@@ -1,0 +1,23 @@
+{
+  "id": "act1_rock_big1",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a large mossy boulder with lichen and cracks, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+    "negative_description": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal",
+    "image_size": {
+      "width": 112,
+      "height": 72
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T18:41:08.690Z"
+}

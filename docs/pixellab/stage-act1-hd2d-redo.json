@@ -1,0 +1,377 @@
+{
+  "defaults": {
+    "engine": "pixflux",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "guidance": 8
+  },
+  "items": [
+    {
+      "id": "act1_grass_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_grass_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of short grass blades and moss, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_grass_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_grass_b.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of short grass with clover and a few tiny pale flowers, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_grass_c",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_grass_c.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of short grass with a few scattered fallen dry leaves, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_grass_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_grass_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of dark soft moss with thin roots and tiny stones, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_dirt_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_dirt_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of bare packed dirt, fine grain, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_dirt_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_dirt_b.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of packed dirt with small pebbles and gravel, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_dirt_c",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_dirt_c.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of dirt with thin roots and shallow cracks, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_dirt_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_dirt_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of damp muddy dirt with a faint wet sheen, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_bed",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_bed.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of wet rounded pebbles and dark silt under shallow clear water, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_stone_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_stone_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of old mossy flagstones with grass in the cracks, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_m_leaves",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_m_leaves.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of dense fallen dry leaves and twigs, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_m_moss",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_m_moss.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of thick soft moss, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_m_gravel",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_m_gravel.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of small pebbles and gravel, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_m_crack",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_m_crack.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of dry cracked earth with fine fissures, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_m_mud",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_m_mud.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of wet dark mud with a faint sheen, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_m_flowers",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_m_flowers.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of short grass full of tiny pale white and blue flowers, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_m_twigs",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_m_twigs.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of dry twigs and small broken branches on dark soil, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_m_clover",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_m_clover.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of clover and low weeds, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient"
+    },
+    {
+      "id": "act1_tree_oak2",
+      "out": "unity/Assets/Resources/Art/props/act1_tree_oak2.png",
+      "size": [
+        160,
+        176
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a huge ancient oak tree, gnarled wide trunk with moss and a hollow, sprawling layered crown of leaves, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tree_giant",
+      "out": "unity/Assets/Resources/Art/props/act1_tree_giant.png",
+      "size": [
+        160,
+        200
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a colossal ancient tree, enormous mossy buttress roots, vast trunk, crown of leaves filling the top of the frame, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_canopy",
+      "out": "unity/Assets/Resources/Art/props/act1_canopy.png",
+      "size": [
+        200,
+        100
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a thick leafy tree branch with dense hanging foliage seen from below, entering from the top left corner and spreading toward the right, only the branch and leaves, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_treeline",
+      "out": "unity/Assets/Resources/Art/props/act1_treeline.png",
+      "size": [
+        200,
+        64
+      ],
+      "view": "side",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a long row of distant conifer treetop silhouettes, flat dark blue-green silhouette shapes only, misty, transparent above and below the row, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_bush1",
+      "out": "unity/Assets/Resources/Art/props/act1_bush1.png",
+      "size": [
+        80,
+        56
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a low rounded leafy shrub without a trunk, wider than tall, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_bush2",
+      "out": "unity/Assets/Resources/Art/props/act1_bush2.png",
+      "size": [
+        96,
+        64
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a wide berry bush with small dark berries and layered leaves, low and rounded, no trunk, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_bush3",
+      "out": "unity/Assets/Resources/Art/props/act1_bush3.png",
+      "size": [
+        56,
+        40
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a small scraggly shrub with sparse leaves, no trunk, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_rock_small",
+      "out": "unity/Assets/Resources/Art/props/act1_rock_small.png",
+      "size": [
+        48,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a small mossy stone, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tallgrass2",
+      "out": "unity/Assets/Resources/Art/props/act1_tallgrass2.png",
+      "size": [
+        64,
+        48
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a wide tuft of tall grass with a few seed heads, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_vines",
+      "out": "unity/Assets/Resources/Art/props/act1_vines.png",
+      "size": [
+        48,
+        96
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a curtain of hanging vines and ivy dangling down from above, only the vines, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_d_puddle",
+      "out": "unity/Assets/Resources/Art/props/act1_d_puddle.png",
+      "size": [
+        64,
+        32
+      ],
+      "view": "high top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a shallow puddle of still dark water on dark soil seen from above, reflecting a faint pale glow, soft muddy edges, isolated, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_d_roots1",
+      "out": "unity/Assets/Resources/Art/props/act1_d_roots1.png",
+      "size": [
+        96,
+        48
+      ],
+      "view": "low top-down",
+      "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, thick gnarled tree roots spreading outward on the ground, only the roots, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    }
+  ]
+}

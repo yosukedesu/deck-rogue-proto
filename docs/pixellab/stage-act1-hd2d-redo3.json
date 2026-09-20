@@ -1,0 +1,62 @@
+{
+  "defaults": {
+    "engine": "pixflux",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "guidance": 9
+  },
+  "items": [
+    {
+      "id": "act1_dirt_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_dirt_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of loose dry brown soil, fine crumbs, dull brown and grey-brown, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, detailed shading, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, daylight, gradient, stripes, rows, green, grass, moss, leaves, cliff, terrace, water, blue"
+    },
+    {
+      "id": "act1_dirt_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_dirt_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of trodden brown earth, smooth packed soil with faint marks, dull brown, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, detailed shading, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, daylight, gradient, stripes, rows, green, grass, moss, leaves, cliff, terrace, water, blue"
+    },
+    {
+      "id": "act1_dirt_e",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_dirt_e.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of brown soil with a few small dark stones and specks, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, detailed shading, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, daylight, gradient, stripes, rows, green, grass, moss, leaves, cliff, terrace, water, blue"
+    },
+    {
+      "id": "act1_grass_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_grass_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of a carpet of dark green moss, soft fine texture, dark green only, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, detailed shading, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, daylight, gradient, stripes, rows, cliff, terrace, water, blue, flowers, pink, bushes, balls, spheres"
+    }
+  ]
+}

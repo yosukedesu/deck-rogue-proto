@@ -1,0 +1,23 @@
+{
+  "id": "act1_dirt_d",
+  "engine": "pixflux",
+  "request": {
+    "description": "flat seamless repeating texture of trodden brown earth, smooth packed soil with faint marks, dull brown, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, detailed shading, no text",
+    "negative_description": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, daylight, gradient, stripes, rows, green, grass, moss, leaves, cliff, terrace, water, blue",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 9,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "high top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T19:03:29.024Z"
+}

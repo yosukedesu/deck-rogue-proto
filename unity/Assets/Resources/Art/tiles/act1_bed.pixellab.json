@@ -1,0 +1,23 @@
+{
+  "id": "act1_bed",
+  "engine": "pixflux",
+  "request": {
+    "description": "flat seamless repeating texture of wet rounded pebbles and dark silt under shallow clear water, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+    "negative_description": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "high top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T18:54:31.283Z"
+}

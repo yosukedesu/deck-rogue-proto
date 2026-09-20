@@ -1,0 +1,23 @@
+{
+  "id": "act1_grass_a",
+  "engine": "pixflux",
+  "request": {
+    "description": "flat seamless repeating texture of short green grass, fine even blades, subtle mottling of darker and lighter green, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+    "negative_description": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, stripes, rows",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 9,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "high top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T18:59:52.100Z"
+}

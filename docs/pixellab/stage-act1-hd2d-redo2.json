@@ -1,0 +1,89 @@
+{
+  "defaults": {
+    "engine": "pixflux",
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "guidance": 9
+  },
+  "items": [
+    {
+      "id": "act1_grass_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_grass_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of short green grass, fine even blades, subtle mottling of darker and lighter green, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, stripes, rows"
+    },
+    {
+      "id": "act1_grass_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_grass_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of dark green moss and short grass with a few thin brown roots, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, stripes, rows"
+    },
+    {
+      "id": "act1_dirt_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_dirt_a.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of bare brown earth, packed dirt, fine grain, brown and grey-brown only, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, stripes, rows, green, grass, moss, leaves, stones"
+    },
+    {
+      "id": "act1_dirt_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_dirt_b.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of brown packed dirt with a few small grey pebbles, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, stripes, rows, green, grass, moss, leaves"
+    },
+    {
+      "id": "act1_dirt_c",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_dirt_c.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of brown dirt with thin dark roots and shallow cracks, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, stripes, rows, green, grass, moss, leaves"
+    },
+    {
+      "id": "act1_dirt_d",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/tiles96/act1_dirt_d.png",
+      "size": [
+        96,
+        96
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "flat seamless repeating texture of damp dark brown mud with a faint wet sheen, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, rocks, flowers, isometric, island, sky, moon, character, animal, text, watermark, blurry, bright saturated colors, daylight, gradient, stripes, rows, green, grass, moss"
+    }
+  ]
+}

@@ -1,0 +1,656 @@
+{
+  "defaults": {
+    "engine": "pixflux",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "guidance": 8
+  },
+  "items": [
+    {
+      "id": "act1_grass_a",
+      "out": "unity/Assets/Resources/Art/tiles/act1_grass_a.png",
+      "size": [
+        64,
+        64
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "seamless tileable pixel art ground texture seen from directly above, repeating tile, no objects, no border, dense short forest grass and moss, soft mottling, a few tiny leaves, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "text, watermark, border, frame, gradient background, blurry, bright saturated colors, daylight, people, character, face, animal, objects, rock, tree"
+    },
+    {
+      "id": "act1_grass_b",
+      "out": "unity/Assets/Resources/Art/tiles/act1_grass_b.png",
+      "size": [
+        64,
+        64
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "seamless tileable pixel art ground texture seen from directly above, repeating tile, no objects, no border, forest moss and short grass with scattered clover and a few tiny pale flowers, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "text, watermark, border, frame, gradient background, blurry, bright saturated colors, daylight, people, character, face, animal, objects, rock, tree"
+    },
+    {
+      "id": "act1_grass_c",
+      "out": "unity/Assets/Resources/Art/tiles/act1_grass_c.png",
+      "size": [
+        64,
+        64
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "seamless tileable pixel art ground texture seen from directly above, repeating tile, no objects, no border, forest floor of short grass with scattered fallen dry leaves and small twigs, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "text, watermark, border, frame, gradient background, blurry, bright saturated colors, daylight, people, character, face, animal, objects, rock, tree"
+    },
+    {
+      "id": "act1_grass_d",
+      "out": "unity/Assets/Resources/Art/tiles/act1_grass_d.png",
+      "size": [
+        64,
+        64
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "seamless tileable pixel art ground texture seen from directly above, repeating tile, no objects, no border, dark soft moss with thin exposed roots and a few small stones, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "text, watermark, border, frame, gradient background, blurry, bright saturated colors, daylight, people, character, face, animal, objects, rock, tree"
+    },
+    {
+      "id": "act1_dirt_a",
+      "out": "unity/Assets/Resources/Art/tiles/act1_dirt_a.png",
+      "size": [
+        64,
+        64
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "seamless tileable pixel art ground texture seen from directly above, repeating tile, no objects, no border, bare packed forest trail dirt, faint footprints, low contrast, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "text, watermark, border, frame, gradient background, blurry, bright saturated colors, daylight, people, character, face, animal, objects, rock, tree"
+    },
+    {
+      "id": "act1_dirt_b",
+      "out": "unity/Assets/Resources/Art/tiles/act1_dirt_b.png",
+      "size": [
+        64,
+        64
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "seamless tileable pixel art ground texture seen from directly above, repeating tile, no objects, no border, packed trail dirt with scattered small pebbles and gravel, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "text, watermark, border, frame, gradient background, blurry, bright saturated colors, daylight, people, character, face, animal, objects, rock, tree"
+    },
+    {
+      "id": "act1_dirt_c",
+      "out": "unity/Assets/Resources/Art/tiles/act1_dirt_c.png",
+      "size": [
+        64,
+        64
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "seamless tileable pixel art ground texture seen from directly above, repeating tile, no objects, no border, trail dirt with thin exposed tree roots and shallow cracks, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "text, watermark, border, frame, gradient background, blurry, bright saturated colors, daylight, people, character, face, animal, objects, rock, tree"
+    },
+    {
+      "id": "act1_dirt_d",
+      "out": "unity/Assets/Resources/Art/tiles/act1_dirt_d.png",
+      "size": [
+        64,
+        64
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "seamless tileable pixel art ground texture seen from directly above, repeating tile, no objects, no border, damp muddy trail dirt with a faint wet sheen and a few dead leaves, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "text, watermark, border, frame, gradient background, blurry, bright saturated colors, daylight, people, character, face, animal, objects, rock, tree"
+    },
+    {
+      "id": "act1_bed",
+      "out": "unity/Assets/Resources/Art/tiles/act1_bed.png",
+      "size": [
+        64,
+        64
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "seamless tileable pixel art ground texture seen from directly above, repeating tile, no objects, no border, shallow stream bed of wet rounded pebbles and dark silt under clear water, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "text, watermark, border, frame, gradient background, blurry, bright saturated colors, daylight, people, character, face, animal, objects, rock, tree"
+    },
+    {
+      "id": "act1_stone_a",
+      "out": "unity/Assets/Resources/Art/tiles/act1_stone_a.png",
+      "size": [
+        64,
+        64
+      ],
+      "view": "high top-down",
+      "no_background": false,
+      "outline": "lineless",
+      "description": "seamless tileable pixel art ground texture seen from directly above, repeating tile, no objects, no border, old mossy flagstones with grass in the cracks, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "text, watermark, border, frame, gradient background, blurry, bright saturated colors, daylight, people, character, face, animal, objects, rock, tree"
+    },
+    {
+      "id": "act1_d_leaves1",
+      "out": "unity/Assets/Resources/Art/props/act1_d_leaves1.png",
+      "size": [
+        96,
+        64
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a loose scattering of fallen dry leaves in a patch, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_leaves2",
+      "out": "unity/Assets/Resources/Art/props/act1_d_leaves2.png",
+      "size": [
+        80,
+        56
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a drift of fallen leaves and twigs piled thicker in the middle, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_leaves3",
+      "out": "unity/Assets/Resources/Art/props/act1_d_leaves3.png",
+      "size": [
+        64,
+        40
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a few scattered fallen leaves, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_moss1",
+      "out": "unity/Assets/Resources/Art/props/act1_d_moss1.png",
+      "size": [
+        80,
+        56
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a soft irregular patch of moss, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_moss2",
+      "out": "unity/Assets/Resources/Art/props/act1_d_moss2.png",
+      "size": [
+        56,
+        40
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a small clump of moss with tiny mushrooms, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_roots1",
+      "out": "unity/Assets/Resources/Art/props/act1_d_roots1.png",
+      "size": [
+        128,
+        72
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, thick gnarled tree roots spreading across the ground, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_roots2",
+      "out": "unity/Assets/Resources/Art/props/act1_d_roots2.png",
+      "size": [
+        96,
+        48
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a few thin tree roots snaking across the ground, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_crack",
+      "out": "unity/Assets/Resources/Art/props/act1_d_crack.png",
+      "size": [
+        80,
+        56
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, dry cracked earth with fine fissures, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_pebbles1",
+      "out": "unity/Assets/Resources/Art/props/act1_d_pebbles1.png",
+      "size": [
+        64,
+        40
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a scattering of small pebbles and gravel, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_pebbles2",
+      "out": "unity/Assets/Resources/Art/props/act1_d_pebbles2.png",
+      "size": [
+        48,
+        32
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a few small stones half sunk in the ground, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_flowers1",
+      "out": "unity/Assets/Resources/Art/props/act1_d_flowers1.png",
+      "size": [
+        56,
+        40
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a cluster of tiny pale white night flowers among grass, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_flowers2",
+      "out": "unity/Assets/Resources/Art/props/act1_d_flowers2.png",
+      "size": [
+        48,
+        32
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a few small pale blue flowers with leaves, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_twigs",
+      "out": "unity/Assets/Resources/Art/props/act1_d_twigs.png",
+      "size": [
+        96,
+        40
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, broken twigs and a small dead branch lying on the ground, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_mud",
+      "out": "unity/Assets/Resources/Art/props/act1_d_mud.png",
+      "size": [
+        96,
+        64
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a trampled muddy patch with a faint wet sheen, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_clover",
+      "out": "unity/Assets/Resources/Art/props/act1_d_clover.png",
+      "size": [
+        64,
+        48
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a patch of clover and low weeds, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_puddle",
+      "out": "unity/Assets/Resources/Art/props/act1_d_puddle.png",
+      "size": [
+        96,
+        56
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a shallow puddle of still dark water reflecting a faint pale moon glow, soft muddy edges, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_edge1",
+      "out": "unity/Assets/Resources/Art/props/act1_d_edge1.png",
+      "size": [
+        64,
+        40
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a ragged tongue of grass and moss creeping over bare dirt, grass on the top half fading into bare ground at the bottom edge, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_edge2",
+      "out": "unity/Assets/Resources/Art/props/act1_d_edge2.png",
+      "size": [
+        64,
+        40
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a fringe of grass tufts and moss with an irregular lower edge that thins out into bare dirt, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_ferns",
+      "out": "unity/Assets/Resources/Art/props/act1_d_ferns.png",
+      "size": [
+        64,
+        48
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, a low spread of small ferns seen from above, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_d_moonlight",
+      "out": "unity/Assets/Resources/Art/props/act1_d_moonlight.png",
+      "size": [
+        96,
+        64
+      ],
+      "view": "high top-down",
+      "outline": "lineless",
+      "description": "seen from directly above, lying flat on the ground, isolated on a completely transparent background with ragged natural edges, no ground plane visible around it, soft dappled patches of pale moonlight falling through leaves onto the ground, glowing light spots only, no leaves, no ground texture, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "square, rectangle, tile, border, frame, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, sky, background"
+    },
+    {
+      "id": "act1_tree_oak",
+      "out": "unity/Assets/Resources/Art/props/act1_tree_oak.png",
+      "size": [
+        160,
+        192
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a large old oak tree with a thick twisted mossy trunk and a broad dense leafy crown, roots spreading at the base, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tree_oak2",
+      "out": "unity/Assets/Resources/Art/props/act1_tree_oak2.png",
+      "size": [
+        192,
+        224
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a huge ancient oak tree, gnarled wide trunk with moss and a hollow, sprawling layered crown of leaves, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tree_pine",
+      "out": "unity/Assets/Resources/Art/props/act1_tree_pine.png",
+      "size": [
+        128,
+        224
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a tall dark conifer tree with layered drooping needle branches and a straight trunk, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tree_pine2",
+      "out": "unity/Assets/Resources/Art/props/act1_tree_pine2.png",
+      "size": [
+        112,
+        208
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a tall slender fir tree with tiers of needle branches, slightly asymmetric, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tree_birch",
+      "out": "unity/Assets/Resources/Art/props/act1_tree_birch.png",
+      "size": [
+        112,
+        192
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a slender pale-barked birch tree with a light airy crown of small leaves, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tree_dead",
+      "out": "unity/Assets/Resources/Art/props/act1_tree_dead.png",
+      "size": [
+        128,
+        176
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a bare dead tree with twisted leafless branches and peeling bark, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tree_willow",
+      "out": "unity/Assets/Resources/Art/props/act1_tree_willow.png",
+      "size": [
+        160,
+        192
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a weeping willow tree with long drooping leafy branches, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tree_giant",
+      "out": "unity/Assets/Resources/Art/props/act1_tree_giant.png",
+      "size": [
+        256,
+        320
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a colossal ancient forest tree, enormous mossy buttress roots, vast trunk, crown of leaves going beyond the top of the frame, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_treeline",
+      "out": "unity/Assets/Resources/Art/props/act1_treeline.png",
+      "size": [
+        400,
+        112
+      ],
+      "view": "side",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a long strip of dense distant forest treetops in mist, layered silhouettes of conifers and broadleaf crowns, only the upper half of the trees, fading softly at the bottom, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_canopy",
+      "out": "unity/Assets/Resources/Art/props/act1_canopy.png",
+      "size": [
+        320,
+        160
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a thick leafy tree branch with dense hanging foliage seen from below, entering from the top left corner and spreading toward the right, framing the top of the picture, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_bush1",
+      "out": "unity/Assets/Resources/Art/props/act1_bush1.png",
+      "size": [
+        80,
+        56
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a rounded dense leafy bush, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_bush2",
+      "out": "unity/Assets/Resources/Art/props/act1_bush2.png",
+      "size": [
+        96,
+        64
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a wide berry bush with small dark berries and layered leaves, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_bush3",
+      "out": "unity/Assets/Resources/Art/props/act1_bush3.png",
+      "size": [
+        56,
+        40
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a small scraggly shrub with sparse leaves, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_bush_flower",
+      "out": "unity/Assets/Resources/Art/props/act1_bush_flower.png",
+      "size": [
+        72,
+        56
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a bushy shrub with pale white night blossoms, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_stump",
+      "out": "unity/Assets/Resources/Art/props/act1_stump.png",
+      "size": [
+        64,
+        48
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a mossy old tree stump with roots and a small mushroom, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_rock_big1",
+      "out": "unity/Assets/Resources/Art/props/act1_rock_big1.png",
+      "size": [
+        112,
+        72
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a large mossy boulder with lichen and cracks, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_rock_big2",
+      "out": "unity/Assets/Resources/Art/props/act1_rock_big2.png",
+      "size": [
+        96,
+        64
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a cluster of two mossy grey rocks leaning together, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_rock_small",
+      "out": "unity/Assets/Resources/Art/props/act1_rock_small.png",
+      "size": [
+        40,
+        28
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a small mossy stone, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_log2",
+      "out": "unity/Assets/Resources/Art/props/act1_log2.png",
+      "size": [
+        144,
+        48
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a long fallen mossy tree log lying horizontally with broken branch stubs and fungus, cut end visible on the left, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tallgrass1",
+      "out": "unity/Assets/Resources/Art/props/act1_tallgrass1.png",
+      "size": [
+        64,
+        56
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a tall clump of wild grass blades bending slightly, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tallgrass2",
+      "out": "unity/Assets/Resources/Art/props/act1_tallgrass2.png",
+      "size": [
+        80,
+        48
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a wide tuft of tall grass and a few seed heads, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_tuft",
+      "out": "unity/Assets/Resources/Art/props/act1_tuft.png",
+      "size": [
+        32,
+        32
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a small tuft of grass, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_fern2",
+      "out": "unity/Assets/Resources/Art/props/act1_fern2.png",
+      "size": [
+        80,
+        56
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a large forest fern with many arching feathery fronds, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_shroom2",
+      "out": "unity/Assets/Resources/Art/props/act1_shroom2.png",
+      "size": [
+        56,
+        40
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a cluster of glowing pale blue-green mushrooms of different heights on a mossy base, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act1_vines",
+      "out": "unity/Assets/Resources/Art/props/act1_vines.png",
+      "size": [
+        64,
+        128
+      ],
+      "view": "low top-down",
+      "description": "isolated single object, centered, completely empty transparent background, nothing else in the frame, no ground, no scenery, a curtain of hanging vines and ivy dangling down from above, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, muted night forest palette under cool moonlight (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+      "negative": "scene, background, landscape, sky, moon, ground plane, grass field, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    }
+  ]
+}

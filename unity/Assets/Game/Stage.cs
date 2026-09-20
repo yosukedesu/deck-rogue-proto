@@ -37,7 +37,9 @@ namespace DeckRogue.Game
         }
         // 画面の下から何割に world 原点を置くか。スマホ (2026-09-14) は手札が画面の 43% を占めるので座席を上げる (絵は半分なので上端は余る)
         static float GroundLineRatio { get { return UiKit.Phone ? 0.56f : 0.45f; } }   // スマホ 0.54→0.56 (2026-09-15 案C: 頭上の吹き出しが無くなり、足元の帳面の札 76 に足が掛からない高さへ)
-        const float Tile = 1.28f;                        // 32ドットのタイル1枚 = 1.28 units (基準深度で 4px/ドット)
+        const float Tile = 1.28f;                        // タイル1枚 = 1.28 units。幕1は 64 ドット (基準深度で 2px/ドット = 地面だけ細かい。2026-09-21 HD-2D 裁定)、幕2/3 は 32 ドット (4px/ドット)
+        const float Dot = 0.04f;                         // 立て板 (木・茂み) の 1 ドット = 基準深度で 4px = 0.04 units (キャラと同じ粒)
+        const float GroundDot = 0.02f;                   // 地面の敷物の 1 ドット = 2px (地面のタイルと同じ粒)
         static readonly Color ShadowColor = new Color(0.02f, 0.02f, 0.08f, 0.92f);   // 接地影: 地面より暗く青寄り。幅0.8・高さ0.35・足元中心・地面とスプライトの間
 
         static Camera _cam;
@@ -124,13 +126,18 @@ namespace DeckRogue.Game
                 var profile = ScriptableObject.CreateInstance<VolumeProfile>();
                 _dof = profile.Add<DepthOfField>(true);
                 _dof.active = !Application.isMobilePlatform;   // スマホは被写界深度を切る (まず動くこと優先)
-                _dof.mode.value = DepthOfFieldMode.Gaussian;   // 座席 (リーダー〜一番奥の敵) は全部くっきり。ぼけるのは遠景だけ (2026-09-08「敵が少しぼやけてる」)
+                // ティルトシフト (2026-09-21 HD-2D 裁定「手前もぼかす」): Bokeh で焦点を場の中心 (基準深度 = LayoutCamera の _dist) に置き、手前の草と遠景の両方をぼかす。
+                // 焦点距離 90mm・F4.5 → 焦点の前後 ±3.4 units が鮮明 = リーダー (手前) から一番奥の敵までの座席は収まる (座席は t=-5〜11)。旧 Gaussian は遠景だけ
+                _dof.mode.value = DepthOfFieldMode.Bokeh;
+                _dof.focalLength.value = 90f;
+                _dof.aperture.value = 4.5f;
+                _dof.bladeCount.value = 5;
                 _dof.gaussianMaxRadius.value = 1.2f;
                 _dof.highQualitySampling.value = true;
                 var bloom = profile.Add<Bloom>(true);
-                bloom.threshold.value = 0.9f;
-                bloom.intensity.value = 1.8f;
-                bloom.scatter.value = 0.78f;
+                bloom.threshold.value = 0.95f;
+                bloom.intensity.value = 1.5f;
+                bloom.scatter.value = 0.7f;
                 bloom.tint.value = new Color(1f, 0.94f, 0.84f);   // 幻想寄り (2026-09-08「もっと幻想的に」): 少し強く・柔らかく・暖色に寄せすぎない
                 var vig = profile.Add<Vignette>(true);
                 vig.intensity.value = 0.34f;
@@ -147,9 +154,9 @@ namespace DeckRogue.Game
                 var ca = profile.Add<ChromaticAberration>(true);
                 ca.intensity.value = 0.03f;                                   // ドット絵の縁を崩さない程度
                 _color = profile.Add<ColorAdjustments>(true);
-                _color.postExposure.value = -0.05f;   // ACES が中間調を沈めるぶん戻す
-                _color.contrast.value = 14f;
-                _color.saturation.value = -6f;
+                _color.postExposure.value = 0.12f;    // ACES が中間調を沈めるぶん戻す (2026-09-21 HD-2D: 舞台全体が暗く平坦だったので半段明るく・締まりを足す)
+                _color.contrast.value = 20f;
+                _color.saturation.value = -2f;
                 _volume.sharedProfile = profile;
             }
             catch (Exception e) { Debug.LogWarning("[Stage] Volume の作成に失敗: " + e.Message); }
@@ -194,6 +201,7 @@ namespace DeckRogue.Game
             if (H < 1f) H = 1080f;
             _k = PlaneUnitsPerScreen / H;
             _dist = (PlaneUnitsPerScreen * 0.5f) / Mathf.Tan(Fov * 0.5f * Mathf.Deg2Rad);
+            if (_dof != null) _dof.focusDistance.value = _dist + 1.0f;   // 焦点 = 場の中心 (原点より少し奥 = 敵①〜②の辺り)
             var rot = Quaternion.Euler(Pitch, 0f, 0f);
             _fwd = rot * Vector3.forward; _up = rot * Vector3.up; _right = Vector3.right;
             float dy = (H * GroundLineRatio - H * 0.5f) * _k;
@@ -260,9 +268,9 @@ namespace DeckRogue.Game
         // ---------------------------------------------------------------- 段丘の高さ場 (2026-09-08 ユーザー「地形が単調。本家を見習って」)
         // 本家の戦場は起伏を段に切った段丘 (草の天面と土の崖面・縁は不定形)。ノイズの起伏を Step 刻みに量子化して段にし、
         // 隣のセルとの高低差に崖面を張る。戦闘の場 (道の座標 t≈2,s≈0.5 の楕円) は平らに均し、土の空き地は不定形の塊にする。
-        const float Cell = 0.5f, Step = 1.1f;
+        const float Cell = 0.64f, Step = 1.1f;          // セル = タイルの半分 (2026-09-21: 材質の 4 種を 2×2 のアトラスに束ね、タイル単位で種と向きを選ぶのでセルはタイルに揃える)
         const float TX0 = -56f, TZ0 = -24f;
-        const int TNX = 224, TNZ = 200;
+        const int TNX = 175, TNZ = 157;
         static float[,] _H;
         static bool _flat;                      // 幕2/3 = 坑の中の平らな床 (起伏・川・土の道なし)
         static bool[,] _Dirt;
@@ -356,6 +364,18 @@ namespace DeckRogue.Game
             return n > 0 ? sum / n : 0f;
         }
 
+        /// <summary>アトラス (2×2) の象限 v に、タイル内の座標 (lx,lz ∈ 0..1) を向き rot (90° 単位) で回して写す</summary>
+        static Vector2 AtlasUv(int v, int rot, float lx, float lz)
+        {
+            float rx, rz;
+            switch (rot & 3) { case 1: rx = 1f - lz; rz = lx; break; case 2: rx = 1f - lx; rz = 1f - lz; break; case 3: rx = lz; rz = 1f - lx; break; default: rx = lx; rz = lz; break; }
+            const float inset = 0.5f / 64f;   // 半ドット (64 ドットのタイル)
+            rx = Mathf.Lerp(inset, 1f - inset, rx); rz = Mathf.Lerp(inset, 1f - inset, rz);
+            return new Vector2((v % 2) * 0.5f + rx * 0.5f, (v / 2) * 0.5f + rz * 0.5f);
+        }
+
+        static int grassVariants, dirtVariants;
+        static List<Texture2D> _rootDecals;
         static void BuildTerrain(Material mGrass, Material mDirt, Material mCliff)
         {
             _tseed = 1000 + _paintedAct * 7;
@@ -368,27 +388,48 @@ namespace DeckRogue.Game
                     _Dirt[i, j] = DirtAt(x, z, _H[i, j]);
                 }
             var top = new MB(); var dirtTop = new MB(); var litter = new MB(); var bed = new MB();
+            bool grassAtlas = grassVariants > 0, dirtAtlas = dirtVariants > 0;
             for (int i = 0; i < TNX; i++)
                 for (int j = 0; j < TNZ; j++)
                 {
                     float x0 = TX0 + i * Cell, x1 = x0 + Cell, z0 = TZ0 + j * Cell, z1 = z0 + Cell;
                     float h00 = CornerH(i, j), h01 = CornerH(i, j + 1), h11 = CornerH(i + 1, j + 1), h10 = CornerH(i + 1, j);
                     float t, sv; PathLocal((x0 + x1) * 0.5f, (z0 + z1) * 0.5f, out t, out sv);
-                    MB target;
-                    if (InStream(t, sv)) target = bed;
-                    else if (_Dirt[i, j]) target = dirtTop;
-                    else target = (Vnoise(x0 * 0.13f + 40f, z0 * 0.13f + 9f) > 0.6f) ? litter : top;   // 落ち葉の溜まりを斑に
-                    int rot = (int)(Hash01(i * 3 + 11, j * 5 + 7) * 4f);
-                    var uv = new[] { new Vector2(x0, z0) / Tile, new Vector2(x0, z1) / Tile, new Vector2(x1, z1) / Tile, new Vector2(x1, z0) / Tile };
-                    target.Quad(new Vector3(x0, h00, z0), new Vector3(x0, h01, z1), new Vector3(x1, h11, z1), new Vector3(x1, h10, z0),
-                                uv[rot], uv[(rot + 1) % 4], uv[(rot + 2) % 4], uv[(rot + 3) % 4]);
+                    MB target; bool atlas;
+                    bool litterHere = Vnoise(x0 * 0.13f + 40f, z0 * 0.13f + 9f) > 0.6f;   // 落ち葉の溜まりを斑に
+                    if (InStream(t, sv)) { target = bed; atlas = false; }
+                    else if (_Dirt[i, j]) { target = dirtTop; atlas = dirtAtlas; }
+                    else if (grassAtlas) { target = top; atlas = true; }
+                    else { target = litterHere ? litter : top; atlas = false; }
+                    Vector2[] uv;
+                    if (atlas)
+                    {
+                        // タイル (2×2 セル) 単位で種 (アトラスの象限) と向きを選ぶ。セルの角はタイルの 0/0.5/1 に当たるので向きを変えても中身は繋がる。
+                        // 象限の縁は半ドット内側に寄せる (点サンプルが隣の象限を拾わない)
+                        int ti = i >> 1, tj = j >> 1;
+                        float hv = Hash01(ti * 7 + 3, tj * 11 + 5);
+                        int v = target == top ? (litterHere ? 2 : hv < 0.74f ? 0 : 3)                       // 草: 素の草 74%・株 26%。落ち葉は溜まりだけ。クローバー (b) は粒が均等に並んで気持ち悪いので使わない (2026-09-21)
+                                              : (hv < 0.9f ? (int)(hv * 3.33f) % 3 : 3);                     // 土: 踏み固めた土 3 相 90%・ひび割れ 10%
+                        int rot = (int)(Hash01(ti * 3 + 11, tj * 5 + 7) * 4f);
+                        float lx0 = (i & 1) * 0.5f, lz0 = (j & 1) * 0.5f, lx1 = lx0 + 0.5f, lz1 = lz0 + 0.5f;
+                        uv = new[] { AtlasUv(v, rot, lx0, lz0), AtlasUv(v, rot, lx0, lz1), AtlasUv(v, rot, lx1, lz1), AtlasUv(v, rot, lx1, lz0) };
+                        target.Quad(new Vector3(x0, h00, z0), new Vector3(x0, h01, z1), new Vector3(x1, h11, z1), new Vector3(x1, h10, z0), uv[0], uv[1], uv[2], uv[3]);
+                    }
+                    else
+                    {
+                        int rot = (int)(Hash01(i * 3 + 11, j * 5 + 7) * 4f);
+                        uv = new[] { new Vector2(x0, z0) / Tile, new Vector2(x0, z1) / Tile, new Vector2(x1, z1) / Tile, new Vector2(x1, z0) / Tile };
+                        target.Quad(new Vector3(x0, h00, z0), new Vector3(x0, h01, z1), new Vector3(x1, h11, z1), new Vector3(x1, h10, z0),
+                                    uv[rot], uv[(rot + 1) % 4], uv[(rot + 2) % 4], uv[(rot + 3) % 4]);
+                    }
                 }
             Solid("terrain-grass", top, mGrass);
             var mLitter = _flat ? mGrass : HasTile(_paintedAct, "grass2") ? Lit(Tex(_paintedAct, "grass2", null)) : Lit(Tex(_paintedAct, "leaves", Px.Dirt(_pal, new System.Random(3))));
             if (!_flat) mLitter.SetColor("_BaseColor", HasTile(_paintedAct, "grass2") ? new Color(0.4f, 0.5f, 0.5f) : HasTile(_paintedAct, "leaves") ? new Color(0.62f, 0.62f, 0.66f) : new Color(0.5f, 0.46f, 0.44f));
             Solid("terrain-litter", litter, mLitter);
             Solid("terrain-dirt", dirtTop, mDirt);
-            var mBed = Lit(Tex(_paintedAct, "dirt", Px.Dirt(_pal, new System.Random(5)))); mBed.SetColor("_BaseColor", new Color(0.36f, 0.34f, 0.32f));   // 川床 = 暗い湿った土
+            var mBed = HasTile(_paintedAct, "bed") ? Lit(Tex(_paintedAct, "bed", null)) : Lit(Tex(_paintedAct, "dirt", Px.Dirt(_pal, new System.Random(5))));
+            mBed.SetColor("_BaseColor", HasTile(_paintedAct, "bed") ? new Color(0.55f, 0.6f, 0.66f) : new Color(0.36f, 0.34f, 0.32f));   // 川床 = 暗い湿った土
             Solid("terrain-bed", bed, mBed);
             // 水面: 溝の上に平らな半透明の板 (月と粒の光を淡く映す)。StageDriver が UV を流す
             var water = new MB();
@@ -910,7 +951,7 @@ namespace DeckRogue.Game
                 p.Ambient = new Color(0.28f, 0.33f, 0.56f); p.Sun = new Color(0.72f, 0.8f, 1f); p.Lantern = new Color(1f, 0.72f, 0.4f);
                 p.Filter = new Color(0.86f, 0.92f, 1.12f); p.UnitAmbient = new Color(0.58f, 0.65f, 0.94f);   // 環境光は青く暗め = 街灯の暖色が読める
             }
-            p.LampOnUnits = 1.0f; p.LampIntensity = 3.6f; p.SunIntensity = 1.6f;   // 月明かりは強め (2026-09-08「月明かりももっと強くして」。旧 0.8)   // 補間の強さ (1 で街灯の色そのもの)
+            p.LampOnUnits = 1.0f; p.LampIntensity = 3.6f; p.SunIntensity = act == 1 ? 2.1f : 1.6f;   // 幕1 (HD-2D 2026-09-21): 月光を強く = 木の影と地面の陰影が読める   // 月明かりは強め (2026-09-08「月明かりももっと強くして」。旧 0.8)   // 補間の強さ (1 で街灯の色そのもの)
             return p;
         }
 
@@ -936,18 +977,20 @@ namespace DeckRogue.Game
             RenderSettings.fog = true;
             RenderSettings.fogMode = FogMode.Linear;
             RenderSettings.fogColor = p.Fog;                  // 空気遠近: 遠くほど白く薄く。最上段はここで薄れて終わる
-            RenderSettings.fogStartDistance = 20f;
-            RenderSettings.fogEndDistance = 62f;
+            RenderSettings.fogStartDistance = act == 1 ? 16f : 20f;
+            RenderSettings.fogEndDistance = act == 1 ? 56f : 62f;
             _sun.color = p.Sun; _sun.intensity = p.SunIntensity;
             _lantern.color = p.Lantern; _lantern.intensity = p.LampIntensity;
             if (_color != null) _color.colorFilter.value = p.Filter;
 
             // 地面と道
             var grass = Px.Grass(p, rng); var dirt = Px.Dirt(p, rng); var stone = Px.Stone(p, rng); var cliff = Px.Cliff(p, rng);
-            var mGrass = Lit(Tex(act, "grass", grass)); var mDirt = Lit(Tex(act, "dirt", dirt)); var mStone = Lit(Tex(act, "stone", stone)); var mCliff = Lit(Tex(act, "cliff", cliff));
-            // PixelLab のタイルは昼の色で描かれるので、取り込んだ時だけ幕の夜のパレットへ寄せる (仮のタイルは元から夜の色)
-            if (HasTile(act, "grass")) mGrass.SetColor("_BaseColor", new Color(0.46f, 0.6f, 0.58f));   // 森の床は暗め
-            if (HasTile(act, "dirt")) mDirt.SetColor("_BaseColor", new Color(0.66f, 0.6f, 0.56f));    // 土=灰茶 (月明かりの空き地。影が読める明るさ)。暖色は街灯の範囲だけ
+            var mGrass = Ground(act, "grass", grass, out grassVariants); var mDirt = Ground(act, "dirt", dirt, out dirtVariants); var mStone = Lit(Tex(act, "stone", stone)); var mCliff = Lit(Tex(act, "cliff", cliff));
+            // PixelLab のタイルは昼の色で描かれるので、取り込んだ時だけ幕の夜のパレットへ寄せる (仮のタイルは元から夜の色)。4 種のアトラス (夜の色で発注) は薄く
+            if (grassVariants > 0) mGrass.SetColor("_BaseColor", new Color(0.5f, 0.58f, 0.6f));   // 月夜の草地 = 青緑に沈める (昼の緑のまま出すと芝生になる)
+            else if (HasTile(act, "grass")) mGrass.SetColor("_BaseColor", new Color(0.46f, 0.6f, 0.58f));   // 森の床は暗め
+            if (dirtVariants > 0) mDirt.SetColor("_BaseColor", new Color(0.66f, 0.62f, 0.6f));
+            else if (HasTile(act, "dirt")) mDirt.SetColor("_BaseColor", new Color(0.66f, 0.6f, 0.56f));    // 土=灰茶 (月明かりの空き地。影が読める明るさ)。暖色は街灯の範囲だけ
             if (HasTile(act, "stone")) mStone.SetColor("_BaseColor", new Color(0.56f, 0.62f, 0.76f)); // 石=青灰
             if (HasTile(act, "cliff")) mCliff.SetColor("_BaseColor", new Color(0.6f, 0.52f, 0.48f));  // 崖=土色
             if (act != 1)
@@ -966,8 +1009,28 @@ namespace DeckRogue.Game
             var mBite = Cutout(Px.Patch(p.GrassA, p.GrassB, rng));
             var mSpill = Cutout(Px.Patch(p.DirtA, p.DirtB, rng));
             var edges = DirtEdgeCells();
+            var edgeDecals = PatchSet(act, "grass_a", true, 40, 26, 32, 22, 48, 28);
+            edgeDecals.AddRange(PatchSet(act, "grass_b", true, 40, 26));
+            if (edgeDecals.Count > 0)
+            {
+                // 境界のセルごとに、草側の隣へ向けて「草の舌」を寝かせる = セル単位の段が消え、道の縁が不定形になる (2026-09-21)
+                for (int e = 0; e < edges.Count; e++)
+                {
+                    var c = edges[e]; int ci = CellI(c.x), cj = CellJ(c.z);
+                    int[] dx = { 1, -1, 0, 0 }, dz = { 0, 0, 1, -1 };
+                    for (int k = 0; k < 4; k++)
+                    {
+                        int ni = ci + dx[k], nj = cj + dz[k];
+                        if (ni < 0 || nj < 0 || ni >= TNX || nj >= TNZ || _Dirt[ni, nj]) continue;
+                        float ex = c.x + dx[k] * Cell * 0.5f, ez = c.z + dz[k] * Cell * 0.5f;
+                        float yaw = Mathf.Atan2(dx[k], dz[k]) * Mathf.Rad2Deg + ((float)rng.NextDouble() - 0.5f) * 30f;
+                        GroundDecal("edge", Pick(edgeDecals, rng), ex + ((float)rng.NextDouble() - 0.5f) * 0.15f, ez + ((float)rng.NextDouble() - 0.5f) * 0.15f,
+                                    0.95f + (float)rng.NextDouble() * 0.5f, yaw, 0.012f, rng.NextDouble() < 0.5);
+                    }
+                }
+            }
             for (int i = 0; i < edges.Count; i++) { int j = rng.Next(i, edges.Count); var tmp = edges[i]; edges[i] = edges[j]; edges[j] = tmp; }
-            for (int i = 0; i < Mathf.Min(44, edges.Count); i++)
+            for (int i = 0; i < (edgeDecals.Count > 0 ? 0 : Mathf.Min(44, edges.Count)); i++)
             {
                 var c = edges[i];
                 float sz = 0.7f + (float)rng.NextDouble() * 1.4f;
@@ -983,16 +1046,59 @@ namespace DeckRogue.Game
                 var w3 = OnPath(3f, 7.6f); Decal("island-streak", mIslandDry, w3.x, w3.z, 5.0f, 0.9f, 80f);
             }
             // 草の株・花は草地に、小石は土の上に
-            var tuft = Px.Tuft(p, rng); var pebble = Px.Pebble(p, rng); var flower = Px.Flower(p, rng);
+            var tuft = PropTex(act, "tuft", Px.Tuft(p, rng)); var pebble = Px.Pebble(p, rng); var flower = Px.Flower(p, rng);
             var mPebble = Cutout(pebble);
-            for (int i = 0; i < 46; i++)
+            var pebbleDecals = PatchSet(act, "m_gravel", false, 24, 16, 40, 28, 32, 20);
+            for (int i = 0; i < 70; i++)
             {
                 float t = -22f + (float)rng.NextDouble() * 46f;
                 float sv = -5f + (float)rng.NextDouble() * 15f;
                 var w = OnPath(t, sv);
-                if (IsDirt(w.x, w.z)) { if (rng.NextDouble() < 0.5) Decal("pebble", mPebble, w.x, w.z, 0.36f + (float)rng.NextDouble() * 0.16f, 0.24f, (float)rng.NextDouble() * 360f); continue; }
+                if (IsDirt(w.x, w.z))
+                {
+                    if (pebbleDecals.Count > 0) { if (rng.NextDouble() < 0.7) GroundDecal("pebbles", Pick(pebbleDecals, rng), w.x, w.z, 0.8f + (float)rng.NextDouble() * 0.5f, (float)rng.NextDouble() * 360f, 0.016f, rng.NextDouble() < 0.5); }
+                    else if (rng.NextDouble() < 0.5) Decal("pebble", mPebble, w.x, w.z, 0.36f + (float)rng.NextDouble() * 0.16f, 0.24f, (float)rng.NextDouble() * 360f);
+                    continue;
+                }
                 if (rng.NextDouble() < 0.15) Plane("flower", flower, w, 0.46f, 0.5f, false);
-                else Plane("tuft", tuft, w, 0.44f + (float)rng.NextDouble() * 0.18f, 0.5f, false);
+                else SpriteH("tuft", tuft, w, 0.3f + (float)rng.NextDouble() * 0.18f, 0f, rng.NextDouble() < 0.5);
+            }
+            // 地面の敷物 (2026-09-21 HD-2D): 落ち葉・苔・クローバー・花・小枝・根・ひび・泥・水たまりを、材質に合わせて散らす (床の空白を埋める = オクトラの床)
+            {
+                var leaves = PatchSet(act, "m_leaves", false, 48, 32, 64, 44, 80, 56, 36, 24); var moss = PatchSet(act, "m_moss", false, 40, 28, 56, 40, 72, 48); var clover = PatchSet(act, "m_clover", false, 40, 28, 56, 36);
+                var flowers = PatchSet(act, "m_flowers", false, 32, 24, 48, 32); var twigs = PatchSet(act, "m_twigs", false, 40, 24, 56, 32); var roots = PropSet(act, "d_roots1", "root");
+                var cracks = PatchSet(act, "m_crack", false, 48, 32, 64, 44); var mud = PatchSet(act, "m_mud", false, 56, 40, 80, 56);
+                var puddles = new List<Texture2D> { Px.Puddle(rng, 72, 40), Px.Puddle(rng, 56, 32), Px.Puddle(rng, 88, 44) };
+                System.Func<float, float, Vector3?> spot = (tMin, tMax) =>
+                {
+                    float t = tMin + (float)rng.NextDouble() * (tMax - tMin), sv = -8f + (float)rng.NextDouble() * 22f;
+                    var w = OnPath(t, sv);
+                    if (InStream(t, sv)) return null;
+                    return w;
+                };
+                // 草地: 落ち葉 (奥と縁に多い)・苔・クローバー・花・小枝
+                for (int i = 0; i < 60 && leaves.Count > 0; i++) { var w = spot(-26f, 32f); if (w == null || IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("leaves", Pick(leaves, rng), w.Value.x, w.Value.z, 0.8f + (float)rng.NextDouble() * 0.6f, (float)rng.NextDouble() * 360f, 0.018f, rng.NextDouble() < 0.5); }
+                for (int i = 0; i < 30 && moss.Count > 0; i++) { var w = spot(-26f, 32f); if (w == null || IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("moss", Pick(moss, rng), w.Value.x, w.Value.z, 0.8f + (float)rng.NextDouble() * 0.7f, (float)rng.NextDouble() * 360f, 0.014f, rng.NextDouble() < 0.5); }
+                for (int i = 0; i < 10 && clover.Count > 0; i++) { var w = spot(-24f, 30f); if (w == null || IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("clover", Pick(clover, rng), w.Value.x, w.Value.z, 0.8f + (float)rng.NextDouble() * 0.5f, (float)rng.NextDouble() * 360f, 0.02f, rng.NextDouble() < 0.5); }
+                for (int i = 0; i < 8 && flowers.Count > 0; i++) { var w = spot(-24f, 30f); if (w == null || IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("flowers", Pick(flowers, rng), w.Value.x, w.Value.z, 0.8f + (float)rng.NextDouble() * 0.4f, (float)rng.NextDouble() * 360f, 0.024f, rng.NextDouble() < 0.5); }
+                for (int i = 0; i < 18 && twigs.Count > 0; i++) { var w = spot(-26f, 32f); if (w == null) continue; GroundDecal("twigs", Pick(twigs, rng), w.Value.x, w.Value.z, 0.8f + (float)rng.NextDouble() * 0.5f, (float)rng.NextDouble() * 360f, 0.026f, rng.NextDouble() < 0.5); }
+                // 土: 小石は上で撒いた。ひび・泥・水たまり
+                for (int i = 0; i < 5 && cracks.Count > 0; i++) { var w = spot(-22f, 28f); if (w == null || !IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("crack", Pick(cracks, rng), w.Value.x, w.Value.z, 0.9f + (float)rng.NextDouble() * 0.5f, (float)rng.NextDouble() * 360f, 0.013f, rng.NextDouble() < 0.5); }
+                for (int i = 0; i < 5 && mud.Count > 0; i++) { var w = spot(-22f, 28f); if (w == null || !IsDirt(w.Value.x, w.Value.z)) continue; GroundDecal("mud", Pick(mud, rng), w.Value.x, w.Value.z, 0.9f + (float)rng.NextDouble() * 0.6f, (float)rng.NextDouble() * 360f, 0.015f, rng.NextDouble() < 0.5); }
+                {
+                    // 水たまり: 半透明の板 (Glow = 影も深度も書かない) を地面のすぐ上に寝かせる。道の脇と空き地の縁
+                    float[] pt = { -2f, 9f, 5.5f, -14f, 20f }; float[] pss = { -2.2f, 2.4f, -2.6f, 1.2f, 3.5f };
+                    for (int i = 0; i < pt.Length; i++)
+                    {
+                        var w = OnPath(pt[i], pss[i]); var tex = Pick(puddles, rng);
+                        float sw = tex.width * GroundDot * (0.9f + (float)rng.NextDouble() * 0.5f);
+                        var g = Glow("puddle", tex, new Vector3(w.x, GroundY(w.x, w.z) + 0.035f, w.z), 1f, 1f);
+                        g.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
+                        g.transform.rotation = Quaternion.Euler(90f, (float)rng.NextDouble() * 360f, 0f);
+                        g.transform.localScale = new Vector3(sw, sw * tex.height / tex.width, 1f);
+                    }
+                }
+                _rootDecals = roots;   // 根は木の足元に (木を置く時に)
             }
             // 夜の花と水たまり (道の脇・空き地の縁)
             var flower2 = PropTex(act, "flower", null); var puddle = PropTex(act, "puddle", null);
@@ -1004,7 +1110,7 @@ namespace DeckRogue.Game
                 if (IsDirt(w.x, w.z) || InStream(t, sv)) continue;
                 if (flower2 != null && rng.NextDouble() < 0.75) Plane("nightflower", flower2, w, 0.42f + (float)rng.NextDouble() * 0.12f, 0.5f, false);
             }
-            if (puddle != null)
+            if (puddle != null && false)   // 旧 PixelLab の水たまり (48×24) は使わない (コード生成の Px.Puddle へ。2026-09-21)
             {
                 float[] pt = { -2f, 9f, 5.5f }; float[] pss = { -2.2f, 2.4f, -2.6f };
                 for (int i = 0; i < pt.Length; i++)
@@ -1037,6 +1143,7 @@ namespace DeckRogue.Game
             }
             // 光る茸: 脈のマナを浴びて育つ森の灯 (世界観)。自発光の板 + 足元の青い暈 + いくつかは点光源。戦闘の場は避ける
             var shroom = PropTex(act, "shroom", Px.GlowShroom(p, rng));
+            var shroom2 = PropTex(act, "shroom2", null);
             int lit = 0;
             for (int i = 0; i < 40; i++)
             {
@@ -1045,7 +1152,8 @@ namespace DeckRogue.Game
                 if (sv > -2.5f && sv < 6.5f && t > -11f && t < 15f) continue;   // 戦闘の場と道の中は避ける
                 var w = OnPath(t, sv);
                 if (IsDirt(w.x, w.z)) continue;
-                var g = Prop("glowshroom", shroom, w + new Vector3(0f, 0.02f, 0f), 0.42f + (float)rng.NextDouble() * 0.16f, 0.5f);
+                bool big = shroom2 != null && rng.NextDouble() < 0.4;
+                var g = Prop("glowshroom", big ? shroom2 : shroom, w + new Vector3(0f, 0.02f, 0f), big ? 0.5f + (float)rng.NextDouble() * 0.2f : 0.42f + (float)rng.NextDouble() * 0.16f, 0.5f);
                 g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f);
                 var halo = Glow("shroom-halo", Px.Radial(new Color(0.55f, 0.9f, 1f, 0.42f)), w + new Vector3(0f, 0.03f, 0f), 1f, 1f);
                 halo.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
@@ -1060,11 +1168,33 @@ namespace DeckRogue.Game
             }
             // 月光の筋: 右上 (月光の向き) から差す淡い光の帯を木立の間に (中景〜遠景)
             var beam = Px.Beam();
-            float[] bx = { -9f, 0f, 9f, 17f }; float[] bz = { 9f, 11f, 8f, 10f }; float[] bw = { 3.8f, 5.4f, 4.6f, 4.0f };
+            float[] bx = { -9f, 0f, 9f, 17f, -18f, 25f, 4.5f }; float[] bz = { 9f, 11f, 8f, 10f, 12f, 7f, 16f }; float[] bw = { 4.6f, 6.4f, 5.4f, 4.8f, 4.2f, 5.0f, 7.0f };
+            var moonPool = PropTexRaw(act, "d_moonlight", null);
             for (int i = 0; i < bx.Length; i++)
             {
-                var b = Glow("moonbeam", beam, new Vector3(bx[i], 0.3f, bz[i]), 20f, bw[i]);
+                var b = Glow("moonbeam", beam, new Vector3(bx[i], 0.3f, bz[i]), 22f, bw[i]);
                 b.transform.rotation = Quaternion.Euler(0f, 0f, -14f);
+                b.GetComponent<MeshRenderer>().sharedMaterial.color = new Color(1f, 1f, 1f, i < 4 ? 1f : 0.7f);
+                // 筋の足元: 木漏れ日の光溜まり (2026-09-21 HD-2D)。筋は -14° に傾いているので足元は少し右 (+x) へ
+                float fx = bx[i] + 22f * Mathf.Sin(14f * Mathf.Deg2Rad) * 0.5f, fz = bz[i];
+                if (moonPool != null)
+                {
+                    for (int q = 0; q < 2; q++)
+                    {
+                        float px2 = fx + ((float)rng.NextDouble() - 0.5f) * 2.5f, pz2 = fz + ((float)rng.NextDouble() - 0.5f) * 2.5f;
+                        var g = Glow("moon-pool", moonPool, new Vector3(px2, GroundY(px2, pz2) + 0.06f, pz2), 1f, 1f);
+                        g.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
+                        g.transform.rotation = Quaternion.Euler(90f, (float)rng.NextDouble() * 360f, 0f);
+                        float sw = moonPool.width * GroundDot * (1.2f + (float)rng.NextDouble() * 0.8f);
+                        g.transform.localScale = new Vector3(sw, sw * moonPool.height / moonPool.width, 1f);
+                        g.GetComponent<MeshRenderer>().sharedMaterial.color = new Color(1f, 1f, 1f, 0.55f);
+                    }
+                }
+                else
+                {
+                    var g = Glow("moon-pool", Px.Radial(new Color(0.8f, 0.88f, 1f, 0.22f)), new Vector3(fx, GroundY(fx, fz) + 0.05f, fz), 1f, 1f);
+                    g.GetComponent<MeshFilter>().sharedMesh = _quadCentered; g.transform.rotation = Quaternion.Euler(90f, 0f, 0f); g.transform.localScale = new Vector3(bw[i] * 1.3f, bw[i] * 0.8f, 1f);
+                }
             }
 
             // 遺跡の柱 (石) — 段丘の上に (額縁)
@@ -1079,13 +1209,33 @@ namespace DeckRogue.Game
             // 木: 段丘の上に大小をばらして散らす (戦闘の場の外・奥ほど多い)。3種・大きさ 0.6〜1.5
             var trees = new[] { Px.Tree(p, rng, 0), Px.Tree(p, rng, 1), Px.Tree(p, rng, 2) };
             var bush = Px.Bush(p, rng); var rock = PropTex(act, "rock", Px.Rock(p, rng));
+            var bushes = PropSet(act, "bush1", "bush2", "bush3"); var bigRocks = PropSet(act, "rock_big1", "rock_big2"); var smallRock = PropTex(act, "rock_small", null);   // bush_flower (等間隔の白い花) は 2026-09-21 ユーザー「集合体恐怖症を煽る」で外した var bigRocks = PropSet(act, "rock_big1", "rock_big2"); var smallRock = PropTex(act, "rock_small", null);
+            var stump = PropTex(act, "stump", null); var log2 = PropTex(act, "log2", null); var tallGrass = PropSet(act, "tallgrass1", "tallgrass2"); var fern2 = PropTex(act, "fern2", null); var vines = PropTex(act, "vines", null);
             var clumpList = new List<Texture2D> { PropTex(act, "leafclump1", Px.LeafClump(p, rng, 0)), PropTex(act, "leafclump2", Px.LeafClump(p, rng, 1)), PropTex(act, "leafclump3", Px.LeafClump(p, rng, 2)) };
             var c4 = PropTex(act, "leafclump4", null); if (c4 != null) clumpList.Add(c4);
             var c5 = PropTex(act, "leafclump5", null); if (c5 != null) clumpList.Add(c5);
             var clumps = clumpList.ToArray();
             var barkMat = Lit(Tex(act, "bark", Px.Bark(p, rng)));
             if (HasTile(act, "bark")) barkMat.SetColor("_BaseColor", new Color(0.5f, 0.42f, 0.38f)); else barkMat.SetColor("_BaseColor", new Color(0.8f, 0.72f, 0.7f));
-            System.Action<Vector3, float, int> tree = (pos, h, kind) => Tree3D(pos, h, kind, rng, clumps, barkMat);
+            // 一枚絵の木 (2026-09-21 HD-2D 裁定「大物は一枚絵のドットに描き直す」): Art/props/act1_tree_*.png を板で立てる (影を落とす・幹の幅の接地影・根の敷物)。無ければ旧・立体の木
+            var species = PropSet(act, "tree_oak", "tree_oak2", "tree_pine", "tree_pine2", "tree_birch", "tree_willow");
+            var deadTree = PropTex(act, "tree_dead", null);
+            var giantTree = PropTex(act, "tree_giant", null);
+            var treeSpots = new List<Vector3>();
+            System.Action<Vector3, float, int> tree = (pos, h, kind) =>
+            {
+                if (species.Count == 0) { Tree3D(pos, h, kind, rng, clumps, barkMat); return; }
+                var tex = (deadTree != null && rng.NextDouble() < 0.1) ? deadTree : species[kind % species.Count];
+                if (rng.NextDouble() < 0.5) tex = Pick(species, rng);
+                float scale = h / (tex.height * Dot);                                   // 旧の高さの指定 (units) を絵のドット数に合わせた倍率へ
+                Sprite("tree", tex, pos, scale, 0.32f, rng.NextDouble() < 0.5);
+                treeSpots.Add(pos);
+                if (_rootDecals != null && _rootDecals.Count > 0 && rng.NextDouble() < 0.35)
+                {
+                    var rp = new Vector3(pos.x + ((float)rng.NextDouble() - 0.5f) * 0.8f, 0f, pos.z - 0.25f); rp.y = GroundY(rp.x, rp.z) + 0.01f;
+                    SpriteH("roots", Pick(_rootDecals, rng), rp, 0.5f + (float)rng.NextDouble() * 0.25f, 0f, rng.NextDouble() < 0.5);
+                }
+            };
             // 森 (2026-09-08「森じゃなくて道路じゃん」): 平地にも木を生やし、戦闘の場と手前・リーダーの頭上・塔の見える切れ目だけ空ける
             int placed = 0, tries = 0;
             while (placed < 120 && tries++ < 3200)
@@ -1097,9 +1247,9 @@ namespace DeckRogue.Game
                 if (ss < -2.6f && ss > -9f && tt > -12f && tt < 18f) continue;       // 場の手前 (キャラを隠さない)
                 if (IsDirt(x, z)) continue;                                          // 道の上には生えない
                 if (tt > 13f && tt < 26f && ss > 3f && ss < 13f && rng.NextDouble() < 0.7) continue;   // 道の先 = 塔が見える切れ目
-                if (x > 7f && x < 24f && z > 16f && z < 52f) continue;                                  // 月と坑口が見える切れ目 (右奥。梢が月を隠さない)
+                if (x > 7f && x < 24f && z > 16f && z < 52f && rng.NextDouble() < 0.75) continue;       // 月と坑口が見える切れ目 (右奥。梢が月を隠さない。2026-09-21: 芝の空白が浮くので少し木を戻す)
                 float h = GroundY(x, z);
-                float sc = 4.6f * (0.7f + (float)rng.NextDouble() * 0.9f);
+                float sc = 4.6f * (0.7f + (float)rng.NextDouble() * 0.9f) * (species.Count > 0 ? 1.35f : 1f);
                 if (ss < -2.6f) sc *= 1.25f;                                         // 手前の木は大きい
                 if (InStream(tt, ss)) continue;
                 tree(new Vector3(x, h, z), sc, rng.Next(3));
@@ -1109,6 +1259,8 @@ namespace DeckRogue.Game
             tree(OnPath(-15.5f, 4.6f), 8.5f, 1); tree(OnPath(-12f, 10.4f), 7.0f, 0); tree(OnPath(15.5f, -4.6f), 7.6f, 2);
             tree(OnPath(-13.5f, -5.4f), 9.5f, 0); tree(OnPath(19.5f, 3.6f), 8.2f, 1); tree(OnPath(-4f, 9.2f), 7.8f, 0);
             tree(OnPath(7f, 10.2f), 7.4f, 2); tree(OnPath(12.5f, 4.6f), 7.9f, 0); tree(OnPath(1.5f, 11.4f), 8.8f, 1);
+            // 大樹 (2026-09-21): 場の背後の左に一本、根が場まで張る (画面の左上を埋める額縁)
+            if (giantTree != null) { var gp = OnPath(-9f, 8.6f); Sprite("tree-giant", giantTree, gp, 1.15f, 0.34f); treeSpots.Add(gp); }
             // 月の映り込み: 川筋に沿って淡い銀の光の帯を寝かせる (面の反射はしない。遠目に「水が月を映している」だけ伝わればよい)
             for (float tt2 = -24f; tt2 <= 28f; tt2 += 2.6f)
             {
@@ -1139,34 +1291,69 @@ namespace DeckRogue.Game
                 }
                 // 倒木と根 (空き地の縁)
                 var log = PropTex(act, "log", null); var root = PropTex(act, "root", null);
-                if (log != null) { var w = OnPath(-9.5f, -4.2f); Plane("log", log, w, 1.0f, 0.5f, true); }
-                if (log != null) { var w = OnPath(16.5f, 5.0f); var g = Plane("log", log, w, 0.9f, 0.5f, true); g.transform.localScale = new Vector3(-g.transform.localScale.x, g.transform.localScale.y, 1f); }
+                if (log2 != null) { SpriteH("log", log2, OnPath(-9.5f, -4.2f), 0.9f, 0.9f); SpriteH("log", log2, OnPath(16.5f, 5.0f), 0.8f, 0.9f, true); SpriteH("log", log2, OnPath(-20f, 6.5f), 0.75f, 0.9f); }
+                else if (log != null) { var w = OnPath(-9.5f, -4.2f); Plane("log", log, w, 1.0f, 0.5f, true); var w2 = OnPath(16.5f, 5.0f); var g = Plane("log", log, w2, 0.9f, 0.5f, true); g.transform.localScale = new Vector3(-g.transform.localScale.x, g.transform.localScale.y, 1f); }
+                if (stump != null) { SpriteH("stump", stump, OnPath(-7f, 5.2f), 0.8f, 0.8f); SpriteH("stump", stump, OnPath(13f, -5.6f), 0.75f, 0.8f, true); SpriteH("stump", stump, OnPath(22f, 6.0f), 0.8f, 0.8f); }
                 if (root != null) { var w = OnPath(-13f, 3.6f); Plane("root", root, w, 0.7f, 0.5f, false); }
                 if (root != null) { var w = OnPath(18.5f, -3.8f); Plane("root", root, w, 0.75f, 0.5f, false); }
             }
             // 下草: 羊歯を空き地の縁と段丘に (道の上は避ける)
             var fern = PropTex(act, "fern", Px.Fern(p, rng));
-            for (int i = 0; i < 56; i++)
+            for (int i = 0; i < (fern2 != null ? 84 : 56); i++)
             {
                 float t = -18f + (float)rng.NextDouble() * 40f;
-                float sv = rng.NextDouble() < 0.75 ? -4.4f + (float)rng.NextDouble() * 1.6f : 4.0f + (float)rng.NextDouble() * 0.5f;   // 奥は川を隠さないよう少なめ
+                float sv = rng.NextDouble() < 0.75 ? -5.6f + (float)rng.NextDouble() * 1.8f : 4.0f + (float)rng.NextDouble() * 0.5f;   // 奥は川を隠さないよう少なめ。手前は座席から離す (2026-09-21: 高い羊歯が敵を隠した)
                 var w = OnPath(t, sv);
                 if (IsDirt(w.x, w.z) || InStream(t, sv)) continue;
+                if (fern2 != null && rng.NextDouble() < 0.5) { SpriteH("fern", fern2, w, 0.5f + (float)rng.NextDouble() * 0.3f, 0f, rng.NextDouble() < 0.5); continue; }
                 var f = Plane("fern", fern, w, 0.7f + (float)rng.NextDouble() * 0.4f, 0.5f, false);
                 if (rng.NextDouble() < 0.5) f.transform.localScale = new Vector3(-f.transform.localScale.x, f.transform.localScale.y, 1f);
             }
+            // 木々の足元の下草 (2026-09-21): 木の根元に羊歯と茂みを寄せる = 幹が地面に刺さって見えない
+            if (fern2 != null || bushes.Count > 0)
+                foreach (var tp in treeSpots)
+                {
+                    float tt2, ss2; PathLocal(tp.x, tp.z, out tt2, out ss2);
+                    if (ss2 > -3f && ss2 < 5f && tt2 > -14f && tt2 < 18f) continue;
+                    if (rng.NextDouble() < 0.5) continue;
+                    float ox = ((float)rng.NextDouble() - 0.5f) * 1.6f, oz = -0.25f - (float)rng.NextDouble() * 0.4f;
+                    var w = new Vector3(tp.x + ox, GroundY(tp.x + ox, tp.z + oz), tp.z + oz);
+                    if (fern2 != null && rng.NextDouble() < 0.6) SpriteH("fern", fern2, w, 0.5f + (float)rng.NextDouble() * 0.3f, 0f, rng.NextDouble() < 0.5);
+                    else if (bushes.Count > 0) SpriteH("bush", Pick(bushes, rng), w, 0.8f + (float)rng.NextDouble() * 0.4f, 0.7f, rng.NextDouble() < 0.5);
+                }
             // 頭上の枝葉 (額縁の上辺。中央は月と坑口のために空ける)
-            var canopy = Px.Canopy(p, rng);
-            { var c = Plane("canopy", canopy, new Vector3(-11f, 5.3f, 0.5f), 3.0f, 0.5f, false); c.transform.rotation = Quaternion.identity; }   // 上辺の両隅にだけ垂れる (画面を覆わない)
-            { var c = Plane("canopy", canopy, new Vector3(11.5f, 5.5f, 0.2f), 2.8f, 0.5f, false); c.transform.rotation = Quaternion.identity; c.transform.localScale = new Vector3(-c.transform.localScale.x, c.transform.localScale.y, 1f); }
+            var canopyArt = PropTexRaw(act, "canopy", null);
+            if (canopyArt != null)
+            {
+                // 一枚絵の枝葉 (200×100 の垂れ下がる葉の塊)。上辺の両隅に大小を並べて垂らす = 額縁 (中央は月と坑口のために空ける)。手前 (z<0) なので座席より大きく写る
+                float[] cx = { -13.5f, -8.0f, -3.4f, 9.5f, 14.5f }; float[] cy = { 2.4f, 2.9f, 3.6f, 3.1f, 2.5f }; float[] cs = { 1.15f, 1.0f, 0.8f, 0.95f, 1.1f };
+                for (int i = 0; i < cx.Length; i++)
+                {
+                    var c = Plane("canopy", canopyArt, new Vector3(cx[i], cy[i], -1.5f + i * 0.08f), canopyArt.height * Dot * cs[i], 0.5f, false); c.transform.rotation = Quaternion.identity;
+                    if (i % 2 == 1) c.transform.localScale = new Vector3(-c.transform.localScale.x, c.transform.localScale.y, 1f);
+                    c.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_BaseColor", new Color(0.6f, 0.66f, 0.8f));   // 逆光の枝葉 = 暗く青く
+                }
+                if (vines != null)
+                {
+                    var v1 = Plane("vines", vines, new Vector3(-6.2f, 2.9f, -1.3f), vines.height * Dot * 0.8f, 0.5f, false); v1.transform.rotation = Quaternion.identity;
+                    var v2 = Plane("vines", vines, new Vector3(10.6f, 3.4f, -1.1f), vines.height * Dot * 0.7f, 0.5f, false); v2.transform.rotation = Quaternion.identity; v2.transform.localScale = new Vector3(-v2.transform.localScale.x, v2.transform.localScale.y, 1f);
+                }
+            }
+            else
+            {
+                var canopy = Px.Canopy(p, rng);
+                { var c = Plane("canopy", canopy, new Vector3(-11f, 5.3f, 0.5f), 3.0f, 0.5f, false); c.transform.rotation = Quaternion.identity; }   // 上辺の両隅にだけ垂れる (画面を覆わない)
+                { var c = Plane("canopy", canopy, new Vector3(11.5f, 5.5f, 0.2f), 2.8f, 0.5f, false); c.transform.rotation = Quaternion.identity; c.transform.localScale = new Vector3(-c.transform.localScale.x, c.transform.localScale.y, 1f); }
+            }
             // 前景 (手前の低い地面・画面の下の隅): 大きな岩と丈の高い草
             var tall = Px.TallGrass(p, rng);
-            Plane("rock-front", rock, OnPath(-3.2f, -7.4f), 2.0f, 0.5f, true);
-            Plane("rock-front", rock, OnPath(11.5f, -6.8f), 1.5f, 0.5f, true);
-            for (int i = 0; i < 26; i++)
+            if (bigRocks.Count > 0) { SpriteH("rock-front", bigRocks[0], OnPath(-3.2f, -7.6f), 1.5f, 0.9f); SpriteH("rock-front", bigRocks[bigRocks.Count - 1], OnPath(11.5f, -7.0f), 1.2f, 0.9f, true); }
+            else { Plane("rock-front", rock, OnPath(-3.2f, -7.4f), 2.0f, 0.5f, true); Plane("rock-front", rock, OnPath(11.5f, -6.8f), 1.5f, 0.5f, true); }
+            for (int i = 0; i < (tallGrass.Count > 0 ? 44 : 26); i++)
             {
                 float t = -20f + (float)rng.NextDouble() * 42f;
-                float sv = i < 14 ? -5.0f - (float)rng.NextDouble() * 1.6f : 4.6f + (float)rng.NextDouble() * 1.4f;
+                float sv = i % 2 == 0 ? -5.4f - (float)rng.NextDouble() * 2.2f : 4.6f + (float)rng.NextDouble() * 1.6f;
+                if (tallGrass.Count > 0) { var w0 = OnPath(t, sv); if (InStream(t, sv)) continue; SpriteH("tallgrass", Pick(tallGrass, rng), w0, 0.65f + (float)rng.NextDouble() * 0.35f, 0f, rng.NextDouble() < 0.5); continue; }
                 var g = Plane("tallgrass", tall, OnPath(t, sv), 1.5f + (float)rng.NextDouble() * 0.6f, 0.5f, false);
                 if (rng.NextDouble() < 0.5) g.transform.localScale = new Vector3(-g.transform.localScale.x, g.transform.localScale.y, 1f);
             }
@@ -1176,17 +1363,21 @@ namespace DeckRogue.Game
             for (int i = 0; i < bt.Length; i++)
             {
                 if (InStream(bt[i], bs[i])) continue;
+                if (bushes.Count > 0) { SpriteH("bush", Pick(bushes, rng), OnPath(bt[i], bs[i]), 0.9f + (float)rng.NextDouble() * 0.5f, 0.75f, rng.NextDouble() < 0.5); continue; }
                 var b = Plane("bush", bush, OnPath(bt[i], bs[i]), 0.9f + (float)rng.NextDouble() * 0.6f, 0.5f, true);
                 if (rng.NextDouble() < 0.5) b.transform.localScale = new Vector3(-b.transform.localScale.x, b.transform.localScale.y, 1f);
             }
-            Plane("rock", rock, OnPath(-14.5f, 4.2f), 0.9f, 0.5f, true);
-            Plane("rock", rock, OnPath(16.5f, 4.0f), 0.8f, 0.5f, true);
-            for (int i = 0; i < 3; i++)
+            if (bigRocks.Count > 0) { SpriteH("rock", Pick(bigRocks, rng), OnPath(-14.5f, 4.2f), 1.0f, 0.9f); SpriteH("rock", Pick(bigRocks, rng), OnPath(16.5f, 4.0f), 0.9f, 0.9f, true); }
+            else { Plane("rock", rock, OnPath(-14.5f, 4.2f), 0.9f, 0.5f, true); Plane("rock", rock, OnPath(16.5f, 4.0f), 0.8f, 0.5f, true); }
+            for (int i = 0; i < (smallRock != null ? 14 : 3); i++)
             {
-                float x = -34f + (float)rng.NextDouble() * 68f, z = 4f + (float)rng.NextDouble() * 40f;
+                float x = -34f + (float)rng.NextDouble() * 68f, z = -6f + (float)rng.NextDouble() * 50f;
                 float tt, ss; PathLocal(x, z, out tt, out ss);
                 if (ss > -3f && ss < 7f && tt > -12f && tt < 16f) continue;
-                Plane("rock", rock, new Vector3(x, GroundY(x, z), z), 0.6f + (float)rng.NextDouble() * 0.6f, 0.5f, true);
+                if (InStream(tt, ss)) continue;
+                if (smallRock != null && rng.NextDouble() < 0.7) SpriteH("rock", smallRock, new Vector3(x, GroundY(x, z), z), 0.3f + (float)rng.NextDouble() * 0.2f, 0.8f, rng.NextDouble() < 0.5);
+                else if (bigRocks.Count > 0) SpriteH("rock", Pick(bigRocks, rng), new Vector3(x, GroundY(x, z), z), 0.7f + (float)rng.NextDouble() * 0.5f, 0.9f, rng.NextDouble() < 0.5);
+                else Plane("rock", rock, new Vector3(x, GroundY(x, z), z), 0.6f + (float)rng.NextDouble() * 0.6f, 0.5f, true);
             }
 
             // 光の粒の足元: 群れの下に暖色の光溜まり (粒そのものは StageFx の Motes)。装置 (街灯) は置かない
@@ -1219,6 +1410,16 @@ namespace DeckRogue.Game
             mts2.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             var skyline = Prop("skyline", Px.Skyline(p, rng), new Vector3(0f, 3.0f, 36f), 2.4f, 0.4f, 120f);
             skyline.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            var treeline = PropTexRaw(act, "treeline", null);
+            if (treeline != null)
+            {
+                // 遠い森の梢 (2026-09-21): 木々の後ろ・山の手前に霧の中の稜線を2枚 (ずらして重ねる = 一本の帯に見えない)。霧を半分受ける
+                float tw = treeline.width * Dot * 1.6f, th = treeline.height * Dot * 1.6f;
+                var tl1 = Prop("treeline", treeline, new Vector3(-6f, 1.4f, 40f), th, 0.4f, tw); tl1.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.75f); tl1.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                var tl2 = Prop("treeline", treeline, new Vector3(30f, 1.0f, 44f), th * 0.9f, 0.4f, tw * 0.9f); tl2.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.85f); tl2.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                tl2.transform.localScale = new Vector3(-tl2.transform.localScale.x, tl2.transform.localScale.y, 1f);
+                var tl3 = Prop("treeline", treeline, new Vector3(-40f, 1.2f, 42f), th * 0.95f, 0.4f, tw * 0.95f); tl3.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.8f); tl3.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            }
             // 坑口: 道の先 (奥右) に立つ木組みの櫓と、その足元の竪坑。世界観「マナ脈の坑を降りる」(2026-09-10 改稿。旧・古の塔を置換)。
             // 霧は半分だけ受けて山より暗く残す = 「これから降りる場所」が遠景の主役になる
             var pithead = Prop("pithead", Px.Headframe(p, rng), new Vector3(22f, 0.2f, 46f), 13f, 0.4f);
@@ -1664,6 +1865,71 @@ namespace DeckRogue.Game
             return s != null ? s.texture : fallback;
         }
 
+        /// <summary>地面の材質 (2026-09-21 HD-2D): Art/tiles/act&lt;N&gt;_&lt;kind&gt;_{a,b,c,d}.png の 4 種を 2×2 のアトラスに束ね、タイルごとに種と向きを変えて繰り返しを消す。
+        /// 明度を高さと読んだノーマルマップで月光の陰影 (草の房・石の角) を出す。4 種が無ければ act&lt;N&gt;_&lt;kind&gt;.png 1 種 (Repeat) のまま。
+        /// variants = アトラスの種の数 (0 = 1 種の敷き詰め)</summary>
+        static Material Ground(int act, string kind, Texture2D fallback, out int variants)
+        {
+            var list = new List<Texture2D>();
+            foreach (var sfx in new[] { "a", "b", "c", "d" }) { var t = Tex(act, kind + "_" + sfx, null); if (t != null) list.Add(t); }
+            if (list.Count < 2) { variants = 0; var m0 = Lit(Tex(act, kind, fallback)); return m0; }
+            while (list.Count < 4) list.Add(list[list.Count % Mathf.Max(1, list.Count)]);
+            int w = list[0].width, h = list[0].height;
+            var atlas = new Texture2D(w * 2, h * 2, TextureFormat.RGBA32, true);
+            atlas.name = "ground-atlas-" + kind; atlas.filterMode = FilterMode.Bilinear; atlas.wrapMode = TextureWrapMode.Clamp;   // 2px/ドットなのでバイリニアでも粒は残り、遠くのちらつき (点サンプル×ミップ) が消える
+            Vector3 mean0 = Vector3.zero;
+            for (int v = 0; v < 4; v++)
+            {
+                var src = list[v];
+                if (src.width != w || src.height != h) { src = list[0]; }
+                var px = src.GetPixels32();
+                // 種ごとの平均色を 1 種目に揃える (種の違いがタイルの格子に見えない。2026-09-21)
+                Vector3 mean = Vector3.zero; for (int i = 0; i < px.Length; i++) mean += new Vector3(px[i].r, px[i].g, px[i].b); mean /= Mathf.Max(1, px.Length);
+                if (v == 0) mean0 = mean;
+                else
+                {
+                    var k = new Vector3(mean0.x / Mathf.Max(1f, mean.x), mean0.y / Mathf.Max(1f, mean.y), mean0.z / Mathf.Max(1f, mean.z));
+                    k = Vector3.Lerp(Vector3.one, k, 0.8f);
+                    for (int i = 0; i < px.Length; i++) px[i] = new Color32((byte)Mathf.Clamp(px[i].r * k.x, 0f, 255f), (byte)Mathf.Clamp(px[i].g * k.y, 0f, 255f), (byte)Mathf.Clamp(px[i].b * k.z, 0f, 255f), 255);
+                }
+                for (int i = 0; i < px.Length; i++) { float g = px[i].r * 0.3f + px[i].g * 0.59f + px[i].b * 0.11f; px[i] = new Color32((byte)(g + (px[i].r - g) * 0.78f), (byte)(g + (px[i].g - g) * 0.78f), (byte)(g + (px[i].b - g) * 0.78f), 255); }   // 彩度 -22% (夜)
+                atlas.SetPixels32((v % 2) * w, (v / 2) * h, w, h, px);
+            }
+            atlas.Apply(true, false);
+            variants = 4;
+            var m = Lit(atlas);
+            var nrm = NormalFromLuma(atlas, 0.9f);
+            m.SetTexture("_BumpMap", nrm); m.SetFloat("_BumpScale", 1f); m.EnableKeyword("_NORMALMAP");
+            return m;
+        }
+
+        /// <summary>明度から高さを読んでノーマルマップを作る (3×3 でならしてから Sobel)。RGB に法線・alpha 1 = URP の UnpackNormal (RG or AG) がそのまま読める</summary>
+        static Texture2D NormalFromLuma(Texture2D src, float strength)
+        {
+            int w = src.width, h = src.height;
+            var px = src.GetPixels32();
+            var lum = new float[w * h];
+            for (int i = 0; i < px.Length; i++) lum[i] = (px[i].r * 0.3f + px[i].g * 0.59f + px[i].b * 0.11f) / 255f;
+            var sm = new float[w * h];
+            for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
+            {
+                float a = 0f;
+                for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++) a += lum[((y + dy + h) % h) * w + (x + dx + w) % w];
+                sm[y * w + x] = a / 9f;
+            }
+            var outPx = new Color32[w * h];
+            for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
+            {
+                float l = sm[y * w + (x - 1 + w) % w], r = sm[y * w + (x + 1) % w], d = sm[((y - 1 + h) % h) * w + x], u = sm[((y + 1) % h) * w + x];
+                var n = new Vector3(-(r - l) * strength, -(u - d) * strength, 1f).normalized;
+                outPx[y * w + x] = new Color32((byte)((n.x * 0.5f + 0.5f) * 255f), (byte)((n.y * 0.5f + 0.5f) * 255f), (byte)((n.z * 0.5f + 0.5f) * 255f), 255);
+            }
+            var t = new Texture2D(w, h, TextureFormat.RGBA32, true, true);
+            t.name = src.name + "-normal"; t.filterMode = FilterMode.Bilinear; t.wrapMode = src.wrapMode;
+            t.SetPixels32(outPx); t.Apply(true, false);
+            return t;
+        }
+
         static Material Lit(Texture2D tex)
         {
             var m = new Material(_dioramaBase);
@@ -1746,6 +2012,114 @@ namespace DeckRogue.Game
             Solid("pillar", mb, mat);
             Blob("shadow-pillar", _world, new Vector3(x, y, z), w * 1.6f);
         }
+
+        static readonly Dictionary<Texture2D, Material> _cutoutCache = new Dictionary<Texture2D, Material>();
+        static Material CutoutCached(Texture2D tex)
+        {
+            Material m;
+            if (_cutoutCache.TryGetValue(tex, out m) && m != null) return m;
+            m = Cutout(tex); _cutoutCache[tex] = m; return m;
+        }
+
+        /// <summary>地面の敷物 (2026-09-21 HD-2D): PixelLab の抜き板 (落ち葉・苔・根・小石・花・水たまり) を地面の粒 (1ドット=2px) で寝かせる。
+        /// lift = 重なる敷物の前後 (z-fighting を避ける段)。flip で左右を返す</summary>
+        static GameObject GroundDecal(string name, Texture2D tex, float x, float z, float scale, float rotDeg, float lift, bool flip = false)
+        {
+            float w = tex.width * GroundDot * scale, d = tex.height * GroundDot * scale;
+            var g = Decal(name, CutoutCached(tex), x, z, w, d, rotDeg);
+            g.transform.position += new Vector3(0f, lift, 0f);
+            if (flip) g.transform.localScale = new Vector3(-w, d, 1f);
+            return g;
+        }
+
+        /// <summary>立て板の一枚絵 (木・茂み・岩・切り株)。大きさは絵のドット数 × 0.04 (キャラと同じ粒) × scale。接地影の幅は絵の幅 × blobK (木の幹は細い)</summary>
+        static GameObject Sprite(string name, Texture2D tex, Vector3 pos, float scale, float blobK, bool flip = false)
+        {
+            float h = tex.height * Dot * scale;
+            var g = Plane(name, tex, pos, h, 0.5f, false);
+            float w = h * tex.width / (float)tex.height;
+            if (flip) g.transform.localScale = new Vector3(-w, h, 1f);
+            if (blobK > 0f) Blob("shadow-" + name, _world, pos, w * blobK);
+            return g;
+        }
+
+        /// <summary>材質タイルをくり抜いた敷物 (2026-09-21 HD-2D): PixelLab は「地面に寝かせた抜き板」を頼むと浮島や台座を描くので、
+        /// 材質 (落ち葉・苔・砂利・ひび・泥・花・小枝) だけをタイルで描かせ、ここで不定形の輪郭にくり抜く。輪郭は楕円＋ノイズで、縁は1ドットのディザ (ドット絵の縁)。
+        /// edge=true は道の縁の帯: 上の 45% は塗り、下へ向かってノイズでちぎれて消える (草が土へ食い込む舌)。同じタイルから切るので地面と色が揃う</summary>
+        static Texture2D MaterialPatch(Texture2D tile, int w, int h, int seed, bool edge)
+        {
+            var src = tile.GetPixels32(); int tw = tile.width, th = tile.height;
+            var px = new Color32[w * h];
+            var rng = new System.Random(seed);
+            int ox = rng.Next(tw), oy = rng.Next(th);
+            float n1 = (float)rng.NextDouble() * 100f, n2 = (float)rng.NextDouble() * 100f;
+            float rot = (float)rng.NextDouble() * Mathf.PI;
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    var c = src[((y + oy) % th) * tw + (x + ox) % tw];
+                    {   // 夜の色に寄せる: 彩度 -30%・明るさ -12% (PixelLab の材質は昼の色で来る)
+                        float g = c.r * 0.3f + c.g * 0.59f + c.b * 0.11f;
+                        c = new Color32((byte)((g + (c.r - g) * 0.7f) * 0.88f), (byte)((g + (c.g - g) * 0.7f) * 0.88f), (byte)((g + (c.b - g) * 0.7f) * 0.9f), c.a);
+                    }
+                    float fx = (x + 0.5f) / w * 2f - 1f, fy = (y + 0.5f) / h * 2f - 1f;
+                    float m;
+                    if (edge)
+                    {
+                        // v=1 (上) が塗り・v=0 (下) が消える。境目をノイズで揺らす (幅の 55% あたり)
+                        float v = (y + 0.5f) / h;
+                        float wob = (Mathf.PerlinNoise(x * 0.11f + n1, n2) - 0.5f) * 0.55f + (Mathf.PerlinNoise(x * 0.31f + n2, n1) - 0.5f) * 0.25f;
+                        m = (v - (0.45f + wob)) * 3.2f;
+                    }
+                    else
+                    {
+                        float rx = fx * Mathf.Cos(rot) - fy * Mathf.Sin(rot), ry = fx * Mathf.Sin(rot) + fy * Mathf.Cos(rot);
+                        float r = Mathf.Sqrt(rx * rx * 1.15f + ry * ry * 0.85f);
+                        float ang = Mathf.Atan2(ry, rx);
+                        float wob = (Mathf.PerlinNoise(Mathf.Cos(ang) * 1.6f + n1 + 5f, Mathf.Sin(ang) * 1.6f + n2 + 5f) - 0.5f) * 0.7f
+                                  + (Mathf.PerlinNoise(x * 0.18f + n2, y * 0.18f + n1) - 0.5f) * 0.45f;
+                        m = (0.92f + wob - r) * 3.5f;
+                    }
+                    // 縁のディザ: m が 0 付近の帯だけ市松で抜く (滑らかな alpha でなく 1 ドットのぎざぎざ)
+                    bool solid = m > 0.18f || (m > -0.12f && ((x + y) & 1) == 0) ;
+                    px[y * w + x] = solid ? c : new Color32(0, 0, 0, 0);
+                }
+            var t = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            t.name = tile.name + "-patch" + seed; t.filterMode = FilterMode.Point; t.wrapMode = TextureWrapMode.Clamp;
+            t.SetPixels32(px); t.Apply(false, false);
+            return t;
+        }
+
+        static readonly Dictionary<string, List<Texture2D>> _patchCache = new Dictionary<string, List<Texture2D>>();
+        /// <summary>材質 kind (Art/tiles/act&lt;N&gt;_&lt;kind&gt;.png) の敷物を数種 (大きさ違い・向き違い) 作る。タイルが無ければ空</summary>
+        static List<Texture2D> PatchSet(int act, string kind, bool edge, params int[] sizes)
+        {
+            string key = act + ":" + kind + ":" + (edge ? "e" : "p") + ":" + sizes.Length;
+            List<Texture2D> l;
+            if (_patchCache.TryGetValue(key, out l)) return l;
+            l = new List<Texture2D>();
+            var tile = Tex(act, kind, null);
+            if (tile != null)
+                for (int i = 0; i + 1 < sizes.Length; i += 2)
+                    for (int v = 0; v < 3; v++) l.Add(MaterialPatch(tile, sizes[i], sizes[i + 1], act * 1000 + kind.GetHashCode() % 997 + i * 7 + v * 31, edge));
+            _patchCache[key] = l;
+            return l;
+        }
+
+        /// <summary>立て板の一枚絵を「世界での高さ h (units)」で置く (PixelLab の絵はドット数と実物の大きさが揃わないので、岩・茂み・草は高さで指定する)</summary>
+        static GameObject SpriteH(string name, Texture2D tex, Vector3 pos, float h, float blobK, bool flip = false)
+        {
+            return Sprite(name, tex, pos, h / (tex.height * Dot), blobK, flip);
+        }
+
+        /// <summary>幕の小物のうち存在するものだけを集める (無い名前は飛ばす)</summary>
+        static List<Texture2D> PropSet(int act, params string[] names)
+        {
+            var l = new List<Texture2D>();
+            foreach (var n in names) { var t = PropTex(act, n, null); if (t != null) l.Add(t); }
+            return l;
+        }
+        static T Pick<T>(List<T> l, System.Random rng) { return l[rng.Next(l.Count)]; }
 
         /// <summary>地面に寝かせた抜き板 (斑・小石)</summary>
         static GameObject Decal(string name, Material mat, float x, float z, float w, float d, float rotDeg)
@@ -2014,6 +2388,7 @@ namespace DeckRogue.Game
                 m.SetVertices(_v); m.SetUVs(0, _uv); m.SetNormals(_n); m.SetTriangles(_t, 0);
                 if (_c.Count > 0) { while (_c.Count < _v.Count) _c.Add(Color.white); m.SetColors(_c); }
                 m.RecalculateBounds();
+                m.RecalculateTangents();   // 地面のノーマルマップ (2026-09-21)
                 return m;
             }
         }
@@ -2905,6 +3280,38 @@ namespace DeckRogue.Game
             }
 
             /// <summary>水面 (仮): 暗い青に淡いさざ波の筋。Repeat</summary>
+            /// <summary>水たまり (2026-09-21): 地面が透ける暗い水面。楕円をノイズで崩し、縁は 1 ドットのディザ。左上に月の映り込み (淡い光) と数点のきらめき。
+            /// PixelLab に頼むと縁のある皿 (マンホール) になったのでコードで描く。半透明なので下の土や草の色がそのまま透ける</summary>
+            public static Texture2D Puddle(System.Random rng, int w, int h)
+            {
+                var t = New(w, h, false);
+                var px = new Color[w * h];
+                float n1 = (float)rng.NextDouble() * 50f, n2 = (float)rng.NextDouble() * 50f;
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        float fx = (x + 0.5f) / w * 2f - 1f, fy = (y + 0.5f) / h * 2f - 1f;
+                        float ang = Mathf.Atan2(fy, fx);
+                        float wob = (Mathf.PerlinNoise(Mathf.Cos(ang) * 1.3f + n1, Mathf.Sin(ang) * 1.3f + n2) - 0.5f) * 0.5f;
+                        float r = Mathf.Sqrt(fx * fx + fy * fy);
+                        float m = (0.9f + wob - r) * 4f;
+                        bool inside = m > 0.2f || (m > -0.15f && ((x + y) & 1) == 0);
+                        if (!inside) { px[y * w + x] = new Color(0f, 0f, 0f, 0f); continue; }
+                        // 水面: 暗い青灰 (alpha 0.72)。縁 (m 小) はもう少し濃く = 湿った土の帯
+                        float edge = Mathf.Clamp01(m / 1.2f);
+                        var c = new Color(0.16f, 0.2f, 0.3f, Mathf.Lerp(0.85f, 0.7f, edge));
+                        // 月の映り込み: 左上寄りの柔らかい楕円 + 細い横の光の筋
+                        float hx = (fx + 0.35f) / 0.55f, hy = (fy - 0.25f) / 0.42f;
+                        float hl = Mathf.Clamp01(1f - Mathf.Sqrt(hx * hx + hy * hy));
+                        hl = hl * hl * 0.55f;
+                        if (((y * 7 + x * 3) % 11) == 0 && r < 0.75f && rng.NextDouble() < 0.06) hl += 0.45f;    // きらめき
+                        c = Color.Lerp(c, new Color(0.78f, 0.86f, 1f, 0.9f), hl);
+                        px[y * w + x] = c;
+                    }
+                t.SetPixels(px); t.Apply();
+                return t;
+            }
+
             public static Texture2D Water(Pal p)
             {
                 int w = 32, h = 32;

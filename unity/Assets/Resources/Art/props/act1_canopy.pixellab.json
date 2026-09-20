@@ -1,0 +1,23 @@
+{
+  "id": "act1_canopy",
+  "engine": "pixflux",
+  "request": {
+    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a thick leafy tree branch with dense hanging foliage seen from below, entering from the top left corner and spreading toward the right, only the branch and leaves, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (desaturated blue-green, deep moss green, grey-brown, pale silver highlights), no text",
+    "negative_description": "scene, background, landscape, forest, trees behind, sky, moon, ground plane, grass field, island, platform, isometric block, soil disc, shadow disc, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal",
+    "image_size": {
+      "width": 200,
+      "height": 100
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down"
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-20T18:57:04.846Z"
+}
