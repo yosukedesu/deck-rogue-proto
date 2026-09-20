@@ -41,7 +41,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { cardNeedsTarget, damageBreakdown, displayedInflict, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, hearthSparkMax, isDoll, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { cardNeedsTarget, damageBreakdown, displayedInflict, dollEffectAmount, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, hearthSparkMax, isDoll, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -368,7 +368,8 @@ function renderBattle(s: GameState, logFrom: number): string {
     const anthem = p.permanents.reduce((a, c) => a + c.def.effects.filter((e) => e.effect === 'blessRetainers').reduce((x, e) => x + (e.amount ?? 0), 0), 0)
     // 誘発ダメージの実値 (成長・勢い・弱体込み。2026-09-05 Opusラン U: 風の棘「2ダメ」が実測15〜17で強さが読めなかった)
     const live = (c: (typeof p.permanents)[number]): string => {
-      const v = c.def.effects.filter((e) => e.effect === 'dealDamage' && e.trigger !== 'onPlay' && e.amount !== undefined).map((e) => `${e.amount}→${playerDamageAfterModifiers(s, e.amount!)}`).filter((t) => !/^(\d+)→\1$/.test(t))
+      // 火勢・アンセム込み (2026-09-21 Opus C「置物の行に実値が出ない」): 実処理と同じ dollEffectAmount → 成長・弱体
+      const v = c.def.effects.filter((e) => e.effect === 'dealDamage' && e.trigger !== 'onPlay' && e.amount !== undefined).map((e) => `${e.amount}→${playerDamageAfterModifiers(s, dollEffectAmount(s, c, e, anthem) ?? e.amount!)}`).filter((t) => !/^(\d+)→\1$/.test(t))
       // 灯篭の人形 (2026-09-20 夜): 灯2につきN = いまの灯で読んだ実値 (Opus 灯と人形 B「置物行に実値が無い」)
       const lit = c.def.effects.filter((e) => e.effect === 'dealDamagePerLight' && e.amount !== undefined).map((e) => {
         const base = Math.floor((p.light ?? 0) / 2) * (e.amount ?? 1)

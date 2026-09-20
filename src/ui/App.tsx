@@ -63,7 +63,7 @@ import {
   getLeaderDef,
   getRelicDef,
 } from '../engine/content.ts'
-import { trapStatusText, BLAZE_THRESHOLD, cardNeedsTarget, damageBreakdown, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, isDamageEffect, isDoll, isPlayableFromHand, playerCanSet, hearthSparkMax, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { trapStatusText, BLAZE_THRESHOLD, anthemTotal, cardNeedsTarget, damageBreakdown, dollEffectAmount, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, isDamageEffect, isDoll, isPlayableFromHand, playerCanSet, hearthSparkMax, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, difficultyDescription, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicChargesLeft, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
@@ -881,16 +881,20 @@ function uiCardRole(def: CardDef): 'attack' | 'defend' | 'other' {
  *  playerDamageAfterModifiers と同じ式 (UI描画中はカードプレイ外 = 勢いは自動で除外) = 表示の嘘を作らない。
  * 敵側の装甲・ブロックは対象が決まらないので含めない。基礎値と同じなら何も出さない
  */
-function permanentLiveDamage(state: GameState, def: CardDef): string | null {
+function permanentLiveDamage(state: GameState, c: CardInstance): string | null {
+  const def = c.def
   const vals: string[] = []
+  // 人形の火勢とアンセム (2026-09-21 Opus C「置物の行に実値が出ない」): 実処理と同じ dollEffectAmount を通してから成長・弱体
+  const anthem = anthemTotal(state)
   for (const e of def.effects) {
     if (e.effect !== 'dealDamage' || e.trigger === 'onPlay' || e.amount === undefined) continue
-    const live = playerDamageAfterModifiers(state, e.amount)
+    const live = playerDamageAfterModifiers(state, dollEffectAmount(state, c, e, anthem) ?? e.amount)
     if (live !== e.amount) vals.push(`${e.amount}→${live}`)
   }
   if (vals.length === 0) return null
-  // 勢いは置物トリガーには乗らない (2026-09-05 裁定) = 成長と弱体だけ
-  const parts = [state.player.growth > 0 ? `成長+${state.player.growth}` : '', state.player.weak > 0 ? '弱体-25%' : ''].filter(Boolean)
+  // 勢いは置物トリガーには乗らない (2026-09-05 裁定) = 火勢・アンセム・成長と弱体だけ
+  const g = dollGrowth(state, c)
+  const parts = [g > 0 ? `火勢+${g}` : '', anthem > 0 && def.retainer === true ? `アンセム+${anthem}` : '', state.player.growth > 0 ? `成長+${state.player.growth}` : '', state.player.weak > 0 ? '弱体-25%' : ''].filter(Boolean)
   return `いま誘発したら ${vals.join('・')}ダメ（${parts.join('・')}。勢いは乗らない）`
 }
 
@@ -2073,8 +2077,8 @@ function BattleScreen({
                       </button>
                     </div>
                   )}
-                  {permanentLiveDamage(s, c.def) && (
-                    <div style={{ color: 'var(--muted)', fontSize: 11 }}>{permanentLiveDamage(s, c.def)}</div>
+                  {permanentLiveDamage(s, c) && (
+                    <div style={{ color: 'var(--muted)', fontSize: 11 }}>{permanentLiveDamage(s, c)}</div>
                   )}
                   <EffectLines
                     def={c.def}
