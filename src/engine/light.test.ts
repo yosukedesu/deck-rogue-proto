@@ -1,6 +1,6 @@
 // 灯 (白の再設計 2026-09-20。docs/white-redesign-proposal-2026-09-20.md): 供給3経路・放出・号令・点灯の定義・鍛え・合成を機械固定
 import { describe, expect, it } from 'vitest'
-import { allCards, getCardDef, getLeaderDef } from './content.ts'
+import { allCards, allDecks, getCardDef, getLeaderDef } from './content.ts'
 import { fuseCards } from './fusion.ts'
 import { REWARD_EXCLUDED } from './run.ts'
 import { rallyPreview } from './effects.ts'
@@ -268,9 +268,11 @@ describe('鍛える・合成・供給', () => {
     expect(p.effects.some((e) => e.effect === 'dischargeLight')).toBe(false)
   })
 
-  it('継ぎ火がスターター専用 (報酬プール外)、灯の矢・光壁砕きは報酬プールへ (2026-09-21)。灯コスト持ちは白だけ', () => {
-    expect(REWARD_EXCLUDED.has('white_light_bolt')).toBe(false) // 2026-09-21: 灯の矢は報酬プールへ、継ぎ火が初期デッキの灯の教材に
-    expect(REWARD_EXCLUDED.has('white_relight')).toBe(true)
+  it('灯の矢がスターター専用 (報酬プール外)、継ぎ火・光壁砕きは報酬プールへ (2026-09-21 夜 ユーザー裁定「継ぎ火を消して灯の矢に」)。灯コスト持ちは白だけ', () => {
+    expect(REWARD_EXCLUDED.has('white_light_bolt')).toBe(true) // 灯の矢 = 初期デッキの灯の教材 (放出)。継ぎ火は人形0体では死に札だった
+    expect(REWARD_EXCLUDED.has('white_relight')).toBe(false)
+    expect(allDecks.find((d) => d.id === 'run_basic_white')!.cards.map((c) => c.cardId)).toContain('white_light_bolt')
+    expect(allDecks.find((d) => d.id === 'run_basic_white')!.cards.map((c) => c.cardId)).not.toContain('white_relight')
     expect(REWARD_EXCLUDED.has('white_bodyslam')).toBe(false)
     expect(allCards.filter((c) => (c.lightCost ?? 0) > 0).every((c) => c.color === 'white')).toBe(true)
     const removed = ['white_holy_oil', 'white_healing_verse', 'white_perm_spring', 'white_perm_bell', 'white_wall_jab', 'white_shield_bash', 'white_perm_ballista', 'white_decree', 'white_cowering_light', 'white_seal_light', 'white_glory_chain', 'white_perm_pavilion', 'white_rank_shield']
