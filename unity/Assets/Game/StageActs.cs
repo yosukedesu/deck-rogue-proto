@@ -131,9 +131,9 @@ namespace DeckRogue.Game
                 var ct = Tex(A, "cliff_c", null); var mCeil = Lit(ct != null ? ct : Tex(A, "cliff", Px.Cliff(p, rng))); mCeil.SetColor("_BaseColor", new Color(0.3f, 0.3f, 0.34f));
                 Solid("ceiling", ceil, mCeil);
             }
-            // 壁面の物 (壁と同じ向き・壁の少し手前・二段目の上 y=1.1): 坑口 (奥行きの錨)・脇坑・大結晶・小結晶・歯車
+            // 壁面の物 (壁と同じ向き・壁の少し手前・二段目の上 y=1.8): 坑口 (奥行きの錨)・脇坑・大結晶・小結晶・歯車
             {
-                float y2 = 1.1f;
+                float y2 = 1.8f;
                 var tm = PropTexRaw(A, "tunnel_mouth", null);
                 if (tm != null)
                 {
@@ -182,8 +182,8 @@ namespace DeckRogue.Game
                 {
                     foreach (var seg in new[] { new Vector2(-10f, -3f), new Vector2(3f, 9f) })
                     {
-                        mb.Box((seg.x + seg.y) * 0.5f, 3.6f, 10.6f, seg.y - seg.x, 0.14f, 1.1f);
-                        for (float t = seg.x + 0.4f; t < seg.y; t += 2.6f + (float)rng.NextDouble() * 0.8f) { mb.Box(t, 1.1f, 10.6f, 0.28f, 2.5f, 0.28f); mb.Box(t, 3.74f, 10.15f, 0.16f, 0.9f, 0.16f); }
+                        mb.Box((seg.x + seg.y) * 0.5f, 3.8f, 10.6f, seg.y - seg.x, 0.14f, 1.1f);
+                        for (float t = seg.x + 0.4f; t < seg.y; t += 2.6f + (float)rng.NextDouble() * 0.8f) { mb.Box(t, 1.8f, 10.6f, 0.28f, 2.0f, 0.28f); mb.Box(t, 3.94f, 10.15f, 0.16f, 0.9f, 0.16f); }
                     }
                 });
                 var ra = PropTexRaw(A, "rail_a", null); var rb = PropTexRaw(A, "rail_b", null);
@@ -193,15 +193,15 @@ namespace DeckRogue.Game
                         {
                             bool broken = (rb != null) && (Mathf.Abs(t - (-3.5f)) < 1f || Mathf.Abs(t - 3.5f) < 1f);
                             var tex = broken ? rb : (ra ?? rb);
-                            var w = OnPath(t + 0.95f, 10.05f); var g = Plane("rail", tex, new Vector3(w.x, 3.74f, w.z), 0.95f, 0.5f, false);
+                            var w = OnPath(t + 0.95f, 10.05f); var g = Plane("rail", tex, new Vector3(w.x, 3.94f, w.z), 0.95f, 0.5f, false);
                             g.transform.rotation = Quaternion.Euler(0f, PathYaw, 0f); g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
                         }
                 var ld = PropTexRaw(A, "ladder", null);
-                if (ld != null) foreach (float t in new[] { -3.4f, 9.4f }) { var w = OnPath(t, 9.9f); var g = Plane("ladder", ld, new Vector3(w.x, 1.1f, w.z), 2.9f, 0.5f, false); g.transform.rotation = Quaternion.Euler(-12f, PathYaw, 0f); }
+                if (ld != null) foreach (float t in new[] { -3.4f, 9.4f }) { var w = OnPath(t, 9.9f); var g = Plane("ladder", ld, new Vector3(w.x, 1.8f, w.z), 2.1f, 0.5f, false); g.transform.rotation = Quaternion.Euler(-12f, PathYaw, 0f); }
             }
             // ---- 二段目 (軌道): レール・枕木・トロッコ・鉱
             {
-                var rails = new MB(); float y2 = 1.1f;
+                var rails = new MB(); float y2 = 1.8f;
                 for (float t = -14f; t <= 30f; t += 0.55f) { var r1 = OnPath(t, 8.5f); var r2 = OnPath(t, 9.7f); rails.Box(r1.x, y2 + 0.16f, r1.z, 0.34f, 0.12f, 0.34f); rails.Box(r2.x, y2 + 0.16f, r2.z, 0.34f, 0.12f, 0.34f); }
                 Solid("rails", rails, mIron);
                 PathBoxes("sleepers", mWood, mb => { for (float t = -14f; t <= 30f; t += 1.5f + (float)rng.NextDouble() * 0.4f) mb.Box(t, y2, 9.1f, 0.4f, 0.16f, 1.7f); });
@@ -216,27 +216,37 @@ namespace DeckRogue.Game
                 var oredust = PatchSet(A, "m_oredust", false, 48, 32);
                 foreach (var pt in new[] { new Vector2(5f, 8.7f), new Vector2(-6f, 8.4f) }) if (oredust.Count > 0) { var w = OnPath(pt.x, pt.y); GroundDecal("oredust", Pick(oredust, rng), w.x, w.z, 1.1f, (float)rng.NextDouble() * 360f, 0.016f); }
                 // 右の上り: 一段目→二段目の木の階段
-                PathBoxes("stairs-wood", mWood, mb => { for (int k = 0; k < 3; k++) mb.Box(12.4f, 0.55f + k * 0.18f, 8.2f - 0.55f + k * 0.25f, 1.6f, 0.18f, 0.5f); });
+                PathBoxes("stairs-wood", mWood, mb => { for (int k = 0; k < 4; k++) mb.Box(12.4f, 0.9f + k * 0.225f, 8.2f - 0.8f + k * 0.26f, 1.6f, 0.225f, 0.52f); });
             }
             // ---- 段鼻: 一段目の縁 (土留めの横木と杭)・溝の縁石・石段
             {
                 PathBoxes("tier1-edge", mWood, mb =>
                 {
-                    mb.Box(6f, 0.28f, 5.0f, 36f, 0.32f, 0.3f);
-                    for (float t = -12f; t < 24f; t += 2.2f + (float)rng.NextDouble() * 0.9f) mb.Box(t, 0f, 4.85f, 0.16f, 0.75f, 0.16f);
-
+                    mb.Box(6f, 0.62f, 5.0f, 36f, 0.32f, 0.3f);
+                    mb.Box(6f, 0.3f, 5.0f, 36f, 0.3f, 0.26f);
+                    for (float t = -12f; t < 24f; t += 2.2f + (float)rng.NextDouble() * 0.9f) mb.Box(t, 0f, 4.85f, 0.16f, 1.1f, 0.16f);
+                    // 棚の縁 (道の手前 s=−3.4): 支保工の板張りが下の坑道へ垂れる面 = 岩の面を隠す。上端に横木、板は縦、柱を 2.4〜3.2 刻み
+                    // 岩の面はセルの階段 (±0.32) で走るので、板張りはその手前 (−0.5) に立て、上端の横木で棚の縁と板の隙間を蓋する
+                    mb.Box(6f, -0.16f, LedgeS - 0.42f, 44f, 0.16f, 1.2f);
+                    for (float t = -16f; t < 28f; t += 2.4f + (float)rng.NextDouble() * 0.8f) mb.Box(t, GalleryY, LedgeS - 0.9f, 0.26f, 1.5f, 0.26f);
                 });
+                PathBoxes("ledge-planks", mPlank, mb => { mb.Box(6f, GalleryY, LedgeS - 0.8f, 44f, 1.4f, 0.1f); });   // 岩の階段 (最大 −3.85) より手前 (−4.2)
                 var stepTex2 = Tex(A, "stone_c", null) ?? Tex(A, "stone", Px.Stone(p, rng)); var mStep2 = Lit(stepTex2); mStep2.SetColor("_BaseColor", new Color(0.5f, 0.52f, 0.6f));
-                PathBoxes("stone-steps", mStep2, mb => { mb.Box(-1.4f, 0f, 4.55f, 2.0f, 0.28f, 0.45f); mb.Box(-1.4f, 0.28f, 4.85f, 2.0f, 0.27f, 0.35f); });
+                PathBoxes("stone-steps", mStep2, mb => { for (int k = 0; k < 3; k++) mb.Box(-1.4f, k * 0.3f, 4.3f + k * 0.28f, 2.0f, 0.3f, 0.5f); });
             }
             // ---- 支保工: 奥の柱 (s=6.6) と持ち送り。手前は一枚絵の柱 2 本 (額縁)
             PathBoxes("timber", mWood, mb =>
             {
                 float[] tt = { -5.6f, 0f, 5.6f, 11.2f, 16.8f };
-                for (int i = 0; i < tt.Length; i++) { float t = tt[i] + ((float)rng.NextDouble() - 0.5f) * 0.6f; mb.Box(t, 0.55f, 6.6f, 0.5f, 3.75f, 0.5f); mb.Box(t, 4.3f, 4.4f, 0.42f, 0.42f, 4.4f); mb.Box(t, 3.4f, 5.7f, 0.3f, 0.3f, 1.8f); }
+                for (int i = 0; i < tt.Length; i++) { float t = tt[i] + ((float)rng.NextDouble() - 0.5f) * 0.6f; mb.Box(t, 0.9f, 6.6f, 0.5f, 3.5f, 0.5f); mb.Box(t, 4.4f, 4.4f, 0.42f, 0.42f, 4.4f); mb.Box(t, 3.5f, 5.7f, 0.3f, 0.3f, 1.8f); }
+                // 道をまたぐ木の桟橋 (右奥 t=17.5・敵④の後ろ・頭より上): 二段目 (1.8) から棚 (0) の縁まで渡す。柱は道の上と縁に
+                mb.Box(17.5f, 3.4f, 2.4f, 1.6f, 0.16f, 11.6f);
+                mb.Box(16.8f, 3.56f, 2.4f, 0.1f, 0.7f, 11.6f); mb.Box(18.2f, 3.56f, 2.4f, 0.1f, 0.7f, 11.6f);
+                foreach (float sv in new[] { -3.1f, 1.2f, 4.6f }) { mb.Box(16.9f, 0f, sv, 0.24f, 3.4f, 0.24f); mb.Box(18.1f, 0f, sv, 0.24f, 3.4f, 0.24f); }
+                mb.Box(17.5f, 2.9f, -3.1f, 1.6f, 0.2f, 0.2f); mb.Box(17.5f, 2.9f, 1.2f, 1.6f, 0.2f, 0.2f); mb.Box(17.5f, 2.9f, 4.6f, 1.6f, 0.2f, 0.2f);
             });
-            { var g = Put(A, "post_brace", -7.6f, -6.2f, 4.6f, 0.5f); if (g != null) g.transform.rotation = Quaternion.Euler(0f, 0f, 2f); }
-            { var g = Put(A, "post_brace", 9.5f, -7.4f, 4.6f, 0.5f, true); if (g != null) g.transform.rotation = Quaternion.Euler(0f, 0f, -2f); }   // 右の額縁は敵③④の手前に掛からない所へ (レビュー)
+            { var g = Put(A, "post_brace", -7.6f, -5.6f, 5.6f, 0.5f); if (g != null) g.transform.rotation = Quaternion.Euler(0f, 0f, 2f); }   // 下の坑道の床 (−1.4) から立つので高く
+            { var g = Put(A, "post_brace", 9.5f, -6.6f, 5.6f, 0.5f, true); if (g != null) g.transform.rotation = Quaternion.Euler(0f, 0f, -2f); }   // 右の額縁は敵③④の手前に掛からない所へ (レビュー)
             // ---- 一段目 (宿場)
             {
                 var h = Put(A, "hearth", -7.5f, 6.8f, 3.0f, 0.9f, false, 0f, 1f, 0f);
@@ -315,11 +325,32 @@ namespace DeckRogue.Game
                 float[] rt = { -6f, 6f, 14f }; float[] rs = { 6.5f, 9f, 6f };
                 for (int i = 0; i < rt.Length; i++) if (Hang(A, "roots_hang", rt[i], rs[i], WallH, 2.2f + (float)rng.NextDouble() * 0.6f, i % 2 == 1) == null) Hang(A, "roots", rt[i], rs[i], WallH, 2.8f);
             }
+            // ---- 下の坑道 (棚の手前 −1.4): 軌道・トロッコ・崩落岩・水路 (−1.75・水面) に提灯の映り
+            {
+                var rails2 = new MB();
+                for (float t = -16f; t <= 28f; t += 0.55f) { var r1 = OnPath(t, -4.3f); var r2 = OnPath(t, -5.5f); rails2.Box(r1.x, GalleryY + 0.16f, r1.z, 0.34f, 0.12f, 0.34f); rails2.Box(r2.x, GalleryY + 0.16f, r2.z, 0.34f, 0.12f, 0.34f); }
+                Solid("rails-lower", rails2, mIron);
+                PathBoxes("sleepers-lower", mWood, mb => { for (float t = -16f; t <= 28f; t += 1.5f + (float)rng.NextDouble() * 0.4f) mb.Box(t, GalleryY, -4.9f, 0.4f, 0.16f, 1.7f); });
+                var c2 = Put(A, "minecart", -3f, -4.9f, 1.5f, 0.9f, true, 0.12f);
+                if (c2 != null) { var w = OnPath(-3f, -4.9f); Halo("ore-glow", new Vector3(w.x, w.y + 1.1f, w.z - 0.2f), 2.0f, new Color(veinC.r, veinC.g, veinC.b, 0.35f)); }
+                Put(A, "ore_pile", 8f, -4.4f, 0.8f, 0.9f); Put(A, "rubble_rock", 14f, -4.6f, 0.7f, 0.9f);
+                var ballast2 = PatchSet(A, "m_ballast", false, 72, 40);
+                for (int i = 0; i < 10 && ballast2.Count > 0; i++) { var w = OnPath(-14f + i * 4f + (float)rng.NextDouble(), -4.9f + ((float)rng.NextDouble() - 0.5f) * 1.2f); GroundDecal("ballast", Pick(ballast2, rng), w.x, w.z, 1f, PathYaw + ((float)rng.NextDouble() - 0.5f) * 20f, 0.014f, rng.NextDouble() < 0.5); }
+                // 桟橋の提灯 (吊り) と、下の坑道を照らす提灯の柱 1 本
+                var lh = PropTexRaw(A, "lantern_hang", null) ?? PropTex(A, "lantern", null);
+                if (lh != null) foreach (float sv in new[] { -1.0f, 3.2f }) { var w = OnPath(17.5f, sv); var g = Plane("bridge-lantern", lh, new Vector3(w.x, 2.7f, w.z), 0.75f, 0.5f, false); g.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_SunAmount", 0f); g.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off; Halo("lantern-glow", new Vector3(w.x, 3.0f, w.z - 0.2f), 1.1f, new Color(1f, 0.66f, 0.36f, 0.35f)); }
+                PointLight("bridge-light", OnPath(17.5f, 1.2f) + new Vector3(0f, 2.9f, 0f), warm, 0.9f, 4.5f);
+                foreach (float t in new[] { -8.4f, 3.8f, 10.4f })
+                {
+                    var w = OnPath(t, ChannelS - 0.6f); var g = Glow("lantern-reflect", Px.Radial(new Color(1f, 0.7f, 0.4f, 0.3f)), new Vector3(w.x, WaterY + 0.02f, w.z), 1f, 1f);
+                    g.GetComponent<MeshFilter>().sharedMesh = _quadCentered; g.transform.rotation = Quaternion.Euler(90f, 0f, 0f); g.transform.localScale = new Vector3(1.2f, 0.5f, 1f);
+                }
+            }
             // ---- 手前の道 (溝は撤去): 濡れた染みと瓦礫の敷物で床の情報密度を足す (レビュー「床が 1 枚のタイルの繰り返し」)
             {
                 var rub = PatchSet(A, "m_rubble", false, 40, 28, 56, 40); var mossF = PatchSet(A, "m_moss", false, 40, 28);
-                for (int i = 0; i < 10 && rub.Count > 0; i++) { var w = OnPath(-10f + (float)rng.NextDouble() * 24f, -7.5f + (float)rng.NextDouble() * 3.4f); GroundDecal("rubble", Pick(rub, rng), w.x, w.z, 0.9f, (float)rng.NextDouble() * 360f, 0.014f, rng.NextDouble() < 0.5); }
-                for (int i = 0; i < 6 && mossF.Count > 0; i++) { var w = OnPath(-10f + (float)rng.NextDouble() * 24f, -7f + (float)rng.NextDouble() * 2.6f); GroundDecal("moss", Pick(mossF, rng), w.x, w.z, 0.9f, (float)rng.NextDouble() * 360f, 0.016f, rng.NextDouble() < 0.5); }
+                for (int i = 0; i < 3 && rub.Count > 0; i++) { var w = OnPath(-10f + (float)rng.NextDouble() * 24f, -3.2f + (float)rng.NextDouble() * 0.6f); GroundDecal("rubble", Pick(rub, rng), w.x, w.z, 0.6f, (float)rng.NextDouble() * 360f, 0.014f, rng.NextDouble() < 0.5); }
+                for (int i = 0; i < 5 && mossF.Count > 0; i++) { var w = OnPath(-10f + (float)rng.NextDouble() * 24f, -6.4f + (float)rng.NextDouble() * 2.6f); GroundDecal("moss", Pick(mossF, rng), w.x, w.z, 0.9f, (float)rng.NextDouble() * 360f, 0.016f, rng.NextDouble() < 0.5); }
             }
             // ---- 天井の下の暗がり: 壁の上端 1.6 unit を沈める帯 (洞窟が「閉じる」= レビュー)
             {

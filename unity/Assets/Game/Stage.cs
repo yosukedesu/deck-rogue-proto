@@ -305,13 +305,16 @@ namespace DeckRogue.Game
         /// 小川の溝は空き地の奥を横切る。戦闘の場は平ら</summary>
         // ---- 幕2/3 の帯 (2026-09-21 HD-2D): 高さは道の座標 s の帯で決める = 道と平行の段 (水平の帯を作らない)。境界は t のノイズで揺らして崩れた縁に
         static float BandWobble(float t, float k) { return (Vnoise(t * 0.35f + k * 13f, k * 7f) - 0.5f) * 0.45f; }
-        /// <summary>幕2 (宿場跡): 近景の縁 +0.25 ／ 排水の溝 −0.35 ／ 道 0 ／ 一段目 (敷石の宿場) +0.55 ／ 二段目 (軌道) +1.1 ／ 壁</summary>
+        /// <summary>幕2 (宿場跡)「縦に積む坑道」(2026-09-21 ユーザー「地形が平らすぎる」→ 裁定): 道は張り出しの棚 (0)。手前は下の坑道 −1.4 (軌道と水 −1.75)、
+        /// 棚の縁 s=−3.4 は揺らさない (支保工の板張りが直線で走る)。後ろは一段目 +0.9 (敷石の宿場)・二段目 +1.8 (軌道)・壁 (s≥11.4)</summary>
+        const float LedgeS = -3.4f, GalleryY = -1.4f, ChannelS = -6.6f, ChannelY = -1.75f;
         static float H2(float t, float s)
         {
+            if (s < LedgeS) return s < ChannelS + BandWobble(t, 3f) * 0.5f ? ChannelY : GalleryY;
             s += BandWobble(t, 1f);
-            if (s < 5.0f) return 0f;        // 手前は平らな道 (溝と近景の段は「黒い穴・浮いた丸太」に見えたので撤去 = レビュー 2026-09-21)
-            if (s < 8.2f) return 0.55f;
-            return 1.1f;
+            if (s < 5.0f) return 0f;
+            if (s < 8.2f) return 0.9f;
+            return 1.8f;
         }
         /// <summary>幕3 (古代都市): 手前の池 −0.95 (t∈[−12,8]) ／ 場と近岸 0 ／ 水路 −0.95 ／ 遠岸 0 ／ T1 +1.1 ／ T2 +2.2</summary>
         static float H3(float t, float s)
@@ -329,6 +332,7 @@ namespace DeckRogue.Game
         {
             if (act == 2)
             {
+                if (s < LedgeS) return s < ChannelS + BandWobble(t, 3f) * 0.5f ? 2 : 1;   // 下の坑道 = 土・水路 = 水底
                 s += BandWobble(t, 1f);
                 if (s < 5.0f) return 1; if (s < 8.2f) return 0; return 1;
             }
@@ -337,7 +341,7 @@ namespace DeckRogue.Game
             if (s < 5.8f) return 0; if (s < 8.6f) return 2; return 1;
         }
         static bool Stepped { get { return _paintedAct != 1; } }
-        static float WaterY { get { return _paintedAct == 2 ? -0.08f : -0.55f; } }
+        static float WaterY { get { return _paintedAct == 2 ? ChannelY + 0.25f : -0.55f; } }
 
         static float RawHeight(float x, float z)
         {
