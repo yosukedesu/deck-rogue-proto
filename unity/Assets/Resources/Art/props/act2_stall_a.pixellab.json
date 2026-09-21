@@ -2,22 +2,23 @@
   "id": "act2_stall_a",
   "engine": "pixflux",
   "request": {
-    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, an empty peddler's stall: a rough timber counter under a tattered faded cloth awning on two poles, small leather pouches, stoppered bottles and a coil of rope hanging from the awning bar, a few brass tools and a small unlit oil lamp on the counter, nobody there, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark aged timber grey-brown, faded dusty red-brown cloth, iron grey, weathered brass, cool blue-grey shadow, pale straw highlights), no text",
-    "negative_description": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, signboard, merchant, vendor, food, fruit, vegetables, bright red awning, striped awning",
+    "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, an empty peddler's stall: a rough timber counter under a tattered faded cloth awning on two poles, small leather pouches, stoppered bottles and a coil of rope hanging from the awning bar, a few brass tools and a small unlit oil lamp on the counter, nobody there, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+    "negative_description": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal",
     "image_size": {
       "width": 96,
       "height": 72
     },
-    "text_guidance_scale": 8,
+    "text_guidance_scale": 9,
     "no_background": true,
     "outline": "selective outline",
     "shading": "detailed shading",
     "detail": "highly detailed",
-    "view": "low top-down"
+    "view": "side",
+    "direction": "south"
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-20T20:58:41.308Z"
+  "at": "2026-09-21T01:40:56.415Z"
 }

@@ -1,0 +1,433 @@
+{
+  "defaults": {
+    "engine": "pixflux",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "guidance": 9,
+    "view": "side",
+    "direction": "south"
+  },
+  "items": [
+    {
+      "id": "act2_crate",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_crate.png",
+      "size": [
+        32,
+        32
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a single rough wooden crate with plank sides, a nailed lid and one corner chipped, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_crate_stack",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_crate_stack.png",
+      "size": [
+        48,
+        52
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, two rough wooden crates stacked with the top one set crooked, a lumpy tied sack resting on top, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_crate_open",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_crate_open.png",
+      "size": [
+        40,
+        32
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, an open wooden crate with its lid leaning against the side, a few dark ore chunks and an old iron chisel spilling out of it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_barrel_stack",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_barrel_stack.png",
+      "size": [
+        48,
+        48
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, three old wooden barrels stacked in a pyramid, two below and one on top, dark iron hoops, one barrel lid missing, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_sacks",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_sacks.png",
+      "size": [
+        48,
+        32
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a pile of three lumpy grain sacks tied at the neck, slumped against each other, coarse faded cloth, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_shelter",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_shelter.png",
+      "size": [
+        96,
+        64
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a low lean-to sleeping shelter: a patched canvas tarp stretched over a simple timber frame, a rolled straw bedroll and a folded grey blanket under it, an iron hook on the front post, nobody there, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_stall_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_stall_b.png",
+      "size": [
+        80,
+        64
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a closed peddler's stall with its wooden shutters down, a slanted roof of rough planks, two crates and a sack stacked in front of it, a small brass bell hanging from the eave, nobody there, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_stall_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_stall_a.png",
+      "size": [
+        96,
+        72
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, an empty peddler's stall: a rough timber counter under a tattered faded cloth awning on two poles, small leather pouches, stoppered bottles and a coil of rope hanging from the awning bar, a few brass tools and a small unlit oil lamp on the counter, nobody there, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_toolrack",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_toolrack.png",
+      "size": [
+        48,
+        56
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a wooden tool rack holding two pickaxes, a shovel and a heavy hammer leaning on it, worn iron heads and dark wooden handles, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_lumber",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_lumber.png",
+      "size": [
+        80,
+        32
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a low stack of rough cut timber beams and logs lying horizontally, pale cut ends facing the viewer, one beam slid off crooked, a few wood chips on top, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_bell_post",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_bell_post.png",
+      "size": [
+        32,
+        64
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a short wooden post with a small bronze hand bell hanging from a curved iron bracket at the top, a frayed pull rope dangling from the bell, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_wreck",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_wreck.png",
+      "size": [
+        96,
+        72
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, the dismantled hulk of an ancient mining machine lying on its side, a dented tarnished metal body with plates missing, exposed brass cogs and a broken drill arm, a snapped cable, no face and no eyes, long abandoned and dusty, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_winch",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_winch.png",
+      "size": [
+        72,
+        64
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a large old hoisting winch: a wide wooden cable drum wound with rope on a heavy timber frame with an iron crank handle and a ratchet wheel, a length of rope trailing off one side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_gear_pile",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_gear_pile.png",
+      "size": [
+        64,
+        32
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a low heap of broken machine parts: rusted cogs of different sizes, a bent brass rod, a cracked metal plate and a length of chain tangled together, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_gear_big",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_gear_big.png",
+      "size": [
+        40,
+        40
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a single large rusted iron cogwheel with a few broken teeth leaning upright at a slight tilt, a smaller brass cog hooked on it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_minecart",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_minecart.png",
+      "size": [
+        64,
+        40
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, an old iron ore cart with riveted dark metal sides on four small wheels, heaped with dark rock and two or three irregular chunks of pale teal ore glowing softly, seen from the side slightly from above, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_minecart_tipped",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_minecart_tipped.png",
+      "size": [
+        64,
+        32
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, an old empty iron ore cart tipped over on its side with two wheels in the air, dented and rusted, one wheel missing, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_ore_pile",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_ore_pile.png",
+      "size": [
+        48,
+        24
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a small heap of dark broken ore rock with two irregular chunks of pale teal ore glowing softly near the top, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_trough",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_trough.png",
+      "size": [
+        72,
+        28
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a long low wooden water trough on two short legs, filled with dark still water, a wooden bucket with a rope handle hanging on one end, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_rope_coil",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_rope_coil.png",
+      "size": [
+        40,
+        28
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a coil of thick hemp rope lying flat with the loose end trailing out, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_hearth",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_hearth.png",
+      "size": [
+        80,
+        80
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a squat stone hearth furnace built of fitted dark stones with an iron hood and a bent stovepipe chimney rising from it, a small dim amber ember glow deep inside its low mouth, a leather bellows and a soot-black iron kettle beside it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_tunnel_side",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_tunnel_side.png",
+      "size": [
+        80,
+        104
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a small side gallery entrance framed by two rough timber posts and a sagging lintel beam, the opening inside is completely pitch black, one post slightly leaning, seen straight from the front, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_crystal_big",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_crystal_big.png",
+      "size": [
+        80,
+        112
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a large cluster of four or five raw crystal spires of different heights and angles growing out of a chunk of dark rock, pale teal translucent crystal glowing softly from within, hard faceted edges, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_crystal",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_crystal.png",
+      "size": [
+        40,
+        48
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a small cluster of three raw crystal shards of different heights leaning at different angles on a bit of dark rock, pale teal translucent crystal glowing softly from within, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act2_stalactite_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act2_stalactite_b.png",
+      "size": [
+        64,
+        64
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a cluster of three short stalactites of different lengths hanging point down from a shared knob of dark wet rock, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_wall_ruin",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_wall_ruin.png",
+      "size": [
+        160,
+        112
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a single wide ruined wall fragment of an ancient house built of fitted dark slate-grey basalt blocks, two dark empty window openings and one dark empty doorway, the top edge collapsed unevenly, a pile of fallen blocks at one end, seen straight on, the bottom edge cut off flat, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_rig_far",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_rig_far.png",
+      "size": [
+        96,
+        192
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a tall skeletal mining headframe tower of blackened iron beams with cross bracing, a large spoked wheel mounted at the top, a cable hanging down the middle, industrial, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_fountain_dry",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_fountain_dry.png",
+      "size": [
+        128,
+        96
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a broken ancient fountain of dark slate-grey basalt, a wide low octagonal basin with one side cracked and collapsed, a short central column with a small upper bowl, dry and empty, seen from slightly above, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_monument_disc",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_monument_disc.png",
+      "size": [
+        128,
+        144
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a monumental carved stone disc shaped like a giant gear standing upright on a stepped stone base, blunt teeth around the rim, a single ring groove glowing faintly pale teal, cracked and half sunk, weathered dark slate-grey basalt, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_statue_kneel",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_statue_kneel.png",
+      "size": [
+        64,
+        96
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a weathered stone statue of a kneeling hooded robed figure with the hood hiding the face completely, both hands cradling a shallow stone bowl in which a small pale teal crystal glows softly, worn robes, pale grey-blue stone with dark cracks and chipped edges, on a low square stone block, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_statue_headless",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_statue_headless.png",
+      "size": [
+        64,
+        112
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a weathered headless stone statue of a standing robed figure, the neck broken off, one arm missing, deep folds of stone cloth, pale grey-blue stone with dark cracks, standing on a square stone block, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_stele",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_stele.png",
+      "size": [
+        48,
+        112
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a tall narrow ancient stone stele of dark slate-grey basalt tapering to a chipped top, one face carved with a vertical band of abstract geometric grooves and gear-like circles glowing faintly pale teal, on a small plinth, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_pillar_tall",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_pillar_tall.png",
+      "size": [
+        64,
+        176
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a tall ancient column of stacked dark slate-grey basalt drums with a plain heavy square capital, hairline cracks, weathered chipped edges, pale bone-white light catching the left edge, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_crystal_spire_big",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_crystal_spire_big.png",
+      "size": [
+        128,
+        184
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a giant pale teal mana crystal spire, one main tapering faceted blade with two smaller blades leaning from its base, lit softly from within, hard flat facets, translucent desaturated pale tones, its base gripped by a ring of black rock and bone-white mineral crust, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_crystal_cluster",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_crystal_cluster.png",
+      "size": [
+        96,
+        80
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a cluster of five pale teal mana crystal blades of different heights growing out of a lump of black rock, hard flat facets, lit softly from within, translucent desaturated pale tones, leaning in different directions, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_vein_wall",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_vein_wall.png",
+      "size": [
+        64,
+        56
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a jagged seam of pale teal mana crystal erupting sideways from a slab of black rock, the rock cracked open around the seam, the crystal lit softly from within, seen straight on, low and wide, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_brazier_cold",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_brazier_cold.png",
+      "size": [
+        48,
+        56
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a wide ancient stone brazier bowl on a short square pedestal of dark slate-grey basalt, a low pale blue-white cold flame burning inside, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_rubble_pile",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_rubble_pile.png",
+      "size": [
+        112,
+        64
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a heap of broken dark slate-grey masonry blocks, split slabs and grey dust, one carved fragment sticking out of the pile, floating in empty space with nothing beneath it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_block",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_block.png",
+      "size": [
+        48,
+        40
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a single large cut stone block of dark slate-grey basalt toppled onto its corner, chipped edges, one face paler and worn, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_gear_wall",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_gear_wall.png",
+      "size": [
+        160,
+        144
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a wall-sized ancient mechanism of blackened iron, several large interlocking cog wheels of different sizes mounted on a riveted iron frame and a slab of dark stone, one large empty round axle mount in the middle, pale worn highlights on the teeth, industrial, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_boiler_pipes",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_boiler_pipes.png",
+      "size": [
+        128,
+        160
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient industrial boiler, a tall riveted cylinder of blackened iron on a stone base with a bundle of thick iron pipes and elbow joints rising beside it, a round valve wheel, one seam leaking a faint pale teal glow, corroded dark metal with pale highlights, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    },
+    {
+      "id": "act3_ore_cart",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/fb3333c8-6e29-4758-b4fd-3c1fd3293853/scratchpad/hd2d/front/act3_ore_cart.png",
+      "size": [
+        96,
+        64
+      ],
+      "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, an ancient heavy blackened iron ore wagon on four small wheels tipped over on its side, spilled lumps of raw pale teal crystal ore beside it glowing faintly, dented and corroded dark metal, seen from the side, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal"
+    }
+  ]
+}

@@ -2,22 +2,23 @@
   "id": "act2_ore_pile",
   "engine": "pixflux",
   "request": {
-    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a small heap of dark broken ore rock with two irregular chunks of pale teal ore glowing softly near the top, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate rock, cool blue-grey, soft pale teal glow only inside the ore), no text",
-    "negative_description": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, light rays, glow halo around it, many glowing dots, evenly spaced dots, gold, treasure, gems",
+    "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a small heap of dark broken ore rock with two irregular chunks of pale teal ore glowing softly near the top, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+    "negative_description": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal",
     "image_size": {
       "width": 48,
-      "height": 32
+      "height": 24
     },
-    "text_guidance_scale": 8,
+    "text_guidance_scale": 9,
     "no_background": true,
     "outline": "selective outline",
     "shading": "detailed shading",
     "detail": "highly detailed",
-    "view": "low top-down"
+    "view": "side",
+    "direction": "south"
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-20T20:57:31.159Z"
+  "at": "2026-09-21T01:42:33.180Z"
 }

@@ -2,22 +2,23 @@
   "id": "act3_pillar_fallen",
   "engine": "pixflux",
   "request": {
-    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a fallen ancient column of dark slate-grey basalt lying on its side, broken into three drums that have rolled slightly apart, cracked fractured ends, floating in empty space with nothing beneath it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
-    "negative_description": "ground, sand, floor, shadow, grass, dirt, soil, scene, background, landscape, sky, moon, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, standing column, near-black",
+    "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, a fallen ancient stone column lying horizontally on its side, seen from the side, weathered grey with cracks, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+    "negative_description": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, grass, plants",
     "image_size": {
       "width": 160,
-      "height": 64
+      "height": 48
     },
-    "text_guidance_scale": 8,
+    "text_guidance_scale": 9,
     "no_background": true,
     "outline": "selective outline",
     "shading": "detailed shading",
     "detail": "highly detailed",
-    "view": "low top-down"
+    "view": "side",
+    "direction": "south"
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-20T21:06:47.691Z"
+  "at": "2026-09-21T01:54:38.178Z"
 }

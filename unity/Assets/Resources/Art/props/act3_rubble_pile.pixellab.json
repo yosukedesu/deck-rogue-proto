@@ -2,22 +2,23 @@
   "id": "act3_rubble_pile",
   "engine": "pixflux",
   "request": {
-    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a heap of broken dark slate-grey masonry blocks, split slabs and grey dust, one carved fragment sticking out of the pile, floating in empty space with nothing beneath it, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
-    "negative_description": "ground, sand, floor, shadow, grass, dirt, soil, scene, background, landscape, sky, moon, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, letters, runes, near-black",
+    "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, a low heap of broken grey stone blocks and chunks of masonry, irregular shapes, wider than tall, no gravestone, no upright stone, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+    "negative_description": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal, grass, plants, truck, car, vehicle, wheels, tank",
     "image_size": {
       "width": 112,
-      "height": 64
+      "height": 56
     },
-    "text_guidance_scale": 8,
+    "text_guidance_scale": 9,
     "no_background": true,
     "outline": "selective outline",
     "shading": "detailed shading",
     "detail": "highly detailed",
-    "view": "low top-down"
+    "view": "side",
+    "direction": "south"
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-20T21:11:41.334Z"
+  "at": "2026-09-21T01:58:33.193Z"
 }

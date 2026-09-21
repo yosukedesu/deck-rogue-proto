@@ -2,22 +2,23 @@
   "id": "act2_crystal",
   "engine": "pixflux",
   "request": {
-    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a small cluster of three raw crystal shards of different heights leaning at different angles on a bit of dark rock, pale teal translucent crystal glowing softly from within, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette (dark slate rock, cool blue-grey, pale teal crystal, soft pale teal glow only inside the crystal), no text",
-    "negative_description": "scene, background, landscape, cave, tunnel behind, rock wall behind, sky, moon, ground plane, floor, island, platform, isometric block, soil disc, shadow disc, frame, border, text, letters, sign, watermark, blurry, bright saturated colors, daylight, people, character, face, hands, animal, light rays, glow halo around it, lens flare, many identical spikes, evenly spaced spikes, gems",
+    "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a small cluster of three raw crystal shards of different heights leaning at different angles on a bit of dark rock, pale teal translucent crystal glowing softly from within, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+    "negative_description": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal",
     "image_size": {
       "width": 40,
       "height": 48
     },
-    "text_guidance_scale": 8,
+    "text_guidance_scale": 9,
     "no_background": true,
     "outline": "selective outline",
     "shading": "detailed shading",
     "detail": "highly detailed",
-    "view": "low top-down"
+    "view": "side",
+    "direction": "south"
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-20T20:55:49.222Z"
+  "at": "2026-09-21T01:44:01.724Z"
 }

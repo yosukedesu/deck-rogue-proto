@@ -2,22 +2,23 @@
   "id": "act3_gear_wall",
   "engine": "pixflux",
   "request": {
-    "description": "isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no soil, no shadow on the ground, no sky, no moon, no platform, a wall-sized ancient mechanism of blackened iron, several large interlocking cog wheels of different sizes mounted on a riveted iron frame and a slab of dark stone, one large empty round axle mount in the middle, pale worn highlights on the teeth, industrial, HD-2D Octopath Traveler style pixel art, detailed shading, muted cold palette (dark slate-grey basalt, blue-grey stone, pale bone-white edge highlights, dim teal glow accents), no text",
-    "negative_description": "scene, background, landscape, sky, moon, ground plane, island, platform, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, eyes, robot, humanoid, animal, wood, warm orange light, fire, brass, copper, gold, clock face, numbers, letters, runes",
+    "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, no moon, no platform, a wall-sized ancient mechanism of blackened iron, several large interlocking cog wheels of different sizes mounted on a riveted iron frame and a slab of dark stone, one large empty round axle mount in the middle, pale worn highlights on the teeth, industrial, HD-2D Octopath Traveler style pixel art, detailed shading, muted cool palette, no text",
+    "negative_description": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, scene, background, landscape, sky, frame, border, text, watermark, blurry, bright saturated colors, daylight, people, character, face, animal",
     "image_size": {
       "width": 160,
       "height": 144
     },
-    "text_guidance_scale": 8,
+    "text_guidance_scale": 9,
     "no_background": true,
     "outline": "selective outline",
     "shading": "detailed shading",
     "detail": "highly detailed",
-    "view": "low top-down"
+    "view": "side",
+    "direction": "south"
   },
   "usage": {
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-20T21:12:07.896Z"
+  "at": "2026-09-21T01:47:31.966Z"
 }
