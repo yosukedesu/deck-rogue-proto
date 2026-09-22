@@ -487,18 +487,34 @@ namespace DeckRogue.Game
                 var ps = g.Battle.PlayerSprite(); if (ps != null) sbd.Append(" player=" + ps.rect.size + "@" + ps.offsetMin + " feet=" + Stage.FeetOffset("player", -1f));
                 Debug.Log(sbd.ToString());
             }
-            // fx=slash[:angle]: 斬撃を敵0の中心に出して撮る (向きと大きさの確認。2026-09-16)。fx=hit[:angle] は敵→自分の斬撃 (朱) を自分の絵の上に
-            if (((Get("fx") ?? "").StartsWith("slash") || (Get("fx") ?? "").StartsWith("hit")) && g.Rs != null && g.Rs.Combat != null && g.Battle != null)
+            // fx=slash[:angle]: 斬撃を敵0の中心に出して撮る (向きと大きさの確認。2026-09-16)。fx=hit[:angle] は敵→自分の斬撃 (朱) を自分の絵の上に。
+            // fx=fang|horn|vine|stomp|spell|light|spark は自分の札の当たりの形 (2026-09-22。fxhits=N で多段の交互を N 発、fxshots=枚数)
+            string fxKey = Get("fx") ?? "";
+            string[] styles = { "slash", "hit", "fang", "horn", "vine", "stomp", "spell", "light", "spark" };
+            if (styles.Any(st => fxKey.StartsWith(st)) && g.Rs != null && g.Rs.Combat != null && g.Battle != null)
             {
-                bool hit = Get("fx").StartsWith("hit");
-                float ang = hit ? 35f : -35f; var parts = Get("fx").Split(':'); if (parts.Length > 1) float.TryParse(parts[1], out ang);
+                bool hit = fxKey.StartsWith("hit");
+                string style = styles.First(st => fxKey.StartsWith(st));
+                float ang = hit ? 35f : -35f; var parts = fxKey.Split(':'); if (parts.Length > 1) float.TryParse(parts[1], out ang);
                 var fx = g.FxLayer;
                 var spr = hit ? g.Battle.PlayerSprite() : g.Battle.EnemySprite(0);
+                var pSpr = g.Battle.PlayerSprite();
+                int hits = 1; int.TryParse(Get("fxhits") ?? "1", out hits); if (hits < 1) hits = 1;
+                int shots = 8; int.TryParse(Get("fxshots") ?? "8", out shots);
                 // 決定的な時間刻み: CaptureScreenshot で実時間が跳ぶので、captureFramerate で1フレーム=1/60秒に固定して3フレームごとに撮る
                 Time.captureFramerate = 60;
                 yield return null;
-                if (spr != null && fx != null) Tween.SlashFx(fx, Tween.CenterIn(spr, fx), ang, hit ? new Color(1f, 0.62f, 0.5f, 0.95f) : new Color(1f, 0.98f, 0.9f, 0.95f), Get("big") == "1");
-                for (int i = 0; i < 8; i++) { yield return null; yield return null; yield return Shot("fx-" + i, 1); }
+                if (spr != null && fx != null)
+                {
+                    if (hit || (style == "slash" && parts.Length > 1)) Tween.SlashFx(fx, Tween.CenterIn(spr, fx), ang, hit ? new Color(1f, 0.62f, 0.5f, 0.95f) : new Color(1f, 0.98f, 0.9f, 0.95f), Get("big") == "1");
+                    else
+                    {
+                        Vector2 from = pSpr != null ? Tween.CenterIn(pSpr, fx) : Tween.CenterIn(spr, fx) + new Vector2(-400f, 0f);
+                        Color col = style == "spell" ? new Color(PaperFx.Mana.r, PaperFx.Mana.g, PaperFx.Mana.b, 0.95f) : style == "light" ? new Color(1f, 0.9f, 0.62f, 0.95f) : style == "spark" ? new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.95f) : new Color(1f, 0.98f, 0.9f, 0.95f);
+                        for (int h = 0; h < hits; h++) { int hh = h; Tween.After(0.14f * h, () => Tween.PlayerHitFx(fx, Tween.CenterIn(spr, fx), style, col, Get("big") == "1", hh, hits, from)); }
+                    }
+                }
+                for (int i = 0; i < shots; i++) { yield return null; yield return null; yield return Shot("fx-" + i, 1); }
                 Time.captureFramerate = 0;
             }
             // play=<手札index>: その札をプレイして (対象は最初の生存敵)、攻撃コマの途中を 4 枚撮る (2026-09-16 このは v2 のアニメ確認)

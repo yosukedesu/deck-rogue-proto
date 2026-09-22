@@ -116,13 +116,15 @@ namespace DeckRogue.Game
             int finishing = FinishingBlowIndex(log, Math.Min(_seen, log.Count), combat);
             var batchAt = new Dictionary<int, DollBatch>(); var batchLast = new HashSet<int>();
             PlanDollBatches(log, Math.Min(_seen, log.Count), batchAt, batchLast);   // 人形の粒を束ねる (2026-09-21)
+            var hitAt = new Dictionary<int, HitPlan>();
+            PlanCardHits(log, Math.Min(_seen, log.Count), hitAt);   // 自分の札の当たりの形と多段の位置 (2026-09-22)
             for (int i = Math.Min(_seen, log.Count); i < log.Count; i++)
             {
                 var ev = log[i];
                 float gap;
                 if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); var cctx = new ReactionCtx { Prev = visibleBoard }; try { Show(g, fx, cp, true, cctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは即・間を取らない
                 if (batchAt.ContainsKey(i)) gap = batchLast.Contains(i) ? 0.3f : 0.04f;   // 束ねた粒は 0.04 秒刻み。最後の1つで合計の数字を出すので少し置く
-                else if (ev is GameEvent_DamageDealt) gap = 0.4f;
+                else if (ev is GameEvent_DamageDealt) gap = (hitAt.ContainsKey(i) && hitAt[i].Volley && !hitAt[i].VolleyLast) ? 0.05f : 0.4f;   // 全体攻撃は一斉に (2026-09-22)
                 else if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) gap = 0.6f;
                 else if (ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
                 else if (IsStatusEvent(ev)) gap = 0.3f;
@@ -136,6 +138,7 @@ namespace DeckRogue.Game
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, visibleBoard);
                 if (batchAt.ContainsKey(i)) { ctx.Batch = batchAt[i]; ctx.BatchLast = batchLast.Contains(i); }
+                if (hitAt.ContainsKey(i)) ctx.Hit = hitAt[i];
                 if (i == finishing) { ctx.FinishingBlow = true; gap += 0.35f; }   // とどめはヒットストップぶん長く見せる
                 Tween.After(delay, () => { try { Show(g, fx, captured, true, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += gap;
@@ -174,6 +177,8 @@ namespace DeckRogue.Game
             int finishing = FinishingBlowIndex(log, _seen, combat);
             var batchAt = new Dictionary<int, DollBatch>(); var batchLast = new HashSet<int>();
             PlanDollBatches(log, _seen, batchAt, batchLast);   // 人形の粒を束ねる (2026-09-21)
+            var hitAt = new Dictionary<int, HitPlan>();
+            PlanCardHits(log, _seen, hitAt);   // 自分の札の当たりの形と多段の位置 (2026-09-22)
             // 差し替えられた意図の札は、組み直しで既に新しい札になっている。豹変の瞬間 (ShowEnemyAct) に跳ねて出すまで隠す (2026-09-17 ④)
             for (int i = _seen; i < log.Count; i++)
                 if (log[i] is GameEvent_EnemyInterrupted ei && ei.Replaced)
@@ -190,10 +195,11 @@ namespace DeckRogue.Game
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, prevBoard);
                 if (batchAt.ContainsKey(i)) { ctx.Batch = batchAt[i]; ctx.BatchLast = batchLast.Contains(i); }
+                if (hitAt.ContainsKey(i)) ctx.Hit = hitAt[i];
                 if (i == finishing) ctx.FinishingBlow = true;
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)。束ねた人形の粒は 0.04 秒 (2026-09-21)
                 Tween.After(delay, () => { try { Show(g, fx, captured, false, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
-                delay += ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
+                delay += ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : (ctx.Hit != null && ctx.Hit.Volley && !ctx.Hit.VolleyLast) ? 0.03f : ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
             }
             HoldLightIfAny(log, _seen, delay);
             _seen = log.Count;
@@ -1145,7 +1151,75 @@ namespace DeckRogue.Game
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public DollBatch Batch; public bool BatchLast; }   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
+        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; }   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
+
+        /// <summary>
+        /// 自分の札の当たりの計画 (2026-09-22 ユーザー「攻撃エフェクトがどの攻撃でも同じ」): 札 (CardPlayed / ReactionTriggered) の後に続く自分由来の DamageDealt
+        /// (人形・置物の SourceUid つきは除く) に、形 (CardHitStyle) と多段の位置を付ける。Index＝何発目 (0 から)・Total＝発数。
+        /// 全体攻撃は「同じ敵が2度目に出るまで」を1発 (Volley) と数え、Volley の中は 0.05 秒刻みで一斉に走らせて揺れは最後の1つだけ
+        /// </summary>
+        sealed class HitPlan { public CardDef Def; public string Style = "slash"; public int Index; public int Total; public bool Volley; public bool VolleyFirst; public bool VolleyLast; }
+        static void PlanCardHits(IReadOnlyList<GameEvent> log, int from, Dictionary<int, HitPlan> at)
+        {
+            CardDef cur = null;
+            var run = new List<int>();
+            void Flush()
+            {
+                if (cur == null || run.Count == 0) { run.Clear(); return; }
+                string style = CardHitStyle(cur);
+                var volleys = new List<List<int>>(); var seen = new HashSet<int>(); List<int> v = null;
+                foreach (var idx in run)
+                {
+                    int ei = (log[idx] as GameEvent_DamageDealt).EnemyIndex ?? 0;
+                    if (v == null || seen.Contains(ei)) { v = new List<int>(); volleys.Add(v); seen.Clear(); }
+                    v.Add(idx); seen.Add(ei);
+                }
+                for (int k = 0; k < volleys.Count; k++)
+                    for (int m = 0; m < volleys[k].Count; m++)
+                        at[volleys[k][m]] = new HitPlan { Def = cur, Style = style, Index = k, Total = volleys.Count, Volley = volleys[k].Count > 1, VolleyFirst = m == 0, VolleyLast = m == volleys[k].Count - 1 };
+                run.Clear();
+            }
+            for (int i = Math.Max(0, from); i < log.Count; i++)
+            {
+                var e = log[i];
+                if (e is GameEvent_CardPlayed cp) { Flush(); cur = null; try { cur = Content.GetCardDef(cp.CardId); } catch (Exception) { } }
+                else if (e is GameEvent_ReactionTriggered rt) { Flush(); cur = null; try { cur = Content.GetCardDef(rt.CardId); } catch (Exception) { } }
+                else if (e is GameEvent_TurnEnded || e is GameEvent_TurnStarted || e is GameEvent_EnemyActionExecuting || e is GameEvent_GearUsed) { Flush(); cur = null; }
+                else if (e is GameEvent_DamageDealt dd && dd.Source == "player" && dd.SourceUid == null && cur != null) run.Add(i);
+            }
+            Flush();
+        }
+
+        /// <summary>札 → 当たりの形 (Tween.PlayerHitFx)。id と名前のキーワード＋タイプ (ユーザー裁定 2026-09-22: データは触らず推定。外れは表を直す)。
+        /// 火種/火花/火の粉=spark ／ 呪文=spell (白は light) ／ 牙・呑=fang ／ 角・突き・楔・槍=horn ／ 蔦・蔓・鞭=vine ／ 踏・突進・突撃・槌・砕き・据え・疾駆=stomp ／ それ以外=slash</summary>
+        public static string CardHitStyle(CardDef def)
+        {
+            if (def == null) return "slash";
+            string id = (def.Id ?? "").ToLowerInvariant(), name = def.Name ?? "";
+            bool white = def.Color == "white";
+            bool Id(params string[] ks) { foreach (var k in ks) if (id.Contains(k)) return true; return false; }
+            bool Nm(params string[] ks) { foreach (var k in ks) if (name.Contains(k)) return true; return false; }
+            if (Id("spark", "ember") || Nm("火種", "火花", "火の粉")) return "spark";
+            if (def.Type == "spell" || Id("powder_pod")) return white ? "light" : "spell";
+            if (Id("fang", "gulp") || Nm("牙", "呑")) return "fang";
+            if (Id("thrust", "wedge", "spear", "needle", "sting") || (!white && Id("horn")) || Nm("角", "突き", "楔", "槍")) return "horn";
+            if (Id("lash", "vine", "whip", "tendril") || Nm("蔦", "蔓", "鞭")) return "vine";
+            if (Id("stomp", "stampede", "charge", "rush", "trample", "maul", "bodyslam", "slam", "bash", "tackle", "sprint") || Nm("踏", "突進", "突撃", "槌", "砕き", "据え", "疾駆")) return "stomp";
+            return "slash";
+        }
+
+        /// <summary>形ごとの筋の色: 呪文=脈の青緑・灯=暖色・火種=延焼の橙・白の物理=真鍮を帯びた紙色・それ以外=紙色 (急所・頭打ちは呼び側で上書き)</summary>
+        static Color HitColor(string style, CardDef def)
+        {
+            switch (style)
+            {
+                case "spell": return new Color(PaperFx.Mana.r, PaperFx.Mana.g, PaperFx.Mana.b, 0.95f);
+                case "light": return new Color(1f, 0.9f, 0.62f, 0.95f);
+                case "spark": return new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.95f);
+            }
+            if (def != null && def.Color == "white") return new Color(1f, 0.94f, 0.76f, 0.95f);
+            return new Color(1f, 0.98f, 0.9f, 0.95f);
+        }
 
         /// <summary>
         /// 人形の粒を束ねる (2026-09-21 【E】人間ラン#15「号令1回＝10〜16行の1〜4ダメの粒が 0.12 秒刻み」): 連続する人形由来 (SourceUid つき) の
@@ -1384,27 +1458,33 @@ namespace DeckRogue.Game
                             var dir = (hit - dp).normalized * (UiKit.Phone ? 22f : 36f);
                             Tween.Lunge(dollSpr, dir + new Vector2(0f, 4f), 0.22f);
                         }
-                        Color streak = crit ? new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 1f) : capped ? new Color(0.78f, 0.8f, 0.86f, 0.9f) : new Color(1f, 0.98f, 0.9f, 0.95f);   // 頭打ちは鈍い筋 (刃が通らない)
+                        var hp = ctx != null ? ctx.Hit : null;
+                        string style = hp != null ? hp.Style : "slash";
+                        Color streak = crit ? new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 1f) : capped ? new Color(0.78f, 0.8f, 0.86f, 0.9f) : HitColor(style, hp != null ? hp.Def : null);   // 頭打ちは鈍い筋 (刃が通らない)
+                        bool volleyTail = hp != null && hp.Volley && !hp.VolleyLast;   // 全体攻撃の途中の1体: 揺れ・寄り・音は最後の1体だけ (2026-09-22)
                         // 敵のブロックが全部吸った (殻は別) = 敵が盾で受け止める (2026-09-17): 斬撃の筋は出さず、敵の正面に空色の盾の面。白い点滅も無し
                         bool guardedE = blocked > 0 && d.HpLoss <= 0 && !shell;
                         if (guardedE) Tween.GuardFx(fx, hit, "slash", -1f);
                         else if (spr != null)
                         {
-                            Tween.SlashFx(fx, hit, UnityEngine.Random.Range(-50f, -20f), streak, big);   // 直線の筋＋着弾の衝撃線＋火花 (2026-09-16 / 2026-09-17)
+                            // 札ごとの当たりの形 (2026-09-22): 斬撃・牙・角・蔦・踏みつけ・呪文・灯・火種。多段は向きを交互に、最後の1発は大きく
+                            var pSprH = g.Battle != null ? g.Battle.PlayerSprite() : null;
+                            Vector2 fromP = pSprH != null ? Tween.CenterIn(pSprH, fx) : hit + new Vector2(-400f, 0f);
+                            Tween.PlayerHitFx(fx, hit, style, streak, big, hp != null ? hp.Index : 0, hp != null ? hp.Total : 1, fromP);
                             Stage.Flash("enemy" + ei);
                         }
                         // 急所: 筋と衝撃線が真鍮色 (big 扱い = 交差する2本目と針10) になり、真鍮の輪が広がる (旧: 星の絵 = 2026-09-17 ユーザー「星型がダサい」で撤去)
                         if (crit && !guardedE) Tween.RingBurst(fx, hit, PaperFx.BrassLight, 200f, 0.35f);
                         if (blocked > 0 && !shell && d.HpLoss > 0) Tween.IconBurst(fx, hit + new Vector2(-10f, 10f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, 0.7f), 90f);
                         if (capped || burrowCut > 0) Tween.RingBurst(fx, hit, new Color(PaperFx.InkSoft.r, PaperFx.InkSoft.g, PaperFx.InkSoft.b, 0.8f), 150f, 0.3f);
-                        Audio.Key("DamageDealt.player.swing");
+                        if (hp == null || !hp.Volley || hp.VolleyFirst) Audio.Key("DamageDealt.player.swing");
                         if (blocked > 0 && d.HpLoss <= 0) Audio.Key("DamageDealt.blocked");
-                        else Audio.Key(big ? "DamageDealt.player.big" : "DamageDealt.player");
-                        if (big && !guardedE) Stage.Shake(Mathf.Min(14f, Mathf.Max(6f, d.Amount * 0.4f)) * (crit ? 1.2f : 1f), 0.25f);
+                        else if (!volleyTail) Audio.Key(big ? "DamageDealt.player.big" : "DamageDealt.player");
+                        if (!volleyTail && !guardedE && (big || style == "stomp")) Stage.Shake(Mathf.Min(14f, Mathf.Max(6f, d.Amount * 0.4f)) * (crit ? 1.2f : 1f) * (style == "stomp" ? 1.3f : 1f), 0.25f);   // 踏みつけは小さくても揺れる
                         // ⑫ カメラ (2026-09-17): 大技は舞台がぐっと寄る。とどめ (戦闘を決めた一撃) はヒットストップ＝時間が一瞬凍って、大きく寄る
                         bool finishing = ctx != null && ctx.FinishingBlow;
                         if (finishing) { Tween.HitStop(0.12f, 0.3f); Stage.ZoomPunch(1.1f, 0.6f); Stage.Shake(12f, 0.35f); Tween.RingBurst(fx, hit, new Color(1f, 1f, 0.95f, 0.9f), 260f, 0.5f); }
-                        else if (big && !guardedE) Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
+                        else if (big && !guardedE && !volleyTail) Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
                         // 数字: 通った量は真鍮の紙、盾に全部吸われたら鋼青、0 は薄く。急所は大きく
                         Color numColor = d.Amount <= 0 ? UiKit.ColDim : (d.HpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;
                         Tween.Float(fx, pos, d.Amount.ToString(), numColor, crit ? 50 : (d.Amount >= 20 ? 46 : 36));
@@ -1591,7 +1671,13 @@ namespace DeckRogue.Game
                     _playHint = 0;
                     // ⑦ 手札 (2026-09-17): エナジーの輪が払った瞬間に跳ね、X の札は払った玉が輪から札の行き先へ飛んで「X = N」の判
                     try { ShowEnergyPaid(g, fx, def, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] energy " + e.Message); }
-                    if (atk)
+                    bool spell = def != null && def.Type == "spell";
+                    if (atk && spell)
+                    {   // 呪文は斧を振らない (2026-09-22 ユーザー裁定): 体の前で色の光がひと膨らみ＝詠唱。当たりは PlayerHitFx の spell/light
+                        var cSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
+                        if (cSpr != null) Tween.CastFx(fx, Tween.CenterIn(cSpr, fx), HitColor(CardHitStyle(def), def));
+                    }
+                    else if (atk)
                     {
                         Stage.PlayAnim("player", "attack");
                         var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;

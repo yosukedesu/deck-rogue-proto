@@ -267,10 +267,10 @@ namespace DeckRogue.Game
         /// <summary>斬撃 (2026-09-16 ユーザー「斬撃エフェクトをもっと豪華に。方向性は当初の直線のままで」→同日「2本に見える・ごてごてしすぎ。もっとスッキリ」):
         /// 直線の筋1本 (白い芯＋青緑の縁が振りの向きへ伸びて細くなり消える) ＋ 着弾の光 (衝撃線＝芯の閃光と細い針の放射。2026-09-17 ユーザー「星型がダサい」で8芒星を撤去) ＋ 火花5。残像・衝撃の輪はやめた。
         /// big (与ダメ 15 以上) は筋が 1.35 倍で、交差する2本目 (X) が 0.05 秒遅れて走り、火花8。絵は Art/fx/slash_streak・spark・glow (無ければ生成)</summary>
-        public static void SlashFx(RectTransform layer, Vector2 pos, float angle, Color color, bool big = false)
+        public static void SlashFx(RectTransform layer, Vector2 pos, float angle, Color color, bool big = false, float scale = 1f)
         {
             if (layer == null) return;
-            float len = (big ? 1.35f : 1f) * 340f;
+            float len = (big ? 1.35f : 1f) * 340f * scale;
             var white = new Color(1f, 1f, 1f, 1f);
             Streak(layer, pos, angle, color, len, 1f, 0.3f, 0f);
             if (big) Streak(layer, pos, angle + 90f, color, len * 0.9f, 0.9f, 0.3f, 0.05f);   // 交差 (X)
@@ -300,6 +300,137 @@ namespace DeckRogue.Game
         {
             Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.95f), big ? 120f : 90f, 1.2f, 0.4f, 0.1f, 0f, delay);
             After(delay, () => Needles(layer, pos, color, big ? 10 : 8, big ? 120f : 84f, angle));
+        }
+
+        /// <summary>
+        /// 自分の札の当たり (2026-09-22 ユーザー「攻撃エフェクトがどの攻撃でも同じ」→ 札の id と名前のキーワード＋タイプで形を選ぶ。敵の HitFx と対):
+        /// slash=斬撃 (斧。今までの SlashFx)・fang=牙 (上下から噛み合う2本)・horn=角の突き (自分の側から水平に刺さり、貫いた先へ抜ける)・
+        /// vine=蔦の鞭 (自分の側から山なりにしなって届き、先が弾ける)・stomp=踏みつけ (太い縦の筋＋地面の輪)・spell=魔力の破裂 (青緑の光が弾けて針が放射)・
+        /// light=灯の光 (暖色の閃光と立ちのぼる粒)・spark=火種 (小さな火花の炸裂)。
+        /// 多段は hitIndex で向きを交互に (偶数=右上から振り下ろし・奇数=右下から振り上げ)、最後の1発 (hitIndex==hitTotal-1・2発以上) は 1.2 倍。from=自分の絵の中心 (角・鞭の出どころ)
+        /// </summary>
+        public static void PlayerHitFx(RectTransform layer, Vector2 pos, string style, Color color, bool big, int hitIndex, int hitTotal, Vector2 from)
+        {
+            if (layer == null) return;
+            bool last = hitTotal > 1 && hitIndex == hitTotal - 1;
+            float scale = last ? 1.2f : 1f;
+            float sign = (hitIndex % 2 == 0) ? -1f : 1f;                       // 偶数=振り下ろし (角度マイナス)・奇数=振り上げ
+            float angle = sign * UnityEngine.Random.Range(22f, 48f);
+            var white = new Color(1f, 1f, 1f, 1f);
+            switch (style)
+            {
+                case "fang":
+                {   // 上下から噛み合う2本。多段は噛む向きを少し傾けて交互に
+                    float tilt = sign * 12f;
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.6f), 150f * scale, 0.4f, 1.0f, 0.14f, 0f, 0f);
+                    Streak(layer, pos + new Vector2(0f, 28f * scale), -64f + tilt, color, 220f * (big ? 1.3f : 1f) * scale, 1f, 0.26f, 0f, 1.3f);
+                    Streak(layer, pos + new Vector2(0f, -28f * scale), 64f + tilt, color, 220f * (big ? 1.3f : 1f) * scale, 1f, 0.26f, 0.03f, 1.3f);
+                    Impact(layer, pos, tilt, color, big || last, 0.05f);
+                    Sparks(layer, pos, color, big ? 8 : 5, tilt);
+                    break;
+                }
+                case "horn":
+                {   // 自分の側 (左) から水平に刺さる細い筋。貫いた先 (右) へ薄い筋が抜ける＝貫通の絵。多段は少し上下にずらす
+                    float dy = sign * 14f * (hitTotal > 1 ? 1f : 0f);
+                    float ang = -8f * sign;
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.6f), 130f * scale, 0.4f, 1.0f, 0.14f, 0f, 0f);
+                    Streak(layer, pos + new Vector2(-110f, dy), ang, color, 320f * (big ? 1.3f : 1f) * scale, 1f, 0.22f, 0f, 0.7f);
+                    Streak(layer, pos + new Vector2(60f, dy - 4f * sign), ang, new Color(color.r, color.g, color.b, color.a * 0.6f), 180f * scale, 0.8f, 0.2f, 0.05f, 0.45f);   // 貫いて抜ける
+                    Impact(layer, pos + new Vector2(0f, dy), ang, color, big || last, 0.04f);
+                    Sparks(layer, pos, color, big ? 8 : 5, 0f);
+                    break;
+                }
+                case "vine":
+                    Whip(layer, from, pos, color, sign, scale, big || last);
+                    break;
+                case "stomp":
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.95f, 0.8f), (big ? 260f : 200f) * scale, 0.3f, 1.2f, 0.18f, 0f, 0f);
+                    Streak(layer, pos + new Vector2(0f, 70f), -90f, color, 240f * (big ? 1.3f : 1f) * scale, 1f, 0.24f, 0f, 1.9f);
+                    Impact(layer, pos, -90f, color, big || last, 0.02f);
+                    RingBurst(layer, pos + new Vector2(0f, -46f), new Color(color.r, color.g, color.b, 0.75f), (big ? 240f : 180f) * scale, 0.34f);
+                    Sparks(layer, pos + new Vector2(0f, -30f), color, big ? 10 : 6, 90f);
+                    break;
+                case "spell":
+                {   // 魔力の破裂: 青緑の光が対象の中で膨らんで弾け、針が放射、粒が上へ
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(color.r, color.g, color.b, 0.85f), (big ? 260f : 200f) * scale, 0.25f, 1.35f, 0.26f, 0f, 0f);
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.97f, 0.9f), 110f * scale, 0.5f, 1.1f, 0.14f, 0f, 0.02f);
+                    After(0.04f, () => Needles(layer, pos, color, big || last ? 14 : 10, (big ? 130f : 100f) * scale, 90f));
+                    RingBurst(layer, pos, new Color(color.r, color.g, color.b, 0.7f), (big ? 220f : 170f) * scale, 0.36f);
+                    Sparks(layer, pos, color, big ? 9 : 6, 90f);
+                    break;
+                }
+                case "light":
+                {   // 灯の光: 暖色の閃光がひとつ大きく灯り、光の粒がゆっくり立ちのぼる (火花は散らさない)
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 0.95f, 0.78f, 0.9f), (big ? 280f : 220f) * scale, 0.3f, 1.3f, 0.3f, 0f, 0f);
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 1f, 0.97f, 0.95f), 120f * scale, 0.6f, 1.0f, 0.16f, 0f, 0f);
+                    After(0.03f, () => Needles(layer, pos, color, big || last ? 12 : 8, (big ? 120f : 92f) * scale, 90f));
+                    Motes(layer, pos, new Color(1f, 0.96f, 0.82f, 1f), big ? 8 : 5, 80f * scale);
+                    break;
+                }
+                case "spark":
+                {   // 火種: 小さな橙の炸裂＝細かい火花が四方へ、短い針、小さな輪
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(color.r, color.g, color.b, 0.9f), 120f * scale, 0.3f, 1.2f, 0.16f, 0f, 0f);
+                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 0.98f, 0.9f, 0.95f), 70f * scale, 0.6f, 1.0f, 0.1f, 0f, 0f);
+                    After(0.02f, () => Needles(layer, pos, color, 6, 60f * scale, angle));
+                    RingBurst(layer, pos, new Color(color.r, color.g, color.b, 0.7f), 110f * scale, 0.26f);
+                    for (int i = 0; i < 3; i++) Sparks(layer, pos, color, big ? 5 : 4, i * 120f);
+                    break;
+                }
+                default:
+                    SlashFx(layer, pos, angle, color, big, scale);
+                    break;
+            }
+        }
+
+        /// <summary>蔦の鞭: from から to へ山なり (制御点は上) の曲線に沿って短い筋を根元から先へ順に置き (しなって届く)、先端で弾ける。sign で山の向き (多段は上下交互)</summary>
+        static void Whip(RectTransform layer, Vector2 from, Vector2 to, Color color, float sign, float scale, bool big)
+        {
+            if (layer == null) return;
+            var start = from + new Vector2(30f, 10f);
+            var mid = (start + to) * 0.5f + new Vector2(0f, -sign * 150f) + new Vector2(0f, 60f);   // 振り下ろし (sign<0) は上へ膨らむ
+            int n = 8;
+            Vector2 Bez(float t) { float u = 1f - t; return u * u * start + 2f * u * t * mid + t * t * to; }
+            for (int i = 1; i <= n; i++)
+            {
+                float t0 = (i - 1) / (float)n, t1 = i / (float)n;
+                var a = Bez(t0); var b = Bez(t1);
+                var seg = b - a; float len = seg.magnitude; float ang = Mathf.Atan2(seg.y, seg.x) * Mathf.Rad2Deg;
+                float thick = 0.5f + 0.9f * (i / (float)n);
+                float alpha = 0.35f + 0.65f * (i / (float)n);
+                Streak(layer, a + seg * 0.5f, ang, color, len * 1.35f, alpha, 0.2f, 0.016f * (i - 1), thick * scale);
+            }
+            float tipDelay = 0.016f * (n - 1) + 0.02f;
+            var tipSeg = Bez(1f) - Bez(0.85f); float tipAng = Mathf.Atan2(tipSeg.y, tipSeg.x) * Mathf.Rad2Deg;
+            Impact(layer, to, tipAng, color, big, tipDelay);
+            After(tipDelay, () => { Sparks(layer, to, color, big ? 8 : 5, tipAng); RingBurst(layer, to, new Color(color.r, color.g, color.b, 0.6f), 120f * scale, 0.26f); });
+        }
+
+        /// <summary>光の粒: pos の周りから n 個の小さな光がゆっくり立ちのぼって消える (灯の当たり)</summary>
+        static void Motes(RectTransform layer, Vector2 pos, Color color, int n, float rise)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                var sp = UiKit.NewRect("mote", layer);
+                sp.anchorMin = sp.anchorMax = new Vector2(0.5f, 0.5f);
+                float sz = UnityEngine.Random.Range(10f, 22f);
+                sp.sizeDelta = new Vector2(sz, sz);
+                var p0 = pos + new Vector2(UnityEngine.Random.Range(-50f, 50f), UnityEngine.Random.Range(-30f, 20f));
+                sp.anchoredPosition = p0;
+                var img = sp.gameObject.AddComponent<Image>();
+                img.sprite = ThemeFx.Glow(); img.raycastTarget = false; img.color = color;
+                float dur = UnityEngine.Random.Range(0.4f, 0.7f); float drift = UnityEngine.Random.Range(-20f, 20f);
+                Run(dur, k => { if (sp == null) return; sp.anchoredPosition = p0 + new Vector2(drift * k, rise * Apply(Ease.OutQuad, k)); img.color = new Color(color.r, color.g, color.b, color.a * (k < 0.3f ? k / 0.3f : 1f - (k - 0.3f) / 0.7f)); }, Ease.Linear, () => { if (sp != null) UnityEngine.Object.Destroy(sp.gameObject); });
+            }
+        }
+
+        /// <summary>詠唱 (2026-09-22): 呪文は斧を振らず、体の前で色の光がひと膨らみして輪が広がる。pos=自分の絵の中心</summary>
+        public static void CastFx(RectTransform layer, Vector2 pos, Color color)
+        {
+            if (layer == null) return;
+            Pop(layer, pos + new Vector2(20f, 10f), ThemeFx.Glow(), new Color(color.r, color.g, color.b, 0.8f), 150f, 0.3f, 1.2f, 0.28f, 0f, 0f);
+            Pop(layer, pos + new Vector2(20f, 10f), ThemeFx.Glow(), new Color(1f, 1f, 0.97f, 0.9f), 70f, 0.5f, 1.0f, 0.16f, 0f, 0.02f);
+            RingBurst(layer, pos + new Vector2(20f, 0f), new Color(color.r, color.g, color.b, 0.6f), 130f, 0.3f);
+            Motes(layer, pos + new Vector2(20f, 0f), new Color(color.r, color.g, color.b, 0.9f), 4, 50f);
         }
 
         /// <summary>衝撃線: n 本の細い針が中心から放射状に伸びて (OutQuad)、後半で消える。振りの向きの針は少し長い</summary>
