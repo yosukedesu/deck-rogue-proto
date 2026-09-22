@@ -1,4 +1,5 @@
-// RewardScreen.cs — カード報酬とレリック報酬 (M3・2026-09-07): 候補を大きなカードで並べ、クリックで取る
+// RewardScreen.cs — カード報酬とレリック報酬 (M3・2026-09-07): 候補を大きなカードで並べる。札はタップで拡大 (説明)、取るのは「取る」ボタンだけ
+// (2026-09-22 友人ラン「説明を見ようとしてうっかり取ってしまう」＝ギアの札と同じ作法・Web プロトも元からボタンだけ)
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -83,7 +84,7 @@ namespace DeckRogue.Game
                 var cv = CardView.Build(cell, ci, null, true, false, "reward-card");
                 cv.localScale = Vector3.one * scale;
                 cv.anchoredPosition = new Vector2(0f, 35f);
-                HoverRaise(cv, delegate { Audio.Ui("pick_card"); g.Do(new RunCommand_PickReward { Index = idx }); });
+                HoverRaise(cv, delegate { Audio.Ui("click"); CardPopup.Open(g, ci, null); });   // タップ＝拡大 (説明)。取るのは下の「取る」だけ (2026-09-22)
                 CardPopup.Attach(g, cv, ci, null, true);
                 var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_card"); g.Do(new RunCommand_PickReward { Index = idx }); }, 18, true, PaperFx.BrassLight);
                 var le = b.GetComponent<LayoutElement>();

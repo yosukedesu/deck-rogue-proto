@@ -116,7 +116,9 @@ namespace DeckRogue.Game
             var items = new List<KeyValuePair<string, Action>>();
             if (g.Rs != null && g.Rs.Phase != RunPhases.Map) items.Add(new KeyValuePair<string, Action>("マップを見る", delegate { g.MenuOpen = false; g.ViewMap = true; g.ViewDeck = false; g.Rebuild(); }));
             // デッキ一覧 (2026-09-16 ユーザー「メニューにデッキ一覧ボタンを追加」): 戦闘中は上部バーにデッキのボタンが無いので、ここが唯一の入口
-            if (g.Rs != null) items.Add(new KeyValuePair<string, Action>(g.ViewDeck ? "デッキ一覧を閉じる" : "デッキ一覧（" + g.Rs.Deck.Count + "枚）", delegate { g.MenuOpen = false; g.ViewDeck = !g.ViewDeck; g.ViewMap = false; g.Rebuild(); }));
+            if (g.Rs != null) items.Add(new KeyValuePair<string, Action>(g.ViewDeck ? "デッキ一覧を閉じる" : "デッキ一覧（" + g.Rs.Deck.Count + "枚）", delegate { g.MenuOpen = false; g.ViewDeck = !g.ViewDeck; g.ViewRelics = false; g.ViewMap = false; g.Rebuild(); }));
+            // レリック一覧 (2026-09-22 友人ラン「持っているレリック一覧をデッキ一覧みたいに出せると嬉しい」＝スマホは上部バーの小さな絵が押しづらい)
+            if (g.Rs != null) items.Add(new KeyValuePair<string, Action>(g.ViewRelics ? "レリック一覧を閉じる" : "レリック一覧（" + g.Rs.Relics.Count + "個）", delegate { g.MenuOpen = false; g.ViewRelics = !g.ViewRelics; g.ViewDeck = false; g.ViewMap = false; g.Rebuild(); }));
             if (combat) items.Add(new KeyValuePair<string, Action>(g.ShowLog ? "ログを閉じる" : "戦闘ログ", delegate { g.MenuOpen = false; g.ShowLog = !g.ShowLog; g.Rebuild(); }));
             items.Add(new KeyValuePair<string, Action>(Feedback.Notes.Count > 0 ? "メモを書く（" + Feedback.Notes.Count + "件）" : "メモを書く", delegate { g.MenuOpen = false; Feedback.MemoOpen = true; g.Rebuild(); }));
             items.Add(new KeyValuePair<string, Action>("レポートを書き出す", delegate { g.MenuOpen = false; FeedbackUi.ExportNow(g); }));
@@ -248,6 +250,59 @@ namespace DeckRogue.Game
                 var le = tg.gameObject.AddComponent<LayoutElement>(); le.ignoreLayout = true;
                 UiKit.Anchor(tg, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-232f - 64f, -18f - 44f), new Vector2(-64f, -18f));   // しおり (右端 48) と重ねない
             }
+        }
+
+        /// <summary>持っているレリックの一覧 (2026-09-22 友人ラン「レリック一覧をデッキ一覧みたいに出せると嬉しい」＝スマホは上部バーの小さな絵がタップしづらい)。
+        /// ≡ の「レリック一覧」から。絵 (64)＋名前＋レア度＋本文の紙の札を並べる (持った順)。脈打つ欠片は残り回数。用語は札を押すと説明</summary>
+        public static void RelicViewer(GameRoot g, RectTransform root)
+        {
+            var run = g.Rs;
+            var inner = BattleScreen.Modal(root, 1500f, 820f, "relicViewer");
+            UiKit.Head(inner, "レリック " + run.Relics.Count + "個", 24);
+            var content = UiKit.Scroll(inner, true, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.06f), 12, 12);
+            float mh = UiKit.Phone ? 0f : 360f;
+            UiKit.Le(UiKit.ScrollRoot(content), -1f, mh, -1f, mh, -1f, 1f);
+            var vg = content.GetComponent<VerticalLayoutGroup>();
+            if (vg != null) UnityEngine.Object.DestroyImmediate(vg);
+            var grid = content.gameObject.AddComponent<GridLayoutGroup>();
+            float cellW = UiKit.Phone ? 372f : 452f, cellH = UiKit.Phone ? 142f : 136f;   // スマホは本文3行ぶん (古根の杯が2行で切れた)
+            grid.cellSize = new Vector2(cellW, cellH);
+            grid.spacing = new Vector2(12f, 12f);
+            grid.padding = new RectOffset(10, 10, 8, 14);
+            grid.childAlignment = TextAnchor.UpperLeft;
+            if (run.Relics.Count == 0)
+            {
+                var none = UiKit.Txt(inner, "（まだ持っていない）", 18, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
+                UiKit.Le(none, -1f, 40f, -1f, 40f);
+            }
+            for (int i = 0; i < run.Relics.Count; i++)
+            {
+                string id = run.Relics[i];
+                RelicDef rd = null;
+                try { rd = Content.GetRelicDef(id); } catch (Exception) { }
+                var cell = UiKit.NewRect("relic-" + id, content);
+                var edge = PaperFx.Sheet(cell, PaperFx.Panel, "edge", PaperFx.RarityEdge(rd != null ? rd.Rarity : "common"));
+                UiKit.Stretch(edge.rectTransform, -3f, -3f, -3f, -3f);
+                edge.raycastTarget = false;
+                var paper = PaperFx.Sheet(cell, PaperFx.Panel, "paper");
+                UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
+                var art = RelicArt(cell, id, 64f);
+                art.rectTransform.anchorMin = art.rectTransform.anchorMax = new Vector2(0f, 0.5f);
+                art.rectTransform.anchoredPosition = new Vector2(48f, 0f);
+                int? left = rd != null ? Run.RelicChargesLeft(run, id) : null;   // 脈打つ欠片の残り回数 (2026-09-18)
+                var name = UiKit.Deco(cell, rd != null ? rd.Name : id, 18, PaperFx.Ink, TextAnchor.MiddleLeft);
+                UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(92f, -36f), new Vector2(-10f, -8f));
+                name.textWrappingMode = TextWrappingModes.NoWrap; name.overflowMode = TextOverflowModes.Ellipsis;
+                var sub = UiKit.Txt(cell, (rd != null ? CardText.RarityLabel(rd.Rarity) : "") + (left != null ? "  残り" + left + "回" : ""), 13, UiKit.ColGoldInk, TextAnchor.MiddleLeft);
+                UiKit.Anchor(sub.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(92f, -54f), new Vector2(-10f, -36f));
+                var desc = UiKit.Txt(cell, rd != null ? rd.Description : "", 14, PaperFx.Ink, TextAnchor.UpperLeft);
+                desc.textWrappingMode = TextWrappingModes.Normal; desc.overflowMode = TextOverflowModes.Ellipsis;
+                UiKit.Anchor(desc.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(92f, 6f), new Vector2(-10f, -54f));
+                desc.raycastTarget = false; name.raycastTarget = false; sub.raycastTarget = false;
+                string tip = rd != null ? "<b>" + rd.Name + "</b>" + (left != null ? "  残り" + left + "回" : "") + "\n" + rd.Description : id;
+                Tooltip.Attach(paper.gameObject, delegate { return tip; });   // 長い本文が切れた時と用語の説明はここ (スマホは固定パネル)
+            }
+            BattleScreen.CenteredButton(inner, "閉じる", delegate { g.ViewRelics = false; g.Rebuild(); }, 18, 260f, 50f);
         }
 
         /// <summary>デッキから選ぶ画面の一覧の置き場 (2026-09-16 案A): スマホは上部バーの下から下の帯 (チェック・確定・戻る) の上まで幅いっぱい。PC は従来 (幅 1520・見出しの下)</summary>

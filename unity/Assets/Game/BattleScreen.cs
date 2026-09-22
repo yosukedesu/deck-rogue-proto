@@ -1044,13 +1044,14 @@ namespace DeckRogue.Game
             // 灯り (2026-09-21): 残りと育ち
             var left = DollUi.LifeLeft(cur, d);
             int grow = DollUi.Growth(cur, d);
-            sb.Append("\n<color=#634410>灯り: ").Append(left == null ? "尽きない" : "あと" + left.Value + "ターン（点灯したターンを含む）").Append("</color>");
-            sb.Append("\n<color=#4e4c55>点灯してから1ターンごとにダメージとブロック+1（いま火勢+").Append(grow).Append("）。写し灯などで写すと残りの灯りを写す</color>");
+            // 語彙 (2026-09-22 友人ラン): 寿命は「期限」。資源の「灯」と同じ字を使わない＝「灯が減ると人形が消える」と読ませない
+            sb.Append("\n<color=#634410>出した瞬間に1回動く（点灯）。").Append(left == null ? "期限なし（消えない）" : "あと" + left.Value + "ターンで消える（出したターンを含む）").Append("</color>");
+            sb.Append("\n<color=#4e4c55>出してから1ターンごとにダメージとブロック+1（いま火勢+").Append(grow).Append("）。写し灯などで写すと残りの期限も写す。灯（資源）とは別＝灯が減っても消えない</color>");
             sb.Append("\n<color=#4e4c55>敵の「人形壊し」で壊れる。灯の捧げの対価に選べる</color>");
             if (g.Pending != null && g.Pending.NextNeed() == "permanent")
             {
                 bool ok = g.Pending.Card == null || DollUi.Eligible(cur, g.Pending.Card.Def, d);
-                sb.Append(ok ? "\n<b>押すとこの人形を選ぶ</b>" : "\n<color=#9c3a2a>灯りが尽きない人形には使えない</color>");
+                sb.Append(ok ? "\n<b>押すとこの人形を選ぶ</b>" : "\n<color=#9c3a2a>期限なしの人形には使えない</color>");
             }
             return sb.ToString();
         }
@@ -1509,7 +1510,7 @@ namespace DeckRogue.Game
                 var lt = UiKit.Deco(chip, left == null ? "∞" : "あと" + left.Value, 11, left != null && left.Value <= 1 ? UiKit.Hex("#a33a30") : PaperFx.InkSoft, TextAnchor.MiddleRight);
                 UiKit.Anchor(lt.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-48f, 0f), new Vector2(-6f, 0f));
                 lt.textWrappingMode = TextWrappingModes.NoWrap;
-                ptip += "\n灯り: " + (left == null ? "尽きない" : "あと" + left.Value + "ターン") + "・火勢+" + DollUi.Growth(st, q);
+                ptip += "\n" + (left == null ? "期限なし" : "あと" + left.Value + "ターンで消える") + "・火勢+" + DollUi.Growth(st, q);
             }
             Tooltip.Attach(chip.gameObject, delegate { return ptip; });
         }

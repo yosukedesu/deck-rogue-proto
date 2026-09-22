@@ -109,6 +109,7 @@ namespace DeckRogue.Game
         public string ViewPile;
         /// <summary>ラン画面のデッキ一覧モーダル (M3)</summary>
         public bool ViewDeck;
+        public bool ViewRelics;   // ≡ の「レリック一覧」(2026-09-22 友人ラン「持っているレリック一覧をデッキ一覧みたいに」)
         /// <summary>マップの常時閲覧 (2026-09-12 ユーザー「マップは常に見れるようにして」): 上部バーの「マップ」で、どの画面の上にも読み取り専用の地図を重ねる</summary>
         public bool ViewMap;
         /// <summary>スマホの「≡」メニューを開いているか (2026-09-14)</summary>
@@ -274,6 +275,7 @@ namespace DeckRogue.Game
             ModeChoiceUid = null;
             ViewPile = null;
             ViewDeck = false;
+            ViewRelics = false;
             ViewMap = false;
             SubMode = null;
             GridPickKey = null; GridPickIndex = -1;
@@ -312,7 +314,7 @@ namespace DeckRogue.Game
                     Presenter.ShowOutcome(this, endedRs, finalSnapshot, delegate
                     {
                         if (!ReferenceEquals(Rs, endedRs)) return;   // その間に別のコマンドが進んでいたら何もしない
-                        Pending = null; ViewPile = null; ViewDeck = false; ViewMap = false; SubMode = null;
+                        Pending = null; ViewPile = null; ViewDeck = false; ViewRelics = false; ViewMap = false; SubMode = null;
                         Rebuild();
                         Presenter.Reset();
                     });
@@ -513,7 +515,7 @@ namespace DeckRogue.Game
         {
             Doodles = SaveGame.DoodlesFromToken(sf.DoodlesUnity); DoodleMode = false; DoodlePen = 0;
             Pending = null; PreferredTarget = -1; WorkshopA = -1; WorkshopB = -1; ShopMode = null; EventChoiceIndex = -1;
-            RelicChoosePicks.Clear(); ViewPile = null; ViewDeck = false; ViewMap = false; ShowLog = false; SubMode = null; MenuOpen = false; Confirm = null;
+            RelicChoosePicks.Clear(); ViewPile = null; ViewDeck = false; ViewRelics = false; ViewMap = false; ShowLog = false; SubMode = null; MenuOpen = false; Confirm = null;
             Feedback.Restore(sf);
             Rs = sf.Run;
             _lastAct = Rs.Act;
@@ -649,7 +651,7 @@ namespace DeckRogue.Game
                 {
                     CardInstance target = null;
                     foreach (var p in st.Player.Permanents) if (p.Uid == uid) { target = p; break; }
-                    if (target != null && !DollUi.Eligible(st, Pending.Card.Def, target)) { Notice = "灯りが尽きない人形には使えない"; Rebuild(); return; }
+                    if (target != null && !DollUi.Eligible(st, Pending.Card.Def, target)) { Notice = "期限なしの人形には使えない"; Rebuild(); return; }
                 }
                 Pending.PermanentUid = uid;
                 SubmitIfReady();
@@ -769,6 +771,7 @@ namespace DeckRogue.Game
                 var over = Battle != null && Battle.UiLayer != null ? Battle.UiLayer : ScreenRoot;
                 if (ViewMap) MapScreen.Overlay(this, over);
                 else if (ViewDeck) RunUi.DeckViewer(this, over);   // ≡ の「デッキ一覧」(2026-09-16)。他の画面と同じく地図が優先
+                else if (ViewRelics) RunUi.RelicViewer(this, over);   // ≡ の「レリック一覧」(2026-09-22)
                 if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, over);
                 if (MenuOpen) RunUi.Menu(this, over);
                 if (SettingsOpen) SettingsUi.Build(this, over);
@@ -777,7 +780,7 @@ namespace DeckRogue.Game
             }
             // タイトルとマップも新画面 (M3)
             if (Content.IsLoaded && Rs == null) { TitleScreen.Build(this, ScreenRoot); if (SettingsOpen) SettingsUi.Build(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
-            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot); if (MenuOpen) RunUi.Menu(this, ScreenRoot); if (SettingsOpen) SettingsUi.Build(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
+            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); if (ViewRelics) RunUi.RelicViewer(this, ScreenRoot); if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot); if (MenuOpen) RunUi.Menu(this, ScreenRoot); if (SettingsOpen) SettingsUi.Build(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
             if (Content.IsLoaded)
             {
                 bool built = true;
@@ -799,6 +802,7 @@ namespace DeckRogue.Game
                     FeedbackUi.RateButton(this, ScreenRoot);                 // 決着直後のフェーズだけ「評価」を直せる
                     if (ViewMap) MapScreen.Overlay(this, ScreenRoot);      // 読み取り専用の地図を重ねる
                     else if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot);   // 画面の上に重ねる (最後に組む)
+                    else if (ViewRelics) RunUi.RelicViewer(this, ScreenRoot);   // ≡ の「レリック一覧」(2026-09-22)
                     if (Feedback.ShouldShowRating(Rs)) FeedbackUi.RatingDialog(this, ScreenRoot);   // 戦闘直後の評価 (1回だけ聞く)
                     if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot);
                     if (MenuOpen) RunUi.Menu(this, ScreenRoot);

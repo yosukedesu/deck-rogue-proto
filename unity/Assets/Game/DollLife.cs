@@ -86,11 +86,11 @@ namespace DeckRogue.Game
             return true;
         }
 
-        /// <summary>残りの灯りの一言: 「あとN」「尽きない」</summary>
+        /// <summary>残りの期限の一言: 「あとN」「期限なし」(語彙は 2026-09-22 に「灯り」→「期限」。資源の「灯」と同じ字を使わない)</summary>
         public static string LifeText(GameState st, CardInstance p)
         {
             var left = LifeLeft(st, p);
-            return left == null ? "尽きない" : "あと" + left.Value;
+            return left == null ? "期限なし" : "あと" + left.Value;
         }
     }
 }

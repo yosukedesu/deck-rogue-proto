@@ -420,7 +420,7 @@ namespace DeckRogue.Game
         /// <summary>灯が消える (人形壊し・灯の捧げ): 光が抜けて灰になり、頭から崩れる (倒れた敵と同じ _Dissolve)。以後の組み直しでは描かない</summary>
         public void KillDoll(GameRoot g, string uid, bool sacrificed) { KillDoll(g, uid, sacrificed, null); }
 
-        /// <summary>stamp=判の文言を差し替える (灯りが尽きた「灯が尽きた」2026-09-21。null なら壊し/捧げの既定)</summary>
+        /// <summary>stamp=判の文言を差し替える (期限切れ「期限切れ」2026-09-21。語彙は 2026-09-22 に灯り→期限。null なら壊し/捧げの既定)</summary>
         public void KillDoll(GameRoot g, string uid, bool sacrificed, string stamp)
         {
             if (uid == null || _dollGone.Contains(uid)) return;

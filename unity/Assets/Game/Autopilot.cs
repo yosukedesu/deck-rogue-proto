@@ -227,7 +227,7 @@ namespace DeckRogue.Game
         ///   enemy=<encounterId or enemyId> (combat)  event=<eventId>  pick=<idx[,idx]> (工房の素材／報酬の選択枠)  submode=forge (焚き火)  shopmode=upgrade|remove
         ///   fire=1 (確認の窓で最初の候補を発動してコマ送り。fireshots=枚数・fireevery=Nフレームごと。2026-09-17)
         ///   endplay=1 (手番を終えて敵フェーズを演出付きでコマ送り。endshots=枚数・endevery=Nフレームごと。2026-09-17)
-        ///   viewmap=1  viewdeck=1  log=1  name=<shot名>  wait=<秒> (撮る前に待つ。ドローの演出を避ける。2026-09-19)
+        ///   viewmap=1  viewdeck=1  viewrelics=1 (≡ のレリック一覧。2026-09-22)  tip=enemy|doll (説明パネル)  log=1  name=<shot名>  wait=<秒> (撮る前に待つ。ドローの演出を避ける。2026-09-19)
         /// act/deck/relics/hp/gold/difficulty のどれかがあればチェックポイント開始 (CreateDebugCheckpointRun)、無ければ通常開始
         /// </summary>
         IEnumerator StateJump(GameRoot g, string spec)
@@ -449,6 +449,7 @@ namespace DeckRogue.Game
             }
             if (Get("viewmap") == "1") g.ViewMap = true;
             if (Get("viewdeck") == "1") g.ViewDeck = true;
+            if (Get("viewrelics") == "1") g.ViewRelics = true;
             if (Get("upgraded") == "1") g.ShowUpgraded = true;   // 一覧の「鍛えた後を見る」(2026-09-16)
             if (Get("gridpick") != null) { var gp = Get("gridpick").Split(':'); int gi; if (gp.Length == 2 && int.TryParse(gp[1], out gi)) g.SetGridPick(gp[0], gi); }   // gridpick=forge:2 = 押した札
             if (Get("log") == "1") g.ShowLog = true;
@@ -672,6 +673,15 @@ namespace DeckRogue.Game
                 var pan = g.Anchor("enemy0");
                 var body = BattleScreen.EnemyTip(g, 0);
                 if (pan != null && body != null) Tooltip.ShowPinned(body, pan.gameObject);
+                yield return null;
+            }
+            if (Get("tip") == "doll" && g.Rs != null && g.Rs.Combat != null && g.Battle != null)
+            {   // tip=doll: 舞台の最初の人形をタップした説明パネル (2026-09-22 友人ラン「何する人形なのか」)
+                string duid = null;
+                foreach (var p in g.Rs.Combat.Player.Permanents) if (DollUi.IsDoll(p)) { duid = p.Uid; break; }
+                var dspr = duid != null ? g.Battle.DollSprite(duid) : null;
+                var dbody = duid != null ? BattleScreen.DollTip(g, duid) : null;
+                if (dspr != null && dbody != null) Tooltip.ShowPinned(dbody, dspr.parent.gameObject);
                 yield return null;
             }
             int popupIdx;

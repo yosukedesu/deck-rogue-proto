@@ -41,7 +41,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { cardNeedsTarget, damageBreakdown, displayedInflict, dollEffectAmount, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, hearthSparkMax, isDoll, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { DOLL_GROWTH_EFFECTS, cardNeedsTarget, damageBreakdown, displayedInflict, dollEffectAmount, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, hearthSparkMax, isDoll, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags } from '../engine/traits.ts'
@@ -98,7 +98,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     addCardToHand: `${e.summonId ? getCardDef(e.summonId).name : ''}${a}枚を手札に加える(この戦闘限り)${xHitsSuffix(e)}`, empowerShivs: `【常在】骨のナイフの与ダメ+${a}`,
     dealDamagePerNegStrength: `対象の威圧×${a}追加ダメ`, dealDamagePerWeak: `対象の威圧×${a}追加ダメ`, retrieveFromExhaust: '消滅置き場から1枚を手札へ(この戦闘中0E)',
     playFromExhaust: '消滅置き場から1枚を直接プレイ', summonPermanent: `${e.summonId ? getCardDef(e.summonId).name : ''}トークン${a}体を召喚${e.condition?.targetDead === true ? '(戦闘が続いていれば。最後の1体では無駄)' : ''}`,
-    duplicateRetainers: '場の従者1体につき同じ従者を1体召喚(複製は複製を産まず、複製同士は互いの登場に反応しない)', sacrificeRetainer: '場の従者1体を選んで破壊(要permanentUid)', copyRetainer: `人形1体を選び同じ人形を${a}体出す(残りの灯りを写す。要permanentUid)`, copyLastRetainer: `最後に点灯した人形と同じ人形を${a}体出す(残りの灯りを写す)`, twinNextRetainer: `次に出す人形${a}体が2体になる(持ち越す)`, extendRetainerLife: `人形1体を選び灯りを${a}ターン継ぐ(要permanentUid)`, persistRetainer: '人形1体を選び灯りが尽きなくなる(要permanentUid)', triggerRetainersNow: '号令: 場の人形の効果をトリガーを問わず(登場ごとを除く)今すぐ1回ずつ解決(アンセム込み)', activateEnteredRetainer: '(旧・駆けつけ。2026-09-20 に白共通ルール「点灯」へ格上げ=この効果は何もしない)',
+    duplicateRetainers: '場の従者1体につき同じ従者を1体召喚(複製は複製を産まず、複製同士は互いの登場に反応しない)', sacrificeRetainer: '場の従者1体を選んで破壊(要permanentUid)', copyRetainer: `人形1体を選び同じ人形を${a}体出す(残りの期限も写す。要permanentUid)`, copyLastRetainer: `最後に点灯した人形と同じ人形を${a}体出す(残りの期限も写す)`, twinNextRetainer: `次に出す人形${a}体が2体になる(持ち越す)`, extendRetainerLife: `人形1体を選び期限を${a}ターン延ばす(要permanentUid)`, persistRetainer: '人形1体を選び期限を無くす(消えなくなる。要permanentUid)', triggerRetainersNow: '号令: 場の人形の効果をトリガーを問わず(登場ごとを除く)今すぐ1回ずつ解決(アンセム込み)', activateEnteredRetainer: '(旧・駆けつけ。2026-09-20 に白共通ルール「点灯」へ格上げ=この効果は何もしない)',
   }
   const trig: Record<string, string> = {
     // 置物文脈の onPlay は「登場時」— 無印だと持続効果に見える (2026-08-30 Opus緑ランの誤読対処)
@@ -130,7 +130,7 @@ function cardLine(def: CardDef): string {
     def.exhaustCost ? `消滅コスト${def.exhaustCost}` : '',
     def.lightCost ? `灯コスト${def.lightCost}(エナジーと別に払う。足りなければプレイ不可)` : '',
     def.necroCost !== undefined ? `💀亡骸プレイ${def.necroCost}E(消滅置き場から一度だけ)` : '',
-    def.retainer ? `従者。灯り${def.lifePersist === true ? 'は尽きない' : `${def.life ?? 3}ターン(点灯したターンを含む)`}。火勢: 点灯してから1ターンごとにダメージとブロック+1` : '',
+    def.retainer ? `人形。出した瞬間に1回動く。${def.lifePersist === true ? '期限なし' : `期限${def.life ?? 3}ターン(出したターンを含む)`}${def.effects.some((e) => e.amount !== undefined && DOLL_GROWTH_EFFECTS.has(e.effect)) ? '。1ターンごとにダメージとブロック+1' : ''}` : '',
     def.fusionCatalyst !== undefined ? `⚗触媒:素材にすると結果が${({ cheaper: 'コスト−1(0Eまで)', echo: 'プレイ時効果を2回解決', retain: '保持を持つ', aoe: '単体ダメージが全体に' } as Record<string, string>)[def.fusionCatalyst]}` : '',
     def.echo === true ? '🔁反復内蔵(効果を2回解決)' : '',
   ].filter(Boolean).join('・')
@@ -251,9 +251,9 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'RetainersDuplicated') L.push(` 🏳️分列: 従者${e.count}体が複製された`)
       else if (e.type === 'RetainersTriggered') L.push(` 📯号令: 人形の効果を延べ${e.count}回解決した（トリガーを問わず）`) // count は延べ回数 (Opus 火種C「人形27体」)
       else if (e.type === 'RetainerRushed') L.push(` 🕯️点灯: ${cname(e.cardId)}が出た瞬間に1回動いた`)
-      else if (e.type === 'RetainerExpired') L.push(` 🕯️灯が尽きた: ${cname(e.cardId)}が消えた`)
-      else if (e.type === 'RetainerCopied') L.push(` 🪞写し: ${cname(e.cardId)}をコピーした(残りの灯りを写す)`)
-      else if (e.type === 'RetainerLifeExtended') L.push(e.persist === true ? ` ✨永遠の灯: ${cname(e.cardId)}の灯りは尽きなくなった` : ` 🔥継ぎ火: ${cname(e.cardId)}の灯りを${e.amount}ターン継いだ`)
+      else if (e.type === 'RetainerExpired') L.push(` 🕯️期限切れ: ${cname(e.cardId)}が消えた`)
+      else if (e.type === 'RetainerCopied') L.push(` 🪞写し: ${cname(e.cardId)}をコピーした(残りの期限も写す)`)
+      else if (e.type === 'RetainerLifeExtended') L.push(e.persist === true ? ` ✨永遠の灯: ${cname(e.cardId)}の期限が無くなった(消えなくなった)` : ` 🔥継ぎ火: ${cname(e.cardId)}の期限を${e.amount}ターン延ばした`)
       else if (e.type === 'LightGained') L.push(` 🕯️灯+${e.amount}（${({ heal: '回復', retainer: '人形の登場', passive: '灯匠', card: 'カード', carry: '残り火' } as Record<string, string>)[e.source] ?? e.source}）`)
       else if (e.type === 'LightDischarged') L.push(` 🕯️灯${e.spent}を放出`) // 火床は払った分だけ (Opus 火種B「全て」が嘘)
       else if (e.type === 'LightSpent') L.push(` 🕯️灯-${e.amount}（${cname(e.cardId)}）`)
@@ -350,7 +350,7 @@ function renderBattle(s: GameState, logFrom: number): string {
   if (hasFx('copyRetainer') || hasFx('extendRetainerLife') || hasFx('persistRetainer')) {
     const cands = p.permanents.filter(isDoll).map((c) => {
       const left = dollLifeLeft(s, c)
-      return `[${c.uid}] ${c.def.name}(灯り${left === null ? '尽きない' : `あと${left}`}${dollGrowth(s, c) > 0 ? `・火勢+${dollGrowth(s, c)}` : ''})`
+      return `[${c.uid}] ${c.def.name}(${left === null ? '期限なし' : `あと${left}ターン`}${dollGrowth(s, c) > 0 ? `・火勢+${dollGrowth(s, c)}` : ''})`
     })
     L.push(`人形を選ぶ札の対象候補(permanentUid): ${cands.join(' ') || 'なし(人形がいないとプレイ不可)'} ※継ぎ火・永遠の灯は期限なしの人形には効かない`)
   }
@@ -383,7 +383,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       if (!isDoll(c)) return ''
       const left = dollLifeLeft(s, c)
       const g = dollGrowth(s, c)
-      return `【灯り${left === null ? '尽きない' : `あと${left}`}${g > 0 ? `・火勢+${g}` : ''}】`
+      return `【${left === null ? '期限なし' : `あと${left}ターン`}${g > 0 ? `・火勢+${g}` : ''}】`
     }
     // 鏡の灯籠 (2026-09-21 Opus B「写す相手が居ないと黙って何も起きない」): 人形が0体なら注記
     const mirrorNote = (c: (typeof p.permanents)[number]): string =>

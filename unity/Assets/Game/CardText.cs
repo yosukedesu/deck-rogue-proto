@@ -159,11 +159,11 @@ namespace DeckRogue.Game
             { "addCardToHand", "トークンN枚を手札へ" },
             { "duplicateRetainers", "場の従者を1体ずつ複製" },
             { "sacrificeRetainer", "従者1体を選んで破壊" },
-            { "copyRetainer", "人形1体を選び同じ人形をN体出す（残りの灯りを写す）" },
-            { "copyLastRetainer", "最後に点灯した人形と同じ人形をN体出す（残りの灯りを写す）" },
+            { "copyRetainer", "人形1体を選び同じ人形をN体出す（残りの期限も写す）" },
+            { "copyLastRetainer", "最後に点灯した人形と同じ人形をN体出す（残りの期限も写す）" },
             { "twinNextRetainer", "次に出す人形N体が2体になる（持ち越す）" },
-            { "extendRetainerLife", "人形1体を選び灯りをNターン継ぐ" },
-            { "persistRetainer", "人形1体を選び灯りが尽きなくなる" },
+            { "extendRetainerLife", "人形1体を選び期限をNターン延ばす" },
+            { "persistRetainer", "人形1体を選び期限を無くす（消えなくなる）" },
             { "triggerRetainersNow", "号令: 場の人形の効果を今すぐ1回ずつ解決 (登場ごとは除く)" },
             { "activateEnteredRetainer", "場に出た従者が即1回動く" },
             { "blessRetainers", "【常在】人形のダメージ・ブロック・回復+N" },
@@ -479,9 +479,11 @@ namespace DeckRogue.Game
             else if (def.FusionCatalyst == "aoe") n.Add("触媒: 素材にすると結果のダメージが全体に");
             if (def.ExhaustUnlessExposedEnemy == true) n.Add("急所持ちがいなければ消滅");
             if (def.Retainer == true)
-            {   // 白の語彙 (2026-09-18 従者→人形)。灯り＝寿命と火勢 (2026-09-21): 点灯したターンを1と数え、尽きると消える。点灯してから1ターンごとにダメージとブロック+1
-                n.Add("人形");
-                n.Add(def.LifePersist == true ? "灯りは尽きない（点灯してから1ターンごとにダメージとブロック+1）" : "灯り: " + (def.Life ?? 3) + "ターン（点灯したターンを含む。1ターンごとにダメージとブロック+1）");
+            {   // 白の語彙 (2026-09-18 従者→人形)。寿命は「期限」(2026-09-22 友人ラン: 寿命を「灯り」と呼ぶと資源の「灯」と同じ字で「灯が減ると人形が消える」と読まれた。からくりと同じ語彙)。
+                // 注記は1行 (同日「人形を置いたらどうなるのか分からない」): 出した瞬間に1回動く (点灯) を用語解説の外に出す。火勢の一文はダメージ・ブロックを持つ人形だけ
+                bool grows = false;
+                foreach (var e in def.Effects) if (e.Amount != null && DollUi.GrowthEffects.Contains(e.Effect)) { grows = true; break; }
+                n.Add("人形: 出した瞬間に1回動く。" + (def.LifePersist == true ? "期限なし" : "期限" + (def.Life ?? 3) + "ターン（出したターンを含む）") + (grows ? "。1ターンごとにダメージとブロック+1" : ""));
             }
             if (def.ShivToken == true) n.Add("骨のナイフ");
             return n;
@@ -756,10 +758,10 @@ namespace DeckRogue.Game
             var d3 = ev as GameEvent_GearUsed; if (d3 != null) return "ギア「" + d3.Name + "」を組んだ";   // ⚙ は Unity のフォントに無い   // ギア (2026-09-17)
             var e3 = ev as GameEvent_DeathSaved; if (e3 != null) return e3.Source == "gear" ? "蘇りの発条がはじけ、HP" + e3.Hp + "で踏みとどまった" : "蜥蜴の尾が砕け、HP" + e3.Hp + "で踏みとどまった";
             var g3 = ev as GameEvent_RetainerRushed; if (g3 != null) return "点灯: " + CardName(g3.CardId) + "が出た瞬間に1回動いた";   // ひなたのパッシブ (2026-09-19 log に出ていなかった)
-            // 人形の灯り (2026-09-21): 尽きた・写した・継いだ (人間ラン#16 のレポートに行が無かった)
-            var gx = ev as GameEvent_RetainerExpired; if (gx != null) return "灯が尽きた: " + CardName(gx.CardId) + "が消えた";
-            var gc = ev as GameEvent_RetainerCopied; if (gc != null) return "写し: " + CardName(gc.CardId) + "をコピーした（残りの灯りを写す）";
-            var gl = ev as GameEvent_RetainerLifeExtended; if (gl != null) return gl.Persist == true ? "永遠の灯: " + CardName(gl.CardId) + "の灯りは尽きなくなった" : "継ぎ火: " + CardName(gl.CardId) + "の灯りを" + gl.Amount + "ターン継いだ";
+            // 人形の期限 (2026-09-21。語彙は 2026-09-22 に「灯り」→「期限」): 切れた・写した・延ばした (人間ラン#16 のレポートに行が無かった)
+            var gx = ev as GameEvent_RetainerExpired; if (gx != null) return "期限切れ: " + CardName(gx.CardId) + "が消えた";
+            var gc = ev as GameEvent_RetainerCopied; if (gc != null) return "写し: " + CardName(gc.CardId) + "をコピーした（残りの期限も写す）";
+            var gl = ev as GameEvent_RetainerLifeExtended; if (gl != null) return gl.Persist == true ? "永遠の灯: " + CardName(gl.CardId) + "の期限が無くなった（消えなくなった）" : "継ぎ火: " + CardName(gl.CardId) + "の期限を" + gl.Amount + "ターン延ばした";
             var h3 = ev as GameEvent_RetainersTriggered; if (h3 != null) return "号令: 人形" + h3.Count + "体がトリガーを問わず今1回ずつ動いた";
             var i4 = ev as GameEvent_RetainersDuplicated; if (i4 != null) return "分列: 従者" + i4.Count + "体が複製された";
             var f3 = ev as GameEvent_HpLossCapped; if (f3 != null) return f3.Left > 0 ? "脈打つ欠片がHPの損失を20で止めた（あと" + f3.Left + "回）" : "脈打つ欠片がHPの損失を20で止めた（これで最後。戦いの後に砕ける）";   // 2026-09-18

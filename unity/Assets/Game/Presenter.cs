@@ -455,6 +455,54 @@ namespace DeckRogue.Game
         }
 
         /// <summary>灯の出どころ (2026-09-20 灯籠): 人形ならその人形、リーダーのパッシブならひなたの竿の灯籠 (絵の右上)、回復・札ならひなたの胸</summary>
+        /// <summary>置物 (人形・道具) の名前を uid から引く (2026-09-22 友人ラン「人形・ひなた・置物の効果が混在して分からない」＝粒に出所を添える):
+        /// 見えている盤面 → 今の盤面 → 舞台の人形の入れ物 (DollInfo) の順。無ければ null (札のプレイなど)</summary>
+        static string PermanentName(GameRoot g, ReactionCtx ctx, string uid)
+        {
+            if (uid == null) return null;
+            var boards = new[] { ctx != null ? ctx.Prev : null, g.Rs != null ? g.Rs.Combat : null };
+            foreach (var st in boards)
+            {
+                if (st == null) continue;
+                foreach (var p in st.Player.Permanents) if (p.Uid == uid) return p.Def.Name;
+            }
+            if (g.Battle != null)
+            {
+                var spr = g.Battle.DollSprite(uid);
+                var info = spr != null && spr.parent != null ? spr.parent.GetComponent<BattleView.DollInfo>() : null;
+                if (info != null) { try { return Content.GetCardDef(info.CardId).Name; } catch (Exception) { } }
+            }
+            return null;
+        }
+
+        /// <summary>灯の出どころの名前 (「ひなた 灯 +1」「灯芯の人形 灯 +1」「回復 灯 +1」)。残り火・札のプレイは null</summary>
+        static string LightSourceName(GameRoot g, ReactionCtx ctx, GameEvent_LightGained lg)
+        {
+            if (lg.Source == "passive") { try { return g.Rs != null ? Content.GetLeaderDef(g.Rs.LeaderId).Name : null; } catch (Exception) { return null; } }
+            if (lg.Source == "heal") return "回復";
+            if (lg.Source == "carry") return null;
+            return PermanentName(g, ctx, lg.SourceUid);
+        }
+
+        /// <summary>
+        /// 浮き数字・判の基準点 (2026-09-22): 敵と自分の「入れ物」は足元の線から高さ 720 の矩形で、その中心はスマホ (キャンバス高さ 675) では画面の上端より上に出る
+        /// ＝スマホでは与ダメの数字が一度も画面に入っていなかった (PC でも頭のだいぶ上)。絵 (舞台のビルボード) の中心＋高さの 0.3 (胸〜頭) を使い、絵が無ければ入れ物の中心
+        /// </summary>
+        static Vector2 EnemyFloatPos(GameRoot g, RectTransform fx, int ei)
+        {
+            var spr = g.Battle != null ? g.Battle.EnemySprite(ei) : null;
+            if (spr != null) return Tween.CenterIn(spr, fx) + new Vector2(0f, spr.rect.height * 0.1f);   // 敵は胸 (0.3 だと頭上の意図の札に重なった)
+            var rt = g.Anchor("enemy" + ei);
+            return rt != null ? Tween.CenterIn(rt, fx) : Vector2.zero;
+        }
+        static Vector2 PlayerFloatPos(GameRoot g, RectTransform fx)
+        {
+            var spr = g.Battle != null ? g.Battle.PlayerSprite() : null;
+            if (spr != null) return Tween.CenterIn(spr, fx) + new Vector2(0f, spr.rect.height * 0.3f);
+            var rt = g.Anchor("player");
+            return rt != null ? Tween.CenterIn(rt, fx) : Vector2.zero;
+        }
+
         static Vector2 LightSourcePos(GameRoot g, RectTransform fx, GameEvent_LightGained lg, ReactionCtx ctx)
         {
             var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
@@ -984,10 +1032,10 @@ namespace DeckRogue.Game
                     break;
                 }
                 case GameEvent_RetainerExpired re:
-                {   // 灯りが尽きた (2026-09-21 人形の灯り): 人形壊しと同じく頭から崩れる。判は灰の「灯が尽きた」
+                {   // 期限切れ (2026-09-21 人形の寿命): 人形壊しと同じく頭から崩れる。判は灰の「期限切れ」(2026-09-22 語彙: 「灯が尽きた」は資源の灯と読まれた)
                     Audio.Key("RetainerExpired");
                     if (g.Battle == null) return;
-                    g.Battle.KillDoll(g, re.Uid, false, "灯が尽きた");
+                    g.Battle.KillDoll(g, re.Uid, false, "期限切れ");
                     break;
                 }
                 case GameEvent_RetainerCopied rc:
@@ -1008,7 +1056,7 @@ namespace DeckRogue.Game
                     break;
                 }
                 case GameEvent_RetainerLifeExtended rl:
-                {   // 継ぎ火 (+Nターン)・永遠の灯 (尽きない): その人形の頭上に真鍮の判
+                {   // 継ぎ火 (+Nターン)・永遠の灯 (期限なし): その人形の頭上に真鍮の判
                     Audio.Key("RetainerLifeExtended");
                     if (g.Battle == null) return;
                     var dSpr = g.Battle.DollSprite(rl.Uid);
@@ -1016,7 +1064,7 @@ namespace DeckRogue.Game
                     Vector2 dp = Tween.CenterIn(dSpr, fx);
                     Tween.Punch(dSpr, 0.12f, 0.3f, true);
                     Tween.RingBurst(fx, dp + new Vector2(0f, -dSpr.rect.height * 0.4f), new Color(1f, 0.85f, 0.55f, 0.9f), 130f, 0.35f);
-                    Tween.Stamp(fx, dp + new Vector2(0f, dSpr.rect.height * 0.55f + 14f), rl.Persist == true ? "尽きない" : "+" + rl.Amount + "ターン", PaperFx.BrassLight, PaperFx.BrassInk, PaperFx.Brass, 17, 0.7f, -6f);
+                    Tween.Stamp(fx, dp + new Vector2(0f, dSpr.rect.height * 0.55f + 14f), rl.Persist == true ? "期限なし" : "+" + rl.Amount + "ターン", PaperFx.BrassLight, PaperFx.BrassInk, PaperFx.Brass, 17, 0.7f, -6f);
                     break;
                 }
             }
@@ -1285,7 +1333,7 @@ namespace DeckRogue.Game
                 if (rt == null) continue;
                 int sum = kv.Value, cnt = b.Cnt.ContainsKey(ei) ? b.Cnt[ei] : 1;
                 int hpLoss = b.HpLoss.ContainsKey(ei) ? b.HpLoss[ei] : 0, blocked = b.Blocked.ContainsKey(ei) ? b.Blocked[ei] : 0;
-                var pos = Tween.CenterIn(rt, fx) + new Vector2(0f, 20f);
+                var pos = EnemyFloatPos(g, fx, ei) + new Vector2(0f, 20f);
                 Color numColor = sum <= 0 ? UiKit.ColDim : (hpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;
                 Tween.Float(fx, pos, (cnt > 1 ? "人形×" + cnt + ": " : "") + sum, numColor, sum >= 15 ? 40 : 32, 60f, 1.0f);
                 if (blocked > 0) Tween.After(0.06f, () => Tween.Float(fx, pos + new Vector2(0f, -34f), "ブロックで −" + blocked, PaperFx.SkyLight, 20, 34f, 1.0f));
@@ -1298,11 +1346,11 @@ namespace DeckRogue.Game
             {
                 if (b.BlockN > 0)
                 {
-                    Tween.Float(fx, Tween.CenterIn(prt, fx) + new Vector2(80f, 10f), (b.BlockN > 1 ? "人形×" + b.BlockN + ": " : "") + "ブロック+" + b.Block, UiKit.ColBlock, 26, 40f, 0.9f);
+                    Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(80f, 10f), (b.BlockN > 1 ? "人形×" + b.BlockN + ": " : "") + "ブロック+" + b.Block, UiKit.ColBlock, 26, 40f, 0.9f);
                     if (nudge && g.Battle != null) g.Battle.NudgePlayerBlock(b.Block);
                 }
                 if (b.HealN > 0)
-                    Tween.Float(fx, Tween.CenterIn(prt, fx) + new Vector2(-80f, 10f + (b.BlockN > 0 ? 30f : 0f)), (b.HealN > 1 ? "人形×" + b.HealN + ": " : "") + "回復+" + b.Heal, UiKit.ColAccent, 26, 40f, 0.9f);
+                    Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(-80f, 10f + (b.BlockN > 0 ? 30f : 0f)), (b.HealN > 1 ? "人形×" + b.HealN + ": " : "") + "回復+" + b.Heal, UiKit.ColAccent, 26, 40f, 0.9f);
             }
         }
 
@@ -1440,7 +1488,7 @@ namespace DeckRogue.Game
                             if (ctx.BatchLast) FlushDollBatch(g, fx, bt, nudgeHp);
                             return;
                         }
-                        var pos = Tween.CenterIn(rt, fx) + new Vector2(UnityEngine.Random.Range(-30f, 30f), 20f);
+                        var pos = EnemyFloatPos(g, fx, ei) + new Vector2(UnityEngine.Random.Range(-30f, 30f), 20f);
                         // ⑥ ダメージの質 (2026-09-17): 急所・貫通・盾が吸った・装甲/ターン装甲/殻/無形の頭打ち を数字の脇で見分ける (イベントの値＝実処理と同じ)
                         bool crit = d.Exposed == true, pierced = d.Pierced == true;
                         int blocked = d.Blocked ?? 0, armorCut = d.ArmorCut ?? 0, turnCut = d.TurnArmorCut ?? 0, burrowCut = d.BurrowCut ?? 0, nemesisCut = d.NemesisCut ?? 0;
@@ -1498,6 +1546,8 @@ namespace DeckRogue.Game
                         }
                         // 脇の一言 (質): 数字の下に小さく、複数なら段を重ねる
                         var notes = new List<KeyValuePair<string, Color>>();
+                        var srcName = PermanentName(g, ctx, d.SourceUid);   // 人形・置物の仕事は出所の名前を添える (2026-09-22 友人ラン「人形・ひなた・置物の効果が混在」)
+                        if (srcName != null) notes.Add(new KeyValuePair<string, Color>(srcName, PaperFx.Paper));
                         if (crit) notes.Add(new KeyValuePair<string, Color>("急所!", PaperFx.BrassLight));
                         if (pierced) notes.Add(new KeyValuePair<string, Color>("貫通", PaperFx.Paper));
                         if (blocked > 0 && bshield == null) notes.Add(new KeyValuePair<string, Color>((shell ? "殻で −" : "ブロックで −") + blocked, PaperFx.SkyLight));
@@ -1607,7 +1657,9 @@ namespace DeckRogue.Game
                     Audio.Key("BlockGained");
                     var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(0.55f, 0.75f, 1f, 0.9f), 110f);
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(80f, 10f), "+" + b.Amount, UiKit.ColBlock, 30, 40f, 0.7f);
+                    Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(80f, 10f), "+" + b.Amount, UiKit.ColBlock, 30, 40f, 0.7f);
+                    var bName = PermanentName(g, ctx, b.SourceUid);   // 出所の名前 (2026-09-22)
+                    if (bName != null) Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(80f, -18f), bName, PaperFx.Paper, 18, 34f, 0.8f);
                     // 人形の誘発 (2026-09-19): 盾の人形が小さく跳ねて盾の絵を出す = 守りの出どころ
                     var bDoll = b.SourceUid != null && g.Battle != null ? g.Battle.DollSprite(b.SourceUid) : null;
                     if (bDoll != null) { Tween.Punch(bDoll, 0.12f, 0.3f, true); Tween.IconBurst(fx, Tween.CenterIn(bDoll, fx) + new Vector2(0f, 10f), "shield", new Color(0.55f, 0.75f, 1f, 0.9f), 60f); }
@@ -1622,7 +1674,7 @@ namespace DeckRogue.Game
                     Audio.Key("BlockGained");
                     var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(PaperFx.SkyLight.r, PaperFx.SkyLight.g, PaperFx.SkyLight.b, 0.9f), 110f);
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(80f, 10f), "氷壁 +" + ib.Amount, PaperFx.SkyLight, 28, 40f, 0.7f);
+                    Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(80f, 10f), "氷壁 +" + ib.Amount, PaperFx.SkyLight, 28, 40f, 0.7f);
                     if (nudgeHp && g.Battle != null) g.Battle.NudgePlayerIce(ib.Amount);
                     break;
                 }
@@ -1695,21 +1747,21 @@ namespace DeckRogue.Game
                     Audio.Key(ev is GameEvent_GrowthAdded || ev is GameEvent_MomentumAdded ? "GrowthAdded" : "StatusInflicted");
                     var ps2 = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (ps2 != null) Tween.IconBurst(fx, Tween.CenterIn(ps2, fx) + new Vector2(0f, 30f), "exposed", new Color(0.72f, 0.5f, 0.85f, 0.9f), 110f);
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 70f), StatusJa(si.Status) + " +" + si.Amount, PaperFx.Plum, 32, 46f, 1.2f);
+                    Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(0f, 70f), StatusJa(si.Status) + " +" + si.Amount, PaperFx.Plum, 32, 46f, 1.2f);
                     break;
                 }
                 case GameEvent_ExposedApplied ea:
                 {
                     var rt = g.Anchor("enemy" + ea.EnemyIndex);
                     if (rt == null) return;
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "急所 +" + ea.Amount, PaperFx.Brass, 28, 40f, 1.0f);
+                    Tween.Float(fx, EnemyFloatPos(g, fx, ea.EnemyIndex) + new Vector2(0f, 60f), "急所 +" + ea.Amount, PaperFx.Brass, 28, 40f, 1.0f);
                     break;
                 }
                 case GameEvent_EnemyWeakened ew:
                 {
                     var rt = g.Anchor("enemy" + ew.EnemyIndex);
                     if (rt == null) return;
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "威圧 +" + ew.Amount, PaperFx.Sky, 28, 40f, 1.0f);
+                    Tween.Float(fx, EnemyFloatPos(g, fx, ew.EnemyIndex) + new Vector2(0f, 60f), "威圧 +" + ew.Amount, PaperFx.Sky, 28, 40f, 1.0f);
                     break;
                 }
                 case GameEvent_ArtifactBlocked ab:
@@ -1718,7 +1770,7 @@ namespace DeckRogue.Game
                     // 敵の上に藤の文字と輪、帳面のアーティファクトの札が跳ねる
                     var rt = g.Anchor("enemy" + ab.EnemyIndex);
                     if (rt == null) return;
-                    var c = Tween.CenterIn(rt, fx) + new Vector2(0f, 60f);
+                    var c = EnemyFloatPos(g, fx, ab.EnemyIndex) + new Vector2(0f, 60f);
                     Tween.RingBurst(fx, c, PaperFx.Plum, 120f, 0.35f);
                     // 判 (紙の帯) にする: 浮き文字 (幅 240) では折り返してダメージの数字と重なる。着弾の数字 (+60) より上に、少し遅らせて
                     string what = "アーティファクトが" + CardText.DebuffName(ab.Effect) + "を弾いた";
@@ -1731,7 +1783,7 @@ namespace DeckRogue.Game
                 {
                     var rt = g.Anchor("player");
                     if (rt == null) return;
-                    var c = Tween.CenterIn(rt, fx) + new Vector2(0f, 70f);
+                    var c = PlayerFloatPos(g, fx) + new Vector2(0f, 70f);
                     Tween.RingBurst(fx, c, PaperFx.Plum, 120f, 0.35f);
                     string what = "時計仕掛けの土産が" + StatusJa(pab.Status) + "を弾いた";
                     Tween.After(0.15f, () => Tween.Stamp(fx, c + new Vector2(0f, 60f), what, new Color(0.93f, 0.86f, 0.97f, 1f), PaperFx.PlumInk, PaperFx.Plum, 18, 1.0f, -5f));
@@ -1742,28 +1794,28 @@ namespace DeckRogue.Game
                 {
                     var rt = g.Anchor("enemy" + ba.EnemyIndex);
                     if (rt == null) return;
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "延焼 +" + ba.Amount, PaperFx.Ember, 28, 40f, 1.0f);
+                    Tween.Float(fx, EnemyFloatPos(g, fx, ba.EnemyIndex) + new Vector2(0f, 60f), "延焼 +" + ba.Amount, PaperFx.Ember, 28, 40f, 1.0f);
                     break;
                 }
                 case GameEvent_StrengthGained sg:
                 {
                     var rt = g.Anchor("enemy" + sg.EnemyIndex);
                     if (rt == null || sg.Amount == 0) return;
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(0f, 60f), "筋力 " + (sg.Amount > 0 ? "+" : "") + sg.Amount, sg.Amount > 0 ? PaperFx.Brass : PaperFx.Sky, 28, 40f, 1.0f);
+                    Tween.Float(fx, EnemyFloatPos(g, fx, sg.EnemyIndex) + new Vector2(0f, 60f), "筋力 " + (sg.Amount > 0 ? "+" : "") + sg.Amount, sg.Amount > 0 ? PaperFx.Brass : PaperFx.Sky, 28, 40f, 1.0f);
                     break;
                 }
                 case GameEvent_GrowthAdded ga:
                 {
                     var rt = g.Anchor("player");
                     if (rt == null || ga.Amount <= 0) return;
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(-60f, 60f), "成長 +" + ga.Amount, PaperFx.Moss, 26, 36f, 0.9f);
+                    Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(-60f, 60f), "成長 +" + ga.Amount, PaperFx.Moss, 26, 36f, 0.9f);
                     break;
                 }
                 case GameEvent_MomentumAdded ma:
                 {
                     var rt = g.Anchor("player");
                     if (rt == null || ma.Amount <= 0) return;
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(60f, 60f), "勢い +" + ma.Amount, PaperFx.Honey, 26, 36f, 0.9f);
+                    Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(60f, 60f), "勢い +" + ma.Amount, PaperFx.Honey, 26, 36f, 0.9f);
                     break;
                 }
                 case GameEvent_LightGained lg:
@@ -1771,10 +1823,14 @@ namespace DeckRogue.Game
                     // 灯 (2026-09-20 灯の表示・案B): 真鍮の粒が出どころ (回復＝ひなたの胸・人形＝その人形・灯匠＝ひなたの竿の灯籠) から灯籠へ飛び込み、
                     // 着いた瞬間に炎がひと膨らみして数字が増え、上に「灯 +N」(真鍮)。器が無い (白以外で初めて灯が付く前) なら自分の上に浮き文字だけ
                     if (lg.Amount <= 0) return;
+                    // 出どころの名前を添える (2026-09-22 友人ラン「人形・ひなた・置物の効果が混在」): 「ひなた 灯 +1」「灯芯の人形 灯 +1」「回復 灯 +1」
+                    string who = LightSourceName(g, ctx, lg);
+                    string lightLabel = (who != null ? who + " " : "") + "灯 +" + lg.Amount;
+                    int lightSize = who != null ? 20 : 24;
                     if (!LightUi.Exists)
                     {
                         var rt0 = g.Anchor("player");
-                        if (rt0 != null) Tween.Float(fx, Tween.CenterIn(rt0, fx) + new Vector2(0f, 70f), "灯 +" + lg.Amount, PaperFx.Brass, 24, 34f, 0.8f);
+                        if (rt0 != null) Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(0f, 70f), lightLabel, PaperFx.Brass, lightSize, 34f, 0.8f);
                         return;
                     }
                     int amt = lg.Amount;
@@ -1792,7 +1848,7 @@ namespace DeckRogue.Game
                         if (arrived) return; arrived = true;
                         LightUi.Add(amt, true);
                         Audio.Key("LightGained");
-                        Tween.Float(fx, LightUi.TopCenter(fx) + new Vector2(0f, 26f), "灯 +" + amt, PaperFx.Brass, 24, 34f, 0.8f);
+                        Tween.Float(fx, LightUi.TopCenter(fx) + new Vector2(0f, 26f), lightLabel, PaperFx.Brass, lightSize, 34f, 0.8f);
                     };
                     int n = Math.Min(amt, 6);
                     LightUi.HoldFor(0.6f);
@@ -1810,7 +1866,7 @@ namespace DeckRogue.Game
                     if (!LightUi.Exists)
                     {
                         var rt0 = g.Anchor("player");
-                        if (rt0 != null) Tween.Float(fx, Tween.CenterIn(rt0, fx) + new Vector2(0f, 70f), "灯 -" + lsp.Amount, PaperFx.InkSoft, 24, 34f, 0.8f);
+                        if (rt0 != null) Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(0f, 70f), "灯 -" + lsp.Amount, PaperFx.InkSoft, 24, 34f, 0.8f);
                         return;
                     }
                     int amt = lsp.Amount;
@@ -1834,7 +1890,7 @@ namespace DeckRogue.Game
                     if (!LightUi.Exists)
                     {
                         var rt0 = g.Anchor("player");
-                        if (rt0 != null) Tween.Float(fx, Tween.CenterIn(rt0, fx) + new Vector2(0f, 90f), "灯" + ld.Spent + " 放出!", PaperFx.Brass, 30, 40f, 1.0f);
+                        if (rt0 != null) Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(0f, 90f), "灯" + ld.Spent + " 放出!", PaperFx.Brass, 30, 40f, 1.0f);
                         return;
                     }
                     Vector2 from = LightUi.GlassCenter(fx);
@@ -1886,7 +1942,9 @@ namespace DeckRogue.Game
                     Audio.Key("HpHealed");
                     var hs = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (hs != null) Tween.IconBurst(fx, Tween.CenterIn(hs, fx) + new Vector2(0f, 20f), "heart", new Color(0.6f, 1f, 0.6f, 0.9f), 100f);
-                    Tween.Float(fx, Tween.CenterIn(rt, fx) + new Vector2(-80f, 10f), "+" + h.Amount, UiKit.ColAccent, 30, 40f, 0.7f);
+                    Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(-80f, 10f), "+" + h.Amount, UiKit.ColAccent, 30, 40f, 0.7f);
+                    var hName = PermanentName(g, ctx, h.SourceUid);   // 出所の名前 (2026-09-22)
+                    if (hName != null) Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(-80f, -18f), hName, PaperFx.Paper, 18, 34f, 0.8f);
                     // 人形の誘発 (2026-09-19): 癒しの人形が小さく跳ねて心の絵を出す
                     var hDoll = h.SourceUid != null && g.Battle != null ? g.Battle.DollSprite(h.SourceUid) : null;
                     if (hDoll != null) { Tween.Punch(hDoll, 0.12f, 0.3f, true); Tween.IconBurst(fx, Tween.CenterIn(hDoll, fx) + new Vector2(0f, 10f), "heart", new Color(0.6f, 1f, 0.6f, 0.9f), 60f); }

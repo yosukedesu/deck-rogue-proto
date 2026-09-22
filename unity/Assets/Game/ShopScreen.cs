@@ -53,7 +53,7 @@ namespace DeckRogue.Game
                 return;
             }
 
-            RunUi.Heading(root, "ショップ", (UiKit.Phone ? "カードをタップで購入。所持金 " : "カードをクリックで購入。所持金 ") + run.Gold + "G", RunUi.TopH + 24f, UiKit.Phone ? 440f : 0f);
+            RunUi.Heading(root, "ショップ", (UiKit.Phone ? "札はタップで拡大。買うのは値札のボタン。所持金 " : "札はクリックで拡大。買うのは値札のボタン。所持金 ") + run.Gold + "G", RunUi.TopH + 24f, UiKit.Phone ? 440f : 0f);
             float shelfTop = RunUi.SceneWindow(root, "shop") ? RunUi.SceneBottom : RunUi.TopH + 110f;   // 情景の窓があれば棚をその下へ
 
             // 棚 (カード)
@@ -92,9 +92,9 @@ namespace DeckRogue.Game
                     var st = UiKit.Txt(cover.transform, "売切", 40, UiKit.ColBad, TextAnchor.MiddleCenter, true);
                     UiKit.Stretch(st.rectTransform, 0f, 0f, 0f, 0f);
                 }
-                else RewardScreen.HoverRaise(cv, delegate { if (canBuy) { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyCard { Index = idx }); } });
+                else RewardScreen.HoverRaise(cv, delegate { Audio.Ui("click"); CardPopup.Open(g, ci, null); });   // タップ＝拡大 (説明)。買うのは値札のボタン (2026-09-22 報酬と同じ作法)
                 CardPopup.Attach(g, cv, ci, null, true);
-                PriceTag(cell, item.Price, sold ? "売切" : null, canBuy);
+                PriceTag(cell, item.Price, sold ? "売切" : null, canBuy, sold ? null : (Action)delegate { if (canBuy) { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyCard { Index = idx }); } });
                 if (i == n - 1 && n >= 6)
                 {
                     var rare = UiKit.Txt(cell, "★ レア枠", 13, UiKit.ColGoldInk, TextAnchor.MiddleCenter, true);
@@ -245,19 +245,28 @@ namespace DeckRogue.Game
             UiKit.Le(b, -1f, 48f, -1f, 48f);
         }
 
-        public static void PriceTag(RectTransform cell, int price, string over, bool affordable)
+        /// <summary>値札。onBuy があればボタン (「N G で買う」。2026-09-22 札のタップは拡大になったので、買うのはここだけ)。指で押せる 48 の高さ</summary>
+        public static void PriceTag(RectTransform cell, int price, string over, bool affordable, Action onBuy = null)
         {
             var tag = UiKit.NewRect("price", cell);
-            UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-70f, 4f), new Vector2(70f, 40f));
+            bool asBtn = onBuy != null;
+            UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), asBtn ? new Vector2(-88f, 0f) : new Vector2(-70f, 4f), asBtn ? new Vector2(88f, 48f) : new Vector2(70f, 40f));
             var bg = tag.gameObject.AddComponent<Image>();
-            bg.sprite = Theme.Tag; bg.type = Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f;
-            bg.color = over != null ? new Color(0.5f, 0.5f, 0.5f, 1f) : affordable ? Color.white : new Color(0.7f, 0.55f, 0.55f, 1f);
+            bg.sprite = asBtn ? Theme.Button : Theme.Tag; bg.type = Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f;
+            bg.color = over != null ? new Color(0.5f, 0.5f, 0.5f, 1f) : affordable ? (asBtn ? PaperFx.BrassLight : Color.white) : new Color(0.7f, 0.55f, 0.55f, 1f);
+            if (asBtn)
+            {
+                var btn = tag.gameObject.AddComponent<Button>();
+                btn.targetGraphic = bg; btn.interactable = affordable;
+                btn.onClick.AddListener(delegate { onBuy(); });
+            }
             var hg = UiKit.Horz(tag, 4, 0);
             hg.childAlignment = TextAnchor.MiddleCenter;
             hg.childForceExpandWidth = false;
             hg.childForceExpandHeight = false;
             if (over == null) UiKit.Icon(tag, "gold", 22f);
-            var t = UiKit.Txt(tag, over ?? (price + " G"), 17, over != null ? UiKit.ColInkSoft : affordable ? UiKit.ColGoldInk : UiKit.ColBadInk, TextAnchor.MiddleCenter, true);
+            var t = UiKit.Txt(tag, over ?? (price + " G" + (asBtn && affordable ? " で買う" : "")), 17, over != null ? UiKit.ColInkSoft : affordable ? UiKit.ColGoldInk : UiKit.ColBadInk, TextAnchor.MiddleCenter, true);
+            t.raycastTarget = false;
             UiKit.Le(t, 50f, 30f, -1f, 30f);
         }
     }
