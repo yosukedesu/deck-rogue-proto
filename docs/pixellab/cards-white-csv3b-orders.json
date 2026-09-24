@@ -1,0 +1,32 @@
+{
+ "_note": "白のカード挿絵 88 種 (2026-09-19 第2稿)。灯火の工房＝真鍮のランタン・暖色の光。札ごとに場と構図を変え、効果と名前を絵に出す。盾が主題は5枚まで。人形は従者11＋主題の4札だけ。生成器 cards-white-descriptions.py 2026-09-23 灯の変換札と灯を払う攻撃の12枚を追加 (1 札 × 2 シード 53,71。scripts/card-art.py orders が cards-white-descriptions.json から生成)",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   80,
+   48
+  ],
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8
+ },
+ "items": [
+  {
+   "id": "white_strike__53",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/777ff1f3-beb5-4e55-9098-108e52c26bd5/scratchpad/art-csv3b/white_strike__53.png",
+   "seed": 53,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a blinding diagonal bolt of white-gold light crossing the whole frame from the lower left to the upper right and blasting a dark boulder apart at the upper right, chunks of stone and amber sparks flying outward from the impact, the bolt drawn as a thick straight ray with a brighter white core, dark mine tunnel behind, no lantern, no one casting it",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, moon, circle in the sky"
+  },
+  {
+   "id": "white_strike__71",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/777ff1f3-beb5-4e55-9098-108e52c26bd5/scratchpad/art-csv3b/white_strike__71.png",
+   "seed": 71,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a blinding diagonal bolt of white-gold light crossing the whole frame from the lower left to the upper right and blasting a dark boulder apart at the upper right, chunks of stone and amber sparks flying outward from the impact, the bolt drawn as a thick straight ray with a brighter white core, dark mine tunnel behind, no lantern, no one casting it",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, moon, circle in the sky"
+  }
+ ]
+}

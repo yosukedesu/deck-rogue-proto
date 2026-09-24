@@ -1,0 +1,30 @@
+{
+ "id": "relic_forgotten_light__23",
+ "engine": "pixflux",
+ "request": {
+  "description": "a tiny half-melted brass candle stub with a faint dying amber flame, wax dripping over a small stone base, ancient mine relic, single object centered, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+  "negative_description": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, people, text, lantern, moon",
+  "image_size": {
+   "width": 32,
+   "height": 32
+  },
+  "text_guidance_scale": 8,
+  "no_background": true,
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "view": "side",
+  "seed": 23
+ },
+ "usage": {
+  "type": "generations",
+  "generations": 1
+ },
+ "at": "2026-09-23T03:23:38.049Z",
+ "judge": {
+  "pick": "A",
+  "seed": 23,
+  "at": "2026-09-23",
+  "note": ""
+ }
+}

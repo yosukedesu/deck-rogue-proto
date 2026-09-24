@@ -1,0 +1,41 @@
+{
+ "_note": "B7–D18 の発注書 (gears)。scripts/art-b7d18.py orders が生成。2シード (23/41) を scratch に出し、sheet → 判定 → apply で Art/ へ写す",
+ "items": [
+  {
+   "id": "gear_pot_of_ghouls__23",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/777ff1f3-beb5-4e55-9098-108e52c26bd5/scratchpad/icons3/gears/gear_pot_of_ghouls__23.png",
+   "seed": 23,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round black-iron pot with a brass lid slightly ajar, pale amber ember sparks and two tiny wisps of warm light escaping from under the lid, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, ghost face, skull, cauldron with legs",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  },
+  {
+   "id": "gear_pot_of_ghouls__41",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/777ff1f3-beb5-4e55-9098-108e52c26bd5/scratchpad/icons3/gears/gear_pot_of_ghouls__41.png",
+   "seed": 41,
+   "size": [
+    32,
+    32
+   ],
+   "description": "a small round black-iron pot with a brass lid slightly ajar, pale amber ember sparks and two tiny wisps of warm light escaping from under the lid, a small clockwork part from a gearwitch's karakuri toolbox, single object centered, brass and black iron, muted cream and ink palette, transparent background, isolated pixel art game sprite of a single object, centered, nothing else in the frame, completely empty transparent background, no scenery, no ground, no sky, HD-2D Octopath Traveler style, detailed shading, selective dark outline, no text",
+   "negative": "scene, background, landscape, sky, moon, ground plane, frame, border, text, watermark, blurry, daylight, people, character, face, hands, text, ghost face, skull, cauldron with legs",
+   "engine": "pixflux",
+   "view": "side",
+   "outline": "selective outline",
+   "shading": "detailed shading",
+   "detail": "highly detailed",
+   "no_background": true,
+   "guidance": 8
+  }
+ ]
+}

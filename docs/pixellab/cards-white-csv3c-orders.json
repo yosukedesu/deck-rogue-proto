@@ -1,0 +1,39 @@
+{
+ "_note": "白のカード挿絵 88 種 (2026-09-19 第2稿)。灯火の工房＝真鍮のランタン・暖色の光。札ごとに場と構図を変え、効果と名前を絵に出す。盾が主題は5枚まで。人形は従者11＋主題の4札だけ。生成器 cards-white-descriptions.py 2026-09-23 灯の変換札と灯を払う攻撃の12枚を追加 (1 札 × 3 シード 81,97,113。scripts/card-art.py orders が cards-white-descriptions.json から生成)",
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   80,
+   48
+  ],
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8
+ },
+ "items": [
+  {
+   "id": "white_strike__81",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/777ff1f3-beb5-4e55-9098-108e52c26bd5/scratchpad/art-csv3c/white_strike__81.png",
+   "seed": 81,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a white holy magic attack spell: a wide pillar of radiant white-gold light crashing straight down from above onto a dark boulder in the center, a glowing white magic circle of runes drawn in light on the ground around the impact, rays and sparkles of pure white light radiating outward, the boulder cracking, gentle warm glow at the edges, dark mine floor, no lantern, no caster, no one visible",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, moon, circle in the sky"
+  },
+  {
+   "id": "white_strike__97",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/777ff1f3-beb5-4e55-9098-108e52c26bd5/scratchpad/art-csv3c/white_strike__97.png",
+   "seed": 97,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a white holy magic attack spell: a wide pillar of radiant white-gold light crashing straight down from above onto a dark boulder in the center, a glowing white magic circle of runes drawn in light on the ground around the impact, rays and sparkles of pure white light radiating outward, the boulder cracking, gentle warm glow at the edges, dark mine floor, no lantern, no caster, no one visible",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, moon, circle in the sky"
+  },
+  {
+   "id": "white_strike__113",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/777ff1f3-beb5-4e55-9098-108e52c26bd5/scratchpad/art-csv3c/white_strike__113.png",
+   "seed": 113,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a white holy magic attack spell: a wide pillar of radiant white-gold light crashing straight down from above onto a dark boulder in the center, a glowing white magic circle of runes drawn in light on the ground around the impact, rays and sparkles of pure white light radiating outward, the boulder cracking, gentle warm glow at the edges, dark mine floor, no lantern, no caster, no one visible",
+   "negative": "person, human, man, woman, child, adventurer, hero, warrior, figure, silhouette, hands, face, portrait, skin, hair, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, figure, character, cloak, hat, silhouette of a person, hand, arm, wielder, someone holding it, moon, circle in the sky"
+  }
+ ]
+}

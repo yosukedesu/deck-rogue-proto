@@ -10,7 +10,7 @@
 |---|---|
 | 敵 | **85/85**（幕1〜3・エリート・ボス。2026-09-11 に幕2/3の59体を追加、向きを検算済み。2026-09-14 苔の産み手＝召喚者を追加。**2026-09-18 用心深い影を作り直し**＝人間ラン#14「見た目がうんこすぎる」→ 兎・鼠に流れた6案を経て「影そのもの」（体を墨黒の半透明の影＋淡い目2つで描く専用 style）の「うずくまる影」seed41 をユーザーが選択。発注書 `docs/pixellab/enemies-set-wary-redo{,3}.json`） |
 | カード挿絵（緑） | **95/95**（触媒4種込み。打撃・打ち据えは 2026-09-12 に作り直し＝断ち割り／急所のひび）＋**工房レシピ産 24/24**（`fusion_*`。2026-09-12）。計算合成の札は素材2枚の絵を溶かし合わせる（`ThemeFx.FusedArt`） |
-| カード挿絵（白） | **89/89**（白83＋白のレシピ産6。2026-09-19。灯の岐路は 2026-09-20 に+1。意匠＝灯火の工房〔真鍮のランタン・暖色の光・光の壁・白鉄の小さな騎士の人形〕。道具 `scripts/card-art.py`。人形28札は ask_user で作り直し。`docs/pixellab-assets.md`「白のカード」） |
+| カード挿絵（白） | **112/112**（2026-09-24 CSV レビュー: 灯の閃撃・灯の護光を呪文の絵に作り直し、灯の薪を新規作成。発注書 `docs/pixellab/cards-white-csv3{,b}-orders.json`。2026-09-23 火種の本家寄せ2枚〔断ち切り・降霊〕も同日作成。供給札6枚〔輝き・埋め火・輝きの一撃・大砕き・集約・余光〕も同日作成。灯の12枚＝連矢・しぶき・閃き・長槍・燃料・炉心・注ぎ・火矢・小盾・火粉・呼び声・頁 を同日に作成・適用。発注書 `docs/pixellab/cards-white-light12{,b,c}-orders.json`。「arrow／launch」の語は弓兵を呼ぶ＝火矢は「炎の筋」に言い換えても人が出て、結局ランタンの絵で妥協。`docs/pixellab/cards-white-descriptions.json` の雛形で `scripts/card-art.py`）。旧: **89/89**（白83＋白のレシピ産6。2026-09-19。灯の岐路は 2026-09-20 に+1。意匠＝灯火の工房〔真鍮のランタン・暖色の光・光の壁・白鉄の小さな騎士の人形〕。道具 `scripts/card-art.py`。人形28札は ask_user で作り直し。`docs/pixellab-assets.md`「白のカード」） |
 | 人形（舞台） | **11/11**（2026-09-19。人形の盤面表示＝白の従者が舞台に立つ。32×32・south-east・low top-down。発注書 `docs/pixellab/dolls-stage.json`。小さな人形だけ seed 1921 に差し替え。無い時の仮の絵は `Creature.Doll`） |
 | このは | **v2（2026-09-16）**: ちび1（88×64・8方向の Create from Reference）・アニメ idle 8／attack 4／block 4（hurt は作らない＝揺れだけ）。素材は `docs/pixellab/konoha-v2/` |
 | ギア（消耗品） | **35/35**（2026-09-18。台帳37のうち抽選外3〔厄除けの符・挟み紙・引き直し〕は作らない＝34＋魔素のアイコン `gears/mana.png`。レリック第1波と同じ定型: 発注文 `docs/pixellab/gears-2026-09-18-descriptions.json` → `scripts/art-b7d18.py orders`（`gears` 群を追加）→ 2シード 23/41 → sheet → 判定 `gears-2026-09-18-judge.json` → apply。発条・締め紐は seed 7/99 で作り直し。絵柄＝真鍮と黒鉄の部品・干渉系は青緑の光・両刃は朱の差し色） |
@@ -55,6 +55,8 @@
 - リーダー: 同「リーダーの絵柄」＋ `docs/pixellab/konoha-v2/`
 - カード: `docs/pixellab/cards-green.json` / `cards-green-magiaxe.json` の style（Octopath HD-2D、人物なし、単一の主題）。**色ごとの一括生産は `scripts/card-art.py`**（発注文 → 2シード → A/B シート → 判定 → apply。白 `docs/pixellab/cards-white-descriptions.json` が雛形。人物が出る型・人形の文の型の教訓は `docs/pixellab-assets.md`「白のカード」）
 - ギア・レリック（32×32 の物）: `scripts/art-b7d18.py orders` の `relics`／`gears` 群（`_base` の定型を `{base}` で参照）
+
+（2026-09-23 追加のレリック2・ギア1の絵は同日に作成・適用済み＝`docs/pixellab/b7d18-relics-2026-09-23.json`・`gears-2026-09-23-pot.json`）
 
 ## 作り直し候補（人間ランの声）
 
