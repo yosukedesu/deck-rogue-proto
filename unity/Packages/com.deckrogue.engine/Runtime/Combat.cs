@@ -31,6 +31,8 @@ namespace DeckRogue.Engine
         public IReadOnlyList<CardInstance> RelicPermanents { get; init; }
         /// <summary>C型レリック (静かな鈴)</summary>
         public int? SetDamageReduction { get; init; }
+        /// <summary>戦闘開始時の所持金 (2026-09-24 E6: 盗みの上限。GameState.GoldAvailable へ渡す)</summary>
+        public int? GoldAvailable { get; init; }
         /// <summary>実験: 全カード伏せ可</summary>
         public bool? SetAnyCards { get; init; }
         /// <summary>C型レリック (回収の紐 2026-09-13 作り直し): 期限切れの罠が手札に戻る</summary>
@@ -273,6 +275,8 @@ namespace DeckRogue.Engine
                 Enemies = enemies,
                 // C型レリック。revealIntents は第1ターンの意図宣言より前に立てる必要がある
                 SetDamageReduction = (options.SetDamageReduction ?? 0) != 0 ? options.SetDamageReduction : null,
+                // 盗みの上限 (2026-09-24 E6)。0 も有効な値 (省略=上限なし)。TS と同形
+                GoldAvailable = options.GoldAvailable,
                 ExpireToHand = options.ExpireToHand == true ? (bool?)true : null,
                 EnergyMaxRefBonus = (options.EnergyMaxRefBonus ?? 0) != 0 ? options.EnergyMaxRefBonus : null,
                 HarvestKeep = (options.HarvestKeep ?? 0) != 0 ? options.HarvestKeep : null,
@@ -309,7 +313,8 @@ namespace DeckRogue.Engine
         public static GameState StartCombat(int seed, string reactionMode, string enemyId,
             string deckId = "starter", string leaderId = null, IReadOnlyList<string> cardIds = null)
         {
-            var deck = (cardIds != null && cardIds.Count > 0) ? (IReadOnlyList<CardInstance>)BuildDeckFromIds(cardIds) : Content.BuildDeck(deckId);
+            // TS の既定引数 (deckId = 'starter') は undefined を渡しても効く。C# は明示の null で既定が効かないので ?? で揃える
+            var deck = (cardIds != null && cardIds.Count > 0) ? (IReadOnlyList<CardInstance>)BuildDeckFromIds(cardIds) : Content.BuildDeck(deckId ?? "starter");
             return StartCombatWithOptions(seed, reactionMode, enemyId, new CombatOptions { Deck = deck, LeaderId = leaderId });
         }
 
@@ -365,7 +370,10 @@ namespace DeckRogue.Engine
             var s = state;
             for (int i = 0; i < s.Enemies.Count; i++)
             {
-                if (s.Enemies[i].Hp <= 0) continue;
+                // 意図の無い敵だけ宣言する (2026-09-24 Opus ひなた E1)。自ターン開始で前のターンの意図は消してあるので、
+                // ここで既に意図を持つのは「このターン開始の誘発の中で宣言済み」の敵 = 分裂体の出現 (隙を含む)・潜伏の噛みつき・
+                // HP半分の豹変で飛んだ先の宣言。旧実装はそれを上書きして2回宣言していた。TS と同形
+                if (s.Enemies[i].Hp <= 0 || s.Enemies[i].Intent != null) continue;
                 s = DeclareOne(s, i);
             }
             return s;
@@ -403,7 +411,8 @@ namespace DeckRogue.Engine
                 var enemiesS = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = restIntent, StaggeredNext = false, IntentMoveId = null, IntentNode = null } : e);
                 return Events.Emit(s with { Rng = rngS, Enemies = enemiesS }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = restIntent });
             }
-            if ((enemy.StolenGold ?? 0) > 0 && (enemy.Intent == null || enemy.Intent.Kind != EnemyActionKinds.Flee))
+            // 前の意図が逃走なら (打ち消された逃走) 2度続けては宣言しない。自ターン開始で意図は消えているので PrevIntentKind を読む (E1)
+            if ((enemy.StolenGold ?? 0) > 0 && (enemy.Intent?.Kind ?? enemy.PrevIntentKind) != EnemyActionKinds.Flee)
             {
                 var (fleeIntent, rngF) = BuildIntent(s.Rng, fleeMove, enemy.Strength, enemy.AtkScale ?? 1.0);
                 var enemies2 = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = fleeIntent, IntentMoveId = null, IntentNode = null } : e);
@@ -465,8 +474,20 @@ namespace DeckRogue.Engine
                 }
             }
 
-            var declared = (conditionalOn != null && alt != null) ? intent with { ConditionalOn = conditionalOn, Alt = alt } : intent;
-            // 盗みは宣言と同時に成立する
+            var declaredRaw = (conditionalOn != null && alt != null) ? intent with { ConditionalOn = conditionalOn, Alt = alt } : intent;
+            // 盗みは宣言と同時に成立する。
+            // 上限 (2026-09-24 Opus ひなた E6・本家 Looter): 所持金−すでに盗まれた額 (逃げた盗人の分も含む) まで。
+            // GoldAvailable が無ければ上限なし (TS の Infinity)
+            int? stealCap = null;
+            if (declaredRaw.Kind == EnemyActionKinds.StealGold && s.GoldAvailable != null)
+            {
+                int alreadyStolen = 0;
+                for (int k = 0; k < s.Enemies.Count; k++) alreadyStolen += s.Enemies[k].StolenGold ?? 0;
+                stealCap = Math.Max(0, s.GoldAvailable.Value - alreadyStolen);
+            }
+            var declared = declaredRaw.Kind == EnemyActionKinds.StealGold && stealCap != null && declaredRaw.Actual > stealCap.Value
+                ? declaredRaw with { Actual = stealCap.Value }
+                : declaredRaw;
             int stolen = declared.Kind == EnemyActionKinds.StealGold ? declared.Actual : 0;
             var declaredMove = move;
             var nextUsesLocal = nextUses;
@@ -557,6 +578,7 @@ namespace DeckRogue.Engine
             int? nextTurnDraw = state.NextTurnDraw;
             int? nextTurnEnergy = state.NextTurnEnergy;
             int? nextTurnBlock = state.NextTurnBlock;
+            int? nextTurnLight = state.NextTurnLight;   // 灯の埋め火・灯の集約 (2026-09-23)
             // 貯め置き (energyCarryThisTurn) はギアの1回版。読んでから旗を落とす (ギアの1ターン1個・挟み紙の旗もここで降りる。2026-09-17)
             bool carryOnce = state.EnergyCarryThisTurn == true;
             var s = state with
@@ -572,6 +594,8 @@ namespace DeckRogue.Engine
                 MaxHpLossFiredThisTurn = null,   // 脈打つ欠片: 同じターンの2発目以降は回数を使わない旗 (2026-09-18)
                 NextTurnEnergy = null,
                 NextTurnBlock = null,
+                NextTurnLight = null,
+                BellLocked = null,   // 静かな鈴の固定 (2026-09-24 E2) は自ターン開始で消える
                 // 通常ブロックはリセット。氷壁 (iceBlock) は持ち越される。
                 // 上限のスナップショットもここで更新 = このターン中のランプは上限参照札に乗らない
                 Player = state.Player with
@@ -594,12 +618,26 @@ namespace DeckRogue.Engine
             };
             // ターン装甲の累計リセット: 自ターン開始〜次の自ターン開始が「1ターン」
             s = s with { Enemies = MapIdx(s.Enemies, (e, _) => (e.DamageThisTurn ?? 0) > 0 ? e with { DamageThisTurn = 0 } : e) };
+            // 前のターンの意図を消す (2026-09-24 Opus ひなた E1)。敵フェーズで実行済みの意図が残っていると、
+            // このターン開始の誘発 (人形・レリック) で HP 半分を割った時に「宣言済みの意図の差し替え」と取り違え、
+            // 最後の DeclareIntents が二重に宣言して第2形態の1手目が飛んでいた。分裂体の「出現ターンは隙」も同じ。
+            // 種別だけ PrevIntentKind に残す (盗人の逃走の判定)。T1 と同じ扱い。TS と同形
+            s = s with
+            {
+                Enemies = MapIdx(s.Enemies, (e, _) =>
+                {
+                    if (e.Intent == null && e.IntentMoveId == null && e.IntentNode == null) return e;
+                    var cleared = e with { Intent = null, IntentMoveId = null, IntentNode = null };
+                    return e.Intent != null ? cleared with { PrevIntentKind = e.Intent.Kind } : cleared;
+                }),
+            };
             s = Events.Emit(s, new GameEvent_TurnStarted { Turn = turn, Hand = s.Player.Hand.Select(c => c.Def.Name).ToList() });
             // ドローを onTurnStart 誘発より先に行う。霞み: ドロー-2・最低3枚
             // 過負荷の歯車 (ギア) は nextTurnDraw に負の量を積む = 0 で下げ止める (2026-09-17)
             s = Effects.DrawCards(s, Math.Max(0, ((s.Player.Mist ?? 0) > 0 ? Math.Max(3, s.Player.DrawPerTurn - 2) : s.Player.DrawPerTurn) + (nextTurnDraw ?? 0)));
             // 自ら固まる粘土 (gainBlockNextTurn): 前のターンに積んだブロックを得る (ブロック獲得の誘発は通す)
             if ((nextTurnBlock ?? 0) > 0) s = Effects.GainPlayerBlock(s, nextTurnBlock ?? 0, FirstAliveOrZero(s));
+            if ((nextTurnLight ?? 0) > 0) s = Effects.GainLight(s, nextTurnLight ?? 0, "card", FirstAliveOrZero(s));   // 灯の埋め火・灯の集約 (2026-09-23)。TS と同形
             s = Effects.RunPermanentTriggers(s, "onTurnStart", FirstAliveOrZero(s));
             // ターン開始誘発で敵が全滅したら即座に勝利を確定する
             s = CheckCombatEnd(s);
@@ -774,7 +812,7 @@ namespace DeckRogue.Engine
         /// <summary>山札/捨て札から選ぶ効果の種別 (引導・回収・サーチ)。1枚の札は1種だけ持てる</summary>
         public static string DeckChooseKindOf(CardDef def)
         {
-            var kinds = new[] { "exhaustFromDeckChoose", "retrieveFromDiscard", "searchDeck" };
+            var kinds = new[] { "exhaustFromDeckChoose", "retrieveFromDiscard", "searchDeck", "transformDeckToToken" };
             foreach (var k in kinds)
             {
                 for (int i = 0; i < def.Effects.Count; i++)
@@ -808,7 +846,7 @@ namespace DeckRogue.Engine
             if (card == null) throw new InvalidOperationException($"手札にないカード: {cardUid}");
             if (!Effects.IsPlayableFromHand(card, state)) throw new InvalidOperationException($"{card.Def.Name} はプレイ不可 (リアクション専用)");
             // 殉教の誓い: 従者が場にいる時だけプレイできる
-            if (!Effects.RetainerRequirementMet(state, card)) throw new InvalidOperationException($"{card.Def.Name} は場に従者が1体以上いる時だけプレイできる");
+            if (!Effects.RetainerRequirementMet(state, card)) throw new InvalidOperationException($"{card.Def.Name} は場に人形が1体以上いる時だけプレイできる");
             // 拘束: 1ターンにプレイできるカードは上限枚数まで。伏せ・発動は制限しない
             AssertPlayCap(state);
             // マナ軽減トークン適用後の実効コストで支払う (素のコスト0は割引を消費しない)
@@ -989,10 +1027,10 @@ namespace DeckRogue.Engine
             IReadOnlyList<CardInstance> deckPool =
                 chooseKind == "retrieveFromDiscard"
                     ? state.Player.DiscardPile
-                    : chooseKind == "searchDeck"
+                    : chooseKind == "searchDeck" || chooseKind == "transformDeckToToken"
                         ? state.Player.DrawPile
                         : (IReadOnlyList<CardInstance>)Concat(state.Player.DrawPile, state.Player.DiscardPile);
-            string poolLabel = chooseKind == "retrieveFromDiscard" ? "捨て札" : chooseKind == "searchDeck" ? "山札" : "山札か捨て札";
+            string poolLabel = chooseKind == "retrieveFromDiscard" ? "捨て札" : chooseKind == "searchDeck" || chooseKind == "transformDeckToToken" ? "山札" : "山札か捨て札";
             var deckChooseUids = deckChooseN > 0 ? (deckUids ?? (IReadOnlyList<string>)new List<string>()) : (IReadOnlyList<string>)new List<string>();
             if (deckChooseN > 0)
             {
@@ -1040,9 +1078,9 @@ namespace DeckRogue.Engine
             CardInstance sacrificed = null;
             if (sacrificeN > 0)
             {
-                if (permanentUid == null) throw new InvalidOperationException($"{card.Def.Name} は破壊する従者 (permanentUid) の指定が必要");
+                if (permanentUid == null) throw new InvalidOperationException($"{card.Def.Name} は破壊する人形 (permanentUid) の指定が必要");
                 var t = state.Player.Permanents.FirstOrDefault(p => p.Uid == permanentUid);
-                if (t == null || t.Def.Retainer != true || t.Innate == true) throw new InvalidOperationException($"従者ではない、または場に無い置物: {permanentUid}");
+                if (t == null || t.Def.Retainer != true || t.Innate == true) throw new InvalidOperationException($"人形ではない、または場に無い置物: {permanentUid}");
                 sacrificed = t;
             }
 
@@ -1133,6 +1171,8 @@ namespace DeckRogue.Engine
             s = Events.Emit(s, new GameEvent_CardPlayed { CardId = card.Def.Id });
             // 灯コストの支払いをログに残す (2026-09-20 夜。TS と同形)
             if (lightCost > 0) s = Events.Emit(s, new GameEvent_LightSpent { Amount = lightCost, CardId = card.Def.Id });
+            // 灯を払う攻撃 (2026-09-23 裁定B) でも onLightDischarged (灯の火皿) は鳴る。TS と同形
+            if (lightCost > 0) s = Effects.RunPermanentTriggers(s, "onLightDischarged", enemyIndex);
             if (redirectedFrom != null)
             {
                 // 庇う: 発生を必ずログに残す
@@ -1163,7 +1203,28 @@ namespace DeckRogue.Engine
             // 亡骸効果: 消滅コストで支払われた札は「プレイ以外の経路」なので発火する
             s = Effects.FireNecroEffects(s, exhaustedCards, enemyIndex);
             // 引導: 効果解決の前に行う = 直後のドロー効果と競合しない
-            if (deckChooseUids.Count > 0 && chooseKind != "exhaustFromDeckChoose")
+            if (deckChooseUids.Count > 0 && chooseKind == "transformDeckToToken")
+            {
+                // 降霊 (白 2026-09-23 本家 Seance): 山札から選んだ札をその場でトークンに変える (置き換え・並びは崩さない)。TS と同形
+                string tokId = null;
+                for (int i = 0; i < card.Def.Effects.Count; i++) if (card.Def.Effects[i].Effect == "transformDeckToToken") { tokId = card.Def.Effects[i].SummonId; break; }
+                var tokDef = Content.GetCardDef(tokId ?? "");
+                var chosenSet = new HashSet<string>(deckChooseUids);
+                int k = 0;
+                var changed = new List<string>();
+                int logLen = s.EventLog.Count;
+                var newDraw = new List<CardInstance>();
+                for (int i = 0; i < s.Player.DrawPile.Count; i++)
+                {
+                    var c = s.Player.DrawPile[i];
+                    if (!chosenSet.Contains(c.Uid)) { newDraw.Add(c); continue; }
+                    changed.Add(c.Def.Id);
+                    newDraw.Add(new CardInstance { Uid = $"tokt_{logLen}_{k++}_{tokDef.Id}", Def = tokDef, Token = true });
+                }
+                s = s with { Player = s.Player with { DrawPile = newDraw } };
+                foreach (var id in changed) s = Events.Emit(s, new GameEvent_DeckCardTransformed { CardId = id, Into = tokDef.Id });
+            }
+            if (deckChooseUids.Count > 0 && (chooseKind == "searchDeck" || chooseKind == "retrieveFromDiscard"))
             {
                 // 回収 (捨て札→手札) / サーチ (山札→手札)。山札の並びは崩さない (抜くだけ)
                 var chosenSet = new HashSet<string>(deckChooseUids);
@@ -1504,7 +1565,7 @@ namespace DeckRogue.Engine
                 if (burnHp > 0)
                 {
                     s = s with { Player = s.Player with { Hp = s.Player.Hp - burnHp } };
-                    s = Events.Emit(s, new GameEvent_ScaldTick { Count = scalds + brands, Amount = burnHp });
+                    s = Events.Emit(s, new GameEvent_ScaldTick { Count = scalds + brands, Amount = burnHp, Scalds = scalds, Brands = brands });
                     s = CheckCombatEnd(s);
                     if (s.Phase == CombatPhases.Lost) return s;
                 }
@@ -1654,6 +1715,8 @@ namespace DeckRogue.Engine
                 };
                 // からくり壊し＋攻撃 (2026-09-14): 生きた罠を pre 窓より先に壊してから殴る
                 if (locked.AlsoDestroySet == true) s = DestroySetCards(s, i);
+                // 静かな鈴が効くかをここで固定する (2026-09-24 Opus ひなた E2: 罠1枚を pre 窓で発動すると鈴が外れ、窓の「鈴で-2」が嘘になっていた)
+                s = s with { BellLocked = s.Player.SetCards.Count > 0 };
                 // 行動実行の直前フック (pre窓): 打ち消し・軽減リアクションがここで発動/割り込みする
                 var executing = new GameEvent_EnemyActionExecuting { EnemyIndex = i, Kind = locked.Kind };
                 s = Events.Emit(s, executing);
@@ -1909,8 +1972,8 @@ namespace DeckRogue.Engine
                         int v = intent.Actual;
                         // 威圧 (本家 Weak 化): スタックがあれば各ヒット-25% (切り捨て・最低1)
                         v = Effects.ApplyEnemyWeak(v, state.Enemies[enemyIndex]?.Weak);
-                        // 静かな鈴 (C型レリック): 伏せ札がある間、各ヒット-N (最低1クランプは威圧と同則)
-                        if ((state.SetDamageReduction ?? 0) > 0 && state.Player.SetCards.Count > 0)
+                        // 静かな鈴 (C型レリック): 伏せ札がある間、各ヒット-N (最低1クランプは威圧と同則)。行動の開始で固定した値を読む (E2)
+                        if (Effects.SetBellActive(state))
                         {
                             v = Math.Max(1, v - (state.SetDamageReduction ?? 0));
                         }

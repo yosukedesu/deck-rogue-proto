@@ -18,7 +18,7 @@ import { dollGrowth, dollLifeLeft, effectiveCost, hearthSparkMax, isBlazing, isD
 import { cardChoosesDoll } from '../engine/combat.ts'
 import { RESTRAIN_PLAY_CAP } from '../engine/combat.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
-import { applyRunCommand, createRun, defaultEventChoice, gearFull, isUpgraded, nextChoices } from '../engine/run.ts'
+import { applyRunCommand, createRun, defaultEventChoice, gearFull, isUpgraded, nextChoices, defaultDepartureCommand } from '../engine/run.ts'
 import { BOSS_ROW } from '../engine/map.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { CardDef, CardInstance, Command, GameState, ReactionMode } from '../engine/types.ts'
@@ -213,7 +213,7 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   if (card.def.effects.some((e) => e.effect === 'dischargeLight') && light < 3) return false
   if (card.def.effects.some((e) => e.effect === 'dischargeLightWeaken') && light < 3) return false // 眩む閃光は灯3未満で不発
   if (card.def.effects.some((e) => e.effect === 'consumeLight') && light < 4) return false // 灯の鍛冶は灯4未満なら鍛えない
-  if (card.def.effects.some((e) => e.effect === 'dischargeLightRally') && (light < 2 || retainers < 1)) return false
+  if (card.def.effects.some((e) => e.effect === 'dischargeLightRally') && (light < 2 * 2 || retainers < 1)) return false // 灯2につき1回 (2026-09-24) = 2回動ける灯4から
   if (card.def.effects.some((e) => e.effect === 'triggerRetainersNow') && retainers < 1) return false
   // 反復 (青): 手札に他のダメージ呪文がないとトークンが腐る (ターン終了で消えるため)
   if (
@@ -340,6 +340,14 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
     const picked = pickBest(state.player.discardPile, retrieveN)
     const need = Math.min(retrieveN, state.player.discardPile.length)
     deckUids = picked.length >= need ? picked : state.player.discardPile.slice(0, need).map((c) => c.uid)
+  }
+  // 降霊 (白 2026-09-23 本家 Seance): 山札の状態異常 > 初期の基本札 > 先頭、の順で火種に変える札を選ぶ
+  const transformN = card.def.effects.filter((e) => e.effect === 'transformDeckToToken').reduce((a, e) => a + (e.amount ?? 1), 0)
+  if (transformN > 0) {
+    const rank = (c: (typeof state.player.drawPile)[number]): number =>
+      c.def.id.startsWith('status_') ? 0 : /_(strike|guard)$/.test(c.def.id) ? 1 : 2
+    const pool = [...state.player.drawPile].sort((a, b) => rank(a) - rank(b))
+    deckUids = pool.slice(0, Math.min(transformN, pool.length)).map((c) => c.uid)
   }
   const searchN = card.def.effects.filter((e) => e.effect === 'searchDeck').reduce((a, e) => a + (e.amount ?? 1), 0)
   if (searchN > 0) {
@@ -580,6 +588,7 @@ function simulateRuns(count: number, baseSeed: number): void {
       let aborted = false
       let actions = 0
       while (
+        run.phase === 'departure' ||
         run.phase === 'combat' ||
         run.phase === 'reward' ||
         run.phase === 'map' ||
@@ -591,6 +600,10 @@ function simulateRuns(count: number, baseSeed: number): void {
         run.phase === 'relic-choose'
       ) {
         if (++actions > 30000) { aborted = true; break } // ラン全体の行動数セーフガード
+        if (run.phase === 'departure') {
+          run = applyRunCommand(run, defaultDepartureCommand(run)) // 出立の店 (2026-09-24): サービスを1つ買って店を出る
+          continue
+        }
         if (run.phase === 'map') {
           // ルートポリシー: HP60%未満なら焚き火優先 / それ以外はHP60%以上でエリート優先 → 戦闘
           const cands = nextChoices(run)

@@ -182,7 +182,7 @@ namespace DeckRogue.EditorTools
                         g.Seed = 4242;
                         g.StartRun();
                         Debug.Log($"[DeckRogue] StartRun: phase={g.Rs?.Phase ?? "null"} error={g.Error ?? "なし"} texts={CountUnder<TMPro.TMP_Text>(g)} buttons={CountUnder<UnityEngine.UI.Button>(g)}");
-                        if (g.Rs == null || g.Error != null || g.Rs.Phase != RunPhases.Map) { Finish(1, "ラン開始に失敗"); return; }
+                        if (g.Rs == null || g.Error != null || (g.Rs.Phase != RunPhases.Map && g.Rs.Phase != RunPhases.Departure)) { Finish(1, "ラン開始に失敗"); return; }   // 出立の店 (2026-09-24) から始まる
                         _step = 2; _frames = 0;
                         return;
                     case 2:
@@ -209,6 +209,7 @@ namespace DeckRogue.EditorTools
                                 cmd = new RunCommand_EventChoice { Index = ev != null ? ev.Choices.Count - 1 : 0 };
                                 break;
                             }
+                            case RunPhases.Departure: cmd = DeckRogue.Engine.Run.DefaultDepartureCommand(rs); break;   // 出立の店 (2026-09-24): 既定=サービスを1つ買う→店を出る (出立の間は1手ずつ繰り返す)
                             case RunPhases.Shop: cmd = new RunCommand_ShopLeave(); break;
                             case RunPhases.Campfire: cmd = new RunCommand_CampfireRest(); break;
                             case RunPhases.Workshop: cmd = new RunCommand_WorkshopSkip(); break;

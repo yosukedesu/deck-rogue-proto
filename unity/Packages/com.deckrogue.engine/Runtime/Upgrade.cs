@@ -82,7 +82,6 @@ namespace DeckRogue.Engine
                 ["blue_page_wind"] = new[] { Eff("onPlay", "drawCards", 1) },
                 ["blue_rolling_wave"] = new[] { Eff("onPlay", "drawCards", 1) },
                 ["black_grave_pressure"] = new[] { Eff("onPlay", "exhaustFromDeck", 2) }, // 自分で燃料を足してから刈る
-                ["white_rank_thrust"] = new[] { Eff("onPlay", "gainBlock", 4) },
                 ["red_streak_bet"] = new[] { Eff("onPlay", "dealDamage", 3) }, // 固定の床3 (茨の報い型)
                 // 刃の葬列+ = ナイフをもう1枚 (per-Exhaust参照はコストに触れない裁定の受け皿)
                 ["black_blade_procession"] = new[] { Eff("onPlay", "addCardToHand", 1, "black_shiv_token") },
@@ -166,7 +165,7 @@ namespace DeckRogue.Engine
             "dealDamagePerCardPlayed", "dealDamagePerExhaust", "dealDamageDrainPerExhaust", "gainBlockPerExhaust", "dealDamagePerSelfHpLost", "dealDamagePerHeal",
             "dischargeLight", // 灯の放出 (白 2026-09-20): 倍率+1
             "dealDamagePerLight", // 灯篭の人形 (灯2につきN)。灯コスト持ちなので実際は Light ティア (灯-1) が先に取る
-            "dealDamagePerSpark", "gainBlockPerLight", "drawCardsPerLight", "dischargeLightWeaken", // 2026-09-20 夜
+            "dealDamagePerSpark", "gainBlockPerSpark", "gainBlockPerLight", "drawCardsPerLight", "dischargeLightWeaken", // 2026-09-20 夜・火守りの盾 (2026-09-24)
         };
 
         private static readonly HashSet<string> UNIT_EFFECTS_V2 = new HashSet<string>
@@ -197,7 +196,7 @@ namespace DeckRogue.Engine
         private static bool IsGreenRule(CardDef def) =>
             def.Id.StartsWith("green_", StringComparison.Ordinal) || (def.Color != null && V2_COLORS.Contains(def.Color));
         /// <summary>本家形の例外 = 名指しでコスト-1 (2026-09-18 白: 誘発ごとにドローする置物は単位+1 だと青のドローの定価を越える)</summary>
-        private static readonly HashSet<string> V2_COST_ONLY = new HashSet<string> { "white_perm_band", "white_perm_apostle", "white_perm_mirror_lantern" }; // 鏡の灯籠 (2026-09-21): 1E
+        private static readonly HashSet<string> V2_COST_ONLY = new HashSet<string> { "white_perm_band", "white_perm_apostle" }; // 鏡の灯籠は 2026-09-24 に撤去
 
         /// <summary>効果列1つぶんの本家形ティア (モードごとにも使う)</summary>
         private static string TierV2(IReadOnlyList<DeclarativeEffect> effects, CardDef? def = null)

@@ -6,7 +6,7 @@ import { fuseCards } from './fusion.ts'
 import { applyCommand } from './state.ts'
 import { freshCombat, withHand } from './test-helpers.ts'
 import { upgradeCard } from './upgrade.ts'
-import type { CardInstance, GameState } from './types.ts'
+import type { CardDef, CardInstance, GameState } from './types.ts'
 
 const play = (s: GameState, uid: string, extra: Record<string, unknown> = {}): GameState =>
   applyCommand(s, { type: 'PlayCard', cardUid: uid, targetIndex: 0, ...extra } as never)
@@ -18,6 +18,10 @@ const light = (s: GameState, n: number): GameState => ({ ...s, player: { ...s.pl
 const nextTurn = (s: GameState): GameState => applyCommand({ ...s, player: { ...s.player, hp: 999, maxHp: 999 } }, { type: 'EndTurn' })
 const dolls = (s: GameState): CardInstance[] => s.player.permanents.filter((p) => p.def.retainer === true && p.innate !== true)
 const inst = (id: string): CardInstance => ({ uid: `x_${id}`, def: getCardDef(id) })
+const withDef = (s: GameState, def: CardDef): GameState => ({ ...s, player: { ...s.player, hand: [{ uid: `d_${def.id}`, def }, ...s.player.hand] } })
+// 2026-09-24 白のプール 108→84 (docs/white-pool-trim-proposal-2026-09-23.md): 撤去した札の機構は仮の札で固定
+const TWIN: CardDef = { id: 'test_twin', name: '試しの二重', cost: 1, type: 'spell', color: 'white', effects: [{ trigger: 'onPlay', effect: 'twinNextRetainer', amount: 1 }] }
+const MIRROR: CardDef = { id: 'test_mirror', name: '試しの鏡', cost: 2, type: 'permanent', color: 'white', effects: [{ trigger: 'onTurnStart', effect: 'copyLastRetainer', amount: 1 }] }
 
 describe('灯り (寿命): 点灯したターンを1と数え、最後のターンの敵フェーズが終わると消える', () => {
   it('剣の人形 (寿命4): T1 に出すと あと4→3→2→1、T4 の敵フェーズの終わりに消える (RetainerExpired)。T2〜T4 の開始に動く', () => {
@@ -102,27 +106,27 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     for (const id of ['white_copy_light', 'white_relight', 'white_eternal_light']) expect(getCardDef(id).requiresRetainer).toBe(true)
   })
 
-  it('継ぎ火 (1E・灯1): 灯りを2ターン継ぐ。永遠の灯 (1E・灯2・消滅): 尽きなくなる。期限なしの人形に継ぎ火は何も起きない', () => {
+  it('継ぎ火 (1E・灯2・2026-09-24 ユーザー案): 場の人形すべての期限を2ターン延ばす。永遠の灯 (1E・灯2・消滅): 尽きなくなる。期限なしの人形に継ぎ火は何も起きない', () => {
     let s = light(energy(fresh(['white_perm_squire', 'white_relight', 'white_eternal_light', 'white_relight']), 9), 9)
     s = play(s, 't0_white_perm_squire')
-    s = play(s, 't1_white_relight', { permanentUid: 't0_white_perm_squire' })
+    s = play(s, 't1_white_relight')
     expect(dollLifeLeft(s, dolls(s)[0])).toBe(6)
-    expect(s.player.light).toBe(8)
+    expect(s.player.light).toBe(7)
     expect(s.eventLog.some((e) => e.type === 'RetainerLifeExtended' && e.amount === 2)).toBe(true)
     s = play(s, 't2_white_eternal_light', { permanentUid: 't0_white_perm_squire' })
     expect(dollLifeLeft(s, dolls(s)[0])).toBeNull()
-    expect(s.player.light).toBe(6)
+    expect(s.player.light).toBe(5)
     expect(s.player.exhaustPile.some((c) => c.def.id === 'white_eternal_light')).toBe(true)
-    s = play(s, 't3_white_relight', { permanentUid: 't0_white_perm_squire' })
-    expect(dolls(s)[0].lifeBonus).toBe(2) // 変わらない
+    s = play(s, 't3_white_relight')
+    expect(dolls(s)[0].lifeBonus).toBe(2) // 変わらない (期限なし)
     for (let i = 0; i < 8; i++) s = nextTurn(s)
     expect(dolls(s)).toHaveLength(1)
     expect(dollGrowth(s, dolls(s)[0])).toBe(8) // 火勢は続く
   })
 
-  it('二重の点灯: 次に出す人形が2体になる (ターンをまたいで持ち越す)。片割れは同じ残り寿命で点灯し、もう倍にはならない', () => {
-    let s = energy(fresh(['white_twin_light', 'white_perm_squire', 'white_perm_squire']), 9)
-    s = play(s, 't0_white_twin_light')
+  it('二重の点灯 (機構 twinNextRetainer。札は 2026-09-24 に撤去): 次に出す人形が2体になる (ターンをまたいで持ち越す)。片割れは同じ残り寿命で点灯し、もう倍にはならない', () => {
+    let s = energy(withDef(fresh(['white_perm_squire', 'white_perm_squire']), TWIN), 9)
+    s = play(s, 'd_test_twin')
     expect(s.nextRetainerTwin).toBe(1)
     s = energy(withHand(nextTurn(s), ['white_perm_squire', 'white_perm_squire']), 9)
     const hp0 = s.enemies[0].hp
@@ -135,12 +139,12 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     expect(dolls(s)).toHaveLength(3) // 2枚目は1体
   })
 
-  it('鏡の灯籠 (置物・人形ではない): 毎ターン開始時に最後に点灯した人形を1体コピー。号令・アンセム・人形壊しの対象にならない', () => {
-    let s = energy(fresh(['white_perm_mirror_lantern', 'white_perm_squire', 'white_perm_shieldmaiden']), 9)
-    s = play(s, 't0_white_perm_mirror_lantern')
-    expect(getCardDef('white_perm_mirror_lantern').retainer).toBeUndefined()
-    s = play(s, 't1_white_perm_squire')
-    s = play(s, 't2_white_perm_shieldmaiden')
+  it('鏡の灯籠の機構 copyLastRetainer (札は 2026-09-24 に撤去。置物・人形ではない): 毎ターン開始時に最後に点灯した人形を1体コピー。号令・アンセム・人形壊しの対象にならない', () => {
+    let s = energy(withDef(fresh(['white_perm_squire', 'white_perm_shieldmaiden']), MIRROR), 9)
+    s = play(s, 'd_test_mirror')
+    expect(MIRROR.retainer).toBeUndefined()
+    s = play(s, 't0_white_perm_squire')
+    s = play(s, 't1_white_perm_shieldmaiden')
     s = nextTurn(s) // T2: 盾の人形 (最後に点灯) のコピー
     expect(dolls(s).map((p) => p.def.id)).toEqual(['white_perm_squire', 'white_perm_shieldmaiden', 'white_perm_shieldmaiden'])
     expect(dolls(s)[2].enteredTurn).toBe(1) // 残り寿命を写す
@@ -155,23 +159,20 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     expect(dolls(s).map((p) => dollLifeLeft(s, p))).toEqual([3, 3])
   })
 
-  it('出力: 剣3・盾3・小さな人形2・一斉点灯3体・大点灯4体。灯コストつきの人形と篝火は据え置き', () => {
+  it('出力: 剣3・盾3・小さな人形2・一斉点灯3体 (大点灯は 2026-09-24 に撤去)。灯コストつきの人形と篝火は据え置き', () => {
     expect(getCardDef('white_perm_squire').effects[0].amount).toBe(3)
     expect(getCardDef('white_perm_shieldmaiden').effects[0].amount).toBe(3)
     expect(getCardDef('white_perm_page').effects[0].amount).toBe(2)
     expect(getCardDef('white_muster').effects[0].amount).toBe(3)
-    expect(getCardDef('white_grand_rally').effects[0].amount).toBe(4)
     expect(getCardDef('white_perm_hound').effects[0].amount).toBe(2)
     expect(getCardDef('white_perm_bonfire').effects[0].amount).toBe(3)
   })
 
-  it('鍛え: 写し灯+=2体・二重の点灯+=次の2体・継ぎ火+=灯0・永遠の灯+=灯1・鏡の灯籠+=1E', () => {
+  it('鍛え: 写し灯+=2体・継ぎ火+=灯1・永遠の灯+=灯1 (二重の点灯・鏡の灯籠は 2026-09-24 に撤去)', () => {
     const up = (id: string) => upgradeCard(inst(id)).def
     expect(up('white_copy_light').effects[0].amount).toBe(2)
-    expect(up('white_twin_light').effects[0].amount).toBe(2)
-    expect(up('white_relight').lightCost).toBe(0)
+    expect(up('white_relight').lightCost).toBe(1)
     expect(up('white_eternal_light').lightCost).toBe(1)
-    expect(up('white_perm_mirror_lantern').cost).toBe(1)
   })
 
   it('合成: 人形×人形は長い方の寿命、篝火が混ざれば期限なし。人形×道具は人形の寿命', () => {
@@ -184,10 +185,10 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     expect(c?.life).toBe(4)
   })
 
-  it('白は 96種 (報酬88): 新規5枚は報酬プール', () => {
+  it('白は 85種 (報酬76): 残った新規3枚は報酬プール', () => {
     const white = allCards.filter((c) => c.color === 'white')
-    expect(white.length).toBe(96)
-    for (const id of ['white_copy_light', 'white_twin_light', 'white_perm_mirror_lantern', 'white_relight', 'white_eternal_light']) {
+    expect(white.length).toBe(85) // 2026-09-24 プールを削る −24 (108→84)・同日 CSV の裁定で −7・灯の薪 +1・Opus ひなた裁定で重ねる灯 −1
+    for (const id of ['white_copy_light', 'white_relight', 'white_eternal_light']) {
       expect(white.some((c) => c.id === id), id).toBe(true)
     }
   })

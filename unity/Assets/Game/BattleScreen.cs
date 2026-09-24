@@ -423,7 +423,8 @@ namespace DeckRogue.Game
                 var it = e.Intent != null ? (Effects.EffectiveIntent(st, index) ?? e.Intent) : null;
                 if (it != null && st.HideIntents != true) { string d = IntentDetail(st, index, it); if (d.Length > 0) parts.Add(d); }
             }
-            if (def != null && def.Interrupts != null)
+            // 鎮めの錘 (ギア) で割り込みを止めた敵は豹変しない = 予告を出さない (2026-09-24 Opus ひなた E5: 止めた後も「HPが166以下になると…」が残っていた)
+            if (def != null && def.Interrupts != null && e.InterruptBlocked != true)
             {
                 int strength = e.Strength;
                 for (int k = 0; k < def.Interrupts.Count; k++)
@@ -660,6 +661,7 @@ namespace DeckRogue.Game
         static float InterruptMarkRatio(EnemyDef def, EnemyState e)
         {
             if (def == null || def.Interrupts == null || e.MaxHp <= 0) return -1f;
+            if (e.InterruptBlocked == true) return -1f;   // 鎮めの錘で止めた敵は行動が変わらない = 線も引かない (2026-09-24 E5)
             for (int k = 0; k < def.Interrupts.Count; k++)
             {
                 var it = def.Interrupts[k];
@@ -848,7 +850,7 @@ namespace DeckRogue.Game
         static string IntentDetail(GameState st, int index, EnemyIntent it)
         {
             string full = CardText.IntentText(st, index);
-            string[] marks = { "【", "※", "からくり", "人形", "従者", "→", "手数", "応援", "回復" };   // 付与・筋力・盾は吹き出しの中に出るので、ここは分岐と特殊行動だけ
+            string[] marks = { "【", "※", "からくり", "人形", "→", "手数", "応援", "回復" };   // 付与・筋力・盾は吹き出しの中に出るので、ここは分岐と特殊行動だけ (「従者」は 2026-09-24 に画面から消えた)
             for (int i = 0; i < marks.Length; i++) if (full.Contains(marks[i])) return full;
             return "";
         }
@@ -903,7 +905,7 @@ namespace DeckRogue.Game
                 case "heal": return "回復";
                 case "hex": return "呪い";
                 case "destroy-set": return "からくり壊し";
-                case "destroy-token": return "従者狩り";
+                case "destroy-token": return "人形狩り";   // 「従者」→「人形」(2026-09-24 T3)
                 case "steal-gold": return "盗み";
                 case "flee": return "逃走";
                 case "mill": return "山札喰い";
@@ -1046,8 +1048,9 @@ namespace DeckRogue.Game
             int grow = DollUi.Growth(cur, d);
             // 語彙 (2026-09-22 友人ラン): 寿命は「期限」。資源の「灯」と同じ字を使わない＝「灯が減ると人形が消える」と読ませない
             sb.Append("\n<color=#634410>出した瞬間に1回動く（点灯）。").Append(left == null ? "期限なし（消えない）" : "あと" + left.Value + "ターンで消える（出したターンを含む）").Append("</color>");
-            sb.Append("\n<color=#4e4c55>出してから1ターンごとにダメージとブロック+1（いま火勢+").Append(grow).Append("）。写し灯などで写すと残りの期限も写す。灯（資源）とは別＝灯が減っても消えない</color>");
-            sb.Append("\n<color=#4e4c55>敵の「人形壊し」で壊れる。灯の捧げの対価に選べる</color>");
+            // 火勢はダメージ・ブロックを持つ人形だけ (2026-09-24 Opus ひなた E8: 灯篭の人形の「灯2につき1」・手当て・灯芯には乗らない)
+            sb.Append("\n<color=#4e4c55>").Append(DollUi.HasGrowth(d.Def) ? "出してから1ターンごとにダメージとブロック+1（いま火勢+" + grow + "）。" : "").Append("写し灯などで写すと残りの期限も写す。灯（資源）とは別＝灯が減っても消えない</color>");
+            sb.Append("\n<color=#4e4c55>敵の「人形狩り」で壊れる。灯の捧げの対価に選べる</color>");   // 用語の見出し「人形狩り」にそろえる (2026-09-24 T3)
             if (g.Pending != null && g.Pending.NextNeed() == "permanent")
             {
                 bool ok = g.Pending.Card == null || DollUi.Eligible(cur, g.Pending.Card.Def, d);
@@ -1510,7 +1513,7 @@ namespace DeckRogue.Game
                 var lt = UiKit.Deco(chip, left == null ? "∞" : "あと" + left.Value, 11, left != null && left.Value <= 1 ? UiKit.Hex("#a33a30") : PaperFx.InkSoft, TextAnchor.MiddleRight);
                 UiKit.Anchor(lt.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-48f, 0f), new Vector2(-6f, 0f));
                 lt.textWrappingMode = TextWrappingModes.NoWrap;
-                ptip += "\n" + (left == null ? "期限なし" : "あと" + left.Value + "ターンで消える") + "・火勢+" + DollUi.Growth(st, q);
+                ptip += "\n" + (left == null ? "期限なし" : "あと" + left.Value + "ターンで消える") + (DollUi.HasGrowth(q.Def) ? "・火勢+" + DollUi.Growth(st, q) : "");   // 火勢はダメージ・ブロックを持つ人形だけ (2026-09-24 E8)
             }
             Tooltip.Attach(chip.gameObject, delegate { return ptip; });
         }
@@ -1525,10 +1528,10 @@ namespace DeckRogue.Game
             if (st == null || st.Phase != CombatPhases.PlayerTurn || g.Pending != null || hc.Rt == null) return;
             int cost = c.Def.Cost; try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
             string why = null; bool energy = false, light = false;
-            if (!Effects.IsPlayableFromHand(c)) why = "仕込む札 (プレイできない)";
+            if (!Effects.IsPlayableFromHand(c, st)) why = "仕込む札 (プレイできない)";
             else if (cost > st.Player.Energy) { why = "エナジー不足"; energy = true; }
             else if ((c.Def.LightCost ?? 0) > (st.Player.Light ?? 0)) { why = "灯が足りない (あと" + (c.Def.LightCost.Value - (st.Player.Light ?? 0)) + ")"; light = true; } // 号令 (白 2026-09-20)
-            else if (!Effects.RetainerRequirementMet(st, c)) why = "場に従者がいない";
+            else if (!Effects.RetainerRequirementMet(st, c)) why = "場に人形がいない";   // 「従者」→「人形」(2026-09-24 T3)
             else why = "いまは出せない";
             Tween.Shake(hc.Rt, 7f, 0.25f);
             Audio.Ui("click", 0.5f);
@@ -1884,6 +1887,8 @@ namespace DeckRogue.Game
             var lines = new List<string>();
             for (int i = 0; i < st.EventLog.Count; i++)
             {
+                // 灯の火床の直後の「火種N枚を山札に混ぜた」は同じ出来事 = 「灯9を払って火種3を山札へ」の1行にまとめる (2026-09-24 T15。CLI と同じ)
+                if (st.EventLog[i] is GameEvent_CardsAddedToDraw && i > 0 && st.EventLog[i - 1] is GameEvent_LightDischarged hearth && (hearth.Sparks ?? 0) > 0) continue;
                 var s = CardText.LogLine(st.EventLog[i]);
                 if (s != null) lines.Add(s);
             }
@@ -2157,7 +2162,7 @@ namespace DeckRogue.Game
             UiKit.Le(title, 100f, -1f, 160f, -1f);
             int cost = card.Def.Cost;
             try { cost = Effects.EffectiveCost(st, card); } catch (Exception) { }
-            bool playable = st.Phase == CombatPhases.PlayerTurn && Effects.IsPlayableFromHand(card) && cost <= st.Player.Energy && (card.Def.LightCost ?? 0) <= (st.Player.Light ?? 0) && Effects.RetainerRequirementMet(st, card);
+            bool playable = st.Phase == CombatPhases.PlayerTurn && Effects.IsPlayableFromHand(card, st) && cost <= st.Player.Energy && (card.Def.LightCost ?? 0) <= (st.Player.Light ?? 0) && Effects.RetainerRequirementMet(st, card);
             if (card.Def.Modes != null)
             {
                 for (int m = 0; m < card.Def.Modes.Count; m++)
@@ -2203,7 +2208,7 @@ namespace DeckRogue.Game
             {
                 var retainers = new List<CardInstance>();
                 for (int i = 0; i < st.Player.Permanents.Count; i++) { var q = st.Player.Permanents[i]; if (q.Def.Retainer == true && q.Innate != true) retainers.Add(q); }
-                pool = retainers; selected = new List<string>(); want = 1; title = "破壊する従者を選ぶ";
+                pool = retainers; selected = new List<string>(); want = 1; title = p.NeedSacrifice ? "捧げる人形を選ぶ" : "人形を1体選ぶ";   // 「従者」→「人形」(2026-09-24 T3)。写し灯・継ぎ火・永遠の灯も同じ窓
             }
             else { UiKit.Txt(root, "未対応の選択: " + need, 20, UiKit.ColBadInk); return; }
 

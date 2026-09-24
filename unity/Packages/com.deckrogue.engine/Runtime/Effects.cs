@@ -26,10 +26,15 @@ namespace DeckRogue.Engine
         public string Stage { get; init; } = default!;
         /// <summary>EnemyActionKind</summary>
         public string Kind { get; init; } = default!;
-        /// <summary>その行動の実値 (post 窓でも minActionValue の判定に使う。2026-08-31)</summary>
+        /// <summary>
+        /// 罠の条件「敵の行動の値N以上/以下」が読む値 = ReactionActionValue (攻撃は1発の実値×ヒット数 2026-09-24 E10)。
+        /// post 窓でも minActionValue の判定に使う (2026-08-31)
+        /// </summary>
         public int Actual { get; init; }
         /// <summary>stage='post' のみ意味を持つ (TS の共用体では pre 側にフィールドが無い)</summary>
         public int HpLoss { get; init; }
+        /// <summary>stage='pre' のみ: 攻撃する敵が混乱中 (攻撃は仲間か自分に向かう) = 被攻撃前の罠は候補にしない (2026-09-24 E3)</summary>
+        public bool? Confused { get; init; }
     }
 
     /// <summary>カードホバー用のダメージ内訳の1段 (TS: DamageBreakdownStep)</summary>
@@ -740,7 +745,8 @@ namespace DeckRogue.Engine
                 bool triggerMatches =
                     win.Stage == "pre"
                         ? e.Trigger == "onEnemyAction" ||
-                          (e.Trigger == "onAttackIncoming" && win.Kind == "attack")
+                          // 混乱した敵の攻撃は仲間か自分に向かう = プレイヤーは殴られないので被攻撃前の罠は鳴らない (2026-09-24 Opus ひなた E3)
+                          (e.Trigger == "onAttackIncoming" && win.Kind == "attack" && win.Confused != true)
                           // 逃がしルールは廃止 (2026-08-30 A2)。破壊されそうな札は回収 (1E) で事前に引き上げる
                         : (e.Trigger == "onAttacked" && win.Kind == "attack") ||
                           (e.Trigger == "onEnemyBuffed" && (win.Kind == "buff" || win.Kind == "rally")) ||
@@ -784,6 +790,52 @@ namespace DeckRogue.Engine
             return age >= 1 && (age <= 2 || card.Def.TrapPersist == true);
         }
 
+        /// <summary>
+        /// 静かな鈴 (C型) が今の敵の攻撃に効くか。敵の行動中は行動の開始で固定した値 (BellLocked)、
+        /// それ以外は今の伏せ札 (2026-09-24 E2。TS setBellActive)
+        /// </summary>
+        public static bool SetBellActive(GameState state)
+        {
+            return (state.SetDamageReduction ?? 0) > 0 && (state.BellLocked ?? state.Player.SetCards.Count > 0);
+        }
+
+        /// <summary>
+        /// 攻撃の実行時のヒット数 (手数の鏡は今のプレイ枚数+伏せ)。被ダメ予測・罠の条件が同じ式を読む (TS attackHitsOf)
+        /// </summary>
+        public static int AttackHitsOf(GameState state, bool? mirrorHits, int? hits)
+        {
+            return mirrorHits == true ? Math.Max(1, state.Player.CardsPlayedThisTurn + (state.Player.SetsThisTurn ?? 0)) : (hits ?? 1);
+        }
+
+        /// <summary>AttackHitsOf の意図版</summary>
+        public static int AttackHitsOf(GameState state, EnemyIntent it) => AttackHitsOf(state, it.MirrorHits, it.Hits);
+
+        /// <summary>
+        /// 罠の条件「敵の行動の値N以上/以下」(minActionValue/maxActionValue) が読む値 (2026-09-24 Opus ひなた E10 裁定「合計で判定」):
+        /// 攻撃は1発の実値×ヒット数、攻撃以外は実値。威圧・鈴・脆弱の前の値 (TS reactionActionValue)
+        /// </summary>
+        public static int ReactionActionValue(GameState state, int enemyIndex)
+        {
+            var it = EffectiveIntent(state, enemyIndex);
+            if (it == null) return state.LastAction != null && state.LastAction.EnemyIndex == enemyIndex ? state.LastAction.Actual : 0;
+            return it.Kind == EnemyActionKinds.Attack ? it.Actual * AttackHitsOf(state, it) : it.Actual;
+        }
+
+        /// <summary>被攻撃前 (pre) の窓を今の盤面から作る (3方式・表示が共用。混乱した攻撃者は被攻撃前の罠を開かない。TS preWindowFor)</summary>
+        public static ReactionWindow PreWindowFor(GameState state, int enemyIndex)
+        {
+            var it = EffectiveIntent(state, enemyIndex);
+            string kind = it?.Kind ?? EnemyActionKinds.Attack;
+            bool confused = kind == EnemyActionKinds.Attack && (EnemyAt(state, enemyIndex)?.Confusion ?? 0) > 0;
+            return new ReactionWindow
+            {
+                Stage = "pre",
+                Kind = kind,
+                Actual = ReactionActionValue(state, enemyIndex),
+                Confused = confused ? (bool?)true : null,
+            };
+        }
+
         /// <summary>罠モデル: この敵フェーズに (宣言済みの意図から見て) この札が鳴りうるか (TS の trapCanFireThisPhase と同形)</summary>
         public static bool TrapCanFireThisPhase(GameState state, CardInstance card)
         {
@@ -792,8 +844,9 @@ namespace DeckRogue.Engine
                 if (state.Enemies[i].Hp <= 0) continue;
                 var it = EffectiveIntent(state, i);
                 if (it == null) continue;
-                if (ReactionMatches(state, card, new ReactionWindow { Stage = "pre", Kind = it.Kind, Actual = it.Actual })) return true;
-                if (ReactionMatches(state, card, new ReactionWindow { Stage = "post", Kind = it.Kind, Actual = it.Actual, HpLoss = it.Actual })) return true;
+                int v = ReactionActionValue(state, i);
+                if (ReactionMatches(state, card, PreWindowFor(state, i))) return true;
+                if (ReactionMatches(state, card, new ReactionWindow { Stage = "post", Kind = it.Kind, Actual = v, HpLoss = v })) return true;
             }
             return false;
         }
@@ -981,16 +1034,14 @@ namespace DeckRogue.Engine
             if (pending == null) return null;
             var intent = EffectiveIntent(state, pending.EnemyIndex);
             if (intent == null) return null;
-            if (pending.Stage == "pre")
-            {
-                return new ReactionWindow { Stage = "pre", Kind = intent.Kind, Actual = intent.Actual };
-            }
+            // 窓の値は攻撃なら1発×ヒット数の合計・攻撃者が混乱中なら被攻撃前の罠は候補にしない (2026-09-24 E10・E3)
+            if (pending.Stage == "pre") return PreWindowFor(state, pending.EnemyIndex);
             return new ReactionWindow
             {
                 Stage = "post",
                 Kind = intent.Kind,
                 HpLoss = state.LastAction?.HpLoss ?? 0,
-                Actual = intent.Actual,
+                Actual = ReactionActionValue(state, pending.EnemyIndex),
             };
         }
 
@@ -1143,7 +1194,8 @@ namespace DeckRogue.Engine
         {
             var e = enemyIndex >= 0 && enemyIndex < s.Enemies.Count ? s.Enemies[enemyIndex] : null;
             int v = ApplyEnemyWeak(actual, e?.Weak);
-            if ((s.SetDamageReduction ?? 0) > 0 && s.Player.SetCards.Count > 0) v = Math.Max(1, v - (s.SetDamageReduction ?? 0));
+            // 静かな鈴: 敵の行動中は行動の開始で固定した値 = 実処理と同じ (2026-09-24 E2)
+            if (SetBellActive(s)) v = Math.Max(1, v - (s.SetDamageReduction ?? 0));
             if (s.Player.Vulnerable > 0) v = (int)Math.Floor(v * 1.5);
             if ((s.Player.Slow ?? 0) > 0 && (s.Player.PlaysThisTurn ?? 0) > 0) v = (int)Math.Floor(v * (1.0 + 0.1 * (s.Player.PlaysThisTurn ?? 0)));
             return v;
@@ -1217,7 +1269,7 @@ namespace DeckRogue.Engine
             var e = enemyIndex >= 0 && enemyIndex < s.Enemies.Count ? s.Enemies[enemyIndex] : null;
             if (e?.ActionNegated == true) notes.Add("打ち消し済み＝この行動は起きない");
             if ((e?.Weak ?? 0) > 0) notes.Add("威圧で-25%");
-            if ((s.SetDamageReduction ?? 0) > 0 && s.Player.SetCards.Count > 0) notes.Add("鈴で-" + s.SetDamageReduction);
+            if (SetBellActive(s)) notes.Add("鈴で-" + s.SetDamageReduction);
             if (s.Player.Vulnerable > 0) notes.Add("脆弱で+50%");
             if ((s.Player.Slow ?? 0) > 0 && (s.Player.PlaysThisTurn ?? 0) > 0) notes.Add("重りで+" + (10 * (s.Player.PlaysThisTurn ?? 0)) + "%");
             return notes;
@@ -1226,7 +1278,7 @@ namespace DeckRogue.Engine
         /// <summary>実行時のヒット数 (手数の鏡は今のプレイ枚数+伏せ)</summary>
         public static int IntentHits(GameState s, bool? mirrorHits, int? hits)
         {
-            return mirrorHits == true ? Math.Max(1, s.Player.CardsPlayedThisTurn + (s.Player.SetsThisTurn ?? 0)) : (hits ?? 1);
+            return AttackHitsOf(s, mirrorHits, hits);
         }
 
         /// <summary>敵1体の「今フェーズに受ける合計ダメージ」。攻撃以外・死亡・混乱は0 (TS summary.ts incomingFrom)</summary>
@@ -1716,6 +1768,9 @@ namespace DeckRogue.Engine
                     return state;
                 case "gainEnergyNextTurn":
                     return state with { NextTurnEnergy = (state.NextTurnEnergy ?? 0) + (effect.Amount ?? 0) };
+                case "addLightNextTurn":
+                    // 灯の埋め火・灯の集約 (2026-09-23)。TS と同形
+                    return state with { NextTurnLight = (state.NextTurnLight ?? 0) + (effect.Amount ?? 0) };
                 case "gainBlockNextTurn":
                     return state with { NextTurnBlock = (state.NextTurnBlock ?? 0) + (effect.Amount ?? 0) };
                 case "blessRetainers":
@@ -1934,6 +1989,18 @@ namespace DeckRogue.Engine
                     GameState s = state with { Player = state.Player with { Permanents = perms } };
                     return Events.Emit(s, new GameEvent_RetainerLifeExtended { CardId = src.Def.Id, Uid = src.Uid, Amount = n });
                 }
+                case "extendAllRetainersLife":
+                {
+                    // 継ぎ火 (白 2026-09-24): 場の人形すべての期限を amount ターン延ばす。期限なしの人形は不変。TS と同形
+                    int n = effect.Amount ?? 1;
+                    var targets = state.Player.Permanents.Where(p => IsDoll(p) && DollLifeTotal(p) != null).ToList();
+                    if (targets.Count == 0) return state;
+                    var perms = new List<CardInstance>(state.Player.Permanents.Count);
+                    foreach (var p in state.Player.Permanents) perms.Add(targets.Any(t => t.Uid == p.Uid) ? p with { LifeBonus = (p.LifeBonus ?? 0) + n } : p);
+                    GameState s = state with { Player = state.Player with { Permanents = perms } };
+                    foreach (var t in targets) s = Events.Emit(s, new GameEvent_RetainerLifeExtended { CardId = t.Def.Id, Uid = t.Uid, Amount = n });
+                    return s;
+                }
                 case "persistRetainer":
                 {
                     // 永遠の灯 (白 2026-09-21): 選んだ人形の灯りが尽きなくなる (育ちは続く)
@@ -2094,6 +2161,21 @@ namespace DeckRogue.Engine
                     GameState next = state with { Player = state.Player with { SetSlots = state.Player.SetSlots + amount } };
                     return Events.Emit(next, new GameEvent_SetSlotGained { Amount = amount });
                 }
+                case "addCardToDiscard":
+                {
+                    // 断ち切り (白 2026-09-23 本家 Severance): summonId のトークン札を捨て札に加える。TS と同形
+                    var def = Content.GetCardDef(effect.SummonId ?? "");
+                    var made = new List<CardInstance>();
+                    for (int i = 0; i < (effect.Amount ?? 1); i++)
+                    {
+                        made.Add(new CardInstance { Uid = $"tokd_{state.EventLog.Count}_{i}_{def.Id}", Def = def, Token = true });
+                    }
+                    GameState s = state with { Player = state.Player with { DiscardPile = state.Player.DiscardPile.Concat(made).ToList() } };
+                    return Events.Emit(s, new GameEvent_CardsAddedToDiscard { CardId = def.Id, Count = made.Count });
+                }
+                case "transformDeckToToken":
+                    // 降霊 (白 2026-09-23 本家 Seance): 選択は Combat.PlayCard が deckUids で解決する
+                    return state;
                 case "addCardToHand":
                 {
                     // 骨刃 (黒 2026-09-01): summonId のトークン札を手札に加える (この戦闘限り)。
@@ -2351,7 +2433,8 @@ namespace DeckRogue.Engine
                     if (n == 0) return state;
                     GameState s = state with { Player = state.Player with { Light = 0 } };
                     s = Events.Emit(s, new GameEvent_LightDischarged { Spent = spent });
-                    int times = spent * (effect.Amount ?? 1);
+                    int times = spent / Math.Max(1, effect.Amount ?? 1); // 灯 amount につき1回 (2026-09-24)
+                    if (times <= 0) return state;
                     for (int i = 0; i < times; i++) s = RallyRetainers(s, enemyIndex);
                     s = Events.Emit(s, new GameEvent_RetainersTriggered { Count = n * times });
                     return AfterLightDischarge(s, spent, enemyIndex);
@@ -2372,10 +2455,12 @@ namespace DeckRogue.Engine
                 }
                 case "consumeLight":
                 {
-                    // 灯の鍛冶 (白 U): 灯を全て失う (ダメージ無しの放出。残り火・放出の誘発は鳴らない)
-                    int spent = state.Player.Light ?? 0;
+                    // 灯を失う (ダメージ無しの放出)。Amount があればその量だけ (2026-09-23 灯の炉心)、省略は全て。TS と同形
+                    int have = state.Player.Light ?? 0;
+                    int spent = effect.Amount != null ? Math.Min(have, effect.Amount.Value) : have;
                     if (spent <= 0) return state;
-                    return Events.Emit(state with { Player = state.Player with { Light = 0 } }, new GameEvent_LightDischarged { Spent = spent });
+                    // 放出ではなく支払い (2026-09-24: ログが「灯3を放出」になっていた) = Paid で見分けて「灯3を払った」と表示する。TS と同形
+                    return Events.Emit(state with { Player = state.Player with { Light = have - spent } }, new GameEvent_LightDischarged { Spent = spent, Paid = true });
                 }
                 case "gainBlockPerLight":
                 {
@@ -2391,6 +2476,17 @@ namespace DeckRogue.Engine
                     // 灯の手帳 (白 C): 灯2につき amount ドロー (上限 amountMax)
                     int n = Math.Min(effect.AmountMax ?? 99, ((state.Player.Light ?? 0) / 2) * (effect.Amount ?? 1));
                     return n > 0 ? DrawCards(state, n) : state;
+                }
+                case "dismissUnlessLight":
+                {
+                    // 灯の炉心 (白 U 2026-09-24): ターン開始に灯が amount 未満ならこの置物は場を離れて捨て札へ。TS と同形
+                    var uid = state.ResolvingPermanentUid;
+                    var me = uid == null ? null : state.Player.Permanents.FirstOrDefault(p => p.Uid == uid);
+                    if (me == null || (state.Player.Light ?? 0) >= (effect.Amount ?? 0)) return state;
+                    var perms = state.Player.Permanents.Where(p => p.Uid != uid).ToList();
+                    var discard = new List<CardInstance>(state.Player.DiscardPile) { me };
+                    GameState s = state with { Player = state.Player with { Permanents = perms, DiscardPile = discard } };
+                    return Events.Emit(s, new GameEvent_PermanentDismissed { CardId = me.Def.Id, Uid = me.Uid });
                 }
                 case "lightCarryHalf":
                     // 残り火 (白 R 置物): 常在の印。AfterLightDischarge が場の有無を読む
@@ -2418,7 +2514,8 @@ namespace DeckRogue.Engine
                     int n = Math.Min(state.HearthSparks ?? 0, (state.Player.Light ?? 0) / per);
                     if (n <= 0) return state;
                     GameState s = state with { Player = state.Player with { Light = (state.Player.Light ?? 0) - n * per } };
-                    s = Events.Emit(s, new GameEvent_LightDischarged { Spent = n * per });
+                    // 火床は「払って火種に変える」= 放出 (全て吐く) ではない。Sparks で見分けて表示は「灯Nを払って火種Mを山札へ」(2026-09-24 T15)
+                    s = Events.Emit(s, new GameEvent_LightDischarged { Spent = n * per, Sparks = n });
                     return ResolveEffect(s, new DeclarativeEffect { Trigger = effect.Trigger, Effect = "addCardToDraw", SummonId = effect.SummonId ?? "white_spark_token", Amount = n }, enemyIndex);
                 }
                 case "dealDamagePerSpark":
@@ -2426,6 +2523,11 @@ namespace DeckRogue.Engine
                     return (state.Player.SparksPlayedThisCombat ?? 0) <= 0
                         ? state
                         : DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * (state.Player.SparksPlayedThisCombat ?? 0), effect.Pierce == true);
+                case "gainBlockPerSpark":
+                    // 火守りの盾 (白 C 2026-09-24 Opus ひなた裁定「作る札に刈り取りを内蔵」): この戦闘で撃った火種×amount のブロック。TS と同形
+                    return (state.Player.SparksPlayedThisCombat ?? 0) <= 0
+                        ? state
+                        : GainPlayerBlock(state, (effect.Amount ?? 0) * (state.Player.SparksPlayedThisCombat ?? 0), enemyIndex);
                 case "triggerRandomRetainer":
                 {
                     // 灯の継ぎ手 (白 U 置物): 場の人形1体 (ランダム=ランRNG) の効果を今1回解決 (号令の小型。灯は産まない)。TS と同形
@@ -2653,7 +2755,7 @@ namespace DeckRogue.Engine
                 new GameEvent_ReactionTriggered { CardId = card.Def.Id, Mode = state.ReactionMode });
             // 罠モデル (2026-09-13 茨の返し=実値10以上なら急所2): 効果ごとの窓条件 (行動の実値) もここで判定する。
             // 発動可否 (ReactionMatches) は「どれか1つの効果が合致」なので、条件つきの副次効果だけを落とす必要がある
-            int actionActual = EffectiveIntent(s, enemyIndex)?.Actual ?? 0;
+            int actionActual = ReactionActionValue(s, enemyIndex);   // 攻撃は1発×ヒット数の合計 (2026-09-24 E10)
             foreach (var effect in SetAny.SetEffectsOf(card))
             {
                 // 効果ごとの条件 (2026-09-06 白 報復の光): 発動可否は eligible 側が見るが、

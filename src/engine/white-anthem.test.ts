@@ -52,16 +52,16 @@ describe('回復の換金 (onHealed網)', () => {
   it('光の聖杯: 回復するたびブロック2 (満タンの過剰回復でも誘発。2026-08-31)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_perm_chalice',
-      'white_heal',
+      'white_mass_heal', // 癒しの光は 2026-09-24 に撤去
     ])
     s = withEnergy(s, 9)
     s = { ...s, player: { ...s.player, hp: s.player.maxHp - 3 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_chalice' })
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_heal' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_mass_heal' })
     expect(s.player.block).toBe(2)
     // 満タンでの回復 = 実回復0でも誘発する (満タン沈黙3割への処方)
-    s = withHand(s, ['white_heal'])
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_heal' })
+    s = withHand(s, ['white_mass_heal'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_mass_heal' })
     expect(s.player.block).toBe(4)
   })
 

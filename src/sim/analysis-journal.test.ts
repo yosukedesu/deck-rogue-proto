@@ -3,7 +3,7 @@
 // UI (App.tsx) と同じ判定で行が1本だけ復元され、計測が実際の combat と一致することを固定する。
 import { describe, expect, it } from 'vitest'
 import { battleRowsFromJournal } from '../engine/analysis.ts'
-import { applyRunCommand, replayInitialRun, type RunCommand, type RunJournal } from '../engine/run.ts'
+import { applyRunCommand, defaultDepartureCommand, replayInitialRun, type RunCommand, type RunJournal } from '../engine/run.ts'
 import { chooseCommand } from './run.ts'
 
 describe('battleRowsFromJournal', () => {
@@ -12,6 +12,7 @@ describe('battleRowsFromJournal', () => {
     const commands: RunCommand[] = []
     let s = replayInitialRun(origin)
     const step = (c: RunCommand) => { s = applyRunCommand(s, c); commands.push(c) }
+    while (s.phase === 'departure') step(defaultDepartureCommand(s)) // 出立の店 (2026-09-24。ボットはサービスを1つ買って出る)
     step({ type: 'ChooseNode', col: 0 }) // 行0は必ず戦闘 (本家 floor1)
     expect(s.combat).not.toBeNull()
     for (let i = 0; i < 400 && s.combat && s.combat.phase !== 'won' && s.combat.phase !== 'lost'; i++) {

@@ -16,7 +16,7 @@ describe('召喚 (トークン再現)', () => {
     expect(s.player.permanents).toHaveLength(3)
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_rally' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 12) // 置物3×4
+    expect(s.enemies[0].hp).toBe(hpBefore - 18) // 置物3×6 (2026-09-24 CSV)
   })
 
   it('召喚された従者は毎ターン開始時に自動攻撃する (本体と同じ挙動)', () => {
@@ -86,7 +86,7 @@ describe('威圧の換金 (断罪の槌)', () => {
 })
 
 describe('灯り溜め (白の再設計 2026-09-20: 守りが準備)', () => {
-  it('ブロック5＋灯+2。人形2体の登場の灯+2と合わせて灯4', () => {
+  it('ブロック8＋灯+2 (2026-09-24 CSV でブロック5→8)。人形2体の登場では灯は増えない', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_perm_squire',
       'white_perm_shieldmaiden',
@@ -96,7 +96,7 @@ describe('灯り溜め (白の再設計 2026-09-20: 守りが準備)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_squire' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_perm_shieldmaiden' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_white_light_hoard' })
-    expect(s.player.block).toBe(3 + 5) // 盾の人形の点灯3 + 灯り溜め5
+    expect(s.player.block).toBe(3 + 8) // 盾の人形の点灯3 + 灯り溜め8
     expect(s.player.light).toBe(2) // 灯り溜めの+2だけ (人形の登場では灯は増えない 2026-09-20 夜)
   })
 })
@@ -105,20 +105,20 @@ describe('回復軸の接着剤 (光の器)', () => {
   it('回復のたびブロック2 (満タンの過剰回復でも誘発。2026-08-31)。回復するたび灯+1 (2026-09-20)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_perm_chalice',
-      'white_heal',
-      'white_heal',
+      'white_mass_heal',
+      'white_mass_heal',
     ])
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_chalice' })
     // 満タン: 実回復0でも器は鳴る (満タン沈黙3割への処方)
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_heal' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_mass_heal' }) // 癒しの光は 2026-09-24 に撤去 = 大いなる癒し (回復15+灯3)
     expect(s.player.block).toBe(2)
-    expect(s.player.light).toBe(2) // 回復+1・明示の灯+1 (回し封じの相殺 2026-09-20)
+    expect(s.player.light).toBe(4) // 回復+1・明示の灯+3
     s = { ...s, player: { ...s.player, hp: 50 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_white_heal' }) // 癒しの光 5→6
-    expect(s.player.hp).toBe(56) // 癒しの光6
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_white_mass_heal' })
+    expect(s.player.hp).toBe(65)
     expect(s.player.block).toBe(4)
-    expect(s.player.light).toBe(4)
+    expect(s.player.light).toBe(8)
   })
 })
 
@@ -137,12 +137,14 @@ describe('白の新リアクション', () => {
     expect(a.eventLog.some((e) => e.type === 'BlockGained' && e.target === 'player' && e.amount === 3)).toBe(false)
   })
 
-  it('光盾の詠唱: 呪文プレイで起爆しブロック9', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), ['white_reaction_chant'])
-    s = setAndArm(s, 't0_white_reaction_chant') // 罠モデル: 伏せたターンは自己誘発も鳴らない
-    s = withHand(s, ['white_heal'])
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_heal' })
-    expect(s.player.block).toBe(9) // 2026-08-27 7→9
+  it('呪文プレイで起爆する仕込み札 (onSpellPlayed。光盾の点灯は 2026-09-24 に撤去=仮の札で固定): ブロック12', () => {
+    const chant: CardDef = { id: 'test_chant', name: '試しの詠唱', cost: 1, type: 'reaction', color: 'white', effects: [{ trigger: 'onSpellPlayed', effect: 'gainBlock', amount: 12 }] }
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [])
+    s = { ...s, player: { ...s.player, hand: [{ uid: 'c0', def: chant }] } }
+    s = setAndArm(s, 'c0') // 罠モデル: 伏せたターンは自己誘発も鳴らない
+    s = withHand(s, ['white_calling']) // 呪文 (癒しの光は 2026-09-24 に撤去)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_calling' })
+    expect(s.player.block).toBe(12) // 2026-08-27 7→9・2026-09-23 罠の強化 9→12
     expect(s.player.setCards).toHaveLength(0)
   })
 })

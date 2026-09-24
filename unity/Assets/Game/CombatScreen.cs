@@ -116,7 +116,7 @@ namespace DeckRogue.Game
             var chipT = UiKit.Txt(pan.transform, chips.Count > 0 ? string.Join(" ", chips.ToArray()) : "-", 12, UiKit.ColBlock);
             UiKit.Le(chipT, -1f, 16f, -1f, 16f);
 
-            string traits = CardText.EnemyTraits(def);
+            string traits = CardText.EnemyTraits(def, st, index);   // 盤面つき = 鎮めの錘で止めた割り込みの予告を出さない (2026-09-24 E5)
             if (traits.Length > 0)
             {
                 var tr = UiKit.Txt(pan.transform, traits, 11, UiKit.ColDim);
@@ -256,7 +256,7 @@ namespace DeckRogue.Game
             int cost = 0;
             try { cost = Effects.EffectiveCost(st, c); }
             catch (Exception) { cost = c.Def.Cost; }
-            bool playable = myTurn && Effects.IsPlayableFromHand(c) && cost <= st.Player.Energy
+            bool playable = myTurn && Effects.IsPlayableFromHand(c, st) && cost <= st.Player.Energy
                 && Effects.RetainerRequirementMet(st, c);
             bool settable = SetBase.CanSetCard(st, c.Uid);
 
@@ -425,7 +425,7 @@ namespace DeckRogue.Game
         public static IReadOnlyList<CardInstance> DeckChoosePool(GameState st, string kind)
         {
             if (kind == "retrieveFromDiscard") return st.Player.DiscardPile;
-            if (kind == "searchDeck") return st.Player.DrawPile;
+            if (kind == "searchDeck" || kind == "transformDeckToToken") return st.Player.DrawPile;
             var all = new List<CardInstance>();
             for (int i = 0; i < st.Player.DrawPile.Count; i++) all.Add(st.Player.DrawPile[i]);
             for (int i = 0; i < st.Player.DiscardPile.Count; i++) all.Add(st.Player.DiscardPile[i]);
@@ -474,7 +474,7 @@ namespace DeckRogue.Game
             {
                 pool = DeckChoosePool(st, p.DeckKind);
                 selected = p.DeckSel; want = p.DeckNeed;
-                title = (p.DeckKind == "searchDeck" ? "山札" : p.DeckKind == "retrieveFromDiscard" ? "捨て札" : "山札か捨て札") + "から" + want + "枚選ぶ";
+                title = (p.DeckKind == "searchDeck" || p.DeckKind == "transformDeckToToken" ? "山札" : p.DeckKind == "retrieveFromDiscard" ? "捨て札" : "山札か捨て札") + "から" + want + "枚選ぶ";
             }
             else if (need == "hand")
             {
@@ -492,7 +492,7 @@ namespace DeckRogue.Game
                 }
                 pool = retainers;
                 selected = new List<string>(); want = 1;
-                title = "破壊する従者を選ぶ";
+                title = p.NeedSacrifice ? "捧げる人形を選ぶ" : "人形を1体選ぶ";   // 「従者」→「人形」(2026-09-24 T3)
             }
             else
             {

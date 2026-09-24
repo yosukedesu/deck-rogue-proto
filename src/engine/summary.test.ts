@@ -4,9 +4,9 @@ import { describe, expect, it } from 'vitest'
 import { chainFromStart } from './enemyGraph.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, incomingFrom, incomingTotal, intentModifierNotes, setBranchNote, summaryLine, xHitsSuffix } from './summary.ts'
 import { allCards, getCardDef, getEnemyDef, allEnemies } from './content.ts'
-import { createRun } from './run.ts'
+
 import { applyCommand } from './state.ts'
-import { freshCombat, withHand } from './test-helpers.ts'
+import { freshCombat, withHand, createRunAtMap as createRun } from './test-helpers.ts'
 import type { GameEvent } from './types.ts'
 
 describe('撃破サマリー (battleSummary)', () => {

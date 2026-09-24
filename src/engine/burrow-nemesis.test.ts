@@ -33,15 +33,21 @@ describe('潜伏 (burrow)', () => {
       s = applyCommand(s, { type: 'EndTurn' })
       expect(s.enemies[0].block, `seed ${seed}`).toBeLessThanOrEqual(12)
     }
-    // 殻が割れた後の宣言では攻防一体・防御が戻る (少なくとも1シードで確認)
+    // 殻が割れた後の最初の宣言は噛みつき、その次の宣言から攻防一体・防御が戻る (少なくとも1シードで確認)。
+    // 2026-09-24 E1: 旧テストは「割れた直後のターン2で防御が戻る」を見ていたが、それはターン開始の二重宣言で
+    // 噛みつきが上書きされる不具合に乗っていた (Opus ひなた: 人形のターン開始の攻撃で割れると噛みつきが防御14に化けた)
     let broke = false
     for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
       let s = freshCombat('set-confirm', 'enemy_rock_beetle', seed)
       s = dealDamageToEnemy(s, 0, 12)
       expect(s.enemies[0].burrowActive).toBe(false)
       s = applyCommand(s, { type: 'EndTurn' })
-      const it1 = s.enemies[0].intent!
-      if (it1.kind === 'defend' || it1.alsoDefend !== undefined) broke = true
+      const bite = getEnemyDef('enemy_rock_beetle').moves.find((m) => m.id === 'bite')!
+      expect(s.enemies[0].intent!.kind, `seed ${seed}`).toBe('attack')
+      expect(s.enemies[0].intent!.actual, `seed ${seed}`).toBeGreaterThanOrEqual(bite.min ?? 0)
+      s = applyCommand(s, { type: 'EndTurn' })
+      const it2 = s.enemies[0].intent!
+      if (it2.kind === 'defend' || it2.alsoDefend !== undefined) broke = true
     }
     expect(broke).toBe(true)
   })

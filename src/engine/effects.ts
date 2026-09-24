@@ -690,7 +690,14 @@ export function resolveEffectTargeted(
  * post = 敵の行動の解決後 (返し onAttacked / onEnemyBuffed / onEnemyDefended。条件判定に hpLoss を使う)
  */
 export type ReactionWindow =
-  | { readonly stage: 'pre'; readonly kind: EnemyActionKind; readonly actual: number }
+  | {
+      readonly stage: 'pre'
+      readonly kind: EnemyActionKind
+      /** 罠の条件「敵の行動の値N以上/以下」が読む値 = reactionActionValue (攻撃は1発の実値×ヒット数 2026-09-24 E10) */
+      readonly actual: number
+      /** 攻撃する敵が混乱中 (攻撃は仲間か自分に向かう) = 被攻撃前の罠は候補にしない (2026-09-24 E3) */
+      readonly confused?: boolean
+    }
   | {
       readonly stage: 'post'
       readonly kind: EnemyActionKind
@@ -706,7 +713,9 @@ export function reactionMatches(state: GameState, card: CardInstance, win: React
     const triggerMatches =
       win.stage === 'pre'
         ? e.trigger === 'onEnemyAction' ||
-          (e.trigger === 'onAttackIncoming' && win.kind === 'attack') ||
+          // 混乱した敵の攻撃は仲間か自分に向かう = プレイヤーは殴られないので被攻撃前の罠は鳴らない (2026-09-24 Opus ひなた E3:
+          // 不滅の騎士の自傷27に灯守りの壁が候補に出ていた。被ダメ予測 incomingFrom はもとから0と数える)
+          (e.trigger === 'onAttackIncoming' && win.kind === 'attack' && win.confused !== true) ||
           // 逃がしルールは廃止 (2026-08-30 A2)。破壊されそうな札は回収 (1E) で事前に引き上げる —
           // 「発動して逃がす」は破壊を敵の最弱行動にしていた (3幕フルラン実測)
           false
@@ -760,6 +769,34 @@ export function isTrapLive(state: GameState, card: CardInstance): boolean {
   return age >= 1 && (age <= 2 || card.def.trapPersist === true)
 }
 
+/** 静かな鈴 (C型) が今の敵の攻撃に効くか。敵の行動中は行動の開始で固定した値 (bellLocked)、それ以外は今の伏せ札 (2026-09-24 E2) */
+export function setBellActive(state: GameState): boolean {
+  return (state.setDamageReduction ?? 0) > 0 && (state.bellLocked ?? state.player.setCards.length > 0)
+}
+
+/** 攻撃の実行時のヒット数 (手数の鏡は今のプレイ枚数+伏せ)。executeEnemyAction・被ダメ予測・罠の条件が同じ式を読む */
+export function attackHitsOf(state: GameState, it: { readonly hits?: number; readonly mirrorHits?: boolean }): number {
+  return it.mirrorHits === true ? Math.max(1, state.player.cardsPlayedThisTurn + (state.player.setsThisTurn ?? 0)) : (it.hits ?? 1)
+}
+
+/**
+ * 罠の条件「敵の行動の値N以上/以下」(minActionValue/maxActionValue) が読む値 (2026-09-24 Opus ひなた E10 裁定「合計で判定」):
+ * 攻撃は1発の実値×ヒット数 (刺突の書 9×4 = 36 で誓いの盾の「10以上」が鳴る)、攻撃以外は実値。威圧・鈴・脆弱の前の値
+ */
+export function reactionActionValue(state: GameState, enemyIndex: number): number {
+  const it = effectiveIntent(state, enemyIndex)
+  if (!it) return state.lastAction?.enemyIndex === enemyIndex ? state.lastAction.actual : 0
+  return it.kind === 'attack' ? it.actual * attackHitsOf(state, it) : it.actual
+}
+
+/** 被攻撃前 (pre) の窓を今の盤面から作る (3方式・表示が共用。混乱した攻撃者は被攻撃前の罠を開かない) */
+export function preWindowFor(state: GameState, enemyIndex: number): ReactionWindow {
+  const it = effectiveIntent(state, enemyIndex)
+  const kind = it?.kind ?? 'attack'
+  const confused = kind === 'attack' && (state.enemies[enemyIndex]?.confusion ?? 0) > 0
+  return { stage: 'pre', kind, actual: reactionActionValue(state, enemyIndex), ...(confused ? { confused: true } : {}) }
+}
+
 /**
  * 罠モデル: この敵フェーズに (宣言済みの意図から見て) この札が鳴りうるか。
  * 「あとN回」を敵フェーズの数でなく「鳴りうる窓」で読ませるための見込み (Opus Z/Z3: 防御・筋力上げのターンは窓を食い潰す)
@@ -768,9 +805,10 @@ export function trapCanFireThisPhase(state: GameState, card: CardInstance): bool
   return state.enemies.some((_, i) => {
     const it = effectiveIntent(state, i)
     if (!it || state.enemies[i].hp <= 0) return false
+    const v = reactionActionValue(state, i)
     return (
-      reactionMatches(state, card, { stage: 'pre', kind: it.kind, actual: it.actual }) ||
-      reactionMatches(state, card, { stage: 'post', kind: it.kind, hpLoss: it.actual, actual: it.actual })
+      reactionMatches(state, card, preWindowFor(state, i)) ||
+      reactionMatches(state, card, { stage: 'post', kind: it.kind, hpLoss: v, actual: v })
     )
   })
 }
@@ -916,10 +954,8 @@ export function windowFromPending(state: GameState): ReactionWindow | null {
   if (!pending) return null
   const intent = effectiveIntent(state, pending.enemyIndex)
   if (!intent) return null
-  if (pending.stage === 'pre') {
-    return { stage: 'pre', kind: intent.kind, actual: intent.actual }
-  }
-  return { stage: 'post', kind: intent.kind, hpLoss: state.lastAction?.hpLoss ?? 0, actual: intent.actual }
+  if (pending.stage === 'pre') return preWindowFor(state, pending.enemyIndex)
+  return { stage: 'post', kind: intent.kind, hpLoss: state.lastAction?.hpLoss ?? 0, actual: reactionActionValue(state, pending.enemyIndex) }
 }
 
 /**
@@ -1611,6 +1647,9 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       return state
     case 'gainEnergyNextTurn':
       return { ...state, nextTurnEnergy: (state.nextTurnEnergy ?? 0) + (effect.amount ?? 0) }
+    case 'addLightNextTurn':
+      // 灯の埋め火・灯の集約 (2026-09-23 本家 HiddenCache/Convergence): 次の自ターン開始に灯を得る (startPlayerTurn が読む)
+      return { ...state, nextTurnLight: (state.nextTurnLight ?? 0) + (effect.amount ?? 0) }
     case 'gainBlockNextTurn':
       return { ...state, nextTurnBlock: (state.nextTurnBlock ?? 0) + (effect.amount ?? 0) }
     case 'blessRetainers':
@@ -1837,6 +1876,18 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       }
       return emit(s, { type: 'RetainerLifeExtended', cardId: src.def.id, uid: src.uid, amount: n })
     }
+    case 'extendAllRetainersLife': {
+      // 継ぎ火 (白 2026-09-24 ユーザー案「全体の期限を延ばす」): 場の人形すべての期限を amount ターン延ばす。期限なしの人形は不変
+      const n = effect.amount ?? 1
+      const targets = state.player.permanents.filter((p) => isDoll(p) && dollLifeTotal(p) !== null)
+      if (targets.length === 0) return state
+      let s: GameState = {
+        ...state,
+        player: { ...state.player, permanents: state.player.permanents.map((p) => (targets.some((t) => t.uid === p.uid) ? { ...p, lifeBonus: (p.lifeBonus ?? 0) + n } : p)) },
+      }
+      for (const t of targets) s = emit(s, { type: 'RetainerLifeExtended', cardId: t.def.id, uid: t.uid, amount: n })
+      return s
+    }
     case 'persistRetainer': {
       // 永遠の灯 (白 2026-09-21): 選んだ人形の灯りが尽きなくなる (火勢は続く)
       const src = state.player.permanents.find((p) => p.uid === state.chosenPermanentUid && isDoll(p))
@@ -2006,6 +2057,20 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const next: GameState = { ...state, player: { ...state.player, setSlots: state.player.setSlots + amount } }
       return emit(next, { type: 'SetSlotGained', amount })
     }
+    case 'addCardToDiscard': {
+      // 断ち切り (白 2026-09-23 本家 Severance): summonId のトークン札を捨て札に加える (この戦闘限り)。uid は addCardToHand と同じ規則
+      const def = getCardDef(effect.summonId ?? '')
+      const made: CardInstance[] = Array.from({ length: effect.amount ?? 1 }, (_, i) => ({
+        uid: `tokd_${state.eventLog.length}_${i}_${def.id}`,
+        def,
+        token: true,
+      }))
+      const s: GameState = { ...state, player: { ...state.player, discardPile: [...state.player.discardPile, ...made] } }
+      return emit(s, { type: 'CardsAddedToDiscard', cardId: def.id, count: made.length })
+    }
+    case 'transformDeckToToken':
+      // 降霊 (白 2026-09-23 本家 Seance): 山札から選んだ札をトークンに変える。選択は combat.ts の playCard が deckUids で解決する
+      return state
     case 'addCardToHand': {
       // 骨刃 (黒 2026-09-01): summonId のトークン札を手札に加える (この戦闘限り)。
       // uid は eventLog 長ベース = 単調増加なので衝突せず、シードから決定的
@@ -2251,7 +2316,8 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       if (n === 0) return state
       let s: GameState = { ...state, player: { ...state.player, light: 0 } }
       s = emit(s, { type: 'LightDischarged', spent })
-      const times = spent * (effect.amount ?? 1)
+      const times = Math.floor(spent / Math.max(1, effect.amount ?? 1)) // 灯 amount につき1回 (2026-09-24 ユーザー「灯2につき」。旧: 灯1につき amount 回)
+      if (times <= 0) return state
       for (let i = 0; i < times; i++) s = rallyRetainers(s, enemyIndex)
       s = emit(s, { type: 'RetainersTriggered', count: n * times })
       return afterLightDischarge(s, spent, enemyIndex)
@@ -2269,10 +2335,13 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       return afterLightDischarge(s, spent, enemyIndex)
     }
     case 'consumeLight': {
-      // 灯の鍛冶 (白 U 2026-09-20 夜): 灯を全て失う (ダメージ無しの放出。残り火・放出の誘発は鳴らない)
-      const spent = state.player.light ?? 0
+      // 灯を失う (ダメージ無しの放出。残り火・放出の誘発は鳴らない)。amount があればその量だけ (2026-09-23 灯の炉心=毎T灯3→一時マナ+1)、
+      // 省略は全て (旧 灯の鍛冶)。足りなければ持っている分だけ
+      const have = state.player.light ?? 0
+      const spent = effect.amount !== undefined ? Math.min(have, effect.amount) : have
       if (spent <= 0) return state
-      return emit({ ...state, player: { ...state.player, light: 0 } }, { type: 'LightDischarged', spent })
+      // 放出ではなく支払い (2026-09-24: ログが「灯3を放出」になっていた) = paid で見分けて「灯3を払った」と表示する
+      return emit({ ...state, player: { ...state.player, light: have - spent } }, { type: 'LightDischarged', spent, paid: true })
     }
     case 'gainBlockPerLight': {
       // 灯の壁 (白 U 2026-09-20 夜): 灯2につき amount ブロック (灯は失わない。風の壁の灯版)
@@ -2286,6 +2355,15 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // 灯の手帳 (白 C 2026-09-20 夜): 灯2につき amount ドロー (上限 amountMax。灯は失わない)
       const n = Math.min(effect.amountMax ?? 99, Math.floor((state.player.light ?? 0) / 2) * (effect.amount ?? 1))
       return n > 0 ? drawCards(state, n) : state
+    }
+    case 'dismissUnlessLight': {
+      // 灯の炉心 (白 U 2026-09-24 ユーザー案「灯を払えなかったら墓地に行く」): ターン開始に灯が amount 未満ならこの置物は場を離れて捨て札へ。
+      // 置物の効果の先頭に置く = 後ろの「灯3を払って一時マナ+1」は払える時だけ鳴る
+      const uid = state.resolvingPermanentUid
+      const me = uid === undefined ? undefined : state.player.permanents.find((p) => p.uid === uid)
+      if (me === undefined || (state.player.light ?? 0) >= (effect.amount ?? 0)) return state
+      const s: GameState = { ...state, player: { ...state.player, permanents: state.player.permanents.filter((p) => p.uid !== uid), discardPile: [...state.player.discardPile, me] } }
+      return emit(s, { type: 'PermanentDismissed', cardId: me.def.id, uid: me.uid })
     }
     case 'lightCarryHalf':
       // 残り火 (白 R 置物 2026-09-20 夜): 常在の印。放出の後処理 (afterLightDischarge) が場の有無を読む
@@ -2311,7 +2389,8 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const n = Math.min(state.hearthSparks ?? 0, Math.floor((state.player.light ?? 0) / per))
       if (n <= 0) return state
       let s: GameState = { ...state, player: { ...state.player, light: (state.player.light ?? 0) - n * per } }
-      s = emit(s, { type: 'LightDischarged', spent: n * per })
+      // 火床は「払って火種に変える」= 放出 (全て吐く) ではない。sparks で見分けて表示は「灯Nを払って火種Mを山札へ」(2026-09-24 T15)
+      s = emit(s, { type: 'LightDischarged', spent: n * per, sparks: n })
       return resolveEffect(s, { trigger: effect.trigger, effect: 'addCardToDraw', summonId: effect.summonId ?? 'white_spark_token', amount: n }, enemyIndex)
     }
     case 'dealDamagePerSpark':
@@ -2319,6 +2398,11 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       return (state.player.sparksPlayedThisCombat ?? 0) <= 0
         ? state
         : dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (state.player.sparksPlayedThisCombat ?? 0), effect.pierce)
+    case 'gainBlockPerSpark':
+      // 火守りの盾 (白 C 2026-09-24 Opus ひなた裁定「作る札に刈り取りを内蔵」): この戦闘で撃った火種×amount のブロック
+      return (state.player.sparksPlayedThisCombat ?? 0) <= 0
+        ? state
+        : gainPlayerBlock(state, (effect.amount ?? 0) * (state.player.sparksPlayedThisCombat ?? 0), enemyIndex)
     case 'triggerRandomRetainer': {
       // 灯の継ぎ手 (白 U 置物 2026-09-20 夜): 場の人形1体 (ランダム=ランRNG) の効果をトリガーを問わず今1回解決 (号令の小型。灯は産まない)
       const retainers = state.player.permanents.filter((p) => p.def.retainer === true && p.innate !== true)
@@ -2509,7 +2593,7 @@ export function resolveReactionEffects(state: GameState, card: CardInstance, ene
   let s = emit({ ...state, resolvingCardPlay: false }, { type: 'ReactionTriggered', cardId: card.def.id, mode: state.reactionMode })
   // 罠モデル (2026-09-13 茨の返し=実値10以上なら急所2): 効果ごとの窓条件 (行動の実値) もここで判定する。
   // 発動可否 (reactionMatches) は「どれか1つの効果が合致」なので、条件つきの副次効果だけを落とす必要がある
-  const actionActual = effectiveIntent(s, enemyIndex)?.actual ?? 0
+  const actionActual = reactionActionValue(s, enemyIndex)
   for (const effect of setEffectsOf(card)) {
     // 効果ごとの条件 (2026-09-06 白 報復の光=返し10+「完全に防いでいたら」+10 の混在): 発動可否は eligible 側が
     // 見るが、条件つきの効果だけを落とすのはここ

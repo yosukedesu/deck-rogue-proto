@@ -18,6 +18,8 @@ namespace DeckRogue.Engine
     public sealed record RunOptions
     {
         public bool? SetAnyCards { get; init; }
+        /// <summary>出立の支度 (2026-09-24)。false はテスト・チェックポイント用 (地図から始める)。省略=出立から</summary>
+        public bool? Departure { get; init; }
     }
 
     /// <summary>難易度倍率 (その幕の1組。TS difficultyScale の戻り値)</summary>
@@ -97,6 +99,7 @@ namespace DeckRogue.Engine
             "white_shield_strike",
             "white_light_bolt", // 灯の矢 (白の派生=灯の教材=放出。2026-09-21 夜 ユーザー裁定「継ぎ火を消して灯の矢に」: 継ぎ火は報酬プールへ)
             "white_mode_crossroad", // 灯の岐路 (2026-09-20 白の初期デッキを緑の形に。剣の人形・灯り継ぎ・報復の光は報酬プールへ)
+            "white_light_buckler", // 灯の小盾 (2026-09-24 Opus ひなた裁定: 初期デッキの白盾1枚を差し替え)
             "black_dark_pact",
             "black_drain",
             "black_bursting_corpse",
@@ -122,6 +125,8 @@ namespace DeckRogue.Engine
 
         // ゴールド
         private const int STARTING_GOLD = 50;
+        /// <summary>出立の店 (2026-09-24): 開始時に上乗せする所持金。ラン開始の所持金は STARTING_GOLD＋これ (チェックポイント開始・Departure=false のテストには無い)</summary>
+        public const int DEPARTURE_PURSE = 100;
         private const int GOLD_PER_BATTLE_MIN = 12;
         private const int GOLD_PER_BATTLE_MAX = 18;
         private const int GOLD_ELITE_BONUS_MIN = 30;
@@ -401,6 +406,7 @@ namespace DeckRogue.Engine
         {
             var card = (index >= 0 && index < run.Deck.Count) ? run.Deck[index] : null;
             if (card == null) throw new InvalidOperationException("対象カードを cardIndex で指定する");
+            if (!CanTransformCard(card)) throw new InvalidOperationException($"{card.Def.Name} は変成できない（状態異常・烙印は除去で消す）");
             string rarity = card.Def.Rarity ?? "common";
             var pool = RewardPool(run).Where(c => (c.Rarity ?? "common") == rarity && c.Id != card.Def.Id).ToList();
             if (pool.Count == 0) return run;
@@ -734,6 +740,8 @@ namespace DeckRogue.Engine
                 Artifact = artifact > 0 ? artifact : (int?)null,
                 // 重石の鍛錬 (焚き火で積んだ回数ぶん戦闘開始時に成長)
                 StartGrowth = train > 0 ? train : (int?)null,
+                // 盗みの上限 (2026-09-24 E6 本家 Looter): 所持金−すでに盗まれた額まで
+                GoldAvailable = run.Gold,
             });
             return run with
             {
@@ -1015,6 +1023,8 @@ namespace DeckRogue.Engine
                 gearSeen.Add(gid);
                 gearShelf.Add(new ShopStateGears { Id = gid, Price = JsFloor(SHOP_GEAR_PRICE[Content.GetGearDef(gid).Rarity] * ShopPriceRatio(run)) });
             }
+            // 行商が預かった出立の支度 (2026-09-24): 幕1の店にだけ並ぶ (幕2以降は行商がよそで売った)。会員証の値引きも乗る
+            var leftovers = run.Act == 1 ? (run.Departure?.Leftovers ?? new List<DepartureOffer>()).Where(o => o.ShopPrice != null).ToList() : new List<DepartureOffer>();
             var shop = new ShopState
             {
                 Cards = cards,
@@ -1022,6 +1032,7 @@ namespace DeckRogue.Engine
                 RelicPrice = JsFloor(SHOP_RELIC_PRICE * ShopPriceRatio(run)), // 会員証
                 Gears = gearShelf,
                 ManaPrice = JsFloor(SHOP_MANA_PRICE * ShopPriceRatio(run)),
+                Departures = leftovers.Count > 0 ? leftovers.Select(o => new ShopStateDepartures { Id = o.Id, Price = JsFloor((o.ShopPrice ?? 0) * ShopPriceRatio(run)) }).ToList() : null,
             };
             // 行商の食券 (2026-09-12 本家 Meal Ticket): ショップに入るたびHP+N
             int heal = RelicBonusSum(run, "shopHeal");
@@ -1044,6 +1055,7 @@ namespace DeckRogue.Engine
         public static bool EventChoiceNeedsCard(EventChoiceDef choice)
         {
             return choice.RemoveCard == true
+                || choice.UnexhaustCard == true
                 || choice.UpgradeCard == true
                 || choice.TransformCard == true
                 || choice.DuplicateCard == true;
@@ -1056,6 +1068,7 @@ namespace DeckRogue.Engine
         /// </summary>
         public static bool EventChoiceAvailable(RunState run, EventChoiceDef choice)
         {
+            if (choice.RelicId != null && run.Relics.Contains(choice.RelicId)) return false;   // 名指しのレリックは二度と取れない (2026-09-23)
             if (choice.RequireGold != null && run.Gold < choice.RequireGold.Value) return false;
             if (EventChoiceNeedsCard(choice)) return DefaultEventCardIndex(run, choice) != null;
             return true;
@@ -1079,14 +1092,42 @@ namespace DeckRogue.Engine
                 for (int i = 0; i < run.Deck.Count; i++) if (Upgrade.CanUpgradeCard(run.Deck[i])) return i;
                 return null;
             }
-            if (choice.RemoveCard == true || choice.TransformCard == true)
+            if (choice.TransformCard == true)
             {
-                if (run.Deck.Count == 0 || (choice.RemoveCard == true && run.Deck.Count <= 5)) return null;
+                // 変成は状態異常・烙印を選べない (2026-09-24 T14)。変成できる先頭の札。TS と同形
+                for (int i = 0; i < run.Deck.Count; i++) if (CanTransformCard(run.Deck[i])) return i;
+                return null;
+            }
+            if (choice.RemoveCard == true)
+            {
+                if (run.Deck.Count == 0 || run.Deck.Count <= 5) return null;
                 for (int i = 0; i < run.Deck.Count; i++) if (run.Deck[i].Def.Id.StartsWith("status_", StringComparison.Ordinal)) return i;
                 return 0;
             }
             if (choice.DuplicateCard == true) return run.Deck.Count > 0 ? 0 : (int?)null;
+            if (choice.UnexhaustCard == true)
+            {
+                for (int i = 0; i < run.Deck.Count; i++) if (CanUnexhaustCard(run.Deck[i])) return i;
+                return null;
+            }
             return null;
+        }
+
+        /// <summary>
+        /// 変成できる札 (2026-09-24 Opus ひなた T14 裁定「状態異常・烙印は変成できない」= 本家2の変成と同じく、変成は呪いを消す手段にならない)。
+        /// ?イベントの変成・星読みの盤・画面の候補が同じ判定を読む。TS canTransformCard と同形
+        /// </summary>
+        public static bool CanTransformCard(CardInstance c) => !c.Def.Id.StartsWith("status_", StringComparison.Ordinal);
+
+        static readonly HashSet<string> UNEXHAUST_BANNED = new HashSet<string> { "drawCards", "impulseDraw", "addCardToHand", "drawCardsPerLight", "drawCardsPerCardPlayed", "dischargeAetherDraw", "retrieveFromExhaust", "playFromExhaust", "gainEnergy", "discountNext", "doubleGrowth", "doubleMomentum", "doubleLight", "gainEnergyMax" };
+        /// <summary>忘れられた墓 (2026-09-23) で消滅を外せる札。TS canUnexhaustCard と同形</summary>
+        public static bool CanUnexhaustCard(CardInstance c)
+        {
+            var d = c.Def;
+            if (d.Exhaust != true || d.Cost < 1 || d.XCost == true || d.NecroCost != null) return false;
+            foreach (var e in d.Effects) if (UNEXHAUST_BANNED.Contains(e.Effect)) return false;
+            if (d.Modes != null) foreach (var m in d.Modes) foreach (var e in m.Effects) if (UNEXHAUST_BANNED.Contains(e.Effect)) return false;
+            return true;
         }
 
         /// <summary>選択肢 (または賭けの結果) が代償を持たないか (HP・最大HP・負傷・烙印・金の支払いが無い)</summary>
@@ -1144,6 +1185,15 @@ namespace DeckRogue.Engine
             var def = Content.GetEventDef(eventId);
             EventChoiceDef? choice = (choiceIndex >= 0 && choiceIndex < def.Choices.Count) ? def.Choices[choiceIndex] : null;
             if (choice == null) throw new InvalidOperationException($"不正な選択肢: {choiceIndex}");
+            return ApplyChoiceDef(run, choice, cardIndex, RunPhases.Map);
+        }
+
+        /// <summary>
+        /// 宣言的な選択肢 (EventChoiceDef) を RunState に反映する。?イベントと出立の支度 (坑口・店の棚) が共用 (2026-09-24)。
+        /// resume=解決後のフェーズ (?・坑口は map、店で買った支度は shop のまま)。TS applyChoiceDef と同形
+        /// </summary>
+        public static RunState ApplyChoiceDef(RunState run, EventChoiceDef choice, int? cardIndex, string resume)
+        {
             if (choice.RequireGold != null && run.Gold < choice.RequireGold.Value)
             {
                 throw new InvalidOperationException($"ゴールドが足りない (必要{choice.RequireGold.Value}G)");
@@ -1207,6 +1257,21 @@ namespace DeckRogue.Engine
                 rng = rE;
                 if (drawn.Count > 0) next = GainRelic(next, drawn[0]);
             }
+            if (choice.RelicId != null)
+            {
+                // 名指しのレリック (2026-09-23)。持っていれば何もしない。TS と同形
+                if (!next.Relics.Contains(choice.RelicId)) next = GainRelic(next, choice.RelicId);
+            }
+            if (choice.UnexhaustCard == true)
+            {
+                var card = (cardIndex.HasValue && cardIndex.Value >= 0 && cardIndex.Value < next.Deck.Count) ? next.Deck[cardIndex.Value] : null;
+                if (card == null) throw new InvalidOperationException("対象カードを cardIndex で指定する");
+                if (!CanUnexhaustCard(card)) throw new InvalidOperationException($"{card.Def.Name} の消滅は外せない");
+                var effs = new List<DeclarativeEffect>(card.Def.Effects) { new DeclarativeEffect { Trigger = "onPlay", Effect = "gainEnergy", Amount = 1 } };
+                var soulDef = card.Def with { Exhaust = null, Name = card.Def.Name + "・魂", Effects = effs };
+                int ci = cardIndex.Value;
+                next = next with { Deck = next.Deck.Select((c, i) => i == ci ? c with { Def = soulDef } : c).ToList() };
+            }
             if (choice.RemoveCard == true)
             {
                 var card = (cardIndex.HasValue && cardIndex.Value >= 0 && cardIndex.Value < next.Deck.Count) ? next.Deck[cardIndex.Value] : null;
@@ -1269,8 +1334,112 @@ namespace DeckRogue.Engine
                 var o = roll < choice.Gamble.Chance * 1000 ? choice.Gamble.Win : choice.Gamble.Lose;
                 ApplyOutcome(o.Gold, o.Hp, null, o.Wounds, null, null);
             }
+            // 出立の支度 (2026-09-24): 名指しのギア・魔素・名指しの札。TS と同じ順・同じ uid
+            if (choice.Gears != null) foreach (var id in choice.Gears) next = AddGear(next, id, $"a{run.Act}_r{run.Row}_{id}");
+            if (choice.Mana.HasValue && choice.Mana.Value != 0) next = next with { Mana = Math.Max(0, Math.Min(Gears.MANA_MAX, ManaOf(next) + choice.Mana.Value)) };
+            if (choice.AddCardIds != null)
+            {
+                var list = choice.AddCardIds.Select((id, i) => new CardInstance { Uid = $"given_a{run.Act}_r{run.Row}_{i}_{id}", Def = Content.GetCardDef(id) }).ToList();
+                next = AddCardsToRunDeck(next, list);
+            }
             if (next.Hp <= 0) return next with { Rng = rng, Hp = 0, Phase = RunPhases.Lost };
-            return EnterPendingChoice(next with { Rng = rng, Phase = RunPhases.Map }, RunPhases.Map);
+            return EnterPendingChoice(next with { Rng = rng, Phase = resume }, resume);
+        }
+
+        /// <summary>
+        /// 出立の店 (2026-09-24): 台帳の全行 (札3・遺物3・サービス4) を台帳の順に並べ、中身 (遺物・ギア・札) を
+        /// ランRNGで名指しに解決して phase departure で返す。所持金に上乗せの所持金 (DEPARTURE_PURSE) を足す。
+        /// 札と遺物は中身の名前で並ぶ。中身が引けなかった行は並べない。RNG の消費順は TS rollDepartureOffers と同じ
+        /// </summary>
+        public static RunState RollDepartureOffers(RunState run)
+        {
+            var rng = run.Rng;
+            var offers = new List<DepartureOffer>();
+            var usedRelics = new List<string>();
+            var usedCards = new List<string>();
+            foreach (var t in Content.AllDepartures)
+            {
+                EventChoiceDef choice = t.Choice with { };
+                string name = t.Name;
+                if (t.RelicRarity != null)
+                {
+                    var pool = run.RelicQueue.Where(id =>
+                        RelicRarity(id) == t.RelicRarity
+                        && !usedRelics.Contains(id)
+                        && !run.Relics.Contains(id)
+                        && run.Act <= (Content.GetRelicDef(id).ActMax ?? 99)
+                        && run.Act >= (Content.GetRelicDef(id).ActMin ?? 0)
+                        && RelicAllowedForColors(Content.GetRelicDef(id), run.Colors)).ToList();
+                    if (pool.Count == 0) continue;
+                    var (j, r2) = Rng.NextInt(rng, 0, pool.Count - 1);
+                    rng = r2;
+                    choice = choice with { RelicId = pool[j] };
+                    usedRelics.Add(pool[j]);
+                    name = Content.GetRelicDef(pool[j]).Name;
+                }
+                if ((t.GearCount ?? 0) > 0)
+                {
+                    var ids = new List<string>();
+                    for (int guard = 0; ids.Count < (t.GearCount ?? 0) && guard < 20; guard++)
+                    {
+                        var (id, r2) = RollGearId(rng, false);
+                        rng = r2;
+                        if (!ids.Contains(id)) ids.Add(id);
+                    }
+                    choice = choice with { Gears = ids };
+                }
+                if (t.CardPick != null && t.CardPick.Count > 0)
+                {
+                    var pick = t.CardPick;
+                    var pool = RewardPool(run).Where(c => c.Rarity == pick.Rarity && !usedCards.Contains(c.Id)).ToList();
+                    var ids = new List<string>();
+                    for (int guard = 0; ids.Count < pick.Count && ids.Count < pool.Count && guard < 20; guard++)
+                    {
+                        var (j, r2) = Rng.NextInt(rng, 0, pool.Count - 1);
+                        rng = r2;
+                        if (!ids.Contains(pool[j].Id)) ids.Add(pool[j].Id);
+                    }
+                    if (ids.Count == 0) continue;
+                    usedCards.AddRange(ids);
+                    choice = choice with { AddCardIds = ids };
+                    name = string.Join("・", ids.Select(id => Content.GetCardDef(id).Name));
+                }
+                offers.Add(new DepartureOffer { Id = t.Id, Kind = t.Kind, Name = name, Text = t.Text, Choice = choice, Price = t.Price, ShopPrice = t.ShopPrice });
+            }
+            return run with
+            {
+                Rng = rng,
+                Gold = run.Gold + DEPARTURE_PURSE,
+                Departure = new RunStateDeparture { Offers = offers, Bought = new List<string>(), Leftovers = new List<DepartureOffer>() },
+                Phase = RunPhases.Departure,
+            };
+        }
+
+        /// <summary>坑口で既に買った支度か</summary>
+        public static bool DepartureOfferBought(RunState run, DepartureOffer offer) => (run.Departure?.Bought ?? new List<string>()).Contains(offer.Id);
+
+        /// <summary>出立の店の支度が今買えるか (まだ買っていない・金が足りる・除去はデッキ6枚以上・鍛えは鍛えられる札がある。?イベントと同じ判定)</summary>
+        public static bool DepartureOfferAvailable(RunState run, DepartureOffer offer) =>
+            !DepartureOfferBought(run, offer) && run.Gold >= offer.Price && EventChoiceAvailable(run, offer.Choice);
+
+        /// <summary>
+        /// ボット・テスト・ゴールデン生成の既定の一手: まだ何も買っていなければサービス (安全な方) を1つ買い、その後は店を出る。
+        /// 対象は ?イベントと同じ既定。phase が departure の間、繰り返し呼ぶ。TS defaultDepartureCommand と同形
+        /// </summary>
+        public static RunCommand DefaultDepartureCommand(RunState run)
+        {
+            var offers = run.Departure?.Offers ?? new List<DepartureOffer>();
+            if ((run.Departure?.Bought ?? new List<string>()).Count == 0)
+            {
+                for (int i = 0; i < offers.Count; i++)
+                {
+                    var offer = offers[i];
+                    if (offer.Kind != "service" || !DepartureOfferAvailable(run, offer)) continue;
+                    int? cardIndex = EventChoiceNeedsCard(offer.Choice) ? DefaultEventCardIndex(run, offer.Choice) : null;
+                    return cardIndex == null ? new RunCommand_BuyDeparture { Index = i } : new RunCommand_BuyDeparture { Index = i, CardIndex = cardIndex };
+                }
+            }
+            return new RunCommand_LeaveDeparture();
         }
 
         /// <summary>伏せ参照レリック (このランの報酬プールにリアクションが1枚も無い色では候補列から除く)</summary>
@@ -1302,7 +1471,7 @@ namespace DeckRogue.Engine
             // 色ゲート (2026-09-12): リーダーの色に合わない固有レリックは候補列にも入れない
             var relicIds = Content.AllRelics.Where(r => RelicAllowedForColors(r, leader.Colors)).Select(r => r.Id).Where(id => canSet || !SET_RELICS.Contains(id)).ToList();
             var (relicQueue, rngAfterRelics) = Rng.Shuffle(rngAfterMap, relicIds);
-            return new RunState
+            var baseRun = new RunState
             {
                 Seed = seed,
                 Mode = mode,
@@ -1349,6 +1518,8 @@ namespace DeckRogue.Engine
                 SeenGearIds = new List<string>(),
                 GearOption = null,
             };
+            // 出立の支度 (2026-09-24): 坑口で1つ選んでから地図へ。Departure=false はテスト・チェックポイント用 (地図から始める)
+            return opts?.Departure == false ? baseRun : RollDepartureOffers(baseRun);
         }
 
         /// <summary>origin からラン初期状態を再現する</summary>
@@ -1397,7 +1568,7 @@ namespace DeckRogue.Engine
         /// </summary>
         public static RunState CreateDebugCheckpointRun(int seed, string mode, string leaderId, ReplayOriginCheckpoint opts, IReadOnlyList<string>? gearIds = null, int? mana = null)
         {
-            var baseRun = CreateRun(seed, mode, leaderId, null, opts.Difficulty ?? DEFAULT_DIFFICULTY);
+            var baseRun = CreateRun(seed, mode, leaderId, null, opts.Difficulty ?? DEFAULT_DIFFICULTY, new RunOptions { Departure = false }); // チェックポイントに出立は無い
             int act = Math.Min(MapGen.ACT_COUNT, Math.Max(1, opts.Act));
             var (map, rng) = MapGen.GenerateMap(baseRun.Rng, act, true, EliteCountFor(baseRun.Difficulty, act));
             RunState run = baseRun with
@@ -1450,9 +1621,9 @@ namespace DeckRogue.Engine
             { "dischargeMomentumBurn", "burn" }, { "dischargeMomentumBlock", "trample" }, { "gainBlockPerMomentum", "trample" }, { "addGrowthPerMomentum", "trample" },
             { "applyBurn", "burn" }, { "dischargeBurn", "burn" },
             { "addAether", "aether" }, { "dischargeAether", "aether" }, { "dischargeAetherDraw", "aether" },
-            { "addLight", "light" }, { "dischargeLight", "light" }, { "dischargeLightRally", "light" }, { "doubleLight", "light" }, { "dealDamagePerLight", "light" }, // 灯
+            { "addLight", "light" }, { "addLightNextTurn", "light" }, { "dischargeLight", "light" }, { "dischargeLightRally", "light" }, { "doubleLight", "light" }, { "dealDamagePerLight", "light" }, // 灯
             { "dischargeLightWeaken", "light" }, { "consumeLight", "light" }, { "gainBlockPerLight", "light" }, { "drawCardsPerLight", "light" }, { "lightCarryHalf", "light" }, // 放出の軸 (2026-09-20 夜)
-            { "addCardToDraw", "spark" }, { "lightToSparks", "spark" }, { "dealDamagePerSpark", "spark" }, { "triggerRandomRetainer", "spark" }, // 火種 (白 2026-09-20)
+            { "addCardToDraw", "spark" }, { "addCardToDiscard", "spark" }, { "transformDeckToToken", "spark" }, { "lightToSparks", "spark" }, { "dealDamagePerSpark", "spark" }, { "gainBlockPerSpark", "spark" }, { "triggerRandomRetainer", "spark" }, // 火種 (白 2026-09-20。2026-09-23/24 断ち切り・降霊・火守りの盾)
             { "gainIceBlock", "ice" }, { "dealDamagePerIceBlock", "ice" }, { "gainIceBlockPerCardPlayed", "ice" },
             { "negate", "permission" }, { "negateConvertIce", "permission" },
             { "summonPermanent", "retinue" }, { "dealDamagePerPermanent", "retinue" }, { "gainBlockPerPermanent", "retinue" },
@@ -1897,6 +2068,43 @@ namespace DeckRogue.Engine
                         Shop = run.Shop with { Gears = shelf.Select((g, i) => i == c.Index ? g with { Sold = true } : g).ToList() },
                     });
                 }
+                case RunCommand_BuyDeparture c:
+                {
+                    if (run.Phase != RunPhases.Departure || run.Departure == null) throw new InvalidOperationException("出立の店ではない");
+                    var offers = run.Departure.Offers;
+                    var offer = c.Index >= 0 && c.Index < offers.Count ? offers[c.Index] : null;
+                    if (offer == null) throw new InvalidOperationException($"不正な支度の指定: {c.Index}");
+                    if (DepartureOfferBought(run, offer)) throw new InvalidOperationException("その支度は買った");
+                    if (run.Gold < offer.Price) throw new InvalidOperationException($"ゴールドが足りない ({offer.Price}G)");
+                    // 坑口の店で買う。買った後も店に留まる (LeaveDeparture で地図へ)
+                    var baseRun = run with { Gold = run.Gold - offer.Price, Departure = run.Departure with { Bought = Append(run.Departure.Bought, offer.Id) } };
+                    return ApplyChoiceDef(baseRun, offer.Choice, c.CardIndex, RunPhases.Departure);
+                }
+                case RunCommand_LeaveDeparture:
+                {
+                    if (run.Phase != RunPhases.Departure || run.Departure == null) throw new InvalidOperationException("出立の店ではない");
+                    // 買わなかったサービス・持ち物は行商が担いで降り、幕1の店に並ぶ
+                    var bought = run.Departure.Bought;
+                    var leftovers = run.Departure.Offers.Where(o => !bought.Contains(o.Id) && o.ShopPrice != null).ToList();
+                    return run with { Departure = run.Departure with { Leftovers = leftovers }, Phase = RunPhases.Map };
+                }
+                case RunCommand_ShopBuyDeparture c:
+                {
+                    if (run.Phase != RunPhases.Shop || run.Shop == null) throw new InvalidOperationException("ショップではない");
+                    var shelf = run.Shop.Departures ?? new List<ShopStateDepartures>();
+                    var slot = c.Index >= 0 && c.Index < shelf.Count ? shelf[c.Index] : null;
+                    if (slot == null || slot.Sold == true) throw new InvalidOperationException($"不正な支度の指定: {c.Index}");
+                    var offer = run.Departure?.Leftovers.FirstOrDefault(o => o.Id == slot.Id);
+                    if (offer == null) throw new InvalidOperationException("その支度は行商が持っていない");
+                    if (run.Gold < slot.Price) throw new InvalidOperationException($"ゴールドが足りない ({slot.Price}G)");
+                    var baseRun = BreakMawBank(run with
+                    {
+                        Gold = run.Gold - slot.Price,
+                        Shop = run.Shop with { Departures = shelf.Select((x, i) => i == c.Index ? x with { Sold = true } : x).ToList() },
+                        Departure = run.Departure! with { Leftovers = run.Departure!.Leftovers.Where(o => o.Id != slot.Id).ToList() },
+                    });
+                    return ApplyChoiceDef(baseRun, offer.Choice, c.CardIndex, RunPhases.Shop);
+                }
                 case RunCommand_ShopBuyMana:
                 {
                     if (run.Phase != RunPhases.Shop || run.Shop == null) throw new InvalidOperationException("ショップではない");
@@ -1963,6 +2171,9 @@ namespace DeckRogue.Engine
                     }
                     else
                     {
+                        // 星読みの盤: 状態異常・烙印は選べない (2026-09-24 T14)。全部を先に確かめてから変成する (途中で投げて半端に変わらない)。TS と同形
+                        foreach (var i in idx)
+                            if (!CanTransformCard(run.Deck[i])) throw new InvalidOperationException($"{run.Deck[i].Def.Name} は変成できない（状態異常・烙印は除去で消す）");
                         foreach (var i in idx) next = TransformCardAt(next, i, true);
                     }
                     return next with { PendingRelicChoice = null, Phase = p.Resume };

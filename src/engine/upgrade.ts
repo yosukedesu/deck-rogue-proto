@@ -66,7 +66,6 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   blue_page_wind: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }],
   blue_rolling_wave: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }],
   black_grave_pressure: [{ trigger: 'onPlay', effect: 'exhaustFromDeck', amount: 2 }], // 自分で燃料を足してから刈る
-  white_rank_thrust: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }],
   red_streak_bet: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 3 }], // 固定の床3 (茨の報い型)
   // 刃の葬列+ = ナイフをもう1枚 (per-Exhaust参照はコストに触れない裁定の受け皿)
   black_blade_procession: [
@@ -133,7 +132,7 @@ const MULT_EFFECTS = new Set([
   'dealDamagePerCardPlayed', 'dealDamagePerExhaust', 'dealDamageDrainPerExhaust', 'gainBlockPerExhaust', 'dealDamagePerSelfHpLost', 'dealDamagePerHeal',
   'dischargeLight', // 灯の放出 (白 2026-09-20): 倍率+1 (灯の矢 ×2→×3・光の奔流 ×3→×4)。大行列 (dischargeLightRally) はコスト-1 側
   'dealDamagePerLight', // 灯篭の人形 (灯2につきN)。灯コスト持ちなので実際は light ティア (灯-1) が先に取る
-  'dealDamagePerSpark', 'gainBlockPerLight', 'drawCardsPerLight', 'dischargeLightWeaken', // 火種の嵐・灯の壁・灯の手帳・眩む閃光 (2026-09-20 夜): 参照倍率+1
+  'dealDamagePerSpark', 'gainBlockPerSpark', 'gainBlockPerLight', 'drawCardsPerLight', 'dischargeLightWeaken', // 火種の嵐・火守りの盾 (2026-09-24)・灯の壁・灯の手帳・眩む閃光 (2026-09-20 夜): 参照倍率+1
 ])
 const UNIT_EFFECTS_V2 = new Set([
   'drawCards', 'impulseDraw', 'addGrowth', 'addMomentum', 'addAether', 'addLight', 'addCasts', 'gainEnergy',
@@ -153,7 +152,7 @@ const isGreenRule = (def: CardDef) => def.id.startsWith('green_') || V2_COLORS.h
  * 単位+1 で「誘発ごと2ドロー」になり、見習いの列1枚 (2体登場) で4ドロー・燭光の従者+使徒で攻撃1枚ごと2ドロー = 青のドローの定価を越える。
  * 年輪の大樹 (旧3段) と同じく「軽くなって置きやすい」が正しい伸び方
  */
-const V2_COST_ONLY = new Set(['white_perm_band', 'white_perm_apostle', 'white_perm_mirror_lantern']) // 鏡の灯籠 (2026-09-21): 単位+1 だと毎T2体コピー=設置速度が倍 → 1E
+const V2_COST_ONLY = new Set(['white_perm_band', 'white_perm_apostle']) // 鏡の灯籠は 2026-09-24 に撤去 (白のプール 108→84)
 
 /** 効果列1つぶんの本家形ティア (モードごとにも使う) */
 function tierV2(effects: readonly DeclarativeEffect[], def?: CardDef): 'mult' | 'unit' | 'threshold' | 'amount' | 'none' {

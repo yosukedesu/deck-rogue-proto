@@ -28,6 +28,21 @@ namespace DeckRogue.Game
             int upPrice = DeckRogue.Engine.Run.ShopUpgradePrice(run);
 
             if (g.ShopMode == "gears") { BuildGears(g, root, run, shop); return; }   // ギアの棚 (2026-09-17 裁定2: サービス欄のボタン→専用画面)
+            if (g.ShopMode != null && g.ShopMode.StartsWith("depart-pick:"))
+            {   // 行商が預かった支度 (2026-09-24) の除去・鍛え: ?イベントと同じ「デッキから1枚選ぶ」画面
+                int di;
+                var slots = shop.Departures;
+                var offer = int.TryParse(g.ShopMode.Substring("depart-pick:".Length), out di) && slots != null && di >= 0 && di < slots.Count ? LeftoverOffer(run, slots[di].Id) : null;
+                if (offer != null)
+                {
+                    int price = slots[di].Price;
+                    EventScreen.CardPick(g, root, offer.Choice, "「" + offer.Name + "」 (" + price + "G)", "shop-departure",
+                        delegate (int i) { g.ShopMode = null; Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyDeparture { Index = di, CardIndex = i }); },
+                        "戻る", delegate { g.ShopMode = null; g.Rebuild(); });
+                    return;
+                }
+                g.ShopMode = null;
+            }
             if (g.ShopMode != null)
             {
                 bool removing = g.ShopMode == "remove";
@@ -54,7 +69,23 @@ namespace DeckRogue.Game
             }
 
             RunUi.Heading(root, "ショップ", (UiKit.Phone ? "札はタップで拡大。買うのは値札のボタン。所持金 " : "札はクリックで拡大。買うのは値札のボタン。所持金 ") + run.Gold + "G", RunUi.TopH + 24f, UiKit.Phone ? 440f : 0f);
-            float shelfTop = RunUi.SceneWindow(root, "shop") ? RunUi.SceneBottom : RunUi.TopH + 110f;   // 情景の窓があれば棚をその下へ
+            bool scene = RunUi.SceneWindow(root, "shop");
+            float shelfTop = scene ? RunUi.SceneBottom : RunUi.TopH + 110f;   // 情景の窓があれば棚をその下へ
+            // 行商が預かった支度 (出立の店の売れ残り 2026-09-24。幕1の店だけ): 見出しと棚のあいだの段。PC は情景の窓の右、スマホは上部バーのすぐ下
+            // 坑口で買わなかった札は普通の札と同じ棚に並べ、遺物・薬草・道具箱だけを段に置く (2026-09-24 夜)
+            var leftCards = new List<int>(); var leftOthers = new List<int>();
+            if (shop.Departures != null)
+                for (int d = 0; d < shop.Departures.Count; d++)
+                {
+                    var lo = LeftoverOffer(run, shop.Departures[d].Id);
+                    if (lo != null && shop.Departures[d].Sold != true && lo.Kind == "card" && lo.Choice.AddCardIds != null && lo.Choice.AddCardIds.Count > 0) leftCards.Add(d);
+                    else if (lo != null && shop.Departures[d].Sold != true) leftOthers.Add(d);
+                }
+            if (leftOthers.Count > 0)
+            {
+                float used = DepartureBand(g, root, run, shop, scene, leftOthers);
+                if (!UiKit.Phone && !scene) shelfTop += used;   // 情景の窓が無い PC は棚を段の下へ
+            }
 
             // 棚 (カード)
             // 棚は左端〜右パネルの手前 (画面幅から出す。スマホの 1800 幅では中央固定だと6枚目がパネルに隠れた。2026-09-09)
@@ -62,13 +93,35 @@ namespace DeckRogue.Game
             UiKit.Anchor(shelf, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(40f, -shelfTop - 410f), new Vector2(-480f, -shelfTop));
             float rootW = root.rect.width > 0f ? root.rect.width : 1920f;
             float availW = rootW - 40f - 480f;
-            int n = shop.Cards.Count;
+            int nShop = shop.Cards.Count;
+            int n = nShop + leftCards.Count;
             float gap = 24f;
             float scale = Mathf.Min(0.95f, (availW - Math.Max(0, n - 1) * gap) / Math.Max(1, n) / CardView.W);
             float cardW = CardView.W * scale, cardH = CardView.H * scale;
             float totalW = n * cardW + Math.Max(0, n - 1) * gap;
             float x0 = -totalW / 2f + cardW / 2f;
-            for (int i = 0; i < n; i++)
+            for (int i = nShop; i < n; i++)
+            {   // 坑口で買わなかった札 (普通の札と同じ見た目・値段は棚の値段)
+                int di = leftCards[i - nShop];
+                var dslot = shop.Departures[di];
+                var dof = LeftoverOffer(run, dslot.Id);
+                CardDef ddef = null;
+                try { ddef = Content.GetCardDef(dof.Choice.AddCardIds[0]); } catch (Exception) { }
+                if (ddef == null) continue;
+                bool dOk = run.Gold >= dslot.Price;
+                var dcell = UiKit.NewRect("shop-dep" + i, shelf);
+                dcell.anchorMin = dcell.anchorMax = new Vector2(0.5f, 0.5f);
+                dcell.sizeDelta = new Vector2(cardW, cardH + 60f);
+                dcell.anchoredPosition = new Vector2(x0 + i * (cardW + gap), 0f);
+                var dci = new CardInstance { Uid = "shop-dep" + i, Def = ddef };
+                var dcv = CardView.Build(dcell, dci, null, dOk, false, "shop-card");
+                dcv.localScale = Vector3.one * scale;
+                dcv.anchoredPosition = new Vector2(0f, 30f);
+                RewardScreen.HoverRaise(dcv, delegate { Audio.Ui("click"); CardPopup.Open(g, dci, null); });
+                CardPopup.Attach(g, dcv, dci, null, true);
+                PriceTag(dcell, dslot.Price, null, dOk, delegate { if (dOk) { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyDeparture { Index = di }); } });
+            }
+            for (int i = 0; i < nShop; i++)
             {
                 int idx = i;
                 var item = shop.Cards[i];
@@ -95,7 +148,7 @@ namespace DeckRogue.Game
                 else RewardScreen.HoverRaise(cv, delegate { Audio.Ui("click"); CardPopup.Open(g, ci, null); });   // タップ＝拡大 (説明)。買うのは値札のボタン (2026-09-22 報酬と同じ作法)
                 CardPopup.Attach(g, cv, ci, null, true);
                 PriceTag(cell, item.Price, sold ? "売切" : null, canBuy, sold ? null : (Action)delegate { if (canBuy) { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyCard { Index = idx }); } });
-                if (i == n - 1 && n >= 6)
+                if (i == nShop - 1 && nShop >= 6)
                 {
                     var rare = UiKit.Txt(cell, "★ レア枠", 13, UiKit.ColGoldInk, TextAnchor.MiddleCenter, true);
                     UiKit.Anchor(rare.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-60f, 4f), new Vector2(60f, 26f));
@@ -237,6 +290,126 @@ namespace DeckRogue.Game
                     GearUi.BuildSwapPicker(g, root, run, shelf[si].Id, delegate (int idx) { g.GearSwap = null; Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyGear { Index = si, DiscardIndex = idx }); });
                 else g.GearSwap = null;
             }
+        }
+
+        /// <summary>
+        /// 「行商が預かった支度」の段 (2026-09-24 出立の支度。docs/departure-proposal-2026-09-24.md §1-3): 出立の店で買わなかった「物」を行商が担いで降り、幕1の店に並べる。
+        /// 札ごとに 絵・名前・中身・値段 (「N G で買う」/売切)。札に触れると中身の説明 (スマホはタップで固定パネル)。除去・鍛えは値札を押すと札を選ぶ画面へ。
+        /// 返り値は段が使った高さ (PC で情景の窓が無い時に棚を下げる量)
+        /// </summary>
+        static float DepartureBand(GameRoot g, RectTransform root, RunState run, ShopState shop, bool scene, List<int> which)
+        {
+            bool ph = UiKit.Phone;
+            var cs = BattleScreen.CanvasSize(root);
+            var slots = shop.Departures;
+            // 置き場: PC は情景の窓 (左 40〜540) の右〜右の列 (右端 -480) の手前、見出しの説明の下。スマホは上部バーの下〜棚の上 (見出しは上部バーに畳まれている)
+            float left = ph ? 20f : (scene ? 580f : 40f);
+            float right = cs.x - (ph ? 440f : 500f);
+            float top = ph ? RunUi.TopH + 6f : RunUi.TopH + 116f;
+            float labelH = ph ? 20f : 26f;
+            float tileH = ph ? 80f : 112f;
+            var lbl = UiKit.Txt(root, "坑口の品", ph ? 13 : 15, UiKit.ColText, TextAnchor.MiddleLeft, true);
+            lbl.outlineWidth = 0.2f; lbl.outlineColor = new Color(0f, 0f, 0f, 0.7f);
+            UiKit.Anchor(lbl.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(left + 4f, -top - labelH), new Vector2(right, -top));
+            lbl.raycastTarget = false;
+            int n = which.Count;
+            float gap = ph ? 12f : 20f;
+            float w = Mathf.Min(ph ? 480f : 420f, (right - left - gap * (n - 1)) / n);
+            float y = top + labelH + 4f;
+            for (int i = 0; i < n; i++)
+            {
+                int idx = which[i];
+                var slot = slots[idx];
+                var offer = LeftoverOffer(run, slot.Id);
+                bool sold = slot.Sold == true || offer == null;
+                bool available = !sold && Run.EventChoiceAvailable(run, offer.Choice);   // 店の値段は slot.Price (物価の倍率込み)。出立の店の値段・購入済みは見ない
+                bool canBuy = available && run.Gold >= slot.Price;
+                var tile = UiKit.NewRect("departure-" + slot.Id, root);
+                UiKit.Anchor(tile, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(left + i * (w + gap), -y - tileH), new Vector2(left + i * (w + gap) + w, -y));
+                var edge = PaperFx.Sheet(tile, PaperFx.Panel, "edge", DepartureScreen.KindEdge(offer != null ? offer.Kind : "service"));
+                UiKit.Stretch(edge.rectTransform, -3f, -3f, -3f, -3f);
+                edge.raycastTarget = false;
+                var paper = PaperFx.Sheet(tile, PaperFx.Panel, "paper");
+                UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
+                // 名前と中身 (売れた札は行商の手を離れているので台帳の名前と文だけ)
+                string nameS, sumS, tip;
+                if (offer != null)
+                {
+                    nameS = offer.Name; sumS = DepartureScreen.Summary(offer); tip = DepartureScreen.Tip(offer);
+                    if (!sold && !available) sumS = "選べない: " + DepartureScreen.UnavailableReason(run, offer.Choice);
+                }
+                else
+                {
+                    DepartureTemplate t = null;
+                    foreach (var d in Content.AllDepartures) if (d.Id == slot.Id) { t = d; break; }
+                    nameS = t != null ? t.Name : slot.Id; sumS = t != null ? t.Text : ""; tip = "<b>" + nameS + "</b>\n" + sumS;
+                }
+                Tooltip.Attach(paper.gameObject, delegate { return tip; });
+                float priceW = 176f, pad = 12f;
+                var wrap = UiKit.NewRect("pricewrap", tile);
+                // 札が狭い (4品並ぶ) 時は縦に積む: 名前 (PC は中身の一行も)・下に値札。中身の全文は札に触れると出る
+                bool narrow = w < 360f;
+                if (narrow)
+                {
+                    var nmN = UiKit.Deco(tile, nameS, ph ? 16 : 18, PaperFx.Ink, TextAnchor.MiddleCenter);
+                    nmN.textWrappingMode = TextWrappingModes.NoWrap; nmN.overflowMode = TextOverflowModes.Ellipsis;
+                    UiKit.Anchor(nmN.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(pad, ph ? -28f : -32f), new Vector2(-pad, -4f));
+                    nmN.raycastTarget = false;
+                    if (!ph)
+                    {
+                        var smN = UiKit.Txt(tile, sumS, 13, !sold && !available ? PaperFx.BadInk : PaperFx.InkSoft, TextAnchor.MiddleCenter);
+                        smN.textWrappingMode = TextWrappingModes.NoWrap; smN.overflowMode = TextOverflowModes.Ellipsis;
+                        UiKit.Anchor(smN.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(pad, -54f), new Vector2(-pad, -32f));
+                        smN.raycastTarget = false;
+                    }
+                    UiKit.Anchor(wrap, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-priceW / 2f, 4f), new Vector2(priceW / 2f, 52f));
+                }
+                else
+                {
+                    float artS = ph ? 48f : 64f;
+                    bool withArt = offer != null && w - pad * 2f - priceW - 10f - artS - 10f >= 120f;   // 狭い札 (幅 1200 のスマホ) は絵を省いて文を読ませる
+                    float textL = pad;
+                    if (withArt)
+                    {
+                        var art = DepartureScreen.Art(tile, offer, artS);
+                        art.anchorMin = art.anchorMax = new Vector2(0f, 0.5f);
+                        art.anchoredPosition = new Vector2(pad + artS / 2f, 0f);
+                        textL = pad + artS + 10f;
+                    }
+                    float textR = priceW + pad + 8f;
+                    var nm = UiKit.Deco(tile, nameS, ph ? 17 : 20, PaperFx.Ink, TextAnchor.MiddleLeft);
+                    nm.textWrappingMode = TextWrappingModes.NoWrap; nm.overflowMode = TextOverflowModes.Ellipsis;
+                    UiKit.Anchor(nm.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(textL, ph ? -34f : -44f), new Vector2(-textR, ph ? -8f : -12f));
+                    nm.raycastTarget = false;
+                    var sm = UiKit.Txt(tile, sumS, ph ? 13 : 15, !sold && !available ? PaperFx.BadInk : PaperFx.InkSoft, TextAnchor.UpperLeft);
+                    sm.textWrappingMode = TextWrappingModes.Normal; sm.overflowMode = TextOverflowModes.Ellipsis;
+                    UiKit.Anchor(sm.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(textL, 8f), new Vector2(-textR, ph ? -36f : -48f));
+                    sm.raycastTarget = false;
+                    float pb = (tileH - 48f) / 2f;
+                    UiKit.Anchor(wrap, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-pad - priceW, pb), new Vector2(-pad, pb + 48f));
+                }
+                PriceTag(wrap, slot.Price, sold ? "売切" : null, canBuy, sold ? null : (Action)delegate
+                {
+                    if (!canBuy) return;
+                    if (Run.EventChoiceNeedsCard(offer.Choice)) { Audio.Ui("click"); g.ShopMode = "depart-pick:" + idx; g.Rebuild(); }
+                    else { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyDeparture { Index = idx }); }
+                });
+                if (sold)
+                {
+                    var cover = UiKit.Pan(tile, new Color(0f, 0f, 0f, 0.35f), "sold");
+                    UiKit.Stretch(cover.rectTransform, 0f, 0f, 0f, 0f);
+                    cover.raycastTarget = false;
+                }
+            }
+            return labelH + 4f + tileH + 12f;
+        }
+
+        /// <summary>行商がまだ持っている支度 (run.departure.leftovers)。売れたら null</summary>
+        static DepartureOffer LeftoverOffer(RunState run, string id)
+        {
+            if (run.Departure == null || run.Departure.Leftovers == null) return null;
+            foreach (var o in run.Departure.Leftovers) if (o.Id == id) return o;
+            return null;
         }
 
         static void ServiceBtn(Transform parent, string label, bool enabled, Action onClick)

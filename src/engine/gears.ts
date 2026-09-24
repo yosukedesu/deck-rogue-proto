@@ -265,6 +265,9 @@ function moveChosenCard(
   def: GearDef,
 ): GameState {
   const from = kind === 'searchDeck' ? state.player.drawPile : state.player.discardPile
+  // 札を指定したのに見つからなければ弾く (2026-09-24 Opus ひなた E4: 捨て札が空の時は早期 return が照合より先に来て、
+  // 山札にある札を指定してもギアと魔素だけが消えていた)。指定なしで山が空なら何もしない (組めるまま = gearNoEffectReason が止める)
+  if (cardUid !== undefined && !from.some((c) => c.uid === cardUid)) throw new Error(`${def.name}: 選んだ札が${kind === 'searchDeck' ? '山札' : '捨て札'}に無い`)
   if (from.length === 0) return state
   const card = cardUid === undefined ? from[0] : from.find((c) => c.uid === cardUid)
   if (card === undefined) throw new Error(`${def.name}: 選んだ札が見つからない`)

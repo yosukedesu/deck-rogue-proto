@@ -1,9 +1,9 @@
 [
   {
     "id": "white_strike",
-    "name": "灯火の一撃",
+    "name": "灯の閃撃",
     "cost": 1,
-    "type": "physical",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -15,9 +15,9 @@
   },
   {
     "id": "white_shield_strike",
-    "name": "灯盾の一撃",
+    "name": "灯の護光",
     "cost": 1,
-    "type": "physical",
+    "type": "spell",
     "effects": [
       {
         "trigger": "onPlay",
@@ -47,34 +47,6 @@
     "rarity": "common"
   },
   {
-    "id": "white_heal",
-    "name": "癒しの光",
-    "cost": 1,
-    "type": "spell",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainHp",
-        "amount": 6
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "gainHp",
-        "amount": 4,
-        "condition": {
-          "hpAtOrBelowRatio": 0.5
-        }
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "addLight",
-        "amount": 1
-      }
-    ],
-    "rarity": "common",
-    "exhaust": true
-  },
-  {
     "id": "white_mass_heal",
     "name": "大いなる癒し",
     "type": "spell",
@@ -91,27 +63,14 @@
         "trigger": "onPlay",
         "effect": "addLight",
         "amount": 3
-      }
-    ]
-  },
-  {
-    "id": "white_bodyslam",
-    "name": "光壁砕き",
-    "cost": 1,
-    "type": "physical",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 3
       },
       {
         "trigger": "onPlay",
-        "effect": "dealDamagePerBlock",
-        "amount": 1
+        "effect": "addCardToHand",
+        "summonId": "white_spark_token",
+        "amount": 2
       }
-    ],
-    "rarity": "common"
+    ]
   },
   {
     "id": "white_light_bolt",
@@ -122,16 +81,27 @@
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dischargeLight",
-        "amount": 2
+        "effect": "dealDamage",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4
       }
-    ]
+    ],
+    "lightCost": 1
   },
   {
     "id": "white_mode_crossroad",
     "name": "灯の岐路",
-    "cost": 1,
-    "type": "physical",
+    "cost": 2,
+    "type": "spell",
     "rarity": "common",
     "effects": [],
     "modes": [
@@ -141,12 +111,12 @@
           {
             "trigger": "onPlay",
             "effect": "dealDamage",
-            "amount": 5
+            "amount": 10
           },
           {
             "trigger": "onPlay",
             "effect": "weakenEnemy",
-            "amount": 1
+            "amount": 2
           }
         ]
       },
@@ -156,7 +126,7 @@
           {
             "trigger": "onPlay",
             "effect": "gainBlock",
-            "amount": 7
+            "amount": 14
           }
         ]
       }
@@ -236,7 +206,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerPermanent",
-        "amount": 4
+        "amount": 6
       }
     ],
     "rarity": "uncommon"
@@ -251,7 +221,7 @@
       {
         "trigger": "onPlay",
         "effect": "dischargeLightRally",
-        "amount": 1
+        "amount": 2
       }
     ],
     "requiresRetainer": true
@@ -277,50 +247,6 @@
       }
     ],
     "rarity": "uncommon"
-  },
-  {
-    "id": "white_reaction_retribution",
-    "name": "報復の光",
-    "cost": 2,
-    "type": "reaction",
-    "effects": [
-      {
-        "trigger": "onAttacked",
-        "effect": "counter",
-        "amount": 10
-      },
-      {
-        "trigger": "onAttacked",
-        "effect": "counter",
-        "amount": 10,
-        "condition": {
-          "lastActionNoHpLoss": true
-        }
-      }
-    ],
-    "rarity": "uncommon"
-  },
-  {
-    "id": "white_judgment",
-    "name": "灼く光",
-    "type": "spell",
-    "cost": 2,
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 8
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 8,
-        "condition": {
-          "minLight": 5
-        }
-      }
-    ]
   },
   {
     "id": "white_muster",
@@ -390,21 +316,6 @@
     "rarity": "rare"
   },
   {
-    "id": "white_knight_charge",
-    "name": "人形の総突撃",
-    "cost": 3,
-    "type": "physical",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamagePerPermanent",
-        "amount": 4,
-        "target": "all"
-      }
-    ],
-    "rarity": "rare"
-  },
-  {
     "id": "white_perm_hound",
     "name": "犬の人形",
     "cost": 1,
@@ -421,48 +332,6 @@
     "life": 4
   },
   {
-    "id": "white_service",
-    "name": "灯り継ぎ",
-    "cost": 1,
-    "type": "spell",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainHp",
-        "amount": 4
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "drawCards",
-        "amount": 1
-      }
-    ],
-    "rarity": "common",
-    "exhaust": true
-  },
-  {
-    "id": "white_mending",
-    "name": "修繕の灯",
-    "cost": 1,
-    "type": "spell",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 6
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 6,
-        "condition": {
-          "healedThisTurn": true
-        }
-      }
-    ],
-    "rarity": "common"
-  },
-  {
     "id": "white_reaction_bright_wall",
     "name": "白光の壁",
     "cost": 2,
@@ -471,38 +340,21 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "gainBlock",
-        "amount": 12
-      },
-      {
-        "trigger": "onAttackIncoming",
-        "effect": "addLight",
-        "amount": 2
+        "amount": 14
       },
       {
         "trigger": "onAttackIncoming",
         "effect": "summonPermanent",
         "amount": 1,
-        "summonId": "white_perm_squire",
-        "condition": {
-          "perfectBlockThisPhase": true
-        }
+        "summonId": "white_perm_squire"
+      },
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "addLight",
+        "amount": 2
       }
     ],
     "rarity": "uncommon"
-  },
-  {
-    "id": "white_reaction_chant",
-    "name": "光盾の点灯",
-    "cost": 1,
-    "type": "reaction",
-    "effects": [
-      {
-        "trigger": "onSpellPlayed",
-        "effect": "gainBlock",
-        "amount": 9
-      }
-    ],
-    "rarity": "common"
   },
   {
     "id": "white_perm_warcry",
@@ -583,23 +435,6 @@
     ]
   },
   {
-    "id": "white_perm_archer",
-    "name": "弩の人形",
-    "cost": 1,
-    "type": "permanent",
-    "rarity": "common",
-    "retainer": true,
-    "effects": [
-      {
-        "trigger": "onTurnStart",
-        "effect": "dealDamage",
-        "amount": 1,
-        "target": "all"
-      }
-    ],
-    "life": 4
-  },
-  {
     "id": "white_perm_monk",
     "name": "手当ての人形",
     "cost": 1,
@@ -631,48 +466,6 @@
     ]
   },
   {
-    "id": "white_rank_thrust",
-    "name": "灯列の突き",
-    "cost": 2,
-    "type": "physical",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamagePerPermanent",
-        "amount": 3
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "summonPermanent",
-        "summonId": "white_perm_squire",
-        "amount": 1,
-        "condition": {
-          "targetDead": true
-        }
-      }
-    ]
-  },
-  {
-    "id": "white_shield_prayer",
-    "name": "大盾の灯",
-    "cost": 2,
-    "type": "spell",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 12
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "addLight",
-        "amount": 1
-      }
-    ]
-  },
-  {
     "id": "white_perm_candle",
     "name": "燭の人形",
     "cost": 1,
@@ -698,7 +491,7 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "gainBlock",
-        "amount": 6
+        "amount": 12
       },
       {
         "trigger": "onAttacked",
@@ -724,9 +517,10 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 5
+        "amount": 12
       }
-    ]
+    ],
+    "lightCost": 2
   },
   {
     "id": "white_holy_maul",
@@ -738,12 +532,12 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 12
+        "amount": 18
       },
       {
         "trigger": "onPlay",
         "effect": "gainHp",
-        "amount": 4
+        "amount": 5
       }
     ]
   },
@@ -798,10 +592,16 @@
       },
       {
         "trigger": "onPlay",
-        "effect": "dischargeLight",
-        "amount": 2
+        "effect": "dealDamage",
+        "amount": 6
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 6
       }
-    ]
+    ],
+    "lightCost": 2
   },
   {
     "id": "white_oath_shield",
@@ -813,17 +613,12 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "gainBlock",
-        "amount": 8
+        "amount": 12
       },
       {
         "trigger": "onAttackIncoming",
         "effect": "addLight",
-        "amount": 1
-      },
-      {
-        "trigger": "onAttackIncoming",
-        "effect": "addLight",
-        "amount": 2,
+        "amount": 3,
         "condition": {
           "minActionValue": 10
         }
@@ -834,7 +629,7 @@
     "id": "white_perm_cathedral",
     "name": "大灯台",
     "type": "permanent",
-    "cost": 3,
+    "cost": 2,
     "rarity": "rare",
     "effects": [
       {
@@ -848,56 +643,6 @@
         "amount": 2
       }
     ]
-  },
-  {
-    "id": "white_grand_rally",
-    "name": "大点灯",
-    "cost": 3,
-    "type": "spell",
-    "rarity": "rare",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "summonPermanent",
-        "amount": 4,
-        "summonId": "white_perm_squire"
-      }
-    ]
-  },
-  {
-    "id": "white_perm_war_banner",
-    "name": "灯火の旗印",
-    "cost": 3,
-    "type": "permanent",
-    "rarity": "rare",
-    "effects": [
-      {
-        "trigger": "onAttackPlayed",
-        "effect": "dealDamage",
-        "amount": 2,
-        "target": "all"
-      }
-    ]
-  },
-  {
-    "id": "white_miracle_light",
-    "name": "輝きの光",
-    "cost": 2,
-    "type": "spell",
-    "rarity": "rare",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainHp",
-        "amount": 8
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "drawCards",
-        "amount": 2
-      }
-    ],
-    "exhaust": true
   },
   {
     "id": "white_perm_page",
@@ -966,26 +711,6 @@
     ]
   },
   {
-    "id": "white_perm_martyr_vow",
-    "name": "灯の捧げ",
-    "type": "permanent",
-    "cost": 1,
-    "rarity": "uncommon",
-    "requiresRetainer": true,
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "sacrificeRetainer",
-        "amount": 1
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "blessRetainers",
-        "amount": 2
-      }
-    ]
-  },
-  {
     "id": "white_march_order",
     "name": "点灯の合図",
     "type": "spell",
@@ -1002,27 +727,6 @@
       {
         "trigger": "onPlay",
         "effect": "triggerRetainersNow"
-      }
-    ]
-  },
-  {
-    "id": "white_war_horn",
-    "name": "灯火の号砲",
-    "type": "physical",
-    "cost": 1,
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 2,
-        "target": "all"
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamagePerAttackPlayed",
-        "amount": 2,
-        "target": "all"
       }
     ]
   },
@@ -1064,74 +768,6 @@
     ]
   },
   {
-    "id": "white_shield_verse",
-    "name": "盾持ちの灯",
-    "cost": 1,
-    "type": "physical",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 5
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "drawCards",
-        "amount": 1
-      }
-    ]
-  },
-  {
-    "id": "white_catalyst_echo",
-    "name": "重ねる灯",
-    "cost": 1,
-    "type": "spell",
-    "rarity": "common",
-    "fusionCatalyst": "echo",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "addLight",
-        "amount": 2
-      }
-    ]
-  },
-  {
-    "id": "white_catalyst_retain",
-    "name": "不動の誓い",
-    "cost": 1,
-    "type": "physical",
-    "rarity": "common",
-    "fusionCatalyst": "retain",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlock",
-        "amount": 4
-      }
-    ]
-  },
-  {
-    "id": "white_light_strike",
-    "name": "灯集めの一撃",
-    "type": "physical",
-    "cost": 1,
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 6
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "addLight",
-        "amount": 1
-      }
-    ]
-  },
-  {
     "id": "white_light_hoard",
     "name": "灯り溜め",
     "type": "physical",
@@ -1141,7 +777,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 5
+        "amount": 8
       },
       {
         "trigger": "onPlay",
@@ -1223,45 +859,17 @@
     ]
   },
   {
-    "id": "white_twin_light",
-    "name": "二重の点灯",
-    "cost": 1,
-    "type": "spell",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "twinNextRetainer",
-        "amount": 1
-      }
-    ]
-  },
-  {
-    "id": "white_perm_mirror_lantern",
-    "name": "鏡の灯籠",
-    "cost": 2,
-    "type": "permanent",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onTurnStart",
-        "effect": "copyLastRetainer",
-        "amount": 1
-      }
-    ]
-  },
-  {
     "id": "white_relight",
     "name": "継ぎ火",
     "cost": 1,
-    "lightCost": 1,
+    "lightCost": 2,
     "type": "spell",
     "rarity": "common",
     "requiresRetainer": true,
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "extendRetainerLife",
+        "effect": "extendAllRetainersLife",
         "amount": 2
       }
     ]
@@ -1291,30 +899,366 @@
     "effects": [
       {
         "trigger": "onPlay",
-        "effect": "dischargeLight",
-        "amount": 3
+        "effect": "dealDamage",
+        "amount": 9
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 9
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 9
+      }
+    ],
+    "lightCost": 3
+  },
+  {
+    "id": "white_light_volley",
+    "name": "灯の連矢",
+    "type": "spell",
+    "cost": 1,
+    "lightCost": 2,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 5
       }
     ]
   },
   {
-    "id": "white_light_verdict",
-    "name": "光の裁き",
+    "id": "white_light_spray",
+    "name": "灯のしぶき",
     "type": "spell",
-    "cost": 2,
+    "cost": 1,
+    "lightCost": 2,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 12,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "white_light_glint",
+    "name": "灯の閃き",
+    "type": "spell",
+    "cost": 1,
+    "lightCost": 1,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_light_lance",
+    "name": "灯の長槍",
+    "type": "spell",
+    "cost": 1,
+    "lightCost": 4,
     "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 10
+        "amount": 30
+      }
+    ]
+  },
+  {
+    "id": "white_light_fuel",
+    "name": "灯の燃料",
+    "type": "spell",
+    "cost": 0,
+    "lightCost": 3,
+    "rarity": "common",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
       },
       {
         "trigger": "onPlay",
-        "effect": "weakenEnemy",
-        "amount": 2,
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_light_kindling",
+    "name": "灯の薪",
+    "type": "spell",
+    "cost": 0,
+    "lightCost": 3,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ],
+    "description": "灯3を払って一時マナ+1。何度でも使える（消滅なし）"
+  },
+  {
+    "id": "white_perm_light_core",
+    "name": "灯の炉心",
+    "type": "permanent",
+    "cost": 1,
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dismissUnlessLight",
+        "amount": 3
+      },
+      {
+        "trigger": "onTurnStart",
+        "effect": "gainEnergy",
+        "amount": 1,
         "condition": {
-          "minLight": 5
+          "minLight": 3
         }
+      },
+      {
+        "trigger": "onTurnStart",
+        "effect": "consumeLight",
+        "amount": 3,
+        "condition": {
+          "minLight": 3
+        }
+      }
+    ]
+  },
+  {
+    "id": "white_light_pour",
+    "name": "灯り注ぎ",
+    "type": "spell",
+    "cost": 0,
+    "xCost": true,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addLight",
+        "amount": 2,
+        "xHits": true
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1,
+        "xHits": true
+      }
+    ]
+  },
+  {
+    "id": "white_light_dart",
+    "name": "灯の火矢",
+    "type": "spell",
+    "cost": 0,
+    "lightCost": 2,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 10
+      }
+    ]
+  },
+  {
+    "id": "white_light_buckler",
+    "name": "灯の小盾",
+    "type": "spell",
+    "cost": 0,
+    "lightCost": 1,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 7
+      }
+    ]
+  },
+  {
+    "id": "white_light_cinders",
+    "name": "灯の火粉",
+    "type": "spell",
+    "cost": 0,
+    "lightCost": 3,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 7,
+        "target": "all"
+      }
+    ]
+  },
+  {
+    "id": "white_light_page",
+    "name": "灯の頁",
+    "type": "spell",
+    "cost": 0,
+    "lightCost": 2,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "white_light_glow",
+    "name": "灯の輝き",
+    "type": "spell",
+    "cost": 1,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addLight",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_light_ember_cache",
+    "name": "灯の埋め火",
+    "type": "spell",
+    "cost": 1,
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addLight",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addLightNextTurn",
+        "amount": 2
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "white_shining_strike",
+    "name": "輝きの一撃",
+    "type": "physical",
+    "cost": 1,
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addLight",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_light_knockout",
+    "name": "灯の大砕き",
+    "type": "physical",
+    "cost": 3,
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 30
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addLight",
+        "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "white_light_convergence",
+    "name": "灯の集約",
+    "type": "spell",
+    "cost": 1,
+    "rarity": "uncommon",
+    "retain": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergyNextTurn",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addLightNextTurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "white_light_radiance",
+    "name": "灯の余光",
+    "type": "spell",
+    "cost": 0,
+    "rarity": "common",
+    "exhaust": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addLight",
+        "amount": 2
       }
     ]
   },
@@ -1328,30 +1272,15 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "gainBlock",
-        "amount": 10
+        "amount": 18
       },
       {
         "trigger": "onAttackIncoming",
         "effect": "addLight",
-        "amount": 3,
+        "amount": 4,
         "condition": {
           "perfectBlockThisPhase": true
         }
-      }
-    ]
-  },
-  {
-    "id": "white_perm_light_ballista",
-    "name": "灯の弩",
-    "type": "permanent",
-    "cost": 2,
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onLightGained",
-        "effect": "dealDamage",
-        "amount": 1,
-        "target": "all"
       }
     ]
   },
@@ -1360,7 +1289,7 @@
     "name": "灯の倍化",
     "type": "spell",
     "cost": 1,
-    "rarity": "rare",
+    "rarity": "uncommon",
     "exhaust": true,
     "effects": [
       {
@@ -1379,7 +1308,7 @@
       {
         "trigger": "onPlay",
         "effect": "dischargeLight",
-        "amount": 2,
+        "amount": 4,
         "target": "all"
       },
       {
@@ -1402,7 +1331,7 @@
       {
         "trigger": "onPlay",
         "effect": "drawCards",
-        "amount": 1
+        "amount": 2
       },
       {
         "trigger": "onPlay",
@@ -1424,7 +1353,12 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 7
+        "amount": 9
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamagePerSpark",
+        "amount": 1
       },
       {
         "trigger": "onPlay",
@@ -1447,7 +1381,12 @@
       {
         "trigger": "onPlay",
         "effect": "gainBlock",
-        "amount": 7
+        "amount": 8
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlockPerSpark",
+        "amount": 1
       },
       {
         "trigger": "onPlay",
@@ -1462,7 +1401,7 @@
     "name": "火花散らし",
     "cost": 1,
     "type": "spell",
-    "rarity": "common",
+    "rarity": "uncommon",
     "axis": [
       "spark"
     ],
@@ -1470,14 +1409,13 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamage",
-        "amount": 3,
-        "pierce": true
+        "amount": 3
       },
       {
         "trigger": "onPlay",
         "effect": "addCardToDraw",
         "summonId": "white_spark_token",
-        "amount": 2
+        "amount": 3
       }
     ]
   },
@@ -1558,11 +1496,46 @@
     ]
   },
   {
+    "id": "white_severance",
+    "name": "断ち切り",
+    "type": "physical",
+    "cost": 2,
+    "rarity": "uncommon",
+    "axis": [
+      "spark"
+    ],
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 13
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToDraw",
+        "summonId": "white_spark_token",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToDiscard",
+        "summonId": "white_spark_token",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToHand",
+        "summonId": "white_spark_token",
+        "amount": 1
+      }
+    ]
+  },
+  {
     "id": "white_spark_storm",
     "name": "火種の嵐",
     "cost": 1,
     "type": "physical",
-    "rarity": "rare",
+    "rarity": "common",
     "axis": [
       "spark"
     ],
@@ -1592,8 +1565,9 @@
       {
         "trigger": "onSparkPlayed",
         "effect": "dealDamage",
-        "amount": 1,
-        "target": "all"
+        "amount": 6,
+        "target": "all",
+        "pierce": true
       }
     ]
   },
@@ -1614,68 +1588,11 @@
     ]
   },
   {
-    "id": "white_light_wall",
-    "name": "灯の壁",
-    "cost": 1,
-    "type": "spell",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "gainBlockPerLight",
-        "amount": 3
-      }
-    ]
-  },
-  {
-    "id": "white_light_flash",
-    "name": "眩む閃光",
-    "cost": 2,
-    "type": "spell",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dischargeLightWeaken",
-        "amount": 1
-      }
-    ]
-  },
-  {
-    "id": "white_light_forge",
-    "name": "灯の鍛冶",
-    "cost": 0,
-    "type": "spell",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "upgradeAllInHand"
-      }
-    ],
-    "lightCost": 4
-  },
-  {
-    "id": "white_light_ledger",
-    "name": "灯の手帳",
-    "cost": 1,
-    "type": "spell",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "drawCardsPerLight",
-        "amount": 1,
-        "amountMax": 2
-      }
-    ]
-  },
-  {
     "id": "white_perm_embers_last",
     "name": "残り火",
     "cost": 2,
     "type": "permanent",
-    "rarity": "rare",
+    "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
@@ -1686,48 +1603,13 @@
   {
     "id": "white_perm_great_furnace",
     "name": "灯の大炉",
-    "cost": 3,
+    "cost": 1,
     "type": "permanent",
     "rarity": "rare",
     "effects": [
       {
         "trigger": "onLightGained",
         "effect": "addLight",
-        "amount": 1
-      }
-    ]
-  },
-  {
-    "id": "white_light_maul",
-    "name": "灯の大槌",
-    "cost": 2,
-    "type": "physical",
-    "rarity": "uncommon",
-    "effects": [
-      {
-        "trigger": "onPlay",
-        "effect": "dealDamage",
-        "amount": 12
-      },
-      {
-        "trigger": "onPlay",
-        "effect": "staggerEnemy",
-        "condition": {
-          "minLight": 5
-        }
-      }
-    ]
-  },
-  {
-    "id": "white_perm_fire_dish",
-    "name": "灯の火皿",
-    "cost": 1,
-    "type": "permanent",
-    "rarity": "common",
-    "effects": [
-      {
-        "trigger": "onLightDischarged",
-        "effect": "drawCards",
         "amount": 1
       }
     ]

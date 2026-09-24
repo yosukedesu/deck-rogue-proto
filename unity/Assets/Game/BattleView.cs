@@ -643,7 +643,7 @@ namespace DeckRogue.Game
                 var c = hand[i];
                 int cost = c.Def.Cost;
                 try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
-                bool playable = myTurn && g.Pending == null && Effects.IsPlayableFromHand(c) && cost <= st.Player.Energy && (c.Def.LightCost ?? 0) <= (st.Player.Light ?? 0) && Effects.RetainerRequirementMet(st, c); // 灯コスト (白 2026-09-20)
+                bool playable = myTurn && g.Pending == null && Effects.IsPlayableFromHand(c, st) && cost <= st.Player.Energy && (c.Def.LightCost ?? 0) <= (st.Player.Light ?? 0) && Effects.RetainerRequirementMet(st, c); // 灯コスト (白 2026-09-20)
                 bool settable = myTurn && g.Pending == null && SetBase.CanSetCard(st, c.Uid);
                 HandCard hc;
                 bool fresh = !_hand.TryGetValue(c.Uid, out hc);

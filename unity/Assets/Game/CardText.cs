@@ -97,6 +97,7 @@ namespace DeckRogue.Game
             { "nullifyNextEnemyAttack", "このターン最初に受ける攻撃1回のHP損失を0にする" },   // ギア 身代わりの符
             { "drawCardsNextTurn", "次のターンの開始時にN枚多くドロー" },
             { "gainEnergyNextTurn", "次のターンの開始時に一時マナ+N" },
+            { "addLightNextTurn", "次のターンの開始時に灯+N" }, // 灯の埋め火・灯の集約 (2026-09-23)
             { "gainBlockNextTurn", "次のターンの開始時にブロック+N" },
             { "gainHp", "HP回復N" },
             { "loseHp", "自傷HP-N" },
@@ -129,15 +130,18 @@ namespace DeckRogue.Game
             { "dischargeAetherDraw", "霊気×Nドロー(全消費)" },
             { "addLight", "灯+N" },
             { "dischargeLight", "灯を全て放出し、灯1につきNダメージ(灯の数だけヒット。全体は灯×N)" },
-            { "dischargeLightRally", "灯を全て放出し、灯1につき全ての人形がN回動く" },
+            { "dischargeLightRally", "灯を全て放出し、灯Nにつき全ての人形が1回動く" },
             { "dealDamagePerLight", "灯2につきNダメージ(切り捨て。灯は失わない)" }, // 灯篭の人形 (2026-09-20 灯と人形の結び)
             // 火種・放出の軸 (2026-09-20 夜。本家 Soul の白版)
             { "addCardToDraw", "火種N枚を山札のランダムな位置に混ぜる(この戦闘限り)" },
+            { "addCardToDiscard", "火種N枚を捨て札に加える(この戦闘限り)" }, // 断ち切り (2026-09-23)
+            { "transformDeckToToken", "山札の札N枚を選んで火種に変える" }, // 降霊 (2026-09-23)
             { "lightToSparks", "灯Nにつき火種1枚を山札へ(払った灯だけ失う)" },
             { "dealDamagePerSpark", "この戦闘で撃った火種×Nダメージ" },
+            { "gainBlockPerSpark", "この戦闘で撃った火種×Nブロック" }, // 火守りの盾 (2026-09-24 Opus ひなた P4「作る札に刈り取りを内蔵」)
             { "triggerRandomRetainer", "場の人形1体(ランダム)の効果を今1回解決(灯は産まない)" },
             { "dischargeLightWeaken", "灯を全て放出し、灯3につき敵全体に威圧N(灯3未満なら不発)" },
-            { "consumeLight", "灯を全て失う" },
+            { "consumeLight", "灯をN失う" }, // amount 付き (2026-09-23 灯の炉心)。省略の札は無い
             { "gainBlockPerLight", "灯2につきNブロック(灯は失わない)" },
             { "drawCardsPerLight", "灯2につきNドロー(上限あり。灯は失わない)" },
             { "lightCarryHalf", "【常在】灯を放出しても半分(切り捨て)が残る" },
@@ -157,15 +161,18 @@ namespace DeckRogue.Game
             { "playFromExhaust", "消滅置き場から直接プレイ" },
             { "summonPermanent", "召喚N体" },
             { "addCardToHand", "トークンN枚を手札へ" },
-            { "duplicateRetainers", "場の従者を1体ずつ複製" },
-            { "sacrificeRetainer", "従者1体を選んで破壊" },
+            // 画面の語は「人形」(2026-09-24 Opus ひなた T3: 分列・捧げ・駆けつけに「従者」が残っていた)。内部名 (Retainer) は不変
+            { "duplicateRetainers", "場の人形を1体ずつ複製" },
+            { "sacrificeRetainer", "人形1体を選んで破壊" },
             { "copyRetainer", "人形1体を選び同じ人形をN体出す（残りの期限も写す）" },
             { "copyLastRetainer", "最後に点灯した人形と同じ人形をN体出す（残りの期限も写す）" },
             { "twinNextRetainer", "次に出す人形N体が2体になる（持ち越す）" },
             { "extendRetainerLife", "人形1体を選び期限をNターン延ばす" },
+            { "extendAllRetainersLife", "場の人形すべての期限をNターン延ばす" },
+            { "dismissUnlessLight", "灯がN未満ならこの置物は消える（捨て札へ）" },
             { "persistRetainer", "人形1体を選び期限を無くす（消えなくなる）" },
             { "triggerRetainersNow", "号令: 場の人形の効果を今すぐ1回ずつ解決 (登場ごとは除く)" },
-            { "activateEnteredRetainer", "場に出た従者が即1回動く" },
+            { "activateEnteredRetainer", "場に出た人形が即1回動く" },
             { "blessRetainers", "【常在】人形のダメージ・ブロック・回復+N" },
             { "empowerShivs", "【常在】ナイフ与ダメ+N" },
             { "gainSetSlot", "仕込み枠+N(この戦闘中)" },
@@ -183,7 +190,7 @@ namespace DeckRogue.Game
         static readonly Dictionary<string, string> IntentKindJa = new Dictionary<string, string>
         {
             { "attack", "攻撃" }, { "defend", "防御" }, { "buff", "筋力上げ" }, { "rally", "応援" },
-            { "heal", "回復" }, { "hex", "呪い" }, { "destroy-set", "からくり壊し" }, { "destroy-token", "従者狩り" },
+            { "heal", "回復" }, { "hex", "呪い" }, { "destroy-set", "からくり壊し" }, { "destroy-token", "人形狩り" },
             { "steal-gold", "盗み" }, { "flee", "逃走" }, { "mill", "山札喰い" }, { "rest", "隙" }, { "hatch", "孵化" }, { "summon", "召喚" },
         };
 
@@ -402,6 +409,11 @@ namespace DeckRogue.Game
         /// <summary>カードの効果行 (選択式はモードごと)。改行区切り</summary>
         public static string Body(CardDef def)
         {
+            // 状態異常の札は効果を持たないので本文が空だった (2026-09-23 人間ラン#17: 烙印の疼きの理由が札に無い)。Web の effectLineStrings と同じ文
+            if (def.Id == "status_wound") return "使えない（ターン終了時に捨てられる）";
+            if (def.Id == "status_scald") return "使えない。自ターン終了時に手札にあるとHP-2（この戦闘限り。捨て/消滅コストの支払いには使える）";
+            if (def.Id == "status_brand") return "使えない。自ターン終了時に手札にあるとHP-1（デッキに残る呪い。ショップの除去で取り除ける。青い蝋燭があれば 0E・HP-1・消滅で出せる）";
+            if (def.Id == "status_guilt") return "使えない。自ターン終了時に手札にあるとHP-1（仮初の呪い。5戦すると自然に消える）";
             var lines = Collapse(LinesOf(def.Effects, def.Type));
             if (def.Modes != null)
             {
@@ -460,7 +472,7 @@ namespace DeckRogue.Game
             if (def.FreeIfHandAllPhysical == true) n.Add("手札が物理だけなら0E");
             if (def.FreeIfHandAll != null) n.Add("手札が" + TypeJa(def.FreeIfHandAll) + "だけなら0E");
             if (def.FreeIfMomentumAtLeast.HasValue) n.Add("勢い" + def.FreeIfMomentumAtLeast.Value + "以上なら0E");
-            if (def.RequiresRetainer == true) n.Add("場に従者が必要");
+            if (def.RequiresRetainer == true) n.Add("プレイ条件: 場に人形が1体以上");   // 「従者」→「人形」(2026-09-24 T3。Web と同じ文)
             if (def.BlazeDiscount.HasValue) n.Add("猛り火中コスト-" + def.BlazeDiscount.Value);
             return n;
         }
@@ -472,6 +484,8 @@ namespace DeckRogue.Game
             if (def.Exhaust == true) n.Add("消滅");
             if (def.Retain == true) n.Add("保持");
             if (def.Echo == true) n.Add("反復内蔵 (効果を2回解決)");
+            // 反復の2回目は同じ敵を狙う (2026-09-24 Opus ひなた E11 裁定B＝本家2と同じく据え置き)。反復内蔵の札と反復を配る札に同じ一文 (CLI の ECHO_MISS_NOTE)
+            if (def.Echo == true || HasEffect(def, "addSpellEcho")) n.Add(EchoMissNote);
             // 合成の触媒 (2026-09-12): 工房の素材にすると結果に乗る恩恵
             if (def.FusionCatalyst == "cheaper") n.Add("触媒: 素材にすると結果のコスト−1");
             else if (def.FusionCatalyst == "echo") n.Add("触媒: 素材にすると結果の効果を2回解決");
@@ -481,12 +495,23 @@ namespace DeckRogue.Game
             if (def.Retainer == true)
             {   // 白の語彙 (2026-09-18 従者→人形)。寿命は「期限」(2026-09-22 友人ラン: 寿命を「灯り」と呼ぶと資源の「灯」と同じ字で「灯が減ると人形が消える」と読まれた。からくりと同じ語彙)。
                 // 注記は1行 (同日「人形を置いたらどうなるのか分からない」): 出した瞬間に1回動く (点灯) を用語解説の外に出す。火勢の一文はダメージ・ブロックを持つ人形だけ
-                bool grows = false;
-                foreach (var e in def.Effects) if (e.Amount != null && DollUi.GrowthEffects.Contains(e.Effect)) { grows = true; break; }
+                bool grows = DollUi.HasGrowth(def);
                 n.Add("人形: 出した瞬間に1回動く。" + (def.LifePersist == true ? "期限なし" : "期限" + (def.Life ?? 3) + "ターン（出したターンを含む）") + (grows ? "。1ターンごとにダメージとブロック+1" : ""));
             }
             if (def.ShivToken == true) n.Add("骨のナイフ");
             return n;
+        }
+
+        /// <summary>反復の2回目の注記 (2026-09-24 E11 裁定B): 2回目も同じ敵を狙う = 1回目で倒れたら空振り。Web/CLI と同じ文</summary>
+        public const string EchoMissNote = "単体の効果は1回目で対象が倒れたら2回目は空振り（別の敵や分裂・残機の次の姿には向かない）";
+
+        /// <summary>札 (選択式のモードも) がその効果を持つか</summary>
+        static bool HasEffect(CardDef def, string effect)
+        {
+            if (def == null) return false;
+            if (def.Effects != null) foreach (var e in def.Effects) if (e.Effect == effect) return true;
+            if (def.Modes != null) foreach (var m in def.Modes) if (m.Effects != null) foreach (var e in m.Effects) if (e.Effect == effect) return true;
+            return false;
         }
 
         // ---- 敵 ----
@@ -536,7 +561,7 @@ namespace DeckRogue.Game
                 case "defend":
                     return "防御 " + it.Actual + (it.AlsoBuff.HasValue ? " +筋力" + it.AlsoBuff.Value : "");
                 case "destroy-set": return "からくり壊し";
-                case "destroy-token": return "従者狩り";
+                case "destroy-token": return "人形狩り";
                 case "buff": return "筋力 +" + it.Actual;
                 case "rally": return "応援 +" + it.Actual + " (味方全体の筋力)";
                 case "hex": return "呪い" + InflictSuffix(it.Inflict);
@@ -640,7 +665,8 @@ namespace DeckRogue.Game
             if (d.Burrow != null) t.Add("潜伏(殻" + d.Burrow.Block + ")");
             if (d.SplitInto != null) t.Add("分裂→" + d.SplitInto.Count + "体");
             if (d.HatchInto != null) t.Add("孵化");
-            if (d.Interrupts != null)
+            // 鎮めの錘 (ギア) で割り込みを止めた敵は豹変しない = 予告を出さない (2026-09-24 Opus ひなた E5。TS interruptPreviews と同じ)
+            if (d.Interrupts != null && (e == null || e.InterruptBlocked != true))
             {
                 // 行動グラフ (2026-09-14): 割り込み = HP半分の豹変・被弾覚醒・単独時の転職。引き金と最初の技を並べる
                 for (int k = 0; k < d.Interrupts.Count; k++)
@@ -742,9 +768,12 @@ namespace DeckRogue.Game
             var s2 = ev as GameEvent_AetherGained; if (s2 != null) return "霊気+" + s2.Amount;
             var t3 = ev as GameEvent_AetherDischarged; if (t3 != null) return "霊気" + t3.Spent + "を全て放出!";
             var lg = ev as GameEvent_LightGained; if (lg != null) return "灯+" + lg.Amount + " (" + (lg.Source == "heal" ? "回復" : lg.Source == "retainer" ? "人形" : lg.Source == "passive" ? "灯匠" : lg.Source == "carry" ? "残り火" : "カード") + ")";
-            var ld = ev as GameEvent_LightDischarged; if (ld != null) return "灯" + ld.Spent + "を放出!";
+            // 灯の火床 (Sparks)・灯の炉心 (Paid) は放出でなく支払い (2026-09-24 Opus ひなた T15。Web/CLI と同じ文)
+            var ld = ev as GameEvent_LightDischarged; if (ld != null) return IsLightPayment(ld) ? LightPayLine(ld) : "灯" + ld.Spent + "を放出!";
             var ls = ev as GameEvent_LightSpent; if (ls != null) return "灯-" + ls.Amount + " (" + CardName(ls.CardId) + ")"; // 2026-09-20 夜
             var cad = ev as GameEvent_CardsAddedToDraw; if (cad != null) return CardName(cad.CardId) + cad.Count + "枚を山札に混ぜた";
+            var cadd = ev as GameEvent_CardsAddedToDiscard; if (cadd != null) return CardName(cadd.CardId) + cadd.Count + "枚を捨て札に加えた";
+            var dct = ev as GameEvent_DeckCardTransformed; if (dct != null) return "山札の" + CardName(dct.CardId) + "が" + CardName(dct.Into) + "に変わった";
             var u2 = ev as GameEvent_EnemySplit; if (u2 != null) return u2.Count == 1 ? "再起動! 倒した敵が次の姿で立ち上がった" : "分裂! 倒した敵から" + u2.Count + "体が現れた";
             var v2 = ev as GameEvent_EnemyHatched; if (v2 != null) return "孵化した!";
             var w2 = ev as GameEvent_GuardianRedirected; if (w2 != null) return "庇われた! 単体対象は護衛に向かった";
@@ -753,21 +782,57 @@ namespace DeckRogue.Game
             var zs = ev as GameEvent_EnemySummoned; if (zs != null) return zs.Count > 0 ? "召喚! " + zs.Count + "体が現れた" : "召喚したが場が満杯で出なかった";
             var z2 = ev as GameEvent_EnemyInterrupted; if (z2 != null) return (z2.Trigger == EnemyInterruptTriggers.DamageTaken ? "目を覚ました! 眠りが終わった" : z2.Trigger == EnemyInterruptTriggers.HpBelowHalf ? "HPが半分を切った!" : z2.Trigger == EnemyInterruptTriggers.Alone ? "仲間が全滅した!" : "仲間が倒れた!") + (z2.Replaced ? " 行動が変わった" + (z2.Before != null && z2.After != null ? ": " + IntentLine(z2.Before) + " → " + IntentLine(z2.After) : "") : " 次のターンから行動が変わる");
             var a3 = ev as GameEvent_ArtifactBlocked; if (a3 != null) return "アーティファクトが" + DebuffName(a3.Effect) + "を弾いた（この効果は消えた）";
-            var b3 = ev as GameEvent_ScaldTick; if (b3 != null) return "火傷・烙印" + b3.Count + "枚が疼いた (HP-" + b3.Amount + ")";
+            var b3 = ev as GameEvent_ScaldTick; if (b3 != null) { var parts = new List<string>(); if ((b3.Scalds ?? 0) > 0) parts.Add("火傷" + b3.Scalds + "枚"); if ((b3.Brands ?? 0) > 0) parts.Add("烙印" + b3.Brands + "枚"); return (parts.Count > 0 ? string.Join("・", parts) : "火傷・烙印" + b3.Count + "枚") + "が疼いた (HP-" + b3.Amount + ")"; }
             var c3 = ev as GameEvent_CombatEnded; if (c3 != null) return c3.Result == "won" ? "=== 勝利 ===" : "=== 敗北 ===";
             var d3 = ev as GameEvent_GearUsed; if (d3 != null) return "ギア「" + d3.Name + "」を組んだ";   // ⚙ は Unity のフォントに無い   // ギア (2026-09-17)
             var e3 = ev as GameEvent_DeathSaved; if (e3 != null) return e3.Source == "gear" ? "蘇りの発条がはじけ、HP" + e3.Hp + "で踏みとどまった" : "蜥蜴の尾が砕け、HP" + e3.Hp + "で踏みとどまった";
             var g3 = ev as GameEvent_RetainerRushed; if (g3 != null) return "点灯: " + CardName(g3.CardId) + "が出た瞬間に1回動いた";   // ひなたのパッシブ (2026-09-19 log に出ていなかった)
             // 人形の期限 (2026-09-21。語彙は 2026-09-22 に「灯り」→「期限」): 切れた・写した・延ばした (人間ラン#16 のレポートに行が無かった)
             var gx = ev as GameEvent_RetainerExpired; if (gx != null) return "期限切れ: " + CardName(gx.CardId) + "が消えた";
+            var gd = ev as GameEvent_PermanentDismissed; if (gd != null) return "灯が足りず " + CardName(gd.CardId) + " が場を離れた（捨て札へ）";
             var gc = ev as GameEvent_RetainerCopied; if (gc != null) return "写し: " + CardName(gc.CardId) + "をコピーした（残りの期限も写す）";
             var gl = ev as GameEvent_RetainerLifeExtended; if (gl != null) return gl.Persist == true ? "永遠の灯: " + CardName(gl.CardId) + "の期限が無くなった（消えなくなった）" : "継ぎ火: " + CardName(gl.CardId) + "の期限を" + gl.Amount + "ターン延ばした";
             var h3 = ev as GameEvent_RetainersTriggered; if (h3 != null) return "号令: 人形" + h3.Count + "体がトリガーを問わず今1回ずつ動いた";
-            var i4 = ev as GameEvent_RetainersDuplicated; if (i4 != null) return "分列: 従者" + i4.Count + "体が複製された";
+            var i4 = ev as GameEvent_RetainersDuplicated; if (i4 != null) return "分列: 人形" + i4.Count + "体が複製された";   // 「従者」→「人形」(2026-09-24 T3)
+            // 人形まわりと反復の行 (2026-09-24 T3/E11: 型名 "TokenDestroyed" などがそのまま出ていた)。CLI と同じ文
+            var td = ev as GameEvent_TokenDestroyed; if (td != null) return "人形狩り: " + CardName(td.CardId) + "が壊された";
+            var rs = ev as GameEvent_RetainerSacrificed; if (rs != null) return "人形を捧げた: " + CardName(rs.CardId);
+            var se = ev as GameEvent_SpellEchoed; if (se != null) return "反復: " + CardName(se.CardId) + "の効果が2回解決";
             var f3 = ev as GameEvent_HpLossCapped; if (f3 != null) return f3.Left > 0 ? "脈打つ欠片がHPの損失を20で止めた（あと" + f3.Left + "回）" : "脈打つ欠片がHPの損失を20で止めた（これで最後。戦いの後に砕ける）";   // 2026-09-18
+            // 型名がそのまま出ていた行 (2026-09-24 人間ラン#18/#19: EnemyDied 70・DeckShuffled 53・CardsAddedToHand 34 行)。文は Web の log.ts と同じ
+            var ed = ev as GameEvent_EnemyDied; if (ed != null) return "敵" + (ed.EnemyIndex + 1) + "を倒した";
+            if (ev is GameEvent_DeckShuffled) return "山札を切り直した";
+            var cah = ev as GameEvent_CardsAddedToHand; if (cah != null) return CardName(cah.CardId) + "を" + cah.Count + "枚手札に加えた";
+            var cmh = ev as GameEvent_CardsMovedToHand; if (cmh != null) return (cmh.From == "draw" ? "サーチ" : "回収") + ": " + Names(cmh.CardIds) + "を手札に加えた";
+            var ccp = ev as GameEvent_CardCopied; if (ccp != null) return CardName(ccp.CardId) + "のコピー" + ccp.Count + "枚を捨て札に加えた";
+            var cgr = ev as GameEvent_CardGrew; if (cgr != null) return CardName(cgr.CardId) + "が育った（与ダメ+" + cgr.Bonus + "）";
+            var cuh = ev as GameEvent_CardUpgradedInHand; if (cuh != null) return CardName(cuh.CardId) + "を鍛えた（この戦闘中）";
+            var crt = ev as GameEvent_CardRetrieved; if (crt != null) return "回収: " + CardName(crt.CardId) + "（消滅置き場から手札へ）";
+            var cpe = ev as GameEvent_CardPlayedFromExhaust; if (cpe != null) return "直接プレイ: " + CardName(cpe.CardId) + "（消滅置き場から）";
+            var nf = ev as GameEvent_NecroFired; if (nf != null) return "亡骸: " + CardName(nf.CardId) + "が消滅して効果が発火";
+            var np = ev as GameEvent_NecroPlayed; if (np != null) return "亡骸プレイ: " + CardName(np.CardId) + "（ゲームから取り除かれた）";
+            var exr = ev as GameEvent_ExhaustRecycled; if (exr != null) return "輪廻: 消滅置き場" + exr.Count + "枚が山札へ還った";
+            var bdc = ev as GameEvent_BurnDischarged; if (bdc != null) return "爆熱: 延焼" + bdc.Amount + "を全て解き放った";
+            var ecf = ev as GameEvent_EnemyConfused; if (ecf != null) return "敵に混乱+" + ecf.Amount + "（攻撃が仲間に向かう）";
+            var cfa = ev as GameEvent_ConfusedAttack; if (cfa != null) return cfa.EnemyIndex == cfa.TargetIndex ? "混乱した敵は自分自身に" + cfa.Amount + "ダメージ!" : "仲間割れ! 混乱した敵が味方に" + cfa.Amount + "ダメージ";
+            var mhg = ev as GameEvent_MaxHpGained; if (mhg != null) return "最大HP+" + mhg.Amount + "（この戦闘後も残る）";
+            var ssg = ev as GameEvent_SetSlotGained; if (ssg != null) return "仕込み枠+" + ssg.Amount + "（この戦闘中）";
+            var pab = ev as GameEvent_PlayerArtifactBlocked; if (pab != null) return "時計仕掛けの土産が" + StatusName(pab.Status) + "を弾いた";
             // 表示しないもの
             if (ev is GameEvent_EnemyActionExecuting || ev is GameEvent_EnemyActionResolved || ev is GameEvent_EnemyPhaseEnded) return null;
             return ev.Type;
+        }
+
+        /// <summary>放出でなく支払いの LightDischarged か: 灯の火床 (Sparks)・灯の炉心などの consumeLight (Paid)。2026-09-24 T15</summary>
+        public static bool IsLightPayment(GameEvent_LightDischarged ld)
+        {
+            return ld != null && ((ld.Sparks ?? 0) > 0 || ld.Paid == true);
+        }
+
+        /// <summary>支払いの一文 (ログ・浮き文字が共用。2026-09-24 T15。Web/CLI と同じ文): 火床「灯9を払って火種3を山札へ」・炉心「灯3を払った」</summary>
+        public static string LightPayLine(GameEvent_LightDischarged ld)
+        {
+            return (ld.Sparks ?? 0) > 0 ? "灯" + ld.Spent + "を払って火種" + ld.Sparks.Value + "を山札へ" : "灯" + ld.Spent + "を払った";
         }
 
         static string SafeEncounter(string id)

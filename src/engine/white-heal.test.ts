@@ -38,15 +38,16 @@ describe('回復の回し封じ (白)', () => {
 
   it('3分割の形: 主役=消滅+灯 / 殴った分=据え置き / 添え物=灯', () => {
     const d = getCardDef
-    expect(d('white_heal').exhaust).toBe(true)
-    expect(d('white_heal').effects.map((e) => `${e.effect}${e.amount}`)).toEqual(['gainHp6', 'gainHp4', 'addLight1'])
+    expect(d('white_mass_heal').exhaust).toBe(true) // 癒しの光は 2026-09-24 に撤去 = 主役の形は大いなる癒しで固定
+    expect(d('white_mass_heal').effects.map((e) => `${e.effect}${e.amount}`)).toEqual(['gainHp15', 'addLight3', 'addCardToHand2']) // 火種2枚は 2026-09-24 CSV
     expect(d('white_hymn_wall').exhaust).toBe(true)
     expect(d('white_hymn_wall').effects.find((e) => e.effect === 'gainHp')?.amount).toBe(8)
     expect(d('white_blade_prayer').exhaust).toBeUndefined() // 灯りの刃 = 6ダメ+回復 (殴った分だけ)
     expect(d('white_praise_chorus').exhaust).toBeUndefined() // 灯の輪 = 放出が敵を削る
     expect(d('white_perm_choir').effects[0]!.trigger).toBe('onAttackPlayed') // 癒しの人形 = 攻撃ごと回復2
     expect(d('white_perm_monk').effects[0]!.trigger).toBe('onPermanentEntered') // 手当ての人形 = 登場ごと回復1
-    for (const id of ['white_shield_prayer', 'white_maiden_prayer', 'white_catalyst_echo', 'white_reaction_bright_wall', 'white_oath_shield']) {
+    // 重ねる灯 (触媒) は 2026-09-24 に撤去 (Opus ひなた裁定「反復つける触媒消そう」)
+    for (const id of ['white_maiden_prayer', 'white_reaction_bright_wall', 'white_oath_shield']) {
       expect(heals(d(id)), id).toEqual([])
       expect(effectsOf(d(id)).some((e) => e.effect === 'addLight'), id).toBe(true)
     }
@@ -54,13 +55,13 @@ describe('回復の回し封じ (白)', () => {
     expect(d('white_prayer_verse').exhaust).toBe(true)
   })
 
-  it('癒しの光はプレイ後に消滅置き場へ行き、回復6 (+条件4) と灯+3 (回復2回+明示1) が入る', () => {
-    let s: GameState = withHand(freshCombat('set-confirm', 'enemy_probe', 42, 'starter_white'), ['white_heal'])
+  it('大いなる癒しはプレイ後に消滅置き場へ行き、回復15 と灯+4 (回復1回+明示3) が入る (癒しの光は 2026-09-24 に撤去)', () => {
+    let s: GameState = withHand(freshCombat('set-confirm', 'enemy_probe', 42, 'starter_white'), ['white_mass_heal'])
     s = { ...s, player: { ...s.player, hp: 30, energy: 3 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_heal' })
-    expect(s.player.hp).toBe(40) // 30 ≤ 半分 → 6+4
-    expect(s.player.light).toBe(3) // 回復の解決ごと+1 (2回) + 明示の灯+1
-    expect(s.player.exhaustPile.map((c) => c.def.id)).toEqual(['white_heal'])
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_mass_heal' })
+    expect(s.player.hp).toBe(45)
+    expect(s.player.light).toBe(4) // 回復の解決ごと+1 + 明示の灯+3
+    expect(s.player.exhaustPile.map((c) => c.def.id)).toEqual(['white_mass_heal'])
     expect(s.player.discardPile.map((c) => c.def.id)).toEqual([])
   })
 

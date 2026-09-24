@@ -15,6 +15,7 @@ import leadersJson from '../data/leaders.json' with { type: 'json' }
 import relicsJson from '../data/relics.json' with { type: 'json' }
 import gearsJson from '../data/gears.json' with { type: 'json' }
 import eventsJson from '../data/events.json' with { type: 'json' }
+import departuresJson from '../data/departures.json' with { type: 'json' }
 import type {
   CardColor,
   CardDef,
@@ -27,6 +28,7 @@ import type {
   RelicDef,
   EventDef,
   GearDef,
+  DepartureTemplate,
 } from './types.ts'
 
 // 色は JSON に書かず、ファイル単位でここで付与する (JSONを本実装へ持ち込む際の共通規約)
@@ -77,6 +79,26 @@ export function getGearDef(id: string): GearDef {
 }
 
 export const allEvents = eventsJson as readonly EventDef[]
+/**
+ * 出立の店 (2026-09-24): 坑口の行商の一言 (出自の工房＝リーダーの最初の色。ギルドは最初の色の里)。
+ * 主人公が坑に降りる前に支度を整えに寄った店 (2026-09-24 夜 ユーザー「行商が送り出す」の枠は撤去)。人間側はライト＝短く軽口 (docs/world.md)。Web/CLI/Unity が同じ文を出す
+ */
+export const DEPARTURE_MASTER_LINES: Readonly<Record<CardColor, string>> = {
+  green: '「大樹の里の工房の出かい。坑に降りる前に、要る物だけ揃えていきな」',
+  blue: '「潮の里の工房の出かい。潮目が変わる前に、要る物だけ揃えていきな」',
+  red: '「燼の里の工房の出かい。燃やす物が足りなきゃ、ここで揃えていきな」',
+  white: '「光耀の里の工房の出かい。灯りの替えも、要る物もここで揃えていきな」',
+  black: '「宵闇の里の工房の出かい。暗がりに降りる前に、要る物だけ揃えていきな」',
+}
+/** 出立の画面の見出しと地の文 (Web/CLI/Unity 共通) */
+export const DEPARTURE_TITLE = '出立の店'
+export const DEPARTURE_LEAD = '坑口の行商の店。坑に降りる前に、支度を整えに寄った。'
+export function departureMasterLine(colors: readonly CardColor[]): string {
+  return DEPARTURE_MASTER_LINES[colors[0] ?? 'green']
+}
+
+/** 出立の店の台帳 (2026-09-24)。2種類 (body/goods) から 2・3 を createRun が抽選する */
+export const allDepartures = departuresJson as readonly DepartureTemplate[]
 
 export function getEventDef(id: string): EventDef {
   const def = allEvents.find((e) => e.id === id)

@@ -1036,7 +1036,7 @@
     "id": "relic_astrolabe",
     "name": "星読みの盤",
     "sprite": "🔭",
-    "description": "取った時、デッキから3枚を選んで同レア度の別の札に変え、鍛える",
+    "description": "取った時、デッキから3枚を選んで同レア度の別の札に変え、鍛える（状態異常・烙印は選べない）",
     "rarity": "boss",
     "bonus": {
       "transformOnPickup": 3
@@ -1104,7 +1104,7 @@
     "id": "relic_velvet_choker",
     "name": "天鵞絨の首輪",
     "sprite": "📿",
-    "description": "戦闘開始時、エナジー上限+1（次のターンから）。1ターンにプレイできるカードは6枚まで",
+    "description": "戦闘開始時、エナジー上限+1（次のターンから）。1ターンにプレイできるカードは6枚まで（仕込むのは数えない）",
     "rarity": "boss",
     "effects": [
       {
@@ -1289,6 +1289,38 @@
         "trigger": "onCombatStart",
         "effect": "gainBlock",
         "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "relic_funerary_mask",
+    "name": "灯の面",
+    "sprite": "🎭",
+    "description": "戦闘開始時に、火種を3枚山札のランダムな位置に混ぜる",
+    "rarity": "uncommon",
+    "colors": [
+      "white"
+    ],
+    "effects": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "addCardToDraw",
+        "summonId": "white_spark_token",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "relic_forgotten_light",
+    "name": "忘れられた灯",
+    "sprite": "🕯️",
+    "description": "札が消滅するたび、敵に1ダメージ",
+    "rarity": "event",
+    "effects": [
+      {
+        "trigger": "onCardExhausted",
+        "effect": "dealDamage",
+        "amount": 1
       }
     ]
   }

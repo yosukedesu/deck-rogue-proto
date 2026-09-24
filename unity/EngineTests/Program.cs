@@ -59,6 +59,136 @@ if (args.Length > 0 && args[0] == "fuse")
     return 0;
 }
 
+if (args.Length > 0 && args[0] == "resolve")
+{
+    // 合成札の id → 定義の照合 (2026-09-24): dotnet run -- resolve <fusedId>... [--data dir] → 1行1件の JSON (TS の resolveFusedDef と突き合わせる)
+    var dataDir = "../../src/data";
+    var ids = new List<string>();
+    for (int i = 1; i < args.Length; i++) { if (args[i] == "--data" && i + 1 < args.Length) { dataDir = args[++i]; continue; } ids.Add(args[i]); }
+    Content.Load(dataDir);
+    foreach (var id in ids) Console.WriteLine(JsonConvert.SerializeObject(Fusion.ResolveFusedDef(id), JsonUnions.Settings));
+    return 0;
+}
+
+if (args.Length > 0 && args[0] == "map-trace")
+{
+    // 地図生成の照合 (2026-09-24 同族回避の4段): dotnet run -- map-trace [count=120] [--data dir] → シード×幕ごとに1行 (型と編成と辺)。TS の同形出力と diff で突き合わせる
+    var dataDir = "../../src/data";
+    int count = 120;
+    for (int i = 1; i < args.Length; i++) { if (args[i] == "--data" && i + 1 < args.Length) { dataDir = args[++i]; continue; } count = int.Parse(args[i]); }
+    Content.Load(dataDir);
+    for (int seed = 1; seed <= count; seed++)
+        for (int act = 1; act <= 3; act++)
+        {
+            var (map, rng) = MapGen.GenerateMap(Rng.Create(seed * 7919 + act), act);
+            var rows = map.Select(row => string.Join(",", row.Select(n => n.Type + ":" + (n.EncounterId ?? "") + ">" + string.Join(".", n.Next))));
+            Console.WriteLine($"{seed}/{act} rng{rng.Counter} " + string.Join("|", rows));
+        }
+    return 0;
+}
+
+if (args.Length > 0 && args[0] == "departure-trace")
+{
+    // 出立の店の照合 (2026-09-24): dotnet run -- departure-trace [--data dir]
+    // 全リーダー×シード1〜40で、抽選 (5品の中身・値段・RNG)・ボットの既定手・各品を買った後・続けてもう1品・二重買い・店を出た後・
+    // 幕1の店の棚と棚から買った後・金不足・幕2の棚・買わずに出る、を1行ずつ出す。TS の同形スクリプト (scratch の dep-trace.ts) の出力と diff で突き合わせる
+    var dataDir = "../../src/data";
+    for (int i = 1; i < args.Length; i++) if (args[i] == "--data" && i + 1 < args.Length) dataDir = args[++i];
+    Content.Load(dataDir);
+    var outLines = new List<string>();
+    string Desc(RunState s) =>
+        $"{s.Phase} hp{s.Hp}/{s.MaxHp} g{s.Gold} m{s.Mana ?? 0} deck{s.Deck.Count}:{string.Join("+", s.Deck.Select(c => c.Uid))} relics={string.Join("+", s.Relics)} gears={string.Join("+", (s.Gears ?? new List<GearInstance>()).Select(g => g.Uid))} bought={string.Join("+", s.Departure?.Bought ?? new List<string>())} left={string.Join("+", (s.Departure?.Leftovers ?? new List<DepartureOffer>()).Select(o => o.Id))} rng{s.Rng.Counter} h={Golden.RunHash(s)}";
+    string Fmt(RunCommand c) => c switch
+    {
+        RunCommand_BuyDeparture b => $"{b.Type}/{b.Index}/{b.CardIndex?.ToString() ?? ""}",
+        RunCommand_ShopBuyDeparture b => $"{b.Type}/{b.Index}/{b.CardIndex?.ToString() ?? ""}",
+        _ => $"{c.Type}//",
+    };
+    string Rep(RunState a, RunCommand c, RunState b) => Report.DescribeRunChoice(a, c, b)?.Text ?? "null";
+    RunCommand Buy(RunState s, int i)
+    {
+        var o = s.Departure!.Offers[i];
+        int? ci = Run.EventChoiceNeedsCard(o.Choice) ? Run.DefaultEventCardIndex(s, o.Choice) : null;
+        return new RunCommand_BuyDeparture { Index = i, CardIndex = ci };
+    }
+    void TryC(string label, Func<object> f) { try { f(); outLines.Add($"  {label} ok"); } catch (Exception) { outLines.Add($"  {label} throw"); } }
+    void ShopLines(RunState l, string tag)
+    {
+        var shop = Run.OpenShop(l with { Gold = 500 });
+        var shelf = shop.Shop!.Departures ?? new List<ShopStateDepartures>();
+        outLines.Add($"  shop{tag} {string.Join("+", shelf.Select(d => d.Id + "@" + d.Price))} rng{shop.Rng.Counter}");
+        for (int k = 0; k < shelf.Count; k++)
+        {
+            var lo = l.Departure!.Leftovers.First(x => x.Id == shelf[k].Id);
+            int? ck = Run.EventChoiceNeedsCard(lo.Choice) ? Run.DefaultEventCardIndex(shop, lo.Choice) : null;
+            var bc = new RunCommand_ShopBuyDeparture { Index = k, CardIndex = ck };
+            try
+            {
+                var b = Run.ApplyRunCommand(shop, bc);
+                outLines.Add($"    sbuy{k} {Desc(b)} sold={string.Join("", (b.Shop!.Departures ?? new List<ShopStateDepartures>()).Select(d => d.Sold == true ? "1" : "0"))} | {Rep(shop, bc, b)}");
+                TryC("stwice", () => Run.ApplyRunCommand(b, bc));
+            }
+            catch (Exception e) { outLines.Add($"    sbuy{k} ERR {e.Message}"); }
+        }
+        if (shelf.Count > 0) TryC("spoor", () => Run.ApplyRunCommand(shop with { Gold = 0 }, new RunCommand_ShopBuyDeparture { Index = 0, CardIndex = 0 }));
+        outLines.Add($"  act2 {(Run.OpenShop(l with { Act = 2 }).Shop!.Departures ?? new List<ShopStateDepartures>()).Count}");
+    }
+    foreach (var l in Content.AllLeaders)
+    {
+        for (int seed = 1; seed <= 40; seed++)
+        {
+            var run = Run.CreateRun(seed, ReactionModes.SetConfirm, l.Id);
+            var offers = run.Departure!.Offers;
+            outLines.Add($"{l.Id} {seed} {Desc(run)} [{string.Join(" ", offers.Select(o => $"{o.Id}:{o.Kind}:{o.Choice.RelicId ?? ""}:{string.Join("+", o.Choice.Gears ?? new List<string>())}:{string.Join("+", o.Choice.AddCardIds ?? new List<string>())}:{o.Price}:{o.ShopPrice?.ToString() ?? ""}"))}]");
+            // ボットの既定手を出立が終わるまで
+            var st = run;
+            for (int step = 0; st.Phase == RunPhases.Departure && step < 10; step++)
+            {
+                var c = Run.DefaultDepartureCommand(st);
+                var n = Run.ApplyRunCommand(st, c);
+                outLines.Add($"  bot {Fmt(c)} {Desc(n)} | {Rep(st, c, n)}");
+                st = n;
+            }
+            for (int i = 0; i < offers.Count; i++)
+            {
+                var c = Buy(run, i);
+                try
+                {
+                    var a = Run.ApplyRunCommand(run, c);
+                    outLines.Add($"  buy{i} {Fmt(c)} {Desc(a)} | {Rep(run, c, a)}");
+                    TryC("twice", () => Run.ApplyRunCommand(a, c));
+                    if (a.Phase == RunPhases.Departure)
+                    {
+                        int j = (i + 1) % offers.Count;
+                        var cj = Buy(a, j);
+                        try
+                        {
+                            var b = Run.ApplyRunCommand(a, cj);
+                            outLines.Add($"  buy{i}+{j} {Fmt(cj)} {Desc(b)} | {Rep(a, cj, b)}");
+                        }
+                        catch (Exception e) { outLines.Add($"  buy{i}+{j} ERR {e.Message}"); }
+                        var leave = new RunCommand_LeaveDeparture();
+                        var lv = Run.ApplyRunCommand(a, leave);
+                        outLines.Add($"  leave{i} {Desc(lv)} | {Rep(a, leave, lv)}");
+                        ShopLines(lv, $"{i}");
+                        TryC("after", () => Run.ApplyRunCommand(lv, new RunCommand_BuyDeparture { Index = 0 }));
+                    }
+                }
+                catch (Exception e) { outLines.Add($"  buy{i} ERR {e.Message}"); }
+            }
+            var leave0 = new RunCommand_LeaveDeparture();
+            var l0 = Run.ApplyRunCommand(run, leave0);
+            outLines.Add($"  leave- {Desc(l0)} | {Rep(run, leave0, l0)}");
+            ShopLines(l0, "-");
+            int priced = -1;
+            for (int i = 0; i < offers.Count; i++) if (offers[i].Price > 0) { priced = i; break; }
+            if (priced >= 0) TryC("poorDep", () => Run.ApplyRunCommand(run with { Gold = 0 }, Buy(run, priced)));
+        }
+    }
+    Console.Out.Write(string.Join("\n", outLines) + "\n");
+    return 0;
+}
+
 var path = args.Length > 0 ? args[0] : "../../goldens/rng-golden.json";
 if (!File.Exists(path))
 {

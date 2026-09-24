@@ -1005,3 +1005,38 @@ button:disabled { cursor: not-allowed; }
 .gear-shelf-item.gear-rare { border-color: #c99a3a; }
 .gear-shelf-item.gear-sold { opacity: 0.45; }
 .btn-small { padding: 2px 8px; font-size: 12px; }
+
+/* 出立の支度 (ラン開始の祝福 2026-09-24): 支度を横に並べる。行商の棚でも同じ札を使う */
+.departure-master { margin-top: 6px; padding: 6px 10px; border-left: 3px solid var(--energy); background: var(--panel2); font-size: 14px; }
+.departure-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; align-items: stretch; }
+.departure-relics { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+.departure-relic { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.departure-offer {
+  flex: 1 1 210px; min-width: 0; display: flex; flex-direction: column; gap: 4px;
+  padding: 10px 12px; border-radius: 8px; background: var(--panel); border: 2px solid var(--border);
+}
+.departure-offer.departure-body { border-color: var(--border-strong); }
+.departure-offer.departure-goods { border-color: var(--block); }
+.departure-offer.departure-selected { box-shadow: 0 0 0 2px var(--accent); }
+.departure-offer.departure-dim { opacity: 0.5; }
+.departure-item { padding: 4px 8px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--border); }
+.departure-item.gear-uncommon { border-color: #6f95b8; }
+.departure-item.gear-rare { border-color: #c99a3a; }
+.departure-cards { margin: 4px 0; }
+.departure-cost { color: var(--danger); font-weight: bold; font-size: 13px; }
+.departure-warn { color: var(--energy); font-size: 12px; }
+.departure-why { color: var(--danger); font-size: 12px; }
+.departure-note { margin: 0; font-size: 12px; }
+.departure-actions { margin-top: auto; padding-top: 6px; }
+.departure-picker { margin-top: 12px; }
+/* 出立の店 (2026-09-24): 5品を1行に並べる (PC)。所持金・買った印・店を出るボタン */
+.setup.departure-shop { max-width: 1100px; }
+.departure-shop .departure-offer { flex: 1 1 196px; padding: 8px 10px; }
+.departure-purse { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+.departure-gold { font-size: 18px; font-weight: bold; color: var(--energy); }
+.departure-offer.departure-bought { opacity: 0.65; border-style: dashed; }
+.departure-bought-mark { color: var(--accent); font-weight: bold; }
+.departure-leave { margin: 16px 0 8px; }
+@media (max-width: 700px) {
+  .departure-offer { flex-basis: 100%; }
+}

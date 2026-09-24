@@ -31,9 +31,8 @@ namespace DeckRogue.Engine
                     if (state.ReactionUsedThisAction) return state; // 敵の1行動につき1回まで
                     // 打ち消し済み (楔 ActionNegated・全体の NegateNextAction) の行動には窓を開かない (2026-09-20 Opus 火種A)。TS と同形
                     if ((e.EnemyIndex < state.Enemies.Count && state.Enemies[e.EnemyIndex].ActionNegated == true) || state.NegateNextAction) return state;
-                    var intent = Effects.EffectiveIntent(state, e.EnemyIndex);
-                    int actual = intent != null ? intent.Actual : 0;
-                    var win = new ReactionWindow { Stage = "pre", Kind = e.Kind, Actual = actual };
+                    // 窓の値は攻撃なら1発×ヒット数の合計・攻撃者が混乱中なら被攻撃前の罠は候補にしない (2026-09-24 E10・E3)。TS と同形
+                    var win = Effects.PreWindowFor(state, e.EnemyIndex) with { Kind = e.Kind };
                     var card = Effects.UsableSetCards(state, win).FirstOrDefault();
                     if (card != null)
                     {
@@ -44,7 +43,7 @@ namespace DeckRogue.Engine
                 case GameEvent_EnemyActionResolved e:
                 {
                     // 窓ごとに1枚 (2026-09-14): pre 窓で鳴っても post 窓は開く
-                    var win = new ReactionWindow { Stage = "post", Kind = e.Kind, HpLoss = e.HpLoss, Actual = e.Actual };
+                    var win = new ReactionWindow { Stage = "post", Kind = e.Kind, HpLoss = e.HpLoss, Actual = Effects.ReactionActionValue(state, e.EnemyIndex) };
                     var card = Effects.UsableSetCards(state, win).FirstOrDefault();
                     if (card != null)
                     {

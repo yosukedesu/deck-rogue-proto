@@ -27,6 +27,12 @@ namespace DeckRogue.Engine
         [JsonProperty("holds")] public int Holds;
         /// <summary>罠モデル (2026-09-13): 2窓で鳴らずに期限切れの札の枚数</summary>
         [JsonProperty("expires")] public int Expires;
+        /// <summary>人形の灯り (2026-09-21 / C# は 2026-09-23 追随＝人間ラン#17 の Unity レポートに人形の数字が無かった): 点灯した人形の数・期限切れの数・号令の回数</summary>
+        [JsonProperty("dolls")] public int Dolls;
+        [JsonProperty("dollsGone")] public int DollsGone;
+        [JsonProperty("rallies")] public int Rallies;
+        /// <summary>人形を並べる札以外のプレイ数 (dollOnlyOpening の材料。TS と同じく書き出さない)</summary>
+        [JsonIgnore] public int NonDollPlays;
         /// <summary>ターン開始時の手札 (保持で残った札+ドロー)</summary>
         [JsonProperty("hand", NullValueHandling = NullValueHandling.Ignore)] public List<string>? Hand;
         /// <summary>ターン終了時に手札に残った札 = 使わなかった札</summary>
@@ -46,6 +52,11 @@ namespace DeckRogue.Engine
         [JsonProperty("fires")] public int Fires;
         [JsonProperty("holds")] public int Holds;
         [JsonProperty("expires")] public int Expires;
+        /// <summary>人形の灯り (2026-09-21): 点灯した人形の数・期限切れの数・号令の回数・最初の3ターンのうち「プレイが全部人形だった」ターン数 (#15 の「並べるだけの序盤」)</summary>
+        [JsonProperty("dolls")] public int Dolls;
+        [JsonProperty("dollsGone")] public int DollsGone;
+        [JsonProperty("rallies")] public int Rallies;
+        [JsonProperty("dollOnlyOpening")] public int DollOnlyOpening;
         [JsonProperty("perTurn")] public List<TurnMetrics> PerTurn = new List<TurnMetrics>();
     }
 
@@ -179,7 +190,17 @@ namespace DeckRogue.Engine
                         }
                         else At(cur).Taken += dd.HpLoss;
                         break;
-                    case GameEvent_CardPlayed _: At(cur).Plays++; break;
+                    case GameEvent_CardPlayed cp:
+                    {
+                        var m = At(cur);
+                        m.Plays++;
+                        // 「人形を並べる札」= 人形そのもの・召喚 (点灯・一斉点灯…)・コピー系。それ以外のプレイを数え、0 のターンが「並べるだけ」
+                        if (!IsDollCardId(cp.CardId)) m.NonDollPlays++;
+                        break;
+                    }
+                    case GameEvent_RetainerRushed _: At(cur).Dolls++; break;
+                    case GameEvent_RetainerExpired _: At(cur).DollsGone++; break;
+                    case GameEvent_RetainersTriggered _: At(cur).Rallies++; break;
                     case GameEvent_CardSet _: At(cur).Sets++; break;
                     case GameEvent_ReactionTriggered _: At(cur).Fires++; break;
                     case GameEvent_ReactionHeld _: At(cur).Holds++; break;
@@ -191,6 +212,8 @@ namespace DeckRogue.Engine
             int Sum(Func<TurnMetrics, int> k) { int s = 0; for (int i = 0; i < perTurn.Count; i++) s += k(perTurn[i]); return s; }
             int maxTurn = 0;
             for (int i = 0; i < perTurn.Count; i++) maxTurn = Math.Max(maxTurn, perTurn[i].Dealt);
+            int dollOnlyOpening = 0;
+            for (int i = 0; i < perTurn.Count && i < 3; i++) if (perTurn[i].Plays > 0 && perTurn[i].NonDollPlays == 0) dollOnlyOpening++;
             return new BattleMetrics
             {
                 Turns = perTurn.Count,
@@ -202,8 +225,29 @@ namespace DeckRogue.Engine
                 Fires = Sum(m => m.Fires),
                 Holds = Sum(m => m.Holds),
                 Expires = Sum(m => m.Expires),
+                Dolls = Sum(m => m.Dolls),
+                DollsGone = Sum(m => m.DollsGone),
+                Rallies = Sum(m => m.Rallies),
+                DollOnlyOpening = dollOnlyOpening,
                 PerTurn = perTurn,
             };
+        }
+
+        /// <summary>人形を並べる札か (analysis.ts isDollCardId): 人形そのもの・召喚 (summonPermanent)・コピー系。定義が無い id (工房産など) は名前で読まない=false</summary>
+        static bool IsDollCardId(string cardId)
+        {
+            CardDef def;
+            try { def = Content.GetCardDef(cardId); }
+            catch (Exception) { return false; }
+            if (def.Retainer == true) return true;
+            var all = new List<DeclarativeEffect>(def.Effects);
+            if (def.Modes != null) foreach (var mode in def.Modes) all.AddRange(mode.Effects);
+            for (int i = 0; i < all.Count; i++)
+            {
+                var e = all[i].Effect;
+                if (e == "summonPermanent" || e == "copyRetainer" || e == "copyLastRetainer" || e == "twinNextRetainer") return true;
+            }
+            return false;
         }
 
         static int Median(List<int> xs)

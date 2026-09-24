@@ -76,7 +76,16 @@ export function setAndArm(state: GameState, cardUid: string): GameState {
 }
 
 // ---- マップランのテスト用航法 (2026-08-28 マップ化) ----
-import { applyRunCommand, createRun, defaultEventChoice, nextChoices } from './run.ts'
+import { applyRunCommand, createRun, defaultDepartureCommand, defaultEventChoice, nextChoices } from './run.ts'
+import type { ReactionMode as RunReactionMode } from './types.ts'
+
+/**
+ * 出立の支度 (2026-09-24) を飛ばして地図から始めるラン (旧テストの前提)。createRun と同じ引数。
+ * 出立そのものを見るテストは engine/run.ts の createRun を直接使う
+ */
+export function createRunAtMap(seed: number, mode: RunReactionMode, leaderId?: string, deckId?: string, difficulty?: number, opts?: { readonly setAnyCards?: boolean }): RunState {
+  return createRun(seed, mode, leaderId, deckId, difficulty, { ...(opts ?? {}), departure: false })
+}
 import type { RunState } from './run.ts'
 import type { MapNodeType } from './map.ts'
 
@@ -136,10 +145,11 @@ export function createRunInBattle(
   mode: ReactionMode,
   leaderId?: string,
 ): RunState {
-  let run = createRun(seed, mode, leaderId)
+  let run = createRun(seed, mode, leaderId, undefined, undefined, { departure: false }) // 出立の店 (2026-09-24) は飛ばす = 旧テストの前提 (地図から)
   let guard = 0
   while (run.phase !== 'combat' && guard++ < 40) {
-    if (run.phase === 'map') run = chooseToward(run, 'battle')
+    if (run.phase === 'departure') run = applyRunCommand(run, defaultDepartureCommand(run)) // 買う→出る、と1手ずつ
+    else if (run.phase === 'map') run = chooseToward(run, 'battle')
     else if (run.phase === 'shop') run = applyRunCommand(run, { type: 'ShopLeave' })
     else if (run.phase === 'event') {
       run = applyRunCommand(run, defaultEventChoice(run)) // 既定の選択 (2026-09-14 無料の「立ち去る」撤去)

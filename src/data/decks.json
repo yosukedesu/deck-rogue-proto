@@ -746,11 +746,11 @@
         "count": 1
       },
       {
-        "cardId": "white_guard",
+        "cardId": "white_light_bolt",
         "count": 1
       },
       {
-        "cardId": "white_heal",
+        "cardId": "white_light_hoard",
         "count": 1
       },
       {
@@ -766,11 +766,11 @@
         "count": 1
       },
       {
-        "cardId": "white_light_strike",
+        "cardId": "white_blade_prayer",
         "count": 1
       },
       {
-        "cardId": "white_bodyslam",
+        "cardId": "white_shield_strike",
         "count": 1
       },
       {
@@ -798,7 +798,7 @@
         "count": 1
       },
       {
-        "cardId": "white_reaction_retribution",
+        "cardId": "white_light_torrent",
         "count": 1
       }
     ]
@@ -807,7 +807,7 @@
     "id": "deck_horde",
     "name": "人形ホード",
     "color": "white",
-    "description": "従者を並べて「集結」で刈り取る横並びの理想形（2026-08-26: 前半に攻撃札が皆無だったため白盾×2を聖光の一撃×2へ）",
+    "description": "人形を並べて「集結」で刈り取る横並びの理想形（2026-08-26: 前半に攻撃札が皆無だったため白盾×2を聖光の一撃×2へ）",
     "cards": [
       {
         "cardId": "white_perm_squire",
@@ -915,7 +915,11 @@
       },
       {
         "cardId": "white_guard",
-        "count": 3
+        "count": 2
+      },
+      {
+        "cardId": "white_light_buckler",
+        "count": 1
       },
       {
         "cardId": "white_mode_crossroad",
@@ -1203,7 +1207,7 @@
     "id": "deck_legion",
     "name": "白銀の大隊",
     "color": "white",
-    "description": "従者を並べて軍旗と軍楽隊で加速し、号令 (点灯の合図) と聖騎士団の突撃で轢き潰す横並びの理想形",
+    "description": "人形を並べて軍旗と軍楽隊で加速し、号令 (点灯の合図) と聖騎士団の突撃で轢き潰す横並びの理想形",
     "cards": [
       {
         "cardId": "white_perm_band",
@@ -1234,7 +1238,7 @@
         "count": 2
       },
       {
-        "cardId": "white_knight_charge",
+        "cardId": "white_holy_procession",
         "count": 1
       },
       {
@@ -1334,7 +1338,7 @@
         "count": 1
       },
       {
-        "cardId": "white_bodyslam",
+        "cardId": "white_shield_strike",
         "count": 1
       }
     ]
@@ -1423,7 +1427,7 @@
     "id": "run_basic_selesnya",
     "name": "わかばの初期デッキ",
     "color": "green",
-    "description": "緑白の基本10枚。従者と成長の種入り",
+    "description": "緑白の基本10枚。人形と成長の種入り",
     "cards": [
       {
         "cardId": "white_strike",
@@ -1490,7 +1494,7 @@
         "count": 1
       },
       {
-        "cardId": "white_heal",
+        "cardId": "white_light_hoard",
         "count": 1
       },
       {
@@ -1526,7 +1530,7 @@
         "count": 1
       },
       {
-        "cardId": "white_perm_martyr_vow",
+        "cardId": "white_page_signal",
         "count": 1
       },
       {
@@ -1538,7 +1542,7 @@
         "count": 1
       },
       {
-        "cardId": "white_rank_thrust",
+        "cardId": "white_muster",
         "count": 1
       },
       {
@@ -1550,11 +1554,11 @@
         "count": 2
       },
       {
-        "cardId": "white_mending",
+        "cardId": "white_light_hoard",
         "count": 1
       },
       {
-        "cardId": "white_heal",
+        "cardId": "white_calling",
         "count": 1
       },
       {
@@ -1562,7 +1566,7 @@
         "count": 1
       },
       {
-        "cardId": "white_light_ledger",
+        "cardId": "white_light_glow",
         "count": 1
       },
       {
@@ -1570,7 +1574,7 @@
         "count": 1
       },
       {
-        "cardId": "white_reaction_retribution",
+        "cardId": "white_oath_shield",
         "count": 1
       },
       {
@@ -1594,7 +1598,7 @@
     "description": "白の再設計 (2026-09-20) の放出型の理想形: 回復と人形で灯を溜め、光の奔流・灼く光で放出する。sim の壊れ検知用",
     "cards": [
       {
-        "cardId": "white_light_strike",
+        "cardId": "white_shining_strike",
         "count": 2
       },
       {
@@ -1602,7 +1606,7 @@
         "count": 2
       },
       {
-        "cardId": "white_service",
+        "cardId": "white_light_glow",
         "count": 2
       },
       {
@@ -1622,7 +1626,7 @@
         "count": 2
       },
       {
-        "cardId": "white_judgment",
+        "cardId": "white_light_spray",
         "count": 1
       },
       {
@@ -1683,7 +1687,7 @@
     "id": "run_basic_boros",
     "name": "あさひの初期デッキ",
     "color": "red",
-    "description": "赤白の基本10枚。従者と延焼の種入り（2026-08-26: 灰の盾1枚を火花＝0マナ攻撃に置換。赤=速さの色の入口）",
+    "description": "赤白の基本10枚。人形と延焼の種入り（2026-08-26: 灰の盾1枚を火花＝0マナ攻撃に置換。赤=速さの色の入口）",
     "cards": [
       {
         "cardId": "red_strike",

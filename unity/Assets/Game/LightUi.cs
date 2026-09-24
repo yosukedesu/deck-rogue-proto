@@ -256,16 +256,16 @@ namespace DeckRogue.Game
             }
             else
             {
-                int min = 0; bool discharge = false, rally = false, weaken = false, consume = false;
+                int min = 0, rallyPer = 1; bool discharge = false, rally = false, weaken = false, consume = false;
                 var effs = new List<DeclarativeEffect>(c.Def.Effects);
                 if (c.Def.Modes != null) foreach (var m in c.Def.Modes) effs.AddRange(m.Effects);
                 foreach (var e in effs)
                 {
                     if (e.Condition != null && e.Condition.MinLight.HasValue) min = Math.Max(min, e.Condition.MinLight.Value);
                     if (e.Effect == "dischargeLight") discharge = true;
-                    else if (e.Effect == "dischargeLightRally") rally = true;
+                    else if (e.Effect == "dischargeLightRally") { rally = true; rallyPer = e.Amount ?? 1; }
                     else if (e.Effect == "dischargeLightWeaken") weaken = true;
-                    else if (e.Effect == "consumeLight" || e.Effect == "lightToSparks") consume = true;
+                    else if ((e.Effect == "consumeLight" || e.Effect == "lightToSparks") && e.Trigger == "onPlay") consume = true;   // 灯の火床・炉心は置物の誘発 = 出しても灯は減らない (2026-09-24 T15)
                 }
                 if (min > 0)
                 {
@@ -273,7 +273,7 @@ namespace DeckRogue.Game
                     else { text = "灯" + min + "以上 不足 (いま " + light + ")"; ink = PaperFx.BadInk; bg = PaperFx.RoseLight; }
                 }
                 else if (discharge) text = light > 0 ? "放出 " + light + " → 0" : "灯0＝不発";
-                else if (rally) text = light > 0 ? "放出 " + light + "＝人形が" + light + "回" : "灯0＝不発";
+                else if (rally) { int per = Math.Max(1, rallyPer); int times = light / per; text = times > 0 ? "放出 " + light + "＝人形が" + times + "回" : "灯" + per + "未満＝不発"; }
                 else if (weaken) text = light >= 3 ? "放出 " + light + "＝威圧" + (light / 3) : "灯3未満＝不発";
                 else if (consume) text = light > 0 ? "灯" + light + " を失う" : null;
                 if (text != null && (text.Contains("不発"))) { ink = PaperFx.BadInk; bg = PaperFx.RoseLight; }

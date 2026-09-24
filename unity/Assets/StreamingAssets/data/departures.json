@@ -1,0 +1,97 @@
+[
+  {
+    "id": "dep_card_common",
+    "kind": "card",
+    "name": "コモンの札",
+    "text": "自分の色のコモン札1枚",
+    "choice": { "label": "コモンの札" },
+    "cardPick": { "rarity": "common", "count": 1 },
+    "price": 50,
+    "shopPrice": 50
+  },
+  {
+    "id": "dep_card_uncommon",
+    "kind": "card",
+    "name": "アンコモンの札",
+    "text": "自分の色のアンコモン札1枚",
+    "choice": { "label": "アンコモンの札" },
+    "cardPick": { "rarity": "uncommon", "count": 1 },
+    "price": 60,
+    "shopPrice": 60
+  },
+  {
+    "id": "dep_card_rare",
+    "kind": "card",
+    "name": "レアの札",
+    "text": "自分の色のレア札1枚",
+    "choice": { "label": "レアの札" },
+    "cardPick": { "rarity": "rare", "count": 1 },
+    "price": 100,
+    "shopPrice": 100
+  },
+  {
+    "id": "dep_relic_common",
+    "kind": "relic",
+    "name": "コモンの遺物",
+    "text": "古代の遺物を1つ（コモン）",
+    "choice": { "label": "コモンの遺物" },
+    "relicRarity": "common",
+    "price": 100,
+    "shopPrice": 100
+  },
+  {
+    "id": "dep_relic_uncommon",
+    "kind": "relic",
+    "name": "アンコモンの遺物",
+    "text": "古代の遺物を1つ（アンコモン）",
+    "choice": { "label": "アンコモンの遺物" },
+    "relicRarity": "uncommon",
+    "price": 120,
+    "shopPrice": 120
+  },
+  {
+    "id": "dep_relic_rare",
+    "kind": "relic",
+    "name": "レアの遺物",
+    "text": "古代の遺物を1つ（レア）",
+    "choice": { "label": "レアの遺物" },
+    "relicRarity": "rare",
+    "price": 150,
+    "shopPrice": 150
+  },
+  {
+    "id": "dep_unpack",
+    "kind": "service",
+    "name": "荷の整理",
+    "text": "デッキから1枚を取り除く",
+    "choice": { "label": "荷の整理", "removeCard": true },
+    "price": 50
+  },
+  {
+    "id": "dep_whet",
+    "kind": "service",
+    "name": "研ぎ",
+    "text": "札を1枚鍛える",
+    "choice": { "label": "研ぎ", "upgradeCard": true },
+    "price": 75
+  },
+  {
+    "id": "dep_herb",
+    "kind": "service",
+    "name": "薬草",
+    "text": "最大HP+8",
+    "choice": { "label": "薬草", "maxHp": 8 },
+    "price": 60,
+    "shopPrice": 60
+  },
+  {
+    "id": "dep_toolbox",
+    "kind": "service",
+    "name": "道具箱",
+    "text": "ギア2個と魔素20",
+    "choice": { "label": "道具箱", "mana": 20 },
+    "gearCount": 2,
+    "price": 80,
+    "shopPrice": 80
+  }
+]

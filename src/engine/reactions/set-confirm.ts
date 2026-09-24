@@ -3,7 +3,7 @@
 // pre窓 (行動確定時・実行前: 打ち消し・軽減) と post窓 (行動解決後: 返し系) の両方で確認が入る。
 // 温存した伏せは場に残り続ける → 伏せ警戒型へのブラフが意図的に打てる。
 
-import { effectiveIntent, unaffordableSetCards, usableSetCards, windowFromPending } from '../effects.ts'
+import { preWindowFor, reactionActionValue, unaffordableSetCards, usableSetCards, windowFromPending } from '../effects.ts'
 import { setFireCost } from '../setany.ts'
 import type { ReactionWindow } from '../effects.ts'
 
@@ -78,8 +78,8 @@ export const setConfirmSystem: ReactionSystem = {
         // 打ち消し済み (楔 actionNegated・全体の negateNextAction) の行動には窓を開かない (2026-09-20 Opus 火種A: 起きない行動に護りの灯印を切らせていた)
         if (state.enemies[event.enemyIndex]?.actionNegated === true || state.negateNextAction === true) return state
         if (event.kind === 'rest') return state // 隙 (何もしない) に確認を挟まない (2026-08-30 ノイズ指摘)
-        const actual = effectiveIntent(state, event.enemyIndex)?.actual ?? 0
-        const win = { stage: 'pre', kind: event.kind, actual } as const
+        // 窓の値は攻撃なら1発×ヒット数の合計・攻撃者が混乱中なら被攻撃前の罠は候補にしない (2026-09-24 E10・E3)
+        const win: ReactionWindow = { ...preWindowFor(state, event.enemyIndex), kind: event.kind }
         if (usableSetCards(state, win).length > 0) {
           return {
             ...state,
@@ -91,7 +91,7 @@ export const setConfirmSystem: ReactionSystem = {
       }
       case 'EnemyActionResolved': {
         // 窓ごとに1枚 (2026-09-14 ユーザー裁定): pre 窓で鳴っても post 窓は開く (仕込み枠2の天井「1行動1リアクション」の解除)
-        const win = { stage: 'post', kind: event.kind, hpLoss: event.hpLoss, actual: event.actual } as const
+        const win: ReactionWindow = { stage: 'post', kind: event.kind, hpLoss: event.hpLoss, actual: reactionActionValue(state, event.enemyIndex) }
         if (usableSetCards(state, win).length > 0) {
           return {
             ...state,

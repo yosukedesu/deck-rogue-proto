@@ -6,17 +6,20 @@ import { getEventDef, getCardDef } from '../engine/content.ts'
 import { fuseBlockReason } from '../engine/fusion.ts'
 import { runHash, runDigest } from '../engine/golden.ts'
 import type { RunDigest } from '../engine/golden.ts'
-import { applyRunCommand, canUpgradeCard, createRun, defaultEventCardIndex, defaultEventChoice, eventChoiceNeedsCard, gearFull, nextChoices, replayInitialRun } from '../engine/run.ts'
+import { applyRunCommand, canUpgradeCard, createRun, defaultEventCardIndex, defaultEventChoice, eventChoiceNeedsCard, gearFull, nextChoices, replayInitialRun, defaultDepartureCommand } from '../engine/run.ts'
 import type { ReplayOrigin, RunCommand, RunState } from '../engine/run.ts'
 import { chooseCommand } from './run.ts'
 
-const ACTIVE = new Set(['combat', 'reward', 'map', 'campfire', 'workshop', 'shop', 'event', 'relic-reward', 'relic-choose'])
+const ACTIVE = new Set(['departure', 'combat', 'reward', 'map', 'campfire', 'workshop', 'shop', 'event', 'relic-reward', 'relic-choose'])
 
 /** 現在のフェーズに対するボットの次の一手 (終了フェーズなら null)。候補は優先順に並べ、不正なら次へ倒す */
 export function botRunCandidates(run: RunState): readonly RunCommand[] {
   switch (run.phase) {
     case 'combat':
       return run.combat ? [{ type: 'Combat', command: chooseCommand(run.combat) }] : []
+    case 'departure':
+      // 出立の店 (2026-09-24): ボットはサービスを1つ買って店を出る = 供給側 (抽選) をゴールデンで固定し、買う判断は人間/Opus で見る
+      return [defaultDepartureCommand(run)]
     case 'map': {
       const cands = nextChoices(run)
       if (cands.length === 0) return []

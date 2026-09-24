@@ -158,7 +158,7 @@ namespace DeckRogue.Engine
             // 幕2: 伏せ検定・固い小物の教師・手数の鏡
             new[] { "enemy_set_wary", "enemy_rock_beetle", "enemy_mimic_jester", "enc_imp_jester", "enc_beetle_wary" },
             // 幕3: 貫通の的・大技→隙の窓・伏せ罰の教師
-            new[] { "enemy_shell_guard", "enemy_axe_ogre", "enemy_set_breaker", "enc_axe_shadow", "enc_wolf_hexer_drummer", "enemy_devoted_sculptor", "enc_biting_scrolls_trio" },
+            new[] { "enemy_shell_guard", "enemy_axe_ogre", "enemy_set_breaker", "enc_axe_shadow", "enemy_devoted_sculptor", "enc_biting_scrolls_trio" },
         };
 
         /// <summary>幕ボスのプール (各幕に複数のボス。ランごとにシードで1体を抽選)</summary>
@@ -574,12 +574,35 @@ namespace DeckRogue.Engine
                             for (int k = Math.Max(0, recentEnemies.Count - 2); k < recentEnemies.Count; k++)
                                 recentIds.AddRange(recentEnemies[k]);
                             recentIds.AddRange(rowEnemies);
-                            var recentMembers = new HashSet<string>();
-                            foreach (var id in recentIds) foreach (var m in MembersOf(id)) recentMembers.Add(m);
-                            var fresh = pool.Where(id => !MembersOf(id).Any(m => recentMembers.Contains(m))).ToList();
+                            // 避ける範囲は4段 (2026-09-24 人間ラン#19。TS map.ts と同じ): ①直前2行と今の行の全ノード
+                            // ②この節へ来る道の祖先 (親と祖父母) ③親だけ ④親と同じ編成だけ。旧実装は①が尽きるとプール全体から引いていた
+                            var myParents = r > 0 ? parents[r][c] : new List<int>();
+                            var parentIds = new List<string>();
+                            if (r > 0) foreach (var p in myParents) { var e = map[r - 1][p].EncounterId; if (e != null) parentIds.Add(e); }
+                            var ancestorIds = new List<string>(parentIds);
+                            if (r > 1)
+                            {
+                                var gps = new List<int>();
+                                foreach (var p in myParents) foreach (var g in parents[r - 1][p]) if (!gps.Contains(g)) gps.Add(g);
+                                foreach (var g in gps) { var e = map[r - 2][g].EncounterId; if (e != null) ancestorIds.Add(e); }
+                            }
+                            List<string> Avoiding(IEnumerable<string> ids)
+                            {
+                                var ms = new HashSet<string>();
+                                foreach (var id in ids) foreach (var m in MembersOf(id)) ms.Add(m);
+                                return pool.Where(id => !MembersOf(id).Any(m => ms.Contains(m))).ToList();
+                            }
+                            var tiers = new List<List<string>>
+                            {
+                                Avoiding(recentIds),
+                                Avoiding(ancestorIds),
+                                Avoiding(parentIds),
+                                pool.Where(id => !parentIds.Contains(id)).ToList(),
+                            };
+                            var tier = tiers.FirstOrDefault(t => t.Count > 0);
                             // 幕内で未使用の編成を優先する
-                            var unused = fresh.Where(id => type == MapNodeTypes.Elite || !usedInAct.Contains(id)).ToList();
-                            IReadOnlyList<string> candidates = unused.Count > 0 ? (IReadOnlyList<string>)unused : fresh.Count > 0 ? (IReadOnlyList<string>)fresh : pool;
+                            var unused = (tier ?? new List<string>()).Where(id => type == MapNodeTypes.Elite || !usedInAct.Contains(id)).ToList();
+                            IReadOnlyList<string> candidates = unused.Count > 0 ? (IReadOnlyList<string>)unused : tier != null ? (IReadOnlyList<string>)tier : pool;
                             var (idx, nx) = Rng.NextInt(rng, 0, candidates.Count - 1);
                             rng = nx;
                             encounterId = candidates[idx];

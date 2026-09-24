@@ -61,14 +61,26 @@ describe('カードデータの不変条件', () => {
     // 補充が捨てた枚数以下なら撃つたび手札が減る (プレイ-1・捨て-1・ドロー+1 = -1) = 循環が閉じない
     const handCost = (c: CardDef) => (c.discardCost ?? 0) + (c.exhaustCost ?? 0)
     const refill = (c: CardDef) => allEffects(c).filter((e) => REFILL_EFFECTS.includes(e.effect)).reduce((a, e) => a + (e.amount ?? 1), 0)
+    // 2026-09-23 灯の頁 (0E・灯2・2ドロー): 灯コストを払う札は例外 (ユーザー「灯の頁消滅つけないでいいよ」)。灯は戦闘内で有限で、
+    // 0E で灯を産む札は消滅か X (エナジーを払う) を持つ = 下のテストで機械固定。よって灯を払って引く循環は必ず止まる
     const bad = allCards.filter(
       (c) =>
         netEnergy(c) >= 0 &&
         c.exhaust !== true &&
+        c.xCost !== true && // X 札は必ずエナジーを1以上払う (灯り注ぎ 2026-09-24: X→灯2X＋Xドロー。撃つたびエナジーが空になる=循環は閉じない)
+        (c.lightCost ?? 0) === 0 &&
         allEffects(c).some((e) => REFILL_EFFECTS.includes(e.effect)) &&
         !(handCost(c) > 0 && refill(c) <= handCost(c)),
     )
     expect(bad.map((c) => `${c.name}(正味${netEnergy(c)})`)).toEqual([])
+  })
+
+  it('0E で灯を産む札は消滅か X を持つ (灯コスト札の補充を例外にした根拠 2026-09-23)', () => {
+    const LIGHT_MAKERS = ['addLight', 'addLightNextTurn', 'doubleLight', 'lightCarryHalf']
+    const bad = allCards.filter(
+      (c) => c.cost === 0 && c.type !== 'permanent' && c.exhaust !== true && c.xCost !== true && allEffects(c).some((e) => LIGHT_MAKERS.includes(e.effect)),
+    )
+    expect(bad.map((c) => c.name)).toEqual([])
   })
 
   it('4枚以上の衝動ドローは必ず消滅する (2026-08-30 ユーザー指摘)', () => {
@@ -88,7 +100,9 @@ describe('カードデータの不変条件', () => {
   it('正味エナジーが増える札は必ず消滅する (2026-08-26制定。無限マナループの禁止)', () => {
     // 抜け道の実例: 魔力変換 1E→一時マナ+2 は正味+1。集中(次のカード-1)と
     // 連鎖する思考(詠唱数ぶんドロー)を挟むとエナジーもドローも青天井になる
-    const bad = allCards.filter((c) => netRawEnergy(c) > 0 && c.exhaust !== true)
+    // 灯コストの例外 (2026-09-24 灯の薪 0E・灯3→+1E・消滅なし): 灯り注ぎが 1E→灯2 で作るので、灯2につき1Eを超えない (lightCost > 2×gainEnergy)
+    // 札なら「注ぎ→薪→注ぎ…」の循環でエナジーが毎周減る = 必ず止まる。灯2で+1E だと収支ゼロで無限になる
+    const bad = allCards.filter((c) => netRawEnergy(c) > 0 && c.exhaust !== true && !((c.lightCost ?? 0) > 2 * (netRawEnergy(c) + c.cost)))
     expect(bad.map((c) => `${c.name}(${c.cost}E→+${netRawEnergy(c) + c.cost})`)).toEqual([])
   })
 
@@ -176,7 +190,7 @@ describe('基本札の上位互換サイクル (2026-08-27。確定済みルー�
     green: { attack: 'green_tailwind', guard: 'green_entangle' }, // 追い風=6貫通(勢い5以上で0E) / モード:ブロック7 (荒角の一撃は2026-09-05 撤去)
     blue: { attack: 'blue_rapid_strike', guard: 'blue_thick_ice' }, // 6+1ドロー / 氷壁7
     red: { attack: 'red_ember_slash', guard: 'red_hearth_shield' }, // 6+衝動1 / 4+衝動1+延焼1
-    white: { attack: 'white_shield_strike', guard: 'white_mending' }, // 5+ブロック3 / 6+回復2
+    white: { attack: 'white_shield_strike', guard: 'white_light_hoard' }, // 5+ブロック3 / ブロック5+灯2 (修繕の灯は 2026-09-24 に撤去)
     black: { attack: 'black_grave_bolt', guard: 'black_gravestone' }, // ミル1+6/12 / 5+燃料2
   }
 
@@ -207,7 +221,7 @@ describe('基本札の上位互換サイクル (2026-08-27。確定済みルー�
     expect(amountOf('green_entangle', 'gainBlock')).toBeGreaterThanOrEqual(5)
     expect(amountOf('blue_thick_ice', 'gainIceBlock')).toBeGreaterThanOrEqual(5)
     expect(amountOf('red_hearth_shield', 'gainBlock')).toBeGreaterThanOrEqual(4)
-    expect(amountOf('white_mending', 'gainBlock')).toBeGreaterThanOrEqual(5)
+    expect(amountOf('white_light_hoard', 'gainBlock')).toBeGreaterThanOrEqual(5)
     expect(amountOf('black_gravestone', 'gainBlock')).toBeGreaterThanOrEqual(5)
   })
 

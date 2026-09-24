@@ -149,7 +149,8 @@ namespace DeckRogue.Game
             var r = sf.Run;
             string leader = r.LeaderId;
             try { var ld = Content.GetLeaderDef(r.LeaderId); if (ld != null) leader = ld.Name; } catch (Exception) { }
-            return leader + "　幕" + r.Act + " 行" + (r.Row + 1) + "　HP " + r.Hp + "/" + r.MaxHp + "　" + r.BattlesWon + "勝　難易度 " + r.Difficulty;
+            string where = r.Phase == RunPhases.Departure ? "幕" + r.Act + " 出立" : "幕" + r.Act + " 行" + (r.Row + 1);   // 出立の支度 (2026-09-24) は地図に入る前
+            return leader + "　" + where + "　HP " + r.Hp + "/" + r.MaxHp + "　" + r.BattlesWon + "勝　難易度 " + r.Difficulty;
         }
 
         /// <summary>要約の2行目: 戦闘の途中なら「戦闘中 T3」(無ければ null)</summary>
@@ -158,6 +159,7 @@ namespace DeckRogue.Game
             if (sf == null || sf.Run == null) return null;
             var r = sf.Run;
             if (r.Phase == RunPhases.Combat && r.Combat != null) return "戦闘中 ターン" + r.Combat.Turn + " の途中";
+            if (r.Phase == RunPhases.Departure) return "出立の店（坑口）にいる";
             return null;
         }
 

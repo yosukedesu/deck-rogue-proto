@@ -441,31 +441,37 @@ describe('白の罠の形 (2026-09-18 白の仕上げ・docs/white-finish-propos
     expect(leaked.enemies[0].weak ?? 0).toBe(0)
   })
 
-  it('白光の壁: ブロック12+回復4。完全に防ぎ切ったら従者の少年を1体召喚 (敵フェーズ終端)', () => {
-    const arm = () => setAndArm(withHand(freshCombat('set-confirm', 'enemy_brute'), ['white_reaction_bright_wall']), 't0_white_reaction_bright_wall')
+  it('白光の壁: ブロック14+少年1体 (無条件・踏むと人形が出る)+灯2 (2026-09-23 罠の強化 card-power §77。旧: 完全に防ぎ切ったら少年)', () => {
+    const arm = () => {
+      const s = setAndArm(withHand(freshCombat('set-confirm', 'enemy_brute'), ['white_reaction_bright_wall']), 't0_white_reaction_bright_wall')
+      return { ...s, player: { ...s.player, hp: 50, light: 0 } }
+    }
     const perfect = attackAndFire(arm(), 10)
     expect(perfect.player.permanents.filter((p) => p.def.id === 'white_perm_squire')).toHaveLength(1)
-    const leaked = attackAndFire(arm(), 15)
-    expect(leaked.player.permanents.filter((p) => p.def.id === 'white_perm_squire')).toHaveLength(0)
+    expect(perfect.player.hp).toBe(50)
+    expect(perfect.player.light).toBe(2)
+    const leaked = attackAndFire(arm(), 15) // 1漏れても少年は出る
+    expect(leaked.player.permanents.filter((p) => p.def.id === 'white_perm_squire')).toHaveLength(1)
+    expect(leaked.player.hp).toBe(50 - 1)
   })
 
-  it('誓いの盾: ブロック8+灯+1。受けた攻撃の実値が10以上ならさらに灯+2 (添え物の回復は灯に = 回し封じ 2026-09-20)', () => {
+  it('誓いの盾: ブロック12。受けた攻撃の実値が10以上なら灯+3 (2026-09-23 罠の強化 card-power §77。旧: ブロック8+灯1、10以上で灯+2)', () => {
     const arm = () => {
       const s = setAndArm(withHand(freshCombat('set-confirm', 'enemy_brute'), ['white_oath_shield']), 't0_white_oath_shield')
       return { ...s, player: { ...s.player, hp: 50, light: 0 } }
     }
-    const small = attackAndFire(arm(), 8) // 完全に防ぐ・灯+1
+    const small = attackAndFire(arm(), 8) // 完全に防ぐ・灯は増えない
     expect(small.player.hp).toBe(50)
-    expect(small.player.light).toBe(1)
-    const big = attackAndFire(arm(), 10) // 2漏れる・灯+1+2
+    expect(small.player.light).toBe(0)
+    const big = attackAndFire(arm(), 14) // 2漏れる・灯+3
     expect(big.player.hp).toBe(50 - 2)
     expect(big.player.light).toBe(3)
   })
 
-  it('灯りの壁: 被攻撃前ブロック6 + 被攻撃後回復8・消滅 (1枠に2つの仕事。回復が主役なので一度きり = 回し封じ 2026-09-20)', () => {
+  it('灯りの壁: 被攻撃前ブロック12 + 被攻撃後回復8・消滅 (1枠に2つの仕事。回復が主役なので一度きり = 回し封じ 2026-09-20。2026-09-23 罠の強化 6→12)', () => {
     let s = setAndArm(withHand(freshCombat('set-confirm', 'enemy_brute'), ['white_hymn_wall']), 't0_white_hymn_wall')
     s = { ...s, player: { ...s.player, hp: 50 } }
-    s = attackAndFire(s, 10) // 6で受けて4漏れ、その後8回復
+    s = attackAndFire(s, 16) // 12で受けて4漏れ、その後8回復
     expect(s.player.hp).toBe(50 - 4 + 8)
     expect(s.player.exhaustPile.map((c) => c.def.id)).toEqual(['white_hymn_wall'])
   })

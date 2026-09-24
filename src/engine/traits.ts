@@ -5,7 +5,7 @@
 import { getEnemyDef } from './content.ts'
 import { moveLabel, sleepingInterrupt } from './enemyGraph.ts'
 import { interruptPreviews, splitChildHp, turnsUntilHatch } from './summary.ts'
-import type { EnemyDef, GameState } from './types.ts'
+import type { EnemyDef, EnemyState, GameState } from './types.ts'
 
 /** EnemyDef のギミック系キー (enemy-conventions.test のホワイトリストと共有) */
 export const ENEMY_GIMMICK_KEYS = [
@@ -43,6 +43,23 @@ export const GIMMICK_KEYWORDS: Record<EnemyGimmickKey, string | null> = {
   burrow: '潜伏',
   nemesis: '因縁',
   imbalanced: 'バランス崩し',
+}
+
+/**
+ * 鎮めの錘 (ギア) で割り込みを止めた敵の一文 (CLI の行動欄・Web のチップが共用)。まだ起きていない割り込みが無ければ null
+ * (2026-09-24 Opus ひなた E5: 止めた後も「HPが半分以下になると…」の予告が最後まで残っていた。予告は interruptPreviews が空を返す)
+ */
+export function interruptBlockedNote(def: EnemyDef, e: EnemyState): string | null {
+  if (e.interruptBlocked !== true) return null
+  const fired = e.firedInterrupts ?? []
+  const kinds = new Set((def.interrupts ?? []).filter((_, k) => !fired.includes(k)).map((it) => it.on))
+  if (kinds.size === 0) return null
+  const when = [
+    kinds.has('damageTaken') ? 'ダメージを受けても' : '',
+    kinds.has('hpBelowHalf') ? 'HPが半分を切っても' : '',
+    kinds.has('allyDied') || kinds.has('alone') ? '仲間が倒れても' : '',
+  ].filter(Boolean)
+  return `鎮めの錘: この戦闘中は${when.join('・')}行動が変わらない`
 }
 
 /** 定義だけで決まる特性タグ (状態非依存) */
@@ -127,7 +144,8 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
     tags.push(`ターン装甲${def.turnArmor}(1ターンのHP損失は${def.turnArmor}以下。残り${remaining}。延焼は無視)${unkillable}`)
   }
   if ((e.artifact ?? 0) > 0) tags.push(`アーティファクト${e.artifact}(デバフ付与を${e.artifact}回弾く。延焼は通る)`)
-  const sleeping = sleepingInterrupt(def, e)
+  // 鎮めの錘 (ギア) で割り込みを止めた敵は目覚めない = 眠りのタグも出さない (2026-09-24 Opus ひなた E5。HP半分の予告は interruptPreviews が空を返す)
+  const sleeping = e.interruptBlocked === true ? undefined : sleepingInterrupt(def, e)
   if (sleeping !== undefined) {
     tags.push(`眠り(累計${sleeping.amount ?? 0}ダメージで目覚める。いま${e.damageTakenTotal ?? 0})`)
   }
@@ -139,7 +157,9 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
   }
   const growing = def.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined)
   if (growing.length > 0) {
-    tags.push(`育つ技(${growing.map((m) => `${moveLabel(def, m.id)}: 使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}。いまは${m.growPerUse ? `+${m.growPerUse * (e.moveUses?.[m.id] ?? 0)}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse * (e.moveUses?.[m.id] ?? 0)}` : ''}`).join('／')})`)
+    // 宣言した時点で使用回数が1つ進む = 宣言中の技は1つ前の回数ぶんだけ育っている (2026-09-24 Opus ひなた E7: 宣言直後から1回先を数えていた。engine の buildIntent と同じ数え方)
+    const usesNow = (id: string): number => Math.max(0, (e.moveUses?.[id] ?? 0) - (e.intent !== null && e.intentMoveId === id ? 1 : 0))
+    tags.push(`育つ技(${growing.map((m) => `${moveLabel(def, m.id)}: 使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}。いまは${m.growPerUse ? `+${m.growPerUse * usesNow(m.id)}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse * usesNow(m.id)}` : ''}`).join('／')})`)
   }
   if (def.angerOnBlock) tags.push(`ブロック反応${def.angerOnBlock}(あなたがカードでブロック・氷壁を得るたび筋力+${def.angerOnBlock}。パッシブ・レリックの自動分は除く)`)
   if (def.regen && e.hp > e.maxHp * 0.5) tags.push(`再生${def.regen}${def.regenBreak ? `(このターン${def.regenBreak}以上削ると停止)` : ''}`)

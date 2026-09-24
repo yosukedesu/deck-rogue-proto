@@ -46,6 +46,10 @@ export function battleSummary(log: readonly GameEvent[]): BattleSummary {
           if (e.amount > 0 && e.hpLoss === 0) perfectBlocks++
         }
         break
+      case 'ScaldTick':
+        // 烙印・火傷の疼きも「受けたダメージ」(2026-09-23 人間ラン#17: 烙印2枚が46HP を吸ったのにサマリーの被ダメには無かった)
+        hpLost += e.amount
+        break
       case 'ThornsReflected':
         // とげ反射も「受けたダメージ」に数える (2026-08-30 計測ランで発覚: 針毛の栗鼠戦で
         // 実際は9減っているのに「被ダメ1」と表示されていた = サマリーが嘘をついていた)
@@ -118,7 +122,7 @@ export function xHitsSuffix(e: { xHits?: boolean; effect?: string }): string {
 // ---- 被ダメ予測 (2026-09-02 レビュー是正: UIフッター・💀致死級バッジ・CLIで式が3通りに割れていたのを1本化。
 // 2026-09-14 実値公開: 幅の上限でなく宣言した実値に補正 (威圧→鈴→脆弱→重り=実処理 combat.ts と同順) を掛けた
 // 「今フェーズに実際に受ける量」になった。意図の数字 (displayedIntentValue) と同じ式) ----
-import { effectiveIntent, applyEnemyWeak, effectiveStrength } from './effects.ts'
+import { effectiveIntent, applyEnemyWeak, effectiveStrength, setBellActive, attackHitsOf } from './effects.ts'
 import { interruptTriggerText, moveLabel, peekMoves, previewMoves } from './enemyGraph.ts'
 import { getEnemyDef as getEnemyDefForSummary } from './content.ts'
 import type { EnemyInterrupt, EnemyIntent, EnemyIntentBranch, EnemyMove, EnemyState, GameState } from './types.ts'
@@ -129,8 +133,8 @@ export function modifiedHit(s: GameState, enemyIndex: number, actual: number): n
   let v = actual
   // 威圧 (2026-09-03 Weak化): -25% (切り捨て・最低1)
   v = applyEnemyWeak(v, e?.weak)
-  // 静かな鈴 (C型): 伏せ札がある間、各ヒット-N (最低1)
-  if ((s.setDamageReduction ?? 0) > 0 && s.player.setCards.length > 0) {
+  // 静かな鈴 (C型): 伏せ札がある間、各ヒット-N (最低1)。敵の行動中は行動の開始で固定した値 = 実処理と同じ (2026-09-24 E2)
+  if (setBellActive(s)) {
     v = Math.max(1, v - (s.setDamageReduction ?? 0))
   }
   // 脆弱: +50% (切り捨て)
@@ -154,7 +158,7 @@ export function intentModifierNotes(s: GameState, enemyIndex: number, it: EnemyI
   const notes: string[] = []
   if (e?.actionNegated === true) notes.push('打ち消し済み＝この行動は起きない')
   if ((e?.weak ?? 0) > 0) notes.push('威圧で-25%')
-  if ((s.setDamageReduction ?? 0) > 0 && s.player.setCards.length > 0) notes.push(`鈴で-${s.setDamageReduction}`)
+  if (setBellActive(s)) notes.push(`鈴で-${s.setDamageReduction}`)
   if (s.player.vulnerable > 0) notes.push('脆弱で+50%')
   if ((s.player.slow ?? 0) > 0 && (s.player.playsThisTurn ?? 0) > 0) notes.push(`重りで+${10 * (s.player.playsThisTurn ?? 0)}%`)
   return notes
@@ -162,7 +166,7 @@ export function intentModifierNotes(s: GameState, enemyIndex: number, it: EnemyI
 
 /** 実行時のヒット数 (手数の鏡は今のプレイ枚数+伏せ) */
 export function intentHits(s: GameState, it: EnemyIntent | EnemyIntentBranch): number {
-  return (it as EnemyIntent).mirrorHits === true ? Math.max(1, s.player.cardsPlayedThisTurn + (s.player.setsThisTurn ?? 0)) : (it.hits ?? 1)
+  return attackHitsOf(s, it as EnemyIntent)
 }
 
 /** 敵1体の「今フェーズに受ける合計ダメージ」。攻撃以外・死亡・混乱 (仲間に向かう) は0 */
@@ -209,6 +213,8 @@ export function moveShort(def: EnemyDef, m: EnemyMove, strength = 0): string {
  * 発火済みは出さない。alone は仲間がいない時は出さない (呼び出し側)
  */
 export function interruptPreviews(def: EnemyDef, e?: EnemyState, s?: GameState, enemyIndex?: number): { readonly index: number; readonly trigger: EnemyInterrupt['on']; readonly text: string }[] {
+  // 鎮めの錘 (ギア) で割り込みを止めた敵は豹変しない = 予告も HP バーの線も出さない (2026-09-24 Opus ひなた E5: 止めた後も「HPが166以下になると…」が最後まで残っていた)
+  if (e?.interruptBlocked === true) return []
   const strength = e === undefined ? 0 : s !== undefined && enemyIndex !== undefined ? effectiveStrength(s, enemyIndex) : e.strength
   return (def.interrupts ?? []).flatMap((it, index) => {
     if (e !== undefined && (e.firedInterrupts ?? []).includes(index)) return []

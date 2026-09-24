@@ -1,6 +1,7 @@
 // 白 (4色目) のテスト。白の柱: 防御・回復の本家 / 威圧 / 従者の横並び / 護りのリアクション。
 import { describe, expect, it } from 'vitest'
 import { allCards, buildDeck, getDeckDef } from './content.ts'
+import type { CardDef } from './types.ts'
 
 import { applyCommand } from './state.ts'
 import { createRunInBattle, attackIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
@@ -24,11 +25,11 @@ describe('白のカラーパイ', () => {
 describe('回復 (白の専売)', () => {
   it('gainHp は最大HPを超えない', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
-      'white_heal',
+      'white_mass_heal',
     ])
     s = { ...s, player: { ...s.player, hp: s.player.maxHp - 3 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_heal' })
-    expect(s.player.hp).toBe(s.player.maxHp) // 5回復だが上限で+3止まり
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_mass_heal' })
+    expect(s.player.hp).toBe(s.player.maxHp) // 15回復だが上限で+3止まり
   })
 
   it('ひなたのパッシブ: 毎ターン開始時にHP1回復', () => {
@@ -52,28 +53,28 @@ describe('威圧 (敵弱体化)', () => {
     s = { ...s, player: { ...s.player, energy: 9 } }
     const str0 = s.enemies[0].strength
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_mode_crossroad', modeIndex: 0, targetIndex: 0 })
-    expect(s.enemies[0].weak).toBe(1)
+    expect(s.enemies[0].weak).toBe(2) // 灯の岐路 2E: 眩ます 10＋威圧2 (2026-09-24 CSV)
     expect(s.enemies[0].strength).toBe(str0)
   })
 })
 
 describe('要塞型 (ブロック変換)', () => {
-  it('城壁砕き: 自前のブロック3を先に得てから、現在のブロック×1のダメージ', () => {
+  it('ブロック変換 (dealDamagePerBlock。光壁砕きは 2026-09-24 に撤去=仮の札で固定): 自前のブロック3を先に得てから、現在のブロック×1のダメージ', () => {
+    const slam: CardDef = { id: 'test_slam', name: '試しの壁砕き', cost: 1, type: 'physical', color: 'white', effects: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 3 }, { trigger: 'onPlay', effect: 'dealDamagePerBlock', amount: 1 }] }
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_spark_shield',
-      'white_bodyslam',
     ])
-    s = { ...s, player: { ...s.player, energy: 9 } }
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_spark_shield' }) // 火守りの盾 ブロック7 (大光壁は 2026-09-20 夜に撤去)
+    s = { ...s, player: { ...s.player, energy: 9, hand: [...s.player.hand, { uid: 't1_test_slam', def: slam }] } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_spark_shield' }) // 火守りの盾 ブロック8 (大光壁は 2026-09-20 夜に撤去。2026-09-23 本家 GraveWarden 並み 7→8)
     const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_bodyslam' })
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_test_slam' })
     // 2026-08-26: 効果順を [ブロック3 → ダメージ] にしたので自前のブロックも自分に乗る
-    expect(s.enemies[0].hp).toBe(hpBefore - 10) // (火守りの盾7 + 自前3) × 1
+    expect(s.enemies[0].hp).toBe(hpBefore - 11) // (火守りの盾8 + 自前3) × 1
   })
 })
 
 describe('従者ホード (置物数参照)', () => {
-  it('集結: 場に出た置物の数×4のダメージ (リーダーパッシブ・レリックは数えない)', () => {
+  it('集結: 場に出た置物の数×6のダメージ (リーダーパッシブ・レリックは数えない)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_white'), [
       'white_perm_squire',
       'white_perm_shieldmaiden',
@@ -84,7 +85,7 @@ describe('従者ホード (置物数参照)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_perm_shieldmaiden' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_white_rally' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 8) // 置物2×4
+    expect(s.enemies[0].hp).toBe(hpBefore - 12) // 置物2×6 (2026-09-24 CSV ×4→×6)
   })
 
   it('従者の少年: 毎ターン開始時に2ダメージの自動攻撃', () => {

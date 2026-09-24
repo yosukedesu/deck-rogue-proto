@@ -804,46 +804,6 @@
     }
   },
   {
-    "a": "white_heal",
-    "b": "white_guard",
-    "result": {
-      "id": "fusion_pray_or_guard",
-      "name": "灯すか守るか",
-      "cost": 1,
-      "type": "spell",
-      "effects": [],
-      "modes": [
-        {
-          "name": "灯す",
-          "effects": [
-            {
-              "trigger": "onPlay",
-              "effect": "gainHp",
-              "amount": 8
-            },
-            {
-              "trigger": "onPlay",
-              "effect": "addLight",
-              "amount": 1
-            }
-          ]
-        },
-        {
-          "name": "守る",
-          "effects": [
-            {
-              "trigger": "onPlay",
-              "effect": "gainBlock",
-              "amount": 10
-            }
-          ]
-        }
-      ],
-      "color": "white",
-      "exhaust": true
-    }
-  },
-  {
     "a": "white_reaction_ward",
     "b": "white_page_rank",
     "result": {
@@ -865,74 +825,6 @@
           "condition": {
             "perfectBlockLastPhase": true
           }
-        }
-      ],
-      "color": "white"
-    }
-  },
-  {
-    "a": "white_war_horn",
-    "b": "white_perm_archer",
-    "result": {
-      "id": "fusion_archer_horn",
-      "name": "弩人形の号砲",
-      "cost": 1,
-      "type": "permanent",
-      "effects": [
-        {
-          "trigger": "onAttackPlayed",
-          "effect": "dealDamage",
-          "amount": 1,
-          "target": "all"
-        }
-      ],
-      "color": "white"
-    }
-  },
-  {
-    "a": "white_strike",
-    "b": "white_reaction_retribution",
-    "result": {
-      "id": "fusion_retribution_blade",
-      "name": "報復の刃",
-      "cost": 1,
-      "type": "physical",
-      "effects": [
-        {
-          "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 5
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "dealDamage",
-          "amount": 10,
-          "condition": {
-            "perfectBlockLastPhase": true
-          }
-        }
-      ],
-      "color": "white"
-    }
-  },
-  {
-    "a": "white_reaction_chant",
-    "b": "white_service",
-    "result": {
-      "id": "fusion_chant_altar",
-      "name": "点灯の台座",
-      "cost": 1,
-      "type": "permanent",
-      "effects": [
-        {
-          "trigger": "onSpellPlayed",
-          "effect": "gainBlock",
-          "amount": 3
-        },
-        {
-          "trigger": "onPlay",
-          "effect": "gainHp",
-          "amount": 4
         }
       ],
       "color": "white"

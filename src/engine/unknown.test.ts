@@ -4,9 +4,10 @@
 // - 確率は整数パーセントポイント (浮動小数を持ち込まない = Unity移植のRNG等価性)
 // - 幕をまたぐと累積確率と祠がリセットされる
 // - 直前がショップなら ?→ショップ が起きない (本家のショップ2連続禁止)
+import { createRunAtMap as createRun } from './test-helpers.ts'
 import { describe, expect, it } from 'vitest'
 import { allEvents } from './content.ts'
-import { applyRunCommand, createRun } from './run.ts'
+import { applyRunCommand } from './run.ts'
 import type { RunState } from './run.ts'
 
 /** ?ノードにいる状態を直接作る (マップ生成の運に左右されない) */

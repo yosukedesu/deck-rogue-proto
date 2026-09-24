@@ -27,6 +27,29 @@ namespace DeckRogue.Engine
         public static IReadOnlyList<GearDef> AllGears { get; private set; } = new List<GearDef>();
         /// <summary>抽選・店・報酬に載るギア (Retired を除く。2026-09-18。TS content.ts poolGears)</summary>
         public static IReadOnlyList<GearDef> PoolGears { get; private set; } = new List<GearDef>();
+        /// <summary>出立の店の台帳 (2026-09-24)。2種類 (body/goods) から 2・3 を CreateRun が抽選する (TS content.ts allDepartures)</summary>
+        public static IReadOnlyList<DepartureTemplate> AllDepartures { get; private set; } = new List<DepartureTemplate>();
+
+        /// <summary>
+        /// 出立の店 (2026-09-24): 坑口の行商の一言 (出自の工房＝リーダーの最初の色。ギルドは最初の色の里)。
+        /// 主人公が坑に降りる前に支度を整えに寄った店。Web/CLI/Unity が同じ文を出す (TS content.ts DEPARTURE_MASTER_LINES)
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, string> DEPARTURE_MASTER_LINES = new Dictionary<string, string>
+        {
+            [CardColors.Green] = "「大樹の里の工房の出かい。坑に降りる前に、要る物だけ揃えていきな」",
+            [CardColors.Blue] = "「潮の里の工房の出かい。潮目が変わる前に、要る物だけ揃えていきな」",
+            [CardColors.Red] = "「燼の里の工房の出かい。燃やす物が足りなきゃ、ここで揃えていきな」",
+            [CardColors.White] = "「光耀の里の工房の出かい。灯りの替えも、要る物もここで揃えていきな」",
+            [CardColors.Black] = "「宵闇の里の工房の出かい。暗がりに降りる前に、要る物だけ揃えていきな」",
+        };
+        /// <summary>出立の画面の見出しと地の文 (Web/CLI/Unity 共通)</summary>
+        public const string DEPARTURE_TITLE = "出立の店";
+        public const string DEPARTURE_LEAD = "坑口の行商の店。坑に降りる前に、支度を整えに寄った。";
+        public static string DepartureMasterLine(IReadOnlyList<string> colors)
+        {
+            string c = colors.Count > 0 ? colors[0] : CardColors.Green;
+            return DEPARTURE_MASTER_LINES.TryGetValue(c, out var line) ? line : DEPARTURE_MASTER_LINES[CardColors.Green];
+        }
 
         /// <summary>手書きレシピの生の配列 (要素は { a, b, result: CardDef })。</summary>
         public static JArray AllFusionsRaw { get; private set; } = new JArray();
@@ -92,6 +115,7 @@ namespace DeckRogue.Engine
             AllEvents = ParseList<EventDef>(read("events.json"), "events.json");
             AllGears = ParseList<GearDef>(read("gears.json"), "gears.json");
             { var pool = new List<GearDef>(); foreach (var g in AllGears) if (g.Retired != true) pool.Add(g); PoolGears = pool; }
+            AllDepartures = ParseList<DepartureTemplate>(read("departures.json"), "departures.json");
             AllFusionsRaw = JArray.Parse(read("fusions.json"));
             AllFusions = DeserializeFusions<FusionRecipe>();
 

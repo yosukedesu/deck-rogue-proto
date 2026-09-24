@@ -144,12 +144,14 @@ namespace DeckRogue.Game
             bool remove = p.Mode == "remove";
             string verb = remove ? "取り除く" : "変成して鍛える";
             RunUi.Heading(root, rd != null ? rd.Name : "レリック",
-                p.Count + "枚まで選んで「決定」。" + (remove ? "デッキは5枚を下回れない" : "同レア度の別の札にランダムで変わり、鍛えた状態で入る") + "（選ばなくてもよい）");
+                p.Count + "枚まで選んで「決定」。" + (remove ? "デッキは5枚を下回れない" : "同レア度の別の札にランダムで変わり、鍛えた状態で入る。状態異常・烙印は変成できない") + "（選ばなくてもよい）");
             var area = UiKit.NewRect("choose", root);
             RunUi.PickArea(root, area);
+            // 星読みの盤 (変成): 状態異常・烙印は選べない (2026-09-24 Opus ひなた T14 裁定A。engine も拒む)。灰色＋理由の札で、押しても選ばれない
+            Func<int, CardInstance, bool> transformable = delegate (int i, CardInstance c) { return remove || Run.CanTransformCard(c); };
             RunUi.CardGrid(g, area, run.Deck,
-                delegate (int i, CardInstance c) { return g.RelicChoosePicks.Contains(i) ? "✓ " + verb : "選ぶ"; },
-                delegate (int i, CardInstance c) { return g.RelicChoosePicks.Contains(i) || g.RelicChoosePicks.Count < p.Count; },
+                delegate (int i, CardInstance c) { return !transformable(i, c) ? "変成できない" : g.RelicChoosePicks.Contains(i) ? "✓ " + verb : "選ぶ"; },
+                delegate (int i, CardInstance c) { return transformable(i, c) && (g.RelicChoosePicks.Contains(i) || g.RelicChoosePicks.Count < p.Count); },
                 delegate (int i)
                 {
                     if (g.RelicChoosePicks.Contains(i)) g.RelicChoosePicks.Remove(i);
@@ -157,7 +159,8 @@ namespace DeckRogue.Game
                     Audio.Ui("click");
                     g.Rebuild();
                 },
-                400f, confirmRoot: root, tapPicks: true, badge: delegate (int i) { return g.RelicChoosePicks.Contains(i) ? "✓" : null; });
+                400f, confirmRoot: root, tapPicks: true, badge: delegate (int i) { return g.RelicChoosePicks.Contains(i) ? "✓" : null; },
+                lockReason: remove ? null : (Func<int, CardInstance, string>)delegate (int i, CardInstance c) { return Run.CanTransformCard(c) ? null : EventScreen.TransformLockReason; });
             RunUi.BottomButton(root, "決定 (" + g.RelicChoosePicks.Count + "/" + p.Count + "枚を" + verb + ")",
                 delegate { Audio.Ui("pick_relic"); g.Do(new RunCommand_RelicChooseCards { Indices = new List<int>(g.RelicChoosePicks) }); }, 18, 420f, 52f, 0f, UiKit.Phone ? 14f : 40f);
         }

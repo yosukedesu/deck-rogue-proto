@@ -50,6 +50,14 @@ namespace DeckRogue.Game
         /// <summary>火勢が乗る効果 (TS DOLL_GROWTH_EFFECTS): ダメージとブロックだけ。回復・灯・率・ドローは増えない</summary>
         public static readonly HashSet<string> GrowthEffects = new HashSet<string> { "dealDamage", "dealDamageRandom", "dealDamageCleave", "gainBlock" };
 
+        /// <summary>火勢が乗る効果を持つ人形か (2026-09-24 Opus ひなた E8: 灯篭の人形の「灯2につき1」・手当て・灯芯には乗らない＝「火勢+N」を出さない)。TS dollHasGrowth と同じ判定</summary>
+        public static bool HasGrowth(CardDef def)
+        {
+            if (def == null || def.Effects == null) return false;
+            foreach (var e in def.Effects) if (e.Amount != null && GrowthEffects.Contains(e.Effect)) return true;
+            return false;
+        }
+
         /// <summary>人形の効果の「いまの量」= 素の量 + アンセム (ANTHEM_EFFECTS) + 火勢。表示が実処理と同じ式を読む</summary>
         public static int? EffectAmount(GameState st, CardInstance p, DeclarativeEffect e, int anthem)
         {

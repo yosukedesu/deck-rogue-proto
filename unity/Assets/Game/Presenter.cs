@@ -67,7 +67,7 @@ namespace DeckRogue.Game
             {
                 if (log[i] is GameEvent_LightGained lg) v -= lg.Amount;
                 else if (log[i] is GameEvent_LightSpent ls) v += ls.Amount;
-                else if (log[i] is GameEvent_LightDischarged ld) v = ld.Spent;
+                else if (log[i] is GameEvent_LightDischarged ld) v += ld.Spent;   // 前＝後＋払った量 (全て放出は後が0。灯の火床・炉心は払った残りがある。2026-09-24 T15)
             }
             return Math.Max(0, v);
         }
@@ -332,6 +332,19 @@ namespace DeckRogue.Game
                     var pile = g.Anchor("pile-draw");
                     if (pile == null) return;
                     Tween.Float(fx, Tween.CenterIn(pile, fx) + new Vector2(0f, 40f), "山札 −" + cm.Count, PaperFx.Plum, 26, 36f, 1.0f);
+                    break;
+                }
+                case GameEvent_ScaldTick sc:
+                {   // 烙印・火傷の疼きに出所の名札 (2026-09-23 人間ラン#17: 浮き数字そのものが無く、仕立屋で烙印でなく負傷を除いていた)
+                    Audio.Key("ThornsReflected");
+                    var pSpr2 = g.Battle != null ? g.Battle.PlayerSprite() : null; var prt2 = g.Anchor("player");
+                    if (pSpr2 == null && prt2 == null) return;
+                    var pos2 = pSpr2 != null ? Tween.CenterIn(pSpr2, fx) : Tween.CenterIn(prt2, fx);
+                    int scalds = sc.Scalds ?? 0, brands = sc.Brands ?? 0; float dy = 40f;
+                    if (scalds > 0) { Tween.Float(fx, pos2 + new Vector2(40f, dy), "火傷 −" + (sc.Amount - brands), UiKit.ColBad, 28, 36f, 0.9f); dy += 30f; }
+                    if (brands > 0) { Tween.Float(fx, pos2 + new Vector2(40f, dy), "烙印 −" + brands, UiKit.ColBad, 28, 36f, 0.9f); dy += 30f; }
+                    if (scalds == 0 && brands == 0) Tween.Float(fx, pos2 + new Vector2(40f, dy), "火傷・烙印 −" + sc.Amount, UiKit.ColBad, 28, 36f, 0.9f);
+                    Stage.Flash("player"); if (live && g.Battle != null) g.Battle.NudgePlayerHp(-sc.Amount);
                     break;
                 }
                 case GameEvent_ThornsReflected tr:
@@ -769,6 +782,7 @@ namespace DeckRogue.Game
                     else { hpLost += dd.HpLoss; if (dd.Amount > 0 && dd.HpLoss == 0) perfect++; }
                 }
                 else if (e is GameEvent_ThornsReflected tr) hpLost += tr.HpLoss;
+                else if (e is GameEvent_ScaldTick sct) hpLost += sct.Amount;   // 烙印・火傷の疼きも被ダメ (2026-09-23)
                 else if (e is GameEvent_BurnTick bt) { total += bt.Amount; cur += bt.Amount; }
                 else if (e is GameEvent_ReactionTriggered) fired++;
                 else if (e is GameEvent_ActionNegated) negates++;
@@ -1146,7 +1160,7 @@ namespace DeckRogue.Game
         /// <summary>敵の行動の出来事 (2026-09-17 敵の行動の演出): 実行の予備動作・回復・盗み・山札喰い・突き刺し/延焼/再生の数字。絵と音を Show で</summary>
         static bool IsEnemyActEvent(GameEvent ev)
         {
-            return ev is GameEvent_EnemyActionExecuting || ev is GameEvent_EnemyHealed || ev is GameEvent_GoldStolen || ev is GameEvent_CardsMilled || ev is GameEvent_ThornsReflected || ev is GameEvent_BurnTick || ev is GameEvent_RegenTicked || ev is GameEvent_BlockShattered || ev is GameEvent_EnemyStaggered || ev is GameEvent_EnemyInterrupted || ev is GameEvent_EnemyDied || ev is GameEvent_EnemyFled;
+            return ev is GameEvent_EnemyActionExecuting || ev is GameEvent_EnemyHealed || ev is GameEvent_GoldStolen || ev is GameEvent_CardsMilled || ev is GameEvent_ThornsReflected || ev is GameEvent_ScaldTick || ev is GameEvent_BurnTick || ev is GameEvent_RegenTicked || ev is GameEvent_BlockShattered || ev is GameEvent_EnemyStaggered || ev is GameEvent_EnemyInterrupted || ev is GameEvent_EnemyDied || ev is GameEvent_EnemyFled;
         }
 
         /// <summary>実行中の技の名前 (EnemyState.IntentMoveId)。コマンド前の盤面から読む (今の盤面は次の宣言に変わっている)</summary>
@@ -1199,7 +1213,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; }   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
+        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; }   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
 
         /// <summary>
         /// 自分の札の当たりの計画 (2026-09-22 ユーザー「攻撃エフェクトがどの攻撃でも同じ」): 札 (CardPlayed / ReactionTriggered) の後に続く自分由来の DamageDealt
@@ -1383,6 +1397,8 @@ namespace DeckRogue.Game
             }
             if (ev is GameEvent_LightDischarged)
             {   // 灯の放出 (2026-09-20 灯籠): 対象はイベントに無いので直後の打撃から引く。2体以上に当たれば全体、人形の仕事 (sourceUid つき) が先に来れば大行列＝人形へ
+                // 灯を払っただけ (灯の火床・灯の炉心) は放出ではない = 飛び先を探さない (2026-09-24 T15: 直後の敵フェーズの返しや人形の打撃を拾って光の筋が飛んでいた)
+                if (LightPayOnly(log, i)) { ctx.LightPayOnly = true; return ctx; }
                 var seen = new HashSet<int>();
                 for (int k = i + 1; k < log.Count && k <= i + 24; k++)
                 {
@@ -1434,6 +1450,27 @@ namespace DeckRogue.Game
                 if (ctx.EnemyIndex < 0) for (int k = i + 1; k < log.Count && k <= i + 8; k++) if (log[k] is GameEvent_DamageDealt dd && dd.Source == "player") { ctx.EnemyIndex = dd.EnemyIndex ?? -1; break; }
             }
             return ctx;
+        }
+
+        /// <summary>
+        /// 灯を「払っただけ」の LightDischarged か (2026-09-24 Opus ひなた T15): 灯の火床 (Sparks つき) と灯の炉心 (consumeLight＝Paid) は放出ではない。
+        /// engine の印 (Sparks・Paid) を読む。印の無い古いログ (再開したセーブ) は「払った後にも灯が残る」＝部分払いで見分ける
+        /// (全て放出する札＝大行列・大放出は灯を 0 にする)
+        /// </summary>
+        static bool LightPayOnly(IReadOnlyList<GameEvent> log, int i)
+        {
+            var ld = i >= 0 && i < log.Count ? log[i] as GameEvent_LightDischarged : null;
+            if (ld == null) return false;
+            if (CardText.IsLightPayment(ld)) return true;
+            // 払った後の灯 = 戦闘の始め (灯0) からの出来事の和 (灯の増減は全て出来事になる)。灯が残るなら部分払い
+            int light = 0;
+            for (int k = 0; k <= i; k++)
+            {
+                if (log[k] is GameEvent_LightGained lg) light += lg.Amount;
+                else if (log[k] is GameEvent_LightSpent ls) light -= ls.Amount;
+                else if (log[k] is GameEvent_LightDischarged d) light -= d.Spent;
+            }
+            return light > 0;
         }
 
         static bool IsStatusEvent(GameEvent ev)
@@ -1887,6 +1924,31 @@ namespace DeckRogue.Game
                 {
                     // 放出: 炎が硝子から抜けて光の筋になり、対象 (単体は狙った敵・全体は全員・号令の大行列は人形) へ飛ぶ。灯籠は暗くなり数字が 0 へ減る。判「放出 N」
                     if (ld.Spent <= 0) return;
+                    if (CardText.IsLightPayment(ld) || (ctx != null && ctx.LightPayOnly))
+                    {   // 払っただけ (灯の火床・灯の炉心 2026-09-24 T15): 光の筋は出さず、灯籠の炎が縮んで数字が減るだけ。火床は火種の粒が山札へ落ちる
+                        string payText = CardText.LightPayLine(ld);   // 「灯9を払って火種3を山札へ」「灯3を払った」(ログと同じ文)
+                        if (!LightUi.Exists)
+                        {
+                            var rt0 = g.Anchor("player");
+                            if (rt0 != null) Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(0f, 70f), payText, PaperFx.Brass, 22, 34f, 0.9f);
+                            return;
+                        }
+                        Audio.Key("LightSpent");
+                        LightUi.HoldFor(0.6f);
+                        LightUi.Add(-ld.Spent, true);
+                        Tween.Float(fx, LightUi.TopCenter(fx) + new Vector2(0f, 26f), payText, PaperFx.InkSoft, 22, 34f, 0.9f);
+                        var pile = (ld.Sparks ?? 0) > 0 ? g.Anchor("pile-draw") : null;
+                        if (pile != null)
+                        {
+                            Vector2 pFrom = LightUi.GlassCenter(fx), pTo = Tween.CenterIn(pile, fx);
+                            for (int k = 0; k < Math.Min(ld.Sparks.Value, 6); k++)
+                            {
+                                bool last = k == Math.Min(ld.Sparks.Value, 6) - 1;
+                                Tween.After(0.06f * k, () => Tween.Projectile(fx, pFrom, pTo, PaperFx.BrassLight, 20f, 0.32f, 60f, last ? (Action)(() => { Tween.RingBurst(fx, pTo, PaperFx.BrassLight, 90f, 0.24f); Tween.Shake(pile, 5f, 0.2f); }) : null));
+                            }
+                        }
+                        return;
+                    }
                     if (!LightUi.Exists)
                     {
                         var rt0 = g.Anchor("player");

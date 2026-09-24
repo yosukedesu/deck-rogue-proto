@@ -404,6 +404,35 @@ describe('StS2式の抽選改善 (2026-09-02 全体改善)', () => {
     expect(violations / checked).toBeLessThan(0.06) // プール枯渇のフォールバックのみ許容
   })
 
+  // 2026-09-24 人間ラン#19: 幕1の弱枠で「蜘蛛と噛みつき果実」を3戦続けて踏んだ。上の検査は「プレイヤーは1行1ノードしか踏まない」として
+  // 弱枠を除外していたが、プレイヤーは親→子の道を歩くので道の上の反復はそのまま見える。旧実装は直前2行の全ノードで避けて尽きると
+  // プール全体から引いており、親子で同じ編成が 幕1 55%・幕2 46%・幕3 28% の地図に出ていた → 道の祖先・親・親と同じ編成の順に避ける
+  it('道の上で同じ編成が親子に続かない (全行・弱枠込み)。幕1は同族も続かない', () => {
+    let same = 0
+    let fam1 = 0
+    let edges = 0
+    for (let seed = 1; seed <= 150; seed++) {
+      for (let act = 1; act <= 3; act++) {
+        const [m] = generateMap(createRng(seed * 97 + act), act)
+        const members = (id: string) => new Set(resolveEncounter(id).map((x) => x.enemyId))
+        for (let r = 0; r < m.length - 1; r++) {
+          for (const n of m[r]) {
+            for (const to of n.next) {
+              const c = m[r + 1][to]
+              if (n.type !== 'battle' || c.type !== 'battle' || !n.encounterId || !c.encounterId) continue
+              edges++
+              if (n.encounterId === c.encounterId) same++
+              else if (act === 1 && [...members(n.encounterId)].some((x) => members(c.encounterId!).has(x))) fam1++
+            }
+          }
+        }
+      }
+    }
+    expect(edges).toBeGreaterThan(3000)
+    expect(same).toBe(0)
+    expect(fam1).toBe(0)
+  })
+
   it('ボス前3行に散布焚き火が無い (ボス前の全焚き火行を除く)', () => {
     for (let act = 1; act <= 3; act++) {
       for (const seed of [3, 13, 23]) {

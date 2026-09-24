@@ -7,9 +7,9 @@
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } from './content.ts'
 import { resolveFusedDef } from './fusion.ts'
-import { applyDamageInterrupts, cardNeedsTarget, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, expireRetainers, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
+import { applyDamageInterrupts, cardNeedsTarget, gainLight, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, expireRetainers, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
 import { applyInterruptsTo, startNodeFor, walkToMove } from './enemyGraph.ts'
-import { applyDeathInterrupts, bindRedeclare, blazeConditionMet, effectiveStrength, enterPermanent, gainEnemyStrength, refreshIntentValues } from './effects.ts'
+import { applyDeathInterrupts, bindRedeclare, blazeConditionMet, effectiveStrength, enterPermanent, gainEnemyStrength, refreshIntentValues, setBellActive } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
 import { emit } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
@@ -111,6 +111,8 @@ export interface CombatOptions {
   readonly relicPermanents?: readonly CardInstance[]
   /** C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N */
   readonly setDamageReduction?: number
+  /** 戦闘開始時の所持金 (2026-09-24 E6: 盗みの上限。GameState.goldAvailable へ渡す) */
+  readonly goldAvailable?: number
   /** 実験: 全カード伏せ可 */
   readonly setAnyCards?: boolean
   /** C型レリック (回収の紐): 回収が0E */
@@ -222,6 +224,7 @@ export function startCombatWithOptions(
     enemies,
     // C型レリック
     ...(options.setDamageReduction ? { setDamageReduction: options.setDamageReduction } : {}),
+    ...(options.goldAvailable !== undefined ? { goldAvailable: options.goldAvailable } : {}),
     ...(options.expireToHand ? { expireToHand: true } : {}),
     ...(options.energyMaxRefBonus ? { energyMaxRefBonus: options.energyMaxRefBonus } : {}),
     ...(options.harvestKeep ? { harvestKeep: options.harvestKeep } : {}),
@@ -306,7 +309,10 @@ function tickCardTimers(state: GameState): GameState {
 function declareIntents(state: GameState): GameState {
   let s = state
   for (let i = 0; i < s.enemies.length; i++) {
-    if (s.enemies[i].hp <= 0) continue
+    // 意図の無い敵だけ宣言する (2026-09-24 Opus ひなた E1)。自ターン開始で前のターンの意図は消してあるので、
+    // ここで既に意図を持つのは「このターン開始の誘発の中で宣言済み」の敵 = 分裂体の出現 (隙を含む)・潜伏の噛みつき・
+    // HP半分の豹変で飛んだ先の宣言。旧実装はそれを上書きして2回宣言し、第2形態の1手目・分裂体の隙が消えていた
+    if (s.enemies[i].hp <= 0 || s.enemies[i].intent !== null) continue
     s = declareOne(s, i)
   }
   return s
@@ -341,7 +347,8 @@ function declareOne(state: GameState, i: number): GameState {
     const enemiesS = s.enemies.map((e, j) => (j === i ? { ...e, intent: restIntent, staggeredNext: false, intentMoveId: undefined, intentNode: undefined } : e))
     return emit({ ...s, rng: rngS, enemies: enemiesS }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: restIntent })
   }
-  if ((enemy.stolenGold ?? 0) > 0 && enemy.intent?.kind !== 'flee') {
+  // 前の意図が逃走なら (打ち消された逃走) 2度続けては宣言しない。自ターン開始で意図は消えているので prevIntentKind を読む (E1)
+  if ((enemy.stolenGold ?? 0) > 0 && (enemy.intent?.kind ?? enemy.prevIntentKind) !== 'flee') {
     const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength, enemy.atkScale ?? 1)
     const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent, intentMoveId: undefined, intentNode: undefined } : e))
     return emit({ ...s, rng: rngF, enemies: enemies2 }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: fleeIntent })
@@ -402,11 +409,18 @@ function declareOne(state: GameState, i: number): GameState {
     }
   }
 
-  const declared = conditionalOn && alt ? { ...intent, conditionalOn, alt } : intent
+  const declaredRaw = conditionalOn && alt ? { ...intent, conditionalOn, alt } : intent
   // 盗みは宣言と同時に成立する (2026-08-30 「宣言ターン内に仕事をする」パッケージ)。
   // 旧実装は実行時成立のため、宣言ターンに倒すと盗み・逃走の設計が丸ごと空振りしていた
   // (3幕フルラン実測: こそ泥4戦で盗み・逃走を一度も見ていない)。宣言時に抱えれば
-  // 「今すぐ倒して取り返す (+懸賞金) か、放置して失うか」のレースが必ず発生する
+  // 「今すぐ倒して取り返す (+懸賞金) か、放置して失うか」のレースが必ず発生する。
+  // 上限 (2026-09-24 Opus ひなた E6・本家 Looter): 所持金−すでに盗まれた額 (逃げた盗人の分も含む) まで。
+  // 所持金20Gに盗人2体で「16G・17G 盗まれた」と出て、逃げられると今回の報酬まで削られていた
+  const stealCap =
+    declaredRaw.kind === 'steal-gold' && s.goldAvailable !== undefined
+      ? Math.max(0, s.goldAvailable - s.enemies.reduce((sum, e) => sum + (e.stolenGold ?? 0), 0))
+      : Infinity
+  const declared = declaredRaw.kind === 'steal-gold' && declaredRaw.actual > stealCap ? { ...declaredRaw, actual: stealCap } : declaredRaw
   const stolen = declared.kind === 'steal-gold' ? declared.actual : 0
   const enemies = s.enemies.map((e, j) =>
     j === i
@@ -484,7 +498,7 @@ function buildIntent(
 /** 自ターン開始: ブロック0リセット・エナジー全回復・置物の開始時効果・5枚ドロー・敵意図宣言 */
 function startPlayerTurn(state: GameState, turn: number): GameState {
   // 次ターン繰り越し (レリック本家形 2026-09-12): 積んであった分を読んで消す。enemyPhase の旗もここで降りる
-  const { nextTurnDraw, nextTurnEnergy, nextTurnBlock, enemyPhase: _ep, gearUsedThisTurn: _g, retainHandThisTurn: _rh, energyCarryThisTurn: carryOnce, maxHpLossFiredThisTurn: _cap, nullifyNextAttack: _nn, ...rest } = state
+  const { nextTurnDraw, nextTurnEnergy, nextTurnBlock, nextTurnLight, enemyPhase: _ep, gearUsedThisTurn: _g, retainHandThisTurn: _rh, energyCarryThisTurn: carryOnce, maxHpLossFiredThisTurn: _cap, nullifyNextAttack: _nn, bellLocked: _bl, ...rest } = state
   let s: GameState = {
     ...rest,
     turn,
@@ -516,6 +530,18 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
   }
   // ターン装甲の累計リセット (2026-09-02): 自ターン開始〜次の自ターン開始が「1ターン」
   s = { ...s, enemies: s.enemies.map((e) => ((e.damageThisTurn ?? 0) > 0 ? { ...e, damageThisTurn: 0 } : e)) }
+  // 前のターンの意図を消す (2026-09-24 Opus ひなた E1)。敵フェーズで実行済みの意図が残っていると、
+  // このターン開始の誘発 (人形・レリック) で HP 半分を割った時に「宣言済みの意図の差し替え」と取り違え、
+  // 最後の declareIntents が二重に宣言して第2形態の1手目が飛んでいた (大亀の噛みつき)。分裂体の「出現ターンは隙」も
+  // 同じ二重宣言で消えていた (合成獣の二の相)。種別だけ prevIntentKind に残す (盗人の逃走の判定)。T1 と同じ扱い
+  s = {
+    ...s,
+    enemies: s.enemies.map((e) => {
+      if (e.intent === null && e.intentMoveId === undefined && e.intentNode === undefined) return e
+      const { intentMoveId: _m, intentNode: _n, ...keep } = e
+      return { ...keep, intent: null, ...(e.intent !== null ? { prevIntentKind: e.intent.kind } : {}) }
+    }),
+  }
   s = emit(s, { type: 'TurnStarted', turn, hand: s.player.hand.map((c) => c.def.name) })
   // ドローを onTurnStart 誘発より先に行う (2026-08-31 変更)。
   // 手札参照の置物 (懐深き外套=手札×N氷壁) が「まだ0枚の手札」を読むのを防ぐ。
@@ -524,6 +550,8 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
   s = drawCards(s, Math.max(0, ((s.player.mist ?? 0) > 0 ? Math.max(3, s.player.drawPerTurn - 2) : s.player.drawPerTurn) + (nextTurnDraw ?? 0)))
   // 自ら固まる粘土 (gainBlockNextTurn): 前のターンに積んだブロックを得る (ブロック獲得の誘発は通す)
   if ((nextTurnBlock ?? 0) > 0) s = gainPlayerBlock(s, nextTurnBlock ?? 0, Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
+  // 灯の埋め火・灯の集約 (addLightNextTurn 2026-09-23): 前のターンに埋めた灯を得る (灯の獲得の誘発は通す)
+  if ((nextTurnLight ?? 0) > 0) s = gainLight(s, nextTurnLight ?? 0, 'card', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
   s = runPermanentTriggers(s, 'onTurnStart', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
   // ターン開始誘発 (従者の自動攻撃など) で敵が全滅したら即座に勝利を確定する
   // (プレイテストで発見: 判定がないと撃破済みの敵に手札が撃てる状態が残る)
@@ -695,8 +723,8 @@ export function checkCombatEnd(state: GameState): GameState {
 /** 山札/捨て札から選ぶ効果の種別 (引導・回収・サーチ)。1枚の札は1種だけ持てる */
 export function deckChooseKindOf(
   def: CardDef,
-): 'exhaustFromDeckChoose' | 'retrieveFromDiscard' | 'searchDeck' | null {
-  for (const k of ['exhaustFromDeckChoose', 'retrieveFromDiscard', 'searchDeck'] as const) {
+): 'exhaustFromDeckChoose' | 'retrieveFromDiscard' | 'searchDeck' | 'transformDeckToToken' | null {
+  for (const k of ['exhaustFromDeckChoose', 'retrieveFromDiscard', 'searchDeck', 'transformDeckToToken'] as const) {
     if (def.effects.some((e) => e.effect === k && e.trigger === 'onPlay')) return k
   }
   return null
@@ -720,7 +748,7 @@ export function playCard(
   if (!card) throw new Error(`手札にないカード: ${cardUid}`)
   if (!isPlayableFromHand(card, state)) throw new Error(`${card.def.name} はプレイ不可 (リアクション専用)`)
   // 殉教の誓い (白 2026-09-06): 従者が場にいる時だけプレイできる (xCost のエナジー1以上と同じ playability)
-  if (!retainerRequirementMet(state, card)) throw new Error(`${card.def.name} は場に従者が1体以上いる時だけプレイできる`)
+  if (!retainerRequirementMet(state, card)) throw new Error(`${card.def.name} は場に人形が1体以上いる時だけプレイできる`)
   // 拘束 (2026-09-02): 1ターンにプレイできるカードは上限枚数まで。伏せ・発動は制限しない。
   // 参照は実プレイ枚数 (playsThisTurn) — 焚べ (addCasts) の嵩で拘束が早く詰まらない
   assertPlayCap(state)
@@ -878,11 +906,11 @@ export function playCard(
   const deckPool =
     chooseKind === 'retrieveFromDiscard'
       ? state.player.discardPile
-      : chooseKind === 'searchDeck'
+      : chooseKind === 'searchDeck' || chooseKind === 'transformDeckToToken'
         ? state.player.drawPile
         : [...state.player.drawPile, ...state.player.discardPile]
   const poolLabel =
-    chooseKind === 'retrieveFromDiscard' ? '捨て札' : chooseKind === 'searchDeck' ? '山札' : '山札か捨て札'
+    chooseKind === 'retrieveFromDiscard' ? '捨て札' : chooseKind === 'searchDeck' || chooseKind === 'transformDeckToToken' ? '山札' : '山札か捨て札'
   const deckChooseUids = deckChooseN > 0 ? (deckUids ?? []) : []
   if (deckChooseN > 0) {
     const need = Math.min(deckChooseN, deckPool.length)
@@ -919,9 +947,9 @@ export function playCard(
   const sacrificeN = card.def.effects.filter((e) => e.effect === 'sacrificeRetainer' && e.trigger === 'onPlay').length
   let sacrificed: CardInstance | null = null
   if (sacrificeN > 0) {
-    if (permanentUid === undefined) throw new Error(`${card.def.name} は破壊する従者 (permanentUid) の指定が必要`)
+    if (permanentUid === undefined) throw new Error(`${card.def.name} は破壊する人形 (permanentUid) の指定が必要`)
     const t = state.player.permanents.find((p) => p.uid === permanentUid)
-    if (!t || t.def.retainer !== true || t.innate === true) throw new Error(`従者ではない、または場に無い置物: ${permanentUid}`)
+    if (!t || t.def.retainer !== true || t.innate === true) throw new Error(`人形ではない、または場に無い置物: ${permanentUid}`)
     sacrificed = t
   }
   // 「人形1体を選ぶ」札 (写し灯・継ぎ火・永遠の灯 2026-09-21): 同じ欄 (permanentUid) で選ぶ。効果の解決は chosenPermanentUid を読む
@@ -1007,6 +1035,8 @@ export function playCard(
   s = emit(s, { type: 'CardPlayed', cardId: card.def.id })
   // 灯コストの支払いをログに残す (2026-09-20 夜。Opus 灯と人形 A/B/C 3本一致「灯が黙って減る」)
   if (lightCost > 0) s = emit(s, { type: 'LightSpent', amount: lightCost, cardId: card.def.id })
+  // 灯を払う攻撃 (2026-09-23 裁定B: 放出を「灯Nを払う」に) でも「灯を放出するたび」(灯の火皿) は鳴る = 払う・吐くを同じ出口として数える
+  if (lightCost > 0) s = runPermanentTriggers(s, 'onLightDischarged', enemyIndex)
   if (redirectedFrom !== undefined) {
     // 庇う (2026-09-02 検証ラン「リダイレクトが無言で起きる」への処方): 発生を必ずログに残す
     s = emit(s, { type: 'GuardianRedirected', fromIndex: redirectedFrom, toIndex: enemyIndex })
@@ -1037,7 +1067,26 @@ export function playCard(
   // 引導 (黒 2026-08-31): 山札か捨て札から選んだ札を消滅させる。効果解決の前に行う =
   // 直後のドロー効果が選んだ札を手札へ引き込む競合を防ぐ。亡骸・onCardExhausted は発火する
   // (プレイ以外の経路)。反復 (echo) されても選択消滅は1回 (選んだ札は1枚しか無い)
-  if (deckChooseUids.length > 0 && chooseKind !== 'exhaustFromDeckChoose') {
+  if (deckChooseUids.length > 0 && chooseKind === 'transformDeckToToken') {
+    // 降霊 (白 2026-09-23 本家 Seance): 山札から選んだ札をその場でトークン (summonId) に変える。並びは崩さない (置き換え)
+    const tokDef = getCardDef(card.def.effects.find((e) => e.effect === 'transformDeckToToken')?.summonId ?? '')
+    const chosenSet = new Set(deckChooseUids)
+    let k = 0
+    const changed: string[] = []
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        drawPile: s.player.drawPile.map((c) => {
+          if (!chosenSet.has(c.uid)) return c
+          changed.push(c.def.id)
+          return { uid: `tokt_${s.eventLog.length}_${k++}_${tokDef.id}`, def: tokDef, token: true }
+        }),
+      },
+    }
+    for (const id of changed) s = emit(s, { type: 'DeckCardTransformed', cardId: id, into: tokDef.id })
+  }
+  if (deckChooseUids.length > 0 && (chooseKind === 'searchDeck' || chooseKind === 'retrieveFromDiscard')) {
     // 回収 (捨て札→手札) / サーチ (山札→手札)。効果解決の前に手札へ = 直後のドロー・参照と競合しない。
     // 山札の並びは崩さない (抜くだけ) = 引き順は伏せたまま
     const chosenSet = new Set(deckChooseUids)
@@ -1361,7 +1410,7 @@ export function endTurn(state: GameState, hearthSparks?: number): GameState {
     const burnHp = scalds * 2 + brands * 1
     if (burnHp > 0) {
       s = { ...s, player: { ...s.player, hp: s.player.hp - burnHp } }
-      s = emit(s, { type: 'ScaldTick', count: scalds + brands, amount: burnHp })
+      s = emit(s, { type: 'ScaldTick', count: scalds + brands, amount: burnHp, scalds, brands })
       s = checkCombatEnd(s)
       if (s.phase === 'lost') return s
     }
@@ -1516,6 +1565,8 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
     }
     // からくり壊し＋攻撃 (2026-09-14): 生きた罠を pre 窓より先に壊してから殴る (壊した罠は鳴らない)
     if (locked.alsoDestroySet === true) s = destroySetCards(s, i)
+    // 静かな鈴が効くかをここで固定する (2026-09-24 Opus ひなた E2: 罠1枚を pre 窓で発動すると鈴が外れ、窓の「鈴で-2」が嘘になっていた)
+    s = { ...s, bellLocked: s.player.setCards.length > 0 }
     // 行動実行の直前フック (pre窓): 打ち消し・軽減リアクションがここで発動/割り込みする
     const executing = { type: 'EnemyActionExecuting', enemyIndex: i, kind: locked.kind } as const
     s = emit(s, executing)
@@ -1789,8 +1840,8 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         let v = intent.actual
         // 威圧 (2026-09-03 本家 Weak 化): スタックがあれば各ヒット-25% (切り捨て・最低1)。行動が終わると1減る
         v = applyEnemyWeak(v, state.enemies[enemyIndex]?.weak)
-        // 静かな鈴 (C型レリック): 伏せ札がある間、各ヒット-N (最低1クランプは威圧と同則)
-        if ((state.setDamageReduction ?? 0) > 0 && state.player.setCards.length > 0) {
+        // 静かな鈴 (C型レリック): 伏せ札がある間、各ヒット-N (最低1クランプは威圧と同則)。行動の開始で固定した値を読む (E2)
+        if (setBellActive(state)) {
           v = Math.max(1, v - (state.setDamageReduction ?? 0))
         }
         // 脆弱: 敵の攻撃ダメージ50%増 (切り捨て)

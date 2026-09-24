@@ -521,6 +521,19 @@ export function describeGraphFrom(def: EnemyDef, from: string, label: (moveId: s
       continue
     }
     if (node.random !== undefined) {
+      // 候補1つの乱択は決まった技 = 「どちらか{…}」と書かず技だけ出す (2026-09-24 Opus ひなた T4: 栗鼠・苔の主・石殻・物真似2体)
+      const only = node.random.length === 1 ? def.nodes[node.random[0].to] : undefined
+      if (only?.move !== undefined) {
+        out.push(label(only.move))
+        seen.add(node.random[0].to)
+        const after = only.next ?? node.random[0].to
+        if (after === cur || after === node.random[0].to) {
+          out.push('同じ技を繰り返す')
+          break
+        }
+        cur = after
+        continue
+      }
       const arms = node.random.map((a) => {
         const flags = [`出やすさ${a.weight}`, a.noRepeat ? '続けて出ない' : '', a.once ? '1回だけ' : '', a.maxRepeat !== undefined ? `${a.maxRepeat}回まで続く` : ''].filter(Boolean)
         return `${labelOfNode(def, a.to, label)}（${flags.join('・')}）`
@@ -544,6 +557,8 @@ function labelOfNode(def: EnemyDef, nodeId: string, label: (moveId: string) => s
   const n = def.nodes[nodeId]
   if (!n) return nodeId
   if (n.move !== undefined) return label(n.move)
+  // 候補1つの乱択は決まった技 (2026-09-24 T4)
+  if (n.random !== undefined && n.random.length === 1 && def.nodes[n.random[0].to]?.move !== undefined) return label(def.nodes[n.random[0].to].move!)
   if (n.random !== undefined) return 'どちらか'
   return '判定'
 }

@@ -282,6 +282,10 @@ namespace DeckRogue.Engine
         static GameState MoveChosenCard(GameState state, string kind, string? cardUid, GearDef def)
         {
             var from = kind == "searchDeck" ? state.Player.DrawPile : state.Player.DiscardPile;
+            // 札を指定したのに見つからなければ弾く (2026-09-24 Opus ひなた E4: 捨て札が空の時は早期 return が照合より先に来て、
+            // 山札にある札を指定してもギアと魔素だけが消えていた)。指定なしで山が空なら何もしない。TS と同形
+            if (cardUid != null && !from.Any(c => c.Uid == cardUid))
+                throw new InvalidOperationException($"{def.Name}: 選んだ札が{(kind == "searchDeck" ? "山札" : "捨て札")}に無い");
             if (from.Count == 0) return state;
             CardInstance? card = cardUid == null ? from[0] : from.FirstOrDefault(c => c.Uid == cardUid);
             if (card == null) throw new InvalidOperationException($"{def.Name}: 選んだ札が見つからない");

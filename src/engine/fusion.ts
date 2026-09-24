@@ -25,7 +25,11 @@ const REFILL = new Set([
   'playFromExhaust',
 ])
 
-/** 名前生成: 軸→語幹 (緑v1)。レシピ札は手書き名が優先される */
+/**
+ * 名前生成: 効果→語 (緑v1)。レシピ札は手書き名が優先される。
+ * 緑 (と色の語彙表が無い色) だけが使う = 他の色は下の COLOR_WORD と色の語で完結し、緑の語 (樹・蔦・角・牙…) が混ざらない
+ * (2026-09-24 T8: 白の gainEnergy が この表の「樹」に落ち、灯の閃撃×灯の薪 = 樹輝の一撃 になっていた)
+ */
 const WORD: readonly (readonly [string, string])[] = [
   ['applyBurn', '焔'],
   ['gainIceBlock', '氷'],
@@ -45,7 +49,10 @@ const WORD: readonly (readonly [string, string])[] = [
   ['dealDamageRandom', '賭'],
   ['impulseDraw', '閃'],
 ]
-/** 色別の語彙上書き (2026-08-31 白ラン指摘「白素材から牙葉の祭壇=緑語彙が生成」への是正) */
+/**
+ * 色別の語彙 (2026-08-31 白ラン指摘「白素材から牙葉の祭壇=緑語彙が生成」への是正)。先に一致した行の語を採る = 具体的な効果を先に、
+ * ダメージ・ブロック・ドローのような汎用の効果を後ろに置く (後ろの語ほど「語だけでは見分けにくい」= 札名の字を足す側。computedStem)
+ */
 const COLOR_WORD: Record<string, readonly (readonly [string, string])[]> = {
   black: [
     ['dealDamageDrain', '血'],
@@ -55,6 +62,7 @@ const COLOR_WORD: Record<string, readonly (readonly [string, string])[]> = {
     ['drawCards', '冥'],
     ['gainHp', '宵'],
     ['dealDamage', '影'],
+    ['gainEnergy', '燭'], // 魂の薪・亡者の蝋燭・骨焚き (2026-09-24 T8: 緑の「樹」に落ちていた)
   ],
   blue: [
     ['gainIceBlock', '氷'],
@@ -63,6 +71,7 @@ const COLOR_WORD: Record<string, readonly (readonly [string, string])[]> = {
     ['addSpellEcho', '谺'],
     ['drawCards', '書'],
     ['dealDamage', '潮'],
+    ['gainEnergy', '魔'], // 魔力変換 (2026-09-24 T8: 緑の「樹」に落ちていた)
   ],
   red: [
     ['applyBurn', '焔'],
@@ -74,32 +83,113 @@ const COLOR_WORD: Record<string, readonly (readonly [string, string])[]> = {
     ['drawCards', '燼'],
     ['dealDamage', '火'],
   ],
+  // 白 = 灯火の工房 (灯・人形・真鍮・光。docs/world.md「光耀の里」)。2026-09-24 T8: 一時マナ・人形・灯の操作の語を足した
+  // (旧: 16枚が色の語「光」に、灯の薪・灯の炉心が緑の「樹」に落ち、大光の祭壇 が171組で重なっていた)
   white: [
     ['dischargeLight', '灯'],
+    ['dischargeLightRally', '点'], // 灯火の大行列 (点灯の合図と同じ「点」)
     ['dealDamagePerLight', '篭'],
     ['dealDamagePerSpark', '火'],
+    ['gainBlockPerSpark', '火'], // 火守りの盾 (2026-09-24 撃った火種×ブロック)
     ['addCardToDraw', '種'],
+    ['doubleLight', '満'], // 灯の倍化
+    ['lightCarryHalf', '残'], // 残り火
+    ['lightToSparks', '火'], // 灯の火床
+    ['gainEnergy', '芯'], // 灯の薪・灯の炉心・灯の燃料 (灯芯・炉心の「芯」)
+    ['gainEnergyNextTurn', '芯'], // 灯の集約
     ['addLight', '灯'],
+    ['addLightNextTurn', '灯'], // 灯の埋め火
+    ['blessRetainers', '照'], // 灯り増し・輝き増し (人形を照らす)
+    ['triggerRetainersNow', '点'], // 点灯の合図
+    ['triggerRandomRetainer', '点'], // 灯の継ぎ手
+    ['duplicateRetainers', '写'], // 人形の分列
+    ['copyRetainer', '写'], // 写し灯
+    ['copyLastRetainer', '写'],
+    ['twinNextRetainer', '写'],
+    ['extendRetainerLife', '継'],
+    ['extendAllRetainersLife', '継'], // 継ぎ火
+    ['persistRetainer', '永'], // 永遠の灯
     ['summonPermanent', '旗'],
     ['dealDamagePerPermanent', '列'],
     ['gainHp', '光'],
     ['weakenEnemy', '威'],
     ['dealDamagePerBlock', '壁'],
+    ['addCardToHand', '火'], // 火種を手札へ (大焚き付け・火起こし・灯火の炉)
+    ['addCardToDiscard', '火'], // 断ち切り
+    ['counter', '報'], // 返し (報復)
     ['gainBlock', '盾'],
     ['dealDamage', '輝'], // 旧「聖」は 2026-09-18 のリネーム漏れ (Opus 火種A)
     ['drawCards', '典'],
   ],
 }
+/** 表に一致しない札の色の語 (緑以外の合成が「樹」になる違和感への対処 2026-08-30) */
+const COLOR_FALLBACK: Record<string, string> = { red: '火', blue: '水', white: '光', black: '影' }
+/**
+ * 素材の効果の語と、その語の表での位置 (大きいほど汎用 = 語だけでは素材を見分けにくい)。
+ * 語彙表を持つ色はその表と色の語だけを使う = 緑の表 (WORD) には落ちない (2026-09-24 T8)
+ */
+function wordRankOf(def: CardDef): readonly [string, number] {
+  const table = COLOR_WORD[def.color ?? ''] ?? WORD
+  for (let i = 0; i < table.length; i++) {
+    if (def.effects.some((e) => e.effect === table[i][0])) return [table[i][1], i]
+  }
+  return [COLOR_FALLBACK[def.color ?? ''] ?? '樹', table.length]
+}
 function wordOf(def: CardDef): string {
-  for (const [eff, w] of COLOR_WORD[def.color ?? ''] ?? []) {
-    if (def.effects.some((e) => e.effect === eff)) return w
+  return wordRankOf(def)[0]
+}
+
+/**
+ * 札名から字を採る時に飛ばす字 (2026-09-24): どの色でも素材の顔にならない字 (一撃の 一・撃、大・小) と、
+ * その色の札名によく出る字 (灯の〜・〜の人形 が多い白なら 灯・人・形)
+ */
+const PLAIN_NAME_KANJI = '一撃大小'
+const COMMON_NAME_KANJI: Record<string, string> = {
+  white: '灯人形火光盾点',
+  green: '蔦樹根角風蔓',
+  red: '火業賭熱紅蓮',
+  blue: '氷渦流霊気',
+  black: '骨刃血死忘却亡骸',
+}
+/** CJK 統合漢字 (拡張A 含む。々 や かな・記号は採らない)。C# の Fusion.IsKanji と同じ範囲 */
+function isKanji(ch: string): boolean {
+  const c = ch.codePointAt(0) ?? 0
+  return (c >= 0x3400 && c <= 0x4dbf) || (c >= 0x4e00 && c <= 0x9fff)
+}
+/**
+ * 素材の札名から1字 (素材の顔)。「の」の後ろの部分を優先し、その色でよく出る字は飛ばす
+ * (灯の閃撃→閃・剣の人形→剣・大いなる癒し→癒)。全部よく出る字なら後ろの部分の最初の漢字、漢字が無ければ ''
+ */
+function nameKanji(def: CardDef): string {
+  const common = PLAIN_NAME_KANJI + (COMMON_NAME_KANJI[def.color ?? ''] ?? '')
+  const parts = def.name.replace(/^真・/, '').replace(/\+$/, '').split('の')
+  for (let p = parts.length - 1; p >= 0; p--) for (const ch of parts[p]) if (isKanji(ch) && !common.includes(ch)) return ch
+  for (let p = parts.length - 1; p >= 0; p--) for (const ch of parts[p]) if (isKanji(ch)) return ch
+  return ''
+}
+/**
+ * 計算合成の語幹 (2026-09-24 T8「同じ名前の合成札が多すぎる」: 白の全組で名前が342種しかなく 大光の祭壇 が171組)。
+ * 従来の語幹 (効果の語2つ) に、素材の札名から1字を足して見分ける = 語幹の頭は従来のまま (緑の名前は1字増えるだけ)。
+ *  - 語が違う: 語2つ + 汎用な語 (表の後ろ) の側の札名の字 (灯の閃撃×灯の薪 = 芯輝閃)
+ *  - 語が同じ (旧「大X」): 語1つ + 両方の札名の字 (打撃×蔦の楔 = 牙楔打)。足せる字が無い時だけ従来の「大X」
+ *  - 足す字は語幹・語尾に既にある字を避ける (嵐の嵐 にしない)。素材2枚の def だけから決まり、a/b は id 順に正規化済み
+ */
+function computedStem(a: CardDef, b: CardDef, suffix: string): string {
+  const [wa, ra] = wordRankOf(a)
+  const [wb, rb] = wordRankOf(b)
+  const same = wa === wb
+  let stem = same ? wa : wa + wb
+  const want = same ? 2 : 1
+  let added = 0
+  for (const d of ra >= rb ? [a, b] : [b, a]) {
+    if (added >= want) break
+    const k = nameKanji(d)
+    if (k !== '' && !stem.includes(k) && !suffix.includes(k)) {
+      stem += k
+      added++
+    }
   }
-  for (const [eff, w] of WORD) {
-    if (def.effects.some((e) => e.effect === eff)) return w
-  }
-  // フォールバックは色の語で (緑以外の合成が「樹」になる違和感への対処 2026-08-30)
-  const FALLBACK: Record<string, string> = { red: '火', blue: '水', white: '光', black: '影' }
-  return FALLBACK[def.color ?? ''] ?? '樹'
+  return same && added === 0 ? `大${stem}` : stem
 }
 /** 全体の触媒で全体化してよいダメージ効果 (状態を消費せず、敵ごとに独立して解決できるもの) */
 const AOE_CATALYST_OK = new Set([
@@ -222,7 +312,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     resultType === 'reaction'
       ? (domi.def.effects.find((e) => REACTION_WINDOWS.has(e.trigger))?.trigger ?? 'onAttacked')
       : 'onPlay'
-  const PLAYCARD_ONLY = new Set(['searchDeck', 'retrieveFromDiscard', 'upgradeInHand', 'upgradeAllInHand', 'gainMaxHp', 'addCopyToDiscard', 'exhaustFromDeckChoose', 'retrieveFromExhaust', 'playFromExhaust', 'gainSetSlot', 'sacrificeRetainer', 'duplicateRetainers', 'triggerRetainersNow', 'copyRetainer', 'extendRetainerLife', 'persistRetainer', 'twinNextRetainer', 'copyLastRetainer'])
+  const PLAYCARD_ONLY = new Set(['searchDeck', 'retrieveFromDiscard', 'upgradeInHand', 'upgradeAllInHand', 'gainMaxHp', 'addCopyToDiscard', 'exhaustFromDeckChoose', 'retrieveFromExhaust', 'playFromExhaust', 'gainSetSlot', 'sacrificeRetainer', 'duplicateRetainers', 'triggerRetainersNow', 'copyRetainer', 'extendRetainerLife', 'extendAllRetainersLife', 'persistRetainer', 'twinNextRetainer', 'copyLastRetainer'])
   const DIES_IN_WINDOW = new Set(['drawCards', 'impulseDraw', 'gainEnergy', 'addCasts'])
   const DEAD_ON_PERMANENT = new Set(['negate', 'growSelf', 'momentumCarryHalf', 'doubleGrowth', 'doubleMomentum', 'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumGrowth', 'dischargeMomentumVolley', 'dischargeAether', 'dischargeAetherDraw', 'dischargeBurn', 'dischargeLight', 'dischargeLightRally', 'doubleLight'])
   // 落とした効果の価値は最大の量効果へ振る (S2: 効果が落ちて素材より劣化する64件の是正。「合成不可」は増やさない)
@@ -433,22 +523,30 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
   const freeIfHandAll = a.def.freeIfHandAll ?? b.def.freeIfHandAll ?? (freeIfPhysical ? 'physical' : undefined)
   const freeIfMomentum = [a.def.freeIfMomentumAtLeast, b.def.freeIfMomentumAtLeast].filter((v): v is number => v !== undefined)
   const conditionalFree = freeIfHandAll !== undefined || freeIfMomentum.length > 0
-  if (!keepX && refills && (net - cost >= 0 || conditionalFree)) {
+  const fusedLightCost = (a.def.lightCost ?? 0) + (b.def.lightCost ?? 0) // 灯コストを払う札は 0E+補充の規約の例外 (2026-09-23 灯の頁。cardrules.test と同じ)
+  if (!keepX && refills && fusedLightCost === 0 && (net - cost >= 0 || conditionalFree)) {
     if (resultType !== 'permanent') exhaust = true
     else while (net - cost >= 0 && cost < 5) cost++
   }
   if (resultType === 'permanent') exhaust = false
 
   const PERM_SUFFIX: Record<string, string> = { red: '炉', blue: '泉', white: '祭壇', black: '柩' }
+  // 人形は溶かしても人形 = 語尾も「人形」(2026-09-24 T8。旧: 剣の人形×盾の人形 = 盾輝の祭壇)
+  const dollResult = (a.def.retainer === true || b.def.retainer === true) && resultType === 'permanent'
   const suffix =
-    resultType === 'permanent' ? (PERM_SUFFIX[a.def.color ?? ''] ?? '大樹') : resultType === 'reaction' ? '罠' : suffixOf(effects)
-  const stemOf = (d: CardDef): string =>
-    d.id.startsWith('fused_') || d.id.startsWith('fusion_') ? d.name.replace(/^真・/, '').replace(/\+$/, '').split('の')[0].slice(0, 3) : wordOf(d)
-  const wa = stemOf(a.def)
-  const wb = stemOf(b.def)
-  const uniq = [...new Set([...wa, ...wb])].join('')
-  // 語の重複は畳む (T1: 角牙牙の乱撃)。相手の語が何も足さない時は「大」を冠して素材と同名になるのを避ける (角牙の嵐×落ち葉の刃=大角牙の嵐)
-  const stem = (wa === wb || uniq === wa || uniq === wb ? `大${uniq}` : uniq).slice(0, 4)
+    resultType === 'permanent' ? (dollResult ? '人形' : (PERM_SUFFIX[a.def.color ?? ''] ?? '大樹')) : resultType === 'reaction' ? '罠' : suffixOf(effects)
+  const workshopMade = (d: CardDef): boolean => d.id.startsWith('fused_') || d.id.startsWith('fusion_')
+  let stem: string
+  if (workshopMade(a.def) || workshopMade(b.def)) {
+    // 工房産を素材にした時は、その語幹を引き継ぐ (従来どおり)
+    const stemOf = (d: CardDef): string =>
+      workshopMade(d) ? d.name.replace(/^真・/, '').replace(/\+$/, '').split('の')[0].slice(0, 3) : wordOf(d)
+    const wa = stemOf(a.def)
+    const wb = stemOf(b.def)
+    const uniq = [...new Set([...wa, ...wb])].join('')
+    // 語の重複は畳む (T1: 角牙牙の乱撃)。相手の語が何も足さない時は「大」を冠して素材と同名になるのを避ける (角牙の嵐×落ち葉の刃=大角牙の嵐)
+    stem = (wa === wb || uniq === wa || uniq === wb ? `大${uniq}` : uniq).slice(0, 4)
+  } else stem = computedStem(a.def, b.def, suffix)
   const name = sameName ? `真・${a.def.name}` : `${stem}の${suffix}`
   const ids = [a0.def.id, b0.def.id]
   const def: CardDef = {
@@ -558,13 +656,28 @@ export function fusionNotes(a: CardInstance, b: CardInstance): string[] {
 export function resolveFusedDef(id: string): CardDef | null {
   const recipe = RECIPES.find((r) => r.result.id === id)
   if (recipe) return recipe.result
-  const m = /^fused_(.+)__(.+)$/.exec(id)
-  if (!m) return null
+  if (!id.startsWith('fused_')) return null
+  // 素材が合成品 (fused_* / fusion_*) だと "__" が2つ以上出る (人間ラン#18: fused_fusion_page_ambush__white_perm_bonfire が
+  // 名前にならずログに id のまま出ていた)。区切りを左から順に試し、両側とも引けるものを採る
+  const body = id.slice('fused_'.length)
+  for (let k = body.indexOf('__'); k >= 0; k = body.indexOf('__', k + 1)) {
+    const a = materialDef(body.slice(0, k))
+    const b = a ? materialDef(body.slice(k + 2)) : null
+    if (!a || !b) continue
+    try {
+      return fuseCards({ uid: 'resolve_a', def: a }, { uid: 'resolve_b', def: b })
+    } catch {
+      return null
+    }
+  }
+  return null
+}
+
+/** 合成の素材の定義: 素のカード→だめなら合成品・レシピ産として復元 */
+function materialDef(id: string): CardDef | null {
   try {
-    const a = getCardDef(m[1])
-    const b = getCardDef(m[2])
-    return fuseCards({ uid: 'resolve_a', def: a }, { uid: 'resolve_b', def: b })
+    return getCardDef(id)
   } catch {
-    return null
+    return resolveFusedDef(id)
   }
 }

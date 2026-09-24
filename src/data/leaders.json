@@ -278,7 +278,7 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_boros",
     "sprite": "🌅",
-    "description": "暁軍の旗頭。赤白の複合（ボロス）。燼と光耀、二つの里の工房を修めた。夜明けと共に従者が駆けつける。戦闘開始時、従者の少年トークン1体を召喚",
+    "description": "暁軍の旗頭。赤白の複合（ボロス）。燼と光耀、二つの里の工房を修めた。夜明けと共に人形が駆けつける。戦闘開始時、剣の人形1体を場に出す",
     "passive": [
       {
         "trigger": "onCombatStart",

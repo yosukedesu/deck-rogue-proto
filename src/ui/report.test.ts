@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest'
 import { applyCardMark, archiveBattle, buildOverrideDefs, buildProposals, buildReport, buildRunSaveFile, cardDraftToDefJson, describeRunChoice, isEmptyMark, replayInitialRun, replayStates } from './report.ts'
 import { getEnemyDef } from '../engine/content.ts'
-import { applyRunCommand, createRun, nextChoices } from '../engine/run.ts'
+import { applyRunCommand, createRun, defaultDepartureCommand, nextChoices, type RunCommand } from '../engine/run.ts'
 import { freshCombat } from '../engine/test-helpers.ts'
 import { metricsExport, toBattleRows, type BattleArchive } from './report.ts'
 import { formatAnalysis } from '../engine/analysis.ts'
@@ -296,7 +296,13 @@ describe('リプレイ (2026-09-01 ジャーナル方式)', () => {
     const origin = { kind: 'run' as const, seed: 7, leaderId: 'leader_green', difficulty: 4 }
     let r = replayInitialRun(origin)
     expect(r.difficulty).toBe(4)
-    const commands = []
+    expect(r.phase).toBe('departure') // ラン開始は出立の店 (2026-09-24)
+    const commands: RunCommand[] = []
+    while (r.phase === 'departure') {
+      const c0 = defaultDepartureCommand(r)
+      r = applyRunCommand(r, c0)
+      commands.push(c0)
+    }
     const c1 = { type: 'ChooseNode' as const, col: nextChoices(r)[0] }
     r = applyRunCommand(r, c1)
     commands.push(c1)
@@ -306,8 +312,8 @@ describe('リプレイ (2026-09-01 ジャーナル方式)', () => {
     commands.push(c2)
     const { states, error } = replayStates({ origin, commands })
     expect(error).toBeNull()
-    expect(states).toHaveLength(3)
-    expect(JSON.stringify(states[2])).toBe(JSON.stringify(r)) // バイト単位で一致
+    expect(states).toHaveLength(commands.length + 1)
+    expect(JSON.stringify(states[commands.length])).toBe(JSON.stringify(r)) // バイト単位で一致
   })
 
   it('不正なコマンド (データ変更で分岐) は error で打ち切り、throwしない', () => {
@@ -330,7 +336,7 @@ describe('リプレイ (2026-09-01 ジャーナル方式)', () => {
 
 describe('選択履歴 (2026-09-01「何をピックしたか・鍛錬の結果が分かりにくい」)', () => {
   it('describeRunChoice: 進路・報酬ピック(見送り込み)が言語化される', () => {
-    let r = createRun(7, 'set-confirm')
+    let r = createRun(7, 'set-confirm', undefined, undefined, undefined, { departure: false })
     const c1 = { type: 'ChooseNode' as const, col: nextChoices(r)[0] }
     const r1 = applyRunCommand(r, c1)
     const line1 = describeRunChoice(r, c1, r1)!

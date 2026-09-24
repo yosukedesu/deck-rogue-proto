@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getEnemyDef, resolveEncounter } from './content.ts'
 import { treasureRowFor, ACT_BOSS_POOLS, bossRowFor, ACT_COUNT, BOSS_ROW, ELITE_COUNT, ELITE_POOLS, generateMap, tierFor } from './map.ts'
 import { createRng } from './rng.ts'
-import { applyRunCommand, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, depthHpScale, depthStrength, DIFFICULTY_TABLE, difficultyDescription, difficultyScale, DIFFICULTY_TAX, difficultyTax, eliteCountFor, shopPriceRatio, CAMPFIRE_HEAL_RATIO, isUpgraded, upgradeCard, rewardPool, defaultEventChoice } from './run.ts'
+import { applyRunCommand, createDebugCheckpointRun, currentNode, DEFAULT_DIFFICULTY, depthHpScale, depthStrength, DIFFICULTY_TABLE, difficultyDescription, difficultyScale, DIFFICULTY_TAX, difficultyTax, eliteCountFor, shopPriceRatio, CAMPFIRE_HEAL_RATIO, isUpgraded, upgradeCard, rewardPool, defaultEventChoice } from './run.ts'
 import type { RunState } from './run.ts'
-import { chooseToward, defendIntent, withHand, withIntent, hpWithin } from './test-helpers.ts'
+import { chooseToward, defendIntent, withHand, withIntent, hpWithin, createRunAtMap as createRun } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
 /** 現在の戦闘を外科的に「全滅寸前」にして薙ぎ払い (全体攻撃) で勝つ (プレイヤーHPは維持される) */
@@ -122,9 +122,10 @@ describe('ラン構造 (マップ)', () => {
     const run = intoFirstBattle(createRun(5, 'set-confirm'))
     const members = resolveEncounter(currentNode(run)!.encounterId!)
     const def = getEnemyDef(members[0].enemyId)
-    expect(run.combat!.enemies[0].maxHp).toBe(
-      Math.round(def.maxHp * 0.62 * (members[0].hpScale ?? 1)), // 2026-09-02 幕1+0.07
-    )
+    // HP は公称 ±7% のロール (2026-09-14 hpRange) が乗る = 幅で確かめる (レリック/イベントの数が変わると乱数がずれる 2026-09-23)
+    const nominal = def.maxHp * 0.62 * (members[0].hpScale ?? 1)
+    expect(run.combat!.enemies[0].maxHp).toBeGreaterThanOrEqual(Math.round(nominal * 0.93) - 1)
+    expect(run.combat!.enemies[0].maxHp).toBeLessThanOrEqual(Math.round(nominal * 1.07) + 1)
     expect(run.combat!.enemies[0].strength).toBe(0 + (members[0].strength ?? 0))
   })
 })
@@ -140,9 +141,11 @@ describe('報酬ピック', () => {
     expect(run.rewardOptions).not.toContain('green_guard')
     const picked = run.rewardOptions![0]
     run = applyRunCommand(run, { type: 'PickReward', index: 0 })
-    // ギアの提示 (2026-09-17) が残っている間は報酬ノードを閉じない = 札とギアは別枠
-    expect(run.phase).toBe('reward')
-    run = applyRunCommand(run, { type: 'SkipGear' })
+    // ギアの提示 (2026-09-17) が残っている間は報酬ノードを閉じない = 札とギアは別枠 (ギアの抽選はシード次第 = 出た時だけ確かめる 2026-09-23)
+    if (run.gearOption !== null && run.gearOption !== undefined) {
+      expect(run.phase).toBe('reward')
+      run = applyRunCommand(run, { type: 'SkipGear' })
+    }
     expect(run.phase).toBe('map') // 両方片付けてマップで次のノードを選ぶ
     expect(run.deck).toHaveLength(11)
     expect(run.picks).toEqual([picked])
@@ -455,17 +458,15 @@ describe('参照札は倍率そのものを鍛える (2026-09-04 本家形。Hea
 })
 
 describe('白も本家形で鍛える (2026-09-18 白の仕上げ・docs/white-finish-proposal-2026-09-18.md §2)', () => {
-  it('集結+ は置物×4→×5 (旧3段のおまけブロック4は使わない)', () => {
+  it('集結+ は置物×6→×7 (旧3段のおまけブロック4は使わない。×4→×6 は 2026-09-24 CSV)', () => {
     const up = upgradeCard({ uid: 't', def: getCardDef('white_rally') })
-    expect(up.def.effects.map((e) => [e.effect, e.amount])).toEqual([['dealDamagePerPermanent', 5]])
+    expect(up.def.effects.map((e) => [e.effect, e.amount])).toEqual([['dealDamagePerPermanent', 7]])
     expect(up.def.cost).toBe(2)
   })
-  it('呼び声+ は 1E のまま少年2体 (旧: 0E・1体)。光の裁き+ は威圧3+量+50% (単位+1と量+50%が同時。眩ます灯印は 2026-09-20 夜に撤去)', () => {
+  it('呼び声+ は 1E のまま少年2体 (旧: 0E・1体。光の裁きは 2026-09-24 に撤去)', () => {
     const call = upgradeCard({ uid: 't', def: getCardDef('white_calling') })
     expect(call.def.cost).toBe(1)
     expect(call.def.effects[0].amount).toBe(2)
-    const verdict = upgradeCard({ uid: 't', def: getCardDef('white_light_verdict') })
-    expect(verdict.def.effects.map((e) => e.amount)).toEqual([15, 3])
   })
   it('例外: 軍楽隊・恵光の使徒 (誘発ごとドローの置物) はコスト-1 (誘発ごと2ドローにしない)', () => {
     for (const id of ['white_perm_band', 'white_perm_apostle']) {

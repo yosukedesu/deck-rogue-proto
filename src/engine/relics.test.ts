@@ -2,11 +2,11 @@
 // 確定済みルール表「エリート挑戦オファー」「レリック」と docs/relics-design.md を固定する。
 import { describe, expect, it } from 'vitest'
 import { allRelics, buildRelicPermanent, getCardDef, getRelicDef, getEnemyDef, resolveEncounter } from './content.ts'
-import { applyRunCommand, createRun, currentNode, drawRelicOptions, shopRemovalPrice, shopUpgradePrice, workshopFusePrice, campfireForgeAllowed, defaultEventChoice } from './run.ts'
+import { applyRunCommand, currentNode, drawRelicOptions, shopRemovalPrice, shopUpgradePrice, workshopFusePrice, campfireForgeAllowed, defaultEventChoice, canUpgradeCard } from './run.ts'
 import type { RunState } from './run.ts'
 import { applyCommand } from './state.ts'
 import { startCombatWithOptions } from './combat.ts'
-import { attackIntent, chooseToward, defendIntent, freshCombat, withHand, withIntent, setAndArm, passTurn, hpWithin } from './test-helpers.ts'
+import { attackIntent, chooseToward, defendIntent, freshCombat, withHand, withIntent, setAndArm, passTurn, hpWithin, createRunAtMap as createRun } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 
 function forceWin(run: RunState): RunState {
@@ -110,7 +110,8 @@ describe('エリートノード (マップ化。opt-inオファーは廃止)', (
     const a = createRun(7, 'set-confirm')
     const b = createRun(7, 'set-confirm')
     expect(a.relicQueue).toEqual(b.relicQueue)
-    expect(new Set(a.relicQueue).size).toBe(allRelics.length)
+    // 色の門 (RelicDef.colors) を持つレリックは候補列に載らない (硫黄の欠片=緑・灯の面=白。緑のランなら白限定だけ抜ける)
+    expect(new Set(a.relicQueue).size).toBe(allRelics.filter((r) => r.colors === undefined || r.colors.includes('green')).length)
   })
 })
 
@@ -126,7 +127,9 @@ describe('レリック効果', () => {
       // 候補に無い場合はテスト用に直接注入
       run = { ...run, relics: [relicId], relicOptions: null, phase: 'reward', rewardOptions: [] }
     }
-    if (run.phase === 'reward') run = applyRunCommand(run, { type: 'SkipReward' })
+    // 札とギアは別枠 (2026-09-17): ギアの提示が残っていれば SkipGear で報酬ノードを閉じる (抽選がずれるとギアが出る/出ないが変わる 2026-09-23)
+    let g = 0
+    while (run.phase === 'reward' && g++ < 4) run = applyRunCommand(run, (run.rewardOptions?.length ?? 0) === 0 && run.gearOption ? { type: 'SkipGear' } : { type: 'SkipReward' })
     return intoBattle(run)
   }
 
@@ -174,10 +177,10 @@ describe('レリック効果', () => {
 
   it('在庫は102個・IDは一意（2026-09-12 本家形の第1波 +63）', () => {
     // 2026-09-12 本家形 +63 (C22/U24/R22/Boss17/Shop12/Event5。docs/relic-analysis-2026-09-12.md §3-1) // 2026-09-09 二重の符 // 2026-09-05 大工の道具を撤去 // 2026-09-03 ボスレリック+4・蜃気楼の面を撤去
-    expect(allRelics).toHaveLength(101)
-    expect(new Set(allRelics.map((r) => r.id)).size).toBe(101)
+    expect(allRelics).toHaveLength(103) // 2026-09-23 灯の面・忘れられた灯 (本家 Funerary Mask / Forgotten Soul)
+    expect(new Set(allRelics.map((r) => r.id)).size).toBe(103)
     const count = (r: string) => allRelics.filter((x) => (x.rarity ?? 'common') === r).length
-    expect([count('common'), count('uncommon'), count('rare'), count('boss'), count('shop'), count('event')]).toEqual([22, 24, 22, 17, 11, 5])
+    expect([count('common'), count('uncommon'), count('rare'), count('boss'), count('shop'), count('event')]).toEqual([22, 25, 22, 17, 11, 6]) // 2026-09-23 灯の面 (U・白限定)・忘れられた灯 (event)
   })
 
   // 2026-09-09 友人のフルランの診断（docs/playtest-2026-09-09-friend-run-analysis.md）への処方
@@ -257,6 +260,10 @@ function intoCampfire(run0: RunState): RunState {
   }
   throw new Error('焚き火に到達できない')
 }
+
+/** 焚き火までの道で ? のイベント (研ぎの祠など) が札を鍛えることがある (イベントの数が変わると抽選がずれる 2026-09-23) = 鍛える対象は「まだ鍛えられる札」から選ぶ */
+const forgeable = (run: RunState): number[] => run.deck.map((c, i) => (canUpgradeCard(c) ? i : -1)).filter((i) => i >= 0)
+const plusCount = (run: RunState): number => run.deck.filter((c) => c.def.name.endsWith('+')).length
 
 describe('第二弾レリック: 緑3本柱 + 汎用 (A型)', () => {
   it('成長の種: 戦闘開始時に成長+1 (2026-09-01 弱体化 2→1。リーダーパッシブとは別枠で加算)', () => {
@@ -355,45 +362,48 @@ describe('第二弾レリック: ラン経済 (商人の秤・鍛冶の砥石)',
 
   it('鍛冶の砥石なし: 鍛えるは1枚で焚き火を出る', () => {
     let run = intoCampfire(createRun(11, 'set-confirm'))
-    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
+    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: forgeable(run)[0] })
     expect(run.phase).toBe('map')
   })
 
   it('幕1でも鍛えるに通算制限は無い (2026-09-01 ユーザー指示「幕に対しての制限不要」で撤廃)', () => {
     // 別の焚き火なら幕1でも何度でも鍛えられる (焚き火1回につき1枚の原則は不変)
     let bare = intoCampfire(createRun(11, 'set-confirm'))
-    bare = applyRunCommand(bare, { type: 'CampfireUpgrade', index: 0 })
+    const base = plusCount(bare)
+    bare = applyRunCommand(bare, { type: 'CampfireUpgrade', index: forgeable(bare)[0] })
     bare = { ...bare, phase: 'campfire' as const, campfireUpgradesUsed: 0 }
-    bare = applyRunCommand(bare, { type: 'CampfireUpgrade', index: 1 })
-    expect(bare.deck.filter((c) => c.def.name.endsWith('+'))).toHaveLength(2)
+    bare = applyRunCommand(bare, { type: 'CampfireUpgrade', index: forgeable(bare)[0] })
+    expect(plusCount(bare)).toBe(base + 2)
     // 砥石あり: 幕1でも追加分の2枚目まで
     let run = { ...intoCampfire(createRun(11, 'set-confirm')), campfireForgeBonus: 1 }
-    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
-    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 1 })
-    expect(run.deck.filter((c) => c.def.name.endsWith('+'))).toHaveLength(2)
+    const base2 = plusCount(run)
+    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: forgeable(run)[0] })
+    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: forgeable(run)[0] })
+    expect(plusCount(run)).toBe(base2 + 2)
   })
 
   it('鍛冶の砥石あり (幕2以降): 2枚まで鍛えられる。除去との併用は不可 (1種類の原則)', () => {
     let run = { ...intoCampfire(createRun(11, 'set-confirm')), campfireForgeBonus: 1, act: 2 }
-    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
+    const base = plusCount(run)
+    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: forgeable(run)[0] })
     expect(run.phase).toBe('campfire') // 1枚目の後も留まる
-    expect(() => applyRunCommand(run, { type: 'CampfireRemove', index: 1 })).toThrow('除去できない') // 2026-09-03 焚き火の除去は廃止
-    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 1 })
+    expect(() => applyRunCommand(run, { type: 'CampfireRemove', index: forgeable(run)[0] })).toThrow('除去できない') // 2026-09-03 焚き火の除去は廃止
+    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: forgeable(run)[0] })
     expect(run.phase).toBe('map') // 2枚目で出る
-    expect(run.deck.filter((c) => c.def.name.endsWith('+'))).toHaveLength(2)
+    expect(plusCount(run)).toBe(base + 2)
   })
 
   it('鍛冶の砥石は1幕に1回だけ2枚 (2026-09-05 ユーザー裁定「砥石の調整」: 人間#6 焚き火9回・休む0回)', () => {
     let run = { ...intoCampfire(createRun(11, 'set-confirm')), campfireForgeBonus: 1, act: 2 }
     expect(campfireForgeAllowed(run)).toBe(2)
-    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
-    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: 1 })
+    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: forgeable(run)[0] })
+    run = applyRunCommand(run, { type: 'CampfireUpgrade', index: forgeable(run)[0] })
     expect(run.phase).toBe('map')
     expect(run.forgeBonusUsedAct).toBe(2)
     // 同じ幕の次の焚き火は1枚で出る
     let again: RunState = { ...run, phase: 'campfire', campfireUpgradesUsed: 0 }
     expect(campfireForgeAllowed(again)).toBe(1)
-    again = applyRunCommand(again, { type: 'CampfireUpgrade', index: 2 })
+    again = applyRunCommand(again, { type: 'CampfireUpgrade', index: forgeable(again)[0] })
     expect(again.phase).toBe('map')
     expect(again.forgeBonusUsedAct).toBe(2) // 1枚だけでは記録が動かない
     // 次の幕では再び2枚
@@ -412,7 +422,7 @@ describe('第二弾レリック: ラン経済 (商人の秤・鍛冶の砥石)',
     expect(won.gold).toBeGreaterThan(battle.gold)
     let camp = intoCampfire(createRun(11, 'set-confirm'))
     const { campfireUpgradesUsed: _u2, campfireForgeBonus: _c2, ...campRest } = camp
-    const upgraded = applyRunCommand(campRest as RunState, { type: 'CampfireUpgrade', index: 0 })
+    const upgraded = applyRunCommand(campRest as RunState, { type: 'CampfireUpgrade', index: forgeable(campRest as RunState)[0] })
     expect(upgraded.phase).toBe('map')
   })
 })
@@ -490,8 +500,8 @@ describe('古根の杯=ボスレリック化 (2026-09-03 本家 Coffee Dripper �
     const rested = applyRunCommand(run, { type: 'CampfireRest' })
     expect(rested.hp).toBe(30)
     expect(rested.phase).toBe('map')
-    const forged = applyRunCommand(run, { type: 'CampfireUpgrade', index: 0 })
-    expect(forged.deck.some((c) => c.def.name.endsWith('+'))).toBe(true)
+    const forged = applyRunCommand(run, { type: 'CampfireUpgrade', index: forgeable(run)[0] })
+    expect(plusCount(forged)).toBe(plusCount(run) + 1)
   })
 })
 

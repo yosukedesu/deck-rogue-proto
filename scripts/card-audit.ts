@@ -29,12 +29,13 @@ const VP_PER: Record<string, number> = {
   dischargeAetherDraw: 3.0 * 2.5,
   // 灯 (白 2026-09-20 白の再設計。card-power.md §72): 灯+1=1.2VP (毎ターン湧くので霊気より安い)。放出は典型灯6 × 倍率amount
   addLight: 1.2,
+  addLightNextTurn: 1.2 * 0.8, // 次のターンに灯る (2026-09-23 灯の埋め火・集約)。1ターン遅れの割引
   dischargeLight: 6,
   doubleLight: 6 * 1.2, // 典型灯6を倍にする = 灯+6
   dischargeLightRally: 6 * 3 * 2, // 典型灯6 × 人形3体 × 1回の出力2 (R2E の派手枠。装甲・ターン装甲が受ける)
   dealDamagePerLight: 1.0 * 3, // 灯篭の人形 (2026-09-20 灯と人形の結び): 典型灯6 ÷ 2 = 3 × amount (灯は消費しない。置物レンズ×3で読む)
   // 火種・放出の軸 (2026-09-20 夜。本家 Soul の白版): 火種1枚 = 0E で 1ドロー(3)+灯1(1.2) = 4.2VP。山札行きは引くまでの遅延で ×0.8
-  addCardToDraw: 4.2 * 0.8, lightToSparks: 4.2, dealDamagePerSpark: 1.0 * 5, triggerRandomRetainer: 3.0,
+  addCardToDraw: 4.2 * 0.8, addCardToDiscard: 4.2 * 0.8, transformDeckToToken: 4.2, // 断ち切り・降霊 (2026-09-23 本家 Severance/Seance) lightToSparks: 4.2, dealDamagePerSpark: 1.0 * 5, triggerRandomRetainer: 3.0,
   dischargeLightWeaken: 5.0 * 2 * 2, consumeLight: 0, gainBlockPerLight: 1.0 * 3, drawCardsPerLight: 3.0 * 3, lightCarryHalf: 6 * 0.5 * 1.2,
   dealDamagePerHandCard: 1.0 * 5,
   // 緑のカード操作 (2026-09-02 床パッケージ)。本家アンカー: Headbutt/Armaments/Anger/Rampage を緑レートに直した典型値

@@ -7,7 +7,7 @@
 
 import { startCombatWithOptions } from './combat.ts'
 import { ACT_COUNT, bossRowFor, ELITE_COUNT, generateMap, tierFor } from './map.ts'
-import { allEvents, getEventDef, getGearDef, poolGears, WOUND_DEF , resolveEncounter } from './content.ts'
+import { allDepartures, allEvents, getEventDef, getGearDef, poolGears, WOUND_DEF , resolveEncounter } from './content.ts'
 import type { MapNode, RunMap } from './map.ts'
 import { fuseBlockReason, fuseCards } from './fusion.ts'
 import {
@@ -23,7 +23,7 @@ import {
 import { createRng, nextInt, shuffle } from './rng.ts'
 import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, makeGear, resolveGear } from './gears.ts'
 import { applyCommand } from './state.ts'
-import type { CardColor, CardDef, CardInstance, Command, EventChoiceDef, EventDef, GameState, GearInstance, GearRarity, ReactionMode, RngState, RelicDef, RelicRarity } from './types.ts'
+import type { CardColor, CardDef, CardInstance, Command, DepartureOffer, EventChoiceDef, EventDef, GameState, GearInstance, GearRarity, ReactionMode, RngState, RelicDef, RelicRarity } from './types.ts'
 
 /** 報酬プールから除外する基本札 (スターターに入っている素のカード) */
 export const REWARD_EXCLUDED = new Set([
@@ -56,6 +56,7 @@ export const REWARD_EXCLUDED = new Set([
   // 2026-09-20 白の初期デッキを緑と同じ形に: 灯の岐路 (モード=決断の教材) を追加し、
   // 剣の人形・灯り継ぎ・報復の光は報酬プールへ戻した (緑の二連の蔦打ち・守りの蔓・茨の返しと同じ扱い)
   'white_mode_crossroad',
+  'white_light_buckler', // 灯の小盾 (2026-09-24 Opus ひなた裁定: 初期デッキの白盾1枚を差し替え。0Eで灯を払う教材＝人形の居ない T1 の守り)
   'black_dark_pact',
   'black_drain',
   'black_bursting_corpse',
@@ -87,6 +88,8 @@ const ELITE_STRENGTH = 0
 // →以後のボスレリック・ショップレリックが全部死んでいた。実効上限は在庫数 (9個)
 /** ゴールド (確定済みルール表「ゴールド」「ショップ」。相場はStS比例で入れて校正) */
 const STARTING_GOLD = 50
+/** 出立の店 (2026-09-24): 開始時に上乗せする所持金。ラン開始の所持金は STARTING_GOLD＋これ (チェックポイント開始・departure:false のテストには無い) */
+export const DEPARTURE_PURSE = 100
 const GOLD_PER_BATTLE_MIN = 12
 const GOLD_PER_BATTLE_MAX = 18
 const GOLD_ELITE_BONUS_MIN = 30
@@ -382,7 +385,7 @@ export function depthHpScale(row: number, act = 1): number {
   return late ? lateScale : early
 }
 
-export type RunPhase = 'map' | 'combat' | 'relic-reward' | 'relic-choose' | 'campfire' | 'workshop' | 'shop' | 'event' | 'reward' | 'won' | 'lost'
+export type RunPhase = 'departure' | 'map' | 'combat' | 'relic-reward' | 'relic-choose' | 'campfire' | 'workshop' | 'shop' | 'event' | 'reward' | 'won' | 'lost'
 
 /** ショップの在庫 (ノード進入時にシードから決定) */
 export interface ShopState {
@@ -394,6 +397,8 @@ export interface ShopState {
   readonly gears?: readonly { readonly id: string; readonly price: number; readonly sold?: boolean }[]
   /** 魔素の値段 (1つぶん)。金余りのシンク */
   readonly manaPrice?: number
+  /** 行商が担いで降りた出立の店の売れ残り (2026-09-24): 幕1の店にだけ並ぶ。買われたら run.departure.leftovers から消える */
+  readonly departures?: readonly { readonly id: string; readonly price: number; readonly sold?: boolean }[]
 }
 
 export interface RunState {
@@ -501,6 +506,12 @@ export interface RunState {
   readonly seenGearIds?: readonly string[]
   /** 報酬フェーズで提示中のギア (札3枚とは別枠。null=この戦闘ではドロップしなかった) */
   readonly gearOption?: string | null
+  /**
+   * 出立の店 (ラン開始 2026-09-24 `docs/departure-proposal-2026-09-24.md`): offers=坑口の行商の店に並んだ5品 (サービス2・品物3)・
+   * bought=坑口で買った支度の id・leftovers=買わなかった品 (行商が担いで降りて幕1の店に並べる。画面には予告しない。買われたら消える)。
+   * 旧セーブ・チェックポイント開始には無い
+   */
+  readonly departure?: { readonly offers: readonly DepartureOffer[]; readonly bought: readonly string[]; readonly leftovers: readonly DepartureOffer[] }
 }
 
 export type RunCommand =
@@ -547,6 +558,10 @@ export type RunCommand =
   | { readonly type: 'DiscardGear'; readonly index: number }
   | { readonly type: 'ShopBuyGear'; readonly index: number; readonly discardIndex?: number }
   | { readonly type: 'ShopBuyMana' }
+  // 出立の支度 (2026-09-24): 坑口で1つ選ぶ (除去・鍛えは cardIndex で対象)。店に並んだ支度を買う (同じく cardIndex)
+  | { readonly type: 'BuyDeparture'; readonly index: number; readonly cardIndex?: number }
+  | { readonly type: 'LeaveDeparture' }
+  | { readonly type: 'ShopBuyDeparture'; readonly index: number; readonly cardIndex?: number }
 
 /** 現在いるノード (row=-1 の開始前は null) */
 export function currentNode(run: RunState): MapNode | null {
@@ -628,6 +643,8 @@ function launchCombat(run: RunState, elite: boolean, encounterOverride?: string)
     ...(ruleSum('artifact') > 0 ? { artifact: ruleSum('artifact') } : {}),
     // 重石の鍛錬 (焚き火で積んだ回数ぶん戦闘開始時に成長)
     ...(relicStateOf(run, 'train') > 0 ? { startGrowth: relicStateOf(run, 'train') } : {}),
+    // 盗みの上限 (2026-09-24 E6 本家 Looter): 所持金−すでに盗まれた額まで
+    goldAvailable: run.gold,
   })
   return { ...run, rng, combat, phase: 'combat', rewardOptions: null, currentElite: elite }
 }
@@ -894,12 +911,15 @@ export function openShop(run: RunState): RunState { // export はテスト用 (�
     gearSeen.add(id)
     gearShelf.push({ id, price: Math.floor(SHOP_GEAR_PRICE[getGearDef(id).rarity] * shopPriceRatio(run)) })
   }
+  // 行商が預かった出立の支度 (2026-09-24): 幕1の店にだけ並ぶ (幕2以降は行商がよそで売った)。会員証の値引きも乗る
+  const leftovers = run.act === 1 ? (run.departure?.leftovers ?? []).filter((o) => o.shopPrice !== undefined) : []
   const shop: ShopState = {
     cards,
     relicId,
     relicPrice: Math.floor(SHOP_RELIC_PRICE * shopPriceRatio(run)), // 会員証
     gears: gearShelf,
     manaPrice: Math.floor(SHOP_MANA_PRICE * shopPriceRatio(run)),
+    ...(leftovers.length > 0 ? { departures: leftovers.map((o) => ({ id: o.id, price: Math.floor((o.shopPrice ?? 0) * shopPriceRatio(run)) })) } : {}),
   }
   // 行商の食券 (2026-09-12 本家 Meal Ticket): ショップに入るたびHP+N
   const heal = relicBonusSum(run, 'shopHeal')
@@ -932,8 +952,25 @@ export function eventChoiceNeedsCard(choice: EventChoiceDef): boolean {
     choice.removeCard === true ||
     choice.upgradeCard === true ||
     choice.transformCard === true ||
-    choice.duplicateCard === true
+    choice.duplicateCard === true ||
+    choice.unexhaustCard === true
   )
+}
+
+/**
+ * 変成できる札 (2026-09-24 Opus ひなた T14 裁定「状態異常・烙印は変成できない」= 本家2の変成と同じく、変成は呪いを消す手段にならない)。
+ * ?イベントの変成・星読みの盤・画面の候補が同じ判定を読む。状態異常・烙印・仮初の烙印は除去 (ショップ・?) で消す
+ */
+export function canTransformCard(c: CardInstance): boolean {
+  return !c.def.id.startsWith('status_')
+}
+
+/** 忘れられた墓 (2026-09-23 本家 Grave of the Forgotten) で消滅を外せる札: 消滅を持ち、1E以上・X でなく、補充・マナ・倍化・上限ランプ・亡骸を持たない (外すと無限ループ規約に触れる形を除く) */
+export function canUnexhaustCard(c: CardInstance): boolean {
+  const d = c.def
+  if (d.exhaust !== true || d.cost < 1 || d.xCost === true || d.necroCost !== undefined) return false
+  const banned = new Set(['drawCards', 'impulseDraw', 'addCardToHand', 'drawCardsPerLight', 'drawCardsPerCardPlayed', 'dischargeAetherDraw', 'retrieveFromExhaust', 'playFromExhaust', 'gainEnergy', 'discountNext', 'doubleGrowth', 'doubleMomentum', 'doubleLight', 'gainEnergyMax'])
+  return ![...d.effects, ...(d.modes ?? []).flatMap((m) => m.effects)].some((e) => banned.has(e.effect))
 }
 
 /**
@@ -943,6 +980,7 @@ export function eventChoiceNeedsCard(choice: EventChoiceDef): boolean {
  */
 export function eventChoiceAvailable(run: RunState, choice: EventChoiceDef): boolean {
   if (choice.requireGold !== undefined && run.gold < choice.requireGold) return false
+  if (choice.relicId !== undefined && run.relics.includes(choice.relicId)) return false // 名指しのレリックは二度と取れない
   if (eventChoiceNeedsCard(choice)) return defaultEventCardIndex(run, choice) !== null
   return true
 }
@@ -962,12 +1000,21 @@ export function defaultEventCardIndex(run: RunState, choice: EventChoiceDef): nu
     const i = run.deck.findIndex((c) => canUpgradeCard(c))
     return i >= 0 ? i : null
   }
-  if (choice.removeCard === true || choice.transformCard === true) {
-    if (run.deck.length === 0 || (choice.removeCard === true && run.deck.length <= 5)) return null
+  if (choice.transformCard === true) {
+    // 変成は状態異常・烙印を選べない (2026-09-24 T14)。変成できる先頭の札
+    const i = run.deck.findIndex((c) => canTransformCard(c))
+    return i >= 0 ? i : null
+  }
+  if (choice.removeCard === true) {
+    if (run.deck.length === 0 || run.deck.length <= 5) return null
     const status = run.deck.findIndex((c) => c.def.id.startsWith('status_'))
     return status >= 0 ? status : 0
   }
   if (choice.duplicateCard === true) return run.deck.length > 0 ? 0 : null
+  if (choice.unexhaustCard === true) {
+    const i = run.deck.findIndex((c) => canUnexhaustCard(c))
+    return i >= 0 ? i : null
+  }
   return null
 }
 
@@ -1016,6 +1063,14 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
   const def = getEventDef(eventId)
   const choice = def.choices[choiceIndex]
   if (choice === undefined) throw new Error(`不正な選択肢: ${choiceIndex}`)
+  return applyChoiceDef(run, choice, cardIndex, 'map')
+}
+
+/**
+ * 宣言的な選択肢 (EventChoiceDef) を RunState に反映する。?イベントと出立の支度 (坑口・店の棚) が共用 (2026-09-24)。
+ * resume=解決後のフェーズ (?・坑口は 'map'、店で買った支度は 'shop' のまま)
+ */
+export function applyChoiceDef(run: RunState, choice: EventChoiceDef, cardIndex: number | undefined, resume: RunPhase): RunState {
   if (choice.requireGold !== undefined && run.gold < choice.requireGold) {
     throw new Error(`ゴールドが足りない (必要${choice.requireGold}G)`)
   }
@@ -1073,6 +1128,19 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
     const relicId = drawn[0]
     if (relicId !== undefined) next = gainRelic(next, relicId)
   }
+  if (choice.relicId !== undefined) {
+    // 名指しのレリック (2026-09-23 忘れられた墓=忘れられた灯)。持っていれば何もしない (選択肢は eventChoiceAvailable が閉じる)
+    if (!next.relics.includes(choice.relicId)) next = gainRelic(next, choice.relicId)
+  }
+  if (choice.unexhaustCard) {
+    // 忘れられた墓 (本家 Grave of the Forgotten の Souls の付与): 消滅を外し、プレイするたび一時マナ+1。定義はインスタンスが携行する (鍛えと同じ)
+    const card = next.deck[cardIndex ?? -1]
+    if (card === undefined) throw new Error('対象カードを cardIndex で指定する')
+    if (!canUnexhaustCard(card)) throw new Error(`${card.def.name} の消滅は外せない`)
+    const { exhaust: _x, ...rest } = card.def
+    const def: CardDef = { ...rest, name: `${card.def.name}・魂`, effects: [...card.def.effects, { trigger: 'onPlay', effect: 'gainEnergy', amount: 1 }] }
+    next = { ...next, deck: next.deck.map((c, i) => (i === cardIndex ? { ...c, def } : c)) }
+  }
   if (choice.removeCard) {
     const card = next.deck[cardIndex ?? -1]
     if (card === undefined) throw new Error('対象カードを cardIndex で指定する')
@@ -1124,8 +1192,99 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
     rng = r1
     applyOutcome(roll < choice.gamble.chance * 1000 ? choice.gamble.win : choice.gamble.lose)
   }
+  // 出立の支度 (2026-09-24): 名指しのギア・魔素・名指しの札
+  if (choice.gears !== undefined) for (const id of choice.gears) next = addGear(next, id, `a${run.act}_r${run.row}_${id}`)
+  if (choice.mana) next = { ...next, mana: Math.max(0, Math.min(MANA_MAX, manaOf(next) + choice.mana)) }
+  if (choice.addCardIds !== undefined) {
+    next = addCardsToRunDeck(next, choice.addCardIds.map((id, i) => ({ uid: `given_a${run.act}_r${run.row}_${i}_${id}`, def: getCardDef(id) })))
+  }
   if (next.hp <= 0) return { ...next, rng, hp: 0, phase: 'lost' }
-  return enterPendingChoice({ ...next, rng, phase: 'map' }, 'map')
+  return enterPendingChoice({ ...next, rng, phase: resume }, resume)
+}
+
+/**
+ * 出立の店 (2026-09-24): 台帳の全行 (札3・遺物3・サービス4。2026-09-24 夜 ユーザー「普通の商店のように」) を台帳の順に並べ、
+ * 中身 (遺物・ギア・札) をランRNGで名指しに解決して phase 'departure' で返す。所持金に上乗せの所持金 (DEPARTURE_PURSE) を足す。
+ * 遺物は候補列から (色ゲート・幕の制約は3択と同じ)、札は自分の色の報酬プールから、ギアは台帳から。
+ * 札と遺物は中身の名前で並ぶ (「コモンの札」でなく札の名前)。中身が引けなかった行 (候補が尽きた) は並べない
+ */
+export function rollDepartureOffers(run: RunState): RunState {
+  let rng = run.rng
+  const offers: DepartureOffer[] = []
+  const usedRelics: string[] = []
+  const usedCards: string[] = []
+  for (const t of allDepartures) {
+    let choice: EventChoiceDef = { ...t.choice }
+    let name = t.name
+    if (t.relicRarity !== undefined) {
+      const pool = run.relicQueue.filter(
+        (id) =>
+          relicRarity(id) === t.relicRarity &&
+          !usedRelics.includes(id) &&
+          !run.relics.includes(id) &&
+          run.act <= (getRelicDef(id).actMax ?? 99) &&
+          run.act >= (getRelicDef(id).actMin ?? 0) &&
+          relicAllowedForColors(getRelicDef(id), run.colors),
+      )
+      if (pool.length === 0) continue
+      const [j, r2] = nextInt(rng, 0, pool.length - 1)
+      rng = r2
+      choice = { ...choice, relicId: pool[j] }
+      usedRelics.push(pool[j])
+      name = getRelicDef(pool[j]).name
+    }
+    if ((t.gearCount ?? 0) > 0) {
+      const ids: string[] = []
+      for (let guard = 0; ids.length < (t.gearCount ?? 0) && guard < 20; guard++) {
+        const [id, r2] = rollGearId(rng, false)
+        rng = r2
+        if (!ids.includes(id)) ids.push(id)
+      }
+      choice = { ...choice, gears: ids }
+    }
+    if (t.cardPick !== undefined && t.cardPick.count > 0) {
+      const pool = rewardPool(run).filter((c) => c.rarity === t.cardPick!.rarity && !usedCards.includes(c.id))
+      const ids: string[] = []
+      for (let guard = 0; ids.length < t.cardPick.count && ids.length < pool.length && guard < 20; guard++) {
+        const [j, r2] = nextInt(rng, 0, pool.length - 1)
+        rng = r2
+        if (!ids.includes(pool[j].id)) ids.push(pool[j].id)
+      }
+      if (ids.length === 0) continue
+      usedCards.push(...ids)
+      choice = { ...choice, addCardIds: ids }
+      name = ids.map((id) => getCardDef(id).name).join('・')
+    }
+    offers.push({ id: t.id, kind: t.kind, name, text: t.text, choice, price: t.price, ...(t.shopPrice !== undefined ? { shopPrice: t.shopPrice } : {}) })
+  }
+  return { ...run, rng, gold: run.gold + DEPARTURE_PURSE, departure: { offers, bought: [], leftovers: [] }, phase: 'departure' }
+}
+
+/** 坑口で既に買った支度か */
+export function departureOfferBought(run: RunState, offer: DepartureOffer): boolean {
+  return (run.departure?.bought ?? []).includes(offer.id)
+}
+
+/** 出立の店の支度が今買えるか (まだ買っていない・金が足りる・除去はデッキ6枚以上・鍛えは鍛えられる札がある。?イベントと同じ判定) */
+export function departureOfferAvailable(run: RunState, offer: DepartureOffer): boolean {
+  return !departureOfferBought(run, offer) && run.gold >= offer.price && eventChoiceAvailable(run, offer.choice)
+}
+
+/**
+ * ボット・テスト・ゴールデン生成の既定の一手: まだ何も買っていなければサービス (安全な方) を1つ買い、その後は店を出る。
+ * 対象は ?イベントと同じ既定。phase が departure の間、繰り返し呼ぶ
+ */
+export function defaultDepartureCommand(run: RunState): RunCommand {
+  const offers = run.departure?.offers ?? []
+  if ((run.departure?.bought ?? []).length === 0) {
+    const index = offers.findIndex((o) => o.kind === 'service' && departureOfferAvailable(run, o))
+    if (index >= 0) {
+      const offer = offers[index]
+      const cardIndex = eventChoiceNeedsCard(offer.choice) ? defaultEventCardIndex(run, offer.choice) : null
+      return { type: 'BuyDeparture', index, ...(cardIndex !== null ? { cardIndex } : {}) }
+    }
+  }
+  return { type: 'LeaveDeparture' }
 }
 
 /**
@@ -1135,6 +1294,7 @@ function applyEventChoice(run: RunState, choiceIndex: number, cardIndex?: number
 export function transformCardAt(run: RunState, index: number, upgrade: boolean): RunState {
   const card = run.deck[index]
   if (card === undefined) throw new Error('対象カードを cardIndex で指定する')
+  if (!canTransformCard(card)) throw new Error(`${card.def.name} は変成できない（状態異常・烙印は除去で消す）`)
   const rarity = card.def.rarity ?? 'common'
   const pool = rewardPool(run).filter((c) => (c.rarity ?? 'common') === rarity && c.id !== card.def.id)
   if (pool.length === 0) return run
@@ -1205,7 +1365,7 @@ export function createRun(
   leaderId = 'leader_green',
   deckId?: string,
   difficulty = DEFAULT_DIFFICULTY,
-  opts?: { readonly setAnyCards?: boolean },
+  opts?: { readonly setAnyCards?: boolean; readonly departure?: boolean },
 ): RunState {
   const leader = getLeaderDef(leaderId)
   // 種の選択制 (確定済みルール表「ラン初期デッキ」): リーダーが許可する初期デッキのみ受け付ける
@@ -1233,7 +1393,7 @@ export function createRun(
     rngAfterMap,
     allRelics.filter((r) => relicAllowedForColors(r, leader.colors)).map((r) => r.id).filter((id) => canSet || !SET_RELICS.has(id)),
   )
-  return {
+  const base: RunState = {
     seed,
     mode,
     leaderId,
@@ -1282,6 +1442,8 @@ export function createRun(
     seenGearIds: [],
     gearOption: null,
   }
+  // 出立の店 (2026-09-24): 坑口の行商の店 (路銀+100G・買っても買わなくてもよい) を経て地図へ。opts.departure=false はテスト・チェックポイント用 (地図から始める)
+  return opts?.departure === false ? base : rollDepartureOffers(base)
 }
 
 /**
@@ -1362,7 +1524,7 @@ export function createDebugCheckpointRun(
     readonly mana?: number
   },
 ): RunState {
-  const base = createRun(seed, mode, leaderId, undefined, opts.difficulty ?? DEFAULT_DIFFICULTY)
+  const base = createRun(seed, mode, leaderId, undefined, opts.difficulty ?? DEFAULT_DIFFICULTY, { departure: false }) // チェックポイントに出立の店は無い
   const act = Math.min(ACT_COUNT, Math.max(1, Math.round(opts.act)))
   const [map, rng] = generateMap(base.rng, act, true, eliteCountFor(base.difficulty, act)) // 2026-09-03 修正: 旧 act===1 は幕2/3のチェックポイントに工房が無かった
   let run: RunState = {
@@ -1415,9 +1577,9 @@ const EFFECT_AXIS: Record<string, string> = {
   dischargeMomentumBurn: 'burn', dischargeMomentumBlock: 'trample', gainBlockPerMomentum: 'trample', addGrowthPerMomentum: 'trample',
   applyBurn: 'burn', dischargeBurn: 'burn',
   addAether: 'aether', dischargeAether: 'aether', dischargeAetherDraw: 'aether',
-  addLight: 'light', dischargeLight: 'light', dischargeLightRally: 'light', doubleLight: 'light', dealDamagePerLight: 'light', // 灯 (白 2026-09-20)
+  addLight: 'light', addLightNextTurn: 'light', dischargeLight: 'light', dischargeLightRally: 'light', doubleLight: 'light', dealDamagePerLight: 'light', // 灯 (白 2026-09-20)
   dischargeLightWeaken: 'light', consumeLight: 'light', gainBlockPerLight: 'light', drawCardsPerLight: 'light', lightCarryHalf: 'light', // 放出の軸 (2026-09-20 夜)
-  addCardToDraw: 'spark', lightToSparks: 'spark', dealDamagePerSpark: 'spark', triggerRandomRetainer: 'spark', // 火種 (白 2026-09-20 夜。本家 Soul)
+  addCardToDraw: 'spark', addCardToDiscard: 'spark', transformDeckToToken: 'spark', lightToSparks: 'spark', dealDamagePerSpark: 'spark', gainBlockPerSpark: 'spark', triggerRandomRetainer: 'spark', // 火種 (白 2026-09-20 夜。本家 Soul)
   gainIceBlock: 'ice', dealDamagePerIceBlock: 'ice', gainIceBlockPerCardPlayed: 'ice',
   negate: 'permission', negateConvertIce: 'permission',
   summonPermanent: 'retinue', dealDamagePerPermanent: 'retinue', gainBlockPerPermanent: 'retinue',
@@ -1917,6 +2079,37 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
         },
       })
     }
+    case 'BuyDeparture': {
+      if (run.phase !== 'departure' || run.departure === undefined) throw new Error('出立の店ではない')
+      const offer = run.departure.offers[command.index]
+      if (offer === undefined) throw new Error(`不正な品の指定: ${command.index}`)
+      if (departureOfferBought(run, offer)) throw new Error('その品は買った')
+      if (run.gold < offer.price) throw new Error(`ゴールドが足りない (${offer.price}G)`)
+      // 坑口の店で買う。買った後も店に留まる (LeaveDeparture で地図へ)。上限は無い＝資金だけが制約
+      const base = { ...run, gold: run.gold - offer.price, departure: { ...run.departure, bought: [...run.departure.bought, offer.id] } }
+      return applyChoiceDef(base, offer.choice, command.cardIndex, 'departure')
+    }
+    case 'LeaveDeparture': {
+      if (run.phase !== 'departure' || run.departure === undefined) throw new Error('出立の店ではない')
+      // 買わなかった品は行商が担いで降り、幕1の店に並ぶ (画面には予告しない)
+      const leftovers = run.departure.offers.filter((o) => !run.departure!.bought.includes(o.id) && o.shopPrice !== undefined)
+      return { ...run, departure: { ...run.departure, leftovers }, phase: 'map' }
+    }
+    case 'ShopBuyDeparture': {
+      if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
+      const slot = (run.shop.departures ?? [])[command.index]
+      if (slot === undefined || slot.sold === true) throw new Error(`不正な品の指定: ${command.index}`)
+      const offer = run.departure?.leftovers.find((o) => o.id === slot.id)
+      if (offer === undefined) throw new Error('その品は行商が持っていない')
+      if (run.gold < slot.price) throw new Error(`ゴールドが足りない (${slot.price}G)`)
+      const base = breakMawBank({
+        ...run,
+        gold: run.gold - slot.price,
+        shop: { ...run.shop, departures: (run.shop.departures ?? []).map((x, i) => (i === command.index ? { ...x, sold: true } : x)) },
+        departure: { ...run.departure!, leftovers: run.departure!.leftovers.filter((o) => o.id !== slot.id) },
+      })
+      return applyChoiceDef(base, offer.choice, command.cardIndex, 'shop')
+    }
     case 'ShopBuyMana': {
       if (run.phase !== 'shop' || run.shop === null) throw new Error('ショップではない')
       const price = run.shop.manaPrice ?? SHOP_MANA_PRICE
@@ -1971,6 +2164,9 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
         if (run.deck.length - idx.length < 5) throw new Error('これ以上デッキを減らせない')
         next = { ...next, deck: next.deck.filter((_, i) => !idx.includes(i)) }
       } else {
+        // 星読みの盤: 状態異常・烙印は選べない (2026-09-24 T14)。全部を先に確かめてから変成する (途中で投げて半端に変わらない)
+        const bad = idx.find((i) => !canTransformCard(run.deck[i]))
+        if (bad !== undefined) throw new Error(`${run.deck[bad].def.name} は変成できない（状態異常・烙印は除去で消す）`)
         for (const i of idx) next = transformCardAt(next, i, true)
       }
       const { pendingRelicChoice: _p, ...rest } = next

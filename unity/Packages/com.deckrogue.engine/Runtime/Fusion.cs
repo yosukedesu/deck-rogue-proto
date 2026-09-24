@@ -39,7 +39,10 @@ namespace DeckRogue.Engine
             "playFromExhaust",
         };
 
-        /// <summary>名前生成: 軸→語幹 (緑v1)。レシピ札は手書き名が優先される</summary>
+        /// <summary>
+        /// 名前生成: 効果→語 (緑v1)。レシピ札は手書き名が優先される。緑 (と色の語彙表が無い色) だけが使う =
+        /// 他の色は COLOR_WORD と色の語で完結し、緑の語 (樹・蔦・角・牙…) が混ざらない (2026-09-24 T8。TS と同形)
+        /// </summary>
         private static readonly (string Effect, string Word)[] WORD = new[]
         {
             ("applyBurn", "焔"),
@@ -61,7 +64,10 @@ namespace DeckRogue.Engine
             ("impulseDraw", "閃"),
         };
 
-        /// <summary>色別の語彙上書き (2026-08-31 白ラン指摘「白素材から牙葉の祭壇=緑語彙が生成」への是正)</summary>
+        /// <summary>
+        /// 色別の語彙 (2026-08-31 白ラン指摘「白素材から牙葉の祭壇=緑語彙が生成」への是正)。先に一致した行の語を採る = 具体的な効果を先に、
+        /// 汎用の効果を後ろに置く (後ろの語ほど札名の字を足す側。ComputedStem)。TS の COLOR_WORD と同じ並び
+        /// </summary>
         private static readonly Dictionary<string, (string Effect, string Word)[]> COLOR_WORD =
             new Dictionary<string, (string, string)[]>
             {
@@ -74,6 +80,7 @@ namespace DeckRogue.Engine
                     ("drawCards", "冥"),
                     ("gainHp", "宵"),
                     ("dealDamage", "影"),
+                    ("gainEnergy", "燭"), // 魂の薪・亡者の蝋燭・骨焚き (2026-09-24 T8: 緑の「樹」に落ちていた)
                 },
                 ["blue"] = new[]
                 {
@@ -83,6 +90,7 @@ namespace DeckRogue.Engine
                     ("addSpellEcho", "谺"),
                     ("drawCards", "書"),
                     ("dealDamage", "潮"),
+                    ("gainEnergy", "魔"), // 魔力変換 (2026-09-24 T8: 緑の「樹」に落ちていた)
                 },
                 ["red"] = new[]
                 {
@@ -95,18 +103,40 @@ namespace DeckRogue.Engine
                     ("drawCards", "燼"),
                     ("dealDamage", "火"),
                 },
+                // 白 = 灯火の工房 (灯・人形・真鍮・光)。2026-09-24 T8: 一時マナ・人形・灯の操作の語を足した。TS と同じ並び
                 ["white"] = new[]
                 {
                     ("dischargeLight", "灯"),
+                    ("dischargeLightRally", "点"), // 灯火の大行列
                     ("dealDamagePerLight", "篭"),
                     ("dealDamagePerSpark", "火"),
+                    ("gainBlockPerSpark", "火"), // 火守りの盾 (2026-09-24)
                     ("addCardToDraw", "種"),
+                    ("doubleLight", "満"),
+                    ("lightCarryHalf", "残"),
+                    ("lightToSparks", "火"),
+                    ("gainEnergy", "芯"),
+                    ("gainEnergyNextTurn", "芯"),
                     ("addLight", "灯"),
+                    ("addLightNextTurn", "灯"),
+                    ("blessRetainers", "照"),
+                    ("triggerRetainersNow", "点"),
+                    ("triggerRandomRetainer", "点"),
+                    ("duplicateRetainers", "写"),
+                    ("copyRetainer", "写"),
+                    ("copyLastRetainer", "写"),
+                    ("twinNextRetainer", "写"),
+                    ("extendRetainerLife", "継"),
+                    ("extendAllRetainersLife", "継"),
+                    ("persistRetainer", "永"),
                     ("summonPermanent", "旗"),
                     ("dealDamagePerPermanent", "列"),
                     ("gainHp", "光"),
                     ("weakenEnemy", "威"),
                     ("dealDamagePerBlock", "壁"),
+                    ("addCardToHand", "火"),
+                    ("addCardToDiscard", "火"),
+                    ("counter", "報"),
                     ("gainBlock", "盾"),
                     ("dealDamage", "輝"), // 旧「聖」は 2026-09-18 のリネーム漏れ
                     ("drawCards", "典"),
@@ -121,22 +151,82 @@ namespace DeckRogue.Engine
             ["black"] = "影",
         };
 
-        private static string WordOf(CardDef def)
+        /// <summary>
+        /// 素材の効果の語と、その語の表での位置 (大きいほど汎用)。語彙表を持つ色はその表と色の語だけを使う =
+        /// 緑の表 (WORD) には落ちない (2026-09-24 T8)。TS の wordRankOf と同形
+        /// </summary>
+        private static (string Word, int Rank) WordRankOf(CardDef def)
         {
             var color = def.Color ?? "";
-            if (COLOR_WORD.TryGetValue(color, out var table))
+            var table = COLOR_WORD.TryGetValue(color, out var t) ? t : WORD;
+            for (int i = 0; i < table.Length; i++)
             {
-                foreach (var (eff, w) in table)
-                {
-                    if (def.Effects.Any(e => e.Effect == eff)) return w;
-                }
-            }
-            foreach (var (eff, w) in WORD)
-            {
-                if (def.Effects.Any(e => e.Effect == eff)) return w;
+                var eff = table[i].Effect;
+                if (def.Effects.Any(e => e.Effect == eff)) return (table[i].Word, i);
             }
             // フォールバックは色の語で (緑以外の合成が「樹」になる違和感への対処 2026-08-30)
-            return NAME_FALLBACK.TryGetValue(color, out var f) ? f : "樹";
+            return (NAME_FALLBACK.TryGetValue(color, out var f) ? f : "樹", table.Length);
+        }
+
+        private static string WordOf(CardDef def) => WordRankOf(def).Word;
+
+        /// <summary>
+        /// 札名から字を採る時に飛ばす字 (2026-09-24。TS の PLAIN_NAME_KANJI / COMMON_NAME_KANJI と同じ):
+        /// どの色でも素材の顔にならない字と、その色の札名によく出る字
+        /// </summary>
+        private const string PLAIN_NAME_KANJI = "一撃大小";
+        private static readonly Dictionary<string, string> COMMON_NAME_KANJI = new Dictionary<string, string>
+        {
+            ["white"] = "灯人形火光盾点",
+            ["green"] = "蔦樹根角風蔓",
+            ["red"] = "火業賭熱紅蓮",
+            ["blue"] = "氷渦流霊気",
+            ["black"] = "骨刃血死忘却亡骸",
+        };
+
+        /// <summary>CJK 統合漢字 (拡張A 含む。々・かな・記号は採らない)。TS の isKanji と同じ範囲 (どちらも BMP なのでサロゲートは該当しない)</summary>
+        private static bool IsKanji(char ch) => (ch >= '㐀' && ch <= '䶿') || (ch >= '一' && ch <= '鿿');
+
+        /// <summary>素材の札名から1字 (「の」の後ろの部分を優先し、その色でよく出る字は飛ばす)。TS の nameKanji と同形</summary>
+        private static string NameKanji(CardDef def)
+        {
+            var common = PLAIN_NAME_KANJI + (COMMON_NAME_KANJI.TryGetValue(def.Color ?? "", out var c) ? c : "");
+            var name = def.Name;
+            if (name.StartsWith("真・", StringComparison.Ordinal)) name = name.Substring(2);
+            if (name.EndsWith("+", StringComparison.Ordinal)) name = name.Substring(0, name.Length - 1);
+            var parts = name.Split('の');
+            for (int p = parts.Length - 1; p >= 0; p--)
+                foreach (var ch in parts[p])
+                    if (IsKanji(ch) && common.IndexOf(ch) < 0) return ch.ToString();
+            for (int p = parts.Length - 1; p >= 0; p--)
+                foreach (var ch in parts[p])
+                    if (IsKanji(ch)) return ch.ToString();
+            return "";
+        }
+
+        /// <summary>
+        /// 計算合成の語幹 (2026-09-24 T8): 従来の語幹 (効果の語2つ) に素材の札名から1字を足して見分ける。
+        /// 語が同じ (旧「大X」) なら語1つ + 両方の札名の字。足す字は語幹・語尾に既にある字を避ける。TS の computedStem と同形
+        /// </summary>
+        private static string ComputedStem(CardDef a, CardDef b, string suffix)
+        {
+            var (wa, ra) = WordRankOf(a);
+            var (wb, rb) = WordRankOf(b);
+            bool same = wa == wb;
+            string stem = same ? wa : wa + wb;
+            int want = same ? 2 : 1;
+            int added = 0;
+            foreach (var d in ra >= rb ? new[] { a, b } : new[] { b, a })
+            {
+                if (added >= want) break;
+                var k = NameKanji(d);
+                if (k.Length > 0 && stem.IndexOf(k, StringComparison.Ordinal) < 0 && suffix.IndexOf(k, StringComparison.Ordinal) < 0)
+                {
+                    stem += k;
+                    added++;
+                }
+            }
+            return same && added == 0 ? "大" + stem : stem;
         }
 
         private static string SuffixOf(IReadOnlyList<DeclarativeEffect> effects)
@@ -227,7 +317,7 @@ namespace DeckRogue.Engine
         {
             "searchDeck", "retrieveFromDiscard", "upgradeInHand", "upgradeAllInHand", "gainMaxHp", "addCopyToDiscard", "exhaustFromDeckChoose",
             "retrieveFromExhaust", "playFromExhaust", "gainSetSlot", "sacrificeRetainer", "duplicateRetainers", "triggerRetainersNow",
-            "copyRetainer", "extendRetainerLife", "persistRetainer", "twinNextRetainer", "copyLastRetainer", // 人形の灯り (2026-09-21)
+            "copyRetainer", "extendRetainerLife", "extendAllRetainersLife", "persistRetainer", "twinNextRetainer", "copyLastRetainer", // 人形の灯り (2026-09-21)
         };
 
         private static readonly HashSet<string> DIES_IN_WINDOW = new HashSet<string>
@@ -708,33 +798,43 @@ namespace DeckRogue.Engine
             if (a.Def.FreeIfMomentumAtLeast != null) freeIfMomentum.Add(a.Def.FreeIfMomentumAtLeast.Value);
             if (b.Def.FreeIfMomentumAtLeast != null) freeIfMomentum.Add(b.Def.FreeIfMomentumAtLeast.Value);
             bool conditionalFree = freeIfHandAll != null || freeIfMomentum.Count > 0;
-            if (!keepX && refills && (net - cost >= 0 || conditionalFree))
+            int fusedLightCost = (a.Def.LightCost ?? 0) + (b.Def.LightCost ?? 0); // 灯コストを払う札は 0E+補充の規約の例外 (2026-09-23)。TS と同形
+            if (!keepX && refills && fusedLightCost == 0 && (net - cost >= 0 || conditionalFree))
             {
                 if (resultType != "permanent") exhaust = true;
                 else while (net - cost >= 0 && cost < 5) cost++;
             }
             if (resultType == "permanent") exhaust = false;
 
+            // 人形は溶かしても人形 = 語尾も「人形」(2026-09-24 T8。旧: 剣の人形×盾の人形 = 盾輝の祭壇)。TS と同形
+            bool dollResult = (a.Def.Retainer == true || b.Def.Retainer == true) && resultType == "permanent";
             string suffix =
                 resultType == "permanent"
-                    ? (PERM_SUFFIX.TryGetValue(a.Def.Color ?? "", out var ps) ? ps : "大樹")
+                    ? (dollResult ? "人形" : PERM_SUFFIX.TryGetValue(a.Def.Color ?? "", out var ps) ? ps : "大樹")
                     : resultType == "reaction" ? "罠" : SuffixOf(effects);
-            string StemOf(CardDef d)
+            bool WorkshopMade(CardDef d) => d.Id.StartsWith("fused_", StringComparison.Ordinal) || d.Id.StartsWith("fusion_", StringComparison.Ordinal);
+            string stem;
+            if (WorkshopMade(a.Def) || WorkshopMade(b.Def))
             {
-                if (!(d.Id.StartsWith("fused_", StringComparison.Ordinal) || d.Id.StartsWith("fusion_", StringComparison.Ordinal))) return WordOf(d);
-                var n = d.Name;
-                if (n.StartsWith("真・", StringComparison.Ordinal)) n = n.Substring(2);
-                if (n.EndsWith("+", StringComparison.Ordinal)) n = n.Substring(0, n.Length - 1);
-                int idx = n.IndexOf("の", StringComparison.Ordinal);
-                if (idx >= 0) n = n.Substring(0, idx);
-                return n.Length > 3 ? n.Substring(0, 3) : n;
+                // 工房産を素材にした時は、その語幹を引き継ぐ (従来どおり)
+                string StemOf(CardDef d)
+                {
+                    if (!WorkshopMade(d)) return WordOf(d);
+                    var n = d.Name;
+                    if (n.StartsWith("真・", StringComparison.Ordinal)) n = n.Substring(2);
+                    if (n.EndsWith("+", StringComparison.Ordinal)) n = n.Substring(0, n.Length - 1);
+                    int idx = n.IndexOf("の", StringComparison.Ordinal);
+                    if (idx >= 0) n = n.Substring(0, idx);
+                    return n.Length > 3 ? n.Substring(0, 3) : n;
+                }
+                string wa = StemOf(a.Def);
+                string wb = StemOf(b.Def);
+                string uniq = UniqueCodePoints(wa, wb);
+                // 語の重複は畳む (T1: 角牙牙の乱撃)。相手の語が何も足さない時は「大」を冠して素材と同名になるのを避ける (角牙の嵐×落ち葉の刃=大角牙の嵐)
+                string stem0 = (wa == wb || uniq == wa || uniq == wb) ? "大" + uniq : uniq;
+                stem = stem0.Length > 4 ? stem0.Substring(0, 4) : stem0;
             }
-            string wa = StemOf(a.Def);
-            string wb = StemOf(b.Def);
-            string uniq = UniqueCodePoints(wa, wb);
-            // 語の重複は畳む (T1: 角牙牙の乱撃)。相手の語が何も足さない時は「大」を冠して素材と同名になるのを避ける (角牙の嵐×落ち葉の刃=大角牙の嵐)
-            string stem0 = (wa == wb || uniq == wa || uniq == wb) ? "大" + uniq : uniq;
-            string stem = stem0.Length > 4 ? stem0.Substring(0, 4) : stem0;
+            else stem = ComputedStem(a.Def, b.Def, suffix);
             string name = sameName ? "真・" + a.Def.Name : stem + "の" + suffix;
             var ids = new[] { a0.Def.Id, b0.Def.Id };
             var def = new CardDef
@@ -920,7 +1020,6 @@ namespace DeckRogue.Engine
             return notes;
         }
 
-        private static readonly Regex FUSED_ID = new Regex("^fused_(.+)__(.+)$", RegexOptions.None);
 
         /// <summary>
         /// 合成カードの定義をIDから復元する (見つからなければ null)。
@@ -933,18 +1032,32 @@ namespace DeckRogue.Engine
             {
                 if (r.Result.Id == id) return r.Result;
             }
-            var m = FUSED_ID.Match(id);
-            if (!m.Success) return null;
-            try
+            if (!id.StartsWith("fused_", StringComparison.Ordinal)) return null;
+            // 素材が合成品 (fused_* / fusion_*) だと "__" が2つ以上出る (2026-09-24 人間ラン#18: ログに id のまま出ていた)。
+            // 区切りを左から順に試し、両側とも引けるものを採る (TS resolveFusedDef と同じ)
+            var body = id.Substring("fused_".Length);
+            for (int k = body.IndexOf("__", StringComparison.Ordinal); k >= 0; k = body.IndexOf("__", k + 1, StringComparison.Ordinal))
             {
-                var a = Content.GetCardDef(m.Groups[1].Value);
-                var b = Content.GetCardDef(m.Groups[2].Value);
-                return FuseCards(new CardInstance { Uid = "resolve_a", Def = a }, new CardInstance { Uid = "resolve_b", Def = b });
+                var a = MaterialDef(body.Substring(0, k));
+                var b = a != null ? MaterialDef(body.Substring(k + 2)) : null;
+                if (a == null || b == null) continue;
+                try
+                {
+                    return FuseCards(new CardInstance { Uid = "resolve_a", Def = a }, new CardInstance { Uid = "resolve_b", Def = b });
+                }
+                catch
+                {
+                    return null;
+                }
             }
-            catch
-            {
-                return null;
-            }
+            return null;
+        }
+
+        /// <summary>合成の素材の定義: 素のカード→だめなら合成品・レシピ産として復元</summary>
+        private static CardDef? MaterialDef(string id)
+        {
+            try { return Content.GetCardDef(id); }
+            catch { return ResolveFusedDef(id); }
         }
     }
 }

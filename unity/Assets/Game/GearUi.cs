@@ -538,7 +538,7 @@ namespace DeckRogue.Game
             var rt = UiKit.Txt(cell, sub ?? ((def != null ? RarityJa(def.Rarity) : "") + (ch > 1 ? " ・ " + ch + "回" : " ・ 1回")), 13, edgeColor.HasValue ? PaperFx.ManaInk : PaperFx.BrassInk, TextAnchor.MiddleCenter);
             UiKit.Anchor(rt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(8f, -136f), new Vector2(-8f, -116f));
             var desc = UiKit.Txt(cell, def != null ? def.Text : "", 14, PaperFx.Ink, TextAnchor.UpperCenter);
-            desc.textWrappingMode = TextWrappingModes.Normal;
+            desc.textWrappingMode = TextWrappingModes.Normal; desc.overflowMode = TextOverflowModes.Ellipsis;   // 長い本文 (蝋の栓) は足元の一文に重なっていた → 「…」で切る (全文は説明文へ。2026-09-24 出立の店で露見)
             UiKit.Anchor(desc.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(14f, 78f), new Vector2(-14f, -142f));
             var footT = UiKit.Txt(cell, foot ?? "自ターンに魔素1で組む\n（1ターン1個）", 12, PaperFx.InkSoft, TextAnchor.MiddleCenter);
             UiKit.Anchor(footT.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(6f, 40f), new Vector2(-6f, 76f));

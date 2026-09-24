@@ -6,7 +6,8 @@
 
 import {
   canSaveFromLethal,
-  effectiveIntent,
+  preWindowFor,
+  reactionActionValue,
   reactionMatches,
   resolveReactionEffects,
   windowFromPending,
@@ -94,8 +95,8 @@ export const holdManualSystem: ReactionSystem = {
         if (state.reactionUsedThisAction) return state // 敵の1行動につき1回まで
         // 打ち消し済み (楔 actionNegated・全体の negateNextAction) の行動には窓を開かない (2026-09-20 Opus 火種A: 起きない行動に護りの灯印を切らせていた)
         if (state.enemies[event.enemyIndex]?.actionNegated === true || state.negateNextAction === true) return state
-        const actual = effectiveIntent(state, event.enemyIndex)?.actual ?? 0
-        if (anyPlayable(state, { stage: 'pre', kind: event.kind, actual })) {
+        // 窓の値は攻撃なら1発×ヒット数の合計・攻撃者が混乱中なら被攻撃前の罠は候補にしない (2026-09-24 E10・E3)
+        if (anyPlayable(state, { ...preWindowFor(state, event.enemyIndex), kind: event.kind })) {
           return {
             ...state,
             phase: 'awaiting-reaction',
@@ -106,7 +107,7 @@ export const holdManualSystem: ReactionSystem = {
       }
       case 'EnemyActionResolved': {
         // 窓ごとに1枚 (2026-09-14 ユーザー裁定): pre 窓で鳴っても post 窓は開く (仕込み枠2の天井「1行動1リアクション」の解除)
-        if (anyPlayable(state, { stage: 'post', kind: event.kind, hpLoss: event.hpLoss, actual: event.actual })) {
+        if (anyPlayable(state, { stage: 'post', kind: event.kind, hpLoss: event.hpLoss, actual: reactionActionValue(state, event.enemyIndex) })) {
           return {
             ...state,
             phase: 'awaiting-reaction',

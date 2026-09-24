@@ -37,7 +37,8 @@ namespace DeckRogue.Game
                 Tooltip.Attach(li.gameObject, delegate { return ltip; });
             }
             var t1 = BattleScreen.Tag(bar, 40f, -0.6f);
-            var tl = UiKit.Txt(t1, "幕 " + run.Act + " · 行 " + (run.Row + 1) + " / " + run.Map.Count, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            // 出立の店 (2026-09-24) はまだ地図に入る前 (行 -1) なので「出立」
+            var tl = UiKit.Txt(t1, "幕 " + run.Act + " · " + (run.Phase == RunPhases.Departure ? "出立" : "行 " + (run.Row + 1) + " / " + run.Map.Count), 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             tl.characterSpacing = 2f;
             UiKit.Le(tl, -1f, 30f, -1f, 30f);
             var te = UiKit.Deco(t1, title, 19, PaperFx.Ink, TextAnchor.MiddleLeft);
@@ -354,8 +355,10 @@ namespace DeckRogue.Game
         /// 「鍛えた後を見る」(g.ShowUpgraded) が入っていれば鍛えられる札を鍛えた後の姿で描く。チェックは confirmRoot の左下に置く</summary>
         public static void CardGrid(GameRoot g, Transform parent, IReadOnlyList<CardInstance> cards,
             Func<int, CardInstance, string> btnLabel, Func<int, CardInstance, bool> btnEnabled, Action<int> onPick, float minH, List<int> marked = null, List<int> starred = null,
-            string pickKey = null, RectTransform confirmRoot = null, bool tapPicks = false, Func<int, string> badge = null, float cellScale = 0f)
+            string pickKey = null, RectTransform confirmRoot = null, bool tapPicks = false, Func<int, string> badge = null, float cellScale = 0f,
+            Func<int, CardInstance, string> lockReason = null)
         {
+            // lockReason (2026-09-24 Opus ひなた T14): 選べない理由を返す札は灰色にして理由の札を重ね、押しても選ばれない (状態異常・烙印は変成できない 等)
             var content = UiKit.Scroll(parent, true, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.06f), 12, 12);
             // 一覧の高さは入れ物の残りいっぱい (flexibleHeight)。スマホは minH を付けない
             // (2026-09-14 ユーザー「工房や焚き火で最下部のカード下部マージンがなく選べない」: 高さ 675 の入れ物より minH 500 の方が大きく、
@@ -389,8 +392,10 @@ namespace DeckRogue.Game
                 // 「鍛えた後を見る」: 鍛えられる札は鍛えた後の姿で描く (長押しの拡大は元の札＝拡大の中に元/後の切り替えがある)
                 CardInstance shown = c;
                 if (g.ShowUpgraded) { try { if (Upgrade.CanUpgradeCard(c)) shown = Upgrade.UpgradeCard(c); } catch (Exception) { } }
+                string lockText = lockReason != null ? lockReason(i, c) : null;
+                bool locked = !string.IsNullOrEmpty(lockText);
                 // 札は raycast を受ける (長押し/右クリックで拡大表示。本家の SingleCardViewPopup)。押す・離すは cell 側の LongPressOpen が受ける
-                var cv = CardView.Build(cell, shown, g.Rs.Combat, true, true, "deck-card");
+                var cv = CardView.Build(cell, shown, g.Rs.Combat, !locked, true, "deck-card");   // 選べない札は灰色 (playable=false の面)
                 cv.localScale = Vector3.one * sc;
                 float lift = withBtn ? 24f : 0f;
                 if (lift > 0f) cv.anchoredPosition = new Vector2(0f, lift);
@@ -414,6 +419,18 @@ namespace DeckRogue.Game
                     ring.raycastTarget = false;
                     ring.transform.SetAsFirstSibling();
                 }
+                if (locked)
+                {   // 選べない理由の札 (紙(濃)に朱の墨)。札の本文 (下端から 14〜118 の帯) の真ん中に重ねる。改行は呼び出し側が入れる (13px で3行まで)
+                    int lines = lockText.Split('\n').Length;
+                    float capW = hw * 2f - 14f, capH = 12f + 19f * Mathf.Max(1, lines), capY = -hh + 66f * sc + lift;
+                    var cap = UiKit.NewRect("lock", cell);
+                    UiKit.Anchor(cap, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-capW / 2f, capY - capH / 2f), new Vector2(capW / 2f, capY + capH / 2f));
+                    var ci = cap.gameObject.AddComponent<Image>();
+                    ci.sprite = PaperFx.Tag2; ci.type = Image.Type.Sliced; ci.pixelsPerUnitMultiplier = 1f; ci.color = PaperFx.RoseLight; ci.raycastTarget = false;
+                    var ct = UiKit.Txt(cap, lockText, 13, PaperFx.BadInk, TextAnchor.MiddleCenter);
+                    ct.textWrappingMode = TextWrappingModes.Normal; ct.raycastTarget = false;
+                    UiKit.Stretch(ct.rectTransform, 5f, 5f, 4f, 4f);
+                }
                 string bd = badge != null ? badge(i) : null;
                 if (!string.IsNullOrEmpty(bd))
                 {   // 札の角の印 (工房の A/B・星読みの盤の ✓)
@@ -434,6 +451,7 @@ namespace DeckRogue.Game
                     click.callback.AddListener(delegate
                     {
                         if (CardPopup.ClickSuppressed) return;
+                        if (locked) return;   // 選べない札 (理由の札が重なっている) は押しても選ばれない
                         if (tapPicks) { if (en && onPick != null) onPick(idx); return; }
                         if (label == null) return;
                         Audio.Ui("click"); g.SetGridPick(pickKey, idx); g.Rebuild();

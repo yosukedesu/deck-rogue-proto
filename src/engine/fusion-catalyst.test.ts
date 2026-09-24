@@ -4,8 +4,8 @@ import { allCards, getCardDef } from './content.ts'
 import { fuseCards, fusionNotes } from './fusion.ts'
 import { startCombatWithOptions } from './combat.ts'
 import { applyCommand } from './state.ts'
-import { createRun } from './run.ts'
-import { withHand } from './test-helpers.ts'
+
+import { withHand, createRunAtMap as createRun } from './test-helpers.ts'
 import type { CardInstance, GameState } from './types.ts'
 
 const ci = (id: string): CardInstance => ({ uid: `t_${id}`, def: getCardDef(id) })

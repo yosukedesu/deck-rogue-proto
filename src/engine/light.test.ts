@@ -7,7 +7,7 @@ import { rallyPreview } from './effects.ts'
 import { applyCommand } from './state.ts'
 import { createRunInBattle, freshCombat, withHand } from './test-helpers.ts'
 import { upgradeCard } from './upgrade.ts'
-import type { CardInstance, GameState } from './types.ts'
+import type { CardDef, CardInstance, GameState } from './types.ts'
 
 const play = (s: GameState, uid: string, extra: Record<string, unknown> = {}): GameState =>
   applyCommand(s, { type: 'PlayCard', cardUid: uid, targetIndex: 0, ...extra } as never)
@@ -16,6 +16,10 @@ const fresh = (ids: readonly string[], enemy = 'enemy_probe'): GameState =>
 const energy = (s: GameState, n: number): GameState => ({ ...s, player: { ...s.player, energy: n, energyMax: n } })
 const light = (s: GameState, n: number): GameState => ({ ...s, player: { ...s.player, light: n } })
 const inst = (id: string): CardInstance => ({ uid: `x_${id}`, def: getCardDef(id) })
+const withDef = (s: GameState, def: CardDef): GameState => ({ ...s, player: { ...s.player, hand: [{ uid: `d_${def.id}`, def }, ...s.player.hand] } })
+// 2026-09-24 白のプール 108→84 (docs/white-pool-trim-proposal-2026-09-23.md): 撤去した札の機構は仮の札で固定
+const JUDGE: CardDef = { id: 'test_judge', name: '試しの灼く光', cost: 2, type: 'spell', color: 'white', effects: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 8 }, { trigger: 'onPlay', effect: 'dealDamage', amount: 8, condition: { minLight: 5 } }] }
+const BALLISTA: CardDef = { id: 'test_ballista', name: '試しの灯の弩', cost: 2, type: 'permanent', color: 'white', effects: [{ trigger: 'onLightGained', effect: 'dealDamage', amount: 1, target: 'all' }] }
 const gained = (s: GameState, source: string) => s.eventLog.filter((e) => e.type === 'LightGained' && e.source === source).length
 
 describe('灯の供給 (回復するたび・人形が場に出るたび・ひなたのパッシブ)', () => {
@@ -28,15 +32,15 @@ describe('灯の供給 (回復するたび・人形が場に出るたび・ひ�
     expect(def.passive.map((e) => e.effect)).toEqual(['addLight'])
   })
 
-  it('回復するたび灯+1。過剰回復 (満タン) でも溜まる (癒しの光は明示の灯+1 も持つ = 回し封じの相殺 2026-09-20)', () => {
-    let s = energy(fresh(['white_heal', 'white_heal']), 9)
-    s = play(s, 't0_white_heal') // 満タン: 回復+1・明示+1
-    expect(s.player.light).toBe(2)
-    s = { ...s, player: { ...s.player, hp: 50 } }
-    s = play(s, 't1_white_heal')
+  it('回復するたび灯+1。過剰回復 (満タン) でも溜まる (大いなる癒しは明示の灯+3 も持つ。癒しの光は 2026-09-24 に撤去)', () => {
+    let s = energy(fresh(['white_mass_heal', 'white_mass_heal']), 9)
+    s = play(s, 't0_white_mass_heal') // 満タン: 回復+1・明示+3
     expect(s.player.light).toBe(4)
+    s = { ...s, player: { ...s.player, hp: 50 } }
+    s = play(s, 't1_white_mass_heal')
+    expect(s.player.light).toBe(8)
     expect(gained(s, 'heal')).toBe(2)
-    expect(gained(s, 'card')).toBe(2)
+    expect(gained(s, 'card')).toBe(2) // 明示の灯は1回の獲得 (量3) ×2枚
   })
 
   it('人形の登場では灯は溜まらない (2026-09-20 夜 廃止: 人形は灯を使う側。手張り・点灯=召喚・道具のどれでも)', () => {
@@ -88,52 +92,56 @@ describe('点灯の定義 (白共通ルール: 人形は場に出た瞬間に1�
 })
 
 describe('放出 (dischargeLight: 灯×N のダメージで灯を0に)', () => {
-  it('灯の矢: 灯4 → 8ダメ・灯0。灯0なら不発 (消費も出来事もない)', () => {
-    let s = light(energy(fresh(['white_light_bolt', 'white_light_bolt']), 9), 4)
+  it('灯の矢: 灯1を払って4ダメ×3 (2026-09-23 裁定B「放出を灯Nを払うに」・同日「本家リージェント並み」で×2→×3)。払った残りは持ち越し、2枚目も撃てる。灯0では出せない', () => {
+    let s = light(energy(fresh(['white_light_bolt', 'white_light_bolt', 'white_light_bolt']), 9), 2)
     const hp0 = s.enemies[0].hp
     s = play(s, 't0_white_light_bolt')
-    expect(hp0 - s.enemies[0].hp).toBe(8)
-    expect(s.player.light).toBe(0)
+    expect(hp0 - s.enemies[0].hp).toBe(12)
+    expect(s.player.light).toBe(1)
     const hp1 = s.enemies[0].hp
     s = play(s, 't1_white_light_bolt')
-    expect(s.enemies[0].hp).toBe(hp1)
-    expect(s.eventLog.filter((e) => e.type === 'LightDischarged').length).toBe(1)
+    expect(hp1 - s.enemies[0].hp).toBe(12)
+    expect(s.player.light).toBe(0)
+    expect(s.eventLog.filter((e) => e.type === 'LightSpent').length).toBe(2)
+    expect(s.eventLog.filter((e) => e.type === 'LightDischarged').length).toBe(0)
+    expect(() => play(s, 't2_white_light_bolt')).toThrow('灯が足りない')
   })
 
-  it('単体の放出は灯1につき1ヒット (2026-09-20 裁定: 装甲を分けて越える) = 成長はヒットごとに乗る', () => {
+  it('灯を払う攻撃は普通の多段 = 成長はヒットごとに乗る (単体の全放出「灯1につき1ヒット」は 2026-09-23 に R の大放出だけ=全体一括になり、engine の規則は残置)', () => {
     let s = light(energy(fresh(['white_light_bolt']), 9), 3)
     s = { ...s, player: { ...s.player, growth: 2 } }
     const hp0 = s.enemies[0].hp
     s = play(s, 't0_white_light_bolt')
-    expect(hp0 - s.enemies[0].hp).toBe(3 * (2 + 2))
+    expect(hp0 - s.enemies[0].hp).toBe(3 * (4 + 2))
     expect(s.eventLog.filter((e) => e.type === 'DamageDealt').length).toBe(3)
+    expect(s.player.light).toBe(2)
   })
 
-  it('装甲5の敵に灯4の灯の矢 (×2): 4ヒット×2 = 8 が丸ごと通る (一括なら8→5に切られていた)', () => {
-    let s = light(energy(fresh(['white_light_bolt'], 'enemy_iron_clam'), 9), 4)
+  it('装甲5の敵に灯の矢 (4×3): 各ヒットが上限以下なので 12 が丸ごと通る', () => {
+    let s = light(energy(fresh(['white_light_bolt'], 'enemy_iron_clam'), 9), 1)
     const hp0 = s.enemies[0].hp
     s = play(s, 't0_white_light_bolt')
-    expect(hp0 - s.enemies[0].hp).toBe(8)
+    expect(hp0 - s.enemies[0].hp).toBe(12)
   })
 
-  it('眩光の大放出: 全体に灯×2 を一括 (2体目も同じ量) + 全体に威圧1', () => {
+  it('眩光の大放出: 全体に灯×4 を一括 (2体目も同じ量。2026-09-23 ×2→×3・2026-09-24 CSV の裁定で ×4) + 全体に威圧1', () => {
     let s = light(energy(fresh(['white_light_burst'], 'enc_probe_pair'), 9), 3)
     const hp = s.enemies.map((e) => e.hp)
     s = play(s, 't0_white_light_burst')
-    expect(hp[0] - s.enemies[0].hp).toBe(6)
-    expect(hp[1] - s.enemies[1].hp).toBe(6)
+    expect(hp[0] - s.enemies[0].hp).toBe(12)
+    expect(hp[1] - s.enemies[1].hp).toBe(12)
     expect(s.enemies.every((e) => e.weak === 1)).toBe(true)
     expect(s.player.light).toBe(0)
   })
 
-  it('灯の輪: 回復6 (灯+1) が先に乗ってから灯×2 を放出', () => {
+  it('灯の輪: 灯2を払い、回復6 (灯+1) と 6ダメ×2 (2026-09-23 裁定B。回復は「殴った分だけ」の形なので消滅なし)', () => {
     let s = light(energy(fresh(['white_praise_chorus']), 9), 2)
     s = { ...s, player: { ...s.player, hp: 50 } }
     const hp0 = s.enemies[0].hp
     s = play(s, 't0_white_praise_chorus')
     expect(s.player.hp).toBe(56)
-    expect(hp0 - s.enemies[0].hp).toBe(6) // 灯3×2
-    expect(s.player.light).toBe(0)
+    expect(hp0 - s.enemies[0].hp).toBe(12)
+    expect(s.player.light).toBe(1) // 2を払って0、回復で+1
   })
 
   it('灯の倍化: 灯3 → 6 (獲得の誘発が乗る)。消滅を持つ', () => {
@@ -145,34 +153,25 @@ describe('放出 (dischargeLight: 灯×N のダメージで灯を0に)', () => {
 })
 
 describe('しきい値 (minLight) と灯を得るたびの誘発', () => {
-  it('灼く光: 8ダメ。灯5以上ならさらに8 (解決の時点で判定)', () => {
-    let s = light(energy(fresh(['white_judgment']), 9), 4)
+  it('minLight (灼く光・光の裁きは 2026-09-24 に撤去=仮の札): 8ダメ。灯5以上ならさらに8 (解決の時点で判定)', () => {
+    let s = light(energy(withDef(fresh([]), JUDGE), 9), 4)
     const hp0 = s.enemies[0].hp
-    s = play(s, 't0_white_judgment')
+    s = play(s, 'd_test_judge')
     expect(hp0 - s.enemies[0].hp).toBe(8)
-    let t = light(energy(fresh(['white_judgment']), 9), 5)
+    let t = light(energy(withDef(fresh([]), JUDGE), 9), 5)
     const hp1 = t.enemies[0].hp
-    t = play(t, 't0_white_judgment')
+    t = play(t, 'd_test_judge')
     expect(hp1 - t.enemies[0].hp).toBe(16)
     expect(t.player.light).toBe(5) // 参照するだけで消費しない
   })
 
-  it('光の裁き: 10ダメ。灯5以上なら威圧2', () => {
-    let s = light(energy(fresh(['white_light_verdict']), 9), 5)
-    s = play(s, 't0_white_light_verdict')
-    expect(s.enemies[0].weak).toBe(2)
-    let t = light(energy(fresh(['white_light_verdict']), 9), 4)
-    t = play(t, 't0_white_light_verdict')
-    expect(t.enemies[0].weak ?? 0).toBe(0)
-  })
-
-  it('灯の弩: 灯を得るたび敵全体に1 (回復・明示の札のどれでも。人形の登場では鳴らない)', () => {
-    let s = energy(fresh(['white_perm_light_ballista', 'white_heal', 'white_perm_squire']), 9)
-    s = play(s, 't0_white_perm_light_ballista')
+  it('onLightGained (灯の弩は 2026-09-24 に撤去=仮の札): 灯を得るたび敵全体に1 (回復・明示の札のどれでも。人形の登場では鳴らない)', () => {
+    let s = energy(withDef(fresh(['white_mass_heal', 'white_perm_squire']), BALLISTA), 9)
+    s = play(s, 'd_test_ballista')
     const hp0 = s.enemies[0].hp
-    s = play(s, 't1_white_heal') // 回復の灯+1 → 弩1、明示の灯+1 → 弩1
+    s = play(s, 't0_white_mass_heal') // 回復の灯+1 → 弩1、明示の灯+3 (1回の獲得) → 弩1
     expect(hp0 - s.enemies[0].hp).toBe(2)
-    s = play(s, 't2_white_perm_squire') // 登場では灯は増えない (弩は鳴らない)、点灯で剣の人形2
+    s = play(s, 't1_white_perm_squire') // 登場では灯は増えない (弩は鳴らない)、点灯で剣の人形2
     expect(hp0 - s.enemies[0].hp).toBe(2 + 3)
   })
 })
@@ -202,16 +201,16 @@ describe('号令 (点灯の合図 1E・灯2) と灯火の大行列', () => {
     expect(() => play(t, 't1_white_march_order')).toThrow('灯が足りない')
   })
 
-  it('灯火の大行列: 灯を全て放出し、灯1につき全人形が1回動く。人形0なら撃てない', () => {
+  it('灯火の大行列: 灯を全て放出し、灯2につき全人形が1回動く (2026-09-24 ユーザー「灯2につき」。旧: 灯1につき)。人形0なら撃てない', () => {
     let s = energy(fresh(['white_perm_squire', 'white_perm_shieldmaiden', 'white_grand_charge']), 9)
     s = play(s, 't0_white_perm_squire')
     s = play(s, 't1_white_perm_shieldmaiden')
     s = light(s, 3)
     const hp0 = s.enemies[0].hp
     const b0 = s.player.block
-    s = play(s, 't2_white_grand_charge')
-    expect(hp0 - s.enemies[0].hp).toBe(3 * 3)
-    expect(s.player.block - b0).toBe(3 * 3)
+    s = play(s, 't2_white_grand_charge') // 灯3 → 1回 (端数は放出されるだけ)
+    expect(hp0 - s.enemies[0].hp).toBe(3)
+    expect(s.player.block - b0).toBe(3)
     expect(s.player.light).toBe(0)
     expect(getCardDef('white_grand_charge').requiresRetainer).toBe(true)
   })
@@ -223,9 +222,9 @@ describe('号令 (点灯の合図 1E・灯2) と灯火の大行列', () => {
     expect(s.player.light).toBe(1)
     s = { ...s, player: { ...s.player, hp: 50 }, }
     s = light(s, 4)
-    s = play(s, 't2_white_grand_charge') // 灯4を放出 → 各人形が4回動く。灯芯の+1×4 も 癒しの回復2×4 の+1×4 も鳴らない
+    s = play(s, 't2_white_grand_charge') // 灯4を放出 → 各人形が2回動く。灯芯の+1×2 も 癒しの回復2×2 の+1×2 も鳴らない
     expect(s.player.light).toBe(0)
-    expect(s.player.hp).toBe(58)
+    expect(s.player.hp).toBe(54)
   })
 
   it('人形の単体ダメージはランダムな生存敵へ (2026-09-20 裁定)。合計は変わらず、2体戦で RNG を1回ずつ消費する', () => {
@@ -248,32 +247,29 @@ describe('号令 (点灯の合図 1E・灯2) と灯火の大行列', () => {
 })
 
 describe('鍛える・合成・供給', () => {
-  it('鍛え: 合図+=灯コスト1 (1Eのまま)・灯の矢+=×3・光の奔流+=×4・灼く光+=灯4以上で12+12・灯り溜め+=灯+3・ブロック8・大行列+=1E', () => {
+  it('鍛え: 合図+=灯コスト1 (1Eのまま)・灯の矢+=×3・光の奔流+=×4・灯り溜め+=灯+3・ブロック8・大行列+=1E (灼く光は 2026-09-24 に撤去)', () => {
     expect(upgradeCard(inst('white_march_order')).def).toMatchObject({ cost: 1, lightCost: 1 })
-    expect(upgradeCard(inst('white_light_bolt')).def.effects[0].amount).toBe(3)
-    expect(upgradeCard(inst('white_light_torrent')).def.effects[0].amount).toBe(4)
-    const j = upgradeCard(inst('white_judgment')).def
-    expect(j.effects.map((e) => e.amount)).toEqual([12, 12])
-    expect(j.effects[1].condition?.minLight).toBe(4)
+    expect(upgradeCard(inst('white_light_bolt')).def).toMatchObject({ lightCost: 0 }) // 2026-09-23 裁定B: 灯を払う攻撃の鍛えは灯コスト−1 (灯の矢+=灯0の4×2)
+    expect(upgradeCard(inst('white_light_torrent')).def).toMatchObject({ lightCost: 2 })
+    expect(upgradeCard(inst('white_light_torrent')).def.effects[0].amount).toBe(9)
     const h = upgradeCard(inst('white_light_hoard')).def
-    expect(h.effects.map((e) => e.amount)).toEqual([8, 3])
+    expect(h.effects.map((e) => e.amount)).toEqual([12, 3]) // 灯り溜め 5→8 (2026-09-24 CSV) の +50%
     expect(upgradeCard(inst('white_grand_charge')).def.cost).toBe(1)
   })
 
   it('合成: 灯コストは合算。放出は置物では落ちる', () => {
-    const f = fuseCards(inst('white_march_order'), inst('white_light_strike'))
-    expect(f.lightCost).toBe(2)
+    const f = fuseCards(inst('white_march_order'), inst('white_light_bolt')) // 合図の灯2 + 灯の矢の灯1 (灯集めの一撃は 2026-09-24 に撤去)
+    expect(f.lightCost).toBe(3)
     const p = fuseCards(inst('white_light_bolt'), inst('white_perm_squire'))
     expect(p.type).toBe('permanent')
     expect(p.effects.some((e) => e.effect === 'dischargeLight')).toBe(false)
   })
 
-  it('灯の矢がスターター専用 (報酬プール外)、継ぎ火・光壁砕きは報酬プールへ (2026-09-21 夜 ユーザー裁定「継ぎ火を消して灯の矢に」)。灯コスト持ちは白だけ', () => {
+  it('灯の矢がスターター専用 (報酬プール外)、継ぎ火は報酬プールへ (2026-09-21 夜 ユーザー裁定「継ぎ火を消して灯の矢に」)。灯コスト持ちは白だけ', () => {
     expect(REWARD_EXCLUDED.has('white_light_bolt')).toBe(true) // 灯の矢 = 初期デッキの灯の教材 (放出)。継ぎ火は人形0体では死に札だった
     expect(REWARD_EXCLUDED.has('white_relight')).toBe(false)
     expect(allDecks.find((d) => d.id === 'run_basic_white')!.cards.map((c) => c.cardId)).toContain('white_light_bolt')
     expect(allDecks.find((d) => d.id === 'run_basic_white')!.cards.map((c) => c.cardId)).not.toContain('white_relight')
-    expect(REWARD_EXCLUDED.has('white_bodyslam')).toBe(false)
     expect(allCards.filter((c) => (c.lightCost ?? 0) > 0).every((c) => c.color === 'white')).toBe(true)
     const removed = ['white_holy_oil', 'white_healing_verse', 'white_perm_spring', 'white_perm_bell', 'white_wall_jab', 'white_shield_bash', 'white_perm_ballista', 'white_decree', 'white_cowering_light', 'white_seal_light', 'white_glory_chain', 'white_perm_pavilion', 'white_rank_shield']
     for (const id of removed) expect(allCards.some((c) => c.id === id), id).toBe(false)
@@ -289,7 +285,7 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
     expect(getCardDef('white_perm_bonfire')).toMatchObject({ cost: 2, lightCost: 4, retainer: true, rarity: 'rare' })
     expect(REWARD_EXCLUDED.has('white_perm_lantern')).toBe(false)
     expect(REWARD_EXCLUDED.has('white_perm_bonfire')).toBe(false)
-    expect(allCards.filter((c) => c.color === 'white').length).toBe(96) // 82 −撤去10 +火種10+トークン1 +放出8 (2026-09-20 夜)
+    expect(allCards.filter((c) => c.color === 'white').length).toBe(85) // 2026-09-24 灯の薪 +1・ 白のプール 108→84 (−24)・同日 CSV の裁定で −7・Opus ひなた裁定で重ねる灯 −1
     // 灯コストを持つ人形は5体だけ (コモンの人形・灯芯は据え置き)
     expect(allCards.filter((c) => c.retainer === true && (c.lightCost ?? 0) > 0).map((c) => c.id).sort()).toEqual(
       ['white_perm_band', 'white_perm_bandleader', 'white_perm_bonfire', 'white_perm_choir', 'white_perm_lantern'],
@@ -312,13 +308,13 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
   })
 
   it('灯篭の人形: 毎ターン開始に敵全体へ灯2につき1ダメ (切り捨て・灯は失わない)。放出すると暗くなる', () => {
-    let s = light(energy(fresh(['white_perm_lantern', 'white_light_bolt'], 'enc_probe_pair'), 9), 6)
+    let s = light(energy(fresh(['white_perm_lantern', 'white_light_burst'], 'enc_probe_pair'), 9), 6)
     const hp = s.enemies.map((e) => e.hp)
     s = play(s, 't0_white_perm_lantern') // 灯2を払って4。点灯だけは払う前の灯6で解決 (2026-09-21) → 6÷2=3 を全体に
     expect(s.player.light).toBe(4)
     expect(s.enemies.map((e, i) => hp[i] - e.hp)).toEqual([3, 3])
     expect(gained(s, 'retainer')).toBe(0)
-    s = play(s, 't1_white_light_bolt') // 灯4を放出 → 灯0 = 暗い
+    s = play(s, 't1_white_light_burst') // 灯4を全て放出 (2026-09-23 裁定B 以後、全放出は R の大放出と大行列だけ) → 灯0 = 暗い
     expect(s.player.light).toBe(0)
     const hp2 = s.enemies.map((e) => e.hp)
     s = applyCommand(s, { type: 'EndTurn' })
@@ -398,5 +394,107 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
     expect(rp0).toEqual({ count: 3, damage: 4, block: 4, heal: 0 })
     const rp6 = rallyPreview(s, 6, ['white_perm_page']) // 合図: 灯6で灯篭は 3×2体、小さな人形 (2+1) 込み (これから出るので育ちは0)
     expect(rp6).toEqual({ count: 4, damage: 4 + 3 * 2 + 3, block: 4, heal: 0 })
+  })
+})
+
+describe('灯の変換札 (2026-09-23 ユーザー「灯からマナに変換するカードなど面白いカードを増やして」→ ask_user: 燃料・炉心・注ぎ＋灯だけで打てる0Eをたくさん)', () => {
+  it('灯の燃料: 0E・灯3。一時マナ+2＋1ドロー・消滅 (本家 Alignment 0E★3=+2E。消滅は灯り注ぎとの循環止め)', () => {
+    let s = light(energy(fresh(['white_light_fuel', 'white_strike']), 3), 3)
+    const hand0 = s.player.hand.length
+    s = play(s, 't0_white_light_fuel')
+    expect(s.player.energy).toBe(5)
+    expect(s.player.light).toBe(0)
+    expect(s.player.hand.length).toBe(hand0 - 1 + 1)
+    expect(s.player.exhaustPile.map((c) => c.def.id)).toEqual(['white_light_fuel'])
+  })
+
+  it('灯の薪 (2026-09-24 ユーザー「0マナ灯コストでエナジー加えるカードほしい」): 0E・灯3・一時マナ+1・消滅なし (灯2だと灯り注ぎと収支ゼロの無限ループ)', () => {
+    let s = light(energy(fresh(['white_light_kindling', 'white_light_kindling']), 3), 4)
+    s = play(s, 't0_white_light_kindling')
+    expect(s.player.energy).toBe(4)
+    expect(s.player.light).toBe(1)
+    expect(() => play(s, 't1_white_light_kindling')).toThrow('灯が足りない')
+    expect(s.player.exhaustPile).toHaveLength(0)
+  })
+
+  it('灯の炉心 (2026-09-24 CSV ユーザー案「払えなかったら墓地」): 毎ターン開始時に灯3未満なら置物が場を離れて捨て札へ (dismissUnlessLight)', () => {
+    let s = light(energy(fresh(['white_perm_light_core']), 9), 2)
+    s = play(s, 't0_white_perm_light_core')
+    s = applyCommand(s, { type: 'EndTurn' }) // ターン開始で灯2 (+パッシブ無し) < 3
+    expect(s.player.permanents.some((p) => p.def.id === 'white_perm_light_core')).toBe(false)
+    expect(s.player.discardPile.some((c) => c.def.id === 'white_perm_light_core')).toBe(true)
+    expect(s.eventLog.some((e) => e.type === 'PermanentDismissed')).toBe(true)
+    expect(s.player.energy).toBe(s.player.energyMax) // 一時マナは出ない
+  })
+
+  it('灯の炉心: 毎ターン開始時、灯3以上なら灯3を払って一時マナ+1。灯3未満なら何もしない (consumeLight に amount)', () => {
+    let s = light(energy(fresh(['white_perm_light_core']), 9), 5)
+    s = play(s, 't0_white_perm_light_core')
+    expect(s.player.light).toBe(5) // 人形ではないので置いた瞬間には動かない
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.energy).toBe(s.player.energyMax + 1)
+    expect(s.player.light).toBe(2)
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.energy).toBe(s.player.energyMax)
+    expect(s.player.light).toBe(2)
+  })
+
+  it('灯り注ぎ: 0E・X。エナジーを全て払い X×2 の灯 (エナジー→灯)', () => {
+    let s = light(energy(fresh(['white_light_pour']), 3), 1)
+    s = play(s, 't0_white_light_pour')
+    expect(s.player.energy).toBe(0)
+    expect(s.player.light).toBe(1 + 6)
+  })
+
+  it('灯だけで打てる0E (本家並み 2026-09-23): 火矢 灯2で10・小盾 灯1でブロック7・火粉 灯3で全体7・頁 灯2で3ドロー (消滅なし。灯の呼び声は 2026-09-24 に撤去)', () => {
+    let s = light(energy(fresh(['white_light_dart', 'white_light_buckler', 'white_light_cinders', 'white_light_page'], 'enc_probe_pair'), 1), 10)
+    const hp = s.enemies.map((e) => e.hp)
+    s = play(s, 't0_white_light_dart')
+    expect(hp[0] - s.enemies[0].hp).toBe(10)
+    s = play(s, 't1_white_light_buckler')
+    expect(s.player.block).toBe(7)
+    const hp2 = s.enemies.map((e) => e.hp)
+    s = play(s, 't2_white_light_cinders')
+    expect(s.enemies.map((e, i) => hp2[i] - e.hp)).toEqual([7, 7])
+    expect(s.player.energy).toBe(1) // ここまでエナジーは1枚も使っていない
+    expect(s.player.light).toBe(10 - 2 - 1 - 3)
+    const hand0 = s.player.hand.length
+    s = play(s, 't3_white_light_page')
+    expect(s.player.hand.length).toBe(hand0 - 1 + 3)
+    expect(s.player.exhaustPile.map((c) => c.def.id)).toEqual([]) // 消滅なし (ユーザー裁定 2026-09-23。灯コスト札は 0E+補充の規約の例外)
+    expect(s.player.light).toBe(2)
+  })
+})
+
+describe('灯の供給札 (2026-09-23 ユーザー「供給カードを増やしたほうが良くない？」→ ask_user 6枚。本家 Glow/HiddenCache/ShiningStrike/KnockoutBlow/Convergence/Radiate の形)', () => {
+  it('灯の埋め火: 灯+1、次のターン開始にさらに灯+2 (addLightNextTurn)。灯の集約: 保持・次のターン開始にエナジー+1と灯+2', () => {
+    let s = light(energy(fresh(['white_light_ember_cache', 'white_light_convergence']), 9), 0)
+    s = play(s, 't0_white_light_ember_cache')
+    expect(s.player.light).toBe(1)
+    s = play(s, 't1_white_light_convergence')
+    expect(s.nextTurnLight).toBe(4)
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(s.player.light).toBe(1 + 4) // スターター単発=パッシブ無し。敵フェーズで減らない
+    expect(s.player.energy).toBe(s.player.energyMax + 1)
+    expect(s.nextTurnLight).toBeUndefined()
+    expect(s.eventLog.filter((e) => e.type === 'LightGained' && e.source === 'card').length).toBe(2)
+  })
+
+  it('輝きの一撃 (8+灯2。消滅は 2026-09-24 CSV で撤去)・灯の余光 (0E 3+灯2・消滅)・灯の大砕き (3E 30+灯5)・灯の輝き (灯+2+2ドロー)', () => {
+    let s = light(energy(fresh(['white_shining_strike', 'white_light_radiance', 'white_light_knockout', 'white_light_glow']), 9), 0)
+    const hp0 = s.enemies[0].hp
+    s = play(s, 't0_white_shining_strike')
+    s = play(s, 't1_white_light_radiance')
+    expect(hp0 - s.enemies[0].hp).toBe(11)
+    expect(s.player.light).toBe(4)
+    expect(s.player.exhaustPile.map((c) => c.def.id).sort()).toEqual(['white_light_radiance'])
+    const hp1 = s.enemies[0].hp
+    s = play(s, 't2_white_light_knockout')
+    expect(hp1 - s.enemies[0].hp).toBe(30)
+    expect(s.player.light).toBe(9)
+    const hand0 = s.player.hand.length
+    s = play(s, 't3_white_light_glow')
+    expect(s.player.light).toBe(11)
+    expect(s.player.hand.length).toBe(hand0 - 1 + 2)
   })
 })

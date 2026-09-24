@@ -44,6 +44,13 @@ namespace DeckRogue.Engine.Generated
         public const string Permanent = "permanent";
     }
 
+    public static class DepartureKinds
+    {
+        public const string Card = "card";
+        public const string Relic = "relic";
+        public const string Service = "service";
+    }
+
     public static class EnemyArchetypes
     {
         public const string WidePower = "wide-power";
@@ -142,6 +149,7 @@ namespace DeckRogue.Engine.Generated
 
     public static class RunPhases
     {
+        public const string Departure = "departure";
         public const string Map = "map";
         public const string Combat = "combat";
         public const string RelicReward = "relic-reward";
@@ -445,6 +453,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>盗みで抱えているゴールド。精算は勝利時にrun層 (確定済みルール表「盗みと逃走」)</summary>
         [JsonProperty("stolenGold", NullValueHandling = NullValueHandling.Ignore)]
         public int? StolenGold { get; init; }
+        /// <summary>前のターンに宣言して実行した意図の種別 (2026-09-24 Opus ひなた E1)。自ターン開始で意図を消す時に残す。 読むのは盗人の「逃走を2度続けて宣言しない」判定だけ (打ち消された逃走の次のターンは素の行動に戻る = 旧挙動)</summary>
+        [JsonProperty("prevIntentKind", NullValueHandling = NullValueHandling.Ignore)]
+        public string? PrevIntentKind { get; init; }
         /// <summary>逃走済み (hp:0とセットで立つ = 既存の死亡判定がそのまま勝利判定に使える)</summary>
         [JsonProperty("fled", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Fled { get; init; }
@@ -688,6 +699,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N。旧セーブに無いので optional</summary>
         [JsonProperty("setDamageReduction", NullValueHandling = NullValueHandling.Ignore)]
         public int? SetDamageReduction { get; init; }
+        /// <summary>静かな鈴が今の敵の行動に効くか (2026-09-24 Opus ひなた E2)。行動の開始 (からくり壊しの後・pre 窓の前) で 「伏せ札があるか」を固定する = 確認の窓に出た値 (鈴で-2) と、発動して罠が無くなった後の解決が同じ値を読む。 自ターン開始で消える (自ターン中の表示は今の伏せ札を見る)</summary>
+        [JsonProperty("bellLocked", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? BellLocked { get; init; }
+        /// <summary>戦闘開始時の所持金 (2026-09-24 Opus ひなた E6)。盗みは宣言時に「所持金−すでに盗まれた額」で頭打ち (本家 Looter と同じ)。 戦闘は所持金を増減しない (精算は勝利時の run 層) ので、読むのは盗みの上限だけ。省略=上限なし (単発戦闘・旧セーブ)</summary>
+        [JsonProperty("goldAvailable", NullValueHandling = NullValueHandling.Ignore)]
+        public int? GoldAvailable { get; init; }
         /// <summary>実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts)</summary>
         [JsonProperty("setAnyCards", NullValueHandling = NullValueHandling.Ignore)]
         public bool? SetAnyCards { get; init; }
@@ -711,6 +728,9 @@ namespace DeckRogue.Engine.Generated
         public int? NextTurnDraw { get; init; }
         [JsonProperty("nextTurnEnergy", NullValueHandling = NullValueHandling.Ignore)]
         public int? NextTurnEnergy { get; init; }
+        /// <summary>次の自ターン開始時に得る灯 (灯の埋め火・灯の集約 2026-09-23。本家 HiddenCache/Convergence)</summary>
+        [JsonProperty("nextTurnLight", NullValueHandling = NullValueHandling.Ignore)]
+        public int? NextTurnLight { get; init; }
         [JsonProperty("nextTurnBlock", NullValueHandling = NullValueHandling.Ignore)]
         public int? NextTurnBlock { get; init; }
         /// <summary>C型: 手札を捨てない (ルーンの角錐。火傷の1回きり・衝動の失効は従来どおり)</summary>
@@ -1169,6 +1189,10 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_LightDischarged() { Type = TypeTag; }
         [JsonProperty("spent")]
         public int Spent { get; init; }
+        [JsonProperty("sparks", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Sparks { get; init; }
+        [JsonProperty("paid", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Paid { get; init; }
     }
 
     /// <summary>GameEvent: type="LightSpent"</summary>
@@ -1233,6 +1257,10 @@ namespace DeckRogue.Engine.Generated
         public int Count { get; init; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
+        [JsonProperty("scalds", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Scalds { get; init; }
+        [JsonProperty("brands", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Brands { get; init; }
     }
 
     /// <summary>GameEvent: type="EnemySplit"</summary>
@@ -1440,6 +1468,28 @@ namespace DeckRogue.Engine.Generated
         public int Count { get; init; }
     }
 
+    /// <summary>GameEvent: type="CardsAddedToDiscard"</summary>
+    public sealed record GameEvent_CardsAddedToDiscard : GameEvent
+    {
+        public const string TypeTag = "CardsAddedToDiscard";
+        public GameEvent_CardsAddedToDiscard() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+        [JsonProperty("count")]
+        public int Count { get; init; }
+    }
+
+    /// <summary>GameEvent: type="DeckCardTransformed"</summary>
+    public sealed record GameEvent_DeckCardTransformed : GameEvent
+    {
+        public const string TypeTag = "DeckCardTransformed";
+        public GameEvent_DeckCardTransformed() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+        [JsonProperty("into")]
+        public string Into { get; init; } = default!;
+    }
+
     /// <summary>GameEvent: type="CardsAddedToDraw"</summary>
     public sealed record GameEvent_CardsAddedToDraw : GameEvent
     {
@@ -1548,6 +1598,17 @@ namespace DeckRogue.Engine.Generated
         public int Amount { get; init; }
         [JsonProperty("persist", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Persist { get; init; }
+    }
+
+    /// <summary>GameEvent: type="PermanentDismissed"</summary>
+    public sealed record GameEvent_PermanentDismissed : GameEvent
+    {
+        public const string TypeTag = "PermanentDismissed";
+        public GameEvent_PermanentDismissed() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+        [JsonProperty("uid")]
+        public string Uid { get; init; } = default!;
     }
 
     /// <summary>GameEvent: type="RetainerRushed"</summary>
@@ -2049,6 +2110,82 @@ namespace DeckRogue.Engine.Generated
         /// <summary>デッキの負傷カードを全て取り除く (本家 The Divine Fountain)。0枚なら何も起きない</summary>
         [JsonProperty("removeAllWounds", NullValueHandling = NullValueHandling.Ignore)]
         public bool? RemoveAllWounds { get; init; }
+        /// <summary>忘れられた墓 (2026-09-23 本家 Grave of the Forgotten): 消滅を持つ札1枚 (cardIndex) の消滅を外し、プレイするたび一時マナ+1 を付ける</summary>
+        [JsonProperty("unexhaustCard", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? UnexhaustCard { get; init; }
+        /// <summary>名指しのレリック (2026-09-23): 持っていなければ得る。持っていれば選べない</summary>
+        [JsonProperty("relicId", NullValueHandling = NullValueHandling.Ignore)]
+        public string? RelicId { get; init; }
+        /// <summary>出立の支度 (2026-09-24): ギアを名指しでN個 (持ち物が満杯なら入らない)</summary>
+        [JsonProperty("gears", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<string>? Gears { get; init; }
+        /// <summary>出立の支度: 魔素+N (上限まで)</summary>
+        [JsonProperty("mana", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Mana { get; init; }
+        /// <summary>出立の支度: 札を名指しでデッキに加える (秘伝の技=自分の色のレア札)</summary>
+        [JsonProperty("addCardIds", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<string>? AddCardIds { get; init; }
+    }
+
+    /// <summary>DepartureTemplate.cardPick のインライン型</summary>
+    public sealed record DepartureTemplateCardPick
+    {
+        [JsonProperty("rarity")]
+        public string Rarity { get; init; } = default!;
+        [JsonProperty("count")]
+        public int Count { get; init; }
+    }
+
+    /// <summary>出立の支度 (ラン開始の祝福 2026-09-24 `docs/departure-proposal-2026-09-24.md`): 台帳 data/departures.json の1行。 中身 (どの遺物・どのギア・どのレア札か) は createRun でランRNGから名指しに解決され、DepartureOffer になる</summary>
+    public sealed record DepartureTemplate
+    {
+        [JsonProperty("id")]
+        public string Id { get; init; } = default!;
+        /// <summary>並べ方: card=札 (普通の店と同じカードの面で並べる) / relic=遺物 / service=サービス (荷の整理・研ぎ・薬草・道具箱)。 台帳の全行が毎回並ぶ (2026-09-24 夜 ユーザー「普通の商店のように。レリック3・カード3」)。画面に種類名は出さない</summary>
+        [JsonProperty("kind")]
+        public string Kind { get; init; } = default!;
+        [JsonProperty("name")]
+        public string Name { get; init; } = default!;
+        [JsonProperty("text")]
+        public string Text { get; init; } = default!;
+        [JsonProperty("choice")]
+        public EventChoiceDef Choice { get; init; } = default!;
+        /// <summary>坑口の店での値段</summary>
+        [JsonProperty("price")]
+        public int Price { get; init; }
+        /// <summary>買わなかった時に行商が担いで降りて幕1の店に並べる値段 (物価が乗る。画面には書かない＝知っている人だけ得をする)。無ければ並べない (除去・鍛えは普通の店にもある)</summary>
+        [JsonProperty("shopPrice", NullValueHandling = NullValueHandling.Ignore)]
+        public int? ShopPrice { get; init; }
+        /// <summary>解決時に候補列からこのレア度の遺物を1つ引いて choice.relicId にする</summary>
+        [JsonProperty("relicRarity", NullValueHandling = NullValueHandling.Ignore)]
+        public string? RelicRarity { get; init; }
+        /// <summary>解決時にギアをN個引いて choice.gears にする</summary>
+        [JsonProperty("gearCount", NullValueHandling = NullValueHandling.Ignore)]
+        public int? GearCount { get; init; }
+        /// <summary>解決時に自分の色の札をこのレア度からN枚引いて choice.addCardIds にする (技の心得=アンコモン・秘伝の技=レア)</summary>
+        [JsonProperty("cardPick", NullValueHandling = NullValueHandling.Ignore)]
+        public DepartureTemplateCardPick? CardPick { get; init; }
+    }
+
+    /// <summary>解決済みの支度 (RunState が持つ。名指しの中身入り)</summary>
+    public sealed record DepartureOffer
+    {
+        [JsonProperty("id")]
+        public string Id { get; init; } = default!;
+        [JsonProperty("kind")]
+        public string Kind { get; init; } = default!;
+        [JsonProperty("name")]
+        public string Name { get; init; } = default!;
+        [JsonProperty("text")]
+        public string Text { get; init; } = default!;
+        [JsonProperty("choice")]
+        public EventChoiceDef Choice { get; init; } = default!;
+        /// <summary>坑口の店での値段</summary>
+        [JsonProperty("price")]
+        public int Price { get; init; }
+        /// <summary>買わなかった時に行商が幕1の店に並べる値段</summary>
+        [JsonProperty("shopPrice", NullValueHandling = NullValueHandling.Ignore)]
+        public int? ShopPrice { get; init; }
     }
 
     /// <summary>?マス (イベント) の定義。data/events.json が一次資料</summary>
@@ -2914,6 +3051,17 @@ namespace DeckRogue.Engine.Generated
         public bool? Sold { get; init; }
     }
 
+    /// <summary>ShopState.departures のインライン型</summary>
+    public sealed record ShopStateDepartures
+    {
+        [JsonProperty("id")]
+        public string Id { get; init; } = default!;
+        [JsonProperty("price")]
+        public int Price { get; init; }
+        [JsonProperty("sold", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Sold { get; init; }
+    }
+
     /// <summary>ショップの在庫 (ノード進入時にシードから決定)</summary>
     public sealed record ShopState
     {
@@ -2930,6 +3078,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>魔素の値段 (1つぶん)。金余りのシンク</summary>
         [JsonProperty("manaPrice", NullValueHandling = NullValueHandling.Ignore)]
         public int? ManaPrice { get; init; }
+        /// <summary>行商が担いで降りた出立の店の売れ残り (2026-09-24): 幕1の店にだけ並ぶ。買われたら run.departure.leftovers から消える</summary>
+        [JsonProperty("departures", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<ShopStateDepartures>? Departures { get; init; }
     }
 
     /// <summary>RunState.unknownPity のインライン型</summary>
@@ -2955,6 +3106,17 @@ namespace DeckRogue.Engine.Generated
         /// <summary>選び終えたら戻るフェーズ (報酬・レリック3択の続き・マップ)</summary>
         [JsonProperty("resume")]
         public string Resume { get; init; } = default!;
+    }
+
+    /// <summary>RunState.departure のインライン型</summary>
+    public sealed record RunStateDeparture
+    {
+        [JsonProperty("offers")]
+        public IReadOnlyList<DepartureOffer> Offers { get; init; } = default!;
+        [JsonProperty("bought")]
+        public IReadOnlyList<string> Bought { get; init; } = default!;
+        [JsonProperty("leftovers")]
+        public IReadOnlyList<DepartureOffer> Leftovers { get; init; } = default!;
     }
 
     /// <summary>RunState</summary>
@@ -3100,6 +3262,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>報酬フェーズで提示中のギア (札3枚とは別枠。null=この戦闘ではドロップしなかった)</summary>
         [JsonProperty("gearOption", NullValueHandling = NullValueHandling.Ignore)]
         public string? GearOption { get; init; }
+        /// <summary>出立の店 (ラン開始 2026-09-24 `docs/departure-proposal-2026-09-24.md`): offers=坑口の行商の店に並んだ5品 (サービス2・品物3)・ bought=坑口で買った支度の id・leftovers=買わなかった品 (行商が担いで降りて幕1の店に並べる。画面には予告しない。買われたら消える)。 旧セーブ・チェックポイント開始には無い</summary>
+        [JsonProperty("departure", NullValueHandling = NullValueHandling.Ignore)]
+        public RunStateDeparture? Departure { get; init; }
     }
 
     /// <summary>判別共用体 RunCommand (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>
@@ -3343,6 +3508,35 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "ShopBuyMana";
         public RunCommand_ShopBuyMana() { Type = TypeTag; }
+    }
+
+    /// <summary>RunCommand: type="BuyDeparture"</summary>
+    public sealed record RunCommand_BuyDeparture : RunCommand
+    {
+        public const string TypeTag = "BuyDeparture";
+        public RunCommand_BuyDeparture() { Type = TypeTag; }
+        [JsonProperty("index")]
+        public int Index { get; init; }
+        [JsonProperty("cardIndex", NullValueHandling = NullValueHandling.Ignore)]
+        public int? CardIndex { get; init; }
+    }
+
+    /// <summary>RunCommand: type="LeaveDeparture"</summary>
+    public sealed record RunCommand_LeaveDeparture : RunCommand
+    {
+        public const string TypeTag = "LeaveDeparture";
+        public RunCommand_LeaveDeparture() { Type = TypeTag; }
+    }
+
+    /// <summary>RunCommand: type="ShopBuyDeparture"</summary>
+    public sealed record RunCommand_ShopBuyDeparture : RunCommand
+    {
+        public const string TypeTag = "ShopBuyDeparture";
+        public RunCommand_ShopBuyDeparture() { Type = TypeTag; }
+        [JsonProperty("index")]
+        public int Index { get; init; }
+        [JsonProperty("cardIndex", NullValueHandling = NullValueHandling.Ignore)]
+        public int? CardIndex { get; init; }
     }
 
     /// <summary>ReplayOrigin.checkpoint のインライン型</summary>

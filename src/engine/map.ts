@@ -187,7 +187,8 @@ const WEAK_POOLS: readonly (readonly string[])[] = [
   // 幕2: 伏せ検定・固い小物の教師・手数の鏡
   ['enemy_set_wary', 'enemy_rock_beetle', 'enemy_mimic_jester', 'enc_imp_jester', 'enc_beetle_wary'], // 2026-09-02 本家形: 弱枠にも群れ
   // 幕3: 貫通の的・大技→隙の窓・伏せ罰の教師
-  ['enemy_shell_guard', 'enemy_axe_ogre', 'enemy_set_breaker', 'enc_axe_shadow', 'enc_wolf_hexer_drummer', 'enemy_devoted_sculptor', 'enc_biting_scrolls_trio'], // 2026-09-02 本家形: 弱枠にも群れ
+  // 2026-09-23 人間ラン#17: 狼と妖術師と太鼓 (3体+応援) は弱枠から外し本帯だけに (段5 で満タンから −55 = 難易度の傾きが弱枠で一番強く出る形)
+  ['enemy_shell_guard', 'enemy_axe_ogre', 'enemy_set_breaker', 'enc_axe_shadow', 'enemy_devoted_sculptor', 'enc_biting_scrolls_trio'], // 2026-09-02 本家形: 弱枠にも群れ
 ]
 
 /**
@@ -573,13 +574,28 @@ export function generateMap(
           // タグのデータ追加なしで家族関係を編成定義そのものから導出する
           const membersOf = (encId: string): readonly string[] =>
             resolveEncounter(encId).map((m) => m.enemyId)
-          const recentIds = [...recentEnemies.slice(-2).flat(), ...rowEnemies]
-          const recentMembers = new Set(recentIds.flatMap(membersOf))
-          const fresh = pool.filter((id) => !membersOf(id).some((m) => recentMembers.has(m)))
+          const avoiding = (ids: readonly string[]): readonly string[] => {
+            const ms = new Set(ids.flatMap(membersOf))
+            return pool.filter((id) => !membersOf(id).some((m) => ms.has(m)))
+          }
+          // 避ける範囲は4段 (2026-09-24 人間ラン#19: 幕1の弱枠で「蜘蛛と噛みつき果実」を3戦続けて踏んだ)。
+          // ①直前2行と今の行の全ノード ②この節へ来る道の祖先 (親と祖父母) ③親だけ ④親と同じ編成だけ。旧実装は①が尽きると
+          // プール全体から引いていた = 弱枠 (7編成・4列) では①が毎行尽き、親子で同じ編成が 幕1 55%・幕2 46%・幕3 28% の地図に出ていた
+          const encOf = (row: number, cols: readonly number[]): string[] =>
+            cols.flatMap((i) => (map[row][i].encounterId ? [map[row][i].encounterId as string] : []))
+          const myParents = r > 0 ? parents[r][c] : []
+          const parentIds = r > 0 ? encOf(r - 1, myParents) : []
+          const ancestorIds = [...parentIds, ...(r > 1 ? encOf(r - 2, [...new Set(myParents.flatMap((p) => parents[r - 1][p]))]) : [])]
+          const tier = [
+            avoiding([...recentEnemies.slice(-2).flat(), ...rowEnemies]),
+            avoiding(ancestorIds),
+            avoiding(parentIds),
+            pool.filter((id) => !parentIds.includes(id)), // ④親と同じ編成だけ避ける (幕2の弱枠は家族が実質2つ = 親が両方の家族だと③も尽きる)
+          ].find((t) => t.length > 0)
           // 幕内で未使用の編成を優先する (2026-09-02 人間ラン#2: 幕2が6戦で4種=走竜×2・甲虫×2。
           // エリート抽選と同じ規則を通常戦闘にも。プールが尽きたら同族回避だけで抽選)
-          const unused = fresh.filter((id) => type === 'elite' || !usedInAct.has(id))
-          const candidates = unused.length > 0 ? unused : fresh.length > 0 ? fresh : pool
+          const unused = (tier ?? []).filter((id) => type === 'elite' || !usedInAct.has(id))
+          const candidates = unused.length > 0 ? unused : tier ?? pool
           const [idx, next] = nextInt(rng, 0, candidates.length - 1)
           rng = next
           encounterId = candidates[idx]

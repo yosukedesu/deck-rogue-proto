@@ -87,6 +87,8 @@ namespace DeckRogue.Game
         /// <summary>relic-choose (2026-09-12): 空の鳥籠/星読みの盤で選んだデッキの添字 (画面を離れたら捨てる)</summary>
         public List<int> RelicChoosePicks = new List<int>();
         public int EventChoiceIndex = -1;   // カード指定待ちの選択肢
+        /// <summary>出立の店 (2026-09-24): 除去・鍛えの品で対象の札を選んでいる (品の添字)。出立を離れたら捨てる</summary>
+        public int DepartureChoiceIndex = -1;
         /// <summary>デッキの一覧 (RunUi.CardGrid) の「鍛えた後を見る」(2026-09-16 ユーザー「デッキ一覧すべてで鍛えた後を見るボタン」。本家 Smith の Show Upgrade)。ランの間は保つ</summary>
         public bool ShowUpgraded;
         /// <summary>スマホの一覧で押した札 (選ぶ→下の帯で確定。2026-09-16 案A)。鍵は画面ごと ("forge"/"remove"/"event") で、別の画面の一覧には効かない。手が通ると捨てる</summary>
@@ -327,6 +329,7 @@ namespace DeckRogue.Game
             if (Rs == null || Rs.Phase != RunPhases.Shop) ShopMode = null;
             if (Rs == null || Rs.Phase != RunPhases.RelicChoose) RelicChoosePicks.Clear();
             if (Rs == null || Rs.Phase != RunPhases.Event) EventChoiceIndex = -1;
+            if (Rs == null || Rs.Phase != RunPhases.Departure) DepartureChoiceIndex = -1;
             if (Rs == null || Rs.Phase != RunPhases.Combat) PreferredTarget = -1;
             // 演出キュー: 敵フェーズを含むコマンドは古い盤面の上で順に見せてから組み直す。それ以外は即組み直して差分を浮き文字に
             if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat && ScreenRoot != null && ScreenRoot.childCount > 0 && Presenter.HasEnemyPhase(Rs.Combat))
@@ -374,6 +377,7 @@ namespace DeckRogue.Game
             WorkshopB = -1;
             ShopMode = null;
             EventChoiceIndex = -1;
+            DepartureChoiceIndex = -1;
             try
             {
                 if (_seedField != null)
@@ -514,7 +518,7 @@ namespace DeckRogue.Game
         void ApplySave(RunSaveFile sf, string warning)
         {
             Doodles = SaveGame.DoodlesFromToken(sf.DoodlesUnity); DoodleMode = false; DoodlePen = 0;
-            Pending = null; PreferredTarget = -1; WorkshopA = -1; WorkshopB = -1; ShopMode = null; EventChoiceIndex = -1;
+            Pending = null; PreferredTarget = -1; WorkshopA = -1; WorkshopB = -1; ShopMode = null; EventChoiceIndex = -1; DepartureChoiceIndex = -1;
             RelicChoosePicks.Clear(); ViewPile = null; ViewDeck = false; ViewRelics = false; ViewMap = false; ShowLog = false; SubMode = null; MenuOpen = false; Confirm = null;
             Feedback.Restore(sf);
             Rs = sf.Run;
@@ -793,6 +797,7 @@ namespace DeckRogue.Game
                     case RunPhases.Workshop: WorkshopScreen.Build(this, ScreenRoot); break;
                     case RunPhases.Shop: ShopScreen.Build(this, ScreenRoot); break;
                     case RunPhases.Event: EventScreen.Build(this, ScreenRoot); break;
+                    case RunPhases.Departure: DepartureScreen.Build(this, ScreenRoot); break;   // 出立の店 (ラン開始 2026-09-24)
                     case RunPhases.Won: EndScreen.Build(this, ScreenRoot, true); break;
                     case RunPhases.Lost: EndScreen.Build(this, ScreenRoot, false); break;
                     default: built = false; break;

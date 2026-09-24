@@ -6,7 +6,13 @@
     "family": "general",
     "charges": 2,
     "text": "ブロック10",
-    "effects": [{ "trigger": "onPlay", "effect": "gainBlock", "amount": 10 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 10
+      }
+    ]
   },
   {
     "id": "gear_cog",
@@ -15,7 +21,13 @@
     "family": "general",
     "charges": 2,
     "text": "一時マナ+2",
-    "effects": [{ "trigger": "onPlay", "effect": "gainEnergy", "amount": 2 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 2
+      }
+    ]
   },
   {
     "id": "gear_oilcan",
@@ -23,7 +35,13 @@
     "rarity": "common",
     "family": "general",
     "text": "3ドロー",
-    "effects": [{ "trigger": "onPlay", "effect": "drawCards", "amount": 3 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCards",
+        "amount": 3
+      }
+    ]
   },
   {
     "id": "gear_powder",
@@ -31,7 +49,14 @@
     "rarity": "common",
     "family": "general",
     "text": "敵全体に10ダメージ",
-    "effects": [{ "trigger": "onPlay", "effect": "dealDamage", "amount": 10, "target": "all" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 10,
+        "target": "all"
+      }
+    ]
   },
   {
     "id": "gear_repair_oil",
@@ -39,7 +64,13 @@
     "rarity": "common",
     "family": "general",
     "text": "最大HPの20%回復",
-    "effects": [{ "trigger": "onPlay", "effect": "gainHpRatio", "amount": 20 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainHpRatio",
+        "amount": 20
+      }
+    ]
   },
   {
     "id": "gear_brand_iron",
@@ -48,7 +79,13 @@
     "family": "general",
     "needsTarget": true,
     "text": "対象に急所3",
-    "effects": [{ "trigger": "onPlay", "effect": "exposeEnemy", "amount": 3 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "exposeEnemy",
+        "amount": 3
+      }
+    ]
   },
   {
     "id": "gear_rust_powder",
@@ -57,9 +94,14 @@
     "family": "general",
     "needsTarget": true,
     "text": "対象に威圧3",
-    "effects": [{ "trigger": "onPlay", "effect": "weakenEnemy", "amount": 3 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "weakenEnemy",
+        "amount": 3
+      }
+    ]
   },
-
   {
     "id": "gear_wedge",
     "name": "楔",
@@ -67,7 +109,12 @@
     "family": "interfere",
     "needsTarget": true,
     "text": "対象のいま宣言されている行動を打ち消す",
-    "effects": [{ "trigger": "onPlay", "effect": "negateEnemyAction" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "negateEnemyAction"
+      }
+    ]
   },
   {
     "id": "gear_rusty_wedge",
@@ -76,7 +123,12 @@
     "family": "interfere",
     "needsTarget": true,
     "text": "対象の召喚・分裂・孵化をこの戦闘で1回止める（再起動〔残機〕は止められない）",
-    "effects": [{ "trigger": "onPlay", "effect": "blockEnemySummon" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "blockEnemySummon"
+      }
+    ]
   },
   {
     "id": "gear_stilling_weight",
@@ -85,16 +137,25 @@
     "family": "interfere",
     "needsTarget": true,
     "text": "対象の割り込み（HP半分の豹変・目覚め）をこの戦闘中起こさない",
-    "effects": [{ "trigger": "onPlay", "effect": "blockEnemyInterrupt" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "blockEnemyInterrupt"
+      }
+    ]
   },
-
   {
     "id": "gear_cleansing_water",
     "name": "清めの水",
     "rarity": "uncommon",
     "family": "cleanse",
     "text": "自分の弱体・脆弱・虚弱・拘束・霞み・重りを全て消す",
-    "effects": [{ "trigger": "onPlay", "effect": "cleanseStatuses" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "cleanseStatuses"
+      }
+    ]
   },
   {
     "id": "gear_ash_remover",
@@ -102,7 +163,12 @@
     "rarity": "common",
     "family": "cleanse",
     "text": "手札の負傷・火傷・がらくた・烙印を全て消滅させる",
-    "effects": [{ "trigger": "onPlay", "effect": "purgeHandStatus" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "purgeHandStatus"
+      }
+    ]
   },
   {
     "id": "gear_ward_charm",
@@ -111,9 +177,14 @@
     "rarity": "uncommon",
     "family": "cleanse",
     "text": "次に受ける状態異常を1回弾く",
-    "effects": [{ "trigger": "onPlay", "effect": "gainArtifact", "amount": 1 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainArtifact",
+        "amount": 1
+      }
+    ]
   },
-
   {
     "id": "gear_dig_out",
     "name": "掘り出し",
@@ -121,7 +192,13 @@
     "family": "field",
     "needsCard": "discard",
     "text": "捨て札から1枚を手札へ",
-    "effects": [{ "trigger": "onPlay", "effect": "retrieveFromDiscard", "amount": 1 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "retrieveFromDiscard",
+        "amount": 1
+      }
+    ]
   },
   {
     "id": "gear_wanted_item",
@@ -130,7 +207,13 @@
     "family": "field",
     "needsCard": "draw",
     "text": "山札から1枚を選んで手札へ",
-    "effects": [{ "trigger": "onPlay", "effect": "searchDeck", "amount": 1 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "searchDeck",
+        "amount": 1
+      }
+    ]
   },
   {
     "id": "gear_redraw",
@@ -139,7 +222,12 @@
     "rarity": "uncommon",
     "family": "field",
     "text": "手札を全て捨て、同じ枚数を引く",
-    "effects": [{ "trigger": "onPlay", "effect": "redrawHand" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "redrawHand"
+      }
+    ]
   },
   {
     "id": "gear_next_prep",
@@ -147,9 +235,14 @@
     "rarity": "common",
     "family": "field",
     "text": "次のターンのドロー+3",
-    "effects": [{ "trigger": "onPlay", "effect": "drawCardsNextTurn", "amount": 3 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "drawCardsNextTurn",
+        "amount": 3
+      }
+    ]
   },
-
   {
     "id": "gear_whetstone_oil",
     "name": "砥ぎ油",
@@ -157,7 +250,13 @@
     "family": "morph",
     "needsCard": "hand",
     "text": "手札1枚をこの戦闘中鍛える",
-    "effects": [{ "trigger": "onPlay", "effect": "upgradeInHand", "amount": 1 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "upgradeInHand",
+        "amount": 1
+      }
+    ]
   },
   {
     "id": "gear_copy",
@@ -166,7 +265,13 @@
     "family": "morph",
     "needsCard": "hand",
     "text": "手札1枚のコピーを手札に加える（この戦闘限り）",
-    "effects": [{ "trigger": "onPlay", "effect": "copyCardInHand", "amount": 1 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "copyCardInHand",
+        "amount": 1
+      }
+    ]
   },
   {
     "id": "gear_shift_powder",
@@ -175,9 +280,14 @@
     "family": "morph",
     "needsCard": "hand",
     "text": "手札1枚を同じレア度の別の札に変える（この戦闘限り）",
-    "effects": [{ "trigger": "onPlay", "effect": "transformInHand", "amount": 1 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "transformInHand",
+        "amount": 1
+      }
+    ]
   },
-
   {
     "id": "gear_bewilder",
     "name": "惑わし",
@@ -185,7 +295,13 @@
     "family": "enemy-status",
     "needsTarget": true,
     "text": "対象に混乱3",
-    "effects": [{ "trigger": "onPlay", "effect": "confuse", "amount": 3 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "confuse",
+        "amount": 3
+      }
+    ]
   },
   {
     "id": "gear_rust_stop",
@@ -194,7 +310,12 @@
     "family": "enemy-status",
     "needsTarget": true,
     "text": "対象の筋力を0に戻す（マイナスの筋力は戻さない）",
-    "effects": [{ "trigger": "onPlay", "effect": "clearEnemyStrength" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "clearEnemyStrength"
+      }
+    ]
   },
   {
     "id": "gear_hammer",
@@ -203,7 +324,12 @@
     "family": "enemy-status",
     "needsTarget": true,
     "text": "対象のブロックと殻を砕く",
-    "effects": [{ "trigger": "onPlay", "effect": "shatterBlock" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "shatterBlock"
+      }
+    ]
   },
   {
     "id": "gear_tie_cord",
@@ -211,10 +337,14 @@
     "rarity": "common",
     "family": "enemy-status",
     "needsTarget": true,
-    "text": "対象の次のターンの行動を隙にする（いま宣言されている行動は止まらない）",
-    "effects": [{ "trigger": "onPlay", "effect": "staggerEnemy" }]
+    "text": "対象の次のターンの行動を隙にする（予定の行動は消えず1ターン遅れて来る。いま宣言されている行動は止まらない）",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "staggerEnemy"
+      }
+    ]
   },
-
   {
     "id": "gear_overload_cog",
     "name": "過負荷の歯車",
@@ -222,8 +352,16 @@
     "family": "edged",
     "text": "一時マナ+3・次のターンのドロー−2",
     "effects": [
-      { "trigger": "onPlay", "effect": "gainEnergy", "amount": 3 },
-      { "trigger": "onPlay", "effect": "drawCardsNextTurn", "amount": -2 }
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergy",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "drawCardsNextTurn",
+        "amount": -2
+      }
     ]
   },
   {
@@ -233,8 +371,17 @@
     "family": "edged",
     "text": "敵全体に16ダメージ・自分もHP−4",
     "effects": [
-      { "trigger": "onPlay", "effect": "dealDamage", "amount": 16, "target": "all" },
-      { "trigger": "onPlay", "effect": "loseHp", "amount": 4 }
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 16,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 4
+      }
     ]
   },
   {
@@ -244,11 +391,18 @@
     "family": "edged",
     "text": "ブロック20・HP−4",
     "effects": [
-      { "trigger": "onPlay", "effect": "gainBlock", "amount": 20 },
-      { "trigger": "onPlay", "effect": "loseHp", "amount": 4 }
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 20
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "loseHp",
+        "amount": 4
+      }
     ]
   },
-
   {
     "id": "gear_paper_slip",
     "retired": true,
@@ -256,7 +410,12 @@
     "rarity": "common",
     "family": "keep",
     "text": "このターンは手札を捨てない",
-    "effects": [{ "trigger": "onPlay", "effect": "retainHandOnce" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "retainHandOnce"
+      }
+    ]
   },
   {
     "id": "gear_stockpile",
@@ -264,16 +423,25 @@
     "rarity": "uncommon",
     "family": "keep",
     "text": "余ったエナジーを次のターンへ持ち越す",
-    "effects": [{ "trigger": "onPlay", "effect": "energyCarryOnce" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "energyCarryOnce"
+      }
+    ]
   },
-
   {
     "id": "gear_revive_spring",
     "name": "蘇りの発条",
     "rarity": "rare",
     "family": "big",
     "text": "この戦闘中、致死ダメージを一度耐えてHP1で立つ",
-    "effects": [{ "trigger": "onPlay", "effect": "gainDeathSaveOne" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainDeathSaveOne"
+      }
+    ]
   },
   {
     "id": "gear_time_cog",
@@ -281,7 +449,13 @@
     "rarity": "rare",
     "family": "big",
     "text": "敵全員のいま宣言している行動を打ち消す（楔の全体版）",
-    "effects": [{ "trigger": "onPlay", "effect": "negateEnemyAction", "target": "all" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "negateEnemyAction",
+        "target": "all"
+      }
+    ]
   },
   {
     "id": "gear_nameless",
@@ -308,7 +482,12 @@
     "family": "enemy-status",
     "needsTarget": true,
     "text": "対象のいま宣言している行動の付随物（状態異常の付与・同時強化・同時防御・からくり壊し）を消す。攻撃そのものは通る",
-    "effects": [{ "trigger": "onPlay", "effect": "stripRider" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "stripRider"
+      }
+    ]
   },
   {
     "id": "gear_rusty_chain",
@@ -317,7 +496,12 @@
     "family": "enemy-status",
     "needsTarget": true,
     "text": "対象のいま宣言している攻撃の連撃を1回にする（手数の鏡も1回）",
-    "effects": [{ "trigger": "onPlay", "effect": "singleHit" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "singleHit"
+      }
+    ]
   },
   {
     "id": "gear_decoy_charm",
@@ -325,7 +509,12 @@
     "rarity": "uncommon",
     "family": "general",
     "text": "このターン、最初に受ける敵の攻撃1回のHP損失を0にする（完全に防いだ扱い）",
-    "effects": [{ "trigger": "onPlay", "effect": "nullifyNextEnemyAttack" }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "nullifyNextEnemyAttack"
+      }
+    ]
   },
   {
     "id": "gear_spring_cog",
@@ -333,6 +522,28 @@
     "rarity": "rare",
     "family": "big",
     "text": "この戦闘中、エナジー上限+1（次のターンから）",
-    "effects": [{ "trigger": "onPlay", "effect": "gainEnergyMax", "amount": 1 }]
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainEnergyMax",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "gear_pot_of_ghouls",
+    "name": "亡者の壺",
+    "rarity": "rare",
+    "family": "general",
+    "charges": 1,
+    "text": "火種を2枚手札に加える",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "addCardToHand",
+        "summonId": "white_spark_token",
+        "amount": 2
+      }
+    ]
   }
 ]

@@ -13,6 +13,11 @@ const fresh = (ids: readonly string[]): GameState =>
   withHand(freshCombat('set-confirm', 'enemy_probe', 42, 'starter_white'), ids)
 const light = (s: GameState, n: number): GameState => ({ ...s, player: { ...s.player, light: n } })
 const energy = (s: GameState, n: number): GameState => ({ ...s, player: { ...s.player, energy: n, energyMax: n } })
+const withDef = (s: GameState, def: CardDef): GameState => ({ ...s, player: { ...s.player, hand: [{ uid: `d_${def.id}`, def }, ...s.player.hand] } })
+// 2026-09-24 白のプール 108→84 (docs/white-pool-trim-proposal-2026-09-23.md): 撤去した札の機構は仮の札で固定
+const MEND: CardDef = { id: 'test_mend', name: '試しの修繕', cost: 1, type: 'spell', color: 'white', effects: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 6 }, { trigger: 'onPlay', effect: 'gainBlock', amount: 6, condition: { healedThisTurn: true } }] }
+const RETRIB: CardDef = { id: 'test_retrib', name: '試しの報復', cost: 2, type: 'reaction', color: 'white', effects: [{ trigger: 'onAttacked', effect: 'counter', amount: 14 }, { trigger: 'onAttacked', effect: 'counter', amount: 14, condition: { lastActionNoHpLoss: true } }] }
+const VOW: CardDef = { id: 'test_vow', name: '試しの捧げ', cost: 1, type: 'permanent', color: 'white', requiresRetainer: true, effects: [{ trigger: 'onPlay', effect: 'sacrificeRetainer', amount: 1 }, { trigger: 'onPlay', effect: 'blessRetainers', amount: 2 }] }
 
 describe('白の品質パス (撤去4・スターター差し替え)', () => {
   it('巡礼の鈴・城門の閂・燦光の槌・祈りの残光は存在しない。見習いは報酬プール外のトークン', () => {
@@ -37,15 +42,15 @@ describe('白の参照シナジー (本家6型の条件札7)', () => {
     expect(t.player.hp).toBe(50)
   })
 
-  it('修繕の祈り: ブロック6。このターンに回復していたらさらに6 (過剰回復でも「回復した」に数える)', () => {
-    let s = energy(fresh(['white_heal', 'white_mending']), 3)
-    s = play(s, 't0_white_heal') // 満タンでの回復 = 過剰回復でも healsThisTurn+1
-    s = play(s, 't1_white_mending')
+  it('healedThisTurn (修繕の灯は 2026-09-24 に撤去=仮の札): ブロック6。このターンに回復していたらさらに6 (過剰回復でも「回復した」に数える)', () => {
+    let s = energy(withDef(fresh(['white_mass_heal']), MEND), 9)
+    s = play(s, 't0_white_mass_heal') // 満タンでの回復 = 過剰回復でも healsThisTurn+1
+    s = play(s, 'd_test_mend')
     expect(s.player.block).toBe(12)
-    const t = play(energy(fresh(['white_mending']), 3), 't0_white_mending')
+    const t = play(energy(withDef(fresh([]), MEND), 3), 'd_test_mend')
     expect(t.player.block).toBe(6)
     // 置物の自動回復 (修道士を進軍の号令で今すぐ動かす) は「カードで回復」ではない = 条件は成立しない (Opusラン W の是正)
-    let u = energy(fresh(['white_perm_monk', 'white_march_order', 'white_mending']), 9)
+    let u = energy(withDef(fresh(['white_perm_monk', 'white_march_order']), MEND), 9)
     u = { ...u, player: { ...u.player, hp: 50 } }
     u = play(u, 't0_white_perm_monk') // 手当ての人形 = 置物が場に出るたび回復1 (回し封じ 2026-09-20): 自分の登場で回復1 → 灯は回復+1 = 1 (登場の+1は無い 2026-09-20 夜)
     expect(u.player.light).toBe(1)
@@ -53,19 +58,8 @@ describe('白の参照シナジー (本家6型の条件札7)', () => {
     u = play(u, 't1_white_march_order') // 号令 (1E・灯2): 小さな人形を点灯 → その登場で手当ての人形が回復1 (灯+1)。号令自体は登場ごとを動かさない
     expect(u.player.hp).toBe(52)
     expect(u.player.light).toBe(1) // 灯2を払い、登場ごとの回復で+1 (号令の外の誘発なので灯を産む) = 合図の正味は灯1〜2
-    u = play(u, 't2_white_mending')
+    u = play(u, 'd_test_mend')
     expect(u.player.block).toBe(6)
-  })
-
-  it('癒しの光: 回復6。HPが半分以下ならさらに4', () => {
-    let low = fresh(['white_heal'])
-    low = { ...low, player: { ...low.player, hp: 30 } }
-    low = play(low, 't0_white_heal')
-    expect(low.player.hp).toBe(40)
-    let high = fresh(['white_heal'])
-    high = { ...high, player: { ...high.player, hp: 60 } }
-    high = play(high, 't0_white_heal')
-    expect(high.player.hp).toBe(66)
   })
 
   it('freeIfHandAll: nonphysical (2026-09-06 裁定) は仮の札で固定 (大光壁は 2026-09-20 夜に撤去)', () => {
@@ -75,49 +69,27 @@ describe('白の参照シナジー (本家6型の条件札7)', () => {
       return { ...s0, player: { ...s0.player, hand: [{ uid: 'w0', def: wall }, ...s0.player.hand] } }
     }
     // 置物・リアクションが混じっていても物理が無ければ0E
-    const noPhys = withWall(['white_perm_squire', 'white_reaction_ward', 'white_heal'])
+    const noPhys = withWall(['white_perm_squire', 'white_reaction_ward', 'white_calling'])
     expect(effectiveCost(noPhys, noPhys.player.hand[0])).toBe(0)
-    const spells = withWall(['white_heal', 'white_light_ledger'])
+    const spells = withWall(['white_calling', 'white_light_glow'])
     expect(effectiveCost(spells, spells.player.hand[0])).toBe(0)
-    const mixed = withWall(['white_heal', 'white_strike'])
+    const mixed = withWall(['white_calling', 'white_light_hoard']) // 灯り溜め=物理 (灯の閃撃は 2026-09-24 に呪文へ)
     expect(effectiveCost(mixed, mixed.player.hand[0])).toBe(2)
     const s = play(spells, 'w0')
     expect(s.player.block).toBe(14)
     expect(s.player.energy).toBe(spells.player.energy) // 0Eで撃てた
   })
 
-  it('隊列の突き: 置物×3。とどめなら従者の少年を1体召喚', () => {
-    let s = energy(fresh(['white_perm_squire', 'white_rank_thrust']), 5)
-    s = play(s, 't0_white_perm_squire')
-    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 3, block: 0 })) }
-    s = play(s, 't1_white_rank_thrust')
-    expect(s.enemies[0].hp).toBeLessThanOrEqual(0)
-    expect(s.player.permanents.filter((p) => p.def.id === 'white_perm_squire').length).toBe(2)
-    // とどめでなければ召喚しない
-    let t = energy(fresh(['white_perm_squire', 'white_rank_thrust']), 5)
-    t = play(t, 't0_white_perm_squire')
-    t = play(t, 't1_white_rank_thrust')
-    expect(t.player.permanents.filter((p) => p.def.id === 'white_perm_squire').length).toBe(1)
-  })
-
-  it('報復の光: 返し10。その攻撃を完全に防いでいたら返し+10 (効果ごとの条件をリアクション解決で判定)', () => {
+  it('lastActionNoHpLoss (報復の光は 2026-09-24 に撤去=仮の札): 返し14。その攻撃を完全に防いでいたら返し+14 (効果ごとの条件をリアクション解決で判定)', () => {
     const base = fresh([])
-    const card = { uid: 'r0', def: getCardDef('white_reaction_retribution') }
+    const card = { uid: 'r0', def: RETRIB }
     const blocked: GameState = { ...base, lastAction: { enemyIndex: 0, kind: 'attack', hpLoss: 0, actual: 12 } }
     const hp0 = blocked.enemies[0].hp
     const a = resolveReactionEffects(blocked, card, 0)
-    expect(hp0 - a.enemies[0].hp).toBe(20)
+    expect(hp0 - a.enemies[0].hp).toBe(28) // 2026-09-23 罠の強化 10+10→14+14
     const hurt: GameState = { ...base, lastAction: { enemyIndex: 0, kind: 'attack', hpLoss: 5, actual: 12 } }
     const b = resolveReactionEffects(hurt, card, 0)
-    expect(hp0 - b.enemies[0].hp).toBe(10)
-  })
-
-  it('聖戦の号砲: 全体2＋このターンにプレイした攻撃×2 (薙ぎ払いの白版)', () => {
-    let s = energy(fresh(['white_strike', 'white_war_horn']), 3)
-    s = play(s, 't0_white_strike')
-    const hp1 = s.enemies[0].hp
-    s = play(s, 't1_white_war_horn')
-    expect(hp1 - s.enemies[0].hp).toBe(2 + 2)
+    expect(hp0 - b.enemies[0].hp).toBe(14)
   })
 })
 
@@ -163,22 +135,22 @@ describe('白の従者軸 (ばらまき・倍加・対価・号令)', () => {
     expect(s.player.block - b0).toBe(11)
   })
 
-  it('殉教の誓い: 従者0ならプレイ不可。選んだ従者だけ消え、この置物がある間 従者+2', () => {
-    const none = energy(fresh(['white_perm_martyr_vow']), 3)
+  it('sacrificeRetainer (灯の捧げは 2026-09-24 に撤去=仮の札): 従者0ならプレイ不可。選んだ従者だけ消え、この置物がある間 従者+2', () => {
+    const none = energy(withDef(fresh([]), VOW), 3)
     expect(retainerRequirementMet(none, none.player.hand[0])).toBe(false)
-    expect(() => play(none, 't0_white_perm_martyr_vow', { permanentUid: 'x' })).toThrow('従者が1体以上')
-    let s = light(energy(fresh(['white_perm_squire', 'white_page_rank', 'white_perm_martyr_vow', 'white_march_order']), 9), 2) // 合図の灯2
+    expect(() => play(none, 'd_test_vow', { permanentUid: 'x' })).toThrow('人形が1体以上') // 画面の語は「人形」 (2026-09-24 T3)
+    let s = light(energy(withDef(fresh(['white_perm_squire', 'white_page_rank', 'white_march_order']), VOW), 9), 2) // 合図の灯2
     s = play(s, 't0_white_perm_squire')
     s = play(s, 't1_white_page_rank')
     const page = s.player.permanents.find((p) => p.def.id === 'white_perm_page')!
-    expect(() => play(s, 't2_white_perm_martyr_vow')).toThrow('permanentUid')
-    s = play(s, 't2_white_perm_martyr_vow', { permanentUid: page.uid })
+    expect(() => play(s, 'd_test_vow')).toThrow('permanentUid')
+    s = play(s, 'd_test_vow', { permanentUid: page.uid })
     expect(s.player.permanents.some((p) => p.uid === page.uid)).toBe(false)
     expect(s.player.permanents.filter((p) => p.def.id === 'white_perm_page').length).toBe(1)
     expect(s.eventLog.some((e) => e.type === 'RetainerSacrificed')).toBe(true)
     // 点灯の合図 (2026-09-20): 小さな人形1体を点灯 (1+2=3) してから号令 = 剣2+2・小さな人形1+2 ×2体 = 10。誓い自身 (置物) は従者でないので鳴らない
     const hp0 = s.enemies[0].hp
-    s = play(s, 't3_white_march_order')
+    s = play(s, 't2_white_march_order')
     expect(hp0 - s.enemies[0].hp).toBe(17)
     expect(s.eventLog.some((e) => e.type === 'RetainersTriggered' && e.count === 3)).toBe(true)
   })
@@ -248,12 +220,6 @@ describe('ひなたのパッシブ「駆けつけ」(2026-09-06 ユーザー裁�
     expect(s.player.hp).toBe(51)
     expect(s.eventLog.filter((e) => e.type === 'RetainerRushed').length).toBe(3)
   })
-
-  it('旧パッシブ (毎T回復1・回復ごとブロック1) は無い = 修繕の祈りの条件は自動では成立しない', () => {
-    const s = withHand(hinata(), ['white_mending'])
-    const t = play(s, 't0_white_mending')
-    expect(t.player.block).toBe(6)
-  })
 })
 
 describe('Opusラン W の裁定 (2026-09-06)', () => {
@@ -268,11 +234,11 @@ describe('Opusラン W の裁定 (2026-09-06)', () => {
       const s = withHand(freshCombat('set-confirm', 'enemy_elite_sergeant', 42, 'starter_white'), [])
       return energy(s, 9)
     }
-    // 修繕の祈り: 癒しの光で条件を立ててから撃つ = ブロック12 だが怒りは+1
-    let s = withHand(start(), ['white_heal', 'white_mending'])
+    // 修繕 (仮の札): 大いなる癒しで条件を立ててから撃つ = ブロック12 だが怒りは+1
+    let s = withDef(withHand(start(), ['white_mass_heal']), MEND)
     const str0 = s.enemies[0].strength
-    s = play(s, 't0_white_heal')
-    s = play(s, 't1_white_mending')
+    s = play(s, 't0_white_mass_heal')
+    s = play(s, 'd_test_mend')
     expect(s.player.block).toBe(12)
     expect(s.enemies[0].strength).toBe(str0 + 1)
     // 盾の人形を出して (点灯の定義で出た瞬間に+2) 点灯の合図 (1E・灯2) で今すぐ動かす: 置物由来のブロックは怒らない

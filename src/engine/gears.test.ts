@@ -15,23 +15,10 @@ import {
   resolveGear,
 } from './gears.ts'
 import { incomingTotal, intentModifierNotes } from './summary.ts'
-import {
-  GEAR_DROP_BASE,
-  MANA_PER_ELITE_BOSS,
-  MANA_PER_WIN,
-  SHOP_GEAR_PRICE,
-  SHOP_GEAR_SLOTS,
-  SHOP_MANA_PRICE,
-  applyRunCommand,
-  createDebugCheckpointRun,
-  createRun,
-  gearsOf,
-  manaOf,
-  openShop,
-} from './run.ts'
+import { GEAR_DROP_BASE, MANA_PER_ELITE_BOSS, MANA_PER_WIN, SHOP_GEAR_PRICE, SHOP_GEAR_SLOTS, SHOP_MANA_PRICE, applyRunCommand, createDebugCheckpointRun, gearsOf, manaOf, openShop } from './run.ts'
 import type { RunState } from './run.ts'
 import { applyCommand } from './state.ts'
-import { attackIntent, createRunInBattle, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, createRunInBattle, freshCombat, withHand, withIntent, createRunAtMap as createRun } from './test-helpers.ts'
 import type { GameState, GearInstance } from './types.ts'
 
 const gear = (id: string): GearInstance => makeGear(id, `t_${id}`)
@@ -45,17 +32,17 @@ const use = (run: RunState, index: number, extra: Record<string, unknown> = {}):
 
 describe('台帳 (裁定 2026-09-17: 33種・C13/U14/R6・数値は本家の瓶並み。2026-09-18: 2本続けて0回の3種を抽選から外し、別案4種〔蝋の栓・錆びた鎖・身代わりの符・湧き水の歯車〕を足して抽選34種)', () => {
   it('定義は37種で id と名前が一意。抽選に載るのは34種 (retired 3 = 厄除けの符・挟み紙・引き直し)', () => {
-    expect(allGears.length).toBe(37)
-    expect(new Set(allGears.map((g) => g.id)).size).toBe(37)
-    expect(new Set(allGears.map((g) => g.name)).size).toBe(37)
-    expect(poolGears.length).toBe(34)
+    expect(allGears.length).toBe(38) // 2026-09-23 亡者の壺 (本家 Pot of Ghouls)
+    expect(new Set(allGears.map((g) => g.id)).size).toBe(38)
+    expect(new Set(allGears.map((g) => g.name)).size).toBe(38)
+    expect(poolGears.length).toBe(35)
     expect(allGears.filter((g) => g.retired === true).map((g) => g.id).sort()).toEqual(['gear_paper_slip', 'gear_redraw', 'gear_ward_charm'])
     expect(getGearDef('gear_redraw').name).toBe('引き直し') // 旧セーブの持ち物としては読める
   })
 
   it('抽選に載るレア度の内訳は C13 / U14 / R7', () => {
     const by = (r: string) => poolGears.filter((g) => g.rarity === r).length
-    expect([by('common'), by('uncommon'), by('rare')]).toEqual([13, 14, 7])
+    expect([by('common'), by('uncommon'), by('rare')]).toEqual([13, 14, 8]) // 2026-09-23 亡者の壺 (R)
   })
 
   it('報酬・店・チェックポイントの抽選は retired を引かない', () => {

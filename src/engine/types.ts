@@ -222,6 +222,11 @@ export interface EnemyState extends CombatantState {
   readonly thorns?: number
   /** 盗みで抱えているゴールド。精算は勝利時にrun層 (確定済みルール表「盗みと逃走」) */
   readonly stolenGold?: number
+  /**
+   * 前のターンに宣言して実行した意図の種別 (2026-09-24 Opus ひなた E1)。自ターン開始で意図を消す時に残す。
+   * 読むのは盗人の「逃走を2度続けて宣言しない」判定だけ (打ち消された逃走の次のターンは素の行動に戻る = 旧挙動)
+   */
+  readonly prevIntentKind?: EnemyActionKind
   /** 逃走済み (hp:0とセットで立つ = 既存の死亡判定がそのまま勝利判定に使える) */
   readonly fled?: boolean
   /** 分裂済み (2026-09-02)。倒れた分裂親が二度と分裂しないためのフラグ */
@@ -424,6 +429,17 @@ export interface GameState {
   readonly eventLog: readonly GameEvent[]
   /** C型レリック (静かな鈴): 伏せ札がある間、敵の攻撃実値-N。旧セーブに無いので optional */
   readonly setDamageReduction?: number
+  /**
+   * 静かな鈴が今の敵の行動に効くか (2026-09-24 Opus ひなた E2)。行動の開始 (からくり壊しの後・pre 窓の前) で
+   * 「伏せ札があるか」を固定する = 確認の窓に出た値 (鈴で-2) と、発動して罠が無くなった後の解決が同じ値を読む。
+   * 自ターン開始で消える (自ターン中の表示は今の伏せ札を見る)
+   */
+  readonly bellLocked?: boolean
+  /**
+   * 戦闘開始時の所持金 (2026-09-24 Opus ひなた E6)。盗みは宣言時に「所持金−すでに盗まれた額」で頭打ち (本家 Looter と同じ)。
+   * 戦闘は所持金を増減しない (精算は勝利時の run 層) ので、読むのは盗みの上限だけ。省略=上限なし (単発戦闘・旧セーブ)
+   */
+  readonly goldAvailable?: number
   /** 実験 (2026-09-02): 通常カードも1Eで伏せられ、発動時に印字コストを払う (engine/setany.ts) */
   readonly setAnyCards?: boolean
   /** C型レリック (回収の紐 2026-09-13 作り直し): 期限切れ (期限切れの) 罠は捨て札でなく手札に戻る */
@@ -440,6 +456,8 @@ export interface GameState {
   /** 次の自ターン開始時に追加でドロー/一時マナ/ブロック (百年の謎かけ・兵法書・自ら固まる粘土。適用したら消える) */
   readonly nextTurnDraw?: number
   readonly nextTurnEnergy?: number
+  /** 次の自ターン開始時に得る灯 (灯の埋め火・灯の集約 2026-09-23。本家 HiddenCache/Convergence) */
+  readonly nextTurnLight?: number
   readonly nextTurnBlock?: number
   /** C型: 手札を捨てない (ルーンの角錐。火傷の1回きり・衝動の失効は従来どおり) */
   readonly retainHand?: boolean
@@ -596,13 +614,13 @@ export type GameEvent =
   | { readonly type: 'NecroPlayed'; readonly cardId: string } // 亡骸プレイ (黒): 消滅置き場からプレイされ、ゲームから取り除かれた
   | { readonly type: 'AetherDischarged'; readonly spent: number } // 霊気放出
   | { readonly type: 'LightGained'; readonly amount: number; readonly source: 'heal' | 'retainer' | 'passive' | 'card' | 'carry'; readonly sourceUid?: string } // 灯 (白 2026-09-20): 回復・人形の登場・パッシブ・明示の札・残り火 (carry)。sourceUid=灯を灯した置物 (灯芯の人形・リーダーのパッシブ。演出用 2026-09-20 灯籠)
-  | { readonly type: 'LightDischarged'; readonly spent: number } // 灯の放出 (白): 灯×N のダメージ or 灯1につき全人形が動く
+  | { readonly type: 'LightDischarged'; readonly spent: number; readonly sparks?: number; readonly paid?: boolean } // 灯の放出 (白): 灯×N のダメージ or 灯1につき全人形が動く。sparks=灯の火床が払った灯を火種に変えた枚数・paid=灯の炉心などの consumeLight (ダメージの無い支払い)。どちらも放出でなく「払った」と表示する (2026-09-24 T15)
   | { readonly type: 'LightSpent'; readonly amount: number; readonly cardId: string } // 灯コストの支払い (白 2026-09-20 夜。Opus 3本「支払いがログに出ない」): 号令・灯コストの人形
   | { readonly type: 'DiscountGained'; readonly amount: number } // マナ軽減トークン
   | { readonly type: 'BurnApplied'; readonly enemyIndex: number; readonly amount: number } // 延焼付与
   | { readonly type: 'BurnTick'; readonly enemyIndex: number; readonly amount: number } // 延焼ダメージ
   | { readonly type: 'StatusInflicted'; readonly status: PlayerStatus; readonly amount: number }
-  | { readonly type: 'ScaldTick'; readonly count: number; readonly amount: number } // 火傷・烙印: 自ターン終了時に手札にあると自傷 (2026-09-02)
+  | { readonly type: 'ScaldTick'; readonly count: number; readonly amount: number; readonly scalds?: number; readonly brands?: number } // 火傷・烙印: 自ターン終了時に手札にあると自傷 (2026-09-02)。scalds/brands=内訳 (2026-09-23 人間ラン#17: 浮き数字に「烙印 −N」「火傷 −N」の名札。旧ログは欠落)
   | { readonly type: 'EnemySplit'; readonly enemyIndex: number; readonly into: string; readonly count: number } // 分裂 (2026-09-02)
   | { readonly type: 'EnemySummoned'; readonly enemyIndex: number; readonly into: string; readonly count: number } // 召喚 (2026-09-14)。count=実際に出た数 (上限で0もある)
   | { readonly type: 'EnemyHatched'; readonly enemyIndex: number; readonly fromId: string; readonly intoId: string } // 孵化 (2026-09-02)
@@ -622,6 +640,8 @@ export type GameEvent =
   | { readonly type: 'PermanentPlayed'; readonly cardId: string }
   | { readonly type: 'CardExhausted'; readonly cardId: string } // 消滅
   | { readonly type: 'CardsAddedToHand'; readonly cardId: string; readonly count: number } // 骨刃などのトークン生成
+  | { readonly type: 'CardsAddedToDiscard'; readonly cardId: string; readonly count: number } // 断ち切り (白 2026-09-23 本家 Severance): トークンを捨て札へ
+  | { readonly type: 'DeckCardTransformed'; readonly cardId: string; readonly into: string } // 降霊 (白 2026-09-23 本家 Seance): 山札の札をトークンに変えた
   | { readonly type: 'CardsAddedToDraw'; readonly cardId: string; readonly count: number } // 火種 (白 2026-09-20 夜): トークンを山札のランダムな位置へ
   | { readonly type: 'ExhaustRecycled'; readonly count: number } // 輪廻: 消滅置き場を山札へ還した
   | { readonly type: 'BurnDischarged'; readonly enemyIndex: number; readonly amount: number } // 爆熱: 延焼の換金
@@ -632,6 +652,7 @@ export type GameEvent =
   | { readonly type: 'RetainerExpired'; readonly cardId: string; readonly uid: string } // 人形の灯りが尽きた (2026-09-21): 寿命の最後の敵フェーズの終わりに場から消えた
   | { readonly type: 'RetainerCopied'; readonly cardId: string; readonly uid: string; readonly fromUid: string } // 人形をコピーした (写し灯・鏡の灯籠・二重の点灯 2026-09-21)。uid=新しい人形
   | { readonly type: 'RetainerLifeExtended'; readonly cardId: string; readonly uid: string; readonly amount: number; readonly persist?: boolean } // 継ぎ火 (+N)・永遠の灯 (persist)
+  | { readonly type: 'PermanentDismissed'; readonly cardId: string; readonly uid: string } // 灯の炉心 (2026-09-24): 灯を払えず置物が場を離れた (捨て札へ)
   | { readonly type: 'RetainerRushed'; readonly cardId: string } // 駆けつけ (ひなた 2026-09-06): 場に出た従者が即1回動いた
   | { readonly type: 'ThornsReflected'; readonly enemyIndex: number; readonly amount: number; readonly hpLoss: number } // とげ反射 (確定済みルール表「とげ（敵の報復）」)
   | { readonly type: 'GoldStolen'; readonly enemyIndex: number; readonly amount: number } // 盗み (精算は勝利時)
@@ -783,15 +804,18 @@ export interface DeclarativeEffect {
     | 'dischargeAether' // 霊気放出: 霊気×amount のダメージを与え、霊気を全消費 (青)
     | 'addLight' // 灯+X (白 2026-09-20 白の再設計): 明示の蓄積。回復・人形の登場・パッシブの加算は engine の規則
     | 'dischargeLight' // 灯の放出 (白): 灯×amount のダメージを与え、灯を0に (target:'all' は生存全体へ一括)。灯0なら不発 (消費しない)
-    | 'dischargeLightRally' // 灯火の大行列 (白 R): 灯を全て放出し、灯1につき全人形が amount 回動く (放出を人形に流す総攻撃)
+    | 'dischargeLightRally' // 灯火の大行列 (白 R): 灯を全て放出し、灯 amount につき全人形が1回動く (放出を人形に流す総攻撃。2026-09-24 灯2につき)
     | 'dischargeLightWeaken' // 眩む閃光 (白 U 2026-09-20 夜): 灯を全て放出し、灯3につき敵全体に威圧 amount (放出の第2の形)
     | 'consumeLight' // 灯の鍛冶 (白 U): 灯を全て失う (ダメージ無しの放出。放出の誘発は鳴らない)
+    | 'dismissUnlessLight' // 灯の炉心 (白 U 2026-09-24): 灯が amount 未満ならこの置物は場を離れて捨て札へ (維持費)
+    | 'extendAllRetainersLife' // 継ぎ火 (白 C 2026-09-24): 場の人形すべての期限を amount ターン延ばす (期限なしの人形は不変)
     | 'gainBlockPerLight' // 灯の壁 (白 U): 灯2につき amount ブロック (灯は失わない)
     | 'drawCardsPerLight' // 灯の手帳 (白 C): 灯2につき amount ドロー (上限 amountMax。灯は失わない)
     | 'lightCarryHalf' // 残り火 (白 R 置物): この置物がある間、灯を放出しても半分 (切り捨て) が残る (疾風の王型の常在の印)
     | 'addCardToDraw' // 火種撒き (白 2026-09-20 夜): summonId のトークン札 amount 枚を山札のランダムな位置へ (本家 Reave 型)
     | 'lightToSparks' // 灯の火床 (白 R 置物): ターン終了時に選んだ枚数 (EndTurn.hearthSparks・上限 灯÷amount) だけ灯 amount につき火種1を山札へ (払った灯だけ失う)
     | 'dealDamagePerSpark' // 火種の嵐 (白 R): この戦闘で撃った火種×amount のダメージ (本家 Soul Storm 型)
+    | 'gainBlockPerSpark' // 火守りの盾 (白 C 2026-09-24 Opus ひなた裁定「作る札に刈り取りを内蔵」): この戦闘で撃った火種×amount のブロック
     | 'triggerRandomRetainer' // 灯の継ぎ手 (白 U 置物): 場の人形1体 (ランダム) の効果を今1回解決 (号令の小型。灯は産まない)
     | 'dealDamagePerLight' // 灯篭の人形 (白 R 2026-09-20 灯と人形の結び): 灯2につき amount ダメージ (切り捨て。灯は消費しない=放出すると暗くなる)
     | 'doubleLight' // 灯の倍化 (白 R・消滅必須): 現在の灯を2倍にする
@@ -829,6 +853,8 @@ export interface DeclarativeEffect {
     | 'upgradeAllInHand' // 研ぎ澄まし (緑 2026-09-07 ピック監査=本家 Armaments+): 手札の全て (自身・レア・工房産を除く) をこの戦闘中鍛える。選択なし
     | 'gainMaxHp' // 獲物 (緑 2026-09-07=本家 Feed): 最大HPとHPを+X (この戦闘後も残る。勝利時に run.maxHp へ同期)
     | 'exhaustFromDeckChoose' // 引導 (黒 2026-08-31): 山札か捨て札から好きなX枚を選んで消滅させる (combat.ts が deckUids で解決。亡骸・onCardExhausted は発火 = 狙い撃ちの起爆と燃料化)
+    | 'addCardToDiscard' // 断ち切り (白 2026-09-23 本家 Severance): summonId のトークン札X枚を捨て札に加える (この戦闘限り)
+    | 'transformDeckToToken' // 降霊 (白 2026-09-23 本家 Seance): 山札から選んだX枚を summonId のトークン札に変える (PlayCard.deckUids)
     | 'addCardToHand' // 骨刃 (黒 2026-09-01): summonId のトークン札X枚を手札に加える (この戦闘限り。ラン層のデッキには入らない)
     | 'empowerShivs' // 骨刃の強化 (黒): 【常在】shivToken 札の与ダメ+X (プレイ時に注入。急所読み=StS Accuracy)
     | 'dealDamagePerHeal' // 回復の換金 (黒 2026-09-01): この戦闘で回復した回数×Xダメージ (滾る血汐。過剰回復も数える)
@@ -879,6 +905,7 @@ export interface DeclarativeEffect {
     | 'dealDamageCleave' // キル連鎖: Xダメージ。対象が倒れたら別の生存敵に同値
     | 'drawCardsNextTurn' // 次の自ターンの開始時にX枚多くドロー (百年の謎かけ・懐中時計 2026-09-12。GameState.nextTurnDraw に積む)
     | 'gainEnergyNextTurn' // 次の自ターンの開始時に一時マナ+X (兵法書)
+    | 'addLightNextTurn' // 次の自ターンの開始時に灯+X (灯の埋め火・灯の集約 2026-09-23)
     | 'gainBlockNextTurn' // 次の自ターンの開始時にブロック+X (自ら固まる粘土)
     | 'gainBlockPerHandCard' // 手札の枚数×X のブロック (外套の留め金=本家 Cloak Clasp)
     | 'staggerEnemy' // 体勢を崩す (蔦の陣 2026-09-13): 対象の敵の次の宣言が隙 (バランス崩しと同じ staggeredNext)
@@ -981,6 +1008,58 @@ export interface EventChoiceDef {
   readonly upgradeRandomCards?: number
   /** デッキの負傷カードを全て取り除く (本家 The Divine Fountain)。0枚なら何も起きない */
   readonly removeAllWounds?: boolean
+  /** 忘れられた墓 (2026-09-23 本家 Grave of the Forgotten): 消滅を持つ札1枚 (cardIndex) の消滅を外し、プレイするたび一時マナ+1 を付ける */
+  readonly unexhaustCard?: boolean
+  /** 名指しのレリック (2026-09-23): 持っていなければ得る。持っていれば選べない */
+  readonly relicId?: string
+  /** 出立の支度 (2026-09-24): ギアを名指しでN個 (持ち物が満杯なら入らない) */
+  readonly gears?: readonly string[]
+  /** 出立の支度: 魔素+N (上限まで) */
+  readonly mana?: number
+  /** 出立の支度: 札を名指しでデッキに加える (秘伝の技=自分の色のレア札) */
+  readonly addCardIds?: readonly string[]
+}
+
+/** 出立の店の品の並べ方 (札・遺物・サービス) */
+export type DepartureKind = 'card' | 'relic' | 'service'
+
+/**
+ * 出立の支度 (ラン開始の祝福 2026-09-24 `docs/departure-proposal-2026-09-24.md`): 台帳 data/departures.json の1行。
+ * 中身 (どの遺物・どのギア・どのレア札か) は createRun でランRNGから名指しに解決され、DepartureOffer になる
+ */
+export interface DepartureTemplate {
+  readonly id: string
+  /**
+   * 並べ方: card=札 (普通の店と同じカードの面で並べる) / relic=遺物 / service=サービス (荷の整理・研ぎ・薬草・道具箱)。
+   * 台帳の全行が毎回並ぶ (2026-09-24 夜 ユーザー「普通の商店のように。レリック3・カード3」)。画面に種類名は出さない
+   */
+  readonly kind: DepartureKind
+  readonly name: string
+  readonly text: string
+  readonly choice: EventChoiceDef
+  /** 坑口の店での値段 */
+  readonly price: number
+  /** 買わなかった時に行商が担いで降りて幕1の店に並べる値段 (物価が乗る。画面には書かない＝知っている人だけ得をする)。無ければ並べない (除去・鍛えは普通の店にもある) */
+  readonly shopPrice?: number
+  /** 解決時に候補列からこのレア度の遺物を1つ引いて choice.relicId にする */
+  readonly relicRarity?: RelicRarity
+  /** 解決時にギアをN個引いて choice.gears にする */
+  readonly gearCount?: number
+  /** 解決時に自分の色の札をこのレア度からN枚引いて choice.addCardIds にする (技の心得=アンコモン・秘伝の技=レア) */
+  readonly cardPick?: { readonly rarity: 'common' | 'uncommon' | 'rare'; readonly count: number }
+}
+
+/** 解決済みの支度 (RunState が持つ。名指しの中身入り) */
+export interface DepartureOffer {
+  readonly id: string
+  readonly kind: DepartureKind
+  readonly name: string
+  readonly text: string
+  readonly choice: EventChoiceDef
+  /** 坑口の店での値段 */
+  readonly price: number
+  /** 買わなかった時に行商が幕1の店に並べる値段 */
+  readonly shopPrice?: number
 }
 
 /** ?マス (イベント) の定義。data/events.json が一次資料 */

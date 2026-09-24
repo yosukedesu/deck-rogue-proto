@@ -6,9 +6,9 @@ import { applyCommand } from './state.ts'
 import { getEnemyDef, resolveEncounter } from './content.ts'
 import * as contentModule from './content.ts'
 import * as combatModule from './combat.ts'
-import { applyRunCommand, createRun } from './run.ts'
+import { applyRunCommand } from './run.ts'
 import type { RunState } from './run.ts'
-import { chooseToward, freshCombat, withHand, withIntent, setAndArm } from './test-helpers.ts'
+import { chooseToward, freshCombat, withHand, withIntent, setAndArm, createRunAtMap as createRun } from './test-helpers.ts'
 import type { EnemyIntent, GameState } from './types.ts'
 
 function intent(partial: Partial<EnemyIntent> & { kind: EnemyIntent['kind'] }): EnemyIntent {

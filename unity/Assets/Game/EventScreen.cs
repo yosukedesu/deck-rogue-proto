@@ -27,19 +27,10 @@ namespace DeckRogue.Game
             if (g.EventChoiceIndex >= 0 && g.EventChoiceIndex < def.Choices.Count)
             {
                 var ch = def.Choices[g.EventChoiceIndex];
-                RunUi.Heading(root, "「" + ch.Label + "」", "対象のカードを1枚選ぶ");
-                var area = UiKit.NewRect("pick", root);
-                // スマホは幅いっぱい (2026-09-15 ユーザー「カード一覧の左が切れてマナコストが見えない」: PC 用の幅 1520 がキャンバス 1462 からはみ出していた)
-                RunUi.PickArea(root, area);
                 int ci = g.EventChoiceIndex;
-                // 鍛えられない札・5枚以下のデッキの除去は選べない (engine が拒む手を押せないようにする 2026-09-14)
-                bool isUpgrade = ch.UpgradeCard == true;
-                bool canRemove = ch.RemoveCard != true || run.Deck.Count > 5;
-                RunUi.CardGrid(g, area, run.Deck,
-                    delegate (int i, CardInstance c) { return isUpgrade && !DeckRogue.Engine.Upgrade.CanUpgradeCard(c) ? "鍛えられない" : "これ"; },
-                    delegate (int i, CardInstance c) { return canRemove && (!isUpgrade || DeckRogue.Engine.Upgrade.CanUpgradeCard(c)); },
-                    delegate (int i) { g.EventChoiceIndex = -1; g.Do(new RunCommand_EventChoice { Index = ci, CardIndex = i }); }, 500f, pickKey: "event", confirmRoot: root);
-                RunUi.BackButton(root, "選び直す", delegate { g.EventChoiceIndex = -1; g.Rebuild(); });
+                CardPick(g, root, ch, "「" + ch.Label + "」", "event",
+                    delegate (int i) { g.EventChoiceIndex = -1; g.Do(new RunCommand_EventChoice { Index = ci, CardIndex = i }); },
+                    "選び直す", delegate { g.EventChoiceIndex = -1; g.Rebuild(); });
                 return;
             }
 
@@ -132,13 +123,44 @@ namespace DeckRogue.Game
             }
         }
 
+        /// <summary>
+        /// 選択肢の「デッキから1枚選ぶ」画面 (?イベント・出立の支度・行商が預かった支度で共用。2026-09-24 出立の支度で切り出し)。
+        /// 鍛えられない札・5枚以下のデッキの除去・消滅を外せない札・変成できない札は選べない (engine が拒む手を押せないようにする 2026-09-14)
+        /// </summary>
+        public static void CardPick(GameRoot g, RectTransform root, EventChoiceDef ch, string title, string pickKey, Action<int> onPick, string backLabel, Action onBack)
+        {
+            var run = g.Rs;
+            bool isUpgrade = ch.UpgradeCard == true;
+            bool isUnexhaust = ch.UnexhaustCard == true;   // 忘れられた墓 (2026-09-23)
+            bool isTransform = ch.TransformCard == true;   // 変転の祠など: 状態異常・烙印は変成できない (2026-09-24 Opus ひなた T14 裁定A。engine も拒む)
+            bool canRemove = ch.RemoveCard != true || run.Deck.Count > 5;
+            string verb = ch.RemoveCard == true ? "取り除く" : isUpgrade ? "鍛える" : isTransform ? "変成する" : isUnexhaust ? "消滅を外す" : ch.DuplicateCard == true ? "複製する" : null;
+            string sub = verb != null ? verb + "札を1枚選ぶ" : "対象のカードを1枚選ぶ";
+            if (isTransform) sub += "（状態異常・烙印は変成できない）";
+            RunUi.Heading(root, title, sub);
+            var area = UiKit.NewRect("pick", root);
+            // スマホは幅いっぱい (2026-09-15 ユーザー「カード一覧の左が切れてマナコストが見えない」: PC 用の幅 1520 がキャンバス 1462 からはみ出していた)
+            RunUi.PickArea(root, area);
+            RunUi.CardGrid(g, area, run.Deck,
+                delegate (int i, CardInstance c) { return isUpgrade && !DeckRogue.Engine.Upgrade.CanUpgradeCard(c) ? "鍛えられない" : isUnexhaust && !Run.CanUnexhaustCard(c) ? "消滅を外せない" : isTransform && !Run.CanTransformCard(c) ? "変成できない" : "これ"; },
+                delegate (int i, CardInstance c) { return canRemove && (!isUpgrade || DeckRogue.Engine.Upgrade.CanUpgradeCard(c)) && (!isUnexhaust || Run.CanUnexhaustCard(c)) && (!isTransform || Run.CanTransformCard(c)); },
+                onPick, 500f, pickKey: pickKey, confirmRoot: root,
+                lockReason: isTransform ? (Func<int, CardInstance, string>)delegate (int i, CardInstance c) { return Run.CanTransformCard(c) ? null : TransformLockReason; } : null);
+            RunUi.BackButton(root, backLabel, onBack);
+        }
+
+        /// <summary>変成できない札の理由 (?イベントの変成・星読みの盤の札に重ねる。Web と同じ文を札の幅 (13px で10字) に合わせて3行に。2026-09-24 T14)</summary>
+        public const string TransformLockReason = "状態異常・烙印は\n変成できない\n（除去で消す）";
+
         /// <summary>効果を何も持たない選択肢 (無料の「立ち去る」)。取引型のイベントだけが最後に持つ</summary>
         static bool IsFreeChoice(EventChoiceDef ch)
         {
             return !ch.Gold.HasValue && !ch.RequireGold.HasValue && !ch.Hp.HasValue && !ch.MaxHp.HasValue && !ch.HpRatio.HasValue
                 && !ch.Wounds.HasValue && !ch.Brands.HasValue && !ch.TimedCurses.HasValue && !ch.AddRandomCards.HasValue
                 && ch.Relic != true && ch.RemoveCard != true && ch.UpgradeCard != true && ch.TransformCard != true
-                && ch.DuplicateCard != true && ch.RemoveAllWounds != true && !ch.UpgradeRandomCards.HasValue && ch.Gamble == null;
+                && ch.DuplicateCard != true && ch.RemoveAllWounds != true && !ch.UpgradeRandomCards.HasValue && ch.Gamble == null
+                && ch.UnexhaustCard != true && ch.RelicId == null
+                && ch.Gears == null && !ch.Mana.HasValue && ch.AddCardIds == null;   // 出立の支度の中身 (2026-09-24。?イベントでは使わない)
         }
 
         static string ChoiceHint(EventChoiceDef ch)

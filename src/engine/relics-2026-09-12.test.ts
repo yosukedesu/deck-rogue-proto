@@ -5,11 +5,8 @@ import { describe, expect, it } from 'vitest'
 import { allEnemies, allRelics, buildDeck, buildRelicPermanent, getCardDef, getEventDef, getRelicDef } from './content.ts'
 import { startCombatWithOptions, type CombatOptions } from './combat.ts'
 import { applyCommand } from './state.ts'
-import { attackIntent, chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
-import {
-  addCardsToRunDeck, applyRunCommand, campfireOptions, createRun, drawRelicOptions, gainRelic, isUpgraded, nextChoices, relicAllowedForColors,
-  relicChargesLeft, relicStateOf, wingChoices, type RunState,
-} from './run.ts'
+import { attackIntent, chooseToward, defendIntent, withHand, withIntent, createRunAtMap as createRun } from './test-helpers.ts'
+import { addCardsToRunDeck, applyRunCommand, campfireOptions, drawRelicOptions, gainRelic, isUpgraded, nextChoices, relicAllowedForColors, relicChargesLeft, relicStateOf, wingChoices, type RunState } from './run.ts'
 import type { EnemyIntent, GameState } from './types.ts'
 
 const ENEMY = allEnemies.find((e) => !('splitInto' in e) && !('hatchInto' in e) && !('burrow' in e) && e.nemesis !== true && e.turnArmor === undefined && e.armor === undefined && e.thorns === undefined && e.regen === undefined)!.id

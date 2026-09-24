@@ -3,9 +3,9 @@
 import { describe, expect, it } from 'vitest'
 import { chainFromStart } from './enemyGraph.ts'
 import { getEnemyDef, allEvents, getCardDef, getEventDef, WOUND_DEF } from './content.ts'
-import { applyRunCommand, canUpgradeCard, createRun, defaultEventChoice, eventChoiceNeedsCard, eventPlayable, pickEvent, shopRemovalPrice, shopUpgradePrice, upgradeCard } from './run.ts'
+import { applyRunCommand, canUpgradeCard, defaultEventChoice, eventChoiceNeedsCard, eventPlayable, pickEvent, shopRemovalPrice, shopUpgradePrice, upgradeCard } from './run.ts'
 import type { RunState } from './run.ts'
-import { chooseToward, defendIntent, withHand, withIntent } from './test-helpers.ts'
+import { chooseToward, defendIntent, withHand, withIntent, createRunAtMap as createRun } from './test-helpers.ts'
 import type { GameState } from './types.ts'
 import type { MapNode } from './map.ts'
 
@@ -152,11 +152,12 @@ describe('ショップ', () => {
   })
 
   it('強化サービス: 100G+使うたび+50G逓増 (2026-08-31 シンク強化)。幕1でも使える (2026-09-01 制限撤廃)', () => {
-    const act1 = applyRunCommand({ ...intoShop(11), gold: 300 }, { type: 'ShopUpgrade', index: 0 })
-    expect(act1.deck.some((c) => c.def.name.endsWith('+'))).toBe(true)
+    const shop1 = { ...intoShop(11), gold: 300 }
+    const act1 = applyRunCommand(shop1, { type: 'ShopUpgrade', index: shop1.deck.findIndex((c) => canUpgradeCard(c)) })
+    expect(act1.deck.filter((c) => c.def.name.endsWith('+')).length).toBe(shop1.deck.filter((c) => c.def.name.endsWith('+')).length + 1)
     let run = { ...intoShop(11), act: 2 }
     run = { ...run, gold: 300 }
-    const idx = run.deck.findIndex((c) => c.def.id === 'green_strike')
+    const idx = run.deck.findIndex((c) => c.def.id === 'green_strike' && canUpgradeCard(c)) // 道中の ? が鍛えた札は避ける (2026-09-23)
     run = applyRunCommand(run, { type: 'ShopUpgrade', index: idx })
     expect(run.gold).toBe(300 - 100)
     expect(run.deck[idx].def.name).toBe('打撃+')
@@ -207,11 +208,12 @@ describe('?マス (イベント)', () => {
     'event_ghost_peddler', 'event_dice_imp', 'event_lost_peddler', 'event_broken_stairs', 'event_fairy_market',
     'event_wing_statue', 'event_old_beggar', 'event_forgotten_altar', 'event_mausoleum', 'event_moai',
     'event_tower_tailor', 'event_obsidian_idol', 'event_blood_altar', 'event_guilty_bargain', 'event_three_cups',
+    'event_forgotten_grave', // 忘れられた墓 (2026-09-23 本家 Grave of the Forgotten): レリック/呪いを持ちかける取引
   ]
   const isFreeChoice = (c: (typeof allEvents)[number]['choices'][number]): boolean =>
     Object.keys(c).every((k) => k === 'label')
 
-  it('規約: 無料の「立ち去る」は取引型15件だけ。それ以外の選択肢は必ず何かを起こす', () => {
+  it('規約: 無料の「立ち去る」は取引型16件だけ。それ以外の選択肢は必ず何かを起こす', () => {
     for (const ev of allEvents) {
       const free = ev.choices.filter(isFreeChoice)
       if (FREE_LEAVE_EVENTS.includes(ev.id)) {
@@ -297,7 +299,7 @@ describe('?マス (イベント)', () => {
     // 2026-09-02 呪いイベント+2 (黒曜の偶像=oneTime・血染めの祭壇=shrine)
     const kindOf = (e: (typeof allEvents)[number]) => e.kind ?? 'act'
     expect(allEvents.filter((e) => kindOf(e) === 'shrine')).toHaveLength(7)
-    expect(allEvents.filter((e) => kindOf(e) === 'oneTime')).toHaveLength(6) // 2026-09-02 毒の三杯 (どの毒を飲むかの選択)
+    expect(allEvents.filter((e) => kindOf(e) === 'oneTime')).toHaveLength(7) // 2026-09-02 毒の三杯 (どの毒を飲むかの選択)。2026-09-23 忘れられた墓
     for (const act of [1, 2, 3]) {
       const pool = allEvents.filter((e) => kindOf(e) === 'act' && e.act === act)
       expect(pool.length, `幕${act}の幕専用イベント`).toBeGreaterThanOrEqual(6)

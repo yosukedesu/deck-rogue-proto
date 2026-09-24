@@ -1,6 +1,6 @@
 import { relicRarityTag } from '../engine/summary.ts'
 import { actSummaries, battleMetrics, type BattleMetrics, type BattleRow } from '../engine/analysis.ts'
-import { allCards, allEnemies, allGears, allLeaders, allRelics, encounterName, getEnemyDef, getEventDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
+import { allCards, allEnemies, allGears, allLeaders, allRelics, encounterName, getCardDef, getEnemyDef, getEventDef, getGearDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
 import { graphFromLegacy } from '../engine/enemyGraph.ts'
 import type { LegacyEnemyDef } from '../engine/enemyGraph.ts'
 
@@ -27,7 +27,7 @@ import { effectiveIntent, effectiveCost, isPlayableFromHand } from '../engine/ef
 import type { RunCommand, RunState } from '../engine/run.ts'
 import type { CardInstance, GameEvent, GameState } from '../engine/types.ts'
 import { cardName, intentText, logLine } from './log.ts'
-export { STATUS_LABEL, inflictSuffix, intentText, cardName, logLine } from './log.ts'
+export { STATUS_LABEL, inflictSuffix, intentText, cardName, logLine, logLines } from './log.ts'
 export type { LogLine } from './log.ts'
 
 /**
@@ -85,7 +85,7 @@ export function archiveBattle(
   deckSize: number,
   ctx?: { readonly act: number; readonly boss: boolean },
 ): BattleArchive {
-  const all = combat.eventLog.map(reportLine).filter((x): x is string => x !== null)
+  const all = reportLines(combat.eventLog)
   return {
     battleNo,
     ...(ctx ? { act: ctx.act, boss: ctx.boss } : {}),
@@ -182,6 +182,27 @@ function reportLine(e: GameEvent): string | null {
   return logLine(e)?.text ?? null
 }
 
+/**
+ * ログ行の列。1つのことを言う出来事の組は1行にまとめる (2026-09-24 T12・T15。ui/log.ts logLines と同じ規則):
+ * 引く途中の切り直し (出来事は「引いた→切り直した」の逆順に出る) と、灯の火床の「灯を払った→火種を山札に混ぜた」
+ */
+function reportLines(events: readonly GameEvent[]): string[] {
+  const out: string[] = []
+  for (let k = 0; k < events.length; k++) {
+    const e = events[k]
+    const next = events[k + 1]
+    if (e.type === 'CardsDrawn' && next?.type === 'DeckShuffled') {
+      out.push(`山札を切り直してドロー${e.count}枚${e.cards ? `: ${e.cards.join('・')}` : ''}`)
+      k++
+      continue
+    }
+    const line = reportLine(e)
+    if (line !== null) out.push(line)
+    if (e.type === 'LightDischarged' && (e.sparks ?? 0) > 0 && next?.type === 'CardsAddedToDraw') k++
+  }
+  return out
+}
+
 function renderBoard(s: GameState): string[] {
   const p = s.player
   const out: string[] = []
@@ -196,7 +217,7 @@ function renderBoard(s: GameState): string[] {
   out.push(`自分: HP ${p.hp}/${p.maxHp} ブロック${p.block} エナジー${p.energy}/${p.energyMax} ${st}`)
   out.push(`手札(${p.hand.length}): ${p.hand.map((c) => {
     const cost = effectiveCost(s, c)
-    const ok = isPlayableFromHand(c) && cost <= p.energy
+    const ok = isPlayableFromHand(c, s) && cost <= p.energy
     return `${c.def.name}(${cost})${ok ? '' : '✕'}`
   }).join('、') || '（なし）'}`)
   out.push(`伏せ場(${p.setCards.length}/${p.setSlots}): ${names(p.setCards)}`)
@@ -309,7 +330,7 @@ export function buildReport(
     L.push(`## 盤面（ターン ${s.turn} / ${s.phase}）`)
     L.push(...renderBoard(s))
     L.push('')
-    const all = s.eventLog.map(reportLine).filter((x): x is string => x !== null)
+    const all = reportLines(s.eventLog)
     const lines = all.length > LOG_CAP ? all.slice(-LOG_CAP) : all
     L.push(`## この戦闘のログ（${lines.length}行${all.length > lines.length ? ` / 冒頭${all.length - lines.length}行は省略` : ''}）`)
     L.push(...lines)
@@ -923,6 +944,22 @@ export function describeRunChoice(prev: RunState, cmd: RunCommand, next: RunStat
   return { ...core, ctx: { hp: next.hp, maxHp: next.maxHp, deck: next.deck.length, gold: next.gold } }
 }
 
+/** 出立の支度の中身 (名指しの遺物・ギア・札を名前で。未定義IDでも落ちない) */
+export function departureDetail(o: { readonly text: string; readonly choice: { readonly relicId?: string; readonly gears?: readonly string[]; readonly addCardIds?: readonly string[] } }): string {
+  const parts = [o.text]
+  const safe = (f: () => string, id: string): string => {
+    try {
+      return f()
+    } catch {
+      return id
+    }
+  }
+  if (o.choice.relicId !== undefined) parts.push(safe(() => getRelicDef(o.choice.relicId!).name, o.choice.relicId))
+  if (o.choice.gears !== undefined && o.choice.gears.length > 0) parts.push(o.choice.gears.map((id) => safe(() => getGearDef(id).name, id)).join('・'))
+  if (o.choice.addCardIds !== undefined && o.choice.addCardIds.length > 0) parts.push(o.choice.addCardIds.map((id) => safe(() => getCardDef(id).name, id)).join('・'))
+  return parts.join('＝')
+}
+
 /** ギアの名前 (未定義IDでも落ちない。データ変更後の古いセーブを読む時のため) */
 function gearName(id: string): string {
   return allGears.find((g) => g.id === id)?.name ?? id
@@ -978,6 +1015,25 @@ function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState):
     }
     case 'ShopBuyMana':
       return { at, text: `ショップ: 魔素を購入（${prev.mana ?? 0}→${next.mana ?? 0}・${prev.shop?.manaPrice ?? 0}G）` }
+    case 'BuyDeparture': {
+      // 出立の店 (2026-09-24): 坑口で買った1つ
+      const o = prev.departure?.offers[cmd.index]
+      if (o === undefined) return null
+      const target = cmd.cardIndex !== undefined ? prev.deck[cmd.cardIndex] : undefined
+      return { at, text: `出立の店: ${o.name}（${departureDetail(o)}）を${o.price}Gで買った${target ? `（対象: ${target.def.name}）` : ''}` }
+    }
+    case 'LeaveDeparture': {
+      const bought = (prev.departure?.offers ?? []).filter((o) => (prev.departure?.bought ?? []).includes(o.id)).map((o) => o.name)
+      const carried = (next.departure?.leftovers ?? []).map((o) => o.name)
+      return { at, text: `出立: 店を出て坑へ（買った: ${bought.join('・') || 'なし'}／行商が担いで降りる: ${carried.join('・') || 'なし'}）` }
+    }
+    case 'ShopBuyDeparture': {
+      const slot = (prev.shop?.departures ?? [])[cmd.index]
+      const o = slot !== undefined ? prev.departure?.leftovers.find((x) => x.id === slot.id) : undefined
+      if (o === undefined || slot === undefined) return null
+      const target = cmd.cardIndex !== undefined ? prev.deck[cmd.cardIndex] : undefined
+      return { at, text: `ショップ: 坑口で買わなかった品「${o.name}」（${departureDetail(o)}）を${slot.price}Gで買った${target ? `（対象: ${target.def.name}）` : ''}` }
+    }
     case 'PickRelic': {
       const opts = prev.relicOptions ?? []
       const picked = opts[cmd.index]
@@ -1091,7 +1147,12 @@ function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState):
         /* 未知イベントは生ID */
       }
       const target = cmd.cardIndex !== undefined ? prev.deck[cmd.cardIndex] : undefined
-      const hpDiff = next.hp - prev.hp
+      // 最大HPが増えた選択は HP も同じだけ増える。HP は選択肢の数字どおりに出し、増えた分は注記する
+      // (2026-09-24 Opus ひなた T6: 忘れられた祭壇「最大HP+8・HP-14」の結果が「HP-6」と出た。sim/play.ts・C# Report.cs と同じ規則):
+      // m=最大HPの増分 (0未満は0)・shown=HP差−m。shown≠0 なら HP{±shown}、m>0 なら「（最大HP+m で HP も+m）」を続ける。
+      // shown=0 なら HP の項目は出さない。最大HPの増分はここに項目が無かったので「最大HP+m」を足す
+      const maxUp = Math.max(0, next.maxHp - prev.maxHp)
+      const hpDiff = next.hp - prev.hp - maxUp
       const goldDiff = next.gold - prev.gold
       // 何を得たかを明記 (2026-09-02 プレイテスト指摘「何を取ったのかわかんない」):
       // レリック・カードの増分を差分から名前で出す
@@ -1108,7 +1169,8 @@ function describeRunChoiceCore(prev: RunState, cmd: RunCommand, next: RunState):
       const outcome = [
         gotRelics.length > 0 ? `獲得レリック: ${gotRelics.join('・')}` : '',
         gotCards.length > 0 ? `獲得: ${gotCards.join('・')}` : '',
-        hpDiff !== 0 ? `HP${hpDiff > 0 ? '+' : ''}${hpDiff}` : '',
+        hpDiff !== 0 ? `HP${hpDiff > 0 ? '+' : ''}${hpDiff}${maxUp > 0 ? `（最大HP+${maxUp} で HP も+${maxUp}）` : ''}` : '',
+        maxUp > 0 ? `最大HP+${maxUp}` : '',
         goldDiff !== 0 ? `${goldDiff > 0 ? '+' : ''}${goldDiff}G` : '',
         // 厄除けの札 (2026-09-13 Opusラン Y2: 烙印を吸った時に無言だった)
         warded > 0 ? `🏷️厄除けの札が烙印${warded}枚を防いだ（残り${next.relicState?.brandWard ?? 0}）` : '',

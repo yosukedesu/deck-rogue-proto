@@ -10,7 +10,7 @@ import {
   archiveBattle,
   cardName,
   intentText,
-  logLine,
+  logLines,
   buildReport,
   cardDraftToDefJson,
   dataFingerprint,
@@ -33,7 +33,6 @@ import {
   type EnemyDraft,
   type EnemyMoveDraft,
   type LeaderDraft,
-  type LogLine,
   type PlayNote,
   type ProposalBundle,
   type RelicDraft,
@@ -62,14 +61,20 @@ import {
   getGearDef,
   getLeaderDef,
   getRelicDef,
+  allDepartures,
+  DEPARTURE_LEAD,
+  DEPARTURE_TITLE,
+  departureMasterLine,
 } from '../engine/content.ts'
 import { trapStatusText, BLAZE_THRESHOLD, DOLL_GROWTH_EFFECTS, anthemTotal, cardNeedsTarget, damageBreakdown, dollEffectAmount, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, isDamageEffect, isDoll, isPlayableFromHand, playerCanSet, hearthSparkMax, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
-import { applyRunCommand, campfireOptions, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, difficultyDescription, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicChargesLeft, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
+import { departureCostText, departureGainText, departureGearRoomNote, departurePriceLabel, departureUnavailableReason, shopDepartureUnavailableReason } from './log.ts'
+import { applyRunCommand, departureOfferBought, campfireOptions, canTransformCard, canUnexhaustCard, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, difficultyDescription, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicChargesLeft, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason, manaLabel } from '../engine/gears.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, intentModifierNotes, interruptPreviews, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { describeGraph, sleepingInterrupt } from '../engine/enemyGraph.ts'
+import { interruptBlockedNote } from '../engine/traits.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { FusionLabPage } from './FusionLab.tsx'
@@ -84,6 +89,7 @@ import type {
   CardInstance,
   Command,
   DeclarativeEffect,
+  DepartureOffer,
   EnemyArchetype,
   EnemyDef,
   EnemyIntent,
@@ -176,7 +182,7 @@ const KW_PATTERN = new RegExp(
 )
 
 /** テキスト中のキーワード能力を吹き出し付き <span> に置き換える */
-const INTENT_KIND_JA_COND: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '従者狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化', summon: '召喚' }
+const INTENT_KIND_JA_COND: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '人形狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化', summon: '召喚' }
 
 function kw(text: string): React.ReactNode {
   return text.split(KW_PATTERN).map((part, i) =>
@@ -435,14 +441,16 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}次のターンの開始時に${e.amount}枚多くドロー`
     case 'gainEnergyNextTurn':
       return `${trigger}次のターンの開始時に一時マナ+${e.amount}`
+    case 'addLightNextTurn':
+      return `${trigger}🕯 次のターンの開始時に灯+${e.amount}`
     case 'gainBlockNextTurn':
       return `${trigger}次のターンの開始時にブロック+${e.amount}`
     case 'addSpellEcho':
-      return `${trigger}🔁 反復+${e.amount}（次に唱える呪文の効果を2回解決。自ターン終了時に消える。とげ反射も2回受ける）`
+      return `${trigger}🔁 反復+${e.amount}（次に唱える呪文の効果を2回解決。自ターン終了時に消える。とげ反射も2回受ける。${ECHO_MISS_NOTE}）`
     case 'addCasts':
       return `${trigger}🌀 詠唱数+${e.amount}（激昂タイマーには数えない）`
     case 'blessRetainers':
-      return `${trigger}✨ 【常在】従者のダメージ・ブロック・回復+${e.amount}（灯・率・ドローには乗らない）`
+      return `${trigger}✨ 【常在】人形のダメージ・ブロック・回復+${e.amount}（灯・率・ドローには乗らない）`
     case 'addAether':
       return `${trigger}霊気+${e.amount}`
     case 'addLight':
@@ -450,11 +458,12 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     case 'doubleLight':
       return ctx ? `${trigger}🕯 灯を2倍にする [現在${ctx.light ?? 0}→${(ctx.light ?? 0) * 2}]` : `${trigger}🕯 灯を2倍にする`
     case 'dischargeLightRally': {
-      const passes = (ctx?.light ?? 0) * (e.amount ?? 1)
+      const per = Math.max(1, e.amount ?? 1)
+      const passes = Math.floor((ctx?.light ?? 0) / per)
       const rz = ctx?.rallyZero
       return ctx
-        ? `${trigger}🕯 灯を全て放出し、灯1につき全ての人形が${e.amount ?? 1}回動く [現在 灯${ctx.light ?? 0}×人形${ctx.retainers ?? 0}体${rz && passes > 0 ? `≈与ダメ${rz.damage * passes}・ブロック${rz.block * passes}・回復${rz.heal * passes}（概算）` : ''}]`
-        : `${trigger}🕯 灯を全て放出し、灯1につき全ての人形が${e.amount ?? 1}回動く`
+        ? `${trigger}🕯 灯を全て放出し、灯${per}につき全ての人形が1回動く [現在 灯${ctx.light ?? 0}→${passes}回×人形${ctx.retainers ?? 0}体${rz && passes > 0 ? `≈与ダメ${rz.damage * passes}・ブロック${rz.block * passes}・回復${rz.heal * passes}（概算）` : ''}]`
+        : `${trigger}🕯 灯を全て放出し、灯${per}につき全ての人形が1回動く`
     }
     case 'discountNext':
       return `${trigger}次にプレイするカードのコスト-${e.amount}`
@@ -515,9 +524,9 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     case 'summonPermanent':
       return `${trigger}🏳️ ${cardName(e.summonId ?? '')}トークンを${e.amount ?? 1}体場に出す${e.condition?.targetDead === true ? '（戦闘が続いていれば。最後の1体を倒した時は何も起きない）' : ''}`
     case 'duplicateRetainers':
-      return `${trigger}🏳️ 場の従者1体につき、同じ従者を1体場に出す（複製は複製を産まず、複製同士は互いの登場に反応しない）`
+      return `${trigger}🏳️ 場の人形1体につき、同じ人形を1体場に出す（複製は複製を産まず、複製同士は互いの登場に反応しない）`
     case 'sacrificeRetainer':
-      return `${trigger}🕯️ 場の従者1体を選んで破壊する`
+      return `${trigger}🕯️ 場の人形1体を選んで破壊する`
     case 'triggerRetainersNow':
       return ctx
         ? `${trigger}📯 号令: 場の人形の効果をトリガーを問わず今すぐ1回ずつ解決する（登場ごとは除く。アンセム込み） [人形${(ctx.retainers ?? 0) + 1}体（小さな人形込み）${ctx.rallyCall ? `≈与ダメ${ctx.rallyCall.damage}・ブロック${ctx.rallyCall.block}・回復${ctx.rallyCall.heal}（概算）` : ''}]`
@@ -530,10 +539,12 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}🕯️🕯️ 次に出す人形${(e.amount ?? 1) > 1 ? `${e.amount}体` : ''}が2体になる（ターンをまたいで持ち越す）`
     case 'extendRetainerLife':
       return `${trigger}🔥 人形1体を選び、期限を${e.amount ?? 1}ターン延ばす`
+    case 'extendAllRetainersLife':
+      return `${trigger}🔥 場の人形すべての期限を${e.amount ?? 1}ターン延ばす`
     case 'persistRetainer':
       return `${trigger}✨ 人形1体を選び、期限を無くす（消えなくなる）`
     case 'activateEnteredRetainer':
-      return `${trigger}🏇 場に出た従者はすぐに1回動く（その従者の効果＝毎ターン開始時・攻撃ごと、を登場時に1回解決。登場ごとの効果はもとから鳴る。従者以外の置物では何も起きない）`
+      return `${trigger}🏇 場に出た人形はすぐに1回動く（その人形の効果＝毎ターン開始時・攻撃ごと、を登場時に1回解決。登場ごとの効果はもとから発動する。人形以外の置物では何も起きない）`
     case 'addCardToHand':
       return `${trigger}🗡️ ${cardName(e.summonId ?? '')}を${e.amount ?? 1}枚手札に加える（この戦闘限り）`
     case 'empowerShivs':
@@ -594,10 +605,16 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     // 火種・放出の軸 (白 2026-09-20 夜。本家 Soul の白版)
     case 'addCardToDraw':
       return `${trigger}🔥 ${cardName(e.summonId ?? '')}を${e.amount ?? 1}枚山札のランダムな位置に混ぜる（この戦闘限り）`
+    case 'addCardToDiscard':
+      return `${trigger}🔥 ${cardName(e.summonId ?? '')}を${e.amount ?? 1}枚捨て札に加える（この戦闘限り）`
+    case 'transformDeckToToken':
+      return `${trigger}🔥 山札の札${e.amount ?? 1}枚を選んで${cardName(e.summonId ?? '')}に変える`
     case 'lightToSparks':
       return `${trigger}🔥 灯${e.amount ?? 3}につき${cardName(e.summonId ?? 'white_spark_token')}1枚を山札へ（払った灯だけ失う）${ctx ? ` [現在 灯${ctx.light ?? 0}→${Math.floor((ctx.light ?? 0) / Math.max(1, e.amount ?? 3))}枚]` : ''}`
     case 'dealDamagePerSpark':
       return `${trigger}⚔️ この戦闘で撃った火種×${e.amount}ダメージ${pierce}${ctx && ctx.sparks !== undefined ? ` [現在 火種${ctx.sparks}→${ctx.sparks * (e.amount ?? 0) + (ctx.sparks > 0 ? atkBonus : 0)}]` : ''}`
+    case 'gainBlockPerSpark':
+      return `${trigger}🛡️ この戦闘で撃った火種×${e.amount}のブロック${ctx && ctx.sparks !== undefined ? ` [現在 火種${ctx.sparks}→${ctx.sparks * (e.amount ?? 0)}]` : ''}`
     case 'triggerRandomRetainer':
       return `${trigger}📯 場の人形1体（ランダム）の効果を今1回解決する（登場ごとは除く。灯は産まない）`
     case 'dischargeLightWeaken': {
@@ -605,7 +622,9 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
       return `${trigger}🕯 灯を全て放出し、灯3につき敵全体に威圧${e.amount ?? 1}（灯3未満なら不発）${ctx ? ` [現在 灯${ctx.light ?? 0}→威圧${stacks}]` : ''}`
     }
     case 'consumeLight':
-      return `${trigger}🕯 灯を全て失う`
+      return `${trigger}🕯 灯を${e.amount !== undefined ? e.amount : '全て'}失う`
+    case 'dismissUnlessLight':
+      return `${trigger}🕯 灯が${e.amount ?? 0}未満ならこの置物は消える（捨て札へ）`
     case 'gainBlockPerLight':
       return `${trigger}🛡️ 灯2につき${e.amount}ブロック（灯は失わない）${ctx ? ` [現在 灯${ctx.light ?? 0}→${Math.floor((ctx.light ?? 0) / 2) * (e.amount ?? 0)}]` : ''}`
     case 'drawCardsPerLight':
@@ -710,7 +729,7 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   // 負傷 (状態異常カード): 効果を持たない死に札
   if (def.id === 'status_wound') return ['使えない（ターン終了時に捨てられる）']
   if (def.id === 'status_scald') return ['使えない。自ターン終了時に手札にあるとHP-2（この戦闘限り。捨て/消滅コストの支払いには使える）']
-  if (def.id === 'status_brand') return ['使えない。自ターン終了時に手札にあるとHP-1（デッキに残る呪い。焚き火・ショップで除去できる）']
+  if (def.id === 'status_brand') return ['使えない。自ターン終了時に手札にあるとHP-1（デッキに残る呪い。ショップの除去で取り除ける。青い蝋燭があれば 0E・HP-1・消滅で出せる）']
   if (def.id === 'status_guilt') return ['使えない。自ターン終了時に手札にあるとHP-1（仮初の呪い。5戦すると自然に消える）']
   const lines: string[] = []
   if ((def.discardCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.discardCost}枚を捨てる`)
@@ -728,7 +747,7 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   if (def.freeIfHandAllPhysical === true || def.freeIfHandAll === 'physical') lines.push('手札の他の札がすべて物理ならコスト0')
   if (def.freeIfHandAll === 'spell') lines.push('手札の他の札がすべて呪文ならコスト0')
   if (def.freeIfHandAll === 'nonphysical') lines.push('手札の他の札に物理が無ければコスト0（置物・リアクション・呪文は可）')
-  if (def.requiresRetainer === true) lines.push('プレイ条件: 場に従者が1体以上')
+  if (def.requiresRetainer === true) lines.push('プレイ条件: 場に人形が1体以上')
   // 人形の期限 (2026-09-21 寿命と火勢。語彙は 2026-09-22 に「灯り」→「期限」＝資源の「灯」と同じ字を使わない)。注記は1行: 出した瞬間に1回動く (点灯) を用語解説の外に出す
   if (def.retainer === true) {
     const grows = def.effects.some((e) => e.amount !== undefined && DOLL_GROWTH_EFFECTS.has(e.effect))
@@ -738,9 +757,11 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   if (def.necroCost !== undefined) lines.push(`💀 亡骸プレイ${def.necroCost}E（消滅置き場から一度だけプレイできる。その後ゲームから消える）`)
   // 合成の触媒 / 反復内蔵 (2026-09-12)
   if (def.fusionCatalyst !== undefined) lines.push(CATALYST_LINE[def.fusionCatalyst])
-  if (def.echo === true) lines.push('🔁 反復内蔵: プレイ時の効果を2回解決（置物なら誘発ごとに2回）')
+  if (def.echo === true) lines.push(`🔁 反復内蔵: プレイ時の効果を2回解決（置物なら誘発ごとに2回。${ECHO_MISS_NOTE}）`)
   return lines
 }
+/** 反復の2回目の注記 (2026-09-24 Opus ひなた E11 裁定B=本家2と同じく据え置き): 2回目も同じ敵を狙う = 1回目で倒れたら空振り */
+const ECHO_MISS_NOTE = '単体の効果は1回目で対象が倒れたら2回目は空振り（別の敵や、分裂・残機の次の姿には向かない）'
 const CATALYST_LINE: Record<NonNullable<CardDef['fusionCatalyst']>, string> = {
   cheaper: '⚗️ 触媒: 工房の素材にすると、結果のコストがさらに−1（0Eまで）',
   echo: '⚗️ 触媒: 工房の素材にすると、結果のプレイ時の効果を2回解決（X・置物も）',
@@ -787,7 +808,7 @@ function conditionalIntentText(s: GameState, i: number): string {
   const altText = liveIntentText(s, i, intent.alt)
   if (altText === baseText) return baseText
   const note = intent.conditionalOn === 'set' ? setBranchNote(getEnemyDef(s.enemies[i].enemyId)) : null
-  const cond = intent.conditionalOn === 'set' ? `発動できる伏せ札あり${note ? `（${note}）` : ''}` : '従者あり'
+  const cond = intent.conditionalOn === 'set' ? `発動できる伏せ札あり${note ? `（${note}）` : ''}` : '人形あり'
   const active = effectiveIntent(s, i)!
   const isAlt = active.kind === intent.alt.kind && active.actual === intent.alt.actual && active.hits === intent.alt.hits
   return `【${cond}】${altText}${isAlt ? '◀今これ' : ''} ／【なし】${baseText}${isAlt ? '' : '◀今これ'}`
@@ -1534,6 +1555,9 @@ function damageTipLines(s: GameState, c: CardInstance): string[] {
     }
   }
   if (dmgEffects.length > 1) lines.push('※多段は各行独立の見積り（急所・敵ブロックの消費は先頭ヒット基準）')
+  // 反復 (反復内蔵・反復トークンが乗る呪文): 上の内訳は1回ぶん。2回目も同じ敵を狙う (2026-09-24 E11)
+  const echoPasses = (c.def.echo === true ? 1 : 0) + (c.def.type === 'spell' && s.player.spellEchoes > 0 ? 1 : 0)
+  if (echoPasses > 0) lines.push(`🔁 反復: 効果を${1 + echoPasses}回解決（上は1回ぶん）。${ECHO_MISS_NOTE}`)
   return lines
 }
 
@@ -1607,6 +1631,12 @@ function BattleScreen({
           break
         case 'ThornsReflected':
           if (e.hpLoss > 0) push('player', `🦔-${e.hpLoss}`, 'float-dmg')
+          break
+        case 'ScaldTick':
+          // 烙印・火傷の疼きに出所の名札 (2026-09-23 人間ラン#17: 浮き数字が無く、仕立屋で烙印でなく負傷を除いていた)
+          if ((e.scalds ?? 0) > 0) push('player', `🔥火傷-${e.amount - (e.brands ?? 0)}`, 'float-dmg')
+          if ((e.brands ?? 0) > 0) push('player', `烙印-${e.brands}`, 'float-dmg')
+          if (!e.scalds && !e.brands) push('player', `火傷・烙印-${e.amount}`, 'float-dmg')
           break
         case 'ArtifactBlocked':
           // 黙って弾かれると「威圧が効いていない不具合」に見える (2026-09-20 ユーザー報告)
@@ -1749,7 +1779,7 @@ function BattleScreen({
     const choosePoolSize =
       chooseKind === 'retrieveFromDiscard'
         ? player.discardPile.length
-        : chooseKind === 'searchDeck'
+        : chooseKind === 'searchDeck' || chooseKind === 'transformDeckToToken'
           ? player.drawPile.length
           : player.drawPile.length + player.discardPile.length
     if (chooseKind !== null && choosePoolSize > 0) {
@@ -1777,7 +1807,8 @@ function BattleScreen({
     }
     playOrTarget(cardUid, modeIndex)
   }
-  const lines = s.eventLog.map(logLine).filter((l): l is LogLine => l !== null)
+  // 1つのことを言う出来事の組 (引く途中の切り直し・灯の火床) は1行にまとめる (2026-09-24 T12・T15。ui/log.ts logLines)
+  const lines = logLines(s.eventLog)
   const setCard = player.setCards[0]
   // 閲覧ビュー (2026-08-31): 山札・捨て札・消滅置き場・デッキ全体・マップをいつでも確認できる
   const [pileView, setPileView] = useState<'draw' | 'discard' | 'exhaust' | 'deck' | 'map' | null>(
@@ -1962,11 +1993,19 @@ function BattleScreen({
                     {enemyDef.imbalanced === true && !dead && (
                       <span className="chip chip-block">🌀 {kw('バランス崩し')}{enemy.staggeredNext === true ? '（体勢を崩した！次の行動は隙）' : '（完全に防ぐと次の行動が隙）'}</span>
                     )}
-                    {sleepingInterrupt(enemyDef, enemy) !== undefined && !dead && (
+                    {sleepingInterrupt(enemyDef, enemy) !== undefined && enemy.interruptBlocked !== true && !dead && (
                       <span className="chip">😴 {kw('眠り')}: 累計{sleepingInterrupt(enemyDef, enemy)?.amount ?? 0}ダメージで目覚める（いま{enemy.damageTakenTotal ?? 0}）</span>
                     )}
+                    {/* 鎮めの錘 (ギア): 割り込み (HP半分・目覚め・仲間の死) を止めた敵は豹変しない = 予告 (interruptPreviews) も眠りも出さず1枚に (2026-09-24 Opus ひなた E5) */}
+                    {interruptBlockedNote(enemyDef, enemy) !== null && !dead && (
+                      <span className="chip">🪨 {interruptBlockedNote(enemyDef, enemy)}</span>
+                    )}
                     {enemyDef.moves.some((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined) && !dead && (
-                      <span className="chip chip-strength">📈 {kw('育つ技')}: {enemyDef.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined).map((m) => `使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}（いまは${m.growPerUse ? `+${m.growPerUse * (enemy.moveUses?.[m.id] ?? 0)}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse * (enemy.moveUses?.[m.id] ?? 0)}` : ''}）`).join('・')}</span>
+                      <span className="chip chip-strength">📈 {kw('育つ技')}: {enemyDef.moves.filter((m) => m.growPerUse !== undefined || m.growHitsPerUse !== undefined).map((m) => {
+                        // 宣言した時点で使用回数が1つ進む = 宣言中の技は1つ前の回数ぶんだけ育っている (2026-09-24 Opus ひなた E7: 宣言直後から1回先を数えていた)
+                        const uses = Math.max(0, (enemy.moveUses?.[m.id] ?? 0) - (enemy.intent !== null && enemy.intentMoveId === m.id ? 1 : 0))
+                        return `使うたび${m.growPerUse ? `+${m.growPerUse}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse}` : ''}（いまは${m.growPerUse ? `+${m.growPerUse * uses}` : ''}${m.growHitsPerUse ? `ヒット+${m.growHitsPerUse * uses}` : ''}）`
+                      }).join('・')}</span>
                     )}
                     {enemyDef.guardian === true && !dead && (
                       <span className="chip chip-strength">🛡️ {kw('庇う')}</span>
@@ -2065,7 +2104,8 @@ function BattleScreen({
                   {isDoll(c) && (
                     <span style={{ marginLeft: 6, color: 'var(--muted)', fontSize: 11 }}>
                       🕯 {dollLifeLeft(s, c) === null ? '期限なし' : `あと${dollLifeLeft(s, c)}ターンで消える`}
-                      {dollGrowth(s, c) > 0 ? `・火勢+${dollGrowth(s, c)}` : ''}
+                      {/* 火勢が乗るのはダメージ・ブロックだけ (2026-09-24 E8: 灯篭の人形の「灯2につき1」には乗らない) */}
+                      {c.def.effects.some((e) => e.amount !== undefined && DOLL_GROWTH_EFFECTS.has(e.effect)) && dollGrowth(s, c) > 0 ? `・火勢+${dollGrowth(s, c)}` : ''}
                     </span>
                   )}
                   {activeSacrifice && c.def.retainer === true && c.innate !== true && (
@@ -2079,7 +2119,7 @@ function BattleScreen({
                           playOrTarget(sac.cardUid, sac.modeIndex, undefined, undefined, undefined, undefined, undefined, undefined, c.uid)
                         }}
                       >
-                        🕯️ この従者を捧げる
+                        🕯️ この人形を捧げる
                       </button>
                     </div>
                   )}
@@ -2287,7 +2327,7 @@ function BattleScreen({
                 0,
               )
               return anthem > 0 ? (
-                <span className="chip chip-aether">✨ アンセム+{anthem}（従者のダメージ・ブロック・回復に加算）</span>
+                <span className="chip chip-aether">✨ アンセム+{anthem}（人形のダメージ・ブロック・回復に加算）</span>
               ) : null
             })()}
             {player.nextCardDiscount > 0 && (
@@ -2494,7 +2534,7 @@ function BattleScreen({
         )}
         {activeSacrifice && (
           <div className="discard-banner">
-            「{player.hand.find((c) => c.uid === activeSacrifice.cardUid)?.def.name}」: 破壊する従者を場（置物ゾーン）から選んでください{' '}
+            「{player.hand.find((c) => c.uid === activeSacrifice.cardUid)?.def.name}」: 破壊する人形を場（置物ゾーン）から選んでください{' '}
             <button className="btn" onClick={() => setPendingSacrifice(null)}>
               キャンセル
             </button>
@@ -2549,6 +2589,8 @@ function BattleScreen({
                 ? '捨て札から手札に戻すカードを選んでください'
                 : k === 'searchDeck'
                   ? '山札から手札に加えるカードを選んでください（並び替え表示＝引き順は分かりません）'
+                  : k === 'transformDeckToToken'
+                    ? '山札から火種に変えるカードを選んでください（並び替え表示＝引き順は分かりません）'
                   : '山札か捨て札から消滅させるカードを選んでください（山札は並び替え表示＝引き順は分かりません）'
             })()}{' '}
             <button className="btn" onClick={() => setPendingDeckChoose(null)}>
@@ -2565,8 +2607,8 @@ function BattleScreen({
                   .sort((a, b) => a.def.cost - b.def.cost || a.def.name.localeCompare(b.def.name, 'ja'))
                   .map((c) => ({ c, src: '山札' }))
                 const disc = player.discardPile.map((c) => ({ c, src: '捨て札' }))
-                const verb = k === 'retrieveFromDiscard' ? '手札に戻す' : k === 'searchDeck' ? '手札に加える' : '消滅させる'
-                const items = k === 'retrieveFromDiscard' ? disc : k === 'searchDeck' ? drawSorted : [...drawSorted, ...disc]
+                const verb = k === 'retrieveFromDiscard' ? '手札に戻す' : k === 'searchDeck' ? '手札に加える' : k === 'transformDeckToToken' ? '火種に変える' : '消滅させる'
+                const items = k === 'retrieveFromDiscard' ? disc : k === 'searchDeck' || k === 'transformDeckToToken' ? drawSorted : [...drawSorted, ...disc]
                 return items.map(({ c, src }) => ({ c, src, verb }))
               })().map(({ c, src, verb }) => (
                 <CardFrame
@@ -2631,7 +2673,7 @@ function BattleScreen({
                         )),
                   )
                 const canPlay =
-                  isPlayableFromHand(c) &&
+                  isPlayableFromHand(c, s) &&
                   retainerRequirementMet(s, c) && // 殉教の誓い: 従者がいなければプレイ不可 (白 2026-09-06)
                   !(player.restrain > 0 && (player.playsThisTurn ?? 0) >= RESTRAIN_PLAY_CAP) &&
                   effCost <= player.energy &&
@@ -2755,7 +2797,7 @@ function BattleScreen({
                             </button>
                           ))
                         ) : (
-                          isPlayableFromHand(c) && (
+                          isPlayableFromHand(c, s) && (
                             <button
                               className="btn"
                               disabled={!canPlay}
@@ -2771,7 +2813,7 @@ function BattleScreen({
                             className="btn"
                             disabled={!canSet}
                             title={c.def.type !== 'reaction' ? `1Eで伏せる。被攻撃${setWindowStage(c.def) === 'pre' ? '前' : '後'}に誘発し、発動時に${c.def.cost}Eを払う` : undefined}
-                            {...(handIdx < 9 && !activeTarget && !isPlayableFromHand(c) ? { 'data-hotkey': `num-${handIdx + 1}` } : {})}
+                            {...(handIdx < 9 && !activeTarget && !isPlayableFromHand(c, s) ? { 'data-hotkey': `num-${handIdx + 1}` } : {})}
                             onClick={() => dispatch({ type: 'SetCard', cardUid: c.uid })}
                           >
                             {c.def.type !== 'reaction' ? '伏せる(1E)' : '伏せる'}
@@ -3020,7 +3062,7 @@ function GearBar({
             key={g.uid}
             className={`gear-token gear-${def.rarity}${openIndex === i ? ' gear-open' : ''}`}
             disabled={!inCombat || runDispatch === undefined}
-            title={`${def.name}: ${def.text}${blocked !== null ? `（いまは組めない: ${blocked}）` : ''}`}
+            title={`${def.name}: ${webVocab(def.text)}${blocked !== null ? `（いまは組めない: ${blocked}）` : ''}`}
             onClick={() => {
               setPick({})
               setOpenIndex(openIndex === i ? null : i)
@@ -3041,7 +3083,7 @@ function GearBar({
               {openDef.rarity === 'rare' ? '★レア' : openDef.rarity === 'uncommon' ? '◆アンコモン' : 'コモン'} ・ 残り{open.charges}回
             </span>
           </div>
-          <div>{openDef.text}</div>
+          <div>{webVocab(openDef.text)}</div>
           {/* 実際に与える値 (2026-09-17 J2 の死因) と空振りの予告 (同 O)。弾きはせず画面に出すだけ */}
           {run.combat !== null && gearLiveDamage(run.combat, openDef) !== null && (
             <div className="hint">{gearLiveDamage(run.combat, openDef)}</div>
@@ -3151,19 +3193,32 @@ function RelicChooseScreen({ run, dispatch, ctx }: { run: RunState; dispatch: (c
         </button>
       </div>
       <div className="hand-cards" style={{ margin: '12px 0' }}>
-        {run.deck.map((c, i) => (
-          <CardFrame
-            key={c.uid}
-            card={c}
-            dim={picked.length >= p.count && !picked.includes(i)}
-            ctx={ctx}
-            actions={
-              <button className={`btn${picked.includes(i) ? ' btn-primary' : ''}`} onClick={() => toggle(i)}>
-                {picked.includes(i) ? `✓ ${verb}` : '選ぶ'}
-              </button>
-            }
-          />
-        ))}
+        {run.deck.map((c, i) => {
+          // 星読みの盤 (変成): 状態異常・烙印は選べない (2026-09-24 T14 裁定A。engine も拒む)
+          const cannot = p.mode !== 'remove' && !canTransformCard(c)
+          return (
+            <CardFrame
+              key={c.uid}
+              card={c}
+              dim={cannot || (picked.length >= p.count && !picked.includes(i))}
+              ctx={ctx}
+              actions={
+                cannot ? (
+                  <>
+                    <div className="choice-desc" style={{ marginBottom: 4 }}>状態異常・烙印は変成できない（除去で消す）</div>
+                    <button className="btn" disabled>
+                      変成できない
+                    </button>
+                  </>
+                ) : (
+                  <button className={`btn${picked.includes(i) ? ' btn-primary' : ''}`} onClick={() => toggle(i)}>
+                    {picked.includes(i) ? `✓ ${verb}` : '選ぶ'}
+                  </button>
+                )
+              }
+            />
+          )
+        })}
       </div>
     </div>
   )
@@ -3606,7 +3661,7 @@ const ENEMY_VOCAB = (() => {
 })()
 
 const MOVE_FIELD_JA: Record<string, string> = { min: '最小', max: '最大', weight: '重み', hits: 'ヒット数', alsoDefend: '攻防一体🛡', alsoBuff: '同時筋力💪' }
-const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪筋力上げ', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓従者狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い', hatch: '🐣孵化', summon: '👶召喚' }
+const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪筋力上げ', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓人形狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い', hatch: '🐣孵化', summon: '👶召喚' }
 
 function moveLine(mv: EnemyMove): string {
   const range = mv.min !== undefined ? `${mv.min}〜${mv.max}` : ''
@@ -3637,7 +3692,7 @@ function enemyTunerFields(def: EnemyDef): { key: string; label: string; cur: num
       out.push({ key: `n.${nodeId}.${k}.weight`, label: `乱択〔${nodeId}〕→「${target}」の重み`, cur: arm.weight })
     })
   }
-  for (const [pfx, ja, arms] of [['vs', '伏せへの反応', def.movesVsSet], ['tk', '従者反応', def.movesVsTokens]] as const) {
+  for (const [pfx, ja, arms] of [['vs', '伏せへの反応', def.movesVsSet], ['tk', '人形反応', def.movesVsTokens]] as const) {
     arms?.forEach((arm, k) => out.push({ key: `${pfx}${k}.weight`, label: `${ja}「${arm.to}」の重み`, cur: arm.weight }))
   }
   return out
@@ -3757,7 +3812,7 @@ function EnemyDraftEditor({ value, onChange, onDelete }: { value: EnemyDraft; on
         <label style={{ ...S, flex: 1 }}>ローテーション(idカンマ区切り・空=重み抽選) <input value={value.sequence ?? ''} onChange={(e) => onChange({ ...value, sequence: e.target.value === '' ? undefined : e.target.value })} style={{ width: '55%', fontSize: 11 }} /></label>
         <button className="chip chip-btn" onClick={onDelete}>🗑 この下書きを削除</button>
       </div>
-      <div className="choice-desc" style={{ fontSize: 10 }}>高度な仕掛け (setAlt=伏せ札あり分岐・伏せ場/従者反応テーブル・フェーズ変化) は補足/メモに書けば実装時に起こします</div>
+      <div className="choice-desc" style={{ fontSize: 10 }}>高度な仕掛け (setAlt=伏せ札あり分岐・伏せ場/人形反応テーブル・フェーズ変化) は補足/メモに書けば実装時に起こします</div>
     </div>
   )
 }
@@ -3924,14 +3979,14 @@ const EFFECT_JA: Record<string, string> = {
   dischargeMomentumDamage: '勢い×Nダメ(全消費)', dischargeMomentumGrowth: '勢い÷Nを成長に(全消費)', dischargeMomentumVolley: '勢い×Nダメを3回(全消費)', momentumCarryHalf: '勢いの半分を持ち越す(常在)', gainBlockPerMomentum: '勢い×Nブロック(失わない)', addGrowthPerMomentum: '勢い2につき成長+N(失わない)', gainMaxHp: '最大HP+N(戦闘後も残る)', upgradeAllInHand: '手札の全てをこの戦闘中鍛える',
   applyBurn: '延焼+N', applyBurnPerDamageTaken: '被ダメ×N延焼', dischargeBurn: '爆熱(延焼×Nダメ全消費)',
   addAether: '霊気+N', dischargeAether: '霊気放出(×Nダメ全消費)', dischargeAetherDraw: '霊気×Nドロー(全消費)',
-  addLight: '灯+N', dischargeLight: '灯の放出(×Nダメ全消費)', dischargeLightRally: '灯を全て放出し灯1につき全人形がN回動く', doubleLight: '灯2倍', dealDamagePerLight: '灯2につきNダメ(非消費)', addCardToDraw: 'トークンN枚を山札へ', lightToSparks: '灯Nにつき火種1を山札へ', dealDamagePerSpark: '撃った火種×Nダメ', triggerRandomRetainer: '人形1体が今1回動く', dischargeLightWeaken: '灯を放出し灯3につき全体威圧N', consumeLight: '灯を全て失う', gainBlockPerLight: '灯2につきNブロック', drawCardsPerLight: '灯2につきNドロー', lightCarryHalf: '放出しても灯の半分が残る',
+  addLight: '灯+N', addLightNextTurn: '次T開始時に灯+N', dischargeLight: '灯の放出(×Nダメ全消費)', dischargeLightRally: '灯を全て放出し灯Nにつき全人形が1回動く', doubleLight: '灯2倍', dealDamagePerLight: '灯2につきNダメ(非消費)', addCardToDraw: 'トークンN枚を山札へ', addCardToDiscard: 'トークンN枚を捨て札へ', transformDeckToToken: '山札のN枚を火種に変える(選ぶ)', lightToSparks: '灯Nにつき火種1を山札へ', dealDamagePerSpark: '撃った火種×Nダメ', gainBlockPerSpark: '撃った火種×Nブロック', triggerRandomRetainer: '人形1体が今1回動く', dischargeLightWeaken: '灯を放出し灯3につき全体威圧N', consumeLight: '灯をN失う(量なし=全て)', gainBlockPerLight: '灯2につきNブロック', drawCardsPerLight: '灯2につきNドロー', lightCarryHalf: '放出しても灯の半分が残る',
   addCasts: '詠唱数+N', addSpellEcho: '反復+N(次の呪文2回解決)', confuse: '混乱+N', exposeEnemy: '急所+N', weakenEnemy: '威圧N(敵の筋力-N)',
   shatterBlock: '粉砕(敵ブロック全壊)', shatterBlockConvert: '粉砕+破壊値ダメ',
   exhaustFromDeck: '山札の上N枚を消滅(ミル)', exhaustFromDeckChoose: '選んでN枚消滅(引導型)', recycleExhaust: '輪廻(消滅を山札へ・×Nダメ)',
   retrieveFromExhaust: '消滅置き場から回収', playFromExhaust: '消滅置き場から直接プレイ',
   summonPermanent: '召喚N体(summonId)', addCardToHand: 'トークンN枚を手札へ(summonId)',
-  duplicateRetainers: '場の従者を1体ずつ複製', sacrificeRetainer: '従者1体を選んで破壊', triggerRetainersNow: '従者のターン開始効果を今すぐ解決', activateEnteredRetainer: '場に出た従者が即1回動く(駆けつけ)',
-  blessRetainers: '【常在】従者の効果+N', empowerShivs: '【常在】ナイフ与ダメ+N',
+  duplicateRetainers: '場の人形を1体ずつ複製', sacrificeRetainer: '人形1体を選んで破壊', triggerRetainersNow: '人形のターン開始効果を今すぐ解決', activateEnteredRetainer: '場に出た人形が即1回動く(駆けつけ)',
+  blessRetainers: '【常在】人形の効果+N', empowerShivs: '【常在】ナイフ与ダメ+N',
   gainSetSlot: '伏せ枠+N(この戦闘中)', retrieveFromDiscard: '捨て札からN枚を手札へ(選ぶ)', searchDeck: '山札からN枚を手札へ(選ぶ)',
   strengthenEnemy: '敵の筋力+N', dealDamagePerAttackPlayed: 'このターンの攻撃数×Nダメ', dealDamagePerWeak: '対象の威圧×N追加ダメ', addCopyToDiscard: 'コピーN枚を捨て札へ', growSelf: 'プレイするたび与ダメ+N(この戦闘中)', upgradeInHand: '手札のN枚をこの戦闘中鍛える',
 }
@@ -4512,7 +4567,7 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                       {e.moves.map(moveLine).join('　')}
                       {describeGraph(e).map((line, k) => `　${k === 0 ? '◇行動' : '◆'}: ${line}`).join('')}
                       {e.movesVsSet !== undefined ? `　◆伏せへの反応: ${e.movesVsSet.map((a) => `${a.to} ${a.weight}`).join('/')}` : ''}
-                      {e.movesVsTokens !== undefined ? `　◆従者反応: ${e.movesVsTokens.map((a) => `${a.to} ${a.weight}`).join('/')}` : ''}
+                      {e.movesVsTokens !== undefined ? `　◆人形反応: ${e.movesVsTokens.map((a) => `${a.to} ${a.weight}`).join('/')}` : ''}
                     </div>
                     {tuner && (
                       <SimpleMarkEditor fields={enemyTunerFields(e)} mark={draft.enemyMarks[e.id] ?? {}} onChange={(m) => setEnemyMark(e.id, m)} />
@@ -4744,6 +4799,346 @@ function DeckChip({ run }: { run: RunState }) {
   )
 }
 
+// ---- 出立の店 (ラン開始 2026-09-24 docs/departure-proposal-2026-09-24.md) ----
+// 坑口の行商の店: 所持金＋100G で 札3・遺物3・サービス4 から何個でも買える。買わずに出てもよい。
+// 札と遺物は普通の店と同じ見た目 (札はカードの面・遺物は名前と説明)。種類名は出さない (2026-09-24 夜 ユーザー裁定)
+// 買わなかった物は行商が担いで降り、幕1のショップの棚に並ぶ (出立の店の画面では言わない。2026-09-24 ユーザー裁定)
+
+/**
+ * 支度1つ (出立の店と幕1のショップの棚で共用): 種類の札・名前・得る物・名指しの中身 (遺物の説明／ギアの説明／札の絵)・
+ * 代償 (朱。いまの台帳には無い)・買えない理由。中身は抽選済みなので全部見せる (「ランダムな遺物」は選択にならない)
+ */
+function DepartureOfferView({
+  run,
+  offer,
+  reason,
+  bought,
+  note,
+  actions,
+  ctx,
+  selected,
+}: {
+  run: RunState
+  offer: DepartureOffer
+  /** 今買えない理由 (買えるなら null)。出立の店と棚で判定が違う (棚は棚の値段で見る) */
+  reason: string | null
+  /** 既に買った (出立の店だけ) */
+  bought?: boolean
+  /** 下に添える注記 (出立の店=買わなかった時の行方) */
+  note?: string
+  actions: React.ReactNode
+  ctx?: EffectCtx
+  /** 対象の札を選んでいる最中の支度 (枠を強調する) */
+  selected?: boolean
+}) {
+  const cost = departureCostText(offer.choice)
+  const room = departureGearRoomNote(run, offer.choice)
+  const relic = offer.choice.relicId !== undefined ? getRelicDef(offer.choice.relicId) : null
+  const dim = bought === true || reason !== null
+  return (
+    <div
+      className={`departure-offer departure-${offer.kind}${dim ? ' departure-dim' : ''}${bought === true ? ' departure-bought' : ''}${selected === true ? ' departure-selected' : ''}`}
+    >
+      <div className="choice-title">{offer.name}</div>
+      <div className="choice-desc">{departureGainText(offer)}</div>
+      {relic !== null && (
+        <div className="departure-item">
+          <b>
+            {relic.sprite} {relic.name}
+          </b>
+          {relicRarityTag(relic) && <span className="chip" style={{ marginLeft: 6 }}>{relicRarityTag(relic)}</span>}
+          <div className="choice-desc">{webVocab(relic.description)}</div>
+        </div>
+      )}
+      {(offer.choice.gears ?? []).map((id, k) => {
+        const g = getGearDef(id)
+        return (
+          <div key={`${id}_${k}`} className={`departure-item gear-${g.rarity}`}>
+            <b>
+              ⚙ {g.rarity === 'rare' ? '★' : g.rarity === 'uncommon' ? '◆' : ''}
+              {g.name}
+            </b>
+            {(g.charges ?? 1) > 1 && <span className="hint">（{g.charges}回）</span>}
+            <div className="choice-desc">{webVocab(g.text)}</div>
+          </div>
+        )
+      })}
+      {(offer.choice.mana ?? 0) > 0 && <div className="choice-desc">魔素+{offer.choice.mana}（上限 {MANA_MAX}）</div>}
+      {(offer.choice.addCardIds ?? []).length > 0 && (
+        <div className="hand-cards departure-cards">
+          {(offer.choice.addCardIds ?? []).map((id, k) => (
+            <CardFrame
+              key={`${id}_${k}`}
+              card={{ uid: `departure_${offer.id}_${k}`, def: getCardDef(id) }}
+              dim={false}
+              ctx={ctx}
+              hint={getCardDef(id).rarity === 'rare' ? '★レア' : getCardDef(id).rarity === 'uncommon' ? '◆アンコモン' : undefined}
+              actions={null}
+            />
+          ))}
+        </div>
+      )}
+      {cost !== null && <div className="departure-cost">代償: {cost}</div>}
+      {room !== null && <div className="departure-warn">⚠ {room}</div>}
+      {bought !== true && reason !== null && <div className="departure-why">買えない: {reason}</div>}
+      {note !== undefined && <div className="hint departure-note">{note}</div>}
+      <div className="departure-actions">{actions}</div>
+    </div>
+  )
+}
+
+/** 除去・鍛えの対象の札を選ぶ一覧 (?イベントと同じ札の一覧。出立の店と幕1のショップの棚で共用) */
+function DepartureCardPicker({
+  run,
+  offer,
+  ctx,
+  onPick,
+  onCancel,
+}: {
+  run: RunState
+  offer: DepartureOffer
+  ctx?: EffectCtx
+  onPick: (cardIndex: number) => void
+  onCancel: () => void
+}) {
+  const c = offer.choice
+  const isUpgrade = c.upgradeCard === true
+  const isRemove = c.removeCard === true
+  const ref = useRef<HTMLDivElement>(null)
+  // 一覧は支度の段の下に開くので、開いた時にそこまで送る (画面遷移の演出ではない)
+  useEffect(() => {
+    ref.current?.scrollIntoView({ block: 'start' })
+  }, [offer.id])
+  return (
+    <div className="panel departure-picker" ref={ref}>
+      <div className="choice-title">
+        「{offer.name}」— {isUpgrade ? '鍛える札を選ぶ' : isRemove ? '取り除く札を選ぶ' : '対象の札を選ぶ'}{' '}
+        <button className="btn" data-hotkey="cancel" onClick={onCancel}>
+          やめる（Esc）
+        </button>
+      </div>
+      <div className="hand-cards" style={{ marginTop: 8 }}>
+        {run.deck.map((card, ci) => {
+          const locked =
+            (isUpgrade && !canUpgradeCard(card)) ||
+            (c.transformCard === true && !canTransformCard(card)) ||
+            (c.unexhaustCard === true && !canUnexhaustCard(card))
+          return (
+            <CardFrame
+              key={card.uid}
+              card={card}
+              dim={locked}
+              ctx={ctx}
+              actions={
+                <>
+                  {isUpgrade && !locked && (
+                    <div className="choice-desc" style={{ marginBottom: 4 }}>
+                      鍛えると→ {describeUpgrade(card)}
+                    </div>
+                  )}
+                  <button className="btn btn-primary" disabled={locked} onClick={() => onPick(ci)}>
+                    {locked ? (isUpgrade ? '鍛えられない' : '選べない') : isUpgrade ? 'この札を鍛える' : isRemove ? 'この札を取り除く' : 'この札を選ぶ'}
+                  </button>
+                </>
+              }
+            />
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 出立の店と幕1の棚の1品。札は普通の店と同じカードの面、遺物は普通の店と同じ「名前＋説明＋値札」、
+ * サービス (荷の整理・研ぎ・薬草・道具箱) は名前と中身の札。buyLabel=値札のボタンの文
+ */
+function DepartureItem({
+  run,
+  offer,
+  reason,
+  bought,
+  selected,
+  ctx,
+  buyLabel,
+  onBuy,
+}: {
+  run: RunState
+  offer: DepartureOffer
+  reason: string | null
+  bought: boolean
+  selected: boolean
+  ctx?: EffectCtx
+  buyLabel: string
+  onBuy: () => void
+}) {
+  const needsCard = eventChoiceNeedsCard(offer.choice)
+  const button = bought ? (
+    <span className="departure-bought-mark">✔ 買った</span>
+  ) : (
+    <button className="btn btn-primary" disabled={reason !== null} onClick={onBuy}>
+      {buyLabel}
+      {needsCard ? '（札を選ぶ）' : ''}
+    </button>
+  )
+  const cardId = offer.kind === 'card' ? (offer.choice.addCardIds ?? [])[0] : undefined
+  if (cardId !== undefined) {
+    const def = getCardDef(cardId)
+    return (
+      <CardFrame
+        card={{ uid: `departure_${offer.id}`, def }}
+        dim={bought || reason !== null}
+        ctx={ctx}
+        hint={def.rarity === 'rare' ? '★レア' : def.rarity === 'uncommon' ? '◆アンコモン' : undefined}
+        actions={
+          <>
+            {button}
+            {!bought && reason !== null && <div className="departure-why">買えない: {reason}</div>}
+          </>
+        }
+      />
+    )
+  }
+  const relic = offer.kind === 'relic' && offer.choice.relicId !== undefined ? getRelicDef(offer.choice.relicId) : null
+  if (relic !== null) {
+    return (
+      <div className={`departure-relic${bought || reason !== null ? ' departure-dim' : ''}`}>
+        <span className="chip">
+          {relic.sprite} {relic.name}
+        </span>
+        {relicRarityTag(relic) && <span className="chip">{relicRarityTag(relic)}</span>}
+        <span className="choice-desc"> {webVocab(relic.description)}</span> {button}
+        {!bought && reason !== null && <span className="departure-why"> 買えない: {reason}</span>}
+      </div>
+    )
+  }
+  return <DepartureOfferView run={run} offer={offer} ctx={ctx} reason={reason} bought={bought} selected={selected} actions={button} />
+}
+
+/** 出立の店: 坑口の行商の店で 札・遺物・サービス から何個でも買う。買わずに出てもよい */
+function DepartureScreen({ run, dispatch, ctx }: { run: RunState; dispatch: (c: RunCommand) => void; ctx?: EffectCtx }) {
+  const offers = run.departure?.offers ?? []
+  const [picking, setPicking] = useState<number | null>(null)
+  const target = picking !== null ? offers[picking] : undefined
+  const bought = offers.filter((o) => departureOfferBought(run, o))
+  return (
+    <div className="app setup departure-shop">
+      <h1>🏪 {DEPARTURE_TITLE}</h1>
+      <div className="panel">
+        <div className="choice-desc">{DEPARTURE_LEAD}</div>
+        <div className="departure-master">行商{departureMasterLine(run.colors)}</div>
+        <div className="departure-purse">
+          <span className="departure-gold">💰 所持 {run.gold}G</span>
+          <span className="choice-desc">
+            何個でも買える。買わずに出てもよい。
+          </span>
+        </div>
+        <div style={{ marginTop: 6 }}>
+          <span className="chip">HP {run.hp}/{run.maxHp}</span>
+          <DeckChip run={run} /> <MapChip run={run} />
+          {bought.length > 0 && <span className="chip">買った: {bought.map((o) => o.name).join('・')}</span>}
+        </div>
+      </div>
+      {(['card', 'relic', 'service'] as const).map((kind) => {
+        const items = offers.map((o, i) => ({ o, i })).filter((x) => x.o.kind === kind)
+        if (items.length === 0) return null
+        const list = items.map(({ o, i }) => (
+          <DepartureItem
+            key={o.id}
+            run={run}
+            offer={o}
+            ctx={ctx}
+            reason={departureUnavailableReason(run, o)}
+            bought={departureOfferBought(run, o)}
+            selected={picking === i}
+            buyLabel={departurePriceLabel(o)}
+            onBuy={() => (eventChoiceNeedsCard(o.choice) ? setPicking(i) : dispatch({ type: 'BuyDeparture', index: i }))}
+          />
+        ))
+        return (
+          <div key={kind} className="panel">
+            <div className="setup-section-title">{kind === 'card' ? 'カード' : kind === 'relic' ? 'レリック' : 'サービス'}</div>
+            <div className={kind === 'card' ? 'hand-cards' : kind === 'relic' ? 'departure-relics' : 'departure-row'}>{list}</div>
+          </div>
+        )
+      })}
+      {target !== undefined && picking !== null && !departureOfferBought(run, target) && (
+        <DepartureCardPicker
+          run={run}
+          offer={target}
+          ctx={ctx}
+          onCancel={() => setPicking(null)}
+          onPick={(cardIndex) => {
+            setPicking(null)
+            dispatch({ type: 'BuyDeparture', index: picking, cardIndex })
+          }}
+        />
+      )}
+      <div className="departure-leave">
+        <button className="btn btn-primary" data-hotkey="skip" onClick={() => dispatch({ type: 'LeaveDeparture' })}>
+          店を出て坑へ（S）
+        </button>{' '}
+        <span className="hint">{bought.length === 0 ? '何も買わずに出てもよい（所持金はそのまま持って降りる）' : `残り ${run.gold}G を持って降りる`}</span>
+      </div>
+    </div>
+  )
+}
+
+/** ショップの「行商が預かった支度」の棚 (幕1だけ。出立の店で買わなかった物が同じ効果で並ぶ) */
+function ShopDepartureShelf({ run, dispatch, ctx }: { run: RunState; dispatch: (c: RunCommand) => void; ctx?: EffectCtx }) {
+  const slots = run.shop?.departures ?? []
+  const [picking, setPicking] = useState<number | null>(null)
+  if (slots.length === 0) return null
+  const offerOf = (id: string) => run.departure?.leftovers.find((o) => o.id === id)
+  const pickSlot = picking !== null ? slots[picking] : undefined
+  const pickOffer = pickSlot !== undefined && pickSlot.sold !== true ? offerOf(pickSlot.id) : undefined
+  return (
+    <div className="panel">
+      <div className="setup-section-title">🎒 坑口で買わなかった品（幕1のショップだけに並ぶ）</div>
+      <div className="departure-row">
+        {slots.map((slot, i) => {
+          const o = slot.sold === true ? undefined : offerOf(slot.id)
+          if (o === undefined) {
+            const name = allDepartures.find((t) => t.id === slot.id)?.name ?? slot.id
+            return (
+              <div key={`${slot.id}_${i}`} className="departure-offer departure-dim">
+                <div className="choice-title">{name}</div>
+                <div className="choice-desc">{slot.sold === true ? '売切' : '行商が持っていない'}</div>
+              </div>
+            )
+          }
+          const reason = shopDepartureUnavailableReason(run, o, slot.price)
+          return (
+            <DepartureItem
+              key={`${slot.id}_${i}`}
+              run={run}
+              offer={o}
+              ctx={ctx}
+              reason={reason}
+              bought={false}
+              selected={picking === i}
+              buyLabel={`${slot.price}G で買う`}
+              onBuy={() => (eventChoiceNeedsCard(o.choice) ? setPicking(i) : dispatch({ type: 'ShopBuyDeparture', index: i }))}
+            />
+          )
+        })}
+      </div>
+      {pickOffer !== undefined && picking !== null && (
+        <DepartureCardPicker
+          run={run}
+          offer={pickOffer}
+          ctx={ctx}
+          onCancel={() => setPicking(null)}
+          onPick={(cardIndex) => {
+            setPicking(null)
+            dispatch({ type: 'ShopBuyDeparture', index: picking, cardIndex })
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
 // ---- ドラフト連戦 (ラン) 画面 ----
 
 function RunScreen({
@@ -4795,6 +5190,10 @@ function RunScreen({
         })}
       </div>
     ) : null
+
+  if (run.phase === 'departure') {
+    return <DepartureScreen run={run} dispatch={dispatch} ctx={ctx} />
+  }
 
   if (run.phase === 'map') {
     return (
@@ -4929,6 +5328,7 @@ function RunScreen({
             })()}
           </div>
         )}
+        <ShopDepartureShelf run={run} dispatch={dispatch} ctx={ctx} />
         <div className="panel">
           <div className="setup-section-title">
             ⚙ ギア（自ターンに1個・魔素を払って組む。持ち物 {gearsOf(run).length}/{GEAR_CARRY_MAX}・魔素 {manaLabel(manaOf(run))}）
@@ -4944,7 +5344,7 @@ function RunScreen({
                     {g.name}
                   </b>
                   {(g.charges ?? 1) > 1 && <span className="hint">（{g.charges}回）</span>}
-                  <div className="choice-desc">{g.text}</div>
+                  <div className="choice-desc">{webVocab(g.text)}</div>
                   <button
                     className="btn btn-primary"
                     disabled={item.sold === true || run.gold < item.price || full}
@@ -5032,7 +5432,7 @@ function RunScreen({
       <div className="app setup">
         <h1>{ev.sprite ?? '❓'} {ev.name}</h1>
         <div className="panel">
-          <div className="choice-desc">{ev.flavor}</div>
+          <div className="choice-desc">{webVocab(ev.flavor)}</div>
           <div style={{ marginTop: 6 }}>
             <span className="chip">HP {run.hp}/{run.maxHp}</span>
             <span className="chip">💰 {run.gold}G</span>
@@ -5079,7 +5479,10 @@ function RunScreen({
                     // 鍛える系の選択肢は結果をプレビューし、鍛えられない札は選べない
                     // (2026-09-01 ユーザー指摘「鍛えた後どうなるかチェックできないイベント」)
                     const isUpgradeChoice = c.upgradeCard === true
-                    const locked = isUpgradeChoice && !canUpgradeCard(card)
+                    const isUnexhaust = c.unexhaustCard === true
+                    // 変成は状態異常・烙印を選べない (2026-09-24 T14 裁定A=本家2どおり。engine も拒む)
+                    const isTransform = c.transformCard === true
+                    const locked = (isUpgradeChoice && !canUpgradeCard(card)) || (isUnexhaust && !canUnexhaustCard(card)) || (isTransform && !canTransformCard(card))
                     return (
                       <CardFrame
                         key={card.uid}
@@ -5093,9 +5496,14 @@ function RunScreen({
                                 鍛えると→ {describeUpgrade(card)}
                               </div>
                             )}
-                            {c.transformCard === true && (
+                            {isTransform && (
                               <div className="choice-desc" style={{ marginBottom: 4 }}>
-                                同レアリティのランダムな別カードに変わる
+                                {locked ? '状態異常・烙印は変成できない（除去で消す）' : '同レアリティのランダムな別カードに変わる'}
+                              </div>
+                            )}
+                            {isUnexhaust && !locked && (
+                              <div className="choice-desc" style={{ marginBottom: 4 }}>
+                                消滅が外れ、プレイするたび一時マナ+1
                               </div>
                             )}
                             <button
@@ -5103,7 +5511,7 @@ function RunScreen({
                               disabled={locked}
                               onClick={() => dispatch({ type: 'EventChoice', index: i, cardIndex: ci })}
                             >
-                              {locked ? '鍛えられない' : 'このカードを選ぶ'}
+                              {locked ? (isUnexhaust ? '消滅を外せない' : isTransform ? '変成できない' : '鍛えられない') : 'このカードを選ぶ'}
                             </button>
                           </>
                         }
@@ -5312,7 +5720,7 @@ function RunScreen({
                     {g.name}
                   </b>
                   {(g.charges ?? 1) > 1 && <span className="hint">（{g.charges}回）</span>}
-                  <div>{g.text}</div>
+                  <div>{webVocab(g.text)}</div>
                   <div className="hint">自ターンに魔素1で組む（1ターン1個）</div>
                   <div style={{ marginTop: 6 }}>
                     {full ? (
@@ -5709,7 +6117,7 @@ export default function App() {
         const r = b.run
         const leaderName = allLeaders.find((l) => l.id === r.leaderId)?.name ?? r.leaderId
         resume = {
-          label: `${leaderName} 幕${r.act} 行${r.row + 1} / HP${r.hp}/${r.maxHp} / ${r.battlesWon}勝 / 🎚${r.difficulty ?? 3}`,
+          label: `${leaderName} 幕${r.act} ${r.phase === 'departure' ? '出立の店' : `行${r.row + 1}`} / HP${r.hp}/${r.maxHp} / ${r.battlesWon}勝 / 🎚${r.difficulty ?? 3}`,
           onResume: resumeFromBackup,
         }
       }
@@ -6313,6 +6721,10 @@ function describeUpgrade(card: CardInstance): string {
   const after = upgradeCard(card)
   if (after.def.cost !== card.def.cost) {
     return `コスト ${card.def.cost}E → ${after.def.cost}E（効果は据え置き）`
+  }
+  // 灯コストが下がる札 (灯の矢 灯1→0 など。2026-09-24 T13: 効果行だけ並べて変化が読めなかった)
+  if ((after.def.lightCost ?? 0) !== (card.def.lightCost ?? 0)) {
+    return `灯コスト${card.def.lightCost ?? 0}→${after.def.lightCost ?? 0}（効果は据え置き）`
   }
   return effectLineStrings(after.def).join(' / ')
 }

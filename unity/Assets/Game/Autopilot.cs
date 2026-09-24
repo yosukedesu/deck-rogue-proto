@@ -107,6 +107,7 @@ namespace DeckRogue.Game
             {
                 var rs = g.Rs;
                 if (rs.Phase == RunPhases.Map) g.Do(new RunCommand_ChooseNode { Col = DeckRogue.Engine.Run.NextChoices(rs)[0] });
+                else if (rs.Phase == RunPhases.Departure) g.Do(DeckRogue.Engine.Run.DefaultDepartureCommand(rs));   // 出立の店 (2026-09-24): 既定=サービスを1つ買う→店を出る (出立の間は繰り返し呼ばれる)
                 else break;
             }
             if (g.Rs == null || g.Rs.Phase != RunPhases.Combat) { yield return Shot("no-combat"); yield break; }
@@ -223,7 +224,9 @@ namespace DeckRogue.Game
         /// <summary>
         /// 任意の状態へ跳んで1枚撮る (2026-09-12 ユーザー「あなたの確認用にデバッグメニュー」)。
         /// -state "key=value;key=value" で指定。キー:
-        ///   phase=map|combat|reward|relic|shop|event|campfire|workshop|won|lost  act=1..3  deck=<deckId>  relics=<id,id>  hp=<%>  gold=<n>  difficulty=<n>  leader=<id>
+        ///   phase=departure|map|combat|reward|relic|shop|event|campfire|workshop|won|lost  act=1..3
+        ///   departure: ラン開始直後の出立の店 (2026-09-24)。pick=<品の番号> で除去・鍛えの「札を選ぶ」画面。depart=<番号,番号> でそれらを買った後の店
+        ///   他のフェーズは店を出てから地図へ (depart=<番号,番号> ならそれらを買ってから出る = 買わなかった物が幕1の店の「行商が預かった支度」に並ぶ)  deck=<deckId>  relics=<id,id>  hp=<%>  gold=<n>  difficulty=<n>  leader=<id>
         ///   enemy=<encounterId or enemyId> (combat)  event=<eventId>  pick=<idx[,idx]> (工房の素材／報酬の選択枠)  submode=forge (焚き火)  shopmode=upgrade|remove
         ///   fire=1 (確認の窓で最初の候補を発動してコマ送り。fireshots=枚数・fireevery=Nフレームごと。2026-09-17)
         ///   endplay=1 (手番を終えて敵フェーズを演出付きでコマ送り。endshots=枚数・endevery=Nフレームごと。2026-09-17)
@@ -270,6 +273,41 @@ namespace DeckRogue.Game
             catch (Exception ex) { startErr = ex.Message; }
             if (startErr != null) { Debug.LogError("[Autopilot] state: 開始に失敗 " + startErr); yield return Shot("state-error"); yield break; }
             if (g.Rs == null) { yield return Shot("state-no-run"); yield break; }
+            if (phase == "departure" && g.Rs.Phase == RunPhases.Departure && Get("depart") != null)
+            {   // 買った後の店 (「買った」の判・所持金の減り) を撮る
+                try
+                {
+                    foreach (var raw in Get("depart").Split(','))
+                    {
+                        int di;
+                        if (!int.TryParse(raw.Trim(), out di) || di < 0 || di >= g.Rs.Departure.Offers.Count) continue;
+                        var offer = g.Rs.Departure.Offers[di];
+                        if (!DeckRogue.Engine.Run.DepartureOfferAvailable(g.Rs, offer)) continue;
+                        int? card = DeckRogue.Engine.Run.EventChoiceNeedsCard(offer.Choice) ? DeckRogue.Engine.Run.DefaultEventCardIndex(g.Rs, offer.Choice) : null;
+                        g.Rs = DeckRogue.Engine.Run.ApplyRunCommand(g.Rs, new RunCommand_BuyDeparture { Index = di, CardIndex = card });
+                    }
+                }
+                catch (Exception ex) { Debug.LogError("[Autopilot] state: 出立の店で買えない " + ex.Message); }
+            }
+            // 出立の店 (2026-09-24): ラン開始直後は坑口の店。phase=departure 以外は店を出てから (depart=<番号,番号> ならそれらを買ってから出る。対象の札は既定)
+            if (phase != "departure" && g.Rs.Phase == RunPhases.Departure)
+            {
+                try
+                {
+                    foreach (var raw in (Get("depart") ?? "").Split(','))
+                    {
+                        int di;
+                        if (!int.TryParse(raw.Trim(), out di) || g.Rs.Departure == null || di < 0 || di >= g.Rs.Departure.Offers.Count) continue;
+                        var offer = g.Rs.Departure.Offers[di];
+                        if (!DeckRogue.Engine.Run.DepartureOfferAvailable(g.Rs, offer)) { Debug.LogWarning("[Autopilot] state: 出立の店で買えない " + offer.Id); continue; }
+                        int? card = DeckRogue.Engine.Run.EventChoiceNeedsCard(offer.Choice) ? DeckRogue.Engine.Run.DefaultEventCardIndex(g.Rs, offer.Choice) : null;
+                        g.Rs = DeckRogue.Engine.Run.ApplyRunCommand(g.Rs, new RunCommand_BuyDeparture { Index = di, CardIndex = card });
+                        if (g.Rs.Phase != RunPhases.Departure) break;   // 遺物の選ぶ画面などへ進んだ
+                    }
+                    if (g.Rs.Phase == RunPhases.Departure) g.Rs = DeckRogue.Engine.Run.ApplyRunCommand(g.Rs, new RunCommand_LeaveDeparture());
+                }
+                catch (Exception ex) { Debug.LogError("[Autopilot] state: 出立の店を出られない " + ex.Message); g.Rs = g.Rs with { Phase = RunPhases.Map }; }
+            }
             // ギア (2026-09-17): gears=<id,...> で持ち物を直接置く (チェックポイントの既定の抽選を上書き)・mana=<n> で魔素
             if (Get("gears") != null || Get("mana") != null)
             {
@@ -437,6 +475,7 @@ namespace DeckRogue.Game
             var picks = (Get("pick") ?? "").Split(',').Select(x => { int v; return int.TryParse(x.Trim(), out v) ? v : -1; }).Where(v => v >= 0).ToList();
             if (phase == "workshop") { g.WorkshopA = picks.Count > 0 ? picks[0] : -1; g.WorkshopB = picks.Count > 1 ? picks[1] : -1; }
             if (phase == "event" && picks.Count > 0) g.EventChoiceIndex = picks[0];   // イベントの「デッキから1枚選ぶ」画面 (pick=選択肢の番号。2026-09-15)
+            if (phase == "departure" && picks.Count > 0) g.DepartureChoiceIndex = picks[0];   // 出立の店の「札を選ぶ」画面 (pick=品の番号。2026-09-24)
             if (Get("doodle") == "1")
             {   // 見本の落書き: 現在地の丸と、右上へ向かう波線 (描画の確認用)
                 var l = g.DoodlesFor(g.Rs.Act);
@@ -783,6 +822,11 @@ namespace DeckRogue.Game
             g.SetSeed(_seed);
             yield return Shot("title");
             g.StartRun();
+            if (g.Rs != null && g.Rs.Phase == RunPhases.Departure)
+            {   // 出立の店 (2026-09-24): 撮ってから既定 (サービスを1つ買う→店を出る) を繰り返す
+                yield return Shot("departure");
+                for (int k = 0; k < 6 && g.Rs != null && g.Rs.Phase == RunPhases.Departure && g.Error == null; k++) g.Do(DeckRogue.Engine.Run.DefaultDepartureCommand(g.Rs));
+            }
             yield return Shot("map");
             var seen = new HashSet<string>();
             var wish = new List<string> { MapNodeTypes.Event, MapNodeTypes.Shop, MapNodeTypes.Workshop, MapNodeTypes.Campfire, MapNodeTypes.Treasure, MapNodeTypes.Elite, MapNodeTypes.Battle };
@@ -838,6 +882,7 @@ namespace DeckRogue.Game
                         break;
                     case RunPhases.RelicReward: g.Do(new RunCommand_PickRelic { Index = 0 }); break;
                     case RunPhases.RelicChoose: g.Do(new RunCommand_RelicChooseCards { Indices = new List<int>() }); break;
+                    case RunPhases.Departure: g.Do(DeckRogue.Engine.Run.DefaultDepartureCommand(g.Rs)); break;   // 出立の店 (2026-09-24): 既定=サービスを1つ買う→店を出る (出立の間は繰り返し呼ばれる)
                     case RunPhases.Campfire: g.Do(new RunCommand_CampfireRest()); break;
                     case RunPhases.Shop: g.Do(new RunCommand_ShopLeave()); break;
                     case RunPhases.Workshop: g.Do(new RunCommand_WorkshopSkip()); break;
@@ -900,7 +945,7 @@ namespace DeckRogue.Game
                         if (c.Def.DiscardCost.HasValue || c.Def.ExhaustCost.HasValue) continue;
                         int cost = c.Def.Cost;
                         try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
-                        if (!Effects.IsPlayableFromHand(c) || cost > st.Player.Energy || (c.Def.LightCost ?? 0) > (st.Player.Light ?? 0)) continue; // 灯コスト (白 2026-09-20)
+                        if (!Effects.IsPlayableFromHand(c, st) || cost > st.Player.Energy || (c.Def.LightCost ?? 0) > (st.Player.Light ?? 0)) continue; // 灯コスト (白 2026-09-20)
                         bool dmg = c.Def.Effects.Any(e => e.Effect == "dealDamage" && e.Trigger == "onPlay");
                         if (pick == null || (dmg && !pick.Def.Effects.Any(e => e.Effect == "dealDamage" && e.Trigger == "onPlay"))) pick = c;
                     }
@@ -934,6 +979,11 @@ namespace DeckRogue.Game
             yield return Shot("setup");
             g.SetSeed(_seed);
             g.StartRun();
+            if (g.Rs != null && g.Rs.Phase == RunPhases.Departure)
+            {   // 出立の店 (2026-09-24): 撮ってから既定 (サービスを1つ買う→店を出る) を繰り返す
+                yield return Shot("departure");
+                for (int k = 0; k < 6 && g.Rs != null && g.Rs.Phase == RunPhases.Departure && g.Error == null; k++) g.Do(DeckRogue.Engine.Run.DefaultDepartureCommand(g.Rs));
+            }
             yield return Shot("map");
             for (int i = 0; i < 8 && g.Rs != null && g.Rs.Phase != RunPhases.Combat; i++)
             {
@@ -942,6 +992,7 @@ namespace DeckRogue.Game
                 switch (rs.Phase)
                 {
                     case RunPhases.Map: cmd = new RunCommand_ChooseNode { Col = DeckRogue.Engine.Run.NextChoices(rs)[0] }; break;
+                    case RunPhases.Departure: cmd = DeckRogue.Engine.Run.DefaultDepartureCommand(rs); break;   // 出立の店 (2026-09-24): 買う→出る
                     case RunPhases.Event:
                     {
                         try { cmd = DeckRogue.Engine.Run.DefaultEventChoice(rs); } catch (Exception) { cmd = new RunCommand_EventChoice { Index = 0 }; }

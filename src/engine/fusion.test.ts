@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef } from './content.ts'
 import { fuseBlockReason, fuseCards, fusionNotes } from './fusion.ts'
 import fusionsJson from '../data/fusions.json'
-import { applyRunCommand, createRun, upgradeCard, upgradeTier, workshopFusePrice, defaultEventChoice } from './run.ts'
+import { applyRunCommand, upgradeCard, upgradeTier, workshopFusePrice, defaultEventChoice } from './run.ts'
 import type { RunState } from './run.ts'
 import { applyCommand, createInitialState } from './state.ts'
-import { chooseToward, defendIntent, freshCombat, withHand, withIntent } from './test-helpers.ts'
+import { chooseToward, defendIntent, freshCombat, withHand, withIntent, createRunAtMap as createRun } from './test-helpers.ts'
 import type { CardDef, CardInstance, DeclarativeEffect, GameState } from './types.ts'
 
 const inst = (id: string, uid = `t_${id}`): CardInstance => ({ uid, def: getCardDef(id) })
@@ -430,6 +430,17 @@ describe('合成カードの描画クラッシュ (2026-08-28 修正。人間+LL
     expect(resolveFusedDef('unknown_id')).toBeNull()
   })
 
+  // 2026-09-24 人間ラン#18: レシピ産を素材にした合成札がログで id のまま (fused_fusion_page_ambush__white_perm_bonfire) だった
+  it('resolveFusedDef: 合成品・レシピ産を素材にした合成札も復元できる', async () => {
+    const { resolveFusedDef } = await import('./fusion.ts')
+    const recipe = resolveFusedDef('fusion_page_ambush')!
+    const def = fuseCards({ uid: 'r', def: recipe }, inst('white_perm_bonfire'))
+    expect(JSON.stringify(resolveFusedDef(def.id))).toBe(JSON.stringify(def))
+    const inner = fuseCards(inst('white_perm_cathedral'), inst('white_perm_spark_hearth'))
+    const outer = fuseCards({ uid: 'f', def: inner }, inst('white_light_bolt'))
+    expect(JSON.stringify(resolveFusedDef(outer.id))).toBe(JSON.stringify(outer))
+  })
+
   it('合成カードをプレイした後のイベントログが UI/CLI の描画関数でクラッシュしない', async () => {
     const { logLine, cardName } = await import('../ui/log.ts')
     const { startCombatWithOptions } = await import('./combat.ts')
@@ -535,7 +546,7 @@ describe('手書きレシピの作り直し (2026-09-12 ユーザー裁定「上
   const recipes = fusionsJson as ReadonlyArray<{ a: string; b: string; result: { id: string; name: string; cost: number; type: string; effects: ReadonlyArray<{ effect: string }>; modes?: ReadonlyArray<unknown> } }>
 
   it('レシピは30件 (既存9+新15+白6〔2026-09-18 白の仕上げ〕)。素材は現行データに実在する = 死にレシピ (素材が撤去済み) を作らない', () => {
-    expect(recipes).toHaveLength(30)
+    expect(recipes).toHaveLength(26) // 2026-09-24 白のプールを削り、素材が消えたレシピ4件 (灯すか守るか・弩人形の号砲・報復の刃・点灯の台座) を外した
     const ids = new Set<string>()
     for (const r of recipes) {
       expect(() => getCardDef(r.a), `${r.result.name}: 素材 ${r.a}`).not.toThrow()
@@ -697,5 +708,58 @@ describe('Opusラン T2/T3 の答え合わせ (2026-09-05)', () => {
     const notes2 = fusionNotes(upgradeCard(inst('green_strike')), inst('green_perm_growth_tree'))
     expect(notes2.some((n) => n.startsWith('鍛えの引き継ぎ'))).toBe(true)
     expect(notes2.some((n) => n.startsWith('置物化'))).toBe(true)
+  })
+})
+
+describe('合成札の命名 (2026-09-24 T8: 白の合成名に緑の語「樹」が入る・同じ名前の合成札が多すぎる)', () => {
+  /** 色の全組 (異なる id の対) の合成名。引数の順序を入れ替えても同じ名前になることもここで確かめる */
+  const cache = new Map<string, { pair: string; name: string; id: string }[]>()
+  const namesOf = (color: string): { pair: string; name: string; id: string }[] => {
+    const hit = cache.get(color)
+    if (hit) return hit
+    const pool = allCards.filter((c) => c.color === color)
+    const out: { pair: string; name: string; id: string }[] = []
+    for (let i = 0; i < pool.length; i++) {
+      for (let j = i + 1; j < pool.length; j++) {
+        const ab = fuseCards({ uid: 'a', def: pool[i] }, { uid: 'b', def: pool[j] })
+        const ba = fuseCards({ uid: 'b', def: pool[j] }, { uid: 'a', def: pool[i] })
+        expect(ba.name, `${pool[i].name}×${pool[j].name}: 引数の順序で名前が変わる`).toBe(ab.name)
+        out.push({ pair: `${pool[i].name}×${pool[j].name}`, name: ab.name, id: ab.id })
+      }
+    }
+    cache.set(color, out)
+    return out
+  }
+
+  it('白の合成名に緑の語 (樹・蔦・角・牙・根) が入らない (旧: 灯の閃撃×灯の薪=樹輝の一撃 ほか169組)。赤・青・黒の計算合成にも緑の表の「樹」が出ない', () => {
+    const white = namesOf('white')
+    expect(white.length).toBeGreaterThan(3000)
+    expect(white.filter((x) => /[樹蔦角牙根]/.test(x.name)).map((x) => `${x.pair}=${x.name}`)).toEqual([])
+    for (const color of ['red', 'blue', 'black']) {
+      const leak = namesOf(color).filter((x) => x.id.startsWith('fused_') && x.name.includes('樹'))
+      expect(leak.map((x) => `${x.pair}=${x.name}`), color).toEqual([])
+    }
+  })
+
+  it('白の全組で、同じ名前になる組は20以下 (旧: 342種・最大171組=大光の祭壇。2026-09-24 実測 約1970種・最大16組)', () => {
+    const white = namesOf('white')
+    const count = new Map<string, number>()
+    for (const x of white) count.set(x.name, (count.get(x.name) ?? 0) + 1)
+    const [worst, n] = [...count.entries()].sort((p, q) => q[1] - p[1])[0]
+    expect(n, `最大の重なり: ${worst}`).toBeLessThanOrEqual(20)
+    expect(count.size).toBeGreaterThanOrEqual(Math.floor(white.length / 3))
+  })
+
+  it('人形どうしの合成は語尾も「人形」(剣の人形×盾の人形)。火種参照のブロック (gainBlockPerSpark) は白の語「火」になる', () => {
+    const doll = fuseCards(inst('white_perm_squire'), inst('white_perm_shieldmaiden'))
+    expect(doll.type).toBe('permanent')
+    expect(doll.name.endsWith('の人形')).toBe(true)
+    const card = (id: string, name: string, effect: DeclarativeEffect['effect']): CardInstance => ({
+      uid: id,
+      def: { id, name, cost: 1, type: 'spell', color: 'white', effects: [{ trigger: 'onPlay', effect, amount: 2 }] },
+    })
+    const def = fuseCards(card('test_spark_guard', '試しの守り', 'gainBlockPerSpark'), card('test_page', '試しの頁', 'drawCards'))
+    expect(def.name).toContain('火')
+    expect(def.name).not.toMatch(/[樹蔦角牙根]/)
   })
 })

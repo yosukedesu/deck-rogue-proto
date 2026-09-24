@@ -121,6 +121,17 @@ namespace DeckRogue.Engine
             try { return Content.GetGearDef(id).Name; } catch (Exception) { return id; }
         }
 
+        /// <summary>出立の支度の中身 (名指しの遺物・ギア・札を名前で。未定義IDでも落ちない)。ui/report.ts departureDetail と同じ</summary>
+        public static string DepartureDetail(DepartureOffer o)
+        {
+            var parts = new List<string> { o.Text };
+            if (o.Choice.RelicId != null) parts.Add(SafeRelicName(o.Choice.RelicId));
+            if (o.Choice.Gears != null && o.Choice.Gears.Count > 0) parts.Add(string.Join("・", o.Choice.Gears.Select(GearName).ToArray()));
+            if (o.Choice.AddCardIds != null && o.Choice.AddCardIds.Count > 0)
+                parts.Add(string.Join("・", o.Choice.AddCardIds.Select(id => { try { return Content.GetCardDef(id).Name; } catch (Exception) { return id; } }).ToArray()));
+            return string.Join("＝", parts.ToArray());
+        }
+
         /// <summary>カードIDから名前 (合成札は合成の解決器で復元する)。ui/log.ts cardName と同じ</summary>
         public static string CardName(string cardId)
         {
@@ -667,6 +678,32 @@ namespace DeckRogue.Engine
                 }
                 case RunCommand_ShopBuyMana _:
                     return Mk("ショップ: 魔素を購入（" + (prev.Mana ?? 0) + "→" + (next.Mana ?? 0) + "・" + (prev.Shop?.ManaPrice ?? 0) + "G）");
+                case RunCommand_BuyDeparture bd:
+                {
+                    // 出立の店 (2026-09-24): 坑口で買った1つ
+                    var offers = prev.Departure?.Offers ?? new List<DepartureOffer>();
+                    if (bd.Index < 0 || bd.Index >= offers.Count) return null;
+                    var o = offers[bd.Index];
+                    var target = bd.CardIndex.HasValue && bd.CardIndex.Value >= 0 && bd.CardIndex.Value < prev.Deck.Count ? prev.Deck[bd.CardIndex.Value] : null;
+                    string how = o.Price + "Gで買った";
+                    return Mk("出立の店: " + o.Name + "（" + DepartureDetail(o) + "）を" + how + (target != null ? "（対象: " + target.Def.Name + "）" : ""));
+                }
+                case RunCommand_LeaveDeparture _:
+                {
+                    var boughtIds = prev.Departure?.Bought ?? new List<string>();
+                    var bought = string.Join("・", (prev.Departure?.Offers ?? new List<DepartureOffer>()).Where(o => boughtIds.Contains(o.Id)).Select(o => o.Name).ToArray());
+                    var carried = string.Join("・", (next.Departure?.Leftovers ?? new List<DepartureOffer>()).Select(o => o.Name).ToArray());
+                    return Mk("出立: 店を出て坑へ（買った: " + (bought != "" ? bought : "なし") + "／行商が担いで降りる: " + (carried != "" ? carried : "なし") + "）");
+                }
+                case RunCommand_ShopBuyDeparture sd:
+                {
+                    var shelf = prev.Shop?.Departures ?? new List<ShopStateDepartures>();
+                    var slot = sd.Index >= 0 && sd.Index < shelf.Count ? shelf[sd.Index] : null;
+                    var o = slot != null ? prev.Departure?.Leftovers.FirstOrDefault(x => x.Id == slot.Id) : null;
+                    if (o == null || slot == null) return null;
+                    var target = sd.CardIndex.HasValue && sd.CardIndex.Value >= 0 && sd.CardIndex.Value < prev.Deck.Count ? prev.Deck[sd.CardIndex.Value] : null;
+                    return Mk("ショップ: 行商が預かった支度「" + o.Name + "」（" + DepartureDetail(o) + "）を" + slot.Price + "Gで買った" + (target != null ? "（対象: " + target.Def.Name + "）" : ""));
+                }
                 case RunCommand_PickRelic pr:
                 {
                     var opts = prev.RelicOptions ?? new List<string>();
@@ -774,11 +811,22 @@ namespace DeckRogue.Engine
                     if (prev.RelicState != null) prev.RelicState.TryGetValue("brandWard", out prevWard);
                     if (next.RelicState != null) next.RelicState.TryGetValue("brandWard", out nextWard);
                     int warded = prevWard - nextWard;
+                    // 同じ選択で最大HPも増えた時 (2026-09-24 T6): 最大HPの分を HP の増減から外して別に書く
+                    // 例「HP-14（最大HP+8 で HP も+8）」(旧: 差し引きの HP-6 だけで、払った HP が読めなかった)。
+                    // m = 最大HPの増分 (0未満は0)・shown = HP差−m。shown≠0 なら HP±shown (m>0 なら注記を続ける)。
+                    // shown=0 かつ m>0 なら HP の項目は出さず「最大HP+m」を1項目 (「HP0（…）」は出さない)
+                    int maxHpGain = Math.Max(0, next.MaxHp - prev.MaxHp);
+                    int hpShown = hpDiff - maxHpGain;
+                    // 並びは report.ts と同じ: HP の項目の直後に「最大HP+m」(m>0 なら shown の有無に関わらず出す)
+                    string hpText = hpShown != 0
+                        ? "HP" + (hpShown > 0 ? "+" : "") + hpShown + (maxHpGain > 0 ? "（最大HP+" + maxHpGain + " で HP も+" + maxHpGain + "）" : "")
+                        : "";
                     var outcome = new[]
                     {
                         gotRelics.Count > 0 ? "獲得レリック: " + string.Join("・", gotRelics.ToArray()) : "",
                         gotCards.Count > 0 ? "獲得: " + string.Join("・", gotCards.ToArray()) : "",
-                        hpDiff != 0 ? "HP" + (hpDiff > 0 ? "+" : "") + hpDiff : "",
+                        hpText,
+                        maxHpGain > 0 ? "最大HP+" + maxHpGain : "",
                         goldDiff != 0 ? (goldDiff > 0 ? "+" : "") + goldDiff + "G" : "",
                         warded > 0 ? "🏷️厄除けの札が烙印" + warded + "枚を防いだ（残り" + nextWard + "）" : "",
                     }.Where(x => x != "").ToArray();
