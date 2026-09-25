@@ -7,6 +7,7 @@ import { applyCommand } from './state.ts'
 import { attackIntent, freshCombat, passTurn, setAndArm, withHand, withIntent } from './test-helpers.ts'
 import { effectiveCost, isTrapLive, trapStatusText, trapWindowsLeft } from './effects.ts'
 import { upgradeCard } from './upgrade.ts'
+import fusionsJson from '../data/fusions.json'
 import type { CardInstance, GameState } from './types.ts'
 
 const inst = (id: string, n: number): CardInstance => ({ uid: `d${n}_${id}`, def: getCardDef(id) })
@@ -33,15 +34,17 @@ describe('潮読み: 占術', () => {
     expect(s.eventLog.some((e) => e.type === 'Scried')).toBe(true)
   })
 
-  it('読み切り=この戦闘で占術で見た枚数×1。渦見の鏡=占術するたび氷壁3', () => {
+  it('読み切り=この戦闘で占術で捨てた枚数×2。渦見の鏡=占術で捨てた1枚ごと氷壁2 (2026-09-25 Opus 青B「捨てる理由が無い」の処方)', () => {
     let s = perm(withDraw(base(['blue_foresight_shield', 'blue_read_through']), ['blue_guard', 'blue_guard', 'blue_guard', 'blue_guard']), 'blue_perm_eddy_mirror')
     const ice0 = s.player.iceBlock
     s = play(s, 't0_blue_foresight_shield')
-    s = applyCommand(s, { type: 'ResolveScry', discardUids: [] })
-    expect(s.player.iceBlock - ice0).toBe(6 + 3)
+    s = applyCommand(s, { type: 'ResolveScry', discardUids: ['d0_blue_guard', 'd1_blue_guard'] })
+    expect(s.player.iceBlock - ice0).toBe(6 + 2 * 2)
+    expect(s.player.scriedThisCombat).toBe(3)
+    expect(s.player.scryDiscardedThisCombat).toBe(2)
     const hp0 = s.enemies[0].hp
     s = play(s, 't1_blue_read_through')
-    expect(hp0 - s.enemies[0].hp).toBe(3)
+    expect(hp0 - s.enemies[0].hp).toBe(4)
   })
 
   it('山札が空なら占術は保留しない (空の窓を出さない)', () => {
@@ -205,5 +208,34 @@ describe('緑と同じ89枚にする追加9枚 (2026-09-25)', () => {
     let s = base(['blue_eddy_foothold'])
     s = play(s, 't0_blue_eddy_foothold')
     expect(s.player.cardsPlayedThisTurn).toBe(1 + 1)
+  })
+})
+
+describe('Opus 青3本の答え合わせ (2026-09-25)', () => {
+  it('反復+ は 0E にならない＝1E・反復1＋1ドロー (C: 0E の反復×巻き波+ で1ターン128)', () => {
+    const d = upgradeCard({ uid: 'u', def: getCardDef('blue_echo') }).def
+    expect(d.cost).toBe(1)
+    expect(d.effects.map((e) => `${e.effect}:${e.amount}`).sort()).toEqual(['addSpellEcho:1', 'drawCards:1'])
+  })
+
+  it('潮溜まり=単独でもターン終了時に手札を1枚残せ、残った札はコスト-1', () => {
+    let s = perm(base(['blue_strike', 'blue_guard']), 'blue_perm_tide_pool')
+    expect(() => applyCommand(s, { type: 'EndTurn', retainUids: ['t0_blue_strike', 't1_blue_guard'] })).toThrow('1枚まで')
+    s = applyCommand(withIntent(s, attackIntent(1)), { type: 'EndTurn', retainUids: ['t0_blue_strike'] })
+    const kept = s.player.hand.find((c) => c.uid === 't0_blue_strike')!
+    expect(effectiveCost(s, kept)).toBe(0)
+  })
+
+  it('魔力盗みの氷壁は多段なら合計 (9×3 を消すと+27。A: 1発ぶんの+9しか入らなかった)', () => {
+    let s = setAndArm(base(['blue_spell_steal']), 't0_blue_spell_steal')
+    const ice0 = s.player.iceBlock
+    s = applyCommand(withIntent(s, { kind: 'attack', actual: 9, hits: 3 } as never), { type: 'EndTurn' })
+    s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
+    expect(s.player.iceBlock - ice0).toBeGreaterThanOrEqual(27)
+  })
+
+  it('沈思の一撃 (知恵の重み×思案のレシピ) は1枚引いてから手札×3 (B: 2枚引いてから×4 で最大101)', () => {
+    const r = (fusionsJson as ReadonlyArray<{ result: { id: string; effects: ReadonlyArray<{ effect: string; amount?: number }> } }>).find((x) => x.result.id === 'fusion_deep_thought')!
+    expect(r.result.effects.map((e) => [e.effect, e.amount])).toEqual([['drawCards', 1], ['dealDamagePerHandCard', 3]])
   })
 })

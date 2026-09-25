@@ -142,8 +142,10 @@ export interface PlayerState extends CombatantState {
   readonly randomPlayedThisCombat: number
   /** 火種 (白 2026-09-20 夜。本家 Soul の白版): この戦闘で撃った火種 (sparkToken) の枚数。火種の嵐が参照 */
   readonly sparksPlayedThisCombat?: number
-  /** 占術 (青 2026-09-25): この戦闘で占術で見た枚数の累計 (読み切りが参照) */
+  /** 占術 (青 2026-09-25): この戦闘で占術で見た枚数の累計 (記録用) */
   readonly scriedThisCombat?: number
+  /** 占術 (青 2026-09-25 Opus B の処方): この戦闘で占術で捨てた枚数の累計 (読み切りが参照) */
+  readonly scryDiscardedThisCombat?: number
   /** 罠使い (青 2026-09-25): この戦闘で罠 (reaction) が鳴った回数 (仕掛けの反響が参照) */
   readonly trapsFiredThisCombat?: number
   /** 直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット) */
@@ -777,7 +779,8 @@ export interface DeclarativeEffect {
     | 'onAetherGained' // 霊気を得るたび (青の接着剤: 静電の帳。妨害の成功が自動火力になる)
     | 'onCardSet' // カードを伏せるたび (レリック: 符師の懐。set-confirmシナジー)
     | 'onReactionFired' // リアクションが発動するたび (置物。緑: 狩人の眼光=読み勝ちの換金。自己誘発・全方式共通)
-    | 'onScry' // 占術するたび (置物。青 渦見の鏡。占術1回につき1回=見た枚数は問わない。山札が空で見られなかった占術は数えない)
+    | 'onScry' // 占術するたび (置物。青 潮読みの極み。占術1回につき1回=見た枚数は問わない。山札が空で見られなかった占術は数えない)
+    | 'onScryDiscard' // 占術で札を捨てるたび (置物。青 渦見の鏡。捨てた1枚ごと。2026-09-25 Opus B「捨てる理由が無い」への処方)
     | 'onSetExpired' // 罠が期限切れになるたび (置物。青 ほどけ泡。1枚ごと)
     | 'onGrowthGained' // 成長を得るたび (緑の接着剤 2026-09-02: 棘葉の茂み。addGrowth/doubleGrowth の加算のたび。再入は1段で止める)
     | 'onMomentumGained' // 勢いを得るたび (緑の接着剤 2026-09-02: 風渡り。addMomentum/doubleMomentum の加算のたび)
@@ -837,7 +840,7 @@ export interface DeclarativeEffect {
     | 'doubleLight' // 灯の倍化 (白 R・消滅必須): 現在の灯を2倍にする
     // --- 青の3本柱 (2026-09-25 docs/blue-archetypes-proposal-2026-09-25.md) ---
     | 'scry' // 占術 (潮読み。StS1 Watcher の Scry): 山札の上 amount 枚を見て、捨てる札を選ぶ (GameState.pendingScry → ResolveScry)。札の解決の後・ターン開始の誘発の後に選ぶ
-    | 'dealDamagePerScry' // 読み切り (潮読み): この戦闘で占術で見た枚数×amount のダメージ
+    | 'dealDamagePerScry' // 読み切り (潮読み): この戦闘で占術で捨てた枚数×amount のダメージ (2026-09-25 Opus B: 見た枚数→捨てた枚数＝捨てるほど得)
     | 'dealDamagePerTrapFired' // 仕掛けの反響 (罠使い): この戦闘で罠 (reaction) が鳴った回数×amount のダメージ
     | 'extendTrapLife' // 潮待ち (罠使い): 仕込んでいる罠すべての期限を amount ターン延ばす (期限なしの罠は不変)
     | 'trapsNeverExpire' // 深き仕掛け (罠使い R 置物): この置物がある間、罠は期限切れにならない (常在の印)

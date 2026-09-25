@@ -1562,6 +1562,7 @@ namespace DeckRogue.Engine
                     DrawPile = state.Player.DrawPile.Where(c => !chosen.Contains(c.Uid)).ToList(),
                     DiscardPile = Concat(state.Player.DiscardPile, discarded),
                     ScriedThisCombat = (state.Player.ScriedThisCombat ?? 0) + look.Count,
+                    ScryDiscardedThisCombat = (state.Player.ScryDiscardedThisCombat ?? 0) + discarded.Count,
                 },
             };
             s = Events.Emit(s, new GameEvent_Scried { Looked = look.Select(c => c.Def.Id).ToList(), Discarded = discarded.Select(c => c.Def.Id).ToList() });
@@ -1569,6 +1570,8 @@ namespace DeckRogue.Engine
             {
                 int firstAlive = FirstAliveOrZero(s);
                 for (int i = 0; i < p.Times; i++) s = Effects.RunPermanentTriggers(s, "onScry", firstAlive);
+                // 渦見の鏡 (2026-09-25 Opus B の処方): 捨てた1枚ごと (TS と同形)
+                for (int i = 0; i < discarded.Count; i++) s = Effects.RunPermanentTriggers(s, "onScryDiscard", firstAlive);
             }
             return CheckCombatEnd(s);
         }

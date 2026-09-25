@@ -70,7 +70,7 @@ import { trapStatusText, BLAZE_THRESHOLD, DOLL_GROWTH_EFFECTS, anthemTotal, card
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
 import { departureCostText, departureGainText, departureGearRoomNote, departurePriceLabel, departureUnavailableReason, shopDepartureUnavailableReason } from './log.ts'
-import { applyRunCommand, departureOfferBought, campfireOptions, canTransformCard, canUnexhaustCard, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, difficultyDescription, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicChargesLeft, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
+import { applyRunCommand, departureOfferBought, campfireOptions, canTransformCard, canUnexhaustCard, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, difficultyDescription, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicChargesLeft, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, workshopFuseResult, campfireForgeAllowed } from '../engine/run.ts'
 import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason, manaLabel } from '../engine/gears.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, intentModifierNotes, interruptPreviews, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { describeGraph, sleepingInterrupt } from '../engine/enemyGraph.ts'
@@ -78,7 +78,7 @@ import { interruptBlockedNote } from '../engine/traits.ts'
 import { GRID_COLS } from '../engine/map.ts'
 import type { MapNode, MapNodeType } from '../engine/map.ts'
 import { FusionLabPage } from './FusionLab.tsx'
-import { fusionNotes, fuseBlockReason, fuseCards, recipePairsInDeck } from '../engine/fusion.ts'
+import { fusionNotes, fuseBlockReason, recipePairsInDeck } from '../engine/fusion.ts'
 import type { RunCommand, RunState } from '../engine/run.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import { RESTRAIN_PLAY_CAP, startCombatWithOptions } from '../engine/combat.ts'
@@ -259,6 +259,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onCardSet: 'カードを伏せるたび: ',
   onReactionFired: '発動するたび: ',
   onScry: '占術するたび: ',
+  onScryDiscard: '占術で札を捨てるたび（1枚ごと）: ',
   onSetExpired: '伏せ札が期限切れになるたび: ',
   onSelfExhausted: '亡骸 (この札がプレイ以外で消滅した時): ',
   onGrowthGained: '成長を得るたび: ',
@@ -505,7 +506,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     case 'scry':
       return `${trigger}🔮 占術${e.amount ?? 1}（山札の上${e.amount ?? 1}枚を見て、要らない札を捨て札へ）`
     case 'dealDamagePerScry':
-      return `${trigger}⚔️ この戦闘で占術で見た枚数×${e.amount}ダメージ${pierce}${ctx && ctx.scried !== undefined ? ` [現在 ${ctx.scried}枚→${ctx.scried * (e.amount ?? 0) + (ctx.scried > 0 ? atkBonus : 0)}]` : ''}`
+      return `${trigger}⚔️ この戦闘で占術で捨てた枚数×${e.amount}ダメージ${pierce}${ctx && ctx.scried !== undefined ? ` [現在 ${ctx.scried}枚→${ctx.scried * (e.amount ?? 0) + (ctx.scried > 0 ? atkBonus : 0)}]` : ''}`
     case 'dealDamagePerTrapFired':
       return `${trigger}⚔️ この戦闘で伏せ札が発動した回数×${e.amount}ダメージ${pierce}${ctx && ctx.trapsFired !== undefined ? ` [現在 ${ctx.trapsFired}回→${ctx.trapsFired * (e.amount ?? 0) + (ctx.trapsFired > 0 ? atkBonus : 0)}]` : ''}`
     case 'extendTrapLife':
@@ -1843,7 +1844,7 @@ function BattleScreen({
   // 満ち潮の書庫 (青 2026-09-25): ターン終了時に残す手札 / 占術 (青 2026-09-25): 捨てる札
   const [retainPick, setRetainPick] = useState<readonly string[]>([])
   const [scryDiscard, setScryDiscard] = useState<readonly string[]>([])
-  const pileCtx: EffectCtx = { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scriedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }
+  const pileCtx: EffectCtx = { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scryDiscardedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }
 
   return (
     <div className="app battle">
@@ -2044,7 +2045,7 @@ function BattleScreen({
                       <span className="chip chip-strength">🤝 {kw('連携')}+{enemyDef.bondStrength}</span>
                     )}
                     {enemyDef.aura !== undefined && !dead && (
-                      <span className="chip chip-strength">🕸️ {kw('重圧')}: {enemyDef.aura.attacksOnly === true ? '攻撃' : enemyDef.aura.cardType !== undefined ? TYPE_LABEL[enemyDef.aura.cardType] : '全'}カード+{enemyDef.aura.costUp}</span>
+                      <span className="chip chip-strength">🕸️ {kw('重圧')}: {enemyDef.aura.attacksOnly === true ? 'ダメージを与える' : enemyDef.aura.cardType !== undefined ? TYPE_LABEL[enemyDef.aura.cardType] : '全'}カード+{enemyDef.aura.costUp}</span>
                     )}
                     {(enemy.stolenGold ?? 0) > 0 && !dead && (
                       <span className="chip chip-growth">💰 {enemy.stolenGold}G 抱え込み（次の宣言で必ず逃走）</span>
@@ -2155,7 +2156,7 @@ function BattleScreen({
                   )}
                   <EffectLines
                     def={c.def}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scriedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scryDiscardedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
                   />
                 </div>
               ))}
@@ -2199,7 +2200,7 @@ function BattleScreen({
                             randomPlayed: player.randomPlayedThisCombat,
                             iceBlock: player.iceBlock,
                             cardsPlayed: player.cardsPlayedThisTurn,
-                            aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scriedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0,
+                            aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scryDiscardedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0,
                             energy: player.energy, handCards: Math.max(0, player.hand.length - 1),
                           }),
                         )}
@@ -2246,7 +2247,7 @@ function BattleScreen({
                       onClick={() => dispatch({ type: 'ReactManual', cardUid: c.uid })}
                     >
                       {c.def.name}({cardCostLabel(c.def)}) —{' '}
-                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scriedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) })}
+                      {effectText(c.def, { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scryDiscardedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) })}
                     </button>
                   ))}
                   <button
@@ -2533,7 +2534,7 @@ function BattleScreen({
                   <CardFrame
                     key={c.uid}
                     card={c}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scriedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scryDiscardedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
                     dim={!eligible}
                     hint={eligible ? undefined : directPlay ? '直接プレイ不可' : undefined}
                     actions={
@@ -2784,7 +2785,7 @@ function BattleScreen({
                     <CardFrame
                       key={c.uid}
                       card={c}
-                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scriedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scryDiscardedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
                       dim={isSource || isChosen}
                       hint={isSource ? 'プレイするカード' : isChosen ? '消滅予定' : undefined}
                       actions={
@@ -2826,7 +2827,7 @@ function BattleScreen({
                     <CardFrame
                       key={c.uid}
                       card={c}
-                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scriedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
+                      ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scryDiscardedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
                       dim={isSource}
                       hint={isSource ? 'プレイするカード' : undefined}
                       actions={
@@ -2867,7 +2868,7 @@ function BattleScreen({
                   )}
                   <CardFrame
                     card={c}
-                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scriedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
+                    ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scryDiscardedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
                     displayCost={effCost}
                     hotkey={handIdx < 9 && !activeTarget && s.phase === 'player-turn' ? String(handIdx + 1) : undefined}
                     dim={!canPlay && !canSet && !heldReaction}
@@ -4069,7 +4070,7 @@ const EFFECT_JA: Record<string, string> = {
   dischargeMomentumDamage: '勢い×Nダメ(全消費)', dischargeMomentumGrowth: '勢い÷Nを成長に(全消費)', dischargeMomentumVolley: '勢い×Nダメを3回(全消費)', momentumCarryHalf: '勢いの半分を持ち越す(常在)', gainBlockPerMomentum: '勢い×Nブロック(失わない)', addGrowthPerMomentum: '勢い2につき成長+N(失わない)', gainMaxHp: '最大HP+N(戦闘後も残る)', upgradeAllInHand: '手札の全てをこの戦闘中鍛える',
   applyBurn: '延焼+N', applyBurnPerDamageTaken: '被ダメ×N延焼', dischargeBurn: '爆熱(延焼×Nダメ全消費)',
   addAether: '霊気+N', dischargeAether: '霊気放出(×Nダメ全消費)', dischargeAetherDraw: '霊気×Nドロー(全消費)',
-  addLight: '灯+N', addLightNextTurn: '次T開始時に灯+N', dischargeLight: '灯の放出(×Nダメ全消費)', dischargeLightRally: '灯を全て放出し灯Nにつき全人形が1回動く', doubleLight: '灯2倍', dealDamagePerLight: '灯2につきNダメ(非消費)', addCardToDraw: 'トークンN枚を山札へ', addCardToDiscard: 'トークンN枚を捨て札へ', transformDeckToToken: '山札のN枚を火種に変える(選ぶ)', lightToSparks: '灯Nにつき火種1を山札へ', dealDamagePerSpark: '撃った火種×Nダメ', gainBlockPerSpark: '撃った火種×Nブロック', triggerRandomRetainer: '人形1体が今1回動く', dischargeLightWeaken: '灯を放出し灯3につき全体威圧N', consumeLight: '灯をN失う(量なし=全て)', gainBlockPerLight: '灯2につきNブロック', drawCardsPerLight: '灯2につきNドロー', lightCarryHalf: '放出しても灯の半分が残る', scry: '占術N', retrieveZeroCostFromDiscard: '捨て札の0Eを全て手札へ', drawTypeFromDeck: '山札から指定タイプをN枚手札へ', aetherCarryHalf: '霊気を放出しても半分残る', retainedCostDown: '手札に残った札のコスト-N', dealDamagePerScry: '占術で見た枚数×Nダメ', dealDamagePerTrapFired: '伏せ札の発動回数×Nダメ', extendTrapLife: '伏せ札の期限+Nターン', trapsNeverExpire: '伏せ札は期限切れにならない', retainHandUpTo: 'ターン終了時に手札をN枚まで残す',
+  addLight: '灯+N', addLightNextTurn: '次T開始時に灯+N', dischargeLight: '灯の放出(×Nダメ全消費)', dischargeLightRally: '灯を全て放出し灯Nにつき全人形が1回動く', doubleLight: '灯2倍', dealDamagePerLight: '灯2につきNダメ(非消費)', addCardToDraw: 'トークンN枚を山札へ', addCardToDiscard: 'トークンN枚を捨て札へ', transformDeckToToken: '山札のN枚を火種に変える(選ぶ)', lightToSparks: '灯Nにつき火種1を山札へ', dealDamagePerSpark: '撃った火種×Nダメ', gainBlockPerSpark: '撃った火種×Nブロック', triggerRandomRetainer: '人形1体が今1回動く', dischargeLightWeaken: '灯を放出し灯3につき全体威圧N', consumeLight: '灯をN失う(量なし=全て)', gainBlockPerLight: '灯2につきNブロック', drawCardsPerLight: '灯2につきNドロー', lightCarryHalf: '放出しても灯の半分が残る', scry: '占術N', retrieveZeroCostFromDiscard: '捨て札の0Eを全て手札へ', drawTypeFromDeck: '山札から指定タイプをN枚手札へ', aetherCarryHalf: '霊気を放出しても半分残る', retainedCostDown: '手札に残った札のコスト-N', dealDamagePerScry: '占術で捨てた枚数×Nダメ', dealDamagePerTrapFired: '伏せ札の発動回数×Nダメ', extendTrapLife: '伏せ札の期限+Nターン', trapsNeverExpire: '伏せ札は期限切れにならない', retainHandUpTo: 'ターン終了時に手札をN枚まで残す',
   addCasts: '詠唱数+N', addSpellEcho: '反復+N(次の呪文2回解決)', confuse: '混乱+N', exposeEnemy: '急所+N', weakenEnemy: '威圧N(敵の筋力-N)',
   shatterBlock: '粉砕(敵ブロック全壊)', shatterBlockConvert: '粉砕+破壊値ダメ',
   exhaustFromDeck: '山札の上N枚を消滅(ミル)', exhaustFromDeckChoose: '選んでN枚消滅(引導型)', recycleExhaust: '輪廻(消滅を山札へ・×Nダメ)',
@@ -6656,7 +6657,7 @@ function WorkshopScreen({
   const a = selected.length === 2 ? run.deck[selected[0]] : null
   const b = selected.length === 2 ? run.deck[selected[1]] : null
   const reason = a && b ? fuseBlockReason(a, b) : null
-  const preview = a && b && reason === null ? fuseCards(a, b) : null
+  const preview = a && b && reason === null ? workshopFuseResult(run, a, b) : null // 鍛冶の火種の鍛えも映す (2026-09-25)
   const price = workshopFusePrice(run)
   const notes = a && b ? fusionNotes(a, b) : []
   // ★ レシピの提示 (2026-09-12): 素材を選ぶ前はレシピ対に含まれる札が全部、1枚目を選んだらその相手札だけが光る

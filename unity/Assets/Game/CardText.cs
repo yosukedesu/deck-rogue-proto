@@ -49,7 +49,8 @@ namespace DeckRogue.Game
             { "onAetherGained", "霊気を得るたび" },
             { "onCardSet", "カードを仕込むたび" },
             { "onReactionFired", "からくりを動かすたび" },
-            { "onScry", "占術するたび" }, // 渦見の鏡 (青 2026-09-25)
+            { "onScry", "占術するたび" }, // 潮読みの極み (青 2026-09-25)
+            { "onScryDiscard", "占術で札を捨てるたび(1枚ごと)" }, // 渦見の鏡 (青 2026-09-25 Opus B の処方)
             { "onSetExpired", "からくりが期限切れになるたび" }, // ほどけ泡 (青 2026-09-25)
             { "onSelfExhausted", "亡骸" },
             { "onGrowthGained", "成長を得るたび" },
@@ -143,7 +144,7 @@ namespace DeckRogue.Game
             { "gainBlockPerSpark", "この戦闘で撃った火種×Nブロック" },
             // 青の3本柱 (2026-09-25): 潮読み (占術・手札を残す)・罠使い (からくりの回数・期限)
             { "scry", "占術N(山札の上N枚を見て、要らない札を捨て札へ)" },
-            { "dealDamagePerScry", "この戦闘で占術で見た枚数×Nダメージ" },
+            { "dealDamagePerScry", "この戦闘で占術で捨てた枚数×Nダメージ" },
             { "dealDamagePerTrapFired", "この戦闘でからくりが動いた回数×Nダメージ" },
             { "extendTrapLife", "仕込んでいるからくりすべての期限をNターン延ばす" },
             { "trapsNeverExpire", "この置物がある間、からくりは期限切れにならない" },

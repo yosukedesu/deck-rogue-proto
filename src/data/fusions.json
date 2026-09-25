@@ -945,7 +945,7 @@
         {
           "trigger": "onPlay",
           "effect": "drawCards",
-          "amount": 2
+          "amount": 1
         },
         {
           "trigger": "onPlay",

@@ -27,7 +27,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { playCapOf } from '../engine/combat.ts'
 import { encounterName, getCardDef, getEnemyDef, getEventDef, getGearDef, getLeaderDef, getRelicDef } from '../engine/content.ts'
-import { fuseBlockReason, fuseCards, fusionNotes, recipePairsInDeck, resolveFusedDef } from '../engine/fusion.ts'
+import { fuseBlockReason, fusionNotes, recipePairsInDeck, resolveFusedDef } from '../engine/fusion.ts'
 import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason, manaLabel } from '../engine/gears.ts'
 import { canSetAsNormal, setFireCost, setWindowStage } from '../engine/setany.ts'
@@ -48,9 +48,9 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
-import { retainHandMax } from '../engine/combat.ts'
+import { deckChoosePool, retainHandMax } from '../engine/combat.ts'
 import { ANTHEM_EFFECTS, DOLL_GROWTH_EFFECTS, cardNeedsTarget, damageBreakdown, displayedInflict, dollEffectAmount, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, hearthSparkMax, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
-import { applyRunCommand, campfireOptions, canTransformCard, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
+import { applyRunCommand, campfireOptions, canTransformCard, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, workshopFuseResult, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags, interruptBlockedNote } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
@@ -105,9 +105,9 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
     strengthenEnemy: `敵の筋力+${a}`, dealDamagePerEnergyMax: `ターン開始時の上限×${a}ダメ`, gainBlockPerEnergyMax: `ターン開始時の上限×${a}ブロック`,
     dealDamagePerLight: `${all}灯2につき${a}ダメ(切り捨て・灯は失わない)`,
-    addCardToDraw: `${cname(e.summonId ?? '')}${a}枚を山札のランダムな位置へ(この戦闘限り)`, addCardToDiscard: `${cname(e.summonId ?? '')}${a}枚を捨て札へ(この戦闘限り)`, transformDeckToToken: `山札の札${a}枚を選んで${cname(e.summonId ?? '')}に変える(deckUids)`, lightToSparks: `灯${a}につき火種1を山札へ(払った灯だけ失う)`, dealDamagePerSpark: `${all}この戦闘で撃った火種×${a}ダメ`, scry: `占術${a}(山札の上${a}枚を見て捨てる札を選ぶ=ResolveScry)`, dealDamagePerScry: `${all}この戦闘で占術で見た枚数×${a}ダメ`, dealDamagePerTrapFired: `${all}この戦闘で伏せ札が発動した回数×${a}ダメ`, extendTrapLife: `伏せている札すべての期限+${a}ターン`, trapsNeverExpire: 'この置物がある間、伏せ札は期限切れにならない', retrieveZeroCostFromDiscard: '捨て札のコスト0の札を全て手札へ', drawTypeFromDeck: `山札の${e.cardType === 'reaction' ? '伏せ札' : '札'}${a}枚を(上から見て最初のものを)手札へ`, aetherCarryHalf: 'この置物がある間、霊気を放出しても半分残る', retainedCostDown: `この置物がある間、敵ターンの後も手札に残った札はコスト-${a}(手札を離れると戻る)`, retainHandUpTo: `この置物がある間、ターン終了時に手札を${a}枚まで残せる(EndTurn.retainUids)`, gainBlockPerSpark: `この戦闘で撃った火種×${a}ブロック`, triggerRandomRetainer: '場の人形1体(ランダム)が今1回動く(灯は産まない)',
+    addCardToDraw: `${cname(e.summonId ?? '')}${a}枚を山札のランダムな位置へ(この戦闘限り)`, addCardToDiscard: `${cname(e.summonId ?? '')}${a}枚を捨て札へ(この戦闘限り)`, transformDeckToToken: `山札の札${a}枚を選んで${cname(e.summonId ?? '')}に変える(deckUids)`, lightToSparks: `灯${a}につき火種1を山札へ(払った灯だけ失う)`, dealDamagePerSpark: `${all}この戦闘で撃った火種×${a}ダメ`, scry: `占術${a}(山札の上${a}枚を見て捨てる札を選ぶ=ResolveScry)`, dealDamagePerScry: `${all}この戦闘で占術で捨てた枚数×${a}ダメ`, dealDamagePerTrapFired: `${all}この戦闘で伏せ札が発動した回数×${a}ダメ`, extendTrapLife: `伏せている札すべての期限+${a}ターン`, trapsNeverExpire: 'この置物がある間、伏せ札は期限切れにならない', retrieveZeroCostFromDiscard: '捨て札のコスト0の札を全て手札へ', drawTypeFromDeck: `山札の${e.cardType === 'reaction' ? '伏せ札' : '札'}${a}枚を(上から見て最初のものを)手札へ`, aetherCarryHalf: 'この置物がある間、霊気を放出しても半分残る', retainedCostDown: `この置物がある間、敵ターンの後も手札に残った札はコスト-${a}(手札を離れると戻る)`, retainHandUpTo: `この置物がある間、ターン終了時に手札を${a}枚まで残せる(EndTurn.retainUids)`, gainBlockPerSpark: `この戦闘で撃った火種×${a}ブロック`, triggerRandomRetainer: '場の人形1体(ランダム)が今1回動く(灯は産まない)',
     dischargeLightWeaken: `灯を全て放出し灯3につき敵全体に威圧${a}(灯3未満なら不発)`, consumeLight: e.amount !== undefined ? `灯を${e.amount}失う` : '灯を全て失う', gainBlockPerLight: `灯2につき${a}ブロック(灯は失わない)`, drawCardsPerLight: `灯2につき${a}ドロー(上限${e.amountMax ?? 99}・灯は失わない)`, lightCarryHalf: '【常在】灯を放出しても半分が残る', dealDamagePerMomentum: `勢い×${a}ダメ(勢いは消費しない)`, doubleMomentum: '勢い2倍', gainBlockPerMomentum: `勢い×${a}ブロック(勢いは失わない)`, addGrowthPerMomentum: `勢い2につき成長+${a}(勢いは失わない)`, gainMaxHp: `最大HP+${a}(この戦闘後も残る)`, upgradeAllInHand: '手札の全て(自身・レア・工房産を除く)をこの戦闘中鍛える',
-    gainSetSlot: `伏せ枠+${a}(置物なら常在=この置物がある間)`, retrieveFromDiscard: `捨て札から${a}枚を選んで手札へ(要deckUids)`, searchDeck: `山札から${a}枚を選んで手札へ(要deckUids)`,
+    gainSetSlot: `伏せ枠+${a}(置物なら常在=この置物がある間)`, retrieveFromDiscard: `捨て札から${a}枚を選んで手札へ(要deckUids)`, searchDeck: `山札から${e.cardType === 'reaction' ? '伏せ札' : ''}${a}枚を選んで手札へ(要deckUids)`,
     addCopyToDiscard: `このカードのコピー${a}枚を捨て札へ`, growSelf: `プレイするたび、この札自身の与ダメ+${a}(この戦闘中。他の札には乗らない)`, upgradeInHand: `手札の${a}枚をこの戦闘中鍛える(要handUids)`,
     exhaustFromDeck: `山札の上${a}枚を消滅`, exhaustFromDeckChoose: `山札か捨て札から好きな${a}枚を選んで消滅(亡骸は発火。要deckUids)`, dealDamagePerExhaust: `${all}消滅数×${a}ダメ`,
     dealDamageDrainPerExhaust: `消滅数×${a}ダメ+半分回復`, gainBlockPerExhaust: `消滅数×${a}ブロック`,
@@ -130,7 +130,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onAttackPlayed: '攻撃プレイごと:', onGrowthGained: '成長獲得ごと:', onMomentumGained: '勢い獲得ごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時/期限切れ時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
     onHealed: '回復ごと(満タンでも誘発):', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
     onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onSparkPlayed: '火種を撃つたび:', onLightDischarged: '灯を放出するたび:', onAetherGained: '霊気獲得ごと:', onLightGained: '灯を得るたび:',
-    onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onScry: '占術するたび:', onSetExpired: '伏せ札の期限切れごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
+    onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onScry: '占術するたび:', onScryDiscard: '占術で札を捨てるたび(1枚ごと):', onSetExpired: '伏せ札の期限切れごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
     onTurnEnd: 'ターン終了時:', onShuffle: '切り直しごと:', onEnemyDied: '敵撃破ごと:', onDamageTaken: '攻撃でHP損失後:',
   }
   const cond = e.condition
@@ -309,7 +309,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'CombatEnded') L.push(` ★戦闘${e.result === 'won' ? '勝利' : '敗北'}★`)
       else if (e.type === 'ThornsReflected') L.push(` 🦔とげ反射${e.amount}(HP損失${e.hpLoss}。ブロックで吸収した分は損失に出ない)`)
       else if (e.type === 'EnemySplit') L.push(e.count === 1 ? ' ♻️再起動! 倒した敵が次の姿で立ち上がった' : ` 🫠分裂! 倒した敵から${e.count}体が現れた`)
-      else if (e.type === 'SetCardExpired') L.push(` ⏳期限切れ: ${cname(e.cardId)}(2回の敵ターンで発動しなかったので${e.to === 'hand' ? '手札へ' : e.to === 'exhaust' ? '消滅置き場へ' : '捨て札へ'})`)
+      else if (e.type === 'SetCardExpired') L.push(` ⏳期限切れ: ${cname(e.cardId)}(期限までに発動しなかったので${e.to === 'hand' ? '手札へ' : e.to === 'exhaust' ? '消滅置き場へ' : '捨て札へ'})`)
       else if (e.type === 'EnemySummoned') L.push(e.count > 0 ? ` 👶召喚! ${e.count}体が現れた` : ' 👶召喚したが場が満杯で出なかった')
       else if (e.type === 'EnemyHatched') L.push(' 🐣孵化した!')
       else if (e.type === 'GuardianRedirected') L.push(' 🛡️庇われた! 単体対象は護衛に向かった')
@@ -327,12 +327,16 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'EnemyFled') L.push(` 🏃敵${e.enemyIndex}が逃走した`)
       else if (e.type === 'EnemyHealed') L.push(` 💚敵${e.enemyIndex}が敵${e.targetIndex}を回復+${e.amount}`)
       else if (e.type === 'ExhaustRecycled') L.push(` ♻️輪廻: 消滅置き場${e.count}枚が山札へ還った`)
+      else if (e.type === 'Scried') L.push(` 🔮占術: ${e.looked.length}枚を見た${e.discarded.length > 0 ? `（捨て札へ: ${e.discarded.map(cname).join('・')}）` : '（全部残した）'}`) // 2026-09-25 Opus 青B
+      else if (e.type === 'TrapLifeExtended') L.push(` ⏳伏せ札${e.count}枚の期限を${e.amount}ターン延ばした`)
+      else if (e.type === 'ActionNegated') L.push(' 🚫敵の行動を打ち消した') // 2026-09-25 Opus 青B: 打ち消しの結果がログに出ない
+      else if (e.type === 'CardsMovedToHand') L.push(` ↩️${e.from === 'discard' ? '捨て札' : e.from === 'draw' ? '山札' : '消滅置き場'}から手札へ: ${e.cardIds.map(cname).join('・')}`) // 引き潮の帰還・仕掛け師の工房・回収・サーチ
     }
   }
   L.push(`--- 盤面 (ターン${s.turn} / phase=${s.phase}) ---`)
   const st = [
     `HP ${Math.max(0, p.hp)}/${p.maxHp}`, `ブロック${p.block}`, p.iceBlock ? `氷壁${p.iceBlock}` : '',
-    `エナジー${p.energy}/${p.energyMax}`, p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
+    `エナジー${p.energy}/${p.energyMax}`, p.cardsPlayedThisTurn ? `詠唱${p.cardsPlayedThisTurn}(このターン)` : '', (p.trapsFiredThisCombat ?? 0) ? `伏せ札の発動${p.trapsFiredThisCombat}回` : '', (p.scryDiscardedThisCombat ?? 0) ? `占術で捨てた${p.scryDiscardedThisCombat}枚` : '', p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
     p.aether ? `霊気${p.aether}` : '', (p.light ?? 0) || p.permanents.some((x) => x.innate === true && x.def.effects.some((e) => e.effect === 'addLight')) ? `灯${p.light ?? 0}` : '', (p.sparksPlayedThisCombat ?? 0) ? `火種(撃った)${p.sparksPlayedThisCombat}` : '', p.spellEchoes ? `反復${p.spellEchoes}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
     s.playCap !== undefined ? `首輪: このターンあと${Math.max(0, (playCapOf(s) ?? 0) - (p.playsThisTurn ?? 0))}枚` : '', // 天鵞絨の首輪 (2026-09-18 Opus 白C: 7枚目で初めてエラーが出て事前に読めなかった)
     `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '', p.frail ? `虚弱${p.frail}(カードのブロック25%減)` : '', p.restrain ? `拘束${p.restrain}(1ターン3枚まで・このターンあと${Math.max(0, 3 - (p.playsThisTurn ?? 0))}枚)` : '', (p.mist ?? 0) ? `霞み${p.mist}(ドロー-2)` : '', (p.slow ?? 0) ? `重り${p.slow}(被ダメ+10%×プレイ枚数。今+${(p.playsThisTurn ?? 0) * 10}%)` : '',
@@ -394,7 +398,10 @@ function renderBattle(s: GameState, logFrom: number): string {
   }
   // 緑のカード操作 (2026-09-02): 回収=捨て札から / サーチ=山札から / 手札で鍛える=自身以外の鍛えられる手札
   if (hasFx('retrieveFromDiscard')) L.push(`回収の選択候補(deckUids・捨て札): ${discList().join(' ') || 'なし'}`)
-  if (hasFx('searchDeck')) L.push(`サーチの選択候補(deckUids・山札): ${drawList().join(' ') || 'なし'} ※名前順表示`)
+  for (const c of p.hand.filter((h) => h.def.effects.some((e) => e.effect === 'searchDeck'))) {
+    const pool = [...deckChoosePool(s, c.def)].sort((a, b) => a.def.name.localeCompare(b.def.name, 'ja')).map((x) => `[${x.uid}]${x.def.name}(山)`)
+    L.push(`サーチの選択候補(${c.def.name}・deckUids・山札${c.def.effects.some((e) => e.effect === 'searchDeck' && e.cardType === 'reaction') ? 'の伏せ札だけ' : ''}): ${pool.join(' ') || 'なし'} ※名前順表示`)
+  }
   if (hasFx('transformDeckToToken')) L.push(`火種に変える札の選択候補(deckUids・山札): ${drawList().join(' ') || 'なし'} ※名前順表示`)
   if (hasFx('sacrificeRetainer')) L.push(`捧げる人形の対象候補(permanentUid・場の人形): ${p.permanents.filter(isDoll).map((c) => `[${c.uid}] ${c.def.name}`).join(' ') || 'なし(人形がいないとプレイ不可)'}`)
   // 人形の灯り (2026-09-21): 写し灯・継ぎ火・永遠の灯も同じ欄で人形を選ぶ (Opus C「候補が出ず撃てない」の是正)。残りの灯りと火勢を添える
@@ -493,7 +500,8 @@ function renderBattle(s: GameState, logFrom: number): string {
     for (const c of p.hand) {
       const cost = effectiveCost(s, c)
       // 盤面を渡す = 青い蝋燭で烙印が出せるかを実処理と同じに読む (2026-09-24 追1: 盤面なしで判定して「使用不可」と出ていた)
-      const playable = isPlayableFromHand(c, s) && cost <= p.energy && retainerRequirementMet(s, c) && (c.def.lightCost ?? 0) <= (p.light ?? 0) // 殉教の誓い・進軍の号令 (2026-09-06 Opusラン X: 表示だけ嘘だった)。灯コスト (Opus 灯と人形 B: 灯不足でも〈プレイ可〉)
+      const capLeft = playCapOf(s) === null ? Infinity : (playCapOf(s) ?? 0) - (p.playsThisTurn ?? 0) // 拘束・首輪 (2026-09-25 Opus 青C: 3枚打った後も〈プレイ可〉)
+      const playable = s.pendingScry === undefined && capLeft > 0 && isPlayableFromHand(c, s) && cost <= p.energy && retainerRequirementMet(s, c) && (c.def.lightCost ?? 0) <= (p.light ?? 0) // 殉教の誓い・進軍の号令 (2026-09-06 Opusラン X: 表示だけ嘘だった)。灯コスト (Opus 灯と人形 B: 灯不足でも〈プレイ可〉)
       const settable = c.def.type === 'reaction' || (s.setAnyCards === true && canSetAsNormal(c.def))
       const canSet = settable && canSetCard(s, c.uid)
       const marks = [
@@ -565,7 +573,7 @@ function renderBattle(s: GameState, logFrom: number): string {
       const costNote =
         c.def.xCost === true || cost === c.def.cost || c.def.type === 'reaction' // 伏せるコストは割引の対象外 (Opus AB #3: リアクションに「割引/無料」の注記は嘘)
           ? ''
-          : ` ⚠実コスト${cost}E(印字${c.def.cost}E${cost > c.def.cost ? '・重圧' : '・割引/無料=次に出す1枚だけ'})`
+          : ` ⚠実コスト${cost}E(印字${c.def.cost}E${cost > c.def.cost ? '・重圧' : (c.retainDiscount ?? 0) > 0 ? `・潮溜まり-${c.retainDiscount}=手札にある間ずっと${cost < c.def.cost - (c.retainDiscount ?? 0) ? '＋割引(次に出す1枚だけ)' : ''}` : '・割引/無料=次に出す1枚だけ'})`
       // 上限参照はターン開始時のスナップショットを読む (T1は素の上限)。その場の実値を出す (同ラン指摘②)
       const capEff = c.def.effects.filter((e) => e.effect === 'dealDamagePerEnergyMax' || e.effect === 'gainBlockPerEnergyMax')
       const capNow =
@@ -1144,7 +1152,7 @@ if (mode === 'new-run') {
       if (reason !== null) {
         console.log(`合成不可: ${reason}`)
       } else {
-        const def = fuseCards(a, b)
+        const def = workshopFuseResult(sf.run!, a, b) // 鍛冶の火種の鍛えも映す (2026-09-25 Opus 青C)
         const recipe = def.id.startsWith('fusion_') ? '⭐レシピ発見! ' : ''
         console.log(`プレビュー: ${recipe}${cardLine(def)} (素材は消費されていない)`)
         if (sf.run!.gold < workshopFusePrice(sf.run!)) console.log(`※所持金不足: 合成${workshopFusePrice(sf.run!)}G / 所持${sf.run!.gold}G (確定は拒否される)`)

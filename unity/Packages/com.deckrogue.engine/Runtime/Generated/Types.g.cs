@@ -330,9 +330,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>火種 (白 2026-09-20 夜。本家 Soul の白版): この戦闘で撃った火種 (sparkToken) の枚数。火種の嵐が参照</summary>
         [JsonProperty("sparksPlayedThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public int? SparksPlayedThisCombat { get; init; }
-        /// <summary>占術 (青 2026-09-25): この戦闘で占術で見た枚数の累計 (読み切りが参照)</summary>
+        /// <summary>占術 (青 2026-09-25): この戦闘で占術で見た枚数の累計 (記録用)</summary>
         [JsonProperty("scriedThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public int? ScriedThisCombat { get; init; }
+        /// <summary>占術 (青 2026-09-25 Opus B の処方): この戦闘で占術で捨てた枚数の累計 (読み切りが参照)</summary>
+        [JsonProperty("scryDiscardedThisCombat", NullValueHandling = NullValueHandling.Ignore)]
+        public int? ScryDiscardedThisCombat { get; init; }
         /// <summary>罠使い (青 2026-09-25): この戦闘で罠 (reaction) が鳴った回数 (仕掛けの反響が参照)</summary>
         [JsonProperty("trapsFiredThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public int? TrapsFiredThisCombat { get; init; }

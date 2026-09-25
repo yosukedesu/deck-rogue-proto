@@ -60,6 +60,7 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   blue_ripple_blade: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 3 }],
   blue_storm_echo: [{ trigger: 'onAttacked', effect: 'dealDamage', amount: 4 }],
   blue_ice_lance: [{ trigger: 'onPlay', effect: 'gainIceBlock', amount: 4 }], // 氷壁を足してから撃つ
+  blue_echo: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }], // 反復+ = 1E・反復1＋1ドロー (0Eにしない。2026-09-25 Opus 青C)
   red_all_in: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 6 }],
   white_rally: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }], // 隊列を組んでから撃つ
   // プール拡充 (2026-08-31): per-X参照でコスト強化を封じた札の受け皿
@@ -157,6 +158,11 @@ const V2_COLORS = new Set(['green', 'white', 'blue'])
  * (割引は本家形の単位に無い) = 旧3段の「次のカード-3」のまま
  */
 const V2_LEGACY = new Set(['blue_ice_lance', 'blue_spark'])
+/**
+ * 本家形の例外 = 同軸のおまけ (BONUS_UPGRADES) で鍛える (2026-09-25 Opus 青C): 反復はコスト-1で0Eになり「0Eで次の呪文を2回」が
+ * 全体の刈り取り (巻き波+ 詠唱16×4) を丸ごと倍にした＝1ターン128。1E のまま反復1＋1ドローに
+ */
+const V2_BONUS = new Set(['blue_echo'])
 const isGreenRule = (def: CardDef) => !V2_LEGACY.has(def.id) && (def.id.startsWith('green_') || V2_COLORS.has(def.color))
 /**
  * 本家形の例外 = 名指しでコスト-1 (2026-09-18 白の仕上げ・ユーザー裁定): 誘発ごとにドローする置物 (軍楽隊=登場ごと・恵光の使徒=回復ごと) は
@@ -262,6 +268,7 @@ export function upgradeTier(def: CardDef): UpgradeTier {
     if (eff.some((e) => e.effect === 'gainEnergyMax') && def.cost >= 1 && !costCutViolates(def)) return 'cost'
     if (V2_COST_ONLY.has(def.id) && def.cost >= 1 && !costCutViolates(def)) return 'cost'
     if (V2_RANGE[def.id] !== undefined) return 'range'
+    if (V2_BONUS.has(def.id) && BONUS_UPGRADES[def.id] !== undefined) return 'bonus'
     // 灯コスト持ち (点灯の合図 1E・灯2。白 2026-09-20): 鍛えると灯コスト-1 (1E・灯1)。エナジーは触らない
     if ((def.lightCost ?? 0) >= 1) return 'light'
     const t = tierV2(eff, def)

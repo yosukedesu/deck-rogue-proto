@@ -2424,10 +2424,10 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         ? state
         : dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (state.player.sparksPlayedThisCombat ?? 0), effect.pierce)
     case 'dealDamagePerScry':
-      // 読み切り (青 潮読み 2026-09-25): この戦闘で占術で見た枚数×amount
-      return (state.player.scriedThisCombat ?? 0) <= 0
+      // 読み切り (青 潮読み 2026-09-25): この戦闘で占術で捨てた枚数×amount (Opus B「手札の枚数で殴るので捨てる理由が無い」→ 捨てるほど得)
+      return (state.player.scryDiscardedThisCombat ?? 0) <= 0
         ? state
-        : dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (state.player.scriedThisCombat ?? 0), effect.pierce)
+        : dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (state.player.scryDiscardedThisCombat ?? 0), effect.pierce)
     case 'dealDamagePerTrapFired':
       // 仕掛けの反響 (青 罠使い 2026-09-25): この戦闘で罠が鳴った回数×amount
       return (state.player.trapsFiredThisCombat ?? 0) <= 0
@@ -2531,8 +2531,9 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // 打ち消し: 次の敵行動を無効化する汎用フラグを立てる (対象は任意の行動)
       return { ...state, negateNextAction: true }
     case 'negateConvertIce': {
-      // 魔力盗み (青): 打ち消し + その行動の実値ぶん氷壁を得る (大技を奪うほど壁になる)
-      const actual = effectiveIntent(state, enemyIndex)?.actual ?? 0
+      // 魔力盗み (青): 打ち消し + その行動の実値ぶん氷壁を得る (大技を奪うほど壁になる)。
+      // 多段は合計 (9×3＝27。2026-09-25 Opus A: 1発ぶんの+9しか入らなかった＝罠の条件と同じ reactionActionValue)
+      const actual = reactionActionValue(state, enemyIndex)
       let s: GameState = { ...state, negateNextAction: true }
       if (actual > 0) {
         s = gainPlayerIceBlock(s, actual)

@@ -97,7 +97,7 @@ namespace DeckRogue.Game
                     blocked = Fusion.FuseBlockReason(a, b);
                     if (blocked == null)
                     {
-                        fused = Fusion.FuseCards(a, b);
+                        fused = DeckRogue.Engine.Run.WorkshopFuseResult(run, a, b);   // 鍛冶の火種の鍛えも映す (2026-09-25 Opus 青C)
                         var fn = Fusion.FusionNotes(a, b);
                         for (int i = 0; i < fn.Count; i++) notes.Add(fn[i]);
                     }

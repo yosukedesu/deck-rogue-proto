@@ -1403,12 +1403,15 @@ export function resolveScry(state: GameState, discardUids: readonly string[]): G
       drawPile: state.player.drawPile.filter((c) => !chosen.has(c.uid)),
       discardPile: [...state.player.discardPile, ...discarded],
       scriedThisCombat: (state.player.scriedThisCombat ?? 0) + look.length,
+      scryDiscardedThisCombat: (state.player.scryDiscardedThisCombat ?? 0) + discarded.length,
     },
   }
   s = emit(s, { type: 'Scried', looked: look.map((c) => c.def.id), discarded: discarded.map((c) => c.def.id) })
   if (look.length > 0) {
     const firstAlive = Math.max(0, s.enemies.findIndex((e) => e.hp > 0))
     for (let i = 0; i < p.times; i++) s = runPermanentTriggers(s, 'onScry', firstAlive)
+    // 渦見の鏡 (2026-09-25 Opus B の処方): 捨てた1枚ごと
+    for (let i = 0; i < discarded.length; i++) s = runPermanentTriggers(s, 'onScryDiscard', firstAlive)
   }
   return checkCombatEnd(s)
 }

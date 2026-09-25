@@ -76,6 +76,7 @@ namespace DeckRogue.Engine
                 ["blue_ripple_blade"] = new[] { Eff("onPlay", "dealDamage", 3) },
                 ["blue_storm_echo"] = new[] { Eff("onAttacked", "dealDamage", 4) },
                 ["blue_ice_lance"] = new[] { Eff("onPlay", "gainIceBlock", 4) }, // 氷壁を足してから撃つ
+                ["blue_echo"] = new[] { Eff("onPlay", "drawCards", 1) }, // 反復+ = 1E・反復1＋1ドロー (0Eにしない。2026-09-25 Opus 青C。TS と同形)
                 ["red_all_in"] = new[] { Eff("onPlay", "dealDamage", 6) },
                 ["white_rally"] = new[] { Eff("onPlay", "gainBlock", 4) }, // 隊列を組んでから撃つ
                 // プール拡充 (2026-08-31): per-X参照でコスト強化を封じた札の受け皿
@@ -200,6 +201,8 @@ namespace DeckRogue.Engine
         private static readonly HashSet<string> V2_COLORS = new HashSet<string> { "green", "white", "blue" };
         /// <summary>本家形の色でも旧3段で鍛える札 (2026-09-25 青の解凍): 氷の槍 (1E 化を封じた札)・魔力の火花 (本家形だと鍛えられない)。TS と同形</summary>
         private static readonly HashSet<string> V2_LEGACY = new HashSet<string> { "blue_ice_lance", "blue_spark" };
+        /// <summary>本家形の色でも「おまけ」で鍛える札 (2026-09-25 Opus 青C): 反復+ は 0E にせず 1ドローを足す。TS V2_BONUS と同形</summary>
+        private static readonly HashSet<string> V2_BONUS = new HashSet<string> { "blue_echo" };
         private static bool IsGreenRule(CardDef def) =>
             !V2_LEGACY.Contains(def.Id) && (def.Id.StartsWith("green_", StringComparison.Ordinal) || (def.Color != null && V2_COLORS.Contains(def.Color)));
         /// <summary>本家形の例外 = 名指しでコスト-1 (2026-09-18 白: 誘発ごとにドローする置物は単位+1 だと青のドローの定価を越える)</summary>
@@ -320,6 +323,7 @@ namespace DeckRogue.Engine
                 if (eff.Any(e => e.Effect == "gainEnergyMax") && def.Cost >= 1 && !CostCutViolates(def)) return UpgradeTiers.Cost;
                 if (V2_COST_ONLY.Contains(def.Id) && def.Cost >= 1 && !CostCutViolates(def)) return UpgradeTiers.Cost;
                 if (V2_RANGE.ContainsKey(def.Id)) return UpgradeTiers.Range;
+                if (V2_BONUS.Contains(def.Id) && BONUS_UPGRADES.ContainsKey(def.Id)) return UpgradeTiers.Bonus;
                 // 灯コスト持ち (点灯の合図 1E・灯2。白 2026-09-20): 鍛えると灯コスト-1。エナジーは触らない
                 if ((def.LightCost ?? 0) >= 1) return UpgradeTiers.Light;
                 var t = TierV2(eff, def);

@@ -2553,10 +2553,10 @@ namespace DeckRogue.Engine
                         ? state
                         : DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * (state.Player.SparksPlayedThisCombat ?? 0), effect.Pierce == true);
                 case "dealDamagePerScry":
-                    // 読み切り (青 潮読み 2026-09-25): この戦闘で占術で見た枚数×amount。TS と同形
-                    return (state.Player.ScriedThisCombat ?? 0) <= 0
+                    // 読み切り (青 潮読み 2026-09-25): この戦闘で占術で捨てた枚数×amount (Opus 青の答え合わせで「見た枚数」から変更)。TS と同形
+                    return (state.Player.ScryDiscardedThisCombat ?? 0) <= 0
                         ? state
-                        : DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * (state.Player.ScriedThisCombat ?? 0), effect.Pierce == true);
+                        : DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * (state.Player.ScryDiscardedThisCombat ?? 0), effect.Pierce == true);
                 case "dealDamagePerTrapFired":
                     // 仕掛けの反響 (青 罠使い 2026-09-25): この戦闘で罠が鳴った回数×amount。TS と同形
                     return (state.Player.TrapsFiredThisCombat ?? 0) <= 0
@@ -2671,8 +2671,9 @@ namespace DeckRogue.Engine
                     return state with { NegateNextAction = true };
                 case "negateConvertIce":
                 {
-                    // 魔力盗み (青): 打ち消し + その行動の実値ぶん氷壁を得る
-                    int actual = EffectiveIntent(state, enemyIndex)?.Actual ?? 0;
+                    // 魔力盗み (青): 打ち消し + その行動の実値ぶん氷壁を得る。
+                    // 多段は合計 (9×3＝27。2026-09-25 Opus A: 1発ぶんの+9しか入らなかった＝罠の条件と同じ ReactionActionValue。TS と同形)
+                    int actual = ReactionActionValue(state, enemyIndex);
                     GameState s = state with { NegateNextAction = true };
                     if (actual > 0)
                     {

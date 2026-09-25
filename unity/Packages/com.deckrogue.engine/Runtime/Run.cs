@@ -171,6 +171,18 @@ namespace DeckRogue.Engine
         /// <summary>工房の合成1回の価格 (強化100Gと同額=圧縮+強化の対価)</summary>
         public const int WORKSHOP_FUSE_PRICE = 100;
 
+        /// <summary>
+        /// 工房の合成の結果 (確定と同じ札。鍛冶の火種なら鍛えた姿)。UI のプレビューも同じ関数を読む
+        /// (2026-09-25 Opus 青C: プレビューが鍛冶の火種の鍛えを映さなかった。TS workshopFuseResult)
+        /// </summary>
+        public static CardDef WorkshopFuseResult(RunState run, CardInstance a, CardInstance b) => WorkshopFuseResult(run, a, b, Fusion.FuseCards(a, b));
+
+        public static CardDef WorkshopFuseResult(RunState run, CardInstance a, CardInstance b, CardDef fusedDef)
+        {
+            var fused = new CardInstance { Uid = "preview", Def = fusedDef };
+            return RelicFlag(run, "fusionUpgraded") && Upgrade.CanUpgradeCard(fused) ? Upgrade.UpgradeCard(fused).Def : fusedDef;
+        }
+
         public static int WorkshopFusePrice(RunState run)
         {
             return Math.Max(0, WORKSHOP_FUSE_PRICE - RelicBonusSum(run, "fusionDiscount")); // 大工の道具
@@ -2241,7 +2253,7 @@ namespace DeckRogue.Engine
                     int usedBefore = run.WorkshopFusesUsed ?? 0;
                     var fused = new CardInstance { Uid = $"fused_a{run.Act}_r{run.Row}_{(usedBefore > 0 ? usedBefore + "_" : "")}{fusedDef.Id}", Def = fusedDef };
                     // 鍛冶の火種 (2026-09-12): 合成した札は鍛えた状態になる (素材の鍛えの引き継ぎとは別口。二重鍛えはしない)
-                    if (RelicFlag(run, "fusionUpgraded") && Upgrade.CanUpgradeCard(fused)) fused = Upgrade.UpgradeCard(fused);
+                    fused = fused with { Def = WorkshopFuseResult(run, a, b, fusedDef) };
                     // 素材2枚はデッキから消え、合成札1枚が入る = 圧縮と強化が同時に起きる
                     var deck = run.Deck.Where((_, i) => i != c.IndexA && i != c.IndexB).ToList();
                     // 職人の手袋 (2026-09-12): 1回の訪問で 1+N 回合成できる

@@ -1428,7 +1428,7 @@
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerScry",
-        "amount": 1
+        "amount": 2
       }
     ]
   },
@@ -1469,9 +1469,9 @@
     "rarity": "uncommon",
     "effects": [
       {
-        "trigger": "onScry",
+        "trigger": "onScryDiscard",
         "effect": "gainIceBlock",
-        "amount": 3
+        "amount": 2
       }
     ]
   },
@@ -1580,6 +1580,11 @@
     "type": "permanent",
     "rarity": "rare",
     "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "retainHandUpTo",
+        "amount": 1
+      },
       {
         "trigger": "onPlay",
         "effect": "retainedCostDown",

@@ -117,6 +117,15 @@ const SHOP_UPGRADE_STEP = 50
 /** 現在の除去サービス価格 (ラン通算の逓増)。?? 0 はフィールド導入前のセーブ読み込み対策 (NaN汚染防止) */
 /** 工房の合成1回の価格 (2026-09-03 ユーザー裁定「工房合成時にお金がいるように」。強化100Gと同額=圧縮+強化の対価) */
 export const WORKSHOP_FUSE_PRICE = 100
+/**
+ * 工房の合成の結果 (確定と同じ札。鍛冶の火種なら鍛えた姿)。UI/CLI のプレビューも同じ関数を読む
+ * (2026-09-25 Opus 青C: FusePreview が鍛冶の火種の鍛えを映さず「詠唱数×1」と出て実物は×2)
+ */
+export function workshopFuseResult(run: RunState, a: CardInstance, b: CardInstance, fusedDef: CardDef = fuseCards(a, b)): CardDef {
+  const fused: CardInstance = { uid: 'preview', def: fusedDef }
+  return relicFlag(run, 'fusionUpgraded') && canUpgradeCard(fused) ? upgradeCard(fused).def : fusedDef
+}
+
 export function workshopFusePrice(run: RunState): number {
   return Math.max(0, WORKSHOP_FUSE_PRICE - relicBonusSum(run, 'fusionDiscount')) // 大工の道具
 }
@@ -2233,7 +2242,7 @@ export function applyRunCommand(run: RunState, command: RunCommand): RunState {
       const fusedDef = fuseCards(a, b)
       let fused: CardInstance = { uid: `fused_a${run.act}_r${run.row}_${(run.workshopFusesUsed ?? 0) > 0 ? `${run.workshopFusesUsed}_` : ''}${fusedDef.id}`, def: fusedDef }
       // 鍛冶の火種 (2026-09-12): 合成した札は鍛えた状態になる (素材の鍛えの引き継ぎとは別口。二重鍛えはしない)
-      if (relicFlag(run, 'fusionUpgraded') && canUpgradeCard(fused)) fused = upgradeCard(fused)
+      fused = { ...fused, def: workshopFuseResult(run, a, b, fusedDef) }
       // 素材2枚はデッキから消え、合成札1枚が入る = 圧縮と強化が同時に起きる (2026-09-03 から有料)
       const deck = run.deck.filter((_, i) => i !== command.indexA && i !== command.indexB)
       // 職人の手袋 (2026-09-12): 1回の訪問で 1+N 回合成できる
