@@ -12,7 +12,7 @@
 //
 // コマンドJSON例:
 //   {"type":"PlayCard","cardUid":"c12","targetIndex":0}
-//   {"type":"SetCard","cardUid":"c3"} (伏せたターンは鳴らない・翌/翌々ターンの敵フェーズだけ・鳴らなければ捨て札) / {"type":"EndTurn"} ({"type":"EndTurn","hearthSparks":N}=灯の火床で灯を火種に変える枚数)
+//   {"type":"SetCard","cardUid":"c3"} (伏せたターンは鳴らない・翌/翌々ターンの敵フェーズだけ・鳴らなければ捨て札) / {"type":"EndTurn"} ({"type":"EndTurn","hearthSparks":N}=灯の火床で灯を火種に変える枚数) ({"type":"EndTurn","retainUids":["c1",...]}=満ち潮の書庫で残す手札) / {"type":"ResolveScry","discardUids":["c4"]} (占術: 山札の上から捨てる札。空=全部残す。保留中はこれしか受け付けない)
 //   {"type":"ConfirmReaction","fire":true,"cardUid":"c3"} / {"type":"ConfirmReaction","fire":false}
 //   ラン専用: {"type":"PickReward","index":0} / {"type":"SkipReward"}
 //            {"type":"ChooseNode","col":0} (マップで次のノードを選ぶ) / {"type":"PickRelic","index":0} / {"type":"SkipRelic"}
@@ -48,6 +48,7 @@ function cname(cardId: string): string {
     return resolveFusedDef(cardId)?.name ?? cardId
   }
 }
+import { retainHandMax } from '../engine/combat.ts'
 import { ANTHEM_EFFECTS, DOLL_GROWTH_EFFECTS, cardNeedsTarget, damageBreakdown, displayedInflict, dollEffectAmount, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, hearthSparkMax, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, campfireOptions, canTransformCard, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, campfireForgeAllowed } from '../engine/run.ts'
 import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
@@ -104,7 +105,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     gainIceBlockPerCardPlayed: `詠唱数×${a}氷壁`, drawCardsPerCardPlayed: `詠唱数×${a}ドロー`,
     strengthenEnemy: `敵の筋力+${a}`, dealDamagePerEnergyMax: `ターン開始時の上限×${a}ダメ`, gainBlockPerEnergyMax: `ターン開始時の上限×${a}ブロック`,
     dealDamagePerLight: `${all}灯2につき${a}ダメ(切り捨て・灯は失わない)`,
-    addCardToDraw: `${cname(e.summonId ?? '')}${a}枚を山札のランダムな位置へ(この戦闘限り)`, addCardToDiscard: `${cname(e.summonId ?? '')}${a}枚を捨て札へ(この戦闘限り)`, transformDeckToToken: `山札の札${a}枚を選んで${cname(e.summonId ?? '')}に変える(deckUids)`, lightToSparks: `灯${a}につき火種1を山札へ(払った灯だけ失う)`, dealDamagePerSpark: `${all}この戦闘で撃った火種×${a}ダメ`, gainBlockPerSpark: `この戦闘で撃った火種×${a}ブロック`, triggerRandomRetainer: '場の人形1体(ランダム)が今1回動く(灯は産まない)',
+    addCardToDraw: `${cname(e.summonId ?? '')}${a}枚を山札のランダムな位置へ(この戦闘限り)`, addCardToDiscard: `${cname(e.summonId ?? '')}${a}枚を捨て札へ(この戦闘限り)`, transformDeckToToken: `山札の札${a}枚を選んで${cname(e.summonId ?? '')}に変える(deckUids)`, lightToSparks: `灯${a}につき火種1を山札へ(払った灯だけ失う)`, dealDamagePerSpark: `${all}この戦闘で撃った火種×${a}ダメ`, scry: `占術${a}(山札の上${a}枚を見て捨てる札を選ぶ=ResolveScry)`, dealDamagePerScry: `${all}この戦闘で占術で見た枚数×${a}ダメ`, dealDamagePerTrapFired: `${all}この戦闘で伏せ札が発動した回数×${a}ダメ`, extendTrapLife: `伏せている札すべての期限+${a}ターン`, trapsNeverExpire: 'この置物がある間、伏せ札は期限切れにならない', retrieveZeroCostFromDiscard: '捨て札のコスト0の札を全て手札へ', drawTypeFromDeck: `山札の${e.cardType === 'reaction' ? '伏せ札' : '札'}${a}枚を(上から見て最初のものを)手札へ`, aetherCarryHalf: 'この置物がある間、霊気を放出しても半分残る', retainedCostDown: `この置物がある間、敵ターンの後も手札に残った札はコスト-${a}(手札を離れると戻る)`, retainHandUpTo: `この置物がある間、ターン終了時に手札を${a}枚まで残せる(EndTurn.retainUids)`, gainBlockPerSpark: `この戦闘で撃った火種×${a}ブロック`, triggerRandomRetainer: '場の人形1体(ランダム)が今1回動く(灯は産まない)',
     dischargeLightWeaken: `灯を全て放出し灯3につき敵全体に威圧${a}(灯3未満なら不発)`, consumeLight: e.amount !== undefined ? `灯を${e.amount}失う` : '灯を全て失う', gainBlockPerLight: `灯2につき${a}ブロック(灯は失わない)`, drawCardsPerLight: `灯2につき${a}ドロー(上限${e.amountMax ?? 99}・灯は失わない)`, lightCarryHalf: '【常在】灯を放出しても半分が残る', dealDamagePerMomentum: `勢い×${a}ダメ(勢いは消費しない)`, doubleMomentum: '勢い2倍', gainBlockPerMomentum: `勢い×${a}ブロック(勢いは失わない)`, addGrowthPerMomentum: `勢い2につき成長+${a}(勢いは失わない)`, gainMaxHp: `最大HP+${a}(この戦闘後も残る)`, upgradeAllInHand: '手札の全て(自身・レア・工房産を除く)をこの戦闘中鍛える',
     gainSetSlot: `伏せ枠+${a}(置物なら常在=この置物がある間)`, retrieveFromDiscard: `捨て札から${a}枚を選んで手札へ(要deckUids)`, searchDeck: `山札から${a}枚を選んで手札へ(要deckUids)`,
     addCopyToDiscard: `このカードのコピー${a}枚を捨て札へ`, growSelf: `プレイするたび、この札自身の与ダメ+${a}(この戦闘中。他の札には乗らない)`, upgradeInHand: `手札の${a}枚をこの戦闘中鍛える(要handUids)`,
@@ -129,13 +130,13 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onAttackPlayed: '攻撃プレイごと:', onGrowthGained: '成長獲得ごと:', onMomentumGained: '勢い獲得ごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時/期限切れ時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
     onHealed: '回復ごと(満タンでも誘発):', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
     onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onSparkPlayed: '火種を撃つたび:', onLightDischarged: '灯を放出するたび:', onAetherGained: '霊気獲得ごと:', onLightGained: '灯を得るたび:',
-    onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
+    onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onScry: '占術するたび:', onSetExpired: '伏せ札の期限切れごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
     onTurnEnd: 'ターン終了時:', onShuffle: '切り直しごと:', onEnemyDied: '敵撃破ごと:', onDamageTaken: '攻撃でHP損失後:',
   }
   const cond = e.condition
     ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターン、先にカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.minEnergyMax !== undefined ? `ターン開始時の上限${e.condition.minEnergyMax}以上なら` : ''}${e.condition.actionKinds !== undefined ? `敵の行動が${e.condition.actionKinds.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}の時` : ''}${e.condition.actionKindsNot !== undefined ? `敵の行動が${e.condition.actionKindsNot.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}以外の時` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.minLight !== undefined ? `灯${e.condition.minLight}以上なら` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}${e.condition.perfectBlockThisPhase === true ? 'この敵フェーズを完全に凌いだら' : ''}${e.condition.targetAlive === true ? '倒せなければ' : ''}${e.condition.turn !== undefined ? `${e.condition.turn}ターン目` : ''}${e.condition.blockZero === true ? 'ブロック0なら' : ''}${e.condition.noAttackThisTurn === true ? '攻撃札なしなら' : ''}${e.condition.maxPlaysThisTurn !== undefined ? `プレイ${e.condition.maxPlaysThisTurn}枚以下なら` : ''}]`
     : ''
-  const every = e.every !== undefined ? `(${e.everyScope === 'turn' ? '1ターンに' : ''}${e.every}回ごとに1回)` : e.once !== undefined ? '(初回だけ)' : ''
+  const every = e.every !== undefined && e.once !== undefined ? `(${e.once === 'turn' ? '1ターンに' : '戦闘で'}${e.every}回目の時だけ)` : e.every !== undefined ? `(${e.everyScope === 'turn' ? '1ターンに' : ''}${e.every}回ごとに1回)` : e.once !== undefined ? '(初回だけ)' : ''
   return `${trig[e.trigger] ?? e.trigger}${cond}${every}${base[e.effect] ?? `${e.effect}${a || ''}`}${th}`
 }
 
@@ -448,6 +449,13 @@ function renderBattle(s: GameState, logFrom: number): string {
     // 灯の火床 (2026-09-20 夜「枚数を選ぶ」): ターン終了時に何枚火種にするかは EndTurn のパラメータ
     if (hearthSparkMax(s) > 0) L.push(`🔥火床: ターン終了時に灯3につき火種1を山札へ。枚数は {"type":"EndTurn","hearthSparks":N} で指定 (0〜${hearthSparkMax(s)}。省略=0=変えない)`)
     else if (p.permanents.some((c) => c.def.effects.some((e) => e.effect === 'lightToSparks'))) L.push('🔥火床: 灯が3未満なので今ターンは火種にできない')
+    // 満ち潮の書庫 (青 2026-09-25): ターン終了時に残す手札は EndTurn のパラメータ
+    if (retainHandMax(s) > 0) L.push(`📚書庫: ターン終了時に手札を${retainHandMax(s)}枚まで残せる。{"type":"EndTurn","retainUids":["<uid>",...]} で指定 (省略=残さない)`)
+  }
+  // 占術 (青 2026-09-25): 保留中は ResolveScry しか受け付けない
+  if (s.pendingScry !== undefined) {
+    L.push(`🔮占術${s.pendingScry.count}: 山札の上 (左が次に引く札) = ${p.drawPile.slice(0, s.pendingScry.count).map((c) => `${c.def.name}[${c.uid}]`).join(' / ')}`)
+    L.push('   捨てる札を {"type":"ResolveScry","discardUids":["<uid>",...]} で指定 (空=全部残す)。これを決めるまで他の操作はできない')
   }
   if (s.phase === 'awaiting-reaction' && s.pendingWindow) {
     const enemy = s.enemies[s.pendingWindow.enemyIndex]

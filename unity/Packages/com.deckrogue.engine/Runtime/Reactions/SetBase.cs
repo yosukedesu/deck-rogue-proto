@@ -57,7 +57,7 @@ namespace DeckRogue.Engine
             var setCards = new List<CardInstance>(state.Player.SetCards)
             {
                 // 罠モデル (2026-09-13): 伏せたターンを記録する。このターンは鳴らない (準備)、翌・翌々ターンの敵フェーズだけ生きる
-                card with { SetTurn = state.Turn },
+                card with { SetTurn = state.Turn, TrapLifeBonus = null }, // 潮待ち (2026-09-25) で延ばした期限は仕込み直すと消える
             };
             var s = state with
             {

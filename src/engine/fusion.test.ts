@@ -546,7 +546,7 @@ describe('手書きレシピの作り直し (2026-09-12 ユーザー裁定「上
   const recipes = fusionsJson as ReadonlyArray<{ a: string; b: string; result: { id: string; name: string; cost: number; type: string; effects: ReadonlyArray<{ effect: string }>; modes?: ReadonlyArray<unknown> } }>
 
   it('レシピは30件 (既存9+新15+白6〔2026-09-18 白の仕上げ〕)。素材は現行データに実在する = 死にレシピ (素材が撤去済み) を作らない', () => {
-    expect(recipes).toHaveLength(26) // 2026-09-24 白のプールを削り、素材が消えたレシピ4件 (灯すか守るか・弩人形の号砲・報復の刃・点灯の台座) を外した
+    expect(recipes).toHaveLength(32) // 2026-09-24 白のプールを削り、素材が消えたレシピ4件 (灯すか守るか・弩人形の号砲・報復の刃・点灯の台座) を外した → 2026-09-25 青の解凍で +6
     const ids = new Set<string>()
     for (const r of recipes) {
       expect(() => getCardDef(r.a), `${r.result.name}: 素材 ${r.a}`).not.toThrow()

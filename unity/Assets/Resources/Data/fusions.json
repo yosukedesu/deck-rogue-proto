@@ -829,5 +829,185 @@
       ],
       "color": "white"
     }
+  },
+  {
+    "a": "blue_strike",
+    "b": "blue_guard",
+    "result": {
+      "id": "fusion_tide_stance",
+      "name": "潮の構え",
+      "cost": 1,
+      "type": "spell",
+      "color": "blue",
+      "effects": [],
+      "modes": [
+        {
+          "name": "打つ",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 9
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "drawCards",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "name": "凍る",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "gainIceBlock",
+              "amount": 12
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "a": "blue_weight_of_wisdom",
+    "b": "blue_tome_shield",
+    "result": {
+      "id": "fusion_reader_stance",
+      "name": "読書家の構え",
+      "cost": 1,
+      "type": "spell",
+      "color": "blue",
+      "effects": [],
+      "modes": [
+        {
+          "name": "読み切る",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamagePerHandCard",
+              "amount": 4
+            }
+          ]
+        },
+        {
+          "name": "積み上げる",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "gainIceBlockPerHandCard",
+              "amount": 3
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "drawCards",
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "a": "blue_counterspell",
+    "b": "blue_perm_vortex_ring",
+    "result": {
+      "id": "fusion_whirl_watch",
+      "name": "渦潮の見張り",
+      "cost": 1,
+      "type": "permanent",
+      "color": "blue",
+      "effects": [
+        {
+          "trigger": "onActionNegated",
+          "effect": "addAether",
+          "amount": 2
+        },
+        {
+          "trigger": "onActionNegated",
+          "effect": "drawCardsNextTurn",
+          "amount": 1
+        }
+      ]
+    }
+  },
+  {
+    "a": "blue_weight_of_wisdom",
+    "b": "blue_ponder",
+    "result": {
+      "id": "fusion_deep_thought",
+      "name": "沈思の一撃",
+      "cost": 1,
+      "type": "spell",
+      "color": "blue",
+      "retain": true,
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "effect": "drawCards",
+          "amount": 2
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamagePerHandCard",
+          "amount": 3
+        }
+      ]
+    }
+  },
+  {
+    "a": "blue_counterspell",
+    "b": "blue_undertow",
+    "result": {
+      "id": "fusion_deep_undertow",
+      "name": "深き逆潮",
+      "cost": 2,
+      "type": "reaction",
+      "color": "blue",
+      "trapPersist": true,
+      "effects": [
+        {
+          "trigger": "onEnemyAction",
+          "effect": "negate"
+        },
+        {
+          "trigger": "onEnemyAction",
+          "effect": "addAether",
+          "amount": 1
+        },
+        {
+          "trigger": "onEnemyAction",
+          "effect": "addAether",
+          "amount": 3,
+          "condition": {
+            "minActionValue": 12
+          }
+        }
+      ]
+    }
+  },
+  {
+    "a": "blue_ice_lance",
+    "b": "blue_thick_ice",
+    "result": {
+      "id": "fusion_iceberg_break",
+      "name": "氷山崩し",
+      "cost": 2,
+      "type": "spell",
+      "color": "blue",
+      "retain": true,
+      "effects": [
+        {
+          "trigger": "onPlay",
+          "effect": "gainIceBlock",
+          "amount": 10
+        },
+        {
+          "trigger": "onPlay",
+          "effect": "dealDamagePerIceBlock",
+          "amount": 1
+        }
+      ]
+    }
   }
 ]

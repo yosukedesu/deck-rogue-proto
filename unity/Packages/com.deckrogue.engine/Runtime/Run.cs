@@ -85,13 +85,12 @@ namespace DeckRogue.Engine
             "blue_strike",
             "blue_guard",
             "blue_counterspell",
-            "blue_frost_veil",
             // --- スターター個性注入の追随 ---
             "green_entangle",
             "green_vine_wedge",
-            "blue_ice_lance",
-            "blue_ponder",
             "blue_tide_drop",
+            "blue_current_lash", // 2026-09-25 青の解凍: 初期デッキの渦流の鞭・知恵の重み (氷の槍・思案・霜の帳は報酬プールへ)
+            "blue_weight_of_wisdom",
             "red_spark",
             "red_ignite",
             "red_perm_flarecoat",
@@ -1641,6 +1640,9 @@ namespace DeckRogue.Engine
             { "dealDamageExecute", "execute" }, { "exposeEnemy", "execute" },
             { "confuse", "confuse" },
             { "dealDamagePerHandCard", "grimoire" }, { "gainIceBlockPerHandCard", "grimoire" }, // 抱え込み (青)
+            { "scry", "grimoire" }, { "dealDamagePerScry", "grimoire" }, { "retainHandUpTo", "grimoire" }, // 潮読み (青 2026-09-25)
+            { "dealDamagePerTrapFired", "permission" }, { "extendTrapLife", "permission" }, { "trapsNeverExpire", "permission" }, // 罠使い (青 2026-09-25)
+            { "retrieveZeroCostFromDiscard", "storm" }, { "drawTypeFromDeck", "permission" }, { "aetherCarryHalf", "aether" }, { "retainedCostDown", "grimoire" }, // 青を89枚に (2026-09-25)
             { "addSpellEcho", "echo" }, // 反復 (青の呪文コピー)
         };
 

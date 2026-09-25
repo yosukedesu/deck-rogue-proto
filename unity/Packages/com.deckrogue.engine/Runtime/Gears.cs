@@ -47,6 +47,7 @@ namespace DeckRogue.Engine
             if (state.Phase != CombatPhases.PlayerTurn) return "自分の番ではない";
             if (state.EnemyPhase == true) return "敵の番には使えない";
             if (state.GearUsedThisTurn == true) return "このターンはもう組んだ";
+            if (state.PendingScry != null) return "占術で捨てる札を選んでから"; // 青 2026-09-25 (TS と同形)
             return null;
         }
 

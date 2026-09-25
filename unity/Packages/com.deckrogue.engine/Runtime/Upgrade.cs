@@ -102,6 +102,8 @@ namespace DeckRogue.Engine
             "impulseDraw",
             "retrieveFromExhaust",
             "playFromExhaust",
+            "retrieveZeroCostFromDiscard", // 引き潮の帰還 (青 2026-09-25)
+            "drawTypeFromDeck", // 仕掛け師の工房 (青 2026-09-25)
         };
 
         private static IReadOnlyList<DeclarativeEffect> AllEffectsOf(CardDef def)
@@ -145,6 +147,7 @@ namespace DeckRogue.Engine
             public const string Mult = "mult";
             public const string Threshold = "threshold";
             public const string Light = "light"; // 灯コスト-1 (白 2026-09-20 点灯の合図+)
+            public const string Range = "range"; // 打ち消しの条件を広げる (青 2026-09-25 マナ漏出+・逆巻き+)
         }
 
         /// <summary>
@@ -166,6 +169,7 @@ namespace DeckRogue.Engine
             "dischargeLight", // 灯の放出 (白 2026-09-20): 倍率+1
             "dealDamagePerLight", // 灯篭の人形 (灯2につきN)。灯コスト持ちなので実際は Light ティア (灯-1) が先に取る
             "dealDamagePerSpark", "gainBlockPerSpark", "gainBlockPerLight", "drawCardsPerLight", "dischargeLightWeaken", // 2026-09-20 夜・火守りの盾 (2026-09-24)
+            "dealDamagePerScry", "dealDamagePerTrapFired", // 読み切り・仕掛けの反響 (青 2026-09-25): 参照倍率+1
         };
 
         private static readonly HashSet<string> UNIT_EFFECTS_V2 = new HashSet<string>
@@ -174,6 +178,7 @@ namespace DeckRogue.Engine
             "exposeEnemy", "weakenEnemy", "summonPermanent", "upgradeInHand", "addCardToHand", "empowerShivs", "exhaustFromDeck",
             "addCardToDraw", "triggerRandomRetainer", // 火種 (2026-09-20 夜)
             "copyRetainer", "twinNextRetainer", "extendRetainerLife", // 人形の灯り (2026-09-21)
+            "scry", "extendTrapLife", // 占術・潮待ち (青 2026-09-25): 枚数・延長ターン+1
         };
 
         private static readonly HashSet<string> AMOUNT_V2 = BuildAmountV2();
@@ -191,12 +196,25 @@ namespace DeckRogue.Engine
         private static bool HasThreshold(DeclarativeEffect e) =>
             e.Condition?.MinGrowth != null || e.Condition?.MinMomentum != null || e.Condition?.MinLight != null;
 
-        /// <summary>本家形の鍛えを使う色 (緑 2026-09-04 先行 → 白 2026-09-18 仕上げ)。工房産 (fused_*) も色で判定</summary>
-        private static readonly HashSet<string> V2_COLORS = new HashSet<string> { "green", "white" };
+        /// <summary>本家形の鍛えを使う色 (緑 2026-09-04 先行 → 白 2026-09-18 仕上げ → 青 2026-09-25 解凍)。工房産 (fused_*) も色で判定</summary>
+        private static readonly HashSet<string> V2_COLORS = new HashSet<string> { "green", "white", "blue" };
+        /// <summary>本家形の色でも旧3段で鍛える札 (2026-09-25 青の解凍): 氷の槍 (1E 化を封じた札)・魔力の火花 (本家形だと鍛えられない)。TS と同形</summary>
+        private static readonly HashSet<string> V2_LEGACY = new HashSet<string> { "blue_ice_lance", "blue_spark" };
         private static bool IsGreenRule(CardDef def) =>
-            def.Id.StartsWith("green_", StringComparison.Ordinal) || (def.Color != null && V2_COLORS.Contains(def.Color));
+            !V2_LEGACY.Contains(def.Id) && (def.Id.StartsWith("green_", StringComparison.Ordinal) || (def.Color != null && V2_COLORS.Contains(def.Color)));
         /// <summary>本家形の例外 = 名指しでコスト-1 (2026-09-18 白: 誘発ごとにドローする置物は単位+1 だと青のドローの定価を越える)</summary>
-        private static readonly HashSet<string> V2_COST_ONLY = new HashSet<string> { "white_perm_band", "white_perm_apostle" }; // 鏡の灯籠は 2026-09-24 に撤去
+        private static readonly HashSet<string> V2_COST_ONLY = new HashSet<string>
+        {
+            "white_perm_band", "white_perm_apostle", // 鏡の灯籠は 2026-09-24 に撤去
+            // 2026-09-25 青の解凍: 何でも消せる打ち消しは値段・書見台と外套は軽くなる側で伸ばす (TS upgrade.ts と同形)
+            "blue_counterspell", "blue_spell_steal", "blue_perm_tidal_lectern", "blue_perm_deep_cloak", // 凍る静寂は 2026-09-25 に撤去 (3本柱)
+        };
+        /// <summary>本家形の例外 = 打ち消しの条件を広げる (2026-09-25): マナ漏出 15以下→20以下・逆巻き 12以上→8以上</summary>
+        private static readonly Dictionary<string, (int Max, int Min)> V2_RANGE = new Dictionary<string, (int Max, int Min)>
+        {
+            ["blue_mana_leak"] = (5, 0),
+            ["blue_undertow"] = (0, -4),
+        };
 
         /// <summary>効果列1つぶんの本家形ティア (モードごとにも使う)</summary>
         private static string TierV2(IReadOnlyList<DeclarativeEffect> effects, CardDef? def = null)
@@ -301,6 +319,7 @@ namespace DeckRogue.Engine
                 // 上限ランプはコスト-1が正史 (複利安全弁: gainEnergyMax の量は増えない)
                 if (eff.Any(e => e.Effect == "gainEnergyMax") && def.Cost >= 1 && !CostCutViolates(def)) return UpgradeTiers.Cost;
                 if (V2_COST_ONLY.Contains(def.Id) && def.Cost >= 1 && !CostCutViolates(def)) return UpgradeTiers.Cost;
+                if (V2_RANGE.ContainsKey(def.Id)) return UpgradeTiers.Range;
                 // 灯コスト持ち (点灯の合図 1E・灯2。白 2026-09-20): 鍛えると灯コスト-1。エナジーは触らない
                 if ((def.LightCost ?? 0) >= 1) return UpgradeTiers.Light;
                 var t = TierV2(eff, def);
@@ -361,6 +380,22 @@ namespace DeckRogue.Engine
         public static CardInstance UpgradeCard(CardInstance card)
         {
             string tier = UpgradeTier(card.Def);
+            if (tier == UpgradeTiers.Range)
+            {
+                var w = V2_RANGE[card.Def.Id];
+                DeclarativeEffect Widen(DeclarativeEffect e)
+                {
+                    var c = e.Condition;
+                    if (c == null || (c.MaxActionValue == null && c.MinActionValue == null)) return e;
+                    var nc = c;
+                    if (c.MaxActionValue != null && w.Max != 0) nc = nc with { MaxActionValue = c.MaxActionValue + w.Max };
+                    if (c.MinActionValue != null && w.Min != 0) nc = nc with { MinActionValue = Math.Max(1, c.MinActionValue.Value + w.Min) };
+                    return e with { Condition = nc };
+                }
+                CardDef rangeDef = card.Def with { Name = card.Def.Name + "+", Effects = card.Def.Effects.Select(Widen).ToList() };
+                if (card.Def.Modes != null) rangeDef = rangeDef with { Modes = card.Def.Modes.Select(m => m with { Effects = m.Effects.Select(Widen).ToList() }).ToList() };
+                return card with { Def = LegalizeUpgrade(rangeDef) };
+            }
             if (IsGreenRule(card.Def) && tier != UpgradeTiers.Cost && tier != UpgradeTiers.Bonus && tier != UpgradeTiers.None && tier != UpgradeTiers.Light)
             {
                 var baseDef = card.Def;
@@ -481,6 +516,8 @@ namespace DeckRogue.Engine
                 "impulseDraw",
                 "retrieveFromExhaust",
                 "playFromExhaust",
+                "retrieveZeroCostFromDiscard", // 引き潮の帰還 (青 2026-09-25)
+                "drawTypeFromDeck", // 仕掛け師の工房 (青 2026-09-25)
             };
             var allEffects = AllEffectsOf(def);
             int netGain = allEffects

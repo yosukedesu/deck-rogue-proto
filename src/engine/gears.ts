@@ -63,6 +63,7 @@ export function gearBlockedReason(
   if (state.phase !== 'player-turn') return '自分の番ではない'
   if (state.enemyPhase === true) return '敵の番には使えない'
   if (state.gearUsedThisTurn === true) return 'このターンはもう組んだ'
+  if (state.pendingScry !== undefined) return '占術で捨てる札を選んでから' // 青 2026-09-25
   return null
 }
 

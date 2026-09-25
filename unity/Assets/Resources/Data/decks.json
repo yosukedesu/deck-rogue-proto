@@ -459,30 +459,26 @@
     "cards": [
       {
         "cardId": "blue_strike",
-        "count": 2
+        "count": 3
+      },
+      {
+        "cardId": "blue_current_lash",
+        "count": 1
       },
       {
         "cardId": "blue_guard",
         "count": 3
       },
       {
-        "cardId": "blue_ice_lance",
-        "count": 1
-      },
-      {
-        "cardId": "blue_ponder",
-        "count": 1
-      },
-      {
-        "cardId": "blue_counterspell",
-        "count": 1
-      },
-      {
-        "cardId": "blue_frost_veil",
+        "cardId": "blue_weight_of_wisdom",
         "count": 1
       },
       {
         "cardId": "blue_tide_drop",
+        "count": 1
+      },
+      {
+        "cardId": "blue_counterspell",
         "count": 1
       }
     ]

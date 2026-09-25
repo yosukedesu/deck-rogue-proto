@@ -135,6 +135,10 @@ namespace DeckRogue.Game
         public bool GearMore;
         /// <summary>灯の火床 (2026-09-20 夜「枚数を選ぶ」): ターン終了を押した時に火種にする枚数を選ぶ窓を開いている</summary>
         public bool HearthChoice;
+        /// <summary>満ち潮の書庫 (青 2026-09-25): ターン終了の前に残す手札を選ぶ窓。選んだ uid</summary>
+        public List<string> RetainChoice;
+        /// <summary>占術 (青 2026-09-25): 捨てると選んだ札の uid (窓は combat.PendingScry が立っている間ずっと出る)</summary>
+        public List<string> ScryDiscard = new List<string>();
         /// <summary>戦闘の残留UI (敵・リーダーの入れ物と手札のカードを持ち越す)。戦闘を離れたら破棄</summary>
         public BattleView Battle;
         readonly Dictionary<string, RectTransform> _anchors = new Dictionary<string, RectTransform>();
@@ -288,6 +292,7 @@ namespace DeckRogue.Game
             GearSwap = null;
             GearMore = false;
             HearthChoice = false;
+            RetainChoice = null;   // 満ち潮の書庫の窓 (2026-09-25)
             // 自動保存 (2026-09-15 本家形): 成功した手のたびに save/run.json を書く (別スレッド)。走破/敗北で終わったランは消す
             if (Rs != null && !ReferenceEquals(Rs, prevRs))
             {
@@ -571,7 +576,7 @@ namespace DeckRogue.Game
                     var e = card.Def.Effects[i];
                     if (e.Effect == p.DeckKind) want += e.Amount.HasValue ? e.Amount.Value : 1;
                 }
-                p.DeckNeed = Math.Min(want, CombatScreen.DeckChoosePool(st, p.DeckKind).Count);
+                p.DeckNeed = Math.Min(want, CombatScreen.DeckChoosePool(st, p.DeckKind, card.Def).Count);
             }
 
             int upgradeN = 0;

@@ -7,7 +7,7 @@
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } from './content.ts'
 import { resolveFusedDef } from './fusion.ts'
-import { applyDamageInterrupts, cardNeedsTarget, gainLight, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, expireRetainers, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge } from './effects.ts'
+import { applyDamageInterrupts, cardNeedsTarget, gainLight, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, expireRetainers, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge, trapLifeOf } from './effects.ts'
 import { applyInterruptsTo, startNodeFor, walkToMove } from './enemyGraph.ts'
 import { applyDeathInterrupts, bindRedeclare, blazeConditionMet, effectiveStrength, enterPermanent, gainEnemyStrength, refreshIntentValues, setBellActive } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
@@ -721,6 +721,21 @@ export function checkCombatEnd(state: GameState): GameState {
  * - 攻撃カテゴリのプレイ後は置物の onAttackPlayed が発火する (そのカード自身には乗らない)
  */
 /** 山札/捨て札から選ぶ効果の種別 (引導・回収・サーチ)。1枚の札は1種だけ持てる */
+/**
+ * 「山札・捨て札から選ぶ」札の選べる札 (UI/CLI/ボット/検証が共有)。
+ * 仕掛けの手配 (青 2026-09-25) のように searchDeck が cardType を持てば、そのタイプの札だけ
+ */
+export function deckChoosePool(state: GameState, def: CardDef): readonly CardInstance[] {
+  const kind = deckChooseKindOf(def)
+  if (kind === 'retrieveFromDiscard') return state.player.discardPile
+  if (kind === 'searchDeck') {
+    const only = def.effects.find((e) => e.effect === 'searchDeck')?.cardType
+    return only === undefined ? state.player.drawPile : state.player.drawPile.filter((c) => c.def.type === only)
+  }
+  if (kind === 'transformDeckToToken') return state.player.drawPile
+  return [...state.player.drawPile, ...state.player.discardPile]
+}
+
 export function deckChooseKindOf(
   def: CardDef,
 ): 'exhaustFromDeckChoose' | 'retrieveFromDiscard' | 'searchDeck' | 'transformDeckToToken' | null {
@@ -903,12 +918,7 @@ export function playCard(
   const deckChooseN = card.def.effects
     .filter((e) => e.effect === chooseKind)
     .reduce((a, e) => a + (e.amount ?? 1), 0)
-  const deckPool =
-    chooseKind === 'retrieveFromDiscard'
-      ? state.player.discardPile
-      : chooseKind === 'searchDeck' || chooseKind === 'transformDeckToToken'
-        ? state.player.drawPile
-        : [...state.player.drawPile, ...state.player.discardPile]
+  const deckPool = deckChoosePool(state, card.def)
   const poolLabel =
     chooseKind === 'retrieveFromDiscard' ? '捨て札' : chooseKind === 'searchDeck' || chooseKind === 'transformDeckToToken' ? '山札' : '山札か捨て札'
   const deckChooseUids = deckChooseN > 0 ? (deckUids ?? []) : []
@@ -1372,9 +1382,52 @@ export function playNecro(state: GameState, cardUid: string, targetIndex?: numbe
 }
 
 /** EndTurn: 勢いリセット・衝動の失効・延焼処理をして、敵フェーズを解決する */
-export function endTurn(state: GameState, hearthSparks?: number): GameState {
+/**
+ * 占術の解決 (青 潮読み 2026-09-25。StS1 Watcher の Scry): 保留 (pendingScry) した枚数ぶん山札の上を見て、選んだ札を捨て札へ。
+ * 残した札は山札の並びのまま (引き順は変えない)。見た枚数を数え (読み切り)、占術の回数ぶん onScry を誘発する (渦見の鏡)。
+ * 山札が足りなければ見られるだけ見る (切り直しはしない＝本家どおり)
+ */
+export function resolveScry(state: GameState, discardUids: readonly string[]): GameState {
+  const p = state.pendingScry
+  if (p === undefined) throw new Error('占術の保留が無い')
+  const look = state.player.drawPile.slice(0, Math.min(p.count, state.player.drawPile.length))
+  const chosen = new Set(discardUids)
+  if (chosen.size !== discardUids.length) throw new Error('discardUids の指定が重複している')
+  for (const uid of discardUids) if (!look.some((c) => c.uid === uid)) throw new Error(`占術で見ている札ではない: ${uid}`)
+  const discarded = look.filter((c) => chosen.has(c.uid))
+  const { pendingScry: _p, ...rest } = state
+  let s: GameState = {
+    ...rest,
+    player: {
+      ...state.player,
+      drawPile: state.player.drawPile.filter((c) => !chosen.has(c.uid)),
+      discardPile: [...state.player.discardPile, ...discarded],
+      scriedThisCombat: (state.player.scriedThisCombat ?? 0) + look.length,
+    },
+  }
+  s = emit(s, { type: 'Scried', looked: look.map((c) => c.def.id), discarded: discarded.map((c) => c.def.id) })
+  if (look.length > 0) {
+    const firstAlive = Math.max(0, s.enemies.findIndex((e) => e.hp > 0))
+    for (let i = 0; i < p.times; i++) s = runPermanentTriggers(s, 'onScry', firstAlive)
+  }
+  return checkCombatEnd(s)
+}
+
+/** 満ち潮の書庫 (青 R 置物 2026-09-25): ターン終了時に残せる手札の枚数 (場の retainHandUpTo の合計)。UI/CLI/ボットが共有 */
+export function retainHandMax(state: GameState): number {
+  return state.player.permanents.reduce((a, p) => a + p.def.effects.filter((e) => e.effect === 'retainHandUpTo').reduce((x, e) => x + (e.amount ?? 0), 0), 0)
+}
+
+export function endTurn(state: GameState, hearthSparks?: number, retainUids?: readonly string[]): GameState {
   if (state.phase !== 'player-turn') throw new Error('自ターン以外はターン終了できない')
   if (hearthSparks !== undefined && (!Number.isInteger(hearthSparks) || hearthSparks < 0)) throw new Error(`hearthSparks は 0 以上の整数 (hearthSparks=${hearthSparks})`)
+  if (retainUids !== undefined && retainUids.length > 0) {
+    const max = retainHandMax(state)
+    if (retainUids.length > max) throw new Error(`手札を残せるのは${max}枚まで (retainUids=${retainUids.length})`)
+    if (new Set(retainUids).size !== retainUids.length) throw new Error('retainUids の指定が重複している')
+    for (const uid of retainUids) if (!state.player.hand.some((c) => c.uid === uid)) throw new Error(`手札に無いカード: ${uid}`)
+    state = { ...state, retainUids: [...retainUids] }
+  }
   // 灯の火床 (2026-09-20 夜 ユーザー裁定「枚数を選ぶ」): この EndTurn で灯を火種に変える枚数。onTurnEnd の間だけ立てて消す
   let s = emit({ ...state, enemyPhase: true as const, hearthSparks: hearthSparks ?? 0 }, { type: 'TurnEnded', turn: state.turn, unplayed: state.player.hand.map((c) => c.def.name) })
   // 自ターン終了時の誘発 (レリック本家形 2026-09-12: 山銅の板・外套の留め金・懐中時計・兵法書・石の暦)。
@@ -2155,7 +2208,11 @@ export function cardChoosesDoll(def: CardDef): boolean {
  * (齢3を待つと窓の無い敵フェーズを1回死んだまま過ごす)。期限なしの札 (trapPersist) は除く
  */
 function expireTraps(state: GameState): GameState {
-  const expired = state.player.setCards.filter((c) => trapAge(state, c) >= 2 && c.def.trapPersist !== true)
+  // 寿命は trapLifeOf (2窓＋潮待ちで延ばしたぶん。期限なし＝札の trapPersist・深き仕掛け 2026-09-25)
+  const expired = state.player.setCards.filter((c) => {
+    const life = trapLifeOf(state, c)
+    return life !== null && trapAge(state, c) >= life
+  })
   if (expired.length === 0) return state
   const firstAlive = Math.max(0, state.enemies.findIndex((e) => e.hp > 0))
   let s: GameState = {
@@ -2168,11 +2225,13 @@ function expireTraps(state: GameState): GameState {
       if (effect.trigger === 'onSetDestroyed') s = resolveEffectTargeted(s, effect, firstAlive)
     }
     const to: 'discard' | 'exhaust' | 'hand' = s.expireToHand === true ? 'hand' : card.def.exhaust === true ? 'exhaust' : 'discard'
-    const { setTurn: _t, ...bare } = card
+    const { setTurn: _t, trapLifeBonus: _b, ...bare } = card
     if (to === 'hand') s = { ...s, player: { ...s.player, hand: [...s.player.hand, bare] } }
     else if (to === 'discard') s = { ...s, player: { ...s.player, discardPile: [...s.player.discardPile, bare] } }
     else s = { ...s, player: { ...s.player, exhaustPile: [...s.player.exhaustPile, bare] } }
     s = emit(s, { type: 'SetCardExpired', cardId: card.def.id, to })
+    // ほどけ泡 (青 罠使い 2026-09-25): 罠が期限切れになるたび (1枚ごと)
+    s = runPermanentTriggers(s, 'onSetExpired', firstAlive)
     if (to === 'exhaust') {
       // 衝動失効と同じ順: 消滅の誘発 (亡者の合唱など) → 亡骸
       s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
@@ -2274,15 +2333,20 @@ function finishEnemyPhase(state: GameState): GameState {
     (c.def.id === SCALD_DEF.id && c.scaldFresh === true) ||
     c.def.retain === true ||
     ((s.retainHand === true || s.retainHandThisTurn === true) && c.def.id !== SCALD_DEF.id) ||
-    !handBeforeExpire.has(c.uid) // 回収の紐で期限切れで手札に戻った罠 (2026-09-13)
+    !handBeforeExpire.has(c.uid) || // 回収の紐で期限切れで手札に戻った罠 (2026-09-13)
+    (s.retainUids?.includes(c.uid) ?? false) // 満ち潮の書庫で残すと選んだ札 (2026-09-25)
+  const { retainUids: _ru, ...clearedRetain } = s // 満ち潮の書庫の指定はこの全捨てで使い切る
+  const retainedDown = s.player.permanents.reduce((a, p) => a + p.def.effects.filter((e) => e.effect === 'retainedCostDown').reduce((x, e) => x + (e.amount ?? 0), 0), 0)
   s = {
-    ...s,
+    ...clearedRetain,
     player: {
       ...s.player,
       // 保持 (retain 2026-09-02): 全捨てで手札に残る
       hand: s.player.hand
         .filter(keeps)
-        .map((c) => (c.scaldFresh === true ? { ...c, scaldFresh: false } : c)),
+        .map((c) => (c.scaldFresh === true ? { ...c, scaldFresh: false } : c))
+        // 潮溜まり (青 R 置物 2026-09-25。本家 Establishment): 敵ターンの後も手札に残った札はコスト-N (状態異常は除く)
+        .map((c) => (retainedDown > 0 && !c.def.id.startsWith('status_') ? { ...c, retainDiscount: (c.retainDiscount ?? 0) + retainedDown } : c)),
       discardPile: [
         ...s.player.discardPile,
         ...s.player.hand.filter((c) => c.def.id !== SCALD_DEF.id && !keeps(c)),

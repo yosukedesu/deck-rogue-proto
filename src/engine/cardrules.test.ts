@@ -26,6 +26,8 @@ const REFILL_EFFECTS = [
   'impulseDraw',
   'retrieveFromExhaust',
   'playFromExhaust',
+  'retrieveZeroCostFromDiscard', // 引き潮の帰還 (青 2026-09-25): 0E化すると2枚で互いを戻し合う
+  'drawTypeFromDeck', // 仕掛け師の工房 (青 2026-09-25)
 ]
 
 /**

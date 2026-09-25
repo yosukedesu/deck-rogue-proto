@@ -330,6 +330,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>火種 (白 2026-09-20 夜。本家 Soul の白版): この戦闘で撃った火種 (sparkToken) の枚数。火種の嵐が参照</summary>
         [JsonProperty("sparksPlayedThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public int? SparksPlayedThisCombat { get; init; }
+        /// <summary>占術 (青 2026-09-25): この戦闘で占術で見た枚数の累計 (読み切りが参照)</summary>
+        [JsonProperty("scriedThisCombat", NullValueHandling = NullValueHandling.Ignore)]
+        public int? ScriedThisCombat { get; init; }
+        /// <summary>罠使い (青 2026-09-25): この戦闘で罠 (reaction) が鳴った回数 (仕掛けの反響が参照)</summary>
+        [JsonProperty("trapsFiredThisCombat", NullValueHandling = NullValueHandling.Ignore)]
+        public int? TrapsFiredThisCombat { get; init; }
         /// <summary>直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット)</summary>
         [JsonProperty("damageTakenLastEnemyPhase")]
         public int DamageTakenLastEnemyPhase { get; init; }
@@ -630,6 +636,15 @@ namespace DeckRogue.Engine.Generated
         public int EnemyIndex { get; init; }
     }
 
+    /// <summary>GameState.pendingScry のインライン型</summary>
+    public sealed record GameStatePendingScry
+    {
+        [JsonProperty("count")]
+        public int Count { get; init; }
+        [JsonProperty("times")]
+        public int Times { get; init; }
+    }
+
     /// <summary>GameState</summary>
     public sealed record GameState
     {
@@ -714,6 +729,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>罠モデル: 「完全に凌いだら」(perfectBlockThisPhase) の遅延効果。finishEnemyPhase が判定して解決し空にする</summary>
         [JsonProperty("pendingPhaseEffects", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<GameStatePendingPhaseEffects>? PendingPhaseEffects { get; init; }
+        /// <summary>占術の保留 (青 2026-09-25): 山札の上 count 枚を見て捨てる札を選ぶまで、ResolveScry 以外のコマンドを受け付けない。 同じ解決の中で重なった占術は枚数を足し、times (占術の回数＝onScry の誘発回数) を数える</summary>
+        [JsonProperty("pendingScry", NullValueHandling = NullValueHandling.Ignore)]
+        public GameStatePendingScry? PendingScry { get; init; }
+        /// <summary>満ち潮の書庫 (青 2026-09-25): この EndTurn で残す手札の uid (敵フェーズ終わりの全捨てで残す。捨てた後に消す)</summary>
+        [JsonProperty("retainUids", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<string>? RetainUids { get; init; }
         /// <summary>カードのプレイ開始時点の敵の急所 (enemyExposed 条件の判定用スナップショット)</summary>
         [JsonProperty("resolvingExposedAtStart", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<int>? ResolvingExposedAtStart { get; init; }
@@ -864,6 +885,15 @@ namespace DeckRogue.Engine.Generated
         public string CardUid { get; init; } = default!;
     }
 
+    /// <summary>Command: type="ResolveScry"</summary>
+    public sealed record Command_ResolveScry : Command
+    {
+        public const string TypeTag = "ResolveScry";
+        public Command_ResolveScry() { Type = TypeTag; }
+        [JsonProperty("discardUids")]
+        public IReadOnlyList<string> DiscardUids { get; init; } = default!;
+    }
+
     /// <summary>Command: type="RetrieveSetCard"</summary>
     public sealed record Command_RetrieveSetCard : Command
     {
@@ -912,6 +942,8 @@ namespace DeckRogue.Engine.Generated
         public Command_EndTurn() { Type = TypeTag; }
         [JsonProperty("hearthSparks", NullValueHandling = NullValueHandling.Ignore)]
         public int? HearthSparks { get; init; }
+        [JsonProperty("retainUids", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<string>? RetainUids { get; init; }
     }
 
     /// <summary>判別共用体 GameEvent (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>
@@ -979,6 +1011,28 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_CardSet() { Type = TypeTag; }
         [JsonProperty("cardId")]
         public string CardId { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="Scried"</summary>
+    public sealed record GameEvent_Scried : GameEvent
+    {
+        public const string TypeTag = "Scried";
+        public GameEvent_Scried() { Type = TypeTag; }
+        [JsonProperty("looked")]
+        public IReadOnlyList<string> Looked { get; init; } = default!;
+        [JsonProperty("discarded")]
+        public IReadOnlyList<string> Discarded { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="TrapLifeExtended"</summary>
+    public sealed record GameEvent_TrapLifeExtended : GameEvent
+    {
+        public const string TypeTag = "TrapLifeExtended";
+        public GameEvent_TrapLifeExtended() { Type = TypeTag; }
+        [JsonProperty("amount")]
+        public int Amount { get; init; }
+        [JsonProperty("count")]
+        public int Count { get; init; }
     }
 
     /// <summary>GameEvent: type="SetCardExpired"</summary>
@@ -1982,7 +2036,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>every のカウンタの寿命。'turn'=自ターン開始でリセット (1ターンに攻撃3枚)・'combat'=戦闘内累計 (既定)</summary>
         [JsonProperty("everyScope", NullValueHandling = NullValueHandling.Ignore)]
         public string? EveryScope { get; init; }
-        /// <summary>戦闘で1回 / ターンに1回だけ解決する (本家の「初回だけ」型: 百年の謎かけ)</summary>
+        /// <summary>戦闘で1回 / ターンに1回だけ解決する (本家の「初回だけ」型: 百年の謎かけ)。every と併せると「N回目の時だけ1回」(青 嵐の目 2026-09-25)</summary>
         [JsonProperty("once", NullValueHandling = NullValueHandling.Ignore)]
         public string? Once { get; init; }
         /// <summary>ダメージに成長を×Nで乗せる (放出しない。大牙=本家 Heavy Blade。単発向けの加算の器 2026-09-03)</summary>
@@ -2016,6 +2070,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>summonPermanent 用: 場に出す置物カードの id (例: white_perm_squire)</summary>
         [JsonProperty("summonId", NullValueHandling = NullValueHandling.Ignore)]
         public string? SummonId { get; init; }
+        /// <summary>searchDeck 用の絞り (青 仕掛けの手配 2026-09-25): このタイプの札だけを山札から選べる</summary>
+        [JsonProperty("cardType", NullValueHandling = NullValueHandling.Ignore)]
+        public string? CardType { get; init; }
         /// <summary>忘却の刻 (黒のしきい値。確定済みルール表「忘却の刻」): 消滅置き場がこの枚数以上なら amount の代わりに amountMax を使う。dealDamageRandom / dealDamageExecute とは併用しない</summary>
         [JsonProperty("exhaustThreshold", NullValueHandling = NullValueHandling.Ignore)]
         public int? ExhaustThreshold { get; init; }
@@ -2328,6 +2385,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>罠モデル (2026-09-13): 伏せた時の state.turn。伏せたターンは鳴らない (準備)、翌・翌々ターンの敵フェーズだけ生きる (2窓)、 2窓目の終端で期限切れ (捨て札。消滅持ちは消滅。trapPersist の札は期限が来ない)。判定は effects.ts の trapAge / isTrapLive。 旧セーブに無い場合は「今伏せた」として読む (NaN で永久死に枠にならないため)</summary>
         [JsonProperty("setTurn", NullValueHandling = NullValueHandling.Ignore)]
         public int? SetTurn { get; init; }
+        /// <summary>潮待ち (青 2026-09-25): この罠の期限を延ばしたターン数 (仕込み直すと消える)</summary>
+        [JsonProperty("trapLifeBonus", NullValueHandling = NullValueHandling.Ignore)]
+        public int? TrapLifeBonus { get; init; }
+        /// <summary>潮溜まり (青 2026-09-25): 手札に残ったターン数ぶんのコスト減 (手札を離れると消える)</summary>
+        [JsonProperty("retainDiscount", NullValueHandling = NullValueHandling.Ignore)]
+        public int? RetainDiscount { get; init; }
         /// <summary>生得: 戦闘開始時から場にあるもの (リーダーパッシブ・レリック)。 「登場」しないので onPermanentEntered が誘発せず、置物数参照 (集結など) でも数えない (2026-08-26。確定済みルール表「置物数参照」)。パッシブが召喚したトークンは生得ではない。</summary>
         [JsonProperty("innate", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Innate { get; init; }

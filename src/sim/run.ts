@@ -15,7 +15,7 @@
 import { canUpgradeInHand } from '../engine/upgrade.ts'
 import { allDecks, allEnemies, allLeaders, getCardDef, getEnemyDef } from '../engine/content.ts'
 import { dollGrowth, dollLifeLeft, effectiveCost, hearthSparkMax, isBlazing, isDamageEffect, isDoll, isPlayableFromHand, retainerRequirementMet } from '../engine/effects.ts'
-import { cardChoosesDoll } from '../engine/combat.ts'
+import { cardChoosesDoll, deckChoosePool, retainHandMax } from '../engine/combat.ts'
 import { RESTRAIN_PLAY_CAP } from '../engine/combat.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { applyRunCommand, createRun, defaultEventChoice, gearFull, isUpgraded, nextChoices, defaultDepartureCommand } from '../engine/run.ts'
@@ -55,6 +55,8 @@ function botRole(def: CardDef): BotRole {
   if (has('applyBurn', 'confuse')) return def.cost >= 3 ? 'bighit' : 'attack'
   // 緑のカード操作 (2026-09-02): 回収・サーチ・手札で鍛えるはカードアドバンテージ系としてドロー枠で早めに撃つ
   if (has('retrieveFromDiscard', 'searchDeck', 'upgradeInHand')) return 'draw'
+  // 占術・罠の期限延長 (青 2026-09-25): 山札・罠を整える札はドロー枠で早めに
+  if (has('scry', 'extendTrapLife')) return 'draw'
   if (has('drawCards', 'impulseDraw', 'drawCardsPerCardPlayed', 'dischargeAetherDraw', 'exhaustFromDeck')) return 'draw'
   // コスト再利用 (黒): 死者再生・屍集めはカードアドバンテージ系としてドロー枠で運用する
   if (has('retrieveFromExhaust', 'playFromExhaust')) return 'draw'
@@ -351,9 +353,11 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
   }
   const searchN = card.def.effects.filter((e) => e.effect === 'searchDeck').reduce((a, e) => a + (e.amount ?? 1), 0)
   if (searchN > 0) {
-    const picked = pickBest(state.player.drawPile, searchN)
-    const need = Math.min(searchN, state.player.drawPile.length)
-    deckUids = picked.length >= need ? picked : state.player.drawPile.slice(0, need).map((c) => c.uid)
+    // 種類の絞り (仕掛けの手配=罠だけ。2026-09-25) は engine の deckChoosePool が決める
+    const pool = deckChoosePool(state, card.def)
+    const picked = pickBest(pool, searchN)
+    const need = Math.min(searchN, pool.length)
+    deckUids = picked.length >= need ? picked : pool.slice(0, need).map((c) => c.uid)
   }
   // 手札で鍛える: 自身以外で最もコストの高い鍛えられる札
   let handUids: string[] | undefined
@@ -398,6 +402,11 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
 
 /** 現在の戦闘状態に対するボットの次の一手 (単発戦闘・ラン共用の純関数) */
 export function chooseCommand(s: GameState): Command {
+  // 占術 (青 2026-09-25): ボットは見た札のうち状態異常 (負傷・火傷・がらくた・烙印) だけを捨てる床値
+  if (s.pendingScry !== undefined) {
+    const look = s.player.drawPile.slice(0, s.pendingScry.count)
+    return { type: 'ResolveScry', discardUids: look.filter((c) => c.def.id.startsWith('status_')).map((c) => c.uid) }
+  }
   if (s.phase === 'awaiting-reaction') {
     if (s.reactionMode === 'set-confirm') return { type: 'ConfirmReaction', fire: true }
     const candidates = playableReactions(s)
@@ -509,7 +518,17 @@ export function chooseCommand(s: GameState): Command {
   // 灯の火床 (2026-09-20 夜): ボットは灯6を残して超過分を火種に (放出の閾値を殺さない床値)
   const hearthMax = hearthSparkMax(s)
   const hearthSparks = hearthMax > 0 ? Math.max(0, Math.floor(((s.player.light ?? 0) - 6) / 3)) : 0
-  return hearthSparks > 0 ? { type: 'EndTurn', hearthSparks: Math.min(hearthMax, hearthSparks) } : { type: 'EndTurn' }
+  // 満ち潮の書庫 (青 2026-09-25): ボットは手札参照の札を先に、次にコストの高い札を残す (状態異常は残さない)
+  const retainMax = retainHandMax(s)
+  const retainUids = retainMax > 0
+    ? [...s.player.hand]
+        .filter((c) => !c.def.id.startsWith('status_'))
+        .sort((a, b) => (botRole(b.def) === 'handpayoff' ? 1 : 0) - (botRole(a.def) === 'handpayoff' ? 1 : 0) || b.def.cost - a.def.cost)
+        .slice(0, retainMax)
+        .map((c) => c.uid)
+    : []
+  const end: Command = { type: 'EndTurn', ...(hearthSparks > 0 ? { hearthSparks: Math.min(hearthMax, hearthSparks) } : {}), ...(retainUids.length > 0 ? { retainUids } : {}) }
+  return end
 }
 
 interface BattleResult {

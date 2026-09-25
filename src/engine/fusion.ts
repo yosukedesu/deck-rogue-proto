@@ -23,6 +23,8 @@ const REFILL = new Set([
   'impulseDraw',
   'retrieveFromExhaust',
   'playFromExhaust',
+  'retrieveZeroCostFromDiscard', // 引き潮の帰還 (青 2026-09-25): 0E化すると2枚で互いを戻し合う
+  'drawTypeFromDeck', // 仕掛け師の工房 (青 2026-09-25)
 ])
 
 /**
@@ -313,7 +315,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
       ? (domi.def.effects.find((e) => REACTION_WINDOWS.has(e.trigger))?.trigger ?? 'onAttacked')
       : 'onPlay'
   const PLAYCARD_ONLY = new Set(['searchDeck', 'retrieveFromDiscard', 'upgradeInHand', 'upgradeAllInHand', 'gainMaxHp', 'addCopyToDiscard', 'exhaustFromDeckChoose', 'retrieveFromExhaust', 'playFromExhaust', 'gainSetSlot', 'sacrificeRetainer', 'duplicateRetainers', 'triggerRetainersNow', 'copyRetainer', 'extendRetainerLife', 'extendAllRetainersLife', 'persistRetainer', 'twinNextRetainer', 'copyLastRetainer'])
-  const DIES_IN_WINDOW = new Set(['drawCards', 'impulseDraw', 'gainEnergy', 'addCasts'])
+  const DIES_IN_WINDOW = new Set(['drawCards', 'impulseDraw', 'gainEnergy', 'addCasts', 'scry']) // 占術 (青 2026-09-25) も敵フェーズでは選べない
   const DEAD_ON_PERMANENT = new Set(['negate', 'growSelf', 'momentumCarryHalf', 'doubleGrowth', 'doubleMomentum', 'dischargeGrowth', 'dischargeGrowthBlock', 'dischargeMomentumDamage', 'dischargeMomentumBlock', 'dischargeMomentumBurn', 'dischargeMomentumGrowth', 'dischargeMomentumVolley', 'dischargeAether', 'dischargeAetherDraw', 'dischargeBurn', 'dischargeLight', 'dischargeLightRally', 'doubleLight'])
   // 落とした効果の価値は最大の量効果へ振る (S2: 効果が落ちて素材より劣化する64件の是正。「合成不可」は増やさない)
   const DROP_VP: Record<string, number> = { gainEnergy: 5, drawCards: 3, impulseDraw: 2, addCasts: 2.5, negate: 12, doubleGrowth: 8, doubleMomentum: 6, growSelf: 4, searchDeck: 6, retrieveFromDiscard: 5, upgradeInHand: 6, upgradeAllInHand: 9, gainMaxHp: 6, addCopyToDiscard: 3, exhaustFromDeckChoose: 3, retrieveFromExhaust: 5, playFromExhaust: 8, gainSetSlot: 6, momentumCarryHalf: 8 }

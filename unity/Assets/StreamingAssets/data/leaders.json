@@ -33,14 +33,15 @@
     "rewardChoices": 3,
     "runDeckId": "run_basic_blue",
     "sprite": "🌊",
-    "description": "潮読みの導師。潮の里の工房の出。紙のように脆いが手札は6枚。毎ターン開始時に氷壁+2",
+    "description": "潮読みの導師。潮の里の工房の出。紙のように脆いが手札は6枚。呪文を撃つたび氷壁+1。仕込み枠が2つある",
     "passive": [
       {
         "trigger": "onSpellPlayed",
         "effect": "gainIceBlock",
         "amount": 1
       }
-    ]
+    ],
+    "setSlots": 2
   },
   {
     "id": "leader_red",

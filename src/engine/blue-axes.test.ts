@@ -99,7 +99,7 @@ describe('反復 (呪文コピー)', () => {
     s = withHand(s, ['blue_echo'])
     s = withEnergy(s, 9)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_echo' })
-    s = withIntent(s, attackIntent(5))
+    s = withIntent(s, attackIntent(20)) // 2026-09-25: 霜の帳は完全に凌ぐと霊気+2 が付いた＝凌げない攻撃で測る
     s = applyCommand(s, { type: 'EndTurn' })
     if (s.phase === 'awaiting-reaction') s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
     expect(s.player.aether).toBe(1) // 2回解決なら2になっているはず

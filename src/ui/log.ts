@@ -89,7 +89,9 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'CardsDrawn': return { text: `${e.count}枚ドロー`, cls: 'log-line' }
     case 'CardPlayed': return { text: `プレイ: ${cardName(e.cardId)}`, cls: 'log-line' }
     case 'CardSet': return { text: `伏せた: ${cardName(e.cardId)}`, cls: 'log-line' }
-    case 'SetCardExpired': return { text: `期限切れ: ${cardName(e.cardId)}（2回の敵ターンで発動しなかったので${e.to === 'hand' ? '手札へ' : e.to === 'exhaust' ? '消滅置き場へ' : '捨て札へ'}）`, cls: 'log-line' }
+    case 'SetCardExpired': return { text: `期限切れ: ${cardName(e.cardId)}（期限までに発動しなかったので${e.to === 'hand' ? '手札へ' : e.to === 'exhaust' ? '消滅置き場へ' : '捨て札へ'}）`, cls: 'log-line' }
+    case 'Scried': return { text: `占術: ${e.looked.length}枚を見た${e.discarded.length > 0 ? `（捨て札へ: ${e.discarded.map(cardName).join('・')}）` : '（全部残した）'}`, cls: 'log-line' }
+    case 'TrapLifeExtended': return { text: `伏せ札${e.count}枚の期限を${e.amount}ターン延ばした`, cls: 'log-good' }
     case 'EnemyIntentDeclared': return { text: `敵の意図: ${intentText(e.intent)}`, cls: 'log-line' }
     case 'EnemyActionExecuting':
     case 'EnemyActionResolved': return null

@@ -51,6 +51,7 @@ namespace DeckRogue.Game
             v.SyncHand(g, st, true);
 
             if (st.Phase == CombatPhases.AwaitingReaction) BuildReactionWindow(g, ui, st);
+            else if (st.PendingScry != null) BuildScryChooser(g, ui, st);   // 占術 (青 2026-09-25): 選ぶまで他の操作はできない
             else if (g.Pending != null)
             {
                 var need = g.Pending.NextNeed();
@@ -60,6 +61,7 @@ namespace DeckRogue.Game
             else if (g.ModeChoiceUid != null) BuildModeChooser(g, ui, st);
             else if (g.GearPending != null) GearUi.BuildPending(g, ui, run, st);   // ギア (2026-09-17): 窓／札を選ぶ／対象の帯
             else if (g.GearMore) GearUi.BuildMore(g, ui, run, st);   // ギアの「+N」= 持ち物の一覧 (2026-09-18)
+            else if (g.RetainChoice != null) BuildRetainChooser(g, ui, st);   // 満ち潮の書庫: 残す手札 (青 2026-09-25)
             else if (g.HearthChoice) BuildHearthChooser(g, ui, st);   // 灯の火床: 火種にする枚数 (2026-09-20 夜)
         }
 
@@ -1813,8 +1815,7 @@ namespace DeckRogue.Game
             // 灯の火床 (2026-09-20 夜「枚数を選ぶ」): 火床が場にあり灯3以上なら、ターン終了の前に何枚火種にするかの窓を挟む
             var b = UiKit.Btn(root, "ターン終了", delegate
             {
-                if (g.Rs != null && g.Rs.Combat != null && Effects.HearthSparkMax(g.Rs.Combat) > 0) { g.HearthChoice = true; g.Rebuild(); }
-                else g.DoCombat(new Command_EndTurn());
+                StartEndTurn(g);
             }, 21, myTurn, myTurn ? PaperFx.BrassLight : Color.white);
             var le = b.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);
@@ -1902,6 +1903,98 @@ namespace DeckRogue.Game
 
         // ---- モーダル: 確認ウィンドウ (set-confirm) ----
 
+        /// <summary>
+        /// ターン終了の入口 (2026-09-25): 満ち潮の書庫があれば残す手札の窓 → 灯の火床があれば枚数の窓 → EndTurn。
+        /// 窓で選んだものは FinishEndTurn がまとめて1つの EndTurn にする
+        /// </summary>
+        public static void StartEndTurn(GameRoot g)
+        {
+            var st = g.Rs != null ? g.Rs.Combat : null;
+            if (st == null) return;
+            if (g.RetainChoice == null && Combat.RetainHandMax(st) > 0) { g.RetainChoice = new List<string>(); g.Rebuild(); return; }
+            if (Effects.HearthSparkMax(st) > 0) { g.HearthChoice = true; g.Rebuild(); return; }
+            FinishEndTurn(g, null);
+        }
+
+        static void FinishEndTurn(GameRoot g, int? hearth)
+        {
+            var keep = g.RetainChoice != null && g.RetainChoice.Count > 0 ? new List<string>(g.RetainChoice) : null;
+            g.RetainChoice = null;
+            g.HearthChoice = false;
+            g.DoCombat(new Command_EndTurn { HearthSparks = hearth, RetainUids = keep });
+        }
+
+        /// <summary>満ち潮の書庫の窓 (青 2026-09-25): ターン終了時に残す手札を上限まで選ぶ (敵ターンの後の全捨てで捨てない)</summary>
+        static void BuildRetainChooser(GameRoot g, RectTransform root, GameState st)
+        {
+            int max = Combat.RetainHandMax(st);
+            var pool = new List<CardInstance>();
+            for (int i = 0; i < st.Player.Hand.Count; i++) if (!st.Player.Hand[i].Def.Id.StartsWith("status_", StringComparison.Ordinal)) pool.Add(st.Player.Hand[i]);
+            var inner = Modal(root, 1400f, 720f, "retain");
+            UiKit.Head(inner, "満ち潮の書庫 — 残す手札を選ぶ（" + g.RetainChoice.Count + " / " + max + "枚まで）", 24);
+            UiKit.Txt(inner, "選んだ札は敵ターンの後も手札に残ります。選ばなかった札はいつもどおり捨て札へ", 15, PaperFx.InkSoft);
+            CardRow(g, inner, st, pool, g.RetainChoice, "残す", "残す（選択中）", uid =>
+            {
+                if (g.RetainChoice.Contains(uid)) g.RetainChoice.Remove(uid);
+                else if (g.RetainChoice.Count < max) g.RetainChoice.Add(uid);
+                g.Rebuild();
+            });
+            CenteredButton(inner, g.RetainChoice.Count > 0 ? "これで終える" : "残さずに終える", delegate
+            {
+                if (g.Rs != null && g.Rs.Combat != null && Effects.HearthSparkMax(g.Rs.Combat) > 0) { g.HearthChoice = true; g.Rebuild(); return; }
+                FinishEndTurn(g, null);
+            }, 18, 300f, 50f, PaperFx.BrassLight);
+            CenteredButton(inner, "戻る", delegate { g.RetainChoice = null; g.Rebuild(); }, 15, 200f, 44f);
+        }
+
+        /// <summary>占術の窓 (青 2026-09-25): 山札の上 (左が次に引く札) から捨てる札を選ぶ。残した札は並びのまま山札に戻る。決めるまで他の操作はできない</summary>
+        static void BuildScryChooser(GameRoot g, RectTransform root, GameState st)
+        {
+            int n = Math.Min(st.PendingScry.Count, st.Player.DrawPile.Count);
+            var look = new List<CardInstance>();
+            for (int i = 0; i < n; i++) look.Add(st.Player.DrawPile[i]);
+            g.ScryDiscard.RemoveAll(u => !look.Exists(c => c.Uid == u));
+            var inner = Modal(root, 1400f, 720f, "scry");
+            UiKit.Head(inner, "占術" + st.PendingScry.Count + " — 山札の上から捨てる札を選ぶ（左が次に引く札）", 24);
+            UiKit.Txt(inner, "選んだ札は捨て札へ。残した札は並びのまま山札に戻ります", 15, PaperFx.InkSoft);
+            CardRow(g, inner, st, look, g.ScryDiscard, "捨てる", "捨てる（選択中）", uid =>
+            {
+                if (g.ScryDiscard.Contains(uid)) g.ScryDiscard.Remove(uid); else g.ScryDiscard.Add(uid);
+                g.Rebuild();
+            });
+            CenteredButton(inner, g.ScryDiscard.Count > 0 ? g.ScryDiscard.Count + "枚を捨てて決める" : "全部残して決める", delegate
+            {
+                var sel = new List<string>(g.ScryDiscard);
+                g.ScryDiscard.Clear();
+                g.DoCombat(new Command_ResolveScry { DiscardUids = sel });
+            }, 18, 320f, 50f, PaperFx.BrassLight);
+        }
+
+        /// <summary>札を横に並べて1枚ずつ切り替えるボタンをつける (書庫・占術の窓が共用)</summary>
+        static void CardRow(GameRoot g, RectTransform inner, GameState st, IReadOnlyList<CardInstance> pool, List<string> selected, string offLabel, string onLabel, Action<string> toggle)
+        {
+            var content = UiKit.Scroll(inner, false, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.06f), 16, 12);
+            UiKit.Le(UiKit.ScrollRoot(content), -1f, 360f, -1f, 360f, -1f, 1f);
+            var lg = content.GetComponent<HorizontalLayoutGroup>();
+            if (lg != null) { lg.childForceExpandWidth = false; lg.childForceExpandHeight = false; lg.childAlignment = TextAnchor.MiddleLeft; }
+            for (int i = 0; i < pool.Count; i++)
+            {
+                var c = pool[i];
+                string uid = c.Uid;
+                bool isSel = selected.Contains(uid);
+                var wrap = UiKit.NewRect("cand", content);
+                UiKit.Le(wrap, 220f, 330f, 220f, 330f);
+                var cv = CardView.Build(wrap, c, st, !isSel, true, "cand-card");
+                CardPopup.Attach(g, cv, c, delegate { return g.Rs != null ? g.Rs.Combat : null; }, true);
+                cv.anchoredPosition = new Vector2(0f, 30f);
+                cv.localScale = Vector3.one * 0.86f;
+                var pick = UiKit.Btn(wrap, isSel ? onLabel : offLabel, delegate { toggle(uid); }, 16, true, isSel ? PaperFx.BrassLight : Color.white);
+                var ple = pick.GetComponent<LayoutElement>();
+                if (ple != null) UnityEngine.Object.Destroy(ple);
+                UiKit.Anchor(pick.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-80f, 0f), new Vector2(80f, 44f));
+            }
+        }
+
         /// <summary>灯の火床の窓 (2026-09-20 夜): ターン終了時に灯3につき火種1を山札へ。0〜最大枚数のボタンで選んでターンを終える</summary>
         static void BuildHearthChooser(GameRoot g, RectTransform root, GameState st)
         {
@@ -1913,8 +2006,7 @@ namespace DeckRogue.Game
                 int nn = n;
                 CenteredButton(inner, nn == 0 ? "変えない (灯を残す)" : nn + "枚 (灯" + (nn * 3) + "を火種に)", delegate
                 {
-                    g.HearthChoice = false;
-                    g.DoCombat(new Command_EndTurn { HearthSparks = nn > 0 ? nn : (int?)null });
+                    FinishEndTurn(g, nn > 0 ? nn : (int?)null);   // 満ち潮の書庫で選んだ残す手札も一緒に (2026-09-25)
                 }, 17, 360f, 50f, nn == 0 ? (Color?)null : PaperFx.BrassLight);
             }
             CenteredButton(inner, "戻る", delegate { g.HearthChoice = false; g.Rebuild(); }, 15, 200f, 44f);
@@ -2189,7 +2281,7 @@ namespace DeckRogue.Game
 
         // ---- 追加コスト・選択のピッカー (モーダル) ----
 
-        public static IReadOnlyList<CardInstance> DeckChoosePool(GameState st, string kind) { return CombatScreen.DeckChoosePool(st, kind); }
+        public static IReadOnlyList<CardInstance> DeckChoosePool(GameState st, string kind, CardDef def = null) { return CombatScreen.DeckChoosePool(st, kind, def); }
         public static List<CardInstance> UpgradablePool(GameState st, CardInstance self) { return CombatScreen.UpgradablePool(st, self); }
 
         static void BuildPicker(GameRoot g, RectTransform root, GameState st, string need)
@@ -2202,7 +2294,7 @@ namespace DeckRogue.Game
             if (need == "discard") { pool = ExceptSelf(st.Player.Hand, p.Card.Uid); selected = p.Discard; want = p.DiscardNeed; title = "追加コスト: 手札を" + want + "枚捨てる"; }
             else if (need == "exhaust") { pool = ExceptSelf(st.Player.Hand, p.Card.Uid); selected = p.Exhaust; want = p.ExhaustNeed; title = "追加コスト: 手札を" + want + "枚消滅させる"; }
             else if (need == "retrieve") { pool = st.Player.ExhaustPile; selected = new List<string>(); want = 1; title = "消滅置き場から1枚選ぶ"; }
-            else if (need == "deck") { pool = DeckChoosePool(st, p.DeckKind); selected = p.DeckSel; want = p.DeckNeed; title = (p.DeckKind == "searchDeck" ? "山札" : p.DeckKind == "retrieveFromDiscard" ? "捨て札" : "山札か捨て札") + "から" + want + "枚選ぶ"; }
+            else if (need == "deck") { pool = DeckChoosePool(st, p.DeckKind, p.Card.Def); selected = p.DeckSel; want = p.DeckNeed; bool onlyTraps = false; foreach (var fe in p.Card.Def.Effects) if (fe.Effect == "searchDeck" && fe.CardType == "reaction") onlyTraps = true; title = (p.DeckKind == "searchDeck" ? (onlyTraps ? "山札の仕込み札" : "山札") : p.DeckKind == "retrieveFromDiscard" ? "捨て札" : "山札か捨て札") + "から" + want + "枚選ぶ"; }
             else if (need == "hand") { pool = UpgradablePool(st, p.Card); selected = p.HandSel; want = p.HandNeed; title = "手札から" + want + "枚を鍛える"; }
             else if (need == "permanent")
             {

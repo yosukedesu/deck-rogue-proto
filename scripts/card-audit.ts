@@ -15,6 +15,8 @@ const VP_PER: Record<string, number> = {
   dealDamagePerDamageTaken: 1.0 * 4,
   applyBurnPerDamageTaken: 1.5 * 4,
   dealDamagePerRandomPlayed: 1.0 * 3,
+  // 青の3本柱 (2026-09-25): 占術1枚=1VP (StS の Scry はドローの1/3前後)・読み切りは典型10枚・仕掛けの反響は典型3回・期限+1≈4
+  scry: 1.0, dealDamagePerScry: 1.0 * 10, dealDamagePerTrapFired: 1.0 * 3, extendTrapLife: 4.0, searchDeck: 4.5,
   // 勢いの変換器 (2026-08-30): 変換時の典型勢い6 (ひばなはプレイごと+2で1ターン8〜10、他リーダーは生成札依存)
   dischargeMomentumBurn: 1.5 * 6,
   dischargeMomentumBlock: 1.0 * 6,

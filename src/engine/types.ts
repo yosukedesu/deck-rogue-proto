@@ -142,6 +142,10 @@ export interface PlayerState extends CombatantState {
   readonly randomPlayedThisCombat: number
   /** 火種 (白 2026-09-20 夜。本家 Soul の白版): この戦闘で撃った火種 (sparkToken) の枚数。火種の嵐が参照 */
   readonly sparksPlayedThisCombat?: number
+  /** 占術 (青 2026-09-25): この戦闘で占術で見た枚数の累計 (読み切りが参照) */
+  readonly scriedThisCombat?: number
+  /** 罠使い (青 2026-09-25): この戦闘で罠 (reaction) が鳴った回数 (仕掛けの反響が参照) */
+  readonly trapsFiredThisCombat?: number
   /** 直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット) */
   readonly damageTakenLastEnemyPhase: number
   /** この敵フェーズ中に付与された弱体の量 (2026-09-04 Opusラン N: 同じ攻撃で付いた弱体が被攻撃後の返しを食っていた)。敵フェーズ中の返しはこの分を差し引き、次の自ターンから全量が効く */
@@ -446,6 +450,13 @@ export interface GameState {
   readonly expireToHand?: boolean
   /** 罠モデル: 「完全に凌いだら」(perfectBlockThisPhase) の遅延効果。finishEnemyPhase が判定して解決し空にする */
   readonly pendingPhaseEffects?: readonly { readonly effect: DeclarativeEffect; readonly enemyIndex: number }[]
+  /**
+   * 占術の保留 (青 2026-09-25): 山札の上 count 枚を見て捨てる札を選ぶまで、ResolveScry 以外のコマンドを受け付けない。
+   * 同じ解決の中で重なった占術は枚数を足し、times (占術の回数＝onScry の誘発回数) を数える
+   */
+  readonly pendingScry?: { readonly count: number; readonly times: number }
+  /** 満ち潮の書庫 (青 2026-09-25): この EndTurn で残す手札の uid (敵フェーズ終わりの全捨てで残す。捨てた後に消す) */
+  readonly retainUids?: readonly string[]
   /** カードのプレイ開始時点の敵の急所 (enemyExposed 条件の判定用スナップショット) */
   readonly resolvingExposedAtStart?: readonly number[]
   /** C型レリック (大樹の心 2026-09-03): 上限参照札が読む値に+N */
@@ -539,6 +550,7 @@ export type Command =
       readonly permanentUid?: string
     }
   | { readonly type: 'SetCard'; readonly cardUid: string } // set-auto / set-confirm 用
+  | { readonly type: 'ResolveScry'; readonly discardUids: readonly string[] } // 占術 (青 2026-09-25): 山札の上から見た札のうち捨てる札。空なら全部残す
   | { readonly type: 'RetrieveSetCard'; readonly cardUid: string } // 回収 (2026-08-30〜2026-09-13 廃止)。旧セーブ・ジャーナル互換のため型だけ残し、常に拒否する
   | { readonly type: 'PlayNecro'; readonly cardUid: string; readonly targetIndex?: number } // 亡骸プレイ (黒 2026-08-31): 消滅置き場の necroCost 持ち札を一度だけプレイ (プレイ後はゲームから完全に取り除く)
   | { readonly type: 'ReactManual'; readonly cardUid: string } // hold-manual 用 (敵行動への割り込み)
@@ -548,7 +560,7 @@ export type Command =
       /** 伏せ2枚 (かすみ) 用: 発動する伏せ札の uid。窓に合致する伏せが複数ある時に指定。省略時は先頭の合致札 */
       readonly cardUid?: string
     }
-  | { readonly type: 'EndTurn'; readonly hearthSparks?: number } // hearthSparks: 灯の火床 (白 R 置物) で灯を火種に変える枚数 (0〜灯÷3。省略=0。2026-09-20 夜 ユーザー裁定「枚数を選ぶ」)
+  | { readonly type: 'EndTurn'; readonly hearthSparks?: number; readonly retainUids?: readonly string[] } // retainUids: 満ち潮の書庫で残す手札 (上限は場の retainHandUpTo の合計。2026-09-25)。 hearthSparks: 灯の火床 (白 R 置物) で灯を火種に変える枚数 (0〜灯÷3。省略=0。2026-09-20 夜 ユーザー裁定「枚数を選ぶ」)
 
 // ============================================================
 // イベント (戦闘内の出来事はすべてイベント。効果はフックとして実装)
@@ -561,6 +573,8 @@ export type GameEvent =
   | { readonly type: 'CardsDrawn'; readonly count: number; readonly cards?: readonly string[] } // cards=引いた札の名前 (2026-09-05 ログ拡充)
   | { readonly type: 'CardPlayed'; readonly cardId: string }
   | { readonly type: 'CardSet'; readonly cardId: string }
+  | { readonly type: 'Scried'; readonly looked: readonly string[]; readonly discarded: readonly string[] } // 占術 (青 2026-09-25): 見た札と捨てた札 (id)
+  | { readonly type: 'TrapLifeExtended'; readonly amount: number; readonly count: number } // 潮待ち (青 2026-09-25): 期限を延ばした罠の枚数
   | { readonly type: 'SetCardExpired'; readonly cardId: string; readonly to: 'discard' | 'exhaust' | 'hand' } // 罠モデル (2026-09-13): 2窓で鳴らなかった罠が期限切れの
   | { readonly type: 'EnemyIntentDeclared'; readonly enemyIndex: number; readonly intent: EnemyIntent }
   /** 敵行動の実行直前フック点 (pre窓)。ReactionSystem はこれを見て割り込む */
@@ -763,6 +777,8 @@ export interface DeclarativeEffect {
     | 'onAetherGained' // 霊気を得るたび (青の接着剤: 静電の帳。妨害の成功が自動火力になる)
     | 'onCardSet' // カードを伏せるたび (レリック: 符師の懐。set-confirmシナジー)
     | 'onReactionFired' // リアクションが発動するたび (置物。緑: 狩人の眼光=読み勝ちの換金。自己誘発・全方式共通)
+    | 'onScry' // 占術するたび (置物。青 渦見の鏡。占術1回につき1回=見た枚数は問わない。山札が空で見られなかった占術は数えない)
+    | 'onSetExpired' // 罠が期限切れになるたび (置物。青 ほどけ泡。1枚ごと)
     | 'onGrowthGained' // 成長を得るたび (緑の接着剤 2026-09-02: 棘葉の茂み。addGrowth/doubleGrowth の加算のたび。再入は1段で止める)
     | 'onMomentumGained' // 勢いを得るたび (緑の接着剤 2026-09-02: 風渡り。addMomentum/doubleMomentum の加算のたび)
     | 'onSelfExhausted' // 亡骸効果 (黒 2026-08-31): この札が「プレイ以外の経路」(ミル・消滅コスト・衝動失効) で消滅した時。プレイして消滅した場合は発火しない (onPlayが仕事を終えているため)
@@ -782,7 +798,7 @@ export interface DeclarativeEffect {
   readonly every?: number
   /** every のカウンタの寿命。'turn'=自ターン開始でリセット (1ターンに攻撃3枚)・'combat'=戦闘内累計 (既定) */
   readonly everyScope?: 'turn' | 'combat'
-  /** 戦闘で1回 / ターンに1回だけ解決する (本家の「初回だけ」型: 百年の謎かけ) */
+  /** 戦闘で1回 / ターンに1回だけ解決する (本家の「初回だけ」型: 百年の謎かけ)。every と併せると「N回目の時だけ1回」(青 嵐の目 2026-09-25) */
   readonly once?: 'combat' | 'turn'
   /** ダメージに成長を×Nで乗せる (放出しない。大牙=本家 Heavy Blade。単発向けの加算の器 2026-09-03) */
   readonly growthMultiplier?: number
@@ -819,6 +835,17 @@ export interface DeclarativeEffect {
     | 'triggerRandomRetainer' // 灯の継ぎ手 (白 U 置物): 場の人形1体 (ランダム) の効果を今1回解決 (号令の小型。灯は産まない)
     | 'dealDamagePerLight' // 灯篭の人形 (白 R 2026-09-20 灯と人形の結び): 灯2につき amount ダメージ (切り捨て。灯は消費しない=放出すると暗くなる)
     | 'doubleLight' // 灯の倍化 (白 R・消滅必須): 現在の灯を2倍にする
+    // --- 青の3本柱 (2026-09-25 docs/blue-archetypes-proposal-2026-09-25.md) ---
+    | 'scry' // 占術 (潮読み。StS1 Watcher の Scry): 山札の上 amount 枚を見て、捨てる札を選ぶ (GameState.pendingScry → ResolveScry)。札の解決の後・ターン開始の誘発の後に選ぶ
+    | 'dealDamagePerScry' // 読み切り (潮読み): この戦闘で占術で見た枚数×amount のダメージ
+    | 'dealDamagePerTrapFired' // 仕掛けの反響 (罠使い): この戦闘で罠 (reaction) が鳴った回数×amount のダメージ
+    | 'extendTrapLife' // 潮待ち (罠使い): 仕込んでいる罠すべての期限を amount ターン延ばす (期限なしの罠は不変)
+    | 'trapsNeverExpire' // 深き仕掛け (罠使い R 置物): この置物がある間、罠は期限切れにならない (常在の印)
+    | 'retrieveZeroCostFromDiscard' // 引き潮の帰還 (青 ストーム R 2026-09-25。本家 All for One): 捨て札のコスト0の札 (状態異常を除く) を全て手札に戻す
+    | 'drawTypeFromDeck' // 仕掛け師の工房 (青 罠使い R 置物 2026-09-25): 山札の上から見て、cardType の札を amount 枚手札に加える (無ければ何もしない)
+    | 'aetherCarryHalf' // 霊気の器 (青 罠使い R 置物 2026-09-25): この置物がある間、霊気を放出しても半分 (切り捨て) が残る (白の残り火の青版・常在の印)
+    | 'retainedCostDown' // 潮溜まり (青 潮読み R 置物 2026-09-25。本家 Establishment): この置物がある間、敵ターンの後も手札に残った札はコスト-amount (プレイすると元に戻る)
+    | 'retainHandUpTo' // 満ち潮の書庫 (潮読み R 置物): この置物がある間、ターン終了時に選んだ手札を合計 amount 枚まで残す (EndTurn.retainUids・常在の印)
     | 'discountNext' // マナ軽減: 次にプレイするカードのコスト-X
     | 'applyBurn' // 延焼+X: 敵への継続ダメージ (赤)
     | 'shatterBlock' // 粉砕: 敵のブロックを全て破壊する (赤)
@@ -942,6 +969,8 @@ export interface DeclarativeEffect {
   readonly target?: 'all'
   /** summonPermanent 用: 場に出す置物カードの id (例: white_perm_squire) */
   readonly summonId?: string
+  /** searchDeck 用の絞り (青 仕掛けの手配 2026-09-25): このタイプの札だけを山札から選べる */
+  readonly cardType?: CardType
   /**
    * 忘却の刻 (黒のしきい値。確定済みルール表「忘却の刻」): 消滅置き場がこの枚数以上なら
    * amount の代わりに amountMax を使う。dealDamageRandom / dealDamageExecute とは併用しない
@@ -1194,6 +1223,10 @@ export interface CardInstance {
    * 旧セーブに無い場合は「今伏せた」として読む (NaN で永久死に枠にならないため)
    */
   readonly setTurn?: number
+  /** 潮待ち (青 2026-09-25): この罠の期限を延ばしたターン数 (仕込み直すと消える) */
+  readonly trapLifeBonus?: number
+  /** 潮溜まり (青 2026-09-25): 手札に残ったターン数ぶんのコスト減 (手札を離れると消える) */
+  readonly retainDiscount?: number
   /**
    * 生得: 戦闘開始時から場にあるもの (リーダーパッシブ・レリック)。
    * 「登場」しないので onPermanentEntered が誘発せず、置物数参照 (集結など) でも数えない

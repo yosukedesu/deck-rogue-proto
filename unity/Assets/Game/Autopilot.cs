@@ -198,7 +198,7 @@ namespace DeckRogue.Game
                 g.DoCombat(new Command_SetCard { CardUid = reactionCard.Uid });
                 yield return Shot("battle-set");
             }
-            g.DoCombat(new Command_EndTurn());
+            { ClearScry(g); g.DoCombat(new Command_EndTurn()); }
             yield return new WaitForSeconds(0.7f);
             yield return Shot("battle-enemy-phase");
             yield return WaitPresentation();
@@ -653,7 +653,7 @@ namespace DeckRogue.Game
             {
                 Time.captureFramerate = 60;
                 Presenter.MarkSeen(g.Rs.Combat);
-                g.DoCombat(new Command_EndTurn());
+                { ClearScry(g); g.DoCombat(new Command_EndTurn()); }
                 int shotsN = 12; int.TryParse(Get("endshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 12;
                 int every = 10; int.TryParse(Get("endevery") ?? "", out every); if (every <= 0) every = 10;
                 for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("end-" + i, 1); }
@@ -957,7 +957,7 @@ namespace DeckRogue.Game
                     yield return null;
                 }
                 if (g.Rs == null || g.Rs.Phase != RunPhases.Combat) break;
-                if (g.Rs.Combat.Phase == CombatPhases.PlayerTurn) g.DoCombat(new Command_EndTurn());
+                if (g.Rs.Combat.Phase == CombatPhases.PlayerTurn) { ClearScry(g); g.DoCombat(new Command_EndTurn()); }
                 yield return WaitPresentation();
                 for (int k = 0; k < 6 && g.Rs != null && g.Rs.Phase == RunPhases.Combat && g.Rs.Combat.Phase == CombatPhases.AwaitingReaction; k++)
                 {
@@ -1020,12 +1020,18 @@ namespace DeckRogue.Game
                         g.DoCombat(new Command_ConfirmReaction { Fire = false });
                         yield return Shot("combat-confirm");
                     }
-                    g.DoCombat(new Command_EndTurn());
+                    { ClearScry(g); g.DoCombat(new Command_EndTurn()); }
                     yield return WaitPresentation();
                     yield return Shot("combat-after-end" + (turn + 1));
                 }
             }
             yield return Shot("last");
+        }
+    
+        /// <summary>占術の保留 (青 2026-09-25) が残っていれば全部残して決める (撮影・自動操作が EndTurn で止まらないように)</summary>
+        static void ClearScry(GameRoot g)
+        {
+            if (g.Rs != null && g.Rs.Combat != null && g.Rs.Combat.PendingScry != null) g.DoCombat(new Command_ResolveScry { DiscardUids = new List<string>() });
         }
     }
 }

@@ -809,6 +809,23 @@ namespace DeckRogue.Engine
 
         // ==== カードのプレイ ====
 
+        /// <summary>
+        /// 「山札・捨て札から選ぶ」札の選べる札 (UI/ボット/検証が共有。TS deckChoosePool)。
+        /// 仕掛けの手配 (青 2026-09-25) のように searchDeck が cardType を持てば、そのタイプの札だけ
+        /// </summary>
+        public static IReadOnlyList<CardInstance> DeckChoosePool(GameState state, CardDef def)
+        {
+            string kind = DeckChooseKindOf(def);
+            if (kind == "retrieveFromDiscard") return state.Player.DiscardPile;
+            if (kind == "searchDeck")
+            {
+                string? only = def.Effects.FirstOrDefault(e => e.Effect == "searchDeck")?.CardType;
+                return only == null ? state.Player.DrawPile : state.Player.DrawPile.Where(c => c.Def.Type == only).ToList();
+            }
+            if (kind == "transformDeckToToken") return state.Player.DrawPile;
+            return Concat(state.Player.DrawPile, state.Player.DiscardPile);
+        }
+
         /// <summary>山札/捨て札から選ぶ効果の種別 (引導・回収・サーチ)。1枚の札は1種だけ持てる</summary>
         public static string DeckChooseKindOf(CardDef def)
         {
@@ -1024,12 +1041,7 @@ namespace DeckRogue.Engine
                 var e = card.Def.Effects[i];
                 if (chooseKind != null && e.Effect == chooseKind) deckChooseN += e.Amount ?? 1;
             }
-            IReadOnlyList<CardInstance> deckPool =
-                chooseKind == "retrieveFromDiscard"
-                    ? state.Player.DiscardPile
-                    : chooseKind == "searchDeck" || chooseKind == "transformDeckToToken"
-                        ? state.Player.DrawPile
-                        : (IReadOnlyList<CardInstance>)Concat(state.Player.DrawPile, state.Player.DiscardPile);
+            IReadOnlyList<CardInstance> deckPool = DeckChoosePool(state, card.Def);
             string poolLabel = chooseKind == "retrieveFromDiscard" ? "捨て札" : chooseKind == "searchDeck" || chooseKind == "transformDeckToToken" ? "山札" : "山札か捨て札";
             var deckChooseUids = deckChooseN > 0 ? (deckUids ?? (IReadOnlyList<string>)new List<string>()) : (IReadOnlyList<string>)new List<string>();
             if (deckChooseN > 0)
@@ -1528,11 +1540,58 @@ namespace DeckRogue.Engine
 
         // ==== ターン終了と敵フェーズ ====
 
+        /// <summary>
+        /// 占術の解決 (青 潮読み 2026-09-25。TS resolveScry): 保留 (PendingScry) した枚数ぶん山札の上を見て、選んだ札を捨て札へ。
+        /// 残した札は山札の並びのまま。見た枚数を数え (読み切り)、占術の回数ぶん onScry を誘発する (渦見の鏡)。
+        /// 山札が足りなければ見られるだけ見る (切り直しはしない)
+        /// </summary>
+        public static GameState ResolveScry(GameState state, IReadOnlyList<string> discardUids)
+        {
+            var p = state.PendingScry;
+            if (p == null) throw new InvalidOperationException("占術の保留が無い");
+            var look = state.Player.DrawPile.Take(Math.Min(p.Count, state.Player.DrawPile.Count)).ToList();
+            var chosen = new HashSet<string>(discardUids);
+            if (chosen.Count != discardUids.Count) throw new InvalidOperationException("discardUids の指定が重複している");
+            foreach (var uid in discardUids) if (!look.Any(c => c.Uid == uid)) throw new InvalidOperationException($"占術で見ている札ではない: {uid}");
+            var discarded = look.Where(c => chosen.Contains(c.Uid)).ToList();
+            var s = state with
+            {
+                PendingScry = null,
+                Player = state.Player with
+                {
+                    DrawPile = state.Player.DrawPile.Where(c => !chosen.Contains(c.Uid)).ToList(),
+                    DiscardPile = Concat(state.Player.DiscardPile, discarded),
+                    ScriedThisCombat = (state.Player.ScriedThisCombat ?? 0) + look.Count,
+                },
+            };
+            s = Events.Emit(s, new GameEvent_Scried { Looked = look.Select(c => c.Def.Id).ToList(), Discarded = discarded.Select(c => c.Def.Id).ToList() });
+            if (look.Count > 0)
+            {
+                int firstAlive = FirstAliveOrZero(s);
+                for (int i = 0; i < p.Times; i++) s = Effects.RunPermanentTriggers(s, "onScry", firstAlive);
+            }
+            return CheckCombatEnd(s);
+        }
+
+        /// <summary>満ち潮の書庫 (青 R 置物 2026-09-25): ターン終了時に残せる手札の枚数 (場の retainHandUpTo の合計。TS retainHandMax)</summary>
+        public static int RetainHandMax(GameState state)
+        {
+            return state.Player.Permanents.Sum(p => p.Def.Effects.Where(e => e.Effect == "retainHandUpTo").Sum(e => e.Amount ?? 0));
+        }
+
         /// <summary>EndTurn: 勢いリセット・衝動の失効・延焼処理をして、敵フェーズを解決する</summary>
-        public static GameState EndTurn(GameState state, int? hearthSparks = null)
+        public static GameState EndTurn(GameState state, int? hearthSparks = null, IReadOnlyList<string>? retainUids = null)
         {
             if (state.Phase != CombatPhases.PlayerTurn) throw new InvalidOperationException("自ターン以外はターン終了できない");
             if (hearthSparks != null && hearthSparks.Value < 0) throw new InvalidOperationException($"hearthSparks は 0 以上の整数 (hearthSparks={hearthSparks})");
+            if (retainUids != null && retainUids.Count > 0)
+            {
+                int max = RetainHandMax(state);
+                if (retainUids.Count > max) throw new InvalidOperationException($"手札を残せるのは{max}枚まで (retainUids={retainUids.Count})");
+                if (new HashSet<string>(retainUids).Count != retainUids.Count) throw new InvalidOperationException("retainUids の指定が重複している");
+                foreach (var uid in retainUids) if (!state.Player.Hand.Any(c => c.Uid == uid)) throw new InvalidOperationException($"手札に無いカード: {uid}");
+                state = state with { RetainUids = retainUids.ToList() };
+            }
             // 敵フェーズ中の旗 (2026-09-14): 割り込みの即時差し替え・出現した敵の宣言・潜伏の差し替えは自ターン中だけ。
             // 灯の火床 (2026-09-20 夜): この EndTurn で灯を火種に変える枚数。onTurnEnd の間だけ立てて消す。TS と同形
             var s = Events.Emit(state with { EnemyPhase = true, HearthSparks = hearthSparks ?? 0 }, new GameEvent_TurnEnded { Turn = state.Turn, Unplayed = state.Player.Hand.Select(c => c.Def.Name).ToList() });
@@ -2265,8 +2324,9 @@ namespace DeckRogue.Engine
 
         private static GameState ExpireTraps(GameState state)
         {
+            // 寿命は TrapLifeOf (2窓＋潮待ちで延ばしたぶん。期限なし＝札の trapPersist・深き仕掛け 2026-09-25。TS と同形)
             var expired = state.Player.SetCards
-                .Where(c => Effects.TrapAge(state, c) >= 2 && c.Def.TrapPersist != true).ToList(); // 2窓目の終端 (turn が進む前) = 齢2
+                .Where(c => { int? life = Effects.TrapLifeOf(state, c); return life != null && Effects.TrapAge(state, c) >= life.Value; }).ToList();
             if (expired.Count == 0) return state;
             int firstAlive = Math.Max(0, FindAlive(state.Enemies));
             var expiredUids = new HashSet<string>(expired.Select(c => c.Uid));
@@ -2283,11 +2343,13 @@ namespace DeckRogue.Engine
                     if (effect.Trigger == "onSetDestroyed") s = Effects.ResolveEffectTargeted(s, effect, firstAlive);
                 }
                 string to = s.ExpireToHand == true ? "hand" : card.Def.Exhaust == true ? "exhaust" : "discard";
-                var bare = card with { SetTurn = null };
+                var bare = card with { SetTurn = null, TrapLifeBonus = null };
                 if (to == "hand") s = s with { Player = s.Player with { Hand = Concat(s.Player.Hand, new List<CardInstance> { bare }) } };
                 else if (to == "discard") s = s with { Player = s.Player with { DiscardPile = Concat(s.Player.DiscardPile, new List<CardInstance> { bare }) } };
                 else s = s with { Player = s.Player with { ExhaustPile = Concat(s.Player.ExhaustPile, new List<CardInstance> { bare }) } };
                 s = Events.Emit(s, new GameEvent_SetCardExpired { CardId = card.Def.Id, To = to });
+                // ほどけ泡 (青 罠使い 2026-09-25): 罠が期限切れになるたび (1枚ごと)
+                s = Effects.RunPermanentTriggers(s, "onSetExpired", firstAlive);
                 if (to == "exhaust")
                 {
                     // 衝動失効と同じ順: 消滅の誘発 (亡者の合唱など) → 亡骸
@@ -2384,14 +2446,19 @@ namespace DeckRogue.Engine
             bool retainAll = s.RetainHand == true || s.RetainHandThisTurn == true;   // 挟み紙 (ギア) はこのターンだけ
             bool Keeps(CardInstance c) =>
                 (c.Def.Id == Content.SCALD_DEF.Id && c.ScaldFresh == true) || c.Def.Retain == true || (retainAll && c.Def.Id != Content.SCALD_DEF.Id)
-                || !handBeforeExpire.Contains(c.Uid); // 回収の紐で期限切れで手札に戻った罠 (2026-09-13)
+                || !handBeforeExpire.Contains(c.Uid) // 回収の紐で期限切れで手札に戻った罠 (2026-09-13)
+                || (s.RetainUids?.Contains(c.Uid) ?? false); // 満ち潮の書庫で残すと選んだ札 (2026-09-25)
+            int retainedDown = s.Player.Permanents.Sum(p => p.Def.Effects.Where(e => e.Effect == "retainedCostDown").Sum(e => e.Amount ?? 0));
             s = s with
             {
+                RetainUids = null, // 満ち潮の書庫の指定はこの全捨てで使い切る
                 Player = s.Player with
                 {
                     Hand = oldHand
                         .Where(Keeps)
                         .Select(c => c.ScaldFresh == true ? c with { ScaldFresh = false } : c)
+                        // 潮溜まり (青 R 置物 2026-09-25。本家 Establishment): 敵ターンの後も手札に残った札はコスト-N (状態異常は除く)。TS と同形
+                        .Select(c => retainedDown > 0 && !c.Def.Id.StartsWith("status_", StringComparison.Ordinal) ? c with { RetainDiscount = (c.RetainDiscount ?? 0) + retainedDown } : c)
                         .ToList(),
                     DiscardPile = Concat(s.Player.DiscardPile, oldHand.Where(c => c.Def.Id != Content.SCALD_DEF.Id && !Keeps(c))),
                 },

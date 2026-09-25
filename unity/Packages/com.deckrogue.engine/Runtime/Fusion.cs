@@ -37,6 +37,8 @@ namespace DeckRogue.Engine
             "impulseDraw",
             "retrieveFromExhaust",
             "playFromExhaust",
+            "retrieveZeroCostFromDiscard", // 引き潮の帰還 (青 2026-09-25)
+            "drawTypeFromDeck", // 仕掛け師の工房 (青 2026-09-25)
         };
 
         /// <summary>
@@ -322,7 +324,7 @@ namespace DeckRogue.Engine
 
         private static readonly HashSet<string> DIES_IN_WINDOW = new HashSet<string>
         {
-            "drawCards", "impulseDraw", "gainEnergy", "addCasts",
+            "drawCards", "impulseDraw", "gainEnergy", "addCasts", "scry", // 占術 (青 2026-09-25) も敵フェーズでは選べない
         };
 
         private static readonly HashSet<string> DEAD_ON_PERMANENT = new HashSet<string>

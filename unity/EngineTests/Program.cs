@@ -39,6 +39,9 @@ if (args.Length > 0 && args[0] == "battle")
         var dolls = g.Player.Permanents.Where(Effects.IsDoll).Select(p => $"{p.Uid}@{p.EnteredTurn?.ToString() ?? "-"}/{Effects.DollLifeLeft(g, p)?.ToString() ?? "inf"}/+{Effects.DollGrowth(g, p)}");
         var tail = g.EventLog.Skip(Math.Max(0, g.EventLog.Count - 12)).Select(e => e.Type);
         Console.WriteLine($"{label} T{g.Turn} hp={g.Enemies[0].Hp} blk={g.Player.Block} twin={g.NextRetainerTwin ?? 0} hash={Golden.Fnv1a32(Golden.CombatDigest(g)):x8} dolls=[{string.Join(" ", dolls)}] ev=[{string.Join(",", tail)}]");
+        // 青の3本柱 (2026-09-25) の照合用: 霊気・占術・罠の回数と寿命・手札の uid (TS の scratch battle-trace と同じ形)
+        var sets = g.Player.SetCards.Select(c => $"{c.Uid}@{c.SetTurn?.ToString() ?? "-"}+{c.TrapLifeBonus ?? 0}/{Effects.TrapWindowsLeft(g, c)?.ToString() ?? "inf"}");
+        Console.WriteLine($"   x aether={g.Player.Aether} ice={g.Player.IceBlock} scried={g.Player.ScriedThisCombat ?? 0} fired={g.Player.TrapsFiredThisCombat ?? 0} pend={(g.PendingScry == null ? "-" : $"{g.PendingScry.Count}x{g.PendingScry.Times}")} energy={g.Player.Energy} sets=[{string.Join(" ", sets)}] hand=[{string.Join(",", g.Player.Hand.Select(c => c.Uid))}] draw=[{string.Join(",", g.Player.DrawPile.Select(c => c.Uid))}]");
     }
     Dump(st, "start");
     int k = 0;
@@ -56,6 +59,22 @@ if (args.Length > 0 && args[0] == "fuse")
     var fa = new CardInstance { Uid = "t_" + ids[0], Def = Content.GetCardDef(ids[0]) };
     var fb = new CardInstance { Uid = "t_" + ids[1], Def = Content.GetCardDef(ids[1]) };
     Console.WriteLine(JsonConvert.SerializeObject(Fusion.FuseCards(fa, fb), JsonUnions.Settings));
+    return 0;
+}
+
+if (args.Length > 0 && args[0] == "upgrade")
+{
+    // 鍛えの照合 (2026-09-25 青の解凍): dotnet run -- upgrade <color> [--data dir] → その色の全札を鍛えた CardDef を1行1件の JSON (TS の upgradeCard と突き合わせる)
+    var dataDir = "../../src/data";
+    string? color = null;
+    for (int i = 1; i < args.Length; i++) { if (args[i] == "--data" && i + 1 < args.Length) { dataDir = args[++i]; continue; } color = args[i]; }
+    Content.Load(dataDir);
+    foreach (var def in Content.AllCards.Where(c => c.Color == color))
+    {
+        var tier = Upgrade.UpgradeTier(def);
+        var up = tier == Upgrade.UpgradeTiers.None ? def : Upgrade.UpgradeCard(new CardInstance { Uid = "u", Def = def }).Def;
+        Console.WriteLine(JsonConvert.SerializeObject(up, JsonUnions.Settings));
+    }
     return 0;
 }
 

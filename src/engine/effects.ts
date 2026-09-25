@@ -83,7 +83,13 @@ export function effectiveCost(state: GameState, card: CardInstance): number {
   // (0マナ手数への圧が重圧オーラの狙い)
   if (card.def.cost === 0) return up
   const blaze = card.def.blazeDiscount !== undefined && isBlazing(state) ? card.def.blazeDiscount : 0
-  return Math.max(0, card.def.cost + up - blaze - state.player.nextCardDiscount)
+  // 潮溜まり (青 2026-09-25): 手札に残ったぶん安くなる
+  return Math.max(0, card.def.cost + up - blaze - state.player.nextCardDiscount - (card.retainDiscount ?? 0))
+}
+
+/** 霊気の器 (青 R 置物 2026-09-25): この置物がある間、霊気の放出で半分 (切り捨て) が残る */
+export function aetherCarriesHalf(state: GameState): boolean {
+  return state.player.permanents.some((p) => p.def.effects.some((e) => e.effect === 'aetherCarryHalf'))
 }
 
 /** 従者を要求する札 (殉教の誓い 2026-09-06) のプレイ条件: 場に従者 (retainer・innate除く) が1体以上。要求しない札は常に true */
@@ -143,6 +149,8 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
     'dealDamagePerRandomPlayed',
     'dealDamagePerIceBlock',
     'dealDamagePerHandCard',
+    'dealDamagePerScry', // 読み切り (青 2026-09-25)
+    'dealDamagePerTrapFired', // 仕掛けの反響 (青 2026-09-25)
     'counter',
   ].includes(effect.effect)
 }
@@ -150,6 +158,8 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
 /** 敵1体を対象に取る効果 (target:'all' を除く)。StS式ターゲティングの要否判定に使う */
 const ENEMY_TARGETED = new Set([
   'dealDamage',
+  'dealDamagePerScry', // 読み切り (青 2026-09-25)
+  'dealDamagePerTrapFired', // 仕掛けの反響 (青 2026-09-25)
   'dealDamageRandom',
   'dealDamagePerCardPlayed',
   'dealDamagePerCardPlayedTotal',
@@ -399,7 +409,8 @@ export function runPermanentTriggers(
               ),
             },
           }
-          const fires = effect.once !== undefined ? n === 1 : n % (effect.every ?? 1) === 0
+          // once と every を併せると「N回目の時だけ1回」(青 嵐の目 2026-09-25＝1ターンに4枚目の時だけ)
+          const fires = effect.once !== undefined ? n === (effect.every ?? 1) : n % (effect.every ?? 1) === 0
           if (!fires) continue
         }
         // アンセムが乗るのはダメージ・ブロック・回復の量だけ (2026-09-20 夜 ユーザー裁定。Opus 灯と人形 A/B: 灯芯の「灯+1」が+3、
@@ -763,10 +774,22 @@ export function trapAge(state: GameState, card: CardInstance): number {
   return state.turn - (card.setTurn ?? state.turn - 1)
 }
 
+/** 深き仕掛け (青 R 置物 2026-09-25): この置物がある間、罠は期限切れにならない */
+export function trapsNeverExpire(state: GameState): boolean {
+  return state.player.permanents.some((p) => p.def.effects.some((e) => e.effect === 'trapsNeverExpire'))
+}
+
+/** 罠の寿命 (窓の数)。期限なし (札の trapPersist・深き仕掛け) は null。潮待ちで延ばしたぶんを足す (2026-09-25) */
+export function trapLifeOf(state: GameState, card: CardInstance): number | null {
+  if (card.def.trapPersist === true || trapsNeverExpire(state)) return null
+  return 2 + (card.trapLifeBonus ?? 0)
+}
+
 /** 罠モデル: この札は今の敵フェーズで鳴らせるか (準備ターンは鳴らない・2窓・期限なしの札は無期限) */
 export function isTrapLive(state: GameState, card: CardInstance): boolean {
   const age = trapAge(state, card)
-  return age >= 1 && (age <= 2 || card.def.trapPersist === true)
+  const life = trapLifeOf(state, card)
+  return age >= 1 && (life === null || age <= life)
 }
 
 /** 静かな鈴 (C型) が今の敵の攻撃に効くか。敵の行動中は行動の開始で固定した値 (bellLocked)、それ以外は今の伏せ札 (2026-09-24 E2) */
@@ -816,20 +839,22 @@ export function trapCanFireThisPhase(state: GameState, card: CardInstance): bool
 /** 罠モデル: 伏せ場の札の状態 (UI/CLI/Unity 共用の文言。プロトの語彙)。
  * 「あとN回」は敵フェーズの数だが、宣言済みの意図で今ターン発動しないなら「実質あとN-1回」と添える (2026-09-13 Opus Z 裁定=表示だけ直す) */
 export function trapStatusText(state: GameState, card: CardInstance): string {
-  if (card.def.trapPersist === true) return trapAge(state, card) === 0 ? '準備中（次のターンから発動できる・期限なし）' : '期限なし'
+  if (trapLifeOf(state, card) === null) return trapAge(state, card) === 0 ? '準備中（次のターンから発動できる・期限なし）' : '期限なし'
   const age = trapAge(state, card)
-  if (age <= 0) return '準備中（次のターンから発動できる）'
+  if (age <= 0) return (card.trapLifeBonus ?? 0) > 0 ? `準備中（次のターンから発動できる・あと${trapWindowsLeft(state, card)}回）` : '準備中（次のターンから発動できる）'
   const left = trapWindowsLeft(state, card) ?? 0
   const quiet = state.phase === 'player-turn' && !trapCanFireThisPhase(state, card)
+  if (left >= 3) return quiet ? `あと${left}回の敵ターン。今ターンの敵の行動では発動しない＝実質あと${left - 1}回` : `あと${left}回の敵ターン（発動しなければ期限切れで捨て札へ）`
   if (left >= 2) return quiet ? 'あと2回の敵ターン。今ターンの敵の行動では発動しない＝実質あと1回' : 'あと2回の敵ターン（発動しなければ期限切れで捨て札へ）'
   return quiet ? 'あと1回。今ターンの敵の行動では発動しない＝このターンの終わりに期限切れ' : 'あと1回（このターンで発動しなければ期限切れで捨て札へ）'
 }
 
-/** 罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1。期限なしの札は null */
+/** 罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1 (潮待ちで延ばしたぶん足す)。期限なしの札は null */
 export function trapWindowsLeft(state: GameState, card: CardInstance): number | null {
-  if (card.def.trapPersist === true) return null
+  const life = trapLifeOf(state, card)
+  if (life === null) return null
   const age = trapAge(state, card)
-  return Math.max(0, 3 - Math.max(1, age))
+  return Math.max(0, life + 1 - Math.max(1, age))
 }
 
 /**
@@ -2275,7 +2300,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // 霊気放出 (青): 霊気×amount のダメージを与え、霊気を全消費
       const spent = state.player.aether
       if (spent === 0) return state
-      let s: GameState = { ...state, player: { ...state.player, aether: 0 } }
+      let s: GameState = { ...state, player: { ...state.player, aether: aetherCarriesHalf(state) ? Math.floor(spent / 2) : 0 } } // 霊気の器 (2026-09-25)
       s = emit(s, { type: 'AetherDischarged', spent })
       return dealDamageToEnemy(s, enemyIndex, spent * (effect.amount ?? 0), effect.pierce)
     }
@@ -2398,6 +2423,54 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       return (state.player.sparksPlayedThisCombat ?? 0) <= 0
         ? state
         : dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (state.player.sparksPlayedThisCombat ?? 0), effect.pierce)
+    case 'dealDamagePerScry':
+      // 読み切り (青 潮読み 2026-09-25): この戦闘で占術で見た枚数×amount
+      return (state.player.scriedThisCombat ?? 0) <= 0
+        ? state
+        : dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (state.player.scriedThisCombat ?? 0), effect.pierce)
+    case 'dealDamagePerTrapFired':
+      // 仕掛けの反響 (青 罠使い 2026-09-25): この戦闘で罠が鳴った回数×amount
+      return (state.player.trapsFiredThisCombat ?? 0) <= 0
+        ? state
+        : dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (state.player.trapsFiredThisCombat ?? 0), effect.pierce)
+    case 'scry': {
+      // 占術 (青 潮読み 2026-09-25): 選ぶまで保留する (ResolveScry)。同じ解決で重なった占術は枚数を足し、回数を数える。
+      // 敵フェーズ (罠・被弾の誘発) では選べないので解決しない (確認の窓と保留が重なって詰まらないため)
+      const n = effect.amount ?? 0
+      if (n <= 0 || state.enemyPhase === true) return state
+      const prev = state.pendingScry
+      return { ...state, pendingScry: { count: (prev?.count ?? 0) + n, times: (prev?.times ?? 0) + 1 } }
+    }
+    case 'extendTrapLife': {
+      // 潮待ち (青 罠使い 2026-09-25): 仕込んでいる罠すべての期限を amount ターン延ばす (期限なしの罠は延ばしても同じ)
+      const n = effect.amount ?? 0
+      if (n <= 0 || state.player.setCards.length === 0) return state
+      const next: GameState = { ...state, player: { ...state.player, setCards: state.player.setCards.map((c) => ({ ...c, trapLifeBonus: (c.trapLifeBonus ?? 0) + n })) } }
+      return emit(next, { type: 'TrapLifeExtended', amount: n, count: state.player.setCards.length })
+    }
+    case 'retrieveZeroCostFromDiscard': {
+      // 引き潮の帰還 (青 ストーム R 2026-09-25。本家 All for One): 捨て札のコスト0の札 (Xと状態異常を除く) を全て手札へ
+      const back = state.player.discardPile.filter((c) => c.def.cost === 0 && c.def.xCost !== true && !c.def.id.startsWith('status_'))
+      if (back.length === 0) return state
+      const ids = new Set(back.map((c) => c.uid))
+      const next: GameState = { ...state, player: { ...state.player, discardPile: state.player.discardPile.filter((c) => !ids.has(c.uid)), hand: [...state.player.hand, ...back] } }
+      return emit(next, { type: 'CardsMovedToHand', cardIds: back.map((c) => c.def.id), from: 'discard' })
+    }
+    case 'drawTypeFromDeck': {
+      // 仕掛け師の工房 (青 罠使い R 置物 2026-09-25): 山札の上から見て、cardType の札を amount 枚手札へ (山札の並びは崩さない)
+      const n = effect.amount ?? 1
+      const picked = state.player.drawPile.filter((c) => effect.cardType === undefined || c.def.type === effect.cardType).slice(0, n)
+      if (picked.length === 0) return state
+      const ids = new Set(picked.map((c) => c.uid))
+      const next: GameState = { ...state, player: { ...state.player, drawPile: state.player.drawPile.filter((c) => !ids.has(c.uid)), hand: [...state.player.hand, ...picked] } }
+      return emit(next, { type: 'CardsMovedToHand', cardIds: picked.map((c) => c.def.id), from: 'draw' })
+    }
+    case 'aetherCarryHalf':
+    case 'retainedCostDown':
+    case 'trapsNeverExpire':
+    case 'retainHandUpTo':
+      // 深き仕掛け・満ち潮の書庫 (青 R 置物 2026-09-25): 常在の印。trapLifeOf・endTurn が場を読むだけ (登場時の no-op)
+      return state
     case 'gainBlockPerSpark':
       // 火守りの盾 (白 C 2026-09-24 Opus ひなた裁定「作る札に刈り取りを内蔵」): この戦闘で撃った火種×amount のブロック
       return (state.player.sparksPlayedThisCombat ?? 0) <= 0
@@ -2479,7 +2552,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // 霊気の奔流 (青): 霊気×amount 枚ドローして霊気を全消費 (放出ダメージと悩む第二の出口)
       const spent = state.player.aether
       if (spent === 0) return state
-      let s: GameState = { ...state, player: { ...state.player, aether: 0 } }
+      let s: GameState = { ...state, player: { ...state.player, aether: aetherCarriesHalf(state) ? Math.floor(spent / 2) : 0 } } // 霊気の器 (2026-09-25)
       s = emit(s, { type: 'AetherDischarged', spent })
       return drawCards(s, spent * (effect.amount ?? 1))
     }
@@ -2614,7 +2687,9 @@ export function resolveReactionEffects(state: GameState, card: CardInstance, ene
   // 読み勝ちの換金 (確定済みルール表「読み勝ちの換金」2026-08-29): リアクション発動に反応する置物。
   // 3方式共通の解決経路なので方式非依存。ブラフで伏せただけでは誘発しない = 本当に読み勝った時だけ。
   // 全カード伏せ可 (実験): 通常カードの伏せ発動は「リアクションの発動」ではない = 換金 (狩人の眼光) は専用札の特権
-  const out = card.def.type === 'reaction' ? runPermanentTriggers(s, 'onReactionFired', enemyIndex) : s
+  // 罠使い (青 2026-09-25): この戦闘で罠が鳴った回数 (仕掛けの反響が参照)。換金の誘発より先に数える
+  const counted: GameState = card.def.type === 'reaction' ? { ...s, player: { ...s.player, trapsFiredThisCombat: (s.player.trapsFiredThisCombat ?? 0) + 1 } } : s
+  const out = card.def.type === 'reaction' ? runPermanentTriggers(counted, 'onReactionFired', enemyIndex) : counted
   return { ...out, resolvingCardPlay: prevCardPlay }
 }
 

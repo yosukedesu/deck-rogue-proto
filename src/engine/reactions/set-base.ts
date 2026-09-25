@@ -52,7 +52,8 @@ export function setCard(state: GameState, cardUid: string): GameState {
       energy: state.player.energy - setCost,
       hand: state.player.hand.filter((c) => c.uid !== cardUid),
       // 罠モデル (2026-09-13): 伏せたターンを記録する。このターンは鳴らない (準備)、翌・翌々ターンの敵フェーズだけ生きる
-      setCards: [...state.player.setCards, { ...card, setTurn: state.turn }],
+      // 潮待ち (2026-09-25) で延ばした期限は仕込み直すと消える (前に鳴って捨て札へ戻った札が持ったままの値を落とす)
+      setCards: [...state.player.setCards, (({ trapLifeBonus: _b, ...fresh }) => ({ ...fresh, setTurn: state.turn }))(card)],
       setsThisTurn: (state.player.setsThisTurn ?? 0) + 1,
     },
   }

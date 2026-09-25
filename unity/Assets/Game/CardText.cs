@@ -49,6 +49,8 @@ namespace DeckRogue.Game
             { "onAetherGained", "霊気を得るたび" },
             { "onCardSet", "カードを仕込むたび" },
             { "onReactionFired", "からくりを動かすたび" },
+            { "onScry", "占術するたび" }, // 渦見の鏡 (青 2026-09-25)
+            { "onSetExpired", "からくりが期限切れになるたび" }, // ほどけ泡 (青 2026-09-25)
             { "onSelfExhausted", "亡骸" },
             { "onGrowthGained", "成長を得るたび" },
             { "onMomentumGained", "勢いを得るたび" },
@@ -138,7 +140,18 @@ namespace DeckRogue.Game
             { "transformDeckToToken", "山札の札N枚を選んで火種に変える" }, // 降霊 (2026-09-23)
             { "lightToSparks", "灯Nにつき火種1枚を山札へ(払った灯だけ失う)" },
             { "dealDamagePerSpark", "この戦闘で撃った火種×Nダメージ" },
-            { "gainBlockPerSpark", "この戦闘で撃った火種×Nブロック" }, // 火守りの盾 (2026-09-24 Opus ひなた P4「作る札に刈り取りを内蔵」)
+            { "gainBlockPerSpark", "この戦闘で撃った火種×Nブロック" },
+            // 青の3本柱 (2026-09-25): 潮読み (占術・手札を残す)・罠使い (からくりの回数・期限)
+            { "scry", "占術N(山札の上N枚を見て、要らない札を捨て札へ)" },
+            { "dealDamagePerScry", "この戦闘で占術で見た枚数×Nダメージ" },
+            { "dealDamagePerTrapFired", "この戦闘でからくりが動いた回数×Nダメージ" },
+            { "extendTrapLife", "仕込んでいるからくりすべての期限をNターン延ばす" },
+            { "trapsNeverExpire", "この置物がある間、からくりは期限切れにならない" },
+            { "retainHandUpTo", "この置物がある間、ターン終了時に手札をN枚まで選んで残せる" },
+            { "retrieveZeroCostFromDiscard", "捨て札のコスト0の札を全て手札に戻す" },
+            { "drawTypeFromDeck", "山札の仕込み札N枚を(上から見て最初のものを)手札に加える" },
+            { "aetherCarryHalf", "この置物がある間、霊気を放出しても半分が残る" },
+            { "retainedCostDown", "この置物がある間、敵ターンの後も手札に残った札はコスト-N(手札を離れると戻る)" }, // 火守りの盾 (2026-09-24 Opus ひなた P4「作る札に刈り取りを内蔵」)
             { "triggerRandomRetainer", "場の人形1体(ランダム)の効果を今1回解決(灯は産まない)" },
             { "dischargeLightWeaken", "灯を全て放出し、灯3につき敵全体に威圧N(灯3未満なら不発)" },
             { "consumeLight", "灯をN失う" }, // amount 付き (2026-09-23 灯の炉心)。省略の札は無い
@@ -330,7 +343,8 @@ namespace DeckRogue.Game
             }
             sb.Append(ConditionLabel(e.Condition));
             // every/once (レリック本家形 2026-09-12): 「3回ごと」「戦闘で1回だけ」
-            if (e.Every.HasValue) sb.Append("(" + (e.EveryScope == "turn" ? "1ターンに" : "") + e.Every.Value + "回ごとに1回) ");
+            if (e.Every.HasValue && e.Once != null) sb.Append("(" + (e.Once == "turn" ? "1ターンに" : "戦闘で") + e.Every.Value + "回目の時だけ) ");   // 嵐の目 (青 2026-09-25)
+            else if (e.Every.HasValue) sb.Append("(" + (e.EveryScope == "turn" ? "1ターンに" : "") + e.Every.Value + "回ごとに1回) ");
             else if (e.Once != null) sb.Append("(" + (e.Once == "turn" ? "ターンに" : "戦闘で") + "1回だけ) ");
             if (e.Target == "all") sb.Append("敵全体に ");
             sb.Append(EffectBody(e));
@@ -358,6 +372,7 @@ namespace DeckRogue.Game
             }
             if (e.Effect == "summonPermanent") return "召喚" + amt + "体: " + CardName(e.SummonId);
             if (e.Effect == "addCardToHand") return CardName(e.SummonId) + "を" + amt + "枚手札へ";
+            if (e.Effect == "searchDeck" && e.CardType == "reaction") return "山札から仕込み札" + amt + "枚を手札へ(選ぶ)";   // 仕掛けの手配 (青 2026-09-25)
             string tpl;
             if (e.Effect == "dealDamage" && DamageModifier != null && (e.Trigger == null || e.Trigger == "onPlay"))
             {
@@ -709,7 +724,11 @@ namespace DeckRogue.Game
             var e = ev as GameEvent_CardPlayed; if (e != null) return "プレイ: " + CardName(e.CardId);
             var f = ev as GameEvent_CardSet; if (f != null) return "仕込んだ: " + CardName(f.CardId);
             var g = ev as GameEvent_SetCardExpired;
-            if (g != null) return "期限切れ: " + CardName(g.CardId) + "（2回の敵ターンで鳴らなかったので" + (g.To == "hand" ? "手札へ" : g.To == "exhaust" ? "消滅置き場へ" : "捨て札へ") + "）";
+            if (g != null) return "期限切れ: " + CardName(g.CardId) + "（期限までに鳴らなかったので" + (g.To == "hand" ? "手札へ" : g.To == "exhaust" ? "消滅置き場へ" : "捨て札へ") + "）";
+            var sc = ev as GameEvent_Scried;   // 占術 (青 2026-09-25)
+            if (sc != null) return "占術: " + (sc.Looked != null ? sc.Looked.Count : 0) + "枚を見た" + (sc.Discarded != null && sc.Discarded.Count > 0 ? "（捨て札へ: " + Names(sc.Discarded) + "）" : "（全部残した）");
+            var tl = ev as GameEvent_TrapLifeExtended;   // 潮待ち (青 2026-09-25)
+            if (tl != null) return "からくり" + tl.Count + "枚の期限を" + tl.Amount + "ターン延ばした";
             var h = ev as GameEvent_EnemyIntentDeclared; if (h != null) return "敵" + (h.EnemyIndex + 1) + "の意図: " + IntentLine(h.Intent);
             var i2 = ev as GameEvent_ActionNegated; if (i2 != null) return "敵の行動を打ち消した!";
             var j = ev as GameEvent_DamageDealt;

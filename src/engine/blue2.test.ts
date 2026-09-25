@@ -20,7 +20,7 @@ describe('霊気獲得の誘発 (静電の帳)', () => {
       ...s,
       enemies: s.enemies.map((e, i) =>
         i === 0
-          ? { ...e, intent: { kind: 'attack' as const, actual: 5 } }
+          ? { ...e, intent: { kind: 'attack' as const, actual: 20 } } // 2026-09-25: 霜の帳は完全に凌ぐと霊気+2＝凌げない攻撃で測る
           : { ...e, intent: { kind: 'defend' as const, actual: 3 } },
       ),
     }

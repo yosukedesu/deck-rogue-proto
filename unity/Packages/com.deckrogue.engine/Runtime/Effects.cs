@@ -153,7 +153,8 @@ namespace DeckRogue.Engine
             // 素のコスト0のカードは割引と無縁 (消費しない既存則) — オーラの重さはそのまま払う
             if (card.Def.Cost == 0) return up;
             int blaze = card.Def.BlazeDiscount != null && IsBlazing(state) ? card.Def.BlazeDiscount.Value : 0;
-            return Math.Max(0, card.Def.Cost + up - blaze - state.Player.NextCardDiscount);
+            // 潮溜まり (青 2026-09-25): 手札に残ったぶん安くなる (TS と同形)
+            return Math.Max(0, card.Def.Cost + up - blaze - state.Player.NextCardDiscount - (card.RetainDiscount ?? 0));
         }
 
         /// <summary>従者を要求する札 (殉教の誓い 2026-09-06) のプレイ条件: 場に従者 (retainer・innate除く) が1体以上</summary>
@@ -214,6 +215,8 @@ namespace DeckRogue.Engine
             "dealDamagePerRandomPlayed",
             "dealDamagePerIceBlock",
             "dealDamagePerHandCard",
+            "dealDamagePerScry", // 読み切り (青 2026-09-25)
+            "dealDamagePerTrapFired", // 仕掛けの反響 (青 2026-09-25)
             "counter",
         };
 
@@ -223,6 +226,8 @@ namespace DeckRogue.Engine
         private static readonly HashSet<string> ENEMY_TARGETED = new HashSet<string>
         {
             "dealDamage",
+            "dealDamagePerScry", // 読み切り (青 2026-09-25)
+            "dealDamagePerTrapFired", // 仕掛けの反響 (青 2026-09-25)
             "dealDamageRandom",
             "dealDamagePerCardPlayed",
             "dealDamagePerCardPlayedTotal",
@@ -462,7 +467,8 @@ namespace DeckRogue.Engine
                             foreach (var p in s.Player.Permanents)
                                 perms.Add(p.Uid == permanent.Uid ? (turnScope ? p with { TurnTriggerCounts = map } : p with { TriggerCounts = map }) : p);
                             s = s with { Player = s.Player with { Permanents = perms } };
-                            bool fires = effect.Once != null ? n == 1 : n % (effect.Every ?? 1) == 0;
+                            // once と every を併せると「N回目の時だけ1回」(青 嵐の目 2026-09-25＝1ターンに4枚目の時だけ。TS と同形)
+                            bool fires = effect.Once != null ? n == (effect.Every ?? 1) : n % (effect.Every ?? 1) == 0;
                             if (!fires) continue;
                         }
                         // アンセムが乗るのはダメージ・ブロック・回復の量だけ (2026-09-20 夜 裁定。TS ANTHEM_EFFECTS と同形)
@@ -783,11 +789,31 @@ namespace DeckRogue.Engine
             return state.Turn - (card.SetTurn ?? (state.Turn - 1)); // 旧セーブ (SetTurn 無し) は齢1の生きた罠として読む (TS と同形)
         }
 
+        /// <summary>霊気の器 (青 R 置物 2026-09-25): この置物がある間、霊気の放出で半分 (切り捨て) が残る (TS aetherCarriesHalf)</summary>
+        public static bool AetherCarriesHalf(GameState state)
+        {
+            return state.Player.Permanents.Any(p => p.Def.Effects.Any(e => e.Effect == "aetherCarryHalf"));
+        }
+
+        /// <summary>深き仕掛け (青 R 置物 2026-09-25): この置物がある間、罠は期限切れにならない (TS trapsNeverExpire)</summary>
+        public static bool TrapsNeverExpire(GameState state)
+        {
+            return state.Player.Permanents.Any(p => p.Def.Effects.Any(e => e.Effect == "trapsNeverExpire"));
+        }
+
+        /// <summary>罠の寿命 (窓の数)。期限なし (札の trapPersist・深き仕掛け) は null。潮待ちで延ばしたぶんを足す (2026-09-25。TS trapLifeOf)</summary>
+        public static int? TrapLifeOf(GameState state, CardInstance card)
+        {
+            if (card.Def.TrapPersist == true || TrapsNeverExpire(state)) return null;
+            return 2 + (card.TrapLifeBonus ?? 0);
+        }
+
         /// <summary>罠モデル: この札は今の敵フェーズで鳴らせるか (準備ターンは鳴らない・2窓・期限なしの札は無期限)</summary>
         public static bool IsTrapLive(GameState state, CardInstance card)
         {
             int age = TrapAge(state, card);
-            return age >= 1 && (age <= 2 || card.Def.TrapPersist == true);
+            int? life = TrapLifeOf(state, card);
+            return age >= 1 && (life == null || age <= life.Value);
         }
 
         /// <summary>
@@ -855,11 +881,12 @@ namespace DeckRogue.Engine
         /// 「あとN回」は敵フェーズの数だが、宣言済みの意図で今ターン発動しないなら「実質あとN-1回」と添える (2026-09-13 Opus Z 裁定=表示だけ直す)</summary>
         public static string TrapStatusText(GameState state, CardInstance card)
         {
-            if (card.Def.TrapPersist == true) return TrapAge(state, card) == 0 ? "準備中（次のターンから発動できる・期限なし）" : "期限なし";
+            if (TrapLifeOf(state, card) == null) return TrapAge(state, card) == 0 ? "準備中（次のターンから発動できる・期限なし）" : "期限なし";
             int age = TrapAge(state, card);
-            if (age <= 0) return "準備中（次のターンから発動できる）";
+            if (age <= 0) return (card.TrapLifeBonus ?? 0) > 0 ? $"準備中（次のターンから発動できる・あと{TrapWindowsLeft(state, card)}回）" : "準備中（次のターンから発動できる）";
             int left = TrapWindowsLeft(state, card) ?? 0;
             bool quiet = state.Phase == CombatPhases.PlayerTurn && !TrapCanFireThisPhase(state, card);
+            if (left >= 3) return quiet ? $"あと{left}回の敵ターン。今ターンの敵の行動では発動しない＝実質あと{left - 1}回" : $"あと{left}回の敵ターン（発動しなければ期限切れで捨て札へ）";
             if (left >= 2) return quiet ? "あと2回の敵ターン。今ターンの敵の行動では発動しない＝実質あと1回" : "あと2回の敵ターン（発動しなければ期限切れで捨て札へ）";
             return quiet ? "あと1回。今ターンの敵の行動では発動しない＝このターンの終わりに期限切れ" : "あと1回（このターンで発動しなければ期限切れで捨て札へ）";
         }
@@ -867,21 +894,23 @@ namespace DeckRogue.Engine
         /// <summary>罠モデル: 伏せ場の札の状態 (Unity の世界の言葉=「からくり」の語彙。TrapStatusText と同じ分岐)</summary>
         public static string TrapStatusTextKarakuri(GameState state, CardInstance card)
         {
-            if (card.Def.TrapPersist == true) return TrapAge(state, card) == 0 ? "準備中（次のターンから鳴る・期限なし）" : "期限なし";
+            if (TrapLifeOf(state, card) == null) return TrapAge(state, card) == 0 ? "準備中（次のターンから鳴る・期限なし）" : "期限なし";
             int age = TrapAge(state, card);
-            if (age <= 0) return "準備中（次のターンから鳴る）";
+            if (age <= 0) return (card.TrapLifeBonus ?? 0) > 0 ? $"準備中（次のターンから鳴る・あと{TrapWindowsLeft(state, card)}回）" : "準備中（次のターンから鳴る）";
             int left = TrapWindowsLeft(state, card) ?? 0;
             bool quiet = state.Phase == CombatPhases.PlayerTurn && !TrapCanFireThisPhase(state, card);
+            if (left >= 3) return quiet ? $"あと{left}回。今の敵の構えでは鳴らない＝実質あと{left - 1}回" : $"あと{left}回（鳴らなければ期限切れ）";
             if (left >= 2) return quiet ? "あと2回。今の敵の構えでは鳴らない＝実質あと1回" : "あと2回（鳴らなければ期限切れ）";
             return quiet ? "あと1回。今の敵の構えでは鳴らない＝このターンの終わりに期限切れ" : "あと1回（鳴らなければ期限切れ）";
         }
 
-        /// <summary>罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1。期限なしの札は null</summary>
+        /// <summary>罠モデル: 残りの窓数 (表示用)。準備中=2・窓1=2・窓2=1 (潮待ちで延ばしたぶん足す)。期限なしの札は null</summary>
         public static int? TrapWindowsLeft(GameState state, CardInstance card)
         {
-            if (card.Def.TrapPersist == true) return null;
+            int? life = TrapLifeOf(state, card);
+            if (life == null) return null;
             int age = TrapAge(state, card);
-            return Math.Max(0, 3 - Math.Max(1, age));
+            return Math.Max(0, life.Value + 1 - Math.Max(1, age));
         }
 
         /// <summary>
@@ -2386,10 +2415,10 @@ namespace DeckRogue.Engine
                 }
                 case "dischargeAether":
                 {
-                    // 霊気放出 (青): 霊気×amount のダメージを与え、霊気を全消費
+                    // 霊気放出 (青): 霊気×amount のダメージを与え、霊気を全消費 (霊気の器があれば半分が残る 2026-09-25)
                     int spent = state.Player.Aether;
                     if (spent == 0) return state;
-                    GameState s = state with { Player = state.Player with { Aether = 0 } };
+                    GameState s = state with { Player = state.Player with { Aether = AetherCarriesHalf(state) ? spent / 2 : 0 } };
                     s = Events.Emit(s, new GameEvent_AetherDischarged { Spent = spent });
                     return DealDamageToEnemy(s, enemyIndex, spent * (effect.Amount ?? 0), effect.Pierce == true);
                 }
@@ -2523,6 +2552,58 @@ namespace DeckRogue.Engine
                     return (state.Player.SparksPlayedThisCombat ?? 0) <= 0
                         ? state
                         : DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * (state.Player.SparksPlayedThisCombat ?? 0), effect.Pierce == true);
+                case "dealDamagePerScry":
+                    // 読み切り (青 潮読み 2026-09-25): この戦闘で占術で見た枚数×amount。TS と同形
+                    return (state.Player.ScriedThisCombat ?? 0) <= 0
+                        ? state
+                        : DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * (state.Player.ScriedThisCombat ?? 0), effect.Pierce == true);
+                case "dealDamagePerTrapFired":
+                    // 仕掛けの反響 (青 罠使い 2026-09-25): この戦闘で罠が鳴った回数×amount。TS と同形
+                    return (state.Player.TrapsFiredThisCombat ?? 0) <= 0
+                        ? state
+                        : DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * (state.Player.TrapsFiredThisCombat ?? 0), effect.Pierce == true);
+                case "scry":
+                {
+                    // 占術 (青 潮読み 2026-09-25): 選ぶまで保留する (ResolveScry)。同じ解決で重なった占術は枚数を足し、回数を数える。
+                    // 敵フェーズ (罠・被弾の誘発) では選べないので解決しない。TS と同形
+                    int n = effect.Amount ?? 0;
+                    if (n <= 0 || state.EnemyPhase == true) return state;
+                    var prev = state.PendingScry;
+                    return state with { PendingScry = new GameStatePendingScry { Count = (prev?.Count ?? 0) + n, Times = (prev?.Times ?? 0) + 1 } };
+                }
+                case "extendTrapLife":
+                {
+                    // 潮待ち (青 罠使い 2026-09-25): 仕込んでいる罠すべての期限を amount ターン延ばす。TS と同形
+                    int n = effect.Amount ?? 0;
+                    if (n <= 0 || state.Player.SetCards.Count == 0) return state;
+                    var next = state with { Player = state.Player with { SetCards = state.Player.SetCards.Select(c => c with { TrapLifeBonus = (c.TrapLifeBonus ?? 0) + n }).ToList() } };
+                    return Events.Emit(next, new GameEvent_TrapLifeExtended { Amount = n, Count = state.Player.SetCards.Count });
+                }
+                case "retrieveZeroCostFromDiscard":
+                {
+                    // 引き潮の帰還 (青 ストーム R 2026-09-25。本家 All for One): 捨て札のコスト0の札 (Xと状態異常を除く) を全て手札へ。TS と同形
+                    var back = state.Player.DiscardPile.Where(c => c.Def.Cost == 0 && c.Def.XCost != true && !c.Def.Id.StartsWith("status_", StringComparison.Ordinal)).ToList();
+                    if (back.Count == 0) return state;
+                    var ids = new HashSet<string>(back.Select(c => c.Uid));
+                    var next = state with { Player = state.Player with { DiscardPile = state.Player.DiscardPile.Where(c => !ids.Contains(c.Uid)).ToList(), Hand = state.Player.Hand.Concat(back).ToList() } };
+                    return Events.Emit(next, new GameEvent_CardsMovedToHand { CardIds = back.Select(c => c.Def.Id).ToList(), From = "discard" });
+                }
+                case "drawTypeFromDeck":
+                {
+                    // 仕掛け師の工房 (青 罠使い R 置物 2026-09-25): 山札の上から見て、cardType の札を amount 枚手札へ (山札の並びは崩さない)。TS と同形
+                    int n = effect.Amount ?? 1;
+                    var picked = state.Player.DrawPile.Where(c => effect.CardType == null || c.Def.Type == effect.CardType).Take(n).ToList();
+                    if (picked.Count == 0) return state;
+                    var ids = new HashSet<string>(picked.Select(c => c.Uid));
+                    var next = state with { Player = state.Player with { DrawPile = state.Player.DrawPile.Where(c => !ids.Contains(c.Uid)).ToList(), Hand = state.Player.Hand.Concat(picked).ToList() } };
+                    return Events.Emit(next, new GameEvent_CardsMovedToHand { CardIds = picked.Select(c => c.Def.Id).ToList(), From = "draw" });
+                }
+                case "aetherCarryHalf":
+                case "retainedCostDown":
+                case "trapsNeverExpire":
+                case "retainHandUpTo":
+                    // 深き仕掛け・満ち潮の書庫 (青 R 置物 2026-09-25): 常在の印 (登場時の no-op)
+                    return state;
                 case "gainBlockPerSpark":
                     // 火守りの盾 (白 C 2026-09-24 Opus ひなた裁定「作る札に刈り取りを内蔵」): この戦闘で撃った火種×amount のブロック。TS と同形
                     return (state.Player.SparksPlayedThisCombat ?? 0) <= 0
@@ -2609,10 +2690,10 @@ namespace DeckRogue.Engine
                         false); // 急所は氷壁変換に乗らない (2026-08-31)
                 case "dischargeAetherDraw":
                 {
-                    // 霊気の奔流 (青): 霊気×amount 枚ドローして霊気を全消費
+                    // 霊気の奔流 (青): 霊気×amount 枚ドローして霊気を全消費 (霊気の器があれば半分が残る 2026-09-25)
                     int spent = state.Player.Aether;
                     if (spent == 0) return state;
-                    GameState s = state with { Player = state.Player with { Aether = 0 } };
+                    GameState s = state with { Player = state.Player with { Aether = AetherCarriesHalf(state) ? spent / 2 : 0 } };
                     s = Events.Emit(s, new GameEvent_AetherDischarged { Spent = spent });
                     return DrawCards(s, spent * (effect.Amount ?? 1));
                 }
@@ -2782,9 +2863,13 @@ namespace DeckRogue.Engine
             }
             // 読み勝ちの換金 (2026-08-29): リアクション発動に反応する置物。3方式共通の解決経路なので方式非依存。
             // 全カード伏せ可 (実験): 通常カードの伏せ発動は「リアクションの発動」ではない
-            GameState @out = card.Def.Type == CardTypes.Reaction
-                ? RunPermanentTriggers(s, "onReactionFired", enemyIndex)
+            // 罠使い (青 2026-09-25): この戦闘で罠が鳴った回数 (仕掛けの反響が参照)。換金の誘発より先に数える (TS と同形)
+            GameState counted = card.Def.Type == CardTypes.Reaction
+                ? s with { Player = s.Player with { TrapsFiredThisCombat = (s.Player.TrapsFiredThisCombat ?? 0) + 1 } }
                 : s;
+            GameState @out = card.Def.Type == CardTypes.Reaction
+                ? RunPermanentTriggers(counted, "onReactionFired", enemyIndex)
+                : counted;
             return @out with { ResolvingCardPlay = prevCardPlay };
         }
     }

@@ -237,6 +237,7 @@ namespace DeckRogue.EditorTools
                         }
                         else
                         {
+                            if (g.Rs.Combat != null && g.Rs.Combat.PendingScry != null) g.DoCombat(new Command_ResolveScry { DiscardUids = new System.Collections.Generic.List<string>() });   // 占術の保留 (青 2026-09-25)
                             g.DoCombat(new Command_EndTurn());
                             _turns++;
                             var c = g.Rs?.Combat;

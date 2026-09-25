@@ -38,15 +38,16 @@ export const REWARD_EXCLUDED = new Set([
   'green_reaction_vine', // 2026-09-13 罠モデル: 初期デッキの教材を茨の返し (post窓) から守りの蔓 (pre窓) へ
   'blue_strike',
   'blue_guard',
-  'blue_counterspell', // 青スターターのリアクション2枚 (2026-08-30 中立化追随)
-  'blue_frost_veil',
+  'blue_counterspell', // 青スターターの罠 (2026-08-30 中立化追随。2026-09-25 青の解凍: 霜の帳は報酬プールへ戻した)
   // --- 2026-08-31 スターター個性注入の追随 (赤Opusランで火花が報酬に4回出た漏れ。
   // 確定済みルール「報酬プールはスターター札除外」に全色を同期) ---
   'green_entangle',
   'green_vine_wedge',
-  'blue_ice_lance',
-  'blue_ponder',
   'blue_tide_drop',
+  // 2026-09-25 青の解凍 (docs/blue-thaw-proposal-2026-09-25.md): 初期デッキを緑の形に＝渦流の鞭 (殴りながら守る枠)・知恵の重み (手札6枚を火力にする個性の1枚)。
+  // 氷の槍・思案・霜の帳は報酬プールへ (初期デッキだけで幕1 10.0T → 6.1T)
+  'blue_current_lash',
+  'blue_weight_of_wisdom',
   'red_spark',
   'red_ignite',
   'red_perm_flarecoat',
@@ -1597,6 +1598,9 @@ const EFFECT_AXIS: Record<string, string> = {
   dealDamageExecute: 'execute', exposeEnemy: 'execute',
   confuse: 'confuse',
   dealDamagePerHandCard: 'grimoire', gainIceBlockPerHandCard: 'grimoire', // 抱え込み (青 2026-08-31)
+  scry: 'grimoire', dealDamagePerScry: 'grimoire', retainHandUpTo: 'grimoire', // 潮読み (青 2026-09-25: 抱え込みを読む→抱える→放つに)
+  dealDamagePerTrapFired: 'permission', extendTrapLife: 'permission', trapsNeverExpire: 'permission', // 罠使い (青 2026-09-25)
+  retrieveZeroCostFromDiscard: 'storm', drawTypeFromDeck: 'permission', aetherCarryHalf: 'aether', retainedCostDown: 'grimoire', // 青を89枚に (2026-09-25)
   addSpellEcho: 'echo', // 反復 (青の呪文コピー)
 }
 

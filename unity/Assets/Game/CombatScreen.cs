@@ -229,7 +229,7 @@ namespace DeckRogue.Game
             var t2 = UiKit.Txt(col, line2.Count > 0 ? "状態異常: " + string.Join(" ", line2.ToArray()) : "状態異常: なし", 12, line2.Count > 0 ? UiKit.ColBad : UiKit.ColDim);
             UiKit.Le(t2, -1f, 16f, -1f, 16f);
 
-            var endBtn = UiKit.Btn(pan.transform, "ターン終了", delegate { g.DoCombat(new Command_EndTurn()); }, 16,
+            var endBtn = UiKit.Btn(pan.transform, "ターン終了", delegate { BattleScreen.StartEndTurn(g); }, 16,
                 st.Phase == CombatPhases.PlayerTurn, UiKit.Hex("#3a5a3a"));
             var le2 = endBtn.GetComponent<LayoutElement>();
             if (le2 != null) { le2.preferredWidth = 140f; le2.minWidth = 140f; le2.preferredHeight = 60f; le2.minHeight = 60f; }
@@ -422,8 +422,10 @@ namespace DeckRogue.Game
 
         // ---- 追加コスト・選択のピッカー ----
 
-        public static IReadOnlyList<CardInstance> DeckChoosePool(GameState st, string kind)
+        public static IReadOnlyList<CardInstance> DeckChoosePool(GameState st, string kind, CardDef def = null)
         {
+            // 仕掛けの手配 (青 2026-09-25) の「山札のからくりだけ」は engine の Combat.DeckChoosePool が決める
+            if (def != null) return Combat.DeckChoosePool(st, def);
             if (kind == "retrieveFromDiscard") return st.Player.DiscardPile;
             if (kind == "searchDeck" || kind == "transformDeckToToken") return st.Player.DrawPile;
             var all = new List<CardInstance>();
@@ -472,7 +474,7 @@ namespace DeckRogue.Game
             }
             else if (need == "deck")
             {
-                pool = DeckChoosePool(st, p.DeckKind);
+                pool = DeckChoosePool(st, p.DeckKind, p.Card.Def);
                 selected = p.DeckSel; want = p.DeckNeed;
                 title = (p.DeckKind == "searchDeck" || p.DeckKind == "transformDeckToToken" ? "山札" : p.DeckKind == "retrieveFromDiscard" ? "捨て札" : "山札か捨て札") + "から" + want + "枚選ぶ";
             }
