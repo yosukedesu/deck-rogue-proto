@@ -13,14 +13,16 @@ namespace DeckRogue.Game
 {
     public static class FeedbackUi
     {
-        /// <summary>上部バーの右側に「メモ N」「レポート」を足す (ラン画面と戦闘画面で共通)</summary>
-        public static void TopBarButtons(GameRoot g, Transform bar)
+        /// <summary>上部バーの右側に「メモ N」「レポート」を足す (ラン画面と戦闘画面で共通)。
+        /// 戦闘の PC 上部バーはメモだけ・高さ34 (2026-09-29: レポートは ≡ の「レポートを書き出す」に同じ項目がある)</summary>
+        public static void TopBarButtons(GameRoot g, Transform bar, bool report = true, float h = 36f)
         {
             var memo = UiKit.Btn(bar, Feedback.Notes.Count > 0 ? "メモ " + Feedback.Notes.Count : "メモ", delegate { Feedback.MemoOpen = !Feedback.MemoOpen; g.Rebuild(); }, 13);
-            BattleScreen.SetSize(memo, Feedback.Notes.Count > 0 ? 92f : 72f, 36f);
+            BattleScreen.SetSize(memo, Feedback.Notes.Count > 0 ? 92f : 72f, h);
             Tooltip.Attach(memo.gameObject, delegate { return "プレイ中メモ: 気づいたことをその場で残す (レポートに同梱される)"; });
+            if (!report) return;
             var rep = UiKit.Btn(bar, "レポート", delegate { ExportNow(g); }, 13);
-            BattleScreen.SetSize(rep, 92f, 36f);
+            BattleScreen.SetSize(rep, 92f, h);
             Tooltip.Attach(rep.gameObject, delegate { return "プレイレポート (md) とセーブ (json) を書き出す\n" + Feedback.ReportsDir; });
         }
 
@@ -144,7 +146,7 @@ namespace DeckRogue.Game
                 var hg = UiKit.Horz(row, 10, 0);
                 hg.childAlignment = TextAnchor.MiddleLeft;
                 hg.childForceExpandHeight = false;
-                var lbl = UiKit.Txt(row, "敗因の感触 <color=#9c3a2a>（敗北時は必須）</color>", 16, UiKit.ColInk, TextAnchor.MiddleLeft);
+                var lbl = UiKit.Txt(row, "敗因の感触 " + UiKit.ColorTag(PaperFx.BadInk, "（敗北時は必須）"), 16, UiKit.ColInk, TextAnchor.MiddleLeft);
                 UiKit.Le(lbl, 250f, 44f, 250f, 44f);
                 foreach (var f in new[] { "build", "unfair" })
                 {

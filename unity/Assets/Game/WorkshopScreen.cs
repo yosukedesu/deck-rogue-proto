@@ -50,7 +50,8 @@ namespace DeckRogue.Game
             bool ph = UiKit.Phone;   // スマホ (2026-09-14): 右パネルを上下いっぱいに、素材の枠と結果を小さく
             var area = UiKit.NewRect("deck", root);
             // 左の棚 (2026-09-16 案A): スマホは見出しを上部バーに畳んで 2行＋しおり、札を押す＝素材 (A→B)。下の帯に「鍛えた後を見る」。右の板は今どおり
-            UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(ph ? 20f : 40f, ph ? 70f : 96f), new Vector2(-520f, ph ? -(RunUi.TopH + 10f) : -deckTop));
+            float deckL = ph ? UiKit.SafeLeft(20f, RunUi.TopH + 10f, BattleScreen.CanvasSize(root).y - 70f) : 40f;   // スマホは画面の切り欠き (パンチホール) の右から (2026-09-29 p10)
+            UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(deckL, ph ? 70f : 96f), new Vector2(-520f, ph ? -(RunUi.TopH + 10f) : -deckTop));
             UiKit.Vert(area, 0, 0);
             RunUi.CardGrid(g, area, run.Deck,
                 delegate (int i, CardInstance c) { return marked.Contains(i) ? "外す" : "選ぶ"; },
@@ -142,7 +143,7 @@ namespace DeckRogue.Game
 
             int ia = g.WorkshopA, ib = g.WorkshopB;
             bool can = a != null && b != null && blocked == null && run.Gold >= price;
-            var fuse = UiKit.Btn(srt, "合成する  " + price + "G" + (run.Gold < price ? " (不足)" : ""), delegate { Audio.Ui("fuse"); g.Do(new RunCommand_WorkshopFuse { IndexA = ia, IndexB = ib }); }, 20, can, UiKit.Hex("#f0d58a"));
+            var fuse = UiKit.Btn(srt, "合成する  " + price + "G" + (run.Gold < price ? " (不足)" : ""), delegate { Audio.Ui("fuse"); g.Do(new RunCommand_WorkshopFuse { IndexA = ia, IndexB = ib }); }, 20, can, PaperFx.BrassLight);   // 決定のボタン＝真鍮の紙 (旧 生の #f0d58a。2026-09-29 p26)
             var fle = fuse.GetComponent<LayoutElement>();
             if (fle != null) UnityEngine.Object.Destroy(fle);
             UiKit.Anchor(fuse.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(20f, ph ? 70f : 80f), new Vector2(-20f, ph ? 122f : 136f));

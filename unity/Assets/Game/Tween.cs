@@ -218,12 +218,12 @@ namespace DeckRogue.Game
         }
 
         /// <summary>浮き文字 (ダメージ数字など)。parent の座標系で pos から上へ浮いて消える</summary>
-        public static void Float(RectTransform parent, Vector2 pos, string text, Color color, int size = 34, float rise = 60f, float dur = 0.9f)
+        public static void Float(RectTransform parent, Vector2 pos, string text, Color color, int size = 34, float rise = 60f, float dur = 0.9f, float width = 240f)
         {
             if (parent == null) return;
             var rt = UiKit.NewRect("float", parent);
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.sizeDelta = new Vector2(240f, 60f);
+            rt.sizeDelta = new Vector2(width, 60f);   // width: 1行に収まる幅 (既定 240 = 24px で10字。長い一言は呼び側が広げる。2026-09-29 p15)
             rt.anchoredPosition = pos;
             var cg = rt.gameObject.AddComponent<CanvasGroup>();
             cg.blocksRaycasts = false;
@@ -370,7 +370,7 @@ namespace DeckRogue.Game
                 case "spark":
                 {   // 火種: 小さな橙の炸裂＝細かい火花が四方へ、短い針、小さな輪
                     Pop(layer, pos, ThemeFx.Glow(), new Color(color.r, color.g, color.b, 0.9f), 120f * scale, 0.3f, 1.2f, 0.16f, 0f, 0f);
-                    Pop(layer, pos, ThemeFx.Glow(), new Color(1f, 0.98f, 0.9f, 0.95f), 70f * scale, 0.6f, 1.0f, 0.1f, 0f, 0f);
+                    Pop(layer, pos, ThemeFx.Glow(), ThemeFx.SlashCore, 70f * scale, 0.6f, 1.0f, 0.1f, 0f, 0f);
                     After(0.02f, () => Needles(layer, pos, color, 6, 60f * scale, angle));
                     RingBurst(layer, pos, new Color(color.r, color.g, color.b, 0.7f), 110f * scale, 0.26f);
                     for (int i = 0; i < 3; i++) Sparks(layer, pos, color, big ? 5 : 4, i * 120f);

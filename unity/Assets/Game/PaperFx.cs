@@ -26,12 +26,19 @@ namespace DeckRogue.Game
         public static readonly Color Ink = H("#2f2e35");
         /// <summary>中墨 (紙の上で 7.2:1)。透明度で薄めない</summary>
         public static readonly Color InkSoft = H("#4e4c55");
+        /// <summary>出せない札・組めないギアの紙に掛ける乗算 (紙を中立の灰へ沈める＝承認済みのカード案の状態一覧 saturate(0.35) に合わせる。
+        /// 2026-09-30 F26: 旧 (0.92,0.90,0.86) は青を多く削って黄ばんだ紙 (225,213,184) に見えた。明るさの比 1.25 と中墨 5.7:1 は保つ)</summary>
+        public static readonly Color DimTint = new Color(0.88f, 0.90f, 0.96f, 1f);
         // 夜 (紙＝暖・夜＝寒 の対比がこの UI の芯)
         public static readonly Color Night = H("#1a1c33");
         /// <summary>札の挿絵の窓・からくりの窓</summary>
         public static readonly Color Window = H("#20233a");
         /// <summary>画面の外・最奥</summary>
         public static readonly Color Ground = H("#0f1120");
+        /// <summary>確認の窓の暗幕 (地 α0.55。行動中の敵の周りだけ穴を開けて明るく残す。2026-09-29 p11 の値・p26 で名前にした)</summary>
+        public static readonly Color Scrim = new Color(Ground.r, Ground.g, Ground.b, 0.55f);
+        /// <summary>窓 (BattleScreen.Modal・札の拡大 CardPopup) の暗幕 (地 α0.7。旧 #141228 α0.68／0.72 の2値を地にそろえた。2026-09-29 p26)</summary>
+        public static readonly Color ModalScrim = new Color(Ground.r, Ground.g, Ground.b, 0.7f);
         // 真鍮＝価値と資源 (選択中の札と狙っている敵の縁・決定のボタン・G・エナジー・R の外線・HP バーの「行動が変わる線」)
         public static readonly Color Brass = H("#c99a3a");
         /// <summary>決定のボタン・予告の札の地</summary>
@@ -50,6 +57,8 @@ namespace DeckRogue.Game
         /// <summary>薔薇＝HP バー・与ダメの札・敗北</summary>
         public static readonly Color Rose = H("#c9635a");
         public static readonly Color RoseLight = H("#fadbd6");
+        /// <summary>薔薇の薄塗り (Rose と Paper を 0.55 で混ぜた値): 自分の HP バーの「削られる分」の帯。塗りの上に重ね、墨の斜線 (ThemeFx.Hatch) を敷く (2026-09-29 p08)</summary>
+        public static readonly Color RoseLoss = H("#e1ae9e");
         /// <summary>鋼青＝ブロック</summary>
         public static readonly Color Sky = H("#6f95b8");
         public static readonly Color SkyLight = H("#d6e6fa");
@@ -74,10 +83,11 @@ namespace DeckRogue.Game
         public static readonly Color DangerBtn = H("#e8b8b0");
         // タイプの帯 (淡い色＋墨の文字。CardView のリボン)
         public static readonly Color Sand = H("#c9a982");
-        public static readonly Color PlumBand = H("#a98cc4");
+        /// <summary>呪文の帯: 藤を同じ色相のまま明るく (墨 6.1:1。旧 #a98cc4 は 4.6:1 で細い字が沈んだ。2026-09-29 p19)</summary>
+        public static readonly Color PlumBand = H("#bca6d6");
         public static readonly Color Teal = H("#7ab8b0");
-        /// <summary>置物の帯: 真鍮から離した鈍い黄 (選択の縁と混ざらない)。旧 蜂蜜</summary>
-        public static readonly Color Olive = H("#a8a66b");
+        /// <summary>置物の帯: 真鍮から離した鈍い黄 (選択の縁と混ざらない)。旧 蜂蜜→#a8a66b (墨 5.3:1)→#b3b67a (墨 6.3:1・砂との差が広がる。2026-09-29 p19)</summary>
+        public static readonly Color Olive = H("#b3b67a");
         // 旧名の別名 (段階的に消す)
         public static readonly Color Honey = Brass;
         public static readonly Color GoldInk = BrassInk;
@@ -125,6 +135,12 @@ namespace DeckRogue.Game
         public static Sprite Tag { get { return Nine("paper_tag", 32, 8, 10, TagBands, false); } }
         /// <summary>紙 (濃) の札: 情報の段 (帳面・上部バーの札・からくりのトークン・付箋・山札の札)。手札と確認の窓 (紙) を一段前に出す (2026-09-16 戦闘画面の色の序列)</summary>
         public static Sprite Tag2 { get { return Nine("paper_tag2", 32, 8, 10, Tag2Bands, false); } }
+        /// <summary>細い縁の札 (2026-09-29 p18 帳面の状態の札・頭上の rider): 中墨の縁1px・中は白 (Image.color で紙の色を掛ける＝塗りがその紙の色ちょうどになる)。
+        /// 帳面の外枠と HP バーの枠 (墨2px) より弱い線にして、状態の札が帳面でいちばん重い線にならないように</summary>
+        public static Sprite TagThin { get { return Nine("paper_tag_thin", 32, 8, 10, d => d < 1f ? InkSoft : Color.white, false); } }
+        /// <summary>夜の札 (2026-09-29 手番の札の「敵の番」): 不透明の夜 #1a1c33 に紙 (濃) の縁2px。紙の文字を載せる。
+        /// NightNote (夜 α0.84・縁は墨) は夜空との差が 1.6:1 で札の形が溶けるので、縁を紙 (濃) にして輪郭を残す (夜空と 7.5:1)</summary>
+        public static Sprite NightTag { get { return Nine("night_tag", 32, 8, 10, NightTagBands, false); } }
         /// <summary>紙のボタン: 墨2・紙、下に厚み (墨 50%) 4px。角丸 10</summary>
         public static Sprite Button { get { return Nine("paper_button", 40, 10, 12, TagBands, true); } }
         /// <summary>カードの面: パネルと同じ二重線。角丸 14</summary>
@@ -154,6 +170,11 @@ namespace DeckRogue.Game
         {
             if (d < 2f) return Ink;
             return Paper2;
+        }
+        static Color NightTagBands(float d)
+        {
+            if (d < 2f) return Paper2;
+            return Night;
         }
 
         static Sprite Nine(string name, int size, int radius, int border, Func<float, Color> bands, bool thickBottom)
@@ -524,6 +545,46 @@ namespace DeckRogue.Game
             s.name = key; _cache[key] = s; return s;
         }
 
+        /// <summary>
+        /// 輪の目盛り (2026-09-29 p20): Ring(thick) と同じ帯 (外径 128) に、上から右回りに 360/n 度ごとの切れ目 (幅 width px) だけを白で描く。
+        /// 色は Image で乗せ、Ring の上に重ねて帯を n 等分する (エナジーの輪で「4つのうち3つ」を数える)。
+        /// 切れ目は帯の内側だけ＝輪の外形は変わらない。縁は Ring と同じなめらかさ (UI の四角を回して置くとギザギザになるので絵に焼く)
+        /// </summary>
+        public static Sprite RingTicks(int thick, int n, float width = 3f)
+        {
+            n = Math.Max(1, n);
+            string key = "ringticks" + thick + ":" + n + ":" + Mathf.RoundToInt(width * 10f);
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            const int size = 128;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var px = new Color[size * size];
+            float c = size / 2f, step = Mathf.PI * 2f / n, half = width / 2f;
+            float outer = c - 1f, inner = c - 1f - thick;
+            for (int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                {
+                    float dx = x + 0.5f - c, dy = y + 0.5f - c;
+                    float r = Mathf.Sqrt(dx * dx + dy * dy);
+                    float band = Mathf.Clamp01(outer - r + 0.5f) * Mathf.Clamp01(r - inner + 0.5f);
+                    float a = 0f;
+                    if (band > 0f)
+                    {
+                        float th = Mathf.Atan2(dx, dy);   // 上が 0・右回り
+                        if (th < 0f) th += Mathf.PI * 2f;
+                        float m = th % step;
+                        float da = Mathf.Min(m, step - m);   // いちばん近い切れ目までの角度
+                        float dist = r * Mathf.Sin(Mathf.Min(da, Mathf.PI / 2f));
+                        a = band * Mathf.Clamp01(half - dist + 0.5f);
+                    }
+                    px[y * size + x] = new Color(1f, 1f, 1f, a);
+                }
+            tex.SetPixels(px); tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = key; _cache[key] = s; return s;
+        }
+
         /// <summary>ドット絵を整数倍で置く倍率 = round(目安の表示幅 / 実寸)。密度はオクトラ相当 (1ドット=4px): 通常 64→256・エリート 80→320・ボス 96→384 がどれも4倍。生成の代役 16 は 16倍</summary>
         public static int PixelScale(Sprite s, float target = 256f)
         {
@@ -561,6 +622,92 @@ namespace DeckRogue.Game
             img.type = Image.Type.Sliced;
             img.pixelsPerUnitMultiplier = 1f;
             img.color = tint ?? Color.white;
+            return img;
+        }
+
+        /// <summary>
+        /// 点線のポケット (空き枠。2026-09-29 p17): 親 (w×h) いっぱいの角丸6の破線 (4 描いて 3 空ける・線は PC 1.5／スマホ 2) と、ごく薄い塗り。
+        /// 決まった寸法で1枚の絵を作る (9スライスで伸ばすと辺の破線の間隔が崩れるので Simple)。テクスチャは画面の画素に合わせて作る (スマホは 1.31倍)。
+        /// 色は line の RGB。線の濃さは line.a、塗りの濃さは fillAlpha (0 で塗りなし)。旧: Tag を灰色に染めた塗り＝押せないボタンに見えた
+        /// </summary>
+        public static Image DashedPocket(Transform parent, float w, float h, Color line, float fillAlpha, float lineW = -1f)
+        {
+            if (lineW <= 0f) lineW = UiKit.Phone ? 2f : 1.5f;
+            var prt = parent as RectTransform;
+            float k = 1f;
+            if (prt != null && Screen.width > 0)
+            {
+                var cs = BattleScreen.CanvasSize(prt);
+                if (cs.x > 0f) k = Mathf.Clamp(Screen.width / cs.x, 1f, 4f);
+            }
+            k = Mathf.Round(k * 20f) / 20f;
+            int tw = Mathf.Max(8, Mathf.CeilToInt(w * k)), th = Mathf.Max(8, Mathf.CeilToInt(h * k));
+            string key = "pocket:" + tw + "x" + th + ":" + Mathf.RoundToInt(lineW * k * 10f) + ":" + Mathf.RoundToInt(line.a * 100f) + ":" + Mathf.RoundToInt(fillAlpha * 100f);
+            Sprite s;
+            if (!_cache.TryGetValue(key, out s))
+            {
+                float lw = lineW * k, r = 6f * k, dash = 4f * k, gap = 3f * k;
+                float hx = tw / 2f, hy = th / 2f;
+                float rc = Mathf.Max(0.5f, r - lw / 2f);                       // 線の芯の角の半径
+                float sx = Mathf.Max(0f, hx - r), sy = Mathf.Max(0f, hy - r);   // 直線の半分の長さ
+                float wc = 2f * sx, hc = 2f * sy, arc = Mathf.PI / 2f * rc;
+                float perim = 2f * wc + 2f * hc + 4f * arc;
+                int nDash = Mathf.Max(4, Mathf.RoundToInt(perim / (dash + gap)));
+                float period = perim / nDash, on = period * dash / (dash + gap);   // 周が破線の周期で割り切れるように少し伸ばす (継ぎ目で破線が欠けない)
+                var tex = new Texture2D(tw, th, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Bilinear;
+                tex.wrapMode = TextureWrapMode.Clamp;
+                var px = new Color[tw * th];
+                for (int y = 0; y < th; y++)
+                    for (int x = 0; x < tw; x++)
+                    {
+                        float cx = x + 0.5f - hx, cy = y + 0.5f - hy;
+                        float qx = Math.Abs(cx) - sx, qy = Math.Abs(cy) - sy;
+                        float outside = Mathf.Sqrt(Mathf.Max(qx, 0f) * Mathf.Max(qx, 0f) + Mathf.Max(qy, 0f) * Mathf.Max(qy, 0f)) + Mathf.Min(Mathf.Max(qx, qy), 0f) - r;
+                        float d = -outside;   // 内側ほど大きい
+                        if (d < -0.5f) { px[y * tw + x] = new Color(1f, 1f, 1f, 0f); continue; }
+                        float edgeA = Mathf.Clamp01(d + 0.5f);
+                        float cov = edgeA * Mathf.Clamp01(lw - d + 0.5f);   // 線の太さぶん (縁は半画素なめらかに)
+                        if (cov > 0f)
+                        {
+                            // 周に沿った位置 s (左上の角の終わりから時計回り)。角は弧の長さで数える
+                            float spos;
+                            if (qx > 0f && qy > 0f)
+                            {
+                                float ccx = cx > 0f ? sx : -sx, ccy = cy > 0f ? sy : -sy;
+                                float phi = Mathf.Atan2(cy - ccy, cx - ccx);
+                                if (cx > 0f && cy > 0f) spos = wc + (Mathf.PI / 2f - phi) * rc;                         // 右上
+                                else if (cx > 0f) spos = wc + arc + hc + (-phi) * rc;                                    // 右下
+                                else if (cy < 0f) { if (phi > 0f) phi -= 2f * Mathf.PI; spos = 2f * wc + 2f * arc + hc + (-Mathf.PI / 2f - phi) * rc; }   // 左下
+                                else spos = 2f * wc + 3f * arc + 2f * hc + (Mathf.PI - phi) * rc;                        // 左上
+                            }
+                            else if (hy - Math.Abs(cy) < hx - Math.Abs(cx))
+                                spos = cy > 0f ? cx + sx : 2f * arc + wc + hc + (sx - cx);                               // 上・下
+                            else
+                                spos = cx > 0f ? wc + arc + (sy - cy) : 2f * wc + 3f * arc + hc + (cy + sy);             // 右・左
+                            float m = spos % period; if (m < 0f) m += period;
+                            // 破線の端も半画素なめらかに
+                            float dashA = Mathf.Clamp01(Mathf.Min(m + 0.5f, on - m + 0.5f));
+                            cov *= dashA;
+                        }
+                        float la = cov * line.a;
+                        float fa = d >= 0f ? fillAlpha * edgeA : 0f;
+                        px[y * tw + x] = new Color(1f, 1f, 1f, la + (1f - la) * fa);
+                    }
+                tex.SetPixels(px);
+                tex.Apply(false, false);
+                s = Sprite.Create(tex, new Rect(0, 0, tw, th), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+                s.name = key;
+                _cache[key] = s;
+            }
+            var rt = UiKit.NewRect("pocket", parent);
+            UiKit.Stretch(rt, 0f, 0f, 0f, 0f);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = s;
+            img.type = Image.Type.Simple;
+            img.preserveAspect = false;
+            img.color = new Color(line.r, line.g, line.b, 1f);
+            img.raycastTarget = false;
             return img;
         }
 

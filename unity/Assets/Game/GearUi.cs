@@ -27,8 +27,10 @@ namespace DeckRogue.Game
 
     public static class GearUi
     {
-        public const float TokenW = 62f, TokenH = 62f;            // PC: 名前は添えない (ツールチップ)
-        public const float PhoneTokenW = 64f, PhoneTokenH = 66f;  // スマホ: 下に名前の帯
+        public const float TokenW = 62f, TokenH = 62f;            // PC: 1段に名前つきで入らない時の絵だけの形 (名前はツールチップ)。さらに入らなければ 48 の2段
+        // PC: 1段に収まる時は名前の帯つき (2026-09-29 p17。スマホと同じ帯)。からくりのトークン 68×74 と同じ大きさ＝下端がそろう
+        public const float NamedW = BattleScreen.PhoneTokenW, NamedH = BattleScreen.PhoneTokenH;
+        public const float PhoneTokenW = 68f, PhoneTokenH = 66f;  // スマホ: 下に名前の帯 (64→68 = からくりのトークン・PC の NamedW と同じ幅。2026-09-30 F41: 6字の名前が帯の端に接した)
 
         public static GearDef DefOf(string id) { try { return Content.GetGearDef(id); } catch (Exception) { return null; } }
         public static string RarityJa(string r) { return r == "rare" ? "★レア" : r == "uncommon" ? "◆アンコモン" : "コモン"; }
@@ -68,8 +70,8 @@ namespace DeckRogue.Game
         // ---- トークン ----
 
         /// <summary>
-        /// 持ち物のトークン: 紙 (濃) ＋レア度の外線 (C 墨／U 空／R 蜂蜜＝札と同じ)＋歯車の絵＋(スマホは名前)＋回数つきは右上に残り回数。
-        /// 組めない時は絵を灰色に (理由はツールチップ)。窓を開いている札は真鍮の縁。演出の的 "gear:&lt;uid&gt;"
+        /// 持ち物のトークン: 紙 (濃) ＋レア度の外線 (C 墨／U 空／R 蜂蜜＝札と同じ)＋歯車の絵＋(スマホと PC の1段は名前の帯)＋回数つきは右上に残り回数。
+        /// 組めない時 (魔素不足・今ターン済・占術中＝BlockShort) は紙・絵・帯・回数を沈める (理由は区画の見出しに1回・細かい理由はツールチップ)。窓を開いている札は真鍮の縁。演出の的 "gear:&lt;uid&gt;"
         /// </summary>
         public static RectTransform Token(GameRoot g, Transform parent, RunState run, GameState st, int index, GearInstance gear, float w, float h, bool withName, bool clickable)
         {
@@ -78,12 +80,16 @@ namespace DeckRogue.Game
             slot.sizeDelta = new Vector2(w, h);
             g.RegisterAnchor("gear:" + gear.Uid, slot);
             string blocked = def != null ? Gears.GearBlockedReason(st, DeckRogue.Engine.Run.ManaOf(run), gear) : "未定義のギア";
+            // 組めない時はトークン全体を沈める (2026-09-29 p14): 手札の「出せない札」と同じ文法＝紙を DimTint で沈め、絵は灰色の影 (GearGlyphMuted)、名前の帯と回数は中墨。
+            // 灰にするのは自分の番でも続く理由 (魔素不足・今ターン済・占術中) だけ。敵の番・確認の窓では沈めない (毎ターン点滅しないように。旧は敵の番にも 0.72 で暗くしていた)。
+            // 理由はトークンごとでなく区画の見出しに1回 (どの理由も全部のギアに同時に当たる)
+            bool muted = def != null && BlockShort(run, st) != null;
             bool open = g.GearPending != null && g.GearPending.Index == index;
             Color edgeCol = open ? PaperFx.Brass : PaperFx.RarityEdge(def != null ? def.Rarity : "common");
             var edge = PaperFx.Sheet(slot, PaperFx.Tag, "edge", edgeCol);
             UiKit.Stretch(edge.rectTransform, -3f, -3f, -3f, -3f);
             edge.raycastTarget = false;
-            var paper = PaperFx.Sheet(slot, PaperFx.Tag2, "paper");
+            var paper = PaperFx.Sheet(slot, PaperFx.Tag2, "paper", muted ? PaperFx.DimTint : (Color?)null);
             UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
             paper.raycastTarget = true;
             float bandH = withName ? 22f : 0f;
@@ -91,28 +97,39 @@ namespace DeckRogue.Game
             float picSize = Mathf.Min(w - 14f, h - bandH - 10f);
             UiKit.Anchor(pic, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-picSize / 2f, -5f - picSize), new Vector2(picSize / 2f, -5f));
             var pimg = pic.gameObject.AddComponent<Image>();
-            pimg.sprite = ThemeFx.GearGlyph(gear.GearId, def != null ? def.Family : "general"); pimg.preserveAspect = true; pimg.raycastTarget = false;
-            if (blocked != null && st != null) pimg.color = new Color(0.72f, 0.72f, 0.72f, 1f);
+            string fam = def != null ? def.Family : "general";
+            Sprite mutedArt = muted ? ThemeFx.GearGlyphMuted(gear.GearId, fam) : null;
+            pimg.sprite = mutedArt ?? ThemeFx.GearGlyph(gear.GearId, fam); pimg.preserveAspect = true; pimg.raycastTarget = false;
+            if (muted && mutedArt == null) pimg.color = new Color(1f, 1f, 1f, 0.6f);   // 読めない絵は灰の版を作れないので薄めて代える
+            UiKit.PixelArt(pimg);   // 32 ドットを 48 (1.5倍)・2段の 34 等で置く＝ドットの太さをそろえる (2026-09-29 p25)
             if (withName)
             {
-                var band = UiKit.Pan(slot, PaperFx.Ink, "band");
+                var band = UiKit.Pan(slot, muted ? PaperFx.InkSoft : PaperFx.Ink, "band");
                 UiKit.Anchor(band.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-1f, bandH + 1f));
                 band.raycastTarget = false;
-                var nt = UiKit.Deco(slot, def != null ? def.Name : gear.GearId, 12, PaperFx.Paper, TextAnchor.MiddleCenter);
-                UiKit.Anchor(nt.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-1f, bandH + 1f));
+                // 名前は字の高さを保ったまま横だけ詰める (長体。2026-09-29 p14: スマホは字が 15 に切り上がり、5〜6字の名前〔目当ての品・過負荷の歯車 等〕が「目当て…」で切れていた)。
+                // 枠は帯の幅いっぱい・字間 0・自動の大きさは上限＝下限＝今の字の大きさ (最小の規約 13/15 を割らない)・字幅は 70% まで。Ellipsis は最後の保険
+                var nt = UiKit.Deco(slot, def != null ? def.Name : gear.GearId, UiKit.MinFontSize, PaperFx.Paper, TextAnchor.MiddleCenter);   // 指定＝実寸 (旧 12 は 13/15 に切り上がっていた。2026-09-29 p16)
+                // 文字の枠は帯の内側 (帯の 1＋余白 2)。旧は帯より広いスロットの幅いっぱいで、長体の字がレア度の外線に接した・食い込んだ (2026-09-30 F41)
+                UiKit.Anchor(nt.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(3f, 1f), new Vector2(-3f, bandH + 1f));
                 nt.textWrappingMode = TextWrappingModes.NoWrap; nt.overflowMode = TextOverflowModes.Ellipsis;
+                nt.characterSpacing = 0f;
+                float fs = nt.fontSize;
+                nt.enableAutoSizing = true; nt.fontSizeMin = fs; nt.fontSizeMax = fs;
+                nt.characterWidthAdjustment = 32f;   // 6字×15 を内側 62 に入れる (約 69%)
             }
             if (gear.Charges > 1 || (def != null && (def.Charges ?? 1) > 1))
-            {   // 角の数字 = 残り回数 (回数つき＝発条・歯車)
+            {   // 角の数字 = 残り回数 (回数つき＝発条・歯車)。外へのはみ出しは 4 (輪を含めて 5.5。2026-09-29 p14: 旧 9＝上の見出しの数字に乗っていた)
                 var badge = UiKit.NewRect("badge", slot);
-                UiKit.Anchor(badge, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-13f, -13f), new Vector2(9f, 9f));
+                UiKit.Anchor(badge, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-18f, -18f), new Vector2(4f, 4f));
                 var bImg = badge.gameObject.AddComponent<Image>();
                 bImg.sprite = PaperFx.Disc(); bImg.preserveAspect = true; bImg.raycastTarget = false;
+                if (muted) bImg.color = PaperFx.DimTint;
                 var bRing = UiKit.NewRect("ring", badge);
                 UiKit.Stretch(bRing, -1.5f, -1.5f, -1.5f, -1.5f);
                 var rImg = bRing.gameObject.AddComponent<Image>();
-                rImg.sprite = PaperFx.Ring(4); rImg.color = PaperFx.Ink; rImg.raycastTarget = false; rImg.preserveAspect = true;
-                var btx = UiKit.Deco(badge, gear.Charges.ToString(), 13, PaperFx.Ink, TextAnchor.MiddleCenter);
+                rImg.sprite = PaperFx.Ring(4); rImg.color = muted ? PaperFx.InkSoft : PaperFx.Ink; rImg.raycastTarget = false; rImg.preserveAspect = true;
+                var btx = UiKit.Deco(badge, gear.Charges.ToString(), 13, muted ? PaperFx.InkSoft : PaperFx.Ink, TextAnchor.MiddleCenter);
                 UiKit.Stretch(btx.rectTransform, 0f, 0f, 0f, 0f);
             }
             string tip = Tip(def, gear, st, blocked);
@@ -140,11 +157,31 @@ namespace DeckRogue.Game
             {
                 string live = null, none = null;
                 try { live = Gears.GearLiveDamage(st, def); none = Gears.GearNoEffectReason(st, def); } catch (Exception) { }
-                if (live != null) sb.Append("\n<color=#7a4e12>").Append(live).Append("</color>");
-                if (none != null) sb.Append("\n<color=#7a4e12>⚠ いま組んでも何も起きない: ").Append(none).Append("</color>");
-                if (blocked != null) sb.Append("\n<color=#9c3a2a>（いまは組めない: ").Append(blocked).Append("）</color>");
+                if (live != null) sb.Append("\n").Append(UiKit.ColorTag(PaperFx.BrassInk, live));   // 注意書き＝真鍮の墨 (旧・金の墨 #7a4e12。2026-09-29 p26)
+                if (none != null) sb.Append("\n").Append(UiKit.ColorTag(PaperFx.BrassInk, "⚠ いま組んでも何も起きない: " + none));
+                if (blocked != null) sb.Append("\n").Append(UiKit.ColorTag(PaperFx.BadInk, "（いまは組めない: " + blocked + "）"));
             }
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// 組めない理由のうち、ギア全部に同時に当たり自分の番でも続くものの短い形 (2026-09-29 p14。トークンを灰にする条件と、区画の見出しに1回だけ出す言葉)。
+        /// 魔素が1個ぶん (GEAR_MANA_COST) に足りない＝「魔素不足」・このターンもう組んだ＝「今ターン済」・占術で捨てる札を選ぶ途中＝「占術中」。
+        /// 敵の番・確認の窓・戦闘の外 (st==null) は null (手番の札が言う＝毎ターン灰になって点滅しない)。エンジンの文字列を照合せず状態から決める
+        /// </summary>
+        public static string BlockShort(RunState run, GameState st)
+        {
+            if (st == null || run == null) return null;
+            if (DeckRogue.Engine.Run.ManaOf(run) < Gears.GEAR_MANA_COST) return "魔素不足";
+            if (st.GearUsedThisTurn == true) return "今ターン済";
+            if (st.PendingScry != null) return "占術中";
+            return null;
+        }
+
+        /// <summary>BlockShort の長い形 (持ち物の一覧の説明の行)</summary>
+        public static string BlockLong(string shortReason)
+        {
+            return shortReason == "魔素不足" ? "魔素が足りない" : shortReason == "今ターン済" ? "このターンはもう組んだ" : shortReason == "占術中" ? "占術で捨てる札を選んでから" : shortReason;
         }
 
         /// <summary>
@@ -183,15 +220,17 @@ namespace DeckRogue.Game
             var gears = DeckRogue.Engine.Run.GearsOf(run);
             if (gears.Count == 0) { g.GearMore = false; return; }
             float tw = PhoneTokenW, th = PhoneTokenH, pitch = PhoneTokenW + 8f, rowH = PhoneTokenH + 8f;
-            float W = ph ? Mathf.Min(560f, cs.x - 272f) : 560f;
-            int perRow = Mathf.Max(1, (int)((W - 40f + 8f) / pitch));
+            // スマホは自分の札の右から (切り欠きで札が右へずれていたら窓もずらす。2026-09-30 F42)。幅は置き場から決める
+            float x = ph ? Mathf.Max(260f, BattleScreen.PhoneStripRight + 12f) : UiKit.Edge + 300f + st.Player.SetSlots * (BattleScreen.PhoneTokenW + 10f) + 24f;   // 自分の札の左端は四辺の余白 (2026-09-29 p12: 旧 40)
+            float W = ph ? Mathf.Min(560f, cs.x - x - 12f) : 560f;
+            int perRow = Mathf.Max(1, (int)((W - 40f - 4f + 8f) / pitch));   // 1列目を 4 ずらす (外線をマスクで切らない。F41)
             int rows = Mathf.CeilToInt(gears.Count / (float)perRow);
             float H = 28f + 30f + 6f + rows * rowH + 6f + 48f + 34f;
-            float maxH = cs.y - RunUi.TopH - 24f - (ph ? 312f : 448f);
+            float maxH = cs.y - RunUi.TopH - 24f - (ph ? 312f : BattleView.StatusLineY + BattleScreen.StripH + 8f);
             if (H > maxH) H = maxH;
-            float x = ph ? 260f : 40f + 300f + st.Player.SetSlots * (BattleScreen.PhoneTokenW + 10f) + 24f;
             if (x + W > cs.x - 12f) x = Mathf.Max(12f, cs.x - 12f - W);
-            float y0 = ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleView.StatusLineY + BattleScreen.StripH + 8f;
+            float y0 = ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleView.StatusLineY + BattleScreen.StripH + 8f;   // PC は自分の札の上端 (StripH に固定。2026-09-30 F19)
+            if (ph) y0 = KeepBelowBand(cs, y0, H);
             var panel = PaperFx.Sheet(root, PaperFx.Panel, "gear-more-window");
             UiKit.Anchor(panel.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x, y0), new Vector2(x + W, y0 + H));
             panel.raycastTarget = true;
@@ -208,7 +247,9 @@ namespace DeckRogue.Game
             var name = UiKit.Deco(head, "ギアの持ち物 " + gears.Count + " / " + Gears.GEAR_CARRY_MAX, ph ? 17 : 19, PaperFx.Ink, TextAnchor.MiddleLeft);
             UiKit.Le(name, -1f, 30f, -1f, 30f);
             bool canUse = st != null && st.Phase == CombatPhases.PlayerTurn && st.EnemyPhase != true && g.Pending == null;
-            var sub = UiKit.Txt(head, canUse ? "押すと窓が開く" : "いまは組めない (敵の番)", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            string why = BlockShort(run, st);   // 組めない理由は全部のギアに共通なので、一覧でも見出しの横に1回 (2026-09-29 p14。旧は魔素0でも「押すと窓が開く」)
+            string subText = why != null ? UiKit.ColorTag(PaperFx.BadInk, "いまは組めない（" + BlockLong(why) + "）") : canUse ? "押すと窓が開く" : "いまは組めない (敵の番)";
+            var sub = UiKit.Txt(head, subText, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(sub, -1f, 30f, -1f, 30f);
             for (int r = 0; r < rows; r++)
             {
@@ -219,7 +260,7 @@ namespace DeckRogue.Game
                     int idx = i;
                     var tok = Token(g, row, run, st, i, gears[i], tw, th, true, false);
                     int c = i - r * perRow;
-                    UiKit.Anchor(tok, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(c * pitch, -4f - th), new Vector2(c * pitch + tw, -4f));
+                    UiKit.Anchor(tok, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(4f + c * pitch, -4f - th), new Vector2(4f + c * pitch + tw, -4f));
                     var paper = tok.Find("paper");
                     if (paper != null && canUse) OnClick(paper.gameObject, delegate { Audio.Ui("click"); g.GearMore = false; g.GearPending = new PendingGear { Index = idx }; g.Rebuild(); });
                 }
@@ -236,23 +277,35 @@ namespace DeckRogue.Game
         // ---- 上部バーの魔素の札 ----
 
         /// <summary>G の札の隣に魔素の札: 歯車の絵＋「25/50（あと2個）」(狭ければ「25/50」)。演出の的 "mana"</summary>
+        /// <summary>魔素の表記「30/50（3個ぶん）」(Unity の画面。2026-09-29 上部バーの整理)。
+        /// エンジンの Gears.ManaLabel (TS の manaLabel と共有・Web と CLI の「（あとN個）」) はルールエンジンの側なので触らず、画面の文言だけここでそろえる</summary>
+        public static string ManaText(int mana)
+        {
+            return mana + "/" + Gears.MANA_MAX + (mana >= Gears.GEAR_MANA_COST ? "（" + (mana / Gears.GEAR_MANA_COST) + "個ぶん）" : "");   // 1個ぶんに満たない時は括弧を出さない (F29「（0個ぶん）」は不自然)
+        }
+
         public static RectTransform ManaTag(GameRoot g, Transform bar, RunState run, bool compact)
         {
             int mana = DeckRogue.Engine.Run.ManaOf(run);
-            var tag = BattleScreen.Tag(bar, 34f, 0.3f);
+            var tag = BattleScreen.Tag(bar, 34f, 0f);   // 傾けない (右の群れは水平。2026-09-29)
             g.RegisterAnchor("mana", tag);
             var tImg = tag.GetComponent<Image>(); if (tImg != null) tImg.raycastTarget = true;
             var ic = new GameObject("gear-ic", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
             ic.transform.SetParent(tag, false);
             ic.sprite = ThemeFx.GearGlyph("mana", "interfere"); ic.preserveAspect = true; ic.raycastTarget = false;
+            UiKit.PixelArt(ic);   // 32 ドットを 18 に縮める＝バイリニア (最近傍で線を飛ばさない。p25)
             UiKit.Le(ic.rectTransform, 18f, 18f, 18f, 18f);
-            var mt = UiKit.Deco(tag, mana.ToString(), 18, PaperFx.Ink, TextAnchor.MiddleLeft);
+            // 何の数字かを札に書く (2026-09-29: 歯車の絵と数字だけで、隣の「150 G」と並ぶと第2の通貨か上限つきのゲージか分からなかった)。
+            // 並びは Web と同じ「魔素 30 /50（3個ぶん）」。数字は青緑の墨 (ギア配置の案A の mana_pill)。「あと N 個」は持ち物の数・組む窓の「このターンはあと1個」と混ざるので「N個ぶん」
+            var lab = UiKit.Txt(tag, "魔素", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            UiKit.Le(lab, -1f, 28f, -1f, 28f);
+            var mt = UiKit.Deco(tag, mana.ToString(), 18, PaperFx.ManaInk, TextAnchor.MiddleLeft);
             UiKit.Le(mt, -1f, 28f, -1f, 28f);
             int left = mana / Gears.GEAR_MANA_COST;
-            var ml = UiKit.Txt(tag, "/" + Gears.MANA_MAX + (compact ? "" : "（あと" + left + "個）"), 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            var ml = UiKit.Txt(tag, "/" + Gears.MANA_MAX + (compact || left <= 0 ? "" : "（" + left + "個ぶん）"), 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);   // 1個ぶん未満は括弧なし (組めない理由はギアの見出しの「魔素不足」。F29)
             UiKit.Le(ml, -1f, 28f, -1f, 28f);
             int n = DeckRogue.Engine.Run.GearsOf(run).Count;
-            string tip = "<b>魔素 " + Gears.ManaLabel(mana) + "</b>\nギアを組む動力。1個＝" + Gears.GEAR_MANA_COST + "。通常戦の勝利で+" + DeckRogue.Engine.Run.MANA_PER_WIN + "・強個体/幕ボスで+" + DeckRogue.Engine.Run.MANA_PER_ELITE_BOSS + "。上限" + Gears.MANA_MAX + "\nギアの持ち物 " + n + " / " + Gears.GEAR_CARRY_MAX;
+            string tip = "<b>魔素 " + ManaText(mana) + "</b>\nギアを組む動力。1個＝" + Gears.GEAR_MANA_COST + "。通常戦の勝利で+" + DeckRogue.Engine.Run.MANA_PER_WIN + "・強個体/幕ボスで+" + DeckRogue.Engine.Run.MANA_PER_ELITE_BOSS + "。上限" + Gears.MANA_MAX + "\nギアの持ち物 " + n + " / " + Gears.GEAR_CARRY_MAX;
             Tooltip.Attach(tag.gameObject, delegate { return tip; });
             return tag;
         }
@@ -271,6 +324,16 @@ namespace DeckRogue.Game
             if (p.Stage == "target") { BuildTargetBanner(g, root, EffectiveDef(def, p) ?? def); return; }
             if (p.Stage == "card") { BuildCardPicker(g, root, st, EffectiveDef(def, p) ?? def); return; }
             BuildWindow(g, root, run, st, gears[p.Index], def);
+        }
+
+        /// <summary>スマホの窓の下端: 上端が上の帯 (からくり・ギア・置物のトークン) に掛かるなら、掛かる分だけ手札の上端へ下ろす
+        /// (2026-09-30 最終の答え合わせ: 窓がほかのギアの名前を隠し、別のギアへ持ち替えにくかった)。下ろすのは 60 まで (札の名前の行まで)</summary>
+        static float KeepBelowBand(Vector2 cs, float y0, float h)
+        {
+            if (BattleScreen.PhoneBandBottom <= 0f) return y0;
+            float topLimit = cs.y - BattleScreen.PhoneBandBottom - 6f;   // キャンバスの下から
+            float over = y0 + h - topLimit;
+            return over > 0f ? y0 - Mathf.Min(over, 60f) : y0;
         }
 
         static void BuildWindow(GameRoot g, RectTransform root, RunState run, GameState st, GearInstance gear, GearDef def)
@@ -292,8 +355,10 @@ namespace DeckRogue.Game
             IReadOnlyList<CardInstance> cardChoices = eff != null && eff.NeedsCard != null ? Gears.GearCardChoices(st, eff) : new List<CardInstance>();
             bool ready = eff != null && (def.Special != "nameless" || p.AsGearId != null);
 
-            // 大きさ: 行数で伸びる。PC は自分の札の上 (x=40)、スマホは自分の札の右・手札の上
-            float W = ph ? Mathf.Min(420f, cs.x - 272f) : 560f;
+            // 大きさ: 行数で伸びる。PC は自分の札の上 (x=Edge)、スマホは自分の札の右・手札の上
+            // スマホは自分の札の右から (2026-09-30 F42: x を 260 に固定していたので、切り欠きで札が右へずれると窓が HP バーの右端を隠した)。幅は置き場から決める
+            float x = ph ? Mathf.Max(260f, BattleScreen.PhoneStripRight + 12f) : UiKit.Edge + 300f + st.Player.SetSlots * (BattleScreen.PhoneTokenW + 10f) + 24f;   // 自分の札の左端は四辺の余白 (2026-09-29 p12: 旧 40)
+            float W = ph ? Mathf.Min(420f, cs.x - x - 12f) : 560f;
             int charsPerLine = Mathf.Max(8, (int)((W - 40f) / 16f));
             int textLines = Mathf.Max(1, Mathf.CeilToInt(def.Text.Length / (float)charsPerLine));
             float H = 28f + 30f + 6f + textLines * 22f;
@@ -303,12 +368,12 @@ namespace DeckRogue.Game
             if (eff != null && eff.NeedsCard != null) H += 30f;
             if (needTarget) H += 30f;
             H += 8f + 22f + 6f + 48f + 40f;   // 縦の並びの間 (6×行数) と紙の余白
-            float maxH = cs.y - RunUi.TopH - 24f - (ph ? 312f : 448f);
+            float maxH = cs.y - RunUi.TopH - 24f - (ph ? 312f : BattleView.StatusLineY + BattleScreen.StripH + 8f);
             if (H > maxH) H = maxH;
-            // PC はギアのトークンの真上 (自分の札の C 区画の左端)。スマホは自分の札の右・手札の上
-            float x = ph ? 260f : 40f + 300f + st.Player.SetSlots * (BattleScreen.PhoneTokenW + 10f) + 24f;
+            // PC はギアのトークンの真上 (自分の札の C 区画の左端)。スマホは自分の札の右・手札の上 (x は上で決めた)
             if (x + W > cs.x - 12f) x = Mathf.Max(12f, cs.x - 12f - W);
-            float y0 = ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleView.StatusLineY + BattleScreen.StripH + 8f;
+            float y0 = ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleView.StatusLineY + BattleScreen.StripH + 8f;   // PC は自分の札の上端 (StripH に固定。2026-09-30 F19)
+            if (ph) y0 = KeepBelowBand(cs, y0, H);
             var panel = PaperFx.Sheet(root, PaperFx.Panel, "gear-window");
             UiKit.Anchor(panel.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x, y0), new Vector2(x + W, y0 + H));
             panel.raycastTarget = true;
@@ -327,6 +392,7 @@ namespace DeckRogue.Game
             var ic = new GameObject("ic", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
             ic.transform.SetParent(head, false);
             ic.sprite = ThemeFx.GearGlyph(def.Id, def.Family); ic.preserveAspect = true; ic.raycastTarget = false;
+            UiKit.PixelArt(ic);   // p25
             UiKit.Le(ic.rectTransform, 26f, 26f, 26f, 26f);
             var name = UiKit.Deco(head, def.Name, ph ? 17 : 19, PaperFx.Ink, TextAnchor.MiddleLeft);
             UiKit.Le(name, -1f, 30f, -1f, 30f);
@@ -361,7 +427,7 @@ namespace DeckRogue.Game
                     for (int r = 0; r < rows; r++)
                     {
                         var row = UiKit.NewRect("row" + r, inner);
-                        UiKit.Le(row, -1f, 40f, -1f, 40f);
+                        UiKit.Le(row, -1f, UiKit.Phone ? 48f : 40f, -1f, UiKit.Phone ? 48f : 40f);   // スマホのボタンは 48 (SetSize の丸め。2026-09-29)
                         var rg = UiKit.Horz(row, 6, 0);
                         rg.childAlignment = TextAnchor.MiddleLeft; rg.childForceExpandWidth = false; rg.childForceExpandHeight = false;
                         for (int i = r * perRow; i < seen.Count && i < (r + 1) * perRow; i++)
@@ -398,7 +464,7 @@ namespace DeckRogue.Game
             // 脚: 魔素の収支と「組む／やめる」
             var sp = UiKit.NewRect("sp", inner); UiKit.Le(sp, -1f, 2f, -1f, 2f, -1f, 1f);
             string note = "魔素 " + mana + " → " + Math.Max(0, mana - Gears.GEAR_MANA_COST) + (st != null && st.GearUsedThisTurn != true && st.Phase == CombatPhases.PlayerTurn ? " ・このターンはあと1個" : "");
-            if (blocked != null) note = "<color=#9c3a2a>" + blocked + "</color>　" + note;
+            if (blocked != null) note = UiKit.ColorTag(PaperFx.BadInk, blocked) + "　" + note;
             var ft = UiKit.Txt(inner, note, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             ft.textWrappingMode = TextWrappingModes.NoWrap; ft.overflowMode = TextOverflowModes.Ellipsis;
             UiKit.Le(ft, -1f, 22f, -1f, 22f);
@@ -531,6 +597,7 @@ namespace DeckRogue.Game
             UiKit.Anchor(pic, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-32f, -82f), new Vector2(32f, -18f));
             var pimg = pic.gameObject.AddComponent<Image>();
             pimg.sprite = ThemeFx.GearGlyph(id, def != null ? def.Family : "general"); pimg.preserveAspect = true; pimg.raycastTarget = false;
+            UiKit.PixelArt(pimg);   // 64 (2倍)。スマホ・拡大の窓では非整数倍 (p25)
             var name = UiKit.Deco(cell, def != null ? def.Name : id, 20, PaperFx.Ink, TextAnchor.MiddleCenter);
             UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(8f, -116f), new Vector2(-8f, -86f));
             name.textWrappingMode = TextWrappingModes.NoWrap; name.overflowMode = TextOverflowModes.Ellipsis;
@@ -540,7 +607,7 @@ namespace DeckRogue.Game
             var desc = UiKit.Txt(cell, def != null ? def.Text : "", 14, PaperFx.Ink, TextAnchor.UpperCenter);
             desc.textWrappingMode = TextWrappingModes.Normal; desc.overflowMode = TextOverflowModes.Ellipsis;   // 長い本文 (蝋の栓) は足元の一文に重なっていた → 「…」で切る (全文は説明文へ。2026-09-24 出立の店で露見)
             UiKit.Anchor(desc.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(14f, 78f), new Vector2(-14f, -142f));
-            var footT = UiKit.Txt(cell, foot ?? "自ターンに魔素1で組む\n（1ターン1個）", 12, PaperFx.InkSoft, TextAnchor.MiddleCenter);
+            var footT = UiKit.Txt(cell, foot ?? "自ターンに魔素1で組む\n（1ターン1個）", UiKit.MinFontSize, PaperFx.InkSoft, TextAnchor.MiddleCenter);   // 指定＝実寸 (2026-09-29 p16)
             UiKit.Anchor(footT.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(6f, 40f), new Vector2(-6f, 76f));
             footT.textWrappingMode = TextWrappingModes.Normal;
             if (def != null) { string tip = "<b>" + def.Name + "</b>  " + RarityJa(def.Rarity) + "\n" + def.Text; Tooltip.Attach(paper.gameObject, delegate { return tip; }); }

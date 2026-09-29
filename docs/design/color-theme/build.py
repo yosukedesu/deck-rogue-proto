@@ -129,7 +129,7 @@ P_FINAL.update(
     accent='#c99a3a', accent_light='#ead08a', accent_ink='#634410', accent2='#3aa79b', accent2_ink='#155650',
     energy='#c99a3a', energy_ink='#634410', gold='#c99a3a', gold_ink='#634410',   # エナジーは真鍮 (同日ユーザー「エナジー表記は黄色系がいい」)
     hp='#c9635a', block='#6f95b8', good='#7fa86c', good_ink='#276a34', bad_ink='#9c3a2a', status='#9d86bf', status_bg='#e9def3', status_ink='#5a3d78',
-    types=dict(physical='#c9a982', spell='#a98cc4', reaction='#7ab8b0', permanent='#a8a66b'), band_ink=True,   # 実装どおり淡い帯＋墨の文字 (CardView のリボン)
+    types=dict(physical='#c9a982', spell='#bca6d6', reaction='#7ab8b0', permanent='#b3b67a'), band_ink=True,   # 実装どおり淡い帯＋墨の文字 (CardView のリボン)。藤と鈍い黄は 2026-09-29 p19 で明るく (墨 6.1／6.3:1)
     rarity=dict(common='#2f2e35', uncommon='#6f95b8', rare='#c99a3a'), orb_filter='',
 )
 GROUND = '#0f1120'
@@ -305,9 +305,9 @@ TOKENS = [
     ]),
     ('タイプの帯 (淡い色＋墨の文字)', [
         ('物理 砂', 'Sand', P_FINAL['types']['physical'], '据え置き（墨 6.1:1）'),
-        ('呪文 藤', 'PlumBand', P_FINAL['types']['spell'], '据え置き（墨 4.6:1）'),
+        ('呪文 藤', 'PlumBand', P_FINAL['types']['spell'], '#a98cc4 を同じ色相で明るく（墨 6.1:1。2026-09-29）'),
         ('仕込み札 青緑', 'Teal', P_FINAL['types']['reaction'], '据え置き＝マナの淡い版（墨 6.0:1）'),
-        ('置物 鈍い黄', 'Olive', P_FINAL['types']['permanent'], '蜂蜜→オリーブ。真鍮の縁と混ざらない（墨 5.3:1）'),
+        ('置物 鈍い黄', 'Olive', P_FINAL['types']['permanent'], '蜂蜜→オリーブ→明るく（墨 6.3:1。2026-09-29）。真鍮の縁と混ざらない'),
     ]),
 ]
 CHANGES = [

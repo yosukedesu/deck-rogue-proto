@@ -49,6 +49,8 @@ namespace DeckRogue.Game
             public bool Settable;
             public int Cost;        // 表示したコスト (割引・重圧で変わったら描き直す。2026-09-09)
             public int Preview;     // 表示に使った対象の敵 (-1 = 無し)
+            public bool Compact;    // 名前を左寄せで描いた (スマホで手札7枚以上。6枚と7枚をまたいだら描き直す。2026-09-29 p09)
+            public float BodyInset; // 本文の右の余白に足した量 (スマホで隣の札に覆われる幅。2026-09-30 F01)
         }
         readonly Dictionary<string, HandCard> _hand = new Dictionary<string, HandCard>();
 
@@ -119,6 +121,20 @@ namespace DeckRogue.Game
                 BattleScreen.BuildBackground(bg, run);
                 _bgAct = run.Act;
             }
+            // 手札の後ろの手前の地面を地の色で沈める (2026-09-29 I44): 幕1 の手前の草は座席より明るく (下の隅 L≈52〜55 対 戦闘の帯 L≈46)、
+            // ぼけた草・タイルの柄の境目・幕2 の額縁の柱の頭が手札・エナジーの輪・山札・ターン終了の真後ろで騒いでいた。
+            // 範囲は画面の下端から足元の線 (StatusLineY) まで。下の 40% は 0.8 で一定、その上を smoothstep で 0 へ (上端に線は付けない＝案B の作業台にはしない)。
+            // 紙の UI (HandLayer・UiLayer) と帳面 (StatusLineY から上) より下の層 = 光と空気は舞台だけ、の規約の内側 (SyncDanger と同じ層)
+            var desk = FieldLayer.Find("desk-shade") as RectTransform;
+            if (desk == null)
+            {
+                desk = UiKit.NewRect("desk-shade", FieldLayer);
+                var dim = desk.gameObject.AddComponent<Image>();
+                dim.sprite = ThemeFx.FadeUp(PaperFx.Ground, 0.8f, "fade-up-ground"); dim.type = Image.Type.Simple; dim.preserveAspect = false; dim.raycastTarget = false;
+            }
+            UiKit.Anchor(desk, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, StatusLineY));
+            var bgRt = FieldLayer.Find("bg");
+            desk.SetSiblingIndex(bgRt != null ? bgRt.GetSiblingIndex() + 1 : 0);
             // 敵の入れ物: 数が変わったら作り直す (分裂・孵化)
             int prevCount = _enemiesArea != null ? _enemyPanels.Count : 0;   // 増えた分は登場の演出 (2026-09-17)
             if (_enemiesArea == null || _enemyPanels.Count != st.Enemies.Count)
@@ -165,16 +181,30 @@ namespace DeckRogue.Game
             // いちばん左の敵の表示 (PC は足元の帳面の左端・スマホは頭上の意図の札の左端) より左で止める。倒れた敵の座席も数える (戦闘中に欄が伸び縮みしない)
             if (_enemyGaps.Length != st.Enemies.Count) _enemyGaps = new float[st.Enemies.Count];
             float zoneRight = float.MaxValue;
+            float minGap = float.MaxValue;
             for (int i = 0; i < st.Enemies.Count; i++)
             {
                 float gap = float.MaxValue;
                 if (i > 0) gap = Mathf.Min(gap, Mathf.Abs(centers[i] - centers[i - 1]));
                 if (i + 1 < centers.Length) gap = Mathf.Min(gap, Mathf.Abs(centers[i + 1] - centers[i]));
                 _enemyGaps[i] = gap;
-                float half = UiKit.Phone ? 112f : BattleScreen.StripW(gap, st.Enemies.Count == 1) / 2f;   // 意図の札は最大 ≈220 幅で頭の真上に中央揃え
+                minGap = Mathf.Min(minGap, gap);
+            }
+            for (int i = 0; i < st.Enemies.Count; i++)
+            {
+                // 全員の帳面と意図の札は、いちばん狭い間隔から1つの幅に揃える (2026-09-29 p02「1体でも4体でも同じ形」: 数 px の差で名前の行の形が
+                // ①②「①嚙み…＋筋力-2」／③④「③嚙みつく…＋-2」と割れていた)。帳面の中心は足元の x のまま (HP は足元)
+                _enemyGaps[i] = minGap;
+                float half = UiKit.Phone ? 112f : BattleScreen.StripW(minGap, st.Enemies.Count == 1) / 2f;   // 意図の札は最大 ≈220 幅で頭の真上に中央揃え
                 zoneRight = Mathf.Min(zoneRight, centers[i] - half);
             }
             SelfZoneRight = st.Enemies.Count > 0 ? zoneRight : -1f;
+            // 1体でも帳面に3段目 (特性・庇われている・分岐・予告) があれば全員の帳面を同じ高さに (名前の行と HP バーが一直線。2026-09-29 p01)
+            bool anyForecast = false;
+            for (int i = 0; i < st.Enemies.Count && !anyForecast; i++) if (BattleScreen.HasForecast(st, i, _enemyGaps[i])) anyForecast = true;
+            // 1体でも意図の札の rider が下の段に回るなら、rider を持つ札は全員下ろす (2026-09-30 F13「1体でも4体でも同じ形」)
+            bool anyStack = false;
+            for (int i = 0; i < st.Enemies.Count && !anyStack; i++) if (BattleScreen.IntentNeedsStack(st, i, _enemyGaps[i])) anyStack = true;
             for (int i = 0; i < st.Enemies.Count; i++)
             {
                 var pan = _enemyPanels[i];
@@ -189,7 +219,7 @@ namespace DeckRogue.Game
                 // 出来事が先に来ていた (順送りの敵フェーズで倒れた) なら _died に印があるので何も描かない。出来事が来なければ 0.6 秒後に崩す (保険)
                 if (alive) _died.Remove(i);
                 bool dyingNow = wasAlive && !alive && !_died.Contains(i);
-                BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i], gap, dyingNow);
+                BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i], gap, dyingNow, anyForecast, anyStack);
                 _shownEnemyHp[i] = st.Enemies[i].Hp;
                 _shownEnemyBlock[i] = st.Enemies[i].Block;
                 if (dyingNow) { int ci = i; bool fled = st.Enemies[i].Fled == true; Tween.After(0.6f, () => KillEnemy(g, ci, fled)); }
@@ -229,9 +259,14 @@ namespace DeckRogue.Game
             bool fired = false;
             for (int i = _boxLogSeen; i < st.EventLog.Count; i++) if (st.EventLog[i] is GameEvent_ReactionTriggered) fired = true;
             _boxLogSeen = st.EventLog.Count;
-            Stage.SetKarakuriBox(st.Player.SetCards.Count, fired);
+            Stage.SetKarakuriBox(st.Player.SetCards.Count, fired, BoxLeftRear);
             SyncDanger(st);
         }
+
+        /// <summary>舞台のからくりの匣をリーダーの左奥に置くか (2026-09-29 戦闘画面のレビュー p13): PC は左奥 (右手前は自分の札 y642 に下端と接地影が隠れ、
+        /// 白では人形の2体目の足元も隠していた)。スマホはリーダーの足元の真ん前 (2026-09-30 F46: 右手前は白の人形の2体目の脚を隠した。左奥は自分の札 x≤325・上端 y382 にもぐる)。
+        /// 人形の数では決めない＝戦闘の途中で匣が動かない</summary>
+        public static bool BoxLeftRear { get { return !UiKit.Phone; } }
 
         /// <summary>自分の欄 (からくり・ギア・置物) が伸びてよい右端 (キャンバス x)。いちばん左の敵の表示の左端。敵がいなければ -1 (2026-09-18)</summary>
         public static float SelfZoneRight = -1f;
@@ -363,6 +398,20 @@ namespace DeckRogue.Game
                     var tagOld = lp.Find("tag"); if (tagOld != null) { tagOld.SetParent(null, false); UnityEngine.Object.Destroy(tagOld.gameObject); }
                     BattleScreen.FillDollTag(lp, st, ld, overflow);
                 }
+            }
+            // 足元の札の重なりをほどく (隣と重なれば2段・PC は自分の札に潜らない。2026-09-29 p16)。
+            // 人形が混んで2段でも置けない札があれば、全部の札を短い形 (「・あとN」の代わりに右端の丸い数字) に組み直してもう一度並べる (形は画面でそろえる)
+            if (!BattleScreen.ArrangeDollTags(_dollsArea))
+            {
+                foreach (var d in dolls)
+                {
+                    RectTransform dp;
+                    if (!_dollPanels.TryGetValue(d.Uid, out dp) || dp == null || !_dollSeat.ContainsKey(d.Uid)) continue;
+                    var tagOld = dp.Find("tag"); if (tagOld == null) continue;
+                    tagOld.SetParent(null, false); UnityEngine.Object.Destroy(tagOld.gameObject);
+                    BattleScreen.FillDollTag(dp, st, d, d.Uid == lastShownUid ? overflow : 0, true);
+                }
+                BattleScreen.ArrangeDollTags(_dollsArea);
             }
         }
         readonly Dictionary<string, int> _dollSeat = new Dictionary<string, int>();   // uid → 座席 (崩れるまで保つ)
@@ -497,7 +546,16 @@ namespace DeckRogue.Game
             if (_playerArea == null) return;
             _shownPlayerHp = Math.Max(0, _shownPlayerHp + delta);
             BattleScreen.TweenHpBar(_playerArea, _shownPlayerHp);
-            BattleScreen.RefreshIncomingLine(_playerArea, _shownPlayerBlock, _shownPlayerHp);
+            BattleScreen.RefreshIncomingLine(_playerArea, _shownPlayerBlock, _shownPlayerIce, _shownPlayerHp);
+        }
+
+        /// <summary>順送りで敵の攻撃が届いた (ブロック前の量)。受けるダメージの見込みから引き、残りの敵の攻撃だけを言う＝HP と見込みで二重に引かない。
+        /// HP バーの削られる分の帯は左端 (見込みの残り HP) を保ったまま、塗りが縮んだ分だけ短くなる (2026-09-29 p08)</summary>
+        public void LandPlayerIncoming(int amount)
+        {
+            if (_playerArea == null) return;
+            BattleScreen.ConsumeIncoming(_playerArea, amount);
+            BattleScreen.RefreshIncomingLine(_playerArea, _shownPlayerBlock, _shownPlayerIce, _shownPlayerHp);
         }
 
         // ---- ブロックの数字を演出の途中で動かす (2026-09-17) ----
@@ -518,7 +576,7 @@ namespace DeckRogue.Game
             value = Math.Max(0, value);
             bool changed = value != _shownPlayerBlock;
             _shownPlayerBlock = value;
-            if (changed) { BattleScreen.SetPlayerBlockBadge(_playerArea, value); BattleScreen.RefreshIncomingLine(_playerArea, value, _shownPlayerHp); }
+            if (changed) { BattleScreen.SetPlayerBlockBadge(_playerArea, value); BattleScreen.RefreshIncomingLine(_playerArea, value, _shownPlayerIce, _shownPlayerHp); }
         }
 
         /// <summary>敵の攻撃が吸われた量を「通常ブロック→氷壁」の順で差し引く (エンジンの消費順と同じ)</summary>
@@ -536,6 +594,7 @@ namespace DeckRogue.Game
             if (_playerArea == null) return;
             _shownPlayerIce = Math.Max(0, _shownPlayerIce + delta);
             BattleScreen.SetPlayerIceText(_playerArea, _shownPlayerIce);
+            BattleScreen.RefreshIncomingLine(_playerArea, _shownPlayerBlock, _shownPlayerIce, _shownPlayerHp);   // 見込みのブロックは氷壁も足す (p08)
         }
 
         public void NudgeEnemyBlock(int index, int delta)
@@ -566,6 +625,7 @@ namespace DeckRogue.Game
         /// <summary>確認の窓 (発動/温存) を閉じる: 順送りの続き (発動の後の敵の行動) を古い盤面の上で見せる前に、窓と暗がりだけ先に畳む (2026-09-17)</summary>
         public void CloseReactionWindow()
         {
+            BattleScreen.RestoreSelfStrip(_playerArea);   // 窓が上げられず打ち切った自分の札を元の幅に (2026-09-29 p11)
             if (UiLayer == null) return;
             for (int i = UiLayer.childCount - 1; i >= 0; i--)
             {
@@ -596,40 +656,417 @@ namespace DeckRogue.Game
             return null;
         }
 
-        /// <summary>予測に使う敵: 狙いを付けた敵、無ければ生存が1体の時だけその敵 (SyncHand と同じ規則)</summary>
+        /// <summary>予測に使う敵: 狙いを付けた敵、無ければ生存が1体の時だけその敵 (SyncHand と同じ規則)。庇われている敵を狙っていれば護衛 (単体の札は護衛に向かう。2026-09-29 p01)</summary>
         public static int PreviewTargetFor(GameRoot g, GameState st)
         {
             int alive = 0, firstAlive = -1;
             for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) { alive++; if (firstAlive < 0) firstAlive = i; }
-            return g.PreferredTarget >= 0 && g.PreferredTarget < st.Enemies.Count && st.Enemies[g.PreferredTarget].Hp > 0 ? g.PreferredTarget : (alive == 1 ? firstAlive : -1);
+            return g.PreferredTarget >= 0 && g.PreferredTarget < st.Enemies.Count && st.Enemies[g.PreferredTarget].Hp > 0 ? BattleScreen.GuardRedirect(st, g.PreferredTarget) : (alive == 1 ? firstAlive : -1);
         }
 
         /// <summary>ドラッグ中に敵の上へ来た/離れた時、その札だけ描き直す (本家と同じく敵に当てた時に数字が変わる。2026-09-09)</summary>
         public void RefreshHandCard(GameRoot g, GameState st, HandCard hc, int previewEnemy)
         {
-            int preview = previewEnemy >= 0 ? previewEnemy : PreviewTargetFor(g, st);
+            int preview = previewEnemy >= 0 ? BattleScreen.GuardRedirect(st, previewEnemy) : PreviewTargetFor(g, st);
             if (hc.Preview == preview) return;
             hc.Preview = preview;
             CardView.PreviewEnemy = preview;
-            try { CardView.Refill(hc.Rt, hc.Card, st, hc.Playable, true); }
-            finally { CardView.PreviewEnemy = -1; }
+            CardView.CompactName = hc.Compact;   // 手札の今の名前の置き方のまま描き直す (p09)
+            CardView.BodyRightInset = hc.BodyInset;
+            CardView.InHand = true;
+            try { CardView.Refill(hc.Rt, hc.Card, st, hc.Playable || hc.Settable, true); }   // 面は「出せる、または仕込める」(判定は Playable のまま。2026-09-29 p05)
+            finally { CardView.PreviewEnemy = -1; CardView.CompactName = false; CardView.BodyRightInset = 0f; CardView.InHand = false; }
+        }
+
+        // ---- 狙いの矢 (スマホ。2026-09-29 p09 ユーザー裁定「狙いの矢だけ」) ----
+        // 敵を狙う札 (選択式でない単体の札) をドラッグすると、札は手札の元の位置・等倍・回転0に留まり、札の上端の中央から指まで
+        // 真鍮の点 (2次ベジェの上に14個) と指先の輪が伸びる (本家 StS の対象指定と同じ形)。旧: 0.8倍の札の中心が指の真下に来て、
+        // 描き直した与ダメの数字 (2026-09-09「敵に当てた時に数字が変わる」) も狙った敵の帳面も親指と札に隠れていた。
+        // 指が画面の下 36% (EndDrag の取り消しの線) にある間は矢を隠す＝そこで離すと取り消し。
+        // 指の下の敵が変わった時だけ、その敵 (庇われていれば護衛＝札の向かう先) の意図の札と帳面に真鍮の縁 "dragedge" を付ける。
+        // 点は敵の帳面・意図の札の上には描かない (紙の後ろを通って見える＝HP と意図の数字を点で隠さない)。
+        // 置き場は UiLayer (組み直しの ClearUi で一緒に消え、次の Drag で作り直す)。どれも raycastTarget=false
+        const int AimDotCount = 14;
+        const float AimDotSize = 10f, AimDotRim = 13f, AimRingSize = 48f;
+        RectTransform _aim, _aimLine, _aimRing;
+        readonly List<RectTransform> _aimDots = new List<RectTransform>();
+        readonly List<GameObject> _aimEdges = new List<GameObject>();
+        int _aimEdgeIdx = -1;
+        static readonly string[] AimBlockers = { "strip", "intent-tag" };
+        static readonly Vector3[] _aimCorners = new Vector3[4];
+        static Sprite _aimDotSprite;
+
+        /// <summary>狙いの矢を指の位置 (画面の座標) まで引き直す。over = 指の下の敵 (-1 = 無し)。札は手札の元の位置に押さえる</summary>
+        public void UpdateAimArrow(GameRoot g, GameState st, HandCard hc, Vector2 screenPos, int over)
+        {
+            if (UiLayer == null || hc == null || hc.Rt == null || st == null) return;
+            if (_aim == null) BuildAimArrow();   // 組み直し (ClearUi) で消えていれば作り直す
+            var pin = _aim.GetComponent<AimPin>();
+            if (pin != null) { pin.Card = hc.Rt; pin.Pos = hc.BasePos; pin.Scale = BattleScreen.CardScale; pin.Apply(); }
+            bool show = screenPos.y > Screen.height * 0.36f;
+            _aimLine.gameObject.SetActive(show);
+            SetAimEdge(g, st, show ? over : -1);
+            // 撃とうとしている札に真鍮の縁 (2026-09-30 F36: 札は手札の元の位置のままで、どの札から矢が出ているかが形から読めなかった)。
+            // 札の子は RefreshHandCard の描き直しで全部消えるので、無ければ付け直す。取り消しの線より下では矢と一緒に隠す
+            var de = hc.Rt.Find("dragedge");
+            if (de == null)
+            {
+                var e = PaperFx.Sheet(hc.Rt, PaperFx.Tag, "dragedge", PaperFx.BrassLight);
+                UiKit.Stretch(e.rectTransform, -5f, -5f, -5f, -5f);
+                e.raycastTarget = false;
+                e.transform.SetAsFirstSibling();   // 紙の後ろ＝縁だけが外に見える
+                de = e.transform;
+            }
+            de.gameObject.SetActive(show);
+            if (!show) return;
+            Vector2 p2;
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(_aim, screenPos, null, out p2)) return;
+            Vector2 p0 = _aim.InverseTransformPoint(hc.Rt.TransformPoint(new Vector3(0f, CardView.H / 2f + 8f, 0f)));   // 札の上端の中央の 8 上 (押さえた直後なので回転0・等倍)
+            // 札からまっすぐ立ち上がり、指より少し高い所から入る (F35: 旧は指と同じ高さを水平に走り、奥の敵を狙うと手前の敵の頭の上を横切った)
+            Vector2 p1 = new Vector2(p0.x, Mathf.Max(p0.y, p2.y) + 70f);
+            // リーダーの体を横切るなら、頂点を狙いの側へ倒す (2026-09-30 最終の答え合わせ: スマホで扇が左へ寄り、左端の札から立ち上がる矢がリーダーの体を縦に貫いた)。
+            // 倒す量は 0.15 刻みで 0.6 まで。体の上に点を描かないのではなく、体を避けて通す (矢は手前の札から出ているので、体の後ろを通って見えるのは嘘)
+            var leaderSpr = g.Anchor("player") != null ? g.Anchor("player").Find("sprite") as RectTransform : null;
+            if (leaderSpr != null && leaderSpr.gameObject.activeInHierarchy)
+            {
+                var lb = AimBodyRect(leaderSpr);
+                for (int step = 1; step <= 4 && CurveHits(p0, p1, p2, lb); step++)
+                    p1 = new Vector2(Mathf.Lerp(p0.x, p2.x, 0.15f * step), p1.y);
+            }
+            // 敵の帳面と意図の札 (生きている敵) の矩形: この上に来る点は描かない。狙っていない敵の体の上にも描かない (その敵の後ろを通って見える。F35)
+            int aimIdx = over >= 0 && over < st.Enemies.Count && st.Enemies[over].Hp > 0 ? BattleScreen.GuardRedirect(st, over) : -1;
+            var blocks = new List<Rect>();
+            for (int i = 0; i < st.Enemies.Count; i++)
+            {
+                if (st.Enemies[i].Hp <= 0) continue;
+                var pan = g.Anchor("enemy" + i);
+                if (pan == null) continue;
+                foreach (var nm in AimBlockers)
+                {
+                    var r = pan.Find(nm) as RectTransform;
+                    if (r != null) blocks.Add(LocalRectIn(_aim, r));
+                }
+                if (i != over && i != aimIdx)
+                {
+                    var spr = pan.Find("sprite") as RectTransform;
+                    if (spr != null && spr.gameObject.activeInHierarchy) blocks.Add(AimBodyRect(spr));
+                }
+            }
+            // 点は曲線の長さで等間隔に (t で等分すると、横に長い曲線では指の近くに点が詰まる)
+            const int samples = 48;
+            var pts = new Vector2[samples + 1];
+            var acc = new float[samples + 1];
+            for (int k = 0; k <= samples; k++)
+            {
+                float t = k / (float)samples, u = 1f - t;
+                pts[k] = u * u * p0 + 2f * u * t * p1 + t * t * p2;
+                acc[k] = k == 0 ? 0f : acc[k - 1] + (pts[k] - pts[k - 1]).magnitude;
+            }
+            float total = acc[samples];
+            float clear = AimRingSize / 2f + 4f;   // 指先の輪の内側にも点は置かない
+            int seg = 1;
+            for (int i = 0; i < _aimDots.Count; i++)
+            {
+                var d = _aimDots[i];
+                if (d == null) continue;
+                float s = total * i / (float)AimDotCount;   // 最初の点は札のすぐ上 (F36: 旧は1間隔ぶん先から始まり、札から約50浮いて見えた)
+                while (seg < samples && acc[seg] < s) seg++;
+                float span = acc[seg] - acc[seg - 1];
+                Vector2 p = span > 0.001f ? Vector2.Lerp(pts[seg - 1], pts[seg], (s - acc[seg - 1]) / span) : pts[seg];
+                d.anchoredPosition = p;
+                bool hide = (p - p2).sqrMagnitude < clear * clear;
+                for (int b = 0; b < blocks.Count && !hide; b++) if (blocks[b].Contains(p)) hide = true;
+                d.gameObject.SetActive(!hide);
+            }
+            if (_aimRing != null) _aimRing.anchoredPosition = p2;
+            UpdateAimNote(g, st, over, p2);
+        }
+
+        string _aimNoteText;
+        RectTransform _aimNote;
+
+        /// <summary>指の下に敵がいない間の案内 (2026-09-30 F34): 離すと前の狙いへ撃つ (タップと同じ) ので「離すと ①牙嵐の狼 へ」、前の狙いが無く敵が2体以上なら
+        /// 「離すと 敵を選ぶ」。指先の輪の右上に夜色の札。前の狙いが無い時は輪の芯を淡い紙色に (真鍮＝その先へ撃つ、ではない合図)。操作は変えない</summary>
+        void UpdateAimNote(GameRoot g, GameState st, int over, Vector2 p2)
+        {
+            string text = null;
+            bool dimRing = false;
+            if (over < 0)
+            {
+                int alive = 0; for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) alive++;
+                int pt = g.PreferredTarget;
+                if (pt >= 0 && pt < st.Enemies.Count && st.Enemies[pt].Hp > 0 && alive >= 2)
+                {
+                    int ti = BattleScreen.GuardRedirect(st, pt);
+                    string nm;
+                    try { nm = Content.GetEnemyDef(st.Enemies[ti].EnemyId).Name; } catch (Exception) { nm = st.Enemies[ti].EnemyId; }
+                    string circled = "①②③④⑤⑥⑦⑧";
+                    text = "離すと " + (ti < circled.Length ? circled[ti].ToString() : "") + nm + " へ";
+                }
+                else if (alive >= 2) { text = "離すと 敵を選ぶ"; dimRing = true; }
+            }
+            if (_aimRing != null)
+            {
+                var core = _aimRing.Find("brass");
+                var ci = core != null ? core.GetComponent<Image>() : null;
+                if (ci != null) ci.color = dimRing ? PaperFx.PaperDim : PaperFx.Brass;
+            }
+            if (text != _aimNoteText || (_aimNote == null && text != null))
+            {
+                if (_aimNote != null) { _aimNote.SetParent(null, false); UnityEngine.Object.Destroy(_aimNote.gameObject); _aimNote = null; }
+                _aimNoteText = text;
+                if (text != null && _aimLine != null)
+                {
+                    _aimNote = PaperFx.NightNote(_aimLine, text, 15, 320f, true, "aimnote");
+                    _aimNote.anchorMin = _aimNote.anchorMax = new Vector2(0.5f, 0.5f);
+                    _aimNote.pivot = new Vector2(0f, 0f);
+                }
+            }
+            if (_aimNote != null)
+            {
+                float rr = AimRingSize / 2f + 8f;
+                var pos = p2 + new Vector2(rr, rr);
+                // 画面の右に出るなら輪の左へ
+                var half = _aim.rect.size / 2f;
+                if (pos.x + _aimNote.sizeDelta.x > half.x - 8f) { pos.x = p2.x - rr - _aimNote.sizeDelta.x; }
+                if (pos.y + _aimNote.sizeDelta.y > half.y - 8f) pos.y = p2.y - rr - _aimNote.sizeDelta.y;
+                _aimNote.anchoredPosition = pos;
+            }
+        }
+
+        /// <summary>2次ベジェ p0→p1→p2 が矩形を通るか (24 分割の点で見る)</summary>
+        static bool CurveHits(Vector2 p0, Vector2 p1, Vector2 p2, Rect r)
+        {
+            for (int k = 1; k < 24; k++)
+            {
+                float t = k / 24f, u = 1f - t;
+                if (r.Contains(u * u * p0 + 2f * u * t * p1 + t * t * p2)) return true;
+            }
+            return false;
+        }
+
+        /// <summary>敵の絵の体の矩形 (_aim の座標・透明な余白を除く＋点の半径ぶん広げる)。狙いの矢の点を描かない範囲 (F35)</summary>
+        Rect AimBodyRect(RectTransform spr)
+        {
+            var r = LocalRectIn(_aim, spr);
+            var img = spr.GetComponent<Image>();
+            var sp = img != null ? img.sprite : null;
+            if (sp != null && sp.rect.width > 0f)
+            {
+                float k = r.width / sp.rect.width;
+                var side = Creature.SideMargins(sp);
+                float top = Creature.TopMargin(sp) * k;
+                var body = Rect.MinMaxRect(r.xMin + side.x * k, r.yMin, r.xMax - side.y * k, r.yMax - top);
+                if (body.width > 0f && body.height > 0f) r = body;
+            }
+            float pad = AimDotRim / 2f;
+            return Rect.MinMaxRect(r.xMin - pad, r.yMin - pad, r.xMax + pad, r.yMax + pad);
+        }
+
+        /// <summary>狙いの矢と狙いの縁を片付ける (EndDrag。札の押さえも外れる)</summary>
+        public void ClearAimArrow()
+        {
+            if (_aim != null)
+            {
+                var pin = _aim.GetComponent<AimPin>();
+                if (pin != null)
+                {
+                    var de = pin.Card != null ? pin.Card.Find("dragedge") : null;   // 撃とうとしていた札の縁 (F36)。取り消しで扇へ戻る札に残さない
+                    if (de != null) { de.gameObject.SetActive(false); UnityEngine.Object.Destroy(de.gameObject); }
+                    pin.Card = null; pin.enabled = false;   // Destroy は次のフレームなので、この後の LateUpdate で札を引き戻さない
+                }
+                _aim.SetParent(null, false); UnityEngine.Object.Destroy(_aim.gameObject);
+            }
+            _aim = null; _aimLine = null; _aimRing = null; _aimNote = null; _aimNoteText = null;
+            _aimDots.Clear();
+            ClearAimEdges();
+        }
+
+        void BuildAimArrow()
+        {
+            _aimDots.Clear();
+            _aim = UiKit.NewRect("aimline", UiLayer);
+            UiKit.Stretch(_aim, 0f, 0f, 0f, 0f);
+            var cg = _aim.gameObject.AddComponent<CanvasGroup>();
+            cg.blocksRaycasts = false; cg.interactable = false;
+            _aim.gameObject.AddComponent<AimPin>();
+            _aimLine = UiKit.NewRect("line", _aim);
+            UiKit.Stretch(_aimLine, 0f, 0f, 0f, 0f);
+            // 点: 真鍮の芯 (10) に墨の縁 (13)。夜の舞台でも紙の上でも輪郭が立つ
+            for (int i = 0; i < AimDotCount; i++)
+            {
+                var d = UiKit.NewRect("dot", _aimLine);
+                d.anchorMin = d.anchorMax = new Vector2(0.5f, 0.5f);
+                d.sizeDelta = new Vector2(AimDotRim, AimDotRim);
+                var di = d.gameObject.AddComponent<Image>();
+                di.sprite = AimDotSprite(); di.color = PaperFx.Ink; di.raycastTarget = false;
+                var core = UiKit.NewRect("core", d);
+                core.anchorMin = core.anchorMax = new Vector2(0.5f, 0.5f);
+                core.sizeDelta = new Vector2(AimDotSize, AimDotSize); core.anchoredPosition = Vector2.zero;
+                var ci = core.gameObject.AddComponent<Image>();
+                ci.sprite = AimDotSprite(); ci.color = PaperFx.Brass; ci.raycastTarget = false;
+                _aimDots.Add(d);
+            }
+            // 指先の輪: 真鍮の輪 (48) の外側に墨の縁
+            _aimRing = UiKit.NewRect("ring", _aimLine);
+            _aimRing.anchorMin = _aimRing.anchorMax = new Vector2(0.5f, 0.5f);
+            _aimRing.sizeDelta = new Vector2(AimRingSize + 4f, AimRingSize + 4f);
+            var ri = _aimRing.gameObject.AddComponent<Image>();
+            ri.sprite = PaperFx.Ring(10); ri.color = PaperFx.Ink; ri.raycastTarget = false;
+            var rc = UiKit.NewRect("brass", _aimRing);
+            rc.anchorMin = rc.anchorMax = new Vector2(0.5f, 0.5f);
+            rc.sizeDelta = new Vector2(AimRingSize, AimRingSize); rc.anchoredPosition = Vector2.zero;
+            var rci = rc.gameObject.AddComponent<Image>();
+            rci.sprite = PaperFx.Ring(6); rci.color = PaperFx.Brass; rci.raycastTarget = false;
+        }
+
+        /// <summary>指の下の敵 (庇われていれば護衛) の帳面と意図の札に真鍮の縁。敵が変わった時と、組み直しで縁が消えた時だけ付け直す</summary>
+        void SetAimEdge(GameRoot g, GameState st, int over)
+        {
+            int idx = over >= 0 && over < st.Enemies.Count && st.Enemies[over].Hp > 0 ? BattleScreen.GuardRedirect(st, over) : -1;
+            bool stale = false;
+            foreach (var o in _aimEdges) if (o == null) { stale = true; break; }
+            if (idx == _aimEdgeIdx && !stale) return;
+            ClearAimEdges();
+            _aimEdgeIdx = idx;
+            if (idx < 0) return;   // 指の下に敵がいない＝離すと今までの狙い (PreferredTarget) に撃つ。その敵の縁 "edge" はそのまま見せる
+            var pan = g.Anchor("enemy" + idx);
+            if (pan == null) return;
+            foreach (var nm in AimBlockers)
+            {
+                var host = pan.Find(nm);
+                if (host == null) continue;
+                var edge = PaperFx.Sheet(host, PaperFx.Tag, "dragedge", PaperFx.Brass);   // 狙っている敵の縁 (LedgerStrip・IntentTag の "edge") と同じ形
+                UiKit.Stretch(edge.rectTransform, -3f, -3f, -3f, -3f);
+                edge.raycastTarget = false;
+                edge.transform.SetAsFirstSibling();   // 紙の後ろ＝縁だけが外に見える
+                _aimEdges.Add(edge.gameObject);
+            }
+            // 別の敵に付いている前の狙いの縁は、指を離すまで隠す (真鍮の縁が2体に付くと、どちらへ撃つのか分からない。離すと指の下の敵が新しい狙いになる)
+            for (int i = 0; i < st.Enemies.Count; i++)
+            {
+                if (i == idx) continue;
+                var other = g.Anchor("enemy" + i);
+                if (other == null) continue;
+                foreach (var nm in AimBlockers)
+                {
+                    var host = other.Find(nm);
+                    var old = host != null ? host.Find("edge") : null;
+                    if (old != null && old.gameObject.activeSelf) { old.gameObject.SetActive(false); _aimHidden.Add(old.gameObject); }
+                }
+            }
+        }
+
+        readonly List<GameObject> _aimHidden = new List<GameObject>();   // 指で別の敵を狙っている間だけ隠した前の狙いの縁
+
+        void ClearAimEdges()
+        {
+            foreach (var o in _aimEdges) if (o != null) UnityEngine.Object.Destroy(o);
+            _aimEdges.Clear();
+            foreach (var o in _aimHidden) if (o != null) o.SetActive(true);
+            _aimHidden.Clear();
+            _aimEdgeIdx = -1;
+        }
+
+        static Rect LocalRectIn(RectTransform space, RectTransform r)
+        {
+            r.GetWorldCorners(_aimCorners);
+            Vector2 a = space.InverseTransformPoint(_aimCorners[0]), b = a;
+            for (int k = 1; k < 4; k++) { Vector2 p = space.InverseTransformPoint(_aimCorners[k]); a = Vector2.Min(a, p); b = Vector2.Max(b, p); }
+            return Rect.MinMaxRect(a.x, a.y, b.x, b.y);
+        }
+
+        /// <summary>白い丸 (32×32・縁はなめらか)。色は Image で乗せる (狙いの矢の点)</summary>
+        static Sprite AimDotSprite()
+        {
+            if (_aimDotSprite != null) return _aimDotSprite;
+            const int n = 32;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear; tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[n * n];
+            float c = n / 2f;
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float r = Mathf.Sqrt((x + 0.5f - c) * (x + 0.5f - c) + (y + 0.5f - c) * (y + 0.5f - c));
+                    px[y * n + x] = new Color(1f, 1f, 1f, Mathf.Clamp01(c - r));
+                }
+            tex.SetPixels(px); tex.Apply(false, false);
+            _aimDotSprite = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            _aimDotSprite.name = "aim-dot";
+            return _aimDotSprite;
+        }
+
+        /// <summary>ドラッグ中の札を手札の元の位置・等倍・回転0に押さえる (押した時の持ち上げのトゥイーンが後から上書きしないよう LateUpdate で)</summary>
+        class AimPin : MonoBehaviour
+        {
+            public RectTransform Card; public Vector2 Pos; public float Scale = 1f;
+            public void Apply()
+            {
+                if (Card == null) return;
+                Card.anchoredPosition = Pos; Card.localScale = new Vector3(Scale, Scale, 1f); Card.localRotation = Quaternion.identity;
+            }
+            void LateUpdate() { Apply(); }
+        }
+
+        /// <summary>
+        /// この札を今プレイできるか (2026-09-29 p12: 扇の沈み・札の面・モードの窓・ターン終了の合図が同じ関数を読む)。
+        /// 自分の番・狙いを選んでいない・手札から出せる型・実際に払うコスト ≤ エナジー・灯コスト ≤ 灯・人形の要件・拘束／首輪の上限 (Combat.PlayCapOf)。
+        /// 仕込めるかは別 (SetBase.CanSetCard)
+        /// </summary>
+        public static bool CanActNow(GameRoot g, GameState st, CardInstance c)
+        {
+            if (st == null || c == null || st.Phase != CombatPhases.PlayerTurn || (g != null && g.Pending != null)) return false;
+            if (!Effects.IsPlayableFromHand(c, st)) return false;
+            int cost = c.Def.Cost;
+            try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
+            if (cost > st.Player.Energy) return false;
+            if ((c.Def.LightCost ?? 0) > (st.Player.Light ?? 0)) return false;   // 灯コスト (白 2026-09-20)
+            if (!Effects.RetainerRequirementMet(st, c)) return false;
+            var cap = Combat.PlayCapOf(st);
+            if (cap != null && (st.Player.PlaysThisTurn ?? 0) >= cap.Value) return false;
+            return true;
         }
 
         public void SyncHand(GameRoot g, GameState st, bool animate)
         {
             var hand = st.Player.Hand;
             int n = hand.Count;
-            // 扇の幅: スマホはエナジーの円盤とターン終了の間 (キャンバス幅 − 560) に収める (2026-09-14)
-            float handSpan = UiKit.Phone ? BattleScreen.CanvasSize(Root).x - 560f : 1180f;
-            float spacing = n > 0 ? Mathf.Min(CardView.W * BattleScreen.CardScale + 12f, handSpan / n) : 0f;
+            // 扇の幅: スマホはエナジーの円盤・灯籠とターン終了の間 (キャンバス幅 − 610) に、両端の札の外縁まで収める (2026-09-29 p12)。
+            // 旧 (2026-09-14) は間隔を handSpan/n で割っていたので両端の札が枠の外へ出て、5枚目がターン終了の縁に重なっていた (6枚以上で 20 以上)。
+            // 610 は、ターン終了の左端 (キャンバス幅 − 254) との間を 5枚で 43・10枚で 25 以上 (傾き −13.5° の角を込み) 空ける値。PC は今のまま
+            // 2026-09-30 F01: スマホは右端 (回転前の最後の札の右の縁) を p12 の cs.x−305 のまま固定し、左端を左の列 (山札・エナジーの輪・灯籠) の右＋24 まで広げ、
+            // 扇をその間の中央に置く。旧は扇をキャンバスの中央に置いたので左に約115 空いたまま5枚でも37 重なり、仕込み札の本文の右端 (「+2」「打ち消し」) が隣の札に隠れた。
+            // 左の余白には1枚目の傾き (左上の角が左へ出る量) も足す (押せる面どうし 24 以上＝I14)
+            float cw = CardView.W * BattleScreen.CardScale;
+            float spacing, fanShift = 0f;
+            if (UiKit.Phone)
+            {
+                float csx = BattleScreen.CanvasSize(Root).x;
+                float leftCol = LightUi.ShouldShow(g.Rs, st) ? UiKit.Edge + 128f + 12f + LightUi.DotsW * 2.5f : UiKit.Edge + 150f;   // 灯籠の右端 or 山札の右端
+                float tilt = n > 1 ? (n - 1) / 2f * 3f * Mathf.Deg2Rad : 0f;
+                float overhang = Mathf.Max(0f, CardView.H / 2f * Mathf.Sin(tilt) - CardView.W / 2f * (1f - Mathf.Cos(tilt))) * BattleScreen.CardScale;
+                float L = leftCol + 24f + overhang, R = csx - 305f;
+                spacing = n > 1 ? Mathf.Max(20f, Mathf.Min(cw + 12f, (R - L - cw) / (n - 1))) : 0f;
+                fanShift = (L + R) / 2f - csx / 2f;
+            }
+            else spacing = n <= 0 ? 0f : Mathf.Min(cw + 12f, 1180f / n);
+            // 覆われる札の本文の右の余白 (スマホ・6枚以下。7枚以上は名前の左寄せと長押しの拡大で読む)。本文の枠の右端 (余白14) を隣の札の縁＋傾きの4＋4 まで下げる
+            float coverInset = 0f;
+            if (UiKit.Phone && n >= 2 && n <= 6)
+            {
+                float coverLocal = (cw - spacing) / BattleScreen.CardScale;
+                coverInset = Mathf.Round(Mathf.Clamp(coverLocal + 8f - 14f, 0f, 32f));
+            }
             float center = (n - 1) / 2f;
             float areaH = CardView.H * BattleScreen.CardScale + 40f;
             bool myTurn = st.Phase == CombatPhases.PlayerTurn;
+            // スマホで7枚以上は札が半分近く重なり、中央寄せの名前 (x44〜188) が隣の札に隠れる (10枚で見える幅 72)。
+            // 見えている左側に読めるよう、手札の札を全部同時に名前だけ左寄せ (コスト玉の右から) で描く。拡大の窓・報酬・店・PC は中央のまま (2026-09-29 p09)
+            bool compact = UiKit.Phone && n >= 7;
 
-            // 予測の対象: 狙いを付けた敵、無ければ生存が1体の時だけその敵
-            int alive = 0, firstAlive = -1;
-            for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) { alive++; if (firstAlive < 0) firstAlive = i; }
-            int preview = g.PreferredTarget >= 0 && g.PreferredTarget < st.Enemies.Count && st.Enemies[g.PreferredTarget].Hp > 0 ? g.PreferredTarget : (alive == 1 ? firstAlive : -1);
+            // 予測の対象: 狙いを付けた敵 (庇われていれば護衛)、無ければ生存が1体の時だけその敵
+            int preview = PreviewTargetFor(g, st);
 
             // 1) 手札から消えた札 → 行き先へ飛ばして消す
             var gone = new List<string>();
@@ -659,13 +1096,17 @@ namespace DeckRogue.Game
                 var c = hand[i];
                 int cost = c.Def.Cost;
                 try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
-                bool playable = myTurn && g.Pending == null && Effects.IsPlayableFromHand(c, st) && cost <= st.Player.Energy && (c.Def.LightCost ?? 0) <= (st.Player.Light ?? 0) && Effects.RetainerRequirementMet(st, c); // 灯コスト (白 2026-09-20)
+                bool playable = CanActNow(g, st, c);   // ターン終了の合図と同じ判定 (2026-09-29 p12。拘束・首輪の上限も見る)
                 bool settable = myTurn && g.Pending == null && SetBase.CanSetCard(st, c.Uid);
+                // 札の面は「プレイできる、または仕込める」で明るく描く (仕込み札を「出せない札」の灰色にしない。2026-09-29 p05)。
+                // hc.Playable / hc.Settable は判定用 (ドラッグ・クリックの分岐・16px 沈める) にそのまま持つ
+                bool face = playable || settable;
+                float inset = i < n - 1 ? coverInset : 0f;   // いちばん右 (最前面) の札は覆われない
                 HandCard hc;
                 bool fresh = !_hand.TryGetValue(c.Uid, out hc);
-                if (!fresh && (hc.Playable != playable || hc.Settable != settable || !ReferenceEquals(hc.Card.Def, c.Def) || hc.Card.GrowBonus != c.GrowBonus || hc.Cost != cost || hc.Preview != preview))
+                if (!fresh && (hc.Playable != playable || hc.Settable != settable || !ReferenceEquals(hc.Card.Def, c.Def) || hc.Card.GrowBonus != c.GrowBonus || hc.Cost != cost || hc.Preview != preview || hc.Compact != compact || hc.BodyInset != inset))
                 {
-                    // 見た目が変わる (プレイ可否・鍛え・育つ・コスト・狙った敵) → 同じ位置で作り直す
+                    // 見た目が変わる (プレイ可否・鍛え・育つ・コスト・狙った敵・名前の置き方) → 同じ位置で作り直す
                     var pos = hc.Rt.anchoredPosition; var rot = hc.Rt.localRotation; var scl = hc.Rt.localScale;
                     hc.Rt.SetParent(null, false);
                     UnityEngine.Object.Destroy(hc.Rt.gameObject);
@@ -673,10 +1114,13 @@ namespace DeckRogue.Game
                     fresh = true;
                     hc = null;
                     CardView.PreviewEnemy = preview;
-                    var rt2 = CardView.Build(HandLayer, c, st, playable, true, "hand" + i);
-                    CardView.PreviewEnemy = -1;
+                    CardView.CompactName = compact;
+                    CardView.BodyRightInset = inset; CardView.InHand = true;
+                    RectTransform rt2;
+                    try { rt2 = CardView.Build(HandLayer, c, st, face, true, "hand" + i); }
+                    finally { CardView.PreviewEnemy = -1; CardView.CompactName = false; CardView.BodyRightInset = 0f; CardView.InHand = false; }
                     rt2.anchoredPosition = pos; rt2.localRotation = rot; rt2.localScale = scl;
-                    hc = new HandCard { Rt = rt2, Card = c, Playable = playable, Settable = settable, Cost = cost, Preview = preview };
+                    hc = new HandCard { Rt = rt2, Card = c, Playable = playable, Settable = settable, Cost = cost, Preview = preview, Compact = compact, BodyInset = inset };
                     _hand[c.Uid] = hc;
                     fresh = false;
                     Attach(g, hc, c);
@@ -684,9 +1128,12 @@ namespace DeckRogue.Game
                 if (fresh)
                 {
                     CardView.PreviewEnemy = preview;
-                    var rt = CardView.Build(HandLayer, c, st, playable, true, "hand" + i);
-                    CardView.PreviewEnemy = -1;
-                    hc = new HandCard { Rt = rt, Card = c, Playable = playable, Settable = settable, Cost = cost, Preview = preview };
+                    CardView.CompactName = compact;
+                    CardView.BodyRightInset = inset; CardView.InHand = true;
+                    RectTransform rt;
+                    try { rt = CardView.Build(HandLayer, c, st, face, true, "hand" + i); }
+                    finally { CardView.PreviewEnemy = -1; CardView.CompactName = false; CardView.BodyRightInset = 0f; CardView.InHand = false; }
+                    hc = new HandCard { Rt = rt, Card = c, Playable = playable, Settable = settable, Cost = cost, Preview = preview, Compact = compact, BodyInset = inset };
                     _hand[c.Uid] = hc;
                     Attach(g, hc, c);
                     if (animate)
@@ -701,7 +1148,7 @@ namespace DeckRogue.Game
                 hc.Card = c;
                 hc.Index = i;
                 hc.Rt.name = "hand" + i;
-                float dx = (i - center) * spacing;
+                float dx = (i - center) * spacing + fanShift;
                 float dy = -Mathf.Abs(i - center) * 10f;
                 if (myTurn && g.Pending == null && !playable && !settable) dy -= 16f;   // ⑦ (2026-09-17): 出せない札 (エナジー不足など) は扇の中で少し沈む
                 hc.BasePos = new Vector2(dx, -areaH / 2f + CardView.H * BattleScreen.CardScale / 2f + dy);
@@ -875,7 +1322,8 @@ namespace DeckRogue.Game
             var p = st.Player;
             float ratio = p.MaxHp > 0 ? (float)p.Hp / p.MaxHp : 1f;
             int incoming = 0; try { incoming = Effects.IncomingTotal(st); } catch (Exception) { }
-            bool lethal = incoming > 0 && p.Hp - Math.Max(0, incoming - p.Block) <= 0 && st.HideIntents != true;
+            // 氷壁も差し引く (2026-09-29 p08: Web の App.tsx・自分の札の見込みと同じ式。旧は青の致死の脈動が誤って出た)
+            bool lethal = incoming > 0 && p.Hp - Math.Max(0, incoming - (p.Block + p.IceBlock)) <= 0 && st.HideIntents != true;
             float level = lethal ? 2f : ratio <= 0.3f ? 1f : 0f;
             if (level <= 0f)
             {
@@ -918,7 +1366,7 @@ namespace DeckRogue.Game
         {
             BattleScreen.HookHandCard(g, hc, c);
             var cardRef = c;
-            Tooltip.Attach(hc.Rt.gameObject, delegate { return BattleScreen.KeywordsOnly(CardText.Body(cardRef.Def) + " " + CardText.Notes(cardRef.Def)); }, false);
+            Tooltip.Attach(hc.Rt.gameObject, delegate { return BattleScreen.KeywordsOnly(cardRef.Def); }, false);
         }
 
         /// <summary>ターン終了: 手札を全部捨て札へ飛ばす (順送り演出の TurnEnded で呼ぶ)</summary>

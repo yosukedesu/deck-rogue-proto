@@ -22,7 +22,8 @@
     "unity:sync": "tsx scripts/sync-unity-data.ts",
     "gen:csharp": "tsx scripts/gen-csharp-types.ts",
     "fusion:table": "tsx scripts/fusion-table.ts",
-    "gen:keywords": "tsx scripts/gen-keyword-help.ts"
+    "gen:keywords": "tsx scripts/gen-keyword-help.ts",
+    "check:colors": "tsx scripts/check-unity-colors.ts"
   },
   "dependencies": {
     "react": "^19.2.8",

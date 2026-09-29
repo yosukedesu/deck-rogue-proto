@@ -63,6 +63,9 @@ namespace DeckRogue.Game
         // キャラの板の明暗 (2026-09-16 ユーザー「このはも反射と影がすごくない？」): 月光の勾配は板の中で右上 1+0.7×A・左下 1−0.7×A、リムは右上の縁を空色へ寄せる割合。
         // 旧 0.5／0.5 は太い墨線のこのは v2 で「左半分が影・右の縁が光る」と読めた → 0.25／0.2 に緩めた (敵も同じ板なので同時に緩む)
         const float UnitSunAmount = 0.25f, UnitRim = 0.2f;
+        // 敵と人形の板のリム (2026-09-29 I24): 環境光を白寄りにした分、暗い墨線の敵 (オーガ・コボルト) の輪郭を足元の地面から離す。
+        // 09-16 の裁定の対象はリーダー (このは) なので UnitRim 0.2 はリーダーだけに残す
+        const float CharRim = 0.3f;
         static Material _waterMat;
         static readonly Dictionary<string, StageUnit> _bound = new Dictionary<string, StageUnit>();
         static readonly Dictionary<string, float> _depths = new Dictionary<string, float>();
@@ -143,6 +146,7 @@ namespace DeckRogue.Game
                 vig.intensity.value = 0.34f;
                 vig.smoothness.value = 0.6f;
                 vig.color.value = new Color(0.02f, 0.02f, 0.06f);
+                _vig = vig;   // 敵と人形の板が席ごとの減光を打ち消すのに値を読む (F06)
                 var tone = profile.Add<Tonemapping>(true);
                 tone.mode.value = TonemappingMode.ACES;                       // 白飛びを滑らかに (オクトラの締まり)
                 var lgg = profile.Add<LiftGammaGain>(true);
@@ -478,7 +482,9 @@ namespace DeckRogue.Game
                     else { h00 = CornerH(i, j); h01 = CornerH(i, j + 1); h11 = CornerH(i + 1, j + 1); h10 = CornerH(i + 1, j); }
                     float t, sv; PathLocal((x0 + x1) * 0.5f, (z0 + z1) * 0.5f, out t, out sv);
                     MB target; bool atlas;
-                    bool litterHere = !Stepped && Vnoise(x0 * 0.13f + 40f, z0 * 0.13f + 9f) > 0.6f;   // 落ち葉の溜まりを斑に (幕1)
+                    // 落ち葉の溜まりを斑に (幕1)。手前 (sv<-4.2) ほど溜まりのしきい値を上げ、sv<-5.2 では使わない (2026-09-29 I44: カメラの近くでタイル 1枚が約230px に写り、
+                    // 落ち葉↔株の柄の境目が手札の左に斜めの直線として出ていた)。sv で一律に切ると溜まりが s 一定の直線で断ち切られるので、しきい値を上げて縁をノイズの形のまま縮める
+                    bool litterHere = !Stepped && Vnoise(x0 * 0.13f + 40f, z0 * 0.13f + 9f) > 0.6f + Mathf.Max(0f, -4.2f - sv) * 0.4f;
                     if (Stepped ? _Bed[i, j] : InStream(t, sv)) { target = bed; atlas = Stepped && bedVariants > 0; }
                     else if (_Dirt[i, j]) { target = dirtTop; atlas = dirtAtlas; }
                     else if (grassAtlas) { target = top; atlas = true; }
@@ -495,6 +501,7 @@ namespace DeckRogue.Game
                         else v = target == top ? (litterHere ? 2 : hv < 0.74f ? 0 : 3)                       // 草: 素の草 74%・株 26%。落ち葉は溜まりだけ。クローバー (b) は粒が均等に並んで気持ち悪いので使わない (2026-09-21)
                                                : (hv < 0.9f ? (int)(hv * 3.33f) % 3 : 3);                    // 土: 踏み固めた土 3 相 90%・ひび割れ 10%
                         int rot = Stepped ? 0 : (int)(Hash01(ti * 3 + 11, tj * 5 + 7) * 4f);   // 幕2/3 は回さない (煉瓦・敷石の目地が揃う)
+                        if (!Stepped && target == top && v == 0) rot &= 2;   // 向きのある草 (grass_a = 横から描いた葉の列) は 0°/180° だけ (2026-09-29 I44: 90° で葉の列が直交し、手前の約230px 角のタイルの格子が見えていた)
                         float lx0 = (i & 1) * 0.5f, lz0 = (j & 1) * 0.5f, lx1 = lx0 + 0.5f, lz1 = lz0 + 0.5f;
                         uv = new[] { AtlasUv(v, rot, lx0, lz0), AtlasUv(v, rot, lx0, lz1), AtlasUv(v, rot, lx1, lz1), AtlasUv(v, rot, lx1, lz0) };
                         target.Quad(new Vector3(x0, h00, z0), new Vector3(x0, h01, z1), new Vector3(x1, h11, z1), new Vector3(x1, h10, z0), uv[0], uv[1], uv[2], uv[3]);
@@ -570,16 +577,25 @@ namespace DeckRogue.Game
         {
             n = Math.Max(1, n);
             var r = new Vector3[n];
-            float[] t = n == 1 ? new[] { 4.6f } : n == 2 ? new[] { 3.2f, 7.6f } : n == 3 ? new[] { 2.2f, 5.8f, 9.4f } : new[] { 1.6f, 4.8f, 8.0f, 11.2f };
-            // スマホは横のずらしを小さく (2026-09-15): ずらしが大きいと画面上の間隔が 150/217/110 と偏り、狭い側で吹き出しが重なる
-            float sB = UiKit.Phone ? 0.1f : 0.7f;
-            for (int i = 0; i < n; i++) r[i] = OnPath(t[i], (i % 2 == 0) ? -0.5f : sB);
+            // 3体・4体は画面上の足元の間隔がほぼ等しくなるよう奥の席を広げる (2026-09-29 戦闘画面のレビュー p02。奥ほど遠近で詰まるので t は等間隔にしない):
+            // PC 4体 1126/1342/1563/1786 (間隔 216/221/223)・スマホ 4体 157/161/154・PC 3体 260/276。先頭 (t=1.6/2.2) は人形の列 (DollSlots「敵① t≥1.6」) の約束で動かさない
+            float[] t = n == 1 ? new[] { 4.6f } : n == 2 ? new[] { 3.2f, 7.6f } : n == 3 ? new[] { 2.2f, 5.9f, 9.4f } : n == 4 ? new[] { 1.6f, 4.6f, 7.15f, 11.2f } : null;
+            // 横のずらしは小さく (2026-09-15 スマホ・2026-09-29 PC の3体以上も): ずらしが大きいと奇数の席が画面上で左へ寄り、間隔が 200/296/126 と偏って帳面と意図の札が重なる。PC の2体は今のまま
+            float sB = (UiKit.Phone || n >= 3) ? 0.1f : 0.7f;
+            for (int i = 0; i < n; i++)
+            {
+                // 5体以上 (苔の産み手の戦闘で倒れた敵が一覧に残る) は同じ範囲を等分して埋める (表の長さは4 = 範囲外エラーを塞ぐ)
+                float ti = t != null ? t[i] : 1.6f + 9.6f * i / (n - 1);
+                r[i] = OnPath(ti, (i % 2 == 0) ? -0.5f : sB);
+            }
             return r;
         }
 
         /// <summary>人形 (白の従者) の座席 (2026-09-19 人形の盤面表示・案A「灯りの列」→ ユーザー「B との中間」= ひなたのすぐ前から):
         /// 点灯した順に、ひなた (t=-5) と敵① (t≥1.6) の間の道に並ぶ。前列5体 (t=-4.1…-0.7・0.85 刻み・奥と手前を交互に) ＋ 後列4体 (一歩奥・半歩右)。
-        /// 匣 (t=-3.7・s=-0.75 手前) より奥に立つので重ならない。上限9 = 超えた分は BattleView が最後の札に「+N」</summary>
+        /// からくりの匣は PC ではリーダーの左奥 (t=-6.3・s=1.7) に置くので、人形の列 (t≥-4.1) とは重ならない (2026-09-29 戦闘画面のレビュー p13)。
+        /// スマホの匣は右手前 (t=-3.7・s=-0.75) のままで、2体目 (t=-3.25・s=0.25) の足元の左を少し隠す (左奥は自分の札にもぐるため。SetKarakuriBox の注記)。
+        /// 上限9 = 超えた分は BattleView が最後の札に「+N」</summary>
         public static Vector3[] DollSlots(int n)
         {
             n = Math.Max(0, Math.Min(n, 9));
@@ -596,19 +612,33 @@ namespace DeckRogue.Game
 
         /// <summary>UI の入れ物の下端から足元までの高さ (敵ごとに違う。名前札や HP バーは入れ物の下端基準で同じ線に揃う)</summary>
         // ---- からくりの匣 (2026-09-10 世界観「からくりだけ実物」): リーダーの足元に置く小さな木の匣。仕込むと蓋が開き、動かすと閃く ----
-        static GameObject _box; static Texture2D _boxClosed, _boxOpen; static int _boxShown = -1; static GameObject _boxGlow;
-        /// <summary>仕込み札の枚数に合わせて匣の蓋を開閉する。fired=true なら一度閃く (動かした)</summary>
-        public static void SetKarakuriBox(int setCount, bool fired)
+        static GameObject _box; static Texture2D _boxClosed, _boxOpen; static int _boxShown = -1; static GameObject _boxGlow, _boxBlob; static bool _boxLeftRear;
+        /// <summary>仕込み札の枚数に合わせて匣の蓋を開閉する。fired=true なら一度閃く (動かした)。
+        /// leftRear=true ならリーダーの左奥 (t=-6.3・s=1.7)、false ならリーダーの右手前 (t=-3.7・s=-0.75)。
+        /// 置き場は BattleView.BoxLeftRear (PC なら左奥・スマホは右手前) で渡す＝戦闘の途中で動かない。
+        /// (2026-09-29 戦闘画面のレビュー p13: PC の右手前は自分の札 (y640) に下端と接地影が隠れ、白では人形の2体目の足元を隠していた)</summary>
+        public static void SetKarakuriBox(int setCount, bool fired, bool leftRear)
         {
             Ensure();
-            if (_box == null || _box.transform.parent != _world)
+            if (_box == null || _box.transform.parent != _world || _boxLeftRear != leftRear)
             {
+                // 置き場が変わった (別のリーダー・別の端末で撮り直した) 時は、匣・閃き・接地影を作り直す
+                if (_box != null) UnityEngine.Object.Destroy(_box);
+                if (_boxGlow != null) UnityEngine.Object.Destroy(_boxGlow);
+                if (_boxBlob != null) UnityEngine.Object.Destroy(_boxBlob);
                 _boxClosed = Px.KarakuriBox(false); _boxOpen = Px.KarakuriBox(true);
-                var pos = OnPath(-3.7f, -0.75f);   // リーダー (t=-5, s=0.9) の少し右手前 = 足元 (UI のポケットとは重ねない)
-                _box = Plane("karakuri-box", _boxClosed, pos + new Vector3(0f, 0.01f, 0f), 0.62f, 0.5f, true);
+                // 左奥 (PC): リーダー (t=-5, s=0.9) の左奥 = 自分の札 (y642) より上で足元と影が収まり (下端 ≈614)、下の札の「からくり」区画の真上に来る。人形の列 (t≥-4.1) とも重ならない。
+                // 右手前 (スマホ): スマホの自分の札 (x≤325・上端 y382) はリーダーの足元 (y≈405) より上まで来る。左奥は s=1.7 で下端 ≈404 (札に 22px もぐる)、
+                // 奥へ逃がしても幕1の地面がそこで沈む (高さ −0.2〜−0.3) ので s=2.2〜3.6 のどれも札の縁に接した (2026-09-29 撮影で確認)。右手前は切れていない
+                // スマホはリーダーの足元の真ん前 (2026-09-30 F46: 旧・右手前 (−3.7,−0.75) は白の人形の2体目の脚を隠し、剣の人形の札が匣に乗った。
+                // 足元の前は3幕とも平らに均した場の内側で、自分の札・人形の札・手札・確認の窓のどれにも掛からない。人形の数では動かさない)
+                var pos = leftRear ? OnPath(-6.3f, 1.7f) : OnPath(-5.3f, -1.9f);
+                _box = Plane("karakuri-box", _boxClosed, pos + new Vector3(0f, 0.01f, 0f), 0.62f, 0.5f, false);
+                _boxBlob = Blob("shadow-karakuri-box", _world, pos, 0.62f * _boxClosed.width / (float)_boxClosed.height);
                 _boxGlow = Glow("karakuri-glow", Px.Glow(new Color(0.55f, 1f, 0.9f, 0.6f)), pos + new Vector3(0f, 0.45f, -0.15f), 1.6f, 1.6f);
                 _boxGlow.SetActive(false);
                 _boxShown = -1;
+                _boxLeftRear = leftRear;
             }
             bool open = setCount > 0;
             if (_boxShown != (open ? 1 : 0))
@@ -622,7 +652,7 @@ namespace DeckRogue.Game
             {
                 _boxGlow.SetActive(true);
                 var t = _boxGlow.transform; var s0 = new Vector3(1.6f, 1.6f, 1f);
-                Tween.Run(0.45f, k => { if (_boxGlow == null) return; t.localScale = s0 * (1f + k * 0.9f); if (k >= 1f) _boxGlow.SetActive(false); }, Ease.OutQuad);
+                Tween.Run(0.45f, k => { if (_boxGlow == null || t == null) return; t.localScale = s0 * (1f + k * 0.9f); if (k >= 1f) _boxGlow.SetActive(false); }, Ease.OutQuad);
             }
         }
 
@@ -856,7 +886,12 @@ namespace DeckRogue.Game
                 transform.localScale = new Vector3(Mathf.Max(0.01f, w * k * FrameScaleX), Mathf.Max(0.01f, h * k * FrameScaleY), 1f);   // 広い枠のコマは同じドット密度で板を広げる (足元中央は固定)
                 var tint = Img != null ? Img.color : Color.white;
                 Mat.SetColor("_BaseColor", tint);
-                ApplyLight(Mat, UnitSunAmount, Key == "player");
+                // この経路を通るのは BindUnit で置いたキャラの板だけ (player・enemyN・人形)。リーダー = 主役の照明、それ以外 = キャラの環境光 (2026-09-29 I24)
+                bool hero = Key == "player";
+                // 敵と人形は絵の真ん中の画面の位置で周辺減光を打ち消す (F06: 同じ噛みつく巻物が ①→④ で明るさ半分・青く曇った)
+                Color lift = hero || Screen.width <= 0 || Screen.height <= 0 ? Color.white : VignetteLift(sx / Screen.width, (sy + h * 0.5f * (1f - FeetPad)) / Screen.height);
+                ApplyLight(Mat, UnitSunAmount, hero, !hero, lift);
+                Mat.SetFloat("_Rim", hero ? UnitRim : CharRim);
                 if (FlashT > 0f) FlashT -= Time.deltaTime;
                 Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * 0.85f);
                 Mat.SetFloat("_Dissolve", DissolveK);
@@ -882,9 +917,18 @@ namespace DeckRogue.Game
             public float PushAmp, PushT, PushDur = 0.3f;                       // ズームパンチ (前へ出て戻る)
             public float DollyAmp, DollyIn, DollyHold, DollyOut, DollyT; public bool DollyOn;   // ゆっくり寄って戻る
             int _lastW, _lastH, _settle;
+            int _edgeSig; bool _edgeSeen;
             void LateUpdate()
             {
                 if (_cam == null) return;
+                // 画面の切り欠き・safeArea が変わったら (折りたたみ端末・マルチウィンドウ)、2フレーム後に組み直す (左端の部品が UiKit.CutoutLeft で穴を避ける。2026-09-29 p10)。
+                // Screen.cutouts は配列を作るので 30 フレームに1回だけ見る (向きは固定なので実質は起動時の1回)
+                if (!_edgeSeen || Time.frameCount % 30 == 0)
+                {
+                    int sig = UiKit.CutoutSignature();
+                    if (_edgeSeen && sig != _edgeSig) _settle = Math.Max(_settle, 3);
+                    _edgeSig = sig; _edgeSeen = true;
+                }
                 // ウィンドウの大きさが変わったら、カメラの係数 (_k・_camBase = 描いた時の画面高さで固定していた) を即座に引き直し、
                 // UI の枡 (ProjectFeet の座席→UI 座標) は大きさが2フレーム落ち着いてから作り直す (CanvasScaler の scaleFactor は次のフレームで更新されるので、
                 // 同じフレームで Rebuild すると古い倍率で枡が置かれた)。放置すると UI 座標→舞台の面の写像が旧高さの比率でずれ、
@@ -1043,11 +1087,42 @@ namespace DeckRogue.Game
             return m;
         }
 
-        static void ApplyLight(Material m, float sunAmount, bool hero = false)
+        static Vignette _vig;
+
+        /// <summary>周辺減光の打ち消し (2026-09-30 F06): 敵と人形の板の環境光に掛ける係数。URP の Vignette と同じ式 (d=|uv−center|×強さ×3、f=(1−d·d)^(滑らかさ×5)、
+        /// 出力＝入力×lerp(色,1,f)) を画面の座標 (0〜1) で求め、手前の席 (f≈0.93) を 1 として奥の席ほど持ち上げる。チャンネルごと＝青の曇りも戻す。
+        /// 上限 1.35 (これ以上はブルームの足切りを奥の席だけ越え、④だけに光のにじみが出る)。額縁の暗さ (リーダー・小物・木・空) はそのまま</summary>
+        static Color VignetteLift(float ux, float uy)
+        {
+            if (_vig == null || !_vig.active) return Color.white;
+            float sc = _vig.intensity.value * 3f;
+            var c = _vig.center.value;
+            float dx = Mathf.Abs(ux - c.x) * sc, dy = Mathf.Abs(uy - c.y) * sc;
+            float f = Mathf.Pow(Mathf.Clamp01(1f - (dx * dx + dy * dy)), _vig.smoothness.value * 5f);
+            const float fRef = 0.93f;   // 手前の敵の席の減光 (pc06 ①・pc01 の狼の胴で約 0.93〜0.95)
+            var vc = _vig.color.value;
+            Func<float, float> ch = col =>
+            {
+                float v = Mathf.Lerp(col, 1f, f), vr = Mathf.Lerp(col, 1f, fRef);
+                return Mathf.Clamp(vr / Mathf.Max(0.5f, v), 1f, 1.35f);
+            };
+            return new Color(ch(vc.r), ch(vc.g), ch(vc.b), 1f);
+        }
+
+        static void ApplyLight(Material m, float sunAmount, bool hero = false, bool character = false) { ApplyLight(m, sunAmount, hero, character, Color.white); }
+
+        static void ApplyLight(Material m, float sunAmount, bool hero, bool character, Color lift)
         {
             bool painted = _pal.LampOnUnits > 0f;
             // hero = リーダーの板: 夜の環境光 (0.8〜0.96) を掛けず源の色で立つ = 主役の照明 (2026-09-16 ユーザー裁定)
-            m.SetColor("_Ambient", painted && !hero ? _pal.UnitAmbient : (hero ? new Color(1.15f, 1.15f, 1.15f) : Color.white));   // hero は ACES と色補正が中間調を沈めるぶん 1.15 で戻す
+            // character = 敵と人形の板: ほぼ白で少しだけ冷たい CharAmbient (2026-09-29 ユーザー裁定「敵の環境光を白寄りに」)。
+            //   旧は小物と同じ UnitAmbient (幕1 0.58/0.65/0.94 = 線形で明るさ 0.4 倍の青いフィルタ) で、クリーム・砂の絵が青灰になり地面に溶けていた。
+            //   小物・木の板 (SpriteMat の既定) は UnitAmbient のまま = 森の暗さと夜の青は変えない
+            Color amb = hero ? new Color(1.15f, 1.15f, 1.15f)   // hero は ACES と色補正が中間調を沈めるぶん 1.15 で戻す
+                : painted ? (character ? _pal.CharAmbient * lift : _pal.UnitAmbient)
+                : Color.white;
+            amb.a = 1f;
+            m.SetColor("_Ambient", amb);
             m.SetVector("_LampPos", _lampPos);
             m.SetColor("_LampColor", painted ? _pal.Lantern : Color.black);
             m.SetFloat("_LampStrength", painted ? _pal.LampOnUnits : 0f);
@@ -1094,6 +1169,7 @@ namespace DeckRogue.Game
         struct Pal
         {
             public Color SkyTop, SkyBot, Fog, GrassA, GrassB, GrassC, GrassDry, DirtA, DirtB, StoneA, StoneB, CliffA, CliffB, LeafA, LeafB, LeafC, Trunk, Ambient, Sun, Lantern, Filter, UnitAmbient;
+            public Color CharAmbient;   // 敵と人形の板の夜の環境光 (ほぼ白・少しだけ冷たい。2026-09-29 I24)。UnitAmbient は小物と木の板
             public float LampOnUnits, LampIntensity, SunIntensity;
         }
 
@@ -1112,6 +1188,7 @@ namespace DeckRogue.Game
                 p.Ambient = new Color(0.2f, 0.25f, 0.28f); p.Sun = new Color(0.7f, 0.84f, 0.84f); p.Lantern = new Color(1f, 0.72f, 0.4f);   // 2026-09-21 HD-2D: 環境光を落として光溜まりと AO が読める余地。リーダーのランタンは暖色 (青緑だとキャラが環境光と同じ色に沈む = レビュー)
                 p.Fog = new Color(0.26f, 0.46f, 0.48f);   // 霧は背景より明るい青緑 = 遠くほど光に溶ける (「空気が光って見える」)
                 p.Filter = new Color(0.92f, 0.97f, 1.06f); p.UnitAmbient = new Color(0.8f, 0.84f, 0.96f);   // 銀の月光 (キャラを緑に染めない)
+                p.CharAmbient = new Color(0.94f, 0.95f, 1.0f);
             }
             else if (act == 2)
             {
@@ -1125,6 +1202,7 @@ namespace DeckRogue.Game
                 p.Ambient = new Color(0.3f, 0.32f, 0.4f); p.Sun = new Color(0.6f, 0.66f, 0.8f); p.Lantern = new Color(1f, 0.6f, 0.35f);   // 2026-09-21 HD-2D: 地は青灰、暖色は炉と提灯の範囲だけ (旧は全体が暖色に染まっていた。設計の 0.16 は真っ暗だった)
                 p.Fog = new Color(0.12f, 0.13f, 0.18f);
                 p.Filter = new Color(1.0f, 0.96f, 0.98f); p.UnitAmbient = new Color(0.7f, 0.7f, 0.82f);
+                p.CharAmbient = new Color(0.9f, 0.88f, 0.94f);
             }
             else
             {
@@ -1136,7 +1214,8 @@ namespace DeckRogue.Game
                 p.CliffA = UiKit.Hex("#524a42"); p.CliffB = UiKit.Hex("#3c3630");
                 p.LeafA = UiKit.Hex("#2c5a48"); p.LeafB = UiKit.Hex("#1e4236"); p.LeafC = UiKit.Hex("#4a8a64"); p.Trunk = UiKit.Hex("#4a3a2a");
                 p.Ambient = new Color(0.28f, 0.33f, 0.56f); p.Sun = new Color(0.72f, 0.8f, 1f); p.Lantern = new Color(1f, 0.72f, 0.4f);
-                p.Filter = new Color(0.86f, 0.92f, 1.12f); p.UnitAmbient = new Color(0.58f, 0.65f, 0.94f);   // 環境光は青く暗め = 街灯の暖色が読める
+                p.Filter = new Color(0.86f, 0.92f, 1.12f); p.UnitAmbient = new Color(0.58f, 0.65f, 0.94f);   // 環境光は青く暗め = 街灯の暖色が読める (小物と木の板)
+                p.CharAmbient = new Color(0.92f, 0.93f, 1.0f);   // 敵と人形は絵本の元の色 (クリーム・砂・淡い銀) で地面より一段明るく立つ。夜の青はカラーフィルタとリフトと空・樹冠が持つ
             }
             p.LampOnUnits = 1.0f; p.LampIntensity = 3.6f; p.SunIntensity = act == 1 ? 2.1f : act == 2 ? 0.9f : 1.45f;   // 幕1: 月光を強く (木の影と地面の陰影)。幕2: 坑内 = 風穴からの淡い光。幕3: 脈の照り返し (2026-09-21 HD-2D)   // 月明かりは強め (2026-09-08「月明かりももっと強くして」。旧 0.8)   // 補間の強さ (1 で街灯の色そのもの)
             return p;
@@ -1392,6 +1471,31 @@ namespace DeckRogue.Game
                     g.GetComponent<MeshFilter>().sharedMesh = _quadCentered; g.transform.rotation = Quaternion.Euler(90f, 0f, 0f); g.transform.localScale = new Vector3(bw[i] * 1.3f, bw[i] * 0.8f, 1f);
                 }
             }
+            // 主役の背後の月明かり (2026-09-29 I25): 黒鉄の斧の刃が背後の暗い幹と同じ暗さ (0.99:1) で黒い円盤に、柄の先だけが火の粉に見えていた。
+            // リーダーの板のリム・勾配・環境光は触らない (2026-09-16 の裁定)。上と同じ月光の筋を1本、リーダー (z≈-1) と背後の木 (z≈9) の間に通し、
+            // 刃と柄の後ろの面だけを持ち上げる (リーダーの板は AlphaTest＋ZWrite なので筋は本人に隠れ、本人の上には色が乗らない)。寒色＝「暖色は街灯の範囲だけ」の外
+            {
+                // 筋の絵は上ほど濃い (α = v^1.3)。根元を地面の下 (y=-3。手前の地面に隠れる) へ下げて長さ 11 にし、濃い中ほどを刃と頭の高さに当てる
+                // (根元 y=0.3・長さ 8 だと刃の高さは v≈0.2 で α≈0.04 = 効かなかった)。傾き −14° で上ほど右へ寄るぶん根元を左へ (刃の高さで中心が画面 x≈500)
+                var hbPos = OnPath(-4.6f, 4.0f); hbPos = new Vector3(hbPos.x - 0.44f, -3.0f, hbPos.z);
+                // 上は薄れさせる (F53: 刃と頭の高さ v≈0.3〜0.45 の α は今と同じ・梢 v≥0.58 では 0)
+                var hb = Glow("moonbeam-hero", Px.Beam(new Color(0.7f, 0.8f, 1f), 0.42f, 0.58f), hbPos, 11f, 3.0f);
+                hb.transform.rotation = Quaternion.Euler(0f, 0f, -14f);
+                // 足元の光溜まり: 足の少し奥 (画面では脚の背後の道)。地面に寝かせる (Glow の既定は下端が支点の立て板)
+                var hp = Glow("moon-pool-hero", Px.Radial(new Color(0.8f, 0.88f, 1f, 0.28f)), Vector3.zero, 1f, 1f);
+                hp.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
+                hp.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                hp.transform.position = LeaderSlot() + new Vector3(0.2f, 0.05f, 0.8f);
+                hp.transform.localScale = new Vector3(3.0f, 1.8f, 1f);
+                // 斧の柄の背後の光溜まり (2026-09-30 F51: 柄の背後に見えているのは川の向こう岸の草で、紺黒の柄が草の暗い筋に溶け、石突の橙だけが浮いた)。
+                // 向こう岸 (s≈8.2・PC とスマホの両方の柄の背後) に寝かせる。手前の暖色の mote-pool (z≦2.0) とは重ならない。α は控えめ (スポットライトに見せない)
+                var hf = OnPath(-5.7f, 8.2f);
+                var hh = Glow("moon-pool-haft", Px.Radial(new Color(0.8f, 0.88f, 1f, 0.18f)), Vector3.zero, 1f, 1f);
+                hh.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
+                hh.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                hh.transform.position = new Vector3(hf.x, GroundY(hf.x, hf.z) + 0.05f, hf.z);
+                hh.transform.localScale = new Vector3(3.0f, 2.6f, 1f);
+            }
 
             // 遺跡の柱 (石) — 段丘の上に (額縁)
             // 道標: 坑口へ続く古い道の名残 (苔むした折れた石柱)。青い煉瓦の柱は森に浮くので廃止
@@ -1448,12 +1552,20 @@ namespace DeckRogue.Game
                 float sc = 4.6f * (0.7f + (float)rng.NextDouble() * 0.9f) * (species.Count > 0 ? 1.35f : 1f);
                 if (ss < -2.6f) sc *= 1.25f;                                         // 手前の木は大きい
                 if (InStream(tt, ss)) continue;
+                // 黒鉄の斧の刃の真後ろ (画面 x≈450〜610) に幹を立てない (2026-09-29 I25): t≈-3.3・s≈6.8 の小さな木の幹が刃の真後ろに立ち、刃が黒い円盤に見えていた。
+                // 帯は刃の後ろだけに絞る (頭と胴の後ろの幹まで動かすと左の木立が抜けて森に囲まれた感じが消えた)。
+                // continue で飛ばすと rng の消費が変わって森全体が組み変わるので、位置だけ左奥 (t-6・s+1 = 画面左端の大樹の木立) へずらす (tree() の rng の消費は位置に依らない)
+                if (ss >= 6.5f && ss < 11f && tt > -4.2f && tt < -2.0f)
+                {
+                    var moved = Quaternion.Euler(0f, PathYaw, 0f) * new Vector3(tt - 6f, 0f, ss + 1f);
+                    x = moved.x; z = moved.z; h = GroundY(x, z);
+                }
                 tree(new Vector3(x, h, z), sc, rng.Next(3));
                 placed++;
             }
             // 額縁と場の背後の大木 (近いので大きい = 森に囲まれている)
             tree(OnPath(-15.5f, 4.6f), 8.5f, 1); tree(OnPath(-12f, 10.4f), 7.0f, 0); tree(OnPath(15.5f, -4.6f), 7.6f, 2);
-            tree(OnPath(-13.5f, -5.4f), 9.5f, 0); tree(OnPath(19.5f, 3.6f), 8.2f, 1); tree(OnPath(-1f, 10.2f), 7.8f, 0);   // リーダーの真後ろ (t=-4) から右へ (幹がリーダーに重なっていた = レビュー)
+            tree(OnPath(-13.5f, -5.4f), 9.5f, 0); tree(OnPath(19.5f, 3.6f), 8.2f, 1); tree(OnPath(1f, 10.2f), 7.8f, 0);   // リーダーの真後ろ (t=-4) から右へ (幹がリーダーに重なっていた = レビュー)。t=-1 では根の張り出し (画面 x≈540〜625) が黒鉄の斧の刃のすぐ右に残り、刃と背後の差が +14 止まり → t=1 で奥の大木 (1.5,11.4) と一叢に (2026-09-29 I25)
             tree(OnPath(19f, 5f), 7.5f, 1); tree(OnPath(1.5f, 11.4f), 8.8f, 1);   // (7,10.2)・(12.5,4.6) は窓を塞いでいたので削除
             // 大樹 (2026-09-21): 場の背後の左に一本、根が場まで張る (画面の左上を埋める額縁)
             if (giantTree != null) { var gp = OnPath(-9f, 8.6f); Sprite("tree-giant", giantTree, gp, 1.15f, 0.34f); treeSpots.Add(gp); }
@@ -1604,18 +1716,31 @@ namespace DeckRogue.Game
             mts.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
             var mts2 = Prop("mountains2", Px.Mountains(p, rng, 0.35f), new Vector3(-10f, 2.9f, 48f), 4.5f, 0.4f, 150f);
             mts2.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-            var skyline = Prop("skyline", Px.Skyline(p, rng), new Vector3(0f, 3.0f, 36f), 2.4f, 0.4f, 120f);
-            skyline.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            // 街の輪郭 (平らな段) は梢の絵が無い時だけの代わり (2026-09-29 I26: 梢の後ろで y≈164〜219 の横一直線と右の平らな帯になり、梢の端と合わせて上中央に四角い濃紺の影を作っていた)。
+            // 絵は梢があっても作って捨てる = rng の消費を変えない (後ろの坑口の櫓の形を変えない)
+            var skylineTex = Px.Skyline(p, rng);
             var treeline = PropTexRaw(act, "treeline", null);
+            if (treeline == null)
+            {
+                var skyline = Prop("skyline", skylineTex, new Vector3(0f, 3.0f, 36f), 2.4f, 0.4f, 120f);
+                skyline.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+            }
+            else UnityEngine.Object.Destroy(skylineTex);
             if (treeline != null)
             {
                 // 遠い森の梢 (2026-09-21): 木々の後ろ・山の手前に霧の中の稜線を2枚 (ずらして重ねる = 一本の帯に見えない)。霧を半分受ける
                 float tw = treeline.width * Dot * 2.6f, th = treeline.height * Dot * 2.6f;   // 遠い森の梢は近く大きく (窓を開けた芝の空白を梢で閉じる)
                 var tl1 = Prop("treeline", treeline, new Vector3(-2f, 1.0f, 33f), th, 0.4f, tw); tl1.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.7f); tl1.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                // tl1 の右の続き (2026-09-29 I26): 絵の端は縦の直線で切れていて (列0・列199 が不透明)、tl1 の右端が画面の上中央 (PC x≈1248) に縦の切り口として出ていた。
+                // 同じ深さ・同じ大きさで右へ2枚つなぎ、端を画面の外 (world x=50 = PC x≈2667・スマホ x≈2445) へ追い出す。
+                // 1枚目は鏡像 (列199 と列199 が接する)・2枚目は正像 (列0 と列0 が接する) = 継ぎ目が出ない。絵のアルファは 0/255 の切り抜きなので端をぼかしても硬い線が内側へ動くだけ
+                var tl1b = Prop("treeline", treeline, new Vector3(-2f + tw, 1.0f, 33f), th, 0.4f, tw); tl1b.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.7f); tl1b.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
+                tl1b.transform.localScale = new Vector3(-tw, th, 1f);
+                var tl1c = Prop("treeline", treeline, new Vector3(-2f + tw * 2f, 1.0f, 33f), th, 0.4f, tw); tl1c.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.7f); tl1c.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
                 var tl2 = Prop("treeline", treeline, new Vector3(34f, 0.6f, 37f), th * 0.9f, 0.4f, tw * 0.9f); tl2.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.8f); tl2.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
                 tl2.transform.localScale = new Vector3(-tl2.transform.localScale.x, tl2.transform.localScale.y, 1f);
                 var tl3 = Prop("treeline", treeline, new Vector3(-40f, 1.2f, 36f), th * 0.95f, 0.4f, tw * 0.95f); tl3.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_Fog", 0.75f); tl3.GetComponent<MeshRenderer>().shadowCastingMode = ShadowCastingMode.Off;
-                foreach (var tl in new[] { tl1, tl2, tl3 }) tl.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_BaseColor", new Color(0.22f, 0.3f, 0.36f));   // 影絵 = 暗く青く (絵は昼の青緑)
+                foreach (var tl in new[] { tl1, tl1b, tl1c, tl2, tl3 }) tl.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_BaseColor", new Color(0.22f, 0.3f, 0.36f));   // 影絵 = 暗く青く (絵は昼の青緑)
             }
             // 坑口: 道の先 (奥右) に立つ木組みの櫓と、その足元の竪坑。世界観「マナ脈の坑を降りる」(2026-09-10 改稿。旧・古の塔を置換)。
             // 霧は半分だけ受けて山より暗く残す = 「これから降りる場所」が遠景の主役になる
@@ -3408,7 +3533,11 @@ namespace DeckRogue.Game
             public static Texture2D Beam() { return Beam(new Color(0.7f, 0.8f, 1f)); }
 
             /// <summary>光の柱。色を渡せる (2026-09-10: 幕3 の脈の光は青緑)</summary>
-            public static Texture2D Beam(Color tint)
+            public static Texture2D Beam(Color tint) { return Beam(tint, 2f, 2f); }
+
+            /// <summary>上を薄れさせる光の柱 (v が fadeFrom→fadeTo で α が 0 へ)。2026-09-30 F53: 主役の背後の筋は上端 (v=1) が最も濃く、
+            /// 梢の中に理由の分からない青い柱が立って視線を引いた。刃と頭の高さの α は変えずに梢へは届かせない</summary>
+            public static Texture2D Beam(Color tint, float fadeFrom, float fadeTo)
             {
                 int w = 32, h = 128;
                 var t = new Texture2D(w, h, TextureFormat.RGBA32, false);
@@ -3420,6 +3549,7 @@ namespace DeckRogue.Game
                         float u = (x + 0.5f) / w, v = (y + 0.5f) / h;
                         float side = Mathf.Sin(u * Mathf.PI); side *= side;
                         float a = side * Mathf.Pow(v, 1.3f) * 0.6f;
+                        if (v > fadeFrom) a *= 1f - Mathf.SmoothStep(0f, 1f, (v - fadeFrom) / Mathf.Max(0.001f, fadeTo - fadeFrom));
                         px[y * w + x] = new Color(tint.r, tint.g, tint.b, a);
                     }
                 t.SetPixels(px); t.Apply();

@@ -1,30 +1,32 @@
 {
- "id": "enemy_chimera_1__23",
- "engine": "pixflux",
- "request": {
-  "description": "a heavy four-legged patchwork BEAST stitched together from mismatched fur patches with visible seams, thick neck, blunt wide muzzle, a riveted iron plate bolted over its forehead for headbutting, head lowered and shoulders raised to charge, a brass hinge joint at one foreleg, a wide iron collar with a numbered brass tag and a short broken chain, a small pale lens set in the collar, bead eyes, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, with two or three mismatched parts of tarnished pale metal grafted onto the body: a riveted plate, a brass joint with a small cog, a small pale glowing lens, stitched seams where metal meets fur",
-  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, lion man, humanoid, person, hands, arms, standing upright, biped, robot, mech, sharp teeth, fangs",
-  "image_size": {
-   "width": 96,
-   "height": 96
+  "id": "enemy_chimera_1__23",
+  "engine": "pixflux",
+  "request": {
+    "description": "a heavy four-legged patchwork BEAST stitched together from mismatched fur patches with visible seams, thick neck, blunt wide muzzle, a riveted iron plate bolted over its forehead for headbutting, head lowered and shoulders raised to charge, a brass hinge joint at one foreleg, a wide iron collar with a numbered brass tag and a short broken chain, a small pale lens set in the collar, bead eyes, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast, with two or three mismatched parts of tarnished pale metal grafted onto the body: a riveted plate, a brass joint with a small cog, a small pale glowing lens, stitched seams where metal meets fur",
+    "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, lion man, humanoid, person, hands, arms, standing upright, biped, robot, mech, sharp teeth, fangs",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 9,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "highly detailed",
+    "view": "low top-down",
+    "direction": "south-west",
+    "seed": 23
   },
-  "text_guidance_scale": 9,
-  "no_background": true,
-  "outline": "selective outline",
-  "shading": "medium shading",
-  "detail": "highly detailed",
-  "view": "low top-down",
-  "direction": "south-west",
-  "seed": 23
- },
- "usage": {
-  "type": "generations",
-  "generations": 1
- },
- "at": "2026-09-10T20:16:49.416Z",
- "judge": {
-  "pick": "A",
-  "seed": 23,
-  "at": "2026-09-11"
- }
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-10T20:16:49.416Z",
+  "judge": {
+    "pick": "A",
+    "seed": 23,
+    "at": "2026-09-11"
+  },
+  "groundRemoved": "2026-09-29 PixelLab v2 edit-images-v2 (Pro) で地面・背景を消した（16/9/4枚ずつまとめて）。足元は元の絵の最下端にそろえて下へずらした",
+  "upscaled128": "2026-09-29 戦闘画面のレビュー p24（ユーザー裁定「1体で戦う幕ボスは128ドットで描き直す」＝1ドット=画面4pxのまま枠だけ大きく）: 今の96の絵を手元で EPX×2 に拡大して背丈103ドットへ縮め128の枠に置き（scratchpad/boss128/upscale.py）、PixelLab v2 edit-images-v2 --size 128（edit_with_text「same creature, same design … redraw as clean crisp pixel art at this resolution」）で描き直した（job 17e2be26-ab82-4a27-bf94-e06b9320b1b6・出力 #1）。edit で消えた金の差し色（首輪の鋲）を手元で元の絵から戻し、散った1〜2点は edit の色に戻した（restore_accent.py・keep_clusters.py）。足元は最下端から2ドット・左右中央"
 }

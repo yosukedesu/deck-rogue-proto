@@ -31,6 +31,7 @@ namespace DeckRogue.Game
                 var li = new GameObject("leader-icon", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
                 li.transform.SetParent(bar, false);
                 li.sprite = leaderIcon; li.preserveAspect = true; li.raycastTarget = false;
+                UiKit.PixelArt(li);   // p25
                 UiKit.Le(li.rectTransform, 64f, 64f, 64f, 64f);
                 string ltip = run.LeaderId;
                 try { var lname = Content.GetLeaderDef(run.LeaderId); if (lname != null) ltip = "<b>" + lname.Name + "</b>"; } catch (Exception) { }
@@ -38,7 +39,7 @@ namespace DeckRogue.Game
             }
             var t1 = BattleScreen.Tag(bar, 40f, -0.6f);
             // 出立の店 (2026-09-24) はまだ地図に入る前 (行 -1) なので「出立」
-            var tl = UiKit.Txt(t1, "幕 " + run.Act + " · " + (run.Phase == RunPhases.Departure ? "出立" : "行 " + (run.Row + 1) + " / " + run.Map.Count), 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            var tl = UiKit.Txt(t1, "幕" + run.Act + "・" + (run.Phase == RunPhases.Departure ? "出立" : "行" + (run.Row + 1) + "/" + run.Map.Count), 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             tl.characterSpacing = 2f;
             UiKit.Le(tl, -1f, 30f, -1f, 30f);
             var te = UiKit.Deco(t1, title, 19, PaperFx.Ink, TextAnchor.MiddleLeft);
@@ -58,7 +59,7 @@ namespace DeckRogue.Game
             UiKit.Le(hm, -1f, 30f, -1f, 30f);
             var gold = BattleScreen.Tag(bar, 36f, -0.4f);
             UiKit.Icon(gold, "gold", 16f);
-            var gt = UiKit.Deco(gold, run.Gold.ToString(), 18, PaperFx.Ink, TextAnchor.MiddleLeft);
+            var gt = UiKit.Deco(gold, run.Gold.ToString(), 18, PaperFx.BrassInk, TextAnchor.MiddleLeft);   // G の数字は真鍮の墨 (color-theme の表。2026-09-29)
             UiKit.Le(gt, -1f, 30f, -1f, 30f);
             var gl = UiKit.Txt(gold, "G", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(gl, -1f, 30f, -1f, 30f);
@@ -101,8 +102,10 @@ namespace DeckRogue.Game
         /// <summary>スマホの「≡」(2026-09-14): 上部バーの右端。押すと Menu が画面の右上に開く</summary>
         public static void MenuButton(GameRoot g, Transform bar)
         {
-            var b = UiKit.Btn(bar, g.MenuOpen ? "×" : "≡", delegate { g.MenuOpen = !g.MenuOpen; g.Rebuild(); }, 22, true, g.MenuOpen ? PaperFx.BrassLight : (Color?)null);
-            BattleScreen.SetSize(b, 56f, 44f);
+            // 大きさ (2026-09-29): スマホは 64×52・記号26 (上端のただ一つの入口＝指で押せる 48 以上)、PC は上部バーの札とそろえて 44×34・記号18
+            bool ph = UiKit.Phone;
+            var b = UiKit.Btn(bar, g.MenuOpen ? "×" : "≡", delegate { g.MenuOpen = !g.MenuOpen; g.Rebuild(); }, ph ? 26 : 18, true, g.MenuOpen ? PaperFx.BrassLight : (Color?)null);
+            BattleScreen.SetSize(b, ph ? 64f : 44f, ph ? 52f : 34f);
         }
 
         /// <summary>スマホのメニュー (≡ の中身): マップ・デッキ一覧・ログ (戦闘)・メモ・レポート。外側を触ると閉じる</summary>
@@ -205,6 +208,7 @@ namespace DeckRogue.Game
             var art = Theme.Art("relics", relicId);
             img.sprite = art != null ? art : ThemeFx.RelicGlyph(relicId);
             img.preserveAspect = true;
+            UiKit.PixelArt(img);   // PC 1080 は 32/64 ちょうど (最近傍のまま)。スマホ・PC の他の解像度では非整数倍 (2026-09-29 p25)
             if (art != null) size = size <= 40f ? 32f : 64f;   // PixelLab のレリックは 32 ドット。整数倍で置く (2026-09-11)
             var rt = img.rectTransform;
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
@@ -309,7 +313,11 @@ namespace DeckRogue.Game
         /// <summary>デッキから選ぶ画面の一覧の置き場 (2026-09-16 案A): スマホは上部バーの下から下の帯 (チェック・確定・戻る) の上まで幅いっぱい。PC は従来 (幅 1520・見出しの下)</summary>
         public static void PickArea(RectTransform root, RectTransform area, float topExtra = 0f)
         {
-            if (UiKit.Phone) UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(20f, 74f), new Vector2(-20f, -(TopH + 10f)));
+            if (UiKit.Phone)
+            {   // 左の余白は画面の切り欠き (パンチホール＝左端の縦の中央) の右まで (2026-09-29 p10)
+                float padL = UiKit.SafeLeft(20f, TopH + 10f, BattleScreen.CanvasSize(root).y - 74f);
+                UiKit.Anchor(area, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(padL, 74f), new Vector2(-20f, -(TopH + 10f)));
+            }
             else UiKit.Anchor(area, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-760f, 110f), new Vector2(760f, -(TopH + 110f + topExtra)));
             UiKit.Vert(area, 0, 0);
         }
@@ -350,7 +358,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>カードのグリッド (スクロール)。btnLabel が null を返す札はボタンなし。marked は強調。
-        /// スマホ (2026-09-16 案A「一面の棚としおり」): 札の下のボタンを出さず「札を押す＝選ぶ」。pickKey があれば押した札に蜂蜜の縁が付き、confirmRoot の下の帯に「〜を鍛える」の確定ボタン
+        /// スマホ (2026-09-16 案A「一面の棚としおり」): 札の下のボタンを出さず「札を押す＝選ぶ」。pickKey があれば押した札に真鍮の縁が付き、confirmRoot の下の帯に「〜を鍛える」の確定ボタン
         /// (tapPicks なら押した時点で onPick = 工房の素材・星読みの盤の複数選択)。badge は札の角の印 (A/B)。cellScale は札の倍率 (既定: スマホ 0.9・PC 0.8)。
         /// 「鍛えた後を見る」(g.ShowUpgraded) が入っていれば鍛えられる札を鍛えた後の姿で描く。チェックは confirmRoot の左下に置く</summary>
         public static void CardGrid(GameRoot g, Transform parent, IReadOnlyList<CardInstance> cards,
@@ -402,8 +410,8 @@ namespace DeckRogue.Game
                 CardPopup.Attach(g, cell, c, delegate { return g.Rs != null && g.Rs.Phase == RunPhases.Combat ? g.Rs.Combat : null; }, true);
                 float hw = CardView.W * sc / 2f, hh = CardView.H * sc / 2f;
                 if (!mark && starred != null && starred.Contains(i))
-                {   // ⭐ レシピの相手札 (2026-09-12): 蜂蜜色の細い枠と星
-                    var sring = UiKit.Frame(cell, Theme.Panel, new Color(0.88f, 0.7f, 0.35f, 0.85f), "star-ring", 3f);
+                {   // ⭐ レシピの相手札 (2026-09-12): 真鍮の細い枠と星
+                    var sring = UiKit.Frame(cell, Theme.Panel, new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.85f), "star-ring", 3f);   // 真鍮＝選択・価値 (旧・蜂蜜の値が残っていた。F57)
                     UiKit.Anchor(sring.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-hw - 6f, -hh - 6f + lift), new Vector2(hw + 6f, hh + 6f + lift));
                     sring.raycastTarget = false;
                     sring.transform.SetAsFirstSibling();
@@ -414,7 +422,7 @@ namespace DeckRogue.Game
                 }
                 if (mark || picked == i)
                 {
-                    var ring = UiKit.Frame(cell, Theme.Panel, picked == i ? new Color(0.88f, 0.7f, 0.35f, 0.95f) : new Color(1f, 0.85f, 0.3f, 0.6f), "mark", 3f);
+                    var ring = UiKit.Frame(cell, Theme.Panel, picked == i ? new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.95f) : new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.6f), "mark", 3f);   // 選択の縁＝真鍮 (F57)
                     UiKit.Anchor(ring.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-hw - 8f, -hh - 8f + lift), new Vector2(hw + 8f, hh + 8f + lift));
                     ring.raycastTarget = false;
                     ring.transform.SetAsFirstSibling();

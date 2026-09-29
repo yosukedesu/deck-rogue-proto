@@ -114,6 +114,12 @@ namespace DeckRogue.Game
                 "..............+.", ".............+#.", "............+#..", "...........+#...", "..........+#....", ".........+#.....",
                 "..-.....+#......", "..-#...+#.......", "...-#.+#........", "....-##.........", "....##-.........", "...#.-#-........",
                 "..#...-#-.......", ".#.....-........", "................", "................" } },
+            // 墨一色で読む剣 (人形の足元の札。2026-09-30 F43: sword は刃と鍔を「-」で描くので IconMono で消え、1〜2ドットの斜線と小さな×＝「✓」「メ」に見えた)。
+            // 「#」だけで描く: 刃は1行3ドットの斜め・鍔は刃と直角・柄頭 2×2
+            { "sword_mono", new[] {
+                ".............###", "............####", "...........###..", "..........###...", ".........###....", "........###.....",
+                ".......###......", "..#...###.......", "..##.###........", "...####.........", "....###.........", "...#####........",
+                "..##..##........", ".##.............", "##..............", "................" } },
             { "shield", new[] {
                 "................", "...--------.....", "..-########-....", ".-#+++++++##-...", ".-#+++++++##-...", ".-#+++++++##-...", ".-##########-...",
                 ".-##########-...", "..-########-....", "..-########-....", "...-######-.....", "....-####-......", ".....-##-.......", "......--........", "................", "................" } },
@@ -189,6 +195,34 @@ namespace DeckRogue.Game
             { "set", new[] {
                 "................", "..-----------...", "..-#########-...", "..-#--#--#--#...", "..-#########-...", "..-#--#--#--#...", "..-#########-...",
                 "..-#--#--#--#...", "..-#########-...", "..-----------...", "................", "................", "................", "................", "................", "................" } },
+            // ---- 状態の札の記号 (2026-09-29 p18: 1つの概念に1つの記号。墨1色で読めるように線は1〜2ドット・区切りは透明で抜く＝'-' を使わない) ----
+            // 筋力の上下 = 強化の意図 (intent_buff の真鍮の矢印) と同じ形を 16 ドットに。向きが符号 (旧: 剣＝攻撃の意図と同じ絵で、14px に縮むと「✓」に見えた)
+            { "strength_up", new[] {
+                "................", ".......##.......", "......####......", ".....######.....", "....########....", "...##########...", "..############..",
+                "......####......", "......####......", "......####......", "......####......", "......####......", "......####......", "......####......", "................", "................" } },
+            { "strength_down", new[] {
+                "................", "......####......", "......####......", "......####......", "......####......", "......####......", "......####......",
+                "......####......", "..############..", "...##########...", "....########....", ".....######.....", "......####......", ".......##.......", "................", "................" } },
+            // 威圧 (敵)・弱体 (自分) = 与ダメ -25%: 下向きの二重の山形 (筋力の▼と見分ける)
+            { "weak", new[] {
+                "................", "................", "..##........##..", "...##......##...", "....##....##....", ".....##..##.....", "......####......",
+                ".......##.......", "..##........##..", "...##......##...", "....##....##....", ".....##..##.....", "......####......", ".......##.......", "................", "................" } },
+            // 装甲・ターン装甲 = 胴鎧 (肩と草摺の段)。盾 (ブロック) と形を分ける
+            { "armor", new[] {
+                "................", "..###......###..", "..####....####..", "..############..", "...##########...", "...##########...", "...##########...",
+                "................", "...##########...", "...##########...", "................", "...##########...", "....########....", "................", "................", "................" } },
+            // ターン = 砂時計 (旧: 地図と同じ格子)
+            { "turn", new[] {
+                "................", "..############..", "..############..", "...##......##...", "....##....##....", ".....##..##.....", "......####......",
+                ".......##.......", "......####......", ".....######.....", "....########....", "...##########...", "..############..", "..############..", "................", "................" } },
+            // 混乱 = 渦 (旧: 急所と同じ的)
+            { "confuse", new[] {
+                "................", "....#######.....", "...##.....##....", "..##.......##...", "..#...####..#...", "..#..##..##.##..", "..#..#....#..#..",
+                "..#..#..#.#..#..", "..#..#..###..#..", "..#..##.....##..", "..##..######.#..", "...##.......##..", "....#########...", "................", "................", "................" } },
+            // 虚弱 = ひびの入った盾 (得るブロック -25%)
+            { "frail", new[] {
+                "................", "..############..", "..######.#####..", "..#####.######..", "..######.#####..", "..######.#####..", "..#####.######..",
+                "..######.#####..", "..#######.####..", "...#####.####...", "....####.###....", ".....###.##.....", "......##.#......", ".......#........", "................", "................" } },
         };
 
         /// <summary>アイコン。差し替えは Resources/Art/icons/<name>.png (PixelLab は 32 ドット。2026-09-11)。
@@ -234,7 +268,7 @@ namespace DeckRogue.Game
                 case "draw": return UiKit.Hex("#c8d0d8");
                 case "growth": return UiKit.Hex("#6abf69");
                 case "momentum": return UiKit.Hex("#9fd8d0");
-                case "burn": return UiKit.Hex("#e8742f");
+                case "burn": return PaperFx.Ember;   // 延焼の印 (color-theme の表の Ember と同じ値)
                 case "gold": return UiKit.Hex("#e0b84a");
                 case "pierce": return UiKit.Hex("#e8e2c8");
                 case "star": return UiKit.Hex("#e0b25a");
@@ -246,8 +280,50 @@ namespace DeckRogue.Game
                 case "question": return UiKit.Hex("#9fd8d0");
                 case "chest": return UiKit.Hex("#e0b84a");
                 case "flag": return UiKit.Hex("#d64f4f");
+                // 2026-09-29 p18 (色を掛けずに置く時の色。札の中は IconMono＋墨で塗る)。役割の色そのもの＝PaperFx の名前 (p26)
+                case "strength_up": return PaperFx.Brass;
+                case "strength_down": case "weak": return PaperFx.Sky;
+                case "confuse": case "frail": return PaperFx.Plum;
                 default: return UiKit.Hex("#c8c0b0");
             }
+        }
+
+        /// <summary>
+        /// 墨1色で塗る 16px のアイコン (2026-09-29 p18)。'#' と '+' は白・'-' と 'w' は透明 (呼び手が墨の色を掛ける)。
+        /// '#' を持たない絵 (消滅の ✕) だけ '-' を白に。IconBitmap に墨を掛けると '#' (主色) と '-' (主色の45%暗) の差が 1.5:1 に潰れ、
+        /// 格子や的が黒い四角になっていた (帳面の状態の札・ターンの札・盾の札)
+        /// </summary>
+        public static Sprite IconMono(string name)
+        {
+            var key = "iconmono:" + name;
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            string[] rows;
+            if (!IconArt.TryGetValue(name, out rows)) rows = IconArt["exposed"];
+            bool hasFill = false;
+            foreach (var r in rows) if (r.IndexOf('#') >= 0 || r.IndexOf('+') >= 0) { hasFill = true; break; }
+            int h = rows.Length, w = rows[0].Length;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[w * h];
+            var clear = new Color(1f, 1f, 1f, 0f);
+            for (int y = 0; y < h; y++)
+            {
+                var row = rows[y];
+                for (int x = 0; x < w; x++)
+                {
+                    char ch = x < row.Length ? row[x] : '.';
+                    bool on = ch == '#' || ch == '+' || (!hasFill && ch == '-');
+                    px[(h - 1 - y) * w + x] = on ? Color.white : clear;
+                }
+            }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = name + "-mono";
+            _cache[key] = s;
+            return s;
         }
 
         static Sprite FromBitmap(string[] rows, Color main, string name)
@@ -491,6 +567,37 @@ namespace DeckRogue.Game
             return m;
         }
 
+        static readonly Dictionary<Sprite, Vector2Int> _sideMargin = new Dictionary<Sprite, Vector2Int>();
+        /// <summary>絵の左右の透明な列数 (ドット。x=左・y=右)。確認の窓が敵の体に掛からないかを測るため (2026-09-29 p11)。読めなければ 0</summary>
+        public static Vector2Int SideMargins(Sprite s)
+        {
+            if (s == null) return Vector2Int.zero;
+            Vector2Int m;
+            if (_sideMargin.TryGetValue(s, out m)) return m;
+            m = Vector2Int.zero;
+            try
+            {
+                var tex = s.texture; var r = s.rect;
+                int x0 = Mathf.RoundToInt(r.x), y0 = Mathf.RoundToInt(r.y), w = Mathf.RoundToInt(r.width), h = Mathf.RoundToInt(r.height);
+                var px = tex.GetPixels32();
+                int tw = tex.width;
+                int lo = w, hi = -1;
+                for (int row = 0; row < h; row++)
+                {
+                    int baseIdx = (y0 + row) * tw + x0;
+                    for (int x = 0; x < w; x++)
+                    {
+                        int k = baseIdx + x;
+                        if (k < px.Length && px[k].a >= 16) { if (x < lo) lo = x; if (x > hi) hi = x; }
+                    }
+                }
+                if (hi >= lo) m = new Vector2Int(lo, w - 1 - hi);
+            }
+            catch (Exception) { m = Vector2Int.zero; }
+            _sideMargin[s] = m;
+            return m;
+        }
+
         static uint Hash(string s)
         {
             uint h = 2166136261u;
@@ -622,6 +729,16 @@ namespace DeckRogue.Game
     {
         static readonly Dictionary<string, Sprite> _cache = new Dictionary<string, Sprite>();
 
+        // ---- 演出の光の色 (絵の側＝color-theme の「絵の光」。PaperFx の役割の表には載せない)。
+        // 同じ光を複数のファイルが直書きしていたので名前を置く (2026-09-29 戦闘画面の見直し p26。値は不変) ----
+        /// <summary>灯の炎の芯 (淡い暖白 #fff6d2): 炎・光の筋の絵の芯、灯の火の粉 (LightUi)・灯を払う粒 (Presenter)</summary>
+        public static readonly Color LampCore = UiKit.Hex("#fff6d2");
+        /// <summary>灯の光 (暖色・α0.95): 灯の札の当たりの筋 (Presenter.HitColor)・ランタンの暈 (LightUi は透明度だけ変える)</summary>
+        public static readonly Color LampGlow = new Color(1f, 0.9f, 0.62f, 0.95f);
+        /// <summary>斬撃の白い芯 (紙色の光・α0.95): 札の当たりの既定の筋 (Presenter.HitColor)・火種の芯 (Tween)。
+        /// 紙 (明) PaperFx.Paper3 に近いが光の色＝紙の色とは別に動かす</summary>
+        public static readonly Color SlashCore = new Color(1f, 0.98f, 0.9f, 0.95f);
+
         /// <summary>縦グラデーション (上 top → 下 bottom)。バイリニアで滑らかに</summary>
         public static Sprite Gradient(string key, Color top, Color bottom)
         {
@@ -640,8 +757,87 @@ namespace DeckRogue.Game
             return s;
         }
 
+        /// <summary>斜線の地紋 (8×8・Point・Repeat): 45° の墨の線 2px (α0.35)。Image.type=Tiled で敷く (1 ドット = キャンバス 1 単位)。
+        /// 自分の HP バーの「削られる分」の帯 (2026-09-29 p08。薔薇の薄塗りだけだと「すでに減った分」とも読めるので、見込みの斜線を重ねる)</summary>
+        public static Sprite Hatch()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("hatch", out s)) return s;
+            const int n = 8;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point;
+            tex.wrapMode = TextureWrapMode.Repeat;
+            var ink = PaperFx.Ink;
+            var line = new Color(ink.r, ink.g, ink.b, 0.35f);
+            var px = new Color[n * n];
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                    px[y * n + x] = (x + y) % n < 2 ? line : new Color(ink.r, ink.g, ink.b, 0f);
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            _cache["hatch"] = s;
+            return s;
+        }
+
+        /// <summary>暗幕の穴の縁のぼかし (9スライス。2026-09-29 戦闘画面のレビュー p11): 左・右・上の辺は c (暗幕の色) で、内側へ b ドットかけて透明になる。
+        /// 下の辺はぼかさない (帳面と手札の暗幕の境は硬いまま)。穴の矩形いっぱいに Sliced で敷き、中は透明。raycastTarget は呼ぶ側で false に</summary>
+        public static Sprite HoleFeather(Color c, int b) { return HoleFeather(c, b, b); }
+
+        /// <summary>左右のぼかし幅 side と上のぼかし幅 top を分けた版 (敵が4体で左右に余白が無くても、上の縁は柔らかく)</summary>
+        public static Sprite HoleFeather(Color c, int side, int top)
+        {
+            side = Mathf.Max(1, side); top = Mathf.Max(1, top);
+            string key = "hole:" + side + ":" + top + ":" + ColorUtility.ToHtmlStringRGBA(c);
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            int w = 2 * side + 2, h = top + 2;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[w * h];
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    // 左・右・上の辺からの距離をそれぞれのぼかし幅で割った小さい方 (下の辺は数えない)
+                    float k = Mathf.Clamp01(Mathf.Min(Mathf.Min(x, w - 1 - x) / (float)side, (h - 1 - y) / (float)top));
+                    float a = c.a * (1f - k * k * (3f - 2f * k));   // smoothstep
+                    px[y * w + x] = new Color(c.r, c.g, c.b, a);
+                }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, new Vector4(side, 0f, side, top));
+            _cache[key] = s;
+            return s;
+        }
+
         /// <summary>ビネット (周辺が暗くなる)。alpha だけの黒</summary>
         public static Sprite Vignette() { return Vignette(Color.black, "vignette"); }
+
+        /// <summary>下から上へ消える縦のグラデーション (2026-09-29 I44 手札の後ろの手前の地面を沈める)。RGB は色そのもの、
+        /// アルファは下の 40% で <paramref name="alpha"/> のまま一定、そこから上端まで smoothstep で 0。上端に線は付けない (案B の作業台にはしない)</summary>
+        public static Sprite FadeUp(Color rgb, float alpha, string key)
+        {
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            const int w = 4, h = 64;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[w * h];
+            for (int y = 0; y < h; y++)
+            {
+                float k = y / (float)(h - 1);                       // 0 = 下端・1 = 上端
+                float u = Mathf.Clamp01((k - 0.4f) / 0.6f);
+                float a = alpha * (1f - u * u * (3f - 2f * u));     // 下 40% は一定、その上を smoothstep で 0 へ
+                for (int x = 0; x < w; x++) px[y * w + x] = new Color(rgb.r, rgb.g, rgb.b, a);
+            }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            _cache[key] = s;
+            return s;
+        }
 
         /// <summary>色つきの縁 (HP 危険域の薔薇など)。RGB は色そのもの、アルファだけ縁へ向かって濃くなる (黒の縁を Image で染めても黒のまま = 別の絵が要る)</summary>
         public static Sprite Vignette(Color rgb, string key)
@@ -837,7 +1033,7 @@ namespace DeckRogue.Game
                 tex.filterMode = FilterMode.Point;
                 tex.wrapMode = TextureWrapMode.Clamp;
                 var px = new Color[w * h];
-                var core = UiKit.Hex("#fff6d2"); var edge = UiKit.Hex("#ead08a"); var glow = new Color(0.79f, 0.6f, 0.23f, 0.45f);
+                var core = LampCore; var edge = UiKit.Hex("#ead08a"); var glow = new Color(0.79f, 0.6f, 0.23f, 0.45f);
                 for (int y = 0; y < h; y++)
                     for (int x = 0; x < w; x++)
                     {
@@ -1136,6 +1332,63 @@ namespace DeckRogue.Game
         }
 
         /// <summary>
+        /// 組めないギアの絵 (2026-09-29 p14): GearGlyph の画素を輝度へ 85% 寄せて彩度を落とし、沈んだ紙の色 (PaperFx.PaperDim) へ 35% 寄せた写し＝紙に溶けかけた灰色の影。
+        /// 旧・0.72 の乗算は絵を暗く濃くし、組めないトークンのほうが重く見えた (使えない印として逆に働いていた)。×0.85 で暗くする案も墨の外線が残って「鋼の版」に見えたので、暗くせず紙へ寄せる。
+        /// 絵の寸法・ピボット・PPU は元と同じ (preserveAspect の置き方を変えない)。読めない絵 (Read/Write 無効) は null＝呼び出し側で元の絵に α0.6
+        /// </summary>
+        public static Sprite GearGlyphMuted(string gearId, string family)
+        {
+            return MutedCopy(GearGlyph(gearId, family), "gearglyph-muted:" + gearId, 0.85f, 0.35f);
+        }
+
+        /// <summary>出せない札のコスト玉 (2026-09-30 F26: 乗算 0.82 では暗い金のままで「灰の玉」にならなかった)。PixelLab の cost_orb を輝度の灰へ 70%・淡い紙色へ 15% 寄せた写し。読めなければ null</summary>
+        public static Sprite CostOrbMuted()
+        {
+            return MutedCopy(Theme.Art("ui", "cost_orb"), "cost_orb-muted", 0.7f, 0.15f);
+        }
+
+        /// <summary>ドット絵の灰の写し (輝度へ toLuma・PaperFx.PaperDim へ toPaper 寄せる。rect と同じ寸法・Point・元のピボットと PPU)。読めなかった時も null を覚える</summary>
+        static Sprite MutedCopy(Sprite src, string key, float toLuma, float toPaper)
+        {
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            s = null;
+            if (src != null && src.texture != null)
+            {
+                Color32[] px = null;
+                try { px = src.texture.GetPixels32(); } catch (Exception) { px = null; }
+                int tw = src.texture.width, th = src.texture.height;
+                var rect = src.rect;
+                int rx = Mathf.RoundToInt(rect.x), ry = Mathf.RoundToInt(rect.y), rw = Mathf.RoundToInt(rect.width), rh = Mathf.RoundToInt(rect.height);
+                if (px != null && rw > 0 && rh > 0 && rx >= 0 && ry >= 0 && rx + rw <= tw && ry + rh <= th && px.Length >= tw * th)
+                {
+                    Color pd = PaperFx.PaperDim;
+                    var outPx = new Color32[rw * rh];
+                    for (int y = 0; y < rh; y++)
+                        for (int x = 0; x < rw; x++)
+                        {
+                            Color32 c = px[(ry + y) * tw + (rx + x)];
+                            float r = c.r / 255f, gg = c.g / 255f, b = c.b / 255f;
+                            float l = 0.30f * r + 0.59f * gg + 0.11f * b;
+                            r = Mathf.Lerp(Mathf.Lerp(r, l, toLuma), pd.r, toPaper);
+                            gg = Mathf.Lerp(Mathf.Lerp(gg, l, toLuma), pd.g, toPaper);
+                            b = Mathf.Lerp(Mathf.Lerp(b, l, toLuma), pd.b, toPaper);
+                            outPx[y * rw + x] = new Color32((byte)Mathf.RoundToInt(r * 255f), (byte)Mathf.RoundToInt(gg * 255f), (byte)Mathf.RoundToInt(b * 255f), c.a);
+                        }
+                    var tex = new Texture2D(rw, rh, TextureFormat.RGBA32, false);
+                    tex.filterMode = FilterMode.Point;
+                    tex.wrapMode = TextureWrapMode.Clamp;
+                    tex.SetPixels32(outPx);
+                    tex.Apply(false, false);
+                    s = Sprite.Create(tex, new Rect(0, 0, rw, rh), new Vector2(src.pivot.x / rw, src.pivot.y / rh), src.pixelsPerUnit, 0, SpriteMeshType.FullRect);
+                    s.name = key;
+                }
+            }
+            _cache[key] = s;   // 読めなかった時も null を覚える (作り直しのたびに例外を起こさない)
+            return s;
+        }
+
+        /// <summary>
         /// 真鍮のランタン (2026-09-20 灯の表示・案B): 32×48 ドットの正面図＝吊り輪・笠・黒鉄の枠・硝子の窓 (x 7〜24・y 14〜35＝暗いまま。炎と数字は LightUi が上に描く)・台座。
         /// 差し替えは Art/ui/lantern.png (同じ寸法・硝子は暗く空けておく)。lit=false は消灯の色 (黒鉄も真鍮も沈む)
         /// </summary>
@@ -1193,7 +1446,7 @@ namespace DeckRogue.Game
                 var tex = new Texture2D(W, H, TextureFormat.RGBA32, false);
                 tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Clamp;
                 var px = new Color[W * H];
-                Color core = UiKit.Hex("#fff6d2"), mid = UiKit.Hex("#ead08a"), edge = UiKit.Hex("#c99a3a");
+                Color core = LampCore, mid = UiKit.Hex("#ead08a"), edge = UiKit.Hex("#c99a3a");
                 for (int y = 0; y < H; y++)
                     for (int x = 0; x < W; x++)
                     {
@@ -1256,6 +1509,45 @@ namespace DeckRogue.Game
                 tex.SetPixels(px);
                 tex.Apply(false, false);
                 s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            }
+            _cache[key] = s;
+            return s;
+        }
+
+        /// <summary>
+        /// 挿絵の中央を w×h ドットで切り出した絵 (2026-09-29 p25。置物の付箋のサムネイル 48×29)。縮めずに1ドット＝1単位で置くため
+        /// (80×48 を 0.6 倍に縮めるとドットが間引かれていた)。絵がその寸法以下の辺は切らない。画素を写した別のテクスチャ
+        /// (＝テクスチャ丸ごとのスプライト。UiKit.PixelArt が当たる)。読めない絵は同じテクスチャの部分矩形 (最近傍のまま)。決定的・キャッシュ
+        /// </summary>
+        public static Sprite CardArtCrop(string cardId, Color tint, int w, int h)
+        {
+            string key = "cardcrop:" + cardId + ":" + w + "x" + h;
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            var src = CardArt(cardId, tint);
+            s = src;
+            if (src != null && src.texture != null)
+            {
+                var r = src.rect;
+                int sw = Mathf.RoundToInt(r.width), sh = Mathf.RoundToInt(r.height);
+                int cw = Math.Min(w, sw), ch = Math.Min(h, sh);
+                if (cw < sw || ch < sh)
+                {
+                    int x0 = Mathf.RoundToInt(r.x) + (sw - cw) / 2, y0 = Mathf.RoundToInt(r.y) + (sh - ch) / 2;
+                    try
+                    {
+                        var px = src.texture.GetPixels(x0, y0, cw, ch);
+                        var tex = new Texture2D(cw, ch, TextureFormat.RGBA32, false);
+                        tex.filterMode = FilterMode.Point; tex.wrapMode = TextureWrapMode.Clamp;
+                        tex.SetPixels(px); tex.Apply(false, false);
+                        s = Sprite.Create(tex, new Rect(0, 0, cw, ch), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+                    }
+                    catch (Exception)
+                    {
+                        s = Sprite.Create(src.texture, new Rect(x0, y0, cw, ch), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+                    }
+                    s.name = key;
+                }
             }
             _cache[key] = s;
             return s;

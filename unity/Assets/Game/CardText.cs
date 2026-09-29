@@ -18,7 +18,7 @@ namespace DeckRogue.Game
         public static string Colored(int baseAmt, int shown)
         {
             if (shown == baseAmt) return shown.ToString();
-            return (shown > baseAmt ? "<color=#276a34>" : "<color=#a33a30>") + shown + "</color>";   // 紙の上で 5.5:1 (旧 #3f8f4a は 3.4:1)
+            return UiKit.ColorTag(shown > baseAmt ? PaperFx.GoodInk : PaperFx.BadDown, shown.ToString());   // 良いの墨／下がった数字 (紙の上で 5.5:1。旧 #3f8f4a は 3.4:1)
         }
         // ---- 語彙表 ----
 
@@ -34,7 +34,7 @@ namespace DeckRogue.Game
             { "onEnemyBuffed", "敵強化時" },
             { "onEnemyDefended", "敵防御時" },
             { "onEnemyActed", "敵の行動後" },
-            { "onTurnStart", "毎T開始時" },
+            { "onTurnStart", "毎ターン開始時" },   // 略語をやめる＝KeywordHelp の用語と同じ語 (2026-09-29 p06)
             { "onCombatStart", "戦闘開始時" },
             { "onAttackPlayed", "攻撃プレイ後" },
             { "onSpellPlayed", "呪文をプレイした時" },
@@ -71,22 +71,22 @@ namespace DeckRogue.Game
             { "dealDamageDrain", "ドレインN(半分回復)" },
             { "dealDamageCleave", "キル連鎖N" },
             { "dealDamageExecute", "処刑N(HP25%以下で上限)" },
-            { "dealDamagePerBlock", "ブロック×Nダメ" },
-            { "dealDamagePerIceBlock", "氷壁×Nダメ" },
-            { "dealDamagePerCardPlayed", "詠唱数×Nダメ" },
-            { "dealDamagePerCardPlayedTotal", "累計プレイ数×Nダメ" },
-            { "dealDamagePerEnergyMax", "上限×Nダメ" },
-            { "dealDamagePerMomentum", "勢い×Nダメ(非消費)" },
-            { "dealDamagePerExhaust", "消滅数×Nダメ" },
-            { "dealDamagePerHandCard", "手札数×Nダメ" },
-            { "dealDamagePerHeal", "回復回数×Nダメ" },
-            { "dealDamagePerDamageTaken", "被ダメ×Nダメ" },
-            { "dealDamagePerSelfHpLost", "失ったHP×Nダメ" },
-            { "dealDamagePerPermanent", "置物数×Nダメ" },
-            { "dealDamagePerRandomPlayed", "運任せ数×Nダメ" },
-            { "dealDamagePerNegStrength", "下げた筋力×Nダメ" },
-            { "dealDamagePerAttackPlayed", "このTの攻撃数×Nダメ" },
-            { "dealDamagePerWeak", "対象の威圧×N追加ダメ" },
+            { "dealDamagePerBlock", "ブロック×Nダメージ" },
+            { "dealDamagePerIceBlock", "氷壁×Nダメージ" },
+            { "dealDamagePerCardPlayed", "詠唱数×Nダメージ" },
+            { "dealDamagePerCardPlayedTotal", "累計プレイ数×Nダメージ" },
+            { "dealDamagePerEnergyMax", "上限×Nダメージ" },
+            { "dealDamagePerMomentum", "勢い×Nダメージ(非消費)" },
+            { "dealDamagePerExhaust", "消滅数×Nダメージ" },
+            { "dealDamagePerHandCard", "手札数×Nダメージ" },
+            { "dealDamagePerHeal", "回復回数×Nダメージ" },
+            { "dealDamagePerDamageTaken", "受けたダメージ×Nダメージ" },
+            { "dealDamagePerSelfHpLost", "失ったHP×Nダメージ" },
+            { "dealDamagePerPermanent", "置物数×Nダメージ" },
+            { "dealDamagePerRandomPlayed", "運任せ数×Nダメージ" },
+            { "dealDamagePerNegStrength", "下げた筋力×Nダメージ" },
+            { "dealDamagePerAttackPlayed", "このターンの攻撃数×Nダメージ" },
+            { "dealDamagePerWeak", "対象の威圧×N追加ダメージ" },
             { "gainBlock", "ブロックN" },
             { "gainBlockPerEnergyMax", "上限×Nブロック" },
             { "gainBlockPerPermanent", "置物数×Nブロック" },
@@ -109,27 +109,27 @@ namespace DeckRogue.Game
             { "negateConvertIce", "打ち消し+実値ぶん氷壁" },
             { "drawCards", "Nドロー" },
             { "drawCardsPerCardPlayed", "詠唱数×Nドロー" },
-            { "impulseDraw", "衝動ドローN(このT限り)" },
+            { "impulseDraw", "衝動ドローN(このターン限り)" },
             { "gainEnergy", "一時マナ+N" },
             { "gainEnergyMax", "エナジー上限+N" },
             { "discountNext", "次のカード-N" },
             { "addGrowth", "成長+N" },
             { "doubleGrowth", "成長2倍" },
-            { "dischargeGrowth", "成長放出(×Nダメ・全消費)" },
+            { "dischargeGrowth", "成長放出(×Nダメージ・全消費)" },
             { "dischargeGrowthBlock", "成長×Nブロック(全消費)" },
             { "addMomentum", "勢い+N" },
             { "doubleMomentum", "勢い2倍" },
             { "dischargeMomentumBlock", "勢い×Nブロック(全消費)" },
             { "dischargeMomentumBurn", "勢い×N延焼(全消費)" },
-            { "dischargeMomentumDamage", "勢い×Nダメ(全消費)" },
+            { "dischargeMomentumDamage", "勢い×Nダメージ(全消費)" },
             { "dischargeMomentumGrowth", "勢い÷Nを成長に(全消費)" },
-            { "dischargeMomentumVolley", "勢い×Nダメを3回(全消費)" },
+            { "dischargeMomentumVolley", "勢い×Nダメージを3回(全消費)" },
             { "momentumCarryHalf", "勢いの半分を持ち越す(常在)" },
             { "applyBurn", "延焼+N" },
-            { "applyBurnPerDamageTaken", "被ダメ×N延焼" },
-            { "dischargeBurn", "爆熱(延焼×Nダメ・全消費)" },
+            { "applyBurnPerDamageTaken", "受けたダメージ×N延焼" },
+            { "dischargeBurn", "爆熱(延焼×Nダメージ・全消費)" },
             { "addAether", "霊気+N" },
-            { "dischargeAether", "霊気放出(×Nダメ・全消費)" },
+            { "dischargeAether", "霊気放出(×Nダメージ・全消費)" },
             { "dischargeAetherDraw", "霊気×Nドロー(全消費)" },
             { "addLight", "灯+N" },
             { "dischargeLight", "灯を全て放出し、灯1につきNダメージ(灯の数だけヒット。全体は灯×N)" },
@@ -167,10 +167,10 @@ namespace DeckRogue.Game
             { "weakenEnemy", "威圧N" },
             { "strengthenEnemy", "敵の筋力+N" },
             { "shatterBlock", "粉砕(敵ブロック全壊)" },
-            { "shatterBlockConvert", "粉砕+破壊値ダメ" },
+            { "shatterBlockConvert", "粉砕+破壊値ダメージ" },
             { "exhaustFromDeck", "山札の上N枚を消滅(ミル)" },
             { "exhaustFromDeckChoose", "選んでN枚消滅(引導)" },
-            { "recycleExhaust", "輪廻(消滅を山札へ・×Nダメ)" },
+            { "recycleExhaust", "輪廻(消滅を山札へ・×Nダメージ)" },
             { "retrieveFromExhaust", "消滅置き場から回収" },
             { "playFromExhaust", "消滅置き場から直接プレイ" },
             { "summonPermanent", "召喚N体" },
@@ -188,12 +188,12 @@ namespace DeckRogue.Game
             { "triggerRetainersNow", "号令: 場の人形の効果を今すぐ1回ずつ解決 (登場ごとは除く)" },
             { "activateEnteredRetainer", "場に出た人形が即1回動く" },
             { "blessRetainers", "【常在】人形のダメージ・ブロック・回復+N" },
-            { "empowerShivs", "【常在】ナイフ与ダメ+N" },
+            { "empowerShivs", "【常在】ナイフ与ダメージ+N" },
             { "gainSetSlot", "仕込み枠+N(この戦闘中)" },
             { "retrieveFromDiscard", "捨て札からN枚を手札へ(選ぶ)" },
             { "searchDeck", "山札からN枚を手札へ(選ぶ)" },
             { "addCopyToDiscard", "コピーN枚を捨て札へ" },
-            { "growSelf", "プレイするたび与ダメ+N(この戦闘中)" },
+            { "growSelf", "プレイするたび与ダメージ+N(この戦闘中)" },
             { "upgradeInHand", "手札のN枚をこの戦闘中鍛える" },
             { "upgradeAllInHand", "手札の全てをこの戦闘中鍛える" },
             { "gainMaxHp", "最大HP+N(戦闘後も残る)" },
@@ -296,7 +296,7 @@ namespace DeckRogue.Game
             if (c.TargetAlive == true) parts.Add("倒せなければ");
             if (c.PerfectBlockThisPhase == true) parts.Add("この敵フェーズを完全に凌いだら");
             if (c.LastActionNoHpLoss == true) parts.Add("完全に凌いだ時");
-            if (c.HealedThisTurn == true) parts.Add("このT先にカードで回復していたら");
+            if (c.HealedThisTurn == true) parts.Add("このターン、先にカードで回復していたら");
             // レリック本家形 (2026-09-12)
             if (c.Turn.HasValue) parts.Add(c.Turn.Value + "ターン目");
             if (c.BlockZero == true) parts.Add("ブロックが0なら");
@@ -317,36 +317,35 @@ namespace DeckRogue.Game
                 parts.Add("敵の行動が" + string.Join("・", ks.ToArray()) + "以外の時");
             }
             if (parts.Count == 0) return "";
-            return "[" + string.Join("かつ", parts.ToArray()) + "] ";
+            // 角括弧の札をやめて文にする (2026-09-29 p06): 句が ら・ば・時 (なら を含む) で終わればそのまま「、」、それ以外は「なら、」
+            // (「凌いだらなら」を避ける)。カードの面では句を目印で囲む＝Emphasize が数字を大きくせず中墨で包む
+            string join = string.Join("かつ", parts.ToArray());
+            string clause = join + (join.EndsWith("ら") || join.EndsWith("ば") || join.EndsWith("時") ? "、" : "なら、");
+            return MarkClauses ? ClauseOpen + clause + ClauseClose : clause;
         }
 
         static int Mathf_Round(double v) { return (int)Math.Round(v, MidpointRounding.AwayFromZero); }
 
-        static string KindJa(string kind)
+        /// <summary>敵の行動の種類の日本語 (攻撃・防御・筋力上げ・応援…)。確認の窓の見出し「① 探り屋 の攻撃の前」でも使う (2026-09-29 p03)</summary>
+        public static string KindJa(string kind)
         {
             string v;
             return IntentKindJa.TryGetValue(kind == null ? "" : kind, out v) ? v : (kind == null ? "" : kind);
         }
 
         /// <summary>効果1つを1行に</summary>
-        public static string EffectLine(DeclarativeEffect e, string holderType)
+        public static string EffectLine(DeclarativeEffect e, string holderType, bool hideTrigger = false)
         {
             var sb = new StringBuilder();
-            if (e.Trigger == "onPlay")
-            {
-                if (holderType == CardTypes.Permanent) sb.Append("登場時: ");
-            }
-            else
-            {
-                string tj;
-                sb.Append(TriggerJa.TryGetValue(e.Trigger, out tj) ? tj : e.Trigger);
-                sb.Append(": ");
-            }
+            // hideTrigger = 誘発の見出しを省く (確認の窓: 窓の名前は窓が言う。2026-09-29 p03)
+            if (!hideTrigger) sb.Append(Heading(e, holderType));
             sb.Append(ConditionLabel(e.Condition));
-            // every/once (レリック本家形 2026-09-12): 「3回ごと」「戦闘で1回だけ」
-            if (e.Every.HasValue && e.Once != null) sb.Append("(" + (e.Once == "turn" ? "1ターンに" : "戦闘で") + e.Every.Value + "回目の時だけ) ");   // 嵐の目 (青 2026-09-25)
-            else if (e.Every.HasValue) sb.Append("(" + (e.EveryScope == "turn" ? "1ターンに" : "") + e.Every.Value + "回ごとに1回) ");
-            else if (e.Once != null) sb.Append("(" + (e.Once == "turn" ? "ターンに" : "戦闘で") + "1回だけ) ");
+            // every/once (レリック本家形 2026-09-12): 「3回ごと」「戦闘で1回だけ」。条件と同じく効果の値ではないので、カードの面では目印で囲む (p06)
+            string every = null;
+            if (e.Every.HasValue && e.Once != null) every = "(" + (e.Once == "turn" ? "1ターンに" : "戦闘で") + e.Every.Value + "回目の時だけ) ";   // 嵐の目 (青 2026-09-25)
+            else if (e.Every.HasValue) every = "(" + (e.EveryScope == "turn" ? "1ターンに" : "") + e.Every.Value + "回ごとに1回) ";
+            else if (e.Once != null) every = "(" + (e.Once == "turn" ? "ターンに" : "戦闘で") + "1回だけ) ";
+            if (every != null) sb.Append(MarkClauses ? ClauseOpen + every + ClauseClose : every);
             if (e.Target == "all") sb.Append("敵全体に ");
             else if (e.Target == "mostHp") sb.Append("HPがいちばん多い敵に ");   // 獅子の人形 (白 2026-09-26)
             sb.Append(EffectBody(e));
@@ -363,6 +362,14 @@ namespace DeckRogue.Game
                 sb.Append("〔忘却の刻" + e.ExhaustThreshold.Value + ": " + (mx < am ? (mx == 0 ? "以降は停止" : mx + "に減少") : mx + "に増える") + "〕");
             }
             return sb.ToString();
+        }
+
+        /// <summary>誘発の見出し (「被攻撃前: 」「登場時: 」)。手札からプレイする札の onPlay は見出しなし (空)</summary>
+        static string Heading(DeclarativeEffect e, string holderType)
+        {
+            if (e.Trigger == null || e.Trigger == "onPlay") return holderType == CardTypes.Permanent ? "登場時: " : "";
+            string tj;
+            return (TriggerJa.TryGetValue(e.Trigger, out tj) ? tj : e.Trigger) + ": ";
         }
 
         static string EffectBody(DeclarativeEffect e)
@@ -385,87 +392,266 @@ namespace DeckRogue.Game
             return e.Effect + (e.Amount.HasValue ? " " + amt : "");
         }
 
-        /// <summary>案B の本文 (2026-09-09): 数字 (+N/-N 含む) を 130% に、「(貫通)」のような短い括弧の注記を小さな下地つきの札に。
-        /// タグ (色・スプライト) の中は触らない。表示層だけの加工で Body の語彙は不変</summary>
-        public static string Emphasize(string body)
+        /// <summary>条件の句を囲む私用の目印 (カードの面だけ。MarkClauses の間に ConditionLabel と every/once が付け、Emphasize が消す)</summary>
+        public const char ClauseOpen = '';
+        public const char ClauseClose = '';
+        /// <summary>true の間 (CardView が Body を呼ぶ間だけ) 条件の句を目印で囲む。ツールチップ・一覧・確認の窓は目印なしの平文 (□ にならない)</summary>
+        public static bool MarkClauses;
+
+        /// <summary>和文の語の途中で改行させない単位のカタカナ (ァ〜ヺ と ー。中黒 ・ は含めない＝「ダメージ・ブロック」は2語)</summary>
+        static bool IsKanaWord(char c) { return (c >= 'ァ' && c <= 'ヺ') || c == 'ー'; }
+
+        /// <summary>案B の本文 (2026-09-09・2026-09-29 p06 組み直し)。タグ (色・スプライト) の中は触らない。表示層だけの加工で Body の語彙は不変。
+        /// ①カタカナの連続 (2字以上) は &lt;nobr&gt; (「1ド／ロー」「次のター／ン」を割らない)。直後の数字も同じ塊 (「ダメージ6」「コスト0」)
+        /// ②数字 (+N/-N 含む) は 130%。直後の単位 (枚・回・体・E・G・カタカナ) を同じ塊に (「1ドロー」「3ターン」)
+        /// ③「×N回」は ×・数字・回 をひとまとまりで 115% (2 だけが大きく見えない)
+        /// ④条件の句 (ClauseOpen〜ClauseClose) の中は数字を大きくせず clauseColor (中墨) で包む＝値でない数字は本文の大きさ
+        /// ⑤「(貫通)」のような括弧の注記 (8字まで) は 90% の下地つきの札
+        /// ⑥見出しの後ろ (「: 」の後) が8字以内なら丸ごと1つの塊＝「毎ターン開始時: 成長」「+1」のように値だけが次の行へ落ちない</summary>
+        /// <summary>語の途中で改行させない nobr だけを付ける (大きさ・色は変えない)。確認の窓の効果文など (2026-09-30 F20: 窓の説明は平文で、
+        /// 「凌い／だら」「ド／ロー」「急所／+2」と語の途中で割れた)。Emphasize の条件の句の扱い (100%・色なし) に、⑦漢字＋送り仮名 ⑧漢字の語＋数字 を足す</summary>
+        public static string NoBreak(string s)
+        {
+            return string.IsNullOrEmpty(s) ? s : Emphasize(ClauseOpen + s + ClauseClose, null, true);
+        }
+
+        static bool IsKanji(char c) { return (c >= '\u4E00' && c <= '\u9FFF') || c == '々'; }
+        static bool IsHira(char c) { return c >= '\u3041' && c <= '\u309F'; }
+
+        public static string Emphasize(string body, string clauseColor = null, bool phrase = false)
         {
             if (string.IsNullOrEmpty(body)) return body;
             var sb = new StringBuilder();
+            bool clause = false;
+            int tailEnd = -1;   // ⑥の塊の終わり (この位置で </nobr>)。塊の中では内側の nobr を出さない (TMP の </nobr> は入れ子を数えない)
             int i = 0;
             while (i < body.Length)
             {
+                if (tailEnd >= 0 && i >= tailEnd) { sb.Append("</nobr>"); tailEnd = -1; }
+                bool inTail = tailEnd >= 0;
                 char ch = body[i];
+                if (ch == ClauseOpen || ch == ClauseClose)
+                {
+                    clause = ch == ClauseOpen;
+                    if (clauseColor != null) sb.Append(clause ? "<color=#" + clauseColor + ">" : "</color>");
+                    i++; continue;
+                }
                 if (ch == '<')
                 {
                     int j = body.IndexOf('>', i);
                     if (j < 0) { sb.Append(body.Substring(i)); break; }
                     sb.Append(body, i, j - i + 1); i = j + 1; continue;
                 }
-                if (ch == '(')
+                if (ch == ':' && i + 1 < body.Length && body[i + 1] == ' ' && !inTail)
+                {
+                    int end = body.IndexOf('\n', i + 2);
+                    if (end < 0) end = body.Length;
+                    int vis = VisibleLength(body, i + 2, end);
+                    sb.Append(": "); i += 2;
+                    if (vis > 0 && vis <= 8 && body.IndexOf(ClauseOpen, i, end - i) < 0) { sb.Append("<nobr>"); tailEnd = end; }
+                    continue;
+                }
+                if (ch == '(' && !clause)
                 {
                     int j = body.IndexOf(')', i);
-                    if (j > i + 1 && j - i - 1 <= 6)
+                    if (j > i + 1 && j - i - 1 <= 8)
                     {
-                        sb.Append("<nobr><size=78%><mark=#3b2f2f22> ").Append(body, i + 1, j - i - 1).Append(" </mark></size></nobr>");   // 札の途中で折り返さない
+                        sb.Append(Nb("<size=90%><mark=#3b2f2f22> " + body.Substring(i + 1, j - i - 1) + " </mark></size>", inTail));   // 札の途中で折り返さない
                         i = j + 1; continue;
                     }
                 }
-                bool sign = (ch == '+' || ch == '-') && i + 1 < body.Length && char.IsDigit(body[i + 1]) && (i == 0 || !char.IsDigit(body[i - 1]));
-                if (char.IsDigit(ch) || sign)
+                int k;
+                if (ch == '×' && TryTimes(body, i, out k))
                 {
-                    int j = sign ? i + 1 : i;
-                    while (j < body.Length && char.IsDigit(body[j])) j++;
-                    sb.Append("<nobr><size=130%>").Append(body, i, j - i).Append("</size></nobr>");   // 「-1」の途中で折り返さない
-                    i = j; continue;
+                    string t = body.Substring(i, k - i);
+                    sb.Append(Nb(clause ? t : "<size=115%>" + t + "</size>", inTail));
+                    i = k; continue;
+                }
+                string num;
+                if (phrase && !inTail && IsKanji(ch))
+                {   // ⑧ 漢字の語 (送り仮名つき) の直後の数字は同じ塊 (「急所+2」「返し10」)。⑦ 数字が無ければ漢字＋送り仮名 (「凌いだら」「開始時に」「多く」)。どちらも8字まで
+                    int j = i;
+                    while (j < body.Length && IsKanji(body[j])) j++;
+                    int m = j;
+                    while (m < body.Length && IsHira(body[m]) && m - j < 4) m++;
+                    if (TryNumber(body, m, clause, out k, out num))
+                    {
+                        if (k < body.Length && "枚回体EG".IndexOf(body[k]) >= 0) { num += body[k]; k++; }
+                        if (m - i + (k - m) <= 12) { sb.Append(Nb(body.Substring(i, m - i) + num, false)); i = k; continue; }
+                    }
+                    if (m > j && m - i <= 6) { sb.Append(Nb(body.Substring(i, m - i), false)); i = m; continue; }
+                }
+                if (IsKanaWord(ch))
+                {
+                    int j = i;
+                    while (j < body.Length && IsKanaWord(body[j])) j++;
+                    if (j - i >= 2)
+                    {
+                        string word = body.Substring(i, j - i);
+                        if (TryNumber(body, j, clause, out k, out num)) { word += num; j = k; }
+                        sb.Append(Nb(word, inTail));
+                        i = j; continue;
+                    }
+                }
+                if (TryNumber(body, i, clause, out k, out num))
+                {
+                    if (k < body.Length && "枚回体EG".IndexOf(body[k]) >= 0) { num += body[k]; k++; }
+                    else if (k < body.Length && IsKanaWord(body[k]))
+                    {
+                        int m = k;
+                        while (m < body.Length && IsKanaWord(body[m])) m++;
+                        num += body.Substring(k, m - k); k = m;
+                    }
+                    sb.Append(Nb(num, inTail));   // 「-1」の途中・「1」と「ドロー」の間で折り返さない
+                    i = k; continue;
                 }
                 sb.Append(ch); i++;
             }
+            if (tailEnd >= 0) sb.Append("</nobr>");
             return sb.ToString();
         }
 
-        /// <summary>カードの効果行 (選択式はモードごと)。改行区切り</summary>
-        public static string Body(CardDef def)
+        static string Nb(string s, bool inOuter) { return inOuter ? s : "<nobr>" + s + "</nobr>"; }
+
+        /// <summary>タグ (&lt;…&gt;) と目印を除いた字数</summary>
+        static int VisibleLength(string s, int from, int to)
+        {
+            int n = 0;
+            for (int i = from; i < to; i++)
+            {
+                char c = s[i];
+                if (c == '<') { int j = s.IndexOf('>', i); if (j < 0 || j >= to) break; i = j; continue; }
+                if (c == ClauseOpen || c == ClauseClose) continue;
+                n++;
+            }
+            return n;
+        }
+
+        /// <summary>「×2回」「×X回」を読む (end = 回 の次)</summary>
+        static bool TryTimes(string s, int i, out int end)
+        {
+            end = i;
+            int k = i + 1;
+            if (k < s.Length && s[k] == 'X') k++;
+            else
+            {
+                int d = k;
+                while (k < s.Length && char.IsDigit(s[k])) k++;
+                if (k == d) return false;
+            }
+            if (k >= s.Length || s[k] != '回') return false;
+            end = k + 1;
+            return true;
+        }
+
+        /// <summary>pos から数字 (符号つき可。手札の実値の色タグ &lt;color=…&gt;N&lt;/color&gt; も1つの数字) を読む。
+        /// markup は条件の句の中なら素の大きさ、それ以外は 130%</summary>
+        static bool TryNumber(string s, int pos, bool plain, out int end, out string markup)
+        {
+            end = pos; markup = null;
+            int p = pos;
+            string open = null;
+            if (p < s.Length && s[p] == '<' && string.CompareOrdinal(s, p, "<color=", 0, 7) == 0)
+            {
+                int q = s.IndexOf('>', p);
+                if (q < 0) return false;
+                open = s.Substring(p, q - p + 1); p = q + 1;
+            }
+            if (p >= s.Length) return false;
+            bool sign = (s[p] == '+' || s[p] == '-') && p + 1 < s.Length && char.IsDigit(s[p + 1]) && (p == 0 || !char.IsDigit(s[p - 1]));
+            if (!char.IsDigit(s[p]) && !sign) return false;
+            int d = sign ? p + 1 : p;
+            while (d < s.Length && char.IsDigit(s[d])) d++;
+            string digits = s.Substring(p, d - p);
+            string close = null;
+            if (open != null && string.CompareOrdinal(s, d, "</color>", 0, 8) == 0) { close = "</color>"; d += 8; }
+            markup = (open ?? "") + (plain ? digits : "<size=130%>" + digits + "</size>") + (close ?? "");
+            end = d;
+            return true;
+        }
+
+        /// <summary>カードの効果行 (選択式はモードごと)。改行区切り。
+        /// withTriggers=false は誘発の見出し (「被攻撃前: 」等) を全部省き、hideTriggers はその誘発の見出しだけを省く
+        /// (確認の窓は窓の誘発だけを省く＝灯りの壁の「被攻撃後: 回復8」は被攻撃前の窓でも見出しつきで残る。2026-09-29 p03)。
+        /// 同じ見出しが続く行は2行目から見出しを省く (「敵行動時: 打ち消し／成長+2」。2026-09-29 p06)</summary>
+        public static string Body(CardDef def, bool withTriggers = true, ICollection<string> hideTriggers = null)
         {
             // 状態異常の札は効果を持たないので本文が空だった (2026-09-23 人間ラン#17: 烙印の疼きの理由が札に無い)。Web の effectLineStrings と同じ文
             if (def.Id == "status_wound") return "使えない（ターン終了時に捨てられる）";
             if (def.Id == "status_scald") return "使えない。自ターン終了時に手札にあるとHP-2（この戦闘限り。捨て/消滅コストの支払いには使える）";
-            if (def.Id == "status_brand") return "使えない。自ターン終了時に手札にあるとHP-1（デッキに残る呪い。ショップの除去で取り除ける。青い蝋燭があれば 0E・HP-1・消滅で出せる）";
+            if (def.Id == "status_brand") return "使えない。自ターン終了時に手札にあるとHP-1（デッキに残る呪い。ショップの除去で取り除ける。青い蝋燭があればコスト0・HP-1・消滅で出せる）";
             if (def.Id == "status_guilt") return "使えない。自ターン終了時に手札にあるとHP-1（仮初の呪い。5戦すると自然に消える）";
-            var lines = Collapse(LinesOf(def.Effects, def.Type));
+            var lines = LinesOf(def.Effects, def.Type, withTriggers, hideTriggers);
             if (def.Modes != null)
             {
                 // 選択式: モード名は効果の言い換え (「7ダメージ」と「ダメージ7」) なので捨て、効果だけを ◆ で並べる (2026-09-09「ダメージ ダメージと読めて2回攻撃と勘違い」)
                 for (int m = 0; m < def.Modes.Count; m++)
                 {
-                    var inner = Collapse(LinesOf(def.Modes[m].Effects, def.Type));
-                    lines.Add("◆" + string.Join(" / ", inner.ToArray()));
+                    var inner = LinesOf(def.Modes[m].Effects, def.Type, withTriggers, hideTriggers);
+                    // 札の面 (MarkClauses) は区切りを「、」に (2026-09-30 F28: 「◆エナジー上限+1 /」「1ドロー」と割れると続きの行が別の選択肢に見えた。
+                    // 読点は行頭に来ないので行末に残り、続きだと読める。段落の間は CardView が少し空ける)。ツールチップ・ログは「 / 」のまま
+                    lines.Add("◆" + string.Join(MarkClauses ? "、" : " / ", inner.ToArray()));
                 }
             }
             return string.Join("\n", lines.ToArray());
         }
 
-        static List<string> LinesOf(IReadOnlyList<DeclarativeEffect> effects, string holderType)
+        /// <summary>効果ごとに (見出し, 本文) を作り、①同じ組の連続 (二連の蔦打ち = ダメージ4 / ダメージ4) は「ダメージ4 ×2回」に畳む＝多段が一目で分かる、
+        /// ②そのあと直前と同じ見出しを省く (改行は残す。区切りの「: 」はそのまま＝確認の窓の見出しの省き方と同じ形)</summary>
+        static List<string> LinesOf(IReadOnlyList<DeclarativeEffect> effects, string holderType, bool withTriggers = true, ICollection<string> hideTriggers = null)
         {
             var lines = new List<string>();
             if (effects == null) return lines;
-            for (int i = 0; i < effects.Count; i++) lines.Add(EffectLine(effects[i], holderType));
-            return lines;
-        }
-
-        /// <summary>同じ行の連続 (二連の蔦打ち = ダメージ4 / ダメージ4) は「ダメージ4 ×2回」に畳む = 多段が一目で分かる</summary>
-        static List<string> Collapse(List<string> lines)
-        {
-            var res = new List<string>();
-            int i = 0;
-            while (i < lines.Count)
+            var heads = new List<string>();
+            var bodies = new List<string>();
+            for (int i = 0; i < effects.Count; i++)
             {
-                int j = i;
-                while (j + 1 < lines.Count && lines[j + 1] == lines[i]) j++;
-                int n = j - i + 1;
-                res.Add(n > 1 ? lines[i] + " ×" + n + "回" : lines[i]);
-                i = j + 1;
+                var e = effects[i];
+                bool hide = !withTriggers || (hideTriggers != null && e.Trigger != null && hideTriggers.Contains(e.Trigger));
+                heads.Add(hide ? "" : Heading(e, holderType));
+                bodies.Add(EffectLine(e, holderType, true));
             }
-            return res;
+            string prevHead = null;
+            int a = 0;
+            while (a < bodies.Count)
+            {
+                // 周期2〜3の繰り返し (蔦の乱舞「成長+1 / ダメージ2」×5) は「［成長+1 → ダメージ2］×5回」の1行に (2026-09-30 F10:
+                // 10行になって 12px でも札の枠に入らなかった)。見出しが同じ組だけ。半角の括弧は Emphasize が注記の札にするので全角の［］
+                bool folded = false;
+                for (int k = 2; k <= 3 && !folded; k++)
+                {
+                    if (a + 2 * k > bodies.Count) break;
+                    bool sameHead = true, allSame = true;
+                    for (int j = 1; j < k; j++) { if (heads[a + j] != heads[a]) sameHead = false; if (bodies[a + j] != bodies[a]) allSame = false; }
+                    if (!sameHead || allSame) continue;
+                    int reps = 1;
+                    while (a + (reps + 1) * k <= bodies.Count)
+                    {
+                        bool match = true;
+                        for (int j = 0; j < k; j++) if (heads[a + reps * k + j] != heads[a + j] || bodies[a + reps * k + j] != bodies[a + j]) { match = false; break; }
+                        if (!match) break;
+                        reps++;
+                    }
+                    if (reps < 2) continue;
+                    var cyc = new List<string>();
+                    for (int j = 0; j < k; j++) cyc.Add(bodies[a + j]);
+                    string hh = heads[a];
+                    lines.Add((hh.Length > 0 && hh == prevHead ? "" : hh) + "［" + string.Join(" → ", cyc.ToArray()) + "］×" + reps + "回");
+                    prevHead = hh;
+                    a += reps * k;
+                    folded = true;
+                }
+                if (folded) continue;
+                int b = a;
+                while (b + 1 < bodies.Count && heads[b + 1] == heads[a] && bodies[b + 1] == bodies[a]) b++;
+                int n = b - a + 1;
+                string text = n > 1 ? bodies[a] + " ×" + n + "回" : bodies[a];
+                string h = heads[a];
+                lines.Add((h.Length > 0 && h == prevHead ? "" : h) + text);
+                prevHead = h;
+                a = b + 1;
+            }
+            return lines;
         }
 
         /// <summary>消滅・保持・追加コストなどの注記</summary>
@@ -476,7 +662,8 @@ namespace DeckRogue.Game
             return n.Count == 0 ? "" : string.Join(" / ", n.ToArray());
         }
 
-        /// <summary>コスト側の注記 (X・追加コスト・亡骸プレイ・0E 条件・前提)。カードでは本文の先頭に普通の文で置く
+        /// <summary>コスト側の注記 (X・追加コスト・亡骸プレイ・コスト0 の条件・前提)。カードでは本文の先頭に普通の文で置く (中墨・数字は大きくしない。CardView)。
+        /// 略語 (0E・NE・中) は使わない (2026-09-29 p06)
         /// (2026-09-09 ユーザー「追加コストは付箋みたいに下に貼るのでなく、普通の表記で効果の最上部に」)</summary>
         public static List<string> CostNotes(CardDef def)
         {
@@ -485,24 +672,26 @@ namespace DeckRogue.Game
             if ((def.DiscardCost.HasValue ? def.DiscardCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.DiscardCost.Value + "枚を捨てる");
             if ((def.ExhaustCost.HasValue ? def.ExhaustCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.ExhaustCost.Value + "枚を消滅");
             if ((def.LightCost.HasValue ? def.LightCost.Value : 0) > 0) n.Add("追加コスト: 灯を" + def.LightCost.Value + "払う");
-            if (def.NecroCost.HasValue) n.Add("亡骸プレイ " + def.NecroCost.Value + "E");
-            if (def.FreeIfHandAllPhysical == true) n.Add("手札が物理だけなら0E");
-            if (def.FreeIfHandAll != null) n.Add("手札が" + TypeJa(def.FreeIfHandAll) + "だけなら0E");
-            if (def.FreeIfMomentumAtLeast.HasValue) n.Add("勢い" + def.FreeIfMomentumAtLeast.Value + "以上なら0E");
+            if (def.NecroCost.HasValue) n.Add("亡骸プレイ（コスト" + def.NecroCost.Value + "）");
+            if (def.FreeIfHandAllPhysical == true) n.Add("手札が物理だけならコスト0");
+            if (def.FreeIfHandAll != null) n.Add("手札が" + TypeJa(def.FreeIfHandAll) + "だけならコスト0");
+            if (def.FreeIfMomentumAtLeast.HasValue) n.Add("勢い" + def.FreeIfMomentumAtLeast.Value + "以上ならコスト0");
             if (def.RequiresRetainer == true) n.Add("プレイ条件: 場に人形が1体以上");   // 「従者」→「人形」(2026-09-24 T3。Web と同じ文)
-            if (def.BlazeDiscount.HasValue) n.Add("猛り火中コスト-" + def.BlazeDiscount.Value);
+            if (def.BlazeDiscount.HasValue) n.Add("猛り火の間はコスト-" + def.BlazeDiscount.Value);
             return n;
         }
 
         /// <summary>効果の後ろに付く注記 (消滅・保持・条件付き消滅・札の種類)。カードでは本文の末尾</summary>
-        public static List<string> TrailNotes(CardDef def)
+        /// <param name="face">札の面 (CardView) に出す短い形 (2026-09-30 F10: 長文の札が 12px でも枠に入らず下へ溢れた)。
+        /// 反復の空振りの全文と人形の「（出したターンを含む）」は用語の説明 (反復・人形・期限) とツールチップに任せる</param>
+        public static List<string> TrailNotes(CardDef def, bool face = false)
         {
             var n = new List<string>();
             if (def.Exhaust == true) n.Add("消滅");
             if (def.Retain == true) n.Add("保持");
             if (def.Echo == true) n.Add("反復内蔵 (効果を2回解決)");
             // 反復の2回目は同じ敵を狙う (2026-09-24 Opus ひなた E11 裁定B＝本家2と同じく据え置き)。反復内蔵の札と反復を配る札に同じ一文 (CLI の ECHO_MISS_NOTE)
-            if (def.Echo == true || HasEffect(def, "addSpellEcho")) n.Add(EchoMissNote);
+            if (def.Echo == true || HasEffect(def, "addSpellEcho")) n.Add(face ? "2回目も同じ敵を狙う" : EchoMissNote);
             // 合成の触媒 (2026-09-12): 工房の素材にすると結果に乗る恩恵
             if (def.FusionCatalyst == "cheaper") n.Add("触媒: 素材にすると結果のコスト−1");
             else if (def.FusionCatalyst == "echo") n.Add("触媒: 素材にすると結果の効果を2回解決");
@@ -513,7 +702,7 @@ namespace DeckRogue.Game
             {   // 白の語彙 (2026-09-18 従者→人形)。寿命は「期限」(2026-09-22 友人ラン: 寿命を「灯り」と呼ぶと資源の「灯」と同じ字で「灯が減ると人形が消える」と読まれた。からくりと同じ語彙)。
                 // 注記は1行 (同日「人形を置いたらどうなるのか分からない」): 出した瞬間に1回動く (点灯) を用語解説の外に出す。火勢の一文はダメージ・ブロックを持つ人形だけ
                 bool grows = DollUi.HasGrowth(def);
-                n.Add("人形: 出した瞬間に1回動く。" + (def.LifePersist == true ? "期限なし" : "期限" + (def.Life ?? 3) + "ターン（出したターンを含む）") + (grows ? "。1ターンごとにダメージとブロック+1" : ""));
+                n.Add("人形: 出した瞬間に1回動く。" + (def.LifePersist == true ? "期限なし" : "期限" + (def.Life ?? 3) + "ターン" + (face ? "" : "（出したターンを含む）")) + (grows ? "。1ターンごとにダメージとブロック+1" : ""));
             }
             if (def.ShivToken == true) n.Add("骨のナイフ");
             return n;
@@ -602,7 +791,14 @@ namespace DeckRogue.Game
             var shown = it.Inflict != null ? it with { Inflict = Effects.DisplayedInflict(st, it.Inflict) } : it;
             string text = IntentLine(shown, Effects.DisplayedIntentValue(st, enemyIndex, it.Kind, it.Actual));
             var notes = Effects.IntentModifierNotes(st, enemyIndex, it.Kind);
-            return notes.Count > 0 ? text + " (もとは" + it.Actual + "・" + string.Join("・", notes) + ")" : text;
+            // 筋力が乗った攻撃は「もとは5・筋力-3で2」(2026-09-30 F17: 頭上の数字に筋力が入っているかが画面のどこにも書かれておらず、
+            // 帳面の「筋力-3」をもう一度引いてしまえた)。Base は筋力抜きの素の値 (engine が宣言時に持つ)。最低1に切り上げた時も実値で書く
+            int str = 0;
+            try { str = Effects.EffectiveStrength(st, enemyIndex); } catch (Exception) { }
+            bool strNote = it.Kind == "attack" && it.Base.HasValue && str != 0;
+            if (!strNote && notes.Count == 0) return text;
+            string lead = strNote ? "もとは" + it.Base.Value + "・筋力" + (str > 0 ? "+" : "") + str + "で" + it.Actual : "もとは" + it.Actual;
+            return text + " (" + lead + (notes.Count > 0 ? "・" + string.Join("・", notes) : "") + ")";
         }
 
         /// <summary>その敵の今の意図 (伏せ分岐の解決込み)</summary>
@@ -618,7 +814,7 @@ namespace DeckRogue.Game
             {
                 // EffectiveIntent は条件を満たさない時だけ raw をそのまま返す (参照が同じ)
                 bool altActive = !object.ReferenceEquals(eff, raw);
-                string what = raw.ConditionalOn == "set" ? "動かせるからくり" : "人形";
+                string what = raw.ConditionalOn == "set" ? "発動できる仕込み札" : "人形";
                 s += "  【" + what + (altActive ? "あり" : "なし") + "分岐】";
                 if (!altActive) s += " ※" + what + "があると: " + LiveIntentLine(st, enemyIndex, BranchToIntent(raw.Alt));
             }
@@ -719,6 +915,82 @@ namespace DeckRogue.Game
             return t.Count == 0 ? "" : string.Join(" / ", t.ToArray());
         }
 
+        /// <summary>帳面に出す特性の札1枚: 絵・短い表記 (「とげ2」)・全文 (ツールチップ)・用語解説の見出し</summary>
+        public struct TraitBadge { public string Icon, Label, Full, Term; }
+
+        /// <summary>
+        /// 帳面の特性の札 (2026-09-29 戦闘画面の見直し p01): 定義の静的な欄から優先順に。庇う＞とげ＞装甲＞ターン装甲＞分裂・残機・孵化＞連携・弔い＞再生＞延焼耐性＞因縁＞バランス崩し＞重圧＞激昂・守ると怒る。
+        /// 開幕ブロック (盾の円)・アーティファクト/朧/潜伏/封じ (状態の札)・割り込み (3段目の予告) は別の場所に出るので入れない。EnemyTraits の連結文字列は分割しない (予告文まで札になる)
+        /// </summary>
+        public static List<TraitBadge> EnemyTraitBadges(EnemyDef d)
+        {
+            var list = new List<TraitBadge>();
+            if (d == null) return list;
+            Action<string, string, string, string> add = (icon, label, full, term) => list.Add(new TraitBadge { Icon = icon, Label = label, Full = full, Term = term });
+            // 絵は1対1の記号がある特性だけ (2026-09-29 p18: 装甲・ターン装甲＝胴鎧・とげ＝返し・再生＝心・延焼耐性＝炎)。他は絵を貸さずに文字だけ
+            // (旧: 装甲と庇うに盾＝ブロックの絵、激昂や連携に剣＝攻撃の意図の絵、重圧に格子＝ターンの絵を使い回していた)
+            if (d.Guardian == true) add(null, "庇う", "庇う (生きている間、単体の札はこの敵に向かう)", "庇う");
+            if (d.Thorns.HasValue) add("counter", "とげ" + d.Thorns.Value, "とげ" + d.Thorns.Value, "とげ");
+            if (d.Armor.HasValue) add("armor", "装甲" + d.Armor.Value, "装甲" + d.Armor.Value, "装甲");
+            // ターン装甲は絵を貸さない (2026-09-30 F03: 装甲と同じ胴鎧だと「[胴鎧]35 [胴鎧]90」が並び、1ヒットの上限と1ターンの上限が読み分けられなかった)
+            if (d.TurnArmor.HasValue) add(null, "ターン装甲" + d.TurnArmor.Value, "ターン装甲" + d.TurnArmor.Value, "ターン装甲");
+            if (d.SplitInto != null)
+            {
+                if (d.SplitInto.Count <= 1) add(null, "残機", "残機 (倒すと次の形態で起き上がる)", "残機");
+                else add(null, "分裂→" + d.SplitInto.Count + "体", "分裂 (倒すと" + d.SplitInto.Count + "体に分かれる)", "分裂");
+            }
+            if (d.HatchInto != null) add(null, "孵化", "孵化", "孵化");
+            if (d.BondStrength.HasValue) add(null, "連携+" + d.BondStrength.Value, "連携+" + d.BondStrength.Value + " (仲間が生きている間、攻撃+" + d.BondStrength.Value + ")", "連携");
+            if (d.MournStrength.HasValue) add(null, "弔い+" + d.MournStrength.Value, "弔い+" + d.MournStrength.Value + " (仲間が倒れるたび筋力+" + d.MournStrength.Value + ")", "弔い");
+            if (d.Regen.HasValue) add("heart", "再生" + d.Regen.Value, "再生" + d.Regen.Value + (d.RegenBreak.HasValue ? " (1ターンに" + d.RegenBreak.Value + "ダメージ受けると止まる)" : ""), "再生");
+            if (d.BurnResist.HasValue) add(null, "延焼耐性" + d.BurnResist.Value, "延焼耐性" + d.BurnResist.Value, "延焼耐性");   // 状態の延焼と同じ炎を貸さない (F03)
+            if (d.Nemesis == true) add(null, "因縁", "因縁 (奇数ターンは無形)", "因縁");
+            if (d.Imbalanced == true) add(null, "バランス崩し", "バランス崩し", "バランス崩し");
+            if (d.Aura != null) add(null, "重圧+" + d.Aura.CostUp, "重圧 (コスト+" + d.Aura.CostUp + ")", "重圧");
+            // 激昂の全文は3つとも並べる (F03: 旧は else-if で門番の「累計80ダメージごと」が抜けていた)
+            if (d.EnrageEveryCards.HasValue || d.EnrageEveryDamage.HasValue || d.Enrage.HasValue)
+            {
+                var en = new List<string>();
+                if (d.EnrageEveryCards.HasValue) en.Add(d.EnrageEveryCards.Value + "枚ごと");
+                if (d.EnrageEveryDamage.HasValue) en.Add("累計" + d.EnrageEveryDamage.Value + "ダメージごと");
+                string head = en.Count > 0 ? string.Join("・", en.ToArray()) + "に筋力+2" : "";
+                string tail = d.Enrage.HasValue ? "毎フェーズ筋力+" + d.Enrage.Value : "";
+                add(null, "激昂", "激昂 (" + head + (head.Length > 0 && tail.Length > 0 ? "・" : "") + tail + ")", "激昂");
+            }
+            if (d.AngerOnBlock.HasValue) add(null, "守ると怒る+" + d.AngerOnBlock.Value, "守ると怒る+" + d.AngerOnBlock.Value, "ブロック反応");
+            return list;
+        }
+
+        /// <summary>
+        /// 分岐の短い一文 (帳面の3段目。2026-09-29 p01): 伏せ分岐・人形分岐がまだ立っていない時だけ。立っている時は頭上に「先に壊す」の札が出ているので null。
+        /// 全文 (実値) はツールチップの IntentText
+        /// </summary>
+        /// <summary>分岐の一文を長い順に (帳面の3段目が入る最初の形を選ぶ。2026-09-30 F02: 旧は幅を測らず、スマホで「からくりがあると 先…」と動詞が切れた)。無ければ null</summary>
+        public static string[] BranchForms(GameState st, int i)
+        {
+            string full = BranchShort(st, i, false);
+            if (full == null) return null;
+            var raw = st.Enemies[i].Intent;
+            bool set = raw.ConditionalOn == "set";
+            if (set && (raw.Alt.AlsoDestroySet == true || raw.Alt.Kind == "destroy-set")) return new[] { full, "からくりを先に壊す", "からくり壊し" };
+            if (set) return new[] { full, "からくりで行動が変わる", "からくりで変わる" };
+            if (raw.Alt.Kind == "destroy-token") return new[] { full, "人形狩り" };
+            return new[] { full, "人形で行動が変わる", "人形で変わる" };
+        }
+
+        public static string BranchShort(GameState st, int i, bool narrow)
+        {
+            if (st == null || i < 0 || i >= st.Enemies.Count || st.HideIntents == true) return null;
+            var raw = st.Enemies[i].Intent;
+            if (raw == null || raw.ConditionalOn == null || raw.Alt == null) return null;
+            var eff = Effects.EffectiveIntent(st, i);
+            if (!object.ReferenceEquals(eff, raw)) return null;
+            bool set = raw.ConditionalOn == "set";
+            if (narrow) return set ? "からくりで行動が変わる" : "人形で行動が変わる";
+            if (set) return raw.Alt.AlsoDestroySet == true || raw.Alt.Kind == "destroy-set" ? "からくりがあると 先に壊す" : "からくりがあると 行動が変わる";
+            return raw.Alt.Kind == "destroy-token" ? "人形がいると 人形狩り" : "人形がいると 行動が変わる";
+        }
+
         // ---- 戦闘ログ ----
 
         /// <summary>1イベント=1行。表示不要なら null</summary>
@@ -768,10 +1040,10 @@ namespace DeckRogue.Game
                 string ja; if (!StatusJa.TryGetValue(t2.Status, out ja)) ja = t2.Status;
                 return ja + t2.Amount + "を付与された";
             }
-            var u = ev as GameEvent_ReactionTriggered; if (u != null) return "動かした: " + CardName(u.CardId);
-            var v = ev as GameEvent_ReactionHeld; if (v != null) return "巻いたまま: " + Names(v.CandidateIds) + " (敵" + (v.EnemyIndex + 1) + "の" + KindJa(v.Kind) + " " + v.Stage + "窓 / 実値" + v.Value + ")";
+            var u = ev as GameEvent_ReactionTriggered; if (u != null) return "発動: " + CardName(u.CardId);
+            var v = ev as GameEvent_ReactionHeld; if (v != null) return "温存: " + Names(v.CandidateIds) + " (敵" + (v.EnemyIndex + 1) + "の" + KindJa(v.Kind) + " " + v.Stage + "窓 / 実値" + v.Value + ")";
             var w = ev as GameEvent_ReactionWhiffed; if (w != null) return "空振り: " + CardName(w.CardId);
-            var x = ev as GameEvent_ReactionUnaffordable; if (x != null) return "仕込み札「" + CardName(x.CardId) + "」を動かすには" + x.Cost + "E必要 (残り" + x.Energy + "E) = 巻いたまま";
+            var x = ev as GameEvent_ReactionUnaffordable; if (x != null) return "仕込み札「" + CardName(x.CardId) + "」を発動するには" + x.Cost + "E必要 (残り" + x.Energy + "E) = 温存";
             var y = ev as GameEvent_SetCardDestroyed; if (y != null) return "からくりを壊された: " + CardName(y.CardId);
             var z = ev as GameEvent_PermanentPlayed; if (z != null) return "置物を設置: " + CardName(z.CardId);
             var a2 = ev as GameEvent_CardExhausted; if (a2 != null) return "消滅: " + CardName(a2.CardId);

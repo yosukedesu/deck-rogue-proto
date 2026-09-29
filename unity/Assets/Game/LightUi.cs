@@ -43,6 +43,12 @@ namespace DeckRogue.Game
         {
             if (st == null) return false;
             if ((st.Player.Light ?? 0) > 0) return true;
+            return LeaderHasWhite(run);
+        }
+
+        /// <summary>リーダーの色に白があるか (ひなた・なぎ・あかり・あさひ＝人形が立ちうる)。1戦闘の間は変わらない</summary>
+        public static bool LeaderHasWhite(RunState run)
+        {
             if (run == null) return false;
             try
             {
@@ -106,17 +112,17 @@ namespace DeckRogue.Game
             _num = UiKit.Deco(_glass, "0", Mathf.RoundToInt(GlassH * scale * 0.62f), PaperFx.Ink, TextAnchor.MiddleCenter);
             UiKit.Stretch(_num.rectTransform, 0f, 0f, 0f, 0f);
             _num.raycastTarget = false;
-            _num.outlineWidth = 0.12f; _num.outlineColor = new Color(1f, 0.96f, 0.82f, 0.9f);
+            // 旧・クリーム色の縁 0.12 は撤去 (2026-09-29 p20): SDF の余白 6 では外へ約 0.4px しか出ず画面に1画素も出ていなかった。読みやすさは硝子の地 (t1 0.95・t2 以上 不透明) が持つ
             // 火の粉 (盛る以上)
             _root.gameObject.AddComponent<Sparks>().Init(_root, scale);
             // 足元の名札「灯」＝タップの的 (用語の説明と、この戦闘の入りの内訳)
             var tag = UiKit.NewRect("tag", _root);
-            float tw = 40f, th = 20f;
+            float tw = 44f, th = 24f;   // 15px の太字が入る大きさ (2026-09-29 p20。旧 40×20・13px 細字は描いた画素で 3.1:1 しか無かった)
             UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-tw / 2f, -th - 4f), new Vector2(tw / 2f, -4f));
             var tagImg = PaperFx.Sheet(tag, PaperFx.Tag2, "paper");
             UiKit.Stretch(tagImg.rectTransform, 0f, 0f, 0f, 0f);
             tagImg.raycastTarget = true;
-            var tagTx = UiKit.Txt(tag, "灯", 13, PaperFx.InkSoft, TextAnchor.MiddleCenter);
+            var tagTx = UiKit.Txt(tag, "灯", 15, PaperFx.InkSoft, TextAnchor.MiddleCenter, true);   // 中墨 (名札＝二次の文字)・太字。エナジーの輪の名札「エナジー」と対
             UiKit.Stretch(tagTx.rectTransform, 0f, 0f, 0f, 0f);
             tagTx.raycastTarget = false;
             var gRef = g;
@@ -147,7 +153,7 @@ namespace DeckRogue.Game
             var sb = new System.Text.StringBuilder();
             sb.Append("<b>灯</b> ");
             string help;
-            if (KeywordHelp.Terms.TryGetValue("灯", out help)) sb.Append("<color=#574b48>" + help + "</color>");
+            if (KeywordHelp.Terms.TryGetValue("灯", out help)) sb.Append(UiKit.ColorTag(PaperFx.InkSoft, help));   // 中墨 (旧・中墨 #574b48。2026-09-29 p26)
             if (st != null)
             {
                 int perTurn = 0; var parts = new List<string>();
@@ -157,9 +163,9 @@ namespace DeckRogue.Game
                     foreach (var e in p.Def.Effects) if (e.Trigger == "onTurnStart" && e.Effect == "addLight") add += e.Amount ?? 0;
                     if (add > 0) { perTurn += add; parts.Add(p.Def.Name + " +" + add); }
                 }
-                sb.Append("\n<color=#634410>いま灯 " + (st.Player.Light ?? 0) + " (" + TierName(st.Player.Light ?? 0) + ")");
-                if (perTurn > 0) sb.Append("・毎ターン開始の入り +" + perTurn + " (" + string.Join("・", parts.ToArray()) + ")");
-                sb.Append("・回復するたび +1</color>");
+                string now = "いま灯 " + (st.Player.Light ?? 0) + " (" + TierName(st.Player.Light ?? 0) + ")";
+                if (perTurn > 0) now += "・毎ターン開始の入り +" + perTurn + " (" + string.Join("・", parts.ToArray()) + ")";
+                sb.Append("\n").Append(UiKit.ColorTag(PaperFx.BrassInk, now + "・回復するたび +1"));
             }
             return sb.ToString();
         }
@@ -188,16 +194,17 @@ namespace DeckRogue.Game
             _lantern.color = Color.white;
             _num.text = n.ToString();
             _num.color = t == 0 ? PaperFx.PaperDim : PaperFx.Ink;
-            _num.outlineWidth = t == 0 ? 0f : 0.12f;
             _glassFill.gameObject.SetActive(t > 0);
-            _glassFill.color = new Color(1f, 1f, 1f, t >= 4 ? 0.95f : 0.5f + 0.1f * t);
+            // 硝子の地は灯1以上でほぼ不透明 (2026-09-29 p20。承認済みの案B の硝子＝t≥1 で不透明の真鍮〜真鍮の紙): 旧 α 0.5+0.1t は灯5で 0.7 しかなく、
+            // 暗い窓が透けて数字の地が 3.3〜4.0:1 に落ちていた。灯の段階の差は炎の大きさ・漏れる光・足元の光溜まり・火の粉で表す
+            _glassFill.color = new Color(1f, 1f, 1f, t >= 2 ? 1f : 0.95f);
             _flameRt.gameObject.SetActive(t > 0);
             float[] fk = { 0f, 0.55f, 0.8f, 1.0f, 1.15f };
             _flameRt.sizeDelta = new Vector2(12f * s * fk[t], 16f * s * fk[t]);
             if (_flicker != null) _flicker.Base = _flameRt.sizeDelta;
             _glowRt.gameObject.SetActive(t > 0);
             _glowRt.sizeDelta = new Vector2(w * 1.9f, h * 0.72f);
-            _glow.color = new Color(1f, 0.9f, 0.62f, t == 0 ? 0f : 0.16f + 0.08f * t);
+            _glow.color = new Color(ThemeFx.LampGlow.r, ThemeFx.LampGlow.g, ThemeFx.LampGlow.b, t == 0 ? 0f : 0.16f + 0.08f * t);
             _poolRt.gameObject.SetActive(t >= 2);
             _poolRt.sizeDelta = new Vector2(w * (0.9f + 0.3f * t), h * 0.16f * (0.7f + 0.2f * t));
             _pool.color = new Color(1f, 0.92f, 0.66f, 0.12f + 0.06f * t);
@@ -223,12 +230,13 @@ namespace DeckRogue.Game
         {
             if (_root == null) { _shown = 0; return; }
             int start = Math.Max(from, _shown);
+            float a0 = _glassFill != null ? _glassFill.color.a : 0.9f;   // 硝子は今の濃さから暗くなる (2026-09-29 p20: 地が不透明になったので固定の 0.9 から始めると一瞬明るさが跳ねる)
             Tween.Run(dur, k =>
             {
                 if (_num == null) return;
                 int v = Mathf.RoundToInt(Mathf.Lerp(start, 0f, k));
                 _num.text = v.ToString();
-                if (_glassFill != null) { var c = _glassFill.color; _glassFill.color = new Color(c.r, c.g, c.b, Mathf.Lerp(0.9f, 0.2f, k)); }
+                if (_glassFill != null) { var c = _glassFill.color; _glassFill.color = new Color(c.r, c.g, c.b, Mathf.Lerp(a0, 0.2f, k)); }
                 if (_flameRt != null && _flameRt.gameObject.activeSelf) _flameRt.localScale = new Vector3(1f - 0.7f * k, 1f - 0.8f * k, 1f);
             }, Ease.OutQuad, () => { if (_flameRt != null) _flameRt.localScale = Vector3.one; SetLight(0, false); });
         }
@@ -333,7 +341,7 @@ namespace DeckRogue.Game
                 float sz = (1.5f + (float)_rng.NextDouble() * 1.5f) * _scale;
                 rt.sizeDelta = new Vector2(sz, sz);
                 var img = rt.gameObject.AddComponent<Image>();
-                img.sprite = ThemeFx.Spark(); img.color = _rng.NextDouble() < 0.5 ? PaperFx.BrassLight : UiKit.Hex("#fff6d2"); img.raycastTarget = false;
+                img.sprite = ThemeFx.Spark(); img.color = _rng.NextDouble() < 0.5 ? PaperFx.BrassLight : ThemeFx.LampCore; img.raycastTarget = false;
                 float rise = (14f + (float)_rng.NextDouble() * 10f) * _scale, drift = ((float)_rng.NextDouble() - 0.5f) * 8f * _scale;
                 Tween.Run(0.9f + (float)_rng.NextDouble() * 0.4f, k =>
                 {

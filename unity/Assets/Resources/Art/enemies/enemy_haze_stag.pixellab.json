@@ -1,0 +1,28 @@
+{
+  "id": "enemy_haze_stag__211",
+  "engine": "pixflux",
+  "request": {
+    "description": "a big plump ghostly STAG spirit-beast, heavy rounded chunky body and a slightly big head, pale silver-white and faded sage fur that glows softly from within, huge wide branching antlers of pale silver like frosted branches, wrapped in a thick soft cloud of pale blue-grey mist that swirls around its legs and hides its hooves, its body edges dissolving into the mist, faint glowing motes in the mist, calm and quiet, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+    "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, antelope, goat, horse, unicorn, reindeer harness, rabbit ears, red nose, brown fur, tan, realistic deer, thin body, small body, dry grass",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 9,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "highly detailed",
+    "view": "low top-down",
+    "direction": "south-west",
+    "seed": 211
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-27T05:50:04.721Z",
+  "rotated": "2026-09-29 PixelLab v2 generate-8-rotations-v2 (Pro) の斜め左手前 (画面で south-west)。足元は前の絵の最下端にそろえた",
+  "upscaled128": "2026-09-29 戦闘画面のレビュー p24（ユーザー裁定「1体で戦う幕ボスは128ドットで描き直す」＝1ドット=画面4pxのまま枠だけ大きく）: 今の96の絵を手元で EPX×2 に拡大して背丈104ドットへ縮め128の枠に置き（scratchpad/boss128/upscale_pt.py）、PixelLab v2 edit-images-v2 --size 128（edit_with_text「same creature, same design … redraw as clean crisp pixel art at this resolution」）で描き直した（job 66011e45-0910-4b70-8a74-94c50398319b・出力 #0）。足元は最下端から2ドット・左右中央",
+  "mirrored": "2026-09-29 p24 の128化の時に左右反転: 96 の絵は斜め右手前（規約違反＝敵はプレイヤーのいる左手前を向く）だったので、拡大の前に反転してから描き直した"
+}

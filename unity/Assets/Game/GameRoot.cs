@@ -105,6 +105,9 @@ namespace DeckRogue.Game
         public RectTransform ScreenRoot;
         /// <summary>戦闘ログの引き出しを開いているか</summary>
         public bool ShowLog;
+        /// <summary>上部バーの手番の札が今どの種類を見せているか (0=自分の番・1=敵の番・2=勝敗・-1=未設定)。
+        /// 弾み (Tween.Punch) は種類が変わった時だけ鳴らす (BattleScreen.SetPhase。2026-09-29)</summary>
+        public int PhaseShownKind = -1;
         /// <summary>選択式カードのモード選択中 (手札の uid)</summary>
         public string ModeChoiceUid;
         /// <summary>山札/捨て札/消滅の一覧を開いているか ("draw"|"discard"|"exhaust"|null)</summary>
@@ -203,6 +206,8 @@ namespace DeckRogue.Game
                 scaler.matchWidthOrHeight = 0.5f;
             }
             canvasGo.AddComponent<GraphicRaycaster>();
+            // 画面の切り欠き (パンチホール) と safeArea を1回だけ出す (実機の logcat で穴の実寸を確かめる。2026-09-29 p10)
+            try { Debug.Log("[Screen] " + UiKit.DescribeCutouts()); } catch (Exception) { }
 
             // EventSystem (シーンに無ければ作る)
             if (EventSystem.current == null)
@@ -593,7 +598,7 @@ namespace DeckRogue.Game
             // 先に敵をクリックして狙いを付けてあれば、そのまま撃つ (二度手間にしない)
             if (p.NeedsTarget && PreferredTarget >= 0 && PreferredTarget < st.Enemies.Count && st.Enemies[PreferredTarget].Hp > 0)
             {
-                p.TargetIndex = PreferredTarget;
+                p.TargetIndex = BattleScreen.GuardRedirect(st, PreferredTarget);   // 庇われていれば護衛へ (engine と同じ結果。2026-09-29 p01)
             }
 
             Pending = p;
@@ -632,9 +637,11 @@ namespace DeckRogue.Game
 
         public void OnEnemyClicked(int index)
         {
+            var cst = Rs != null ? Rs.Combat : null;
             if (Pending != null && Pending.NextNeed() == "target")
             {
-                Pending.TargetIndex = index;
+                // 庇われている敵を押したら護衛へ (engine も同じ向け直しをする。候補の縁は護衛にだけ付いている。2026-09-29 p01)
+                Pending.TargetIndex = cst != null ? BattleScreen.GuardRedirect(cst, index) : index;
                 SubmitIfReady();
                 return;
             }
@@ -645,7 +652,13 @@ namespace DeckRogue.Game
                 GearUi.Submit(this);
                 return;
             }
+            // 狙いは押した敵のまま (ギアは庇うを受けない)。単体の札の向かう先 (縁・手札の予告) は護衛に回り、一言で知らせる
             PreferredTarget = index;
+            string guard = cst != null ? BattleScreen.GuardNotice(cst, index) : null;
+            // スマホは帯を出さない (2026-09-30 F07: 上部バーの下の全幅の帯が押した敵の意図の札に掛かった)。縁と足元の輪が護衛へ移ること・
+            // 庇われている側の帳面の「①が庇う」・タップの固定パネル (EnemyTip に同じ一言) で伝わる
+            if (guard != null && !UiKit.Phone) Notice = guard;
+            else if (Notice != null && Notice.Contains("が庇っている（")) Notice = null;
             Rebuild();
         }
 

@@ -110,7 +110,7 @@ namespace DeckRogue.Game
                 bool available = DeckRogue.Engine.Run.EventChoiceAvailable(run, ch);
                 string why = available ? "" : (ch.RequireGold.HasValue && run.Gold < ch.RequireGold.Value ? "  (G不足)" : "  (対象がない)");
                 string hint = ChoiceHint(ch);
-                var b = UiKit.Btn(list, (leave ? "" : "▶ ") + ch.Label + (needsCard ? "  (デッキから1枚選ぶ)" : "") + why + (hint.Length > 0 ? "\n<size=14><color=#7a4e12>" + hint + "</color></size>" : ""),
+                var b = UiKit.Btn(list, (leave ? "" : "▶ ") + ch.Label + (needsCard ? "  (デッキから1枚選ぶ)" : "") + why + (hint.Length > 0 ? "\n<size=14>" + UiKit.ColorTag(PaperFx.BrassInk, hint) + "</size>" : ""),
                     delegate
                     {
                         if (needsCard) { g.EventChoiceIndex = idx; g.Rebuild(); }

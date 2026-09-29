@@ -27,7 +27,7 @@ namespace DeckRogue.Game
             {
                 var terms = KeywordHelp.FindIn(body);
                 for (int i = 0; i < terms.Count && i < 4; i++)
-                    body += "\n<color=#276a34><b>" + terms[i] + "</b></color> <color=#574b48>" + KeywordHelp.Terms[terms[i]] + "</color>";   // 紙の上で 5.5:1 / 7:1
+                    body += "\n" + UiKit.ColorTag(PaperFx.GoodInk, "<b>" + terms[i] + "</b>") + " " + UiKit.ColorTag(PaperFx.InkSoft, KeywordHelp.Terms[terms[i]]);   // 良いの墨 5.5:1 ／ 中墨 7.2:1 (旧・中墨 #574b48。2026-09-29 p26)
             }
             return body;
         }
@@ -87,7 +87,9 @@ namespace DeckRogue.Game
             _text.rectTransform.sizeDelta = new Vector2(w - 32f, h - 24f);
             _panel.sizeDelta = new Vector2(w, h);
             float halfH = _layer.rect.height / 2f, halfW = _layer.rect.width / 2f;
-            _panel.anchoredPosition = new Vector2(-halfW + 24f, halfH - BattleScreen.TopH - 10f);   // 左上 (敵の吹き出しは中央〜右にある)
+            float top = BattleScreen.TopH + 10f;
+            float left = UiKit.SafeLeft(24f, top, top + h);   // 長い説明が縦の中央まで伸びたら、画面の切り欠き (パンチホール) の右から (2026-09-29 p10)
+            _panel.anchoredPosition = new Vector2(-halfW + left, halfH - top);   // 左上 (敵の吹き出しは中央〜右にある)
         }
 
         /// <summary>スマホ: 押した主の外を触ったら閉じる (触った操作は素通し = もう一度押させない)</summary>
@@ -125,6 +127,7 @@ namespace DeckRogue.Game
             bg.pixelsPerUnitMultiplier = 1f;
             bg.raycastTarget = false;
             _text = UiKit.Txt(_panel, "", 15, UiKit.ColInk, TextAnchor.UpperLeft);
+            UiKit.PlainWeight(_text);   // 長い本文は小さい文字の太らせ (p19) を掛けない
             _text.rectTransform.anchorMin = _text.rectTransform.anchorMax = new Vector2(0f, 1f);
             _text.rectTransform.pivot = new Vector2(0f, 1f);
             _text.rectTransform.anchoredPosition = new Vector2(16f, -12f);

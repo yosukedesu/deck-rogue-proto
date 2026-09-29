@@ -1,30 +1,32 @@
 {
- "id": "enemy_turtle__23",
- "engine": "pixflux",
- "request": {
-  "description": "a giant TORTOISE asleep: an enormous domed shell overgrown with moss and small ferns like a hill, a tiny sapling and a small stone lantern standing on top of the shell, a rusted pickaxe stuck in the moss, thick stubby legs folded under, the wrinkled head half tucked into the shell with two heavy half-closed bead eyes, slow and dreaming, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
-  "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, turtle standing upright, ninja turtle, cartoon turtle, sea turtle, flippers, bright green, human, humanoid",
-  "image_size": {
-   "width": 96,
-   "height": 96
+  "id": "enemy_turtle__23",
+  "engine": "pixflux",
+  "request": {
+    "description": "a giant TORTOISE asleep: an enormous domed shell overgrown with moss and small ferns like a hill, a tiny sapling and a small stone lantern standing on top of the shell, a rusted pickaxe stuck in the moss, thick stubby legs folded under, the wrinkled head half tucked into the shell with two heavy half-closed bead eyes, slow and dreaming, pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+    "negative_description": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, turtle standing upright, ninja turtle, cartoon turtle, sea turtle, flippers, bright green, human, humanoid",
+    "image_size": {
+      "width": 96,
+      "height": 96
+    },
+    "text_guidance_scale": 9,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "highly detailed",
+    "view": "low top-down",
+    "direction": "south-west",
+    "seed": 23
   },
-  "text_guidance_scale": 9,
-  "no_background": true,
-  "outline": "selective outline",
-  "shading": "medium shading",
-  "detail": "highly detailed",
-  "view": "low top-down",
-  "direction": "south-west",
-  "seed": 23
- },
- "usage": {
-  "type": "generations",
-  "generations": 1
- },
- "at": "2026-09-10T19:51:20.445Z",
- "judge": {
-  "pick": "A",
-  "seed": 23,
-  "at": "2026-09-11"
- }
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-10T19:51:20.445Z",
+  "judge": {
+    "pick": "A",
+    "seed": 23,
+    "at": "2026-09-11"
+  },
+  "groundRemoved": "2026-09-29 PixelLab v2 edit-images-v2 (Pro) で地面・背景を消した（個別の指示で作り直し）。足元は元の絵の最下端にそろえて下へずらした",
+  "upscaled128": "2026-09-29 戦闘画面のレビュー p24（ユーザー裁定「1体で戦う幕ボスは128ドットで描き直す」＝1ドット=画面4pxのまま枠だけ大きく）: 今の96の絵を手元で EPX×2 に拡大して背丈100ドットへ縮め128の枠に置き（scratchpad/boss128/upscale.py）、PixelLab v2 edit-images-v2 --size 128（edit_with_text「same creature, same design … redraw as clean crisp pixel art at this resolution」）で描き直した（job c43c23f9-30c5-44e6-aaec-97d51352336a・出力 #0）。豆の目だけ手で直した。足元は最下端から2ドット・左右中央"
 }

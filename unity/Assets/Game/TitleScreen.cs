@@ -248,7 +248,7 @@ namespace DeckRogue.Game
             var field = RunScreens.MakeSeedField(g, seedRow);
             UiKit.Le(field, 180f, 36f, 180f, 36f);
             var diffRow = UiKit.NewRect("diffrow", col);
-            UiKit.Le(diffRow, -1f, 40f, -1f, 40f);
+            UiKit.Le(diffRow, -1f, UiKit.Phone ? 48f : 40f, -1f, UiKit.Phone ? 48f : 40f);   // スマホの −/＋ は 48 (SetSize の丸め。2026-09-29)
             var hg2 = UiKit.Horz(diffRow, 10, 0);
             hg2.childAlignment = TextAnchor.MiddleLeft;
             hg2.childForceExpandWidth = false;

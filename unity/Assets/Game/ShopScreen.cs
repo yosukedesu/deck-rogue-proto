@@ -97,9 +97,29 @@ namespace DeckRogue.Game
             int n = nShop + leftCards.Count;
             float gap = 24f;
             float scale = Mathf.Min(0.95f, (availW - Math.Max(0, n - 1) * gap) / Math.Max(1, n) / CardView.W);
+            // スマホで札が多い (坑口の札が残った幕1の店＝9枚) 時は2段に折る (2026-09-30 F11: 1段だと 0.42 倍まで縮み、値札のボタンが隣と約90px 重なって
+            // 「で買う」が隠れ、左端のボタンは画面の外へ出た)。棚は「店を出る」の上まで下へ伸ばし、段の中は間を広げて値札を並べる
+            int rows = 1, perRow = n;
+            if (UiKit.Phone && n >= 5 && scale < 0.5f)
+            {
+                rows = 2; perRow = (n + 1) / 2;
+                float canvasH = BattleScreen.CanvasSize(root).y;
+                float shelfH = canvasH - shelfTop - 84f;
+                UiKit.Anchor(shelf, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(40f, -shelfTop - shelfH), new Vector2(-480f, -shelfTop));
+                scale = Mathf.Min(0.95f, Mathf.Min((availW - (perRow - 1) * gap) / perRow / CardView.W, (shelfH - 2f * 60f - 8f) / 2f / CardView.H));
+                float cw0 = CardView.W * scale;
+                gap = perRow > 1 ? Mathf.Min(88f, (availW - perRow * cw0) / (perRow - 1)) : gap;
+            }
             float cardW = CardView.W * scale, cardH = CardView.H * scale;
-            float totalW = n * cardW + Math.Max(0, n - 1) * gap;
+            float totalW = perRow * cardW + Math.Max(0, perRow - 1) * gap;
             float x0 = -totalW / 2f + cardW / 2f;
+            float tagW = Mathf.Min(176f, cardW + gap - 8f);   // 値札は段の間隔に収める (隣と重ねない)
+            Func<int, Vector2> cellPos = i =>
+            {
+                int col = i % perRow, row = i / perRow;
+                float y = rows == 2 ? (row == 0 ? 1f : -1f) * (cardH + 68f) / 2f : 0f;
+                return new Vector2(x0 + col * (cardW + gap), y);
+            };
             for (int i = nShop; i < n; i++)
             {   // 坑口で買わなかった札 (普通の札と同じ見た目・値段は棚の値段)
                 int di = leftCards[i - nShop];
@@ -112,14 +132,14 @@ namespace DeckRogue.Game
                 var dcell = UiKit.NewRect("shop-dep" + i, shelf);
                 dcell.anchorMin = dcell.anchorMax = new Vector2(0.5f, 0.5f);
                 dcell.sizeDelta = new Vector2(cardW, cardH + 60f);
-                dcell.anchoredPosition = new Vector2(x0 + i * (cardW + gap), 0f);
+                dcell.anchoredPosition = cellPos(i);
                 var dci = new CardInstance { Uid = "shop-dep" + i, Def = ddef };
                 var dcv = CardView.Build(dcell, dci, null, dOk, false, "shop-card");
                 dcv.localScale = Vector3.one * scale;
                 dcv.anchoredPosition = new Vector2(0f, 30f);
                 RewardScreen.HoverRaise(dcv, delegate { Audio.Ui("click"); CardPopup.Open(g, dci, null); });
                 CardPopup.Attach(g, dcv, dci, null, true);
-                PriceTag(dcell, dslot.Price, null, dOk, delegate { if (dOk) { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyDeparture { Index = di }); } });
+                PriceTag(dcell, dslot.Price, null, dOk, delegate { if (dOk) { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyDeparture { Index = di }); } }, tagW);
             }
             for (int i = 0; i < nShop; i++)
             {
@@ -133,7 +153,7 @@ namespace DeckRogue.Game
                 var cell = UiKit.NewRect("shop" + i, shelf);
                 cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
                 cell.sizeDelta = new Vector2(cardW, cardH + 60f);
-                cell.anchoredPosition = new Vector2(x0 + i * (cardW + gap), 0f);
+                cell.anchoredPosition = cellPos(i);
                 var ci = new CardInstance { Uid = "shop" + i, Def = def };
                 var cv = CardView.Build(cell, ci, null, canBuy, false, "shop-card");
                 cv.localScale = Vector3.one * scale;
@@ -147,11 +167,13 @@ namespace DeckRogue.Game
                 }
                 else RewardScreen.HoverRaise(cv, delegate { Audio.Ui("click"); CardPopup.Open(g, ci, null); });   // タップ＝拡大 (説明)。買うのは値札のボタン (2026-09-22 報酬と同じ作法)
                 CardPopup.Attach(g, cv, ci, null, true);
-                PriceTag(cell, item.Price, sold ? "売切" : null, canBuy, sold ? null : (Action)delegate { if (canBuy) { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyCard { Index = idx }); } });
-                if (i == nShop - 1 && nShop >= 6)
-                {
-                    var rare = UiKit.Txt(cell, "★ レア枠", 13, UiKit.ColGoldInk, TextAnchor.MiddleCenter, true);
-                    UiKit.Anchor(rare.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-60f, 4f), new Vector2(60f, 26f));
+                bool rareSlot = i == nShop - 1 && nShop >= 6;
+                PriceTag(cell, item.Price, sold ? "売切" : null, canBuy, sold ? null : (Action)delegate { if (canBuy) { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyCard { Index = idx }); } }, tagW, rareSlot && rows == 2);
+                if (rareSlot && rows == 1)
+                {   // 夜の上の注記は夜色の札に (2026-09-30 F11: 旧は真鍮の墨を夜空に直に置いて 2.1:1)。2段の時は段の間が狭いので値札の頭に「★」
+                    var rare = PaperFx.NightNote(cell, "★ レア枠", 13, 140f, true, "rare");
+                    rare.anchorMin = rare.anchorMax = new Vector2(0.5f, 1f); rare.pivot = new Vector2(0.5f, 0f);
+                    rare.anchoredPosition = new Vector2(0f, 2f);
                 }
             }
 
@@ -203,7 +225,7 @@ namespace DeckRogue.Game
             var cs = BattleScreen.CanvasSize(root);
             var gears = DeckRogue.Engine.Run.GearsOf(run);
             int mana = DeckRogue.Engine.Run.ManaOf(run);
-            RunUi.Heading(root, "ギアの棚", "自ターンに1個・魔素を払って組む。持ち物 " + gears.Count + "/" + Gears.GEAR_CARRY_MAX + "・魔素 " + Gears.ManaLabel(mana) + "・所持金 " + run.Gold + "G");
+            RunUi.Heading(root, "ギアの棚", "自ターンに1個・魔素を払って組む。持ち物 " + gears.Count + "/" + Gears.GEAR_CARRY_MAX + "・魔素 " + GearUi.ManaText(mana) + "・所持金 " + run.Gold + "G");
             var shelf = shop.Gears ?? new List<ShopStateGears>();
             int manaPrice = shop.ManaPrice ?? DeckRogue.Engine.Run.SHOP_MANA_PRICE;
             float scale = ph ? 0.8f : 1f;
@@ -250,7 +272,7 @@ namespace DeckRogue.Game
                 UiKit.Anchor(cell, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(i * (cw + gap), 0f), new Vector2(i * (cw + gap) + cw, 0f));
                 // 魔素の札はギアの札と同じ器 (GearUi.Card) に仮の定義を流し込む = 大きさと位置が棚と揃う
                 var manaDef = new GearDef { Id = "mana", Name = "魔素", Rarity = "common", Family = "interfere", Text = "ギアを組む動力。組むたび " + Gears.GEAR_MANA_COST + " 使う", Effects = new List<DeclarativeEffect>() };
-                var card = GearUi.Card(cell, manaDef, "mana", 200f, 272f, null, scale, "1個ぶん（" + Gears.GEAR_MANA_COST + "）", "上限 " + Gears.MANA_MAX + "\nいま " + Gears.ManaLabel(mana), PaperFx.Mana);
+                var card = GearUi.Card(cell, manaDef, "mana", 200f, 272f, null, scale, "1個ぶん（" + Gears.GEAR_MANA_COST + "）", "上限 " + Gears.MANA_MAX + "\nいま " + GearUi.ManaText(mana), PaperFx.Mana);
                 card.anchorMin = card.anchorMax = new Vector2(0.5f, 1f); card.pivot = new Vector2(0.5f, 1f); card.anchoredPosition = Vector2.zero;
                 bool full = mana >= Gears.MANA_MAX;
                 bool canBuy = !full && run.Gold >= manaPrice;
@@ -264,7 +286,7 @@ namespace DeckRogue.Game
             }
             // 持ち物の整理: トークンの列＋「捨てる」
             float invTop = top + chh + btnH + 18f;
-            float tw = 64f, th = 66f;
+            float tw = GearUi.PhoneTokenW, th = GearUi.PhoneTokenH;   // ギアのトークンの幅にそろえる (F41)
             float invW = Math.Max(420f, gears.Count * (tw + 14f));
             var inv = UiKit.NewRect("gear-inv", root);
             UiKit.Anchor(inv, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-invW / 2f, -invTop - 130f), new Vector2(invW / 2f, -invTop));
@@ -419,11 +441,12 @@ namespace DeckRogue.Game
         }
 
         /// <summary>値札。onBuy があればボタン (「N G で買う」。2026-09-22 札のタップは拡大になったので、買うのはここだけ)。指で押せる 48 の高さ</summary>
-        public static void PriceTag(RectTransform cell, int price, string over, bool affordable, Action onBuy = null)
+        public static void PriceTag(RectTransform cell, int price, string over, bool affordable, Action onBuy = null, float width = 176f, bool star = false)
         {
             var tag = UiKit.NewRect("price", cell);
             bool asBtn = onBuy != null;
-            UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), asBtn ? new Vector2(-88f, 0f) : new Vector2(-70f, 4f), asBtn ? new Vector2(88f, 48f) : new Vector2(70f, 40f));
+            float hw = Mathf.Min(88f, width / 2f);   // 棚の段の間隔に収める (F11)
+            UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), asBtn ? new Vector2(-hw, 0f) : new Vector2(-Mathf.Min(70f, hw), 4f), asBtn ? new Vector2(hw, 48f) : new Vector2(Mathf.Min(70f, hw), 40f));
             var bg = tag.gameObject.AddComponent<Image>();
             bg.sprite = asBtn ? Theme.Button : Theme.Tag; bg.type = Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f;
             bg.color = over != null ? new Color(0.5f, 0.5f, 0.5f, 1f) : affordable ? (asBtn ? PaperFx.BrassLight : Color.white) : new Color(0.7f, 0.55f, 0.55f, 1f);
@@ -438,7 +461,9 @@ namespace DeckRogue.Game
             hg.childForceExpandWidth = false;
             hg.childForceExpandHeight = false;
             if (over == null) UiKit.Icon(tag, "gold", 22f);
-            var t = UiKit.Txt(tag, over ?? (price + " G" + (asBtn && affordable ? " で買う" : "")), 17, over != null ? UiKit.ColInkSoft : affordable ? UiKit.ColGoldInk : UiKit.ColBadInk, TextAnchor.MiddleCenter, true);
+            // 幅が 150 未満の値札は「で買う」を省く (ボタンの形は残す)。レア枠は頭に「★」
+            string label = over ?? ((star ? "★ " : "") + price + " G" + (asBtn && affordable && width >= 150f ? " で買う" : ""));
+            var t = UiKit.Txt(tag, label, 17, over != null ? UiKit.ColInkSoft : affordable ? UiKit.ColGoldInk : UiKit.ColBadInk, TextAnchor.MiddleCenter, true);
             t.raycastTarget = false;
             UiKit.Le(t, 50f, 30f, -1f, 30f);
         }

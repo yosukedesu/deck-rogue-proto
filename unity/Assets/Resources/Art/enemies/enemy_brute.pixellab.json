@@ -21,5 +21,8 @@
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-08T04:28:24.187Z"
+  "at": "2026-09-08T04:28:24.187Z",
+  "groundRemoved": "2026-09-29 PixelLab v2 edit-images-v2 (Pro) で地面・背景を消した（16/9/4枚ずつまとめて）。足元は元の絵の最下端にそろえて下へずらした",
+  "rotated": "2026-09-29 PixelLab v2 generate-8-rotations-v2 (Pro) の8番目 (画面で斜め左手前＝プレイヤーの方。PixelLab の返す順は画面で S, SE, E, NE, N, NW, W, SW)。足元は前の絵の最下端にそろえた",
+  "upscaled128": "2026-09-29 戦闘画面のレビュー p24（ユーザー裁定「1体で戦う幕ボスは128ドットで描き直す」＝1ドット=画面4pxのまま枠だけ大きく）: 今の96の絵を手元で EPX×2 に拡大して背丈100ドットへ縮め128の枠に置き（scratchpad/boss128/upscale.py）、PixelLab v2 edit-images-v2 --size 128（edit_with_text「same creature, same design … redraw as clean crisp pixel art at this resolution」）で描き直した（job 25172695-434c-4627-a031-e66bcc160526・出力 #0）。edit で消えた差し色（鬣の金の筋・腕の房）を手元で元の絵から戻した（restore_accent.py）。足元は最下端から2ドット・左右中央"
 }

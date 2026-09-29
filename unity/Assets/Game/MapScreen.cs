@@ -35,7 +35,11 @@ namespace DeckRogue.Game
 
             // 地図本体 (縦スクロール)
             var view = UiKit.NewRect("mapview", root);
-            UiKit.Anchor(view, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-MapW / 2f, overlay ? 90f : 0f), new Vector2(MapW / 2f, -RunUi.TopH - (overlay ? 56f : 0f)));   // 重ねる時は見出しと「閉じる」の分だけ狭める
+            // 画面の切り欠き (パンチホール＝左端の縦の中央) に左の列のノードが掛かる狭い端末では、地図を右へ寄せる (2026-09-29 p10。S25 と PC は 0)
+            var mcs = BattleScreen.CanvasSize(root);
+            float mapShift = Mathf.Max(0f, UiKit.CutoutLeft(RunUi.TopH, mcs.y) - (mcs.x / 2f - MapW / 2f + 60f - NodeSize / 2f));
+            mapShift = Mathf.Min(mapShift, Mathf.Max(0f, mcs.x / 2f - MapW / 2f));   // 右の端からはみ出さない
+            UiKit.Anchor(view, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-MapW / 2f + mapShift, overlay ? 90f : 0f), new Vector2(MapW / 2f + mapShift, -RunUi.TopH - (overlay ? 56f : 0f)));   // 重ねる時は見出しと「閉じる」の分だけ狭める
             var viewImg = view.gameObject.AddComponent<Image>();
             viewImg.color = new Color(0f, 0f, 0f, overlay ? 0.5f : 0.18f);
             var mask = view.gameObject.AddComponent<RectMask2D>();
@@ -197,7 +201,8 @@ namespace DeckRogue.Game
             var hint = UiKit.Txt(root, choices.Count > 0 ? (UiKit.Phone ? "光っている道へ進めます" : "光っている道へ進めます。ノードにカーソルを重ねると中身の説明") : "進めるノードがありません", 15, UiKit.ColDim, TextAnchor.MiddleLeft);
             UiKit.Anchor(hint.rectTransform, new Vector2(0f, 0f), new Vector2(0.35f, 0f), new Vector2(24f, 70f), new Vector2(0f, 100f));
             var legend = UiKit.NewRect("legend", root);
-            UiKit.Anchor(legend, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24f, 110f), new Vector2(330f, 420f));
+            float legendL = UiKit.SafeLeft(24f, mcs.y - 420f, mcs.y - 110f);   // 凡例の行は縦の中央に掛かるので画面の切り欠き (パンチホール) の右から (2026-09-29 p10)
+            UiKit.Anchor(legend, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(legendL, 110f), new Vector2(legendL + 306f, 420f));
             var lg = UiKit.Vert(legend, 6, 0);
             lg.childForceExpandHeight = false;
             LegendRow(legend, MapNodeTypes.Battle); LegendRow(legend, MapNodeTypes.Elite); LegendRow(legend, MapNodeTypes.Event);
@@ -344,7 +349,7 @@ namespace DeckRogue.Game
         static void DoodleToolbar(GameRoot g, RectTransform root)
         {
             var bar = UiKit.NewRect("doodle-tools", root);
-            UiKit.Anchor(bar, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-24f - 4f * 78f - 3f * 8f, 62f), new Vector2(-24f, 100f));
+            UiKit.Anchor(bar, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-24f - 4f * 78f - 3f * 8f, 62f), new Vector2(-24f, UiKit.Phone ? 110f : 100f));   // スマホはボタンが 48 (SetSize の丸め。2026-09-29)
             var hg = UiKit.Horz(bar, 8, 0);
             hg.childAlignment = TextAnchor.MiddleRight; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
             string[] labels = { "紙ペン", "朱ペン", "消しゴム", "全消し" };   // ✎ はフォントに無い
@@ -364,7 +369,7 @@ namespace DeckRogue.Game
                 BattleScreen.SetSize(b, idx == 2 || idx == 3 ? 82f : 70f, 36f);
             }
             var hint = UiKit.Txt(root, g.DoodleMode ? (g.DoodlePen == 2 ? "消しゴム: 線に触れると消える（もう一度押すと解除）" : "ペン: ドラッグで地図に描ける（もう一度押すと解除）") : (UiKit.Phone ? "ペンを押すと指で地図に描ける" : "右ドラッグで地図に描ける（ペンを押すと指でも）"), 13, UiKit.ColDim, TextAnchor.MiddleRight);
-            UiKit.Anchor(hint.rectTransform, new Vector2(0.55f, 0f), new Vector2(1f, 0f), new Vector2(0f, 104f), new Vector2(-24f, 126f));
+            UiKit.Anchor(hint.rectTransform, new Vector2(0.55f, 0f), new Vector2(1f, 0f), new Vector2(0f, UiKit.Phone ? 114f : 104f), new Vector2(-24f, UiKit.Phone ? 136f : 126f));
         }
 
         static Color NodeTint(string type, bool avail, bool cur, bool taken, bool passed)

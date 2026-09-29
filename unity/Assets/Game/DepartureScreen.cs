@@ -168,7 +168,7 @@ namespace DeckRogue.Game
             string title = offer.Name;
             if (offer.Choice.RelicId != null)
             {
-                try { title += "  <size=" + (ph ? 12 : 14) + "><color=#634410>" + CardText.RarityLabel(Content.GetRelicDef(offer.Choice.RelicId).Rarity) + "</color></size>"; } catch (Exception) { }
+                try { title += "  <size=" + (ph ? 12 : 14) + ">" + UiKit.ColorTag(PaperFx.BrassInk, CardText.RarityLabel(Content.GetRelicDef(offer.Choice.RelicId).Rarity)) + "</size>"; } catch (Exception) { }
             }
             var nm = UiKit.Deco(tile, title, ph ? 17 : 20, PaperFx.Ink, TextAnchor.MiddleLeft);
             nm.textWrappingMode = TextWrappingModes.NoWrap; nm.overflowMode = TextOverflowModes.Ellipsis;

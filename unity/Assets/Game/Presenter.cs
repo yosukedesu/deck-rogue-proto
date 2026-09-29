@@ -223,12 +223,22 @@ namespace DeckRogue.Game
         /// 呪い＝藤の玉が自分へ飛ぶ。回復＝苔の玉が味方へ。盗み＝金の玉が G の札へ。山札喰い＝闇の玉が山札へ。逃走＝走り去る (BattleView)。隙＝「隙」とうつむく。
         /// 意図の札は実行の瞬間に一度跳ねる (どの札が動いたか)
         /// </summary>
+        /// <summary>手番の札の「/ N」の N: 見えている盤面 (順送りは古い盤面) の敵の数 (組み直しの BuildTopBar と同じく倒れた敵も数える)。召喚で増えた番号は見逃さない</summary>
+        static int PhaseEnemyCount(GameRoot g, ReactionCtx ctx, int acting)
+        {
+            int n = ctx != null && ctx.Prev != null ? ctx.Prev.Enemies.Count : 0;
+            if (n == 0 && g != null && g.Rs != null && g.Rs.Combat != null) n = g.Rs.Combat.Enemies.Count;
+            return Math.Max(n, acting + 1);
+        }
+
         static void ShowEnemyAct(GameRoot g, RectTransform fx, GameEvent ev, ReactionCtx ctx, bool live)
         {
             switch (ev)
             {
                 case GameEvent_EnemyActionExecuting ex:
                 {
+                    // 上部バーの手番の札の番号を進める「敵の番 ② / 3」(敵が2体以上の時。順送りの間だけ。2026-09-29)
+                    if (live) { int cnt = PhaseEnemyCount(g, ctx, ex.EnemyIndex); BattleScreen.SetPhase(g, 1, cnt > 1 ? ex.EnemyIndex : -1, cnt); }
                     var pan = g.Anchor("enemy" + ex.EnemyIndex);
                     var spr = g.Battle != null ? g.Battle.EnemySprite(ex.EnemyIndex) : null;
                     if (pan == null) return;
@@ -388,7 +398,7 @@ namespace DeckRogue.Game
                     var pos = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
                     Tween.IconBurst(fx, pos, "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, 0.9f), 140f);
                     Tween.RingBurst(fx, pos, PaperFx.SkyLight, 180f, 0.35f);
-                    Tween.Float(fx, pos + new Vector2(0f, 50f), "盾を砕いた " + bs.Amount, PaperFx.SkyLight, 26, 36f, 0.9f);
+                    Tween.Float(fx, pos + new Vector2(0f, 50f), "ブロックを砕いた " + bs.Amount, PaperFx.SkyLight, 26, 36f, 0.9f);
                     Stage.Shake(5f, 0.2f);
                     if (live && g.Battle != null) g.Battle.SetEnemyBlock(bs.EnemyIndex, 0);
                     break;
@@ -410,7 +420,7 @@ namespace DeckRogue.Game
                     Tween.RingBurst(fx, center, PaperFx.BrassLight, 170f, 0.35f);
                     Tween.ScreenFlash(fx, new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, 0.16f), 0.3f);
                     // 目盛り (行動が変わる線) が弾ける。組み直し済みの帳面から目盛りは消えているので、半分の線は HP バーの中央から出す
-                    var mark = pan.Find("strip/hpbar/mark") as RectTransform;
+                    var mark = pan.Find("strip/hpbar/inner/mark") as RectTransform;   // 目盛りは塗りと同じ inner の子 (2026-09-29 p04)
                     var bar = pan.Find("strip/hpbar") as RectTransform;
                     Vector2? mp = null;
                     if (mark != null) mp = Tween.CenterIn(mark, fx);
@@ -674,7 +684,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>
-        /// 決着の余韻 (2026-09-17 ⑧): 勝利＝「勝利」の帯の下に戦いの記録 (ターン数・与ダメ・被ダメ・読み勝ち・完全に凌いだ・打ち消し) が1行ずつ積み上がる。
+        /// 決着の余韻 (2026-09-17 ⑧): 勝利＝「勝利」の帯の下に戦いの記録 (ターン数・与えたダメージ・受けたダメージ・読み勝ち・完全に凌いだ・打ち消し) が1行ずつ積み上がる。
         /// 幕ボスは「幕ボス撃破」で長めに、舞台がゆっくり寄る。敗北＝画面が暗転して「倒れた…」。どれも画面を触ると飛ばせる。終わったら onDone (=報酬/敗北の画面へ)
         /// </summary>
         public static void ShowOutcome(GameRoot g, RunState endedRs, GameState final, Action onDone)
@@ -789,8 +799,8 @@ namespace DeckRogue.Game
                 else if (e is GameEvent_ActionNegated) negates++;
             }
             best = Math.Max(best, cur);
-            lines.Add(turns + "ターン ・ 与ダメ " + total + (best > 0 ? "（最大ターン " + best + "）" : ""));
-            lines.Add("被ダメ " + hpLost);
+            lines.Add(turns + "ターン ・ 与えたダメージ " + total + (best > 0 ? "（最大ターン " + best + "）" : ""));
+            lines.Add("受けたダメージ " + hpLost);
             var extra = new List<string>();
             if (fired > 0) extra.Add("読み勝ち " + fired + "回");
             if (perfect > 0) extra.Add("完全に凌いだ " + perfect + "回");
@@ -817,7 +827,7 @@ namespace DeckRogue.Game
             hg.childAlignment = TextAnchor.MiddleCenter; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
             var art = Theme.Art("icons", "intent_" + before.Kind);
             var ic = UiKit.Icon(row, before.Kind == "defend" ? "shield" : "sword", 32f, Color.white);
-            if (art != null) ic.sprite = art;
+            if (art != null) { ic.sprite = art; UiKit.PixelArt(ic); }   // p25
             ic.rectTransform.sizeDelta = new Vector2(32f, 32f); UiKit.Le(ic, 32f, 32f, 32f, 32f);
             var t = UiKit.Deco(row, line, size, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(t, 14f, h - 4f, -1f, h - 4f);
@@ -970,8 +980,9 @@ namespace DeckRogue.Game
                     // 舞台の匣: 蓋が開いて閃く。仕込み札が無ければ 0.6 秒後に閉じる (SyncField と同じ呼び方)
                     try
                     {
-                        Stage.SetKarakuriBox(1, true);
-                        Tween.After(0.6f, () => { var cur2 = g.Rs != null ? g.Rs.Combat : null; if (cur2 != null) Stage.SetKarakuriBox(cur2.Player.SetCards.Count, false); });
+                        bool boxLeftRear = BattleView.BoxLeftRear;
+                        Stage.SetKarakuriBox(1, true, boxLeftRear);
+                        Tween.After(0.6f, () => { var cur2 = g.Rs != null ? g.Rs.Combat : null; if (cur2 != null) Stage.SetKarakuriBox(cur2.Player.SetCards.Count, false, boxLeftRear); });
                     }
                     catch (Exception) { }
                     var ghost = GearGhost(fx, fromPos, gu.GearId, gdef);
@@ -1118,6 +1129,7 @@ namespace DeckRogue.Game
             UiKit.Anchor(pic, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(3f, -44f), new Vector2(-3f, -3f));
             var pimg = pic.gameObject.AddComponent<Image>();
             pimg.sprite = ThemeFx.CardArt(cardId, def != null ? Theme.CardTypeColor(def.Type) : PaperFx.Sand); pimg.preserveAspect = true; pimg.raycastTarget = false;
+            UiKit.PixelArt(pimg);   // 飛んで膨らむ途中もドットの縁がちらつかない (2026-09-29 p25)
             var band = UiKit.Pan(rt, PaperFx.ManaInk, "band");
             UiKit.Anchor(band.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-1f, 27f)); band.raycastTarget = false;
             var name = UiKit.Deco(rt, def != null ? def.Name : "", 13, PaperFx.Paper, TextAnchor.MiddleCenter);
@@ -1127,19 +1139,24 @@ namespace DeckRogue.Game
         }
 
         /// <summary>画面中央の帯 (ターン開始・敵の番)。0.9 秒で消える</summary>
-        static void Banner(RectTransform fx, string text, Color color)
+        /// <summary>手番の帯 (2026-09-30 F09: 旧は紙の上に苔 #7fa86c＝2.3:1・薔薇＝3.3:1 の文字だった＝塗りの色で文字を書いていた)。
+        /// 上部バーの手番の札と同じ組: あなたの番＝紙に墨・敵の番＝夜の札に紙の文字。苔と薔薇は帯の下の短い線だけ (color-theme 規律3)</summary>
+        static void Banner(RectTransform fx, string text, bool enemy)
         {
             var rt = UiKit.NewRect("banner", fx);
             UiKit.Anchor(rt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-360f, -40f), new Vector2(360f, 40f));
             rt.localRotation = Quaternion.Euler(0f, 0f, -1f);
             var bg = rt.gameObject.AddComponent<UnityEngine.UI.Image>();
-            bg.sprite = PaperFx.Panel; bg.type = UnityEngine.UI.Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f;
+            bg.sprite = enemy ? PaperFx.NightTag : PaperFx.Panel; bg.type = UnityEngine.UI.Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f;
             bg.raycastTarget = false;
             var cg = rt.gameObject.AddComponent<CanvasGroup>();
             cg.blocksRaycasts = false;
             cg.alpha = 0f;
-            var t = UiKit.Deco(rt, text, 34, color, TextAnchor.MiddleCenter);
-            UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
+            var accent = UiKit.Pan(rt, enemy ? PaperFx.Rose : PaperFx.Moss, "accent");
+            UiKit.Anchor(accent.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-60f, 12f), new Vector2(60f, 16f));
+            accent.raycastTarget = false;
+            var t = UiKit.Deco(rt, text, 34, enemy ? PaperFx.Paper : PaperFx.Ink, TextAnchor.MiddleCenter);
+            UiKit.Stretch(t.rectTransform, 0f, 4f, 0f, 0f);
             Tween.Run(0.9f, k => { if (cg != null) cg.alpha = k < 0.15f ? k / 0.15f : k > 0.7f ? 1f - (k - 0.7f) / 0.3f : 1f; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 
@@ -1277,11 +1294,11 @@ namespace DeckRogue.Game
             switch (style)
             {
                 case "spell": return new Color(PaperFx.Mana.r, PaperFx.Mana.g, PaperFx.Mana.b, 0.95f);
-                case "light": return new Color(1f, 0.9f, 0.62f, 0.95f);
+                case "light": return ThemeFx.LampGlow;
                 case "spark": return new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.95f);
             }
             if (def != null && def.Color == "white") return new Color(1f, 0.94f, 0.76f, 0.95f);
-            return new Color(1f, 0.98f, 0.9f, 0.95f);
+            return ThemeFx.SlashCore;
         }
 
         /// <summary>
@@ -1660,6 +1677,7 @@ namespace DeckRogue.Game
                                 Tween.After(0.08f, () => Tween.Float(fx, pos + new Vector2(0f, -36f), "ブロックで −" + blockedP, PaperFx.SkyLight, 22, 34f, 1.0f));
                             }
                             if (dd.Amount > 0 && !guarded) Tween.Punch(rtC, Mathf.Min(0.1f, 0.03f + dd.Amount * 0.004f), keepBottom: true);
+                            if (nudge && g.Battle != null) g.Battle.LandPlayerIncoming(dd.Amount);   // 見込みから届いた攻撃を引く (先に。この後の Nudge が残りで引き直す。p08)
                             if (nudge && g.Battle != null && dd.HpLoss > 0) g.Battle.NudgePlayerHp(-dd.HpLoss);
                             if (nudge && g.Battle != null && blockedP > 0) g.Battle.AbsorbPlayerBlock(blockedP);   // 自分の札の盾の数字も吸われた分だけ減る (通常→氷壁の順。2026-09-17)
                         });
@@ -1719,7 +1737,9 @@ namespace DeckRogue.Game
                 }
                 case GameEvent_TurnStarted ts:
                     Audio.Key("TurnStarted");
-                    Banner(fx, "ターン " + ts.Turn + "  —  あなたの番", UiKit.ColAccent);
+                    Banner(fx, "ターン " + ts.Turn + "  —  あなたの番", false);
+                    // 上部バーの手番の札も順送りの間に「あなたの番」へ (2026-09-29。即時の時は組み直し済み＝触らない)
+                    if (nudgeHp) BattleScreen.SetPhase(g, 0, -1, 0);
                     // 自ターンの始まりで通常ブロックは消える (留め具 blockKeep なら N まで残る)。順送りの途中の盾の数字もここで揃える。この後の置物の分は BlockGained が足す
                     if (nudgeHp && g.Battle != null)
                     {
@@ -1727,21 +1747,65 @@ namespace DeckRogue.Game
                         int keep = cur != null && cur.BlockKeep.HasValue ? Math.Min(g.Battle.ShownPlayerBlock, cur.BlockKeep.Value) : 0;
                         g.Battle.SetPlayerBlock(keep);
                     }
-                    // 罠が生きた瞬間 (準備ターン明け) を伏せ場の上に浮かせる (2026-09-14 ユーザー「伏せが有効になることを GUI で分かりやすく」)
+                    // 仕込み札が生きた瞬間 (準備ターン明け) をからくりの上に浮かせる (2026-09-14 ユーザー「伏せが有効になることを GUI で分かりやすく」)。
+                    // 語は Unity のからくりの語 (2026-09-29 p15: 旧「罠が鳴る準備完了」)。同じターンに2枚以上生きても一言は1つ (生きた札の枠の真ん中)＝
+                    // 枠ごとに出すと 78px 間隔で重なっていた。スマホの枠は画面の左端・上部バーのすぐ下なので、文字が画面の外へ切れないよう左右を詰め、
+                    // 上がりきった時も上部バーに掛からない高さまで下げる (スマホは枠の上に重なる。PC は枠の上 90 のまま)
                     {
                         var st = g.Rs != null ? g.Rs.Combat : null;
                         if (st != null)
+                        {
+                            Vector2 sum = Vector2.zero; int live = 0;
+                            float lowest = float.MaxValue, leftmost = float.MaxValue;
+                            var liveSlots = new List<RectTransform>();
                             for (int si = 0; si < st.Player.SetCards.Count; si++)
                                 if (Effects.TrapAge(st, st.Player.SetCards[si]) == 1)
                                 {
                                     var slot = g.Anchor("setslot" + si);
-                                    if (slot != null) Tween.Float(fx, Tween.CenterIn(slot, fx) + new Vector2(0f, 90f), "罠が鳴る準備完了", PaperFx.ManaLight, 24, 40f, 1.2f);
+                                    if (slot != null)
+                                    {
+                                        var cpos = Tween.CenterIn(slot, fx);
+                                        sum += cpos; live++; liveSlots.Add(slot);
+                                        lowest = Mathf.Min(lowest, cpos.y - slot.rect.height / 2f);
+                                        leftmost = Mathf.Min(leftmost, cpos.x - slot.rect.width / 2f);
+                                    }
                                 }
+                            if (live > 0)
+                            {
+                                // 帯を今の盤面で描き直してから浮かせる (順送りの間、帯は古い盤面の「準備中」のままで、浮き文字の「準備完了」と食い違った。F55)。
+                                // 生きた枠は弾んで青緑の輪＝帯が「あとN回」に変わる瞬間が合図
+                                if (nudgeHp) BattleScreen.RedrawSetTokens(g, st);
+                                foreach (var ls in liveSlots)
+                                {
+                                    if (ls == null) continue;
+                                    Tween.Punch(ls, 0.12f, 0.3f);
+                                    Tween.RingBurst(fx, Tween.CenterIn(ls, fx), PaperFx.ManaLight, 110f, 0.4f);
+                                }
+                                var fr = fx.rect;
+                                if (UiKit.Phone)
+                                {   // スマホはからくりの列の下 (右はギア・置物の帯、上は見出しなので避ける)。短い一言・上がらずに薄れる (F55: 旧は挿絵と見出しに重なった)
+                                    const float pw = 150f;
+                                    var ppos = new Vector2(leftmost + pw / 2f, lowest - 22f);
+                                    ppos.x = Mathf.Max(ppos.x, fr.xMin + pw / 2f + 8f);
+                                    Tween.Float(fx, ppos, "準備完了", PaperFx.ManaLight, 24, 6f, 1.2f, pw);
+                                }
+                                else
+                                {
+                                    const float fw = 300f;   // 24px で11字 (264) が1行に収まる幅
+                                    var pos = sum / live + new Vector2(0f, 90f);
+                                    pos.x = Mathf.Clamp(pos.x, fr.xMin + fw / 2f + 8f, Mathf.Max(fr.xMin + fw / 2f + 8f, fr.xMax - fw / 2f - 8f));
+                                    pos.y = Mathf.Min(pos.y, fr.yMax - BattleScreen.TopH - 4f - 40f - 16f);   // 40 = 上がる量・16 = 24px の文字の半分
+                                    Tween.Float(fx, pos, "からくりが鳴る準備完了", PaperFx.ManaLight, 24, 40f, 1.2f, fw);
+                                }
+                            }
+                        }
                     }
                     break;
                 case GameEvent_TurnEnded _:
                     Audio.Key("TurnEnded");
-                    Banner(fx, "敵の番", PaperFx.Rose);
+                    Banner(fx, "敵の番", true);
+                    // 上部バーの手番の札を夜の札「敵の番」に (2026-09-29: 旧は敵が行動している間ずっと「あなたの番」のままだった)
+                    if (nudgeHp) BattleScreen.SetPhase(g, 1, -1, PhaseEnemyCount(g, ctx, -1));
                     // 敵フェーズの始まりで敵のブロックは失効 (潜伏の殻は残る)。帳面の盾もここで消す
                     if (nudgeHp && g.Battle != null) g.Battle.ResetEnemyBlocks(ctx != null ? ctx.Prev : null);
                     break;
@@ -1814,7 +1878,7 @@ namespace DeckRogue.Game
                     // 判 (紙の帯) にする: 浮き文字 (幅 240) では折り返してダメージの数字と重なる。着弾の数字 (+60) より上に、少し遅らせて
                     string what = "アーティファクトが" + CardText.DebuffName(ab.Effect) + "を弾いた";
                     // 意図の札 (頭上) と着弾の数字 (胸) を避けて、胴の下 (帳面の上) に
-                    Tween.After(0.15f, () => Tween.Stamp(fx, c + new Vector2(0f, -100f), what, new Color(0.93f, 0.86f, 0.97f, 1f), PaperFx.PlumInk, PaperFx.Plum, 18, 1.0f, -5f));
+                    Tween.After(0.15f, () => Tween.Stamp(fx, c + new Vector2(0f, -100f), what, PaperFx.PlumLight, PaperFx.PlumInk, PaperFx.Plum, 18, 1.0f, -5f));
                     Audio.Play("block", 0.6f);
                     break;
                 }
@@ -1825,7 +1889,7 @@ namespace DeckRogue.Game
                     var c = PlayerFloatPos(g, fx) + new Vector2(0f, 70f);
                     Tween.RingBurst(fx, c, PaperFx.Plum, 120f, 0.35f);
                     string what = "時計仕掛けの土産が" + StatusJa(pab.Status) + "を弾いた";
-                    Tween.After(0.15f, () => Tween.Stamp(fx, c + new Vector2(0f, 60f), what, new Color(0.93f, 0.86f, 0.97f, 1f), PaperFx.PlumInk, PaperFx.Plum, 18, 1.0f, -5f));
+                    Tween.After(0.15f, () => Tween.Stamp(fx, c + new Vector2(0f, 60f), what, PaperFx.PlumLight, PaperFx.PlumInk, PaperFx.Plum, 18, 1.0f, -5f));
                     Audio.Play("block", 0.6f);
                     break;
                 }
@@ -1982,7 +2046,7 @@ namespace DeckRogue.Game
                         var tt = t;
                         Tween.BeamFx(fx, from, tt, Color.white, 0.34f, 1.3f, ThemeFx.LightStreak());
                         // 筋に沿って光の粒
-                        for (int k = 0; k < 4; k++) { float kk = 0.2f + 0.2f * k; Tween.After(0.02f * k, () => Tween.Projectile(fx, from, tt, UiKit.Hex("#fff6d2"), 18f, 0.22f, 10f)); }
+                        for (int k = 0; k < 4; k++) { float kk = 0.2f + 0.2f * k; Tween.After(0.02f * k, () => Tween.Projectile(fx, from, tt, ThemeFx.LampCore, 18f, 0.22f, 10f)); }
                     }
                     LightUi.HoldFor(0.6f);
                     LightUi.Drain(ld.Spent);

@@ -230,7 +230,7 @@ namespace DeckRogue.Game
         ///   enemy=<encounterId or enemyId> (combat)  event=<eventId>  pick=<idx[,idx]> (工房の素材／報酬の選択枠)  submode=forge (焚き火)  shopmode=upgrade|remove
         ///   fire=1 (確認の窓で最初の候補を発動してコマ送り。fireshots=枚数・fireevery=Nフレームごと。2026-09-17)
         ///   endplay=1 (手番を終えて敵フェーズを演出付きでコマ送り。endshots=枚数・endevery=Nフレームごと。2026-09-17)
-        ///   viewmap=1  viewdeck=1  viewrelics=1 (≡ のレリック一覧。2026-09-22)  tip=enemy|doll (説明パネル)  log=1  name=<shot名>  wait=<秒> (撮る前に待つ。ドローの演出を避ける。2026-09-19)
+        ///   viewmap=1  viewdeck=1  viewrelics=1 (≡ のレリック一覧。2026-09-22)  tip=enemy|doll|karakuri (説明パネル。karakuri=からくりの見出し)  log=1  name=<shot名>  wait=<秒> (撮る前に待つ。ドローの演出を避ける。2026-09-19)
         /// act/deck/relics/hp/gold/difficulty のどれかがあればチェックポイント開始 (CreateDebugCheckpointRun)、無ければ通常開始
         /// </summary>
         IEnumerator StateJump(GameRoot g, string spec)
@@ -469,6 +469,13 @@ namespace DeckRogue.Game
                             g.Rs = DeckRogue.Engine.Run.ApplyRunCommand(g.Rs, new RunCommand_Combat { Command = new Command_EndTurn() });
                         }
                     }
+                    // hold=N: 確認の窓を N 回温存して次の敵の窓へ (② や ③ が行動する窓の配置の確認。2026-09-29 p11)
+                    int holds;
+                    if (int.TryParse(Get("hold") ?? "", out holds))
+                    {
+                        for (int i = 0; i < holds && g.Rs.Combat != null && g.Rs.Combat.Phase == CombatPhases.AwaitingReaction; i++)
+                            g.Rs = DeckRogue.Engine.Run.ApplyRunCommand(g.Rs, new RunCommand_Combat { Command = new Command_ConfirmReaction { Fire = false } });
+                    }
                 }
                 catch (Exception ex) { Debug.LogError("[Autopilot] state: set/endturn " + ex.Message); }
             }
@@ -546,11 +553,11 @@ namespace DeckRogue.Game
                 yield return null;
                 if (spr != null && fx != null)
                 {
-                    if (hit || (style == "slash" && parts.Length > 1)) Tween.SlashFx(fx, Tween.CenterIn(spr, fx), ang, hit ? new Color(1f, 0.62f, 0.5f, 0.95f) : new Color(1f, 0.98f, 0.9f, 0.95f), Get("big") == "1");
+                    if (hit || (style == "slash" && parts.Length > 1)) Tween.SlashFx(fx, Tween.CenterIn(spr, fx), ang, hit ? new Color(1f, 0.62f, 0.5f, 0.95f) : ThemeFx.SlashCore, Get("big") == "1");
                     else
                     {
                         Vector2 from = pSpr != null ? Tween.CenterIn(pSpr, fx) : Tween.CenterIn(spr, fx) + new Vector2(-400f, 0f);
-                        Color col = style == "spell" ? new Color(PaperFx.Mana.r, PaperFx.Mana.g, PaperFx.Mana.b, 0.95f) : style == "light" ? new Color(1f, 0.9f, 0.62f, 0.95f) : style == "spark" ? new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.95f) : new Color(1f, 0.98f, 0.9f, 0.95f);
+                        Color col = style == "spell" ? new Color(PaperFx.Mana.r, PaperFx.Mana.g, PaperFx.Mana.b, 0.95f) : style == "light" ? ThemeFx.LampGlow : style == "spark" ? new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.95f) : ThemeFx.SlashCore;
                         for (int h = 0; h < hits; h++) { int hh = h; Tween.After(0.14f * h, () => Tween.PlayerHitFx(fx, Tween.CenterIn(spr, fx), style, col, Get("big") == "1", hh, hits, from)); }
                     }
                 }
@@ -706,12 +713,63 @@ namespace DeckRogue.Game
                 foreach (var sr in g.ScreenRoot.GetComponentsInChildren<ScrollRect>(true)) if (sr.vertical) sr.verticalNormalizedPosition = 0f;
                 yield return null;
             }
+            // aim=<敵index>: 札を選ばずに敵を押した状態 (狙い。庇われている敵なら縁は護衛に回り一言が出る) /
+            // pend=<手札index>: 単体の札を選んで対象を待つ状態 (候補の縁と輪。庇われている敵には付かない)。2026-09-29 p01
+            int aimIdx;
+            if (int.TryParse(Get("aim") ?? "", out aimIdx) && g.Rs != null && g.Rs.Combat != null && aimIdx >= 0 && aimIdx < g.Rs.Combat.Enemies.Count) { g.OnEnemyClicked(aimIdx); yield return null; }
+            int pendIdx;
+            if (int.TryParse(Get("pend") ?? "", out pendIdx) && g.Rs != null && g.Rs.Combat != null && pendIdx >= 0 && pendIdx < g.Rs.Combat.Player.Hand.Count) { g.PreferredTarget = -1; g.BeginPlay(g.Rs.Combat.Player.Hand[pendIdx], null); yield return null; }
+            // dragaim=<手札index>:<敵index>: その札をつかんで敵の胴の上まで引いた途中 (指を離さない) を撮る (2026-09-29 p09 スマホの狙いの矢)。
+            // 手札の札に BeginDrag と Drag を EventSystem で1回ずつ送る (人の指と同じ経路)。敵の番号を省くと最初の生存敵。
+            // スマホ (UISCALE=1.6) で敵を狙う札なら、札は手札に残り矢と縁が出る。PC・狙わない札は今までどおり札が指 (敵の胴) に付く
+            if (Get("dragaim") != null && g.Rs != null && g.Rs.Combat != null && g.Battle != null && g.Battle.HandLayer != null)
+            {
+                var da = Get("dragaim").Split(':');
+                int dh, de = -1;
+                bool low = da.Length >= 2 && da[1] == "low";   // dragaim=<手札>:low = 指を画面の下 30% (取り消しの線より下) に置いた途中 = 矢が消える
+                bool miss = da.Length >= 2 && da[1] == "miss";   // dragaim=<手札>:miss = 指をリーダーと敵の間の地面に置いた途中 (どの敵も指していない。2026-09-30 F34 の案内の札)
+                if (int.TryParse(da[0], out dh) && dh >= 0 && dh < g.Rs.Combat.Player.Hand.Count)
+                {
+                    if (da.Length < 2 || low || miss || !int.TryParse(da[1], out de) || de < 0 || de >= g.Rs.Combat.Enemies.Count || g.Rs.Combat.Enemies[de].Hp <= 0)
+                    {
+                        de = -1;
+                        for (int i = 0; i < g.Rs.Combat.Enemies.Count; i++) if (g.Rs.Combat.Enemies[i].Hp > 0) { de = i; break; }
+                    }
+                    var cardGo = g.Battle.HandLayer.Find("hand" + dh);
+                    var epan = de >= 0 ? g.Anchor("enemy" + de) : null;
+                    var body = epan != null ? (epan.Find("sprite") as RectTransform ?? epan) : null;
+                    if (cardGo != null && body != null)
+                    {
+                        var es = UnityEngine.EventSystems.EventSystem.current;
+                        Vector2 sp = RectTransformUtility.WorldToScreenPoint(null, body.TransformPoint(body.rect.center));   // 重ねの UI (Overlay) なので世界の座標＝画面の座標
+                        var cardSp = RectTransformUtility.WorldToScreenPoint(null, cardGo.position);
+                        if (low) sp = new Vector2(cardSp.x + 60f, Screen.height * 0.3f);
+                        if (miss) sp = new Vector2(Screen.width * 0.42f, Screen.height * 0.55f);
+                        var pdd = new UnityEngine.EventSystems.PointerEventData(es) { button = UnityEngine.EventSystems.PointerEventData.InputButton.Left, pressPosition = cardSp, position = cardSp, dragging = true };
+                        UnityEngine.EventSystems.ExecuteEvents.Execute(cardGo.gameObject, pdd, UnityEngine.EventSystems.ExecuteEvents.beginDragHandler);
+                        pdd.position = sp;
+                        UnityEngine.EventSystems.ExecuteEvents.Execute(cardGo.gameObject, pdd, UnityEngine.EventSystems.ExecuteEvents.dragHandler);
+                        yield return null;
+                        UnityEngine.EventSystems.ExecuteEvents.Execute(cardGo.gameObject, pdd, UnityEngine.EventSystems.ExecuteEvents.dragHandler);   // 描き直した札の上で矢をもう一度引く
+                        Debug.Log("[Autopilot] dragaim hand" + dh + " → enemy" + de + " at " + sp);
+                        yield return null;
+                    }
+                    else Debug.LogWarning("[Autopilot] dragaim: hand" + dh + " か enemy" + de + " が見つからない");
+                }
+            }
             // tip=enemy: 敵をタップした説明パネル (スマホ) / popup=N: 手札 N 枚目の長押しポップアップ
             if (Get("tip") == "enemy" && g.Rs != null && g.Rs.Combat != null && g.Battle != null)
             {
                 var pan = g.Anchor("enemy0");
                 var body = BattleScreen.EnemyTip(g, 0);
                 if (pan != null && body != null) Tooltip.ShowPinned(body, pan.gameObject);
+                yield return null;
+            }
+            if (Get("tip") == "karakuri" && g.Rs != null && g.Rs.Combat != null && g.Battle != null)
+            {   // tip=karakuri: からくりの見出し「からくり 1 / 2」を押した説明パネル (2026-09-29 p15)
+                var lbl = g.Anchor("setlabel");
+                var kbody = BattleScreen.SetLabelTip(g.Rs.Combat);
+                if (lbl != null && kbody != null) Tooltip.ShowPinned(kbody, lbl.gameObject);
                 yield return null;
             }
             if (Get("tip") == "doll" && g.Rs != null && g.Rs.Combat != null && g.Battle != null)

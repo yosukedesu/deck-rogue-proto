@@ -48,7 +48,7 @@ namespace DeckRogue.Game
             _root = UiKit.NewRect("cardPopup", layer);
             UiKit.Stretch(_root, 0f, 0f, 0f, 0f);
             // 暗幕 (触ると閉じる)
-            var dim = UiKit.Pan(_root, new Color(20f / 255f, 18f / 255f, 40f / 255f, 0.72f), "dim");
+            var dim = UiKit.Pan(_root, PaperFx.ModalScrim, "dim");
             UiKit.Stretch(dim.rectTransform, 0f, 0f, 0f, 0f);
             dim.raycastTarget = true;
             var dimBtn = dim.gameObject.AddComponent<Button>();
@@ -64,7 +64,15 @@ namespace DeckRogue.Game
 
             // 右: 用語の説明 (紙)
             string keys = null;
-            try { keys = BattleScreen.KeywordsOnly(CardText.Body(c.Def) + " " + CardText.Notes(c.Def)); } catch (Exception) { }
+            try { keys = BattleScreen.KeywordsOnly(c.Def); } catch (Exception) { }
+            // 札の面で本文が切れる長文の札 (F10) は、全文を用語の説明の先頭に出す (拡大しても同じ面なので同じ所で切れる)
+            if (CardView.LastBodyTruncated)
+            {
+                string full = CardText.Body(c.Def);
+                string notes = CardText.Notes(c.Def);
+                string all = "<b>全文</b>\n" + full + (notes.Length > 0 ? "\n" + notes : "");
+                keys = string.IsNullOrEmpty(keys) ? all : all + "\n\n" + keys;
+            }
             if (!string.IsNullOrEmpty(keys))
             {
                 var pan = PaperFx.Sheet(_root, PaperFx.Panel, "keys");
@@ -72,6 +80,7 @@ namespace DeckRogue.Game
                 pan.rectTransform.pivot = new Vector2(0f, 0.5f);
                 pan.rectTransform.anchoredPosition = new Vector2(80f, 30f);
                 var t = UiKit.Txt(pan.transform, keys, 15, PaperFx.Ink, TextAnchor.UpperLeft);
+                UiKit.PlainWeight(t);   // 用語の説明は長文なので元の太さ (p19。説明パネルと同じ)
                 t.rectTransform.anchorMin = t.rectTransform.anchorMax = new Vector2(0f, 1f);
                 t.rectTransform.pivot = new Vector2(0f, 1f);
                 t.rectTransform.anchoredPosition = new Vector2(16f, -14f);

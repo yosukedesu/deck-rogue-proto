@@ -100,7 +100,8 @@ case "$MODE" in
     powershell.exe -NoProfile -Command "Get-Process DeckRogue -ErrorAction SilentlyContinue | Where-Object { \$_.Path -like '$(wslpath -w "$WIN_DIR")\Build\*' } | Stop-Process -Force" >/dev/null 2>&1; sleep 2
     # SHOT_W/SHOT_H で窓の寸法、UISCALE でスマホの倍率を PC で再現 (例: SHOT_W=1920 SHOT_H=886 UISCALE=1.3 = S25 の 1800×831 キャンバス)
     # STATE="phase=workshop;pick=0;viewmap=1" scripts/unity-win.sh shots state 4242  = 任意の状態へ跳んで1枚撮る (キーは Autopilot.StateJump の説明)
-    timeout -k 5 300 "$EXE" -autopilot "$SCENARIO" -seed "$SEED" -shots "$(wslpath -w "$WIN_DIR/Shots")" ${STAGEACT:+-stageact "$STAGEACT"} ${UISCALE:+-uiscale "$UISCALE"} ${STATE:+-state "$STATE"} \
+    # FAKECUTOUT="0,416,78,53" = 画面の切り欠き (実px・左下原点。「;」で複数) を差し込む = S25 のパンチホールを SHOT_W=1920 SHOT_H=886 で再現 (2026-09-29 p10)
+    timeout -k 5 300 "$EXE" -autopilot "$SCENARIO" -seed "$SEED" -shots "$(wslpath -w "$WIN_DIR/Shots")" ${STAGEACT:+-stageact "$STAGEACT"} ${UISCALE:+-uiscale "$UISCALE"} ${FAKECUTOUT:+-fakecutout "$FAKECUTOUT"} ${STATE:+-state "$STATE"} \
       -screen-width "${SHOT_W:-1920}" -screen-height "${SHOT_H:-1080}" -screen-fullscreen 0 -logFile "$(wslpath -w "$WIN_DIR/player.log")"
     PCODE=$?
     mkdir -p "$REPO/unity/Shots"; rm -f "$REPO/unity/Shots"/*.png
