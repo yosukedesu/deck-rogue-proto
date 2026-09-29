@@ -182,7 +182,7 @@ const KW_PATTERN = new RegExp(
 )
 
 /** テキスト中のキーワード能力を吹き出し付き <span> に置き換える */
-const INTENT_KIND_JA_COND: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '人形狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化', summon: '召喚' }
+const INTENT_KIND_JA_COND: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '人形狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', seal: '技封じ', rest: '隙', hatch: '孵化', summon: '召喚' }
 
 function kw(text: string): React.ReactNode {
   return text.split(KW_PATTERN).map((part, i) =>
@@ -343,7 +343,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     (e.trigger === 'onPlay' && holderType === 'permanent' ? '登場時: ' : TRIGGER_LABEL[e.trigger]) +
     conditionLabel(e)
   const pierce = e.pierce ? '(貫通)' : ''
-  const aoe = e.target === 'all' ? '敵全体に' : ''
+  const aoe = e.target === 'all' ? '敵全体に' : e.target === 'mostHp' ? 'HPがいちばん多い敵に' : ''
   // トータル先頭表記: 補正込みの実ダメージを先に出し、内訳を括弧で添える
   const atkBreak = atkBonus > 0 ? `（${'基礎'}${e.amount}+補正${atkBonus}）` : ''
   switch (e.effect) {
@@ -2017,6 +2017,12 @@ function BattleScreen({
                     )}
                     {enemyDef.nemesis === true && !dead && (
                       <span className="chip chip-strength">👻 {kw('因縁')}: {s.turn % 2 === 1 ? '今ターンは無形（被ダメ1固定）' : '今ターンは実体'}</span>
+                    )}
+                    {(enemy.sealed?.length ?? 0) > 0 && !dead && (
+                      <span className="chip chip-strength">🔒 封じている: {enemy.sealed!.map((c) => c.def.name).join('・')}（倒せば手札に戻る）</span>
+                    )}
+                    {enemyDef.slippery !== undefined && !dead && (
+                      <span className="chip chip-block">🌫 {kw('朧')}{(enemy.slippery ?? 0) > 0 ? ` 残り${enemy.slippery}回（HPに届く当たりは1）` : '（霧が晴れた）'}</span>
                     )}
                     {enemyDef.imbalanced === true && !dead && (
                       <span className="chip chip-block">🌀 {kw('バランス崩し')}{enemy.staggeredNext === true ? '（体勢を崩した！次の行動は隙）' : '（完全に防ぐと次の行動が隙）'}</span>
@@ -3752,7 +3758,7 @@ const ENEMY_VOCAB = (() => {
 })()
 
 const MOVE_FIELD_JA: Record<string, string> = { min: '最小', max: '最大', weight: '重み', hits: 'ヒット数', alsoDefend: '攻防一体🛡', alsoBuff: '同時筋力💪' }
-const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪筋力上げ', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓人形狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い', hatch: '🐣孵化', summon: '👶召喚' }
+const MOVE_KIND_ICON: Record<string, string> = { attack: '⚔️攻撃', defend: '🛡防御', buff: '💪筋力上げ', rally: '📣応援', hex: '🧿呪い', 'destroy-set': '💥伏せ破壊', 'destroy-token': '🪓人形狩り', heal: '💚回復', 'steal-gold': '💰盗み', flee: '🏃逃走', rest: '😮‍💨隙', mill: '📖山札喰い', seal: '🔒技封じ', hatch: '🐣孵化', summon: '👶召喚' }
 
 function moveLine(mv: EnemyMove): string {
   const range = mv.min !== undefined ? `${mv.min}〜${mv.max}` : ''

@@ -427,7 +427,11 @@ export function runPermanentTriggers(
         // 人形 (retainer・innate除く) の単体ダメージはランダムな生存敵へ (白 2026-09-20 ユーザー裁定「人形はランダム対象」。
         // 旧: 生存先頭固定＝護衛や開幕ブロック持ちに丸ごと吸われていた)。生存2体以上の時だけ RNG を1回消費 (ソロ戦のゴールデン不変)
         let target = alive
-        if (permanent.def.retainer === true && permanent.innate !== true && isDamageEffect(boosted) && boosted.target !== 'all') {
+        if (boosted.target === 'mostHp') {
+          // 獅子の人形 (白 2026-09-26): いまの HP がいちばん多い生存敵 (同じなら左から)。RNG は使わない
+          target = s.enemies.reduce((best, e, i) => (e.hp > 0 && (best < 0 || e.hp > s.enemies[best].hp) ? i : best), -1)
+          if (target < 0) target = alive
+        } else if (permanent.def.retainer === true && permanent.innate !== true && isDamageEffect(boosted) && boosted.target !== 'all') {
           const aliveIdx = s.enemies.map((e, i) => (e.hp > 0 ? i : -1)).filter((i) => i >= 0)
           if (aliveIdx.length > 1) {
             const [k, rng] = nextInt(s.rng, 0, aliveIdx.length - 1)
@@ -1111,6 +1115,11 @@ export function damageBreakdown(
     hpLoss = 1
     steps.push({ label: '無形=1固定', value: 1 })
   }
+  // 朧 (2026-09-27 朧の大鹿): HP に届く当たりは1 (残り回数のうち)
+  if ((enemy.slippery ?? 0) > 0 && hpLoss > 0) {
+    if (hpLoss > 1) steps.push({ label: `朧=1(残り${enemy.slippery}回)`, value: 1 })
+    hpLoss = 1
+  }
   // ターン装甲 (2026-09-02): このターンのHP損失累計の上限
   const turnArmor = getEnemyDef(enemy.enemyId).turnArmor
   if (turnArmor !== undefined) {
@@ -1294,6 +1303,10 @@ export function dealDamageToEnemy(
     nemesisCut = hpLoss - 1
     hpLoss = 1
   }
+  // 朧 (2026-09-27 朧の大鹿): HP に届く当たりの最初のN回は1になる。ブロックで全部止まった当たりは数えない
+  const slipped = (enemy.slippery ?? 0) > 0 && hpLoss > 0
+  const slipperyCut = slipped ? hpLoss - 1 : 0
+  if (slipped) hpLoss = 1
   // ターン装甲 (2026-09-02 StS2 HardenedShell式): このターンのHP損失累計はN以下 (装甲の対 =
   // 多段・バーストへの量の問い)。ブロックの後・延焼は別経路で無視 (装甲と同じ裁定)
   const turnArmor = getEnemyDef(enemy.enemyId).turnArmor
@@ -1312,6 +1325,7 @@ export function dealDamageToEnemy(
           block: e.block - blocked,
           hp: e.hp - hpLoss,
           exposed: exposed ? e.exposed - 1 : e.exposed,
+          ...(slipped ? { slippery: (e.slippery ?? 0) - 1 } : {}),
           // regenBreak の判定用 (確定済みルール表「再生」)。再生判定のたびにリセットされる
           hpLostSinceRegen: (e.hpLostSinceRegen ?? 0) + hpLoss,
           damageTakenTotal: (e.damageTakenTotal ?? 0) + hpLoss,
@@ -1331,6 +1345,7 @@ export function dealDamageToEnemy(
       ...(turnArmorCut > 0 ? { turnArmorCut } : {}),
       ...(burrowCut > 0 ? { burrowCut } : {}),
       ...(nemesisCut > 0 ? { nemesisCut } : {}),
+      ...(slipperyCut > 0 ? { slipperyCut } : {}),
       // ダメージの質 (2026-09-17 演出用): 急所が乗った・貫通でブロックを無視した・ブロック (殻) が吸った量
       ...(exposed ? { exposed: true } : {}),
       ...(pierce && !shellUp && enemy.block > 0 ? { pierced: true } : {}),
@@ -1649,7 +1664,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         ...state,
         enemies: state.enemies.map((e, i) => {
           if (i !== enemyIndex || e.hp <= 0 || e.intent === undefined || e.intent === null) return e
-          const { inflict: _i, alsoBuff: _b, alsoDefend: _d, alsoDestroySet: _s, ...rest } = e.intent
+          const { inflict: _i, alsoBuff: _b, alsoDefend: _d, alsoDestroySet: _s, strengthPerMilled: _m, ...rest } = e.intent
           return { ...e, intent: rest }
         }),
       }

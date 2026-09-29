@@ -21,5 +21,6 @@
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-08T04:15:11.166Z"
+  "at": "2026-09-08T04:15:11.166Z",
+  "groundRemoved": "2026-09-29 PixelLab v2 edit-images-v2 (Pro) で地面・背景を消した（16/9/4枚ずつまとめて）。足元は元の絵の最下端にそろえて下へずらした"
 }

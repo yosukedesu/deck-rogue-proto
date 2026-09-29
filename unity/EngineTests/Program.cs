@@ -425,7 +425,7 @@ int VerifyGoldenRuns(string[] argv)
 
 // ゴールデンを再生しながら、N手ごとに Report.BuildRunSaveFile → JsonUnions.Deserialize<RunSaveFile> で読み戻し、
 // 読み戻した状態から残りの手を続けても各手のハッシュがゴールデンに一致することを確かめる
-// (= 「セーブから続きを操作しても同じ結果」の機械固定。戦闘ログはスナップショット上限で切り詰めるが engine は読まない)。
+// (= 「セーブから続きを操作しても同じ結果」の機械固定。セーブは戦闘ログを切り詰めない＝トークンの uid が eventLog の長さを使うため。2026-09-26)。
 //   dotnet run -- roundtrip <golden.json...> [--every N] [--data <src/data>]
 int SaveRoundtrip(string[] argv)
 {

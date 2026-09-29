@@ -22,5 +22,7 @@
     "generations": 1
   },
   "at": "2026-09-08T15:51:44.105Z",
-  "postprocess": "2026-09-09 ユーザー「芋虫はきもすぎ」→6案から「⑤毛玉の虫」を採用"
+  "postprocess": "2026-09-09 ユーザー「芋虫はきもすぎ」→6案から「⑤毛玉の虫」を採用",
+  "groundRemoved": "2026-09-29 PixelLab v2 edit-images-v2 (Pro) で地面・背景を消した（16/9/4枚ずつまとめて）。足元は元の絵の最下端にそろえて下へずらした",
+  "rotated": "2026-09-29 PixelLab v2 generate-8-rotations-v2 (Pro) の8番目 (画面で斜め左手前＝プレイヤーの方。PixelLab の返す順は画面で S, SE, E, NE, N, NW, W, SW)。足元は前の絵の最下端にそろえた"
 }

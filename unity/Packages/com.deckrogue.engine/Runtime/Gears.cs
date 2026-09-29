@@ -158,7 +158,7 @@ namespace DeckRogue.Engine
                     {
                         if (e == null) return null;
                         var it = e.Intent;
-                        return it != null && (it.Inflict != null || it.AlsoBuff != null || it.AlsoDefend != null || it.AlsoDestroySet == true) ? null : "この敵のいまの行動に付随物（状態異常・同時強化・同時防御・からくり壊し）は無い";
+                        return it != null && (it.Inflict != null || it.AlsoBuff != null || it.AlsoDefend != null || it.AlsoDestroySet == true || it.StrengthPerMilled != null) ? null : "この敵のいまの行動に付随物（状態異常・同時強化・同時防御・からくり壊し）は無い";
                     }
                     case "singleHit":
                     {

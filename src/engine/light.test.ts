@@ -218,13 +218,13 @@ describe('号令 (点灯の合図 1E・灯2) と灯火の大行列', () => {
   it('号令・大行列の中では灯を産まない (2026-09-20 裁定): 灯芯の人形・癒しの人形が動いても灯は戻らない', () => {
     let s = light(energy(fresh(['white_perm_wick', 'white_perm_choir', 'white_grand_charge']), 9), 1)
     s = play(s, 't0_white_perm_wick') // 灯2 (自分の効果で+1)
-    s = play(s, 't1_white_perm_choir') // 灯2を払って0 → 点灯の回復2で灯1
+    s = play(s, 't1_white_perm_choir') // 灯2を払って0 → 点灯の回復1で灯1
     expect(s.player.light).toBe(1)
     s = { ...s, player: { ...s.player, hp: 50 }, }
     s = light(s, 4)
-    s = play(s, 't2_white_grand_charge') // 灯4を放出 → 各人形が2回動く。灯芯の+1×2 も 癒しの回復2×2 の+1×2 も鳴らない
+    s = play(s, 't2_white_grand_charge') // 灯4を放出 → 各人形が2回動く。灯芯の+1×2 も 癒しの回復1×2 (2026-09-25 半分) の+1×2 も鳴らない
     expect(s.player.light).toBe(0)
-    expect(s.player.hp).toBe(54)
+    expect(s.player.hp).toBe(52)
   })
 
   it('人形の単体ダメージはランダムな生存敵へ (2026-09-20 裁定)。合計は変わらず、2体戦で RNG を1回ずつ消費する', () => {
@@ -285,7 +285,7 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
     expect(getCardDef('white_perm_bonfire')).toMatchObject({ cost: 2, lightCost: 4, retainer: true, rarity: 'rare' })
     expect(REWARD_EXCLUDED.has('white_perm_lantern')).toBe(false)
     expect(REWARD_EXCLUDED.has('white_perm_bonfire')).toBe(false)
-    expect(allCards.filter((c) => c.color === 'white').length).toBe(85) // 2026-09-24 灯の薪 +1・ 白のプール 108→84 (−24)・同日 CSV の裁定で −7・Opus ひなた裁定で重ねる灯 −1
+    expect(allCards.filter((c) => c.color === 'white').length).toBe(86) // 2026-09-26 竜と獅子の人形 +2・2026-09-25 燭の人形 −1・2026-09-24 灯の薪 +1・ 白のプール 108→84 (−24)・同日 CSV の裁定で −7・Opus ひなた裁定で重ねる灯 −1
     // 灯コストを持つ人形は5体だけ (コモンの人形・灯芯は据え置き)
     expect(allCards.filter((c) => c.retainer === true && (c.lightCost ?? 0) > 0).map((c) => c.id).sort()).toEqual(
       ['white_perm_band', 'white_perm_bandleader', 'white_perm_bonfire', 'white_perm_choir', 'white_perm_lantern'],
@@ -296,7 +296,7 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
     let s = light(energy(fresh(['white_perm_choir', 'white_perm_squire']), 9), 2)
     s = { ...s, player: { ...s.player, hp: 50 } }
     s = play(s, 't0_white_perm_choir')
-    expect(s.player.hp).toBe(52) // 点灯: 攻撃ごと回復2 が出た瞬間に1回
+    expect(s.player.hp).toBe(51) // 点灯: 攻撃ごと回復1 (2026-09-25「人形の回復だけ半分」＝旧2) が出た瞬間に1回
     expect(s.player.light).toBe(1) // 灯2を払って0 → 点灯の回復で+1
     expect(s.eventLog.filter((e) => e.type === 'LightSpent').map((e) => (e.type === 'LightSpent' ? [e.amount, e.cardId] : null))).toEqual([[2, 'white_perm_choir']])
     expect(s.eventLog.filter((e) => e.type === 'RetainerRushed').length).toBe(1)
@@ -340,9 +340,9 @@ describe('灯と人形の結び (2026-09-20 夜 ユーザー「灯と人形の�
     expect(s.player.block).toBe(3)
   })
 
-  it('鍛え: 灯コストの人形は灯-1 (癒し+=1E・灯1・回復2のまま、灯篭+=灯1、篝火+=灯3)。合成: 人形×人形は灯コスト合算', () => {
+  it('鍛え: 灯コストの人形は灯-1 (癒し+=1E・灯1・回復1のまま〔2026-09-25 半分＝旧2〕、灯篭+=灯1、篝火+=灯3)。合成: 人形×人形は灯コスト合算', () => {
     expect(upgradeCard(inst('white_perm_choir')).def).toMatchObject({ cost: 1, lightCost: 1 })
-    expect(upgradeCard(inst('white_perm_choir')).def.effects[0].amount).toBe(2)
+    expect(upgradeCard(inst('white_perm_choir')).def.effects[0].amount).toBe(1)
     expect(upgradeCard(inst('white_perm_lantern')).def).toMatchObject({ cost: 1, lightCost: 1 })
     expect(upgradeCard(inst('white_perm_bonfire')).def).toMatchObject({ cost: 2, lightCost: 3 })
     const f = fuseCards(inst('white_perm_band'), inst('white_perm_bandleader'))

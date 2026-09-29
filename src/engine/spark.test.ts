@@ -168,12 +168,12 @@ describe('放出の軸 (灯の使い道を4形に)', () => {
     expect(u.player.light).toBe(3)
   })
 
-  it('白は 85種 (報酬76。2026-09-24 プールを削る −24・CSV の裁定で −7・灯の薪 +1・Opus ひなた裁定で重ねる灯 −1・灯の小盾は初期札へ)。2026-09-20 夜の撤去10 (眩ます灯印・白光の矢・眩みの障壁・眩みの槌・光壁の反撃・大光壁・光門閉鎖・灯りの杖・灯の身代わり・灯りの庭) は無い', () => {
+  it('白は 86種 (報酬77。2026-09-24 プールを削る −24・CSV の裁定で −7・灯の薪 +1・Opus ひなた裁定で重ねる灯 −1・灯の小盾は初期札へ・2026-09-25 燭の人形 −1・2026-09-26 竜と獅子の人形 +2)。2026-09-20 夜の撤去10 (眩ます灯印・白光の矢・眩みの障壁・眩みの槌・光壁の反撃・大光壁・光門閉鎖・灯りの杖・灯の身代わり・灯りの庭) は無い', () => {
     const removed = ['white_menace', 'white_light_arrow', 'white_reaction_holy_wall', 'white_verdict_hammer', 'white_rampart_riposte', 'white_fortress', 'white_gate_close', 'white_mercy_staff', 'white_reaction_martyr', 'white_reaction_sanctuary']
     for (const id of removed) expect(allCards.some((c) => c.id === id), id).toBe(false)
     const white = allCards.filter((c) => c.color === 'white')
-    expect(white.length).toBe(85) // 2026-09-24 白のプール 108→84 (A8+B7+C3+D6 の24枚を撤去) → CSV の裁定で −7 (呼び声・光盾の点灯・眩む閃光・降霊・輝きの光・総突撃・旗印)・灯の薪 +1 → Opus ひなた裁定で重ねる灯 (反復の触媒) −1
-    expect(white.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(76) // 灯の小盾は初期札になり報酬から外れた (2026-09-24)
+    expect(white.length).toBe(86) // 2026-09-26 竜と獅子の人形 +2 ← 2026-09-24 白のプール 108→84 (A8+B7+C3+D6 の24枚を撤去) → CSV の裁定で −7 (呼び声・光盾の点灯・眩む閃光・降霊・輝きの光・総突撃・旗印)・灯の薪 +1 → Opus ひなた裁定で重ねる灯 (反復の触媒) −1 → 2026-09-25 燭の人形 −1 (人形の回復を半分にしたら癒しの人形と同じ札になった)
+    expect(white.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(77) // 灯の小盾は初期札になり報酬から外れた (2026-09-24)
   })
 })
 

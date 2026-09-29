@@ -12,7 +12,7 @@ export const ENEMY_GIMMICK_KEYS = [
   'enrage', 'enrageEveryCards', 'enrageEveryDamage', 'regen', 'regenBreak', 'burnResist',
   'thorns', 'armor', 'startingBlock', 'angerOnBlock', 'guardian', 'bondStrength',
   'interrupts', 'splitInto', 'hatchInto', 'mournStrength', 'aura',
-  'turnArmor', 'artifact', 'burrow', 'nemesis', 'imbalanced',
+  'turnArmor', 'artifact', 'burrow', 'nemesis', 'imbalanced', 'slippery',
 ] as const
 export type EnemyGimmickKey = (typeof ENEMY_GIMMICK_KEYS)[number]
 
@@ -43,6 +43,7 @@ export const GIMMICK_KEYWORDS: Record<EnemyGimmickKey, string | null> = {
   burrow: '潜伏',
   nemesis: '因縁',
   imbalanced: 'バランス崩し',
+  slippery: '朧',
 }
 
 /**
@@ -72,6 +73,7 @@ export function enemyTraitTagsOfDef(def: EnemyDef): string[] {
   if (def.burrow) tags.push(`潜伏(殻${def.burrow.block}が尽きるまでHPにダメージが通らない。超過は捨てる・貫通も殻に吸われる・粉砕は殻を割る。割れると次の行動が噛みつきに変わる=割ったターンのうちに倒せば来ない)`)
   if (def.nemesis) tags.push('因縁(奇数ターンは無形=1ヒットのHP損失が1固定。偶数ターンに実体化。延焼は通る)')
   if (def.imbalanced) tags.push('バランス崩し(攻撃を完全に防ぐ=HP損失0にすると体勢を崩し、次の行動が隙になる。軽減リアクション・ブロックの報酬)')
+  if (def.slippery) tags.push(`朧${def.slippery}(霧で姿がぼやけ、HPに届く当たりの最初の${def.slippery}回は1ダメージになる。人形・罠の当たりも数える。ブロックで止まった当たりと延焼は数えない)`)
   if (def.splitInto) {
     const child = getEnemyDef(def.splitInto.enemyId)
     tags.push(
@@ -111,6 +113,10 @@ export function enemyTraitTags(s: GameState, i: number): string[] {
     tags.push(
       `因縁(${s.turn % 2 === 1 ? '今ターンは無形=1ヒットのHP損失が1固定' : '今ターンは実体=普通に通る'}。奇数ターン無形・偶数ターン実体。延焼は通る)`,
     )
+  }
+  if ((e.sealed?.length ?? 0) > 0) tags.push(`封じている札: ${e.sealed!.map((c) => c.def.name).join('・')}(倒せば手札に戻る)`)
+  if (def.slippery) {
+    tags.push((e.slippery ?? 0) > 0 ? `朧 残り${e.slippery}回(HPに届く当たりは1ダメージになる。人形・罠の当たりも数える。延焼は素通し)` : '朧(霧が晴れた=以後は普通に通る)')
   }
   if (def.imbalanced) {
     tags.push(e.staggeredNext === true ? 'バランス崩し(体勢を崩した! 次の行動は隙)' : 'バランス崩し(攻撃を完全に防ぐ=HP損失0で次の行動が隙になる)')

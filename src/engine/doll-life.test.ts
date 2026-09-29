@@ -61,9 +61,9 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
   })
 
   it('育ち: 人形のダメージ・ブロックは点灯してからのターン数ぶん増える (T1 3 → T2 4 → T3 5)。回復は増えない。号令でも同じ値', () => {
-    let s = light(energy(fresh(['white_perm_squire', 'white_perm_candle', 'white_strike', 'white_march_order']), 9), 9)
+    let s = light(energy(fresh(['white_perm_squire', 'white_perm_choir', 'white_strike', 'white_march_order']), 9), 9)
     s = play(s, 't0_white_perm_squire') // 点灯 3
-    s = play(s, 't1_white_perm_candle')
+    s = play(s, 't1_white_perm_choir') // 癒しの人形 (燭の人形は 2026-09-25 に撤去)
     expect(dollGrowth(s, dolls(s)[0])).toBe(0)
     const hp1 = s.enemies[0].hp
     s = nextTurn(s) // T2 開始: 剣 3+1
@@ -71,11 +71,11 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     expect(dollGrowth(s, dolls(s)[0])).toBe(1)
     s = light(energy(withHand({ ...s, player: { ...s.player, hp: 50, maxHp: 999 } }, ['white_strike', 'white_march_order']), 9), 9)
     const hp2 = s.enemies[0].hp
-    s = play(s, 't0_white_strike') // 灯火の一撃5 → 燭が回復1 (増えない)
+    s = play(s, 't0_white_strike') // 灯火の一撃5 → 癒しが回復1 (増えない)
     expect(hp2 - s.enemies[0].hp).toBe(5)
     expect(s.player.hp).toBe(51)
     const hp3 = s.enemies[0].hp
-    s = play(s, 't1_white_march_order') // 小さな人形 (点灯 2) + 号令: 剣 3+1・小さな人形 2・燭は回復1
+    s = play(s, 't1_white_march_order') // 小さな人形 (点灯 2) + 号令: 剣 3+1・小さな人形 2・癒しは回復1
     expect(hp3 - s.enemies[0].hp).toBe(2 + 4 + 2)
     expect(rallyPreview(s, 0).damage).toBe(4 + 2)
   })
@@ -185,9 +185,9 @@ describe('灯り (寿命): 点灯したターンを1と数え、最後のター�
     expect(c?.life).toBe(4)
   })
 
-  it('白は 85種 (報酬76): 残った新規3枚は報酬プール', () => {
+  it('白は 86種 (報酬77): 残った新規3枚は報酬プール', () => {
     const white = allCards.filter((c) => c.color === 'white')
-    expect(white.length).toBe(85) // 2026-09-24 プールを削る −24 (108→84)・同日 CSV の裁定で −7・灯の薪 +1・Opus ひなた裁定で重ねる灯 −1
+    expect(white.length).toBe(86) // 2026-09-24 プールを削る −24 (108→84)・同日 CSV の裁定で −7・灯の薪 +1・Opus ひなた裁定で重ねる灯 −1・2026-09-25 燭の人形 −1・2026-09-26 竜と獅子の人形 +2
     for (const id of ['white_copy_light', 'white_relight', 'white_eternal_light']) {
       expect(white.some((c) => c.id === id), id).toBe(true)
     }
@@ -205,5 +205,55 @@ describe('鍛え・是正 (2026-09-21 Opus A/B/C)', () => {
     expect(up.effects[1].amount).toBe(1)
     // 灯芯の人形 (灯+1 だけ) は従来どおり単位+1
     expect(upgradeCard(inst('white_perm_wick')).def.effects[0].amount).toBe(2)
+  })
+})
+
+// 大きい人形 (白 2026-09-26 ユーザー「強い人形 (ドラゴンとか) だすのどうかな？コスト高いけど複製しがいがある」→ ask_user「3マナの竜・全体攻撃」＋「獅子」)
+describe('竜の人形と獅子の人形 (レア・3E・期限3)', () => {
+  it('竜: 出た瞬間に敵全体へ10、次のターン開始に11 (火勢)、期限3で T3 の敵フェーズの終わりに消える', () => {
+    expect(getCardDef('white_perm_dragon')).toMatchObject({ cost: 3, rarity: 'rare', retainer: true, life: 3 })
+    let s = energy(fresh(['white_perm_dragon'], 'enc_probe_pair'), 3)
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 200, maxHp: 200 })) }
+    const hp0 = s.enemies.map((e) => e.hp)
+    s = play(s, 't0_white_perm_dragon')
+    expect(s.enemies.map((e, i) => hp0[i] - e.hp)).toEqual([10, 10])
+    const log1 = s.eventLog.length
+    s = nextTurn(s)
+    // 敵が守りの手番でブロックを積むことがあるので、HP でなく竜のダメージ (ブロック適用前) を見る
+    const dragonUid = dolls(s)[0].uid
+    const hits = s.eventLog.slice(log1).filter((e) => e.type === 'DamageDealt' && e.source === 'player' && e.sourceUid === dragonUid)
+    expect(hits.map((e) => (e.type === 'DamageDealt' ? e.amount : 0))).toEqual([11, 11])
+    s = nextTurn(s)
+    expect(dolls(s).map((p) => p.def.id)).toEqual(['white_perm_dragon'])
+    s = nextTurn(s)
+    expect(dolls(s)).toEqual([]) // T3 の敵フェーズの終わりに消えた
+  })
+
+  it('獅子: HP がいちばん多い敵に20 (ランダムでない＝RNG を使わない)。同じ HP なら左', () => {
+    expect(getCardDef('white_perm_lion')).toMatchObject({ cost: 3, rarity: 'rare', retainer: true, life: 3 })
+    let s = energy(fresh(['white_perm_lion'], 'enc_probe_pair'), 3)
+    s = { ...s, enemies: s.enemies.map((e, i) => ({ ...e, hp: i === 1 ? 60 : 30, maxHp: 60 })) }
+    const rng0 = s.rng
+    s = play(s, 't0_white_perm_lion')
+    expect(s.enemies.map((e) => e.hp)).toEqual([30, 40])
+    expect(s.rng).toEqual(rng0)
+    let t = energy(fresh(['white_perm_lion'], 'enc_probe_pair'), 3)
+    t = { ...t, enemies: t.enemies.map((e) => ({ ...e, hp: 50, maxHp: 50 })) }
+    t = play(t, 't0_white_perm_lion')
+    expect(t.enemies.map((e) => e.hp)).toEqual([30, 50])
+  })
+
+  it('写し灯で竜を写すと、残りの期限と火勢を写した竜がもう1体出て、出た瞬間にも全体へ攻撃する', () => {
+    let s = energy(fresh(['white_perm_dragon'], 'enc_probe_pair'), 3)
+    s = { ...s, enemies: s.enemies.map((e) => ({ ...e, hp: 200, maxHp: 200 })) }
+    s = play(s, 't0_white_perm_dragon')
+    s = nextTurn(s) // T2: 竜は あと2・火勢+1
+    s = energy(withHand(s, ['white_copy_light']), 3)
+    const hp0 = s.enemies.map((e) => e.hp)
+    const dragon = dolls(s)[0]
+    s = play(s, 't0_white_copy_light', { permanentUid: dragon.uid })
+    expect(dolls(s).length).toBe(2)
+    expect(s.enemies.map((e, i) => hp0[i] - e.hp)).toEqual([11, 11]) // 写しの点灯＝火勢+1 の11
+    expect(dollLifeLeft(s, dolls(s)[1])).toBe(dollLifeLeft(s, dragon))
   })
 })

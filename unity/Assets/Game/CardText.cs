@@ -205,7 +205,7 @@ namespace DeckRogue.Game
         {
             { "attack", "攻撃" }, { "defend", "防御" }, { "buff", "筋力上げ" }, { "rally", "応援" },
             { "heal", "回復" }, { "hex", "呪い" }, { "destroy-set", "からくり壊し" }, { "destroy-token", "人形狩り" },
-            { "steal-gold", "盗み" }, { "flee", "逃走" }, { "mill", "山札喰い" }, { "rest", "隙" }, { "hatch", "孵化" }, { "summon", "召喚" },
+            { "steal-gold", "盗み" }, { "flee", "逃走" }, { "mill", "山札喰い" }, { "seal", "技封じ" }, { "rest", "隙" }, { "hatch", "孵化" }, { "summon", "召喚" },
         };
 
         static readonly Dictionary<string, string> StatusJa = new Dictionary<string, string>
@@ -348,6 +348,7 @@ namespace DeckRogue.Game
             else if (e.Every.HasValue) sb.Append("(" + (e.EveryScope == "turn" ? "1ターンに" : "") + e.Every.Value + "回ごとに1回) ");
             else if (e.Once != null) sb.Append("(" + (e.Once == "turn" ? "ターンに" : "戦闘で") + "1回だけ) ");
             if (e.Target == "all") sb.Append("敵全体に ");
+            else if (e.Target == "mostHp") sb.Append("HPがいちばん多い敵に ");   // 獅子の人形 (白 2026-09-26)
             sb.Append(EffectBody(e));
             if (e.Pierce == true) sb.Append("(貫通)");
             if (e.XHits == true) sb.Append("×X回");
@@ -586,7 +587,8 @@ namespace DeckRogue.Game
                 case "flee": return "逃走 (倒すか打ち消せば阻止)";
                 case "rest": return "隙だらけ";
                 case "hatch": return "孵化する";
-                case "mill": return "山札喰い " + it.Actual + "枚";
+                case "seal": return "技封じ (山札でいちばんレアな札を1枚、倒すまで封じる)";
+                case "mill": return "山札喰い " + it.Actual + "枚" + (it.StrengthPerMilled.HasValue ? " (食べた1枚ごとに筋力+" + it.StrengthPerMilled.Value + ")" : "");
                 case "summon": return "召喚 ×" + it.Actual + " (場が4体なら出ない)";
                 default: return KindJa(it.Kind);
             }
@@ -645,10 +647,12 @@ namespace DeckRogue.Game
             int? lo = m.Min.HasValue ? (int?)Math.Max(m.Kind == "attack" ? 1 : m.Min.Value, m.Min.Value + add) : null;
             int? hi = m.Max.HasValue ? (int?)Math.Max(m.Kind == "attack" ? 1 : m.Max.Value, m.Max.Value + add) : null;
             string range = lo.HasValue ? (lo == hi ? lo.Value.ToString() : lo.Value + "〜" + hi) : "";
+            // HPで痛む一撃 (2026-09-27 熾を喰う古炉): 幅の代わりに式 (宣言した時のあなたのHPで決まる)
+            if (m.DamageFromPlayerHp != null) range = "(あなたのHP÷" + m.DamageFromPlayerHp.Divisor + "+" + m.DamageFromPlayerHp.Add + (add != 0 ? (add > 0 ? "+" : "") + add : "") + ")";
             string sign = (m.Kind == "buff" || m.Kind == "rally") ? "+" : "";
             string hits = m.MirrorHits == true ? "×手数" : ((m.Hits ?? 1) > 1 ? "×" + m.Hits.Value : "");
             string inflict = m.Inflict != null ? (range != "" ? "+" : "") + StatusName(m.Inflict.Status) + m.Inflict.Amount : "";
-            string riders = (m.AlsoDefend.HasValue ? "+ブロック" + m.AlsoDefend.Value : "") + (m.AlsoBuff.HasValue ? "+筋力" + m.AlsoBuff.Value : "") + (m.AlsoDestroySet == true ? "+からくり壊し" : "") + (m.GrowPerUse.HasValue ? "(使うたび+" + m.GrowPerUse.Value + ")" : "") + (m.GrowHitsPerUse.HasValue ? "(使うたびヒット+" + m.GrowHitsPerUse.Value + ")" : "");
+            string riders = (m.AlsoDefend.HasValue ? "+ブロック" + m.AlsoDefend.Value : "") + (m.AlsoBuff.HasValue ? "+筋力" + m.AlsoBuff.Value : "") + (m.AlsoDestroySet == true ? "+からくり壊し" : "") + (m.StrengthPerMilled.HasValue ? "+食べた1枚ごとに筋力" + m.StrengthPerMilled.Value : "") + (m.GrowPerUse.HasValue ? "(使うたび+" + m.GrowPerUse.Value + ")" : "") + (m.GrowHitsPerUse.HasValue ? "(使うたびヒット+" + m.GrowHitsPerUse.Value + ")" : "");
             return mark + sign + range + hits + inflict + riders;
         }
 
@@ -678,6 +682,8 @@ namespace DeckRogue.Game
             if (d.MournStrength.HasValue) t.Add("弔い+" + d.MournStrength.Value);
             if (d.Nemesis == true) t.Add("因縁(奇数Tは無形)");
             if (d.Imbalanced == true) t.Add("バランス崩し");
+            if (e != null && e.Sealed != null && e.Sealed.Count > 0) t.Add("封じている札: " + string.Join("・", e.Sealed.Select(c => c.Def.Name)) + " (倒せば手札に戻る)");
+            if (d.Slippery.HasValue) t.Add(e != null && (e.Slippery ?? 0) <= 0 ? "朧(霧が晴れた)" : "朧" + (e != null ? (e.Slippery ?? 0) : d.Slippery.Value) + "回");
             if (d.Burrow != null) t.Add("潜伏(殻" + d.Burrow.Block + ")");
             if (d.SplitInto != null) t.Add("分裂→" + d.SplitInto.Count + "体");
             if (d.HatchInto != null) t.Add("孵化");
@@ -744,11 +750,12 @@ namespace DeckRogue.Game
                         + (j.TurnArmorCut.HasValue && j.TurnArmorCut.Value > 0 ? " [ターン装甲で" + j.TurnArmorCut.Value + "]" : "")
                         + (j.BurrowCut.HasValue && j.BurrowCut.Value > 0 ? " [潜伏の殻で" + j.BurrowCut.Value + "]" : "")
                         + (j.NemesisCut.HasValue && j.NemesisCut.Value > 0 ? " [無形で1固定]" : "")
+                        + (j.SlipperyCut.HasValue && j.SlipperyCut.Value > 0 ? " [朧で1]" : "")
                     : "敵の攻撃" + j.Amount + " → HP-" + j.HpLoss + (j.Blocked.HasValue && j.Blocked.Value > 0 ? " (ブロックで" + j.Blocked.Value + ")" : "");
             }
             var k = ev as GameEvent_BlockGained; if (k != null) return (k.Target == "player" ? "自分" : "敵") + "がブロック+" + k.Amount;
             var l = ev as GameEvent_IceBlockGained; if (l != null) return "氷壁+" + l.Amount;
-            var m = ev as GameEvent_StrengthGained; if (m != null) return "敵の筋力 +" + m.Amount + (m.Reason != null ? " (" + m.Reason + ")" : "");
+            var m = ev as GameEvent_StrengthGained; if (m != null) return "敵の筋力 +" + m.Amount + (m.Reason != null ? " (" + StrengthReasonJa(m.Reason) + ")" : "");
             var n = ev as GameEvent_BurnApplied; if (n != null) return "敵に延焼+" + n.Amount;
             var o = ev as GameEvent_BurnTick; if (o != null) return "延焼で敵に" + o.Amount + "ダメージ";
             var p = ev as GameEvent_GrowthAdded; if (p != null) return "成長+" + p.Amount;
@@ -768,6 +775,8 @@ namespace DeckRogue.Game
             var y = ev as GameEvent_SetCardDestroyed; if (y != null) return "からくりを壊された: " + CardName(y.CardId);
             var z = ev as GameEvent_PermanentPlayed; if (z != null) return "置物を設置: " + CardName(z.CardId);
             var a2 = ev as GameEvent_CardExhausted; if (a2 != null) return "消滅: " + CardName(a2.CardId);
+            var sl = ev as GameEvent_CardSealed; if (sl != null) return "敵" + (sl.EnemyIndex + 1) + "が「" + CardName(sl.CardId) + "」を封じた (倒せば手札に戻る)";
+            var us = ev as GameEvent_CardUnsealed; if (us != null) return "封じられていた「" + CardName(us.CardId) + "」が手札に戻った";
             var b2 = ev as GameEvent_CardsMilled; if (b2 != null) return "山札の上" + b2.Count + "枚を忘却" + (b2.CardIds != null ? ": " + Names(b2.CardIds) : "");
             var c2 = ev as GameEvent_ExposedApplied; if (c2 != null) return "敵に急所+" + c2.Amount;
             var d2 = ev as GameEvent_EnemyWeakened; if (d2 != null) return "敵を威圧" + d2.Amount;
@@ -867,6 +876,19 @@ namespace DeckRogue.Game
             var buf = new List<string>();
             for (int i = 0; i < ids.Count; i++) buf.Add(CardName(ids[i]));
             return string.Join("・", buf.ToArray());
+        }
+
+        /// <summary>敵の筋力が増えた理由 (Web の ui/log.ts ENRAGE_JA と同じ文。2026-09-25 人間ラン#21 で「(enrage-phase)」のまま出ていた)</summary>
+        static string StrengthReasonJa(string reason)
+        {
+            switch (reason)
+            {
+                case "enrage-cards": return "激昂〔プレイ枚数の節目〕";
+                case "enrage-damage": return "激昂〔累計被ダメの節目〕";
+                case "enrage-phase": return "激昂〔毎フェーズ〕";
+                case "mourn": return "弔い〔仲間が倒れた〕";
+                default: return reason;
+            }
         }
     }
 }

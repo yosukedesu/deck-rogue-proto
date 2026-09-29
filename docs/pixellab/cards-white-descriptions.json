@@ -1578,6 +1578,28 @@
       "seeds": [
         37
       ]
+    },
+    {
+      "id": "white_perm_dragon",
+      "name": "竜の人形",
+      "ja": "白鉄のからくりの竜が広間いっぱいに灯の火を吐く（2026-09-26・seed 1249）",
+      "description": "{style}, a large white iron armored dragon doll rearing up in a dark stone hall and breathing a wide fan of warm amber lamplight fire that sweeps across the entire width of the frame, a clockwork dragon automaton (matte white enameled iron armor plates with brass rivets, wings made of brass ribs and white iron plates, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no scales of flesh, a brass lantern burning inside its chest behind a grille)",
+      "doll": true,
+      "seeds": [
+        1249
+      ],
+      "negative_extra": "real dragon, green dragon, red dragon, lizard, dinosaur"
+    },
+    {
+      "id": "white_perm_lion",
+      "name": "獅子の人形",
+      "ja": "白鉄のからくりの獅子が坑道で大きな影に跳びかかる（2026-09-26・seed 1553）",
+      "description": "{style}, a large white iron armored lion doll inside a dark stone tunnel with a low rock ceiling, leaping to the right with brass claws out at one huge hulking dark beast that fills the right third of the frame, a single bright amber streak of light trailing its claws, a four-legged clockwork lion automaton (matte white enameled iron armor plates with brass rivets, a mane of fanned brass plates like a sunburst, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no fur, a brass lantern burning inside its chest behind a grille)",
+      "doll": true,
+      "seeds": [
+        1553
+      ],
+      "negative_extra": "real lion, fur, cat, tiger, dog, full moon, night sky, clouds, stars, outdoors"
     }
   ]
 }

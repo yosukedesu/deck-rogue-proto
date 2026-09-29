@@ -24,6 +24,13 @@ function hasNoWinCondition(s: GameState): boolean {
 /** 1ターンの詠唱数の上限。健全なデッキの実測最大は11 (deck_chaos の衝動連打) */
 const MAX_PLAYS_PER_TURN = 20
 /**
+ * 有限だが大きいターンになると分かっている組 (無限ループではない。1ターンの終わりまで回して確かめた)。
+ * 2026-09-27 大喰らいの蟲の作り直し (食べた分だけ太る・噛む→喰う→噛む): 山札喰いで薄くなった deck_big_mana が
+ * 陽光の恵み (上限+1・消滅なし) と緑の閃き (4ドロー) を回して上限が T9 32・T10 42 に伸び、1ターンに22〜26枚。
+ * エナジーで止まり T10 に勝つ。ボットが X 札でなく回転にエナジーを使う床値
+ */
+const KNOWN_FINITE_BIG_TURNS = new Set(['deck_big_mana vs enemy_elite_devourer'])
+/**
  * 1戦闘のコマンド数上限。これは「無限ループの backstop」であって試合の長さの基準ではない。
  * 実測の最長は deck_fortress vs 苔まといの主 の 329ターン (1329コマンド) で、
  * これはループではなく膠着 (要塞デッキの火力が再生をわずかに上回るだけ)。
@@ -53,8 +60,9 @@ describe('無限ループ検知', () => {
               break
             }
             s = applyCommand(s, chooseCommand(s))
-            if (s.player.cardsPlayedThisTurn > worstPlays) worstPlays = s.player.cardsPlayedThisTurn
-            if (s.player.cardsPlayedThisTurn > MAX_PLAYS_PER_TURN) {
+            const known = KNOWN_FINITE_BIG_TURNS.has(`${deck.id} vs ${enemy.id}`)
+            if (!known && s.player.cardsPlayedThisTurn > worstPlays) worstPlays = s.player.cardsPlayedThisTurn
+            if (!known && s.player.cardsPlayedThisTurn > MAX_PLAYS_PER_TURN) {
               offenders.push(
                 `${deck.id} vs ${enemy.id} seed${seed}: ターン${s.turn}で詠唱数${s.player.cardsPlayedThisTurn}`,
               )

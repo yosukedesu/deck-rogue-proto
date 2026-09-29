@@ -91,6 +91,7 @@ namespace DeckRogue.Engine.Generated
         public const string Heal = "heal";
         public const string StealGold = "steal-gold";
         public const string Flee = "flee";
+        public const string Seal = "seal";
         public const string Rest = "rest";
         public const string Mill = "mill";
         public const string Summon = "summon";
@@ -447,6 +448,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可)</summary>
         [JsonProperty("armor", NullValueHandling = NullValueHandling.Ignore)]
         public int? Armor { get; init; }
+        /// <summary>ぬめりの残り回数 (def.slippery からコピー。HP に届く当たりのたび1減る)</summary>
+        [JsonProperty("slippery", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Slippery { get; init; }
+        /// <summary>技封じ (kind:'seal') で封じている札。この敵が倒れたら手札へ戻る</summary>
+        [JsonProperty("sealed", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<CardInstance>? Sealed { get; init; }
         /// <summary>打点倍率 (2026-09-01 ユーザー裁定「幕2/3の打点+15%」)。攻撃の基礎値に乗算して四捨五入 (強化は倍率の後に加算)。幕2/3の通常戦闘のみ = ボス・エリートは各自の校正のため1</summary>
         [JsonProperty("atkScale", NullValueHandling = NullValueHandling.Ignore)]
         public double? AtkScale { get; init; }
@@ -502,6 +509,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す</summary>
         [JsonProperty("alsoDestroySet", NullValueHandling = NullValueHandling.Ignore)]
         public bool? AlsoDestroySet { get; init; }
+        /// <summary>山札喰いで食べた1枚ごとに筋力+N (2026-09-27 大喰らいの蟲の作り直し。山札が薄ければ食べた分しか太らない)</summary>
+        [JsonProperty("strengthPerMilled", NullValueHandling = NullValueHandling.Ignore)]
+        public int? StrengthPerMilled { get; init; }
         /// <summary>条件付き意図 (2026-08-25): 反応テーブルを持つ敵は「条件を満たすなら alt / 満たさないなら本体」の 両方を宣言時に確定し、実行時の盤面で分岐する (確定済みルール表「条件付き意図」)。 'set' = 伏せ札がある / 'tokens' = 従者・トークンが場にいる</summary>
         [JsonProperty("conditionalOn", NullValueHandling = NullValueHandling.Ignore)]
         public string? ConditionalOn { get; init; }
@@ -1145,6 +1155,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>因縁 (無形ターン) で1に固定されて消えたぶん</summary>
         [JsonProperty("nemesisCut", NullValueHandling = NullValueHandling.Ignore)]
         public int? NemesisCut { get; init; }
+        /// <summary>ぬめりで1にされて消えたぶん (2026-09-27 月影の大蛞蝓)</summary>
+        [JsonProperty("slipperyCut", NullValueHandling = NullValueHandling.Ignore)]
+        public int? SlipperyCut { get; init; }
         /// <summary>急所が乗った (×1.5)。演出「ダメージの質の見分け」用 (2026-09-17)</summary>
         [JsonProperty("exposed", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Exposed { get; init; }
@@ -1868,6 +1881,28 @@ namespace DeckRogue.Engine.Generated
         public IReadOnlyList<string>? CardIds { get; init; }
     }
 
+    /// <summary>GameEvent: type="CardSealed"</summary>
+    public sealed record GameEvent_CardSealed : GameEvent
+    {
+        public const string TypeTag = "CardSealed";
+        public GameEvent_CardSealed() { Type = TypeTag; }
+        [JsonProperty("enemyIndex")]
+        public int EnemyIndex { get; init; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="CardUnsealed"</summary>
+    public sealed record GameEvent_CardUnsealed : GameEvent
+    {
+        public const string TypeTag = "CardUnsealed";
+        public GameEvent_CardUnsealed() { Type = TypeTag; }
+        [JsonProperty("enemyIndex")]
+        public int EnemyIndex { get; init; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+    }
+
     /// <summary>GameEvent: type="EnemyWeakened"</summary>
     public sealed record GameEvent_EnemyWeakened : GameEvent
     {
@@ -2067,7 +2102,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>dealDamagePerBlock 用: 解決後にブロックを全て失う (壁を売り払う)。VPの二重計上を消す歯止め</summary>
         [JsonProperty("spendBlock", NullValueHandling = NullValueHandling.Ignore)]
         public bool? SpendBlock { get; init; }
-        /// <summary>全体攻撃: 'all' で生存する敵全体に解決する (dealDamage/applyBurn/shatterBlock 等)。省略時は単体</summary>
+        /// <summary>全体攻撃: 'all' で生存する敵全体に解決する (dealDamage/applyBurn/shatterBlock 等)。省略時は単体。 'mostHp' = いまの HP がいちばん多い生存敵 (同じなら左から)。獅子の人形 (白 2026-09-26) 用＝人形のランダムな対象の代わり</summary>
         [JsonProperty("target", NullValueHandling = NullValueHandling.Ignore)]
         public string? Target { get; init; }
         /// <summary>summonPermanent 用: 場に出す置物カードの id (例: white_perm_squire)</summary>
@@ -2436,6 +2471,15 @@ namespace DeckRogue.Engine.Generated
         public int? Strength { get; init; }
     }
 
+    /// <summary>EnemyMove.damageFromPlayerHp のインライン型</summary>
+    public sealed record EnemyMoveDamageFromPlayerHp
+    {
+        [JsonProperty("divisor")]
+        public int Divisor { get; init; }
+        [JsonProperty("add")]
+        public int Add { get; init; }
+    }
+
     /// <summary>敵の1行動 (技の定義)。attack/defend/buff は [min, max] を宣言時にロール。destroy-set/hex は数値なし。 どの順で出すかは技には無く、行動グラフ (EnemyDef.nodes) が決める (2026-09-14 本家式の状態機械)</summary>
     public sealed record EnemyMove
     {
@@ -2470,9 +2514,15 @@ namespace DeckRogue.Engine.Generated
         /// <summary>からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す</summary>
         [JsonProperty("alsoDestroySet", NullValueHandling = NullValueHandling.Ignore)]
         public bool? AlsoDestroySet { get; init; }
+        /// <summary>山札喰い (kind:'mill') で食べた1枚ごとに筋力+N (2026-09-27 大喰らいの蟲の作り直し「食べた分だけ、太る」)。山札が足りなければ食べた枚数だけ。打ち消せば太らない</summary>
+        [JsonProperty("strengthPerMilled", NullValueHandling = NullValueHandling.Ignore)]
+        public int? StrengthPerMilled { get; init; }
         /// <summary>召喚 (kind:'summon' 2026-09-14): 場に出す敵。分裂と同じ器 (召喚体は素の値×召喚者のHP倍率・atkScale 継承・ k 体目の開始節は startBySlot・stunned なら出現ターンは隙・strength は初期筋力)。生存が上限 (4体) に達していれば出ない</summary>
         [JsonProperty("summon", NullValueHandling = NullValueHandling.Ignore)]
         public EnemyMoveSummon? Summon { get; init; }
+        /// <summary>HPで痛む一撃 (2026-09-27 熾を喰う古炉。本家 Hexaghost の Divider): 攻撃の1発の素の値を「宣言した時のプレイヤーのHP÷divisor (切り捨て)＋add」にする (min/max は使わない・RNG を引かない)。打点倍率と筋力は普通の攻撃と同じく乗る。HPが高いほど痛い</summary>
+        [JsonProperty("damageFromPlayerHp", NullValueHandling = NullValueHandling.Ignore)]
+        public EnemyMoveDamageFromPlayerHp? DamageFromPlayerHp { get; init; }
     }
 
     /// <summary>乱択の腕。to=遷移先の節 (noRepeat/once/maxRepeat は技の節を指す腕にだけ付けられる)</summary>
@@ -2703,6 +2753,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>装甲 (2026-08-30 n²スケーリングへのワクチン)。**1ヒットで受けるダメージはN以下**に頭打ち。 5色すべてが持つ「線形参照×枚数」の乗算 (勢い×多段・詠唱×0マナ・ブロック変換・自傷高効率・ 成長×X) に対し、カードをナーフせず敵側で受ける構造的な処方。多段デッキには「ヒット数で 押し切れ」、一撃デッキには「上限まで」と別の問いを出す。とげ・延焼耐性と同じく常時表示 (フェアネス)。 延焼 (DoT) はヒットではないので装甲を無視する = バーンが装甲の解答になる</summary>
         [JsonProperty("armor", NullValueHandling = NullValueHandling.Ignore)]
         public int? Armor { get; init; }
+        /// <summary>ぬめり (2026-09-27 月影の大蛞蝓。本家 Vantom の Slippery): HP に届く当たりの最初のN回は HP 損失が1になる (1回ごとに1減る)。札・人形・置物・罠の当たりを全部数える。敵のブロックで全部止まった当たりは数えない。 延焼はヒットではないので素通し (装甲と同じ裁定)。装甲 (大技が届かない) の逆の問い = 小さい当たりで剥がしてから大技</summary>
+        [JsonProperty("slippery", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Slippery { get; init; }
     }
 
     /// <summary>編成メンバー。hpScale/strength は「群れ補正」(頭数=行動回数が増えるぶん個体を弱める)</summary>

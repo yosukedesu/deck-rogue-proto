@@ -215,6 +215,10 @@ export interface EnemyState extends CombatantState {
   readonly noReactTable?: boolean
   /** 装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可) */
   readonly armor?: number
+  /** 朧の残り回数 (def.slippery からコピー。HP に届く当たりのたび1減る) */
+  readonly slippery?: number
+  /** 技封じ (kind:'seal') で封じている札。この敵が倒れたら手札へ戻る */
+  readonly sealed?: readonly CardInstance[]
   /**
    * 打点倍率 (2026-09-01 ユーザー裁定「幕2/3の打点+15%」)。攻撃の基礎値に乗算して四捨五入
    * (強化は倍率の後に加算)。幕2/3の通常戦闘のみ = ボス・エリートは各自の校正のため1
@@ -266,6 +270,8 @@ export interface EnemyIntent {
   readonly alsoBuff?: number
   /** からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す */
   readonly alsoDestroySet?: true
+  /** 山札喰いで食べた1枚ごとに筋力+N (2026-09-27 大喰らいの蟲の作り直し。山札が薄ければ食べた分しか太らない) */
+  readonly strengthPerMilled?: number
   /**
    * 条件付き意図 (2026-08-25): 反応テーブルを持つ敵は「条件を満たすなら alt / 満たさないなら本体」の
    * 両方を宣言時に確定し、実行時の盤面で分岐する (確定済みルール表「条件付き意図」)。
@@ -613,6 +619,8 @@ export type GameEvent =
       readonly burrowCut?: number
       /** 因縁 (無形ターン) で1に固定されて消えたぶん */
       readonly nemesisCut?: number
+      /** 朧で1にされて消えたぶん (2026-09-27 朧の大鹿) */
+      readonly slipperyCut?: number
       /** 急所が乗った (×1.5)。演出「ダメージの質の見分け」用 (2026-09-17) */
       readonly exposed?: boolean
       /** 貫通で敵のブロック (1以上あった) を無視した (source=player) */
@@ -689,6 +697,8 @@ export type GameEvent =
   | { readonly type: 'MomentumDischarged'; readonly spent: number } // 勢い放出 (角の一突き・根付く勢い。緑 2026-09-04)
   | { readonly type: 'HpHealed'; readonly amount: number; readonly sourceUid?: string } // 回復 (白)。sourceUid=置物の誘発なら誰が (人形の盤面表示 2026-09-19)
   | { readonly type: 'CardsMilled'; readonly count: number; readonly cardIds?: readonly string[] } // 忘却=山札からの消滅 (黒)。cardIds=何が墓地へ行ったか (2026-08-31 可視化)
+  | { readonly type: 'CardSealed'; readonly enemyIndex: number; readonly cardId: string } // 技封じ (2026-09-27): 敵が札を1枚封じた
+  | { readonly type: 'CardUnsealed'; readonly enemyIndex: number; readonly cardId: string } // 封じた敵が倒れて札が手札に戻った
   | { readonly type: 'EnemyWeakened'; readonly enemyIndex: number; readonly amount: number } // 威圧 (白)
   | { readonly type: 'ExposedApplied'; readonly enemyIndex: number; readonly amount: number } // 急所付与
   | { readonly type: 'ReactionTriggered'; readonly cardId: string; readonly mode: ReactionMode }
@@ -968,8 +978,11 @@ export interface DeclarativeEffect {
   readonly xHits?: boolean
   /** dealDamagePerBlock 用: 解決後にブロックを全て失う (壁を売り払う)。VPの二重計上を消す歯止め */
   readonly spendBlock?: boolean
-  /** 全体攻撃: 'all' で生存する敵全体に解決する (dealDamage/applyBurn/shatterBlock 等)。省略時は単体 */
-  readonly target?: 'all'
+  /**
+   * 全体攻撃: 'all' で生存する敵全体に解決する (dealDamage/applyBurn/shatterBlock 等)。省略時は単体。
+   * 'mostHp' = いまの HP がいちばん多い生存敵 (同じなら左から)。獅子の人形 (白 2026-09-26) 用＝人形のランダムな対象の代わり
+   */
+  readonly target?: 'all' | 'mostHp'
   /** summonPermanent 用: 場に出す置物カードの id (例: white_perm_squire) */
   readonly summonId?: string
   /** searchDeck 用の絞り (青 仕掛けの手配 2026-09-25): このタイプの札だけを山札から選べる */
@@ -1289,6 +1302,7 @@ export type EnemyActionKind =
   | 'heal' // 回復役: 最もHP割合の低い生存味方 (自分含む) を回復 (確定済みルール表「回復役（敵）」)
   | 'steal-gold' // 盗み: ロール額を敵が抱える。精算は勝利時にrun層 (確定済みルール表「盗みと逃走」)
   | 'flee' // 逃走: 戦闘から離脱 (hp:0+fled)。打ち消しで止められる
+  | 'seal' // 技封じ (2026-09-27 巻き上げ機の番人の絡繰。本家 Bronze Orb の Stasis): 山札でいちばんレアな札を1枚、この敵が倒れるまで封じる (倒れたら手札へ)。打ち消せば封じない
   | 'rest' // 隙: 何もしない (斧鬼の息切れ = 大技を凌げば反撃の窓)
   | 'mill' // 山札喰い (2026-08-31 大喰らいの蟲): プレイヤーの山札の上N枚を消滅させる。亡骸・onCardExhausted は発火する (ミルの既存則)。打ち消し可
   | 'summon' // 召喚 (2026-09-14 本家 Fabricator/Reptomancer 型): move.summon の敵を場に出す。場の生存が上限 (4体) なら no-op = 「潰すなら今」の合図。打ち消し可
@@ -1330,11 +1344,18 @@ export interface EnemyMove {
   readonly alsoBuff?: number
   /** からくり壊し＋攻撃 (2026-09-14 ユーザー裁定): 攻撃の直前に生きた罠を全て壊す (pre 窓より先。壊した後の攻撃に窓は開かない)。囮1枚で大技が消えるスイッチを消す */
   readonly alsoDestroySet?: true
+  /** 山札喰い (kind:'mill') で食べた1枚ごとに筋力+N (2026-09-27 大喰らいの蟲の作り直し「食べた分だけ、太る」)。山札が足りなければ食べた枚数だけ。打ち消せば太らない */
+  readonly strengthPerMilled?: number
   /**
    * 召喚 (kind:'summon' 2026-09-14): 場に出す敵。分裂と同じ器 (召喚体は素の値×召喚者のHP倍率・atkScale 継承・
    * k 体目の開始節は startBySlot・stunned なら出現ターンは隙・strength は初期筋力)。生存が上限 (4体) に達していれば出ない
    */
   readonly summon?: { readonly enemyId: string; readonly count: number; readonly stunned?: boolean; readonly strength?: number }
+  /**
+   * HPで痛む一撃 (2026-09-27 熾を喰う古炉。本家 Hexaghost の Divider): 攻撃の1発の素の値を「宣言した時のプレイヤーのHP÷divisor (切り捨て)＋add」にする
+   * (min/max は使わない・RNG を引かない)。打点倍率と筋力は普通の攻撃と同じく乗る。HPが高いほど痛い
+   */
+  readonly damageFromPlayerHp?: { readonly divisor: number; readonly add: number }
 }
 
 // ---- 行動グラフ (2026-09-14 本家式の状態機械。確定済みルール表「敵の行動グラフ」) ----
@@ -1537,6 +1558,12 @@ export interface EnemyDef {
    * 延焼 (DoT) はヒットではないので装甲を無視する = バーンが装甲の解答になる
    */
   readonly armor?: number
+  /**
+   * 朧 (2026-09-27 朧の大鹿。本家 Vantom の Slippery。当初は月影の大蛞蝓＝ぬめり、同日ユーザー「ナメクジキモい」で鹿に): HP に届く当たりの最初のN回は HP 損失が1になる
+   * (1回ごとに1減る)。札・人形・置物・罠の当たりを全部数える。敵のブロックで全部止まった当たりは数えない。
+   * 延焼はヒットではないので素通し (装甲と同じ裁定)。装甲 (大技が届かない) の逆の問い = 小さい当たりで霧を晴らしてから大技
+   */
+  readonly slippery?: number
 }
 
 // ---- エンカウンター (1〜3体の編成。data/encounters.json) ----

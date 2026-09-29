@@ -149,7 +149,7 @@ export function gearNoEffectReason(state: GameState, def: GearDef, targetIndex?:
       case 'stripRider': {
         if (e === undefined) return null
         const it = e.intent
-        return it !== undefined && it !== null && (it.inflict !== undefined || it.alsoBuff !== undefined || it.alsoDefend !== undefined || it.alsoDestroySet === true)
+        return it !== undefined && it !== null && (it.inflict !== undefined || it.alsoBuff !== undefined || it.alsoDefend !== undefined || it.alsoDestroySet === true || it.strengthPerMilled !== undefined)
           ? null
           : 'この敵のいまの行動に付随物（状態異常・同時強化・同時防御・からくり壊し）は無い'
       }

@@ -64,12 +64,15 @@ describe('代償なしのボスレリック (2026-09-06 人間#7b「全部デメ
 })
 
 describe('残機の予告HP (2026-09-06 人間ラン#8「復活するときの体力の説明が違う」)', () => {
-  it('分裂体の予告HPは素の値×親の倍率 (幕3ボス×2.4: 二の相55→132・三の相70→168)', () => {
+  it('分裂体の予告HPは素の値×親の倍率 (幕3ボス×2.4。2026-09-27 本家並み: 一の相101→二の相200→三の相300)', () => {
     const c1 = getEnemyDef('enemy_chimera_1')
     const c2 = getEnemyDef('enemy_chimera_2')
     const c3 = getEnemyDef('enemy_chimera_3')
-    expect(splitChildHp({ maxHp: Math.round(c1.maxHp * 2.4) }, c1, c2)).toBe(Math.round(c2.maxHp * 2.4))
-    expect(splitChildHp({ maxHp: Math.round(c2.maxHp * 2.4) }, c2, c3)).toBe(Math.round(c3.maxHp * 2.4))
+    // 親の倍率は丸めた maxHp ÷ 素の値 (101/42 = 2.405…) なので、子も同じ比で丸める
+    const p1 = Math.round(c1.maxHp * 2.4)
+    const p2 = Math.round(c2.maxHp * 2.4)
+    expect(splitChildHp({ maxHp: p1 }, c1, c2)).toBe(Math.round(c2.maxHp * (p1 / c1.maxHp)))
+    expect(splitChildHp({ maxHp: p2 }, c2, c3)).toBe(Math.round(c3.maxHp * (p2 / c2.maxHp)))
     expect(splitChildHp({ maxHp: c1.maxHp }, c1, c2)).toBe(c2.maxHp)
   })
 })

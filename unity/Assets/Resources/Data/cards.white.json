@@ -173,7 +173,7 @@
       {
         "trigger": "onAttackPlayed",
         "effect": "gainHp",
-        "amount": 2
+        "amount": 1
       }
     ],
     "retainer": true,
@@ -448,7 +448,7 @@
         "amount": 1
       }
     ],
-    "life": 4
+    "life": 2
   },
   {
     "id": "white_calling",
@@ -464,22 +464,6 @@
         "summonId": "white_perm_squire"
       }
     ]
-  },
-  {
-    "id": "white_perm_candle",
-    "name": "燭の人形",
-    "cost": 1,
-    "type": "permanent",
-    "rarity": "common",
-    "retainer": true,
-    "effects": [
-      {
-        "trigger": "onAttackPlayed",
-        "effect": "gainHp",
-        "amount": 1
-      }
-    ],
-    "life": 4
   },
   {
     "id": "white_hymn_wall",
@@ -842,6 +826,40 @@
       }
     ],
     "lifePersist": true
+  },
+  {
+    "id": "white_perm_dragon",
+    "name": "竜の人形",
+    "type": "permanent",
+    "cost": 3,
+    "rarity": "rare",
+    "retainer": true,
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamage",
+        "amount": 10,
+        "target": "all"
+      }
+    ],
+    "life": 3
+  },
+  {
+    "id": "white_perm_lion",
+    "name": "獅子の人形",
+    "type": "permanent",
+    "cost": 3,
+    "rarity": "rare",
+    "retainer": true,
+    "effects": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "dealDamage",
+        "amount": 20,
+        "target": "mostHp"
+      }
+    ],
+    "life": 3
   },
   {
     "id": "white_copy_light",

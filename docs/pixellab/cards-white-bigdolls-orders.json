@@ -1,0 +1,101 @@
+{
+ "defaults": {
+  "engine": "pixflux",
+  "size": [
+   80,
+   48
+  ],
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "no_background": false,
+  "guidance": 8
+ },
+ "items": [
+  {
+   "id": "white_perm_dragon__1201",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_dragon_1201.png",
+   "seed": 1201,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored dragon doll rearing up in a dark stone hall and breathing a wide fan of warm amber lamplight fire that sweeps across the entire width of the frame, a clockwork dragon automaton (matte white enameled iron armor plates with brass rivets, wings made of brass ribs and white iron plates, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no scales of flesh, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real dragon, green dragon, red dragon, lizard, dinosaur"
+  },
+  {
+   "id": "white_perm_dragon__1223",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_dragon_1223.png",
+   "seed": 1223,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored dragon doll rearing up in a dark stone hall and breathing a wide fan of warm amber lamplight fire that sweeps across the entire width of the frame, a clockwork dragon automaton (matte white enameled iron armor plates with brass rivets, wings made of brass ribs and white iron plates, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no scales of flesh, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real dragon, green dragon, red dragon, lizard, dinosaur"
+  },
+  {
+   "id": "white_perm_dragon__1249",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_dragon_1249.png",
+   "seed": 1249,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored dragon doll rearing up in a dark stone hall and breathing a wide fan of warm amber lamplight fire that sweeps across the entire width of the frame, a clockwork dragon automaton (matte white enameled iron armor plates with brass rivets, wings made of brass ribs and white iron plates, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no scales of flesh, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real dragon, green dragon, red dragon, lizard, dinosaur"
+  },
+  {
+   "id": "white_perm_dragon__1277",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_dragon_1277.png",
+   "seed": 1277,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored dragon doll rearing up in a dark stone hall and breathing a wide fan of warm amber lamplight fire that sweeps across the entire width of the frame, a clockwork dragon automaton (matte white enameled iron armor plates with brass rivets, wings made of brass ribs and white iron plates, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no scales of flesh, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real dragon, green dragon, red dragon, lizard, dinosaur"
+  },
+  {
+   "id": "white_perm_lion__1303",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_lion_1303.png",
+   "seed": 1303,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored lion doll leaping to the right with brass claws out at one huge looming dark beast shape filling the right edge of the frame, a single bright amber streak of light trailing its claws, a four-legged clockwork lion automaton (matte white enameled iron armor plates with brass rivets, a mane of fanned brass plates like a sunburst, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no fur, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real lion, fur, cat, tiger, dog"
+  },
+  {
+   "id": "white_perm_lion__1327",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_lion_1327.png",
+   "seed": 1327,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored lion doll leaping to the right with brass claws out at one huge looming dark beast shape filling the right edge of the frame, a single bright amber streak of light trailing its claws, a four-legged clockwork lion automaton (matte white enameled iron armor plates with brass rivets, a mane of fanned brass plates like a sunburst, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no fur, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real lion, fur, cat, tiger, dog"
+  },
+  {
+   "id": "white_perm_lion__1361",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_lion_1361.png",
+   "seed": 1361,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored lion doll leaping to the right with brass claws out at one huge looming dark beast shape filling the right edge of the frame, a single bright amber streak of light trailing its claws, a four-legged clockwork lion automaton (matte white enameled iron armor plates with brass rivets, a mane of fanned brass plates like a sunburst, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no fur, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real lion, fur, cat, tiger, dog"
+  },
+  {
+   "id": "white_perm_lion__1381",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_lion_1381.png",
+   "seed": 1381,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored lion doll leaping to the right with brass claws out at one huge looming dark beast shape filling the right edge of the frame, a single bright amber streak of light trailing its claws, a four-legged clockwork lion automaton (matte white enameled iron armor plates with brass rivets, a mane of fanned brass plates like a sunburst, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no fur, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real lion, fur, cat, tiger, dog"
+  },
+  {
+   "id": "white_perm_lion__1553",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_lion_1553.png",
+   "seed": 1553,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored lion doll inside a dark stone tunnel with a low rock ceiling, leaping to the right with brass claws out at one huge hulking dark beast that fills the right third of the frame, a single bright amber streak of light trailing its claws, a four-legged clockwork lion automaton (matte white enameled iron armor plates with brass rivets, a mane of fanned brass plates like a sunburst, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no fur, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real lion, fur, cat, tiger, dog, full moon, night sky, clouds, stars, outdoors"
+  },
+  {
+   "id": "white_perm_lion__1571",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_lion_1571.png",
+   "seed": 1571,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored lion doll inside a dark stone tunnel with a low rock ceiling, leaping to the right with brass claws out at one huge hulking dark beast that fills the right third of the frame, a single bright amber streak of light trailing its claws, a four-legged clockwork lion automaton (matte white enameled iron armor plates with brass rivets, a mane of fanned brass plates like a sunburst, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no fur, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real lion, fur, cat, tiger, dog, full moon, night sky, clouds, stars, outdoors"
+  },
+  {
+   "id": "white_perm_lion__1597",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_lion_1597.png",
+   "seed": 1597,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored lion doll inside a dark stone tunnel with a low rock ceiling, leaping to the right with brass claws out at one huge hulking dark beast that fills the right third of the frame, a single bright amber streak of light trailing its claws, a four-legged clockwork lion automaton (matte white enameled iron armor plates with brass rivets, a mane of fanned brass plates like a sunburst, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no fur, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real lion, fur, cat, tiger, dog, full moon, night sky, clouds, stars, outdoors"
+  },
+  {
+   "id": "white_perm_lion__1613",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/d529b263-b78f-4d9f-b078-ee51195c7e0e/scratchpad/px/card_lion_1613.png",
+   "seed": 1613,
+   "description": "Octopath Traveler HD-2D style pixel art illustration for a small card, the single subject fills most of the frame in close-up, painterly detailed shading, muted palette where warm lamplight is the only bright accent, polished brass and white as the materials, no text, no letters, no border, no frame, no people, no moon, no sky, a large white iron armored lion doll inside a dark stone tunnel with a low rock ceiling, leaping to the right with brass claws out at one huge hulking dark beast that fills the right third of the frame, a single bright amber streak of light trailing its claws, a four-legged clockwork lion automaton (matte white enameled iron armor plates with brass rivets, a mane of fanned brass plates like a sunburst, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no fur, a brass lantern burning inside its chest behind a grille)",
+   "negative": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, card frame, ui, blurry, bright saturated colors, teal glow, green glow, real lion, fur, cat, tiger, dog, full moon, night sky, clouds, stars, outdoors"
+  }
+ ]
+}

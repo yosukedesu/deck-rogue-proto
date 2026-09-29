@@ -1,0 +1,25 @@
+{
+  "id": "white_perm_dragon__1433",
+  "engine": "pixflux",
+  "request": {
+    "description": "Octopath Traveler HD-2D style pixel art character sprite, full body, standing on the ground, single character centered, muted palette where the warm amber eyes and brass trim are the only bright accents, polished brass and matte white iron as the materials, no text, no background, a large white iron armored dragon doll standing on four legs with its brass-ribbed wings half spread, a clockwork dragon automaton (matte white enameled iron armor plates with brass rivets, wings made of brass ribs and white iron plates, hood-shaped white iron helm over its head with an empty dark hollow and two small warm amber glowing eyes, no scales of flesh, a brass lantern burning inside its chest behind a grille)",
+    "negative_description": "human, person, child, man, woman, girl, boy, skin, flesh, hair, face, eyes with pupils, mouth, nose, skull, ghost, cloth doll, rag doll, plush, wooden puppet, marionette strings, gold robot, holding a lantern, handheld lantern, moon, sun, sky, text, letters, watermark, border, frame, ui, blurry, bright saturated colors, teal glow, green glow, background, floor tiles, scenery, real dragon, lizard, dinosaur",
+    "image_size": {
+      "width": 48,
+      "height": 48
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "medium detail",
+    "view": "low top-down",
+    "direction": "south-east",
+    "seed": 1433
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-26T01:59:37.929Z"
+}

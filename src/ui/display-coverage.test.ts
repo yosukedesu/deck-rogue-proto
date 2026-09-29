@@ -33,6 +33,7 @@ const SAMPLE: Record<string, Partial<LegacyEnemyDef>> = {
   burrow: { burrow: { block: 8, bite: 'poke' } },
   nemesis: { nemesis: true },
   imbalanced: { imbalanced: true },
+  slippery: { slippery: 9 },
 }
 
 describe('予告表示の網羅性 (display-coverage)', () => {

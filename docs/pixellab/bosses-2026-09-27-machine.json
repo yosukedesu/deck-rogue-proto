@@ -1,0 +1,82 @@
+{
+  "_note": "2026-09-27 3体目の幕ボス (古機＝金属質): 巻き上げ機の番人 (幕2・本家 Bronze Automaton)・技封じの絡繰 (その取り巻き)・熾を喰う古炉 (幕3・本家 Hexaghost)。各2シード (23,41) から選ぶ。技封じの絡繰は 48×48（64 だと番人と同じ大きさに見えた＝絵の大きさ×4px で描くため）",
+  "defaults": {
+    "engine": "pixflux",
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9
+  },
+  "style": "pixel art of an ancient mining automaton that was never switched off, still working in a buried city, body of tarnished pale metal plates and worn stone with visible rivets, brass cogs and a taut cable, hard straight edges and crisp metallic highlights, thin dark ink outline, one small pale glowing lens where a face would be, no mouth, no fur, no animal features, cold patient and a little sad, palette of cream paper, tarnished silver, weathered brass, dusty blue-grey slate and ink, low contrast",
+  "items": [
+    {
+      "id": "enemy_winch_warden__23",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/5a6fabf9-ca4e-46ce-bea6-38dd3e0b5b4c/scratchpad/bosses/enemy_winch_warden__23.png",
+      "seed": 23,
+      "size": [
+        96,
+        96
+      ],
+      "description": "an old MINE WINCH machine that became a guardian: a squat heavy iron frame on four short riveted legs, a big horizontal cable drum wound thick with taut steel cable on its back, a large crank wheel on its side, a hooked boom arm raised high like a small crane, a round brass barrel set in the front plate for firing a beam, a small pale glowing lens above the barrel, {style}",
+      "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, fur, moss, soft fuzzy texture, animal, beast, watercolor wash, pastel, cute mascot, animal head, dog, crocodile, alligator, tongue, lips, beak, torso, hands"
+    },
+    {
+      "id": "enemy_winch_warden__41",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/5a6fabf9-ca4e-46ce-bea6-38dd3e0b5b4c/scratchpad/bosses/enemy_winch_warden__41.png",
+      "seed": 41,
+      "size": [
+        96,
+        96
+      ],
+      "description": "an old MINE WINCH machine that became a guardian: a squat heavy iron frame on four short riveted legs, a big horizontal cable drum wound thick with taut steel cable on its back, a large crank wheel on its side, a hooked boom arm raised high like a small crane, a round brass barrel set in the front plate for firing a beam, a small pale glowing lens above the barrel, {style}",
+      "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, fur, moss, soft fuzzy texture, animal, beast, watercolor wash, pastel, cute mascot, animal head, dog, crocodile, alligator, tongue, lips, beak, torso, hands"
+    },
+    {
+      "id": "enemy_seal_orb__23_48",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/5a6fabf9-ca4e-46ce-bea6-38dd3e0b5b4c/scratchpad/bosses/enemy_seal_orb__23_48.png",
+      "seed": 23,
+      "size": [
+        48,
+        48
+      ],
+      "description": "a small hovering ORB automaton the size of a lantern: a round riveted brass and tarnished silver shell, a small round glass window on its front with a faint pale glowing sigil sealed inside, two tiny stubby side fins, a thin antenna on top, floating slightly above the ground with no legs, {style}",
+      "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, fur, moss, soft fuzzy texture, animal, beast, watercolor wash, pastel, cute mascot, animal head, dog, crocodile, alligator, tongue, lips, beak, torso, hands"
+    },
+    {
+      "id": "enemy_seal_orb__41_48",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/5a6fabf9-ca4e-46ce-bea6-38dd3e0b5b4c/scratchpad/bosses/enemy_seal_orb__41_48.png",
+      "seed": 41,
+      "size": [
+        48,
+        48
+      ],
+      "description": "a small hovering ORB automaton the size of a lantern: a round riveted brass and tarnished silver shell, a small round glass window on its front with a faint pale glowing sigil sealed inside, two tiny stubby side fins, a thin antenna on top, floating slightly above the ground with no legs, {style}",
+      "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, fur, moss, soft fuzzy texture, animal, beast, watercolor wash, pastel, cute mascot, animal head, dog, crocodile, alligator, tongue, lips, beak, torso, hands"
+    },
+    {
+      "id": "enemy_ember_furnace__23",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/5a6fabf9-ca4e-46ce-bea6-38dd3e0b5b4c/scratchpad/bosses/enemy_ember_furnace__23.png",
+      "seed": 23,
+      "size": [
+        96,
+        96
+      ],
+      "description": "an ancient FURNACE machine: a squat round kiln-shaped body of dark weathered stone bands bound with riveted iron hoops, a wide barred iron grate on the front with a dull low ember glow deep inside, a short chimney stack on top with a thin wisp of pale smoke, small iron vents around its shoulders, four stubby stone legs, a small pale lens above the grate, {style}",
+      "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, fur, moss, soft fuzzy texture, animal, beast, watercolor wash, pastel, cute mascot, animal head, dog, crocodile, alligator, tongue, lips, beak, torso, hands"
+    },
+    {
+      "id": "enemy_ember_furnace__41",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/5a6fabf9-ca4e-46ce-bea6-38dd3e0b5b4c/scratchpad/bosses/enemy_ember_furnace__41.png",
+      "seed": 41,
+      "size": [
+        96,
+        96
+      ],
+      "description": "an ancient FURNACE machine: a squat round kiln-shaped body of dark weathered stone bands bound with riveted iron hoops, a wide barred iron grate on the front with a dull low ember glow deep inside, a short chimney stack on top with a thin wisp of pale smoke, small iron vents around its shoulders, four stubby stone legs, a small pale lens above the grate, {style}",
+      "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, fur, moss, soft fuzzy texture, animal, beast, watercolor wash, pastel, cute mascot, animal head, dog, crocodile, alligator, tongue, lips, beak, torso, hands"
+    }
+  ]
+}

@@ -238,7 +238,7 @@ function renderBoard(s: GameState): string[] {
   return out
 }
 
-/** スナップショットの eventLog 上限。engine は eventLog を読まないので切り詰めても再開挙動は不変 */
+/** md レポートのスナップショットの eventLog 上限 (読む用)。engine はトークンの uid に eventLog の長さを使うので、セーブ (buildRunSaveFile) には使わない */
 const SNAPSHOT_LOG_CAP = 400
 
 function trimLog(s: GameState): GameState {
@@ -1215,7 +1215,11 @@ export interface RunSaveFile {
   readonly doodles?: DoodleBook
 }
 
-/** ランのセーブを直列化する (純関数)。戦闘ログはスナップショット上限で切り詰める (engineは読まない) */
+/**
+ * ランのセーブを直列化する (純関数)。戦闘ログは**切り詰めない** (2026-09-26): engine はトークン札の uid に
+ * eventLog の長さを使う (tok_${length}_…) ので、切ると読み戻し後の uid がずれ、戦闘中のトークンと衝突しうる
+ * (C# のセーブ往復で白のゴールデンが 418 件の戦闘に届いて発覚)。md レポートのスナップショットは読む用なので切ったまま
+ */
 export function buildRunSaveFile(
   run: RunState,
   history: readonly BattleArchive[] = [],
@@ -1224,7 +1228,7 @@ export function buildRunSaveFile(
   choices: readonly RunChoice[] = [],
   doodles?: DoodleBook,
 ): string {
-  const r = run.combat ? { ...run, combat: trimLog(run.combat) } : run
+  const r = run
   const sf: RunSaveFile = {
     kind: 'run',
     run: r,

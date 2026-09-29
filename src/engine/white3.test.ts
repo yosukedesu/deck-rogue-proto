@@ -207,8 +207,8 @@ describe('ひなたのパッシブ「駆けつけ」(2026-09-06 ユーザー裁�
     expect(s.player.hand.length).toBe(hand0 - 1 + 1) // 自分の登場で1ドローだけ (駆けつけの分は無い)
   })
 
-  it('攻撃ごとの従者も出た時に1回動く (2026-09-19 ユーザー「従者の能力は全て出た時に誘発させるパッシブ」): 犬=2ダメ・旗=ブロック2・燭=回復1', () => {
-    let s = withHand(hinata(), ['white_perm_hound', 'white_perm_banneret', 'white_perm_candle'])
+  it('攻撃ごとの従者も出た時に1回動く (2026-09-19 ユーザー「従者の能力は全て出た時に誘発させるパッシブ」): 犬=2ダメ・旗=ブロック2・癒し=回復1 (燭の人形は 2026-09-25 に撤去)', () => {
+    let s = withHand(hinata(), ['white_perm_hound', 'white_perm_banneret', 'white_perm_choir'])
     s = { ...s, player: { ...s.player, hp: 50 } }
     const hp0 = s.enemies[0].hp
     s = play(s, 't0_white_perm_hound')
@@ -216,7 +216,8 @@ describe('ひなたのパッシブ「駆けつけ」(2026-09-06 ユーザー裁�
     const b0 = s.player.block
     s = play(s, 't1_white_perm_banneret')
     expect(s.player.block - b0).toBe(2)
-    s = play(s, 't2_white_perm_candle')
+    s = light(s, 2) // 癒しの人形は 1E・灯2
+    s = play(s, 't2_white_perm_choir')
     expect(s.player.hp).toBe(51)
     expect(s.eventLog.filter((e) => e.type === 'RetainerRushed').length).toBe(3)
   })

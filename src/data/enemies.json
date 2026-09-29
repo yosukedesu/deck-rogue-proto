@@ -1290,9 +1290,9 @@
   },
   {
     "id": "enemy_slug",
-    "name": "酸吐きの蛞蝓",
+    "name": "酸吐きの蜥蜴",
     "archetype": "hexer",
-    "flavor": "舐められたら力が抜け、浴びせられたら鎧が緩む。ぬめりは全部が武器。",
+    "flavor": "舐められたら力が抜け、浴びせられたら鎧が緩む。舌も酸も全部が武器。",
     "maxHp": 70,
     "hpRange": [
       65,
@@ -2216,10 +2216,10 @@
     "name": "大喰らいの蟲",
     "archetype": "elite",
     "flavor": "頁も刃も、腹に入れば同じこと。食べた分だけ、太る。",
-    "maxHp": 70,
+    "maxHp": 85,
     "hpRange": [
-      65,
-      75
+      79,
+      91
     ],
     "moves": [
       {
@@ -2232,20 +2232,8 @@
         "id": "devour",
         "kind": "mill",
         "min": 3,
-        "max": 3
-      },
-      {
-        "id": "fatten",
-        "kind": "buff",
-        "min": 2,
-        "max": 2
-      },
-      {
-        "id": "guard",
-        "kind": "defend",
-        "min": 7,
-        "max": 10,
-        "alsoBuff": 1
+        "max": 3,
+        "strengthPerMilled": 1
       }
     ],
     "nodes": {
@@ -2259,14 +2247,6 @@
       },
       "bite_2": {
         "move": "bite",
-        "next": "fatten"
-      },
-      "fatten": {
-        "move": "fatten",
-        "next": "guard"
-      },
-      "guard": {
-        "move": "guard",
         "next": "bite"
       }
     },
@@ -4649,23 +4629,23 @@
     "name": "蘇る合成獣・一の相",
     "archetype": "splitter",
     "flavor": "古代都市の実験体。殺しても終わらない。一の相は噛み、頭突きで急所を晒す。",
-    "maxHp": 50,
+    "maxHp": 42,
     "hpRange": [
-      47,
-      54
+      39,
+      45
     ],
     "moves": [
       {
         "id": "bite",
         "kind": "attack",
-        "min": 14,
-        "max": 18
+        "min": 17,
+        "max": 19
       },
       {
         "id": "skull_bash",
         "kind": "attack",
-        "min": 9,
-        "max": 12,
+        "min": 11,
+        "max": 13,
         "inflict": {
           "status": "vulnerable",
           "amount": 1
@@ -4695,17 +4675,17 @@
     "name": "蘇る合成獣・二の相",
     "archetype": "splitter",
     "flavor": "二度目の目覚め。爪は振るうたび一本ずつ増える——長引かせるほど、戻らない。",
-    "maxHp": 55,
+    "maxHp": 83,
     "hpRange": [
-      51,
-      59
+      77,
+      89
     ],
     "moves": [
       {
         "id": "swelling_claws",
         "kind": "attack",
-        "min": 4,
-        "max": 6,
+        "min": 7,
+        "max": 9,
         "hits": 3,
         "growHitsPerUse": 1
       }
@@ -4729,24 +4709,24 @@
     "name": "蘇る合成獣・三の相",
     "archetype": "brute",
     "flavor": "三度目の躯。裂き、跳び、燃える唸りで手札を焼く。これが最後の命。",
-    "maxHp": 70,
+    "maxHp": 125,
     "hpRange": [
-      65,
-      75
+      116,
+      134
     ],
     "moves": [
       {
         "id": "lacerate",
         "kind": "attack",
-        "min": 5,
-        "max": 7,
+        "min": 6,
+        "max": 8,
         "hits": 3
       },
       {
         "id": "pounce",
         "kind": "attack",
-        "min": 30,
-        "max": 34,
+        "min": 40,
+        "max": 44,
         "alsoBuff": 2
       },
       {
@@ -4776,9 +4756,9 @@
   },
   {
     "id": "enemy_burrow_worm",
-    "name": "潜行する大地虫",
+    "name": "潜行する大土竜",
     "archetype": "shell",
-    "flavor": "土の下から地面ごと揺らす。殻が尽きるまで刃は届かず、割れた瞬間に大顎が来る。",
+    "flavor": "土の下から地面ごと揺らす。背負った土の殻が尽きるまで刃は届かず、割れた瞬間に鋭い前歯が来る。",
     "maxHp": 120,
     "hpRange": [
       112,
@@ -4843,9 +4823,9 @@
   },
   {
     "id": "enemy_bowl_bug",
-    "name": "転がる岩虫",
+    "name": "転がる鎧鼠",
     "archetype": "wide-power",
-    "flavor": "岩ごと転がって突っ込んでくる。受け止め切れば、勢い余って自分が転ぶ。",
+    "flavor": "岩の鎧ごと丸まって、転がって突っ込んでくる。受け止め切れば、勢い余って自分が転ぶ。",
     "maxHp": 78,
     "hpRange": [
       73,
@@ -4946,5 +4926,293 @@
     },
     "start": "curse_touch",
     "nemesis": true
+  },
+  {
+    "id": "enemy_haze_stag",
+    "name": "朧の大鹿",
+    "archetype": "windup",
+    "flavor": "露頭の霧をまとって育った大鹿。姿がぼやけて、刃も斧も逸れていく——小さな当たりで霧を晴らしてから、大技を叩き込め。",
+    "maxHp": 128,
+    "hpRange": [
+      122,
+      134
+    ],
+    "slippery": 9,
+    "moves": [
+      {
+        "id": "antler_jab",
+        "kind": "attack",
+        "min": 6,
+        "max": 7
+      },
+      {
+        "id": "hoof_flurry",
+        "kind": "attack",
+        "min": 5,
+        "max": 6,
+        "hits": 2
+      },
+      {
+        "id": "antler_charge",
+        "kind": "attack",
+        "min": 25,
+        "max": 27,
+        "inflict": {
+          "status": "wound",
+          "amount": 3
+        }
+      },
+      {
+        "id": "fade_in_mist",
+        "kind": "defend",
+        "min": 9,
+        "max": 11,
+        "alsoBuff": 2
+      }
+    ],
+    "nodes": {
+      "antler_jab": {
+        "move": "antler_jab",
+        "next": "hoof_flurry"
+      },
+      "hoof_flurry": {
+        "move": "hoof_flurry",
+        "next": "antler_charge"
+      },
+      "antler_charge": {
+        "move": "antler_charge",
+        "next": "fade_in_mist"
+      },
+      "fade_in_mist": {
+        "move": "fade_in_mist",
+        "next": "antler_jab"
+      }
+    },
+    "start": "antler_jab"
+  },
+  {
+    "id": "enemy_winch_warden",
+    "name": "巻き上げ機の番人",
+    "archetype": "summoner",
+    "flavor": "先代が据えた巻き上げ機が、坑を守る番人になった。小さな絡繰を放って坑匠の技を封じ、溜めた力を光に変えて撃つ。撃った後は巻き戻しで動けない。",
+    "maxHp": 130,
+    "hpRange": [
+      124,
+      136
+    ],
+    "artifact": 3,
+    "moves": [
+      {
+        "id": "release_orbs",
+        "kind": "summon",
+        "summon": {
+          "enemyId": "enemy_seal_orb",
+          "count": 2
+        }
+      },
+      {
+        "id": "flail",
+        "kind": "attack",
+        "min": 6,
+        "max": 7,
+        "hits": 2
+      },
+      {
+        "id": "wind_up",
+        "kind": "defend",
+        "min": 9,
+        "max": 9,
+        "alsoBuff": 3
+      },
+      {
+        "id": "hyper_beam",
+        "kind": "attack",
+        "min": 43,
+        "max": 45
+      },
+      {
+        "id": "rewind",
+        "kind": "rest"
+      }
+    ],
+    "nodes": {
+      "release_orbs": {
+        "move": "release_orbs",
+        "next": "flail"
+      },
+      "flail": {
+        "move": "flail",
+        "next": "wind_up"
+      },
+      "wind_up": {
+        "move": "wind_up",
+        "next": "flail_2"
+      },
+      "flail_2": {
+        "move": "flail",
+        "next": "wind_up_2"
+      },
+      "wind_up_2": {
+        "move": "wind_up",
+        "next": "hyper_beam"
+      },
+      "hyper_beam": {
+        "move": "hyper_beam",
+        "next": "rewind"
+      },
+      "rewind": {
+        "move": "rewind",
+        "next": "flail"
+      }
+    },
+    "start": "release_orbs"
+  },
+  {
+    "id": "enemy_seal_orb",
+    "name": "技封じの絡繰",
+    "archetype": "hexer",
+    "flavor": "巻き上げ機の番人が放つ小さな絡繰。坑匠のいちばんの技を抱え込んで封じる。壊せば技は手に戻る。",
+    "maxHp": 24,
+    "hpRange": [
+      22,
+      26
+    ],
+    "moves": [
+      {
+        "id": "seal",
+        "kind": "seal",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "id": "beam",
+        "kind": "attack",
+        "min": 7,
+        "max": 9
+      },
+      {
+        "id": "guard",
+        "kind": "defend",
+        "min": 8,
+        "max": 10
+      }
+    ],
+    "nodes": {
+      "seal": {
+        "move": "seal",
+        "next": "beam"
+      },
+      "beam": {
+        "move": "beam",
+        "next": "guard"
+      },
+      "guard": {
+        "move": "guard",
+        "next": "beam"
+      }
+    },
+    "start": "seal"
+  },
+  {
+    "id": "enemy_ember_furnace",
+    "name": "熾を喰う古炉",
+    "archetype": "charger",
+    "flavor": "古代都市の炉。坑匠の命の熾を嗅ぎ分ける——燃えさかる者ほど、深く喰らう。火が入ると、焼き付けと業火の輪を止めない。",
+    "maxHp": 175,
+    "hpRange": [
+      166,
+      184
+    ],
+    "moves": [
+      {
+        "id": "stoke",
+        "kind": "defend",
+        "min": 12,
+        "max": 15
+      },
+      {
+        "id": "devour_ember",
+        "kind": "attack",
+        "hits": 6,
+        "damageFromPlayerHp": {
+          "divisor": 12,
+          "add": 1
+        }
+      },
+      {
+        "id": "sear",
+        "kind": "attack",
+        "min": 9,
+        "max": 11,
+        "inflict": {
+          "status": "scald",
+          "amount": 1
+        }
+      },
+      {
+        "id": "tackle",
+        "kind": "attack",
+        "min": 6,
+        "max": 8,
+        "hits": 2
+      },
+      {
+        "id": "inflame",
+        "kind": "defend",
+        "min": 14,
+        "max": 16,
+        "alsoBuff": 2
+      },
+      {
+        "id": "inferno",
+        "kind": "attack",
+        "min": 3,
+        "max": 4,
+        "hits": 6,
+        "inflict": {
+          "status": "scald",
+          "amount": 3
+        }
+      }
+    ],
+    "nodes": {
+      "stoke": {
+        "move": "stoke",
+        "next": "devour_ember"
+      },
+      "devour_ember": {
+        "move": "devour_ember",
+        "next": "sear"
+      },
+      "sear": {
+        "move": "sear",
+        "next": "tackle"
+      },
+      "tackle": {
+        "move": "tackle",
+        "next": "sear_2"
+      },
+      "sear_2": {
+        "move": "sear",
+        "next": "inflame"
+      },
+      "inflame": {
+        "move": "inflame",
+        "next": "tackle_2"
+      },
+      "tackle_2": {
+        "move": "tackle",
+        "next": "sear_3"
+      },
+      "sear_3": {
+        "move": "sear",
+        "next": "inferno"
+      },
+      "inferno": {
+        "move": "inferno",
+        "next": "sear"
+      }
+    },
+    "start": "stoke"
   }
 ]

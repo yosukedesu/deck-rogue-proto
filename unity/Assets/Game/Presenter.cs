@@ -284,6 +284,7 @@ namespace DeckRogue.Game
                             if (gold != null) Tween.Projectile(fx, Tween.CenterIn(gold, fx), center, PaperFx.Brass, 36f, 0.32f, 60f, () => Tween.RingBurst(fx, center, PaperFx.Brass, 120f, 0.3f));
                             break;
                         }
+                        case "seal":
                         case "mill":
                         {
                             var pile = g.Anchor("pile-draw");
@@ -1528,9 +1529,9 @@ namespace DeckRogue.Game
                         var pos = EnemyFloatPos(g, fx, ei) + new Vector2(UnityEngine.Random.Range(-30f, 30f), 20f);
                         // ⑥ ダメージの質 (2026-09-17): 急所・貫通・盾が吸った・装甲/ターン装甲/殻/無形の頭打ち を数字の脇で見分ける (イベントの値＝実処理と同じ)
                         bool crit = d.Exposed == true, pierced = d.Pierced == true;
-                        int blocked = d.Blocked ?? 0, armorCut = d.ArmorCut ?? 0, turnCut = d.TurnArmorCut ?? 0, burrowCut = d.BurrowCut ?? 0, nemesisCut = d.NemesisCut ?? 0;
+                        int blocked = d.Blocked ?? 0, armorCut = d.ArmorCut ?? 0, turnCut = d.TurnArmorCut ?? 0, burrowCut = d.BurrowCut ?? 0, nemesisCut = d.NemesisCut ?? 0, slipCut = d.SlipperyCut ?? 0;
                         bool shell = ctx != null && ctx.Prev != null && ei < ctx.Prev.Enemies.Count && ctx.Prev.Enemies[ei].BurrowActive == true;
-                        bool capped = armorCut > 0 || turnCut > 0 || nemesisCut > 0;
+                        bool capped = armorCut > 0 || turnCut > 0 || nemesisCut > 0 || slipCut > 0;
                         bool big = d.Amount >= 15 || crit;
                         // 斬撃の筋と白い点滅、大きいほど画面も揺れる。急所は真鍮の筋＋星、盾に全部吸われた時は鋼青の輪 (金属の当たり)、頭打ちは鈍い輪
                         var spr = g.Battle != null ? g.Battle.EnemySprite(ei) : null;
@@ -1592,6 +1593,7 @@ namespace DeckRogue.Game
                         if (turnCut > 0) notes.Add(new KeyValuePair<string, Color>("ターン装甲で −" + turnCut, PaperFx.Paper2));
                         if (burrowCut > 0) notes.Add(new KeyValuePair<string, Color>("殻がこぼした −" + burrowCut, PaperFx.Paper2));
                         if (nemesisCut > 0) notes.Add(new KeyValuePair<string, Color>("無形で −" + nemesisCut, PaperFx.Paper2));
+                        if (slipCut > 0) notes.Add(new KeyValuePair<string, Color>("朧で −" + slipCut, PaperFx.Paper2));
                         for (int n = 0; n < notes.Count; n++)
                         {
                             var note = notes[n]; float dy = -34f - 26f * n; float dl = 0.06f * (n + 1);

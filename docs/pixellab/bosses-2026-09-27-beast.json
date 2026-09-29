@@ -1,0 +1,61 @@
+{
+  "_note": "2026-09-27 3体目の幕1ボス 朧の大鹿 (獣＝水彩絵本×淡い光。本家 Vantom の型＝最初の9回の当たりは1)。当初は月影の大蛞蝓だったが同日ユーザー「ナメクジキモい」で鹿に作り直し",
+  "defaults": {
+    "engine": "pixflux",
+    "view": "low top-down",
+    "direction": "south-west",
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 9,
+    "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, long legs, thin legs, spindly, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile"
+  },
+  "style": "pixel art in the style of a gentle watercolor picture book illustration of a pale creature that grew up beside a glowing ore vein deep in the ground, body of soft pale grey-white moss-like fur faintly glowing from within, soft rounded simplified body, slightly big head, tiny face with two small round black bead eyes looking slightly down and no mouth, plain cheeks with no blush marks, serene quiet and a little lonely, palette of cream paper, pale silver, faded sage, dusty blue-grey and ink, thin dark ink outline, soft shading like watercolor washes, low contrast",
+  "items": [
+    {
+      "id": "enemy_haze_stag__7",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/5a6fabf9-ca4e-46ce-bea6-38dd3e0b5b4c/scratchpad/bosses/enemy_haze_stag__7.png",
+      "seed": 7,
+      "size": [
+        96,
+        96
+      ],
+      "description": "a big plump ghostly STAG spirit-beast, heavy rounded chunky body and a slightly big head, pale silver-white and faded sage fur that glows softly from within, huge wide branching antlers of pale silver like frosted branches, wrapped in a thick soft cloud of pale blue-grey mist that swirls around its legs and hides its hooves, its body edges dissolving into the mist, faint glowing motes in the mist, calm and quiet, {style}",
+      "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, antelope, goat, horse, unicorn, reindeer harness, rabbit ears, red nose, brown fur, tan, realistic deer, thin body, small body, dry grass"
+    },
+    {
+      "id": "enemy_haze_stag__101",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/5a6fabf9-ca4e-46ce-bea6-38dd3e0b5b4c/scratchpad/bosses/enemy_haze_stag__101.png",
+      "seed": 101,
+      "size": [
+        96,
+        96
+      ],
+      "description": "a big plump ghostly STAG spirit-beast, heavy rounded chunky body and a slightly big head, pale silver-white and faded sage fur that glows softly from within, huge wide branching antlers of pale silver like frosted branches, wrapped in a thick soft cloud of pale blue-grey mist that swirls around its legs and hides its hooves, its body edges dissolving into the mist, faint glowing motes in the mist, calm and quiet, {style}",
+      "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, antelope, goat, horse, unicorn, reindeer harness, rabbit ears, red nose, brown fur, tan, realistic deer, thin body, small body, dry grass"
+    },
+    {
+      "id": "enemy_haze_stag__133",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/5a6fabf9-ca4e-46ce-bea6-38dd3e0b5b4c/scratchpad/bosses/enemy_haze_stag__133.png",
+      "seed": 133,
+      "size": [
+        96,
+        96
+      ],
+      "description": "a big plump ghostly STAG spirit-beast, heavy rounded chunky body and a slightly big head, pale silver-white and faded sage fur that glows softly from within, huge wide branching antlers of pale silver like frosted branches, wrapped in a thick soft cloud of pale blue-grey mist that swirls around its legs and hides its hooves, its body edges dissolving into the mist, faint glowing motes in the mist, calm and quiet, {style}",
+      "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, antelope, goat, horse, unicorn, reindeer harness, rabbit ears, red nose, brown fur, tan, realistic deer, thin body, small body, dry grass"
+    },
+    {
+      "id": "enemy_haze_stag__211",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/5a6fabf9-ca4e-46ce-bea6-38dd3e0b5b4c/scratchpad/bosses/enemy_haze_stag__211.png",
+      "seed": 211,
+      "size": [
+        96,
+        96
+      ],
+      "description": "a big plump ghostly STAG spirit-beast, heavy rounded chunky body and a slightly big head, pale silver-white and faded sage fur that glows softly from within, huge wide branching antlers of pale silver like frosted branches, wrapped in a thick soft cloud of pale blue-grey mist that swirls around its legs and hides its hooves, its body edges dissolving into the mist, faint glowing motes in the mist, calm and quiet, {style}",
+      "negative": "human, humanoid, person, child, elf, doll, hair, hood, clothes, rabbit, bunny, bear, cat, fox, plush toy, realistic, hairy, scary, horror, creepy, ghost sheet, skull, eye sockets, sharp teeth, fangs, claws, red eyes, orange eyes, glowing eyes, fire, mask, bone, big googly eyes, cartoon mascot, smile, happy, blush, rosy cheeks, pink cheeks, colorful, bright saturated colors, vivid green, blurry, gradient background, text, watermark, side profile, antelope, goat, horse, unicorn, reindeer harness, rabbit ears, red nose, brown fur, tan, realistic deer, thin body, small body, dry grass"
+    }
+  ]
+}

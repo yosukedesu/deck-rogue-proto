@@ -204,6 +204,7 @@ export function startCombatWithOptions(
       ...(def.thorns !== undefined ? { thorns: def.thorns } : {}),
       ...(def.artifact !== undefined ? { artifact: def.artifact } : {}),
       ...(def.armor !== undefined ? { armor: def.armor } : {}),
+      ...(def.slippery !== undefined ? { slippery: def.slippery } : {}),
     }
   })
   state = {
@@ -378,7 +379,7 @@ function declareOne(state: GameState, i: number): GameState {
   const landedNode = def.nodes[walked.nodeId]
   const nextCursor = landedNode.next ?? walked.nodeId
   const usesSoFar = enemy.moveUses?.[move.id] ?? 0
-  const [intentRaw, rngA] = buildIntent(rng, move, enemy.strength, enemy.atkScale ?? 1, usesSoFar)
+  const [intentRaw, rngA] = buildIntent(rng, move, enemy.strength, enemy.atkScale ?? 1, usesSoFar, s.player.hp)
   // 潜伏中は殻が育たない (2026-09-06 ユーザー裁定。Opusラン W: 甲虫の攻防一体で殻12→33、「割る」が「殻レースに勝つ」に化けた):
   // 殻は土であって盾ではない = 攻防一体のブロックは宣言から外す (表示と実処理を一致させる。割れた後の宣言からは普通に得る)
   // 防御行動そのものも潜伏中は殻を育てない = 宣言時に「隙」に置き換える (「🛡️防御」と見せて何も起きない嘘を作らない)
@@ -450,6 +451,7 @@ function buildIntent(
   strength: number,
   atkScale = 1,
   uses = 0,
+  playerHp?: number,
 ): readonly [
   {
     kind: EnemyMove['kind']
@@ -458,6 +460,7 @@ function buildIntent(
     inflict?: StatusInflict
     alsoDefend?: number
     alsoBuff?: number
+    strengthPerMilled?: number
   },
   GameState['rng'],
 ] {
@@ -473,6 +476,10 @@ function buildIntent(
     ;[actual, next] = nextInt(rng, gMin, gMax)
   }
   if (move.kind === 'summon') actual = move.summon?.count ?? 0 // 召喚: 意図の数字は出す体数
+  // HPで痛む一撃 (2026-09-27 熾を喰う古炉): 1発の素の値 = 宣言した時のプレイヤーのHP÷N＋M (RNG を引かない)
+  if (move.damageFromPlayerHp !== undefined && playerHp !== undefined) {
+    actual = Math.floor(Math.max(0, playerHp) / move.damageFromPlayerHp.divisor) + move.damageFromPlayerHp.add
+  }
   const bonus = move.kind === 'attack' ? strength : 0
   // 打点倍率 (幕2/3+15%): 攻撃の基礎値だけに乗算・四捨五入。強化は倍率の後に加算 =
   // 実値・per-hit のすべてに同じ規則で効く (alsoDefend・付与量は対象外)
@@ -490,6 +497,7 @@ function buildIntent(
       alsoDefend: move.alsoDefend,
       ...(move.alsoBuff !== undefined ? { alsoBuff: move.alsoBuff } : {}),
       ...(move.alsoDestroySet === true ? { alsoDestroySet: true as const } : {}),
+      ...(move.strengthPerMilled !== undefined ? { strengthPerMilled: move.strengthPerMilled } : {}),
     },
     next,
   ]
@@ -630,6 +638,7 @@ function spawnEnemies(
       ...(childDef.thorns !== undefined ? { thorns: childDef.thorns } : {}),
       ...(childDef.artifact !== undefined ? { artifact: childDef.artifact } : {}),
       ...(childDef.armor !== undefined ? { armor: childDef.armor } : {}),
+      ...(childDef.slippery !== undefined ? { slippery: childDef.slippery } : {}),
     }
     s = { ...s, enemies: [...s.enemies, child] }
     if (stunned) s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: s.enemies.length - 1, intent: child.intent! })
@@ -663,6 +672,29 @@ function processMourning(state: GameState): GameState {
 }
 
 /**
+ * 技封じ (2026-09-27 巻き上げ機の番人の絡繰): 倒れた (逃げた) 敵が封じていた札を手札に戻す。
+ * どの経路で倒れても (札・人形・延焼・混乱) ここで拾う = 死亡走査は checkCombatEnd に一本化 (弔いと同じ)
+ */
+function processUnseal(state: GameState): GameState {
+  let s = state
+  for (let i = 0; i < s.enemies.length; i++) {
+    const e = s.enemies[i]
+    if (e.hp > 0 || (e.sealed?.length ?? 0) === 0) continue
+    const cards = e.sealed!
+    s = {
+      ...s,
+      enemies: s.enemies.map((x, j) => (j === i ? { ...x, sealed: [] } : x)),
+      player: { ...s.player, hand: [...s.player.hand, ...cards] },
+    }
+    for (const c of cards) s = emit(s, { type: 'CardUnsealed', enemyIndex: i, cardId: c.def.id })
+  }
+  return s
+}
+
+/** 技封じで封じる札の順位 (本家 Stasis: いちばんレア度の高い札)。同じ順位はランダム */
+const SEAL_RARITY_RANK: Readonly<Record<string, number>> = { rare: 3, uncommon: 2, common: 1 }
+
+/**
  * 潜伏の殻が自ターン中に割れた敵の意図をその場で噛みつきに差し替える (2026-09-03 本家 Burrowed
  * 「割れた瞬間に潜行攻撃へ移行」)。プレイヤーの行動が原因で、差し替え後の意図は自ターン中に見える =
  * 宣言時固定則の例外だが「窓が嘘をつかない」は保たれる
@@ -692,6 +724,7 @@ export function checkCombatEnd(state: GameState): GameState {
   if (state.phase === 'won' || state.phase === 'lost') return state
   state = processSplits(state)
   state = processMourning(state)
+  state = processUnseal(state)
   // 仲間が倒れた瞬間の割り込み (行動グラフ 2026-09-14: allyDied / alone。自ターン中なら意図を即差し替え)
   state = applyDeathInterrupts(state)
   // 連携 (bondStrength) は仲間が倒れた瞬間に素へ戻る = 宣言済みの実値も引き直す (筋力ライブ)
@@ -1611,6 +1644,7 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
       ...(acting.alsoDefend !== undefined ? { alsoDefend: acting.alsoDefend } : {}),
       ...(acting.alsoBuff !== undefined ? { alsoBuff: acting.alsoBuff } : {}),
       ...(acting.alsoDestroySet === true ? { alsoDestroySet: true as const } : {}),
+      ...(acting.strengthPerMilled !== undefined ? { strengthPerMilled: acting.strengthPerMilled } : {}),
     }
     // 行動ごとにリアクション消費フラグをリセット (pre 窓で1枚。post 窓は別に1枚 = 窓ごとに1枚 2026-09-14)
     s = {
@@ -2130,7 +2164,40 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       // 山札喰い (2026-08-31 大喰らいの蟲): 山札の上N枚を消滅させる。
       // 亡骸・onCardExhausted は発火する (ミルの既存則) = 黒の墓地デッキには部分的な追い風
       // というマッチアップの色も込み。打ち消し可 (negateNextAction は冒頭で処理済み)
-      return markResolved(millPlayerDeck(state, intent.actual, enemyIndex), 0)
+      // 食べた分だけ太る (2026-09-27 大喰らいの蟲の作り直し): 実際に食べた枚数 (山札が足りなければその分) × N の筋力
+      const eaten = Math.max(0, Math.min(intent.actual, state.player.drawPile.length))
+      let s = millPlayerDeck(state, intent.actual, enemyIndex)
+      if (intent.strengthPerMilled !== undefined && eaten > 0 && s.enemies[enemyIndex] && s.enemies[enemyIndex].hp > 0) {
+        const gain = eaten * intent.strengthPerMilled
+        s = gainEnemyStrength(s, enemyIndex, gain)
+        s = emit(s, { type: 'StrengthGained', enemyIndex, amount: gain })
+      }
+      return markResolved(s, 0)
+    }
+    case 'seal': {
+      // 技封じ (2026-09-27 巻き上げ機の番人の絡繰。本家 Bronze Orb の Stasis): 山札でいちばんレアな札を1枚封じる
+      // (同じ順位はランダム・山札が空なら捨て札から・両方空なら何もしない)。この敵が倒れたら手札へ戻る (processUnseal)
+      const fromDraw = state.player.drawPile.length > 0
+      const pile = fromDraw ? state.player.drawPile : state.player.discardPile
+      if (pile.length === 0 || !state.enemies[enemyIndex] || state.enemies[enemyIndex].hp <= 0) return markResolved(state, 0)
+      const rank = (c: CardInstance) => SEAL_RARITY_RANK[c.def.rarity ?? ''] ?? 0
+      const top = Math.max(...pile.map(rank))
+      const cands = pile.map((c, k) => ({ c, k })).filter(({ c }) => rank(c) === top)
+      let s: GameState = state
+      let pick = cands[0]
+      if (cands.length > 1) {
+        const [r, rng] = nextInt(s.rng, 0, cands.length - 1)
+        pick = cands[r]
+        s = { ...s, rng }
+      }
+      const rest = pile.filter((_, k) => k !== pick.k)
+      s = {
+        ...s,
+        player: { ...s.player, ...(fromDraw ? { drawPile: rest } : { discardPile: rest }) },
+        enemies: s.enemies.map((x, j) => (j === enemyIndex ? { ...x, sealed: [...(x.sealed ?? []), pick.c] } : x)),
+      }
+      s = emit(s, { type: 'CardSealed', enemyIndex, cardId: pick.c.def.id })
+      return markResolved(s, 0)
     }
     case 'rally': {
       // 応援: 生存する味方全体の強化 (確定済みルール表「応援（ラリー）」)。宣言済みの味方の攻撃にもその場で乗る (筋力ライブ)

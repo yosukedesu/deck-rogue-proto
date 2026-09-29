@@ -197,9 +197,9 @@ const WEAK_POOLS: readonly (readonly string[])[] = [
  * ACT_BOSSES は各幕の代表 (先頭) = 旧テスト・CLI表示の互換用
  */
 export const ACT_BOSS_POOLS: readonly (readonly string[])[] = [
-  ['enemy_brute', 'enc_kin_ritual'], // 幕1: 脳筋オーガ (装甲25・激昂) / 血族の儀式 (司祭+踊り手×2=キル順・従者全滅で司祭が本気) 2026-09-02 本家TheKin型
-  ['enemy_turtle', 'enc_kaiser_crab'], // 幕2: 眠たがりの大亀 (チャージ・装甲30) / 双腕の巨蟹 (2腕・片腕を倒すと弔い+3=同時に削るか) 本家KaiserCrab型
-  ['enemy_warden', 'enemy_chimera_1'], // 幕3: 門番 (激昂2タイマー) / 蘇る合成獣 (膨らむ残機3段=オーバーキル無効・爪が育つ・火傷) 本家TestSubject型
+  ['enemy_brute', 'enc_kin_ritual', 'enemy_haze_stag'], // 幕1: 脳筋オーガ (装甲25・激昂) / 血族の儀式 (司祭+踊り手×2=キル順・従者全滅で司祭が本気) 2026-09-02 本家TheKin型 / 朧の大鹿 (2026-09-27 最初の9回の当たりは1=朧) 本家Vantom型
+  ['enemy_turtle', 'enc_kaiser_crab', 'enemy_winch_warden'], // 幕2: 眠たがりの大亀 (チャージ・装甲30) / 双腕の巨蟹 (2腕・片腕を倒すと弔い+3=同時に削るか) 本家KaiserCrab型
+  ['enemy_warden', 'enemy_chimera_1', 'enemy_ember_furnace'], // 幕3: 門番 (激昂2タイマー) / 蘇る合成獣 (膨らむ残機3段=オーバーキル無効・爪が育つ・火傷) 本家TestSubject型 / 熾を喰う古炉 (2026-09-27 あなたのHP÷12+1×6の一撃・焼き付けと業火の輪) 本家Hexaghost型
 ]
 export const ACT_BOSSES: readonly string[] = ACT_BOSS_POOLS.map((p) => p[0])
 export const ACT_COUNT = 3

@@ -39,7 +39,7 @@ import { webVocab } from '../ui/vocab.ts'
 import { departureChoiceLine, departureCliLines, shopDepartureCliLines, type DepartureCliFormat } from '../ui/log.ts'
 
 /** 合成カード (fused_ / fusion_ 系ID) も引ける安全な名前解決 */
-const INTENT_KIND_JA: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '人形狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', rest: '隙', hatch: '孵化', summon: '召喚' }
+const INTENT_KIND_JA: Record<string, string> = { attack: '攻撃', defend: '防御', buff: '筋力上げ', rally: '応援', heal: '回復', hex: '状態異常', 'destroy-set': '伏せ破壊', 'destroy-token': '人形狩り', 'steal-gold': '盗み', flee: '逃走', mill: '山札喰い', seal: '技封じ', rest: '隙', hatch: '孵化', summon: '召喚' }
 
 function cname(cardId: string): string {
   try {
@@ -84,7 +84,7 @@ interface SaveFile {
 // ---- 効果の短文レンダラ (UIの簡易版) ----
 function fx(e: DeclarativeEffect, holderType?: string): string {
   const a = e.amount ?? 0
-  const all = e.target === 'all' ? '敵全体に' : ''
+  const all = e.target === 'all' ? '敵全体に' : e.target === 'mostHp' ? 'HPがいちばん多い敵に' : ''
   // amountMax < amount は弱まる/止まる側の安全弁 (冒涜の祭壇=刻5でミル停止)。「強化」と書かない
   const th = e.exhaustThreshold !== undefined
     ? `〔忘却の刻${e.exhaustThreshold}: ${(e.amountMax ?? 0) < (e.amount ?? 0) ? (e.amountMax === 0 ? '以降は停止' : `${e.amountMax}に減少`) : `${e.amountMax}に増える`}〕`
@@ -222,7 +222,8 @@ function branchText(s: GameState, i: number, it: EnemyIntent | EnemyIntentBranch
     flee: '逃走(倒すか打ち消せば阻止)',
     rest: '隙だらけ',
     hatch: '🐣孵化する(打ち消しで1ターン遅延可)',
-    mill: `📖山札喰い${it.actual}枚(消滅置き場へ。亡骸は発火する)`,
+    seal: '🔒技封じ(山札でいちばんレアな札を1枚、倒すまで封じる)',
+    mill: `📖山札喰い${it.actual}枚${(it as EnemyIntent).strengthPerMilled !== undefined ? `+食べた1枚ごとに筋力+${(it as EnemyIntent).strengthPerMilled}` : ''}(消滅置き場へ。亡骸は発火する)`,
     summon: `👶召喚×${it.actual}(場が4体なら出ない)`,
   }
   return `${kinds[it.kind] ?? it.kind}${inflict}`
@@ -266,11 +267,13 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push('--- 直近の出来事 ---')
     for (let k = 0; k < events.length; k++) {
       const e = events[k]
-      if (e.type === 'DamageDealt') L.push(` ${e.source === 'player' ? '与ダメ' : '被ダメ'}${e.amount}(HP損失${'hpLoss' in e ? e.hpLoss : '?'})${e.exposed ? '【急所】' : ''}${e.pierced ? '【貫通】' : ''}${e.blocked ? `【ブロックで${e.blocked}】` : ''}${e.armorCut ? `【装甲で${e.armorCut}切り捨て=本来${e.amount + e.armorCut}】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`)
+      if (e.type === 'DamageDealt') L.push(` ${e.source === 'player' ? '与ダメ' : '被ダメ'}${e.amount}(HP損失${'hpLoss' in e ? e.hpLoss : '?'})${e.exposed ? '【急所】' : ''}${e.pierced ? '【貫通】' : ''}${e.blocked ? `【ブロックで${e.blocked}】` : ''}${e.armorCut ? `【装甲で${e.armorCut}切り捨て=本来${e.amount + e.armorCut}】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.slipperyCut ? `【朧で${e.slipperyCut}消えた=1】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`)
       else if (e.type === 'CardPlayed') L.push(` プレイ:${cname(e.cardId)}`)
       else if (e.type === 'CardSet') L.push(` 伏せた:${cname(e.cardId)}`)
       else if (e.type === 'ReactionTriggered') L.push(` リアクション発動:${cname(e.cardId)}`)
       else if (e.type === 'CardExhausted') L.push(` 消滅:${cname(e.cardId)}`)
+      else if (e.type === 'CardSealed') L.push(` 🔒敵${e.enemyIndex + 1}が「${cname(e.cardId)}」を封じた(倒せば手札に戻る)`)
+      else if (e.type === 'CardUnsealed') L.push(` 🔓「${cname(e.cardId)}」が手札に戻った`)
       else if (e.type === 'CardsMilled') L.push(` 忘却${e.count}枚→消滅置き場: ${(e.cardIds ?? []).map(cname).join('・')}`)
       else if (e.type === 'NecroFired') L.push(` 💀亡骸発火:${cname(e.cardId)}`)
       else if (e.type === 'NecroPlayed') L.push(` 💀亡骸プレイ:${cname(e.cardId)}(ゲームから消えた)`)

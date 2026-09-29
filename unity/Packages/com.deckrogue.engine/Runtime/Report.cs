@@ -95,7 +95,7 @@ namespace DeckRogue.Engine
         /// <summary>1戦闘あたりの保管ログ行数の上限 (10戦ぶんでもファイルが読める範囲に収める)</summary>
         public const int ARCHIVE_LINES_CAP = 300;
         const int LOG_CAP = 600;
-        /// <summary>スナップショットの eventLog 上限。engine は eventLog を読まないので切り詰めても再開挙動は不変</summary>
+        /// <summary>md レポートのスナップショットの eventLog 上限 (読む用)。engine はトークンの uid に eventLog の長さを使うので、セーブ (MakeRunSaveFile) には使わない</summary>
         const int SNAPSHOT_LOG_CAP = 400;
 
         // ---- 名前解決の安全版 (レポートはデータ回収の道具なので未知IDで例外死させない) ----
@@ -510,7 +510,7 @@ namespace DeckRogue.Engine
             return string.Join("\n", L.ToArray());
         }
 
-        /// <summary>ランのセーブを直列化する (ui/report.ts buildRunSaveFile)。戦闘ログはスナップショット上限で切り詰める</summary>
+        /// <summary>ランのセーブを直列化する (ui/report.ts buildRunSaveFile)。戦闘ログは切り詰めない (2026-09-26: トークンの uid が eventLog の長さを使うため。md のスナップショットは切ったまま)</summary>
         public static string BuildRunSaveFile(RunState run, IReadOnlyList<BattleArchive> history, IReadOnlyList<PlayNote> playNotes, RunJournal? journal, IReadOnlyList<RunChoice> choices)
         {
             return SerializeRunSaveFile(MakeRunSaveFile(run, history, playNotes, journal, choices, null));
@@ -522,7 +522,7 @@ namespace DeckRogue.Engine
         /// </summary>
         public static RunSaveFile MakeRunSaveFile(RunState run, IReadOnlyList<BattleArchive> history, IReadOnlyList<PlayNote> playNotes, RunJournal? journal, IReadOnlyList<RunChoice> choices, Newtonsoft.Json.Linq.JToken? doodlesUnity)
         {
-            var r = run.Combat != null ? run with { Combat = TrimLog(run.Combat) } : run;
+            var r = run;   // 戦闘ログは切り詰めない (2026-09-26。TS buildRunSaveFile と同じ)
             return new RunSaveFile
             {
                 Kind = "run",

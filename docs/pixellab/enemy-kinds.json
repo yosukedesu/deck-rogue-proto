@@ -86,7 +86,7 @@
    "kind": "beast"
   },
   "enemy_slug": {
-   "name": "酸吐きの蛞蝓",
+   "name": "酸吐きの蜥蜴",
    "kind": "beast"
   },
   "enemy_whetstone_colossus": {
@@ -330,16 +330,32 @@
    "kind": "hybrid"
   },
   "enemy_burrow_worm": {
-   "name": "潜行する大地虫",
+   "name": "潜行する大土竜",
    "kind": "beast"
   },
   "enemy_bowl_bug": {
-   "name": "転がる岩虫",
+   "name": "転がる鎧鼠",
    "kind": "beast"
   },
   "enemy_nemesis_wraith": {
    "name": "因縁の亡霊",
    "kind": "revenant"
+  },
+  "enemy_haze_stag": {
+   "name": "朧の大鹿",
+   "kind": "beast"
+  },
+  "enemy_winch_warden": {
+   "name": "巻き上げ機の番人",
+   "kind": "machine"
+  },
+  "enemy_seal_orb": {
+   "name": "技封じの絡繰",
+   "kind": "machine"
+  },
+  "enemy_ember_furnace": {
+   "name": "熾を喰う古炉",
+   "kind": "machine"
   }
  }
 }

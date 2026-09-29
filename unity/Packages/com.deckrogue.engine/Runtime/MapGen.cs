@@ -164,9 +164,9 @@ namespace DeckRogue.Engine
         /// <summary>幕ボスのプール (各幕に複数のボス。ランごとにシードで1体を抽選)</summary>
         public static readonly IReadOnlyList<IReadOnlyList<string>> ACT_BOSS_POOLS = new IReadOnlyList<string>[]
         {
-            new[] { "enemy_brute", "enc_kin_ritual" },   // 幕1: 脳筋オーガ / 血族の儀式
-            new[] { "enemy_turtle", "enc_kaiser_crab" }, // 幕2: 眠たがりの大亀 / 双腕の巨蟹
-            new[] { "enemy_warden", "enemy_chimera_1" }, // 幕3: 門番 / 蘇る合成獣
+            new[] { "enemy_brute", "enc_kin_ritual", "enemy_haze_stag" },          // 幕1: 脳筋オーガ / 血族の儀式 / 朧の大鹿 (2026-09-27)
+            new[] { "enemy_turtle", "enc_kaiser_crab", "enemy_winch_warden" },     // 幕2: 眠たがりの大亀 / 双腕の巨蟹 / 巻き上げ機の番人 (2026-09-27)
+            new[] { "enemy_warden", "enemy_chimera_1", "enemy_ember_furnace" },   // 幕3: 門番 / 蘇る合成獣 / 熾を喰う古炉 (2026-09-27)
         };
 
         /// <summary>各幕の代表ボス (先頭) = 旧テスト・CLI表示の互換用</summary>

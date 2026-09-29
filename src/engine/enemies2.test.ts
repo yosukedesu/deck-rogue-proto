@@ -339,6 +339,53 @@ describe('山札喰い (2026-08-31 大喰らいの蟲。kind:mill)', () => {
   })
 })
 
+describe('大喰らいの蟲の作り直し (2026-09-27 ユーザー「敵弱くない？」→ 案「食べた分だけ太る」を本物に)', () => {
+  it('噛む→喰う→噛む の3手番 (太る・構えの手番は無い)・HP 85', () => {
+    const def = getEnemyDef('enemy_elite_devourer')
+    expect(chainFromStart(def, 6)).toEqual(['bite', 'devour', 'bite', 'bite', 'devour', 'bite'])
+    expect(def.moves.some((m) => m.kind === 'buff' || m.kind === 'defend')).toBe(false)
+    expect(def.maxHp).toBe(85)
+  })
+
+  it('山札喰いで食べた枚数だけ筋力が上がる (山札が足りなければ食べた分だけ・0枚なら上がらない)', () => {
+    const eat = (pile: number): number => {
+      let s = freshCombat('set-confirm', 'enemy_elite_devourer', 42)
+      s = { ...s, player: { ...s.player, hp: 999, maxHp: 999, drawPile: s.player.drawPile.slice(0, pile) } }
+      const str0 = s.enemies[0].strength
+      s = withIntent(s, { kind: 'mill', actual: 3, strengthPerMilled: 1 })
+      s = applyCommand(s, { type: 'EndTurn' })
+      return s.enemies[0].strength - str0
+    }
+    expect(eat(5)).toBe(3)
+    expect(eat(1)).toBe(1)
+    expect(eat(0)).toBe(0)
+  })
+
+  it('宣言した意図に「食べた1枚ごとに筋力」が載る', () => {
+    let s = freshCombat('set-confirm', 'enemy_elite_devourer', 42)
+    s = applyCommand(s, { type: 'EndTurn' }) // 噛む → 次の宣言は喰う
+    expect(s.enemies[0].intent?.kind).toBe('mill')
+    expect(s.enemies[0].intent?.strengthPerMilled).toBe(1)
+  })
+})
+
+describe('蘇る合成獣を本家並みに (2026-09-27 ユーザー裁定「HPも打点も本家並みに」＝本家 Test Subject)', () => {
+  it('HP は素の値×幕3ボス係数2.4で 100/200/300 相当 (本家と同じ 1:2:3)', () => {
+    const hp = ['enemy_chimera_1', 'enemy_chimera_2', 'enemy_chimera_3'].map((id) => Math.round(getEnemyDef(id).maxHp * 2.4))
+    expect(hp).toEqual([101, 199, 300])
+  })
+
+  it('打点は幕3ボスの筋力+2・残機の筋力 (二の相2・三の相3) を足して本家の素の値 (噛む20・頭突き14・爪10・裂き10・跳びかかり45)', () => {
+    const mv = (id: string, move: string) => getEnemyDef(id).moves.find((m) => m.id === move)!
+    const mid = (id: string, move: string, str: number) => (mv(id, move).min! + mv(id, move).max!) / 2 + str
+    expect(mid('enemy_chimera_1', 'bite', 2)).toBe(20)
+    expect(mid('enemy_chimera_1', 'skull_bash', 2)).toBe(14)
+    expect(mid('enemy_chimera_2', 'swelling_claws', 2)).toBe(10)
+    expect(mid('enemy_chimera_3', 'lacerate', 3)).toBe(10)
+    expect(mid('enemy_chimera_3', 'pounce', 3)).toBe(45)
+  })
+})
+
 describe('幕2/3の打点スケール (2026-09-01 ユーザー裁定「打点+15%」。HPは据え置き)', () => {
   it('enemyAtkScale=1.15: 攻撃の幅・実値が四捨五入で乗算され、強化は倍率の後に加算される', () => {
     const { startCombatWithOptions } = combatModule

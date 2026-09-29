@@ -21,5 +21,7 @@
     "type": "generations",
     "generations": 1
   },
-  "at": "2026-09-08T04:21:25.215Z"
+  "at": "2026-09-08T04:21:25.215Z",
+  "groundRemoved": "2026-09-29 PixelLab v2 edit-images-v2 (Pro) で地面・背景を消した（個別の指示で作り直し）。足元は元の絵の最下端にそろえて下へずらした",
+  "rotated": "2026-09-29 PixelLab v2 generate-8-rotations-v2 (Pro) の8番目 (画面で斜め左手前＝プレイヤーの方。PixelLab の返す順は画面で S, SE, E, NE, N, NW, W, SW)。足元は前の絵の最下端にそろえた"
 }

@@ -457,15 +457,18 @@ export const STATUS_JA: Record<string, string> = { weak: '弱体', vulnerable: '
 export function moveLabel(def: EnemyDef, moveId: string, strength = 0): string {
   const m = def.moves.find((x) => x.id === moveId)
   if (!m) return moveId
-  const mark: Record<string, string> = { attack: '⚔️', defend: '🛡️', buff: '💪', rally: '📣', hex: '🧿', heal: '💚', 'steal-gold': '💰', flee: '🏃', rest: '😮‍💨', hatch: '🐣', mill: '📖', 'destroy-set': '💥', 'destroy-token': '🪓', summon: '👶' }
+  const mark: Record<string, string> = { attack: '⚔️', defend: '🛡️', buff: '💪', rally: '📣', hex: '🧿', heal: '💚', 'steal-gold': '💰', flee: '🏃', rest: '😮‍💨', hatch: '🐣', mill: '📖', seal: '🔒', 'destroy-set': '💥', 'destroy-token': '🪓', summon: '👶' }
   const add = m.kind === 'attack' ? strength : 0
   const lo = m.min !== undefined ? Math.max(m.kind === 'attack' ? 1 : m.min, m.min + add) : undefined
   const hi = m.max !== undefined ? Math.max(m.kind === 'attack' ? 1 : m.max, m.max + add) : undefined
-  const range = lo !== undefined ? (lo === hi ? `${lo}` : `${lo}〜${hi}`) : ''
+  // HPで痛む一撃 (2026-09-27 熾を喰う古炉): 幅の代わりに式を出す (宣言した時のあなたのHPで決まる)
+  const range = m.damageFromPlayerHp !== undefined
+    ? `(あなたのHP÷${m.damageFromPlayerHp.divisor}+${m.damageFromPlayerHp.add}${add !== 0 ? `${add > 0 ? '+' : ''}${add}` : ''})`
+    : lo !== undefined ? (lo === hi ? `${lo}` : `${lo}〜${hi}`) : ''
   const sign = m.kind === 'buff' || m.kind === 'rally' ? '+' : ''
   const hits = m.mirrorHits === true ? '×手数' : (m.hits ?? 1) > 1 ? `×${m.hits}` : ''
   const inflict = m.inflict ? `${range !== '' ? '+' : ''}${STATUS_JA[m.inflict.status] ?? m.inflict.status}${m.inflict.amount}` : ''
-  const riders = `${m.alsoDefend !== undefined ? `+ブロック${m.alsoDefend}` : ''}${m.alsoBuff !== undefined ? `+筋力${m.alsoBuff}` : ''}${m.alsoDestroySet === true ? '+伏せ破壊' : ''}${m.growPerUse !== undefined ? `(使うたび+${m.growPerUse})` : ''}${m.growHitsPerUse !== undefined ? `(使うたびヒット+${m.growHitsPerUse})` : ''}`
+  const riders = `${m.alsoDefend !== undefined ? `+ブロック${m.alsoDefend}` : ''}${m.alsoBuff !== undefined ? `+筋力${m.alsoBuff}` : ''}${m.alsoDestroySet === true ? '+伏せ破壊' : ''}${m.strengthPerMilled !== undefined ? `+食べた1枚ごとに筋力${m.strengthPerMilled}` : ''}${m.growPerUse !== undefined ? `(使うたび+${m.growPerUse})` : ''}${m.growHitsPerUse !== undefined ? `(使うたびヒット+${m.growHitsPerUse})` : ''}`
   const summon = m.summon ? `${summonName(m.summon.enemyId)}×${m.summon.count}` : ''
   return `${mark[m.kind] ?? m.kind}${sign}${range}${hits}${inflict}${riders}${summon}`
 }

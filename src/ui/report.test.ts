@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 import { applyCardMark, archiveBattle, buildOverrideDefs, buildProposals, buildReport, buildRunSaveFile, cardDraftToDefJson, describeRunChoice, isEmptyMark, replayInitialRun, replayStates } from './report.ts'
 import { getEnemyDef } from '../engine/content.ts'
 import { applyRunCommand, createRun, defaultDepartureCommand, nextChoices, type RunCommand } from '../engine/run.ts'
-import { freshCombat } from '../engine/test-helpers.ts'
+import { createRunInBattle, freshCombat } from '../engine/test-helpers.ts'
 import { metricsExport, toBattleRows, type BattleArchive } from './report.ts'
 import { formatAnalysis } from '../engine/analysis.ts'
 
@@ -254,6 +254,16 @@ describe('セーブ機能 (2026-09-01 裁定で解禁拡張: 続きから+ファ
     expect(sf.logIndex).toBe(0)
     expect(sf.fingerprint).toContain('cards')
     expect(sf.playNotes).toHaveLength(1)
+  })
+
+  it('セーブは戦闘ログを切り詰めない (2026-09-26): トークン札の uid は eventLog の長さから作るので、切ると読み戻し後の uid がずれる', () => {
+    const run = createRunInBattle(7, 'set-confirm')
+    const combat = run.combat!
+    const filler = Array.from({ length: 450 }, () => ({ type: 'DeckShuffled' as const }))
+    const long = { ...run, combat: { ...combat, eventLog: [...combat.eventLog, ...filler] } }
+    const sf = JSON.parse(buildRunSaveFile(long))
+    expect(sf.run.combat.eventLog.length).toBe(long.combat.eventLog.length)
+    expect(sf.logIndex).toBe(long.combat.eventLog.length)
   })
 })
 

@@ -256,6 +256,7 @@ namespace DeckRogue.Engine
                     Thorns = def.Thorns,
                     Artifact = def.Artifact,
                     Armor = def.Armor,
+                    Slippery = def.Slippery,
                 });
             }
             state = state with
@@ -439,7 +440,7 @@ namespace DeckRogue.Engine
             string nextCursor = landedNode.Next ?? walked.NodeId;
             int usesSoFar = 0;
             if (enemy.MoveUses != null) enemy.MoveUses.TryGetValue(move.Id, out usesSoFar);
-            var (intentRaw, rngA) = BuildIntent(rng, move, enemy.Strength, enemy.AtkScale ?? 1.0, usesSoFar);
+            var (intentRaw, rngA) = BuildIntent(rng, move, enemy.Strength, enemy.AtkScale ?? 1.0, usesSoFar, s.Player.Hp);
             // 潜伏中は殻が育たない: 攻防一体のブロックは宣言から外し、防御行動そのものは「隙」に置き換える
             var intent =
                 enemy.BurrowActive != true
@@ -534,7 +535,7 @@ namespace DeckRogue.Engine
         };
 
         /// <summary>行動1つから意図 (幅表示 + 非公開の実値) を組み立てる。強化は攻撃にのみ乗り、攻撃は最低1にクランプ</summary>
-        private static (EnemyIntent Intent, RngState Rng) BuildIntent(RngState rng, EnemyMove move, int strength, double atkScale = 1.0, int uses = 0)
+        private static (EnemyIntent Intent, RngState Rng) BuildIntent(RngState rng, EnemyMove move, int strength, double atkScale = 1.0, int uses = 0, int? playerHp = null)
         {
             // 技の恒久成長: 宣言回数×growPerUse を min/max に、×growHitsPerUse をヒット数に加算
             int grow = (move.GrowPerUse ?? 0) * uses;
@@ -551,6 +552,9 @@ namespace DeckRogue.Engine
                 next = r.Next;
             }
             if (move.Kind == EnemyActionKinds.Summon) actual = move.Summon?.Count ?? 0; // 召喚: 意図の数字は出す体数
+            // HPで痛む一撃 (2026-09-27 熾を喰う古炉): 1発の素の値 = 宣言した時のプレイヤーのHP÷N＋M (RNG を引かない)
+            if (move.DamageFromPlayerHp != null && playerHp != null)
+                actual = Math.Max(0, playerHp.Value) / move.DamageFromPlayerHp.Divisor + move.DamageFromPlayerHp.Add;
             int bonus = move.Kind == EnemyActionKinds.Attack ? strength : 0;
             // 打点倍率: 攻撃の基礎値だけに乗算・四捨五入。強化は倍率の後に加算
             Func<int, int> scale = v => move.Kind == EnemyActionKinds.Attack ? JsRound(v * atkScale) : v;
@@ -567,6 +571,7 @@ namespace DeckRogue.Engine
                 AlsoDefend = move.AlsoDefend,
                 AlsoBuff = move.AlsoBuff,
                 AlsoDestroySet = move.AlsoDestroySet == true ? (bool?)true : null,
+                StrengthPerMilled = move.StrengthPerMilled,
             };
             return (intent, next);
         }
@@ -712,6 +717,7 @@ namespace DeckRogue.Engine
                     Thorns = childDef.Thorns,
                     Artifact = childDef.Artifact,
                     Armor = childDef.Armor,
+                    Slippery = childDef.Slippery,
                 };
                 s = s with { Enemies = Append(s.Enemies, child) };
                 if (stunned) s = Events.Emit(s, new GameEvent_EnemyIntentDeclared { EnemyIndex = s.Enemies.Count - 1, Intent = child.Intent });
@@ -720,6 +726,25 @@ namespace DeckRogue.Engine
             }
             return s;
         }
+
+        /// <summary>技封じ (2026-09-27 巻き上げ機の番人の絡繰): 倒れた (逃げた) 敵が封じていた札を手札に戻す</summary>
+        private static GameState ProcessUnseal(GameState state)
+        {
+            var s = state;
+            for (int i = 0; i < s.Enemies.Count; i++)
+            {
+                var e = s.Enemies[i];
+                if (e.Hp > 0 || e.Sealed == null || e.Sealed.Count == 0) continue;
+                var cards = e.Sealed.ToList();
+                s = WithEnemy(s, i, x => x with { Sealed = new List<CardInstance>() });
+                s = s with { Player = s.Player with { Hand = s.Player.Hand.Concat(cards).ToList() } };
+                foreach (var c in cards) s = Events.Emit(s, new GameEvent_CardUnsealed { EnemyIndex = i, CardId = c.Def.Id });
+            }
+            return s;
+        }
+
+        /// <summary>技封じで封じる札の順位 (本家 Stasis: いちばんレア度の高い札)。同じ順位はランダム</summary>
+        private static int SealRarityRank(CardInstance c) => c.Def.Rarity == "rare" ? 3 : c.Def.Rarity == "uncommon" ? 2 : c.Def.Rarity == "common" ? 1 : 0;
 
         /// <summary>弔い強化: 仲間が倒れるたび (逃走は除く)、生存する mournStrength 持ちの筋力+N</summary>
         private static GameState ProcessMourning(GameState state)
@@ -776,6 +801,7 @@ namespace DeckRogue.Engine
             if (state.Phase == CombatPhases.Won || state.Phase == CombatPhases.Lost) return state;
             state = ProcessSplits(state);
             state = ProcessMourning(state);
+            state = ProcessUnseal(state);
             // 仲間が倒れた瞬間の割り込み (行動グラフ 2026-09-14: allyDied / alone。自ターン中なら意図を即差し替え)
             state = Effects.ApplyDeathInterrupts(state);
             // 連携 (bondStrength) は仲間が倒れた瞬間に素へ戻る = 宣言済みの実値も引き直す (筋力ライブ)
@@ -1767,6 +1793,7 @@ namespace DeckRogue.Engine
                     AlsoDefend = acting.AlsoDefend,
                     AlsoBuff = acting.AlsoBuff,
                     AlsoDestroySet = acting.AlsoDestroySet == true ? (bool?)true : null,
+                    StrengthPerMilled = acting.StrengthPerMilled,
                 };
                 // 行動ごとにリアクション消費フラグをリセット (pre 窓で1枚。post 窓は別に1枚 = 窓ごとに1枚 2026-09-14)
                 s = s with
@@ -2243,7 +2270,41 @@ namespace DeckRogue.Engine
                 case EnemyActionKinds.Mill:
                 {
                     // 山札喰い: 山札の上N枚を消滅させる。亡骸・onCardExhausted は発火する
-                    return markResolved(Effects.MillPlayerDeck(state, intent.Actual, enemyIndex), 0);
+                    // 食べた分だけ太る (2026-09-27 大喰らいの蟲の作り直し): 実際に食べた枚数 × N の筋力
+                    int eaten = Math.Max(0, Math.Min(intent.Actual, state.Player.DrawPile.Count));
+                    var sm = Effects.MillPlayerDeck(state, intent.Actual, enemyIndex);
+                    if (intent.StrengthPerMilled != null && eaten > 0 && enemyIndex < sm.Enemies.Count && sm.Enemies[enemyIndex] != null && sm.Enemies[enemyIndex].Hp > 0)
+                    {
+                        int gain = eaten * intent.StrengthPerMilled.Value;
+                        sm = Effects.GainEnemyStrength(sm, enemyIndex, gain);
+                        sm = Events.Emit(sm, new GameEvent_StrengthGained { EnemyIndex = enemyIndex, Amount = gain });
+                    }
+                    return markResolved(sm, 0);
+                }
+                case EnemyActionKinds.Seal:
+                {
+                    // 技封じ (2026-09-27 本家 Bronze Orb の Stasis): 山札でいちばんレアな札を1枚封じる
+                    // (同じ順位はランダム・山札が空なら捨て札から・両方空なら何もしない)。倒れたら手札へ戻る (ProcessUnseal)
+                    bool fromDraw = state.Player.DrawPile.Count > 0;
+                    var pile = fromDraw ? state.Player.DrawPile : state.Player.DiscardPile;
+                    if (pile.Count == 0 || enemyIndex >= state.Enemies.Count || state.Enemies[enemyIndex] == null || state.Enemies[enemyIndex].Hp <= 0) return markResolved(state, 0);
+                    int top = pile.Max(SealRarityRank);
+                    var cands = new List<int>();
+                    for (int k = 0; k < pile.Count; k++) if (SealRarityRank(pile[k]) == top) cands.Add(k);
+                    var s = state;
+                    int pickK = cands[0];
+                    if (cands.Count > 1)
+                    {
+                        var (r, rng) = Rng.NextInt(s.Rng, 0, cands.Count - 1);
+                        pickK = cands[r];
+                        s = s with { Rng = rng };
+                    }
+                    var picked = pile[pickK];
+                    var rest = pile.Where((_, k) => k != pickK).ToList();
+                    s = s with { Player = fromDraw ? s.Player with { DrawPile = rest } : s.Player with { DiscardPile = rest } };
+                    s = WithEnemy(s, enemyIndex, x => x with { Sealed = (x.Sealed ?? new List<CardInstance>()).Concat(new[] { picked }).ToList() });
+                    s = Events.Emit(s, new GameEvent_CardSealed { EnemyIndex = enemyIndex, CardId = picked.Def.Id });
+                    return markResolved(s, 0);
                 }
                 case EnemyActionKinds.Rally:
                 {

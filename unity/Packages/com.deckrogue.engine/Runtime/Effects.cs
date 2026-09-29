@@ -481,7 +481,15 @@ namespace DeckRogue.Engine
                         s = s with { ResolvingPermanentUid = permanent.Uid };
                         // 人形 (retainer・innate除く) の単体ダメージはランダムな生存敵へ (白 2026-09-20 裁定)。生存2体以上の時だけ RNG を1回消費。TS と同形
                         int target = alive;
-                        if (permanent.Def.Retainer == true && permanent.Innate != true && IsDamageEffect(boosted) && boosted.Target != "all")
+                        if (boosted.Target == "mostHp")
+                        {
+                            // 獅子の人形 (白 2026-09-26): いまの HP がいちばん多い生存敵 (同じなら左から)。RNG は使わない。TS と同形
+                            int best = -1;
+                            for (int i = 0; i < s.Enemies.Count; i++)
+                                if (s.Enemies[i].Hp > 0 && (best < 0 || s.Enemies[i].Hp > s.Enemies[best].Hp)) best = i;
+                            if (best >= 0) target = best;
+                        }
+                        else if (permanent.Def.Retainer == true && permanent.Innate != true && IsDamageEffect(boosted) && boosted.Target != "all")
                         {
                             var aliveIdx = new List<int>();
                             for (int i = 0; i < s.Enemies.Count; i++) if (s.Enemies[i].Hp > 0) aliveIdx.Add(i);
@@ -1198,6 +1206,12 @@ namespace DeckRogue.Engine
                 hpLoss = 1;
                 steps.Add(new DamageBreakdownStep { Label = "無形=1固定", Value = 1 });
             }
+            // 朧 (2026-09-27 朧の大鹿): HP に届く当たりは1 (残り回数のうち)
+            if ((enemy.Slippery ?? 0) > 0 && hpLoss > 0)
+            {
+                if (hpLoss > 1) steps.Add(new DamageBreakdownStep { Label = $"朧=1(残り{enemy.Slippery}回)", Value = 1 });
+                hpLoss = 1;
+            }
             // ターン装甲 (2026-09-02): このターンのHP損失累計の上限
             int? turnArmor = Content.GetEnemyDef(enemy.EnemyId).TurnArmor;
             if (turnArmor != null)
@@ -1498,6 +1512,10 @@ namespace DeckRogue.Engine
                 nemesisCut = hpLoss - 1;
                 hpLoss = 1;
             }
+            // 朧 (2026-09-27 朧の大鹿): HP に届く当たりの最初のN回は1になる。ブロックで全部止まった当たりは数えない
+            bool slipped = (enemy.Slippery ?? 0) > 0 && hpLoss > 0;
+            int slipperyCut = slipped ? hpLoss - 1 : 0;
+            if (slipped) hpLoss = 1;
             // ターン装甲 (2026-09-02 StS2 HardenedShell式): このターンのHP損失累計はN以下
             int? turnArmor = Content.GetEnemyDef(enemy.EnemyId).TurnArmor;
             int turnArmorCut = 0;
@@ -1517,6 +1535,7 @@ namespace DeckRogue.Engine
                 Block = e.Block - blockedF,
                 Hp = e.Hp - hpLossF,
                 Exposed = exposedF ? e.Exposed - 1 : e.Exposed,
+                Slippery = slipped ? (e.Slippery ?? 0) - 1 : e.Slippery,
                 // regenBreak の判定用。再生判定のたびにリセットされる
                 HpLostSinceRegen = (e.HpLostSinceRegen ?? 0) + hpLossF,
                 DamageTakenTotal = (e.DamageTakenTotal ?? 0) + hpLossF,
@@ -1534,6 +1553,7 @@ namespace DeckRogue.Engine
                     TurnArmorCut = turnArmorCut > 0 ? turnArmorCut : (int?)null,
                     BurrowCut = burrowCut > 0 ? burrowCut : (int?)null,
                     NemesisCut = nemesisCut > 0 ? nemesisCut : (int?)null,
+                    SlipperyCut = slipperyCut > 0 ? slipperyCut : (int?)null,
                     // ダメージの質 (2026-09-17 演出用): 急所が乗った・貫通でブロックを無視した・ブロック (殻) が吸った量
                     Exposed = exposed ? true : (bool?)null,
                     Pierced = pierce && !shellUp && enemy.Block > 0 ? true : (bool?)null,
@@ -1784,7 +1804,7 @@ namespace DeckRogue.Engine
                     return state with { GearDeathSave = true };
                 case "stripRider":
                     // 蝋の栓 (2026-09-18): 対象のいま宣言している行動の付随物 (状態異常の付与・同時強化・同時防御・からくり壊し) を消す。攻撃そのものは通る
-                    return state with { Enemies = MapEnemy(state.Enemies, enemyIndex, e => e.Hp > 0 && e.Intent != null ? e with { Intent = e.Intent with { Inflict = null, AlsoBuff = null, AlsoDefend = null, AlsoDestroySet = null } } : e) };
+                    return state with { Enemies = MapEnemy(state.Enemies, enemyIndex, e => e.Hp > 0 && e.Intent != null ? e with { Intent = e.Intent with { Inflict = null, AlsoBuff = null, AlsoDefend = null, AlsoDestroySet = null, StrengthPerMilled = null } } : e) };
                 case "singleHit":
                     // 錆びた鎖 (2026-09-18): 対象のいま宣言している攻撃の連撃を1回に (物真似の鏡も1回)
                     return state with { Enemies = MapEnemy(state.Enemies, enemyIndex, e => e.Hp > 0 && e.Intent != null ? e with { Intent = e.Intent with { Hits = null, MirrorHits = null } } : e) };

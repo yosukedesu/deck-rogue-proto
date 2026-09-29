@@ -64,7 +64,8 @@ export function intentText(intent: EnemyIntent | EnemyIntentBranch | null, shown
     case 'flee': return '🏃 逃走（倒すか打ち消せば阻止）'
     case 'rest': return '😮‍💨 隙だらけ'
     case 'hatch': return '🐣 孵化する'
-    case 'mill': return `📖 山札喰い ${intent.actual}枚（消滅置き場へ。亡骸は発火する）`
+    case 'seal': return '🔒 技封じ（山札でいちばんレアな札を1枚、倒すまで封じる）'
+    case 'mill': return `📖 山札喰い ${intent.actual}枚${(intent as EnemyIntent).strengthPerMilled !== undefined ? `＋食べた1枚ごとに💪筋力+${(intent as EnemyIntent).strengthPerMilled}` : ''}（消滅置き場へ。亡骸は発火する）`
     case 'summon': return `👶 召喚 ×${intent.actual}（場が4体なら出ない）`
   }
 }
@@ -98,7 +99,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'ActionNegated': return { text: '敵の行動は打ち消された！', cls: 'log-good' }
     case 'DamageDealt':
       return e.source === 'player'
-        ? { text: `敵に${e.amount}ダメージ（HP-${e.hpLoss}）${e.exposed ? '【急所】' : ''}${e.pierced ? '【貫通】' : ''}${e.blocked ? `【ブロックで${e.blocked}】` : ''}${e.armorCut ? `【装甲で${e.armorCut}切り捨て】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`, cls: 'log-line' }
+        ? { text: `敵に${e.amount}ダメージ（HP-${e.hpLoss}）${e.exposed ? '【急所】' : ''}${e.pierced ? '【貫通】' : ''}${e.blocked ? `【ブロックで${e.blocked}】` : ''}${e.armorCut ? `【装甲で${e.armorCut}切り捨て】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.slipperyCut ? `【朧で${e.slipperyCut}消えた=1】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`, cls: 'log-line' }
         : { text: `敵の攻撃${e.amount} → HP-${e.hpLoss}${e.blocked ? `（ブロックで${e.blocked}）` : ''}`, cls: 'log-bad' }
     case 'BlockGained': return { text: `${e.target === 'player' ? '自分' : '敵'}がブロック+${e.amount}`, cls: 'log-line' }
     case 'StrengthGained': {
@@ -160,6 +161,8 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'GrowthDischarged': return { text: `成長${e.spent}を全て放出した！`, cls: 'log-good' }
     case 'MomentumDischarged': return { text: `勢い${e.spent}を全て放出した！`, cls: 'log-good' }
     case 'HpHealed': return { text: `HP+${e.amount}回復`, cls: 'log-good' }
+    case 'CardSealed': return { text: `🔒 敵${e.enemyIndex + 1}が「${cardName(e.cardId)}」を封じた（倒せば手札に戻る）`, cls: 'log-line' }
+    case 'CardUnsealed': return { text: `🔓 封じられていた「${cardName(e.cardId)}」が手札に戻った`, cls: 'log-line' }
     case 'CardsMilled': return { text: `山札の上${e.count}枚が忘却された（この戦闘から除外・ランのデッキには残る）: ${(e.cardIds ?? []).map(cardName).join('・')}`, cls: 'log-line' }
     case 'EnemyWeakened': return { text: `敵を威圧（筋力-${e.amount}）`, cls: 'log-good' }
     case 'ConfusedAttack':

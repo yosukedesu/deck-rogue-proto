@@ -87,6 +87,7 @@ namespace DeckRogue.Game
             _dollPanels.Clear();
             _dollGone.Clear();
             _dollSeat.Clear();
+            _dollWide.Clear();
             _dollDying.Clear();
             _dollsArea = null;
         }
@@ -300,7 +301,7 @@ namespace DeckRogue.Game
             }
             // 座席: 立っている人形は今の座席を保ち、新しい人形は空いている最も前の座席へ (上限 DollCap)
             var used = new HashSet<int>();
-            foreach (var kv in _dollSeat) if (_dollPanels.ContainsKey(kv.Key)) used.Add(kv.Value);   // 崩れかけの人形の座席も塞いだまま
+            foreach (var kv in _dollSeat) if (_dollPanels.ContainsKey(kv.Key)) { used.Add(kv.Value); if (_dollWide.Contains(kv.Key)) used.Add(kv.Value + 1); }   // 崩れかけの人形の座席も塞いだまま (大きい人形は隣の座席も)
             var stale = new List<string>();
             foreach (var kv in _dollSeat) if (!_dollPanels.ContainsKey(kv.Key)) stale.Add(kv.Key);
             foreach (var k in stale) _dollSeat.Remove(k);
@@ -313,11 +314,17 @@ namespace DeckRogue.Game
                 if (!_dollSeat.TryGetValue(d.Uid, out seat))
                 {
                     seat = -1;
-                    for (int i = 0; i < DollCap; i++) if (!used.Contains(i)) { seat = i; break; }
+                    // 大きい人形 (48 ドットの絵＝竜・獅子 2026-09-26) は同じ列の隣り合う2席を取り、その間に立つ (1席だと隣と重なる)
+                    if (IsWideDoll(d))
+                        for (int i = 0; i + 1 < DollCap; i++)
+                            if (!used.Contains(i) && !used.Contains(i + 1) && (i + 1) % 5 != 0) { seat = i; _dollWide.Add(d.Uid); break; }
+                    if (seat < 0) for (int i = 0; i < DollCap; i++) if (!used.Contains(i)) { seat = i; break; }
                     if (seat < 0) { overflow++; continue; }
                     _dollSeat[d.Uid] = seat;
                 }
                 used.Add(seat);
+                bool wide = _dollWide.Contains(d.Uid);
+                if (wide) used.Add(seat + 1);
                 string key = "doll:" + d.Uid;
                 RectTransform pan; bool fresh = false;
                 if (!_dollPanels.TryGetValue(d.Uid, out pan) || pan == null)
@@ -335,8 +342,9 @@ namespace DeckRogue.Game
                     fresh = true;
                 }
                 { var info = pan.GetComponent<DollInfo>(); if (info != null) info.Order = seat; }
-                var feet = Stage.ProjectFeet(key, slots[seat]);
-                UiKit.Anchor(pan, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(feet.x - w / 2f, StatusLineY), new Vector2(feet.x + w / 2f, StatusLineY + h));
+                var feet = Stage.ProjectFeet(key, wide ? (slots[seat] + slots[seat + 1]) * 0.5f : slots[seat]);
+                float pw = wide ? w * 1.5f : w;
+                UiKit.Anchor(pan, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(feet.x - pw / 2f, StatusLineY), new Vector2(feet.x + pw / 2f, StatusLineY + h));
                 Stage.SetFeetOffset(key, feet.y - StatusLineY);
                 pan.SetSiblingIndex(Math.Max(0, DollCap - 1 - seat));   // 奥 (後列・右) ほど先に描く
                 for (int c = pan.childCount - 1; c >= 0; c--) { var ch = pan.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
@@ -358,6 +366,14 @@ namespace DeckRogue.Game
             }
         }
         readonly Dictionary<string, int> _dollSeat = new Dictionary<string, int>();   // uid → 座席 (崩れるまで保つ)
+        readonly HashSet<string> _dollWide = new HashSet<string>();   // 2席を取っている大きい人形 (竜・獅子 2026-09-26)
+
+        /// <summary>絵が 32 ドットより大きい人形 (竜・獅子の 48 ドット) = 2席ぶん場所を取る</summary>
+        static bool IsWideDoll(CardInstance d)
+        {
+            var art = Creature.Get("dolls", d.Def.Id, true, 32);
+            return art != null && Mathf.Max(art.rect.width, art.rect.height) > 32f;
+        }
         readonly HashSet<string> _dollDying = new HashSet<string>();               // 状態から消えたが、まだ崩していない
 
         /// <summary>点灯 (登場): 暗い人形が座席に置かれ、灯りが点って等身大に弾む。足元に暖色の光の輪と判「点灯」</summary>

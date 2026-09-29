@@ -259,6 +259,8 @@ namespace DeckRogue.Game
             try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
             float artDots = nodeType == MapNodeTypes.Boss ? 384f : nodeType == MapNodeTypes.Elite ? 320f : 256f;
             var artSprite = Creature.Get("enemies", e.EnemyId, false, (int)(artDots / 4f));
+            // 64ドット未満の小さな絵 (2026-09-27 技封じの絡繰 48×48) は節の箱へ引き伸ばさず 1ドット=4px のまま (ボス戦の取り巻きがボスと同じ大きさにならない)
+            if (artSprite.rect.height < 64f) artDots = artSprite.rect.height * 4f;
             float artTarget = artDots * ArtScale;   // スマホは 0.6 (2026-09-15)
             float feetY = Stage.FeetOffset("enemy" + index, 130f);
             float spriteTop = feetY + artSprite.rect.height * PaperFx.PixelScaleF(artSprite, artTarget);
@@ -363,6 +365,8 @@ namespace DeckRogue.Game
                 if ((e.Weak ?? 0) > 0) chips.Add(new KeyValuePair<string, string>("shield", "威圧" + e.Weak.Value));
                 if ((e.Artifact ?? 0) > 0) chips.Add(new KeyValuePair<string, string>("set", "アーティファクト" + e.Artifact.Value));   // 旧「AF1」は略語で読めなかった (2026-09-20)
                 if (e.BurrowActive == true) chips.Add(new KeyValuePair<string, string>("shield", "潜伏"));
+                if ((e.Slippery ?? 0) > 0) chips.Add(new KeyValuePair<string, string>("shield", "朧" + e.Slippery.Value));   // 2026-09-27 朧の大鹿: HPに届く当たりの残り回数
+                if (e.Sealed != null && e.Sealed.Count > 0) chips.Add(new KeyValuePair<string, string>("exhaust", "封じ: " + string.Join("・", System.Linq.Enumerable.Select(e.Sealed, c => c.Def.Name))));   // 2026-09-27 技封じの絡繰: 倒せば手札に戻る
                 for (int i = 0; i < chips.Count; i++)
                 {
                     var ch = chips[i];
@@ -379,6 +383,7 @@ namespace DeckRogue.Game
                     {
                         string item = tr[i].Trim();
                         if (item.Length == 0 || item.Length > 7) continue;
+                        if (item.StartsWith("朧")) continue;   // 残り回数は状態の札が出す (定義の「朧9回」を並べると古い数字が残る)
                         string tipText = ChipTip(item);
                         statusPills.Add(t => MiniPill(t, "set", item, PaperFx.InkSoft, PaperFx.Paper2, tipText));
                         shown++;
@@ -568,6 +573,7 @@ namespace DeckRogue.Game
                 if (inflict != null) { string tx = CardText.StatusName(inflict.Status) + inflict.Amount; riders.Add(t => MiniPill(t, "exposed", tx, UiKit.Hex("#5a3d78"), UiKit.Hex("#eddbf7"), null, rsz, true)); riderW.Add(MiniPillW(tx, rsz)); }
                 if (it.AlsoBuff.HasValue) { string tx = "筋力+" + it.AlsoBuff.Value; riders.Add(t => MiniPill(t, "sword", tx, PaperFx.BrassInk, PaperFx.Paper2, null, rsz, true)); riderW.Add(MiniPillW(tx, rsz)); }
                 if (it.AlsoDefend.HasValue) { string tx = "ブロック" + it.AlsoDefend.Value; riders.Add(t => MiniPill(t, "shield", tx, PaperFx.SkyInk, PaperFx.SkyLight, null, rsz, true)); riderW.Add(MiniPillW(tx, rsz)); }
+                if (it.StrengthPerMilled.HasValue) { string tx = "食べた分 筋力+" + it.StrengthPerMilled.Value + "/枚"; riders.Add(t => MiniPill(t, "sword", tx, PaperFx.BrassInk, PaperFx.Paper2, null, rsz, true)); riderW.Add(MiniPillW(tx, rsz)); }
                 if (it.AlsoDestroySet == true) { string tx = "先に壊す"; riders.Add(t => MiniPill(t, "exhaust", tx, PaperFx.BadInk, PaperFx.RoseLight, null, rsz, true)); riderW.Add(MiniPillW(tx, rsz)); }
             }
             bool stack = riders.Count > 0 && (small || (ph && neighborGap < 220f));
@@ -870,6 +876,7 @@ namespace DeckRogue.Game
                 case "steal-gold": return "gold";
                 case "flee": return "momentum";
                 case "mill": return "draw";
+                case "seal": return "exhaust";
                 case "summon": return "growth";
                 case "rest": return "set";
                 default: return "exposed";
@@ -911,6 +918,7 @@ namespace DeckRogue.Game
                 case "steal-gold": return "盗み";
                 case "flee": return "逃走";
                 case "mill": return "山札喰い";
+                case "seal": return "技封じ";
                 case "summon": return "召喚";
                 case "rest": return "隙";
                 case "hatch": return "孵化";
@@ -973,7 +981,8 @@ namespace DeckRogue.Game
         {
             string key = "doll:" + d.Uid;
             var art = Creature.Get("dolls", d.Def.Id, true, 32);
-            float artTarget = 32f * 4f * ArtScale;   // 32 ドット×4px (スマホは 0.6) = ひなたの半分の背丈
+            // 32 ドット×4px (スマホは 0.6) = ひなたの半分の背丈。大きい人形 (竜・獅子 2026-09-26) は 48 ドットの絵を同じ 4px で＝1.5 倍の背丈
+            float artTarget = Mathf.Max(32f, Mathf.Max(art.rect.width, art.rect.height)) * 4f * ArtScale;
             float feetY = Stage.FeetOffset(key, 130f);
             var spr = UiKit.NewRect("sprite", pan);
             PaperFx.FitPixel(spr, art, 0f, feetY, artTarget);

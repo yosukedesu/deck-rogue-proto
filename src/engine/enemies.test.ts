@@ -342,7 +342,7 @@ describe('敵圧監査の新敵2体 (2026-09-01 幕1の状態異常ゼロを解�
     expect(def.enrageEveryCards).toBeUndefined() // 毎フェーズ自動 = 時限爆弾
   })
 
-  it('酸吐きの蛞蝓は状態異常の教師 (舐め=弱体 → 酸=虚弱 → 体当たりのローテーション)', () => {
+  it('酸吐きの蜥蜴 (旧・蛞蝓) は状態異常の教師 (舐め=弱体 → 酸=虚弱 → 体当たりのローテーション)', () => {
     const def = getEnemyDef('enemy_slug')
     expect(chainFromStart(def, 4)).toEqual(['lick', 'guard', 'acid_spit', 'tackle']) // 構えは2拍目 (2026-09-14。末尾だと幕1で見えない)
     expect(def.moves.find((m) => m.id === 'lick')!.inflict).toEqual({ status: 'weak', amount: 2 })

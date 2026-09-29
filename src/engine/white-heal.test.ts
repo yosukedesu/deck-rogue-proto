@@ -65,16 +65,37 @@ describe('回復の回し封じ (白)', () => {
     expect(s.player.discardPile.map((c) => c.def.id)).toEqual([])
   })
 
-  it('癒しの人形は攻撃をプレイするたび回復2 (ターン開始では回復しない)。点灯で出た瞬間にも1回', () => {
+  it('癒しの人形は攻撃をプレイするたび回復1 (2026-09-25 人間ラン#21・#22「人形の回復だけ半分」＝旧2。ターン開始では回復しない)。点灯で出た瞬間にも1回', () => {
     let s: GameState = withHand(freshCombat('set-confirm', 'enemy_probe', 42, 'starter_white'), ['white_perm_choir', 'white_strike'])
     s = { ...s, player: { ...s.player, hp: 30, energy: 9, energyMax: 9, light: 2 } } // 癒しの人形は 1E・灯2 (2026-09-20 灯と人形の結び)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_choir' })
-    expect(s.player.hp).toBe(32) // 点灯の定義: 出た瞬間に1回動く
+    expect(s.player.hp).toBe(31) // 点灯の定義: 出た瞬間に1回動く
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_white_strike', targetIndex: 0 })
-    expect(s.player.hp).toBe(34)
+    expect(s.player.hp).toBe(32)
     const hpBefore = s.player.hp
     s = applyCommand(s, { type: 'EndTurn' })
     // 敵フェーズ〜次の自ターン開始で人形は回復しない (被弾ぶんだけ減る)
     expect(s.player.hp).toBeLessThanOrEqual(hpBefore)
+  })
+
+  // 2026-09-25 人間ラン#21・#22: 回復役がそろった白は幕2〜3で受けたダメージとほぼ同じだけ戦闘中に回復していた
+  // (回復÷被ダメ 87〜112%。段5で「苦しい」にならない)。ユーザー裁定「人形の回復だけ半分」(ルールでなくカードで。灯火の大槌・灯の輪・大いなる癒しは据え置き)。
+  // 燭・手当ては「2回ごとに1回」だと分かりにくい (ユーザー) → 手当ては文面そのままで期限 4→2。
+  // 燭は回復1にした癒しと同じ札になった (ユーザー「同じになっちゃった」) → 燭を撤去
+  it('人形の回復は半分: 癒し=攻撃ごと回復1 (期限5)・手当て=回復1のまま期限2・燭は撤去', () => {
+    const spec = (id: string) => [getCardDef(id).life, ...heals(getCardDef(id)).map((e) => [e.trigger, e.amount, e.every ?? 1])]
+    expect(spec('white_perm_choir')).toEqual([5, ['onAttackPlayed', 1, 1]])
+    expect(spec('white_perm_monk')).toEqual([2, ['onPermanentEntered', 1, 1]])
+    expect(allCards.some((c) => c.id === 'white_perm_candle')).toBe(false)
+    // 手当て: T1 に出す (自分の登場で回復1) → T2 の敵フェーズの終わりに消える
+    let s: GameState = withHand(freshCombat('set-confirm', 'enemy_probe', 42, 'starter_white'), ['white_perm_monk'])
+    s = { ...s, player: { ...s.player, hp: 30, energy: 9, energyMax: 9 } }
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_white_perm_monk' })
+    expect(s.player.hp).toBe(31)
+    const monkOnField = (g: GameState) => g.player.permanents.some((p) => p.def.id === 'white_perm_monk')
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(monkOnField(s)).toBe(true) // T2: あと1ターン
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(monkOnField(s)).toBe(false) // T2 の敵フェーズの終わりに消えた
   })
 })
