@@ -1,0 +1,145 @@
+{
+    "version": 1,
+    "entries": [
+        {
+            "key": "ProjectSettings/ProjectSettings.asset|colorSpace",
+            "asset": "ProjectSettings/ProjectSettings.asset",
+            "path": "colorSpace",
+            "kind": "colorspace",
+            "before": "Gamma",
+            "after": "Linear"
+        },
+        {
+            "key": "ProjectSettings/TagManager.asset|layers.Array.data[8]",
+            "asset": "ProjectSettings/TagManager.asset",
+            "path": "layers.Array.data[8]",
+            "kind": "string",
+            "before": "",
+            "after": "StageUnit"
+        },
+        {
+            "key": "ProjectSettings/TagManager.asset|layers.Array.data[9]",
+            "asset": "ProjectSettings/TagManager.asset",
+            "path": "layers.Array.data[9]",
+            "kind": "string",
+            "before": "",
+            "after": "StageSet"
+        },
+        {
+            "key": "ProjectSettings/TagManager.asset|layers.Array.data[10]",
+            "asset": "ProjectSettings/TagManager.asset",
+            "path": "layers.Array.data[10]",
+            "kind": "string",
+            "before": "",
+            "after": "StageFx"
+        },
+        {
+            "key": "ProjectSettings/TagManager.asset|m_RenderingLayers.Array.size",
+            "asset": "ProjectSettings/TagManager.asset",
+            "path": "m_RenderingLayers",
+            "kind": "arraysize",
+            "before": "1",
+            "after": "3"
+        },
+        {
+            "key": "ProjectSettings/TagManager.asset|m_RenderingLayers.Array.data[1]",
+            "asset": "ProjectSettings/TagManager.asset",
+            "path": "m_RenderingLayers.Array.data[1]",
+            "kind": "string",
+            "before": "Default",
+            "after": "Characters"
+        },
+        {
+            "key": "ProjectSettings/TagManager.asset|m_RenderingLayers.Array.data[2]",
+            "asset": "ProjectSettings/TagManager.asset",
+            "path": "m_RenderingLayers.Array.data[2]",
+            "kind": "string",
+            "before": "Default",
+            "after": "Environment"
+        },
+        {
+            "key": "Assets/Settings/URP-Default.asset|m_SupportsLightLayers",
+            "asset": "Assets/Settings/URP-Default.asset",
+            "path": "m_SupportsLightLayers",
+            "kind": "bool",
+            "before": "0",
+            "after": "1"
+        },
+        {
+            "key": "Assets/Settings/URP-Default.asset|m_AdditionalLightShadowsSupported",
+            "asset": "Assets/Settings/URP-Default.asset",
+            "path": "m_AdditionalLightShadowsSupported",
+            "kind": "bool",
+            "before": "0",
+            "after": "1"
+        },
+        {
+            "key": "Assets/Settings/URP-Default.asset|m_AnyShadowsSupported",
+            "asset": "Assets/Settings/URP-Default.asset",
+            "path": "m_AnyShadowsSupported",
+            "kind": "bool",
+            "before": "1",
+            "after": "1"
+        },
+        {
+            "key": "Assets/Settings/URP-Default.asset|m_ShadowCascadeCount",
+            "asset": "Assets/Settings/URP-Default.asset",
+            "path": "m_ShadowCascadeCount",
+            "kind": "int",
+            "before": "1",
+            "after": "2"
+        },
+        {
+            "key": "ProjectSettings/GraphicsSettings.asset|m_FogStripping",
+            "asset": "ProjectSettings/GraphicsSettings.asset",
+            "path": "m_FogStripping",
+            "kind": "int",
+            "before": "0",
+            "after": "1"
+        },
+        {
+            "key": "ProjectSettings/GraphicsSettings.asset|m_FogKeepLinear",
+            "asset": "ProjectSettings/GraphicsSettings.asset",
+            "path": "m_FogKeepLinear",
+            "kind": "bool",
+            "before": "1",
+            "after": "1"
+        },
+        {
+            "key": "ProjectSettings/GraphicsSettings.asset|m_FogKeepExp",
+            "asset": "ProjectSettings/GraphicsSettings.asset",
+            "path": "m_FogKeepExp",
+            "kind": "bool",
+            "before": "1",
+            "after": "1"
+        },
+        {
+            "key": "ProjectSettings/GraphicsSettings.asset|m_FogKeepExp2",
+            "asset": "ProjectSettings/GraphicsSettings.asset",
+            "path": "m_FogKeepExp2",
+            "kind": "bool",
+            "before": "1",
+            "after": "1"
+        },
+        {
+            "key": "ProjectSettings/QualitySettings.asset|m_QualitySettings.Array.data[2].customRenderPipeline",
+            "asset": "ProjectSettings/QualitySettings.asset",
+            "path": "m_QualitySettings.Array.data[2].customRenderPipeline",
+            "kind": "objref",
+            "before": "guid:c43a40b0cc2aad84aa0dcbea7c9760de;fid:11400000",
+            "after": "guid:1d1acd27f377193c068b2802112ca40f;fid:11400000"
+        },
+        {
+            "key": "ProjectSettings/QualitySettings.asset|m_PerPlatformDefaultQuality.Array.data[0].second",
+            "asset": "ProjectSettings/QualitySettings.asset",
+            "path": "m_PerPlatformDefaultQuality.Array.data[0].second",
+            "kind": "int",
+            "before": "2",
+            "after": "2"
+        }
+    ],
+    "created": [
+        "Assets/Settings/URP-Phone-Renderer.asset",
+        "Assets/Settings/URP-Phone.asset"
+    ]
+}

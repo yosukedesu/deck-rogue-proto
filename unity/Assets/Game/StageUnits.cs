@@ -1,9 +1,19 @@
 // StageUnits.cs — Stage のキャラの板 (2026-09-30 HD-2D 見本。計画 docs/design/hd2d-slice-plan-2026-09-30.md §3・§2-3)。
 // P02 (W1) で Stage.cs から移した部分 (中身は1文字も変えていない): アニメの状態・板の明暗と主役の照明の定数・板の登録簿 (_bound・_depths)・
 // BindUnit・FeetPad・PlayAnim・DebugAnim・Flash・Dissolve・StageUnit・光と影の共通部品 (SpriteMat・VignetteLift・ApplyLight・BlobTex・Blob・PlaceBlob)。
-// TryGetUnitBox・DebugUnitBoxes の中身は P11 が書く (アダプタ)。
+// P11 (W2) が足した部分 (計画 §2-3・§2-5・P11):
+//   アダプタ   … stage=diorama の時、板の位置を「座席の世界の点 (TryGetSeat) ＋ 休んでいる時の矩形との差 (カメラの横と上 × px × 座席の k)」で決める。
+//               板は回さず、向きはレイアウト用のカメラの回転 (揺れ・寄り・漂いを含まない)。式は今の ScreenToPlane と数学的に同じ (単体の検査 = adapter の範囲)。
+//               stage=old は今のコードをそのまま通す (1画素も変えない)
+//   光を受ける板 … litunits=1 の時、材質を StageUnitLit へ差し替える (旗が変われば LateUpdate が差し替え直す)。コマごとに法線 _n・発光 _e を差し替え、
+//               _KeyFlip は art-lint の表 (Art/stage/act1/keyflip)、受光・主役の持ち上げ・環境光の倍率は StageLook (旗 receive=・herolift= が勝つ)
+//   影         … stage=diorama か charshadow=1 の時、板はレイヤー8 (HD2DLayers.StageUnit)・Rendering Layer は Characters。charshadow=1 で影を落とし、接地影の楕円は濃さ 0.35 倍・幅 0.6 倍
+//   48 の見本  … herodots=48 の絵 (Theme.cs の Creature.Get が leader_green_48 を返す) も主役の照明と杖の先の光の表で同じに扱う
+//   材質の漏れ … 板が消える時に材質 (と接地影・杖の先の光の材質) を捨てる
+//   口         … TryGetUnitBox (板の足元と高さ。StageFx.UnitPoint・技の光が読む)・DebugUnitBoxes (矩形と板のずれ。dumplayout の stage.unitBoxes)
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -30,7 +40,22 @@ namespace DeckRogue.Game
         // 敵÷このは ≤2.2 には 1.6 が要り、その時は白飛び 5% になるので 1.5 で止める (クリーム色・白い敵の場面の比は次の裁定)
         static float HeroAmbientFor(string art)
         {
-            return art == "leader_green" ? 1.5f : HeroAmbient;
+            // 名前の頭で見る (2026-09-30 P11): herodots=48 の縮めた見本 leader_green_48 も同じ絵なので同じ 1.5
+            return art != null && art.StartsWith("leader_green", StringComparison.Ordinal) ? 1.5f : HeroAmbient;
+        }
+        // 杖の先の光の位置 (板の中の UV。x 0=左・1=右、y 0=足元・1=上端) は絵ごとの表 (2026-09-30 P11)。表に無い絵は今の値 (0.64, 0.93) = 板の右上。
+        // P05 の art-lint: 48 は 62 を足元の中央を基準に同じ倍率で縮めたので、板の中の UV はほぼ同じ (斧の宝石 62 (0.686,0.721)／48 (0.689,0.717)、
+        // 柄の真鍮の先 62 (0.215,0.411)／48 (0.213,0.405))。今の (0.64, 0.93) は v2 では斧の頭の上。どこに置くかは P23 の詰め (見た目は今のまま)
+        static readonly Vector2 DefaultHaloUv = new Vector2(0.64f, 0.93f);
+        static readonly Dictionary<string, Vector2> HaloUvByArt = new Dictionary<string, Vector2>
+        {
+            { "leader_green", new Vector2(0.64f, 0.93f) },
+            { "leader_green_48", new Vector2(0.64f, 0.93f) },
+        };
+        static Vector2 HaloUvFor(string art)
+        {
+            Vector2 uv;
+            return art != null && HaloUvByArt.TryGetValue(art, out uv) ? uv : DefaultHaloUv;
         }
         // ランタンの暖色は、リーダーの環境光が 1.15 の時にシェーダの lamp×1.15 と R がそろう値。環境光だけ上げるとランタン側 (左) の方が暗くなる
         // (lerp(1.35, lamp×1.15, lf) の G・B が下がる = 光源の側が暗い逆の陰影。このはの体は lf 0.36〜0.80 でランタンに近く、1.35 の半分しか効かない) →
@@ -44,19 +69,246 @@ namespace DeckRogue.Game
 
         /// <summary>
         /// キャラの板 (key = "player"・"enemy0"…・"doll:&lt;uid&gt;") の足元の中心の世界の点と、板の世界の高さ。演出で動いている時はその位置。
-        /// 無ければ false。骨組み: P11 が書く
+        /// 無ければ false。
+        /// feet = 絵の足元 (板の下端から絵の下の余白 FeetPad ぶん上 = 地面に着いている点。呼吸・踏み込み・縮みなどの演出の動きを含む)。
+        /// heightWorld = 足元から板の上端までの世界の長さ (広い枠のコマはそのぶん高い)。板はレイアウト用のカメラの回転を向く (StageFx.UnitPoint がこれで板の上の点を作る)。
+        /// 値は最後の LateUpdate の時のもの (演出の途中で聞けば1フレーム前)。stage=old でも答える
         /// </summary>
         public static bool TryGetUnitBox(string key, out Vector3 feet, out float heightWorld)
         {
             feet = default; heightWorld = 0f;
-            return false;
+            StageUnit u;
+            if (string.IsNullOrEmpty(key) || !_bound.TryGetValue(key, out u) || u == null || !u.HasBox) return false;
+            feet = u.FeetWorld; heightWorld = u.HeightWorld;
+            return heightWorld > 0f;
         }
 
         /// <summary>
-        /// 「UI の矩形の画面の箱」と「板をレイアウト用のカメラで写した箱」を並べた記録 (JSON にできる値)。
-        /// 静止で1px・演出中で2px を超えたものに印を付けて dumplayout に出す。骨組み: P11 が書く (無ければ null)
+        /// 「UI の矩形の画面の箱」と「板をレイアウト用のカメラで写した箱」を並べた記録 (JSON にできる値。dumplayout の stage.unitBoxes)。
+        /// 1体1つの辞書の並び: key・rectPx (矩形)・boardPx (板を写した箱から、決めてあるずらし = 絵の下の余白・呼吸・広い枠のコマの拡大 を外した箱 = 矩形と同じ物差し)・
+        /// boardRawPx (板を写した箱そのもの)・dev (rectPx と boardPx の角のずれの最大・px)・moving (演出中)・tol (静止 1・演出中 2)・over (dev が tol を超えた)・
+        /// pxPerDot (板の幅 ÷ いまのコマの絵の幅 = 座席での1ドットの大きさ)・ほか (mode・lit・depth・座席の k の突き合わせ・板の向きとレイアウトの回転の差)。
+        /// 箱は [x, y, w, h] = PNG の画素 (左上が原点・y は下向き。layout.json の px と同じ)
         /// </summary>
-        public static object DebugUnitBoxes() => null;
+        public static object DebugUnitBoxes()
+        {
+            var list = new List<object>();
+            if (_cam == null) return list;
+            var cam = CurrentLayoutCam();
+            var layoutRot = LayoutRot();
+            float H = Screen.height;
+            foreach (var kv in _bound)
+            {
+                var u = kv.Value;
+                if (u == null || !u.HasBox || u.Rect == null) continue;
+                var e = new Dictionary<string, object>();
+                e["key"] = kv.Key;
+                e["mode"] = u.InDiorama ? "diorama" : "old";
+                e["lit"] = u.IsLit;
+                e["art"] = u.ArtName;
+                e["anim"] = u.Anim + "#" + u.Frame;
+                // 矩形 (LateUpdate が読んだ角) と、板の四隅をレイアウト用のカメラで写した箱
+                var rect = new Vector4(u.RectMin.x, u.RectMin.y, u.RectMax.x, u.RectMax.y);
+                var t = u.transform;
+                float x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue;
+                bool ok = true;
+                foreach (var v in _quadCorners)
+                {
+                    float d;
+                    var p = cam.Project(t.TransformPoint(v), out d);
+                    if (!(d > 0.01f)) { ok = false; break; }
+                    x0 = Mathf.Min(x0, p.x); x1 = Mathf.Max(x1, p.x); y0 = Mathf.Min(y0, p.y); y1 = Mathf.Max(y1, p.y);
+                }
+                e["rectPx"] = PngBox(rect, H);
+                if (ok)
+                {
+                    var raw = new Vector4(x0, y0, x1, y1);
+                    var board = NormalizeBoardBox(raw, u.FeetPadPx, u.BreathePx, u.FrameScaleX, u.FrameScaleY);
+                    float dev = BoxDev(rect, board);
+                    float tol = u.Moving ? 2f : 1f;
+                    e["boardRawPx"] = PngBox(raw, H);
+                    e["boardPx"] = PngBox(board, H);
+                    e["dev"] = Mathf.Round(dev * 100f) / 100f;
+                    e["tol"] = tol;
+                    e["over"] = dev > tol;
+                    float texW = u.CurrentTexelWidth();
+                    e["pxPerDot"] = texW > 0f ? Mathf.Round((x1 - x0) / texW * 1000f) / 1000f : 0f;
+                }
+                else e["error"] = "板がカメラの後ろ";
+                e["moving"] = u.Moving;
+                e["feetPadPx"] = u.FeetPadPx;
+                e["breathePx"] = Mathf.Round(u.BreathePx * 100f) / 100f;
+                e["frameScale"] = new Vector2(u.FrameScaleX, u.FrameScaleY);
+                e["depth"] = u.UsedDepth;
+                e["k"] = u.UsedK;
+                e["seat"] = u.SeatFound;
+                if (u.SeatFound) { e["seatWorld"] = u.SeatWorld; e["seatK"] = u.SeatK; }
+                e["feetWorld"] = u.FeetWorld;
+                e["heightWorld"] = u.HeightWorld;
+                // 板の向き: 見本はレイアウト用のカメラの回転 (_fwd・_up から作る)。Stage.LayoutRotation (P10) との差も並べる (約束のずれの見張り)
+                e["rotVsLayoutDeg"] = Mathf.Round(Quaternion.Angle(t.rotation, layoutRot) * 100f) / 100f;
+                e["rotVsLayoutRotationDeg"] = Mathf.Round(Quaternion.Angle(t.rotation, LayoutRotation) * 100f) / 100f;
+                e["layer"] = u.gameObject.layer;
+                e["renderingLayerMask"] = u.Rend != null ? u.Rend.renderingLayerMask : 0u;
+                e["castShadows"] = u.Rend != null && u.Rend.shadowCastingMode != ShadowCastingMode.Off;
+                if (u.IsLit) { e["keyFlip"] = u.KeyFlipArt; e["hasNormal"] = u.CurNormal != null; e["hasEmission"] = u.CurEmission != null; }
+                list.Add(e);
+            }
+            return list;
+        }
+
+        static readonly Vector3[] _quadCorners = { new Vector3(-0.5f, 0f, 0f), new Vector3(-0.5f, 1f, 0f), new Vector3(0.5f, 1f, 0f), new Vector3(0.5f, 0f, 0f) };
+
+        /// <summary>画面の箱 (x0, y0, x1, y1。左下が原点) → PNG の箱 [x, y, w, h] (左上が原点・0.1px に丸め)</summary>
+        static float[] PngBox(Vector4 b, float H)
+        {
+            Func<float, float> r = v => Mathf.Round(v * 10f) / 10f;
+            return new[] { r(b.x), r(H - b.w), r(b.z - b.x), r(b.w - b.y) };
+        }
+
+        /// <summary>今のレイアウト用のカメラ (ProjectFeet・ScreenToPlane と同じ静的な値)</summary>
+        static LayoutCam CurrentLayoutCam()
+        {
+            return new LayoutCam { Base = _camBase, Fwd = _fwd, Right = _right, Up = _up, K = _k, Dist = _dist, W = Screen.width, H = Screen.height };
+        }
+
+        /// <summary>
+        /// 見本の板の向き = レイアウト用のカメラの回転。ProjectFeet・ScreenToPlane が使う _fwd・_up から作る (= LayoutCamera の回転。揺れ・寄り・漂いを含まない)。
+        /// Stage.LayoutRotation (P10) と同じ物のはずで、DebugUnitBoxes が差を並べる
+        /// </summary>
+        static Quaternion LayoutRot()
+        {
+            if (_fwd.sqrMagnitude < 1e-8f || _up.sqrMagnitude < 1e-8f) return CameraRotation;
+            return Quaternion.LookRotation(_fwd, _up);
+        }
+
+        // ==== adapter-begin (単体の検査 scratchpad/hd2d/check-P11 がこの範囲を取り出して .NET で回す。Unity の API は Vector2〜4 の算術と Mathf だけ)
+        /// <summary>
+        /// レイアウト用のカメラ (揺れ・寄り・漂いを含まない): 位置 Base・向き Fwd/Right/Up・基準深度 Dist で1px あたり K unit・画面 W×H (px・左下が原点)。
+        /// Project と Unproject は今の ProjectFeet・ScreenToPlane と同じ式
+        /// </summary>
+        internal struct LayoutCam
+        {
+            public Vector3 Base, Fwd, Right, Up;
+            public float K, Dist, W, H;
+            /// <summary>深さ depth での k (画面 1px あたりの unit)</summary>
+            public float KAt(float depth) { return K * depth / Dist; }
+            /// <summary>画面の点 (px) → 深さ depth の面 (視線に垂直) の世界の点 (= ScreenToPlane)</summary>
+            public Vector3 Unproject(float sx, float sy, float depth)
+            {
+                float k = KAt(depth);
+                return Base + Fwd * depth + Right * ((sx - W * 0.5f) * k) + Up * ((sy - H * 0.5f) * k);
+            }
+            /// <summary>世界の点 → 画面の点 (px・左下が原点) と深さ (= ProjectFeet の画面の px。キャンバスの倍率で割る前)</summary>
+            public Vector2 Project(Vector3 world, out float depth)
+            {
+                var rel = world - Base;
+                depth = Vector3.Dot(rel, Fwd);
+                float k = KAt(depth);
+                return new Vector2(W * 0.5f + Vector3.Dot(rel, Right) / k, H * 0.5f + Vector3.Dot(rel, Up) / k);
+            }
+        }
+
+        /// <summary>
+        /// アダプタ (計画 §2-3): 板の足元 (矩形の下端の中心 sx, sy・px) を、座席の世界の点 seat からのずれに変える。
+        /// 休んでいる時の矩形の点 = seat をレイアウト用のカメラで写した点 (rest)。いまの矩形との差 (sx−rest.x, sy−rest.y) を、
+        /// 座席の深さの面の横 (Right) と上 (Up) × 座席の k で世界へ戻して seat に足す。
+        /// seat = Base + Fwd·d + Right·x + Up·y、rest = (W/2 + x/k, H/2 + y/k) なので、結果は Unproject(sx, sy, d) (= 今の ScreenToPlane) と同じ式になる
+        /// (休んでいる時は seat そのもの。演出で矩形が動けば、そのぶんだけ座席の面で動く)
+        /// </summary>
+        internal static Vector3 AdapterFeet(LayoutCam c, Vector3 seat, float sx, float sy, out float k, out float depth)
+        {
+            var rest = c.Project(seat, out depth);
+            k = c.KAt(depth);
+            return seat + c.Right * ((sx - rest.x) * k) + c.Up * ((sy - rest.y) * k);
+        }
+
+        /// <summary>
+        /// 板を写した箱 raw (x0, y0, x1, y1。px・左下が原点) から、決めてあるずらしを外して矩形と同じ物差しにする:
+        /// 絵の下の余白 (板を feetPadPx 下げて足を地面に着けた)・呼吸 (breathePx 上下)・広い枠のコマの拡大 (幅 fsx 倍は足元の中央を軸・高さ fsy 倍は下端を軸)
+        /// </summary>
+        internal static Vector4 NormalizeBoardBox(Vector4 raw, float feetPadPx, float breathePx, float fsx, float fsy)
+        {
+            float cx = (raw.x + raw.z) * 0.5f;
+            float w = (raw.z - raw.x) / Mathf.Max(0.0001f, fsx);
+            float h = (raw.w - raw.y) / Mathf.Max(0.0001f, fsy);
+            float y0 = raw.y + feetPadPx - breathePx;
+            return new Vector4(cx - w * 0.5f, y0, cx + w * 0.5f, y0 + h);
+        }
+
+        /// <summary>2つの箱 (x0, y0, x1, y1) の角のずれの最大 (px)</summary>
+        internal static float BoxDev(Vector4 a, Vector4 b)
+        {
+            return Mathf.Max(Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y)), Mathf.Max(Mathf.Abs(a.z - b.z), Mathf.Abs(a.w - b.w)));
+        }
+        // ==== adapter-end
+
+        // ---- 光を受ける板 (litunits=1) の共通の値 ----
+        static Shader _litShader; static bool _litShaderTried;
+        /// <summary>StageUnitLit (無い・使えない時は null = 今の StageUnit のまま。警告は1回)</summary>
+        static Shader LitShader()
+        {
+            if (_litShaderTried) return _litShader;
+            _litShaderTried = true;
+            var s = Shader.Find("DeckRogue/StageUnitLit");
+            if (s == null || !s.isSupported) { Debug.LogWarning("[Stage] StageUnitLit が無いか使えない → litunits=1 でも今の StageUnit のまま"); s = null; }
+            _litShader = s;
+            return _litShader;
+        }
+
+        static HashSet<string> _keyFlipArts;
+        /// <summary>画像ファイルを左右反転した絵 (P05 の art-lint が書く Resources/Art/stage/act1/keyflip の "keyflip")。_KeyFlip=1 にする絵の名前</summary>
+        static bool IsKeyFlipArt(string art)
+        {
+            if (_keyFlipArts == null)
+            {
+                _keyFlipArts = new HashSet<string>(StringComparer.Ordinal);
+                try
+                {
+                    var ta = Resources.Load<TextAsset>("Art/stage/act1/keyflip");
+                    if (ta != null)
+                    {
+                        var arr = JObject.Parse(ta.text)["keyflip"] as JArray;
+                        if (arr != null) foreach (var x in arr) { var n = (string)x; if (!string.IsNullOrEmpty(n)) _keyFlipArts.Add(n); }
+                    }
+                    else Debug.LogWarning("[Stage] Art/stage/act1/keyflip が無い → _KeyFlip は全部 0");
+                }
+                catch (Exception ex) { Debug.LogWarning("[Stage] keyflip を読めない: " + ex.Message); }
+            }
+            return art != null && _keyFlipArts.Contains(art);
+        }
+
+        /// <summary>
+        /// 設計図のキャラの塊 (look_act1.char.json の "char") の、StageLook の型に無い材質の値 (P23 が詰める口)。書いていなければシェーダの既定のまま。
+        /// localLights (技の光・逆光を受ける割合。既定 0)・whiteCap・emissionIntensity・outlineFloor [r,g,b]・receiveShadows・cookieOnKey
+        /// </summary>
+        sealed class CharMatExtras
+        {
+            public float LocalLights = -1f, WhiteCap = -1f, EmissionIntensity = -1f, ReceiveShadows = -1f, CookieOnKey = -1f;
+            public Color OutlineFloor; public bool HasOutlineFloor;
+        }
+        static StageLookData _extrasFor; static CharMatExtras _extras;
+        static CharMatExtras CharExtras()
+        {
+            var cur = StageLook.Current;
+            if (_extras != null && ReferenceEquals(_extrasFor, cur)) return _extras;
+            var x = new CharMatExtras();
+            try
+            {
+                var c = cur != null && cur.Raw != null ? cur.Raw["char"] as JObject : null;
+                if (c != null)
+                {
+                    Func<string, float> num = name => { var t = c[name]; return t != null && (t.Type == JTokenType.Float || t.Type == JTokenType.Integer) ? (float)t : -1f; };
+                    x.LocalLights = num("localLights"); x.WhiteCap = num("whiteCap"); x.EmissionIntensity = num("emissionIntensity");
+                    x.ReceiveShadows = num("receiveShadows"); x.CookieOnKey = num("cookieOnKey");
+                    var of = c["outlineFloor"] as JArray;
+                    if (of != null && of.Count >= 3) { x.OutlineFloor = new Color((float)of[0], (float)of[1], (float)of[2], 1f); x.HasOutlineFloor = true; }
+                }
+            }
+            catch (Exception ex) { Debug.LogWarning("[Stage] look の char を読めない: " + ex.Message); }
+            _extrasFor = cur; _extras = x;
+            return x;
+        }
 
         // ---------------------------------------------------------------- キャラ (UI の矩形に追従するビルボード)
 
@@ -109,6 +361,12 @@ namespace DeckRogue.Game
             u.FrameDur["block"] = new[] { 0.06f, 0.08f, 0.10f, 0.20f };   // 9コマの 2,4,6,8 = 斧を前に回して構える
             // 盤面の作り直し (Rebuild) で板が作り直されても、再生中のコマ送りは引き継ぐ (攻撃コマが Rebuild で消えていた)
             u.Key = key;
+            // 光を受ける板の法線・発光と _KeyFlip の引き先 (2026-09-30 P11)。絵の名前 = Resources の名前 (leader_green・enemy_wolf・人形の id)
+            u.ArtName = sprite.name;
+            u.BaseFolder = key == "player" ? "leaders" : key.StartsWith("doll:", StringComparison.Ordinal) ? "dolls" : "enemies";
+            u.AnimFolder = cat + "/anim";
+            u.KeyFlipArt = IsKeyFlipArt(sprite.name);
+            u.InitShadowState();
             AnimState st0;
             if (_animStates.TryGetValue(key, out st0) && st0.Anim != "idle" && u.Anims.ContainsKey(st0.Anim) && Time.time - st0.At < 2f)
             {
@@ -125,7 +383,7 @@ namespace DeckRogue.Game
                 var hmr = halo.AddComponent<MeshRenderer>();
                 hmr.sharedMaterial = GlowMaterial(Px.Radial(new Color(1f, 0.86f, 0.5f, 0.5f)));
                 hmr.shadowCastingMode = ShadowCastingMode.Off; hmr.receiveShadows = false;
-                u.Halo = halo.transform; u.HaloUv = new Vector2(0.64f, 0.93f);
+                u.Halo = halo.transform; u.HaloUv = HaloUvFor(sprite.name);   // 絵ごとの表 (表に無ければ今の 0.64, 0.93)
             }
             u.LateUpdate();
             _bound[key] = u;
@@ -196,6 +454,25 @@ namespace DeckRogue.Game
             public Dictionary<string, float[]> FrameDur = new Dictionary<string, float[]>();   // コマごとの秒 (緩急)。無ければ fps で均等
             public string Anim = "idle"; public int Frame; public float FrameT; public float Fps = 8f; public bool Breathe = true; public float BreathePhase; public string Key;
             static readonly Vector3[] _c = new Vector3[4];
+
+            // ---- 2026-09-30 P11 (HD-2D 見本) ----
+            // 絵の名前と引き先 (法線 <名前>_n・発光 <名前>_e・コマ <名前>_<動き>_<n>_n)
+            public string ArtName, BaseFolder, AnimFolder;
+            public bool KeyFlipArt;                         // art-lint の表で左右反転した絵
+            public bool IsLit;                              // 材質が StageUnitLit (litunits=1)
+            bool _mapsLoaded;
+            Texture2D _baseN, _baseE;
+            readonly Dictionary<string, List<Texture2D>> _animN = new Dictionary<string, List<Texture2D>>(), _animE = new Dictionary<string, List<Texture2D>>();
+            public Texture2D CurNormal, CurEmission;       // いまのコマの法線・発光 (無ければ null)
+            // 影の置き方 (レイヤー・Rendering Layer・影を落とすか)。作った時の値を覚え、旗が変わった時だけ書く (撮影の unitsonly がその場でレイヤーを動かすのを毎フレーム戻さない)
+            int _layer0; uint _mask0; int _shadowSig = int.MinValue;
+            public bool CharShadowOn;
+            // 最後の LateUpdate の値 (TryGetUnitBox・DebugUnitBoxes が読む)
+            public bool HasBox, InDiorama, SeatFound, Moving;
+            public Vector3 FeetWorld, SeatWorld; public float HeightWorld, SeatK, UsedDepth, UsedK;
+            public Vector2 RectMin, RectMax;                // 矩形の角 (px・左下が原点。丸める前)
+            public float FeetPadPx, BreathePx;
+            Vector4 _lastRect; int _movedFrame = -100;
             public void Play(string anim)
             {
                 if (!Anims.ContainsKey(anim) || Anims[anim].Count == 0) return;
@@ -220,8 +497,138 @@ namespace DeckRogue.Game
                     FrameScaleX = FrameScaleY = 1f;
                     Mat.SetTextureScale("_BaseMap", BaseUvScale); Mat.SetTextureOffset("_BaseMap", BaseUvOffset);
                 }
+                if (IsLit) ApplyMaps(tex);
             }
             public Vector2 BaseUvScale = Vector2.one, BaseUvOffset = Vector2.zero;
+
+            /// <summary>いまのコマの絵の幅 (テクセル。一枚絵は絵の矩形の幅)。pxPerDot の分母</summary>
+            public float CurrentTexelWidth()
+            {
+                var tex = Mat != null ? Mat.mainTexture : null;
+                if (tex == null) return 0f;
+                if (tex == BaseTex) return BaseUvScale.x * tex.width;
+                return tex.width;
+            }
+
+            /// <summary>光を受ける板: いまのコマの法線 _NormalMap と発光 _EmissionMap を差し替える (無いコマは _HasNormal・_HasEmission を 0)</summary>
+            void ApplyMaps(Texture tex)
+            {
+                EnsureMaps();
+                Texture2D n = null, e = null;
+                if (tex == BaseTex) { n = _baseN; e = _baseE; }
+                else
+                {
+                    List<Texture2D> l;
+                    if (_animN.TryGetValue(Anim, out l) && Frame >= 0 && Frame < l.Count) n = l[Frame];
+                    if (_animE.TryGetValue(Anim, out l) && Frame >= 0 && Frame < l.Count) e = l[Frame];
+                }
+                CurNormal = n; CurEmission = e;
+                Mat.SetTexture("_NormalMap", n); Mat.SetFloat("_HasNormal", n != null ? 1f : 0f);
+                Mat.SetTexture("_EmissionMap", e); Mat.SetFloat("_HasEmission", e != null ? 1f : 0f);
+            }
+
+            /// <summary>法線と発光の絵を1回だけ引く (P05 の sprite-normals.py の出力。一枚絵 = Art/&lt;種別&gt;/&lt;名前&gt;_n、コマ = Art/&lt;種別&gt;/anim/&lt;名前&gt;_&lt;動き&gt;_&lt;n&gt;_n)</summary>
+            void EnsureMaps()
+            {
+                if (_mapsLoaded) return;
+                _mapsLoaded = true;
+                if (string.IsNullOrEmpty(ArtName)) return;
+                _baseN = MapTex(BaseFolder, ArtName + "_n");
+                _baseE = MapTex(BaseFolder, ArtName + "_e");
+                foreach (var kv in Anims)
+                {
+                    var ln = new List<Texture2D>(); var le = new List<Texture2D>();
+                    for (int i = 0; i < kv.Value.Count; i++)
+                    {
+                        string f = ArtName + "_" + kv.Key + "_" + i;
+                        ln.Add(MapTex(AnimFolder, f + "_n"));
+                        le.Add(MapTex(AnimFolder, f + "_e"));
+                    }
+                    _animN[kv.Key] = ln; _animE[kv.Key] = le;
+                }
+            }
+
+            static Texture2D MapTex(string folder, string name)
+            {
+                if (string.IsNullOrEmpty(folder)) return null;
+                var s = Theme.Art(folder, name);
+                return s != null ? s.texture : null;
+            }
+
+            /// <summary>
+            /// 材質を旗に合わせる: litunits=1 なら StageUnitLit、そうでなければ今の StageUnit。合っていれば何もしない (stage=old・旗なしでは毎フレーム即戻る)。
+            /// 差し替えたら古い材質は捨てる
+            /// </summary>
+            void EnsureMaterial()
+            {
+                bool want = HD2DFlags.LitUnits && LitShader() != null;
+                if (want == IsLit || Mat == null || BaseTex == null) return;
+                Material m;
+                if (want)
+                {
+                    m = new Material(LitShader());
+                    m.SetTexture("_BaseMap", BaseTex); m.mainTexture = BaseTex;
+                    m.SetFloat("_Cutoff", 0.4f);
+                    m.SetFloat("_Fog", 1f);
+                }
+                else m = SpriteMat(BaseTex, 0.4f, 0.35f);
+                var old = Mat;
+                Mat = m; IsLit = want;
+                if (Rend != null) Rend.sharedMaterial = m;
+                Apply();   // いまのコマの絵と UV (光を受ける板なら法線・発光も)
+                if (!IsLit) { CurNormal = null; CurEmission = null; }
+                Destroy(old);
+            }
+
+            /// <summary>光を受ける板の材質の値 (毎フレーム。旗 receive=・herolift=・keyflip= と設計図 look の char が変わっても追う)</summary>
+            void ApplyLitProps(bool hero)
+            {
+                Mat.SetFloat("_Receive", StageLook.CharReceive(hero));
+                Mat.SetFloat("_HeroLift", hero ? StageLook.HeroLift : 1f);
+                Mat.SetFloat("_AmbientScale", StageLook.CharAmbientScale);
+                Mat.SetFloat("_KeyFlip", KeyFlipArt && HD2DFlags.KeyFlip == HD2DKeyFlip.Auto ? 1f : 0f);
+                var x = CharExtras();
+                Mat.SetFloat("_LocalLights", x.LocalLights >= 0f ? x.LocalLights : 0f);
+                if (x.WhiteCap >= 0f) Mat.SetFloat("_WhiteCap", x.WhiteCap);
+                if (x.EmissionIntensity >= 0f) Mat.SetFloat("_EmissionIntensity", x.EmissionIntensity);
+                if (x.ReceiveShadows >= 0f) Mat.SetFloat("_ReceiveShadows", x.ReceiveShadows);
+                if (x.CookieOnKey >= 0f) Mat.SetFloat("_CookieOnKey", x.CookieOnKey);
+                if (x.HasOutlineFloor) Mat.SetColor("_OutlineFloor", x.OutlineFloor);
+            }
+
+            /// <summary>作った時のレイヤー・Rendering Layer を覚える (旗なしの時はこの値のまま一度も書かない)</summary>
+            public void InitShadowState()
+            {
+                _layer0 = gameObject.layer;
+                _mask0 = Rend != null ? Rend.renderingLayerMask : 1u;
+                _shadowSig = ShadowSig(_layer0, _mask0, false);
+            }
+
+            static int ShadowSig(int layer, uint mask, bool cast) { return (layer & 0xff) | ((int)(mask & 0xffff) << 8) | (cast ? 1 << 24 : 0); }
+
+            /// <summary>
+            /// 影の置き方 (計画 P11 手順3): stage=diorama か charshadow=1 なら板はレイヤー8 (StageUnit)・Rendering Layer は Default＋Characters (bit0・bit1。Environment は無し)
+            /// (舞台の灯 = スポットの影のレイヤーだけに載り、月の影 (Environment) には載らない = キャラの影は1方向に1本)。charshadow=1 で影を落とす。
+            /// どれも立っていなければ作った時の値。旗が変わった時だけ書く
+            /// </summary>
+            void SyncShadowMode(bool dio)
+            {
+                bool cs = HD2DFlags.CharShadow;
+                bool staged = dio || cs;
+                int layer = staged ? HD2DLayers.StageUnit : _layer0;
+                // Default (bit0) は残す (Diorama の部品が 1|Environment にしているのと同じ形)。月の影 (Environment だけ) には載らず、舞台の灯 (Characters) には載る
+                uint mask = staged ? (1u | HD2DLayers.RenderingCharacters) : _mask0;
+                int sig = ShadowSig(layer, mask, cs);
+                CharShadowOn = cs;
+                if (sig == _shadowSig) return;
+                _shadowSig = sig;
+                gameObject.layer = layer;
+                if (Rend != null)
+                {
+                    Rend.renderingLayerMask = mask;
+                    Rend.shadowCastingMode = cs ? ShadowCastingMode.On : ShadowCastingMode.Off;
+                }
+            }
             void Advance()
             {
                 List<Texture2D> frames;
@@ -242,7 +649,29 @@ namespace DeckRogue.Game
                 }
                 Apply();
             }
-            void OnDestroy() { if (Shadow != null) Destroy(Shadow.gameObject); if (Halo != null) Destroy(Halo.gameObject); }
+            // 板が消える時に、この板だけの材質を捨てる (2026-09-30 P11: Rebuild のたびに板の材質・接地影の材質・杖の先の光の材質と絵が漏れていた)。
+            // 接地影の絵 (BlobTex) は全員で共有なので捨てない。杖の先の光の絵 (Px.Radial) は板ごとに作っているので捨てる
+            void OnDestroy()
+            {
+                if (Shadow != null)
+                {
+                    var smr = Shadow.GetComponent<MeshRenderer>();
+                    if (smr != null && smr.sharedMaterial != null) Destroy(smr.sharedMaterial);
+                    Destroy(Shadow.gameObject);
+                }
+                if (Halo != null)
+                {
+                    var hmr = Halo.GetComponent<MeshRenderer>();
+                    if (hmr != null && hmr.sharedMaterial != null)
+                    {
+                        var htex = hmr.sharedMaterial.mainTexture;
+                        Destroy(hmr.sharedMaterial);
+                        if (htex != null) Destroy(htex);
+                    }
+                    Destroy(Halo.gameObject);
+                }
+                if (Mat != null) Destroy(Mat);
+            }
             public void LateUpdate()
             {
                 if (Rect == null) { Destroy(gameObject); return; }
@@ -250,39 +679,96 @@ namespace DeckRogue.Game
                 Rect.GetWorldCorners(_c);
                 float sx = Mathf.Round((_c[0].x + _c[3].x) * 0.5f), sy = Mathf.Round(_c[0].y);
                 float w = Mathf.Round(_c[3].x - _c[0].x), h = Mathf.Round(_c[1].y - _c[0].y);
-                float k = _k * Depth / _dist;
-                var pos = ScreenToPlane(sx, sy, Depth);
+                // 見本 (stage=diorama) はアダプタ (計画 §2-3): 座席の世界の点＋休んでいる時の矩形との差。座席が無い (TryGetSeat が false) 時は今の式。
+                // どちらも同じ画面の箱になる (adapter の範囲の注記)。stage=old は今の式をそのまま (1画素も変えない)
+                bool dio = HD2DFlags.StageMode == HD2DStage.Diorama;
+                float k; Vector3 pos;
+                Vector3 seat; float seatK;
+                SeatFound = false;
+                if (dio && Key != null && TryGetSeat(Key, out seat, out seatK) && TryAdapter(seat, sx, sy, out pos, out k))
+                {
+                    SeatFound = true; SeatWorld = seat; SeatK = seatK;
+                }
+                else
+                {
+                    k = _k * Depth / _dist;
+                    pos = ScreenToPlane(sx, sy, Depth);
+                    UsedDepth = Depth;
+                }
+                UsedK = k;
                 var ground = pos;
                 pos -= _up * (FeetPad * h * k);   // 絵の余白ぶん下げる = 足が地面の点に着く (影は地面の点のまま)
-                if (Anim == "idle" && Breathe) pos += _up * (Mathf.Sin(Time.time * (2.4f + BreathePhase * 0.08f) + BreathePhase) * (Key == "player" ? 2f : 3f) * k);   // 呼吸: ±2〜3px の上下 (拡大・回転はしない)。周期も個体ごとに少しずらす (⑩ 2026-09-17)
+                float breathe = 0f;
+                if (Anim == "idle" && Breathe)
+                {
+                    breathe = Mathf.Sin(Time.time * (2.4f + BreathePhase * 0.08f) + BreathePhase) * (Key == "player" ? 2f : 3f);
+                    pos += _up * (breathe * k);   // 呼吸: ±2〜3px の上下 (拡大・回転はしない)。周期も個体ごとに少しずらす (⑩ 2026-09-17)
+                }
+                var rot = dio ? LayoutRot() : CameraRotation;   // 見本の板はレイアウト用のカメラの回転 (漂い・揺れで回さない)
                 transform.position = pos;
-                transform.rotation = CameraRotation;
+                transform.rotation = rot;
                 transform.localScale = new Vector3(Mathf.Max(0.01f, w * k * FrameScaleX), Mathf.Max(0.01f, h * k * FrameScaleY), 1f);   // 広い枠のコマは同じドット密度で板を広げる (足元中央は固定)
+                RecordBox(dio, pos, k, w, h, breathe);
+                EnsureMaterial();   // litunits の旗に材質を合わせる (旗なしなら何もしない)
                 var tint = Img != null ? Img.color : Color.white;
                 Mat.SetColor("_BaseColor", tint);
                 // この経路を通るのは BindUnit で置いたキャラの板だけ (player・enemyN・人形)。リーダー = 主役の照明、それ以外 = キャラの環境光 (2026-09-29 I24)
                 bool hero = Key == "player";
                 bool doll = !hero && Key != null && Key.StartsWith("doll:", StringComparison.Ordinal);   // 人形 (BattleScreen.FillDollPanel の key) = 敵と主役の間の環境光 (F05)
-                // 敵と人形は絵の真ん中の画面の位置で周辺減光を打ち消す (F06: 同じ噛みつく巻物が ①→④ で明るさ半分・青く曇った)
-                Color lift = hero || Screen.width <= 0 || Screen.height <= 0 ? Color.white : VignetteLift(sx / Screen.width, (sy + h * 0.5f * (1f - FeetPad)) / Screen.height);
-                ApplyLight(Mat, UnitSunAmount, hero, !hero, lift, doll, HeroLight);
+                if (IsLit) ApplyLitProps(hero);   // 光を受ける板: 固定のキー＋上下の環境光 (StageLook の全体値)。見本は PalOf・主役の照明・周辺減光の打ち消しを使わない (計画 §2-4)
+                else
+                {
+                    // 敵と人形は絵の真ん中の画面の位置で周辺減光を打ち消す (F06: 同じ噛みつく巻物が ①→④ で明るさ半分・青く曇った)
+                    Color lift = hero || Screen.width <= 0 || Screen.height <= 0 ? Color.white : VignetteLift(sx / Screen.width, (sy + h * 0.5f * (1f - FeetPad)) / Screen.height);
+                    ApplyLight(Mat, UnitSunAmount, hero, !hero, lift, doll, HeroLight);
+                }
                 Mat.SetFloat("_Rim", hero ? UnitRim : CharRim);
                 if (FlashT > 0f) FlashT -= Time.deltaTime;
                 Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * 0.85f);
                 Mat.SetFloat("_Dissolve", DissolveK);
+                SyncShadowMode(dio);
                 if (Shadow != null)
                 {
                     float ww = w * k;
-                    PlaceBlob(Shadow, new Vector3(ground.x, 0f, ground.z), ww, tint.a * (1f - DissolveK));
+                    float sa = tint.a * (1f - DissolveK);
+                    if (CharShadowOn) { ww *= 0.6f; sa *= 0.35f; }   // 本物の影 (舞台の灯) が落ちる時は、足元の接地影の楕円を濃さ 0.35 倍・幅 0.6 倍に (計画 P11 手順3)
+                    // 見本は座席の地面の高さ (帯は平ら)。old は今どおり 0
+                    PlaceBlob(Shadow, new Vector3(ground.x, SeatFound ? SeatWorld.y : 0f, ground.z), ww, sa);
                 }
                 if (Halo != null)
                 {
                     float ww = w * k, hh = h * k;
                     Halo.position = pos + _right * ((HaloUv.x - 0.5f) * ww) + _up * (HaloUv.y * hh) - _fwd * 0.05f;
-                    Halo.rotation = CameraRotation;
+                    Halo.rotation = rot;
                     float sz = 0.9f * (1f + 0.06f * Mathf.Sin(Time.time * 5f));
                     Halo.localScale = new Vector3(sz, sz, 1f);
                 }
+            }
+
+            /// <summary>アダプタ: レイアウト用のカメラで座席 seat を写し、矩形の足元 (sx, sy) との差を座席の深さの面で足す。深さが正でなければ false (今の式へ)</summary>
+            bool TryAdapter(Vector3 seat, float sx, float sy, out Vector3 pos, out float k)
+            {
+                float d;
+                pos = AdapterFeet(CurrentLayoutCam(), seat, sx, sy, out k, out d);
+                if (!(d > 0.01f) || !(k > 0f) || float.IsNaN(pos.x) || float.IsInfinity(pos.x)) { pos = default; k = 0f; return false; }
+                UsedDepth = d;
+                return true;
+            }
+
+            /// <summary>TryGetUnitBox・DebugUnitBoxes の値を記録する (矩形の角・絵の足元・高さ・決めてあるずらし・演出中か)</summary>
+            void RecordBox(bool dio, Vector3 pos, float k, float w, float h, float breathe)
+            {
+                InDiorama = dio;
+                FeetWorld = pos + _up * (FeetPad * h * k);   // 絵の足元 (地面の点。呼吸と演出の動きを含む)
+                HeightWorld = Mathf.Max(0f, h * k * FrameScaleY - FeetPad * h * k);
+                RectMin = new Vector2(_c[0].x, _c[0].y); RectMax = new Vector2(_c[2].x, _c[2].y);
+                FeetPadPx = FeetPad * h; BreathePx = breathe;
+                var r = new Vector4(_c[0].x, _c[0].y, _c[2].x, _c[2].y);
+                if ((r - _lastRect).sqrMagnitude > 1e-4f) _movedFrame = Time.frameCount;
+                _lastRect = r;
+                // 演出中 = 矩形がこの2フレームで動いた・待機でないコマ・点滅・崩れ・呼吸のない絵の揺れ (許すずれは 2px)
+                Moving = Time.frameCount - _movedFrame <= 2 || Anim != "idle" || FlashT > 0f || DissolveK > 0f;
+                HasBox = true;
             }
         }
 

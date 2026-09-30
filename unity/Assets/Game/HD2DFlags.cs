@@ -260,12 +260,21 @@ namespace DeckRogue.Game
         static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
         static HD2DTier _defaultTier = HD2DTier.Pc;
         static int _pcQuality = -1;   // tier=phone へ切り替える前の品質レベル (-1 = 切り替えていない)
+        // PC の品質レベル = QualitySettings.asset の m_PerPlatformDefaultQuality の Standalone (5「Ultra」= URP-Default)。
+        // 2026-09-30 W2 の統合で見つけた不具合: Windows のプレイヤーは終わる時に今の品質レベルをレジストリ (HKCU\Software\DeckRogue\DeckRogue の
+        // UnityGraphicsQuality_h…) に書き、次の起動はその値で始まる。tier=phone の撮影 (品質レベル2 = URP-Phone) の後に起動した PC の撮影が
+        // 全部スマホの URP (MSAA なし・影 512・SSAO なし) で撮られていた。→ 起動の頭で PC なら必ずこのレベルへ戻し、
+        // tier=phone で切り替えたら終わる時に元のレベルへ戻す (書かれる値を PC のレベルにする)。ゲームは品質レベルを変える口を持たないので、
+        // PC でレベル2から始まるのは撮影の残りだけ
+        const int PcQualityLevel = 5;
+        static bool _quitHooked;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Boot()
         {
             // スマホの実機は phone が既定 (品質はもともとレベル2なので触らない)
             if (Application.isMobilePlatform) { _defaultTier = HD2DTier.Phone; _tier = HD2DTier.Phone; }
+            else HealPcQuality();
             // 起動引数の -hd2d、続けて撮影の -state の中の旗 (撮影の STATE のほうが勝つ)。StateJump も頭でもう一度当てる (変わらなければ何も起きない)
             ApplyLaunchArgs();
             var st = Autopilot.Arg("-state");
@@ -426,6 +435,29 @@ namespace DeckRogue.Game
             return Convert.ToString(v, Inv);
         }
 
+        /// <summary>PC の起動の頭: 品質レベルがスマホのレベル (2) なら PC のレベルへ戻す (前の撮影の tier=phone がレジストリに残した値。上の PcQualityLevel の注記)</summary>
+        static void HealPcQuality()
+        {
+            try
+            {
+                int n = QualitySettings.names.Length;
+                int lv = QualitySettings.GetQualityLevel();
+                if (n > PcQualityLevel && lv == 2 && lv != PcQualityLevel)
+                {
+                    QualitySettings.SetQualityLevel(PcQualityLevel, true);
+                    Debug.LogWarning("[HD2DFlags] 品質レベルが 2 (スマホ) で始まった = 前の tier=phone の撮影の残り → " + PcQualityLevel + " (" + QualitySettings.names[PcQualityLevel] + ") へ戻した");
+                }
+            }
+            catch (Exception e) { Debug.LogWarning("[HD2DFlags] 品質レベルを確かめられない: " + e.Message); }
+        }
+
+        /// <summary>tier=phone のまま終わる時: 品質レベルを切り替える前へ戻す (プレイヤーが終わる時にレジストリへ書く値を PC のレベルにする)</summary>
+        static void RestorePcQualityOnQuit()
+        {
+            if (Application.isMobilePlatform || _pcQuality < 0) return;
+            try { QualitySettings.SetQualityLevel(_pcQuality, false); } catch (Exception) { }
+        }
+
         /// <summary>tier の品質レベル: PC で phone にしたらレベル2へ、pc に戻したら元のレベルへ (実機では触らない)</summary>
         static void SyncTierQuality()
         {
@@ -437,6 +469,7 @@ namespace DeckRogue.Game
                     if (QualitySettings.names.Length <= 2) { Debug.LogWarning("[HD2DFlags] tier=phone: 品質レベル2が無い (レベル数 " + QualitySettings.names.Length + ")。品質はそのまま"); return; }
                     if (_pcQuality < 0) _pcQuality = QualitySettings.GetQualityLevel();
                     if (QualitySettings.GetQualityLevel() != 2) QualitySettings.SetQualityLevel(2, true);
+                    if (!_quitHooked) { _quitHooked = true; Application.quitting += RestorePcQualityOnQuit; }
                     Debug.Log("[HD2DFlags] tier=phone: 品質レベル " + _pcQuality + " → 2 (" + QualitySettings.names[2] + ")");
                 }
                 else if (_pcQuality >= 0)

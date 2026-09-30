@@ -96,7 +96,7 @@ mkdir -p "$WIN_DIR"
 # GUI で足したパッケージをリポジトリへ戻すのは scripts/unity-win.sh pull Packages/manifest.json
 rsync -a --delete \
   --exclude 'Library/' --exclude 'Temp/' --exclude 'Logs/' --exclude 'UserSettings/' --exclude 'obj/' --exclude 'bin/' \
-  --exclude 'EngineTests/' --exclude '*.csproj' --exclude '*.sln' --exclude 'unity-batch.log' --exclude 'goldens/' --exclude 'Build/' --exclude 'Shots/' --exclude 'player.log' \
+  --exclude 'EngineTests/' --exclude '*.csproj' --exclude '*.sln' --exclude 'unity-batch.log' --exclude 'goldens/' --exclude 'Build/' --exclude 'Shots/' --exclude 'PShots/' --exclude 'player.log' \
   --exclude 'Packages/manifest.json' --exclude 'Packages/packages-lock.json' \
   "$REPO/unity/" "$WIN_DIR/"
 mkdir -p "$WIN_DIR/Packages"

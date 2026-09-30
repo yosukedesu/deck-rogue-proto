@@ -13,9 +13,9 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
+  - StageUnit
+  - StageSet
+  - StageFx
   - 
   - 
   - 
@@ -43,4 +43,6 @@ TagManager:
     locked: 0
   m_RenderingLayers:
   - Default
+  - Characters
+  - Environment
   m_MigratedRenderPipelines: []

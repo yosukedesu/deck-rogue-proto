@@ -35,6 +35,11 @@ namespace DeckRogue.Game
         static Pal _pal;
         static Vector3 _lampPos;
         static Material _waterMat;
+        // 箱庭 (HD-2D 見本 P12・2026-09-30): 幕1 × stage=diorama の時だけ、今の舞台 (Paint の old の道筋) の代わりに Diorama (P04) と StageLook (P09) で組む
+        static bool _diorama;                   // いま舞台が箱庭 (GroundY は Diorama.GroundY を読む・SetFxForAct は水の粒を止める)
+        static string _paintedSig = "";         // 描いた舞台の組み方 ("old" か "d|幕|幹|設計図|段")。同じ幕でも組み方が変われば描き直す (old と diorama を交互に撮っても混ざらない)
+        static bool _dioramaFlagsHooked;        // HD2DFlags.Changed を1回だけ購読した (aa の切り替えで半立体の alpha-to-coverage を当て直す)
+        static float _dioramaBuildMs;           // 最後に箱庭を組んだ時間 (ミリ秒。dumplayout と記録)
 
         // ---------------------------------------------------------------- 座席 (舞台が配置を決める)
 
@@ -179,7 +184,12 @@ namespace DeckRogue.Game
         }
         static int CellI(float x) { return Mathf.Clamp(Mathf.FloorToInt((x - TX0) / Cell), 0, TNX - 1); }
         static int CellJ(float z) { return Mathf.Clamp(Mathf.FloorToInt((z - TZ0) / Cell), 0, TNZ - 1); }
-        public static float GroundY(float x, float z) { return _H == null ? 0f : _H[CellI(x), CellJ(z)]; }
+        /// <summary>舞台の地面の高さ (世界の x・z)。箱庭 (幕1 × stage=diorama) の間は Diorama.GroundY (設計図の段の天面。座席の帯は 0)、それ以外は段丘の高さ場</summary>
+        public static float GroundY(float x, float z)
+        {
+            if (_diorama) return Diorama.GroundY(x, z);
+            return _H == null ? 0f : _H[CellI(x), CellJ(z)];
+        }
         static bool IsDirt(float x, float z) { return _Dirt != null && _Dirt[CellI(x), CellJ(z)]; }
 
         static float CornerH(int i, int j)
@@ -549,8 +559,14 @@ namespace DeckRogue.Game
             // 検証用: 起動引数 -stageact N で舞台の幕だけ差し替える (スクショの自動操縦で幕2/3の舞台を撮る。ゲームの進行には触れない)
             var cargs = Environment.GetCommandLineArgs();
             for (int i = 0; i < cargs.Length - 1; i++) if (cargs[i] == "-stageact") { int a; if (int.TryParse(cargs[i + 1], out a)) act = Mathf.Clamp(a, 1, 3); }
-            if (_paintedAct == act) return;
+            bool wantDio = WantDiorama(act);
+            string sig = wantDio ? DioramaSignature(act) : "old";
+            if (_paintedAct == act && _paintedSig == sig) return;
+            // 箱庭 (HD-2D 見本 P12): 幕1 × stage=diorama なら Diorama と StageLook で組んで終わり。設計図が無い・組むのに失敗したら下の今の舞台 (old) で描く
+            if (wantDio && PaintDiorama(act, sig)) return;
+            LeaveDiorama();   // old で描く前に: 箱庭の光 (StageLook) を控えへ戻し (Paint が下で書く環境光・霧・色補正を上書きしないよう先に)・箱庭を捨て・今の月とランタンを点け直す
             _paintedAct = act;
+            _paintedSig = sig;   // 箱庭に失敗した時もこの組み方のうちは組み直さない (Rebuild のたびに失敗と old の描き直しを繰り返さない)
             _flat = act != 1;
             for (int i = _world.childCount - 1; i >= 0; i--) UnityEngine.Object.Destroy(_world.GetChild(i).gameObject);
             _seatPools.Clear(); _seatPoolN = -1;   // 座席の光溜まりも今消した子の中にある (Destroy はフレームの終わりなので null 判定に頼らず次の EnemySlots で置き直す)
@@ -1075,17 +1091,147 @@ namespace DeckRogue.Game
             }
         }
 
-        /// <summary>粒子の幕別トグル: 蛍・水のきらめき・落ち葉・月の塵は森 (幕1) のもの。幕3 は月の塵だけ戻す</summary>
+        // ---------------------------------------------------------------- 箱庭をつなぐ (HD-2D 見本 P12・2026-09-30。計画 docs/design/hd2d-slice-plan-2026-09-30.md の P12)
+        // 幕1 × stage=diorama の時だけ、Paint は今の舞台 (下の old の道筋) の代わりに Diorama (P04 の組み立て器) と StageLook (P09 の光の一式) で組む。
+        // 幕2・3 と stage=old は今の舞台のまま (比べる元と戻り先)。old に戻る時は LeaveDiorama が光を控えへ戻してから今の舞台を描く
+
+        /// <summary>この幕を箱庭で描くか (見本は幕1だけ)</summary>
+        static bool WantDiorama(int act) { return act == 1 && HD2DFlags.StageMode == HD2DStage.Diorama; }
+
+        /// <summary>箱庭の組み方の名札。組むのに使う旗 (幹 trunk=・光の設計図 look=・段 tier=) が変われば別の名札 = Paint が組み直す</summary>
+        static string DioramaSignature(int act)
+        {
+            return "d|" + act + "|" + HD2DFlags.Trunk + "|" + (HD2DFlags.Look ?? "") + "|" + HD2DFlags.Tier;
+        }
+
+        /// <summary>
+        /// 幕 act を箱庭で描く (計画 P12 の手順1): world を空にし、今の月とランタンを止め、_pal = PalOf(act) → StageLook.Apply → Diorama.Build →
+        /// StageLook.ApplyMaterials (Build が材質を作り直すので後でもう一度) → 半立体の alpha-to-coverage → Diorama.OnCameraLayout → SetFxForAct の順。
+        /// 設計図が無い・組むのに失敗したら false (呼び手の Paint が LeaveDiorama で片付けて今の舞台で描く)
+        /// </summary>
+        static bool PaintDiorama(int act, string sig)
+        {
+            var layout = Diorama.LoadLayout(act);
+            if (layout == null) { Debug.LogError("[Stage] 箱庭の設計図が無い (Resources/" + Diorama.LayoutResource(act) + ") → 今の舞台 (old) で描く"); return false; }
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            Diorama.Clear();   // 前の箱庭を先に捨てる (下で world を空にする時に同じ物を2回捨てない)
+            _paintedAct = act;
+            _paintedSig = sig;
+            _diorama = true;   // ここから GroundY は Diorama.GroundY (座席の帯は 0)
+            _flat = false;
+            for (int i = _world.childCount - 1; i >= 0; i--) UnityEngine.Object.Destroy(_world.GetChild(i).gameObject);   // 前の舞台の地形・小物・点光源・前の光の一式 (HD2D-LookRig)
+            _seatPools.Clear(); _seatPoolN = -1;   // 座席の光溜まりも今消した子の中 (次の EnemySlots が置き直す)
+            DisableReflection();
+            if (_sun != null) _sun.enabled = false;          // 今の月 (Moonlight) とランタン (Lantern) を止める = 光は StageLook の一式 (月・舞台の灯・逆光) だけ
+            if (_lantern != null) _lantern.enabled = false;
+            _pal = PalOf(act);   // 見本でも StageUnits (litunits=0 の板)・StageDriver が _pal を読む (古い幕の値を残さない。審査1)
+            try
+            {
+                StageLook.Apply(act, _world, _cam, Profile);   // 光の一式 (HD2D-LookRig) は world の下。old に戻る時は LeaveDiorama が Restore してから world を空にする
+                var look = StageLook.Current ?? StageLook.Load(act);
+                Diorama.Build(act, _world, look, new DioramaBuildOptions { Layout = layout, Log = false });
+                if (!Diorama.Active || Diorama.Root == null) throw new Exception("Diorama.Build が箱庭を組めなかった");
+                StageLook.ApplyMaterials();                     // Build が材質を作り直したので、設計図の受光と影の強さをもう一度
+                Diorama.SetAlphaToCoverage(DioramaMsaaOn());    // MSAA の時だけ半立体と札の縁を alpha-to-coverage に (P04 の申し送り)
+                LayoutCamera();   // 光が当たった後のカメラの同期 (P10 の LayoutCamera の後始末 = 霧と影の距離 × r・ぼかしの帯・影のカスケードの分割・額縁の置き直し)
+                Diorama.OnCameraLayout(_camBase, LayoutRotation, _cam.fieldOfView);   // 額縁をレイアウトのカメラ (揺れ・寄り・漂いなし) の決まった位置へ (計画 P12 の手順1)
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[Stage] 箱庭を組めない → 今の舞台 (old) で描く: " + e);
+                return false;
+            }
+            SetFxForAct(act);
+            sw.Stop();
+            _dioramaBuildMs = (float)sw.Elapsed.TotalMilliseconds;
+            HD2DFlags.LayoutDumpers["diorama"] = DioramaDebugInfo;   // dumplayout=1 の layout.json の extra.diorama (部品数・座席の帯の高さ・見つからない物・組んだ時間)。額縁の矩形 extra.frames は P10 (StageCamera の DumpFrames)
+            if (!_dioramaFlagsHooked) { _dioramaFlagsHooked = true; HD2DFlags.Changed += OnDioramaFlagsChanged; }
+            LogDiorama(act);
+            return true;
+        }
+
+        /// <summary>
+        /// 今の舞台 (old) で描く前に: 箱庭だったなら、光の一式を控えへ戻し (RenderSettings.sun・環境光・霧・Volume・カメラ・URP のアセット・ぼかし)・
+        /// 箱庭を捨て (メッシュ・テクスチャ・材質)・記録の口を外す。どちらの時も今の月とランタンを点ける (箱庭で止めた物)
+        /// </summary>
+        static void LeaveDiorama()
+        {
+            bool was = _diorama || Diorama.Active || StageLook.Active;
+            _diorama = false;   // ここから GroundY は段丘の高さ場 (下の BuildTerrain が作り直す)
+            if (was)
+            {
+                StageLook.Restore();
+                Diorama.Clear();
+                HD2DFlags.LayoutDumpers.Remove("diorama");
+            }
+            if (_sun != null) _sun.enabled = true;
+            if (_lantern != null) _lantern.enabled = true;
+        }
+
+        /// <summary>箱庭に MSAA が掛かるか (StageLook.ApplyMsaa と同じ決め方: aa=msaa の時、標本数 = 旗の msaa と設計図の msaaMax の小さい方が 2 以上)。
+        /// 旗から決める = HD2DFlags.Changed の購読の順に依らない</summary>
+        static bool DioramaMsaaOn()
+        {
+            if (HD2DFlags.Aa != HD2DAa.Msaa) return false;
+            int max = StageLook.Current != null ? StageLook.Current.Cam.MsaaMax : 8;
+            return Mathf.Min(HD2DFlags.MsaaSamples, Mathf.Max(1, max)) > 1;
+        }
+
+        /// <summary>旗が変わった時 (aa=・msaa=): 箱庭なら半立体の alpha-to-coverage を当て直す (光の MSAA は StageLook が当て直す)。
+        /// 舞台の組み方の旗 (stage=・trunk=・look=・tier=) は次の Paint が名札で見て組み直す</summary>
+        static void OnDioramaFlagsChanged()
+        {
+            if (_diorama) Diorama.SetAlphaToCoverage(DioramaMsaaOn());
+        }
+
+        static object DioramaDebugInfo()
+        {
+            var o = Diorama.DebugInfo();
+            o["sig"] = _paintedSig;
+            o["buildMs"] = _dioramaBuildMs;
+            return o;
+        }
+
+        /// <summary>組んだ箱庭の記録を1行 (部品数・三角形・Renderer・材質・座席の帯の高さ・種類ごとの数・見つからない物・光の設計図)。門を外れたら警告</summary>
+        static void LogDiorama(int act)
+        {
+            var st = Diorama.LastStats;
+            var sb = new System.Text.StringBuilder();
+            sb.Append("[Stage] 箱庭 幕").Append(act).Append(" を組んだ ").Append(Mathf.RoundToInt(_dioramaBuildMs)).Append("ms (").Append(_paintedSig).Append(") ");
+            sb.Append(st != null ? st.Summary() : "(点検なし)");
+            if (st != null)
+            {
+                sb.Append(" | 種類");
+                var keys = new List<string>(st.ByKind.Keys); keys.Sort(string.CompareOrdinal);
+                foreach (var k in keys) sb.Append(' ').Append(k).Append('=').Append(st.ByKind[k]);
+                if (st.Missing.Count > 0)
+                {
+                    int n = Math.Min(16, st.Missing.Count);
+                    sb.Append(" | 見つからない物 ").Append(string.Join(", ", st.Missing.GetRange(0, n).ToArray()));
+                    if (st.Missing.Count > n) sb.Append(" ほか").Append(st.Missing.Count - n);
+                }
+                if (st.IntrusionNames.Count > 0) sb.Append(" | 座席の帯の部品 ").Append(string.Join(", ", st.IntrusionNames.ToArray()));
+            }
+            var look = StageLook.Current;
+            if (look != null) sb.Append(" | 光 ").Append(look.Name).Append(" [").Append(string.Join("+", look.Sources.ToArray())).Append(']');
+            if (st == null || !st.Ok) Debug.LogWarning(sb.ToString()); else Debug.Log(sb.ToString());
+        }
+
+        /// <summary>粒子の幕別トグル: 蛍・水のきらめき・落ち葉・月の塵は森 (幕1) のもの。幕3 は月の塵だけ戻す。
+        /// 箱庭 (幕1の見本) は小川が無いので水のきらめきを止め、粒の光のひな型 (mote-light-template) も点けない</summary>
         static void SetFxForAct(int act)
         {
             if (_fx == null) return;
+            bool dio = _diorama;
             for (int i = 0; i < _fx.childCount; i++)
             {
                 var c = _fx.GetChild(i);
                 bool on = true;
                 switch (c.name)
                 {
-                    case "fireflies": case "water-sparkle": case "leaves": on = act == 1; break;
+                    case "fireflies": case "leaves": on = act == 1; break;
+                    case "water-sparkle": on = act == 1 && !dio; break;
+                    case "mote-light-template": on = !dio; break;   // 粒ごとの点光源のひな型。今の舞台は今までどおり (既定の on で点いている = 見た目を変えない)。箱庭では点けない (世界の原点に弱い暖色の点光源が1つ立っていた)
                     case "moondust": on = act != 2; break;
                     case "mist-far": on = act != 2; break;
                     case "vein-motes": on = act != 1; break;

@@ -5,7 +5,7 @@
 #   scripts/pshots.sh <一覧> <出力フォルダ> [並列数=3] [seed=4242]
 #   一覧は1行=名前|PC または PH|STATE か 名前|STATE（後者は DEV=PH で全部スマホ相当・既定 PC。# と空行は読み飛ばす）
 #   環境変数: DET=1（-det）・HD2D=…（-hd2d）・PLAYER_ARGS=…・SHOT_TIMEOUT=秒（既定 240）・RETRY=回（既定 2）・WIN_DIR
-#   PH の行は 1920×886・UI 1.6倍（S25 横持ち相当）。出力は <出力>/<名前>-<n>.png と <名前>.log・<名前>*.json、最後に _status.txt に DONE。
+#   PH の行は 1920×886・UI 1.6倍（S25 横持ち相当）。出力は <出力>/<名前>-<n>.png（と dumplayout=1 なら <名前>-<n>.layout.json）・<名前>.log・perf の <名前>-*.json/csv、最後に _status.txt に DONE。
 # 前提: 先に scripts/unity-win.sh build（このスクリプトはビルドも同期もしない）。
 set -u
 LIST="${1:?一覧}"; OUT="${2:?出力フォルダ}"; JOBS="${3:-3}"; SEED="${4:-4242}"
@@ -31,9 +31,18 @@ one() {
     rc=$?
     n=$(ls "$work"/*.png 2>/dev/null | wc -l)
     if [ "$n" -ge 1 ]; then
-      local i=0 f
-      for f in "$work"/*.png; do i=$((i + 1)); cp "$f" "$OUT/$name-$i.png"; done
-      for f in "$work"/*.json "$work"/*.csv; do [ -f "$f" ] && cp "$f" "$OUT/$name-$(basename "$f")"; done
+      local i=0 f stem
+      # 連番の撮影は「NN-…png」(NN は2桁以上の通し番号)。数で並べて 1,2,3… を振り、dumplayout=1 の同じ名前の .layout.json も同じ番号へ
+      # (hd2d-measure.py・hd2d-layout-check.py は <名前>-<k>.png と <名前>-<k>.layout.json を対で読む。2026-09-30 W2)
+      while IFS= read -r f; do
+        i=$((i + 1)); stem="$(basename "$f" .png)"
+        cp "$f" "$OUT/$name-$i.png"
+        [ -f "$work/$stem.layout.json" ] && cp "$work/$stem.layout.json" "$OUT/$name-$i.layout.json"
+      done < <(ls "$work"/*.png | awk -F/ '{n=$NF; split(n,a,"-"); printf "%09d\t%s\n", a[1]+0, $0}' | sort -k1,1n -k2 | cut -f2)
+      for f in "$work"/*.json "$work"/*.csv; do
+        case "$f" in *.layout.json) continue ;; esac
+        [ -f "$f" ] && cp "$f" "$OUT/$name-$(basename "$f")"
+      done
       cp "$work/player.log" "$OUT/$name.log" 2>/dev/null
       echo "$name ok rc=$rc n=$n attempt=$attempt" >> "$OUT/_status.txt"
       return 0

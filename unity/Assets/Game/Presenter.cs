@@ -365,6 +365,7 @@ namespace DeckRogue.Game
                     if (pSpr == null && prt == null) return;
                     var pos = pSpr != null ? Tween.CenterIn(pSpr, fx) : Tween.CenterIn(prt, fx);
                     Tween.HitFx(fx, pos, "claw", new Color(1f, 0.62f, 0.5f, 0.9f), false);
+                    StageFx.FoeHit("player", null, false);   // 舞台の技の光 (2026-09-30 HD-2D 見本 P13。stage=diorama だけ・old では何もしない)
                     Tween.Float(fx, pos + new Vector2(40f, 40f), "とげ −" + tr.HpLoss, UiKit.ColBad, 28, 36f, 0.9f);
                     if (tr.HpLoss > 0) { Stage.Flash("player"); if (live && g.Battle != null) g.Battle.NudgePlayerHp(-tr.HpLoss); }
                     break;
@@ -1702,7 +1703,7 @@ namespace DeckRogue.Game
                         bool volleyTail = hp != null && hp.Volley && !hp.VolleyLast;   // 全体攻撃の途中の1体: 揺れ・寄り・音は最後の1体だけ (2026-09-22)
                         // 敵のブロックが全部吸った (殻は別) = 敵が盾で受け止める (2026-09-17): 斬撃の筋は出さず、敵の正面に空色の盾の面。白い点滅も無し
                         bool guardedE = blocked > 0 && d.HpLoss <= 0 && !shell;
-                        if (guardedE) Tween.GuardFx(fx, hit, "slash", -1f);
+                        if (guardedE) { Tween.GuardFx(fx, hit, "slash", -1f); StageFx.Guard("enemy" + ei, -1f); }   // 技の光 (P13): 盾の面の側に空色
                         else if (spr != null)
                         {
                             // 札ごとの当たりの形 (2026-09-22): 斬撃・牙・角・蔦・踏みつけ・呪文・灯・火種。多段は向きを交互に、最後の1発は大きく
@@ -1723,6 +1724,9 @@ namespace DeckRogue.Game
                         bool finishing = ctx != null && ctx.FinishingBlow;
                         if (finishing) { Tween.HitStop(0.12f, 0.3f); Stage.ZoomPunch(1.1f, 0.6f); Stage.Shake(12f, 0.35f); Tween.RingBurst(fx, hit, new Color(1f, 1f, 0.95f, 0.9f), 260f, 0.5f); }
                         else if (big && !guardedE && !volleyTail) Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
+                        // 舞台の技の光 (2026-09-30 HD-2D 見本 P13): 2Dの当たりと同じ所に点光源。色は当たりの形、大きい当たり (15以上・急所) は強く影あり (PC)。
+                        // とどめはその代わりに白・0.3秒・影あり (1つだけ灯す)。stage=diorama だけ・old では何もしない (乱数も Tween も使わない)
+                        if (!guardedE && spr != null) { if (finishing) StageFx.Finish("enemy" + ei); else StageFx.PlayerHit("enemy" + ei, style, big); }
                         // 数字: 通った量は真鍮の紙、盾に全部吸われたら鋼青、0 は薄く。急所は大きく
                         Color numColor = d.Amount <= 0 ? UiKit.ColDim : (d.HpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;
                         Tween.Float(fx, pos, d.Amount.ToString(), numColor, crit ? 50 : (d.Amount >= 20 ? 46 : 36));
@@ -1787,8 +1791,9 @@ namespace DeckRogue.Game
                         {
                             // 完全に防いだ (2026-09-17 ユーザー「完全に防いだ時に敵からダメージ食らってるように見える」): 被弾の筋 (朱) の代わりに盾で受ける演出 (GuardFx)
                             bool guarded = dd.HpLoss <= 0 && dd.Amount > 0;
-                            if (guarded) Tween.GuardFx(fx, hitPos, style);
-                            else Tween.HitFx(fx, hitPos, style, hitColor, dd.HpLoss >= 12);
+                            // 舞台の技の光 (2026-09-30 HD-2D 見本 P13): 防いだら盾の面の側 (敵の側) に空色、当たったら朱 (飛び道具・光線はその色)。old では何もしない
+                            if (guarded) { Tween.GuardFx(fx, hitPos, style); StageFx.Guard("player", 1f); }
+                            else { Tween.HitFx(fx, hitPos, style, hitColor, dd.HpLoss >= 12); StageFx.FoeHit("player", ranged ? hitColor : (Color?)null, dd.HpLoss >= 12); }
                             // 完全に防いだ時は被弾音でなく防御音 (2026-09-14 ユーザー指摘)。ブロックで受けた盾の音 + 構えの絵
                             if (dd.HpLoss <= 0 && dd.Amount > 0) { Audio.Key("DamageDealt.blocked"); Stage.PlayAnim("player", "block"); }
                             else Audio.Key(dd.HpLoss >= 12 ? "DamageDealt.enemy.big" : "DamageDealt.enemy", dd.HpLoss > 0 ? 1f : 0.5f);
@@ -1965,7 +1970,7 @@ namespace DeckRogue.Game
                     if (atk && spell)
                     {   // 呪文は斧を振らない (2026-09-22 ユーザー裁定): 体の前で色の光がひと膨らみ＝詠唱。当たりは PlayerHitFx の spell/light
                         var cSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
-                        if (cSpr != null) Tween.CastFx(fx, Tween.CenterIn(cSpr, fx), HitColor(CardHitStyle(def), def));
+                        if (cSpr != null) { Tween.CastFx(fx, Tween.CenterIn(cSpr, fx), HitColor(CardHitStyle(def), def)); StageFx.Cast("player", CardHitStyle(def)); }   // 技の光 (P13): 体の前に青緑 (白の灯は暖色)
                     }
                     else if (atk)
                     {

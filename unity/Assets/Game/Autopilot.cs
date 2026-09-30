@@ -123,6 +123,25 @@ namespace DeckRogue.Game
             if (Det) Time.captureFramerate = DetFps;   // 念のため (Awake も最初のフレームの前)
         }
 
+        bool _detPointerOff;
+        /// <summary>
+        /// det: 本物のマウスを読まない = EventSystem の入力モジュールを止める (2026-09-30 HD-2D 見本 W2 の統合)。
+        /// 並列の撮影 (scripts/pshots.sh) でプレイヤーの窓がデスクトップのマウスの下に開くと、手札の札がホバーで持ち上がり、同じ STATE でも撮るたびに画が変わった。
+        /// 自動操縦の押す・ドラッグは ExecuteEvents で直に叩くので、モジュールが止まっていても動く
+        /// </summary>
+        void Update()
+        {
+            if (!Det) return;
+            var es = UnityEngine.EventSystems.EventSystem.current;
+            if (es == null) return;
+            foreach (var m in es.GetComponents<UnityEngine.EventSystems.BaseInputModule>())
+            {
+                if (!m.enabled) continue;
+                m.enabled = false;
+                if (!_detPointerOff) { _detPointerOff = true; Debug.Log("[Autopilot] det: マウスを読まない (入力モジュール " + m.GetType().Name + " を止めた)"); }
+            }
+        }
+
         /// <summary>det: 舞台の粒を種を固定して頭から再生し、90フレーム待つ (粒の数と位置を撮るたびに同じにする)</summary>
         IEnumerator DetSettleStage()
         {

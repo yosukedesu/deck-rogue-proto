@@ -451,6 +451,7 @@ namespace DeckRogue.Game
         /// <summary>絵を取る。無ければ仮の絵を size ドット (通常 64・エリート 80・ボス 96 = どれも4倍表示) で作る</summary>
         public static Sprite Get(string category, string id, bool friendly = false, int size = 64)
         {
+            id = HeroVariant(category, id);   // herodots=48 なら縮めた見本の名前 (キャッシュの鍵にも入る)
             var key = category + "/" + id + "@" + size;
             Sprite s;
             if (_cache.TryGetValue(key, out s)) return s;
@@ -458,6 +459,19 @@ namespace DeckRogue.Game
             if (s == null) s = category == "dolls" ? Doll(id, size) : Generate(id, friendly, size);
             _cache[key] = s;
             return s;
+        }
+
+        /// <summary>
+        /// 主人公の背丈の見本 (2026-09-30 HD-2D 見本 P11。計画 §1-1「62ドットと48ドットを並べる」): 旗 herodots=48 の時、リーダーの絵に
+        /// 縮めた見本 Art/leaders/&lt;id&gt;_48 (P05 の hero-downscale.py。今は leader_green だけ) があればその名前を返す。
+        /// 戦闘の矩形 (BattleScreen) はこの絵の幅×4px で作るので、座席での1ドットは 4px のまま。コマ (leaders/anim/&lt;id&gt;_48_idle_0 …) も絵の名前から引ける。
+        /// 旗が 62 (既定) の時・見本の無いリーダーは id のまま = 今の絵
+        /// </summary>
+        static string HeroVariant(string category, string id)
+        {
+            if (category != "leaders" || string.IsNullOrEmpty(id) || HD2DFlags.HeroDots != 48) return id;
+            var alt = id + "_48";
+            return Theme.Art("leaders", alt) != null ? alt : id;
         }
 
         /// <summary>人形 (白の従者) の仮の絵 (2026-09-19 人形の盤面表示): 白鉄のフードの小さな騎士 = 暗い顔の空洞に琥珀の目2つ・真鍮の帯。

@@ -1,7 +1,10 @@
 // StageSeats.cs — Stage の座席 (2026-09-30 HD-2D 見本。計画 docs/design/hd2d-slice-plan-2026-09-30.md §3)。
-// P02 (W1) で Stage.cs から移した部分 (中身は1文字も変えていない): 座席の足元の高さの登録簿 (_feetOffsets)・LeaderSlot・EnemySlots・
+// P02 (W1) で Stage.cs から移した部分: 座席の足元の高さの登録簿 (_feetOffsets)・LeaderSlot・EnemySlots・
 // 座席の足元の光溜まり (SyncSeatPools)・DollSlots・からくりの匣 (SetKarakuriBox)・SetFeetOffset/FeetOffset。
-// TryGetSeat・SeatDepthRange の中身は P10 が書く。
+// P10 (W2) が書いた部分: TryGetSeat・SeatDepthRange・見本 (stage=diorama) の座席の表 (画角ごとの敵と人形の t)。
+//  ・見本の座席の t は docs/design/hd2d-slice/seatfit.json (P08 の scripts/hd2d-seatfit.py) の表を写し、画角 22/28/36 の間は線形に補間する
+//    (見下ろし 10° の表との差は t で 敵 0.011・人形 0.02 以下 = 画面で 2px ほどなので見下ろしでは分けない)。今の舞台 (stage=old) の t は今のまま。
+//  ・見本では座席の足元の光溜まり (F50・今の舞台の地面を明るくする板) を置かない (光は StageLook の舞台の灯。③の座席の帯のむらを増やすため)。
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,20 +13,129 @@ namespace DeckRogue.Game
 {
     public static partial class Stage
     {
+        /// <summary>座席の世界の点 (key → ProjectFeet に渡された足元の世界の点)。ProjectFeet が書く</summary>
+        static readonly Dictionary<string, Vector3> _seatWorld = new Dictionary<string, Vector3>();
+
         /// <summary>
         /// 座席 (key = "player"・"enemy0"…・"doll:&lt;uid&gt;") の足元の世界の点と、その深さでの k (画面 1px あたりの unit)。
-        /// 無ければ false。骨組み: P10 が書く
+        /// 世界の点 = 最後の組み直しで ProjectFeet に渡された足元 (大きい人形は2席の間)。"player" だけはまだ写していなくても LeaderSlot を返す。
+        /// k はレイアウト用のカメラ (揺れと寄りと漂いを含まない) で今の深さから計算する (= StageUnit の _k × Depth ÷ _dist と同じ式)。
+        /// カメラがまだ無い・知らない key・カメラの後ろなら false
         /// </summary>
         public static bool TryGetSeat(string key, out Vector3 world, out float k)
         {
             world = default; k = 0f;
-            return false;
+            if (key == null || !_laidOut) return false;
+            Vector3 w;
+            if (!_seatWorld.TryGetValue(key, out w))
+            {
+                if (key != "player") return false;
+                w = LeaderSlot();
+            }
+            float d = Vector3.Dot(w - _camBase, _fwd);
+            if (!(d > 0.01f)) return false;
+            world = w;
+            k = _k * d / _dist;
+            return true;
         }
 
-        /// <summary>座席の帯の深さの範囲 (カメラからの距離。手前 near・奥 far)。ぼかしの帯に渡す。骨組み: P10 が書く (まだ無ければ 0・0)</summary>
+        /// <summary>
+        /// 座席の帯の深さの範囲 (カメラからの距離。手前 near・奥 far)。ぼかしの帯 (StageLook.SetSeatBand) と影のカスケードの分割に渡す。
+        /// 帯 = 座りうる全部の席 (リーダー・敵1〜4体の表・人形9体・からくりの匣の2か所) = 戦闘ごとに焦点が動かない。
+        /// レイアウト用のカメラ (揺れと寄りと漂いを含まない) の深さ。カメラがまだ無ければ 0・0
+        /// </summary>
         public static void SeatDepthRange(out float near, out float far)
         {
             near = 0f; far = 0f;
+            if (!_laidOut) return;
+            float lo = float.MaxValue, hi = float.MinValue;
+            foreach (var p in SeatBandPoints())
+            {
+                float d = Vector3.Dot(p - _camBase, _fwd);
+                if (d < lo) lo = d;
+                if (d > hi) hi = d;
+            }
+            if (lo < hi) { near = lo; far = hi; }
+        }
+
+        /// <summary>座りうる全部の席の足元 (帯の深さ・漂いの幅・dumplayout 用。光溜まりは置かない)</summary>
+        static List<Vector3> SeatBandPoints()
+        {
+            var pts = new List<Vector3>(24) { LeaderSlot() };
+            for (int n = 1; n <= 4; n++) pts.AddRange(EnemySeats(n));
+            pts.AddRange(DollSlots(9));
+            pts.Add(OnPath(-6.3f, 1.7f));    // からくりの匣 (PC = リーダーの左奥。SetKarakuriBox と同じ)
+            pts.Add(OnPath(-5.3f, -1.9f));   // からくりの匣 (スマホ = 足元の真ん前)
+            return pts;
+        }
+
+        // ---- 見本 (stage=diorama) の座席の表 (2026-09-30 P10。docs/design/hd2d-slice/seatfit.json の fovs[].enemyT・dolls.step) ----
+        // 条件 (P08 の seatfit): 2〜4体の足元が画面で等間隔 (差 ±5%)・いちばん右の敵の絵と帳面が画面の右端 −16 の内側・先頭の t は人形の列の約束で今のまま。
+        // 人形は1体目の t を今のまま、刻みを伸ばして画面の間隔を今 (36°) 以上に。足元の線は PC 0.42・スマホ 0.52 (GroundLineRatio) で解いた値
+        static readonly float[] SeatFovs = { 22f, 28f, 36f };
+        // 1行 = 1つの画角 (22・28・36)。並びは 1体 | 2体 | 3体 | 4体 (n 体の最初の添字 = (n−1)n/2)
+        static readonly float[] SeatEnemyPc =
+        {
+            4.459f,  3.2f, 7.055f,  2.2f, 5.708f, 8.741f,  1.6f, 4.417f, 6.716f, 10.01f,
+            4.517f,  3.2f, 7.276f,  2.2f, 5.831f, 9.005f,  1.6f, 4.492f, 6.863f, 10.404f,
+            4.6f,    3.2f, 7.6f,    2.2f, 6.009f, 9.4f,    1.6f, 4.599f, 7.079f, 10.999f,
+        };
+        static readonly float[] SeatEnemyPhone =
+        {
+            4.431f,  3.2f, 7.02f,   2.2f, 5.651f, 8.617f,  1.6f, 4.387f, 6.645f, 9.994f,
+            4.5f,    3.2f, 7.254f,  2.2f, 5.796f, 8.928f,  1.6f, 4.476f, 6.819f, 10.469f,
+            4.6f,    3.2f, 7.6f,    2.2f, 6.007f, 9.4f,    1.6f, 4.605f, 7.077f, 11.2f,
+        };
+        static readonly float[] SeatDollStepPc = { 0.93f, 0.895f, 0.85f };
+        static readonly float[] SeatDollStepPhone = { 0.945f, 0.905f, 0.85f };
+        const float SeatDollFirstT = -3.9f;
+
+        /// <summary>画角 fov の表の行 (a・b) と補間の割合 u。22 未満・36 超は端の行</summary>
+        static void SeatFovRow(float fov, out int a, out int b, out float u)
+        {
+            int last = SeatFovs.Length - 1;
+            if (!(fov > SeatFovs[0])) { a = b = 0; u = 0f; return; }
+            if (fov >= SeatFovs[last]) { a = b = last; u = 0f; return; }
+            for (int i = 0; i < last; i++)
+            {
+                if (fov <= SeatFovs[i + 1]) { a = i; b = i + 1; u = (fov - SeatFovs[i]) / (SeatFovs[i + 1] - SeatFovs[i]); return; }
+            }
+            a = b = last; u = 0f;
+        }
+
+        /// <summary>見本の敵の t (n 体・今の画角と端末)。5体以上は4体の表の先頭〜末尾を等分</summary>
+        static float[] DioramaEnemyT(int n)
+        {
+            if (n > 4)
+            {
+                var t4 = DioramaEnemyT(4);
+                var r5 = new float[n];
+                for (int i = 0; i < n; i++) r5[i] = t4[0] + (t4[3] - t4[0]) * i / (n - 1);
+                return r5;
+            }
+            var tbl = UiKit.Phone ? SeatEnemyPhone : SeatEnemyPc;
+            int a, b; float u;
+            SeatFovRow(CurrentFov, out a, out b, out u);
+            int off = (n - 1) * n / 2;
+            var r = new float[n];
+            for (int i = 0; i < n; i++)
+            {
+                float va = tbl[a * 10 + off + i], vb = tbl[b * 10 + off + i];
+                r[i] = va + (vb - va) * u;
+            }
+            return r;
+        }
+
+        /// <summary>見本の人形の前列の t (5つ)。1体目は今のまま・刻みは表から</summary>
+        static float[] DioramaDollT()
+        {
+            var steps = UiKit.Phone ? SeatDollStepPhone : SeatDollStepPc;
+            int a, b; float u;
+            SeatFovRow(CurrentFov, out a, out b, out u);
+            float step = steps[a] + (steps[b] - steps[a]) * u;
+            var r = new float[5];
+            for (int j = 0; j < 5; j++) r[j] = SeatDollFirstT + j * step;
+            return r;
         }
 
         static readonly Dictionary<string, float> _feetOffsets = new Dictionary<string, float>();
@@ -33,11 +145,21 @@ namespace DeckRogue.Game
         /// <summary>敵は道に沿って奥右へ (本家の3/4ジオラマの対角線の隊列)。横に少しずらして一直線を崩す</summary>
         public static Vector3[] EnemySlots(int n)
         {
+            var r = EnemySeats(n);
+            if (DioramaCamera) ClearSeatPools();   // 見本では光溜まりを置かない (光は StageLook の舞台の灯)
+            else SyncSeatPools(r);   // 座席の足元の光溜まり (F50)。BattleView.SyncField が組み直しのたびにここを通る
+            return r;
+        }
+
+        /// <summary>敵の座席 (副作用なし。EnemySlots・座席の帯が使う)</summary>
+        static Vector3[] EnemySeats(int n)
+        {
             n = Math.Max(1, n);
             var r = new Vector3[n];
             // 3体・4体は画面上の足元の間隔がほぼ等しくなるよう奥の席を広げる (2026-09-29 戦闘画面のレビュー p02。奥ほど遠近で詰まるので t は等間隔にしない):
             // PC 4体 1126/1342/1563/1786 (間隔 216/221/223)・スマホ 4体 157/161/154・PC 3体 260/276。先頭 (t=1.6/2.2) は人形の列 (DollSlots「敵① t≥1.6」) の約束で動かさない
             float[] t = n == 1 ? new[] { 4.6f } : n == 2 ? new[] { 3.2f, 7.6f } : n == 3 ? new[] { 2.2f, 5.9f, 9.4f } : n == 4 ? new[] { 1.6f, 4.6f, 7.15f, 11.2f } : null;
+            if (DioramaCamera) t = DioramaEnemyT(n);   // 見本: 画角ごとの座席の表 (seatfit)。5体以上も表から
             // 横のずらしは小さく (2026-09-15 スマホ・2026-09-29 PC の3体以上も): ずらしが大きいと奇数の席が画面上で左へ寄り、間隔が 200/296/126 と偏って帳面と意図の札が重なる。PC の2体は今のまま
             float sB = (UiKit.Phone || n >= 3) ? 0.1f : 0.7f;
             for (int i = 0; i < n; i++)
@@ -46,8 +168,22 @@ namespace DeckRogue.Game
                 float ti = t != null ? t[i] : 1.6f + 9.6f * i / (n - 1);
                 r[i] = OnPath(ti, (i % 2 == 0) ? -0.5f : sB);
             }
-            SyncSeatPools(r);   // 座席の足元の光溜まり (F50)。BattleView.SyncField が組み直しのたびにここを通る
             return r;
+        }
+
+        /// <summary>座席の足元の光溜まりを片付ける (見本では置かない。今の舞台へ戻れば次の SyncSeatPools が置き直す)</summary>
+        static void ClearSeatPools()
+        {
+            if (_seatPools.Count == 0 && _seatPoolN < 0) return;
+            foreach (var old in _seatPools)
+            {
+                if (old == null) continue;
+                var omr = old.GetComponent<MeshRenderer>();
+                if (omr != null) UnityEngine.Object.Destroy(omr.sharedMaterial);
+                UnityEngine.Object.Destroy(old);
+            }
+            _seatPools.Clear();
+            _seatPoolN = -1;
         }
 
         // ---- 座席の足元の光溜まり (2026-09-30 F50 ユーザー裁定「地面を3か所明るく」) ----
@@ -107,12 +243,13 @@ namespace DeckRogue.Game
         /// 敵4体の時の5体目 (t=-0.5) と敵① (t=1.6) の絵の端の間は PC 69→51px・スマホ 105→87px (射影の計算。足元の札と帳面は ArrangeDollTags が別に解く)。
         /// からくりの匣は PC ではリーダーの左奥 (t=-6.3・s=1.7) に置くので、人形の列 (t≥-3.9) とは重ならない (2026-09-29 戦闘画面のレビュー p13)。
         /// スマホの匣はリーダーの足元の真ん前 (t=-5.3・s=-1.9。2026-09-30 F46) で、人形の列とは重ならない (左奥は自分の札にもぐるため。SetKarakuriBox の注記)。
-        /// 上限9 = 超えた分は BattleView が最後の札に「+N」</summary>
+        /// 上限9 = 超えた分は BattleView が最後の札に「+N」。見本 (stage=diorama) は前列の刻みを画角ごとの表から (DioramaDollT)。副作用なし</summary>
         public static Vector3[] DollSlots(int n)
         {
             n = Math.Max(0, Math.Min(n, 9));
             var r = new Vector3[n];
             float[] t = { -3.9f, -3.05f, -2.2f, -1.35f, -0.5f };   // 0.85 刻み (0.7 は PC で 128px の人形が 73px 間隔に詰まりすぎた)。F45 で列ごと +0.2
+            if (DioramaCamera) t = DioramaDollT();   // 見本: 画角ごとの刻み (seatfit。画面の間隔を今以上に保つ。1体目は −3.9 のまま)
             for (int i = 0; i < n; i++)
             {
                 int j = i % 5; bool back = i >= 5;

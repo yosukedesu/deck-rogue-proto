@@ -535,11 +535,20 @@ namespace DeckRogue.Game
             var names = new List<string> { baseName, baseName + ".char", baseName + ".dof" };
             if (HD2DFlags.Tier == HD2DTier.Phone) names.Add(baseName + ".phone");
             var texts = new List<KeyValuePair<string, string>>();
+            TextAsset[] dir = null;
             foreach (var n in names)
             {
                 TextAsset ta = null;
                 try { ta = Resources.Load<TextAsset>(ResourceDir + n); }
                 catch (Exception e) { Debug.LogWarning("[StageLook] " + ResourceDir + n + " を読めない: " + e.Message); }
+                // 名前に点がある設計図 (look_act1.char など): Resources.Load が点の後ろを拡張子として扱って見つけないことがある (W1 で未確認 = P09 の申し送り)。
+                // その時はフォルダの TextAsset を全部読み、アセットの名前 (= ファイル名から最後の拡張子だけを除いた物) で探す (W2 P12 の直し)
+                if (ta == null && n.IndexOf('.') >= 0)
+                {
+                    try { if (dir == null) dir = Resources.LoadAll<TextAsset>(ResourceDir.TrimEnd('/')); }
+                    catch (Exception e) { Debug.LogWarning("[StageLook] " + ResourceDir + " を読めない: " + e.Message); dir = new TextAsset[0]; }
+                    foreach (var t in dir) if (t != null && t.name == n) { ta = t; break; }
+                }
                 if (ta != null) texts.Add(new KeyValuePair<string, string>(n, ta.text));
             }
             var d = FromLayers(act, texts);
@@ -1028,7 +1037,8 @@ namespace DeckRogue.Game
         static void ApplyTiltShift(StageLookData d)
         {
             var t = d.Dof;
-            TiltShiftSettings.Enabled = HD2DFlags.TiltShift == HD2DTiltShift.On;
+            // uionly・unitsonly の撮影の間は切ったまま (Autopilot が撮る前に Enabled を控えて false にしている。組み直しや旗の通知で書き直すと撮影の間に戻ってしまう = P07 の申し送り。W2 P12 の直し)
+            TiltShiftSettings.Enabled = HD2DFlags.TiltShift == HD2DTiltShift.On && !HD2DFlags.UiOnly && !HD2DFlags.UnitsOnly;
             TiltShiftSettings.UseUrpBokeh = HD2DFlags.TiltShift == HD2DTiltShift.Urp;
             TiltShiftSettings.RampNear = Mathf.Max(0.01f, t.RampNear);
             TiltShiftSettings.RampFar = Mathf.Max(0.01f, t.RampFar);

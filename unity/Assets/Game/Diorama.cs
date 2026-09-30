@@ -760,6 +760,51 @@ namespace DeckRogue.Game
             }
         }
 
+        /// <summary>
+        /// アトラスの材質 (設計図の surfaces で shader = "atlas" の物 = 半立体・札・額縁) の alpha-to-coverage (StageModule の _AlphaToMask) を切り替える。
+        /// MSAA の時だけ on にする (MSAA の無い時に on だと、URP の AlphaClip が切った後の値を1標本の被覆へ回して縁の切れ方が変わる)。Stage (P12) が組んだ後と旗 aa= が変わった時に呼ぶ
+        /// </summary>
+        public static void SetAlphaToCoverage(bool on)
+        {
+            if (Layout == null) return;
+            foreach (var kv in Layout.Surfaces)
+            {
+                if (kv.Value == null || kv.Value.Shader != "atlas") continue;
+                if (Materials.TryGetValue(kv.Key, out var m) && m != null && m.HasProperty("_AlphaToMask")) m.SetFloat("_AlphaToMask", on ? 1f : 0f);
+            }
+        }
+
+        /// <summary>
+        /// dumplayout 用 (layout.json の extra.diorama): 最後に組んだ時の点検 (部品・三角形・Renderer・材質・動く物・座席の帯の高さと部品・種類ごとの数・見つからない物)と、
+        /// 設計図の名前・額縁の数・動く物の名前。Stage が組んだ時間と組み方の名札を足す (額縁の画面の矩形 extra.frames は P10 の StageCamera.DumpFrames)
+        /// </summary>
+        public static Dictionary<string, object> DebugInfo()
+        {
+            var o = new Dictionary<string, object>();
+            o["active"] = Active;
+            o["layout"] = Layout != null ? LayoutResource(Layout.Act) : null;
+            o["pathYaw"] = _pathYaw;
+            var st = LastStats;
+            if (st != null)
+            {
+                o["parts"] = st.Parts; o["triangles"] = st.Triangles; o["renderers"] = st.Renderers; o["materials"] = st.Materials; o["dynamic"] = st.Dynamic;
+                o["seatMaxAbsY"] = float.IsNaN(st.SeatMaxAbsY) ? (object)null : st.SeatMaxAbsY;
+                o["seatIntrusions"] = st.SeatIntrusions;
+                o["ok"] = st.Ok;
+                o["failures"] = new List<string>(st.Failures);
+                o["missing"] = new List<string>(st.Missing);
+                var kinds = new Dictionary<string, object>();
+                var keys = new List<string>(st.ByKind.Keys); keys.Sort(string.CompareOrdinal);
+                foreach (var k in keys) kinds[k] = st.ByKind[k];
+                o["byKind"] = kinds;
+            }
+            o["frames"] = _frames.Count;
+            var dyn = new List<string>();
+            foreach (var e in Dynamic) dyn.Add(e.Name);
+            o["dynamicNames"] = dyn;
+            return o;
+        }
+
         // ================================================================ 捨てる
 
         /// <summary>箱庭を捨てる (old に戻る時)。作ったメッシュ・テクスチャ・材質も捨てる</summary>
