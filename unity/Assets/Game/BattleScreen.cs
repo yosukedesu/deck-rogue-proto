@@ -475,7 +475,7 @@ namespace DeckRogue.Game
             // 密度はオクトラ相当 (1ドット=画面4px)。目安の幅は絵のドット数×4 (2026-09-29 p24 ユーザー裁定「1体で戦う幕ボスは128ドットで描き直す」:
             // オーガ・大亀・門番・朧の大鹿・熾を喰う古炉・合成獣の一の相は 128→512px＝このはの約1.7倍。旧は節の種類で固定 (通常 256・エリート 320・ボス 384) で、
             // 128 の絵は round(384/128)=3＝1ドット3px に落ちる)。節の目安より小さい絵は節の値のまま＝仮の絵 (Creature が節の大きさで作る) と
-            // ボスの節の 64 ドット (合成獣の二の相・三の相は今までどおり 384＝一の相の後に半分の背丈へ縮まない)
+            // ボスの節の 64 ドット。合成獣の二の相・三の相も 2026-09-30 F48 で 128 に描き直した (背丈 103→109→111 ドット＝相ごとに膨らむ。スマホは <id>_96)
             string nodeType = null;
             try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
             float nodeDots = nodeType == MapNodeTypes.Boss ? 384f : nodeType == MapNodeTypes.Elite ? 320f : 256f;
@@ -494,7 +494,7 @@ namespace DeckRogue.Game
             float artTarget = artDots * ArtScale;   // スマホは 0.6 (2026-09-15)
             // スマホは中身の背丈 184 単位で頭打ち (2026-09-29 p24): 足元から頭 (上の透明な余白を除く) まで。今のオーガ (78 ドット×2.4＝187) と同じ背丈で、
             // 128 の幕ボスも大きくしない (上部バーまでの余白は約 12px しか無く、頭上の意図の札が頭に重なる)。スマホは整数倍の規約を外している (PixelScaleF＝目安÷幅) ので縮めてよい。
-            // 96 の背の高いボス (巻き上げ機の番人・血族) とボスの節の 64 (合成獣の相＝3.6倍) も同じ背丈にそろう
+            // 96 の背の高いボス (巻き上げ機の番人・血族) とボスの節の 64 の仮の絵も同じ背丈にそろう (合成獣の二・三の相は 2026-09-30 F48 から 128＋<id>_96 = phone96 の道)
             // 96 の幕ボス (phone96) は頭打ちにしない＝背の高い門番・大鹿・古炉は意図の札が頭に重なる (IntentTag の逃がし。本家も重なる。2026-09-16 案A)
             if (UiKit.Phone && !phone96)
             {
@@ -1041,6 +1041,57 @@ namespace DeckRogue.Game
             return riders.Count > 0 && (small || (UiKit.Phone && minor) || wTop + wR > neighborGap - 8f);
         }
 
+        // ---- 登場の演出の間は意図の札を隠す (2026-09-30 F47 ユーザー裁定「帯を下げ、札は後から」) ----
+        // 強個体・幕ボスの名前の帯と舞台の寄り (Stage.Dolly) が終わるまで、意図の札を CanvasGroup の alpha 0 にする。
+        // 旧: 寄りの間に 128 ドットの幕ボスの鬣が札の尾に食い込み、名乗りと予告が同時に出ていた。帯の間は入力を塞いでいる (Presenter.ShowEntrance) ので読めなくても困らない。
+        // 帯が消える時に Presenter が RevealIntentsAfterEntrance を呼び、0.2 秒で出す (名乗り → 予告の順)。隠している間に組み直しが来ても、新しい札は隠れて生まれる。
+        // 保険: 出す合図が来なくても期限 (_entranceHideUntil) を過ぎたら新しい札は隠さない (札が消えたままにならない)
+        static bool _entranceHide;
+        static float _entranceHideUntil;
+        static bool EntranceHidesIntents { get { return _entranceHide && Time.time < _entranceHideUntil; } }
+
+        /// <summary>登場の演出の間、いま出ている意図の札を隠し、以後に組み直した札も隠れて生まれるようにする。maxSeconds は保険の期限</summary>
+        public static void HideIntentsForEntrance(GameRoot g, float maxSeconds)
+        {
+            _entranceHide = true;
+            _entranceHideUntil = Time.time + Mathf.Max(0.5f, maxSeconds);
+            ForEachIntentTag(g, cg => { cg.alpha = 0f; cg.blocksRaycasts = false; });
+        }
+
+        /// <summary>登場の演出の終わり: 意図の札を dur 秒で出す (いま隠れている札だけ。途中で組み直した札は隠さずに生まれる)</summary>
+        public static void RevealIntentsAfterEntrance(GameRoot g, float dur)
+        {
+            _entranceHide = false;
+            var groups = new List<CanvasGroup>();
+            ForEachIntentTag(g, cg => { if (cg.alpha < 1f) groups.Add(cg); });
+            if (groups.Count == 0) return;
+            var from = new float[groups.Count];
+            for (int i = 0; i < groups.Count; i++) from[i] = groups[i].alpha;
+            Tween.Run(Mathf.Max(0.01f, dur), k =>
+            {
+                for (int i = 0; i < groups.Count; i++) if (groups[i] != null) groups[i].alpha = Mathf.Lerp(from[i], 1f, k);
+            }, Ease.OutQuad, () =>
+            {
+                for (int i = 0; i < groups.Count; i++) if (groups[i] != null) { groups[i].alpha = 1f; groups[i].blocksRaycasts = true; }
+            });
+        }
+
+        /// <summary>画面の敵全員の意図の札 (入れ物の子 "intent-tag") の CanvasGroup (無ければ足す) に act を掛ける</summary>
+        static void ForEachIntentTag(GameRoot g, Action<CanvasGroup> act)
+        {
+            var st = g != null && g.Rs != null ? g.Rs.Combat : null;
+            if (st == null) return;
+            for (int i = 0; i < st.Enemies.Count; i++)
+            {
+                var pan = g.Anchor("enemy" + i);
+                var tag = pan != null ? pan.Find("intent-tag") as RectTransform : null;
+                if (tag == null) continue;
+                var cg = tag.GetComponent<CanvasGroup>();
+                if (cg == null) cg = tag.gameObject.AddComponent<CanvasGroup>();
+                act(cg);
+            }
+        }
+
         static void IntentTag(GameRoot g, RectTransform pan, GameState st, int index, EnemyDef def, float headTop, bool aimed, bool candidate, bool acting, float neighborGap, bool uniformStack = false)
         {
             var e = st.Enemies[index];
@@ -1078,6 +1129,7 @@ namespace DeckRogue.Game
             if (bottom + h > canvasTopFromLine) bottom = Mathf.Max(headTop - h * 0.6f, canvasTopFromLine - h);
             var tag = UiKit.NewRect("intent-tag", pan);
             UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-w / 2f, bottom), new Vector2(w / 2f, bottom + h));
+            if (EntranceHidesIntents) { var hcg = tag.gameObject.AddComponent<CanvasGroup>(); hcg.alpha = 0f; hcg.blocksRaycasts = false; }   // 登場の演出の間は隠れて生まれる (F47)
             if (aimed || candidate || acting)
             {
                 var edge = PaperFx.Sheet(tag, PaperFx.Tag, "edge", acting ? PaperFx.BrassLight : candidate ? new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.55f) : PaperFx.Brass);

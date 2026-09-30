@@ -63,9 +63,28 @@ namespace DeckRogue.Game
         // キャラの板の明暗 (2026-09-16 ユーザー「このはも反射と影がすごくない？」): 月光の勾配は板の中で右上 1+0.7×A・左下 1−0.7×A、リムは右上の縁を空色へ寄せる割合。
         // 旧 0.5／0.5 は太い墨線のこのは v2 で「左半分が影・右の縁が光る」と読めた → 0.25／0.2 に緩めた (敵も同じ板なので同時に緩む)
         const float UnitSunAmount = 0.25f, UnitRim = 0.2f;
-        // 敵と人形の板のリム (2026-09-29 I24): 環境光を白寄りにした分、暗い墨線の敵 (オーガ・コボルト) の輪郭を足元の地面から離す。
-        // 09-16 の裁定の対象はリーダー (このは) なので UnitRim 0.2 はリーダーだけに残す
-        const float CharRim = 0.3f;
+        // 敵と人形の板のリム (2026-09-29 I24 で 0.3 に上げた): 環境光を白寄りにした分、暗い墨線の敵 (オーガ・コボルト) の輪郭を足元の地面から離すため。
+        // 2026-09-30 F05 (ユーザー裁定「主人公を持ち上げる」): 敵と人形の縁がリーダー (0.2) より強く光り「主役の照明」の序列が逆になった → 主役とそろえる
+        const float CharRim = UnitRim;
+        // リーダーの板の環境光 (主役の照明)。旧 1.15 = ACES と色補正が沈める中間調を戻す値 (2026-09-16)。
+        // 2026-09-30 F05 裁定で 1.35: 敵を白寄りの環境光にした後 (I24)、このはの体 (線形 Y 0.064) が狼 0.21・妖術師 0.23 より暗く画面でいちばん暗いキャラになっていた。
+        // 縁の光ではなく体の中間調を持ち上げる (09-16「反射と影がすごい」の裁定＝勾配とリムは触らない)
+        const float HeroAmbient = 1.35f;
+        // 主役の照明はリーダーの絵ごとに変えられる (2026-09-30 F05 の続き)。1.35 のままでは、このはの体が幕1で線形 Y 0.077〜0.083 にとどまり、目標 0.09 に届かなかった。
+        // 原因は光より絵の側: 元の絵の明るさ (線形 Y) は このは 0.086 (黒鉄の衣と墨線)・妖術師 0.315・狼 0.340 で、このはだけ最初から敵の約4分の1。
+        // ひなたは白い衣が幕3ですでに白に近いので 1.35 のまま (共用の値を上げると衣が飛ぶ)。このはだけ 1.5 = 予測 Y 0.090〜0.096・白飛び 1% のまま。
+        // 敵÷このは ≤2.2 には 1.6 が要り、その時は白飛び 5% になるので 1.5 で止める (クリーム色・白い敵の場面の比は次の裁定)
+        static float HeroAmbientFor(string art)
+        {
+            return art == "leader_green" ? 1.5f : HeroAmbient;
+        }
+        // ランタンの暖色は、リーダーの環境光が 1.15 の時にシェーダの lamp×1.15 と R がそろう値。環境光だけ上げるとランタン側 (左) の方が暗くなる
+        // (lerp(1.35, lamp×1.15, lf) の G・B が下がる = 光源の側が暗い逆の陰影。このはの体は lf 0.36〜0.80 でランタンに近く、1.35 の半分しか効かない) →
+        // リーダーだけランタンの色も (主役の照明)/1.15 倍にして、暖色の差 (近い側が暖かい) はそのままに体全体を 1.35/1.15 倍 (このは 1.5/1.15 倍) にする
+        const float HeroLampRef = 1.15f;
+        // 人形の板の環境光 = 小物・木の UnitAmbient と敵の CharAmbient の間 (2026-09-30 F05 裁定 Lerp 0.6)。
+        // 人形は味方の板なので敵ほど白く立てず、ひなた (主役) を頭一つ上に残す (I24 の後は盾の人形・聖歌の人形がひなたの 85% まで来ていた)
+        const float DollAmbientMix = 0.6f;
         static Material _waterMat;
         static readonly Dictionary<string, StageUnit> _bound = new Dictionary<string, StageUnit>();
         static readonly Dictionary<string, float> _depths = new Dictionary<string, float>();
@@ -459,9 +478,55 @@ namespace DeckRogue.Game
                 if (Vector3.Dot(n, outward) >= 0f) faces.Quad(a, b, c, d, ua, ub, uc, ud); else faces.Quad(d, c, b, a, ud, uc, ub, ua);
             }
         }
+        // ---- 道の帯の明るさ (2026-09-30 F50 ユーザー裁定「地面を3か所明るく」) ----
+        // 道の座標 s=−2〜8 (リーダー・人形・敵の座席から、幕1 では奥の小川 (中心 s≈6) の両岸まで) の地面タイルの色を 1.15 倍にする = 画面の中間の群 (60〜169) を舞台の地面で作る。
+        // 縁は外へ PathBandFeather の幅で 3 段 (1.05/1.10/1.15) に下げ、境目を t のノイズで揺らす (s 一定の直線の帯を作らない)。
+        // 川床・水面 (幕1 の小川・幕2/3 の水路) と段の垂直の面は対象外 (川床は「座席の高さで最も明るい帯にしない」の裁定どおり暗いまま)
+        const float PathBandS0 = -2f, PathBandS1 = 8f, PathBandGain = 0.15f, PathBandFeather = 1.3f;
+        const int PathBandTiers = 3;
+        static int PathBandTier(float t, float s)
+        {
+            float w = (Vnoise(t * 0.3f + 57f, 11f) - 0.5f) * 1.0f;
+            float e = Mathf.Min(s + w - PathBandS0, PathBandS1 - (s + w));   // 帯の内側への距離 (負 = 外)
+            float k = Mathf.Clamp01((e + PathBandFeather) / PathBandFeather);
+            return Mathf.Clamp(Mathf.RoundToInt(k * PathBandTiers), 0, PathBandTiers);
+        }
+        static float PathBandGainAt(float x, float z)
+        {
+            if (_H == null) return 1f;
+            float t, s; PathLocal(x, z, out t, out s);
+            return 1f + PathBandGain * PathBandTier(t, s) / PathBandTiers;
+        }
+        static readonly Dictionary<MB, MB[]> _bandMb = new Dictionary<MB, MB[]>();
+        static MB PathBandMb(MB baseMb, int tier)
+        {
+            if (tier <= 0) return baseMb;
+            MB[] arr;
+            if (!_bandMb.TryGetValue(baseMb, out arr)) { arr = new MB[PathBandTiers + 1]; _bandMb[baseMb] = arr; }
+            if (arr[tier] == null) arr[tier] = new MB();
+            return arr[tier];
+        }
+        /// <summary>地面の面を置き、道の帯の段 (PathBandMb で振り分けた分) を _BaseColor を上げた複製の材質で重ねずに置く</summary>
+        static void SolidBand(string name, MB baseMb, Material mat)
+        {
+            Solid(name, baseMb, mat);
+            MB[] arr;
+            if (!_bandMb.TryGetValue(baseMb, out arr)) return;
+            var c = mat.GetColor("_BaseColor");
+            for (int k = 1; k <= PathBandTiers; k++)
+            {
+                if (arr[k] == null) continue;
+                var m = new Material(mat);
+                float g = 1f + PathBandGain * k / PathBandTiers;
+                m.SetColor("_BaseColor", new Color(c.r * g, c.g * g, c.b * g, c.a));
+                Solid(name + "-band" + k, arr[k], m);
+            }
+        }
+
         static void BuildTerrain(Material mGrass, Material mDirt, Material mCliff)
         {
             _tseed = 1000 + _paintedAct * 7;
+            _bandMb.Clear();
             _H = new float[TNX, TNZ]; _Dirt = new bool[TNX, TNZ]; _Bed = new bool[TNX, TNZ];
             for (int i = 0; i < TNX; i++)
                 for (int j = 0; j < TNZ; j++)
@@ -489,6 +554,7 @@ namespace DeckRogue.Game
                     else if (_Dirt[i, j]) { target = dirtTop; atlas = dirtAtlas; }
                     else if (grassAtlas) { target = top; atlas = true; }
                     else { target = litterHere ? litter : top; atlas = false; }
+                    var dst = target == bed ? bed : PathBandMb(target, PathBandTier(t, sv));   // 道の帯は _BaseColor を上げた複製へ (F50。種と向きの選び方は target のまま)
                     Vector2[] uv;
                     if (atlas)
                     {
@@ -504,21 +570,21 @@ namespace DeckRogue.Game
                         if (!Stepped && target == top && v == 0) rot &= 2;   // 向きのある草 (grass_a = 横から描いた葉の列) は 0°/180° だけ (2026-09-29 I44: 90° で葉の列が直交し、手前の約230px 角のタイルの格子が見えていた)
                         float lx0 = (i & 1) * 0.5f, lz0 = (j & 1) * 0.5f, lx1 = lx0 + 0.5f, lz1 = lz0 + 0.5f;
                         uv = new[] { AtlasUv(v, rot, lx0, lz0), AtlasUv(v, rot, lx0, lz1), AtlasUv(v, rot, lx1, lz1), AtlasUv(v, rot, lx1, lz0) };
-                        target.Quad(new Vector3(x0, h00, z0), new Vector3(x0, h01, z1), new Vector3(x1, h11, z1), new Vector3(x1, h10, z0), uv[0], uv[1], uv[2], uv[3]);
+                        dst.Quad(new Vector3(x0, h00, z0), new Vector3(x0, h01, z1), new Vector3(x1, h11, z1), new Vector3(x1, h10, z0), uv[0], uv[1], uv[2], uv[3]);
                     }
                     else
                     {
                         int rot = Stepped ? 0 : (int)(Hash01(i * 3 + 11, j * 5 + 7) * 4f);
                         uv = new[] { new Vector2(x0, z0) / Tile, new Vector2(x0, z1) / Tile, new Vector2(x1, z1) / Tile, new Vector2(x1, z0) / Tile };
-                        target.Quad(new Vector3(x0, h00, z0), new Vector3(x0, h01, z1), new Vector3(x1, h11, z1), new Vector3(x1, h10, z0),
+                        dst.Quad(new Vector3(x0, h00, z0), new Vector3(x0, h01, z1), new Vector3(x1, h11, z1), new Vector3(x1, h10, z0),
                                     uv[rot], uv[(rot + 1) % 4], uv[(rot + 2) % 4], uv[(rot + 3) % 4]);
                     }
                 }
-            Solid("terrain-grass", top, mGrass);
+            SolidBand("terrain-grass", top, mGrass);
             var mLitter = _flat ? mGrass : HasTile(_paintedAct, "grass2") ? Lit(Tex(_paintedAct, "grass2", null)) : Lit(Tex(_paintedAct, "leaves", Px.Dirt(_pal, new System.Random(3))));
             if (!_flat) mLitter.SetColor("_BaseColor", HasTile(_paintedAct, "grass2") ? new Color(0.4f, 0.5f, 0.5f) : HasTile(_paintedAct, "leaves") ? new Color(0.62f, 0.62f, 0.66f) : new Color(0.5f, 0.46f, 0.44f));
-            Solid("terrain-litter", litter, mLitter);
-            Solid("terrain-dirt", dirtTop, mDirt);
+            SolidBand("terrain-litter", litter, mLitter);
+            SolidBand("terrain-dirt", dirtTop, mDirt);
             var mBed = HasTile(_paintedAct, "bed") ? Lit(Tex(_paintedAct, "bed", null)) : Lit(Tex(_paintedAct, "dirt", Px.Dirt(_pal, new System.Random(5))));
             mBed.SetColor("_BaseColor", HasTile(_paintedAct, "bed") ? (Stepped ? new Color(0.3f, 0.36f, 0.4f) : new Color(0.36f, 0.42f, 0.48f)) : new Color(0.36f, 0.34f, 0.32f));   // 川床 = 暗い湿った土 (座席の高さで最も明るい帯にしない = レビュー)
             Solid("terrain-bed", bed, mBed);
@@ -588,23 +654,83 @@ namespace DeckRogue.Game
                 float ti = t != null ? t[i] : 1.6f + 9.6f * i / (n - 1);
                 r[i] = OnPath(ti, (i % 2 == 0) ? -0.5f : sB);
             }
+            SyncSeatPools(r);   // 座席の足元の光溜まり (F50)。BattleView.SyncField が組み直しのたびにここを通る
             return r;
         }
 
+        // ---- 座席の足元の光溜まり (2026-09-30 F50 ユーザー裁定「地面を3か所明るく」) ----
+        // 画面の画素の約7割が暗 (60未満) で中間の群 (60〜169) が12〜13%しかなく、紙の UI が黒い画面に貼った札に見えた (I24)。
+        // 空・樹冠・露出は触らず、中間の群を舞台の地面で作る (ほかの2か所は BuildTerrain の道の帯と BattleView の desk-shade)。
+        // 敵の座席の足元に、光溜まり (moon-pool と同じ寒色の放射状の暈を地面に寝かせる) を置く。半径は隣の座席までの距離の 0.6 倍
+        // (隣の暈とは縁の薄いところで触れるだけ)。寒色 = 「暖色は街灯の範囲だけ」の外。リーダーの足元は moon-pool-hero が先にある。
+        // 座席は戦闘ごとに敵の数で変わるので、EnemySlots が呼ばれるたびに数と幕が変わっていれば置き直す
+        static readonly Color SeatPoolColor = new Color(0.8f, 0.88f, 1f, 0.12f);
+        const float SeatPoolRadius = 0.6f;
+        static readonly List<GameObject> _seatPools = new List<GameObject>();
+        static int _seatPoolN = -1, _seatPoolAct = -1;
+        static bool _seatPoolPhone;
+        static Texture2D _seatPoolTex;
+
+        static void SyncSeatPools(Vector3[] seats)
+        {
+            if (_world == null) return;
+            bool same = _seatPoolN == seats.Length && _seatPoolAct == _paintedAct && _seatPoolPhone == UiKit.Phone && _seatPools.Count == seats.Length;
+            if (same) foreach (var old in _seatPools) if (old == null) { same = false; break; }
+            if (same) return;
+            foreach (var old in _seatPools)
+            {
+                if (old == null) continue;
+                var omr = old.GetComponent<MeshRenderer>();
+                if (omr != null) UnityEngine.Object.Destroy(omr.sharedMaterial);
+                UnityEngine.Object.Destroy(old);
+            }
+            _seatPools.Clear();
+            if (_seatPoolTex == null) _seatPoolTex = Px.Radial(SeatPoolColor);
+            for (int i = 0; i < seats.Length; i++)
+            {
+                float gap = float.MaxValue;
+                for (int j = 0; j < seats.Length; j++)
+                {
+                    if (j == i) continue;
+                    float dx = seats[j].x - seats[i].x, dz = seats[j].z - seats[i].z;
+                    gap = Mathf.Min(gap, Mathf.Sqrt(dx * dx + dz * dz));
+                }
+                if (gap == float.MaxValue) gap = 4.4f;   // 1体 (幕ボス) は2体の時の座席の間隔 (t 3.2→7.6) で
+                float dia = 2f * SeatPoolRadius * gap;
+                var p = seats[i];
+                var pool = Glow("seat-pool", _seatPoolTex, new Vector3(p.x, GroundY(p.x, p.z) + 0.035f, p.z), 1f, 1f);
+                pool.GetComponent<MeshFilter>().sharedMesh = _quadCentered;
+                pool.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                pool.transform.localScale = new Vector3(dia, dia, 1f);
+                pool.GetComponent<MeshRenderer>().sharedMaterial.renderQueue = 2999;   // 接地影 (GlowMaterial の 3000) より先に描く = 足元の影を明るく抜かない
+                _seatPools.Add(pool);
+            }
+            _seatPoolN = seats.Length; _seatPoolAct = _paintedAct; _seatPoolPhone = UiKit.Phone;
+        }
+
         /// <summary>人形 (白の従者) の座席 (2026-09-19 人形の盤面表示・案A「灯りの列」→ ユーザー「B との中間」= ひなたのすぐ前から):
-        /// 点灯した順に、ひなた (t=-5) と敵① (t≥1.6) の間の道に並ぶ。前列5体 (t=-4.1…-0.7・0.85 刻み・奥と手前を交互に) ＋ 後列4体 (一歩奥・半歩右)。
-        /// からくりの匣は PC ではリーダーの左奥 (t=-6.3・s=1.7) に置くので、人形の列 (t≥-4.1) とは重ならない (2026-09-29 戦闘画面のレビュー p13)。
-        /// スマホの匣は右手前 (t=-3.7・s=-0.75) のままで、2体目 (t=-3.25・s=0.25) の足元の左を少し隠す (左奥は自分の札にもぐるため。SetKarakuriBox の注記)。
+        /// 点灯した順に、ひなた (t=-5) と敵① (t≥1.6) の間の道に並ぶ。前列5体 (t=-3.9…-0.5・0.85 刻み・奥と手前を交互に。PC の1体目だけは灯籠の下を避けて手前) ＋ 後列4体 (一歩奥・半歩右)。
+        /// 2026-09-30 F45 (ユーザー裁定「列を少し右へ」): 旧 t=-4.1…-0.7 では1体目 (PC x483〜567) の兜が灯籠の下枠に 3〜5px 重なり、袖の角に接し、裾との間が 0〜3px で、
+        /// ひなたと1体目がひとつの塊に見えた → 列ごと t+0.2 (画面で約 +22px)。灯籠の下に立つこと自体は「灯りの列」の結果なので残す。
+        /// 敵4体の時の5体目 (t=-0.5) と敵① (t=1.6) の絵の端の間は PC 69→51px・スマホ 105→87px (射影の計算。足元の札と帳面は ArrangeDollTags が別に解く)。
+        /// からくりの匣は PC ではリーダーの左奥 (t=-6.3・s=1.7) に置くので、人形の列 (t≥-3.9) とは重ならない (2026-09-29 戦闘画面のレビュー p13)。
+        /// スマホの匣はリーダーの足元の真ん前 (t=-5.3・s=-1.9。2026-09-30 F46) で、人形の列とは重ならない (左奥は自分の札にもぐるため。SetKarakuriBox の注記)。
         /// 上限9 = 超えた分は BattleView が最後の札に「+N」</summary>
         public static Vector3[] DollSlots(int n)
         {
             n = Math.Max(0, Math.Min(n, 9));
             var r = new Vector3[n];
-            float[] t = { -4.1f, -3.25f, -2.4f, -1.55f, -0.7f };   // 0.85 刻み (0.7 は PC で 128px の人形が 73px 間隔に詰まりすぎた)
+            float[] t = { -3.9f, -3.05f, -2.2f, -1.35f, -0.5f };   // 0.85 刻み (0.7 は PC で 128px の人形が 73px 間隔に詰まりすぎた)。F45 で列ごと +0.2
             for (int i = 0; i < n; i++)
             {
                 int j = i % 5; bool back = i >= 5;
-                float s = (j % 2 == 0 ? 0.9f : 0.25f) + (back ? 1.15f : 0f);
+                // PC は1体目だけ手前の道 (s 0.25) に立つ (2026-09-30 F45 の続き)。奥 (s 0.9) のままでは t+0.2 で兜が灯籠の中心の真下に来て
+                // (PC 灯籠 x518〜578・下端 y497／兜の上端 y487)、人形が灯籠をかぶった1体に見えた。手前なら足元 (550,610)→(560,626) で兜の上端 503、
+                // 灯籠がいちばん下がる待機のコマ (一枚絵と同じ) でも 6px 空く。2体目からの奥と手前の交互はそのまま
+                // (交互ごと入れ替えると 1-2体目・3-4体目の間が 78・65px に詰まり、剣が盾の人形に・犬が聖歌の人形に掛かった)。
+                // スマホは奥のまま: 1体目はもう灯籠の右 (灯籠 x483〜517／人形 x525〜) にいて、手前へ出すと足元の札が横に並べず盾の人形の札がその体の上へ押し上げられた
+                bool nearFirst = i == 0 && !UiKit.Phone;
+                float s = (nearFirst ? 0.25f : j % 2 == 0 ? 0.9f : 0.25f) + (back ? 1.15f : 0f);
                 r[i] = OnPath(t[j] + (back ? 0.15f : 0f), s);
             }
             return r;
@@ -627,7 +753,7 @@ namespace DeckRogue.Game
                 if (_boxGlow != null) UnityEngine.Object.Destroy(_boxGlow);
                 if (_boxBlob != null) UnityEngine.Object.Destroy(_boxBlob);
                 _boxClosed = Px.KarakuriBox(false); _boxOpen = Px.KarakuriBox(true);
-                // 左奥 (PC): リーダー (t=-5, s=0.9) の左奥 = 自分の札 (y642) より上で足元と影が収まり (下端 ≈614)、下の札の「からくり」区画の真上に来る。人形の列 (t≥-4.1) とも重ならない。
+                // 左奥 (PC): リーダー (t=-5, s=0.9) の左奥 = 自分の札 (y642) より上で足元と影が収まり (下端 ≈614)、下の札の「からくり」区画の真上に来る。人形の列 (t≥-3.9) とも重ならない。
                 // 右手前 (スマホ): スマホの自分の札 (x≤325・上端 y382) はリーダーの足元 (y≈405) より上まで来る。左奥は s=1.7 で下端 ≈404 (札に 22px もぐる)、
                 // 奥へ逃がしても幕1の地面がそこで沈む (高さ −0.2〜−0.3) ので s=2.2〜3.6 のどれも札の縁に接した (2026-09-29 撮影で確認)。右手前は切れていない
                 // スマホはリーダーの足元の真ん前 (2026-09-30 F46: 旧・右手前 (−3.7,−0.75) は白の人形の2体目の脚を隠し、剣の人形の札が匣に乗った。
@@ -718,6 +844,7 @@ namespace DeckRogue.Game
             else if (u.Anims.ContainsKey("idle")) u.Play("idle");
             if (key == "player")
             {
+                u.HeroLight = HeroAmbientFor(sprite.name);   // 主役の照明はリーダーの絵ごと (F05 の続き)
                 // 杖の先の光: 板の右上 (絵の uv≈0.64,0.93) に追従する淡い暖色のハロー
                 var halo = new GameObject("staff-glow");
                 halo.transform.SetParent(_units, false);
@@ -816,6 +943,7 @@ namespace DeckRogue.Game
         {
             public RectTransform Rect; public Image Img; public Material Mat; public MeshRenderer Rend; public float FlashT; public float DissolveK; public float Depth; public Transform Shadow;
             public Transform Halo; public Vector2 HaloUv; public float FeetPad;
+            public float HeroLight = HeroAmbient;   // リーダーの板の主役の照明 (絵ごと。HeroAmbientFor)。敵と人形では使わない
             // コマ送り (2026-09-09 このはの戦闘アニメ): 待機はループ、攻撃/被弾/防御は1回流して待機へ戻る。ドットは拡大・回転せず絵を差し替えるだけ
             public Texture2D BaseTex;
             public Dictionary<string, List<Texture2D>> Anims = new Dictionary<string, List<Texture2D>>();
@@ -888,9 +1016,10 @@ namespace DeckRogue.Game
                 Mat.SetColor("_BaseColor", tint);
                 // この経路を通るのは BindUnit で置いたキャラの板だけ (player・enemyN・人形)。リーダー = 主役の照明、それ以外 = キャラの環境光 (2026-09-29 I24)
                 bool hero = Key == "player";
+                bool doll = !hero && Key != null && Key.StartsWith("doll:", StringComparison.Ordinal);   // 人形 (BattleScreen.FillDollPanel の key) = 敵と主役の間の環境光 (F05)
                 // 敵と人形は絵の真ん中の画面の位置で周辺減光を打ち消す (F06: 同じ噛みつく巻物が ①→④ で明るさ半分・青く曇った)
                 Color lift = hero || Screen.width <= 0 || Screen.height <= 0 ? Color.white : VignetteLift(sx / Screen.width, (sy + h * 0.5f * (1f - FeetPad)) / Screen.height);
-                ApplyLight(Mat, UnitSunAmount, hero, !hero, lift);
+                ApplyLight(Mat, UnitSunAmount, hero, !hero, lift, doll, HeroLight);
                 Mat.SetFloat("_Rim", hero ? UnitRim : CharRim);
                 if (FlashT > 0f) FlashT -= Time.deltaTime;
                 Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * 0.85f);
@@ -1111,20 +1240,23 @@ namespace DeckRogue.Game
 
         static void ApplyLight(Material m, float sunAmount, bool hero = false, bool character = false) { ApplyLight(m, sunAmount, hero, character, Color.white); }
 
-        static void ApplyLight(Material m, float sunAmount, bool hero, bool character, Color lift)
+        static void ApplyLight(Material m, float sunAmount, bool hero, bool character, Color lift, bool doll = false, float heroLight = HeroAmbient)
         {
             bool painted = _pal.LampOnUnits > 0f;
-            // hero = リーダーの板: 夜の環境光 (0.8〜0.96) を掛けず源の色で立つ = 主役の照明 (2026-09-16 ユーザー裁定)
+            // hero = リーダーの板: 夜の環境光 (0.8〜0.96) を掛けず源の色で立つ = 主役の照明 (2026-09-16 ユーザー裁定。2026-09-30 F05 で 1.15→1.35、このはだけ 1.5 = heroLight)
             // character = 敵と人形の板: ほぼ白で少しだけ冷たい CharAmbient (2026-09-29 ユーザー裁定「敵の環境光を白寄りに」)。
             //   旧は小物と同じ UnitAmbient (幕1 0.58/0.65/0.94 = 線形で明るさ 0.4 倍の青いフィルタ) で、クリーム・砂の絵が青灰になり地面に溶けていた。
-            //   小物・木の板 (SpriteMat の既定) は UnitAmbient のまま = 森の暗さと夜の青は変えない
-            Color amb = hero ? new Color(1.15f, 1.15f, 1.15f)   // hero は ACES と色補正が中間調を沈めるぶん 1.15 で戻す
-                : painted ? (character ? _pal.CharAmbient * lift : _pal.UnitAmbient)
+            //   doll = 人形は UnitAmbient と CharAmbient の間 (F05)。小物・木の板 (SpriteMat の既定) は UnitAmbient のまま = 森の暗さと夜の青は変えない
+            Color amb = hero ? new Color(heroLight, heroLight, heroLight)   // hero は ACES と色補正が中間調を沈めるぶん戻し、白寄りにした敵 (I24) に対して主役を持ち上げる (F05)
+                : painted ? (character ? (doll ? Color.Lerp(_pal.UnitAmbient, _pal.CharAmbient, DollAmbientMix) : _pal.CharAmbient) * lift : _pal.UnitAmbient)
                 : Color.white;
             amb.a = 1f;
             m.SetColor("_Ambient", amb);
             m.SetVector("_LampPos", _lampPos);
-            m.SetColor("_LampColor", painted ? _pal.Lantern : Color.black);
+            // リーダーのランタンの暖色は環境光と同じ倍率 (HeroLampRef の注記)。プロジェクトはガンマ色空間なので SetColor の値がそのままシェーダに届く
+            Color lamp = painted ? (hero ? _pal.Lantern * (heroLight / HeroLampRef) : _pal.Lantern) : Color.black;
+            lamp.a = 1f;
+            m.SetColor("_LampColor", lamp);
             m.SetFloat("_LampStrength", painted ? _pal.LampOnUnits : 0f);
             m.SetFloat("_LampFalloff", 7f);
             m.SetVector("_SunDir2", new Vector4(0.7f, 0.7f, 0f, 0f));   // 右上が光源側
@@ -1232,6 +1364,7 @@ namespace DeckRogue.Game
             _paintedAct = act;
             _flat = act != 1;
             for (int i = _world.childCount - 1; i >= 0; i--) UnityEngine.Object.Destroy(_world.GetChild(i).gameObject);
+            _seatPools.Clear(); _seatPoolN = -1;   // 座席の光溜まりも今消した子の中にある (Destroy はフレームの終わりなので null 判定に頼らず次の EnemySlots で置き直す)
             DisableReflection();
             SetFxForAct(act);
             var p = PalOf(act);
@@ -2351,7 +2484,11 @@ namespace DeckRogue.Game
         static GameObject GroundDecal(string name, Texture2D tex, float x, float z, float scale, float rotDeg, float lift, bool flip = false)
         {
             float w = tex.width * GroundDot * scale, d = tex.height * GroundDot * scale;
+            // 道の帯の上の敷物は、下の地面と同じだけ明るくする (F50。敷物の色は下の地面の _BaseColor に結ぶ = _decalTint の約束を帯の中でも守る)
+            var tint0 = _decalTint; float bandGain = PathBandGainAt(x, z);
+            if (bandGain != 1f) _decalTint = new Color(tint0.r * bandGain, tint0.g * bandGain, tint0.b * bandGain, tint0.a);
             var g = Decal(name, CutoutCached(tex), x, z, w, d, rotDeg);
+            _decalTint = tint0;
             g.transform.position += new Vector3(0f, lift, 0f);
             if (flip) g.transform.localScale = new Vector3(-w, d, 1f);
             return g;

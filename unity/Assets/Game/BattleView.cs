@@ -123,16 +123,19 @@ namespace DeckRogue.Game
             }
             // 手札の後ろの手前の地面を地の色で沈める (2026-09-29 I44): 幕1 の手前の草は座席より明るく (下の隅 L≈52〜55 対 戦闘の帯 L≈46)、
             // ぼけた草・タイルの柄の境目・幕2 の額縁の柱の頭が手札・エナジーの輪・山札・ターン終了の真後ろで騒いでいた。
-            // 範囲は画面の下端から足元の線 (StatusLineY) まで。下の 40% は 0.8 で一定、その上を smoothstep で 0 へ (上端に線は付けない＝案B の作業台にはしない)。
+            // 範囲は画面の下端から足元の線 (StatusLineY) の少し上まで。下の 40% は一定、その上を smoothstep で 0 へ (上端に線は付けない＝案B の作業台にはしない)。
             // 紙の UI (HandLayer・UiLayer) と帳面 (StatusLineY から上) より下の層 = 光と空気は舞台だけ、の規約の内側 (SyncDanger と同じ層)
+            // 2026-09-30 F50 (ユーザー裁定「地面を3か所明るく」): α 0.8 では手札の左右の地面の輝度 Y が 0.040→0.013 に落ち、手札の紙がほぼ黒の上に置かれて
+            // 「紙の UI が黒い画面に貼った札」(I24) を手札のまわりでかえって強めた → α 0.55 にし、上端のフェードを StatusLineY+40 まで伸ばして沈みの境目をなだらかに
+            const float DeskShadeAlpha = 0.55f, DeskShadeOver = 40f;   // 下の 40% の濃さ・足元の線より上へ伸ばす高さ (F50)
             var desk = FieldLayer.Find("desk-shade") as RectTransform;
             if (desk == null)
             {
                 desk = UiKit.NewRect("desk-shade", FieldLayer);
                 var dim = desk.gameObject.AddComponent<Image>();
-                dim.sprite = ThemeFx.FadeUp(PaperFx.Ground, 0.8f, "fade-up-ground"); dim.type = Image.Type.Simple; dim.preserveAspect = false; dim.raycastTarget = false;
+                dim.sprite = ThemeFx.FadeUp(PaperFx.Ground, DeskShadeAlpha, "fade-up-ground-055"); dim.type = Image.Type.Simple; dim.preserveAspect = false; dim.raycastTarget = false;
             }
-            UiKit.Anchor(desk, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, StatusLineY));
+            UiKit.Anchor(desk, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, StatusLineY + DeskShadeOver));
             var bgRt = FieldLayer.Find("bg");
             desk.SetSiblingIndex(bgRt != null ? bgRt.GetSiblingIndex() + 1 : 0);
             // 敵の入れ物: 数が変わったら作り直す (分裂・孵化)

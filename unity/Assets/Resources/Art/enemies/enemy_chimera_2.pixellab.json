@@ -29,5 +29,7 @@
     "note": "第2回 (fix_hint で3シード) から手で選択"
   },
   "postprocess": "flip_left_right (2026-09-11 向きの検算: 右向きに出たので反転＝敵はプレイヤー側=左を向く)",
-  "groundRemoved": "2026-09-29 PixelLab v2 edit-images-v2 (Pro) で地面・背景を消した（16/9/4枚ずつまとめて）。足元は元の絵の最下端にそろえて下へずらした"
+  "groundRemoved": "2026-09-29 PixelLab v2 edit-images-v2 (Pro) で地面・背景を消した（16/9/4枚ずつまとめて）。足元は元の絵の最下端にそろえて下へずらした",
+  "upscaled128": "2026-09-30 戦闘画面のレビュー F48（ユーザー裁定「二・三の相も描き直す」＝一の相だけ 128 にしたら二・三の相が1ドット6px で小さく粗く見え、膨らむ残機3段の並びが逆転した）: 今の64の絵を手元で EPX×2 に拡大して背丈108ドットへ縮め128の枠に置き（scratchpad/boss128/upscale.py）、PixelLab v2 edit-images-v2 --size 128（edit_with_text「same creature, same design … redraw as clean crisp pixel art at this resolution」＋棘・丸い頭・豆の目・体の点・三つ指の足を名指し）で描き直した（job c8aac8c6-9ba7-46b4-86ad-543efc60e92e・出力 #1）。edit で体が濃い苔色に寄ったので、色み（Lab の a,b）だけを元の絵からぼかして戻し明るさと陰影は edit のまま（recolor_chroma.py・112色に減色）、消えた差し色（棘の淡い黄・体の点）を元の絵から戻した（restore_accent.py・keep_clusters.py。顎の下の平たい線は落とした）。背丈109ドット（一の相103→二の相109→三の相111）・足元は最下端から2ドット・左右中央。元の64は scratchpad/pkgB/backup64/",
+  "phone96": "enemy_chimera_2_96.png（スマホ用。1ドット＝2.4単位でこのはと同じ粒）: 128 の仕上げを Lanczos で 3/4 に縮めて 128 の色へ寄せ（down96_lz.py）、PixelLab v2 edit-images-v2 --size 96 で描き直した（job 6292b9a5-4139-4b43-9ad1-12c8abdb563a・出力 #0）。背丈81ドット・足元2・左右中央"
 }

@@ -27,5 +27,7 @@
     "seed": 41,
     "at": "2026-09-11"
   },
-  "groundRemoved": "2026-09-29 PixelLab v2 edit-images-v2 (Pro) で地面・背景を消した（16/9/4枚ずつまとめて）。足元は元の絵の最下端にそろえて下へずらした"
+  "groundRemoved": "2026-09-29 PixelLab v2 edit-images-v2 (Pro) で地面・背景を消した（16/9/4枚ずつまとめて）。足元は元の絵の最下端にそろえて下へずらした",
+  "upscaled128": "2026-09-30 戦闘画面のレビュー F48（ユーザー裁定「二・三の相も描き直す」＝一の相だけ 128 にしたら二・三の相が1ドット6px で小さく粗く見え、膨らむ残機3段の並びが逆転した）: 今の64の絵を手元で EPX×2 に拡大して背丈112ドットへ縮め128の枠に置き（scratchpad/boss128/upscale.py）、PixelLab v2 edit-images-v2 --size 128（edit_with_text「same creature, same design … redraw as clean crisp pixel art at this resolution」＋尖った耳・丸い目・鼻・背の板つきの帯・脚の金具・暗い足・細い巻き尾を名指し）で描き直した（job 353f92c7-a471-4c02-8ccc-4b7980bfebf0・出力 #0）。edit で消えた差し色（耳の内の赤・帯と脚の金具の金）を元の絵から戻した（restore_accent.py・keep_clusters.py。鼻の上に出た金の2×2は落とした）。背丈111ドット（一の相103→二の相109→三の相111）・足元は最下端から2ドット（edit で4に上がったので下げた）・左右中央。元の64は scratchpad/pkgB/backup64/",
+  "phone96": "enemy_chimera_3_96.png（スマホ用。1ドット＝2.4単位でこのはと同じ粒）: 128 の仕上げを Lanczos で 3/4 に縮めて 128 の色へ寄せ（down96_lz.py）、PixelLab v2 edit-images-v2 --size 96 で描き直した（job 1a7c1fe9-0857-4ff3-9291-166f79aa1fe3・出力 #0）。edit で目が茶に寄ったので、目の中の5色だけ 128 の黄の目の色へ置き換えた。背丈83ドット・足元2・左右中央"
 }

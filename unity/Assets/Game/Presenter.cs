@@ -599,6 +599,18 @@ namespace DeckRogue.Game
             string nodeType = null;
             try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
             bool boss = nodeType == MapNodeTypes.Boss, elite = nodeType == MapNodeTypes.Elite;
+            // 強個体・幕ボスの名前の帯 (2026-09-30 F47 ユーザー裁定「帯を下げ、札は後から」): 置き場は登場の縮みを掛ける前 (絵が座席に等身大で立っている時) に測る。
+            // 意図の札は帯と寄りが終わるまで隠す (帯が消える時に 0.2 秒で出す＝名乗り → 予告の順。寄りの間に 128 ドットの鬣が札の尾に食い込まない)
+            bool named = boss || elite;
+            float hold = boss ? 1.5f : 1.1f;
+            float bandEnd = 0.35f + BandFadeIn + hold + BandFadeOut;   // 帯が消えきる時刻
+            float bandTop = NameBandH(boss) / 2f + 40f, bandX = 0f;     // 測れない時は旧の置き場 (画面の中心の 40 上)
+            if (named)
+            {
+                float t0, x0;
+                if (NameBandPlace(g, fx, combat, NameBandH(boss), out t0, out x0)) { bandTop = t0; bandX = x0; }
+                BattleScreen.HideIntentsForEntrance(g, bandEnd + 1.5f);
+            }
             float step = 0.09f;
             for (int i = 0; i < combat.Enemies.Count; i++)
             {
@@ -626,8 +638,8 @@ namespace DeckRogue.Game
                 });
             }
             float wait = 0.35f + step * combat.Enemies.Count;
-            if (!(boss || elite)) return wait;
-            // 名前の帯 (画面の真ん中を横切る夜の帯に真鍮の線と名前)。ボスは舞台がゆっくり寄る。帯の間は入力を塞ぐ
+            if (!named) return wait;
+            // 名前の帯 (画面を横切る夜の帯に真鍮の線と名前。敵の足元と帳面の間)。ボスは舞台がゆっくり寄る。帯と意図の札が出きるまで入力を塞ぐ
             string enc = null;
             try
             {   // 節の編成名。ただし編成のメンバーと戦っている敵が食い違う時 (デバッグの敵指定) は敵の名前
@@ -641,24 +653,92 @@ namespace DeckRogue.Game
             }
             catch (Exception) { }
             if (string.IsNullOrEmpty(enc)) { try { enc = Content.GetEnemyDef(combat.Enemies[0].EnemyId).Name; } catch (Exception) { enc = ""; } }
-            float hold = boss ? 1.5f : 1.1f;
-            Tween.After(0.35f, () => NameBand(fx, boss ? "幕ボス" : "強個体", enc, boss, hold));
-            if (boss) { Stage.Dolly(0.9f, 1.3f, 0.7f, 0.9f); Audio.Ui("act_start"); }
+            Tween.After(0.35f, () => NameBand(fx, boss ? "幕ボス" : "強個体", enc, boss, hold, bandTop, bandX));
+            // 寄りは帯が消えきる前に戻り終える (旧 1.3+0.7+0.9=2.9 秒は帯より 0.4 秒長く、意図の札を出す時に舞台がまだ寄っていた)。割合は旧と同じ (寄る 45%・留まる 25%・戻る 30%)
+            float dolly = bandEnd - 0.04f;
+            if (boss) { Stage.Dolly(0.9f, dolly * 0.45f, dolly * 0.25f, dolly * 0.30f); Audio.Ui("act_start"); }
+            Tween.After(bandEnd, () => BattleScreen.RevealIntentsAfterEntrance(g, 0.2f));
             var block = UiKit.NewRect("inputblock", fx);
             UiKit.Stretch(block, 0f, 0f, 0f, 0f);
             var bimg = block.gameObject.AddComponent<Image>(); bimg.color = new Color(0f, 0f, 0f, 0f); bimg.raycastTarget = true;
             var cg = fx.GetComponent<CanvasGroup>(); if (cg != null) cg.blocksRaycasts = true;
-            Tween.After(0.35f + hold + 0.5f, () => { if (block != null) UnityEngine.Object.Destroy(block.gameObject); if (cg != null) cg.blocksRaycasts = false; });
-            return 0.35f + hold + 0.4f;
+            Tween.After(bandEnd + 0.2f, () => { if (block != null) UnityEngine.Object.Destroy(block.gameObject); if (cg != null) cg.blocksRaycasts = false; });
+            // ターン開始の帯は名前の帯が消えてから (旧は 0.23 秒早く、名前の帯の上に重なって出た。名前の帯を下げたので縦にも重なる)
+            return bandEnd;
         }
 
-        /// <summary>名前の帯: 夜の帯 (画面の幅いっぱい・高さ 120〜150) に真鍮の細い線、上に小さな肩書、真ん中に名前。左から滑り込んで hold の後に消える</summary>
-        static void NameBand(RectTransform fx, string kicker, string name, bool boss, float hold)
+        /// <summary>名前の帯の出入りの秒数 (ShowEntrance が帯の消えきる時刻を読む)</summary>
+        const float BandFadeIn = 0.28f, BandFadeOut = 0.35f;
+
+        /// <summary>名前の帯の高さ (2026-09-30 F47: 足元と帳面の間に収まる一行の帯。旧 150/118 の二段は 128 ドットの幕ボスの腰から下を覆った)</summary>
+        static float NameBandH(bool boss) { return UiKit.Phone ? (boss ? 54f : 48f) : (boss ? 62f : 56f); }
+
+        /// <summary>
+        /// 名前の帯の置き場 (2026-09-30 F47 ユーザー裁定「帯を下げ」): 帯の上端＝敵の足元 (いちばん低い足元) のすぐ下、文字の中心＝敵の体の中心の平均。
+        /// 足元と帳面の間に帯が収まれば、間の余りの半分 (6〜14) だけ足元から下げる (PC のオーガ: 足元 566・帳面 640 の間 74 に 62 の帯)。
+        /// 収まらなければ足元の 4〜6 下から (帳面に掛かる。スマホは足元と帳面の間がほぼ無い＝帳面の名前と HP を覆う。入力は塞いでいる)。手札には掛けない。
+        /// 座標は fx の中 (中心が原点・上が +)。敵の絵が見つからなければ false
+        /// </summary>
+        static bool NameBandPlace(GameRoot g, RectTransform fx, GameState combat, float h, out float top, out float textX)
+        {
+            top = 0f; textX = 0f;
+            if (g == null || g.Battle == null || fx == null || combat == null) return false;
+            float feet = float.MaxValue, ledger = float.MinValue, sumX = 0f; int n = 0;
+            for (int i = 0; i < combat.Enemies.Count; i++)
+            {
+                if (combat.Enemies[i].Hp <= 0) continue;
+                var spr = g.Battle.EnemySprite(i);
+                if (spr == null) continue;
+                var body = BodyInFx(spr, fx);
+                feet = Mathf.Min(feet, body.yMin);
+                sumX += body.center.x; n++;
+                var pan = g.Anchor("enemy" + i);
+                var strip = pan != null ? pan.Find("strip") as RectTransform : null;
+                if (strip != null) ledger = Mathf.Max(ledger, RectInFx(strip, fx).yMax);
+            }
+            if (n == 0) return false;
+            float space = ledger > float.MinValue ? feet - ledger : 1000f;
+            float below = Mathf.Clamp((space - h) / 2f, UiKit.Phone ? 4f : 6f, 14f);
+            top = feet - below;
+            float floor = fx.rect.yMin + BattleView.StatusLineY + 4f;   // 足元の線 (手札のすぐ上) より下へは出さない
+            if (top - h < floor) top = floor + h;
+            textX = sumX / n;
+            return true;
+        }
+
+        /// <summary>RectTransform の矩形を fx の座標 (中心が原点・上が +) で。拡縮と回転も含む</summary>
+        static Rect RectInFx(RectTransform rt, RectTransform fx)
+        {
+            var c = new Vector3[4];
+            rt.GetWorldCorners(c);
+            Vector3 a = fx.InverseTransformPoint(c[0]), b = fx.InverseTransformPoint(c[2]);
+            return Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
+        }
+
+        /// <summary>絵 (キャラの sprite の枠) の、透明な余白を除いた体の矩形を fx の座標で (BattleScreen.EnemyBodyRect と同じ式。下端＝足元)</summary>
+        static Rect BodyInFx(RectTransform spr, RectTransform fx)
+        {
+            var r = RectInFx(spr, fx);
+            var img = spr.GetComponent<Image>();
+            var s = img != null ? img.sprite : null;
+            if (s == null || s.rect.width <= 0f) return r;
+            float k = r.width / s.rect.width;
+            var side = Creature.SideMargins(s);
+            float topM = Creature.TopMargin(s) * k;
+            var b = Rect.MinMaxRect(r.xMin + side.x * k, r.yMin, r.xMax - side.y * k, r.yMax - topM);
+            return b.width > 0f && b.height > 0f ? b : r;
+        }
+
+        /// <summary>名前の帯: 夜の帯 (画面の幅いっぱい) に真鍮の細い線、一行に小さな肩書｜名前。左から滑り込んで hold の後に消える。
+        /// 2026-09-30 F47: 上端 top (fx の座標) は敵の足元のすぐ下 (NameBandPlace)、文字の中心は敵の体の中心 textX に寄せる (画面の端から 48 は空ける)。
+        /// 旧は画面の真ん中の 40 上に高さ 150 の二段 (肩書の下に名前) で、128 ドットの幕ボスの腰から下を覆った</summary>
+        static void NameBand(RectTransform fx, string kicker, string name, bool boss, float hold, float top, float textX)
         {
             if (fx == null) return;
-            float h = boss ? 150f : 118f;
+            bool ph = UiKit.Phone;
+            float h = NameBandH(boss);
             var rt = UiKit.NewRect("nameband", fx);
-            UiKit.Anchor(rt, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, -h / 2f + 40f), new Vector2(0f, h / 2f + 40f));
+            UiKit.Anchor(rt, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, top - h), new Vector2(0f, top));
             var bg = rt.gameObject.AddComponent<Image>(); bg.color = new Color(PaperFx.Night.r, PaperFx.Night.g, PaperFx.Night.b, 0.84f); bg.raycastTarget = false;
             foreach (float y in new[] { 0f, 1f })
             {
@@ -666,20 +746,31 @@ namespace DeckRogue.Game
                 UiKit.Anchor(line, new Vector2(0f, y), new Vector2(1f, y), new Vector2(0f, y == 0f ? 4f : -6f), new Vector2(0f, y == 0f ? 6f : -4f));
                 var li = line.gameObject.AddComponent<Image>(); li.color = PaperFx.Brass; li.raycastTarget = false;
             }
+            // 中身は一行: 肩書 (真鍮・字間広め) ｜ 名前。幅は文字を測って決め、敵の下に置く
+            int ksz = ph ? (boss ? 17 : 15) : (boss ? 20 : 17);
+            int nsz = ph ? (boss ? 32 : 28) : (boss ? 40 : 34);
             var inner = UiKit.NewRect("inner", rt);
-            UiKit.Stretch(inner, 0f, 0f, 0f, 0f);
-            var kt = UiKit.Deco(inner, kicker, boss ? 20 : 17, PaperFx.BrassLight, TextAnchor.MiddleCenter);
-            UiKit.Anchor(kt.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -40f), new Vector2(0f, -10f));
-            kt.characterSpacing = 12f;
-            var nt = UiKit.Deco(inner, name, boss ? 48 : 38, PaperFx.Paper, TextAnchor.MiddleCenter);
-            UiKit.Anchor(nt.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 8f), new Vector2(0f, h - 40f));
-            nt.characterSpacing = 4f;
+            var kt = UiKit.Deco(inner, kicker, ksz, PaperFx.BrassLight, TextAnchor.MiddleCenter);
+            kt.characterSpacing = 12f; kt.textWrappingMode = TextWrappingModes.NoWrap;
+            var nt = UiKit.Deco(inner, name, nsz, PaperFx.Paper, TextAnchor.MiddleCenter);
+            nt.characterSpacing = 4f; nt.textWrappingMode = TextWrappingModes.NoWrap;
+            float kw = kt.GetPreferredValues(kicker).x + 4f, nw = nt.GetPreferredValues(name ?? "").x + 4f;
+            float sepGap = ph ? 14f : 18f;
+            float W = kw + sepGap * 2f + 2f + nw;
+            UiKit.Anchor(kt.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 0f), new Vector2(kw, 0f));
+            var sep = UiKit.Pan(inner, PaperFx.Brass, "sep"); sep.raycastTarget = false;   // 肩書と名前の間の細い縦線
+            UiKit.Anchor(sep.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(kw + sepGap, -h * 0.24f), new Vector2(kw + sepGap + 2f, h * 0.24f));
+            UiKit.Anchor(nt.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-nw, 0f), new Vector2(0f, 0f));
+            var fr = fx.rect;
+            float lo = fr.xMin + W / 2f + 48f, hi = fr.xMax - W / 2f - 48f;
+            float cx = lo <= hi ? Mathf.Clamp(textX, lo, hi) : (fr.xMin + fr.xMax) / 2f;
+            UiKit.Anchor(inner, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(cx - W / 2f, 6f), new Vector2(cx + W / 2f, -6f));
             var cg = rt.gameObject.AddComponent<CanvasGroup>(); cg.blocksRaycasts = false; cg.alpha = 0f;
-            inner.anchoredPosition = new Vector2(-60f, 0f);
+            inner.anchoredPosition = new Vector2(cx - 60f, 0f);
             var innerC = inner;
-            Tween.Run(0.28f, k => { if (cg != null) cg.alpha = k; if (innerC != null) innerC.anchoredPosition = new Vector2(-60f * (1f - Tween.Apply(Ease.OutCubic, k)), 0f); }, Ease.Linear, () =>
+            Tween.Run(BandFadeIn, k => { if (cg != null) cg.alpha = k; if (innerC != null) innerC.anchoredPosition = new Vector2(cx - 60f * (1f - Tween.Apply(Ease.OutCubic, k)), 0f); }, Ease.Linear, () =>
             {
-                Tween.After(hold, () => Tween.Run(0.35f, k => { if (cg != null) cg.alpha = 1f - k; if (innerC != null) innerC.anchoredPosition = new Vector2(40f * k, 0f); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); }));
+                Tween.After(hold, () => Tween.Run(BandFadeOut, k => { if (cg != null) cg.alpha = 1f - k; if (innerC != null) innerC.anchoredPosition = new Vector2(cx + 40f * k, 0f); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); }));
             });
         }
 
@@ -1141,10 +1232,9 @@ namespace DeckRogue.Game
         /// <summary>画面中央の帯 (ターン開始・敵の番)。0.9 秒で消える</summary>
         /// <summary>手番の帯 (2026-09-30 F09: 旧は紙の上に苔 #7fa86c＝2.3:1・薔薇＝3.3:1 の文字だった＝塗りの色で文字を書いていた)。
         /// 上部バーの手番の札と同じ組: あなたの番＝紙に墨・敵の番＝夜の札に紙の文字。苔と薔薇は帯の下の短い線だけ (color-theme 規律3)</summary>
-        static void Banner(RectTransform fx, string text, bool enemy)
+        static void Banner(GameRoot g, RectTransform fx, string text, bool enemy)
         {
             var rt = UiKit.NewRect("banner", fx);
-            UiKit.Anchor(rt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-360f, -40f), new Vector2(360f, 40f));
             rt.localRotation = Quaternion.Euler(0f, 0f, -1f);
             var bg = rt.gameObject.AddComponent<UnityEngine.UI.Image>();
             bg.sprite = enemy ? PaperFx.NightTag : PaperFx.Panel; bg.type = UnityEngine.UI.Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f;
@@ -1157,7 +1247,52 @@ namespace DeckRogue.Game
             accent.raycastTarget = false;
             var t = UiKit.Deco(rt, text, 34, enemy ? PaperFx.Paper : PaperFx.Ink, TextAnchor.MiddleCenter);
             UiKit.Stretch(t.rectTransform, 0f, 4f, 0f, 0f);
+            // 置き場 (2026-09-30 F47): 主人公と敵の間。幅は文字が収まる幅 (左右 36 ずつ) を下限に 560 まで
+            float cx, cy, w;
+            BannerPlace(g, fx, t.GetPreferredValues(text).x + 72f, out cx, out cy, out w);
+            UiKit.Anchor(rt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(cx - w / 2f, cy - 40f), new Vector2(cx + w / 2f, cy + 40f));
             Tween.Run(0.9f, k => { if (cg != null) cg.alpha = k < 0.15f ? k / 0.15f : k > 0.7f ? 1f - (k - 0.7f) / 0.3f : 1f; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+        }
+
+        /// <summary>
+        /// 手番の帯の置き場 (2026-09-30 F47 ユーザー裁定「主人公とボスの間へ寄せ、幅 560 以下でボスに掛けない」。帯は fx の中心が原点・上が +):
+        /// 横＝主人公の体の右端と、いちばん左の敵の体の左端の真ん中。幅＝その間 (両側 16 の余白) を 560 で頭打ち、文字の幅 (need) を下限に。
+        /// 4体の戦闘などで間が文字の幅より狭い時は、はみ出した分だけ体に掛かる (文字は切らない)。縦＝画面の中心。ただし横に重なる敵の帳面の上端に掛かるなら
+        /// その 8 上へ (スマホ: 画面の中心が帳面の高さ)。上部バーには掛けない。
+        /// 旧: 画面の中心に幅 720 で、右端が 128 ドットの幕ボスの左脚に重なった。主人公か敵の絵が見つからなければ旧の置き場
+        /// </summary>
+        static void BannerPlace(GameRoot g, RectTransform fx, float need, out float cx, out float cy, out float w)
+        {
+            cx = 0f; cy = 0f; w = 720f;
+            if (g == null || g.Battle == null || fx == null) return;
+            var st = g.Rs != null ? g.Rs.Combat : null;
+            var ps = g.Battle.PlayerSprite();
+            if (st == null || ps == null) return;
+            float left = BodyInFx(ps, fx).xMax;
+            float right = float.MaxValue;
+            for (int i = 0; i < st.Enemies.Count; i++)
+            {   // 絵が立っている敵 (倒れて消えた敵は絵が無い。順送りの古い盤面でまだ立っている敵は数える)
+                var spr = g.Battle.EnemySprite(i);
+                if (spr == null || !spr.gameObject.activeInHierarchy) continue;
+                right = Mathf.Min(right, BodyInFx(spr, fx).xMin);
+            }
+            if (right == float.MaxValue || right <= left) return;
+            const float margin = 16f, maxW = 560f;
+            w = Mathf.Max(need, Mathf.Min(maxW, right - left - margin * 2f));
+            var fr = fx.rect;
+            cx = Mathf.Clamp((left + right) / 2f, fr.xMin + w / 2f + 8f, Mathf.Max(fr.xMin + w / 2f + 8f, fr.xMax - w / 2f - 8f));
+            const float half = 40f;
+            float lift = float.MinValue;
+            for (int i = 0; i < st.Enemies.Count; i++)
+            {
+                var pan = g.Anchor("enemy" + i);
+                var strip = pan != null ? pan.Find("strip") as RectTransform : null;
+                if (strip == null || !strip.gameObject.activeInHierarchy) continue;
+                var r = RectInFx(strip, fx);
+                if (r.xMax > cx - w / 2f && r.xMin < cx + w / 2f) lift = Mathf.Max(lift, r.yMax + 8f);
+            }
+            if (lift > float.MinValue && cy - half < lift) cy = lift + half;
+            cy = Mathf.Min(cy, fr.yMax - BattleScreen.TopH - 8f - half);
         }
 
         /// <summary>
@@ -1737,7 +1872,7 @@ namespace DeckRogue.Game
                 }
                 case GameEvent_TurnStarted ts:
                     Audio.Key("TurnStarted");
-                    Banner(fx, "ターン " + ts.Turn + "  —  あなたの番", false);
+                    Banner(g, fx, "ターン " + ts.Turn + "  —  あなたの番", false);
                     // 上部バーの手番の札も順送りの間に「あなたの番」へ (2026-09-29。即時の時は組み直し済み＝触らない)
                     if (nudgeHp) BattleScreen.SetPhase(g, 0, -1, 0);
                     // 自ターンの始まりで通常ブロックは消える (留め具 blockKeep なら N まで残る)。順送りの途中の盾の数字もここで揃える。この後の置物の分は BlockGained が足す
@@ -1803,7 +1938,7 @@ namespace DeckRogue.Game
                     break;
                 case GameEvent_TurnEnded _:
                     Audio.Key("TurnEnded");
-                    Banner(fx, "敵の番", true);
+                    Banner(g, fx, "敵の番", true);
                     // 上部バーの手番の札を夜の札「敵の番」に (2026-09-29: 旧は敵が行動している間ずっと「あなたの番」のままだった)
                     if (nudgeHp) BattleScreen.SetPhase(g, 1, -1, PhaseEnemyCount(g, ctx, -1));
                     // 敵フェーズの始まりで敵のブロックは失効 (潜伏の殻は残る)。帳面の盾もここで消す

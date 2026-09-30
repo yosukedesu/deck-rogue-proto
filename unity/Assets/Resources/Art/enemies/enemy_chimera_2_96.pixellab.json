@@ -1,0 +1,6 @@
+{
+ "id": "enemy_chimera_2_96",
+ "purpose": "2026-09-30 F48: スマホの蘇る合成獣・二の相 (96 ドットを 1ドット=2.4単位＝このはと同じ粒で描く。PC は 128 の本体。一の相 enemy_chimera_1_96 と同じ役目)",
+ "source": "128 の仕上げ enemy_chimera_2.png を Lanczos で 3/4 に縮め 128 の色へ寄せた絵 (scratchpad/boss128/down96_lz.py) を PixelLab v2 edit-images-v2 --size 96 で描き直した (job 6292b9a5-4139-4b43-9ad1-12c8abdb563a・出力 #0)。背丈81ドット・足元は最下端から2ドット・左右中央",
+ "mirrored": null
+}
