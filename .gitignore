@@ -48,3 +48,4 @@ unity/Build/
 # デザインカンバスの公開用に seed した1枚 html（2MB の編集ペイロード込み。生成元の .dc.html と build.py だけを追う）
 docs/design/*/*.html
 !docs/design/*/*.dc.html
+__pycache__/
