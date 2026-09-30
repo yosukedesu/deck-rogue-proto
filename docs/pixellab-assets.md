@@ -27,6 +27,8 @@
 | 背景（幕） | bg | **384×216**（API 上限 400） | 3 | `act1/act2/act3.png`。舞台の一番奥の板（幕2/3も）。済 3/3 |
 | 焚き火・工房・ショップ・イベントの情景 | scenes | **240×132**（4の倍数） | 4 | `campfire/workshop/shop/event.png`。見出しの左の窓に2倍／イベントは挿絵つきの頁。済 4/4 |
 | UI 部品 | ui | 各種 | 約10 | パネル9スライス（`panel.png` 24×24 角6）・ボタン3態（`btn_normal/hover/pressed.png` 24×24 角6）・HPバー枠 |
+| HD-2D 見本の舞台（幕1の箱庭） | stage/act1/{tiles,relief,litter} | タイル **64×64**（25テクセル/unit）・半立体は絵ごと・小札は背丈12ドット以下 | 36＋27＋11 | 2026-09-30〜10-01 段1。規格は `docs/art-bible.md`。末尾の節「HD-2D 見本 幕1」 |
+| キャラの法線・発光（HD-2D 見本） | leaders・enemies・dolls の隣 | 元の絵と同じ | `_n` 163・`_e` 37 | `<名前>_n.png`（全キャラの全コマ）・`<名前>_e.png`（このは・狼・オーガだけ）。`scripts/sprite-normals.py` で作る（PixelLab は使わない） |
 
 ## 状態アイコン（icons/16px）
 
@@ -500,3 +502,49 @@ B7–D18 のレリックと同じ定型（`ancient mine relic, single object cen
 - **敷物の材質** `Art/tiles/act<N>_m_<name>.png`（落ち葉・苔・砂利・ひび・泥・小枝・小花・クローバー／幕2 バラスト・鉱の粉・煤・おがくず・瓦礫・苔／幕3 瓦礫・ひび・濡れ・脈・モザイク）。`Stage.PatchSet` がコードで不定形にくり抜く。捨てた＝m_straw・m_crust・m_dust・m_shards・m_lichen（等間隔の粒・縞）
 - **一枚絵** `Art/props/act1_*`（tree_oak/oak2/pine/pine2/birch/willow/dead/giant・treeline・canopy・bush2/3・stump・rock_big1/2・rock_small・log2・tallgrass1・tuft・fern2・shroom2）／`act2_*`（設計の統合案の 38 種＝坑口・結晶・歩廊の手すり・梯子・残骸・巻き上げ機・トロッコ・炉・屋台・差し掛け・樽・木箱・袋・提灯・鍾乳石・垂れ根・滑車・柱）／`act3_*`（36 種＝大門・柱・館・街の輪郭・水道橋・櫓・鍾乳石・天井の房・鎖・灯・結晶・像・碑・噴水・欄干・瓦礫・機械の庭）。捨てた＝act1_bush_flower（等間隔の花）・act1_d_puddle（皿）・act3_cable_hang（縄の輪）
 - 寸法は `SpriteH` の世界の高さで置く（絵のドット数と実物の大きさは揃わない）
+- **幕1は HD-2D 見本（下の節）で作り直し中**。見本の舞台（旗 `stage=diorama`）は `Art/stage/act1/` の絵を使い、この節の幕1の絵は今の舞台（`stage=old`・main の既定）と、半立体の元の絵の写し（`relief/act1_*`）にだけ使う。
+
+## HD-2D 見本 幕1の舞台とキャラ（2026-09-30〜10-01・段1。枝 `hd2d/slice`）
+
+計画 `docs/design/hd2d-slice-plan-2026-09-30.md`（包み P05・P22・P23）。**絵の決まり（粒・作り分け・光の向き・色表・禁止語・手順）は `docs/art-bible.md`**。作った時の記録は `docs/pixellab/hd2d-act1/README.md`（発注書・生の出力・確認シート・art-lint の表）。
+
+### PixelLab で使った数
+| 波 | 何 | 回数 |
+|---|---|---|
+| W1（P05） | 試し map-objects 1本 | 1 |
+| W1（P05） | 試し create-tiles-pro 1本（64px が16枚） | 25 |
+| W1（P05） | タイル pixflux 160×160（6材質＋草の2シード目） | 7 |
+| W1（P05） | 半立体 pixflux（8種×2シード） | 16 |
+| W2・W3・W3b・W4 | 使っていない（キャラの塗り直しは要らなかった・48 の清書は枠待ち） | 0 |
+| **合計** | | **49** |
+- 月の枠（Tier 2）は 76.45 → **27.45**（9/29 の敵の向きと 128 化で先に使っていた）。**10/7 に 5,000 へ戻る**。HTTP 4xx は 0 件。
+- 枠の残りは `node scripts/pixellab-v2.mjs balance`（v2 の `/balance`。v1 の balance は USD しか出さない）。
+
+### 置いた絵
+| 物 | 置き場 | 数 | 作り方 |
+|---|---|---|---|
+| 地面・崖・幹のタイル（64×64） | `Art/stage/act1/tiles/<材質>_{a,b,c,d}.png` | 9材質×4＝36 | W1: `top_grass`・`top_grass_alt`・`top_path`・`top_rock`・`side_rock`・`side_bark`・`side_wood`＝pixflux 160 → `scripts/tile-calm.py` → `scripts/stage-palette.py map`。W3b: `top_grass_seat`＝同じ生の草を明暗 0.6 で（生成なし）・`top_path_seat`＝コード生成の踏み固めた土（色表の色だけ） |
+| 半立体の元の絵 | `Art/stage/act1/relief/<名前>.png` | 27 | 新規8（`canopy_1..3`・`frame_1..2`・`fern_1..2`・`bush_1`）＝pixflux（view side）→ `docs/pixellab/hd2d-act1/relief-clean.py` → 色表。既存の小物の写し16（`act1_leafclump1..5`・`act1_bush2/3`・`act1_fern/fern2`・`act1_reed`・`act1_root`・`act1_rock_big1/2`・`act1_tree_giant`・`act1_tree_oak/oak2`）＝色表へ写しただけ。W3b の奥の高い幹3（`trunk_tall_1..3`）＝コード生成（樹皮のタイルを縦に敷いて切る） |
+| 地面の小札 | `Art/stage/act1/litter/` | 11 | W3b のコード生成（小石4・草の株4・落ち葉2・小枝1。3〜8 × 2〜5 ドット） |
+| 一覧・表 | `Art/stage/act1/index.json`・`keyflip.json` | — | 材質・回し方・半立体のドット数／`_KeyFlip` の表（`scripts/art-lint.py`） |
+| 幕1の色表 | `docs/pixellab/hd2d-act1/palette-act1.{json,png}` | 48色 | タイルと新規の半立体から Oklab の k-means（`stage-palette.py build`） |
+| このは 48 の縮めた見本 | `Art/leaders/leader_green_48.png`・`Art/leaders/anim/leader_green_48_{idle_0..7,attack_0..3,block_0..3}.png` | 17 | `scripts/hero-downscale.py`（v2 を多数決で縮めた。**清書ではない**） |
+| 法線 | 全キャラの隣に `<名前>_n.png` | 163 | `scripts/sprite-normals.py normals --all` |
+| 発光 | このは（一枚絵・全コマ・48）・狼・オーガ（128 と 96）の隣に `<名前>_e.png` | 37 | `scripts/sprite-normals.py emission --preset konoha`（狼は `wolf`・オーガは `ogre`） |
+
+### 採らなかった物
+- create-tiles-pro（右と下の縁に 1〜3px の案内線が残り、敷くとつながらない・色数3〜24の平らな絵）・map-objects（否定の文が無く「幹なし」を守らない）は試しだけ。タイルは pixflux で大きく作って切る道に落とした。
+- 半立体の2シード目の泡の粒の集まり・星形の葉・台つきの門（等間隔の粒は集合体恐怖症の地雷）。
+- `top_grass_alt_d` は端の差 3.0 で検査を外れた（差し替え候補の組なので据え置き）。
+
+### まだ作っていない物
+- **このは 48 の清書**（見本では 48 を既定にしたが、絵は縮めた見本のまま）: edit-images-v2 で待機8・攻撃4・防御4＝16 コマ。コマは 71×60 前後なので 80px の枠で1回9枚まで＝2回・約 **40 生成**。10/7 の枠の戻りの後。枠 80×80・足元は下から2ドット。
+- 塗り直し（`_KeyFlip` で直らない絵）: 今は無い。
+- 狼の待機（任意）: 見送り（コードの呼吸で足りている）。
+- タイルの `_n`（法線）: 作っていない（明るさから作る `NormalFromLuma` で代用）。要れば高さの絵を別に作る。
+- W3b のコード生成の絵（`top_path_seat`・`trunk_tall`・小札）の作り方のスクリプトは作業場（scratchpad の `p22b/gen_art.py`）にしかない。作り直す時のために `docs/pixellab/hd2d-act1/` へ写すこと。
+
+### 勘所（この段で分かったこと）
+- create-tiles-pro は 1回 **25 生成**で 64px が16枚（案内線つき）。map-objects は 1回 1 生成・背景は抜ける。
+- 半立体を頼むと pixflux も map-objects も「幹なし」「地面なし」を守らない＝樹冠は丸ごとの木から切り出し、羊歯と茂みの根元の土は消す。
+- 夜の色で頼まず、中立の昼の明るさで頼む（夜はエンジンの光で作る）。昼の明るさで作った葉は既存の夜の色の小物より明るく彩度が高いので、色表でそろえ、明るさは受光と露出で合わせる。

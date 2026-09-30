@@ -173,8 +173,20 @@ namespace DeckRogue.Game
             var ctx = new BuildContext { Layout = layout, Opt = opt, StaticRoot = staticRoot, DynRoot = dynRoot, Missing = missing };
             MakeTexturesAndMaterials(ctx);
 
+            // 設計図 look の diorama.dropKinds (スマホの段1〜3 = look_act1_phone1〜3。W4 P31 の申し送り・統合で足した): その種類の部品を組まない。
+            // 段1 の「光の筋と霧の面を落とす」を見た目 (materials.glow.intensity 0) だけでなく描く重さごと消す。既定の設計図には無いキーなので既定の画は変わらない
+            HashSet<string> drop = null;
+            if (look != null && look.Raw != null && look.Raw["diorama"] is JObject dio && dio["dropKinds"] is JArray dk)
+            {
+                drop = new HashSet<string>();
+                foreach (var k in dk) if (k.Type == JTokenType.String) drop.Add((string)k);
+                if (drop.Count == 0) drop = null;
+                else Debug.Log("[Diorama] 組まない部品の種類 (diorama.dropKinds): " + string.Join(",", drop));
+            }
+
             foreach (var p in layout.Parts)
             {
+                if (drop != null && drop.Contains(p.Kind)) continue;
                 try { BuildPart(ctx, p); }
                 catch (Exception e) { missing.Add("p" + p.Index + ":" + p.Kind + " 例外 " + e.Message); Debug.LogWarning("[Diorama] 部品 " + p.Index + " (" + p.Kind + ") で例外: " + e); }
             }

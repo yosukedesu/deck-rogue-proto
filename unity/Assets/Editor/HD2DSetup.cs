@@ -9,7 +9,11 @@
 //      ※ どれも「全部の URP アセットで切られていると、その版のシェーダがビルドで削られる」ので資産の側で入れる。
 //      ※ MSAA・深度テクスチャは入れない (旗 Aa・StageLook が実行時に入れる。旧舞台 stage=old を色空間以外で変えないため)
 //   5. スマホの URP (URP-Phone＋URP-Phone-Renderer) を作り、品質レベル2 (Android の既定) に割り当てる (§2-7):
-//      MSAA なし・月の影 512・スポットの影 512・カスケード1・SSAO なし。細かい詰めは W4 の P31
+//      MSAA なし・月の影 512・スポットの影 512・カスケード1・SSAO なし。
+//      W4 P31 の詰め: 追加ライトの影の段 (低 128・中 256・高 512 = 影の地図 512 に1枚がそのまま入る。PC の 256/512/1024 のままだと
+//      舞台の灯 (高) が 512 の地図に入らず URP が縮めて入れる)・追加ライトのクッキーの地図 2048 → 1024 (クッキーは 256・上限 1024 = StageLook.ClampSize)。
+//      見た目は変えない (縮められていた影は同じ 512・クッキーは縮まない)。軟らかい影の質 (中) と HDR は PC と同じ (§2-7 の「同じ構図のまま段を落とす」)。
+//      フレームレート 30 は実行時 (PerfProbe.cs の PhoneFramePacing)。重い時に落とす段 1〜3 は設計図の変種 look_act1_phone1〜3 (手順書 docs/design/hd2d-slice/perf-runbook.md)
 //   6. Graphics の霧の版を残す (Fog Modes: Automatic → Custom で Linear/Exp/Exp2。Main.unity は霧なしなので Automatic だと削られうる)
 // 戻し方は2段 (§0): 受光0 (シェーダ側) と、これの Revert (控えの値に丸ごと戻す)。
 //   控え = ProjectSettings/HD2DSetupBackup.json (変えた項目ごとに「元の値」。最初の Apply の値を保つ＝2回 Apply しても元の値は消えない)。
@@ -236,6 +240,15 @@ namespace DeckRogue.EditorTools
             ctx.Set(PhoneAssetPath, "m_ShadowCascadeCount", "int", "1", false);
             ctx.Set(PhoneAssetPath, "m_RenderScale", "float", "1", false);                   // 解像度は下げない (§2-7)
             SetSsaoActive(ctx, PhoneRendererPath, false);                                    // SSAO は PC だけ (§2-6)
+            // W4 P31 (スマホの段の詰め): 追加ライトの影の段を影の地図 512 に合わせる。舞台の灯 (スポット) は段「高」(StageLook の LampLook.ShadowTier 2)、
+            // 逆光と技の光は「低」(スマホは影なし)。PC の 256/512/1024 のままだと 1024 の要求が 512 の地図に入らず、URP が縮めて入れる
+            // (縮める時に警告のログを出すことがある。縮めた結果も 512 なので見た目は同じ)。
+            ctx.Set(PhoneAssetPath, "m_AdditionalLightsShadowResolutionTierLow", "int", "128", false);
+            ctx.Set(PhoneAssetPath, "m_AdditionalLightsShadowResolutionTierMedium", "int", "256", false);
+            ctx.Set(PhoneAssetPath, "m_AdditionalLightsShadowResolutionTierHigh", "int", "512", false);
+            // 追加ライトのクッキーの地図: 舞台の灯の木漏れ日のクッキーは 256 (設計図 cookie.size・上限 1024 = StageLook.ClampSize) だけなので 1024 で足りる
+            // (PC の 2048 は RGBA で 16MB。スマホは 4MB)。月のクッキーは主光なので地図に入らない
+            ctx.Set(PhoneAssetPath, "m_AdditionalLightsCookieResolution", "int", "1024", false);
 
             // 7. 霧の版をビルドで削らない (Graphics の Fog Modes を Automatic → Custom＋Linear/Exp/Exp2 を残す)。
             //    Automatic はビルドに入るシーン (Main.unity は霧なし) から決めるので、実行時に RenderSettings.fog を立てる
@@ -527,6 +540,8 @@ namespace DeckRogue.EditorTools
                 Expect(PcAssetPath, "m_SupportsLightLayers: 1", true);
                 Expect(PcAssetPath, "m_AdditionalLightShadowsSupported: 1", true);
                 Expect(QualityPath, StableGuid("DeckRogue/HD2D/URP-Phone"), true);
+                Expect(PhoneAssetPath, "m_AdditionalLightsShadowResolutionTierHigh: 512", true);   // W4 P31 のスマホの詰め
+                Expect(PhoneAssetPath, "m_AdditionalLightsCookieResolution: 1024", true);
             }
             else
             {
@@ -737,6 +752,14 @@ namespace DeckRogue.EditorTools
                 }
                 PlayerSettings.productName = "DeckRogue Perf";
                 PlayerSettings.enableFrameTimingStats = true;
+                // W4 P31: 測った数字を読む時に要る「ビルドの時に決まる値」を記録に残す (本体の APK と同じ値のまま。ここでは変えない)
+                try
+                {
+                    string apis = PlayerSettings.GetUseDefaultGraphicsAPIs(target) ? "既定 (自動)" : string.Join(",", PlayerSettings.GetGraphicsAPIs(target));
+                    string pacing = android ? " optimizedFramePacing=" + PlayerSettings.Android.optimizedFramePacing : "";
+                    Debug.Log(Tag + $"perf build の設定 ({target}): graphicsAPIs={apis}{pacing} frameTimingStats={PlayerSettings.enableFrameTimingStats} colorSpace={PlayerSettings.colorSpace} development=false (ProfilerRecorder の Draw Calls などは空欄になる)");
+                }
+                catch (Exception e) { Debug.LogWarning(Tag + "perf build の設定を読めない: " + e.Message); }
                 var opts = new BuildPlayerOptions
                 {
                     scenes = new[] { ScenePath },

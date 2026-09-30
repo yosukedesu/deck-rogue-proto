@@ -1,0 +1,26 @@
+{
+  "_doc": [
+    "幕1のスマホの段3 (2026-10-01 HD-2D 見本 W4 P31。計画 §2-7「重い時に落とす順」の最後 = ぼかしの段数)。持ち主は P31。",
+    "使い方: 旗 look=look_act1_phone3 (段1・段2 を含む)。",
+    "段3 = 段2 + ぼかし (ティルトシフト) の点の数を半分: スマホの taps 16 → 8・nearOwnTaps 12 → 6 (look_act1.dof.json の tiltShiftPass.phone の上に重なる)。",
+    "  ぼけの上限 (maxPxPhone 10)・半解像度・ピントの帯は変えない = ぼけの形は同じで、ぼけの中のざらつきが少し増える。",
+    "  解像度は下げない (計画 §2-7)。これでも 30fps に届かない時の次の手 (影を硬くする・ブルームを軽くする・ぼかしを切る) は手順書 docs/design/hd2d-slice/perf-runbook.md に候補だけ書いた (ユーザーに確かめてから)。"
+  ],
+  "materials": {
+    "glow": {
+      "intensity": 0
+    }
+  },
+  "diorama": {
+    "dropKinds": ["shaft", "fog"]
+  },
+  "backlight": {
+    "on": false
+  },
+  "tiltShiftPass": {
+    "phone": {
+      "taps": 8,
+      "nearOwnTaps": 6
+    }
+  }
+}

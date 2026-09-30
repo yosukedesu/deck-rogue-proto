@@ -2007,7 +2007,7 @@ namespace DeckRogue.Game
             else
             {
                 // 失う HP: 1以上は危険の墨・0 (受けきる) は良いの墨
-                // スマホも括弧つき (2026-09-30 F30: 括弧の無い「HP 80 → 69 -11」は「69 − 11」と続けて読めた。括弧つきでも 3桁の HP で約180/208 に収まる)
+                // スマホも括弧つき (2026-09-30 F30: 括弧の無い「HP 80 → 69 -11」は「69 − 11」と続けて読めた。括弧つきでも 3桁の HP で約180/208 に収まる。HD-2D 見本の箱庭は札が 16 細く内側 192 = PhoneStripWHd2d)
                 string lossTxt = "（−" + left + "）";
                 head = "HP " + hp + " → <b>" + (hp - left) + "</b>" + small + UiKit.ColorTag(left > 0 ? PaperFx.BadInk : PaperFx.GoodInk, lossTxt) + "</size>";
             }
@@ -2473,6 +2473,15 @@ namespace DeckRogue.Game
         // 座標はキャンバスの左上から測った値 (S25 相当 1462×675) を area (左下が feet.x-130, StatusLineY) の座標へ写す。
         public const float PhoneTokenW = 68f, PhoneTokenH = 74f, PhoneChipW = 168f, PhoneChipH = 40f;
 
+        /// <summary>
+        /// スマホの自分の札 (左下の hpwrap) の幅。HD-2D 見本の箱庭だけ (2026-10-01 P33)。今の舞台は 224 のまま。
+        /// 箱庭では自分の札が演出で動かない (P20 2周目: リーダーの入れ物の兄弟) ので、被弾ののけぞり (絵の Lunge −36 と、入れ物の押し縮みの拡大・2.5° の傾きで
+        /// 足元が横へ最大 約60 ずれる) の間、リーダーの足元の検査の幅 (絵の幅の ±25%) の左端が 232.7 まで来て、札の右端 248 (=24+224) に入っていた
+        /// (W3b の regress の PH-R06-guard-9・PH-R07-hurt-5 = layout-check L2「足元を self:hpwrap が 60px 隠す」)。16 細くして右端を 232 にする (のけぞりの最も深いコマより左)。
+        /// 見込みの2行は最長 185 (3桁の被ダメと3桁のブロック「受ける 110 − ブロック 120」を Klee One 15 で測った幅) で、内側 192 に収まる
+        /// </summary>
+        public const float PhoneStripWHd2d = 208f;
+
         static void PhoneSelfColumn(GameRoot g, RectTransform area, GameState st, int shownHp)
         {
             SelfStripRight = -1f;   // スマホの確認の窓は自分の欄 (左の列) に掛からないので上げない (2026-09-29 p11)
@@ -2570,7 +2579,7 @@ namespace DeckRogue.Game
             // 自分の札 (下端は帳面の線): HP＋ブロック／被ダメ予測 (2行)／資源 (1行に2つ・3つ目からは2行目)
             var res = ResourceChips(p, st);
             int resRows = res.Count > 2 ? 2 : (res.Count > 0 ? 1 : 0);
-            float stripW = 224f, stripH = 80f + resRows * 30f;   // HP の行 18→22 (2026-09-29 p04) の分 +4・見込みの結論を Deco 18 にした分 +6 (p08)
+            float stripW = Hd2dLayout ? PhoneStripWHd2d : 224f, stripH = 80f + resRows * 30f;   // HP の行 18→22 (2026-09-29 p04) の分 +4・見込みの結論を Deco 18 にした分 +6 (p08)
             float stripTop = cs.y - ay - stripH;
             var strip = UiKit.NewRect("hpwrap", area);
             // 画面の切り欠き (S25 のパンチホール＝横持ちで左端の縦の中央) がこの札の高さに掛かれば、その右へ逃がす (2026-09-29 p10: 「被ダメ」の頭が穴に隠れていた)。

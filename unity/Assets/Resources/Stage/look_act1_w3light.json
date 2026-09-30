@@ -1,8 +1,10 @@
 {
   "_doc": [
     "P22 (W3b) の比較用の変種: 光・霧・後処理・色の寄せ・技の光を W3 の統合の値 (37840d6 の look_act1.json) に戻す。設計図 (箱庭) は新しいまま = W3b の光の変化だけを見る。",
-    "撮影の STATE に look=look_act1_w3light。W3 の見本そのもの (光も設計図も W3) は look_act1_w3、光は新しく設計図だけ W3 は look_act1_w3layout。持ち主は P22。"
+    "撮影の STATE に look=look_act1_w3light。W3 の見本そのもの (光も設計図も W3) は look_act1_w3、光は新しく設計図だけ W3 は look_act1_w3layout。持ち主は P22。",
+    "2026-10-01 P33 (W4 の回帰の直し): 設計図を act1_layout_w3blanes に固定した。W3b の統合が既定の設計図 act1_layout.json の霧の面の gain を 0.53 倍 (vein-mist 0.55→0.29・mist-t2 0.85→0.45) にし、代わりに光の面の強さ (materials.glow) を 1.6→3.0 に上げた = 光の変更の半分が設計図に入った。この変種は光の面を W3 の 1.2 に戻すので、既定の設計図のままだと霧の面だけ P22 の意図の 0.53 倍に暗くなっていた。act1_layout_w3blanes は既定の設計図と霧の面の gain 2つだけが違う写し (= P22 の W3b の設計図) なので、「W3 の光・P22 の W3b の設計図」という元の意図に戻る"
   ],
+  "layout": "act1_layout_w3blanes",
   "moon": { "intensity": 0.6 },
   "lamp": {
     "illum": 1.65,

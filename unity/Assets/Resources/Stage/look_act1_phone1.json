@@ -1,0 +1,18 @@
+{
+  "_doc": [
+    "幕1のスマホの段1 (2026-10-01 HD-2D 見本 W4 P31。計画 §2-7「重い時に落とす順」の1つ目)。持ち主は P31。",
+    "使い方: 旗 look=look_act1_phone1 (実機は -hd2d hd2d=slice,look=look_act1_phone1。PC は tier=phone と一緒に)。段0 (look_act1.phone.json) は tier=phone の時に最後に重なる。",
+    "段1 = 光の筋と霧の面 (箱庭の部品 shaft・fog。材質 glow = StageShaft) を消す。",
+    "  materials.glow.intensity 0 = 見た目で消す (dropKinds を読まない古いビルドの保険)。",
+    "  描くこと自体を止めるのは diorama.dropKinds (Diorama.Build が読んで、その種類の部品を組まない)。この口は W4 の統合で Diorama.Build に足した (部品 313 → 306。材質 glow と動く物の登録簿から霧と筋が抜ける)。",
+    "  intensity 0 は残しても害は無い (組まない面に値を書くだけ)。"
+  ],
+  "materials": {
+    "glow": {
+      "intensity": 0
+    }
+  },
+  "diorama": {
+    "dropKinds": ["shaft", "fog"]
+  }
+}
