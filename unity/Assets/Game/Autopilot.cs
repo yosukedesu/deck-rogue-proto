@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using DeckRogue.Engine;
 using DeckRogue.Engine.Generated;
@@ -16,17 +17,143 @@ namespace DeckRogue.Game
 {
     public class Autopilot : MonoBehaviour
     {
-        static string Arg(string name)
+        /// <summary>起動引数 name の次の値 (無ければ null)。計測用の APK では引数ファイル perf-args.txt の中身も読む (CommandLine)</summary>
+        internal static string Arg(string name)
         {
-            var args = Environment.GetCommandLineArgs();
+            var args = CommandLine();
             for (int i = 0; i < args.Length - 1; i++) if (args[i] == name) return args[i + 1];
             return null;
+        }
+
+        // ---- 起動引数と引数ファイル (2026-09-30 HD-2D 見本 P01) ----
+        // 計測用の APK (applicationId が「.perf」で終わる) か、起動引数に -perfprobe がある時は、persistentDataPath/perf-args.txt の中身を
+        // 起動引数の後ろに足す (Android の intent の -e unity で引数が届かない時の逃げ道。adb push で置く)。
+        // 書き方: 空白で区切った起動引数そのもの (「"」で囲めば空白を含められる。# で始まる行は読み飛ばす)。例:
+        //   -autopilot state -state "phase=combat;enemy=enemy_wolf;perf=900" -perfprobe -hd2d hd2d=slice,tier=phone
+        // 普段の起動 (PC・通常の APK) では読まない = 置き忘れたファイルで勝手に自動操縦が始まらない
+        static string[] _cmdLine;
+        /// <summary>起動引数 (＋引数ファイル)。最初に呼んだ時に1回だけ作る</summary>
+        static string[] CommandLine()
+        {
+            if (_cmdLine != null) return _cmdLine;
+            var list = new List<string>(Environment.GetCommandLineArgs());
+            try
+            {
+                bool perfBuild = (Application.identifier ?? "").EndsWith(".perf", StringComparison.Ordinal);
+                if (perfBuild || list.Contains("-perfprobe"))
+                {
+                    var path = Path.Combine(Application.persistentDataPath, "perf-args.txt");
+                    if (File.Exists(path))
+                    {
+                        var extra = new List<string>();
+                        foreach (var line in File.ReadAllLines(path))
+                        {
+                            var t = line.Trim();
+                            if (t.Length == 0 || t.StartsWith("#")) continue;
+                            extra.AddRange(SplitArgs(t));
+                        }
+                        list.AddRange(extra);
+                        Debug.Log("[Autopilot] 引数ファイル " + path + " から " + extra.Count + " 個の引数を足した");
+                    }
+                }
+            }
+            catch (Exception e) { Debug.LogWarning("[Autopilot] 引数ファイルを読めない: " + e.Message); }
+            _cmdLine = list.ToArray();
+            return _cmdLine;
+        }
+
+        /// <summary>1行を空白で区切る (「"…"」は1つの引数)</summary>
+        static List<string> SplitArgs(string line)
+        {
+            var r = new List<string>();
+            var sb = new System.Text.StringBuilder();
+            bool quoted = false, any = false;
+            foreach (char c in line)
+            {
+                if (c == '"') { quoted = !quoted; any = true; continue; }
+                if (!quoted && char.IsWhiteSpace(c)) { if (any) { r.Add(sb.ToString()); sb.Length = 0; any = false; } continue; }
+                sb.Append(c); any = true;
+            }
+            if (any) r.Add(sb.ToString());
+            return r;
+        }
+
+        // ---- 決定的な撮影 (-det。2026-09-30 HD-2D 見本 P00) ----
+        // 同じ STATE を2回撮って画素まで一致させるための起動引数。見た目は変えず、時間と乱数だけを固定する:
+        //   ・最初のフレームの前から Time.captureFramerate=60 (1フレーム=1/60秒。演出・呼吸・粒・シェーダの _Time が実時間に左右されない)。
+        //     コマ送りの撮影 (play= 等) の後も 0 へ戻さず 60 のまま
+        //   ・UnityEngine.Random.InitState(20260930) (演出の火花・音の揺らぎ・揺れの向き)
+        //   ・Run の最初の待ちと演出の終わりの待ちはフレーム数で数える
+        //   ・状態へ跳んだ後、舞台の粒 (ParticleSystem) を種を固定して頭から再生し、90フレーム待ってから先へ進む
+        // STATE に det=1 と書いても同じ (-state の中身を起動の前に読む)。既存のキーの意味は変えない
+        /// <summary>-det で起動した (決定的な撮影)</summary>
+        public static bool Det { get; private set; }
+        const int DetFps = 60;
+        const int DetRandomSeed = 20260930;
+        const int DetSettleFrames = 90;
+        /// <summary>撮影の後に戻す captureFramerate (det なら 60 のまま・それ以外は 0 = 実時間)</summary>
+        static int DetFramerate => Det ? DetFps : 0;
+
+        static bool HasFlag(string name) => CommandLine().Any(a => a == name);
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        static void DetBoot()
+        {
+            var st = Arg("-state") ?? "";
+            bool det = HasFlag("-det") || st.Split(';').Any(p => p.Trim().ToLowerInvariant() == "det=1");
+            if (!det) return;
+            EnableDet();
+        }
+
+        /// <summary>
+        /// 決定的な撮影を立てる (起動引数 -det・STATE の det=1・HD2DFlags.Det=true)。2回目以降は何もしない。
+        /// 最初のフレームの前 (DetBoot) に呼ばれるのが本来の形。途中 (-statesfile の行の det=1) で立てた時はその時から固定される
+        /// </summary>
+        internal static void EnableDet()
+        {
+            if (Det) return;
+            Det = true;
+            Time.captureFramerate = DetFps;   // DetBoot から = シーンの読み込みより前 = 最初のフレームの前
+            UnityEngine.Random.InitState(DetRandomSeed);
+            Debug.Log("[Autopilot] det: captureFramerate=" + DetFps + " seed=" + DetRandomSeed);
+        }
+
+        void Awake()
+        {
+            if (Det) Time.captureFramerate = DetFps;   // 念のため (Awake も最初のフレームの前)
+        }
+
+        /// <summary>det: 舞台の粒を種を固定して頭から再生し、90フレーム待つ (粒の数と位置を撮るたびに同じにする)</summary>
+        IEnumerator DetSettleStage()
+        {
+            if (!Det) yield break;
+            var all = FindObjectsByType<ParticleSystem>(FindObjectsInactive.Include)
+                .Select(ps => new { ps, path = HierarchyPath(ps.transform) })
+                .OrderBy(x => x.path, StringComparer.Ordinal).ToList();
+            foreach (var x in all) x.ps.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+            for (int i = 0; i < all.Count; i++)
+            {
+                var ps = all[i].ps;
+                ps.useAutoRandomSeed = false;
+                ps.randomSeed = (uint)(DetRandomSeed + 7919 * (i + 1));
+            }
+            foreach (var x in all) if (x.ps.gameObject.activeInHierarchy) x.ps.Play(false);
+            Debug.Log("[Autopilot] det: 舞台の粒 " + all.Count + " 個を種を固定して頭から再生");
+            for (int i = 0; i < DetSettleFrames; i++) yield return null;
+        }
+
+        static string HierarchyPath(Transform t)
+        {
+            var sb = new System.Text.StringBuilder();
+            for (; t != null; t = t.parent) sb.Insert(0, "/" + t.GetSiblingIndex().ToString("0000") + ":" + t.name);
+            return sb.ToString();
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
         {
             var scenario = Arg("-autopilot");
+            if (string.IsNullOrEmpty(scenario) && !string.IsNullOrEmpty(Arg("-statesfile"))) scenario = "states";   // -statesfile だけでも自動操縦で撮る (P01)
             if (string.IsNullOrEmpty(scenario)) return;
             var go = new GameObject("Autopilot");
             DontDestroyOnLoad(go);
@@ -40,11 +167,18 @@ namespace DeckRogue.Game
         string _dir;
         int _seed;
         int _n;
+        string _stateSpec;    // 今撮っている STATE (layout.json の "state")
+        string _linePrefix;   // -statesfile の行の名前 (null = 1行1起動の普通の名前 NN-name.png)
+        int _lineN;           // その行で撮った枚数
+        int _diff0;           // -statesfile を始めた時の難易度 (行の頭で戻す)
 
         void Start()
         {
             Directory.CreateDirectory(_dir);
-            SaveGame.Delete();   // 前回のスクショのセーブが残っているとタイトルに「続きから」が出る (2026-09-15)。撮る時は白紙から
+            // 前回のスクショのセーブが残っているとタイトルに「続きから」が出る (2026-09-15)。撮る時は白紙から。
+            // 計測 (-perfprobe) の時は消さない (計測用の APK・PC でユーザーのセーブを消さない。2026-09-30 HD-2D 見本 P01)
+            if (!HasFlag("-perfprobe")) SaveGame.Delete();
+            else Debug.Log("[Autopilot] -perfprobe: セーブは消さない");
             StartCoroutine(Run());
         }
 
@@ -52,17 +186,25 @@ namespace DeckRogue.Game
         IEnumerator WaitPresentation()
         {
             float t0 = Time.realtimeSinceStartup;
-            while (GameObject.Find("inputblock") != null && Time.realtimeSinceStartup - t0 < 6f) yield return null;
+            int frames = 0;   // det では実時間でなくフレーム数で打ち切る (6秒 = 360フレーム)
+            while (GameObject.Find("inputblock") != null && (Det ? frames++ < 6 * DetFps : Time.realtimeSinceStartup - t0 < 6f)) yield return null;
         }
 
         IEnumerator Shot(string name, int settle = 6)
         {
             // レイアウトと描画が落ち着くまで数フレーム待つ (Rebuild 直後の1フレームは LayoutGroup が未計算)。コマ送りの途中を撮る時は settle=1
+            ApplyCaptureMode();   // uionly / unitsonly (立っていなければ何もしない。2026-09-30 HD-2D 見本 P01)
             for (int i = 0; i < settle; i++) yield return null;
+            ApplyCaptureMode();   // 待つ間の組み直し (幕の描き直し) で戻された値を、撮る直前にもう一度
             _n++;
-            var path = Path.Combine(_dir, $"{_n:00}-{name}.png");
+            // 1回の起動で順に撮る (-statesfile) 時は「行の名前-その行の何枚目.png」(1行1起動で撮って shoot.sh が付け直す名前と同じ)
+            string file;
+            if (_linePrefix != null) { _lineN++; file = _linePrefix + "-" + _lineN + ".png"; }
+            else file = $"{_n:00}-{name}.png";
+            var path = Path.Combine(_dir, file);
             ScreenCapture.CaptureScreenshot(path, 1);
             Debug.Log("[Autopilot] shot " + path + " ut=" + Time.unscaledTime.ToString("F2") + " player=" + Stage.DebugAnim("player"));
+            if (HD2DFlags.DumpLayout) LayoutDump.Write(this, path, name);   // dumplayout=1: 同じ名前の .layout.json (撮るのと同じフレームの矩形)
             for (int i = 0; i < 3; i++) yield return null;
         }
 
@@ -71,13 +213,17 @@ namespace DeckRogue.Game
             // GameRoot の起動を待つ
             float t0 = Time.realtimeSinceStartup;
             while (GameRoot.I == null && Time.realtimeSinceStartup - t0 < 20f) yield return null;
-            yield return new WaitForSeconds(0.5f);
+            if (Det) { for (int i = 0; i < DetFps / 2; i++) yield return null; }   // det: 0.5秒をフレーム数で
+            else yield return new WaitForSeconds(0.5f);
             var g = GameRoot.I;
             if (g == null) { Debug.LogError("[Autopilot] GameRoot が起動しない"); Application.Quit(1); yield break; }
             try
             {
+                var statesFile = Arg("-statesfile");
+                if (!string.IsNullOrEmpty(statesFile)) _scenario = "states";   // -autopilot state -statesfile <file> でも 1回の起動で順に撮る
                 switch (_scenario)
                 {
+                    case "states": yield return StatesFile(g, statesFile); break;   // 1回の起動で順に撮る (まとめて撮る専用。合否の門には使わない。2026-09-30 P01)
                     case "battle":
                         yield return Battle(g);
                         break;
@@ -243,6 +389,10 @@ namespace DeckRogue.Game
                 if (eq > 0) kv[part.Substring(0, eq).Trim().ToLowerInvariant()] = part.Substring(eq + 1).Trim();
             }
             string Get(string k, string dflt = null) { string v; return kv.TryGetValue(k, out v) ? v : dflt; }
+            // HD-2D 見本の旗 (stage・cam・hd2d=slice・uionly・dumplayout・perf …。2026-09-30 P01)。知らないキーは HD2DFlags が無視する。
+            // 起動の時 (BeforeSceneLoad) にも -state から当ててあるので、1行1起動なら何も変わらない (Changed も投げない)
+            _stateSpec = spec;
+            HD2DFlags.ApplyState(kv);
             string phase = (Get("phase", "map") ?? "map").ToLowerInvariant();
             g.SetSeed(_seed);
             g.LeaderId = Get("leader") ?? "leader_green";   // 前回の選択 (PlayerPrefs) に左右されないよう既定は緑
@@ -512,7 +662,9 @@ namespace DeckRogue.Game
                 else { Feedback.OpenRating(); Feedback.DraftStrength = 3; }
             }
             if (Get("memo") == "1") { Feedback.MemoOpen = true; Feedback.MemoDraft = Get("memotext") ?? ""; }
+            var perfBase = g.Rs;   // perf=<秒>: 決着したらこの盤面へ跳び直す (RunState は不変なので同じ戦闘がそのまま戻る)
             g.Rebuild();
+            yield return DetSettleStage();   // det: 舞台の粒を頭から再生して90フレーム待つ (det でなければ何もしない)
             // entershots=N: 戦闘の始まり (敵の登場・強個体/幕ボスの名前の帯) をコマ送りで撮る (2026-09-17 ⑨)。状態へ跳んだ直後は Play が呼ばれないので明示的に鳴らす
             if (Get("entershots") != null && g.Rs != null && g.Rs.Combat != null)
             {
@@ -523,7 +675,7 @@ namespace DeckRogue.Game
                 Presenter.Reset();
                 Presenter.Play(g, g.Rs.Combat);
                 for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("enter-" + i, 1); }
-                Time.captureFramerate = 0;
+                Time.captureFramerate = DetFramerate;   // det なら 60 のまま (撮影の時間刻みを最後まで固定する。2026-09-30 HD-2D 見本 P00)
             }
             yield return WaitPresentation();
             // 配置の確認 (スマホ倍率の調整用): 絵の枠の大きさと足元の高さ
@@ -562,7 +714,7 @@ namespace DeckRogue.Game
                     }
                 }
                 for (int i = 0; i < shots; i++) { yield return null; yield return null; yield return Shot("fx-" + i, 1); }
-                Time.captureFramerate = 0;
+                Time.captureFramerate = DetFramerate;   // det なら 60 のまま (撮影の時間刻みを最後まで固定する。2026-09-30 HD-2D 見本 P00)
             }
             // play=<手札index>: その札をプレイして (対象は最初の生存敵)、攻撃コマの途中を 4 枚撮る (2026-09-16 このは v2 のアニメ確認)
             int playIdx;
@@ -624,7 +776,7 @@ namespace DeckRogue.Game
                 int shotsN = 4; int.TryParse(Get("playshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 4;   // playshots=N で枚数 (札が飛んで着弾するまで 0.3〜0.6 秒)
                 int every = 4; int.TryParse(Get("playevery") ?? "", out every); if (every <= 0) every = 4;      // playevery=N フレームごとに撮る (1フレーム=1/60秒に固定)
                 for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("play-" + i, 1); }
-                Time.captureFramerate = 0;
+                Time.captureFramerate = DetFramerate;   // det なら 60 のまま (撮影の時間刻みを最後まで固定する。2026-09-30 HD-2D 見本 P00)
                 yield return WaitPresentation();
             }
             // usegear=<持ち物index>[:<敵index>]: そのギアを組んで (対象は指定か最初の生存敵)、「組んだ」の演出をコマ送りで撮る (2026-09-17)。playshots/playevery を共用。
@@ -651,7 +803,7 @@ namespace DeckRogue.Game
                     int shotsN = 6; int.TryParse(Get("playshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 6;
                     int every = 5; int.TryParse(Get("playevery") ?? "", out every); if (every <= 0) every = 5;
                     for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("gear-" + i, 1); }
-                    Time.captureFramerate = 0;
+                    Time.captureFramerate = DetFramerate;   // det なら 60 のまま (撮影の時間刻みを最後まで固定する。2026-09-30 HD-2D 見本 P00)
                     yield return WaitPresentation();
                 }
             }
@@ -664,7 +816,7 @@ namespace DeckRogue.Game
                 int shotsN = 12; int.TryParse(Get("endshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 12;
                 int every = 10; int.TryParse(Get("endevery") ?? "", out every); if (every <= 0) every = 10;
                 for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("end-" + i, 1); }
-                Time.captureFramerate = 0;
+                Time.captureFramerate = DetFramerate;   // det なら 60 のまま (撮影の時間刻みを最後まで固定する。2026-09-30 HD-2D 見本 P00)
                 yield return WaitPresentation();
             }
             // fire=1: 確認の窓が開いていれば最初の候補を発動して、からくりの演出 (札の飛び出し・判・着弾) をコマ送りで撮る (2026-09-17)。fireshots=枚数・fireevery=Nフレームごと
@@ -682,7 +834,7 @@ namespace DeckRogue.Game
                     int shotsN = 6; int.TryParse(Get("fireshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 6;
                     int every = 6; int.TryParse(Get("fireevery") ?? "", out every); if (every <= 0) every = 6;
                     for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("fire-" + i, 1); }
-                    Time.captureFramerate = 0;
+                    Time.captureFramerate = DetFramerate;   // det なら 60 のまま (撮影の時間刻みを最後まで固定する。2026-09-30 HD-2D 見本 P00)
                     yield return WaitPresentation();
                 }
                 else Debug.LogWarning("[Autopilot] fire: 発動できる仕込み札が無い");
@@ -858,6 +1010,87 @@ namespace DeckRogue.Game
                     yield return Shot((Get("name") ?? ("state-" + phase)) + "-resized", 10);
                 }
             }
+            // perf=<秒>: 撮った後、その秒数だけ戦闘を回し続ける (描画の重さの計測。GPU 時間の記録は PerfProbe = P08)。2026-09-30 HD-2D 見本 P01
+            if (HD2DFlags.Perf > 0f) yield return PerfLoop(g, perfBase, HD2DFlags.Perf);
+        }
+
+        // ---- perf=<秒> (2026-09-30 HD-2D 見本 P01) ----
+        // 3秒ごとに札を1枚打つ (打てる札が無ければ手番を終える。確認の窓は温存・占術は全部残す)。
+        // 毎ターンの頭に自分のブロックを 999 にする (既存の pblock= と同じ状態の書き換え。エンジンのルールは触らない) = 負けない。
+        // 決着したら (勝ち・負け・戦闘の外へ出た) 同じ STATE の盤面 (状態へ跳んだ直後の RunState) へ跳び直す = 終わらない戦闘。
+        // 時間は実時間で数える (det の captureFramerate の下でも「秒」が実時間になるように)。det と一緒に使うと計測の意味が無いので警告だけ出す
+        /// <summary>perf の戦闘を回している間 true (PerfProbe などが「計測の区間」を知るため)</summary>
+        public static bool PerfRunning { get; private set; }
+        /// <summary>perf の区間で打った札・終えた手番・跳び直しの数 (ログと PerfProbe 用)</summary>
+        public static int PerfPlays, PerfTurns, PerfRejumps;
+
+        IEnumerator PerfLoop(GameRoot g, RunState perfBase, float seconds)
+        {
+            if (Det) Debug.LogWarning("[Autopilot] perf: det と一緒 (captureFramerate=60 で描画が実時間に縛られない)。計測は det なしで");
+            PerfRunning = true; PerfPlays = 0; PerfTurns = 0; PerfRejumps = 0;
+            float t0 = Time.realtimeSinceStartup, end = t0 + seconds, next = t0 + 3f;
+            int lastTurn = -1;
+            Debug.Log("[Autopilot] perf start secs=" + seconds.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + " flags=" + HD2DFlags.Describe());
+            while (Time.realtimeSinceStartup < end)
+            {
+                yield return null;
+                if (Time.realtimeSinceStartup < next) continue;
+                next = Time.realtimeSinceStartup + 3f;
+                if (GameObject.Find("inputblock") != null) continue;   // 演出の順送りの途中 (次の3秒で)
+                bool inCombat = g.Rs != null && g.Rs.Phase == RunPhases.Combat && g.Rs.Combat != null;
+                if (!inCombat)
+                {
+                    if (perfBase == null || perfBase.Phase != RunPhases.Combat || perfBase.Combat == null) continue;   // 戦闘でない STATE は描画を回すだけ
+                    // 決着した → 同じ盤面へ跳び直す
+                    CardPopup.Close(); Tooltip.Hide();
+                    g.Pending = null; g.ModeChoiceUid = null; g.GearPending = null;
+                    Feedback.RatingOpen = false;   // 決着の評価の窓 (出ていれば) を閉じる
+                    g.Rs = null; g.Rebuild();   // 前の戦闘の画面 (報酬・敗北) を掃除して、次の組み立てを「新しい戦闘」にする
+                    yield return null;
+                    g.Rs = perfBase;
+                    Presenter.MarkSeen(perfBase.Combat);
+                    g.Rebuild();
+                    lastTurn = -1; PerfRejumps++;
+                    continue;
+                }
+                var st = g.Rs.Combat;
+                if (st.Phase == CombatPhases.AwaitingReaction) { g.DoCombat(new Command_ConfirmReaction { Fire = false }); continue; }
+                if (st.PendingScry != null) { ClearScry(g); continue; }
+                if (st.Phase != CombatPhases.PlayerTurn) continue;
+                if (st.Turn != lastTurn)
+                {   // 毎ターンの頭: ブロック 999 (pblock= と同じ書き換え)
+                    lastTurn = st.Turn; PerfTurns++;
+                    g.Rs = g.Rs with { Combat = st with { Player = st.Player with { Block = 999 } } };
+                    g.Rebuild();
+                    continue;   // 札は次の3秒で
+                }
+                if (g.Pending != null) { g.CancelPending(); }
+                // 打てる札 (AutoBattle と同じ選び方: ダメージ札を優先。選択式・追加コスト・仕込み札は打たない)
+                CardInstance pick = null; int target = -1;
+                for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) { target = i; break; }
+                foreach (var c in st.Player.Hand)
+                {
+                    if (c.Def.Type == "reaction" || (c.Def.Modes != null && c.Def.Modes.Count > 0) || c.Def.DiscardCost.HasValue || c.Def.ExhaustCost.HasValue) continue;
+                    int cost = c.Def.Cost;
+                    try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
+                    if (!Effects.IsPlayableFromHand(c, st) || cost > st.Player.Energy || (c.Def.LightCost ?? 0) > (st.Player.Light ?? 0)) continue;
+                    bool dmg = c.Def.Effects.Any(e => e.Effect == "dealDamage" && e.Trigger == "onPlay");
+                    if (pick == null || (dmg && !pick.Def.Effects.Any(e => e.Effect == "dealDamage" && e.Trigger == "onPlay"))) pick = c;
+                }
+                if (pick != null)
+                {
+                    g.PreferredTarget = target;
+                    g.BeginPlay(pick, null);
+                    if (g.Pending != null && g.Pending.NextNeed() == "target" && target >= 0) g.OnEnemyClicked(target);
+                    if (g.Pending != null) { g.CancelPending(); pick = null; }   // 対象以外を選ぶ札 (捨て札・山札から選ぶ) は打たない
+                    if (g.Error != null) { g.Error = null; pick = null; }
+                    if (pick != null) { PerfPlays++; continue; }
+                }
+                ClearScry(g);
+                g.DoCombat(new Command_EndTurn());
+            }
+            PerfRunning = false;
+            Debug.Log("[Autopilot] perf end secs=" + (Time.realtimeSinceStartup - t0).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + " plays=" + PerfPlays + " turns=" + PerfTurns + " rejumps=" + PerfRejumps);
         }
 
         /// <summary>ランを始めて即 工房の状態に差し替えて撮る (⭐レシピの相手札の光・結果の札)。run 巡回は強個体戦で時間切れになりやすいので単独の口</summary>
@@ -1086,6 +1319,559 @@ namespace DeckRogue.Game
             yield return Shot("last");
         }
     
+        // ---- -statesfile <file> (2026-09-30 HD-2D 見本 P01) ----
+        // 1回の起動で、ファイルの行を順に撮る (まとめて撮る専用。合否の門の比較は1行1起動で撮る = 計画 §8 審査1)。
+        // ファイルの書き方は scripts/hd2d-states/baseline.txt と同じ: 1行 = 名前|STATE、# で始まる行と空行は読み飛ばす。
+        // 「名前|PC|STATE」(W0 の list-all の形) も読む (真ん中は無視。スマホ相当の寸法と UI の倍率は起動引数なので1回の起動では切り替えられない = PH の行は警告)。
+        // 撮った PNG は「名前-その行の何枚目.png」(1行1起動で撮って shoot.sh が付け直す名前と同じ)。dumplayout=1 なら同じ名前の .layout.json。
+        // 各行の頭: 画面を白紙 (タイトル) に戻し、GameRoot の見る物の旗・ポップアップ・uionly の設定・窓の大きさ・時間の刻みを戻し、
+        // HD2DFlags.Reset → 起動引数の -hd2d → その行の STATE の順に旗を当てる。静的な状態 (Stage・Tween・Presenter の中) は消さない (計画の裁定)
+        IEnumerator StatesFile(GameRoot g, string path)
+        {
+            string[] lines = null;
+            try { lines = File.ReadAllLines(path); }
+            catch (Exception ex) { Debug.LogError("[Autopilot] states: ファイルを読めない " + path + " " + ex.Message); }
+            if (lines == null) yield break;
+            int origW = Screen.width, origH = Screen.height;
+            _diff0 = g.Difficulty;
+            int done = 0, failed = 0;
+            var names = new HashSet<string>();
+            for (int li = 0; li < lines.Length; li++)
+            {
+                var line = lines[li].Trim();
+                if (line.Length == 0 || line.StartsWith("#")) continue;
+                var parts = line.Split('|');
+                string name = parts.Length >= 2 ? parts[0].Trim() : "line" + (li + 1);
+                string spec = parts[parts.Length - 1].Trim();
+                if (parts.Length >= 3 && parts[1].Trim().ToUpperInvariant() == "PH")
+                    Debug.LogWarning("[Autopilot] states: " + name + " は PH (スマホ相当) の行。寸法と UI の倍率は起動引数なので、この起動の寸法のまま撮る");
+                name = SafeFileName(name);
+                if (!names.Add(name)) { int k = 2; while (!names.Add(name + "_" + k)) k++; name = name + "_" + k; }   // 同じ名前の行は _2, _3 … (上書きしない)
+
+                yield return ResetForLine(g, origW, origH);
+                HD2DFlags.Reset();
+                HD2DFlags.ApplyLaunchArgs();   // StateJump の頭で、この行の STATE を当てる
+                _linePrefix = name; _lineN = 0;
+                Debug.Log("[Autopilot] states: 行 " + (li + 1) + " " + name + " | " + spec);
+                bool err = false;
+                yield return Guard(StateJump(g, spec), ex => { err = true; Debug.LogError("[Autopilot] states: " + name + " で例外 " + ex); });
+                if (err) failed++; else done++;
+                _linePrefix = null;
+            }
+            yield return ResetForLine(g, origW, origH);
+            Debug.Log("[Autopilot] states: 終わり 撮った行 " + done + "・例外 " + failed);
+        }
+
+        /// <summary>-statesfile の行の頭で、前の行の見た目の状態を戻す (Rs を捨ててタイトルへ = 次の戦闘は新しい BattleView で組む)</summary>
+        IEnumerator ResetForLine(GameRoot g, int origW, int origH)
+        {
+            Time.captureFramerate = DetFramerate;
+            if (Det) UnityEngine.Random.InitState(DetRandomSeed);   // 行ごとに乱数を頭から (1行1起動に近づける)
+            RestoreCaptureMode();
+            CardPopup.Close(); Tooltip.Hide();
+            g.Pending = null; g.PreferredTarget = -1; g.ModeChoiceUid = null;
+            g.WorkshopA = -1; g.WorkshopB = -1; g.ShopMode = null; g.SubMode = null;
+            g.EventChoiceIndex = -1; g.DepartureChoiceIndex = -1; g.RelicChoosePicks.Clear();
+            g.ShowUpgraded = false; g.GridPickKey = null; g.GridPickIndex = -1; g.ShowLog = false; g.ViewPile = null;
+            g.ViewDeck = false; g.ViewRelics = false; g.ViewMap = false; g.MenuOpen = false; g.SettingsOpen = false; g.Confirm = null;
+            g.DoodleMode = false; g.Doodles.Clear();
+            g.GearPending = null; g.GearSwap = null; g.GearMore = false; g.HearthChoice = false; g.RetainChoice = null; g.ScryDiscard.Clear();
+            g.Notice = null; g.Error = null; g.PhaseShownKind = -1;
+            if (_diff0 > 0) g.Difficulty = _diff0;   // 前の行の difficulty= を持ち越さない (起動した時の値へ)
+            Feedback.MemoOpen = false; Feedback.RatingOpen = false; Feedback.Silent = false;
+            if (Screen.width != origW || Screen.height != origH)
+            {   // resize= の行の後
+                Screen.SetResolution(origW, origH, false);
+                for (int i = 0; i < 12; i++) yield return null;
+            }
+            g.Rs = null; g.Rebuild();   // 画面を掃除 (戦闘中の Rebuild は掃除しないので、一度タイトルへ)
+            Presenter.Reset();
+            for (int i = 0; i < 3; i++) yield return null;   // Destroy はフレームの終わり
+        }
+
+        /// <summary>入れ子のコルーチンを平らにして回し、例外が出たらそこで止めて onError に渡す (-statesfile で1行の失敗が残りの行を止めないように)</summary>
+        static IEnumerator Guard(IEnumerator root, Action<Exception> onError)
+        {
+            var stack = new Stack<IEnumerator>();
+            stack.Push(root);
+            while (stack.Count > 0)
+            {
+                var top = stack.Peek();
+                bool moved; object cur = null;
+                try { moved = top.MoveNext(); if (moved) cur = top.Current; }
+                catch (Exception ex) { onError(ex); yield break; }
+                if (!moved) { stack.Pop(); continue; }
+                var nested = cur as IEnumerator;
+                if (nested != null) { stack.Push(nested); continue; }
+                yield return cur;
+            }
+        }
+
+        static string SafeFileName(string s)
+        {
+            var bad = Path.GetInvalidFileNameChars();
+            var sb = new System.Text.StringBuilder();
+            foreach (char c in s) sb.Append(Array.IndexOf(bad, c) >= 0 || c == ':' || c == '*' || c == '?' || c == '"' || c == '<' || c == '>' || c == '|' || c == '/' || c == '\\' ? '_' : c);
+            var r = sb.ToString().Trim();
+            return r.Length > 0 ? r : "line";
+        }
+
+        // ---- uionly / unitsonly (2026-09-30 HD-2D 見本 P01) ----
+        // uionly=1: 舞台を描かない (画面に出すカメラは何も写さず背景のマゼンタ (1,0,1) だけ)。UI (重ねのキャンバス) だけが乗る = UI の型抜き。
+        // unitsonly=1: キャラの板 (レイヤー8) だけを写し、キャンバスを隠す = キャラの型抜き。両方立っていたら unitsonly。
+        // どちらも後処理とぼかしを切る (renderPostProcessing=false・TiltShiftSettings.Enabled=false)・背景は SolidColor のマゼンタ。
+        // P11 が板をレイヤー8に置くまで (stage=old のまま)、unitsonly は名前が「unit-」の板をその場でレイヤー8へ移して写す (撮影の時だけ。行の頭で戻す)。
+        // Shot の頭と撮る直前に毎回当てる (幕の描き直しが背景の色を戻すため)。立っていなければ何もしない = 普段の撮影は1画素も変わらない
+        struct CamSave { public Camera Cam; public CameraClearFlags Flags; public Color Bg; public int Mask; public bool Post; public bool HasData; }
+        static readonly List<CamSave> _capCams = new List<CamSave>();
+        static readonly List<Canvas> _capCanvases = new List<Canvas>();
+        static readonly List<KeyValuePair<GameObject, int>> _capLayers = new List<KeyValuePair<GameObject, int>>();
+        static bool _capOn;
+        static bool _capTilt;
+        static readonly Color CaptureMagenta = new Color(1f, 0f, 1f, 1f);
+        const int UnitLayer = HD2DLayers.StageUnit;
+
+        static void ApplyCaptureMode()
+        {
+            bool units = HD2DFlags.UnitsOnly, ui = HD2DFlags.UiOnly && !units;
+            if (!ui && !units) { RestoreCaptureMode(); return; }
+            if (!_capOn) { _capOn = true; _capTilt = TiltShiftSettings.Enabled; }
+            TiltShiftSettings.Enabled = false;
+            foreach (var cam in Camera.allCameras)
+            {
+                if (cam == null || cam.targetTexture != null) continue;   // 水面の鏡像など RT へ描くカメラは触らない
+                int idx = _capCams.FindIndex(x => x.Cam == cam);
+                if (idx < 0)
+                {
+                    var s = new CamSave { Cam = cam, Flags = cam.clearFlags, Bg = cam.backgroundColor, Mask = cam.cullingMask };
+                    try { var d = cam.GetUniversalAdditionalCameraData(); s.Post = d.renderPostProcessing; s.HasData = true; } catch (Exception) { }
+                    _capCams.Add(s);
+                }
+                cam.clearFlags = CameraClearFlags.SolidColor;
+                cam.backgroundColor = CaptureMagenta;
+                cam.cullingMask = units ? (1 << UnitLayer) : 0;
+                try { cam.GetUniversalAdditionalCameraData().renderPostProcessing = false; } catch (Exception) { }
+            }
+            if (units)
+            {
+                foreach (var cv in FindObjectsByType<Canvas>(FindObjectsInactive.Exclude))
+                {
+                    if (cv == null || !cv.isRootCanvas || !cv.enabled) continue;
+                    cv.enabled = false; _capCanvases.Add(cv);
+                }
+                bool any = false;
+                foreach (var r in FindObjectsByType<Renderer>(FindObjectsInactive.Exclude)) if (r != null && r.enabled && r.gameObject.activeInHierarchy && r.gameObject.layer == UnitLayer) { any = true; break; }
+                if (!any)
+                    foreach (var r in FindObjectsByType<MeshRenderer>(FindObjectsInactive.Exclude))
+                    {
+                        if (r == null || !r.gameObject.name.StartsWith("unit-", StringComparison.Ordinal)) continue;
+                        _capLayers.Add(new KeyValuePair<GameObject, int>(r.gameObject, r.gameObject.layer));
+                        r.gameObject.layer = UnitLayer;
+                    }
+            }
+        }
+
+        static void RestoreCaptureMode()
+        {
+            if (!_capOn) return;
+            foreach (var s in _capCams)
+            {
+                if (s.Cam == null) continue;
+                s.Cam.clearFlags = s.Flags; s.Cam.backgroundColor = s.Bg; s.Cam.cullingMask = s.Mask;
+                if (s.HasData) { try { s.Cam.GetUniversalAdditionalCameraData().renderPostProcessing = s.Post; } catch (Exception) { } }
+            }
+            foreach (var cv in _capCanvases) if (cv != null) cv.enabled = true;
+            foreach (var p in _capLayers) if (p.Key != null) p.Key.layer = p.Value;
+            _capCams.Clear(); _capCanvases.Clear(); _capLayers.Clear();
+            TiltShiftSettings.Enabled = _capTilt;
+            _capOn = false;
+        }
+
+        // ---- dumplayout=1 (2026-09-30 HD-2D 見本 P01) ----
+        // 撮った PNG と同じ名前の .layout.json (01-state-combat.png → 01-state-combat.layout.json) に、撮るのと同じフレームの矩形を書く。
+        // 形 (schema "hd2d-layout/1"。読むのは P08 の hd2d-layout-check.py・hd2d-measure.py・hd2d-seatfit.py):
+        //   png・name・frame・time・state (その STATE)・flags (HD2DFlags.Snapshot)
+        //   screen {w,h} (= PNG の寸法)・canvas {w,h,scale,phone,overlay}・statusLineY {canvas, px} (足元の線。canvas は下から・px は PNG の上から)
+        //   units [ {key, kind(enemy|player|doll), index, id, alive, hp, px, sprite, strip, intent, ring, feetOffset} ]
+        //   hand [ {name, px, body, digits [[x,y,w,h]…], digitsBottomGap (本文の数字の下端から画面の下端まで・px)} ]
+        //   anchors {topbar, phase, gold, energy, light, mana, setlabel, gearzone, setslotN, gear:<uid> …} (無い物は書かない)
+        //   nodes [ {path, px, text?, fs?, color?, digits?} ] = 画面 (screen/…) と重ねの層 (popup/…) の見えている RectTransform 全部 (上限 4000)
+        //   stage {camera: Stage.DebugCameraInfo(), unitBoxes: Stage.DebugUnitBoxes()} (P10・P11 が中身を書く。無ければ null)
+        //   extra {<名前>: HD2DFlags.LayoutDumpers[名前]() …}・errors [文字列…] (記録の途中で失敗した所)
+        // 矩形 px は [x, y, w, h] = PNG の画素 (左上が原点・y は下向き)。digits は TMP の文字の箱から数字の続き (1行の中) ごとに作った箱。
+        // fs は文字の大きさ (画面の px。<size=130%> 込みの最大)。color は文字の色 (#RRGGBBAA)
+        static class LayoutDump
+        {
+            const int MaxNodes = 4000, MaxDepth = 12;
+            static readonly System.Globalization.CultureInfo Inv = System.Globalization.CultureInfo.InvariantCulture;
+            static readonly System.Text.RegularExpressions.Regex Tags = new System.Text.RegularExpressions.Regex("<[^>]*>");
+
+            internal static void Write(Autopilot ap, string pngPath, string name)
+            {
+                string jsonPath = Path.Combine(Path.GetDirectoryName(pngPath) ?? "", Path.GetFileNameWithoutExtension(pngPath) + ".layout.json");
+                var errors = new List<object>();
+                var root = new Dictionary<string, object>();
+                try
+                {
+                    var g = GameRoot.I;
+                    root["schema"] = "hd2d-layout/1";
+                    root["png"] = Path.GetFileName(pngPath);
+                    root["name"] = name;
+                    root["frame"] = Time.frameCount;
+                    root["time"] = Time.time;
+                    root["state"] = ap != null ? ap._stateSpec : null;
+                    var flags = new Dictionary<string, object>();
+                    foreach (var p in HD2DFlags.Snapshot()) flags[p.Key] = p.Value;
+                    root["flags"] = flags;
+                    root["screen"] = new Dictionary<string, object> { { "w", Screen.width }, { "h", Screen.height } };
+                    Canvas canvas = null;
+                    if (g != null && g.ScreenRoot != null) { canvas = g.ScreenRoot.GetComponentInParent<Canvas>(); if (canvas != null) canvas = canvas.rootCanvas; }
+                    Camera cvCam = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
+                    float scale = canvas != null ? canvas.scaleFactor : 1f;
+                    Section(errors, "canvas", () =>
+                    {
+                        var cs = g != null && g.ScreenRoot != null ? BattleScreen.CanvasSize(g.ScreenRoot) : new Vector2(Screen.width, Screen.height);
+                        root["canvas"] = new Dictionary<string, object> { { "w", R(cs.x) }, { "h", R(cs.y) }, { "scale", scale }, { "phone", UiKit.Phone }, { "overlay", cvCam == null } };
+                    });
+                    var st = g != null && g.Rs != null ? g.Rs.Combat : null;
+                    bool battle = g != null && g.Battle != null && st != null && g.Rs.Phase == RunPhases.Combat;
+                    if (battle)
+                        Section(errors, "statusLineY", () =>
+                        {
+                            float y = BattleView.StatusLineY;
+                            root["statusLineY"] = new Dictionary<string, object> { { "canvas", R(y) }, { "px", R(Screen.height - y * scale) } };
+                        });
+                    // キャラの入れ物 (敵・リーダー・人形) と主な子
+                    var units = new List<object>();
+                    if (battle)
+                    {
+                        Section(errors, "units.enemy", () =>
+                        {
+                            for (int i = 0; i < st.Enemies.Count; i++)
+                                AddUnit(units, g.Anchor("enemy" + i), "enemy" + i, "enemy", i, st.Enemies[i].EnemyId, st.Enemies[i].Hp > 0, st.Enemies[i].Hp, cvCam);
+                        });
+                        Section(errors, "units.player", () => AddUnit(units, g.Anchor("player"), "player", "player", 0, g.LeaderId, st.Player.Hp > 0, st.Player.Hp, cvCam));
+                        Section(errors, "units.doll", () =>
+                        {
+                            var dolls = g.Battle.StageDolls(st);
+                            for (int i = 0; i < dolls.Count; i++) AddUnit(units, g.Anchor("doll:" + dolls[i].Uid), "doll:" + dolls[i].Uid, "doll", i, dolls[i].Def != null ? dolls[i].Def.Id : null, true, 0, cvCam);
+                        });
+                    }
+                    root["units"] = units;
+                    // 手札と本文の数字
+                    var hand = new List<object>();
+                    if (battle && g.Battle.HandLayer != null)
+                        Section(errors, "hand", () =>
+                        {
+                            foreach (Transform ch in g.Battle.HandLayer)
+                            {
+                                var rt = ch as RectTransform;
+                                if (rt == null || !rt.gameObject.activeInHierarchy || !rt.name.StartsWith("hand", StringComparison.Ordinal)) continue;
+                                var e = new Dictionary<string, object> { { "name", rt.name }, { "px", Px(rt, cvCam) } };
+                                // 本文 = 札の根の直下の文字 (CardView の body)。いちばん大きい物
+                                TMPro.TMP_Text body = null; float bestArea = -1f;
+                                foreach (Transform c in rt)
+                                {
+                                    var t = c.GetComponent<TMPro.TMP_Text>();
+                                    if (t == null || !c.gameObject.activeInHierarchy) continue;
+                                    float a = t.rectTransform.rect.width * t.rectTransform.rect.height;
+                                    if (a > bestArea) { bestArea = a; body = t; }
+                                }
+                                if (body != null)
+                                {
+                                    e["body"] = Px(body.rectTransform, cvCam);
+                                    float fs;
+                                    var digits = Digits(body, cvCam, scale, out fs);
+                                    e["digits"] = digits;
+                                    if (digits.Count > 0)
+                                    {
+                                        float bottom = 0f;
+                                        foreach (var d in digits) bottom = Mathf.Max(bottom, d[1] + d[3]);
+                                        e["digitsBottomGap"] = R(Screen.height - bottom);
+                                        e["digitsFs"] = fs;
+                                    }
+                                }
+                                hand.Add(e);
+                            }
+                        });
+                    root["hand"] = hand;
+                    // 名前で引ける部品 (上部バー・エナジー・灯・魔素・からくり・ギア)
+                    var anchors = new Dictionary<string, object>();
+                    if (g != null)
+                        Section(errors, "anchors", () =>
+                        {
+                            if (g.Battle != null && g.Battle.UiLayer != null) { var tb = g.Battle.UiLayer.Find("topbar") as RectTransform; if (tb != null && tb.gameObject.activeInHierarchy) anchors["topbar"] = Px(tb, cvCam); }
+                            var nm = new List<string> { "phase", "gold", "energy", "light", "mana", "setlabel", "gearzone" };
+                            for (int i = 0; i < 6; i++) nm.Add("setslot" + i);
+                            var rs = g.Rs;
+                            if (rs != null) foreach (var gear in DeckRogue.Engine.Run.GearsOf(rs)) nm.Add("gear:" + gear.Uid);
+                            foreach (var k in nm) { var a = g.Anchor(k); if (a != null && a.gameObject.activeInHierarchy) anchors[k] = Px(a, cvCam); }
+                        });
+                    root["anchors"] = anchors;
+                    // 見えている矩形の全部 (画面と重ねの層)
+                    var nodes = new List<object>();
+                    Section(errors, "nodes", () =>
+                    {
+                        if (g != null && g.ScreenRoot != null) Walk(g.ScreenRoot, "screen", 0, nodes, cvCam, scale);
+                        if (g != null && g.PopupLayer != null) Walk(g.PopupLayer, "popup", 0, nodes, cvCam, scale);
+                    });
+                    root["nodes"] = nodes;
+                    if (nodes.Count >= MaxNodes) errors.Add("nodes: 上限 " + MaxNodes + " で打ち切った");
+                    // 舞台 (P10・P11 が中身を書く)
+                    var stage = new Dictionary<string, object>();
+                    Section(errors, "stage.camera", () => stage["camera"] = Stage.DebugCameraInfo());
+                    Section(errors, "stage.unitBoxes", () => stage["unitBoxes"] = Stage.DebugUnitBoxes());
+                    root["stage"] = stage;
+                    // 他のレーンが足した記録
+                    var extra = new Dictionary<string, object>();
+                    foreach (var p in HD2DFlags.LayoutDumpers.ToList())
+                    {
+                        var key = p.Key; var fn = p.Value;
+                        Section(errors, "extra." + key, () => extra[key] = fn != null ? fn() : null);
+                    }
+                    root["extra"] = extra;
+                }
+                catch (Exception ex) { errors.Add("layout: " + ex.Message); }
+                root["errors"] = errors;
+                try
+                {
+                    File.WriteAllText(jsonPath, Json.Write(root), new System.Text.UTF8Encoding(false));
+                    Debug.Log("[Autopilot] layout " + jsonPath + (errors.Count > 0 ? " errors=" + errors.Count : ""));
+                }
+                catch (Exception ex) { Debug.LogWarning("[Autopilot] layout.json を書けない " + jsonPath + " " + ex.Message); }
+            }
+
+            static void Section(List<object> errors, string what, Action a)
+            {
+                try { a(); }
+                catch (Exception ex) { errors.Add(what + ": " + ex.GetType().Name + " " + ex.Message); }
+            }
+
+            static void AddUnit(List<object> units, RectTransform pan, string key, string kind, int index, string id, bool alive, int hp, Camera cvCam)
+            {
+                var e = new Dictionary<string, object> { { "key", key }, { "kind", kind }, { "index", index }, { "id", id }, { "alive", alive }, { "hp", hp } };
+                if (pan != null)
+                {
+                    e["px"] = Px(pan, cvCam);
+                    e["active"] = pan.gameObject.activeInHierarchy;
+                    foreach (var child in new[] { "sprite", "strip", "intent-tag", "ring" })
+                    {
+                        var c = pan.Find(child) as RectTransform;
+                        if (c != null && c.gameObject.activeInHierarchy) e[child == "intent-tag" ? "intent" : child] = Px(c, cvCam);
+                    }
+                }
+                e["feetOffset"] = Stage.FeetOffset(key, float.NaN);
+                units.Add(e);
+            }
+
+            static void Walk(Transform t, string path, int depth, List<object> nodes, Camera cvCam, float scale)
+            {
+                if (depth > MaxDepth) return;
+                for (int i = 0; i < t.childCount && nodes.Count < MaxNodes; i++)
+                {
+                    var ch = t.GetChild(i);
+                    if (!ch.gameObject.activeInHierarchy) continue;
+                    var rt = ch as RectTransform;
+                    string p = path + "/" + ch.name;
+                    if (rt != null)
+                    {
+                        var px = Px(rt, cvCam);
+                        if (px[2] >= 0.5f && px[3] >= 0.5f)
+                        {
+                            var e = new Dictionary<string, object> { { "path", p }, { "px", px } };
+                            var tx = ch.GetComponent<TMPro.TMP_Text>();
+                            if (tx != null && tx.enabled)
+                            {
+                                var s = Tags.Replace(tx.text ?? "", "").Replace("\n", " ");
+                                e["text"] = s.Length > 48 ? s.Substring(0, 48) : s;
+                                e["color"] = "#" + ColorUtility.ToHtmlStringRGBA(tx.color);
+                                float fs;
+                                var digits = Digits(tx, cvCam, scale, out fs);
+                                e["fs"] = fs > 0f ? fs : R(tx.fontSize * scale);
+                                if (digits.Count > 0) e["digits"] = digits;
+                            }
+                            nodes.Add(e);
+                        }
+                    }
+                    Walk(ch, p, depth + 1, nodes, cvCam, scale);
+                }
+            }
+
+            /// <summary>TMP の見えている数字 (0-9) の箱を、1行の中の続きごとに1つへまとめる (PNG の画素)。fs = その中の最大の文字の大きさ (画面の px)</summary>
+            static List<float[]> Digits(TMPro.TMP_Text t, Camera cvCam, float scale, out float fs)
+            {
+                var runs = new List<float[]>();
+                fs = 0f;
+                var info = t.textInfo;
+                if (info == null || info.characterInfo == null) return runs;
+                float x0 = 0f, y0 = 0f, x1 = 0f, y1 = 0f; int line = -1; bool open = false; int last = -2;
+                int n = Mathf.Min(info.characterCount, info.characterInfo.Length);
+                var tr = t.rectTransform;
+                for (int i = 0; i < n; i++)
+                {
+                    var ci = info.characterInfo[i];
+                    bool digit = ci.isVisible && ci.character >= '0' && ci.character <= '9';
+                    if (!digit) continue;
+                    var a = RectTransformUtility.WorldToScreenPoint(cvCam, tr.TransformPoint(ci.bottomLeft));
+                    var b = RectTransformUtility.WorldToScreenPoint(cvCam, tr.TransformPoint(ci.topRight));
+                    float ax = Mathf.Min(a.x, b.x), bx = Mathf.Max(a.x, b.x), ay = Mathf.Min(a.y, b.y), by = Mathf.Max(a.y, b.y);
+                    fs = Mathf.Max(fs, R(ci.pointSize * scale));
+                    if (open && ci.lineNumber == line && i == last + 1) { x0 = Mathf.Min(x0, ax); x1 = Mathf.Max(x1, bx); y0 = Mathf.Min(y0, ay); y1 = Mathf.Max(y1, by); }
+                    else
+                    {
+                        if (open) runs.Add(new[] { R(x0), R(Screen.height - y1), R(x1 - x0), R(y1 - y0) });
+                        x0 = ax; x1 = bx; y0 = ay; y1 = by; line = ci.lineNumber; open = true;
+                    }
+                    last = i;
+                }
+                if (open) runs.Add(new[] { R(x0), R(Screen.height - y1), R(x1 - x0), R(y1 - y0) });
+                return runs;
+            }
+
+            /// <summary>RectTransform の画面の箱 [x, y, w, h] (PNG の画素・左上が原点・y は下向き)</summary>
+            internal static float[] Px(RectTransform rt, Camera cvCam)
+            {
+                var c = new Vector3[4];
+                rt.GetWorldCorners(c);
+                float x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue;
+                for (int i = 0; i < 4; i++)
+                {
+                    var p = RectTransformUtility.WorldToScreenPoint(cvCam, c[i]);
+                    x0 = Mathf.Min(x0, p.x); x1 = Mathf.Max(x1, p.x); y0 = Mathf.Min(y0, p.y); y1 = Mathf.Max(y1, p.y);
+                }
+                return new[] { R(x0), R(Screen.height - y1), R(x1 - x0), R(y1 - y0) };
+            }
+
+            static float R(float v) { return Mathf.Round(v * 10f) / 10f; }
+        }
+
+        /// <summary>
+        /// 小さな JSON 書き出し (layout.json 用)。null・文字列・真偽・数 (不変の書式。NaN と無限は null)・列挙 (名前)・辞書 (キーは文字列)・並び・
+        /// Vector2/3/4・Rect ([x,y,w,h])・Color ([r,g,b,a])・Quaternion・UnityEngine.Object (名前) と、それ以外は公開のフィールドと読めるプロパティ
+        /// (匿名型も。深さ 8 まで)。Newtonsoft に Unity の型を渡すと normalized などで自分を指して止まらないので、自前で書く
+        /// </summary>
+        internal static class Json
+        {
+            static readonly System.Globalization.CultureInfo Inv = System.Globalization.CultureInfo.InvariantCulture;
+
+            internal static string Write(object v)
+            {
+                var sb = new System.Text.StringBuilder();
+                Val(sb, v, 0);
+                return sb.ToString();
+            }
+
+            static void Val(System.Text.StringBuilder sb, object v, int depth)
+            {
+                if (v == null) { sb.Append("null"); return; }
+                if (depth > 8) { Str(sb, v.ToString()); return; }
+                switch (v)
+                {
+                    case string s: Str(sb, s); return;
+                    case bool b: sb.Append(b ? "true" : "false"); return;
+                    case char ch: Str(sb, ch.ToString()); return;
+                    case float f: Num(sb, f); return;
+                    case double d: Num(sb, d); return;
+                    case decimal m: sb.Append(m.ToString(Inv)); return;
+                    case int _: case long _: case short _: case byte _: case uint _: case ulong _: case ushort _: case sbyte _:
+                        sb.Append(Convert.ToString(v, Inv)); return;
+                    case Enum e: Str(sb, e.ToString()); return;
+                    case Vector2 a: Arr(sb, a.x, a.y); return;
+                    case Vector3 a: Arr(sb, a.x, a.y, a.z); return;
+                    case Vector4 a: Arr(sb, a.x, a.y, a.z, a.w); return;
+                    case Quaternion q: Arr(sb, q.x, q.y, q.z, q.w); return;
+                    case Rect r: Arr(sb, r.x, r.y, r.width, r.height); return;
+                    case Color c: Arr(sb, c.r, c.g, c.b, c.a); return;
+                    case UnityEngine.Object o: Str(sb, o != null ? o.name : null); return;
+                    case System.Collections.IDictionary dict:
+                    {
+                        sb.Append('{'); bool first = true;
+                        foreach (System.Collections.DictionaryEntry de in dict)
+                        {
+                            if (!first) sb.Append(','); first = false;
+                            Str(sb, Convert.ToString(de.Key, Inv)); sb.Append(':'); Val(sb, de.Value, depth + 1);
+                        }
+                        sb.Append('}'); return;
+                    }
+                    case System.Collections.IEnumerable list:
+                    {
+                        sb.Append('['); bool first = true;
+                        foreach (var x in list)
+                        {
+                            if (!first) sb.Append(','); first = false;
+                            if (x != null && x.GetType().IsGenericType && x.GetType().GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+                            {   // KeyValuePair の並び (Snapshot など) は {"key": value} の1つずつ
+                                var kt = x.GetType();
+                                sb.Append('{'); Str(sb, Convert.ToString(kt.GetProperty("Key").GetValue(x), Inv)); sb.Append(':'); Val(sb, kt.GetProperty("Value").GetValue(x), depth + 1); sb.Append('}');
+                            }
+                            else Val(sb, x, depth + 1);
+                        }
+                        sb.Append(']'); return;
+                    }
+                }
+                // それ以外の型: 公開のフィールドと読めるプロパティ
+                var type = v.GetType();
+                sb.Append('{'); bool firstM = true;
+                foreach (var fi in type.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+                {
+                    if (!firstM) sb.Append(','); firstM = false;
+                    Str(sb, fi.Name); sb.Append(':');
+                    object fv; try { fv = fi.GetValue(v); } catch (Exception) { fv = null; }
+                    Val(sb, fv, depth + 1);
+                }
+                foreach (var pi in type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
+                {
+                    if (!pi.CanRead || pi.GetIndexParameters().Length > 0) continue;
+                    if (!firstM) sb.Append(','); firstM = false;
+                    Str(sb, pi.Name); sb.Append(':');
+                    object pv; try { pv = pi.GetValue(v); } catch (Exception) { pv = null; }
+                    Val(sb, pv, depth + 1);
+                }
+                sb.Append('}');
+            }
+
+            static void Arr(System.Text.StringBuilder sb, params float[] xs)
+            {
+                sb.Append('[');
+                for (int i = 0; i < xs.Length; i++) { if (i > 0) sb.Append(','); Num(sb, xs[i]); }
+                sb.Append(']');
+            }
+
+            static void Num(System.Text.StringBuilder sb, double d)
+            {
+                if (double.IsNaN(d) || double.IsInfinity(d)) { sb.Append("null"); return; }
+                sb.Append(d.ToString("R", Inv));
+            }
+
+            static void Num(System.Text.StringBuilder sb, float f)
+            {
+                if (float.IsNaN(f) || float.IsInfinity(f)) { sb.Append("null"); return; }
+                sb.Append(f.ToString("R", Inv));
+            }
+
+            static void Str(System.Text.StringBuilder sb, string s)
+            {
+                if (s == null) { sb.Append("null"); return; }
+                sb.Append('"');
+                foreach (char c in s)
+                {
+                    switch (c)
+                    {
+                        case '"': sb.Append("\\\""); break;
+                        case '\\': sb.Append("\\\\"); break;
+                        case '\n': sb.Append("\\n"); break;
+                        case '\r': sb.Append("\\r"); break;
+                        case '\t': sb.Append("\\t"); break;
+                        default:
+                            if (c < 0x20) sb.Append("\\u").Append(((int)c).ToString("x4", Inv));
+                            else sb.Append(c);
+                            break;
+                    }
+                }
+                sb.Append('"');
+            }
+        }
+
         /// <summary>占術の保留 (青 2026-09-25) が残っていれば全部残して決める (撮影・自動操作が EndTurn で止まらないように)</summary>
         static void ClearScry(GameRoot g)
         {

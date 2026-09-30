@@ -1,0 +1,23 @@
+# HD-2D 見本の撮影の一覧 (2026-09-30 P08。計画 docs/design/hd2d-slice-plan-2026-09-30.md §4 P08・§6)。1行 = 名前|STATE。# と空行は読み飛ばす。
+# 撮り方: scripts/hd2d-shots.sh <この一覧> <出力名> [--phone-tier] (1行1起動 = 門の撮り方)。まとめて撮るだけなら --states
+# 今の舞台 (stage=old) の同じ5場面 × 4通り。W1 では W0 と同じ画 (マスクつきで「今」を測る)、W2 では「Linear 版の今」
+S-wolf|phase=combat;enemy=enemy_wolf;dumplayout=1
+S-wolf-hideui|phase=combat;enemy=enemy_wolf;hideui=1;dumplayout=1
+S-wolf-uionly|phase=combat;enemy=enemy_wolf;uionly=1;dumplayout=1
+S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;unitsonly=1;dumplayout=1
+S-ogre|phase=combat;enemy=enemy_brute;boss=1;dumplayout=1
+S-ogre-hideui|phase=combat;enemy=enemy_brute;boss=1;hideui=1;dumplayout=1
+S-ogre-uionly|phase=combat;enemy=enemy_brute;boss=1;uionly=1;dumplayout=1
+S-ogre-unitsonly|phase=combat;enemy=enemy_brute;boss=1;unitsonly=1;dumplayout=1
+S-trio|phase=combat;enemy=enc_wolf_hexer_drummer;dumplayout=1
+S-trio-hideui|phase=combat;enemy=enc_wolf_hexer_drummer;hideui=1;dumplayout=1
+S-trio-uionly|phase=combat;enemy=enc_wolf_hexer_drummer;uionly=1;dumplayout=1
+S-trio-unitsonly|phase=combat;enemy=enc_wolf_hexer_drummer;unitsonly=1;dumplayout=1
+S-quad|phase=combat;enemy=enc_biting_scrolls_quad;dumplayout=1
+S-quad-hideui|phase=combat;enemy=enc_biting_scrolls_quad;hideui=1;dumplayout=1
+S-quad-uionly|phase=combat;enemy=enc_biting_scrolls_quad;uionly=1;dumplayout=1
+S-quad-unitsonly|phase=combat;enemy=enc_biting_scrolls_quad;unitsonly=1;dumplayout=1
+S-dolls|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;dumplayout=1
+S-dolls-hideui|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;hideui=1;dumplayout=1
+S-dolls-uionly|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;uionly=1;dumplayout=1
+S-dolls-unitsonly|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;unitsonly=1;dumplayout=1

@@ -1357,7 +1357,7 @@ namespace DeckRogue.Game
             void Update()
             {
                 if (Img == null) return;
-                _t += Time.unscaledDeltaTime;
+                _t += Tween.UnscaledDt;   // det の撮影では 1/60 秒 (2026-09-30 HD-2D 見本 P00)
                 float hz = Level >= 2f ? 1.7f : 0.9f;
                 float baseA = Level >= 2f ? 0.55f : 0.32f, amp = Level >= 2f ? 0.3f : 0.16f;
                 float a = baseA + amp * Mathf.Sin(_t * hz * Mathf.PI * 2f);

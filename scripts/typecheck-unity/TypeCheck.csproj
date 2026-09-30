@@ -1,0 +1,64 @@
+<!--
+  TypeCheck.csproj — Unity を起動せずに unity/Assets の C# を型検査する (2026-09-30 HD-2D 見本 P00)。
+  Unity の作業コピーは1つしか無く、並列のレーンは Unity でコンパイルできない。代わりにこの型検査で自分の変更を確かめる。
+  直接は呼ばず scripts/typecheck-unity/run.sh から使う (参照と定義は Unity が書いた応答ファイルから gen-props.py が作る)。
+
+  TcPass:
+    runtime = Assembly-CSharp 相当 (Assets の Editor 以外。エディタの定義 UNITY_EDITOR つき)
+    editor  = Assembly-CSharp-Editor 相当 (Assets/**/Editor。runtime の出力を参照)
+    player  = Assembly-CSharp をプレイヤーの定義 (UNITY_EDITOR なし) で。エディタ専用 API の漏れを拾う
+  出力は run.sh が毎回作る一時フォルダ (直接 dotnet build した時は bin/ と obj/。git の管理外)。できた DLL は使わない (型が通るかだけを見る)。
+-->
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <TcPass Condition="'$(TcPass)' == ''">runtime</TcPass>
+    <UnityDir Condition="'$(UnityDir)' == ''">$(MSBuildThisFileDirectory)../../unity/</UnityDir>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>disable</Nullable>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <NoStdLib>true</NoStdLib>
+    <NoCompilerStandardLib>true</NoCompilerStandardLib>
+    <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <DebugType>none</DebugType>
+    <Deterministic>true</Deterministic>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <!-- 警告は Unity と同じく止めない (数だけ run.sh が出す)。レベルは Unity と同じ 4 (CS0618 の古い API もここに入る) -->
+    <WarningLevel>4</WarningLevel>
+    <AssemblyName Condition="'$(TcPass)' == 'editor'">Assembly-CSharp-Editor</AssemblyName>
+    <AssemblyName Condition="'$(TcPass)' != 'editor'">Assembly-CSharp</AssemblyName>
+    <RootNamespace />
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>bin/$(TcPass)/</OutputPath>
+    <IntermediateOutputPath>obj/$(TcPass)/</IntermediateOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <ResolveAssemblyReferencesSilent>true</ResolveAssemblyReferencesSilent>
+    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);MSB3277;MSB3243;MSB3245;MSB3246;MSB3268;NU1503</MSBuildWarningsAsMessages>
+  </PropertyGroup>
+
+  <!-- 参照・定義・言語版 (run.sh が gen/<pass>.props を作って -p:TcProps= で渡す) -->
+  <Import Project="$(TcProps)" Condition="'$(TcProps)' != '' And Exists('$(TcProps)')" />
+
+  <ItemGroup Condition="'$(TcPass)' != 'editor'">
+    <Compile Include="$(UnityDir)Assets/**/*.cs" Exclude="$(UnityDir)Assets/**/Editor/**/*.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TcPass)' == 'editor'">
+    <Compile Include="$(UnityDir)Assets/**/Editor/**/*.cs" />
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <!-- 参照の解決 (ResolveAssemblyReferences) を素通しにする: 参照は Unity の応答ファイルにある DLL をそのまま使う。
+       通常の解決は /mnt/c・/mnt/d の DLL ごとに関連ファイルを探しに行き、WSL では1回30秒近くかかる -->
+  <Target Name="ResolveAssemblyReferences" Returns="@(ReferencePath)">
+    <ItemGroup>
+      <ReferencePath Include="@(Reference->'%(HintPath)')" />
+    </ItemGroup>
+  </Target>
+</Project>

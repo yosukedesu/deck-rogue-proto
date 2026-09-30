@@ -1,0 +1,262 @@
+{
+  "_": "HD-2D 見本 P05 の手順4: 半立体 (ReliefMesh) の元の絵。view side の正面の立面図・背景なし・台座なし・面積3万px以下。樹冠3・額縁2・羊歯2・茂み1。まず各1シード、見てから2シード目",
+  "forbidden": [
+    "forest",
+    "night",
+    "moonlight",
+    "scene",
+    "moss green",
+    "dirt"
+  ],
+  "defaultsByKind": {
+    "pixflux": {
+      "outline": "selective outline",
+      "shading": "detailed shading",
+      "detail": "highly detailed",
+      "guidance": 9
+    }
+  },
+  "items": [
+    {
+      "id": "canopy_1_s1",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/canopy_1_s1.png",
+      "size": [
+        160,
+        112
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3301,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, a broad dense crown of tree foliage only, many overlapping clumps of small leaves, lumpy rounded outline with a few small gaps, the leaves only with no trunk and no branches showing, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, grass field, island, scene, background, landscape, forest, trees behind, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, trunk, stem, branches, roots, pot, whole tree"
+    },
+    {
+      "id": "canopy_2_s1",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/canopy_2_s1.png",
+      "size": [
+        176,
+        112
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3302,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, a wide flat layered crown of tree foliage only, horizontal tiers of leaf clumps like a spreading oak crown, the leaves only with no trunk and no branches showing, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, grass field, island, scene, background, landscape, forest, trees behind, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, trunk, stem, roots, pot, whole tree"
+    },
+    {
+      "id": "canopy_3_s1",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/canopy_3_s1.png",
+      "size": [
+        144,
+        112
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3303,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, a tall rounded crown of tree foliage only, dense leaf clumps with soft darker hollows between them, the leaves only with no trunk showing, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, grass field, island, scene, background, landscape, forest, trees behind, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, trunk, stem, roots, pot, whole tree"
+    },
+    {
+      "id": "frame_1_s1",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/frame_1_s1.png",
+      "size": [
+        160,
+        128
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3304,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, a large leafy branch reaching in from the left edge of the frame, broad overlapping leaves hanging down, the branch enters from the left border and fills the left half, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, grass field, island, scene, background, landscape, forest, trees behind, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, trunk, whole tree, roots, flowers, fruit"
+    },
+    {
+      "id": "frame_2_s1",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/frame_2_s1.png",
+      "size": [
+        160,
+        128
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3305,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, a dense curtain of broad leaves and short leafy vines hanging down from the top edge of the frame, the leaves enter from the top border, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, grass field, island, scene, background, landscape, forest, trees behind, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, trunk, whole tree, roots, flowers, fruit, rope, chain"
+    },
+    {
+      "id": "fern_1_s1",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/fern_1_s1.png",
+      "size": [
+        112,
+        72
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3306,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, a large clump of fern with many long arching feathery fronds spreading left and right from one low center, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, grass field, island, scene, background, landscape, forest, trees behind, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, flowers, pot, soil mound, rocks, trunk"
+    },
+    {
+      "id": "fern_2_s1",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/fern_2_s1.png",
+      "size": [
+        96,
+        64
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3307,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, a small low clump of young fern fronds, curled fiddleheads among a few open fronds, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, grass field, island, scene, background, landscape, forest, trees behind, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, flowers, pot, soil mound, rocks, trunk"
+    },
+    {
+      "id": "bush_1_s1",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/bush_1_s1.png",
+      "size": [
+        112,
+        72
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3308,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, a low rounded leafy bush, dense small leaves in soft clumps, wider than tall, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, grass field, island, scene, background, landscape, forest, trees behind, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, flowers, berries, pot, trunk, tree, rocks"
+    },
+    {
+      "id": "canopy_1_s2",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/canopy_1_s2.png",
+      "size": [
+        160,
+        112
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3401,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, nothing else in the frame, completely empty transparent background, a floating cloud-shaped cluster of broad green leaves, like a detached puff of foliage hanging in the air, lumpy rounded outline, only leaves, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, perspective, visible floor, ground tile, grass field, island, scene, background, landscape, forest, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, tree, trunk, wood, roots, soil, ground, dirt patch, mound, shadow on the ground, base, pot, platform"
+    },
+    {
+      "id": "canopy_2_s2",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/canopy_2_s2.png",
+      "size": [
+        176,
+        112
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3402,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, nothing else in the frame, completely empty transparent background, a wide flat layered puff of green leaf clumps floating in the air, horizontal tiers of leaves, like a cut-out treetop with nothing below it, only leaves, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, perspective, visible floor, ground tile, grass field, island, scene, background, landscape, forest, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, tree, trunk, wood, roots, soil, ground, dirt patch, mound, shadow on the ground, base, pot, platform"
+    },
+    {
+      "id": "canopy_3_s2",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/canopy_3_s2.png",
+      "size": [
+        144,
+        112
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3403,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, nothing else in the frame, completely empty transparent background, a tall rounded floating bundle of dense green leaf clumps with soft dark hollows between the clumps, nothing below it, only leaves, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, perspective, visible floor, ground tile, grass field, island, scene, background, landscape, forest, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, tree, trunk, wood, roots, soil, ground, dirt patch, mound, shadow on the ground, base, pot, platform"
+    },
+    {
+      "id": "frame_1_s2",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/frame_1_s2.png",
+      "size": [
+        176,
+        96
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3404,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, nothing else in the frame, completely empty transparent background, a single long leafy branch lying horizontally across the whole frame, broad overlapping leaves along its whole length, the branch is cut off at both ends of the frame, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, perspective, visible floor, ground tile, grass field, island, scene, background, landscape, forest, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, tree, trunk, wood, roots, soil, ground, dirt patch, mound, shadow on the ground, base, pot, platform"
+    },
+    {
+      "id": "frame_2_s2",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/frame_2_s2.png",
+      "size": [
+        160,
+        96
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3405,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, nothing else in the frame, completely empty transparent background, a horizontal band of dense leaves across the top of the frame with short leafy vine strands hanging down from it, nothing else, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, perspective, visible floor, ground tile, grass field, island, scene, background, landscape, forest, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, tree, trunk, wood, roots, soil, ground, dirt patch, mound, shadow on the ground, base, pot, platform"
+    },
+    {
+      "id": "fern_1_s2",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/fern_1_s2.png",
+      "size": [
+        112,
+        72
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3406,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, nothing else in the frame, completely empty transparent background, a large clump of fern with many long arching feathery fronds spreading left and right, the stems end in a clean flat cut at the bottom with nothing under them, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, perspective, visible floor, ground tile, grass field, island, scene, background, landscape, forest, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, tree, trunk, wood, roots, soil, ground, dirt patch, mound, shadow on the ground, base, pot, platform"
+    },
+    {
+      "id": "fern_2_s2",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/fern_2_s2.png",
+      "size": [
+        96,
+        64
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3407,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, nothing else in the frame, completely empty transparent background, a small clump of young fern fronds with a few curled fiddleheads, the stems end in a clean flat cut at the bottom with nothing under them, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, perspective, visible floor, ground tile, grass field, island, scene, background, landscape, forest, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, tree, trunk, wood, roots, soil, ground, dirt patch, mound, shadow on the ground, base, pot, platform"
+    },
+    {
+      "id": "bush_1_s2",
+      "kind": "pixflux",
+      "out": "docs/pixellab/hd2d-act1/raw/relief/bush_1_s2.png",
+      "size": [
+        112,
+        72
+      ],
+      "view": "side",
+      "direction": "south",
+      "no_background": true,
+      "seed": 3408,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, nothing else in the frame, completely empty transparent background, a low rounded leafy shrub, dense small leaves in soft clumps, wider than tall, flat clean bottom edge with nothing under it, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+      "negative": "isometric, perspective, visible floor, ground tile, grass field, island, scene, background, landscape, forest, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, tree, trunk, wood, roots, soil, ground, dirt patch, mound, shadow on the ground, base, pot, platform"
+    }
+  ],
+  "_s2": "2シード目は言い回しを変えた: 1シード目は『幹なし』『地面なし』を守らず、木を丸ごと・根元に土の皿を描いた (pixflux も map-objects も)。tree/trunk/soil を否定に入れ、描写から tree の語を外した"
+}

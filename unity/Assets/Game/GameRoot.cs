@@ -186,6 +186,7 @@ namespace DeckRogue.Game
             canvasGo.transform.SetParent(transform, false);
             var canvas = canvasGo.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.vertexColorAlwaysGammaSpace = true;   // Linear でも UI の頂点色はガンマの値のまま (Gamma では何もしない。2026-09-30 HD-2D P06)
             var scaler = canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;

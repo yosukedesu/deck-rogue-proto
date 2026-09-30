@@ -1,0 +1,117 @@
+{
+  "id": "trial_tilespro_top",
+  "request": {
+    "description": "1). short mossy grass ground seen straight from above, soft small tufts, muted grey-green, evenly lit, no shadows 2). packed brown earth footpath seen straight from above, smooth trodden soil, dull warm brown, evenly lit 3). flat weathered grey stone top seen straight from above, broad smooth worn facets, cool grey, evenly lit 4). short mossy grass ground with slightly darker soft patches, muted grey-green, evenly lit 5). packed brown earth footpath with faint shallow footprints, dull warm brown, evenly lit 6). flat grey stone top with a soft patch of low moss, cool grey, evenly lit 7). short mossy grass ground, a few longer blades, muted grey-green, evenly lit 8). packed brown earth footpath, slightly lighter trodden centre, dull warm brown, evenly lit 9). flat weathered grey stone top, faint layered bands, cool grey, evenly lit 10). short mossy grass ground, calm uniform texture, muted grey-green, evenly lit 11). packed brown earth footpath, calm uniform texture, dull warm brown, evenly lit 12). flat grey stone top, calm uniform texture, cool grey, evenly lit",
+    "tile_type": "square_topdown",
+    "tile_size": 64,
+    "outline_mode": "segmentation",
+    "tile_view": "top-down",
+    "seed": 1102
+  },
+  "tile_id": "dc713d0b-ddc7-410f-a5eb-8f361d51a58a",
+  "job": "0950b031-2ce9-4783-bf97-0abf2c1e8dee",
+  "kind": "tiles",
+  "usage": {
+    "type": "generations",
+    "generations": 25
+  },
+  "saved": [
+    {
+      "key": "tile_0",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_0.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_1",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_1.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_2",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_2.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_3",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_3.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_4",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_4.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_5",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_5.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_6",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_6.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_7",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_7.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_8",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_8.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_9",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_9.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_10",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_10.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_11",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_11.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_12",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_12.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_13",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_13.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_14",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_14.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "key": "tile_15",
+      "file": "/home/yosuke/projects/deck-rogue-proto/docs/pixellab/hd2d-act1/raw/trial/trial_tilespro_top_15.png",
+      "width": 64,
+      "height": 64
+    }
+  ],
+  "at": "2026-09-30T05:41:33.406Z"
+}

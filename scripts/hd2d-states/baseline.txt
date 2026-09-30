@@ -1,0 +1,30 @@
+# HD-2D 見本 (幕1の1戦闘) の基準の撮影 (2026-09-30 P00)。1行 = 名前|STATE (Autopilot.StateJump のキー)。# で始まる行は読み飛ばす。
+# 撮り方: DET=1 STATE="<STATE>" scripts/unity-win.sh shots state 4242 を1行ごとに起動し直して撮る (合否の比較は1行1起動)。
+# スマホ相当は SHOT_W=1920 SHOT_H=886 UISCALE=1.6 を付けて S-wolf・S-ogre・S-quad を撮る。
+# 基準の5場面 (通常と hideui=1)
+S-wolf|phase=combat;enemy=enemy_wolf
+S-wolf-hideui|phase=combat;enemy=enemy_wolf;hideui=1
+S-ogre|phase=combat;enemy=enemy_brute;boss=1
+S-ogre-hideui|phase=combat;enemy=enemy_brute;boss=1;hideui=1
+S-trio|phase=combat;enemy=enc_wolf_hexer_drummer
+S-trio-hideui|phase=combat;enemy=enc_wolf_hexer_drummer;hideui=1
+S-quad|phase=combat;enemy=enc_biting_scrolls_quad
+S-quad-hideui|phase=combat;enemy=enc_biting_scrolls_quad;hideui=1
+S-dolls|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir
+S-dolls-hideui|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;hideui=1
+# 演出の回帰 R1〜R15 (振り・多段・全体・急所・豹変・盾で受ける・被弾・とどめと崩れ・登場と名前の帯・からくりの発動・人形の踏み込み・ギアの窓・拡大・説明パネル)
+R01-swing|phase=combat;enemy=enemy_probe;play=attack;playshots=8;playevery=1
+R02-multi|phase=combat;hand=green_double_lash;play=0;playshots=12;playevery=3
+R03-aoe|phase=combat;enemy=enc_probe_pair;hand=green_earth_roar;play=0;playshots=10;playevery=3
+R04-exposed|phase=combat;eexposed=1;hand=green_strike;play=0;playshots=8;playevery=2
+R05-enrage|phase=combat;enemy=enemy_brute;ehp=h+3;hand=green_strike;play=0;playshots=14;playevery=5
+R06-guard|phase=combat;enemy=enemy_wolf;pblock=20;endplay=1;endshots=16;endevery=3
+R07-hurt|phase=combat;enemy=enemy_wolf;endplay=1;endshots=14;endevery=9
+R08-kill|phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4
+R09-enter|phase=combat;enemy=enemy_brute;boss=1;entershots=12;enterevery=6
+R10-trap|phase=combat;enemy=enemy_wolf;sets=green_reaction_vine*;endturn=1;fire=1;fireshots=10;fireevery=8
+R11-doll|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_hound,white_perm_squire;hand=white_light_bolt;play=0;playshots=8;playevery=3
+R12-gearwin|phase=combat;gears=gear_spring,gear_cog;gearwin=0
+R13-gearmore|phase=combat;gears=gear_spring,gear_cog;gearmore=1
+R14-popup|phase=combat;popup=0
+R15-tip|phase=combat;tip=enemy

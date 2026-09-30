@@ -1,0 +1,23 @@
+{
+  "request": {
+    "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no base platform, nothing else in the frame, a broad dense mass of tree leaves hanging from a few thin twigs, no trunk, rounded lumpy outline with a few gaps of empty space, leaves in large soft clusters, soft light from the upper left, evenly exposed neutral mid-tone greens and grey-greens, pixel art, no text",
+    "image_size": {
+      "width": 160,
+      "height": 112
+    },
+    "view": "side",
+    "outline": "selective outline",
+    "shading": "medium shading",
+    "detail": "high detail",
+    "text_guidance_scale": 8,
+    "seed": 1101
+  },
+  "object_id": "cd0a526f-555f-4e27-9dd2-aec62d9cf571",
+  "job": "c4a58d6e-0c78-49ab-ac27-edc28e0ccd79",
+  "usage": null,
+  "size": {
+    "width": 160,
+    "height": 112
+  },
+  "at": "2026-09-30T05:39:38.281Z"
+}

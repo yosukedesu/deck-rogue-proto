@@ -1,0 +1,22 @@
+{
+  "_doc": [
+    "幕1のぼかし (2026-09-30 HD-2D 見本。計画 §2-6)。持ち主は P24 (ぼかしの詰め)。作ったのは P09。look_act1.json・look_act1.char.json の上に重ねて読む。",
+    "StageLook.Apply が TiltShiftSettings (P07 のパスが読む) に書く。Enabled は旗 dof=1、UseUrpBokeh は旗 dof=urp。",
+    "座席の帯の深さは P10 の Stage.SeatDepthRange から (StageLook.SetSeatBand が bandMargin を足して BandNear・BandFar に書く)。まだ無い時は カメラの距離 + fallbackBandRel。",
+    "urpBokeh は dof=urp (逃げ道) の時の URP の Bokeh の値。焦点は座席の帯の真ん中。"
+  ],
+  "tiltShift": {
+    "bandMargin": 0.8,
+    "rampNear": 2.5,
+    "rampFar": 9.0,
+    "maxPxPC": 24,
+    "maxPxPhone": 12,
+    "halfRes": false,
+    "fallbackBandRel": [-4.0, 8.0]
+  },
+  "urpBokeh": {
+    "focalLength": 90,
+    "aperture": 4.5,
+    "bladeCount": 5
+  }
+}

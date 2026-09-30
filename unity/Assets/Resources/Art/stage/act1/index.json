@@ -1,0 +1,521 @@
+{
+ "_": "HD-2D 見本の幕1の舞台の絵の一覧 (2026-09-30 P05 が書く。scripts/tile-calm.py → scripts/stage-palette.py map で作った。元と経緯は docs/pixellab/hd2d-act1/README.md)。art は Resources からのパス (拡張子なし)。タイルは tile-calm 済み＝読み込み側で明暗を絞り直さない (DioramaTileCandidate の calm=1・sat=1)。色はどれも docs/pixellab/hd2d-act1/palette-act1.json (48色・Oklab の k-means) へ写してある",
+ "tileSize": 64,
+ "texelsPerUnit": 25,
+ "palette": "docs/pixellab/hd2d-act1/palette-act1.json",
+ "materials": {
+  "top_grass": {
+   "face": "top",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act1/tiles/top_grass_a",
+    "Art/stage/act1/tiles/top_grass_b",
+    "Art/stage/act1/tiles/top_grass_c",
+    "Art/stage/act1/tiles/top_grass_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "苔の草地 (芝と平たい苔の株)。raw/tiles/top_grass_s2 の 160 を 64×4 に",
+   "lapvar": [
+    783.6,
+    740.2,
+    655.8,
+    749.2
+   ],
+   "pass": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "top_grass_alt": {
+   "face": "top",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act1/tiles/top_grass_alt_a",
+    "Art/stage/act1/tiles/top_grass_alt_b",
+    "Art/stage/act1/tiles/top_grass_alt_c",
+    "Art/stage/act1/tiles/top_grass_alt_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "大きな葉の株の草地 (top_grass の差し替え候補)。raw/tiles/top_grass_s1",
+   "lapvar": [
+    609.9,
+    776.5,
+    788.2,
+    700.8
+   ],
+   "pass": [
+    true,
+    true,
+    true,
+    false
+   ]
+  },
+  "top_path": {
+   "face": "top",
+   "rot": "rot4",
+   "art": [
+    "Art/stage/act1/tiles/top_path_a",
+    "Art/stage/act1/tiles/top_path_b",
+    "Art/stage/act1/tiles/top_path_c",
+    "Art/stage/act1/tiles/top_path_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "踏み固めた土の道。raw/tiles/top_path_s1 (色表で3色の静かな面)",
+   "lapvar": [
+    257.0,
+    284.6,
+    340.0,
+    328.2
+   ],
+   "pass": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "top_rock": {
+   "face": "top",
+   "rot": "rot4",
+   "art": [
+    "Art/stage/act1/tiles/top_rock_a",
+    "Art/stage/act1/tiles/top_rock_b",
+    "Art/stage/act1/tiles/top_rock_c",
+    "Art/stage/act1/tiles/top_rock_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "岩の天面 (平らな風化した岩)。raw/tiles/top_rock_s1",
+   "lapvar": [
+    729.4,
+    628.3,
+    602.7,
+    611.0
+   ],
+   "pass": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "side_rock": {
+   "face": "side",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act1/tiles/side_rock_a",
+    "Art/stage/act1/tiles/side_rock_b",
+    "Art/stage/act1/tiles/side_rock_c",
+    "Art/stage/act1/tiles/side_rock_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "岩の面 (崖・段の縦の面)。raw/tiles/side_rock_s1",
+   "lapvar": [
+    654.6,
+    665.8,
+    664.1,
+    715.6
+   ],
+   "pass": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "side_bark": {
+   "face": "side",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act1/tiles/side_bark_a",
+    "Art/stage/act1/tiles/side_bark_b",
+    "Art/stage/act1/tiles/side_bark_c",
+    "Art/stage/act1/tiles/side_bark_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "樹皮 (幹の円筒)。raw/tiles/side_bark_s1。明暗をほかより絞った (--max-lap 640)",
+   "lapvar": [
+    565.0,
+    664.9,
+    642.9,
+    622.6
+   ],
+   "pass": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "side_wood": {
+   "face": "side",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act1/tiles/side_wood_a",
+    "Art/stage/act1/tiles/side_wood_b",
+    "Art/stage/act1/tiles/side_wood_c",
+    "Art/stage/act1/tiles/side_wood_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "板 (縦の板張り・釘)。櫓・柵。梁はこの絵を 90° 回して貼る",
+   "lapvar": [
+    607.4,
+    765.1,
+    677.1,
+    654.1
+   ],
+   "pass": [
+    true,
+    true,
+    true,
+    true
+   ]
+  }
+ },
+ "relief": {
+  "act1_bush2": {
+   "art": "Art/stage/act1/relief/act1_bush2",
+   "kind": "既存",
+   "dots": [
+    96,
+    64
+   ],
+   "unitsAt25": [
+    3.84,
+    2.56
+   ],
+   "from": "Art/props/act1_bush2",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_bush3": {
+   "art": "Art/stage/act1/relief/act1_bush3",
+   "kind": "既存",
+   "dots": [
+    56,
+    40
+   ],
+   "unitsAt25": [
+    2.24,
+    1.6
+   ],
+   "from": "Art/props/act1_bush3",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_fern": {
+   "art": "Art/stage/act1/relief/act1_fern",
+   "kind": "既存",
+   "dots": [
+    48,
+    32
+   ],
+   "unitsAt25": [
+    1.92,
+    1.28
+   ],
+   "from": "Art/props/act1_fern",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_fern2": {
+   "art": "Art/stage/act1/relief/act1_fern2",
+   "kind": "既存",
+   "dots": [
+    80,
+    56
+   ],
+   "unitsAt25": [
+    3.2,
+    2.24
+   ],
+   "from": "Art/props/act1_fern2",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_leafclump1": {
+   "art": "Art/stage/act1/relief/act1_leafclump1",
+   "kind": "既存",
+   "dots": [
+    64,
+    35
+   ],
+   "unitsAt25": [
+    2.56,
+    1.4
+   ],
+   "from": "Art/props/act1_leafclump1",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_leafclump2": {
+   "art": "Art/stage/act1/relief/act1_leafclump2",
+   "kind": "既存",
+   "dots": [
+    64,
+    36
+   ],
+   "unitsAt25": [
+    2.56,
+    1.44
+   ],
+   "from": "Art/props/act1_leafclump2",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_leafclump3": {
+   "art": "Art/stage/act1/relief/act1_leafclump3",
+   "kind": "既存",
+   "dots": [
+    48,
+    32
+   ],
+   "unitsAt25": [
+    1.92,
+    1.28
+   ],
+   "from": "Art/props/act1_leafclump3",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_leafclump4": {
+   "art": "Art/stage/act1/relief/act1_leafclump4",
+   "kind": "既存",
+   "dots": [
+    64,
+    30
+   ],
+   "unitsAt25": [
+    2.56,
+    1.2
+   ],
+   "from": "Art/props/act1_leafclump4",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_leafclump5": {
+   "art": "Art/stage/act1/relief/act1_leafclump5",
+   "kind": "既存",
+   "dots": [
+    64,
+    27
+   ],
+   "unitsAt25": [
+    2.56,
+    1.08
+   ],
+   "from": "Art/props/act1_leafclump5",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_reed": {
+   "art": "Art/stage/act1/relief/act1_reed",
+   "kind": "既存",
+   "dots": [
+    32,
+    32
+   ],
+   "unitsAt25": [
+    1.28,
+    1.28
+   ],
+   "from": "Art/props/act1_reed",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_rock_big1": {
+   "art": "Art/stage/act1/relief/act1_rock_big1",
+   "kind": "既存",
+   "dots": [
+    112,
+    72
+   ],
+   "unitsAt25": [
+    4.48,
+    2.88
+   ],
+   "from": "Art/props/act1_rock_big1",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_rock_big2": {
+   "art": "Art/stage/act1/relief/act1_rock_big2",
+   "kind": "既存",
+   "dots": [
+    96,
+    64
+   ],
+   "unitsAt25": [
+    3.84,
+    2.56
+   ],
+   "from": "Art/props/act1_rock_big2",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_root": {
+   "art": "Art/stage/act1/relief/act1_root",
+   "kind": "既存",
+   "dots": [
+    64,
+    32
+   ],
+   "unitsAt25": [
+    2.56,
+    1.28
+   ],
+   "from": "Art/props/act1_root",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_tree_giant": {
+   "art": "Art/stage/act1/relief/act1_tree_giant",
+   "kind": "既存",
+   "dots": [
+    160,
+    200
+   ],
+   "unitsAt25": [
+    6.4,
+    8.0
+   ],
+   "from": "Art/props/act1_tree_giant",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_tree_oak": {
+   "art": "Art/stage/act1/relief/act1_tree_oak",
+   "kind": "既存",
+   "dots": [
+    160,
+    192
+   ],
+   "unitsAt25": [
+    6.4,
+    7.68
+   ],
+   "from": "Art/props/act1_tree_oak",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "act1_tree_oak2": {
+   "art": "Art/stage/act1/relief/act1_tree_oak2",
+   "kind": "既存",
+   "dots": [
+    160,
+    176
+   ],
+   "unitsAt25": [
+    6.4,
+    7.04
+   ],
+   "from": "Art/props/act1_tree_oak2",
+   "note": "既存の小物の色表への写し (元の絵は変えていない)"
+  },
+  "bush_1": {
+   "art": "Art/stage/act1/relief/bush_1",
+   "kind": "茂み",
+   "dots": [
+    76,
+    54
+   ],
+   "unitsAt25": [
+    3.04,
+    2.16
+   ],
+   "from": "docs/pixellab/hd2d-act1/raw/relief-clean/bush_1.png (PixelLab pixflux・relief-clean.py で手直し)",
+   "note": "丸い茂み (根元の土を消した)"
+  },
+  "canopy_1": {
+   "art": "Art/stage/act1/relief/canopy_1",
+   "kind": "樹冠",
+   "dots": [
+    107,
+    62
+   ],
+   "unitsAt25": [
+    4.28,
+    2.48
+   ],
+   "from": "docs/pixellab/hd2d-act1/raw/relief-clean/canopy_1.png (PixelLab pixflux・relief-clean.py で手直し)",
+   "note": "塊の樹冠 (幹と根を落とした)。下端は平ら＝幹の上に載せる"
+  },
+  "canopy_2": {
+   "art": "Art/stage/act1/relief/canopy_2",
+   "kind": "樹冠",
+   "dots": [
+    124,
+    65
+   ],
+   "unitsAt25": [
+    4.96,
+    2.6
+   ],
+   "from": "docs/pixellab/hd2d-act1/raw/relief-clean/canopy_2.png (PixelLab pixflux・relief-clean.py で手直し)",
+   "note": "横に広い樹冠"
+  },
+  "canopy_3": {
+   "art": "Art/stage/act1/relief/canopy_3",
+   "kind": "樹冠",
+   "dots": [
+    77,
+    72
+   ],
+   "unitsAt25": [
+    3.08,
+    2.88
+   ],
+   "from": "docs/pixellab/hd2d-act1/raw/relief-clean/canopy_3.png (PixelLab pixflux・relief-clean.py で手直し)",
+   "note": "縦に丸い樹冠"
+  },
+  "fern_1": {
+   "art": "Art/stage/act1/relief/fern_1",
+   "kind": "羊歯",
+   "dots": [
+    84,
+    59
+   ],
+   "unitsAt25": [
+    3.36,
+    2.36
+   ],
+   "from": "docs/pixellab/hd2d-act1/raw/relief-clean/fern_1.png (PixelLab pixflux・relief-clean.py で手直し)",
+   "note": "弓なりの大きな羊歯 (根元の土を消した)"
+  },
+  "fern_2": {
+   "art": "Art/stage/act1/relief/fern_2",
+   "kind": "羊歯",
+   "dots": [
+    56,
+    49
+   ],
+   "unitsAt25": [
+    2.24,
+    1.96
+   ],
+   "from": "docs/pixellab/hd2d-act1/raw/relief-clean/fern_2.png (PixelLab pixflux・relief-clean.py で手直し)",
+   "note": "若い羊歯"
+  },
+  "frame_1": {
+   "art": "Art/stage/act1/relief/frame_1",
+   "kind": "額縁",
+   "dots": [
+    150,
+    34
+   ],
+   "unitsAt25": [
+    6.0,
+    1.36
+   ],
+   "from": "docs/pixellab/hd2d-act1/raw/relief-clean/frame_1.png (PixelLab pixflux・relief-clean.py で手直し)",
+   "note": "横に伸びる葉の枝 (手前の額縁。左右の縁から差し込む)"
+  },
+  "frame_2": {
+   "art": "Art/stage/act1/relief/frame_2",
+   "kind": "額縁",
+   "dots": [
+    159,
+    58
+   ],
+   "unitsAt25": [
+    6.36,
+    2.32
+   ],
+   "from": "docs/pixellab/hd2d-act1/raw/relief-clean/frame_2.png (PixelLab pixflux・relief-clean.py で手直し)",
+   "note": "上から垂れる葉と蔓の帯 (手前の上の額縁)"
+  }
+ }
+}

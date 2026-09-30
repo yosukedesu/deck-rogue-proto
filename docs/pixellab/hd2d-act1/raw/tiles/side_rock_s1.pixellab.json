@@ -1,0 +1,24 @@
+{
+  "id": "side_rock_s1",
+  "engine": "pixflux",
+  "request": {
+    "description": "flat seamless repeating texture of a vertical weathered rock cliff face seen straight on, broad chiselled rock facets and small ledges, cool grey-brown, evenly lit neutral daylight, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, detailed shading, no text",
+    "negative_description": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, gradient, stripes, rows, white specks, bright highlights, night, dark blue tint, bricks, wall, masonry, grid, horizon, ground line, plants, grass, flowers, water, strata stripes",
+    "image_size": {
+      "width": 160,
+      "height": 160
+    },
+    "text_guidance_scale": 9,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "seed": 2204
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-30T05:45:29.228Z"
+}

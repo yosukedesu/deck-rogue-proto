@@ -1,0 +1,25 @@
+{
+  "_": "HD-2D 見本の発注書の雛形 (2026-09-30 P05)。写して id・out・text を埋める。実行は node scripts/pixellab-v2.mjs order <発注書> [--dry] [--budget N]。禁止語が描写 (text) にあると送る前に止まる (negative には書いてよい)。使った回数は <発注書>.log.jsonl",
+  "forbidden": ["forest", "night", "moonlight", "scene", "moss green", "dirt"],
+  "_forbidden": "forest/night/moonlight/scene=木・月・風景を描き足す、moss green=土まで緑にする、dirt=段丘や丸い塊を呼ぶ (memory pixellab-stage-lessons・docs/stage-hd2d-2026-09-21.md)。土は 'packed earth' 'soil'、夜は描かせず中立の明るさで頼み、夜はエンジンの光で作る",
+  "defaultsByKind": {
+    "pixflux": {
+      "_": "既知の道。1枚1生成。タイルは 160×160 で作り中央 128 を 64×4 に切る (tile-calm)。小物は view side の正面の立面図",
+      "outline": "selective outline", "shading": "detailed shading", "detail": "highly detailed", "guidance": 9
+    },
+    "tilespro": {
+      "_": "1回 25 生成で 64px が16枚。ただし右と下の縁に案内線 (1〜3px) が残り、つながらない・色数3〜24の平らな絵 (2026-09-30 試し)",
+      "type": "square_topdown", "size": 64, "view": "top-down", "outlineMode": "segmentation", "estimate": 25
+    },
+    "mapobj": {
+      "_": "1回 1 生成・背景なし・400×400 まで。否定の文が無いので『幹なし』を守らず木を丸ごと描く (2026-09-30 試し)",
+      "view": "side", "outline": "selective outline", "shading": "medium shading", "detail": "high detail", "guidance": 8, "estimate": 1
+    },
+    "edit": { "_": "edit-images-v2。1回 20 生成", "estimate": 20 }
+  },
+  "_tileText": "flat seamless repeating texture of <材質>, <色>, evenly lit neutral daylight, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, no text",
+  "_tileNegative": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, gradient, stripes, rows, white specks, highlights",
+  "_reliefText": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, the top surface is not visible, the ground plane is not visible, no base platform, centered, nothing else in the frame, completely empty transparent background, no soil, no shadow on the ground, no sky, <物>, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, no text",
+  "_reliefNegative": "isometric, dimetric, oblique, 3/4 view, perspective, vanishing point, diagonal base, diamond platform, tilted top surface, visible floor, ground tile, grass field, island, scene, background, landscape, forest, trees behind, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal",
+  "items": []
+}

@@ -1,0 +1,23 @@
+# HD-2D 見本の撮影の一覧 (2026-09-30 P08。計画 docs/design/hd2d-slice-plan-2026-09-30.md §4 P08・§6)。1行 = 名前|STATE。# と空行は読み飛ばす。
+# 撮り方: scripts/hd2d-shots.sh <この一覧> <出力名> [--phone-tier] (1行1起動 = 門の撮り方)。まとめて撮るだけなら --states
+# 見本 (stage=diorama;hd2d=slice) の基準の5場面 × 通常／UI なし／UI だけ／キャラの板だけ。全部 dumplayout=1 (hd2d-measure.py と hd2d-layout-check.py が読む)
+S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1
+S-wolf-hideui|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+S-wolf-uionly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;uionly=1;dumplayout=1
+S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1
+S-ogre|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1
+S-ogre-hideui|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+S-ogre-uionly|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;uionly=1;dumplayout=1
+S-ogre-unitsonly|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1
+S-trio|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;dumplayout=1
+S-trio-hideui|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+S-trio-uionly|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;uionly=1;dumplayout=1
+S-trio-unitsonly|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1
+S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1
+S-quad-hideui|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+S-quad-uionly|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;uionly=1;dumplayout=1
+S-quad-unitsonly|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1
+S-dolls|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dumplayout=1
+S-dolls-hideui|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+S-dolls-uionly|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;uionly=1;dumplayout=1
+S-dolls-unitsonly|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1

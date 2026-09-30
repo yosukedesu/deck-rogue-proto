@@ -199,13 +199,18 @@ namespace DeckRogue.Game
             I.StartCoroutine(HitStopCo(scale, sec));
         }
 
+        /// <summary>実時間の1フレームの長さ (ヒットストップ・ターン終了の脈・危険域の脈が使う)。決定的な撮影 (-det) では 1/60 秒に固定する
+        /// (Time.captureFramerate は deltaTime を固定するが unscaledDeltaTime は実時間のまま = 撮るたびに脈の位相とヒットストップの長さが変わった。
+        /// 2026-09-30 HD-2D 見本 P00)。det でなければ Time.unscaledDeltaTime そのまま</summary>
+        public static float UnscaledDt => Autopilot.Det ? 1f / 60f : Time.unscaledDeltaTime;
+
         static int _hitStops;
         static IEnumerator HitStopCo(float scale, float sec)
         {
             _hitStops++;
             Time.timeScale = Mathf.Min(Time.timeScale, scale);
             float t = 0f;
-            while (t < sec) { yield return null; t += Mathf.Min(Time.unscaledDeltaTime, 0.05f); }   // 長いフレーム (Rebuild 直後・撮影) 1回で終わらないよう上限
+            while (t < sec) { yield return null; t += Mathf.Min(UnscaledDt, 0.05f); }   // 長いフレーム (Rebuild 直後・撮影) 1回で終わらないよう上限
             if (--_hitStops <= 0) { _hitStops = 0; Time.timeScale = 1f; }
         }
 

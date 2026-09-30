@@ -1,0 +1,16 @@
+{"id":"canopy_1_s1","kind":"pixflux","used":1,"left":43.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:47:02.827Z"}
+{"id":"canopy_2_s1","kind":"pixflux","used":1,"left":43.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:47:46.770Z"}
+{"id":"canopy_3_s1","kind":"pixflux","used":1,"left":42.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:48:14.109Z"}
+{"id":"frame_1_s1","kind":"pixflux","used":1,"left":41.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:48:35.062Z"}
+{"id":"frame_2_s1","kind":"pixflux","used":1,"left":40.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:48:54.661Z"}
+{"id":"fern_1_s1","kind":"pixflux","used":1,"left":39.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:49:33.697Z"}
+{"id":"fern_2_s1","kind":"pixflux","used":1,"left":38.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:50:08.532Z"}
+{"id":"bush_1_s1","kind":"pixflux","used":1,"left":37.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:50:33.706Z"}
+{"id":"canopy_1_s2","kind":"pixflux","used":1,"left":36.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:52:10.652Z"}
+{"id":"canopy_2_s2","kind":"pixflux","used":1,"left":35.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:52:54.867Z"}
+{"id":"canopy_3_s2","kind":"pixflux","used":1,"left":34.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:53:28.589Z"}
+{"id":"frame_1_s2","kind":"pixflux","used":1,"left":33.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:54:06.445Z"}
+{"id":"frame_2_s2","kind":"pixflux","used":1,"left":32.44999999999982,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:54:33.355Z"}
+{"id":"fern_1_s2","kind":"pixflux","used":1,"left":31.449999999999818,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:54:56.947Z"}
+{"id":"fern_2_s2","kind":"pixflux","used":1,"left":30.449999999999818,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:55:13.757Z"}
+{"id":"bush_1_s2","kind":"pixflux","used":1,"left":29.449999999999818,"usage":{"type":"generations","generations":1},"at":"2026-09-30T05:55:46.255Z"}

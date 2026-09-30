@@ -1,0 +1,148 @@
+{
+  "_doc": [
+    "幕1・坑口の森の光の設計図 (2026-09-30 HD-2D 見本。計画 docs/design/hd2d-slice-plan-2026-09-30.md §2-4・§2-6)。持ち主は P22 (舞台の詰め)。作ったのは P09。",
+    "StageLook.Load が look_act1.json → look_act1.char.json (P23) → look_act1.dof.json (P24) → look_act1.phone.json (P31。tier=phone の時だけ) の順に重ねて読む。",
+    "重ね方: オブジェクトはキーごとに混ぜる・配列と数は後のファイルで置き換える。「_」で始まるキーは説明で、読まない。書いていないキーは StageLook.cs の既定の値になる。",
+    "見本の舞台 (stage=diorama) でだけ使う。stage=old では読まれるだけで何も当てない。",
+    "座標: t = 道に沿った距離・s = 道と直角 (+ が奥)・y = 高さ。道の向き pathYaw (度)。offset は世界の軸 (x 右・y 上・z 奥)。",
+    "色は [r, g, b] (0〜1・sRGB の値。Linear でも SetColor が自動で線形へ直す)。",
+    "距離の値 (fog.start・fog.end・shadow.distance) は画角36° (カメラの距離 baseCameraDistance) の時の値。StageLook.ScaleByCameraDistance が 距離÷baseCameraDistance を掛けて1か所で書く。",
+    "illum = その光が照らす的の所での明るさ。URP の点光源とスポットは距離の2乗で弱まるので、StageLook が Light.intensity = illum × 距離² (スポットは帯でいちばん暗い所の値) に直す。"
+  ],
+  "version": 1,
+  "act": 1,
+  "pathYaw": -22,
+  "baseCameraDistance": 16.62,
+
+  "moon": {
+    "_doc": "月 (平行光)。左上の手前から。影は地形と大物だけ (shadowLayers)。向きは最後に art-lint の描き込みの光の向きで決める (P22)",
+    "euler": [48, 38, 0],
+    "color": [0.74, 0.82, 1.0],
+    "intensity": 1.1,
+    "shadows": "soft",
+    "shadowStrength": 0.75,
+    "shadowBias": 0.05,
+    "shadowNormalBias": 0.4,
+    "lightLayers": "all",
+    "shadowLayers": "environment",
+    "cookie": false,
+    "cookieSize": [24, 24]
+  },
+
+  "lamp": {
+    "_doc": "舞台の灯 (スポット)。カメラ側の上から座席の帯へ。影はキャラの板だけ。向きと角度は座席の帯 (band) の四隅から StageLook が計算する (帯の四隅がクッキーの半径 bandFill に来る)。flatten = クッキーで距離と入射角の差を打ち消して、帯の地面の明るさをそろえる (いちばん暗い所に合わせて明るい所を削る。floor より下げない)。キャラの固定のキーはこの灯の向き (StageLook.KeyDir)",
+    "color": [0.92, 0.96, 1.0],
+    "illum": 1.0,
+    "offset": [-8.0, 17.0, -14.0],
+    "band": { "tMin": -6.5, "tMax": 12.5, "sMin": -1.4, "sMax": 1.8 },
+    "aimY": 0.0,
+    "bandFill": 0.6,
+    "innerRatio": 0.78,
+    "rangeScale": 3.0,
+    "flatten": true,
+    "flattenFloor": 0.2,
+    "shadows": "soft",
+    "shadowStrength": 0.8,
+    "shadowBias": 0.04,
+    "shadowNormalBias": 0.3,
+    "shadowTier": "high",
+    "lightLayers": "all",
+    "shadowLayers": "characters",
+    "cookie": true
+  },
+
+  "backlight": {
+    "_doc": "逆光: 坑口の奥の脈の青緑 (点光源)。影は PC だけ (phone で shadow=false)。大きい技の光が影を借りる時は、この灯の影を一時的に止める (影を落とす光は画面に最大 shadow.maxShadowedLights)",
+    "on": true,
+    "t": 4.0, "s": 22.0, "y": 5.8,
+    "color": [0.40, 0.95, 0.88],
+    "illum": 1.6,
+    "illumDist": 5.0,
+    "range": 16,
+    "shadow": true,
+    "shadows": "soft",
+    "shadowStrength": 0.6,
+    "shadowBias": 0.05,
+    "shadowNormalBias": 0.4,
+    "shadowTier": "low",
+    "lightLayers": "all",
+    "shadowLayers": "environment"
+  },
+
+  "cookie": {
+    "_doc": "木漏れ日のクッキー (256×256・linear・舞台の灯に付ける)。大きく不定形な明暗を blobs 個。中央 (半径 centerRadius。帯の四隅は lamp.bandFill) はコントラスト centerContrast 以下、外は edgeContrast。等間隔の粒は作らない",
+    "size": 256,
+    "seed": 20260930,
+    "blobs": 4,
+    "centerRadius": 0.64,
+    "centerContrast": 0.18,
+    "edgeContrast": 0.62,
+    "softness": 0.16
+  },
+
+  "ambient": {
+    "_doc": "環境光。Flat をやめて Trilight (空・地平・地面の3色)",
+    "mode": "trilight",
+    "sky": [0.30, 0.36, 0.58],
+    "equator": [0.22, 0.27, 0.40],
+    "ground": [0.12, 0.13, 0.18]
+  },
+
+  "fog": {
+    "_doc": "距離の霧 (Linear。start・end は画角36° の時の値×r) と高さの霧 (全体値 _HD2DHeightFogColor・_HD2DHeightFogRange に書くだけ。読むシェーダは P22/P03)",
+    "on": true,
+    "color": [0.34, 0.50, 0.60],
+    "start": 14,
+    "end": 60,
+    "height": { "on": true, "color": [0.40, 0.60, 0.66], "base": -0.6, "top": 3.0, "density": 0.35 }
+  },
+
+  "shadow": {
+    "_doc": "URP のアセットの影の値 (実行時に書き、Restore で戻す)。distance は画角36° の時の値×r。カスケードの分割は P10 が座席の深さから計算して上書きする",
+    "distance": 42,
+    "cascades": 2,
+    "cascade2Split": 0.33,
+    "mainResolution": 2048,
+    "additionalResolution": 2048,
+    "maxShadowedLights": 3
+  },
+
+  "post": {
+    "_doc": "後処理 (Stage の Volume の設定に書き、Restore で控えに戻す)。フィルムグレインと色収差は切る。周辺減光は座席の帯の外側から (0.25)",
+    "tonemap": "aces",
+    "exposure": 0.3,
+    "contrast": 10,
+    "saturation": 0,
+    "colorFilter": [0.95, 0.98, 1.04],
+    "liftGammaGain": { "lift": [1, 1, 1, 0], "gamma": [1, 1, 1, 0], "gain": [1, 1, 1, 0] },
+    "bloom": { "threshold": 1.0, "intensity": 0.8, "scatter": 0.65, "tint": [0.92, 0.98, 1.0] },
+    "vignette": { "intensity": 0.25, "smoothness": 0.45, "center": [0.5, 0.52], "rounded": false, "color": [0.02, 0.02, 0.06] },
+    "filmGrain": false,
+    "chromaticAberration": false
+  },
+
+  "camera": {
+    "_doc": "カメラ: 深度テクスチャ (ぼかしが読む) は必ず作る。MSAA は旗 aa=msaa の時だけ、標本数は HD2DFlags.MsaaSamples と msaaMax の小さい方。background = 何も描かない所の色",
+    "depthTexture": true,
+    "msaaMax": 8,
+    "background": [0.08, 0.10, 0.21]
+  },
+
+  "materials": {
+    "_doc": "箱庭の材質 (Diorama.Materials の名前) ごとの受光 _Receive と影の強さ _ShadowStrength。地形0.8・半立体0.35・札0.25",
+    "terrain": { "receive": 0.8, "shadowStrength": 1.0 },
+    "rock":    { "receive": 0.8, "shadowStrength": 1.0 },
+    "wood":    { "receive": 0.8, "shadowStrength": 1.0 },
+    "bark":    { "receive": 0.8, "shadowStrength": 1.0 },
+    "relief":  { "receive": 0.35, "shadowStrength": 1.0 },
+    "card":    { "receive": 0.25, "shadowStrength": 1.0 }
+  },
+
+  "hitLight": {
+    "_doc": "技の光 (StageFx.HitLight)。点光源を maxLights 個プールする。HitLight の intensity は refDist の所での明るさ (Light.intensity = intensity × refDist²)。影は大きい当たりだけ (呼ぶ側が shadow=true)",
+    "maxLights": 3,
+    "range": 4.0,
+    "refDist": 1.5,
+    "shadowTier": "low"
+  }
+}

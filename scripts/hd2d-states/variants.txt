@@ -1,0 +1,78 @@
+# HD-2D 見本の撮影の一覧 (2026-09-30 P08。計画 docs/design/hd2d-slice-plan-2026-09-30.md §4 P08・§6)。1行 = 名前|STATE。# と空行は読み飛ばす。
+# 撮り方: scripts/hd2d-shots.sh <この一覧> <出力名> [--phone-tier] (1行1起動 = 門の撮り方)。まとめて撮るだけなら --states
+# 見本の変種 (cam・pitch・receive・keycolor・herolift・charshadow・ui・ledger・herodots・dof・trunk・artscale)。名前 = V-<変種>-<場面>
+# カメラ (§6 4。22 は見下ろし 10° と 12°)。P10 の確かめ方 = 各2〜4体で足元の間隔の差 ±5%・右端・深さの比
+V-cam36-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;cam=36;pitch=12;dumplayout=1
+V-cam36-S-trio|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;cam=36;pitch=12;dumplayout=1
+V-cam36-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;cam=36;pitch=12;dumplayout=1
+V-cam28-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;cam=28;pitch=12;dumplayout=1
+V-cam28-S-trio|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;cam=28;pitch=12;dumplayout=1
+V-cam28-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;cam=28;pitch=12;dumplayout=1
+V-cam22-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;cam=22;pitch=12;dumplayout=1
+V-cam22-S-trio|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;cam=22;pitch=12;dumplayout=1
+V-cam22-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;cam=22;pitch=12;dumplayout=1
+V-cam22p10-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;cam=22;pitch=10;dumplayout=1
+V-cam22p10-S-trio|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;cam=22;pitch=10;dumplayout=1
+V-cam22p10-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;cam=22;pitch=10;dumplayout=1
+# 光 (§6 5。キャラの受光・キーの色・主役の持ち上げ・キャラの影)。⑧ はキャラの板だけの画で測る
+V-recv05-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;receive=0.5;dumplayout=1
+V-recv05-S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;receive=0.5;unitsonly=1;dumplayout=1
+V-recv07-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;receive=0.7;dumplayout=1
+V-recv07-S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;receive=0.7;unitsonly=1;dumplayout=1
+V-recv09-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;receive=0.9;dumplayout=1
+V-recv09-S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;receive=0.9;unitsonly=1;dumplayout=1
+V-keyneutral-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;keycolor=neutral;dumplayout=1
+V-keyneutral-S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;keycolor=neutral;unitsonly=1;dumplayout=1
+V-keywarm-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;keycolor=warm;dumplayout=1
+V-keywarm-S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;keycolor=warm;unitsonly=1;dumplayout=1
+V-lift12-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;herolift=1.2;dumplayout=1
+V-lift12-S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;herolift=1.2;unitsonly=1;dumplayout=1
+V-lift13-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;herolift=1.3;dumplayout=1
+V-lift13-S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;herolift=1.3;unitsonly=1;dumplayout=1
+V-lift14-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;herolift=1.4;dumplayout=1
+V-lift14-S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;herolift=1.4;unitsonly=1;dumplayout=1
+V-shadow0-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;charshadow=0;dumplayout=1
+V-shadow0-S-wolf-hideui|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;charshadow=0;hideui=1;dumplayout=1
+V-shadow1-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;charshadow=1;dumplayout=1
+V-shadow1-S-wolf-hideui|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;charshadow=1;hideui=1;dumplayout=1
+# 画面の紙 (§6 6。夜色／紙・敵1〜4体と人形9体)。スマホ相当は --phone-tier で同じ一覧を撮る
+V-uinight-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;ui=night;dumplayout=1
+V-uinight-S-ogre|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;ui=night;dumplayout=1
+V-uinight-S-trio|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;ui=night;dumplayout=1
+V-uinight-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;ui=night;dumplayout=1
+V-uinight-S-dolls|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;ui=night;dumplayout=1
+V-uipaper-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;ui=paper;dumplayout=1
+V-uipaper-S-ogre|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;ui=paper;dumplayout=1
+V-uipaper-S-trio|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;ui=paper;dumplayout=1
+V-uipaper-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;ui=paper;dumplayout=1
+V-uipaper-S-dolls|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;ui=paper;dumplayout=1
+V-ledgerline-S-trio|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;ledger=line;dumplayout=1
+V-ledgerline-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;ledger=line;dumplayout=1
+V-ledgerfeet-S-trio|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;ledger=feet;dumplayout=1
+V-ledgerfeet-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;ledger=feet;dumplayout=1
+# 主人公の大きさ (§6 3。62 と 48 の縮めた見本)
+V-hero62-S-ogre|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;herodots=62;dumplayout=1
+V-hero62-S-ogre-unitsonly|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;herodots=62;unitsonly=1;dumplayout=1
+V-hero62-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;herodots=62;dumplayout=1
+V-hero62-S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;herodots=62;unitsonly=1;dumplayout=1
+V-hero48-S-ogre|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;herodots=48;dumplayout=1
+V-hero48-S-ogre-unitsonly|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;herodots=48;unitsonly=1;dumplayout=1
+V-hero48-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;herodots=48;dumplayout=1
+V-hero48-S-wolf-unitsonly|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;herodots=48;unitsonly=1;dumplayout=1
+# ぼかし (P24。奥の敵が読めることを先に)。dof=0 の m6_seat が比べる元
+V-dof0-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dof=0;dumplayout=1
+V-dof0-S-quad-hideui|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dof=0;hideui=1;dumplayout=1
+V-dof1-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dof=1;dumplayout=1
+V-dof1-S-quad-hideui|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dof=1;hideui=1;dumplayout=1
+V-dofurp-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dof=urp;dumplayout=1
+V-dofurp-S-quad-hideui|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dof=urp;hideui=1;dumplayout=1
+# 幹 (W2 の途中でユーザーに確かめる: 3D の筒か、既存の絵から作る半立体か)
+V-trunkmesh-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;trunk=mesh;dumplayout=1
+V-trunkmesh-S-wolf-hideui|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;trunk=mesh;hideui=1;dumplayout=1
+V-trunkrelief-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;trunk=relief;dumplayout=1
+V-trunkrelief-S-wolf-hideui|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;trunk=relief;hideui=1;dumplayout=1
+# スマホの1ドットの整数倍 (P20 の artscale。--phone-tier で撮る)
+V-art0625-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;artscale=0.625;dumplayout=1
+V-art0625-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;artscale=0.625;dumplayout=1
+V-art0469-S-wolf|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;artscale=0.469;dumplayout=1
+V-art0469-S-quad|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;artscale=0.469;dumplayout=1

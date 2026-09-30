@@ -1,0 +1,24 @@
+{
+  "id": "top_grass_s1",
+  "engine": "pixflux",
+  "request": {
+    "description": "flat seamless repeating texture of short soft grass mixed with low moss seen straight from above, fine calm texture, muted grey-green, evenly lit neutral daylight, extreme close-up, uniform all over, fills the whole frame edge to edge, no vignette, no objects, no border, lineless, pixel art, detailed shading, no text",
+    "negative_description": "trees, trunk, path, road, scene, border, vignette, frame, bevel, objects, isometric, island, sky, moon, character, animal, text, watermark, blurry, gradient, stripes, rows, white specks, bright highlights, night, dark blue tint, rocks, pebbles, stones, flowers, clover, fallen leaves, water, blue, tall blades",
+    "image_size": {
+      "width": 160,
+      "height": 160
+    },
+    "text_guidance_scale": 9,
+    "no_background": false,
+    "outline": "lineless",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down",
+    "seed": 2201
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-30T05:44:37.638Z"
+}

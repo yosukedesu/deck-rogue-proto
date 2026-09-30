@@ -195,6 +195,12 @@ namespace DeckRogue.Game
         }
         static Material _numHalo;
 
+        /// <summary>
+        /// 夜色の札 (HD-2D 見本の ui=night) の上の数字の素材 (2026-09-30 §3)。紙色の字のすぐ外に夜の下敷きを敷く版の NumHalo。
+        /// 骨組み (P00): いつも null (呼ぶ側は null なら素の素材のまま)。中身は P21 が書き、P20 が呼ぶ
+        /// </summary>
+        public static Material NumHaloNight(TMP_FontAsset font = null) => null;
+
         /// <summary>小さい文字の上限 (実際に描く大きさ Fs がこれ以下なら SmallMat を当てる。2026-09-29 p19)</summary>
         public const int SmallTextMax = 15;
         static Material _smallRegular, _smallBold, _smallDeco;

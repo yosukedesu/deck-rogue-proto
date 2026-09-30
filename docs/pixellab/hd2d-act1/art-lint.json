@@ -1,0 +1,3659 @@
+{
+ "characters": {
+  "leaders/leader_green.png": {
+   "size": [
+    88,
+    64
+   ],
+   "height": 62,
+   "width": 59,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.077,
+   "lightDy": -0.03,
+   "lightMag": 0.082,
+   "lightDeg": 201.6,
+   "light": "左",
+   "bottomReach": 0.339,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader"
+  },
+  "leaders/leader_green_48.png": {
+   "size": [
+    68,
+    50
+   ],
+   "height": 48,
+   "width": 45,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.11,
+   "lightDy": -0.016,
+   "lightMag": 0.112,
+   "lightDeg": 188.0,
+   "light": "左",
+   "bottomReach": 0.356,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader"
+  },
+  "leaders/leader_white.png": {
+   "size": [
+    112,
+    64
+   ],
+   "height": 56,
+   "width": 65,
+   "outlineMin": 23.6,
+   "outlineMedian": 102.6,
+   "white235": 0.2481,
+   "lightDx": -0.152,
+   "lightDy": -0.357,
+   "lightMag": 0.388,
+   "lightDeg": 246.9,
+   "light": "左下",
+   "bottomReach": 0.246,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader"
+  },
+  "leaders/anim/leader_green_48_attack_0.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 52,
+   "width": 28,
+   "outlineMin": 4.1,
+   "outlineMedian": 16.6,
+   "white235": 0.0,
+   "lightDx": -0.035,
+   "lightDy": -0.141,
+   "lightMag": 0.145,
+   "lightDeg": 256.3,
+   "light": "下",
+   "bottomReach": 0.536,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_attack_1.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 46,
+   "width": 41,
+   "outlineMin": 4.1,
+   "outlineMedian": 11.9,
+   "white235": 0.0,
+   "lightDx": 0.02,
+   "lightDy": -0.024,
+   "lightMag": 0.031,
+   "lightDeg": 310.4,
+   "light": "なし",
+   "bottomReach": 0.366,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_attack_2.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 50,
+   "width": 48,
+   "outlineMin": 4.1,
+   "outlineMedian": 14.2,
+   "white235": 0.0,
+   "lightDx": 0.062,
+   "lightDy": 0.215,
+   "lightMag": 0.223,
+   "lightDeg": 74.0,
+   "light": "上",
+   "bottomReach": 0.583,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_attack_3.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 46,
+   "width": 51,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.004,
+   "lightDy": 0.118,
+   "lightMag": 0.118,
+   "lightDeg": 91.8,
+   "light": "上",
+   "bottomReach": 0.471,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_block_0.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 47,
+   "width": 47,
+   "outlineMin": 4.1,
+   "outlineMedian": 16.6,
+   "white235": 0.0,
+   "lightDx": -0.068,
+   "lightDy": -0.043,
+   "lightMag": 0.081,
+   "lightDeg": 211.9,
+   "light": "左下",
+   "bottomReach": 0.319,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_block_1.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 45,
+   "width": 49,
+   "outlineMin": 4.1,
+   "outlineMedian": 16.6,
+   "white235": 0.0,
+   "lightDx": -0.104,
+   "lightDy": 0.026,
+   "lightMag": 0.107,
+   "lightDeg": 165.8,
+   "light": "左",
+   "bottomReach": 0.306,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_block_2.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 45,
+   "width": 49,
+   "outlineMin": 4.1,
+   "outlineMedian": 11.9,
+   "white235": 0.0,
+   "lightDx": -0.093,
+   "lightDy": -0.046,
+   "lightMag": 0.104,
+   "lightDeg": 206.5,
+   "light": "左下",
+   "bottomReach": 0.327,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_block_3.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 45,
+   "width": 49,
+   "outlineMin": 4.1,
+   "outlineMedian": 11.9,
+   "white235": 0.0,
+   "lightDx": -0.105,
+   "lightDy": -0.063,
+   "lightMag": 0.122,
+   "lightDeg": 210.9,
+   "light": "左下",
+   "bottomReach": 0.327,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_idle_0.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 48,
+   "width": 47,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.064,
+   "lightDy": -0.033,
+   "lightMag": 0.072,
+   "lightDeg": 206.9,
+   "light": "左下",
+   "bottomReach": 0.319,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_idle_1.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 48,
+   "width": 47,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.065,
+   "lightDy": -0.036,
+   "lightMag": 0.075,
+   "lightDeg": 208.8,
+   "light": "左下",
+   "bottomReach": 0.319,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_idle_2.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 49,
+   "width": 46,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.106,
+   "lightDy": -0.036,
+   "lightMag": 0.112,
+   "lightDeg": 198.9,
+   "light": "左",
+   "bottomReach": 0.326,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_idle_3.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 50,
+   "width": 46,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.128,
+   "lightDy": -0.06,
+   "lightMag": 0.141,
+   "lightDeg": 204.9,
+   "light": "左下",
+   "bottomReach": 0.326,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_idle_4.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 50,
+   "width": 45,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.125,
+   "lightDy": -0.067,
+   "lightMag": 0.142,
+   "lightDeg": 208.2,
+   "light": "左下",
+   "bottomReach": 0.333,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_idle_5.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 50,
+   "width": 45,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.136,
+   "lightDy": -0.066,
+   "lightMag": 0.151,
+   "lightDeg": 206.0,
+   "light": "左下",
+   "bottomReach": 0.333,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_idle_6.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 50,
+   "width": 46,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.102,
+   "lightDy": -0.034,
+   "lightMag": 0.108,
+   "lightDeg": 198.5,
+   "light": "左",
+   "bottomReach": 0.326,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_48_idle_7.png": {
+   "size": [
+    71,
+    60
+   ],
+   "height": 49,
+   "width": 47,
+   "outlineMin": 4.1,
+   "outlineMedian": 11.9,
+   "white235": 0.0,
+   "lightDx": -0.086,
+   "lightDy": -0.05,
+   "lightMag": 0.1,
+   "lightDeg": 210.4,
+   "light": "左下",
+   "bottomReach": 0.319,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_attack_0.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 67,
+   "width": 37,
+   "outlineMin": 4.1,
+   "outlineMedian": 11.9,
+   "white235": 0.0,
+   "lightDx": -0.036,
+   "lightDy": -0.145,
+   "lightMag": 0.15,
+   "lightDeg": 255.9,
+   "light": "下",
+   "bottomReach": 0.514,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_attack_1.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 59,
+   "width": 53,
+   "outlineMin": 4.1,
+   "outlineMedian": 11.9,
+   "white235": 0.0,
+   "lightDx": -0.001,
+   "lightDy": -0.003,
+   "lightMag": 0.003,
+   "lightDeg": 254.2,
+   "light": "なし",
+   "bottomReach": 0.34,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_attack_2.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 65,
+   "width": 63,
+   "outlineMin": 4.1,
+   "outlineMedian": 11.9,
+   "white235": 0.0,
+   "lightDx": 0.046,
+   "lightDy": 0.188,
+   "lightMag": 0.194,
+   "lightDeg": 76.1,
+   "light": "上",
+   "bottomReach": 0.556,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_attack_3.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 59,
+   "width": 66,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.018,
+   "lightDy": 0.136,
+   "lightMag": 0.137,
+   "lightDeg": 97.6,
+   "light": "上",
+   "bottomReach": 0.409,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_block_0.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 61,
+   "width": 60,
+   "outlineMin": 4.1,
+   "outlineMedian": 11.9,
+   "white235": 0.0,
+   "lightDx": -0.1,
+   "lightDy": -0.034,
+   "lightMag": 0.105,
+   "lightDeg": 198.7,
+   "light": "左",
+   "bottomReach": 0.333,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_block_1.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 58,
+   "width": 64,
+   "outlineMin": 4.1,
+   "outlineMedian": 16.6,
+   "white235": 0.0,
+   "lightDx": -0.079,
+   "lightDy": 0.018,
+   "lightMag": 0.081,
+   "lightDeg": 167.4,
+   "light": "左",
+   "bottomReach": 0.312,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_block_2.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 58,
+   "width": 62,
+   "outlineMin": 4.1,
+   "outlineMedian": 11.9,
+   "white235": 0.0,
+   "lightDx": -0.112,
+   "lightDy": -0.061,
+   "lightMag": 0.128,
+   "lightDeg": 208.8,
+   "light": "左下",
+   "bottomReach": 0.306,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_block_3.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 58,
+   "width": 64,
+   "outlineMin": 4.1,
+   "outlineMedian": 11.9,
+   "white235": 0.0,
+   "lightDx": -0.103,
+   "lightDy": -0.072,
+   "lightMag": 0.125,
+   "lightDeg": 214.9,
+   "light": "左下",
+   "bottomReach": 0.297,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_idle_0.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 62,
+   "width": 60,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.097,
+   "lightDy": -0.025,
+   "lightMag": 0.1,
+   "lightDeg": 194.5,
+   "light": "左",
+   "bottomReach": 0.333,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_idle_1.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 62,
+   "width": 60,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.097,
+   "lightDy": -0.024,
+   "lightMag": 0.1,
+   "lightDeg": 194.0,
+   "light": "左",
+   "bottomReach": 0.333,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_idle_2.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 63,
+   "width": 59,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.112,
+   "lightDy": -0.021,
+   "lightMag": 0.114,
+   "lightDeg": 190.5,
+   "light": "左",
+   "bottomReach": 0.339,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_idle_3.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 64,
+   "width": 59,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.105,
+   "lightDy": -0.047,
+   "lightMag": 0.116,
+   "lightDeg": 204.2,
+   "light": "左下",
+   "bottomReach": 0.339,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_idle_4.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 65,
+   "width": 58,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.12,
+   "lightDy": -0.054,
+   "lightMag": 0.131,
+   "lightDeg": 204.1,
+   "light": "左下",
+   "bottomReach": 0.345,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_idle_5.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 64,
+   "width": 58,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.122,
+   "lightDy": -0.035,
+   "lightMag": 0.127,
+   "lightDeg": 196.2,
+   "light": "左",
+   "bottomReach": 0.345,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_idle_6.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 64,
+   "width": 59,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.105,
+   "lightDy": -0.028,
+   "lightMag": 0.109,
+   "lightDeg": 195.1,
+   "light": "左",
+   "bottomReach": 0.339,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_green_idle_7.png": {
+   "size": [
+    92,
+    78
+   ],
+   "height": 63,
+   "width": 60,
+   "outlineMin": 4.1,
+   "outlineMedian": 8.5,
+   "white235": 0.0,
+   "lightDx": -0.103,
+   "lightDy": -0.031,
+   "lightMag": 0.107,
+   "lightDeg": 196.9,
+   "light": "左",
+   "bottomReach": 0.333,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_attack_0.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 65,
+   "width": 34,
+   "outlineMin": 23.6,
+   "outlineMedian": 82.1,
+   "white235": 0.2805,
+   "lightDx": -0.007,
+   "lightDy": -0.32,
+   "lightMag": 0.32,
+   "lightDeg": 268.7,
+   "light": "下",
+   "bottomReach": 0.412,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_attack_1.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 54,
+   "width": 76,
+   "outlineMin": 23.6,
+   "outlineMedian": 78.3,
+   "white235": 0.2748,
+   "lightDx": 0.094,
+   "lightDy": -0.278,
+   "lightMag": 0.293,
+   "lightDeg": 288.7,
+   "light": "下",
+   "bottomReach": 0.066,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_attack_2.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 54,
+   "width": 85,
+   "outlineMin": 33.0,
+   "outlineMedian": 159.3,
+   "white235": 0.3979,
+   "lightDx": 0.032,
+   "lightDy": -0.015,
+   "lightMag": 0.035,
+   "lightDeg": 334.6,
+   "light": "なし",
+   "bottomReach": 0.153,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_attack_3.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 54,
+   "width": 81,
+   "outlineMin": 33.0,
+   "outlineMedian": 142.2,
+   "white235": 0.3654,
+   "lightDx": -0.035,
+   "lightDy": -0.18,
+   "lightMag": 0.183,
+   "lightDeg": 259.1,
+   "light": "下",
+   "bottomReach": 0.16,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_block_0.png": {
+   "size": [
+    112,
+    64
+   ],
+   "height": 56,
+   "width": 72,
+   "outlineMin": 23.6,
+   "outlineMedian": 84.8,
+   "white235": 0.2584,
+   "lightDx": -0.126,
+   "lightDy": -0.283,
+   "lightMag": 0.31,
+   "lightDeg": 246.0,
+   "light": "左下",
+   "bottomReach": 0.222,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_block_1.png": {
+   "size": [
+    112,
+    64
+   ],
+   "height": 54,
+   "width": 77,
+   "outlineMin": 23.6,
+   "outlineMedian": 84.8,
+   "white235": 0.2848,
+   "lightDx": -0.09,
+   "lightDy": -0.238,
+   "lightMag": 0.255,
+   "lightDeg": 249.2,
+   "light": "下",
+   "bottomReach": 0.195,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_block_2.png": {
+   "size": [
+    112,
+    64
+   ],
+   "height": 54,
+   "width": 82,
+   "outlineMin": 33.0,
+   "outlineMedian": 138.1,
+   "white235": 0.5194,
+   "lightDx": 0.1,
+   "lightDy": -0.138,
+   "lightMag": 0.171,
+   "lightDeg": 305.9,
+   "light": "右下",
+   "bottomReach": 0.207,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_block_3.png": {
+   "size": [
+    112,
+    64
+   ],
+   "height": 56,
+   "width": 75,
+   "outlineMin": 33.0,
+   "outlineMedian": 124.9,
+   "white235": 0.369,
+   "lightDx": 0.033,
+   "lightDy": -0.187,
+   "lightMag": 0.19,
+   "lightDeg": 280.1,
+   "light": "下",
+   "bottomReach": 0.213,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_idle_0.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 56,
+   "width": 65,
+   "outlineMin": 23.6,
+   "outlineMedian": 102.6,
+   "white235": 0.2481,
+   "lightDx": -0.152,
+   "lightDy": -0.357,
+   "lightMag": 0.388,
+   "lightDeg": 246.9,
+   "light": "左下",
+   "bottomReach": 0.246,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_idle_1.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 57,
+   "width": 65,
+   "outlineMin": 23.6,
+   "outlineMedian": 102.6,
+   "white235": 0.2547,
+   "lightDx": -0.147,
+   "lightDy": -0.333,
+   "lightMag": 0.364,
+   "lightDeg": 246.2,
+   "light": "左下",
+   "bottomReach": 0.246,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_idle_2.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 58,
+   "width": 66,
+   "outlineMin": 23.6,
+   "outlineMedian": 102.6,
+   "white235": 0.2546,
+   "lightDx": -0.15,
+   "lightDy": -0.316,
+   "lightMag": 0.35,
+   "lightDeg": 244.6,
+   "light": "左下",
+   "bottomReach": 0.242,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_idle_3.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 59,
+   "width": 66,
+   "outlineMin": 11.2,
+   "outlineMedian": 102.6,
+   "white235": 0.2543,
+   "lightDx": -0.144,
+   "lightDy": -0.337,
+   "lightMag": 0.366,
+   "lightDeg": 246.8,
+   "light": "左下",
+   "bottomReach": 0.242,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_idle_4.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 60,
+   "width": 65,
+   "outlineMin": 23.6,
+   "outlineMedian": 102.6,
+   "white235": 0.2526,
+   "lightDx": -0.143,
+   "lightDy": -0.3,
+   "lightMag": 0.332,
+   "lightDeg": 244.6,
+   "light": "左下",
+   "bottomReach": 0.246,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_idle_5.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 61,
+   "width": 64,
+   "outlineMin": 23.6,
+   "outlineMedian": 102.6,
+   "white235": 0.2626,
+   "lightDx": -0.143,
+   "lightDy": -0.309,
+   "lightMag": 0.341,
+   "lightDeg": 245.1,
+   "light": "左下",
+   "bottomReach": 0.25,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_idle_6.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 59,
+   "width": 64,
+   "outlineMin": 23.6,
+   "outlineMedian": 102.6,
+   "white235": 0.2539,
+   "lightDx": -0.142,
+   "lightDy": -0.324,
+   "lightMag": 0.354,
+   "lightDeg": 246.3,
+   "light": "左下",
+   "bottomReach": 0.25,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "leaders/anim/leader_white_idle_7.png": {
+   "size": [
+    112,
+    84
+   ],
+   "height": 58,
+   "width": 64,
+   "outlineMin": 23.6,
+   "outlineMedian": 102.6,
+   "white235": 0.2547,
+   "lightDx": -0.148,
+   "lightDy": -0.333,
+   "lightMag": 0.365,
+   "lightDeg": 246.0,
+   "light": "左下",
+   "bottomReach": 0.25,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "leader-anim"
+  },
+  "enemies/enemy_apprentice_colossus.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 54,
+   "width": 38,
+   "outlineMin": 3.7,
+   "outlineMedian": 11.8,
+   "white235": 0.0164,
+   "lightDx": -0.084,
+   "lightDy": 0.14,
+   "lightMag": 0.164,
+   "lightDeg": 121.0,
+   "light": "左上",
+   "bottomReach": 0.474,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_axe_automaton.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 58,
+   "width": 53,
+   "outlineMin": 0.0,
+   "outlineMedian": 0.7,
+   "white235": 0.0573,
+   "lightDx": -0.011,
+   "lightDy": 0.186,
+   "lightMag": 0.187,
+   "lightDeg": 93.4,
+   "light": "上",
+   "bottomReach": 0.151,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_axe_automaton_reboot.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 56,
+   "width": 56,
+   "outlineMin": 0.0,
+   "outlineMedian": 0.7,
+   "white235": 0.0706,
+   "lightDx": -0.089,
+   "lightDy": 0.161,
+   "lightMag": 0.184,
+   "lightDeg": 119.0,
+   "light": "左上",
+   "bottomReach": 0.143,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_axe_ogre.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 56,
+   "width": 54,
+   "outlineMin": 1.9,
+   "outlineMedian": 9.1,
+   "white235": 0.0081,
+   "lightDx": -0.043,
+   "lightDy": -0.002,
+   "lightMag": 0.043,
+   "lightDeg": 182.2,
+   "light": "なし",
+   "bottomReach": 0.333,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_big_slime.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 52,
+   "width": 54,
+   "outlineMin": 7.2,
+   "outlineMedian": 19.2,
+   "white235": 0.032,
+   "lightDx": 0.018,
+   "lightDy": 0.246,
+   "lightMag": 0.247,
+   "lightDeg": 85.9,
+   "light": "上",
+   "bottomReach": 0.519,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_biting_scroll.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 53,
+   "width": 53,
+   "outlineMin": 0.2,
+   "outlineMedian": 5.9,
+   "white235": 0.0508,
+   "lightDx": -0.067,
+   "lightDy": 0.228,
+   "lightMag": 0.237,
+   "lightDeg": 106.3,
+   "light": "上",
+   "bottomReach": 0.245,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_bomber.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 44,
+   "width": 50,
+   "outlineMin": 9.3,
+   "outlineMedian": 16.5,
+   "white235": 0.0364,
+   "lightDx": -0.139,
+   "lightDy": 0.297,
+   "lightMag": 0.328,
+   "lightDeg": 115.0,
+   "light": "左上",
+   "bottomReach": 0.34,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_bond_wolf.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 56,
+   "width": 49,
+   "outlineMin": 24.6,
+   "outlineMedian": 42.1,
+   "white235": 0.0587,
+   "lightDx": -0.2,
+   "lightDy": 0.216,
+   "lightMag": 0.295,
+   "lightDeg": 132.8,
+   "light": "左上",
+   "bottomReach": 0.49,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_bowl_bug.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 38,
+   "width": 49,
+   "outlineMin": 5.2,
+   "outlineMedian": 13.4,
+   "white235": 0.0727,
+   "lightDx": -0.173,
+   "lightDy": 0.063,
+   "lightMag": 0.185,
+   "lightDeg": 160.0,
+   "light": "左",
+   "bottomReach": 0.347,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_brood_raptor.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 50,
+   "width": 41,
+   "outlineMin": 5.9,
+   "outlineMedian": 12.1,
+   "white235": 0.0488,
+   "lightDx": -0.131,
+   "lightDy": -0.174,
+   "lightMag": 0.218,
+   "lightDeg": 233.2,
+   "light": "左下",
+   "bottomReach": 0.317,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_brood_toad.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 54,
+   "width": 47,
+   "outlineMin": 9.4,
+   "outlineMedian": 12.8,
+   "white235": 0.0017,
+   "lightDx": -0.221,
+   "lightDy": -0.034,
+   "lightMag": 0.224,
+   "lightDeg": 188.7,
+   "light": "左",
+   "bottomReach": 0.404,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_broodling.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 45,
+   "width": 46,
+   "outlineMin": 2.5,
+   "outlineMedian": 9.7,
+   "white235": 0.0557,
+   "lightDx": -0.17,
+   "lightDy": 0.053,
+   "lightMag": 0.178,
+   "lightDeg": 162.5,
+   "light": "左",
+   "bottomReach": 0.261,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_brute.png": {
+   "size": [
+    128,
+    128
+   ],
+   "height": 100,
+   "width": 108,
+   "outlineMin": 1.0,
+   "outlineMedian": 3.2,
+   "white235": 0.0052,
+   "lightDx": -0.038,
+   "lightDy": 0.062,
+   "lightMag": 0.072,
+   "lightDeg": 121.4,
+   "light": "左上",
+   "bottomReach": 0.102,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_brute_96.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 75,
+   "width": 81,
+   "outlineMin": 5.0,
+   "outlineMedian": 8.4,
+   "white235": 0.0046,
+   "lightDx": -0.029,
+   "lightDy": 0.075,
+   "lightMag": 0.08,
+   "lightDeg": 111.2,
+   "light": "上",
+   "bottomReach": 0.136,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_burrow_worm.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 44,
+   "width": 39,
+   "outlineMin": 4.5,
+   "outlineMedian": 12.1,
+   "white235": 0.0,
+   "lightDx": -0.217,
+   "lightDy": -0.184,
+   "lightMag": 0.285,
+   "lightDeg": 220.3,
+   "light": "左下",
+   "bottomReach": 0.744,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_chimera_1.png": {
+   "size": [
+    128,
+    128
+   ],
+   "height": 103,
+   "width": 99,
+   "outlineMin": 1.0,
+   "outlineMedian": 5.0,
+   "white235": 0.0119,
+   "lightDx": -0.032,
+   "lightDy": 0.059,
+   "lightMag": 0.067,
+   "lightDeg": 118.7,
+   "light": "左上",
+   "bottomReach": 0.111,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_chimera_1_96.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 79,
+   "width": 76,
+   "outlineMin": 4.1,
+   "outlineMedian": 15.7,
+   "white235": 0.0325,
+   "lightDx": -0.099,
+   "lightDy": 0.108,
+   "lightMag": 0.146,
+   "lightDeg": 132.6,
+   "light": "左上",
+   "bottomReach": 0.132,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_chimera_2.png": {
+   "size": [
+    128,
+    128
+   ],
+   "height": 109,
+   "width": 100,
+   "outlineMin": 2.5,
+   "outlineMedian": 6.2,
+   "white235": 0.0146,
+   "lightDx": -0.2,
+   "lightDy": 0.292,
+   "lightMag": 0.354,
+   "lightDeg": 124.3,
+   "light": "左上",
+   "bottomReach": 0.1,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_chimera_2_96.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 81,
+   "width": 76,
+   "outlineMin": 1.0,
+   "outlineMedian": 11.4,
+   "white235": 0.0213,
+   "lightDx": -0.215,
+   "lightDy": 0.268,
+   "lightMag": 0.344,
+   "lightDeg": 128.7,
+   "light": "左上",
+   "bottomReach": 0.158,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_chimera_3.png": {
+   "size": [
+    128,
+    128
+   ],
+   "height": 111,
+   "width": 97,
+   "outlineMin": 2.5,
+   "outlineMedian": 4.3,
+   "white235": 0.0016,
+   "lightDx": -0.14,
+   "lightDy": 0.193,
+   "lightMag": 0.239,
+   "lightDeg": 126.0,
+   "light": "左上",
+   "bottomReach": 0.144,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_chimera_3_96.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 83,
+   "width": 73,
+   "outlineMin": 0.5,
+   "outlineMedian": 3.3,
+   "white235": 0.0044,
+   "lightDx": -0.122,
+   "lightDy": 0.193,
+   "lightMag": 0.228,
+   "lightDeg": 122.4,
+   "light": "左上",
+   "bottomReach": 0.247,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_chomper.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 56,
+   "width": 56,
+   "outlineMin": 1.1,
+   "outlineMedian": 5.9,
+   "white235": 0.0334,
+   "lightDx": -0.065,
+   "lightDy": 0.248,
+   "lightMag": 0.257,
+   "lightDeg": 104.8,
+   "light": "上",
+   "bottomReach": 0.286,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_cinder_imp.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 53,
+   "width": 56,
+   "outlineMin": 7.2,
+   "outlineMedian": 16.3,
+   "white235": 0.1157,
+   "lightDx": 0.002,
+   "lightDy": 0.065,
+   "lightMag": 0.065,
+   "lightDeg": 88.0,
+   "light": "上",
+   "bottomReach": 0.375,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_cog_construct.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 58,
+   "width": 48,
+   "outlineMin": 0.0,
+   "outlineMedian": 24.1,
+   "white235": 0.0593,
+   "lightDx": -0.222,
+   "lightDy": 0.146,
+   "lightMag": 0.266,
+   "lightDeg": 146.7,
+   "light": "左上",
+   "bottomReach": 0.208,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_crab_cannon.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 59,
+   "width": 58,
+   "outlineMin": 8.4,
+   "outlineMedian": 21.9,
+   "white235": 0.1253,
+   "lightDx": -0.118,
+   "lightDy": 0.062,
+   "lightMag": 0.133,
+   "lightDeg": 152.5,
+   "light": "左上",
+   "bottomReach": 0.121,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_crab_crusher.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 66,
+   "width": 64,
+   "outlineMin": 32.4,
+   "outlineMedian": 37.1,
+   "white235": 0.0802,
+   "lightDx": -0.027,
+   "lightDy": 0.031,
+   "lightMag": 0.041,
+   "lightDeg": 130.8,
+   "light": "なし",
+   "bottomReach": 0.188,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_crossbow_archer.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 51,
+   "width": 49,
+   "outlineMin": 7.3,
+   "outlineMedian": 43.3,
+   "white235": 0.0125,
+   "lightDx": 0.055,
+   "lightDy": 0.078,
+   "lightMag": 0.096,
+   "lightDeg": 54.8,
+   "light": "右上",
+   "bottomReach": 0.592,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_cultist.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 46,
+   "width": 56,
+   "outlineMin": 4.5,
+   "outlineMedian": 48.3,
+   "white235": 0.0142,
+   "lightDx": -0.232,
+   "lightDy": 0.231,
+   "lightMag": 0.327,
+   "lightDeg": 135.2,
+   "light": "左上",
+   "bottomReach": 0.321,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_devoted_sculptor.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 56,
+   "width": 54,
+   "outlineMin": 0.3,
+   "outlineMedian": 4.6,
+   "white235": 0.0593,
+   "lightDx": -0.084,
+   "lightDy": 0.17,
+   "lightMag": 0.19,
+   "lightDeg": 116.3,
+   "light": "左上",
+   "bottomReach": 0.611,
+   "pedestal": true,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_drummer.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 51,
+   "width": 48,
+   "outlineMin": 7.6,
+   "outlineMedian": 24.2,
+   "white235": 0.0018,
+   "lightDx": 0.06,
+   "lightDy": 0.071,
+   "lightMag": 0.093,
+   "lightDeg": 50.1,
+   "light": "右上",
+   "bottomReach": 0.625,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_deathless.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 77,
+   "width": 61,
+   "outlineMin": 1.0,
+   "outlineMedian": 10.1,
+   "white235": 0.0137,
+   "lightDx": -0.157,
+   "lightDy": 0.116,
+   "lightMag": 0.195,
+   "lightDeg": 143.5,
+   "light": "左上",
+   "bottomReach": 0.197,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_devourer.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 64,
+   "width": 49,
+   "outlineMin": 3.3,
+   "outlineMedian": 18.2,
+   "white235": 0.1501,
+   "lightDx": -0.12,
+   "lightDy": 0.236,
+   "lightMag": 0.265,
+   "lightDeg": 117.1,
+   "light": "左上",
+   "bottomReach": 0.122,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_doom_chanter.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 72,
+   "width": 64,
+   "outlineMin": 4.6,
+   "outlineMedian": 48.4,
+   "white235": 0.0027,
+   "lightDx": 0.166,
+   "lightDy": 0.13,
+   "lightMag": 0.211,
+   "lightDeg": 38.2,
+   "light": "右上",
+   "bottomReach": 0.312,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_giant_face.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 78,
+   "width": 70,
+   "outlineMin": 3.0,
+   "outlineMedian": 43.6,
+   "white235": 0.0072,
+   "lightDx": 0.024,
+   "lightDy": 0.238,
+   "lightMag": 0.24,
+   "lightDeg": 84.2,
+   "light": "上",
+   "bottomReach": 0.6,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_gold_raven.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 65,
+   "width": 62,
+   "outlineMin": 1.2,
+   "outlineMedian": 6.2,
+   "white235": 0.0187,
+   "lightDx": -0.044,
+   "lightDy": 0.362,
+   "lightMag": 0.365,
+   "lightDeg": 96.9,
+   "light": "上",
+   "bottomReach": 0.194,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_husk_1.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 74,
+   "width": 75,
+   "outlineMin": 0.0,
+   "outlineMedian": 1.6,
+   "white235": 0.0028,
+   "lightDx": 0.025,
+   "lightDy": 0.142,
+   "lightMag": 0.144,
+   "lightDeg": 80.1,
+   "light": "上",
+   "bottomReach": 0.04,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_husk_2.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 71,
+   "width": 74,
+   "outlineMin": 0.0,
+   "outlineMedian": 3.3,
+   "white235": 0.0455,
+   "lightDx": -0.014,
+   "lightDy": 0.158,
+   "lightMag": 0.159,
+   "lightDeg": 94.9,
+   "light": "上",
+   "bottomReach": 0.054,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_husk_3.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 74,
+   "width": 74,
+   "outlineMin": 0.0,
+   "outlineMedian": 3.5,
+   "white235": 0.0094,
+   "lightDx": 0.006,
+   "lightDy": 0.238,
+   "lightMag": 0.239,
+   "lightDeg": 88.6,
+   "light": "上",
+   "bottomReach": 0.054,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_iron_egg.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 74,
+   "width": 56,
+   "outlineMin": 1.1,
+   "outlineMedian": 6.4,
+   "white235": 0.0626,
+   "lightDx": 0.177,
+   "lightDy": 0.136,
+   "lightMag": 0.224,
+   "lightDeg": 37.5,
+   "light": "右上",
+   "bottomReach": 0.893,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_mirror_djinn.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 68,
+   "width": 58,
+   "outlineMin": 5.0,
+   "outlineMedian": 14.4,
+   "white235": 0.1029,
+   "lightDx": -0.169,
+   "lightDy": 0.167,
+   "lightMag": 0.238,
+   "lightDeg": 135.3,
+   "light": "左上",
+   "bottomReach": 0.224,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_owl.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 70,
+   "width": 51,
+   "outlineMin": 3.7,
+   "outlineMedian": 9.7,
+   "white235": 0.0189,
+   "lightDx": -0.159,
+   "lightDy": 0.052,
+   "lightMag": 0.167,
+   "lightDeg": 161.8,
+   "light": "左",
+   "bottomReach": 0.157,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_sentry.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 73,
+   "width": 44,
+   "outlineMin": 18.3,
+   "outlineMedian": 40.5,
+   "white235": 0.0084,
+   "lightDx": 0.042,
+   "lightDy": 0.234,
+   "lightMag": 0.238,
+   "lightDeg": 79.7,
+   "light": "上",
+   "bottomReach": 0.614,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_sergeant.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 73,
+   "width": 68,
+   "outlineMin": 1.5,
+   "outlineMedian": 3.9,
+   "white235": 0.0337,
+   "lightDx": -0.052,
+   "lightDy": 0.07,
+   "lightMag": 0.087,
+   "lightDeg": 126.9,
+   "light": "左上",
+   "bottomReach": 0.176,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_slaver.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 67,
+   "width": 55,
+   "outlineMin": 2.9,
+   "outlineMedian": 7.8,
+   "white235": 0.0537,
+   "lightDx": -0.018,
+   "lightDy": 0.335,
+   "lightMag": 0.335,
+   "lightDeg": 93.0,
+   "light": "上",
+   "bottomReach": 0.545,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_elite_stab_book.png": {
+   "size": [
+    80,
+    80
+   ],
+   "height": 76,
+   "width": 69,
+   "outlineMin": 1.0,
+   "outlineMedian": 17.0,
+   "white235": 0.034,
+   "lightDx": -0.036,
+   "lightDy": 0.158,
+   "lightMag": 0.162,
+   "lightDeg": 102.7,
+   "light": "上",
+   "bottomReach": 0.333,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_ember_furnace.png": {
+   "size": [
+    128,
+    128
+   ],
+   "height": 104,
+   "width": 89,
+   "outlineMin": 4.9,
+   "outlineMedian": 9.2,
+   "white235": 0.0078,
+   "lightDx": -0.165,
+   "lightDy": 0.093,
+   "lightMag": 0.19,
+   "lightDeg": 150.6,
+   "light": "左上",
+   "bottomReach": 0.225,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_ember_furnace_96.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 85,
+   "width": 73,
+   "outlineMin": 6.8,
+   "outlineMedian": 18.3,
+   "white235": 0.0152,
+   "lightDx": -0.194,
+   "lightDy": 0.076,
+   "lightMag": 0.208,
+   "lightDeg": 158.6,
+   "light": "左",
+   "bottomReach": 0.219,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_forgotten_soul.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 42,
+   "width": 27,
+   "outlineMin": 30.7,
+   "outlineMedian": 160.8,
+   "white235": 0.0176,
+   "lightDx": -0.122,
+   "lightDy": 0.145,
+   "lightMag": 0.19,
+   "lightDeg": 130.1,
+   "light": "左上",
+   "bottomReach": 0.593,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_frog_knight.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 59,
+   "width": 49,
+   "outlineMin": 4.7,
+   "outlineMedian": 9.3,
+   "white235": 0.0249,
+   "lightDx": -0.131,
+   "lightDy": 0.175,
+   "lightMag": 0.219,
+   "lightDeg": 126.9,
+   "light": "左上",
+   "bottomReach": 0.347,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_gaping_maw.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 57,
+   "width": 52,
+   "outlineMin": 20.5,
+   "outlineMedian": 60.5,
+   "white235": 0.0489,
+   "lightDx": 0.077,
+   "lightDy": 0.163,
+   "lightMag": 0.181,
+   "lightDeg": 64.6,
+   "light": "右上",
+   "bottomReach": 0.308,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_haze_stag.png": {
+   "size": [
+    128,
+    128
+   ],
+   "height": 104,
+   "width": 97,
+   "outlineMin": 24.7,
+   "outlineMedian": 78.9,
+   "white235": 0.0759,
+   "lightDx": -0.008,
+   "lightDy": 0.007,
+   "lightMag": 0.011,
+   "lightDeg": 137.7,
+   "light": "なし",
+   "bottomReach": 0.887,
+   "pedestal": true,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_haze_stag_96.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 89,
+   "width": 83,
+   "outlineMin": 46.4,
+   "outlineMedian": 93.6,
+   "white235": 0.1165,
+   "lightDx": 0.014,
+   "lightDy": -0.01,
+   "lightMag": 0.017,
+   "lightDeg": 322.3,
+   "light": "なし",
+   "bottomReach": 0.904,
+   "pedestal": true,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_hexer.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 48,
+   "width": 38,
+   "outlineMin": 21.2,
+   "outlineMedian": 25.0,
+   "white235": 0.0289,
+   "lightDx": -0.142,
+   "lightDy": -0.104,
+   "lightMag": 0.176,
+   "lightDeg": 216.4,
+   "light": "左下",
+   "bottomReach": 0.211,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_iron_clam.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 49,
+   "width": 52,
+   "outlineMin": 8.5,
+   "outlineMedian": 47.1,
+   "white235": 0.2407,
+   "lightDx": 0.052,
+   "lightDy": 0.021,
+   "lightMag": 0.056,
+   "lightDeg": 21.8,
+   "light": "なし",
+   "bottomReach": 0.481,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_joker.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 52,
+   "width": 51,
+   "outlineMin": 13.1,
+   "outlineMedian": 21.8,
+   "white235": 0.2728,
+   "lightDx": -0.026,
+   "lightDy": -0.019,
+   "lightMag": 0.033,
+   "lightDeg": 216.5,
+   "light": "なし",
+   "bottomReach": 0.098,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_kin_follower.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 81,
+   "width": 68,
+   "outlineMin": 22.4,
+   "outlineMedian": 26.6,
+   "white235": 0.1399,
+   "lightDx": 0.338,
+   "lightDy": 0.138,
+   "lightMag": 0.365,
+   "lightDeg": 22.2,
+   "light": "右",
+   "bottomReach": 0.103,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_kin_priest.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 83,
+   "width": 36,
+   "outlineMin": 8.0,
+   "outlineMedian": 42.0,
+   "white235": 0.1098,
+   "lightDx": 0.126,
+   "lightDy": 0.197,
+   "lightMag": 0.234,
+   "lightDeg": 57.5,
+   "light": "右上",
+   "bottomReach": 0.306,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_lost_soul.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 53,
+   "width": 31,
+   "outlineMin": 13.2,
+   "outlineMedian": 75.0,
+   "white235": 0.3178,
+   "lightDx": -0.05,
+   "lightDy": 0.183,
+   "lightMag": 0.19,
+   "lightDeg": 105.3,
+   "light": "上",
+   "bottomReach": 0.645,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_maw_hunter.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 52,
+   "width": 57,
+   "outlineMin": 5.1,
+   "outlineMedian": 15.6,
+   "white235": 0.023,
+   "lightDx": -0.073,
+   "lightDy": 0.242,
+   "lightMag": 0.253,
+   "lightDeg": 106.9,
+   "light": "上",
+   "bottomReach": 0.053,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_mimic_imp.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 57,
+   "width": 48,
+   "outlineMin": 7.0,
+   "outlineMedian": 12.2,
+   "white235": 0.0034,
+   "lightDx": 0.199,
+   "lightDy": -0.041,
+   "lightMag": 0.203,
+   "lightDeg": 348.3,
+   "light": "右",
+   "bottomReach": 0.188,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_mimic_jester.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 51,
+   "width": 47,
+   "outlineMin": 1.1,
+   "outlineMedian": 3.8,
+   "white235": 0.188,
+   "lightDx": -0.038,
+   "lightDy": 0.064,
+   "lightMag": 0.075,
+   "lightDeg": 120.2,
+   "light": "左上",
+   "bottomReach": 0.234,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_moss.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 58,
+   "width": 54,
+   "outlineMin": 8.5,
+   "outlineMedian": 24.3,
+   "white235": 0.045,
+   "lightDx": -0.4,
+   "lightDy": 0.016,
+   "lightMag": 0.401,
+   "lightDeg": 177.7,
+   "light": "左",
+   "bottomReach": 0.333,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_moss_healer.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 59,
+   "width": 37,
+   "outlineMin": 3.4,
+   "outlineMedian": 83.2,
+   "white235": 0.0644,
+   "lightDx": -0.219,
+   "lightDy": 0.114,
+   "lightMag": 0.247,
+   "lightDeg": 152.5,
+   "light": "左上",
+   "bottomReach": 0.676,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_moss_slime.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 54,
+   "width": 27,
+   "outlineMin": 11.7,
+   "outlineMedian": 20.5,
+   "white235": 0.0261,
+   "lightDx": -0.079,
+   "lightDy": 0.238,
+   "lightMag": 0.251,
+   "lightDeg": 108.3,
+   "light": "上",
+   "bottomReach": 0.333,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_moss_spawner.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 54,
+   "width": 48,
+   "outlineMin": 11.5,
+   "outlineMedian": 29.9,
+   "white235": 0.0295,
+   "lightDx": 0.014,
+   "lightDy": 0.464,
+   "lightMag": 0.464,
+   "lightDeg": 88.3,
+   "light": "上",
+   "bottomReach": 0.688,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_mourn_beast.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 56,
+   "width": 39,
+   "outlineMin": 4.9,
+   "outlineMedian": 57.6,
+   "white235": 0.0026,
+   "lightDx": -0.168,
+   "lightDy": 0.067,
+   "lightMag": 0.181,
+   "lightDeg": 158.1,
+   "light": "左",
+   "bottomReach": 0.308,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_mud_lump.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 55,
+   "width": 48,
+   "outlineMin": 4.5,
+   "outlineMedian": 61.4,
+   "white235": 0.0134,
+   "lightDx": -0.14,
+   "lightDy": 0.403,
+   "lightMag": 0.427,
+   "lightDeg": 109.1,
+   "light": "上",
+   "bottomReach": 0.458,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_mudling.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 46,
+   "width": 56,
+   "outlineMin": 15.9,
+   "outlineMedian": 43.5,
+   "white235": 0.039,
+   "lightDx": -0.102,
+   "lightDy": 0.346,
+   "lightMag": 0.36,
+   "lightDeg": 106.5,
+   "light": "上",
+   "bottomReach": 0.196,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_nemesis_wraith.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 56,
+   "width": 47,
+   "outlineMin": 12.6,
+   "outlineMedian": 107.7,
+   "white235": 0.0,
+   "lightDx": -0.122,
+   "lightDy": 0.414,
+   "lightMag": 0.432,
+   "lightDeg": 106.4,
+   "light": "上",
+   "bottomReach": 0.638,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_probe.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 54,
+   "width": 46,
+   "outlineMin": 6.0,
+   "outlineMedian": 39.5,
+   "white235": 0.0837,
+   "lightDx": 0.038,
+   "lightDy": -0.167,
+   "lightMag": 0.171,
+   "lightDeg": 282.9,
+   "light": "下",
+   "bottomReach": 0.261,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_raptor_chick.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 48,
+   "width": 32,
+   "outlineMin": 5.6,
+   "outlineMedian": 63.0,
+   "white235": 0.002,
+   "lightDx": -0.067,
+   "lightDy": -0.141,
+   "lightMag": 0.156,
+   "lightDeg": 244.4,
+   "light": "左下",
+   "bottomReach": 0.5,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_raptor_egg.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 49,
+   "width": 34,
+   "outlineMin": 9.9,
+   "outlineMedian": 88.4,
+   "white235": 0.0087,
+   "lightDx": 0.129,
+   "lightDy": 0.593,
+   "lightMag": 0.607,
+   "lightDeg": 77.7,
+   "light": "上",
+   "bottomReach": 0.529,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_rock_beetle.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 44,
+   "width": 48,
+   "outlineMin": 14.7,
+   "outlineMedian": 44.1,
+   "white235": 0.0272,
+   "lightDx": 0.025,
+   "lightDy": 0.32,
+   "lightMag": 0.321,
+   "lightDeg": 85.5,
+   "light": "上",
+   "bottomReach": 0.375,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_scald_gnat.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 52,
+   "width": 57,
+   "outlineMin": 0.4,
+   "outlineMedian": 33.6,
+   "white235": 0.001,
+   "lightDx": 0.089,
+   "lightDy": 0.183,
+   "lightMag": 0.204,
+   "lightDeg": 64.0,
+   "light": "右上",
+   "bottomReach": 0.035,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_seal_orb.png": {
+   "size": [
+    48,
+    48
+   ],
+   "height": 44,
+   "width": 36,
+   "outlineMin": 2.9,
+   "outlineMedian": 36.3,
+   "white235": 0.022,
+   "lightDx": -0.12,
+   "lightDy": 0.183,
+   "lightMag": 0.219,
+   "lightDeg": 123.2,
+   "light": "左上",
+   "bottomReach": 0.056,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_set_breaker.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 56,
+   "width": 55,
+   "outlineMin": 0.3,
+   "outlineMedian": 5.7,
+   "white235": 0.0221,
+   "lightDx": -0.003,
+   "lightDy": 0.236,
+   "lightMag": 0.236,
+   "lightDeg": 90.8,
+   "light": "上",
+   "bottomReach": 0.273,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_set_wary.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 40,
+   "width": 34,
+   "outlineMin": 6.7,
+   "outlineMedian": 14.1,
+   "white235": 0.0015,
+   "lightDx": -0.305,
+   "lightDy": -0.046,
+   "lightMag": 0.309,
+   "lightDeg": 188.6,
+   "light": "左",
+   "bottomReach": 0.294,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_shell_guard.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 55,
+   "width": 53,
+   "outlineMin": 0.3,
+   "outlineMedian": 5.9,
+   "white235": 0.0091,
+   "lightDx": -0.094,
+   "lightDy": 0.184,
+   "lightMag": 0.206,
+   "lightDeg": 117.0,
+   "light": "左上",
+   "bottomReach": 0.245,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_shield_squire.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 38,
+   "width": 40,
+   "outlineMin": 2.3,
+   "outlineMedian": 7.0,
+   "white235": 0.0411,
+   "lightDx": -0.194,
+   "lightDy": 0.192,
+   "lightMag": 0.273,
+   "lightDeg": 135.4,
+   "light": "左上",
+   "bottomReach": 0.35,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_sludge_berserker.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 57,
+   "width": 60,
+   "outlineMin": 4.5,
+   "outlineMedian": 39.3,
+   "white235": 0.0277,
+   "lightDx": -0.018,
+   "lightDy": 0.245,
+   "lightMag": 0.245,
+   "lightDeg": 94.3,
+   "light": "上",
+   "bottomReach": 0.683,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_sludge_spider.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 50,
+   "width": 46,
+   "outlineMin": 6.1,
+   "outlineMedian": 42.9,
+   "white235": 0.0009,
+   "lightDx": -0.07,
+   "lightDy": 0.282,
+   "lightMag": 0.29,
+   "lightDeg": 103.9,
+   "light": "上",
+   "bottomReach": 0.109,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_slug.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 35,
+   "width": 48,
+   "outlineMin": 15.4,
+   "outlineMedian": 26.5,
+   "white235": 0.0831,
+   "lightDx": -0.026,
+   "lightDy": 0.048,
+   "lightMag": 0.054,
+   "lightDeg": 118.3,
+   "light": "なし",
+   "bottomReach": 0.104,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_snap_fruit.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 54,
+   "width": 37,
+   "outlineMin": 28.8,
+   "outlineMedian": 34.6,
+   "white235": 0.0301,
+   "lightDx": -0.281,
+   "lightDy": 0.041,
+   "lightMag": 0.283,
+   "lightDeg": 171.7,
+   "light": "左",
+   "bottomReach": 0.649,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_spore_cap.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 52,
+   "width": 49,
+   "outlineMin": 0.9,
+   "outlineMedian": 16.3,
+   "white235": 0.0007,
+   "lightDx": -0.086,
+   "lightDy": -0.314,
+   "lightMag": 0.326,
+   "lightDeg": 254.7,
+   "light": "下",
+   "bottomReach": 0.367,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_strangler_serpent.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 53,
+   "width": 52,
+   "outlineMin": 10.1,
+   "outlineMedian": 21.9,
+   "white235": 0.0109,
+   "lightDx": 0.072,
+   "lightDy": 0.04,
+   "lightMag": 0.082,
+   "lightDeg": 29.2,
+   "light": "右上",
+   "bottomReach": 0.231,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_thief.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 51,
+   "width": 47,
+   "outlineMin": 2.8,
+   "outlineMedian": 22.0,
+   "white235": 0.0212,
+   "lightDx": -0.103,
+   "lightDy": 0.442,
+   "lightMag": 0.454,
+   "lightDeg": 103.1,
+   "light": "上",
+   "bottomReach": 0.872,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_thorn_squirrel.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 48,
+   "width": 46,
+   "outlineMin": 10.8,
+   "outlineMedian": 57.5,
+   "white235": 0.0025,
+   "lightDx": -0.247,
+   "lightDy": 0.077,
+   "lightMag": 0.259,
+   "lightDeg": 162.8,
+   "light": "左",
+   "bottomReach": 0.413,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_thunder_globe.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 56,
+   "width": 42,
+   "outlineMin": 0.3,
+   "outlineMedian": 11.8,
+   "white235": 0.0783,
+   "lightDx": -0.138,
+   "lightDy": 0.29,
+   "lightMag": 0.321,
+   "lightDeg": 115.4,
+   "light": "左上",
+   "bottomReach": 0.429,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_turtle.png": {
+   "size": [
+    128,
+    128
+   ],
+   "height": 100,
+   "width": 98,
+   "outlineMin": 0.8,
+   "outlineMedian": 46.3,
+   "white235": 0.0227,
+   "lightDx": -0.217,
+   "lightDy": -0.173,
+   "lightMag": 0.278,
+   "lightDeg": 218.6,
+   "light": "左下",
+   "bottomReach": 0.112,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_turtle_96.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 76,
+   "width": 77,
+   "outlineMin": 1.3,
+   "outlineMedian": 63.2,
+   "white235": 0.0782,
+   "lightDx": -0.212,
+   "lightDy": -0.155,
+   "lightMag": 0.263,
+   "lightDeg": 216.2,
+   "light": "左下",
+   "bottomReach": 0.143,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_vine_walker.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 55,
+   "width": 38,
+   "outlineMin": 0.4,
+   "outlineMedian": 2.6,
+   "white235": 0.0,
+   "lightDx": -0.125,
+   "lightDy": 0.491,
+   "lightMag": 0.506,
+   "lightDeg": 104.3,
+   "light": "上",
+   "bottomReach": 0.421,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "enemies/enemy_warden.png": {
+   "size": [
+    128,
+    128
+   ],
+   "height": 104,
+   "width": 100,
+   "outlineMin": 1.2,
+   "outlineMedian": 8.3,
+   "white235": 0.0036,
+   "lightDx": -0.028,
+   "lightDy": 0.208,
+   "lightMag": 0.21,
+   "lightDeg": 97.7,
+   "light": "上",
+   "bottomReach": 0.39,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_warden_96.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 87,
+   "width": 83,
+   "outlineMin": 1.6,
+   "outlineMedian": 26.4,
+   "white235": 0.0027,
+   "lightDx": -0.028,
+   "lightDy": 0.216,
+   "lightMag": 0.218,
+   "lightDeg": 97.4,
+   "light": "上",
+   "bottomReach": 0.398,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_whetstone_colossus.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 58,
+   "width": 49,
+   "outlineMin": 0.2,
+   "outlineMedian": 5.9,
+   "white235": 0.0063,
+   "lightDx": -0.2,
+   "lightDy": -0.039,
+   "lightMag": 0.203,
+   "lightDeg": 191.1,
+   "light": "左",
+   "bottomReach": 0.469,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_wide_power.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 46,
+   "width": 51,
+   "outlineMin": 2.9,
+   "outlineMedian": 24.4,
+   "white235": 0.0056,
+   "lightDx": 0.217,
+   "lightDy": 0.415,
+   "lightMag": 0.469,
+   "lightDeg": 62.4,
+   "light": "右上",
+   "bottomReach": 0.49,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_winch_warden.png": {
+   "size": [
+    96,
+    96
+   ],
+   "height": 90,
+   "width": 65,
+   "outlineMin": 2.7,
+   "outlineMedian": 9.3,
+   "white235": 0.0193,
+   "lightDx": -0.064,
+   "lightDy": 0.099,
+   "lightMag": 0.118,
+   "lightDeg": 123.0,
+   "light": "左上",
+   "bottomReach": 0.185,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "enemy"
+  },
+  "enemies/enemy_wolf.png": {
+   "size": [
+    64,
+    64
+   ],
+   "height": 53,
+   "width": 48,
+   "outlineMin": 5.6,
+   "outlineMedian": 8.7,
+   "white235": 0.1127,
+   "lightDx": 0.124,
+   "lightDy": 0.276,
+   "lightMag": 0.303,
+   "lightDeg": 65.9,
+   "light": "右上",
+   "bottomReach": 0.271,
+   "pedestal": false,
+   "mirrored": true,
+   "category": "enemy"
+  },
+  "dolls/white_perm_archer.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 26,
+   "width": 24,
+   "outlineMin": 6.1,
+   "outlineMedian": 9.1,
+   "white235": 0.119,
+   "lightDx": -0.031,
+   "lightDy": 0.108,
+   "lightMag": 0.112,
+   "lightDeg": 105.9,
+   "light": "上",
+   "bottomReach": 0.458,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_band.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 30,
+   "width": 20,
+   "outlineMin": 27.9,
+   "outlineMedian": 44.9,
+   "white235": 0.1158,
+   "lightDx": 0.039,
+   "lightDy": 0.225,
+   "lightMag": 0.229,
+   "lightDeg": 80.1,
+   "light": "上",
+   "bottomReach": 0.55,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_bandleader.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 26,
+   "width": 18,
+   "outlineMin": 18.0,
+   "outlineMedian": 23.9,
+   "white235": 0.1456,
+   "lightDx": 0.057,
+   "lightDy": 0.146,
+   "lightMag": 0.157,
+   "lightDeg": 68.5,
+   "light": "上",
+   "bottomReach": 0.5,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_banneret.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 28,
+   "width": 15,
+   "outlineMin": 44.2,
+   "outlineMedian": 83.3,
+   "white235": 0.2079,
+   "lightDx": -0.045,
+   "lightDy": 0.168,
+   "lightMag": 0.174,
+   "lightDeg": 105.1,
+   "light": "上",
+   "bottomReach": 0.467,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_bonfire.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 28,
+   "width": 22,
+   "outlineMin": 23.5,
+   "outlineMedian": 96.9,
+   "white235": 0.0909,
+   "lightDx": 0.068,
+   "lightDy": 0.355,
+   "lightMag": 0.362,
+   "lightDeg": 79.1,
+   "light": "上",
+   "bottomReach": 0.773,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_candle.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 27,
+   "width": 22,
+   "outlineMin": 33.6,
+   "outlineMedian": 62.8,
+   "white235": 0.14,
+   "lightDx": -0.072,
+   "lightDy": 0.276,
+   "lightMag": 0.285,
+   "lightDeg": 104.6,
+   "light": "上",
+   "bottomReach": 0.455,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_choir.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 30,
+   "width": 23,
+   "outlineMin": 29.0,
+   "outlineMedian": 38.6,
+   "white235": 0.1169,
+   "lightDx": -0.06,
+   "lightDy": 0.264,
+   "lightMag": 0.271,
+   "lightDeg": 102.7,
+   "light": "上",
+   "bottomReach": 0.913,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_dragon.png": {
+   "size": [
+    48,
+    48
+   ],
+   "height": 43,
+   "width": 37,
+   "outlineMin": 34.4,
+   "outlineMedian": 41.1,
+   "white235": 0.0784,
+   "lightDx": 0.033,
+   "lightDy": 0.037,
+   "lightMag": 0.049,
+   "lightDeg": 48.8,
+   "light": "なし",
+   "bottomReach": 0.432,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_hound.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 26,
+   "width": 21,
+   "outlineMin": 4.5,
+   "outlineMedian": 8.7,
+   "white235": 0.1264,
+   "lightDx": 0.197,
+   "lightDy": 0.207,
+   "lightMag": 0.286,
+   "lightDeg": 46.4,
+   "light": "右上",
+   "bottomReach": 0.571,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_lantern.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 27,
+   "width": 25,
+   "outlineMin": 35.2,
+   "outlineMedian": 39.2,
+   "white235": 0.1481,
+   "lightDx": 0.017,
+   "lightDy": 0.172,
+   "lightMag": 0.173,
+   "lightDeg": 84.4,
+   "light": "上",
+   "bottomReach": 0.48,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_lion.png": {
+   "size": [
+    48,
+    48
+   ],
+   "height": 46,
+   "width": 39,
+   "outlineMin": 34.3,
+   "outlineMedian": 38.2,
+   "white235": 0.1474,
+   "lightDx": 0.085,
+   "lightDy": 0.247,
+   "lightMag": 0.261,
+   "lightDeg": 71.1,
+   "light": "上",
+   "bottomReach": 0.513,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_monk.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 29,
+   "width": 19,
+   "outlineMin": 29.4,
+   "outlineMedian": 32.4,
+   "white235": 0.165,
+   "lightDx": -0.009,
+   "lightDy": 0.324,
+   "lightMag": 0.324,
+   "lightDeg": 91.6,
+   "light": "上",
+   "bottomReach": 0.684,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_page.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 26,
+   "width": 16,
+   "outlineMin": 33.2,
+   "outlineMedian": 48.7,
+   "white235": 0.1111,
+   "lightDx": -0.005,
+   "lightDy": 0.248,
+   "lightMag": 0.248,
+   "lightDeg": 91.1,
+   "light": "上",
+   "bottomReach": 0.5,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_shieldmaiden.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 26,
+   "width": 20,
+   "outlineMin": 32.0,
+   "outlineMedian": 35.2,
+   "white235": 0.1741,
+   "lightDx": -0.149,
+   "lightDy": 0.358,
+   "lightMag": 0.388,
+   "lightDeg": 112.6,
+   "light": "左上",
+   "bottomReach": 0.75,
+   "pedestal": true,
+   "mirrored": false,
+   "category": "doll"
+  },
+  "dolls/white_perm_squire.png": {
+   "size": [
+    32,
+    32
+   ],
+   "height": 30,
+   "width": 23,
+   "outlineMin": 20.7,
+   "outlineMedian": 63.0,
+   "white235": 0.1044,
+   "lightDx": -0.008,
+   "lightDy": 0.314,
+   "lightMag": 0.314,
+   "lightDeg": 91.5,
+   "light": "上",
+   "bottomReach": 0.391,
+   "pedestal": false,
+   "mirrored": false,
+   "category": "doll"
+  }
+ },
+ "stage": {
+  "stage/act1/relief/act1_bush2.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 25,
+   "before": "unity/Assets/Resources/Art/props/act1_bush2.png",
+   "beforeP95": 5.0
+  },
+  "stage/act1/relief/act1_bush3.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 21,
+   "before": "unity/Assets/Resources/Art/props/act1_bush3.png",
+   "beforeP95": 3.92
+  },
+  "stage/act1/relief/act1_fern.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 21,
+   "before": "unity/Assets/Resources/Art/props/act1_fern.png",
+   "beforeP95": 4.64
+  },
+  "stage/act1/relief/act1_fern2.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 20,
+   "before": "unity/Assets/Resources/Art/props/act1_fern2.png",
+   "beforeP95": 6.01
+  },
+  "stage/act1/relief/act1_leafclump1.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 19,
+   "before": "unity/Assets/Resources/Art/props/act1_leafclump1.png",
+   "beforeP95": 5.91
+  },
+  "stage/act1/relief/act1_leafclump2.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 24,
+   "before": "unity/Assets/Resources/Art/props/act1_leafclump2.png",
+   "beforeP95": 5.85
+  },
+  "stage/act1/relief/act1_leafclump3.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 22,
+   "before": "unity/Assets/Resources/Art/props/act1_leafclump3.png",
+   "beforeP95": 16.22
+  },
+  "stage/act1/relief/act1_leafclump4.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 22,
+   "before": "unity/Assets/Resources/Art/props/act1_leafclump4.png",
+   "beforeP95": 4.77
+  },
+  "stage/act1/relief/act1_leafclump5.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 20,
+   "before": "unity/Assets/Resources/Art/props/act1_leafclump5.png",
+   "beforeP95": 6.14
+  },
+  "stage/act1/relief/act1_reed.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 22,
+   "before": "unity/Assets/Resources/Art/props/act1_reed.png",
+   "beforeP95": 6.92
+  },
+  "stage/act1/relief/act1_rock_big1.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 31,
+   "before": "unity/Assets/Resources/Art/props/act1_rock_big1.png",
+   "beforeP95": 5.68
+  },
+  "stage/act1/relief/act1_rock_big2.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 31,
+   "before": "unity/Assets/Resources/Art/props/act1_rock_big2.png",
+   "beforeP95": 13.73
+  },
+  "stage/act1/relief/act1_root.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 25,
+   "before": "unity/Assets/Resources/Art/props/act1_root.png",
+   "beforeP95": 7.53
+  },
+  "stage/act1/relief/act1_tree_giant.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 37,
+   "before": "unity/Assets/Resources/Art/props/act1_tree_giant.png",
+   "beforeP95": 6.03
+  },
+  "stage/act1/relief/act1_tree_oak.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 32,
+   "before": "unity/Assets/Resources/Art/props/act1_tree_oak.png",
+   "beforeP95": 6.42
+  },
+  "stage/act1/relief/act1_tree_oak2.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 28,
+   "before": "unity/Assets/Resources/Art/props/act1_tree_oak2.png",
+   "beforeP95": 4.21
+  },
+  "stage/act1/relief/bush_1.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 28,
+   "before": "docs/pixellab/hd2d-act1/raw/relief-clean/bush_1.png",
+   "beforeP95": 3.68
+  },
+  "stage/act1/relief/canopy_1.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 26,
+   "before": "docs/pixellab/hd2d-act1/raw/relief-clean/canopy_1.png",
+   "beforeP95": 4.03
+  },
+  "stage/act1/relief/canopy_2.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 21,
+   "before": "docs/pixellab/hd2d-act1/raw/relief-clean/canopy_2.png",
+   "beforeP95": 3.86
+  },
+  "stage/act1/relief/canopy_3.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 26,
+   "before": "docs/pixellab/hd2d-act1/raw/relief-clean/canopy_3.png",
+   "beforeP95": 3.56
+  },
+  "stage/act1/relief/fern_1.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 23,
+   "before": "docs/pixellab/hd2d-act1/raw/relief-clean/fern_1.png",
+   "beforeP95": 4.58
+  },
+  "stage/act1/relief/fern_2.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 19,
+   "before": "docs/pixellab/hd2d-act1/raw/relief-clean/fern_2.png",
+   "beforeP95": 3.38
+  },
+  "stage/act1/relief/frame_1.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 29,
+   "before": "docs/pixellab/hd2d-act1/raw/relief-clean/frame_1.png",
+   "beforeP95": 5.14
+  },
+  "stage/act1/relief/frame_2.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 20,
+   "before": "docs/pixellab/hd2d-act1/raw/relief-clean/frame_2.png",
+   "beforeP95": 3.44
+  },
+  "stage/act1/tiles/side_bark_a.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 11,
+   "before": "docs/pixellab/hd2d-act1/calm/side_bark_a.png",
+   "beforeP95": 2.32
+  },
+  "stage/act1/tiles/side_bark_b.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 14,
+   "before": "docs/pixellab/hd2d-act1/calm/side_bark_b.png",
+   "beforeP95": 2.21
+  },
+  "stage/act1/tiles/side_bark_c.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 13,
+   "before": "docs/pixellab/hd2d-act1/calm/side_bark_c.png",
+   "beforeP95": 2.53
+  },
+  "stage/act1/tiles/side_bark_d.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 14,
+   "before": "docs/pixellab/hd2d-act1/calm/side_bark_d.png",
+   "beforeP95": 2.22
+  },
+  "stage/act1/tiles/side_rock_a.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 14,
+   "before": "docs/pixellab/hd2d-act1/calm/side_rock_a.png",
+   "beforeP95": 1.63
+  },
+  "stage/act1/tiles/side_rock_b.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 14,
+   "before": "docs/pixellab/hd2d-act1/calm/side_rock_b.png",
+   "beforeP95": 1.72
+  },
+  "stage/act1/tiles/side_rock_c.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 12,
+   "before": "docs/pixellab/hd2d-act1/calm/side_rock_c.png",
+   "beforeP95": 1.56
+  },
+  "stage/act1/tiles/side_rock_d.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 14,
+   "before": "docs/pixellab/hd2d-act1/calm/side_rock_d.png",
+   "beforeP95": 1.57
+  },
+  "stage/act1/tiles/side_wood_a.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 8,
+   "before": "docs/pixellab/hd2d-act1/calm/side_wood_a.png",
+   "beforeP95": 1.57
+  },
+  "stage/act1/tiles/side_wood_b.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 8,
+   "before": "docs/pixellab/hd2d-act1/calm/side_wood_b.png",
+   "beforeP95": 1.43
+  },
+  "stage/act1/tiles/side_wood_c.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 9,
+   "before": "docs/pixellab/hd2d-act1/calm/side_wood_c.png",
+   "beforeP95": 1.41
+  },
+  "stage/act1/tiles/side_wood_d.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 8,
+   "before": "docs/pixellab/hd2d-act1/calm/side_wood_d.png",
+   "beforeP95": 1.39
+  },
+  "stage/act1/tiles/top_grass_a.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 22,
+   "before": "docs/pixellab/hd2d-act1/calm/top_grass_a.png",
+   "beforeP95": 2.71
+  },
+  "stage/act1/tiles/top_grass_alt_a.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 19,
+   "before": "docs/pixellab/hd2d-act1/calm/top_grass_alt_a.png",
+   "beforeP95": 2.29
+  },
+  "stage/act1/tiles/top_grass_alt_b.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 19,
+   "before": "docs/pixellab/hd2d-act1/calm/top_grass_alt_b.png",
+   "beforeP95": 2.13
+  },
+  "stage/act1/tiles/top_grass_alt_c.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 23,
+   "before": "docs/pixellab/hd2d-act1/calm/top_grass_alt_c.png",
+   "beforeP95": 2.44
+  },
+  "stage/act1/tiles/top_grass_alt_d.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 19,
+   "before": "docs/pixellab/hd2d-act1/calm/top_grass_alt_d.png",
+   "beforeP95": 2.34
+  },
+  "stage/act1/tiles/top_grass_b.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 21,
+   "before": "docs/pixellab/hd2d-act1/calm/top_grass_b.png",
+   "beforeP95": 2.59
+  },
+  "stage/act1/tiles/top_grass_c.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 19,
+   "before": "docs/pixellab/hd2d-act1/calm/top_grass_c.png",
+   "beforeP95": 2.32
+  },
+  "stage/act1/tiles/top_grass_d.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 20,
+   "before": "docs/pixellab/hd2d-act1/calm/top_grass_d.png",
+   "beforeP95": 2.31
+  },
+  "stage/act1/tiles/top_path_a.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 3,
+   "before": "docs/pixellab/hd2d-act1/calm/top_path_a.png",
+   "beforeP95": 1.19
+  },
+  "stage/act1/tiles/top_path_b.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 3,
+   "before": "docs/pixellab/hd2d-act1/calm/top_path_b.png",
+   "beforeP95": 1.21
+  },
+  "stage/act1/tiles/top_path_c.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 3,
+   "before": "docs/pixellab/hd2d-act1/calm/top_path_c.png",
+   "beforeP95": 1.27
+  },
+  "stage/act1/tiles/top_path_d.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 3,
+   "before": "docs/pixellab/hd2d-act1/calm/top_path_d.png",
+   "beforeP95": 1.25
+  },
+  "stage/act1/tiles/top_rock_a.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 9,
+   "before": "docs/pixellab/hd2d-act1/calm/top_rock_a.png",
+   "beforeP95": 1.87
+  },
+  "stage/act1/tiles/top_rock_b.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 11,
+   "before": "docs/pixellab/hd2d-act1/calm/top_rock_b.png",
+   "beforeP95": 1.97
+  },
+  "stage/act1/tiles/top_rock_c.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 11,
+   "before": "docs/pixellab/hd2d-act1/calm/top_rock_c.png",
+   "beforeP95": 1.67
+  },
+  "stage/act1/tiles/top_rock_d.png": {
+   "palP50": 0.0,
+   "palP95": 0.0,
+   "colors": 12,
+   "before": "docs/pixellab/hd2d-act1/calm/top_rock_d.png",
+   "beforeP95": 1.65
+  }
+ },
+ "keyflip": [
+  "enemy_bowl_bug",
+  "enemy_brood_raptor",
+  "enemy_devoted_sculptor",
+  "enemy_elite_husk_1",
+  "enemy_elite_mirror_djinn",
+  "enemy_ember_furnace",
+  "enemy_haze_stag",
+  "enemy_haze_stag_96",
+  "enemy_kin_priest",
+  "enemy_mimic_jester",
+  "enemy_mourn_beast",
+  "enemy_scald_gnat",
+  "enemy_seal_orb",
+  "enemy_set_wary",
+  "enemy_vine_walker",
+  "enemy_wolf"
+ ],
+ "lightFromRight": [
+  "enemy_elite_doom_chanter",
+  "enemy_elite_iron_egg",
+  "enemy_kin_follower",
+  "enemy_kin_priest",
+  "enemy_mimic_imp",
+  "enemy_raptor_egg",
+  "enemy_wide_power",
+  "enemy_wolf",
+  "white_perm_hound"
+ ]
+}

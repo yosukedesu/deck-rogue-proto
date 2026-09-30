@@ -3080,7 +3080,7 @@ namespace DeckRogue.Game
                     enabled = false;
                     return;
                 }
-                _t += Time.unscaledDeltaTime;
+                _t += Tween.UnscaledDt;   // det の撮影では 1/60 秒 (2026-09-30 HD-2D 見本 P00)
                 float live = _t - 0.4f;
                 if (live <= 0f) return;
                 float s = 0.5f - 0.5f * Mathf.Cos(live * 1.2f * Mathf.PI * 2f);

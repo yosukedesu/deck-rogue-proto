@@ -1,0 +1,25 @@
+{
+  "_": "HD-2D 見本 P05 の手順2: PixelLab の新しい機能を1生成ずつ試す (2026-09-30)。map-objects は樹冠の候補、tiles-pro は天面3材質の候補を兼ねる。雛形の禁止語は template.json と同じ",
+  "forbidden": ["forest", "night", "moonlight", "scene", "moss green", "dirt"],
+  "defaultsByKind": {
+    "mapobj": { "view": "side", "outline": "selective outline", "shading": "medium shading", "detail": "high detail", "guidance": 8 },
+    "tilespro": { "type": "square_topdown", "size": 64, "view": "top-down", "outlineMode": "segmentation" }
+  },
+  "items": [
+    {
+      "id": "trial_mapobj_canopy",
+      "kind": "mapobj",
+      "out": "docs/pixellab/hd2d-act1/raw/trial/trial_mapobj_canopy.png",
+      "w": 160, "h": 112, "seed": 1101,
+      "text": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no base platform, nothing else in the frame, a broad dense mass of tree leaves hanging from a few thin twigs, no trunk, rounded lumpy outline with a few gaps of empty space, leaves in large soft clusters, soft light from the upper left, evenly exposed neutral mid-tone greens and grey-greens, pixel art, no text"
+    },
+    {
+      "id": "trial_tilespro_top",
+      "kind": "tilespro",
+      "out": "docs/pixellab/hd2d-act1/raw/trial",
+      "seed": 1102,
+      "_text": "番号つきは1項目1枚 (公式 docs)。64px で何枚返るか分からないので、3材質を交互に12項目並べる (少なく返っても3材質がそろう順)",
+      "text": "1). short mossy grass ground seen straight from above, soft small tufts, muted grey-green, evenly lit, no shadows 2). packed brown earth footpath seen straight from above, smooth trodden soil, dull warm brown, evenly lit 3). flat weathered grey stone top seen straight from above, broad smooth worn facets, cool grey, evenly lit 4). short mossy grass ground with slightly darker soft patches, muted grey-green, evenly lit 5). packed brown earth footpath with faint shallow footprints, dull warm brown, evenly lit 6). flat grey stone top with a soft patch of low moss, cool grey, evenly lit 7). short mossy grass ground, a few longer blades, muted grey-green, evenly lit 8). packed brown earth footpath, slightly lighter trodden centre, dull warm brown, evenly lit 9). flat weathered grey stone top, faint layered bands, cool grey, evenly lit 10). short mossy grass ground, calm uniform texture, muted grey-green, evenly lit 11). packed brown earth footpath, calm uniform texture, dull warm brown, evenly lit 12). flat grey stone top, calm uniform texture, cool grey, evenly lit"
+    }
+  ]
+}

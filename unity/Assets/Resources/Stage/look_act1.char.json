@@ -1,0 +1,19 @@
+{
+  "_doc": [
+    "幕1のキャラの光 (2026-09-30 HD-2D 見本。計画 §2-4・§2-5)。持ち主は P23 (キャラの詰め)。作ったのは P09。look_act1.json の上に重ねて読む。",
+    "キャラの板 (StageUnitLit) は場の光を受けず、全員に同じ向き・同じ色の固定のキー (舞台の灯の向き = StageLook.KeyDir) と上下の環境光だけを受ける。",
+    "StageLook.Apply が全体値 _CharKeyDir・_CharKeyColor (= key か keyWarm × keyIntensity)・_CharAmbTop・_CharAmbBottom を書く。",
+    "receive・heroLift・ambientScale は材質ごとの値 (UnityPerMaterial) なので、板を作る P11 が StageLook.CharReceive(hero)・StageLook.HeroLift・StageLook.CharAmbientScale を読んで材質に書く。",
+    "旗 receive= / herolift= / keycolor=warm がこのファイルの値より勝つ。"
+  ],
+  "char": {
+    "key": [0.92, 0.96, 1.0],
+    "keyWarm": [1.0, 0.92, 0.8],
+    "keyIntensity": 1.0,
+    "ambTop": [0.62, 0.66, 0.80],
+    "ambBottom": [0.38, 0.40, 0.50],
+    "ambientScale": 1.0,
+    "receive": 0.6,
+    "heroLift": 1.2
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "_doc": [
+    "幕1のスマホの段 (2026-09-30 HD-2D 見本。計画 §2-7)。持ち主は P31 (スマホの段と計測用 APK)。作ったのは P09。",
+    "tier=phone (実機は既定で phone) の時だけ、look_act1.json・.char・.dof の上に最後に重ねる。",
+    "同じ構図のまま段を落とす: 影つきの光は2つ (月と舞台の灯・影512)、逆光の影なし、MSAA なし、ぼかしは半解像度で12px。SSAO と水面の反射はレンダラーの側 (P06/P31)。",
+    "重い時に落とす順: 光の筋と霧の面 → 影つきの逆光 → SSAO → ぼかしの段数。解像度は下げない。"
+  ],
+  "backlight": { "shadow": false },
+  "shadow": {
+    "cascades": 1,
+    "mainResolution": 512,
+    "additionalResolution": 512,
+    "maxShadowedLights": 2
+  },
+  "camera": { "msaaMax": 1 },
+  "tiltShift": { "halfRes": true }
+}

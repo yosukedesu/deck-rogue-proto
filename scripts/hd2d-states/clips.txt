@@ -1,0 +1,7 @@
+# HD-2D 見本の撮影の一覧 (2026-09-30 P08。計画 docs/design/hd2d-slice-plan-2026-09-30.md §4 P08・§6)。1行 = 名前|STATE。# と空行は読み飛ばす。
+# 撮り方: scripts/hd2d-shots.sh <この一覧> <出力名> [--phone-tier] (1行1起動 = 門の撮り方)。まとめて撮るだけなら --states
+# 動く見比べ (hd2d-clip.sh。約4秒 = 80 枚 × 3 フレーム。待機は登場の撮影キー entershots で撮る = 最初の約0.7秒は登場)
+CL-wolf-idle|phase=combat;enemy=enemy_wolf;entershots=80;enterevery=3
+CL-wolf-idle-sample|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;entershots=80;enterevery=3
+CL-R01|phase=combat;enemy=enemy_probe;play=attack;playshots=80;playevery=3
+CL-R01-sample|phase=combat;enemy=enemy_probe;stage=diorama;hd2d=slice;play=attack;playshots=80;playevery=3

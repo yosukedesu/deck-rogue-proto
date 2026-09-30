@@ -1,0 +1,18 @@
+# HD-2D 見本の撮影の一覧 (2026-09-30 P08。計画 docs/design/hd2d-slice-plan-2026-09-30.md §4 P08・§6)。1行 = 名前|STATE。# と空行は読み飛ばす。
+# 撮り方: scripts/hd2d-shots.sh <この一覧> <出力名> [--phone-tier] (1行1起動 = 門の撮り方)。まとめて撮るだけなら --states
+# 演出の回帰 R1〜R15 (今の舞台 = stage=old)。baseline.txt の R 行に dumplayout=1 を足した物
+R01-swing|phase=combat;enemy=enemy_probe;play=attack;playshots=8;playevery=1;dumplayout=1
+R02-multi|phase=combat;hand=green_double_lash;play=0;playshots=12;playevery=3;dumplayout=1
+R03-aoe|phase=combat;enemy=enc_probe_pair;hand=green_earth_roar;play=0;playshots=10;playevery=3;dumplayout=1
+R04-exposed|phase=combat;eexposed=1;hand=green_strike;play=0;playshots=8;playevery=2;dumplayout=1
+R05-enrage|phase=combat;enemy=enemy_brute;ehp=h+3;hand=green_strike;play=0;playshots=14;playevery=5;dumplayout=1
+R06-guard|phase=combat;enemy=enemy_wolf;pblock=20;endplay=1;endshots=16;endevery=3;dumplayout=1
+R07-hurt|phase=combat;enemy=enemy_wolf;endplay=1;endshots=14;endevery=9;dumplayout=1
+R08-kill|phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4;dumplayout=1
+R09-enter|phase=combat;enemy=enemy_brute;boss=1;entershots=12;enterevery=6;dumplayout=1
+R10-trap|phase=combat;enemy=enemy_wolf;sets=green_reaction_vine*;endturn=1;fire=1;fireshots=10;fireevery=8;dumplayout=1
+R11-doll|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_hound,white_perm_squire;hand=white_light_bolt;play=0;playshots=8;playevery=3;dumplayout=1
+R12-gearwin|phase=combat;gears=gear_spring,gear_cog;gearwin=0;dumplayout=1
+R13-gearmore|phase=combat;gears=gear_spring,gear_cog;gearmore=1;dumplayout=1
+R14-popup|phase=combat;popup=0;dumplayout=1
+R15-tip|phase=combat;tip=enemy;dumplayout=1

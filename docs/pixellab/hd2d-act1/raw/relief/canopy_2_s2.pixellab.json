@@ -1,0 +1,25 @@
+{
+  "id": "canopy_2_s2",
+  "engine": "pixflux",
+  "request": {
+    "description": "strictly front-facing orthographic elevation of a single object, drawn like a 2D side-scrolling platformer background sprite, no perspective, no depth, nothing else in the frame, completely empty transparent background, a wide flat layered puff of green leaf clumps floating in the air, horizontal tiers of leaves, like a cut-out treetop with nothing below it, only leaves, lit softly from the upper left, neutral mid-tone colors, HD-2D Octopath Traveler style pixel art, detailed shading, selective dark outline, no text",
+    "negative_description": "isometric, perspective, visible floor, ground tile, grass field, island, scene, background, landscape, forest, sky, moon, frame, border, text, watermark, blurry, bright saturated colors, night, dark blue tint, people, character, face, animal, tree, trunk, wood, roots, soil, ground, dirt patch, mound, shadow on the ground, base, pot, platform",
+    "image_size": {
+      "width": 176,
+      "height": 112
+    },
+    "text_guidance_scale": 9,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "direction": "south",
+    "seed": 3402
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-09-30T05:52:54.550Z"
+}
