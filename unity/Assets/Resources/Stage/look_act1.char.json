@@ -4,7 +4,16 @@
     "キャラの板 (StageUnitLit) は場の光を受けず、全員に同じ向き・同じ色の固定のキー (舞台の灯の向き = StageLook.KeyDir) と上下の環境光だけを受ける。",
     "StageLook.Apply が全体値 _CharKeyDir・_CharKeyColor (= key か keyWarm × keyIntensity)・_CharAmbTop・_CharAmbBottom を書く。",
     "receive・heroLift・ambientScale は材質ごとの値 (UnityPerMaterial) なので、板を作る P11 が StageLook.CharReceive(hero)・StageLook.HeroLift・StageLook.CharAmbientScale を読んで材質に書く。",
-    "旗 receive= / herolift= / keycolor=warm がこのファイルの値より勝つ。"
+    "旗 receive= / herolift= / keycolor=warm がこのファイルの値より勝つ。",
+    "P23 (W3) の詰め: このはだけ主役の持ち上げを 1.2 → 1.6 (art の leader_green。W2 の見本でこのはの体の中央値 33 = 地面の輪 82・舞台の中央値 80 よりずっと暗い。元の絵の中央値が 39 と暗い黒鉄の衣で、ACES の足が暗部を線形で約 1/3 に沈めるため)。白い衣のひなた (体 146) は heroLift 1.2 のまま (共用の値を上げると衣が飛ぶ = 旧舞台の HeroAmbientFor と同じ判断)。",
+    "art = 絵ごとの上書き (名前の頭がいちばん長く一致した物。leader_green は herodots=48 の leader_green_48 にも当たる)。heroLift = 主役の持ち上げ (旗 herolift= が勝つ)・blackLift = 輪郭の持ち上げの倍率 (書けば blackLiftAuto より勝つ)。",
+    "blackLift = 輪郭の持ち上げ (StageUnitLit の _BlackLift。StageUnits.BlackLiftVector が線形へ直してトーンマップと露出で割り戻す)。真っ黒の画素がこの色 (線形の輝度 0.024) になる。W2 の墨線は画面で 4〜13 (p10) → 目標 20〜30。",
+    "blackLiftAuto.litRef = キャラの光のおおよその倍率 (W2 の見本で環境光 0.29＋受光 0.6×キー 0.9×向き 0.65 ≈ 0.65)。絵の輪郭 (縁の画素の暗い側 10%) がもともと明るいほど持ち上げを減らす = ひなた (輪郭 55) は 0・白の人形は 0.2〜0.75・墨線の絵 (このは・狼・オーガ・巻物) は 0.93〜0.98。消すと全員に同じだけ足す。",
+    "blackLiftExposureRef = blackLift を決めた時の露出 (look_act1.json の post.exposure = 0.3)。P22 が露出を変えても輪郭の画面の暗さは保つ。",
+    "exposureRef = キャラの光を決めた時の露出。あれば受光・環境光・発光の強さを 2^(exposureRef − 今の post.exposure) 倍にする = P22 が露出を下げて舞台を夜にしても、キャラの画面の明るさは保つ (主役の照明と同じ考え)。キャラも一緒に暗くしたい時はこの行を消す。",
+    "blackLiftTonemap = トーンマップごとの倍率 (ACES の足は暗部を強く沈める。Neutral・無しでは黒がほぼそのまま出るので少なくてよい)。",
+    "keyFlipFrom = _KeyFlip の選び方。measured = art-lint が測った「描き込まれた光が右から来る絵」(lightFromRight)。旧の mirrored (画像ファイルを左右反転した絵) は16枚中9枚が左からの光で、キーが描き込みと逆になっていた。",
+    "keyFlipAdd = 表の境目で落ちた絵 (enemy_scald_gnat は反転した絵で光は右上・横の大きさ 0.089 で表の 0.10 に届かなかった)。"
   ],
   "char": {
     "key": [0.92, 0.96, 1.0],
@@ -14,6 +23,17 @@
     "ambBottom": [0.38, 0.40, 0.50],
     "ambientScale": 1.0,
     "receive": 0.6,
-    "heroLift": 1.2
+    "exposureRef": 0.3,
+    "heroLift": 1.2,
+    "art": {
+      "leader_green": { "heroLift": 1.6 }
+    },
+    "blackLift": [0.165, 0.165, 0.215],
+    "blackLiftAuto": { "litRef": 0.65 },
+    "blackLiftExposureRef": 0.3,
+    "blackLiftTonemap": { "aces": 1.0, "neutral": 0.3, "none": 0.25 },
+    "keyFlipFrom": "measured",
+    "keyFlipAdd": ["enemy_scald_gnat"],
+    "keyFlipRemove": []
   }
 }

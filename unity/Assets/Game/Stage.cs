@@ -1232,6 +1232,7 @@ namespace DeckRogue.Game
                     case "fireflies": case "leaves": on = act == 1; break;
                     case "water-sparkle": on = act == 1 && !dio; break;
                     case "mote-light-template": on = !dio; break;   // 粒ごとの点光源のひな型。今の舞台は今までどおり (既定の on で点いている = 見た目を変えない)。箱庭では点けない (世界の原点に弱い暖色の点光源が1つ立っていた)
+                    case "motes-cluster": on = !dio; break;   // 今の舞台のランタンの足元の暖色の粒の一群 (t −7.1 = 画面の左端)。箱庭ではランタンが無く、左端の地面だけが暖色に光って③ (中央÷端) を下げていた (W3 P22)
                     case "moondust": on = act != 2; break;
                     case "mist-far": on = act != 2; break;
                     case "vein-motes": on = act != 1; break;

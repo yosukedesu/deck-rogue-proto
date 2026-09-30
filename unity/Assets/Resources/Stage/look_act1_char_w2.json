@@ -1,0 +1,14 @@
+{
+  "_doc": [
+    "P23 (W3) の比較用の変種: キャラの光を W2 の時に戻す (このはの主役の持ち上げ 1.2・輪郭の持ち上げなし・_KeyFlip は画像ファイルを左右反転した絵・露出の割り戻しなし)。",
+    "撮影の STATE に look=look_act1_char_w2。舞台の光 (P22) は今のまま = キャラの光の詰めだけの差を見る。旗 look= が重ね読みになった後 (W3 P22) で使う。持ち主は P23。",
+    "exposureRef の \"off\" は数でないので読まれない (= 割り戻さない)。重ね読みは null を飛ばすので、消すかわりに文字を置く。"
+  ],
+  "char": {
+    "art": { "leader_green": { "heroLift": 1.2 } },
+    "blackLift": [0, 0, 0],
+    "keyFlipFrom": "mirrored",
+    "keyFlipAdd": [],
+    "exposureRef": "off"
+  }
+}

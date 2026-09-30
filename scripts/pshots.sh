@@ -29,6 +29,12 @@ one() {
       ${DET:+-det} ${ui:+-uiscale "$ui"} -state "$st" ${HD2D:+-hd2d "$HD2D"} ${PLAYER_ARGS:-} \
       -screen-width 1920 -screen-height "$h" -screen-fullscreen 0 -logFile "$(wslpath -w "$work/player.log")" </dev/null >/dev/null 2>&1
     rc=$?
+    # timeout で WSL 側の中継だけが死に、Windows の DeckRogue.exe は止まったまま残る (2026-09-30 W3 の統合: 残った 17 本が GPU を握り、
+    # 後の撮影ほど止まる・作業フォルダを消せず rc=5 で落ちる、が起きた)。止まった時はこの作業フォルダで起動したプレイヤーを Windows 側で落とす
+    if [ "$rc" -ge 124 ]; then
+      powershell.exe -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='DeckRogue.exe'\" | Where-Object { \$_.CommandLine -like '*PShots\\$name *' } | ForEach-Object { Stop-Process -Id \$_.ProcessId -Force }" >/dev/null 2>&1
+      sleep 2
+    fi
     n=$(ls "$work"/*.png 2>/dev/null | wc -l)
     if [ "$n" -ge 1 ]; then
       local i=0 f stem

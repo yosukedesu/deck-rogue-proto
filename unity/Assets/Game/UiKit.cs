@@ -2,6 +2,7 @@
 // プレハブ・シーンは使わず全てスクリプトから生成する (UI技術の裁定: uGUI・コード生成＋テーマ)。
 // 文字は TextMeshPro (Resources/Fonts の Noto Sans JP から動的 SDF フォントを作る)。枠は Theme の生成スプライト。
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -189,6 +190,8 @@ namespace DeckRogue.Game
                 m.SetFloat(ShaderUtilities.ID_UnderlaySoftness, 0.15f);
                 m.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 0f);
                 m.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, 0f);
+                // Linear (2026-09-30 P21): 墨の字は細り (紙(明)の上の墨 0.138)、紙の下敷きの縁は薔薇の上で太る (−0.074)。HP の数字 17 単位に合わせる
+                if (LinearFix) FitHalo(m, bold, NumHaloUnits, 0.15f, 1.2f, 0.15f, 0.138f, -0.074f);
                 _numHalo = m;
                 return m;
             }
@@ -196,10 +199,36 @@ namespace DeckRogue.Game
         static Material _numHalo;
 
         /// <summary>
-        /// 夜色の札 (HD-2D 見本の ui=night) の上の数字の素材 (2026-09-30 §3)。紙色の字のすぐ外に夜の下敷きを敷く版の NumHalo。
-        /// 骨組み (P00): いつも null (呼ぶ側は null なら素の素材のまま)。中身は P21 が書き、P20 が呼ぶ
+        /// 夜色の札 (HD-2D 見本の ui=night) の上の数字の素材 (2026-09-30 §3・P21)。紙色の字のすぐ外に夜 (地 PaperFx.Ground) の下敷きを敷く版の NumHalo。
+        /// 字の色は呼ぶ側が TMP の color で決める (紙 PaperFx.Paper を想定。夜の札の上で 14:1・地の下敷きの上で 15:1)。
+        /// 下敷きは薔薇の HP の塗りの上でも字のすぐ外を夜にする (NumHalo の紙の縁と同じ形: FaceDilate 0.15・下敷きの Dilate 1.2・ぼかし 0.15 を Gamma の設計の値とする)。
+        /// スイッチは OUTLINE_ON と UNDERLAY_ON の両方 (NumHalo と同じ理由: ビルドに残る版は Resources の「Drop Shadow.mat」と同じ組み合わせだけ)。縁取りの幅は 0。
+        /// Linear では紙色の字は夜の上で太り (−0.168)、夜の下敷きの縁は薔薇の上で細る (0.138) ので、FitHalo で両方を戻す (大きさは HP 16〜17 と意図 32 の間の 23 単位に合わせる)。
+        /// font が null なら太字 (FontBold)。フォントごとに1つを共有する (呼ぶ側は t.fontSharedMaterial に入れるだけ。色を変えても作り直さない)
         /// </summary>
-        public static Material NumHaloNight(TMP_FontAsset font = null) => null;
+        public static Material NumHaloNight(TMP_FontAsset font = null)
+        {
+            var f = font ?? FontBold;
+            if (f == null || f.material == null) return null;
+            Material m;
+            if (_numHaloNight.TryGetValue(f, out m) && m != null) return m;
+            m = new Material(f.material) { name = f.name + " NumHaloNight" };
+            m.EnableKeyword("OUTLINE_ON");
+            m.EnableKeyword("UNDERLAY_ON");
+            m.SetFloat(ShaderUtilities.ID_OutlineWidth, 0f);
+            m.SetColor(ShaderUtilities.ID_OutlineColor, PaperFx.Ground);   // 幅 0 の縁取りの境目がにじんでも夜のまま
+            m.SetFloat(ShaderUtilities.ID_FaceDilate, 0.15f);
+            m.SetColor(ShaderUtilities.ID_UnderlayColor, PaperFx.Ground);
+            m.SetFloat(ShaderUtilities.ID_UnderlayDilate, 1.2f);
+            m.SetFloat(ShaderUtilities.ID_UnderlaySoftness, 0.15f);
+            m.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 0f);
+            m.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, 0f);
+            if (LinearFix) FitHalo(m, f, NightHaloUnits, 0.15f, 1.2f, 0.15f, -0.168f, 0.138f);
+            else ShaderUtilities.UpdateShaderRatios(m);
+            _numHaloNight[f] = m;
+            return m;
+        }
+        static readonly Dictionary<TMP_FontAsset, Material> _numHaloNight = new Dictionary<TMP_FontAsset, Material>();
 
         /// <summary>小さい文字の上限 (実際に描く大きさ Fs がこれ以下なら SmallMat を当てる。2026-09-29 p19)</summary>
         public const int SmallTextMax = 15;
@@ -233,16 +262,23 @@ namespace DeckRogue.Game
             var m = new Material(src) { name = f.name + " small" };
             m.SetFloat(ShaderUtilities.ID_FaceDilate, dilate);
             if (m.HasProperty("_Sharpness")) m.SetFloat("_Sharpness", 0.4f);
+            if (LinearFix)
+            {   // Linear (2026-09-30 P21): 墨の字の縁の細りを戻す。dilate は Gamma の設計の値として覚える (明るい字の版 LightMat の元)
+                _designDilate[m] = dilate;
+                m.SetFloat(ShaderUtilities.ID_FaceDilate, dilate + LinearDilate(m, f, SmallTextUnits, InkThin));
+            }
             ShaderUtilities.UpdateShaderRatios(m);
             cache = m;
             return m;
         }
 
-        /// <summary>長い本文 (説明パネル・用語の説明) を小さい文字の素材から元の太さへ戻す (2026-09-29 p19。長文まで太くしない)</summary>
+        /// <summary>長い本文 (説明パネル・用語の説明) を小さい文字の素材から元の太さへ戻す (2026-09-29 p19。長文まで太くしない)。
+        /// Linear では明るい字なら明るい字の版の素材へ (P21)</summary>
         public static void PlainWeight(TMP_Text t)
         {
             if (t == null || t.font == null || t.font.material == null) return;
             t.fontSharedMaterial = t.font.material;
+            if (LinearFix && IsLightText(t.color)) FitTextToColor(t);
         }
 
         static void EnsureFonts()
@@ -254,6 +290,12 @@ namespace DeckRogue.Game
             _fontBold = MakeFont("KleeOne-SemiBold") ?? MakeFont("NotoSansJP-Bold");
             _fontDeco = MakeFont("KaiseiDecol-Bold");
             if (_fontRegular == null) Debug.LogWarning("[UiKit] 日本語フォントを作れなかった。TMP の既定フォントで描く (日本語は豆腐)");
+            // Linear (2026-09-30 P21): 既定の素材 (font.material) そのものを墨の字に合わせる。PlainWeight・書体の差し替え・縁取りの実体の素材はここから写されるので、
+            // 外のコードが t.font.material に戻しても補正は残る。明るい字は LightMat (Txt・Deco・PlainWeight が色を見て選ぶ)
+            FixBaseLinear(_fontRegular);
+            FixBaseLinear(_fontBold);
+            FixBaseLinear(_fontDeco);
+            try { HD2DFlags.LayoutDumpers["linearUi"] = LinearUiInfo; } catch (Exception) { }   // dumplayout=1 の layout.json の extra.linearUi
         }
 
         static TMP_FontAsset MakeFont(string resourceName)
@@ -274,6 +316,380 @@ namespace DeckRogue.Game
             }
         }
 
+        // ---- Linear の色空間の後始末 (2026-09-30 HD-2D 見本 P21。計画 docs/design/hd2d-slice-plan-2026-09-30.md §4 P21) ----
+        // prep (W2) で色空間が Linear になった。UI の色そのもの (頂点色・紙の絵) は Gamma と同じに出る (canvas.vertexColorAlwaysGammaSpace と、UI・UIPixelSharp・TMP のシェーダの
+        // UIGammaToLinear) が、半透明の混ぜ方が「光の量」で混ざるようになり、2つの所で見え方が変わる (W1 の Gamma と W2 の Linear だけの撮影で実測した):
+        //   ① 字の縁 (SDF の 0→1 の傾き。幅 約1.4px) の混ざり方。紙の上の墨の字は縁が 0.17〜0.30px 内へ寄り、墨の量が 11〜28% 減る (16〜18px で 21%)。
+        //      夜の上の紙色の字は逆に太る。縁1本あたり傾き幅の 0.136 (墨/紙)・0.168 (紙色/地) ぶん (数値積分)。
+        //      → 字の素材の FaceDilate をその分だけ足す/引く (LinearDilate。足し分は TMP Mobile SDF の頂点シェーダの scale の式から出す)
+        //   ② 半透明の板の混ざり方。暗い板 (暗幕) は薄く、明るい板 (光の薄塗り) は濃く見える (地 α0.55 の暗幕が 9 レベル明るい・薔薇の危険の縁は 22 レベル濃い)。
+        //      → 頂点の α を「Gamma で混ぜた時と同じ明るさになる α」へ写す (GammaAlpha。Pan が半透明の板に LinearShadeEffect を付ける。絵に焼いた α は LinearSprite。
+        //        暗幕 "dim" の白い板に貼る穴のぼかしは Pan が付ける LinearDimSprite が写す)。手札の暗幕・危険の縁 (BattleView) は呼ぶ側が LinearSprite を通す (lane-P21.md)
+        // Gamma では全部何もしない (今の見た目のまま)。起動引数 -uilinearfix 0 で全部切れる (比べる撮影用)。0 と 1 以外の正の数は字の補正の強さの倍率 (0.8・1.25 など。板の α は倍率を掛けない)
+        // 測り方と数値の出どころ: lane-P21.md (scratchpad の p21/ の deficit.py・edgeshift.py・ink.py・halo.py・overlay.py)
+
+        static bool _linArgsRead;
+        static float _linFixScale = 1f;
+        static int _shadeCount, _shadedMeshes;
+        static bool _linSpriteWarned;
+        static readonly Dictionary<(Sprite, int), Sprite> _linSprites = new Dictionary<(Sprite, int), Sprite>();
+        /// <summary>素材ごとの Gamma の設計の FaceDilate (補正の前の値。明るい字の版を作る元・記録用)</summary>
+        static readonly Dictionary<Material, float> _designDilate = new Dictionary<Material, float>();
+        static readonly Dictionary<TMP_FontAsset, Material> _lightBase = new Dictionary<TMP_FontAsset, Material>();
+        static readonly Dictionary<TMP_FontAsset, Material> _lightSmall = new Dictionary<TMP_FontAsset, Material>();
+
+        /// <summary>墨 (暗い字) の縁が Linear で細る量 (傾き幅の単位)。紙 0.136・紙(濃) 0.133・紙(明) 0.138・真鍮の紙 0.128・中墨 0.106・真鍮の墨 0.112 の間</summary>
+        const float InkThin = 0.13f;
+        /// <summary>紙色 (明るい字) の縁が夜の上で太る量 (同じ単位)。紙/夜 0.155・淡い紙/夜 0.144・真鍮の紙/夜 0.149</summary>
+        const float LightThick = 0.15f;
+        /// <summary>補正を合わせる字の大きさ (キャンバスの単位)。足し分は画面の px に反比例するので、素材ごとにいちばん多い大きさで合わせる
+        /// (PC の戦闘画面の字の量: 13 が 332 字・16〜23 が 600 字・32 以上 21 字)。外れた大きさの残りの誤差は縁1本 0.05px 未満</summary>
+        const float BaseTextUnits = 19f, NumHaloUnits = 17f, NightHaloUnits = 23f;
+        static float SmallTextUnits { get { return Phone ? 15f : 14f; } }
+
+        /// <summary>暗い板の下にあると仮定する明るさ (sRGB の輝度 0〜1)。戦闘の画面 (舞台と紙の札が混ざる) の上の暗幕で、W1 の画を下に敷いて誤差が最小になる値 (α0.55・0.7・0.82 とも 0.6 前後)</summary>
+        public const float DarkUnderY = 0.6f;
+        /// <summary>明るい板 (光・薄塗り) の下にあると仮定する明るさ。夜の地 (#1a1c33 の輝度 0.11) と舞台の暗い縁 (0.035) の間</summary>
+        public const float LightUnderY = 0.08f;
+
+        static void ReadLinearArgs()
+        {
+            if (_linArgsRead) return;
+            _linArgsRead = true;
+            try
+            {
+                var args = Environment.GetCommandLineArgs();
+                for (int i = 0; i + 1 < args.Length; i++)
+                {
+                    if (args[i] != "-uilinearfix") continue;
+                    float v;
+                    if (float.TryParse(args[i + 1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out v))
+                        _linFixScale = Mathf.Max(0f, v);
+                }
+            }
+            catch (Exception) { }
+        }
+
+        /// <summary>Linear の後始末が効いているか (色空間が Linear で、起動引数 -uilinearfix 0 でない)。Gamma では false = 今までの見た目のまま</summary>
+        public static bool LinearFix
+        {
+            get
+            {
+                ReadLinearArgs();
+                return _linFixScale > 0f && QualitySettings.activeColorSpace == ColorSpace.Linear;
+            }
+        }
+
+        static float SrgbToLinear(float c) { return c <= 0.04045f ? c / 12.92f : Mathf.Pow((c + 0.055f) / 1.055f, 2.4f); }
+        static float Luma(Color c) { return 0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b; }
+        /// <summary>明るい字か (紙・淡い紙・真鍮の紙など。墨と各色の墨は暗い字)</summary>
+        public static bool IsLightText(Color c) { return Luma(c) > 0.5f; }
+
+        /// <summary>
+        /// 色 over を α a で重ねた板が、Linear の混ぜ方でも Gamma で混ぜた時と同じ明るさになる α (P21)。Gamma・-uilinearfix 0・a が 0 か 1 の時は a のまま。
+        /// 正しい値は下の明るさで変わるので、underY (sRGB の輝度 0〜1) で下を仮定する。省略時は暗い板なら DarkUnderY、明るい板なら LightUnderY。
+        /// 例: 地 (PaperFx.Ground) α0.55 → 0.77・α0.7 → 0.88・黒 α0.35 → 0.61・墨 α0.25 → 0.37・薔薇 α0.47 (下 0.03) → 0.21
+        /// </summary>
+        public static float GammaAlpha(Color over, float a, float underY = -1f)
+        {
+            if (a <= 0f || a >= 1f || !LinearFix) return a;
+            float cy = Mathf.Clamp01(Luma(over));
+            float b = underY >= 0f ? Mathf.Clamp01(underY) : (cy < 0.35f ? DarkUnderY : LightUnderY);
+            float fc = SrgbToLinear(cy), fb = SrgbToLinear(b), den = fc - fb;
+            if (Mathf.Abs(den) < 1e-4f) return a;
+            return Mathf.Clamp01((SrgbToLinear(a * cy + (1f - a) * b) - fb) / den);
+        }
+
+        /// <summary>
+        /// 半透明の板 (Image など) の頂点の α を GammaAlpha で写す部品 (P21)。Image.color は設計の値のまま (読み返し・Tween の α のフェードはそのまま動く)。
+        /// Pan が半透明の色の板に付ける。絵 (スプライト) に焼いた α は写さない (それは LinearSprite)。CanvasGroup の α・ボタンの色の切り替えも写さない
+        /// </summary>
+        public sealed class LinearShadeEffect : BaseMeshEffect
+        {
+            /// <summary>下の明るさの仮定 (負 = 板の色から既定を選ぶ)</summary>
+            public float UnderY = -1f;
+
+            public override void ModifyMesh(VertexHelper vh)
+            {
+                if (!IsActive() || vh == null || !LinearFix) return;
+                var v = new UIVertex();
+                bool any = false;
+                for (int i = 0; i < vh.currentVertCount; i++)
+                {
+                    vh.PopulateUIVertex(ref v, i);
+                    byte a = v.color.a;
+                    if (a == 0 || a == 255) continue;
+                    Color c = v.color;
+                    v.color.a = (byte)Mathf.Clamp(Mathf.RoundToInt(GammaAlpha(c, c.a, UnderY) * 255f), 0, 255);
+                    vh.SetUIVertex(v, i);
+                    any = true;
+                }
+                if (any) _shadedMeshes++;
+            }
+        }
+
+        /// <summary>板 g の頂点の α を Linear 用に写す部品を付ける (Linear の時だけ。2回呼んでも1つ)。underY は GammaAlpha と同じ</summary>
+        public static void LinearShade(Graphic g, float underY = -1f)
+        {
+            if (g == null || !LinearFix) return;
+            var e = g.GetComponent<LinearShadeEffect>();
+            if (e == null) { e = g.gameObject.AddComponent<LinearShadeEffect>(); _shadeCount++; }
+            e.UnderY = underY;
+            g.SetVerticesDirty();
+        }
+
+        /// <summary>
+        /// 絵に焼いた α (暗幕のぼかし・下から消える帯・色つきの縁) を GammaAlpha で写した写しを返す (Linear の時だけ。Gamma はそのまま s)。
+        /// 画素ごとに、その画素の色と α で写す。矩形・中心・PPU・9スライスの縁 (border) は元のまま。写しは元のスプライトと underY ごとに1つを使い回す。
+        /// 読めない絵 (取り込んだ資産で Read/Write が切れている物) はそのまま返す (実行時に作る Theme・PaperFx の絵は読める)
+        /// </summary>
+        public static Sprite LinearSprite(Sprite s, float underY = -1f)
+        {
+            if (s == null || !LinearFix || _linOut.Contains(s)) return s;   // 写した絵をもう一度渡されても2度は写さない
+            var key = (s, underY < 0f ? -1 : Mathf.RoundToInt(underY * 1000f));
+            Sprite hit;
+            if (_linSprites.TryGetValue(key, out hit) && hit != null) return hit;
+            var tex = s.texture;
+            if (tex == null || !tex.isReadable)
+            {
+                if (!_linSpriteWarned) { _linSpriteWarned = true; Debug.LogWarning("[UiKit] LinearSprite: 読めない絵なので α を写さない: " + (tex != null ? tex.name : s.name)); }
+                return s;
+            }
+            Color32[] px;
+            try { px = tex.GetPixels32(); }
+            catch (Exception e)
+            {
+                if (!_linSpriteWarned) { _linSpriteWarned = true; Debug.LogWarning("[UiKit] LinearSprite: 画素を読めなかった: " + tex.name + " / " + e.Message); }
+                return s;
+            }
+            bool changed = false;
+            for (int i = 0; i < px.Length; i++)
+            {
+                byte a = px[i].a;
+                if (a == 0 || a == 255) continue;
+                Color c = px[i];
+                byte na = (byte)Mathf.Clamp(Mathf.RoundToInt(GammaAlpha(c, c.a, underY) * 255f), 0, 255);
+                if (na != a) { px[i].a = na; changed = true; }
+            }
+            if (!changed) { _linSprites[key] = s; return s; }
+            bool srgb = UnityEngine.Experimental.Rendering.GraphicsFormatUtility.IsSRGBFormat(tex.graphicsFormat);
+            var nt = new Texture2D(tex.width, tex.height, TextureFormat.RGBA32, false, !srgb);
+            nt.name = tex.name + " (linear)";
+            nt.filterMode = tex.filterMode;
+            nt.wrapMode = tex.wrapMode;
+            nt.SetPixels32(px);
+            nt.Apply(false, false);
+            var r = s.rect;
+            var ns = Sprite.Create(nt, r, new Vector2(r.width > 0f ? s.pivot.x / r.width : 0.5f, r.height > 0f ? s.pivot.y / r.height : 0.5f),
+                s.pixelsPerUnit, 0, SpriteMeshType.FullRect, s.border);
+            ns.name = s.name + " (linear)";
+            _linSprites[key] = ns;
+            _linOut.Add(ns);
+            return ns;
+        }
+        static readonly HashSet<Sprite> _linOut = new HashSet<Sprite>();
+
+        /// <summary>
+        /// 暗幕 (名前 "dim") の白い板に後から貼られた絵の α を LinearSprite で写す部品 (P21)。Pan が白 (不透明) の "dim" の板にだけ付ける
+        /// (今は確認の窓の穴のぼかし BattleScreen の ThemeFx.HoleFeather だけ。まわりの4枚の板は Pan の LinearShadeEffect で写るので、
+        /// ぼかしだけ写さないと穴の縁に段差が出る = 明るい舞台で最大 約14 レベル)。絵が貼られた最初のフレームで1回写して止まる。
+        /// 呼ぶ側が先に LinearSprite で写してあれば何もしない (2度は写さない)。数フレーム絵が貼られなければ止まる
+        /// </summary>
+        public sealed class LinearDimSprite : MonoBehaviour
+        {
+            public float UnderY = -1f;
+            Image _img;
+            int _waited;
+
+            void LateUpdate()
+            {
+                if (_img == null) _img = GetComponent<Image>();
+                if (_img == null || !LinearFix) { enabled = false; return; }
+                var s = _img.sprite;
+                if (s == null) { if (++_waited > 8) enabled = false; return; }
+                var t = LinearSprite(s, UnderY);
+                if (t != s) _img.sprite = t;
+                enabled = false;
+            }
+        }
+
+        /// <summary>キャンバスの1単位が画面の何 px か (CanvasScaler と同じ式。GameRoot がまだ無い時は基準の解像度から)。PC 1080p = 1・スマホ (S25) = 1.6</summary>
+        static float CanvasPxPerUnit()
+        {
+            if (Screen.width <= 0 || Screen.height <= 0) return 1f;
+            var g = GameRoot.I;
+            if (g != null && g.ScreenRoot != null)
+            {
+                var cs = BattleScreen.CanvasSize(g.ScreenRoot);
+                if (cs.y > 0f) return Screen.height / cs.y;
+            }
+            if (Phone) return Screen.height / 675f;
+            return Mathf.Sqrt((Screen.width / 1920f) * (Screen.height / 1080f));
+        }
+
+        /// <summary>TMP Mobile SDF の頂点シェーダの scale (= 字の縁の傾きの逆数。sdf の単位) を、キャンバスの fsUnits の字について求める。
+        /// シェーダの式: rsqrt(dot(pixelSize, pixelSize)) × |uv.w| × GradientScale × (Sharpness+1)。オーバーレイのキャンバスでは pixelSize が画面の半 px・uv.w が1テクセルの px なので
+        /// √2 × GradientScale × (字の px ÷ 採寸の大きさ) × (1+Sharpness)。縁の傾き幅は約 √2 px (W1 の画の縁の 50% の位置のずれ 0.24px ÷ 理論値 0.2 = 1.2px・PC とスマホで同じ)</summary>
+        static float SdfScale(Material m, TMP_FontAsset f, float fsUnits)
+        {
+            float g = m.HasProperty(ShaderUtilities.ID_GradientScale) ? m.GetFloat(ShaderUtilities.ID_GradientScale) : 7f;
+            if (g <= 1f) g = 7f;
+            float sh = m.HasProperty(ShaderUtilities.ID_Sharpness) ? m.GetFloat(ShaderUtilities.ID_Sharpness) : 0f;
+            float pt = f != null ? (float)f.faceInfo.pointSize : 40f;
+            if (pt <= 0f) pt = 40f;
+            float px = Mathf.Max(1f, fsUnits * CanvasPxPerUnit());
+            return 1.41421356f * g * (px / pt) * (1f + sh);
+        }
+
+        /// <summary>字の縁を thin (傾き幅の単位。正 = 外へ・負 = 内へ) だけ動かす FaceDilate の足し分。Gamma・-uilinearfix 0 では 0。
+        /// FaceDilate d は縁を 0.5 × ScaleRatioA × d (sdf) だけ外へ出し、傾き幅は 1/scale (sdf) なので、d = 2 × thin ÷ (ScaleRatioA × scale)</summary>
+        static float LinearDilate(Material m, TMP_FontAsset f, float fsUnits, float thin)
+        {
+            if (m == null || !LinearFix) return 0f;
+            ShaderUtilities.UpdateShaderRatios(m);
+            float ra = m.HasProperty(ShaderUtilities.ID_ScaleRatio_A) ? m.GetFloat(ShaderUtilities.ID_ScaleRatio_A) : 1f;
+            if (ra <= 0.01f) ra = 1f;
+            return _linFixScale * 2f * thin / (ra * SdfScale(m, f, fsUnits));
+        }
+
+        /// <summary>フォントの既定の素材 (font.material) を墨の字に合わせる (Linear の時だけ・1回だけ)</summary>
+        static void FixBaseLinear(TMP_FontAsset f)
+        {
+            if (f == null || f.material == null || !LinearFix) return;
+            var m = f.material;
+            if (!m.HasProperty(ShaderUtilities.ID_FaceDilate) || _designDilate.ContainsKey(m)) return;
+            float d0 = m.GetFloat(ShaderUtilities.ID_FaceDilate);
+            _designDilate[m] = d0;
+            m.SetFloat(ShaderUtilities.ID_FaceDilate, d0 + LinearDilate(m, f, BaseTextUnits, InkThin));
+            ShaderUtilities.UpdateShaderRatios(m);
+        }
+
+        /// <summary>明るい字 (夜の上の紙色) の素材。既定 (small=false) か小さい字 (SmallMat) の設計の FaceDilate から、Linear で太る分を引いた版 (Linear の時だけ。それ以外は null)</summary>
+        static Material LightMat(TMP_FontAsset f, bool small)
+        {
+            if (f == null || !LinearFix) return null;
+            var cache = small ? _lightSmall : _lightBase;
+            Material m;
+            if (cache.TryGetValue(f, out m) && m != null) return m;
+            var src = small ? SmallMat(f) : f.material;
+            if (src == null || !src.HasProperty(ShaderUtilities.ID_FaceDilate)) return null;
+            float design;
+            if (!_designDilate.TryGetValue(src, out design)) design = src.GetFloat(ShaderUtilities.ID_FaceDilate);
+            m = new Material(src) { name = src.name + " light" };
+            m.SetFloat(ShaderUtilities.ID_FaceDilate, design);
+            m.SetFloat(ShaderUtilities.ID_FaceDilate, design + LinearDilate(m, f, small ? SmallTextUnits : BaseTextUnits, -LightThick));
+            ShaderUtilities.UpdateShaderRatios(m);
+            _designDilate[m] = design;
+            cache[f] = m;
+            return m;
+        }
+
+        /// <summary>
+        /// 字の色が明るいか暗いかで、同じ系統 (既定か小さい字) の中の素材を選び直す (Linear の時だけ。P21)。
+        /// Txt・Deco・PlainWeight は作る時に呼ぶ。字の色を後から変えた時 (夜の札で墨→紙色など) は呼ぶ側がもう一度呼ぶ。
+        /// NumHalo・NumHaloNight・縁取り (outlineWidth) の実体の素材など、既定と小さい字の素材でない物は触らない
+        /// </summary>
+        public static void FitTextToColor(TMP_Text t)
+        {
+            if (t == null || t.font == null || !LinearFix) return;
+            var f = t.font;
+            var cur = t.fontSharedMaterial;
+            Material lb, ls;
+            _lightBase.TryGetValue(f, out lb);
+            _lightSmall.TryGetValue(f, out ls);
+            var sm = SmallMat(f);
+            bool small;
+            if (cur == f.material || (lb != null && cur == lb)) small = false;
+            else if ((sm != null && cur == sm) || (ls != null && cur == ls)) small = true;
+            else return;
+            Material want = IsLightText(t.color) ? LightMat(f, small) : (small ? sm : f.material);
+            if (want != null && want != cur) t.fontSharedMaterial = want;
+        }
+
+        /// <summary>
+        /// 下敷き (UNDERLAY) つきの字の素材を Linear に合わせる (NumHalo・NumHaloNight。P21)。字の縁は faceThin、下敷きの外縁は underThin (どちらも傾き幅の単位・正は Linear で細る)
+        /// ぶん戻し、字の縁から下敷きの外縁までの距離と下敷きのぼかしの幅は設計 (Gamma) の値 fd0・ud0・us0 の形を保つ。
+        /// TMP の比 (ScaleRatioC) が FaceDilate と下敷きの Dilate で変わるので、TMP 自身の UpdateShaderRatios を回して下敷きの Dilate とぼかしを解き直す。
+        /// 下敷きの Dilate は素材の範囲 (−1〜1) で止まる (夜の下敷きは 1 で頭打ち = 設計より外縁が 0.04 sdf 内側。17px で約 0.2px)
+        /// </summary>
+        static void FitHalo(Material m, TMP_FontAsset f, float fsUnits, float fd0, float ud0, float us0, float faceThin, float underThin)
+        {
+            if (m == null || !LinearFix || !m.HasProperty(ShaderUtilities.ID_UnderlayDilate)) return;
+            m.SetFloat(ShaderUtilities.ID_FaceDilate, fd0);
+            m.SetFloat(ShaderUtilities.ID_UnderlayDilate, ud0);
+            m.SetFloat(ShaderUtilities.ID_UnderlaySoftness, us0);
+            ShaderUtilities.UpdateShaderRatios(m);
+            float ra = Mathf.Max(0.01f, m.GetFloat(ShaderUtilities.ID_ScaleRatio_A));
+            float rc0 = Mathf.Max(1e-4f, m.GetFloat(ShaderUtilities.ID_ScaleRatio_C));
+            float ext0 = ud0 * rc0 * 0.5f;      // 字の縁から下敷きの外縁 (50%) まで (sdf)
+            float soft0 = us0 * rc0;            // 下敷きのぼかし (layerScale = scale / (1 + soft × scale))
+            float scale = SdfScale(m, f, fsUnits);
+            float layer = scale / (1f + soft0 * scale);
+            float k = _linFixScale;
+            float fd = fd0 + k * 2f * faceThin / (ra * scale);
+            float ext1 = ext0 + k * underThin / layer - k * faceThin / scale;
+            m.SetFloat(ShaderUtilities.ID_FaceDilate, fd);
+            float ud = ud0, us = us0;
+            for (int i = 0; i < 12; i++)
+            {
+                m.SetFloat(ShaderUtilities.ID_UnderlayDilate, ud);
+                m.SetFloat(ShaderUtilities.ID_UnderlaySoftness, us);
+                ShaderUtilities.UpdateShaderRatios(m);
+                float rc = Mathf.Max(1e-4f, m.GetFloat(ShaderUtilities.ID_ScaleRatio_C));
+                ud = Mathf.Clamp(2f * ext1 / rc, -1f, 1f);
+                us = Mathf.Clamp01(soft0 / rc);
+            }
+            m.SetFloat(ShaderUtilities.ID_UnderlayDilate, ud);
+            m.SetFloat(ShaderUtilities.ID_UnderlaySoftness, us);
+            ShaderUtilities.UpdateShaderRatios(m);
+            _designDilate[m] = fd0;
+        }
+
+        /// <summary>dumplayout=1 の layout.json の extra.linearUi (P21): 色空間・補正の有無と倍率・キャンバスの倍率・字の素材ごとの FaceDilate (設計/今)・下敷き・写した板と絵の数</summary>
+        static object LinearUiInfo()
+        {
+            var o = new Dictionary<string, object>();
+            o["colorSpace"] = QualitySettings.activeColorSpace.ToString();
+            o["fix"] = LinearFix;
+            o["fixScale"] = _linFixScale;
+            o["pxPerUnit"] = CanvasPxPerUnit();
+            o["phone"] = Phone;
+            var mats = new List<object>();
+            var seen = new HashSet<Material>();
+            Action<Material> add = mat =>
+            {
+                if (mat == null || !seen.Add(mat) || !mat.HasProperty(ShaderUtilities.ID_FaceDilate)) return;
+                var d = new Dictionary<string, object>();
+                d["name"] = mat.name;
+                float design;
+                d["design"] = _designDilate.TryGetValue(mat, out design) ? (object)design : null;
+                d["faceDilate"] = mat.GetFloat(ShaderUtilities.ID_FaceDilate);
+                if (mat.HasProperty(ShaderUtilities.ID_Sharpness)) d["sharpness"] = mat.GetFloat(ShaderUtilities.ID_Sharpness);
+                if (mat.IsKeywordEnabled("UNDERLAY_ON"))
+                {
+                    d["underlayDilate"] = mat.GetFloat(ShaderUtilities.ID_UnderlayDilate);
+                    d["underlaySoftness"] = mat.GetFloat(ShaderUtilities.ID_UnderlaySoftness);
+                    d["ratioC"] = mat.GetFloat(ShaderUtilities.ID_ScaleRatio_C);
+                }
+                mats.Add(d);
+            };
+            foreach (var f in new[] { _fontRegular, _fontBold, _fontDeco })
+            {
+                if (f == null) continue;
+                add(f.material);
+                Material x;
+                if (_lightBase.TryGetValue(f, out x)) add(x);
+                if (_lightSmall.TryGetValue(f, out x)) add(x);
+                if (_numHaloNight.TryGetValue(f, out x)) add(x);
+            }
+            add(_smallRegular); add(_smallBold); add(_smallDeco); add(_numHalo);
+            o["materials"] = mats;
+            o["shadeEffects"] = _shadeCount;
+            o["shadedMeshes"] = _shadedMeshes;
+            o["linearSprites"] = _linSprites.Count;
+            return o;
+        }
+
         // ---- 生成 ----
 
         public static RectTransform NewRect(string name, Transform parent)
@@ -285,12 +701,16 @@ namespace DeckRogue.Game
             return rt;
         }
 
-        /// <summary>単色パネル (Image)</summary>
+        /// <summary>単色パネル (Image)。半透明の色 (α&lt;1。0 も含む = 後から α を上げるフェード) なら、Linear では頂点の α を Gamma と同じ見え方へ写す (P21・LinearShade)。
+        /// 写すのは頂点の α だけで、後から sprite を貼った板の絵の α は写さない (それは LinearSprite)。
+        /// ただし白 (不透明) の暗幕 "dim" の板 (確認の窓の穴のぼかし) は、後から貼られた絵の α を写す (LinearDimSprite。まわりの暗幕の板と段差を出さない)</summary>
         public static Image Pan(Transform parent, Color color, string name = "panel")
         {
             var rt = NewRect(name, parent);
             var img = rt.gameObject.AddComponent<Image>();
             img.color = color;
+            if (color.a < 1f) LinearShade(img);
+            else if (name == "dim" && LinearFix) rt.gameObject.AddComponent<LinearDimSprite>();
             return img;
         }
 
@@ -314,6 +734,7 @@ namespace DeckRogue.Game
             var t = Txt(parent, text, size, color ?? ColInk, anchor, true);
             if (FontDeco != null) t.font = FontDeco;   // 書体の差し替えで素材は装飾体の既定に戻る
             if (Fs(size) <= SmallTextMax) { var sm = SmallMat(t.font); if (sm != null) t.fontSharedMaterial = sm; }
+            if (LinearFix && IsLightText(t.color)) FitTextToColor(t);   // 明るい字は Linear で太るので明るい字の版 (P21)
             t.characterSpacing = 2f;
             return t;
         }
@@ -352,6 +773,7 @@ namespace DeckRogue.Game
             t.fontSize = Fs(size);
             if (Fs(size) <= SmallTextMax && f != null) { var sm = SmallMat(f); if (sm != null) t.fontSharedMaterial = sm; }   // 細い小さい字を指定の墨の濃さへ (p19)
             t.color = color;
+            if (LinearFix && IsLightText(color)) FitTextToColor(t);   // 明るい字は Linear で太るので明るい字の版 (P21。墨の字は既定・小さい字の素材がそのまま合っている)
             t.text = text == null ? "" : text;
             t.alignment = MapAnchor(anchor);
             t.textWrappingMode = TextWrappingModes.Normal;
@@ -496,6 +918,7 @@ namespace DeckRogue.Game
             var root = NewRect("scroll", parent);
             var img = root.gameObject.AddComponent<Image>();
             img.color = bg.HasValue ? bg.Value : new Color(0f, 0f, 0f, 0.18f);
+            if (img.color.a < 1f) LinearShade(img);   // Linear の後始末 (P21)
             var sr = root.gameObject.AddComponent<ScrollRect>();
             sr.horizontal = !vertical;
             sr.vertical = vertical;
@@ -547,6 +970,7 @@ namespace DeckRogue.Game
             var row = NewRect("bar", parent);
             var bg = row.gameObject.AddComponent<Image>();
             bg.color = new Color(0f, 0f, 0f, 0.45f);
+            LinearShade(bg);   // Linear の後始末 (P21)
             bg.raycastTarget = false;
             Le(row, -1f, height, -1f, height);
 

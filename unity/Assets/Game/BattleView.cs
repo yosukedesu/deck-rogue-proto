@@ -128,14 +128,21 @@ namespace DeckRogue.Game
             // 2026-09-30 F50 (ユーザー裁定「地面を3か所明るく」): α 0.8 では手札の左右の地面の輝度 Y が 0.040→0.013 に落ち、手札の紙がほぼ黒の上に置かれて
             // 「紙の UI が黒い画面に貼った札」(I24) を手札のまわりでかえって強めた → α 0.55 にし、上端のフェードを StatusLineY+40 まで伸ばして沈みの境目をなだらかに
             const float DeskShadeAlpha = 0.55f, DeskShadeOver = 40f;   // 下の 40% の濃さ・足元の線より上へ伸ばす高さ (F50)
+            // HD-2D 見本の箱庭 (2026-09-30 P20「desk-shade を縮める」): 手前の段 (羊歯・根・岩) と額縁の下隅が手札のまわりで見えるように、上端を足元の線の 40 下まで縮める
+            // (濃さは今のまま。Linear で暗幕の濃さを合わせるのは P21 の見立て)。今の舞台は今のまま
+            const float DeskShadeUnderDiorama = 40f;
+            float deskTop = BattleScreen.Hd2dLayout ? StatusLineY - DeskShadeUnderDiorama : StatusLineY + DeskShadeOver;
+            // 手札の置き場は手札を沈めた量 (BattleScreen.HandY) に追う (Ensure は戦闘の最初に1回だけ。旗が後から変わっても組み直しで揃う)
+            if (HandLayer != null)
+                UiKit.Anchor(HandLayer, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-700f, BattleScreen.HandY), new Vector2(700f, BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 40f));
             var desk = FieldLayer.Find("desk-shade") as RectTransform;
             if (desk == null)
             {
                 desk = UiKit.NewRect("desk-shade", FieldLayer);
                 var dim = desk.gameObject.AddComponent<Image>();
-                dim.sprite = ThemeFx.FadeUp(PaperFx.Ground, DeskShadeAlpha, "fade-up-ground-055"); dim.type = Image.Type.Simple; dim.preserveAspect = false; dim.raycastTarget = false;
+                dim.sprite = UiKit.LinearSprite(ThemeFx.FadeUp(PaperFx.Ground, DeskShadeAlpha, "fade-up-ground-055"), 0.25f); dim.type = Image.Type.Simple; dim.preserveAspect = false; dim.raycastTarget = false;   // Linear (W3 P21 の申し送り2): 絵に焼いた α を Gamma と同じ濃さへ (下の地面 0.25 を仮定)
             }
-            UiKit.Anchor(desk, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, StatusLineY + DeskShadeOver));
+            UiKit.Anchor(desk, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, deskTop));
             var bgRt = FieldLayer.Find("bg");
             desk.SetSiblingIndex(bgRt != null ? bgRt.GetSiblingIndex() + 1 : 0);
             // 敵の入れ物: 数が変わったら作り直す (分裂・孵化)
@@ -274,8 +281,10 @@ namespace DeckRogue.Game
         /// <summary>自分の欄 (からくり・ギア・置物) が伸びてよい右端 (キャンバス x)。いちばん左の敵の表示の左端。敵がいなければ -1 (2026-09-18)</summary>
         public static float SelfZoneRight = -1f;
 
-        /// <summary>名前札・HPバーの線 (入れ物の下端)。手札の上端 (約290) のすぐ上。スマホは等倍の札の上端 (14+290) に合わせる</summary>
-        public static float StatusLineY { get { return UiKit.Phone ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 6f : 300f; } }
+        /// <summary>名前札・HPバーの線 (入れ物の下端)。手札の上端 (約290) のすぐ上。スマホは等倍の札の上端 (14+290) に合わせる。
+        /// HD-2D 見本の箱庭 (2026-09-30 P20): 手札を沈めた分だけ下げる。PC 285 = 沈めた手札の真ん中の札の上端 (11+266.8=277.8) の 7.2 上
+        /// (layout-check L1 の 6 以上。今の 300 は上端 296.8 の 3.2 上で、人形の多い白の自分の札 (幅 924) だけ L1 に掛かっていた)。スマホは式のまま (−3+290+6 = 293)</summary>
+        public static float StatusLineY { get { return UiKit.Phone ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 6f : (BattleScreen.Hd2dLayout ? 285f : 300f); } }
 
         /// <summary>手札 UI に残っている札の数 (自動操作の検証用)</summary>
         public int HandCount { get { return _hand.Count; } }
@@ -1339,8 +1348,9 @@ namespace DeckRogue.Game
                 _danger = UiKit.NewRect("danger", FieldLayer);
                 UiKit.Stretch(_danger, -40f, -40f, -40f, -40f);
                 _dangerImg = _danger.gameObject.AddComponent<Image>();
-                _dangerImg.sprite = ThemeFx.Vignette(PaperFx.Rose, "vignette-rose"); _dangerImg.type = Image.Type.Simple; _dangerImg.preserveAspect = false; _dangerImg.raycastTarget = false;
+                _dangerImg.sprite = UiKit.LinearSprite(ThemeFx.Vignette(PaperFx.Rose, "vignette-rose"), 0.03f); _dangerImg.type = Image.Type.Simple; _dangerImg.preserveAspect = false; _dangerImg.raycastTarget = false;
                 _dangerImg.color = new Color(1f, 1f, 1f, 0f);
+                UiKit.LinearShade(_dangerImg, 0.03f);   // Linear (W3 P21 の申し送り1): 脈打つ頂点の α も舞台の縁 (0.03) を仮定して写す
                 var pulse = _danger.gameObject.AddComponent<DangerPulse>();
                 pulse.Img = _dangerImg;
             }

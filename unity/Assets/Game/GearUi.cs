@@ -226,10 +226,11 @@ namespace DeckRogue.Game
             int perRow = Mathf.Max(1, (int)((W - 40f - 4f + 8f) / pitch));   // 1列目を 4 ずらす (外線をマスクで切らない。F41)
             int rows = Mathf.CeilToInt(gears.Count / (float)perRow);
             float H = 28f + 30f + 6f + rows * rowH + 6f + 48f + 34f;
-            float maxH = cs.y - RunUi.TopH - 24f - (ph ? 312f : BattleView.StatusLineY + BattleScreen.StripH + 8f);
+            // 窓の下端 = スマホは手札の上端＋8 (旧の 312 は 14+290+8 の決め打ち)・PC は自分の札の上端＋8 (HD-2D 見本の箱庭で手札と足元の線を下げた時も同じ式で追う。2026-09-30 P20)
+            float maxH = cs.y - RunUi.TopH - 24f - (ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleScreen.SelfCardTop + 8f);
             if (H > maxH) H = maxH;
             if (x + W > cs.x - 12f) x = Mathf.Max(12f, cs.x - 12f - W);
-            float y0 = ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleView.StatusLineY + BattleScreen.StripH + 8f;   // PC は自分の札の上端 (StripH に固定。2026-09-30 F19)
+            float y0 = ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleScreen.SelfCardTop + 8f;   // PC は自分の札の上端 (StripH に固定。2026-09-30 F19)
             if (ph) y0 = KeepBelowBand(cs, y0, H);
             var panel = PaperFx.Sheet(root, PaperFx.Panel, "gear-more-window");
             UiKit.Anchor(panel.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x, y0), new Vector2(x + W, y0 + H));
@@ -368,11 +369,12 @@ namespace DeckRogue.Game
             if (eff != null && eff.NeedsCard != null) H += 30f;
             if (needTarget) H += 30f;
             H += 8f + 22f + 6f + 48f + 40f;   // 縦の並びの間 (6×行数) と紙の余白
-            float maxH = cs.y - RunUi.TopH - 24f - (ph ? 312f : BattleView.StatusLineY + BattleScreen.StripH + 8f);
+            // 窓の下端 = スマホは手札の上端＋8 (旧の 312 は 14+290+8 の決め打ち)・PC は自分の札の上端＋8 (HD-2D 見本の箱庭で手札と足元の線を下げた時も同じ式で追う。2026-09-30 P20)
+            float maxH = cs.y - RunUi.TopH - 24f - (ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleScreen.SelfCardTop + 8f);
             if (H > maxH) H = maxH;
             // PC はギアのトークンの真上 (自分の札の C 区画の左端)。スマホは自分の札の右・手札の上 (x は上で決めた)
             if (x + W > cs.x - 12f) x = Mathf.Max(12f, cs.x - 12f - W);
-            float y0 = ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleView.StatusLineY + BattleScreen.StripH + 8f;   // PC は自分の札の上端 (StripH に固定。2026-09-30 F19)
+            float y0 = ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleScreen.SelfCardTop + 8f;   // PC は自分の札の上端 (StripH に固定。2026-09-30 F19)
             if (ph) y0 = KeepBelowBand(cs, y0, H);
             var panel = PaperFx.Sheet(root, PaperFx.Panel, "gear-window");
             UiKit.Anchor(panel.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x, y0), new Vector2(x + W, y0 + H));

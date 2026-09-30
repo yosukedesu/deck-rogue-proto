@@ -20,6 +20,8 @@
   06 紙: ui=night／paper × 敵1〜4体と人形9体 (variants。layout-check の違反の数を添える)
   07 演出: R1〜R15 を old (上) と見本 (下) で並べた連続写真。板と矩形のずれの最大 (layout.json の stage.unitBoxes)
   08 帯の明るさ: 横5帯の明るさの折れ線 (本家・今・見本)
+  09 色彩 (W3 の統合で足した): scripts/hd2d-color.py の色表・明るさ別の色味・色相の割合を本家と並べる (color)
+  10 同じ大きさ (W3 の統合で足した): 本家の画 1920×1080 とうちの画を縮めずに横に並べる (pair。スマホ相当は 1920×886 を上に寄せる)
 """
 import argparse
 import glob
@@ -492,12 +494,63 @@ def s_bands(a, gates, out):
     print('シート: %s' % out)
     return out
 
+# ------------------------------------------------------------------------------------------ 09 色彩・10 同じ大きさ (W3 の統合)
+
+
+def s_color(a, gates, out):
+    """scripts/hd2d-color.py の色の比較シート (本家の夜の森と各組)。色の設計書 docs/design/hd2d-slice/honke-color.json が要る"""
+    try:
+        C = load_mod('hd2d_color', 'hd2d-color.py')
+    except Exception as ex:
+        print('09 色彩: hd2d-color.py を読めない (%s)' % ex)
+        return None
+    design = None
+    if os.path.exists(C.DEFAULT_DESIGN):
+        with open(C.DEFAULT_DESIGN, encoding='utf-8') as f:
+            design = json.load(f)
+    if not design:
+        print('09 色彩: 色の設計書が無い (%s)' % C.DEFAULT_DESIGN)
+        return None
+    return C.make_sheet(out, a.sets, '%s-%s' % (a.dev, a.scene), design, a.ref, M.REF_PATCHES)
+
+
+def s_pair(a, gates, out):
+    """本家の画と同じ大きさ (1920×1080) でうちの画を縮めずに並べる。下に①〜⑩"""
+    rp = ref_path(a.ref, 'ot_921570_16')
+    cols = []
+    if rp:
+        cols.append((Image.open(rp).convert('RGB'), '本家 ot_921570_16 (1920×1080・そのまま)', metric_tokens(measure_ref(a.ref, 'ot_921570_16'), None)))
+    for name, d in a.sets:
+        p = find(d, a.dev, a.scene)
+        if not p:
+            continue
+        r = measure_one(d, a.dev, a.scene)
+        im = Image.open(p).convert('RGB')
+        cols.append((im, '%s %s-%s (%d×%d・そのまま)' % (name, a.dev, a.scene, im.width, im.height), metric_tokens(r, gates) if r else []))
+    if not cols:
+        return None
+    pad, head, cap = 24, 64, 90
+    W = pad + len(cols) * (1920 + pad)
+    H = head + 1080 + cap + pad
+    sh = Image.new('RGB', (W, H), BG)
+    d = ImageDraw.Draw(sh)
+    d.text((pad, 16), '10 本家と同じ大きさで並べる (%s・%s。縮めていない)%s' % (a.dev, a.scene, '・緑=合格 朱=不合格' if gates else ''), fill=INK, font=font(30, True))
+    for i, (im, lab, toks) in enumerate(cols):
+        x = pad + i * (1920 + pad)
+        sh.paste(im.crop((0, 0, min(1920, im.width), min(1080, im.height))), (x, head))
+        d.text((x, head + 1080 + 8), lab, fill=INK, font=font(24, True))
+        draw_tokens(d, x, head + 1080 + 44, toks, 1920, font(22))
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    sh.save(out)
+    print('シート: %s' % out)
+    return out
+
 # ------------------------------------------------------------------------------------------ 入口
 
 
 def main():
     ap = argparse.ArgumentParser(description='HD-2D 見本の比較シート')
-    ap.add_argument('what', choices=['all', 'overview', 'crops', 'hero', 'camera', 'light', 'paper', 'regress', 'bands'])
+    ap.add_argument('what', choices=['all', 'overview', 'crops', 'hero', 'camera', 'light', 'paper', 'regress', 'bands', 'color', 'pair'])
     ap.add_argument('--set', action='append', default=[], help='組名=フォルダ (並べる順)')
     ap.add_argument('--ref', default=DEFAULT_REF)
     ap.add_argument('--gates')
@@ -521,7 +574,7 @@ def main():
             gates = json.load(f)
     o = a.out
     tag = '%s-%s' % (a.dev, a.scene)
-    todo = [a.what] if a.what != 'all' else ['overview', 'crops', 'hero', 'camera', 'light', 'paper', 'regress', 'bands']
+    todo = [a.what] if a.what != 'all' else ['overview', 'crops', 'hero', 'camera', 'light', 'paper', 'regress', 'bands', 'color', 'pair']
     made = []
     for w in todo:
         if w == 'overview':
@@ -540,6 +593,10 @@ def main():
             made += s_regress(a, gates, o)
         elif w == 'bands':
             made.append(s_bands(a, gates, os.path.join(o, '08-bands-%s.png' % tag)))
+        elif w == 'color':
+            made.append(s_color(a, gates, os.path.join(o, '09-color-%s.png' % tag)))
+        elif w == 'pair':
+            made.append(s_pair(a, gates, os.path.join(o, '10-pair-%s.png' % tag)))
     made = [m for m in made if m]
     print('作った: %d 枚 (%s)' % (len(made), o))
     return 0

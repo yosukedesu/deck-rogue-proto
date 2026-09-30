@@ -3,6 +3,7 @@
 // 規約「絵はドット、紙と文字はなめらか」: ここで作るのは紙と線 (なめらか側)。ドット絵は Point フィルタで整数倍に置く。
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -92,6 +93,47 @@ namespace DeckRogue.Game
         public static readonly Color Honey = Brass;
         public static readonly Color GoldInk = BrassInk;
 
+        // ---- 夜の札 (HD-2D 見本 ui=night。2026-09-30 P20・ユーザー裁定③「舞台の上に常に出る札は夜色の地に紙色の文字」) ----
+        // 紙の役割をそのまま夜へ写す: 墨 → 紙色、各色の墨 → 同じ色の淡い版、淡い塗り → 同じ色相の暗い塗り (Nightify が写す)。
+        // 文字は夜の地で 9:1 以上、色つきの暗い塗りの上で 7:1 以上 (WCAG の式で確かめた値)。対象は敵の帳面・意図の札・自分の札 (からくり・ギア・置物)・
+        // 上部バー・人形の札だけ。紙のまま残すのは手札・確認の窓・メニューと窓 (Nightify を呼ばない所)。役割は増やさない＝紙の表の1対1の写し
+        /// <summary>夜の札 (主) の地: 意図の攻撃の札・上部バーのボタン・レリックの円 (紙 Tag の役。紙色の文字と 12:1)</summary>
+        public static readonly Color NightHi = H("#262943");
+        /// <summary>夜の札の線 (紙 (濃) の札の墨の縁・区切り線の役。夜の上で 4.8:1)</summary>
+        public static readonly Color NightEdge = H("#8a879c");
+        /// <summary>夜の上の小さな札 (帳面の状態・rider) の地 (紙 (濃) の MiniPill の役。紙色 11:1・淡い紙色 7.2:1)</summary>
+        public static readonly Color NightPill = H("#2a2d48");
+        /// <summary>夜の札の HP バーの空き (紙の track の役)</summary>
+        public static readonly Color NightTrack = H("#31344f");
+        /// <summary>墨 → 紙色 (夜の上で 14:1)</summary>
+        public static readonly Color NightInk = Paper;
+        /// <summary>中墨 → 淡い紙色 (9:1)</summary>
+        public static readonly Color NightInkSoft = PaperDim;
+        /// <summary>真鍮の墨 → 淡い真鍮 (11:1)</summary>
+        public static readonly Color NightBrassInk = BrassLight;
+        /// <summary>青緑の墨 → 淡い青緑 (11:1)</summary>
+        public static readonly Color NightManaInk = ManaLight;
+        /// <summary>危険の墨・下がった数字 → 淡い薔薇 (8.2:1)</summary>
+        public static readonly Color NightBadInk = H("#f2a193");
+        /// <summary>良いの墨 → 淡い苔 (10:1)</summary>
+        public static readonly Color NightGoodInk = H("#a6d99a");
+        /// <summary>鋼青の墨 → 淡い鋼青 (9.7:1)</summary>
+        public static readonly Color NightSkyInk = H("#a8c9ea");
+        /// <summary>藤の墨 → 淡い藤 (9.1:1)</summary>
+        public static readonly Color NightPlumInk = H("#cdb6ea");
+        /// <summary>淡い真鍮の塗り (予告の札) → 暗い真鍮 (淡い真鍮の文字と 8.3:1)</summary>
+        public static readonly Color NightBrass = H("#3d3214");
+        /// <summary>淡い青緑の塗り (からくり) → 暗い青緑 (7.9:1)</summary>
+        public static readonly Color NightMana = H("#173f3c");
+        /// <summary>淡い薔薇の塗り (危険・先に壊す) → 暗い薔薇 (7.2:1)</summary>
+        public static readonly Color NightRose = H("#3d2028");
+        /// <summary>淡い鋼青の塗り (盾の札・ブロックの rider) → 暗い鋼青 (7.4:1)</summary>
+        public static readonly Color NightSky = H("#1f344c");
+        /// <summary>淡い苔の塗り → 暗い苔 (7.4:1)</summary>
+        public static readonly Color NightMoss = H("#243c2a");
+        /// <summary>藤の紙 (状態異常の札) → 暗い藤 (7.4:1)</summary>
+        public static readonly Color NightPlum = H("#33284d");
+
         static readonly Dictionary<string, Sprite> _cache = new Dictionary<string, Sprite>();
 
         /// <summary>タイプの帯の色 (淡い色＋墨の文字)。物理=砂・呪文=藤・仕込み札=青緑・置物=鈍い黄 (2026-09-16 蜂蜜→オリーブ)</summary>
@@ -141,6 +183,17 @@ namespace DeckRogue.Game
         /// <summary>夜の札 (2026-09-29 手番の札の「敵の番」): 不透明の夜 #1a1c33 に紙 (濃) の縁2px。紙の文字を載せる。
         /// NightNote (夜 α0.84・縁は墨) は夜空との差が 1.6:1 で札の形が溶けるので、縁を紙 (濃) にして輪郭を残す (夜空と 7.5:1)</summary>
         public static Sprite NightTag { get { return Nine("night_tag", 32, 8, 10, NightTagBands, false); } }
+        /// <summary>夜の札 (主。HD-2D 見本 ui=night・2026-09-30 P20): 紙 (濃) の縁2px・夜 (主) NightHi の地。紙の Tag の役 (意図の攻撃の札・上部バーの札)</summary>
+        public static Sprite NightCard { get { return Nine("night_card", 32, 8, 10, d => d < 2f ? Paper2 : NightHi, false); } }
+        /// <summary>夜の札 (情報): 夜の線 NightEdge 2px・夜の地。紙 (濃) の Tag2 の役 (帳面・自分の札・トークン・人形の札)</summary>
+        public static Sprite NightCard2 { get { return Nine("night_card2", 32, 8, 10, d => d < 2f ? NightEdge : Night, false); } }
+        /// <summary>夜の色つきの札 (Image.color で染める): 白の縁 1.5px・灰 NightTintFill の地＝縁が地より一段明るい同じ色相。淡い塗りの札 (状態・rider・盾) の役。
+        /// 色は NightTintOf (塗りの色 ÷ NightTintFill) で渡す</summary>
+        public static Sprite NightTint { get { return Nine("night_tint", 32, 8, 10, d => d < 1.5f ? Color.white : new Color(NightTintFill, NightTintFill, NightTintFill, 1f), false); } }
+        /// <summary>NightTint の地の灰 (縁との明るさの比)</summary>
+        public const float NightTintFill = 0.72f;
+        /// <summary>夜のボタン: 紙 (濃) の縁2px・夜 (主) の地・下に厚み。紙の Button の役 (上部バーのマップ・メモ・≡)</summary>
+        public static Sprite NightButton { get { return Nine("night_button", 40, 10, 12, d => d < 2f ? Paper2 : NightHi, true); } }
         /// <summary>紙のボタン: 墨2・紙、下に厚み (墨 50%) 4px。角丸 10</summary>
         public static Sprite Button { get { return Nine("paper_button", 40, 10, 12, TagBands, true); } }
         /// <summary>カードの面: パネルと同じ二重線。角丸 14</summary>
@@ -375,10 +428,15 @@ namespace DeckRogue.Game
         }
 
         /// <summary>吹き出しの尾 (下向きの小さな三角。紙色に墨の線)</summary>
-        public static Sprite BubbleTail()
+        public static Sprite BubbleTail() { return TailSprite("tail", Ink, Paper); }
+
+        /// <summary>夜の札の尾 (BubbleTail の夜の版。2026-09-30 P20): 紙 (濃) の線・夜 (主) NightHi の地 = NightCard と同じ組</summary>
+        public static Sprite NightBubbleTail() { return TailSprite("night_tail", Paper2, NightHi); }
+
+        static Sprite TailSprite(string key, Color edgeCol, Color fillCol)
         {
             Sprite s;
-            if (_cache.TryGetValue("tail", out s)) return s;
+            if (_cache.TryGetValue(key, out s)) return s;
             const int w = 30, h = 22;
             var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
             tex.filterMode = FilterMode.Bilinear;
@@ -391,13 +449,13 @@ namespace DeckRogue.Game
                     float left = Mathf.Lerp(2f, 8f, t), right = Mathf.Lerp(w - 4f, 12f, t);
                     bool inside = x + 0.5f > left && x + 0.5f < right;
                     bool edge = inside && (x + 0.5f < left + 2f || x + 0.5f > right - 2f || y < 2);
-                    px[y * w + x] = !inside ? new Color(0f, 0f, 0f, 0f) : (edge ? Ink : Paper);
+                    px[y * w + x] = !inside ? new Color(0f, 0f, 0f, 0f) : (edge ? edgeCol : fillCol);
                 }
             tex.SetPixels(px);
             tex.Apply(false, false);
             s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 1f), 100f, 0, SpriteMeshType.FullRect);
-            s.name = "tail";
-            _cache["tail"] = s;
+            s.name = key;
+            _cache[key] = s;
             return s;
         }
 
@@ -519,6 +577,29 @@ namespace DeckRogue.Game
             tex.SetPixels(px); tex.Apply(false, false);
             s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
             s.name = "disc"; _cache["disc"] = s; return s;
+        }
+
+        /// <summary>夜の円盤 (Disc の夜の版。2026-09-30 P20): 夜の線 NightEdge の縁2px・夜 (主) NightHi の地。レリックの円・角の数字の丸</summary>
+        public static Sprite NightDisc()
+        {
+            Sprite s;
+            if (_cache.TryGetValue("night_disc", out s)) return s;
+            const int n = 128;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var px = new Color[n * n];
+            float c = n / 2f;
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float d = c - Mathf.Sqrt((x + 0.5f - c) * (x + 0.5f - c) + (y + 0.5f - c) * (y + 0.5f - c));
+                    Color col = d < 0f ? new Color(0f, 0f, 0f, 0f) : (d < 2f ? NightEdge : NightHi);
+                    if (d >= 0f && d < 1f) col.a *= Mathf.Clamp01(d + 0.5f);
+                    px[y * n + x] = col;
+                }
+            tex.SetPixels(px); tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = "night_disc"; _cache["night_disc"] = s; return s;
         }
 
         /// <summary>白いリング (太さ thick px、外径 128)。色は Image で乗せ、fillMethod Radial360 で弧にする</summary>
@@ -734,6 +815,187 @@ namespace DeckRogue.Game
             img.preserveAspect = false;
             img.raycastTarget = false;
             return img;
+        }
+
+        // ---- 夜の札への写し (HD-2D 見本 ui=night。2026-09-30 P20) ----
+
+        /// <summary>墨 → 夜の上の文字 (紙の表の1対1。文字の色・墨1色の絵・点線のポケット・輪・リッチテキストの色タグに使う)</summary>
+        static readonly Color[,] NightInkPairs =
+        {
+            { Ink, NightInk }, { InkSoft, NightInkSoft }, { BrassInk, NightBrassInk }, { ManaInk, NightManaInk },
+            { BadInk, NightBadInk }, { BadDown, NightBadInk }, { GoodInk, NightGoodInk }, { SkyInk, NightSkyInk }, { PlumInk, NightPlumInk },
+        };
+        /// <summary>淡い塗り → 夜の暗い塗り (紙の札を染めた色・平らな塗り)。紙そのもの (Paper・Paper2・Paper3) は小さな札なら NightPill・平らな塗りなら NightTrack</summary>
+        static readonly Color[,] NightFillPairs =
+        {
+            { BrassLight, NightBrass }, { ManaLight, NightMana }, { RoseLight, NightRose }, { DangerBtn, NightRose },
+            { SkyLight, NightSky }, { MossLight, NightMoss }, { PlumLight, NightPlum },
+        };
+        static Dictionary<string, string> _nightTags;
+
+        /// <summary>
+        /// 舞台の上に常に出る札 (root の下) を夜の組へ写す。旗 ui=night の時だけ (立っていなければ何もしない＝今の画は1画素も変わらない)。組み立ての後に呼ぶ。
+        /// 写し方 (紙の表の1対1): 紙の札 Tag→NightCard・Tag2→NightCard2・細い縁の札 TagThin と淡い色で染めた札→NightTint (同じ色相の暗い塗り)・
+        /// 紙のボタン→NightButton・紙の円→NightDisc・吹き出しの尾→NightBubbleTail／墨の文字・墨1色の絵・点線のポケット・輪→紙色 (各色の墨はそれぞれの淡い版。リッチテキストの色タグも)／
+        /// 紙の平らな塗り (HP バーの空き)→NightTrack・墨の細い線 (区切り・刻み)→NightEdge。
+        /// 写さないもの: 名前が "edge" の縁 (狙い・行動中の真鍮の光・トークンのレア度の外線)・真鍮や薔薇などの濃い色で染めた札・墨の太い帯
+        /// (ギアの名前の帯・挿絵の額＝上の紙色の文字ごと残す)・色つきの絵 (白で描く絵)・HP バーの数字 (紙の下敷きつき。UiKit.NumHaloNight が有ればそれに替えて紙色へ)。
+        /// 後から足される子 (順送りの盾・書き換わる数字) は root に付けた NightSkin が毎フレーム写す (写した後の色は紙の表に無いので、2度写しても変わらない)
+        /// </summary>
+        public static void Nightify(Transform root)
+        {
+            if (root == null || !HD2DFlags.UiNight) return;
+            var skin = root.GetComponent<NightSkin>();
+            if (skin == null) skin = root.gameObject.AddComponent<NightSkin>();
+            skin.Apply();
+        }
+
+        /// <summary>夜の札の皮 (Nightify が付ける)。LateUpdate で root の下を写す＝演出が後から足した札・書き換えた文字も同じフレームのうちに夜になる</summary>
+        public class NightSkin : MonoBehaviour
+        {
+            static readonly List<Graphic> _buf = new List<Graphic>();
+            readonly Dictionary<TMP_Text, string> _textSeen = new Dictionary<TMP_Text, string>();   // 文字の札 → 最後に見た文字列 (同じ参照なら色タグを見直さない)
+
+            void LateUpdate() { if (HD2DFlags.UiNight) Apply(); }
+
+            public void Apply()
+            {
+                _buf.Clear();
+                GetComponentsInChildren(true, _buf);
+                for (int i = 0; i < _buf.Count; i++)
+                {
+                    var gr = _buf[i];
+                    if (gr == null) continue;
+                    var tmp = gr as TMP_Text;
+                    if (tmp != null) { SkinText(tmp); continue; }
+                    var img = gr as Image;
+                    if (img != null) SkinImage(img);
+                }
+                _buf.Clear();
+            }
+
+            void SkinText(TMP_Text t)
+            {
+                // HP バーの数字 (紙の下敷き NumHalo): 夜の下敷き (P21 の NumHaloNight) が有る時だけ紙色へ。無ければ墨＋紙の下敷きのまま (薔薇の塗りの上で読める)
+                var halo = UiKit.NumHalo;
+                if (halo != null && t.fontSharedMaterial == halo)
+                {
+                    var nm = UiKit.NumHaloNight(t.font);
+                    if (nm == null) return;
+                    t.fontSharedMaterial = nm;
+                    t.color = WithA(NightInk, t.color.a);
+                    return;
+                }
+                Color n;
+                // Linear (W3 P21 の申し送り3): 墨で作った字を紙色へ塗り替えたら、字の素材も明るい字の版へ (墨の補正の素材のままだと縁1本 0.4 傾き幅ぶん太る)
+                if (TryNightInk(t.color, out n)) { t.color = n; UiKit.FitTextToColor(t); }
+                // リッチテキストの色タグ (UiKit.ColorTag が書く "<color=#RRGGBB>")。同じ文字列は2度見ない
+                string s = t.text, seen;
+                if (_textSeen.TryGetValue(t, out seen) && ReferenceEquals(seen, s)) return;
+                if (!string.IsNullOrEmpty(s) && s.IndexOf("<color=#", StringComparison.Ordinal) >= 0)
+                {
+                    string r = s;
+                    foreach (var kv in NightTagTable()) if (r.IndexOf(kv.Key, StringComparison.OrdinalIgnoreCase) >= 0) r = ReplaceIgnoreCase(r, kv.Key, kv.Value);
+                    if (r != s) { t.text = r; s = t.text; }
+                }
+                _textSeen[t] = s;
+            }
+
+            static void SkinImage(Image img)
+            {
+                if (img.gameObject.name == "edge") return;   // 狙い・行動中の真鍮の光とレア度の外線は紙の時の色のまま
+                var sp = img.sprite;
+                var c = img.color;
+                Color f;
+                if (sp == null)
+                {   // 平らな塗り: 紙 → HP バーの空き・淡い塗り → 暗い塗り・墨の細い線 → 夜の線 (太い墨の帯は上の紙色の文字ごと残す)
+                    if (TryNightFill(c, true, out f)) img.color = WithA(f, c.a);
+                    else if ((Near(c, Ink) || Near(c, InkSoft)) && Thin(img.rectTransform)) img.color = WithA(NightEdge, c.a);
+                    return;
+                }
+                bool tag = sp == Tag, tag2 = sp == Tag2, thin = sp == TagThin, btn = sp == Button;
+                if (tag || tag2 || thin || btn)
+                {
+                    if (TryNightFill(c, false, out f)) { img.sprite = NightTint; img.color = WithA(NightTintOf(f), c.a); }
+                    else if (Whiteish(c))
+                    {
+                        if (thin) { img.sprite = NightTint; var p = NightTintOf(NightPill); img.color = new Color(p.r * c.r, p.g * c.g, p.b * c.b, c.a); }
+                        else img.sprite = tag ? NightCard : tag2 ? NightCard2 : NightButton;   // 灰の掛け算 (倒れた・組めない) はそのまま
+                    }
+                    return;
+                }
+                if (sp == Disc()) { if (Whiteish(c)) img.sprite = NightDisc(); return; }
+                if (sp == BubbleTail())
+                {   // 尾: 紙 (濃) の札の尾は Paper2/Paper の比で染めてある (IntentTag) → 夜 (情報) の札の尾は Night/NightHi の比
+                    img.sprite = NightBubbleTail();
+                    if (!(c.r > 0.995f && c.g > 0.995f && c.b > 0.995f)) img.color = new Color(Night.r / NightHi.r, Night.g / NightHi.g, Night.b / NightHi.b, c.a);
+                    return;
+                }
+                Color n;
+                if (TryNightInk(c, out n)) img.color = n;   // 墨1色の絵・点線のポケット・輪
+            }
+        }
+
+        static bool Near(Color a, Color b) { return Mathf.Abs(a.r - b.r) < 0.006f && Mathf.Abs(a.g - b.g) < 0.006f && Mathf.Abs(a.b - b.b) < 0.006f; }
+        static Color WithA(Color c, float a) { return new Color(c.r, c.g, c.b, a); }
+        /// <summary>灰〜白 (掛け算の沈め: 倒れた帳面 0.8・組めないギア DimTint・紙 (濃) の比)。淡い色の塗りは先に NightFillPairs で拾う</summary>
+        static bool Whiteish(Color c)
+        {
+            float mx = Mathf.Max(c.r, Mathf.Max(c.g, c.b)), mn = Mathf.Min(c.r, Mathf.Min(c.g, c.b));
+            return mn >= 0.75f && mx - mn <= 0.1f;
+        }
+        /// <summary>細い線 (区切り・刻み)。大きさがまだ決まっていない (0×0) 時は写さない＝次のフレームに見直す</summary>
+        static bool Thin(RectTransform rt)
+        {
+            if (rt == null) return false;
+            var r = rt.rect;
+            return r.width > 0f && r.height > 0f && Mathf.Min(r.width, r.height) <= 3.5f;
+        }
+        /// <summary>NightTint を c の塗りにする Image.color (地が NightTintFill の灰なので割り戻す。縁は1段明るい同じ色相)</summary>
+        public static Color NightTintOf(Color fill)
+        {
+            return new Color(Mathf.Min(1f, fill.r / NightTintFill), Mathf.Min(1f, fill.g / NightTintFill), Mathf.Min(1f, fill.b / NightTintFill), 1f);
+        }
+        /// <summary>墨 (紙の表) → 夜の上の文字。透明度はそのまま。紙の表に無い色は false</summary>
+        public static bool TryNightInk(Color c, out Color night)
+        {
+            for (int i = 0; i < NightInkPairs.GetLength(0); i++)
+                if (Near(c, NightInkPairs[i, 0])) { night = WithA(NightInkPairs[i, 1], c.a); return true; }
+            night = c; return false;
+        }
+        /// <summary>淡い塗り (紙の表) → 夜の暗い塗り。flat=平らな塗り (紙そのものは NightTrack)・それ以外は札の地 (紙そのものは NightPill)</summary>
+        public static bool TryNightFill(Color c, bool flat, out Color night)
+        {
+            if (Near(c, Paper) || Near(c, Paper2) || Near(c, Paper3)) { night = flat ? NightTrack : NightPill; return true; }
+            for (int i = 0; i < NightFillPairs.GetLength(0); i++)
+                if (Near(c, NightFillPairs[i, 0])) { night = NightFillPairs[i, 1]; return true; }
+            night = c; return false;
+        }
+        /// <summary>リッチテキストの色タグの写し ("&lt;color=#9C3A2A" → "&lt;color=#F2A193")。UiKit.ColorTag と同じ書式 (大文字の6桁)</summary>
+        static Dictionary<string, string> NightTagTable()
+        {
+            if (_nightTags != null) return _nightTags;
+            var d = new Dictionary<string, string>();
+            for (int i = 0; i < NightInkPairs.GetLength(0); i++)
+            {
+                string k = "<color=#" + ColorUtility.ToHtmlStringRGB(NightInkPairs[i, 0]);
+                if (!d.ContainsKey(k)) d[k] = "<color=#" + ColorUtility.ToHtmlStringRGB(NightInkPairs[i, 1]);
+            }
+            _nightTags = d;
+            return d;
+        }
+        static string ReplaceIgnoreCase(string s, string from, string to)
+        {
+            var sb = new System.Text.StringBuilder(s.Length);
+            int i = 0;
+            while (true)
+            {
+                int j = s.IndexOf(from, i, StringComparison.OrdinalIgnoreCase);
+                if (j < 0) { sb.Append(s, i, s.Length - i); break; }
+                sb.Append(s, i, j - i).Append(to);
+                i = j + from.Length;
+            }
+            return sb.ToString();
         }
     }
 }

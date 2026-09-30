@@ -403,6 +403,7 @@ namespace DeckRogue.Game
                     m.SetFloat("_NearFade", sd.NearFade);
                     m.SetFloat("_Fog", sd.Fog);
                     m.SetFloat("_EdgeFade", sd.EdgeFade);
+                    m.SetFloat("_LobeFloor", Mathf.Clamp01(sd.LobeFloor));   // W3 P22: 霧の光の芯から外れた面ほど薄く (中央の奥が光る)
                     m.renderQueue = 3000;
                     break;
                 }
@@ -517,6 +518,8 @@ namespace DeckRogue.Game
                 {
                     var rb = ReliefFor(ctx, p.Src, p.Flip, p, new Vector2(0.5f, 0.5f));
                     if (rb == null) return;
+                    Color frameTint;
+                    if (PartTint(p, out frameTint)) rb = TintedCopy(rb, frameTint);   // 額縁を暗い影絵に (W3 P22)
                     int idx = Dynamic.Count;
                     var go = MakeObject(ctx.DynRoot, "frame-" + _frames.Count, rb.ToMesh("diorama-frame-" + p.Index), surface, p.ShadowOr(false));
                     go.transform.localScale = Vector3.one * scale;
@@ -555,6 +558,11 @@ namespace DeckRogue.Game
                 if (model != null) { pieces[0].Mesh = model; pieces[0].Local = Matrix4x4.identity; }
             }
 
+            // 部品ごとの色の倍率 (設計図の "tint": 灰の数 か [r, g, b])。頂点色 (AO) に掛ける = 材質は増やさない (W3 P22: 端の幹を暗い影絵に など)
+            Color partTint;
+            if (PartTint(p, out partTint))
+                foreach (var pc in pieces) pc.Mesh = TintedCopy(pc.Mesh, partTint);
+
             var partM = Matrix4x4.TRS(pos, rot, Vector3.one * scale);
             if (ctx.Opt.Merge)
             {
@@ -586,6 +594,34 @@ namespace DeckRogue.Game
                     child.transform.localScale = pc.Local.lossyScale;
                 }
             }
+        }
+
+        /// <summary>設計図の部品の "tint" (灰の数 0〜1 か [r, g, b])。無い・読めない・白なら false (W3 P22)</summary>
+        static bool PartTint(DioramaPart p, out Color c)
+        {
+            c = Color.white;
+            var t = p.Raw != null ? p.Raw["tint"] : null;
+            if (t == null) return false;
+            if (t.Type == JTokenType.Float || t.Type == JTokenType.Integer) { float g = Mathf.Clamp01(t.Value<float>()); c = new Color(g, g, g, 1f); }
+            else if (t is JArray a && a.Count >= 3) c = new Color(Mathf.Clamp01(a[0].Value<float>()), Mathf.Clamp01(a[1].Value<float>()), Mathf.Clamp01(a[2].Value<float>()), 1f);
+            else return false;
+            if (!(c.r < 0.999f || c.g < 0.999f || c.b < 0.999f)) return false;
+            // 値は見た目の明るさ (sRGB・surfaces の tint と同じ読み)。頂点色は色空間の変換を受けないので、Linear なら線形へ直して掛ける
+            if (QualitySettings.activeColorSpace == ColorSpace.Linear) c = c.linear;
+            return true;
+        }
+
+        /// <summary>頂点色の rgb (AO) に色を掛けた写し (元の器はキャッシュで共有されるので書き換えない)。a (苔の割合) はそのまま</summary>
+        static DioramaMeshBuilder TintedCopy(DioramaMeshBuilder src, Color tint)
+        {
+            var b = new DioramaMeshBuilder();
+            b.Append(src, Matrix4x4.identity);
+            for (int i = 0; i < b.C.Count; i++)
+            {
+                var k = b.C[i];
+                b.C[i] = new Color32((byte)Mathf.RoundToInt(k.r * tint.r), (byte)Mathf.RoundToInt(k.g * tint.g), (byte)Mathf.RoundToInt(k.b * tint.b), k.a);
+            }
+            return b;
         }
 
         /// <summary>エディタで組んだ部品の GameObject の名前 ("p012:rock:名前")。DioramaLayoutTool がこれで設計図の行を探す</summary>
@@ -730,15 +766,20 @@ namespace DeckRogue.Game
             if (_frames.Count == 0) return;
             float tanV = Mathf.Tan(Mathf.Clamp(fov, 1f, 170f) * 0.5f * Mathf.Deg2Rad);
             float aspect = Screen.width > 0 && Screen.height > 0 ? Screen.width / (float)Screen.height : 16f / 9f;
+            // スマホの配置 (UI 1.6倍) では札の置き場が違うので、額縁の "phone": {vx, vy, depth, scale, roll} があればそちら (W3 P22: 額縁と UI の重なり L8)
+            bool phone = UiKit.Phone;
             foreach (var f in _frames)
             {
                 if (f.Tr == null) continue;
                 var p = f.Part;
-                float depth = p.Num("depth", 8f);
-                float x = (p.Num("vx", 0f) - 0.5f) * 2f * tanV * aspect * depth;
-                float y = (p.Num("vy", 0.5f) - 0.5f) * 2f * tanV * depth;
+                var ph = phone && p.Raw != null ? p.Raw["phone"] as JObject : null;
+                float depth = FrameNum(p, ph, "depth", 8f);
+                float x = (FrameNum(p, ph, "vx", 0f) - 0.5f) * 2f * tanV * aspect * depth;
+                float y = (FrameNum(p, ph, "vy", 0.5f) - 0.5f) * 2f * tanV * depth;
                 f.Tr.position = camPos + camRot * new Vector3(x, y, depth);
-                f.Tr.rotation = camRot * Quaternion.Euler(0f, 0f, p.Num("roll", 0f));
+                f.Tr.rotation = camRot * Quaternion.Euler(0f, 0f, FrameNum(p, ph, "roll", 0f));
+                float sc = FrameNum(p, ph, "scale", p.Scale > 0f ? p.Scale : 1f);
+                f.Tr.localScale = Vector3.one * (sc > 0f ? sc : 1f);
                 if (f.DynIndex >= 0 && f.DynIndex < Dynamic.Count)
                 {
                     var e = Dynamic[f.DynIndex];
@@ -746,6 +787,14 @@ namespace DeckRogue.Game
                     Dynamic[f.DynIndex] = e;
                 }
             }
+        }
+
+        /// <summary>額縁の値: スマホの上書き (ph) にあればそれ、無ければ部品の値</summary>
+        static float FrameNum(DioramaPart p, JObject ph, string key, float def)
+        {
+            var t = ph != null ? ph[key] : null;
+            if (t != null && (t.Type == JTokenType.Float || t.Type == JTokenType.Integer)) return t.Value<float>();
+            return p.Num(key, def);
         }
 
         /// <summary>動く物を時刻 time (秒) の姿にする (StageDriver が毎フレーム呼ぶ。det の撮影では Time.time が決定的)</summary>
@@ -984,6 +1033,8 @@ namespace DeckRogue.Game
         public string Side, Top, Tile;
         public float Receive = 0.8f, ShadowStrength = 1f, VColorAO = 1f, TopThreshold = 0.65f, TopBlend = 0.15f, Cutoff = 0.4f;
         public float Intensity = 1f, SoftDepth = 1.5f, NearFade = 2f, Fog = 0.3f, EdgeFade;
+        /// <summary>光の面: 霧の光の芯から外れた所の明るさの倍率 (StageShaft の _LobeFloor。1 = 芯を見ない) (W3 P22)</summary>
+        public float LobeFloor = 1f;
         /// <summary>配列の材質で法線の配列 _Normal を読む (_NormalArrayOn)</summary>
         public bool NormalArray = true;
         public Color Tint = Color.white;
@@ -1107,7 +1158,7 @@ namespace DeckRogue.Game
                         Receive = F(o, "receive", 0.8f), ShadowStrength = F(o, "shadowStrength", 1f), VColorAO = F(o, "vcolorAO", 1f),
                         TopThreshold = F(o, "topThreshold", 0.65f), TopBlend = F(o, "topBlend", 0.15f), Cutoff = F(o, "cutoff", 0.4f),
                         Intensity = F(o, "intensity", 1f), SoftDepth = F(o, "softDepth", 1.5f), NearFade = F(o, "nearFade", 2f), Fog = F(o, "fog", 0.3f),
-                        EdgeFade = F(o, "edgeFade", 0f), NormalArray = B(o, "normalArray", true),
+                        EdgeFade = F(o, "edgeFade", 0f), NormalArray = B(o, "normalArray", true), LobeFloor = F(o, "lobeFloor", 1f),
                         Tint = Col(o, "tint", Color.white),
                     };
                 }

@@ -1,0 +1,9 @@
+{
+  "_doc": [
+    "P23 (W3) の比較用の変種: 輪郭の持ち上げだけを切る (ほかは look_act1.char.json のまま)。撮影の STATE に look=look_act1_char_nolift。",
+    "旗 look= が「幕の設計図の上に重ねる変種」になった後 (W3 P22 の StageLook) で使う。持ち主は P23。"
+  ],
+  "char": {
+    "blackLift": [0, 0, 0]
+  }
+}

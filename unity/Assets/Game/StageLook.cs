@@ -15,6 +15,13 @@
 //   SetShadowCascadeSplit(s) … 月の影のカスケードの分割を、控えを取った URP のアセットにだけ書く (P10 が座席の深さから計算して渡す)
 //   CharReceive(hero)・HeroLift・CharAmbientScale … キャラの板の材質の値 (旗 receive=・herolift= が勝つ)。P11 が読む
 //   Active・Current・Moon・Lamp・Backlight・DistanceScale・DebugInfo() … 詰めと dumplayout (layout.json の extra.look) 用
+//
+// W3 P22 (舞台の詰め) で足したもの:
+//   旗 look= … 幕の設計図 (look_act1 + .char + .dof) の上に重ねる変種 (look=look_act1_w2light・「+」で複数)。今まで look= は丸ごとの差し替えで、使う物は無かった
+//   灯の形 (lamp.mask・lamp.pool・lamp.fit) … 舞台の灯のクッキーに「座席の帯 ∪ 中央の光の池」を焼き、外を暗く。帯の t は今の座席 (Stage.TryGetUnitBox) に合わせて
+//             LookDriver (光の一式の根に付く) が焼き直す。灯の位置と向き (= キャラのキー KeyDir) は設計図の帯から決めたまま変えない
+//   霧の光の芯 (fog.lobe) … 全体値 _HD2DFogLobePos・_HD2DFogLobeColor。視線が坑口の奥の脈を向くほど霧が明るく、外れるほど暗い (StageModule の霧・StageShaft の光の面が読む)
+//   高さの霧の深さ (fog.height.depthStart・depthFull) … 全体値 _HD2DHeightFogDepth (× r)。座席の帯より奥にだけ掛ける (StageModule が読む)
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -77,17 +84,17 @@ namespace DeckRogue.Game
         public sealed class MoonLook : LightLook
         {
             public Vector3 Euler = new Vector3(48f, 38f, 0f);
-            public float Intensity = 1.1f;
+            public float Intensity = 0.6f;
             public bool Cookie;
             public Vector2 CookieSize = new Vector2(24f, 24f);
-            public MoonLook() { Color = new Color(0.74f, 0.82f, 1f); Shadows = LightShadows.Soft; ShadowStrength = 0.75f; ShadowBias = 0.05f; ShadowNormalBias = 0.4f; ShadowLayers = 1u << 2; }
+            public MoonLook() { Color = new Color(0.66f, 0.76f, 1f); Shadows = LightShadows.Soft; ShadowStrength = 0.75f; ShadowBias = 0.05f; ShadowNormalBias = 0.4f; ShadowLayers = 1u << 2; }
         }
 
         /// <summary>舞台の灯 (スポット)。カメラ側の上から座席の帯へ。影はキャラの板だけ。キャラの固定のキーはこの灯の向き</summary>
         public sealed class LampLook : LightLook
         {
             /// <summary>帯でいちばん暗い所 (flatten=false なら狙いの点) の明るさ</summary>
-            public float Illum = 1f;
+            public float Illum = 1.65f;
             /// <summary>帯の真ん中 (狙いの点) から灯の位置へのずれ (世界の軸)</summary>
             public Vector3 Offset = new Vector3(-8f, 17f, -14f);
             /// <summary>座席の帯 (道の座標)</summary>
@@ -108,6 +115,21 @@ namespace DeckRogue.Game
             /// </summary>
             public float FlattenFloor = 0.2f;
             public bool Cookie = true;
+
+            // ---- 灯の形 (W3 P22。クッキーに焼く。灯の位置と向き = キャラのキーは帯から決めたまま変えない)
+            /// <summary>座席の外を暗くする (クッキーに「座席の帯 ∪ 中央の光の池」の形を焼く。外は MaskOutside 倍)</summary>
+            public bool MaskOn = true;
+            /// <summary>帯 (t = 座席に合わせた範囲・s = SMin〜SMax) の外側の余白 (t, s)。縁は MaskSoft (半径に対する割合) でなじむ。MaskPower = 角の丸さ (大きいほど四角)</summary>
+            public Vector2 MaskMargin = new Vector2(1.6f, 4f);
+            public float MaskSoft = 0.25f, MaskPower = 6f, MaskOutside = 0.1f;
+            /// <summary>手前 (s が小さい側) の余白 (負 = MaskMargin.y と同じ)。奥は座席の後ろの崖の根元まで照らし (③のむら)、手前は段の縁で止める</summary>
+            public float MaskMarginFront = 3.2f;
+            /// <summary>中央の光の池 (奥の段の真ん中へ伸ばす楕円。画面の中央の列を明るく保つ = ③)。Shear = s が1増えるごとに中心の t がずれる量 (画面の中央の線に沿わせる)</summary>
+            public bool PoolOn = true;
+            public float PoolT = 3.8f, PoolS = 4.8f, PoolRT = 5f, PoolRS = 9f, PoolShear = 0.4f, PoolLevel = 0.8f, PoolSoft = 0.35f;
+            /// <summary>帯の t を今の座席 (主人公と敵の板の足元) に合わせる (敵1体なら右の地面は暗い)。外れる時は設計図の帯</summary>
+            public bool FitSeats = true;
+            public float FitPadLeft = 2f, FitPadRight = 2.2f, FitMinSpan = 8f;
             public LampLook() { Color = new Color(0.92f, 0.96f, 1f); Shadows = LightShadows.Soft; ShadowStrength = 0.8f; ShadowBias = 0.04f; ShadowNormalBias = 0.3f; ShadowTier = 2; ShadowLayers = 1u << 1; }
         }
 
@@ -115,9 +137,9 @@ namespace DeckRogue.Game
         public sealed class BacklightLook : LightLook
         {
             public bool On = true;
-            public float T = 4f, S = 22f, Y = 5.8f;
+            public float T = 9.5f, S = 23f, Y = 5.2f;
             /// <summary>IllumDist の距離での明るさ (Light.intensity = Illum × IllumDist²)</summary>
-            public float Illum = 1.6f, IllumDist = 5f, Range = 16f;
+            public float Illum = 3.2f, IllumDist = 5f, Range = 16f;
             /// <summary>影を落とすか (スマホの段は false)</summary>
             public bool Shadow = true;
             public BacklightLook() { Color = new Color(0.40f, 0.95f, 0.88f); Shadows = LightShadows.Soft; ShadowStrength = 0.6f; ShadowTier = 0; ShadowLayers = 1u << 2; }
@@ -138,18 +160,31 @@ namespace DeckRogue.Game
         {
             /// <summary>trilight・flat</summary>
             public string Mode = "trilight";
-            public Color Sky = new Color(0.30f, 0.36f, 0.58f), Equator = new Color(0.22f, 0.27f, 0.40f), Ground = new Color(0.12f, 0.13f, 0.18f);
+            public Color Sky = new Color(0.23f, 0.27f, 0.45f), Equator = new Color(0.16f, 0.19f, 0.30f), Ground = new Color(0.08f, 0.09f, 0.12f);
         }
 
         public sealed class FogLook
         {
             public bool On = true;
-            public Color Color = new Color(0.34f, 0.50f, 0.60f);
+            public Color Color = new Color(0.18f, 0.25f, 0.34f);
             /// <summary>画角36° の時の開始と終了 (× r で書く)</summary>
             public float Start = 14f, End = 60f;
             public bool HeightOn = true;
-            public Color HeightColor = new Color(0.40f, 0.60f, 0.66f);
-            public float HeightBase = -0.6f, HeightTop = 3f, HeightDensity = 0.35f;
+            public Color HeightColor = new Color(0.34f, 0.59f, 0.64f);
+            public float HeightBase = -0.6f, HeightTop = 4f, HeightDensity = 0.55f;
+            /// <summary>高さの霧がかかり始める深さと満ちる深さ (画角36° の時の値 × r。座席の帯より奥だけに掛ける) (W3 P22)</summary>
+            public float HeightDepthStart = 20f, HeightDepthFull = 32f;
+            // ---- 霧の光の芯 (W3 P22): 坑口の奥の脈の方を向く霧ほど明るく、外れるほど暗い (中央が光り左右の端が沈む夜の霧)
+            public bool LobeOn = true;
+            /// <summary>芯の置き場 (道の座標)</summary>
+            public float LobeT = 11f, LobeS = 30f, LobeY = 3f;
+            /// <summary>絞り (視線と芯の向きの cos の乗数。画面の端 ≈ 24° で 16 なら 0.23 倍)</summary>
+            public float LobePower = 16f;
+            /// <summary>芯から外れた所の霧の色の倍率 (0〜1)</summary>
+            public float LobeEdge = 0.5f;
+            /// <summary>芯で霧に足す色 (× LobeStrength)</summary>
+            public Color LobeColor = new Color(0.36f, 0.78f, 0.74f);
+            public float LobeStrength = 1.7f;
         }
 
         public sealed class ShadowLook
@@ -222,6 +257,9 @@ namespace DeckRogue.Game
         {
             /// <summary>負 = 書かない (設計図の値のまま)</summary>
             public float Receive = -1f, ShadowStrength = -1f;
+            /// <summary>光の面 (StageShaft) の色と強さの上書き (W3 の統合・本家の色彩)。null・負 = 書かない (設計図 act1_layout.json の値のまま)</summary>
+            public Color? Tint;
+            public float Intensity = -1f;
         }
     }
     // ==== data-end
@@ -231,20 +269,26 @@ namespace DeckRogue.Game
         // ================================================================ 約束の口 (§3)
 
         /// <summary>
-        /// 幕 act の設計図を読む。look_act&lt;N&gt; (旗 look= があればその名前) → .char → .dof → (tier=phone なら) .phone の順に重ねる。
-        /// 1つも読めなければ既定の値 (計画 §2-4 の初期値) だけの設計図。旗 look= の名前のファイルが無ければ警告して幕の既定へ戻す。
+        /// 幕 act の設計図を読む。look_act&lt;N&gt; → .char → .dof → (旗 look= の上書きの設計図) → (tier=phone なら) .phone の順に重ねる。
+        /// 旗 look= は「幕の設計図の上に重ねる変種」(W3 P22 で丸ごとの差し替えから変えた。今まで look= を使う物は無かった):
+        /// look=look_act1_w2 なら look_act1 一式の上に look_act1_w2.json を重ねる。「+」でつなぐと順に重ねる (look=look_act1_w2+look_act1_recv20)。
+        /// 見つからない変種は警告して飛ばす。1つも読めなければ既定の値 (計画 §2-4 の初期値) だけの設計図。
         /// 舞台には何もしない (エディタの検査 = HD2DSetup の checks からも呼ばれる)
         /// </summary>
         public static StageLookData Load(int act)
         {
             string custom = HD2DFlags.Look;
-            string baseName = !string.IsNullOrEmpty(custom) ? custom : DefaultName(act);
-            var d = LoadNamed(act, baseName);
-            if (d.Sources.Count == 0 && !string.IsNullOrEmpty(custom))
-            {
-                Debug.LogWarning("[StageLook] 設計図 " + ResourceDir + custom + " が無い → " + DefaultName(act));
-                d = LoadNamed(act, DefaultName(act));
-            }
+            var overlays = new List<string>();
+            if (!string.IsNullOrEmpty(custom))
+                foreach (var raw in custom.Split('+', ' '))
+                {
+                    string n = raw.Trim();
+                    if (n.Length == 0 || n == DefaultName(act) || overlays.Contains(n)) continue;
+                    overlays.Add(n);
+                }
+            var d = LoadNamed(act, DefaultName(act), overlays);
+            foreach (var n in overlays)
+                if (!d.Sources.Contains(n)) Debug.LogWarning("[StageLook] 変種の設計図 " + ResourceDir + n + " が無い (飛ばす)");
             return d;
         }
 
@@ -279,6 +323,7 @@ namespace DeckRogue.Game
             ApplyVolume(profile, d);
             ApplyCharGlobals(d);
             ApplyHeightFog(d);
+            ApplyEnvGrade(d);
             ApplyMaterials();
             StageFx.Prepare(d.Hit);
             HD2DFlags.LayoutDumpers["look"] = DebugInfo;
@@ -305,6 +350,7 @@ namespace DeckRogue.Game
             DistanceScale = 1f;
             _seatBandSet = false;
             _borrowed = 0; _backlightLent = false;
+            _lampBasis = null; _maskFitted = false; _maskBakes = 0; _fitSeats.Clear();
             HD2DFlags.LayoutDumpers.Remove("look");
             Debug.Log("[StageLook] Restore (Volume は控えと" + (LastRestoreVolumeOk ? "一致" : "不一致") + ")");
         }
@@ -360,6 +406,18 @@ namespace DeckRogue.Game
                 if (kv.Value.Receive >= 0f && m.HasProperty(_idReceive)) m.SetFloat(_idReceive, kv.Value.Receive);
                 if (kv.Value.ShadowStrength >= 0f && m.HasProperty(_idShadowStrength)) m.SetFloat(_idShadowStrength, kv.Value.ShadowStrength);
             }
+            // 光の面の色と強さの上書き (W3 の統合・本家の色彩)。上書きの無い材質は設計図の値へ戻す
+            foreach (var mkv in Diorama.Materials)
+            {
+                var m = mkv.Value;
+                if (m == null || !m.HasProperty(_idTint) || !m.HasProperty(_idIntensity)) continue;
+                if (!_matOrig.ContainsKey(m)) _matOrig[m] = new KeyValuePair<Color, float>(m.GetColor(_idTint), m.GetFloat(_idIntensity));
+                var orig = _matOrig[m];
+                StageLookData.MaterialLook ml;
+                d.Materials.TryGetValue(mkv.Key, out ml);
+                m.SetColor(_idTint, ml != null && ml.Tint.HasValue ? ml.Tint.Value : orig.Key);
+                m.SetFloat(_idIntensity, ml != null && ml.Intensity >= 0f ? ml.Intensity : orig.Value);
+            }
         }
 
         /// <summary>
@@ -376,6 +434,8 @@ namespace DeckRogue.Game
             DistanceScale = r;
             RenderSettings.fogStartDistance = d.Fog.Start * r;
             RenderSettings.fogEndDistance = d.Fog.End * r;
+            EnsureIds();
+            Shader.SetGlobalVector(_idHFogDepth, new Vector4(d.Fog.HeightDepthStart * r, Mathf.Max(d.Fog.HeightDepthStart + 0.01f, d.Fog.HeightDepthFull) * r, 0f, 0f));   // 高さの霧の深さ (W3 P22)
             var urp = BackedUrp();
             if (urp != null) urp.shadowDistance = d.Shadow.Distance * r;
             if (!_seatBandSet) ApplyFallbackBand();
@@ -437,7 +497,12 @@ namespace DeckRogue.Game
             {
                 { "on", RenderSettings.fog }, { "mode", RenderSettings.fogMode.ToString() }, { "color", RenderSettings.fogColor },
                 { "start", RenderSettings.fogStartDistance }, { "end", RenderSettings.fogEndDistance },
+                // W3 P22: 霧の光の芯・高さの霧 (シェーダの全体値の今の値)
+                { "lobePos", _idsReady ? Shader.GetGlobalVector(_idLobePos) : Vector4.zero }, { "lobeColor", _idsReady ? Shader.GetGlobalVector(_idLobeColor) : Vector4.zero },
+                { "heightColor", _idsReady ? Shader.GetGlobalVector(_idHFogColor) : Vector4.zero }, { "heightRange", _idsReady ? Shader.GetGlobalVector(_idHFogRange) : Vector4.zero },
+                { "heightDepth", _idsReady ? Shader.GetGlobalVector(_idHFogDepth) : Vector4.zero },
             };
+            o["envGrade"] = _idsReady ? Shader.GetGlobalVector(_idEnvGrade) : Vector4.zero;   // 舞台の色の寄せ (W3 の統合)
             var urp = BackedUrp();
             if (urp != null)
                 o["urp"] = new Dictionary<string, object>
@@ -512,6 +577,8 @@ namespace DeckRogue.Game
         static VolBak _bakVol;
         static TsBak _bakTs;
         static int _idKeyDir, _idKeyColor, _idAmbTop, _idAmbBottom, _idHFogColor, _idHFogRange, _idReceive, _idShadowStrength;
+        static int _idHFogDepth, _idLobePos, _idLobeColor;   // 高さの霧の深さ・霧の光の芯 (W3 P22。StageModule・StageShaft が読む)
+        static int _idEnvGrade, _idTint, _idIntensity;        // 舞台の色の寄せ (W3 の統合・本家の色彩。StageModule が読む)・光の面の色と強さ
 
         static string DefaultName(int act) { return "look_act" + act; }
 
@@ -528,11 +595,18 @@ namespace DeckRogue.Game
             _idHFogRange = Shader.PropertyToID("_HD2DHeightFogRange"); // x = 下の高さ・y = 上の高さ・z = 1 なら有効
             _idReceive = Shader.PropertyToID("_Receive");               // StageModule (P03)
             _idShadowStrength = Shader.PropertyToID("_ShadowStrength");
+            _idHFogDepth = Shader.PropertyToID("_HD2DHeightFogDepth");  // x = かかり始める深さ・y = 満ちる深さ (W3 P22)
+            _idLobePos = Shader.PropertyToID("_HD2DFogLobePos");        // xyz = 霧の光の芯 (世界)・w = 絞り (0 = 使わない)
+            _idLobeColor = Shader.PropertyToID("_HD2DFogLobeColor");    // rgb = 芯で足す色 (線形)・a = 外れた所の霧の色の倍率
+            _idEnvGrade = Shader.PropertyToID("_HD2DEnvGrade");         // xyz = 色の倍率 − 1・w = 彩度を落とす量 (W3 の統合。0 = そのまま)
+            _idTint = Shader.PropertyToID("_Tint");                     // StageShaft の光の面の色
+            _idIntensity = Shader.PropertyToID("_Intensity");
         }
 
-        static StageLookData LoadNamed(int act, string baseName)
+        static StageLookData LoadNamed(int act, string baseName, IList<string> overlays)
         {
             var names = new List<string> { baseName, baseName + ".char", baseName + ".dof" };
+            if (overlays != null) names.AddRange(overlays);   // 旗 look= の変種 (W3 P22)。スマホの段より先 = スマホの段の軽くする値が最後に勝つ
             if (HD2DFlags.Tier == HD2DTier.Phone) names.Add(baseName + ".phone");
             var texts = new List<KeyValuePair<string, string>>();
             TextAsset[] dir = null;
@@ -552,7 +626,7 @@ namespace DeckRogue.Game
                 if (ta != null) texts.Add(new KeyValuePair<string, string>(n, ta.text));
             }
             var d = FromLayers(act, texts);
-            d.Name = baseName;
+            d.Name = overlays != null && overlays.Count > 0 ? baseName + "+" + string.Join("+", overlays) : baseName;
             return d;
         }
 
@@ -762,6 +836,7 @@ namespace DeckRogue.Game
             var root = new GameObject("HD2D-LookRig");
             if (parent != null) root.transform.SetParent(parent, false);
             _rig = root.transform;
+            if (Application.isPlaying) root.AddComponent<LookDriver>();   // 灯の帯を座席に合わせる (W3 P22)
 
             // 月 (平行光): 左上の手前から。影は地形と大物だけ
             var mgo = new GameObject("HD2D-Moon");
@@ -855,11 +930,21 @@ namespace DeckRogue.Game
             bool flatten = L.Flatten && L.Cookie && bandN > 0 && eMin > 0.0;
             double eRef = flatten ? eMin : eAim;
             _lamp.intensity = (float)(Math.Max(0.0, L.Illum) / Math.Max(1e-9, eRef));
+            _lampBasis = null;
             if (L.Cookie)
             {
                 var pat = CookiePattern(size, d.Cookie.Seed, d.Cookie.Blobs, d.Cookie.CenterRadius, d.Cookie.CenterContrast, d.Cookie.EdgeContrast, d.Cookie.Softness);
                 var gain = flatten ? FlattenGain(E, eMin, L.FlattenFloor) : null;
-                _lampCookie = MakeCookieTexture("HD2D-LampCookie", size, pat, gain, TextureWrapMode.Clamp);
+                // 灯の形 (W3 P22): 座席の帯 ∪ 中央の光の池 の外を暗く。帯の t は今の座席に合わせて LookDriver が焼き直す (灯の位置と向きは変えない = キャラのキーは同じ)
+                if (L.MaskOn)
+                {
+                    var bas = new double[size * size];
+                    for (int i = 0; i < bas.Length; i++) bas[i] = pat[i] * (gain != null ? gain[i] : 1.0);
+                    _lampBasis = new LampBasis { Size = size, Pos = V(pos), Fwd = V(fwd), Right = V(R), Up = V(U), TanHalf = tanHalf, Yaw = yaw, Base = bas };
+                    if (!_maskFitted) { _maskTMin = L.TMin; _maskTMax = L.TMax; }
+                    _lampCookie = MakeCookieTexture("HD2D-LampCookie", size, bas, LampMaskFor(d, _maskTMin, _maskTMax), TextureWrapMode.Clamp);
+                }
+                else _lampCookie = MakeCookieTexture("HD2D-LampCookie", size, pat, gain, TextureWrapMode.Clamp);
                 _lamp.cookie = _lampCookie;
             }
             KeyDir = fwd;
@@ -871,6 +956,111 @@ namespace DeckRogue.Game
                 { "bandTexels", bandN }, { "bandLightMin", eMin }, { "bandLightMax", eMax },
                 { "bandEvenness", evenAfter }, { "bandEvennessBeforeFlatten", evenBefore }, { "flatten", flatten },
             };
+            UpdateMaskStats(d);
+        }
+
+        // ---------------------------------------------------------------- 灯の形 (W3 P22)
+
+        /// <summary>クッキーを焼き直すための灯の基底 (位置・向き・円錐・木漏れ日×打ち消しの倍率)。BuildLamp が作る</summary>
+        sealed class LampBasis
+        {
+            public int Size;
+            public double[] Pos, Fwd, Right, Up, Base;
+            public double TanHalf;
+            public float Yaw;
+        }
+
+        static LampBasis _lampBasis;
+        static readonly Dictionary<string, float> _fitNow = new Dictionary<string, float>();
+        static float _maskTMin = -6.5f, _maskTMax = 12.5f;
+        static bool _maskFitted;
+        static int _maskBakes;
+
+        /// <summary>帯 (t = tMin〜tMax・s = 設計図の SMin〜SMax) と中央の光の池からクッキーの形 (0〜1) を作る</summary>
+        static double[] LampMaskFor(StageLookData d, float tMin, float tMax)
+        {
+            var L = d.Lamp; var b = _lampBasis;
+            if (b == null) return null;
+            return LampGroundMask(b.Size, b.Pos, b.Fwd, b.Right, b.Up, b.TanHalf, 0.0, b.Yaw,
+                new double[] { tMin, tMax, L.SMin, L.SMax }, new double[] { L.MaskMargin.x, L.MaskMargin.y, L.MaskMarginFront >= 0f ? L.MaskMarginFront : L.MaskMargin.y }, L.MaskSoft, L.MaskPower, L.MaskOutside,
+                L.PoolOn ? new double[] { L.PoolT, L.PoolS, L.PoolRT, L.PoolRS, L.PoolShear, L.PoolLevel, L.PoolSoft } : null);
+        }
+
+        static void UpdateMaskStats(StageLookData d)
+        {
+            if (_lampStats == null || d == null) return;
+            var L = d.Lamp;
+            _lampStats["mask"] = new Dictionary<string, object>
+            {
+                { "on", L.MaskOn && _lampBasis != null }, { "tMin", _maskTMin }, { "tMax", _maskTMax }, { "fitted", _maskFitted },
+                { "sMin", L.SMin }, { "sMax", L.SMax }, { "margin", L.MaskMargin }, { "outside", L.MaskOutside }, { "pool", L.PoolOn }, { "bakes", _maskBakes },
+            };
+        }
+
+        static readonly Dictionary<string, float> _fitSeats = new Dictionary<string, float>();
+
+        /// <summary>
+        /// 帯の t を今の座席に合わせる (LookDriver が毎フレーム呼ぶ。変わった時だけクッキーを焼き直す = 新しい戦闘・召喚の時)。
+        /// 座席 = 板が居る (Stage.TryGetUnitBox) 主人公と敵 (enemy0〜7) の座席の足元 (Stage.TryGetSeat = 組み直しの置き場。演出の踏み込みでは動かない)。
+        /// 合わせ直すのは「居る座席の置き場が変わった・新しい座席が増えた」時だけ。倒れて居なくなっただけなら縮めない (撃破の最中に灯が動かない)
+        /// </summary>
+        internal static void RefitLamp()
+        {
+            var d = Current;
+            if (!Active || d == null || _lamp == null || _lampBasis == null || _lampCookie == null) return;
+            var L = d.Lamp;
+            if (!L.MaskOn || !L.FitSeats) return;
+            float lo = float.MaxValue, hi = float.MinValue;
+            int n = 0;
+            bool changed = !_maskFitted;
+            float yaw = d.PathYaw * Mathf.Deg2Rad, c = Mathf.Cos(yaw), s = Mathf.Sin(yaw);
+            _fitNow.Clear();
+            for (int i = -1; i < 8; i++)
+            {
+                string key = i < 0 ? "player" : "enemy" + i;
+                Vector3 feet, seat; float h, k;
+                if (!Stage.TryGetUnitBox(key, out feet, out h)) continue;
+                if (Stage.TryGetSeat(key, out seat, out k)) feet = seat;
+                float t = c * feet.x - s * feet.z;   // 世界 → 道の t (LampGroundLight と同じ式)
+                _fitNow[key] = t;
+                float old;
+                if (!_fitSeats.TryGetValue(key, out old) || Mathf.Abs(old - t) > 0.1f) changed = true;
+                if (t < lo) lo = t;
+                if (t > hi) hi = t;
+                n++;
+            }
+            if (n == 0 || !changed) return;
+            _fitSeats.Clear();
+            foreach (var kv in _fitNow) _fitSeats[kv.Key] = kv.Value;
+            float tMin = lo - Mathf.Max(0f, L.FitPadLeft), tMax = hi + Mathf.Max(0f, L.FitPadRight);
+            float span = Mathf.Max(1f, L.FitMinSpan);
+            if (tMax - tMin < span) { float m = 0.5f * (tMin + tMax); tMin = m - 0.5f * span; tMax = m + 0.5f * span; }
+            tMin = Mathf.Clamp(tMin, L.TMin - 4f, L.TMax + 4f);
+            tMax = Mathf.Clamp(tMax, tMin + 1f, L.TMax + 4f);
+            if (_maskFitted && Mathf.Abs(tMin - _maskTMin) < 0.25f && Mathf.Abs(tMax - _maskTMax) < 0.25f) return;
+            _maskTMin = tMin; _maskTMax = tMax; _maskFitted = true;
+            var mask = LampMaskFor(d, tMin, tMax);
+            if (mask == null) return;
+            var bas = _lampBasis.Base;
+            int size = _lampBasis.Size;
+            var px = new Color32[size * size];
+            for (int i = 0; i < px.Length; i++)
+            {
+                double v = bas[i] * mask[i];
+                byte b = (byte)Math.Round(255.0 * Math.Max(0.0, Math.Min(1.0, v)));
+                px[i] = new Color32(b, b, b, 255);
+            }
+            _lampCookie.SetPixels32(px);
+            _lampCookie.Apply(true, false);
+            _maskBakes++;
+            UpdateMaskStats(d);
+            Debug.Log("[StageLook] 灯の形を座席に合わせた t " + tMin.ToString("0.0", CultureInfo.InvariantCulture) + "〜" + tMax.ToString("0.0", CultureInfo.InvariantCulture) + " (座席 " + n + ")");
+        }
+
+        /// <summary>光の一式の根に付く見張り: 帯の t を座席に合わせる (StageLook は静的なので毎フレームの口をここに持つ)</summary>
+        sealed class LookDriver : MonoBehaviour
+        {
+            void LateUpdate() { RefitLamp(); }
         }
 
         static void SetupShadows(Light l, StageLookData.LightLook s, LightShadows shadows)
@@ -1164,6 +1354,22 @@ namespace DeckRogue.Game
             Color c = QualitySettings.activeColorSpace == ColorSpace.Linear ? f.HeightColor.linear : f.HeightColor;
             Shader.SetGlobalVector(_idHFogColor, new Vector4(c.r, c.g, c.b, Mathf.Max(0f, f.HeightDensity)));
             Shader.SetGlobalVector(_idHFogRange, new Vector4(f.HeightBase, Mathf.Max(f.HeightBase + 0.01f, f.HeightTop), f.HeightOn ? 1f : 0f, 0f));
+            float r = DistanceScale > 0.01f ? DistanceScale : 1f;
+            Shader.SetGlobalVector(_idHFogDepth, new Vector4(f.HeightDepthStart * r, Mathf.Max(f.HeightDepthStart + 0.01f, f.HeightDepthFull) * r, 0f, 0f));
+            // 霧の光の芯 (W3 P22): 坑口の奥の脈の方を向く霧ほど明るく、外れるほど暗い。StageModule の霧の色と StageShaft の光の面 (_LobeFloor) が読む
+            if (f.LobeOn && f.LobePower > 0f)
+            {
+                Vector3 lp = PathToWorld(d.PathYaw, f.LobeT, f.LobeS, f.LobeY);
+                Color lc = QualitySettings.activeColorSpace == ColorSpace.Linear ? f.LobeColor.linear : f.LobeColor;
+                float ls = Mathf.Max(0f, f.LobeStrength);
+                Shader.SetGlobalVector(_idLobePos, new Vector4(lp.x, lp.y, lp.z, f.LobePower));
+                Shader.SetGlobalVector(_idLobeColor, new Vector4(lc.r * ls, lc.g * ls, lc.b * ls, Mathf.Clamp01(f.LobeEdge)));
+            }
+            else
+            {
+                Shader.SetGlobalVector(_idLobePos, Vector4.zero);
+                Shader.SetGlobalVector(_idLobeColor, Vector4.zero);
+            }
         }
 
         /// <summary>全体値を「未設定」(0) に戻す = シェーダは場の主光と環境光 (SH) に戻る</summary>
@@ -1175,7 +1381,32 @@ namespace DeckRogue.Game
             Shader.SetGlobalVector(_idAmbBottom, Vector4.zero);
             Shader.SetGlobalVector(_idHFogColor, Vector4.zero);
             Shader.SetGlobalVector(_idHFogRange, Vector4.zero);
+            Shader.SetGlobalVector(_idHFogDepth, Vector4.zero);
+            Shader.SetGlobalVector(_idLobePos, Vector4.zero);
+            Shader.SetGlobalVector(_idLobeColor, Vector4.zero);
+            Shader.SetGlobalVector(_idEnvGrade, Vector4.zero);
         }
+
+        /// <summary>
+        /// 舞台の色の寄せ (2026-09-30 W3 の統合。ユーザー「本家の色彩も参考にしてほしい」→ docs/design/hd2d-slice/honke-color.md)。
+        /// look の "envGrade": { "desaturate": 0〜1 (舞台の絵の彩度を落とす量), "tint": [r, g, b] (舞台の絵の色に掛ける倍率。線形) } を
+        /// 全体値 _HD2DEnvGrade に書く。StageModule (地形・3Dの部品・半立体・札) の絵の色にだけ掛かり、キャラの板 (StageUnitLit) には掛からない
+        /// = 本家の「舞台は1つの色相に沈め、キャラは舞台の色の外にいる」。書いていなければ 0 (= そのまま)
+        /// </summary>
+        static void ApplyEnvGrade(StageLookData d)
+        {
+            var eg = d.Raw != null ? d.Raw["envGrade"] as JObject : null;
+            _envGrade = Vector4.zero;
+            if (eg != null && B(eg, "on", true))
+            {
+                Vector3 t = V3(eg, "tint", Vector3.one);
+                _envGrade = new Vector4(t.x - 1f, t.y - 1f, t.z - 1f, Mathf.Clamp01(F(eg, "desaturate", 0f)));
+            }
+            Shader.SetGlobalVector(_idEnvGrade, _envGrade);
+        }
+        static Vector4 _envGrade;
+        /// <summary>光の面の設計図の色と強さ (上書きの前。上書きの無い look に替わった時に戻す)</summary>
+        static readonly Dictionary<Material, KeyValuePair<Color, float>> _matOrig = new Dictionary<Material, KeyValuePair<Color, float>>();
 
         // ---------------------------------------------------------------- 記録
 
@@ -1217,6 +1448,10 @@ namespace DeckRogue.Game
             }
             sb.Append(" | 影 ").Append(RigShadowCount()).Append('/').Append(d.Shadow.MaxShadowedLights);
             if (_lampStats != null) sb.Append(" | 帯の明るさのそろい ").Append(Convert.ToDouble(_lampStats["bandEvenness"], CultureInfo.InvariantCulture).ToString("0.00", CultureInfo.InvariantCulture));
+            if (_lampBasis != null) sb.Append(" | 灯の形 t ").Append(_maskTMin.ToString("0.0", CultureInfo.InvariantCulture)).Append('〜').Append(_maskTMax.ToString("0.0", CultureInfo.InvariantCulture)).Append(d.Lamp.PoolOn ? "+池" : "");
+            if (d.Fog.LobeOn) sb.Append(" | 霧の芯 ").Append(d.Fog.LobePower.ToString("0", CultureInfo.InvariantCulture)).Append("乗");
+            if (_envGrade != Vector4.zero) sb.Append(" | 舞台の色 彩度−").Append(_envGrade.w.ToString("0.00", CultureInfo.InvariantCulture))
+                .Append(" 倍率 ").Append((1f + _envGrade.x).ToString("0.00", CultureInfo.InvariantCulture)).Append(',').Append((1f + _envGrade.y).ToString("0.00", CultureInfo.InvariantCulture)).Append(',').Append((1f + _envGrade.z).ToString("0.00", CultureInfo.InvariantCulture));
             sb.Append(" | ぼかし ").Append(TiltShiftSettings.Enabled ? "自作" : TiltShiftSettings.UseUrpBokeh ? "URP" : "なし");
             sb.Append(" 帯 ").Append(TiltShiftSettings.BandNear.ToString("0.0", CultureInfo.InvariantCulture)).Append('〜').Append(TiltShiftSettings.BandFar.ToString("0.0", CultureInfo.InvariantCulture));
             return sb.ToString();
@@ -1282,6 +1517,34 @@ namespace DeckRogue.Game
                 L.Flatten = B(l, "flatten", L.Flatten);
                 L.FlattenFloor = F(l, "flattenFloor", L.FlattenFloor);
                 L.Cookie = B(l, "cookie", L.Cookie);
+                var mk = Obj(l, "mask");
+                if (mk != null)
+                {
+                    L.MaskOn = B(mk, "on", L.MaskOn);
+                    L.MaskMargin = V2(mk, "margin", L.MaskMargin);
+                    L.MaskMarginFront = F(mk, "marginFront", L.MaskMarginFront);
+                    L.MaskSoft = F(mk, "soft", L.MaskSoft);
+                    L.MaskPower = F(mk, "power", L.MaskPower);
+                    L.MaskOutside = F(mk, "outside", L.MaskOutside);
+                }
+                var pl = Obj(l, "pool");
+                if (pl != null)
+                {
+                    L.PoolOn = B(pl, "on", L.PoolOn);
+                    L.PoolT = F(pl, "t", L.PoolT); L.PoolS = F(pl, "s", L.PoolS);
+                    L.PoolRT = F(pl, "rt", L.PoolRT); L.PoolRS = F(pl, "rs", L.PoolRS);
+                    L.PoolShear = F(pl, "shear", L.PoolShear);
+                    L.PoolLevel = F(pl, "level", L.PoolLevel);
+                    L.PoolSoft = F(pl, "soft", L.PoolSoft);
+                }
+                var ft = Obj(l, "fit");
+                if (ft != null)
+                {
+                    L.FitSeats = B(ft, "on", L.FitSeats);
+                    L.FitPadLeft = F(ft, "padLeft", L.FitPadLeft);
+                    L.FitPadRight = F(ft, "padRight", L.FitPadRight);
+                    L.FitMinSpan = F(ft, "minSpan", L.FitMinSpan);
+                }
             }
 
             var b = Obj(o, "backlight");
@@ -1333,6 +1596,18 @@ namespace DeckRogue.Game
                     FG.HeightBase = F(h, "base", FG.HeightBase);
                     FG.HeightTop = F(h, "top", FG.HeightTop);
                     FG.HeightDensity = F(h, "density", FG.HeightDensity);
+                    FG.HeightDepthStart = F(h, "depthStart", FG.HeightDepthStart);
+                    FG.HeightDepthFull = F(h, "depthFull", FG.HeightDepthFull);
+                }
+                var lb = Obj(f, "lobe");
+                if (lb != null)
+                {
+                    FG.LobeOn = B(lb, "on", FG.LobeOn);
+                    FG.LobeT = F(lb, "t", FG.LobeT); FG.LobeS = F(lb, "s", FG.LobeS); FG.LobeY = F(lb, "y", FG.LobeY);
+                    FG.LobePower = F(lb, "power", FG.LobePower);
+                    FG.LobeEdge = F(lb, "edge", FG.LobeEdge);
+                    FG.LobeColor = Col(lb, "color", FG.LobeColor);
+                    FG.LobeStrength = F(lb, "strength", FG.LobeStrength);
                 }
             }
 
@@ -1441,7 +1716,9 @@ namespace DeckRogue.Game
                     if (prop.Name.StartsWith("_", StringComparison.Ordinal)) continue;
                     var mo = prop.Value as JObject;
                     if (mo == null) continue;
-                    d.Materials[prop.Name] = new StageLookData.MaterialLook { Receive = F(mo, "receive", -1f), ShadowStrength = F(mo, "shadowStrength", -1f) };
+                    var ml = new StageLookData.MaterialLook { Receive = F(mo, "receive", -1f), ShadowStrength = F(mo, "shadowStrength", -1f), Intensity = F(mo, "intensity", -1f) };
+                    if (mo["tint"] != null) ml.Tint = Col(mo, "tint", Color.white);
+                    d.Materials[prop.Name] = ml;
                 }
             return d;
         }
@@ -1708,6 +1985,56 @@ namespace DeckRogue.Game
             for (int i = 0; i < e.Length; i++) g[i] = e[i] > 0.0 ? Math.Max(fl, Math.Min(1.0, eMin / e[i])) : 1.0;
             return g;
         }
+
+        /// <summary>
+        /// 灯の形 (W3 P22。クッキーの画素ごとの倍率 0〜1・行 j=0 が下)。画素の向きの光線が地面 (高さ groundY) に当たる点を道の座標 (t, s) にし、
+        /// 帯 band = (tMin, tMax, sMin, sMax) を余白 margin = (t, s の奥[, s の手前]) だけ広げた「角の丸い四角」(|dt|^p + |ds|^p ≦ 1。p = power) の中なら 1、
+        /// 縁の外 soft (半径に対する割合) でなめらかに outside へ落とす。pool = (t, s, rt, rs, shear, level, soft) があれば中央の光の池 (楕円・中心の t は s とともに shear ずれる) を
+        /// level まで足す (大きい方)。円錐の外・地面に向かわない画素は outside。壁に当たる光線も地面の点で決まる (壁の奥の地面 = 帯の外なら暗い)
+        /// </summary>
+        internal static double[] LampGroundMask(int size, double[] pos, double[] fwd, double[] right, double[] up, double tanHalf,
+            double groundY, double yawDeg, double[] band, double[] margin, double soft, double power, double outside, double[] pool)
+        {
+            var m = new double[size * size];
+            double yaw = yawDeg * Math.PI / 180.0, cyw = Math.Cos(yaw), syw = Math.Sin(yaw);
+            double tc = 0.5 * (band[0] + band[1]), sc = 0.5 * (band[2] + band[3]);
+            double rt = Math.Max(0.1, 0.5 * (band[1] - band[0]) + Math.Max(0.0, margin[0]));
+            double rs = Math.Max(0.1, 0.5 * (band[3] - band[2]) + Math.Max(0.0, margin[1]));   // 奥 (s ≧ 帯の真ん中)
+            double rsF = margin.Length >= 3 ? Math.Max(0.1, 0.5 * (band[3] - band[2]) + Math.Max(0.0, margin[2])) : rs;   // 手前
+            double pw = Math.Max(1.0, power), sf = Math.Max(0.01, soft);
+            double outV = Math.Max(0.0, Math.Min(1.0, outside));
+            for (int j = 0; j < size; j++)
+                for (int i = 0; i < size; i++)
+                {
+                    int k = j * size + i;
+                    m[k] = outV;
+                    double x = (i + 0.5) / size * 2.0 - 1.0, y = (j + 0.5) / size * 2.0 - 1.0;
+                    if (x * x + y * y > 1.0) continue;
+                    double dx = fwd[0] + (right[0] * x + up[0] * y) * tanHalf;
+                    double dy = fwd[1] + (right[1] * x + up[1] * y) * tanHalf;
+                    double dz = fwd[2] + (right[2] * x + up[2] * y) * tanHalf;
+                    double len = Math.Sqrt(dx * dx + dy * dy + dz * dz);
+                    dx /= len; dy /= len; dz /= len;
+                    if (dy > -1e-4) continue;
+                    double t = (groundY - pos[1]) / dy;
+                    if (t <= 0.0) continue;
+                    double hx = pos[0] + dx * t, hz = pos[2] + dz * t;
+                    double pt = cyw * hx - syw * hz, ps = syw * hx + cyw * hz;
+                    double q = Math.Pow(Math.Pow(Math.Abs(pt - tc) / rt, pw) + Math.Pow(Math.Abs(ps - sc) / (ps >= sc ? rs : rsF), pw), 1.0 / pw);
+                    double inside = 1.0 - SmoothStep(1.0 - 0.5 * sf, 1.0 + 0.5 * sf, q);
+                    if (pool != null && pool.Length >= 7)
+                    {
+                        double ct = pool[0] + pool[4] * (ps - pool[1]);
+                        double e = Math.Sqrt(Sq((pt - ct) / Math.Max(0.1, pool[2])) + Sq((ps - pool[1]) / Math.Max(0.1, pool[3])));
+                        double pv = (1.0 - SmoothStep(1.0 - 0.5 * pool[6], 1.0 + 0.5 * pool[6], e)) * Math.Max(0.0, Math.Min(1.0, pool[5]));
+                        if (pv > inside) inside = pv;
+                    }
+                    m[k] = outV + (1.0 - outV) * inside;
+                }
+            return m;
+        }
+
+        static double Sq(double v) { return v * v; }
 
         internal static double SmoothStep(double a, double b, double x)
         {

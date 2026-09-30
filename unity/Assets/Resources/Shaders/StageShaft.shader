@@ -7,6 +7,8 @@
 //   _EdgeFade  … 0 より大きいと、面を真横から見るほど薄くする (|法線・視線| の _EdgeFade 乗)。板の筋が線に見えるのを防ぐ
 //   _Scroll    … xy = 絵の流れる速さ (UV/秒。揺れる霧)。det の撮影では時間が固定の刻みなので決定的
 //   _Fog       … 霧に沈む割合 (1 = 遠いほど霧に消えて足されない)
+//   _LobeFloor … 霧の光の芯 (全体値 _HD2DFogLobePos。StageLook が書く) から外れた所の明るさの倍率 (0〜1。1 = 芯を見ない = 今まで)。
+//                芯 (坑口の奥の脈) の方を向く面ほど明るく、画面の端ほど暗い = 中央の奥が光り、左右の端が沈む (W3 P22)
 Shader "DeckRogue/StageShaft"
 {
     Properties
@@ -19,6 +21,7 @@ Shader "DeckRogue/StageShaft"
         _EdgeFade ("Edge Fade Power", Float) = 0
         _Scroll ("UV Scroll (xy)", Vector) = (0,0,0,0)
         _Fog ("Fog", Range(0,1)) = 1
+        _LobeFloor ("Lobe Floor", Range(0,1)) = 1
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0
     }
     SubShader
@@ -46,9 +49,10 @@ Shader "DeckRogue/StageShaft"
                 float4 _BaseMap_ST;
                 half4 _Tint;
                 half _Intensity, _SoftDepth, _NearFade, _Fog;
-                half _EdgeFade, _Cull;
+                half _EdgeFade, _Cull, _LobeFloor;
                 float4 _Scroll;
             CBUFFER_END
+            float4 _HD2DFogLobePos;   // 全体値 (StageLook。xyz = 霧の光の芯・w = 絞り。0 = 使わない)
             struct Attributes
             {
                 float4 positionOS : POSITION;
@@ -102,6 +106,14 @@ Shader "DeckRogue/StageShaft"
                 {
                     float3 v = GetWorldSpaceNormalizeViewDir(i.positionWS);
                     k *= half(pow(saturate(abs(dot(SafeNormalize(i.normalWS), v))), _EdgeFade));
+                }
+                // 霧の光の芯から外れるほど薄く (W3 P22。全体値が 0 か _LobeFloor=1 なら今まで)
+                if (_HD2DFogLobePos.w > 0.0 && _LobeFloor < 1.0h)
+                {
+                    float3 v = SafeNormalize(i.positionWS - _WorldSpaceCameraPos);
+                    float3 l = SafeNormalize(_HD2DFogLobePos.xyz - _WorldSpaceCameraPos);
+                    half lobe = half(pow(saturate(dot(v, l)), _HD2DFogLobePos.w));
+                    k *= lerp(_LobeFloor, 1.0h, lobe);
                 }
                 half3 col = c.rgb * k;
                 // 霧に沈む (加算なので、霧の色でなく黒へ寄せる = 遠いほど足されない)

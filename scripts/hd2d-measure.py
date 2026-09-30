@@ -36,7 +36,8 @@
          本家は ref-patches の ground) で。キャラは除く。m5_char = キャラの画素 (unitsonly のマスクを1画素削った内側) のラプラシアン分散。
   ⑥ m6  ピントの外の鋭さ: 舞台の画 (hideui) の帯ごとの「ラプラシアン分散 ÷ 分散」。m6 = 奥の帯 (上端〜25%) と手前の帯 (73〜98%) の大きい方。
          m6_seat = 座席の帯 (足元の線の上 15%) の同じ値 (P24 の「座席の帯の鋭さが dof=0 の0.95倍以上」は同じ場面の dof=0 の m6_seat と比べる)。
-         m6_ratio = m6 ÷ m6_seat (参考)。
+         m6_ratio = m6 ÷ m6_seat (参考)。m6_nb = 同じ帯をキャラの板 (unitsonly のマスクを2画素太らせた物) も除いて測った値。
+         合否はこちらで読む (W3: 幕ボスの頭・4体の奥の敵の頭は奥の帯に入るが座席の帯の中にいるのでくっきりが正しい)。
   ⑦ m7  明るい画素 (L>150) のうち、舞台の上の札 (敵の帳面・意図の札・自分の札・上部バー・人形の札) が占める割合。
          手札・確認の窓・ポップアップの矩形は分母からも除く (layout.json が要る)。m7_all = UI 全部 (手札込み) の割合 (参考。StS1 55%)。
          layout.json が無い時は W0 と同じ近似 (UI = 通常と hideui の差・縦 66% より下を捨てる)。
@@ -562,6 +563,16 @@ class Scene:
             r['m6'] = max(outs)
             if seat:
                 r['m6_ratio'] = r['m6'] / seat
+        # ⑥ をキャラの板を除いて測った値 (W3 の統合・P24 の申し送り3)。幕ボスの頭や4体の奥の敵の頭は⑥の「奥の帯」(上 25%) に入るが、
+        # 座席の帯の中にいるのでくっきりしているのが正しい (計画「奥の座席の敵の意図と HP が読めることが先」)。合否 (judge) はこちらで読む
+        if getattr(self, 'char_source', '') in ('unitsonly', 'rects') and ch.any():
+            exb = dilate(ch, 2) | (ui if usesNormal else np.zeros_like(ch))
+            farb = sharp_band(g, far0, int(self.H * 0.25), exb)
+            nearb = sharp_band(g, int(self.H * 0.73), int(self.H * 0.98), exb)
+            r['m6_far_nb'], r['m6_near_nb'] = farb, nearb
+            outsb = [v for v in (farb, nearb) if v is not None]
+            if outsb:
+                r['m6_nb'] = max(outsb)
         # ⑦
         bright = Ln > BRIGHT
         if self.lay is not None and self.lay.get('units') is not None:
@@ -864,7 +875,7 @@ def judge(r, gates):
         j['m5'] = r['m5'] <= r['m5_char']
     else:
         j['m5'] = r['m5'] <= g5.get('max', 1500)
-    j['m6'] = between(r.get('m6'), G.get('m6', {}))
+    j['m6'] = between(r.get('m6_nb', r.get('m6')), G.get('m6', {}))   # キャラの板を除いた値があればそれで (W3)
     j['m7'] = None if r.get('m7') is None else r['m7'] < G.get('m7', {}).get('max', 0.5)
     j['m8'] = r.get('m8_ok')
     g9 = G.get('m9', {})
@@ -927,6 +938,10 @@ def cell(r, key, kind, j):
             extra.append('右/左%s' % fmt(r['m3_right_left'], 'f2'))
         if extra:
             v += ' (' + ' '.join(extra) + ')'
+    elif key == 'm6':
+        v = fmt(r.get('m6'), kind)
+        if r.get('m6_nb') is not None:
+            v += ' (板除く %s)' % fmt(r['m6_nb'], kind)
     elif key == 'm5':
         v = fmt(r.get('m5'), kind)
         if r.get('m5_char') is not None:

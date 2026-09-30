@@ -222,7 +222,12 @@
       "shadowStrength": 1.0,
       "topThreshold": 0.72,
       "topBlend": 0.12,
-      "vcolorAO": 1.0
+      "vcolorAO": 1.0,
+      "tint": [
+        0.72,
+        0.76,
+        0.8
+      ]
     },
     "wood": {
       "shader": "array",
@@ -253,11 +258,12 @@
         0.8,
         0.76
       ],
-      "intensity": 1.1,
+      "intensity": 1.4,
       "softDepth": 1.5,
       "nearFade": 3.0,
       "edgeFade": 1.0,
-      "fog": 0.25
+      "fog": 0.25,
+      "lobeFloor": 0.2
     }
   },
   "sources": {
@@ -509,7 +515,7 @@
     {"kind":"rig","name":"pithead","t":8.2,"s":19.8,"yaw":0.0,"w":2.0,"d":1.6,"h":1.9,"wheel":0.42,"spin":18,"seed":501},
     {"kind":"fence","t":4.4,"s":17.2,"yaw":4.0,"len":3.2,"h":0.85,"posts":4,"seed":601},
     {"kind":"fence","t":11.9,"s":17.6,"yaw":-6.0,"len":3.6,"h":0.85,"posts":4,"seed":602},
-    {"kind":"fence","t":18.0,"s":6.6,"yaw":8.0,"len":3.0,"h":0.85,"posts":3,"seed":603},
+    {"kind":"fence","t":16.4,"s":6.6,"yaw":8.0,"len":3.0,"h":0.85,"posts":3,"seed":603},
     {"kind":"fence","t":-15.5,"s":6.3,"yaw":-10.0,"len":2.6,"h":0.85,"posts":3,"seed":604},
     {"kind":"fence","t":21.5,"s":-3.1,"yaw":3.0,"len":3.2,"h":0.85,"posts":4,"seed":605},
     {"kind":"marker","name":"waystone-left","t":-11.2,"s":3.9,"yaw":12.0,"h":1.35,"seed":701},
@@ -523,19 +529,19 @@
     {"kind":"block","t":-4.2,"s":17.77,"y":0.0,"yaw":4.0,"w":2.2,"d":1.6,"h":2.02,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":814},
     {"kind":"block","t":15.6,"s":17.61,"y":0.0,"yaw":-6.0,"w":2.0,"d":1.4,"h":2.02,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":815},
     {"kind":"block","t":17.2,"s":-3.35,"y":0.0,"yaw":12.0,"w":1.4,"d":1.0,"h":0.72,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":816},
-    {"kind":"tree","name":"tree-0","t":-12.6,"s":7.9,"yaw":236.0,"h":13.0,"r":0.62,"lean":0.35,"flare":0.55,"roots":5,"rootLen":1.5,"relief":"treeGiant","reliefScale":1.0,"flip":false,"seed":900},
-    {"kind":"tree","name":"tree-1","t":20.6,"s":7.6,"yaw":207.0,"h":12.0,"r":0.55,"lean":-0.3,"flare":0.55,"roots":4,"rootLen":1.5,"relief":"treeOak","reliefScale":1.0,"flip":true,"seed":901},
+    {"kind":"tree","name":"tree-0","t":-8.3,"s":7.9,"yaw":236.0,"h":13.0,"r":0.62,"lean":0.35,"flare":0.55,"roots":5,"rootLen":1.5,"relief":"treeGiant","reliefScale":1.0,"flip":false,"seed":900,"tint":0.62},
+    {"kind":"tree","name":"tree-1","t":19.4,"s":8.4,"yaw":207.0,"h":12.0,"r":0.55,"lean":-0.3,"flare":0.55,"roots":4,"rootLen":1.5,"relief":"treeOak","reliefScale":1.0,"flip":true,"seed":901,"tint":0.62},
     {"kind":"tree","name":"tree-2","t":-4.6,"s":13.4,"yaw":322.0,"h":13.5,"r":0.7,"lean":0.4,"flare":0.55,"roots":5,"rootLen":1.5,"relief":"treeGiant","reliefScale":1.0,"flip":false,"seed":902},
     {"kind":"tree","name":"tree-3","t":15.2,"s":13.0,"yaw":113.0,"h":12.5,"r":0.6,"lean":-0.35,"flare":0.55,"roots":4,"rootLen":1.5,"relief":"treeOak2","reliefScale":1.0,"flip":true,"seed":903},
     {"kind":"tree","name":"tree-4","t":-9.6,"s":20.6,"yaw":345.0,"h":12.0,"r":0.66,"lean":0.3,"flare":0.55,"roots":4,"rootLen":1.5,"relief":"treeOak","reliefScale":1.0,"flip":false,"seed":904},
     {"kind":"tree","name":"tree-5","t":1.6,"s":21.8,"yaw":157.0,"h":11.0,"r":0.58,"lean":-0.2,"flare":0.55,"roots":4,"rootLen":1.5,"relief":"treeOak2","reliefScale":1.0,"flip":true,"seed":905},
     {"kind":"tree","name":"tree-6","t":23.0,"s":19.8,"yaw":327.0,"h":12.0,"r":0.64,"lean":0.25,"flare":0.55,"roots":4,"rootLen":1.5,"relief":"treeGiant","reliefScale":1.0,"flip":false,"seed":906},
-    {"kind":"relief","src":"leaf5","t":-13.43,"s":6.965,"y":7.226,"abs":true,"yaw":-15.0,"flip":true,"shadow":1,"seed":1024},
-    {"kind":"relief","src":"canopy3","t":-11.926,"s":6.833,"y":7.583,"abs":true,"yaw":-15.0,"flip":false,"shadow":1,"seed":1025},
-    {"kind":"relief","src":"leaf4","t":-9.907,"s":6.874,"y":5.926,"abs":true,"yaw":-13.0,"flip":false,"shadow":1,"seed":1026},
-    {"kind":"relief","src":"canopy3","t":18.532,"s":6.295,"y":5.655,"abs":true,"yaw":-3.0,"flip":false,"shadow":1,"seed":1027},
-    {"kind":"relief","src":"canopy2","t":20.339,"s":6.644,"y":6.714,"abs":true,"yaw":12.0,"flip":false,"shadow":1,"seed":1028},
-    {"kind":"relief","src":"leaf5","t":21.38,"s":6.505,"y":7.286,"abs":true,"yaw":8.0,"flip":true,"shadow":1,"seed":1029},
+    {"kind":"relief","src":"leaf5","t":-9.13,"s":6.965,"y":7.226,"abs":true,"yaw":-15.0,"flip":true,"shadow":1,"seed":1024,"tint":0.7},
+    {"kind":"relief","src":"canopy3","t":-7.626,"s":6.833,"y":7.583,"abs":true,"yaw":-15.0,"flip":false,"shadow":1,"seed":1025,"tint":0.7},
+    {"kind":"relief","src":"leaf4","t":-5.607,"s":6.874,"y":5.926,"abs":true,"yaw":-13.0,"flip":false,"shadow":1,"seed":1026,"tint":0.7},
+    {"kind":"relief","src":"canopy3","t":17.332,"s":7.095,"y":5.655,"abs":true,"yaw":-3.0,"flip":false,"shadow":1,"seed":1027,"tint":0.7},
+    {"kind":"relief","src":"canopy2","t":19.139,"s":7.444,"y":6.714,"abs":true,"yaw":12.0,"flip":false,"shadow":1,"seed":1028,"tint":0.7},
+    {"kind":"relief","src":"leaf5","t":20.18,"s":7.305,"y":7.286,"abs":true,"yaw":8.0,"flip":true,"shadow":1,"seed":1029,"tint":0.7},
     {"kind":"relief","src":"canopy3","t":-5.299,"s":12.467,"y":8.648,"abs":true,"yaw":-7.0,"flip":true,"shadow":1,"seed":1030},
     {"kind":"relief","src":"canopy2","t":-3.457,"s":12.768,"y":8.863,"abs":true,"yaw":6.0,"flip":false,"shadow":1,"seed":1031},
     {"kind":"relief","src":"leaf5","t":-2.288,"s":12.376,"y":8.483,"abs":true,"yaw":13.0,"flip":false,"shadow":1,"seed":1032},
@@ -646,7 +652,6 @@
     {"kind":"card","src":"rockSmall","t":14.678,"s":-4.758,"yaw":10.0,"flip":false,"seed":731421},
     {"kind":"card","src":"rockSmall","t":9.813,"s":-8.831,"yaw":6.0,"flip":true,"seed":706675},
     {"kind":"card","src":"rockSmall","t":2.732,"s":-5.685,"yaw":-11.0,"flip":false,"seed":276396},
-    {"kind":"card","src":"flower","t":3.516,"s":-6.43,"yaw":-12.0,"flip":false,"seed":915026},
     {"kind":"card","src":"sprout","t":13.41,"s":-8.028,"yaw":1.0,"flip":false,"seed":304425},
     {"kind":"card","src":"pebble","t":17.805,"s":-6.847,"yaw":12.0,"flip":true,"seed":992087},
     {"kind":"card","src":"flower","t":22.623,"s":-9.152,"yaw":3.0,"flip":false,"seed":267649},
@@ -768,10 +773,8 @@
     {"kind":"shaft","name":"moon-shaft-1","t":-2.5,"s":7.5,"y":11.5,"abs":true,"top":0.8,"bottom":2.5,"len":9.0,"dir":[0.36,-1.0,0.34]},
     {"kind":"shaft","name":"moon-shaft-2","t":5.5,"s":6.5,"y":12.0,"abs":true,"top":0.9,"bottom":2.2,"len":9.0,"dir":[0.36,-1.0,0.34]},
     {"kind":"shaft","name":"moon-shaft-3","t":14.5,"s":8.5,"y":11.0,"abs":true,"top":1.0,"bottom":2.5,"len":9.0,"dir":[0.36,-1.0,0.34]},
-    {"kind":"frame","name":"frame-left-mid","src":"frameBranch","vx":0.02,"vy":0.55,"depth":7.0,"scale":0.288,"flip":false,"roll":-14.0},
-    {"kind":"frame","name":"frame-right-mid","src":"frameBranch","vx":1.0,"vy":0.5,"depth":8.0,"scale":0.228,"flip":true,"roll":12.0},
-    {"kind":"frame","name":"frame-low-left","src":"frameFern","vx":0.03,"vy":0.35,"depth":6.5,"scale":0.394,"flip":false,"roll":4.0},
-    {"kind":"frame","name":"frame-low-right","src":"frameBush","vx":0.97,"vy":0.28,"depth":7.0,"scale":0.471,"flip":true,"roll":-4.0},
-    {"kind":"frame","name":"frame-right-high","src":"frameVines","vx":0.9,"vy":0.93,"depth":9.5,"scale":0.396,"flip":true,"roll":0.0}
+    {"kind":"frame","name":"frame-left-mid","src":"frameBranch","vx":0.02,"vy":0.55,"depth":7.0,"scale":0.288,"flip":false,"roll":-14.0,"tint":0.5,"phone":{"vy":0.66}},
+    {"kind":"frame","name":"frame-low-left","src":"frameFern","vx":0.03,"vy":0.15,"depth":6.5,"scale":0.394,"flip":false,"roll":4.0,"tint":0.5},
+    {"kind":"frame","name":"frame-low-right","src":"frameBush","vx":0.97,"vy":0.28,"depth":7.0,"scale":0.471,"flip":true,"roll":-4.0,"tint":0.5}
   ]
 }

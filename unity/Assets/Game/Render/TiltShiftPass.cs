@@ -16,6 +16,16 @@
 //
 // 既定 (TiltShiftSettings.Enabled = false) では TiltShiftHook が何も積まない = 今の見た目のまま (W1)。
 // 帯が未設定 (BandFar ≤ 0) の間は、有効でも何もしない (画面全体が「奥」になって全部ぼけるのを防ぐ)。
+//
+// P24 (W3) の詰め
+//   - ピントの帯を「道に沿った帯」にできる (TiltShiftSettings.Focus = Path。既定)。画素の世界の点の道の座標 s が PathNear〜PathFar ならぼかし 0。
+//     座席は道に沿って斜めに並ぶ (左手前の主人公〜右奥の敵) ので、深さの帯 (Depth) だと「左の奥のひな壇は帯の中でくっきり・右の敵のすぐ後ろの地面はぼける」
+//     という左右の食い違いが出ていた (W2 のスマホ相当の⑥ 0.23〜0.29 の主因)。道に沿った帯は、焦点面を座席の列に沿って傾けたティルトシフトのレンズと同じ。
+//     シェーダには、道の s 軸をカメラの右・上・前へ写した値 (_TS_Plane) と投影の値 (_TS_Proj) を渡し、画素ごとに s = n·C + 深さ × (n·視線) で求める。
+//     箱庭が無い・カメラが道とほぼ平行・正射影の時は深さの帯へ戻る (LastFocus に理由)。
+//   - 手前の層の輪郭: 自分が手前の画素は、自分の錯乱円の円盤 (NearOwnTaps 点) で「手前の物が占める割合」と「後ろの背景」を取り、
+//     α = 占める割合・下地 = 背景の平均にする (前は自分の画素を α=1 にしていたので、細い蔦や羊歯の輪郭がくっきり残っていた = W2 の額縁 frame-4・frame-1)。
+//     背景は奥の層のテクスチャ (far) の空いている所 (自分が手前の画素) に α=1 で書き、合成で「元の色」の代わりに使う。
 using System;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -29,8 +39,10 @@ namespace DeckRogue.Game
     {
         // ---------------------------------------------------------------- 詰めの値 (P24 が詰める。値の置き場を TiltShiftSettings へ移してもよい)
 
-        /// <summary>ぼかしの点の数 (ゴールデンアングルの渦。4〜64)。多いほど滑らかで重い</summary>
-        public static int Taps = 22;
+        /// <summary>ぼかしの点の数 (ゴールデンアングルの渦。4〜64)。多いほど滑らかで重い (P24: 22 → 32。PC の全解像度 24px で 22 点は粒が見えた)</summary>
+        public static int Taps = 32;
+        /// <summary>自分が手前の画素だけ、自分の錯乱円の円盤を取る点の数 (4〜64。手前の輪郭の α と後ろの背景。P24)</summary>
+        public static int NearOwnTaps = 24;
         /// <summary>手前のにじみ出しのタイルの大きさ (作業の解像度の px。4〜64)</summary>
         public static int NearDilateTile = 16;
         /// <summary>点の渦を画素ごとに回す (帯状の縞を細かい粒に変える。粒は画素の位置だけで決まる = 撮影で毎回同じ)</summary>
@@ -43,6 +55,13 @@ namespace DeckRogue.Game
         public static float TiltBottom = 0f, TiltBottomFrom = 0.25f;
         /// <summary>調べの表示: 0 = 普通・1 = 錯乱円 (赤 = 手前・青 = 奥)・2 = 奥の層・3 = 手前の層</summary>
         public static int DebugView = 0;
+
+        /// <summary>最後に記録したフレームのピントの帯 ("path" = 道に沿った帯・"depth" = 深さの帯・"depth (理由)" = 道に沿った帯にできなかった)。dumplayout 用</summary>
+        public static string LastFocus = "";
+        /// <summary>最後に記録したフレームの道の帯の値 (x = n·カメラの右・y = n·カメラの上・z = n·カメラの前・w = カメラの位置の s)。dumplayout 用</summary>
+        public static Vector4 LastPlane;
+        /// <summary>最後に記録したフレームの上限 (全解像度の px・手前は NearScale を掛ける前)</summary>
+        public static float LastMaxPx;
 
         /// <summary>シェーダ DeckRogue/TiltShift のパスの番号</summary>
         public static class ShaderPass
@@ -70,6 +89,9 @@ namespace DeckRogue.Game
             public static readonly int Params = Shader.PropertyToID("_TS_Params");
             public static readonly int Tilt = Shader.PropertyToID("_TS_Tilt");
             public static readonly int Misc = Shader.PropertyToID("_TS_Misc");
+            public static readonly int Focus = Shader.PropertyToID("_TS_Focus");
+            public static readonly int Plane = Shader.PropertyToID("_TS_Plane");
+            public static readonly int Proj = Shader.PropertyToID("_TS_Proj");
         }
 
         static readonly ProfilingSampler s_Prefilter = new ProfilingSampler("TiltShift Prefilter");
@@ -122,7 +144,7 @@ namespace DeckRogue.Game
 
         struct Consts
         {
-            public Vector4 fullSize, workSize, tileSize, band, param, tilt, misc;
+            public Vector4 fullSize, workSize, tileSize, band, param, tilt, misc, focus, plane, proj;
         }
 
         static void SetConsts(MaterialPropertyBlock mpb, in Consts c)
@@ -135,6 +157,42 @@ namespace DeckRogue.Game
             mpb.SetVector(Ids.Params, c.param);
             mpb.SetVector(Ids.Tilt, c.tilt);
             mpb.SetVector(Ids.Misc, c.misc);
+            mpb.SetVector(Ids.Focus, c.focus);
+            mpb.SetVector(Ids.Plane, c.plane);
+            mpb.SetVector(Ids.Proj, c.proj);
+        }
+
+        /// <summary>
+        /// 道に沿った帯の値 (P24)。道の s 軸 n (箱庭の根のローカル = 世界。Diorama.OnPath) を、描画のカメラ (揺れ・寄りを含む実際のカメラ) の
+        /// 右・上・前へ写す: plane = (n·右, n·上, n·前, n·(カメラの位置 − 根の原点))。画素の視線 r = ((ndc.x + m02)/m00, (ndc.y + m12)/m11, 1) (カメラの空間・+z が前) で
+        /// s = plane.w + 深さ × (plane.x r.x + plane.y r.y + plane.z)。proj = (1/m00, 1/m11, m02, m12) (投影は GL の形 = 上下の反転を含まない)。
+        /// 返り値 false = 深さの帯へ戻す (why に理由)
+        /// </summary>
+        static bool TryPathPlane(Camera cam, out Vector4 plane, out Vector4 proj, out string why)
+        {
+            plane = proj = default;
+            why = null;
+            if (TiltShiftSettings.Focus != TiltShiftFocus.Path) { why = "depth"; return false; }
+            if (!Diorama.Active) { why = "depth (箱庭が無い)"; return false; }
+            if (cam == null || cam.orthographic) { why = "depth (カメラが無いか正射影)"; return false; }
+            Vector3 n = Diorama.OnPath(0f, 1f, 0f) - Diorama.OnPath(0f, 0f, 0f);
+            Vector3 origin = Vector3.zero;
+            Transform root = Stage.WorldRoot;
+            if (root != null) { n = root.TransformDirection(n); origin = root.position; }   // 箱庭は根のローカル (根は原点に置く約束。念のため写す)
+            if (!(n.sqrMagnitude > 1e-8f)) { why = "depth (道の向きが無い)"; return false; }
+            n.Normalize();
+            Matrix4x4 c2w = cam.cameraToWorldMatrix;   // カメラの空間は −z が前 (GL の形)
+            Vector3 right = ((Vector3)c2w.GetColumn(0)).normalized;
+            Vector3 up = ((Vector3)c2w.GetColumn(1)).normalized;
+            Vector3 fwd = -((Vector3)c2w.GetColumn(2)).normalized;
+            Vector3 pos = c2w.GetColumn(3);
+            Matrix4x4 p = cam.projectionMatrix;
+            if (!(Mathf.Abs(p.m00) > 1e-6f) || !(Mathf.Abs(p.m11) > 1e-6f)) { why = "depth (投影が読めない)"; return false; }
+            float nf = Vector3.Dot(n, fwd);
+            if (!(nf > 0.2f)) { why = "depth (カメラが道とほぼ平行)"; return false; }
+            plane = new Vector4(Vector3.Dot(n, right), Vector3.Dot(n, up), nf, Vector3.Dot(n, pos - origin));
+            proj = new Vector4(1f / p.m00, 1f / p.m11, p.m02, p.m12);
+            return true;
         }
 
         static Vector4 SizeVec(int w, int h) { return new Vector4(w, h, 1f / w, 1f / h); }
@@ -151,13 +209,22 @@ namespace DeckRogue.Game
             return s_NoScaleBias;
         }
 
-        bool TryMakeConsts(int fullW, int fullH, out Consts c, out int workW, out int workH, out int tileW, out int tileH)
+        bool TryMakeConsts(Camera cam, int fullW, int fullH, out Consts c, out int workW, out int workH, out int tileW, out int tileH)
         {
             c = default; workW = workH = tileW = tileH = 0;
             float bandNear = TiltShiftSettings.BandNear, bandFar = TiltShiftSettings.BandFar;
             if (!(bandFar > 0f) || bandFar < bandNear) return false;                     // 帯が未設定 = 何もしない
             float maxPx = Mathf.Max(0f, Phone ? TiltShiftSettings.MaxPxPhone : TiltShiftSettings.MaxPxPC) * (fullH / 1080f);
+            LastMaxPx = maxPx;
             if (maxPx < 0.5f) return false;                                              // 上限が 0 = 何もしない
+            // ピントの帯の形 (P24): 道に沿った帯にできなければ深さの帯
+            bool path = TryPathPlane(cam, out var plane, out var proj, out var why);
+            LastFocus = path ? "path" : why;
+            LastPlane = plane;
+            float pathNear = TiltShiftSettings.PathNear, pathFar = Mathf.Max(TiltShiftSettings.PathNear + 0.01f, TiltShiftSettings.PathFar);
+            c.focus = new Vector4(pathNear, pathFar, Mathf.Clamp(TiltShiftSettings.NearScale, 0f, 2f), path ? 1f : 0f);
+            c.plane = plane;
+            c.proj = proj;
             int scale = TiltShiftSettings.HalfRes ? 2 : 1;
             workW = (fullW + scale - 1) / scale;
             workH = (fullH + scale - 1) / scale;
@@ -175,7 +242,7 @@ namespace DeckRogue.Game
             c.param = new Vector4(maxPx, scale, taps, Jitter ? 1f : 0f);
             c.tilt = new Vector4(Mathf.Clamp01(TiltTop), Mathf.Clamp(TiltTopFrom, 0f, 0.999f),
                                  Mathf.Clamp01(TiltBottom), Mathf.Clamp(TiltBottomFrom, 0.001f, 1f));
-            c.misc = new Vector4(tile, Mathf.Clamp01(FarExclude), Mathf.Clamp(DebugView, 0, 3), 0f);
+            c.misc = new Vector4(tile, Mathf.Clamp01(FarExclude), Mathf.Clamp(DebugView, 0, 3), Mathf.Clamp(NearOwnTaps, 4, 64));
             return true;
         }
 
@@ -299,7 +366,7 @@ namespace DeckRogue.Game
                 fullH = cameraData.cameraTargetDescriptor.height;
             }
             if (fullW < 4 || fullH < 4) return;
-            if (!TryMakeConsts(fullW, fullH, out var consts, out int workW, out int workH, out int tileW, out int tileH)) return;
+            if (!TryMakeConsts(cameraData.camera, fullW, fullH, out var consts, out int workW, out int workH, out int tileW, out int tileH)) return;
 
             TextureHandle work = renderGraph.CreateTexture(Derive(srcDesc, workW, workH, s_LayerFormat, "TiltShift_Work", FilterMode.Point));
             TextureHandle tile = renderGraph.CreateTexture(Derive(srcDesc, tileW, tileH, s_TileFormat, "TiltShift_Tile", FilterMode.Point));

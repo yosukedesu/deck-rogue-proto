@@ -120,6 +120,53 @@ Shader "DeckRogue/StageModule"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Include/HD2DPixel.hlsl"
 
+            // 見本の霧の形 (2026-09-30 W3 P22)。StageLook が全体値で書き、Restore で 0 に戻す (0 = 使わない = URP の霧のまま)
+            float4 _HD2DFogLobePos;      // xyz = 霧の光の芯 (世界。坑口の奥の脈)・w = 芯の絞り (cos の乗数。0 = 使わない)
+            float4 _HD2DFogLobeColor;    // rgb = 芯を向いた時に霧へ足す色 (線形)・a = 芯から外れた所の霧の色の倍率 (0〜1)
+            float4 _HD2DHeightFogColor;  // rgb = 高さの霧の色 (線形)・a = 濃さ
+            float4 _HD2DHeightFogRange;  // x = 下の高さ・y = 上の高さ・z = 1 なら有効
+            float4 _HD2DHeightFogDepth;  // x = かかり始める深さ・y = 濃さが満ちる深さ (カメラからの視線の深さ)
+            // 舞台の色の寄せ (2026-09-30 W3 の統合・本家の色彩 docs/design/hd2d-slice/honke-color.md)。StageLook が look の envGrade から書く。
+            // xyz = 色の倍率 − 1 (0 = そのまま)・w = 彩度を落とす量 (0 = そのまま・1 = 灰)。全部 0 なら何も変わらない (キャラの板は別のシェーダ = 掛からない)
+            float4 _HD2DEnvGrade;
+
+            half3 HD2D_EnvGrade(half3 c)
+            {
+                half g = Luminance(c);
+                c = lerp(c, half3(g, g, g), half(saturate(_HD2DEnvGrade.w)));
+                return c * max(half3(0.0h, 0.0h, 0.0h), 1.0h + half3(_HD2DEnvGrade.xyz));
+            }
+
+            // 霧の光の芯を向くほど 1 (視線と芯の向きの cos の w 乗)。使わない時は 1
+            half HD2D_FogLobe(float3 posWS)
+            {
+                if (_HD2DFogLobePos.w <= 0.0) return 1.0h;
+                float3 v = SafeNormalize(posWS - _WorldSpaceCameraPos);
+                float3 l = SafeNormalize(_HD2DFogLobePos.xyz - _WorldSpaceCameraPos);
+                return half(pow(saturate(dot(v, l)), _HD2DFogLobePos.w));
+            }
+
+            // 霧の色: 芯を向くほど脈の光で明るく、外れるほど暗い (中央が明るく端が暗い夜の霧)。使わない時は URP の霧の色
+            half3 HD2D_FogColor(half lobe)
+            {
+                half3 fc = unity_FogColor.rgb;
+                if (_HD2DFogLobePos.w <= 0.0) return fc;
+                return fc * lerp(half(_HD2DFogLobeColor.a), 1.0h, lobe) + half3(_HD2DFogLobeColor.rgb) * lobe;
+            }
+
+            // 高さの霧: 低い所 (下〜上の高さ) に、深さ x〜y で満ちる霧。色は芯の向きで同じく明暗が付く。使わない時は元の色のまま
+            half3 HD2D_HeightFog(half3 col, float3 posWS, half lobe)
+            {
+                if (_HD2DHeightFogRange.z < 0.5 || _HD2DHeightFogColor.a <= 0.0) return col;
+                half h = half(saturate((_HD2DHeightFogRange.y - posWS.y) / max(_HD2DHeightFogRange.y - _HD2DHeightFogRange.x, 1e-3)));
+                float depth = -TransformWorldToView(posWS).z;
+                half dd = half(saturate((depth - _HD2DHeightFogDepth.x) / max(_HD2DHeightFogDepth.y - _HD2DHeightFogDepth.x, 1e-3)));
+                half amt = saturate(half(_HD2DHeightFogColor.a) * h * dd);
+                half3 hc = half3(_HD2DHeightFogColor.rgb);
+                if (_HD2DFogLobePos.w > 0.0) hc *= lerp(half(_HD2DFogLobeColor.a), 1.0h, lobe);
+                return lerp(col, hc, amt);
+            }
+
             struct Attributes
             {
                 float4 positionOS : POSITION;
@@ -270,7 +317,7 @@ Shader "DeckRogue/StageModule"
             #endif
 
                 half alpha = AlphaDiscard(albedo.a * _BaseColor.a, _Cutoff);
-                half3 col = albedo.rgb * _BaseColor.rgb;
+                half3 col = HD2D_EnvGrade(albedo.rgb * _BaseColor.rgb);   // 本家の色彩への寄せ (全体値 0 = そのまま)
                 col *= lerp(half3(1.0h, 1.0h, 1.0h), i.color.rgb, half(_VColorAO));
 
                 // 光の位置 (ドットの中心)
@@ -340,7 +387,10 @@ Shader "DeckRogue/StageModule"
                 half darken = 1.0h - half(_ShadowStrength) * saturate(lostL / max(fullL, 1e-4h));
                 col = col * (amb + half(_Receive) * direct) * darken;
 
-                half3 fogged = MixFog(col, InitializeInputDataFog(float4(posWS, 1.0), i.fogFactor));
+                // 霧 (W3 P22): 高さの霧 → 距離の霧。距離の霧の色は芯の向きで明暗が付く (全体値が 0 なら URP の MixFog と同じ)
+                half lobe = HD2D_FogLobe(posWS);
+                half3 hazed = HD2D_HeightFog(col, posWS, lobe);
+                half3 fogged = MixFogColor(hazed, HD2D_FogColor(lobe), InitializeInputDataFog(float4(posWS, 1.0), i.fogFactor));
                 col = lerp(col, fogged, half(_Fog));
                 outColor = half4(col, OutputAlpha(alpha, false));
             #ifdef _WRITE_RENDERING_LAYERS

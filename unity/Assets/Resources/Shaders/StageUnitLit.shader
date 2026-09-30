@@ -12,11 +12,15 @@
 //   _NormalMap + _HasNormal=1 … コマごとの法線 (*_n.png。sRGB なし・Point)。向きは x=右・y=上・z=手前 (OpenGL 形)。y が逆 (DirectX 形) の絵なら _NormalYSign=-1
 //   _EmissionMap + _HasEmission=1 … 発光マスク (*_e.png。光る画素 = 元の色・ほか = 黒。sRGB・Point)。黒でない所 (最大チャンネル×8 で 0〜1) は
 //     環境の暗さを受けず、絵の色 × _EmissionIntensity (既定 1.6 = 今の「灯りの目 ×1.6」と同じ。ブルームに乗る) へ寄る
-//   _KeyFlip=1 … 画像ファイルを左右反転した絵 (art-lint の表)。キーの左右を絵の描き込みに合わせる
+//   _KeyFlip=1 … 描き込まれた光が右から来る絵 (art-lint の測った向き。2026-09-30 P23: 「画像ファイルを左右反転した絵」の表は16枚中9枚が左からの光だったので、
+//     反転の有無でなく測った向きで選ぶ = StageUnits の CharExtras)。キーの左右を絵の描き込みに合わせる
 //   _Receive … 受光率 (既定 0.6。主役 0.5〜0.6 から)。_AmbientScale … 環境光の倍率。_HeroLift … 主役の持ち上げ (全体の倍率。既定 1)
 //   _LocalLights … 技の光など近くの点光源をどれだけ受けるか (0 = 受けない。影は受けない = 自分の影で汚れない)
 //   _ReceiveShadows … 月の影 (地形・大物が落とす) を受ける割合 (既定 0 = 受けない)。_CookieOnKey … 月の木漏れ日のクッキーをキーに掛ける割合 (既定 1)
 //   _OutlineFloor … 光で暗くしても、この色より暗くしない (ただし元の絵がそれより暗い所は元の絵のまま) = 輪郭の墨を夜に潰さない
+//   _BlackLift … 輪郭の持ち上げ (2026-09-30 P23。計画 P23 手順2)。xyz = 真っ黒の画素がなる色 (線形・後処理の前)。col = L + col×(1−L) で、
+//     順序と明るい所はほぼそのまま、墨の輪郭と黒鉄の暗部だけを持ち上げる (ACES の足が暗部を 1/3 に沈めるので、墨線が画面で 4〜13 に潰れていた。
+//     目標は画面で 20〜30 = トライアングルストラテジーの輪郭 RGB 24)。StageUnits がトーンマップと露出で割り戻して SetVector で書く。既定 0 = 何もしない
 //   _WhiteCap … 1 未満なら、発光以外の出力をこの明るさで頭打ちにする (白の上限 235/255≈0.92 など)。既定 1 = 使わない
 //   _Flash (被弾の白)・_Dissolve (撃破の崩れ)・_Rim (右上の縁の1ドット)・_Fog (霧を受ける割合) は StageUnit と同じ式
 // パス: Forward・ShadowCaster (舞台の灯の影。Cull Off)・DepthOnly・DepthNormals (SSAO とぼかしの深度にキャラを載せる)
@@ -42,6 +46,7 @@ Shader "DeckRogue/StageUnitLit"
         _LocalLights ("Local Lights", Float) = 0
         _OutlineFloor ("Outline Floor", Color) = (0.094,0.086,0.118,1)
         _WhiteCap ("White Cap", Float) = 1
+        _BlackLift ("Black Lift (linear rgb pure black becomes)", Vector) = (0,0,0,0)
         _HasNormal ("Has Normal", Float) = 0
         _HasEmission ("Has Emission", Float) = 0
         _EmissionIntensity ("Emission Intensity", Float) = 1.6
@@ -71,6 +76,7 @@ Shader "DeckRogue/StageUnitLit"
             half4 _OutlineFloor;
             half _WhiteCap, _HasNormal, _HasEmission, _Cull;
             half _EmissionIntensity, _NormalYSign, _ReceiveShadows, _CookieOnKey;
+            half4 _BlackLift;
         CBUFFER_END
 
         // 撃破の崩れ (StageUnit と同じ式): ドット単位の乱数で消えていく。頭 (上) から先に、足元は最後
@@ -230,6 +236,9 @@ Shader "DeckRogue/StageUnitLit"
                 half3 col = albedo * lit * _HeroLift;
                 // 輪郭の持ち上げ: 光で暗くしても min(元の絵, _OutlineFloor) より暗くしない
                 col = max(col, min(albedo, _OutlineFloor.rgb));
+                // 輪郭の持ち上げ (黒の持ち上げ): 真っ黒 → _BlackLift、白 → 白のまま。暗いほど多く上がる (順序は変えない)。既定 0 = そのまま
+                half3 lift = saturate(_BlackLift.rgb);
+                col = lift + col * (1.0h - lift);
                 if (_WhiteCap < 0.999h) col = min(col, half3(_WhiteCap, _WhiteCap, _WhiteCap));
                 // 発光: 光る所は暗さを受けず、絵の色 × 強さ へ
                 if (_HasEmission > 0.5h)

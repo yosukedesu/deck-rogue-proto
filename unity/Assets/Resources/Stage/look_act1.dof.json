@@ -3,16 +3,45 @@
     "幕1のぼかし (2026-09-30 HD-2D 見本。計画 §2-6)。持ち主は P24 (ぼかしの詰め)。作ったのは P09。look_act1.json・look_act1.char.json の上に重ねて読む。",
     "StageLook.Apply が TiltShiftSettings (P07 のパスが読む) に書く。Enabled は旗 dof=1、UseUrpBokeh は旗 dof=urp。",
     "座席の帯の深さは P10 の Stage.SeatDepthRange から (StageLook.SetSeatBand が bandMargin を足して BandNear・BandFar に書く)。まだ無い時は カメラの距離 + fallbackBandRel。",
-    "urpBokeh は dof=urp (逃げ道) の時の URP の Bokeh の値。焦点は座席の帯の真ん中。"
+    "urpBokeh は dof=urp (逃げ道) の時の URP の Bokeh の値。焦点は座席の帯の真ん中。",
+    "P24 (W3): tiltShiftPass は TiltShiftLook (Game/Render) が StageLook.Current.Raw から読むパスの中の詰めの値 (StageLook は読まない)。",
+    "  focus = path: ピントの帯を道に沿った帯にする (画素の世界の点の道の座標 s が pathBand の中ならぼかし 0。帯の外は視線に沿った深さに直して rampNear・rampFar で上限へ)。",
+    "    座席は道に沿って斜めに並ぶので、深さの帯 (focus = depth・bandMargin) だと左の奥のひな壇が帯の中でくっきり・右の敵のすぐ後ろはぼける、と左右が食い違った (W2 のスマホ相当の⑥ 0.23〜0.29)。",
+    "    pathBand [-3, 5.5]: 座席は s −0.5〜+2.05 (人形の後ろの列)・板の縁と頭で ±0.7〜+1.5・からくりの匣 −1.9/+1.7・座席の帯の前の縁 −3.2〜−3.8 (手前の段)・奥のひな壇の1段目の面 s 5.1〜6.1 (座席のすぐ後ろの石垣。座席の帯の鋭さ〔dof=0 の 0.95 倍以上〕の測る所に入るので、面の半分までを帯に入れる)。",
+    "    箱庭が無い時は自動で深さの帯 (bandMargin・rampNear・rampFar)。撮影で比べる時は STATE に tsfocus=depth (1行1起動の撮影だけ)。",
+    "  rampFar 9 → 5 (P24): ひな壇の1段目の上の岩・茂み (s 6〜9) に上限の1割〜9割、2段目 (s 11〜) から上限が効く値。深さの帯の時も同じ値。",
+    "  nearOwnTaps: 自分が手前の画素だけ、自分の錯乱円の円盤で「手前の物が占める割合」と「後ろの背景」を取る点の数 (細い蔦・羊歯の輪郭を溶かす)。",
+    "  nearScale: 手前のぼけの上限の倍率 (1 = 奥と同じ 24px)。額縁が溶けすぎる時に下げる。",
+    "  phone: tier=phone の時だけ上に重ねる (look_act1.phone.json の tiltShiftPass も重なる)。半解像度 (phone.json の halfRes) なので点は少なめ。",
+    "  debugView (撮影は STATE の tsdebug): 1 = 錯乱円 (赤 = 手前・青 = 奥・黒 = 帯の中)・2 = 奥の層 (手前の画素は後ろの背景の見積もり)・3 = 手前の層。"
   ],
   "tiltShift": {
     "bandMargin": 0.8,
     "rampNear": 2.5,
-    "rampFar": 9.0,
+    "rampFar": 5.0,
     "maxPxPC": 24,
     "maxPxPhone": 12,
     "halfRes": false,
     "fallbackBandRel": [-4.0, 8.0]
+  },
+  "tiltShiftPass": {
+    "focus": "path",
+    "pathBand": [-3.0, 5.5],
+    "nearScale": 1.0,
+    "taps": 32,
+    "nearOwnTaps": 24,
+    "nearDilateTile": 16,
+    "jitter": true,
+    "farExclude": 0.5,
+    "tiltTop": 0.0,
+    "tiltTopFrom": 0.75,
+    "tiltBottom": 0.0,
+    "tiltBottomFrom": 0.25,
+    "debugView": 0,
+    "phone": {
+      "taps": 24,
+      "nearOwnTaps": 16
+    }
   },
   "urpBokeh": {
     "focalLength": 90,

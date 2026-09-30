@@ -6,6 +6,8 @@
 //   - 積むのは舞台のカメラ (Stage.Camera) だけ。水面の反射のカメラ・シーンビュー・プレビューには積まない
 //   - スマホの段 (HD2DFlags.Tier = phone) なら上限は MaxPxPhone
 // 場に GameObject は作らない (撮影の粒の並べ直し・dumplayout の走査に何も増やさない)。登録は起動時に1回、終了 (再生の終わり) で外す。
+// P24 (W3): 積む直前に TiltShiftLook.Sync (設計図の tiltShiftPass = ピントの帯の形・点の数などの詰めの値) を呼び、
+//           dumplayout の extra.tiltShiftPass に読んだ値と実際に使ったピントの帯の形を出す。
 //
 // 逃げ道 (dof=urp): UseUrpBokeh = true の間は自作のパスを積まず、URP の被写界深度 (Bokeh) を使う。
 // Volume の DepthOfField を組む側 (StageLook・P09 / P24) が ConfigureUrpBokeh(dof) を呼ぶと、帯の値から焦点と絞りを入れて有効にする。
@@ -38,6 +40,7 @@ namespace DeckRogue.Game
             if (s_Installed) return;
             RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
             Application.quitting += Uninstall;
+            HD2DFlags.LayoutDumpers["tiltShiftPass"] = TiltShiftLook.DebugInfo;   // layout.json の extra.tiltShiftPass (P24)
             s_Installed = true;
         }
 
@@ -47,8 +50,10 @@ namespace DeckRogue.Game
             {
                 RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
                 Application.quitting -= Uninstall;
+                HD2DFlags.LayoutDumpers.Remove("tiltShiftPass");
                 s_Installed = false;
             }
+            TiltShiftLook.Invalidate();
             if (s_Pass != null)
             {
                 s_Pass.Dispose();
@@ -67,6 +72,7 @@ namespace DeckRogue.Game
             if (renderer == null) return;
             if (s_Pass == null) s_Pass = new TiltShiftPass();
             if (!s_Pass.EnsureMaterial()) return;
+            TiltShiftLook.Sync();   // 詰めの値 (設計図の tiltShiftPass。替わった時だけ読み直す。P24)
             s_Pass.Phone = HD2DFlags.Tier == HD2DTier.Phone;
             renderer.EnqueuePass(s_Pass);
         }

@@ -6,7 +6,7 @@
 //  ・画角と見下ろしは旗 (cam=・pitch=) から。LayoutCamera のたびに fieldOfView・遠端 (220×r) を書く。r = 画角 36° の時の距離に対する今の距離の比
 //    (同じ端末の比 = PC では _dist÷16.62。36° ならちょうど 1)。寄り (ZoomPunch・Dolly) の量に r を掛ける = どの画角でも同じ割合だけ寄る。
 //    揺れ (Shake) は横に動かすので、焦点の面の px は画角に依らず同じ (r を掛けない)。
-//  ・足元の線は旗 groundline= か、見本 (stage=diorama) の既定 PC 0.42・スマホ 0.52 (seatfit の表で帳面と自分の札が足元を隠さない、いちばん低い線)。
+//  ・足元の線は旗 groundline= か、見本 (stage=diorama) の既定 PC 0.41・スマホ 0.51 (W3 の P20 の表で帳面と自分の札が足元を隠さない、いちばん低い線。W2 は 0.42/0.52)。
 //  ・霧と影の距離は StageLook.ScaleByCameraDistance の1か所で書く (ここは _dist を渡すだけ)。座席の帯 (SeatDepthRange) をぼかしの帯へ、
 //    影のカスケードの分割を「座席の帯の奥＋余白 ÷ 影の距離」から StageLook へ渡す (StageLook が当たっている時だけ。当たった後の最初のフレームでも渡す)。
 //  ・LayoutCamera の最後で Diorama.OnCameraLayout (額縁の置き直し)。StageDriver が毎フレーム Diorama.Tick (滑車を基準の回転 × Z 回りで回す)。
@@ -217,7 +217,7 @@ namespace DeckRogue.Game
             }
         }
         // 画面の下から何割に world 原点を置くか。スマホ (2026-09-14) は手札が画面の 43% を占めるので座席を上げる (絵は半分なので上端は余る)
-        // 旗 groundline= (0〜1) があればそれ。見本 (stage=diorama) の既定は PC 0.42・スマホ 0.52 (2026-09-30 P10: docs/design/hd2d-slice/seatfit.md の
+        // 旗 groundline= (0〜1) があればそれ。見本 (stage=diorama) の既定は PC 0.41・スマホ 0.51 (W3。W2 は PC 0.42・スマホ 0.52 = 2026-09-30 P10: docs/design/hd2d-slice/seatfit.md の
         // 「今の UI のまま・手札を沈めずに帳面と自分の札が足元を 16px 以上隠さない、いちばん低い線」。計画の目安 PC 0.40 は自分の札が主人公の足元を 34〜38px 隠す)
         static float GroundLineRatio
         {
@@ -225,7 +225,9 @@ namespace DeckRogue.Game
             {
                 float g = HD2DFlags.GroundLine;
                 if (g >= 0f && g <= 1f) return g;
-                if (DioramaCamera) return UiKit.Phone ? 0.52f : 0.42f;
+                // W3 (P20・2026-09-30): 手札を PC 19・スマホ 17 沈め、PC の足元の線 (StatusLineY) を 285 にした上で重ならないいちばん低い線 = PC 0.41・スマホ 0.51
+                // (scratchpad/hd2d/p20/seatfit-p20.md。PC は人形の1体目を自分の札が隠さない高さ、スマホは幕ボスの帳面がボスの足元を隠さない高さで決まる)
+                if (DioramaCamera) return UiKit.Phone ? 0.51f : 0.41f;
                 return UiKit.Phone ? 0.56f : 0.45f;   // スマホ 0.54→0.56 (2026-09-15 案C: 頭上の吹き出しが無くなり、足元の帳面の札 76 に足が掛からない高さへ)
             }
         }

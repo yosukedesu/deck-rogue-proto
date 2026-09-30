@@ -11,6 +11,10 @@
 //   48 の見本  … herodots=48 の絵 (Theme.cs の Creature.Get が leader_green_48 を返す) も主役の照明と杖の先の光の表で同じに扱う
 //   材質の漏れ … 板が消える時に材質 (と接地影・杖の先の光の材質) を捨てる
 //   口         … TryGetUnitBox (板の足元と高さ。StageFx.UnitPoint・技の光が読む)・DebugUnitBoxes (矩形と板のずれ。dumplayout の stage.unitBoxes)
+// P23 (W3) が足した部分 (計画 P23。光を受ける板だけ = litunits=1。stage=old と litunits=0 は1画素も変えない):
+//   輪郭の持ち上げ … look の char の blackLift を、トーンマップと露出で割り戻して _BlackLift に書く (BlackLiftVector)
+//   _KeyFlip       … 描き込まれた光の向きを測った表 (art-lint の lightFromRight) で選べるようにした (ResolveKeyFlip・look の char の keyFlipFrom)
+//   絵ごとの上書き … look の char の art (このはだけ主役の持ち上げ 1.6・ひなたの輪郭の持ち上げは半分)。露出の割り戻し … look の char の exposureRef (CharExposureScale)
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
@@ -151,7 +155,19 @@ namespace DeckRogue.Game
                 e["layer"] = u.gameObject.layer;
                 e["renderingLayerMask"] = u.Rend != null ? u.Rend.renderingLayerMask : 0u;
                 e["castShadows"] = u.Rend != null && u.Rend.shadowCastingMode != ShadowCastingMode.Off;
-                if (u.IsLit) { e["keyFlip"] = u.KeyFlipArt; e["hasNormal"] = u.CurNormal != null; e["hasEmission"] = u.CurEmission != null; }
+                if (u.IsLit)
+                {
+                    e["keyFlip"] = u.KeyFlipArt; e["hasNormal"] = u.CurNormal != null; e["hasEmission"] = u.CurEmission != null;
+                    // P23: 材質に書いた光の値 (主役の持ち上げ・輪郭の持ち上げ〔線形〕・受光)
+                    if (u.Mat != null)
+                    {
+                        var bl = u.Mat.GetVector("_BlackLift");
+                        e["heroLift"] = Mathf.Round(u.Mat.GetFloat("_HeroLift") * 1000f) / 1000f;
+                        e["receive"] = Mathf.Round(u.Mat.GetFloat("_Receive") * 1000f) / 1000f;
+                        e["blackLift"] = new[] { Mathf.Round(bl.x * 10000f) / 10000f, Mathf.Round(bl.y * 10000f) / 10000f, Mathf.Round(bl.z * 10000f) / 10000f };
+                        e["edgeLin"] = Mathf.Round(u.EdgeLin() * 100000f) / 100000f;   // 絵の輪郭の暗さ (線形。-1 = 測れない)
+                    }
+                }
                 list.Add(e);
             }
             return list;
@@ -256,36 +272,110 @@ namespace DeckRogue.Game
             return _litShader;
         }
 
-        static HashSet<string> _keyFlipArts;
-        /// <summary>画像ファイルを左右反転した絵 (P05 の art-lint が書く Resources/Art/stage/act1/keyflip の "keyflip")。_KeyFlip=1 にする絵の名前</summary>
+        static HashSet<string> _keyFlipArts, _lightFromRightArts;
+        /// <summary>
+        /// P05 の art-lint が書く Resources/Art/stage/act1/keyflip の2つの表を1回だけ読む:
+        /// "keyflip" = 画像ファイルを左右反転した絵・"lightFromRight" = 描き込まれた光が右から来る絵 (測った向き。lightDx ≥ 0.10・大きさ ≥ 0.12)
+        /// </summary>
+        static void LoadKeyFlipTables()
+        {
+            if (_keyFlipArts != null) return;
+            _keyFlipArts = new HashSet<string>(StringComparer.Ordinal);
+            _lightFromRightArts = new HashSet<string>(StringComparer.Ordinal);
+            try
+            {
+                var ta = Resources.Load<TextAsset>("Art/stage/act1/keyflip");
+                if (ta != null)
+                {
+                    var o = JObject.Parse(ta.text);
+                    Action<string, HashSet<string>> read = (name, set) =>
+                    {
+                        var arr = o[name] as JArray;
+                        if (arr != null) foreach (var x in arr) { var n = (string)x; if (!string.IsNullOrEmpty(n)) set.Add(n); }
+                    };
+                    read("keyflip", _keyFlipArts);
+                    read("lightFromRight", _lightFromRightArts);
+                }
+                else Debug.LogWarning("[Stage] Art/stage/act1/keyflip が無い → _KeyFlip は全部 0");
+            }
+            catch (Exception ex) { Debug.LogWarning("[Stage] keyflip を読めない: " + ex.Message); }
+        }
+
+        /// <summary>画像ファイルを左右反転した絵 (P05 の art-lint の "keyflip")。P11 の選び方 (look の char に keyFlipFrom が無い時) の _KeyFlip=1 の絵</summary>
         static bool IsKeyFlipArt(string art)
         {
-            if (_keyFlipArts == null)
-            {
-                _keyFlipArts = new HashSet<string>(StringComparer.Ordinal);
-                try
-                {
-                    var ta = Resources.Load<TextAsset>("Art/stage/act1/keyflip");
-                    if (ta != null)
-                    {
-                        var arr = JObject.Parse(ta.text)["keyflip"] as JArray;
-                        if (arr != null) foreach (var x in arr) { var n = (string)x; if (!string.IsNullOrEmpty(n)) _keyFlipArts.Add(n); }
-                    }
-                    else Debug.LogWarning("[Stage] Art/stage/act1/keyflip が無い → _KeyFlip は全部 0");
-                }
-                catch (Exception ex) { Debug.LogWarning("[Stage] keyflip を読めない: " + ex.Message); }
-            }
+            LoadKeyFlipTables();
             return art != null && _keyFlipArts.Contains(art);
+        }
+
+        /// <summary>描き込まれた光が右から来る絵 (P05 の art-lint の "lightFromRight")</summary>
+        static bool IsLightFromRightArt(string art)
+        {
+            LoadKeyFlipTables();
+            return art != null && _lightFromRightArts.Contains(art);
+        }
+
+        /// <summary>
+        /// _KeyFlip=1 にする絵か (2026-09-30 P23)。look の char の keyFlipFrom で選び方を決める:
+        ///   "measured" = 描き込まれた光が右から来る絵 (lightFromRight)。反転した絵でも光が左から描かれていれば 0 (art-lint の表では反転した16枚のうち9枚が左からの光だった)
+        ///   "mirrored" = 画像ファイルを左右反転した絵 (P11 の選び方・keyFlipFrom が無い時の既定)
+        ///   "both"     = どちらか
+        /// そのうえで keyFlipAdd の絵は 1、keyFlipRemove の絵は 0 (表の境目の絵を手で直す口)
+        /// </summary>
+        static bool ResolveKeyFlip(string art, CharMatExtras x)
+        {
+            if (string.IsNullOrEmpty(art)) return false;
+            if (x != null && x.KeyFlipRemove.Contains(art)) return false;
+            if (x != null && x.KeyFlipAdd.Contains(art)) return true;
+            string from = x != null && !string.IsNullOrEmpty(x.KeyFlipFrom) ? x.KeyFlipFrom : "mirrored";
+            switch (from)
+            {
+                case "measured": return IsLightFromRightArt(art);
+                case "both": return IsLightFromRightArt(art) || IsKeyFlipArt(art);
+                default: return IsKeyFlipArt(art);
+            }
         }
 
         /// <summary>
         /// 設計図のキャラの塊 (look_act1.char.json の "char") の、StageLook の型に無い材質の値 (P23 が詰める口)。書いていなければシェーダの既定のまま。
-        /// localLights (技の光・逆光を受ける割合。既定 0)・whiteCap・emissionIntensity・outlineFloor [r,g,b]・receiveShadows・cookieOnKey
+        /// localLights (技の光・逆光を受ける割合。既定 0)・whiteCap・emissionIntensity・outlineFloor [r,g,b]・receiveShadows・cookieOnKey。
+        /// P23 (W3) が足した口:
+        ///   blackLift [r,g,b] / heroBlackLift [r,g,b] … 輪郭の持ち上げ (StageUnitLit の _BlackLift)。sRGB の色 = 真っ黒がなる色 (トーンマップ blackLiftTonemap の
+        ///     「1」の段・露出 blackLiftExposureRef の時の値)。今のトーンマップの倍率 × 2^(基準の露出 − 今の露出) を線形の値に掛けて書く = 画面の上の輪郭の暗さを
+        ///     舞台の露出 (P22) が変わっても保つ。heroBlackLift が無ければ主役も blackLift
+        ///   blackLiftExposureRef … 上の値を決めた時の露出 (post.exposure)。無ければ割り戻さない
+        ///   blackLiftTonemap {aces, neutral, none} … トーンマップごとの倍率 (ACES の足は暗部を強く沈めるので、Neutral・無しでは少なくてよい)。無い段は 1
+        ///   keyFlipFrom "measured"|"mirrored"|"both"・keyFlipAdd [絵の名前]・keyFlipRemove [絵の名前] … _KeyFlip の選び方 (ResolveKeyFlip)
+        ///   art { 絵の名前の頭: { heroLift, blackLift } } … 絵ごとの上書き (名前の頭がいちばん長く一致した物。leader_green は leader_green_48 にも当たる)。
+        ///     heroLift = 主役の持ち上げ (主役の時だけ・旗 herolift= が勝つ)・blackLift = 輪郭の持ち上げの倍率 (0 = 持ち上げない)
         /// </summary>
+        sealed class ArtLook { public float HeroLift = -1f, BlackLiftScale = -1f; }
         sealed class CharMatExtras
         {
+            public readonly Dictionary<string, ArtLook> Art = new Dictionary<string, ArtLook>(StringComparer.Ordinal);
+            /// <summary>絵の名前の頭がいちばん長く一致した上書き (無ければ null)</summary>
+            public ArtLook ArtFor(string art)
+            {
+                if (string.IsNullOrEmpty(art) || Art.Count == 0) return null;
+                ArtLook best = null; int bestLen = -1;
+                foreach (var kv in Art)
+                    if (kv.Key.Length > bestLen && art.StartsWith(kv.Key, StringComparison.Ordinal)) { best = kv.Value; bestLen = kv.Key.Length; }
+                return best;
+            }
             public float LocalLights = -1f, WhiteCap = -1f, EmissionIntensity = -1f, ReceiveShadows = -1f, CookieOnKey = -1f;
             public Color OutlineFloor; public bool HasOutlineFloor;
+            public Color BlackLift, HeroBlackLift; public bool HasBlackLift, HasHeroBlackLift;
+            public float BlackLiftExposureRef = float.NaN;
+            /// <summary>
+            /// 輪郭の持ち上げを絵ごとに割り引く時の、キャラの光のおおよその倍率 (look の char の blackLiftAuto.litRef。NaN = 割り引かない)。
+            /// 絵の輪郭がもともと明るい (ひなた・白の人形) ほど持ち上げを減らす: 倍率 = 1 − 絵の輪郭の暗さ (線形) × litRef × 主役の持ち上げ ÷ 持ち上げの明るさ
+            /// </summary>
+            public float BlackLiftAutoLit = float.NaN;
+            /// <summary>キャラの光を決めた時の露出 (look の char の exposureRef)。あれば受光・環境光・発光を 2^(これ − 今の post.exposure) 倍 = 舞台の露出が変わってもキャラの明るさを保つ</summary>
+            public float ExposureRef = float.NaN;
+            public readonly Dictionary<string, float> BlackLiftTonemap = new Dictionary<string, float>(StringComparer.Ordinal);
+            public string KeyFlipFrom;
+            public readonly HashSet<string> KeyFlipAdd = new HashSet<string>(StringComparer.Ordinal), KeyFlipRemove = new HashSet<string>(StringComparer.Ordinal);
         }
         static StageLookData _extrasFor; static CharMatExtras _extras;
         static CharMatExtras CharExtras()
@@ -303,11 +393,126 @@ namespace DeckRogue.Game
                     x.ReceiveShadows = num("receiveShadows"); x.CookieOnKey = num("cookieOnKey");
                     var of = c["outlineFloor"] as JArray;
                     if (of != null && of.Count >= 3) { x.OutlineFloor = new Color((float)of[0], (float)of[1], (float)of[2], 1f); x.HasOutlineFloor = true; }
+                    // P23: 輪郭の持ち上げ・_KeyFlip の選び方
+                    var bl = c["blackLift"] as JArray;
+                    if (bl != null && bl.Count >= 3) { x.BlackLift = new Color((float)bl[0], (float)bl[1], (float)bl[2], 1f); x.HasBlackLift = true; }
+                    var hbl = c["heroBlackLift"] as JArray;
+                    if (hbl != null && hbl.Count >= 3) { x.HeroBlackLift = new Color((float)hbl[0], (float)hbl[1], (float)hbl[2], 1f); x.HasHeroBlackLift = true; }
+                    var ert = c["blackLiftExposureRef"];
+                    if (ert != null && (ert.Type == JTokenType.Float || ert.Type == JTokenType.Integer)) x.BlackLiftExposureRef = (float)ert;
+                    var bla = c["blackLiftAuto"] as JObject;
+                    if (bla != null)
+                    {
+                        var lr = bla["litRef"];
+                        if (lr != null && (lr.Type == JTokenType.Float || lr.Type == JTokenType.Integer)) x.BlackLiftAutoLit = Mathf.Max(0f, (float)lr);
+                    }
+                    var cer = c["exposureRef"];
+                    if (cer != null && (cer.Type == JTokenType.Float || cer.Type == JTokenType.Integer)) x.ExposureRef = (float)cer;
+                    var tm = c["blackLiftTonemap"] as JObject;
+                    if (tm != null)
+                        foreach (var p in tm.Properties())
+                            if (!p.Name.StartsWith("_", StringComparison.Ordinal) && (p.Value.Type == JTokenType.Float || p.Value.Type == JTokenType.Integer))
+                                x.BlackLiftTonemap[p.Name.Trim().ToLowerInvariant()] = Mathf.Max(0f, (float)p.Value);
+                    var kf = c["keyFlipFrom"];
+                    if (kf != null && kf.Type == JTokenType.String) x.KeyFlipFrom = ((string)kf).Trim().ToLowerInvariant();
+                    Action<string, HashSet<string>> names = (name, set) =>
+                    {
+                        var arr = c[name] as JArray;
+                        if (arr != null) foreach (var t in arr) if (t.Type == JTokenType.String && !string.IsNullOrEmpty((string)t)) set.Add((string)t);
+                    };
+                    names("keyFlipAdd", x.KeyFlipAdd);
+                    names("keyFlipRemove", x.KeyFlipRemove);
+                    var arts = c["art"] as JObject;
+                    if (arts != null)
+                        foreach (var p in arts.Properties())
+                        {
+                            var ao = p.Value as JObject;
+                            if (ao == null || p.Name.StartsWith("_", StringComparison.Ordinal)) continue;
+                            Func<string, float> anum = name => { var t = ao[name]; return t != null && (t.Type == JTokenType.Float || t.Type == JTokenType.Integer) ? (float)t : -1f; };
+                            x.Art[p.Name] = new ArtLook { HeroLift = anum("heroLift"), BlackLiftScale = anum("blackLift") };
+                        }
                 }
             }
             catch (Exception ex) { Debug.LogWarning("[Stage] look の char を読めない: " + ex.Message); }
             _extrasFor = cur; _extras = x;
             return x;
+        }
+
+        /// <summary>
+        /// 輪郭の持ち上げの実際の値 (StageUnitLit の _BlackLift。線形・後処理の前。2026-09-30 P23)。
+        /// look の char の blackLift (主役は heroBlackLift があればそれ) を線形へ直し、今のトーンマップの倍率 (blackLiftTonemap) と
+        /// 2^(blackLiftExposureRef − 今の post.exposure) を掛ける = 後処理が変わっても画面の上の輪郭の暗さ (目標 20〜30) を保つ。書いていなければ 0 (何もしない)。
+        /// edgeLin = 絵の輪郭の暗さ (EdgeDarkLinear。負 = 分からない)・litMul = その板の光の倍率 (露出の割り戻し × 主役の持ち上げ)。
+        /// 絵ごとの倍率: look の char の art の blackLift があればそれ、無ければ blackLiftAuto (絵の輪郭がもともと明るいほど減らす)、どちらも無ければ 1
+        /// </summary>
+        static Vector4 BlackLiftVector(CharMatExtras x, bool hero, ArtLook art, float edgeLin = -1f, float litMul = 1f)
+        {
+            if (x == null) return Vector4.zero;
+            bool heroOwn = hero && x.HasHeroBlackLift;
+            if (!heroOwn && !x.HasBlackLift) return Vector4.zero;
+            Color c = heroOwn ? x.HeroBlackLift : x.BlackLift;
+            Color lin = QualitySettings.activeColorSpace == ColorSpace.Linear ? c.linear : c;
+            float s = 1f;
+            var cur = StageLook.Current;
+            if (cur != null)
+            {
+                string tm = (cur.Post.Tonemap ?? "aces").Trim().ToLowerInvariant();
+                float f;
+                if (x.BlackLiftTonemap.TryGetValue(tm, out f)) s *= f;
+                if (!float.IsNaN(x.BlackLiftExposureRef)) s *= Mathf.Pow(2f, Mathf.Clamp(x.BlackLiftExposureRef - cur.Post.Exposure, -3f, 3f));
+            }
+            float artScale = 1f;
+            if (art != null && art.BlackLiftScale >= 0f) artScale = art.BlackLiftScale;   // 絵ごとの倍率 (look の char の art)
+            else if (!float.IsNaN(x.BlackLiftAutoLit) && edgeLin >= 0f)
+            {
+                // 輪郭の画素 ≈ 絵の輪郭 × 光。持ち上げはその足りない分だけ (もともと目標より明るい輪郭は持ち上げない)
+                float liftY = (0.2126f * lin.r + 0.7152f * lin.g + 0.0722f * lin.b) * s;
+                artScale = liftY > 1e-6f ? Mathf.Clamp01(1f - edgeLin * x.BlackLiftAutoLit * Mathf.Max(0f, litMul) / liftY) : 0f;
+            }
+            s *= artScale;
+            return new Vector4(Mathf.Clamp01(lin.r * s), Mathf.Clamp01(lin.g * s), Mathf.Clamp01(lin.b * s), 0f);
+        }
+
+        /// <summary>
+        /// 絵の輪郭の暗さ (線形の輝度): 矩形 [x0,x1)×[y0,y1) の中で、不透明 (a&gt;127) で上下左右のどれかが透明か矩形の外の画素の、
+        /// 輝度 (sRGB 0〜255 の 0.2126R+0.7152G+0.0722B) の 10 パーセンタイルを線形へ直した値。輪郭の画素が無ければ 0 (真っ黒として扱う)
+        /// </summary>
+        internal static float EdgeDarkLinearFrom(Color32[] px, int w, int x0, int y0, int x1, int y1)
+        {
+            var list = new List<float>();
+            if (px == null || w <= 0) return 0f;
+            int h = px.Length / w;
+            x0 = Math.Max(0, x0); y0 = Math.Max(0, y0); x1 = Math.Min(w, x1); y1 = Math.Min(h, y1);
+            Func<int, int, bool> opaque = (xx, yy) => xx >= x0 && xx < x1 && yy >= y0 && yy < y1 && px[yy * w + xx].a > 127;
+            for (int y = y0; y < y1; y++)
+                for (int xx = x0; xx < x1; xx++)
+                {
+                    if (!opaque(xx, y)) continue;
+                    if (opaque(xx - 1, y) && opaque(xx + 1, y) && opaque(xx, y - 1) && opaque(xx, y + 1)) continue;
+                    var p = px[y * w + xx];
+                    list.Add(0.2126f * p.r + 0.7152f * p.g + 0.0722f * p.b);
+                }
+            if (list.Count == 0) return 0f;
+            list.Sort();
+            // numpy の percentile (線形補間) と同じ 10 パーセンタイル
+            float pos = 0.1f * (list.Count - 1);
+            int i0 = (int)Math.Floor(pos); int i1 = Math.Min(list.Count - 1, i0 + 1);
+            float v = (list[i0] + (list[i1] - list[i0]) * (pos - i0)) / 255f;
+            return v <= 0.04045f ? v / 12.92f : (float)Math.Pow((v + 0.055) / 1.055, 2.4);
+        }
+
+        /// <summary>StageUnitLit の _EmissionIntensity の既定 (シェーダの Properties と同じ値)</summary>
+        const float DefaultEmissionIntensity = 1.6f;
+
+        /// <summary>
+        /// キャラの光の露出の割り戻し (2026-09-30 P23): look の char に exposureRef があれば 2^(exposureRef − 今の post.exposure) (0.25〜4 倍)。無ければ 1。
+        /// 受光・環境光・発光の強さに掛ける = 舞台の露出 (P22) を下げて夜にしても、キャラの画面の明るさは保つ (主役の照明と同じ考え)
+        /// </summary>
+        static float CharExposureScale(CharMatExtras x)
+        {
+            var cur = StageLook.Current;
+            if (x == null || cur == null || float.IsNaN(x.ExposureRef)) return 1f;
+            return Mathf.Pow(2f, Mathf.Clamp(x.ExposureRef - cur.Post.Exposure, -2f, 2f));
         }
 
         // ---------------------------------------------------------------- キャラ (UI の矩形に追従するビルボード)
@@ -390,6 +595,7 @@ namespace DeckRogue.Game
         }
 
         static readonly Dictionary<Texture2D, float> _feetPad = new Dictionary<Texture2D, float>();
+        static readonly Dictionary<Texture2D, float> _edgeLinCache = new Dictionary<Texture2D, float>();   // 絵の輪郭の暗さ (P23。StageUnit.EdgeLin)
         /// <summary>絵の矩形の中で、いちばん下の不透明ドットより下にある透明行の割合 (0〜1)。PixelLab の絵は下に数ドットの余白がある</summary>
         static float FeetPad(Sprite sprite)
         {
@@ -580,17 +786,47 @@ namespace DeckRogue.Game
                 Destroy(old);
             }
 
+            float _edgeLin = -2f;   // 絵の輪郭の暗さ (線形。-2 = まだ測っていない・-1 = 測れない)
+            /// <summary>この板の一枚絵の輪郭の暗さ (EdgeDarkLinearFrom。絵ごとに1回だけ測って覚える。読めない絵は -1 = 輪郭の持ち上げを割り引かない)</summary>
+            public float EdgeLin()
+            {
+                if (_edgeLin > -1.5f) return _edgeLin;
+                _edgeLin = -1f;
+                if (BaseTex == null) return _edgeLin;
+                float cached;
+                if (_edgeLinCache.TryGetValue(BaseTex, out cached)) return _edgeLin = cached;
+                try
+                {
+                    int tw = BaseTex.width, th = BaseTex.height;
+                    int x0 = Mathf.RoundToInt(BaseUvOffset.x * tw), y0 = Mathf.RoundToInt(BaseUvOffset.y * th);
+                    int x1 = x0 + Mathf.RoundToInt(BaseUvScale.x * tw), y1 = y0 + Mathf.RoundToInt(BaseUvScale.y * th);
+                    _edgeLin = EdgeDarkLinearFrom(BaseTex.GetPixels32(), tw, x0, y0, x1, y1);
+                }
+                catch (Exception) { _edgeLin = -1f; }
+                _edgeLinCache[BaseTex] = _edgeLin;
+                return _edgeLin;
+            }
+
             /// <summary>光を受ける板の材質の値 (毎フレーム。旗 receive=・herolift=・keyflip= と設計図 look の char が変わっても追う)</summary>
             void ApplyLitProps(bool hero)
             {
-                Mat.SetFloat("_Receive", StageLook.CharReceive(hero));
-                Mat.SetFloat("_HeroLift", hero ? StageLook.HeroLift : 1f);
-                Mat.SetFloat("_AmbientScale", StageLook.CharAmbientScale);
-                Mat.SetFloat("_KeyFlip", KeyFlipArt && HD2DFlags.KeyFlip == HD2DKeyFlip.Auto ? 1f : 0f);
                 var x = CharExtras();
+                var art = x.ArtFor(ArtName);
+                float es = CharExposureScale(x);   // 露出の割り戻し (look の char の exposureRef。無ければ 1)
+                Mat.SetFloat("_Receive", StageLook.CharReceive(hero) * es);
+                // 主役の持ち上げ: 旗 herolift= > 絵ごとの上書き (look の char の art。P23: このはだけ上げ、白い衣のひなたは上げない) > look の heroLift
+                float heroLift = StageLook.HeroLift;
+                if (hero && HD2DFlags.HeroLift < 0f && art != null && art.HeroLift >= 0f) heroLift = art.HeroLift;
+                Mat.SetFloat("_HeroLift", hero ? heroLift : 1f);
+                Mat.SetFloat("_AmbientScale", StageLook.CharAmbientScale * es);
+                // _KeyFlip の絵は look の char の keyFlipFrom で選ぶ (P23: 既定は描き込まれた光の向きを測った表。旗 keyflip=off なら全部 0)。dumplayout の keyFlip もこの値
+                KeyFlipArt = ResolveKeyFlip(ArtName, x);
+                Mat.SetFloat("_KeyFlip", KeyFlipArt && HD2DFlags.KeyFlip == HD2DKeyFlip.Auto ? 1f : 0f);
+                // 輪郭の持ち上げ (P23)。書いていなければ 0。絵の輪郭がもともと明るい絵 (ひなた・白の人形) は blackLiftAuto で減らす
+                Mat.SetVector("_BlackLift", BlackLiftVector(x, hero, art, EdgeLin(), es * (hero ? heroLift : 1f)));
                 Mat.SetFloat("_LocalLights", x.LocalLights >= 0f ? x.LocalLights : 0f);
                 if (x.WhiteCap >= 0f) Mat.SetFloat("_WhiteCap", x.WhiteCap);
-                if (x.EmissionIntensity >= 0f) Mat.SetFloat("_EmissionIntensity", x.EmissionIntensity);
+                Mat.SetFloat("_EmissionIntensity", (x.EmissionIntensity >= 0f ? x.EmissionIntensity : DefaultEmissionIntensity) * es);   // 露出の割り戻しが戻った時も書き直す
                 if (x.ReceiveShadows >= 0f) Mat.SetFloat("_ReceiveShadows", x.ReceiveShadows);
                 if (x.CookieOnKey >= 0f) Mat.SetFloat("_CookieOnKey", x.CookieOnKey);
                 if (x.HasOutlineFloor) Mat.SetColor("_OutlineFloor", x.OutlineFloor);

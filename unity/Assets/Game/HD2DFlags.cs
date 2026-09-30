@@ -9,8 +9,10 @@
 //   drift=0|1                 aa=none|msaa|2|4|8 (msaa=<N> も同じ。N≦1 = 無し)   litunits=0|1   charshadow=0|1
 //   trunk=mesh|relief         keyflip=auto|off          tier=pc|phone            look=<設計図の名前|auto>
 //   det=1                     dumplayout=0|1            uionly=0|1               unitsonly=0|1    perf=<秒>
-//   hd2d=slice = stage=diorama・cam=28・litunits=1・charshadow=1・dof=1・aa=msaa・ui=night をまとめて立てる。
-//              同じ STATE に書いた個別のキーのほうが勝つ (hd2d=slice;cam=36 は画角36)。
+//   hd2d=slice = stage=diorama・cam=28・litunits=1・charshadow=1・dof=1・aa=msaa・ui=night・herodots=48・trunk=relief をまとめて立てる。
+//              同じ STATE に書いた個別のキーのほうが勝つ (hd2d=slice;cam=36 は画角36・hd2d=slice;herodots=62 は主人公62)。
+//              herodots=48・trunk=relief は W3 の統合で足した (2026-09-30 ユーザー「本家っぽく」= 主人公は 48 を既定・62 は旗で残す／
+//              幹・根・茂みは半立体。CLAUDE.md「見本の途中の方針」)。旗を立てない時の既定 (62・mesh) は今のまま。
 // 数値の旗の「負 = 既定」は、各レーンの設計図 (look) か今の値を使う、の意味 (auto と書いても -1 になる)。
 // 起動の時 (BeforeSceneLoad) に -hd2d と -state の中の旗を読む (舞台を最初のフレームから旗どおりに組むため)。撮影の StateJump も頭で ApplyState を呼ぶ。
 using System;
@@ -89,7 +91,7 @@ namespace DeckRogue.Game
             set { if (_tier == value) return; _tier = value; SyncTierQuality(); }
         }
         static HD2DTier _tier = HD2DTier.Pc;
-        /// <summary>look= (設計図の名前。null = 幕の既定 look_act&lt;N&gt;)</summary>
+        /// <summary>look= (幕の設計図 look_act&lt;N&gt; の上に重ねる変種の名前。「+」で複数。null = 変種なし。W3 P22 で「丸ごとの差し替え」から「重ねる変種」へ)</summary>
         public static string Look { get; set; } = null;
 
         // ---- 撮影と計測の旗 ----
@@ -130,6 +132,8 @@ namespace DeckRogue.Game
             new KeyValuePair<string, string>("dof", "1"),
             new KeyValuePair<string, string>("aa", "msaa"),
             new KeyValuePair<string, string>("ui", "night"),
+            new KeyValuePair<string, string>("herodots", "48"),    // W3 統合: 主人公は 48 を既定 (62 は herodots=62 で)
+            new KeyValuePair<string, string>("trunk", "relief"),   // W3 統合: 幹と根は半立体 (3Dの筒は trunk=mesh で)
         };
 
         /// <summary>

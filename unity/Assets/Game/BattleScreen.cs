@@ -17,12 +17,25 @@ namespace DeckRogue.Game
     {
         /// <summary>上部バーの高さ。スマホは 56 (2026-09-15: 頭上の吹き出しの高さを稼ぐ。札は 40〜44 なので収まる)</summary>
         public static float TopH { get { return UiKit.Phone ? 56f : 72f; } }
-        /// <summary>手札の下端 (キャンバス下からの距離)。スマホは詰める</summary>
-        public static float HandY { get { return UiKit.Phone ? 14f : 30f; } }
+        /// <summary>手札の下端 (キャンバス下からの距離)。スマホは詰める。HD-2D 見本の箱庭では HandSink だけ沈める</summary>
+        public static float HandY { get { return (UiKit.Phone ? 14f : 30f) - HandSink; } }
+        /// <summary>HD-2D 見本の箱庭 (stage=diorama) の画面の配置か (2026-09-30 P20)。足元の線・手札の沈め・帳面の置き方 (ledger=feet)・暗幕の丈がこの時だけ変わる。
+        /// 紙か夜か (ui=night|paper) とは別 = ui=paper でも同じ配置で撮れる。今の舞台 (stage=old) は1画素も変えない</summary>
+        public static bool Hd2dLayout { get { return HD2DFlags.StageMode == HD2DStage.Diorama; } }
+        /// <summary>
+        /// 手札を沈める量 (キャンバス単位。HD-2D 見本の箱庭だけ。2026-09-30 P20)。上限は手札の本文の数字が画面の下端から 36px (layout-check L5):
+        /// W2 の撮影で両端の札の数字の下端が PC 57.8px・スマホ 60.4px (5枚の扇) なので、PC 19 (→38.8px)・スマホ 17 (×1.31＝22.3px → 38.1px)。
+        /// 計画の目安「PC 30→−12」(42 沈める) は数字が 16px まで下がるので採らない (lane-P20.md)。触れた札の持ち上げにはこの量を足す (HookHandCard)
+        /// </summary>
+        public static float HandSink { get { return Hd2dLayout ? (UiKit.Phone ? 17f : 19f) : 0f; } }
         /// <summary>手札の札の倍率。スマホは等倍 (2026-09-14「字が小さい」= 札の本文が最も読まれる文字)</summary>
         public static float CardScale { get { return UiKit.Phone ? 1.0f : 0.92f; } }
-        /// <summary>戦闘の絵の目安の幅 (通常 256・エリート 320・ボス 384 = 1ドット4px)。スマホは半分 (1ドット2px) = 吹き出しが画面に収まる</summary>
-        public static float ArtScale { get { return UiKit.Phone ? 0.6f : 1f; } }   // スマホは 0.5→0.6 (2026-09-15 吹き出しの小型化と対で「敵が小さすぎる」を戻す)
+        /// <summary>戦闘の絵の目安の幅 (通常 256・エリート 320・ボス 384 = 1ドット4px)。スマホは半分 (1ドット2px) = 吹き出しが画面に収まる。
+        /// 旗 artscale= (HD-2D 見本の変種。0.625 = S25 の実機で1ドット4px) が有ればその値</summary>
+        public static float ArtScale { get { float f = HD2DFlags.ArtScale; return f > 0f ? f : (UiKit.Phone ? 0.6f : 1f); } }   // スマホは 0.5→0.6 (2026-09-15 吹き出しの小型化と対で「敵が小さすぎる」を戻す)
+        /// <summary>PC の自分の札の上端 (キャンバス y・下から) = 足元の線＋StripH (札は上端を固定して中身の 120/140 を下で吸収する。2026-09-30 F19)。
+        /// ギアの窓・人形の札の床・確認の窓が読む (2026-09-30 P20: 箱庭で足元の線が下がった時に1か所で追う)</summary>
+        public static float SelfCardTop { get { return BattleView.StatusLineY + StripH; } }
         /// <summary>キャンバスの実寸 (スマホ 1.6倍なら 1200〜1462×675)。組み立て中に画面の上端 (上部バーの下) を知るため</summary>
         public static Vector2 CanvasSize(RectTransform any)
         {
@@ -153,6 +166,10 @@ namespace DeckRogue.Game
                 RunUi.MenuButton(g, bar);   // PC も「≡」: セーブして終了・ランを放棄・戦闘ログ・レポート (2026-09-15)
                 KeepGoldClearOfPhase(g, bar, root, gold, pt, run);
             }
+            // 夜の札 (ui=night・2026-09-30 P20): 上部バーの札・ボタン・レリックの円 (PC はバーの下の列も)。手番の札は今のまま
+            // (自分の番＝紙・敵の番＝夜の札で「明度の反転で読める」＝2026-09-29 C07。夜の上部バーの中では自分の番の紙が1枚だけ明るく立つ)。通知の札は紙のまま
+            PaperFx.Nightify(bar);
+            PaperFx.Nightify(root.Find("relic-row"));
 
             // エラー・通知は上部バーの下に (紙の札)
             string msg = g.Error != null ? "! " + g.Error : (g.Notice != null ? g.Notice : null);
@@ -441,6 +458,8 @@ namespace DeckRogue.Game
         // 旧: 頭上の吹き出し (奥の敵ほど高い) と名前札・HP バー・状態の札が縦に散っていた。
 
         public static float StripH { get { return UiKit.Phone ? 76f : 140f; } }
+        /// <summary>ledger=feet (HD-2D 見本の変種): 帳面の上端と足元の間 (キャンバス単位。L2 の「16px 以上隠さない」の内側)</summary>
+        const float LedgerFeetGap = 10f;
         /// <summary>帳面の一行の幅: 隣との間隔に収める (スマホ 間隔−4 を 96〜176・PC 間隔−12 を 116〜210。150 未満は LedgerStrip の narrow = 状態の札は絵だけ)。
         /// 座席を画面上で等間隔にしたので (2026-09-29 p02) 4体でも PC 約204・スマホ約150〜157。1体だけ (ボス) は広く (特性の札も並ぶ)</summary>
         public static float StripW(float neighborGap, bool solo = false)
@@ -524,7 +543,8 @@ namespace DeckRogue.Game
             img.raycastTarget = false;
             img.color = Color.white;   // 倒れた瞬間も素の色 (白く光ってから崩れる)
             Stage.BindUnit("enemy" + index, spr, img, artSprite);
-            if ((aimed || acting) && alive && !ph && feetY > StripH + 16f)
+            bool ledgerAtFeet = Hd2dLayout && HD2DFlags.Ledger == HD2DLedger.Feet;   // 帳面を足元ごとに浮かせる変種 (HD-2D 見本 ledger=feet。2026-09-30 P20)
+            if ((aimed || acting) && alive && !ph && !ledgerAtFeet && feetY > StripH + 16f)
             {   // 足元の輪 (PC。スマホは札の上端が足元なので出さない)。頭上の▼は 2026-09-16 に廃止 = 狙いは意図の札と帳面の縁 (真鍮)。
                 // 輪の下端が帳面に掛からない時だけ: PC の帳面の上端は自分の札の上端＝StripH (2026-09-30 F19 で固定)
                 var honey = acting ? PaperFx.BrassLight : PaperFx.Brass;
@@ -544,9 +564,14 @@ namespace DeckRogue.Game
             // PC は自分の札と上端をそろえ、下へ伸ばす (2026-09-29 p23 ユーザー裁定「上端でそろえて下へ」): 旧は下端を足元の線 (手札のすぐ上) にそろえていたので、
             // 足元から 120〜230px 離れて手札の 12px 上に乗り「手札の一部」に見えた。敵全員と自分の札の名前の行が1本の線にそろう。スマホは今のまま (下端が線・足元まで約40px)
             float sb = ph ? 0f : PcLedgerTop(h) - h;
+            // ledger=feet (変種): 帳面の上端を足元の LedgerFeetGap 下に (足元の線より下へは出さない)。帳面の高さがそろう (uniformForecast) ので名前の行は足元の高さ順に並ぶ
+            if (ledgerAtFeet) sb = Mathf.Max(0f, feetY - LedgerFeetGap - h);
             UiKit.Anchor(strip, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-w / 2f, sb), new Vector2(w / 2f, sb + h));
             LedgerStrip(g, strip, st, index, def, nm, shownHp, w, h, aimed, candidate, acting, forecast, dying);
             if (alive) IntentTag(g, pan, st, index, def, headTop, aimed, candidate, acting, neighborGap, uniformStack);
+            // 夜の札 (ui=night): 帳面と意図の札を夜の組へ (旗が無ければ何もしない)
+            PaperFx.Nightify(strip);
+            PaperFx.Nightify(pan.Find("intent-tag"));
             // 前の表示 (shownHp) から今の HP へ滑らせる (案C への書き換えで落ちていた＝バーが1手遅れて減っていた。2026-09-16 ユーザー報告)
             if (shownHp != e.Hp) TweenHpBar(pan, e.Hp);
         }
@@ -1005,6 +1030,15 @@ namespace DeckRogue.Game
             if (minor) { isz = small ? 22f : (ph ? 26f : 32f); num = small ? 16 : (ph ? 18 : 22); h = small ? 30f : (ph ? 34f : 44f); }
             else if (small) { isz = ph ? 28f : 36f; num = ph ? 22 : 26; h = ph ? 38f : 48f; }
             else { isz = ph ? 32f : 44f; num = ph ? 24 : 32; h = ph ? 42f : 56f; }
+            // 夜の札 (HD-2D 見本 ui=night・2026-09-30 P20): 意図の数字は画面で 32px 以上 (門⑨)。スマホは 25 単位 × 1.31 = 32.8px。
+            // 一段小さい札 (隣が近い・敵自身の行動) も数字だけは下げない (序列は地の明るさ NightCard/NightCard2 と絵の大きさで残す)。行の高さは数字が入る 48/38 まで
+            if (HD2DFlags.UiNight)
+            {
+                int numMin = ph ? 25 : 32;
+                if (num < numMin) num = numMin;
+                float hMin = ph ? 38f : 48f;
+                if (h < hMin) h = hMin;
+            }
             shortText = hidden ? "？" : IntentShort(st, index, it);
             if (it.Kind == "defend" && !hidden) shortText = it.Actual.ToString();
             // rider (状態異常・同時に筋力・同時にブロック・先に壊す)
@@ -1172,6 +1206,7 @@ namespace DeckRogue.Game
             {
                 // 筋力上げ・応援の数字は真鍮の墨 (color-theme: 筋力の rider と同じ「紙 (濃)＋真鍮の墨」)
                 var itT = UiKit.Deco(row, shortText, num, (!hidden && (it.Kind == "buff" || it.Kind == "rally")) ? PaperFx.BrassInk : PaperFx.Ink, TextAnchor.MiddleLeft);
+                if (HD2DFlags.UiNight) { var hm = UiKit.NumHaloNight(itT.font); if (hm != null) itT.fontSharedMaterial = hm; }   // 夜の札の数字の素材 (P21。無ければ素の素材のまま)
                 UiKit.Le(itT, 14f, rowH, -1f, rowH);
                 itT.textWrappingMode = TextWrappingModes.NoWrap; itT.overflowMode = TextOverflowModes.Overflow;   // 数字は省略記号で切らない
             }
@@ -1748,6 +1783,7 @@ namespace DeckRogue.Game
             var fit = tag.gameObject.AddComponent<ContentSizeFitter>();
             fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             LayoutRebuilder.ForceRebuildLayoutImmediate(tag);   // 幅をこの場で確定する (ArrangeDollTags と確認の窓の DollTagsTop が読む)
+            PaperFx.Nightify(tag);   // 夜の札 (ui=night・2026-09-30 P20。舞台の上に常に出る札＝人形の足元の札も)
         }
 
         /// <summary>人形の残りの期限の丸い数字 (付箋の挿絵の角・足元の札の短い形)。紙 (濃) の丸＋墨の輪＋数字 15。残り1は朱・期限なしは ∞ (2026-09-29 p16)</summary>
@@ -1894,8 +1930,13 @@ namespace DeckRogue.Game
             // 自キャラ名表示は不要なのでは？」)。誰を操作しているかはセットアップとラン画面で分かるので、戦場では絵を優先する。
             // 敵の名前札は「どれを狙うか」の識別に要るので据え置き
             // 自分の札 (帳面の一行の左端。2026-09-15 案C): HP・被ダメ予測・資源を、敵の札と同じ足元の線に置く
-            if (UiKit.Phone) { PhoneSelfColumn(g, area, st, shownHp); return; }
-            PcSelfStrip(g, area, st, shownHp);
+            if (UiKit.Phone) PhoneSelfColumn(g, area, st, shownHp);
+            else PcSelfStrip(g, area, st, shownHp);
+            // 夜の札 (ui=night・2026-09-30 P20): 自分の札 (PC は hpwrap の中にからくり・ギア・置物。スマホは左下の札と上の帯の3区画)
+            PaperFx.Nightify(area.Find("hpwrap"));
+            PaperFx.Nightify(area.Find("setzone"));
+            PaperFx.Nightify(area.Find("gearzone"));
+            PaperFx.Nightify(area.Find("perms"));
         }
 
         /// <summary>
@@ -2810,7 +2851,7 @@ namespace DeckRogue.Game
                 Audio.Hover();
                 rt.SetAsLastSibling();
                 Tween.Scale(rt, Vector3.one * 1.18f, 0.12f, Ease.OutQuad);
-                Tween.Move(rt, hc.BasePos + new Vector2(0f, 70f), 0.12f, Ease.OutQuad);
+                Tween.Move(rt, hc.BasePos + new Vector2(0f, 70f + HandSink), 0.12f, Ease.OutQuad);   // 沈めた分を足す = 持ち上げた札は今と同じ高さ (HD-2D 見本 2026-09-30 P20)
                 rt.localRotation = Quaternion.identity;
                 try { if (g.Rs != null) LightUi.PreviewFor(g.Rs.Combat, c); } catch (Exception) { }   // 灯籠に予告 (PC のホバー。2026-09-20)
             });
