@@ -1,6 +1,8 @@
 // HD2DFlags.cs — HD-2D 見本 (幕1の1戦闘) の旗 (2026-09-30。計画 docs/design/hd2d-slice-plan-2026-09-30.md §3)。
 // 骨組み (P00) の名前と形に、P01 が中身を書いた: 読み込み (起動引数 -hd2d k=v,… と撮影の STATE)・Changed の通知・まとめ役 hd2d=slice・Reset。
-// 既定は「今の見た目」(stage=old)。W3 のレーンはこのファイルを触らない (旗は全部 P01 で先に定義する)。
+// 旗の初期値は「今の見た目」(stage=old)。W3 のレーンはこのファイルを触らない (旗は全部 P01 で先に定義する)。
+// 2026-10-01: stage= と hd2d= を書かない普通の起動 (APK・exe) は、舞台を組む時に幕で束を当てる = 幕1 は見本 (hd2d=slice)・幕2/3 は今の舞台 (ApplyActDefault)。
+// 撮影の STATE や -hd2d に stage= か hd2d= を書けば今までどおり書いた旗が全部の幕で勝つ。
 //
 // 読み方 (キーは小文字・値は前後の空白を捨てる。知らないキーは黙って無視 = 撮影の STATE の他のキーと同居できる)
 //   stage=old|diorama         herodots=62|48           cam=36|28|22 (画角)     pitch=<度>
@@ -136,10 +138,59 @@ namespace DeckRogue.Game
             new KeyValuePair<string, string>("trunk", "relief"),   // W3 統合: 幹と根は半立体 (3Dの筒は trunk=mesh で)
         };
 
+        /// <summary>今の舞台 (stage=old) の時の束のキーの値 (SliceBundle と同じキー・同じ順。Reset の既定と同じ値)</summary>
+        static readonly KeyValuePair<string, string>[] OldBundle =
+        {
+            new KeyValuePair<string, string>("stage", "old"),
+            new KeyValuePair<string, string>("cam", "36"),
+            new KeyValuePair<string, string>("litunits", "0"),
+            new KeyValuePair<string, string>("charshadow", "0"),
+            new KeyValuePair<string, string>("dof", "0"),
+            new KeyValuePair<string, string>("aa", "none"),
+            new KeyValuePair<string, string>("ui", "paper"),
+            new KeyValuePair<string, string>("herodots", "62"),
+            new KeyValuePair<string, string>("trunk", "mesh"),
+        };
+
+        // ---- 幕ごとの既定 (2026-10-01。ユーザーが遊ぶ APK・exe で見本の舞台が出るように) ----
+        // 旗 stage= と hd2d= を起動引数 (-hd2d) にも撮影の STATE にも書かない時 (普通の起動) は、舞台を組む時 (Stage.Paint) に幕で束を当てる:
+        // 幕1 = 見本 (hd2d=slice の束 = 箱庭・画角28・キャラの光と影・ぼかし・AA・夜色の札・主人公48・幹は半立体)、
+        // 幕2・3 = 今の舞台 (束のキーを今の既定へ = stage=old・画角36・紙の札・主人公62 …。箱庭は幕1にしか無いので、見本のカメラ・配置・キャラの光を今の舞台に当てない)。
+        // 束のキーを個別に書いた時 (ui=paper・cam=36・herodots=62 など) はその値が幕の既定より勝つ。
+        // stage= か hd2d= を書いた時は幕で切り替えない (今までどおり、書いた旗が全部の幕で効く = 見本の撮影の再現性を変えない)
+        static bool _stageExplicit;
+        static readonly Dictionary<string, string> _explicitBundle = new Dictionary<string, string>();   // 束のキー (と msaa) のうち起動引数か STATE で書いた物
+
+        /// <summary>幕ごとの既定が効いているか (stage= と hd2d= を起動引数にも STATE にも書いていない)</summary>
+        public static bool ByAct { get { return !_stageExplicit; } }
+
+        /// <summary>
+        /// 幕 act の既定の束を当てる (Stage.Paint が舞台を組む前に呼ぶ)。ByAct でなければ何もしない。
+        /// 幕1 は SliceBundle、幕2・3 は OldBundle を当て、その上に書いた束のキー (と msaa) を当て直す。値が変わったら Changed を1回
+        /// </summary>
+        public static void ApplyActDefault(int act)
+        {
+            if (_stageExplicit) return;
+            string before = Describe();
+            var bundle = act == 1 ? SliceBundle : OldBundle;
+            string v;
+            foreach (var p in bundle) SetKey(p.Key, _explicitBundle.TryGetValue(p.Key, out v) ? v : p.Value);
+            if (_explicitBundle.TryGetValue("msaa", out v)) SetKey("msaa", v);
+            if (Describe() != before) Debug.Log("[HD2DFlags] 幕" + act + " の既定 (" + (act == 1 ? "見本" : "今の舞台") + ") → " + Describe());
+            RaiseIfChanged(before);
+        }
+
+        static bool IsBundleKey(string key)
+        {
+            foreach (var p in SliceBundle) if (p.Key == key) return true;
+            return false;
+        }
+
         /// <summary>
         /// STATE のキー (stage・herodots・cam・…・hd2d=slice) から旗を読む。書いてあるキーだけを変える (書いていない旗は今の値のまま)。
         /// 知らないキー (phase・enemy など撮影の他のキー) は黙って無視する。値が読めない時は警告して今の値のまま。
-        /// hd2d=slice を先に当ててから個別のキーを当てる (個別のキーが勝つ)。値が変わったら最後に Changed を1回
+        /// hd2d=slice を先に当ててから個別のキーを当てる (個別のキーが勝つ)。値が変わったら最後に Changed を1回。
+        /// 書いたキーは覚える (stage・hd2d なら幕ごとの既定を止める・束のキーなら幕の既定の上に当て直す。Reset で忘れる)
         /// </summary>
         public static void ApplyState(IDictionary<string, string> kv)
         {
@@ -149,6 +200,12 @@ namespace DeckRogue.Game
             {
                 if (string.IsNullOrEmpty(p.Key)) continue;
                 norm[p.Key.Trim().ToLowerInvariant()] = (p.Value ?? "").Trim();
+            }
+            foreach (var p in norm)
+            {
+                if (p.Value.Length == 0) continue;
+                if (p.Key == "hd2d" || p.Key == "stage") _stageExplicit = true;
+                else if (p.Key == "msaa" || IsBundleKey(p.Key)) _explicitBundle[p.Key] = p.Value;
             }
             string before = Describe();
             string bundle;
@@ -164,6 +221,8 @@ namespace DeckRogue.Game
         public static void Reset()
         {
             string before = Describe();
+            _stageExplicit = false;        // 書いた旗も忘れる (幕ごとの既定に戻る。次の Stage.Paint が幕の束を当てる)
+            _explicitBundle.Clear();
             StageMode = HD2DStage.Old;
             HeroDots = 62;
             CamFov = 36f;

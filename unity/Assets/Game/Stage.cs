@@ -559,6 +559,10 @@ namespace DeckRogue.Game
             // 検証用: 起動引数 -stageact N で舞台の幕だけ差し替える (スクショの自動操縦で幕2/3の舞台を撮る。ゲームの進行には触れない)
             var cargs = Environment.GetCommandLineArgs();
             for (int i = 0; i < cargs.Length - 1; i++) if (cargs[i] == "-stageact") { int a; if (int.TryParse(cargs[i + 1], out a)) act = Mathf.Clamp(a, 1, 3); }
+            // 幕ごとの既定 (2026-10-01): 旗 stage=・hd2d= を書かない普通の起動では、ここで幕の束を当てる = 幕1 は見本 (hd2d=slice)・幕2/3 は今の舞台 (stage=old・画角36・紙の札・主人公62)。
+            // 箱庭は幕1にしか無いので、幕2/3 に見本のカメラ・座席・キャラの光・夜色の札を残さない。変われば Changed でカメラが置き直り、下の名札 (sig) が組み直しを決める。
+            // 撮影の STATE・-hd2d に stage= か hd2d= を書いた時は何もしない (今までどおり書いた旗が全部の幕で勝つ)
+            HD2DFlags.ApplyActDefault(act);
             bool wantDio = WantDiorama(act);
             string sig = wantDio ? DioramaSignature(act) : "old";
             if (_paintedAct == act && _paintedSig == sig) return;

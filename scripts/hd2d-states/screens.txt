@@ -1,18 +1,19 @@
 # HD-2D 見本の撮影の一覧 (2026-09-30 P08。計画 docs/design/hd2d-slice-plan-2026-09-30.md §4 P08・§6)。1行 = 名前|STATE。# と空行は読み飛ばす。
 # 撮り方: scripts/hd2d-shots.sh <この一覧> <出力名> [--phone-tier] (1行1起動 = 門の撮り方)。まとめて撮るだけなら --states
 # 戦闘の外の画面と重ねの窓 (P21 が Gamma の W1 と Linear の W3 で並べて測る)。舞台の旗は付けない
-SC-map|phase=map
-SC-reward|phase=reward
-SC-relic|phase=relic
-SC-shop|phase=shop
-SC-event|phase=event
-SC-campfire|phase=campfire
-SC-workshop|phase=workshop
-SC-won|phase=won
-SC-lost|phase=lost
-SC-settings|phase=combat;settings=1
-SC-menu|phase=combat;menu=1
-SC-deck|phase=combat;viewdeck=1
-SC-popup|phase=combat;popup=0
-SC-tip|phase=combat;tip=enemy
-SC-rating|phase=combat;rating=won
+# 2026-10-01: 旗を書かない起動は幕1＝見本・幕2/3＝今の舞台 (HD2DFlags.ApplyActDefault) になったので、今の舞台の行には stage=old を明記した
+SC-map|phase=map;stage=old
+SC-reward|phase=reward;stage=old
+SC-relic|phase=relic;stage=old
+SC-shop|phase=shop;stage=old
+SC-event|phase=event;stage=old
+SC-campfire|phase=campfire;stage=old
+SC-workshop|phase=workshop;stage=old
+SC-won|phase=won;stage=old
+SC-lost|phase=lost;stage=old
+SC-settings|phase=combat;settings=1;stage=old
+SC-menu|phase=combat;menu=1;stage=old
+SC-deck|phase=combat;viewdeck=1;stage=old
+SC-popup|phase=combat;popup=0;stage=old
+SC-tip|phase=combat;tip=enemy;stage=old
+SC-rating|phase=combat;rating=won;stage=old
