@@ -853,6 +853,32 @@ namespace DeckRogue.Game
             return s;
         }
 
+        /// <summary>上から下へ薄くなる縦のグラデーション (2026-10-01 HD-2D 見本の箱庭の上に出す戦闘以外の画面の暗がり。BattleScreen.MenuShade)。
+        /// RGB は色そのもの、アルファは上の 30% で <paramref name="top"/> のまま一定、下の 25% で <paramref name="bottom"/> のまま一定、その間を smoothstep でつなぐ。
+        /// 箱庭のいちばん明るい霧の帯 (画面の上 1/3) を強く、手前の地面 (もともと暗い) を弱く沈める形</summary>
+        public static Sprite FadeDown(Color rgb, float top, float bottom, string key)
+        {
+            Sprite s;
+            if (_cache.TryGetValue(key, out s)) return s;
+            const int w = 4, h = 64;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[w * h];
+            for (int y = 0; y < h; y++)
+            {
+                float k = y / (float)(h - 1);                       // 0 = 下端・1 = 上端
+                float u = Mathf.Clamp01((k - 0.25f) / 0.45f);
+                float a = Mathf.Lerp(bottom, top, u * u * (3f - 2f * u));
+                for (int x = 0; x < w; x++) px[y * w + x] = new Color(rgb.r, rgb.g, rgb.b, a);
+            }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            _cache[key] = s;
+            return s;
+        }
+
         /// <summary>色つきの縁 (HP 危険域の薔薇など)。RGB は色そのもの、アルファだけ縁へ向かって濃くなる (黒の縁を Image で染めても黒のまま = 別の絵が要る)</summary>
         public static Sprite Vignette(Color rgb, string key)
         {

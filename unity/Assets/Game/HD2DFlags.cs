@@ -11,10 +11,11 @@
 //   drift=0|1                 aa=none|msaa|2|4|8 (msaa=<N> も同じ。N≦1 = 無し)   litunits=0|1   charshadow=0|1
 //   trunk=mesh|relief         keyflip=auto|off          tier=pc|phone            look=<設計図の名前|auto>
 //   det=1                     dumplayout=0|1            uionly=0|1               unitsonly=0|1    perf=<秒>
-//   hd2d=slice = stage=diorama・cam=28・litunits=1・charshadow=1・dof=1・aa=msaa・ui=night・herodots=48・trunk=relief をまとめて立てる。
-//              同じ STATE に書いた個別のキーのほうが勝つ (hd2d=slice;cam=36 は画角36・hd2d=slice;herodots=62 は主人公62)。
-//              herodots=48・trunk=relief は W3 の統合で足した (2026-09-30 ユーザー「本家っぽく」= 主人公は 48 を既定・62 は旗で残す／
-//              幹・根・茂みは半立体。CLAUDE.md「見本の途中の方針」)。旗を立てない時の既定 (62・mesh) は今のまま。
+//   hd2d=slice = stage=diorama・cam=28・litunits=1・charshadow=1・dof=1・aa=msaa・ui=night・herodots=62・trunk=relief をまとめて立てる。
+//              同じ STATE に書いた個別のキーのほうが勝つ (hd2d=slice;cam=36 は画角36・hd2d=slice;herodots=48 は主人公48)。
+//              herodots・trunk=relief は W3 の統合で足した (2026-09-30 ユーザー「本家っぽく」= 幹・根・茂みは半立体。CLAUDE.md「見本の途中の方針」)。
+//              主人公は W3 で 48 を既定にしたが、W5 の判定 (2026-10-01 ユーザー「主人公は 62・48 は旗で残す」) で 62 に戻した = 幕1 と幕2/3 で背丈が変わらない。
+//              旗を立てない時の既定 (62・mesh) は今のまま。
 // 数値の旗の「負 = 既定」は、各レーンの設計図 (look) か今の値を使う、の意味 (auto と書いても -1 になる)。
 // 起動の時 (BeforeSceneLoad) に -hd2d と -state の中の旗を読む (舞台を最初のフレームから旗どおりに組むため)。撮影の StateJump も頭で ApplyState を呼ぶ。
 using System;
@@ -134,7 +135,7 @@ namespace DeckRogue.Game
             new KeyValuePair<string, string>("dof", "1"),
             new KeyValuePair<string, string>("aa", "msaa"),
             new KeyValuePair<string, string>("ui", "night"),
-            new KeyValuePair<string, string>("herodots", "48"),    // W3 統合: 主人公は 48 を既定 (62 は herodots=62 で)
+            new KeyValuePair<string, string>("herodots", "62"),    // W5 の判定 (2026-10-01 ユーザー): 主人公は 62 (48 は herodots=48 で)。W3 の統合では 48 だった
             new KeyValuePair<string, string>("trunk", "relief"),   // W3 統合: 幹と根は半立体 (3Dの筒は trunk=mesh で)
         };
 
@@ -154,7 +155,7 @@ namespace DeckRogue.Game
 
         // ---- 幕ごとの既定 (2026-10-01。ユーザーが遊ぶ APK・exe で見本の舞台が出るように) ----
         // 旗 stage= と hd2d= を起動引数 (-hd2d) にも撮影の STATE にも書かない時 (普通の起動) は、舞台を組む時 (Stage.Paint) に幕で束を当てる:
-        // 幕1 = 見本 (hd2d=slice の束 = 箱庭・画角28・キャラの光と影・ぼかし・AA・夜色の札・主人公48・幹は半立体)、
+        // 幕1 = 見本 (hd2d=slice の束 = 箱庭・画角28・キャラの光と影・ぼかし・AA・夜色の札・主人公62・幹は半立体)、
         // 幕2・3 = 今の舞台 (束のキーを今の既定へ = stage=old・画角36・紙の札・主人公62 …。箱庭は幕1にしか無いので、見本のカメラ・配置・キャラの光を今の舞台に当てない)。
         // 束のキーを個別に書いた時 (ui=paper・cam=36・herodots=62 など) はその値が幕の既定より勝つ。
         // stage= か hd2d= を書いた時は幕で切り替えない (今までどおり、書いた旗が全部の幕で効く = 見本の撮影の再現性を変えない)

@@ -80,15 +80,40 @@ namespace DeckRogue.Game
 
         // ---- 背景 ----
 
-        public static void BuildBackground(RectTransform root, RunState run) { BuildBackground(root, run.Act); }
+        /// <summary>戦闘の背景 (BattleView の FieldLayer)。戦闘以外の画面の暗がり (MenuShade) は足さない</summary>
+        public static void BuildBackground(RectTransform root, RunState run) { BuildBackground(root, run.Act, false); }
 
-        public static void BuildBackground(RectTransform root, int act)
+        /// <summary>戦闘以外の画面 (タイトル・地図・報酬・店・焚き火・工房・?・出立の店・終わり) の背景</summary>
+        public static void BuildBackground(RectTransform root, int act) { BuildBackground(root, act, true); }
+
+        public static void BuildBackground(RectTransform root, int act, bool menu)
         {
-            // 背景は舞台 (別カメラ・ポスト処理と粒子つき) に描く。UI 側 (root) には何も置かない。
+            // 背景は舞台 (別カメラ・ポスト処理と粒子つき) に描く。UI 側 (root) には何も置かない (箱庭の上の戦闘以外の画面の暗がりだけ例外 = 下の MenuShade)。
             // 舞台が組めなくても UI は組む (2026-09-14 実機: 舞台の例外で画面ごと消えていた疑い。原因は ErrorOverlay に出る)
             try { Stage.Paint(act); }
             catch (Exception e) { Debug.LogException(e); }
+            if (menu && Stage.ShowingDiorama) MenuShade(root);
         }
+
+        /// <summary>
+        /// 箱庭の上の戦闘以外の画面の暗がり (2026-10-01 APK の既定で幕1 の全画面が箱庭になった時の直し)。
+        /// 箱庭は画面の上 1/3 に明るい霧の帯があり (縦 120〜420 の平均 126)、今の舞台 (暗い夜の森) を前提にした各画面の暗幕 (0.35〜0.65) だけでは、
+        /// 舞台の上に直に置いた淡い字 (見出しの下の説明・地図のノードの名前・タイトルの副題・終わりの画面の要約) の対比が今の舞台の半分に落ちた。
+        /// 各画面の暗幕の下に、地の色 (PaperFx.Ground) を上 α0.68・下 α0.2 で重ねる = 霧の帯を今の舞台の暗さまで沈め、手前の地面は少しだけ沈める。
+        /// 戦闘の画面・今の舞台 (幕2/3・stage=old) には足さない (今の舞台は1画素も変えない)。霧の帯を座席のすぐ上へ下げる作業 (W5 の判定) の後に α を見直す
+        /// </summary>
+        static void MenuShade(RectTransform root)
+        {
+            var shade = UiKit.NewRect("dio-shade", root);
+            UiKit.Stretch(shade, 0f, 0f, 0f, 0f);
+            var img = shade.gameObject.AddComponent<Image>();
+            img.sprite = UiKit.LinearSprite(ThemeFx.FadeDown(PaperFx.Ground, MenuShadeTop, MenuShadeBottom, "fade-down-ground-menu"), 0.25f);   // Linear: 絵に焼いた α を Gamma と同じ濃さへ (desk-shade と同じ)
+            img.type = Image.Type.Simple;
+            img.preserveAspect = false;
+            img.raycastTarget = false;
+        }
+        /// <summary>MenuShade の上端と下端の濃さ (Gamma の見た目の α)</summary>
+        const float MenuShadeTop = 0.68f, MenuShadeBottom = 0.2f;
 
         static void BuildTopBar(GameRoot g, RectTransform root, RunState run, GameState st)
         {

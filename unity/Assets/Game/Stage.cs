@@ -37,6 +37,8 @@ namespace DeckRogue.Game
         static Material _waterMat;
         // 箱庭 (HD-2D 見本 P12・2026-09-30): 幕1 × stage=diorama の時だけ、今の舞台 (Paint の old の道筋) の代わりに Diorama (P04) と StageLook (P09) で組む
         static bool _diorama;                   // いま舞台が箱庭 (GroundY は Diorama.GroundY を読む・SetFxForAct は水の粒を止める)
+        /// <summary>いま舞台が箱庭か (Paint の後に読む。組むのに失敗して今の舞台で描いた時は false)。戦闘以外の画面が暗がりを足すかを決める (BattleScreen.MenuShade)</summary>
+        public static bool ShowingDiorama { get { return _diorama; } }
         static string _paintedSig = "";         // 描いた舞台の組み方 ("old" か "d|幕|幹|設計図|段")。同じ幕でも組み方が変われば描き直す (old と diorama を交互に撮っても混ざらない)
         static bool _dioramaFlagsHooked;        // HD2DFlags.Changed を1回だけ購読した (aa の切り替えで半立体の alpha-to-coverage を当て直す)
         static float _dioramaBuildMs;           // 最後に箱庭を組んだ時間 (ミリ秒。dumplayout と記録)
