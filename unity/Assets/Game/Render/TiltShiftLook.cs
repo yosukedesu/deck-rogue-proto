@@ -6,7 +6,8 @@
 //     "farExclude": 0.5, "tiltTop": 0, "tiltTopFrom": 0.75, "tiltBottom": 0, "tiltBottomFrom": 0.25, "debugView": 0,
 //     "phone": { …同じキー… } }   ← tier=phone の時だけ上に重ねる (look_act1.phone.json の "tiltShiftPass" も重なる = StageLook の重ね方)
 //   書いていないキーは既定 (下の Def*。look_act1.dof.json と同じ値)。
-// 撮影の上書き (1行1起動の撮影だけ): 起動引数 -state / -hd2d の中の tsfocus=path|depth・tsdebug=0〜3 (HD2DFlags は知らないキーを無視する)。
+//   2周目 (W3b) のキー: "curve": "lens"|"smooth" (帯の外の伸び方)・"lensFar"・"lensNear" (レンズの強さ)。上限 (px) は今までどおり "tiltShift" の maxPxPC・maxPxPhone (StageLook が読む)。
+// 撮影の上書き (1行1起動の撮影だけ): 起動引数 -state / -hd2d の中の tsfocus=path|depth・tscurve=lens|smooth・tsdebug=0〜3 (HD2DFlags は知らないキーを無視する)。
 //   -statesfile のまとめ撮りの行には効かない (行ごとの STATE をここは読めない)。
 // 書く所: TiltShiftSettings (Focus・PathNear・PathFar・NearScale) と TiltShiftPass の静的な詰めの値。
 // いつ: TiltShiftHook が積む直前に Sync (設計図 = StageLook.Current が替わった時と tier が替わった時だけ読み直す)。
@@ -23,11 +24,14 @@ namespace DeckRogue.Game
     {
         // ---- 既定 (設計図に書いていない時。look_act1.dof.json と同じ値) ----
         const TiltShiftFocus DefFocus = TiltShiftFocus.Path;
-        const float DefPathNear = -3f, DefPathFar = 5.5f, DefNearScale = 1f;
-        const int DefTaps = 32, DefNearOwnTaps = 24, DefNearDilateTile = 16;
+        const float DefPathNear = -3f, DefPathFar = 5.5f, DefNearScale = 2.0f;   // 2周目: 1 → 1.2・W3b の統合: 2.0 (手前の上限 = 奥の上限 10px × 2 = 20px)
+        const int DefTaps = 24, DefNearOwnTaps = 20, DefNearDilateTile = 16;     // 2周目: 32/24 → 24/16 (上限が半分以下になった)・W3b の統合: 手前の点 20
         const bool DefJitter = true;
         const float DefFarExclude = 0.5f, DefTiltTop = 0f, DefTiltTopFrom = 0.75f, DefTiltBottom = 0f, DefTiltBottomFrom = 0.25f;
         const int DefDebugView = 0;
+        // P24 2周目: 帯の外の伸び方 (レンズ)。look_act1.dof.json と同じ値
+        const TiltShiftCurve DefCurve = TiltShiftCurve.Lens;
+        const float DefLensFar = 1.6f, DefLensNear = 1.6f;   // W3b の統合: 手前 1.4 → 1.6
 
         static bool _loaded;
         static StageLookData _for;
@@ -58,6 +62,9 @@ namespace DeckRogue.Game
             TiltShiftSettings.PathNear = DefPathNear;
             TiltShiftSettings.PathFar = DefPathFar;
             TiltShiftSettings.NearScale = DefNearScale;
+            TiltShiftSettings.Curve = DefCurve;
+            TiltShiftSettings.LensFar = DefLensFar;
+            TiltShiftSettings.LensNear = DefLensNear;
             TiltShiftPass.Taps = DefTaps;
             TiltShiftPass.NearOwnTaps = DefNearOwnTaps;
             TiltShiftPass.NearDilateTile = DefNearDilateTile;
@@ -102,6 +109,14 @@ namespace DeckRogue.Game
                 if (Num(band[0], out n) && Num(band[1], out fr) && fr > n) { TiltShiftSettings.PathNear = n; TiltShiftSettings.PathFar = fr; }
             }
             TiltShiftSettings.NearScale = Mathf.Clamp(F(b, "nearScale", TiltShiftSettings.NearScale), 0f, 2f);
+            string cv = Str(b, "curve");
+            if (cv != null)
+            {
+                if (cv.Equals("lens", StringComparison.OrdinalIgnoreCase)) TiltShiftSettings.Curve = TiltShiftCurve.Lens;
+                else if (cv.Equals("smooth", StringComparison.OrdinalIgnoreCase)) TiltShiftSettings.Curve = TiltShiftCurve.Smooth;
+            }
+            TiltShiftSettings.LensFar = Mathf.Clamp(F(b, "lensFar", TiltShiftSettings.LensFar), 0.05f, 20f);
+            TiltShiftSettings.LensNear = Mathf.Clamp(F(b, "lensNear", TiltShiftSettings.LensNear), 0.05f, 20f);
             TiltShiftPass.Taps = Mathf.Clamp(I(b, "taps", TiltShiftPass.Taps), 4, 64);
             TiltShiftPass.NearOwnTaps = Mathf.Clamp(I(b, "nearOwnTaps", TiltShiftPass.NearOwnTaps), 4, 64);
             TiltShiftPass.NearDilateTile = Mathf.Clamp(I(b, "nearDilateTile", TiltShiftPass.NearDilateTile), 4, 64);
@@ -134,6 +149,12 @@ namespace DeckRogue.Game
                 else if (string.Equals(v, "depth", StringComparison.OrdinalIgnoreCase)) { TiltShiftSettings.Focus = TiltShiftFocus.Depth; _stateOverrides += " tsfocus=depth"; }
                 else Debug.LogWarning("[TiltShift] tsfocus=" + v + " は path か depth");
             }
+            if (kv.TryGetValue("tscurve", out v))   // P24 2周目: 帯の外の伸び方だけを切り替えて撮る (上限・強さは設計図のまま)
+            {
+                if (string.Equals(v, "lens", StringComparison.OrdinalIgnoreCase)) { TiltShiftSettings.Curve = TiltShiftCurve.Lens; _stateOverrides += " tscurve=lens"; }
+                else if (string.Equals(v, "smooth", StringComparison.OrdinalIgnoreCase)) { TiltShiftSettings.Curve = TiltShiftCurve.Smooth; _stateOverrides += " tscurve=smooth"; }
+                else Debug.LogWarning("[TiltShift] tscurve=" + v + " は lens か smooth");
+            }
             int n;
             if (kv.TryGetValue("tsdebug", out v))
             {
@@ -151,6 +172,10 @@ namespace DeckRogue.Game
                 + (TiltShiftSettings.Focus == TiltShiftFocus.Path
                     ? "道 s " + TiltShiftSettings.PathNear.ToString("0.##", inv) + "〜" + TiltShiftSettings.PathFar.ToString("0.##", inv)
                     : "深さ")
+                + " | 伸び方 " + (TiltShiftSettings.Curve == TiltShiftCurve.Lens
+                    ? "レンズ 奥" + TiltShiftSettings.LensFar.ToString("0.##", inv) + "・手前" + TiltShiftSettings.LensNear.ToString("0.##", inv)
+                    : "smoothstep")
+                + " | 上限 PC " + TiltShiftSettings.MaxPxPC.ToString("0.#", inv) + "・スマホ " + TiltShiftSettings.MaxPxPhone.ToString("0.#", inv) + " px"
                 + " | 点 " + TiltShiftPass.Taps + "/" + TiltShiftPass.NearOwnTaps
                 + " | 手前×" + TiltShiftSettings.NearScale.ToString("0.##", inv)
                 + (TiltShiftPass.DebugView != 0 ? " | 調べ " + TiltShiftPass.DebugView : "");
@@ -167,6 +192,11 @@ namespace DeckRogue.Game
             o["focusUsed"] = TiltShiftPass.LastFocus;
             o["pathBand"] = new[] { TiltShiftSettings.PathNear, TiltShiftSettings.PathFar };
             o["nearScale"] = TiltShiftSettings.NearScale;
+            o["curve"] = TiltShiftSettings.Curve == TiltShiftCurve.Lens ? "lens" : "smooth";
+            o["curveUsed"] = TiltShiftPass.LastCurve;
+            o["lens"] = new[] { TiltShiftSettings.LensFar, TiltShiftSettings.LensNear };
+            o["maxPx"] = new[] { TiltShiftSettings.MaxPxPC, TiltShiftSettings.MaxPxPhone };
+            o["ramp"] = new[] { TiltShiftSettings.RampNear, TiltShiftSettings.RampFar };
             o["taps"] = TiltShiftPass.Taps;
             o["nearOwnTaps"] = TiltShiftPass.NearOwnTaps;
             o["nearDilateTile"] = TiltShiftPass.NearDilateTile;

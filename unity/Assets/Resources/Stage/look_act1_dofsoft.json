@@ -1,0 +1,9 @@
+{
+  "_doc": [
+    "P24 (W3b・2周目) の比較用の変種: 本家の測り (奥の木で 2〜3px・手前の草で 4〜5px) にいちばん近い弱いぼかし。レンズの形で 奥の上限 8px・手前 10px (PC 1080)。",
+    "場所ごと (PC): 1段目の上 約 1px・2段目 約 2.5px・3段目と尾根 約 4px・霧の面 約 5px。手前の段の地面 s −8 で約 4.5px・額縁 10px。",
+    "撮影の STATE に look=look_act1_dofsoft。既定と W3 (look=look_act1_dofw3) と本家を同じ大きさで並べて選ぶ。持ち主は P24。"
+  ],
+  "tiltShift": { "maxPxPC": 8, "maxPxPhone": 8 },
+  "tiltShiftPass": { "curve": "lens", "lensFar": 1.2, "lensNear": 1.0, "nearScale": 1.25 }
+}

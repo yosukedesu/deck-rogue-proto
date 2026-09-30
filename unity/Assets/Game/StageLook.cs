@@ -84,17 +84,17 @@ namespace DeckRogue.Game
         public sealed class MoonLook : LightLook
         {
             public Vector3 Euler = new Vector3(48f, 38f, 0f);
-            public float Intensity = 0.6f;
+            public float Intensity = 0.45f;   // W3b P22 (夜の森): 0.6 → 0.4・W3b の統合: 0.45 (既定 = look_act1.json の値)
             public bool Cookie;
             public Vector2 CookieSize = new Vector2(24f, 24f);
-            public MoonLook() { Color = new Color(0.66f, 0.76f, 1f); Shadows = LightShadows.Soft; ShadowStrength = 0.75f; ShadowBias = 0.05f; ShadowNormalBias = 0.4f; ShadowLayers = 1u << 2; }
+            public MoonLook() { Color = new Color(0.528f, 0.7f, 0.921f); Shadows = LightShadows.Soft; ShadowStrength = 0.75f; ShadowBias = 0.05f; ShadowNormalBias = 0.4f; ShadowLayers = 1u << 2; }
         }
 
         /// <summary>舞台の灯 (スポット)。カメラ側の上から座席の帯へ。影はキャラの板だけ。キャラの固定のキーはこの灯の向き</summary>
         public sealed class LampLook : LightLook
         {
-            /// <summary>帯でいちばん暗い所 (flatten=false なら狙いの点) の明るさ</summary>
-            public float Illum = 1.65f;
+            /// <summary>帯でいちばん暗い所 (flatten=false なら狙いの点) の明るさ (W3b P22: 1.65 → 0.8 = 座席の地面を本家の帯へ。キャラは固定のキーなので暗くならない・W3b の統合: 1.0 = ② 暗部を本家の 61% へ)</summary>
+            public float Illum = 1.0f;
             /// <summary>帯の真ん中 (狙いの点) から灯の位置へのずれ (世界の軸)</summary>
             public Vector3 Offset = new Vector3(-8f, 17f, -14f);
             /// <summary>座席の帯 (道の座標)</summary>
@@ -120,17 +120,17 @@ namespace DeckRogue.Game
             /// <summary>座席の外を暗くする (クッキーに「座席の帯 ∪ 中央の光の池」の形を焼く。外は MaskOutside 倍)</summary>
             public bool MaskOn = true;
             /// <summary>帯 (t = 座席に合わせた範囲・s = SMin〜SMax) の外側の余白 (t, s)。縁は MaskSoft (半径に対する割合) でなじむ。MaskPower = 角の丸さ (大きいほど四角)</summary>
-            public Vector2 MaskMargin = new Vector2(1.6f, 4f);
-            public float MaskSoft = 0.25f, MaskPower = 6f, MaskOutside = 0.1f;
+            public Vector2 MaskMargin = new Vector2(1.1f, 4f);
+            public float MaskSoft = 0.25f, MaskPower = 6f, MaskOutside = 0.05f;
             /// <summary>手前 (s が小さい側) の余白 (負 = MaskMargin.y と同じ)。奥は座席の後ろの崖の根元まで照らし (③のむら)、手前は段の縁で止める</summary>
             public float MaskMarginFront = 3.2f;
             /// <summary>中央の光の池 (奥の段の真ん中へ伸ばす楕円。画面の中央の列を明るく保つ = ③)。Shear = s が1増えるごとに中心の t がずれる量 (画面の中央の線に沿わせる)</summary>
             public bool PoolOn = true;
-            public float PoolT = 3.8f, PoolS = 4.8f, PoolRT = 5f, PoolRS = 9f, PoolShear = 0.4f, PoolLevel = 0.8f, PoolSoft = 0.35f;
+            public float PoolT = 3.8f, PoolS = 4.8f, PoolRT = 5f, PoolRS = 9f, PoolShear = 0.4f, PoolLevel = 1f, PoolSoft = 0.35f;
             /// <summary>帯の t を今の座席 (主人公と敵の板の足元) に合わせる (敵1体なら右の地面は暗い)。外れる時は設計図の帯</summary>
             public bool FitSeats = true;
-            public float FitPadLeft = 2f, FitPadRight = 2.2f, FitMinSpan = 8f;
-            public LampLook() { Color = new Color(0.92f, 0.96f, 1f); Shadows = LightShadows.Soft; ShadowStrength = 0.8f; ShadowBias = 0.04f; ShadowNormalBias = 0.3f; ShadowTier = 2; ShadowLayers = 1u << 1; }
+            public float FitPadLeft = 1.6f, FitPadRight = 1.8f, FitMinSpan = 8f;
+            public LampLook() { Color = new Color(0.795f, 0.868f, 0.963f); Shadows = LightShadows.Soft; ShadowStrength = 0.8f; ShadowBias = 0.04f; ShadowNormalBias = 0.3f; ShadowTier = 2; ShadowLayers = 1u << 1; }
         }
 
         /// <summary>逆光: 坑口の奥の脈の青緑 (点光源)。影は PC だけ</summary>
@@ -142,7 +142,7 @@ namespace DeckRogue.Game
             public float Illum = 3.2f, IllumDist = 5f, Range = 16f;
             /// <summary>影を落とすか (スマホの段は false)</summary>
             public bool Shadow = true;
-            public BacklightLook() { Color = new Color(0.40f, 0.95f, 0.88f); Shadows = LightShadows.Soft; ShadowStrength = 0.6f; ShadowTier = 0; ShadowLayers = 1u << 2; }
+            public BacklightLook() { Color = new Color(0.40f, 0.80f, 0.95f); Shadows = LightShadows.Soft; ShadowStrength = 0.6f; ShadowTier = 0; ShadowLayers = 1u << 2; }
         }
 
         /// <summary>木漏れ日のクッキー (舞台の灯に付ける)</summary>
@@ -160,31 +160,33 @@ namespace DeckRogue.Game
         {
             /// <summary>trilight・flat</summary>
             public string Mode = "trilight";
-            public Color Sky = new Color(0.23f, 0.27f, 0.45f), Equator = new Color(0.16f, 0.19f, 0.30f), Ground = new Color(0.08f, 0.09f, 0.12f);
+            public Color Sky = new Color(0.128f, 0.222f, 0.339f), Equator = new Color(0.084f, 0.145f, 0.221f), Ground = new Color(0.042f, 0.065f, 0.097f);
         }
 
         public sealed class FogLook
         {
             public bool On = true;
-            public Color Color = new Color(0.18f, 0.25f, 0.34f);
+            public Color Color = new Color(0.30f, 0.33f, 0.40f);
             /// <summary>画角36° の時の開始と終了 (× r で書く)</summary>
             public float Start = 14f, End = 60f;
             public bool HeightOn = true;
-            public Color HeightColor = new Color(0.34f, 0.59f, 0.64f);
-            public float HeightBase = -0.6f, HeightTop = 4f, HeightDensity = 0.55f;
-            /// <summary>高さの霧がかかり始める深さと満ちる深さ (画角36° の時の値 × r。座席の帯より奥だけに掛ける) (W3 P22)</summary>
-            public float HeightDepthStart = 20f, HeightDepthFull = 32f;
+            /// <summary>高さの霧の色 (W3b P22: 本家の奥の霧 (143,146,158) の淡い青灰。honke-color.md §4-1)</summary>
+            public Color HeightColor = new Color(0.66f, 0.67f, 0.70f);   // W3b の統合: 0.56 → 0.66 (奥の霧の帯を本家の 152 へ)
+            /// <summary>高さの霧の下と上の高さと濃さ (W3b P22: 奥の段 = 段2の天面 y 2.6・段3の面に満ちる形)</summary>
+            public float HeightBase = 0.5f, HeightTop = 6f, HeightDensity = 1.8f;   // W3b の統合: 濃さ 1.2 → 1.8
+            /// <summary>高さの霧がかかり始める深さと満ちる深さ (画角36° の時の値 × r。座席の帯より奥だけに掛ける) (W3 P22・W3b で段1の奥〜段2 に合わせた)</summary>
+            public float HeightDepthStart = 20f, HeightDepthFull = 24f;
             // ---- 霧の光の芯 (W3 P22): 坑口の奥の脈の方を向く霧ほど明るく、外れるほど暗い (中央が光り左右の端が沈む夜の霧)
             public bool LobeOn = true;
             /// <summary>芯の置き場 (道の座標)</summary>
-            public float LobeT = 11f, LobeS = 30f, LobeY = 3f;
+            public float LobeT = 12.1f, LobeS = 30f, LobeY = 1.4f;   // W3b P22: 画面の中央 (959, 249) を向く
             /// <summary>絞り (視線と芯の向きの cos の乗数。画面の端 ≈ 24° で 16 なら 0.23 倍)</summary>
             public float LobePower = 16f;
             /// <summary>芯から外れた所の霧の色の倍率 (0〜1)</summary>
-            public float LobeEdge = 0.5f;
-            /// <summary>芯で霧に足す色 (× LobeStrength)</summary>
-            public Color LobeColor = new Color(0.36f, 0.78f, 0.74f);
-            public float LobeStrength = 1.7f;
+            public float LobeEdge = 0.3f;
+            /// <summary>芯で霧に足す色 (× LobeStrength)。W3b P22: 白に近い淡い青 (本家の霧の上位 5% はほぼ無彩の白)</summary>
+            public Color LobeColor = new Color(0.60f, 0.61f, 0.66f);
+            public float LobeStrength = 1.0f;   // W3b の統合: 0.6 → 1.0
         }
 
         public sealed class ShadowLook
@@ -202,15 +204,16 @@ namespace DeckRogue.Game
         {
             /// <summary>aces・neutral・none</summary>
             public string Tonemap = "aces";
-            public float Exposure = 0.3f, Contrast = 10f, Saturation = 0f;
-            public Color ColorFilter = new Color(0.95f, 0.98f, 1.04f);
-            public Vector4 Lift = new Vector4(1f, 1f, 1f, 0f), Gamma = new Vector4(1f, 1f, 1f, 0f), Gain = new Vector4(1f, 1f, 1f, 0f);
-            public float BloomThreshold = 1f, BloomIntensity = 0.8f, BloomScatter = 0.65f;
-            public Color BloomTint = new Color(0.92f, 0.98f, 1f);
-            public float VignetteIntensity = 0.25f, VignetteSmoothness = 0.45f;
+            // W3b P22 (honke-color.md §4-2・§4-6・§4-7): 色の膜をやめ、暗部だけ紺 (lift)・明部をわずかに暖かく (gain)・中間は触らない・contrast 14・ブルーム 1.0/0.75/白・周辺減光は強さ据え置きで色だけ紺 (端は舞台だけの周辺減光 stageVignette)
+            public float Exposure = 0.3f, Contrast = 14f, Saturation = 0f;
+            public Color ColorFilter = new Color(1f, 1f, 1f);
+            public Vector4 Lift = new Vector4(0.94f, 0.99f, 1.10f, -0.01f), Gamma = new Vector4(1f, 1f, 1f, 0f), Gain = new Vector4(1.02f, 1f, 0.97f, 0f);
+            public float BloomThreshold = 1f, BloomIntensity = 1f, BloomScatter = 0.75f;
+            public Color BloomTint = new Color(1f, 1f, 1f);
+            public float VignetteIntensity = 0.15f, VignetteSmoothness = 0.45f;   // W3b の統合: 0.25 → 0.15 (キャラの板にも掛かるので右端の敵を沈めない。舞台の端は stageVignette)
             public Vector2 VignetteCenter = new Vector2(0.5f, 0.52f);
             public bool VignetteRounded;
-            public Color VignetteColor = new Color(0.02f, 0.02f, 0.06f);
+            public Color VignetteColor = new Color(0.01f, 0.03f, 0.07f);
             public bool FilmGrain, ChromaticAberration;
         }
 
@@ -236,7 +239,7 @@ namespace DeckRogue.Game
 
         public sealed class DofLook
         {
-            public float BandMargin = 0.8f, RampNear = 2.5f, RampFar = 9f, MaxPxPC = 24f, MaxPxPhone = 12f;
+            public float BandMargin = 0.8f, RampNear = 2.5f, RampFar = 5f, MaxPxPC = 10f, MaxPxPhone = 10f;   // W3b の統合: look_act1.dof.json の値にそろえた (P24 の申し送り。旧 9/24/12)
             public bool HalfRes;
             /// <summary>座席の帯がまだ無い時 (P10 の前) の帯 = カメラの距離 + この (手前, 奥)</summary>
             public Vector2 FallbackBandRel = new Vector2(-4f, 8f);
@@ -247,7 +250,7 @@ namespace DeckRogue.Game
         public sealed class HitLook
         {
             public int MaxLights = 3;
-            public float Range = 4f;
+            public float Range = 5f;   // W3b P22: 4 → 5 (技の光が足元の地面へ届く)
             /// <summary>HitLight の intensity はこの距離での明るさ (Light.intensity = intensity × RefDist²)</summary>
             public float RefDist = 1.5f;
             public int ShadowTier = 0;
@@ -324,6 +327,7 @@ namespace DeckRogue.Game
             ApplyCharGlobals(d);
             ApplyHeightFog(d);
             ApplyEnvGrade(d);
+            ApplyStageVignette(d);
             ApplyMaterials();
             StageFx.Prepare(d.Hit);
             HD2DFlags.LayoutDumpers["look"] = DebugInfo;
@@ -503,6 +507,8 @@ namespace DeckRogue.Game
                 { "heightDepth", _idsReady ? Shader.GetGlobalVector(_idHFogDepth) : Vector4.zero },
             };
             o["envGrade"] = _idsReady ? Shader.GetGlobalVector(_idEnvGrade) : Vector4.zero;   // 舞台の色の寄せ (W3 の統合)
+            o["stageVignette"] = _idsReady ? Shader.GetGlobalVector(_idStageVignette) : Vector4.zero;   // 舞台だけの周辺減光 (W3b P22)
+            o["layout"] = d != null && d.Raw != null && d.Raw["layout"] != null ? d.Raw["layout"].ToString() : null;   // 比べる用の別の設計図 (W3b P22。null = 既定)
             var urp = BackedUrp();
             if (urp != null)
                 o["urp"] = new Dictionary<string, object>
@@ -579,6 +585,7 @@ namespace DeckRogue.Game
         static int _idKeyDir, _idKeyColor, _idAmbTop, _idAmbBottom, _idHFogColor, _idHFogRange, _idReceive, _idShadowStrength;
         static int _idHFogDepth, _idLobePos, _idLobeColor;   // 高さの霧の深さ・霧の光の芯 (W3 P22。StageModule・StageShaft が読む)
         static int _idEnvGrade, _idTint, _idIntensity;        // 舞台の色の寄せ (W3 の統合・本家の色彩。StageModule が読む)・光の面の色と強さ
+        static int _idStageVignette;                          // 舞台だけの周辺減光 (W3b P22。StageModule・StageShaft が読む)
 
         static string DefaultName(int act) { return "look_act" + act; }
 
@@ -601,6 +608,7 @@ namespace DeckRogue.Game
             _idEnvGrade = Shader.PropertyToID("_HD2DEnvGrade");         // xyz = 色の倍率 − 1・w = 彩度を落とす量 (W3 の統合。0 = そのまま)
             _idTint = Shader.PropertyToID("_Tint");                     // StageShaft の光の面の色
             _idIntensity = Shader.PropertyToID("_Intensity");
+            _idStageVignette = Shader.PropertyToID("_HD2DStageVignette"); // x = 横の始まり・y = 横の強さ・z = 上の帯の幅・w = 上の強さ (W3b P22。0 = そのまま)
         }
 
         static StageLookData LoadNamed(int act, string baseName, IList<string> overlays)
@@ -1385,7 +1393,26 @@ namespace DeckRogue.Game
             Shader.SetGlobalVector(_idLobePos, Vector4.zero);
             Shader.SetGlobalVector(_idLobeColor, Vector4.zero);
             Shader.SetGlobalVector(_idEnvGrade, Vector4.zero);
+            Shader.SetGlobalVector(_idStageVignette, Vector4.zero);
         }
+
+        /// <summary>
+        /// 舞台だけの周辺減光 (2026-09-30 W3b P22・ユーザー「本家っぽく」: 座席の帯が明るく、画面の端と上下が沈む。中央÷端 4 以上)。
+        /// look の "stageVignette": { "on", "sideStart": 画面の中央からの距離 0〜0.5 (ここから横の端へ暗くなる), "side": 横の端での強さ 0〜1,
+        /// "topBand": 画面の上から 0〜1 (この帯の中で上端へ暗くなる), "top": 上端での強さ 0〜1 } を全体値 _HD2DStageVignette に書く。
+        /// StageModule (地形・部品・半立体・札) と StageShaft (霧の面・光の筋) だけに掛かり、キャラの板と UI には掛からない
+        /// = URP の周辺減光 (post.vignette) と違い、右端の敵や主人公を暗くしない。書いていない・on=false なら 0 (= そのまま)
+        /// </summary>
+        static void ApplyStageVignette(StageLookData d)
+        {
+            var sv = d.Raw != null ? d.Raw["stageVignette"] as JObject : null;
+            _stageVignette = Vector4.zero;
+            if (sv != null && B(sv, "on", true))
+                _stageVignette = new Vector4(Mathf.Clamp(F(sv, "sideStart", 0.34f), 0f, 0.499f), Mathf.Clamp01(F(sv, "side", 0f)),
+                    Mathf.Clamp01(F(sv, "topBand", 0f)), Mathf.Clamp01(F(sv, "top", 0f)));
+            Shader.SetGlobalVector(_idStageVignette, _stageVignette);
+        }
+        static Vector4 _stageVignette;
 
         /// <summary>
         /// 舞台の色の寄せ (2026-09-30 W3 の統合。ユーザー「本家の色彩も参考にしてほしい」→ docs/design/hd2d-slice/honke-color.md)。
@@ -1452,6 +1479,9 @@ namespace DeckRogue.Game
             if (d.Fog.LobeOn) sb.Append(" | 霧の芯 ").Append(d.Fog.LobePower.ToString("0", CultureInfo.InvariantCulture)).Append("乗");
             if (_envGrade != Vector4.zero) sb.Append(" | 舞台の色 彩度−").Append(_envGrade.w.ToString("0.00", CultureInfo.InvariantCulture))
                 .Append(" 倍率 ").Append((1f + _envGrade.x).ToString("0.00", CultureInfo.InvariantCulture)).Append(',').Append((1f + _envGrade.y).ToString("0.00", CultureInfo.InvariantCulture)).Append(',').Append((1f + _envGrade.z).ToString("0.00", CultureInfo.InvariantCulture));
+            if (_stageVignette.y > 0f || _stageVignette.w > 0f) sb.Append(" | 舞台の周辺減光 横 ").Append(_stageVignette.x.ToString("0.00", CultureInfo.InvariantCulture)).Append('/').Append(_stageVignette.y.ToString("0.00", CultureInfo.InvariantCulture))
+                .Append(" 上 ").Append(_stageVignette.z.ToString("0.00", CultureInfo.InvariantCulture)).Append('/').Append(_stageVignette.w.ToString("0.00", CultureInfo.InvariantCulture));   // W3b P22
+            if (d.Raw != null && d.Raw["layout"] != null) sb.Append(" | 設計図 ").Append(d.Raw["layout"].ToString());   // W3b P22: 比べる用の別の設計図
             sb.Append(" | ぼかし ").Append(TiltShiftSettings.Enabled ? "自作" : TiltShiftSettings.UseUrpBokeh ? "URP" : "なし");
             sb.Append(" 帯 ").Append(TiltShiftSettings.BandNear.ToString("0.0", CultureInfo.InvariantCulture)).Append('〜').Append(TiltShiftSettings.BandFar.ToString("0.0", CultureInfo.InvariantCulture));
             return sb.ToString();

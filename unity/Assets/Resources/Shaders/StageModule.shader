@@ -129,6 +129,24 @@ Shader "DeckRogue/StageModule"
             // 舞台の色の寄せ (2026-09-30 W3 の統合・本家の色彩 docs/design/hd2d-slice/honke-color.md)。StageLook が look の envGrade から書く。
             // xyz = 色の倍率 − 1 (0 = そのまま)・w = 彩度を落とす量 (0 = そのまま・1 = 灰)。全部 0 なら何も変わらない (キャラの板は別のシェーダ = 掛からない)
             float4 _HD2DEnvGrade;
+            // 舞台だけの周辺減光 (2026-09-30 W3b P22・ユーザー「本家っぽく」: 座席の帯が明るく、画面の端と上が沈む)。StageLook が look の stageVignette から書く。
+            // キャラの板 (StageUnitLit) と UI には掛からない = 右端の敵や主人公は暗くならない。画面の位置はカメラの視線の空間で求める (描く先の上下の反転に左右されない)。
+            // x = 横の減光の始まり (画面の中央からの距離 0〜0.5)・y = 横の端での強さ (0〜1)・z = 上の減光の帯の幅 (画面の上から 0〜1)・w = 上端での強さ。y と w が 0 なら何もしない
+            float4 _HD2DStageVignette;
+
+            half HD2D_StageVignette(float3 posWS)
+            {
+                if (_HD2DStageVignette.y <= 0.0 && _HD2DStageVignette.w <= 0.0) return 1.0h;
+                float3 pv = TransformWorldToView(posWS);
+                float iz = 1.0 / max(1e-3, -pv.z);
+                float4x4 proj = UNITY_MATRIX_P;
+                float nx = pv.x * iz * abs(proj._m00);   // −1 (左端) 〜 1 (右端)
+                float ny = pv.y * iz * abs(proj._m11);   // −1 (下端) 〜 1 (上端)
+                float side = smoothstep(_HD2DStageVignette.x, 0.5, abs(nx) * 0.5);
+                float fromTop = 0.5 - ny * 0.5;                     // 0 (上端) 〜 1 (下端)
+                float top = _HD2DStageVignette.z > 0.0 ? 1.0 - smoothstep(0.0, _HD2DStageVignette.z, fromTop) : 0.0;
+                return half(saturate((1.0 - _HD2DStageVignette.y * side) * (1.0 - _HD2DStageVignette.w * top)));
+            }
 
             half3 HD2D_EnvGrade(half3 c)
             {
@@ -392,6 +410,7 @@ Shader "DeckRogue/StageModule"
                 half3 hazed = HD2D_HeightFog(col, posWS, lobe);
                 half3 fogged = MixFogColor(hazed, HD2D_FogColor(lobe), InitializeInputDataFog(float4(posWS, 1.0), i.fogFactor));
                 col = lerp(col, fogged, half(_Fog));
+                col *= HD2D_StageVignette(posWS);   // 舞台だけの周辺減光 (W3b P22。全体値 0 = そのまま)
                 outColor = half4(col, OutputAlpha(alpha, false));
             #ifdef _WRITE_RENDERING_LAYERS
                 outRenderingLayers = EncodeMeshRenderingLayer();

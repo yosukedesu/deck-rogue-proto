@@ -1,0 +1,39 @@
+{
+  "_doc": [
+    "W3b の統合の前 (レーン P22・P24 の W3b の値) へ戻す変種: 月 0.4・舞台の灯 0.8・高さの霧 色 [0.56,0.57,0.60] 濃さ 1.2・霧の芯 0.6・舞台の上の減光 0.45・光の面 1.6 と、統合の前の設計図 act1_layout_w3blanes (霧の面の gain 0.55/0.85)・手前のぼかし (レンズ 1.4・nearScale 1.2・点 16)。",
+    "撮影の STATE に look=look_act1_w3blanes。統合で寄せた分だけを比べる。持ち主は統合担当 (W3b)。"
+  ],
+  "layout": "act1_layout_w3blanes",
+  "moon": {
+    "intensity": 0.4
+  },
+  "lamp": {
+    "illum": 0.8
+  },
+  "fog": {
+    "height": {
+      "color": [
+        0.56,
+        0.57,
+        0.6
+      ],
+      "density": 1.2
+    },
+    "lobe": {
+      "strength": 0.6
+    }
+  },
+  "stageVignette": {
+    "top": 0.45
+  },
+  "materials": {
+    "glow": {
+      "intensity": 1.6
+    }
+  },
+  "tiltShiftPass": {
+    "lensNear": 1.4,
+    "nearScale": 1.2,
+    "nearOwnTaps": 16
+  }
+}

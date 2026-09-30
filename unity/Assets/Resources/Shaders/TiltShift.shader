@@ -22,6 +22,9 @@
 //     α = max(タイルの半径での被覆, 自分の円盤での被覆)・背景は far (MRT 0) に α=1 で書き、合成で元の色の代わりの下地にする
 //     (前は自分の画素を α=1 にしていたので、細い蔦・羊歯の輪郭がくっきり残った)。
 //   - 手前の上限は _TS_Focus.z 倍 (既定 1)
+//   - 2周目 (本家っぽく): 帯の外のぼけの伸び方を「レンズ」にできる (_TS_Lens.xy > 0)。錯乱円 = 上限 × saturate(強さ × 帯の縁からの深さの差 ÷ 深さ)
+//     (薄いレンズの |z − 焦点| ÷ z と同じ形)。本家 (オクトラ1 の夜の森・洞窟・村) を測ると、ぼけは弱く・奥ほど少しずつ強い (帯のすぐ奥の段はほぼくっきり・
+//     奥の木は形が読める・手前の草は 4〜5px)。今までの smoothstep (帯の外 5 unit で上限 24px) は奥が全部同じ塗りつぶしになっていた。0 = 今までの形
 //
 // 決まり
 //   - 全部のテクスチャは材質でなく MaterialPropertyBlock で渡す (パスごとに別々。_TS_* の名前)。_BlitTexture は使わない
@@ -52,6 +55,7 @@ Shader "DeckRogue/TiltShift"
     float4 _TS_Focus;       // P24: x = 道の帯の手前 (s)・y = 奥 (s)・z = 手前の上限の倍率・w = 1 なら道に沿った帯 (0 = 深さの帯)
     float4 _TS_Plane;       // P24: x = n·カメラの右・y = n·カメラの上・z = n·カメラの前・w = カメラの位置の s (n = 道の s 軸)
     float4 _TS_Proj;        // P24: x = 1/m00・y = 1/m11・z = m02・w = m12 (カメラの投影。GL の形)
+    float4 _TS_Lens;        // P24 (2周目): x = 奥のレンズの強さ・y = 手前のレンズの強さ (0 = 今までの smoothstep の傾斜)。zw は空き
 
     #define TS_GOLDEN_ANGLE 2.39996323
 
@@ -78,14 +82,24 @@ Shader "DeckRogue/TiltShift"
         // 道に沿った帯 (P24): 視線の向き r (カメラの空間・+z が前) と、道の s の視線に沿った増え方 k
         float2 r = ((uv * 2.0 - 1.0) + _TS_Proj.zw) * _TS_Proj.xy;
         float k = _TS_Plane.x * r.x + _TS_Plane.y * r.y + _TS_Plane.z;
+        // 帯の外の距離 (視線に沿った深さの差・unit)。dzF = 帯の奥の縁より奥・dzN = 帯の手前の縁より手前 (どちらも帯の中なら 0)
+        float dzF = 0.0, dzN = 0.0;
         if (_TS_Focus.w > 0.5 && k > 0.05)
         {
             float s = _TS_Plane.w + z * k;
-            if (s < _TS_Focus.x)      c = -smoothstep(0.0, 1.0, saturate((_TS_Focus.x - s) / k * _TS_Band.z));
-            else if (s > _TS_Focus.y) c =  smoothstep(0.0, 1.0, saturate((s - _TS_Focus.y) / k * _TS_Band.w));
+            dzN = max(_TS_Focus.x - s, 0.0) / k;
+            dzF = max(s - _TS_Focus.y, 0.0) / k;
         }
-        else if (z < _TS_Band.x) c = -smoothstep(0.0, 1.0, saturate((_TS_Band.x - z) * _TS_Band.z));
-        else if (z > _TS_Band.y) c =  smoothstep(0.0, 1.0, saturate((z - _TS_Band.y) * _TS_Band.w));
+        else
+        {
+            dzN = max(_TS_Band.x - z, 0.0);
+            dzF = max(z - _TS_Band.y, 0.0);
+        }
+        // 形 (P24 2周目): レンズ (_TS_Lens.xy > 0) = 薄いレンズの錯乱円 ∝ (帯の縁からの深さの差) ÷ (深さ)。帯の縁から緩やかに始まり、遠くほど伸びて上限へ近づく
+        //   (本家の夜の森は、帯のすぐ奥の段はほぼくっきり・奥の木は柔らかく読める・いちばん奥は霧で沈む)。0 = 今までの smoothstep の傾斜 (_TS_Band.zw)
+        float zs = max(z, 1e-3);
+        if (dzF > 0.0)      c =  (_TS_Lens.x > 0.0 ? saturate(_TS_Lens.x * dzF / zs) : smoothstep(0.0, 1.0, saturate(dzF * _TS_Band.w)));
+        else if (dzN > 0.0) c = -(_TS_Lens.y > 0.0 ? saturate(_TS_Lens.y * dzN / zs) : smoothstep(0.0, 1.0, saturate(dzN * _TS_Band.z)));
         // 画面の上下の追加のぼけ (既定 0 = 無し)。奥の側は上端で、手前の側は下端で強める。符号の向きは深さの結果に従う
         float top = _TS_Tilt.x * saturate((uv.y - _TS_Tilt.y) / max(1.0 - _TS_Tilt.y, 1e-3));
         float bot = _TS_Tilt.z * saturate((_TS_Tilt.w - uv.y) / max(_TS_Tilt.w, 1e-3));

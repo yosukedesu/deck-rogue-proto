@@ -1,0 +1,7 @@
+{
+  "_doc": [
+    "P22 (W3b) の比較用の変種: 舞台だけの周辺減光 (stageVignette) を切る。③ 中央÷端・④ 上の1/3 にどれだけ効いているかを見る。",
+    "撮影の STATE に look=look_act1_nosvig。持ち主は P22。"
+  ],
+  "stageVignette": { "on": false }
+}

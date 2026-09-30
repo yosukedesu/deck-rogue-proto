@@ -517,5 +517,31 @@
    "from": "docs/pixellab/hd2d-act1/raw/relief-clean/frame_2.png (PixelLab pixflux・relief-clean.py で手直し)",
    "note": "上から垂れる葉と蔓の帯 (手前の上の額縁)"
   }
+ },
+ "w3b": {
+  "_": "2026-09-30 W3b P22 (ユーザー「本家っぽく」) がコードで作った絵 (PixelLab 0 回)。作り方は scratchpad の p22b/gen_art.py (色は palette-act1.json の色だけ) と、草は tile-calm --contrast 0.6 --no-auto → stage-palette map。設計図 act1_layout.json の tiles.pathSeat/grassSeat・sources.trunkTall*/litter* が読む",
+  "tiles": {
+   "top_path_seat": {
+    "art": ["Art/stage/act1/tiles/top_path_seat_a", "Art/stage/act1/tiles/top_path_seat_b", "Art/stage/act1/tiles/top_path_seat_c", "Art/stage/act1/tiles/top_path_seat_d"],
+    "note": "座席の帯の踏み固めた土 (64×64・継ぎ目なし)。大きな斑 4段・細かい粒・小石 6〜8・ひび 2・草の芽 3〜4。輝度の標準偏差 6.8〜7.8 (W1 の top_path は 3.5 の3色)"
+   },
+   "top_grass_seat": {
+    "art": ["Art/stage/act1/tiles/top_grass_seat_a", "Art/stage/act1/tiles/top_grass_seat_b", "Art/stage/act1/tiles/top_grass_seat_c", "Art/stage/act1/tiles/top_grass_seat_d"],
+    "from": "docs/pixellab/hd2d-act1/raw/tiles/top_grass_s2.png (tile-calm --contrast 0.6 --no-auto)",
+    "note": "座席の帯の草。明暗 0.6 (W1 の top_grass は 0.25 前後) = 標準偏差 22・ラプラシアン分散 3,600〜4,000 (タイル)。奥の段の草は top_grass のまま"
+   }
+  },
+  "relief": {
+   "trunk_tall_1": { "art": "Art/stage/act1/relief/trunk_tall_1", "kind": "奥の幹", "dots": [51, 200], "note": "幅 26・side_bark_a を縦に敷いて切る・左上からの丸い陰・根元の張り出し・枝の付け根" },
+   "trunk_tall_2": { "art": "Art/stage/act1/relief/trunk_tall_2", "kind": "奥の幹", "dots": [40, 200], "note": "幅 20・side_bark_c" },
+   "trunk_tall_3": { "art": "Art/stage/act1/relief/trunk_tall_3", "kind": "奥の幹", "dots": [61, 200], "note": "幅 32・side_bark_b" }
+  },
+  "litter": {
+   "_": "地面の小札 (設計図の kind litter)。背丈 12 ドット以下 (Diorama.LitterMaxTexels)。1ドット = 座席で 4px",
+   "pebble": ["Art/stage/act1/litter/pebble_1", "Art/stage/act1/litter/pebble_2", "Art/stage/act1/litter/pebble_3", "Art/stage/act1/litter/pebble_4"],
+   "tuft": ["Art/stage/act1/litter/tuft_1", "Art/stage/act1/litter/tuft_2", "Art/stage/act1/litter/tuft_3", "Art/stage/act1/litter/tuft_4"],
+   "leaves": ["Art/stage/act1/litter/leaves_1", "Art/stage/act1/litter/leaves_2"],
+   "twig": ["Art/stage/act1/litter/twig_1"]
+  }
  }
 }

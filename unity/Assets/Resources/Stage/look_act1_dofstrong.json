@@ -1,0 +1,17 @@
+{
+  "_doc": [
+    "P24 (W3b・2周目) の比較用の変種: レンズの形のまま強めたぼかし (奥の上限 14px・手前 18px。PC 1080)。「手前と奥は本家並みに強く」を形を崩さずに試す案。",
+    "場所ごと (PC): 1段目の上 約 2.5px・2段目 約 7px・3段目と尾根 約 11〜13px・霧の面から奥は上限 14px。手前の段の地面 s −8 で約 12.5px・額縁 18px。",
+    "撮影の STATE に look=look_act1_dofstrong。既定・弱い変種 (look_act1_dofsoft)・W3 (look_act1_dofw3) と本家を同じ大きさで並べて選ぶ。持ち主は P24。"
+  ],
+  "tiltShift": { "maxPxPC": 14, "maxPxPhone": 14 },
+  "tiltShiftPass": {
+    "curve": "lens",
+    "lensFar": 2.2,
+    "lensNear": 1.6,
+    "nearScale": 1.3,
+    "taps": 32,
+    "nearOwnTaps": 20,
+    "phone": { "taps": 20, "nearOwnTaps": 14, "nearDilateTile": 12 }
+  }
+}

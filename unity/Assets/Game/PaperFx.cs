@@ -723,7 +723,15 @@ namespace DeckRogue.Game
             }
             k = Mathf.Round(k * 20f) / 20f;
             int tw = Mathf.Max(8, Mathf.CeilToInt(w * k)), th = Mathf.Max(8, Mathf.CeilToInt(h * k));
-            string key = "pocket:" + tw + "x" + th + ":" + Mathf.RoundToInt(lineW * k * 10f) + ":" + Mathf.RoundToInt(line.a * 100f) + ":" + Mathf.RoundToInt(fillAlpha * 100f);
+            // 見える色 (夜の札の中なら NightSkin が写す先の色。ポケットはどれも夜の札の中＝自分の札のからくりの区画) と、
+            // Linear の時の α の写し (P20 2周目): 絵に焼いた α は Linear では混ぜ方が変わり、スマホの空き枠の塗り (紙色 7%) が夜の上で
+            // 輝度 12→73 まで持ち上がって「淡い灰の板」に見えていた (W3 の統合の所見)。UiKit.GammaAlpha で Gamma と同じ見え方の α へ (-uilinearfix 0 なら今のまま)
+            Color shown = line;
+            Color nightLine;
+            if (HD2DFlags.UiNight && TryNightInk(line, out nightLine)) shown = nightLine;
+            bool lin = UiKit.LinearFix;
+            string key = "pocket:" + tw + "x" + th + ":" + Mathf.RoundToInt(lineW * k * 10f) + ":" + Mathf.RoundToInt(line.a * 100f) + ":" + Mathf.RoundToInt(fillAlpha * 100f)
+                + (lin ? ":L" + ColorUtility.ToHtmlStringRGB(shown) : "");
             Sprite s;
             if (!_cache.TryGetValue(key, out s))
             {
@@ -773,7 +781,9 @@ namespace DeckRogue.Game
                         }
                         float la = cov * line.a;
                         float fa = d >= 0f ? fillAlpha * edgeA : 0f;
-                        px[y * tw + x] = new Color(1f, 1f, 1f, la + (1f - la) * fa);
+                        float pa = la + (1f - la) * fa;
+                        if (lin) pa = UiKit.GammaAlpha(shown, pa);   // 下は色から既定 (明るい線＝暗い地・墨の線＝紙の地)
+                        px[y * tw + x] = new Color(1f, 1f, 1f, pa);
                     }
                 tex.SetPixels(px);
                 tex.Apply(false, false);
@@ -787,7 +797,7 @@ namespace DeckRogue.Game
             img.sprite = s;
             img.type = Image.Type.Simple;
             img.preserveAspect = false;
-            img.color = new Color(line.r, line.g, line.b, 1f);
+            img.color = new Color(shown.r, shown.g, shown.b, 1f);   // 夜の札の中では写した後の色 (NightSkin はもう写さない)
             img.raycastTarget = false;
             return img;
         }
@@ -833,6 +843,10 @@ namespace DeckRogue.Game
         };
         static Dictionary<string, string> _nightTags;
 
+        /// <summary>夜の札の中でも写さない「絵」の枝の名前 (P20 2周目)。pile-glyph = 山札・捨て札の札の小さな札の絵 (表向きの紙の札・裏向きの夜＋真鍮の札。
+        /// 写すと表向きの紙の札まで夜になり、裏向きと見分けられない)</summary>
+        static readonly string[] KeepPaperNames = { "pile-glyph" };
+
         /// <summary>
         /// 舞台の上に常に出る札 (root の下) を夜の組へ写す。旗 ui=night の時だけ (立っていなければ何もしない＝今の画は1画素も変わらない)。組み立ての後に呼ぶ。
         /// 写し方 (紙の表の1対1): 紙の札 Tag→NightCard・Tag2→NightCard2・細い縁の札 TagThin と淡い色で染めた札→NightTint (同じ色相の暗い塗り)・
@@ -866,12 +880,22 @@ namespace DeckRogue.Game
                 {
                     var gr = _buf[i];
                     if (gr == null) continue;
+                    if (UnderKeepPaper(gr.transform)) continue;   // 札の中の「絵」(山札・捨て札の小さな札の絵) は紙のまま (P20 2周目)
                     var tmp = gr as TMP_Text;
                     if (tmp != null) { SkinText(tmp); continue; }
                     var img = gr as Image;
                     if (img != null) SkinImage(img);
                 }
                 _buf.Clear();
+            }
+
+            /// <summary>札の中に描いた「絵」の枝 (KeepPaperNames の名前の物の下) か。皮の根 (この部品の付いた物) までさかのぼる</summary>
+            bool UnderKeepPaper(Transform t)
+            {
+                for (var p = t; p != null && p != transform; p = p.parent)
+                    for (int k = 0; k < KeepPaperNames.Length; k++)
+                        if (p.name == KeepPaperNames[k]) return true;
+                return false;
             }
 
             void SkinText(TMP_Text t)

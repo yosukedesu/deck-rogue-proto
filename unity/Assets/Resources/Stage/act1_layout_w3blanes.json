@@ -1,5 +1,5 @@
 {
-  "_doc": "幕1の箱庭の設計図 (HD-2D 見本 P04・計画 docs/design/hd2d-slice-plan-2026-09-30.md §2-2)。座標は道の座標: t = 道に沿った距離・s = 道と直角 (+ が奥)・y = その場所の地面からの高さ (abs=true なら絶対の高さ)。yaw は度 (block・rig・fence・marker は道の向きから・ほかは世界)。tiles の variants は種ごとの候補 (先に読めた絵。文字列か {art, calm, sat, clampWhite})、rot は none|flipX|rot4。surfaces の shader は array (道の座標で1軸投影)|atlas (半立体と札)|uv (メッシュの UV)|shaft (光の面)。エディタのメニュー「DeckRogue/箱庭/幕1を組む」で組み、動かしてから「書き戻す」と parts の t・s・y・yaw・scale が書き換わる。初版は scratchpad の gen_layout.py (seed 20260930) が作った。W3b P22 (ユーザー「本家っぽく」): 座席の帯の土と草を明暗の戻ったタイル (pathSeat・grassSeat) に、地面の小札 (kind litter・39枚。背丈 12 ドット以下は座席の帯にも置ける)、奥の高い幹 (trunk-l1〜r2)、月光の筋を画面の上から左上の光で (lobe 0 = 霧の芯で薄めない)、霧の面の明るさ (gain)、上の角に暗い樹冠。W3 の設計図は act1_layout_w3.json (旗 look= の変種 look_act1_w3layout で組める)。W3b の統合 (本家っぽく): 月光の筋を見えるように、霧の面の gain を 0.53 倍 (vein-mist 0.55→0.29・mist-t2 0.85→0.45) にして光の面の強さを 1.6→3.0 に上げた (look_act1.json の materials.glow) = 霧の面の明るさはそのまま・筋だけ約1.9倍。統合前 (レーン P22 の W3b) の設計図は act1_layout_w3blanes.json (変種 look_act1_w3blanes で組める)",
+  "_doc": "幕1の箱庭の設計図 (HD-2D 見本 P04・計画 docs/design/hd2d-slice-plan-2026-09-30.md §2-2)。座標は道の座標: t = 道に沿った距離・s = 道と直角 (+ が奥)・y = その場所の地面からの高さ (abs=true なら絶対の高さ)。yaw は度 (block・rig・fence・marker は道の向きから・ほかは世界)。tiles の variants は種ごとの候補 (先に読めた絵。文字列か {art, calm, sat, clampWhite})、rot は none|flipX|rot4。surfaces の shader は array (道の座標で1軸投影)|atlas (半立体と札)|uv (メッシュの UV)|shaft (光の面)。エディタのメニュー「DeckRogue/箱庭/幕1を組む」で組み、動かしてから「書き戻す」と parts の t・s・y・yaw・scale が書き換わる。初版は scratchpad の gen_layout.py (seed 20260930) が作った。W3b P22 (ユーザー「本家っぽく」): 座席の帯の土と草を明暗の戻ったタイル (pathSeat・grassSeat) に、地面の小札 (kind litter・39枚。背丈 12 ドット以下は座席の帯にも置ける)、奥の高い幹 (trunk-l1〜r2)、月光の筋を画面の上から左上の光で (lobe 0 = 霧の芯で薄めない)、霧の面の明るさ (gain)、上の角に暗い樹冠。W3 の設計図は act1_layout_w3.json (旗 look= の変種 look_act1_w3layout で組める)。【この写しはレーン P22 の W3b の設計図 (W3b の統合の前) = 比べる用。既定では読まない】",
   "version": 1,
   "act": 1,
   "pathYaw": -22,
@@ -931,9 +931,9 @@
     {"kind":"card","src":"flower","t":-5.775,"s":25.144,"yaw":8.0,"flip":true,"seed":534825},
     {"kind":"card","src":"shroom2","t":-2.365,"s":24.475,"yaw":-8.0,"flip":true,"seed":617019},
     {"kind":"card","src":"pebble","t":9.507,"s":26.997,"yaw":7.0,"flip":false,"seed":775874},
-    {"kind":"fog","name":"vein-mist","t":6.0,"s":30.0,"y":0.0,"w":110.0,"h":14.0,"v0":0.0,"gain":0.29},
+    {"kind":"fog","name":"vein-mist","t":6.0,"s":30.0,"y":0.0,"w":110.0,"h":14.0,"v0":0.0,"gain":0.55},
     {"kind":"fog","name":"mist-t3","t":4.0,"s":16.2,"y":0.0,"w":90.0,"h":3.2,"v0":0.45},
-    {"kind":"fog","name":"mist-t2","t":4.0,"s":9.6,"y":0.0,"w":90.0,"h":2.2,"v0":0.6,"gain":0.45},
+    {"kind":"fog","name":"mist-t2","t":4.0,"s":9.6,"y":0.0,"w":90.0,"h":2.2,"v0":0.6,"gain":0.85},
     {"kind":"shaft","name":"moon-shaft-0","t":-5.45,"s":5.2,"y":6.905,"abs":true,"top":0.9,"bottom":2.6,"len":7.2,"dir":[0.36,-1.0,0.34],"gain":1.0,"lobe":0.0},
     {"kind":"shaft","name":"moon-shaft-1","t":-1.6,"s":5.8,"y":6.973,"abs":true,"top":0.8,"bottom":2.2,"len":7.0,"dir":[0.36,-1.0,0.34],"gain":0.8,"lobe":0.0},
     {"kind":"shaft","name":"moon-shaft-2","t":5.25,"s":6.4,"y":7.08,"abs":true,"top":0.9,"bottom":2.4,"len":6.6,"dir":[0.36,-1.0,0.34],"gain":0.9,"lobe":0.0},

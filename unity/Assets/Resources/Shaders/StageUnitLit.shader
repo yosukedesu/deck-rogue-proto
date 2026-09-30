@@ -4,6 +4,7 @@
 // 光の形 (本家の作法: ドットには陰影が描き込み済み。写実的な光は当てず、全員に同じ固定のキーライトだけ)
 //   lit  = 上下の環境光 × _AmbientScale ＋ _Receive × (キーの色 × max(0, 法線・キー) × 月の影 × 木漏れ日 ＋ 近くの点光源 × _LocalLights)
 //   色   = 絵の色 × lit × _HeroLift       … _Receive=0 で「絵の色 × 環境光」の平らな色に戻る (光の戻しのスイッチ。計画 §2-5・§7-7)
+//   順序 = 光 → 主役の持ち上げ → 暗い色の持ち上げ → 輪郭の床 → 輪郭の持ち上げ → 白の上限 → 発光 → リム → キャラの色の掛け算 → 点滅 → 霧
 //   キー・環境光は全体値 (Include/HD2DCharLight.hlsl の _CharKeyDir・_CharKeyColor・_CharAmbTop・_CharAmbBottom。StageLook.Apply が書く)。
 //   全体値が未設定 (0) の時は場の主光 (月) と環境光 (SH) を使う = 黒くならない。
 //   法線と光の位置は「ドットの中心」で読む/計算する (1つのドットの中で明るさが割れない)。
@@ -21,6 +22,10 @@
 //   _BlackLift … 輪郭の持ち上げ (2026-09-30 P23。計画 P23 手順2)。xyz = 真っ黒の画素がなる色 (線形・後処理の前)。col = L + col×(1−L) で、
 //     順序と明るい所はほぼそのまま、墨の輪郭と黒鉄の暗部だけを持ち上げる (ACES の足が暗部を 1/3 に沈めるので、墨線が画面で 4〜13 に潰れていた。
 //     目標は画面で 20〜30 = トライアングルストラテジーの輪郭 RGB 24)。StageUnits がトーンマップと露出で割り戻して SetVector で書く。既定 0 = 何もしない
+//     2周目 (本家っぽく): StageUnits が「画面の輪郭の暗さ」(look の char の outlineTarget) から今の後処理 (露出・コントラスト・colorFilter・LGG・トーンマップ・周辺減光) を
+//     逆にたどって絵ごとに求める = 舞台 (P22) が後処理を変えても輪郭は目標の暗さのまま
+//   _ShadeLift … 暗い色の持ち上げ (2026-09-30 P23 2周目)。x = 最大の倍率 −1 (gain)・y = knee (線形の明るさ)。倍率 = 1 + gain × (knee/(knee+Y))²。既定 0 = 何もしない
+//   _CharTint … キャラの色の掛け算 (2026-09-30 P23 2周目)。リムの後・点滅の前に掛ける。後処理の colorFilter の打ち消し × 暖かさ。既定 (1,1,1) = そのまま
 //   _WhiteCap … 1 未満なら、発光以外の出力をこの明るさで頭打ちにする (白の上限 235/255≈0.92 など)。既定 1 = 使わない
 //   _Flash (被弾の白)・_Dissolve (撃破の崩れ)・_Rim (右上の縁の1ドット)・_Fog (霧を受ける割合) は StageUnit と同じ式
 // パス: Forward・ShadowCaster (舞台の灯の影。Cull Off)・DepthOnly・DepthNormals (SSAO とぼかしの深度にキャラを載せる)
@@ -47,6 +52,8 @@ Shader "DeckRogue/StageUnitLit"
         _OutlineFloor ("Outline Floor", Color) = (0.094,0.086,0.118,1)
         _WhiteCap ("White Cap", Float) = 1
         _BlackLift ("Black Lift (linear rgb pure black becomes)", Vector) = (0,0,0,0)
+        _ShadeLift ("Shade Lift (x gain, y knee linear)", Vector) = (0,0,0,0)
+        _CharTint ("Char Tint (linear rgb multiplier)", Vector) = (1,1,1,0)
         _HasNormal ("Has Normal", Float) = 0
         _HasEmission ("Has Emission", Float) = 0
         _EmissionIntensity ("Emission Intensity", Float) = 1.6
@@ -77,6 +84,7 @@ Shader "DeckRogue/StageUnitLit"
             half _WhiteCap, _HasNormal, _HasEmission, _Cull;
             half _EmissionIntensity, _NormalYSign, _ReceiveShadows, _CookieOnKey;
             half4 _BlackLift;
+            half4 _ShadeLift, _CharTint;
         CBUFFER_END
 
         // 撃破の崩れ (StageUnit と同じ式): ドット単位の乱数で消えていく。頭 (上) から先に、足元は最後
@@ -234,6 +242,15 @@ Shader "DeckRogue/StageUnitLit"
 
                 half3 lit = HD2D_CharAmbient(nW) * _AmbientScale + _Receive * direct;
                 half3 col = albedo * lit * _HeroLift;
+                // 暗い色の持ち上げ (2026-09-30 P23 2周目): 明るさ Y が knee より暗い色ほど強く (最大 1+gain 倍) 上げ、明るい色はほぼそのまま。
+                // 色相は変えない (3つのチャンネルに同じ倍率)。絵の暗い黒鉄の衣が ACES の足で潰れるのを戻す (このはだけ。look の char の art の shadeLift)
+                if (_ShadeLift.x > 0.0h)
+                {
+                    half sy = dot(col, half3(0.2126h, 0.7152h, 0.0722h));
+                    half sk = max(_ShadeLift.y, 1e-3h);
+                    half sq = sk / (sk + max(sy, 0.0h));
+                    col *= 1.0h + _ShadeLift.x * sq * sq;
+                }
                 // 輪郭の持ち上げ: 光で暗くしても min(元の絵, _OutlineFloor) より暗くしない
                 col = max(col, min(albedo, _OutlineFloor.rgb));
                 // 輪郭の持ち上げ (黒の持ち上げ): 真っ黒 → _BlackLift、白 → 白のまま。暗いほど多く上がる (順序は変えない)。既定 0 = そのまま
@@ -256,6 +273,9 @@ Shader "DeckRogue/StageUnitLit"
                     half aU = SAMPLE_TEXTURE2D_LOD(_BaseMap, sampler_BaseMap, i.uv + float2(0, tx.y), 0).a;
                     if (aR < _Cutoff || aU < _Cutoff) col = lerp(col, _RimColor.rgb, _Rim);
                 }
+                // キャラの色の掛け算 (2026-09-30 P23 2周目): 後処理の colorFilter (舞台を冷やす色の膜) をキャラだけ打ち消す割り戻し × 暖かさ。
+                // 発光・リムの後に掛ける (発光の白も冷えない)。既定 (1,1,1) = そのまま。被弾の白 (_Flash) はこの後なので白のまま
+                col *= _CharTint.rgb;
                 col = lerp(col, half3(1, 1, 1), _Flash);
                 half3 fogged = MixFog(col, InitializeInputDataFog(float4(i.positionWS, 1.0), i.fogFactor));
                 col = lerp(col, fogged, _Fog);

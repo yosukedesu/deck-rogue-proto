@@ -13,7 +13,20 @@
     "露出・色の補正 (post) はキャラにも掛かるので W2 のまま (舞台の明るさは光で決める)。W2 の光は look=look_act1_w2light で重ねれば戻る (旗 look= は幕の設計図の上に重ねる変種。ほかに _bright・_dark・_edge・_nomask・_nolobe・_recv20/35/50)。",
     "W3 の統合 (同日・ユーザー「本家の色彩も参考にしてほしい」): 舞台の色を本家の夜の森 (ot_921570_16) の数字へ寄せた (docs/design/hd2d-slice/honke-color.md・scripts/hd2d-color.py)。",
     "envGrade = 舞台の絵 (StageModule) だけの彩度落とし 0.72 と青への倍率 (キャラの板には掛からない)・光の色 (月・舞台の灯・逆光・環境光・霧・高さの霧・霧の芯) を h 約255° の青へ・彩度 0.7 倍・霧の芯 1.7→1.1・光の面 (materials.glow) を淡い青白で 1.2。",
-    "P22 の W3 の色 (寄せる前) は look=look_act1_precolor で重ねれば戻る (P22 の _bright・_dark・_w2light は色も書くので look_act1_precolor+look_act1_bright の順で重ねて比べる)。"
+    "P22 の W3 の色 (寄せる前) は look=look_act1_precolor で重ねれば戻る (P22 の _bright・_dark・_w2light は色も書くので look_act1_precolor+look_act1_bright の順で重ねて比べる)。",
+    "── W3b P22 (2周目・ユーザー「本家っぽく」= 本家の夜の森 ot_921570_16 に合わせる。honke-color.md §4) ──",
+    "夜の森: 月 0.6→0.4・環境光を 0.85 倍・舞台の灯 1.65→0.8 (座席の地面を本家の帯へ暗く = 主人公が地面より明るく見える。キャラの光は look_act1.char.json の固定のキーなので灯を下げても暗くならない)。",
+    "奥の霧を明るく淡く (§4-1): 高さの霧を奥の段 (段1の天面の奥・段2の面と天面・段3の面 = PC の画面の縦 約 180〜420。段1の石垣 (深さ 27) にうっすら) に満ちる形へ (base 0.5・top 6.0・濃さ 1.2・深さ 20〜24×r = 26〜31) で色は淡い青灰 [0.56,0.57,0.60]、霧の光の芯を画面の中央 (t 12.1・s 30・y 1.4 = 画面 (959, 249)) へ・芯の色を白に近い淡い青・強さ 0.6・端 0.3、距離の霧の色 [0.30,0.33,0.40]。",
+    "光の構図 (中央÷端 4 以上): 舞台だけの周辺減光 stageVignette (StageModule・StageShaft の全体値 _HD2DStageVignette。キャラの板と UI には掛からない = 右端の敵を沈めない) で画面の左右の外 18% (端で 0.2 倍) と上の 14% を沈める (W3 の画に当てた粗い見積もりで ③ 2.49 → 約 4.2・① 47 → 約 41)。灯の外 0.1→0.05・灯の帯の左の余白を詰める (padLeft 1.6・margin 1.1)・中央の光の池 0.8→1.0 (奥の真ん中だけ)。",
+    "後処理 (§4-2・§4-6・§4-7): 色の膜 colorFilter をやめ (1,1,1)、暗部だけ紺 (lift)・明部をわずかに暖かく (gain は §4-2 の半分 = P23 がキャラのキーを暖かくしたので二重にしない)・中間は触らない (gamma 1 = キャラの肌を青くしない)・contrast 14・周辺減光は強さ 0.25/0.45 のまま色だけ暗い紺 [0.01,0.03,0.07] (§4-6 の 0.35 は主人公 (画面の 23%) と右端の敵も沈め、座席の帯のむら (③の副条件) を 8% 悪くする。端は stageVignette で沈める)・ブルーム 1.0/0.75・白。露出 0.3 は据え置き (キャラの exposureRef の基準)。",
+    "光の面 (§4-4): 月光の筋を本家の (147,152,170) の淡い藤青 [0.57,0.59,0.645]・強さ 1.6。舞台の彩度 (§4-5) envGrade 0.72→0.64。",
+    "技の光: 強さ 1.4→2.6・届く距離 4→5・灯す高さ 0.45→0.3 (板の高さの割合。足元の地面を明るくする)・保つ 0.4→0.42 (W3 の測り +7〜+18 → 門 +20)。",
+    "比べる変種 (旗 look= で重ねる): look_act1_w3 (W3 の光と W3 の設計図 = W3 の見本そのもの)・_w3light (W3 の光・新しい設計図)・_w3layout (新しい光・W3 の設計図)・_nosvig (舞台の周辺減光なし)・_svigstrong・_lampup・_lampdown・_fogup・_fogdown・_postw3 (後処理だけ W3)。",
+    "── W3b の統合 (同日・探りの撮影 4周 = scratchpad hd2d/w3b/probe1〜4。本家の夜の森と同じ物差しで測って寄せた) ──",
+    "② 暗部 65% (門 61.4%) と本家の色の目安 (honke-color.json の design.targets。奥の霧の帯 84・座席の地面の p90 60・舞台の中央値 26) を見て、月 0.4→0.45・舞台の灯 0.8→1.0・高さの霧 色 [0.56,0.57,0.60]→[0.66,0.67,0.70]・濃さ 1.2→1.8・霧の芯 0.6→1.0・舞台の上の減光 0.45→0.3。",
+    "月光の筋を見えるように、光の面 (materials.glow) の強さ 1.6→3.0 (霧の面は設計図の gain を 0.53 倍にして明るさを保つ = 筋だけ約1.9倍)。手前のぼかしは look_act1.dof.json (手前のレンズ 1.4→1.6・上限 12→20px)。",
+    "暗部の lift を青緑寄りに変える案 ([0.94,1.00,1.07]・[0.95,1.01,1.04]) は中間の青が抜けて灰色の霧の画になったので採らない (probe2・probe3)。統合の前 (レーン P22 の W3b の値と設計図) は look=look_act1_w3blanes で重ねれば戻る。",
+    "URP の周辺減光 0.25→0.15 (キャラの板にも掛かる = 右端の敵が沈み ③ のいちばん右の敵 ÷ 左が 0.79 (門 0.8)。舞台の端は stageVignette が沈める。probe5: むら 34→28%・右/左 0.79→0.85・① 56→62)。"
   ],
   "version": 1,
   "act": 1,
@@ -24,7 +37,7 @@
     "_doc": "月 (平行光)。左上の手前から。影は地形と大物だけ (shadowLayers)。向きは最後に art-lint の描き込みの光の向きで決める (P22)",
     "euler": [48, 38, 0],
     "color": [0.528, 0.7, 0.921],
-    "intensity": 0.6,
+    "intensity": 0.45,
     "shadows": "soft",
     "shadowStrength": 0.75,
     "shadowBias": 0.05,
@@ -38,7 +51,7 @@
   "lamp": {
     "_doc": "舞台の灯 (スポット)。カメラ側の上から座席の帯へ。影はキャラの板だけ。向きと角度は座席の帯 (band) の四隅から StageLook が計算する (帯の四隅がクッキーの半径 bandFill に来る)。flatten = クッキーで距離と入射角の差を打ち消して、帯の地面の明るさをそろえる (いちばん暗い所に合わせて明るい所を削る。floor より下げない)。キャラの固定のキーはこの灯の向き (StageLook.KeyDir)",
     "color": [0.795, 0.868, 0.963],
-    "illum": 1.65,
+    "illum": 1.0,
     "offset": [-8.0, 17.0, -14.0],
     "band": { "tMin": -6.5, "tMax": 12.5, "sMin": -1.4, "sMax": 1.8 },
     "aimY": 0.0,
@@ -58,25 +71,25 @@
     "mask": {
       "_doc": "W3 P22: 灯の形をクッキーに焼く。座席の帯 (t = 今の座席に合わせた範囲・s = band の sMin〜sMax) を margin [t, s] だけ広げた角の丸い四角 (power が大きいほど四角) の外を outside 倍に落とす (縁は soft でなじむ)。灯の位置と向き (= キャラのキー) は band から決めたまま。on=false で W2 の形",
       "on": true,
-      "margin": [1.6, 4.0],
+      "margin": [1.1, 4.0],
       "marginFront": 3.2,
       "soft": 0.25,
       "power": 6,
-      "outside": 0.1
+      "outside": 0.05
     },
     "pool": {
       "_doc": "W3 P22: 中央の光の池 (楕円・道の座標)。奥の段の真ん中まで灯を伸ばし、画面の中央の列を明るく保つ (③ 中央÷端)。shear = s が1増えるごとに中心の t がずれる量 (画面の中央の線に沿わせる)。level = 明るさ (帯 = 1)",
       "on": true,
       "t": 3.8, "s": 4.8, "rt": 5.0, "rs": 9.0,
       "shear": 0.4,
-      "level": 0.8,
+      "level": 1.0,
       "soft": 0.35
     },
     "fit": {
       "_doc": "W3 P22: 帯の t を今の座席 (主人公と敵の板の足元) に合わせる (padLeft/padRight = 左右の余白・minSpan = いちばん狭い幅)。敵1体なら右の地面は暗い。座席が変わった時だけクッキーを焼き直す (LookDriver)",
       "on": true,
-      "padLeft": 2.0,
-      "padRight": 2.2,
+      "padLeft": 1.6,
+      "padRight": 1.8,
       "minSpan": 8.0
     }
   },
@@ -113,26 +126,26 @@
   "ambient": {
     "_doc": "環境光。Flat をやめて Trilight (空・地平・地面の3色)",
     "mode": "trilight",
-    "sky": [0.151, 0.261, 0.399],
-    "equator": [0.099, 0.17, 0.26],
-    "ground": [0.049, 0.077, 0.114]
+    "sky": [0.128, 0.222, 0.339],
+    "equator": [0.084, 0.145, 0.221],
+    "ground": [0.042, 0.065, 0.097]
   },
 
   "fog": {
     "_doc": "距離の霧 (Linear。start・end は画角36° の時の値×r) と高さの霧 (全体値 _HD2DHeightFogColor・_HD2DHeightFogRange・_HD2DHeightFogDepth。StageModule が読む。W3 P22)。depthStart・depthFull = かかり始める深さと満ちる深さ (画角36° の時の値×r。座席の帯より奥だけ)",
     "on": true,
-    "color": [0.116, 0.184, 0.27],
+    "color": [0.30, 0.33, 0.40],
     "start": 14,
     "end": 60,
-    "height": { "on": true, "color": [0.284, 0.401, 0.551], "base": -0.6, "top": 4.0, "density": 0.55, "depthStart": 20, "depthFull": 32 },
+    "height": { "on": true, "color": [0.66, 0.67, 0.70], "base": 0.5, "top": 6.0, "density": 1.8, "depthStart": 20, "depthFull": 24 },
     "lobe": {
       "_doc": "W3 P22: 霧の光の芯 (坑口の奥の脈。道の座標 t・s・y)。視線がこの芯を向くほど霧の色に color×strength を足し、外れるほど霧の色を edge 倍に落とす (cos の power 乗。画面の端 ≈ 24° で power 16 なら 0.23)。StageModule の距離の霧・高さの霧と、StageShaft の光の面 (設計図 act1_layout.json の glow の lobeFloor) が読む",
       "on": true,
-      "t": 11.0, "s": 30.0, "y": 3.0,
+      "t": 12.1, "s": 30.0, "y": 1.4,
       "power": 16,
-      "edge": 0.5,
-      "color": [0.469, 0.585, 0.716],
-      "strength": 1.1
+      "edge": 0.3,
+      "color": [0.60, 0.61, 0.66],
+      "strength": 1.0
     }
   },
 
@@ -150,12 +163,12 @@
     "_doc": "後処理 (Stage の Volume の設定に書き、Restore で控えに戻す)。フィルムグレインと色収差は切る。周辺減光は座席の帯の外側から (0.25)",
     "tonemap": "aces",
     "exposure": 0.3,
-    "contrast": 10,
+    "contrast": 14,
     "saturation": 0,
-    "colorFilter": [0.95, 0.98, 1.04],
-    "liftGammaGain": { "lift": [1, 1, 1, 0], "gamma": [1, 1, 1, 0], "gain": [1, 1, 1, 0] },
-    "bloom": { "threshold": 1.0, "intensity": 0.8, "scatter": 0.65, "tint": [0.92, 0.98, 1.0] },
-    "vignette": { "intensity": 0.25, "smoothness": 0.45, "center": [0.5, 0.52], "rounded": false, "color": [0.02, 0.02, 0.06] },
+    "colorFilter": [1.0, 1.0, 1.0],
+    "liftGammaGain": { "lift": [0.94, 0.99, 1.10, -0.01], "gamma": [1, 1, 1, 0], "gain": [1.02, 1.0, 0.97, 0] },
+    "bloom": { "threshold": 1.0, "intensity": 1.0, "scatter": 0.75, "tint": [1.0, 1.0, 1.0] },
+    "vignette": { "intensity": 0.15, "smoothness": 0.45, "center": [0.5, 0.52], "rounded": false, "color": [0.01, 0.03, 0.07] },
     "filmGrain": false,
     "chromaticAberration": false
   },
@@ -175,25 +188,35 @@
     "bark":    { "receive": 0.8, "shadowStrength": 1.0 },
     "relief":  { "receive": 0.35, "shadowStrength": 1.0 },
     "card":    { "receive": 0.25, "shadowStrength": 1.0 },
-    "glow":    { "_doc": "光の面 (霧の面・月光の筋。StageShaft) の色と強さの上書き (W3 の統合・本家の色彩。書かなければ act1_layout.json の surfaces.glow の値)", "tint": [0.706, 0.743, 0.836], "intensity": 1.2 }
+    "glow":    { "_doc": "光の面 (霧の面・月光の筋。StageShaft) の色と強さの上書き (W3 の統合・本家の色彩。書かなければ act1_layout.json の surfaces.glow の値)", "tint": [0.57, 0.59, 0.645], "intensity": 3.0 }
   },
 
   "envGrade": {
     "_doc": "舞台の色の寄せ (W3 の統合・本家の色彩 docs/design/hd2d-slice/honke-color.md)。StageModule (地形・3Dの部品・半立体・札) の絵の色だけに掛かる (キャラの板には掛からない)。desaturate = 彩度を落とす量 (0〜1)・tint = 色の倍率 (線形)。on=false で寄せる前",
     "on": true,
-    "desaturate": 0.72,
+    "desaturate": 0.64,
     "tint": [0.74, 0.90, 1.08]
+  },
+
+  "stageVignette": {
+    "_doc": "W3b P22: 舞台だけの周辺減光 (StageModule・StageShaft。キャラの板と UI には掛からない)。sideStart = 画面の中央からの距離 (0〜0.5。0.32 = 画面の左右の外 18% から暗くなる = 座席の帯のむらを測る帯 (主人公の足元−5% = 画面の 17.8%〜右の敵+5%) にはほぼ掛からない。4体の時の右端の敵の足元の地面は沈む)・side = 左右の端での強さ・topBand = 画面の上からの帯 (0〜1)・top = 上端での強さ。on=false (変種 look_act1_nosvig) で W3 と同じ",
+    "on": true,
+    "sideStart": 0.32,
+    "side": 0.8,
+    "topBand": 0.14,
+    "top": 0.3
   },
 
   "hitLight": {
     "_doc": "技の光 (StageFx.HitLight)。点光源を maxLights 個プールする。HitLight の intensity は refDist の所での明るさ (Light.intensity = intensity × refDist²)。影は大きい当たりだけ (呼ぶ側が shadow=true)",
     "maxLights": 3,
-    "range": 4.0,
+    "range": 5.0,
     "refDist": 1.5,
     "shadowTier": "low",
-    "_tune": "W3 P22: W2 の測り (R01 斬撃 +22→+16・盾 +6・敵の近接 −2 = 2〜6 フレームで +20 に届かない) を受けて、強さ・保つ長さ・敵の当たりと盾の倍率を上げた (キーは StageFx.HitTune。P13)",
-    "intensity": 1.4,
-    "hold": 0.4,
+    "_tune": "W3 P22: W2 の測り (R01 斬撃 +22→+16・盾 +6・敵の近接 −2 = 2〜6 フレームで +20 に届かない) を受けて、強さ・保つ長さ・敵の当たりと盾の倍率を上げた (キーは StageFx.HitTune。P13)。W3b P22: W3 の測り +7〜+18 → 強さ 1.4→2.6・届く距離 4→5・灯す高さ 0.45→0.3 (板の高さの割合 = 足元の地面に近く)・保つ 0.42",
+    "intensity": 2.6,
+    "height": 0.3,
+    "hold": 0.42,
     "foeMul": 1.6,
     "guardMul": 1.2
   }

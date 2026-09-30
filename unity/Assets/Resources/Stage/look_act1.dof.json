@@ -13,23 +13,36 @@
     "  nearOwnTaps: 自分が手前の画素だけ、自分の錯乱円の円盤で「手前の物が占める割合」と「後ろの背景」を取る点の数 (細い蔦・羊歯の輪郭を溶かす)。",
     "  nearScale: 手前のぼけの上限の倍率 (1 = 奥と同じ 24px)。額縁が溶けすぎる時に下げる。",
     "  phone: tier=phone の時だけ上に重ねる (look_act1.phone.json の tiltShiftPass も重なる)。半解像度 (phone.json の halfRes) なので点は少なめ。",
-    "  debugView (撮影は STATE の tsdebug): 1 = 錯乱円 (赤 = 手前・青 = 奥・黒 = 帯の中)・2 = 奥の層 (手前の画素は後ろの背景の見積もり)・3 = 手前の層。"
+    "  debugView (撮影は STATE の tsdebug): 1 = 錯乱円 (赤 = 手前・青 = 奥・黒 = 帯の中)・2 = 奥の層 (手前の画素は後ろの背景の見積もり)・3 = 手前の層。",
+    "P24 2周目 (W3b・ユーザーの方針「本家っぽく」): ぼけの強さを本家 (オクトラ1 の夜の森 ot_921570_16・洞窟 _7・村 _11) に合わせて測って決めた。",
+    "  本家を同じ物差し (64px 四方の窓の 明暗の幅 ÷ 最大の勾配 = ぼけの太さ。scratchpad/hd2d/p24b/cmpband.py) で測ると、奥の帯 (画面の上 2〜34%) は 1.27〜2.73・",
+    "  手前の帯 (80〜100%) は 1.59〜2.96 (円盤のぼかしに直すと 奥の木で 2〜3px・手前の草で 4〜5px。くっきりの帯は JPEG で 1.33〜1.71)。W3 は 奥 6.4・手前は塗りつぶし (測れない) で、",
+    "  奥は帯の外 5 unit で上限 24px に届いて一面の塗りつぶし・手前の額縁は黒い雲になっていた (本家の奥は木の形が読め、深さは霧と明るさで出している)。",
+    "  curve = lens: 錯乱円 = 上限 × saturate(強さ × 帯の縁からの深さの差 ÷ 深さ) (薄いレンズの形)。帯のすぐ奥の1段目の上 (s 6〜10) は約 1〜2.5px・2段目と櫓 (s 11〜16) は約 3.5〜4.5px・",
+    "  3段目と尾根の木 (s 18〜24) は約 6〜7px・霧の面 (s 30) は約 8px・その奥と空は 10px (PC 1080・道の座標 s は PathYaw −22°)。手前は手前の段の地面 s −4〜−8 が 1〜7px・s −10 より手前と額縁 (深さ 6〜7) は上限 12px (= 10 × nearScale 1.2)。",
+    "  lensFar 1.6・lensNear 1.4・maxPxPC 10 (奥の上限)・nearScale 1.2。スマホも 1080 基準で同じ値 (maxPxPhone 10。スマホの1ドットは 3.15px で PC の 4px と比べてぼけの割合が同じになる)。",
+    "  rampNear・rampFar は curve = smooth の時だけ使う (W3 の形)。W3 の形へ丸ごと戻す変種 = look=look_act1_dofw3・本家の測りにいちばん近い弱い変種 = look=look_act1_dofsoft。",
+    "  点の数は上限が半分以下になったので減らした (PC 24/16・スマホ 16/12。W3 は 32/24・24/16)。スマホのにじみ出しのタイルは 8 (半解像度で上限 6 作業px)。",
+    "W3b の統合 (同日): 手前だけ強める (手前のレンズ 1.4→1.6・nearScale 1.2→2.0 = 手前の上限 12→20px・点 16→20)。⑥ ピントの外の鋭さ 0.12 → 0.09 (門 0.1・本家 ot_921570_16 0.08)。奥は P24 の既定のまま (本家の奥は弱い)。変種 look_act1_dofstrong は奥も強い案"
   ],
   "tiltShift": {
     "bandMargin": 0.8,
     "rampNear": 2.5,
     "rampFar": 5.0,
-    "maxPxPC": 24,
-    "maxPxPhone": 12,
+    "maxPxPC": 10,
+    "maxPxPhone": 10,
     "halfRes": false,
     "fallbackBandRel": [-4.0, 8.0]
   },
   "tiltShiftPass": {
     "focus": "path",
     "pathBand": [-3.0, 5.5],
-    "nearScale": 1.0,
-    "taps": 32,
-    "nearOwnTaps": 24,
+    "curve": "lens",
+    "lensFar": 1.6,
+    "lensNear": 1.6,
+    "nearScale": 2.0,
+    "taps": 24,
+    "nearOwnTaps": 20,
     "nearDilateTile": 16,
     "jitter": true,
     "farExclude": 0.5,
@@ -39,8 +52,9 @@
     "tiltBottomFrom": 0.25,
     "debugView": 0,
     "phone": {
-      "taps": 24,
-      "nearOwnTaps": 16
+      "taps": 16,
+      "nearOwnTaps": 12,
+      "nearDilateTile": 8
     }
   },
   "urpBokeh": {

@@ -1129,6 +1129,10 @@ namespace DeckRogue.Game
             {
                 StageLook.Apply(act, _world, _cam, Profile);   // 光の一式 (HD2D-LookRig) は world の下。old に戻る時は LeaveDiorama が Restore してから world を空にする
                 var look = StageLook.Current ?? StageLook.Load(act);
+                // 比べる用の別の設計図 (W3b P22): 光の設計図 (旗 look= で重ねた変種を含む) に "layout": "act1_layout_w3" などがあれば、その設計図で組む。無ければ既定
+                var named = look != null && look.Raw != null && look.Raw["layout"] != null && look.Raw["layout"].Type == Newtonsoft.Json.Linq.JTokenType.String
+                    ? Diorama.LoadLayoutNamed((string)look.Raw["layout"]) : null;
+                if (named != null) layout = named;
                 Diorama.Build(act, _world, look, new DioramaBuildOptions { Layout = layout, Log = false });
                 if (!Diorama.Active || Diorama.Root == null) throw new Exception("Diorama.Build が箱庭を組めなかった");
                 StageLook.ApplyMaterials();                     // Build が材質を作り直したので、設計図の受光と影の強さをもう一度

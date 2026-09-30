@@ -1,0 +1,30 @@
+{
+  "_doc": [
+    "P22 (W3b) の比較用の変種: 光・霧・後処理・色の寄せ・技の光を W3 の統合の値 (37840d6 の look_act1.json) に戻す。設計図 (箱庭) は新しいまま = W3b の光の変化だけを見る。",
+    "撮影の STATE に look=look_act1_w3light。W3 の見本そのもの (光も設計図も W3) は look_act1_w3、光は新しく設計図だけ W3 は look_act1_w3layout。持ち主は P22。"
+  ],
+  "moon": { "intensity": 0.6 },
+  "lamp": {
+    "illum": 1.65,
+    "mask": { "margin": [1.6, 4.0], "outside": 0.1 },
+    "pool": { "level": 0.8 },
+    "fit": { "padLeft": 2.0, "padRight": 2.2 }
+  },
+  "ambient": { "sky": [0.151, 0.261, 0.399], "equator": [0.099, 0.17, 0.26], "ground": [0.049, 0.077, 0.114] },
+  "fog": {
+    "color": [0.116, 0.184, 0.27],
+    "height": { "color": [0.284, 0.401, 0.551], "base": -0.6, "top": 4.0, "density": 0.55, "depthStart": 20, "depthFull": 32 },
+    "lobe": { "t": 11.0, "s": 30.0, "y": 3.0, "power": 16, "edge": 0.5, "color": [0.469, 0.585, 0.716], "strength": 1.1 }
+  },
+  "post": {
+    "contrast": 10,
+    "colorFilter": [0.95, 0.98, 1.04],
+    "liftGammaGain": { "lift": [1, 1, 1, 0], "gamma": [1, 1, 1, 0], "gain": [1, 1, 1, 0] },
+    "bloom": { "threshold": 1.0, "intensity": 0.8, "scatter": 0.65, "tint": [0.92, 0.98, 1.0] },
+    "vignette": { "intensity": 0.25, "smoothness": 0.45, "color": [0.02, 0.02, 0.06] }
+  },
+  "materials": { "glow": { "tint": [0.706, 0.743, 0.836], "intensity": 1.2 } },
+  "envGrade": { "desaturate": 0.72 },
+  "stageVignette": { "on": false },
+  "hitLight": { "range": 4.0, "intensity": 1.4, "height": 0.45, "hold": 0.4 }
+}

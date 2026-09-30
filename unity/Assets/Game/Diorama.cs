@@ -421,7 +421,8 @@ namespace DeckRogue.Game
             switch (kind)
             {
                 case "slab": return "terrain";
-                case "card": return Layout != null && Layout.Surfaces.ContainsKey("card") ? "card" : "relief";
+                case "card":
+                case "litter": return Layout != null && Layout.Surfaces.ContainsKey("card") ? "card" : "relief";
                 case "block": case "rock": return "rock";
                 case "tree": return "bark";
                 case "rig": case "fence": case "marker": return "wood";
@@ -495,6 +496,17 @@ namespace DeckRogue.Game
                     pieces.Add(new Piece { Mesh = rb, Surface = surface, Shadow = p.ShadowOr(shadowDefault) });
                     break;
                 }
+                case "litter":
+                {
+                    // 地面の小札 (W3b P22・ユーザー「小石・草の株・ひび・落ち葉の小さな2Dの札を不規則に控えめに散らす」): 札と同じ立った板 (大きさは絵のまま = 1ドット 4px)。
+                    // 座席の帯にも置いてよい (点検の「座席の帯の部品」に数えない) ので、背丈 LitterMaxTexels (12 ドット = 0.48 unit) を超える絵は置かない。影は落とさない
+                    if (!string.IsNullOrEmpty(p.Src) && ctx.Atlas.Entries.TryGetValue(p.Src, out var le) && le.H > LitterMaxTexels) { ctx.Missing.Add("litter:" + p.Src + " (背丈 " + le.H + " > " + LitterMaxTexels + ")"); return; }
+                    var rb = CardFor(ctx, p.Src, p.Flip);
+                    if (rb == null) return;
+                    pieces.Add(new Piece { Mesh = rb, Surface = surface, Shadow = p.ShadowOr(false) });
+                    scale = 1f;   // ドットの粒をそろえる (縮めない)
+                    break;
+                }
                 case "rig":
                 {
                     var frame = DioramaMesh.Rig(p.Num("w", 2.0f), p.Num("d", 1.6f), p.Num("h", 1.9f), p.Num("wheel", 0.42f), out var wheel, out var wheelCenter);
@@ -531,6 +543,7 @@ namespace DeckRogue.Game
                 {
                     float v0 = Mathf.Clamp01(p.Num("v0", 0f));
                     var b = DioramaMesh.GlowQuad(p.Num("w", 80f), p.Num("h", 12f), new Rect(0f, v0, 0.5f, 1f - v0));
+                    GlowVertexColor(b, p);
                     var go = MakeObject(ctx.DynRoot, "fog-" + p.Index, b.ToMesh("diorama-fog-" + p.Index), surface, false);
                     go.transform.localPosition = pos; go.transform.localRotation = rot;
                     Dynamic.Add(new DynamicEntry { Name = "fog-" + p.Index, Transform = go.transform, BaseRotation = rot });
@@ -539,6 +552,7 @@ namespace DeckRogue.Game
                 case "shaft":
                 {
                     var b = DioramaMesh.Shaft(p.Num("top", 0.8f), p.Num("bottom", 2.4f), p.Num("len", 12f), new Rect(0.5f, 0f, 0.5f, 1f));
+                    GlowVertexColor(b, p);
                     var go = MakeObject(ctx.DynRoot, "shaft-" + p.Index, b.ToMesh("diorama-shaft-" + p.Index), surface, false);
                     var dir = p.Dir.sqrMagnitude > 1e-6f ? p.Dir.normalized : new Vector3(0.35f, -1f, 0.3f).normalized;
                     go.transform.localPosition = pos;
@@ -594,6 +608,18 @@ namespace DeckRogue.Game
                     child.transform.localScale = pc.Local.lossyScale;
                 }
             }
+        }
+
+        /// <summary>
+        /// 光の面 (霧の面・光の筋) の部品ごとの明るさと芯の効き (W3b P22)。StageShaft は頂点色を読む: rgb = 明るさの倍率 (設計図の "gain" 0〜1・既定 1)、
+        /// a = 霧の光の芯 (_LobeFloor) の効き (設計図の "lobe" 0〜1・既定 1 = 今まで)。光の筋は lobe 0 = 芯から外れた画面の左右でも薄めない (本家の月光の筋は左上から差す)
+        /// </summary>
+        static void GlowVertexColor(DioramaMeshBuilder b, DioramaPart p)
+        {
+            float gain = Mathf.Clamp01(p.Num("gain", 1f)), lobe = Mathf.Clamp01(p.Num("lobe", 1f));
+            if (gain >= 0.999f && lobe >= 0.999f) return;   // 既定 = 頂点色は白のまま (今まで)
+            byte g = (byte)Mathf.Clamp(Mathf.RoundToInt(gain * 255f), 0, 255), a = (byte)Mathf.Clamp(Mathf.RoundToInt(lobe * 255f), 0, 255);
+            for (int i = 0; i < b.C.Count; i++) b.C[i] = new Color32(g, g, g, a);
         }
 
         /// <summary>設計図の部品の "tint" (灰の数 0〜1 か [r, g, b])。無い・読めない・白なら false (W3 P22)</summary>
@@ -831,7 +857,7 @@ namespace DeckRogue.Game
         {
             var o = new Dictionary<string, object>();
             o["active"] = Active;
-            o["layout"] = Layout != null ? LayoutResource(Layout.Act) : null;
+            o["layout"] = Layout != null ? (!string.IsNullOrEmpty(Layout.Name) ? Layout.Name : LayoutResource(Layout.Act)) : null;
             o["pathYaw"] = _pathYaw;
             var st = LastStats;
             if (st != null)
@@ -890,6 +916,8 @@ namespace DeckRogue.Game
         /// <summary>見本の門 (計画 P04 の確かめ方): 部品 250〜350・Renderer 120 以下・材質 6 以下・三角形 25 万以下・座席の帯の高さ |y| &lt; 0.01・座席の帯に部品が無い</summary>
         public const int GatePartsMin = 250, GatePartsMax = 350, GateRenderers = 120, GateMaterials = 6, GateTriangles = 250000;
         public const float GateSeatAbsY = 0.01f;
+        /// <summary>地面の小札 (kind "litter") の数の上限と、1枚の絵の背丈の上限 (ドット。12 = 0.48 unit = 座席で 48px)。控えめに散らす (W3b P22)</summary>
+        public const int GateLitter = 80, LitterMaxTexels = 12;
 
         /// <summary>座席の帯 (道の座標)。敵4体の奥の席 t=11.2・ひなたの人形の後列 s≈2.05・からくりの匣 (−6.3, 1.7)/(−5.3, −1.9) を含む</summary>
         public const float SeatT0 = -8.5f, SeatT1 = 13f, SeatS0 = -2.6f, SeatS1 = 2.8f;
@@ -904,6 +932,7 @@ namespace DeckRogue.Game
                 {
                     st.Parts++;
                     st.ByKind.TryGetValue(p.Kind, out var c); st.ByKind[p.Kind] = c + 1;
+                    if (p.Kind == "litter") { st.Litter++; continue; }   // 地面の小札 (背丈 0.48 unit 以下) は座席の帯にも置く (W3b P22)
                     if (p.Kind == "slab" || p.Kind == "fog" || p.Kind == "shaft" || p.Kind == "frame") continue;
                     float reach = p.Kind == "rock" ? p.Num("r", 0.6f) : p.Kind == "block" ? Mathf.Max(p.Num("w", 1.6f), p.Num("d", 1.2f)) * 0.5f
                         : p.Kind == "tree" ? p.Num("r", 0.55f) + p.Num("rootLen", 1.6f) : p.Kind == "fence" ? p.Num("len", 3f) * 0.5f : p.Kind == "rig" ? 1.5f : 0.3f;
@@ -953,8 +982,22 @@ namespace DeckRogue.Game
         {
             var ta = Resources.Load<TextAsset>(LayoutResource(act));
             if (ta == null) return null;
-            try { return DioramaLayout.Parse(ta.text); }
+            try { var l = DioramaLayout.Parse(ta.text); l.Name = LayoutResource(act); return l; }
             catch (Exception e) { Debug.LogWarning("[Diorama] 設計図が読めない: " + e.Message); return null; }
+        }
+
+        /// <summary>
+        /// 名前で設計図を読む (W3b P22。比べる用の別の設計図 = 幕の光の設計図 look の "layout" キー。例 "act1_layout_w3" → Resources/Stage/act1_layout_w3)。
+        /// 名前が空・見つからない・読めなければ null (呼び手は既定の設計図のまま)
+        /// </summary>
+        public static DioramaLayout LoadLayoutNamed(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+            string path = name.StartsWith("Stage/", StringComparison.Ordinal) ? name : "Stage/" + name;
+            var ta = Resources.Load<TextAsset>(path);
+            if (ta == null) { Debug.LogWarning("[Diorama] 設計図 " + path + " が無い (既定の設計図で組む)"); return null; }
+            try { var l = DioramaLayout.Parse(ta.text); l.Name = path; return l; }
+            catch (Exception e) { Debug.LogWarning("[Diorama] 設計図 " + path + " が読めない: " + e.Message); return null; }
         }
     }
 
@@ -974,7 +1017,7 @@ namespace DeckRogue.Game
     /// <summary>点検の結果</summary>
     public sealed class DioramaStats
     {
-        public int Parts, Triangles, Renderers, Materials, Dynamic, SeatIntrusions;
+        public int Parts, Triangles, Renderers, Materials, Dynamic, SeatIntrusions, Litter;
         public float SeatMaxAbsY;
         public readonly Dictionary<string, int> ByKind = new Dictionary<string, int>();
         public readonly List<string> IntrusionNames = new List<string>();
@@ -992,6 +1035,7 @@ namespace DeckRogue.Game
             if (Triangles > Diorama.GateTriangles) Failures.Add("三角形 " + Triangles + " (" + Diorama.GateTriangles + " 以下)");
             if (float.IsNaN(SeatMaxAbsY) || SeatMaxAbsY >= Diorama.GateSeatAbsY) Failures.Add("座席の帯の高さ " + SeatMaxAbsY.ToString("0.000", CultureInfo.InvariantCulture));
             if (SeatIntrusions > 0) Failures.Add("座席の帯の部品 " + SeatIntrusions);
+            if (Litter > Diorama.GateLitter) Failures.Add("地面の小札 " + Litter + " (" + Diorama.GateLitter + " 以下)");
         }
 
         public string Summary()
@@ -1001,6 +1045,7 @@ namespace DeckRogue.Game
               .Append(" materials=").Append(Materials).Append(" dynamic=").Append(Dynamic)
               .Append(" seatY=").Append(SeatMaxAbsY.ToString("0.0000", CultureInfo.InvariantCulture))
               .Append(" seatParts=").Append(SeatIntrusions)
+              .Append(" litter=").Append(Litter)
               .Append(" result=").Append(Ok ? "OK" : "NG");
             if (!Ok) sb.Append(" (").Append(string.Join(" / ", Failures)).Append(")");
             if (Missing.Count > 0) sb.Append(" missing=").Append(Missing.Count);
@@ -1013,7 +1058,7 @@ namespace DeckRogue.Game
             {
                 ["parts"] = Parts, ["triangles"] = Triangles, ["renderers"] = Renderers, ["materials"] = Materials, ["dynamic"] = Dynamic,
                 ["seatMaxAbsY"] = float.IsNaN(SeatMaxAbsY) ? (JToken)JValue.CreateNull() : SeatMaxAbsY,
-                ["seatIntrusions"] = SeatIntrusions, ["ok"] = Ok,
+                ["seatIntrusions"] = SeatIntrusions, ["litter"] = Litter, ["ok"] = Ok,
                 ["failures"] = new JArray(Failures.ToArray()), ["missing"] = new JArray(Missing.ToArray()),
                 ["intrusions"] = new JArray(IntrusionNames.ToArray()),
             };
@@ -1086,6 +1131,8 @@ namespace DeckRogue.Game
     public sealed class DioramaLayout
     {
         public int Act = 1;
+        /// <summary>読んだ Resources のパス (dumplayout の extra.diorama.layout。W3b P22)</summary>
+        public string Name;
         public float PathYaw = Diorama.DefaultPathYaw;
         public int Tile = 64;
         /// <summary>色の配列を linear:true で作り sRGB の色をそのまま入れる (シェーダが Linear の時だけ戻す = _AlbedoDecode 1)。計画 P04 の手順2。false = sRGB の配列 (_AlbedoDecode 0)</summary>

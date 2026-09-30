@@ -26,6 +26,12 @@
 //   - 手前の層の輪郭: 自分が手前の画素は、自分の錯乱円の円盤 (NearOwnTaps 点) で「手前の物が占める割合」と「後ろの背景」を取り、
 //     α = 占める割合・下地 = 背景の平均にする (前は自分の画素を α=1 にしていたので、細い蔦や羊歯の輪郭がくっきり残っていた = W2 の額縁 frame-4・frame-1)。
 //     背景は奥の層のテクスチャ (far) の空いている所 (自分が手前の画素) に α=1 で書き、合成で「元の色」の代わりに使う。
+//
+// P24 (W3b・2周目「本家っぽく」)
+//   - 帯の外のぼけの伸び方をレンズの形にできる (TiltShiftSettings.Curve = Lens。既定)。錯乱円 = 上限 × saturate(強さ × 帯の縁からの深さの差 ÷ 深さ)。
+//     本家 (オクトラ1 の夜の森 ot_921570_16・洞窟 _7・村 _11) を同じ物差しで測ると、奥は帯のすぐ後ろがほぼくっきり・奥の木で 2〜3px・いちばん奥は霧で沈む、
+//     手前の草で 4〜5px (1080 基準) と弱い。W3 の smoothstep (帯の外 5 unit で上限 24px) は奥が一面の塗りつぶし・手前の額縁が黒い雲になっていた。
+//     値 (上限・強さ・点の数) は look_act1.dof.json。W3 の形へ戻すのは look=look_act1_dofw3。シェーダへは _TS_Lens (x = 奥の強さ・y = 手前の強さ。0 = smoothstep)
 using System;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -39,10 +45,11 @@ namespace DeckRogue.Game
     {
         // ---------------------------------------------------------------- 詰めの値 (P24 が詰める。値の置き場を TiltShiftSettings へ移してもよい)
 
-        /// <summary>ぼかしの点の数 (ゴールデンアングルの渦。4〜64)。多いほど滑らかで重い (P24: 22 → 32。PC の全解像度 24px で 22 点は粒が見えた)</summary>
-        public static int Taps = 32;
-        /// <summary>自分が手前の画素だけ、自分の錯乱円の円盤を取る点の数 (4〜64。手前の輪郭の α と後ろの背景。P24)</summary>
-        public static int NearOwnTaps = 24;
+        /// <summary>ぼかしの点の数 (ゴールデンアングルの渦。4〜64)。多いほど滑らかで重い (P24: 22 → 32。PC の全解像度 24px で 22 点は粒が見えた。
+        /// 2周目: 上限が PC 10〜12px になったので 24。値は TiltShiftLook が設計図から入れる)</summary>
+        public static int Taps = 24;
+        /// <summary>自分が手前の画素だけ、自分の錯乱円の円盤を取る点の数 (4〜64。手前の輪郭の α と後ろの背景。P24。2周目 24 → 16)</summary>
+        public static int NearOwnTaps = 16;
         /// <summary>手前のにじみ出しのタイルの大きさ (作業の解像度の px。4〜64)</summary>
         public static int NearDilateTile = 16;
         /// <summary>点の渦を画素ごとに回す (帯状の縞を細かい粒に変える。粒は画素の位置だけで決まる = 撮影で毎回同じ)</summary>
@@ -62,6 +69,8 @@ namespace DeckRogue.Game
         public static Vector4 LastPlane;
         /// <summary>最後に記録したフレームの上限 (全解像度の px・手前は NearScale を掛ける前)</summary>
         public static float LastMaxPx;
+        /// <summary>最後に記録したフレームの帯の外の伸び方 ("lens" / "smooth")。dumplayout 用 (P24 2周目)</summary>
+        public static string LastCurve = "";
 
         /// <summary>シェーダ DeckRogue/TiltShift のパスの番号</summary>
         public static class ShaderPass
@@ -92,6 +101,7 @@ namespace DeckRogue.Game
             public static readonly int Focus = Shader.PropertyToID("_TS_Focus");
             public static readonly int Plane = Shader.PropertyToID("_TS_Plane");
             public static readonly int Proj = Shader.PropertyToID("_TS_Proj");
+            public static readonly int Lens = Shader.PropertyToID("_TS_Lens");
         }
 
         static readonly ProfilingSampler s_Prefilter = new ProfilingSampler("TiltShift Prefilter");
@@ -144,7 +154,7 @@ namespace DeckRogue.Game
 
         struct Consts
         {
-            public Vector4 fullSize, workSize, tileSize, band, param, tilt, misc, focus, plane, proj;
+            public Vector4 fullSize, workSize, tileSize, band, param, tilt, misc, focus, plane, proj, lens;
         }
 
         static void SetConsts(MaterialPropertyBlock mpb, in Consts c)
@@ -160,6 +170,7 @@ namespace DeckRogue.Game
             mpb.SetVector(Ids.Focus, c.focus);
             mpb.SetVector(Ids.Plane, c.plane);
             mpb.SetVector(Ids.Proj, c.proj);
+            mpb.SetVector(Ids.Lens, c.lens);
         }
 
         /// <summary>
@@ -225,6 +236,10 @@ namespace DeckRogue.Game
             c.focus = new Vector4(pathNear, pathFar, Mathf.Clamp(TiltShiftSettings.NearScale, 0f, 2f), path ? 1f : 0f);
             c.plane = plane;
             c.proj = proj;
+            // 帯の外のぼけの伸び方 (P24 2周目): レンズなら強さ (>0)、smoothstep なら 0 (シェーダが _TS_Band.zw の傾斜を使う)
+            bool lens = TiltShiftSettings.Curve == TiltShiftCurve.Lens;
+            c.lens = new Vector4(lens ? Mathf.Max(0.01f, TiltShiftSettings.LensFar) : 0f, lens ? Mathf.Max(0.01f, TiltShiftSettings.LensNear) : 0f, 0f, 0f);
+            LastCurve = lens ? "lens" : "smooth";
             int scale = TiltShiftSettings.HalfRes ? 2 : 1;
             workW = (fullW + scale - 1) / scale;
             workH = (fullH + scale - 1) / scale;

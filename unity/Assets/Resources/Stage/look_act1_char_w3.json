@@ -1,0 +1,18 @@
+{
+  "_doc": [
+    "P23 (W3b・2周目) の比較用の変種: キャラの光を W3 (1周目の統合の時) に戻す。撮影の STATE に look=look_act1_char_w3。持ち主は P23。",
+    "戻す物: キーと環境光 (寒色)・環境光の倍率 1.0・このはの主役の持ち上げ 1.6 と受光 (-1 = 設計図の receive 0.6)・暗い色の持ち上げなし ([0, 0])・狼の発光 (-1 = 既定 1.6)・",
+    "colorFilter の打ち消しなし・輪郭の目標なし (\"off\" = blackLift を露出とトーンマップで割り戻す W3 の読み方)。舞台の光 (P22) は今のまま = キャラの光の詰めだけの差を見る。",
+    "重ね読みは null を飛ばすので、消すかわりに -1・[0, 0]・\"off\" を置く。"
+  ],
+  "char": {
+    "key": [0.92, 0.96, 1.0],
+    "ambTop": [0.62, 0.66, 0.80],
+    "ambBottom": [0.38, 0.40, 0.50],
+    "ambientScale": 1.0,
+    "art": { "leader_green": { "heroLift": 1.6, "receive": -1, "shadeLift": [0, 0] }, "enemy_wolf": { "emission": -1 } },
+    "cancelColorFilter": false,
+    "outlineTarget": "off",
+    "blackLift": [0.165, 0.165, 0.215]
+  }
+}

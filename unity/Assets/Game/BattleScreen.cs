@@ -1906,9 +1906,11 @@ namespace DeckRogue.Game
             return sb.ToString();
         }
 
-        public static void FillPlayerPanel(GameRoot g, RectTransform area, GameState st, int shownHp)
+        /// <param name="selfArea">自分の札を置く入れ物 (HD-2D 見本の箱庭では area と同じ矩形の兄弟＝被弾の押し縮みが札に掛からない。BattleView.SyncPlayerSelf)。null なら area</param>
+        public static void FillPlayerPanel(GameRoot g, RectTransform area, GameState st, int shownHp, RectTransform selfArea = null)
         {
             var p = st.Player;
+            var self = selfArea != null ? selfArea : area;
 
             string leaderId = g.Rs.LeaderId;
 
@@ -1930,13 +1932,13 @@ namespace DeckRogue.Game
             // 自キャラ名表示は不要なのでは？」)。誰を操作しているかはセットアップとラン画面で分かるので、戦場では絵を優先する。
             // 敵の名前札は「どれを狙うか」の識別に要るので据え置き
             // 自分の札 (帳面の一行の左端。2026-09-15 案C): HP・被ダメ予測・資源を、敵の札と同じ足元の線に置く
-            if (UiKit.Phone) PhoneSelfColumn(g, area, st, shownHp);
-            else PcSelfStrip(g, area, st, shownHp);
+            if (UiKit.Phone) PhoneSelfColumn(g, self, st, shownHp);
+            else PcSelfStrip(g, self, st, shownHp);
             // 夜の札 (ui=night・2026-09-30 P20): 自分の札 (PC は hpwrap の中にからくり・ギア・置物。スマホは左下の札と上の帯の3区画)
-            PaperFx.Nightify(area.Find("hpwrap"));
-            PaperFx.Nightify(area.Find("setzone"));
-            PaperFx.Nightify(area.Find("gearzone"));
-            PaperFx.Nightify(area.Find("perms"));
+            PaperFx.Nightify(self.Find("hpwrap"));
+            PaperFx.Nightify(self.Find("setzone"));
+            PaperFx.Nightify(self.Find("gearzone"));
+            PaperFx.Nightify(self.Find("perms"));
         }
 
         /// <summary>
@@ -2986,6 +2988,9 @@ namespace DeckRogue.Game
             UiKit.Le(cnt, -1f, lineH, -1f, lineH);
             var lb = UiKit.Txt(row, label, ph ? 15 : 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(lb, -1f, lineH, -1f, lineH);
+            // 夜の札 (ui=night・2026-09-30 P20 2周目「本家っぽく」②「画面の端と上下が沈む」): 山札・捨て札・消滅の札も舞台の上に常に出る札
+            // (裁定③「紙のまま残すのは手札・確認の窓・メニューだけ」)。画面の下の両隅で紙の札だけが明るく立っていた。小さな札の絵 (pile-glyph) は絵なので紙のまま
+            PaperFx.Nightify(rt);
         }
 
         /// <summary>山札・捨て札の札の絵 (2026-09-29 p12): 墨一色の 16 ドットの「draw」は ■ に見え、捨て札には消滅の ✕ が付いていた。
@@ -3278,6 +3283,7 @@ namespace DeckRogue.Game
             {
                 return "<b>エナジーの上限 " + nextMax + "</b>\n上限が増えた分は、次のターンの補充から効く（このターンは " + turnMax + " まで）";
             }, false);
+            PaperFx.Nightify(rt);   // 夜の札 (ui=night・P20 2周目): 予告の札も舞台の上に常に出る札 (紙 (濃)＋真鍮の墨 → 夜＋淡い真鍮)。エナジーの輪 (資源＝真鍮) は今のまま
         }
 
         // ---- ログの引き出し ----
@@ -3587,7 +3593,7 @@ namespace DeckRogue.Game
             bool lifted;
             var wr = ReactionWindowRect(g, st, cs, ei, ecx, stripHalf, W, H, out lifted);
             float x = wr.x, y0 = wr.y;
-            if (!ph && !lifted && SelfStripRight > 0f && x < SelfStripRight + 2f) TrimSelfStrip(g.Anchor("player"), x - 12f);
+            if (!ph && !lifted && SelfStripRight > 0f && x < SelfStripRight + 2f) TrimSelfStrip(g.Battle != null && g.Battle.SelfArea != null ? g.Battle.SelfArea : g.Anchor("player"), x - 12f);   // 札の入れ物 (箱庭では兄弟。P20 2周目)
             var panel = PaperFx.Sheet(root, PaperFx.Panel, "reaction");
             UiKit.Anchor(panel.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x, y0), new Vector2(x + W, y0 + H));
             panel.raycastTarget = true;

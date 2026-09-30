@@ -21,6 +21,11 @@ namespace DeckRogue.Game
         public RectTransform UiLayer;
         RectTransform _enemiesArea;
         RectTransform _playerArea;
+        // 自分の札の入れ物 (HD-2D 見本の箱庭だけ。2026-09-30 P20 2周目): リーダーの入れ物 (_playerArea = 演出の的 "player") と同じ矩形の兄弟。
+        // 被弾の押し縮み (Presenter の Tween.Punch(入れ物, keepBottom)) は入れ物を拡大と 2.5° の傾きで揺らすので、子の自分の札も一緒に
+        // 上へ 27px・画面の外へ 20px 動き、足元を 16〜36px 隠していた (W3 の regress R06・R07・R10 の L2/L4)。札を兄弟へ移すと演出は絵だけに掛かる
+        // (「画面揺れは舞台が揺れ、紙の UI は揺れない」)。名前は同じ "player" = layout-check (/player/hpwrap)・hideui・hidezone が今と同じに拾う。今の舞台は null (今のまま入れ物の子)
+        RectTransform _playerSelf;
         readonly List<RectTransform> _enemyPanels = new List<RectTransform>();
         readonly List<Image> _enemyHits = new List<Image>();
         float[] _enemyGaps = new float[0];   // 隣の敵との間隔 (帳面の一行の幅を絞る。確認の窓も同じ幅を読む)
@@ -258,8 +263,9 @@ namespace DeckRogue.Game
                 Stage.SetFeetOffset("player", feet.y - StatusLineY);
             }
             for (int c = _playerArea.childCount - 1; c >= 0; c--) { var ch = _playerArea.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
+            SyncPlayerSelf();
             g.RegisterAnchor("player", _playerArea);
-            BattleScreen.FillPlayerPanel(g, _playerArea, st, _shownPlayerHp);
+            BattleScreen.FillPlayerPanel(g, _playerArea, st, _shownPlayerHp, _playerSelf);
             _shownPlayerHp = st.Player.Hp;
             _shownPlayerBlock = st.Player.Block;
             _shownPlayerIce = st.Player.IceBlock;
@@ -310,6 +316,30 @@ namespace DeckRogue.Game
         public RectTransform PlayerSprite()
         {
             return _playerArea != null ? _playerArea.Find("sprite") as RectTransform : null;
+        }
+
+        /// <summary>自分の札 (hpwrap・からくり・ギア・置物) の入れ物。箱庭では演出の的と別の兄弟 (_playerSelf)、今の舞台はリーダーの入れ物そのもの</summary>
+        public RectTransform SelfArea { get { return _playerSelf != null ? _playerSelf : _playerArea; } }
+
+        /// <summary>
+        /// 自分の札の入れ物を、リーダーの入れ物と同じ矩形・すぐ後ろの兄弟に置き、中身を空にする (箱庭の時だけ。2026-09-30 P20 2周目)。
+        /// 同じ矩形なので札の置き場 (PcSelfStrip・PhoneSelfColumn の座標) は1画素も変わらず、変わるのは被弾の押し縮みが札に掛からないことだけ。
+        /// 描く順も今と同じ (リーダーの入れ物の直後 = 人形の札より後)。旗が今の舞台へ戻ったら消して、札はリーダーの入れ物の子に戻る
+        /// </summary>
+        void SyncPlayerSelf()
+        {
+            if (!BattleScreen.Hd2dLayout)
+            {
+                if (_playerSelf != null) { _playerSelf.SetParent(null, false); UnityEngine.Object.Destroy(_playerSelf.gameObject); _playerSelf = null; }
+                return;
+            }
+            if (_playerSelf == null) _playerSelf = UiKit.NewRect("player", FieldLayer);
+            _playerSelf.pivot = _playerArea.pivot;   // 先に (pivot を後で変えると矩形が動く)
+            // 直前に SyncField がリーダーの入れ物を休んでいる時の矩形へ置き直している (押し縮みの途中でも offset は今の置き場) のでそれを写す
+            UiKit.Anchor(_playerSelf, _playerArea.anchorMin, _playerArea.anchorMax, _playerArea.offsetMin, _playerArea.offsetMax);
+            int p = _playerArea.GetSiblingIndex(), s = _playerSelf.GetSiblingIndex();
+            if (s != p + 1) _playerSelf.SetSiblingIndex(s < p ? p : p + 1);   // 前にいれば抜いた分だけ番号が詰まる
+            for (int c = _playerSelf.childCount - 1; c >= 0; c--) { var ch = _playerSelf.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
         }
 
         // ---- 人形 (白の従者) の舞台の座席 (2026-09-19 ユーザー「人形は戦場の盤面にも表示するようにしたい」→ デザインカンバス「人形の盤面表示」案A「灯りの列」) ----
@@ -557,8 +587,8 @@ namespace DeckRogue.Game
         {
             if (_playerArea == null) return;
             _shownPlayerHp = Math.Max(0, _shownPlayerHp + delta);
-            BattleScreen.TweenHpBar(_playerArea, _shownPlayerHp);
-            BattleScreen.RefreshIncomingLine(_playerArea, _shownPlayerBlock, _shownPlayerIce, _shownPlayerHp);
+            BattleScreen.TweenHpBar(SelfArea, _shownPlayerHp);   // 札は箱庭では兄弟の入れ物 (SelfArea。P20 2周目)
+            BattleScreen.RefreshIncomingLine(SelfArea, _shownPlayerBlock, _shownPlayerIce, _shownPlayerHp);
         }
 
         /// <summary>順送りで敵の攻撃が届いた (ブロック前の量)。受けるダメージの見込みから引き、残りの敵の攻撃だけを言う＝HP と見込みで二重に引かない。
@@ -566,8 +596,8 @@ namespace DeckRogue.Game
         public void LandPlayerIncoming(int amount)
         {
             if (_playerArea == null) return;
-            BattleScreen.ConsumeIncoming(_playerArea, amount);
-            BattleScreen.RefreshIncomingLine(_playerArea, _shownPlayerBlock, _shownPlayerIce, _shownPlayerHp);
+            BattleScreen.ConsumeIncoming(SelfArea, amount);
+            BattleScreen.RefreshIncomingLine(SelfArea, _shownPlayerBlock, _shownPlayerIce, _shownPlayerHp);
         }
 
         // ---- ブロックの数字を演出の途中で動かす (2026-09-17) ----
@@ -588,7 +618,7 @@ namespace DeckRogue.Game
             value = Math.Max(0, value);
             bool changed = value != _shownPlayerBlock;
             _shownPlayerBlock = value;
-            if (changed) { BattleScreen.SetPlayerBlockBadge(_playerArea, value); BattleScreen.RefreshIncomingLine(_playerArea, value, _shownPlayerIce, _shownPlayerHp); }
+            if (changed) { BattleScreen.SetPlayerBlockBadge(SelfArea, value); BattleScreen.RefreshIncomingLine(SelfArea, value, _shownPlayerIce, _shownPlayerHp); }
         }
 
         /// <summary>敵の攻撃が吸われた量を「通常ブロック→氷壁」の順で差し引く (エンジンの消費順と同じ)</summary>
@@ -605,8 +635,8 @@ namespace DeckRogue.Game
         {
             if (_playerArea == null) return;
             _shownPlayerIce = Math.Max(0, _shownPlayerIce + delta);
-            BattleScreen.SetPlayerIceText(_playerArea, _shownPlayerIce);
-            BattleScreen.RefreshIncomingLine(_playerArea, _shownPlayerBlock, _shownPlayerIce, _shownPlayerHp);   // 見込みのブロックは氷壁も足す (p08)
+            BattleScreen.SetPlayerIceText(SelfArea, _shownPlayerIce);
+            BattleScreen.RefreshIncomingLine(SelfArea, _shownPlayerBlock, _shownPlayerIce, _shownPlayerHp);   // 見込みのブロックは氷壁も足す (p08)
         }
 
         public void NudgeEnemyBlock(int index, int delta)
@@ -637,7 +667,7 @@ namespace DeckRogue.Game
         /// <summary>確認の窓 (発動/温存) を閉じる: 順送りの続き (発動の後の敵の行動) を古い盤面の上で見せる前に、窓と暗がりだけ先に畳む (2026-09-17)</summary>
         public void CloseReactionWindow()
         {
-            BattleScreen.RestoreSelfStrip(_playerArea);   // 窓が上げられず打ち切った自分の札を元の幅に (2026-09-29 p11)
+            BattleScreen.RestoreSelfStrip(SelfArea);   // 窓が上げられず打ち切った自分の札を元の幅に (2026-09-29 p11)
             if (UiLayer == null) return;
             for (int i = UiLayer.childCount - 1; i >= 0; i--)
             {

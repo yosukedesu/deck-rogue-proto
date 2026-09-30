@@ -2,6 +2,7 @@
 // 骨組み (P00): 値の置き場だけ。パスとフックは P07 (TiltShiftPass・TiltShiftHook) が書き、値は StageLook (P09) と座席の深さ (P10) が入れる。
 // 既定は無効 = 今の見た目。
 // P24 (W3) が足した値: Focus・PathNear・PathFar・NearScale (ピントの帯の形と手前の上限)。入れるのは TiltShiftLook (look_act1.dof.json の tiltShiftPass)。
+// P24 (W3b・2周目) が足した値: Curve・LensFar・LensNear (帯の外のぼけの伸び方。既定はレンズ)。入れるのは同じく TiltShiftLook。
 namespace DeckRogue.Game
 {
     /// <summary>
@@ -34,5 +35,18 @@ namespace DeckRogue.Game
         public static float PathNear = -3f, PathFar = 5.5f;
         /// <summary>手前 (帯より手前) のぼけの上限の倍率 (MaxPx に掛ける。1 = 奥と同じ)</summary>
         public static float NearScale = 1f;
+
+        // ---- P24 (W3b・2周目「本家っぽく」) ----
+        /// <summary>帯の外のぼけの伸び方 (既定 = レンズ)。Smooth = 今までの smoothstep (RampNear・RampFar で上限へ)</summary>
+        public static TiltShiftCurve Curve = TiltShiftCurve.Lens;
+        /// <summary>レンズの強さ (奥・手前)。錯乱円 = 上限 × saturate(強さ × 帯の縁からの深さの差 ÷ 深さ)。1/強さ が「上限に届く 深さの差÷深さ」</summary>
+        public static float LensFar = 1.6f, LensNear = 1.4f;
     }
+
+    /// <summary>
+    /// 帯の外のぼけの伸び方 (P24 2周目)。
+    /// Lens   = 薄いレンズの形: 錯乱円 ∝ (帯の縁からの深さの差) ÷ (深さ)。帯の縁から緩やかに始まり、遠くほど伸びて上限へ近づく (本家の夜の森の測り)。
+    /// Smooth = 今までの形: smoothstep(帯の縁からの深さの差 ÷ RampNear・RampFar)。帯の外の数 unit で上限に届き、奥が一面の塗りつぶしになる (W3)
+    /// </summary>
+    public enum TiltShiftCurve { Smooth = 0, Lens = 1 }
 }

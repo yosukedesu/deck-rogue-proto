@@ -15,6 +15,12 @@
 //   輪郭の持ち上げ … look の char の blackLift を、トーンマップと露出で割り戻して _BlackLift に書く (BlackLiftVector)
 //   _KeyFlip       … 描き込まれた光の向きを測った表 (art-lint の lightFromRight) で選べるようにした (ResolveKeyFlip・look の char の keyFlipFrom)
 //   絵ごとの上書き … look の char の art (このはだけ主役の持ち上げ 1.6・ひなたの輪郭の持ち上げは半分)。露出の割り戻し … look の char の exposureRef (CharExposureScale)
+// P23 (W3b・2周目「本家っぽく」) が足した部分 (同じく光を受ける板だけ):
+//   輪郭の目標     … look の char の outlineTarget (画面の輝度) から、今の後処理を灰色で逆にたどって _BlackLift を絵ごとに解く
+//                    (BlackLiftForTarget・PostGrayDisplay/PostGrayInverse・ViewFor。舞台 P22 が露出・コントラスト・LGG・周辺減光を変えても輪郭の暗さを保つ)
+//   キャラの色     … _CharTint = look の char の tint × cancelColorFilter (後処理の colorFilter をキャラだけ打ち消す = 舞台の青がキャラの白に乗らない。CharTintFor)
+//   暗い色の持ち上げ … _ShadeLift (look の char の art の shadeLift。このはの黒鉄の衣が ACES の足で潰れるのを戻す。ShadeLiftFor)
+//   発光の強さ     … look の char の art の emission (狼の白い毛の発光 1.6 が白飛び → ブルームで青く冷えていた)
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
@@ -166,6 +172,13 @@ namespace DeckRogue.Game
                         e["receive"] = Mathf.Round(u.Mat.GetFloat("_Receive") * 1000f) / 1000f;
                         e["blackLift"] = new[] { Mathf.Round(bl.x * 10000f) / 10000f, Mathf.Round(bl.y * 10000f) / 10000f, Mathf.Round(bl.z * 10000f) / 10000f };
                         e["edgeLin"] = Mathf.Round(u.EdgeLin() * 100000f) / 100000f;   // 絵の輪郭の暗さ (線形。-1 = 測れない)
+                        // P23 2周目: キャラの色の掛け算・暗い色の持ち上げ・発光の強さ・輪郭の目標を解いた時の周辺減光と霧
+                        Func<float, float> r4 = v => Mathf.Round(v * 10000f) / 10000f;
+                        e["charTint"] = new[] { r4(u.LastTint.x), r4(u.LastTint.y), r4(u.LastTint.z) };
+                        e["shadeLift"] = new[] { r4(u.LastShade.x), r4(u.LastShade.y) };
+                        e["emission"] = r4(u.LastEmission);
+                        e["outlineVignette"] = r4(u.LastVignette);
+                        e["outlineFog"] = r4(u.LastFog);
                     }
                 }
                 list.Add(e);
@@ -348,8 +361,24 @@ namespace DeckRogue.Game
         ///   keyFlipFrom "measured"|"mirrored"|"both"・keyFlipAdd [絵の名前]・keyFlipRemove [絵の名前] … _KeyFlip の選び方 (ResolveKeyFlip)
         ///   art { 絵の名前の頭: { heroLift, blackLift } } … 絵ごとの上書き (名前の頭がいちばん長く一致した物。leader_green は leader_green_48 にも当たる)。
         ///     heroLift = 主役の持ち上げ (主役の時だけ・旗 herolift= が勝つ)・blackLift = 輪郭の持ち上げの倍率 (0 = 持ち上げない)
+        /// P23 (2周目・本家っぽく) が足した口:
+        ///   outlineTarget … 輪郭の暗さの目標 (画面の輝度 sRGB 0〜255。書けば _BlackLift を「画面でこの暗さ」になるよう今の後処理を逆にたどって絵ごとに求める = PostGrayInverse)。
+        ///     blackLift は色味 (輝度で割った比) だけに使う。無ければ W3 の読み方 (blackLift を露出とトーンマップで割り戻す)
+        ///   outlineLitRef … 絵の輪郭の画素にかかる光のおおよその輝度 (W3 の撮影から逆算した 0.8)。無ければ blackLiftAuto.litRef
+        ///   tint [r,g,b] … キャラの色の掛け算 (sRGB の色。_CharTint)・cancelColorFilter … 後処理の colorFilter をキャラだけ打ち消す (輝度は保つ)
+        ///   shadeLift [gain, knee] … 暗い色の持ち上げ (_ShadeLift。全員)。art の shadeLift が勝つ
+        ///   art { 絵の名前の頭: { receive, emission, shadeLift } } … 受光 (旗 receive= が勝つ)・発光の強さ (狼の白い毛の発光 1.6 が白飛びしてブルームで青く冷えていた)・暗い色の持ち上げ
         /// </summary>
-        sealed class ArtLook { public float HeroLift = -1f, BlackLiftScale = -1f; }
+        sealed class ArtLook
+        {
+            public float HeroLift = -1f, BlackLiftScale = -1f;
+            /// <summary>受光 (負 = 設計図の receive / heroReceive。旗 receive= が勝つ)</summary>
+            public float Receive = -1f;
+            /// <summary>発光の強さ (負 = 設計図の emissionIntensity)</summary>
+            public float Emission = -1f;
+            /// <summary>暗い色の持ち上げ (HasShade の時だけ。gain 0 = 持ち上げない)</summary>
+            public Vector2 ShadeLift; public bool HasShade;
+        }
         sealed class CharMatExtras
         {
             public readonly Dictionary<string, ArtLook> Art = new Dictionary<string, ArtLook>(StringComparer.Ordinal);
@@ -376,6 +405,25 @@ namespace DeckRogue.Game
             public readonly Dictionary<string, float> BlackLiftTonemap = new Dictionary<string, float>(StringComparer.Ordinal);
             public string KeyFlipFrom;
             public readonly HashSet<string> KeyFlipAdd = new HashSet<string>(StringComparer.Ordinal), KeyFlipRemove = new HashSet<string>(StringComparer.Ordinal);
+            // P23 (2周目)
+            /// <summary>輪郭の暗さの目標 (画面の輝度 sRGB 0〜255。NaN = 目標を使わない = W3 の読み方)</summary>
+            public float OutlineTarget = float.NaN;
+            /// <summary>輪郭の画素にかかる光の輝度 (NaN = blackLiftAuto.litRef)</summary>
+            public float OutlineLitRef = float.NaN;
+            public Color Tint = Color.white; public bool HasTint;
+            public bool CancelColorFilter;
+            public Vector2 ShadeLift; public bool HasShade;
+        }
+
+        /// <summary>JSON の [a, b] を Vector2 に (無い・短い時は false)</summary>
+        static bool ReadVec2(JToken t, out Vector2 v)
+        {
+            v = Vector2.zero;
+            var a = t as JArray;
+            if (a == null || a.Count < 2) return false;
+            if (!(a[0].Type == JTokenType.Float || a[0].Type == JTokenType.Integer) || !(a[1].Type == JTokenType.Float || a[1].Type == JTokenType.Integer)) return false;
+            v = new Vector2((float)a[0], (float)a[1]);
+            return true;
         }
         static StageLookData _extrasFor; static CharMatExtras _extras;
         static CharMatExtras CharExtras()
@@ -422,6 +470,17 @@ namespace DeckRogue.Game
                     };
                     names("keyFlipAdd", x.KeyFlipAdd);
                     names("keyFlipRemove", x.KeyFlipRemove);
+                    // P23 (2周目): 輪郭の暗さの目標・キャラの色の掛け算・暗い色の持ち上げ
+                    var ot = c["outlineTarget"];
+                    if (ot != null && (ot.Type == JTokenType.Float || ot.Type == JTokenType.Integer)) x.OutlineTarget = Mathf.Clamp((float)ot, 0f, 255f);
+                    var olr = c["outlineLitRef"];
+                    if (olr != null && (olr.Type == JTokenType.Float || olr.Type == JTokenType.Integer)) x.OutlineLitRef = Mathf.Max(0f, (float)olr);
+                    var tn = c["tint"] as JArray;
+                    if (tn != null && tn.Count >= 3) { x.Tint = new Color((float)tn[0], (float)tn[1], (float)tn[2], 1f); x.HasTint = true; }
+                    var ccf = c["cancelColorFilter"];
+                    if (ccf != null && ccf.Type == JTokenType.Boolean) x.CancelColorFilter = (bool)ccf;
+                    Vector2 sl;
+                    if (ReadVec2(c["shadeLift"], out sl)) { x.ShadeLift = sl; x.HasShade = true; }
                     var arts = c["art"] as JObject;
                     if (arts != null)
                         foreach (var p in arts.Properties())
@@ -429,7 +488,10 @@ namespace DeckRogue.Game
                             var ao = p.Value as JObject;
                             if (ao == null || p.Name.StartsWith("_", StringComparison.Ordinal)) continue;
                             Func<string, float> anum = name => { var t = ao[name]; return t != null && (t.Type == JTokenType.Float || t.Type == JTokenType.Integer) ? (float)t : -1f; };
-                            x.Art[p.Name] = new ArtLook { HeroLift = anum("heroLift"), BlackLiftScale = anum("blackLift") };
+                            var al = new ArtLook { HeroLift = anum("heroLift"), BlackLiftScale = anum("blackLift"), Emission = anum("emission"), Receive = anum("receive") };
+                            Vector2 asl;
+                            if (ReadVec2(ao["shadeLift"], out asl)) { al.ShadeLift = asl; al.HasShade = true; }
+                            x.Art[p.Name] = al;
                         }
                 }
             }
@@ -447,7 +509,17 @@ namespace DeckRogue.Game
         /// </summary>
         static Vector4 BlackLiftVector(CharMatExtras x, bool hero, ArtLook art, float edgeLin = -1f, float litMul = 1f)
         {
+            return BlackLiftVector(x, hero, art, edgeLin, litMul, UnitView.Neutral);
+        }
+
+        /// <summary>
+        /// 2周目 (P23・本家っぽく): look の char に outlineTarget があれば、「輪郭の画素が画面でその暗さになる」_BlackLift を解く (BlackLiftForTarget)。
+        /// 無ければ W3 の読み方 (blackLift を露出とトーンマップで割り戻す)。view = その板の画面の事情 (周辺減光・霧・キャラの色の掛け算)
+        /// </summary>
+        static Vector4 BlackLiftVector(CharMatExtras x, bool hero, ArtLook art, float edgeLin, float litMul, UnitView view)
+        {
             if (x == null) return Vector4.zero;
+            if (!float.IsNaN(x.OutlineTarget) && StageLook.Current != null) return BlackLiftForTarget(x, hero, art, edgeLin, litMul, view);
             bool heroOwn = hero && x.HasHeroBlackLift;
             if (!heroOwn && !x.HasBlackLift) return Vector4.zero;
             Color c = heroOwn ? x.HeroBlackLift : x.BlackLift;
@@ -471,6 +543,224 @@ namespace DeckRogue.Game
             }
             s *= artScale;
             return new Vector4(Mathf.Clamp01(lin.r * s), Mathf.Clamp01(lin.g * s), Mathf.Clamp01(lin.b * s), 0f);
+        }
+
+        // ---------------------------------------------------------------- 輪郭の暗さを画面の値で決める (2026-09-30 P23 2周目)
+
+        /// <summary>
+        /// 輪郭の目標を解く時の、その板の画面の事情。Vignette = 周辺減光の倍率 (輝度・1 = 掛からない)・FogAmount = 霧の割合 (0 = 無し)・
+        /// FogLum = 霧の色の輝度 (線形)・CharCf = キャラの色 (後処理の colorFilter × _CharTint) の輝度・StageCf = 後処理の colorFilter の輝度 (霧にかかる)
+        /// </summary>
+        struct UnitView
+        {
+            public float Vignette, FogAmount, FogLum, CharCf, StageCf;
+            /// <summary>何も掛からない (周辺減光 1・霧 0・colorFilter は後処理の値そのまま = -1)</summary>
+            public static UnitView Neutral => new UnitView { Vignette = 1f, FogAmount = 0f, FogLum = 0f, CharCf = -1f, StageCf = -1f };
+        }
+
+        /// <summary>
+        /// look の char の outlineTarget (画面の輝度 sRGB 0〜255) から _BlackLift (線形・後処理の前) を解く。
+        ///   ① 今の後処理を灰色について逆にたどり (PostGrayInverse。周辺減光・霧を含む)、輪郭の画素が後処理の前にいくつなら画面で目標の暗さかを求める
+        ///   ② 絵の輪郭がもともと持つ明るさ (edgeLin × 光 × 暗い色の持ち上げ) を差し引く (もともと目標より明るい輪郭の絵 = ひなた・白の人形は持ち上げない)
+        ///   ③ col = L + col×(1−L) を L について解き、blackLift の色味 (輝度で割った比。無ければ灰色) を掛ける。絵ごとの倍率 (art の blackLift) も掛ける
+        /// </summary>
+        static Vector4 BlackLiftForTarget(CharMatExtras x, bool hero, ArtLook art, float edgeLin, float litMul, UnitView view)
+        {
+            var p = StageLook.Current.Post;
+            float stageCf = view.StageCf > 0f ? view.StageCf : LumLin(p.ColorFilter);
+            float charCf = view.CharCf > 0f ? view.CharCf : stageCf;
+            // ① 画面で目標の暗さになる、後処理の前の値 (colorFilter は舞台の値で、キャラの分は charCf/stageCf で割り戻す)
+            float xin = PostGrayInverse(x.OutlineTarget, p, view.Vignette, stageCf);
+            float phi = Mathf.Clamp01(view.FogAmount);
+            float z = (xin - phi * view.FogLum) / Mathf.Max(1e-4f, (1f - phi) * charCf / Mathf.Max(1e-4f, stageCf));
+            // ② 絵の輪郭の明るさ (読めない絵 = -1 は 0 として扱う = 割り引かない)
+            float litRef = !float.IsNaN(x.OutlineLitRef) ? x.OutlineLitRef : (!float.IsNaN(x.BlackLiftAutoLit) ? x.BlackLiftAutoLit : 0.8f);
+            float c = edgeLin > 0f ? edgeLin * litRef * Mathf.Max(0f, litMul) : 0f;
+            Vector2 shade = ShadeLiftFor(x, art);
+            if (shade.x > 0f) { float k = Mathf.Max(1e-3f, shade.y), q = k / (k + c); c *= 1f + shade.x * q * q; }
+            // ③
+            float l = c < 0.999f ? Mathf.Max(0f, (z - c) / (1f - c)) : 0f;
+            if (art != null && art.BlackLiftScale >= 0f) l *= art.BlackLiftScale;
+            Vector3 hue = Vector3.one;
+            bool heroOwn = hero && x.HasHeroBlackLift;
+            if (heroOwn || x.HasBlackLift)
+            {
+                Color h = heroOwn ? x.HeroBlackLift : x.BlackLift;
+                Color hl = QualitySettings.activeColorSpace == ColorSpace.Linear ? h.linear : h;
+                float hy = 0.2126f * hl.r + 0.7152f * hl.g + 0.0722f * hl.b;
+                if (hy > 1e-6f) hue = new Vector3(hl.r / hy, hl.g / hy, hl.b / hy);
+            }
+            return new Vector4(Mathf.Clamp01(l * hue.x), Mathf.Clamp01(l * hue.y), Mathf.Clamp01(l * hue.z), 0f);
+        }
+
+        /// <summary>暗い色の持ち上げ (gain, knee): art の shadeLift ＞ look の char の shadeLift ＞ 無し (0, 0)</summary>
+        static Vector2 ShadeLiftFor(CharMatExtras x, ArtLook art)
+        {
+            if (art != null && art.HasShade) return new Vector2(Mathf.Max(0f, art.ShadeLift.x), Mathf.Max(0f, art.ShadeLift.y));
+            if (x != null && x.HasShade) return new Vector2(Mathf.Max(0f, x.ShadeLift.x), Mathf.Max(0f, x.ShadeLift.y));
+            return Vector2.zero;
+        }
+
+        /// <summary>sRGB の色 (0〜1) の輝度を線形で (色空間が Gamma なら値のまま)</summary>
+        static float LumLin(Color c)
+        {
+            Color l = QualitySettings.activeColorSpace == ColorSpace.Linear ? c.linear : c;
+            return 0.2126f * l.r + 0.7152f * l.g + 0.0722f * l.b;
+        }
+
+        /// <summary>
+        /// 後処理 (URP 17.6 の HDR の色の段) を灰色の入力 x (線形・後処理の前) について近似し、画面の輝度 (sRGB 0〜255 の 0.2126R+0.7152G+0.0722B) を返す。
+        /// 写した物: 周辺減光 (UberPost の ApplyVignette = 輝度の倍率 vig で受ける) → 露出 2^exposure → コントラスト (ACES は ACEScc で 0.18 を軸・それ以外は LogC) →
+        /// colorFilter → Lift/Gamma/Gain (ColorUtils.PrepareLiftGammaGain) → トーンマップ (ACES は Color.hlsl の MJP の近似と dim surround のγ 0.9811・Neutral・無し) → sRGB。
+        /// 灰色では効かない ACES の色の回転・glow・赤の補正・彩度の補正は省く。W3 の撮影 (unitsonly と hideui) で暗部 (線形 0.02〜0.08) は ±2 レベル
+        /// (ブルームのにじみの分だけ実際が少し明るい)。cfScale = colorFilter の代わりに掛ける灰色の倍率 (負 = 設計図の colorFilter をチャンネルごとに)
+        /// </summary>
+        internal static float PostGrayDisplay(float x, StageLookData.PostLook p, float vig, float cfScale)
+        {
+            string tm = (p.Tonemap ?? "aces").Trim().ToLowerInvariant();
+            float v = Mathf.Max(0f, x) * Mathf.Max(0f, vig) * Mathf.Pow(2f, p.Exposure);
+            float con = p.Contrast / 100f + 1f;
+            if (tm == "aces") v = 0.18f * Mathf.Pow(Mathf.Max(v, 1.52587890625e-5f) / 0.18f, con);
+            else v = Mathf.Max(0f, LogCToLinearApprox((LinearToLogCApprox(v) - 0.4135884f) * con + 0.4135884f));
+            Vector3 cf;
+            if (cfScale >= 0f) cf = new Vector3(cfScale, cfScale, cfScale);
+            else
+            {
+                Color cl = QualitySettings.activeColorSpace == ColorSpace.Linear ? p.ColorFilter.linear : p.ColorFilter;
+                cf = new Vector3(cl.r, cl.g, cl.b);
+            }
+            Vector3 lift, gamma, gain;
+            PrepareLiftGammaGain(p.Lift, p.Gamma, p.Gain, out lift, out gamma, out gain);
+            float y = 0f;
+            for (int i = 0; i < 3; i++)
+            {
+                float ch = Mathf.Max(0f, v * cf[i]);
+                ch = ch * gain[i] + lift[i];
+                ch = Mathf.Sign(ch) * Mathf.Pow(Mathf.Abs(ch), gamma[i]);
+                if (tm == "aces") ch = Mathf.Pow(AcesFitCurve(ch), 0.9811f);
+                else if (tm == "neutral") ch = NeutralTonemapCurve(ch);
+                else ch = Mathf.Max(0f, ch);
+                float w = i == 0 ? 0.2126f : i == 1 ? 0.7152f : 0.0722f;
+                y += w * SrgbEncode01(ch) * 255f;
+            }
+            return y;
+        }
+
+        /// <summary>PostGrayDisplay の逆 (画面の輝度 target になる後処理の前の灰色の値)。対数の二分探索 40 回。届かなければ端の値</summary>
+        internal static float PostGrayInverse(float target, StageLookData.PostLook p, float vig, float cfScale)
+        {
+            float lo = -18f, hi = 4f;   // log2 の範囲 (約 3.8e-6 〜 16)
+            if (PostGrayDisplay(Mathf.Pow(2f, lo), p, vig, cfScale) >= target) return 0f;
+            if (PostGrayDisplay(Mathf.Pow(2f, hi), p, vig, cfScale) <= target) return Mathf.Pow(2f, hi);
+            for (int i = 0; i < 40; i++)
+            {
+                float mid = (lo + hi) * 0.5f;
+                if (PostGrayDisplay(Mathf.Pow(2f, mid), p, vig, cfScale) < target) lo = mid; else hi = mid;
+            }
+            return Mathf.Pow(2f, (lo + hi) * 0.5f);
+        }
+
+        /// <summary>URP の ColorUtils.PrepareLiftGammaGain と同じ (lift = 色×0.15 の輝度を引いて w を足す・gamma = 1/(色×0.8 − 輝度 + 1 + w)・gain = 色×0.8 − 輝度 + 1 + w)</summary>
+        static void PrepareLiftGammaGain(Vector4 inLift, Vector4 inGamma, Vector4 inGain, out Vector3 lift, out Vector3 gamma, out Vector3 gain)
+        {
+            Func<Vector4, float, Vector3> lin = (v, s) => new Vector3(Mathf.GammaToLinearSpace(v.x) * s, Mathf.GammaToLinearSpace(v.y) * s, Mathf.GammaToLinearSpace(v.z) * s);
+            Func<Vector3, float> lum = v => 0.2126f * v.x + 0.7152f * v.y + 0.0722f * v.z;
+            var l = lin(inLift, 0.15f); float ll = lum(l);
+            lift = new Vector3(l.x - ll + inLift.w, l.y - ll + inLift.w, l.z - ll + inLift.w);
+            var g = lin(inGamma, 0.8f); float lg = lum(g); float gw = inGamma.w + 1f;
+            gamma = new Vector3(1f / Mathf.Max(g.x - lg + gw, 1e-3f), 1f / Mathf.Max(g.y - lg + gw, 1e-3f), 1f / Mathf.Max(g.z - lg + gw, 1e-3f));
+            var n = lin(inGain, 0.8f); float ln = lum(n); float nw = inGain.w + 1f;
+            gain = new Vector3(n.x - ln + nw, n.y - ln + nw, n.z - ln + nw);
+        }
+
+        /// <summary>URP の AcesTonemap の有理式 (MJP の BakingLab の近似。Color.hlsl)</summary>
+        static float AcesFitCurve(float x)
+        {
+            const float a = 0.0245786f, b = 0.000090537f, c = 0.983729f, d = 0.4329510f, e = 0.238081f;
+            x = Mathf.Max(0f, x);
+            return Mathf.Max(0f, (x * (x + a) - b) / (x * (c * x + d) + e));
+        }
+
+        /// <summary>URP の NeutralTonemap (Color.hlsl) の1チャンネル</summary>
+        static float NeutralTonemapCurve(float x)
+        {
+            Func<float, float> curve = t => ((t * (0.2f * t + 0.24f * 0.29f) + 0.272f * 0.02f) / (t * (0.2f * t + 0.29f) + 0.272f * 0.3f)) - 0.02f / 0.3f;
+            float ws = 1f / curve(5.3f);
+            return curve(Mathf.Max(0f, x) * ws) * ws;
+        }
+
+        /// <summary>URP の LinearToLogC (Alexa LogC El 1000・USE_PRECISE_LOGC 0 の式)</summary>
+        static float LinearToLogCApprox(float x) { return 0.244161f * Mathf.Log10(Mathf.Max(5.555556f * x + 0.047996f, 1e-6f)) + 0.386036f; }
+        /// <summary>URP の LogCToLinear (同上)</summary>
+        static float LogCToLinearApprox(float x) { return (Mathf.Pow(10f, (x - 0.386036f) / 0.244161f) - 0.047996f) / 5.555556f; }
+
+        /// <summary>線形 (0〜1) → sRGB (0〜1)</summary>
+        static float SrgbEncode01(float v)
+        {
+            v = Mathf.Clamp01(v);
+            return v <= 0.0031308f ? v * 12.92f : 1.055f * Mathf.Pow(v, 1f / 2.4f) - 0.055f;
+        }
+
+        /// <summary>
+        /// その板の画面の事情 (輪郭の目標を解く時に使う)。周辺減光は URP の ApplyVignette (uv は画面の左下が原点・強さ×3・なめらかさ×5・rounded なら横に縦横比)、
+        /// 霧は RenderSettings (Linear・Exp・Exp2)。uvX/uvY = 板の真ん中の画面の割合・depth = 板の深さ・fogOnUnit = 材質の _Fog・charTint = _CharTint (線形)
+        /// </summary>
+        static UnitView ViewFor(float uvX, float uvY, float depth, float fogOnUnit, Vector3 charTint)
+        {
+            var v = UnitView.Neutral;
+            var cur = StageLook.Current;
+            if (cur == null) return v;
+            var p = cur.Post;
+            if (p.VignetteIntensity > 0f)
+            {
+                float aspect = Screen.height > 0 ? (float)Screen.width / Screen.height : 16f / 9f;
+                float dx = Mathf.Abs(uvX - p.VignetteCenter.x) * p.VignetteIntensity * 3f, dy = Mathf.Abs(uvY - p.VignetteCenter.y) * p.VignetteIntensity * 3f;
+                if (p.VignetteRounded) dx *= aspect;
+                float vf = Mathf.Pow(Mathf.Clamp01(1f - (dx * dx + dy * dy)), p.VignetteSmoothness * 5f);
+                v.Vignette = Mathf.Lerp(LumLin(p.VignetteColor), 1f, vf);
+            }
+            if (RenderSettings.fog && fogOnUnit > 0f && depth > 0f)
+            {
+                float amt;
+                switch (RenderSettings.fogMode)
+                {
+                    case FogMode.Linear:
+                        float s = RenderSettings.fogStartDistance, e = RenderSettings.fogEndDistance;
+                        amt = e > s ? Mathf.Clamp01((depth - s) / (e - s)) : 0f; break;
+                    case FogMode.Exponential: amt = 1f - Mathf.Exp(-RenderSettings.fogDensity * depth); break;
+                    default: { float dd = RenderSettings.fogDensity * depth; amt = 1f - Mathf.Exp(-dd * dd); break; }
+                }
+                v.FogAmount = Mathf.Clamp01(amt * fogOnUnit);
+                v.FogLum = LumLin(RenderSettings.fogColor);
+            }
+            Color cfl = QualitySettings.activeColorSpace == ColorSpace.Linear ? p.ColorFilter.linear : p.ColorFilter;
+            v.StageCf = 0.2126f * cfl.r + 0.7152f * cfl.g + 0.0722f * cfl.b;
+            v.CharCf = 0.2126f * cfl.r * charTint.x + 0.7152f * cfl.g * charTint.y + 0.0722f * cfl.b * charTint.z;
+            return v;
+        }
+
+        /// <summary>
+        /// キャラの色の掛け算 _CharTint (線形)。look の char の tint (sRGB の色) × cancelColorFilter なら後処理の colorFilter の打ち消し
+        /// (チャンネルごとに colorFilter の輝度 ÷ colorFilter = 画面の上でキャラの色だけ colorFilter が掛からない。明るさは保つ)。無ければ (1,1,1)
+        /// </summary>
+        static Vector3 CharTintFor(CharMatExtras x)
+        {
+            var t = Vector3.one;
+            if (x == null) return t;
+            if (x.HasTint)
+            {
+                Color tl = QualitySettings.activeColorSpace == ColorSpace.Linear ? x.Tint.linear : x.Tint;
+                t = new Vector3(tl.r, tl.g, tl.b);
+            }
+            var cur = StageLook.Current;
+            if (x.CancelColorFilter && cur != null)
+            {
+                Color cfl = QualitySettings.activeColorSpace == ColorSpace.Linear ? cur.Post.ColorFilter.linear : cur.Post.ColorFilter;
+                float lum = 0.2126f * cfl.r + 0.7152f * cfl.g + 0.0722f * cfl.b;
+                if (cfl.r > 1e-4f && cfl.g > 1e-4f && cfl.b > 1e-4f)
+                    t = new Vector3(t.x * lum / cfl.r, t.y * lum / cfl.g, t.z * lum / cfl.b);
+            }
+            return t;
         }
 
         /// <summary>
@@ -807,13 +1097,20 @@ namespace DeckRogue.Game
                 return _edgeLin;
             }
 
-            /// <summary>光を受ける板の材質の値 (毎フレーム。旗 receive=・herolift=・keyflip= と設計図 look の char が変わっても追う)</summary>
-            void ApplyLitProps(bool hero)
+            /// <summary>2周目 (P23) の dumplayout 用: 最後に解いた板の画面の事情 (周辺減光・霧) と _CharTint・_ShadeLift・発光の強さ</summary>
+            public float LastVignette = 1f, LastFog, LastEmission = -1f;
+            public Vector3 LastTint = Vector3.one; public Vector2 LastShade;
+
+            /// <summary>光を受ける板の材質の値 (毎フレーム。旗 receive=・herolift=・keyflip= と設計図 look の char が変わっても追う)。
+            /// sx, sy = 足元の画面の点 (px・左下が原点)・h = 絵の高さ (px)。輪郭の目標 (outlineTarget) の周辺減光を板の真ん中で読む</summary>
+            void ApplyLitProps(bool hero, float sx, float sy, float h)
             {
                 var x = CharExtras();
                 var art = x.ArtFor(ArtName);
                 float es = CharExposureScale(x);   // 露出の割り戻し (look の char の exposureRef。無ければ 1)
-                Mat.SetFloat("_Receive", StageLook.CharReceive(hero) * es);
+                // 受光: 旗 receive= ＞ 絵ごとの上書き (look の char の art の receive。P23 2周目: このはだけ舞台の灯を強く受ける) ＞ 設計図の receive / heroReceive
+                float receive = HD2DFlags.Receive < 0f && art != null && art.Receive >= 0f ? art.Receive : StageLook.CharReceive(hero);
+                Mat.SetFloat("_Receive", receive * es);
                 // 主役の持ち上げ: 旗 herolift= > 絵ごとの上書き (look の char の art。P23: このはだけ上げ、白い衣のひなたは上げない) > look の heroLift
                 float heroLift = StageLook.HeroLift;
                 if (hero && HD2DFlags.HeroLift < 0f && art != null && art.HeroLift >= 0f) heroLift = art.HeroLift;
@@ -822,11 +1119,27 @@ namespace DeckRogue.Game
                 // _KeyFlip の絵は look の char の keyFlipFrom で選ぶ (P23: 既定は描き込まれた光の向きを測った表。旗 keyflip=off なら全部 0)。dumplayout の keyFlip もこの値
                 KeyFlipArt = ResolveKeyFlip(ArtName, x);
                 Mat.SetFloat("_KeyFlip", KeyFlipArt && HD2DFlags.KeyFlip == HD2DKeyFlip.Auto ? 1f : 0f);
-                // 輪郭の持ち上げ (P23)。書いていなければ 0。絵の輪郭がもともと明るい絵 (ひなた・白の人形) は blackLiftAuto で減らす
-                Mat.SetVector("_BlackLift", BlackLiftVector(x, hero, art, EdgeLin(), es * (hero ? heroLift : 1f)));
+                // キャラの色の掛け算 (P23 2周目): 後処理の colorFilter の打ち消し × 暖かさ。暗い色の持ち上げ (このはだけ = art の shadeLift)
+                var tint = CharTintFor(x);
+                Mat.SetVector("_CharTint", new Vector4(tint.x, tint.y, tint.z, 0f));
+                var shade = ShadeLiftFor(x, art);
+                Mat.SetVector("_ShadeLift", new Vector4(shade.x, shade.y, 0f, 0f));
+                LastTint = tint; LastShade = shade;
+                // 輪郭の持ち上げ (P23)。書いていなければ 0。2周目: outlineTarget があれば画面の暗さから解く (周辺減光は板の真ん中・霧は板の深さ)。
+                // 絵の輪郭がもともと明るい絵 (ひなた・白の人形) は持ち上げを減らす
+                UnitView view = UnitView.Neutral;
+                if (!float.IsNaN(x.OutlineTarget) && Screen.width > 0 && Screen.height > 0)
+                {
+                    view = ViewFor(sx / Screen.width, (sy + h * 0.5f * (1f - FeetPad)) / Screen.height, UsedDepth, Mat.GetFloat("_Fog"), tint);
+                    LastVignette = view.Vignette; LastFog = view.FogAmount;
+                }
+                Mat.SetVector("_BlackLift", BlackLiftVector(x, hero, art, EdgeLin(), es * (hero ? heroLift : 1f), view));
                 Mat.SetFloat("_LocalLights", x.LocalLights >= 0f ? x.LocalLights : 0f);
                 if (x.WhiteCap >= 0f) Mat.SetFloat("_WhiteCap", x.WhiteCap);
-                Mat.SetFloat("_EmissionIntensity", (x.EmissionIntensity >= 0f ? x.EmissionIntensity : DefaultEmissionIntensity) * es);   // 露出の割り戻しが戻った時も書き直す
+                // 発光の強さ: 絵ごと (art の emission。狼の白い毛) ＞ 設計図の emissionIntensity ＞ シェーダの既定 1.6。露出の割り戻しが戻った時も書き直す
+                float em = art != null && art.Emission >= 0f ? art.Emission : (x.EmissionIntensity >= 0f ? x.EmissionIntensity : DefaultEmissionIntensity);
+                LastEmission = em;
+                Mat.SetFloat("_EmissionIntensity", em * es);
                 if (x.ReceiveShadows >= 0f) Mat.SetFloat("_ReceiveShadows", x.ReceiveShadows);
                 if (x.CookieOnKey >= 0f) Mat.SetFloat("_CookieOnKey", x.CookieOnKey);
                 if (x.HasOutlineFloor) Mat.SetColor("_OutlineFloor", x.OutlineFloor);
@@ -951,7 +1264,7 @@ namespace DeckRogue.Game
                 // この経路を通るのは BindUnit で置いたキャラの板だけ (player・enemyN・人形)。リーダー = 主役の照明、それ以外 = キャラの環境光 (2026-09-29 I24)
                 bool hero = Key == "player";
                 bool doll = !hero && Key != null && Key.StartsWith("doll:", StringComparison.Ordinal);   // 人形 (BattleScreen.FillDollPanel の key) = 敵と主役の間の環境光 (F05)
-                if (IsLit) ApplyLitProps(hero);   // 光を受ける板: 固定のキー＋上下の環境光 (StageLook の全体値)。見本は PalOf・主役の照明・周辺減光の打ち消しを使わない (計画 §2-4)
+                if (IsLit) ApplyLitProps(hero, sx, sy, h);   // 光を受ける板: 固定のキー＋上下の環境光 (StageLook の全体値)。見本は PalOf・主役の照明・周辺減光の打ち消しを使わない (計画 §2-4)
                 else
                 {
                     // 敵と人形は絵の真ん中の画面の位置で周辺減光を打ち消す (F06: 同じ噛みつく巻物が ①→④ で明るさ半分・青く曇った)
