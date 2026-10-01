@@ -27,7 +27,51 @@ namespace DeckRogue.Game
         /// W2 の撮影で両端の札の数字の下端が PC 57.8px・スマホ 60.4px (5枚の扇) なので、PC 19 (→38.8px)・スマホ 17 (×1.31＝22.3px → 38.1px)。
         /// 計画の目安「PC 30→−12」(42 沈める) は数字が 16px まで下がるので採らない (lane-P20.md)。触れた札の持ち上げにはこの量を足す (HookHandCard)
         /// </summary>
-        public static float HandSink { get { return Hd2dLayout ? (UiKit.Phone ? 17f : 19f) : 0f; } }
+        public static float HandSink { get { return Hd2dLayout ? (R3 ? (UiKit.Phone ? R3U_HandSinkPhone : R3U_HandSinkPc) : (UiKit.Phone ? 17f : 19f)) : 0f; } }
+
+        // ---- 三周目 R3 UI の作り直し (2026-10-02 ユーザー裁定「本番に入れる」・仕様 docs/design/hd2d-slice/r3-ui-spec.md) ----
+        // 箱庭 (Hd2dLayout) の既定 = 旗 uilayout=r3 (uilayout=r2 で二周目の割り付け。uitrial=1 は r3 の別名)。PC とスマホの両方:
+        //   足元の線 PC 0.36・スマホ 0.45 (Stage.GroundLineRatio)／手札を PC 168・スマホ 176 沈め、上の帯と「要の数字の札」(CardView keynum) だけ見せ、触れた札だけ上げる
+        //   (本文は触れて読む)／敵の帳面は足元の下 (PC 10・スマホ 8) に名前＋HP の 60 (予告の行があれば全員 88。スマホ 53/79)／
+        //   PC の自分の欄 = 主人公の足元の下の「足元の帳」(HP・見込み・状態) と左下の「匣」(からくり・ギア・置物を輪の上へ下から積む)／
+        //   スマホ = 足元の帳 (HP・見込み・からくり) と今の上の帯 (状態・ギア・置物)、輪・灯籠・山札は下へ／確認の窓・ギアの窓・持ち物の一覧は R3PcWindowRect・R3PhoneWindowRect。
+        //   今の舞台 (stage=old) は Hd2dLayout が偽なので1画素も変わらない。段1 の試し撮り (R3A_) を本番の形にしたもの (新しいメンバーは R3U_)
+
+        /// <summary>箱庭で三周目の割り付けか (PC とスマホ共通。r3 の分岐は全部この値を読む)</summary>
+        public static bool R3 { get { return Hd2dLayout && HD2DFlags.UiLayout == HD2DUiLayout.R3; } }
+        /// <summary>手札の沈め (r3)。PC 168 (=手札の上端 行 951。試し撮りの 183 だと10枚の端の札の要の数字の札が画面の外に出る)・スマホ 176 (手札の上端 上から 547)</summary>
+        const float R3U_HandSinkPc = 168f, R3U_HandSinkPhone = 176f;
+        /// <summary>触れた (押した) 札の持ち上げ。沈めた量を足す＝持ち上げた札は二周目と同じ高さ (PC)。スマホ r3 は +130 (札の全体が親指 = 画面の下 0〜110 より上に出る)</summary>
+        public static float HandLift { get { return R3 && UiKit.Phone ? 130f : 70f; } }
+        /// <summary>
+        /// 手札を「場に出す」高さ (画面の px・下から): 札を離した点がこれより上なら出す。二周目は画面の 36% (1080 で 389＝二周目の手札の上端 278 の 111 上)。
+        /// r3 の PC は「触れて上がった札の上端」の 15.6 下 (=二周目と同じ 行 691・キャンバス 388.8)。PC は上がった札のどこでもつかめるので、
+        /// 沈めた手札の上端＋111 (行 840) だと上がった札の上半分が線より上にあり、つかんでその場で離すだけで出てしまった (2026-10-02 読み合わせの指摘)。
+        /// r3 のスマホは沈めた手札の上端＋111 (下から 239。押した札をつかむ前に上げない狙いの矢)。BattleView の狙いの矢 (スマホ) もこの線で隠す
+        /// </summary>
+        public static float DropLineScreen(RectTransform any)
+        {
+            if (!R3) return Screen.height * 0.36f;
+            float ch = CanvasSize(any).y;
+            float canvasY = UiKit.Phone
+                ? HandY + CardView.H * CardScale + R3A_DropMargin
+                : HandY + HandSink + HandLift + CardView.H * (CardScale + R3U_HoverScale) / 2f - R3U_DropBelowLiftTop;   // 上がった札の上端 (中心の札。回転0) − 15.6
+            return ch > 0f ? canvasY * Screen.height / ch : Screen.height * 0.36f;
+        }
+        /// <summary>触れた札の倍率 (HookHandCard の PointerEnter と同じ値)・PC の「場に出す」線を上がった札の上端から下げる量 (二周目の 404.4−388.8)</summary>
+        const float R3U_HoverScale = 1.18f, R3U_DropBelowLiftTop = 15.6f;
+        /// <summary>二周目の手札の上端 (30−19+290×0.92＝277.8) と「場に出す」線 (1080×0.36＝388.8) の差</summary>
+        const float R3A_DropMargin = 111f;
+        /// <summary>r3 の PC の敵の帳面の高さ (名前の行＋HP バー＝上 4・名前 30・間 2・バー 20・下 4) と予告の行 (28)</summary>
+        const float R3A_LedgerThinH = 60f, R3U_ForecastRowH = 28f;
+        /// <summary>足元の帳 (r3) の右端 (キャンバス x)。下の窓・名前の帯・人形の札の障害物が読む。組むたびに書く。r3 でない時は -1</summary>
+        public static float R3U_FootRight = -1f;
+        /// <summary>r3 のスマホの足元の帳の HP の区画の右端 (キャンバス x)。窓の左端 (仕様 §8-2) が読む。組むたびに書く</summary>
+        public static float R3U_FootHpRight = -1f;
+        /// <summary>r3 のスマホの足元の帳 (hpwrap) の矩形 (キャンバス・左下基準)。窓の下端がこれを縁で切らない (仕様 §8-2・直しの輪1)。組むたびに書く。無ければ幅 0</summary>
+        public static Rect R3U_PhoneFootRect = default(Rect);
+        /// <summary>r3 の自分の欄の矩形 (キャンバス・左下基準)。足元の帳・匣 (PC)／足元の帳・上の帯 (スマホ)。人形の足元の札の障害物 (ArrangeDollTags)。組むたびに書く</summary>
+        public static readonly List<Rect> R3U_SelfRects = new List<Rect>();
         /// <summary>手札の札の倍率。スマホは等倍 (2026-09-14「字が小さい」= 札の本文が最も読まれる文字)</summary>
         public static float CardScale { get { return UiKit.Phone ? 1.0f : 0.92f; } }
         /// <summary>戦闘の絵の目安の幅 (通常 256・エリート 320・ボス 384 = 1ドット4px)。スマホは半分 (1ドット2px) = 吹き出しが画面に収まる。
@@ -487,6 +531,8 @@ namespace DeckRogue.Game
         public static float StripH { get { return UiKit.Phone ? 76f : 140f; } }
         /// <summary>ledger=feet (HD-2D 見本の変種): 帳面の上端と足元の間 (キャンバス単位。L2 の「16px 以上隠さない」の内側)</summary>
         const float LedgerFeetGap = 10f;
+        /// <summary>r3 のスマホの帳面と足元の間 (仕様 §5)</summary>
+        const float R3U_LedgerFeetGapPhone = 8f;
         /// <summary>帳面の一行の幅: 隣との間隔に収める (スマホ 間隔−4 を 96〜176・PC 間隔−12 を 116〜210。150 未満は LedgerStrip の narrow = 状態の札は絵だけ)。
         /// 座席を画面上で等間隔にしたので (2026-09-29 p02) 4体でも PC 約204・スマホ約150〜157。1体だけ (ボス) は広く (特性の札も並ぶ)</summary>
         public static float StripW(float neighborGap, bool solo = false)
@@ -570,7 +616,7 @@ namespace DeckRogue.Game
             img.raycastTarget = false;
             img.color = Color.white;   // 倒れた瞬間も素の色 (白く光ってから崩れる)
             Stage.BindUnit("enemy" + index, spr, img, artSprite);
-            bool ledgerAtFeet = Hd2dLayout && HD2DFlags.Ledger == HD2DLedger.Feet;   // 帳面を足元ごとに浮かせる変種 (HD-2D 見本 ledger=feet。2026-09-30 P20)
+            bool ledgerAtFeet = Hd2dLayout && (HD2DFlags.Ledger == HD2DLedger.Feet || R3);   // 帳面を足元ごとに浮かせる (HD-2D 見本 ledger=feet。2026-09-30 P20。三周目 r3 の既定 = PC とスマホ)
             if ((aimed || acting) && alive && !ph && !ledgerAtFeet && feetY > StripH + 16f)
             {   // 足元の輪 (PC。スマホは札の上端が足元なので出さない)。頭上の▼は 2026-09-16 に廃止 = 狙いは意図の札と帳面の縁 (真鍮)。
                 // 輪の下端が帳面に掛からない時だけ: PC の帳面の上端は自分の札の上端＝StripH (2026-09-30 F19 で固定)
@@ -584,15 +630,16 @@ namespace DeckRogue.Game
 
             // 帳面 (入れ物の下端に。幅は隣との間隔で絞る): 名前＋状態／HP (盾は左端)／予告がある時だけ3段目。意図は頭上の札へ (2026-09-16 案A)
             float w = StripW(neighborGap, st.Enemies.Count == 1);
-            string forecast = alive ? ForecastLine(st, index, def, e, w) : null;
+            string forecast = alive ? ForecastLine(st, index, def, e, w) : null;   // r3 も予告の行を出す (2026-10-02 仕様 §5: 割り込みの予告は足元から PC 98px 以内に必ず。段1 の試し撮りは出していなかった)
             // 1体でも3段目がある画面は全員の帳面を同じ高さに (名前の行と HP バーが一直線に並ぶ。3段目の無い帳面は空いた紙のまま。2026-09-29 p01)
-            float h = EnemyStripH(forecast != null || uniformForecast);
+            // r3 の PC は 60 (名前＋HP。下の余白 4)・予告ありは全員 88 (スマホは今の 53/79 のまま)
+            float h = R3 && !ph ? R3A_LedgerThinH + (forecast != null || uniformForecast ? R3U_ForecastRowH : 0f) : EnemyStripH(forecast != null || uniformForecast);
             var strip = UiKit.NewRect("strip", pan);
             // PC は自分の札と上端をそろえ、下へ伸ばす (2026-09-29 p23 ユーザー裁定「上端でそろえて下へ」): 旧は下端を足元の線 (手札のすぐ上) にそろえていたので、
             // 足元から 120〜230px 離れて手札の 12px 上に乗り「手札の一部」に見えた。敵全員と自分の札の名前の行が1本の線にそろう。スマホは今のまま (下端が線・足元まで約40px)
             float sb = ph ? 0f : PcLedgerTop(h) - h;
             // ledger=feet (変種): 帳面の上端を足元の LedgerFeetGap 下に (足元の線より下へは出さない)。帳面の高さがそろう (uniformForecast) ので名前の行は足元の高さ順に並ぶ
-            if (ledgerAtFeet) sb = Mathf.Max(0f, feetY - LedgerFeetGap - h);
+            if (ledgerAtFeet) sb = Mathf.Max(0f, feetY - (R3 && ph ? R3U_LedgerFeetGapPhone : LedgerFeetGap) - h);
             UiKit.Anchor(strip, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-w / 2f, sb), new Vector2(w / 2f, sb + h));
             if (EntranceHidesStrips) { var scg = strip.gameObject.AddComponent<CanvasGroup>(); scg.alpha = 0f; scg.blocksRaycasts = false; }   // 見本: 登場の演出の間は隠れて生まれる (直しの輪2・R09)
             LedgerStrip(g, strip, st, index, def, nm, shownHp, w, h, aimed, candidate, acting, forecast, dying);
@@ -1872,6 +1919,9 @@ namespace DeckRogue.Game
             }
             bool ok = true;
             var placed = new List<Rect>();
+            // r3 (2026-10-02 仕様 §7): 足元の帳・匣 (スマホは足元の帳・上の帯) を障害物として先に置く (保険。足元の帳の右端の上限で普通は掛からない)。
+            // 障害物は札としては数えない (placed に入れるだけ)
+            if (R3) foreach (var sr in R3U_SelfRects) placed.Add(sr);
             for (int i = 0; i < tags.Count; i++)
             {
                 var tag = tags[i]; var pan = pans[i];
@@ -1880,8 +1930,8 @@ namespace DeckRogue.Game
                 var r = new Rect(pcx + tag.anchoredPosition.x - w / 2f, py + tag.anchoredPosition.y, w, h);
                 // 床: 手札の線の上 2。PC で自分の札に横が掛かる札は、自分の札の上端＋4
                 float floor = BattleView.StatusLineY + 2f;
-                if (!ph)
-                {
+                if (!ph && !R3)
+                {   // r3 は床を足元の線＋2 のまま (足元の帳は人形の座席の左にあるので床にならない＝障害物として上で避ける。仕様 §7)
                     float selfRight = SelfStripRight > 0f ? SelfStripRight : float.MaxValue;
                     if (r.xMin < selfRight && r.xMax > UiKit.Edge) floor = BattleView.StatusLineY + StripH + 4f;   // 札の上端は StripH に固定 (2026-09-30 F19)
                 }
@@ -1998,9 +2048,16 @@ namespace DeckRogue.Game
             // 自キャラ名表示は不要なのでは？」)。誰を操作しているかはセットアップとラン画面で分かるので、戦場では絵を優先する。
             // 敵の名前札は「どれを狙うか」の識別に要るので据え置き
             // 自分の札 (帳面の一行の左端。2026-09-15 案C): HP・被ダメ予測・資源を、敵の札と同じ足元の線に置く
-            if (UiKit.Phone) PhoneSelfColumn(g, self, st, shownHp);
+            R3U_SelfRects.Clear();
+            R3U_FootRight = -1f;
+            R3U_FootHpRight = -1f;
+            R3U_PhoneFootRect = default(Rect);
+            if (UiKit.Phone) PhoneSelfColumn(g, self, st, shownHp);   // r3 の枝は中 (足元の帳＝HP・見込み・からくり／上の帯＝状態・ギア・置物)
+            else if (R3) { R3U_PcFootLedger(g, self, st, shownHp); R3U_PcBox(g, self, st); }   // 三周目 r3 (2026-10-02 仕様 §6-1・§6-2): 足元の帳と左下の匣
             else PcSelfStrip(g, self, st, shownHp);
-            // 夜の札 (ui=night・2026-09-30 P20): 自分の札 (PC は hpwrap の中にからくり・ギア・置物。スマホは左下の札と上の帯の3区画)
+            // 夜の札 (ui=night・2026-09-30 P20): 自分の札 (PC は hpwrap の中にからくり・ギア・置物。スマホは左下の札と上の帯の3区画。r3 の PC は足元の帳と匣)
+            PaperFx.Nightify(self.Find("box"));
+            PaperFx.Nightify(self.Find("chips"));
             PaperFx.Nightify(self.Find("hpwrap"));
             PaperFx.Nightify(self.Find("setzone"));
             PaperFx.Nightify(self.Find("gearzone"));
@@ -2423,6 +2480,288 @@ namespace DeckRogue.Game
             cuts.Sections = new[] { new GameObject[0], new[] { divA.gameObject, setArea.gameObject }, gearSection, permSection };
         }
 
+        // ---- 三周目 r3 の PC の自分の欄 (2026-10-02 仕様 docs/design/hd2d-slice/r3-ui-spec.md §6-1・§6-2) ----
+
+        /// <summary>r3 の PC の足元の帳の左端 (匣の右 184 ＋20)・既定の右端 (仕様 §2 の x 204〜500)</summary>
+        const float R3U_FootLeftPc = 204f, R3U_FootRightPc = 500f;
+        /// <summary>足元の帳の高さ: 状態の札が無い時 74・ある時 96 (4行目 72〜94＋下の余白 2)</summary>
+        const float R3U_FootHPc = 74f, R3U_FootHStatusPc = 96f;
+        /// <summary>匣の幅 (x Edge〜Edge+152)・区画の間・見出しの行の高さ・上端の上限 (画面の上から 480＝主人公の頭 455 より下)</summary>
+        const float R3U_BoxW = 152f, R3U_BoxGap = 8f, R3U_BoxHead = 22f, R3U_BoxTopFromTop = 480f;
+        /// <summary>匣の下端 (キャンバス y・下から) = エナジーの輪の上端 (116+128) ＋24 (画面の上から 812)</summary>
+        const float R3U_BoxBottomPc = 268f;
+        /// <summary>匣のギアのトークン (3個以上): 46×46 を3列 (送り 50)・2段 (送り 53)</summary>
+        const float R3U_GearSmall = 46f, R3U_GearPitchX = 50f, R3U_GearPitchY = 53f;
+        /// <summary>匣の置物の付箋の高さ・段の送り</summary>
+        const float R3U_PermChipH = 32f, R3U_PermPitchY = 38f;
+
+        /// <summary>白の色を持つリーダーの時、足元の帳の右端を人形の座席のいちばん左の x の 38 手前で止める (人形の足元の札に掛けない。仕様 §6-1)。
+        /// 座席は人形がいなくても先に見る (戦闘の途中で帳の幅が変わらない)。舞台が組めていなければ既定の右端</summary>
+        static float R3U_FootRightFor(GameRoot g, float dflt)
+        {
+            if (g == null || !LightUi.LeaderHasWhite(g.Rs)) return dflt;
+            try
+            {
+                var seats = Stage.DollSlots(BattleView.DollCap);
+                float minX = float.MaxValue;
+                foreach (var w in seats) minX = Mathf.Min(minX, Stage.R3U_ProjectPoint(w).x);
+                if (minX < float.MaxValue) return Mathf.Min(dflt, minX - 38f);
+            }
+            catch (Exception e) { Debug.LogException(e); }
+            return dflt;
+        }
+
+        /// <summary>
+        /// r3 の PC の足元の帳 (名前 hpwrap・夜色の札1枚。仕様 §6-1): 主人公の足元の 10 下・x 204〜500 (白は人形の座席の 38 手前まで)。
+        /// 上から HP バー (6〜28・盾は左端・氷壁は右端)／結論「HP 80 → 67（−13）」(30〜54)／内訳「受けるダメージ 17 − ブロック 5」(54〜70)／状態の札1行 (72〜94。入らない分は「+N」)。
+        /// 状態が1つも無ければ4行目ごと無く高さ 74。子の名前は二周目と同じ (hp・incoming・incoming-detail・ice・chips) = 順送りの書き直し (RefreshIncomingLine・SetPlayerBlockBadge・
+        /// TweenHpBar・ConsumeIncoming) がそのまま効く。確認の窓・ギアの窓は足元の帳に掛からない (§8 の x0 ≥ 右端＋12) ので TrimSelfStrip は使わない (区画は1つ)
+        /// </summary>
+        static void R3U_PcFootLedger(GameRoot g, RectTransform area, GameState st, int shownHp)
+        {
+            var p = st.Player;
+            float ax = area.offsetMin.x;   // area の左端 (キャンバス x)。area の下端は足元の線 (StatusLineY)
+            var res = ResourceChips(p, st);
+            float h = res.Count > 0 ? R3U_FootHStatusPc : R3U_FootHPc;
+            float x0 = R3U_FootLeftPc, x1 = Mathf.Max(x0 + 240f, R3U_FootRightFor(g, R3U_FootRightPc));
+            float w = x1 - x0;
+            float feet = Stage.FeetOffset("player", 130f);
+            float top = feet - LedgerFeetGap;   // area の中 (下端＝足元の線) の高さ
+            SelfStripH = h;
+            SelfStripRight = -1f;   // r3 は確認の窓が自分の札を打ち切らない (下の窓 R3PcWindowRect)。人形の札の床も自分の札を見ない
+            PhoneStripRight = -1f;
+            PhoneBandBottom = -1f;
+            R3U_FootRight = x1;
+            float canvasTop = BattleView.StatusLineY + top;
+            R3U_SelfRects.Add(new Rect(x0, canvasTop - h, w, h));
+            var strip = UiKit.NewRect("hpwrap", area);
+            UiKit.Anchor(strip, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x0 - ax, top - h), new Vector2(x0 - ax + w, top));
+            var cuts = strip.gameObject.AddComponent<SelfStripCuts>();
+            cuts.Cuts = new[] { w, w, w, w };
+            cuts.FullW = w;
+            cuts.Sections = new[] { new GameObject[0], new GameObject[0], new GameObject[0], new GameObject[0] };
+            var paper = PaperFx.Sheet(strip, PaperFx.Tag2, "paper");
+            UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
+            paper.raycastTarget = false;
+            // 1段目: HP バー (二周目の自分の札と同じ部品。行 6〜28)
+            var hpRt = UiKit.NewRect("hp", strip);
+            UiKit.Anchor(hpRt, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(14f, -28f), new Vector2(w - 12f, -6f));
+            HpBar(hpRt, Vector2.zero, Vector2.one, 0f, 0f, shownHp, p.MaxHp, 0f, 17, -1f, PredictedLoss(st), p.Hp);
+            PlayerShieldSlot(hpRt, p.Block, 22f);
+            if (shownHp != p.Hp) TweenHpBar(area, p.Hp);
+            // 2・3段目: 受けるダメージの結論 (Deco 20) と内訳 (13)
+            var inc = IncomingBlock(strip, st, false);
+            UiKit.Anchor(inc.GetComponent<RectTransform>(), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(14f, -54f), new Vector2(w - 8f, -30f));
+            UiKit.Anchor(inc.Detail.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(14f, -70f), new Vector2(w - 8f, -54f));
+            if (p.IceBlock > 0)
+            {   // 氷壁: HP バーの行の右端 (二周目と同じ作法。バーをその分だけ縮める)
+                string iceText = "氷壁 " + p.IceBlock;
+                var ice = UiKit.Txt(strip, iceText, 14, PaperFx.SkyInk, TextAnchor.MiddleRight, true);
+                ice.name = "ice";
+                ice.textWrappingMode = TextWrappingModes.NoWrap;
+                ice.alignment = TextAlignmentOptions.MidlineRight;
+                float iw = ice.GetPreferredValues(iceText + "0").x;
+                UiKit.Anchor(ice.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(w - 12f - iw, -28f), new Vector2(w - 12f, -6f));
+                hpRt.offsetMax = new Vector2(w - 12f - iw - 8f, hpRt.offsetMax.y);
+            }
+            // 4段目: 状態の札1行 (成長・勢い・弱体・虚弱・拘束…)。入らない分は「+N」(一覧はツールチップ)
+            if (res.Count > 0)
+            {
+                var rows = PackChips(strip, res, w - 24f, 1);
+                if (rows.Count > 0) R3U_ChipRow(strip, "chips", res, rows[0], 12f, -72f, w - 8f, 22f);
+            }
+        }
+
+        /// <summary>状態の札の1行 (PackChips の行割りの1行。負の値 −N は「+N」＝入らない札の一覧のツールチップ)。parent の左上から (left, top) に高さ chipH</summary>
+        static RectTransform R3U_ChipRow(RectTransform parent, string name, List<KeyValuePair<string, string>> res, List<int> row, float left, float top, float right, float chipH)
+        {
+            var col = UiKit.NewRect(name, parent);
+            UiKit.Anchor(col, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(left, top - chipH), new Vector2(right, top));
+            var hg = UiKit.Horz(col, 6, 0);
+            hg.childAlignment = TextAnchor.MiddleLeft; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
+            foreach (int i in row)
+            {
+                if (i >= 0) { SmallChip(col, res[i].Key, res[i].Value, PaperFx.Ink, chipH); continue; }
+                int hidden = -i;
+                var sb = new System.Text.StringBuilder();
+                for (int k = res.Count - hidden; k < res.Count; k++) { if (sb.Length > 0) sb.Append("\n"); sb.Append(ChipTip(res[k].Value)); }
+                string mtip = sb.ToString();
+                var more = Tag(col, chipH, 0f);
+                more.GetComponent<Image>().raycastTarget = true;
+                var mt = UiKit.Txt(more, "+" + hidden, 14, PaperFx.Ink, TextAnchor.MiddleCenter, true);
+                UiKit.Le(mt, 16f, chipH - 2f, -1f, chipH - 2f);
+                Tooltip.Attach(more.gameObject, delegate { return mtip; });
+            }
+            return col;
+        }
+
+        /// <summary>
+        /// r3 の PC の左下の匣 (名前 box・x Edge〜Edge+152。仕様 §6-2): エナジーの輪の真上 (下端 画面の上から 812) から上へ、からくり → ギア → 置物 の区画を積む。
+        /// 区画ごとに夜色の札・間は 8・見出しは 13px。上端は画面の上から 480 より上へ出さない: 超える時は 置物を1段 → ギアを1段 の順に畳む (からくりは畳まない＝判断に要る)。
+        /// 人形は付箋に並べず見出しの「人形 m」だけ (舞台の足元の札で数と期限が読める。仕様 §15 Q1)。演出の的 (setslotN・setlabel・gearzone・gear:uid) は匣の中
+        /// </summary>
+        static void R3U_PcBox(GameRoot g, RectTransform area, GameState st)
+        {
+            var p = st.Player;
+            var cs = CanvasSize(area);
+            float ax = area.offsetMin.x, ay = BattleView.StatusLineY;
+            float left = UiKit.Edge;
+            var gearList = DeckRogue.Engine.Run.GearsOf(g.Rs);
+            int gearN = gearList.Count;
+            var perms = new List<CardInstance>();
+            int dolls = 0;
+            for (int i = 0; i < p.Permanents.Count; i++)
+            {
+                var q = p.Permanents[i];
+                if (q.Innate == true) continue;
+                if (DollUi.IsDoll(q)) dolls++; else perms.Add(q);
+            }
+            // 区画の高さ (見出し 22＋中身＋下の余白 4)
+            int setRows = Math.Max(1, (p.SetSlots + 1) / 2);
+            float hSet = R3U_BoxHead + setRows * PhoneTokenH + (setRows - 1) * 8f + 4f;
+            int gearRows = gearN <= 0 ? 0 : gearN <= 2 ? 1 : (gearN <= 3 ? 1 : 2);
+            bool gearNamed = gearN > 0 && gearN <= 2;
+            Func<int, float> gearH = rows => gearN <= 0 ? 0f : R3U_BoxHead + (gearNamed ? PhoneTokenH : rows * R3U_GearSmall + (rows - 1) * (R3U_GearPitchY - R3U_GearSmall)) + 4f;
+            bool hasPermSec = perms.Count > 0 || dolls > 0;
+            int permRows = perms.Count >= 2 ? 2 : perms.Count;
+            Func<int, float> permH = rows => !hasPermSec ? 0f : R3U_BoxHead + (rows > 0 ? R3U_PermChipH + (rows - 1) * R3U_PermPitchY : 0f) + 4f;
+            Func<float> total = () =>
+            {
+                float t = hSet;
+                if (gearN > 0) t += R3U_BoxGap + gearH(gearRows);
+                if (hasPermSec) t += R3U_BoxGap + permH(permRows);
+                return t;
+            };
+            float topLimit = cs.y - R3U_BoxTopFromTop;
+            float bottom = R3U_BoxBottomPc;
+            if (bottom + total() > topLimit && permRows > 1) permRows = 1;          // ①置物を1段 (付箋1枚＋「+N」)
+            if (bottom + total() > topLimit && gearRows > 1 && !gearNamed) gearRows = 1;   // ②ギアを1段 (3枡目が「+N」)
+            // ③名前つきのギア (1〜2個・高さ 100) を 46×46 の1段へ (2026-10-02 読み合わせの指摘: かすみの3枠＋ギア2＋置物で上端が 行 456＝主人公の頭の高さに届いた)。
+            // それでも超えるのは仕込み枠5つ (かすみ＋二重の符＋罠師の茂み) だけ: からくりのトークンは 68×74 より小さくすると帯の字が 13px を割るので畳まず、上限を越えて積む (仕様 §6-2 の注記)
+            if (bottom + total() > topLimit && gearNamed) { gearNamed = false; gearRows = 1; }
+            float boxH = total();
+            var box = UiKit.NewRect("box", area);
+            UiKit.Anchor(box, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(left - ax, bottom - ay), new Vector2(left - ax + R3U_BoxW, bottom - ay + boxH));
+            R3U_SelfRects.Add(new Rect(left, bottom, R3U_BoxW, boxH));
+            float y = 0f;   // box の中の下から
+
+            // からくり (いちばん下。トークン 68×74 を2枚で1段。3枠は2段目＝下の段の左。点線のポケット・帯の一言・角の数字は二周目の部品)
+            var setArea = R3U_BoxSection(box, "setzone", y, hSet);
+            var setLabel = UiKit.Txt(setArea, "からくり " + p.SetCards.Count + " / " + p.SetSlots, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            UiKit.Anchor(setLabel.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(8f, -R3U_BoxHead), new Vector2(-6f, -2f));
+            setLabel.textWrappingMode = TextWrappingModes.NoWrap;
+            AttachSetLabelTip(g, setLabel.gameObject, setLabel);
+            for (int i = 0; i < p.SetSlots; i++)
+            {
+                int r = i / 2, c = i % 2;
+                var slot = UiKit.NewRect("slot" + i, setArea);
+                float tx = 4f + c * 76f, ttop = -R3U_BoxHead - r * (PhoneTokenH + 8f);
+                UiKit.Anchor(slot, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(tx, ttop - PhoneTokenH), new Vector2(tx + PhoneTokenW, ttop));
+                g.RegisterAnchor("setslot" + i, slot);
+                if (i < p.SetCards.Count) PhoneSetToken(g, slot, st, p.SetCards[i]);
+                else PaperFx.DashedPocket(slot, PhoneTokenW, PhoneTokenH, new Color(PaperFx.InkSoft.r, PaperFx.InkSoft.g, PaperFx.InkSoft.b, 0.45f), 0f);
+            }
+            y += hSet;
+
+            // ギア (からくりの上)。0個なら区画を出さず、演出の予備の的 gearzone はからくりの見出しの右端に幅 0 で
+            if (gearN == 0)
+            {
+                var gz = UiKit.NewRect("gearzone", setArea);
+                UiKit.Anchor(gz, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(0f, -R3U_BoxHead), new Vector2(0f, 0f));
+                g.RegisterAnchor("gearzone", gz);
+            }
+            else
+            {
+                y += R3U_BoxGap;
+                float hg = gearH(gearRows);
+                var gearArea = R3U_BoxSection(box, "gearzone", y, hg);
+                g.RegisterAnchor("gearzone", gearArea);
+                // 見出し「ギア n / 10」＋組めない理由 (夜の札の上なので危険の墨は Nightify が夜の淡い朱へ写す)。入らなければ理由だけ
+                string head = "ギア " + gearN + " / " + Gears.GEAR_CARRY_MAX;
+                var gearLabel = UiKit.Txt(gearArea, head, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+                gearLabel.textWrappingMode = TextWrappingModes.NoWrap;
+                UiKit.Anchor(gearLabel.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(8f, -R3U_BoxHead), new Vector2(-4f, -2f));
+                string why = GearUi.BlockShort(g.Rs, st);
+                if (why != null)
+                {
+                    string whyTag = UiKit.ColorTag(PaperFx.BadInk, why);
+                    gearLabel.text = gearLabel.GetPreferredValues(head + " " + why).x <= R3U_BoxW - 12f ? head + " " + whyTag : whyTag;
+                }
+                bool canUseGear = st.Phase == CombatPhases.PlayerTurn && st.EnemyPhase != true && g.Pending == null;
+                int cells = gearNamed ? gearN : gearRows * 3;
+                int shown = gearN <= cells ? gearN : cells - 1;
+                for (int i = 0; i < shown + (shown < gearN ? 1 : 0); i++)
+                {
+                    float tw, th, tx, ttop;
+                    if (gearNamed) { tw = PhoneTokenW; th = PhoneTokenH; tx = 4f + i * 76f; ttop = -R3U_BoxHead; }
+                    else { tw = th = R3U_GearSmall; tx = 3f + (i % 3) * R3U_GearPitchX; ttop = -R3U_BoxHead - (i / 3) * R3U_GearPitchY; }
+                    RectTransform tok;
+                    if (i < shown) tok = GearUi.Token(g, gearArea, g.Rs, st, i, gearList[i], tw, th, gearNamed, canUseGear);
+                    else
+                    {   // 溢れた分は最後の枡に「+N」(押すと持ち物の一覧。窓を開いている札が隠れていれば真鍮の縁)
+                        var rest = new List<GearInstance>();
+                        for (int k = shown; k < gearN; k++) rest.Add(gearList[k]);
+                        tok = GearUi.MoreChip(g, gearArea, rest, tw, th, g.GearPending != null && g.GearPending.Index >= shown);
+                    }
+                    UiKit.Anchor(tok, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(tx, ttop - th), new Vector2(tx + tw, ttop));
+                }
+                y += hg;
+            }
+
+            // 置物 (いちばん上)。見出し「置物 n・人形 m」。付箋 (挿絵＋名前) を2段、3枚目以降は2段目が「+N …」。人形は数だけ
+            if (hasPermSec)
+            {
+                y += R3U_BoxGap;
+                float hp = permH(permRows);
+                var permRow = R3U_BoxSection(box, "perms", y, hp);
+                string head = (perms.Count > 0 ? "置物 " + perms.Count : "") + (perms.Count > 0 && dolls > 0 ? "・" : "") + (dolls > 0 ? "人形 " + dolls : "");
+                var permLabel = UiKit.Txt(permRow, head, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+                permLabel.textWrappingMode = TextWrappingModes.NoWrap;
+                UiKit.Anchor(permLabel.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(8f, -R3U_BoxHead), new Vector2(-4f, -2f));
+                if (dolls > 0) Tooltip.Attach(permLabel.gameObject, delegate { return "<b>人形 " + dolls + "</b>\n人形は舞台の足元の札で、何をするかと残りの期限を読む"; });
+                if (dolls > 0) permLabel.raycastTarget = true;
+                int fit = permRows * 1;   // 付箋の枚数 (段ごとに1枚)
+                int showN = perms.Count <= fit ? perms.Count : Math.Max(0, fit - 1);
+                bool oneRowMore = permRows == 1 && perms.Count > 1;   // 1段に畳んだ時: 付箋1枚＋「+N」を横に
+                if (oneRowMore) showN = 1;
+                for (int i = 0; i < showN; i++)
+                {
+                    var chip = UiKit.NewRect("perm", permRow);
+                    float cw = oneRowMore ? R3U_BoxW - 4f - 48f - 6f : R3U_BoxW - 8f;
+                    float ctop = -R3U_BoxHead - i * R3U_PermPitchY;
+                    UiKit.Anchor(chip, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(4f, ctop - R3U_PermChipH), new Vector2(4f + cw, ctop));
+                    PhonePermChip(chip, perms[i], st);
+                }
+                if (showN < perms.Count)
+                {
+                    var more = UiKit.NewRect("more", permRow);
+                    float mx = oneRowMore ? R3U_BoxW - 4f - 48f : 4f, mw = oneRowMore ? 48f : 72f;
+                    float mtop = -R3U_BoxHead - (oneRowMore ? 0 : showN) * R3U_PermPitchY;
+                    UiKit.Anchor(more, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(mx, mtop - R3U_PermChipH), new Vector2(mx + mw, mtop));
+                    var mImg = PaperFx.Sheet(more, PaperFx.Tag2, "paper");
+                    UiKit.Stretch(mImg.rectTransform, 0f, 0f, 0f, 0f);
+                    mImg.raycastTarget = true;
+                    var mt = UiKit.Txt(more, "+" + (perms.Count - showN) + (oneRowMore ? "" : " …"), 15, PaperFx.Ink, TextAnchor.MiddleCenter, true);
+                    UiKit.Stretch(mt.rectTransform, 4f, 4f, 0f, 0f);
+                    var sb = new System.Text.StringBuilder();
+                    for (int i = showN; i < perms.Count; i++) { if (sb.Length > 0) sb.Append("\n"); sb.Append("<b>" + perms[i].Def.Name + "</b> " + CardText.Body(perms[i].Def)); }
+                    string mtip = sb.ToString();
+                    Tooltip.Attach(more.gameObject, delegate { return mtip; });
+                }
+            }
+        }
+
+        /// <summary>匣の区画 (夜色の札1枚)。box の中の下から y に高さ h・全幅</summary>
+        static RectTransform R3U_BoxSection(RectTransform box, string name, float y, float h)
+        {
+            var sec = UiKit.NewRect(name, box);
+            UiKit.Anchor(sec, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, y), new Vector2(0f, y + h));
+            var paper = PaperFx.Sheet(sec, PaperFx.Tag2, "paper");
+            UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
+            paper.raycastTarget = false;
+            return sec;
+        }
+
         /// <summary>置物の付箋を並べる (cols 列・2行)。行に収まらない分は「+N …」(タップで名前の一覧)。上端 top から下へ</summary>
         static void PermChips(RectTransform permRow, List<CardInstance> perms, int cols, float chipW, float top, GameState st = null)
         {
@@ -2454,7 +2793,7 @@ namespace DeckRogue.Game
 
         /// <summary>資源の札を行に詰める (F31)。幅は SmallChip と同じ部品 (左右の余白 10+10・絵 16＋間 6・14px の文字) で測る。最大2行。
         /// 入らない分は2行目の最後を「+N」(負の値 −N) にする</summary>
-        static List<List<int>> PackChips(RectTransform any, List<KeyValuePair<string, string>> res, float rowW)
+        static List<List<int>> PackChips(RectTransform any, List<KeyValuePair<string, string>> res, float rowW, int maxRows = 2)
         {
             var rows = new List<List<int>>();
             if (res.Count == 0) return rows;
@@ -2473,12 +2812,12 @@ namespace DeckRogue.Game
                 if (cur.Count > 0 && x + add > rowW)
                 {
                     rows.Add(cur);
-                    if (rows.Count == 2) break;
+                    if (rows.Count == maxRows) break;
                     cur = new List<int>(); x = 0f; add = cw[k];
                 }
                 cur.Add(k); x += add;
             }
-            if (rows.Count < 2 && cur.Count > 0) { rows.Add(cur); cur = null; }
+            if (rows.Count < maxRows && cur.Count > 0) { rows.Add(cur); cur = null; }
             if (k < res.Count)
             {   // 2行目の最後を「+N」に: 入るまで2行目の後ろから外す
                 var last = rows[rows.Count - 1];
@@ -2550,6 +2889,7 @@ namespace DeckRogue.Game
 
         static void PhoneSelfColumn(GameRoot g, RectTransform area, GameState st, int shownHp)
         {
+            if (R3) { R3U_PhoneSelf(g, area, st, shownHp); return; }   // 三周目 r3 (2026-10-02 仕様 §6-3): 足元の帳 (HP・見込み・からくり) と上の帯 (状態・ギア・置物)
             SelfStripRight = -1f;   // スマホの確認の窓は自分の欄 (左の列) に掛からないので上げない (2026-09-29 p11)
             SelfStripH = StripH;    // PC 用 (スマホでは読まない)
             var p = st.Player;
@@ -2689,6 +3029,192 @@ namespace DeckRogue.Game
             }
         }
 
+        // ---- 三周目 r3 のスマホの自分の欄 (2026-10-02 仕様 docs/design/hd2d-slice/r3-ui-spec.md §3・§6-3) ----
+
+        /// <summary>r3 のスマホの足元の帳: HP の区画の幅・高さ・足元からの間</summary>
+        const float R3U_PhoneHpW = 200f, R3U_PhoneFootH = 80f, R3U_PhoneFootGap = 8f;
+        /// <summary>白で仕込み枠が3つ以上の時のトークン (足元の帳の右端を人形の札の手前に収める)</summary>
+        const float R3U_PhoneTokSmallW = 56f, R3U_PhoneTokSmallH = 62f;
+
+        /// <summary>
+        /// r3 のスマホの自分の欄: 足元の帳 (名前 hpwrap・x 24〜384・主人公の足元の 8 下・高さ 80) = HP の区画 (24〜224: HP バー／結論／内訳) ＋ からくりの区画 (setzone・トークン 68×74・見出しなし)。
+        /// 上の帯 (今の位置 上から 62〜) = 状態の札 (2列×最大2行・「+N」) → ギア (68×66 名前つき・溢れは「+N」) → 置物 (付箋 168×40 を2行)。
+        /// 確認の窓・ギアの窓が開いている間はからくりの区画を畳む (TrimSelfStrip。区画の境 = HP の区画の右)
+        /// </summary>
+        static void R3U_PhoneSelf(GameRoot g, RectTransform area, GameState st, int shownHp)
+        {
+            SelfStripRight = -1f;
+            SelfStripH = StripH;
+            var p = st.Player;
+            float ax = area.offsetMin.x, ay = BattleView.StatusLineY;
+            var cs = CanvasSize(area);
+            Action<RectTransform, float, float, float, float> place = (rt, x, top, w, h) =>
+                UiKit.Anchor(rt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x - ax, cs.y - top - h - ay), new Vector2(x - ax + w, cs.y - top - ay));
+            float left = UiKit.Edge; const float bandTop = 62f;
+            PhoneBandBottom = -1f;
+            float bandRight = left;
+
+            // 上の帯 ①状態の札 (2列×最大2行。5つ目からは2行目の右が「+N」)
+            var res = ResourceChips(p, st);
+            float statusW = 0f;
+            if (res.Count > 0)
+            {
+                var meas = UiKit.Txt(area, "", 14, PaperFx.Ink, TextAnchor.MiddleLeft, true);
+                meas.textWrappingMode = TextWrappingModes.NoWrap;
+                Func<int, float> cw = i => 20f + (res[i].Key != null ? 22f : 0f) + meas.GetPreferredValues(res[i].Value).x + 2f;
+                var rows = new List<List<int>> { new List<int>() };
+                for (int i = 0; i < res.Count && i < 2; i++) rows[0].Add(i);
+                if (res.Count > 2)
+                {
+                    rows.Add(new List<int>());
+                    if (res.Count <= 4) for (int i = 2; i < res.Count; i++) rows[1].Add(i);
+                    else { rows[1].Add(2); rows[1].Add(-(res.Count - 3)); }
+                }
+                float moreW = 20f + meas.GetPreferredValues("+" + res.Count).x + 2f;
+                foreach (var r in rows)
+                {
+                    float rw = 0f;
+                    for (int j = 0; j < r.Count; j++) rw += (j > 0 ? 6f : 0f) + (r[j] >= 0 ? cw(r[j]) : moreW);
+                    statusW = Mathf.Max(statusW, rw);
+                }
+                meas.gameObject.SetActive(false);
+                UnityEngine.Object.Destroy(meas.gameObject);
+                statusW = Mathf.Ceil(statusW) + 4f;
+                var chips = UiKit.NewRect("chips", area);
+                place(chips, left, bandTop + 22f, statusW, 28f + 30f * (rows.Count - 1));
+                for (int r = 0; r < rows.Count; r++) R3U_ChipRow(chips, r == 0 ? "row0" : "row1", res, rows[r], 0f, -r * 30f, statusW, 28f);
+                PhoneBandBottom = bandTop + 22f + 28f + 30f * (rows.Count - 1);
+                bandRight = left + statusW;
+                statusW += 14f;
+            }
+
+            // ②ギア・③置物 (二周目の上の帯と同じ部品。からくりが抜けた分、状態の札の右から)
+            var gearList = DeckRogue.Engine.Run.GearsOf(g.Rs);
+            var perms = new List<CardInstance>();
+            for (int i = 0; i < p.Permanents.Count; i++) if (p.Permanents[i].Innate != true) perms.Add(p.Permanents[i]);
+            float zoneRight = BattleView.SelfZoneRight > 0f ? BattleView.SelfZoneRight - 8f : cs.x - 300f;
+            float gx = left + statusW;
+            float gearW = 0f;
+            if (gearList.Count > 0)
+            {
+                float gearPitch = GearUi.PhoneTokenW + 8f, chipW = 44f;
+                float avail = zoneRight - gx - (perms.Count > 0 ? PhoneChipW + 8f + 14f : 0f);
+                int fitAll = (int)((avail + 8f) / gearPitch);
+                int gearShown = gearList.Count <= fitAll ? gearList.Count : Math.Max(1, (int)((avail - chipW - 8f + 8f) / gearPitch));
+                bool more = gearShown < gearList.Count;
+                gearW = gearShown * gearPitch + (more ? chipW + 8f : 0f);
+                var gearArea = UiKit.NewRect("gearzone", area);
+                place(gearArea, gx, bandTop, gearW, 22f + GearUi.PhoneTokenH);
+                g.RegisterAnchor("gearzone", gearArea);
+                PhoneBandBottom = Mathf.Max(PhoneBandBottom, bandTop + 22f + GearUi.PhoneTokenH);
+                string gearWhy = GearUi.BlockShort(g.Rs, st);
+                var gearLabel = PaperFx.NightNote(gearArea, "ギア " + gearList.Count + " / " + Gears.GEAR_CARRY_MAX + (gearWhy != null ? "・" + gearWhy : ""), 14, gearWhy != null ? Mathf.Max(200f, gearW) : 160f);
+                gearLabel.anchorMin = gearLabel.anchorMax = new Vector2(0f, 1f); gearLabel.pivot = new Vector2(0f, 1f);
+                gearLabel.anchoredPosition = new Vector2(-4f, 9f);
+                float labelRight = gearLabel.sizeDelta.x - 4f;
+                if (labelRight > gearW) { gearW = labelRight; place(gearArea, gx, bandTop, gearW, 22f + GearUi.PhoneTokenH); }
+                bool canUseGear = st.Phase == CombatPhases.PlayerTurn && st.EnemyPhase != true && g.Pending == null;
+                for (int i = 0; i < gearShown; i++)
+                {
+                    var tok = GearUi.Token(g, gearArea, g.Rs, st, i, gearList[i], GearUi.PhoneTokenW, GearUi.PhoneTokenH, true, canUseGear);
+                    UiKit.Anchor(tok, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(i * gearPitch, 0f), new Vector2(i * gearPitch + GearUi.PhoneTokenW, GearUi.PhoneTokenH));
+                }
+                if (more)
+                {
+                    var rest = new List<GearInstance>();
+                    for (int i = gearShown; i < gearList.Count; i++) rest.Add(gearList[i]);
+                    bool openHidden = g.GearPending != null && g.GearPending.Index >= gearShown;
+                    var chip = GearUi.MoreChip(g, gearArea, rest, chipW, GearUi.PhoneTokenH, openHidden);
+                    UiKit.Anchor(chip, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(gearShown * gearPitch, 0f), new Vector2(gearShown * gearPitch + chipW, GearUi.PhoneTokenH));
+                }
+                bandRight = gx + gearW;
+                gearW += 14f;
+            }
+            else
+            {   // 演出の予備の的 gearzone (Presenter) は帯の左端に幅 0 で
+                var gz = UiKit.NewRect("gearzone", area);
+                place(gz, gx, bandTop, 0f, 22f + GearUi.PhoneTokenH);
+                g.RegisterAnchor("gearzone", gz);
+            }
+            if (perms.Count > 0)
+            {
+                float permX = gx + gearW;
+                int cols = cs.x >= 1400f && permX + 2f * (PhoneChipW + 8f) - 8f <= zoneRight ? 2 : 1;
+                var permRow = UiKit.NewRect("perms", area);
+                place(permRow, permX, bandTop, cols * (PhoneChipW + 8f), 22f + 2f * (PhoneChipH + 6f));
+                PhoneBandBottom = Mathf.Max(PhoneBandBottom, bandTop + 22f + (perms.Count > cols ? 2f : 1f) * (PhoneChipH + 6f));
+                var permLabel = PaperFx.NightNote(permRow, "置物 " + perms.Count, 14, 120f);
+                permLabel.anchorMin = permLabel.anchorMax = new Vector2(0f, 1f); permLabel.pivot = new Vector2(0f, 1f);
+                permLabel.anchoredPosition = new Vector2(-4f, 9f);
+                PermChips(permRow, perms, cols, PhoneChipW, 22f, st);
+                bandRight = permX + cols * (PhoneChipW + 8f);
+            }
+            if (PhoneBandBottom > 0f) R3U_SelfRects.Add(new Rect(left, cs.y - PhoneBandBottom, bandRight - left, PhoneBandBottom - bandTop));
+
+            // 足元の帳 (主人公の足元の 8 下・高さ 80): HP の区画 ＋ からくりの区画
+            float feet = Stage.FeetOffset("player", 130f);
+            float top = cs.y - (ay + feet) + R3U_PhoneFootGap;   // キャンバスの上から
+            float h = R3U_PhoneFootH;
+            bool smallTok = p.SetSlots >= 3 && LightUi.LeaderHasWhite(g.Rs);
+            float tw = smallTok ? R3U_PhoneTokSmallW : PhoneTokenW, th = smallTok ? R3U_PhoneTokSmallH : PhoneTokenH;
+            float setW = 8f + p.SetSlots * (tw + 8f);
+            float stripW = R3U_PhoneHpW + setW;
+            float stripX = UiKit.SafeLeft(left, top, top + h);   // 画面の切り欠き (仕様 §3: 足元の帳は穴の高さの外に来るが、端末が変わっても守る)
+            PhoneStripRight = stripX + stripW;
+            R3U_FootRight = stripX + stripW;
+            R3U_FootHpRight = stripX + R3U_PhoneHpW;
+            R3U_PhoneFootRect = new Rect(stripX, cs.y - top - h, stripW, h);
+            R3U_SelfRects.Add(R3U_PhoneFootRect);
+            var strip = UiKit.NewRect("hpwrap", area);
+            place(strip, stripX, top, stripW, h);
+            var cuts = strip.gameObject.AddComponent<SelfStripCuts>();
+            cuts.Cuts = new[] { R3U_PhoneHpW, stripW, stripW, stripW };
+            cuts.FullW = stripW;
+            var paper = PaperFx.Sheet(strip, PaperFx.Tag2, "paper");
+            UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
+            paper.raycastTarget = false;
+            var hpRt = UiKit.NewRect("hp", strip);
+            UiKit.Anchor(hpRt, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(8f, -26f), new Vector2(R3U_PhoneHpW - 8f, -4f));
+            HpBar(hpRt, Vector2.zero, Vector2.one, 0f, 0f, shownHp, p.MaxHp, 0f, 13, -1f, PredictedLoss(st), p.Hp);
+            PlayerShieldSlot(hpRt, p.Block, 22f);
+            if (shownHp != p.Hp) TweenHpBar(area, p.Hp);
+            if (p.IceBlock > 0)
+            {   // 氷壁: HP バーの行の右端 (二周目と同じ作法)
+                string iceText = "氷壁 " + p.IceBlock;
+                var ice = UiKit.Txt(strip, iceText, 13, PaperFx.SkyInk, TextAnchor.MiddleRight, true);
+                ice.name = "ice";
+                ice.textWrappingMode = TextWrappingModes.NoWrap;
+                ice.alignment = TextAlignmentOptions.MidlineRight;
+                float iw = ice.GetPreferredValues(iceText + "0").x;
+                UiKit.Anchor(ice.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(R3U_PhoneHpW - 8f - iw, -26f), new Vector2(R3U_PhoneHpW - 8f, -4f));
+                hpRt.offsetMax = new Vector2(R3U_PhoneHpW - 8f - iw - 8f, hpRt.offsetMax.y);
+            }
+            var inc = IncomingBlock(strip, st, true);
+            UiKit.Anchor(inc.GetComponent<RectTransform>(), new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(8f, -50f), new Vector2(R3U_PhoneHpW - 6f, -28f));
+            UiKit.Anchor(inc.Detail.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(8f, -72f), new Vector2(R3U_PhoneHpW - 6f, -50f));
+            // からくりの区画 (見出しは置かない。空きのポケットとトークンの無い所を押すと からくり と 仕込む の説明＝的 setlabel はこの区画の矩形)
+            var div = UiKit.Pan(strip, new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.35f), "div");
+            UiKit.Anchor(div.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(R3U_PhoneHpW, 8f), new Vector2(R3U_PhoneHpW + 1f, -8f));
+            div.raycastTarget = false;
+            var setArea = UiKit.NewRect("setzone", strip);
+            UiKit.Anchor(setArea, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(R3U_PhoneHpW, 0f), new Vector2(stripW, 0f));
+            var setHit = setArea.gameObject.AddComponent<Image>();
+            setHit.color = Color.clear;
+            AttachSetLabelTip(g, setArea.gameObject, setHit);
+            for (int i = 0; i < p.SetSlots; i++)
+            {
+                // トークンの部品 (PhoneSetToken) は 68×74 の寸法で組むので、小さいトークンは枠ごと縮める (演出の的 setslotN は縮めた矩形の中心へ飛ぶ)
+                var slot = UiKit.NewRect("slot" + i, setArea);
+                float sx = 8f + i * (tw + 8f) + tw / 2f;
+                UiKit.Anchor(slot, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(sx - PhoneTokenW / 2f, -PhoneTokenH / 2f), new Vector2(sx + PhoneTokenW / 2f, PhoneTokenH / 2f));
+                if (smallTok) slot.localScale = Vector3.one * (tw / PhoneTokenW);
+                g.RegisterAnchor("setslot" + i, slot);
+                if (i < p.SetCards.Count) PhoneSetToken(g, slot, st, p.SetCards[i]);
+                else PaperFx.DashedPocket(slot, PhoneTokenW, PhoneTokenH, new Color(PaperFx.InkSoft.r, PaperFx.InkSoft.g, PaperFx.InkSoft.b, 0.45f), 0f);   // 札の上なので中墨の破線 (PC の匣と同じ)
+            }
+            cuts.Sections = new[] { new GameObject[0], new[] { div.gameObject, setArea.gameObject }, new GameObject[0], new GameObject[0] };
+        }
+
         /// <summary>仕込み札のトークン (68×74): 上に挿絵 64×38、下に状態の帯 (準備中／あとN回／鳴る／期限なし)。生きている札は蜂蜜の縁、今ターン鳴る札は縁が脈打ち角に残り回数</summary>
         /// <summary>からくりの枠を今の盤面で描き直す (2026-09-30 F55: 準備が明けた瞬間の浮き文字「準備完了」と、帯の「準備中」が順送りの間食い違った)。
         /// 期限切れで番号がずれても同じ札が2枚見えないよう全部の枠を描き直す。空きの枠は PC＝中墨の破線・スマホ＝紙色の破線 (組み立てと同じ)</summary>
@@ -2701,7 +3227,7 @@ namespace DeckRogue.Game
                 if (slot == null) continue;
                 for (int c = slot.childCount - 1; c >= 0; c--) { var ch = slot.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
                 if (i < st.Player.SetCards.Count) PhoneSetToken(g, slot, st, st.Player.SetCards[i]);
-                else if (UiKit.Phone) PaperFx.DashedPocket(slot, PhoneTokenW, PhoneTokenH, new Color(PaperFx.Paper.r, PaperFx.Paper.g, PaperFx.Paper.b, 0.55f), 0.07f);
+                else if (UiKit.Phone && !R3) PaperFx.DashedPocket(slot, PhoneTokenW, PhoneTokenH, new Color(PaperFx.Paper.r, PaperFx.Paper.g, PaperFx.Paper.b, 0.55f), 0.07f);   // r3 のスマホは足元の帳 (札) の中 = PC と同じ中墨
                 else PaperFx.DashedPocket(slot, PhoneTokenW, PhoneTokenH, new Color(PaperFx.InkSoft.r, PaperFx.InkSoft.g, PaperFx.InkSoft.b, 0.45f), 0f);
             }
         }
@@ -2852,10 +3378,28 @@ namespace DeckRogue.Game
         // スマホで敵を狙う札 (選択式でない単体の札) をドラッグ中: 札は手札に留まり、指まで狙いの矢が伸びる (2026-09-29 p09。BattleView.UpdateAimArrow)
         static bool _dragAim;
 
+        /// <summary>
+        /// 三周目 r3 (段1 の試し撮り 2026-10-01 レーン A の部品。2026-10-02 から r3 の PC とスマホで常に) の、触れて上がった札の下の透明な的。札を沈めると見えるのは上の約 129 だけで、
+        /// 触れると札は HandLift＋沈め 上がる (PC は二周目と同じ高さ) ので、指 (ポインタ) の下から札が抜けて PointerExit → 下りる → また Enter の揺れになる
+        /// (上がった札の下端はキャンバスの y 76。見えていた帯 0〜114 のうち 0〜76 で起きる)。札の下端から沈めた量＋70 だけ下へ伸ばした透明な Image を札の子に置き、
+        /// 上がった札が元の場所の上も覆うようにする (休んでいる時は画面の下の外)。子なので Enter/Exit・クリック・ドラッグは札の EventTrigger に届く。
+        /// 旗が無い時は作らない (今の 19 の沈めでも札の下 65 で同じ揺れがありうるが、二周目の画と操作は変えない)
+        /// </summary>
+        public static void R3A_HoverCatch(RectTransform card)
+        {
+            var catcher = UiKit.NewRect("r3a-hover-catch", card);
+            UiKit.Anchor(catcher, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, -(HandLift + HandSink)), new Vector2(0f, 0f));
+            var img = catcher.gameObject.AddComponent<Image>();
+            img.color = Color.clear;   // 見えない。当たり判定だけ (敵の入れ物の当たりと同じ作法)
+            img.raycastTarget = true;
+            catcher.SetAsFirstSibling();
+        }
+
         public static void HookHandCard(GameRoot g, BattleView.HandCard hc, CardInstance c)
         {
             var rt = hc.Rt;
             var et = rt.gameObject.AddComponent<EventTrigger>();
+            if (R3) R3A_HoverCatch(rt);   // r3 (PC とスマホ): 触れて上がった札の下に、沈めていた時の札の場所を受ける透明な的 (上がった札が指から離れて下りる揺れを止める)
             // 長押し 0.5 秒で拡大表示 (本家の SingleCardViewPopup。右クリックは伏せるに使っているので手札は長押しだけ)
             CardPopup.Attach(g, rt, c, delegate { return g.Rs != null ? g.Rs.Combat : null; }, false);
             // ドラッグ: カードを持ち上げて敵に落とすと対象指定して即プレイ、戦場に落とすとプレイ、手札に戻すと取り消し
@@ -2869,7 +3413,7 @@ namespace DeckRogue.Game
                 if (g.Battle != null) g.Battle.ClearAimArrow();   // 前のドラッグの残り (EndDrag が来ないまま組み直された時) を消す
                 rt.SetAsLastSibling();
                 rt.localRotation = Quaternion.identity;
-                if (_dragAim) { rt.anchoredPosition = hc.BasePos; rt.localScale = Vector3.one * CardScale; }   // 押した時の持ち上げ (+70・1.18倍) を戻す。以後は矢の部品が押さえる
+                if (_dragAim) { rt.anchoredPosition = hc.BasePos; rt.localScale = Vector3.one * CardScale; CardView.SetKeyNumVisible(rt, true); }   // 押した時の持ち上げ (+70・1.18倍) を戻す。以後は矢の部品が押さえる
                 else rt.localScale = Vector3.one * 0.8f;
                 try { if (g.Rs != null) LightUi.PreviewFor(g.Rs.Combat, c); } catch (Exception) { }   // 灯籠に「−2 → 4」などの予告 (2026-09-20)
             });
@@ -2902,11 +3446,11 @@ namespace DeckRogue.Game
                 LightUi.HidePreview();
                 var pd = d as PointerEventData;
                 int enemyIdx = pd != null ? EnemyUnderPointer(pd) : -1;
-                bool overField = pd != null && pd.position.y > Screen.height * 0.36f;
+                bool overField = pd != null && pd.position.y > DropLineScreen(rt);   // r3 の PC は上がった札の上端の 15.6 下 (=二周目と同じ)・スマホは沈めた手札の上端＋111 (二周目は画面の 36%)
                 if (c.Def.Modes != null && c.Def.Modes.Count > 0)
                 {
                     if (overField) { g.PreferredTarget = enemyIdx; g.ModeChoiceUid = c.Uid; g.Rebuild(); }
-                    else { Tween.Move(rt, hc.BasePos, 0.15f); Tween.Scale(rt, Vector3.one * CardScale, 0.15f); rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot); RestoreOrder(rt); }
+                    else { Tween.Move(rt, hc.BasePos, 0.15f); Tween.Scale(rt, Vector3.one * CardScale, 0.15f); rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot); CardView.SetKeyNumVisible(rt, true); RestoreOrder(rt); }
                     return;
                 }
                 if (enemyIdx >= 0 || overField)
@@ -2918,6 +3462,7 @@ namespace DeckRogue.Game
                 Tween.Move(rt, hc.BasePos, 0.15f);
                 Tween.Scale(rt, Vector3.one * CardScale, 0.15f);
                 rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot);
+                CardView.SetKeyNumVisible(rt, true);
                 RestoreOrder(rt);
             });
             et.triggers.Add(endDrag);
@@ -2927,8 +3472,9 @@ namespace DeckRogue.Game
                 if (_dragging) return;
                 Audio.Hover();
                 rt.SetAsLastSibling();
-                Tween.Scale(rt, Vector3.one * 1.18f, 0.12f, Ease.OutQuad);
-                Tween.Move(rt, hc.BasePos + new Vector2(0f, 70f + HandSink), 0.12f, Ease.OutQuad);   // 沈めた分を足す = 持ち上げた札は今と同じ高さ (HD-2D 見本 2026-09-30 P20)
+                Tween.Scale(rt, Vector3.one * R3U_HoverScale, 0.12f, Ease.OutQuad);
+                Tween.Move(rt, hc.BasePos + new Vector2(0f, HandLift + HandSink), 0.12f, Ease.OutQuad);   // 沈めた分を足す = 持ち上げた札は今と同じ高さ (HD-2D 見本 2026-09-30 P20)。r3 のスマホは +130 (親指より上)
+                CardView.SetKeyNumVisible(rt, false);   // r3: 上がっている間は要の数字の札を隠す (本文に同じ数字がある。仕様 §4)
                 rt.localRotation = Quaternion.identity;
                 try { if (g.Rs != null) LightUi.PreviewFor(g.Rs.Combat, c); } catch (Exception) { }   // 灯籠に予告 (PC のホバー。2026-09-20)
             });
@@ -2938,6 +3484,7 @@ namespace DeckRogue.Game
             {
                 if (_dragging) return;
                 LightUi.HidePreview();
+                CardView.SetKeyNumVisible(rt, true);
                 Tween.Scale(rt, Vector3.one * CardScale, 0.12f, Ease.OutQuad);
                 Tween.Move(rt, hc.BasePos, 0.12f, Ease.OutQuad);
                 rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot);
@@ -3021,10 +3568,12 @@ namespace DeckRogue.Game
             var p = st.Player;
             bool ph = UiKit.Phone;
             float e = UiKit.Edge, pw = ph ? 150f : 130f, phh = ph ? 52f : 40f;
-            Pile(g, root, new Vector2(0f, 0f), new Vector2(e, 24f), new Vector2(pw, phh), "draw", "山札", p.DrawPile.Count, delegate { g.ViewPile = "draw"; g.Rebuild(); }, "pile-draw");
-            Pile(g, root, new Vector2(1f, 0f), new Vector2(-(pw + e), 24f), new Vector2(pw, phh), "discard", "捨て札", p.DiscardPile.Count, delegate { g.ViewPile = "discard"; g.Rebuild(); }, "pile-discard");
+            // r3 のスマホ (2026-10-02 仕様 §3): 山札・捨て札は 10 下 (下から 14)、消滅はそのすぐ上 (間 4)。輪・灯籠を 48 下げた分の場所
+            float py = ph && R3 ? R3U_PilesYPhone : 24f, exGap = ph && R3 ? 4f : 8f;
+            Pile(g, root, new Vector2(0f, 0f), new Vector2(e, py), new Vector2(pw, phh), "draw", "山札", p.DrawPile.Count, delegate { g.ViewPile = "draw"; g.Rebuild(); }, "pile-draw");
+            Pile(g, root, new Vector2(1f, 0f), new Vector2(-(pw + e), py), new Vector2(pw, phh), "discard", "捨て札", p.DiscardPile.Count, delegate { g.ViewPile = "discard"; g.Rebuild(); }, "pile-discard");
             if (p.ExhaustPile.Count > 0)   // 本家と同じく、消滅は1枚以上ある時だけ (1ターン目の右下の角を静かに保つ)
-                Pile(g, root, new Vector2(1f, 0f), new Vector2(-(pw + e), 24f + phh + 8f), new Vector2(pw, 36f), "exhaust", "消滅", p.ExhaustPile.Count, delegate { g.ViewPile = "exhaust"; g.Rebuild(); }, "pile-exhaust");
+                Pile(g, root, new Vector2(1f, 0f), new Vector2(-(pw + e), py + phh + exGap), new Vector2(pw, 36f), "exhaust", "消滅", p.ExhaustPile.Count, delegate { g.ViewPile = "exhaust"; g.Rebuild(); }, "pile-exhaust");
             if (g.ViewPile != null) BuildPileViewer(g, root, st);
         }
 
@@ -3214,15 +3763,41 @@ namespace DeckRogue.Game
             }
         }
 
+        /// <summary>r3 のスマホの左下の列 (仕様 §3): 山札の下端 (下から)・エナジーの輪と灯籠の台座の下端 (下から。二周目の 116 より 48 下)・ターン終了の上端の下限 (上から)・高さ</summary>
+        const float R3U_PilesYPhone = 14f, R3U_OrbYPhone = 68f, R3U_EndTopPhone = 465f, R3U_EndHPhone = 64f;
+
+        /// <summary>r3 のスマホのターン終了の上端 (キャンバスの上から): 敵の帳の最下端＋6 (4体の帳と重ならない)。下端は手札の上端より上 (仕様 §3)</summary>
+        static float R3U_EndTurnTopPhone(GameRoot g, Vector2 cs)
+        {
+            float top = R3U_EndTopPhone;
+            var bv = g.Battle;
+            var st = g.Rs != null ? g.Rs.Combat : null;
+            if (bv != null && st != null)
+                for (int i = 0; i < st.Enemies.Count; i++)
+                {
+                    Rect r;
+                    if (PanelChildRect(bv.EnemyPanel(i), "strip", 0f, out r)) top = Mathf.Max(top, cs.y - r.yMin + 6f);
+                }
+            float handTop = cs.y - (HandY + CardView.H * CardScale);
+            return Mathf.Min(top, handTop - R3U_EndHPhone - 4f);
+        }
+
         static void BuildEndTurn(GameRoot g, RectTransform root, GameState st)
         {
             bool myTurn = st.Phase == CombatPhases.PlayerTurn && g.Pending == null;
             float e = UiKit.Edge;
+            bool r3ph = R3 && UiKit.Phone;
+            var csE = CanvasSize(root);
             // 打てる手が尽きた (2026-09-29 p12): 自分の番で、手札に出せる札も仕込める札も無い (ギアは数えない＝本家もポーションは数えない)。
             // 占術・満ち潮の書庫・灯の火床・ギアの窓が開いている間は合図を出さない
             bool idle = myTurn && st.PendingScry == null && g.RetainChoice == null && !g.HearthChoice && g.GearPending == null && g.ModeChoiceUid == null && !AnyMoveLeft(g, st);
             Image nudgeEdge = null;
             Vector2 bMin = new Vector2(-(230f + e), 146f), bMax = new Vector2(-e, 210f);   // 右端は四辺の余白 (PC 32・スマホ 24)
+            if (r3ph)
+            {   // r3 のスマホ: 上端 = max(465, 敵の帳の最下端＋6)・高さ 64 (仕様 §3)
+                float top = R3U_EndTurnTopPhone(g, csE);
+                bMax = new Vector2(-e, csE.y - top); bMin = new Vector2(-(230f + e), csE.y - top - R3U_EndHPhone);
+            }
             if (idle)
             {   // ボタンの 6 外に真鍮の縁 (行動中の敵の帳面の縁と同じ作法＝紙の縁が脈打つ。光の玉は使わない＝紙の UI は光らない)。ボタンより先に置く＝後ろ
                 nudgeEdge = PaperFx.Sheet(root, PaperFx.Tag, "endturn-edge", new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0f));
@@ -3248,6 +3823,7 @@ namespace DeckRogue.Game
                 var note = PaperFx.NightNote(root, "打てる札なし", 13, 240f, false, "endturn-note");
                 note.anchorMin = note.anchorMax = new Vector2(1f, 0f); note.pivot = new Vector2(1f, 0f);
                 note.anchoredPosition = new Vector2(-e, 222f);
+                if (r3ph) { note.pivot = new Vector2(1f, 0.5f); note.anchoredPosition = new Vector2(-(230f + e + 12f), (bMin.y + bMax.y) / 2f); }   // r3 のスマホ: ターン終了の左 (真上は4体の帳に重なる)
                 var pulse = b.gameObject.AddComponent<EndTurnPulse>();
                 pulse.Edge = nudgeEdge; pulse.Note = note.gameObject; pulse.G = g; pulse.Built = st;
             }
@@ -3261,7 +3837,8 @@ namespace DeckRogue.Game
                 var sle = sb.GetComponent<LayoutElement>();
                 if (sle != null) UnityEngine.Object.Destroy(sle);
                 var srt = sb.GetComponent<RectTransform>();
-                if (UiKit.Phone) UiKit.Anchor(srt, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-(230f + e), 252f), new Vector2(-e, 300f));
+                if (r3ph) UiKit.Anchor(srt, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-(230f + e + 12f + 216f), bMax.y - 48f), new Vector2(-(230f + e + 12f), bMax.y));   // r3 のスマホ: ターン終了の左 −12・幅 216・上端をそろえる
+                else if (UiKit.Phone) UiKit.Anchor(srt, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-(230f + e), 252f), new Vector2(-e, 300f));
                 else UiKit.Anchor(srt, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-(460f + e), 152f), new Vector2(-(246f + e), 204f));
                 srt.localRotation = Quaternion.Euler(0f, 0f, -1f);
             }
@@ -3277,8 +3854,9 @@ namespace DeckRogue.Game
             int turnMax = st.Player.EnergyMaxAtTurnStart > 0 ? st.Player.EnergyMaxAtTurnStart - (st.EnergyMaxRefBonus ?? 0) : st.Player.EnergyMax;   // 0 は旧セーブの欠落
             if (turnMax < 1) turnMax = 1;
             // エナジーの輪 (紙の円盤に真鍮の弧)
+            float orbY = r3ph ? R3U_OrbYPhone : 116f;   // r3 のスマホは 48 下 (足元の帳の下。仕様 §3)
             var sun = UiKit.NewRect("energyOrb", root);
-            UiKit.Anchor(sun, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(orbX, 116f), new Vector2(orbX + 128f, 244f));
+            UiKit.Anchor(sun, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(orbX, orbY), new Vector2(orbX + 128f, orbY + 128f));
             sun.localRotation = Quaternion.Euler(0f, 0f, -3f);
             var disc = UiKit.NewRect("disc", sun);   // 最初の子のまま (CannotPlay の Flash が GetComponentInChildren<Image> で円盤を朱に光らせる)
             UiKit.Stretch(disc, 6f, 6f, 6f, 6f);
@@ -3326,12 +3904,13 @@ namespace DeckRogue.Game
             el.characterSpacing = 2f;
             UiKit.Anchor(el.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 20f), new Vector2(0f, 38f));
             g.RegisterAnchor("energy", sun);
-            if (st.Player.EnergyMax > turnMax) EnergyNextTag(root, orbX, st.Player.EnergyMax, turnMax);
-            if (lantern)
-            {
-                float ls = UiKit.Phone ? 2.5f : 3f;
-                LightUi.Build(g, root, st, orbX + 128f + 12f + LightUi.DotsW * ls / 2f, 116f, ls);
+            float ls = UiKit.Phone ? 2.5f : 3f;
+            if (st.Player.EnergyMax > turnMax)
+            {   // r3 のスマホは輪の右 (白は灯籠の右) の上端にそろえる (輪の下は山札との間が無い。仕様 §3)
+                if (r3ph) EnergyNextTag(root, orbX, st.Player.EnergyMax, turnMax, orbX + 128f + 8f + (lantern ? 12f + LightUi.DotsW * ls : 0f), orbY + 128f - 28f);
+                else EnergyNextTag(root, orbX, st.Player.EnergyMax, turnMax);
             }
+            if (lantern) LightUi.Build(g, root, st, orbX + 128f + 12f + LightUi.DotsW * ls / 2f, orbY, ls);
         }
 
         /// <summary>
@@ -3339,7 +3918,7 @@ namespace DeckRogue.Game
         /// 輪の下 (山札の札の上端と輪の下端の間) に紙 (濃)＋真鍮の墨 (color-theme「予告の札」の形)。左端は四辺の余白 (山札と同じ x)。
         /// 文言は「次のターンから上限 N」だとスマホで灯籠の名札「灯」に掛かる (15px で約148) ので、同じ意味の短い形にした (「+1」だけだとエナジーが1増えるとも読める)
         /// </summary>
-        static void EnergyNextTag(RectTransform root, float orbX, int nextMax, int turnMax)
+        static void EnergyNextTag(RectTransform root, float orbX, int nextMax, int turnMax, float atX = -1f, float atY = -1f)
         {
             string text = "次のターン 上限 " + nextMax;
             var rt = UiKit.NewRect("energyNext", root);
@@ -3352,7 +3931,9 @@ namespace DeckRogue.Game
             float w = Mathf.Ceil(t.GetPreferredValues(text).x) + 18f;
             // 山札の札の上端 (PC 64・スマホ 76) と輪の下端 116 の間の真ん中
             float y0 = UiKit.Phone ? 82f : 76f, h = 28f;
-            UiKit.Anchor(rt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(orbX, y0), new Vector2(orbX + w, y0 + h));
+            float x0 = orbX;
+            if (atX >= 0f) { x0 = atX; y0 = atY; }   // r3 のスマホ: 輪 (灯籠) の右・輪の上端にそろえる
+            UiKit.Anchor(rt, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x0, y0), new Vector2(x0 + w, y0 + h));
             rt.localRotation = Quaternion.Euler(0f, 0f, -2f);
             Tooltip.Attach(rt.gameObject, delegate
             {
@@ -3633,10 +4214,13 @@ namespace DeckRogue.Game
             float outH = ph ? 24f : 26f;             // 「発動すると」の行 (Ellipsis の矩形は字の大きさ×1.6以上)
             float W = ph ? 490f : 560f;              // スマホは 410→490 (説明の列 194→274。窓は帳面の左に張り付いたまま左へ伸びる)
             float btnWc = ph ? 100f : 140f, bhc = ph ? 30f : 28f;
-            float descW = W - 2f * (ph ? 14f : 20f) - (PhoneTokenW + 12f) - (btnWc + 8f);
             var descH = new float[usable.Count];
             var candH = new float[usable.Count];
+            var hs = new List<float>();
+            // 窓の高さを幅 w で測る (説明の行数は幅で決まる)。descH・candH・hs を書き直す
+            Func<float, float> measureH = mw =>
             {
+                float descW = mw - 2f * (ph ? 14f : 20f) - (PhoneTokenW + 12f) - (btnWc + 8f);
                 var meas = UiKit.Txt(root, "", 15, PaperFx.Ink, TextAnchor.UpperLeft, true);
                 meas.lineSpacing = 0f;
                 float three = meas.GetPreferredValues("あ\nあ\nあ", descW, 0f).y;
@@ -3648,25 +4232,38 @@ namespace DeckRogue.Game
                 }
                 meas.gameObject.SetActive(false);
                 UnityEngine.Object.Destroy(meas.gameObject);
-            }
-            var hs = new List<float>();
-            hs.Add(ph ? 26f : 30f);                  // 見出し
-            hs.Add(ph ? 34f : 40f);                  // 実値の行
-            if (hasSub) hs.Add(ph ? 22f : 26f);      // 温存すると／受けた HP
-            if (risks.Count > 0) hs.Add(40f);
-            hs.Add(1f);                              // 区切り
-            for (int i = 0; i < usable.Count; i++) { if (i > 0) hs.Add(1f); hs.Add(candH[i]); }   // 候補の間に細い線
-            for (int i = 0; i < un.Count + others.Count; i++) hs.Add(rowH2);
-            if (rows == 0) hs.Add(44f);
-            hs.Add(usable.Count > 0 ? 48f : (ph ? 48f : 52f));   // 温存の行 (発動と同じ列) ／続ける
-            float H = (ph ? 20f : 28f) + sp * (hs.Count - 1);
-            for (int i = 0; i < hs.Count; i++) H += hs[i];
-            float maxH = cs.y - TopH - 12f - 12f;
-            if (H > maxH) H = maxH;
+                hs.Clear();
+                hs.Add(ph ? 26f : 30f);                  // 見出し
+                hs.Add(ph ? 34f : 40f);                  // 実値の行
+                if (hasSub) hs.Add(ph ? 22f : 26f);      // 温存すると／受けた HP
+                if (risks.Count > 0) hs.Add(40f);
+                hs.Add(1f);                              // 区切り
+                for (int i = 0; i < usable.Count; i++) { if (i > 0) hs.Add(1f); hs.Add(candH[i]); }   // 候補の間に細い線
+                for (int i = 0; i < un.Count + others.Count; i++) hs.Add(rowH2);
+                if (rows == 0) hs.Add(44f);
+                hs.Add(usable.Count > 0 ? 48f : (ph ? 48f : 52f));   // 温存の行 (発動と同じ列) ／続ける
+                float mh = (ph ? 20f : 28f) + sp * (hs.Count - 1);
+                for (int i = 0; i < hs.Count; i++) mh += hs[i];
+                float mMax = cs.y - TopH - 12f - 12f;
+                return mh > mMax ? mMax : mh;
+            };
+            float W0r = W;
+            float H = measureH(W);
+            // r3 (2026-10-02 読み合わせの指摘): 置き場の幅は H で変わる (H が大きいと主人公を避けて左端が右へ寄る＝狭まる)。
+            // 最後の幅で中身を測り直す (2回まで)。旧は H=300 の見積りの幅で中身を組み、狭まった窓から説明とボタンがはみ出した
+            if (R3)
+                for (int it2 = 0; it2 < 3; it2++)
+                {
+                    Rect pr;
+                    if (!R3WindowRect(g, st, cs, W0r, H, ei, out pr, false) || Mathf.Abs(pr.width - W) < 1f) break;
+                    W = pr.width; H = measureH(W);
+                }
             // 置き場 (2026-09-29 p11): PC で自分の札に掛かる時は札の上 (空いた道) へ上げる。上げられなければ下端は帳面の線のまま、
             // 自分の札を窓の手前の区画の境で打ち切る (ギア・置物は敵の番には押せず暗幕の下。窓を畳むと戻す)
             bool lifted;
-            var wr = ReactionWindowRect(g, st, cs, ei, ecx, stripHalf, W, H, out lifted);
+            Rect wr;
+            if (R3 && R3WindowRect(g, st, cs, W0r, H, ei, out wr)) { lifted = true; W = wr.width; H = wr.height; }   // r3 (2026-10-02 仕様 §8): 下の窓 (PC)／主人公を切らない窓 (スマホ)。幅は上で測った W と同じ (同じ H なので同じ置き場)
+            else { if (R3) { W = W0r; H = measureH(W); } wr = ReactionWindowRect(g, st, cs, ei, ecx, stripHalf, W, H, out lifted); }
             float x = wr.x, y0 = wr.y;
             if (!ph && !lifted && SelfStripRight > 0f && x < SelfStripRight + 2f) TrimSelfStrip(g.Battle != null && g.Battle.SelfArea != null ? g.Battle.SelfArea : g.Anchor("player"), x - 12f);   // 札の入れ物 (箱庭では兄弟。P20 2周目)
             var panel = PaperFx.Sheet(root, PaperFx.Panel, "reaction");
@@ -4020,6 +4617,291 @@ namespace DeckRogue.Game
             return win;
         }
 
+        // ---- 三周目 r3 の窓の置き場 (2026-10-02 仕様 docs/design/hd2d-slice/r3-ui-spec.md §8) ----
+        // 確認の窓・ギアの窓・持ち物の一覧が同じ枠を使う。PC は「下の窓」(足元の帳の右から敵の帳の左まで・下端は画面の下 −24)、
+        // スマホは「主人公を窓の縁で切らない窓」(覆うなら丸ごと)。窓と重なる人形の足元の札は窓が開いている間だけ畳む
+
+        /// <summary>r3 の PC の下の窓の幅の下限・下端 (キャンバス y・下から＝画面の上から 1056)</summary>
+        const float R3U_WinMinWPc = 440f, R3U_WinBottomPc = 24f;
+        /// <summary>r3 のスマホの窓の幅の下限</summary>
+        const float R3U_WinMinWPhone = 400f;
+        /// <summary>窓と重なって畳んだ人形の足元の札 (窓を閉じた時に戻す。組み直しは札ごと作り直すので戻さなくてよい)</summary>
+        static readonly List<GameObject> _r3uHiddenDollTags = new List<GameObject>();
+
+        /// <summary>生きている敵の帳面の左端のうちいちばん左 (キャンバス x)。無ければ +∞</summary>
+        static float R3U_LeftmostLedger(GameRoot g, GameState st)
+        {
+            float x = float.MaxValue;
+            if (g == null || g.Battle == null || st == null) return x;
+            for (int i = 0; i < st.Enemies.Count; i++)
+            {
+                if (st.Enemies[i].Hp <= 0) continue;
+                Rect r;
+                if (PanelChildRect(g.Battle.EnemyPanel(i), "strip", 0f, out r)) x = Mathf.Min(x, r.xMin);
+            }
+            return x;
+        }
+
+        /// <summary>
+        /// 窓の縁が人形の体を切らないように窓を直す (2026-10-02 読み合わせの指摘: 上端だけを見ていて、左右の縁がスマホの人形5体目・PC の人形2体目と7体目を縦に切った)。
+        /// 人形の体は絵の箱 (透明な余白込み＝layout-check L13 の箱)。窓の縦の範囲に掛かる人形について: 左の縁が体の中なら体の左 −8 まで広げる (minX より左へは出さない。出せなければ体の右 +8 まで狭める・幅 minW を割るなら触らない)。
+        /// 右の縁も同じ (maxX まで広げる。出せなければ体の左 −8 まで狭める)。上の縁が体の中ならその人形の頭の 8 上まで上げる (topLimit まで)。2回まわす
+        /// (広げた・上げた分で新しく掛かる人形も見る)。人形の札を畳むのは R3U_HideDollTags (apply の時だけ)
+        /// </summary>
+        static Rect R3U_FitDolls(GameRoot g, Rect win, float topLimit, float minX, float maxX, float minW)
+        {
+            float x0 = win.xMin, x1 = win.xMax, y0 = win.yMin, top = win.yMax;
+            var area = g != null && g.Battle != null && g.Battle.FieldLayer != null ? g.Battle.FieldLayer.Find("dolls") : null;
+            if (area == null) return win;
+            for (int pass = 0; pass < 2; pass++)
+                for (int i = 0; i < area.childCount; i++)
+                {
+                    var dp = area.GetChild(i) as RectTransform;
+                    if (dp == null || !dp.gameObject.activeInHierarchy) continue;
+                    Rect r;
+                    if (!PanelChildRect(dp, "sprite", 0f, out r)) continue;   // 絵の箱 (透明な余白も含む): layout-check L13 と同じ箱で測る (余白の内側で切ると L13 が「縁で切る」と数える)
+                    if (r.yMax <= y0 || r.yMin >= top) continue;   // 窓の縦の範囲に掛からない
+                    if (r.xMin < x0 && r.xMax > x0)
+                    {
+                        if (r.xMin - 8f >= minX) x0 = r.xMin - 8f;
+                        else if (x1 - (r.xMax + 8f) >= minW) x0 = r.xMax + 8f;
+                    }
+                    if (r.xMin < x1 && r.xMax > x1)
+                    {
+                        if (r.xMax + 8f <= maxX) x1 = r.xMax + 8f;
+                        else if ((r.xMin - 8f) - x0 >= minW) x1 = r.xMin - 8f;
+                    }
+                    if (r.xMax > x0 && r.xMin < x1 && top > r.yMin && top < r.yMax && r.yMax + 8f <= topLimit) top = r.yMax + 8f;
+                }
+            return Rect.MinMaxRect(x0, y0, x1, top);
+        }
+
+        /// <summary>窓 full と重なる人形の足元の札を、窓が開いている間だけ畳む (閉じると R3U_RestoreDollTags が戻す)</summary>
+        static void R3U_HideDollTags(GameRoot g, Rect full)
+        {
+            _r3uHiddenDollTags.RemoveAll(x => x == null);   // 組み直しで捨てた札
+            var area = g != null && g.Battle != null && g.Battle.FieldLayer != null ? g.Battle.FieldLayer.Find("dolls") : null;
+            if (area == null) return;
+            for (int i = 0; i < area.childCount; i++)
+            {
+                var dp = area.GetChild(i) as RectTransform;
+                if (dp == null) continue;
+                Rect r;
+                if (!PanelChildRect(dp, "tag", 0f, out r) || !r.Overlaps(full)) continue;
+                var tag = dp.Find("tag");
+                tag.gameObject.SetActive(false);
+                _r3uHiddenDollTags.Add(tag.gameObject);
+            }
+        }
+
+        /// <summary>窓を閉じた時に、畳んだ人形の足元の札を戻す (BattleView.CloseReactionWindow)</summary>
+        public static void R3U_RestoreDollTags()
+        {
+            foreach (var go in _r3uHiddenDollTags) if (go != null) go.SetActive(true);
+            _r3uHiddenDollTags.Clear();
+        }
+
+        /// <summary>
+        /// r3 の PC の「下の窓」(仕様 §8-1)。右端 = いちばん左の生きている敵の帳の左 −12 (行動中の敵の帳も含む)・左端の限界 = 足元の帳の右 +12・
+        /// 幅 = min(W0, 右端−左端の限界) で下限 440・下端 = 画面の下 −24。窓の上端が主人公の足元より上に出て主人公の体と x で重なるなら、左端を体の右 +12 へ寄せる (下限 440)。
+        /// 寄せると下限を割る時 (4体の時の右端 1012 など) は、主人公を足元の帳ごと丸ごと覆う: 左端 = min(体の左 −12, 足元の帳の左 −8) (匣の右 +12 より左へは出さない)・上端 = 頭の上 +8
+        /// (窓の中に「温存すると HP 80 → 67」があるので足元の帳を覆っても数字は消えない。スマホ §8-2 と同じ考え。2026-10-02 読み合わせの指摘＝旧は二周目の置き方へ戻り、
+        /// r3 では自分の欄を畳めないので主人公を縦に切った)。窓の縁が人形の体を切るなら直し (R3U_FitDolls)、高くなった窓の右端は行動していない敵の意図の札の手前で止める。
+        /// false を返すのは上部バーに当たる時だけ (呼ぶ側は二周目の置き方へ戻す)。apply の時だけ窓と重なる人形の足元の札を畳む
+        /// </summary>
+        public static bool R3PcWindowRect(GameRoot g, GameState st, Vector2 cs, float W0, float H, out Rect rect, bool apply = true)
+        {
+            rect = default(Rect);
+            float lm = R3U_LeftmostLedger(g, st);
+            float x1 = (lm < float.MaxValue ? lm : cs.x) - 12f;
+            float xL = (R3U_FootRight > 0f ? R3U_FootRight : 500f) + 12f;
+            float W = Mathf.Max(R3U_WinMinWPc, Mathf.Min(W0, x1 - xL));
+            float x0 = x1 - W;
+            float y0 = R3U_WinBottomPc, top = y0 + H;
+            float topLimit = cs.y - TopH - 12f;
+            if (top > topLimit) return false;
+            float minX = xL;
+            Rect lr;
+            if (LeaderBodyRect(g, out lr) && top > lr.yMin && x0 < lr.xMax + 12f && x0 + W > lr.xMin)
+            {
+                float xs = lr.xMax + 12f, ws = Mathf.Min(W0, x1 - xs);
+                if (ws >= R3U_WinMinWPc) { x0 = xs; W = ws; minX = xs; }
+                else
+                {   // 主人公を丸ごと覆う (足元の帳ごと。窓の縁で帳を切らない。匣の右 +12 より左へは出さない)
+                    x0 = Mathf.Max(Mathf.Min(lr.xMin - 12f, R3U_FootLeftPc - 8f), UiKit.Edge + R3U_BoxW + 12f);
+                    W = Mathf.Min(Mathf.Max(W0, lr.xMax + 12f - x0), x1 - x0);
+                    top = Mathf.Max(top, lr.yMax + 8f);
+                    if (top > topLimit) return false;
+                    minX = x0;
+                }
+            }
+            var win = Rect.MinMaxRect(x0, y0, x0 + W, top);
+            win = R3U_FitDolls(g, win, topLimit, minX, x1, R3U_WinMinWPc);
+            // 主人公の足元より上へ伸びた窓: 行動していない敵の意図の札に右端を掛けない (掛かるなら手前で止める。幅の下限を割るなら止めない)
+            if (win.yMax > (lr.height > 0f ? lr.yMin : y0 + 350f) && g != null && g.Battle != null && st != null)
+                for (int j = 0; j < st.Enemies.Count; j++)
+                {
+                    if (st.Enemies[j].Hp <= 0) continue;
+                    Rect r;
+                    if (PanelChildRect(g.Battle.EnemyPanel(j), "intent-tag", 4f, out r) && r.Overlaps(win) && r.xMin - 12f - win.xMin >= R3U_WinMinWPc)
+                        win = Rect.MinMaxRect(win.xMin, win.yMin, r.xMin - 12f, win.yMax);
+                }
+            if (apply) R3U_HideDollTags(g, win);
+            rect = win;
+            return true;
+        }
+
+        /// <summary>
+        /// r3 のスマホの窓 (仕様 §8-2)。主人公を窓の縁で切らない (覆うなら丸ごと)。
+        /// 2026-10-02 三周目 直しの輪1 (反証のまとめ (d)「窓の左端 x 304〜367 が主人公の絵の箱を縁で切る・『次のターン 上限 4』を途中で切る・下半分が空く」):
+        /// ・主人公は絵の箱 (透明な余白込み＝layout-check L13 の箱。LeaderSpriteBox) で測る。旧は透明な余白を除いた体で測ったので、
+        ///   ひなた (箱の左 207) は x0 232 の縁で箱を切った。
+        /// ・窓が主人公の足元より下に収まらない (＝主人公を覆う) 時は、HP の区画の右 +8 が箱の左 −8 より右なら 足元の帳ごと覆う: 左端は画面の左の余白から
+        ///   (切り欠きの右・UiKit.SafeLeft)。右端は覆わない時と同じ (HP の区画の右 +8 +W0。主人公の右 +8 までは必ず) で、左へ伸ばすだけ。
+        /// ・上端は主人公の頭の 8 上・下端は足元の 4 下まで (箱を丸ごと中に)。高さは max(中身の高さ, 主人公の丈)＝中身に合わせる (旧は下端が足元の線に貼り付き、
+        ///   小さいギアの窓は上の半分が中身・下の半分が空いた)。
+        /// ・下端は、横に重なるエナジーの輪・灯籠・足元の帳を縁で切らない (切るなら丸ごと含むか丸ごと外す。候補のうち窓がいちばん低く、同じなら上端が低い置き方)。
+        /// ・上の帯の下 +6 に収まらなければ、上部バーの下まで上げてよい (上の帯の札を覆う。旧は二周目の置き方へ戻り、主人公を縦に切った)。
+        ///   それでも入らない背の高い窓 (候補が2つ以上の確認の窓) は下端を足元の線まで下げ、横に重なるエナジーの輪・灯籠を窓の間だけ畳む
+        ///   (縁で輪の数字を切らない。足元の帳は切らない)。それでも入らない時だけ false。
+        /// ・「次のターン 上限 N」の札は、窓に重なるなら窓が開いている間だけ畳む (R3U_HideOverlap。apply の時)。
+        /// 右端は 行動中の敵の帳の左 −12 (ギアの窓は いちばん左の敵の帳の左 −12) で頭打ち (下限 400。割る時は他の敵の体と帳に掛けてよい)。
+        /// 窓の縁が人形の体を切るなら直す (R3U_FitDolls)。行動していない敵の意図の札に掛かる時は false (二周目の置き方へ)
+        /// </summary>
+        public static bool R3PhoneWindowRect(GameRoot g, GameState st, Vector2 cs, float W0, float H, int actingEnemy, out Rect rect, out bool coverLedger, bool apply = true)
+        {
+            rect = default(Rect); coverLedger = false;
+            float line = BattleView.StatusLineY;
+            float hpRight = R3U_FootHpRight > 0f ? R3U_FootHpRight : UiKit.Edge + R3U_PhoneHpW;
+            float xDef = hpRight + 8f;
+            float capX;
+            if (actingEnemy >= 0 && g != null && g.Battle != null)
+            {
+                Rect sr;
+                capX = PanelChildRect(g.Battle.EnemyPanel(actingEnemy), "strip", 0f, out sr) ? sr.xMin - 12f : cs.x - 12f;
+            }
+            else { float lm = R3U_LeftmostLedger(g, st); capX = (lm < float.MaxValue ? lm : cs.x) - 12f; }
+            float maxX = Mathf.Min(capX, cs.x - 12f);
+            float topLimit = cs.y - Mathf.Max(PhoneBandBottom > 0f ? PhoneBandBottom : 0f, 170f) - 6f;   // 上の帯の下 +6
+            float topHard = cs.y - TopH - 6f;                                                               // 上部バーの下 (覆う窓が上の帯に入らない時だけ)
+            Rect box;
+            bool hasLeader = LeaderSpriteBox(g, out box);
+            float x0, xr, bottom, top, lim = topLimit;
+            bool hideLeft = false;   // 背の高い窓が下端でエナジーの輪・灯籠に掛かる時だけ、窓の間それらを畳む
+            bool below = !hasLeader || line + H <= box.yMin - 4f;   // 窓が主人公の足元より下に収まる (小さい窓・主人公がいない)
+            if (below)
+            {   // 今の置き方: HP の区画の右から・下端は足元の線
+                x0 = xDef;
+                xr = Mathf.Min(maxX, x0 + W0);
+                if (xr - x0 < R3U_WinMinWPhone) xr = x0 + R3U_WinMinWPhone;
+                if (xr > cs.x - 12f) return false;
+                bottom = line; top = line + H;
+                if (top > topLimit) return false;
+            }
+            else
+            {
+                coverLedger = xDef > box.xMin - 8f;
+                x0 = coverLedger ? UiKit.Edge : xDef;
+                xr = Mathf.Min(maxX, Mathf.Max(xDef + W0, box.xMax + 8f));
+                if (xr - x0 < R3U_WinMinWPhone) xr = x0 + R3U_WinMinWPhone;
+                if (xr > cs.x - 12f) return false;
+                float headTop = box.yMax + 8f, feetMax = Mathf.Max(line, box.yMin - 4f);
+                float needH = Mathf.Max(H, headTop - feetMax);
+                // 下端が縁で切ってはいけない物 (横に重なる物だけ)。足元の帳は、覆わない時は HP の区画だけ (からくりの区画は TrimSelfStrip が畳む)
+                var foot = new List<Rect>();
+                var left = new List<Rect>();
+                Rect r;
+                if (R3U_PhoneFootRect.width > 0f) foot.Add(coverLedger ? R3U_PhoneFootRect : Rect.MinMaxRect(R3U_PhoneFootRect.xMin, R3U_PhoneFootRect.yMin, hpRight, R3U_PhoneFootRect.yMax));
+                if (g != null && R3U_CanvasRect(g, g.Anchor("energy"), out r)) left.Add(r);
+                if (g != null && R3U_CanvasRect(g, g.Anchor("light"), out r)) left.Add(r);
+                float ox0 = x0, oxr = xr;
+                foot.RemoveAll(o => o.xMax <= ox0 + 1f || o.xMin >= oxr - 1f);
+                left.RemoveAll(o => o.xMax <= ox0 + 1f || o.xMin >= oxr - 1f);
+                float bestB = float.NaN, bestTop = 0f, bestH = float.MaxValue;
+                // 1) 上の帯の下に収める 2) 上部バーの下まで上げる 3) それでも入らない背の高い窓 (スマホで候補が2つ以上) は、下端を足元の線まで下げ、
+                //    横に重なるエナジーの輪・灯籠は窓が開いている間だけ畳む (縁で数字を切らない。足元の帳は切らない)
+                for (int pass = 0; pass < 3 && float.IsNaN(bestB); pass++)
+                {
+                    lim = pass == 0 ? topLimit : topHard;
+                    var obs = new List<Rect>(foot);
+                    if (pass < 2) obs.AddRange(left);
+                    var cands = new List<float> { headTop - needH, line };
+                    foreach (var o in obs) { cands.Add(o.yMin - 2f); cands.Add(o.yMax + 2f); }
+                    foreach (var c0 in cands)
+                    {
+                        float b = Mathf.Clamp(c0, line, feetMax);
+                        bool cut = false;
+                        foreach (var o in obs) if (b > o.yMin + 1f && b < o.yMax - 1f) { cut = true; break; }
+                        if (cut) continue;
+                        float t = Mathf.Max(b + needH, headTop);
+                        if (t > lim) continue;
+                        float hh = t - b;
+                        if (hh < bestH - 0.5f || (Mathf.Abs(hh - bestH) <= 0.5f && t < bestTop)) { bestB = b; bestTop = t; bestH = hh; }
+                    }
+                    if (!float.IsNaN(bestB) && pass == 2) hideLeft = true;
+                }
+                if (float.IsNaN(bestB)) return false;
+                bottom = bestB; top = bestTop;
+                if (coverLedger) x0 = UiKit.SafeLeft(UiKit.Edge, cs.y - top, cs.y - bottom);   // 窓の縦の範囲 (上から) に掛かる切り欠きの右から。右端は保つ
+            }
+            var win = Rect.MinMaxRect(x0, bottom, xr, top);
+            win = R3U_FitDolls(g, win, lim, x0, maxX, R3U_WinMinWPhone);
+            if (g != null && g.Battle != null && st != null)
+                for (int j = 0; j < st.Enemies.Count; j++)
+                {
+                    if (j == actingEnemy || st.Enemies[j].Hp <= 0) continue;
+                    Rect r;
+                    if (PanelChildRect(g.Battle.EnemyPanel(j), "intent-tag", 4f, out r) && r.Overlaps(win)) return false;
+                }
+            if (apply)
+            {
+                R3U_HideDollTags(g, win);
+                if (g != null && g.Battle != null && g.Battle.UiLayer != null) R3U_HideOverlap(g, g.Battle.UiLayer.Find("energyNext") as RectTransform, win);   // 「次のターン 上限 N」を窓の縁で切らない
+                if (hideLeft && g != null) { R3U_HideOverlap(g, g.Anchor("energy"), win); R3U_HideOverlap(g, g.Anchor("light"), win); }
+            }
+            rect = win;
+            return true;
+        }
+
+        /// <summary>rt のキャンバスの矩形 (窓の層 UiLayer の左下が原点＝窓の置き場と同じ座標)。見えていない・無い時は false</summary>
+        static bool R3U_CanvasRect(GameRoot g, RectTransform rt, out Rect r)
+        {
+            r = default(Rect);
+            var basis = g != null && g.Battle != null ? g.Battle.UiLayer : null;
+            if (rt == null || basis == null || !rt.gameObject.activeInHierarchy) return false;
+            var c = new Vector3[4];
+            rt.GetWorldCorners(c);
+            float x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue;
+            for (int i = 0; i < 4; i++)
+            {
+                var p = basis.InverseTransformPoint(c[i]);
+                x0 = Mathf.Min(x0, p.x); y0 = Mathf.Min(y0, p.y); x1 = Mathf.Max(x1, p.x); y1 = Mathf.Max(y1, p.y);
+            }
+            var b = basis.rect;
+            r = Rect.MinMaxRect(x0 - b.xMin, y0 - b.yMin, x1 - b.xMin, y1 - b.yMin);
+            return r.width > 0f && r.height > 0f;
+        }
+
+        /// <summary>rt が窓 full と重なるなら、窓が開いている間だけ畳む (閉じると R3U_RestoreDollTags が人形の札と一緒に戻す。組み直しは作り直すので戻さなくてよい)</summary>
+        static void R3U_HideOverlap(GameRoot g, RectTransform rt, Rect full)
+        {
+            Rect r;
+            if (!R3U_CanvasRect(g, rt, out r) || !r.Overlaps(full)) return;
+            rt.gameObject.SetActive(false);
+            _r3uHiddenDollTags.Add(rt.gameObject);
+        }
+
+        /// <summary>r3 の窓の置き場 (確認の窓・ギアの窓・持ち物の一覧の共通の入口)。apply = 人形の札を畳み・スマホで足元の帳のからくりの区画に掛かるなら畳む
+        /// (false = 幅の見積りだけ。窓の中身の幅を先に決める時)。入らなければ false</summary>
+        public static bool R3WindowRect(GameRoot g, GameState st, Vector2 cs, float W0, float H, int actingEnemy, out Rect rect, bool apply = true)
+        {
+            if (!UiKit.Phone) return R3PcWindowRect(g, st, cs, W0, H, out rect, apply);
+            bool cover;
+            if (!R3PhoneWindowRect(g, st, cs, W0, H, actingEnemy, out rect, out cover, apply)) return false;
+            if (apply && !cover && g != null && g.Battle != null) TrimSelfStrip(g.Battle.SelfArea, rect.xMin - 8f);
+            return true;
+        }
+
         /// <summary>x0〜x1 に掛かる白の人形の足元の札の上端 (キャンバス y)。無ければ -∞</summary>
         static float DollTagsTop(GameRoot g, float x0, float x1)
         {
@@ -4063,6 +4945,17 @@ namespace DeckRogue.Game
             r = Rect.MinMaxRect(box.xMin + side.x * k, box.yMin, box.xMax - side.y * k, box.yMax - top);
             if (r.width <= 0f || r.height <= 0f) r = box;
             return true;
+        }
+
+        /// <summary>リーダーの絵の箱 (透明な余白を含む・キャンバス座標)。layout-check L13 が「窓の縁で切らない」を測る箱と同じ (スマホの窓。2026-10-02 三周目 直しの輪1)</summary>
+        static bool LeaderSpriteBox(GameRoot g, out Rect r)
+        {
+            r = default(Rect);
+            var area = g != null ? g.Anchor("player") : null;
+            var spr = area != null ? area.Find("sprite") as RectTransform : null;
+            if (spr == null || !spr.gameObject.activeInHierarchy) return false;
+            r = Rect.MinMaxRect(area.offsetMin.x + spr.offsetMin.x, area.offsetMin.y + spr.offsetMin.y, area.offsetMin.x + spr.offsetMax.x, area.offsetMin.y + spr.offsetMax.y);
+            return r.width > 0f && r.height > 0f;
         }
 
         /// <summary>敵の絵の、透明な余白を除いた体の矩形 (キャンバス座標)</summary>
@@ -4111,7 +5004,12 @@ namespace DeckRogue.Game
             for (int i = 0; i < st.Player.Hand.Count; i++) if (st.Player.Hand[i].Uid == g.ModeChoiceUid) card = st.Player.Hand[i];
             if (card == null) { g.ModeChoiceUid = null; return; }
             var pan = UiKit.Frame(root, Theme.Panel, Color.white, "modeChooser", 3f);
-            UiKit.Anchor(pan.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-360f, HandY + CardView.H * CardScale + 60f), new Vector2(360f, HandY + CardView.H * CardScale + 150f));
+            if (R3 && UiKit.Phone)
+            {   // r3 のスマホ (2026-10-02 仕様 §8-3): 足元の帳の右 ＋12 から・下端は手札の上端 ＋8 (手札の上 60 だと主人公の足元に掛かる)
+                float mx = (R3U_FootRight > 0f ? R3U_FootRight : 384f) + 12f, my = HandY + CardView.H * CardScale + 8f;
+                UiKit.Anchor(pan.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(mx, my), new Vector2(mx + 720f, my + 90f));
+            }
+            else UiKit.Anchor(pan.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-360f, HandY + CardView.H * CardScale + 60f), new Vector2(360f, HandY + CardView.H * CardScale + 150f));
             var inner = UiKit.NewRect("inner", pan.transform);
             UiKit.Stretch(inner, 16f, 16f, 12f, 12f);
             var hg = UiKit.Horz(inner, 10, 0);

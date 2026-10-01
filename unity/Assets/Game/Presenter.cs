@@ -742,7 +742,9 @@ namespace DeckRogue.Game
             bool ph = UiKit.Phone;
             float h = NameBandH(boss);
             var rt = UiKit.NewRect("nameband", fx);
-            UiKit.Anchor(rt, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, top - h), new Vector2(0f, top));
+            // r3 (2026-10-02 仕様 §9・§10): 帯の左端は足元の帳の右 ＋16 から (帯は帳面の高さを横切るので、主人公の足元の帳を覆わない)
+            float leftInset = BattleScreen.R3 && BattleScreen.R3U_FootRight > 0f ? BattleScreen.R3U_FootRight + 16f : 0f;
+            UiKit.Anchor(rt, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(leftInset, top - h), new Vector2(0f, top));
             var bg = rt.gameObject.AddComponent<Image>(); bg.color = new Color(PaperFx.Night.r, PaperFx.Night.g, PaperFx.Night.b, 0.84f); bg.raycastTarget = false;
             foreach (float y in new[] { 0f, 1f })
             {
@@ -766,8 +768,9 @@ namespace DeckRogue.Game
             UiKit.Anchor(sep.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(kw + sepGap, -h * 0.24f), new Vector2(kw + sepGap + 2f, h * 0.24f));
             UiKit.Anchor(nt.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-nw, 0f), new Vector2(0f, 0f));
             var fr = fx.rect;
-            float lo = fr.xMin + W / 2f + 48f, hi = fr.xMax - W / 2f - 48f;
-            float cx = lo <= hi ? Mathf.Clamp(textX, lo, hi) : (fr.xMin + fr.xMax) / 2f;
+            float lo = fr.xMin + leftInset + W / 2f + 48f, hi = fr.xMax - W / 2f - 48f;
+            float cx = lo <= hi ? Mathf.Clamp(textX, lo, hi) : (fr.xMin + leftInset + fr.xMax) / 2f;
+            cx -= leftInset / 2f;   // fx の座標 → 帯の中の座標 (帯の中心は左端を詰めた分だけ右へずれる)
             UiKit.Anchor(inner, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(cx - W / 2f, 6f), new Vector2(cx + W / 2f, -6f));
             var cg = rt.gameObject.AddComponent<CanvasGroup>(); cg.blocksRaycasts = false; cg.alpha = 0f;
             inner.anchoredPosition = new Vector2(cx - 60f, 0f);

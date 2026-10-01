@@ -223,15 +223,36 @@ namespace DeckRogue.Game
             // スマホは自分の札の右から (切り欠きで札が右へずれていたら窓もずらす。2026-09-30 F42)。幅は置き場から決める
             float x = ph ? Mathf.Max(260f, BattleScreen.PhoneStripRight + 12f) : UiKit.Edge + 300f + st.Player.SetSlots * (BattleScreen.PhoneTokenW + 10f) + 24f;   // 自分の札の左端は四辺の余白 (2026-09-29 p12: 旧 40)
             float W = ph ? Mathf.Min(560f, cs.x - x - 12f) : 560f;
-            int perRow = Mathf.Max(1, (int)((W - 40f - 4f + 8f) / pitch));   // 1列目を 4 ずらす (外線をマスクで切らない。F41)
-            int rows = Mathf.CeilToInt(gears.Count / (float)perRow);
-            float H = 28f + 30f + 6f + rows * rowH + 6f + 48f + 34f;
             // 窓の下端 = スマホは手札の上端＋8 (旧の 312 は 14+290+8 の決め打ち)・PC は自分の札の上端＋8 (HD-2D 見本の箱庭で手札と足元の線を下げた時も同じ式で追う。2026-09-30 P20)
             float maxH = cs.y - RunUi.TopH - 24f - (ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleScreen.SelfCardTop + 8f);
-            if (H > maxH) H = maxH;
+            int perRow = 1, rows = 1;
+            // 窓の高さを幅 ww で測る (1行に並ぶ数は幅で決まる。1列目を 4 ずらす = 外線をマスクで切らない。F41)
+            Func<float, float> heightFor = ww =>
+            {
+                perRow = Mathf.Max(1, (int)((ww - 40f - 4f + 8f) / pitch));
+                rows = Mathf.CeilToInt(gears.Count / (float)perRow);
+                float hh = 28f + 30f + 6f + rows * rowH + 6f + 48f + 34f;
+                return hh > maxH ? maxH : hh;
+            };
+            // 三周目 r3 (2026-10-02 仕様 §8): 置き場は確認の窓と同じ枠 (PC 下の窓・スマホ 主人公を切らない窓)。置き場の幅は H で変わるので、最後の幅で並びを測り直す (2回まで)
+            float Wfb = W;   // 二周目の置き方の幅 (r3 の枠に入らなかった時に戻す)
+            float W0r = BattleScreen.R3 ? 560f : W;
+            if (BattleScreen.R3) W = W0r;
+            float H = heightFor(W);
+            float Hr = Mathf.Min(H, cs.y - RunUi.TopH - 24f - 24f);
+            Rect r3pre = default(Rect);
+            bool r3 = BattleScreen.R3 && BattleScreen.R3WindowRect(g, st, cs, W0r, Hr, -1, out r3pre, false);
+            for (int it2 = 0; r3 && it2 < 3 && Mathf.Abs(r3pre.width - W) >= 1f; it2++)
+            {
+                W = r3pre.width; H = heightFor(W); Hr = Mathf.Min(H, cs.y - RunUi.TopH - 24f - 24f);
+                r3 = BattleScreen.R3WindowRect(g, st, cs, W0r, Hr, -1, out r3pre, false);
+            }
+            if (BattleScreen.R3 && !r3) { W = Wfb; H = heightFor(W); }
             if (x + W > cs.x - 12f) x = Mathf.Max(12f, cs.x - 12f - W);
             float y0 = ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleScreen.SelfCardTop + 8f;   // PC は自分の札の上端 (StripH に固定。2026-09-30 F19)
             if (ph) y0 = KeepBelowBand(cs, y0, H);
+            Rect r3r = default(Rect);
+            if (r3 && BattleScreen.R3WindowRect(g, st, cs, W0r, Hr, -1, out r3r)) { x = r3r.x; y0 = r3r.y; W = r3r.width; H = r3r.height; }
             var panel = PaperFx.Sheet(root, PaperFx.Panel, "gear-more-window");
             UiKit.Anchor(panel.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x, y0), new Vector2(x + W, y0 + H));
             panel.raycastTarget = true;
@@ -360,22 +381,42 @@ namespace DeckRogue.Game
             // スマホは自分の札の右から (2026-09-30 F42: x を 260 に固定していたので、切り欠きで札が右へずれると窓が HP バーの右端を隠した)。幅は置き場から決める
             float x = ph ? Mathf.Max(260f, BattleScreen.PhoneStripRight + 12f) : UiKit.Edge + 300f + st.Player.SetSlots * (BattleScreen.PhoneTokenW + 10f) + 24f;   // 自分の札の左端は四辺の余白 (2026-09-29 p12: 旧 40)
             float W = ph ? Mathf.Min(420f, cs.x - x - 12f) : 560f;
-            int charsPerLine = Mathf.Max(8, (int)((W - 40f) / 16f));
-            int textLines = Mathf.Max(1, Mathf.CeilToInt(def.Text.Length / (float)charsPerLine));
-            float H = 28f + 30f + 6f + textLines * 22f;
-            if (live != null) H += 22f;
-            if (none != null) H += 24f;
-            if (def.Special == "nameless") H += 26f + (seen.Count == 0 ? 24f : Mathf.CeilToInt(seen.Count / (float)Mathf.Max(1, (int)((W - 40f) / 132f))) * 44f);
-            if (eff != null && eff.NeedsCard != null) H += 30f;
-            if (needTarget) H += 30f;
-            H += 8f + 22f + 6f + 48f + 40f;   // 縦の並びの間 (6×行数) と紙の余白
             // 窓の下端 = スマホは手札の上端＋8 (旧の 312 は 14+290+8 の決め打ち)・PC は自分の札の上端＋8 (HD-2D 見本の箱庭で手札と足元の線を下げた時も同じ式で追う。2026-09-30 P20)
             float maxH = cs.y - RunUi.TopH - 24f - (ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleScreen.SelfCardTop + 8f);
-            if (H > maxH) H = maxH;
+            int charsPerLine = 8, textLines = 1;
+            // 窓の高さを幅 ww で測る (本文の行数・無銘の化ける先の段数は幅で決まる)
+            Func<float, float> heightFor = ww =>
+            {
+                charsPerLine = Mathf.Max(8, (int)((ww - 40f) / 16f));
+                textLines = Mathf.Max(1, Mathf.CeilToInt(def.Text.Length / (float)charsPerLine));
+                float hh = 28f + 30f + 6f + textLines * 22f;
+                if (live != null) hh += 22f;
+                if (none != null) hh += 24f;
+                if (def.Special == "nameless") hh += 26f + (seen.Count == 0 ? 24f : Mathf.CeilToInt(seen.Count / (float)Mathf.Max(1, (int)((ww - 40f) / 132f))) * 44f);
+                if (eff != null && eff.NeedsCard != null) hh += 30f;
+                if (needTarget) hh += 30f;
+                hh += 8f + 22f + 6f + 48f + 40f;   // 縦の並びの間 (6×行数) と紙の余白
+                return hh > maxH ? maxH : hh;
+            };
+            float H = heightFor(W);
+            // 三周目 r3 (2026-10-02 仕様 §8): 置き場は確認の窓と同じ枠 (PC 下の窓・スマホ 主人公を切らない窓)。置き場の幅は H で変わる (高い窓は主人公を避けて狭まる) ので、
+            // 最後の幅で行数を測り直す (2回まで。読み合わせの指摘: 旧は H=300 の見積りの幅で行数を決め、狭まった窓から本文がはみ出した)
+            float W0r = W;
+            float Hr = Mathf.Min(H, cs.y - RunUi.TopH - 24f - 24f);
+            Rect r3pre = default(Rect);
+            bool r3 = BattleScreen.R3 && BattleScreen.R3WindowRect(g, st, cs, W0r, Hr, -1, out r3pre, false);
+            for (int it2 = 0; r3 && it2 < 3 && Mathf.Abs(r3pre.width - W) >= 1f; it2++)
+            {
+                W = r3pre.width; H = heightFor(W); Hr = Mathf.Min(H, cs.y - RunUi.TopH - 24f - 24f);
+                r3 = BattleScreen.R3WindowRect(g, st, cs, W0r, Hr, -1, out r3pre, false);
+            }
+            if (!r3 && Mathf.Abs(W - W0r) >= 1f) { W = W0r; H = heightFor(W); }
             // PC はギアのトークンの真上 (自分の札の C 区画の左端)。スマホは自分の札の右・手札の上 (x は上で決めた)
             if (x + W > cs.x - 12f) x = Mathf.Max(12f, cs.x - 12f - W);
             float y0 = ph ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 8f : BattleScreen.SelfCardTop + 8f;   // PC は自分の札の上端 (StripH に固定。2026-09-30 F19)
             if (ph) y0 = KeepBelowBand(cs, y0, H);
+            Rect r3r = default(Rect);
+            if (r3 && BattleScreen.R3WindowRect(g, st, cs, W0r, Hr, -1, out r3r)) { x = r3r.x; y0 = r3r.y; W = r3r.width; H = r3r.height; }
             var panel = PaperFx.Sheet(root, PaperFx.Panel, "gear-window");
             UiKit.Anchor(panel.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(x, y0), new Vector2(x + W, y0 + H));
             panel.raycastTarget = true;

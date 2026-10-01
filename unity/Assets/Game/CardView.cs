@@ -224,7 +224,104 @@ namespace DeckRogue.Game
                 var sm = UiKit.SmallMat(body.font);
                 if (sm != null) body.fontSharedMaterial = sm;
             }
+            // 三周目 r3 の手札だけ: 要の数字の札 (札を沈めると本文が見えないので、最初の量の効果を1つ左上に。拡大の窓・報酬・店・r2 には出さない)
+            if (InHand && BattleScreen.R3) BuildKeyNum(root, def, mod);
+        }
 
+        // ---- 要の数字の札 (三周目 r3 UI 2026-10-02・仕様 docs/design/hd2d-slice/r3-ui-spec.md §4) ----
+        // 手札を沈めると本文が画面の外に出るので、本文の最初の量の効果を1つ、コスト玉のすぐ下 (挿絵の窓の左上・札の単位で x 12〜・y 50〜74) に小さな札で出す。
+        // 手札は右の札ほど手前に描く (SyncHand の SetSiblingIndex(i)) ので、扇が重なっても札の左上は隠れない。値は本文と同じ実値
+        // (MakeDamageModifier＝成長・勢い・弱体・狙った敵の急所と装甲込み。狙った敵が変わると RefreshHandCard が札ごと描き直す)。
+        // 形は「剣の絵＋6」「剣の絵＋4×2」「盾の絵＋5」「心の絵＋6」「2ドロー」「+1E」。選択式・量の無い札・状態異常の札は出さない (触れて読む)。
+        // 見た目は紙 (濃) の札＋墨の数字 (Deco 17)。新しい色は使わない。触れて上がっている間は隠す (SetKeyNumVisible。本文に同じ数字がある)
+
+        /// <summary>要の数字の札を出し入れする (無ければ何もしない)</summary>
+        public static void SetKeyNumVisible(RectTransform card, bool on)
+        {
+            var k = card != null ? card.Find("keynum") : null;
+            if (k != null && k.gameObject.activeSelf != on) k.gameObject.SetActive(on);
+        }
+
+        static void BuildKeyNum(RectTransform root, CardDef def, Func<int, int> mod)
+        {
+            string icon, text;
+            if (!KeyNumOf(def, mod, out icon, out text)) return;
+            var k = UiKit.NewRect("keynum", root);
+            var paper = PaperFx.Sheet(k, PaperFx.Tag2, "paper");
+            UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
+            paper.raycastTarget = false;
+            var t = UiKit.Deco(k, text, 17, PaperFx.Ink, TextAnchor.MiddleLeft);
+            t.textWrappingMode = TextWrappingModes.NoWrap;
+            t.characterSpacing = 0f;
+            t.raycastTarget = false;
+            float tw = Mathf.Ceil(t.GetPreferredValues(text).x);
+            float iconW = icon != null ? 16f : 0f;
+            float w = 6f + iconW + (icon != null ? 3f : 0f) + tw + 7f;
+            UiKit.Anchor(k, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(12f, -74f), new Vector2(12f + w, -50f));
+            if (icon != null)
+            {
+                var ic = UiKit.Icon(k, icon, 16f, PaperFx.Ink, true);
+                ic.rectTransform.anchorMin = ic.rectTransform.anchorMax = new Vector2(0f, 0.5f);
+                ic.rectTransform.pivot = new Vector2(0f, 0.5f);
+                ic.rectTransform.anchoredPosition = new Vector2(6f, 0f);
+            }
+            UiKit.Anchor(t.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(6f + iconW + (icon != null ? 3f : 0f), 0f), new Vector2(-4f, 0f));
+        }
+
+        /// <summary>要の数字: 本文 (onPlay) の最初の量の効果。ダメージは同じ札の onPlay のダメージを全部まとめる (同値の多段は a×n・X 札は a×X)。
+        /// 条件つきの効果 (condition 付き: 「上限5以上でさらに6」「急所なら4」「成長3以上で+6」・猛り火など) は数えない (2026-10-02 読み合わせの指摘:
+        /// Summarize は条件を見ず、被攻撃の窓の効果も足すので、条件を満たしていない時に本文より大きい数を見せていた＝表示の嘘)。
+        /// 盤面で条件の成否を判定する式は手札の札の組み立てに渡っていないので、条件つきの分は足さない (触れて本文で読む)</summary>
+        static bool KeyNumOf(CardDef def, Func<int, int> mod, out string icon, out string text)
+        {
+            icon = null; text = null;
+            if (def == null || def.Effects == null || (def.Modes != null && def.Modes.Count > 0)) return false;
+            for (int i = 0; i < def.Effects.Count; i++)
+            {
+                var e = def.Effects[i];
+                if (e.Trigger != null && e.Trigger != "onPlay") continue;
+                if (!e.Amount.HasValue || e.Condition != null) continue;   // 条件つきは数えない (上の注記)
+                int amt = e.Amount.Value;
+                string xs = e.XHits == true ? "×X" : "";
+                switch (e.Effect)
+                {
+                    case "dealDamage":
+                    {
+                        string dmg = KeyNumDamage(def.Effects, mod);
+                        if (dmg == null) return false;
+                        icon = "sword"; text = dmg + xs; return true;
+                    }
+                    case "dealDamageRandom":
+                        icon = "sword"; text = amt + "〜" + (e.AmountMax.HasValue ? e.AmountMax.Value : amt); return true;
+                    case "gainBlock":
+                    case "gainIceBlock":
+                        icon = "shield"; text = amt + xs; return true;
+                    case "gainHp":
+                        icon = "heart"; text = amt + xs; return true;
+                    case "drawCards":
+                        text = amt + "ドロー"; return true;
+                    case "gainEnergy":
+                        text = "+" + amt + "E"; return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>要の数字のダメージ: onPlay で条件の無い dealDamage だけを集める (同値の繰り返し＝多段は a×n、違う値は合計)。値は手札の本文と同じ補正 (mod)</summary>
+        static string KeyNumDamage(IReadOnlyList<DeclarativeEffect> effects, Func<int, int> mod)
+        {
+            var dmgs = new List<int>();
+            for (int i = 0; i < effects.Count; i++)
+            {
+                var e = effects[i];
+                if (e.Trigger != null && e.Trigger != "onPlay") continue;
+                if (e.Effect != "dealDamage" || !e.Amount.HasValue || e.Condition != null) continue;
+                dmgs.Add(mod != null ? mod(e.Amount.Value) : e.Amount.Value);
+            }
+            if (dmgs.Count == 0) return null;
+            bool same = true; int sum = 0;
+            for (int i = 0; i < dmgs.Count; i++) { if (dmgs[i] != dmgs[0]) same = false; sum += dmgs[i]; }
+            return dmgs.Count > 1 && same ? dmgs[0] + "×" + dmgs.Count : sum.ToString();
         }
 
         /// <summary>本文の末尾の注記 (2026-09-29 p06): 「消滅」「保持」「骨のナイフ」の一語は真鍮の墨 (color-theme の「注意書き」)、

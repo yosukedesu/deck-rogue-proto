@@ -141,13 +141,28 @@ namespace DeckRogue.Game
             if (HandLayer != null)
                 UiKit.Anchor(HandLayer, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-700f, BattleScreen.HandY), new Vector2(700f, BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 40f));
             var desk = FieldLayer.Find("desk-shade") as RectTransform;
+            Image deskImg;
             if (desk == null)
             {
                 desk = UiKit.NewRect("desk-shade", FieldLayer);
-                var dim = desk.gameObject.AddComponent<Image>();
-                dim.sprite = UiKit.LinearSprite(ThemeFx.FadeUp(PaperFx.Ground, DeskShadeAlpha, "fade-up-ground-055"), 0.25f); dim.type = Image.Type.Simple; dim.preserveAspect = false; dim.raycastTarget = false;   // Linear (W3 P21 の申し送り2): 絵に焼いた α を Gamma と同じ濃さへ (下の地面 0.25 を仮定)
+                deskImg = desk.gameObject.AddComponent<Image>();
+                deskImg.sprite = UiKit.LinearSprite(ThemeFx.FadeUp(PaperFx.Ground, DeskShadeAlpha, "fade-up-ground-055"), 0.25f); deskImg.type = Image.Type.Simple; deskImg.preserveAspect = false; deskImg.raycastTarget = false;   // Linear (W3 P21 の申し送り2): 絵に焼いた α を Gamma と同じ濃さへ (下の地面 0.25 を仮定)
             }
-            UiKit.Anchor(desk, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, deskTop));
+            else deskImg = desk.GetComponent<Image>();
+            if (R3A_DeskHand)
+            {   // 三周目 (2026-10-01 レーン A・分析 R6): 箱庭の既定 deskshade=hand = 手札の矩形 (HandLayer。画面の下端から手札の上の余白 40 まで) の内側だけ α0.3。
+                // 左右の端は幅の 15% で 0 へぼかす (硬い縦の縁を作らない)。旗 deskshade=full で二周目の全幅の暗幕。今の舞台は下の else のまま
+                var want = R3A_DeskHandSprite();
+                if (deskImg != null && deskImg.sprite != want) deskImg.sprite = want;
+                float handTop = BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 40f;
+                UiKit.Anchor(desk, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-700f, 0f), new Vector2(700f, Mathf.Max(1f, handTop)));
+            }
+            else
+            {
+                var want = UiKit.LinearSprite(ThemeFx.FadeUp(PaperFx.Ground, DeskShadeAlpha, "fade-up-ground-055"), 0.25f);   // 作った時と同じ絵 (deskshade=hand から戻した時だけ差し替わる)
+                if (deskImg != null && deskImg.sprite != want) deskImg.sprite = want;
+                UiKit.Anchor(desk, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, deskTop));
+            }
             var bgRt = FieldLayer.Find("bg");
             desk.SetSiblingIndex(bgRt != null ? bgRt.GetSiblingIndex() + 1 : 0);
             // 敵の入れ物: 数が変わったら作り直す (分裂・孵化)
@@ -291,6 +306,48 @@ namespace DeckRogue.Game
         /// HD-2D 見本の箱庭 (2026-09-30 P20): 手札を沈めた分だけ下げる。PC 285 = 沈めた手札の真ん中の札の上端 (11+266.8=277.8) の 7.2 上
         /// (layout-check L1 の 6 以上。今の 300 は上端 296.8 の 3.2 上で、人形の多い白の自分の札 (幅 924) だけ L1 に掛かっていた)。スマホは式のまま (−3+290+6 = 293)</summary>
         public static float StatusLineY { get { return UiKit.Phone ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 6f : (BattleScreen.Hd2dLayout ? 285f : 300f); } }
+
+        // ---- 三周目 (2026-10-01 レーン A・分析 R6・計画 docs/design/hd2d-round3-plan-2026-10-01.md §2 A): 箱庭の手札の後ろの暗幕を手札の矩形だけに ----
+        /// <summary>暗幕 desk-shade を手札の矩形の内側だけにするか (箱庭で deskshade=hand。旗を書かない時は uilayout=r3 → hand・r2 → full = 二周目の全幅 (HD2DFlags.DeskShade の既定)。今の舞台は旗によらず false)</summary>
+        static bool R3A_DeskHand { get { return BattleScreen.Hd2dLayout && HD2DFlags.DeskShade == HD2DDeskShade.Hand; } }
+        /// <summary>手札の矩形の暗幕の濃さ (Gamma の見た目の α。下の 40% で一定)・左右の端のぼかしの幅 (矩形の幅の割合)</summary>
+        const float R3A_DeskHandAlpha = 0.3f, R3A_DeskHandFeather = 0.15f;
+        static Sprite _r3aDeskHand;
+        /// <summary>
+        /// 手札の矩形の暗幕の絵: 縦は ThemeFx.FadeUp と同じ形 (下の 40% は R3A_DeskHandAlpha のまま一定・その上を smoothstep で 0)、
+        /// 横は左右の端から幅の R3A_DeskHandFeather で smoothstep の 0 へ。色は PaperFx.Ground。FadeUp の 0.55 (鍵 fade-up-ground-055) とは別の絵 = 別の鍵
+        /// (FadeUp のキャッシュは鍵だけで引くので、同じ鍵で α を変えると先に作った方が返る)。Linear の補正は今の暗幕と同じ (下の地面 0.25)
+        /// </summary>
+        static Sprite R3A_DeskHandSprite()
+        {
+            if (_r3aDeskHand != null) return _r3aDeskHand;
+            const int w = 64, h = 64;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.name = "r3a-desk-hand-030";
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            var c = PaperFx.Ground;
+            var px = new Color[w * h];
+            for (int y = 0; y < h; y++)
+            {
+                float k = y / (float)(h - 1);                      // 0 = 下端・1 = 上端
+                float u = Mathf.Clamp01((k - 0.4f) / 0.6f);
+                float v = 1f - u * u * (3f - 2f * u);
+                for (int x = 0; x < w; x++)
+                {
+                    float kx = x / (float)(w - 1);
+                    float d = Mathf.Clamp01(Mathf.Min(kx, 1f - kx) / R3A_DeskHandFeather);
+                    float hx = d * d * (3f - 2f * d);
+                    px[y * w + x] = new Color(c.r, c.g, c.b, R3A_DeskHandAlpha * v * hx);
+                }
+            }
+            tex.SetPixels(px);
+            tex.Apply(false, false);
+            var s = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            s.name = "r3a-desk-hand-030";
+            _r3aDeskHand = UiKit.LinearSprite(s, 0.25f);
+            return _r3aDeskHand;
+        }
 
         /// <summary>手札 UI に残っている札の数 (自動操作の検証用)</summary>
         public int HandCount { get { return _hand.Count; } }
@@ -668,6 +725,7 @@ namespace DeckRogue.Game
         public void CloseReactionWindow()
         {
             BattleScreen.RestoreSelfStrip(SelfArea);   // 窓が上げられず打ち切った自分の札を元の幅に (2026-09-29 p11)
+            BattleScreen.R3U_RestoreDollTags();         // r3: 窓と重なって畳んだ人形の足元の札を戻す (2026-10-02 仕様 §8)
             if (UiLayer == null) return;
             for (int i = UiLayer.childCount - 1; i >= 0; i--)
             {
@@ -718,6 +776,8 @@ namespace DeckRogue.Game
             CardView.InHand = true;
             try { CardView.Refill(hc.Rt, hc.Card, st, hc.Playable || hc.Settable, true); }   // 面は「出せる、または仕込める」(判定は Playable のまま。2026-09-29 p05)
             finally { CardView.PreviewEnemy = -1; CardView.CompactName = false; CardView.BodyRightInset = 0f; CardView.InHand = false; }
+            if (BattleScreen.R3) BattleScreen.R3A_HoverCatch(hc.Rt);   // r3: Refill が子を全部捨てるので、上がった札の下の透明な的を付け直す
+            if (BattleScreen.R3 && hc.Rt.localScale.x > BattleScreen.CardScale + 0.01f) CardView.SetKeyNumVisible(hc.Rt, false);   // 上がっている札は要の数字の札を隠したまま
         }
 
         // ---- 狙いの矢 (スマホ。2026-09-29 p09 ユーザー裁定「狙いの矢だけ」) ----
@@ -745,7 +805,7 @@ namespace DeckRogue.Game
             if (_aim == null) BuildAimArrow();   // 組み直し (ClearUi) で消えていれば作り直す
             var pin = _aim.GetComponent<AimPin>();
             if (pin != null) { pin.Card = hc.Rt; pin.Pos = hc.BasePos; pin.Scale = BattleScreen.CardScale; pin.Apply(); }
-            bool show = screenPos.y > Screen.height * 0.36f;
+            bool show = screenPos.y > BattleScreen.DropLineScreen(Root);   // 取り消しの線 = EndDrag の「場に出す」線 (r3 は沈めた手札の上端＋111)
             _aimLine.gameObject.SetActive(show);
             SetAimEdge(g, st, show ? over : -1);
             // 撃とうとしている札に真鍮の縁 (2026-09-30 F36: 札は手札の元の位置のままで、どの札から矢が出ているかが形から読めなかった)。
@@ -1070,6 +1130,11 @@ namespace DeckRogue.Game
             return true;
         }
 
+        /// <summary>r3 の扇の下がり (中央から1枚ごと。二周目は 10)</summary>
+        const float R3U_FanDrop = 4f, R3U_FanDropMax = 12f, R3U_FanTiltMax = 6f;
+        /// <summary>r3 の出せない札の沈み (二周目は 16)。0 = 沈めず、紙の色と灰の玉だけで知らせる (要の数字の札の門 36。hd2d-seatfit.py の R3_FAN unplay_sink と同じ値)</summary>
+        const float R3U_UnplayableSink = 0f;
+
         public void SyncHand(GameRoot g, GameState st, bool animate)
         {
             var hand = st.Player.Hand;
@@ -1086,7 +1151,7 @@ namespace DeckRogue.Game
             {
                 float csx = BattleScreen.CanvasSize(Root).x;
                 float leftCol = LightUi.ShouldShow(g.Rs, st) ? UiKit.Edge + 128f + 12f + LightUi.DotsW * 2.5f : UiKit.Edge + 150f;   // 灯籠の右端 or 山札の右端
-                float tilt = n > 1 ? (n - 1) / 2f * 3f * Mathf.Deg2Rad : 0f;
+                float tilt = n > 1 ? (BattleScreen.R3 ? Mathf.Min((n - 1) / 2f * 3f, R3U_FanTiltMax) : (n - 1) / 2f * 3f) * Mathf.Deg2Rad : 0f;
                 float overhang = Mathf.Max(0f, CardView.H / 2f * Mathf.Sin(tilt) - CardView.W / 2f * (1f - Mathf.Cos(tilt))) * BattleScreen.CardScale;
                 float L = leftCol + 24f + overhang, R = csx - 305f;
                 spacing = n > 1 ? Mathf.Max(20f, Mathf.Min(cw + 12f, (R - L - cw) / (n - 1))) : 0f;
@@ -1162,6 +1227,7 @@ namespace DeckRogue.Game
                     try { rt2 = CardView.Build(HandLayer, c, st, face, true, "hand" + i); }
                     finally { CardView.PreviewEnemy = -1; CardView.CompactName = false; CardView.BodyRightInset = 0f; CardView.InHand = false; }
                     rt2.anchoredPosition = pos; rt2.localRotation = rot; rt2.localScale = scl;
+                    if (BattleScreen.R3 && scl.x > BattleScreen.CardScale + 0.01f) CardView.SetKeyNumVisible(rt2, false);   // 触れて上がっている札は要の数字の札を隠したまま
                     hc = new HandCard { Rt = rt2, Card = c, Playable = playable, Settable = settable, Cost = cost, Preview = preview, Compact = compact, BodyInset = inset };
                     _hand[c.Uid] = hc;
                     fresh = false;
@@ -1191,10 +1257,15 @@ namespace DeckRogue.Game
                 hc.Index = i;
                 hc.Rt.name = "hand" + i;
                 float dx = (i - center) * spacing + fanShift;
-                float dy = -Mathf.Abs(i - center) * 10f;
-                if (myTurn && g.Pending == null && !playable && !settable) dy -= 16f;   // ⑦ (2026-09-17): 出せない札 (エナジー不足など) は扇の中で少し沈む
+                // r3 は扇の下がり 4 で 12 まで・傾きは端で ±6° まで (仕様 §4 の 4 に加えて頭打ち: 傾き 3°×枚数のままだと 7枚以上で左端の札の左上 = 要の数字の札が
+                // 回転で下がり、画面の下から PC 35px・スマホ 30px を割った。頭打ちで 10枚でも PC 40px・スマホ 42px 以上。5枚以下は仕様のまま)
+                float dy = BattleScreen.R3 ? -Mathf.Min(Mathf.Abs(i - center) * R3U_FanDrop, R3U_FanDropMax) : -Mathf.Abs(i - center) * 10f;
+                // ⑦ (2026-09-17): 出せない札 (エナジー不足など) は扇の中で少し沈む。r3 は沈めない (R3U_UnplayableSink 0): 沈めた手札で端の札が 16 下がると
+                // 要の数字の札の下端が画面の下から PC 24・スマホ 21px まで落ち、門 36 を割った (2026-10-02 読み合わせの指摘。ターンの終わりは全部の札が出せない)。
+                // 合図は紙の沈んだ色 (CardView の PaperFx.DimTint) と灰のコスト玉が担う
+                if (myTurn && g.Pending == null && !playable && !settable) dy -= BattleScreen.R3 ? R3U_UnplayableSink : 16f;
                 hc.BasePos = new Vector2(dx, -areaH / 2f + CardView.H * BattleScreen.CardScale / 2f + dy);
-                hc.BaseRot = -(i - center) * 3f;
+                hc.BaseRot = BattleScreen.R3 ? Mathf.Clamp(-(i - center) * 3f, -R3U_FanTiltMax, R3U_FanTiltMax) : -(i - center) * 3f;
             }
             // 3) 並び順と位置
             int k = 0;

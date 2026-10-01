@@ -260,9 +260,35 @@ namespace DeckRogue.Game
                 // 主人公の足・人形の1体目・敵の帳面が足元を 16px 以上隠さない線 = PC 0.407 (隠す量 0.0／1.3／0.0px)。スマホは 0.519 だと幕ボスの帳面 (予告つき 79) が
                 // ボスの足元を 15.6px 隠す (門 16) → 余裕を取って 0.525 (10.6px)。docs/design/hd2d-slice/seatfit.md「二周目のカメラ」。
                 // W3 (P20・2026-09-30) の 28°・12° では PC 0.41・スマホ 0.51 だった (scratchpad/hd2d/p20/seatfit-p20.md)
-                if (DioramaCamera) return UiKit.Phone ? 0.525f : 0.407f;
+                // 三周目 R3 UI (2026-10-02 本番・旗 uilayout=r3 = 箱庭の既定。仕様 docs/design/hd2d-slice/r3-ui-spec.md §1): PC 0.36 (主人公の足元 上から 65%)・
+                // スマホ 0.45 (足元 上から 57%。PC と同じ 65% だと左下の列＝足元の帳・輪・山札が画面に入らない)。uilayout=r2 は二周目の 0.407／0.525
+                if (DioramaCamera) return UiKit.Phone ? (R3U_Layout ? R3U_GroundLinePhone : 0.525f) : (R3U_Layout ? R3A_GroundLineUiTrial : 0.407f);
                 return UiKit.Phone ? 0.56f : 0.45f;   // スマホ 0.54→0.56 (2026-09-15 案C: 頭上の吹き出しが無くなり、足元の帳面の札 76 に足が掛からない高さへ)
             }
+        }
+
+        /// <summary>
+        /// 三周目 R3 の試し撮りの足元の線 (2026-10-01 レーン A・計画 docs/design/hd2d-round3-plan-2026-10-01.md §0 の1)。
+        /// 主人公の足元 上から 706px (65%。二周目 0.407 は 654)・頭 41%・足元の下 20% (分析 frame の案2)。カメラは上下に平行移動するだけ = 座席の画面の x・深さ・地平線の行 297 は変わらない
+        /// (= 座席の表 SeatEnemyPc はそのまま使える。scripts/hd2d-seatfit.py の「三周目の試し撮り」の節)
+        /// </summary>
+        const float R3A_GroundLineUiTrial = 0.36f;
+        /// <summary>三周目 R3 UI のスマホの足元の線 (2026-10-02 仕様 §3・§15 Q4)</summary>
+        const float R3U_GroundLinePhone = 0.45f;
+        /// <summary>箱庭で三周目の割り付け (旗 uilayout=r3・既定) か (旗 groundline= を書けばそちらが勝つ。BattleScreen.R3 と同じ条件＝PC とスマホ共通)</summary>
+        static bool R3U_Layout { get { return DioramaCamera && HD2DFlags.UiLayout == HD2DUiLayout.R3; } }
+
+        /// <summary>world の点を画面 (UI キャンバスの px・左下原点) へ写す。ProjectFeet と同じ式だが深度を覚えない (UI の置き場の見積り用。2026-10-02 R3U)</summary>
+        public static Vector2 R3U_ProjectPoint(Vector3 world)
+        {
+            Ensure();
+            var rel = world - _camBase;
+            float d = Vector3.Dot(rel, _fwd);
+            float x = Vector3.Dot(rel, _right), y = Vector3.Dot(rel, _up);
+            float W = Screen.width, H = Screen.height;
+            float k = _k * d / _dist;
+            float sf = ScaleFactor();
+            return new Vector2((W * 0.5f + x / k) / sf, (H * 0.5f + y / k) / sf);
         }
 
         static Camera _cam;
