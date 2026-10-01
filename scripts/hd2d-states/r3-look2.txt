@@ -1,0 +1,14 @@
+# HD-2D 見本 三周目 本番の変種 (2026-10-02 統合)。段2 で既定が変わった (霧 end 38・far2 20〜40 0.4・芯 1.9・色の倍率 ×1.45) ので、r3-look.txt の段1 の変種は使わない。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r3-look2.txt <本番の撮影の親>/r3-look2 2
+# 見ること: 既定 (r3-slice の PC-S-*) と並べて、暗い側 (r3s2dark)・明るい側 (r3s2bright) のどれが夜の森として良いか (暗い画素 ≤0.66・帯の頂点 ≥150・地面が明るすぎないか)。主人公の照明の段 (char_soft・char_s1)。
+PC-V2-dark-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3s2dark
+PC-V2-dark-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3s2dark
+PC-V2-dark-quad-hideui|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3s2dark
+PC-V2-bright-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3s2bright
+PC-V2-bright-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3s2bright
+PC-V2-bright-quad-hideui|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3s2bright
+PC-V2-charsoft-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3char_soft
+PC-V2-chars1-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3char_s1
+PC-V2-nonormal-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3nonormal
+PH-V2-dark-ogre-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;tier=phone;look=look_act1_r3s2dark
+PH-V2-bright-ogre-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;tier=phone;look=look_act1_r3s2bright

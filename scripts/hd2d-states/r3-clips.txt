@@ -1,0 +1,19 @@
+# HD-2D 見本 三周目の動く物の連写 (2026-10-01 レーン F 段1。分析 R14 揺れ・R8 流れる霧・R11 待機の位相)。1行 = 名前|PC または PH|STATE。
+# 撮り方: DET=1 SHOT_TIMEOUT=600 scripts/pshots.sh scripts/hd2d-states/r3-clips.txt <本番の撮影の親>/r3-clips 2   (1行 80〜100 枚)
+#   動く見比べ (mp4) は scripts/hd2d-clip.sh <出力名> --list scripts/hd2d-states/r3-clips.txt --no-shoot (撮った連番から)。名札はコマ番号で (二周目の教訓)。
+# 中身: r2-clips.txt の写し (同じ6行・同じ名前・同じ STATE) ＋三周目で足した 2 行 (房と草の揺れ・α合成の霧の板の流れを UI なしで約4秒)。
+# 見る所: ① 待機 = 敵の足元の行が動かず頭だけ 4px 動く (r2idle)・座席ごとの待機の位相がばらける (R11) ② 揺れ (R14) = 房・垂れる枝・草がゆっくり揺れ、
+#   幹と地面は動かない・影も同じだけ動く (影と深さの3パスに同じ変位)・上下のぼかしの縁が揺れでちらつかない ③ 霧の板の流れ (0.02 unit/秒) が座席の数字の読みを邪魔しない
+#   ④ R01 = 振りのコマで斧の宝石の光が宙に残らない。
+# 直しの輪1 (2026-10-02 反証のまとめ (d)): 旧版の撮影は hideui を連写の後ろでだけ当てていたので、hideui の6行に UI (帳面・手札・上部バー) が写っていた
+#   (R14 揺れ・R8 霧の流れを UI なしで見た結論は無効)。Autopilot が hideui・hidezone を entershots の連写の前と1枚ごとに当て、hideui の連写の間は演出の層
+#   (名前の帯・登場の土煙の輪) も隠すように直した (1枚撮りは今のまま)。撮り直したら、手前の草のちらつき (向きが行ったり来たりする画素 0.2〜0.4% の増え) を mp4 で目で見る。
+PC-CL-wolf-idle|PC|phase=combat;enemy=enemy_wolf;entershots=80;enterevery=3;hideui=1;dumplayout=1;stage=old
+PC-CL-wolf-idle-sample|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;entershots=80;enterevery=3;hideui=1;dumplayout=1
+PC-CL-ogre-idle-sample|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;entershots=100;enterevery=3;hideui=1;dumplayout=1
+PC-CL-dolls-idle-sample|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;entershots=80;enterevery=3;hideui=1;dumplayout=1
+PH-CL-wolf-idle-sample|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;entershots=80;enterevery=3;hideui=1;dumplayout=1;tier=phone
+PC-CL-R01-sample|PC|phase=combat;enemy=enemy_probe;stage=diorama;hd2d=slice;play=attack;playshots=80;playevery=3
+# ---- 三周目で足した: 揺れと霧の流れ (UI なし・幕ボス・約4秒)
+PC-CL-ogre-sway-sample|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;entershots=80;enterevery=3;hideui=1;dumplayout=1
+PH-CL-ogre-sway-sample|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;entershots=80;enterevery=3;hideui=1;dumplayout=1;tier=phone

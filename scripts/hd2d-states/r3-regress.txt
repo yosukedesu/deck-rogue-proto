@@ -1,0 +1,32 @@
+# HD-2D 見本 三周目の演出の回帰 R1〜R16 (見本・PC) (2026-10-01 レーン F 段1。計画 §1「壊していないか」・§3 の5)。1行 = 名前|PC または PH|STATE。# と空行は読み飛ばす。
+# 中身: r2-regress.txt の写し (同じ22行・同じ名前・同じ STATE)。hd2d=slice = 束 (画角22°・見下ろし5°) ＋三周目の既定の設計図と光 = 三周目の既定で撮る。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r3-regress.txt <本番の撮影の親>/r3-regress 2   (並列は2まで)
+# 見方: 二周目の最終 (~/.cache/deck-rogue/hd2d-r2/shots-final/r2-regress・同じ名前) と並べ、コマ送りを目で見る (斬撃・盾・崩れ・登場の帯・罠の幽霊・人形の点灯と踏み込み)。画素一致は求めない (森が変わった)。
+#   python3 scripts/hd2d-layout-check.py <出力> --moving --md …   (重なり 0 件・L11 の ⑨ 垂れる枝が幕ボスの頭と意図の札の真上に掛からない・⑩ 手前の草が名前の帯と手札に掛からない)
+#   R09 (幕ボスの登場の寄り)・R08／R16 (撃破の寄り) で額縁 (手前の草 10 枚) が内側へ寄って名前の帯と幕ボスの頭に掛からないか・垂れる枝が寄りで意図の札に被らないか。
+#   R01 で宝石の光が宙に残らないか。揺れ (R14) は DET でもコマで動く = 名札はコマ番号で (二周目の教訓)。
+#   板と矩形のずれ (L9): 静止 1px・演出中 2px 以内。演出の板は座席の UI 追従で決まるので部品の追加では動かない見込み。
+# シート: python3 scripts/hd2d-r2-sheet.py regress --shots <親> --prefix r3 --out-dir <シートの置き場>   (今 = r3-regress-old*・三周目 = r3-regress*。二周目と並べる時は --prefix r2 で二周目の親を)
+PC-R01-swing|PC|phase=combat;enemy=enemy_probe;play=attack;playshots=8;playevery=1;stage=diorama;hd2d=slice;dumplayout=1
+PC-R02-multi|PC|phase=combat;hand=green_double_lash;play=0;playshots=12;playevery=3;stage=diorama;hd2d=slice;dumplayout=1
+PC-R03-aoe|PC|phase=combat;enemy=enc_probe_pair;hand=green_earth_roar;play=0;playshots=10;playevery=3;stage=diorama;hd2d=slice;dumplayout=1
+PC-R04-exposed|PC|phase=combat;eexposed=1;hand=green_strike;play=0;playshots=8;playevery=2;stage=diorama;hd2d=slice;dumplayout=1
+PC-R05-enrage|PC|phase=combat;enemy=enemy_brute;ehp=h+3;hand=green_strike;play=0;playshots=14;playevery=5;stage=diorama;hd2d=slice;dumplayout=1
+PC-R06-guard|PC|phase=combat;enemy=enemy_wolf;pblock=20;endplay=1;endshots=16;endevery=3;stage=diorama;hd2d=slice;dumplayout=1
+PC-R07-hurt|PC|phase=combat;enemy=enemy_wolf;endplay=1;endshots=14;endevery=9;stage=diorama;hd2d=slice;dumplayout=1
+PC-R08-kill|PC|phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4;stage=diorama;hd2d=slice;dumplayout=1
+PC-R09-enter|PC|phase=combat;enemy=enemy_brute;boss=1;entershots=12;enterevery=6;stage=diorama;hd2d=slice;dumplayout=1
+PC-R10-trap|PC|phase=combat;enemy=enemy_wolf;sets=green_reaction_vine*;endturn=1;fire=1;fireshots=10;fireevery=8;stage=diorama;hd2d=slice;dumplayout=1
+PC-R11-doll|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_hound,white_perm_squire;hand=white_light_bolt;play=0;playshots=8;playevery=3;stage=diorama;hd2d=slice;dumplayout=1
+PC-R12-gearwin|PC|phase=combat;gears=gear_spring,gear_cog;gearwin=0;stage=diorama;hd2d=slice;dumplayout=1
+PC-R13-gearmore|PC|phase=combat;gears=gear_spring,gear_cog;gearmore=1;stage=diorama;hd2d=slice;dumplayout=1
+PC-R14-popup|PC|phase=combat;popup=0;stage=diorama;hd2d=slice;dumplayout=1
+PC-R15-tip|PC|phase=combat;tip=enemy;stage=diorama;hd2d=slice;dumplayout=1
+PC-R01-swing-hideui|PC|phase=combat;enemy=enemy_probe;play=attack;playshots=8;playevery=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+PC-R02-multi-hideui|PC|phase=combat;hand=green_double_lash;play=0;playshots=12;playevery=3;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+PC-R04-exposed-hideui|PC|phase=combat;eexposed=1;hand=green_strike;play=0;playshots=8;playevery=2;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+PC-R06-guard-hideui|PC|phase=combat;enemy=enemy_wolf;pblock=20;endplay=1;endshots=16;endevery=3;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+PC-R07-hurt-hideui|PC|phase=combat;enemy=enemy_wolf;endplay=1;endshots=14;endevery=9;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+PC-R08-kill-hideui|PC|phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+# R16 (二周目で足した) 幕ボスの撃破の寄り
+PC-R16-bosskill|PC|phase=combat;enemy=enemy_brute;boss=1;ehp=3;hand=green_strike;play=0;playshots=20;playevery=14;stage=diorama;hd2d=slice;dumplayout=1

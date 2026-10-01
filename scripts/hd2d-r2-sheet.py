@@ -20,6 +20,18 @@
   08           演出の回帰 (PC・スマホ相当): 今 (stage=old) の2コマ｜二周目の2コマ・板と矩形のずれ・配置の検査 (= regress と同じ)
   final-numbers.md / .json  上の表の数字 (md の表と生の値)
 段2 = regress: 08 だけ (--shots の r2-regress*・r2-regress-old*)。
+三周目 (2026-10-01 レーン F 段1・計画 docs/design/hd2d-round3-plan-2026-10-01.md §1・§4。物差しは scripts/hd2d-r3-targets.py):
+  r3-trial  試しのビルド (scripts/hd2d-states/r3-trial.txt・r3-trial2.txt) = 本家 ot16｜二周目の最終｜試し × PC オーガ・狼・4体・人形9体・スマホ オーガ・4体
+            (UI なし・数字の小さな表)。--prev <1 回前の試しのフォルダ> で 本家｜二周目｜試し1｜試し2 (2026-10-02 段1b)。
+            ＋霧と変種 (撮ってある物: fog34・fog40・fog40far2・fog45・lensfar・far2・nonormal。試しごとに 既定の狼 と並べる)・キャラの照明 (T3-char-soft。主人公の数字)・
+            UI ありの行 (T3-ogre・T3-ui = R3 の試し撮り。UI の物差し U1〜U4)・二周目の写しの確かめ (T3-r2 と二周目の最終の画素の差)
+            舞台の数字は UI なしの画、UI ありの画は UI の物差しだけ。主人公の型は同じフォルダの unitsonly から借りる (hd2d-r3-targets の make_shot)
+  r3-final  本番 (scripts/hd2d-states/r3-slice.txt) = 本家｜W5｜二周目｜三周目 × 5場面 (オーガ・狼・4体・人形9体・スマホ オーガ)。
+            00-r3-targets (物差しの表)・01 UI あり・02 UI なし (数字つき)・03 ひと目 (384px)・final-r3-numbers.md/json。
+            二周目の列は r3-slice の「二周目の写し」(<dev>-R2-*) があればそれ (三周目の道具 = hideui で暗幕も消えた画)、無ければ二周目の最終 (~/.cache の r2-slice)。
+  python3 scripts/hd2d-r2-sheet.py r3-trial --shots <試しの撮影> [--prev <1 回前の試しの撮影>] [--out シート.png] [--md 数字.md] [--json 数字.json]
+  python3 scripts/hd2d-r2-sheet.py r3-final --shots <本番の撮影の親> [--out-dir …] [--only 00,01,02,03]
+  共通: [--r2 ~/.cache/deck-rogue/hd2d-r2/shots-final/r2-slice] [--w5 ~/.cache/deck-rogue/hd2d-w5/shots] [--ref-dir …]。出力の既定は unity/Shots/hd2d/r3/ (git の管理外)
 
 使い方
   python3 scripts/hd2d-r2-sheet.py trial --shots <試しの撮影のフォルダ> [--w5 <W5 の shots (hero62 と slice の親)>] [--out シート.png]
@@ -943,8 +955,10 @@ REG_ROWS = [('R01-swing', '振り (打撃)'), ('R02-multi', '多段'), ('R03-aoe
 
 
 def s_regress(F, dev, out):
-    dn = os.path.join(F.r2, 'r2-regress' if dev == 'PC' else 'r2-regress-ph')
-    do = os.path.join(F.r2, 'r2-regress-old' if dev == 'PC' else 'r2-regress-old-ph')
+    pre = getattr(F, 'prefix', 'r2')   # r3 = 三周目の r3-regress*・r3-regress-old* (2026-10-01 三周目 レーン F)
+    dn = os.path.join(F.r2, pre + ('-regress' if dev == 'PC' else '-regress-ph'))
+    do = os.path.join(F.r2, pre + ('-regress-old' if dev == 'PC' else '-regress-old-ph'))
+    newlab = '三周目' if pre == 'r3' else '二周目'
     C = F.C
     rows = []
     for row, lab in REG_ROWS:
@@ -987,7 +1001,7 @@ def s_regress(F, dev, out):
             if k == ks[0] and wn is not None:
                 tk.append(('板と矩形のずれ 最大 %.1fpx (今 %s・差 %+.1f)' % (wn, ('%.1f' % wo) if wo is not None else '—', wn - (wo or 0)) if moving else '板と矩形のずれ 最大 %.1fpx (静止)' % wn, OKC if ok else NGC))
                 tk.append(('配置の検査 %d 件 (全コマ・今 %d 件)' % (lcn, lco), OKC if lcn <= lco else NGC))
-            cells.append((Image.open(p).convert('RGB') if p else None, '二周目 %d/%d 枚目' % (k, n), tk))
+            cells.append((Image.open(p).convert('RGB') if p else None, '%s %d/%d 枚目' % (newlab, k, n), tk))
         rows.append(('%s %s' % (row[:3], lab), cells))
     notes = ['演出の回帰 R1〜R16 (R13 ギアの一覧は省いた) から、連番の 4割と 7割の所の2枚ずつ。左2枚 = 今 (stage=old)・右2枚 = 二周目。W5 と画素一致は求めない (カメラが変わった)。',
              '「板と矩形のずれ」= キャラの板が UI の矩形からずれた最大 (静止は 1px 以内・演出中は今の舞台との差 1px 以内が合格)。「配置の検査」= hd2d-layout-check.py の違反の数 (全コマの合計)。',
@@ -995,7 +1009,7 @@ def s_regress(F, dev, out):
     if not rows:
         print('演出の回帰の画が無い: %s・%s' % (dn, do))
         return None
-    return grid('08 演出の回帰 (%s): 今｜二周目' % ('PC' if dev == 'PC' else 'スマホ相当'), notes, rows, 480, out, cap_h=70, row_label_w=200)
+    return grid('08 演出の回帰 (%s): 今｜%s' % ('PC' if dev == 'PC' else 'スマホ相当', newlab), notes, rows, 480, out, cap_h=70, row_label_w=200)
 
 
 def sheet_final(a):
@@ -1044,13 +1058,400 @@ def sheet_final(a):
 
 def sheet_regress(a):
     F = Final(a)
+    F.prefix = a.prefix
     for dev in (a.dev.split(',') if a.dev else ['PC', 'PH']):
         s_regress(F, dev, os.path.join(F.out, '08-regress-%s.png' % dev))
 
 
+# ==================================================================================== 三周目 = r3-trial・r3-final (2026-10-01 レーン F 段1・R12)
+# 物差しは scripts/hd2d-r3-targets.py (★ 目安 = 本家 ot16 が入り二周目が外れる・◆ 歯止め・— 参考)。合否は目で決める (計画 §1)。
+# 置き場の既定: 本家 = ~/.cache/deck-rogue/hd2d-ref (+steam)・二周目の最終 = ~/.cache/deck-rogue/hd2d-r2/shots-final/r2-slice・
+#   W5 = ~/.cache/deck-rogue/hd2d-w5/shots (hero62・slice。無ければ前の作業場)。三周目の本番で「二周目の写し」(r3-slice.txt の <dev>-R2-*) を撮っていれば、
+#   二周目の列はそちらを使う (同じ道具 = hideui で暗幕も消えた画)。
+
+R3_CACHE = os.path.expanduser('~/.cache/deck-rogue')
+R3_R2 = os.path.join(R3_CACHE, 'hd2d-r2', 'shots-final', 'r2-slice')
+R3_OUT = os.path.join(REPO, 'unity', 'Shots', 'hd2d', 'r3')
+R3_SCENES = [('PC', 'ogre', 'オーガ (幕ボス・主役)'), ('PC', 'wolf', '狼'), ('PC', 'quad', '4体 (巻物)'), ('PC', 'dolls', '人形9体 (ひなた)'), ('PH', 'ogre', 'オーガ (幕ボス)')]
+R3_TOK = [('頂点', 'guard.peak', '%.0f'), ('p95', 'guard.p95', '%.0f'), ('暗', 'guard.dark60', '%.2f'), ('覆い', 'M2.cover', '%.2f'), ('σ', 'N2s.sigma', '%.0f'),
+          ('幹', 'trunks.dark', '%d'), ('樹皮', 'M5.band', '%.2f'), ('近幹', 'M5.near', '%.2f'), ('縁石', 'M6.hard', '%.1f'), ('空帯', 'strips.empty', '%d'),
+          ('手前', 'edges.front', '%.0f'), ('帯縁', 'edges.band', '%.0f'), ('体÷窓', 'chars.heroOverWindow', '%.2f'), ('敵鋭', 'chars.enemySharp', '%.2f'),
+          ('主鋭', 'chars.heroSharp', '%.2f'), ('足元', 'chars.heroContact', '%.2f'), ('体', 'chars.heroBody', '%.0f')]
+# UI の物差し (hd2d-r3-targets.py の U1〜U4・参考)。UI ありの画の行だけに出す
+R3_UI_TOK = [('UI覆', 'ui.cover', '%.2f'), ('窓覆', 'ui.pictureCover', '%.3f'), ('札p95', 'ui.p95', '%.0f'), ('札÷頂点', 'ui.p95OverPeak', '%.2f'),
+             ('明札', 'ui.brightOutsideHand', '%.0f')]
+R3_HERO_KEYS = ('chars.heroBody', 'chars.heroOverWindow', 'chars.heroSharp', 'chars.heroContact', 'guard.peak')
+_R3M = None
+
+
+def r3mod():
+    global _R3M
+    if _R3M is None:
+        _R3M = load_mod('hd2d_r3_targets', 'hd2d-r3-targets.py')
+    return _R3M
+
+
+class R3Src:
+    """1枚ぶんの画 (UI あり・UI なし・キャラの型・layout) の置き場"""
+
+    def __init__(self, label, ui=None, hide=None, units=None, lay=None, ref=None):
+        self.label, self.ui, self.hide, self.units, self.lay, self.ref = label, ui, hide, units, lay, ref
+
+
+def r3_paths(folder, name):
+    """<名前>-1.png (UI あり)・<名前>-hideui-1.png (UI なし)・<名前>-unitsonly-1.png・layout。無ければ None"""
+    def p(suf):
+        q = os.path.join(folder, name + suf)
+        return q if os.path.exists(q) else None
+    ui = p('-1.png'); hide = p('-hideui-1.png'); units = p('-unitsonly-1.png')
+    lay = p('-hideui-1.layout.json') or p('-1.layout.json')
+    if hide is None and ui is not None and lay and 'hideui=1' in (json.load(open(lay)).get('state') or ''):
+        hide, ui = ui, None   # 名前に hideui が付かない UI なしの画 (試しの撮影の T3-fog40 など)
+    return ui, hide, units, lay
+
+
+class R3:
+    """三周目のシートの読み込みと数字 (同じ画は1回だけ測る)"""
+
+    def __init__(self, ref_dirs=None):
+        self.R = r3mod()
+        self.refdirs = list(ref_dirs or []) + self.R.REF_DIRS + [STEAM_DIR]
+        self._m = {}
+        self._img = {}
+
+    def img(self, p):
+        if not p:
+            return None
+        if p not in self._img:
+            self._img[p] = Image.open(p).convert('RGB')
+        return self._img[p]
+
+    def ref_img(self, key):
+        for d in self.refdirs:
+            for ext in ('.jpg', '.png'):
+                q = os.path.join(d, REF_FILE[key] + ext)
+                if os.path.exists(q):
+                    return Image.open(q).convert('RGB')
+        return None
+
+    def measure(self, src, ui_ok=False):
+        """src = R3Src。舞台は UI なしの画で測る (ref なら本家)。ui_ok = UI ありの画しか無い時もその画で測る (UI を layout の矩形で除く・舞台は合否なし)。
+        UI ありの画もあれば UI の物差し (U1〜U4) を足す。unitsonly が無ければ同じフォルダの unitsonly から主人公の型を借りる (hd2d-r3-targets の make_shot)"""
+        if src is None:
+            return None
+        k = src.ref or src.hide or (src.ui if ui_ok else None)
+        if not k:
+            return None
+        if k not in self._m:
+            try:
+                if src.ref:
+                    s = T.shot_from_ref(src.ref, self.refdirs)
+                else:
+                    img = src.hide or src.ui
+                    lay = src.lay if src.hide else (src.ui[:-4] + '.layout.json')
+                    s = self.R.make_shot(img, lay, src.units, folder=os.path.dirname(os.path.abspath(img)), ui_only=src.hide is None,
+                                         name=os.path.basename(img)[:-4])
+                r = self.R.measure(s)
+                if not src.ref and src.ui:
+                    ul = src.ui[:-4] + '.layout.json'
+                    r['ui'] = self.R.ui_measure(src.ui, ul if os.path.exists(ul) else None, None if src.hide is None else s, r)
+                r['label'] = '%s %s' % (src.label, s.name) if not src.ref else '本家 ' + src.ref
+                self._m[k] = r
+            except SystemExit as e:
+                print('測れない:', e); self._m[k] = None
+            except Exception as e:  # noqa
+                print('測れない: %s (%s: %s)' % (k, type(e).__name__, e)); self._m[k] = None
+        return self._m[k]
+
+    def toks(self, r, keys=None, table=None):
+        """数字の小札: 緑 = 目標に入った・朱 = 外れた・白 = 本家か参考・灰の ≈ = 合否なし (キャラの型が近似か UI ありの画だけ)"""
+        if not r:
+            return []
+        out = []
+        J = {c['key']: (c, ok) for c, v, rng, ok in self.R.judge(r)}
+        un = getattr(self.R, 'unjudged', lambda r_, k_: None)
+        for lab, key, fmt in (table or R3_TOK):
+            if keys and key not in keys:
+                continue
+            v = T.get_key(r, key)
+            if v is None:
+                continue
+            c, ok = J.get(key, (None, None))
+            approx = ok is None and c is not None and c['cls'] != '参考' and un(r, key)
+            col = INK2 if approx else (INK if (ok is None or r.get('kind') == 'ref') else (OKC if ok else NGC))
+            try:
+                t = (lab + ' ' + fmt) % v
+            except TypeError:
+                t = '%s %s' % (lab, v)
+            out.append((t + ('≈' if approx else ''), col))
+        return out
+
+
+def r3_glance(title, notes, blocks, col_heads, out, w=384):
+    """「ひと目」: blocks = [(見出し, [(行の名前, [画 or None …]) …])]。画は w px に縮め、行の名前は左、列の見出しは上"""
+    pad = 12; lw = 150; h = round(w * 9 / 16)
+    ncol = len(col_heads)
+    f_t, f_n, f_h, f_c = font(26, True), font(16), font(18, True), font(15, True)
+    probe = ImageDraw.Draw(Image.new('RGB', (10, 10)))
+    Wd = pad * 2 + lw + ncol * (w + pad)
+    y = pad + 40
+    for n in notes:
+        y = text_wrap(probe, pad, y, n, Wd - 2 * pad, f_n, INK2)
+    top = y + 8
+    Ht = top + sum(30 + 28 + len(rows) * (h + pad) for _, rows in blocks) + pad
+    im = Image.new('RGB', (Wd, Ht), BG); d = ImageDraw.Draw(im)
+    d.text((pad, pad), title, fill=INK, font=f_t)
+    y = pad + 40
+    for n in notes:
+        y = text_wrap(d, pad, y, n, Wd - 2 * pad, f_n, INK2)
+    y = top
+    for head, rows in blocks:
+        d.text((pad, y), head, fill=GOLD, font=f_h); y += 30
+        for i, ch in enumerate(col_heads):
+            d.text((pad + lw + i * (w + pad), y), ch, fill=GOLD, font=f_c)
+        y += 28
+        for lab, ims in rows:
+            text_wrap(d, pad, y + 8, lab, lw - 12, f_c, INK)
+            for i, img_ in enumerate(ims):
+                x = pad + lw + i * (w + pad)
+                if img_ is None:
+                    d.rectangle([x, y, x + w, y + h], outline=LINE, fill=(30, 32, 44)); d.text((x + 10, y + 10), '未撮影', fill=INK2, font=f_c)
+                else:
+                    t_ = img_.resize((w, round(img_.height * w / img_.width)), Image.LANCZOS)
+                    im.paste(t_.crop((0, 0, w, min(h, t_.height))), (x, y))
+            y += h + pad
+    im.save(out)
+    print('シート:', out, im.size)
+    return out
+
+
+def r3_diff(a, b, specks=False):
+    """二周目の写しの確かめ: 同じ大きさの2枚の差 (画素の値の差が 2 を超える割合・差の絵 ×8)。
+    specks = (割合, 絵, 粒を除いた割合, 粒の数) を返す。粒 = 差の塊のうち 40×40 に収まり 800 画素以下の物 (月の塵の粒は動きの位相で場所が変わる)"""
+    if a is None or b is None or a.size != b.size:
+        return (None, None, None, None) if specks else (None, None)
+    x = np.asarray(a).astype(np.int16); y = np.asarray(b).astype(np.int16)
+    dd = np.abs(x - y).max(-1)
+    frac = float((dd > 2).mean())
+    vis = Image.fromarray(np.clip(dd * 8, 0, 255).astype(np.uint8)).convert('RGB')
+    if not specks:
+        return frac, vis
+    n = 0; rest = int((dd > 2).sum())
+    if rest and rest < 200000:
+        for y0, y1, x0, x1, c in r3mod().comps(dd > 2):
+            if y1 - y0 < 40 and x1 - x0 < 40 and c <= 800:
+                n += 1; rest -= c
+    return frac, vis, rest / dd.size, n
+
+
+# 試しの撮影の変種 (あれば並べる。1 回目 r3-trial.txt = fog40・fog45・lensfar・far2・nonormal／2 回目 r3-trial2.txt = fog34・fog40far2)
+R3_TRIAL_VARS = [('T3-fog34', 'fog.end 34 (look_act1_r3fog34)'), ('T3-fog40', 'fog.end 40 (look_act1_r3fog40)'),
+                 ('T3-fog40far2', 'fog.end 40＋霧の2段目 (look_act1_r3fog40far2)'), ('T3-fog45', 'fog.end 45 (look_act1_r3fog45)'),
+                 ('T3-lensfar', 'lensFar 1.6〜2.0 (look_act1_r3lens)'), ('T3-far2', '霧の2段目 far2 (look_act1_r3far2)'),
+                 ('T3-nonormal', '半立体の法線なし・オーガ (look_act1_r3nonormal)')]
+R3_VAR_KEYS = ('guard.peak', 'guard.p95', 'guard.dark60', 'M2.cover', 'N2s.sigma', 'trunks.dark', 'M5.band', 'edges.band')
+
+
+def sheet_r3_trial(a):
+    """試しのビルド (scripts/hd2d-states/r3-trial.txt・r3-trial2.txt): 本家｜二周目｜試し (--prev で 試し1｜試し2) + 変種・キャラの照明・
+    UI の試し撮り・二周目の写しの確かめ"""
+    F = R3(a.ref_dir)
+    sh = a.shots; r2 = a.r2; prev = getattr(a, 'prev', None)
+    if prev and not os.path.isdir(prev):
+        print('--prev のフォルダが無い:', prev); prev = None
+    tri = [('試し1', prev), ('試し2', sh)] if prev else [('試し', sh)]
+    ncol = 2 + len(tri)
+    ot = F.ref_img('ot16'); rref = F.measure(R3Src('本家 ot16', ref='ot16'))
+    rows = []
+    for dev, sc, lab in (('PC', 'ogre', 'PC オーガ (幕ボス)'), ('PC', 'wolf', 'PC 狼'), ('PC', 'quad', 'PC 4体'), ('PC', 'dolls', 'PC 人形9体'),
+                         ('PH', 'ogre', 'スマホ オーガ'), ('PH', 'quad', 'スマホ 4体')):
+        ui2, h2, u2, l2 = r3_paths(r2, '%s-S-%s' % (dev, sc))
+        tname = 'T3-%s%s' % (sc, '-ph' if dev == 'PH' else '')
+        m2 = F.measure(R3Src('二周目', ui2, h2, u2, l2))
+        cells = [(ot, '本家 ot16 (夜の森)', [(t, INK) for t, _ in F.toks(rref)]),
+                 (F.img(h2), '二周目 %s-S-%s (UI なし・暗幕あり)' % (dev, sc), F.toks(m2))]
+        for tl, folder in tri:
+            uiT, hT, uT, lT = r3_paths(folder, tname)
+            mT = F.measure(R3Src(tl, uiT, hT, uT, lT))
+            cap = '%s %s (UI なし)' % (tl, tname) if hT else '%s %s (UI なしが無い)' % (tl, tname)
+            cells.append((F.img(hT), cap, F.toks(mT)))
+        rows.append((lab, cells))
+    # 変種 (霧の end・霧の2段目・lensFar・法線なし)。試しごとに 既定 (狼 UI なし) ＋ 撮ってある変種
+    for tl, folder in tri:
+        uiW, hW, uW, lW = r3_paths(folder, 'T3-wolf')
+        cells = [(F.img(hW), '%s 既定 T3-wolf (UI なし)' % tl, F.toks(F.measure(R3Src(tl, uiW, hW, uW, lW)), R3_VAR_KEYS))]
+        for nm, cap in R3_TRIAL_VARS:
+            ui_, h_, u_, l_ = r3_paths(folder, nm)
+            if not (h_ or ui_):
+                continue
+            m = F.measure(R3Src(tl, ui_, h_, u_, l_), ui_ok=True)
+            cells.append((F.img(h_ or ui_), '%s %s%s' % (tl, cap, '' if h_ else ' (UI あり)'), F.toks(m, R3_VAR_KEYS)))
+        for i in range(0, len(cells), ncol):
+            rows.append(('霧と変種 (%s)%s' % (tl, '' if i == 0 else ' の続き'), cells[i:i + ncol]))
+    # キャラの照明 (主人公の型は unitsonly から借りる = 体・体÷窓・鋭い縁・足元)
+    uiO, hO, uO, lO = r3_paths(sh, 'T3-ogre')
+    cells = [(F.img(hO), '%s 既定 T3-ogre (UI なし)' % tri[-1][0], F.toks(F.measure(R3Src(tri[-1][0], uiO, hO, uO, lO)), R3_HERO_KEYS))]
+    for tl, folder in reversed(tri):
+        ui_, h_, u_, l_ = r3_paths(folder, 'T3-char-soft')
+        if h_ or ui_:
+            m = F.measure(R3Src(tl, ui_, h_, u_, l_), ui_ok=True)
+            cells.append((F.img(h_ or ui_), '%s T3-char-soft (照明をもう一段下げた変種・%s)' % (tl, 'UI なし' if h_ else 'UI あり'), F.toks(m, R3_HERO_KEYS)))
+    rows.append(('キャラの照明 (主人公の数字)', cells[:ncol]))
+    # UI あり (今の割り付け・R3 の試し撮り)。UI の物差し U1〜U4
+    cells = []
+    if uiO:
+        mO = F.measure(R3Src(tri[-1][0], uiO, hO, uO, lO))
+        cells.append((F.img(uiO), '%s T3-ogre (UI あり・今の割り付け)' % tri[-1][0], F.toks(mO, table=R3_UI_TOK)))
+    for tl, folder in reversed(tri):
+        uiU, hU, uU, lU = r3_paths(folder, 'T3-ui')
+        if uiU or hU:
+            mU = F.measure(R3Src(tl, uiU, hU, uU, lU), ui_ok=True)
+            cells.append((F.img(uiU or hU), '%s T3-ui (uitrial=1・R3 の試し撮り = Q1 の2段目)' % tl, F.toks(mU, table=R3_UI_TOK)))
+    if cells:
+        rows.append(('UI あり (UI の物差し)', cells[:ncol]))
+    # 二周目の写しの確かめ (今回の T3-r2)
+    ui2, h2, u2, l2 = r3_paths(r2, 'PC-S-ogre')
+    uiR, hR, uR, lR = r3_paths(sh, 'T3-r2')
+    a_, b_ = F.img(ui2), F.img(uiR or hR)
+    frac, vis, rest, nsp = r3_diff(a_, b_, specks=True)
+    toks = []
+    if frac is not None:
+        toks = [('全部 %s' % ('同じ画 (≤0.1%%)' if frac <= 0.001 else '違う (%.2f%%)' % (frac * 100)), OKC if frac <= 0.001 else NGC),
+                ('粒 %d 個を除くと %s' % (nsp, '同じ画 (≤0.1%%)' if rest <= 0.001 else '違う (%.2f%%)' % (rest * 100)), OKC if rest <= 0.001 else NGC)]
+    rows.append(('二周目の写し (look_act1_r2+look_act1_r2char)', [
+        (a_, '二周目の最終 PC-S-ogre (UI あり)', []),
+        (b_, '%s T3-r2 (三周目の道具で二周目の写しを撮った)' % tri[-1][0], []),
+        (vis, '差 ×8' + ('' if frac is None else ' — 値の差が 2 を超える画素 %.2f%%' % (frac * 100)), toks),
+    ]))
+    heads = ['本家 ot16', '二周目 (最終)'] + (['試し1 (%s)' % os.path.basename(os.path.normpath(prev)), '試し2 (%s)' % os.path.basename(os.path.normpath(sh))]
+                                         if prev else ['試し (三周目)'])
+    notes = ['三周目 段1 の試しのビルド (計画 §4・scripts/hd2d-states/r3-trial.txt・r3-trial2.txt)。同じ幅で 本家 ot16｜二周目の最終｜%s を並べた。'
+             '合否は目で決める (数字は補助)。' % ('試し1｜試し2' if prev else '試し'),
+             '数字 (scripts/hd2d-r3-targets.py): 緑 = 目標に入った・朱 = 外れた・白 = 本家か参考・灰の ≈ = 合否なし (キャラの型が近似か、UI ありの画だけ)。'
+             '頂点 = 帯の頂点 N3 (≥145)・p95 (≥125)・暗 = 暗い画素 (≤0.66) = 歯止め / '
+             '覆い = 上の覆い (0.35〜0.7)・σ = 帯の芯 (50〜110)・幹 = 暗く見える本数 (6〜8)・樹皮 = 帯の幹の樹皮 (≥0.3)・近幹 (≥0.18)・縁石 = 地面の縁の硬さ (≤9)・'
+             '空帯 = 細かさの無い 60 行の帯 (≤2)・手前 = 手前の縁 (≥30)・帯縁 = 帯の中の縁 (≥100)・体÷窓 (≤1.5)・敵鋭／主鋭 = 1画素の段差の割合 (≤0.3／≤0.15)・'
+             '足元 (0.85〜1.1)・体 = 主人公の体の中央値 (≥90)。',
+             '舞台の数字は UI なしの画で測る (UI ありの画は UI の行の UI覆 = UI の覆い・窓覆 = 絵の窓を覆う割合・札p95 = 手札の外の UI の明るさ・'
+             '札÷頂点・明札 = 手札の外で霧の芯より明るい UI の画素/万 だけ)。主人公の型は unitsonly が無ければ同じフォルダの T3-ogre-unitsonly から借りる。',
+             '二周目の UI なしの画は暗幕が残っている (二周目の道具)。三周目から hideui は暗幕も消すので、手前の数字の比べは本番の「二周目の写し」(r3-slice の R2) で見る。']
+    out = a.out or os.path.join(R3_OUT, 'trial-sheet.png')
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+    grid('三周目 試しのビルド — 本家｜二周目｜%s (同じ大きさ)' % ('試し1｜試し2' if prev else '試し'), notes, rows, a.cell_w, out, cap_h=100, row_label_w=190,
+         col_heads=heads)
+    results = [r for r in (F._m.values()) if r]
+    if a.md:
+        open(a.md, 'w').write(F.R.md_table(results, '三周目 試しのビルドの数字 (scripts/hd2d-r3-targets.py)'))
+    if a.json:
+        json.dump(results, open(a.json, 'w'), ensure_ascii=False, indent=1, default=lambda o: o.item() if hasattr(o, 'item') else str(o))
+
+
+def r3_final_sources(a, dev, sc):
+    """1場面の 本家｜W5｜二周目｜三周目 の置き場"""
+    w5 = a.w5 or r3mod().default_w5()
+    w5d = os.path.join(w5, 'hero62' if sc in ('ogre', 'wolf') else 'slice')
+    r3d = os.path.join(a.shots, 'r3-slice')
+    out = [R3Src('本家 ot16', ref='ot16'), R3Src('W5', *r3_paths(w5d, '%s-S-%s' % (dev, sc)))]
+    ui, h, u, l = r3_paths(r3d, '%s-R2-%s' % (dev, sc))   # 三周目の道具で撮った二周目の写し
+    if ui or h:
+        if u is None:
+            u = r3_paths(r3d, '%s-S-%s' % (dev, sc))[2] or r3_paths(a.r2, '%s-S-%s' % (dev, sc))[2]
+        out.append(R3Src('二周目 (写し・三周目の道具)', ui, h, u, l))
+    else:
+        out.append(R3Src('二周目 (最終・暗幕あり)', *r3_paths(a.r2, '%s-S-%s' % (dev, sc))))
+    out.append(R3Src('三周目', *r3_paths(r3d, '%s-S-%s' % (dev, sc))))
+    return out
+
+
+def sheet_r3_final(a):
+    """本番 (scripts/hd2d-states/r3-slice.txt): 本家｜W5｜二周目｜三周目 × 5場面 と 384px の「ひと目」・物差しの表"""
+    F = R3(a.ref_dir)
+    os.makedirs(a.out_dir, exist_ok=True)
+    only = set((a.only or '').split(',')) - {''}
+
+    def want(k):
+        return not only or any(k.startswith(o) for o in only)
+    ot = F.ref_img('ot16')
+    srcs = {(dev, sc): r3_final_sources(a, dev, sc) for dev, sc, _ in R3_SCENES}
+    made = []
+    heads = ['本家 ot16', 'W5 の見本', '二周目', '三周目']
+    if want('00'):
+        res = []
+        for (dev, sc), ss in srcs.items():
+            for s_ in ss:
+                if s_.ref and res and any(r_.get('kind') == 'ref' for r_ in res):
+                    continue
+                m = F.measure(s_)
+                if m:
+                    m = dict(m); m['label'] = '%s %s %s' % (s_.label.split(' (')[0], dev, sc) if not s_.ref else '本家 ot16'
+                    res.append(m)
+        md = F.R.md_table(res, '三周目 本番の物差し (本家｜W5｜二周目｜三周目 × 5場面)')
+        open(os.path.join(a.out_dir, 'final-r3-numbers.md'), 'w').write(md)
+        json.dump(res, open(os.path.join(a.out_dir, 'final-r3-numbers.json'), 'w'), ensure_ascii=False, indent=1,
+                  default=lambda o: o.item() if hasattr(o, 'item') else str(o))
+        rows = []
+        for c in F.R.CHECKS:
+            row = [('%s %s %s' % (F.R.CLS_MARK[c['cls']], c['id'], c['label']), INK), ('%s / %s' % (F.R.fmt_rng(c.get('PC')), F.R.fmt_rng(c.get('PH'))), INK2)]
+            for r_ in res:
+                v = T.get_key(r_, c['key'])
+                j = F.R.judge(r_, [c])[0][3]
+                row.append((F.R.fmt_v(v), INK if (j is None or r_.get('kind') == 'ref') else (OKC if j else NGC)))
+            rows.append(row)
+        made.append(table_image('00 三周目の物差し: 本家｜W5｜二周目｜三周目', [
+            '★ 目安 = 本家 ot16 が入り二周目が外れる・◆ 歯止め = 本家も二周目も入る (壊さない)・— 参考。緑 = 入った・朱 = 外れた。合否は目で (数字は補助)。',
+            '二周目の列は三周目の本番で撮った「二周目の写し」(<dev>-R2-*) があればそれ、無ければ二周目の最終 (hideui に暗幕が残る版)。'],
+            ['物差し', '目標 PC / PH'] + [r_['label'] for r_ in res], rows, [470, 170] + [150] * len(res), os.path.join(a.out_dir, '00-r3-targets.png')))
+    for key, var, lab in (('01', 'ui', 'UI あり'), ('02', 'hide', 'UI なし')):
+        if not want(key):
+            continue
+        rows = []
+        for dev, sc, slab in R3_SCENES:
+            cells = []
+            for s_ in srcs[(dev, sc)]:
+                if s_.ref:
+                    cells.append((ot if var == 'ui' else dimmed(ot), '本家 ot16' + ('' if var == 'ui' else ' (UI なしの画は無い。暗くした)'), [] if var == 'ui' else [(t, INK) for t, _ in F.toks(F.measure(s_))]))
+                else:
+                    p = getattr(s_, var)
+                    cells.append((F.img(p), s_.label, [] if var == 'ui' else F.toks(F.measure(s_))))
+            rows.append(('%s %s' % ('スマホ' if dev == 'PH' else 'PC', slab), cells))
+        made.append(grid('%s 本家｜W5｜二周目｜三周目 (%s・同じ幅)' % (key, lab), [
+            '判定の5場面 (裁定 Q8: オーガ・狼・4体・人形9体・スマホ オーガ)。W5 の狼・オーガは主人公62・28°・12°、4体・人形9体は主人公48 (W5 の門の撮影)。本家は夜の森 ot16。',
+            '数字は scripts/hd2d-r3-targets.py (UI なしの行だけ。緑 目標に入った・朱 外れた)。合否は目で決める。'],
+            rows, a.cell_w, os.path.join(a.out_dir, '%s-r3-compare-%s.png' % (key, 'ui' if var == 'ui' else 'hideui')), cap_h=100, row_label_w=170, col_heads=heads))
+    if want('03'):
+        blocks = []
+        for var, lab in (('ui', 'UI あり'), ('hide', 'UI なし')):
+            rows = []
+            for dev, sc, slab in R3_SCENES:
+                ims = []
+                for s_ in srcs[(dev, sc)]:
+                    ims.append(ot if s_.ref else F.img(getattr(s_, var)))
+                rows.append(('%s %s' % ('スマホ' if dev == 'PH' else 'PC', slab), ims))
+            blocks.append((lab, rows))
+        made.append(r3_glance('03 ひと目 (384px): 本家｜W5｜二周目｜三周目', [
+            '384px に縮めた「ひと目」の印象 (反証 score の verify-03-glance の形)。層の数・上の覆い・手前・キャラの浮きはこの大きさで決まる。'], blocks, heads,
+            os.path.join(a.out_dir, '03-r3-glance.png')))
+    print(json.dumps([m for m in made if m], ensure_ascii=False))
+
+
 def main():
-    ap = argparse.ArgumentParser(description='HD-2D 見本 二周目の比較シート')
+    ap = argparse.ArgumentParser(description='HD-2D 見本 二周目・三周目の比較シート')
     sp = ap.add_subparsers(dest='cmd', required=True)
+    for nm, hp in (('r3-trial', '三周目 試しのビルドのシート (段1・scripts/hd2d-states/r3-trial.txt)'), ('r3-final', '三周目 本番の比較シート (本家｜W5｜二周目｜三周目 × 5場面＋ひと目)')):
+        f = sp.add_parser(nm, help=hp)
+        f.add_argument('--shots', required=True, help='試しの撮影のフォルダ (r3-trial) / 本番の撮影の親 (r3-final: r3-slice が並ぶ所)')
+        f.add_argument('--r2', default=R3_R2, help='二周目の最終の撮影 (r2-slice。既定 ~/.cache/deck-rogue/hd2d-r2/shots-final/r2-slice)')
+        f.add_argument('--w5', default=None, help='W5 の shots (hero62・slice の親。既定 ~/.cache/deck-rogue/hd2d-w5/shots)')
+        f.add_argument('--ref-dir', action='append', default=[])
+        if nm == 'r3-trial':
+            f.add_argument('--out', default=None, help='シート (既定 unity/Shots/hd2d/r3/trial-sheet.png)')
+            f.add_argument('--prev', default=None, help='1 回前の試しの撮影のフォルダ (付けると 本家｜二周目｜試し1｜試し2。例 ~/.cache/deck-rogue/hd2d-r3/trial1)')
+            f.add_argument('--md'); f.add_argument('--json')
+            f.add_argument('--cell-w', type=int, default=640)
+        else:
+            f.add_argument('--out-dir', default=os.path.join(R3_OUT, 'final'))
+            f.add_argument('--only', help='作るシートの頭 (カンマ区切り: 00,01,02,03)')
+            f.add_argument('--cell-w', type=int, default=960)
     t = sp.add_parser('trial', help='試しのビルドのシート (段1)')
     t.add_argument('--shots', required=True, help='試しの撮影のフォルダ (pshots.sh の出力)')
     t.add_argument('--w5', default=DEFAULT_W5, help='W5 の shots (hero62 と slice の親)')
@@ -1073,7 +1474,12 @@ def main():
             f.add_argument('--only', help='作るシートの頭の名前 (カンマ区切り: 00-gates,00-targets,00-char,01,02,…,08)')
         else:
             f.add_argument('--dev', help='PC・PH (カンマ区切り。既定は両方)')
+            f.add_argument('--prefix', default='r2', help='撮影のフォルダの頭 (r2 = r2-regress*・r3 = 三周目の r3-regress* と r3-regress-old*)')
     a = ap.parse_args()
+    if a.cmd == 'r3-trial':
+        return sheet_r3_trial(a)
+    if a.cmd == 'r3-final':
+        return sheet_r3_final(a)
     if a.cmd == 'final':
         return sheet_final(a)
     if a.cmd == 'regress':

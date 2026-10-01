@@ -1,0 +1,61 @@
+# HD-2D 見本 三周目 段1b の試しの撮影 2 回目 (2026-10-02 レーン F2)。1行 = 名前|PC または PH|STATE。# と空行は読み飛ばす。書式は r3-trial.txt と同じ。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r3-trial2.txt <出力> 2   (並列は2まで・13枚。出力は <名前>-1.png と <名前>-1.layout.json)
+#   前提: scripts/unity-win.sh build (段1b の直し = 垂れる枝・帯の木・土手の茂みの作り直しと、レーン B の霧の変種 look_act1_r3fog34・look_act1_r3fog40far2 が入ったビルド)。
+#   look_act1_r3fog34.json・look_act1_r3fog40far2.json が unity/Assets/Resources/Stage/ に無いまま撮ると、その2枚は既定の霧で撮れる (=変種にならない)。撮る前に ls で確かめる。
+# 共通の STATE は phase=combat;stage=diorama;hd2d=slice;dumplayout=1 (束 = 画角22°・見下ろし PC 5°／スマホ 7°・主人公62・夜色の札。光と配置は三周目の既定)。
+#   hideui=1 は三周目から手札の後ろの暗幕 (desk-shade) も消す (Autopilot)。
+# 1 回目 (r3-trial.txt) からの変更:
+#   - UI ありの画はオーガ1枚 (T3-ogre) だけ。狼・4体・人形9体は UI なしだけ (舞台の物差しは UI なしの画で測る。UI ありの画は UI の物差し U1〜U4 だけ)。
+#   - T3-char-soft は UI なし (T3-char-soft-hideui) に (1 回目は UI ありだけで、舞台の数字が手札を霧の芯と取り違えた)。
+#   - 霧の変種は fog.end 34 と 40＋far2 (1 回目の 40／45 は帯の頂点 130／122 で歯止め 145 を割った)。lensFar・far2 単独・法線なしは外した。
+# 測り方:
+#   物差し   python3 scripts/hd2d-r3-targets.py <出力> T3-ogre T3-wolf T3-quad T3-dolls T3-ogre-ph T3-quad-ph T3-fog34 T3-fog40far2 T3-char-soft T3-ui T3-r2 \
+#              --md <出力>/r3-targets.md --json <出力>/r3-targets.json
+#            (名前に -hideui を付けても同じ列。T3-ogre は舞台 = T3-ogre-hideui・UI = T3-ogre・キャラの型 = T3-ogre-unitsonly。
+#             狼・4体・霧の変種・char-soft は T3-ogre-unitsonly から主人公の型を借りる (同じキャラ・同じ板・同じ時刻)。char-soft はオーガの型も借りる。
+#             それ以外の敵の型は近似 = 敵の物差しは ≈。人形9体・スマホ・T3-ui は借りられない = キャラの物差しは ≈)
+#   配置     python3 scripts/hd2d-layout-check.py <出力> --md <出力>/layout-check.md
+#   箱庭の門 <出力>/T3-*-1.layout.json の extra.diorama.ok が true
+#   シート   python3 scripts/hd2d-r2-sheet.py r3-trial --shots <出力> --prev ~/.cache/deck-rogue/hd2d-r3/trial1 --out <出力>/trial-sheet.png --md <出力>/trial-sheet.md
+#            (本家｜二周目｜試し1｜試し2。--prev を付けなければ 本家｜二周目｜試し)
+# 見ること (統合の所見 1〜4): 垂れる枝が椰子の葉でなく段の重なった針葉の塊か (左上)・帯の木が傘でなく密な針葉樹か・土手が丸い生け垣でなく
+#   低くぎざぎざの低木と草で霧に半分沈むか・数字 = 帯の頂点 ≥145 (霧 34／40＋far2 でも)・上の覆い M2・帯の幹の樹皮 M5b・地面の縁の硬さ M6・帯の中の縁 E2・暗く見える幹 T1。
+
+# ---- 5場面のうち PC の4場面。UI ありはオーガだけ (UI の物差し・配置の検査)、物差しは UI なし
+T3-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1
+T3-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+T3-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+T3-quad-hideui|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+# 人形9体 = r2-slice.txt の PC-S-dolls と同じ (ひなた・白の人形9体・敵は狼)。主人公がひなたなので T3-ogre-unitsonly から型は借りられない (キャラの物差しは ≈)
+T3-dolls-hideui|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+# キャラの型 (体÷すぐ後ろの窓・敵と主人公の鋭い縁・足の真下÷左右)。同じ時刻の他の PC の画にも主人公の型を貸す
+T3-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1
+
+# ---- スマホ (1920×886・UI 1.6倍・tier=phone)。UI なし
+T3-ogre-ph|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone;hideui=1
+T3-quad-ph|PH|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;tier=phone;hideui=1
+
+# ---- 霧の変種 (レーン B の段1b。帯の頂点 ≥145 を守るか・暗く見える幹の本数・帯の幹の樹皮)
+T3-fog34|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3fog34
+T3-fog40far2|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3fog40far2
+
+# ---- 主人公の照明の段 (レーン E の look_act1_r3char_soft)。UI なし (主人公の型は T3-ogre-unitsonly から借りる)
+T3-char-soft-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3char_soft
+
+# ---- R3 の試し撮り (Q1 の2段目に見せる): 旗 uitrial=1 (足元の線 0.36・帳面を足元の下・手札を沈めて触れた札だけ上げる・暗幕は手札の矩形だけ)
+T3-ui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;uitrial=1
+
+# ---- 二周目の写しが同じ画になること (1 回目と同じ行。比べる元 = ~/.cache/deck-rogue/hd2d-r2/shots-final/r2-slice/PC-S-ogre-1.png。値の差が 2 を超える画素 ≤0.1%)
+T3-r2|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r2+look_act1_r2char;deskshade=full;uilayout=r2
+
+# ---- 足したければ (# を外す。13 枚の外): 敵の型 (C2 敵の鋭い縁・敵の足元) を狼・4体・霧の変種でも測る (狼の型は fog34・fog40far2 にも貸せる)／
+#      人形9体のひなたの型／スマホの型／R3 の試し撮りのキャラの型 (uitrial は足元の線が違う = T3-ogre-unitsonly を借りられない)
+# T3-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1
+# T3-quad-unitsonly|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1
+# T3-dolls-unitsonly|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1
+# T3-ogre-ph-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone;unitsonly=1
+# T3-ui-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;uitrial=1;unitsonly=1
+
+# ---- 統合が足した2枚 (2026-10-02): 土手の灯の直しの前 (B2) と、主人公の照明を段1 の値に戻した物 (E2)
+T3-pooltrial1|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3pooltrial1
+T3-char-s1-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3char_s1

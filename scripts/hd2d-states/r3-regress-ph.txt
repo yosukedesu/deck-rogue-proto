@@ -1,0 +1,21 @@
+# HD-2D 見本 三周目の演出の回帰 R1〜R16 (見本・スマホ相当 1920×886・UI 1.6倍・tier=phone) (2026-10-01 レーン F 段1)。1行 = 名前|PC または PH|STATE。
+# 中身: r2-regress-ph.txt の写し (同じ16行・同じ名前・同じ STATE)。三周目の既定で撮る。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r3-regress-ph.txt <本番の撮影の親>/r3-regress-ph 2
+# 見方: r3-regress.txt と同じ (比べる元 = ~/.cache/deck-rogue/hd2d-r2/shots-final/r2-regress-ph)。スマホは額縁の草が左右だけ・部品の phone.hide の効き・霧の板が1枚 (dropKinds) を見る。
+PH-R01-swing|PH|phase=combat;enemy=enemy_probe;play=attack;playshots=8;playevery=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R02-multi|PH|phase=combat;hand=green_double_lash;play=0;playshots=12;playevery=3;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R03-aoe|PH|phase=combat;enemy=enc_probe_pair;hand=green_earth_roar;play=0;playshots=10;playevery=3;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R04-exposed|PH|phase=combat;eexposed=1;hand=green_strike;play=0;playshots=8;playevery=2;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R05-enrage|PH|phase=combat;enemy=enemy_brute;ehp=h+3;hand=green_strike;play=0;playshots=14;playevery=5;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R06-guard|PH|phase=combat;enemy=enemy_wolf;pblock=20;endplay=1;endshots=16;endevery=3;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R07-hurt|PH|phase=combat;enemy=enemy_wolf;endplay=1;endshots=14;endevery=9;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R08-kill|PH|phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R09-enter|PH|phase=combat;enemy=enemy_brute;boss=1;entershots=12;enterevery=6;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R10-trap|PH|phase=combat;enemy=enemy_wolf;sets=green_reaction_vine*;endturn=1;fire=1;fireshots=10;fireevery=8;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R11-doll|PH|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_hound,white_perm_squire;hand=white_light_bolt;play=0;playshots=8;playevery=3;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R12-gearwin|PH|phase=combat;gears=gear_spring,gear_cog;gearwin=0;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R13-gearmore|PH|phase=combat;gears=gear_spring,gear_cog;gearmore=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R14-popup|PH|phase=combat;popup=0;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R15-tip|PH|phase=combat;tip=enemy;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+# R16 (二周目で足した) 幕ボスの撃破の寄り
+PH-R16-bosskill|PH|phase=combat;enemy=enemy_brute;boss=1;ehp=3;hand=green_strike;play=0;playshots=20;playevery=14;stage=diorama;hd2d=slice;dumplayout=1;tier=phone

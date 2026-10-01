@@ -689,11 +689,32 @@ namespace DeckRogue.Game
             {
                 int shotsN = 10; int.TryParse(Get("entershots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 10;
                 int every = 8; int.TryParse(Get("enterevery") ?? "", out every); if (every <= 0) every = 8;
+                // hideui / hidezone は連写の前に当てる (2026-10-02 三周目 直しの輪1: 旧は連写の後ろ (1枚撮りの直前) でだけ当てていたので、
+                // r3-clips の「UI なし」の連写に帳面・手札・上部バーが写っていた)。組み直しで戻っても消えたままになるよう、1枚ごとにも当て直す。
+                // uionly / unitsonly は Shot の ApplyCaptureMode が1枚ごとに当てる (もとから連写に効く)。
+                // hideui の連写の間は演出の層 (fx: 強個体・幕ボスの名前の帯・登場の土煙の輪・判) も隠し、連写が終わったら戻す (1枚撮りは今のまま)
+                bool hideBurst = Get("hideui") == "1" && g.ScreenRoot != null && g.Battle != null;
+                bool zoneBurst = Get("hidezone") == "1" && g.ScreenRoot != null;
+                if (hideBurst) HideUiNow(g);
+                if (zoneBurst) HideZoneNow(g);
                 Time.captureFramerate = 60;
                 yield return null;
                 Presenter.Reset();
                 Presenter.Play(g, g.Rs.Combat);
-                for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("enter-" + i, 1); }
+                GameObject fxGo = hideBurst && g.FxLayer != null ? g.FxLayer.gameObject : null;
+                bool fxWas = fxGo != null && fxGo.activeSelf;
+                if (fxGo != null) fxGo.SetActive(false);
+                try
+                {
+                    for (int i = 0; i < shotsN; i++)
+                    {
+                        for (int f = 0; f < every; f++) yield return null;
+                        if (hideBurst) HideUiNow(g);
+                        if (zoneBurst) HideZoneNow(g);
+                        yield return Shot("enter-" + i, 1);
+                    }
+                }
+                finally { if (fxGo != null) fxGo.SetActive(fxWas); }
                 Time.captureFramerate = DetFramerate;   // det なら 60 のまま (撮影の時間刻みを最後まで固定する。2026-09-30 HD-2D 見本 P00)
             }
             yield return WaitPresentation();
@@ -858,23 +879,17 @@ namespace DeckRogue.Game
                 }
                 else Debug.LogWarning("[Autopilot] fire: 発動できる仕込み札が無い");
             }
-            // hideui=1: 舞台と絵 (敵・リーダー・狙いの輪) だけを残して UI を全部消す (配置案のモックの下地用。2026-09-15 戦闘画面の見直し)
+            // hideui=1: 舞台と絵 (敵・リーダー・狙いの輪) だけを残して UI を全部消す (配置案のモックの下地用。2026-09-15 戦闘画面の見直し)。
+            // entershots の連写の時は連写の前にも当てる (HideUiNow。2026-10-02 三周目 直しの輪1)。ここは1枚撮りの時と同じ (同じ処理を2度当てても同じ)
             if (Get("hideui") == "1" && g.ScreenRoot != null && g.Battle != null)
             {
-                if (g.Battle.UiLayer != null) g.Battle.UiLayer.gameObject.SetActive(false);
-                if (g.Battle.HandLayer != null) g.Battle.HandLayer.gameObject.SetActive(false);
-                foreach (var rt in g.ScreenRoot.GetComponentsInChildren<RectTransform>(true))
-                {
-                    if (rt.parent == null || !(rt.parent.name.StartsWith("enemy") || rt.parent.name == "player" || rt.parent.name.StartsWith("doll:"))) continue;
-                    if (rt.name == "sprite" || rt.name == "ring") continue;
-                    rt.gameObject.SetActive(false);
-                }
+                HideUiNow(g);
                 yield return null;
             }
             // hidezone=1: 伏せ場と置物の欄を消して撮る (配置案のモックの下地用。2026-09-14)
             if (Get("hidezone") == "1" && g.ScreenRoot != null)
             {
-                foreach (var rt in g.ScreenRoot.GetComponentsInChildren<RectTransform>(true)) if (rt.name == "setzone" || rt.name == "chips" && rt.parent != null && rt.parent.name == "player") rt.gameObject.SetActive(false);
+                HideZoneNow(g);
                 yield return null;
             }
             // scroll=1: 画面の一覧を一番下まで送る (最後の行が選べるかの確認。2026-09-14)
@@ -1435,6 +1450,31 @@ namespace DeckRogue.Game
             return r.Length > 0 ? r : "line";
         }
 
+        // ---- hideui / hidezone の当て方 (2026-10-02 三周目 直しの輪1: 連写の前と1枚撮りの直前の両方から呼ぶ。何度当てても同じ) ----
+
+        /// <summary>hideui=1: 舞台と絵 (敵・リーダー・人形の絵と狙いの輪) だけを残して UI を消す。箱庭の時だけ手札の後ろの暗幕も消す
+        /// (三周目 R12: 二周目の hideui は手前を暗幕ごと測っていた。今の舞台の hideui は W5・二周目と画素で比べるので今のまま)</summary>
+        static void HideUiNow(GameRoot g)
+        {
+            if (g == null || g.ScreenRoot == null || g.Battle == null) return;
+            if (g.Battle.UiLayer != null) g.Battle.UiLayer.gameObject.SetActive(false);
+            if (g.Battle.HandLayer != null) g.Battle.HandLayer.gameObject.SetActive(false);
+            { var desk = BattleScreen.Hd2dLayout && g.Battle.FieldLayer != null ? g.Battle.FieldLayer.Find("desk-shade") : null; if (desk != null) desk.gameObject.SetActive(false); }
+            foreach (var rt in g.ScreenRoot.GetComponentsInChildren<RectTransform>(true))
+            {
+                if (rt.parent == null || !(rt.parent.name.StartsWith("enemy") || rt.parent.name == "player" || rt.parent.name.StartsWith("doll:"))) continue;
+                if (rt.name == "sprite" || rt.name == "ring") continue;
+                rt.gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>hidezone=1: 伏せ場と (スマホの) 置物の欄を消す</summary>
+        static void HideZoneNow(GameRoot g)
+        {
+            if (g == null || g.ScreenRoot == null) return;
+            foreach (var rt in g.ScreenRoot.GetComponentsInChildren<RectTransform>(true)) if (rt.name == "setzone" || rt.name == "chips" && rt.parent != null && rt.parent.name == "player") rt.gameObject.SetActive(false);
+        }
+
         // ---- uionly / unitsonly (2026-09-30 HD-2D 見本 P01) ----
         // uionly=1: 舞台を描かない (画面に出すカメラは何も写さず背景のマゼンタ (1,0,1) だけ)。UI (重ねのキャンバス) だけが乗る = UI の型抜き。
         // unitsonly=1: キャラの板 (レイヤー8) だけを写し、キャンバスを隠す = キャラの型抜き。両方立っていたら unitsonly。
@@ -1512,7 +1552,8 @@ namespace DeckRogue.Game
         //   png・name・frame・time・state (その STATE)・flags (HD2DFlags.Snapshot)
         //   screen {w,h} (= PNG の寸法)・canvas {w,h,scale,phone,overlay}・statusLineY {canvas, px} (足元の線。canvas は下から・px は PNG の上から)
         //   units [ {key, kind(enemy|player|doll), index, id, alive, hp, px, sprite, strip, intent, ring, feetOffset} ]
-        //   hand [ {name, px, body, digits [[x,y,w,h]…], digitsBottomGap (本文の数字の下端から画面の下端まで・px)} ]
+        //   hand [ {name, px, back, flying, raised, body, digits [[x,y,w,h]…], digitsBottomGap (本文の数字の下端から画面の下端まで・px)} ]
+        //        (back = 裏が見えている・flying = 扇に休んでいない (飛んでいる途中・つかんでいる)・raised = 触れて上がった。2026-10-02 三周目 直しの輪1)
         //   anchors {topbar, phase, gold, energy, light, mana, setlabel, gearzone, setslotN, gear:<uid> …} (無い物は書かない)
         //   nodes [ {path, px, text?, fs?, color?, digits?} ] = 画面 (screen/…) と重ねの層 (popup/…) の見えている RectTransform 全部 (上限 4000)
         //   stage {camera: Stage.DebugCameraInfo(), unitBoxes: Stage.DebugUnitBoxes()} (P10・P11 が中身を書く。無ければ null)
@@ -1587,6 +1628,18 @@ namespace DeckRogue.Game
                                 var rt = ch as RectTransform;
                                 if (rt == null || !rt.gameObject.activeInHierarchy || !rt.name.StartsWith("hand", StringComparison.Ordinal)) continue;
                                 var e = new Dictionary<string, object> { { "name", rt.name }, { "px", Px(rt, cvCam) } };
+                                // 札の状態 (2026-10-02 三周目 直しの輪1。layout-check の L5 は動いている札を数えない):
+                                //   back = 裏が見えている (ドローで山札から飛ぶ途中の前半)・
+                                //   flying = 扇に休んでいない (今の手札の札でない＝捨て札・からくり・敵へ飛ぶ途中／裏／倍率が CardScale より小さい＝ドローの途中・PC でつかんだ札)・
+                                //   raised = 触れて上がった (倍率が CardScale より大きい。r3 の 1.18 倍)
+                                var backT = rt.Find("back");
+                                bool back = backT != null && backT.gameObject.activeInHierarchy;
+                                bool live = false;
+                                for (int hi = 0; hi < g.Battle.HandCount && !live; hi++) { var hcard = g.Battle.CardAt(hi); if (hcard != null && ReferenceEquals(hcard.Rt, rt)) live = true; }
+                                float sy = rt.localScale.y;
+                                e["back"] = back;
+                                e["flying"] = !live || back || sy < BattleScreen.CardScale - 0.01f;
+                                e["raised"] = live && !back && sy > BattleScreen.CardScale + 0.01f;
                                 // 本文 = 札の根の直下の文字 (CardView の body)。いちばん大きい物
                                 TMPro.TMP_Text body = null; float bestArea = -1f;
                                 foreach (Transform c in rt)

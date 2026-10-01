@@ -1,0 +1,35 @@
+# HD-2D 見本 三周目 R3 UI の確かめ (2026-10-02 統合。仕様 docs/design/hd2d-slice/r3-ui-spec.md §14-2)。1行 = 名前|PC または PH|STATE。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r3-ui.txt <出力> 2。見方は仕様 §14-2 の表。hd2d-layout-check.py で L1〜L14。
+# 直しの輪1 (2026-10-02 反証のまとめ (d)): *-quad-window-e4 は hold=1 (この並びで攻撃するのは①②だけ＝hold=3 だと窓が残らなかった。②の窓が①の帳の左 −12 で止まるかを見る)。
+#   PH-U-press は dragaim=0:0 (打撃を幕ボスの胴まで引いた途中＝狙いの矢の姿。旧 0:low は取り消しの姿だった)。PC-U-press は 0:low のまま。
+#   PH-U-box-full のタイトル画面 (未定義デッキ starter_dimir) は撮影の時の取り違え＝今の行 (deck=run_basic_dimir) で撮り直すだけ。
+PC-U-ogre-window|PC|phase=combat;enemy=enemy_brute;boss=1;sets=green_reaction_vine*;endturn=1;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-dolls-window|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;sets=green_reaction_vine*;endturn=1;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-quad-window-e1|PC|phase=combat;enemy=enc_biting_scrolls_quad;sets=green_reaction_vine*;endturn=1;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-quad-window-e4|PC|phase=combat;enemy=enc_biting_scrolls_quad;sets=green_reaction_vine*;endturn=1;hold=1;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-quad-window2|PC|phase=combat;enemy=enc_biting_scrolls_quad;sets=green_reaction_vine*,green_reaction_vine*;endturn=1;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-gear10|PC|phase=combat;enemy=enc_biting_scrolls_quad;gears=gear_spring,gear_cog,gear_oilcan,gear_powder,gear_repair_oil,gear_brand_iron,gear_rust_powder,gear_wedge,gear_rusty_wedge,gear_stilling_weight;mana=0;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-gear10-more|PC|phase=combat;enemy=enc_biting_scrolls_quad;gears=gear_spring,gear_cog,gear_oilcan,gear_powder,gear_repair_oil,gear_brand_iron,gear_rust_powder,gear_wedge,gear_rusty_wedge,gear_stilling_weight;gearmore=1;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-box-full|PC|phase=combat;leader=leader_dimir;deck=run_basic_dimir;enemy=enemy_wolf;sets=green_reaction_vine*,green_reaction_vine;gears=gear_spring,gear_cog,gear_oilcan,gear_powder;perms=green_perm_thorn_vine,green_perm_bark_bud,green_perm_gale_vine,green_perm_wind_runner;relics=relic_growth_seed,relic_swift_sash;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-status|PC|phase=combat;enemy=enemy_wolf;relics=relic_growth_seed,relic_swift_sash;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-hand10|PC|phase=combat;enemy=enemy_wolf;hand=green_strike,green_strike,green_strike,green_guard,green_guard,green_guard,green_entangle,green_double_lash,green_fang,green_earth_roar;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-hand10-e0|PC|phase=combat;enemy=enemy_wolf;hand=green_strike,green_strike,green_strike,green_guard,green_guard,green_guard,green_entangle,green_double_lash,green_fang,green_earth_roar;penergy=0;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-keynum|PC|phase=combat;enemy=enemy_wolf;hand=green_sapling_strike,green_earth_roar,green_twin_fang_vine,green_verdant_hour,green_strike;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-press|PC|phase=combat;enemy=enemy_brute;boss=1;dragaim=0:low;stage=diorama;hd2d=slice;dumplayout=1
+PC-U-old-r2|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;uilayout=r2;uionly=1
+PC-U-trial-alias|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;uitrial=1
+PH-U-ogre-window|PH|phase=combat;enemy=enemy_brute;boss=1;sets=green_reaction_vine*;endturn=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-dolls-window|PH|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;sets=green_reaction_vine*;endturn=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-quad-window-e1|PH|phase=combat;enemy=enc_biting_scrolls_quad;sets=green_reaction_vine*;endturn=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-quad-window-e4|PH|phase=combat;enemy=enc_biting_scrolls_quad;sets=green_reaction_vine*;endturn=1;hold=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-quad-window2|PH|phase=combat;enemy=enc_biting_scrolls_quad;sets=green_reaction_vine*,green_reaction_vine*;endturn=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-gear10|PH|phase=combat;enemy=enc_biting_scrolls_quad;gears=gear_spring,gear_cog,gear_oilcan,gear_powder,gear_repair_oil,gear_brand_iron,gear_rust_powder,gear_wedge,gear_rusty_wedge,gear_stilling_weight;mana=0;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-gear10-more|PH|phase=combat;enemy=enc_biting_scrolls_quad;gears=gear_spring,gear_cog,gear_oilcan,gear_powder,gear_repair_oil,gear_brand_iron,gear_rust_powder,gear_wedge,gear_rusty_wedge,gear_stilling_weight;gearmore=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-box-full|PH|phase=combat;leader=leader_dimir;deck=run_basic_dimir;enemy=enemy_wolf;sets=green_reaction_vine*,green_reaction_vine;gears=gear_spring,gear_cog,gear_oilcan,gear_powder;perms=green_perm_thorn_vine,green_perm_bark_bud,green_perm_gale_vine,green_perm_wind_runner;relics=relic_growth_seed,relic_swift_sash;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-status|PH|phase=combat;enemy=enemy_wolf;relics=relic_growth_seed,relic_swift_sash;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-hand10|PH|phase=combat;enemy=enemy_wolf;hand=green_strike,green_strike,green_strike,green_guard,green_guard,green_guard,green_entangle,green_double_lash,green_fang,green_earth_roar;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-hand10-e0|PH|phase=combat;enemy=enemy_wolf;hand=green_strike,green_strike,green_strike,green_guard,green_guard,green_guard,green_entangle,green_double_lash,green_fang,green_earth_roar;penergy=0;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-keynum|PH|phase=combat;enemy=enemy_wolf;hand=green_sapling_strike,green_earth_roar,green_twin_fang_vine,green_verdant_hour,green_strike;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-press|PH|phase=combat;enemy=enemy_brute;boss=1;dragaim=0:0;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-U-old-r2|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;uilayout=r2;uionly=1;tier=phone
+PH-U-trial-alias|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;uitrial=1;tier=phone

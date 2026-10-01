@@ -1,0 +1,39 @@
+# HD-2D 見本 三周目の「今の舞台 (stage=old) は二周目と画素一致」の撮影 (2026-10-01 レーン F 段1。計画 §1「幕2/3（stage=old）32枚の画素比べ」)。1行 = 名前|PC または PH|STATE。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r3-old.txt <本番の撮影の親>/r3-old 2   (32枚)
+# 中身: r2-old.txt の写し (PC 5場面・PH 3場面 × 通常・hideui・uionly・unitsonly。同じ名前・全行 stage=old。PH は二周目と同じく tier=phone を付けない)。
+#   ★ hideui の画も今の舞台では二周目と同じ (三周目の Autopilot が暗幕を消すのは箱庭の時だけ)。
+#   合格: <名前>-1.png・-hideui-1.png・-uionly-1.png・-unitsonly-1.png を二周目の最終 (~/.cache/deck-rogue/hd2d-r2/shots-final/<r2-old|r2-regress-old|r2-regress-old-ph>・同じ名前) と比べ、
+#   値の差が 2 を超える画素が 0.1% 以下 (計画 §1・§5「幕2/3 への漏れ」)。粒 (蛍・脈の粒) の差は DET で揃う。外れたら三周目のどのレーンの枝が漏れたかを探す。
+#   比べ方の例: python3 - <<'PY' … (2枚を numpy で読み、abs 差の max が 2 を超える画素の割合) … PY  (hd2d-r2-sheet.py r3-trial の r3_diff と同じ)
+PC-S-wolf|PC|phase=combat;enemy=enemy_wolf;dumplayout=1;stage=old
+PC-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;hideui=1;dumplayout=1;stage=old
+PC-S-wolf-uionly|PC|phase=combat;enemy=enemy_wolf;uionly=1;dumplayout=1;stage=old
+PC-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;unitsonly=1;dumplayout=1;stage=old
+PC-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;dumplayout=1;stage=old
+PC-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;hideui=1;dumplayout=1;stage=old
+PC-S-ogre-uionly|PC|phase=combat;enemy=enemy_brute;boss=1;uionly=1;dumplayout=1;stage=old
+PC-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;unitsonly=1;dumplayout=1;stage=old
+PC-S-trio|PC|phase=combat;enemy=enc_wolf_hexer_drummer;dumplayout=1;stage=old
+PC-S-trio-hideui|PC|phase=combat;enemy=enc_wolf_hexer_drummer;hideui=1;dumplayout=1;stage=old
+PC-S-trio-uionly|PC|phase=combat;enemy=enc_wolf_hexer_drummer;uionly=1;dumplayout=1;stage=old
+PC-S-trio-unitsonly|PC|phase=combat;enemy=enc_wolf_hexer_drummer;unitsonly=1;dumplayout=1;stage=old
+PC-S-quad|PC|phase=combat;enemy=enc_biting_scrolls_quad;dumplayout=1;stage=old
+PC-S-quad-hideui|PC|phase=combat;enemy=enc_biting_scrolls_quad;hideui=1;dumplayout=1;stage=old
+PC-S-quad-uionly|PC|phase=combat;enemy=enc_biting_scrolls_quad;uionly=1;dumplayout=1;stage=old
+PC-S-quad-unitsonly|PC|phase=combat;enemy=enc_biting_scrolls_quad;unitsonly=1;dumplayout=1;stage=old
+PC-S-dolls|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;dumplayout=1;stage=old
+PC-S-dolls-hideui|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;hideui=1;dumplayout=1;stage=old
+PC-S-dolls-uionly|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;uionly=1;dumplayout=1;stage=old
+PC-S-dolls-unitsonly|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;unitsonly=1;dumplayout=1;stage=old
+PH-S-wolf|PH|phase=combat;enemy=enemy_wolf;dumplayout=1;stage=old
+PH-S-wolf-hideui|PH|phase=combat;enemy=enemy_wolf;hideui=1;dumplayout=1;stage=old
+PH-S-wolf-uionly|PH|phase=combat;enemy=enemy_wolf;uionly=1;dumplayout=1;stage=old
+PH-S-wolf-unitsonly|PH|phase=combat;enemy=enemy_wolf;unitsonly=1;dumplayout=1;stage=old
+PH-S-ogre|PH|phase=combat;enemy=enemy_brute;boss=1;dumplayout=1;stage=old
+PH-S-ogre-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;hideui=1;dumplayout=1;stage=old
+PH-S-ogre-uionly|PH|phase=combat;enemy=enemy_brute;boss=1;uionly=1;dumplayout=1;stage=old
+PH-S-ogre-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;unitsonly=1;dumplayout=1;stage=old
+PH-S-quad|PH|phase=combat;enemy=enc_biting_scrolls_quad;dumplayout=1;stage=old
+PH-S-quad-hideui|PH|phase=combat;enemy=enc_biting_scrolls_quad;hideui=1;dumplayout=1;stage=old
+PH-S-quad-uionly|PH|phase=combat;enemy=enc_biting_scrolls_quad;uionly=1;dumplayout=1;stage=old
+PH-S-quad-unitsonly|PH|phase=combat;enemy=enc_biting_scrolls_quad;unitsonly=1;dumplayout=1;stage=old

@@ -1,0 +1,28 @@
+# HD-2D 見本 三周目の戦闘以外の画面の字 (N25) の撮影 (2026-10-01 レーン F 段1)。1行 = 名前|PC または PH|STATE。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r3-screens.txt <本番の撮影の親>/r3-screens 2
+# 中身: r2-screens.txt の写し (同じ22行・同じ名前)。旗は書かない (APK の既定 = 幕1 の画面は後ろに三周目の見本の箱庭・幕2 の焚き火は今の舞台)。
+#   三周目は森が暗く・上の覆いと手前の草が増える = 霧の明るい帯の上の淡い字 (二周目の直しの輪1 で BattleScreen.MenuShade を足した所) を見直す。
+# 測り方 (N25 = 字の地との比 7:1 以上): 二周目と同じ (r2-screens.txt の頭)。比べる元 = ~/.cache/deck-rogue/hd2d-r2/shots-final/r2-screens (同じ名前)。割れたら統合担当が MenuShade の α を直す。
+PC-reward|PC|phase=reward
+PC-shop|PC|phase=shop
+PC-map|PC|phase=map
+PC-relic|PC|phase=relic
+PC-campfire|PC|phase=campfire
+PC-workshop|PC|phase=workshop
+PC-won|PC|phase=won
+PC-event|PC|phase=event
+PH-map|PH|phase=map
+PH-reward|PH|phase=reward
+PC-title|PC|phase=map;saveexit=1
+PH-title|PH|phase=map;saveexit=1
+PC-A2-campfire|PC|act=2;deck=deck_growth;phase=campfire
+PC-lost|PC|phase=lost
+PC-departure|PC|phase=departure
+# 直しの輪1 (2026-10-01・統合): 霧の帯がキャラの高さへ下がったので、字が画面の縦の中ほどに来るスマホの画面も 7:1 を確かめる (W5 の直し apkfix/fix/shots2 の PH-campfire・PH-event と、PH の店・工房・遺物・出立の店・勝利)
+PH-campfire|PH|phase=campfire
+PH-event|PH|phase=event
+PH-shop|PH|phase=shop
+PH-workshop|PH|phase=workshop
+PH-relic|PH|phase=relic
+PH-departure|PH|phase=departure
+PH-won|PH|phase=won

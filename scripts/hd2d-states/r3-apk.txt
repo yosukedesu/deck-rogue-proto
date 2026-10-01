@@ -1,0 +1,25 @@
+# HD-2D 見本 三周目の「APK の既定」(旗を書かない起動) の撮影 (2026-10-01 レーン F 段1。計画 §1・§5)。1行 = 名前|PC または PH|STATE。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r3-apk.txt <本番の撮影の親>/r3-apk 2   (16枚)
+# 中身: r2-apk.txt の写し (同じ16行・同じ名前)。★ stage=・hd2d=・uitrial=・deskshade= を書かない = 幕1 は見本 (三周目の既定)・幕2/3 は今の舞台。
+#   幕2/3 の行 (act=2・act=3) は起動のタイトルで幕1 の箱庭を組んでから入る = 幕1→幕2 の旗の漏れ (三周目の新しい旗・揺れ・霧の板・法線) がここに写る。
+# 合格:
+#   幕2/3 の行 (A2-squire・A3-quad・A2-map): 二周目の最終 (~/.cache/deck-rogue/hd2d-r2/shots-final/r2-apk・同じ名前) と画素一致 (差が 2 を超える画素 ≤0.1%。粒だけの差は許す)。
+#     layout.json の flags が pitch=12・cam=36・stage=old・litunits=0 (二周目と同じ)。三周目の旗 (uitrial・deskshade) は今の舞台では読まれない。
+#   幕1 の行 (A1-wolf・A1-ogre・map・reward・shop): r3-slice の同じ場面 (PC-S-wolf・PC-S-ogre。PH は tier=phone の無い版なので画素一致は PC だけ) と画素一致。
+#   戦闘以外の画面 (地図・報酬・店) の後ろの箱庭は三周目の森 = 字の読みやすさは r3-screens.txt で。
+PC-A1-wolf|PC|phase=combat;enemy=enemy_wolf;dumplayout=1
+PC-A1-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;dumplayout=1
+PC-A2-squire|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;dumplayout=1
+PC-A3-quad|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;dumplayout=1
+PC-map|PC|phase=map
+PC-reward|PC|phase=reward
+PC-shop|PC|phase=shop
+PC-A2-map|PC|act=2;deck=deck_growth;phase=map
+PH-A1-wolf|PH|phase=combat;enemy=enemy_wolf;dumplayout=1
+PH-A1-ogre|PH|phase=combat;enemy=enemy_brute;boss=1;dumplayout=1
+PH-A2-squire|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;dumplayout=1
+PH-A3-quad|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;dumplayout=1
+PH-map|PH|phase=map
+PH-reward|PH|phase=reward
+PH-shop|PH|phase=shop
+PH-A2-map|PH|act=2;deck=deck_growth;phase=map

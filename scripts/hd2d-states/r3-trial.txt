@@ -1,0 +1,50 @@
+# HD-2D 見本 三周目 段1 の試しのビルドの撮影 (2026-10-01 レーン F。計画 docs/design/hd2d-round3-plan-2026-10-01.md §4 の表)。1行 = 名前|PC または PH|STATE。# と空行は読み飛ばす。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r3-trial.txt <出力> 2   (並列は2まで・17枚。出力は <名前>-1.png と <名前>-1.layout.json)
+#   前提: scripts/unity-win.sh build (段1 の S・D・C・B・E・A・F が全部入ったビルド)。S25 の 15 分 (perf-runbook §5) は別に (撮影と同時に回さない)
+# 共通の STATE は phase=combat;stage=diorama;hd2d=slice;dumplayout=1 (束 = 画角22°・見下ろし PC 5°／スマホ 7°・主人公62・夜色の札。光と配置は三周目の既定)。
+#   hideui=1 は三周目から手札の後ろの暗幕 (desk-shade) も消す (Autopilot・R12) = 二周目の UI なしの画より手前が明るく出る。比べる時は本番の「二周目の写し」(r3-slice の R2) で。
+# 測り方 (計画 §3 の3):
+#   物差し   python3 scripts/hd2d-r3-targets.py <出力> T3-ogre T3-wolf T3-quad T3-dolls T3-ogre-ph T3-quad-ph T3-fog40 T3-fog45 T3-lensfar --md <出力>/r3-targets.md --json <出力>/r3-targets.json
+#            (本家と二周目の値は python3 scripts/hd2d-r3-targets.py --calibrate --md <出力>/calib.md。★ 目安・◆ 歯止め・— 参考。合否は目で)
+#   配置     python3 scripts/hd2d-layout-check.py <出力> --md <出力>/layout-check.md   (L1〜L10 ＋ L11 = 三周目の部品の数と ⑨ 幕ボスの真上・⑩ 手前の草と手札・名前の帯)
+#   箱庭の門 <出力>/T3-*-1.layout.json の extra.diorama.ok が true (Diorama.Check の result=OK。部品・小札 250・材質 7・三角形。failures に理由)
+#   シート   python3 scripts/hd2d-r2-sheet.py r3-trial --shots <出力> --out <出力>/trial-sheet.png --md <出力>/trial-sheet.md   (本家｜二周目｜試し・変種・UI の試し撮り・二周目の写しの差)
+# 決めること (計画 §3 の4): 霧の end (40／45)・lensFar (3.0／1.6〜2.0)・上の覆いの枚数と tint (暗い画素 ≤66%・帯の頂点 ≥145)・株の本数・R3 の試し撮り (T3-ui) を見てユーザーに Q1 の2段目を聞く。
+
+# ---- 5場面のうち PC の4場面 (層・幹・土手・手前・キャラ)。UI あり (配置の検査) と UI なし (物差し)
+T3-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1
+T3-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+T3-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1
+T3-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+T3-quad|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1
+T3-quad-hideui|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+# 人形9体 = r2-slice.txt の PC-S-dolls と同じ (ひなた・白の人形9体・敵は狼)
+T3-dolls|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dumplayout=1
+T3-dolls-hideui|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+# ★ レーン F が足した1枚 (計画 §4 の表には無い): キャラの型 = 体÷すぐ後ろの窓 (M9)・敵と主人公の鋭い縁 (縁 1px の中間色の効き)・足の真下÷左右 を測るため。要らなければこの行を消す
+T3-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1
+
+# ---- スマホ (1920×886・UI 1.6倍・tier=phone)。帯・覆い・部品を UI なしで (スマホの部品の phone.hide の候補・帯の頂点・暗い画素の歯止め PH ≤0.70)
+T3-ogre-ph|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone;hideui=1
+T3-quad-ph|PH|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;tier=phone;hideui=1
+
+# ---- 霧の end の変種 (N22・N8・N3。レーン B の look_act1_r3fog40／r3fog45 を既定の設計図に重ねる。帯の頂点 ≥145 を守るか)
+T3-fog40|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3fog40
+T3-fog45|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3fog45
+# ---- 奥のぼかし lensFar 1.6〜2.0 (幹の筋が読めるか = M5b 帯の幹の樹皮の読める率。分析 §11 の 11)
+T3-lensfar|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3lens
+
+# ---- 主人公の照明の段 (レーン E の look_act1_r3char_soft = もう一段下げた物)
+T3-char-soft|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r3char_soft
+
+# ---- R3 の試し撮り (Q1 の2段目に見せる): 旗 uitrial=1 (箱庭の時だけ: 足元の線 0.36・帳面を足元の下・手札を沈めて触れた札だけ上げる・暗幕は手札の矩形だけ)
+T3-ui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;uitrial=1
+
+# ---- 二周目の写しが同じ画になること (戻し方の確かめ)。look_act1_r2 が設計図 act1_layout_r2 を指す (取り決め 4)。
+#   ★ deskshade=full を足した (計画 §4 の STATE には無い): 三周目の箱庭の既定は deskshade=hand = 手札の矩形だけの暗幕なので、書かないと手札のまわりだけ二周目と違う画になる。
+#   比べる元 = 二周目の最終 ~/.cache/deck-rogue/hd2d-r2/shots-final/r2-slice/PC-S-ogre-1.png (r3-trial のシートが差を出す。値の差が 2 を超える画素 ≤0.1% なら同じ画)
+T3-r2|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r2+look_act1_r2char;deskshade=full;uilayout=r2
+
+# ---- 統合が足した2枚 (2026-10-02): 霧の2段目が効く変種 (既定の far2 は深さ 75〜150 で1段目の霧が満ちた後＝画に出ない) と、半立体の法線なし
+T3-far2|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3far2
+T3-nonormal|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3nonormal

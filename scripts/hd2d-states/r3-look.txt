@@ -1,0 +1,57 @@
+# HD-2D 見本 三周目の光と空気・キャラの変種の撮り比べ (2026-10-01 レーン F 段1。計画 §2 B・E・§3 の4〜5)。1行 = 名前|PC または PH|STATE。# と空行は読み飛ばす。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r3-look.txt <本番の撮影の親>/r3-look 2   (7変種 × 狼・オーガ × 3 = 42枚・約7分)
+# 中身: 変種 × PC の狼とオーガ (boss=1) × {通常・hideui・unitsonly}。名前は PC-V-<変種>-S-<場面>[-hideui|-unitsonly] (r2-look.txt と同じ形)。
+#   look=<変種> は三周目の既定の設計図 (look_act1 + .char + .dof) の上に重ねる = 変種の差だけが写る。変種の設計図が無ければ StageLook が警告して既定で撮る。
+#   時間が足りない時は -unitsonly の行を消す (キャラの物差しが近似になる)。比べる元 (既定) は r3-slice の PC-S-wolf・PC-S-ogre。
+# 測り方: python3 scripts/hd2d-r3-targets.py --all <親>/r3-look --md … (帯の頂点・p95・暗い画素の歯止め・σ・幹・樹皮・帯の中の縁・体÷窓)。
+#   霧の end は N22・N8・N3 (python3 scripts/hd2d-r2-targets.py --all <親>/r3-look) も並べる。色寄せの変種は scripts/hd2d-color.py (本家の色の目安 21 項目)。
+# 変種 (レーン B: look_act1_r3*・レーン E: look_act1_r3char_soft。どれも Resources/Stage/ にある。足したら同じ形で行を足す)
+# look=look_act1_r3fog40 = fog.end 28→40 (霧の帯の奥の木が3段に読めるか)
+PC-V-r3fog40-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3fog40;dumplayout=1
+PC-V-r3fog40-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3fog40;hideui=1;dumplayout=1
+PC-V-r3fog40-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3fog40;unitsonly=1;dumplayout=1
+PC-V-r3fog40-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3fog40;dumplayout=1
+PC-V-r3fog40-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3fog40;hideui=1;dumplayout=1
+PC-V-r3fog40-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3fog40;unitsonly=1;dumplayout=1
+# look=look_act1_r3fog45 = fog.end 28→45
+PC-V-r3fog45-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3fog45;dumplayout=1
+PC-V-r3fog45-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3fog45;hideui=1;dumplayout=1
+PC-V-r3fog45-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3fog45;unitsonly=1;dumplayout=1
+PC-V-r3fog45-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3fog45;dumplayout=1
+PC-V-r3fog45-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3fog45;hideui=1;dumplayout=1
+PC-V-r3fog45-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3fog45;unitsonly=1;dumplayout=1
+# look=look_act1_r3fog40+look_act1_r3far2 = fog.end 40 ＋ 霧の2段目を帯の木の深さへ (look_act1_r3far2 を後ろに重ねる)
+PC-V-r3fog40far2-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3fog40+look_act1_r3far2;dumplayout=1
+PC-V-r3fog40far2-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3fog40+look_act1_r3far2;hideui=1;dumplayout=1
+PC-V-r3fog40far2-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3fog40+look_act1_r3far2;unitsonly=1;dumplayout=1
+PC-V-r3fog40far2-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3fog40+look_act1_r3far2;dumplayout=1
+PC-V-r3fog40far2-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3fog40+look_act1_r3far2;hideui=1;dumplayout=1
+PC-V-r3fog40far2-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3fog40+look_act1_r3far2;unitsonly=1;dumplayout=1
+# look=look_act1_r3lens = 奥のぼかし lensFar 3.0→1.8 (幹の筋が読めるか)
+PC-V-r3lens-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3lens;dumplayout=1
+PC-V-r3lens-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3lens;hideui=1;dumplayout=1
+PC-V-r3lens-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3lens;unitsonly=1;dumplayout=1
+PC-V-r3lens-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3lens;dumplayout=1
+PC-V-r3lens-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3lens;hideui=1;dumplayout=1
+PC-V-r3lens-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3lens;unitsonly=1;dumplayout=1
+# look=look_act1_r3nograde = 色だけ二周目に戻す (夜の色寄せ off・desaturate 0.64)
+PC-V-r3nograde-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3nograde;dumplayout=1
+PC-V-r3nograde-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3nograde;hideui=1;dumplayout=1
+PC-V-r3nograde-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3nograde;unitsonly=1;dumplayout=1
+PC-V-r3nograde-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3nograde;dumplayout=1
+PC-V-r3nograde-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3nograde;hideui=1;dumplayout=1
+PC-V-r3nograde-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3nograde;unitsonly=1;dumplayout=1
+# look=look_act1_r3sat45 = 舞台の彩度 desaturate 0.45
+PC-V-r3sat45-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3sat45;dumplayout=1
+PC-V-r3sat45-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3sat45;hideui=1;dumplayout=1
+PC-V-r3sat45-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3sat45;unitsonly=1;dumplayout=1
+PC-V-r3sat45-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3sat45;dumplayout=1
+PC-V-r3sat45-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3sat45;hideui=1;dumplayout=1
+PC-V-r3sat45-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3sat45;unitsonly=1;dumplayout=1
+# look=look_act1_r3char_soft = 主人公の照明をもう一段下げた物 (レーン E)
+PC-V-r3charsoft-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3char_soft;dumplayout=1
+PC-V-r3charsoft-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3char_soft;hideui=1;dumplayout=1
+PC-V-r3charsoft-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r3char_soft;unitsonly=1;dumplayout=1
+PC-V-r3charsoft-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3char_soft;dumplayout=1
+PC-V-r3charsoft-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3char_soft;hideui=1;dumplayout=1
+PC-V-r3charsoft-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r3char_soft;unitsonly=1;dumplayout=1
