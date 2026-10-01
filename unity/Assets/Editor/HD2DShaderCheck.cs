@@ -28,7 +28,7 @@ namespace DeckRogue.EditorTools
         const string ShaderDir = "Assets/Resources/Shaders";
 
         /// <summary>HD-2D の新シェーダ (組を多く試す)</summary>
-        static readonly string[] Hd2dShaders = { "DeckRogue/StageModule", "DeckRogue/StageUnitLit", "DeckRogue/StageShaft", "DeckRogue/TiltShift" };
+        static readonly string[] Hd2dShaders = { "DeckRogue/StageModule", "DeckRogue/StageUnitLit", "DeckRogue/StageShaft", "DeckRogue/TiltShift", "DeckRogue/StageMist" };   // StageMist = 三周目の霧の板 (2026-10-02 統合)
 
         /// <summary>代表のキーワードの組 (パスが宣言していない物は落として使う)。空の組 = 既定の版</summary>
         static readonly string[][] Hd2dKeywordSets =

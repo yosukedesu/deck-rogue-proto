@@ -29,6 +29,19 @@
 // 切り替え: multi_compile_local の _UV_MESH・_ALPHATEST_ON (アルファで切る。MSAA の時は _AlphaToMask=1 で alpha-to-coverage) と、URP のパイプラインのキーワード
 //   (Lit.shader 17.6 から、ここで使う物を写す)。shader_feature は使わない (ビルドで版が削られる)。
 // パス: Forward・ShadowCaster・DepthOnly・DepthNormals。影と深度のパスが読むアルファは _BaseMap (メッシュの UV) だけ = 配列のタイルは不透明の前提。
+//
+// 三周目 (2026-10-01・レーン S。計画 docs/design/hd2d-round3-plan-2026-10-01.md §2 S・分析 R7/R8/R14)。どれも値が 0 (既定) なら二周目と同じ画:
+//   R7  _NormalAtlasOn=1: _UV_MESH で _MeshArraySlice < 0 (アトラスの半立体と札) の時、_NormalAtlas (アトラスと同じ詰め方の法線。linear・x=右・y=上・z=手前) を
+//       ドットの中心で読み、強さ _NormalAtlasStrength で頂点の法線 (膨らみ) を曲げる。接空間 = 板の右 (u が増える向き)・上 (v)・手前 (頂点の法線)。
+//       半立体は材質ごとに1つのメッシュへ溶かす (部品ごとの行列が無い) ので、右と上は画面の微分から解く (HD2D_UvFrame。StageUnitLit の R/U/F の R・U に当たる。
+//       左右の反転も出る)。設計図 surfaces.<名前>.normal が強さ (Diorama が書く)。
+//   R8  全体値 _HD2DFog2 (StageLook が書く): 距離の霧の後に、視線の深さ x〜y で霧の色 (_HD2DFog2Color の rgb が 0 なら芯の向きの霧の色) へ強さ z だけ寄せる 2段目。w=1 で有効。
+//       深さは「視線の深さ」= カメラ空間の −z (高さの霧の _HD2DHeightFogDepth と同じ物差し・URP の線形の霧の start/end も同じ)。
+//   R9  全体値 _HD2DNightGrade/_HD2DNightGradeRange (StageLook が書く): いちばん最後 (光・霧・周辺減光の後) に、出力の明るさ (線形の Luminance・後処理の前) が
+//       Range.x 以下の所は全部・Range.y 以上は0 の重みで、明るさを保ったまま色相と彩度を紺 (rgb) へ強さ w だけ寄せ、明るい所の彩度を Range.z 倍 (0 か 1 = そのまま)。
+//   R14 _SwayAmp > 0: _UV_MESH の頂点を世界の x へ sin 2種で揺らす。重み = 1 − 頂点色の a (ReliefMesh.R3S_SwayCopy が a = 1 − 部品の sway × 根元からの割合 で書く。
+//       揺らさない部品は今までどおり a = 1 = 重み 0)。_SwayFreq = (x 周波数1 Hz・y 周波数2 Hz・z 場所による位相 rad/unit)。影・DepthOnly・DepthNormals も同じ変位。
+//       配列の材質 (地形。頂点色の a = 苔) は _UV_MESH が無いので揺れない。
 Shader "DeckRogue/StageModule"
 {
     Properties
@@ -58,6 +71,13 @@ Shader "DeckRogue/StageModule"
         _Fog ("Fog", Range(0,1)) = 1
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 2
         [HideInInspector] _AlphaToMask ("Alpha To Mask", Float) = 0
+        // 三周目 R7 (レーン S): 半立体の法線アトラス (アトラスと同じ詰め方。Diorama が作る)。0 = 読まない = 二周目
+        [NoScaleOffset] _NormalAtlas ("Normal Atlas (mesh UV, linear)", 2D) = "bump" {}
+        _NormalAtlasOn ("Normal Atlas On", Float) = 0
+        _NormalAtlasStrength ("Normal Atlas Strength", Float) = 0
+        // 三周目 R14 (レーン S): 揺れ (重み = 1 − 頂点色の a)。0 = 揺れない = 二周目
+        _SwayAmp ("Sway Amplitude (unit)", Float) = 0
+        _SwayFreq ("Sway Freq (x Hz, y Hz, z phase rad/unit)", Vector) = (0.23, 0.61, 0.12, 0)
     }
     SubShader
     {
@@ -69,6 +89,7 @@ Shader "DeckRogue/StageModule"
         TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
         TEXTURE2D_ARRAY(_Albedo); SAMPLER(sampler_Albedo);
         TEXTURE2D_ARRAY(_Normal); SAMPLER(sampler_Normal);
+        TEXTURE2D(_NormalAtlas); SAMPLER(sampler_NormalAtlas);   // 三周目 R7 (レーン S)
         // 全部のパスで同じ並び (SRP Batcher)
         CBUFFER_START(UnityPerMaterial)
             float4 _BaseMap_ST;
@@ -79,6 +100,9 @@ Shader "DeckRogue/StageModule"
             float4 _MatSlices;
             float _TopSlice, _TopThreshold, _TopBlend, _VColorAO, _NormalStrength, _Cutoff, _Receive, _ShadowStrength, _TexelLighting;
             float _TileTexels, _TopNoise, _NormalArrayOn, _AlbedoDecode, _MeshArraySlice, _PathYaw, _Fog, _Cull, _AlphaToMask, _TopCount;
+            // 三周目 (レーン S): R7 法線アトラス・R14 揺れ
+            float _NormalAtlasOn, _NormalAtlasStrength, _SwayAmp;
+            float4 _SwayFreq;
         CBUFFER_END
 
         // 影と深度のパスのアルファ (メッシュの UV の _BaseMap だけ。配列のタイルは不透明の前提)
@@ -89,6 +113,27 @@ Shader "DeckRogue/StageModule"
             if (_MeshArraySlice < 0.0) a *= SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv).a;
         #endif
             return a;
+        }
+
+        // 三周目 R14 (レーン S): 揺れ。世界の位置を x へずらす (重み = 1 − 頂点色の a。a = 1 の頂点・_SwayAmp 0 は動かない)。
+        // 位相は「ずらす前の」世界の xz から (となりの株と揃わない・1つの株の中では位相がゆっくり変わる)。4つのパスで同じ式 = 影と深度もずれない
+        float3 HD2D_ModuleSway(float3 positionWS, half4 vcolor)
+        {
+            float w = saturate(1.0 - (float)vcolor.a);
+            float ph = dot(positionWS.xz, float2(1.0, 0.63)) * _SwayFreq.z;
+            float t = _Time.y * 6.2831853;
+            float s = sin(t * _SwayFreq.x + ph) * 0.65 + sin(t * _SwayFreq.y + ph * 1.7 + 1.3) * 0.35;
+            positionWS.x += _SwayAmp * w * s;
+            return positionWS;
+        }
+
+        // 物体 → クリップ (揺れなしなら今までの TransformObjectToHClip と同じ式)
+        float4 HD2D_ModuleObjectToHClip(float3 positionOS, half4 vcolor)
+        {
+        #if defined(_UV_MESH)
+            if (_SwayAmp > 0.0) return TransformWorldToHClip(HD2D_ModuleSway(TransformObjectToWorld(positionOS), vcolor));
+        #endif
+            return TransformObjectToHClip(positionOS);
         }
         ENDHLSL
 
@@ -209,6 +254,55 @@ Shader "DeckRogue/StageModule"
                 return lerp(col, hc, amt);
             }
 
+            // 三周目 R8 (レーン S): 距離の霧の 2段目。StageLook (レーン B) が look の fog.far2 から書き、Restore で 0 に戻す (0 = 使わない = 二周目)。
+            // _HD2DFog2: x = 始まりの深さ・y = 終わりの深さ (視線の深さ = カメラ空間の −z。高さの霧の _HD2DHeightFogDepth・URP の線形の霧の start/end と同じ物差し)・
+            //            z = 強さ (0〜1。終わりの深さでの寄せる割合)・w = 1 なら有効
+            // _HD2DFog2Color: rgb = 寄せる色 (線形)。全部 0 なら霧の色 (芯の向きで明暗がつく HD2D_FogColor = 距離の霧と同じ色)。色を書いた時も芯の外れでは高さの霧と同じ割合で暗くなる
+            float4 _HD2DFog2;
+            float4 _HD2DFog2Color;
+            // 三周目 R9 (レーン S): 夜の色寄せ。StageLook (レーン B) が look の nightGrade から書く (0 = 使わない = 二周目)。
+            // _HD2DNightGrade: rgb = 暗部を寄せる紺 (線形)・w = 強さ 0〜1。_HD2DNightGradeRange: x = 明るさの下 (これより暗い所は全部寄せる)・
+            //                  y = 明るさの上 (これより明るい所は寄せない)・z = 明るい所の彩度の倍率 (0 か 1 = そのまま)。明るさ = 出力の線形の Luminance (後処理の前)
+            float4 _HD2DNightGrade;
+            float4 _HD2DNightGradeRange;
+
+            half3 HD2D_Fog2(half3 col, float3 posWS, half lobe)
+            {
+                if (_HD2DFog2.w < 0.5 || _HD2DFog2.z <= 0.0) return col;
+                float depth = -TransformWorldToView(posWS).z;
+                half k = half(saturate((depth - _HD2DFog2.x) / max(_HD2DFog2.y - _HD2DFog2.x, 1e-3)) * saturate(_HD2DFog2.z));
+                half3 fc;
+                if (dot(_HD2DFog2Color.rgb, _HD2DFog2Color.rgb) > 1e-8)
+                {
+                    fc = half3(_HD2DFog2Color.rgb);
+                    if (_HD2DFogLobePos.w > 0.0) fc *= lerp(half(_HD2DFogLobeColor.a), 1.0h, lobe);
+                }
+                else fc = HD2D_FogColor(lobe);
+                return lerp(col, fc, k);
+            }
+
+            half3 HD2D_NightGrade(half3 col)
+            {
+                if (_HD2DNightGrade.w <= 0.0) return col;
+                half L = Luminance(col);
+                float lo = _HD2DNightGradeRange.x;
+                float hi = max(_HD2DNightGradeRange.y, lo + 1e-3);
+                half bright = half(smoothstep(lo, hi, (float)L));   // 0 = 暗部・1 = 明部
+                half nl = Luminance(half3(_HD2DNightGrade.rgb));
+                if (nl > 1e-4h)
+                {
+                    half3 navy = half3(_HD2DNightGrade.rgb) * (L / nl);   // 明るさを保ち、色相と彩度だけ紺へ
+                    col = lerp(col, navy, half(saturate(_HD2DNightGrade.w)) * (1.0h - bright));
+                }
+                float bs = _HD2DNightGradeRange.z;
+                if (bs > 0.0 && abs(bs - 1.0) > 1e-3)
+                {
+                    half L2 = Luminance(col);
+                    col = max(half3(0.0h, 0.0h, 0.0h), L2 + (col - L2) * lerp(1.0h, half(bs), bright));
+                }
+                return col;
+            }
+
             struct Attributes
             {
                 float4 positionOS : POSITION;
@@ -239,6 +333,14 @@ Shader "DeckRogue/StageModule"
                 UNITY_TRANSFER_INSTANCE_ID(i, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 VertexPositionInputs p = GetVertexPositionInputs(i.positionOS.xyz);
+            #if defined(_UV_MESH)
+                // 三周目 R14 (レーン S): 揺れ (_SwayAmp 0 = 今までの位置のまま)。影と深度のパスも HD2D_ModuleSway で同じだけずらす
+                if (_SwayAmp > 0.0)
+                {
+                    p.positionWS = HD2D_ModuleSway(p.positionWS, i.color);
+                    p.positionCS = TransformWorldToHClip(p.positionWS);
+                }
+            #endif
                 VertexNormalInputs n = GetVertexNormalInputs(i.normalOS);
                 o.positionCS = p.positionCS;
                 o.positionWS = p.positionWS;
@@ -295,6 +397,7 @@ Shader "DeckRogue/StageModule"
                 float2 texB = i.uv * baseSize;
                 float2 fatB = HD2D_FatTexel(texB);
                 float2 gxB = ddx(i.uv), gyB = ddy(i.uv);
+                float3 dpdxW = ddx(posWS), dpdyW = ddy(posWS);   // 三周目 R7: 余接の枠の微分 (分岐の外で取る)
                 float2 uvS, uvC, gx, gy; float2x2 M; float slice;
                 HD2D_TileSample(i.uv, arraySize, max(_MeshArraySlice, 0.0), _MatSlices.y, _MatSlices.z, 3.0, uvS, uvC, gx, gy, M, slice);
                 bool useArray = _MeshArraySlice >= 0.0;
@@ -308,6 +411,26 @@ Shader "DeckRogue/StageModule"
                 else
                 {
                     albedo = SAMPLE_TEXTURE2D_GRAD(_BaseMap, sampler_BaseMap, fatB / baseSize, gxB, gyB);
+                }
+                // 三周目 R7 (レーン S): 半立体の法線アトラス。ドットの中心で読み、板の右 (u)・上 (v)・手前 (頂点の法線 = 膨らみ) の枠で世界へ。
+                // _NormalAtlasOn 0 (既定) なら読まない = 頂点の法線のまま (二周目)
+                if (!useArray && _NormalAtlasOn > 0.5)
+                {
+                    float2 uvCB = (floor(texB) + 0.5) / baseSize;
+                    half3 nA = HD2D_DecodeNormal(SAMPLE_TEXTURE2D_GRAD(_NormalAtlas, sampler_NormalAtlas, uvCB, gxB, gyB), half(_NormalAtlasStrength));
+                    float3 nR, nU;
+                    HD2D_UvFrame(N, dpdxW, dpdyW, gxB, gyB, nR, nU);
+                    // 統合 (2026-10-02): 膨らみの法線 N に絵の法線を足すと丸みが二重になる (幹の縁で 90° を超えて裏を向き、左の明るい筋まで沈む)。
+                    // 絵の法線は形全体を持つので「足す」でなく「置き換える」: 板の枠はカメラ側の水平の向き (半立体は立てた板・額縁はカメラに付く) で作り、
+                    // 左右の反転と上下は余接の枠 (nR・nU) の向きに合わせる。絵が平らな所 (_n の無い絵・透明な所) は今までどおり N のまま。
+                    float3 fpV = SafeNormalize(_WorldSpaceCameraPos - posWS);
+                    float3 fp = SafeNormalize(float3(fpV.x, 0.0, fpV.z));
+                    float3 rp = SafeNormalize(cross(fp, float3(0.0, 1.0, 0.0)));
+                    if (dot(rp, nR) < 0.0) rp = -rp;
+                    float3 up = dot(nU, float3(0.0, 1.0, 0.0)) < 0.0 ? float3(0.0, -1.0, 0.0) : float3(0.0, 1.0, 0.0);
+                    float3 mapped = SafeNormalize(rp * (float)nA.x + up * (float)nA.y + fp * (float)nA.z);
+                    float wMap = saturate(length((float2)nA.xy) * 8.0);
+                    nPerturbed = half3(SafeNormalize(lerp(N, mapped, wMap)));
                 }
             #else
                 // (a) 道の座標で1軸だけ選んで投影
@@ -433,8 +556,10 @@ Shader "DeckRogue/StageModule"
                 half lobe = HD2D_FogLobe(posWS);
                 half3 hazed = HD2D_HeightFog(col, posWS, lobe);
                 half3 fogged = MixFogColor(hazed, HD2D_FogColor(lobe), InitializeInputDataFog(float4(posWS, 1.0), i.fogFactor));
+                fogged = HD2D_Fog2(fogged, posWS, lobe);   // 三周目 R8 (レーン S): 距離の霧の 2段目 (全体値 0 = そのまま)
                 col = lerp(col, fogged, half(_Fog));
                 col *= HD2D_StageVignette(posWS);   // 舞台だけの周辺減光 (W3b P22。全体値 0 = そのまま)
+                col = HD2D_NightGrade(col);         // 三周目 R9 (レーン S): 夜の色寄せ = いちばん最後 (全体値 0 = そのまま)
                 outColor = half4(col, OutputAlpha(alpha, false));
             #ifdef _WRITE_RENDERING_LAYERS
                 outRenderingLayers = EncodeMeshRenderingLayer();
@@ -462,7 +587,7 @@ Shader "DeckRogue/StageModule"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
             float3 _LightDirection;
             float3 _LightPosition;
-            struct Attributes { float4 positionOS : POSITION; float3 normalOS : NORMAL; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            struct Attributes { float4 positionOS : POSITION; float3 normalOS : NORMAL; float2 uv : TEXCOORD0; half4 color : COLOR; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
             Varyings ShadowVert(Attributes i)
             {
@@ -470,6 +595,9 @@ Shader "DeckRogue/StageModule"
                 UNITY_SETUP_INSTANCE_ID(i);
                 UNITY_TRANSFER_INSTANCE_ID(i, o);
                 float3 positionWS = TransformObjectToWorld(i.positionOS.xyz);
+            #if defined(_UV_MESH)
+                if (_SwayAmp > 0.0) positionWS = HD2D_ModuleSway(positionWS, i.color);   // 三周目 R14: 色のパスと同じ揺れ
+            #endif
                 float3 normalWS = TransformObjectToWorldNormal(i.normalOS);
             #if _CASTING_PUNCTUAL_LIGHT_SHADOW
                 float3 lightDirectionWS = normalize(_LightPosition - positionWS);
@@ -506,7 +634,7 @@ Shader "DeckRogue/StageModule"
             #pragma multi_compile_local _ _UV_MESH
             #pragma multi_compile_local _ _ALPHATEST_ON
             #pragma multi_compile_instancing
-            struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; half4 color : COLOR; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID UNITY_VERTEX_OUTPUT_STEREO };
             Varyings DepthVert(Attributes i)
             {
@@ -514,7 +642,7 @@ Shader "DeckRogue/StageModule"
                 UNITY_SETUP_INSTANCE_ID(i);
                 UNITY_TRANSFER_INSTANCE_ID(i, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                o.positionCS = TransformObjectToHClip(i.positionOS.xyz);
+                o.positionCS = HD2D_ModuleObjectToHClip(i.positionOS.xyz, i.color);   // 三周目 R14: 揺れ (無ければ TransformObjectToHClip と同じ)
                 o.uv = TRANSFORM_TEX(i.uv, _BaseMap);
                 return o;
             }
@@ -546,7 +674,7 @@ Shader "DeckRogue/StageModule"
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RealtimeLights.hlsl"
-            struct Attributes { float4 positionOS : POSITION; float3 normalOS : NORMAL; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            struct Attributes { float4 positionOS : POSITION; float3 normalOS : NORMAL; float2 uv : TEXCOORD0; half4 color : COLOR; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; float3 normalWS : TEXCOORD1; UNITY_VERTEX_INPUT_INSTANCE_ID UNITY_VERTEX_OUTPUT_STEREO };
             Varyings DNVert(Attributes i)
             {
@@ -554,7 +682,7 @@ Shader "DeckRogue/StageModule"
                 UNITY_SETUP_INSTANCE_ID(i);
                 UNITY_TRANSFER_INSTANCE_ID(i, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                o.positionCS = TransformObjectToHClip(i.positionOS.xyz);
+                o.positionCS = HD2D_ModuleObjectToHClip(i.positionOS.xyz, i.color);   // 三周目 R14: 揺れ (無ければ TransformObjectToHClip と同じ)
                 o.uv = TRANSFORM_TEX(i.uv, _BaseMap);
                 o.normalWS = TransformObjectToWorldNormal(i.normalOS);
                 return o;

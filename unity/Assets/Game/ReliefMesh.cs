@@ -5,6 +5,7 @@
 // (d = 距離 ÷ ramp。ramp は膨らみの 1.6 倍以上。細い絵は膨らみを縮める)。
 // 格子の1マス = cell テクセル。1つでも不透明のテクセルを含むマスだけ面を作る (抜けはシェーダのアルファで切る)。
 // 表はローカル −z (カメラの方)。膨らみも −z へ。足元の中心 (pivot) が原点。
+// 頂点色: rgb = 凹みの暗さ (AO)・a = 1 (三周目 R14 から、揺らす部品だけ R3S_SwayCopy が a = 1 − 揺れの重み に書き換える。StageModule の _UV_MESH は a を苔に使わない)。
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -94,6 +95,39 @@ namespace DeckRogue.Game
                     else b.Quad(a, d, c2, c1);
                 }
             RecalcNormals(b);
+            return b;
+        }
+
+        /// <summary>
+        /// 三周目 R14 (レーン S): 揺れの重みを頂点色の a に書いた写し (元の器はキャッシュで共有されるので書き換えない)。
+        /// a = 1 − weight × 根元からの割合 (0〜1)。StageModule は「1 − a」を重みとして読む = 揺らさない部品 (a = 1 のまま) は二周目と同じ。
+        /// 根元 from: "bottom" (既定。器の y の下端 = 0 → 上端 = 1)・"top" (上端が根元)・"left"・"right" (絵の左 / 右の辺 = UV の u の小さい / 大きい側が根元。
+        /// 左右の反転 flip をしても絵の同じ辺のまま = 垂れる枝の付け根)。rgb (AO・部品の色) はそのまま。weight が 0 以下なら元の器をそのまま返す
+        /// </summary>
+        public static DioramaMeshBuilder R3S_SwayCopy(DioramaMeshBuilder src, float weight, string from)
+        {
+            weight = Mathf.Clamp01(weight);
+            if (src == null || weight <= 0f || src.V.Count == 0) return src;
+            bool horizontal = from == "left" || from == "right";
+            float lo = float.PositiveInfinity, hi = float.NegativeInfinity;
+            for (int i = 0; i < src.V.Count; i++)
+            {
+                float k = horizontal ? src.U[i].x : src.V[i].y;
+                if (k < lo) lo = k;
+                if (k > hi) hi = k;
+            }
+            float span = Mathf.Max(1e-6f, hi - lo);
+            var b = new DioramaMeshBuilder();
+            b.V.AddRange(src.V); b.N.AddRange(src.N); b.U.AddRange(src.U); b.T.AddRange(src.T);
+            for (int i = 0; i < src.C.Count; i++)
+            {
+                float k = horizontal ? src.U[i].x : src.V[i].y;
+                float f = Mathf.Clamp01((k - lo) / span);
+                if (from == "top" || from == "right") f = 1f - f;
+                var c = src.C[i];
+                c.a = (byte)Mathf.Clamp(Mathf.RoundToInt((1f - weight * f) * 255f), 0, 255);
+                b.C.Add(c);
+            }
             return b;
         }
 

@@ -8,6 +8,8 @@
 //   HD2D_TileXform     … タイルの回し方 (0 = なし・1 = 左右の反転だけ・2 = 90° ずつ4通り)。読む座標 q = M·(p−½)+½、法線の xy は Mᵀ で面へ戻す
 //   HD2D_DecodeNormal  … 法線を tex×2−1 で自分でほどく (UnpackNormal は使わない。Linear のデータとして読む前提＝配列は linear:true・_n.png は sRGB なし)
 //   HD2D_DecodeAlbedo  … linear:true で作った配列に sRGB の色が入っている時、Linear の色空間でだけ sRGB→線形に戻す (Gamma では何もしない)
+//   HD2D_UvFrame       … (三周目 R7・レーン S) 面の上で「UV の u が増える向き = 板の右」「v が増える向き = 板の上」を画面の微分から解く (余接の枠)。
+//                        まとめたメッシュ (部品ごとの行列が無い) でも部品ごとの向きと左右の反転がそのまま出る。StageUnitLit の R/U/F の R・U に当たる
 #ifndef HD2D_PIXEL_INCLUDED
 #define HD2D_PIXEL_INCLUDED
 
@@ -119,6 +121,21 @@ half3 HD2D_DecodeAlbedo(half3 c, half flag)
     if (flag > 0.5h) c = SRGBToLinear(c);
 #endif
     return c;
+}
+
+// ---------------------------------------------------------------- 余接の枠 (三周目 R7・レーン S)
+
+// 面の法線 N (世界・正規化済み) と、画面の微分 (dpdx = ddx(世界の位置)・dpdy = ddy(世界の位置)・duvdx = ddx(uv)・duvdy = ddy(uv)) から、
+// 面の上で u が増える向き R (板の右) と v が増える向き U (板の上) を返す (どちらも N に直交・正規化。解けなければ 0 の向き = 法線は N のまま)。
+// 微分は分岐の外で取って渡すこと。uv が左右に反転して貼られた板 (札の flip・半立体の鏡) では R も反転する = 絵の右がそのまま世界の右へ写る。
+// 解いた向きは D = N・(dpdx × dpdy) 倍になる (D の符号は世界の手の向き・画面の y の向き (D3D と GL・描く先の上下の反転) で変わる) ので、D の符号を掛けて消す
+void HD2D_UvFrame(float3 N, float3 dpdx, float3 dpdy, float2 duvdx, float2 duvdy, out float3 R, out float3 U)
+{
+    float3 dp2perp = cross(dpdy, N);
+    float3 dp1perp = cross(N, dpdx);
+    float sg = dot(N, cross(dpdx, dpdy)) < 0.0 ? -1.0 : 1.0;
+    R = SafeNormalize((dp2perp * duvdx.x + dp1perp * duvdy.x) * sg);
+    U = SafeNormalize((dp2perp * duvdx.y + dp1perp * duvdy.y) * sg);
 }
 
 #endif // HD2D_PIXEL_INCLUDED

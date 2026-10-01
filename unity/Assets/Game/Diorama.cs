@@ -13,6 +13,16 @@
 //   頂点色 rgb = AO (_VColorAO で効かせる)、a = 天の材質 (苔) を載せてよい割合 (空き地の土は 0)。
 //  メッシュの UV の材質 (_UV_MESH・_MeshArraySlice = −1): _BaseMap (sRGB)。アトラスの半立体と札は _ALPHATEST_ON・_Cutoff も。
 //  光の面 (StageShaft): _BaseMap = 光の絵 (霧 = 左半分・筋 = 右半分)、_Tint・_Intensity・_SoftDepth・_NearFade・_EdgeFade・_Fog。
+// 三周目 (2026-10-01・レーン S。計画 docs/design/hd2d-round3-plan-2026-10-01.md §2 S)。新しいキーが無ければ二周目と同じ:
+//  ・surfaces.<名前>.normal (数 0〜1): アトラスの材質の法線アトラスの強さ (StageModule の _NormalAtlasOn/_NormalAtlasStrength)。どれかの atlas の面が > 0 の時だけ
+//    DioramaTextures.R3S_BuildNormalAtlas で法線のアトラスを作る (各絵の "<パス>_n"。無い絵は平ら)。1枚も無ければ読まない (Missing に1行)。
+//  ・surfaces.<名前>.sway: {"amp": unit, "freq": [Hz, Hz], "phase": rad/unit (既定 0.12)} = 揺れの振幅と周波数 (atlas と uv の材質だけ。_SwayAmp/_SwayFreq)。
+//    部品の "sway": 0〜1 (relief・card・frame・tree の半立体) と "swayFrom": "bottom" (既定)|"top"|"left"|"right" (根元の辺) を ReliefMesh.R3S_SwayCopy が頂点色の a に書く
+//    (a = 1 − 重み × 根元からの割合。揺らさない部品は a = 1 のまま)。
+//  ・部品 "kind": "mist" = α合成のノイズ入り霧の板 (StageMist。材質は全部の霧の板で1つ = Materials["mist"]・板ごとの値は MaterialPropertyBlock)。
+//    {"t","s","y","abs"?,"yaw"?,"w","h","v0"?,"alpha","noise":[横,縦 (回/unit)],"flow": unit/秒,"tint":[r,g,b]? (無ければ霧の色),"seed"?,"phone":{...}?}
+//  ・設計図の頂の "gates": {"partsMin","partsMax","litterMax" (＋任意で "renderersMax","materialsMax","trianglesMax")} = 点検の門 (無ければ定数の三周目の既定)。
+//  ・幕の光の設計図 look の "diorama": {"normalAtlas": false, "sway": false} で法線と揺れを切る (スマホの重さの口。既定 true)。
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -251,6 +261,32 @@ namespace DeckRogue.Game
             public readonly Dictionary<string, bool> GroupShadow = new Dictionary<string, bool>();
             public readonly Dictionary<string, DioramaMeshBuilder> ReliefCache = new Dictionary<string, DioramaMeshBuilder>();
             public readonly Dictionary<string, DioramaMeshBuilder> ModelCache = new Dictionary<string, DioramaMeshBuilder>();
+            /// <summary>三周目 R7 (レーン S): 法線のアトラス (頼まれた時だけ。無ければ null) と、法線のあった絵の数</summary>
+            public Texture2D NormalAtlas;
+            public int NormalFound;
+            /// <summary>三周目 R8 (レーン S): 霧の板の材質 (最初の mist 部品で作る。シェーダが無ければ null のまま = 霧の板は組まない)</summary>
+            public Material Mist;
+            public bool MistTried;
+        }
+
+        // ================================================================ 三周目 (レーン S) の記録 (dumplayout の extra.diorama)
+
+        /// <summary>法線のアトラス: 頼まれたか・法線のあった絵の数・アトラスの絵の数・材質で読んでいるか</summary>
+        static bool R3S_NormalRequested, R3S_NormalOn;
+        static int R3S_NormalFound, R3S_NormalTotal;
+        /// <summary>組んだ霧の板 (kind mist) と、揺れの重みを書いた部品の数・揺れを書いた材質の名前</summary>
+        static int R3S_MistParts, R3S_SwayParts;
+        static readonly List<string> R3S_SwayMaterials = new List<string>();
+
+        /// <summary>幕の光の設計図 look の "diorama" の真偽 (key が無ければ def)。スマホの段で法線と揺れを切る口 ("normalAtlas"・"sway")</summary>
+        static bool R3S_LookFlag(string key, bool def)
+        {
+            var dio = _look != null && _look.Raw != null ? _look.Raw["diorama"] as JObject : null;
+            var t = dio != null ? dio[key] : null;
+            if (t == null) return def;
+            if (t.Type == JTokenType.Boolean) return (bool)t;
+            if (t.Type == JTokenType.Integer || t.Type == JTokenType.Float) return t.Value<float>() > 0.5f;
+            return def;
         }
 
         /// <summary>差し替えの形 (Resources/Stage/Act&lt;N&gt;/Models/ の Mesh)。名前は部品の model → name → kind の順に探す。無ければ null</summary>
@@ -326,6 +362,17 @@ namespace DeckRogue.Game
             ctx.Atlas = DioramaTextures.BuildAtlas(srcList, 6, 2048);
             Own(ctx.Atlas.Tex);
             foreach (var m in ctx.Atlas.Missing) ctx.Missing.Add("atlas:" + m);
+
+            // 三周目 R7 (レーン S): どれかのアトラスの材質が法線を頼んだ (surfaces.<名前>.normal > 0) 時だけ、同じ詰め方の法線のアトラスを作る。
+            // look の diorama.normalAtlas = false (スマホの段) なら作らない。法線の絵が1枚も無ければ読ませない (平らと同じで、読む分だけ重い)
+            foreach (var sd in L.Surfaces.Values) if (sd != null && sd.Shader == "atlas" && sd.NormalAtlas > 0f) R3S_NormalRequested = true;
+            if (R3S_NormalRequested && R3S_LookFlag("normalAtlas", true))
+            {
+                ctx.NormalAtlas = DioramaTextures.R3S_BuildNormalAtlas(ctx.Atlas, out ctx.NormalFound, out R3S_NormalTotal, ctx.Missing);
+                Own(ctx.NormalAtlas);
+                R3S_NormalFound = ctx.NormalFound;
+                if (ctx.NormalAtlas != null && ctx.NormalFound == 0) ctx.Missing.Add("normalAtlas: 半立体の絵に _n が1枚も無い (法線は読まない)");
+            }
 
             foreach (var kv in L.Surfaces)
             {
@@ -422,6 +469,108 @@ namespace DeckRogue.Game
                     break;
                 }
             }
+
+            // 三周目 (レーン S): 法線のアトラス (R7) と揺れ (R14)。設計図にキーが無ければ 0 = 二周目と同じ
+            if (sd.Shader != "shaft")
+            {
+                m.SetFloat("_NormalAtlasOn", 0f);
+                m.SetFloat("_NormalAtlasStrength", 0f);
+                m.SetFloat("_SwayAmp", 0f);
+                if (sd.Shader == "atlas" && sd.NormalAtlas > 0f && ctx.NormalAtlas != null && ctx.NormalFound > 0)
+                {
+                    m.SetTexture("_NormalAtlas", ctx.NormalAtlas);
+                    m.SetFloat("_NormalAtlasOn", 1f);
+                    m.SetFloat("_NormalAtlasStrength", Mathf.Clamp(sd.NormalAtlas, 0f, 2f));
+                    R3S_NormalOn = true;
+                }
+                // 揺れはメッシュの UV の材質だけ (配列の材質は頂点色の a が苔の割合 = シェーダも _UV_MESH の時しか揺らさない)
+                if ((sd.Shader == "atlas" || sd.Shader == "uv") && sd.SwayAmp > 0f && R3S_LookFlag("sway", true))
+                {
+                    m.SetFloat("_SwayAmp", sd.SwayAmp);
+                    m.SetVector("_SwayFreq", new Vector4(sd.SwayFreq.x, sd.SwayFreq.y, sd.SwayFreq.z, 0f));
+                    R3S_SwayMaterials.Add(m.name);
+                }
+            }
+        }
+
+        /// <summary>三周目 R14 (レーン S): 部品の揺れの重み ("sway" 0〜1) と根元の辺 ("swayFrom")。重みが 0 なら false</summary>
+        static bool R3S_PartSway(DioramaPart p, out float weight, out string from)
+        {
+            weight = Mathf.Clamp01(p.Num("sway", 0f));
+            from = p.Raw != null && p.Raw["swayFrom"] != null && p.Raw["swayFrom"].Type == JTokenType.String ? (string)p.Raw["swayFrom"] : "bottom";
+            if (from != "top" && from != "left" && from != "right") from = "bottom";
+            return weight > 0f;
+        }
+
+        /// <summary>三周目 R14 (レーン S): その材質が揺らせる (メッシュの UV の材質 = atlas・uv)</summary>
+        static bool R3S_SwayableSurface(BuildContext ctx, string surface)
+        {
+            return surface != null && ctx.Layout.Surfaces.TryGetValue(surface, out var sd) && sd != null && (sd.Shader == "atlas" || sd.Shader == "uv");
+        }
+
+        /// <summary>三周目 R8 (レーン S): 霧の板の材質 (全部の霧の板で1つ)。最初に呼ばれた時に作る。シェーダが無ければ null (霧の板は組まない = 白い箱を出さない)</summary>
+        static Material R3S_MistMaterial(BuildContext ctx)
+        {
+            if (ctx.MistTried) return ctx.Mist;
+            ctx.MistTried = true;
+            var sh = Shader.Find("DeckRogue/StageMist");
+            bool noDevice = SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null;
+            if (sh == null || (!sh.isSupported && !noDevice)) { ctx.Missing.Add("shader:StageMist"); return null; }
+            var m = new Material(sh) { name = "diorama-mist" };
+            Own(m);
+            if (!Materials.ContainsKey("mist")) Materials["mist"] = m;
+            ctx.Mist = m;
+            return m;
+        }
+
+        /// <summary>三周目 R8 (レーン S): 霧の板の "tint" ([r, g, b]・0〜1 か 0〜255。見た目の明るさ = sRGB)。無い・読めなければ false (霧の色を使う)</summary>
+        static bool R3S_MistTint(DioramaPart p, out Color c)
+        {
+            c = Color.white;
+            var a = p.Raw != null ? p.Raw["tint"] as JArray : null;
+            if (a == null || a.Count < 3) return false;
+            float k = 1f;
+            for (int i = 0; i < 3; i++) if (a[i].Value<float>() > 1.001f) { k = 1f / 255f; break; }
+            c = new Color(Mathf.Clamp01(a[0].Value<float>() * k), Mathf.Clamp01(a[1].Value<float>() * k), Mathf.Clamp01(a[2].Value<float>() * k), 1f);
+            if (QualitySettings.activeColorSpace == ColorSpace.Linear) c = c.linear;
+            return true;
+        }
+
+        /// <summary>三周目 R8 (レーン S): 霧の板を1枚組む (動かさない・まとめない・影なし)。板ごとの値は MaterialPropertyBlock</summary>
+        static void R3S_BuildMist(BuildContext ctx, DioramaPart p, Vector3 pos, Quaternion rot)
+        {
+            var mat = R3S_MistMaterial(ctx);
+            if (mat == null) return;
+            var ph = PhoneOf(p);
+            float w = Mathf.Max(0.1f, JNum(ph, "w", p.Num("w", 20f)));
+            float h = Mathf.Max(0.1f, JNum(ph, "h", p.Num("h", 4f)));
+            float v0 = Mathf.Clamp01(JNum(ph, "v0", p.Num("v0", 0f)));
+            float alpha = Mathf.Clamp01(JNum(ph, "alpha", p.Num("alpha", 0.3f)));
+            float flow = JNum(ph, "flow", p.Num("flow", 0.02f));
+            var noise = p.Vec2("noise", new Vector2(0.3f, 0.8f));
+            float seed01 = (Mathf.Abs(p.Seed) % 997) / 997f;
+            var b = DioramaMesh.GlowQuad(w, h, new Rect(0f, v0, 1f, 1f - v0));
+            var mesh = b.ToMesh("diorama-mist-" + p.Index);
+            Own(mesh);
+            var go = new GameObject("mist-" + p.Index);
+            go.layer = HD2DLayers.StageSet;
+            go.transform.SetParent(ctx.DynRoot, false);
+            go.transform.localPosition = pos; go.transform.localRotation = rot;
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var mr = go.AddComponent<MeshRenderer>();
+            mr.sharedMaterial = mat;
+            mr.shadowCastingMode = ShadowCastingMode.Off;
+            mr.receiveShadows = false;
+            mr.lightProbeUsage = LightProbeUsage.Off;
+            mr.reflectionProbeUsage = ReflectionProbeUsage.Off;
+            mr.renderingLayerMask = 1u | HD2DLayers.RenderingEnvironment;
+            var mpb = new MaterialPropertyBlock();
+            mpb.SetVector("_MistParams", new Vector4(alpha, flow, Mathf.Max(0.001f, noise.x), Mathf.Max(0.001f, noise.y)));
+            mpb.SetVector("_MistSize", new Vector4(w, h, v0, seed01));
+            mpb.SetVector("_MistTint", R3S_MistTint(p, out var tint) ? new Vector4(tint.r, tint.g, tint.b, 1f) : Vector4.zero);
+            mr.SetPropertyBlock(mpb);
+            AddBox(p, b, Matrix4x4.TRS(pos, rot, Vector3.one));
+            R3S_MistParts++;
         }
 
         // ---------------------------------------------------------------- 部品
@@ -450,7 +599,7 @@ namespace DeckRogue.Game
             var L = ctx.Layout;
             string surface = !string.IsNullOrEmpty(p.Surface) ? p.Surface : DefaultSurface(p.Kind);
             // スマホの上書き (二周目 レーン D 段2): 部品の "phone": {"hide": true} ならスマホでは組まない (額縁も)。t・s・y・scale はスマホの時だけその値で置く (PlaceOf)
-            if (PhoneHidden(p)) return;
+            if (PhoneHidden(p) || R3I_FlagHidden(p)) return;
             PlaceOf(p, out float pt, out float ps, out float py, out float pscale);
             // 置き場 (根のローカル)
             float gy = HeightAtPath(pt, ps);
@@ -553,6 +702,8 @@ namespace DeckRogue.Game
                     if (rb == null) return;
                     Color frameTint;
                     if (PartTint(p, out frameTint)) rb = TintedCopy(rb, frameTint);   // 額縁を暗い影絵に (W3 P22)
+                    // 三周目 R14 (レーン S): 揺れの重み (部品の "sway"・材質が揺らせる時だけ。無ければ a = 1 のまま = 二周目)
+                    if (R3S_PartSway(p, out var fsw, out var ffrom) && R3S_SwayableSurface(ctx, surface)) { rb = ReliefMesh.R3S_SwayCopy(rb, fsw, ffrom); R3S_SwayParts++; }
                     int idx = Dynamic.Count;
                     var go = MakeObject(ctx.DynRoot, "frame-" + _frames.Count, rb.ToMesh("diorama-frame-" + p.Index), surface, p.ShadowOr(false));
                     go.transform.localScale = Vector3.one * scale;
@@ -583,6 +734,10 @@ namespace DeckRogue.Game
                     Dynamic.Add(new DynamicEntry { Name = "shaft-" + p.Index, Transform = go.transform, BaseRotation = go.transform.localRotation });
                     return;
                 }
+                case "mist":
+                    // 三周目 R8 (レーン S): α合成のノイズ入り霧の板 (StageMist)。まとめない・動かさない
+                    R3S_BuildMist(ctx, p, pos, rot);
+                    return;
                 default:
                     ctx.Missing.Add("kind:" + p.Kind);
                     return;
@@ -603,6 +758,15 @@ namespace DeckRogue.Game
             Color partTint;
             if (PartTint(p, out partTint))
                 foreach (var pc in pieces) pc.Mesh = TintedCopy(pc.Mesh, partTint);
+
+            // 三周目 R14 (レーン S): 揺れの重み (部品の "sway" 0〜1。メッシュの UV の材質 = 半立体・札・幹の半立体だけ。地面の小札は揺らさない)
+            if (p.Kind != "litter" && R3S_PartSway(p, out var sw, out var swFrom))
+            {
+                bool any = false;
+                foreach (var pc in pieces)
+                    if (R3S_SwayableSurface(ctx, pc.Surface)) { pc.Mesh = ReliefMesh.R3S_SwayCopy(pc.Mesh, sw, swFrom); any = true; }
+                if (any) R3S_SwayParts++;
+            }
 
             if (ctx.Opt.Merge)
             {
@@ -869,6 +1033,19 @@ namespace DeckRogue.Game
             return p.Raw["phone"] as JObject;
         }
 
+        /// <summary>三周目 統合 (2026-10-02): 旗が無いと組まない部品 ("onlyWith": "uitrial" = 旗 uitrial=1 の時だけ。手札を沈めた試し撮りでだけ見える真ん中の手前の草など)。
+        /// 普段の UI では手札の後ろに隠れる部品を、物差し (UI なしの撮影) に混ぜないため。部品の数には数える (PhoneHidden と同じ扱い)</summary>
+        public static bool R3I_FlagHidden(DioramaPart p)
+        {
+            var w = p != null && p.Raw != null ? p.Raw["onlyWith"] : null;
+            if (w == null || w.Type != JTokenType.String) return false;
+            switch ((string)w)
+            {
+                case "uitrial": return !HD2DFlags.UiTrial;
+                default: return false;
+            }
+        }
+
         /// <summary>スマホでは組まない部品 ("phone": {"hide": true})。額縁も (スマホで片側だけの手前の草など)</summary>
         public static bool PhoneHidden(DioramaPart p)
         {
@@ -1073,6 +1250,18 @@ namespace DeckRogue.Game
             o["offscreenPartsWide"] = CountOffscreen(1f / 3f, offNames, 60);
             o["offscreenNames"] = offNames;
             o["phoneHidden"] = st != null ? st.PhoneHidden : 0;
+            // 三周目 (レーン S): 点検の門の値 (設計図の "gates" か定数)・法線のアトラス (R7)・霧の板 (R8)・揺れ (R14)
+            o["gates"] = st != null ? st.GatesInfo() : new DioramaStats().GatesInfo();
+            o["normalAtlas"] = new Dictionary<string, object>
+            {
+                ["requested"] = R3S_NormalRequested, ["on"] = R3S_NormalOn, ["found"] = R3S_NormalFound, ["total"] = R3S_NormalTotal,
+                ["lookAllows"] = R3S_LookFlag("normalAtlas", true),
+            };
+            o["mistParts"] = R3S_MistParts;
+            o["sway"] = new Dictionary<string, object>
+            {
+                ["parts"] = R3S_SwayParts, ["materials"] = new List<string>(R3S_SwayMaterials), ["lookAllows"] = R3S_LookFlag("sway", true),
+            };
             var dyn = new List<string>();
             foreach (var e in Dynamic) dyn.Add(e.Name);
             o["dynamicNames"] = dyn;
@@ -1094,6 +1283,9 @@ namespace DeckRogue.Game
             _partBoxes.Clear(); _localBounds.Clear();
             Root = null; Layout = null; Active = false; _look = null;
             _pathYaw = DefaultPathYaw;
+            // 三周目 (レーン S) の記録
+            R3S_NormalRequested = false; R3S_NormalOn = false; R3S_NormalFound = 0; R3S_NormalTotal = 0;
+            R3S_MistParts = 0; R3S_SwayParts = 0; R3S_SwayMaterials.Clear();
         }
 
         static void Own(UnityEngine.Object o) { if (o != null) _owned.Add(o); }
@@ -1113,11 +1305,28 @@ namespace DeckRogue.Game
 
         // ================================================================ 点検
 
-        /// <summary>見本の門 (計画 P04 の確かめ方): 部品 250〜350・Renderer 120 以下・材質 6 以下・三角形 25 万以下・座席の帯の高さ |y| &lt; 0.01・座席の帯に部品が無い</summary>
-        public const int GatePartsMin = 250, GatePartsMax = 350, GateRenderers = 120, GateMaterials = 6, GateTriangles = 250000;
+        /// <summary>見本の門 (計画 P04 の確かめ方): 部品の数・Renderer・材質・三角形の上限・座席の帯の高さ |y| &lt; 0.01・座席の帯に部品が無い。
+        /// 三周目 (2026-10-01・レーン S・計画 §0 の 7): 部品 200〜450・材質 7 (霧の板の材質 +1)・小札 250・三角形 25 万のまま・Renderer 120 のまま。
+        /// 設計図の頂の "gates" ({"partsMin","partsMax","litterMax"} ＋任意で "renderersMax","materialsMax","trianglesMax") があればそちらが勝つ (DioramaStats の G*)。
+        /// 二周目までの値: 部品 250〜350・材質 6・小札 80</summary>
+        public const int GatePartsMin = 200, GatePartsMax = 450, GateRenderers = 120, GateMaterials = 7, GateTriangles = 250000;
         public const float GateSeatAbsY = 0.01f;
-        /// <summary>地面の小札 (kind "litter") の数の上限と、1枚の絵の背丈の上限 (ドット。12 = 0.48 unit = 座席で 48px)。控えめに散らす (W3b P22)</summary>
-        public const int GateLitter = 80, LitterMaxTexels = 12;
+        /// <summary>地面の小札 (kind "litter") の数の上限 (三周目 250。二周目 80) と、1枚の絵の背丈の上限 (ドット。12 = 0.48 unit = 座席で 48px)。控えめに散らす (W3b P22)</summary>
+        public const int GateLitter = 250, LitterMaxTexels = 12;
+
+        /// <summary>三周目 (レーン S): 設計図の "gates" を点検の門へ (書いた物だけ。無ければ定数のまま)</summary>
+        static void R3S_ApplyGates(DioramaStats st, DioramaLayout layout)
+        {
+            var g = layout != null && layout.Raw != null ? layout.Raw["gates"] as JObject : null;
+            if (g == null) return;
+            st.GateSource = "layout";
+            st.GPartsMin = (int)JNum(g, "partsMin", st.GPartsMin);
+            st.GPartsMax = (int)JNum(g, "partsMax", st.GPartsMax);
+            st.GLitter = (int)JNum(g, "litterMax", st.GLitter);
+            st.GRenderers = (int)JNum(g, "renderersMax", st.GRenderers);
+            st.GMaterials = (int)JNum(g, "materialsMax", st.GMaterials);
+            st.GTriangles = (int)JNum(g, "trianglesMax", st.GTriangles);
+        }
 
         /// <summary>座席の帯 (道の座標)。敵4体の奥の席 t=11.2・ひなたの人形の後列 s≈2.05・からくりの匣 (−6.3, 1.7)/(−5.3, −1.9) を含む</summary>
         public const float SeatT0 = -8.5f, SeatT1 = 13f, SeatS0 = -2.6f, SeatS1 = 2.8f;
@@ -1126,15 +1335,17 @@ namespace DeckRogue.Game
         public static DioramaStats Check()
         {
             var st = new DioramaStats();
+            R3S_ApplyGates(st, Layout);   // 三周目 (レーン S): 設計図の "gates" (無ければ定数)
             if (Layout != null)
             {
                 foreach (var p in Layout.Parts)
                 {
                     st.Parts++;
                     st.ByKind.TryGetValue(p.Kind, out var c); st.ByKind[p.Kind] = c + 1;
-                    if (PhoneHidden(p)) { st.PhoneHidden++; continue; }   // スマホで組まない部品 (二周目 レーン D 段2。部品の数には数える = 設計図の数)
+                    if (PhoneHidden(p)) { st.PhoneHidden++; continue; }
+                    if (R3I_FlagHidden(p)) continue;   // 三周目 統合: 旗の時だけの部品 ("onlyWith")   // スマホで組まない部品 (二周目 レーン D 段2。部品の数には数える = 設計図の数)
                     if (p.Kind == "litter") { st.Litter++; continue; }   // 地面の小札 (背丈 0.48 unit 以下) は座席の帯にも置く (W3b P22)
-                    if (p.Kind == "slab" || p.Kind == "fog" || p.Kind == "shaft" || p.Kind == "frame") continue;
+                    if (p.Kind == "slab" || p.Kind == "fog" || p.Kind == "shaft" || p.Kind == "frame" || p.Kind == "mist") continue;   // 霧の板 (三周目) も光の面と同じく数えない
                     float reach = p.Kind == "rock" ? p.Num("r", 0.6f) : p.Kind == "block" ? Mathf.Max(p.Num("w", 1.6f), p.Num("d", 1.2f)) * 0.5f
                         : p.Kind == "tree" ? p.Num("r", 0.55f) + p.Num("rootLen", 1.6f) : p.Kind == "fence" ? p.Num("len", 3f) * 0.5f : p.Kind == "rig" ? 1.5f : 0.3f;
                     PlaceOf(p, out float pt, out float ps, out _, out _);   // スマホなら "phone" の t・s
@@ -1230,16 +1441,31 @@ namespace DeckRogue.Game
         public readonly List<string> Failures = new List<string>();
         public bool Ok => Failures.Count == 0;
 
+        /// <summary>三周目 (レーン S): この点検で使う門 (既定は Diorama の定数。設計図の "gates" で上書き)。GateSource = "default" | "layout"</summary>
+        public int GPartsMin = Diorama.GatePartsMin, GPartsMax = Diorama.GatePartsMax, GRenderers = Diorama.GateRenderers,
+            GMaterials = Diorama.GateMaterials, GTriangles = Diorama.GateTriangles, GLitter = Diorama.GateLitter;
+        public string GateSource = "default";
+
         public void Evaluate()
         {
             Failures.Clear();
-            if (Parts < Diorama.GatePartsMin || Parts > Diorama.GatePartsMax) Failures.Add("部品 " + Parts + " (" + Diorama.GatePartsMin + "〜" + Diorama.GatePartsMax + ")");
-            if (Renderers > Diorama.GateRenderers) Failures.Add("Renderer " + Renderers + " (" + Diorama.GateRenderers + " 以下)");
-            if (Materials > Diorama.GateMaterials) Failures.Add("材質 " + Materials + " (" + Diorama.GateMaterials + " 以下)");
-            if (Triangles > Diorama.GateTriangles) Failures.Add("三角形 " + Triangles + " (" + Diorama.GateTriangles + " 以下)");
+            if (Parts < GPartsMin || Parts > GPartsMax) Failures.Add("部品 " + Parts + " (" + GPartsMin + "〜" + GPartsMax + ")");
+            if (Renderers > GRenderers) Failures.Add("Renderer " + Renderers + " (" + GRenderers + " 以下)");
+            if (Materials > GMaterials) Failures.Add("材質 " + Materials + " (" + GMaterials + " 以下)");
+            if (Triangles > GTriangles) Failures.Add("三角形 " + Triangles + " (" + GTriangles + " 以下)");
             if (float.IsNaN(SeatMaxAbsY) || SeatMaxAbsY >= Diorama.GateSeatAbsY) Failures.Add("座席の帯の高さ " + SeatMaxAbsY.ToString("0.000", CultureInfo.InvariantCulture));
             if (SeatIntrusions > 0) Failures.Add("座席の帯の部品 " + SeatIntrusions);
-            if (Litter > Diorama.GateLitter) Failures.Add("地面の小札 " + Litter + " (" + Diorama.GateLitter + " 以下)");
+            if (Litter > GLitter) Failures.Add("地面の小札 " + Litter + " (" + GLitter + " 以下)");
+        }
+
+        /// <summary>門の値 (dumplayout の extra.diorama.gates・ToJson の gates)</summary>
+        public Dictionary<string, object> GatesInfo()
+        {
+            return new Dictionary<string, object>
+            {
+                ["source"] = GateSource, ["partsMin"] = GPartsMin, ["partsMax"] = GPartsMax, ["renderersMax"] = GRenderers,
+                ["materialsMax"] = GMaterials, ["trianglesMax"] = GTriangles, ["litterMax"] = GLitter, ["seatAbsY"] = Diorama.GateSeatAbsY,
+            };
         }
 
         public string Summary()
@@ -1265,6 +1491,11 @@ namespace DeckRogue.Game
                 ["seatIntrusions"] = SeatIntrusions, ["litter"] = Litter, ["phoneHidden"] = PhoneHidden, ["ok"] = Ok,
                 ["failures"] = new JArray(Failures.ToArray()), ["missing"] = new JArray(Missing.ToArray()),
                 ["intrusions"] = new JArray(IntrusionNames.ToArray()),
+                ["gates"] = new JObject   // 三周目 (レーン S)。IL2CPP で安全なよう手で組む (FromObject は使わない)
+                {
+                    ["source"] = GateSource, ["partsMin"] = GPartsMin, ["partsMax"] = GPartsMax, ["renderersMax"] = GRenderers,
+                    ["materialsMax"] = GMaterials, ["trianglesMax"] = GTriangles, ["litterMax"] = GLitter,
+                },
             };
             var kinds = new JObject();
             var keys = new List<string>(ByKind.Keys); keys.Sort(string.CompareOrdinal);
@@ -1287,6 +1518,11 @@ namespace DeckRogue.Game
         /// <summary>配列の材質で法線の配列 _Normal を読む (_NormalArrayOn)</summary>
         public bool NormalArray = true;
         public Color Tint = Color.white;
+        /// <summary>三周目 R7 (レーン S): "normal" = アトラスの材質の法線アトラスの強さ (0 = 読まない = 二周目)</summary>
+        public float NormalAtlas;
+        /// <summary>三周目 R14 (レーン S): "sway" = {"amp": 振幅 unit (0 = 揺れない), "freq": [Hz, Hz], "phase": rad/unit}。SwayFreq = (Hz1, Hz2, phase)</summary>
+        public float SwayAmp;
+        public Vector3 SwayFreq = new Vector3(0.23f, 0.61f, 0.12f);
     }
 
     /// <summary>半立体・札の元の絵 (設計図の sources の1つ)</summary>
@@ -1406,7 +1642,7 @@ namespace DeckRogue.Game
                 foreach (var kv in surfs)
                 {
                     var o = kv.Value as JObject; if (o == null) continue;
-                    L.Surfaces[kv.Key] = new DioramaSurface
+                    var sd = new DioramaSurface
                     {
                         Shader = S(o, "shader") ?? "array", Side = S(o, "side"), Top = S(o, "top"), Tile = S(o, "tile"),
                         Receive = F(o, "receive", 0.8f), ShadowStrength = F(o, "shadowStrength", 1f), VColorAO = F(o, "vcolorAO", 1f),
@@ -1414,7 +1650,18 @@ namespace DeckRogue.Game
                         Intensity = F(o, "intensity", 1f), SoftDepth = F(o, "softDepth", 1.5f), NearFade = F(o, "nearFade", 2f), Fog = F(o, "fog", 0.3f),
                         EdgeFade = F(o, "edgeFade", 0f), NormalArray = B(o, "normalArray", true), LobeFloor = F(o, "lobeFloor", 1f),
                         Tint = Col(o, "tint", Color.white),
+                        NormalAtlas = Mathf.Max(0f, F(o, "normal", 0f)),   // 三周目 R7 (レーン S)
                     };
+                    // 三周目 R14 (レーン S): 揺れ {"amp", "freq": [f1, f2], "phase"}。無ければ揺れない
+                    if (o["sway"] is JObject so)
+                    {
+                        sd.SwayAmp = Mathf.Max(0f, F(so, "amp", 0f));
+                        var fq = so["freq"] as JArray;
+                        float f1 = fq != null && fq.Count >= 1 ? fq[0].Value<float>() : sd.SwayFreq.x;
+                        float f2 = fq != null && fq.Count >= 2 ? fq[1].Value<float>() : (fq != null && fq.Count == 1 ? f1 * 2.63f : sd.SwayFreq.y);
+                        sd.SwayFreq = new Vector3(f1, f2, F(so, "phase", sd.SwayFreq.z));
+                    }
+                    L.Surfaces[kv.Key] = sd;
                 }
 
             if (root["sources"] is JObject srcs)
