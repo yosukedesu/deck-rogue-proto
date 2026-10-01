@@ -1236,13 +1236,24 @@ namespace DeckRogue.Game
             bool dio = _diorama;
             bool slice = dio && R2B_MoondustSliceLook() != null;   // 二周目 段2 (R2B): 箱庭だけの月の塵
             if (slice) R2B_MoondustSlice();                        // 無ければ作る (StageFx のいちばん後ろ)・値を設計図に合わせる
+            // 三周目 直しの輪1 (2026-10-02・反証のまとめ (d)「舞う葉の緑のにじみ」): 箱庭では光の設計図 (look) の fx.leaves が false なら舞う葉を点けない。
+            // 既定の look_act1.json は false・二周目と W5 の写し (look_act1_r2・look_act1_w5) は true = 写しの画は今まで。今の舞台 (stage=old)・幕2/3 は読まない = 今まで
+            bool dioNoLeaves = false;
+            if (dio)
+            {
+                var lookRaw = StageLook.Current != null ? StageLook.Current.Raw : null;
+                var fxLook = lookRaw != null ? lookRaw["fx"] as Newtonsoft.Json.Linq.JObject : null;
+                var lv = fxLook != null ? fxLook["leaves"] : null;
+                dioNoLeaves = lv != null && lv.Type == Newtonsoft.Json.Linq.JTokenType.Boolean && !(bool)lv;
+            }
             for (int i = 0; i < _fx.childCount; i++)
             {
                 var c = _fx.GetChild(i);
                 bool on = true;
                 switch (c.name)
                 {
-                    case "fireflies": case "leaves": on = act == 1; break;
+                    case "fireflies": on = act == 1; break;
+                    case "leaves": on = act == 1 && !dioNoLeaves; break;
                     case "water-sparkle": on = act == 1 && !dio; break;
                     case "mote-light-template": on = !dio; break;   // 粒ごとの点光源のひな型。今の舞台は今までどおり (既定の on で点いている = 見た目を変えない)。箱庭では点けない (世界の原点に弱い暖色の点光源が1つ立っていた)
                     case "motes-cluster": on = !dio; break;   // 今の舞台のランタンの足元の暖色の粒の一群 (t −7.1 = 画面の左端)。箱庭ではランタンが無く、左端の地面だけが暖色に光って③ (中央÷端) を下げていた (W3 P22)

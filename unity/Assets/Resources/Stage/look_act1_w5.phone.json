@@ -1,0 +1,13 @@
+{
+  "_doc": "W5 の写し look_act1_w5 のスマホの上書き (三周目 直しの輪1・統合 2026-10-02)。look_act1.phone.json の三周目のスマホの値を W5 の値 (look_act1_w5.json) に戻す",
+  "envGrade": {
+    "tint": [
+      0.74,
+      0.9,
+      1.08
+    ]
+  },
+  "stageVignette": {
+    "top": 0.3
+  }
+}

@@ -22,6 +22,15 @@
 //             LookDriver (光の一式の根に付く) が焼き直す。灯の位置と向き (= キャラのキー KeyDir) は設計図の帯から決めたまま変えない
 //   霧の光の芯 (fog.lobe) … 全体値 _HD2DFogLobePos・_HD2DFogLobeColor。視線が坑口の奥の脈を向くほど霧が明るく、外れるほど暗い (StageModule の霧・StageShaft の光の面が読む)
 //   高さの霧の深さ (fog.height.depthStart・depthFull) … 全体値 _HD2DHeightFogDepth (× r)。座席の帯より奥にだけ掛ける (StageModule が読む)
+//
+// 三周目 段1 (2026-10-01 レーン B。計画 docs/design/hd2d-round3-plan-2026-10-01.md §2 B・分析 R2/R4/R8/R9) で足したもの (どれも look にキーが無ければ 0 = 二周目と同じ):
+//   霧の2段目 (fog.far2 { start, end, strength, color? }) … 全体値 _HD2DFog2 (x = start × r・y = end × r = 視線の深さ・z = 強さ・w = 1) と _HD2DFog2Color
+//             (rgb = 寄せる色 (線形)・無ければ 0 = StageModule が芯の向きの霧の色を使う)。StageModule だけが読む (キャラと光の筋には掛からない)
+//   夜の色寄せ (nightGrade { color, strength, lo, hi, brightSat }) … 全体値 _HD2DNightGrade (rgb = 紺 (線形)・w = 強さ) と _HD2DNightGradeRange
+//             (x = lo・y = hi = StageModule の出力の線形の輝度・z = 明るい所の彩度の倍率)。StageModule の最後で掛かる (キャラと光の筋には掛からない)
+//   光の筋の倍率 (materials.<名前>.shaftGain) … StageShaft の材質の _ShaftGain。頂点色の a が 0 の面 (月光の筋) だけに掛かる (霧の面 a 1 は 1 倍)。
+//             設計図の部品の gain は Diorama で 0〜1 に丸められる (1.1 も 1.3 も 1.0) ので、筋を 1 倍より明るくする口はここ
+//   光の池の明るさ 1 より上 (lamp.pool.level > 1) … クッキーは 0〜1 なので、池が帯より明るい時はクッキー全体を level で割り、灯の強さを level 倍 (帯・外の明るさは同じ・池の芯だけ level 倍)
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -328,7 +337,9 @@ namespace DeckRogue.Game
             ApplyVolume(profile, d);
             ApplyCharGlobals(d);
             ApplyHeightFog(d);
+            R3B_WriteFog2(d);        // 三周目 段1 (R3B): 霧の2段目 (ScaleByCameraDistance でも書く。r が変わるたび)
             ApplyEnvGrade(d);
+            R3B_ApplyNightGrade(d);  // 三周目 段1 (R3B): 夜の色寄せ
             ApplyStageVignette(d);
             ApplyMaterials();
             StageFx.Prepare(d.Hit);
@@ -434,6 +445,16 @@ namespace DeckRogue.Game
                 var mo = matsRaw != null ? matsRaw[mkv.Key] as JObject : null;
                 m.SetFloat(_idSkipTopVig, mo != null && B(mo, "shaftSkipTopVig", false) ? 1f : 0f);
             }
+            // 三周目 段1 (R3B・分析 R2 の moon-shaft-0 gain 1.1→1.3): 光の筋の倍率。look の materials.<名前>.shaftGain (0〜4・既定 1) を StageShaft の _ShaftGain へ。
+            // 頂点色の a (設計図の lobe) が 0 の面 = 月光の筋だけに掛かり、霧の面 (a 1) は 1 倍のまま。設計図の部品の gain は Diorama で 0〜1 に丸められるので、筋を明るくする口はここ。
+            // 無い = 1 (= 二周目)。材質に _ShaftGain が無い (StageShaft の古い版) なら書かない
+            foreach (var mkv in Diorama.Materials)
+            {
+                var m = mkv.Value;
+                if (m == null || !m.HasProperty(R3B_idShaftGain)) continue;
+                var mo = matsRaw != null ? matsRaw[mkv.Key] as JObject : null;
+                m.SetFloat(R3B_idShaftGain, mo != null ? Mathf.Clamp(F(mo, "shaftGain", 1f), 0f, 4f) : 1f);
+            }
         }
 
         /// <summary>
@@ -452,6 +473,7 @@ namespace DeckRogue.Game
             RenderSettings.fogEndDistance = d.Fog.End * r;
             EnsureIds();
             Shader.SetGlobalVector(_idHFogDepth, new Vector4(d.Fog.HeightDepthStart * r, Mathf.Max(d.Fog.HeightDepthStart + 0.01f, d.Fog.HeightDepthFull) * r, 0f, 0f));   // 高さの霧の深さ (W3 P22)
+            R3B_WriteFog2(d);   // 三周目 段1 (R3B): 霧の2段目の深さも同じ r で
             var urp = BackedUrp();
             if (urp != null) urp.shadowDistance = d.Shadow.Distance * r;
             if (!_seatBandSet) ApplyFallbackBand();
@@ -523,6 +545,16 @@ namespace DeckRogue.Game
             o["stageVignette"] = _idsReady ? Shader.GetGlobalVector(_idStageVignette) : Vector4.zero;   // 舞台だけの周辺減光 (W3b P22)
             o["seatBand"] = _idsReady ? Shader.GetGlobalVector(_idSeatBand) : Vector4.zero;              // 二周目 段2 (R2B): 横の減光を外す座席の帯 (t0, t1, s0, s1)
             o["seatBandParam"] = _idsReady ? Shader.GetGlobalVector(_idSeatBandParam) : Vector4.zero;    // (cos 道の向き, sin, 縁, 1 = 使う)
+            // 三周目 段1 (R3B): 霧の2段目・夜の色寄せ (全体値の今の値。0 = 使わない = 二周目)・光の筋の倍率 (材質の値)
+            o["fog2"] = _idsReady ? Shader.GetGlobalVector(R3B_idFog2) : Vector4.zero;                  // (始まりの深さ, 終わりの深さ (視線の深さ・× r 済み), 強さ, 1 = 使う)
+            o["fog2Color"] = _idsReady ? Shader.GetGlobalVector(R3B_idFog2Color) : Vector4.zero;        // rgb = 寄せる色 (線形。0 = 芯の向きの霧の色)
+            o["nightGrade"] = _idsReady ? Shader.GetGlobalVector(R3B_idNightGrade) : Vector4.zero;      // rgb = 紺 (線形)・w = 強さ
+            o["nightGradeRange"] = _idsReady ? Shader.GetGlobalVector(R3B_idNightGradeRange) : Vector4.zero;   // (下, 上 = 線形の輝度, 明るい所の彩度の倍率, 0)
+            var r3bGain = new Dictionary<string, object>();
+            if (_idsReady)
+                foreach (var mkv in Diorama.Materials)
+                    if (mkv.Value != null && mkv.Value.HasProperty(R3B_idShaftGain)) r3bGain[mkv.Key] = mkv.Value.GetFloat(R3B_idShaftGain);
+            o["shaftGain"] = r3bGain;
             o["layout"] = d != null && d.Raw != null && d.Raw["layout"] != null ? d.Raw["layout"].ToString() : null;   // 比べる用の別の設計図 (W3b P22。null = 既定)
             var urp = BackedUrp();
             if (urp != null)
@@ -603,6 +635,7 @@ namespace DeckRogue.Game
         static int _idEnvGrade, _idTint, _idIntensity;        // 舞台の色の寄せ (W3 の統合・本家の色彩。StageModule が読む)・光の面の色と強さ
         static int _idStageVignette;                          // 舞台だけの周辺減光 (W3b P22。StageModule・StageShaft が読む)
         static int _idSeatBand, _idSeatBandParam, _idSkipTopVig;   // 二周目 段2 (R2B): 座席の帯 (横の減光を外す。StageModule)・光の筋の上の減光を外す (StageShaft の材質の値)
+        static int R3B_idFog2, R3B_idFog2Color, R3B_idNightGrade, R3B_idNightGradeRange, R3B_idShaftGain;   // 三周目 段1 (R3B): 霧の2段目・夜の色寄せ (StageModule)・光の筋の倍率 (StageShaft の材質の値)
 
         static string DefaultName(int act) { return "look_act" + act; }
 
@@ -630,13 +663,26 @@ namespace DeckRogue.Game
             _idSeatBand = Shader.PropertyToID("_HD2DSeatBand");           // 二周目 段2 (R2B): x・y = 座席の帯の t の範囲・z・w = s の範囲 (道の座標)
             _idSeatBandParam = Shader.PropertyToID("_HD2DSeatBandParam"); // x = cos(道の向き)・y = sin(道の向き)・z = 縁のなじみ (unit)・w = 1 なら使う (0 = 今まで)
             _idSkipTopVig = Shader.PropertyToID("_SkipTopVig");           // StageShaft の材質: 1 なら頂点色の a が 0 の面 (月光の筋) は上の減光を受けない
+            // 三周目 段1 (R3B): 取り決め 3 の名前 (レーン S の StageModule が読む)
+            R3B_idFog2 = Shader.PropertyToID("_HD2DFog2");                     // x = 始まりの視線の深さ (look の far2.start × r)・y = 終わり (× r)・z = 強さ・w = 1 なら有効 (0 = 二周目)
+            R3B_idFog2Color = Shader.PropertyToID("_HD2DFog2Color");           // rgb = 寄せる色 (線形)。0 = 芯の向きの霧の色 (StageModule の HD2D_FogColor)
+            R3B_idNightGrade = Shader.PropertyToID("_HD2DNightGrade");         // rgb = 暗部を寄せる紺 (線形)・w = 強さ 0〜1 (0 = 二周目)
+            R3B_idNightGradeRange = Shader.PropertyToID("_HD2DNightGradeRange"); // x = 明るさの下・y = 上 (StageModule の出力の線形の輝度)・z = 明るい所の彩度の倍率・w = 0
+            R3B_idShaftGain = Shader.PropertyToID("_ShaftGain");               // StageShaft の材質: 頂点色の a が 0 の面 (月光の筋) の明るさの倍率 (1 = 二周目)
         }
 
         static StageLookData LoadNamed(int act, string baseName, IList<string> overlays)
         {
             var names = new List<string> { baseName, baseName + ".char", baseName + ".dof" };
             if (overlays != null) names.AddRange(overlays);   // 旗 look= の変種 (W3 P22)。スマホの段より先 = スマホの段の軽くする値が最後に勝つ
-            if (HD2DFlags.Tier == HD2DTier.Phone) names.Add(baseName + ".phone");
+            if (HD2DFlags.Tier == HD2DTier.Phone)
+            {
+                names.Add(baseName + ".phone");
+                // 三周目 直しの輪1 (統合 2026-10-02): 変種ごとのスマホの設計図 <変種>.phone (ある時だけ) を .phone の後に重ねる。
+                // .phone が最後に勝つので、既定のスマホの値 (夜の締め) を変えると写し (look_act1_r2・look_act1_w5) のスマホまで変わっていた。
+                // 写しは自分の .phone で二周目・W5 の値を書き戻す。無い変種は今までどおり (読めなくても警告しない)
+                if (overlays != null) foreach (var o in overlays) names.Add(o + ".phone");
+            }
             var texts = new List<KeyValuePair<string, string>>();
             TextAsset[] dir = null;
             foreach (var n in names)
@@ -959,6 +1005,9 @@ namespace DeckRogue.Game
             bool flatten = L.Flatten && L.Cookie && bandN > 0 && eMin > 0.0;
             double eRef = flatten ? eMin : eAim;
             _lamp.intensity = (float)(Math.Max(0.0, L.Illum) / Math.Max(1e-9, eRef));
+            // 三周目 段1 (R3B): 光の池が 1 より明るい (lamp.pool.level > 1) 時は、LampGroundMask がクッキーを level で割るので灯をその倍率で上げる (帯と外は同じ明るさ・池の芯だけ level 倍)。
+            // 池をクッキーに焼くのは灯の形 (mask) とクッキーがある時だけ。level ≦ 1 なら 1 倍 (= 二周目)
+            if (L.Cookie && L.MaskOn && L.PoolOn) _lamp.intensity *= Mathf.Max(1f, L.PoolLevel);   // = PoolOverOf (LampMaskFor が渡す池の level)
             _lampBasis = null;
             if (L.Cookie)
             {
@@ -1027,6 +1076,7 @@ namespace DeckRogue.Game
             {
                 { "on", L.MaskOn && _lampBasis != null }, { "tMin", _maskTMin }, { "tMax", _maskTMax }, { "fitted", _maskFitted },
                 { "sMin", L.SMin }, { "sMax", L.SMax }, { "margin", L.MaskMargin }, { "outside", L.MaskOutside }, { "pool", L.PoolOn }, { "bakes", _maskBakes },
+                { "poolLevel", L.PoolLevel }, { "poolRT", L.PoolRT }, { "poolRS", L.PoolRS },   // 三周目 段1 (R3B): level > 1 の時はクッキーを割って灯の強さを level 倍
             };
         }
 
@@ -1427,6 +1477,10 @@ namespace DeckRogue.Game
             Shader.SetGlobalVector(_idSeatBand, Vector4.zero);        // 二周目 段2 (R2B)
             Shader.SetGlobalVector(_idSeatBandParam, Vector4.zero);
             _svSeatBandOn = false;
+            Shader.SetGlobalVector(R3B_idFog2, Vector4.zero);          // 三周目 段1 (R3B): 霧の2段目・夜の色寄せを止める (今の舞台・幕2/3 は StageModule を使わないが念のため)
+            Shader.SetGlobalVector(R3B_idFog2Color, Vector4.zero);
+            Shader.SetGlobalVector(R3B_idNightGrade, Vector4.zero);
+            Shader.SetGlobalVector(R3B_idNightGradeRange, Vector4.zero);
         }
 
         /// <summary>
@@ -1509,6 +1563,63 @@ namespace DeckRogue.Game
             Shader.SetGlobalVector(_idEnvGrade, _envGrade);
         }
         static Vector4 _envGrade;
+
+        /// <summary>
+        /// 三周目 段1 (R3B・分析 R8・取り決め 3): 距離の霧の2段目。look の "fog": { "far2": { "on", "start", "end", "strength", "color"? } } を
+        /// 全体値 _HD2DFog2 (x = start × r・y = end × r・z = 強さ 0〜1・w = 1) と _HD2DFog2Color (rgb = color を線形へ・無ければ 0) に書く。
+        /// start・end は fog.start・fog.end と同じ物差し (画角36° の時の値 × r = 視線の深さ。r = DistanceScale) なので、ScaleByCameraDistance でも書き直す。
+        /// StageModule が距離の霧の後で、視線の深さ start〜end で 0 → 強さ だけ color (0 なら芯の向きの霧の色 = 距離の霧と同じ色) へ寄せる。
+        /// 無い・on=false・強さ 0 以下なら全部 0 (= 二周目)。キャラ (StageUnitLit) と光の筋 (StageShaft) は読まない
+        /// </summary>
+        static void R3B_WriteFog2(StageLookData d)
+        {
+            if (!_idsReady || d == null) return;
+            var fo = d.Raw != null ? d.Raw["fog"] as JObject : null;
+            var f2 = fo != null ? fo["far2"] as JObject : null;
+            float strength = f2 != null ? Mathf.Clamp01(F(f2, "strength", 0f)) : 0f;
+            if (f2 == null || !B(f2, "on", true) || strength <= 0f)
+            {
+                Shader.SetGlobalVector(R3B_idFog2, Vector4.zero);
+                Shader.SetGlobalVector(R3B_idFog2Color, Vector4.zero);
+                return;
+            }
+            float r = DistanceScale > 0.01f ? DistanceScale : 1f;
+            float s0 = Mathf.Max(0f, F(f2, "start", 45f)), s1 = Mathf.Max(s0 + 0.01f, F(f2, "end", 90f));
+            Shader.SetGlobalVector(R3B_idFog2, new Vector4(s0 * r, s1 * r, strength, 1f));
+            if (f2["color"] != null && f2["color"].Type != JTokenType.Null)
+            {
+                Color c = Col(f2, "color", Color.black);
+                if (QualitySettings.activeColorSpace == ColorSpace.Linear) c = c.linear;
+                Shader.SetGlobalVector(R3B_idFog2Color, new Vector4(Mathf.Max(0f, c.r), Mathf.Max(0f, c.g), Mathf.Max(0f, c.b), 1f));
+            }
+            else Shader.SetGlobalVector(R3B_idFog2Color, Vector4.zero);   // 省略 = 芯の向きの霧の色 (StageModule が HD2D_FogColor を使う)
+        }
+
+        /// <summary>
+        /// 三周目 段1 (R3B・分析 R9・取り決め 3): 夜の色寄せ。look の "nightGrade": { "on", "color": [r,g,b] (sRGB), "strength": 0〜1, "lo", "hi", "brightSat" } を
+        /// 全体値 _HD2DNightGrade (rgb = color を線形へ・w = 強さ) と _HD2DNightGradeRange (x = lo・y = hi・z = brightSat・w = 0) に書く。
+        /// lo・hi は StageModule の出力 (光・霧・周辺減光の後・後処理の前) の線形の輝度。StageModule は lo より暗い所を全部・hi より明るい所は 0 の重みで、
+        /// 明るさを保ったまま色相と彩度を color の向きへ強さだけ寄せ、明るい所の彩度を brightSat 倍 (1 = そのまま)。color は向きだけが効く (明るさは使わない)。
+        /// 無い・on=false・強さ 0 以下なら全部 0 (= 二周目)。キャラと光の筋は読まない
+        /// </summary>
+        static void R3B_ApplyNightGrade(StageLookData d)
+        {
+            if (!_idsReady) return;
+            var ng = d != null && d.Raw != null ? d.Raw["nightGrade"] as JObject : null;
+            float w = ng != null ? Mathf.Clamp01(F(ng, "strength", 0f)) : 0f;
+            if (ng == null || !B(ng, "on", true) || w <= 0f)
+            {
+                Shader.SetGlobalVector(R3B_idNightGrade, Vector4.zero);
+                Shader.SetGlobalVector(R3B_idNightGradeRange, Vector4.zero);
+                return;
+            }
+            Color c = Col(ng, "color", new Color(0.227f, 0.233f, 0.268f));   // 既定 = look_act1.json の値 (色は向きだけが効く)
+            if (QualitySettings.activeColorSpace == ColorSpace.Linear) c = c.linear;
+            float lo = Mathf.Max(0f, F(ng, "lo", 0.05f)), hi = Mathf.Max(lo + 1e-3f, F(ng, "hi", 0.25f));
+            Shader.SetGlobalVector(R3B_idNightGrade, new Vector4(Mathf.Max(0f, c.r), Mathf.Max(0f, c.g), Mathf.Max(0f, c.b), w));
+            Shader.SetGlobalVector(R3B_idNightGradeRange, new Vector4(lo, hi, Mathf.Max(0f, F(ng, "brightSat", 1f)), 0f));
+        }
+
         /// <summary>光の面の設計図の色と強さ (上書きの前。上書きの無い look に替わった時に戻す)</summary>
         static readonly Dictionary<Material, KeyValuePair<Color, float>> _matOrig = new Dictionary<Material, KeyValuePair<Color, float>>();
 
@@ -1558,6 +1669,14 @@ namespace DeckRogue.Game
                 .Append(" 倍率 ").Append((1f + _envGrade.x).ToString("0.00", CultureInfo.InvariantCulture)).Append(',').Append((1f + _envGrade.y).ToString("0.00", CultureInfo.InvariantCulture)).Append(',').Append((1f + _envGrade.z).ToString("0.00", CultureInfo.InvariantCulture));
             if (_stageVignette.y > 0f || _stageVignette.w > 0f) sb.Append(" | 舞台の周辺減光 横 ").Append(_stageVignette.x.ToString("0.00", CultureInfo.InvariantCulture)).Append('/').Append(_stageVignette.y.ToString("0.00", CultureInfo.InvariantCulture))
                 .Append(" 上 ").Append(_stageVignette.z.ToString("0.00", CultureInfo.InvariantCulture)).Append('/').Append(_stageVignette.w.ToString("0.00", CultureInfo.InvariantCulture));   // W3b P22
+            if (_idsReady)   // 三周目 段1 (R3B): 霧の2段目・夜の色寄せ (使っている時だけ)
+            {
+                Vector4 f2 = Shader.GetGlobalVector(R3B_idFog2), ng = Shader.GetGlobalVector(R3B_idNightGrade), ngr = Shader.GetGlobalVector(R3B_idNightGradeRange);
+                if (f2.w > 0.5f) sb.Append(" | 霧の2段目 ").Append(f2.x.ToString("0.#", CultureInfo.InvariantCulture)).Append('〜').Append(f2.y.ToString("0.#", CultureInfo.InvariantCulture))
+                    .Append(" 強さ ").Append(f2.z.ToString("0.00", CultureInfo.InvariantCulture));
+                if (ng.w > 0f) sb.Append(" | 夜の色寄せ ").Append(ng.w.ToString("0.00", CultureInfo.InvariantCulture)).Append(" 輝度 ").Append(ngr.x.ToString("0.###", CultureInfo.InvariantCulture))
+                    .Append('〜').Append(ngr.y.ToString("0.###", CultureInfo.InvariantCulture));
+            }
             if (d.Raw != null && d.Raw["layout"] != null) sb.Append(" | 設計図 ").Append(d.Raw["layout"].ToString());   // W3b P22: 比べる用の別の設計図
             sb.Append(" | ぼかし ").Append(TiltShiftSettings.Enabled ? "自作" : TiltShiftSettings.UseUrpBokeh ? "URP" : "なし");
             sb.Append(" 帯 ").Append(TiltShiftSettings.BandNear.ToString("0.0", CultureInfo.InvariantCulture)).Append('〜').Append(TiltShiftSettings.BandFar.ToString("0.0", CultureInfo.InvariantCulture));
@@ -2135,12 +2254,23 @@ namespace DeckRogue.Game
                     {
                         double ct = pool[0] + pool[4] * (ps - pool[1]);
                         double e = Math.Sqrt(Sq((pt - ct) / Math.Max(0.1, pool[2])) + Sq((ps - pool[1]) / Math.Max(0.1, pool[3])));
-                        double pv = (1.0 - SmoothStep(1.0 - 0.5 * pool[6], 1.0 + 0.5 * pool[6], e)) * Math.Max(0.0, Math.Min(1.0, pool[5]));
+                        // 三周目 段1 (R3B・分析 R4 の level 1.3): 池の明るさは 1 より上も取る (二周目までは 0〜1 に丸めていた = 1.3 は 1 として効いた)
+                        double pv = (1.0 - SmoothStep(1.0 - 0.5 * pool[6], 1.0 + 0.5 * pool[6], e)) * Math.Max(0.0, pool[5]);
                         if (pv > inside) inside = pv;
                     }
                     m[k] = outV + (1.0 - outV) * inside;
                 }
+            // 三周目 段1 (R3B): 池が 1 より明るい時は全体を池の明るさで割る (クッキーは 0〜1)。灯の強さを同じ倍率で上げる (BuildLamp) ので、帯と外は今までと同じ明るさ・池の芯だけ level 倍。
+            // level ≦ 1 なら割らない (= 二周目と同じ値)
+            double over = PoolOverOf(pool);
+            if (over > 1.0) for (int n = 0; n < m.Length; n++) m[n] /= over;
             return m;
+        }
+
+        /// <summary>三周目 段1 (R3B): 光の池の明るさが 1 より上の時の倍率 (クッキーを割り、灯の強さに掛ける)。池が無い・level ≦ 1 なら 1</summary>
+        internal static double PoolOverOf(double[] pool)
+        {
+            return pool != null && pool.Length >= 7 ? Math.Max(1.0, pool[5]) : 1.0;
         }
 
         static double Sq(double v) { return v * v; }

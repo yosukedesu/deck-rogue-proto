@@ -1,0 +1,460 @@
+{
+  "_doc": [
+    "二周目の光の写し (2026-10-01 HD-2D 見本 三周目 段1・レーン B。計画 docs/design/hd2d-round3-plan-2026-10-01.md §2 B・§4 の T3-r2)。",
+    "中身 = 二周目の最終 (git の 1498a88 = 三周目の段0 の時点の HEAD) の look_act1.json と look_act1.dof.json を StageLook と同じ重ね方で重ねた物 (オブジェクトはキーごと・配列と数は後ろが勝つ・null は飛ばす・「_」のキーは読まない) ＋ \"layout\": \"act1_layout_r2\" (レーン C が作る二周目の設計図の写し。無ければ既定の設計図で組む)。",
+    "使い方: 旗 look=look_act1_r2+look_act1_r2char (キャラの写しはレーン E) を重ねると、三周目で既定を変えた後でも二周目の光と配置で撮れる (StageLook.Load は look_act1 → .char → .dof → 旗の変種 → .phone の順。この写しは .char と .dof の後に重なるので二周目の値が勝つ)。スマホは look_act1.phone.json がこの後に重なる (三周目でスマホの値は変えていない = 二周目と同じ)。",
+    "約束: 三周目で look_act1.json・look_act1.dof.json に新しいキーを足したら、そのキーの「二周目と同じ値／off」をこのファイルにも書く (書かないと新しいキーが写しに漏れる)。このファイルの値は触らない (二周目の値)。",
+    "三周目 段1 (R3B) で足したキーの off: fog.far2 (on false・強さ 0)・nightGrade (on false・強さ 0)・materials.glow.shaftGain 1.0。値を変えただけのキー (月の塵・灯の池・受光・高さの霧・舞台の彩度・横の減光・ぼかし) は二周目の値のまま。",
+    "コードの変化で二周目の値の効き方が変わった所: tiltShiftPass.nearScale (二周目の 2.5 は頭打ち 2 で効いていた → 頭打ちを 3 にしたので 2.0 を書く)・lamp.pool.level (二周目までは 0〜1 に丸めていた。この写しは 1.0 なので同じ)。",
+    "下の各段の _doc は二周目の look_act1.json・look_act1.dof.json の説明をそのまま写した物 (二周目の時点の説明)。"
+  ],
+  "version": 1,
+  "act": 1,
+  "pathYaw": -22,
+  "baseCameraDistance": 16.62,
+  "moon": {
+    "_doc": "月 (平行光)。左上の手前から。影は地形と大物だけ (shadowLayers)。向きは最後に art-lint の描き込みの光の向きで決める (P22)",
+    "euler": [
+      48,
+      38,
+      0
+    ],
+    "color": [
+      0.528,
+      0.7,
+      0.921
+    ],
+    "intensity": 0.45,
+    "shadows": "soft",
+    "shadowStrength": 0.75,
+    "shadowBias": 0.05,
+    "shadowNormalBias": 0.4,
+    "lightLayers": "all",
+    "shadowLayers": "environment",
+    "cookie": false,
+    "cookieSize": [
+      24,
+      24
+    ]
+  },
+  "lamp": {
+    "_doc": "舞台の灯 (スポット)。カメラ側の上から座席の帯へ。影はキャラの板だけ。向きと角度は座席の帯 (band) の四隅から StageLook が計算する (帯の四隅がクッキーの半径 bandFill に来る)。flatten = クッキーで距離と入射角の差を打ち消して、帯の地面の明るさをそろえる (いちばん暗い所に合わせて明るい所を削る。floor より下げない)。キャラの固定のキーはこの灯の向き (StageLook.KeyDir)。二周目 段2: charKeyDir を書くとキャラのキーはその向き (光が進む向き・世界。false か無しで灯の向き)",
+    "color": [
+      0.7,
+      0.82,
+      1.0
+    ],
+    "illum": 2.6,
+    "_fix2": "直しの輪2 (2026-10-01・反証 medium「座席の地面が月に照らされた青い道に見えず灰色の青緑の板」Oklab 明るさ 43.9・色の濃さ 2.8・色相 243° 対 本家 ot16 50.2・7.1・262°): color [0.795,0.868,0.963]→[0.70,0.82,1.0] (地面だけ青く濃く。霧には掛からない)・illum 2.0→2.2 (青くした分の明るさを戻し N9 を上げる)。2回目のビルドの変種で 2.5 は N9 PC 74→79・スマホ 78→83・N8 PC 0.54→0.56 (0.55 を越える)・N18 土 100→111 (≤120)・オーガの門⑧ 62/54→62/56 (元から外れ。差 15 には届かない) → 2.6 を既定 (N9 PC ≈81 の見込み)",
+    "offset": [
+      -8.0,
+      17.0,
+      -14.0
+    ],
+    "charKeyDir": [
+      0.341432,
+      -0.725542,
+      0.597505
+    ],
+    "band": {
+      "tMin": -6.5,
+      "tMax": 15.0,
+      "sMin": -1.4,
+      "sMax": 1.8
+    },
+    "_fix1": "直しの輪1 (2026-10-01・反証 medium「敵の立つ地面が暗い・門③の輪」): band.tMax 12.5→15・fit.padRight 2.6→4.0・padLeft 2.4→3.2 (人形の場面の主人公の左の地面)・pool.t 1.5→3.0 (光の池を戦う2人の真ん中へ)・rt 5.0→6.5・level 0.9→1.0・illum 1.8→2.0 (池を広げて真ん中の地面が 82→62 に下がったぶん。2.3 はオーガの門⑧を割る)・stageVignette.seatBandEdge 1.2→1.6",
+    "aimY": 0.0,
+    "bandFill": 0.6,
+    "innerRatio": 0.78,
+    "rangeScale": 3.0,
+    "flatten": true,
+    "flattenFloor": 0.2,
+    "shadows": "soft",
+    "shadowStrength": 0.8,
+    "shadowBias": 0.04,
+    "shadowNormalBias": 0.3,
+    "shadowTier": "high",
+    "lightLayers": "all",
+    "shadowLayers": "characters",
+    "cookie": true,
+    "mask": {
+      "_doc": "W3 P22: 灯の形をクッキーに焼く。座席の帯 (t = 今の座席に合わせた範囲・s = band の sMin〜sMax) を margin [t, s] だけ広げた角の丸い四角 (power が大きいほど四角) の外を outside 倍に落とす (縁は soft でなじむ)。灯の位置と向き (= キャラのキー) は band から決めたまま。on=false で W2 の形",
+      "on": true,
+      "margin": [
+        1.1,
+        4.0
+      ],
+      "marginFront": 3.2,
+      "soft": 0.25,
+      "power": 6,
+      "outside": 0.05
+    },
+    "pool": {
+      "_doc": "W3 P22: 中央の光の池 (楕円・道の座標)。奥の段の真ん中まで灯を伸ばし、画面の中央の列を明るく保つ (③ 中央÷端)。shear = s が1増えるごとに中心の t がずれる量 (画面の中央の線に沿わせる)。level = 明るさ (帯 = 1)",
+      "on": true,
+      "t": 3.0,
+      "s": 4.8,
+      "rt": 6.5,
+      "rs": 9.0,
+      "shear": 0.4,
+      "level": 1.0,
+      "soft": 0.35
+    },
+    "fit": {
+      "_doc": "W3 P22: 帯の t を今の座席 (主人公と敵の板の足元) に合わせる (padLeft/padRight = 左右の余白・minSpan = いちばん狭い幅)。敵1体なら右の地面は暗い。座席が変わった時だけクッキーを焼き直す (LookDriver)",
+      "on": true,
+      "padLeft": 3.2,
+      "padRight": 4.0,
+      "minSpan": 8.0
+    }
+  },
+  "backlight": {
+    "_doc": "逆光: 坑口の奥の脈の青緑 (点光源)。影は PC だけ (phone で shadow=false)。大きい技の光が影を借りる時は、この灯の影を一時的に止める (影を落とす光は画面に最大 shadow.maxShadowedLights)",
+    "on": true,
+    "t": 9.5,
+    "s": 23.0,
+    "y": 5.2,
+    "color": [
+      0.4,
+      0.8,
+      0.95
+    ],
+    "illum": 3.2,
+    "illumDist": 5.0,
+    "range": 16,
+    "shadow": true,
+    "shadows": "soft",
+    "shadowStrength": 0.6,
+    "shadowBias": 0.05,
+    "shadowNormalBias": 0.4,
+    "shadowTier": "low",
+    "lightLayers": "all",
+    "shadowLayers": "environment"
+  },
+  "cookie": {
+    "_doc": "木漏れ日のクッキー (256×256・linear・舞台の灯に付ける)。大きく不定形な明暗を blobs 個。中央 (半径 centerRadius。帯の四隅は lamp.bandFill) はコントラスト centerContrast 以下、外は edgeContrast。等間隔の粒は作らない",
+    "size": 256,
+    "seed": 20260930,
+    "blobs": 4,
+    "centerRadius": 0.64,
+    "centerContrast": 0.18,
+    "edgeContrast": 0.62,
+    "softness": 0.16
+  },
+  "ambient": {
+    "_doc": "環境光。Flat をやめて Trilight (空・地平・地面の3色)",
+    "mode": "trilight",
+    "sky": [
+      0.128,
+      0.222,
+      0.339
+    ],
+    "equator": [
+      0.084,
+      0.145,
+      0.221
+    ],
+    "ground": [
+      0.042,
+      0.065,
+      0.097
+    ]
+  },
+  "fog": {
+    "_doc": "距離の霧 (Linear。start・end は画角36° の時の値×r) と高さの霧 (全体値 _HD2DHeightFogColor・_HD2DHeightFogRange・_HD2DHeightFogDepth。StageModule が読む。W3 P22)。depthStart・depthFull = かかり始める深さと満ちる深さ (画角36° の時の値×r。座席の帯より奥だけ)",
+    "on": true,
+    "color": [
+      0.36,
+      0.396,
+      0.48
+    ],
+    "_colorFix1": "直しの輪1 (2026-10-01): 霧の色 ×1.2 (0.30,0.33,0.40 → 0.36,0.396,0.48) = 帯の外の霧の地を明るく (本家の上は 86〜101 の霧の地の上に 150 の帯)。1回目の直しのビルドで PC の門④ (上の1/3) が 38〜40 に落ちたため",
+    "start": 14,
+    "end": 28,
+    "height": {
+      "_doc": "二周目 段2: 地面のもや (低い所ほど濃い・座席より奥だけ)。帯は距離の霧が作る",
+      "on": true,
+      "color": [
+        0.66,
+        0.67,
+        0.7
+      ],
+      "base": 0.0,
+      "top": 1.5,
+      "density": 0.3,
+      "depthStart": 20,
+      "depthFull": 30
+    },
+    "lobe": {
+      "_doc": "W3 P22: 霧の光の芯 (坑口の奥の脈。道の座標 t・s・y)。視線がこの芯を向くほど霧の色に color×strength を足し、外れるほど霧の色を edge 倍に落とす (cos の power 乗。画面の端 ≈ 24° で power 16 なら 0.23)。StageModule の距離の霧・高さの霧と、StageShaft の光の面 (設計図 act1_layout.json の glow の lobeFloor) が読む。二周目 段2: 地平線の真ん中の奥 (t 32.5・s 80・y 1.0) を向き、power 200 で細く絞る (芯から 5° で 0.47・10° で 0.05 = 上の真ん中と両端は霧の色 × edge)",
+      "on": true,
+      "t": 32.5,
+      "s": 80.0,
+      "y": 2.2,
+      "power": 200,
+      "powerV": 900,
+      "powerH": 100,
+      "_fix1": "直しの輪1 (2026-10-01・反証 high「霧の帯にとがった頂点が無く、なだらかな台地」N3 121・N2 390px): 芯を縦と横で別の絞りに (powerV・powerH。cos^p ≈ exp(−p·θ²/2) と同じ物差し。どちらかが無ければ power の cos 乗 = W5)。横 100 = 芯から横 6.7° (約 330px) で半分 = 帯は横に広いまま (オーガの後ろも霧で明るく = 暗い体の影絵)。1回目の直しのビルドの変種 (縦 700/1400/2500・強さ 1.4/2.0/2.8・横 200・縦横同じ 300) を撮って決めた: 縦 1400・強さ 2.0 は N3 179・PC の門④ 38〜40 と② 63% (オーガ) で門を割り、縦 700 は門④ 50〜53 で入るが N2 290。→ 縦 900・強さ 1.2 (2回目のビルドの変種: 1.4 で N3 163・1.1 で 149)・芯の高さ y 1.0→2.2 (帯を約 37px 上へ = 主人公の頭の約 80px 上・オーガの足元の輪に帯がかからない)・霧の色 ×1.2 (帯の外の霧の地)。power 200 は縦横を使わない変種と W5 の写しのために残す",
+      "edge": 1.0,
+      "_edgeInt": "統合 本番の前 (2026-10-01): edge 0.3→1.0・stageVignette side 0.9→0.8・sideStart 0.28→0.30 (= 変種 look_act1_r2edge。レーン B の推奨)。2回目の試し T-E-wolf で門① 24.7・② 70.9%・④ 31.0 と3つとも外れたため (W5 は 61.7・48%・106.6)。決めた値の姿は変種 look_act1_r2edge03 で撮る",
+      "color": [
+        0.6,
+        0.61,
+        0.66
+      ],
+      "strength": 1.2
+    },
+    "far2": {
+      "_doc": "三周目 段1 (R3B) の霧の2段目。off (= 二周目)",
+      "on": false,
+      "start": 45,
+      "end": 90,
+      "strength": 0.0
+    }
+  },
+  "shadow": {
+    "_doc": "URP のアセットの影の値 (実行時に書き、Restore で戻す)。distance は画角36° の時の値×r。カスケードの分割は P10 が座席の深さから計算して上書きする",
+    "distance": 42,
+    "cascades": 2,
+    "cascade2Split": 0.33,
+    "mainResolution": 2048,
+    "additionalResolution": 2048,
+    "maxShadowedLights": 3
+  },
+  "post": {
+    "_doc": "後処理 (Stage の Volume の設定に書き、Restore で控えに戻す)。フィルムグレインと色収差は切る。周辺減光は座席の帯の外側から (0.25)",
+    "tonemap": "aces",
+    "exposure": 0.3,
+    "contrast": 14,
+    "saturation": 0,
+    "colorFilter": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "liftGammaGain": {
+      "lift": [
+        0.955,
+        1.01,
+        1.04,
+        -0.011
+      ],
+      "gamma": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "gain": [
+        1.02,
+        1.0,
+        0.97,
+        0
+      ]
+    },
+    "_liftFix2": "直しの輪2 (2026-10-01・N10 の暗い所の色相 227°・a* +2.8 = 青紫に寄りすぎ): lift [0.95,1.00,1.05,-0.012] → [0.956,1.012,1.038,-0.0108] (= 変種 look_act1_r2liftref の [0.96,1.02,1.03,-0.01] へ 6 割寄せた値)。1回目のビルドで r2liftref そのものにすると N10 は 205°・a* −1.8 で入ったが、本家の色の目安の暗部 dark_b −12.4→−6.3・dark_C 13.1→8.2 (目安 ≤−8・≥10) と青の色相の割合 0.86→0.78 が外れた。両方の線形の内挿で N10 ≤215° と dark_b ≤−8・dark_C ≥10 が両立する 0.55〜0.63 の間。2回目のビルドの変種 (5割・6割・7割) を撮ると 6割と7割は同じ画 (暗い所は色の表の刻みで段になる)・5割 [0.955,1.01,1.04,-0.011] で dark_b −9.2・dark_C 10.3・本家の色の目安 PC 12→14/21・N10 の両端 (HSV の色相 220°・C* 10.5・a* 0.0・b* −10.2) = 本家の両端 (209〜215°・C* 13・a* 0) に Lab では 6割 (210°・C* 7.7・a* −1.0・b* −7.5) より近い。→ 5割を既定 (HSV の色相は 215 を 5 越える。L* 5 の暗い所の HSV の色相は RGB の 1 の差で大きく動く)",
+    "bloom": {
+      "threshold": 1.3,
+      "intensity": 1.0,
+      "scatter": 0.85,
+      "tint": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "_fix1": "直しの輪1: threshold 1.0→1.3 (主人公の明るい所でにじみを出さない・反証 high「主人公が白く光って浮く」)"
+    },
+    "vignette": {
+      "intensity": 0.15,
+      "smoothness": 0.45,
+      "center": [
+        0.5,
+        0.52
+      ],
+      "rounded": false,
+      "color": [
+        0.0,
+        0.025,
+        0.04
+      ]
+    },
+    "filmGrain": false,
+    "chromaticAberration": false
+  },
+  "camera": {
+    "_doc": "カメラ: 深度テクスチャ (ぼかしが読む) は必ず作る。MSAA は旗 aa=msaa の時だけ、標本数は HD2DFlags.MsaaSamples と msaaMax の小さい方。background = 何も描かない所の色",
+    "depthTexture": true,
+    "msaaMax": 8,
+    "background": [
+      0.06,
+      0.09,
+      0.12
+    ]
+  },
+  "materials": {
+    "_doc": "箱庭の材質 (Diorama.Materials の名前) ごとの受光 _Receive と影の強さ _ShadowStrength。地形0.8・半立体0.35・札0.25",
+    "terrain": {
+      "receive": 0.8,
+      "shadowStrength": 1.0
+    },
+    "rock": {
+      "receive": 0.8,
+      "shadowStrength": 1.0
+    },
+    "wood": {
+      "receive": 0.8,
+      "shadowStrength": 1.0
+    },
+    "bark": {
+      "receive": 0.8,
+      "shadowStrength": 1.0
+    },
+    "relief": {
+      "receive": 0.35,
+      "shadowStrength": 1.0
+    },
+    "card": {
+      "receive": 0.25,
+      "shadowStrength": 1.0
+    },
+    "glow": {
+      "_doc": "光の面 (霧の面・月光の筋。StageShaft) の色と強さの上書き (W3 の統合・本家の色彩。書かなければ act1_layout.json の surfaces.glow の値)",
+      "tint": [
+        0.57,
+        0.59,
+        0.645
+      ],
+      "intensity": 3.0,
+      "_r2": "二周目 段2: shaftSkipTopVig = 頂点色の a が 0 の光の面 (設計図の lobe 0 = 月光の筋) は舞台の上の減光を受けない (霧の面は a 1 で今までどおり)。false か無しで W5 と同じ",
+      "shaftSkipTopVig": true,
+      "shaftGain": 1.0
+    }
+  },
+  "envGrade": {
+    "_doc": "舞台の色の寄せ (W3 の統合・本家の色彩 docs/design/hd2d-slice/honke-color.md)。StageModule (地形・3Dの部品・半立体・札) の絵の色だけに掛かる (キャラの板には掛からない)。desaturate = 彩度を落とす量 (0〜1)・tint = 色の倍率 (線形)。on=false で寄せる前",
+    "on": true,
+    "desaturate": 0.64,
+    "tint": [
+      0.78,
+      0.9,
+      1.08
+    ],
+    "_fix2": "直しの輪2 (2026-10-01): tint [0.78,0.95,1.02]→[0.78,0.90,1.08] (中くらいの明るさの緑みを青へ。座席の地面が灰色の青緑の板に見えた)"
+  },
+  "stageVignette": {
+    "_doc": "W3b P22: 舞台だけの周辺減光 (StageModule・StageShaft。キャラの板と UI には掛からない)。sideStart = 画面の中央からの距離 (0〜0.5。0.32 = 画面の左右の外 18% から暗くなる = 座席の帯のむらを測る帯 (主人公の足元−5% = 画面の 17.8%〜右の敵+5%) にはほぼ掛からない。4体の時の右端の敵の足元の地面は沈む)・side = 左右の端での強さ・topBand = 画面の上からの帯 (0〜1)・top = 上端での強さ。on=false (変種 look_act1_nosvig) で W3 と同じ",
+    "_r2": "二周目 段2 (K4): 上の減光は両端だけ = side 0.8→0.9・sideStart 0.32→0.28 (top・topBand は据え置き)。seatBand = 座席の帯 (灯の帯に合わせた t の範囲 × lamp.band の s ± seatBandSPad) の中は横の減光を受けない (縁は seatBandEdge unit でなじむ。StageModule だけ・StageShaft は受けたまま)。帯は StageLook が座席の置き場に合わせて全体値 _HD2DSeatBand に書く。seatBand false か無しで W5 と同じ",
+    "on": true,
+    "sideStart": 0.3,
+    "side": 0.6,
+    "topBand": 0.14,
+    "top": 0.12,
+    "_fix1": "直しの輪1 (2026-10-01): side 0.8→0.7 (左の 1/6 が真っ黒の壁・オーガの門② 62%)・top 0.3→0.12 (上の真ん中が暗すぎた = 本家の上は霧に透けた枝 76〜85)・seatBandEdge 1.2→1.6 (右の敵の足元の地面が暗い・門③ の輪)",
+    "_fix2": "直しの輪2 (2026-10-01・反証 high「左の木立が何も描かれていない真っ黒の壁」行 60〜650 の平均 7.6・本家 36): side 0.7→0.6 (設計図で左の幹を外へ寄せたのと一緒に)",
+    "seatBand": true,
+    "seatBandEdge": 1.6,
+    "seatBandSPad": 0.5
+  },
+  "moondust": {
+    "_doc": "二周目 段2: 月の塵を箱庭だけの粒 moondust-slice に替える (Stage.SetFxForAct が箱庭の時だけ読む。今の舞台は今までの moondust のまま)。slice false か無しで W5 と同じ (今までの moondust)。箱は道の座標の中心 (t, s, y) と大きさ (t, 高さ, s)",
+    "slice": true,
+    "_fix2": "直しの輪2 (2026-10-01・反証 medium「空気の粒が無い」本家 ot16 は約24個・PC は1個): 箱を s −1.5〜4.5 (ピントの帯の中) へ・高さ y 1.55〜6.05 = center [3,3.5,3.5]→[3,1.5,3.8]・size [36,5,10]→[36,4.5,6]・色をブルームの閾値 1.3 の上へ [1.3,1.45,1.9,0.9]→[2.2,2.4,3.0,1.0]・sizeMax 0.11→0.14 (奥のピントの外で直径 15〜20px のぼけた輪になり霧より +5 しか明るくなかった)",
+    "_fix2b": "直しの輪2 の1回目のビルドで分かったこと: 粒は深さを書かないので、ぼかしは粒の後ろの物 (奥の霧・背景の板) の深さで粒をぼかしていた (箱をピントの帯へ移しても直径 15〜20px のぼけた輪のまま・数え 3個)。sharp = true で粒の芯が深さを書く材質 (Shaders/StageDust) にし、芯をくっきりした点に。頂点の色は 0〜1 に丸められるので HDR は材質の強さで掛ける。くっきりした芯は 0.14 だと 8〜9px の円盤になる (本家の粒は 3〜6px) ので sizeMax は 0.10 (→ 3回目のビルドで見込み違いと分かり 0.14 へ。_sizeFix2)",
+    "sharp": true,
+    "coreCutoff": 0.25,
+    "_coreFix2": "芯 (深さを書く所) のしきい: 2回目のビルドで 0.5 にすると芯は PC 1〜2px・スマホ 1px の針の先になった (頂点の α が寿命で 0.7 前後に落ちるため)。0.25 で芯 PC 約 4〜7px・スマホ 3〜6px (本家の粒 3〜6px)",
+    "center": [
+      3.0,
+      1.5,
+      3.8
+    ],
+    "size": [
+      36.0,
+      4.5,
+      6.0
+    ],
+    "rate": 10,
+    "max": 120,
+    "sizeMin": 0.07,
+    "sizeMax": 0.14,
+    "_sizeFix2": "3回目のビルド: 芯は絵の半径の割合 d で決まる (芯の直径 ≈ d × 粒の大きさ)。coreCutoff 0.25 で d ≈ 0.32 = 0.05〜0.10 の粒では芯 PC 1〜3px・スマホ 1〜2px で、スマホの N20 は 5 (目標 ≥10)。→ 0.07〜0.14 (芯 PC 約 2.5〜5px・スマホ 約 2〜4px。本家の粒 3〜6px。反証の案の 0.14 に戻した)",
+    "color": [
+      2.2,
+      2.4,
+      3.0,
+      1.0
+    ]
+  },
+  "hitLight": {
+    "_doc": "技の光 (StageFx.HitLight)。点光源を maxLights 個プールする。HitLight の intensity は refDist の所での明るさ (Light.intensity = intensity × refDist²)。影は大きい当たりだけ (呼ぶ側が shadow=true)",
+    "maxLights": 3,
+    "range": 5.0,
+    "refDist": 1.5,
+    "shadowTier": "low",
+    "_tune": "W3 P22: W2 の測り (R01 斬撃 +22→+16・盾 +6・敵の近接 −2 = 2〜6 フレームで +20 に届かない) を受けて、強さ・保つ長さ・敵の当たりと盾の倍率を上げた (キーは StageFx.HitTune。P13)。W3b P22: W3 の測り +7〜+18 → 強さ 1.4→2.6・届く距離 4→5・灯す高さ 0.45→0.3 (板の高さの割合 = 足元の地面に近く)・保つ 0.42",
+    "intensity": 2.6,
+    "height": 0.3,
+    "hold": 0.42,
+    "foeMul": 1.6,
+    "guardMul": 1.2
+  },
+  "tiltShift": {
+    "bandMargin": 0.8,
+    "rampNear": 2.5,
+    "rampFar": 4.0,
+    "maxPxPC": 10,
+    "maxPxPhone": 10,
+    "halfRes": false,
+    "fallbackBandRel": [
+      -4.0,
+      8.0
+    ]
+  },
+  "tiltShiftPass": {
+    "focus": "path",
+    "pathBand": [
+      -2.4,
+      4.5
+    ],
+    "_fix2": "直しの輪2 (2026-10-01・反証 medium「座席の帯の前の縁に明るい灰緑の四角い欠片が段々に並ぶ」= 縁のタイルが見下ろし 5° で縦に約 0.09 倍に潰れた物): pathBand の手前 −3.0→−2.4 (縁 s −3.2〜−3.8 を手前のぼけに入れる。匣 PC s 1.7・スマホ s 2.4・人形の後列 s 2.05 は帯の中のまま)",
+    "curve": "lens",
+    "lensFar": 3.0,
+    "_fix1": "直しの輪1 (2026-10-01・反証 medium「霧の中の幹の縁がくっきり」N12 0.48): lensFar 1.6→3.0 (奥の錯乱円が約 1.9 倍。上限 maxPx は 10 のまま。1回目の直しの 2.2 で N12 奥 0.48→0.23)",
+    "lensNear": 2.2,
+    "nearScale": 2.0,
+    "taps": 24,
+    "nearOwnTaps": 20,
+    "nearDilateTile": 16,
+    "jitter": true,
+    "farExclude": 0.5,
+    "tiltTop": 0.0,
+    "tiltTopFrom": 0.75,
+    "tiltBottom": 0.0,
+    "tiltBottomFrom": 0.25,
+    "debugView": 0,
+    "phone": {
+      "taps": 16,
+      "nearOwnTaps": 12,
+      "nearDilateTile": 8
+    },
+    "_r3": "三周目 段1 (R3B): 二周目の look は 2.5 だったが TiltShiftLook/TiltShiftPass が 2 で頭打ちにしていた (実効 2.0)。三周目で頭打ちを 3 へ上げたので、二周目の画を出すためにこの写しは 2.0 を書く"
+  },
+  "urpBokeh": {
+    "focalLength": 90,
+    "aperture": 4.5,
+    "bladeCount": 5
+  },
+  "nightGrade": {
+    "_doc": "三周目 段1 (R3B) の夜の色寄せ。off (= 二周目)",
+    "on": false,
+    "strength": 0.0,
+    "color": [0.227, 0.233, 0.268],
+    "hi": 0.25,
+    "_fix1r3": "直しの輪1 (2026-10-02): 既定の look_act1.json の色寄せを color [0.20,0.29,0.41]・hi 0.32 にした。ここは off なので効かないが、重ねた結果を前と同じにするため前の値 (color・hi) を書いた"
+  },
+  "fx": {
+    "_doc": "直しの輪1 (2026-10-02・三周目 反証のまとめ (d)): 既定の look_act1.json は箱庭で舞う葉を点けない (fx.leaves false)。二周目の写しは点ける (= 今までどおり・写しの画を変えない)",
+    "leaves": true
+  },
+  "layout": "act1_layout_r2"
+}

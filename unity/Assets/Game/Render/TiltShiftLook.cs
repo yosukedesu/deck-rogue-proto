@@ -108,7 +108,7 @@ namespace DeckRogue.Game
                 float n, fr;
                 if (Num(band[0], out n) && Num(band[1], out fr) && fr > n) { TiltShiftSettings.PathNear = n; TiltShiftSettings.PathFar = fr; }
             }
-            TiltShiftSettings.NearScale = Mathf.Clamp(F(b, "nearScale", TiltShiftSettings.NearScale), 0f, 2f);
+            TiltShiftSettings.NearScale = Mathf.Clamp(F(b, "nearScale", TiltShiftSettings.NearScale), 0f, 3f);   // 三周目 段1 (R3B): 頭打ち 2→3 (二周目の look の 2.5 は 2 として効いていた。写し look_act1_r2 は 2.0 を書く)
             string cv = Str(b, "curve");
             if (cv != null)
             {

@@ -233,7 +233,7 @@ namespace DeckRogue.Game
             LastFocus = path ? "path" : why;
             LastPlane = plane;
             float pathNear = TiltShiftSettings.PathNear, pathFar = Mathf.Max(TiltShiftSettings.PathNear + 0.01f, TiltShiftSettings.PathFar);
-            c.focus = new Vector4(pathNear, pathFar, Mathf.Clamp(TiltShiftSettings.NearScale, 0f, 2f), path ? 1f : 0f);
+            c.focus = new Vector4(pathNear, pathFar, Mathf.Clamp(TiltShiftSettings.NearScale, 0f, 3f), path ? 1f : 0f);   // 三周目 段1 (R3B): 頭打ち 2→3 (TiltShiftLook と同じ)
             c.plane = plane;
             c.proj = proj;
             // 帯の外のぼけの伸び方 (P24 2周目): レンズなら強さ (>0)、smoothstep なら 0 (シェーダが _TS_Band.zw の傾斜を使う)

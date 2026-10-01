@@ -10,6 +10,8 @@
 //   _LobeFloor … 霧の光の芯 (全体値 _HD2DFogLobePos。StageLook が書く) から外れた所の明るさの倍率 (0〜1。1 = 芯を見ない = 今まで)。
 //                芯 (坑口の奥の脈) の方を向く面ほど明るく、画面の端ほど暗い = 中央の奥が光り、左右の端が沈む (W3 P22)
 //   _SkipTopVig … 1 なら頂点色の a (設計図の lobe) が 0 の面 = 月光の筋は舞台の上の減光を受けない (霧の面は a 1 で今まで)。0 = 今まで (二周目 段2 R2B。StageLook が look の materials.glow.shaftSkipTopVig から書く)
+//   _ShaftGain  … 頂点色の a (設計図の lobe) が 0 の面 = 月光の筋の明るさの倍率 (a 1 の霧の面は 1 倍・間の a はなめらかに)。1 = 今まで (三周目 段1 R3B。StageLook が look の materials.glow.shaftGain から書く。
+//                 設計図の部品の gain は頂点色なので 0〜1 に丸められる = 筋を 1 倍より明るくする口はこれ)
 Shader "DeckRogue/StageShaft"
 {
     Properties
@@ -24,6 +26,7 @@ Shader "DeckRogue/StageShaft"
         _Fog ("Fog", Range(0,1)) = 1
         _LobeFloor ("Lobe Floor", Range(0,1)) = 1
         _SkipTopVig ("Skip Top Vignette by Vertex Alpha", Range(0,1)) = 0
+        _ShaftGain ("Shaft Gain (vertex alpha 0 faces)", Range(0,4)) = 1
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0
     }
     SubShader
@@ -53,6 +56,7 @@ Shader "DeckRogue/StageShaft"
                 half _Intensity, _SoftDepth, _NearFade, _Fog;
                 half _EdgeFade, _Cull, _LobeFloor;
                 half _SkipTopVig;   // 二周目 段2 (R2B): 1 = 頂点色の a が 0 の面 (月光の筋) は上の減光を受けない (0 = 今まで。StageLook が look の materials.glow.shaftSkipTopVig から書く)
+                half _ShaftGain;    // 三周目 段1 (R3B): 頂点色の a が 0 の面 (月光の筋) の明るさの倍率 (1 = 今まで。StageLook が look の materials.glow.shaftGain から書く)
                 float4 _Scroll;
             CBUFFER_END
             float4 _HD2DFogLobePos;   // 全体値 (StageLook。xyz = 霧の光の芯・w = 絞り。0 = 使わない)
@@ -116,6 +120,7 @@ Shader "DeckRogue/StageShaft"
                 half4 c = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv) * _Tint;
                 c.rgb *= i.color.rgb;   // 部品ごとの明るさ (設計図の gain。既定 1)
                 half k = c.a * _Intensity;
+                k *= lerp(_ShaftGain, 1.0h, i.color.a);   // 三周目 段1 (R3B): 月光の筋 (a 0) だけ _ShaftGain 倍・霧の面 (a 1) は 1 倍 (既定 1 = 今まで)
                 // 深度のなじみ (後ろの物に刺さる縁を消す)
                 if (_SoftDepth > 0.0h)
                 {

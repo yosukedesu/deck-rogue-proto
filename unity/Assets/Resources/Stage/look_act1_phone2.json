@@ -4,7 +4,8 @@
     "使い方: 旗 look=look_act1_phone2 (段1 を含む。look_act1_phone1 と重ねなくてよい)。",
     "段2 = 段1 (光の筋と霧の面を消す) + 逆光 (坑口の奥の脈の青緑の点光源) を消す。",
     "  計画の順の2つ目は「影つきの逆光」だが、スマホの段0で逆光の影は既に無いので、スマホでは逆光の光そのものを消す (点光源が1つ減る)。",
-    "  3つ目の SSAO はスマホの段0で既に無い (URP-Phone-Renderer) ので段に数えない。"
+    "  3つ目の SSAO はスマホの段0で既に無い (URP-Phone-Renderer) ので段に数えない。",
+    "三周目 段1 (2026-10-01 レーン B): 三周目の霧の板 (設計図の kind mist・α合成のノイズ入り。材質 StageMist) も霧の面と同じく組まない (dropKinds に mist を足した)。二周目の設計図には mist が無いので二周目の画は変わらない"
   ],
   "materials": {
     "glow": {
@@ -12,9 +13,16 @@
     }
   },
   "diorama": {
-    "dropKinds": ["shaft", "fog"]
+    "dropKinds": [
+      "shaft",
+      "fog",
+      "mist"
+    ],
+    "sway": false,
+    "normalAtlas": false
   },
   "backlight": {
     "on": false
-  }
+  },
+  "_r3int": "統合 (2026-10-02): 三周目の重い物を段で落とす = 段1 は揺れ、段2・3 は揺れと半立体の法線アトラスも切る (look の diorama.sway/normalAtlas。レーン S の口)。S25 は未計測"
 }

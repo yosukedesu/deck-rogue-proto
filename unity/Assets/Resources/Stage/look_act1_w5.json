@@ -5,7 +5,8 @@
     "使い方: 旗 look=look_act1_w5+look_act1_w5char (キャラの写しはレーン E) を重ねると、二周目で既定を変えた後でも W5 の光と配置で撮れる。スマホは look_act1.phone.json がこの後に重なる (W5 と同じ)。",
     "約束: 二周目で look_act1.json・look_act1.dof.json に新しいキーを足したら、そのキーの「W5 と同じ値／off」をこのファイルにも書く (書かないと新しいキーが W5 の写しに漏れる)。このファイルの値は触らない (W5 の値)。",
     "下の各段の _doc は e30c510 の look_act1.json の説明をそのまま写した物 (W5 の時点の説明)。",
-    "二周目 段2 (2026-10-01 レーン B) で足したキーの off: lamp.charKeyDir false (= 灯の向き。W5 の灯の向きと同じ)・stageVignette.seatBand false・materials.glow.shaftSkipTopVig false・moondust.slice false (今までの moondust)。値を変えただけのキー (霧・灯・色・ぼかし) は上の W5 の値のまま。"
+    "二周目 段2 (2026-10-01 レーン B) で足したキーの off: lamp.charKeyDir false (= 灯の向き。W5 の灯の向きと同じ)・stageVignette.seatBand false・materials.glow.shaftSkipTopVig false・moondust.slice false (今までの moondust)。値を変えただけのキー (霧・灯・色・ぼかし) は上の W5 の値のまま。",
+    "三周目 段1 (2026-10-01 レーン B) で足したキーの off: fog.far2 (on false・強さ 0)・nightGrade (on false・強さ 0)・materials.glow.shaftGain 1.0。コードの変化: TiltShift の nearScale の頭打ち 2→3 (この写しは 2.0 なので同じ)・lamp.pool.level は 1 より上も効くようになった (この写しは 1.0 なので同じ)。"
   ],
   "version": 1,
   "act": 1,
@@ -193,6 +194,13 @@
         0.66
       ],
       "strength": 1.0
+    },
+    "far2": {
+      "_doc": "三周目 段1 (R3B) の霧の2段目。off (= W5)",
+      "on": false,
+      "start": 45,
+      "end": 90,
+      "strength": 0.0
     }
   },
   "shadow": {
@@ -306,7 +314,8 @@
         0.645
       ],
       "intensity": 3.0,
-      "shaftSkipTopVig": false
+      "shaftSkipTopVig": false,
+      "shaftGain": 1.0
     }
   },
   "envGrade": {
@@ -386,6 +395,18 @@
   },
   "moondust": {
     "slice": false
+  },
+  "nightGrade": {
+    "_doc": "三周目 段1 (R3B) の夜の色寄せ。off (= W5)",
+    "on": false,
+    "strength": 0.0,
+    "color": [0.227, 0.233, 0.268],
+    "hi": 0.25,
+    "_fix1r3": "直しの輪1 (2026-10-02): 既定の look_act1.json の色寄せを color [0.20,0.29,0.41]・hi 0.32 にした。ここは off なので効かないが、重ねた結果を前と同じにするため前の値 (color・hi) を書いた"
+  },
+  "fx": {
+    "_doc": "直しの輪1 (2026-10-02・三周目 反証のまとめ (d)): 既定の look_act1.json は箱庭で舞う葉を点けない (fx.leaves false)。W5の写しは点ける (= 今までどおり・写しの画を変えない)",
+    "leaves": true
   },
   "layout": "act1_layout_w5"
 }
