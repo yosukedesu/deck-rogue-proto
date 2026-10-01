@@ -8,6 +8,8 @@
 配置の計算は place.py (同じ作業場)。乱数は固定の種 (決定的)。
 
 使い方: gen_layout.py [--out <path>] [--prune]   (既定は scratch の s2/cand.json。--repo で act1_layout.json へ)
+       gen_layout.py --r3 [--out <path>|--repo]  三周目 (2026-10-01): 二周目の最終の写し act1_layout_r2.json から三周目の設計図を焼く
+         (作り方は gen_r3.py・検査は place.py <layout> --r3 [--img])。二周目の build() はこの写しを作った物 (act1_layout_r2t2.json から)
 """
 import argparse
 import copy
@@ -603,9 +605,22 @@ def w5_doc():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--out', default=os.path.join(HERE, 's2', 'layout-cand.json'))
+    ap.add_argument('--out', default=None)
     ap.add_argument('--repo', action='store_true')
+    ap.add_argument('--r3', action='store_true', help='三周目: act1_layout_r2.json (二周目の最終の写し) から三周目の設計図を焼く (gen_r3.py・種 20261003)')
     args = ap.parse_args()
+    if args.r3:
+        import gen_r3
+        L, log = gen_r3.build_r3(gen_r3.load_r2())
+        L['_doc'] = L['_doc'] + gen_r3.DOC_R3
+        out = STAGE + 'act1_layout.json' if args.repo else (args.out or gen_r3.DEFAULT_OUT)
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        open(out, 'w', encoding='utf-8').write(dump_layout(L))
+        print('\n'.join(log))
+        print(out)
+        return
+    if args.out is None:
+        args.out = os.path.join(HERE, 's2', 'layout-cand.json')
     L, log = build()
     phone_fix(L, log)
     prune(L, log)

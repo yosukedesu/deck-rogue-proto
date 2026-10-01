@@ -17,13 +17,20 @@
 
 使い方
   place.py <layout.json> [--out <dir>] [--tag <名前>] [--img] [--fog A,B,C]
+  place.py <layout.json> --r3 [--out <dir>] [--tag <名前>] [--img] [--fogshow R|F40|F45]   三周目の節 (r3_check。ファイルの末尾)
 出力
   <out>/<tag>.json (表)・<out>/<tag>.md (人が読む要約)・--img なら <tag>-PC.png・<tag>-PH.png (光なしの構図の画)
+  --r3: <tag>.json・<tag>.md (窓・意図の札・座席の通り・M2・N24・太い幹・額縁 L8・名前の帯・霧の板・木の表・段1b の模型の M2/T1/G1/E2 と
+        段1 の縦の面の隠れ具合)・--img なら <tag>-<PC|PH|PCU>-<場面>-<霧>.png (二周目の最終の撮影の unitsonly のキャラ・意図の札・手札・窓・
+        160 のボスの箱を重ねた光なしの構図) と <tag>-<PC|PH|PCU>-mock-R.png (模型 = 夜の光・奥のぼかし・左右の減光を足した画。r3_mock)
+  三周目の新しい絵 (取り決め 1) がまだ無ければ、取り決めの大きさの代わりの影絵 (r3_proxy) で数える。
+  W5 の撮影を読む二周目の節 (w5_intents・draw) は、作業場の scratchpad (SP) が消えると画のキャラの重ねだけが落ちる (表は出る)
 """
 import argparse
 import json
 import math
 import os
+import re
 import sys
 
 import numpy as np
@@ -188,6 +195,11 @@ def art_for(L, src):
     if sd:
         arts = sd['art'] if isinstance(sd['art'], list) else [sd['art']]
         for a in arts:
+            # 三周目 (r3 の節): 取り決め 1 の新しい絵 (R3_ART) は、R3_FORCE_PROXY なら絵があっても代わりの影絵 (焼いた設計図を絵の有無に依らず同じにする)、
+            # 絵がまだ無ければ R3_PROXY の時に代わりの影絵で数える (レーン D が遅れても配置の検査を回せる)
+            if a in R3_ART and (R3_FORCE_PROXY or (R3_PROXY and not os.path.exists(RES + a + '.png'))):
+                res = (r3_proxy(a), a + '(proxy)')
+                break
             fp = RES + a + '.png'
             if not os.path.exists(fp) and a.startswith(DRAFT_PREFIX):
                 fp = DRAFT_DIR + a[len(DRAFT_PREFIX):] + '.png'   # レーン D の下書き (まだ Art に無い新しい絵)
@@ -258,8 +270,11 @@ def place_part(L, G, cam, i, p, with_image=False):
     o.i, o.p, o.kind = i, p, k
     o.src = p.get('relief') if k == 'tree' else p.get('src')
     o.art, o.box, o.depth, o.visible, o.facing, o.mask, o.rgba, o.origin, o.wpx, o.note, o.worldH, o.foot = None, None, None, False, True, None, None, (0, 0), 0.0, '', 0.0, None
-    if k in ('slab', 'fog', 'shaft'):
+    if k in ('slab', 'fog', 'shaft', 'mist'):   # mist = 三周目の α合成の霧の板 (光の面と同じく部品の箱にしない)
         return None
+    if p.get('onlyWith') == 'uitrial' and cam.name != 'PCU':   # Diorama.R3I_FlagHidden: 旗 uitrial=1 の時だけ組む (R3 の試し撮り = PCU)
+        o.note = 'flag-hide'
+        return o
     if k == 'frame':
         return place_frame(L, cam, o, with_image)
     ph = p.get('phone') if (cam.phone and isinstance(p.get('phone'), dict) and k not in ('slab', 'frame')) else None   # Diorama.PlaceOf (段 slab・額縁は上書きしない)
@@ -579,7 +594,7 @@ def seat_intrusions(L):
     out = []
     for i, p in enumerate(L['parts']):
         k = p['kind']
-        if k in ('litter', 'slab', 'fog', 'shaft', 'frame'):
+        if k in ('litter', 'slab', 'fog', 'shaft', 'frame', 'mist'):
             continue
         reach = {'rock': p.get('r', 0.6), 'block': max(p.get('w', 1.6), p.get('d', 1.2)) * 0.5,
                  'tree': p.get('r', 0.55) + p.get('rootLen', 1.6), 'fence': p.get('len', 3.0) * 0.5, 'rig': 1.5}.get(k, 0.3)
@@ -675,7 +690,10 @@ def main():
     ap.add_argument('--tag', default=None)
     ap.add_argument('--img', action='store_true')
     ap.add_argument('--fogshow', default='R')
+    ap.add_argument('--r3', action='store_true', help='三周目の節の検査 (r3_check) を回す (取り決め 1 の新しい絵が無ければ代わりの影絵で数える)')
     args = ap.parse_args()
+    if args.r3:
+        return r3_main(args)
     L = json.load(open(args.layout))
     tag = args.tag or os.path.splitext(os.path.basename(args.layout))[0]
     G = Ground(L)
@@ -1121,6 +1139,855 @@ def draw(cam, G, L, placed, rc, st, info, path, fogv, intents_w5, scene='wolf'):
     d.rectangle([0, H - 34, W, H], fill=(0, 0, 0, 180))
     d.text((10, H - 30), lbl, fill=(255, 255, 255), font=font(20))
     img.convert('RGB').save(path)
+
+
+# ================================================================== 三周目 (段1 レーン C・2026-10-01)
+# 計画 docs/design/hd2d-round3-plan-2026-10-01.md §2 C・分析 docs/design/hd2d-r3-analysis-2026-10-01.md §7 R1・R2・R4・R6・R8。
+# 「r3 の節」= 三周目の設計図 (act1_layout.json) を、二周目と同じカメラ (PC 22°・5°・足元 0.407／スマホ 22°・7°・0.525) と
+# R3 の試し撮りのカメラ (PCU = PC の足元 0.36。レーン A の旗 uitrial=1) で写して、配置の規則を数える。
+#   窓 (主人公の後ろ)・意図の札 (二周目の最終の撮影の矩形＋160 のボスの頭の箱)・座席の通り (1〜4体・人形・主人公の全部の並び)・
+#   N24・部品の数・上の覆い M2 (上端〜霧の芯 −60 行)・太い幹 (幹の見かけの幅で)・額縁と UI (L8 の見込み)・名前の帯。
+# 取り決め 1 の新しい絵 (レーン D) がまだ無い時は、取り決めの大きさの「代わりの影絵」(r3_proxy) で数える。
+# 霧は 3 つで数える: R = 今の look (start 14・end 28)、F40・F45 = レーン B の変種 (end 40・45)。どれも ×r (カメラの距離の比)。
+
+R2_SHOTS = '/home/yosuke/.cache/deck-rogue/hd2d-r2/shots-final/r2-slice/'   # 二周目の最終の撮影 (今のカメラ。UI の矩形と unitsonly の絵)
+R3_RA = 'Art/stage/act1/relief/'
+R3_FOGS = {'R': (14.0, 28.0), 'F40': (14.0, 40.0), 'F45': (14.0, 45.0)}
+R3_PROXY = True          # 新しい絵がまだ無ければ代わりの影絵で数える
+R3_FORCE_PROXY = False   # gen_r3 が立てる: 絵があっても代わりの影絵 (焼いた設計図を絵の有無に依らず同じにする)
+
+# 取り決め 1 の新しい絵の大きさ (ドット)。trunk = 根元の幹の幅。w は「幹の幅の約 4〜4.5 倍まで」の上の方で見積もる (覆いを多めに数える側)
+R3_ART = {}
+for _i in (1, 2):
+    # 段1b (レーン D2 の描き直し 2026-10-02): 切った後の幅 w20 74・w32 116〜118・w48 169〜171 (旧 90／142／215)。足元 = 幹の中心
+    R3_ART[R3_RA + 'conifer_w20_%d' % _i] = dict(kind='conifer', w=74, h=280, trunk=20)
+    R3_ART[R3_RA + 'conifer_w32_%d' % _i] = dict(kind='conifer', w=117, h=280, trunk=32)
+    R3_ART[R3_RA + 'conifer_w48_%d' % _i] = dict(kind='conifer', w=170, h=280, trunk=48)
+    R3_ART[R3_RA + 'bush_clump_l_%d' % _i] = dict(kind='bush', w=96, h=64)
+    R3_ART[R3_RA + 'bush_clump_m_%d' % _i] = dict(kind='bush', w=64, h=48)
+    R3_ART[R3_RA + 'bush_clump_s_%d' % _i] = dict(kind='bush', w=48, h=32)
+# 段1b (レーン D2): 密な針葉樹 (段の重なり・三角の影絵・葉は高さの約 10% から上)。trunk = 根元の幹の幅 (ドット)
+for _i, (_w, _h, _tr) in enumerate(((150, 300, 12), (150, 300, 11), (200, 340, 15), (200, 340, 16)), start=1):
+    R3_ART[R3_RA + 'conifer_dense_%d' % _i] = dict(kind='dense', w=_w, h=_h, trunk=_tr)
+R3_ART[R3_RA + 'conifer_near_1'] = dict(kind='near', w=137, h=320, trunk=36)
+R3_ART[R3_RA + 'conifer_near_2'] = dict(kind='near', w=148, h=320, trunk=42)
+for _i in range(1, 5):
+    R3_ART[R3_RA + 'bough_hang_%d' % _i] = dict(kind='bough', w=160, h=80)
+for _i, (_w, _h) in enumerate(((82, 88), (104, 72), (54, 96), (74, 64), (63, 60), (86, 80)), start=1):
+    R3_ART[R3_RA + 'fore_grass_%d' % _i] = dict(kind='grass', w=_w, h=_h)   # 大きさはレーン D の絵 (2026-10-01 23:13) に合わせた
+for _v in 'abcd':
+    R3_ART['Art/stage/act1/tiles/top_path_seat_r3_' + _v] = dict(kind='tile', w=64, h=64)
+_R3_PROXY_CACHE = {}
+
+
+def _r3_seed(name):
+    import zlib
+    return zlib.crc32(name.encode('utf-8')) & 0x7fffffff
+
+
+def r3_proxy(path):
+    """取り決め 1 の大きさの代わりの影絵 (RGBA・α は 0 か 255・暗い紺緑)。決定的 (名前の crc32 で種)。形は覆いと幹の幅の見積もり用で、絵の出来の代わりではない"""
+    if path in _R3_PROXY_CACHE:
+        return _R3_PROXY_CACHE[path]
+    spec = R3_ART[path]
+    w, h = spec['w'], spec['h']
+    rng = np.random.default_rng(_r3_seed(path))
+    a = np.zeros((h, w), bool)   # 行 0 = 上
+    yy, xx = np.mgrid[0:h, 0:w]
+    k = spec['kind']
+    if k in ('conifer', 'near'):
+        tw = spec['trunk']
+        cx = w / 2.0
+        top_w = tw * (0.35 if k == 'conifer' else 0.8)
+        half = (top_w + (tw - top_w) * (yy / (h - 1.0))) / 2.0       # 上ほど細い
+        flare = np.clip((yy - (h - 8)) / 8.0, 0, 1) * tw * 0.2
+        a |= np.abs(xx + 0.5 - cx) <= half + flare
+        if k == 'conifer':
+            # 枝の段: 根元から 12% の高さより上 (レーン D の絵は低い枝が根元近くまで下りる)。上ほど短い・先が垂れる・房は不透明
+            y_start = int(h * (1 - 0.12))
+            n = int(rng.integers(6, 9))
+            for j in range(n):
+                fy = 6 + (y_start - 6) * j / max(1, n - 1) + rng.uniform(-4, 4)
+                frac = 1.0 - (fy / y_start)                                  # 0 = 下の枝・1 = 上の枝
+                for side in (-1, 1):
+                    L_ = (w / 2.0 - tw / 2.0) * (0.95 - 0.5 * frac) * rng.uniform(0.75, 1.0)
+                    thick = 3 + 9 * (1 - frac) * rng.uniform(0.7, 1.0)
+                    droop = L_ * rng.uniform(0.25, 0.45)
+                    for u in np.linspace(0, 1, 40):
+                        px_ = cx + side * (tw * 0.3 + L_ * u)
+                        py_ = fy + droop * u * u
+                        r_ = thick * (1 - 0.6 * u) + (4 if (u > 0.3 and rng.random() < 0.35) else 0)
+                        a |= ((xx - px_) ** 2 + ((yy - py_ - r_ * 0.6) * 1.2) ** 2) <= r_ * r_
+        else:
+            for j in range(int(rng.integers(2, 4))):   # 枝の付け根の短い残り
+                fy = rng.uniform(h * 0.1, h * 0.6)
+                side = rng.choice((-1, 1))
+                ln = rng.uniform(tw * 0.6, w / 2.0 - 2)
+                for u in np.linspace(0, 1, 20):
+                    px_ = cx + side * (tw * 0.4 + ln * u)
+                    a |= ((xx - px_) ** 2 + (yy - fy - 6 * u) ** 2) <= (3.5 - 2 * u) ** 2
+    elif k == 'dense':
+        tw = spec['trunk']
+        cx = w / 2.0
+        a |= (np.abs(xx + 0.5 - cx) <= tw / 2.0) & (yy >= h * 0.5)
+        fb = h * 0.9                                                         # 葉の下端 = 高さの 10%
+        half = (w / 2.0) * np.clip((yy - 2) / (fb - 2), 0, 1)               # 三角の影絵 (段のぎざぎざは省く)
+        a |= (np.abs(xx + 0.5 - cx) <= half) & (yy <= fb)
+    elif k == 'bough':
+        for u in np.linspace(0, 1, 90):                                     # 付け根 (左の辺) が太く、右と下へ垂れて先細り
+            px_ = u * (w - 6)
+            py_ = 10 + 24 * u * u
+            r_ = 6 - 4 * u
+            a |= ((xx - px_) ** 2 + (yy - py_) ** 2) <= r_ * r_
+        for j in range(12):                                                 # 房 12〜30 ドット
+            u = 0.12 + 0.86 * j / 11.0 + rng.uniform(-0.03, 0.03)
+            px_ = u * (w - 6)
+            py_ = 10 + 24 * u * u
+            ln = rng.uniform(12, 30)
+            wd = rng.uniform(5, 10)
+            a |= (np.abs(xx - px_) <= wd * (1 - np.clip((yy - py_) / ln, 0, 1))) & (yy >= py_) & (yy <= py_ + ln)
+    elif k == 'bush':
+        for j in range(7):
+            ex, ey = rng.uniform(0.18, 0.82) * w, rng.uniform(0.35, 0.8) * h
+            rx, ry = rng.uniform(0.18, 0.32) * w, rng.uniform(0.25, 0.42) * h
+            a |= ((xx - ex) / rx) ** 2 + ((yy - ey) / ry) ** 2 <= 1
+        a &= yy >= int(h * 0.05)
+    elif k == 'grass':
+        x = 2.0
+        while x < w - 2:                                                    # 穂の間隔 ≥10 ドット (=近くで 40px 以上)
+            ht = rng.uniform(0.55, 1.0) * h
+            lean = rng.uniform(-6, 6)
+            for u in np.linspace(0, 1, 30):
+                px_ = x + lean * u * u
+                py_ = h - 1 - ht * u
+                a |= ((xx - px_) ** 2 + (yy - py_) ** 2) <= (2.5 - 1.5 * u) ** 2
+            x += rng.uniform(10, 16)
+        a |= yy >= h - 6
+    else:   # tile
+        a[:] = True
+    rgba = np.zeros((h, w, 4), np.uint8)
+    rgba[a] = (32, 46, 60, 255)
+    im = Image.fromarray(rgba, 'RGBA')
+    al = np.array(im)[..., 3]
+    ys, xs = np.nonzero(al > 16)
+    if len(xs):
+        im = im.crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
+    _R3_PROXY_CACHE[path] = im
+    return im
+
+
+def r3_cams():
+    """PC・スマホ・PC 21:9・PCU (R3 の試し撮り = 足元 0.36)"""
+    pc, ph, pc21 = cams(extra_wide=True)
+    pcu = Cam('PCU', 1920, 1080, False, 22, 5, 0.36)
+    return pc, ph, pc21, pcu
+
+
+def r3_shot_ui(cam_name):
+    """二周目の最終の撮影 (今のカメラ) の UI の矩形: {scene: {intents, strips, self, hand, topbar, feet, png_units}}。スマホは PH-S-*"""
+    pre = 'PH' if cam_name == 'PH' else 'PC'
+    out = {}
+    for scene in ('wolf', 'ogre', 'trio', 'quad', 'dolls'):
+        fp = R2_SHOTS + '%s-S-%s-1.layout.json' % (pre, scene)
+        if not os.path.exists(fp):
+            continue
+        d = json.load(open(fp))
+        sc = (d.get('canvas') or {}).get('scale') or 1.0
+        sl = (d.get('statusLineY') or {}).get('px')
+        rec = dict(intents=[], strips=[], self=[], hand=[], feet=[], doll_tags=[], topbar=(d.get('anchors') or {}).get('topbar'))
+        for u in d['units']:
+            if not isinstance(u, dict):
+                continue
+            if u.get('kind') == 'enemy':
+                if u.get('intent'):
+                    rec['intents'].append(u['intent'])
+                if u.get('strip'):
+                    rec['strips'].append(u['strip'])
+                px = u['px']
+                rec['feet'].append((px[0] + px[2] / 2.0, px[1] + px[3] - (u.get('feetOffset') or 0.0) * sc))
+        for n in d.get('nodes', []):
+            if isinstance(n, dict) and n.get('px') and re.search(r'/player/(hpwrap|setzone|gearzone|perms)$', n.get('path', '')):
+                rec['self'].append(n['px'])
+            if isinstance(n, dict) and n.get('px') and re.search(r'/(doll:[^/]+)/tag$', n.get('path', '')):
+                rec['doll_tags'].append(n['px'])
+        rec['hand'] = [h['px'] for h in d.get('hand', []) if isinstance(h, dict) and h.get('px')]
+        out[scene] = rec
+    return out
+
+
+def _rect_union_frac(r, rects):
+    """矩形 r (x,y,w,h) のうち rects の和が覆う割合 (画素の格子で数える)"""
+    x0, y0, w, h = [int(round(v)) for v in r]
+    if w <= 0 or h <= 0:
+        return 0.0
+    m = np.zeros((h, w), bool)
+    for q in rects:
+        if not q:
+            continue
+        a0 = max(0, int(round(q[0])) - x0)
+        b0 = max(0, int(round(q[1])) - y0)
+        a1 = min(w, int(round(q[0] + q[2])) - x0)
+        b1 = min(h, int(round(q[1] + q[3])) - y0)
+        if a1 > a0 and b1 > b0:
+            m[b0:b1, a0:a1] = True
+    return float(m.mean())
+
+
+def r3_art_spec(o):
+    a = (o.art or '').replace('(proxy)', '')
+    return R3_ART.get(a)
+
+
+def r3_is_tree(o):
+    a = (o.art or '')
+    src = o.src or ''
+    return o.kind == 'tree' or 'conifer' in a or 'trunk' in a or 'pine' in a or src.startswith(('conifer', 'nearTrunk', 'trunk'))
+
+
+def r3_trunk_px(o, cam):
+    """幹の見かけの幅 (px)。新しい絵は取り決めの幹の幅 (ドット)、二周目の幹の絵は板の幅の 0.55 倍 (幹の絵は枝の分だけ板が広い)"""
+    spec = r3_art_spec(o)
+    sc = o.p.get('scale', 1.0) or 1.0
+    d = o.depth if o.depth else 1.0
+    if spec and spec.get('trunk'):
+        return spec['trunk'] / TPU * sc * cam.f / d
+    return o.wpx * 0.55
+
+
+def r3_fogs(depth, cam):
+    return {k: round(fog_frac(depth, a, b, cam.r), 2) for k, (a, b) in R3_FOGS.items()}
+
+
+# 段1b (2026-10-02 統合の所見 2「敵の側の奥の木を今の霧 end 28 でも見える深さへ」): 帯の細い針葉樹 (conifer_w20・w32) が霧 R ≥ R3_HAZY_TREE_R なら、
+# 意図の札 (夜色の不透明の札 = 後ろの幹は札で隠れる) の後ろを通ってよい。160 のボスの頭の箱は霧 R ≥ R3_HAZY_BOSS_R の木だけ (暗い体の影絵を霧の上に保つ)。
+# 密な針葉樹・垂れる枝・近い幹・茂み・岩は今までどおり霧 F45 <0.7 なら意図の札に掛けない (art-bible §2-2 の「意図の札の箱に幹を掛けない」の例外 = 統合の裁定待ち)
+R3_HAZY_TREE_R = 0.45
+R3_HAZY_BOSS_R = 0.8
+R3_WANT_MOCK = True          # r3_check で模型の物差しを出す (gen_r3 の焼きの中では切る = 速さ)
+R3_MOCK_FOGS = ('R', 'F40')
+
+
+def r3_hazy_tree_ok(o, cam, boss_box=False):
+    """霞んだ木なら意図の札 (boss_box なら 160 のボスの箱) の後ろを通ってよい。帯の細い針葉樹 (conifer_w20・w32) は霧 R ≥0.45 (ボスの箱は ≥0.8)、
+    密な針葉樹 (conifer_dense。三角の段の塊) は霧 R ≥0.8 だけ (霧の中の影絵 = 本家 ref16_fogtrunk)"""
+    a = (o.art or '')
+    fr = fog_frac(o.depth, R3_FOGS['R'][0], R3_FOGS['R'][1], cam.r)
+    if 'conifer_dense' in a:
+        return fr >= R3_HAZY_BOSS_R
+    if 'conifer_w20' not in a and 'conifer_w32' not in a:
+        return False
+    return fr >= (R3_HAZY_BOSS_R if boss_box else R3_HAZY_TREE_R)
+
+
+def r3_seat_points(cam, G):
+    """全部の座席の足元 (画面): 主人公・敵 1〜4体 (StageSeats の見本の表と同じ足元の x)・人形 9体 (見本の刻み)。(名前, x, y, 横の幅の半分)"""
+    st = seats(cam, G)
+    pts = [('hero', st['hero'][0], st['hero'][1], 60.0)]
+    for n in (1, 2, 3, 4):
+        for j, e in enumerate(st['enemies'][n]):
+            pts.append(('enemy%d-%d' % (n, j), e['x'], e['y'], 140.0))
+    step = 0.945 if cam.phone else 0.93
+    for i in range(9):
+        j = i % 5
+        back = i >= 5
+        t = -3.9 + j * step + ((0.5 if cam.phone else 0.45) if back else 0.0)
+        near_first = (i == 0 and not cam.phone)
+        s = (0.25 if near_first else (0.9 if j % 2 == 0 else 0.25)) + ((2.8 if cam.phone else 2.0) if back else 0.0)
+        x, y, d = cam.project(G.on_path(t, s, 0.0))
+        pts.append(('doll%d' % i, float(x), float(y), 50.0))
+    return pts, st
+
+
+def r3_name_band(cam, G):
+    """幕ボス・強個体の名前の帯 (Presenter.NameBandPlace): 帯の上端 = いちばん高い敵の足元の 6 下・高さ 62 (スマホ 54×sf)・画面の幅いっぱい。
+    1〜4体のどの並びでも同じ帯の行の範囲 (上端の最小〜下端の最大) を返す"""
+    st = seats(cam, G)
+    rows = [e['y'] for n in (1, 2, 3, 4) for e in st['enemies'][n]]
+    h = (54 * cam.canvas_sf) if cam.phone else 62.0
+    return (0, min(rows) - 4, cam.W, max(rows) + 6 + h - (min(rows) - 4))
+
+
+def r3_core_row(cam, G):
+    """霧の帯の頂点の行 = 主人公の足元から PC 329px・スマホ 268px 上 (art-bible §5-6・二周目の実測)"""
+    st = seats(cam, G)
+    return st['hero'][1] - (268.0 if cam.phone else 329.0)
+
+
+R3_TUFT_SRC = ('tuftStand', 'litterTuft')
+# 座席の足元の通り (分析 R4「敵 ±140px・主人公 ±60px を空ける」・人形 ±50px): 株の板が、足元の x ±幅 の中で、根元の行が足元より 8px 上〜
+# 先の行が足元の 20px 下 の間に掛かれば「足元を隠す」。足元より奥 (根元が 8px 以上上) の株はキャラの体の後ろ = 隠さない (足の間から見える草)
+R3_CORR_BACK, R3_CORR_FRONT = 8.0, 20.0
+R3_CORR_MIN_H = 10 / TPU   # 通りを数える小札の背丈の下限 (unit = 10 ドット。株 12〜20 ドットは数える・小石や落ち葉は数えない)
+R3_BOSS160 = (1200, 0, 350, 140)      # 160 のボスの頭と意図の札 (分析 R2「x1200〜1550 の真上は空ける」。PC)
+
+
+def r3_check(L, cams_=None, want_img=False, ui=None):
+    """三周目の規則を数える。返す = (結果の dict・各カメラの (placed, rc, st))"""
+    from collections import Counter
+    G = Ground(L)
+    if cams_ is None:
+        cams_ = r3_cams()
+    res = dict(parts=len(L['parts']), byKind=dict(Counter(p['kind'] for p in L['parts'])))
+    res['litter'] = sum(1 for p in L['parts'] if p['kind'] == 'litter')
+    res['gates'] = L.get('gates')
+    res['seatParts'] = seat_intrusions(L)
+    per = {}
+    placed_all = {}
+    ui = ui if ui is not None else {c: r3_shot_ui(c) for c in ('PC', 'PH')}
+    for cam in cams_:
+        rc = G.raycast(cam, 4)
+        tdf = upsample(rc, cam.W, cam.H)
+        placed = []
+        for i, p in enumerate(L['parts']):
+            o = place_part(L, G, cam, i, p, with_image=True)
+            if o is not None:
+                placed.append(o)
+        pts, st = r3_seat_points(cam, G)
+        placed_all[cam.name] = (placed, rc, st, tdf)
+        info = {}
+        vis = {}
+        for o in placed:
+            vm, npx = visible_mask(o, cam, tdf, cam.W, cam.H)
+            vis[o.i] = (vm, npx)
+        # ---- 主人公の後ろの窓
+        win = (230, 230, 430, 380) if cam.phone else (300, 380, 560, 560)
+        if cam.name == 'PCU':
+            hx, hy = st['hero'][0], st['hero'][1]
+            win = (300, int(hy - 274), 560, int(hy - 94))   # 同じ窓を主人公の足元に付けて動かす (PC の窓は足元 654 の 94〜274 上)
+        hw = []
+        for o in placed:
+            if o.kind in ('litter', 'frame'):
+                continue
+            vm, npx = vis[o.i]
+            if vm is None:
+                continue
+            c = int(vm[win[1]:win[3], win[0]:win[2]].sum())
+            if c > 0:
+                fz = r3_fogs(o.depth, cam)
+                tree = r3_is_tree(o)
+                need = 0.7 if tree else 0.4
+                hw.append(dict(i=o.i, kind=o.kind, name=o.p.get('name'), src=o.src, px=c, fog=fz, tree=tree,
+                               bad=bool(fz['F45'] < need and c >= 50), new=bool((o.p.get('name') or '').startswith(R3_NEW_PREFIX))))
+        hw.sort(key=lambda d: -d['px'])
+        info['heroWindow'] = dict(window=win, total=sum(d['px'] for d in hw), bad=[d for d in hw if d['bad']], badNew=[d for d in hw if d['bad'] and d['new']], parts=hw[:12])
+        # ---- 太い幹 (幹の見かけの幅 ≥40px) × 1〜2体の敵の足元 ±130px
+        thick = []
+        feet12 = sorted({round(e['x']) for n in (1, 2) for e in st['enemies'][n]})
+        trees = []
+        for o in placed:
+            if not o.visible or o.box is None or not r3_is_tree(o):
+                continue
+            tw = r3_trunk_px(o, cam)
+            cx = o.foot[0] if o.foot else (o.box[0] + o.box[2]) / 2
+            fz = r3_fogs(o.depth, cam)
+            trees.append(dict(i=o.i, name=o.p.get('name'), src=o.src, art=o.art, cx=round(cx), trunkPx=round(tw, 1), depth=round(o.depth, 1), fog=fz,
+                              s=o.p.get('s'), box=[round(v) for v in o.box]))
+            if tw >= 40:
+                for fx in feet12:
+                    if cx + tw / 2 >= fx - 130 and cx - tw / 2 <= fx + 130:
+                        thick.append(dict(i=o.i, name=o.p.get('name'), src=o.src, cx=round(cx), trunkPx=round(tw), footX=fx))
+        info['thickTrunkNearFeet'] = thick
+        info['trees'] = sorted(trees, key=lambda d: d['cx'])
+        # ---- 意図の札 (二周目の最終の撮影の矩形・PC は 160 のボスの頭の箱も) に掛かる「暗い」部品 (霧 F45 < 0.7)
+        if cam.name in ('PC', 'PH'):
+            boxes = []
+            for scene, rec in ui.get(cam.name, {}).items():
+                for j, r in enumerate(rec['intents']):
+                    boxes.append(('%s-%d' % (scene, j), r))
+            if cam.name == 'PC':
+                boxes.append(('boss160', R3_BOSS160))
+            inter = []
+            faint = []
+            hazy = []
+            for o in placed:
+                if o.kind in ('litter',):
+                    continue
+                vm, npx = vis[o.i]
+                if vm is None:
+                    continue
+                fz = r3_fogs(o.depth, cam)
+                for name, r in boxes:
+                    x0, y0, w_, h_ = [int(round(v)) for v in r]
+                    c = int(vm[max(0, y0):max(0, y0 + h_), max(0, x0):max(0, x0 + w_)].sum())
+                    if c > 0:
+                        rec_ = dict(box=name, i=o.i, kind=o.kind, src=o.src, name=o.p.get('name'), px=c, fog=fz)
+                        if fz['F45'] >= 0.7:
+                            faint.append(rec_)
+                        elif r3_hazy_tree_ok(o, cam, name == 'boss160'):
+                            hazy.append(rec_)
+                        else:
+                            inter.append(rec_)
+            # 光の筋の四角形が意図の札に掛かるか (二周目の ⑨)
+            sh_hits = []
+            for p in L['parts']:
+                if p['kind'] != 'shaft':
+                    continue
+                sh = place_shaft(G, cam, p)
+                qx = [q[0] for q in sh['quad']]
+                qy = [q[1] for q in sh['quad']]
+                for name, r in boxes:
+                    if max(qx) >= r[0] and min(qx) <= r[0] + r[2] and max(qy) >= r[1] and min(qy) <= r[1] + r[3]:
+                        sh_hits.append(dict(box=name, shaft=p.get('name')))
+            info['intent'] = dict(dark=inter, faint=len(faint), faintParts=sorted({d['name'] or d['src'] for d in faint}), shafts=sh_hits,
+                                  hazy=len(hazy), hazyParts=sorted({d['name'] or d['src'] for d in hazy}))
+        # ---- 座席の通り: 株と小札 (litter・card) が、どの座席の並びの足元 (x ±幅・根元が足元の 8px 上より手前・先が足元の 20px 下より上 = R3_CORR_*) にも掛からない
+        corr = []
+        for o in placed:
+            if o.kind not in ('litter', 'card') or o.box is None or not o.visible:
+                continue
+            if o.worldH < R3_CORR_MIN_H:   # 背丈 10 ドット未満の平たい小札 (小石・落ち葉・小枝) は足元を隠さない
+                continue
+            x0, y0, x1, y1 = o.box
+            for nm, fx, fy, hwid in pts:
+                if x1 >= fx - hwid and x0 <= fx + hwid and y1 >= fy - R3_CORR_BACK and y0 <= fy + R3_CORR_FRONT:
+                    corr.append(dict(i=o.i, kind=o.kind, src=o.src, seat=nm, t=o.p.get('t'), s=o.p.get('s'), new=bool((o.p.get('name') or '').startswith(R3_NEW_PREFIX))))
+                    break
+        info['seatCorridor'] = dict(all=len(corr), new=[d for d in corr if d['new']], old=len([d for d in corr if not d['new']]))
+        # 座席の帯 (t −8.5〜13・s −2.6〜2.8) の株の数と、画面の真ん中 ±200px (PC 760〜1160) の株
+        band_tufts = [o for o in placed if o.kind == 'litter' and (o.src or '').startswith(R3_TUFT_SRC) and -8.5 <= o.p.get('t', 0) <= 13 and -2.6 <= o.p.get('s', 0) <= 2.8]
+        mid = [o for o in band_tufts if o.foot and abs(o.foot[0] - cam.W / 2.0) <= 200]
+        info['seatBandTufts'] = dict(count=len(band_tufts), centerPm200=len(mid), visible=sum(1 for o in band_tufts if o.visible))
+        # ---- 上の覆い M2 (上端〜霧の芯 −60 行) と N24 (上の 40%) と上の真ん中
+        core = r3_core_row(cam, G)
+        m2rows = max(1, int(core - 60))
+        m2 = {}
+        for fk in R3_FOGS:
+            cov = np.zeros((m2rows, cam.W), bool)
+            for o in placed:
+                if o.kind == 'frame' and o.src == 'backdropPlain':
+                    continue
+                vm, npx = vis[o.i]
+                if vm is None:
+                    continue
+                if r3_fogs(o.depth, cam)[fk] >= 0.85:      # 霧に溶けた物 (勾配 ≤6) は数えない
+                    continue
+                cov |= vm[:m2rows]
+            m2[fk] = round(float(cov.mean()), 3)
+        info['M2'] = dict(rows=[0, m2rows], core=round(core), cover=m2)
+        topH = int(cam.H * 0.4)
+        cov = np.zeros((topH, cam.W), bool)
+        for o in placed:
+            if o.kind == 'frame' and o.src == 'backdropPlain':
+                continue
+            if not (r3_is_tree(o) or o.kind == 'frame' or 'bough' in (o.art or '') or 'Bough' in (o.src or '')):
+                continue
+            vm, npx = vis[o.i]
+            if vm is None:
+                continue
+            cov |= vm[:topH]
+        info['N24'] = round(float(cov.mean()), 3)
+        # 霧の帯の行 (頂点 ±80) を幹が横切る列の割合 (帯が暗くなる見込み。霧 R < 0.9 の木だけ)
+        b0, b1 = int(core - 80), int(core + 80)
+        colcov = np.zeros(cam.W, bool)
+        for o in placed:
+            if not r3_is_tree(o):
+                continue
+            vm, npx = vis[o.i]
+            if vm is None:
+                continue
+            if r3_fogs(o.depth, cam)['R'] >= 0.9:
+                continue
+            colcov |= vm[max(0, b0):b1].mean(axis=0) > 0.5
+        info['bandColumns'] = dict(rows=[b0, b1], frac=round(float(colcov.mean()), 3))
+        # ---- 額縁 (frame): 画面の矩形・UI と重なる割合 (L8 の見込み)・名前の帯
+        nb = r3_name_band(cam, G)
+        frs = []
+        for o in placed:
+            if o.kind != 'frame' or o.box is None or o.src == 'backdropPlain':
+                continue
+            if o.note == 'phone-hide':
+                continue
+            x0, y0, x1, y1 = o.box
+            cx0, cy0, cx1, cy1 = max(0, x0), max(0, y0), min(cam.W, x1), min(cam.H, y1)
+            r = (cx0, cy0, cx1 - cx0, cy1 - cy0)
+            rec = dict(i=o.i, name=o.p.get('name'), src=o.src, box=[round(v) for v in o.box], screen=[round(v) for v in r])
+            if r[2] > 0 and r[3] > 0:
+                rec['nameBand'] = round(_rect_union_frac(r, [nb]), 3)
+                ucam = 'PH' if cam.phone else 'PC'
+                l8 = {}
+                for scene, recu in ui.get(ucam, {}).items():
+                    if cam.name == 'PCU':   # R3 の試し撮り: 手札を 164px 沈める (HandSink 19→183)・帳面は足元の下へ (ledger=feet。ここでは外して数える)
+                        rects = [[h_[0], h_[1] + 164, h_[2], h_[3]] for h_ in recu['hand']] + list(recu['intents']) + list(recu['self'])
+                    else:
+                        rects = list(recu['hand']) + list(recu['intents']) + list(recu['strips']) + list(recu['self']) + list(recu['doll_tags'])
+                    if recu.get('topbar'):
+                        rects.append(recu['topbar'])
+                    l8[scene] = round(_rect_union_frac(r, rects), 3)
+                rec['L8'] = l8
+            frs.append(rec)
+        info['frames'] = frs
+        info['nameBand'] = [round(v) for v in nb]
+        # ---- 霧の板 (kind mist) の行
+        mists = []
+        for p in L['parts']:
+            if p['kind'] != 'mist':
+                continue
+            if cam.phone and isinstance(p.get('phone'), dict) and p['phone'].get('hide'):
+                continue
+            t_, s_ = p.get('t', 0.0), p.get('s', 0.0)
+            y0_ = p['y'] if p.get('abs') else G.gy(t_, s_) + p.get('y', 0.0)
+            pos = G.on_path(t_, s_, y0_)
+            a = cam.project(pos)
+            b = cam.project(pos + np.array([0, p.get('h', 2.0), 0]))
+            mists.append(dict(name=p.get('name'), rowBase=round(float(a[1])), rowTop=round(float(b[1])), depth=round(float(a[2]), 1), fog=r3_fogs(float(a[2]), cam), alpha=p.get('alpha')))
+        info['mists'] = mists
+        info['core'] = round(core)
+        if cam.name in ('PC', 'PH', 'PCU') and R3_WANT_MOCK:
+            mk = {}
+            for fk in R3_MOCK_FOGS:
+                im_ = r3_mock(cam, G, L, placed, rc, tdf, fk)
+                mk[fk] = r3_tex_metrics(cam, G, im_)
+                if fk == 'R':
+                    placed_all[cam.name + ':mock'] = im_
+            info['mock'] = mk
+            info['face'] = r3_face_cover(cam, G, L, placed, tdf)
+        info['seats'] = dict(hero=[round(v) for v in st['hero'][:2]], enemies={n: [round(e['x']) for e in st['enemies'][n]] for n in (1, 2, 3, 4)},
+                             enemyRows={n: [round(e['y']) for e in st['enemies'][n]] for n in (1, 2, 3, 4)})
+        per[cam.name] = info
+    res['cams'] = per
+    # 映らない部品 (PC・PC 21:9・スマホのどれにも)
+    vis_any = {}
+    for cname in ('PC', 'PC21', 'PH'):
+        if cname not in placed_all:
+            continue
+        for o in placed_all[cname][0]:
+            vis_any.setdefault(o.i, []).append(bool(o.visible and o.facing and o.note != 'phone-hide'))
+    off = [i for i, v in vis_any.items() if not any(v)]
+    res['offscreen'] = dict(count=len(off), byKind=dict(Counter(L['parts'][i]['kind'] for i in off)),
+                            names=sorted({(L['parts'][i].get('name') or L['parts'][i].get('src') or '') for i in off}))
+    return res, placed_all
+
+
+R3_NEW_PREFIX = 'r3-'   # 三周目で足した部品の名前の頭 (gen_r3 が付ける)
+
+
+# ------------------------------------------------------------------ 段1b: 模型の物差し (撮影の数字 M2・T1・G1・E2 の見当)
+# 光なしの構図の画に、エンジンに近づける 3 つだけを足した「模型」= ①半立体の色 × R3_MOCK_LIT (夜の光。試しの撮影 T3 の近い幹 輝度 10〜30 ÷ 絵 77〜102)
+# ②奥のぼかし (s 5.5 より奥で σ = 0.35×(s−5.5) px・上限 4 = look の pathBand と lensFar の見当) ③左右の減光 (stageVignette side 0.5)。
+# 数字は scripts/hd2d-r3-targets.py と同じ式 (M2 = 芯−60 より上の σ3 の局所の標準偏差 >3 の割合・T1 = 芯 ±80 の暗い筋・G1 = x700〜1220 の帯の頂点・
+# E2 = 芯 ±70・x 28〜80% の縁 /1万画素)。キャラは描かない (撮影の物差しはキャラを除く)。絶対の値はエンジンと合わない = 設計図どうしの比べ用
+R3_MOCK_LIT = 0.5
+_R3T = None
+
+
+def _r3_targets():
+    global _R3T
+    if _R3T is None:
+        import importlib.util
+        sp = importlib.util.spec_from_file_location('hd2d_r3_targets_for_place', os.path.join(REPO, 'scripts', 'hd2d-r3-targets.py'))
+        _R3T = importlib.util.module_from_spec(sp)
+        sp.loader.exec_module(_R3T)
+    return _R3T
+
+
+def r3_mock(cam, G, L, placed, rc, tdf, fogk='R', lit=R3_MOCK_LIT):
+    """模型の画 (H×W×3 の float・0〜255)"""
+    W, H = cam.W, cam.H
+    step = rc['step']
+    st_, en_ = R3_FOGS[fogk]
+    fs, fe = st_ * cam.r, en_ * cam.r
+    dirs, X, Y = cam.ray_dirs(rc['xs'], rc['ys'])
+    lobeP = G.on_path(LOBE['t'], LOBE['s'], LOBE['y'])
+    l = (lobeP - cam.base) / np.linalg.norm(lobeP - cam.base)
+    lobe = np.clip(dirs @ l, 0, 1) ** LOBE['power']
+    fogcol = np.array([150, 158, 172.0])
+    base_bg = fogcol * (0.35 + 0.65 * lobe)[..., None]
+    dep = rc['depth']
+    f = np.clip((dep - fs) / (fe - fs), 0, 1)
+    slab_col = {'front-step': (40, 52, 44), 'seat-band': (70, 66, 58), 'terrace-1': (62, 70, 74), 'terrace-2': (70, 78, 84), 'terrace-3': (80, 88, 96)}
+    gcol = np.zeros(dep.shape + (3,))
+    for i, sl in enumerate(G.slabs):
+        gcol[rc['slab'] == i] = slab_col.get(sl['name'], (70, 70, 70))
+    tops = np.array([sl['top'] for sl in G.slabs])
+    wall = (rc['slab'] >= 0) & (rc['y'] < tops[np.clip(rc['slab'], 0, None)] - 0.05)
+    gcol[wall] *= 0.55
+    col = np.where(rc['hit'][..., None], gcol * (1 - f[..., None]) + base_bg * f[..., None], base_bg)
+    img = np.repeat(np.repeat(col, step, 0), step, 1)[:H, :W]
+    if img.shape[:2] != (H, W):
+        img = np.pad(img, ((0, H - img.shape[0]), (0, W - img.shape[1]), (0, 0)), mode='edge')
+    img = img.astype(float)
+    bgf = np.repeat(np.repeat(base_bg, step, 0), step, 1)[:H, :W]
+    if bgf.shape[:2] != (H, W):
+        bgf = np.pad(bgf, ((0, H - bgf.shape[0]), (0, W - bgf.shape[1]), (0, 0)), mode='edge')
+    T_ = _r3_targets().T
+    order = sorted([o for o in placed if o.rgba is not None and o.facing and o.note not in ('flag-hide', 'phone-hide')], key=lambda o: -(o.depth or 0))
+    for o in order:
+        a = o.rgba.astype(float)
+        X0, Y0 = o.origin
+        h, w = a.shape[:2]
+        xa, ya, xb, yb = max(0, X0), max(0, Y0), min(W, X0 + w), min(H, Y0 + h)
+        if xb <= xa or yb <= ya:
+            continue
+        sub = a[ya - Y0:yb - Y0, xa - X0:xb - X0].copy()
+        al = (sub[..., 3] > 40).astype(float)
+        al[o.depth > tdf[ya:yb, xa:xb] + 0.6] = 0.0
+        rgb = sub[..., :3] * (lit if o.kind != 'frame' else lit * 0.8)
+        if o.kind != 'frame':
+            ff = float(np.clip(((o.depth or 0) - fs) / (fe - fs), 0, 1))
+            rgb = rgb * (1 - ff) + bgf[ya:yb, xa:xb] * ff
+        s_ = o.p.get('s', 0.0) if o.kind != 'frame' else None
+        sig = 0.0 if s_ is None else float(np.clip(0.35 * (s_ - 5.5), 0, 4))
+        if sig >= 0.6:
+            pm = rgb * al[..., None]
+            pm = np.dstack([T_.gblur(pm[..., c], sig) for c in range(3)])
+            al = T_.gblur(al, sig)
+            rgb = np.where(al[..., None] > 1e-3, pm / np.maximum(al[..., None], 1e-3), rgb)
+        dst = img[ya:yb, xa:xb]
+        img[ya:yb, xa:xb] = dst * (1 - al[..., None]) + rgb * al[..., None]
+    xx = np.abs(np.arange(W) / W - 0.5)
+    vig = 1.0 - 0.5 * np.clip((xx - 0.30) / 0.20, 0, 1) ** 2
+    return img * vig[None, :, None]
+
+
+def r3_tex_metrics(cam, G, img):
+    """模型の画の M2・T1・G1・E2 (scripts/hd2d-r3-targets.py の式)"""
+    R = _r3_targets()
+    T_ = R.T
+    Lm = R.lum(img.clip(0, 255))
+    H, W = Lm.shape
+    sc = 1.0 if not cam.phone else (H / 1080.0)
+    core = int(r3_core_row(cam, G))
+    y1 = int(max(20, core - 60 * sc))
+    m2 = float((R.localstd(Lm, 3.0 * sc)[:y1] > 3).mean())
+    half_b = int(round(80 * sc))
+    b0, b1 = max(0, core - half_b), min(H, core + half_b)
+    cm = np.median(Lm[b0:b1], axis=0)
+    base = T_.running_median(cm, 241)
+    wmin = max(6, int(round(12 * sc)))
+    streaks = [(int(a_), int(b_)) for a_, b_ in T_.runs(cm < 0.85 * base) if b_ - a_ >= wmin]
+    x0, x1 = 700, 1220
+    prof = np.array([Lm[y:y + 10, x0:x1].mean() for y in range(0, H, 10)])
+    sm = np.convolve(prof, np.ones(5) / 5, mode='same')
+    n3 = float(sm[3:-3].max())
+    valid = np.ones_like(Lm, bool)
+    e2 = R.edge_density(Lm, valid, [int(W * 0.28), core - 70 * sc, int(W * 0.52), 140 * sc])
+    return dict(M2=round(m2, 3), T1=len(streaks), streaks=streaks, N3=round(n3, 1), E2=e2, core=core)
+
+
+def r3_face_cover(cam, G, L, placed, tdf):
+    """段1 (terrace-1) の前の縦の面 (s = 前の縁・高さ 0〜天面) のうち、手前の部品 (茂み・株・岩・木) に隠れる割合 (画面の中・2px おきの列)"""
+    t1 = [p for p in L['parts'] if p['kind'] == 'slab' and p.get('name') == 'terrace-1']
+    if not t1:
+        return None
+    t1 = t1[0]
+    Tf = [q[0] for q in t1['front']]
+    Sf = [q[1] for q in t1['front']]
+    top = t1['top']
+    W, H = cam.W, cam.H
+    cover = np.zeros((H, W), bool)
+    for o in placed:
+        if o.kind in ('frame',) or o.mask is None or o.note in ('flag-hide', 'phone-hide'):
+            continue
+        vm, npx = visible_mask(o, cam, tdf, W, H)
+        if vm is not None:
+            cover |= vm
+    tot = 0
+    hid = 0
+    for x in range(0, W, 2):
+        lo, hi = -60.0, 60.0
+        for _ in range(50):
+            m = (lo + hi) / 2
+            s_ = float(np.interp(m, Tf, Sf))
+            if cam.project(G.on_path(m, s_, top * 0.5))[0] < x:
+                lo = m
+            else:
+                hi = m
+        t = (lo + hi) / 2
+        s_ = float(np.interp(t, Tf, Sf))
+        a = cam.project(G.on_path(t, s_ - 0.02, 0.02))
+        b = cam.project(G.on_path(t, s_ - 0.02, top))
+        if abs(a[0] - x) > 3:
+            continue
+        r0, r1 = int(max(0, math.floor(b[1]))), int(min(H, math.ceil(a[1])))
+        if r1 <= r0:
+            continue
+        d_face = float(a[2])
+        vis = tdf[r0:r1, x] >= d_face - 0.8          # 面がほかの地面に隠れていない画素
+        tot += int(vis.sum())
+        hid += int((vis & cover[r0:r1, x]).sum())
+    return dict(px=tot, hidden=round(hid / tot, 3) if tot else None)
+
+
+def r3_summary_md(res, tag):
+    out = ['# 三周目の配置の検査 (r3 の節): %s' % tag, '',
+           '部品 %d (%s)・地面の小札 %d・門 %s' % (res['parts'], '・'.join('%s %d' % kv for kv in sorted(res['byKind'].items())), res['litter'], json.dumps(res.get('gates'), ensure_ascii=False)),
+           '座席の帯の部品 (seatParts) %d・どこにも映らない部品 %d %s' % (len(res['seatParts']), res['offscreen']['count'], res['offscreen']['byKind']), '',
+           '霧: ' + '・'.join('%s start %g end %g (×r)' % (k, a, b) for k, (a, b) in R3_FOGS.items()), '']
+    cs = res['cams']
+    names = [c for c in ('PC', 'PH', 'PCU') if c in cs]
+    out.append('| 規則 | ' + ' | '.join(names) + ' |')
+    out.append('|---|' + '---|' * len(names))
+
+    def row(label, fn):
+        out.append('| %s | %s |' % (label, ' | '.join(fn(cs[c]) for c in names)))
+    row('主人公の後ろの窓: 画素の計・霧 F45 が足りない部品 (新/全)', lambda c: '%d・%d/%d' % (c['heroWindow']['total'], len(c['heroWindow']['badNew']), len(c['heroWindow']['bad'])))
+    row('太い幹 (幹の見かけ ≥40px) × 1〜2体の足元 ±130px', lambda c: str(len(c['thickTrunkNearFeet'])))
+    row('意図の札に掛かる暗い部品 (霧 F45 <0.7)・霧に沈んだ部品・光の筋', lambda c: ('%d・%d・%d' % (len(c['intent']['dark']), c['intent']['faint'], len(c['intent']['shafts']))) if 'intent' in c else '—')
+    row('座席の通りに掛かる株・小札 (新/二周目から)', lambda c: '%d/%d' % (len(c['seatCorridor']['new']), c['seatCorridor']['old']))
+    row('座席の帯の株 (見える)・画面の真ん中 ±200px', lambda c: '%d (%d)・%d' % (c['seatBandTufts']['count'], c['seatBandTufts']['visible'], c['seatBandTufts']['centerPm200']))
+    row('M2 上の覆い (行 0〜芯−60) R/F40/F45', lambda c: '行0〜%d: %s' % (c['M2']['rows'][1], '/'.join('%.0f%%' % (100 * c['M2']['cover'][k]) for k in R3_FOGS)))
+    row('N24 上の 40% の木・枝・額縁', lambda c: '%.0f%%' % (100 * c['N24']))
+    row('霧の帯 (芯 ±80 行) を幹が横切る列の割合 (霧 R <0.9)', lambda c: '%.0f%% (行 %d〜%d)' % (100 * c['bandColumns']['frac'], c['bandColumns']['rows'][0], c['bandColumns']['rows'][1]))
+    row('模型 M2 (霧 R / F40)', lambda c: '/'.join('%.2f' % c['mock'][k]['M2'] for k in R3_MOCK_FOGS) if c.get('mock') else '—')
+    row('模型 T1 暗い幹の筋 (霧 R / F40)', lambda c: '/'.join('%d' % c['mock'][k]['T1'] for k in R3_MOCK_FOGS) if c.get('mock') else '—')
+    row('模型 G1 帯の頂点 (霧 R / F40)', lambda c: '/'.join('%.0f' % c['mock'][k]['N3'] for k in R3_MOCK_FOGS) if c.get('mock') else '—')
+    row('模型 E2 帯の中の縁 (霧 R / F40)', lambda c: '/'.join('%s' % c['mock'][k]['E2'] for k in R3_MOCK_FOGS) if c.get('mock') else '—')
+    row('段1 の縦の面が手前の部品に隠れる割合', lambda c: ('%.0f%% (%dpx)' % (100 * c['face']['hidden'], c['face']['px'])) if c.get('face') and c['face'].get('hidden') is not None else '—')
+    row('意図の札の後ろを通る霞んだ帯の木 (霧 R ≥%.2f)' % R3_HAZY_TREE_R, lambda c: str(c['intent'].get('hazy', 0)) if 'intent' in c else '—')
+    row('額縁: 名前の帯に掛かる・L8 の最大 (場面)', lambda c: '%d・%s' % (sum(1 for f in c['frames'] if f.get('nameBand', 0) > 0),
+                                                                    max(((max(f['L8'].values()) if f.get('L8') else 0.0) for f in c['frames']), default=0.0)))
+    out.append('')
+    for c in names:
+        info = cs[c]
+        out.append('## %s' % c)
+        out.append('- 足元: 主人公 %s・敵 %s (行 %s)・霧の芯の行 %d' % (info['seats']['hero'], info['seats']['enemies'], info['seats']['enemyRows'], info['core']))
+        if info['heroWindow']['bad']:
+            out.append('- 窓の違反: ' + '・'.join('%s %s %dpx 霧F45 %.2f' % (d['name'] or d['src'], d['kind'], d['px'], d['fog']['F45']) for d in info['heroWindow']['bad']))
+        if info['thickTrunkNearFeet']:
+            out.append('- 太い幹: ' + '・'.join('%s x%d 幹%dpx 足元%d' % (d['name'] or d['src'], d['cx'], d['trunkPx'], d['footX']) for d in info['thickTrunkNearFeet']))
+        if 'intent' in info and info['intent']['dark']:
+            out.append('- 意図の札の暗い部品: ' + '・'.join('%s→%s %dpx F45 %.2f' % (d['name'] or d['src'], d['box'], d['px'], d['fog']['F45']) for d in info['intent']['dark'][:20]))
+        if info.get('mock'):
+            out.append('- 模型の暗い幹の筋 (霧 R): ' + '・'.join('%d〜%d' % q for q in info['mock']['R']['streaks']))
+        if 'intent' in info and info['intent'].get('hazyParts'):
+            out.append('- 意図の札の後ろを通る霞んだ帯の木 (許す・統合の裁定待ち): ' + '・'.join(info['intent']['hazyParts']))
+        if 'intent' in info and info['intent']['faintParts']:
+            out.append('- 意図の札の後ろの霧に沈んだ部品 (F45 ≥0.7・許す): ' + '・'.join(info['intent']['faintParts']))
+        if 'intent' in info and info['intent']['shafts']:
+            out.append('- 意図の札に掛かる光の筋: ' + '・'.join('%s→%s' % (d['shaft'], d['box']) for d in info['intent']['shafts']))
+        if info['seatCorridor']['new']:
+            out.append('- 座席の通りの新しい株: ' + '・'.join('%s t%.2f s%.2f (%s)' % (d['src'], d['t'], d['s'], d['seat']) for d in info['seatCorridor']['new'][:20]))
+        out.append('- 木 (幹の中心 x・幹の見かけの幅・s・霧 R/F40/F45):')
+        for d in info['trees']:
+            out.append('  - %s %s x%d 幹 %.0fpx s%.1f 深さ %.1f 霧 %.2f/%.2f/%.2f' % (d['name'] or '', d['src'], d['cx'], d['trunkPx'], d['s'] or 0, d['depth'], d['fog']['R'], d['fog']['F40'], d['fog']['F45']))
+        out.append('- 額縁: ' + '・'.join('%s %s 画面%s 帯%.2f L8%s' % (f['name'], f['src'], f.get('screen'), f.get('nameBand', 0), f.get('L8')) for f in info['frames']))
+        out.append('- 霧の板: ' + '・'.join('%s 行%d〜%d 深さ %.1f 霧 R %.2f α%s' % (m['name'], m['rowTop'], m['rowBase'], m['depth'], m['fog']['R'], m['alpha']) for m in info['mists']))
+        out.append('')
+    return '\n'.join(out) + '\n'
+
+
+def r3_draw(cam, G, L, placed, rc, st, path, fogk='R', scene=None, ui=None, info=None):
+    """光なしの構図の画 (霧は fogk の変種)。キャラは二周目の最終の unitsonly の絵 (同じカメラ) を重ねる。目印: 窓・意図の札・160 の箱・名前の帯・手札"""
+    W, H = cam.W, cam.H
+    step = rc['step']
+    st_, en_ = R3_FOGS[fogk]
+    fs, fe = st_ * cam.r, en_ * cam.r
+    dirs, X, Y = cam.ray_dirs(rc['xs'], rc['ys'])
+    lobeP = G.on_path(LOBE['t'], LOBE['s'], LOBE['y'])
+    l = (lobeP - cam.base) / np.linalg.norm(lobeP - cam.base)
+    lobe = np.clip(dirs @ l, 0, 1) ** LOBE['power']
+    fogcol = np.array([150, 158, 172])
+    base_bg = fogcol * (0.35 + 0.65 * lobe)[..., None]
+    dep = rc['depth']
+    f = np.clip((dep - fs) / (fe - fs), 0, 1)
+    slab_col = {'front-step': (40, 52, 44), 'seat-band': (70, 66, 58), 'terrace-1': (62, 70, 74), 'terrace-2': (70, 78, 84), 'terrace-3': (80, 88, 96)}
+    gcol = np.zeros(dep.shape + (3,))
+    for i, sl in enumerate(G.slabs):
+        gcol[rc['slab'] == i] = slab_col.get(sl['name'], (70, 70, 70))
+    tops = np.array([sl['top'] for sl in G.slabs])
+    wall = (rc['slab'] >= 0) & (rc['y'] < tops[np.clip(rc['slab'], 0, None)] - 0.05)
+    gcol[wall] *= 0.55
+    col = np.where(rc['hit'][..., None], gcol * (1 - f[..., None]) + base_bg * f[..., None], base_bg)
+    colf = np.repeat(np.repeat(col, step, 0), step, 1)[:H, :W]
+    if colf.shape[:2] != (H, W):
+        colf = np.pad(colf, ((0, H - colf.shape[0]), (0, W - colf.shape[1]), (0, 0)), mode='edge')
+    img = Image.fromarray(colf.clip(0, 255).astype(np.uint8)).convert('RGBA')
+    tdf = upsample(rc, W, H)
+    # 霧の板 (α合成の帯) を地面の上に薄く
+    ov = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    od = ImageDraw.Draw(ov)
+    for p in L['parts']:
+        if p['kind'] != 'mist' or (cam.phone and isinstance(p.get('phone'), dict) and p['phone'].get('hide')):
+            continue
+        t_, s_ = p.get('t', 0.0), p.get('s', 0.0)
+        y0_ = p['y'] if p.get('abs') else G.gy(t_, s_) + p.get('y', 0.0)
+        pos = G.on_path(t_, s_, y0_)
+        w_, h_ = p.get('w', 20.0), p.get('h', 2.0)
+        q = [cam.project(pos + np.array(v)) for v in ((-w_ / 2, 0, 0), (-w_ / 2, h_, 0), (w_ / 2, h_, 0), (w_ / 2, 0, 0))]
+        od.polygon([(a[0], a[1]) for a in q], fill=(190, 200, 214, int(255 * 0.6 * p.get('alpha', 0.3))))
+    img.alpha_composite(ov)
+    order = sorted([o for o in placed if o.rgba is not None and o.facing], key=lambda o: -(o.depth or 0))
+    bgf = np.repeat(np.repeat(base_bg, step, 0), step, 1)[:H, :W]
+    if bgf.shape[:2] != (H, W):
+        bgf = np.pad(bgf, ((0, H - bgf.shape[0]), (0, W - bgf.shape[1]), (0, 0)), mode='edge')
+    for o in order:
+        a = o.rgba.copy()
+        ff = float(np.clip(((o.depth or 0) - fs) / (fe - fs), 0, 1))
+        X0, Y0 = o.origin
+        h, w = a.shape[:2]
+        xa, ya, xb, yb = max(0, X0), max(0, Y0), min(W, X0 + w), min(H, Y0 + h)
+        if xb <= xa or yb <= ya:
+            continue
+        sub = a[ya - Y0:yb - Y0, xa - X0:xb - X0].copy()
+        if o.kind != 'frame':   # 霧はその画素の霧の色 (芯の向きで明るい) へ寄せる = 霧 1.0 の物は消える
+            a3 = sub[..., :3].astype(float)
+            sub[..., :3] = (a3 * (1 - ff) + bgf[ya:yb, xa:xb] * ff).clip(0, 255).astype(np.uint8)
+        occl = (o.depth > tdf[ya:yb, xa:xb] + 0.6)
+        sub[occl, 3] = 0
+        sub[sub[..., 3] <= 40, 3] = 0
+        sub[sub[..., 3] > 40, 3] = 255
+        img.alpha_composite(Image.fromarray(sub, 'RGBA'), (xa, ya))
+    ov = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    od = ImageDraw.Draw(ov)
+    for p in L['parts']:
+        if p['kind'] == 'shaft':
+            sh = place_shaft(G, cam, p)
+            od.polygon(sh['quad'], fill=(200, 225, 235, int(55 * float(sh['gain']))))
+    img.alpha_composite(ov)
+    pre = 'PH' if cam.phone else 'PC'
+    if scene:
+        fp = R2_SHOTS + '%s-S-%s-unitsonly-1.png' % (pre, scene)
+        if os.path.exists(fp) and cam.name in ('PC', 'PH'):
+            u = np.array(Image.open(fp).convert('RGB')).astype(int)
+            keym = (np.abs(u - np.array([255, 0, 255])).sum(2) > 60)
+            img.alpha_composite(Image.fromarray(np.dstack([u, keym * 255]).astype(np.uint8), 'RGBA'))
+    d = ImageDraw.Draw(img)
+    if info:
+        win = info['heroWindow']['window']
+        d.rectangle(win, outline=(255, 90, 90), width=2)
+        core = info['core']
+        d.line([(0, core), (W, core)], fill=(255, 230, 0), width=1)
+        d.line([(0, info['M2']['rows'][1]), (W, info['M2']['rows'][1])], fill=(90, 255, 255), width=1)
+        nb = info['nameBand']
+        d.rectangle([nb[0], nb[1], nb[0] + nb[2], nb[1] + nb[3]], outline=(255, 160, 255), width=1)
+    if cam.name == 'PC':
+        d.rectangle([R3_BOSS160[0], R3_BOSS160[1], R3_BOSS160[0] + R3_BOSS160[2], R3_BOSS160[1] + R3_BOSS160[3]], outline=(255, 120, 60), width=2)
+    if ui and scene and (pre in ui) and scene in ui[pre] and cam.name in ('PC', 'PH'):
+        rec = ui[pre][scene]
+        for r in rec['intents']:
+            d.rectangle([r[0], r[1], r[0] + r[2], r[1] + r[3]], outline=(255, 210, 90), width=2)
+        for r in rec['hand']:
+            d.rectangle([r[0], r[1], r[0] + r[2], r[1] + r[3]], outline=(160, 160, 255), width=1)
+    lbl = '%s  %s  %g°・%g°・足元 %.3f  霧 %s (start %g・end %g ×r%.3f)  %s' % (os.path.basename(path), cam.name, cam.fov, cam.pitch, cam.gl, fogk, st_, en_, cam.r, scene or '')
+    d.rectangle([0, H - 34, W, H], fill=(0, 0, 0, 180))
+    d.text((10, H - 30), lbl, fill=(255, 255, 255), font=font(20))
+    img.convert('RGB').save(path)
+
+
+def r3_main(args):
+    L = json.load(open(args.layout))
+    tag = args.tag or (os.path.splitext(os.path.basename(args.layout))[0] + '-r3')
+    ui = {c: r3_shot_ui(c) for c in ('PC', 'PH')}
+    res, placed_all = r3_check(L, ui=ui)
+    res['layout'] = os.path.relpath(args.layout, REPO) if args.layout.startswith(REPO) else args.layout
+    os.makedirs(args.out, exist_ok=True)
+    jp = os.path.join(args.out, tag + '.json')
+    json.dump(res, open(jp, 'w'), ensure_ascii=False, indent=1, default=float)
+    open(os.path.join(args.out, tag + '.md'), 'w').write(r3_summary_md(res, tag))
+    if args.img:
+        G = Ground(L)
+        cs = {c.name: c for c in r3_cams()}
+        fk = args.fogshow if args.fogshow in R3_FOGS else 'R'
+        for cname, scene in (('PC', 'ogre'), ('PC', 'wolf'), ('PC', 'quad'), ('PC', 'dolls'), ('PH', 'ogre'), ('PH', 'quad'), ('PCU', None)):
+            placed, rc, st, tdf = placed_all[cname]
+            nm = '%s-%s-%s-%s.png' % (tag, cname, scene or 'stage', fk)
+            r3_draw(cs[cname], G, L, placed, rc, st, os.path.join(args.out, nm), fk, scene, ui, res['cams'][cname])
+        for cname in ('PC', 'PH', 'PCU'):
+            im_ = placed_all.get(cname + ':mock')
+            if im_ is not None:
+                Image.fromarray(im_.clip(0, 255).astype(np.uint8)).save(os.path.join(args.out, '%s-%s-mock-R.png' % (tag, cname)))
+    print(jp)
+    return res
 
 
 if __name__ == '__main__':
