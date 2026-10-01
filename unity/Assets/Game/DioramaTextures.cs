@@ -56,11 +56,24 @@ namespace DeckRogue.Game
         }
 
         /// <summary>
-        /// 材質のタイルを1つの配列に積む。tile = 1枚のテクセル (64)。normalStrength = 明るさから作る法線の強さ。
+        /// 配列 (色と法線) の異方性フィルタの段 (二周目 2026-10-01 レーン D 段1)。低いカメラ (見下ろし 5°) は地面を浅い角度で見るので、
+        /// 1 (異方性なし) だと座席の地面が1段粗いミップに落ちてぼける → PC は 8。tier=phone は 1 のまま (品質レベル2 は「テクスチャごと」なので 1 = 異方性なし)。
+        /// 注: PC の品質 Ultra (レベル5) は anisotropicTextures=2 (Forced On) で、1 以上の段はどれも Unity の強制の最小値まで上がる。
+        /// 設計図の頂の "anisoLevel" で PC の段を上書きできる (W5 の写しを画素まで合わせる時は 1。DioramaLayout.AnisoPc)
+        /// </summary>
+        public const int AnisoPc = 8, AnisoPhone = 1;
+
+        /// <summary>最後に組んだ配列の異方性の段 (dumplayout の extra.diorama.arrayAniso。配列を作らなかったら 0)</summary>
+        public static int LastArrayAniso { get; private set; }
+
+        /// <summary>
+        /// 材質のタイルを1つの配列に積む。tile = 1枚のテクセル (64)。normalStrength = 明るさから作る法線の強さ。anisoLevel = 配列の異方性の段 (上の AnisoPc/AnisoPhone)。
         /// 各タイルは「同じ材質の1種目の平均色」へ寄せる (種の違いが格子に見えない)。法線は同じ名前に _n があればそれ、無ければ明るさから作る
         /// </summary>
-        public static ArraySet BuildArrays(IList<DioramaTileMaterial> mats, int tile, bool albedoLinear, float normalStrength)
+        public static ArraySet BuildArrays(IList<DioramaTileMaterial> mats, int tile, bool albedoLinear, float normalStrength, int anisoLevel)
         {
+            LastArrayAniso = 0;
+            anisoLevel = Mathf.Clamp(anisoLevel, 0, 16);
             var set = new ArraySet { TileSize = tile };
             var colors = new List<Color32[]>();
             var normals = new List<Color32[]>();
@@ -114,8 +127,9 @@ namespace DeckRogue.Game
                 set.Missing.Add("Texture2DArray");
                 return set;
             }
-            set.Albedo = new Texture2DArray(tile, tile, depth, TextureFormat.RGBA32, true, albedoLinear) { name = "diorama-albedo", filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Repeat, anisoLevel = 1 };
-            set.Normal = new Texture2DArray(tile, tile, depth, TextureFormat.RGBA32, true, true) { name = "diorama-normal", filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Repeat, anisoLevel = 1 };
+            set.Albedo = new Texture2DArray(tile, tile, depth, TextureFormat.RGBA32, true, albedoLinear) { name = "diorama-albedo", filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Repeat, anisoLevel = anisoLevel };
+            set.Normal = new Texture2DArray(tile, tile, depth, TextureFormat.RGBA32, true, true) { name = "diorama-normal", filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Repeat, anisoLevel = anisoLevel };
+            LastArrayAniso = anisoLevel;
             try
             {
                 for (int i = 0; i < colors.Count; i++)

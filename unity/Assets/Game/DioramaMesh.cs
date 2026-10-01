@@ -129,12 +129,16 @@ namespace DeckRogue.Game
         /// 段 (崖の帯・台地) を世界の座標で作る。front = 手前の縁の折れ線 (道の座標 t,s。t の昇順)、sBack = 奥の縁 (s)。
         /// 天面は yTop の平ら (格子 grid で割って頂点色を持たせる)、前の面と両端の面は yBottom まで垂直。後ろと底は作らない (隠れる)。
         /// chamfer > 0 なら天面の手前の角を面取りする (前の面は yTop−chamfer まで、斜めの帯で天面へ)。
-        /// heightAt(t,s) = 段の全体の高さ (天面の奥の段の根元を暗くする AO に使う)。topMask(t,s) = 天面の苔の割合
+        /// heightAt(t,s) = 段の全体の高さ (天面の奥の段の根元を暗くする AO に使う)。topMask(t,s) = 天面の苔の割合。
+        /// 二周目 レーン D 段2: topAo(t,s) = 天面の頂点色 (AO) に掛ける倍率 (地面の汚し "mottle"。null = 1)。
+        /// tStep &gt; 0 なら縁の点の間を tStep 以下の間隔に割る (同じ直線の上に点を足すだけ = 形は変わらない。斑や空き地の縁を t の向きにも細かく持つ)
         /// </summary>
         public static DioramaMeshBuilder Slab(IList<Vector2> front, float sBack, float yTop, float yBottom, float grid, float chamfer,
-            float pathYaw, Func<float, float, float> heightAt, Func<float, float, float> topMask)
+            float pathYaw, Func<float, float, float> heightAt, Func<float, float, float> topMask,
+            Func<float, float, float> topAo = null, float tStep = 0f)
         {
             var b = new DioramaMeshBuilder();
+            if (tStep > 0.05f && front.Count >= 2) front = Subdivide(front, tStep);
             int n = front.Count;
             if (n < 2) return b;
             Func<float, float, float, Vector3> W = (t, s, y) => YawRotate(pathYaw, new Vector3(t, y, s));
@@ -156,6 +160,7 @@ namespace DeckRogue.Game
                     float rise = heightAt != null ? heightAt(t, s + 0.7f) - yTop : 0f;
                     float ao = 1f - 0.32f * Mathf.Clamp01(rise / 1.0f);
                     if (j == 0) ao *= 0.94f;   // 縁 (面取りの上) はわずかに沈める
+                    if (topAo != null) ao *= Mathf.Clamp01(topAo(t, s));   // 地面の汚し (二周目 レーン D 段2)
                     float mask = topMask != null ? topMask(t, s) : 1f;
                     var p = W(t, s, yTop);
                     idx[i, j] = b.Add(p, Vector3.up, new Vector2(t, s) * UvScale, Ao(ao, mask));
@@ -200,6 +205,21 @@ namespace DeckRogue.Game
                 FlatPoly(b, pts, outward, p => Ao(0.6f + 0.4f * Mathf.Clamp01((p.y - yBottom) / 1.2f), 0f));
             }
             return b;
+        }
+
+        /// <summary>折れ線の各区間を step 以下の長さ (t の差) に等分した写し (元の点は全部残す)。二周目 レーン D 段2</summary>
+        static List<Vector2> Subdivide(IList<Vector2> front, float step)
+        {
+            var o = new List<Vector2>(front.Count * 2);
+            for (int i = 0; i < front.Count; i++)
+            {
+                o.Add(front[i]);
+                if (i == front.Count - 1) break;
+                var a = front[i]; var c = front[i + 1];
+                int k = Mathf.Min(512, Mathf.CeilToInt(Mathf.Abs(c.x - a.x) / step - 1e-4f));
+                for (int j = 1; j < k; j++) o.Add(Vector2.Lerp(a, c, j / (float)k));
+            }
+            return o;
         }
 
         // ================================================================ ① 段の角・岩棚 (押し出した多角形)

@@ -526,6 +526,8 @@ B7–D18 のレリックと同じ定型（`ancient mine relic, single object cen
 | 地面・崖・幹のタイル（64×64） | `Art/stage/act1/tiles/<材質>_{a,b,c,d}.png` | 9材質×4＝36 | W1: `top_grass`・`top_grass_alt`・`top_path`・`top_rock`・`side_rock`・`side_bark`・`side_wood`＝pixflux 160 → `scripts/tile-calm.py` → `scripts/stage-palette.py map`。W3b: `top_grass_seat`＝同じ生の草を明暗 0.6 で（生成なし）・`top_path_seat`＝コード生成の踏み固めた土（色表の色だけ） |
 | 半立体の元の絵 | `Art/stage/act1/relief/<名前>.png` | 27 | 新規8（`canopy_1..3`・`frame_1..2`・`fern_1..2`・`bush_1`）＝pixflux（view side）→ `docs/pixellab/hd2d-act1/relief-clean.py` → 色表。既存の小物の写し16（`act1_leafclump1..5`・`act1_bush2/3`・`act1_fern/fern2`・`act1_reed`・`act1_root`・`act1_rock_big1/2`・`act1_tree_giant`・`act1_tree_oak/oak2`）＝色表へ写しただけ。W3b の奥の高い幹3（`trunk_tall_1..3`）＝コード生成（樹皮のタイルを縦に敷いて切る） |
 | 地面の小札 | `Art/stage/act1/litter/` | 11 | W3b のコード生成（小石4・草の株4・落ち葉2・小枝1。3〜8 × 2〜5 ドット） |
+| 二周目の背景の板 | `Art/stage/act1/relief/backdrop_plain.png` | 1 | 2026-10-01 二周目 段1（レーン D）のコード生成＝32×32 不透明の無地 `#204043`（色表の暗い紺緑・CIELab 色相 207°）。カメラの奥の額縁に敷き距離の霧で霧の色に満たす。`docs/pixellab/hd2d-act1/gen_art.py r2 <out> --only backdrop` |
+| 二周目のコード生成の絵 | `Art/stage/act1/relief/{trunk_long_1..3,trunk_thin_1..3,needle_bough_1..4,tuft_stand_1..4,act1_canopy_navy,act1_tree_giant_cut,act1_tree_pine,act1_tallgrass1,act1_stump,act1_waystone}.png`・`Art/stage/act1/tiles/top_path_seat_r2_{a..d}.png` | 25 | 2026-10-01 二周目 段2（レーン D）。`gen_art.py r2 <out>`（PixelLab 0 回・色は色表の48色だけ）。長い幹（幅 40〜56・高さ 280＝画面の上を突き抜ける・光の側の明るい筋・先が垂れる枝）・細い幹（幅 16〜24）・針葉の枝の影絵（垂れる房の塊・不透明 35〜45%・色相 208〜213°）・立った草の株（背丈 12・12・16・20）・垂れ葉の紺緑・大樹の皿を切った写し・小物4枚の色表への写し。座席の土は**新しい名前**（W5 の写しの `top_path_seat_*` を画素まで守る）＝設計図の `tiles.pathSeat` の候補の先頭に足して使う。明るい点 176→49/1万。草は作り直さない（段2 の試しで画面の草の縁が目標内） |
 | 一覧・表 | `Art/stage/act1/index.json`・`keyflip.json` | — | 材質・回し方・半立体のドット数／`_KeyFlip` の表（`scripts/art-lint.py`） |
 | 幕1の色表 | `docs/pixellab/hd2d-act1/palette-act1.{json,png}` | 48色 | タイルと新規の半立体から Oklab の k-means（`stage-palette.py build`） |
 | このは 48 の縮めた見本 | `Art/leaders/leader_green_48.png`・`Art/leaders/anim/leader_green_48_{idle_0..7,attack_0..3,block_0..3}.png` | 17 | `scripts/hero-downscale.py`（v2 を多数決で縮めた。**清書ではない**） |
@@ -542,7 +544,7 @@ B7–D18 のレリックと同じ定型（`ancient mine relic, single object cen
 - 塗り直し（`_KeyFlip` で直らない絵）: 今は無い。
 - 狼の待機（任意）: 見送り（コードの呼吸で足りている）。
 - タイルの `_n`（法線）: 作っていない（明るさから作る `NormalFromLuma` で代用）。要れば高さの絵を別に作る。
-- W3b のコード生成の絵（`top_path_seat`・`trunk_tall`・小札）の作り方のスクリプトは作業場（scratchpad の `p22b/gen_art.py`）にしかない。作り直す時のために `docs/pixellab/hd2d-act1/` へ写すこと。
+- ~~W3b のコード生成の絵の作り方のスクリプトは作業場にしかない~~ → 2026-10-01 に `docs/pixellab/hd2d-act1/gen_art.py` へ写した（`w3b <out>` が今の Art の18枚と画素まで同じ物を出すことを確かめた）。二周目の絵は同じ日の段2 で `r2 <Art/stage/act1>` から Art に置いた（上の表。今ある絵は1枚も上書きしない）。針葉の枝は段1 の下書き（細い線の網・不透明 18〜26%）を霧に沈めると網の目にしか見えなかったので、垂れる房の塊に作り直した。
 
 ### 勘所（この段で分かったこと）
 - create-tiles-pro は 1回 **25 生成**で 64px が16枚（案内線つき）。map-objects は 1回 1 生成・背景は抜ける。

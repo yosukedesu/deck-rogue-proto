@@ -304,7 +304,9 @@ namespace DeckRogue.Game
                 if (L.Tiles.TryGetValue(n, out var tm)) mats.Add(tm);
                 else { ctx.Missing.Add("tiles:" + n); mats.Add(new DioramaTileMaterial { Name = n }); }
             }
-            ctx.Arrays = DioramaTextures.BuildArrays(mats, L.Tile, L.AlbedoLinear, L.NormalStrength);
+            // 異方性の段 (二周目 レーン D 段1): PC は設計図の anisoLevel (無ければ 8)・tier=phone は 1
+            int aniso = HD2DFlags.Tier == HD2DTier.Phone ? DioramaTextures.AnisoPhone : L.AnisoPc;
+            ctx.Arrays = DioramaTextures.BuildArrays(mats, L.Tile, L.AlbedoLinear, L.NormalStrength, aniso);
             Own(ctx.Arrays.Albedo); Own(ctx.Arrays.Normal);
             ctx.Missing.AddRange(ctx.Arrays.Missing);
 
@@ -447,12 +449,15 @@ namespace DeckRogue.Game
         {
             var L = ctx.Layout;
             string surface = !string.IsNullOrEmpty(p.Surface) ? p.Surface : DefaultSurface(p.Kind);
+            // スマホの上書き (二周目 レーン D 段2): 部品の "phone": {"hide": true} ならスマホでは組まない (額縁も)。t・s・y・scale はスマホの時だけその値で置く (PlaceOf)
+            if (PhoneHidden(p)) return;
+            PlaceOf(p, out float pt, out float ps, out float py, out float pscale);
             // 置き場 (根のローカル)
-            float gy = HeightAtPath(p.T, p.S);
-            var pos = OnPath(p.T, p.S, p.Abs ? p.Y : gy + p.Y);
+            float gy = HeightAtPath(pt, ps);
+            var pos = OnPath(pt, ps, p.Abs ? py : gy + py);
             float yaw = PathAligned(p.Kind) ? L.PathYaw + p.Yaw : p.Yaw;
             var rot = Quaternion.Euler(0f, yaw, 0f);
-            float scale = p.Scale > 0f ? p.Scale : 1f;
+            float scale = pscale;
             var pieces = new List<Piece>();
             var r = new System.Random(p.Seed);
 
@@ -464,7 +469,11 @@ namespace DeckRogue.Game
                     for (int i = 0; i < p.Front.Count; i++) front.Add(p.Front[i]);
                     Func<float, float, float> mask = null;
                     if (p.Mask == "clearing") mask = (t, s) => ClearingMask(p, t, s);
-                    var b = DioramaMesh.Slab(front, p.Back, p.Top, p.Bottom, p.Grid, p.Chamfer, L.PathYaw, HeightAtPath, mask);
+                    // 地面の汚し (二周目 レーン D 段2): "mottle" があれば天面の頂点色に低い周波数の斑。縁の点の間が粗い段 (手前の段は2点) は
+                    // 斑が t の向きに出ないので、"gridT" (無ければ mottle の時だけ grid) の間隔まで縁を割る。どちらも無ければ今どおり (割らない・斑なし)
+                    var mottle = MottleFor(p, mask);
+                    float tStep = p.Num("gridT", mottle != null ? p.Grid : 0f);
+                    var b = DioramaMesh.Slab(front, p.Back, p.Top, p.Bottom, p.Grid, p.Chamfer, L.PathYaw, HeightAtPath, mask, mottle, tStep);
                     pieces.Add(new Piece { Mesh = b, Surface = surface, Shadow = p.ShadowOr(true) });
                     pos = Vector3.zero; rot = Quaternion.identity; scale = 1f;   // 世界の座標で作ってある
                     break;
@@ -558,6 +567,7 @@ namespace DeckRogue.Game
                     GlowVertexColor(b, p);
                     var go = MakeObject(ctx.DynRoot, "fog-" + p.Index, b.ToMesh("diorama-fog-" + p.Index), surface, false);
                     go.transform.localPosition = pos; go.transform.localRotation = rot;
+                    AddBox(p, b, Matrix4x4.TRS(pos, rot, Vector3.one));
                     Dynamic.Add(new DynamicEntry { Name = "fog-" + p.Index, Transform = go.transform, BaseRotation = rot });
                     return;
                 }
@@ -569,6 +579,7 @@ namespace DeckRogue.Game
                     var dir = p.Dir.sqrMagnitude > 1e-6f ? p.Dir.normalized : new Vector3(0.35f, -1f, 0.3f).normalized;
                     go.transform.localPosition = pos;
                     go.transform.localRotation = Quaternion.FromToRotation(Vector3.down, dir);
+                    AddBox(p, b, Matrix4x4.TRS(pos, go.transform.localRotation, Vector3.one));
                     Dynamic.Add(new DynamicEntry { Name = "shaft-" + p.Index, Transform = go.transform, BaseRotation = go.transform.localRotation });
                     return;
                 }
@@ -584,12 +595,15 @@ namespace DeckRogue.Game
                 if (model != null) { pieces[0].Mesh = model; pieces[0].Local = Matrix4x4.identity; }
             }
 
+            var partM = Matrix4x4.TRS(pos, rot, Vector3.one * scale);
+            // 映らない部品の数 (dumplayout の offscreenParts。二周目 レーン D 段2)。色を掛ける前の器で数える (半立体のキャッシュの箱を使い回す)
+            if (p.Kind != "slab") foreach (var pc in pieces) AddBox(p, pc.Mesh, partM * pc.Local);
+
             // 部品ごとの色の倍率 (設計図の "tint": 灰の数 か [r, g, b])。頂点色 (AO) に掛ける = 材質は増やさない (W3 P22: 端の幹を暗い影絵に など)
             Color partTint;
             if (PartTint(p, out partTint))
                 foreach (var pc in pieces) pc.Mesh = TintedCopy(pc.Mesh, partTint);
 
-            var partM = Matrix4x4.TRS(pos, rot, Vector3.one * scale);
             if (ctx.Opt.Merge)
             {
                 string chunk = ChunkKey(p);
@@ -763,25 +777,188 @@ namespace DeckRogue.Game
 
         // ---------------------------------------------------------------- 空き地 (天面の苔を抜く)
 
-        /// <summary>空き地の苔の割合 (1 = 苔・0 = 土)。楕円 (中心 maskCenter・半径 maskRadius) を値ノイズで揺らし、左右へ延びる踏み跡を足す</summary>
+        /// <summary>空き地の縁の幅の既定 (楕円の値 v の InverseLerp の2点)。二周目 レーン D 段2 で段の "maskEdge" から読めるようにした (無ければ今どおり)</summary>
+        static readonly Vector2 DefaultMaskEdge = new Vector2(0.72f, 1.08f), DefaultTrailEdge = new Vector2(0.7f, 1.05f);
+
+        /// <summary>
+        /// 空き地の苔の割合 (1 = 苔・0 = 土)。楕円 (中心 maskCenter・半径 maskRadius) を値ノイズで揺らし、左右へ延びる踏み跡を足す。
+        /// 縁の幅 (二周目 レーン D 段2・stage-05 ①): 段の "maskEdge": [v0, v1] (無ければ [0.72, 1.08])。狭いほど苔と土の混ざる帯 (シェーダがドットごとの閾値で
+        /// 切り替える＝ゴマ塩) が細る。踏み跡の縁は "trailEdge" (無ければ maskEdge があればそれ・どちらも無ければ [0.7, 1.05])。
+        /// 頂点の間 (grid・縁の点の間隔) より細くはならない (頂点色を面の上で補間する) ので、もっと締めたい時は段の "grid" と "gridT" も小さく
+        /// </summary>
         static float ClearingMask(DioramaPart p, float t, float s)
         {
             var c = p.Vec2("maskCenter", new Vector2(3f, 0.3f));
             var rr = p.Vec2("maskRadius", new Vector2(14f, 3.4f));
+            var edge = EdgeOf(p.Vec2("maskEdge", DefaultMaskEdge));
             int seed = p.Seed;
             float e = Sq((t - c.x) / Mathf.Max(0.1f, rr.x)) + Sq((s - c.y) / Mathf.Max(0.1f, rr.y));
             float n = DioramaTextures.Fbm(t * 0.35f, s * 0.35f, seed);
             float v = e + (n - 0.5f) * 0.9f;
-            float clearing = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.72f, 1.08f, v));
+            float clearing = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(edge.x, edge.y, v));
             // 踏み跡 (空き地から左右へ細く続く土)
             float trail = p.Num("trail", 1.1f);
             if (trail > 0f)
             {
+                var tedge = EdgeOf(p.Vec2("trailEdge", p.Has("maskEdge") ? edge : DefaultTrailEdge));
                 float center = c.y + 0.5f * Mathf.Sin(t * 0.17f + seed * 0.01f);
                 float d = Mathf.Abs(s - center) / trail + (DioramaTextures.Noise(t * 0.5f, s * 0.5f, seed + 7) - 0.5f) * 0.8f;
-                clearing = Mathf.Max(clearing, 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.7f, 1.05f, d)));
+                clearing = Mathf.Max(clearing, 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(tedge.x, tedge.y, d)));
             }
             return 1f - clearing;
+        }
+
+        /// <summary>縁の2点を小さい順に・幅 0.01 以上に (逆や同じ値を書いても割り算にならない)</summary>
+        static Vector2 EdgeOf(Vector2 e)
+        {
+            float a = Mathf.Min(e.x, e.y), b = Mathf.Max(e.x, e.y);
+            if (b - a < 0.01f) { float m = (a + b) * 0.5f; a = m - 0.005f; b = m + 0.005f; }
+            return new Vector2(a, b);
+        }
+
+        // ---------------------------------------------------------------- 地面の汚し (二周目 レーン D 段2・stage-05 ④)
+
+        /// <summary>
+        /// 段の "mottle": {"scale": [小, 大] (unit・斑の大きさ), "amount": 暗くする量 (0〜0.6), "seed"} → 天面の頂点色 (AO) に掛ける倍率 (1 = そのまま)。
+        /// 2つの大きさの値ノイズの平均が中ほどより上の所だけを暗くする (斑)。空き地の土 (mask "clearing" の 0 の所) と座席の帯
+        /// (SeatT0〜SeatT1・SeatS0〜SeatS1 とその外 1 unit) には入れない。キーが無い・amount 0 なら null (今どおり)
+        /// </summary>
+        static Func<float, float, float> MottleFor(DioramaPart p, Func<float, float, float> mask)
+        {
+            var mo = p.Raw != null ? p.Raw["mottle"] as JObject : null;
+            if (mo == null) return null;
+            float amount = Mathf.Clamp(JNum(mo, "amount", 0.1f), 0f, 0.6f);
+            if (amount <= 0f) return null;
+            Vector2 sc = new Vector2(2f, 5f);
+            if (mo["scale"] is JArray sa && sa.Count >= 2) sc = new Vector2(sa[0].Value<float>(), sa[1].Value<float>());
+            else if (mo["scale"] != null && (mo["scale"].Type == JTokenType.Float || mo["scale"].Type == JTokenType.Integer)) sc = Vector2.one * mo["scale"].Value<float>();
+            float small = Mathf.Max(0.25f, Mathf.Min(sc.x, sc.y)), big = Mathf.Max(small, Mathf.Max(sc.x, sc.y));
+            int seed = (int)JNum(mo, "seed", p.Seed + 523);
+            return (t, s) =>
+            {
+                float n = 0.5f * DioramaTextures.Noise(t / small, s / small, seed) + 0.5f * DioramaTextures.Noise(t / big + 3.7f, s / big - 1.9f, seed + 71);
+                float spot = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(MottleLo, MottleHi, n));
+                float w = mask != null ? Mathf.Clamp01(mask(t, s)) : 1f;
+                return 1f - amount * spot * w * SeatFade(t, s);
+            };
+        }
+
+        /// <summary>斑の閾値 (2つの値ノイズの平均 = 平均 0.52・標準偏差 0.15。0.52 より上から暗くなり始め 0.78 で amount いっぱい。
+        /// Python の写しで: 斑のある所 (0.1 以上) が面の 33〜36%・amount いっぱいは 3〜5%・amount 0.1 の平均の暗さ 1.8〜2.1%。scratchpad lane-D/s2/edge_sim.py)</summary>
+        const float MottleLo = 0.52f, MottleHi = 0.78f;
+
+        /// <summary>座席の帯の中は 0・外へ 1 unit で 1 に (座席の帯に地面の汚しを入れない)</summary>
+        static float SeatFade(float t, float s)
+        {
+            float dt = Mathf.Max(0f, Mathf.Max(SeatT0 - t, t - SeatT1)), ds = Mathf.Max(0f, Mathf.Max(SeatS0 - s, s - SeatS1));
+            return Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(Mathf.Sqrt(dt * dt + ds * ds)));
+        }
+
+        static float JNum(JObject o, string key, float def)
+        {
+            var t = o != null ? o[key] : null;
+            return t != null && (t.Type == JTokenType.Float || t.Type == JTokenType.Integer) ? t.Value<float>() : def;
+        }
+
+        // ---------------------------------------------------------------- スマホの上書き (二周目 レーン D 段2)
+
+        /// <summary>部品の "phone" (スマホの配置 = UiKit.Phone の時だけ。段 slab は持たない = 地面の高さが PC と変わらない)</summary>
+        static JObject PhoneOf(DioramaPart p)
+        {
+            if (!UiKit.Phone || p == null || p.Raw == null || p.Kind == "slab") return null;
+            return p.Raw["phone"] as JObject;
+        }
+
+        /// <summary>スマホでは組まない部品 ("phone": {"hide": true})。額縁も (スマホで片側だけの手前の草など)</summary>
+        public static bool PhoneHidden(DioramaPart p)
+        {
+            var h = PhoneOf(p)?["hide"];
+            if (h == null) return false;
+            if (h.Type == JTokenType.Boolean) return (bool)h;
+            return (h.Type == JTokenType.Integer || h.Type == JTokenType.Float) && h.Value<float>() > 0.5f;
+        }
+
+        /// <summary>
+        /// 部品を置く道の座標・高さ・大きさ。スマホなら "phone" の t・s・y・scale (書いた物だけ) で上書きする。
+        /// 額縁は画面の割合で置く (OnCameraLayout が "phone" の vx・vy・depth・scale・roll を読む) ので、ここでは上書きしない
+        /// </summary>
+        static void PlaceOf(DioramaPart p, out float t, out float s, out float y, out float scale)
+        {
+            var ph = p.Kind == "frame" ? null : PhoneOf(p);
+            t = JNum(ph, "t", p.T);
+            s = JNum(ph, "s", p.S);
+            y = JNum(ph, "y", p.Y);
+            scale = JNum(ph, "scale", p.Scale);
+            if (scale <= 0f) scale = 1f;
+        }
+
+        // ---------------------------------------------------------------- 映らない部品の数 (二周目 レーン D 段2・任意)
+
+        struct PartBox { public int Index; public string Name; public Bounds Box; }
+        static readonly List<PartBox> _partBoxes = new List<PartBox>();
+
+        /// <summary>部品の形 (器 b を m で写した物) の外接の箱 (根のローカル) を部品ごとに足す。組んだ後に DebugInfo が今のカメラへ写して数える</summary>
+        static void AddBox(DioramaPart p, DioramaMeshBuilder b, Matrix4x4 m)
+        {
+            if (b == null || b.V.Count == 0) return;
+            var lb = LocalBounds(b);
+            var mn = lb.min; var mx = lb.max;
+            var box = new Bounds(m.MultiplyPoint3x4(mn), Vector3.zero);
+            for (int k = 1; k < 8; k++)
+                box.Encapsulate(m.MultiplyPoint3x4(new Vector3((k & 1) != 0 ? mx.x : mn.x, (k & 2) != 0 ? mx.y : mn.y, (k & 4) != 0 ? mx.z : mn.z)));
+            for (int i = _partBoxes.Count - 1; i >= 0 && i >= _partBoxes.Count - 4; i--)
+            {
+                if (_partBoxes[i].Index != p.Index) continue;
+                var pb = _partBoxes[i]; pb.Box.Encapsulate(box); _partBoxes[i] = pb;   // 同じ部品の2つ目の形 (幹と根など)
+                return;
+            }
+            _partBoxes.Add(new PartBox { Index = p.Index, Name = PartObjectName(p), Box = box });
+        }
+
+        static readonly Dictionary<DioramaMeshBuilder, Bounds> _localBounds = new Dictionary<DioramaMeshBuilder, Bounds>();
+
+        /// <summary>器の頂点の外接の箱 (同じ器 = 半立体のキャッシュは1回だけ数える)</summary>
+        static Bounds LocalBounds(DioramaMeshBuilder b)
+        {
+            if (_localBounds.TryGetValue(b, out var bb)) return bb;
+            bb = new Bounds(b.V[0], Vector3.zero);
+            for (int i = 1; i < b.V.Count; i++) bb.Encapsulate(b.V[i]);
+            _localBounds[b] = bb;
+            return bb;
+        }
+
+        /// <summary>
+        /// 今のカメラ (OnCameraLayout が受けたレイアウトのカメラ = 揺れ・寄り・漂いなし) に1画素も映らない部品を数える。
+        /// widen = 画面の左右へ広げる割合 (NDC。0.3333 = 1920 幅の画面の ±320px = 21:9 の余白)。names に部品の名前 (先頭 max 個)
+        /// </summary>
+        static int CountOffscreen(float widen, List<string> names, int max)
+        {
+            if (Root == null || !_hasCam) return -1;
+            float tanV = Mathf.Tan(Mathf.Clamp(_camFov, 1f, 170f) * 0.5f * Mathf.Deg2Rad);
+            float aspect = Screen.width > 0 && Screen.height > 0 ? Screen.width / (float)Screen.height : 16f / 9f;
+            var toWorld = Root.localToWorldMatrix;
+            var inv = Quaternion.Inverse(_camRot);
+            int count = 0;
+            foreach (var pb in _partBoxes)
+            {
+                var mn = pb.Box.min; var mx = pb.Box.max;
+                bool anyFront = false, anyBehind = false;
+                float x0 = float.MaxValue, x1 = float.MinValue, y0 = float.MaxValue, y1 = float.MinValue;
+                for (int k = 0; k < 8; k++)
+                {
+                    var w = toWorld.MultiplyPoint3x4(new Vector3((k & 1) != 0 ? mx.x : mn.x, (k & 2) != 0 ? mx.y : mn.y, (k & 4) != 0 ? mx.z : mn.z));
+                    var v = inv * (w - _camPos);
+                    if (v.z <= 0.05f) { anyBehind = true; continue; }
+                    anyFront = true;
+                    float nx = v.x / (v.z * tanV * aspect), ny = v.y / (v.z * tanV);
+                    x0 = Mathf.Min(x0, nx); x1 = Mathf.Max(x1, nx); y0 = Mathf.Min(y0, ny); y1 = Mathf.Max(y1, ny);
+                }
+                bool visible = anyFront && (anyBehind || (x1 >= -1f - widen && x0 <= 1f + widen && y1 >= -1f && y0 <= 1f));
+                if (visible) continue;
+                count++;
+                if (names != null && names.Count < max) names.Add(pb.Name);
+            }
+            return count;
         }
 
         static float Sq(float v) { return v * v; }
@@ -886,6 +1063,16 @@ namespace DeckRogue.Game
                 o["byKind"] = kinds;
             }
             o["frames"] = _frames.Count;
+            // 地面の配列の異方性 (二周目 レーン D 段1): 組んだ時の段と、品質設定の異方性の方式 (Disable / Enable = テクスチャごと / ForceEnable = 強制)
+            o["arrayAniso"] = DioramaTextures.LastArrayAniso;
+            o["anisoMode"] = QualitySettings.anisotropicFiltering.ToString();
+            // 映らない部品 (二周目 レーン D 段2): 今のレイアウトのカメラに1画素も映らない部品の数 (offscreenParts) と、
+            // 左右へ ±320px (1920 幅。21:9 の余白) 広げても映らない数 (offscreenPartsWide = 消してよい候補)。名前は広げた方の先頭 60 個
+            var offNames = new List<string>();
+            o["offscreenParts"] = CountOffscreen(0f, null, 0);
+            o["offscreenPartsWide"] = CountOffscreen(1f / 3f, offNames, 60);
+            o["offscreenNames"] = offNames;
+            o["phoneHidden"] = st != null ? st.PhoneHidden : 0;
             var dyn = new List<string>();
             foreach (var e in Dynamic) dyn.Add(e.Name);
             o["dynamicNames"] = dyn;
@@ -904,6 +1091,7 @@ namespace DeckRogue.Game
             Materials.Clear();
             _frames.Clear();
             _slabs.Clear();
+            _partBoxes.Clear(); _localBounds.Clear();
             Root = null; Layout = null; Active = false; _look = null;
             _pathYaw = DefaultPathYaw;
         }
@@ -944,11 +1132,13 @@ namespace DeckRogue.Game
                 {
                     st.Parts++;
                     st.ByKind.TryGetValue(p.Kind, out var c); st.ByKind[p.Kind] = c + 1;
+                    if (PhoneHidden(p)) { st.PhoneHidden++; continue; }   // スマホで組まない部品 (二周目 レーン D 段2。部品の数には数える = 設計図の数)
                     if (p.Kind == "litter") { st.Litter++; continue; }   // 地面の小札 (背丈 0.48 unit 以下) は座席の帯にも置く (W3b P22)
                     if (p.Kind == "slab" || p.Kind == "fog" || p.Kind == "shaft" || p.Kind == "frame") continue;
                     float reach = p.Kind == "rock" ? p.Num("r", 0.6f) : p.Kind == "block" ? Mathf.Max(p.Num("w", 1.6f), p.Num("d", 1.2f)) * 0.5f
                         : p.Kind == "tree" ? p.Num("r", 0.55f) + p.Num("rootLen", 1.6f) : p.Kind == "fence" ? p.Num("len", 3f) * 0.5f : p.Kind == "rig" ? 1.5f : 0.3f;
-                    if (p.T + reach > SeatT0 && p.T - reach < SeatT1 && p.S + reach > SeatS0 && p.S - reach < SeatS1 && !p.Abs)
+                    PlaceOf(p, out float pt, out float ps, out _, out _);   // スマホなら "phone" の t・s
+                    if (pt + reach > SeatT0 && pt - reach < SeatT1 && ps + reach > SeatS0 && ps - reach < SeatS1 && !p.Abs)
                     { st.SeatIntrusions++; st.IntrusionNames.Add(PartObjectName(p)); }
                 }
             }
@@ -1030,6 +1220,8 @@ namespace DeckRogue.Game
     public sealed class DioramaStats
     {
         public int Parts, Triangles, Renderers, Materials, Dynamic, SeatIntrusions, Litter;
+        /// <summary>スマホの配置で組まなかった部品 ("phone": {"hide": true})。二周目 レーン D 段2</summary>
+        public int PhoneHidden;
         public float SeatMaxAbsY;
         public readonly Dictionary<string, int> ByKind = new Dictionary<string, int>();
         public readonly List<string> IntrusionNames = new List<string>();
@@ -1070,7 +1262,7 @@ namespace DeckRogue.Game
             {
                 ["parts"] = Parts, ["triangles"] = Triangles, ["renderers"] = Renderers, ["materials"] = Materials, ["dynamic"] = Dynamic,
                 ["seatMaxAbsY"] = float.IsNaN(SeatMaxAbsY) ? (JToken)JValue.CreateNull() : SeatMaxAbsY,
-                ["seatIntrusions"] = SeatIntrusions, ["litter"] = Litter, ["ok"] = Ok,
+                ["seatIntrusions"] = SeatIntrusions, ["litter"] = Litter, ["phoneHidden"] = PhoneHidden, ["ok"] = Ok,
                 ["failures"] = new JArray(Failures.ToArray()), ["missing"] = new JArray(Missing.ToArray()),
                 ["intrusions"] = new JArray(IntrusionNames.ToArray()),
             };
@@ -1151,6 +1343,8 @@ namespace DeckRogue.Game
         public bool AlbedoLinear = true;
         public bool StaticBatch = true;
         public float NormalStrength = 0.6f;
+        /// <summary>PC の地面の配列の異方性の段 (頂の "anisoLevel"・0〜16。無ければ DioramaTextures.AnisoPc = 8。tier=phone は設計図に依らず 1)。二周目 レーン D 段1</summary>
+        public int AnisoPc = DioramaTextures.AnisoPc;
         public readonly Dictionary<string, DioramaTileMaterial> Tiles = new Dictionary<string, DioramaTileMaterial>();
         public readonly Dictionary<string, DioramaSurface> Surfaces = new Dictionary<string, DioramaSurface>();
         public readonly Dictionary<string, DioramaSource> Sources = new Dictionary<string, DioramaSource>();
@@ -1188,6 +1382,7 @@ namespace DeckRogue.Game
             L.AlbedoLinear = B(root, "albedoLinear", true);
             L.StaticBatch = B(root, "staticBatch", true);
             L.NormalStrength = F(root, "normalStrength", 0.6f);
+            L.AnisoPc = Mathf.Clamp((int)F(root, "anisoLevel", DioramaTextures.AnisoPc), 0, 16);
 
             if (root["tiles"] is JObject tiles)
                 foreach (var kv in tiles)

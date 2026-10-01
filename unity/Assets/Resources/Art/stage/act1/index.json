@@ -543,5 +543,34 @@
    "leaves": ["Art/stage/act1/litter/leaves_1", "Art/stage/act1/litter/leaves_2"],
    "twig": ["Art/stage/act1/litter/twig_1"]
   }
+ },
+ "r2": {
+  "_": "2026-10-01 二周目 (計画 docs/design/hd2d-round2-plan-2026-10-01.md §2 レーン D) がコードで作った絵 (PixelLab 0 回・色は palette-act1.json の色だけ)。作り方は docs/pixellab/hd2d-act1/gen_art.py。設計図の sources が読む (ファイルが無くても落ちない並べ方)",
+  "relief": {
+   "backdrop_plain": { "art": "Art/stage/act1/relief/backdrop_plain", "kind": "背景の板", "dots": [32, 32], "note": "不透明の無地 #204043 (色表の暗い紺緑・CIELab の色相 207°・C* 12)。カメラの奥 (深さ 140) の額縁に大きく敷き、距離の霧で霧の色に満たす。flat の source で使う (半立体にしない)" },
+   "trunk_long_1": { "art": "Art/stage/act1/relief/trunk_long_1", "kind": "長い幹", "dots": [112, 280], "note": "幹の幅 48・高さ 280 (画面の上を突き抜ける)。樹皮 side_bark_a を縦に敷いて切る・光の側に途切れる明るい筋・斜め上へ伸びて先が垂れる枝 3〜6・苔の筋 3。左の近い木立と霧の帯・右端の幹 (計画 §2 C の5)。W5 の trunk_tall_* は別物 (上書きしない)" },
+   "trunk_long_2": { "art": "Art/stage/act1/relief/trunk_long_2", "kind": "長い幹", "dots": [94, 280], "note": "幹の幅 40・高さ 280 (画面の上を突き抜ける)。樹皮 side_bark_b を縦に敷いて切る・光の側に途切れる明るい筋・斜め上へ伸びて先が垂れる枝 3〜6・苔の筋 2。左の近い木立と霧の帯・右端の幹 (計画 §2 C の5)。W5 の trunk_tall_* は別物 (上書きしない)" },
+   "trunk_long_3": { "art": "Art/stage/act1/relief/trunk_long_3", "kind": "長い幹", "dots": [130, 280], "note": "幹の幅 56・高さ 280 (画面の上を突き抜ける)。樹皮 side_bark_c を縦に敷いて切る・光の側に途切れる明るい筋・斜め上へ伸びて先が垂れる枝 3〜6・苔の筋 4。左の近い木立と霧の帯・右端の幹 (計画 §2 C の5)。W5 の trunk_tall_* は別物 (上書きしない)" },
+   "trunk_thin_1": { "art": "Art/stage/act1/relief/trunk_thin_1", "kind": "細い幹", "dots": [58, 280], "note": "幹の幅 20・高さ 280。同じ作り方の細い幹 (霧の帯の幹・3〜4体の座席の後ろ)。樹皮 side_bark_c" },
+   "trunk_thin_2": { "art": "Art/stage/act1/relief/trunk_thin_2", "kind": "細い幹", "dots": [48, 280], "note": "幹の幅 16・高さ 280。同じ作り方の細い幹 (霧の帯の幹・3〜4体の座席の後ろ)。樹皮 side_bark_a" },
+   "trunk_thin_3": { "art": "Art/stage/act1/relief/trunk_thin_3", "kind": "細い幹", "dots": [69, 280], "note": "幹の幅 24・高さ 280。同じ作り方の細い幹 (霧の帯の幹・3〜4体の座席の後ろ)。樹皮 side_bark_b" },
+   "needle_bough_1": { "art": "Art/stage/act1/relief/needle_bough_1", "kind": "針葉の枝の影絵", "dots": [96, 48], "note": "上の真ん中の霧に透けた高い枝 (本家 ot16)。主枝の下に先へ流れて垂れる房の塊・不透明 35〜45%・平均の色相 208〜213°。元の端 (細い方) を幹の後ろか画面の外へ。霧に沈めて (tint 0.45〜0.6) 使う" },
+   "needle_bough_2": { "art": "Art/stage/act1/relief/needle_bough_2", "kind": "針葉の枝の影絵", "dots": [120, 56], "note": "上の真ん中の霧に透けた高い枝 (本家 ot16)。主枝の下に先へ流れて垂れる房の塊・不透明 35〜45%・平均の色相 208〜213°。元の端 (細い方) を幹の後ろか画面の外へ。霧に沈めて (tint 0.45〜0.6) 使う" },
+   "needle_bough_3": { "art": "Art/stage/act1/relief/needle_bough_3", "kind": "針葉の枝の影絵", "dots": [84, 42], "note": "上の真ん中の霧に透けた高い枝 (本家 ot16)。主枝の下に先へ流れて垂れる房の塊・不透明 35〜45%・平均の色相 208〜213°。元の端 (細い方) を幹の後ろか画面の外へ。霧に沈めて (tint 0.45〜0.6) 使う" },
+   "needle_bough_4": { "art": "Art/stage/act1/relief/needle_bough_4", "kind": "針葉の枝の影絵", "dots": [108, 60], "note": "上の真ん中の霧に透けた高い枝 (本家 ot16)。主枝の下に先へ流れて垂れる房の塊・不透明 35〜45%・平均の色相 208〜213°。元の端 (細い方) を幹の後ろか画面の外へ。霧に沈めて (tint 0.45〜0.6) 使う" },
+   "tuft_stand_1": { "art": "Art/stage/act1/relief/tuft_stand_1", "kind": "立った草の株", "dots": [11, 12], "note": "背丈 12。葉の根元は固まり・長さと傾きは乱数 (等間隔にしない)。地面の小札 (litter の背丈の上限 12) にもできる＝手前 s −9〜−11 の株 (K12)" },
+   "tuft_stand_2": { "art": "Art/stage/act1/relief/tuft_stand_2", "kind": "立った草の株", "dots": [11, 12], "note": "背丈 12。葉の根元は固まり・長さと傾きは乱数 (等間隔にしない)。地面の小札 (litter の背丈の上限 12) にもできる＝手前 s −9〜−11 の株 (K12)" },
+   "tuft_stand_3": { "art": "Art/stage/act1/relief/tuft_stand_3", "kind": "立った草の株", "dots": [12, 16], "note": "背丈 16。葉の根元は固まり・長さと傾きは乱数 (等間隔にしない)。背丈 16 は litter にできない (上限 12)。空き地の縁 (s 3.1〜4.0) に card で" },
+   "tuft_stand_4": { "art": "Art/stage/act1/relief/tuft_stand_4", "kind": "立った草の株", "dots": [10, 20], "note": "背丈 20。葉の根元は固まり・長さと傾きは乱数 (等間隔にしない)。背丈 20 は litter にできない (上限 12)。空き地の縁 (s 3.1〜4.0) に card で" },
+   "act1_canopy_navy": { "art": "Art/stage/act1/relief/act1_canopy_navy", "kind": "垂れ葉 (紺緑)", "dots": [200, 100], "note": "Art/props/act1_canopy (色相 191°) を明るさの順位で紺緑の4段へ (中の段は青と緑を半々・平均の色相 208°)。上の角の額縁 (canopyHang)" },
+   "act1_tree_giant_cut": { "art": "Art/stage/act1/relief/act1_tree_giant_cut", "kind": "大樹 (皿なし)", "dots": [160, 172], "note": "relief/act1_tree_giant の足元の土の皿と石を透明にして 172 行目から下を切った写し (見下ろし 5° で茶色い楕円に見えるため)。画面の外に樹冠が出る左端だけで使う" },
+   "act1_tree_pine": { "art": "Art/stage/act1/relief/act1_tree_pine", "kind": "小物の写し", "dots": [128, 224], "note": "Art/props の同名を色表へ写した (平均の色相 219°)" },
+   "act1_tallgrass1": { "art": "Art/stage/act1/relief/act1_tallgrass1", "kind": "小物の写し", "dots": [64, 56], "note": "Art/props の同名を色表へ写した (平均の色相 181°)。手前の額縁の背の高い草" },
+   "act1_stump": { "art": "Art/stage/act1/relief/act1_stump", "kind": "小物の写し", "dots": [64, 48], "note": "Art/props の同名を色表へ写した" },
+   "act1_waystone": { "art": "Art/stage/act1/relief/act1_waystone", "kind": "小物の写し", "dots": [48, 64], "note": "Art/props の同名を色表へ写した。道標 marker の半立体 (waystone)" }
+  },
+  "tiles": {
+   "top_path_seat_r2": { "art": ["Art/stage/act1/tiles/top_path_seat_r2_a", "Art/stage/act1/tiles/top_path_seat_r2_b", "Art/stage/act1/tiles/top_path_seat_r2_c", "Art/stage/act1/tiles/top_path_seat_r2_d"], "kind": "座席の土 (二周目)", "dots": [64, 64], "note": "W3b の top_path_seat の作り直し (N18): 小石 6〜8→2〜3 個で暗い石・明るい粒 1.2%→0.4%・乾いた灰色の斑を小さく・細かい斜めの筋 10〜16 本 (本家 ot11 の土)。タイルの明るい点 176→49/1万。W5 の写しを守るため新しい名前 = 設計図の tiles.pathSeat の候補の先頭に足して使う" }
+  }
  }
 }
