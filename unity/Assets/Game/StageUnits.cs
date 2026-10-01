@@ -67,6 +67,15 @@ namespace DeckRogue.Game
             Vector2 uv;
             return art != null && HaloUvByArt.TryGetValue(art, out uv) ? uv : DefaultHaloUv;
         }
+        // 二周目 レーン E (2026-10-01・char C11): 箱庭で look の char.heroGem がある時だけ、杖の先の光を「斧の宝石」(このは)・「ランタンの火」(ひなた) へ置き、
+        // そこに点光源 (宝石の灯) を作る。今の表 HaloUvByArt は触らない (今の舞台の杖の光は動かさない)。
+        // 値は P05 の art-lint (このは 62 = (0.686, 0.721)・48 = (0.689, 0.717)) と、ひなたの一枚絵の橙の火の画素の重心 (レーン E が測った (0.766, 0.574))
+        static readonly Dictionary<string, Vector2> R2E_HaloUvByArtDiorama = new Dictionary<string, Vector2>
+        {
+            { "leader_green", new Vector2(0.686f, 0.721f) },
+            { "leader_green_48", new Vector2(0.689f, 0.717f) },
+            { "leader_white", new Vector2(0.766f, 0.574f) },
+        };
         // ランタンの暖色は、リーダーの環境光が 1.15 の時にシェーダの lamp×1.15 と R がそろう値。環境光だけ上げるとランタン側 (左) の方が暗くなる
         // (lerp(1.35, lamp×1.15, lf) の G・B が下がる = 光源の側が暗い逆の陰影。このはの体は lf 0.36〜0.80 でランタンに近く、1.35 の半分しか効かない) →
         // リーダーだけランタンの色も (主役の照明)/1.15 倍にして、暖色の差 (近い側が暖かい) はそのままに体全体を 1.35/1.15 倍 (このは 1.5/1.15 倍) にする
@@ -179,8 +188,18 @@ namespace DeckRogue.Game
                         e["emission"] = r4(u.LastEmission);
                         e["outlineVignette"] = r4(u.LastVignette);
                         e["outlineFog"] = r4(u.LastFog);
+                        // 二周目 レーン E: 環境光の倍率・霧を受ける割合・鮮やかさ・リム・点光源を受ける割合 (look の char が効いたかの確かめ)
+                        e["ambientScale"] = r4(u.Mat.GetFloat("_AmbientScale"));
+                        e["fogOnUnit"] = r4(u.Mat.GetFloat("_Fog"));
+                        e["charSat"] = r4(u.Mat.GetFloat("_CharSat"));
+                        e["rim"] = r4(u.Mat.GetFloat("_Rim"));
+                        e["localLights"] = r4(u.Mat.GetFloat("_LocalLights"));
                     }
                 }
+                e["r2idle"] = u.R2E_IdleInfo;   // 二周目 レーン E: 待機のコマ (off = 使っていない・on = r2idle のコマ・missing = 欲しいが絵が無い)
+                e["contactCore"] = u.R2E_ContactInfo;
+                e["contactDepth"] = u.R2E_ContactDepthInfo;   // 段2: 接地影の奥行きの倍率 (1 = W5)
+                if (u.R2E_GemInfo != null) e["gemLight"] = u.R2E_GemInfo;
                 list.Add(e);
             }
             return list;
@@ -378,6 +397,13 @@ namespace DeckRogue.Game
             public float Emission = -1f;
             /// <summary>暗い色の持ち上げ (HasShade の時だけ。gain 0 = 持ち上げない)</summary>
             public Vector2 ShadeLift; public bool HasShade;
+            // 二周目 レーン E (2026-10-01)。負 = 書いていない (W5 と同じ = 全体の値)
+            /// <summary>環境光の倍率 (負 = look の char の ambientScale)。材質には これ × 露出の割り戻し を書く (暗めの敵を本家どおり暗い体に。char C3・N14)</summary>
+            public float AmbientScale = -1f;
+            /// <summary>鮮やかさ (負 = look の char の saturation。無ければ 1)。StageUnitLit の _CharSat</summary>
+            public float Saturation = -1f;
+            /// <summary>近くの点光源を受ける割合 (負 = look の char の localLights。無ければ 0)。このはの斧の宝石の灯を体に受ける</summary>
+            public float LocalLights = -1f;
         }
         sealed class CharMatExtras
         {
@@ -413,6 +439,28 @@ namespace DeckRogue.Game
             public Color Tint = Color.white; public bool HasTint;
             public bool CancelColorFilter;
             public Vector2 ShadeLift; public bool HasShade;
+            // ---- 二周目 レーン E (2026-10-01。計画 docs/design/hd2d-round2-plan-2026-10-01.md §2 レーン E)。どれも書いていなければ W5 と同じ ----
+            /// <summary>キャラの板が霧を受ける割合 (char.fog。StageUnitLit の _Fog。負 = W5 の 1)</summary>
+            public float Fog = -1f;
+            /// <summary>光を受ける板のリム (char.rim = 敵・char.dollRim = 人形・char.heroRim = 主役。負 = W5 の UnitRim / CharRim)</summary>
+            public float Rim = -1f, DollRim = -1f, HeroRim = -1f;
+            /// <summary>鮮やかさ (char.saturation。負 = 1)</summary>
+            public float Saturation = -1f;
+            /// <summary>
+            /// 接地影 (charshadow=1 の時だけ): ContactCore = 芯の平らな半径 (0〜1。負 = W5 の柔らかい楕円 Px.Glow と 幅 0.6・濃さ 0.35)、
+            /// ContactWidth・ContactAlpha = 芯の幅と濃さの倍率 (負 = W5 の 0.6・0.35)。HaloWidth・HaloAlpha = 同じ位置に重ねる広く薄い暈
+            /// (幅は芯の何倍・濃さは元の接地影の何倍。char.contactHalo。負 = 暈なし)
+            /// </summary>
+            public float ContactCore = -1f, ContactWidth = -1f, ContactAlpha = -1f, HaloWidth = -1f, HaloAlpha = -1f;
+            /// <summary>接地影の楕円の奥行きの倍率 (char.contactDepth。段2: 低いカメラ 22°・5° では寝かせた楕円の画面の縦が W5 (28°・12°) の約 0.49 倍に潰れるので、
+            /// 奥行きを伸ばして W5 と同じ画面の形に戻す。芯の影と暈の両方に掛ける。負 = 1 = 今のまま。charshadow=1 の時だけ)</summary>
+            public float ContactDepth = -1f;
+            /// <summary>敵と人形の待機のコマ (char.r2idle.on。箱庭の時だけ Art/enemies/anim/&lt;名前&gt;_r2idle_&lt;n&gt; を読む)。IdleDur = 1コマの秒・IdleSlowDur = 幕ボスの1コマの秒 (IdleSlow の名前の頭に当たる絵)</summary>
+            public bool Idle; public float IdleDur = 0.25f, IdleSlowDur = 0.4f;
+            public readonly List<string> IdleSlow = new List<string>();
+            /// <summary>主役の斧の宝石の灯 (char.heroGem。光を受ける板の時だけ・tier=phone では作らない)。Range・Intensity・Moving (待機以外のコマの強さの倍率)・Colors (リーダーの絵の頭 → 色)・Push (板から手前へ出す距離)</summary>
+            public bool Gem; public float GemRange = 2.75f, GemIntensity = 1f, GemMoving = 0.3f, GemPush = 0.35f;
+            public readonly Dictionary<string, Color> GemColors = new Dictionary<string, Color>(StringComparer.Ordinal);
         }
 
         /// <summary>JSON の [a, b] を Vector2 に (無い・短い時は false)</summary>
@@ -488,16 +536,90 @@ namespace DeckRogue.Game
                             var ao = p.Value as JObject;
                             if (ao == null || p.Name.StartsWith("_", StringComparison.Ordinal)) continue;
                             Func<string, float> anum = name => { var t = ao[name]; return t != null && (t.Type == JTokenType.Float || t.Type == JTokenType.Integer) ? (float)t : -1f; };
-                            var al = new ArtLook { HeroLift = anum("heroLift"), BlackLiftScale = anum("blackLift"), Emission = anum("emission"), Receive = anum("receive") };
+                            var al = new ArtLook { HeroLift = anum("heroLift"), BlackLiftScale = anum("blackLift"), Emission = anum("emission"), Receive = anum("receive"),
+                                AmbientScale = anum("ambientScale"), Saturation = anum("saturation"), LocalLights = anum("localLights") };   // 後ろ3つ = 二周目 レーン E
                             Vector2 asl;
                             if (ReadVec2(ao["shadeLift"], out asl)) { al.ShadeLift = asl; al.HasShade = true; }
                             x.Art[p.Name] = al;
                         }
+                    R2E_ReadExtras(c, x, num);
                 }
             }
             catch (Exception ex) { Debug.LogWarning("[Stage] look の char を読めない: " + ex.Message); }
             _extrasFor = cur; _extras = x;
             return x;
+        }
+
+        /// <summary>
+        /// 二周目 レーン E (2026-10-01) の look の char のキーを読む。どれも無ければ W5 と同じ (CharMatExtras の既定 = 負・off)。
+        ///   fog … キャラの板が霧を受ける割合 (_Fog)・rim / dollRim / heroRim … 光を受ける板のリム (敵・人形・主役)・saturation … 鮮やかさ (_CharSat)
+        ///   contactCore / contactWidth / contactAlpha … 芯のある接地影 (charshadow=1 の時だけ)・contactHalo {width, alpha} | true | false … 広く薄い暈
+        ///   r2idle {on, dur, slowDur, slow [絵の名前の頭]} | true | false … 敵と人形の待機のコマ (箱庭の時だけ)
+        ///   heroGem {on, range, intensity, moving, push, color {リーダーの絵の頭: [r,g,b]}} | true | false … 主役の斧の宝石の灯 (光を受ける板の時だけ・スマホは作らない)
+        /// 塊は {"on": false} か false で消える (重ね読みは null を飛ばすので、W5 の写し look_act1_w5char はこの形で消す)
+        /// </summary>
+        static void R2E_ReadExtras(JObject c, CharMatExtras x, Func<string, float> num)
+        {
+            x.Fog = num("fog");
+            x.Rim = num("rim"); x.DollRim = num("dollRim"); x.HeroRim = num("heroRim");
+            x.Saturation = num("saturation");
+            x.ContactCore = num("contactCore"); x.ContactWidth = num("contactWidth"); x.ContactAlpha = num("contactAlpha");
+            x.ContactDepth = num("contactDepth");
+            Func<JToken, bool> on = t =>
+            {
+                if (t == null || t.Type == JTokenType.Null) return false;
+                if (t.Type == JTokenType.Boolean) return (bool)t;
+                var o = t as JObject;
+                if (o == null) return false;
+                var f = o["on"];
+                return f == null || f.Type != JTokenType.Boolean || (bool)f;
+            };
+            Func<JObject, string, float, float> onum = (o, name, def) =>
+            {
+                var t = o != null ? o[name] : null;
+                return t != null && (t.Type == JTokenType.Float || t.Type == JTokenType.Integer) ? (float)t : def;
+            };
+            var halo = c["contactHalo"];
+            if (on(halo))
+            {
+                var ho = halo as JObject;
+                x.HaloWidth = Mathf.Max(0f, onum(ho, "width", 1.8f)); x.HaloAlpha = Mathf.Max(0f, onum(ho, "alpha", 0.3f));
+            }
+            var idle = c["r2idle"];
+            x.Idle = on(idle);
+            if (x.Idle)
+            {
+                var io = idle as JObject;
+                x.IdleDur = Mathf.Max(0.02f, onum(io, "dur", x.IdleDur)); x.IdleSlowDur = Mathf.Max(0.02f, onum(io, "slowDur", x.IdleSlowDur));
+                var sl = io != null ? io["slow"] as JArray : null;
+                if (sl != null) foreach (var t in sl) if (t.Type == JTokenType.String && !string.IsNullOrEmpty((string)t)) x.IdleSlow.Add((string)t);
+            }
+            var gem = c["heroGem"];
+            x.Gem = on(gem);
+            if (x.Gem)
+            {
+                var go = gem as JObject;
+                x.GemRange = Mathf.Max(0.1f, onum(go, "range", x.GemRange)); x.GemIntensity = Mathf.Max(0f, onum(go, "intensity", x.GemIntensity));
+                x.GemMoving = Mathf.Clamp01(onum(go, "moving", x.GemMoving)); x.GemPush = onum(go, "push", x.GemPush);
+                var cols = go != null ? go["color"] as JObject : null;
+                if (cols != null)
+                    foreach (var p in cols.Properties())
+                    {
+                        var a = p.Value as JArray;
+                        if (a != null && a.Count >= 3 && !p.Name.StartsWith("_", StringComparison.Ordinal)) x.GemColors[p.Name] = new Color((float)a[0], (float)a[1], (float)a[2], 1f);
+                    }
+            }
+        }
+
+        /// <summary>名前の頭がいちばん長く一致した値 (無ければ false)。二周目 レーン E の表 (宝石の灯の色・待機のコマの幕ボス) が使う</summary>
+        static bool R2E_PrefixMatch<T>(Dictionary<string, T> table, string art, out T value)
+        {
+            value = default(T);
+            if (string.IsNullOrEmpty(art) || table == null) return false;
+            int best = -1;
+            foreach (var kv in table)
+                if (kv.Key.Length > best && art.StartsWith(kv.Key, StringComparison.Ordinal)) { value = kv.Value; best = kv.Key.Length; }
+            return best >= 0;
         }
 
         /// <summary>
@@ -679,6 +801,14 @@ namespace DeckRogue.Game
             const float a = 0.0245786f, b = 0.000090537f, c = 0.983729f, d = 0.4329510f, e = 0.238081f;
             x = Mathf.Max(0f, x);
             return Mathf.Max(0f, (x * (x + a) - b) / (x * (c * x + d) + e));
+        }
+
+        /// <summary>光を受ける板のリム (二周目 レーン E の 2・char C6): look の char の heroRim (主役)・dollRim (人形)・rim (敵)。書いていなければ fallback (今の UnitRim / CharRim)</summary>
+        static float R2E_LitRim(bool hero, bool doll, float fallback)
+        {
+            var x = CharExtras();
+            float v = hero ? x.HeroRim : doll ? x.DollRim : x.Rim;
+            return v >= 0f ? v : fallback;
         }
 
         /// <summary>URP の NeutralTonemap (Color.hlsl) の1チャンネル</summary>
@@ -1034,9 +1164,11 @@ namespace DeckRogue.Game
                 foreach (var kv in Anims)
                 {
                     var ln = new List<Texture2D>(); var le = new List<Texture2D>();
+                    string stem;
+                    if (!AnimStem.TryGetValue(kv.Key, out stem)) stem = kv.Key;   // 二周目 レーン E: 箱庭の待機は r2idle の絵
                     for (int i = 0; i < kv.Value.Count; i++)
                     {
-                        string f = ArtName + "_" + kv.Key + "_" + i;
+                        string f = ArtName + "_" + stem + "_" + i;
                         ln.Add(MapTex(AnimFolder, f + "_n"));
                         le.Add(MapTex(AnimFolder, f + "_e"));
                     }
@@ -1115,7 +1247,14 @@ namespace DeckRogue.Game
                 float heroLift = StageLook.HeroLift;
                 if (hero && HD2DFlags.HeroLift < 0f && art != null && art.HeroLift >= 0f) heroLift = art.HeroLift;
                 Mat.SetFloat("_HeroLift", hero ? heroLift : 1f);
-                Mat.SetFloat("_AmbientScale", StageLook.CharAmbientScale * es);
+                // 環境光の倍率: 絵ごとの上書き (二周目 レーン E: 暗めの敵 = art の "enemy_" の ambientScale) ＞ look の ambientScale。どちらも露出の割り戻しを掛ける
+                float ambScale = art != null && art.AmbientScale >= 0f ? art.AmbientScale : StageLook.CharAmbientScale;
+                Mat.SetFloat("_AmbientScale", ambScale * es);
+                // 霧を受ける割合 (二周目 レーン E: look の char.fog。無ければ W5 の 1)。輪郭の目標 (ViewFor) がこの値を読むので先に書く
+                Mat.SetFloat("_Fog", x.Fog >= 0f ? Mathf.Clamp01(x.Fog) : 1f);
+                // 鮮やかさ (二周目 レーン E: 絵ごと ＞ look の char.saturation ＞ 1 = W5)
+                float sat = art != null && art.Saturation >= 0f ? art.Saturation : (x.Saturation >= 0f ? x.Saturation : 1f);
+                Mat.SetFloat("_CharSat", sat);
                 // _KeyFlip の絵は look の char の keyFlipFrom で選ぶ (P23: 既定は描き込まれた光の向きを測った表。旗 keyflip=off なら全部 0)。dumplayout の keyFlip もこの値
                 KeyFlipArt = ResolveKeyFlip(ArtName, x);
                 Mat.SetFloat("_KeyFlip", KeyFlipArt && HD2DFlags.KeyFlip == HD2DKeyFlip.Auto ? 1f : 0f);
@@ -1134,7 +1273,8 @@ namespace DeckRogue.Game
                     LastVignette = view.Vignette; LastFog = view.FogAmount;
                 }
                 Mat.SetVector("_BlackLift", BlackLiftVector(x, hero, art, EdgeLin(), es * (hero ? heroLift : 1f), view));
-                Mat.SetFloat("_LocalLights", x.LocalLights >= 0f ? x.LocalLights : 0f);
+                // 近くの点光源を受ける割合: 絵ごと (二周目 レーン E: このは = 斧の宝石の灯) ＞ look の localLights ＞ 0
+                Mat.SetFloat("_LocalLights", art != null && art.LocalLights >= 0f ? art.LocalLights : (x.LocalLights >= 0f ? x.LocalLights : 0f));
                 if (x.WhiteCap >= 0f) Mat.SetFloat("_WhiteCap", x.WhiteCap);
                 // 発光の強さ: 絵ごと (art の emission。狼の白い毛) ＞ 設計図の emissionIntensity ＞ シェーダの既定 1.6。露出の割り戻しが戻った時も書き直す
                 float em = art != null && art.Emission >= 0f ? art.Emission : (x.EmissionIntensity >= 0f ? x.EmissionIntensity : DefaultEmissionIntensity);
@@ -1219,11 +1359,23 @@ namespace DeckRogue.Game
                     }
                     Destroy(Halo.gameObject);
                 }
+                // 二周目 レーン E: 接地影の暈 (材質は板ごと・絵は共有) と宝石の灯
+                if (_r2eHalo != null)
+                {
+                    var hmr2 = _r2eHalo.GetComponent<MeshRenderer>();
+                    if (hmr2 != null && hmr2.sharedMaterial != null) Destroy(hmr2.sharedMaterial);
+                    Destroy(_r2eHalo.gameObject);
+                }
+                if (_r2eGem != null) Destroy(_r2eGem.gameObject);
+                // 光の板の色の差し替え (R2E_SyncHaloTint): 上で捨てたのは今貼っている絵なので、もう片方 (元の暖色か宝石の色) を捨てる
+                if (_r2eHaloTinted) { if (_r2eHaloTexOrig != null) Destroy(_r2eHaloTexOrig); }
+                else if (_r2eHaloGemTex != null) Destroy(_r2eHaloGemTex);
                 if (Mat != null) Destroy(Mat);
             }
             public void LateUpdate()
             {
                 if (Rect == null) { Destroy(gameObject); return; }
+                R2E_SyncIdle(HD2DFlags.StageMode == HD2DStage.Diorama);   // 二周目 レーン E: 箱庭の待機のコマ (look の char.r2idle が無ければ何もしない)
                 Advance();
                 Rect.GetWorldCorners(_c);
                 float sx = Mathf.Round((_c[0].x + _c[3].x) * 0.5f), sy = Mathf.Round(_c[0].y);
@@ -1271,7 +1423,9 @@ namespace DeckRogue.Game
                     Color lift = hero || Screen.width <= 0 || Screen.height <= 0 ? Color.white : VignetteLift(sx / Screen.width, (sy + h * 0.5f * (1f - FeetPad)) / Screen.height);
                     ApplyLight(Mat, UnitSunAmount, hero, !hero, lift, doll, HeroLight);
                 }
-                Mat.SetFloat("_Rim", hero ? UnitRim : CharRim);
+                float rim = hero ? UnitRim : CharRim;
+                if (IsLit) rim = R2E_LitRim(hero, doll, rim);   // 二周目 レーン E: 光を受ける板のリムは look の char (敵 0・人形 0.1・主役 0.25)。無ければ今のまま
+                Mat.SetFloat("_Rim", rim);
                 if (FlashT > 0f) FlashT -= Time.deltaTime;
                 Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * 0.85f);
                 Mat.SetFloat("_Dissolve", DissolveK);
@@ -1280,17 +1434,227 @@ namespace DeckRogue.Game
                 {
                     float ww = w * k;
                     float sa = tint.a * (1f - DissolveK);
-                    if (CharShadowOn) { ww *= 0.6f; sa *= 0.35f; }   // 本物の影 (舞台の灯) が落ちる時は、足元の接地影の楕円を濃さ 0.35 倍・幅 0.6 倍に (計画 P11 手順3)
+                    bool core = false; float haloW = -1f, haloA = 0f, coreFlat = 0f, depthMul = 1f;
+                    if (CharShadowOn)
+                    {
+                        // 本物の影 (舞台の灯) が落ちる時は、足元の接地影の楕円を濃さ 0.35 倍・幅 0.6 倍に (計画 P11 手順3)。
+                        // 二周目 レーン E の 3 (char C5・N15): look の char の contactCore があれば芯のある影 (幅 contactWidth・濃さ contactAlpha 倍) と、
+                        // contactHalo があれば同じ位置に広く薄い暈 (芯の幅の width 倍・元の濃さの alpha 倍・今の柔らかい楕円)。無ければ W5 のまま
+                        var cx = CharExtras();
+                        float baseSa = sa;
+                        core = cx.ContactCore >= 0f; coreFlat = cx.ContactCore;
+                        ww *= cx.ContactWidth >= 0f ? cx.ContactWidth : 0.6f;
+                        sa *= cx.ContactAlpha >= 0f ? cx.ContactAlpha : 0.35f;
+                        if (cx.HaloWidth > 0f && cx.HaloAlpha > 0f) { haloW = ww * cx.HaloWidth; haloA = baseSa * cx.HaloAlpha; }
+                        if (cx.ContactDepth > 0f) depthMul = cx.ContactDepth;   // 段2: 低いカメラで潰れる楕円の奥行きを戻す (無ければ 1 = W5)
+                    }
                     // 見本は座席の地面の高さ (帯は平ら)。old は今どおり 0
-                    PlaceBlob(Shadow, new Vector3(ground.x, SeatFound ? SeatWorld.y : 0f, ground.z), ww, sa);
+                    var gp = new Vector3(ground.x, SeatFound ? SeatWorld.y : 0f, ground.z);
+                    R2E_SyncShadowTex(core, coreFlat);   // 芯の有無が変わった時だけ絵を貼り替える (旗なし・W5 では一度も触らない)
+                    PlaceBlob(Shadow, gp, ww, sa, depthMul);
+                    R2E_SyncHalo(gp, haloW, haloA, depthMul);
+                    _r2eDepthMul = depthMul;
                 }
                 if (Halo != null)
                 {
                     float ww = w * k, hh = h * k;
-                    Halo.position = pos + _right * ((HaloUv.x - 0.5f) * ww) + _up * (HaloUv.y * hh) - _fwd * 0.05f;
+                    var huv = R2E_HaloUv(dio);   // 二周目 レーン E: 箱庭で look の char.heroGem がある時は斧の宝石 (無ければ今の HaloUv)
+                    Halo.position = pos + _right * ((huv.x - 0.5f) * ww) + _up * (huv.y * hh) - _fwd * 0.05f;
                     Halo.rotation = rot;
                     float sz = 0.9f * (1f + 0.06f * Mathf.Sin(Time.time * 5f));
                     Halo.localScale = new Vector3(sz, sz, 1f);
+                    R2E_SyncGem(dio, Halo.position);   // 宝石の灯 (点光源。heroGem が無い・スマホ・光を受けない板では消えている)
+                    R2E_SyncHaloTint(dio);   // 宝石の位置へ動いた光の板の色を宝石の灯の色へ (箱庭で heroGem がある時だけ。今の舞台・W5 では触らない)
+                    // 直しの輪1 (2026-10-01): 光の板の位置は待機の絵の宝石 (R2E_HaloUvByArtDiorama) なので、振り・構えのコマでは斧が動いて宙に残った
+                    // (R01 の1〜3コマ目、主人公の頭の右上に青緑の玉)。箱庭で heroGem の表がある絵は、待機以外のコマで板を隠す。今の舞台・表の無い絵は今まで
+                    bool r2HideHalo = dio && Anim != "idle" && ArtName != null && CharExtras().Gem && R2E_HaloUvByArtDiorama.ContainsKey(ArtName);
+                    if (Halo.gameObject.activeSelf == r2HideHalo) Halo.gameObject.SetActive(!r2HideHalo);
+                }
+            }
+
+            // ---------------------------------------------------------------- 二周目 レーン E (2026-10-01)。どれも look の char のキーが無ければ何もしない (W5 と同じ)
+
+            bool _r2eCoreOn; float _r2eCoreFlat = -1f;
+            Transform _r2eHalo;
+            /// <summary>dumplayout (DebugUnitBoxes) 用: 待機のコマ・接地影の芯・宝石の灯の今の状態</summary>
+            public string R2E_IdleInfo => _r2eIdleState == 1 ? "on" : _r2eIdleState == 2 ? "missing" : "off";
+            public bool R2E_ContactInfo => _r2eCoreOn;
+            float _r2eDepthMul = 1f;
+            /// <summary>dumplayout 用: 接地影の楕円の奥行きの倍率 (char.contactDepth。1 = 今のまま)</summary>
+            public float R2E_ContactDepthInfo => _r2eDepthMul;
+            public object R2E_GemInfo => _r2eGem != null && _r2eGem.enabled
+                ? (object)new Dictionary<string, object> { { "intensity", Mathf.Round(_r2eGem.intensity * 1000f) / 1000f }, { "range", _r2eGem.range }, { "color", new[] { _r2eGem.color.r, _r2eGem.color.g, _r2eGem.color.b } }, { "pos", _r2eGem.transform.position } }
+                : null;
+            /// <summary>接地影の絵: 芯のある影 (R2E_BlobCoreTex) か今の柔らかい楕円 (BlobTex)。変わった時だけ貼り替える (旗なし・W5 では一度も触らない)</summary>
+            void R2E_SyncShadowTex(bool core, float flat)
+            {
+                if (core == _r2eCoreOn && (!core || Mathf.Abs(flat - _r2eCoreFlat) < 1e-4f)) return;
+                _r2eCoreOn = core; _r2eCoreFlat = flat;
+                var smr = Shadow != null ? Shadow.GetComponent<MeshRenderer>() : null;
+                if (smr == null || smr.sharedMaterial == null) return;
+                smr.sharedMaterial.mainTexture = core ? R2E_BlobCoreTex(flat) : BlobTex();
+            }
+
+            /// <summary>接地影に重ねる広く薄い暈 (width ≤ 0 なら隠す)。今の柔らかい楕円 (BlobTex) を芯より先に描く (renderQueue 2999)。初めて要る時に作る</summary>
+            void R2E_SyncHalo(Vector3 ground, float width, float alpha, float depthMul = 1f)
+            {
+                if (width <= 0f || alpha <= 0f)
+                {
+                    if (_r2eHalo != null && _r2eHalo.gameObject.activeSelf) _r2eHalo.gameObject.SetActive(false);
+                    return;
+                }
+                if (_r2eHalo == null)
+                {
+                    var go = Blob("shadow-halo-" + (Key ?? "unit"), _units, ground, width);
+                    var mr = go.GetComponent<MeshRenderer>();
+                    if (mr != null && mr.sharedMaterial != null) mr.sharedMaterial.renderQueue = 2999;
+                    _r2eHalo = go.transform;
+                }
+                if (!_r2eHalo.gameObject.activeSelf) _r2eHalo.gameObject.SetActive(true);
+                PlaceBlob(_r2eHalo, new Vector3(ground.x, ground.y - 0.005f, ground.z), width, alpha, depthMul);
+            }
+
+            // ---- 待機のコマ (レーン E の 7・char C8): 箱庭 (stage=diorama) かつ look の char.r2idle の時だけ、Art/enemies/anim/<名前>_r2idle_<n> を待機にする ----
+            int _r2eIdleState;   // 0 = 使っていない・1 = r2idle を待機にしている・2 = 欲しいが絵が無い (コードの上下のまま)
+            List<Texture2D> _r2eSavedIdle; float[] _r2eSavedDur; bool _r2eSavedBreathe;
+            /// <summary>待機のコマの絵の名前の頭 (動きの名前 → ファイルの名前の動きの部分。無ければ動きの名前のまま)。EnsureMaps・R2E_SyncIdle が読む</summary>
+            public readonly Dictionary<string, string> AnimStem = new Dictionary<string, string>(StringComparer.Ordinal);
+
+            void R2E_SyncIdle(bool dio)
+            {
+                bool want = dio && Key != null && Key != "player" && StageLook.Current != null && CharExtras().Idle;
+                if (want && _r2eIdleState != 0) return;
+                if (!want && _r2eIdleState == 0) return;
+                if (!want)
+                {
+                    if (_r2eIdleState == 1)
+                    {
+                        if (_r2eSavedIdle != null) Anims["idle"] = _r2eSavedIdle; else Anims.Remove("idle");
+                        if (_r2eSavedDur != null) FrameDur["idle"] = _r2eSavedDur; else FrameDur.Remove("idle");
+                        AnimStem.Remove("idle");
+                        Breathe = _r2eSavedBreathe;
+                        R2E_ReloadIdleMaps();
+                        if (Anim == "idle") { Frame = 0; FrameT = 0f; Apply(); }
+                    }
+                    _r2eIdleState = 0;
+                    return;
+                }
+                var frames = new List<Texture2D>();
+                for (int i = 0; i < 16; i++)
+                {
+                    var f = Theme.Art(AnimFolder, ArtName + "_r2idle_" + i);
+                    if (f == null) break;
+                    frames.Add(f.texture);
+                }
+                if (frames.Count == 0 || BaseTex == null || frames[0].width != BaseTex.width || frames[0].height != BaseTex.height) { _r2eIdleState = 2; return; }
+                List<Texture2D> old; float[] oldDur;
+                _r2eSavedIdle = Anims.TryGetValue("idle", out old) ? old : null;
+                _r2eSavedDur = FrameDur.TryGetValue("idle", out oldDur) ? oldDur : null;
+                _r2eSavedBreathe = Breathe;
+                var x = CharExtras();
+                bool slow = false;
+                foreach (var p in x.IdleSlow) if (ArtName != null && ArtName.StartsWith(p, StringComparison.Ordinal)) { slow = true; break; }
+                float dur = slow ? x.IdleSlowDur : x.IdleDur;
+                var durs = new float[frames.Count];
+                for (int i = 0; i < durs.Length; i++) durs[i] = dur;
+                Anims["idle"] = frames; FrameDur["idle"] = durs; AnimStem["idle"] = "r2idle";
+                Breathe = false;   // コマで息をするので、コードの上下 (足元ごと動く) は止める
+                R2E_ReloadIdleMaps();
+                _r2eIdleState = 1;
+                if (Anim == "idle")
+                {
+                    // 全員が同じ拍で息をしないよう、時刻と板ごとの位相から途中のコマで始める (盤面の作り直しでも拍が続く)
+                    float cyc = dur * frames.Count;
+                    float tt = Mathf.Repeat(Time.time + BreathePhase * 0.37f, cyc);
+                    Frame = Mathf.Clamp((int)(tt / dur), 0, frames.Count - 1); FrameT = tt - Frame * dur;
+                    Apply();
+                }
+            }
+
+            /// <summary>待機の法線・発光を引き直す (EnsureMaps が済んでいる時だけ。まだなら EnsureMaps が AnimStem で引く)</summary>
+            void R2E_ReloadIdleMaps()
+            {
+                if (!_mapsLoaded) return;
+                List<Texture2D> frames;
+                if (!Anims.TryGetValue("idle", out frames)) { _animN.Remove("idle"); _animE.Remove("idle"); return; }
+                string stem;
+                if (!AnimStem.TryGetValue("idle", out stem)) stem = "idle";
+                var ln = new List<Texture2D>(); var le = new List<Texture2D>();
+                for (int i = 0; i < frames.Count; i++)
+                {
+                    string f = ArtName + "_" + stem + "_" + i;
+                    ln.Add(MapTex(AnimFolder, f + "_n"));
+                    le.Add(MapTex(AnimFolder, f + "_e"));
+                }
+                _animN["idle"] = ln; _animE["idle"] = le;
+            }
+
+            // ---- 斧の宝石の灯 (レーン E の 5・char C11): 主役・光を受ける板・箱庭・tier=pc・look の char.heroGem の時だけ。点光源 (影なし) ----
+            Light _r2eGem;
+            /// <summary>杖の先の光の板の中の位置: 箱庭で heroGem がある時は R2E_HaloUvByArtDiorama (宝石・ランタンの火)、無ければ今の HaloUv</summary>
+            Vector2 R2E_HaloUv(bool dio)
+            {
+                Vector2 uv;
+                if (dio && ArtName != null && CharExtras().Gem && R2E_HaloUvByArtDiorama.TryGetValue(ArtName, out uv)) return uv;
+                return HaloUv;
+            }
+
+            void R2E_SyncGem(bool dio, Vector3 at)
+            {
+                var x = CharExtras();
+                Color col = Color.white;
+                bool want = Key == "player" && dio && IsLit && HD2DFlags.LitUnits && HD2DFlags.Tier != HD2DTier.Phone && x.Gem
+                    && R2E_PrefixMatch(x.GemColors, ArtName, out col) && R2E_HaloUvByArtDiorama.ContainsKey(ArtName ?? "");
+                if (!want)
+                {
+                    if (_r2eGem != null && _r2eGem.enabled) _r2eGem.enabled = false;
+                    return;
+                }
+                if (_r2eGem == null)
+                {
+                    var go = new GameObject("gem-light");
+                    go.transform.SetParent(_units, false);
+                    _r2eGem = go.AddComponent<Light>();
+                    _r2eGem.type = LightType.Point;
+                    _r2eGem.shadows = LightShadows.None;
+                }
+                if (!_r2eGem.enabled) _r2eGem.enabled = true;
+                _r2eGem.transform.position = at - _fwd * x.GemPush;   // 板より少し手前 (板の画素の法線が灯の方を向く)
+                _r2eGem.range = x.GemRange;
+                _r2eGem.color = col;
+                // 待機以外のコマ (振り・構え) では斧が動いて宝石が灯から離れる = 宙に残らないよう弱める
+                _r2eGem.intensity = x.GemIntensity * (Anim == "idle" ? 1f : x.GemMoving);
+            }
+
+            // 杖の先の光の板 (staff-glow) の色 (段2 の仕上げ): 板は R2E_HaloUv で宝石 (このは = 青緑)・ランタンの火 (ひなた = 暖色) へ動くが、
+            // 絵は今の淡い暖色 (1, 0.86, 0.5) のまま = このはの青緑の宝石のまわりに黄色いにじみが出ていた。
+            // 箱庭で look の char.heroGem がある時だけ、板の絵を宝石の灯の色 (heroGem.color。濃さ 0.5 は今と同じ) の放射に差し替える。
+            // スマホ (点光源を作らない) でも板は宝石の位置へ動くので、色はそろえる。heroGem が無い・今の舞台では一度も触らない (元の絵のまま)。
+            // 絵は板ごと (OnDestroy が今貼っている絵を捨て、もう片方はこの下の値で捨てる)
+            Texture _r2eHaloTexOrig; Texture2D _r2eHaloGemTex; bool _r2eHaloTinted; Color _r2eHaloGemCol;
+            void R2E_SyncHaloTint(bool dio)
+            {
+                var hmr = Halo != null ? Halo.GetComponent<MeshRenderer>() : null;
+                if (hmr == null || hmr.sharedMaterial == null) return;
+                var x = CharExtras();
+                Color col = Color.white;
+                bool want = dio && x.Gem && ArtName != null && R2E_HaloUvByArtDiorama.ContainsKey(ArtName) && R2E_PrefixMatch(x.GemColors, ArtName, out col);
+                var m = hmr.sharedMaterial;
+                if (want)
+                {
+                    if (!_r2eHaloTinted) { _r2eHaloTexOrig = m.mainTexture; _r2eHaloTinted = true; }
+                    if (_r2eHaloGemTex == null || col != _r2eHaloGemCol)
+                    {
+                        if (_r2eHaloGemTex != null) Destroy(_r2eHaloGemTex);
+                        _r2eHaloGemTex = Px.Radial(new Color(col.r, col.g, col.b, 0.5f));
+                        _r2eHaloGemCol = col;
+                    }
+                    if (m.mainTexture != _r2eHaloGemTex) m.mainTexture = _r2eHaloGemTex;
+                }
+                else if (_r2eHaloTinted)
+                {
+                    m.mainTexture = _r2eHaloTexOrig;
+                    _r2eHaloTinted = false;
                 }
             }
 
@@ -1386,6 +1750,32 @@ namespace DeckRogue.Game
             return _blobTex;
         }
 
+        static Texture2D _R2E_blobCoreTex; static float _R2E_blobCoreFlat = -1f;
+        /// <summary>
+        /// 芯のある接地影の絵 (二周目 レーン E の 3・char C5・N15): 半径の flat (既定 0.55) まで平らに濃く、そこから smoothstep で縁の 0 へ。
+        /// 64×64・全員で共有 (板ごとの材質の mainTexture に貼る。捨てない)。今の BlobTex (Px.Glow = 中心から (1−d)² で消える円錐) は芯が無く、足の真下が暗くならなかった
+        /// </summary>
+        static Texture2D R2E_BlobCoreTex(float flat)
+        {
+            flat = Mathf.Clamp(flat, 0f, 0.95f);
+            if (_R2E_blobCoreTex != null && Mathf.Abs(_R2E_blobCoreFlat - flat) < 1e-4f) return _R2E_blobCoreTex;
+            if (_R2E_blobCoreTex != null) UnityEngine.Object.Destroy(_R2E_blobCoreTex);
+            const int n = 64;
+            var t = new Texture2D(n, n, TextureFormat.RGBA32, false);
+            t.filterMode = FilterMode.Bilinear; t.wrapMode = TextureWrapMode.Clamp;
+            var px = new Color[n * n];
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(n / 2f, n / 2f)) / (n / 2f);
+                    float a = d <= flat ? 1f : 1f - Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((d - flat) / Mathf.Max(1e-3f, 1f - flat)));
+                    px[y * n + x] = new Color(1f, 1f, 1f, d >= 1f ? 0f : a);
+                }
+            t.SetPixels(px); t.Apply();
+            _R2E_blobCoreTex = t; _R2E_blobCoreFlat = flat;
+            return t;
+        }
+
         /// <summary>接地影の楕円を作る (地面に寝かせた半透明の板)</summary>
         static GameObject Blob(string name, Transform parent, Vector3 basePos, float width)
         {
@@ -1402,9 +1792,9 @@ namespace DeckRogue.Game
 
         /// <summary>接地影: 横幅 0.8 倍・奥行き 0.4 倍。Euler(90,0,0) の板は原点から −z (手前) へ伸びるので、中心が足元に来るよう +d/2 に置く。
         /// 光源 (右上・手前) の反対 = 左奥へ少し寄せる</summary>
-        static void PlaceBlob(Transform blob, Vector3 basePos, float width, float alpha)
+        static void PlaceBlob(Transform blob, Vector3 basePos, float width, float alpha, float depthMul = 1f)
         {
-            float w = width * 0.8f, d = width * 0.35f;
+            float w = width * 0.8f, d = width * 0.35f * depthMul;   // depthMul: 二周目 段2 の char.contactDepth (既定 1 = 今のまま)
             blob.position = new Vector3(basePos.x, basePos.y + 0.03f, basePos.z);   // 中心原点の板 = そのまま足元
             blob.rotation = Quaternion.Euler(90f, 0f, 0f);
             blob.localScale = new Vector3(w, d, 1f);

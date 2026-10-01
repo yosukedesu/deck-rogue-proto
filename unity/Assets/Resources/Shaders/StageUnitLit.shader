@@ -4,7 +4,7 @@
 // 光の形 (本家の作法: ドットには陰影が描き込み済み。写実的な光は当てず、全員に同じ固定のキーライトだけ)
 //   lit  = 上下の環境光 × _AmbientScale ＋ _Receive × (キーの色 × max(0, 法線・キー) × 月の影 × 木漏れ日 ＋ 近くの点光源 × _LocalLights)
 //   色   = 絵の色 × lit × _HeroLift       … _Receive=0 で「絵の色 × 環境光」の平らな色に戻る (光の戻しのスイッチ。計画 §2-5・§7-7)
-//   順序 = 光 → 主役の持ち上げ → 暗い色の持ち上げ → 輪郭の床 → 輪郭の持ち上げ → 白の上限 → 発光 → リム → キャラの色の掛け算 → 点滅 → 霧
+//   順序 = 光 → 主役の持ち上げ → 暗い色の持ち上げ → 輪郭の床 → 輪郭の持ち上げ → 白の上限 → 発光 → 鮮やかさ → リム → キャラの色の掛け算 → 点滅 → 霧
 //   キー・環境光は全体値 (Include/HD2DCharLight.hlsl の _CharKeyDir・_CharKeyColor・_CharAmbTop・_CharAmbBottom。StageLook.Apply が書く)。
 //   全体値が未設定 (0) の時は場の主光 (月) と環境光 (SH) を使う = 黒くならない。
 //   法線と光の位置は「ドットの中心」で読む/計算する (1つのドットの中で明るさが割れない)。
@@ -26,7 +26,9 @@
 //     逆にたどって絵ごとに求める = 舞台 (P22) が後処理を変えても輪郭は目標の暗さのまま
 //   _ShadeLift … 暗い色の持ち上げ (2026-09-30 P23 2周目)。x = 最大の倍率 −1 (gain)・y = knee (線形の明るさ)。倍率 = 1 + gain × (knee/(knee+Y))²。既定 0 = 何もしない
 //   _CharTint … キャラの色の掛け算 (2026-09-30 P23 2周目)。リムの後・点滅の前に掛ける。後処理の colorFilter の打ち消し × 暖かさ。既定 (1,1,1) = そのまま
-//   _WhiteCap … 1 未満なら、発光以外の出力をこの明るさで頭打ちにする (白の上限 235/255≈0.92 など)。既定 1 = 使わない
+//   _CharSat … キャラの鮮やかさ (2026-10-01 二周目 レーン E の 4。char C9・N16)。発光の後・リムの前に col = 輝度 + (col − 輝度) × _CharSat (輝度は変えない・負は 0 で止める)。
+//     発光の後なので狼の白い毛 (発光) の暖かさ (b*) も同じ割合で保つ。既定 1 = そのまま (W5)。StageUnits が look の char の saturation (art ごとの上書きあり) を書く
+//   _WhiteCap … 1 未満なら、発光以外の出力の明るさ Y を、上限の 0.6 倍から上限へ漸近する柔らかい肩で縮める (色相は保つ。2026-10-01 直しの輪1。旧はチャンネルごとの頭打ち)。既定 1 = 使わない
 //   _Flash (被弾の白)・_Dissolve (撃破の崩れ)・_Rim (右上の縁の1ドット)・_Fog (霧を受ける割合) は StageUnit と同じ式
 // パス: Forward・ShadowCaster (舞台の灯の影。Cull Off)・DepthOnly・DepthNormals (SSAO とぼかしの深度にキャラを載せる)
 // 切り替え: URP のパイプラインのキーワードだけ (multi_compile。Lit.shader から写した物のうち、ここで使う物)。自前のキーワードは無く、float の分岐だけ。
@@ -54,6 +56,7 @@ Shader "DeckRogue/StageUnitLit"
         _BlackLift ("Black Lift (linear rgb pure black becomes)", Vector) = (0,0,0,0)
         _ShadeLift ("Shade Lift (x gain, y knee linear)", Vector) = (0,0,0,0)
         _CharTint ("Char Tint (linear rgb multiplier)", Vector) = (1,1,1,0)
+        _CharSat ("Char Saturation", Float) = 1
         _HasNormal ("Has Normal", Float) = 0
         _HasEmission ("Has Emission", Float) = 0
         _EmissionIntensity ("Emission Intensity", Float) = 1.6
@@ -85,6 +88,7 @@ Shader "DeckRogue/StageUnitLit"
             half _EmissionIntensity, _NormalYSign, _ReceiveShadows, _CookieOnKey;
             half4 _BlackLift;
             half4 _ShadeLift, _CharTint;
+            half _CharSat;
         CBUFFER_END
 
         // 撃破の崩れ (StageUnit と同じ式): ドット単位の乱数で消えていく。頭 (上) から先に、足元は最後
@@ -256,7 +260,20 @@ Shader "DeckRogue/StageUnitLit"
                 // 輪郭の持ち上げ (黒の持ち上げ): 真っ黒 → _BlackLift、白 → 白のまま。暗いほど多く上がる (順序は変えない)。既定 0 = そのまま
                 half3 lift = saturate(_BlackLift.rgb);
                 col = lift + col * (1.0h - lift);
-                if (_WhiteCap < 0.999h) col = min(col, half3(_WhiteCap, _WhiteCap, _WhiteCap));
+                // 白の上限 (直しの輪1 2026-10-01): 色相を保つ柔らかい肩 = 明るさ Y が knee (上限の 0.6) を超えたら、上限へ漸近するように3つを同じ倍率で縮める。
+                // 白い所 (肌の光・白い衣) だけが縮み、色の濃い所 (橙の髪・肌の中間) は縮まない (いちばん明るいチャンネルで測ると橙が先に縮んで体の中央値が 135→99 に落ちた)。
+                // 旧はチャンネルごとの min (肌が灰色になる) だった。使う look は二周目の見本の char.whiteCap だけ (W5 の写し・今の舞台は既定 1 = 何もしない)
+                if (_WhiteCap < 0.999h)
+                {
+                    half cap = max(_WhiteCap, 1e-3h), knee = cap * 0.6h;
+                    half m = dot(col, half3(0.2126h, 0.7152h, 0.0722h));
+                    if (m > knee)
+                    {
+                        half over = m - knee;
+                        half m2 = knee + over / (1.0h + over / max(cap - knee, 1e-3h));
+                        col *= m2 / m;
+                    }
+                }
                 // 発光: 光る所は暗さを受けず、絵の色 × 強さ へ
                 if (_HasEmission > 0.5h)
                 {
@@ -264,6 +281,12 @@ Shader "DeckRogue/StageUnitLit"
                     // P05 の _e は「光る画素 = 元の色・ほか = 黒」。黒でなければほぼ全部を光らせる (暗い色の光る画素も落とさない)
                     half em = saturate(max(e.r, max(e.g, e.b)) * 8.0h);
                     col = lerp(col, albedo * _EmissionIntensity, em);
+                }
+                // 鮮やかさ (2026-10-01 二周目 レーン E の 4): 輝度を保って彩度だけ _CharSat 倍 (発光の後 = 白い毛の暖かさも同じ割合)。既定 1 = そのまま
+                if (abs(_CharSat - 1.0h) > 1e-3h)
+                {
+                    half sl = dot(col, half3(0.2126h, 0.7152h, 0.0722h));
+                    col = max(half3(0.0h, 0.0h, 0.0h), sl + (col - sl) * _CharSat);
                 }
                 // リム (StageUnit と同じ): 右上の隣のドットが透明なら縁を淡く光らせる
                 if (_Rim > 0.0h)

@@ -1,0 +1,52 @@
+{
+  "_doc": [
+    "W5 のキャラの光の写し (2026-10-01 二周目 レーン E の 0)。git e30c510 の look_act1.char.json の char をそのまま写した物。撮影の STATE に look=look_act1_w5+look_act1_w5char で W5 に戻す。",
+    "重ね読み (JObject.Merge・null は飛ばす) で今の look_act1.char.json の上に乗るので、二周目で足したキーは「W5 と同じ値」か「off」をここに必ず書く (計画 §2 レーン E の 8)。",
+    "off の書き方: 数は -1 (StageUnits は負を「書いていない」と読む = W5 の値)・塊は {\"on\": false}・art の絵ごとの上書きは全部 -1 (\"enemy_\" の塊は -1 だけ = 書いていないのと同じ)。cookieOnKey はシェーダの既定の 1 (W5 は書いていなかった = 1)。",
+    "足した off: keyIntensity 1.0 (元の値)・art.leader_green の heroLift 1.5 (元)・saturation/localLights -1・art.enemy_・art.enemy_brute (段2) 全部 -1・art.enemy_wolf.ambientScale -1・fog/rim/dollRim/heroRim/saturation/contactCore/contactWidth/contactAlpha/contactDepth (段2) -1・art.leader_green.shadeLift は W5 の [2.0, 0.2] (段2 で既定を 3.0 にした)・cookieOnKey 1・contactHalo/r2idle/heroGem は on false。",
+    "e30c510 の元の説明文は look_act1.char.json の _doc (二周目の追記より上) を見ること。"
+  ],
+  "char": {
+    "key": [1.0, 0.95, 0.88],
+    "keyWarm": [1.0, 0.92, 0.8],
+    "keyIntensity": 1.0,
+    "ambTop": [0.63, 0.66, 0.75],
+    "ambBottom": [0.39, 0.40, 0.47],
+    "ambientScale": 1.1,
+    "receive": 0.6,
+    "exposureRef": 0.3,
+    "heroLift": 1.2,
+    "art": {
+      "leader_green": { "heroLift": 1.5, "receive": 0.9, "shadeLift": [2.0, 0.2], "saturation": -1, "localLights": -1 },
+      "enemy_": { "receive": -1, "ambientScale": -1, "blackLift": -1 },
+      "enemy_brute": { "receive": -1, "ambientScale": -1, "blackLift": -1 },
+      "enemy_wolf": { "emission": 0.9, "ambientScale": -1 },
+      "enemy_biting_scroll": { "ambientScale": -1 },
+      "white_perm_band": { "ambientScale": -1 }
+    },
+    "cancelColorFilter": true,
+    "outlineTarget": 27,
+    "outlineLitRef": 0.5,
+    "blackLift": [0.165, 0.165, 0.215],
+    "blackLiftAuto": { "litRef": 0.65 },
+    "blackLiftExposureRef": 0.3,
+    "blackLiftTonemap": { "aces": 1.0, "neutral": 0.3, "none": 0.25 },
+    "keyFlipFrom": "measured",
+    "keyFlipAdd": ["enemy_scald_gnat"],
+    "keyFlipRemove": [],
+    "fog": -1,
+    "rim": -1,
+    "dollRim": -1,
+    "heroRim": -1,
+    "saturation": -1,
+    "cookieOnKey": 1,
+    "contactCore": -1,
+    "contactWidth": -1,
+    "contactAlpha": -1,
+    "contactDepth": -1,
+    "contactHalo": { "on": false },
+    "r2idle": { "on": false },
+    "heroGem": { "on": false },
+    "whiteCap": -1
+  }
+}
