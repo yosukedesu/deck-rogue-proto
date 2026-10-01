@@ -30,6 +30,16 @@
 //     発光の後なので狼の白い毛 (発光) の暖かさ (b*) も同じ割合で保つ。既定 1 = そのまま (W5)。StageUnits が look の char の saturation (art ごとの上書きあり) を書く
 //   _WhiteCap … 1 未満なら、発光以外の出力の明るさ Y を、上限の 0.6 倍から上限へ漸近する柔らかい肩で縮める (色相は保つ。2026-10-01 直しの輪1。旧はチャンネルごとの頭打ち)。既定 1 = 使わない
 //   _Flash (被弾の白)・_Dissolve (撃破の崩れ)・_Rim (右上の縁の1ドット)・_Fog (霧を受ける割合) は StageUnit と同じ式
+// 三周目 レーン E (2026-10-01・計画 docs/design/hd2d-round3-plan-2026-10-01.md §2 E・分析 R5)。どれも既定 0 = 二周目と同じ画素:
+//   _BodyShade … 足元ほど暗い縦の勾配 (R5 (b))。x = 足元の暗さ (0〜1。光 lit に 1−x を掛ける)・y = 足元の uv (板の下端からの割合 = 絵の下の余白)・
+//     z = 勾配が 1 に戻る uv・w = 勾配の曲がり (1 = まっすぐ)。光 (環境光＋キー＋近くの光) にだけ掛ける = 輪郭の持ち上げ・発光は変わらない。
+//     uv はドットの中心で読む (1つのドットの中で明るさが割れない)。StageUnits が 3体以上の群れの敵と人形にだけ書く (オーガ・幕ボスには書かない)
+//   _EdgeSoft … 輪郭の1画素の中間色 (R5 (c)・裁定 Q2 = 規約「絵はドットを整数倍で鋭く」の戦闘のキャラだけの例外)。0〜1 = 強さ。
+//     輪郭 (α が隣のドットと違う境界) をまたぐ1画素だけ、ドットの縁を1画素なじませる読み方 (HD2D_FatTexelW) で絵を双線形に読み (inline sampler
+//     sampler_LinearClamp = URP の Core.hlsl が GlobalSamplers.hlsl で宣言済みの物)、その α を被覆 (Alpha to Coverage) にして MSAA の解決で背景と混ぜる。
+//     外側の1画素の色は縁のドットの色 (取り込みの alphaIsTransparency が透明のドットへにじませた色)。ドットの中は今までどおり点の読み (1ドット = 4px のまま)。
+//     _EdgeA2C (AlphaToMask の切り替え) と組で使う: StageUnits は MSAA が効いている時 (PC の aa=msaa) だけ両方を 1 にする (MSAA が無いと被覆は 0/1 にしかならず、
+//     外側の1画素がそのまま太るため)。幕2/3 の StageUnit (アンリット) は触らない
 // パス: Forward・ShadowCaster (舞台の灯の影。Cull Off)・DepthOnly・DepthNormals (SSAO とぼかしの深度にキャラを載せる)
 // 切り替え: URP のパイプラインのキーワードだけ (multi_compile。Lit.shader から写した物のうち、ここで使う物)。自前のキーワードは無く、float の分岐だけ。
 Shader "DeckRogue/StageUnitLit"
@@ -63,6 +73,9 @@ Shader "DeckRogue/StageUnitLit"
         _NormalYSign ("Normal Y Sign", Float) = 1
         _ReceiveShadows ("Receive Moon Shadows", Range(0,1)) = 0
         _CookieOnKey ("Cookie On Key", Range(0,1)) = 1
+        _BodyShade ("Body Shade (x feet dark, y feet uv, z top uv, w power)", Vector) = (0,0,1,1)
+        _EdgeSoft ("Edge Soft 1px (0 = off)", Range(0,1)) = 0
+        [HideInInspector] _EdgeA2C ("Edge Alpha To Coverage", Float) = 0
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0
     }
     SubShader
@@ -89,6 +102,9 @@ Shader "DeckRogue/StageUnitLit"
             half4 _BlackLift;
             half4 _ShadeLift, _CharTint;
             half _CharSat;
+            // 三周目 レーン E (R5 (b)(c))。_EdgeA2C は描画の状態 (AlphaToMask) にだけ使うので、ここには入れない (URP の Lit の _AlphaToMask と同じ)
+            half4 _BodyShade;
+            half _EdgeSoft;
         CBUFFER_END
 
         // 撃破の崩れ (StageUnit と同じ式): ドット単位の乱数で消えていく。頭 (上) から先に、足元は最後
@@ -109,6 +125,7 @@ Shader "DeckRogue/StageUnitLit"
             Tags { "LightMode"="UniversalForward" }
             ZWrite On
             Cull [_Cull]
+            AlphaToMask [_EdgeA2C]   // 三周目 レーン E (R5 (c)): 輪郭の1画素の被覆。既定 0 = 切 (二周目と同じ)
             HLSLPROGRAM
             #pragma target 3.0
             #pragma vertex Vert
@@ -173,9 +190,36 @@ Shader "DeckRogue/StageUnitLit"
                 // ドットの中心 (光と影と法線はここで読む)。微分は分岐より前に取る
                 float3 shift = HD2D_TexelShift(texel, i.positionWS);
                 float2 uvC = HD2D_TexelCenter(texel) / max(size, float2(1, 1));
+                float2 fwTexel = fwidth(texel);   // 三周目 レーン E: 輪郭の1画素 (_EdgeSoft) の幅 = 1画素ぶんのテクセル。微分なので分岐より前に取る
 
                 half4 c = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv) * _BaseColor;
-                clip(c.a - _Cutoff);
+                // 三周目 レーン E (R5 (c)・裁定 Q2): 輪郭の1画素の中間色。_EdgeSoft = 0 (既定) なら下の clip は二周目と同じ (c.a − _Cutoff)。
+                // 双線形の読み (inline sampler sampler_LinearClamp) を「ドットの縁だけ1画素なじませる」座標 (HD2D_FatTexelW) で取り、
+                // その α が 0 と 1 の間 = 輪郭をまたぐ1画素 (α が隣のドットと違う境界) だけを被覆 cover にする (Alpha to Coverage で背景と混ざる)。
+                // ドットの中 (双線形の α が 0 か 1) は点の読みのまま = 1ドット 4px は変えない
+                half cover = 1.0h;        // 被覆 (出力の α。_EdgeA2C = AlphaToMask の時だけ効く)
+                bool edgeOut = false;     // 輪郭の外側の1画素 (透明のドットの中。縁のドットの色で塗る)
+                float2 uvL = uvC;         // 法線と発光を読む uv (外側の1画素だけ縁を双線形で)
+                // _AlphaToMaskAvailable = URP の全体値 (DrawObjectsPass が「描く先が MSAA の不透明」の時だけ 1)。MSAA でない描く先 (撮影の別のカメラなど) では
+                // 被覆が 0/1 にしかならず外側の1画素が太るので、材質の _EdgeSoft が立っていても二周目のまま
+                if (_EdgeSoft > 0.0h && _AlphaToMaskAvailable != 0.0)
+                {
+                    float2 uvFat = HD2D_FatTexelW(texel, fwTexel) / max(size, float2(1, 1));
+                    // 境界の見分けと被覆は絵の α だけで (Img の α = 現れる・消える演出の _BaseColor.a は今までどおり clip が受け持つ = 演出は二周目と同じ)
+                    half4 tb = SAMPLE_TEXTURE2D_LOD(_BaseMap, sampler_LinearClamp, uvFat, 0);
+                    half inside = c.a >= _Cutoff ? 1.0h : 0.0h;
+                    if (tb.a > 0.004h && tb.a < 0.996h && _BaseColor.a >= _Cutoff)
+                    {
+                        cover = lerp(inside, tb.a, _EdgeSoft);
+                        if (inside < 0.5h)
+                        {
+                            edgeOut = true;
+                            c.rgb = tb.rgb * _BaseColor.rgb;   // 透明のドットの色は取り込みの alphaIsTransparency が縁の色でにじませてある = 縁のドットの色
+                            uvL = uvFat;
+                        }
+                    }
+                }
+                clip((edgeOut ? (cover > 0.06h ? 1.0h : 0.0h) : c.a) - _Cutoff);
                 HD2D_UnitDissolve(i.uv, i.uv0);
                 half3 albedo = c.rgb;
                 float3 posC = i.positionWS + shift;
@@ -190,7 +234,10 @@ Shader "DeckRogue/StageUnitLit"
                 half3 nS = half3(0.0h, 0.0h, 1.0h);
                 if (_HasNormal > 0.5h)
                 {
-                    nS = HD2D_DecodeNormal(SAMPLE_TEXTURE2D_LOD(_NormalMap, sampler_NormalMap, uvC, 0), 1.0h);
+                    // 三周目 レーン E: 輪郭の外側の1画素は縁のドットの法線を双線形で (それ以外は今までどおりドットの中心を点で)
+                    half4 nTex = edgeOut ? SAMPLE_TEXTURE2D_LOD(_NormalMap, sampler_LinearClamp, uvL, 0)
+                                         : SAMPLE_TEXTURE2D_LOD(_NormalMap, sampler_NormalMap, uvC, 0);
+                    nS = HD2D_DecodeNormal(nTex, 1.0h);
                     nS.y *= _NormalYSign;
                 }
                 half3 nW = normalize(R * nS.x + U * nS.y + F * nS.z);
@@ -245,6 +292,12 @@ Shader "DeckRogue/StageUnitLit"
             #endif
 
                 half3 lit = HD2D_CharAmbient(nW) * _AmbientScale + _Receive * direct;
+                // 三周目 レーン E (R5 (b)): 足元ほど暗い縦の勾配。光にだけ掛ける (輪郭の持ち上げ・発光は後で = 変わらない)。高さはドットの中心の uv0 (板の下端 = 0)
+                if (_BodyShade.x > 0.0h)
+                {
+                    float uv0Cy = (uvC.y - _BaseMap_ST.w) / max(_BaseMap_ST.y, 1e-5);
+                    lit *= HD2D_BodyShadeMul(uv0Cy, _BodyShade);
+                }
                 half3 col = albedo * lit * _HeroLift;
                 // 暗い色の持ち上げ (2026-09-30 P23 2周目): 明るさ Y が knee より暗い色ほど強く (最大 1+gain 倍) 上げ、明るい色はほぼそのまま。
                 // 色相は変えない (3つのチャンネルに同じ倍率)。絵の暗い黒鉄の衣が ACES の足で潰れるのを戻す (このはだけ。look の char の art の shadeLift)
@@ -277,7 +330,9 @@ Shader "DeckRogue/StageUnitLit"
                 // 発光: 光る所は暗さを受けず、絵の色 × 強さ へ
                 if (_HasEmission > 0.5h)
                 {
-                    half3 e = SAMPLE_TEXTURE2D_LOD(_EmissionMap, sampler_EmissionMap, uvC, 0).rgb;
+                    // 三周目 レーン E: 輪郭の外側の1画素は縁のドットの発光を双線形で (光る縁の外に暗い1画素を作らない)
+                    half3 e = edgeOut ? SAMPLE_TEXTURE2D_LOD(_EmissionMap, sampler_LinearClamp, uvL, 0).rgb
+                                      : SAMPLE_TEXTURE2D_LOD(_EmissionMap, sampler_EmissionMap, uvC, 0).rgb;
                     // P05 の _e は「光る画素 = 元の色・ほか = 黒」。黒でなければほぼ全部を光らせる (暗い色の光る画素も落とさない)
                     half em = saturate(max(e.r, max(e.g, e.b)) * 8.0h);
                     col = lerp(col, albedo * _EmissionIntensity, em);
@@ -288,8 +343,8 @@ Shader "DeckRogue/StageUnitLit"
                     half sl = dot(col, half3(0.2126h, 0.7152h, 0.0722h));
                     col = max(half3(0.0h, 0.0h, 0.0h), sl + (col - sl) * _CharSat);
                 }
-                // リム (StageUnit と同じ): 右上の隣のドットが透明なら縁を淡く光らせる
-                if (_Rim > 0.0h)
+                // リム (StageUnit と同じ): 右上の隣のドットが透明なら縁を淡く光らせる。三周目 レーン E: 輪郭の外側の1画素 (透明のドットの中) には掛けない
+                if (_Rim > 0.0h && !edgeOut)
                 {
                     float2 tx = _BaseMap_TexelSize.xy;
                     half aR = SAMPLE_TEXTURE2D_LOD(_BaseMap, sampler_BaseMap, i.uv + float2(tx.x, 0), 0).a;
@@ -302,7 +357,7 @@ Shader "DeckRogue/StageUnitLit"
                 col = lerp(col, half3(1, 1, 1), _Flash);
                 half3 fogged = MixFog(col, InitializeInputDataFog(float4(i.positionWS, 1.0), i.fogFactor));
                 col = lerp(col, fogged, _Fog);
-                outColor = half4(col, 1.0h);
+                outColor = half4(col, cover);   // 三周目 レーン E: α = 被覆 (_EdgeSoft = 0 なら 1 = 二周目と同じ)
             #ifdef _WRITE_RENDERING_LAYERS
                 outRenderingLayers = EncodeMeshRenderingLayer();
             #endif

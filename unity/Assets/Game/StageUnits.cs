@@ -21,6 +21,11 @@
 //   キャラの色     … _CharTint = look の char の tint × cancelColorFilter (後処理の colorFilter をキャラだけ打ち消す = 舞台の青がキャラの白に乗らない。CharTintFor)
 //   暗い色の持ち上げ … _ShadeLift (look の char の art の shadeLift。このはの黒鉄の衣が ACES の足で潰れるのを戻す。ShadeLiftFor)
 //   発光の強さ     … look の char の art の emission (狼の白い毛の発光 1.6 が白飛び → ブルームで青く冷えていた)
+// 三周目 レーン E (2026-10-01・計画 docs/design/hd2d-round3-plan-2026-10-01.md §2 E。箱庭の時だけ・look の char のキーが無ければ二周目と同じ):
+//   足元ほど暗い勾配 … char.bodyShade → _BodyShade (編成の頭数 3 以上の敵と人形だけ。R3E_ApplyLitExtras)
+//   輪郭の1画素     … char.edgeSoft → _EdgeSoft・_EdgeA2C (MSAA が効いている時だけ。裁定 Q2 = 規約の例外。R3E_MsaaOn)
+//   座席の環境光    … char.seatAmbient (敵の座席の番号)・dollBackAmbient (人形の後列) を _AmbientScale に掛ける (R3E_SeatAmbientMul)
+//   待機の位相      … char.idlePhaseSpread で座席の番号ごとに散らす (R3E_IdleOffset・R3E_BreathePhase)
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
@@ -194,8 +199,17 @@ namespace DeckRogue.Game
                         e["charSat"] = r4(u.Mat.GetFloat("_CharSat"));
                         e["rim"] = r4(u.Mat.GetFloat("_Rim"));
                         e["localLights"] = r4(u.Mat.GetFloat("_LocalLights"));
+                        // 三周目 レーン E: 足元ほど暗い勾配・輪郭の1画素・座席の環境光の倍率 (look の char が効いたかの確かめ)
+                        var bsv = u.Mat.GetVector("_BodyShade");
+                        e["bodyShade"] = new[] { r4(bsv.x), r4(bsv.y), r4(bsv.z), r4(bsv.w) };
+                        e["edgeSoft"] = r4(u.Mat.GetFloat("_EdgeSoft"));
+                        e["edgeA2C"] = u.Mat.GetFloat("_EdgeA2C") > 0.5f;
+                        e["seatAmbient"] = r4(u.R3E_LastSeatAmb);
                     }
                 }
+                e["r3Slot"] = u.R3E_LastSlot;               // 三周目 レーン E: 座席の番号 (敵 = enemyN の N・人形 = DollSlots の番号。-1 = 主人公・分からない)
+                e["r3Group"] = u.R3E_LastGroup;             // 敵の編成の頭数の見当 (座席の表から。0 = 敵でない)
+                e["r3IdleOffset"] = Mathf.Round(u.R3E_LastIdleOffset * 1000f) / 1000f;   // 待機の位相 (秒。二周目の式 = 位相 × 0.37)
                 e["r2idle"] = u.R2E_IdleInfo;   // 二周目 レーン E: 待機のコマ (off = 使っていない・on = r2idle のコマ・missing = 欲しいが絵が無い)
                 e["contactCore"] = u.R2E_ContactInfo;
                 e["contactDepth"] = u.R2E_ContactDepthInfo;   // 段2: 接地影の奥行きの倍率 (1 = W5)
@@ -404,6 +418,8 @@ namespace DeckRogue.Game
             public float Saturation = -1f;
             /// <summary>近くの点光源を受ける割合 (負 = look の char の localLights。無ければ 0)。このはの斧の宝石の灯を体に受ける</summary>
             public float LocalLights = -1f;
+            /// <summary>三周目 レーン E: 足元ほど暗い勾配の強さの上書き (負 = look の char の bodyShade の enemy / doll。0 = この絵には掛けない = 白い狼)</summary>
+            public float BodyShade = -1f;
         }
         sealed class CharMatExtras
         {
@@ -461,6 +477,18 @@ namespace DeckRogue.Game
             /// <summary>主役の斧の宝石の灯 (char.heroGem。光を受ける板の時だけ・tier=phone では作らない)。Range・Intensity・Moving (待機以外のコマの強さの倍率)・Colors (リーダーの絵の頭 → 色)・Push (板から手前へ出す距離)</summary>
             public bool Gem; public float GemRange = 2.75f, GemIntensity = 1f, GemMoving = 0.3f, GemPush = 0.35f;
             public readonly Dictionary<string, Color> GemColors = new Dictionary<string, Color>(StringComparer.Ordinal);
+            // ---- 三周目 レーン E (2026-10-01。計画 docs/design/hd2d-round3-plan-2026-10-01.md §2 E・分析 R5・R11)。どれも書いていなければ二周目と同じ ----
+            /// <summary>足元ほど暗い勾配 (char.bodyShade): 足元の暗さ (敵・人形。0 = 掛けない)・勾配が 1 に戻る高さ (足元からの絵の高さの割合)・曲がり・敵に掛ける編成の頭数の下限</summary>
+            public float R3E_BodyShadeEnemy, R3E_BodyShadeDoll, R3E_BodyShadeTop = 0.9f, R3E_BodyShadePower = 1f;
+            public int R3E_BodyShadeMinGroup = 3;
+            /// <summary>輪郭の1画素の中間色の強さ (char.edgeSoft 0〜1。0 = 切)。MSAA が効いている時だけ材質に書く</summary>
+            public float R3E_EdgeSoft;
+            /// <summary>敵の環境光の倍率を座席の番号で (char.seatAmbient。enemy0, enemy1… の順・最後の値で止める。null = 掛けない)</summary>
+            public float[] R3E_SeatAmbient;
+            /// <summary>人形の後列の環境光の倍率 (char.dollBackAmbient。負 = 掛けない)</summary>
+            public float R3E_DollBackAmbient = -1f;
+            /// <summary>待機の位相を座席の番号で散らす割合 (char.idlePhaseSpread 0〜1。0 = 二周目の式 = 板の位相 × 0.37 秒)</summary>
+            public float R3E_IdlePhaseSpread;
         }
 
         /// <summary>JSON の [a, b] を Vector2 に (無い・短い時は false)</summary>
@@ -537,12 +565,14 @@ namespace DeckRogue.Game
                             if (ao == null || p.Name.StartsWith("_", StringComparison.Ordinal)) continue;
                             Func<string, float> anum = name => { var t = ao[name]; return t != null && (t.Type == JTokenType.Float || t.Type == JTokenType.Integer) ? (float)t : -1f; };
                             var al = new ArtLook { HeroLift = anum("heroLift"), BlackLiftScale = anum("blackLift"), Emission = anum("emission"), Receive = anum("receive"),
-                                AmbientScale = anum("ambientScale"), Saturation = anum("saturation"), LocalLights = anum("localLights") };   // 後ろ3つ = 二周目 レーン E
+                                AmbientScale = anum("ambientScale"), Saturation = anum("saturation"), LocalLights = anum("localLights"),   // 後ろ3つ = 二周目 レーン E
+                                BodyShade = anum("bodyShade") };   // 三周目 レーン E
                             Vector2 asl;
                             if (ReadVec2(ao["shadeLift"], out asl)) { al.ShadeLift = asl; al.HasShade = true; }
                             x.Art[p.Name] = al;
                         }
                     R2E_ReadExtras(c, x, num);
+                    R3E_ReadExtras(c, x, num);
                 }
             }
             catch (Exception ex) { Debug.LogWarning("[Stage] look の char を読めない: " + ex.Message); }
@@ -609,6 +639,73 @@ namespace DeckRogue.Game
                         if (a != null && a.Count >= 3 && !p.Name.StartsWith("_", StringComparison.Ordinal)) x.GemColors[p.Name] = new Color((float)a[0], (float)a[1], (float)a[2], 1f);
                     }
             }
+        }
+
+        /// <summary>
+        /// 三周目 レーン E (2026-10-01) の look の char のキーを読む。どれも無ければ二周目と同じ (CharMatExtras の既定 = 0・null・負)。
+        ///   bodyShade {on, enemy, doll, top, power, minGroup} | 数 | false … 足元ほど暗い縦の勾配 (R5 (b))。enemy = 編成の頭数が minGroup 以上の敵の足元の暗さ・
+        ///     doll = 人形の足元の暗さ (0〜1)・top = 勾配が 1 に戻る高さ (足元からの絵の高さの割合)・power = 曲がり。数なら enemy と doll の両方。
+        ///     art の bodyShade (数) が絵ごとに勝つ (0 = その絵には掛けない)
+        ///   edgeSoft 0〜1 … 輪郭の1画素の中間色 (R5 (c)・裁定 Q2)。MSAA が効いている時だけ (StageUnitLit の _EdgeSoft と _EdgeA2C)
+        ///   seatAmbient [enemy0, enemy1, …] … 敵の環境光の倍率を座席の番号で (R11。最後の値で止める)・dollBackAmbient … 人形の後列の環境光の倍率
+        ///   idlePhaseSpread 0〜1 … 待機の位相を座席の番号 (2進の逆順 0・½・¼・¾…) で散らす割合 (R11。0 = 二周目の板ごとの乱数の位相)
+        /// off の書き方 (写し look_act1_r2char): bodyShade {"on": false}・edgeSoft 0・seatAmbient [1]・dollBackAmbient 1・idlePhaseSpread 0・art の bodyShade -1
+        /// </summary>
+        static void R3E_ReadExtras(JObject c, CharMatExtras x, Func<string, float> num)
+        {
+            Func<JObject, string, float, float> onum = (o, name, def) =>
+            {
+                var t = o != null ? o[name] : null;
+                return t != null && (t.Type == JTokenType.Float || t.Type == JTokenType.Integer) ? (float)t : def;
+            };
+            var bs = c["bodyShade"];
+            if (bs != null && (bs.Type == JTokenType.Float || bs.Type == JTokenType.Integer))
+            {
+                x.R3E_BodyShadeEnemy = x.R3E_BodyShadeDoll = Mathf.Clamp01((float)bs);
+            }
+            else if (bs is JObject bo)
+            {
+                var f = bo["on"];
+                bool on = f == null || f.Type != JTokenType.Boolean || (bool)f;
+                if (on)
+                {
+                    x.R3E_BodyShadeEnemy = Mathf.Clamp01(onum(bo, "enemy", 0f));
+                    x.R3E_BodyShadeDoll = Mathf.Clamp01(onum(bo, "doll", 0f));
+                    x.R3E_BodyShadeTop = Mathf.Clamp(onum(bo, "top", x.R3E_BodyShadeTop), 0.05f, 1f);
+                    x.R3E_BodyShadePower = Mathf.Clamp(onum(bo, "power", x.R3E_BodyShadePower), 0.05f, 8f);
+                    x.R3E_BodyShadeMinGroup = Mathf.Max(1, Mathf.RoundToInt(onum(bo, "minGroup", x.R3E_BodyShadeMinGroup)));
+                }
+            }
+            x.R3E_EdgeSoft = Mathf.Clamp01(Mathf.Max(0f, num("edgeSoft")));
+            var sa = c["seatAmbient"] as JArray;
+            if (sa != null && sa.Count > 0)
+            {
+                var arr = new List<float>();
+                foreach (var t in sa) if (t.Type == JTokenType.Float || t.Type == JTokenType.Integer) arr.Add(Mathf.Max(0f, (float)t));
+                bool any = false;
+                foreach (var v in arr) if (Mathf.Abs(v - 1f) > 1e-4f) { any = true; break; }
+                x.R3E_SeatAmbient = any ? arr.ToArray() : null;
+            }
+            float db = num("dollBackAmbient");
+            x.R3E_DollBackAmbient = db >= 0f && Mathf.Abs(db - 1f) > 1e-4f ? db : -1f;
+            x.R3E_IdlePhaseSpread = Mathf.Clamp01(Mathf.Max(0f, num("idlePhaseSpread")));
+        }
+
+        /// <summary>座席の番号を 0〜1 に散らす (2進の逆順: 0・½・¼・¾・⅛・⅝…)。隣り合う座席ほど離れた位相になる (三周目 レーン E・R11)</summary>
+        static float R3E_VanDerCorput(int n)
+        {
+            float v = 0f, b = 0.5f;
+            for (n = Mathf.Max(0, n); n > 0; n >>= 1, b *= 0.5f) if ((n & 1) != 0) v += b;
+            return v;
+        }
+
+        /// <summary>
+        /// MSAA が効いているか (半立体と札の alpha-to-coverage と同じ判定 = Stage.DioramaMsaaOn: 旗 aa=msaa・標本数 = HD2DFlags.MsaaSamples と設計図の msaaMax の小さい方 &gt; 1)。
+        /// 輪郭の1画素 (Alpha to Coverage) はこの時だけ材質に書く (MSAA が無いと被覆が 0/1 にしかならず、外側の1画素がそのまま太る)。スマホの段は msaaMax 1 = 切
+        /// </summary>
+        static bool R3E_MsaaOn()
+        {
+            return HD2DFlags.Tier != HD2DTier.Phone && DioramaMsaaOn();
         }
 
         /// <summary>名前の頭がいちばん長く一致した値 (無ければ false)。二周目 レーン E の表 (宝石の灯の色・待機のコマの幕ボス) が使う</summary>
@@ -1249,7 +1346,9 @@ namespace DeckRogue.Game
                 Mat.SetFloat("_HeroLift", hero ? heroLift : 1f);
                 // 環境光の倍率: 絵ごとの上書き (二周目 レーン E: 暗めの敵 = art の "enemy_" の ambientScale) ＞ look の ambientScale。どちらも露出の割り戻しを掛ける
                 float ambScale = art != null && art.AmbientScale >= 0f ? art.AmbientScale : StageLook.CharAmbientScale;
+                ambScale *= R3E_SeatAmbientMul(x);   // 三周目 レーン E (R11): 群れの奥の座席・人形の後列ほど暗く (look の char.seatAmbient・dollBackAmbient。無ければ 1)
                 Mat.SetFloat("_AmbientScale", ambScale * es);
+                R3E_ApplyLitExtras(x, art, hero);   // 三周目 レーン E (R5 (b)(c)): 足元ほど暗い勾配・輪郭の1画素 (無ければ 0 = 二周目)
                 // 霧を受ける割合 (二周目 レーン E: look の char.fog。無ければ W5 の 1)。輪郭の目標 (ViewFor) がこの値を読むので先に書く
                 Mat.SetFloat("_Fog", x.Fog >= 0f ? Mathf.Clamp01(x.Fog) : 1f);
                 // 鮮やかさ (二周目 レーン E: 絵ごと ＞ look の char.saturation ＞ 1 = W5)
@@ -1402,7 +1501,7 @@ namespace DeckRogue.Game
                 float breathe = 0f;
                 if (Anim == "idle" && Breathe)
                 {
-                    breathe = Mathf.Sin(Time.time * (2.4f + BreathePhase * 0.08f) + BreathePhase) * (Key == "player" ? 2f : 3f);
+                    breathe = Mathf.Sin(Time.time * (2.4f + BreathePhase * 0.08f) + R3E_BreathePhase()) * (Key == "player" ? 2f : 3f);   // 三周目 レーン E (R11): 位相は座席の番号で散らす (無ければ BreathePhase = 二周目)
                     pos += _up * (breathe * k);   // 呼吸: ±2〜3px の上下 (拡大・回転はしない)。周期も個体ごとに少しずらす (⑩ 2026-09-17)
                 }
                 var rot = dio ? LayoutRot() : CameraRotation;   // 見本の板はレイアウト用のカメラの回転 (漂い・揺れで回さない)
@@ -1565,7 +1664,7 @@ namespace DeckRogue.Game
                 {
                     // 全員が同じ拍で息をしないよう、時刻と板ごとの位相から途中のコマで始める (盤面の作り直しでも拍が続く)
                     float cyc = dur * frames.Count;
-                    float tt = Mathf.Repeat(Time.time + BreathePhase * 0.37f, cyc);
+                    float tt = Mathf.Repeat(Time.time + R3E_IdleOffset(cyc), cyc);   // 三周目 レーン E (R11): 座席の番号で散らす (look の char.idlePhaseSpread。無ければ BreathePhase × 0.37 = 二周目)
                     Frame = Mathf.Clamp((int)(tt / dur), 0, frames.Count - 1); FrameT = tt - Frame * dur;
                     Apply();
                 }
@@ -1587,6 +1686,155 @@ namespace DeckRogue.Game
                     le.Add(MapTex(AnimFolder, f + "_e"));
                 }
                 _animN["idle"] = ln; _animE["idle"] = le;
+            }
+
+            // ---------------------------------------------------------------- 三周目 レーン E (2026-10-01・計画 §2 E・分析 R5 (b)(c)・R11)
+            // どれも箱庭 (stage=diorama) の時だけ・look の char のキーが無ければ二周目と同じ (今の舞台 = 幕2/3 は1画素も変えない)
+
+            /// <summary>dumplayout 用: 最後に掛けた座席の環境光の倍率・座席の番号・敵の編成の頭数の見当・待機の位相 (秒)</summary>
+            public float R3E_LastSeatAmb = 1f, R3E_LastIdleOffset;
+            public int R3E_LastSlot = -1, R3E_LastGroup;
+            Vector3 _r3eSlotFor = new Vector3(float.NaN, 0f, 0f);
+            int _r3eSlot = -1, _r3eGroup; bool _r3eDollBack;
+
+            bool R3E_IsDoll => Key != null && Key.StartsWith("doll:", StringComparison.Ordinal);
+
+            /// <summary>敵の番号 (key "enemyN" の N。敵でなければ −1)</summary>
+            int R3E_EnemyIndex()
+            {
+                if (Key == null || Key.Length <= 5 || !Key.StartsWith("enemy", StringComparison.Ordinal)) return -1;
+                int n;
+                return int.TryParse(Key.Substring(5), out n) && n >= 0 ? n : -1;
+            }
+
+            /// <summary>
+            /// 座席の番号を座席の世界の点から引く (座席が変わった時だけ計算し直す。板は組み直しのたびに作り直されるので、ほぼ1回)。
+            /// 敵 = enemyN の N と、編成の頭数 (座席の表 EnemySeats(n) のどの n の N 番目と同じ点か = BattleView が Stage.EnemySlots(敵の数) を ProjectFeet に渡す)。
+            /// 人形 = いちばん近い DollSlots(9) の番号 (5 以上 = 後列。大きい人形は同じ列の2席の間なので列は同じ)。主人公 = −1
+            /// </summary>
+            void R3E_ResolveSlot()
+            {
+                Vector3 w = Vector3.zero; float k;
+                bool has = Key != null && TryGetSeat(Key, out w, out k);
+                if (has && w == _r3eSlotFor) return;
+                _r3eSlotFor = has ? w : new Vector3(float.NaN, 0f, 0f);
+                int ei = R3E_EnemyIndex();
+                _r3eSlot = -1; _r3eGroup = 0; _r3eDollBack = false;
+                if (ei >= 0)
+                {
+                    _r3eSlot = ei;
+                    _r3eGroup = has ? R3E_GroupFromSeat(ei, w) : ei + 1;
+                }
+                else if (R3E_IsDoll && has)
+                {
+                    var slots = DollSlots(9);
+                    float bd = float.MaxValue;
+                    for (int i = 0; i < slots.Length; i++)
+                    {
+                        float d = (slots[i] - w).sqrMagnitude;
+                        if (d < bd) { bd = d; _r3eSlot = i; }
+                    }
+                    _r3eDollBack = _r3eSlot >= 5;
+                }
+                R3E_LastSlot = _r3eSlot; R3E_LastGroup = _r3eGroup;
+            }
+
+            /// <summary>敵の編成の頭数の見当: 自分の座席が EnemySeats(n) の idx 番目と同じ点になる n (1〜4)。どれとも合わなければ 5 体以上の戦闘 (= 3 体以上)</summary>
+            static int R3E_GroupFromSeat(int idx, Vector3 w)
+            {
+                int best = -1; float bd = float.MaxValue;
+                for (int n = Mathf.Max(1, idx + 1); n <= 4; n++)
+                {
+                    var s = EnemySeats(n);
+                    if (idx >= s.Length) continue;
+                    float d = (s[idx] - w).sqrMagnitude;
+                    if (d < bd) { bd = d; best = n; }
+                }
+                return best < 0 || bd > 0.04f ? Mathf.Max(idx + 1, 5) : best;
+            }
+
+            /// <summary>R11: 環境光の倍率 = 敵は座席の番号の seatAmbient (最後の値で止める)・人形の後列は dollBackAmbient。主人公・今の舞台・キーが無い時は 1</summary>
+            float R3E_SeatAmbientMul(CharMatExtras x)
+            {
+                R3E_LastSeatAmb = 1f;
+                if (HD2DFlags.StageMode != HD2DStage.Diorama || Key == null || Key == "player") return 1f;
+                if (x.R3E_SeatAmbient == null && x.R3E_DollBackAmbient < 0f) return 1f;
+                R3E_ResolveSlot();
+                float m = 1f;
+                var sa = x.R3E_SeatAmbient;
+                if (R3E_EnemyIndex() >= 0 && sa != null && sa.Length > 0 && _r3eSlot >= 0) m = sa[Mathf.Min(_r3eSlot, sa.Length - 1)];
+                else if (R3E_IsDoll && _r3eDollBack && x.R3E_DollBackAmbient >= 0f) m = x.R3E_DollBackAmbient;
+                R3E_LastSeatAmb = m;
+                return m;
+            }
+
+            /// <summary>
+            /// R5 (b)(c) の材質の値 (毎フレーム): _BodyShade = 編成の頭数が minGroup 以上の敵と人形にだけ (主人公・1〜2体の敵・幕ボスは 0)。
+            /// 足元の uv = 絵の下の余白 FeetPad (広い枠のコマは FrameScaleY で割る)・勾配が 1 に戻る uv = 足元 + top × 絵の高さ。
+            /// _EdgeSoft・_EdgeA2C = 輪郭の1画素 (全員。MSAA が効いている時だけ。R3E_MsaaOn)
+            /// </summary>
+            void R3E_ApplyLitExtras(CharMatExtras x, ArtLook art, bool hero)
+            {
+                bool dio = HD2DFlags.StageMode == HD2DStage.Diorama;
+                float bs = 0f;
+                if (dio && !hero && Key != null)
+                {
+                    R3E_ResolveSlot();
+                    bool doll = R3E_IsDoll;
+                    bool enemyInGroup = R3E_EnemyIndex() >= 0 && _r3eGroup >= x.R3E_BodyShadeMinGroup;
+                    if (doll || enemyInGroup)
+                        bs = art != null && art.BodyShade >= 0f ? Mathf.Clamp01(art.BodyShade) : (doll ? x.R3E_BodyShadeDoll : x.R3E_BodyShadeEnemy);
+                }
+                if (bs > 0f)
+                {
+                    float fsy = Mathf.Max(1f, FrameScaleY);
+                    float feet = Mathf.Clamp01(FeetPad / fsy);
+                    float top = Mathf.Clamp(feet + x.R3E_BodyShadeTop * (1f - FeetPad) / fsy, feet + 0.01f, 1f);
+                    Mat.SetVector("_BodyShade", new Vector4(bs, feet, top, x.R3E_BodyShadePower));
+                }
+                else Mat.SetVector("_BodyShade", new Vector4(0f, 0f, 1f, 1f));
+                float es = dio && x.R3E_EdgeSoft > 0f && R3E_MsaaOn() ? x.R3E_EdgeSoft : 0f;
+                Mat.SetFloat("_EdgeSoft", es);
+                Mat.SetFloat("_EdgeA2C", es > 0f ? 1f : 0f);
+            }
+
+            /// <summary>座席の番号で散らす待機の位相 (s = look の char.idlePhaseSpread・f = 座席の番号の 2進の逆順)。散らさない時は false</summary>
+            bool R3E_SpreadPhase(out float s, out float f)
+            {
+                s = 0f; f = 0f;
+                if (HD2DFlags.StageMode != HD2DStage.Diorama || Key == null || Key == "player" || StageLook.Current == null) return false;
+                var x = CharExtras();
+                if (!(x.R3E_IdlePhaseSpread > 0f)) return false;
+                R3E_ResolveSlot();
+                if (_r3eSlot < 0) return false;
+                s = x.R3E_IdlePhaseSpread; f = R3E_VanDerCorput(_r3eSlot);
+                return true;
+            }
+
+            /// <summary>
+            /// 待機のコマ (r2idle) の始まりのずれ (秒)。二周目 = BreathePhase × 0.37 (板ごとの乱数 = 同じ絵の4体のうち2体が同じコマになることがあった)。
+            /// 散らす時は位相 (周期の割合) を二周目の乱数と座席の番号 (0・½・¼・¾ = 隣の座席ほど離れる) の間で s の割合に寄せる。周期は全員同じなので、ずれはそのまま続く
+            /// </summary>
+            float R3E_IdleOffset(float cyc)
+            {
+                float r2 = BreathePhase * 0.37f;
+                R3E_LastIdleOffset = r2;
+                float s, f;
+                if (!(cyc > 1e-4f) || !R3E_SpreadPhase(out s, out f)) return r2;
+                float h = Mathf.Repeat(r2 / cyc, 1f);
+                float off = Mathf.Repeat(h * (1f - s) + f * s, 1f) * cyc;
+                R3E_LastIdleOffset = off;
+                return off;
+            }
+
+            /// <summary>コードの上下 (待機のコマが無い絵) の位相 (ラジアン)。散らさない時は BreathePhase (二周目)。周期は二周目のまま (板ごとに少しずつ違う)</summary>
+            float R3E_BreathePhase()
+            {
+                float s, f;
+                if (!R3E_SpreadPhase(out s, out f)) return BreathePhase;
+                const float Tau = Mathf.PI * 2f;
+                float h = Mathf.Repeat(BreathePhase / Tau, 1f);
+                return Mathf.Repeat(h * (1f - s) + f * s, 1f) * Tau;
             }
 
             // ---- 斧の宝石の灯 (レーン E の 5・char C11): 主役・光を受ける板・箱庭・tier=pc・look の char.heroGem の時だけ。点光源 (影なし) ----

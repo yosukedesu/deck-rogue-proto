@@ -7,6 +7,7 @@
 //   _CharKeyColor  color   rgb = キーの色×強さ (HDR 可)。既定の狙いは中立からわずかに寒色 (0.92, 0.96, 1.0)
 //   _CharAmbTop    color   上から来る環境光 (rgb)
 //   _CharAmbBottom color   下から来る環境光 (rgb)。上下とも 0 (未設定) なら場の環境光 (SH) を使う
+// 三周目 レーン E (2026-10-01): HD2D_BodyShadeMul (足元ほど暗い縦の勾配の倍率。材質ごとの _BodyShade は StageUnitLit の CBUFFER にある)
 #ifndef HD2D_CHAR_LIGHT_INCLUDED
 #define HD2D_CHAR_LIGHT_INCLUDED
 
@@ -38,6 +39,15 @@ half3 HD2D_CharAmbient(half3 nWS)
     if (dot(top + bottom, half3(1.0h, 1.0h, 1.0h)) <= 1e-4h)
         return max(half3(0.0h, 0.0h, 0.0h), half3(SampleSH(nWS)));
     return lerp(bottom, top, saturate(nWS.y * 0.5h + 0.5h));
+}
+
+// 足元ほど暗い縦の勾配の倍率 (三周目 レーン E・R5 (b))。y = 板の uv0 の高さ (下端 0・上端 1)、p = _BodyShade
+// (x = 足元の暗さ 0〜1・y = 足元の uv・z = 勾配が 1 に戻る uv・w = 曲がり)。足元 (y ≤ p.y) は 1 − p.x、p.z より上は 1。p.x = 0 なら 1 (何もしない)
+half HD2D_BodyShadeMul(float y, half4 p)
+{
+    half t = saturate((half(y) - p.y) / max(p.z - p.y, 1e-3h));
+    t = pow(max(t, 1e-4h), max(p.w, 0.05h));
+    return 1.0h - saturate(p.x) * (1.0h - t);
 }
 
 // 世界の向き v を板の接空間 (x = 右・y = 上・z = 見る人の方) へ。keyFlip > 0.5 なら x を反転する
