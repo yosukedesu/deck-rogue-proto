@@ -187,6 +187,8 @@ namespace DeckRogue.Game
             /// <summary>芯で霧に足す色 (× LobeStrength)。W3b P22: 白に近い淡い青 (本家の霧の上位 5% はほぼ無彩の白)</summary>
             public Color LobeColor = new Color(0.60f, 0.61f, 0.66f);
             public float LobeStrength = 1.0f;   // W3b の統合: 0.6 → 1.0
+            /// <summary>直しの輪1 (2026-10-01): 縦と横で別の絞り (fog.lobe の powerV・powerH)。どちらかが 0 以下なら今までの cos の power 乗 (W5 と同じ)</summary>
+            public float LobePowerV = 0f, LobePowerH = 0f;
         }
 
         public sealed class ShadowLook
@@ -422,6 +424,16 @@ namespace DeckRogue.Game
                 m.SetColor(_idTint, ml != null && ml.Tint.HasValue ? ml.Tint.Value : orig.Key);
                 m.SetFloat(_idIntensity, ml != null && ml.Intensity >= 0f ? ml.Intensity : orig.Value);
             }
+            // 二周目 段2 (R2B・計画 レーン B の 6): 光の筋は上の減光を受けない。look の materials.<名前>.shaftSkipTopVig が true の材質 (StageShaft = glow) に _SkipTopVig 1。
+            // 無い・false = 0 (= 今まで・W5)。StageShaft は頂点色の a (設計図の lobe。月光の筋は 0・霧の面は 1) で上の減光を外すかを決める
+            var matsRaw = d.Raw != null ? d.Raw["materials"] as JObject : null;
+            foreach (var mkv in Diorama.Materials)
+            {
+                var m = mkv.Value;
+                if (m == null || !m.HasProperty(_idSkipTopVig)) continue;
+                var mo = matsRaw != null ? matsRaw[mkv.Key] as JObject : null;
+                m.SetFloat(_idSkipTopVig, mo != null && B(mo, "shaftSkipTopVig", false) ? 1f : 0f);
+            }
         }
 
         /// <summary>
@@ -503,11 +515,14 @@ namespace DeckRogue.Game
                 { "start", RenderSettings.fogStartDistance }, { "end", RenderSettings.fogEndDistance },
                 // W3 P22: 霧の光の芯・高さの霧 (シェーダの全体値の今の値)
                 { "lobePos", _idsReady ? Shader.GetGlobalVector(_idLobePos) : Vector4.zero }, { "lobeColor", _idsReady ? Shader.GetGlobalVector(_idLobeColor) : Vector4.zero },
+                { "lobeAniso", _idsReady ? Shader.GetGlobalVector(_idLobeAniso) : Vector4.zero },
                 { "heightColor", _idsReady ? Shader.GetGlobalVector(_idHFogColor) : Vector4.zero }, { "heightRange", _idsReady ? Shader.GetGlobalVector(_idHFogRange) : Vector4.zero },
                 { "heightDepth", _idsReady ? Shader.GetGlobalVector(_idHFogDepth) : Vector4.zero },
             };
             o["envGrade"] = _idsReady ? Shader.GetGlobalVector(_idEnvGrade) : Vector4.zero;   // 舞台の色の寄せ (W3 の統合)
             o["stageVignette"] = _idsReady ? Shader.GetGlobalVector(_idStageVignette) : Vector4.zero;   // 舞台だけの周辺減光 (W3b P22)
+            o["seatBand"] = _idsReady ? Shader.GetGlobalVector(_idSeatBand) : Vector4.zero;              // 二周目 段2 (R2B): 横の減光を外す座席の帯 (t0, t1, s0, s1)
+            o["seatBandParam"] = _idsReady ? Shader.GetGlobalVector(_idSeatBandParam) : Vector4.zero;    // (cos 道の向き, sin, 縁, 1 = 使う)
             o["layout"] = d != null && d.Raw != null && d.Raw["layout"] != null ? d.Raw["layout"].ToString() : null;   // 比べる用の別の設計図 (W3b P22。null = 既定)
             var urp = BackedUrp();
             if (urp != null)
@@ -584,8 +599,10 @@ namespace DeckRogue.Game
         static TsBak _bakTs;
         static int _idKeyDir, _idKeyColor, _idAmbTop, _idAmbBottom, _idHFogColor, _idHFogRange, _idReceive, _idShadowStrength;
         static int _idHFogDepth, _idLobePos, _idLobeColor;   // 高さの霧の深さ・霧の光の芯 (W3 P22。StageModule・StageShaft が読む)
+        static int _idLobeAniso;                             // 直しの輪1: 霧の光の芯の縦と横の絞り (StageModule・StageShaft)
         static int _idEnvGrade, _idTint, _idIntensity;        // 舞台の色の寄せ (W3 の統合・本家の色彩。StageModule が読む)・光の面の色と強さ
         static int _idStageVignette;                          // 舞台だけの周辺減光 (W3b P22。StageModule・StageShaft が読む)
+        static int _idSeatBand, _idSeatBandParam, _idSkipTopVig;   // 二周目 段2 (R2B): 座席の帯 (横の減光を外す。StageModule)・光の筋の上の減光を外す (StageShaft の材質の値)
 
         static string DefaultName(int act) { return "look_act" + act; }
 
@@ -605,10 +622,14 @@ namespace DeckRogue.Game
             _idHFogDepth = Shader.PropertyToID("_HD2DHeightFogDepth");  // x = かかり始める深さ・y = 満ちる深さ (W3 P22)
             _idLobePos = Shader.PropertyToID("_HD2DFogLobePos");        // xyz = 霧の光の芯 (世界)・w = 絞り (0 = 使わない)
             _idLobeColor = Shader.PropertyToID("_HD2DFogLobeColor");    // rgb = 芯で足す色 (線形)・a = 外れた所の霧の色の倍率
+            _idLobeAniso = Shader.PropertyToID("_HD2DFogLobeAniso");    // 直しの輪1: x = 縦・y = 横の絞り (0 = cos の w 乗)
             _idEnvGrade = Shader.PropertyToID("_HD2DEnvGrade");         // xyz = 色の倍率 − 1・w = 彩度を落とす量 (W3 の統合。0 = そのまま)
             _idTint = Shader.PropertyToID("_Tint");                     // StageShaft の光の面の色
             _idIntensity = Shader.PropertyToID("_Intensity");
             _idStageVignette = Shader.PropertyToID("_HD2DStageVignette"); // x = 横の始まり・y = 横の強さ・z = 上の帯の幅・w = 上の強さ (W3b P22。0 = そのまま)
+            _idSeatBand = Shader.PropertyToID("_HD2DSeatBand");           // 二周目 段2 (R2B): x・y = 座席の帯の t の範囲・z・w = s の範囲 (道の座標)
+            _idSeatBandParam = Shader.PropertyToID("_HD2DSeatBandParam"); // x = cos(道の向き)・y = sin(道の向き)・z = 縁のなじみ (unit)・w = 1 なら使う (0 = 今まで)
+            _idSkipTopVig = Shader.PropertyToID("_SkipTopVig");           // StageShaft の材質: 1 なら頂点色の a が 0 の面 (月光の筋) は上の減光を受けない
         }
 
         static StageLookData LoadNamed(int act, string baseName, IList<string> overlays)
@@ -956,11 +977,15 @@ namespace DeckRogue.Game
                 _lamp.cookie = _lampCookie;
             }
             KeyDir = fwd;
+            // 二周目 段2 (R2B・計画 レーン B の 8): キャラのキーを灯から切り離す口。look の lamp.charKeyDir [x,y,z] (光が進む向き・世界) があればキャラの固定のキー (_CharKeyDir) はその向き。
+            // false・無し・長さ 0 = 今までどおり灯の向き。既定の look_act1.json は今の灯の向き [0.341432,-0.725542,0.597505] を書く (= 見た目は変わらない。灯だけ回す変種 look_act1_r2lampside でキャラは同じ)
+            Vector3 charKey;
+            if (TryCharKeyDir(d, out charKey)) KeyDir = charKey;
             double evenBefore = eMax > 0.0 ? eMin / eMax : 0.0;
             double evenAfter = !flatten ? evenBefore : eMin / Math.Max(eMin, Math.Max(0.0, Math.Min(1.0, L.FlattenFloor)) * eMax);
             _lampStats = new Dictionary<string, object>
             {
-                { "aim", aim }, { "position", pos }, { "spotAngle", spot }, { "range", range }, { "intensity", _lamp.intensity },
+                { "aim", aim }, { "position", pos }, { "spotAngle", spot }, { "range", range }, { "intensity", _lamp.intensity }, { "charKeyDir", KeyDir }, { "lampDir", fwd },
                 { "bandTexels", bandN }, { "bandLightMin", eMin }, { "bandLightMax", eMax },
                 { "bandEvenness", evenAfter }, { "bandEvennessBeforeFlatten", evenBefore }, { "flatten", flatten },
             };
@@ -1062,6 +1087,7 @@ namespace DeckRogue.Game
             _lampCookie.Apply(true, false);
             _maskBakes++;
             UpdateMaskStats(d);
+            WriteSeatBand(d);   // 二周目 段2 (R2B): 座席の帯 (横の減光を外す所) も同じ t に
             Debug.Log("[StageLook] 灯の形を座席に合わせた t " + tMin.ToString("0.0", CultureInfo.InvariantCulture) + "〜" + tMax.ToString("0.0", CultureInfo.InvariantCulture) + " (座席 " + n + ")");
         }
 
@@ -1372,11 +1398,14 @@ namespace DeckRogue.Game
                 float ls = Mathf.Max(0f, f.LobeStrength);
                 Shader.SetGlobalVector(_idLobePos, new Vector4(lp.x, lp.y, lp.z, f.LobePower));
                 Shader.SetGlobalVector(_idLobeColor, new Vector4(lc.r * ls, lc.g * ls, lc.b * ls, Mathf.Clamp01(f.LobeEdge)));
+                bool aniso = f.LobePowerV > 0f && f.LobePowerH > 0f;   // 直しの輪1: 縦と横で別の絞り (無ければ 0 = 今まで)
+                Shader.SetGlobalVector(_idLobeAniso, aniso ? new Vector4(f.LobePowerV, f.LobePowerH, 0f, 0f) : Vector4.zero);
             }
             else
             {
                 Shader.SetGlobalVector(_idLobePos, Vector4.zero);
                 Shader.SetGlobalVector(_idLobeColor, Vector4.zero);
+                Shader.SetGlobalVector(_idLobeAniso, Vector4.zero);
             }
         }
 
@@ -1392,8 +1421,12 @@ namespace DeckRogue.Game
             Shader.SetGlobalVector(_idHFogDepth, Vector4.zero);
             Shader.SetGlobalVector(_idLobePos, Vector4.zero);
             Shader.SetGlobalVector(_idLobeColor, Vector4.zero);
+            Shader.SetGlobalVector(_idLobeAniso, Vector4.zero);   // 直しの輪1
             Shader.SetGlobalVector(_idEnvGrade, Vector4.zero);
             Shader.SetGlobalVector(_idStageVignette, Vector4.zero);
+            Shader.SetGlobalVector(_idSeatBand, Vector4.zero);        // 二周目 段2 (R2B)
+            Shader.SetGlobalVector(_idSeatBandParam, Vector4.zero);
+            _svSeatBandOn = false;
         }
 
         /// <summary>
@@ -1411,8 +1444,52 @@ namespace DeckRogue.Game
                 _stageVignette = new Vector4(Mathf.Clamp(F(sv, "sideStart", 0.34f), 0f, 0.499f), Mathf.Clamp01(F(sv, "side", 0f)),
                     Mathf.Clamp01(F(sv, "topBand", 0f)), Mathf.Clamp01(F(sv, "top", 0f)));
             Shader.SetGlobalVector(_idStageVignette, _stageVignette);
+            // 二周目 段2 (R2B・計画 レーン B の 5): 座席の帯は横の減光を受けない。"seatBand": true・"seatBandEdge" (縁のなじみ unit・既定 1.2)・"seatBandSPad" (s の余白・既定 0.5)。
+            // 無い・false = 今まで (W5)。帯の t は灯の帯 (座席に合わせて RefitLamp が決める t) と同じ = WriteSeatBand が書く
+            _svSeatBandOn = sv != null && B(sv, "on", true) && B(sv, "seatBand", false) && _stageVignette.y > 0f;
+            _svSeatBandEdge = sv != null ? Mathf.Max(0.01f, F(sv, "seatBandEdge", 1.2f)) : 1.2f;
+            _svSeatBandSPad = sv != null ? Mathf.Max(0f, F(sv, "seatBandSPad", 0.5f)) : 0.5f;
+            WriteSeatBand(d);
         }
         static Vector4 _stageVignette;
+        static bool _svSeatBandOn;
+        static float _svSeatBandEdge = 1.2f, _svSeatBandSPad = 0.5f;
+
+        /// <summary>
+        /// 二周目 段2 (R2B): 座席の帯 (道の座標) を全体値 _HD2DSeatBand・_HD2DSeatBandParam に書く。StageModule の HD2D_StageVignette が、帯の中 (縁は seatBandEdge でなじむ) の横の減光を 0 にする。
+        /// t = 灯の帯の t (灯の形を使う時は座席に合わせた _maskTMin〜_maskTMax = 座席の足元 − padLeft 〜 + padRight。使わない時は lamp.band の tMin〜tMax)・s = lamp.band の sMin〜sMax ± seatBandSPad。
+        /// seatBand が無い・false なら 0 (= 今まで)
+        /// </summary>
+        static void WriteSeatBand(StageLookData d)
+        {
+            if (!_idsReady) return;
+            if (!_svSeatBandOn || d == null)
+            {
+                Shader.SetGlobalVector(_idSeatBand, Vector4.zero);
+                Shader.SetGlobalVector(_idSeatBandParam, Vector4.zero);
+                return;
+            }
+            var L = d.Lamp;
+            bool mask = L.MaskOn && _lampBasis != null;
+            float t0 = mask ? _maskTMin : L.TMin, t1 = mask ? _maskTMax : L.TMax;
+            float yaw = d.PathYaw * Mathf.Deg2Rad;
+            Shader.SetGlobalVector(_idSeatBand, new Vector4(t0, t1, L.SMin - _svSeatBandSPad, L.SMax + _svSeatBandSPad));
+            Shader.SetGlobalVector(_idSeatBandParam, new Vector4(Mathf.Cos(yaw), Mathf.Sin(yaw), _svSeatBandEdge, 1f));
+        }
+
+        /// <summary>二周目 段2 (R2B): look の lamp.charKeyDir (光が進む向き・世界の [x, y, z])。書いてあって長さがあれば true。false・無し・読めない = false (灯の向きのまま)</summary>
+        static bool TryCharKeyDir(StageLookData d, out Vector3 dir)
+        {
+            dir = Vector3.down;
+            var l = d != null && d.Raw != null ? d.Raw["lamp"] as JObject : null;
+            var a = l != null ? l["charKeyDir"] as JArray : null;
+            if (a == null || a.Count < 3) return false;
+            if (!IsNum(a[0]) || !IsNum(a[1]) || !IsNum(a[2])) { Debug.LogWarning("[StageLook] lamp.charKeyDir が数でない (灯の向きのまま)"); return false; }
+            var v = new Vector3((float)a[0], (float)a[1], (float)a[2]);
+            if (v.sqrMagnitude < 1e-8f) return false;
+            dir = v.normalized;
+            return true;
+        }
 
         /// <summary>
         /// 舞台の色の寄せ (2026-09-30 W3 の統合。ユーザー「本家の色彩も参考にしてほしい」→ docs/design/hd2d-slice/honke-color.md)。
@@ -1638,6 +1715,8 @@ namespace DeckRogue.Game
                     FG.LobeEdge = F(lb, "edge", FG.LobeEdge);
                     FG.LobeColor = Col(lb, "color", FG.LobeColor);
                     FG.LobeStrength = F(lb, "strength", FG.LobeStrength);
+                    FG.LobePowerV = F(lb, "powerV", FG.LobePowerV);   // 直しの輪1 (無ければ 0 = 今まで)
+                    FG.LobePowerH = F(lb, "powerH", FG.LobePowerH);
                 }
             }
 

@@ -1,0 +1,16 @@
+{
+  "_doc": [
+    "二周目 段2 の撮り比べの変種 (2026-10-01 レーン B。計画 docs/design/hd2d-round2-plan-2026-10-01.md §2 レーン B の 13)。旗 look= で既定 (look_act1 + .char + .dof) の上に重ねる。",
+    "月の木漏れ日: moon.cookie true・cookieSize [40,40] (舞台に大きな明暗のむら)。キャラのキーには掛けない (char.cookieOnKey 0 = レーン E の口。既定の look_act1.char.json も 0)。座席のむら (門③) が悪くなるので既定には入れない。"
+  ],
+  "moon": {
+    "cookie": true,
+    "cookieSize": [
+      40,
+      40
+    ]
+  },
+  "char": {
+    "cookieOnKey": 0
+  }
+}

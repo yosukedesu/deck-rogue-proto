@@ -9,6 +9,7 @@
 //   _Fog       … 霧に沈む割合 (1 = 遠いほど霧に消えて足されない)
 //   _LobeFloor … 霧の光の芯 (全体値 _HD2DFogLobePos。StageLook が書く) から外れた所の明るさの倍率 (0〜1。1 = 芯を見ない = 今まで)。
 //                芯 (坑口の奥の脈) の方を向く面ほど明るく、画面の端ほど暗い = 中央の奥が光り、左右の端が沈む (W3 P22)
+//   _SkipTopVig … 1 なら頂点色の a (設計図の lobe) が 0 の面 = 月光の筋は舞台の上の減光を受けない (霧の面は a 1 で今まで)。0 = 今まで (二周目 段2 R2B。StageLook が look の materials.glow.shaftSkipTopVig から書く)
 Shader "DeckRogue/StageShaft"
 {
     Properties
@@ -22,6 +23,7 @@ Shader "DeckRogue/StageShaft"
         _Scroll ("UV Scroll (xy)", Vector) = (0,0,0,0)
         _Fog ("Fog", Range(0,1)) = 1
         _LobeFloor ("Lobe Floor", Range(0,1)) = 1
+        _SkipTopVig ("Skip Top Vignette by Vertex Alpha", Range(0,1)) = 0
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0
     }
     SubShader
@@ -50,11 +52,14 @@ Shader "DeckRogue/StageShaft"
                 half4 _Tint;
                 half _Intensity, _SoftDepth, _NearFade, _Fog;
                 half _EdgeFade, _Cull, _LobeFloor;
+                half _SkipTopVig;   // 二周目 段2 (R2B): 1 = 頂点色の a が 0 の面 (月光の筋) は上の減光を受けない (0 = 今まで。StageLook が look の materials.glow.shaftSkipTopVig から書く)
                 float4 _Scroll;
             CBUFFER_END
             float4 _HD2DFogLobePos;   // 全体値 (StageLook。xyz = 霧の光の芯・w = 絞り。0 = 使わない)
+            float4 _HD2DFogLobeAniso; // 全体値 (直しの輪1。x = 縦・y = 横の絞り。どちらかが 0 なら cos の w 乗 = 今まで。StageModule と同じ式)
             float4 _HD2DStageVignette; // 全体値 (StageLook。舞台だけの周辺減光。StageModule と同じ式・0 = 使わない。W3b P22)
-            half HD2D_StageVignette(float3 posWS)
+            // topW = 上の減光の効き (1 = 今まで・0 = 上の減光なし。二周目 段2 R2B)
+            half HD2D_StageVignette(float3 posWS, half topW)
             {
                 if (_HD2DStageVignette.y <= 0.0 && _HD2DStageVignette.w <= 0.0) return 1.0h;
                 float3 pv = TransformWorldToView(posWS);
@@ -65,6 +70,7 @@ Shader "DeckRogue/StageShaft"
                 float side = smoothstep(_HD2DStageVignette.x, 0.5, abs(nx) * 0.5);
                 float fromTop = 0.5 - ny * 0.5;
                 float top = _HD2DStageVignette.z > 0.0 ? 1.0 - smoothstep(0.0, _HD2DStageVignette.z, fromTop) : 0.0;
+                top *= topW;
                 return half(saturate((1.0 - _HD2DStageVignette.y * side) * (1.0 - _HD2DStageVignette.w * top)));
             }
             struct Attributes
@@ -131,10 +137,17 @@ Shader "DeckRogue/StageShaft"
                     float3 v = SafeNormalize(i.positionWS - _WorldSpaceCameraPos);
                     float3 l = SafeNormalize(_HD2DFogLobePos.xyz - _WorldSpaceCameraPos);
                     half lobe = half(pow(saturate(dot(v, l)), _HD2DFogLobePos.w));
+                    if (_HD2DFogLobeAniso.x > 0.0 && _HD2DFogLobeAniso.y > 0.0)
+                    {
+                        float dv = asin(clamp(v.y, -1.0, 1.0)) - asin(clamp(l.y, -1.0, 1.0));
+                        float dh = atan2(v.x, v.z) - atan2(l.x, l.z);
+                        lobe = half(exp(-0.5 * (_HD2DFogLobeAniso.x * dv * dv + _HD2DFogLobeAniso.y * dh * dh)));
+                    }
                     // 部品ごとの芯の効き (設計図の lobe = 頂点色の a。1 = 今まで・0 = 芯を見ない = 光の筋は画面の左右でも薄めない)
                     k *= lerp(1.0h, lerp(_LobeFloor, 1.0h, lobe), i.color.a);
                 }
-                half3 col = c.rgb * k * HD2D_StageVignette(i.positionWS);   // 舞台だけの周辺減光 (W3b P22。0 = そのまま)
+                // 舞台だけの周辺減光 (W3b P22。0 = そのまま)。頂点色の a は2役 = 霧の光の芯の効き (上) と、_SkipTopVig の時の上の減光の効き (二周目 段2 R2B: 月光の筋 a 0 は上の減光を受けない・霧の面 a 1 は今まで)
+                half3 col = c.rgb * k * HD2D_StageVignette(i.positionWS, lerp(1.0h, i.color.a, _SkipTopVig));
                 // 霧に沈む (加算なので、霧の色でなく黒へ寄せる = 遠いほど足されない)
                 half3 sunk = MixFogColor(col, half3(0.0h, 0.0h, 0.0h), InitializeInputDataFog(float4(i.positionWS, 1.0), i.fogFactor));
                 col = lerp(col, sunk, _Fog);

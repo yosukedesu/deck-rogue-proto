@@ -123,6 +123,9 @@ Shader "DeckRogue/StageModule"
             // 見本の霧の形 (2026-09-30 W3 P22)。StageLook が全体値で書き、Restore で 0 に戻す (0 = 使わない = URP の霧のまま)
             float4 _HD2DFogLobePos;      // xyz = 霧の光の芯 (世界。坑口の奥の脈)・w = 芯の絞り (cos の乗数。0 = 使わない)
             float4 _HD2DFogLobeColor;    // rgb = 芯を向いた時に霧へ足す色 (線形)・a = 芯から外れた所の霧の色の倍率 (0〜1)
+            // 直しの輪1 (2026-10-01): 縦と横で別の絞り。x = 縦 (仰角の差)・y = 横 (方位の差) の乗数 (cos^p ≈ exp(−p·θ²/2) と同じ物差し)。
+            // どちらかが 0 なら今までの cos の w 乗 (W5・今の舞台は StageLook が 0 を書く)
+            float4 _HD2DFogLobeAniso;
             float4 _HD2DHeightFogColor;  // rgb = 高さの霧の色 (線形)・a = 濃さ
             float4 _HD2DHeightFogRange;  // x = 下の高さ・y = 上の高さ・z = 1 なら有効
             float4 _HD2DHeightFogDepth;  // x = かかり始める深さ・y = 濃さが満ちる深さ (カメラからの視線の深さ)
@@ -133,6 +136,10 @@ Shader "DeckRogue/StageModule"
             // キャラの板 (StageUnitLit) と UI には掛からない = 右端の敵や主人公は暗くならない。画面の位置はカメラの視線の空間で求める (描く先の上下の反転に左右されない)。
             // x = 横の減光の始まり (画面の中央からの距離 0〜0.5)・y = 横の端での強さ (0〜1)・z = 上の減光の帯の幅 (画面の上から 0〜1)・w = 上端での強さ。y と w が 0 なら何もしない
             float4 _HD2DStageVignette;
+            // 二周目 段2 (2026-10-01 R2B・計画 hd2d-round2-plan §2 レーン B の 5): 座席の帯は横の減光を受けない (上の減光はそのまま)。StageLook が look の stageVignette.seatBand から書く。
+            // _HD2DSeatBand: x・y = 帯の t の範囲・z・w = s の範囲 (道の座標)。_HD2DSeatBandParam: x = cos(道の向き)・y = sin(道の向き)・z = 縁のなじみ (unit)・w = 1 なら使う (0 = 今まで = W5)
+            float4 _HD2DSeatBand;
+            float4 _HD2DSeatBandParam;
 
             half HD2D_StageVignette(float3 posWS)
             {
@@ -143,6 +150,16 @@ Shader "DeckRogue/StageModule"
                 float nx = pv.x * iz * abs(proj._m00);   // −1 (左端) 〜 1 (右端)
                 float ny = pv.y * iz * abs(proj._m11);   // −1 (下端) 〜 1 (上端)
                 float side = smoothstep(_HD2DStageVignette.x, 0.5, abs(nx) * 0.5);
+                if (_HD2DSeatBandParam.w > 0.5)
+                {
+                    // 世界 → 道の座標 (StageLook.RefitLamp・Diorama.OnPath と同じ式: t = x cos − z sin・s = x sin + z cos)
+                    float bt = posWS.x * _HD2DSeatBandParam.x - posWS.z * _HD2DSeatBandParam.y;
+                    float bs = posWS.x * _HD2DSeatBandParam.y + posWS.z * _HD2DSeatBandParam.x;
+                    float be = max(_HD2DSeatBandParam.z, 1e-3);
+                    float dt = max(max(_HD2DSeatBand.x - bt, bt - _HD2DSeatBand.y), 0.0);
+                    float ds = max(max(_HD2DSeatBand.z - bs, bs - _HD2DSeatBand.w), 0.0);
+                    side *= 1.0 - (1.0 - smoothstep(0.0, be, dt)) * (1.0 - smoothstep(0.0, be, ds));   // 帯の中 = 0・縁から be の外 = 今まで
+                }
                 float fromTop = 0.5 - ny * 0.5;                     // 0 (上端) 〜 1 (下端)
                 float top = _HD2DStageVignette.z > 0.0 ? 1.0 - smoothstep(0.0, _HD2DStageVignette.z, fromTop) : 0.0;
                 return half(saturate((1.0 - _HD2DStageVignette.y * side) * (1.0 - _HD2DStageVignette.w * top)));
@@ -161,6 +178,13 @@ Shader "DeckRogue/StageModule"
                 if (_HD2DFogLobePos.w <= 0.0) return 1.0h;
                 float3 v = SafeNormalize(posWS - _WorldSpaceCameraPos);
                 float3 l = SafeNormalize(_HD2DFogLobePos.xyz - _WorldSpaceCameraPos);
+                if (_HD2DFogLobeAniso.x > 0.0 && _HD2DFogLobeAniso.y > 0.0)
+                {
+                    // 直しの輪1: 縦に細く横に広い帯 (地平線の奥がいちばん明るく、上と下へは早く・左右へはゆっくり暗くなる = 本家の夜の霧の帯)
+                    float dv = asin(clamp(v.y, -1.0, 1.0)) - asin(clamp(l.y, -1.0, 1.0));
+                    float dh = atan2(v.x, v.z) - atan2(l.x, l.z);
+                    return half(exp(-0.5 * (_HD2DFogLobeAniso.x * dv * dv + _HD2DFogLobeAniso.y * dh * dh)));
+                }
                 return half(pow(saturate(dot(v, l)), _HD2DFogLobePos.w));
             }
 

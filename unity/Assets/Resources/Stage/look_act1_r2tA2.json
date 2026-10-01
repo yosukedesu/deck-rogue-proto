@@ -1,0 +1,33 @@
+{
+  "_doc": [
+    "統合の2回目の試し (2026-10-01)。霧 A (1回目と同じ値) を act1_layout_r2t2 で (霧の面と段の効きを霧の値の効きと分けるため)。撮影だけが使う。",
+    "2026-10-01 段2 (レーン B): 既定の look_act1.json を段2 の値にしたので、この試しを同じ光で撮り直すなら look=look_act1_w5+<この変種>+look_act1_w5char (W5 の光の上に霧の形だけ重ねる)。スマホは look_act1.phone.json の芯の強さ 1.0 が最後に勝つ。試しの撮影は scratchpad hd2d/r2/shots/trial・trial2"
+  ],
+  "layout": "act1_layout_r2t2",
+  "camera": {
+    "background": [
+      0.06,
+      0.09,
+      0.12
+    ]
+  },
+  "fog": {
+    "start": 12,
+    "end": 40,
+    "height": {
+      "base": 0.0,
+      "top": 1.5,
+      "density": 0.3,
+      "depthStart": 20,
+      "depthFull": 30
+    },
+    "lobe": {
+      "t": 32.5,
+      "s": 80.0,
+      "y": 2.9,
+      "power": 60,
+      "edge": 0.3,
+      "strength": 0.35
+    }
+  }
+}

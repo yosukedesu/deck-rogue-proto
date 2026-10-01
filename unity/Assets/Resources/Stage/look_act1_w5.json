@@ -1,0 +1,391 @@
+{
+  "_doc": [
+    "W5 の光の写し (2026-10-01 HD-2D 見本 二周目・レーン B 段1-0。計画 docs/design/hd2d-round2-plan-2026-10-01.md §2 レーン B の 0)。",
+    "中身 = git の e30c510 の look_act1.json と look_act1.dof.json を重ねた物 (StageLook と同じ重ね方: オブジェクトはキーごと・配列と数は後ろが勝つ・「_」のキーは読まない) ＋ \"layout\": \"act1_layout_w5\" (レーン C が作る W5 の設計図の写し。無ければ既定の設計図で組む)。",
+    "使い方: 旗 look=look_act1_w5+look_act1_w5char (キャラの写しはレーン E) を重ねると、二周目で既定を変えた後でも W5 の光と配置で撮れる。スマホは look_act1.phone.json がこの後に重なる (W5 と同じ)。",
+    "約束: 二周目で look_act1.json・look_act1.dof.json に新しいキーを足したら、そのキーの「W5 と同じ値／off」をこのファイルにも書く (書かないと新しいキーが W5 の写しに漏れる)。このファイルの値は触らない (W5 の値)。",
+    "下の各段の _doc は e30c510 の look_act1.json の説明をそのまま写した物 (W5 の時点の説明)。",
+    "二周目 段2 (2026-10-01 レーン B) で足したキーの off: lamp.charKeyDir false (= 灯の向き。W5 の灯の向きと同じ)・stageVignette.seatBand false・materials.glow.shaftSkipTopVig false・moondust.slice false (今までの moondust)。値を変えただけのキー (霧・灯・色・ぼかし) は上の W5 の値のまま。"
+  ],
+  "version": 1,
+  "act": 1,
+  "pathYaw": -22,
+  "baseCameraDistance": 16.62,
+  "moon": {
+    "_doc": "月 (平行光)。左上の手前から。影は地形と大物だけ (shadowLayers)。向きは最後に art-lint の描き込みの光の向きで決める (P22)",
+    "euler": [
+      48,
+      38,
+      0
+    ],
+    "color": [
+      0.528,
+      0.7,
+      0.921
+    ],
+    "intensity": 0.45,
+    "shadows": "soft",
+    "shadowStrength": 0.75,
+    "shadowBias": 0.05,
+    "shadowNormalBias": 0.4,
+    "lightLayers": "all",
+    "shadowLayers": "environment",
+    "cookie": false,
+    "cookieSize": [
+      24,
+      24
+    ]
+  },
+  "lamp": {
+    "_doc": "舞台の灯 (スポット)。カメラ側の上から座席の帯へ。影はキャラの板だけ。向きと角度は座席の帯 (band) の四隅から StageLook が計算する (帯の四隅がクッキーの半径 bandFill に来る)。flatten = クッキーで距離と入射角の差を打ち消して、帯の地面の明るさをそろえる (いちばん暗い所に合わせて明るい所を削る。floor より下げない)。キャラの固定のキーはこの灯の向き (StageLook.KeyDir)",
+    "color": [
+      0.795,
+      0.868,
+      0.963
+    ],
+    "illum": 1.0,
+    "offset": [
+      -8.0,
+      17.0,
+      -14.0
+    ],
+    "band": {
+      "tMin": -6.5,
+      "tMax": 12.5,
+      "sMin": -1.4,
+      "sMax": 1.8
+    },
+    "aimY": 0.0,
+    "bandFill": 0.6,
+    "innerRatio": 0.78,
+    "rangeScale": 3.0,
+    "flatten": true,
+    "flattenFloor": 0.2,
+    "shadows": "soft",
+    "shadowStrength": 0.8,
+    "shadowBias": 0.04,
+    "shadowNormalBias": 0.3,
+    "shadowTier": "high",
+    "lightLayers": "all",
+    "shadowLayers": "characters",
+    "cookie": true,
+    "mask": {
+      "_doc": "W3 P22: 灯の形をクッキーに焼く。座席の帯 (t = 今の座席に合わせた範囲・s = band の sMin〜sMax) を margin [t, s] だけ広げた角の丸い四角 (power が大きいほど四角) の外を outside 倍に落とす (縁は soft でなじむ)。灯の位置と向き (= キャラのキー) は band から決めたまま。on=false で W2 の形",
+      "on": true,
+      "margin": [
+        1.1,
+        4.0
+      ],
+      "marginFront": 3.2,
+      "soft": 0.25,
+      "power": 6,
+      "outside": 0.05
+    },
+    "pool": {
+      "_doc": "W3 P22: 中央の光の池 (楕円・道の座標)。奥の段の真ん中まで灯を伸ばし、画面の中央の列を明るく保つ (③ 中央÷端)。shear = s が1増えるごとに中心の t がずれる量 (画面の中央の線に沿わせる)。level = 明るさ (帯 = 1)",
+      "on": true,
+      "t": 3.8,
+      "s": 4.8,
+      "rt": 5.0,
+      "rs": 9.0,
+      "shear": 0.4,
+      "level": 1.0,
+      "soft": 0.35
+    },
+    "fit": {
+      "_doc": "W3 P22: 帯の t を今の座席 (主人公と敵の板の足元) に合わせる (padLeft/padRight = 左右の余白・minSpan = いちばん狭い幅)。敵1体なら右の地面は暗い。座席が変わった時だけクッキーを焼き直す (LookDriver)",
+      "on": true,
+      "padLeft": 1.6,
+      "padRight": 1.8,
+      "minSpan": 8.0
+    },
+    "charKeyDir": false
+  },
+  "backlight": {
+    "_doc": "逆光: 坑口の奥の脈の青緑 (点光源)。影は PC だけ (phone で shadow=false)。大きい技の光が影を借りる時は、この灯の影を一時的に止める (影を落とす光は画面に最大 shadow.maxShadowedLights)",
+    "on": true,
+    "t": 9.5,
+    "s": 23.0,
+    "y": 5.2,
+    "color": [
+      0.4,
+      0.8,
+      0.95
+    ],
+    "illum": 3.2,
+    "illumDist": 5.0,
+    "range": 16,
+    "shadow": true,
+    "shadows": "soft",
+    "shadowStrength": 0.6,
+    "shadowBias": 0.05,
+    "shadowNormalBias": 0.4,
+    "shadowTier": "low",
+    "lightLayers": "all",
+    "shadowLayers": "environment"
+  },
+  "cookie": {
+    "_doc": "木漏れ日のクッキー (256×256・linear・舞台の灯に付ける)。大きく不定形な明暗を blobs 個。中央 (半径 centerRadius。帯の四隅は lamp.bandFill) はコントラスト centerContrast 以下、外は edgeContrast。等間隔の粒は作らない",
+    "size": 256,
+    "seed": 20260930,
+    "blobs": 4,
+    "centerRadius": 0.64,
+    "centerContrast": 0.18,
+    "edgeContrast": 0.62,
+    "softness": 0.16
+  },
+  "ambient": {
+    "_doc": "環境光。Flat をやめて Trilight (空・地平・地面の3色)",
+    "mode": "trilight",
+    "sky": [
+      0.128,
+      0.222,
+      0.339
+    ],
+    "equator": [
+      0.084,
+      0.145,
+      0.221
+    ],
+    "ground": [
+      0.042,
+      0.065,
+      0.097
+    ]
+  },
+  "fog": {
+    "_doc": "距離の霧 (Linear。start・end は画角36° の時の値×r) と高さの霧 (全体値 _HD2DHeightFogColor・_HD2DHeightFogRange・_HD2DHeightFogDepth。StageModule が読む。W3 P22)。depthStart・depthFull = かかり始める深さと満ちる深さ (画角36° の時の値×r。座席の帯より奥だけ)",
+    "on": true,
+    "color": [
+      0.3,
+      0.33,
+      0.4
+    ],
+    "start": 14,
+    "end": 60,
+    "height": {
+      "on": true,
+      "color": [
+        0.66,
+        0.67,
+        0.7
+      ],
+      "base": 0.5,
+      "top": 6.0,
+      "density": 1.8,
+      "depthStart": 20,
+      "depthFull": 24
+    },
+    "lobe": {
+      "_doc": "W3 P22: 霧の光の芯 (坑口の奥の脈。道の座標 t・s・y)。視線がこの芯を向くほど霧の色に color×strength を足し、外れるほど霧の色を edge 倍に落とす (cos の power 乗。画面の端 ≈ 24° で power 16 なら 0.23)。StageModule の距離の霧・高さの霧と、StageShaft の光の面 (設計図 act1_layout.json の glow の lobeFloor) が読む",
+      "on": true,
+      "t": 12.1,
+      "s": 30.0,
+      "y": 1.4,
+      "power": 16,
+      "powerV": 0,
+      "powerH": 0,
+      "_fix1": "直しの輪1 (2026-10-01): 既定に足した縦と横の絞り (powerV・powerH) の off = W5 と同じ cos の power 乗",
+      "edge": 0.3,
+      "color": [
+        0.6,
+        0.61,
+        0.66
+      ],
+      "strength": 1.0
+    }
+  },
+  "shadow": {
+    "_doc": "URP のアセットの影の値 (実行時に書き、Restore で戻す)。distance は画角36° の時の値×r。カスケードの分割は P10 が座席の深さから計算して上書きする",
+    "distance": 42,
+    "cascades": 2,
+    "cascade2Split": 0.33,
+    "mainResolution": 2048,
+    "additionalResolution": 2048,
+    "maxShadowedLights": 3
+  },
+  "post": {
+    "_doc": "後処理 (Stage の Volume の設定に書き、Restore で控えに戻す)。フィルムグレインと色収差は切る。周辺減光は座席の帯の外側から (0.25)",
+    "tonemap": "aces",
+    "exposure": 0.3,
+    "contrast": 14,
+    "saturation": 0,
+    "colorFilter": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "liftGammaGain": {
+      "lift": [
+        0.94,
+        0.99,
+        1.1,
+        -0.01
+      ],
+      "gamma": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "gain": [
+        1.02,
+        1.0,
+        0.97,
+        0
+      ]
+    },
+    "bloom": {
+      "threshold": 1.0,
+      "intensity": 1.0,
+      "scatter": 0.75,
+      "tint": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "vignette": {
+      "intensity": 0.15,
+      "smoothness": 0.45,
+      "center": [
+        0.5,
+        0.52
+      ],
+      "rounded": false,
+      "color": [
+        0.01,
+        0.03,
+        0.07
+      ]
+    },
+    "filmGrain": false,
+    "chromaticAberration": false
+  },
+  "camera": {
+    "_doc": "カメラ: 深度テクスチャ (ぼかしが読む) は必ず作る。MSAA は旗 aa=msaa の時だけ、標本数は HD2DFlags.MsaaSamples と msaaMax の小さい方。background = 何も描かない所の色",
+    "depthTexture": true,
+    "msaaMax": 8,
+    "background": [
+      0.08,
+      0.1,
+      0.21
+    ]
+  },
+  "materials": {
+    "_doc": "箱庭の材質 (Diorama.Materials の名前) ごとの受光 _Receive と影の強さ _ShadowStrength。地形0.8・半立体0.35・札0.25",
+    "terrain": {
+      "receive": 0.8,
+      "shadowStrength": 1.0
+    },
+    "rock": {
+      "receive": 0.8,
+      "shadowStrength": 1.0
+    },
+    "wood": {
+      "receive": 0.8,
+      "shadowStrength": 1.0
+    },
+    "bark": {
+      "receive": 0.8,
+      "shadowStrength": 1.0
+    },
+    "relief": {
+      "receive": 0.35,
+      "shadowStrength": 1.0
+    },
+    "card": {
+      "receive": 0.25,
+      "shadowStrength": 1.0
+    },
+    "glow": {
+      "_doc": "光の面 (霧の面・月光の筋。StageShaft) の色と強さの上書き (W3 の統合・本家の色彩。書かなければ act1_layout.json の surfaces.glow の値)",
+      "tint": [
+        0.57,
+        0.59,
+        0.645
+      ],
+      "intensity": 3.0,
+      "shaftSkipTopVig": false
+    }
+  },
+  "envGrade": {
+    "_doc": "舞台の色の寄せ (W3 の統合・本家の色彩 docs/design/hd2d-slice/honke-color.md)。StageModule (地形・3Dの部品・半立体・札) の絵の色だけに掛かる (キャラの板には掛からない)。desaturate = 彩度を落とす量 (0〜1)・tint = 色の倍率 (線形)。on=false で寄せる前",
+    "on": true,
+    "desaturate": 0.64,
+    "tint": [
+      0.74,
+      0.9,
+      1.08
+    ]
+  },
+  "stageVignette": {
+    "_doc": "W3b P22: 舞台だけの周辺減光 (StageModule・StageShaft。キャラの板と UI には掛からない)。sideStart = 画面の中央からの距離 (0〜0.5。0.32 = 画面の左右の外 18% から暗くなる = 座席の帯のむらを測る帯 (主人公の足元−5% = 画面の 17.8%〜右の敵+5%) にはほぼ掛からない。4体の時の右端の敵の足元の地面は沈む)・side = 左右の端での強さ・topBand = 画面の上からの帯 (0〜1)・top = 上端での強さ。on=false (変種 look_act1_nosvig) で W3 と同じ",
+    "on": true,
+    "sideStart": 0.32,
+    "side": 0.8,
+    "topBand": 0.14,
+    "top": 0.3,
+    "seatBand": false
+  },
+  "hitLight": {
+    "_doc": "技の光 (StageFx.HitLight)。点光源を maxLights 個プールする。HitLight の intensity は refDist の所での明るさ (Light.intensity = intensity × refDist²)。影は大きい当たりだけ (呼ぶ側が shadow=true)",
+    "maxLights": 3,
+    "range": 5.0,
+    "refDist": 1.5,
+    "shadowTier": "low",
+    "_tune": "W3 P22: W2 の測り (R01 斬撃 +22→+16・盾 +6・敵の近接 −2 = 2〜6 フレームで +20 に届かない) を受けて、強さ・保つ長さ・敵の当たりと盾の倍率を上げた (キーは StageFx.HitTune。P13)。W3b P22: W3 の測り +7〜+18 → 強さ 1.4→2.6・届く距離 4→5・灯す高さ 0.45→0.3 (板の高さの割合 = 足元の地面に近く)・保つ 0.42",
+    "intensity": 2.6,
+    "height": 0.3,
+    "hold": 0.42,
+    "foeMul": 1.6,
+    "guardMul": 1.2
+  },
+  "tiltShift": {
+    "bandMargin": 0.8,
+    "rampNear": 2.5,
+    "rampFar": 5.0,
+    "maxPxPC": 10,
+    "maxPxPhone": 10,
+    "halfRes": false,
+    "fallbackBandRel": [
+      -4.0,
+      8.0
+    ]
+  },
+  "tiltShiftPass": {
+    "focus": "path",
+    "pathBand": [
+      -3.0,
+      5.5
+    ],
+    "curve": "lens",
+    "lensFar": 1.6,
+    "lensNear": 1.6,
+    "nearScale": 2.0,
+    "taps": 24,
+    "nearOwnTaps": 20,
+    "nearDilateTile": 16,
+    "jitter": true,
+    "farExclude": 0.5,
+    "tiltTop": 0.0,
+    "tiltTopFrom": 0.75,
+    "tiltBottom": 0.0,
+    "tiltBottomFrom": 0.25,
+    "debugView": 0,
+    "phone": {
+      "taps": 16,
+      "nearOwnTaps": 12,
+      "nearDilateTile": 8
+    }
+  },
+  "urpBokeh": {
+    "focalLength": 90,
+    "aperture": 4.5,
+    "bladeCount": 5
+  },
+  "moondust": {
+    "slice": false
+  },
+  "layout": "act1_layout_w5"
+}

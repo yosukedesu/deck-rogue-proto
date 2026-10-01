@@ -1228,11 +1228,14 @@ namespace DeckRogue.Game
         }
 
         /// <summary>粒子の幕別トグル: 蛍・水のきらめき・落ち葉・月の塵は森 (幕1) のもの。幕3 は月の塵だけ戻す。
-        /// 箱庭 (幕1の見本) は小川が無いので水のきらめきを止め、粒の光のひな型 (mote-light-template) も点けない</summary>
+        /// 箱庭 (幕1の見本) は小川が無いので水のきらめきを止め、粒の光のひな型 (mote-light-template) も点けない。
+        /// 二周目 段2 (R2B): 箱庭で光の設計図 (look) の moondust.slice が true なら、今の moondust の代わりに箱庭だけの月の塵 moondust-slice を点ける</summary>
         static void SetFxForAct(int act)
         {
             if (_fx == null) return;
             bool dio = _diorama;
+            bool slice = dio && R2B_MoondustSliceLook() != null;   // 二周目 段2 (R2B): 箱庭だけの月の塵
+            if (slice) R2B_MoondustSlice();                        // 無ければ作る (StageFx のいちばん後ろ)・値を設計図に合わせる
             for (int i = 0; i < _fx.childCount; i++)
             {
                 var c = _fx.GetChild(i);
@@ -1243,7 +1246,8 @@ namespace DeckRogue.Game
                     case "water-sparkle": on = act == 1 && !dio; break;
                     case "mote-light-template": on = !dio; break;   // 粒ごとの点光源のひな型。今の舞台は今までどおり (既定の on で点いている = 見た目を変えない)。箱庭では点けない (世界の原点に弱い暖色の点光源が1つ立っていた)
                     case "motes-cluster": on = !dio; break;   // 今の舞台のランタンの足元の暖色の粒の一群 (t −7.1 = 画面の左端)。箱庭ではランタンが無く、左端の地面だけが暖色に光って③ (中央÷端) を下げていた (W3 P22)
-                    case "moondust": on = act != 2; break;
+                    case "moondust": on = act != 2 && !slice; break;
+                    case "moondust-slice": on = slice; break;   // 今の舞台では作られない (作られていても消す)
                     case "mist-far": on = act != 2; break;
                     case "vein-motes": on = act != 1; break;
                     case "drips": on = act != 1; break;
@@ -3438,7 +3442,8 @@ namespace DeckRogue.Game
             far.Play();
         }
 
-        /// <summary>月の塵: 銀色の小さな粒が舞台全体でゆっくり昇る (暖色ではないので光のルールに触れない)</summary>
+        /// <summary>月の塵: 銀色の小さな粒が舞台全体でゆっくり昇る (暖色ではないので光のルールに触れない)。
+        /// 箱庭の月の塵 (moondust-slice・二周目 段2) はここでは作らない = R2B_MoondustSlice (SetFxForAct が箱庭で初めて要る時に作る。粒の系の順番を変えないため)</summary>
         static void Moondust()
         {
             var ps = NewSystem("moondust", GlowDotTex());
@@ -3459,6 +3464,118 @@ namespace DeckRogue.Game
                       new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(0.7f, 0.6f), new GradientAlphaKey(0f, 1f) });
             col.color = g;
             ps.Play();
+        }
+
+        /// <summary>
+        /// 二周目 段2 (R2B・計画 hd2d-round2-plan §2 レーン B の 11): 箱庭だけの月の塵の値 (光の設計図 look の "moondust")。slice が true でなければ null (= 今までの moondust)。
+        /// 今の舞台 (stage=old) では StageLook を当てないので読まれない
+        /// </summary>
+        static Newtonsoft.Json.Linq.JObject R2B_MoondustSliceLook()
+        {
+            var look = StageLook.Current;
+            var md = look != null && look.Raw != null ? look.Raw["moondust"] as Newtonsoft.Json.Linq.JObject : null;
+            var sl = md != null ? md["slice"] : null;
+            return sl != null && sl.Type == Newtonsoft.Json.Linq.JTokenType.Boolean && (bool)sl ? md : null;
+        }
+
+        static string R2B_moondustSig;
+
+        /// <summary>
+        /// 二周目 段2 (R2B): 箱庭だけの月の塵 moondust-slice。道の座標の箱 (中心 t・s・y と大きさ t・高さ・s) の中に銀の小さな粒が昇る。始めから満ちた状態 (prewarm・1周 12 秒)。
+        /// 今の moondust (Moondust) とは別の粒の系だが、Moondust の中では作らず、箱庭で初めて要る時にここで作って StageFx のいちばん後ろへ置く:
+        /// det の撮影 (Autopilot.DetSettleStage) は粒の系を階層の順に並べて順番で種を配るので、途中に足すと後ろの系 (幕2/3 の脈の粒・しずく・灰・火の粉) の種がずれ、今の舞台の画が W5 と変わる。
+        /// いちばん後ろなら他の系の順番は変わらない。今の舞台だけの撮影では作られもしない。値が変わった時だけ作り直して頭から流す
+        /// </summary>
+        static void R2B_MoondustSlice()
+        {
+            var md = R2B_MoondustSliceLook();
+            if (md == null || _fx == null) return;
+            Vector3 c = R2B_V3(md["center"], new Vector3(3f, 3.5f, 3.5f));     // 道の座標 (t, s, y)
+            Vector3 z = R2B_V3(md["size"], new Vector3(36f, 5f, 10f));         // 大きさ (t, 高さ, s)
+            float rate = R2B_F(md["rate"], 10f), max = R2B_F(md["max"], 120f);
+            float s0 = R2B_F(md["sizeMin"], 0.05f), s1 = R2B_F(md["sizeMax"], 0.11f);
+            var ca = md["color"] as Newtonsoft.Json.Linq.JArray;
+            var col = ca != null && ca.Count >= 4 ? new Color(R2B_F(ca[0], 1.3f), R2B_F(ca[1], 1.45f), R2B_F(ca[2], 1.9f), R2B_F(ca[3], 0.9f)) : new Color(1.3f, 1.45f, 1.9f, 0.9f);
+            // 直しの輪2 (2026-10-01): sharp が true なら粒の芯が深さを書く材質 (StageDust) = ぼかしが芯を帯の中と読み、くっきりした小さな光の点になる。
+            // 頂点の色は 0〜1 に丸められるので、色を最大の成分で割り、その成分を材質の _Intensity に (HDR の明るさを保つ)
+            var shTok = md["sharp"];
+            bool sharp = shTok != null && shTok.Type == Newtonsoft.Json.Linq.JTokenType.Boolean && (bool)shTok;
+            float coreCut = Mathf.Clamp(R2B_F(md["coreCutoff"], 0.5f), 0.05f, 0.95f);   // 芯 (深さを書く所) の α のしきい。小さいほど芯が大きい
+            float yaw = StageLook.Current != null ? StageLook.Current.PathYaw : PathYaw;
+            var sigSb = new System.Text.StringBuilder();
+            foreach (var v in new[] { c.x, c.y, c.z, z.x, z.y, z.z, rate, max, s0, s1, col.r, col.g, col.b, col.a, yaw, sharp ? 1f : 0f, coreCut }) sigSb.Append(v.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture)).Append(',');
+            string sig = sigSb.ToString();
+
+            var tr = _fx.Find("moondust-slice");
+            ParticleSystem ps = tr != null ? tr.GetComponent<ParticleSystem>() : null;
+            bool fresh = ps == null;
+            if (fresh) ps = NewSystem("moondust-slice", GlowDotTex());
+            ps.transform.SetAsLastSibling();   // 粒の系の順番で他の系の種を動かさない (上の説明)
+            if (!fresh && sig == R2B_moondustSig && ps.gameObject.activeSelf) return;
+            R2B_moondustSig = sig;
+            ps.gameObject.SetActive(true);
+            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);   // duration は止めてからでないと書けない
+            var pr = ps.GetComponent<ParticleSystemRenderer>();
+            Material dm = sharp ? R2B_DustMaterial() : null;
+            float hdr = Mathf.Max(1f, Mathf.Max(col.r, Mathf.Max(col.g, col.b)));
+            if (dm != null)
+            {
+                dm.SetFloat("_Intensity", hdr);
+                dm.SetFloat("_Cutoff", coreCut);
+                pr.sharedMaterial = dm;
+                pr.shadowCastingMode = ShadowCastingMode.Off; pr.receiveShadows = false;   // 深さを書いても影は落とさない
+                col = new Color(col.r / hdr, col.g / hdr, col.b / hdr, col.a);
+            }
+            else if (pr.sharedMaterial == _r2bDustMat) pr.sharedMaterial = GlowMaterial(GlowDotTex());   // sharp を外した変種 = 今までの材質へ戻す
+            var main = ps.main;
+            main.duration = 12f;
+            main.prewarm = true;                                               // 始めから満ちた状態 (det の撮影も 90 フレームで満ちる)
+            main.startLifetime = new ParticleSystem.MinMaxCurve(9f, 15f);
+            main.startSpeed = 0f;
+            main.startSize = new ParticleSystem.MinMaxCurve(Mathf.Max(0.001f, s0), Mathf.Max(s0, s1));
+            main.startColor = col;
+            main.maxParticles = Mathf.Max(1, Mathf.RoundToInt(max));
+            var em = ps.emission; em.rateOverTime = Mathf.Max(0f, rate);
+            var shape = ps.shape; shape.shapeType = ParticleSystemShapeType.Box;
+            shape.rotation = new Vector3(0f, yaw, 0f);
+            shape.scale = new Vector3(z.x, z.y, z.z);                          // 箱の x = 道の t・y = 高さ・z = 道の s (shape.rotation で道の向きへ)
+            var cw = Quaternion.Euler(0f, yaw, 0f) * new Vector3(c.x, 0f, c.y);
+            shape.position = new Vector3(cw.x, c.z, cw.z);
+            var vel = ps.velocityOverLifetime; vel.enabled = true; vel.space = ParticleSystemSimulationSpace.World;
+            vel.x = new ParticleSystem.MinMaxCurve(-0.06f, 0.06f); vel.y = new ParticleSystem.MinMaxCurve(0.04f, 0.14f); vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
+            var noise = ps.noise; noise.enabled = true; noise.strength = 0.2f; noise.frequency = 0.3f; noise.scrollSpeed = 0.15f;
+            var colL = ps.colorOverLifetime; colL.enabled = true;
+            var g = new Gradient();
+            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+                      new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(0.7f, 0.6f), new GradientAlphaKey(0f, 1f) });
+            colL.color = g;
+            ps.Play();
+        }
+
+        static Material _r2bDustMat;
+        /// <summary>直しの輪2: 月の塵の芯が深さを書く材質 (Resources/Shaders/StageDust)。不透明の列 2450。シェーダが無ければ null (= 今までの材質)</summary>
+        static Material R2B_DustMaterial()
+        {
+            if (_r2bDustMat != null) return _r2bDustMat;
+            var sh = Resources.Load<Shader>("Shaders/StageDust");
+            if (sh == null) sh = Shader.Find("DeckRogue/StageDust");
+            if (sh == null || !sh.isSupported) return null;
+            _r2bDustMat = new Material(sh) { name = "moondust-slice-dust" };
+            _r2bDustMat.mainTexture = GlowDotTex();
+            _r2bDustMat.SetFloat("_Cutoff", 0.5f);
+            _r2bDustMat.renderQueue = 2450;
+            return _r2bDustMat;
+        }
+
+        static float R2B_F(Newtonsoft.Json.Linq.JToken t, float def)
+        {
+            return t != null && (t.Type == Newtonsoft.Json.Linq.JTokenType.Float || t.Type == Newtonsoft.Json.Linq.JTokenType.Integer) ? (float)t : def;
+        }
+
+        static Vector3 R2B_V3(Newtonsoft.Json.Linq.JToken t, Vector3 def)
+        {
+            var a = t as Newtonsoft.Json.Linq.JArray;
+            return a != null && a.Count >= 3 ? new Vector3(R2B_F(a[0], def.x), R2B_F(a[1], def.y), R2B_F(a[2], def.z)) : def;
         }
 
         /// <summary>脈の粒: 結晶と露頭から青緑の粒がゆっくり昇る (幕2/3)</summary>
