@@ -13,6 +13,8 @@
 
 使い方:
   python3 scripts/sprite-normals.py normals <png...>                 # 隣に <名前>_n.png
+  python3 scripts/sprite-normals.py normals-stage <png...>           # 舞台の半立体の法線 (局所の太さの円柱＋明るさの細部。三周目 R7)
+  python3 scripts/sprite-normals.py normals-stage --layout unity/Assets/Resources/Stage/act1_layout.json   # 設計図の半立体を全部
   python3 scripts/sprite-normals.py normals --all                    # リーダー・敵・人形の全部 (既にあれば作り直す)
   python3 scripts/sprite-normals.py emission --preset konoha <png...> # 隣に <名前>_e.png
   python3 scripts/sprite-normals.py sheet --out <png> <元の png...>   # 元・法線・法線で照らした見本・発光 を並べる
@@ -133,6 +135,104 @@ def normal_map(a, radius=None, strength=2.5, detail=0.25):
     return out
 
 
+# ---------- 舞台の半立体の法線 (2026-10-01 三周目 レーン D・R7) ----------
+# 舞台の半立体 (ReliefMesh) は膨らみの縁だけが法線を持ち、板の中は平ら＝霧の幹が一様な柱に見えた (分析 R7・facts E3)。
+# 本家は「ドットに光を当てる」ために法線を持つ (霧の幹でも左が明るく右が暗い)。そこで絵ごとに法線 <名前>_n.png を作り、
+# StageModule が板の向き (右 R・上 U・手前 F) の接空間でほどく (レーン S)。向きはキャラと同じ: 赤 +x 右・緑 +y 上・青 +z 手前。
+# 形: 枝・房・幹の太さごとに丸みをそろえる＝局所の太さ R (その画素を含むいちばん大きな内接円の半径の近似) を求め、
+# 高さ h = √(R² − (R − d)²) (d = 輪郭までの距離)＝幹は円柱・細い枝と房は細い円柱の断面になる。
+# そこへ絵の明るさの細部 (局所の平均からの差＝樹皮の山と溝・房の明るい塊) を少し足す。透明の所は (128,128,255)・α は元の絵のまま。
+
+def local_thickness(dist, alpha, rmax=40):
+    """局所の太さ R(x) ≈ max{ d(y) : |x − y| ≤ d(y) } (内接円の半径)。距離 d を「届く残り」と一緒に 4 近傍へ広げる近似 (rmax 回)"""
+    R = np.where(alpha, dist, 0.0)
+    reach = R.copy()
+    for _ in range(int(rmax)):
+        best_R, best_reach = R.copy(), reach.copy()
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            nR = np.roll(np.roll(R, dy, 0), dx, 1)
+            nreach = np.roll(np.roll(reach, dy, 0), dx, 1) - 1.0
+            # 端で回り込まない
+            if dy == 1:
+                nR[0, :] = 0; nreach[0, :] = -1
+            if dy == -1:
+                nR[-1, :] = 0; nreach[-1, :] = -1
+            if dx == 1:
+                nR[:, 0] = 0; nreach[:, 0] = -1
+            if dx == -1:
+                nR[:, -1] = 0; nreach[:, -1] = -1
+            take = alpha & (nreach >= 0) & ((nR > best_R) | ((nR == best_R) & (nreach > best_reach)))
+            best_R = np.where(take, nR, best_R)
+            best_reach = np.where(take, nreach, best_reach)
+        if np.array_equal(best_R, R) and np.array_equal(best_reach, reach):
+            break
+        R, reach = best_R, best_reach
+    return np.maximum(R, 1.0)
+
+
+def stage_normal_map(a, strength=0.9, detail=0.35, rmax=40, alpha_min=102):
+    """舞台の半立体の法線 (上の説明)。alpha_min = 不透明とみなす α (ReliefMesh の cutoff 0.4 と同じ 102)。
+    strength = 傾きの倍率 (1 = 円柱そのもの)・detail = 明るさの細部の高さ (局所の太さに対する割合)"""
+    alpha = a[..., 3] >= alpha_min
+    out = np.zeros_like(a)
+    out[..., 0] = 128; out[..., 1] = 128; out[..., 2] = 255
+    out[..., 3] = a[..., 3]
+    if not alpha.any():
+        return out
+    # 絵の端に触れている不透明 (画面の上を突き抜ける幹の上の切り口・地面に立つ根元・垂れる枝の付け根) は、その先へ続く物として扱う
+    # (端で丸めると切り口がドームになり、上を向いた法線で明るく光る)。端の行と列を rmax だけ写して広げてから測り、切り戻す
+    P = int(rmax)
+    ap = np.pad(alpha, P, mode='edge')
+    distp = distance_inside(ap)
+    Rp = local_thickness(distp, ap, rmax)
+    dist = distp[P:-P, P:-P]
+    R = Rp[P:-P, P:-P]
+    d = np.minimum(dist, R)
+    h = np.sqrt(np.maximum(0.0, R * R - (R - d) ** 2))
+    rgb = a[..., :3].astype(np.float64)
+    lum = (0.299 * rgb[..., 0] + 0.587 * rgb[..., 1] + 0.114 * rgb[..., 2]) / 255.0
+    lum_hp = lum - blur3(np.where(alpha, lum, lum[alpha].mean()), 2)
+    h = h + detail * np.minimum(R, 6.0) * lum_hp * 2.0
+    h = np.where(alpha, h, 0.0)
+    # なめらかに (局所の太さの近似が作る放射状の筋と、行ごとに幅の揺れる裾の横縞を消す)。外は 0 のまま＝縁の傾きは残る
+    h = np.where(alpha, blur3(h, 2), 0.0)
+    p = np.pad(h, 1, mode='edge')
+    gx = (p[:-2, 2:] + 2 * p[1:-1, 2:] + p[2:, 2:] - p[:-2, :-2] - 2 * p[1:-1, :-2] - p[2:, :-2]) / 8.0
+    gy = (p[2:, :-2] + 2 * p[2:, 1:-1] + p[2:, 2:] - p[:-2, :-2] - 2 * p[:-2, 1:-1] - p[:-2, 2:]) / 8.0
+    nx = -gx * strength
+    ny = gy * strength
+    nz = np.ones_like(nx)
+    ln = np.sqrt(nx * nx + ny * ny + nz * nz)
+    enc = np.clip(np.round((np.dstack([nx / ln, ny / ln, nz / ln]) * 0.5 + 0.5) * 255.0), 0, 255).astype(np.uint8)
+    out[..., :3][alpha] = enc[alpha]
+    return out
+
+
+def layout_relief_pngs(layout_path):
+    """設計図 (act1_layout.json) の sources のうち半立体 (flat でない) の絵を、候補の先頭から実際にある物で解決して返す。
+    返り値: (舞台の relief/ の絵のパス一覧, それ以外〔書けない場所〕の (source, パス) 一覧, 見つからない source 一覧)"""
+    lay = json.load(open(layout_path))
+    stage_dir = os.path.join(ART, 'stage') + os.sep
+    found, other, missing = [], [], []
+    for name, src in lay.get('sources', {}).items():
+        if src.get('flat'):
+            continue
+        hit = None
+        for c in src.get('art', []):
+            path = os.path.join(ROOT, 'unity', 'Assets', 'Resources', c + '.png')
+            if os.path.exists(path):
+                hit = path
+                break
+        if hit is None:
+            missing.append(name)
+        elif hit.startswith(stage_dir):
+            if hit not in found:
+                found.append(hit)
+        else:
+            other.append((name, os.path.relpath(hit, ROOT)))
+    return found, other, missing
+
+
 # ---------- 発光 ----------
 # 色相は度 (0〜360)・彩度と明るさは 0〜1。どれか1つの帯に入れば光る
 PRESETS = {
@@ -250,10 +350,38 @@ def main():
     em.add_argument('--add', action='append', default=[], help='x0,y0,x1,y1 の矩形を光らせる (目で見て直す用)')
     em.add_argument('--remove', action='append', default=[], help='x0,y0,x1,y1 の矩形を光らせない')
     em.add_argument('--suffix', default='_e')
+    ns = sub.add_parser('normals-stage', help='舞台の半立体の法線 (三周目 R7)。隣に <名前>_n.png')
+    ns.add_argument('files', nargs='*')
+    ns.add_argument('--layout', help='設計図 (act1_layout.json) の sources の半立体を全部 (Art/stage/ の下の物だけ書く)')
+    ns.add_argument('--strength', type=float, default=0.9)
+    ns.add_argument('--detail', type=float, default=0.35)
+    ns.add_argument('--rmax', type=int, default=40)
+    ns.add_argument('--suffix', default='_n')
+    ns.add_argument('--skip-existing', action='store_true')
     sh = sub.add_parser('sheet')
     sh.add_argument('--out', required=True)
     sh.add_argument('files', nargs='+')
     args = ap.parse_args()
+
+    if args.cmd == 'normals-stage':
+        files = list(args.files)
+        if args.layout:
+            found, other, missing = layout_relief_pngs(args.layout)
+            files += [f for f in found if f not in files]
+            for name, path in other:
+                print(f'書かない (Art/stage/ の外): {name} → {path}  (シェーダは平らな法線で埋める)')
+            for name in missing:
+                print(f'絵が見つからない: {name}')
+        files = [f for f in files if not is_generated(f)]
+        n = 0
+        for f in files:
+            out = os.path.splitext(f)[0] + args.suffix + '.png'
+            if args.skip_existing and os.path.exists(out):
+                continue
+            Image.fromarray(stage_normal_map(load(f), args.strength, args.detail, args.rmax), 'RGBA').save(out, optimize=True)
+            n += 1
+        print(f'法線 {n} 枚')
+        return
 
     if args.cmd == 'normals':
         files = all_character_pngs() if args.all else args.files
