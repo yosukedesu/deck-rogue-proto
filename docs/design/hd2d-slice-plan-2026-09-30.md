@@ -864,3 +864,10 @@ W5 の判定（ユーザー: 本家と並べた見劣り **3/5**・差は光と�
 ### 12-5 シートと記録（git の管理外）
 - 最後の比較シート: `~/.cache/deck-rogue/hd2d-r3/final3/sheets/`（`01-r3-compare-ui`・`02-r3-compare-hideui`・`03-r3-glance`＝本家｜W5｜二周目｜三周目 × 5場面＋384px）。試しのシート `~/.cache/deck-rogue/hd2d-r3/trial2/trial-sheet.png`。
 - 撮影: `~/.cache/deck-rogue/hd2d-r3/final`（本番）・`final2`（直しの輪1）・`final3`（直しの輪2）・`trial1`・`trial2`。反証の切り抜き: scratchpad の `review/`。PC の計測: `~/.cache/deck-rogue/hd2d-r3/perf-pc/`。
+
+### 12-6 ユーザーの判定（2026-10-02）
+- **本家と並べた見劣り 3.5**（5場面の総合。二周目 3〜3.5）。段2（幕2・幕3）へは進まず、10/7 の PixelLab（森の点描の粒・敵の描き方・幕ボス 160・獣 96・第2姿勢）を入れた四周目で 4 を目指す。
+- UI の作り直しの細部（仕様 `r3-ui-spec.md` §15 の Q1〜Q6）は**このまま**（人形を置物の付箋から外す＝09-19 の裁定を変えた・要の数字の札・匣の上端 480・スマホの足元の線 0.45・スマホの窓が足元の帳ごと覆う）。
+- **1〜2 体で出る獣は 96 の枠にする**（裁定 Q5 の条件「狼の場面が 3 のまま」に当たった。発注書 `docs/pixellab/hd2d-r3-order-draft.md` の E 枠を発注する）。
+- 残り: S25 の 15 分の計測（adb に端末が無く三周目も未計測）・APK の実機の確認（`adb logcat` の `E Unity`）。
+
