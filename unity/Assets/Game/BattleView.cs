@@ -453,7 +453,7 @@ namespace DeckRogue.Game
                     tagOld.SetParent(null, false); UnityEngine.Object.Destroy(tagOld.gameObject);
                     BattleScreen.FillDollTag(dp, st, d, d.Uid == lastShownUid ? overflow : 0, true);
                 }
-                BattleScreen.ArrangeDollTags(_dollsArea);
+                BattleScreen.ArrangeDollTags(_dollsArea, true);   // 2回目 = 見本だけ2段上・半札横まで探す (直しの輪1。今の舞台は今まで)
             }
         }
         readonly Dictionary<string, int> _dollSeat = new Dictionary<string, int>();   // uid → 座席 (崩れるまで保つ)

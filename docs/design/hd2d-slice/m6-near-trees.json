@@ -1,0 +1,356 @@
+{
+ "_doc": "門⑥の新しい読み (ユーザーの回答 2026-10-01): 「座席より手前〜座席の帯の近い木」の画面の箱を設計図から出す。\n近い木 = 設計図 (act1_layout*.json) の relief・tree・card のうち、絵の名前が木の類 (幹・松・木・樹冠・葉・針葉の枝) で、\n根元の道の座標 s が「ピントの帯 (look の dof の pathBand) の奥 + 1.0」以下の物 (帯の中と、帯のすぐ奥の1〜2px しかぼけない所)。\n額縁 (kind frame) はカメラに付く手前の物でぼけるので入れない。箱は lane-C/place.py の place_part (StageCamera の写し) で出す。\n出力: {\"<設計図の名前>|<画角>|<見下ろし>|<足元の線>|<PC|PH>\": {\"boxes\": [[x,y,w,h]…], \"names\": […], \"bandFar\": …}}\nhd2d-measure.py --near-trees <この JSON> が layout.json の設計図とカメラで引く。",
+ "Stage/act1_layout|22|5|0.407|PC": {
+  "file": "act1_layout.json",
+  "bandFar": 4.5,
+  "boxes": [
+   [
+    0,
+    0,
+    146,
+    638
+   ],
+   [
+    0,
+    0,
+    253,
+    639
+   ],
+   [
+    0,
+    0,
+    118,
+    632
+   ],
+   [
+    1797,
+    0,
+    123,
+    548
+   ],
+   [
+    0,
+    0,
+    264,
+    175
+   ],
+   [
+    1715,
+    0,
+    205,
+    175
+   ],
+   [
+    0,
+    0,
+    24,
+    175
+   ]
+  ],
+  "names": [
+   "grove-trunk-3#8 trunkLong3 s4.3",
+   "grove-trunk-1#9 trunkLong1 s3.5",
+   "grove-pine#10 pine s4.9",
+   "edge-trunk-r#31 trunkLong1 s4.6",
+   "crown-left#57 canopyHang s-9.0",
+   "crown-right#58 canopyHang s-9.0",
+   "crown-left-wide#59 canopyHang s-9.0"
+  ]
+ },
+ "Stage/act1_layout|22|7|0.525|PH": {
+  "file": "act1_layout.json",
+  "bandFar": 4.5,
+  "boxes": [
+   [
+    0,
+    0,
+    162,
+    418
+   ],
+   [
+    0,
+    0,
+    265,
+    419
+   ],
+   [
+    0,
+    0,
+    137,
+    414
+   ],
+   [
+    0,
+    0,
+    313,
+    150
+   ],
+   [
+    1687,
+    0,
+    233,
+    150
+   ]
+  ],
+  "names": [
+   "grove-trunk-3#8 trunkLong3 s4.3",
+   "grove-trunk-1#9 trunkLong1 s3.5",
+   "grove-pine#10 pine s4.9",
+   "crown-left#57 canopyHang s-9.0",
+   "crown-right#58 canopyHang s-9.0"
+  ]
+ },
+ "Stage/act1_layout|22|6|0.407|PC": {
+  "file": "act1_layout.json",
+  "bandFar": 4.5,
+  "boxes": [
+   [
+    0,
+    0,
+    146,
+    637
+   ],
+   [
+    0,
+    0,
+    253,
+    638
+   ],
+   [
+    0,
+    0,
+    118,
+    631
+   ],
+   [
+    1798,
+    0,
+    122,
+    535
+   ],
+   [
+    0,
+    0,
+    262,
+    212
+   ],
+   [
+    1717,
+    0,
+    203,
+    191
+   ],
+   [
+    0,
+    0,
+    21,
+    214
+   ]
+  ],
+  "names": [
+   "grove-trunk-3#8 trunkLong3 s4.3",
+   "grove-trunk-1#9 trunkLong1 s3.5",
+   "grove-pine#10 pine s4.9",
+   "edge-trunk-r#31 trunkLong1 s4.6",
+   "crown-left#57 canopyHang s-9.0",
+   "crown-right#58 canopyHang s-9.0",
+   "crown-left-wide#59 canopyHang s-9.0"
+  ]
+ },
+ "Stage/act1_layout|22|8|0.525|PH": {
+  "file": "act1_layout.json",
+  "bandFar": 4.5,
+  "boxes": [
+   [
+    0,
+    0,
+    162,
+    418
+   ],
+   [
+    0,
+    0,
+    264,
+    419
+   ],
+   [
+    0,
+    0,
+    137,
+    413
+   ],
+   [
+    0,
+    0,
+    311,
+    191
+   ],
+   [
+    1689,
+    0,
+    231,
+    168
+   ]
+  ],
+  "names": [
+   "grove-trunk-3#8 trunkLong3 s4.3",
+   "grove-trunk-1#9 trunkLong1 s3.5",
+   "grove-pine#10 pine s4.9",
+   "crown-left#57 canopyHang s-9.0",
+   "crown-right#58 canopyHang s-9.0"
+  ]
+ },
+ "Stage/act1_layout|28|5.5|0.410|PC": {
+  "file": "act1_layout.json",
+  "bandFar": 4.5,
+  "boxes": [
+   [
+    0,
+    0,
+    151,
+    634
+   ],
+   [
+    0,
+    0,
+    254,
+    635
+   ],
+   [
+    0,
+    0,
+    127,
+    628
+   ],
+   [
+    1739,
+    0,
+    181,
+    540
+   ],
+   [
+    0,
+    0,
+    66,
+    88
+   ],
+   [
+    1801,
+    0,
+    119,
+    138
+   ]
+  ],
+  "names": [
+   "grove-trunk-3#8 trunkLong3 s4.3",
+   "grove-trunk-1#9 trunkLong1 s3.5",
+   "grove-pine#10 pine s4.9",
+   "edge-trunk-r#31 trunkLong1 s4.6",
+   "crown-left#57 canopyHang s-9.0",
+   "crown-right#58 canopyHang s-9.0"
+  ]
+ },
+ "Stage/act1_layout|28|7.5|0.525|PH": {
+  "file": "act1_layout.json",
+  "bandFar": 4.5,
+  "boxes": [
+   [
+    0,
+    0,
+    167,
+    418
+   ],
+   [
+    0,
+    0,
+    266,
+    419
+   ],
+   [
+    0,
+    0,
+    147,
+    413
+   ],
+   [
+    0,
+    0,
+    43,
+    57
+   ],
+   [
+    1801,
+    0,
+    119,
+    115
+   ]
+  ],
+  "names": [
+   "grove-trunk-3#8 trunkLong3 s4.3",
+   "grove-trunk-1#9 trunkLong1 s3.5",
+   "grove-pine#10 pine s4.9",
+   "crown-left#57 canopyHang s-9.0",
+   "crown-right#58 canopyHang s-9.0"
+  ]
+ },
+ "Stage/act1_layout|28|12|0.410|PC": {
+  "file": "act1_layout_w5.json",
+  "bandFar": 5.5,
+  "boxes": [
+   [
+    0,
+    360,
+    144,
+    110
+   ]
+  ],
+  "names": [
+   "relief#122 leaf4 s5.9"
+  ]
+ },
+ "Stage/act1_layout|28|12|0.510|PH": {
+  "file": "act1_layout_w5.json",
+  "bandFar": 5.5,
+  "boxes": [
+   [
+    0,
+    175,
+    171,
+    106
+   ]
+  ],
+  "names": [
+   "relief#122 leaf4 s5.9"
+  ]
+ },
+ "Stage/act1_layout_w5|28|12|0.410|PC": {
+  "file": "act1_layout_w5.json",
+  "bandFar": 5.5,
+  "boxes": [
+   [
+    0,
+    360,
+    144,
+    110
+   ]
+  ],
+  "names": [
+   "relief#122 leaf4 s5.9"
+  ]
+ },
+ "Stage/act1_layout_w5|28|12|0.510|PH": {
+  "file": "act1_layout_w5.json",
+  "bandFar": 5.5,
+  "boxes": [
+   [
+    0,
+    175,
+    171,
+    106
+   ]
+  ],
+  "names": [
+   "relief#122 leaf4 s5.9"
+  ]
+ }
+}

@@ -112,8 +112,10 @@ namespace DeckRogue.Game
             img.preserveAspect = false;
             img.raycastTarget = false;
         }
-        /// <summary>MenuShade の上端と下端の濃さ (Gamma の見た目の α)</summary>
-        const float MenuShadeTop = 0.68f, MenuShadeBottom = 0.2f;
+        /// <summary>MenuShade の上端と下端の濃さ (Gamma の見た目の α)。
+        /// 二周目 (2026-10-01 統合): 霧の帯がキャラのすぐ上へ下がり、画面の中ほど (地図の下の段のノードの名前) の後ろが明るくなった
+        /// (スマホ相当の地図の「戦闘」の行で淡い字の対比 p95 9.2 → 6.7)。下端 0.2 → 0.4 (画面の縦 51% の α 0.46 → 0.55)</summary>
+        const float MenuShadeTop = 0.68f, MenuShadeBottom = 0.4f;
 
         static void BuildTopBar(GameRoot g, RectTransform root, RunState run, GameState st)
         {
@@ -592,6 +594,7 @@ namespace DeckRogue.Game
             // ledger=feet (変種): 帳面の上端を足元の LedgerFeetGap 下に (足元の線より下へは出さない)。帳面の高さがそろう (uniformForecast) ので名前の行は足元の高さ順に並ぶ
             if (ledgerAtFeet) sb = Mathf.Max(0f, feetY - LedgerFeetGap - h);
             UiKit.Anchor(strip, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-w / 2f, sb), new Vector2(w / 2f, sb + h));
+            if (EntranceHidesStrips) { var scg = strip.gameObject.AddComponent<CanvasGroup>(); scg.alpha = 0f; scg.blocksRaycasts = false; }   // 見本: 登場の演出の間は隠れて生まれる (直しの輪2・R09)
             LedgerStrip(g, strip, st, index, def, nm, shownHp, w, h, aimed, candidate, acting, forecast, dying);
             if (alive) IntentTag(g, pan, st, index, def, headTop, aimed, candidate, acting, neighborGap, uniformStack);
             // 夜の札 (ui=night): 帳面と意図の札を夜の組へ (旗が無ければ何もしない)
@@ -1108,21 +1111,27 @@ namespace DeckRogue.Game
         static bool _entranceHide;
         static float _entranceHideUntil;
         static bool EntranceHidesIntents { get { return _entranceHide && Time.time < _entranceHideUntil; } }
+        /// <summary>二周目 直しの輪2 (2026-10-01・R09): 見本 (箱庭) では敵の帳面 (strip) も意図の札と同じく登場の演出の間は隠す。
+        /// 新しいカメラで足元が 18px 下がり、足元と帳面の間 (約29px) に高さ 62 の名前の帯が入らず、帯の文字が帳面の名前の行に重なっていた。
+        /// 帳面は帯が消えてから意図の札と一緒に出す (F47「札は後から」と同じ作法)。今の舞台 (stage=old) は今までどおり隠さない</summary>
+        static bool EntranceHidesStrips { get { return EntranceHidesIntents && Hd2dLayout; } }
 
-        /// <summary>登場の演出の間、いま出ている意図の札を隠し、以後に組み直した札も隠れて生まれるようにする。maxSeconds は保険の期限</summary>
+        /// <summary>登場の演出の間、いま出ている意図の札 (見本では帳面も) を隠し、以後に組み直した札も隠れて生まれるようにする。maxSeconds は保険の期限</summary>
         public static void HideIntentsForEntrance(GameRoot g, float maxSeconds)
         {
             _entranceHide = true;
             _entranceHideUntil = Time.time + Mathf.Max(0.5f, maxSeconds);
             ForEachIntentTag(g, cg => { cg.alpha = 0f; cg.blocksRaycasts = false; });
+            if (Hd2dLayout) ForEachStrip(g, cg => { cg.alpha = 0f; cg.blocksRaycasts = false; });
         }
 
-        /// <summary>登場の演出の終わり: 意図の札を dur 秒で出す (いま隠れている札だけ。途中で組み直した札は隠さずに生まれる)</summary>
+        /// <summary>登場の演出の終わり: 意図の札 (見本では帳面も) を dur 秒で出す (いま隠れている札だけ。途中で組み直した札は隠さずに生まれる)</summary>
         public static void RevealIntentsAfterEntrance(GameRoot g, float dur)
         {
             _entranceHide = false;
             var groups = new List<CanvasGroup>();
             ForEachIntentTag(g, cg => { if (cg.alpha < 1f) groups.Add(cg); });
+            if (Hd2dLayout) ForEachStrip(g, cg => { if (cg.alpha < 1f) groups.Add(cg); });
             if (groups.Count == 0) return;
             var from = new float[groups.Count];
             for (int i = 0; i < groups.Count; i++) from[i] = groups[i].alpha;
@@ -1136,14 +1145,19 @@ namespace DeckRogue.Game
         }
 
         /// <summary>画面の敵全員の意図の札 (入れ物の子 "intent-tag") の CanvasGroup (無ければ足す) に act を掛ける</summary>
-        static void ForEachIntentTag(GameRoot g, Action<CanvasGroup> act)
+        static void ForEachIntentTag(GameRoot g, Action<CanvasGroup> act) { ForEachEnemyChild(g, "intent-tag", act); }
+
+        /// <summary>画面の敵全員の帳面 (入れ物の子 "strip") の CanvasGroup (無ければ足す) に act を掛ける (直しの輪2・見本だけ)</summary>
+        static void ForEachStrip(GameRoot g, Action<CanvasGroup> act) { ForEachEnemyChild(g, "strip", act); }
+
+        static void ForEachEnemyChild(GameRoot g, string child, Action<CanvasGroup> act)
         {
             var st = g != null && g.Rs != null ? g.Rs.Combat : null;
             if (st == null) return;
             for (int i = 0; i < st.Enemies.Count; i++)
             {
                 var pan = g.Anchor("enemy" + i);
-                var tag = pan != null ? pan.Find("intent-tag") as RectTransform : null;
+                var tag = pan != null ? pan.Find(child) as RectTransform : null;
                 if (tag == null) continue;
                 var cg = tag.GetComponent<CanvasGroup>();
                 if (cg == null) cg = tag.gameObject.AddComponent<CanvasGroup>();
@@ -1839,7 +1853,7 @@ namespace DeckRogue.Game
         /// 上 (人形の足に掛かる) は1段 (札の高さ＋4) までで、上へ動かすのは下の 1.6 倍の遠さと見る。
         /// どこにも置けない札が1枚でもあれば false (呼ぶ側が短い形に組み直してもう一度並べる)
         /// </summary>
-        public static bool ArrangeDollTags(RectTransform area)
+        public static bool ArrangeDollTags(RectTransform area, bool lastResort = false)
         {
             if (area == null) return true;
             bool ph = UiKit.Phone;
@@ -1886,6 +1900,33 @@ namespace DeckRogue.Game
                         if (DollTagHits(test, placed)) continue;
                         float cost = y <= y0 ? y0 - y : (y - y0) * 1.6f;
                         if (cost < bestCost) { bestCost = cost; best = y; }
+                    }
+                    // 見本 (stage=diorama) の最後の手 (直しの輪1 2026-10-01。短い形で並べ直す2回目 lastResort だけ): 1段上でも置けない札は、2段上まで・半札ぶん横にずらした置き場も探す。
+                    // 低いカメラ (22°・7°) では人形が横に詰まり、1段では3組が重なった (PH 人形9体の L6)。今の舞台は通らない (1画素も変えない)
+                    if (bestCost == float.MaxValue && lastResort && HD2DFlags.StageMode == HD2DStage.Diorama)
+                    {
+                        float x0 = r.x, bestDx = 0f;
+                        float[] dxs = { 0f, w * 0.5f, -w * 0.5f };
+                        foreach (var dx in dxs)
+                        {
+                            var ys = new List<float> { y0 };
+                            for (int j = 0; j < placed.Count; j++)
+                                if (x0 + dx < placed[j].xMax + 2f && x0 + dx + w > placed[j].xMin - 2f) { ys.Add(placed[j].yMin - h - 2f); ys.Add(placed[j].yMax + 2f); }
+                            for (int c = 0; c < ys.Count; c++)
+                            {
+                                float y = ys[c];
+                                if (y < floor || y > y0 + 2f * (h + 4f)) continue;
+                                if (DollTagHits(new Rect(x0 + dx, y, w, h), placed)) continue;
+                                float cost = (y <= y0 ? y0 - y : (y - y0) * 1.6f) + Mathf.Abs(dx) * 2f;
+                                if (cost < bestCost) { bestCost = cost; best = y; bestDx = dx; }
+                            }
+                            if (bestCost < float.MaxValue) break;
+                        }
+                        if (bestCost < float.MaxValue && bestDx != 0f)
+                        {
+                            r.x = x0 + bestDx;
+                            tag.anchoredPosition = new Vector2(tag.anchoredPosition.x + bestDx, tag.anchoredPosition.y);
+                        }
                     }
                     if (bestCost == float.MaxValue) ok = false;
                     r.y = best;

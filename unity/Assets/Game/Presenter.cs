@@ -601,7 +601,8 @@ namespace DeckRogue.Game
             try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
             bool boss = nodeType == MapNodeTypes.Boss, elite = nodeType == MapNodeTypes.Elite;
             // 強個体・幕ボスの名前の帯 (2026-09-30 F47 ユーザー裁定「帯を下げ、札は後から」): 置き場は登場の縮みを掛ける前 (絵が座席に等身大で立っている時) に測る。
-            // 意図の札は帯と寄りが終わるまで隠す (帯が消える時に 0.2 秒で出す＝名乗り → 予告の順。寄りの間に 128 ドットの鬣が札の尾に食い込まない)
+            // 意図の札は帯と寄りが終わるまで隠す (帯が消える時に 0.2 秒で出す＝名乗り → 予告の順。寄りの間に 128 ドットの鬣が札の尾に食い込まない)。
+            // 見本 (箱庭) では敵の帳面も同じく隠す (足元と帳面の間に帯が入らず、帯の文字が帳面の名前に重なるため。直しの輪2)
             bool named = boss || elite;
             float hold = boss ? 1.5f : 1.1f;
             float bandEnd = 0.35f + BandFadeIn + hold + BandFadeOut;   // 帯が消えきる時刻
@@ -676,8 +677,10 @@ namespace DeckRogue.Game
 
         /// <summary>
         /// 名前の帯の置き場 (2026-09-30 F47 ユーザー裁定「帯を下げ」): 帯の上端＝敵の足元 (いちばん低い足元) のすぐ下、文字の中心＝敵の体の中心の平均。
-        /// 足元と帳面の間に帯が収まれば、間の余りの半分 (6〜14) だけ足元から下げる (PC のオーガ: 足元 566・帳面 640 の間 74 に 62 の帯)。
+        /// 足元と帳面の間に帯が収まれば、間の余りの半分 (6〜14) だけ足元から下げる (今の舞台の PC のオーガ: 足元 566・帳面 640 の間 74 に 62 の帯)。
         /// 収まらなければ足元の 4〜6 下から (帳面に掛かる。スマホは足元と帳面の間がほぼ無い＝帳面の名前と HP を覆う。入力は塞いでいる)。手札には掛けない。
+        /// 見本 (箱庭・22°・5°) の PC のオーガは足元 626・帳面 655 の間が約29 で帯が入らない＝足元の 6 下から帳面に掛かる。そのため見本では帯の間は帳面を隠し、
+        /// 帯が消えてから意図の札と一緒に出す (BattleScreen.HideIntentsForEntrance。直しの輪2 2026-10-01・R09 の「脳筋オ幕ボスガ」)
         /// 座標は fx の中 (中心が原点・上が +)。敵の絵が見つからなければ false
         /// </summary>
         static bool NameBandPlace(GameRoot g, RectTransform fx, GameState combat, float h, out float top, out float textX)

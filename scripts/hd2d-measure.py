@@ -31,6 +31,9 @@
          m3_uneven = 座席の帯のむら: 足元の線の少し上の帯 (左端の足元−5%〜右端の足元+5%。キャラと UI を除く) を横8つに分け、
          各区画の平均の (最大−最小)÷最大 (= いちばん暗い区画が明るい区画の何割か。0.2 以下 = 0.8 倍以上)。layout の足元が要る。
          m3_right_left = いちばん右の敵の体の明るさ ÷ いちばん左の敵の体の明るさ (⑧の体の値。敵2体以上の時)。
+         m3_ring_min = どのキャラの足元の輪も、いちばん明るい輪の何倍か (⑧の輪の値の 最小 ÷ 最大。キャラ2つ以上の時)。
+         合否 (2026-10-01 ユーザーの回答で読み方を変えた): 中央÷端 ≥ min・右÷左 ≥ rightLeftMin・m3_ring_min ≥ ringMinRatio (0.6)。
+         門に ringMinRatio が無い古い gates.json では m3_uneven ≤ unevenMax で読む (m3_uneven は参考として出し続ける)。
   ④ m4  上の1/3の輝度の中央値: 舞台の画 (hideui) の縦 0〜33.3%。本家は UI の矩形を除く。
   ⑤ m5  地面のざらつき: 舞台の画 (hideui) のグレーのラプラシアン分散を、地面の矩形 (リーダーの足元と左端の敵の足元の間・足元の線の近く。
          本家は ref-patches の ground) で。キャラは除く。m5_char = キャラの画素 (unitsonly のマスクを1画素削った内側) のラプラシアン分散。
@@ -38,6 +41,9 @@
          m6_seat = 座席の帯 (足元の線の上 15%) の同じ値 (P24 の「座席の帯の鋭さが dof=0 の0.95倍以上」は同じ場面の dof=0 の m6_seat と比べる)。
          m6_ratio = m6 ÷ m6_seat (参考)。m6_nb = 同じ帯をキャラの板 (unitsonly のマスクを2画素太らせた物) も除いて測った値。
          合否はこちらで読む (W3: 幕ボスの頭・4体の奥の敵の頭は奥の帯に入るが座席の帯の中にいるのでくっきりが正しい)。
+         m6_nt = さらに「座席より手前〜座席の帯の近い木」の箱も除いた値 (2026-10-01 ユーザーの回答。--near-trees の JSON を
+         layout.json の設計図の名前 (extra.diorama.layout)・画角・見下ろし・足元の線・端末で引く。箱は設計図の relief・幹から出した物)。
+         門に nearTrees: true があり m6_nt が測れればこちらで読む (無ければ m6_nb)。
   ⑦ m7  明るい画素 (L>150) のうち、舞台の上の札 (敵の帳面・意図の札・自分の札・上部バー・人形の札) が占める割合。
          手札・確認の窓・ポップアップの矩形は分母からも除く (layout.json が要る)。m7_all = UI 全部 (手札込み) の割合 (参考。StS1 55%)。
          layout.json が無い時は W0 と同じ近似 (UI = 通常と hideui の差・縦 66% より下を捨てる)。
@@ -95,6 +101,7 @@ VARIANTS = ('hideui', 'uionly', 'unitsonly')
 MAGENTA_TOL = 10          # マゼンタ (255,0,255) と見なす差 (各チャンネル)
 BRIGHT = 150              # ⑦ の明るい画素
 DARK = 60                 # ② の暗い画素
+NEAR_TREES = {}           # --near-trees の JSON (⑥の近い木の箱。キー = 設計図|画角|見下ろし|足元の線|端末)
 
 # ------------------------------------------------------------------------------------------ 画素の道具
 
@@ -453,6 +460,24 @@ class Scene:
         self.notes.append('舞台の画 = 通常の画 (hideui なし)')
         return self.normal, True
 
+    # ---- ⑥ の近い木
+    def near_tree_boxes(self):
+        """⑥ の近い木の箱 (--near-trees)。無ければ None"""
+        if not NEAR_TREES or self.lay is None:
+            return None
+        cam = ((self.lay.get('stage') or {}).get('camera') or {})
+        dio = ((self.lay.get('extra') or {}).get('diorama') or {})
+        name = dio.get('layout')
+        if not name or cam.get('mode') != 'diorama' or cam.get('fov') is None:
+            return None
+        pitch = (cam.get('layoutEuler') or [cam.get('pitch')])[0]
+        k = '%s|%g|%g|%.3f|%s' % (name, round(float(cam['fov']), 2), round(float(pitch), 2), float(cam.get('groundLine') or 0), 'PH' if self.phone else 'PC')
+        v = NEAR_TREES.get(k)
+        if v is None:
+            self.notes.append('⑥の近い木の箱が無い (%s)' % k)
+            return None
+        return v.get('boxes') or []
+
     # ---- 足元
     def feet(self):
         out = []
@@ -573,6 +598,16 @@ class Scene:
             outsb = [v for v in (farb, nearb) if v is not None]
             if outsb:
                 r['m6_nb'] = max(outsb)
+            nt = self.near_tree_boxes()
+            if nt is not None:
+                ext = exb | rect_mask(img.shape, nt)
+                fart = sharp_band(g, far0, int(self.H * 0.25), ext)
+                neart = sharp_band(g, int(self.H * 0.73), int(self.H * 0.98), ext)
+                r['m6_far_nt'], r['m6_near_nt'] = fart, neart
+                r['m6_nt_boxes'] = len(nt)
+                outst = [v for v in (fart, neart) if v is not None]
+                if outst:
+                    r['m6_nt'] = max(outst)
         # ⑦
         bright = Ln > BRIGHT
         if self.lay is not None and self.lay.get('units') is not None:
@@ -627,6 +662,9 @@ class Scene:
             en = sorted([u for u in units8 if u['kind'] == 'enemy' and u['body'] is not None], key=lambda u: u['x'])
             if len(en) >= 2:
                 r['m3_right_left'] = float(en[-1]['body'] / max(1.0, en[0]['body']))
+            rings = [u['ring'] for u in units8 if u['ring'] is not None]
+            if len(rings) >= 2:
+                r['m3_ring_min'] = float(min(rings) / max(1.0, max(rings)))
         # ⑨
         m9 = self.intent_digits()
         if m9:
@@ -821,11 +859,11 @@ def make_gates(refs):
         'm1': {'min': rnd(main['m1'] * 0.85, 1), 'max': rnd(max(m1s) * 1.15, 1),
                'why': '%s の ① %.1f の −15%% 以上、かつ本家3枚の最大 %.1f の 1.15 倍以下' % (GATE_MAIN, main['m1'], max(m1s))},
         'm2': {'max': rnd(main['m2'], 3), 'why': '%s の ② %.1f%% 以下' % (GATE_MAIN, main['m2'] * 100)},
-        'm3': {'min': 4.0, 'unevenMax': 0.2, 'rightLeftMin': 0.8,
-               'why': '4 以上 (本家3枚: %s)。あわせて座席の帯のむら 20%% 以下・いちばん右の敵の体がいちばん左の 0.8 倍以上' % ', '.join('%s %.2f' % (k, refs[k]['m3']) for k in GATE_REFS if k in refs and refs[k].get('m3'))},
+        'm3': {'min': 4.0, 'ringMinRatio': 0.6, 'rightLeftMin': 0.8,
+               'why': '4 以上 (本家3枚: %s)。あわせてどのキャラの足元の輪もいちばん明るい輪の 0.6 倍以上 (2026-10-01 ユーザーの回答。旧「座席の帯のむら 20%% 以下」は m3_uneven として参考に出す)・いちばん右の敵の体がいちばん左の 0.8 倍以上' % ', '.join('%s %.2f' % (k, refs[k]['m3']) for k in GATE_REFS if k in refs and refs[k].get('m3'))},
         'm4': {'min': rnd(main['m4'] * 0.75, 1), 'why': '%s の ④ %.1f の 0.75 倍以上' % (GATE_MAIN, main['m4'])},
         'm5': {'max': 1500, 'charMax': True, 'why': 'キャラ以下 (m5 ≦ m5_char)。目安 1,500 (本家3枚: %s)' % ', '.join('%s %.0f' % (k, refs[k]['m5']) for k in GATE_REFS if k in refs and refs[k].get('m5') is not None)},
-        'm6': {'max': 0.1, 'why': '目安 0.1 以下。奥の座席の敵の意図と HP が読めることが先 (本家3枚: %s)' % ', '.join('%s %.2f' % (k, refs[k]['m6']) for k in GATE_REFS if k in refs and refs[k].get('m6') is not None)},
+        'm6': {'max': 0.1, 'nearTrees': True, 'why': '目安 0.1 以下。奥の座席の敵の意図と HP が読めることが先 (本家3枚: %s)。キャラの板と、座席より手前〜座席の帯の近い木 (設計図の relief・幹の箱。--near-trees) を除いて測る (2026-10-01 ユーザーの回答)' % ', '.join('%s %.2f' % (k, refs[k]['m6']) for k in GATE_REFS if k in refs and refs[k].get('m6') is not None)},
         'm7': {'max': 0.5, 'why': '50% 未満 (手札と確認の窓は除いて測る)'},
         'm8': {'minDiff': 15, 'minRatio': 1.4, 'heroAtLeastM1': True, 'why': '各キャラの体と足元の後ろの地面の輪の差 15 以上か比 1.4 以上。主人公の体は ① 以上'},
         'm9': {'minPx': 32, 'minContrast': 7.0, 'why': '意図の数字 32px 以上・地とのコントラスト 7:1 以上'},
@@ -862,7 +900,10 @@ def judge(r, gates):
         j['m3'] = None
     else:
         ok = r['m3'] >= g3.get('min', 4.0)
-        if r.get('m3_uneven') is not None:
+        if 'ringMinRatio' in g3:   # 2026-10-01 ユーザーの回答: むら 20% の代わりに「どの足元の輪もいちばん明るい輪の 0.6 倍以上」
+            if r.get('m3_ring_min') is not None:
+                ok = ok and r['m3_ring_min'] >= g3['ringMinRatio']
+        elif r.get('m3_uneven') is not None:
             ok = ok and r['m3_uneven'] <= g3.get('unevenMax', 0.2)
         if r.get('m3_right_left') is not None:
             ok = ok and r['m3_right_left'] >= g3.get('rightLeftMin', 0.8)
@@ -875,7 +916,11 @@ def judge(r, gates):
         j['m5'] = r['m5'] <= r['m5_char']
     else:
         j['m5'] = r['m5'] <= g5.get('max', 1500)
-    j['m6'] = between(r.get('m6_nb', r.get('m6')), G.get('m6', {}))   # キャラの板を除いた値があればそれで (W3)
+    g6 = G.get('m6', {})
+    m6v = r.get('m6_nb', r.get('m6'))   # キャラの板を除いた値があればそれで (W3)
+    if g6.get('nearTrees') and r.get('m6_nt') is not None:
+        m6v = r['m6_nt']   # 2026-10-01 ユーザーの回答: 近い木 (設計図の relief・幹) の箱も除く
+    j['m6'] = between(m6v, g6)
     j['m7'] = None if r.get('m7') is None else r['m7'] < G.get('m7', {}).get('max', 0.5)
     j['m8'] = r.get('m8_ok')
     g9 = G.get('m9', {})
@@ -932,6 +977,8 @@ def cell(r, key, kind, j):
     elif key == 'm3':
         v = fmt(r.get('m3'), kind)
         extra = []
+        if r.get('m3_ring_min') is not None:
+            extra.append('輪%s' % fmt(r['m3_ring_min'], 'f2'))
         if r.get('m3_uneven') is not None:
             extra.append('むら%s' % fmt(r['m3_uneven'], 'pct'))
         if r.get('m3_right_left') is not None:
@@ -942,6 +989,8 @@ def cell(r, key, kind, j):
         v = fmt(r.get('m6'), kind)
         if r.get('m6_nb') is not None:
             v += ' (板除く %s)' % fmt(r['m6_nb'], kind)
+        if r.get('m6_nt') is not None:
+            v += ' (近い木も除く %s)' % fmt(r['m6_nt'], kind)
     elif key == 'm5':
         v = fmt(r.get('m5'), kind)
         if r.get('m5_char') is not None:
@@ -1004,7 +1053,15 @@ def main():
     ap.add_argument('--write-gates', help='本家3枚から門を作って書く (--ref が要る)')
     ap.add_argument('--frame', type=int, default=1, help='連番の何枚目を測るか (既定 1)')
     ap.add_argument('--only', help='場面の名前の正規表現')
+    ap.add_argument('--near-trees', help='⑥の近い木の箱の JSON (既定 docs/design/hd2d-slice/m6-near-trees.json があればそれ。none で使わない)')
     a = ap.parse_args()
+    nt = a.near_trees
+    if nt is None:
+        cand = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'docs', 'design', 'hd2d-slice', 'm6-near-trees.json')
+        nt = cand if os.path.exists(cand) else None
+    if nt and nt != 'none':
+        with open(nt, encoding='utf-8') as f:
+            NEAR_TREES.update({k: v for k, v in json.load(f).items() if not k.startswith('_')})
     if not a.dir and not a.ref:
         ap.error('撮影のフォルダか --ref のどちらかが要る')
     patches = REF_PATCHES
