@@ -1,0 +1,51 @@
+# HD-2D 見本 二周目の本番の撮影 (2026-10-01 レーン F 段2。計画 docs/design/hd2d-round2-plan-2026-10-01.md §2 レーン F の6・§3-3)。1行 = 名前|PC または PH|STATE。# と空行は読み飛ばす。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r2-slice.txt scratchpad/hd2d/r2/shots/r2-slice 2   (並列は2まで。40枚・約6分)
+# 中身: PC と PH × 狼・オーガ (boss=1)・3体・4体・人形9体 (ひなた) × {通常・hideui・uionly・unitsonly} = 40枚。名前は W5 の final/lists/slice.txt と同じ形 (<PC|PH>-S-<場面>[-<変種>])
+#       = hd2d-measure.py・hd2d-compare.py・hd2d-honke-targets.py・hd2d-r2-targets.py・hd2d-char-metrics.py がそのまま読む。
+# STATE は phase=combat;stage=diorama;hd2d=slice;dumplayout=1 (束 = 画角22°・見下ろし PC 5°／スマホ 7°・主人公62・夜色の札。光と配置は段2 の既定の設計図)。
+# PH の行は W5 の PH と同じくスマホの段 (tier=phone) で撮る。W5 の PH は狼・オーガ・4体だけ・二周目は3体と人形9体も足した。
+# 測り方: 門 python3 scripts/hd2d-measure.py <出力> --gates docs/design/hd2d-slice/gates.json --md …・新しい物差し python3 scripts/hd2d-r2-targets.py --all <出力> --md … --json …
+#         キャラ python3 scripts/hd2d-char-metrics.py --all <出力> --md … --json …・配置 python3 scripts/hd2d-layout-check.py <出力>/*.layout.json --all-variants
+#         シート python3 scripts/hd2d-r2-sheet.py final --shots scratchpad/hd2d/r2/shots
+# PC 1920×1080
+PC-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1
+PC-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+PC-S-wolf-uionly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;uionly=1;dumplayout=1
+PC-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1
+PC-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1
+PC-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+PC-S-ogre-uionly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;uionly=1;dumplayout=1
+PC-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1
+PC-S-trio|PC|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;dumplayout=1
+PC-S-trio-hideui|PC|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+PC-S-trio-uionly|PC|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;uionly=1;dumplayout=1
+PC-S-trio-unitsonly|PC|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1
+PC-S-quad|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1
+PC-S-quad-hideui|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+PC-S-quad-uionly|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;uionly=1;dumplayout=1
+PC-S-quad-unitsonly|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1
+PC-S-dolls|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dumplayout=1
+PC-S-dolls-hideui|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+PC-S-dolls-uionly|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;uionly=1;dumplayout=1
+PC-S-dolls-unitsonly|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1
+# スマホ相当 1920×886・UI 1.6倍・tier=phone
+PH-S-wolf|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-S-wolf-hideui|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;hideui=1;dumplayout=1;tier=phone
+PH-S-wolf-uionly|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;uionly=1;dumplayout=1;tier=phone
+PH-S-wolf-unitsonly|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1;tier=phone
+PH-S-ogre|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-S-ogre-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;hideui=1;dumplayout=1;tier=phone
+PH-S-ogre-uionly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;uionly=1;dumplayout=1;tier=phone
+PH-S-ogre-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1;tier=phone
+PH-S-trio|PH|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-S-trio-hideui|PH|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;hideui=1;dumplayout=1;tier=phone
+PH-S-trio-uionly|PH|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;uionly=1;dumplayout=1;tier=phone
+PH-S-trio-unitsonly|PH|phase=combat;enemy=enc_wolf_hexer_drummer;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1;tier=phone
+PH-S-quad|PH|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-S-quad-hideui|PH|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;hideui=1;dumplayout=1;tier=phone
+PH-S-quad-uionly|PH|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;uionly=1;dumplayout=1;tier=phone
+PH-S-quad-unitsonly|PH|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1;tier=phone
+PH-S-dolls|PH|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-S-dolls-hideui|PH|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;hideui=1;dumplayout=1;tier=phone
+PH-S-dolls-uionly|PH|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;uionly=1;dumplayout=1;tier=phone
+PH-S-dolls-unitsonly|PH|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;unitsonly=1;dumplayout=1;tier=phone

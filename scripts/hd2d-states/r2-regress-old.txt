@@ -1,0 +1,28 @@
+# HD-2D 見本 二周目の演出の回帰 R1〜R15 (今の舞台 stage=old・PC) (2026-10-01 レーン F 段2。計画 §3-4 の12)。1行 = 名前|PC または PH|STATE。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r2-regress-old.txt scratchpad/hd2d/r2/shots/r2-regress-old 2
+# 中身: W5 の final/lists/regress-old.txt と同じ21行 (同じ名前) ＋ R16。
+#   ★ 全行に stage=old を足した (W5 の一覧は stage= が無い。10/01 から旗を書かない起動は幕1 = 見本なので、書かないと見本が撮れてしまう)。
+#   合格: hideui の画を W5 の同じ名前の画 (scratchpad/hd2d/final/shots/<old|regress-old|regress-old-ph>) と比べ、差が 2 を超える画素が 0.1% 以下 (計画 §3-4 の12)。
+PC-R01-swing|PC|phase=combat;enemy=enemy_probe;play=attack;playshots=8;playevery=1;dumplayout=1;stage=old
+PC-R02-multi|PC|phase=combat;hand=green_double_lash;play=0;playshots=12;playevery=3;dumplayout=1;stage=old
+PC-R03-aoe|PC|phase=combat;enemy=enc_probe_pair;hand=green_earth_roar;play=0;playshots=10;playevery=3;dumplayout=1;stage=old
+PC-R04-exposed|PC|phase=combat;eexposed=1;hand=green_strike;play=0;playshots=8;playevery=2;dumplayout=1;stage=old
+PC-R05-enrage|PC|phase=combat;enemy=enemy_brute;ehp=h+3;hand=green_strike;play=0;playshots=14;playevery=5;dumplayout=1;stage=old
+PC-R06-guard|PC|phase=combat;enemy=enemy_wolf;pblock=20;endplay=1;endshots=16;endevery=3;dumplayout=1;stage=old
+PC-R07-hurt|PC|phase=combat;enemy=enemy_wolf;endplay=1;endshots=14;endevery=9;dumplayout=1;stage=old
+PC-R08-kill|PC|phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4;dumplayout=1;stage=old
+PC-R09-enter|PC|phase=combat;enemy=enemy_brute;boss=1;entershots=12;enterevery=6;dumplayout=1;stage=old
+PC-R10-trap|PC|phase=combat;enemy=enemy_wolf;sets=green_reaction_vine*;endturn=1;fire=1;fireshots=10;fireevery=8;dumplayout=1;stage=old
+PC-R11-doll|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_hound,white_perm_squire;hand=white_light_bolt;play=0;playshots=8;playevery=3;dumplayout=1;stage=old
+PC-R12-gearwin|PC|phase=combat;gears=gear_spring,gear_cog;gearwin=0;dumplayout=1;stage=old
+PC-R13-gearmore|PC|phase=combat;gears=gear_spring,gear_cog;gearmore=1;dumplayout=1;stage=old
+PC-R14-popup|PC|phase=combat;popup=0;dumplayout=1;stage=old
+PC-R15-tip|PC|phase=combat;tip=enemy;dumplayout=1;stage=old
+PC-R01-swing-hideui|PC|phase=combat;enemy=enemy_probe;play=attack;playshots=8;playevery=1;dumplayout=1;hideui=1;stage=old
+PC-R02-multi-hideui|PC|phase=combat;hand=green_double_lash;play=0;playshots=12;playevery=3;dumplayout=1;hideui=1;stage=old
+PC-R04-exposed-hideui|PC|phase=combat;eexposed=1;hand=green_strike;play=0;playshots=8;playevery=2;dumplayout=1;hideui=1;stage=old
+PC-R06-guard-hideui|PC|phase=combat;enemy=enemy_wolf;pblock=20;endplay=1;endshots=16;endevery=3;dumplayout=1;hideui=1;stage=old
+PC-R07-hurt-hideui|PC|phase=combat;enemy=enemy_wolf;endplay=1;endshots=14;endevery=9;dumplayout=1;hideui=1;stage=old
+PC-R08-kill-hideui|PC|phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4;dumplayout=1;hideui=1;stage=old
+# R16 (二周目で足した・W5 に対は無い = 画素一致の比べから外す) 幕ボスの撃破の寄り
+PC-R16-bosskill|PC|phase=combat;enemy=enemy_brute;boss=1;ehp=3;hand=green_strike;play=0;playshots=20;playevery=14;dumplayout=1;stage=old

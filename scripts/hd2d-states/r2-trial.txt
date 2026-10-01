@@ -1,0 +1,25 @@
+# HD-2D 見本 二周目の試しのビルドの撮影 (2026-10-01 レーン F 段1。計画 docs/design/hd2d-round2-plan-2026-10-01.md §3-2 の12行)。1行 = 名前|PC または PH|STATE。# と空行は読み飛ばす。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r2-trial.txt <出力> 2   (並列は2まで。出力は <名前>-1.png と <名前>-1.layout.json)
+# 測り方: python3 scripts/hd2d-r2-targets.py --all <出力> --md <出力>/targets.md --json <出力>/targets.json
+#         シート: python3 scripts/hd2d-r2-sheet.py trial --shots <出力> --out <シート.png>
+# 共通の STATE は phase=combat;stage=diorama;hd2d=slice;dumplayout=1 (カメラは束の既定 = 22°・5°／スマホ 7°)。
+# PH の行は W5 の PH と同じくスマホの段 (tier=phone) で撮る (look_act1.phone.json は霧を触らないので、霧の比べは PC と同じ)。
+# キャラの光は全部 W5 の写し (+look_act1_w5char) を重ねる = レーン E の書きかけを写さない。
+# W5 の光と配置を新しいカメラで (背景の見え方・地面のぼけ・段・奥の端)
+T-w5-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_w5+look_act1_w5char;hideui=1
+T-w5-quad|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_w5+look_act1_w5char;hideui=1
+T-w5-wolf-ph|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_w5+look_act1_w5char;hideui=1;tier=phone
+# 霧の3変種 (N1・N2・N8・N22)
+T-A-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r2tA+look_act1_w5char;hideui=1
+T-B-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r2tB+look_act1_w5char;hideui=1
+T-C-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r2tC+look_act1_w5char;hideui=1
+T-A-quad|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r2tA+look_act1_w5char;hideui=1
+# 見下ろし 6° との比べ
+T-A-wolf-p6|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r2tA+look_act1_w5char;pitch=6;hideui=1
+# スマホの帯の位置
+T-A-wolf-ph|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r2tA+look_act1_w5char;hideui=1;tier=phone
+T-A-quad-ph|PH|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r2tA+look_act1_w5char;hideui=1;tier=phone
+# K13: 人形の後列の頭が、いちばん近い前列の頭より 20px 以上上か (人形9体は slice.txt の S-dolls と同じ)
+T-A-dolls|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r2tA+look_act1_w5char;hideui=1
+# 帳面・意図の札・手札と舞台の重なり (UI あり。scripts/hd2d-layout-check.py で)
+T-A-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r2tA+look_act1_w5char

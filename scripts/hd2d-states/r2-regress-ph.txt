@@ -1,0 +1,25 @@
+# HD-2D 見本 二周目の演出の回帰 R1〜R15 (見本・スマホ相当 1920×886・UI 1.6倍・tier=phone) (2026-10-01 レーン F 段2)。1行 = 名前|PC または PH|STATE。
+# 中身: W5 の final/lists/regress-ph.txt と同じ15行 (同じ名前) ＋ R16。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r2-regress-ph.txt scratchpad/hd2d/r2/shots/r2-regress-ph 2   (並列は2まで)
+# 見方: 回帰の R1〜R15 は W5 と画素一致は求めない (カメラが変わった)。コマ送りを目で見る (斬撃・盾・崩れ・登場の帯・罠の幽霊・人形の点灯と踏み込み) ＋
+#       python3 scripts/hd2d-layout-check.py <出力>/*.layout.json --moving (重なり 0 件)。振りのコマで宝石の光が宙に残らないか (R01)。
+#       撃破 (R08) と幕ボスの登場 (R09) は寄り (ZoomPunch・Dolly) で額縁が動く = 額縁の下端がボスの頭と名前の帯に掛からないかをコマで見る。
+#       R16 (二周目で足した・W5 に対は無い) = 幕ボスの撃破の寄り (Stage.Dolly 0.8 unit・寄る 1.6 秒・留まる 1.2 秒) を約4.7秒ぶんコマ送り。
+# シート: python3 scripts/hd2d-r2-sheet.py regress --shots scratchpad/hd2d/r2/shots (今 = r2-regress-old*・二周目 = r2-regress*)
+PH-R01-swing|PH|phase=combat;enemy=enemy_probe;play=attack;playshots=8;playevery=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R02-multi|PH|phase=combat;hand=green_double_lash;play=0;playshots=12;playevery=3;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R03-aoe|PH|phase=combat;enemy=enc_probe_pair;hand=green_earth_roar;play=0;playshots=10;playevery=3;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R04-exposed|PH|phase=combat;eexposed=1;hand=green_strike;play=0;playshots=8;playevery=2;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R05-enrage|PH|phase=combat;enemy=enemy_brute;ehp=h+3;hand=green_strike;play=0;playshots=14;playevery=5;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R06-guard|PH|phase=combat;enemy=enemy_wolf;pblock=20;endplay=1;endshots=16;endevery=3;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R07-hurt|PH|phase=combat;enemy=enemy_wolf;endplay=1;endshots=14;endevery=9;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R08-kill|PH|phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R09-enter|PH|phase=combat;enemy=enemy_brute;boss=1;entershots=12;enterevery=6;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R10-trap|PH|phase=combat;enemy=enemy_wolf;sets=green_reaction_vine*;endturn=1;fire=1;fireshots=10;fireevery=8;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R11-doll|PH|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_hound,white_perm_squire;hand=white_light_bolt;play=0;playshots=8;playevery=3;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R12-gearwin|PH|phase=combat;gears=gear_spring,gear_cog;gearwin=0;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R13-gearmore|PH|phase=combat;gears=gear_spring,gear_cog;gearmore=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R14-popup|PH|phase=combat;popup=0;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-R15-tip|PH|phase=combat;tip=enemy;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+# R16 (二周目で足した) 幕ボスの撃破の寄り
+PH-R16-bosskill|PH|phase=combat;enemy=enemy_brute;boss=1;ehp=3;hand=green_strike;play=0;playshots=20;playevery=14;stage=diorama;hd2d=slice;dumplayout=1;tier=phone

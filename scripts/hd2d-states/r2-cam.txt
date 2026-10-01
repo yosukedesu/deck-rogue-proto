@@ -1,0 +1,24 @@
+# HD-2D 見本 二周目のカメラの比べ (2026-10-01 レーン F 段2。計画 §2 レーン F の6)。1行 = 名前|PC または PH|STATE。# と空行は読み飛ばす。
+# ★ 霧と配置は 22°・5° 用 (段2 の既定の設計図は新しいカメラに合わせて置いた)。他のカメラの列は「カメラだけ替えた時の見え方」で、霧の帯や木の位置が合わないのは当たり前。
+#   W5 の列だけは W5 の光と配置 (look=look_act1_w5+look_act1_w5char = W5 の設計図 act1_layout_w5) を重ねて W5 のカメラで撮る = 二周目の既定との全体の比べ。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r2-cam.txt scratchpad/hd2d/r2/shots/r2-cam 2   (12枚)
+# 中身: {22°・5° (既定)・22°・6°・28°・5.5°・0.41・W5 のカメラと設計図} × {PC 狼・PC 4体・PH 狼} の UI なし (hideui=1)。名前は <PC|PH>-V-<カメラ>-S-<場面>-hideui。
+# スマホの見下ろし: 束はスマホに pitchphone=7 を当てる (pitch= だけ書くとスマホは 7 のまま)。PC の +1° はスマホも +1° (6°→8°・5.5°→7.5°)、W5 は pitchphone=off (= pitch 12)。
+# スマホの足元の線: 28°・5.5° の列はスマホの箱庭の既定 0.525 のまま (groundline を書かない)、W5 の列は W5 のスマホの 0.51 (HD2DFlags.cs の頭の注)。
+# 測り方: python3 scripts/hd2d-r2-targets.py --all <出力> --md … (N1・N2・N4 が カメラで動く)。シートは hd2d-r2-sheet.py final の「カメラの比べ」。
+# 22°・5° (既定。スマホ 7°)
+PC-V-cam22p5-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+PC-V-cam22p5-S-quad-hideui|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;hideui=1;dumplayout=1
+PH-V-cam22p5-S-wolf-hideui|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;hideui=1;dumplayout=1;tier=phone
+# 22°・6° (スマホ 8°)
+PC-V-cam22p6-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;pitch=6;pitchphone=8;hideui=1;dumplayout=1
+PC-V-cam22p6-S-quad-hideui|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;pitch=6;pitchphone=8;hideui=1;dumplayout=1
+PH-V-cam22p6-S-wolf-hideui|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;pitch=6;pitchphone=8;hideui=1;dumplayout=1;tier=phone
+# 28°・5.5°・足元の線 0.41 (スマホ 7.5°・足元の線はスマホの既定 0.525)
+PC-V-cam28p55-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;cam=28;pitch=5.5;groundline=0.41;hideui=1;dumplayout=1
+PC-V-cam28p55-S-quad-hideui|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;cam=28;pitch=5.5;groundline=0.41;hideui=1;dumplayout=1
+PH-V-cam28p55-S-wolf-hideui|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;cam=28;pitch=5.5;pitchphone=7.5;hideui=1;dumplayout=1;tier=phone
+# W5 のカメラと W5 の設計図 (28°・12°・足元の線 0.41／スマホ 0.51・look=look_act1_w5+look_act1_w5char)
+PC-V-w5cam-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;cam=28;pitch=12;pitchphone=off;groundline=0.41;look=look_act1_w5+look_act1_w5char;hideui=1;dumplayout=1
+PC-V-w5cam-S-quad-hideui|PC|phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;cam=28;pitch=12;pitchphone=off;groundline=0.41;look=look_act1_w5+look_act1_w5char;hideui=1;dumplayout=1
+PH-V-w5cam-S-wolf-hideui|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;cam=28;pitch=12;pitchphone=off;groundline=0.51;look=look_act1_w5+look_act1_w5char;hideui=1;dumplayout=1;tier=phone

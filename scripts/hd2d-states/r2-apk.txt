@@ -1,0 +1,24 @@
+# HD-2D 見本 二周目の「APK の既定」(旗を書かない起動) の撮影 (2026-10-01 レーン F 段2。計画 §2 レーン F の6・§3-4 の13)。1行 = 名前|PC または PH|STATE。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r2-apk.txt scratchpad/hd2d/r2/shots/r2-apk 2   (16枚)
+# 中身: scratchpad/hd2d/apkfix/lists/main.txt と同じ16行 (同じ名前)。★ stage=・hd2d= を書かない = 幕1 は見本 (SliceBundle)・幕2/3 は今の舞台 (OldBundle) が当たる。
+#   幕2/3 の行 (act=2・act=3) は起動のタイトルで幕1 の箱庭を組んでから入る = 幕1→幕2 の旗の漏れ (見下ろし 5°・画角22°・夜色の札・漂い) がここに写る。
+# 合格 (計画 §3-4 の13):
+#   幕2/3 の行: layout.json の flags が pitch=12・cam=36・stage=old・litunits=0 (・pitchphone=off・drift=false) で、画の差が粒 (蛍・脈の粒・炉の火の粉) だけ (apkfix で 0.01〜0.12%)。
+#     比べる元: A2-squire は scratchpad/hd2d/apkfix/fix/shots (直しの後の最後の撮影)、A3-quad と A2-map は apkfix/shots/main (fix では撮っていない)。
+#   幕1 の行 (A1-wolf・A1-ogre): r2-slice の同じ場面 (PC-S-wolf・PC-S-ogre・PH は tier=phone の無い版なので画素一致は PC だけ) と画素一致。地図・報酬・店は幕1 = 見本の舞台。
+PC-A1-wolf|PC|phase=combat;enemy=enemy_wolf;dumplayout=1
+PC-A1-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;dumplayout=1
+PC-A2-squire|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;dumplayout=1
+PC-A3-quad|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;dumplayout=1
+PC-map|PC|phase=map
+PC-reward|PC|phase=reward
+PC-shop|PC|phase=shop
+PC-A2-map|PC|act=2;deck=deck_growth;phase=map
+PH-A1-wolf|PH|phase=combat;enemy=enemy_wolf;dumplayout=1
+PH-A1-ogre|PH|phase=combat;enemy=enemy_brute;boss=1;dumplayout=1
+PH-A2-squire|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;dumplayout=1
+PH-A3-quad|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;dumplayout=1
+PH-map|PH|phase=map
+PH-reward|PH|phase=reward
+PH-shop|PH|phase=shop
+PH-A2-map|PH|act=2;deck=deck_growth;phase=map

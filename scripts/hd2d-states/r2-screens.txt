@@ -1,0 +1,31 @@
+# HD-2D 見本 二周目の戦闘以外の画面の字 (N25) の撮影 (2026-10-01 レーン F 段2。計画 §2 レーン F の6・§3-4 の14)。1行 = 名前|PC または PH|STATE。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r2-screens.txt scratchpad/hd2d/r2/shots/r2-screens 2
+# 中身: scratchpad/hd2d/apkfix/fix/lists/fix.txt の戦闘以外の12行 (地図・報酬・店・遺物・焚き火・工房・勝利・?・タイトル。PC と PH の一部。同じ名前) ＋
+#       fix2.txt の出立の店・敗北・幕2 の焚き火。旗は書かない (APK の既定 = 幕1 の画面は後ろに見本の箱庭・幕2 の焚き火は今の舞台)。
+#   タイトルは phase=map;saveexit=1 の2枚目 (<名前>-2.png)。
+# 測り方 (N25 = 字の地との比 7:1 以上): python3 scratchpad/hd2d/apkfix/fix/bgmax.py "<{名前: [x0,y0,x1,y1]} の字の箱>" <出力>/<名前>-1.png …
+#   字の箱は apkfix で測った場所 (見出しの下の説明・地図のノードの名前・タイトルの副題・走破と敗北の要約・出立の店の説明。apkfix/fix/log.md の表)。
+#   箱の座標そのものは記録に残っていない = 測る時に同じ場所を画から決める。割れたら統合担当が BattleScreen.MenuShade の α を直す。比べる元の画は apkfix/fix/shots2 (α0.68 = 最終・同じ名前)。
+PC-reward|PC|phase=reward
+PC-shop|PC|phase=shop
+PC-map|PC|phase=map
+PC-relic|PC|phase=relic
+PC-campfire|PC|phase=campfire
+PC-workshop|PC|phase=workshop
+PC-won|PC|phase=won
+PC-event|PC|phase=event
+PH-map|PH|phase=map
+PH-reward|PH|phase=reward
+PC-title|PC|phase=map;saveexit=1
+PH-title|PH|phase=map;saveexit=1
+PC-A2-campfire|PC|act=2;deck=deck_growth;phase=campfire
+PC-lost|PC|phase=lost
+PC-departure|PC|phase=departure
+# 直しの輪1 (2026-10-01・統合): 霧の帯がキャラの高さへ下がったので、字が画面の縦の中ほどに来るスマホの画面も 7:1 を確かめる (W5 の直し apkfix/fix/shots2 の PH-campfire・PH-event と、PH の店・工房・遺物・出立の店・勝利)
+PH-campfire|PH|phase=campfire
+PH-event|PH|phase=event
+PH-shop|PH|phase=shop
+PH-workshop|PH|phase=workshop
+PH-relic|PH|phase=relic
+PH-departure|PH|phase=departure
+PH-won|PH|phase=won

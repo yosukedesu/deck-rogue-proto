@@ -1,0 +1,59 @@
+# HD-2D 見本 二周目の光の変種の撮り比べ (2026-10-01 レーン F 段2。計画 §2 レーン B の13・レーン F の6)。1行 = 名前|PC または PH|STATE。# と空行は読み飛ばす。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r2-look.txt scratchpad/hd2d/r2/shots/r2-look 2   (36枚・約6分)
+# 中身: レーン B の変種 6つ × PC の狼とオーガ (boss=1) × {通常・hideui・unitsonly}。名前は PC-V-<変種>-S-<場面>[-hideui|-unitsonly]。
+#   計画 §2 レーン F の6 は通常の12枚。レーン F 段2 で UI なしとキャラの板だけを足した (24枚): UI ありの画だけだと手札と帳面の明るさが帯と座席の数字に入る
+#   (同じ既定の画で N3 帯の頂点が UI なし 171 → UI あり 223)。灯の強さ (1.4／1.8／2.3) は門⑧ (暗めの敵の体と輪) の判断に使うので、門の撮影と同じ組で測る。
+#   時間が足りない時は -hideui と -unitsonly の行を消せば計画どおりの12枚 (数字は近似・目で見る並びは同じ)。
+#   look=<変種> は既定の設計図 (look_act1 + .char + .dof) の上に重ねる = 変種の差だけが写る。変種の設計図が無ければ StageLook が警告して既定で撮る (ログの「変種の設計図 … が無い」)。
+# 比べる元 (既定) は r2-slice の PC-S-wolf・PC-S-ogre。
+# 測り方: python3 scripts/hd2d-measure.py <出力> --gates docs/design/hd2d-slice/gates.json (UI ありの画なので ③⑥ は近似)・python3 scripts/hd2d-r2-targets.py (帯と地面)。
+#         門⑧ (暗めの敵の体と輪) は hd2d-char-metrics.py (unitsonly が無いので近似)。シートは hd2d-r2-sheet.py final の「光の変種」。
+# look_act1_r2lamp14 = 座席の灯 illum 1.4 (既定 1.8)
+PC-V-r2lamp14-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2lamp14;dumplayout=1
+PC-V-r2lamp14-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2lamp14;hideui=1;dumplayout=1
+PC-V-r2lamp14-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2lamp14;unitsonly=1;dumplayout=1
+PC-V-r2lamp14-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2lamp14;dumplayout=1
+PC-V-r2lamp14-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2lamp14;hideui=1;dumplayout=1
+PC-V-r2lamp14-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2lamp14;unitsonly=1;dumplayout=1
+# look_act1_r2lamp23 = 座席の灯 illum 2.3
+PC-V-r2lamp23-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2lamp23;dumplayout=1
+PC-V-r2lamp23-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2lamp23;hideui=1;dumplayout=1
+PC-V-r2lamp23-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2lamp23;unitsonly=1;dumplayout=1
+PC-V-r2lamp23-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2lamp23;dumplayout=1
+PC-V-r2lamp23-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2lamp23;hideui=1;dumplayout=1
+PC-V-r2lamp23-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2lamp23;unitsonly=1;dumplayout=1
+# look_act1_r2liftref = 暗い所の色を本家の分解の lift [0.96,1.02,1.03,−0.01] に
+PC-V-r2liftref-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2liftref;dumplayout=1
+PC-V-r2liftref-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2liftref;hideui=1;dumplayout=1
+PC-V-r2liftref-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2liftref;unitsonly=1;dumplayout=1
+PC-V-r2liftref-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2liftref;dumplayout=1
+PC-V-r2liftref-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2liftref;hideui=1;dumplayout=1
+PC-V-r2liftref-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2liftref;unitsonly=1;dumplayout=1
+# look_act1_r2dofstrong = ぼかしを強く (nearScale 3・lensNear 2.4)
+PC-V-r2dofstrong-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2dofstrong;dumplayout=1
+PC-V-r2dofstrong-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2dofstrong;hideui=1;dumplayout=1
+PC-V-r2dofstrong-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2dofstrong;unitsonly=1;dumplayout=1
+PC-V-r2dofstrong-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2dofstrong;dumplayout=1
+PC-V-r2dofstrong-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2dofstrong;hideui=1;dumplayout=1
+PC-V-r2dofstrong-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2dofstrong;unitsonly=1;dumplayout=1
+# look_act1_r2lampside = 灯を横へ回す (offset [−14,15,−8])
+PC-V-r2lampside-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2lampside;dumplayout=1
+PC-V-r2lampside-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2lampside;hideui=1;dumplayout=1
+PC-V-r2lampside-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2lampside;unitsonly=1;dumplayout=1
+PC-V-r2lampside-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2lampside;dumplayout=1
+PC-V-r2lampside-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2lampside;hideui=1;dumplayout=1
+PC-V-r2lampside-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2lampside;unitsonly=1;dumplayout=1
+# look_act1_r2moonck = 月の木漏れ日 (moon.cookie・cookieSize [40,40])
+PC-V-r2moonck-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2moonck;dumplayout=1
+PC-V-r2moonck-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2moonck;hideui=1;dumplayout=1
+PC-V-r2moonck-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2moonck;unitsonly=1;dumplayout=1
+PC-V-r2moonck-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2moonck;dumplayout=1
+PC-V-r2moonck-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2moonck;hideui=1;dumplayout=1
+PC-V-r2moonck-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2moonck;unitsonly=1;dumplayout=1
+# look_act1_r2edge03 = 試しの決定のままの霧の芯 edge 0.3・横の減光 side 0.9／sideStart 0.28 (統合が本番の前に既定を edge 1.0・0.8／0.30 へ変えた。その前の姿の記録)
+PC-V-r2edge03-S-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2edge03;dumplayout=1
+PC-V-r2edge03-S-wolf-hideui|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2edge03;hideui=1;dumplayout=1
+PC-V-r2edge03-S-wolf-unitsonly|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;look=look_act1_r2edge03;unitsonly=1;dumplayout=1
+PC-V-r2edge03-S-ogre|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2edge03;dumplayout=1
+PC-V-r2edge03-S-ogre-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2edge03;hideui=1;dumplayout=1
+PC-V-r2edge03-S-ogre-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;look=look_act1_r2edge03;unitsonly=1;dumplayout=1

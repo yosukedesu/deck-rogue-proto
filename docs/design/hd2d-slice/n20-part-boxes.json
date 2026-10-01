@@ -1,0 +1,11000 @@
+{
+ "_doc": "N20 (上半分の小さな光の粒) の数え違いを消す箱 (直しの輪2・2026-10-01 反証 medium「スマホの 22 個は全部羊歯の葉の明るい所」)。\n明るい細部を持つ部品 = 設計図 (act1_layout*.json) の relief・tree・card・litter のうち、絵の名前が幹・針葉の枝・背景の板でない物\n(羊歯・茂み・草・株・花・きのこ・落ち葉・倒木・岩の絵・道標・松・樹冠・垂れ葉)。その画面の箱 (lane-C/place.py の place_part = StageCamera の写し) の中の点は粒に数えない。\n幹・針葉の枝は霧に沈んだ暗い影絵で明るい細部が無い = 粒がその前を通れば数える (本家の粒も幹の前を通る)。\n出力: {\"<設計図の名前>|<画角>|<見下ろし>|<足元の線>|<PC|PH>\": {\"boxes\": [[x,y,w,h]…], \"names\": […]}}。hd2d-r2-targets.py --part-boxes が layout.json の設計図とカメラで引く。",
+ "Stage/act1_layout|22|5|0.407|PC": {
+  "file": "act1_layout.json",
+  "boxes": [
+   [
+    0,
+    652,
+    62,
+    133
+   ],
+   [
+    0,
+    0,
+    118,
+    632
+   ],
+   [
+    0,
+    462,
+    147,
+    253
+   ],
+   [
+    0,
+    490,
+    258,
+    190
+   ],
+   [
+    43,
+    459,
+    209,
+    178
+   ],
+   [
+    0,
+    416,
+    113,
+    212
+   ],
+   [
+    1831,
+    420,
+    89,
+    138
+   ],
+   [
+    1893,
+    385,
+    27,
+    159
+   ],
+   [
+    0,
+    478,
+    93,
+    316
+   ],
+   [
+    1901,
+    467,
+    19,
+    184
+   ],
+   [
+    0,
+    522,
+    298,
+    139
+   ],
+   [
+    1736,
+    386,
+    116,
+    169
+   ],
+   [
+    640,
+    497,
+    119,
+    103
+   ],
+   [
+    762,
+    496,
+    120,
+    102
+   ],
+   [
+    1039,
+    417,
+    178,
+    163
+   ],
+   [
+    1512,
+    425,
+    164,
+    141
+   ],
+   [
+    1576,
+    410,
+    172,
+    151
+   ],
+   [
+    581,
+    449,
+    117,
+    99
+   ],
+   [
+    712,
+    442,
+    112,
+    95
+   ],
+   [
+    951,
+    432,
+    104,
+    89
+   ],
+   [
+    1827,
+    415,
+    91,
+    78
+   ],
+   [
+    1892,
+    414,
+    28,
+    77
+   ],
+   [
+    606,
+    447,
+    116,
+    98
+   ],
+   [
+    664,
+    444,
+    112,
+    97
+   ],
+   [
+    852,
+    435,
+    106,
+    91
+   ],
+   [
+    0,
+    0,
+    264,
+    175
+   ],
+   [
+    1715,
+    0,
+    205,
+    175
+   ],
+   [
+    0,
+    0,
+    24,
+    175
+   ],
+   [
+    1706,
+    503,
+    53,
+    55
+   ],
+   [
+    1693,
+    499,
+    105,
+    66
+   ],
+   [
+    803,
+    443,
+    40,
+    63
+   ],
+   [
+    942,
+    431,
+    106,
+    84
+   ],
+   [
+    999,
+    434,
+    55,
+    67
+   ],
+   [
+    128,
+    529,
+    65,
+    62
+   ],
+   [
+    72,
+    383,
+    102,
+    61
+   ],
+   [
+    0,
+    455,
+    16,
+    68
+   ],
+   [
+    1241,
+    445,
+    49,
+    48
+   ],
+   [
+    0,
+    581,
+    4,
+    65
+   ],
+   [
+    977,
+    526,
+    35,
+    69
+   ],
+   [
+    1692,
+    459,
+    34,
+    45
+   ],
+   [
+    1828,
+    437,
+    26,
+    53
+   ],
+   [
+    1743,
+    441,
+    28,
+    54
+   ],
+   [
+    1417,
+    461,
+    31,
+    62
+   ],
+   [
+    666,
+    491,
+    41,
+    54
+   ],
+   [
+    1567,
+    467,
+    37,
+    48
+   ],
+   [
+    926,
+    472,
+    36,
+    49
+   ],
+   [
+    1645,
+    464,
+    35,
+    47
+   ],
+   [
+    1239,
+    472,
+    37,
+    49
+   ],
+   [
+    1112,
+    456,
+    30,
+    60
+   ],
+   [
+    1318,
+    470,
+    37,
+    49
+   ],
+   [
+    1630,
+    460,
+    35,
+    46
+   ],
+   [
+    1019,
+    470,
+    36,
+    48
+   ],
+   [
+    1866,
+    450,
+    31,
+    43
+   ],
+   [
+    1537,
+    471,
+    38,
+    49
+   ],
+   [
+    564,
+    475,
+    33,
+    67
+   ],
+   [
+    803,
+    481,
+    39,
+    52
+   ],
+   [
+    589,
+    493,
+    42,
+    55
+   ],
+   [
+    1499,
+    457,
+    31,
+    60
+   ],
+   [
+    738,
+    473,
+    33,
+    67
+   ],
+   [
+    832,
+    376,
+    26,
+    52
+   ],
+   [
+    623,
+    378,
+    27,
+    53
+   ],
+   [
+    605,
+    390,
+    32,
+    43
+   ],
+   [
+    1000,
+    377,
+    26,
+    53
+   ],
+   [
+    685,
+    389,
+    32,
+    43
+   ],
+   [
+    113,
+    558,
+    41,
+    79
+   ],
+   [
+    166,
+    548,
+    40,
+    76
+   ],
+   [
+    981,
+    568,
+    27,
+    17
+   ],
+   [
+    1663,
+    546,
+    16,
+    12
+   ],
+   [
+    1702,
+    542,
+    22,
+    15
+   ],
+   [
+    1917,
+    537,
+    3,
+    12
+   ],
+   [
+    1009,
+    574,
+    17,
+    14
+   ],
+   [
+    1657,
+    549,
+    19,
+    12
+   ],
+   [
+    1061,
+    578,
+    27,
+    10
+   ],
+   [
+    1328,
+    564,
+    20,
+    13
+   ],
+   [
+    1706,
+    549,
+    16,
+    12
+   ],
+   [
+    1877,
+    545,
+    21,
+    9
+   ],
+   [
+    1379,
+    567,
+    16,
+    10
+   ],
+   [
+    1396,
+    567,
+    17,
+    13
+   ],
+   [
+    1322,
+    570,
+    17,
+    13
+   ],
+   [
+    838,
+    598,
+    7,
+    7
+   ],
+   [
+    798,
+    589,
+    25,
+    18
+   ],
+   [
+    272,
+    619,
+    30,
+    12
+   ],
+   [
+    895,
+    593,
+    14,
+    11
+   ],
+   [
+    320,
+    619,
+    16,
+    12
+   ],
+   [
+    351,
+    621,
+    28,
+    12
+   ],
+   [
+    795,
+    606,
+    7,
+    7
+   ],
+   [
+    617,
+    614,
+    19,
+    12
+   ],
+   [
+    1863,
+    560,
+    20,
+    13
+   ],
+   [
+    1907,
+    559,
+    13,
+    13
+   ],
+   [
+    44,
+    651,
+    9,
+    8
+   ],
+   [
+    912,
+    668,
+    36,
+    14
+   ],
+   [
+    1440,
+    640,
+    17,
+    12
+   ],
+   [
+    1400,
+    643,
+    21,
+    12
+   ],
+   [
+    888,
+    674,
+    18,
+    14
+   ],
+   [
+    1482,
+    642,
+    17,
+    12
+   ],
+   [
+    681,
+    683,
+    28,
+    19
+   ],
+   [
+    624,
+    697,
+    10,
+    10
+   ],
+   [
+    580,
+    692,
+    25,
+    20
+   ],
+   [
+    0,
+    857,
+    76,
+    89
+   ],
+   [
+    0,
+    852,
+    31,
+    90
+   ],
+   [
+    321,
+    820,
+    80,
+    85
+   ],
+   [
+    245,
+    822,
+    77,
+    83
+   ],
+   [
+    628,
+    747,
+    66,
+    71
+   ],
+   [
+    504,
+    743,
+    67,
+    71
+   ],
+   [
+    547,
+    742,
+    66,
+    70
+   ],
+   [
+    544,
+    743,
+    66,
+    70
+   ],
+   [
+    967,
+    813,
+    75,
+    83
+   ],
+   [
+    841,
+    813,
+    75,
+    83
+   ],
+   [
+    1130,
+    678,
+    56,
+    61
+   ],
+   [
+    1134,
+    680,
+    55,
+    62
+   ],
+   [
+    1231,
+    683,
+    57,
+    61
+   ],
+   [
+    1418,
+    735,
+    62,
+    71
+   ],
+   [
+    1311,
+    731,
+    65,
+    70
+   ],
+   [
+    1332,
+    742,
+    67,
+    72
+   ],
+   [
+    1413,
+    727,
+    62,
+    69
+   ],
+   [
+    1605,
+    665,
+    53,
+    59
+   ],
+   [
+    1578,
+    663,
+    51,
+    59
+   ],
+   [
+    1811,
+    733,
+    67,
+    70
+   ],
+   [
+    1902,
+    723,
+    18,
+    69
+   ],
+   [
+    1839,
+    715,
+    66,
+    68
+   ],
+   [
+    46,
+    750,
+    70,
+    73
+   ],
+   [
+    98,
+    735,
+    66,
+    69
+   ],
+   [
+    736,
+    777,
+    70,
+    76
+   ],
+   [
+    678,
+    780,
+    71,
+    77
+   ],
+   [
+    656,
+    771,
+    69,
+    75
+   ],
+   [
+    1433,
+    767,
+    68,
+    75
+   ],
+   [
+    1489,
+    748,
+    67,
+    71
+   ],
+   [
+    120,
+    687,
+    60,
+    63
+   ],
+   [
+    16,
+    696,
+    61,
+    63
+   ],
+   [
+    24,
+    694,
+    59,
+    63
+   ],
+   [
+    647,
+    655,
+    54,
+    58
+   ],
+   [
+    695,
+    652,
+    53,
+    58
+   ],
+   [
+    900,
+    639,
+    51,
+    56
+   ],
+   [
+    896,
+    638,
+    51,
+    56
+   ],
+   [
+    0,
+    597,
+    7,
+    49
+   ],
+   [
+    971,
+    553,
+    38,
+    42
+   ],
+   [
+    1010,
+    553,
+    38,
+    42
+   ],
+   [
+    1439,
+    539,
+    37,
+    40
+   ],
+   [
+    1431,
+    540,
+    37,
+    40
+   ],
+   [
+    1395,
+    541,
+    37,
+    40
+   ],
+   [
+    1652,
+    530,
+    36,
+    38
+   ],
+   [
+    703,
+    496,
+    35,
+    39
+   ],
+   [
+    831,
+    489,
+    34,
+    38
+   ],
+   [
+    1758,
+    466,
+    31,
+    33
+   ],
+   [
+    1127,
+    484,
+    34,
+    37
+   ],
+   [
+    1197,
+    481,
+    33,
+    36
+   ],
+   [
+    1670,
+    467,
+    30,
+    34
+   ],
+   [
+    1020,
+    396,
+    28,
+    31
+   ],
+   [
+    947,
+    397,
+    29,
+    31
+   ],
+   [
+    752,
+    399,
+    29,
+    32
+   ],
+   [
+    876,
+    398,
+    29,
+    31
+   ],
+   [
+    1615,
+    525,
+    32,
+    38
+   ],
+   [
+    667,
+    601,
+    25,
+    12
+   ],
+   [
+    1831,
+    539,
+    24,
+    9
+   ],
+   [
+    1230,
+    576,
+    26,
+    10
+   ],
+   [
+    872,
+    595,
+    29,
+    11
+   ],
+   [
+    639,
+    586,
+    27,
+    11
+   ],
+   [
+    1029,
+    539,
+    35,
+    40
+   ],
+   [
+    1749,
+    549,
+    22,
+    9
+   ],
+   [
+    58,
+    582,
+    42,
+    46
+   ],
+   [
+    0,
+    588,
+    20,
+    48
+   ],
+   [
+    152,
+    635,
+    31,
+    13
+   ],
+   [
+    1734,
+    567,
+    27,
+    10
+   ],
+   [
+    1232,
+    588,
+    28,
+    11
+   ],
+   [
+    980,
+    602,
+    26,
+    11
+   ],
+   [
+    666,
+    616,
+    31,
+    12
+   ],
+   [
+    1507,
+    579,
+    24,
+    10
+   ],
+   [
+    1581,
+    573,
+    27,
+    10
+   ],
+   [
+    1356,
+    587,
+    28,
+    11
+   ],
+   [
+    873,
+    608,
+    26,
+    11
+   ],
+   [
+    1126,
+    597,
+    29,
+    11
+   ],
+   [
+    767,
+    610,
+    27,
+    11
+   ],
+   [
+    1862,
+    562,
+    17,
+    10
+   ]
+  ],
+  "names": [
+   "relief#7 rootArt",
+   "grove-pine#10 pine",
+   "grove-rock#11 rockBig1",
+   "grove-rock#12 rockBig2",
+   "grove-foot#13 fern",
+   "grove-foot#14 fern2",
+   "grove-foot#15 fern",
+   "grove-foot#16 fern2",
+   "wide-edge#18 fern2",
+   "wide-edge#20 fern",
+   "grove-log#23 log",
+   "waystone#43 waystone",
+   "bank#44 fernSmall",
+   "bank#45 fernSmall",
+   "bank#46 tallgrass",
+   "bank#47 fern",
+   "bank#48 tallgrass",
+   "bank-top#49 fernSmall",
+   "bank-top#50 fernSmall",
+   "bank-top#51 fernSmall",
+   "bank-top#52 fernSmall",
+   "bank-top#53 fernSmall",
+   "bank-top#54 fernSmall",
+   "bank-top#55 fernSmall",
+   "bank-top#56 fernSmall",
+   "crown-left#57 canopyHang",
+   "crown-right#58 canopyHang",
+   "crown-left-wide#59 canopyHang",
+   "card#78 rockSmall",
+   "card#79 pebble",
+   "card#80 flower",
+   "card#81 shroom2",
+   "card#82 shroom",
+   "card#86 rockSmall",
+   "card#87 pebble",
+   "card#88 flower",
+   "card#89 rockSmall",
+   "card#90 tuftStand3",
+   "card#91 tuftStand4",
+   "card#92 tuftStand3",
+   "card#93 tuftStand4",
+   "card#94 tuftStand4",
+   "card#95 tuftStand4",
+   "card#96 tuftStand3",
+   "card#97 tuftStand3",
+   "card#98 tuftStand3",
+   "card#99 tuftStand3",
+   "card#100 tuftStand3",
+   "card#101 tuftStand4",
+   "card#102 tuftStand3",
+   "card#103 tuftStand3",
+   "card#104 tuftStand3",
+   "card#105 tuftStand3",
+   "card#106 tuftStand3",
+   "card#107 tuftStand4",
+   "card#108 tuftStand3",
+   "card#109 tuftStand3",
+   "card#110 tuftStand4",
+   "card#111 tuftStand4",
+   "card#112 tuftStand4",
+   "card#113 tuftStand4",
+   "card#114 tuftStand3",
+   "card#115 tuftStand4",
+   "card#116 tuftStand3",
+   "card#117 tuftStand4",
+   "card#119 tuftStand4",
+   "litter#120 litterTuft4",
+   "litter#121 litterTuft1",
+   "litter#122 litterTuft2",
+   "litter#123 litterTuft1",
+   "litter#124 litterPebble2",
+   "litter#125 litterPebble4",
+   "litter#126 litterTwig1",
+   "litter#127 litterPebble4",
+   "litter#128 litterPebble2",
+   "litter#129 litterLeaves2",
+   "litter#131 litterLeaves1",
+   "litter#132 litterTuft1",
+   "litter#133 litterTuft1",
+   "litter#134 litterPebble3",
+   "litter#135 litterTuft2",
+   "litter#136 litterTwig1",
+   "litter#137 litterPebble1",
+   "litter#138 litterPebble1",
+   "litter#139 litterLeaves2",
+   "litter#140 litterPebble3",
+   "litter#141 litterLeaves1",
+   "litter#142 litterPebble4",
+   "litter#143 litterPebble4",
+   "litter#144 litterPebble3",
+   "litter#145 litterTwig1",
+   "litter#146 litterPebble1",
+   "litter#147 litterLeaves1",
+   "litter#148 litterPebble1",
+   "litter#149 litterPebble1",
+   "litter#150 litterPebble4",
+   "litter#151 litterPebble3",
+   "litter#152 litterTuft1",
+   "litter#154 tuftStand1",
+   "litter#155 tuftStand1",
+   "litter#156 tuftStand1",
+   "litter#157 tuftStand2",
+   "litter#158 tuftStand2",
+   "litter#159 tuftStand1",
+   "litter#160 tuftStand2",
+   "litter#161 tuftStand2",
+   "litter#162 tuftStand1",
+   "litter#163 tuftStand2",
+   "litter#164 tuftStand2",
+   "litter#165 tuftStand1",
+   "litter#166 tuftStand2",
+   "litter#167 tuftStand2",
+   "litter#168 tuftStand1",
+   "litter#169 tuftStand2",
+   "litter#170 tuftStand2",
+   "litter#171 tuftStand2",
+   "litter#172 tuftStand2",
+   "litter#173 tuftStand2",
+   "litter#174 tuftStand2",
+   "litter#175 tuftStand2",
+   "litter#176 tuftStand2",
+   "litter#177 tuftStand1",
+   "litter#178 tuftStand1",
+   "litter#179 tuftStand2",
+   "litter#180 tuftStand2",
+   "litter#181 tuftStand1",
+   "litter#182 tuftStand2",
+   "litter#183 tuftStand1",
+   "litter#184 tuftStand2",
+   "litter#185 tuftStand2",
+   "litter#186 tuftStand1",
+   "litter#187 tuftStand2",
+   "litter#188 tuftStand2",
+   "litter#189 tuftStand2",
+   "litter#190 tuftStand1",
+   "litter#191 tuftStand2",
+   "litter#192 tuftStand2",
+   "litter#193 tuftStand1",
+   "litter#194 tuftStand1",
+   "litter#195 tuftStand2",
+   "litter#196 tuftStand2",
+   "litter#197 tuftStand1",
+   "litter#198 tuftStand1",
+   "litter#199 tuftStand1",
+   "litter#200 tuftStand1",
+   "litter#201 tuftStand1",
+   "litter#202 tuftStand1",
+   "litter#203 tuftStand1",
+   "litter#204 tuftStand1",
+   "litter#205 tuftStand1",
+   "litter#206 tuftStand1",
+   "litter#207 tuftStand2",
+   "litter#208 litterLeaves2",
+   "litter#209 litterTwig1",
+   "litter#210 litterTwig1",
+   "litter#211 litterTwig1",
+   "litter#212 litterTwig1",
+   "litter#213 tuftStand2",
+   "litter#214 litterLeaves2",
+   "litter#215 tuftStand1",
+   "litter#217 tuftStand1",
+   "litter#218 litterTwig1",
+   "litter#219 litterTwig1",
+   "litter#220 litterTwig1",
+   "litter#221 litterLeaves2",
+   "litter#222 litterTwig1",
+   "litter#223 litterLeaves2",
+   "litter#224 litterTwig1",
+   "litter#225 litterTwig1",
+   "litter#226 litterLeaves2",
+   "litter#227 litterTwig1",
+   "litter#228 litterLeaves2",
+   "litter#229 litterLeaves1"
+  ]
+ },
+ "Stage/act1_layout|22|7|0.525|PH": {
+  "file": "act1_layout.json",
+  "boxes": [
+   [
+    0,
+    420,
+    2,
+    142
+   ],
+   [
+    0,
+    0,
+    137,
+    414
+   ],
+   [
+    0,
+    245,
+    159,
+    249
+   ],
+   [
+    0,
+    275,
+    275,
+    186
+   ],
+   [
+    12,
+    242,
+    210,
+    177
+   ],
+   [
+    0,
+    201,
+    132,
+    208
+   ],
+   [
+    1779,
+    221,
+    141,
+    130
+   ],
+   [
+    1830,
+    190,
+    90,
+    148
+   ],
+   [
+    0,
+    233,
+    30,
+    339
+   ],
+   [
+    1887,
+    249,
+    33,
+    181
+   ],
+   [
+    0,
+    306,
+    227,
+    138
+   ],
+   [
+    1689,
+    189,
+    110,
+    159
+   ],
+   [
+    652,
+    286,
+    115,
+    99
+   ],
+   [
+    769,
+    285,
+    115,
+    98
+   ],
+   [
+    1035,
+    213,
+    170,
+    155
+   ],
+   [
+    1481,
+    223,
+    156,
+    134
+   ],
+   [
+    1540,
+    210,
+    164,
+    143
+   ],
+   [
+    596,
+    241,
+    113,
+    96
+   ],
+   [
+    723,
+    237,
+    107,
+    90
+   ],
+   [
+    952,
+    231,
+    98,
+    84
+   ],
+   [
+    1762,
+    222,
+    85,
+    72
+   ],
+   [
+    1821,
+    221,
+    83,
+    72
+   ],
+   [
+    621,
+    240,
+    112,
+    95
+   ],
+   [
+    677,
+    238,
+    107,
+    93
+   ],
+   [
+    858,
+    233,
+    100,
+    86
+   ],
+   [
+    0,
+    0,
+    313,
+    150
+   ],
+   [
+    1687,
+    0,
+    233,
+    150
+   ],
+   [
+    1661,
+    298,
+    50,
+    52
+   ],
+   [
+    1652,
+    294,
+    100,
+    63
+   ],
+   [
+    814,
+    245,
+    38,
+    59
+   ],
+   [
+    943,
+    232,
+    100,
+    78
+   ],
+   [
+    996,
+    237,
+    51,
+    63
+   ],
+   [
+    162,
+    319,
+    63,
+    60
+   ],
+   [
+    129,
+    188,
+    97,
+    57
+   ],
+   [
+    24,
+    253,
+    46,
+    65
+   ],
+   [
+    1220,
+    249,
+    46,
+    45
+   ],
+   [
+    0,
+    361,
+    16,
+    65
+   ],
+   [
+    977,
+    314,
+    33,
+    67
+   ],
+   [
+    1642,
+    260,
+    32,
+    42
+   ],
+   [
+    1762,
+    243,
+    24,
+    49
+   ],
+   [
+    1685,
+    245,
+    27,
+    50
+   ],
+   [
+    1391,
+    258,
+    30,
+    58
+   ],
+   [
+    678,
+    282,
+    40,
+    52
+   ],
+   [
+    1530,
+    266,
+    36,
+    45
+   ],
+   [
+    928,
+    269,
+    34,
+    46
+   ],
+   [
+    1601,
+    263,
+    34,
+    44
+   ],
+   [
+    1222,
+    269,
+    35,
+    46
+   ],
+   [
+    1102,
+    255,
+    28,
+    56
+   ],
+   [
+    1296,
+    267,
+    35,
+    46
+   ],
+   [
+    1585,
+    261,
+    33,
+    43
+   ],
+   [
+    1016,
+    268,
+    34,
+    46
+   ],
+   [
+    1798,
+    254,
+    29,
+    40
+   ],
+   [
+    1503,
+    269,
+    37,
+    46
+   ],
+   [
+    581,
+    268,
+    31,
+    64
+   ],
+   [
+    811,
+    275,
+    37,
+    49
+   ],
+   [
+    604,
+    284,
+    40,
+    52
+   ],
+   [
+    1466,
+    255,
+    30,
+    57
+   ],
+   [
+    748,
+    267,
+    31,
+    64
+   ],
+   [
+    842,
+    187,
+    24,
+    48
+   ],
+   [
+    648,
+    188,
+    25,
+    49
+   ],
+   [
+    631,
+    198,
+    30,
+    40
+   ],
+   [
+    997,
+    188,
+    24,
+    49
+   ],
+   [
+    706,
+    198,
+    30,
+    40
+   ],
+   [
+    126,
+    340,
+    42,
+    78
+   ],
+   [
+    185,
+    332,
+    41,
+    74
+   ],
+   [
+    980,
+    356,
+    25,
+    16
+   ],
+   [
+    1621,
+    339,
+    15,
+    11
+   ],
+   [
+    1658,
+    335,
+    21,
+    14
+   ],
+   [
+    1855,
+    331,
+    14,
+    11
+   ],
+   [
+    1007,
+    362,
+    16,
+    13
+   ],
+   [
+    1617,
+    342,
+    18,
+    12
+   ],
+   [
+    1057,
+    365,
+    26,
+    10
+   ],
+   [
+    1309,
+    354,
+    19,
+    13
+   ],
+   [
+    1663,
+    342,
+    15,
+    12
+   ],
+   [
+    1821,
+    339,
+    20,
+    9
+   ],
+   [
+    1900,
+    331,
+    20,
+    14
+   ],
+   [
+    1359,
+    357,
+    16,
+    9
+   ],
+   [
+    1374,
+    356,
+    16,
+    13
+   ],
+   [
+    1306,
+    359,
+    16,
+    13
+   ],
+   [
+    842,
+    383,
+    7,
+    7
+   ],
+   [
+    804,
+    374,
+    25,
+    18
+   ],
+   [
+    286,
+    401,
+    30,
+    12
+   ],
+   [
+    897,
+    378,
+    14,
+    10
+   ],
+   [
+    334,
+    401,
+    15,
+    11
+   ],
+   [
+    363,
+    403,
+    27,
+    12
+   ],
+   [
+    800,
+    390,
+    7,
+    7
+   ],
+   [
+    625,
+    396,
+    19,
+    11
+   ],
+   [
+    1816,
+    350,
+    19,
+    12
+   ],
+   [
+    1857,
+    349,
+    19,
+    12
+   ],
+   [
+    48,
+    430,
+    9,
+    8
+   ],
+   [
+    911,
+    445,
+    36,
+    14
+   ],
+   [
+    1436,
+    420,
+    16,
+    12
+   ],
+   [
+    1397,
+    422,
+    21,
+    12
+   ],
+   [
+    887,
+    451,
+    18,
+    14
+   ],
+   [
+    1478,
+    421,
+    17,
+    12
+   ],
+   [
+    675,
+    458,
+    29,
+    19
+   ],
+   [
+    616,
+    473,
+    10,
+    10
+   ],
+   [
+    570,
+    467,
+    25,
+    20
+   ],
+   [
+    223,
+    601,
+    95,
+    97
+   ],
+   [
+    136,
+    604,
+    91,
+    95
+   ],
+   [
+    598,
+    521,
+    73,
+    77
+   ],
+   [
+    464,
+    516,
+    74,
+    77
+   ],
+   [
+    511,
+    516,
+    72,
+    76
+   ],
+   [
+    507,
+    517,
+    72,
+    76
+   ],
+   [
+    967,
+    594,
+    86,
+    95
+   ],
+   [
+    824,
+    594,
+    86,
+    95
+   ],
+   [
+    1136,
+    452,
+    59,
+    64
+   ],
+   [
+    1141,
+    454,
+    57,
+    65
+   ],
+   [
+    1242,
+    456,
+    60,
+    64
+   ],
+   [
+    1455,
+    509,
+    67,
+    77
+   ],
+   [
+    1337,
+    504,
+    71,
+    75
+   ],
+   [
+    1363,
+    515,
+    74,
+    78
+   ],
+   [
+    1447,
+    500,
+    67,
+    74
+   ],
+   [
+    1623,
+    439,
+    55,
+    60
+   ],
+   [
+    1595,
+    437,
+    53,
+    61
+   ],
+   [
+    1878,
+    506,
+    42,
+    75
+   ],
+   [
+    1896,
+    488,
+    24,
+    72
+   ],
+   [
+    0,
+    524,
+    39,
+    80
+   ],
+   [
+    28,
+    508,
+    73,
+    74
+   ],
+   [
+    710,
+    553,
+    79,
+    84
+   ],
+   [
+    645,
+    556,
+    80,
+    86
+   ],
+   [
+    622,
+    546,
+    77,
+    83
+   ],
+   [
+    1482,
+    542,
+    76,
+    83
+   ],
+   [
+    1536,
+    522,
+    75,
+    77
+   ],
+   [
+    81,
+    461,
+    65,
+    65
+   ],
+   [
+    0,
+    468,
+    32,
+    66
+   ],
+   [
+    0,
+    467,
+    39,
+    66
+   ],
+   [
+    638,
+    429,
+    56,
+    60
+   ],
+   [
+    689,
+    427,
+    54,
+    59
+   ],
+   [
+    899,
+    414,
+    51,
+    57
+   ],
+   [
+    895,
+    414,
+    52,
+    56
+   ],
+   [
+    0,
+    378,
+    19,
+    48
+   ],
+   [
+    970,
+    341,
+    37,
+    40
+   ],
+   [
+    1008,
+    341,
+    37,
+    40
+   ],
+   [
+    1415,
+    330,
+    36,
+    38
+   ],
+   [
+    1408,
+    331,
+    36,
+    38
+   ],
+   [
+    1374,
+    331,
+    36,
+    38
+   ],
+   [
+    1614,
+    322,
+    34,
+    36
+   ],
+   [
+    716,
+    289,
+    34,
+    37
+   ],
+   [
+    838,
+    284,
+    33,
+    36
+   ],
+   [
+    1700,
+    267,
+    29,
+    31
+   ],
+   [
+    1117,
+    280,
+    32,
+    35
+   ],
+   [
+    1183,
+    278,
+    31,
+    34
+   ],
+   [
+    1620,
+    268,
+    28,
+    31
+   ],
+   [
+    1016,
+    206,
+    26,
+    29
+   ],
+   [
+    948,
+    207,
+    26,
+    29
+   ],
+   [
+    768,
+    207,
+    27,
+    29
+   ],
+   [
+    883,
+    207,
+    27,
+    29
+   ],
+   [
+    1577,
+    319,
+    31,
+    35
+   ],
+   [
+    676,
+    385,
+    24,
+    11
+   ],
+   [
+    1775,
+    334,
+    23,
+    8
+   ],
+   [
+    1218,
+    364,
+    25,
+    10
+   ],
+   [
+    875,
+    380,
+    28,
+    11
+   ],
+   [
+    651,
+    372,
+    26,
+    10
+   ],
+   [
+    1026,
+    330,
+    34,
+    38
+   ],
+   [
+    1702,
+    342,
+    21,
+    9
+   ],
+   [
+    77,
+    365,
+    42,
+    46
+   ],
+   [
+    0,
+    370,
+    37,
+    47
+   ],
+   [
+    161,
+    415,
+    30,
+    13
+   ],
+   [
+    1695,
+    356,
+    26,
+    10
+   ],
+   [
+    1222,
+    374,
+    27,
+    11
+   ],
+   [
+    979,
+    386,
+    25,
+    11
+   ],
+   [
+    672,
+    398,
+    30,
+    11
+   ],
+   [
+    1484,
+    367,
+    23,
+    10
+   ],
+   [
+    1552,
+    362,
+    26,
+    10
+   ],
+   [
+    1341,
+    373,
+    27,
+    10
+   ],
+   [
+    875,
+    391,
+    26,
+    11
+   ],
+   [
+    1121,
+    381,
+    28,
+    11
+   ],
+   [
+    772,
+    393,
+    26,
+    11
+   ],
+   [
+    1815,
+    353,
+    16,
+    9
+   ]
+  ],
+  "names": [
+   "relief#7 rootArt",
+   "grove-pine#10 pine",
+   "grove-rock#11 rockBig1",
+   "grove-rock#12 rockBig2",
+   "grove-foot#13 fern",
+   "grove-foot#14 fern2",
+   "grove-foot#15 fern",
+   "grove-foot#16 fern2",
+   "wide-edge#18 fern2",
+   "wide-edge#20 fern",
+   "grove-log#23 log",
+   "waystone#43 waystone",
+   "bank#44 fernSmall",
+   "bank#45 fernSmall",
+   "bank#46 tallgrass",
+   "bank#47 fern",
+   "bank#48 tallgrass",
+   "bank-top#49 fernSmall",
+   "bank-top#50 fernSmall",
+   "bank-top#51 fernSmall",
+   "bank-top#52 fernSmall",
+   "bank-top#53 fernSmall",
+   "bank-top#54 fernSmall",
+   "bank-top#55 fernSmall",
+   "bank-top#56 fernSmall",
+   "crown-left#57 canopyHang",
+   "crown-right#58 canopyHang",
+   "card#78 rockSmall",
+   "card#79 pebble",
+   "card#80 flower",
+   "card#81 shroom2",
+   "card#82 shroom",
+   "card#86 rockSmall",
+   "card#87 pebble",
+   "card#88 flower",
+   "card#89 rockSmall",
+   "card#90 tuftStand3",
+   "card#91 tuftStand4",
+   "card#92 tuftStand3",
+   "card#93 tuftStand4",
+   "card#94 tuftStand4",
+   "card#95 tuftStand4",
+   "card#96 tuftStand3",
+   "card#97 tuftStand3",
+   "card#98 tuftStand3",
+   "card#99 tuftStand3",
+   "card#100 tuftStand3",
+   "card#101 tuftStand4",
+   "card#102 tuftStand3",
+   "card#103 tuftStand3",
+   "card#104 tuftStand3",
+   "card#105 tuftStand3",
+   "card#106 tuftStand3",
+   "card#107 tuftStand4",
+   "card#108 tuftStand3",
+   "card#109 tuftStand3",
+   "card#110 tuftStand4",
+   "card#111 tuftStand4",
+   "card#112 tuftStand4",
+   "card#113 tuftStand4",
+   "card#114 tuftStand3",
+   "card#115 tuftStand4",
+   "card#116 tuftStand3",
+   "card#117 tuftStand4",
+   "card#119 tuftStand4",
+   "litter#120 litterTuft4",
+   "litter#121 litterTuft1",
+   "litter#122 litterTuft2",
+   "litter#123 litterTuft1",
+   "litter#124 litterPebble2",
+   "litter#125 litterPebble4",
+   "litter#126 litterTwig1",
+   "litter#127 litterPebble4",
+   "litter#128 litterPebble2",
+   "litter#129 litterLeaves2",
+   "litter#130 litterTuft4",
+   "litter#131 litterLeaves1",
+   "litter#132 litterTuft1",
+   "litter#133 litterTuft1",
+   "litter#134 litterPebble3",
+   "litter#135 litterTuft2",
+   "litter#136 litterTwig1",
+   "litter#137 litterPebble1",
+   "litter#138 litterPebble1",
+   "litter#139 litterLeaves2",
+   "litter#140 litterPebble3",
+   "litter#141 litterLeaves1",
+   "litter#142 litterPebble4",
+   "litter#143 litterPebble4",
+   "litter#144 litterPebble3",
+   "litter#145 litterTwig1",
+   "litter#146 litterPebble1",
+   "litter#147 litterLeaves1",
+   "litter#148 litterPebble1",
+   "litter#149 litterPebble1",
+   "litter#150 litterPebble4",
+   "litter#151 litterPebble3",
+   "litter#152 litterTuft1",
+   "litter#156 tuftStand1",
+   "litter#157 tuftStand2",
+   "litter#158 tuftStand2",
+   "litter#159 tuftStand1",
+   "litter#160 tuftStand2",
+   "litter#161 tuftStand2",
+   "litter#162 tuftStand1",
+   "litter#163 tuftStand2",
+   "litter#164 tuftStand2",
+   "litter#165 tuftStand1",
+   "litter#166 tuftStand2",
+   "litter#167 tuftStand2",
+   "litter#168 tuftStand1",
+   "litter#169 tuftStand2",
+   "litter#170 tuftStand2",
+   "litter#171 tuftStand2",
+   "litter#172 tuftStand2",
+   "litter#173 tuftStand2",
+   "litter#175 tuftStand2",
+   "litter#176 tuftStand2",
+   "litter#177 tuftStand1",
+   "litter#178 tuftStand1",
+   "litter#179 tuftStand2",
+   "litter#180 tuftStand2",
+   "litter#181 tuftStand1",
+   "litter#182 tuftStand2",
+   "litter#183 tuftStand1",
+   "litter#184 tuftStand2",
+   "litter#185 tuftStand2",
+   "litter#186 tuftStand1",
+   "litter#187 tuftStand2",
+   "litter#188 tuftStand2",
+   "litter#189 tuftStand2",
+   "litter#190 tuftStand1",
+   "litter#191 tuftStand2",
+   "litter#192 tuftStand2",
+   "litter#193 tuftStand1",
+   "litter#194 tuftStand1",
+   "litter#195 tuftStand2",
+   "litter#196 tuftStand2",
+   "litter#197 tuftStand1",
+   "litter#198 tuftStand1",
+   "litter#199 tuftStand1",
+   "litter#200 tuftStand1",
+   "litter#201 tuftStand1",
+   "litter#202 tuftStand1",
+   "litter#203 tuftStand1",
+   "litter#204 tuftStand1",
+   "litter#205 tuftStand1",
+   "litter#206 tuftStand1",
+   "litter#207 tuftStand2",
+   "litter#208 litterLeaves2",
+   "litter#209 litterTwig1",
+   "litter#210 litterTwig1",
+   "litter#211 litterTwig1",
+   "litter#212 litterTwig1",
+   "litter#213 tuftStand2",
+   "litter#214 litterLeaves2",
+   "litter#215 tuftStand1",
+   "litter#217 tuftStand1",
+   "litter#218 litterTwig1",
+   "litter#219 litterTwig1",
+   "litter#220 litterTwig1",
+   "litter#221 litterLeaves2",
+   "litter#222 litterTwig1",
+   "litter#223 litterLeaves2",
+   "litter#224 litterTwig1",
+   "litter#225 litterTwig1",
+   "litter#226 litterLeaves2",
+   "litter#227 litterTwig1",
+   "litter#228 litterLeaves2",
+   "litter#229 litterLeaves1"
+  ]
+ },
+ "Stage/act1_layout|22|6|0.407|PC": {
+  "file": "act1_layout.json",
+  "boxes": [
+   [
+    0,
+    672,
+    63,
+    133
+   ],
+   [
+    0,
+    0,
+    118,
+    631
+   ],
+   [
+    0,
+    462,
+    147,
+    253
+   ],
+   [
+    0,
+    488,
+    258,
+    190
+   ],
+   [
+    42,
+    458,
+    210,
+    178
+   ],
+   [
+    0,
+    414,
+    113,
+    212
+   ],
+   [
+    1831,
+    408,
+    89,
+    138
+   ],
+   [
+    1893,
+    371,
+    27,
+    159
+   ],
+   [
+    0,
+    497,
+    94,
+    317
+   ],
+   [
+    1901,
+    467,
+    19,
+    184
+   ],
+   [
+    0,
+    521,
+    298,
+    140
+   ],
+   [
+    1737,
+    374,
+    117,
+    169
+   ],
+   [
+    640,
+    491,
+    120,
+    103
+   ],
+   [
+    762,
+    490,
+    120,
+    102
+   ],
+   [
+    1039,
+    409,
+    179,
+    163
+   ],
+   [
+    1512,
+    414,
+    165,
+    141
+   ],
+   [
+    1576,
+    399,
+    173,
+    151
+   ],
+   [
+    580,
+    442,
+    118,
+    99
+   ],
+   [
+    711,
+    433,
+    112,
+    95
+   ],
+   [
+    951,
+    421,
+    104,
+    89
+   ],
+   [
+    1828,
+    399,
+    92,
+    78
+   ],
+   [
+    1893,
+    398,
+    27,
+    78
+   ],
+   [
+    606,
+    440,
+    117,
+    98
+   ],
+   [
+    663,
+    436,
+    112,
+    98
+   ],
+   [
+    852,
+    424,
+    106,
+    91
+   ],
+   [
+    0,
+    0,
+    262,
+    212
+   ],
+   [
+    1717,
+    0,
+    203,
+    191
+   ],
+   [
+    0,
+    0,
+    21,
+    214
+   ],
+   [
+    1706,
+    491,
+    53,
+    55
+   ],
+   [
+    1694,
+    489,
+    105,
+    66
+   ],
+   [
+    803,
+    429,
+    40,
+    63
+   ],
+   [
+    942,
+    418,
+    107,
+    84
+   ],
+   [
+    999,
+    419,
+    55,
+    67
+   ],
+   [
+    127,
+    523,
+    65,
+    62
+   ],
+   [
+    71,
+    369,
+    103,
+    61
+   ],
+   [
+    0,
+    444,
+    15,
+    68
+   ],
+   [
+    1241,
+    429,
+    49,
+    48
+   ],
+   [
+    0,
+    582,
+    4,
+    65
+   ],
+   [
+    977,
+    519,
+    35,
+    69
+   ],
+   [
+    1692,
+    445,
+    34,
+    45
+   ],
+   [
+    1829,
+    421,
+    26,
+    53
+   ],
+   [
+    1743,
+    425,
+    28,
+    54
+   ],
+   [
+    1417,
+    449,
+    31,
+    62
+   ],
+   [
+    665,
+    484,
+    41,
+    54
+   ],
+   [
+    1568,
+    455,
+    38,
+    48
+   ],
+   [
+    926,
+    460,
+    36,
+    49
+   ],
+   [
+    1646,
+    450,
+    36,
+    47
+   ],
+   [
+    1239,
+    460,
+    37,
+    49
+   ],
+   [
+    1112,
+    444,
+    30,
+    60
+   ],
+   [
+    1318,
+    458,
+    37,
+    49
+   ],
+   [
+    1631,
+    446,
+    35,
+    46
+   ],
+   [
+    1019,
+    458,
+    36,
+    48
+   ],
+   [
+    1866,
+    434,
+    31,
+    43
+   ],
+   [
+    1537,
+    460,
+    39,
+    49
+   ],
+   [
+    563,
+    467,
+    33,
+    67
+   ],
+   [
+    803,
+    472,
+    39,
+    52
+   ],
+   [
+    589,
+    486,
+    42,
+    55
+   ],
+   [
+    1499,
+    445,
+    32,
+    60
+   ],
+   [
+    738,
+    465,
+    33,
+    67
+   ],
+   [
+    832,
+    359,
+    26,
+    52
+   ],
+   [
+    622,
+    361,
+    27,
+    53
+   ],
+   [
+    605,
+    374,
+    32,
+    43
+   ],
+   [
+    1000,
+    361,
+    26,
+    53
+   ],
+   [
+    685,
+    373,
+    32,
+    43
+   ],
+   [
+    112,
+    558,
+    41,
+    79
+   ],
+   [
+    166,
+    546,
+    41,
+    76
+   ],
+   [
+    981,
+    560,
+    27,
+    17
+   ],
+   [
+    1663,
+    534,
+    16,
+    12
+   ],
+   [
+    1703,
+    530,
+    22,
+    15
+   ],
+   [
+    1917,
+    524,
+    3,
+    12
+   ],
+   [
+    1009,
+    567,
+    17,
+    14
+   ],
+   [
+    1658,
+    538,
+    19,
+    12
+   ],
+   [
+    1061,
+    570,
+    27,
+    10
+   ],
+   [
+    1328,
+    555,
+    20,
+    13
+   ],
+   [
+    1706,
+    538,
+    16,
+    12
+   ],
+   [
+    1877,
+    533,
+    21,
+    9
+   ],
+   [
+    1380,
+    558,
+    16,
+    10
+   ],
+   [
+    1396,
+    558,
+    17,
+    13
+   ],
+   [
+    1323,
+    562,
+    17,
+    13
+   ],
+   [
+    838,
+    594,
+    7,
+    7
+   ],
+   [
+    798,
+    585,
+    25,
+    18
+   ],
+   [
+    272,
+    618,
+    30,
+    12
+   ],
+   [
+    895,
+    588,
+    14,
+    11
+   ],
+   [
+    320,
+    618,
+    16,
+    12
+   ],
+   [
+    351,
+    620,
+    28,
+    12
+   ],
+   [
+    795,
+    603,
+    7,
+    7
+   ],
+   [
+    617,
+    611,
+    19,
+    12
+   ],
+   [
+    1863,
+    550,
+    20,
+    13
+   ],
+   [
+    1907,
+    549,
+    13,
+    13
+   ],
+   [
+    44,
+    654,
+    9,
+    8
+   ],
+   [
+    912,
+    673,
+    36,
+    14
+   ],
+   [
+    1440,
+    642,
+    17,
+    12
+   ],
+   [
+    1400,
+    645,
+    21,
+    12
+   ],
+   [
+    888,
+    681,
+    18,
+    14
+   ],
+   [
+    1482,
+    644,
+    17,
+    12
+   ],
+   [
+    681,
+    691,
+    28,
+    19
+   ],
+   [
+    624,
+    707,
+    10,
+    9
+   ],
+   [
+    581,
+    702,
+    25,
+    19
+   ],
+   [
+    0,
+    898,
+    78,
+    88
+   ],
+   [
+    0,
+    893,
+    33,
+    90
+   ],
+   [
+    321,
+    855,
+    80,
+    85
+   ],
+   [
+    246,
+    857,
+    78,
+    83
+   ],
+   [
+    628,
+    771,
+    66,
+    71
+   ],
+   [
+    505,
+    766,
+    67,
+    71
+   ],
+   [
+    547,
+    766,
+    66,
+    70
+   ],
+   [
+    544,
+    767,
+    66,
+    70
+   ],
+   [
+    967,
+    847,
+    75,
+    83
+   ],
+   [
+    841,
+    847,
+    75,
+    83
+   ],
+   [
+    1130,
+    691,
+    56,
+    61
+   ],
+   [
+    1134,
+    693,
+    55,
+    62
+   ],
+   [
+    1231,
+    697,
+    57,
+    61
+   ],
+   [
+    1417,
+    757,
+    62,
+    71
+   ],
+   [
+    1310,
+    752,
+    65,
+    70
+   ],
+   [
+    1331,
+    765,
+    67,
+    72
+   ],
+   [
+    1413,
+    747,
+    62,
+    69
+   ],
+   [
+    1605,
+    675,
+    54,
+    59
+   ],
+   [
+    1578,
+    674,
+    51,
+    60
+   ],
+   [
+    1811,
+    755,
+    67,
+    69
+   ],
+   [
+    1901,
+    743,
+    19,
+    69
+   ],
+   [
+    1838,
+    734,
+    66,
+    68
+   ],
+   [
+    46,
+    774,
+    71,
+    73
+   ],
+   [
+    98,
+    756,
+    66,
+    69
+   ],
+   [
+    736,
+    806,
+    70,
+    76
+   ],
+   [
+    678,
+    809,
+    71,
+    77
+   ],
+   [
+    656,
+    798,
+    69,
+    75
+   ],
+   [
+    1432,
+    794,
+    69,
+    75
+   ],
+   [
+    1488,
+    772,
+    68,
+    71
+   ],
+   [
+    121,
+    702,
+    60,
+    62
+   ],
+   [
+    16,
+    711,
+    61,
+    63
+   ],
+   [
+    24,
+    709,
+    59,
+    63
+   ],
+   [
+    647,
+    665,
+    54,
+    58
+   ],
+   [
+    695,
+    662,
+    53,
+    58
+   ],
+   [
+    900,
+    646,
+    51,
+    56
+   ],
+   [
+    896,
+    646,
+    51,
+    56
+   ],
+   [
+    0,
+    598,
+    7,
+    49
+   ],
+   [
+    971,
+    547,
+    38,
+    42
+   ],
+   [
+    1010,
+    547,
+    38,
+    42
+   ],
+   [
+    1439,
+    531,
+    37,
+    40
+   ],
+   [
+    1431,
+    532,
+    38,
+    40
+   ],
+   [
+    1395,
+    532,
+    37,
+    40
+   ],
+   [
+    1652,
+    519,
+    36,
+    38
+   ],
+   [
+    703,
+    487,
+    35,
+    39
+   ],
+   [
+    831,
+    479,
+    34,
+    38
+   ],
+   [
+    1758,
+    450,
+    31,
+    33
+   ],
+   [
+    1127,
+    472,
+    34,
+    37
+   ],
+   [
+    1197,
+    468,
+    33,
+    36
+   ],
+   [
+    1671,
+    452,
+    30,
+    34
+   ],
+   [
+    1020,
+    379,
+    28,
+    31
+   ],
+   [
+    947,
+    380,
+    29,
+    31
+   ],
+   [
+    752,
+    382,
+    29,
+    32
+   ],
+   [
+    876,
+    381,
+    29,
+    31
+   ],
+   [
+    1615,
+    514,
+    33,
+    38
+   ],
+   [
+    667,
+    597,
+    25,
+    12
+   ],
+   [
+    1832,
+    526,
+    24,
+    9
+   ],
+   [
+    1230,
+    569,
+    26,
+    10
+   ],
+   [
+    872,
+    590,
+    29,
+    11
+   ],
+   [
+    638,
+    579,
+    27,
+    11
+   ],
+   [
+    1029,
+    530,
+    35,
+    40
+   ],
+   [
+    1749,
+    538,
+    22,
+    9
+   ],
+   [
+    57,
+    581,
+    43,
+    46
+   ],
+   [
+    0,
+    588,
+    20,
+    48
+   ],
+   [
+    152,
+    636,
+    31,
+    13
+   ],
+   [
+    1734,
+    558,
+    27,
+    10
+   ],
+   [
+    1232,
+    582,
+    28,
+    11
+   ],
+   [
+    980,
+    598,
+    26,
+    11
+   ],
+   [
+    666,
+    614,
+    31,
+    12
+   ],
+   [
+    1508,
+    572,
+    24,
+    10
+   ],
+   [
+    1581,
+    565,
+    27,
+    10
+   ],
+   [
+    1356,
+    581,
+    28,
+    11
+   ],
+   [
+    873,
+    605,
+    26,
+    11
+   ],
+   [
+    1126,
+    592,
+    29,
+    11
+   ],
+   [
+    767,
+    608,
+    27,
+    11
+   ],
+   [
+    1862,
+    553,
+    17,
+    10
+   ]
+  ],
+  "names": [
+   "relief#7 rootArt",
+   "grove-pine#10 pine",
+   "grove-rock#11 rockBig1",
+   "grove-rock#12 rockBig2",
+   "grove-foot#13 fern",
+   "grove-foot#14 fern2",
+   "grove-foot#15 fern",
+   "grove-foot#16 fern2",
+   "wide-edge#18 fern2",
+   "wide-edge#20 fern",
+   "grove-log#23 log",
+   "waystone#43 waystone",
+   "bank#44 fernSmall",
+   "bank#45 fernSmall",
+   "bank#46 tallgrass",
+   "bank#47 fern",
+   "bank#48 tallgrass",
+   "bank-top#49 fernSmall",
+   "bank-top#50 fernSmall",
+   "bank-top#51 fernSmall",
+   "bank-top#52 fernSmall",
+   "bank-top#53 fernSmall",
+   "bank-top#54 fernSmall",
+   "bank-top#55 fernSmall",
+   "bank-top#56 fernSmall",
+   "crown-left#57 canopyHang",
+   "crown-right#58 canopyHang",
+   "crown-left-wide#59 canopyHang",
+   "card#78 rockSmall",
+   "card#79 pebble",
+   "card#80 flower",
+   "card#81 shroom2",
+   "card#82 shroom",
+   "card#86 rockSmall",
+   "card#87 pebble",
+   "card#88 flower",
+   "card#89 rockSmall",
+   "card#90 tuftStand3",
+   "card#91 tuftStand4",
+   "card#92 tuftStand3",
+   "card#93 tuftStand4",
+   "card#94 tuftStand4",
+   "card#95 tuftStand4",
+   "card#96 tuftStand3",
+   "card#97 tuftStand3",
+   "card#98 tuftStand3",
+   "card#99 tuftStand3",
+   "card#100 tuftStand3",
+   "card#101 tuftStand4",
+   "card#102 tuftStand3",
+   "card#103 tuftStand3",
+   "card#104 tuftStand3",
+   "card#105 tuftStand3",
+   "card#106 tuftStand3",
+   "card#107 tuftStand4",
+   "card#108 tuftStand3",
+   "card#109 tuftStand3",
+   "card#110 tuftStand4",
+   "card#111 tuftStand4",
+   "card#112 tuftStand4",
+   "card#113 tuftStand4",
+   "card#114 tuftStand3",
+   "card#115 tuftStand4",
+   "card#116 tuftStand3",
+   "card#117 tuftStand4",
+   "card#119 tuftStand4",
+   "litter#120 litterTuft4",
+   "litter#121 litterTuft1",
+   "litter#122 litterTuft2",
+   "litter#123 litterTuft1",
+   "litter#124 litterPebble2",
+   "litter#125 litterPebble4",
+   "litter#126 litterTwig1",
+   "litter#127 litterPebble4",
+   "litter#128 litterPebble2",
+   "litter#129 litterLeaves2",
+   "litter#131 litterLeaves1",
+   "litter#132 litterTuft1",
+   "litter#133 litterTuft1",
+   "litter#134 litterPebble3",
+   "litter#135 litterTuft2",
+   "litter#136 litterTwig1",
+   "litter#137 litterPebble1",
+   "litter#138 litterPebble1",
+   "litter#139 litterLeaves2",
+   "litter#140 litterPebble3",
+   "litter#141 litterLeaves1",
+   "litter#142 litterPebble4",
+   "litter#143 litterPebble4",
+   "litter#144 litterPebble3",
+   "litter#145 litterTwig1",
+   "litter#146 litterPebble1",
+   "litter#147 litterLeaves1",
+   "litter#148 litterPebble1",
+   "litter#149 litterPebble1",
+   "litter#150 litterPebble4",
+   "litter#151 litterPebble3",
+   "litter#152 litterTuft1",
+   "litter#154 tuftStand1",
+   "litter#155 tuftStand1",
+   "litter#156 tuftStand1",
+   "litter#157 tuftStand2",
+   "litter#158 tuftStand2",
+   "litter#159 tuftStand1",
+   "litter#160 tuftStand2",
+   "litter#161 tuftStand2",
+   "litter#162 tuftStand1",
+   "litter#163 tuftStand2",
+   "litter#164 tuftStand2",
+   "litter#165 tuftStand1",
+   "litter#166 tuftStand2",
+   "litter#167 tuftStand2",
+   "litter#168 tuftStand1",
+   "litter#169 tuftStand2",
+   "litter#170 tuftStand2",
+   "litter#171 tuftStand2",
+   "litter#172 tuftStand2",
+   "litter#173 tuftStand2",
+   "litter#174 tuftStand2",
+   "litter#175 tuftStand2",
+   "litter#176 tuftStand2",
+   "litter#177 tuftStand1",
+   "litter#178 tuftStand1",
+   "litter#179 tuftStand2",
+   "litter#180 tuftStand2",
+   "litter#181 tuftStand1",
+   "litter#182 tuftStand2",
+   "litter#183 tuftStand1",
+   "litter#184 tuftStand2",
+   "litter#185 tuftStand2",
+   "litter#186 tuftStand1",
+   "litter#187 tuftStand2",
+   "litter#188 tuftStand2",
+   "litter#189 tuftStand2",
+   "litter#190 tuftStand1",
+   "litter#191 tuftStand2",
+   "litter#192 tuftStand2",
+   "litter#193 tuftStand1",
+   "litter#194 tuftStand1",
+   "litter#195 tuftStand2",
+   "litter#196 tuftStand2",
+   "litter#197 tuftStand1",
+   "litter#198 tuftStand1",
+   "litter#199 tuftStand1",
+   "litter#200 tuftStand1",
+   "litter#201 tuftStand1",
+   "litter#202 tuftStand1",
+   "litter#203 tuftStand1",
+   "litter#204 tuftStand1",
+   "litter#205 tuftStand1",
+   "litter#206 tuftStand1",
+   "litter#207 tuftStand2",
+   "litter#208 litterLeaves2",
+   "litter#209 litterTwig1",
+   "litter#210 litterTwig1",
+   "litter#211 litterTwig1",
+   "litter#212 litterTwig1",
+   "litter#213 tuftStand2",
+   "litter#214 litterLeaves2",
+   "litter#215 tuftStand1",
+   "litter#217 tuftStand1",
+   "litter#218 litterTwig1",
+   "litter#219 litterTwig1",
+   "litter#220 litterTwig1",
+   "litter#221 litterLeaves2",
+   "litter#222 litterTwig1",
+   "litter#223 litterLeaves2",
+   "litter#224 litterTwig1",
+   "litter#225 litterTwig1",
+   "litter#226 litterLeaves2",
+   "litter#227 litterTwig1",
+   "litter#228 litterLeaves2",
+   "litter#229 litterLeaves1"
+  ]
+ },
+ "Stage/act1_layout|22|8|0.525|PH": {
+  "file": "act1_layout.json",
+  "boxes": [
+   [
+    0,
+    441,
+    3,
+    142
+   ],
+   [
+    0,
+    0,
+    137,
+    413
+   ],
+   [
+    0,
+    245,
+    159,
+    250
+   ],
+   [
+    0,
+    273,
+    275,
+    186
+   ],
+   [
+    11,
+    242,
+    212,
+    177
+   ],
+   [
+    0,
+    199,
+    132,
+    208
+   ],
+   [
+    1780,
+    209,
+    140,
+    130
+   ],
+   [
+    1830,
+    177,
+    90,
+    149
+   ],
+   [
+    0,
+    254,
+    31,
+    340
+   ],
+   [
+    1887,
+    250,
+    33,
+    182
+   ],
+   [
+    0,
+    306,
+    227,
+    139
+   ],
+   [
+    1689,
+    177,
+    112,
+    159
+   ],
+   [
+    651,
+    281,
+    115,
+    99
+   ],
+   [
+    769,
+    280,
+    116,
+    98
+   ],
+   [
+    1035,
+    205,
+    171,
+    155
+   ],
+   [
+    1481,
+    213,
+    157,
+    134
+   ],
+   [
+    1540,
+    200,
+    165,
+    143
+   ],
+   [
+    596,
+    234,
+    113,
+    96
+   ],
+   [
+    723,
+    228,
+    107,
+    91
+   ],
+   [
+    952,
+    220,
+    98,
+    84
+   ],
+   [
+    1763,
+    206,
+    86,
+    72
+   ],
+   [
+    1822,
+    206,
+    83,
+    72
+   ],
+   [
+    621,
+    233,
+    112,
+    95
+   ],
+   [
+    677,
+    230,
+    107,
+    93
+   ],
+   [
+    858,
+    223,
+    100,
+    86
+   ],
+   [
+    0,
+    0,
+    311,
+    191
+   ],
+   [
+    1689,
+    0,
+    231,
+    168
+   ],
+   [
+    1662,
+    287,
+    50,
+    52
+   ],
+   [
+    1653,
+    284,
+    100,
+    63
+   ],
+   [
+    814,
+    232,
+    38,
+    59
+   ],
+   [
+    943,
+    220,
+    100,
+    79
+   ],
+   [
+    996,
+    223,
+    51,
+    63
+   ],
+   [
+    161,
+    312,
+    64,
+    60
+   ],
+   [
+    127,
+    175,
+    97,
+    58
+   ],
+   [
+    22,
+    242,
+    47,
+    65
+   ],
+   [
+    1220,
+    234,
+    46,
+    45
+   ],
+   [
+    0,
+    362,
+    16,
+    65
+   ],
+   [
+    977,
+    308,
+    33,
+    67
+   ],
+   [
+    1643,
+    247,
+    32,
+    42
+   ],
+   [
+    1762,
+    227,
+    25,
+    49
+   ],
+   [
+    1685,
+    230,
+    27,
+    50
+   ],
+   [
+    1391,
+    247,
+    30,
+    58
+   ],
+   [
+    678,
+    275,
+    40,
+    52
+   ],
+   [
+    1530,
+    254,
+    36,
+    45
+   ],
+   [
+    928,
+    258,
+    34,
+    46
+   ],
+   [
+    1601,
+    251,
+    34,
+    44
+   ],
+   [
+    1223,
+    258,
+    36,
+    47
+   ],
+   [
+    1103,
+    244,
+    28,
+    57
+   ],
+   [
+    1297,
+    256,
+    35,
+    46
+   ],
+   [
+    1585,
+    248,
+    33,
+    43
+   ],
+   [
+    1016,
+    256,
+    34,
+    46
+   ],
+   [
+    1799,
+    239,
+    30,
+    40
+   ],
+   [
+    1503,
+    258,
+    37,
+    46
+   ],
+   [
+    581,
+    260,
+    32,
+    64
+   ],
+   [
+    811,
+    266,
+    37,
+    49
+   ],
+   [
+    604,
+    277,
+    40,
+    52
+   ],
+   [
+    1466,
+    244,
+    30,
+    57
+   ],
+   [
+    748,
+    259,
+    31,
+    64
+   ],
+   [
+    842,
+    171,
+    24,
+    48
+   ],
+   [
+    647,
+    172,
+    25,
+    49
+   ],
+   [
+    631,
+    183,
+    30,
+    40
+   ],
+   [
+    997,
+    172,
+    24,
+    49
+   ],
+   [
+    705,
+    183,
+    30,
+    40
+   ],
+   [
+    126,
+    340,
+    42,
+    78
+   ],
+   [
+    184,
+    330,
+    41,
+    74
+   ],
+   [
+    980,
+    348,
+    26,
+    16
+   ],
+   [
+    1621,
+    328,
+    15,
+    11
+   ],
+   [
+    1658,
+    324,
+    21,
+    14
+   ],
+   [
+    1855,
+    319,
+    14,
+    11
+   ],
+   [
+    1007,
+    355,
+    16,
+    13
+   ],
+   [
+    1617,
+    331,
+    18,
+    12
+   ],
+   [
+    1057,
+    358,
+    26,
+    10
+   ],
+   [
+    1309,
+    345,
+    19,
+    13
+   ],
+   [
+    1663,
+    331,
+    15,
+    12
+   ],
+   [
+    1821,
+    327,
+    20,
+    9
+   ],
+   [
+    1900,
+    319,
+    20,
+    14
+   ],
+   [
+    1359,
+    348,
+    16,
+    9
+   ],
+   [
+    1375,
+    347,
+    16,
+    13
+   ],
+   [
+    1306,
+    351,
+    16,
+    13
+   ],
+   [
+    842,
+    379,
+    7,
+    7
+   ],
+   [
+    804,
+    370,
+    25,
+    18
+   ],
+   [
+    286,
+    399,
+    30,
+    12
+   ],
+   [
+    897,
+    373,
+    14,
+    10
+   ],
+   [
+    334,
+    400,
+    15,
+    11
+   ],
+   [
+    363,
+    402,
+    27,
+    12
+   ],
+   [
+    800,
+    386,
+    7,
+    7
+   ],
+   [
+    625,
+    394,
+    19,
+    11
+   ],
+   [
+    1816,
+    341,
+    19,
+    12
+   ],
+   [
+    1858,
+    340,
+    19,
+    12
+   ],
+   [
+    48,
+    433,
+    9,
+    8
+   ],
+   [
+    911,
+    450,
+    36,
+    14
+   ],
+   [
+    1436,
+    421,
+    17,
+    12
+   ],
+   [
+    1397,
+    424,
+    21,
+    12
+   ],
+   [
+    887,
+    458,
+    18,
+    14
+   ],
+   [
+    1478,
+    423,
+    17,
+    12
+   ],
+   [
+    675,
+    467,
+    29,
+    19
+   ],
+   [
+    616,
+    483,
+    10,
+    10
+   ],
+   [
+    571,
+    478,
+    26,
+    20
+   ],
+   [
+    224,
+    642,
+    95,
+    97
+   ],
+   [
+    137,
+    645,
+    91,
+    95
+   ],
+   [
+    598,
+    547,
+    73,
+    77
+   ],
+   [
+    465,
+    541,
+    74,
+    77
+   ],
+   [
+    512,
+    541,
+    73,
+    76
+   ],
+   [
+    508,
+    542,
+    73,
+    76
+   ],
+   [
+    967,
+    633,
+    86,
+    95
+   ],
+   [
+    824,
+    633,
+    86,
+    94
+   ],
+   [
+    1136,
+    465,
+    59,
+    64
+   ],
+   [
+    1141,
+    467,
+    57,
+    65
+   ],
+   [
+    1242,
+    471,
+    60,
+    63
+   ],
+   [
+    1454,
+    532,
+    67,
+    77
+   ],
+   [
+    1337,
+    527,
+    71,
+    75
+   ],
+   [
+    1363,
+    540,
+    74,
+    78
+   ],
+   [
+    1446,
+    522,
+    67,
+    74
+   ],
+   [
+    1623,
+    450,
+    56,
+    60
+   ],
+   [
+    1595,
+    448,
+    53,
+    61
+   ],
+   [
+    1877,
+    529,
+    43,
+    75
+   ],
+   [
+    1894,
+    508,
+    26,
+    72
+   ],
+   [
+    0,
+    550,
+    41,
+    79
+   ],
+   [
+    29,
+    531,
+    73,
+    74
+   ],
+   [
+    711,
+    585,
+    79,
+    84
+   ],
+   [
+    645,
+    589,
+    80,
+    85
+   ],
+   [
+    623,
+    576,
+    77,
+    83
+   ],
+   [
+    1481,
+    572,
+    77,
+    82
+   ],
+   [
+    1535,
+    548,
+    75,
+    77
+   ],
+   [
+    82,
+    476,
+    65,
+    65
+   ],
+   [
+    0,
+    485,
+    33,
+    66
+   ],
+   [
+    0,
+    483,
+    40,
+    66
+   ],
+   [
+    639,
+    440,
+    56,
+    60
+   ],
+   [
+    689,
+    437,
+    54,
+    59
+   ],
+   [
+    899,
+    422,
+    51,
+    57
+   ],
+   [
+    895,
+    422,
+    52,
+    56
+   ],
+   [
+    0,
+    379,
+    19,
+    48
+   ],
+   [
+    970,
+    335,
+    37,
+    40
+   ],
+   [
+    1008,
+    335,
+    37,
+    40
+   ],
+   [
+    1416,
+    322,
+    36,
+    38
+   ],
+   [
+    1408,
+    322,
+    36,
+    38
+   ],
+   [
+    1374,
+    323,
+    36,
+    38
+   ],
+   [
+    1614,
+    313,
+    35,
+    36
+   ],
+   [
+    716,
+    280,
+    34,
+    38
+   ],
+   [
+    838,
+    274,
+    33,
+    36
+   ],
+   [
+    1701,
+    253,
+    30,
+    31
+   ],
+   [
+    1117,
+    269,
+    32,
+    35
+   ],
+   [
+    1183,
+    266,
+    32,
+    34
+   ],
+   [
+    1621,
+    254,
+    28,
+    31
+   ],
+   [
+    1016,
+    190,
+    26,
+    29
+   ],
+   [
+    948,
+    191,
+    26,
+    29
+   ],
+   [
+    768,
+    191,
+    27,
+    29
+   ],
+   [
+    882,
+    191,
+    27,
+    29
+   ],
+   [
+    1578,
+    308,
+    31,
+    35
+   ],
+   [
+    676,
+    381,
+    24,
+    11
+   ],
+   [
+    1775,
+    322,
+    23,
+    8
+   ],
+   [
+    1218,
+    357,
+    25,
+    10
+   ],
+   [
+    875,
+    375,
+    28,
+    11
+   ],
+   [
+    651,
+    366,
+    26,
+    10
+   ],
+   [
+    1026,
+    321,
+    34,
+    38
+   ],
+   [
+    1702,
+    331,
+    21,
+    9
+   ],
+   [
+    76,
+    363,
+    42,
+    45
+   ],
+   [
+    0,
+    369,
+    37,
+    47
+   ],
+   [
+    161,
+    416,
+    30,
+    13
+   ],
+   [
+    1695,
+    348,
+    26,
+    10
+   ],
+   [
+    1222,
+    368,
+    27,
+    11
+   ],
+   [
+    979,
+    382,
+    25,
+    11
+   ],
+   [
+    672,
+    396,
+    30,
+    11
+   ],
+   [
+    1484,
+    360,
+    23,
+    10
+   ],
+   [
+    1552,
+    354,
+    26,
+    10
+   ],
+   [
+    1341,
+    367,
+    27,
+    10
+   ],
+   [
+    875,
+    388,
+    26,
+    11
+   ],
+   [
+    1121,
+    377,
+    28,
+    11
+   ],
+   [
+    772,
+    391,
+    26,
+    11
+   ],
+   [
+    1815,
+    343,
+    16,
+    9
+   ]
+  ],
+  "names": [
+   "relief#7 rootArt",
+   "grove-pine#10 pine",
+   "grove-rock#11 rockBig1",
+   "grove-rock#12 rockBig2",
+   "grove-foot#13 fern",
+   "grove-foot#14 fern2",
+   "grove-foot#15 fern",
+   "grove-foot#16 fern2",
+   "wide-edge#18 fern2",
+   "wide-edge#20 fern",
+   "grove-log#23 log",
+   "waystone#43 waystone",
+   "bank#44 fernSmall",
+   "bank#45 fernSmall",
+   "bank#46 tallgrass",
+   "bank#47 fern",
+   "bank#48 tallgrass",
+   "bank-top#49 fernSmall",
+   "bank-top#50 fernSmall",
+   "bank-top#51 fernSmall",
+   "bank-top#52 fernSmall",
+   "bank-top#53 fernSmall",
+   "bank-top#54 fernSmall",
+   "bank-top#55 fernSmall",
+   "bank-top#56 fernSmall",
+   "crown-left#57 canopyHang",
+   "crown-right#58 canopyHang",
+   "card#78 rockSmall",
+   "card#79 pebble",
+   "card#80 flower",
+   "card#81 shroom2",
+   "card#82 shroom",
+   "card#86 rockSmall",
+   "card#87 pebble",
+   "card#88 flower",
+   "card#89 rockSmall",
+   "card#90 tuftStand3",
+   "card#91 tuftStand4",
+   "card#92 tuftStand3",
+   "card#93 tuftStand4",
+   "card#94 tuftStand4",
+   "card#95 tuftStand4",
+   "card#96 tuftStand3",
+   "card#97 tuftStand3",
+   "card#98 tuftStand3",
+   "card#99 tuftStand3",
+   "card#100 tuftStand3",
+   "card#101 tuftStand4",
+   "card#102 tuftStand3",
+   "card#103 tuftStand3",
+   "card#104 tuftStand3",
+   "card#105 tuftStand3",
+   "card#106 tuftStand3",
+   "card#107 tuftStand4",
+   "card#108 tuftStand3",
+   "card#109 tuftStand3",
+   "card#110 tuftStand4",
+   "card#111 tuftStand4",
+   "card#112 tuftStand4",
+   "card#113 tuftStand4",
+   "card#114 tuftStand3",
+   "card#115 tuftStand4",
+   "card#116 tuftStand3",
+   "card#117 tuftStand4",
+   "card#119 tuftStand4",
+   "litter#120 litterTuft4",
+   "litter#121 litterTuft1",
+   "litter#122 litterTuft2",
+   "litter#123 litterTuft1",
+   "litter#124 litterPebble2",
+   "litter#125 litterPebble4",
+   "litter#126 litterTwig1",
+   "litter#127 litterPebble4",
+   "litter#128 litterPebble2",
+   "litter#129 litterLeaves2",
+   "litter#130 litterTuft4",
+   "litter#131 litterLeaves1",
+   "litter#132 litterTuft1",
+   "litter#133 litterTuft1",
+   "litter#134 litterPebble3",
+   "litter#135 litterTuft2",
+   "litter#136 litterTwig1",
+   "litter#137 litterPebble1",
+   "litter#138 litterPebble1",
+   "litter#139 litterLeaves2",
+   "litter#140 litterPebble3",
+   "litter#141 litterLeaves1",
+   "litter#142 litterPebble4",
+   "litter#143 litterPebble4",
+   "litter#144 litterPebble3",
+   "litter#145 litterTwig1",
+   "litter#146 litterPebble1",
+   "litter#147 litterLeaves1",
+   "litter#148 litterPebble1",
+   "litter#149 litterPebble1",
+   "litter#150 litterPebble4",
+   "litter#151 litterPebble3",
+   "litter#152 litterTuft1",
+   "litter#156 tuftStand1",
+   "litter#157 tuftStand2",
+   "litter#158 tuftStand2",
+   "litter#159 tuftStand1",
+   "litter#160 tuftStand2",
+   "litter#161 tuftStand2",
+   "litter#162 tuftStand1",
+   "litter#163 tuftStand2",
+   "litter#164 tuftStand2",
+   "litter#165 tuftStand1",
+   "litter#166 tuftStand2",
+   "litter#167 tuftStand2",
+   "litter#168 tuftStand1",
+   "litter#169 tuftStand2",
+   "litter#170 tuftStand2",
+   "litter#171 tuftStand2",
+   "litter#172 tuftStand2",
+   "litter#173 tuftStand2",
+   "litter#175 tuftStand2",
+   "litter#176 tuftStand2",
+   "litter#177 tuftStand1",
+   "litter#178 tuftStand1",
+   "litter#179 tuftStand2",
+   "litter#180 tuftStand2",
+   "litter#181 tuftStand1",
+   "litter#182 tuftStand2",
+   "litter#183 tuftStand1",
+   "litter#184 tuftStand2",
+   "litter#185 tuftStand2",
+   "litter#186 tuftStand1",
+   "litter#187 tuftStand2",
+   "litter#188 tuftStand2",
+   "litter#189 tuftStand2",
+   "litter#190 tuftStand1",
+   "litter#191 tuftStand2",
+   "litter#192 tuftStand2",
+   "litter#193 tuftStand1",
+   "litter#194 tuftStand1",
+   "litter#195 tuftStand2",
+   "litter#196 tuftStand2",
+   "litter#197 tuftStand1",
+   "litter#198 tuftStand1",
+   "litter#199 tuftStand1",
+   "litter#200 tuftStand1",
+   "litter#201 tuftStand1",
+   "litter#202 tuftStand1",
+   "litter#203 tuftStand1",
+   "litter#204 tuftStand1",
+   "litter#205 tuftStand1",
+   "litter#206 tuftStand1",
+   "litter#207 tuftStand2",
+   "litter#208 litterLeaves2",
+   "litter#209 litterTwig1",
+   "litter#210 litterTwig1",
+   "litter#211 litterTwig1",
+   "litter#212 litterTwig1",
+   "litter#213 tuftStand2",
+   "litter#214 litterLeaves2",
+   "litter#215 tuftStand1",
+   "litter#217 tuftStand1",
+   "litter#218 litterTwig1",
+   "litter#219 litterTwig1",
+   "litter#220 litterTwig1",
+   "litter#221 litterLeaves2",
+   "litter#222 litterTwig1",
+   "litter#223 litterLeaves2",
+   "litter#224 litterTwig1",
+   "litter#225 litterTwig1",
+   "litter#226 litterLeaves2",
+   "litter#227 litterTwig1",
+   "litter#228 litterLeaves2",
+   "litter#229 litterLeaves1"
+  ]
+ },
+ "Stage/act1_layout|28|5.5|0.410|PC": {
+  "file": "act1_layout.json",
+  "boxes": [
+   [
+    0,
+    0,
+    127,
+    628
+   ],
+   [
+    0,
+    459,
+    145,
+    253
+   ],
+   [
+    0,
+    487,
+    266,
+    188
+   ],
+   [
+    44,
+    455,
+    210,
+    178
+   ],
+   [
+    0,
+    413,
+    122,
+    210
+   ],
+   [
+    1776,
+    420,
+    142,
+    129
+   ],
+   [
+    1823,
+    388,
+    97,
+    147
+   ],
+   [
+    1902,
+    464,
+    18,
+    185
+   ],
+   [
+    0,
+    518,
+    296,
+    140
+   ],
+   [
+    1686,
+    388,
+    108,
+    158
+   ],
+   [
+    650,
+    493,
+    116,
+    100
+   ],
+   [
+    768,
+    492,
+    116,
+    98
+   ],
+   [
+    1035,
+    417,
+    170,
+    155
+   ],
+   [
+    1480,
+    424,
+    155,
+    133
+   ],
+   [
+    1538,
+    411,
+    163,
+    142
+   ],
+   [
+    595,
+    446,
+    113,
+    96
+   ],
+   [
+    724,
+    440,
+    107,
+    90
+   ],
+   [
+    952,
+    431,
+    97,
+    84
+   ],
+   [
+    1753,
+    416,
+    84,
+    71
+   ],
+   [
+    1811,
+    416,
+    81,
+    71
+   ],
+   [
+    620,
+    445,
+    112,
+    94
+   ],
+   [
+    677,
+    442,
+    107,
+    93
+   ],
+   [
+    858,
+    434,
+    100,
+    86
+   ],
+   [
+    0,
+    0,
+    66,
+    88
+   ],
+   [
+    1801,
+    0,
+    119,
+    138
+   ],
+   [
+    1659,
+    498,
+    49,
+    52
+   ],
+   [
+    1651,
+    494,
+    99,
+    62
+   ],
+   [
+    815,
+    442,
+    37,
+    58
+   ],
+   [
+    943,
+    430,
+    99,
+    78
+   ],
+   [
+    996,
+    433,
+    51,
+    62
+   ],
+   [
+    159,
+    524,
+    63,
+    60
+   ],
+   [
+    135,
+    386,
+    96,
+    57
+   ],
+   [
+    27,
+    453,
+    45,
+    64
+   ],
+   [
+    1217,
+    444,
+    45,
+    44
+   ],
+   [
+    977,
+    520,
+    34,
+    67
+   ],
+   [
+    1636,
+    456,
+    32,
+    42
+   ],
+   [
+    1752,
+    437,
+    24,
+    48
+   ],
+   [
+    1677,
+    440,
+    26,
+    49
+   ],
+   [
+    1389,
+    458,
+    29,
+    58
+   ],
+   [
+    677,
+    487,
+    40,
+    52
+   ],
+   [
+    1526,
+    464,
+    35,
+    45
+   ],
+   [
+    928,
+    468,
+    34,
+    46
+   ],
+   [
+    1596,
+    461,
+    33,
+    43
+   ],
+   [
+    1221,
+    468,
+    35,
+    46
+   ],
+   [
+    1102,
+    454,
+    28,
+    56
+   ],
+   [
+    1295,
+    466,
+    35,
+    45
+   ],
+   [
+    1580,
+    457,
+    33,
+    42
+   ],
+   [
+    1015,
+    467,
+    34,
+    45
+   ],
+   [
+    1789,
+    449,
+    28,
+    39
+   ],
+   [
+    1500,
+    468,
+    36,
+    46
+   ],
+   [
+    581,
+    471,
+    31,
+    64
+   ],
+   [
+    811,
+    477,
+    37,
+    49
+   ],
+   [
+    603,
+    489,
+    40,
+    52
+   ],
+   [
+    1463,
+    454,
+    30,
+    56
+   ],
+   [
+    748,
+    470,
+    31,
+    64
+   ],
+   [
+    843,
+    381,
+    24,
+    47
+   ],
+   [
+    652,
+    382,
+    25,
+    48
+   ],
+   [
+    635,
+    393,
+    29,
+    39
+   ],
+   [
+    997,
+    382,
+    24,
+    48
+   ],
+   [
+    709,
+    393,
+    29,
+    39
+   ],
+   [
+    114,
+    555,
+    42,
+    79
+   ],
+   [
+    176,
+    544,
+    41,
+    75
+   ],
+   [
+    980,
+    560,
+    26,
+    16
+   ],
+   [
+    1618,
+    537,
+    15,
+    11
+   ],
+   [
+    1655,
+    534,
+    21,
+    14
+   ],
+   [
+    1849,
+    529,
+    14,
+    11
+   ],
+   [
+    1007,
+    567,
+    16,
+    13
+   ],
+   [
+    1615,
+    541,
+    18,
+    12
+   ],
+   [
+    1057,
+    570,
+    26,
+    10
+   ],
+   [
+    1309,
+    556,
+    19,
+    13
+   ],
+   [
+    1661,
+    541,
+    15,
+    12
+   ],
+   [
+    1817,
+    537,
+    19,
+    8
+   ],
+   [
+    1895,
+    529,
+    22,
+    14
+   ],
+   [
+    1359,
+    559,
+    16,
+    9
+   ],
+   [
+    1375,
+    559,
+    16,
+    13
+   ],
+   [
+    1306,
+    563,
+    16,
+    13
+   ],
+   [
+    842,
+    592,
+    7,
+    7
+   ],
+   [
+    803,
+    583,
+    25,
+    18
+   ],
+   [
+    277,
+    615,
+    30,
+    12
+   ],
+   [
+    896,
+    586,
+    14,
+    10
+   ],
+   [
+    325,
+    615,
+    15,
+    12
+   ],
+   [
+    354,
+    617,
+    28,
+    12
+   ],
+   [
+    799,
+    600,
+    7,
+    7
+   ],
+   [
+    621,
+    608,
+    19,
+    11
+   ],
+   [
+    1815,
+    552,
+    19,
+    12
+   ],
+   [
+    1856,
+    551,
+    18,
+    12
+   ],
+   [
+    29,
+    651,
+    9,
+    9
+   ],
+   [
+    910,
+    671,
+    37,
+    14
+   ],
+   [
+    1445,
+    639,
+    17,
+    13
+   ],
+   [
+    1406,
+    642,
+    21,
+    13
+   ],
+   [
+    885,
+    679,
+    19,
+    14
+   ],
+   [
+    1488,
+    641,
+    17,
+    13
+   ],
+   [
+    666,
+    691,
+    30,
+    20
+   ],
+   [
+    605,
+    707,
+    10,
+    10
+   ],
+   [
+    557,
+    703,
+    26,
+    21
+   ],
+   [
+    152,
+    908,
+    104,
+    108
+   ],
+   [
+    56,
+    912,
+    99,
+    105
+   ],
+   [
+    574,
+    789,
+    77,
+    82
+   ],
+   [
+    433,
+    783,
+    78,
+    82
+   ],
+   [
+    483,
+    782,
+    77,
+    81
+   ],
+   [
+    478,
+    783,
+    77,
+    81
+   ],
+   [
+    968,
+    896,
+    94,
+    104
+   ],
+   [
+    811,
+    896,
+    95,
+    104
+   ],
+   [
+    1143,
+    692,
+    61,
+    66
+   ],
+   [
+    1149,
+    695,
+    59,
+    68
+   ],
+   [
+    1254,
+    698,
+    62,
+    66
+   ],
+   [
+    1486,
+    771,
+    70,
+    82
+   ],
+   [
+    1360,
+    765,
+    75,
+    80
+   ],
+   [
+    1389,
+    781,
+    78,
+    83
+   ],
+   [
+    1476,
+    759,
+    70,
+    79
+   ],
+   [
+    1647,
+    674,
+    57,
+    63
+   ],
+   [
+    1618,
+    672,
+    54,
+    63
+   ],
+   [
+    0,
+    770,
+    48,
+    78
+   ],
+   [
+    691,
+    836,
+    85,
+    91
+   ],
+   [
+    620,
+    841,
+    87,
+    92
+   ],
+   [
+    597,
+    825,
+    83,
+    89
+   ],
+   [
+    1521,
+    820,
+    81,
+    89
+   ],
+   [
+    1574,
+    791,
+    79,
+    82
+   ],
+   [
+    43,
+    704,
+    67,
+    68
+   ],
+   [
+    627,
+    664,
+    58,
+    62
+   ],
+   [
+    679,
+    660,
+    56,
+    62
+   ],
+   [
+    897,
+    643,
+    53,
+    59
+   ],
+   [
+    893,
+    643,
+    53,
+    58
+   ],
+   [
+    0,
+    595,
+    3,
+    49
+   ],
+   [
+    970,
+    547,
+    37,
+    40
+   ],
+   [
+    1008,
+    547,
+    37,
+    40
+   ],
+   [
+    1416,
+    533,
+    36,
+    38
+   ],
+   [
+    1409,
+    534,
+    36,
+    38
+   ],
+   [
+    1374,
+    534,
+    36,
+    38
+   ],
+   [
+    1613,
+    523,
+    34,
+    36
+   ],
+   [
+    716,
+    492,
+    33,
+    37
+   ],
+   [
+    838,
+    485,
+    32,
+    36
+   ],
+   [
+    1693,
+    463,
+    29,
+    30
+   ],
+   [
+    1116,
+    480,
+    32,
+    34
+   ],
+   [
+    1182,
+    477,
+    31,
+    34
+   ],
+   [
+    1614,
+    464,
+    27,
+    31
+   ],
+   [
+    1015,
+    400,
+    25,
+    28
+   ],
+   [
+    948,
+    401,
+    26,
+    28
+   ],
+   [
+    770,
+    401,
+    27,
+    29
+   ],
+   [
+    884,
+    401,
+    26,
+    29
+   ],
+   [
+    1576,
+    518,
+    30,
+    35
+   ],
+   [
+    674,
+    595,
+    24,
+    11
+   ],
+   [
+    1770,
+    531,
+    23,
+    8
+   ],
+   [
+    1219,
+    568,
+    25,
+    10
+   ],
+   [
+    874,
+    588,
+    28,
+    11
+   ],
+   [
+    650,
+    578,
+    26,
+    10
+   ],
+   [
+    1026,
+    532,
+    34,
+    38
+   ],
+   [
+    1699,
+    541,
+    21,
+    9
+   ],
+   [
+    66,
+    578,
+    42,
+    46
+   ],
+   [
+    0,
+    585,
+    24,
+    48
+   ],
+   [
+    148,
+    632,
+    30,
+    13
+   ],
+   [
+    1695,
+    559,
+    26,
+    10
+   ],
+   [
+    1223,
+    581,
+    27,
+    11
+   ],
+   [
+    980,
+    596,
+    25,
+    11
+   ],
+   [
+    669,
+    611,
+    31,
+    12
+   ],
+   [
+    1486,
+    572,
+    23,
+    10
+   ],
+   [
+    1553,
+    566,
+    26,
+    10
+   ],
+   [
+    1343,
+    580,
+    27,
+    10
+   ],
+   [
+    874,
+    602,
+    26,
+    11
+   ],
+   [
+    1122,
+    590,
+    28,
+    11
+   ],
+   [
+    770,
+    605,
+    26,
+    11
+   ],
+   [
+    1814,
+    554,
+    16,
+    9
+   ]
+  ],
+  "names": [
+   "grove-pine#10 pine",
+   "grove-rock#11 rockBig1",
+   "grove-rock#12 rockBig2",
+   "grove-foot#13 fern",
+   "grove-foot#14 fern2",
+   "grove-foot#15 fern",
+   "grove-foot#16 fern2",
+   "wide-edge#20 fern",
+   "grove-log#23 log",
+   "waystone#43 waystone",
+   "bank#44 fernSmall",
+   "bank#45 fernSmall",
+   "bank#46 tallgrass",
+   "bank#47 fern",
+   "bank#48 tallgrass",
+   "bank-top#49 fernSmall",
+   "bank-top#50 fernSmall",
+   "bank-top#51 fernSmall",
+   "bank-top#52 fernSmall",
+   "bank-top#53 fernSmall",
+   "bank-top#54 fernSmall",
+   "bank-top#55 fernSmall",
+   "bank-top#56 fernSmall",
+   "crown-left#57 canopyHang",
+   "crown-right#58 canopyHang",
+   "card#78 rockSmall",
+   "card#79 pebble",
+   "card#80 flower",
+   "card#81 shroom2",
+   "card#82 shroom",
+   "card#86 rockSmall",
+   "card#87 pebble",
+   "card#88 flower",
+   "card#89 rockSmall",
+   "card#91 tuftStand4",
+   "card#92 tuftStand3",
+   "card#93 tuftStand4",
+   "card#94 tuftStand4",
+   "card#95 tuftStand4",
+   "card#96 tuftStand3",
+   "card#97 tuftStand3",
+   "card#98 tuftStand3",
+   "card#99 tuftStand3",
+   "card#100 tuftStand3",
+   "card#101 tuftStand4",
+   "card#102 tuftStand3",
+   "card#103 tuftStand3",
+   "card#104 tuftStand3",
+   "card#105 tuftStand3",
+   "card#106 tuftStand3",
+   "card#107 tuftStand4",
+   "card#108 tuftStand3",
+   "card#109 tuftStand3",
+   "card#110 tuftStand4",
+   "card#111 tuftStand4",
+   "card#112 tuftStand4",
+   "card#113 tuftStand4",
+   "card#114 tuftStand3",
+   "card#115 tuftStand4",
+   "card#116 tuftStand3",
+   "card#117 tuftStand4",
+   "card#119 tuftStand4",
+   "litter#120 litterTuft4",
+   "litter#121 litterTuft1",
+   "litter#122 litterTuft2",
+   "litter#123 litterTuft1",
+   "litter#124 litterPebble2",
+   "litter#125 litterPebble4",
+   "litter#126 litterTwig1",
+   "litter#127 litterPebble4",
+   "litter#128 litterPebble2",
+   "litter#129 litterLeaves2",
+   "litter#130 litterTuft4",
+   "litter#131 litterLeaves1",
+   "litter#132 litterTuft1",
+   "litter#133 litterTuft1",
+   "litter#134 litterPebble3",
+   "litter#135 litterTuft2",
+   "litter#136 litterTwig1",
+   "litter#137 litterPebble1",
+   "litter#138 litterPebble1",
+   "litter#139 litterLeaves2",
+   "litter#140 litterPebble3",
+   "litter#141 litterLeaves1",
+   "litter#142 litterPebble4",
+   "litter#143 litterPebble4",
+   "litter#144 litterPebble3",
+   "litter#145 litterTwig1",
+   "litter#146 litterPebble1",
+   "litter#147 litterLeaves1",
+   "litter#148 litterPebble1",
+   "litter#149 litterPebble1",
+   "litter#150 litterPebble4",
+   "litter#151 litterPebble3",
+   "litter#152 litterTuft1",
+   "litter#156 tuftStand1",
+   "litter#157 tuftStand2",
+   "litter#158 tuftStand2",
+   "litter#159 tuftStand1",
+   "litter#160 tuftStand2",
+   "litter#161 tuftStand2",
+   "litter#162 tuftStand1",
+   "litter#163 tuftStand2",
+   "litter#164 tuftStand2",
+   "litter#165 tuftStand1",
+   "litter#166 tuftStand2",
+   "litter#167 tuftStand2",
+   "litter#168 tuftStand1",
+   "litter#169 tuftStand2",
+   "litter#170 tuftStand2",
+   "litter#171 tuftStand2",
+   "litter#172 tuftStand2",
+   "litter#177 tuftStand1",
+   "litter#178 tuftStand1",
+   "litter#179 tuftStand2",
+   "litter#180 tuftStand2",
+   "litter#181 tuftStand1",
+   "litter#182 tuftStand2",
+   "litter#183 tuftStand1",
+   "litter#186 tuftStand1",
+   "litter#187 tuftStand2",
+   "litter#188 tuftStand2",
+   "litter#189 tuftStand2",
+   "litter#190 tuftStand1",
+   "litter#191 tuftStand2",
+   "litter#192 tuftStand2",
+   "litter#193 tuftStand1",
+   "litter#194 tuftStand1",
+   "litter#195 tuftStand2",
+   "litter#196 tuftStand2",
+   "litter#197 tuftStand1",
+   "litter#198 tuftStand1",
+   "litter#199 tuftStand1",
+   "litter#200 tuftStand1",
+   "litter#201 tuftStand1",
+   "litter#202 tuftStand1",
+   "litter#203 tuftStand1",
+   "litter#204 tuftStand1",
+   "litter#205 tuftStand1",
+   "litter#206 tuftStand1",
+   "litter#207 tuftStand2",
+   "litter#208 litterLeaves2",
+   "litter#209 litterTwig1",
+   "litter#210 litterTwig1",
+   "litter#211 litterTwig1",
+   "litter#212 litterTwig1",
+   "litter#213 tuftStand2",
+   "litter#214 litterLeaves2",
+   "litter#215 tuftStand1",
+   "litter#217 tuftStand1",
+   "litter#218 litterTwig1",
+   "litter#219 litterTwig1",
+   "litter#220 litterTwig1",
+   "litter#221 litterLeaves2",
+   "litter#222 litterTwig1",
+   "litter#223 litterLeaves2",
+   "litter#224 litterTwig1",
+   "litter#225 litterTwig1",
+   "litter#226 litterLeaves2",
+   "litter#227 litterTwig1",
+   "litter#228 litterLeaves2",
+   "litter#229 litterLeaves1"
+  ]
+ },
+ "Stage/act1_layout|28|7.5|0.525|PH": {
+  "file": "act1_layout.json",
+  "boxes": [
+   [
+    0,
+    0,
+    147,
+    413
+   ],
+   [
+    0,
+    244,
+    157,
+    250
+   ],
+   [
+    11,
+    276,
+    273,
+    183
+   ],
+   [
+    11,
+    242,
+    213,
+    177
+   ],
+   [
+    0,
+    203,
+    142,
+    207
+   ],
+   [
+    1721,
+    231,
+    134,
+    121
+   ],
+   [
+    1757,
+    205,
+    163,
+    136
+   ],
+   [
+    1888,
+    249,
+    32,
+    182
+   ],
+   [
+    1897,
+    217,
+    23,
+    126
+   ],
+   [
+    1842,
+    190,
+    78,
+    112
+   ],
+   [
+    0,
+    306,
+    220,
+    139
+   ],
+   [
+    1635,
+    202,
+    103,
+    148
+   ],
+   [
+    663,
+    289,
+    111,
+    96
+   ],
+   [
+    776,
+    289,
+    111,
+    94
+   ],
+   [
+    1031,
+    222,
+    161,
+    147
+   ],
+   [
+    1447,
+    232,
+    147,
+    125
+   ],
+   [
+    1500,
+    221,
+    154,
+    134
+   ],
+   [
+    612,
+    247,
+    108,
+    92
+   ],
+   [
+    736,
+    244,
+    101,
+    86
+   ],
+   [
+    952,
+    241,
+    91,
+    78
+   ],
+   [
+    1686,
+    236,
+    78,
+    65
+   ],
+   [
+    1739,
+    236,
+    75,
+    65
+   ],
+   [
+    636,
+    246,
+    107,
+    90
+   ],
+   [
+    691,
+    245,
+    102,
+    88
+   ],
+   [
+    864,
+    242,
+    94,
+    81
+   ],
+   [
+    0,
+    0,
+    43,
+    57
+   ],
+   [
+    1801,
+    0,
+    119,
+    115
+   ],
+   [
+    1900,
+    295,
+    20,
+    60
+   ],
+   [
+    1611,
+    304,
+    46,
+    48
+   ],
+   [
+    1607,
+    299,
+    93,
+    58
+   ],
+   [
+    826,
+    256,
+    35,
+    54
+   ],
+   [
+    944,
+    242,
+    92,
+    73
+   ],
+   [
+    993,
+    249,
+    47,
+    57
+   ],
+   [
+    0,
+    323,
+    24,
+    58
+   ],
+   [
+    197,
+    321,
+    62,
+    57
+   ],
+   [
+    195,
+    202,
+    90,
+    53
+   ],
+   [
+    86,
+    261,
+    44,
+    60
+   ],
+   [
+    1195,
+    261,
+    42,
+    41
+   ],
+   [
+    0,
+    361,
+    11,
+    65
+   ],
+   [
+    976,
+    317,
+    32,
+    64
+   ],
+   [
+    1584,
+    270,
+    30,
+    39
+   ],
+   [
+    1684,
+    255,
+    22,
+    44
+   ],
+   [
+    1617,
+    257,
+    25,
+    46
+   ],
+   [
+    1361,
+    266,
+    28,
+    54
+   ],
+   [
+    691,
+    287,
+    38,
+    50
+   ],
+   [
+    1486,
+    274,
+    33,
+    42
+   ],
+   [
+    930,
+    276,
+    32,
+    43
+   ],
+   [
+    1549,
+    272,
+    31,
+    40
+   ],
+   [
+    1204,
+    276,
+    33,
+    43
+   ],
+   [
+    1092,
+    264,
+    26,
+    52
+   ],
+   [
+    1272,
+    275,
+    33,
+    42
+   ],
+   [
+    1532,
+    270,
+    31,
+    39
+   ],
+   [
+    1012,
+    275,
+    32,
+    42
+   ],
+   [
+    1719,
+    265,
+    27,
+    36
+   ],
+   [
+    1464,
+    276,
+    35,
+    43
+   ],
+   [
+    600,
+    273,
+    30,
+    61
+   ],
+   [
+    820,
+    281,
+    35,
+    46
+   ],
+   [
+    620,
+    288,
+    39,
+    50
+   ],
+   [
+    1428,
+    264,
+    28,
+    52
+   ],
+   [
+    759,
+    272,
+    30,
+    60
+   ],
+   [
+    853,
+    205,
+    22,
+    43
+   ],
+   [
+    678,
+    205,
+    23,
+    44
+   ],
+   [
+    662,
+    214,
+    27,
+    36
+   ],
+   [
+    993,
+    205,
+    22,
+    44
+   ],
+   [
+    730,
+    214,
+    27,
+    36
+   ],
+   [
+    128,
+    340,
+    42,
+    78
+   ],
+   [
+    196,
+    333,
+    41,
+    73
+   ],
+   [
+    979,
+    357,
+    24,
+    15
+   ],
+   [
+    1574,
+    341,
+    14,
+    11
+   ],
+   [
+    1607,
+    338,
+    19,
+    13
+   ],
+   [
+    1784,
+    335,
+    13,
+    10
+   ],
+   [
+    1005,
+    363,
+    15,
+    12
+   ],
+   [
+    1572,
+    344,
+    17,
+    11
+   ],
+   [
+    1052,
+    366,
+    25,
+    9
+   ],
+   [
+    1289,
+    355,
+    18,
+    12
+   ],
+   [
+    1615,
+    344,
+    14,
+    11
+   ],
+   [
+    1757,
+    341,
+    18,
+    8
+   ],
+   [
+    1828,
+    334,
+    21,
+    13
+   ],
+   [
+    1336,
+    357,
+    15,
+    9
+   ],
+   [
+    1352,
+    357,
+    15,
+    12
+   ],
+   [
+    1288,
+    360,
+    15,
+    12
+   ],
+   [
+    846,
+    383,
+    7,
+    7
+   ],
+   [
+    808,
+    374,
+    24,
+    17
+   ],
+   [
+    292,
+    401,
+    29,
+    12
+   ],
+   [
+    899,
+    378,
+    13,
+    10
+   ],
+   [
+    339,
+    401,
+    15,
+    11
+   ],
+   [
+    367,
+    402,
+    27,
+    11
+   ],
+   [
+    804,
+    390,
+    7,
+    7
+   ],
+   [
+    630,
+    396,
+    19,
+    11
+   ],
+   [
+    1764,
+    351,
+    18,
+    11
+   ],
+   [
+    1803,
+    351,
+    18,
+    11
+   ],
+   [
+    30,
+    431,
+    9,
+    9
+   ],
+   [
+    909,
+    448,
+    37,
+    15
+   ],
+   [
+    1442,
+    420,
+    17,
+    13
+   ],
+   [
+    1404,
+    423,
+    21,
+    13
+   ],
+   [
+    883,
+    455,
+    19,
+    15
+   ],
+   [
+    1485,
+    422,
+    17,
+    13
+   ],
+   [
+    656,
+    464,
+    31,
+    20
+   ],
+   [
+    591,
+    480,
+    11,
+    10
+   ],
+   [
+    540,
+    475,
+    28,
+    22
+   ],
+   [
+    0,
+    694,
+    60,
+    137
+   ],
+   [
+    516,
+    554,
+    90,
+    94
+   ],
+   [
+    355,
+    548,
+    92,
+    94
+   ],
+   [
+    414,
+    547,
+    90,
+    92
+   ],
+   [
+    408,
+    548,
+    89,
+    92
+   ],
+   [
+    970,
+    679,
+    120,
+    131
+   ],
+   [
+    770,
+    679,
+    121,
+    131
+   ],
+   [
+    1154,
+    460,
+    66,
+    70
+   ],
+   [
+    1161,
+    462,
+    63,
+    72
+   ],
+   [
+    1273,
+    466,
+    67,
+    70
+   ],
+   [
+    1556,
+    536,
+    80,
+    93
+   ],
+   [
+    1410,
+    530,
+    87,
+    89
+   ],
+   [
+    1449,
+    546,
+    93,
+    95
+   ],
+   [
+    1538,
+    523,
+    80,
+    88
+   ],
+   [
+    1679,
+    444,
+    61,
+    66
+   ],
+   [
+    1648,
+    443,
+    57,
+    66
+   ],
+   [
+    637,
+    606,
+    102,
+    108
+   ],
+   [
+    549,
+    612,
+    106,
+    110
+   ],
+   [
+    529,
+    594,
+    99,
+    106
+   ],
+   [
+    1622,
+    588,
+    98,
+    105
+   ],
+   [
+    1666,
+    556,
+    94,
+    95
+   ],
+   [
+    0,
+    471,
+    51,
+    73
+   ],
+   [
+    612,
+    434,
+    61,
+    64
+   ],
+   [
+    668,
+    431,
+    59,
+    64
+   ],
+   [
+    895,
+    417,
+    54,
+    60
+   ],
+   [
+    891,
+    416,
+    55,
+    60
+   ],
+   [
+    0,
+    378,
+    14,
+    49
+   ],
+   [
+    970,
+    342,
+    35,
+    39
+   ],
+   [
+    1006,
+    342,
+    35,
+    38
+   ],
+   [
+    1390,
+    332,
+    34,
+    36
+   ],
+   [
+    1384,
+    333,
+    35,
+    36
+   ],
+   [
+    1352,
+    333,
+    35,
+    36
+   ],
+   [
+    1572,
+    325,
+    33,
+    34
+   ],
+   [
+    730,
+    294,
+    32,
+    35
+   ],
+   [
+    846,
+    290,
+    31,
+    33
+   ],
+   [
+    1634,
+    277,
+    27,
+    28
+   ],
+   [
+    1106,
+    287,
+    30,
+    32
+   ],
+   [
+    1166,
+    285,
+    29,
+    31
+   ],
+   [
+    1562,
+    277,
+    25,
+    28
+   ],
+   [
+    1010,
+    223,
+    23,
+    26
+   ],
+   [
+    949,
+    223,
+    24,
+    26
+   ],
+   [
+    787,
+    223,
+    24,
+    26
+   ],
+   [
+    890,
+    223,
+    24,
+    26
+   ],
+   [
+    1535,
+    322,
+    29,
+    33
+   ],
+   [
+    684,
+    385,
+    23,
+    11
+   ],
+   [
+    1710,
+    337,
+    21,
+    8
+   ],
+   [
+    1205,
+    364,
+    24,
+    9
+   ],
+   [
+    877,
+    380,
+    27,
+    10
+   ],
+   [
+    664,
+    372,
+    25,
+    10
+   ],
+   [
+    1022,
+    332,
+    32,
+    36
+   ],
+   [
+    1649,
+    344,
+    20,
+    8
+   ],
+   [
+    86,
+    365,
+    42,
+    45
+   ],
+   [
+    0,
+    370,
+    41,
+    47
+   ],
+   [
+    156,
+    415,
+    30,
+    13
+   ],
+   [
+    1653,
+    357,
+    25,
+    9
+   ],
+   [
+    1212,
+    374,
+    26,
+    10
+   ],
+   [
+    979,
+    385,
+    24,
+    11
+   ],
+   [
+    676,
+    398,
+    30,
+    11
+   ],
+   [
+    1460,
+    367,
+    22,
+    9
+   ],
+   [
+    1522,
+    362,
+    25,
+    9
+   ],
+   [
+    1326,
+    373,
+    26,
+    10
+   ],
+   [
+    877,
+    391,
+    25,
+    11
+   ],
+   [
+    1116,
+    381,
+    27,
+    11
+   ],
+   [
+    775,
+    393,
+    26,
+    11
+   ],
+   [
+    1763,
+    354,
+    15,
+    9
+   ]
+  ],
+  "names": [
+   "grove-pine#10 pine",
+   "grove-rock#11 rockBig1",
+   "grove-rock#12 rockBig2",
+   "grove-foot#13 fern",
+   "grove-foot#14 fern2",
+   "grove-foot#15 fern",
+   "grove-foot#16 fern2",
+   "wide-edge#20 fern",
+   "wide-edge#21 bush",
+   "wide-edge#22 tallgrass",
+   "grove-log#23 log",
+   "waystone#43 waystone",
+   "bank#44 fernSmall",
+   "bank#45 fernSmall",
+   "bank#46 tallgrass",
+   "bank#47 fern",
+   "bank#48 tallgrass",
+   "bank-top#49 fernSmall",
+   "bank-top#50 fernSmall",
+   "bank-top#51 fernSmall",
+   "bank-top#52 fernSmall",
+   "bank-top#53 fernSmall",
+   "bank-top#54 fernSmall",
+   "bank-top#55 fernSmall",
+   "bank-top#56 fernSmall",
+   "crown-left#57 canopyHang",
+   "crown-right#58 canopyHang",
+   "card#77 flower",
+   "card#78 rockSmall",
+   "card#79 pebble",
+   "card#80 flower",
+   "card#81 shroom2",
+   "card#82 shroom",
+   "card#84 rockSmall",
+   "card#86 rockSmall",
+   "card#87 pebble",
+   "card#88 flower",
+   "card#89 rockSmall",
+   "card#90 tuftStand3",
+   "card#91 tuftStand4",
+   "card#92 tuftStand3",
+   "card#93 tuftStand4",
+   "card#94 tuftStand4",
+   "card#95 tuftStand4",
+   "card#96 tuftStand3",
+   "card#97 tuftStand3",
+   "card#98 tuftStand3",
+   "card#99 tuftStand3",
+   "card#100 tuftStand3",
+   "card#101 tuftStand4",
+   "card#102 tuftStand3",
+   "card#103 tuftStand3",
+   "card#104 tuftStand3",
+   "card#105 tuftStand3",
+   "card#106 tuftStand3",
+   "card#107 tuftStand4",
+   "card#108 tuftStand3",
+   "card#109 tuftStand3",
+   "card#110 tuftStand4",
+   "card#111 tuftStand4",
+   "card#112 tuftStand4",
+   "card#113 tuftStand4",
+   "card#114 tuftStand3",
+   "card#115 tuftStand4",
+   "card#116 tuftStand3",
+   "card#117 tuftStand4",
+   "card#119 tuftStand4",
+   "litter#120 litterTuft4",
+   "litter#121 litterTuft1",
+   "litter#122 litterTuft2",
+   "litter#123 litterTuft1",
+   "litter#124 litterPebble2",
+   "litter#125 litterPebble4",
+   "litter#126 litterTwig1",
+   "litter#127 litterPebble4",
+   "litter#128 litterPebble2",
+   "litter#129 litterLeaves2",
+   "litter#130 litterTuft4",
+   "litter#131 litterLeaves1",
+   "litter#132 litterTuft1",
+   "litter#133 litterTuft1",
+   "litter#134 litterPebble3",
+   "litter#135 litterTuft2",
+   "litter#136 litterTwig1",
+   "litter#137 litterPebble1",
+   "litter#138 litterPebble1",
+   "litter#139 litterLeaves2",
+   "litter#140 litterPebble3",
+   "litter#141 litterLeaves1",
+   "litter#142 litterPebble4",
+   "litter#143 litterPebble4",
+   "litter#144 litterPebble3",
+   "litter#145 litterTwig1",
+   "litter#146 litterPebble1",
+   "litter#147 litterLeaves1",
+   "litter#148 litterPebble1",
+   "litter#149 litterPebble1",
+   "litter#150 litterPebble4",
+   "litter#151 litterPebble3",
+   "litter#152 litterTuft1",
+   "litter#156 tuftStand1",
+   "litter#158 tuftStand2",
+   "litter#159 tuftStand1",
+   "litter#160 tuftStand2",
+   "litter#161 tuftStand2",
+   "litter#162 tuftStand1",
+   "litter#163 tuftStand2",
+   "litter#164 tuftStand2",
+   "litter#165 tuftStand1",
+   "litter#166 tuftStand2",
+   "litter#167 tuftStand2",
+   "litter#168 tuftStand1",
+   "litter#169 tuftStand2",
+   "litter#170 tuftStand2",
+   "litter#171 tuftStand2",
+   "litter#172 tuftStand2",
+   "litter#178 tuftStand1",
+   "litter#179 tuftStand2",
+   "litter#180 tuftStand2",
+   "litter#181 tuftStand1",
+   "litter#182 tuftStand2",
+   "litter#183 tuftStand1",
+   "litter#186 tuftStand1",
+   "litter#187 tuftStand2",
+   "litter#188 tuftStand2",
+   "litter#189 tuftStand2",
+   "litter#190 tuftStand1",
+   "litter#191 tuftStand2",
+   "litter#192 tuftStand2",
+   "litter#193 tuftStand1",
+   "litter#194 tuftStand1",
+   "litter#195 tuftStand2",
+   "litter#196 tuftStand2",
+   "litter#197 tuftStand1",
+   "litter#198 tuftStand1",
+   "litter#199 tuftStand1",
+   "litter#200 tuftStand1",
+   "litter#201 tuftStand1",
+   "litter#202 tuftStand1",
+   "litter#203 tuftStand1",
+   "litter#204 tuftStand1",
+   "litter#205 tuftStand1",
+   "litter#206 tuftStand1",
+   "litter#207 tuftStand2",
+   "litter#208 litterLeaves2",
+   "litter#209 litterTwig1",
+   "litter#210 litterTwig1",
+   "litter#211 litterTwig1",
+   "litter#212 litterTwig1",
+   "litter#213 tuftStand2",
+   "litter#214 litterLeaves2",
+   "litter#215 tuftStand1",
+   "litter#217 tuftStand1",
+   "litter#218 litterTwig1",
+   "litter#219 litterTwig1",
+   "litter#220 litterTwig1",
+   "litter#221 litterLeaves2",
+   "litter#222 litterTwig1",
+   "litter#223 litterLeaves2",
+   "litter#224 litterTwig1",
+   "litter#225 litterTwig1",
+   "litter#226 litterLeaves2",
+   "litter#227 litterTwig1",
+   "litter#228 litterLeaves2",
+   "litter#229 litterLeaves1"
+  ]
+ },
+ "Stage/act1_layout|28|12|0.410|PC": {
+  "file": "act1_layout_w5.json",
+  "boxes": [
+   [
+    64,
+    0,
+    449,
+    292
+   ],
+   [
+    0,
+    0,
+    148,
+    140
+   ],
+   [
+    1501,
+    0,
+    214,
+    126
+   ],
+   [
+    0,
+    0,
+    226,
+    66
+   ],
+   [
+    190,
+    0,
+    162,
+    37
+   ],
+   [
+    1740,
+    0,
+    180,
+    66
+   ],
+   [
+    1745,
+    0,
+    175,
+    86
+   ],
+   [
+    136,
+    0,
+    235,
+    24
+   ],
+   [
+    1319,
+    0,
+    173,
+    34
+   ],
+   [
+    133,
+    0,
+    232,
+    135
+   ],
+   [
+    411,
+    0,
+    189,
+    129
+   ],
+   [
+    558,
+    0,
+    219,
+    121
+   ],
+   [
+    829,
+    0,
+    146,
+    120
+   ],
+   [
+    1166,
+    0,
+    208,
+    123
+   ],
+   [
+    1341,
+    0,
+    157,
+    122
+   ],
+   [
+    0,
+    61,
+    338,
+    62
+   ],
+   [
+    1022,
+    64,
+    307,
+    53
+   ],
+   [
+    1576,
+    739,
+    325,
+    264
+   ],
+   [
+    1015,
+    821,
+    360,
+    259
+   ],
+   [
+    40,
+    856,
+    601,
+    224
+   ],
+   [
+    1144,
+    647,
+    643,
+    413
+   ],
+   [
+    558,
+    239,
+    214,
+    146
+   ],
+   [
+    847,
+    318,
+    127,
+    75
+   ],
+   [
+    545,
+    254,
+    240,
+    157
+   ],
+   [
+    1643,
+    238,
+    153,
+    122
+   ],
+   [
+    1392,
+    239,
+    144,
+    119
+   ],
+   [
+    0,
+    360,
+    144,
+    110
+   ],
+   [
+    1569,
+    184,
+    269,
+    151
+   ],
+   [
+    1563,
+    179,
+    92,
+    53
+   ],
+   [
+    0,
+    105,
+    197,
+    173
+   ],
+   [
+    1112,
+    185,
+    90,
+    58
+   ],
+   [
+    497,
+    120,
+    197,
+    134
+   ],
+   [
+    0,
+    13,
+    113,
+    117
+   ],
+   [
+    41,
+    16,
+    166,
+    124
+   ],
+   [
+    1047,
+    15,
+    172,
+    105
+   ],
+   [
+    1788,
+    793,
+    81,
+    115
+   ],
+   [
+    1491,
+    753,
+    88,
+    90
+   ],
+   [
+    1311,
+    671,
+    99,
+    131
+   ],
+   [
+    720,
+    849,
+    220,
+    161
+   ],
+   [
+    1055,
+    459,
+    110,
+    66
+   ],
+   [
+    1662,
+    427,
+    51,
+    52
+   ],
+   [
+    1408,
+    446,
+    53,
+    56
+   ],
+   [
+    1654,
+    429,
+    102,
+    63
+   ],
+   [
+    820,
+    469,
+    110,
+    73
+   ],
+   [
+    131,
+    503,
+    151,
+    109
+   ],
+   [
+    53,
+    504,
+    88,
+    110
+   ],
+   [
+    1254,
+    459,
+    59,
+    57
+   ],
+   [
+    1811,
+    272,
+    38,
+    51
+   ],
+   [
+    857,
+    318,
+    40,
+    63
+   ],
+   [
+    1330,
+    286,
+    56,
+    78
+   ],
+   [
+    1228,
+    296,
+    55,
+    64
+   ],
+   [
+    1261,
+    335,
+    54,
+    52
+   ],
+   [
+    1326,
+    335,
+    53,
+    53
+   ],
+   [
+    1081,
+    316,
+    63,
+    89
+   ],
+   [
+    1741,
+    276,
+    54,
+    58
+   ],
+   [
+    426,
+    373,
+    119,
+    73
+   ],
+   [
+    997,
+    311,
+    108,
+    84
+   ],
+   [
+    1049,
+    304,
+    55,
+    67
+   ],
+   [
+    1846,
+    267,
+    52,
+    55
+   ],
+   [
+    725,
+    337,
+    69,
+    98
+   ],
+   [
+    304,
+    374,
+    123,
+    73
+   ],
+   [
+    667,
+    336,
+    69,
+    96
+   ],
+   [
+    554,
+    300,
+    61,
+    84
+   ],
+   [
+    1187,
+    347,
+    57,
+    55
+   ],
+   [
+    528,
+    329,
+    42,
+    66
+   ],
+   [
+    146,
+    374,
+    67,
+    61
+   ],
+   [
+    733,
+    322,
+    65,
+    92
+   ],
+   [
+    1328,
+    302,
+    93,
+    57
+   ],
+   [
+    1035,
+    190,
+    31,
+    49
+   ],
+   [
+    1839,
+    178,
+    43,
+    50
+   ],
+   [
+    659,
+    190,
+    53,
+    74
+   ],
+   [
+    1282,
+    207,
+    37,
+    56
+   ],
+   [
+    1329,
+    187,
+    47,
+    54
+   ],
+   [
+    1912,
+    163,
+    8,
+    57
+   ],
+   [
+    1720,
+    177,
+    67,
+    40
+   ],
+   [
+    1800,
+    187,
+    33,
+    47
+   ],
+   [
+    1646,
+    188,
+    37,
+    36
+   ],
+   [
+    1845,
+    196,
+    42,
+    39
+   ],
+   [
+    1064,
+    177,
+    45,
+    66
+   ],
+   [
+    117,
+    221,
+    100,
+    59
+   ],
+   [
+    1248,
+    207,
+    42,
+    43
+   ],
+   [
+    1150,
+    173,
+    38,
+    47
+   ],
+   [
+    1884,
+    181,
+    36,
+    51
+   ],
+   [
+    4,
+    230,
+    50,
+    66
+   ],
+   [
+    1715,
+    180,
+    30,
+    44
+   ],
+   [
+    1695,
+    179,
+    43,
+    50
+   ],
+   [
+    1091,
+    173,
+    39,
+    47
+   ],
+   [
+    1222,
+    217,
+    47,
+    46
+   ],
+   [
+    1185,
+    205,
+    85,
+    52
+   ],
+   [
+    1181,
+    202,
+    82,
+    50
+   ],
+   [
+    902,
+    85,
+    62,
+    39
+   ],
+   [
+    1713,
+    83,
+    27,
+    39
+   ],
+   [
+    1399,
+    84,
+    56,
+    35
+   ],
+   [
+    1149,
+    70,
+    36,
+    52
+   ],
+   [
+    170,
+    84,
+    31,
+    47
+   ],
+   [
+    333,
+    71,
+    80,
+    59
+   ],
+   [
+    872,
+    85,
+    60,
+    38
+   ],
+   [
+    980,
+    511,
+    26,
+    16
+   ],
+   [
+    1622,
+    467,
+    15,
+    11
+   ],
+   [
+    1659,
+    463,
+    21,
+    14
+   ],
+   [
+    1854,
+    450,
+    14,
+    11
+   ],
+   [
+    1007,
+    521,
+    16,
+    13
+   ],
+   [
+    1618,
+    474,
+    18,
+    12
+   ],
+   [
+    1058,
+    524,
+    26,
+    10
+   ],
+   [
+    1311,
+    501,
+    19,
+    13
+   ],
+   [
+    1664,
+    474,
+    16,
+    12
+   ],
+   [
+    1821,
+    464,
+    20,
+    9
+   ],
+   [
+    1900,
+    453,
+    20,
+    14
+   ],
+   [
+    1360,
+    504,
+    16,
+    9
+   ],
+   [
+    1376,
+    506,
+    16,
+    12
+   ],
+   [
+    1308,
+    513,
+    16,
+    13
+   ],
+   [
+    841,
+    561,
+    7,
+    7
+   ],
+   [
+    802,
+    554,
+    25,
+    18
+   ],
+   [
+    276,
+    606,
+    31,
+    12
+   ],
+   [
+    896,
+    554,
+    14,
+    10
+   ],
+   [
+    325,
+    606,
+    16,
+    12
+   ],
+   [
+    354,
+    611,
+    28,
+    12
+   ],
+   [
+    798,
+    576,
+    7,
+    7
+   ],
+   [
+    621,
+    595,
+    19,
+    11
+   ],
+   [
+    1819,
+    493,
+    19,
+    12
+   ],
+   [
+    1860,
+    492,
+    19,
+    12
+   ],
+   [
+    30,
+    669,
+    9,
+    8
+   ],
+   [
+    1873,
+    494,
+    23,
+    15
+   ],
+   [
+    215,
+    740,
+    42,
+    25
+   ],
+   [
+    960,
+    670,
+    35,
+    22
+   ],
+   [
+    1396,
+    636,
+    34,
+    20
+   ],
+   [
+    801,
+    710,
+    38,
+    23
+   ],
+   [
+    910,
+    709,
+    37,
+    14
+   ],
+   [
+    1445,
+    650,
+    17,
+    12
+   ],
+   [
+    1405,
+    656,
+    22,
+    12
+   ],
+   [
+    1865,
+    600,
+    31,
+    20
+   ],
+   [
+    885,
+    724,
+    19,
+    14
+   ],
+   [
+    1488,
+    654,
+    18,
+    12
+   ],
+   [
+    667,
+    749,
+    30,
+    19
+   ],
+   [
+    606,
+    771,
+    10,
+    10
+   ],
+   [
+    558,
+    771,
+    27,
+    20
+   ]
+  ],
+  "names": [
+   "tree-2#24 treeGiant",
+   "tree-4#26 treeOak",
+   "tree-6#28 treeGiant",
+   "relief#30 canopy3",
+   "relief#31 leaf4",
+   "relief#32 canopy3",
+   "relief#33 canopy2",
+   "relief#35 canopy3",
+   "relief#38 canopy3",
+   "relief#52 pine2",
+   "relief#53 pine2",
+   "relief#54 treeOak2",
+   "relief#55 pine2",
+   "relief#56 pine",
+   "relief#57 pine2",
+   "relief#58 treeline",
+   "relief#59 treeline",
+   "relief#98 fern",
+   "relief#99 fern",
+   "relief#101 rockBig2",
+   "relief#102 rockBig1",
+   "relief#115 bush",
+   "relief#116 leaf5",
+   "relief#118 rockBig2",
+   "relief#119 fern",
+   "relief#120 fern",
+   "relief#122 leaf4",
+   "relief#123 rockBig1",
+   "relief#125 leaf5",
+   "relief#126 rockBig1",
+   "relief#127 leaf5",
+   "relief#130 fern2",
+   "relief#131 fern2",
+   "relief#132 rockBig2",
+   "relief#133 rockBig1",
+   "card#141 flower",
+   "card#144 rockSmall",
+   "card#152 sprout",
+   "card#153 shroom2",
+   "card#181 pebble",
+   "card#182 rockSmall",
+   "card#183 rockSmall",
+   "card#184 pebble",
+   "card#185 pebble",
+   "card#186 shroom2",
+   "card#187 sprout",
+   "card#188 rockSmall",
+   "card#190 flower",
+   "card#191 flower",
+   "card#192 sprout",
+   "card#193 shroom",
+   "card#194 rockSmall",
+   "card#197 rockSmall",
+   "card#198 sprout",
+   "card#199 shroom",
+   "card#200 pebble",
+   "card#201 shroom2",
+   "card#206 shroom",
+   "card#209 shroom",
+   "card#210 sprout",
+   "card#211 pebble",
+   "card#213 sprout",
+   "card#215 sprout",
+   "card#216 rockSmall",
+   "card#217 flower",
+   "card#218 rockSmall",
+   "card#219 sprout",
+   "card#220 pebble",
+   "card#223 flower",
+   "card#225 shroom",
+   "card#226 sprout",
+   "card#227 flower",
+   "card#228 shroom",
+   "card#230 sprout",
+   "card#231 pebble",
+   "card#233 flower",
+   "card#234 rockSmall",
+   "card#235 rockSmall",
+   "card#236 sprout",
+   "card#237 pebble",
+   "card#238 rockSmall",
+   "card#240 shroom",
+   "card#241 shroom",
+   "card#242 flower",
+   "card#243 flower",
+   "card#244 shroom",
+   "card#245 shroom",
+   "card#246 rockSmall",
+   "card#247 pebble",
+   "card#248 pebble",
+   "card#250 pebble",
+   "card#252 flower",
+   "card#253 pebble",
+   "card#254 sprout",
+   "card#256 flower",
+   "card#257 shroom2",
+   "card#258 pebble",
+   "litter#271 litterTuft4",
+   "litter#272 litterTuft1",
+   "litter#273 litterTuft2",
+   "litter#274 litterTuft1",
+   "litter#275 litterPebble2",
+   "litter#276 litterPebble4",
+   "litter#277 litterTwig1",
+   "litter#278 litterPebble4",
+   "litter#279 litterPebble2",
+   "litter#280 litterLeaves2",
+   "litter#281 litterTuft4",
+   "litter#282 litterLeaves1",
+   "litter#283 litterTuft1",
+   "litter#284 litterTuft1",
+   "litter#285 litterPebble3",
+   "litter#286 litterTuft2",
+   "litter#287 litterTwig1",
+   "litter#288 litterPebble1",
+   "litter#289 litterPebble1",
+   "litter#290 litterLeaves2",
+   "litter#291 litterPebble3",
+   "litter#292 litterLeaves1",
+   "litter#293 litterPebble4",
+   "litter#294 litterPebble4",
+   "litter#295 litterPebble3",
+   "litter#296 litterTuft2",
+   "litter#297 litterTuft4",
+   "litter#298 litterTuft4",
+   "litter#299 litterTuft4",
+   "litter#300 litterTuft4",
+   "litter#301 litterTwig1",
+   "litter#302 litterPebble1",
+   "litter#303 litterLeaves1",
+   "litter#304 litterTuft4",
+   "litter#305 litterPebble1",
+   "litter#306 litterPebble1",
+   "litter#307 litterPebble4",
+   "litter#308 litterPebble3",
+   "litter#309 litterTuft1"
+  ]
+ },
+ "Stage/act1_layout|28|12|0.510|PH": {
+  "file": "act1_layout_w5.json",
+  "boxes": [
+   [
+    118,
+    0,
+    432,
+    139
+   ],
+   [
+    0,
+    0,
+    221,
+    19
+   ],
+   [
+    1442,
+    0,
+    189,
+    32
+   ],
+   [
+    0,
+    0,
+    92,
+    24
+   ],
+   [
+    208,
+    0,
+    214,
+    22
+   ],
+   [
+    467,
+    0,
+    170,
+    27
+   ],
+   [
+    605,
+    0,
+    194,
+    34
+   ],
+   [
+    844,
+    0,
+    129,
+    34
+   ],
+   [
+    1143,
+    0,
+    186,
+    32
+   ],
+   [
+    1297,
+    0,
+    140,
+    33
+   ],
+   [
+    86,
+    0,
+    322,
+    31
+   ],
+   [
+    1015,
+    0,
+    269,
+    37
+   ],
+   [
+    1633,
+    485,
+    287,
+    291
+   ],
+   [
+    1022,
+    558,
+    415,
+    328
+   ],
+   [
+    0,
+    584,
+    588,
+    302
+   ],
+   [
+    1165,
+    379,
+    710,
+    456
+   ],
+   [
+    584,
+    91,
+    200,
+    137
+   ],
+   [
+    854,
+    162,
+    119,
+    70
+   ],
+   [
+    568,
+    96,
+    227,
+    148
+   ],
+   [
+    1589,
+    100,
+    143,
+    112
+   ],
+   [
+    1358,
+    101,
+    133,
+    111
+   ],
+   [
+    1884,
+    93,
+    36,
+    88
+   ],
+   [
+    0,
+    175,
+    171,
+    106
+   ],
+   [
+    1515,
+    59,
+    247,
+    139
+   ],
+   [
+    1502,
+    68,
+    83,
+    48
+   ],
+   [
+    23,
+    0,
+    231,
+    134
+   ],
+   [
+    1098,
+    69,
+    81,
+    52
+   ],
+   [
+    0,
+    1,
+    13,
+    139
+   ],
+   [
+    537,
+    1,
+    180,
+    124
+   ],
+   [
+    38,
+    0,
+    163,
+    26
+   ],
+   [
+    122,
+    0,
+    151,
+    19
+   ],
+   [
+    1036,
+    0,
+    152,
+    35
+   ],
+   [
+    1835,
+    559,
+    85,
+    123
+   ],
+   [
+    1509,
+    527,
+    91,
+    93
+   ],
+   [
+    1317,
+    448,
+    102,
+    135
+   ],
+   [
+    696,
+    605,
+    243,
+    178
+   ],
+   [
+    1904,
+    259,
+    16,
+    60
+   ],
+   [
+    1050,
+    285,
+    104,
+    64
+   ],
+   [
+    1614,
+    266,
+    48,
+    49
+   ],
+   [
+    1381,
+    279,
+    50,
+    52
+   ],
+   [
+    1610,
+    266,
+    96,
+    59
+   ],
+   [
+    827,
+    292,
+    104,
+    69
+   ],
+   [
+    150,
+    308,
+    150,
+    106
+   ],
+   [
+    73,
+    307,
+    88,
+    109
+   ],
+   [
+    1238,
+    288,
+    56,
+    54
+   ],
+   [
+    1732,
+    144,
+    35,
+    46
+   ],
+   [
+    864,
+    166,
+    37,
+    59
+   ],
+   [
+    1301,
+    142,
+    52,
+    73
+   ],
+   [
+    1207,
+    153,
+    51,
+    59
+   ],
+   [
+    1241,
+    179,
+    50,
+    49
+   ],
+   [
+    1838,
+    141,
+    30,
+    45
+   ],
+   [
+    1302,
+    179,
+    49,
+    50
+   ],
+   [
+    1073,
+    155,
+    59,
+    85
+   ],
+   [
+    1671,
+    144,
+    50,
+    53
+   ],
+   [
+    448,
+    195,
+    115,
+    70
+   ],
+   [
+    995,
+    154,
+    101,
+    79
+   ],
+   [
+    1043,
+    157,
+    51,
+    62
+   ],
+   [
+    0,
+    202,
+    10,
+    59
+   ],
+   [
+    1763,
+    140,
+    48,
+    50
+   ],
+   [
+    735,
+    164,
+    66,
+    94
+   ],
+   [
+    331,
+    195,
+    119,
+    70
+   ],
+   [
+    680,
+    164,
+    66,
+    93
+   ],
+   [
+    582,
+    148,
+    57,
+    79
+   ],
+   [
+    1174,
+    186,
+    53,
+    52
+   ],
+   [
+    555,
+    171,
+    39,
+    62
+   ],
+   [
+    183,
+    200,
+    65,
+    58
+   ],
+   [
+    745,
+    157,
+    62,
+    87
+   ],
+   [
+    1299,
+    160,
+    86,
+    52
+   ],
+   [
+    1027,
+    75,
+    28,
+    44
+   ],
+   [
+    1747,
+    70,
+    39,
+    45
+   ],
+   [
+    684,
+    60,
+    49,
+    69
+   ],
+   [
+    1255,
+    76,
+    34,
+    52
+   ],
+   [
+    1293,
+    71,
+    43,
+    49
+   ],
+   [
+    1809,
+    61,
+    41,
+    51
+   ],
+   [
+    1636,
+    75,
+    59,
+    36
+   ],
+   [
+    1716,
+    74,
+    30,
+    43
+   ],
+   [
+    1574,
+    81,
+    33,
+    33
+   ],
+   [
+    1757,
+    82,
+    38,
+    35
+   ],
+   [
+    1054,
+    60,
+    41,
+    60
+   ],
+   [
+    179,
+    80,
+    94,
+    54
+   ],
+   [
+    1221,
+    84,
+    38,
+    39
+   ],
+   [
+    1859,
+    81,
+    32,
+    33
+   ],
+   [
+    1130,
+    70,
+    34,
+    42
+   ],
+   [
+    1791,
+    70,
+    40,
+    46
+   ],
+   [
+    64,
+    78,
+    48,
+    62
+   ],
+   [
+    1635,
+    74,
+    27,
+    40
+   ],
+   [
+    1619,
+    70,
+    39,
+    45
+   ],
+   [
+    1076,
+    70,
+    35,
+    42
+   ],
+   [
+    1200,
+    86,
+    43,
+    42
+   ],
+   [
+    1166,
+    78,
+    78,
+    48
+   ],
+   [
+    1161,
+    78,
+    75,
+    46
+   ],
+   [
+    60,
+    0,
+    28,
+    24
+   ],
+   [
+    909,
+    0,
+    55,
+    31
+   ],
+   [
+    1627,
+    0,
+    24,
+    32
+   ],
+   [
+    1346,
+    4,
+    49,
+    31
+   ],
+   [
+    1127,
+    0,
+    32,
+    32
+   ],
+   [
+    250,
+    0,
+    28,
+    25
+   ],
+   [
+    397,
+    0,
+    72,
+    26
+   ],
+   [
+    882,
+    0,
+    53,
+    32
+   ],
+   [
+    979,
+    335,
+    24,
+    15
+   ],
+   [
+    1576,
+    304,
+    14,
+    11
+   ],
+   [
+    1610,
+    301,
+    20,
+    13
+   ],
+   [
+    1788,
+    292,
+    13,
+    10
+   ],
+   [
+    1005,
+    343,
+    15,
+    12
+   ],
+   [
+    1574,
+    309,
+    17,
+    11
+   ],
+   [
+    1053,
+    346,
+    25,
+    9
+   ],
+   [
+    1291,
+    328,
+    18,
+    12
+   ],
+   [
+    1617,
+    309,
+    15,
+    11
+   ],
+   [
+    1760,
+    303,
+    18,
+    8
+   ],
+   [
+    1832,
+    294,
+    21,
+    13
+   ],
+   [
+    1337,
+    331,
+    15,
+    9
+   ],
+   [
+    1353,
+    332,
+    15,
+    12
+   ],
+   [
+    1289,
+    337,
+    16,
+    12
+   ],
+   [
+    846,
+    374,
+    7,
+    7
+   ],
+   [
+    808,
+    366,
+    24,
+    17
+   ],
+   [
+    292,
+    407,
+    30,
+    12
+   ],
+   [
+    899,
+    368,
+    13,
+    10
+   ],
+   [
+    339,
+    408,
+    16,
+    11
+   ],
+   [
+    366,
+    411,
+    28,
+    11
+   ],
+   [
+    804,
+    385,
+    7,
+    7
+   ],
+   [
+    630,
+    399,
+    19,
+    11
+   ],
+   [
+    1767,
+    322,
+    18,
+    11
+   ],
+   [
+    1806,
+    322,
+    18,
+    11
+   ],
+   [
+    31,
+    458,
+    9,
+    8
+   ],
+   [
+    1820,
+    322,
+    21,
+    14
+   ],
+   [
+    191,
+    515,
+    44,
+    26
+   ],
+   [
+    960,
+    456,
+    35,
+    22
+   ],
+   [
+    1393,
+    429,
+    34,
+    20
+   ],
+   [
+    797,
+    490,
+    39,
+    24
+   ],
+   [
+    909,
+    490,
+    37,
+    15
+   ],
+   [
+    1442,
+    442,
+    17,
+    12
+   ],
+   [
+    1403,
+    447,
+    22,
+    12
+   ],
+   [
+    1845,
+    401,
+    31,
+    19
+   ],
+   [
+    883,
+    503,
+    19,
+    14
+   ],
+   [
+    1485,
+    445,
+    18,
+    12
+   ],
+   [
+    657,
+    523,
+    31,
+    20
+   ],
+   [
+    593,
+    544,
+    11,
+    10
+   ],
+   [
+    541,
+    542,
+    28,
+    21
+   ]
+  ],
+  "names": [
+   "tree-2#24 treeGiant",
+   "tree-4#26 treeOak",
+   "tree-6#28 treeGiant",
+   "relief#51 treeOak2",
+   "relief#52 pine2",
+   "relief#53 pine2",
+   "relief#54 treeOak2",
+   "relief#55 pine2",
+   "relief#56 pine",
+   "relief#57 pine2",
+   "relief#58 treeline",
+   "relief#59 treeline",
+   "relief#98 fern",
+   "relief#99 fern",
+   "relief#101 rockBig2",
+   "relief#102 rockBig1",
+   "relief#115 bush",
+   "relief#116 leaf5",
+   "relief#118 rockBig2",
+   "relief#119 fern",
+   "relief#120 fern",
+   "relief#121 fern",
+   "relief#122 leaf4",
+   "relief#123 rockBig1",
+   "relief#125 leaf5",
+   "relief#126 rockBig1",
+   "relief#127 leaf5",
+   "relief#128 rockBig2",
+   "relief#130 fern2",
+   "relief#131 fern2",
+   "relief#132 rockBig2",
+   "relief#133 rockBig1",
+   "card#141 flower",
+   "card#144 rockSmall",
+   "card#152 sprout",
+   "card#153 shroom2",
+   "card#178 flower",
+   "card#181 pebble",
+   "card#182 rockSmall",
+   "card#183 rockSmall",
+   "card#184 pebble",
+   "card#185 pebble",
+   "card#186 shroom2",
+   "card#187 sprout",
+   "card#188 rockSmall",
+   "card#190 flower",
+   "card#191 flower",
+   "card#192 sprout",
+   "card#193 shroom",
+   "card#194 rockSmall",
+   "card#196 flower",
+   "card#197 rockSmall",
+   "card#198 sprout",
+   "card#199 shroom",
+   "card#200 pebble",
+   "card#201 shroom2",
+   "card#206 shroom",
+   "card#208 rockSmall",
+   "card#209 shroom",
+   "card#210 sprout",
+   "card#211 pebble",
+   "card#213 sprout",
+   "card#215 sprout",
+   "card#216 rockSmall",
+   "card#217 flower",
+   "card#218 rockSmall",
+   "card#219 sprout",
+   "card#220 pebble",
+   "card#223 flower",
+   "card#225 shroom",
+   "card#226 sprout",
+   "card#227 flower",
+   "card#228 shroom",
+   "card#230 sprout",
+   "card#231 pebble",
+   "card#233 flower",
+   "card#234 rockSmall",
+   "card#235 rockSmall",
+   "card#236 sprout",
+   "card#237 pebble",
+   "card#238 rockSmall",
+   "card#239 rockSmall",
+   "card#240 shroom",
+   "card#241 shroom",
+   "card#242 flower",
+   "card#243 flower",
+   "card#244 shroom",
+   "card#245 shroom",
+   "card#246 rockSmall",
+   "card#247 pebble",
+   "card#248 pebble",
+   "card#249 flower",
+   "card#250 pebble",
+   "card#252 flower",
+   "card#253 pebble",
+   "card#254 sprout",
+   "card#256 flower",
+   "card#257 shroom2",
+   "card#258 pebble",
+   "litter#271 litterTuft4",
+   "litter#272 litterTuft1",
+   "litter#273 litterTuft2",
+   "litter#274 litterTuft1",
+   "litter#275 litterPebble2",
+   "litter#276 litterPebble4",
+   "litter#277 litterTwig1",
+   "litter#278 litterPebble4",
+   "litter#279 litterPebble2",
+   "litter#280 litterLeaves2",
+   "litter#281 litterTuft4",
+   "litter#282 litterLeaves1",
+   "litter#283 litterTuft1",
+   "litter#284 litterTuft1",
+   "litter#285 litterPebble3",
+   "litter#286 litterTuft2",
+   "litter#287 litterTwig1",
+   "litter#288 litterPebble1",
+   "litter#289 litterPebble1",
+   "litter#290 litterLeaves2",
+   "litter#291 litterPebble3",
+   "litter#292 litterLeaves1",
+   "litter#293 litterPebble4",
+   "litter#294 litterPebble4",
+   "litter#295 litterPebble3",
+   "litter#296 litterTuft2",
+   "litter#297 litterTuft4",
+   "litter#298 litterTuft4",
+   "litter#299 litterTuft4",
+   "litter#300 litterTuft4",
+   "litter#301 litterTwig1",
+   "litter#302 litterPebble1",
+   "litter#303 litterLeaves1",
+   "litter#304 litterTuft4",
+   "litter#305 litterPebble1",
+   "litter#306 litterPebble1",
+   "litter#307 litterPebble4",
+   "litter#308 litterPebble3",
+   "litter#309 litterTuft1"
+  ]
+ },
+ "Stage/act1_layout_w5|28|12|0.410|PC": {
+  "file": "act1_layout_w5.json",
+  "boxes": [
+   [
+    64,
+    0,
+    449,
+    292
+   ],
+   [
+    0,
+    0,
+    148,
+    140
+   ],
+   [
+    1501,
+    0,
+    214,
+    126
+   ],
+   [
+    0,
+    0,
+    226,
+    66
+   ],
+   [
+    190,
+    0,
+    162,
+    37
+   ],
+   [
+    1740,
+    0,
+    180,
+    66
+   ],
+   [
+    1745,
+    0,
+    175,
+    86
+   ],
+   [
+    136,
+    0,
+    235,
+    24
+   ],
+   [
+    1319,
+    0,
+    173,
+    34
+   ],
+   [
+    133,
+    0,
+    232,
+    135
+   ],
+   [
+    411,
+    0,
+    189,
+    129
+   ],
+   [
+    558,
+    0,
+    219,
+    121
+   ],
+   [
+    829,
+    0,
+    146,
+    120
+   ],
+   [
+    1166,
+    0,
+    208,
+    123
+   ],
+   [
+    1341,
+    0,
+    157,
+    122
+   ],
+   [
+    0,
+    61,
+    338,
+    62
+   ],
+   [
+    1022,
+    64,
+    307,
+    53
+   ],
+   [
+    1576,
+    739,
+    325,
+    264
+   ],
+   [
+    1015,
+    821,
+    360,
+    259
+   ],
+   [
+    40,
+    856,
+    601,
+    224
+   ],
+   [
+    1144,
+    647,
+    643,
+    413
+   ],
+   [
+    558,
+    239,
+    214,
+    146
+   ],
+   [
+    847,
+    318,
+    127,
+    75
+   ],
+   [
+    545,
+    254,
+    240,
+    157
+   ],
+   [
+    1643,
+    238,
+    153,
+    122
+   ],
+   [
+    1392,
+    239,
+    144,
+    119
+   ],
+   [
+    0,
+    360,
+    144,
+    110
+   ],
+   [
+    1569,
+    184,
+    269,
+    151
+   ],
+   [
+    1563,
+    179,
+    92,
+    53
+   ],
+   [
+    0,
+    105,
+    197,
+    173
+   ],
+   [
+    1112,
+    185,
+    90,
+    58
+   ],
+   [
+    497,
+    120,
+    197,
+    134
+   ],
+   [
+    0,
+    13,
+    113,
+    117
+   ],
+   [
+    41,
+    16,
+    166,
+    124
+   ],
+   [
+    1047,
+    15,
+    172,
+    105
+   ],
+   [
+    1788,
+    793,
+    81,
+    115
+   ],
+   [
+    1491,
+    753,
+    88,
+    90
+   ],
+   [
+    1311,
+    671,
+    99,
+    131
+   ],
+   [
+    720,
+    849,
+    220,
+    161
+   ],
+   [
+    1055,
+    459,
+    110,
+    66
+   ],
+   [
+    1662,
+    427,
+    51,
+    52
+   ],
+   [
+    1408,
+    446,
+    53,
+    56
+   ],
+   [
+    1654,
+    429,
+    102,
+    63
+   ],
+   [
+    820,
+    469,
+    110,
+    73
+   ],
+   [
+    131,
+    503,
+    151,
+    109
+   ],
+   [
+    53,
+    504,
+    88,
+    110
+   ],
+   [
+    1254,
+    459,
+    59,
+    57
+   ],
+   [
+    1811,
+    272,
+    38,
+    51
+   ],
+   [
+    857,
+    318,
+    40,
+    63
+   ],
+   [
+    1330,
+    286,
+    56,
+    78
+   ],
+   [
+    1228,
+    296,
+    55,
+    64
+   ],
+   [
+    1261,
+    335,
+    54,
+    52
+   ],
+   [
+    1326,
+    335,
+    53,
+    53
+   ],
+   [
+    1081,
+    316,
+    63,
+    89
+   ],
+   [
+    1741,
+    276,
+    54,
+    58
+   ],
+   [
+    426,
+    373,
+    119,
+    73
+   ],
+   [
+    997,
+    311,
+    108,
+    84
+   ],
+   [
+    1049,
+    304,
+    55,
+    67
+   ],
+   [
+    1846,
+    267,
+    52,
+    55
+   ],
+   [
+    725,
+    337,
+    69,
+    98
+   ],
+   [
+    304,
+    374,
+    123,
+    73
+   ],
+   [
+    667,
+    336,
+    69,
+    96
+   ],
+   [
+    554,
+    300,
+    61,
+    84
+   ],
+   [
+    1187,
+    347,
+    57,
+    55
+   ],
+   [
+    528,
+    329,
+    42,
+    66
+   ],
+   [
+    146,
+    374,
+    67,
+    61
+   ],
+   [
+    733,
+    322,
+    65,
+    92
+   ],
+   [
+    1328,
+    302,
+    93,
+    57
+   ],
+   [
+    1035,
+    190,
+    31,
+    49
+   ],
+   [
+    1839,
+    178,
+    43,
+    50
+   ],
+   [
+    659,
+    190,
+    53,
+    74
+   ],
+   [
+    1282,
+    207,
+    37,
+    56
+   ],
+   [
+    1329,
+    187,
+    47,
+    54
+   ],
+   [
+    1912,
+    163,
+    8,
+    57
+   ],
+   [
+    1720,
+    177,
+    67,
+    40
+   ],
+   [
+    1800,
+    187,
+    33,
+    47
+   ],
+   [
+    1646,
+    188,
+    37,
+    36
+   ],
+   [
+    1845,
+    196,
+    42,
+    39
+   ],
+   [
+    1064,
+    177,
+    45,
+    66
+   ],
+   [
+    117,
+    221,
+    100,
+    59
+   ],
+   [
+    1248,
+    207,
+    42,
+    43
+   ],
+   [
+    1150,
+    173,
+    38,
+    47
+   ],
+   [
+    1884,
+    181,
+    36,
+    51
+   ],
+   [
+    4,
+    230,
+    50,
+    66
+   ],
+   [
+    1715,
+    180,
+    30,
+    44
+   ],
+   [
+    1695,
+    179,
+    43,
+    50
+   ],
+   [
+    1091,
+    173,
+    39,
+    47
+   ],
+   [
+    1222,
+    217,
+    47,
+    46
+   ],
+   [
+    1185,
+    205,
+    85,
+    52
+   ],
+   [
+    1181,
+    202,
+    82,
+    50
+   ],
+   [
+    902,
+    85,
+    62,
+    39
+   ],
+   [
+    1713,
+    83,
+    27,
+    39
+   ],
+   [
+    1399,
+    84,
+    56,
+    35
+   ],
+   [
+    1149,
+    70,
+    36,
+    52
+   ],
+   [
+    170,
+    84,
+    31,
+    47
+   ],
+   [
+    333,
+    71,
+    80,
+    59
+   ],
+   [
+    872,
+    85,
+    60,
+    38
+   ],
+   [
+    980,
+    511,
+    26,
+    16
+   ],
+   [
+    1622,
+    467,
+    15,
+    11
+   ],
+   [
+    1659,
+    463,
+    21,
+    14
+   ],
+   [
+    1854,
+    450,
+    14,
+    11
+   ],
+   [
+    1007,
+    521,
+    16,
+    13
+   ],
+   [
+    1618,
+    474,
+    18,
+    12
+   ],
+   [
+    1058,
+    524,
+    26,
+    10
+   ],
+   [
+    1311,
+    501,
+    19,
+    13
+   ],
+   [
+    1664,
+    474,
+    16,
+    12
+   ],
+   [
+    1821,
+    464,
+    20,
+    9
+   ],
+   [
+    1900,
+    453,
+    20,
+    14
+   ],
+   [
+    1360,
+    504,
+    16,
+    9
+   ],
+   [
+    1376,
+    506,
+    16,
+    12
+   ],
+   [
+    1308,
+    513,
+    16,
+    13
+   ],
+   [
+    841,
+    561,
+    7,
+    7
+   ],
+   [
+    802,
+    554,
+    25,
+    18
+   ],
+   [
+    276,
+    606,
+    31,
+    12
+   ],
+   [
+    896,
+    554,
+    14,
+    10
+   ],
+   [
+    325,
+    606,
+    16,
+    12
+   ],
+   [
+    354,
+    611,
+    28,
+    12
+   ],
+   [
+    798,
+    576,
+    7,
+    7
+   ],
+   [
+    621,
+    595,
+    19,
+    11
+   ],
+   [
+    1819,
+    493,
+    19,
+    12
+   ],
+   [
+    1860,
+    492,
+    19,
+    12
+   ],
+   [
+    30,
+    669,
+    9,
+    8
+   ],
+   [
+    1873,
+    494,
+    23,
+    15
+   ],
+   [
+    215,
+    740,
+    42,
+    25
+   ],
+   [
+    960,
+    670,
+    35,
+    22
+   ],
+   [
+    1396,
+    636,
+    34,
+    20
+   ],
+   [
+    801,
+    710,
+    38,
+    23
+   ],
+   [
+    910,
+    709,
+    37,
+    14
+   ],
+   [
+    1445,
+    650,
+    17,
+    12
+   ],
+   [
+    1405,
+    656,
+    22,
+    12
+   ],
+   [
+    1865,
+    600,
+    31,
+    20
+   ],
+   [
+    885,
+    724,
+    19,
+    14
+   ],
+   [
+    1488,
+    654,
+    18,
+    12
+   ],
+   [
+    667,
+    749,
+    30,
+    19
+   ],
+   [
+    606,
+    771,
+    10,
+    10
+   ],
+   [
+    558,
+    771,
+    27,
+    20
+   ]
+  ],
+  "names": [
+   "tree-2#24 treeGiant",
+   "tree-4#26 treeOak",
+   "tree-6#28 treeGiant",
+   "relief#30 canopy3",
+   "relief#31 leaf4",
+   "relief#32 canopy3",
+   "relief#33 canopy2",
+   "relief#35 canopy3",
+   "relief#38 canopy3",
+   "relief#52 pine2",
+   "relief#53 pine2",
+   "relief#54 treeOak2",
+   "relief#55 pine2",
+   "relief#56 pine",
+   "relief#57 pine2",
+   "relief#58 treeline",
+   "relief#59 treeline",
+   "relief#98 fern",
+   "relief#99 fern",
+   "relief#101 rockBig2",
+   "relief#102 rockBig1",
+   "relief#115 bush",
+   "relief#116 leaf5",
+   "relief#118 rockBig2",
+   "relief#119 fern",
+   "relief#120 fern",
+   "relief#122 leaf4",
+   "relief#123 rockBig1",
+   "relief#125 leaf5",
+   "relief#126 rockBig1",
+   "relief#127 leaf5",
+   "relief#130 fern2",
+   "relief#131 fern2",
+   "relief#132 rockBig2",
+   "relief#133 rockBig1",
+   "card#141 flower",
+   "card#144 rockSmall",
+   "card#152 sprout",
+   "card#153 shroom2",
+   "card#181 pebble",
+   "card#182 rockSmall",
+   "card#183 rockSmall",
+   "card#184 pebble",
+   "card#185 pebble",
+   "card#186 shroom2",
+   "card#187 sprout",
+   "card#188 rockSmall",
+   "card#190 flower",
+   "card#191 flower",
+   "card#192 sprout",
+   "card#193 shroom",
+   "card#194 rockSmall",
+   "card#197 rockSmall",
+   "card#198 sprout",
+   "card#199 shroom",
+   "card#200 pebble",
+   "card#201 shroom2",
+   "card#206 shroom",
+   "card#209 shroom",
+   "card#210 sprout",
+   "card#211 pebble",
+   "card#213 sprout",
+   "card#215 sprout",
+   "card#216 rockSmall",
+   "card#217 flower",
+   "card#218 rockSmall",
+   "card#219 sprout",
+   "card#220 pebble",
+   "card#223 flower",
+   "card#225 shroom",
+   "card#226 sprout",
+   "card#227 flower",
+   "card#228 shroom",
+   "card#230 sprout",
+   "card#231 pebble",
+   "card#233 flower",
+   "card#234 rockSmall",
+   "card#235 rockSmall",
+   "card#236 sprout",
+   "card#237 pebble",
+   "card#238 rockSmall",
+   "card#240 shroom",
+   "card#241 shroom",
+   "card#242 flower",
+   "card#243 flower",
+   "card#244 shroom",
+   "card#245 shroom",
+   "card#246 rockSmall",
+   "card#247 pebble",
+   "card#248 pebble",
+   "card#250 pebble",
+   "card#252 flower",
+   "card#253 pebble",
+   "card#254 sprout",
+   "card#256 flower",
+   "card#257 shroom2",
+   "card#258 pebble",
+   "litter#271 litterTuft4",
+   "litter#272 litterTuft1",
+   "litter#273 litterTuft2",
+   "litter#274 litterTuft1",
+   "litter#275 litterPebble2",
+   "litter#276 litterPebble4",
+   "litter#277 litterTwig1",
+   "litter#278 litterPebble4",
+   "litter#279 litterPebble2",
+   "litter#280 litterLeaves2",
+   "litter#281 litterTuft4",
+   "litter#282 litterLeaves1",
+   "litter#283 litterTuft1",
+   "litter#284 litterTuft1",
+   "litter#285 litterPebble3",
+   "litter#286 litterTuft2",
+   "litter#287 litterTwig1",
+   "litter#288 litterPebble1",
+   "litter#289 litterPebble1",
+   "litter#290 litterLeaves2",
+   "litter#291 litterPebble3",
+   "litter#292 litterLeaves1",
+   "litter#293 litterPebble4",
+   "litter#294 litterPebble4",
+   "litter#295 litterPebble3",
+   "litter#296 litterTuft2",
+   "litter#297 litterTuft4",
+   "litter#298 litterTuft4",
+   "litter#299 litterTuft4",
+   "litter#300 litterTuft4",
+   "litter#301 litterTwig1",
+   "litter#302 litterPebble1",
+   "litter#303 litterLeaves1",
+   "litter#304 litterTuft4",
+   "litter#305 litterPebble1",
+   "litter#306 litterPebble1",
+   "litter#307 litterPebble4",
+   "litter#308 litterPebble3",
+   "litter#309 litterTuft1"
+  ]
+ },
+ "Stage/act1_layout_w5|28|12|0.510|PH": {
+  "file": "act1_layout_w5.json",
+  "boxes": [
+   [
+    118,
+    0,
+    432,
+    139
+   ],
+   [
+    0,
+    0,
+    221,
+    19
+   ],
+   [
+    1442,
+    0,
+    189,
+    32
+   ],
+   [
+    0,
+    0,
+    92,
+    24
+   ],
+   [
+    208,
+    0,
+    214,
+    22
+   ],
+   [
+    467,
+    0,
+    170,
+    27
+   ],
+   [
+    605,
+    0,
+    194,
+    34
+   ],
+   [
+    844,
+    0,
+    129,
+    34
+   ],
+   [
+    1143,
+    0,
+    186,
+    32
+   ],
+   [
+    1297,
+    0,
+    140,
+    33
+   ],
+   [
+    86,
+    0,
+    322,
+    31
+   ],
+   [
+    1015,
+    0,
+    269,
+    37
+   ],
+   [
+    1633,
+    485,
+    287,
+    291
+   ],
+   [
+    1022,
+    558,
+    415,
+    328
+   ],
+   [
+    0,
+    584,
+    588,
+    302
+   ],
+   [
+    1165,
+    379,
+    710,
+    456
+   ],
+   [
+    584,
+    91,
+    200,
+    137
+   ],
+   [
+    854,
+    162,
+    119,
+    70
+   ],
+   [
+    568,
+    96,
+    227,
+    148
+   ],
+   [
+    1589,
+    100,
+    143,
+    112
+   ],
+   [
+    1358,
+    101,
+    133,
+    111
+   ],
+   [
+    1884,
+    93,
+    36,
+    88
+   ],
+   [
+    0,
+    175,
+    171,
+    106
+   ],
+   [
+    1515,
+    59,
+    247,
+    139
+   ],
+   [
+    1502,
+    68,
+    83,
+    48
+   ],
+   [
+    23,
+    0,
+    231,
+    134
+   ],
+   [
+    1098,
+    69,
+    81,
+    52
+   ],
+   [
+    0,
+    1,
+    13,
+    139
+   ],
+   [
+    537,
+    1,
+    180,
+    124
+   ],
+   [
+    38,
+    0,
+    163,
+    26
+   ],
+   [
+    122,
+    0,
+    151,
+    19
+   ],
+   [
+    1036,
+    0,
+    152,
+    35
+   ],
+   [
+    1835,
+    559,
+    85,
+    123
+   ],
+   [
+    1509,
+    527,
+    91,
+    93
+   ],
+   [
+    1317,
+    448,
+    102,
+    135
+   ],
+   [
+    696,
+    605,
+    243,
+    178
+   ],
+   [
+    1904,
+    259,
+    16,
+    60
+   ],
+   [
+    1050,
+    285,
+    104,
+    64
+   ],
+   [
+    1614,
+    266,
+    48,
+    49
+   ],
+   [
+    1381,
+    279,
+    50,
+    52
+   ],
+   [
+    1610,
+    266,
+    96,
+    59
+   ],
+   [
+    827,
+    292,
+    104,
+    69
+   ],
+   [
+    150,
+    308,
+    150,
+    106
+   ],
+   [
+    73,
+    307,
+    88,
+    109
+   ],
+   [
+    1238,
+    288,
+    56,
+    54
+   ],
+   [
+    1732,
+    144,
+    35,
+    46
+   ],
+   [
+    864,
+    166,
+    37,
+    59
+   ],
+   [
+    1301,
+    142,
+    52,
+    73
+   ],
+   [
+    1207,
+    153,
+    51,
+    59
+   ],
+   [
+    1241,
+    179,
+    50,
+    49
+   ],
+   [
+    1838,
+    141,
+    30,
+    45
+   ],
+   [
+    1302,
+    179,
+    49,
+    50
+   ],
+   [
+    1073,
+    155,
+    59,
+    85
+   ],
+   [
+    1671,
+    144,
+    50,
+    53
+   ],
+   [
+    448,
+    195,
+    115,
+    70
+   ],
+   [
+    995,
+    154,
+    101,
+    79
+   ],
+   [
+    1043,
+    157,
+    51,
+    62
+   ],
+   [
+    0,
+    202,
+    10,
+    59
+   ],
+   [
+    1763,
+    140,
+    48,
+    50
+   ],
+   [
+    735,
+    164,
+    66,
+    94
+   ],
+   [
+    331,
+    195,
+    119,
+    70
+   ],
+   [
+    680,
+    164,
+    66,
+    93
+   ],
+   [
+    582,
+    148,
+    57,
+    79
+   ],
+   [
+    1174,
+    186,
+    53,
+    52
+   ],
+   [
+    555,
+    171,
+    39,
+    62
+   ],
+   [
+    183,
+    200,
+    65,
+    58
+   ],
+   [
+    745,
+    157,
+    62,
+    87
+   ],
+   [
+    1299,
+    160,
+    86,
+    52
+   ],
+   [
+    1027,
+    75,
+    28,
+    44
+   ],
+   [
+    1747,
+    70,
+    39,
+    45
+   ],
+   [
+    684,
+    60,
+    49,
+    69
+   ],
+   [
+    1255,
+    76,
+    34,
+    52
+   ],
+   [
+    1293,
+    71,
+    43,
+    49
+   ],
+   [
+    1809,
+    61,
+    41,
+    51
+   ],
+   [
+    1636,
+    75,
+    59,
+    36
+   ],
+   [
+    1716,
+    74,
+    30,
+    43
+   ],
+   [
+    1574,
+    81,
+    33,
+    33
+   ],
+   [
+    1757,
+    82,
+    38,
+    35
+   ],
+   [
+    1054,
+    60,
+    41,
+    60
+   ],
+   [
+    179,
+    80,
+    94,
+    54
+   ],
+   [
+    1221,
+    84,
+    38,
+    39
+   ],
+   [
+    1859,
+    81,
+    32,
+    33
+   ],
+   [
+    1130,
+    70,
+    34,
+    42
+   ],
+   [
+    1791,
+    70,
+    40,
+    46
+   ],
+   [
+    64,
+    78,
+    48,
+    62
+   ],
+   [
+    1635,
+    74,
+    27,
+    40
+   ],
+   [
+    1619,
+    70,
+    39,
+    45
+   ],
+   [
+    1076,
+    70,
+    35,
+    42
+   ],
+   [
+    1200,
+    86,
+    43,
+    42
+   ],
+   [
+    1166,
+    78,
+    78,
+    48
+   ],
+   [
+    1161,
+    78,
+    75,
+    46
+   ],
+   [
+    60,
+    0,
+    28,
+    24
+   ],
+   [
+    909,
+    0,
+    55,
+    31
+   ],
+   [
+    1627,
+    0,
+    24,
+    32
+   ],
+   [
+    1346,
+    4,
+    49,
+    31
+   ],
+   [
+    1127,
+    0,
+    32,
+    32
+   ],
+   [
+    250,
+    0,
+    28,
+    25
+   ],
+   [
+    397,
+    0,
+    72,
+    26
+   ],
+   [
+    882,
+    0,
+    53,
+    32
+   ],
+   [
+    979,
+    335,
+    24,
+    15
+   ],
+   [
+    1576,
+    304,
+    14,
+    11
+   ],
+   [
+    1610,
+    301,
+    20,
+    13
+   ],
+   [
+    1788,
+    292,
+    13,
+    10
+   ],
+   [
+    1005,
+    343,
+    15,
+    12
+   ],
+   [
+    1574,
+    309,
+    17,
+    11
+   ],
+   [
+    1053,
+    346,
+    25,
+    9
+   ],
+   [
+    1291,
+    328,
+    18,
+    12
+   ],
+   [
+    1617,
+    309,
+    15,
+    11
+   ],
+   [
+    1760,
+    303,
+    18,
+    8
+   ],
+   [
+    1832,
+    294,
+    21,
+    13
+   ],
+   [
+    1337,
+    331,
+    15,
+    9
+   ],
+   [
+    1353,
+    332,
+    15,
+    12
+   ],
+   [
+    1289,
+    337,
+    16,
+    12
+   ],
+   [
+    846,
+    374,
+    7,
+    7
+   ],
+   [
+    808,
+    366,
+    24,
+    17
+   ],
+   [
+    292,
+    407,
+    30,
+    12
+   ],
+   [
+    899,
+    368,
+    13,
+    10
+   ],
+   [
+    339,
+    408,
+    16,
+    11
+   ],
+   [
+    366,
+    411,
+    28,
+    11
+   ],
+   [
+    804,
+    385,
+    7,
+    7
+   ],
+   [
+    630,
+    399,
+    19,
+    11
+   ],
+   [
+    1767,
+    322,
+    18,
+    11
+   ],
+   [
+    1806,
+    322,
+    18,
+    11
+   ],
+   [
+    31,
+    458,
+    9,
+    8
+   ],
+   [
+    1820,
+    322,
+    21,
+    14
+   ],
+   [
+    191,
+    515,
+    44,
+    26
+   ],
+   [
+    960,
+    456,
+    35,
+    22
+   ],
+   [
+    1393,
+    429,
+    34,
+    20
+   ],
+   [
+    797,
+    490,
+    39,
+    24
+   ],
+   [
+    909,
+    490,
+    37,
+    15
+   ],
+   [
+    1442,
+    442,
+    17,
+    12
+   ],
+   [
+    1403,
+    447,
+    22,
+    12
+   ],
+   [
+    1845,
+    401,
+    31,
+    19
+   ],
+   [
+    883,
+    503,
+    19,
+    14
+   ],
+   [
+    1485,
+    445,
+    18,
+    12
+   ],
+   [
+    657,
+    523,
+    31,
+    20
+   ],
+   [
+    593,
+    544,
+    11,
+    10
+   ],
+   [
+    541,
+    542,
+    28,
+    21
+   ]
+  ],
+  "names": [
+   "tree-2#24 treeGiant",
+   "tree-4#26 treeOak",
+   "tree-6#28 treeGiant",
+   "relief#51 treeOak2",
+   "relief#52 pine2",
+   "relief#53 pine2",
+   "relief#54 treeOak2",
+   "relief#55 pine2",
+   "relief#56 pine",
+   "relief#57 pine2",
+   "relief#58 treeline",
+   "relief#59 treeline",
+   "relief#98 fern",
+   "relief#99 fern",
+   "relief#101 rockBig2",
+   "relief#102 rockBig1",
+   "relief#115 bush",
+   "relief#116 leaf5",
+   "relief#118 rockBig2",
+   "relief#119 fern",
+   "relief#120 fern",
+   "relief#121 fern",
+   "relief#122 leaf4",
+   "relief#123 rockBig1",
+   "relief#125 leaf5",
+   "relief#126 rockBig1",
+   "relief#127 leaf5",
+   "relief#128 rockBig2",
+   "relief#130 fern2",
+   "relief#131 fern2",
+   "relief#132 rockBig2",
+   "relief#133 rockBig1",
+   "card#141 flower",
+   "card#144 rockSmall",
+   "card#152 sprout",
+   "card#153 shroom2",
+   "card#178 flower",
+   "card#181 pebble",
+   "card#182 rockSmall",
+   "card#183 rockSmall",
+   "card#184 pebble",
+   "card#185 pebble",
+   "card#186 shroom2",
+   "card#187 sprout",
+   "card#188 rockSmall",
+   "card#190 flower",
+   "card#191 flower",
+   "card#192 sprout",
+   "card#193 shroom",
+   "card#194 rockSmall",
+   "card#196 flower",
+   "card#197 rockSmall",
+   "card#198 sprout",
+   "card#199 shroom",
+   "card#200 pebble",
+   "card#201 shroom2",
+   "card#206 shroom",
+   "card#208 rockSmall",
+   "card#209 shroom",
+   "card#210 sprout",
+   "card#211 pebble",
+   "card#213 sprout",
+   "card#215 sprout",
+   "card#216 rockSmall",
+   "card#217 flower",
+   "card#218 rockSmall",
+   "card#219 sprout",
+   "card#220 pebble",
+   "card#223 flower",
+   "card#225 shroom",
+   "card#226 sprout",
+   "card#227 flower",
+   "card#228 shroom",
+   "card#230 sprout",
+   "card#231 pebble",
+   "card#233 flower",
+   "card#234 rockSmall",
+   "card#235 rockSmall",
+   "card#236 sprout",
+   "card#237 pebble",
+   "card#238 rockSmall",
+   "card#239 rockSmall",
+   "card#240 shroom",
+   "card#241 shroom",
+   "card#242 flower",
+   "card#243 flower",
+   "card#244 shroom",
+   "card#245 shroom",
+   "card#246 rockSmall",
+   "card#247 pebble",
+   "card#248 pebble",
+   "card#249 flower",
+   "card#250 pebble",
+   "card#252 flower",
+   "card#253 pebble",
+   "card#254 sprout",
+   "card#256 flower",
+   "card#257 shroom2",
+   "card#258 pebble",
+   "litter#271 litterTuft4",
+   "litter#272 litterTuft1",
+   "litter#273 litterTuft2",
+   "litter#274 litterTuft1",
+   "litter#275 litterPebble2",
+   "litter#276 litterPebble4",
+   "litter#277 litterTwig1",
+   "litter#278 litterPebble4",
+   "litter#279 litterPebble2",
+   "litter#280 litterLeaves2",
+   "litter#281 litterTuft4",
+   "litter#282 litterLeaves1",
+   "litter#283 litterTuft1",
+   "litter#284 litterTuft1",
+   "litter#285 litterPebble3",
+   "litter#286 litterTuft2",
+   "litter#287 litterTwig1",
+   "litter#288 litterPebble1",
+   "litter#289 litterPebble1",
+   "litter#290 litterLeaves2",
+   "litter#291 litterPebble3",
+   "litter#292 litterLeaves1",
+   "litter#293 litterPebble4",
+   "litter#294 litterPebble4",
+   "litter#295 litterPebble3",
+   "litter#296 litterTuft2",
+   "litter#297 litterTuft4",
+   "litter#298 litterTuft4",
+   "litter#299 litterTuft4",
+   "litter#300 litterTuft4",
+   "litter#301 litterTwig1",
+   "litter#302 litterPebble1",
+   "litter#303 litterLeaves1",
+   "litter#304 litterTuft4",
+   "litter#305 litterPebble1",
+   "litter#306 litterPebble1",
+   "litter#307 litterPebble4",
+   "litter#308 litterPebble3",
+   "litter#309 litterTuft1"
+  ]
+ }
+}

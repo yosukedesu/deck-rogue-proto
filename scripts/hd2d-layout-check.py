@@ -24,6 +24,10 @@ dumplayout=1 で撮った <名前>.layout.json (P01 の hd2d-layout/1) を読み
      UI の矩形と重なる割合が 30% 以下。記録が無ければ検査しない (注意に1行)。
   L9 板のずれ: stage.unitBoxes (P11 の Stage.DebugUnitBoxes) の各キャラの板と矩形のずれが、静止 1px・演出中 2px 以下。
      ずれは記録の dev (px) を使い、無ければ rectPx と boardPx の4辺の差の最大。記録が無ければ検査しない。
+  L10 からくりの匣 (2026-10-01 二周目の直しの輪1): extra.karakuriBox (Stage.R2A_DumpKarakuriBox = 匣の板の画面の矩形) が、
+     主人公の足元 (足元の x ±0.15×絵の幅・足元の 24px 上〜8px 下) と自分の札 (hpwrap・からくり・ギア・置物の欄) に掛からない。記録が無ければ検査しない。
+     演出中のコマ (--moving・STATE に play= など) の足元は注意 (のけぞった主人公が奥の匣の手前を横切るだけ)。
+  L8 の額縁から、深さ 50 以上の板 (カメラに付く背景の板 backdrop = 深さ 140・全幅) は外す (手前の額縁ではない。直しの輪1)。
 """
 import argparse
 import glob
@@ -221,6 +225,8 @@ def check(lay, hand_gap_units=6.0, feet_hide=16.0, digits_min=36.0, right_margin
             r = fr.get('px') if isinstance(fr, dict) else fr
             if not r or area(r) <= 0:
                 continue
+            if isinstance(fr, dict) and isinstance(fr.get('depth'), (int, float)) and fr['depth'] >= 50:
+                continue   # 背景の板 (深さ 140) は額縁ではない (直しの輪1)
             cov = union_area_within(r, ui_rects) / area(r)
             if cov > frame_max:
                 v('L8', '額縁 %s が UI と %.0f%% 重なる (> %.0f%%)' % (fr.get('name') if isinstance(fr, dict) else '?', cov * 100, frame_max * 100), r)
@@ -245,6 +251,27 @@ def check(lay, hand_gap_units=6.0, feet_hide=16.0, digits_min=36.0, right_margin
                 v('L9', '%s の板と矩形のずれ %.1fpx (> %.0fpx)' % (e.get('key'), dev, tolb), e.get('boardPx') or e.get('board') or [0, 0, 0, 0])
     elif ub is None:
         w('L9', '板の記録 (stage.unitBoxes) が無いので検査しない')
+    # L10 からくりの匣 (直しの輪1)
+    kb = (lay.get('extra') or {}).get('karakuriBox')
+    if isinstance(kb, dict) and kb.get('px'):
+        rb = kb['px']
+        for u in us:
+            if u.get('kind') != 'player' or not u.get('sprite'):
+                continue
+            f = feet_of(lay, u)
+            if not f:
+                continue
+            fx, fy = f
+            half = max(8.0, 0.15 * u['sprite'][2])   # 足の幅 (絵の矩形は斧・竿を含むので 0.25 では広すぎる)
+            probe = [fx - half, fy - 24, 2 * half, 32]
+            it = inter(rb, probe)
+            if it and area(it) > 4:
+                # 演出中 (被弾でのけぞる・盾で下がる) は主人公が匣の手前を横切る = 奥の匣を隠すだけなので注意に留める
+                (w if moving_state(lay.get('state')) else v)('L10', 'からくりの匣 (%s) が主人公の足元 (%.0f,%.0f) に掛かる (%.0fpx²)' % (kb.get('place'), fx, fy, area(it)), rb, probe)
+        for n, r2 in selfr:
+            it = inter(rb, r2)
+            if it and area(it) > 4:
+                v('L10', 'からくりの匣 (%s) が自分の札 (%s) に掛かる (%.0fpx²)' % (kb.get('place'), n, area(it)), rb, r2)
     return V, W_
 
 

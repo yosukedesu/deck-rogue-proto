@@ -1,0 +1,12 @@
+# HD-2D 見本 二周目の待機の連写 (2026-10-01 レーン F 段2。計画 §2 レーン E の7・レーン F の6・§3-4 の16)。1行 = 名前|PC または PH|STATE。
+# 撮り方: DET=1 SHOT_TIMEOUT=600 scripts/pshots.sh scripts/hd2d-states/r2-clips.txt scratchpad/hd2d/r2/shots/r2-clips 2   (1行 80〜100 枚。W5 の clips と同じく時間切れを 600 秒に)
+#   動く見比べ (mp4) は scripts/hd2d-clip.sh。待機は登場の撮影キー entershots で撮る (3 フレームごと = 20fps。最初の約0.7秒は登場・幕ボスは名前の帯と寄りが約2.5秒)。
+# 見る所 (§3-4 の16): 敵の足元の行が動かず、頭だけ 4px (1ドット) 動くか = 箱庭の時だけ r2idle の4コマ (元・上・上・元)。今の舞台 (stage=old) はコードの上下のまま。
+#   UI なし (hideui=1) と dumplayout=1 で撮る = コマごとの layout.json の unitBoxes で板の位置も見られる。
+#   R01 は振りのコマで斧の宝石の光が宙に残らないか (待機以外のコマでは宝石の点光源の強さ 0.3 倍。レーン E の5)。W5 の clips の CL-R01-sample と同じ STATE。
+PC-CL-wolf-idle|PC|phase=combat;enemy=enemy_wolf;entershots=80;enterevery=3;hideui=1;dumplayout=1;stage=old
+PC-CL-wolf-idle-sample|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;entershots=80;enterevery=3;hideui=1;dumplayout=1
+PC-CL-ogre-idle-sample|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;entershots=100;enterevery=3;hideui=1;dumplayout=1
+PC-CL-dolls-idle-sample|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;entershots=80;enterevery=3;hideui=1;dumplayout=1
+PH-CL-wolf-idle-sample|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;entershots=80;enterevery=3;hideui=1;dumplayout=1;tier=phone
+PC-CL-R01-sample|PC|phase=combat;enemy=enemy_probe;stage=diorama;hd2d=slice;play=attack;playshots=80;playevery=3

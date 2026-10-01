@@ -1,0 +1,22 @@
+# HD-2D 見本 二周目の演出の回帰 R1〜R15 (今の舞台 stage=old・スマホ相当 1920×886・UI 1.6倍) (2026-10-01 レーン F 段2。計画 §3-4 の12)。1行 = 名前|PC または PH|STATE。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r2-regress-old-ph.txt scratchpad/hd2d/r2/shots/r2-regress-old-ph 2
+# 中身: W5 の final/lists/regress-old-ph.txt と同じ15行 (同じ名前・W5 と同じく tier=phone を付けない) ＋ R16。
+#   ★ 全行に stage=old を足した (W5 の一覧は stage= が無い。10/01 から旗を書かない起動は幕1 = 見本なので、書かないと見本が撮れてしまう)。
+#   合格: hideui の画を W5 の同じ名前の画 (scratchpad/hd2d/final/shots/<old|regress-old|regress-old-ph>) と比べ、差が 2 を超える画素が 0.1% 以下 (計画 §3-4 の12)。
+PH-R01-swing|PH|phase=combat;enemy=enemy_probe;play=attack;playshots=8;playevery=1;dumplayout=1;stage=old
+PH-R02-multi|PH|phase=combat;hand=green_double_lash;play=0;playshots=12;playevery=3;dumplayout=1;stage=old
+PH-R03-aoe|PH|phase=combat;enemy=enc_probe_pair;hand=green_earth_roar;play=0;playshots=10;playevery=3;dumplayout=1;stage=old
+PH-R04-exposed|PH|phase=combat;eexposed=1;hand=green_strike;play=0;playshots=8;playevery=2;dumplayout=1;stage=old
+PH-R05-enrage|PH|phase=combat;enemy=enemy_brute;ehp=h+3;hand=green_strike;play=0;playshots=14;playevery=5;dumplayout=1;stage=old
+PH-R06-guard|PH|phase=combat;enemy=enemy_wolf;pblock=20;endplay=1;endshots=16;endevery=3;dumplayout=1;stage=old
+PH-R07-hurt|PH|phase=combat;enemy=enemy_wolf;endplay=1;endshots=14;endevery=9;dumplayout=1;stage=old
+PH-R08-kill|PH|phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4;dumplayout=1;stage=old
+PH-R09-enter|PH|phase=combat;enemy=enemy_brute;boss=1;entershots=12;enterevery=6;dumplayout=1;stage=old
+PH-R10-trap|PH|phase=combat;enemy=enemy_wolf;sets=green_reaction_vine*;endturn=1;fire=1;fireshots=10;fireevery=8;dumplayout=1;stage=old
+PH-R11-doll|PH|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_hound,white_perm_squire;hand=white_light_bolt;play=0;playshots=8;playevery=3;dumplayout=1;stage=old
+PH-R12-gearwin|PH|phase=combat;gears=gear_spring,gear_cog;gearwin=0;dumplayout=1;stage=old
+PH-R13-gearmore|PH|phase=combat;gears=gear_spring,gear_cog;gearmore=1;dumplayout=1;stage=old
+PH-R14-popup|PH|phase=combat;popup=0;dumplayout=1;stage=old
+PH-R15-tip|PH|phase=combat;tip=enemy;dumplayout=1;stage=old
+# R16 (二周目で足した・W5 に対は無い = 画素一致の比べから外す) 幕ボスの撃破の寄り
+PH-R16-bosskill|PH|phase=combat;enemy=enemy_brute;boss=1;ehp=3;hand=green_strike;play=0;playshots=20;playevery=14;dumplayout=1;stage=old
