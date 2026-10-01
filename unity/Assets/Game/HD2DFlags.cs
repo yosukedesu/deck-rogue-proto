@@ -6,16 +6,21 @@
 //
 // 読み方 (キーは小文字・値は前後の空白を捨てる。知らないキーは黙って無視 = 撮影の STATE の他のキーと同居できる)
 //   stage=old|diorama         herodots=62|48           cam=36|28|22 (画角)     pitch=<度>
+//   pitchphone=<度|off> (スマホ (UiKit.Phone) だけの見下ろし。off = pitch と同じ。2026-10-01 二周目 レーン A)
 //   groundline=<割合|auto>    receive=<数|auto>         keycolor=neutral|warm    herolift=<数|auto>
 //   ui=night|paper            ledger=line|feet          artscale=<数|auto>       dof=0|1|urp
 //   drift=0|1                 aa=none|msaa|2|4|8 (msaa=<N> も同じ。N≦1 = 無し)   litunits=0|1   charshadow=0|1
 //   trunk=mesh|relief         keyflip=auto|off          tier=pc|phone            look=<設計図の名前|auto>
 //   det=1                     dumplayout=0|1            uionly=0|1               unitsonly=0|1    perf=<秒>
-//   hd2d=slice = stage=diorama・cam=28・litunits=1・charshadow=1・dof=1・aa=msaa・ui=night・herodots=62・trunk=relief をまとめて立てる。
+//   hd2d=slice = stage=diorama・cam=22・pitch=5・pitchphone=7・litunits=1・charshadow=1・dof=1・aa=msaa・ui=night・herodots=62・trunk=relief・drift=1
+//              をまとめて立てる (二周目 2026-10-01 = カメラ 22°・見下ろし PC 5°／スマホ 7°・主人公62。W5 は cam=28・pitch=12 (旗なしの既定) だった)。
 //              同じ STATE に書いた個別のキーのほうが勝つ (hd2d=slice;cam=36 は画角36・hd2d=slice;herodots=48 は主人公48)。
+//              W5 のカメラへ戻す撮影は cam=28;pitch=12;pitchphone=off;groundline=0.41 (スマホは groundline=0.51)。
+//              スマホで pitch= を変える撮影は pitchphone= も書く (書かないと束の 7 がスマホで勝つ)。
 //              herodots・trunk=relief は W3 の統合で足した (2026-09-30 ユーザー「本家っぽく」= 幹・根・茂みは半立体。CLAUDE.md「見本の途中の方針」)。
 //              主人公は W3 で 48 を既定にしたが、W5 の判定 (2026-10-01 ユーザー「主人公は 62・48 は旗で残す」) で 62 に戻した = 幕1 と幕2/3 で背丈が変わらない。
-//              旗を立てない時の既定 (62・mesh) は今のまま。
+//              旗を立てない時の既定 (62・mesh・画角36・見下ろし12・pitchphone=off・drift=0) は今のまま。
+//              今の舞台の束 (OldBundle) も同じキーを数で持つ (pitch=12・pitchphone=off・drift=0) = 幕1→幕2 で見本のカメラと漂いが残らない。
 // 数値の旗の「負 = 既定」は、各レーンの設計図 (look) か今の値を使う、の意味 (auto と書いても -1 になる)。
 // 起動の時 (BeforeSceneLoad) に -hd2d と -state の中の旗を読む (舞台を最初のフレームから旗どおりに組むため)。撮影の StateJump も頭で ApplyState を呼ぶ。
 using System;
@@ -54,6 +59,11 @@ namespace DeckRogue.Game
         public static float CamFov { get; set; } = 36f;
         /// <summary>pitch= (見下ろしの角度・度)</summary>
         public static float CamPitch { get; set; } = 12f;
+        /// <summary>
+        /// pitchphone= (スマホ (UiKit.Phone) だけの見下ろしの角度・度。off = float.NaN = pitch と同じ。2026-10-01 二周目 レーン A)。
+        /// −1 は「少し見上げ」の有効な値なので「使わない」の印にしない (NaN で持つ)。Stage.CurrentPitch が読む
+        /// </summary>
+        public static float CamPitchPhone { get; set; } = float.NaN;
         /// <summary>groundline= (足元の線。画面の下から何割。負 = モードの既定)</summary>
         public static float GroundLine { get; set; } = -1f;
         /// <summary>receive= (キャラの板の受光率。負 = 設計図 look の値)</summary>
@@ -125,11 +135,13 @@ namespace DeckRogue.Game
         /// <summary>dumplayout の記録を足す口 (名前 → JSON にできる値を返す関数)。他のレーンが足す (layout.json の "extra" に名前ごとに入る)</summary>
         public static readonly Dictionary<string, Func<object>> LayoutDumpers = new Dictionary<string, Func<object>>();
 
-        /// <summary>hd2d=slice が立てる旗 (計画 §3。個別のキーのほうが勝つ)</summary>
+        /// <summary>hd2d=slice が立てる旗 (計画 §3・二周目の計画 docs/design/hd2d-round2-plan-2026-10-01.md §2「二周目の旗の束」。個別のキーのほうが勝つ)</summary>
         static readonly KeyValuePair<string, string>[] SliceBundle =
         {
             new KeyValuePair<string, string>("stage", "diorama"),
-            new KeyValuePair<string, string>("cam", "28"),
+            new KeyValuePair<string, string>("cam", "22"),         // 二周目 K1: 画角22° (W5 は 28)。画面の端の縦の傾き 5.0°→約1.6°
+            new KeyValuePair<string, string>("pitch", "5"),        // 二周目 K1: 見下ろし 5° (W5 は旗なしの 12)。地平線 PC の行 297 (W5 は 80)
+            new KeyValuePair<string, string>("pitchphone", "7"),   // 二周目 K1: スマホは 7° (足元の線が高いので 5° だと地平線が顔にかかる)。地平線 1920×886 の行 163
             new KeyValuePair<string, string>("litunits", "1"),
             new KeyValuePair<string, string>("charshadow", "1"),
             new KeyValuePair<string, string>("dof", "1"),
@@ -137,13 +149,19 @@ namespace DeckRogue.Game
             new KeyValuePair<string, string>("ui", "night"),
             new KeyValuePair<string, string>("herodots", "62"),    // W5 の判定 (2026-10-01 ユーザー): 主人公は 62 (48 は herodots=48 で)。W3 の統合では 48 だった
             new KeyValuePair<string, string>("trunk", "relief"),   // W3 統合: 幹と根は半立体 (3Dの筒は trunk=mesh で)
+            new KeyValuePair<string, string>("drift", "1"),        // 二周目: 待機の漂い (撮影 = -det・-autopilot・-statesfile では Stage が切る)
         };
 
-        /// <summary>今の舞台 (stage=old) の時の束のキーの値 (SliceBundle と同じキー・同じ順。Reset の既定と同じ値)</summary>
+        /// <summary>
+        /// 今の舞台 (stage=old) の時の束のキーの値 (SliceBundle と同じキー・同じ順。Reset の既定と同じ値)。
+        /// 値は全部「数か語」で書く (pitch=auto のような文字は TryFloat で読めず、警告して前の値 = 幕1 の 5° が残る。二周目の計画 §0 の5)
+        /// </summary>
         static readonly KeyValuePair<string, string>[] OldBundle =
         {
             new KeyValuePair<string, string>("stage", "old"),
             new KeyValuePair<string, string>("cam", "36"),
+            new KeyValuePair<string, string>("pitch", "12"),
+            new KeyValuePair<string, string>("pitchphone", "off"),
             new KeyValuePair<string, string>("litunits", "0"),
             new KeyValuePair<string, string>("charshadow", "0"),
             new KeyValuePair<string, string>("dof", "0"),
@@ -151,12 +169,14 @@ namespace DeckRogue.Game
             new KeyValuePair<string, string>("ui", "paper"),
             new KeyValuePair<string, string>("herodots", "62"),
             new KeyValuePair<string, string>("trunk", "mesh"),
+            new KeyValuePair<string, string>("drift", "0"),
         };
 
         // ---- 幕ごとの既定 (2026-10-01。ユーザーが遊ぶ APK・exe で見本の舞台が出るように) ----
         // 旗 stage= と hd2d= を起動引数 (-hd2d) にも撮影の STATE にも書かない時 (普通の起動) は、舞台を組む時 (Stage.Paint) に幕で束を当てる:
-        // 幕1 = 見本 (hd2d=slice の束 = 箱庭・画角28・キャラの光と影・ぼかし・AA・夜色の札・主人公62・幹は半立体)、
-        // 幕2・3 = 今の舞台 (束のキーを今の既定へ = stage=old・画角36・紙の札・主人公62 …。箱庭は幕1にしか無いので、見本のカメラ・配置・キャラの光を今の舞台に当てない)。
+        // 幕1 = 見本 (hd2d=slice の束 = 箱庭・画角22・見下ろし PC 5°／スマホ 7°・キャラの光と影・ぼかし・AA・夜色の札・主人公62・幹は半立体・待機の漂い)、
+        // 幕2・3 = 今の舞台 (束のキーを今の既定へ = stage=old・画角36・見下ろし12・pitchphone=off・紙の札・主人公62・漂いなし …。
+        // 箱庭は幕1にしか無いので、見本のカメラ・配置・キャラの光を今の舞台に当てない)。
         // 束のキーを個別に書いた時 (ui=paper・cam=36・herodots=62 など) はその値が幕の既定より勝つ。
         // stage= か hd2d= を書いた時は幕で切り替えない (今までどおり、書いた旗が全部の幕で効く = 見本の撮影の再現性を変えない)
         static bool _stageExplicit;
@@ -228,6 +248,7 @@ namespace DeckRogue.Game
             HeroDots = 62;
             CamFov = 36f;
             CamPitch = 12f;
+            CamPitchPhone = float.NaN;   // off = スマホも pitch と同じ
             GroundLine = -1f;
             Receive = -1f;
             KeyColor = HD2DKeyColor.Neutral;
@@ -294,6 +315,7 @@ namespace DeckRogue.Game
             add("herodots", HeroDots);
             add("cam", CamFov);
             add("pitch", CamPitch);
+            add("pitchphone", float.IsNaN(CamPitchPhone) ? (object)"off" : CamPitchPhone);   // off は語で (JSON の NaN は null になり読めない)
             add("groundline", GroundLine);
             add("receive", Receive);
             add("keycolor", KeyColor == HD2DKeyColor.Warm ? "warm" : "neutral");
@@ -384,6 +406,12 @@ namespace DeckRogue.Game
                     return true;
                 case "cam": if (TryFloat(v, out f) && f > 1f && f < 170f) CamFov = f; else Warn(key, v); return true;
                 case "pitch": if (TryFloat(v, out f) && f > -89f && f < 89f) CamPitch = f; else Warn(key, v); return true;
+                case "pitchphone":
+                    // off・none・auto = スマホも pitch と同じ (NaN)。数は -89〜89 (負 = 見上げも有効な値)
+                    if (Is(v, "off") || Is(v, "none") || Is(v, "auto")) CamPitchPhone = float.NaN;
+                    else if (TryFloat(v, out f) && f > -89f && f < 89f) CamPitchPhone = f;
+                    else Warn(key, v);
+                    return true;
                 case "groundline": if (TryAuto(v, out f)) GroundLine = f; else Warn(key, v); return true;
                 case "receive": if (TryAuto(v, out f)) Receive = f; else Warn(key, v); return true;
                 case "herolift": if (TryAuto(v, out f)) HeroLift = f; else Warn(key, v); return true;

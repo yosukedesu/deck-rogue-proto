@@ -6,7 +6,9 @@
 //  ・画角と見下ろしは旗 (cam=・pitch=) から。LayoutCamera のたびに fieldOfView・遠端 (220×r) を書く。r = 画角 36° の時の距離に対する今の距離の比
 //    (同じ端末の比 = PC では _dist÷16.62。36° ならちょうど 1)。寄り (ZoomPunch・Dolly) の量に r を掛ける = どの画角でも同じ割合だけ寄る。
 //    揺れ (Shake) は横に動かすので、焦点の面の px は画角に依らず同じ (r を掛けない)。
-//  ・足元の線は旗 groundline= か、見本 (stage=diorama) の既定 PC 0.41・スマホ 0.51 (W3 の P20 の表で帳面と自分の札が足元を隠さない、いちばん低い線。W2 は 0.42/0.52)。
+//  ・足元の線は旗 groundline= か、見本 (stage=diorama) の既定 PC 0.407・スマホ 0.525 (二周目 2026-10-01 レーン A: カメラ 22°・5°／スマホ 22°・7° で
+//    帳面と自分の札が足元を隠さない線。docs/design/hd2d-slice/seatfit.md「二周目のカメラ」。W3 の P20 は 28°・12° で 0.41/0.51・W2 は 0.42/0.52)。
+//  ・見下ろしはスマホ (UiKit.Phone) だけ旗 pitchphone= で別に持てる (二周目: 束が 7°。off なら pitch と同じ = 今の舞台と旗なしは今のまま)。
 //  ・霧と影の距離は StageLook.ScaleByCameraDistance の1か所で書く (ここは _dist を渡すだけ)。座席の帯 (SeatDepthRange) をぼかしの帯へ、
 //    影のカスケードの分割を「座席の帯の奥＋余白 ÷ 影の距離」から StageLook へ渡す (StageLook が当たっている時だけ。当たった後の最初のフレームでも渡す)。
 //  ・LayoutCamera の最後で Diorama.OnCameraLayout (額縁の置き直し)。StageDriver が毎フレーム Diorama.Tick (滑車を基準の回転 × Z 回りで回す)。
@@ -45,8 +47,23 @@ namespace DeckRogue.Game
 
         /// <summary>今の画角 (旗 cam=。既定・読めない値は Fov = 36)</summary>
         public static float CurrentFov { get { float f = HD2DFlags.CamFov; return f >= 5f && f <= 120f ? f : Fov; } }
-        /// <summary>今の見下ろし (旗 pitch=。既定・読めない値は Pitch = 12)</summary>
-        public static float CurrentPitch { get { float p = HD2DFlags.CamPitch; return p > -89f && p < 89f ? p : Pitch; } }
+        /// <summary>
+        /// 今の見下ろし (旗 pitch=。既定・読めない値は Pitch = 12)。スマホ (UiKit.Phone) で旗 pitchphone= が数ならそれ (二周目 2026-10-01 レーン A: 見本の束は 7°)、
+        /// off (NaN) なら pitch と同じ。今の舞台の束 (OldBundle) と旗なしの既定は off = 今の見た目のまま
+        /// </summary>
+        public static float CurrentPitch
+        {
+            get
+            {
+                float p = HD2DFlags.CamPitch;
+                if (UiKit.Phone)
+                {
+                    float pp = HD2DFlags.CamPitchPhone;
+                    if (!float.IsNaN(pp) && pp > -89f && pp < 89f) p = pp;
+                }
+                return p > -89f && p < 89f ? p : Pitch;
+            }
+        }
         /// <summary>見本のカメラと座席 (旗 stage=diorama): 足元の線の既定と、敵と人形の座席の表が見本の物になる。画角・見下ろしの旗はどちらの舞台でも効く</summary>
         static bool DioramaCamera => HD2DFlags.StageMode == HD2DStage.Diorama;
         /// <summary>
@@ -95,6 +112,19 @@ namespace DeckRogue.Game
             o["mode"] = DioramaCamera ? "diorama" : "old";
             o["fov"] = _cam.fieldOfView;
             o["pitch"] = CurrentPitch;
+            // 二周目 (2026-10-01 レーン A。レーン F の hd2d-r2-targets.py の N4 が読む): 旗 pitchphone (off = 語)・地平線の行・画面の端の縦の傾き
+            float pp = HD2DFlags.CamPitchPhone;
+            o["pitchphone"] = float.IsNaN(pp) ? (object)"off" : pp;
+            {
+                // 地平線 (目の高さの水平な線) の行 = PNG の上から。f = 縦の焦点距離 (px) = (H/2) ÷ tan(画角/2)。見下ろし p° なら中心から f·tan(p) 上
+                float fovR = _cam.fieldOfView * 0.5f * Mathf.Deg2Rad, pitR = CurrentPitch * Mathf.Deg2Rad;
+                float fpx = Mathf.Tan(fovR) > 1e-4f ? H * 0.5f / Mathf.Tan(fovR) : 0f;
+                o["horizonRow"] = fpx > 0f ? H * 0.5f - fpx * Mathf.Tan(pitR) : 0f;
+                // 画面の端の縦の傾き (度): 縦の線は中心の真下 f·cot(p) の消失点へ寄る = 中心の行で横 x の所の傾きは atan(x·tan(p) ÷ f)。
+                // edgeTiltDeg = 画面の左右の端 (x = W/2)・edgeTiltDeg900 = 中心から 900px (本家の分解 r2/ref/targets.md T2 の測り方。22°・5° で 1.6°)。正 = 見下ろし (下すぼまり)
+                o["edgeTiltDeg"] = fpx > 0f ? Mathf.Atan(W * 0.5f * Mathf.Tan(pitR) / fpx) * Mathf.Rad2Deg : 0f;
+                o["edgeTiltDeg900"] = fpx > 0f ? Mathf.Atan(900f * Mathf.Tan(pitR) / fpx) * Mathf.Rad2Deg : 0f;
+            }
             o["groundLine"] = GroundLineRatio;
             o["planeUnitsPerScreen"] = PlaneUnitsPerScreen;
             o["dist"] = _dist;
@@ -139,6 +169,7 @@ namespace DeckRogue.Game
             }
             o["enemies"] = enemies;
             o["dollT"] = DioramaCamera ? DioramaDollT() : null;
+            o["dollBack"] = new float[] { R2A_DollBackDt, R2A_DollBackDs };   // 人形の後列のずらし (t・s)。見本は二周目 K13 の +0.45・+2.0、今の舞台は +0.15・+1.15
             var seatsNow = new List<object>();
             foreach (var kv in _seatWorld)
             {
@@ -217,17 +248,19 @@ namespace DeckRogue.Game
             }
         }
         // 画面の下から何割に world 原点を置くか。スマホ (2026-09-14) は手札が画面の 43% を占めるので座席を上げる (絵は半分なので上端は余る)
-        // 旗 groundline= (0〜1) があればそれ。見本 (stage=diorama) の既定は PC 0.41・スマホ 0.51 (W3。W2 は PC 0.42・スマホ 0.52 = 2026-09-30 P10: docs/design/hd2d-slice/seatfit.md の
-        // 「今の UI のまま・手札を沈めずに帳面と自分の札が足元を 16px 以上隠さない、いちばん低い線」。計画の目安 PC 0.40 は自分の札が主人公の足元を 34〜38px 隠す)
+        // 旗 groundline= (0〜1) があればそれ。見本 (stage=diorama) の既定は PC 0.407・スマホ 0.525 (二周目 2026-10-01。W3 は PC 0.41・スマホ 0.51・W2 は PC 0.42・スマホ 0.52 =
+        // 2026-09-30 P10: docs/design/hd2d-slice/seatfit.md の「今の UI のまま・手札を沈めずに帳面と自分の札が足元を 16px 以上隠さない、いちばん低い線」。計画の目安 PC 0.40 は自分の札が主人公の足元を 34〜38px 隠す)
         static float GroundLineRatio
         {
             get
             {
                 float g = HD2DFlags.GroundLine;
                 if (g >= 0f && g <= 1f) return g;
-                // W3 (P20・2026-09-30): 手札を PC 19・スマホ 17 沈め、PC の足元の線 (StatusLineY) を 285 にした上で重ならないいちばん低い線 = PC 0.41・スマホ 0.51
-                // (scratchpad/hd2d/p20/seatfit-p20.md。PC は人形の1体目を自分の札が隠さない高さ、スマホは幕ボスの帳面がボスの足元を隠さない高さで決まる)
-                if (DioramaCamera) return UiKit.Phone ? 0.51f : 0.41f;
+                // 二周目 (2026-10-01 レーン A・計画 K1): カメラ 22°・見下ろし PC 5°／スマホ 7° で、P20 の UI (手札を PC 19・スマホ 17 沈め、PC の足元の線 285) のまま
+                // 主人公の足・人形の1体目・敵の帳面が足元を 16px 以上隠さない線 = PC 0.407 (隠す量 0.0／1.3／0.0px)。スマホは 0.519 だと幕ボスの帳面 (予告つき 79) が
+                // ボスの足元を 15.6px 隠す (門 16) → 余裕を取って 0.525 (10.6px)。docs/design/hd2d-slice/seatfit.md「二周目のカメラ」。
+                // W3 (P20・2026-09-30) の 28°・12° では PC 0.41・スマホ 0.51 だった (scratchpad/hd2d/p20/seatfit-p20.md)
+                if (DioramaCamera) return UiKit.Phone ? 0.525f : 0.407f;
                 return UiKit.Phone ? 0.56f : 0.45f;   // スマホ 0.54→0.56 (2026-09-15 案C: 頭上の吹き出しが無くなり、足元の帳面の札 76 に足が掛からない高さへ)
             }
         }

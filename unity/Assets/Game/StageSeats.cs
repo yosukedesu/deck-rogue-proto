@@ -5,6 +5,10 @@
 //  ・見本の座席の t は docs/design/hd2d-slice/seatfit.json (P08 の scripts/hd2d-seatfit.py) の表を写し、画角 22/28/36 の間は線形に補間する
 //    (見下ろし 10° の表との差は t で 敵 0.011・人形 0.02 以下 = 画面で 2px ほどなので見下ろしでは分けない)。今の舞台 (stage=old) の t は今のまま。
 //  ・見本では座席の足元の光溜まり (F50・今の舞台の地面を明るくする板) を置かない (光は StageLook の舞台の灯。③の座席の帯のむらを増やすため)。
+// 二周目 (2026-10-01 レーン A・計画 docs/design/hd2d-round2-plan-2026-10-01.md K1・K13):
+//  ・カメラ 22°・見下ろし PC 5°／スマホ 7°・足元の線 PC 0.407／スマホ 0.525 で座席の表を解き直した (scripts/hd2d-seatfit.py・seatfit.md「二周目のカメラ」)。
+//    22° の行との差は敵の t で 0.03 未満 = 表はそのまま (差は seatfit.md に)。
+//  ・人形の後列は見本だけ t +0.45・s +2.0 (前列の間へ・奥へ)。今の舞台は +0.15・+1.15 のまま (R2A_DollBackDt・R2A_DollBackDs)。
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -66,12 +70,15 @@ namespace DeckRogue.Game
             pts.AddRange(DollSlots(9));
             pts.Add(OnPath(-6.3f, 1.7f));    // からくりの匣 (PC = リーダーの左奥。SetKarakuriBox と同じ)
             pts.Add(OnPath(-5.3f, -1.9f));   // からくりの匣 (スマホ = 足元の真ん前)
+            // 見本のスマホの匣 (R2A_BoxPhoneDiorama・直しの輪1) は足さない: 深さは帯の内側だが、点の重心が漂いの軸 (ComputeDrift) を動かすため
             return pts;
         }
 
         // ---- 見本 (stage=diorama) の座席の表 (2026-09-30 P10。docs/design/hd2d-slice/seatfit.json の fovs[].enemyT・dolls.step) ----
         // 条件 (P08 の seatfit): 2〜4体の足元が画面で等間隔 (差 ±5%)・いちばん右の敵の絵と帳面が画面の右端 −16 の内側・先頭の t は人形の列の約束で今のまま。
-        // 人形は1体目の t を今のまま、刻みを伸ばして画面の間隔を今 (36°) 以上に。足元の線は PC 0.42・スマホ 0.52 (GroundLineRatio) で解いた値
+        // 人形は1体目の t を今のまま、刻みを伸ばして画面の間隔を今 (36°) 以上に。足元の線は PC 0.42・スマホ 0.52 (GroundLineRatio) で解いた値。
+        // 二周目 (2026-10-01): 22° の行を PC 22°・5°・0.407／スマホ 22°・7°・0.525・P20 の UI で解き直すと、敵の t の差は最大 0.024 (4体の4体目)・
+        // 人形の刻みの差は PC 0.005・スマホ 0 = 表はそのまま (画面で 2〜4px。seatfit.md「二周目のカメラ」)
         static readonly float[] SeatFovs = { 22f, 28f, 36f };
         // 1行 = 1つの画角 (22・28・36)。並びは 1体 | 2体 | 3体 | 4体 (n 体の最初の添字 = (n−1)n/2)
         static readonly float[] SeatEnemyPc =
@@ -243,7 +250,8 @@ namespace DeckRogue.Game
         /// 敵4体の時の5体目 (t=-0.5) と敵① (t=1.6) の絵の端の間は PC 69→51px・スマホ 105→87px (射影の計算。足元の札と帳面は ArrangeDollTags が別に解く)。
         /// からくりの匣は PC ではリーダーの左奥 (t=-6.3・s=1.7) に置くので、人形の列 (t≥-3.9) とは重ならない (2026-09-29 戦闘画面のレビュー p13)。
         /// スマホの匣はリーダーの足元の真ん前 (t=-5.3・s=-1.9。2026-09-30 F46) で、人形の列とは重ならない (左奥は自分の札にもぐるため。SetKarakuriBox の注記)。
-        /// 上限9 = 超えた分は BattleView が最後の札に「+N」。見本 (stage=diorama) は前列の刻みを画角ごとの表から (DioramaDollT)。副作用なし</summary>
+        /// 上限9 = 超えた分は BattleView が最後の札に「+N」。見本 (stage=diorama) は前列の刻みを画角ごとの表から (DioramaDollT)、
+        /// 後列のずらしは t +0.45・s +2.0 (二周目 K13。見本のスマホは +0.5・+2.8 = 直しの輪1。今の舞台は +0.15・+1.15)。副作用なし</summary>
         public static Vector3[] DollSlots(int n)
         {
             n = Math.Max(0, Math.Min(n, 9));
@@ -259,15 +267,43 @@ namespace DeckRogue.Game
                 // (交互ごと入れ替えると 1-2体目・3-4体目の間が 78・65px に詰まり、剣が盾の人形に・犬が聖歌の人形に掛かった)。
                 // スマホは奥のまま: 1体目はもう灯籠の右 (灯籠 x483〜517／人形 x525〜) にいて、手前へ出すと足元の札が横に並べず盾の人形の札がその体の上へ押し上げられた
                 bool nearFirst = i == 0 && !UiKit.Phone;
-                float s = (nearFirst ? 0.25f : j % 2 == 0 ? 0.9f : 0.25f) + (back ? 1.15f : 0f);
-                r[i] = OnPath(t[j] + (back ? 0.15f : 0f), s);
+                float s = (nearFirst ? 0.25f : j % 2 == 0 ? 0.9f : 0.25f) + (back ? R2A_DollBackDs : 0f);
+                r[i] = OnPath(t[j] + (back ? R2A_DollBackDt : 0f), s);
             }
             return r;
         }
 
+        // ---- 人形の後列のずらし (二周目 2026-10-01 レーン A・計画 K13) ----
+        // 見本 (stage=diorama) の新しいカメラ (22°・5°) は低いので、後列を今の +0.15・+1.15 のまま奥へ置いても画面の縦にほとんど開かない
+        // (後列の足元が前列より 13〜22px 上にしか出ず、幅 128px の人形の頭が前列の頭に重なる)。→ 後列を前列の間 (t +0.45 = 刻み約0.93 の半分) へ寄せ、
+        // 奥へ s +2.0 下げる: 後列の頭がいちばん近い前列の頭より 21〜32px 上・11〜23px 横 (seatfit.md「二周目のカメラ」の人形の表)。
+        // 試しのビルドの人形9体 (T-A-dolls) で、後列の頭がいちばん近い前列の頭より 20px 以上上に出なければ今の値 (+0.15・+1.15) へ戻す (計画 K13)。
+        // 今の舞台 (stage=old) は +0.15・+1.15 のまま (1画素も変えない)
+        const float R2A_DollBackDtDiorama = 0.45f, R2A_DollBackDsDiorama = 2.0f;
+        const float R2A_DollBackDtOld = 0.15f, R2A_DollBackDsOld = 1.15f;
+        // 直しの輪1 (2026-10-01): 見本のスマホ (22°・7°・足元 0.525) は人形が横に詰まり、後列 (+0.45・+2.0) の足元の札が前列の札と3組重なった
+        // (ArrangeDollTags は1段しか上へ逃がせない。PH 人形9体の L6 3件)。ArrangeDollTags の式を写した計算 (scratchpad integrate/fix1/dollsim.py) で
+        // s の開きを振ると、t +0.45 では s ≥2.1 で重なり 0・+0.5 では s ≥2.3。→ スマホの見本だけ t +0.5・s +2.8 (どちらの向きに ±0.1 ずれても 0 のまま。
+        // 後列の足元はいちばん近い前列より 27〜29px 上 = K13 の 20px を超える)。PC の見本は +0.45・+2.0 のまま (L6 0件)
+        const float R2A_DollBackDtDioramaPhone = 0.5f, R2A_DollBackDsDioramaPhone = 2.8f;
+        /// <summary>人形の後列の t のずらし (見本 PC +0.45・見本スマホ +0.5・今の舞台 +0.15)</summary>
+        static float R2A_DollBackDt { get { return DioramaCamera ? (UiKit.Phone ? R2A_DollBackDtDioramaPhone : R2A_DollBackDtDiorama) : R2A_DollBackDtOld; } }
+        /// <summary>人形の後列の s のずらし (見本 PC +2.0・見本スマホ +2.8・今の舞台 +1.15)</summary>
+        static float R2A_DollBackDs { get { return DioramaCamera ? (UiKit.Phone ? R2A_DollBackDsDioramaPhone : R2A_DollBackDsDiorama) : R2A_DollBackDsOld; } }
+
+        // ---- からくりの匣 見本のスマホの置き場 (直しの輪1 2026-10-01) ----
+        // 今の舞台のスマホの置き場 (足元の真ん前 t −5.3・s −1.9) は、見本のカメラ (22°・7°・足元 0.525) では画面 x 467・行 398〜470 に写り、
+        // 主人公の足 (x 448・行 433) の前に重なった (主人公が匣の上に立って見えた。反証 high)。見本のスマホだけ主人公の左奥 (t −5.6・s 2.4) へ:
+        // 画面 x 312〜379・行 359〜420 = 自分の札 (x ≤302) にも足 (x 420〜490) にも、ひなたの衣 (x ≥395) にも掛からない (r2/camera/cam.py と撮影。
+        // 1回目の t −5.6 は x 328〜396 でひなたの衣に接した)。主人公より奥なので主人公の絵が手前に描かれる
+        const float R2A_BoxPhoneT = -5.75f, R2A_BoxPhoneS = 2.4f;
+        /// <summary>見本のスマホの匣の足元 (世界)</summary>
+        static Vector3 R2A_BoxPhoneDiorama() { return OnPath(R2A_BoxPhoneT, R2A_BoxPhoneS); }
+
         /// <summary>UI の入れ物の下端から足元までの高さ (敵ごとに違う。名前札や HP バーは入れ物の下端基準で同じ線に揃う)</summary>
         // ---- からくりの匣 (2026-09-10 世界観「からくりだけ実物」): リーダーの足元に置く小さな木の匣。仕込むと蓋が開き、動かすと閃く ----
         static GameObject _box; static Texture2D _boxClosed, _boxOpen; static int _boxShown = -1; static GameObject _boxGlow, _boxBlob; static bool _boxLeftRear;
+        static bool _boxDiorama;   // 直しの輪1: 組んだ時に見本だったか (幕1→幕2 で見本の置き場が今の舞台に残らないよう、変われば作り直す)
         /// <summary>仕込み札の枚数に合わせて匣の蓋を開閉する。fired=true なら一度閃く (動かした)。
         /// leftRear=true ならリーダーの左奥 (t=-6.3・s=1.7)、false ならリーダーの右手前 (t=-3.7・s=-0.75)。
         /// 置き場は BattleView.BoxLeftRear (PC なら左奥・スマホは右手前) で渡す＝戦闘の途中で動かない。
@@ -275,7 +311,7 @@ namespace DeckRogue.Game
         public static void SetKarakuriBox(int setCount, bool fired, bool leftRear)
         {
             Ensure();
-            if (_box == null || _box.transform.parent != _world || _boxLeftRear != leftRear)
+            if (_box == null || _box.transform.parent != _world || _boxLeftRear != leftRear || _boxDiorama != DioramaCamera)
             {
                 // 置き場が変わった (別のリーダー・別の端末で撮り直した) 時は、匣・閃き・接地影を作り直す
                 if (_box != null) UnityEngine.Object.Destroy(_box);
@@ -287,13 +323,16 @@ namespace DeckRogue.Game
                 // 奥へ逃がしても幕1の地面がそこで沈む (高さ −0.2〜−0.3) ので s=2.2〜3.6 のどれも札の縁に接した (2026-09-29 撮影で確認)。右手前は切れていない
                 // スマホはリーダーの足元の真ん前 (2026-09-30 F46: 旧・右手前 (−3.7,−0.75) は白の人形の2体目の脚を隠し、剣の人形の札が匣に乗った。
                 // 足元の前は3幕とも平らに均した場の内側で、自分の札・人形の札・手札・確認の窓のどれにも掛からない。人形の数では動かさない)
-                var pos = leftRear ? OnPath(-6.3f, 1.7f) : OnPath(-5.3f, -1.9f);
+                // 見本のスマホは主人公の左奥 (直しの輪1。R2A_BoxPhoneDiorama の注記)。今の舞台は今まで (−5.3, −1.9) のまま
+                var pos = leftRear ? OnPath(-6.3f, 1.7f) : (DioramaCamera ? R2A_BoxPhoneDiorama() : OnPath(-5.3f, -1.9f));
                 _box = Plane("karakuri-box", _boxClosed, pos + new Vector3(0f, 0.01f, 0f), 0.62f, 0.5f, false);
                 _boxBlob = Blob("shadow-karakuri-box", _world, pos, 0.62f * _boxClosed.width / (float)_boxClosed.height);
                 _boxGlow = Glow("karakuri-glow", Px.Glow(new Color(0.55f, 1f, 0.9f, 0.6f)), pos + new Vector3(0f, 0.45f, -0.15f), 1.6f, 1.6f);
                 _boxGlow.SetActive(false);
                 _boxShown = -1;
                 _boxLeftRear = leftRear;
+                _boxDiorama = DioramaCamera;
+                HD2DFlags.LayoutDumpers["karakuriBox"] = R2A_DumpKarakuriBox;   // dumplayout の extra.karakuriBox (匣の画面の矩形。直しの輪1・hd2d-layout-check の L10)
             }
             bool open = setCount > 0;
             if (_boxShown != (open ? 1 : 0))
@@ -309,6 +348,32 @@ namespace DeckRogue.Game
                 var t = _boxGlow.transform; var s0 = new Vector3(1.6f, 1.6f, 1f);
                 Tween.Run(0.45f, k => { if (_boxGlow == null || t == null) return; t.localScale = s0 * (1f + k * 0.9f); if (k >= 1f) _boxGlow.SetActive(false); }, Ease.OutQuad);
             }
+        }
+
+        /// <summary>dumplayout の extra.karakuriBox: 匣の画面の矩形 px [x, y (上から), w, h]・足元 [x, y]・深さ・置き場 (直しの輪1。hd2d-layout-check の L10 が読む)。
+        /// 矩形は匣の板 (絵の不透明でない所も含む) の四隅を、揺れと寄りを含まないレイアウト用のカメラで写した物</summary>
+        static object R2A_DumpKarakuriBox()
+        {
+            if (_box == null || !_laidOut) return null;
+            var mf = _box.GetComponent<MeshFilter>();
+            if (mf == null || mf.sharedMesh == null) return null;
+            float H = Screen.height;
+            var b = mf.sharedMesh.bounds; var m = _box.transform.localToWorldMatrix;
+            float x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue;
+            for (int c = 0; c < 8; c++)
+            {
+                var w = m.MultiplyPoint3x4(b.center + Vector3.Scale(b.extents, new Vector3((c & 1) == 0 ? -1f : 1f, (c & 2) == 0 ? -1f : 1f, (c & 4) == 0 ? -1f : 1f)));
+                var s = LayoutScreen(w);
+                x0 = Mathf.Min(x0, s.x); x1 = Mathf.Max(x1, s.x); y0 = Mathf.Min(y0, s.y); y1 = Mathf.Max(y1, s.y);
+            }
+            var feet = LayoutScreen(_box.transform.position);
+            return new Dictionary<string, object>
+            {
+                { "px", new float[] { x0, H - y1, x1 - x0, y1 - y0 } },
+                { "feet", new float[] { feet.x, H - feet.y } },
+                { "depth", Vector3.Dot(_box.transform.position - _camBase, _fwd) },
+                { "place", _boxLeftRear ? "leftRear" : (_boxDiorama ? "dioramaPhone" : "front") },
+            };
         }
 
         public static void SetFeetOffset(string key, float y) { _feetOffsets[key] = y; }
