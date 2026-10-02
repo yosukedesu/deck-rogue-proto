@@ -33,14 +33,16 @@
 - 足元は最下端から 2 ドット・左右中央。PC の箱は `BattleScreen.FillEnemyPanel` が絵のドット数×4 で読むので 160 の絵を置けば 640px（コードは段1 以降）。スマホは今の `<id>_96.png` のまま（同じ粒では体 103 ドットが上限。`char.md` §2）。
 - 優先順: オーガ・大鹿（見本の幕）→ 合成獣 一・二・三（膨らむ残機の並び 135→138→140）→ 門番・古炉・大亀。
 
-## B. 1〜2 体で出る幕1 の敵を 80 の枠（裁定 2026-10-01）— 17 体 ＝ 2 回 × 2 シード × 20 ＝ **80**
+## B. 1〜2 体で出る幕1 の敵を 80 の枠（裁定 2026-10-01）— 14 体 ＝ 2 回 × 2 シード × 20 ＝ **80**
+
+> 2026-10-02: E 枠（獣 96）を発注すると決まったので、二重になる3体（うねる獣・裂け口の獣・巻きつく大蛇）を B から外した（17→14 体。回数は 2 回のまま）。
 
 出所: `src/engine/map.ts` の `ACT_POOLS[0]`・`WEAK_POOLS[0]`・`ELITE_POOLS[0]` を `src/data/encounters.json` で展開。
 
 | 枠 | 敵（id） |
 |---|---|
-| 1 回目（9 枚） | 探り屋 enemy_probe・うねる獣 enemy_wide_power・針毛の栗鼠 enemy_thorn_squirrel・見習い巨像 enemy_apprentice_colossus・囁きの狂信者 enemy_cultist・酸吐きの蜥蜴 enemy_slug・泥まとうもの enemy_mud_lump・裂け口の獣 enemy_gaping_maw・歯車の箱兵 enemy_cog_construct（古機＝文を hard metallic に） |
-| 2 回目（8 枚） | 蔦纏いの歩き木 enemy_vine_walker・巻きつく大蛇 enemy_strangler_serpent・鉄殻の溝貝 enemy_iron_clam・汚泥紡ぎの蜘蛛 enemy_sludge_spider・物真似の子鬼 enemy_mimic_imp・こそ泥ゴブリン enemy_thief・噛みつき果実 enemy_snap_fruit・胞子吹きの茸 enemy_spore_cap |
+| 1 回目（7 枚） | 探り屋 enemy_probe・針毛の栗鼠 enemy_thorn_squirrel・見習い巨像 enemy_apprentice_colossus・囁きの狂信者 enemy_cultist・酸吐きの蜥蜴 enemy_slug・泥まとうもの enemy_mud_lump・歯車の箱兵 enemy_cog_construct（古機＝文を hard metallic に） |
+| 2 回目（7 枚） | 蔦纏いの歩き木 enemy_vine_walker・鉄殻の溝貝 enemy_iron_clam・汚泥紡ぎの蜘蛛 enemy_sludge_spider・物真似の子鬼 enemy_mimic_imp・こそ泥ゴブリン enemy_thief・噛みつき果実 enemy_snap_fruit・胞子吹きの茸 enemy_spore_cap |
 | 64 のまま | 小泥 enemy_mudling（3〜4 体の群れだけ） |
 | 既に 80 | 鬼軍曹・歩哨・金羽の大鴉・大喰らいの蟲（強個体） |
 | 既に 96 | 血族の司祭・踊り手（幕ボス・3 体） |
