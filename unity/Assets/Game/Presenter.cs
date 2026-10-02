@@ -1927,7 +1927,10 @@ namespace DeckRogue.Game
                                 if (pSprC != null) Tween.Lunge(pSprC, new Vector2(-36f, 0f));   // のけぞり (後ろへ小さく)
                                 Stage.Shake(Mathf.Min(18f, 4f + dd.HpLoss * 0.7f) * (style == "blunt" ? 1.3f : 1f), 0.3f);
                                 Stage.Flash("player");
-                                Tween.ScreenFlash(fx, new Color(0.9f, 0.1f, 0.1f, Mathf.Min(0.35f, 0.1f + dd.HpLoss * 0.015f)));
+                                float hurtA = Mathf.Min(0.35f, 0.1f + dd.HpLoss * 0.015f);
+                                // 段2 レーン M (直し 2026-10-03・反証「白の閃きに被弾の赤い点滅が重なり紙の UI まで桃色」): 敵の大技の合図から帯の終わりまでは α を上限まで (0 = 出さない)。門が偽なら今のまま
+                                if (StageMotion.EnemyBigFlashing) hurtA = Mathf.Min(hurtA, StageMotion.EnemyBigHurtFlashAlpha);
+                                if (hurtA > 0.001f) Tween.ScreenFlash(fx, new Color(0.9f, 0.1f, 0.1f, hurtA));
                             }
                             var pos = Tween.CenterIn(rtC, fx) + new Vector2(UnityEngine.Random.Range(-40f, 40f), 10f);
                             // 数字は失った HP (2026-09-17 ⑥)。完全に防いだら「防いだ」、盾が吸った量は脇に鋼青で (旧: ブロック前の量を朱で＝表示の嘘)

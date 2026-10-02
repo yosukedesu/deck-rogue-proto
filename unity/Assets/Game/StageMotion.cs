@@ -17,41 +17,74 @@
 //   寄りの外の者に演出が出る時 (別の敵への寄らない当たり・敵の当たり・敵の行動・手番の区切り・次の札 = Presenter が Interrupt を呼ぶ)・
 //   カメラの置き直し (画面の大きさの変更・旗 = StageCamera が LayoutChanged を呼ぶ) は寄りを戻す。
 // 技の光 (light): 寄りの間の当たりは StageFx.MotionLight (技の光の印つき・強さ intensity・届く距離 range・dur 秒・hold は dur に対する割合) を対象の体の前に1つ、
-//   壁の光 (wall) を対象から道の奥へ back の所に1つ。次の当たりは同じ2つを灯し直す (多段で光の数が増えない)。寄らない当たりは今の光 (StageFx.PlayerHit) のまま。
+//   壁の光 (wall) を1つ。次の当たりは同じ2つを灯し直す (多段で光の数が増えない)。寄らない当たりは今の光 (StageFx.PlayerHit) のまま。
+//   壁の光の置き場 (直し 2026-10-03・反証「技の光が画面で対象の 326px 左に落ちる」): mode behind (既定) = 寄りのカメラから軸 (対象の体の点) へ延ばした線が
+//   最初に当たる面 (名前が parts で始まる壁の部品の足跡・s を書けば道の座標 s のその面・steps なら段の立ち上がり) の pull 手前 = 画面で対象の真後ろ。
+//   高さは当たった所 + rise・地面から minHeight 以上。線が maxDist までどこにも当たらない・軸 (対象の体の点) がもう面の中 (奥の席で s を書いた・
+//   壁の部品の足跡の下に立っている) なら path の置き方 (記録の how に理由)。壁の部品の箱は組む時と同じ置き場と大きさ (Diorama.PartPlace = スマホの phone の t・s・y・scale)。
+//   mode path = 今までの置き方 (足元から道の奥へ back か s)。
+//   寄りの間だけ距離の霧と霧の板を薄める (zoom.fogScale = StageLook.SetFogScale。霧の end を伸ばし、2段目の強さと霧の板の α を下げる。寄りを戻すと正確に戻す。
+//   別の敵への切り替えでは戻さずに掛けたまま = 空気の基を取り直さない)。
 // 暗転 (dim): 寄る札 (既定は X 札・全体の最後の1発・とどめ = minKind boost) を出した瞬間 (Presenter の CardPlayed) に StageLook.SetDim を k へ in 秒で落とし、
 //   寄りが終わって after 秒後に out 秒で 1 へ戻す
 //   (寄りが wait 秒来なければ戻す・長くても max 秒)。キャラの固定のキーは SetDim が触らない (レーン B)。
+//   SetDim は光 (月・舞台の灯・逆光・lights) に加えて空気も落とす (直し 2026-10-03・反証「暗転が見えない」): 霧の色・芯・高さの霧・2段目・霧の板の色は lerp(1, k, air)、
+//   環境光 (Trilight と SH) は lerp(1, k, ambient)、暈と光の面 (StageShaft) は lerp(1, k, glow)。効きは StageLook.SetDimMix で渡す (落とす前に毎回)。
 // 敵の大技 (enemyBig): 予告つき大技 (moves に名指し = 既定は溜め・予告つきの大技 17 個 DefaultBigMoves。auto を真にすると、その敵の攻撃の技でいちばん大きい技・
 //   実値×発数が minTotal 以上・攻撃の技が2つ以上も) を
 //   実行する瞬間に、赤い合図 (cue 秒・敵の足元の赤い点光源 StageFx.MotionCue と、敵の絵を cueTint で染める) → 暖のフラッシュ (warm 秒) → 白 (white 秒) → 技の色の帯 (band 秒)。
-//   フラッシュと帯は舞台のカメラの前の板 (描画用のカメラの子・舞台のカメラが描く時だけ見える) = 紙の UI は染めない。
+//   mode light (既定・直し 2026-10-03・反証「色の板をかぶせただけで舞台の形が消える」): 暖と白は舞台だけの光 = 技の光の印つきの大きな点光源 2 つ
+//   (技の向かう先 = 自分の足元の上 flashHeight と、自分と敵の間 (画面の中心寄り) の上 centerHeight) と、舞台の後処理の露出の山
+//   (StageLook.SetExposureBoost = ColorAdjustments.postExposure に暖 expWarm 段・白 expWhite 段 (白の間に 0 へ)。紙の UI は Overlay なので染まらない)。
+//   暗部は暗いまま照らされた形が残る。板は技の色の帯 (band 秒・bandAlpha) だけ。mode plate = 今までの置き方 (暖・白も舞台のカメラの前の板の α)。
+//   light の光は段の頭で灯し直す (暖の 1 つ目 = 合図の光・白 = 暖の 2 つ = 光は 2 つ (合図を入れて) まで)。灯し直される合図と暖は段の長さ + 0.1 秒灯す
+//   (FlashReuseMargin。段の境目で先に消えて光の無い 1 フレームが出ない。plate の合図は今のまま)。
+//   帯は舞台のカメラの前の板 (描画用のカメラの子・舞台のカメラが描く時だけ見える) = 紙の UI は染めない。
+//   合図から帯の終わりまで (どちらの mode も) は Presenter の被弾の画面の赤い点滅 (Tween.ScreenFlash) の α を hurtFlashAlpha までにする (0 = 出さない)。
 // 火花 (sparks): 大きい当たり・とどめ・X 札と全体の最後の1発で、寄っている対象の体の前から count 粒を放射 (画面に沿って広がる)・life 秒。
+//   粒は速さで伸ばす (直し 2026-10-03・反証「火花が点のまま」: ParticleSystemRenderer の Stretch = 長さ size × lengthScale + 速さ × velocityScale。stretch false で丸い点)。
 //
 // 光の設計図の "motion" のキー (書かなければ下の既定。tier=phone の時は motion.phone の中のキーを上に重ねる):
 //   on false
 //   zoom:    { on true, big 0.45, boost 0.9, finish 0.9, bossFinish 1.8, bigMin 15, boostMin 15, scale 1.28, lookUp 6, yaw 0, pivot 0.45, minCamY 0.35,
-//              chainHold 0.5, hideUi true, hideDesk true, frames "follow" | "keep" }
+//              chainHold 0.5, hideUi true, hideDesk true, frames "follow" | "keep", fogScale 0.6 }
 //            big = 大きい当たり (与ダメ bigMin 以上か急所) を保つ秒・boost = X 札の最後の1発／全体の最後の1発 (札の与ダメの合計 boostMin 以上か大きい当たりを含む)・
 //            finish = とどめ・bossFinish = 幕ボスのとどめ。scale = 対象の深さでの拡大・lookUp = 見上げ (度。足元が近すぎる時は minCamY まで弱める)・
 //            yaw = 対象を軸に横へ回す (度。+ = カメラが左へ回り込み右を向く)・pivot = 軸の高さ (板の高さの割合)・minCamY = カメラの足元からの最低の高さ (unit)・
-//            chainHold = 同じ札で同じ敵にまだ寄る当たりが来る時 (Shot.Chain)、寄りの時間が切れてから次の当たりを待つ上限の秒 (待つ間も寄ったまま)
+//            chainHold = 同じ札で同じ敵にまだ寄る当たりが来る時 (Shot.Chain)、寄りの時間が切れてから次の当たりを待つ上限の秒 (待つ間も寄ったまま)・
+//            fogScale = 寄りの間の霧の量の倍率 (0.05〜1。1 = 触らない)
 //   light:   { on true, intensity 12, range 10, dur 1.0, hold 0.35, height 0.45, towardCamera 0.6, shadow true, finishMul 1.25,
 //              colors { physical [1,0.62,0.3], spell [0.35,1,0.85], light [1,0.74,0.4], spark [1,0.5,0.2], <形の名前> [r,g,b] },
-//              wall { on true, back 4, s (無し), height 1.6, intensity 8, range 9 } }
+//              wall { on true, mode "behind" | "path", intensity 8, range 9,
+//                     behind の時: s (無し = 壁の面は部品から), parts ["wall"], steps "auto" | true | false, pull 1.0, rise 0.4, minHeight 0.5, maxLift 2.2, maxDist 40,
+//                     path の時: back 4, s (無し), height 1.6 } }
 //            intensity = hitLight.refDist の距離での明るさ (StageFx と同じ物差し)。hold = dur に対する割合 (0.35 × 1.0 秒 = 0.35 秒は最大のまま)
-//            wall = 壁を照らす2つ目の光: 対象の足元から道の奥 (s の + 向き) へ back の所、足元から height の高さ。s を書くと back の代わりに道の座標 s のその位置
+//            wall = 壁を照らす2つ目の光。behind: 寄りのカメラ→対象の体の点の線の先で最初に当たる面の pull (unit) 手前・高さ + rise・地面から minHeight 以上。
+//            面 = 名前が parts のどれかで始まる block・arch・pillar の足跡の中 (上端より下。床に立つ壁の下の地面も壁に数える)・s を書けばその s の面 (どれか最初の物)。
+//            steps: true = 段の立ち上がり (地面より下に入る所) も面に数える・false = 数えない・"auto" (既定) = 壁で探して、当たらないか
+//            地面へ持ち上げる高さ (線の高さからの差) が maxLift を超えた時だけ (床が線より高い幕 = 幕3 の段) 段の立ち上がりも数えて探し直す。
+//            path: 対象の足元から道の奥 (s の + 向き) へ back の所、足元から height の高さ。s を書くと back の代わりに道の座標 s のその位置
 //            (座席の奥行きによらず壁のすぐ手前に置ける。壁の部品の中に入れると壁の表は照らさない = 壁の面より手前の s にする)
-//   dim:     { on true, k 0.4, in 0.2, out 0.35, after 0.1, wait 1.5, max 4, minKind "boost" }   (minKind = この重さ以上の寄りを含む札だけ暗くする。既定 boost = X 札・全体の最後の1発・とどめだけ
-//            = 分析書 §8-3「ブーストの溜め」。本家は WEAK の 0.42 秒の寄りでは暗くしない。big にすると大きい当たり (15 以上・急所) の札も全部暗くする)
-//   sparks:  { on true, count 70, life 0.5, speed [3.5, 8], size [0.05, 0.11], gravity 0.6, drag 3, glow 2.2, height 0.5, towardCamera 0.8 }
+//   dim:     { on true, k 0.4, in 0.2, out 0.35, after 0.1, wait 1.5, max 4, minKind "boost", air 0.7, ambient 0.9, glow 0.9 }
+//            (minKind = この重さ以上の寄りを含む札だけ暗くする。既定 boost = X 札・全体の最後の1発・とどめだけ
+//            = 分析書 §8-3「ブーストの溜め」。本家は WEAK の 0.42 秒の寄りでは暗くしない。big にすると大きい当たり (15 以上・急所) の札も全部暗くする)。
+//            air・ambient・glow = 空気の効き (0 = 落とさない・1 = 光と同じ k まで落とす): 霧の色・芯・高さの霧・2段目・霧の板 / 環境光 / 暈と光の面
+//   sparks:  { on true, count 120, life 0.6, speed [5, 11], size [0.07, 0.15], gravity 0.6, drag 3, glow 3.0, height 0.5, towardCamera 0.8,
+//              stretch true, velocityScale 0.06, lengthScale 1.0 }   (stretch = 速さで伸ばす筋・false = 丸い点 (今まで))
 //   focus:   { on true, near 2, far 12, tiltTop 0 }   (道の s で対象の足元の near 手前〜far 奥をピントの帯に。深さの帯は寄りのカメラから同じ幅。tiltTop = 上端の追加のぼけ・負なら触らない)
-//   enemyBig:{ on true, auto false, minTotal 20, moves [既定の名指し DefaultBigMoves], cue 0.17, warm 0.15, white 0.3, band 1.2,
+//   enemyBig:{ on true, auto false, minTotal 20, moves [既定の名指し DefaultBigMoves], cue 0.17, warm 0.15, white 0.3, band 1.2, mode "light" | "plate",
 //              cueColor [1,0.25,0.18], cueIntensity 6, cueRange 5, cueHeight 0.35, cueTint [1,0.62,0.55], warmColor [1,0.55,0.22], warmAlpha 0.45, whiteColor [1,1,1], whiteAlpha 0.5,
-//              bandColor [r,g,b] (無ければ技の色: 飛び道具・光線はその色・近接は bandMelee [1,0.5,0.28]), bandAlpha 0.16 }
+//              bandColor [r,g,b] (無ければ技の色: 飛び道具・光線はその色・近接は bandMelee [1,0.5,0.28]), bandAlpha 0.16,
+//              light の時: flashWarm 8, flashWhite 14, flashRange 16, flashHeight 1.2, centerHeight 2.0, centerMul 0.8, flashToward 0.8, expWarm 0.5, expWhite 1.0,
+//              hurtFlashAlpha 0.1 }
 //            cueTint = 赤い合図の間だけ敵の絵 (板は Image の色を掛ける) に掛ける色 ([1,1,1] で染めない)。戻すのは合図の終わり (誰かが色を書き換えていたら戻さない)
 //            moves = 「敵の id:技の id」か「技の id」の名指し (書けば既定の名指しを置き換える。[] で名指しなし)。既定は溜め・予告つきの大技だけ (DefaultBigMoves)。
 //            auto = 名指しの外でも、その敵の攻撃の技でいちばん大きい技 (攻撃の技2つ以上・実値×発数 ≥ minTotal) を大技とみなす (既定 false。
 //            true にすると狼の裂き・道化の大振りのような溜めの無い技まで鳴る = 2026-10-03 反証: 89 体中 26 体)
+//            light: flashWarm・flashWhite = 暖・白の点光源の強さ (StageFx と同じ物差し・2 つ目は × centerMul・0 で 2 つ目なし)・flashRange = 届く距離・
+//            flashHeight = 1 つ目 (技の向かう先 = 自分) の足元からの高さ・centerHeight = 2 つ目 (自分と敵の足元の真ん中) の高さ・flashToward = カメラの方へ寄せる unit・
+//            expWarm・expWhite = 露出の足し (段。白は白の間に 0 へ下がる)。warmAlpha・whiteAlpha は plate の時だけ。
+//            hurtFlashAlpha = 合図から帯の終わりまでの被弾の赤い点滅の α の上限 (0 = 出さない・どちらの mode も)
 //   phone:   { 上と同じ形 (スマホの段だけ重なる) }
 // 記録: dumplayout の extra.motion (DebugInfo。門が真の時だけ登録)・ログ "[StageMotion]" (det・dumplayout の時だけ。frame と time つき)。
 using System;
@@ -165,9 +198,10 @@ namespace DeckRogue.Game
                 if (!_cu) StartCloseUp(enemyIndex, shot);
                 else if (_cuEnemy != enemyIndex)
                 {   // 寄る当たりが別の敵に来た: 重さによらずその敵へ切り替える (軸の敵しか画面の位置が保たれない = 延ばすと別の敵の絵と2Dの当たりがずれる。2026-10-03 反証)。
-                    // 紙の UI は隠したまま (同じフレームで戻して隠し直すと、捨てた CanvasGroup が描く前に消えて1フレーム見える)
+                    // 紙の UI は隠したまま (同じフレームで戻して隠し直すと、捨てた CanvasGroup が描く前に消えて1フレーム見える)。
+                    // 寄りの霧の倍率もそのまま (戻してすぐ掛け直すと、空気の基の取り直しが切り替えのフレームに入る。直し 2026-10-03 反証)
                     EndCloseUp("切り替え", true);
-                    if (!StartCloseUp(enemyIndex, shot)) HideUi(false);
+                    if (!StartCloseUp(enemyIndex, shot)) { HideUi(false); RestoreFog(); }
                 }
                 else Extend(shot);
             }
@@ -199,19 +233,23 @@ namespace DeckRogue.Game
             if (!eb.On) return;
             string key = "enemy" + enemyIndex;
             Vector3 feet; float h;
+            _cueSeq = 0;
             if (eb.Cue > 0f && Stage.TryGetUnitBox(key, out feet, out h))
             {
                 var p = feet + Vector3.up * (h * eb.CueHeight);
                 var cam = Stage.Camera;
                 if (cam != null) { var to = cam.transform.position - p; if (to.sqrMagnitude > 1e-6f) p += to.normalized * 0.8f; }
-                StageFx.MotionCue(p, eb.CueColor, eb.CueIntensity, eb.CueRange, eb.Cue, key);
+                // light の時は合図の光を暖の段が灯し直す = 段の境目まで消えないよう少し長く灯す (FlashReuseMargin。plate は今のまま)
+                _cueSeq = StageFx.MotionCue(p, eb.CueColor, eb.CueIntensity, eb.CueRange, eb.Cue + (eb.LightMode ? FlashReuseMargin : 0f), key);
             }
             if (eb.Cue > 0f) CueTint(enemyIndex, eb.CueTint);
             _plateT = 0f; _plateStartFrame = Time.frameCount;
             _plateBand = band ?? eb.BandColor ?? eb.BandMelee;
+            _plateKey = key; _flashPhase = 0; _flashSeqA = 0; _flashSeqB = 0;
+            if (eb.LightMode) StageLook.SetExposureBoost(0f);   // 前の大技の露出の山が残っていれば戻す (合図の間は 0)
             _enemyBigs++;
             EnsurePlate();
-            Log("敵の大技 " + key + " 赤 " + F(eb.Cue) + "→暖 " + F(eb.Warm) + "→白 " + F(eb.White) + "→帯 " + F(eb.Band) + "秒");
+            Log("敵の大技 " + key + " (" + (eb.LightMode ? "光" : "板") + ") 赤 " + F(eb.Cue) + "→暖 " + F(eb.Warm) + "→白 " + F(eb.White) + "→帯 " + F(eb.Band) + "秒");
             Remember("enemyBig", key, eb.Cue + eb.Warm + eb.White + eb.Band);
         }
 
@@ -240,6 +278,12 @@ namespace DeckRogue.Game
             return attacks >= 2 && mine >= 0f && mine >= best;
         }
 
+        /// <summary>敵の大技の合図から帯の終わりまで (門が偽なら false = Presenter の被弾の点滅は今のまま)</summary>
+        public static bool EnemyBigFlashing => _plateT >= 0f && On;
+
+        /// <summary>敵の大技の間の被弾の画面の赤い点滅の α の上限 (光の設計図の enemyBig.hurtFlashAlpha・既定 0.1。0 = 出さない)</summary>
+        public static float EnemyBigHurtFlashAlpha => Mathf.Clamp01(Tune.EnemyBig.HurtFlash);
+
         // ================================================================ カメラ (StageDriver)
 
         /// <summary>寄りの姿勢 (StageDriver が描画用のカメラに当てる。揺れは StageDriver が足す)。寄っていなければ false</summary>
@@ -266,6 +310,7 @@ namespace DeckRogue.Game
                     else EndCloseUp(_cuChain ? "次の当たりが来ない" : "時間");
                 }
                 if (_cu && Tune.Zoom.HideUi) HideUi(true);   // 寄りの間 (次の当たりを待つ間も) に組み直しが来ても隠し直す
+                if (_cu) KeepFogScale();                     // 寄りの間の霧の倍率 (光の組み直しで 1 に戻っていたら掛け直す)
             }
             TickDim(dt);
             TickPlate(dt);
@@ -283,6 +328,10 @@ namespace DeckRogue.Game
         static bool _cuFramesMoved;
         static BattleView _hidView;
         static long _lightSeq, _wallSeq;
+        static bool _cuWallSet;          // この寄りの壁の光の置き場を解いた (寄りごとに1回。多段の灯し直しも同じ所)
+        static Vector3 _cuWall;
+        static string _cuWallHow;        // 置き場の出どころ (記録: "behind:ground"・"behind:part:wall-main-2"・"behind:s"・"path"・"path (behind: 当たらない)"・"path (behind: 軸が面の中 (s))")
+        static float _cuFog = 1f;        // この寄りの霧の倍率 (zoom.fogScale)
 
         static int Rank(string kind)
         {
@@ -301,6 +350,9 @@ namespace DeckRogue.Game
             _cuChain = shot.Chain; _cuChainT = 0f;
             _cuPos = pos; _cuRot = rot; _cuPivot = pivot; _cuFeet = feet;
             _lightSeq = 0; _wallSeq = 0;
+            _cuWallSet = false; _cuWallHow = null;
+            _cuFog = z.FogScale;
+            KeepFogScale();   // 寄りの間だけ距離の霧と霧の板を薄める (fogScale 1 なら触らない)
             if (z.HideUi) HideUi(true);
             if (t.Focus.On) FocusOn(pivot, feet, pos, rot, t.Focus);
             if (z.Frames) { Diorama.OnCameraLayout(pos, rot, Stage.CurrentFov); _cuFramesMoved = true; }
@@ -322,16 +374,34 @@ namespace DeckRogue.Game
             Log("寄りを延ばした " + shot.Kind + " " + _cuKey + " 残り " + F(_cuLeft) + "秒");
         }
 
-        static void EndCloseUp(string why, bool keepUi = false)
+        /// <summary>寄りを戻す。switching = 別の敵へ切り替える途中 (紙の UI と寄りの霧の倍率はそのまま。続く StartCloseUp が失敗したら呼び手が HideUi(false)・RestoreFog)</summary>
+        static void EndCloseUp(string why, bool switching = false)
         {
             if (!_cu) return;
             _cu = false;
-            if (!keepUi) HideUi(false);
+            if (!switching) { HideUi(false); RestoreFog(); }   // 寄りの霧の倍率を正確に戻す (暗転が残っていれば空気は暗転の分だけ落ちたまま)
+            else _cuFog = 1f;                                   // 書いた倍率は残す (次の寄りが同じ値なら KeepFogScale は書かない)
             FocusOff();
             if (_cuFramesMoved) { _cuFramesMoved = false; Diorama.OnCameraLayout(Stage.MotionLayoutPos, Stage.LayoutRotation, Stage.CurrentFov); }
             Log("寄りを戻した (" + why + ") " + _cuKey);
             Remember("closeUpEnd:" + why, _cuKey, 0f);
             _cuEnemy = -1; _cuKey = null; _cuKind = null; _cuLeft = 0f; _cuChain = false; _cuChainT = 0f;
+            _cuWallSet = false; _cuWallHow = null;
+        }
+
+        /// <summary>寄りの霧の倍率を 1 へ戻す (StageLook が基へ正確に戻す。書いていなければ何もしない)</summary>
+        static void RestoreFog()
+        {
+            _cuFog = 1f;
+            if (StageLook.FogScale < 1f) StageLook.SetFogScale(1f);
+        }
+
+        /// <summary>寄りの間の霧の倍率を StageLook に当てる (光の組み直しで 1 に戻っていたら掛け直す。fogScale 1 以上なら触らない)</summary>
+        static void KeepFogScale()
+        {
+            if (!(_cuFog < 1f)) return;
+            float want = Mathf.Clamp(_cuFog, 0.05f, 1f);
+            if (Mathf.Abs(StageLook.FogScale - want) > 1e-4f) StageLook.SetFogScale(want);
         }
 
         /// <summary>寄りの軸 (対象の体の点 = 板の高さの frac) と足元。板が無ければ座席から (高さ 2.4 unit の板とみなす)</summary>
@@ -470,13 +540,160 @@ namespace DeckRogue.Game
             var w = L.Wall;
             if (w.On)
             {
-                Vector3 n, origin;
-                if (!PathAxis(out n, out origin)) n = Vector3.ProjectOnPlane(Stage.LayoutRotation * Vector3.forward, Vector3.up).normalized;
-                float back = w.Back, sFeet;
-                if (w.S.HasValue && PathS(_cuFeet, out sFeet)) back = w.S.Value - sFeet;   // 道の座標 s の位置 (足元の s からの差)
-                var wp = _cuFeet + n * back + Vector3.up * w.Height;
-                _wallSeq = StageFx.MotionLight(wp, c, w.Intensity * mul, w.Range, L.Dur, L.Hold, false, "motion-wall:" + (style ?? "slash"), key, _wallSeq);
+                if (!_cuWallSet)
+                {
+                    // 置き場は寄りごとに1回 (多段の次の当たりも同じ所を灯し直す)
+                    _cuWallSet = true;
+                    string how = null;
+                    if (w.Behind && WallBehind(w, out _cuWall, out how)) _cuWallHow = "behind:" + how;
+                    else { _cuWall = WallOnPath(w); _cuWallHow = w.Behind ? "path (behind: " + (how ?? "当たらない") + ")" : "path"; }
+                    Log("壁の光 " + _cuWallHow + " " + V(_cuWall) + " " + _cuKey);
+                    Remember("wall:" + _cuWallHow, _cuKey, 0f);
+                }
+                _wallSeq = StageFx.MotionLight(_cuWall, c, w.Intensity * mul, w.Range, L.Dur, L.Hold, false, "motion-wall:" + (style ?? "slash"), key, _wallSeq);
             }
+        }
+
+        /// <summary>壁の光の今までの置き場 (mode path): 対象の足元から道の奥 (s の + 向き) へ back (s を書けばその s)、足元から height</summary>
+        static Vector3 WallOnPath(WallTune w)
+        {
+            Vector3 n, origin;
+            if (!PathAxis(out n, out origin)) n = Vector3.ProjectOnPlane(Stage.LayoutRotation * Vector3.forward, Vector3.up).normalized;
+            float back = w.Back, sFeet;
+            if (w.S.HasValue && PathS(_cuFeet, out sFeet)) back = w.S.Value - sFeet;   // 道の座標 s の位置 (足元の s からの差)
+            return _cuFeet + n * back + Vector3.up * w.Height;
+        }
+
+        /// <summary>
+        /// 壁の光の置き場 (mode behind): 寄りのカメラ (_cuPos) から軸 (_cuPivot = 対象の体の点) へ延ばした線を、軸から 0.5 unit 先から 0.2 unit ずつ maxDist まで進め、
+        /// 最初に「面の中」に入った所を二分で詰め、そこから pull 手前 (軸からの距離の半分より手前には来ない) に置く = 画面で対象の真後ろ。
+        /// 面 = 名前が parts で始まる壁の部品の足跡の中 (高さは上端より下 = 床に立つ壁の下の地面の中も壁に数える)・s を書いていればその s より奥・
+        /// steps の時は段の立ち上がり (地面より下に入る所) も。高さは線の高さ + rise、その所の地面から minHeight 以上。
+        /// steps "auto" (既定): まず壁と s だけで探し、当たらないか、地面へ持ち上げる高さが maxLift を超えたら (床が線より高い幕 = 幕3 の段) 段の立ち上がりも数えて探し直す。
+        /// 箱庭が無い・線が奥へ進まない・どこにも当たらなければ false (呼び手は path の置き方)。how = 当たった物 (記録)
+        /// </summary>
+        static bool WallBehind(WallTune w, out Vector3 wp, out string how)
+        {
+            wp = default; how = null;
+            if (!Diorama.Active || !Stage.Camera) { how = "箱庭が無い"; return false; }
+            Vector3 dir = _cuPivot - _cuPos;
+            float len = dir.magnitude;
+            if (!(len > 1e-3f)) { how = "線が作れない"; return false; }
+            dir /= len;
+            Vector3 n, origin;
+            if (!PathAxis(out n, out origin) || Vector3.Dot(n, dir) < 0.05f) { how = "線が奥へ進まない"; return false; }
+            var root = Diorama.Root != null ? Diorama.Root : Stage.WorldRoot;
+            var boxes = WallBoxes(w);
+            Vector3 p1, p2; string h1, h2; float lift1, lift2;
+            bool hit1 = March(w, dir, root, boxes, w.Steps == WallSteps.On, out p1, out h1, out lift1);
+            if (w.Steps != WallSteps.Auto || (hit1 && lift1 <= w.MaxLift))
+            {
+                if (!hit1) { how = h1; return false; }   // h1 = 外れた理由 (軸が面の中) か null (どこにも当たらない)
+                wp = p1; how = h1 + " lift " + F(lift1);
+                return true;
+            }
+            bool hit2 = March(w, dir, root, boxes, true, out p2, out h2, out lift2);
+            if (hit2) { wp = p2; how = h2 + " lift " + F(lift2) + (hit1 ? " (壁は持ち上げ " + F(lift1) + " > maxLift)" : " (壁に当たらない)"); return true; }
+            if (hit1) { wp = p1; how = h1 + " lift " + F(lift1); return true; }
+            how = h1 ?? h2;
+            return false;
+        }
+
+        /// <summary>
+        /// WallBehind の1回の探し (steps = 段の立ち上がりも面に数える)。当たれば置き場 (pull 手前・持ち上げ済み)・当たった物・持ち上げた高さ (線からの差)。
+        /// 軸 (対象の体の点) がもう面の中なら探さずに false・how に理由 (奥の席で s を書いた・壁の部品の足跡の下に立っている = 線の先は全部「中」か、
+        /// 外へ出た先は別の面の裏。直し 2026-10-03 反証: 1回目の点がもう中だと二分の幅が 0 になり、光が体の 0.25 後ろ = 体の中に置かれていた)。
+        /// 軸は外で1回目の点 (start) が中なら、軸〜start を二分で詰める (面が体のすぐ後ろ = 光は体と面の間)
+        /// </summary>
+        static bool March(WallTune w, Vector3 dir, Transform root, List<WallBox> boxes, bool steps, out Vector3 wp, out string how, out float lift)
+        {
+            wp = default; how = null; lift = 0f;
+            const float start = 0.5f, step = 0.2f;
+            float maxD = Mathf.Clamp(w.MaxDist, 1f, 200f);
+            string atAxis = SolidAt(root, _cuPivot, w, boxes, steps);
+            if (atAxis != null) { how = "軸が面の中 (" + atAxis + ")"; return false; }
+            float prev = 0f;   // いちばん近い外の点 (軸は外 = 0)
+            for (float d = start; d <= maxD; d += step)
+            {
+                string hit = SolidAt(root, _cuPivot + dir * d, w, boxes, steps);
+                if (hit == null) { prev = d; continue; }
+                // 二分で面の所を詰める (prev は外・d は中。1回目の点で当たれば 0〜start)
+                float lo = prev, hi = d;
+                for (int i = 0; i < 6; i++)
+                {
+                    float mid = 0.5f * (lo + hi);
+                    string hm = SolidAt(root, _cuPivot + dir * mid, w, boxes, steps);
+                    if (hm != null) { hi = mid; hit = hm; } else lo = mid;
+                }
+                float dHit = hi;
+                float dAt = Mathf.Max(0.5f * dHit, dHit - Mathf.Max(0f, w.Pull));
+                var q = _cuPivot + dir * dAt;
+                var ql = root != null ? root.InverseTransformPoint(q) : q;
+                float t, s;
+                Diorama.ToPath(ql.x, ql.z, out t, out s);
+                float y = Mathf.Max(ql.y + w.Rise, Diorama.HeightAtPath(t, s) + w.MinHeight);
+                lift = y - ql.y;
+                ql.y = y;
+                wp = root != null ? root.TransformPoint(ql) : ql;
+                how = hit + " d " + F(dHit) + " s " + F(s);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 点 p (世界) が面の中か: steps なら地面より下 ("ground")・s を書いていればその s より奥 ("s")・壁の部品の足跡の中で上端より下 ("part:名前")。
+        /// 壁の部品は下端を見ない (床に立つ壁の下は地面 = 線が床の下を通っても、その奥の壁の面で止める)。どれでもなければ null
+        /// </summary>
+        static string SolidAt(Transform root, Vector3 p, WallTune w, List<WallBox> boxes, bool steps)
+        {
+            var lp = root != null ? root.InverseTransformPoint(p) : p;
+            float t, s;
+            Diorama.ToPath(lp.x, lp.z, out t, out s);
+            if (steps && lp.y < Diorama.HeightAtPath(t, s)) return "ground";
+            if (w.S.HasValue && s >= w.S.Value) return "s";
+            foreach (var b in boxes)
+            {
+                if (lp.y > b.Y1) continue;
+                float dt = t - b.T, ds = s - b.S;
+                float lx = dt * b.Cos - ds * b.Sin, lz = dt * b.Sin + ds * b.Cos;   // 部品の向き (道に沿う + yaw) の箱の中の座標
+                if (Mathf.Abs(lx) <= b.HalfW && Mathf.Abs(lz) <= b.HalfD) return "part:" + b.Name;
+            }
+            return null;
+        }
+
+        /// <summary>壁の部品の箱 (道の座標の中心・半幅・向き・高さの範囲)。名前が parts のどれかで始まる block・arch・pillar (スマホで組まない物・旗が無いと組まない物は除く)</summary>
+        sealed class WallBox { public string Name; public float T, S, HalfW, HalfD, Cos, Sin, Y0, Y1; }
+        static readonly List<WallBox> _wallBoxes = new List<WallBox>();
+        static DioramaLayout _wallBoxesOf;
+        static string _wallBoxesSig;
+
+        static List<WallBox> WallBoxes(WallTune w)
+        {
+            var L = Diorama.Layout;
+            string sig = (UiKit.Phone ? "ph:" : "pc:") + string.Join(",", w.Parts ?? new string[0]);
+            if (ReferenceEquals(L, _wallBoxesOf) && sig == _wallBoxesSig) return _wallBoxes;
+            _wallBoxesOf = L; _wallBoxesSig = sig;
+            _wallBoxes.Clear();
+            if (L == null || w.Parts == null || w.Parts.Length == 0) return _wallBoxes;
+            foreach (var p in L.Parts)
+            {
+                if (p == null || string.IsNullOrEmpty(p.Name) || (p.Kind != "block" && p.Kind != "arch" && p.Kind != "pillar")) continue;
+                bool named = false;
+                foreach (var pre in w.Parts) if (!string.IsNullOrEmpty(pre) && p.Name.StartsWith(pre, StringComparison.Ordinal)) { named = true; break; }
+                if (!named || Diorama.PhoneHidden(p) || Diorama.R3I_FlagHidden(p)) continue;
+                // 置き場と大きさは組む時と同じ規則 (Diorama.PartPlace = PlaceOf: スマホなら phone の t・s・y・scale。直し 2026-10-03 反証: scale を見ていなかった)。
+                // 形は原点の回りに大きさ scale で写る (Diorama の partM = TRS(pos, rot, scale)) = 足跡・高さ・沈みの全部に掛ける。w・d・h・sink は組む時も phone を読まない
+                float pt, ps, py, sc;
+                Diorama.PartPlace(p, out pt, out ps, out py, out sc);
+                bool arch = p.Kind == "arch", pillar = p.Kind == "pillar";
+                float bw = p.Num("w", arch ? 4f : pillar ? 0.9f : 1.6f) * sc, bd = p.Num("d", arch ? 1f : pillar ? 0.9f : 1.2f) * sc, bh = p.Num("h", arch ? 4.5f : pillar ? 5f : 1f) * sc;
+                float sink = p.Num("sink", arch || pillar ? 0.15f : 0.2f) * sc;
+                float y0 = (p.Abs ? py : Diorama.HeightAtPath(pt, ps) + py) - sink;
+                float a = (Diorama.IsPathAligned(p.Kind) ? p.Yaw : 0f) * Mathf.Deg2Rad;
+                _wallBoxes.Add(new WallBox { Name = p.Name, T = pt, S = ps, HalfW = 0.5f * bw, HalfD = 0.5f * bd, Cos = Mathf.Cos(a), Sin = Mathf.Sin(a), Y0 = y0, Y1 = y0 + sink + bh });
+            }
+            return _wallBoxes;
         }
 
         /// <summary>寄れない時の光 (今の口と同じ = Presenter が門の外で呼ぶ物)</summary>
@@ -503,6 +720,7 @@ namespace DeckRogue.Game
             var camPos = _cu ? _cuPos : (Stage.Camera != null ? Stage.Camera.transform.position : at);
             var camRot = _cu ? _cuRot : Stage.LayoutRotation;
             if (sp.TowardCamera > 0f) { var to = camPos - at; if (to.sqrMagnitude > 1e-6f) at += to.normalized * sp.TowardCamera; }
+            SparkRender(ps, sp);
             var main = ps.main;
             main.startColor = new ParticleSystem.MinMaxGradient(new Color(color.r * sp.Glow, color.g * sp.Glow, color.b * sp.Glow, 1f));
             main.gravityModifier = sp.Gravity;
@@ -525,10 +743,25 @@ namespace DeckRogue.Game
                 ps.Emit(ep, 1);
             }
             _bursts++;
-            Log("火花 " + n + "粒 " + key);
+            Log("火花 " + n + "粒" + (sp.Stretch ? " (筋)" : "") + " " + key);
         }
 
         static float Frac(float x) => x - Mathf.Floor(x);
+
+        /// <summary>粒の描き方 (stretch = 速さで伸ばす筋: 長さ = 大きさ × lengthScale + 速さ × velocityScale・カメラの速さは足さない (寄りの切り替えで伸びない)。false = 丸い点)</summary>
+        static void SparkRender(ParticleSystem ps, SparkTune sp)
+        {
+            var r = ps != null ? ps.GetComponent<ParticleSystemRenderer>() : null;
+            if (r == null) return;
+            if (sp.Stretch)
+            {
+                r.renderMode = ParticleSystemRenderMode.Stretch;
+                r.velocityScale = sp.VelocityScale;
+                r.lengthScale = sp.LengthScale;
+                r.cameraVelocityScale = 0f;
+            }
+            else r.renderMode = ParticleSystemRenderMode.Billboard;
+        }
 
         /// <summary>火花の粒の系 (無ければ作る)。粒の光の材質 (Stage.MotionGlowMaterial)。乱数の種は固定・自分では出さない (Emit だけ)</summary>
         static ParticleSystem Sparks()
@@ -591,6 +824,7 @@ namespace DeckRogue.Game
                 _dimK = Mathf.MoveTowards(_dimK, 1f, dt * Mathf.Max(0.01f, 1f - k) / Mathf.Max(0.01f, dm.Out));
                 if (_dimK >= 1f) { _dimK = 1f; _dimPhase = 0; }
             }
+            StageLook.SetDimMix(dm.Air, dm.Ambient, dm.Glow);   // 空気の効き (霧・環境光・暈。k=1 では何も書かない)
             StageLook.SetDim(_dimK);
         }
 
@@ -653,12 +887,96 @@ namespace DeckRogue.Game
             float t0 = eb.Cue, t1 = t0 + eb.Warm, t2 = t1 + eb.White, t3 = t2 + eb.Band;
             Color c = Color.white; float a = 0f;
             if (_plateT >= t0) CueTintOff();   // 赤い合図の終わり
+            if (eb.LightMode) { TickFlash(eb, t0, t1, t2, t3); return; }   // 光で出す (既定。板は帯だけ)
             if (_plateT < t0) a = 0f;
             else if (_plateT < t1) { c = eb.WarmColor; a = eb.WarmAlpha; }
             else if (_plateT < t2) { float u = (_plateT - t1) / Mathf.Max(0.01f, eb.White); c = eb.WhiteColor; a = eb.WhiteAlpha * (1f - 0.5f * u); }
             else if (_plateT < t3) { float u = (_plateT - t2) / Mathf.Max(0.01f, eb.Band); c = _plateBand; a = eb.BandAlpha * (u < 0.8f ? 1f : (1f - u) / 0.2f); }
             else { _plateT = -1f; HidePlate(); Log("敵の大技の板を消した"); return; }
             SetPlate(c, a);
+        }
+
+        // 敵の大技を光で出す (mode light): 暖と白は技の光の印つきの大きな点光源 2 つ (A = 技の向かう先 = 自分の足元の上・B = 自分と敵の真ん中の上) と
+        // 舞台の後処理の露出の山。板は技の色の帯だけ。光は段の頭で1回ずつ灯す (暖は合図の光を灯し直す = 光の数を増やさない・白は暖の2つを灯し直す)
+        static int _flashPhase;          // 0 = まだ (合図)・1 = 暖を灯した・2 = 白を灯した
+        static long _cueSeq, _flashSeqA, _flashSeqB;
+        // 次の段が灯し直す光 (合図・暖) を段の長さより長く灯す秒 (直し 2026-10-03 反証: StageFx は灯したフレームから数え、こちらは始めたフレームを数えない・
+        // LateUpdate の順も決まっていない = 光が段の境目の 1 フレーム前に消えて灯し直しに失敗し、光の無い 1 フレームが出ていた。60fps で 6 フレーム・30fps で 3 フレームの余り。
+        // 余りの分は次の段の頭で灯し直すので消えていく所は画に出ない。消え方は hold が dur の割合なので、合図は段の終わりまで少し明るいまま = 合図→暖が途切れない)
+        const float FlashReuseMargin = 0.1f;
+        static string _plateKey;
+
+        static void TickFlash(EnemyBigTune eb, float t0, float t1, float t2, float t3)
+        {
+            if (_plateT >= t3)
+            {
+                _plateT = -1f; HidePlate(); StageLook.SetExposureBoost(0f);
+                Log("敵の大技の光と帯を消した");
+                return;
+            }
+            float exp = 0f;
+            if (_plateT >= t0 && _plateT < t1)
+            {
+                if (_flashPhase < 1) FlashLights(eb, 1);
+                exp = eb.ExpWarm;
+            }
+            else if (_plateT >= t1 && _plateT < t2)
+            {
+                if (_flashPhase < 2) FlashLights(eb, 2);
+                float u = Mathf.Clamp01((_plateT - t1) / Mathf.Max(0.01f, eb.White));
+                exp = eb.ExpWhite * (1f - u * u);   // 白の頭がいちばん明るく、白の終わりで 0 へ
+            }
+            StageLook.SetExposureBoost(exp);   // 合図と帯の間は 0 (= 基へ正確に戻す)
+            if (_plateT >= t2)
+            {
+                float u = (_plateT - t2) / Mathf.Max(0.01f, eb.Band);
+                SetPlate(_plateBand, eb.BandAlpha * (u < 0.8f ? 1f : (1f - u) / 0.2f));
+            }
+            else SetPlate(Color.white, 0f);
+        }
+
+        /// <summary>暖 (phase 1) か白 (phase 2) の点光源 2 つを灯す (影なし・技の光の印つき = _HitReceive の材質が強く受ける)</summary>
+        static void FlashLights(EnemyBigTune eb, int phase)
+        {
+            _flashPhase = phase;
+            bool warm = phase == 1;
+            Color col = warm ? eb.WarmColor : eb.WhiteColor;
+            float I = warm ? eb.FlashWarm : eb.FlashWhite;
+            // 暖は白の段が灯し直すので、段の長さに FlashReuseMargin を足して段の境目まで消さない (白は最後の光 = 段の長さのまま消える)
+            float dur = Mathf.Max(0.02f, warm ? eb.Warm + FlashReuseMargin : eb.White);
+            float hold = warm ? 0.9f : 0.35f;   // 暖は段の間ずっと最大・白は 0.35 から消えていく (露出の山と同じ形)
+            if (!(I > 0f)) return;
+            Vector3 a, b;
+            bool hasB;
+            if (!FlashPoints(eb, out a, out b, out hasB)) { Log("敵の大技の光を置けない (板も座席も無い) " + _plateKey); return; }
+            // A の灯し直し: 暖は合図の光・白は暖の A (暖を灯さなかった = warm 0・強さ 0 なら合図の光)
+            long reuseA = warm ? _cueSeq : (_flashSeqA != 0 ? _flashSeqA : _cueSeq);
+            _flashSeqA = StageFx.MotionLight(a, col, I, eb.FlashRange, dur, hold, false, "enemyBig:" + (warm ? "warm" : "white"), "player", reuseA);
+            if (hasB && eb.CenterMul > 0f)
+                _flashSeqB = StageFx.MotionLight(b, col, I * eb.CenterMul, eb.FlashRange, dur, hold, false, "enemyBig-center:" + (warm ? "warm" : "white"), _plateKey, _flashSeqB);
+            Log("敵の大技の" + (warm ? "暖" : "白") + "の光 強さ " + F(I) + " 距離 " + F(eb.FlashRange) + " A " + V(a) + (hasB ? " B " + V(b) : "") + " 露出 +" + F(warm ? eb.ExpWarm : eb.ExpWhite));
+        }
+
+        /// <summary>
+        /// 暖と白の光の置き場: A = 技の向かう先 (自分の板の足元) の上 flashHeight、B = 自分と敵の足元の真ん中の上 centerHeight。どちらもカメラの方へ flashToward 寄せる。
+        /// 自分の板が無ければ A は敵の足元の上 (B なし)。どちらも無ければ false
+        /// </summary>
+        static bool FlashPoints(EnemyBigTune eb, out Vector3 a, out Vector3 b, out bool hasB)
+        {
+            a = b = default; hasB = false;
+            Vector3 pf, ef = default; float ph, eh;
+            bool hasP = Stage.TryGetUnitBox("player", out pf, out ph);
+            bool hasE = !string.IsNullOrEmpty(_plateKey) && Stage.TryGetUnitBox(_plateKey, out ef, out eh);
+            if (!hasP && !hasE) return false;
+            a = (hasP ? pf : ef) + Vector3.up * eb.FlashHeight;
+            if (hasP && hasE) { b = 0.5f * (pf + ef) + Vector3.up * eb.CenterHeight; hasB = true; }
+            var cam = Stage.Camera;
+            if (cam != null && eb.FlashToward > 0f)
+            {
+                var ta = cam.transform.position - a; if (ta.sqrMagnitude > 1e-6f) a += ta.normalized * eb.FlashToward;
+                if (hasB) { var tb = cam.transform.position - b; if (tb.sqrMagnitude > 1e-6f) b += tb.normalized * eb.FlashToward; }
+            }
+            return true;
         }
 
         static void SetPlate(Color c, float a)
@@ -721,6 +1039,9 @@ namespace DeckRogue.Game
             StageFx.MotionStop();   // 寄りの技の光を消して印を外す (前のランの印を次の画面・次の幕へ持ち越さない。2026-10-03 反証)
             if (_dimPhase != 0 || _dimK < 1f) { _dimPhase = 0; _dimK = 1f; StageLook.SetDim(1f); }
             if (_plateT >= 0f) { _plateT = -1f; HidePlate(); }
+            if (StageLook.FogScale < 1f) StageLook.SetFogScale(1f);           // 寄りの霧の倍率 (EndCloseUp が戻すが念のため)
+            if (StageLook.ExposureBoost != 0f) StageLook.SetExposureBoost(0f); // 敵の大技の露出の山
+            _flashPhase = 0; _cueSeq = _flashSeqA = _flashSeqB = 0;
             CueTintOff();
             Log("止めた (" + why + ")");
         }
@@ -733,6 +1054,8 @@ namespace DeckRogue.Game
             _plateHooked = false; _plateWanted = false; _plate = null; _plateR = null; _plateMat = null; _plateT = -1f;
             _cu = false; _cuEnemy = -1; _cuKey = null; _cuKind = null; _cuLeft = 0f; _cuChain = false; _cuChainT = 0f; _cuFramesMoved = false; _hidView = null;
             _focusSet = false; _dimPhase = 0; _dimK = 1f; _sparks = null; _cueOn = false; _cueImg = null;
+            _cuWallSet = false; _cuWallHow = null; _cuFog = 1f; _wallBoxes.Clear(); _wallBoxesOf = null; _wallBoxesSig = null;
+            _flashPhase = 0; _cueSeq = _flashSeqA = _flashSeqB = 0; _plateKey = null;
             _tune = null; _tuneOf = null; _registered = false;
             _closeUps = _extended = _dims = _enemyBigs = _bursts = 0;
             _recent.Clear();
@@ -747,14 +1070,22 @@ namespace DeckRogue.Game
             public float Scale = 1.28f, LookUp = 6f, Yaw = 0f, Pivot = 0.45f, MinCamY = 0.35f;
             public float ChainHold = 0.5f;   // 同じ札の次の当たりを待つ上限 (秒。Play の当たりは 0.12 秒・順送りは 0.4 秒おき)
             public bool HideUi = true, HideDesk = true, Frames = true;
+            public float FogScale = 0.6f;    // 寄りの間の霧の量の倍率 (StageLook.SetFogScale。1 = 触らない。直し 2026-10-03)
         }
 
         sealed class WallTune
         {
             public bool On = true;
             public float Back = 4f, Height = 1.6f, Intensity = 8f, Range = 9f;
-            public float? S;   // 道の座標 s (書けば Back の代わり)
+            public float? S;   // 道の座標 s (path: Back の代わり・behind: その s の面)
+            // mode behind (既定・直し 2026-10-03): 寄りのカメラ→対象の体の点の線の先で最初に当たる面の手前。path = 今までの置き方
+            public bool Behind = true;
+            public float Pull = 1.0f, Rise = 0.4f, MinHeight = 0.5f, MaxDist = 40f, MaxLift = 2.2f;
+            public string[] Parts = { "wall" };   // 壁とみなす部品の名前の頭 (block・arch・pillar)
+            public WallSteps Steps = WallSteps.Auto;   // 段の立ち上がりを面に数えるか (auto = 壁で持ち上げが maxLift を超える時だけ)
         }
+
+        enum WallSteps { Off, On, Auto }
 
         sealed class LightTune
         {
@@ -787,13 +1118,17 @@ namespace DeckRogue.Game
             public bool On = true;
             public float K = 0.4f, In = 0.2f, Out = 0.35f, After = 0.1f, Wait = 1.5f, Max = 4f;   // wait 1.5 = X 札の多段 (最後の1発で寄る) が 0.13+0.12×(X−1) 秒後でも間に合う
             public string MinKind = "boost";   // この重さ以上の寄りを含む札だけ暗くする (big < boost < finish < bossFinish)。既定 boost = 分析書 §8-3「ブーストの溜め」 (2026-10-03 反証で big から)
+            public float Air = 0.7f, Ambient = 0.9f, Glow = 0.9f;   // 空気の効き (StageLook.SetDimMix。霧・霧の板 / 環境光 / 暈と光の面。直し 2026-10-03)
         }
 
         sealed class SparkTune
         {
             public bool On = true;
-            public int Count = 70;
-            public float Life = 0.5f, SpeedMin = 3.5f, SpeedMax = 8f, SizeMin = 0.05f, SizeMax = 0.11f, Gravity = 0.6f, Drag = 3f, Glow = 2.2f, Height = 0.5f, TowardCamera = 0.8f;
+            // 直し 2026-10-03 (反証「火花が点のまま」): 数・速さ・大きさ・光り方を上げ、速さで伸ばす筋に (前の既定 70・0.5・[3.5,8]・[0.05,0.11]・2.2・点)
+            public int Count = 120;
+            public float Life = 0.6f, SpeedMin = 5f, SpeedMax = 11f, SizeMin = 0.07f, SizeMax = 0.15f, Gravity = 0.6f, Drag = 3f, Glow = 3f, Height = 0.5f, TowardCamera = 0.8f;
+            public bool Stretch = true;
+            public float VelocityScale = 0.06f, LengthScale = 1f;
         }
 
         sealed class FocusTune
@@ -834,6 +1169,11 @@ namespace DeckRogue.Game
             public Color? BandColor;
             public Color BandMelee = new Color(1f, 0.5f, 0.28f);
             public float BandAlpha = 0.16f;
+            // mode light (既定・直し 2026-10-03): 暖と白を舞台だけの光 (点光源 2 つ＋露出の山) で出す。false = plate (今までの板)
+            public bool LightMode = true;
+            public float FlashWarm = 8f, FlashWhite = 14f, FlashRange = 16f, FlashHeight = 1.2f, CenterHeight = 2f, CenterMul = 0.8f, FlashToward = 0.8f;
+            public float ExpWarm = 0.5f, ExpWhite = 1f;   // 露出の足し (段)
+            public float HurtFlash = 0.1f;                // 合図から帯の終わりまでの被弾の赤い点滅の α の上限 (0 = 出さない)
         }
 
         sealed class MotionTune
@@ -889,6 +1229,7 @@ namespace DeckRogue.Game
                     Z.Scale = Num(z, "scale", Z.Scale); Z.LookUp = Signed(z, "lookUp", Z.LookUp); Z.Yaw = Signed(z, "yaw", Z.Yaw);
                     Z.Pivot = Num(z, "pivot", Z.Pivot); Z.MinCamY = Signed(z, "minCamY", Z.MinCamY); Z.ChainHold = Num(z, "chainHold", Z.ChainHold);
                     Z.HideUi = Bool(z, "hideUi", Z.HideUi); Z.HideDesk = Bool(z, "hideDesk", Z.HideDesk);
+                    Z.FogScale = Num(z, "fogScale", Z.FogScale);
                     var fr = z["frames"];
                     if (fr != null && fr.Type == JTokenType.String) Z.Frames = !string.Equals((string)fr, "keep", StringComparison.OrdinalIgnoreCase);
                     else if (fr != null && fr.Type == JTokenType.Boolean) Z.Frames = (bool)fr;
@@ -919,6 +1260,19 @@ namespace DeckRogue.Game
                         W.On = Bool(w, "on", W.On); W.Back = Signed(w, "back", W.Back); W.Height = Signed(w, "height", W.Height);
                         W.Intensity = Num(w, "intensity", W.Intensity); W.Range = Num(w, "range", W.Range);
                         if (w["s"] != null && (w["s"].Type == JTokenType.Float || w["s"].Type == JTokenType.Integer)) { float sv = w["s"].Value<float>(); if (!float.IsNaN(sv) && !float.IsInfinity(sv)) W.S = sv; }
+                        var wm = w["mode"];
+                        if (wm != null && wm.Type == JTokenType.String) W.Behind = !string.Equals((string)wm, "path", StringComparison.OrdinalIgnoreCase);
+                        W.Pull = Num(w, "pull", W.Pull); W.Rise = Signed(w, "rise", W.Rise); W.MinHeight = Signed(w, "minHeight", W.MinHeight); W.MaxDist = Num(w, "maxDist", W.MaxDist);
+                        W.MaxLift = Num(w, "maxLift", W.MaxLift);
+                        var ws = w["steps"];
+                        if (ws != null && ws.Type == JTokenType.Boolean) W.Steps = (bool)ws ? WallSteps.On : WallSteps.Off;
+                        else if (ws != null && ws.Type == JTokenType.String) W.Steps = string.Equals((string)ws, "auto", StringComparison.OrdinalIgnoreCase) ? WallSteps.Auto : (string.Equals((string)ws, "on", StringComparison.OrdinalIgnoreCase) ? WallSteps.On : WallSteps.Off);
+                        if (w["parts"] is JArray wp)
+                        {
+                            var names = new List<string>();
+                            foreach (var x in wp) if (x.Type == JTokenType.String && ((string)x).Length > 0) names.Add((string)x);
+                            W.Parts = names.ToArray();
+                        }
                     }
                 }
                 if (m["dim"] is JObject dm)
@@ -927,6 +1281,7 @@ namespace DeckRogue.Game
                     D.On = Bool(dm, "on", D.On); D.K = Num(dm, "k", D.K); D.In = Num(dm, "in", D.In); D.Out = Num(dm, "out", D.Out);
                     D.After = Num(dm, "after", D.After); D.Wait = Num(dm, "wait", D.Wait); D.Max = Num(dm, "max", D.Max);
                     if (dm["minKind"] != null && dm["minKind"].Type == JTokenType.String && Rank((string)dm["minKind"]) > 0) D.MinKind = (string)dm["minKind"];
+                    D.Air = Num(dm, "air", D.Air); D.Ambient = Num(dm, "ambient", D.Ambient); D.Glow = Num(dm, "glow", D.Glow);
                 }
                 if (m["sparks"] is JObject sp)
                 {
@@ -935,6 +1290,7 @@ namespace DeckRogue.Game
                     Range2(sp, "speed", ref S.SpeedMin, ref S.SpeedMax); Range2(sp, "size", ref S.SizeMin, ref S.SizeMax);
                     S.Gravity = Signed(sp, "gravity", S.Gravity); S.Drag = Num(sp, "drag", S.Drag); S.Glow = Num(sp, "glow", S.Glow);
                     S.Height = Num(sp, "height", S.Height); S.TowardCamera = Num(sp, "towardCamera", S.TowardCamera);
+                    S.Stretch = Bool(sp, "stretch", S.Stretch); S.VelocityScale = Num(sp, "velocityScale", S.VelocityScale); S.LengthScale = Num(sp, "lengthScale", S.LengthScale);
                 }
                 if (m["focus"] is JObject fo)
                 {
@@ -962,12 +1318,20 @@ namespace DeckRogue.Game
                     if (eb["bandColor"] != null && Col(eb["bandColor"], out c)) E.BandColor = c;
                     if (eb["bandMelee"] != null && Col(eb["bandMelee"], out c)) E.BandMelee = c;
                     E.BandAlpha = Num(eb, "bandAlpha", E.BandAlpha);
+                    var em = eb["mode"];
+                    if (em != null && em.Type == JTokenType.String) E.LightMode = !string.Equals((string)em, "plate", StringComparison.OrdinalIgnoreCase);
+                    E.FlashWarm = Num(eb, "flashWarm", E.FlashWarm); E.FlashWhite = Num(eb, "flashWhite", E.FlashWhite); E.FlashRange = Num(eb, "flashRange", E.FlashRange);
+                    E.FlashHeight = Signed(eb, "flashHeight", E.FlashHeight); E.CenterHeight = Signed(eb, "centerHeight", E.CenterHeight);
+                    E.CenterMul = Num(eb, "centerMul", E.CenterMul); E.FlashToward = Num(eb, "flashToward", E.FlashToward);
+                    E.ExpWarm = Signed(eb, "expWarm", E.ExpWarm); E.ExpWhite = Signed(eb, "expWhite", E.ExpWhite);
+                    E.HurtFlash = Num(eb, "hurtFlashAlpha", E.HurtFlash);
                 }
             }
             catch (Exception e) { Debug.LogWarning("[StageMotion] 光の設計図の motion を読めない (読めた所まで使う): " + e.Message); }
             if (HD2DFlags.Det || HD2DFlags.DumpLayout)
                 Debug.Log("[StageMotion] motion を読んだ: " + (t.On ? "on" : "off") + (phone ? " (phone を重ねた)" : "") + " 寄り " + F(t.Zoom.Big) + "/" + F(t.Zoom.Boost) + "/" + F(t.Zoom.Finish) + "/" + F(t.Zoom.BossFinish)
-                    + "秒 倍率 " + F(t.Zoom.Scale) + " 光 " + F(t.Light.Intensity) + " 距離 " + F(t.Light.Range) + " 暗転 " + F(t.Dim.K));
+                    + "秒 倍率 " + F(t.Zoom.Scale) + " 光 " + F(t.Light.Intensity) + " 距離 " + F(t.Light.Range) + " 暗転 " + F(t.Dim.K)
+                    + " 壁 " + (t.Light.Wall.Behind ? "behind" : "path") + " 霧 " + F(t.Zoom.FogScale) + " 敵の大技 " + (t.EnemyBig.LightMode ? "light" : "plate") + " 火花 " + t.Sparks.Count + (t.Sparks.Stretch ? " 筋" : ""));
             return t;
         }
 
@@ -1031,6 +1395,7 @@ namespace DeckRogue.Game
                 r["pathBand"] = new[] { TiltShiftSettings.PathNear, TiltShiftSettings.PathFar };
                 r["depthBand"] = new[] { TiltShiftSettings.BandNear, TiltShiftSettings.BandFar };
             }
+            if (kind != null && kind.StartsWith("wall:", StringComparison.Ordinal)) r["pos"] = _cuWall;   // 壁の光の置き場 (直し 2026-10-03)
             _recent.Insert(0, r);
             if (_recent.Count > RecentMax) _recent.RemoveRange(RecentMax, _recent.Count - RecentMax);
         }
@@ -1047,16 +1412,25 @@ namespace DeckRogue.Game
                 { "light", new[] { t.Light.Intensity, t.Light.Range, t.Light.Dur, t.Light.Hold } }, { "wall", new[] { t.Light.Wall.Back, t.Light.Wall.Height, t.Light.Wall.Intensity, t.Light.Wall.Range } }, { "wallS", t.Light.Wall.S },
                 { "dimK", t.Dim.K }, { "sparks", t.Sparks.Count }, { "focus", new[] { t.Focus.Near, t.Focus.Far, t.Focus.TiltTop } }, { "enemyBigMin", t.EnemyBig.MinTotal }, { "boostMin", t.Zoom.BoostMin },
                 { "dimMinKind", t.Dim.MinKind }, { "enemyBigAuto", t.EnemyBig.Auto }, { "enemyBigMoves", t.EnemyBig.Moves != null ? t.EnemyBig.Moves.Count : 0 },
+                // 直し 2026-10-03: 壁の光の置き方・寄りの霧・暗転の空気の効き・敵の大技の出し方・火花の筋
+                { "wallMode", t.Light.Wall.Behind ? "behind" : "path" }, { "wallBehind", new[] { t.Light.Wall.Pull, t.Light.Wall.Rise, t.Light.Wall.MinHeight, t.Light.Wall.MaxDist, t.Light.Wall.MaxLift } }, { "wallSteps", t.Light.Wall.Steps.ToString() },
+                { "fogScale", t.Zoom.FogScale }, { "dimMix", new[] { t.Dim.Air, t.Dim.Ambient, t.Dim.Glow } },
+                { "enemyBigMode", t.EnemyBig.LightMode ? "light" : "plate" },
+                { "enemyBigFlash", new[] { t.EnemyBig.FlashWarm, t.EnemyBig.FlashWhite, t.EnemyBig.FlashRange, t.EnemyBig.ExpWarm, t.EnemyBig.ExpWhite, t.EnemyBig.HurtFlash } },
+                { "sparkStretch", t.Sparks.Stretch ? new[] { t.Sparks.VelocityScale, t.Sparks.LengthScale } : null },
             };
             o["closeUp"] = _cu ? new Dictionary<string, object>
             {
                 { "key", _cuKey }, { "kind", _cuKind }, { "left", _cuLeft }, { "total", _cuTotal }, { "chain", _cuChain }, { "chainWait", _cuChainT }, { "camPos", _cuPos }, { "camEuler", _cuRot.eulerAngles }, { "pivot", _cuPivot },
                 // 額縁を寄りのカメラに付け直している (Diorama.OnCameraLayout に寄りの姿勢を渡した) = この間の Diorama の記録 (offscreenParts など) は寄りのカメラから数えた値
                 { "framesOnCloseUp", _cuFramesMoved },
+                { "wall", _cuWallSet ? (object)_cuWall : null }, { "wallHow", _cuWallHow }, { "fogScale", StageLook.FogScale },
             } : null;
             o["dimK"] = _dimK;
             o["dimPhase"] = _dimPhase;
             o["plateT"] = _plateT;
+            o["flashPhase"] = _flashPhase;
+            o["exposureBoost"] = StageLook.ExposureBoost;
             o["counts"] = new Dictionary<string, object> { { "closeUps", _closeUps }, { "extended", _extended }, { "dims", _dims }, { "enemyBigs", _enemyBigs }, { "sparkBursts", _bursts } };
             o["recent"] = new List<Dictionary<string, object>>(_recent);
             return o;

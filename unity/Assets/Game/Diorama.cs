@@ -95,6 +95,35 @@ namespace DeckRogue.Game
         /// <summary>材質 (設計図の surfaces の名前 → Material)。StageLook (P09/P12) が受光 _Receive などを後から書き換えてよい</summary>
         public static readonly Dictionary<string, Material> Materials = new Dictionary<string, Material>();
 
+        /// <summary>
+        /// 段2 (2026-10-03 レーン M・読むだけ): 組んだ霧の板 (kind mist・材質 Materials["mist"]) の Renderer を into に足す。
+        /// StageLook の暗転と寄りの霧の倍率が板ごとの MaterialPropertyBlock (_MistParams・_MistTint) を一時的に書き換えるため。組み立てには触れない
+        /// </summary>
+        public static void CollectMistRenderers(List<Renderer> into)
+        {
+            if (into == null || Root == null) return;
+            Material m;
+            if (!Materials.TryGetValue("mist", out m) || m == null) return;
+            // 組んだ回 (根と材質) ごとに1回だけ箱庭を走査して覚える (霧の板は組む時にしか作らない。寄りのたびに走査とアロケーションをしない。直し 2026-10-03 反証)
+            if (!ReferenceEquals(_mistRsRoot, Root) || !ReferenceEquals(_mistRsMat, m))
+            {
+                _mistRs.Clear();
+                _mistRsRoot = Root; _mistRsMat = m;
+                foreach (var r in Root.GetComponentsInChildren<Renderer>(true))
+                    if (r != null && r.sharedMaterial == m) _mistRs.Add(r);
+            }
+            foreach (var r in _mistRs) if (r != null) into.Add(r);
+        }
+        static readonly List<Renderer> _mistRs = new List<Renderer>();
+        static Transform _mistRsRoot;
+        static Material _mistRsMat;
+
+        /// <summary>
+        /// 段2 (2026-10-03 レーン M・読むだけ): 部品を置く道の座標・高さ・大きさ (組む時の PlaceOf と同じ規則 = スマホなら "phone" の t・s・y・scale を書いた物だけ上書き)。
+        /// StageMotion の壁の光の当たり判定 (壁の部品の箱) が組んだ壁と合うように。組み立てには触れない
+        /// </summary>
+        public static void PartPlace(DioramaPart p, out float t, out float s, out float y, out float scale) { PlaceOf(p, out t, out s, out y, out scale); }
+
         /// <summary>最後に組んだ時の点検 (部品数・三角形・Renderer・材質・座席の帯の高さ)</summary>
         public static DioramaStats LastStats { get; private set; }
 

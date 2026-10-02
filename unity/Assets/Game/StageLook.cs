@@ -40,6 +40,9 @@
 //   技の光の受け (materials.<名前>.hitReceive) … 材質の _HitReceive (レーン S のシェーダの口。書かなければ触らない)
 //   戦闘以外の画面の暗がりの濃さ (menuShade.top・bottom) … MenuShadeTop・MenuShadeBottom (無ければ null = BattleScreen の今の定数)
 //   暗転 SetDim(k) … 月・舞台の灯・逆光・lights を組んだ時の値 × k (レーン M が大技の前後に呼ぶ。k=1 で元へ。組み直しで 1 に戻る)
+//     段2 の直し (2026-10-03 レーン M・名前の頭 S2M_): 空気も落とす (霧の色・芯・高さの霧・2段目の色・霧の板・暈と光の面・環境光。効きは SetDimMix)。
+//     寄りの霧の倍率 SetFogScale(f) (霧の end を伸ばし 2段目と霧の板の α を f 倍)・敵の大技の露出の山 SetExposureBoost(段) も同じ器 (基を取って倍を書き、1/0 で基へ正確に戻す)。
+//     呼ぶのは StageMotion だけ (門 = motion.on)。呼ばれなければ1つも書かない
 //   粒の置き場 (fx.<名前>: {"on", "pos", "at"}) … Stage.SetFxForAct の箱庭の枝が S2B_FxPlace を呼ぶ (火の粉を炉の上へ)
 //   "motion" … 読むのはレーン M (StageFx・StageCamera)。B は書くだけ
 using System;
@@ -378,6 +381,7 @@ namespace DeckRogue.Game
             EnsureIds();
             if (cam == null) cam = Stage.Camera != null ? Stage.Camera : Camera.main;
             var d = Load(act);
+            S2M_Reset();         // 段2 レーン M: 暗転の空気・寄りの霧・露出の山を基へ戻して捨てる (組み直しは暗転なしから。何も書き換えていなければ何もしない)
             StageFx.StopAll();   // 前の Apply の技の光を消し、借りていた影を返す
             TakeBackups(cam, profile);
             Current = d;
@@ -411,6 +415,7 @@ namespace DeckRogue.Game
             StageFx.StopAll();
             if (!Active) return;
             EnsureIds();
+            S2M_Reset();   // 段2 レーン M: 暗転の空気・寄りの霧・露出の山を基へ戻してから控えを戻す (何も書き換えていなければ何もしない)
             DestroyRig();
             if (_bakVol != null) { LastRestoreVolumeOk = _bakVol.Put(); _bakVol = null; }
             if (_bakCam != null) { _bakCam.Put(); _bakCam = null; }
@@ -445,16 +450,55 @@ namespace DeckRogue.Game
         // ---- 段2 の口 (2026-10-03・docs/design/hd2d-stage2/contracts.md §C2)。中身はレーン B (S2B) ----
         /// <summary>
         /// 舞台の暗転 (レーン M の大技の前後): 月・舞台の灯・逆光・lights[] の強さを「組んだ時の値 × k」にする (0≦k≦1。k=1 で元の値へ正確に戻す)。
+        /// 段2 の直し (2026-10-03 レーン M・反証「暗転が見えない = 画の明るさの約 9 割は空気から」): 空気も落とす = 距離の霧の色・霧の光の芯の色・高さの霧の色・
+        /// 霧の2段目の色 (書いてある時)・霧の板 (StageMist の tint)・暈と光の面 (StageShaft の _Intensity)・環境光 (Trilight の色と SH) も
+        /// 「基 × lerp(1, k, 効き)」(効きは SetDimMix・既定 霧 0.7・環境光 0.9・暈 0.9)。k=1 (かつ寄りの霧の倍率 1) で全部を基へ正確に戻す (S2M_WriteAir)。
         /// キャラの固定のキー (ApplyCharGlobals の全体値) と技の光 (StageFx) は触らない。光を当てていない時は値を覚えるだけ (次の組み直しで 1 に戻る)。
-        /// 門 (look の motion.on・有効な箱庭) は呼ぶ側の M が持つ = 呼ばれたら素直に効く
+        /// 門 (look の motion.on・有効な箱庭) は呼ぶ側の M が持つ = 呼ばれたら素直に効く (呼ぶのは StageMotion だけ)
         /// </summary>
         public static void SetDim(float k)
         {
             _s2bDim = float.IsNaN(k) ? 1f : Mathf.Clamp01(k);
             S2B_WriteIntensities();
+            S2M_WriteAir();   // 段2 レーン M: 空気 (霧・霧の板・暈・環境光)。暗転も寄りの霧も無ければ何も書かない
         }
         /// <summary>今の暗転の倍率 (1 = 暗転なし)</summary>
         public static float Dim => _s2bDim;
+
+        /// <summary>
+        /// 段2 (レーン M・S2M): 暗転の空気の効き (0 = 落とさない・1 = k と同じだけ落とす)。air = 霧の色・芯・高さの霧・2段目・霧の板の色、ambient = 環境光、glow = 暈と光の面。
+        /// 呼ぶのは StageMotion だけ (光の設計図の motion.dim.air・ambient・glow)。書いていなければ既定 0.7・0.9・0.9。次の SetDim から効く
+        /// </summary>
+        public static void SetDimMix(float air, float ambient, float glow)
+        {
+            _s2mMixAir = float.IsNaN(air) ? 0.7f : Mathf.Clamp01(air);
+            _s2mMixAmb = float.IsNaN(ambient) ? 0.9f : Mathf.Clamp01(ambient);
+            _s2mMixGlow = float.IsNaN(glow) ? 0.9f : Mathf.Clamp01(glow);
+        }
+
+        /// <summary>
+        /// 段2 (レーン M・S2M): 寄りの間だけ距離の霧と霧の板を薄める倍率 f (0.05〜1。1 = そのまま)。距離の霧の end を start + (end − start) ÷ f へ伸ばし
+        /// (= 同じ深さの霧の量が f 倍)、霧の2段目の強さと霧の板の α を f 倍にする。f=1 (かつ暗転なし) で基へ正確に戻す。呼ぶのは StageMotion だけ
+        /// </summary>
+        public static void SetFogScale(float f)
+        {
+            _s2mFog = float.IsNaN(f) ? 1f : Mathf.Clamp(f, 0.05f, 1f);
+            S2M_WriteAir();
+        }
+        /// <summary>段2 (レーン M・S2M): 今の寄りの霧の倍率 (1 = そのまま。組み直しで 1 に戻る)</summary>
+        public static float FogScale => _s2mFog;
+
+        /// <summary>
+        /// 段2 (レーン M・S2M): 敵の大技の露出の山。後処理の ColorAdjustments.postExposure を「基 + stops」にする (0 で基へ正確に戻す)。
+        /// 舞台のカメラの後処理だけ = 紙の UI (Overlay) は染まらない (キャラの板は舞台と一緒に明るくなる)。呼ぶのは StageMotion だけ。光を当てていなければ覚えるだけ
+        /// </summary>
+        public static void SetExposureBoost(float stops)
+        {
+            _s2mExp = float.IsNaN(stops) || float.IsInfinity(stops) ? 0f : Mathf.Clamp(stops, -4f, 4f);
+            S2M_WriteExposure();
+        }
+        /// <summary>段2 (レーン M・S2M): 今の露出の足し (段。0 = そのまま)</summary>
+        public static float ExposureBoost => _s2mExp;
         /// <summary>戦闘以外の画面の暗がり (BattleScreen.MenuShade) の上端と下端の α (光の設計図の "menuShade": {"top","bottom"}・0〜1)。無ければ null = 今の定数</summary>
         public static float? MenuShadeTop { get { return S2B_MenuShade("top"); } }
         public static float? MenuShadeBottom { get { return S2B_MenuShade("bottom"); } }
@@ -555,6 +599,7 @@ namespace DeckRogue.Game
             var urp = BackedUrp();
             if (urp != null) urp.shadowDistance = d.Shadow.Distance * r;
             if (!_seatBandSet) ApplyFallbackBand();
+            if (_s2mAirOn) S2M_RebaseDistances();   // 段2 レーン M: 暗転か寄りの霧の最中なら、今書いた距離の値を新しい基にして倍を掛け直す (書き換えていなければ通らない)
         }
 
         /// <summary>
@@ -611,6 +656,7 @@ namespace DeckRogue.Game
                 });
             o["pointLights"] = pts;
             o["dim"] = _s2bDim;
+            o["motionAir"] = S2M_DebugInfo();   // 段2 レーン M: 暗転の空気・寄りの霧・露出の山 (書き換えていなければ on false)
             o["backlightPlace"] = _s2bBacklightPlace;
             o["menuShade"] = new Dictionary<string, object> { { "top", MenuShadeTop }, { "bottom", MenuShadeBottom } };
             o["shadowed"] = RigShadowCount() + _borrowed;
@@ -1556,6 +1602,190 @@ namespace DeckRogue.Game
             var t = ms[key];
             if (!IsNum(t)) return null;
             return Mathf.Clamp01((float)t);
+        }
+
+        // ================================================================ 段2 レーン M (S2M): 暗転の空気・寄りの霧の倍率・敵の大技の露出の山
+        // 呼ぶのは StageMotion だけ (SetDim・SetDimMix・SetFogScale・SetExposureBoost。門 = 光の設計図の motion.on・有効な箱庭)。
+        // 初めて書き換える時に今の値を「基」に取り、基 × 倍を書く。暗転なし (k=1) かつ霧の倍率 1 になったら基へ戻して基を捨てる (= k=1 で正確に元へ)。
+        // 基の取り直しは距離の書き直し (ScaleByCameraDistance = 霧の end と2段目) の時だけ。組み直し (Apply) と Restore は S2M_Reset で基へ戻してから捨てる。
+        // 光の設計図の値 (StageLookData) は書き換えない。キャラの固定のキー・キャラの環境光 (_CharAmb*) と技の光は触らない。
+        // 環境光は Trilight の色と SH (RenderSettings.ambientProbe) の両方に同じ倍を書く (SH は色から作られる線形の値なので、色から作り直されても同じ値になる)。
+        // 発光 (_e.png) は箱庭のシェーダ (StageModule) が読んでいない (2026-10-03 時点) = 落とす物が無い。暈 (halo) と光の面 (fog・shaft) は StageShaft の _Intensity で落とす
+
+        static float _s2mFog = 1f, _s2mExp;
+        static float _s2mMixAir = 0.7f, _s2mMixAmb = 0.9f, _s2mMixGlow = 0.9f;
+        static bool _s2mAirOn, _s2mExpOn;
+        static Color _s2mFogColor, _s2mSky, _s2mEquator, _s2mGround;
+        static SphericalHarmonicsL2 _s2mProbe;
+        static float _s2mFogEnd, _s2mExpBase;
+        static Vector4 _s2mLobeColor, _s2mHFogColor, _s2mFog2, _s2mFog2Color;
+        static readonly List<KeyValuePair<Material, float>> _s2mGlow = new List<KeyValuePair<Material, float>>();
+        sealed class S2MMist { public Renderer R; public Vector4 Params, Tint; }
+        static readonly List<S2MMist> _s2mMists = new List<S2MMist>();
+        static readonly HashSet<Material> _s2mSeen = new HashSet<Material>();   // S2M_TakeAirBase の走査の器 (使い回す)
+        static readonly List<Renderer> _s2mRs = new List<Renderer>();
+        static MaterialPropertyBlock _s2mMpb;
+        static int _s2mIdMistParams, _s2mIdMistTint;
+        static float _s2mKAir = 1f, _s2mKAmb = 1f, _s2mKGlow = 1f;   // 最後に書いた倍 (記録)
+
+        /// <summary>暗転 (_s2bDim) と寄りの霧の倍率 (_s2mFog) を空気へ書く。どちらも 1 なら基へ戻す (書き換えていなければ何もしない)</summary>
+        static void S2M_WriteAir()
+        {
+            if (!Active) return;
+            bool want = _s2bDim < 1f || _s2mFog < 1f;
+            if (!want) { if (_s2mAirOn) S2M_PutAirBase(); return; }
+            EnsureIds();
+            if (!_s2mAirOn) S2M_TakeAirBase();
+            float k = _s2bDim, f = _s2mFog;
+            float kAir = Mathf.Lerp(1f, k, _s2mMixAir), kAmb = Mathf.Lerp(1f, k, _s2mMixAmb), kGlow = Mathf.Lerp(1f, k, _s2mMixGlow);
+            _s2mKAir = kAir; _s2mKAmb = kAmb; _s2mKGlow = kGlow;
+            // 距離の霧: 色 × kAir・end を伸ばす (同じ深さの霧の量が f 倍)
+            RenderSettings.fogColor = S2M_Mul(_s2mFogColor, kAir);
+            float start = RenderSettings.fogStartDistance;
+            RenderSettings.fogEndDistance = f < 1f ? start + Mathf.Max(0.01f, _s2mFogEnd - start) / f : _s2mFogEnd;
+            // 霧の光の芯 (rgb = 芯で足す色・a = 外れた所の倍率は触らない)・高さの霧の色 (a = 濃さは触らない)・霧の2段目 (強さ × f・色は書いてある時だけ × kAir)
+            Shader.SetGlobalVector(_idLobeColor, S2M_MulRgb(_s2mLobeColor, kAir));
+            Shader.SetGlobalVector(_idHFogColor, S2M_MulRgb(_s2mHFogColor, kAir));
+            Shader.SetGlobalVector(R3B_idFog2, new Vector4(_s2mFog2.x, _s2mFog2.y, _s2mFog2.z * f, _s2mFog2.w));
+            if (_s2mFog2Color.w > 0.5f) Shader.SetGlobalVector(R3B_idFog2Color, S2M_MulRgb(_s2mFog2Color, kAir));
+            // 環境光 (舞台の SampleSH。キャラは _CharAmb* を読むので変わらない)
+            S2M_PutAmbient(S2M_Mul(_s2mSky, kAmb), S2M_Mul(_s2mEquator, kAmb), S2M_Mul(_s2mGround, kAmb), _s2mProbe * kAmb);
+            // 暈と光の面 (StageShaft)
+            foreach (var kv in _s2mGlow) if (kv.Key != null) kv.Key.SetFloat(_idIntensity, kv.Value * kGlow);
+            // 霧の板 (StageMist): α × f・tint (書いてある板だけ) × kAir。tint の無い板は霧の色を使う = 上の霧の色で落ちる
+            foreach (var m in _s2mMists)
+            {
+                if (m.R == null) continue;
+                m.R.GetPropertyBlock(_s2mMpb);
+                _s2mMpb.SetVector(_s2mIdMistParams, new Vector4(m.Params.x * f, m.Params.y, m.Params.z, m.Params.w));
+                _s2mMpb.SetVector(_s2mIdMistTint, m.Tint.w > 0.5f ? S2M_MulRgb(m.Tint, kAir) : m.Tint);
+                m.R.SetPropertyBlock(_s2mMpb);
+            }
+        }
+
+        /// <summary>今の値を基に取る (書き換える前・1回だけ)</summary>
+        static void S2M_TakeAirBase()
+        {
+            _s2mFogColor = RenderSettings.fogColor;
+            _s2mFogEnd = RenderSettings.fogEndDistance;
+            _s2mSky = RenderSettings.ambientSkyColor; _s2mEquator = RenderSettings.ambientEquatorColor; _s2mGround = RenderSettings.ambientGroundColor;
+            _s2mProbe = RenderSettings.ambientProbe;
+            _s2mLobeColor = Shader.GetGlobalVector(_idLobeColor);
+            _s2mHFogColor = Shader.GetGlobalVector(_idHFogColor);
+            _s2mFog2 = Shader.GetGlobalVector(R3B_idFog2);
+            _s2mFog2Color = Shader.GetGlobalVector(R3B_idFog2Color);
+            _s2mGlow.Clear();
+            // 走査の器は使い回す (寄りのたびに基を取るので、毎回のアロケーションと箱庭全体の走査をしない。霧の板の一覧は Diorama が組んだ回ごとに覚える。直し 2026-10-03 反証)
+            _s2mSeen.Clear();
+            foreach (var mkv in Diorama.Materials)
+            {
+                var m = mkv.Value;
+                if (m == null || !_s2mSeen.Add(m) || !m.HasProperty(_idTint) || !m.HasProperty(_idIntensity)) continue;   // StageShaft (暈・霧の面・光の筋) だけ
+                _s2mGlow.Add(new KeyValuePair<Material, float>(m, m.GetFloat(_idIntensity)));
+            }
+            _s2mSeen.Clear();
+            _s2mMists.Clear();
+            if (_s2mMpb == null) _s2mMpb = new MaterialPropertyBlock();
+            if (_s2mIdMistParams == 0) { _s2mIdMistParams = Shader.PropertyToID("_MistParams"); _s2mIdMistTint = Shader.PropertyToID("_MistTint"); }
+            _s2mRs.Clear();
+            Diorama.CollectMistRenderers(_s2mRs);
+            foreach (var r in _s2mRs)
+            {
+                r.GetPropertyBlock(_s2mMpb);
+                _s2mMists.Add(new S2MMist { R = r, Params = _s2mMpb.GetVector(_s2mIdMistParams), Tint = _s2mMpb.GetVector(_s2mIdMistTint) });
+            }
+            _s2mRs.Clear();
+            _s2mAirOn = true;
+        }
+
+        /// <summary>基へ戻して基を捨てる (暗転なし・霧の倍率 1 になった時・組み直しと Restore の前)</summary>
+        static void S2M_PutAirBase()
+        {
+            if (!_s2mAirOn) return;
+            _s2mAirOn = false;
+            _s2mKAir = _s2mKAmb = _s2mKGlow = 1f;
+            RenderSettings.fogColor = _s2mFogColor;
+            RenderSettings.fogEndDistance = _s2mFogEnd;
+            if (_idsReady)
+            {
+                Shader.SetGlobalVector(_idLobeColor, _s2mLobeColor);
+                Shader.SetGlobalVector(_idHFogColor, _s2mHFogColor);
+                Shader.SetGlobalVector(R3B_idFog2, _s2mFog2);
+                Shader.SetGlobalVector(R3B_idFog2Color, _s2mFog2Color);
+            }
+            S2M_PutAmbient(_s2mSky, _s2mEquator, _s2mGround, _s2mProbe);
+            foreach (var kv in _s2mGlow) if (kv.Key != null) kv.Key.SetFloat(_idIntensity, kv.Value);
+            _s2mGlow.Clear();
+            foreach (var m in _s2mMists)
+            {
+                if (m.R == null) continue;
+                m.R.GetPropertyBlock(_s2mMpb);
+                _s2mMpb.SetVector(_s2mIdMistParams, m.Params);
+                _s2mMpb.SetVector(_s2mIdMistTint, m.Tint);
+                m.R.SetPropertyBlock(_s2mMpb);
+            }
+            _s2mMists.Clear();
+        }
+
+        /// <summary>距離の値を書き直した (ScaleByCameraDistance): 霧の end と2段目を新しい基にして、倍を掛け直す</summary>
+        static void S2M_RebaseDistances()
+        {
+            _s2mFogEnd = RenderSettings.fogEndDistance;
+            _s2mFog2 = Shader.GetGlobalVector(R3B_idFog2);
+            _s2mFog2Color = Shader.GetGlobalVector(R3B_idFog2Color);
+            S2M_WriteAir();
+        }
+
+        /// <summary>環境光の色 (Trilight の3色・Flat なら空の色 = ambientLight) と SH を書く</summary>
+        static void S2M_PutAmbient(Color sky, Color equator, Color ground, SphericalHarmonicsL2 probe)
+        {
+            RenderSettings.ambientSkyColor = sky;   // = ambientLight (Flat の色)
+            RenderSettings.ambientEquatorColor = equator;
+            RenderSettings.ambientGroundColor = ground;
+            RenderSettings.ambientProbe = probe;
+        }
+
+        /// <summary>露出の山を書く (0 で基へ戻す)。光を当てていない・Volume の控えが無い・ColorAdjustments が無ければ何もしない</summary>
+        static void S2M_WriteExposure()
+        {
+            if (!Active || _bakVol == null || _bakVol.Profile == null) return;
+            ColorAdjustments ca;
+            if (!_bakVol.Profile.TryGet(out ca) || ca == null) return;
+            if (_s2mExp == 0f)
+            {
+                if (_s2mExpOn) { ca.postExposure.value = _s2mExpBase; _s2mExpOn = false; }
+                return;
+            }
+            if (!_s2mExpOn) { _s2mExpBase = ca.postExposure.value; _s2mExpOn = true; }
+            ca.postExposure.value = _s2mExpBase + _s2mExp;
+        }
+
+        /// <summary>全部を基へ戻して捨てる (Apply の頭・Restore の頭)。何も書き換えていなければ何もしない</summary>
+        static void S2M_Reset()
+        {
+            if (_s2mAirOn) S2M_PutAirBase();
+            if (_s2mExpOn)
+            {
+                ColorAdjustments ca;
+                if (_bakVol != null && _bakVol.Profile != null && _bakVol.Profile.TryGet(out ca) && ca != null) ca.postExposure.value = _s2mExpBase;
+                _s2mExpOn = false;
+            }
+            _s2mFog = 1f; _s2mExp = 0f;
+        }
+
+        static Color S2M_Mul(Color c, float k) { return new Color(c.r * k, c.g * k, c.b * k, c.a); }
+        static Vector4 S2M_MulRgb(Vector4 v, float k) { return new Vector4(v.x * k, v.y * k, v.z * k, v.w); }
+
+        /// <summary>dumplayout の extra.look.motionAir: 書き換えているか・暗転・霧の倍率・露出の足し・効き・最後に書いた倍・数</summary>
+        static object S2M_DebugInfo()
+        {
+            return new Dictionary<string, object>
+            {
+                { "on", _s2mAirOn }, { "dim", _s2bDim }, { "fogScale", _s2mFog }, { "exposureBoost", _s2mExp }, { "exposureOn", _s2mExpOn },
+                { "mix", new[] { _s2mMixAir, _s2mMixAmb, _s2mMixGlow } }, { "k", new[] { _s2mKAir, _s2mKAmb, _s2mKGlow } },
+                { "glowMaterials", _s2mGlow.Count }, { "mists", _s2mMists.Count },
+                { "fogEnd", RenderSettings.fogEndDistance }, { "fogEndBase", _s2mAirOn ? _s2mFogEnd : RenderSettings.fogEndDistance },
+            };
         }
 
         static Texture2D MakeCookieTexture(string name, int size, double[] pattern, double[] gain, TextureWrapMode wrap)

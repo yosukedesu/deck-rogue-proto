@@ -12,6 +12,7 @@
 // 同じ光を当たりごとに灯し直す (reuse = 前に返した番号。まだ灯っていればその光の明るさ・色・場所を新しくする = 多段で光の数が増えない)。
 // 印の付いた光を普通の当たりに使い回す時は印を外す (Slot.Marked)。門が偽なら印は一度も付かない = 今の口 (PlayerHit・FoeHit・Guard・Cast・Finish) の通り方は今と同じ。
 // 印は寄りの光が灯っている間だけ: 減衰で消えた時 (Tick)・全部消す時 (StopAll)・動きを止める時 (MotionStop) に外す (2026-10-03 反証: 消えた光の印が次の幕へ残っていた)。
+// 直し 2026-10-03: MotionCue は灯した光の番号を返す (敵の大技を光で出す時、暖の段が合図の光を MotionLight の reuse で灯し直す = 光の数を増やさない)。
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -188,12 +189,12 @@ namespace DeckRogue.Game
 
         /// <summary>
         /// 敵の大技の赤い合図 (約束 §C5「赤の合図 0.17」・分析書 §8 の guardian 22.48s「敵の絵が赤く染まり、足元が光る」): world に赤い点光源を dur 秒。
-        /// 影なし・印なし (技の光ではない)。届く距離 range
+        /// 影なし・印なし (技の光ではない)。届く距離 range。返り値 = 灯した光の番号 (敵の大技を光で出す時、暖の段がこの光を MotionLight の reuse で灯し直す = 光の数を増やさない。灯さなかったら 0)
         /// </summary>
-        internal static void MotionCue(Vector3 world, Color color, float intensity, float range, float dur, string key)
+        internal static long MotionCue(Vector3 world, Color color, float intensity, float range, float dur, string key)
         {
-            if (!Live) return;
-            LightAt(world, color, intensity, dur, 0.6f, false, "cue", key, range, false);
+            if (!Live) return 0;
+            return LightAt(world, color, intensity, dur, 0.6f, false, "cue", key, range, false);
         }
 
         /// <summary>
