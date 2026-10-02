@@ -1262,6 +1262,7 @@ namespace DeckRogue.Game
         {
             if (_fx == null) return;
             bool dio = _diorama;
+            S2B_RestoreFxHome();   // 段2 (S2B): 前の箱庭が fx の置き場 (pos・at) で動かした粒の系を元の置き場へ戻す (動かした物が無ければ何もしない = 今の舞台だけの起動は今まで)
             bool slice = dio && R2B_MoondustSliceLook() != null;   // 二周目 段2 (R2B): 箱庭だけの月の塵
             if (slice) R2B_MoondustSlice();                        // 無ければ作る (StageFx のいちばん後ろ)・値を設計図に合わせる
             // 三周目 直しの輪1 (2026-10-02・反証のまとめ (d)「舞う葉の緑のにじみ」): 箱庭では光の設計図 (look) の fx.leaves が false なら舞う葉を点けない。
@@ -1297,9 +1298,56 @@ namespace DeckRogue.Game
                 {
                     var fv = fxLook[c.name];
                     if (fv != null && fv.Type == Newtonsoft.Json.Linq.JTokenType.Boolean) on = (bool)fv;
+                    else if (fv is Newtonsoft.Json.Linq.JObject fo) on = S2B_FxObject(c, fo);   // 段2 (S2B・約束 §C2-4): 物の形 {"on", "pos": [t, s, y], "at"?}
+                    // 段2 (S2B): 位置のある粒 (火の粉) は、箱庭では置き場が決まった時だけ点ける (bool の true だけでは、今の舞台の炉の位置か原点に出る)
+                    if (on && S2B_NeedsPlace(c.name) && !_s2bFxPlaced.Contains(c))
+                    {
+                        on = false;
+                        Debug.LogWarning("[Stage] 光の設計図の fx." + c.name + " は箱庭では置き場 (pos か at) が要る → 点けない");
+                    }
                 }
                 c.gameObject.SetActive(on);
             }
+        }
+
+        // ---- 段2 (S2B・約束 §C2-4): 光の設計図の fx の物の形 (箱庭の枝だけ) ----
+        static readonly Dictionary<Transform, Vector3> _s2bFxHome = new Dictionary<Transform, Vector3>();   // 動かした粒の系の元の置き場 (_fx の中の位置)
+        static readonly HashSet<Transform> _s2bFxPlaced = new HashSet<Transform>();                      // この SetFxForAct で置き場を決めた粒の系
+
+        /// <summary>位置のある粒 (出どころが1点の系)。箱庭では fx の置き場が決まった時だけ点く。箱の粒 (塵・霧・しずく) は書かなくても今の箱のまま</summary>
+        static bool S2B_NeedsPlace(string name) { return name == "embers"; }
+
+        /// <summary>
+        /// fx.&lt;名前&gt; の物の形を読む: on (無ければ true) と、置き場 (pos [t, s, y]・y は絶対。at があれば設計図の部品に付いていく = StageLook.S2B_FxPlace)。
+        /// 置き場を書いていれば粒の系をそこへ動かし (元の置き場を控える)、点けるかを返す。置き場が決まらない時、位置のある粒は点けない
+        /// </summary>
+        static bool S2B_FxObject(Transform c, Newtonsoft.Json.Linq.JObject fo)
+        {
+            var ot = fo["on"];
+            bool on = ot == null || ot.Type == Newtonsoft.Json.Linq.JTokenType.Null
+                || (ot.Type == Newtonsoft.Json.Linq.JTokenType.Boolean ? (bool)ot
+                : (ot.Type == Newtonsoft.Json.Linq.JTokenType.Integer || ot.Type == Newtonsoft.Json.Linq.JTokenType.Float) && (float)ot != 0f);
+            if (!on) return false;
+            if (fo["pos"] == null && fo["at"] == null) return true;   // 置き場を書いていなければ点け消しだけ
+            Vector3 w; string how;
+            if (!StageLook.S2B_FxPlace(fo, out w, out how))
+            {
+                Debug.LogWarning("[Stage] 光の設計図の fx." + c.name + " の置き場が決まらない (at の部品が無く pos も無い)");
+                return !S2B_NeedsPlace(c.name);
+            }
+            if (!_s2bFxHome.ContainsKey(c)) _s2bFxHome[c] = c.localPosition;
+            c.position = w;
+            _s2bFxPlaced.Add(c);
+            return true;
+        }
+
+        /// <summary>前の SetFxForAct が動かした粒の系を元の置き場へ戻す (今の舞台へ戻る時・箱庭の組み直しの時)。動かした物が無ければ何もしない</summary>
+        static void S2B_RestoreFxHome()
+        {
+            _s2bFxPlaced.Clear();
+            if (_s2bFxHome.Count == 0) return;
+            foreach (var kv in _s2bFxHome) if (kv.Key != null) kv.Key.localPosition = kv.Value;
+            _s2bFxHome.Clear();
         }
 
         /// <summary>幕2 先代の坑道 (2026-09-10 改稿。旧「提灯の夜市」): 坑道の宿場跡。石の床・奥の石壁と暗い門・提灯の柱と吊り提灯 (暖色はここだけ)・屋台と樽と歯車。空は暗い天井</summary>

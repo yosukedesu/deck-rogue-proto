@@ -1,0 +1,33 @@
+{
+ "_doc": [
+  "幕2 の撮り比べの変種 (2026-10-03 HD-2D 段2 レーン B。計画 docs/design/hd2d-stage2-plan-2026-10-02.md §3 手順2・§4)。旗 look=look_act2_min で幕2 の設計図 (look_act2 + .char + .dof) の上に重ねる (変える鍵だけ書く。スマホでは .phone が後に重なる)。",
+  "最小の試し撮り (計画 §3 手順2・§4 の T2-min・約束 §C2-7): 設計図をレーン C の最小の設計図 act2_layout_min (岩棚つきの壁 1 式＋提灯 2＋座席の帯の slab と段だけ・小物なし) にし、光も最小の設計図にある物だけ = 平行光 (風穴)・舞台の灯・提灯 2 (lights の lantern-a・lantern-b)。霧・色寄せ・露出は look_act2 のまま。",
+  "切る物: 炉の逆光 (backlight.on false)・坑口の灯 (lightsOff mouth-lamp)・霧の光の芯 (lobe)・塵 (moondust-slice)・粒 (しずく・塵・地面の霧・火の粉)。炉と坑口の部品は最小の設計図に無いので、点けたままだと絵の無い暖色の点光源が look_act2.json に書いた控えの置き場 (炉 = t −6.2・s 6.4 の地面 + 1.4 = 主人公 (t −5・s 0.9) と壁 (s 10.9) の間・強さ 18・range 7.5／坑口 = t 19.5・s 11.6・y 3.0) に灯り、主人公の列の床と壁・灯の真下の床の彩度・暖色の割合を汚す (反証 2026-10-03 の指摘)。",
+  "見る物: 帯の 3 条件 (計画 §1。① 主人公の列の最大が壁にあり床の 1.15 倍以上 ② 壁の上段 (行 130〜290) ≤60 ③ 灯の真下の床の彩度 ≤0.12) を提灯 2 だけで。届かなければここで提灯の強さ・range (_lamp_hi／_lamp_lo／_lamp_y29)・露出 (_exp040／_exp050) を重ねて決める (例 look=look_act2_min+look_act2_lamp_hi。lightsOff と backlight.on false は重ねても残る = 後の変種はこの 2 つの鍵を書かない)。",
+  "炉と坑口の灯を足した見え方は、本番の設計図 act2_layout (炉 hearth・坑口 mouth-lamp の部品がある) の T2-squire で見る。炉で主人公の列の床が上がって ① が割れたら、炉の range 7.5→6 (look_act2.json の backlight._tune)"
+ ],
+ "layout": "act2_layout_min",
+ "fog": {
+  "lobe": {
+   "on": false
+  }
+ },
+ "moondust": {
+  "slice": false
+ },
+ "fx": {
+  "drips": false,
+  "dust": false,
+  "mist": false,
+  "embers": {
+   "on": false
+  }
+ },
+ "backlight": {
+  "on": false
+ },
+ "lightsOff": [
+  "mouth-lamp",
+  "lantern-c"
+ ]
+}

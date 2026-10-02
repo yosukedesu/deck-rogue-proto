@@ -1,0 +1,548 @@
+{
+ "_doc": [
+  "幕2・先代の坑道の光の設計図 (2026-10-03 HD-2D 段2 レーン B。計画 docs/design/hd2d-stage2-plan-2026-10-02.md §2 B・分析 docs/design/hd2d-stage2-analysis-2026-10-02.md §4-2・約束 docs/design/hd2d-stage2/contracts.md §C2)。",
+  "読み方は幕1 と同じ: StageLook.Load が look_act2.json → look_act2.char.json → look_act2.dof.json → (旗 look= の変種) → look_act2.phone.json (tier=phone の時だけ) の順に重ねる。「_」で始まるキーは説明。書いていないキーは StageLook.cs の既定。",
+  "箱庭にするのは旗 dioramaacts= に幕2 を入れた時だけ (既定 1 = 幕1 だけ)。設計図 act2_layout.json とこのファイルの両方がそろっていなければ今の舞台 (old) に落ちる (Stage.DioramaAssetsReady)。",
+  "出発点 = 提案 A の下書き (~/.cache/deck-rogue/hd2d-stage2/B/act2/propA/look_act2.draft.json)。下書きから変えた所: nightGrade.hi 0.30→0.10 (0.30 は床の光溜まりと帯まで紺に寄せる。計画の直し)・fog.far2 off→on 20〜36・fog.lobe の強さ 1.4→0.9 (補助 = 無くても帯が出ること)・",
+  "  lamp.cookie false→true (cookie が false だと StageLook.BuildLamp が灯の形 mask・光の池 pool・打ち消し flatten を焼かない = 下書きの『外 0.08・池 1.35』が効かなかった。木漏れ日は cookie.blobs 0・コントラスト 0 で無地)・",
+  "  炉 = backlight を影なしのまま設計図の部品 hearth に付いていく形 (at)・提灯 2 と坑口の灯 = lights (下書きの設計図の新 kind lamp の代わり)・粒の表 fx を全部の名前で明示 (火の粉 embers は炉の上)・menuShade・materials の hitReceive・motion。",
+  "光の台本 (分析 §4-2・本家 ot_921570_2 = 洞窟型): 影を落とす光は 平行光 (風穴) ＋ 舞台の灯 (キャラ) の 2 つ = 技の光が 1 つ借りられる (shadow.maxShadowedLights 3)。影なしの点光源は 炉 (backlight) ＋ lights 3 (提灯 2・坑口)。今の舞台の点光源 37 本 (固定 18・粒 18・ランタン) は持ち越さない (fx の motes-path・motes-cluster・mote-light-template を false)。",
+  "帯 (いちばん明るい所) は『壁の照明』= 提灯 2 の点光源が壁 (岩棚 y 1.8〜4.4) を照らし、設計図の壁の前の霧の板 (kind mist・レーン C) がつなぐ。距離の霧の芯 fog.lobe は補助。合否 (計画 §1・目で): ① 主人公の列 (±125px・10 行の最大) の最大が壁にあり床の 1.15 倍以上 ② 壁の上段 (行 130〜290) ≤60 ③ 灯の真下の床は無彩色 (彩度 ≤0.12)。歯止め: p95 ≤174・主人公の体 ≥ 床・紙の UI がいちばん明るくならない。",
+  "露出で合わせない (p95 と主人公の体の歯止め。分析 §11-4: 暗い画素 45% は照らされた壁と床の面積で出す)。届かなければ試し撮り (計画 §3 手順 2) で提灯の range・mist の α・壁の tint・露出の変種を決める。",
+  "撮り比べの変種 (旗 look= で重ねる。変える鍵だけ書く): look_act2_min (最小の設計図 act2_layout_min・光は平行光・舞台の灯・提灯 2 だけ = 炉と坑口の灯を切る・lobe なし・塵なし)・_exp040・_exp050 (露出)・_lamp_hi・_lamp_lo (lights の強さと range = lightsMul)・_lamp_y29 (lights を 0.4 下げる = lightsShift)・_wall3・_wall4 (岩棚の張り出し 3／4 の設計図)・_hi12 (nightGrade.hi 0.12)・_dof24 (奥のぼかし lensFar 2.4)・_dustwall (塵の箱を壁の手前 s 9.5 まで)。",
+  "キャラの光 (look_act2.char.json) は幕1 の写し = このは (0周目の色) と敵は幕1 と同じ見え方。露出 0.45 の差は char.exposureRef 0.3 がキャラの受光・環境光・発光を割り戻す (StageUnits.CharExposureScale)。"
+ ],
+ "version": 1,
+ "act": 2,
+ "pathYaw": -22,
+ "baseCameraDistance": 16.62,
+ "moon": {
+  "_doc": "『月』= 風穴の冷たい平行光 (分析 §4-2: 0.15〜0.22・[52,34,0]・影あり)。地形と大物 (岩棚・支保工・歩廊) の影を壁と床に落とす唯一の光 (月は切らない = 影を落とす場の主光を失わない)。向きは幕1 と同じ左上の手前から (art-bible §5-1)。強さは範囲の下寄り 0.18 = 壁の上段 (行 130〜290 ≤60 = 合否②) を持ち上げすぎない。上げるなら 0.22",
+  "euler": [
+   52,
+   34,
+   0
+  ],
+  "color": [
+   0.55,
+   0.64,
+   0.8
+  ],
+  "intensity": 0.18,
+  "shadows": "soft",
+  "shadowStrength": 0.7,
+  "shadowBias": 0.05,
+  "shadowNormalBias": 0.4,
+  "lightLayers": "all",
+  "shadowLayers": "environment",
+  "cookie": false
+ },
+ "lamp": {
+  "_doc": "舞台の灯 (スポット) = 座席の帯の光溜まり。洞窟型は灯の真下の床が無彩色 (本家 ot2 (105,105,110)・彩度 0.05) なので色はほぼ白 [0.92,0.90,0.86] (分析 §4-2)。中央÷端 3.0〜3.4 (ot7) を mask.outside 0.08 と pool.level 1.35 で作る。キャラの固定のキーの向き charKeyDir は幕1 の値の写し (= キャラの陰影は幕1 と同じ)。帯・灯の位置 (offset) も幕1 と同じ",
+  "_cookie": "cookie は true (灯の形 mask・光の池 pool・打ち消し flatten はクッキーに焼くので、false だと全部効かない = 下書きの不具合)。木漏れ日の模様は cookie.blobs 0 で無地",
+  "_illum": "illum 2.4 (下書きの値)。幕1 は 2.6 で座席の地面 ≈81 (色 [0.6,0.76,1.0] の明るさ 0.74・露出 0.3)。幕2 は色の明るさ 0.90・露出 0.45 なので同じ illum で線形 ×1.35 ≈ 床 100〜115 の見込み (本家 ot2 の床 110〜125 の下端)。床を上げすぎると帯の合否① (壁 ≥ 床 ×1.15) が苦しくなるので 2.4 で止めた",
+  "color": [
+   0.92,
+   0.9,
+   0.86
+  ],
+  "illum": 1.3,
+  "offset": [
+   -8.0,
+   17.0,
+   -14.0
+  ],
+  "charKeyDir": [
+   0.341432,
+   -0.725542,
+   0.597505
+  ],
+  "band": {
+   "tMin": -6.5,
+   "tMax": 15.0,
+   "sMin": -1.4,
+   "sMax": 1.8
+  },
+  "aimY": 0.0,
+  "bandFill": 0.6,
+  "innerRatio": 0.78,
+  "rangeScale": 3.0,
+  "flatten": true,
+  "flattenFloor": 0.2,
+  "shadows": "soft",
+  "shadowStrength": 0.8,
+  "shadowBias": 0.04,
+  "shadowNormalBias": 0.3,
+  "shadowTier": "high",
+  "lightLayers": "all",
+  "shadowLayers": "characters",
+  "cookie": true,
+  "mask": {
+   "on": true,
+   "margin": [
+    1.1,
+    3.6
+   ],
+   "marginFront": 3.2,
+   "soft": 0.3,
+   "power": 6,
+   "outside": 0.08
+  },
+  "pool": {
+   "on": true,
+   "t": 2.5,
+   "s": 1.2,
+   "rt": 6.5,
+   "rs": 4.0,
+   "shear": 0.4,
+   "level": 1.35,
+   "soft": 0.35
+  },
+  "fit": {
+   "on": true,
+   "padLeft": 3.2,
+   "padRight": 4.0,
+   "minSpan": 8.0
+  },
+  "_k1": "illum 2.4→1.3 (床の光溜まり 164 → 105・本家 ot2 の床 110〜125)"
+ },
+ "backlight": {
+  "_doc": "逆光の器 = 炉 (左奥・いちばん強い暖色)。影は落とさない (影つきは 平行光＋舞台の灯 の 2 = 技の光の影の枠を残す。分析 §4-2)。at = 設計図の部品 hearth (半立体・レーン C) に付いていく (約束の外の足し。幕1 の look には at が無い = 幕1 の道は1文字も変わらない)。y を書いていないので、高さは炉の部品の高さ + dy 1.4 (今の舞台の炉の灯 = 地面 + 1.4)。炉が設計図に無ければ t −6.2・s 6.8 (計画 §2 C の『炉は t −6.2』) の地面 + 1.4。ds −0.4 = 炉の口の少し手前",
+  "_tune": "illum 2.0 × illumDist 3.0² = 強さ 18・range 7.5 (下書き)。暖色の割合 2〜5% (上限 6%) を越えたら range を 6 へ (propB §2)",
+  "on": true,
+  "at": "hearth",
+  "t": -6.2,
+  "s": 6.8,
+  "ds": -0.4,
+  "dy": 1.4,
+  "color": [
+   1.0,
+   0.56,
+   0.26
+  ],
+  "illum": 2.0,
+  "illumDist": 3.0,
+  "range": 7.5,
+  "shadow": false,
+  "shadows": "none",
+  "lightLayers": "all",
+  "shadowLayers": "environment",
+  "shadowTier": "low"
+ },
+ "lights": [
+  {
+   "_doc": "提灯 A (主人公の列の壁)。at = 設計図の部品 lantern-a (レーン C)。y 3.3 は絶対の高さ (計画 §2 B・分析 §4-1『y 3.3 前後』= PC 行 ≈306・主人公の頭の約 100px 上)。ds −0.8 = 光を提灯の絵の手前へ出す (壁の目の前に置くと焼けた小さな点になり、横へ広がらない)。部品が無い時の置き場 t −2.9・s 10.9 = 22°・5° で主人公 (t −5・s 0.9) の画面の列 x ≈443 に来る壁の t (propA の Cam で計算)。スマホは帯を壁 y 1.1〜2.6 へ下げる (phone.y 2.3) / 統合 2026-10-03: y をレーン C の絵のガラスの高さへ (a 3.5・b 4.2)・スマホは棚の縁から吊る絵 (y 1.45) のガラス 2.1",
+   "_tune": "illum 2.4 × illumDist 2² = 強さ 9.6・range 5.5。見込み: 光が壁から ≈1.2 の時、真後ろの壁の照度 ≈ illum × (2/1.2)² ≈ 6.7 (床の灯 2.4×1.35 ≈ 3.2 の 2 倍) = 壁の霧 0.34〜0.48 を引いても合否① (床 ×1.15) に届く側。range 5.5 = 壁の上段 (y 4.4〜6.3) へ届きすぎない (合否②)。違えば変種 _lamp_hi (×1.5・range ×1.3)・_lamp_lo (×0.65・×0.8)・_lamp_y29 (0.4 下げる)",
+   "name": "lantern-a",
+   "at": "lantern-a",
+   "t": -2.9,
+   "s": 10.9,
+   "y": 3.5,
+   "ds": -0.8,
+   "color": [
+    1.0,
+    0.62,
+    0.32
+   ],
+   "illum": 5.76,
+   "illumDist": 2.0,
+   "range": 7.48,
+   "flicker": 0.05,
+   "phone": {
+    "y": 2.4,
+    "illumMul": 1.4
+   },
+   "_k1": "illum ×2.4・range ×1.6 (格子 k1)。スマホは絵 (y 1.83) のガラスの高さ 2.4・強さ ×1.4",
+   "_n1": "range ×0.85 (格子 n1: 上段へ届きすぎない)"
+  },
+  {
+   "_doc": "提灯 B (敵の側の壁・t をばらす)。at = lantern-b。部品が無い時の置き場 t 11.0 (PC x ≈1360 = 敵②③の後ろの壁。幕ボス 160 の頭と意図の札の箱 (行 0〜140) より下の行 ≈305)。値は提灯 A と同じ / 統合 2026-10-03: y をレーン C の絵のガラスの高さへ (a 3.5・b 4.2)・スマホは棚の縁から吊る絵 (y 1.45) のガラス 2.1",
+   "name": "lantern-b",
+   "at": "lantern-b",
+   "t": 17.2,
+   "s": 11.28,
+   "y": 4.2,
+   "ds": -0.8,
+   "color": [
+    1.0,
+    0.62,
+    0.32
+   ],
+   "illum": 5.76,
+   "illumDist": 2.0,
+   "range": 7.48,
+   "flicker": 0.05,
+   "phone": {
+    "y": 2.4,
+    "illumMul": 1.4
+   },
+   "_k1": "illum ×2.4・range ×1.6 (格子 k1)。スマホは絵 (y 1.83) のガラスの高さ 2.4・強さ ×1.4",
+   "_n1": "range ×0.85 (格子 n1: 上段へ届きすぎない)"
+  },
+  {
+   "_doc": "提灯 C (二段目の奥の壁の真ん中・t 4.3。レーン C が足した4つ目の灯。統合 2026-10-03: 弱め = 暈 gain 0.5 に合わせて強さ 0.6 倍)",
+   "_tune": "illum 1.4 × 2² = 5.6・range 5.0",
+   "name": "lantern-c",
+   "at": "lantern-c",
+   "t": 4.3,
+   "s": 11.28,
+   "y": 3.5,
+   "ds": -0.8,
+   "color": [
+    1.0,
+    0.62,
+    0.32
+   ],
+   "illum": 3.36,
+   "illumDist": 2.0,
+   "range": 6.8,
+   "flicker": 0.05,
+   "phone": {
+    "y": 2.4,
+    "illumMul": 1.4
+   },
+   "_k1": "illum ×2.4・range ×1.6 (格子 k1)。スマホは絵 (y 1.83) のガラスの高さ 2.4・強さ ×1.4",
+   "_n1": "range ×0.85 (格子 n1: 上段へ届きすぎない)"
+  },
+  {
+   "_doc": "坑口の奥の灯 (弱い・遠くに灯がある = 本家の『奥に模様の無い黒は置かない』の小さな灯 1 つ。分析 §3-2)。at = 設計図の暈 mouth-lamp (レーン C)。部品が無い時の置き場 t 19.5・s 11.9 (坑口の真ん中)・y 3.0。強さ 0.6 × 2² = 2.4・range 3.5 (下書き 0.5・propB 0.22 の間)",
+   "name": "mouth-lamp",
+   "at": "mouth-lamp",
+   "t": 19.8,
+   "s": 11.05,
+   "y": 4.5,
+   "ds": -0.3,
+   "color": [
+    1.0,
+    0.68,
+    0.4
+   ],
+   "illum": 1.44,
+   "illumDist": 2.0,
+   "range": 4.76,
+   "flicker": 0.04,
+   "_k1": "illum ×2.4・range ×1.6 (格子 k1)。スマホは絵 (y 1.83) のガラスの高さ 2.4・強さ ×1.4",
+   "_n1": "range ×0.85 (格子 n1: 上段へ届きすぎない)"
+  }
+ ],
+ "lightsMul": {
+  "illum": 1.0,
+  "range": 1.0
+ },
+ "cookie": {
+  "_doc": "舞台の灯のクッキーの木漏れ日の模様は坑道では無地 (blobs 0・コントラスト 0)。クッキー自体は灯の形 (mask・pool) を焼くのに要る",
+  "size": 256,
+  "seed": 20261003,
+  "blobs": 0,
+  "centerRadius": 0.64,
+  "centerContrast": 0.0,
+  "edgeContrast": 0.0,
+  "softness": 0.2
+ },
+ "ambient": {
+  "_doc": "坑内 = 上 (天井) が暗く、地面は床の反射で少し明るい。色は紺緑 (本家 ot2 の暗部 (21,44,50))。幕1 の環境光の約半分",
+  "mode": "trilight",
+  "sky": [
+   0.07,
+   0.13,
+   0.17
+  ],
+  "equator": [
+   0.08,
+   0.14,
+   0.17
+  ],
+  "ground": [
+   0.06,
+   0.09,
+   0.1
+  ]
+ },
+ "fog": {
+  "_doc": "距離の霧は幕1 と同じ 14→40 (× r。PC r 1.672 = 23.4〜66.9・スマホ r 1.393 = 19.5〜55.7。壁 (深さ 36〜44) に 0.34〜0.48 = 壁の模様が残る。分析 §6)。色は本家の洞窟の霧の青灰 (90,111,133) を少し沈めた値。高さの霧は床のもやだけ (上 1.2・濃さ 0.15・座席より奥)",
+  "_far2": "2段目 (計画の直し: off でなく 20〜36): 壁の深さ (× r で 33〜60) を霧の色へ寄せる薄い層 (強さ 0.3)。色を書かない = 芯の向きの霧の色。壁の模様を消さない強さに抑えた (幕1 は 0.5)",
+  "_lobe": "霧の光の芯は補助 (計画の直し: 無くても帯が出ること = 帯は提灯と壁で作る)。芯の置き場は壁の帯の真ん中 (t 4.7・s 11.4・y 2.6)・縦に細く横に広い (powerV 700・powerH 60)・色は暖灰・強さ 0.9 (下書き 1.4)。変種 look_act2_min は芯を切る",
+  "on": true,
+  "color": [
+   0.36,
+   0.43,
+   0.5
+  ],
+  "start": 14,
+  "end": 40,
+  "height": {
+   "on": true,
+   "color": [
+    0.55,
+    0.58,
+    0.62
+   ],
+   "base": 0.0,
+   "top": 1.2,
+   "density": 0.15,
+   "depthStart": 24,
+   "depthFull": 34
+  },
+  "far2": {
+   "on": true,
+   "start": 20,
+   "end": 36,
+   "strength": 0.3
+  },
+  "lobe": {
+   "on": true,
+   "t": 4.7,
+   "s": 11.4,
+   "y": 2.2,
+   "power": 200,
+   "powerV": 700,
+   "powerH": 60,
+   "edge": 1.0,
+   "color": [
+    0.62,
+    0.6,
+    0.55
+   ],
+   "strength": 1.6
+  },
+  "_k1": "色 [0.30,0.37,0.44]→[0.36,0.43,0.5]・芯の強さ 0.9→1.6・芯の高さ 2.6→2.2 (帯を下げる)"
+ },
+ "shadow": {
+  "_doc": "幕1 と同じ。影を落とす光の上限 3 = 平行光・舞台の灯・技の光 1 (炉・lights は影なし)",
+  "distance": 42,
+  "cascades": 2,
+  "cascade2Split": 0.33,
+  "mainResolution": 2048,
+  "additionalResolution": 2048,
+  "maxShadowedLights": 3
+ },
+ "post": {
+  "_doc": "露出 0.45 (分析 §4-2・変種 _exp040／_exp050。今の幕2 の +0.32 と幕1 の 0.3 の上)。キャラは char.exposureRef 0.3 で割り戻す。bloom の閾値 1.15 = 提灯と炉の芯 (本家 ot2 の松明の芯 246) だけ光らせる。lift・gain は下書き (暗部をわずかに青緑へ・明部をわずかに暖かく。キャラにも掛かるが幕1 との差は暗部の 0.01〜0.02)",
+  "tonemap": "aces",
+  "exposure": 0.68,
+  "contrast": 14,
+  "saturation": 0,
+  "colorFilter": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "liftGammaGain": {
+   "lift": [
+    0.95,
+    1.0,
+    1.02,
+    -0.01
+   ],
+   "gamma": [
+    1,
+    1,
+    1,
+    0
+   ],
+   "gain": [
+    1.02,
+    1.0,
+    0.97,
+    0
+   ]
+  },
+  "bloom": {
+   "threshold": 1.15,
+   "intensity": 1.2,
+   "scatter": 0.8,
+   "tint": [
+    1.0,
+    0.95,
+    0.9
+   ]
+  },
+  "vignette": {
+   "intensity": 0.15,
+   "smoothness": 0.45,
+   "center": [
+    0.5,
+    0.52
+   ],
+   "rounded": false,
+   "color": [
+    0.0,
+    0.02,
+    0.025
+   ]
+  },
+  "filmGrain": false,
+  "chromaticAberration": false,
+  "_k1": "露出 0.45→0.68 (中央値 34 → 46・暗い画素 62% → 56%。p95 148 ≤174)"
+ },
+ "camera": {
+  "_doc": "何も描かない所の色 = 紺緑の暗部 (霧の端の暗い色)",
+  "depthTexture": true,
+  "msaaMax": 8,
+  "background": [
+   0.05,
+   0.1,
+   0.12
+  ]
+ },
+ "materials": {
+  "_doc": "設計図の surfaces の名前 (約束 §C3: terrain・rock・wood・plank・iron・relief・card・glow)。受光は幕1 と同じ物差し (地形・木 0.8・鉄 0.6・半立体 0.6・札 0.25)",
+  "_hitReceive": "技の光の受け (約束 §C1-6・§C2-2。材質の _HitReceive・既定 1 = 今と同じ): 壁 rock 2.0・床と段 terrain 1.8・半立体 relief 1.5 (分析 §8: 本家は技の光で壁 ×2.3〜4.4・床 ×1.7)。技の光は寄りの間だけ強くなる (レーン M) ので、技の光が無ければ見た目は変わらない。木 wood・板 plank・鉄 iron は 1 のまま",
+  "_glow": "glow (暈・霧の板) の色と強さは上書きしない (設計図の surfaces の値のまま)。幕1 の淡い青白 tint を書くと提灯の暈の暖色まで冷える",
+  "terrain": {
+   "receive": 0.8,
+   "shadowStrength": 1.0,
+   "hitReceive": 1.8
+  },
+  "rock": {
+   "receive": 0.8,
+   "shadowStrength": 1.0,
+   "hitReceive": 2.0
+  },
+  "wood": {
+   "receive": 0.8,
+   "shadowStrength": 1.0
+  },
+  "plank": {
+   "receive": 0.8,
+   "shadowStrength": 1.0
+  },
+  "iron": {
+   "receive": 0.6,
+   "shadowStrength": 1.0
+  },
+  "relief": {
+   "receive": 0.6,
+   "shadowStrength": 1.0,
+   "hitReceive": 1.5
+  },
+  "card": {
+   "receive": 0.25,
+   "shadowStrength": 1.0
+  }
+ },
+ "envGrade": {
+  "_doc": "舞台の絵だけの彩度落とし 0.5 (幕1 と同じ) と色の倍率 [0.98,1.12,1.28] (紺緑へ。分析 §4-2・計画 §2 B)。キャラの板には掛からない",
+  "on": true,
+  "desaturate": 0.5,
+  "tint": [
+   0.98,
+   1.12,
+   1.28
+  ]
+ },
+ "nightGrade": {
+  "_doc": "暗部を本家 ot2 の紺緑 (21,44,50) へ (幕1 は紺 [0.2,0.29,0.41])。hi 0.10 (計画の直し: 0.08〜0.12。下書きの 0.30 は線形の輝度 0.30 ≈ 画面 145 まで寄せる = 床の光溜まりと壁の帯まで紺に染めて『灯の真下の床は無彩色』(合否③) を割る)。0.10 ≈ 画面 63 で効きが消える。変種 _hi12 (0.12)",
+  "on": true,
+  "color": [
+   0.11,
+   0.21,
+   0.24
+  ],
+  "strength": 0.7,
+  "lo": 0.05,
+  "hi": 0.1,
+  "brightSat": 1.0
+ },
+ "stageVignette": {
+  "_doc": "上 (天井側・壁の上段) を幕1 より沈める top 0.22 (計画 §2 B・本家 ot7 の上端 25)・横 0.45。座席の帯は横の減光を受けない (seatBand)",
+  "on": true,
+  "sideStart": 0.3,
+  "side": 0.45,
+  "topBand": 0.3,
+  "top": 0.3,
+  "seatBand": true,
+  "seatBandEdge": 1.6,
+  "seatBandSPad": 0.5,
+  "_n1": "統合 2026-10-03 (格子 n1): 上の帯 0.16→0.3・強さ 0.22→0.3 (壁の上段 73 → 66・本家 ot2 48)"
+ },
+ "moondust": {
+  "_doc": "坑道の塵 (計画 §2 B『StageDust 暖白 20 (座席〜壁)』)。箱庭だけの粒 moondust-slice (Stage.R2B_MoondustSlice)。center は [t, s, y]・size は [t, 高さ, s]。箱 = s −1〜5 (座席の帯から一段目の手前。奥へ伸ばすほどピントの外でぼけた輪になる = 幕1 二周目の直しの輪2 の教訓)・y 0.9〜3.5 (キャラの胸から帯の下)。毎秒 5・最大 70 (満ちた数 ≈ 60・画面に見える数 約 20〜25 の見込み)。色は暖かい白 (下書き)・芯は深さを書く (sharp)",
+  "_wall": "計画の『座席〜壁』(壁 s 10.9〜12.4) からは外している (反証 2026-10-03 の指摘・上のピントの理由)。壁の手前の粒が要るかは統合の試し撮りで look=look_act2_dustwall (箱 s −0.5〜9.5・毎秒 8・最大 110) と並べて目で決め、決めた値をここと計画 §7 に書く",
+  "slice": true,
+  "sharp": true,
+  "coreCutoff": 0.25,
+  "center": [
+   3.0,
+   2.0,
+   2.2
+  ],
+  "size": [
+   30.0,
+   2.6,
+   6.0
+  ],
+  "rate": 5,
+  "max": 70,
+  "sizeMin": 0.07,
+  "sizeMax": 0.13,
+  "color": [
+   2.2,
+   2.05,
+   1.75,
+   1.0
+  ]
+ },
+ "fx": {
+  "_doc": "箱庭の粒の出し分け (Stage.SetFxForAct の箱庭の枝・約束 §C2-4)。全部の名前を明示する (書かない名前は今の舞台の規則 = 幕2 では脈の粒・しずくが点く)。点けるのは しずく (天井から落ちる銀の筋)・塵 dust (幕1 の箱庭と同じ・ごく淡い)・地面の霧 mist (幕1 の箱庭と同じ)・火の粉 embers (炉の上)。消すのは 森の物 (蛍・落ち葉・水のきらめき)・今の舞台の暖色の光の粒と粒の点光源 (motes-path・motes-cluster・mote-light-template = 今の 37 本の点光源を持ち越さない)・脈の青緑の粒 vein-motes (暖色の地下に青緑 2% 以下)・遠くの霧 mist-far (壁の裏)・今の舞台の月の塵 moondust (箱庭の塵は moondust-slice)・幕3 の灰と人魂",
+  "_embers": "火の粉は物の形 {on, at, pos, dy} (約束 §C2-4。at・dy・2 つの数の pos は約束の外の足し): at = 設計図の炉 hearth に付いていき、高さは炉の部品の高さ + dy 1.2 (今の舞台の _emberPos = 炉の地面 + 1.2)。炉が無ければ pos [t −6.2, s 6.8] の地面 + 1.2。pos に y (3 つ目) を書けば絶対の高さが勝つ。箱庭では置き場が決まらない火の粉は点かない",
+  "leaves": false,
+  "fireflies": false,
+  "water-sparkle": false,
+  "motes-path": false,
+  "motes-cluster": false,
+  "mote-light-template": false,
+  "vein-motes": false,
+  "mist-far": false,
+  "moondust": false,
+  "ashfall": false,
+  "wisps": false,
+  "drips": true,
+  "dust": true,
+  "mist": true,
+  "embers": {
+   "on": true,
+   "at": "hearth",
+   "pos": [
+    -6.2,
+    6.8
+   ],
+   "dy": 1.2
+  }
+ },
+ "menuShade": {
+  "_doc": "戦闘以外の画面 (マップ・報酬など) の暗がりの上端と下端の α (約束 §C2-3。読むのはレーン A の BattleScreen.MenuShade)。試しの値 = 幕1 の定数 0.68／0.4 そのまま (計画 §4 の T2-map／T2-reward で見てから決める)",
+  "top": 0.68,
+  "bottom": 0.4
+ },
+ "motion": {
+  "_doc": "統合 2026-10-03 (格子 mo2): 壁の光を岩棚のすぐ手前 (s 8.6・高さ 2.6) に強さ 40・暗転を大きい当たりにも k 0.6 (寄りの画で棚と壁が技の色に照らされて読める。暗転なしの強さ 20 では壁 ×1.03)",
+  "on": true,
+  "light": {
+   "intensity": 15,
+   "wall": {
+    "on": true,
+    "s": 8.6,
+    "height": 2.6,
+    "intensity": 40,
+    "range": 10
+   }
+  },
+  "dim": {
+   "minKind": "big",
+   "k": 0.6
+  }
+ },
+ "hitLight": {
+  "_doc": "技の光 (StageFx.HitLight) の器は幕1 の写し (強さ 2.6・range 5・保つ 0.42)。寄りの間の強さ・長さ・色は motion の下でレーン M が持つ",
+  "maxLights": 3,
+  "range": 5.0,
+  "refDist": 1.5,
+  "shadowTier": "low",
+  "intensity": 2.6,
+  "height": 0.3,
+  "hold": 0.42,
+  "foeMul": 1.6,
+  "guardMul": 1.2
+ }
+}

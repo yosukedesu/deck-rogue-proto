@@ -1,0 +1,10 @@
+{
+  "_doc": [
+    "幕2 の撮り比べの変種 (2026-10-03 HD-2D 段2 レーン B。計画 docs/design/hd2d-stage2-plan-2026-10-02.md §3 手順2・§4)。旗 look=look_act2_lamp_lo で幕2 の設計図 (look_act2 + .char + .dof) の上に重ねる (変える鍵だけ書く。スマホでは .phone が後に重なる)。",
+    "提灯と坑口の灯 (lights) を弱く狭く: 強さ ×0.65・range ×0.8 (lightsMul)。壁の上段 (合否②) や暖色が出すぎた時の側"
+  ],
+  "lightsMul": {
+    "illum": 0.65,
+    "range": 0.8
+  }
+}

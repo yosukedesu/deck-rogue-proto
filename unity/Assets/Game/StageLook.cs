@@ -31,6 +31,17 @@
 //   光の筋の倍率 (materials.<名前>.shaftGain) … StageShaft の材質の _ShaftGain。頂点色の a が 0 の面 (月光の筋) だけに掛かる (霧の面 a 1 は 1 倍)。
 //             設計図の部品の gain は Diorama で 0〜1 に丸められる (1.1 も 1.3 も 1.0) ので、筋を 1 倍より明るくする口はここ
 //   光の池の明るさ 1 より上 (lamp.pool.level > 1) … クッキーは 0〜1 なので、池が帯より明るい時はクッキー全体を level で割り、灯の強さを level 倍 (帯・外の明るさは同じ・池の芯だけ level 倍)
+//
+// 段2 (2026-10-03 レーン B。計画 docs/design/hd2d-stage2-plan-2026-10-02.md §2 B・約束 docs/design/hd2d-stage2/contracts.md §C2) で足したもの。
+// どれも look にキーが無ければ今と同じ (幕1 の look_act1* には書かない = 幕1 の見本は1画素も変わらない)。名前の頭は S2B_:
+//   影なしの点光源 (lights[] ≤4) … 提灯・坑口の灯。at = 設計図の同じ name の部品に付いていく (Apply は Diorama.Build より前なので、設計図の JSON の部品から置き場を読み、
+//             地面の高さは設計図の段 slab から Diorama.HeightAtPath と同じ式で出す)。影なし・リグの子・RigShadowCount に数えない (影の上限と技の光の貸し借りに触れない)。
+//             flicker は det の撮影では揺らさない。lightsMul (試し撮りの変種の倍率)・lightsOff (変種から名前で消す)。逆光 (backlight) にも at (幕2 の炉)
+//   技の光の受け (materials.<名前>.hitReceive) … 材質の _HitReceive (レーン S のシェーダの口。書かなければ触らない)
+//   戦闘以外の画面の暗がりの濃さ (menuShade.top・bottom) … MenuShadeTop・MenuShadeBottom (無ければ null = BattleScreen の今の定数)
+//   暗転 SetDim(k) … 月・舞台の灯・逆光・lights を組んだ時の値 × k (レーン M が大技の前後に呼ぶ。k=1 で元へ。組み直しで 1 に戻る)
+//   粒の置き場 (fx.<名前>: {"on", "pos", "at"}) … Stage.SetFxForAct の箱庭の枝が S2B_FxPlace を呼ぶ (火の粉を炉の上へ)
+//   "motion" … 読むのはレーン M (StageFx・StageCamera)。B は書くだけ
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -74,6 +85,40 @@ namespace DeckRogue.Game
         public readonly HitLook Hit = new HitLook();
         /// <summary>箱庭の材質 (Diorama.Materials の名前) ごとの受光と影の強さ</summary>
         public readonly Dictionary<string, MaterialLook> Materials = new Dictionary<string, MaterialLook>();
+        /// <summary>段2 (S2B): 影なしの点光源 (光の設計図の "lights"。4 個まで。無ければ空 = 幕1 と同じ光の一式)</summary>
+        public readonly List<PointLook> Lights = new List<PointLook>();
+        /// <summary>段2 (S2B): 全部の lights に掛ける倍率 ("lightsMul": {"illum", "range"}。試し撮りの変種用。既定 1)</summary>
+        public float LightsIllumMul = 1f, LightsRangeMul = 1f;
+        /// <summary>段2 (S2B): 組まない lights の名前 ("lightsOff": [名前…]。重ねる変種から1つだけ消す口 = 配列は重ねると丸ごと置き換わるので)</summary>
+        public readonly List<string> LightsOff = new List<string>();
+        /// <summary>段2 (S2B・約束の外の足し): 全部の lights の置き場に足すずらし ("lightsShift": {"dt", "ds", "dy"}。変種で高さだけ動かす口)。x = t・y = s・z = 高さ</summary>
+        public Vector3 LightsShift = Vector3.zero;
+
+        /// <summary>
+        /// 段2 (S2B・約束 contracts.md §C2-1): 影なしの点光源 1 つ。at = 設計図の同じ name の部品の t・s を使う (動かせば光も付いてくる)。
+        /// y を書けば絶対の高さ・無ければ部品の絶対の高さ + Dy。Light.intensity = Illum × IllumDist²
+        /// </summary>
+        public sealed class PointLook : LightLook
+        {
+            public string Name, At;
+            /// <summary>false = 組まない ("on")</summary>
+            public bool On = true;
+            /// <summary>書いた置き場 (at が無い・見つからない時の置き場。y は書いていれば at が見つかっても勝つ)</summary>
+            public bool HasT, HasS, HasY;
+            public float T, S, Y;
+            /// <summary>置き場からのずらし (道の座標・高さ)。dt・ds は約束の外の足し (光を絵の少し手前へ出す)</summary>
+            public float Dt, Ds, Dy;
+            public float Illum = 1f, IllumDist = 2f, Range = 6f;
+            /// <summary>ゆらぎ 0〜1 (det の撮影では揺らさない)</summary>
+            public float Flicker;
+            /// <summary>スマホの段 (tier=phone) の点け消しと倍率</summary>
+            public bool PhoneOn = true;
+            public float PhoneIllumMul = 1f, PhoneRangeMul = 1f;
+            /// <summary>スマホの配置 (UI がスマホ = 部品の phone と同じ判定) の置き場の上書き (書いた物だけ。y は絶対)</summary>
+            public bool PhoneHasT, PhoneHasS, PhoneHasY;
+            public float PhoneT, PhoneS, PhoneY;
+            public PointLook() { Color = new Color(1f, 0.64f, 0.34f); Shadows = LightShadows.None; ShadowLayers = 0u; ShadowTier = 0; }
+        }
 
         /// <summary>光の共通の値</summary>
         public class LightLook
@@ -151,6 +196,13 @@ namespace DeckRogue.Game
             public float Illum = 3.2f, IllumDist = 5f, Range = 16f;
             /// <summary>影を落とすか (スマホの段は false)</summary>
             public bool Shadow = true;
+            /// <summary>
+            /// 段2 (S2B・約束の外の足し): 設計図の部品に付いていく置き場 (lights の at と同じ読み方。幕2 の炉 = "hearth")。
+            /// null = 今まで (t・s・y をそのまま。幕1 の道は1文字も変わらない)。YGiven = y を書いたか (書いていなければ部品の高さ + Dy)
+            /// </summary>
+            public string At;
+            public float Dt, Ds, Dy;
+            public bool YGiven = true;
             public BacklightLook() { Color = new Color(0.40f, 0.80f, 0.95f); Shadows = LightShadows.Soft; ShadowStrength = 0.6f; ShadowTier = 0; ShadowLayers = 1u << 2; }
         }
 
@@ -274,6 +326,8 @@ namespace DeckRogue.Game
             /// <summary>光の面 (StageShaft) の色と強さの上書き (W3 の統合・本家の色彩)。null・負 = 書かない (設計図 act1_layout.json の値のまま)</summary>
             public Color? Tint;
             public float Intensity = -1f;
+            /// <summary>段2 (S2B・約束 §C1-6・§C2-2): 技の光にだけ強く受ける倍率 _HitReceive。負 = 書かない (材質の既定 1 = 今と同じ)</summary>
+            public float HitReceive = -1f;
         }
     }
     // ==== data-end
@@ -298,6 +352,9 @@ namespace DeckRogue.Game
                 {
                     string n = raw.Trim();
                     if (n.Length == 0 || n == DefaultName(act) || overlays.Contains(n)) continue;
+                    // 段2 (2026-10-03 統合): 「look_act<N>_…」と幕の名が入った変種は、その幕を組む時だけ重ねる
+                    // (幕2 の撮影の look=look_act2_min が、起動のタイトルで組む幕1 の箱庭に重なって設計図まで差し替えていた)。幕の名の無い変種は今までどおり全部の幕
+                    if (n.Length > 8 && n.StartsWith("look_act", StringComparison.Ordinal) && char.IsDigit(n[8]) && (n.Length == 9 || n[9] == '_' || n[9] == '.') && n[8] - '0' != act) continue;
                     overlays.Add(n);
                 }
             var d = LoadNamed(act, DefaultName(act), overlays);
@@ -326,6 +383,7 @@ namespace DeckRogue.Game
             Current = d;
             Active = true;
             if (!_hooked) { _hooked = true; Application.quitting += OnQuit; HD2DFlags.Changed += OnFlagsChanged; }
+            _s2bAtLayout = null; _s2bAtLayoutLoaded = false;   // 段2 (S2B): at の設計図は今の光の設計図から読み直す (要る時に1回)
 
             BuildRig(rigParent, d);
             ApplyAmbient(d);
@@ -368,6 +426,7 @@ namespace DeckRogue.Game
             _seatBandSet = false;
             _borrowed = 0; _backlightLent = false;
             _lampBasis = null; _maskFitted = false; _maskBakes = 0; _fitSeats.Clear();
+            _s2bDim = 1f; _s2bAtLayout = null; _s2bAtLayoutLoaded = false;   // 段2 (S2B)
             HD2DFlags.LayoutDumpers.Remove("look");
             Debug.Log("[StageLook] Restore (Volume は控えと" + (LastRestoreVolumeOk ? "一致" : "不一致") + ")");
         }
@@ -382,6 +441,23 @@ namespace DeckRogue.Game
 
         /// <summary>光を当てている (Apply から Restore まで)</summary>
         public static bool Active { get; private set; }
+
+        // ---- 段2 の口 (2026-10-03・docs/design/hd2d-stage2/contracts.md §C2)。中身はレーン B (S2B) ----
+        /// <summary>
+        /// 舞台の暗転 (レーン M の大技の前後): 月・舞台の灯・逆光・lights[] の強さを「組んだ時の値 × k」にする (0≦k≦1。k=1 で元の値へ正確に戻す)。
+        /// キャラの固定のキー (ApplyCharGlobals の全体値) と技の光 (StageFx) は触らない。光を当てていない時は値を覚えるだけ (次の組み直しで 1 に戻る)。
+        /// 門 (look の motion.on・有効な箱庭) は呼ぶ側の M が持つ = 呼ばれたら素直に効く
+        /// </summary>
+        public static void SetDim(float k)
+        {
+            _s2bDim = float.IsNaN(k) ? 1f : Mathf.Clamp01(k);
+            S2B_WriteIntensities();
+        }
+        /// <summary>今の暗転の倍率 (1 = 暗転なし)</summary>
+        public static float Dim => _s2bDim;
+        /// <summary>戦闘以外の画面の暗がり (BattleScreen.MenuShade) の上端と下端の α (光の設計図の "menuShade": {"top","bottom"}・0〜1)。無ければ null = 今の定数</summary>
+        public static float? MenuShadeTop { get { return S2B_MenuShade("top"); } }
+        public static float? MenuShadeBottom { get { return S2B_MenuShade("bottom"); } }
         /// <summary>当てている設計図 (当てていなければ null)</summary>
         public static StageLookData Current { get; private set; }
         /// <summary>月・舞台の灯・逆光 (無ければ null)</summary>
@@ -422,6 +498,8 @@ namespace DeckRogue.Game
                 if (!Diorama.Materials.TryGetValue(kv.Key, out m) || m == null) continue;
                 if (kv.Value.Receive >= 0f && m.HasProperty(_idReceive)) m.SetFloat(_idReceive, kv.Value.Receive);
                 if (kv.Value.ShadowStrength >= 0f && m.HasProperty(_idShadowStrength)) m.SetFloat(_idShadowStrength, kv.Value.ShadowStrength);
+                // 段2 (S2B・約束 §C2-2): 技の光にだけ強く受ける倍率。書いた材質だけ (書かなければ材質の既定 1 = 今と同じ)・シェーダに口が無ければ書かない
+                if (kv.Value.HitReceive >= 0f && m.HasProperty(S2B_idHitReceive)) m.SetFloat(S2B_idHitReceive, kv.Value.HitReceive);
             }
             // 光の面の色と強さの上書き (W3 の統合・本家の色彩)。上書きの無い材質は設計図の値へ戻す
             foreach (var mkv in Diorama.Materials)
@@ -519,8 +597,22 @@ namespace DeckRogue.Game
             o["keyColor"] = KeyColor;
             var lights = new List<object>();
             foreach (var l in new[] { _moon, _lamp, _backlight }) if (l != null) lights.Add(LightInfo(l));
+            foreach (var p in _s2bPoints) if (p.Light != null) lights.Add(LightInfo(p.Light));   // 段2 (S2B): 影なしの点光源 (位置・強さ・range)
             foreach (var l in StageFx.PoolLights()) if (l != null) lights.Add(LightInfo(l));
             o["lights"] = lights;
+            // 段2 (S2B): 影なしの点光源の置き場の出どころ (設計図の部品か書いた値か)・暗転・逆光の置き場・暗がりの濃さ
+            var pts = new List<object>();
+            foreach (var p in _s2bPoints)
+                pts.Add(new Dictionary<string, object>
+                {
+                    { "name", p.Name }, { "at", p.Look != null ? p.Look.At : null }, { "place", p.Place }, { "t", p.T }, { "s", p.S }, { "y", p.Y },
+                    { "illum", p.Look != null ? p.Look.Illum : 0f }, { "illumDist", p.Look != null ? p.Look.IllumDist : 0f },
+                    { "baseIntensity", p.BaseIntensity }, { "range", p.Light != null ? p.Light.range : 0f }, { "flicker", p.Flicker },
+                });
+            o["pointLights"] = pts;
+            o["dim"] = _s2bDim;
+            o["backlightPlace"] = _s2bBacklightPlace;
+            o["menuShade"] = new Dictionary<string, object> { { "top", MenuShadeTop }, { "bottom", MenuShadeBottom } };
             o["shadowed"] = RigShadowCount() + _borrowed;
             o["shadowCap"] = d != null ? d.Shadow.MaxShadowedLights : 0;
             o["shadowBorrowed"] = _borrowed;
@@ -555,6 +647,11 @@ namespace DeckRogue.Game
                 foreach (var mkv in Diorama.Materials)
                     if (mkv.Value != null && mkv.Value.HasProperty(R3B_idShaftGain)) r3bGain[mkv.Key] = mkv.Value.GetFloat(R3B_idShaftGain);
             o["shaftGain"] = r3bGain;
+            var s2bHit = new Dictionary<string, object>();   // 段2 (S2B): 技の光の受け (材質に口がある物だけ)
+            if (_idsReady)
+                foreach (var mkv in Diorama.Materials)
+                    if (mkv.Value != null && mkv.Value.HasProperty(S2B_idHitReceive)) s2bHit[mkv.Key] = mkv.Value.GetFloat(S2B_idHitReceive);
+            o["hitReceive"] = s2bHit;
             o["layout"] = d != null && d.Raw != null && d.Raw["layout"] != null ? d.Raw["layout"].ToString() : null;   // 比べる用の別の設計図 (W3b P22。null = 既定)
             var urp = BackedUrp();
             if (urp != null)
@@ -636,6 +733,7 @@ namespace DeckRogue.Game
         static int _idStageVignette;                          // 舞台だけの周辺減光 (W3b P22。StageModule・StageShaft が読む)
         static int _idSeatBand, _idSeatBandParam, _idSkipTopVig;   // 二周目 段2 (R2B): 座席の帯 (横の減光を外す。StageModule)・光の筋の上の減光を外す (StageShaft の材質の値)
         static int R3B_idFog2, R3B_idFog2Color, R3B_idNightGrade, R3B_idNightGradeRange, R3B_idShaftGain;   // 三周目 段1 (R3B): 霧の2段目・夜の色寄せ (StageModule)・光の筋の倍率 (StageShaft の材質の値)
+        static int S2B_idHitReceive;                                                                         // 段2 (S2B): 技の光の受けの倍率 (材質の値)
 
         internal static string DefaultName(int act) { return "look_act" + act; }
 
@@ -669,6 +767,7 @@ namespace DeckRogue.Game
             R3B_idNightGrade = Shader.PropertyToID("_HD2DNightGrade");         // rgb = 暗部を寄せる紺 (線形)・w = 強さ 0〜1 (0 = 二周目)
             R3B_idNightGradeRange = Shader.PropertyToID("_HD2DNightGradeRange"); // x = 明るさの下・y = 上 (StageModule の出力の線形の輝度)・z = 明るい所の彩度の倍率・w = 0
             R3B_idShaftGain = Shader.PropertyToID("_ShaftGain");               // StageShaft の材質: 頂点色の a が 0 の面 (月光の筋) の明るさの倍率 (1 = 二周目)
+            S2B_idHitReceive = Shader.PropertyToID("_HitReceive");             // 段2 (S2B・約束 §C1-6): 印の付いた光 (技の光) の当たりの倍率 (既定 1 = 今と同じ。レーン S のシェーダ)
         }
 
         static StageLookData LoadNamed(int act, string baseName, IList<string> overlays)
@@ -940,6 +1039,15 @@ namespace DeckRogue.Game
                 var bgo = new GameObject("HD2D-Backlight");
                 bgo.transform.SetParent(_rig, false);
                 bgo.transform.position = PathToWorld(d.PathYaw, B.T, B.S, B.Y);
+                // 段2 (S2B・約束の外の足し): at を書いた時だけ、設計図の部品 (幕2 の炉 "hearth") に付いていく。at の無い設計図 (幕1) は上の1行のまま
+                if (!string.IsNullOrEmpty(B.At))
+                {
+                    float bt, bs, by; string how;
+                    var want = new StageLookData.PointLook { At = B.At, HasT = true, T = B.T, HasS = true, S = B.S, HasY = B.YGiven, Y = B.Y, Dt = B.Dt, Ds = B.Ds, Dy = B.Dy };
+                    if (S2B_Place(d, want, false, out bt, out bs, out by, out how)) bgo.transform.position = PathToWorld(d.PathYaw, bt, bs, by);
+                    _s2bBacklightPlace = how;
+                }
+                else _s2bBacklightPlace = null;
                 _backlight = bgo.AddComponent<Light>();
                 _backlight.type = LightType.Point;
                 _backlight.range = Mathf.Max(0.1f, B.Range);
@@ -947,7 +1055,13 @@ namespace DeckRogue.Game
                 _backlight.intensity = Mathf.Max(0f, B.Illum * B.IllumDist * B.IllumDist);
                 SetupShadows(_backlight, B, B.Shadow ? B.Shadows : LightShadows.None);
             }
+            S2B_BuildPoints(d);   // 段2 (S2B): 影なしの点光源 (lights[] が無ければ何も作らない)
             EnforceShadowCap(d);
+            // 段2 (S2B): 暗転 (SetDim) の基の値 = 組んだ時の値。組み直しは暗転なし (1) から
+            _s2bDim = 1f;
+            _s2bMoonBase = _moon != null ? _moon.intensity : 0f;
+            _s2bLampBase = _lamp != null ? _lamp.intensity : 0f;
+            _s2bBackBase = _backlight != null ? _backlight.intensity : 0f;
         }
 
         /// <summary>
@@ -1144,7 +1258,7 @@ namespace DeckRogue.Game
         /// <summary>光の一式の根に付く見張り: 帯の t を座席に合わせる (StageLook は静的なので毎フレームの口をここに持つ)</summary>
         sealed class LookDriver : MonoBehaviour
         {
-            void LateUpdate() { RefitLamp(); }
+            void LateUpdate() { RefitLamp(); S2B_TickFlicker(); }
         }
 
         static void SetupShadows(Light l, StageLookData.LightLook s, LightShadows shadows)
@@ -1193,6 +1307,8 @@ namespace DeckRogue.Game
         {
             // 主光 (RenderSettings.sun) は、作り直しなら BuildRig が新しい月を、Restore なら控えが戻す
             foreach (var l in new[] { _moon, _lamp, _backlight }) if (l != null) l.enabled = false;   // Destroy はフレームの終わり = 同じフレームに光が二重にならないよう先に消す
+            foreach (var p in _s2bPoints) if (p.Light != null) p.Light.enabled = false;              // 段2 (S2B): 影なしの点光源もリグの子 (下の Kill で消える)
+            _s2bPoints.Clear();
             if (_rig != null) Kill(_rig.gameObject);
             _rig = null; _moon = null; _lamp = null; _backlight = null;
             if (_lampCookie != null) Kill(_lampCookie);
@@ -1206,6 +1322,240 @@ namespace DeckRogue.Game
         {
             if (o == null) return;
             if (Application.isPlaying) UnityEngine.Object.Destroy(o); else UnityEngine.Object.DestroyImmediate(o);
+        }
+
+        // ---------------------------------------------------------------- 段2 (S2B): 影なしの点光源・部品に付いていく置き場・暗転・暗がりの濃さ
+
+        /// <summary>組んだ影なしの点光源 1 つ (設計図の値・解いた置き場・組んだ時の強さ)</summary>
+        sealed class S2BPoint
+        {
+            public StageLookData.PointLook Look;
+            public Light Light;
+            public string Name;
+            /// <summary>組んだ時の強さ (= illum × illumDist² × 倍率)。暗転とゆらぎはこれに掛ける</summary>
+            public float BaseIntensity, Flicker, Seed;
+            /// <summary>解いた置き場 (道の座標・絶対の高さ) と、その出どころ ("part:<名前>"・"look"・"look (<名前> が設計図に無い)")</summary>
+            public float T, S, Y;
+            public string Place;
+        }
+
+        /// <summary>lights は 4 個まで (約束 §C2-1。影なしでも点光源は1つずつ描く重さがある)</summary>
+        const int S2BMaxPoints = 4;
+        static readonly List<S2BPoint> _s2bPoints = new List<S2BPoint>();
+        static float _s2bDim = 1f, _s2bMoonBase, _s2bLampBase, _s2bBackBase;
+        static string _s2bBacklightPlace;
+        static DioramaLayout _s2bAtLayout;
+        static bool _s2bAtLayoutLoaded;
+
+        /// <summary>
+        /// lights[] を組む (4 個まで。on false・lightsOff の名前・スマホの段で phone.on false の物は飛ばす)。点光源・影なし・リグの子。
+        /// 照らす層は look の lightLayers (既定 all = 逆光と同じ = 地形・大物・半立体・キャラ)。RigShadowCount には数えない (影を落とさない)
+        /// </summary>
+        static void S2B_BuildPoints(StageLookData d)
+        {
+            _s2bPoints.Clear();
+            if (d == null || d.Lights.Count == 0 || _rig == null) return;
+            bool tierPhone = HD2DFlags.Tier == HD2DTier.Phone;   // 点け消しと強さはスマホの段 (.phone.json と同じ判定)
+            bool uiPhone = UiKit.Phone;                          // 置き場の上書きはスマホの配置 (Diorama の部品の phone と同じ判定)
+            int i = -1;
+            foreach (var P in d.Lights)
+            {
+                i++;
+                string nm = !string.IsNullOrEmpty(P.Name) ? P.Name : !string.IsNullOrEmpty(P.At) ? P.At : "light" + i;
+                if (!P.On || d.LightsOff.Contains(nm) || (tierPhone && !P.PhoneOn)) continue;
+                if (_s2bPoints.Count >= S2BMaxPoints) { Debug.LogWarning("[StageLook] lights は " + S2BMaxPoints + " 個まで (" + nm + " から後は組まない)"); break; }
+                float t, s, y; string how;
+                if (!S2B_Place(d, P, uiPhone, out t, out s, out y, out how))
+                {
+                    Debug.LogWarning("[StageLook] lights の " + nm + " は置き場が決まらない (at の部品が設計図に無く、t・s も書いていない) → 組まない");
+                    continue;
+                }
+                t += d.LightsShift.x; s += d.LightsShift.y; y += d.LightsShift.z;   // 変種のずらし (lightsShift。既定 0)
+                var go = new GameObject("HD2D-Light-" + nm);
+                go.transform.SetParent(_rig, false);
+                go.transform.position = PathToWorld(d.PathYaw, t, s, y);
+                var l = go.AddComponent<Light>();
+                l.type = LightType.Point;
+                float im = Mathf.Max(0f, d.LightsIllumMul) * (tierPhone ? Mathf.Max(0f, P.PhoneIllumMul) : 1f);
+                float rm = Mathf.Max(0f, d.LightsRangeMul) * (tierPhone ? Mathf.Max(0f, P.PhoneRangeMul) : 1f);
+                l.range = Mathf.Max(0.1f, P.Range * rm);
+                l.color = P.Color;
+                l.intensity = Mathf.Max(0f, P.Illum * P.IllumDist * P.IllumDist * im);   // illum = illumDist の距離での明るさ (逆光と同じ)
+                SetupShadows(l, P, LightShadows.None);   // 影なし (約束)。書いた shadows は読まない
+                _s2bPoints.Add(new S2BPoint { Look = P, Light = l, Name = nm, BaseIntensity = l.intensity, Flicker = Mathf.Clamp01(P.Flicker), Seed = 17.3f * (i + 1), T = t, S = s, Y = y, Place = how });
+            }
+        }
+
+        /// <summary>
+        /// 置き場を解く (lights・逆光・fx の共通)。at があり設計図に同じ name の部品があれば、その t・s (スマホの配置なら部品の phone.t・phone.s) を使い、
+        /// y は書いていれば書いた値 (絶対)・書いていなければ部品の絶対の高さ。at が無い・見つからなければ書いた t・s・y (y が無ければその点の地面の高さ)。
+        /// その後に uiPhone なら w の phone の t・s・y (書いた物だけ・y は絶対) で置き換え、最後に dt・ds・dy を足す。t・s が決まらなければ false
+        /// </summary>
+        static bool S2B_Place(StageLookData d, StageLookData.PointLook w, bool uiPhone, out float t, out float s, out float y, out string how)
+        {
+            t = w.T; s = w.S; y = w.Y; how = "look";
+            bool part = false;
+            if (!string.IsNullOrEmpty(w.At))
+            {
+                float pt, ps, py;
+                part = S2B_PartPlace(d, w.At, out pt, out ps, out py);
+                if (part) { t = pt; s = ps; if (!w.HasY) y = py; how = "part:" + w.At; }
+                else how = "look (" + w.At + " が設計図に無い)";
+            }
+            if (!part)
+            {
+                if (!w.HasT || !w.HasS) return false;
+                if (!w.HasY) { var L = S2B_AtLayoutOf(d); y = L != null ? S2B_GroundAt(L, t, s) : 0f; }
+            }
+            if (uiPhone)
+            {
+                if (w.PhoneHasT) t = w.PhoneT;
+                if (w.PhoneHasS) s = w.PhoneS;
+                if (w.PhoneHasY) y = w.PhoneY;
+            }
+            t += w.Dt; s += w.Ds; y += w.Dy;
+            return true;
+        }
+
+        /// <summary>
+        /// 設計図の部品 name の置き場 (道の座標 t・s と絶対の高さ)。Diorama.BuildPart と同じ読み方: スマホの配置 (UiKit.Phone) なら部品の "phone" の t・s・y、
+        /// abs でなければ地面の高さ (設計図の段 slab から) を足す。額縁 (frame・カメラに付く) と段 (slab) は数えない。無ければ false
+        /// </summary>
+        static bool S2B_PartPlace(StageLookData d, string name, out float t, out float s, out float yAbs)
+        {
+            t = s = yAbs = 0f;
+            var L = S2B_AtLayoutOf(d);
+            if (L == null || string.IsNullOrEmpty(name)) return false;
+            foreach (var p in L.Parts)
+            {
+                if (p.Name != name || p.Kind == "frame" || p.Kind == "slab") continue;
+                float pt = p.T, ps = p.S, py = p.Y;
+                var ph = UiKit.Phone && p.Raw != null ? p.Raw["phone"] as JObject : null;
+                if (ph != null)
+                {
+                    if (IsNum(ph["t"])) pt = (float)ph["t"];
+                    if (IsNum(ph["s"])) ps = (float)ph["s"];
+                    if (IsNum(ph["y"])) py = (float)ph["y"];
+                }
+                t = pt; s = ps;
+                yAbs = p.Abs ? py : S2B_GroundAt(L, pt, ps) + py;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// at を引く設計図 (Apply ごとに1回だけ読む): 光の設計図の "layout" で名指しの物があればそれ・無ければ幕の既定 (Stage.PaintDiorama と同じ決め方)。
+        /// Apply は Diorama.Build より前に呼ばれるので、組んだ箱庭 (Diorama.Layout) ではなく設計図の JSON を読む
+        /// </summary>
+        static DioramaLayout S2B_AtLayoutOf(StageLookData d)
+        {
+            if (_s2bAtLayoutLoaded) return _s2bAtLayout;
+            _s2bAtLayoutLoaded = true;
+            _s2bAtLayout = null;
+            if (d == null) return null;
+            var nt = d.Raw != null ? d.Raw["layout"] : null;
+            string name = nt != null && nt.Type == JTokenType.String ? (string)nt : null;
+            if (!string.IsNullOrEmpty(name)) _s2bAtLayout = Diorama.LoadLayoutNamed(name);
+            if (_s2bAtLayout == null) _s2bAtLayout = Diorama.LoadLayout(d.Act);
+            if (_s2bAtLayout == null) Debug.LogWarning("[StageLook] at を引く設計図が無い (幕" + d.Act + ") → lights・逆光・fx は書いた t・s・y で置く");
+            return _s2bAtLayout;
+        }
+
+        /// <summary>設計図の段 (slab) から道の座標の地面の高さ (Diorama.HeightAtPath と同じ式: その点を含むいちばん高い天面・どれにも入らなければいちばん低い天面・段が無ければ 0)</summary>
+        static float S2B_GroundAt(DioramaLayout L, float t, float s)
+        {
+            float best = float.NegativeInfinity, lowest = float.PositiveInfinity;
+            bool any = false;
+            foreach (var p in L.Parts)
+            {
+                if (p.Kind != "slab" || p.Front.Count < 2) continue;
+                any = true;
+                lowest = Mathf.Min(lowest, p.Top);
+                if (p.Top > best && S2B_SlabContains(p, t, s)) best = p.Top;
+            }
+            if (!any) return 0f;
+            return float.IsNegativeInfinity(best) ? lowest : best;
+        }
+
+        /// <summary>段の中か (Diorama の SlabShape.Contains と同じ: t が縁の点列の範囲・s が縁 (点の間は直線) から奥 back まで)。Front は Parse で t の順に並んでいる</summary>
+        static bool S2B_SlabContains(DioramaPart p, float t, float s)
+        {
+            var F0 = p.Front;
+            int n = F0.Count;
+            if (t < F0[0].x || t > F0[n - 1].x) return false;
+            float front;
+            if (t <= F0[0].x) front = F0[0].y;
+            else if (t >= F0[n - 1].x) front = F0[n - 1].y;
+            else
+            {
+                int lo = 0, hi = n - 1;
+                while (hi - lo > 1) { int mid = (lo + hi) >> 1; if (F0[mid].x <= t) lo = mid; else hi = mid; }
+                float k = (t - F0[lo].x) / Mathf.Max(1e-5f, F0[hi].x - F0[lo].x);
+                front = Mathf.Lerp(F0[lo].y, F0[hi].y, k);
+            }
+            return s >= front - 1e-4f && s <= p.Back;
+        }
+
+        /// <summary>
+        /// 段2 (S2B・約束 §C2-4): 光の設計図の fx の物の形 {"on", "pos": [t, s, y], "at"?, "dt"?, "ds"?, "dy"?} の置き場 (世界)。Stage.SetFxForAct の箱庭の枝が呼ぶ。
+        /// at があれば設計図の部品に付いていく (y は pos の y が勝つ・pos が無ければ部品の高さ + dy)。at が無い・見つからなければ pos (y は絶対)。
+        /// どちらも無い・光を当てていなければ false (呼び手は位置のある粒を点けない)
+        /// </summary>
+        internal static bool S2B_FxPlace(JObject fo, out Vector3 world, out string how)
+        {
+            world = Vector3.zero; how = null;
+            var d = Current;
+            if (!Active || d == null || fo == null) return false;
+            var w = new StageLookData.PointLook { At = S(fo, "at", null), Dt = F(fo, "dt", 0f), Ds = F(fo, "ds", 0f), Dy = F(fo, "dy", 0f) };
+            var pos = Nums(fo["pos"]);
+            if (pos != null && pos.Length >= 2) { w.HasT = w.HasS = true; w.T = pos[0]; w.S = pos[1]; }
+            if (pos != null && pos.Length >= 3) { w.HasY = true; w.Y = pos[2]; }
+            float t, s, y;
+            if (!S2B_Place(d, w, false, out t, out s, out y, out how)) return false;
+            world = PathToWorld(d.PathYaw, t, s, y);
+            return true;
+        }
+
+        /// <summary>月・舞台の灯・逆光・lights を「組んだ時の値 × 暗転 × ゆらぎ」で書く (SetDim と組み直しの後)</summary>
+        static void S2B_WriteIntensities()
+        {
+            if (!Active) return;
+            if (_moon != null) _moon.intensity = _s2bMoonBase * _s2bDim;
+            if (_lamp != null) _lamp.intensity = _s2bLampBase * _s2bDim;
+            if (_backlight != null) _backlight.intensity = _s2bBackBase * _s2bDim;
+            bool det = HD2DFlags.Det;
+            float tm = Time.time;
+            foreach (var p in _s2bPoints)
+                if (p.Light != null) p.Light.intensity = p.BaseIntensity * _s2bDim * (p.Flicker > 0f && !det ? S2B_FlickerFactor(p, tm) : 1f);
+        }
+
+        /// <summary>lights の flicker (毎フレーム。LookDriver が呼ぶ)。det の撮影では揺らさない (組んだ時の値 × 暗転のまま)</summary>
+        static void S2B_TickFlicker()
+        {
+            if (_s2bPoints.Count == 0 || HD2DFlags.Det) return;
+            float tm = Time.time;
+            foreach (var p in _s2bPoints)
+                if (p.Flicker > 0f && p.Light != null) p.Light.intensity = p.BaseIntensity * _s2bDim * S2B_FlickerFactor(p, tm);
+        }
+
+        /// <summary>ゆらぎの倍率 (ゆっくりの波と速い波のパーリンノイズ。平均 1・±flicker)</summary>
+        static float S2B_FlickerFactor(S2BPoint p, float tm)
+        {
+            float a = Mathf.PerlinNoise(tm * 5.3f, p.Seed) - 0.5f, b = Mathf.PerlinNoise(tm * 13.7f, p.Seed + 41.7f) - 0.5f;
+            return Mathf.Max(0f, 1f + 2f * p.Flicker * (0.65f * a + 0.35f * b));
+        }
+
+        /// <summary>光の設計図の "menuShade" の上端・下端の α (0〜1)。書いていない・on false・光を当てていなければ null</summary>
+        static float? S2B_MenuShade(string key)
+        {
+            var d = Current;
+            if (!Active || d == null || d.Raw == null) return null;
+            var ms = d.Raw["menuShade"] as JObject;
+            if (ms == null || !B(ms, "on", true)) return null;
+            var t = ms[key];
+            if (!IsNum(t)) return null;
+            return Mathf.Clamp01((float)t);
         }
 
         static Texture2D MakeCookieTexture(string name, int size, double[] pattern, double[] gain, TextureWrapMode wrap)
@@ -1661,6 +2011,14 @@ namespace DeckRogue.Game
                 if (l.type == LightType.Spot) sb.Append(" 角").Append(l.spotAngle.ToString("0.#", CultureInfo.InvariantCulture)).Append('°');
                 sb.Append(" 影=").Append(l.shadows.ToString());
             }
+            if (_s2bPoints.Count > 0)   // 段2 (S2B): 影なしの点光源
+            {
+                sb.Append(" | 点光源 ").Append(_s2bPoints.Count);
+                foreach (var p in _s2bPoints)
+                    sb.Append(' ').Append(p.Name).Append(" i=").Append(p.BaseIntensity.ToString("0.##", CultureInfo.InvariantCulture))
+                      .Append(" r=").Append(p.Light != null ? p.Light.range.ToString("0.#", CultureInfo.InvariantCulture) : "-").Append(" (").Append(p.Place).Append(')');
+            }
+            if (_s2bBacklightPlace != null) sb.Append(" | 逆光の置き場 ").Append(_s2bBacklightPlace);
             sb.Append(" | 影 ").Append(RigShadowCount()).Append('/').Append(d.Shadow.MaxShadowedLights);
             if (_lampStats != null) sb.Append(" | 帯の明るさのそろい ").Append(Convert.ToDouble(_lampStats["bandEvenness"], CultureInfo.InvariantCulture).ToString("0.00", CultureInfo.InvariantCulture));
             if (_lampBasis != null) sb.Append(" | 灯の形 t ").Append(_maskTMin.ToString("0.0", CultureInfo.InvariantCulture)).Append('〜').Append(_maskTMax.ToString("0.0", CultureInfo.InvariantCulture)).Append(d.Lamp.PoolOn ? "+池" : "");
@@ -1784,7 +2142,50 @@ namespace DeckRogue.Game
                 BL.IllumDist = F(b, "illumDist", BL.IllumDist);
                 BL.Range = F(b, "range", BL.Range);
                 BL.Shadow = B(b, "shadow", BL.Shadow);
+                // 段2 (S2B・約束の外の足し): 設計図の部品に付いていく置き場 (幕1 の look には無いキー = BL.At は null のまま)
+                BL.At = S(b, "at", BL.At);
+                BL.Dt = F(b, "dt", BL.Dt); BL.Ds = F(b, "ds", BL.Ds); BL.Dy = F(b, "dy", BL.Dy);
+                BL.YGiven = IsNum(b["y"]);
             }
+
+            // 段2 (S2B・約束 §C2-1): 影なしの点光源の表 (配列は重ねると丸ごと置き換わる。変種で1つだけ消すのは lightsOff)
+            var lts = o["lights"] as JArray;
+            if (lts != null)
+                foreach (var tok in lts)
+                {
+                    var lo = tok as JObject;
+                    if (lo == null) continue;
+                    var PL = new StageLookData.PointLook();
+                    ReadLight(lo, PL);
+                    PL.Name = S(lo, "name", null);
+                    PL.At = S(lo, "at", null);
+                    PL.On = B(lo, "on", true);
+                    PL.HasT = IsNum(lo["t"]); PL.T = F(lo, "t", 0f);
+                    PL.HasS = IsNum(lo["s"]); PL.S = F(lo, "s", 0f);
+                    PL.HasY = IsNum(lo["y"]); PL.Y = F(lo, "y", 0f);
+                    PL.Dt = F(lo, "dt", 0f); PL.Ds = F(lo, "ds", 0f); PL.Dy = F(lo, "dy", 0f);
+                    PL.Illum = F(lo, "illum", PL.Illum);
+                    PL.IllumDist = F(lo, "illumDist", PL.IllumDist);
+                    PL.Range = F(lo, "range", PL.Range);
+                    PL.Flicker = Math.Max(0f, Math.Min(1f, F(lo, "flicker", 0f)));
+                    var ph = Obj(lo, "phone");
+                    if (ph != null)
+                    {
+                        PL.PhoneOn = B(ph, "on", true);
+                        PL.PhoneIllumMul = F(ph, "illumMul", 1f);
+                        PL.PhoneRangeMul = F(ph, "rangeMul", 1f);
+                        PL.PhoneHasT = IsNum(ph["t"]); PL.PhoneT = F(ph, "t", 0f);
+                        PL.PhoneHasS = IsNum(ph["s"]); PL.PhoneS = F(ph, "s", 0f);
+                        PL.PhoneHasY = IsNum(ph["y"]); PL.PhoneY = F(ph, "y", 0f);
+                    }
+                    d.Lights.Add(PL);
+                }
+            var lmul = Obj(o, "lightsMul");
+            if (lmul != null) { d.LightsIllumMul = F(lmul, "illum", 1f); d.LightsRangeMul = F(lmul, "range", 1f); }
+            var lsh = Obj(o, "lightsShift");
+            if (lsh != null) d.LightsShift = new Vector3(F(lsh, "dt", 0f), F(lsh, "ds", 0f), F(lsh, "dy", 0f));
+            var loff = o["lightsOff"] as JArray;
+            if (loff != null) foreach (var x in loff) if (x != null && x.Type == JTokenType.String) d.LightsOff.Add((string)x);
 
             var c = Obj(o, "cookie");
             if (c != null)
@@ -1944,7 +2345,8 @@ namespace DeckRogue.Game
                     if (prop.Name.StartsWith("_", StringComparison.Ordinal)) continue;
                     var mo = prop.Value as JObject;
                     if (mo == null) continue;
-                    var ml = new StageLookData.MaterialLook { Receive = F(mo, "receive", -1f), ShadowStrength = F(mo, "shadowStrength", -1f), Intensity = F(mo, "intensity", -1f) };
+                    var ml = new StageLookData.MaterialLook { Receive = F(mo, "receive", -1f), ShadowStrength = F(mo, "shadowStrength", -1f), Intensity = F(mo, "intensity", -1f),
+                        HitReceive = F(mo, "hitReceive", -1f) };   // 段2 (S2B): 技の光の受け (無ければ -1 = 書かない)
                     if (mo["tint"] != null) ml.Tint = Col(mo, "tint", Color.white);
                     d.Materials[prop.Name] = ml;
                 }
