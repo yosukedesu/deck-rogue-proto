@@ -40,7 +40,8 @@
     "── 二周目 段2 (2026-10-01・試しのビルドの撮影から門⑧を見直し。scratchpad/hd2d/r2/lane-E/s2/) ──",
     "art.enemy_brute (オーガ・スマホの 96 も) = 受光 0.6・環境光 0.5・輪郭の持ち上げ 0.5 倍 (名前の頭がいちばん長く一致した物だけ効くので enemy_ の値は書き直す)。試しの画でオーガの足元の輪 (門⑧) は、下の行が灯の当たる座席の地面 (灯 ×1.8 で 97〜109 の見込み)・上の行が霧に満ちた土手と霧の面 (92〜108) = 輪 約 90〜100。オーガの体は enemy_ の値のままだと 約 72 (スマホ 約 78) で差 13〜28 = 割れうる。この値で 約 63 (スマホ 約 68・p5 9・p25 24 = 本家の夜の魔物 7/24/55 に近い) = 差 27〜37。",
     "art.leader_green.shadeLift [2.0,0.2]→[3.0,0.2] (P23 の「地面が明るく残った時の逃げ道」= 変種 look_act1_char_shade3 と同じ値。W3b の撮影で +4 前後)。試しの画でこのはの足元の輪は灯 ×1.8 で 約 86〜94。体は宝石の灯が効いて 約 112〜116・効かないスマホ (宝石の点光源を作らない) は 約 108 = 差 14〜18 で割れうるため。白 (肌・髪) は明るさ 0.2 より上なので変わらない。衣が灰色に見えたら look_act1_char_shade1 か [2.5,0.2]。",
-    "contactDepth 2.0 = 接地影 (芯と暈) の楕円の奥行きを 2 倍 (charshadow=1 の時だけ・無ければ 1)。寝かせた楕円の画面の縦は足元を見下ろす角度の sin に比例し、新しいカメラ (目の高さ 3.42・オーガの足元まで 28.8 = 6.8°) は W5 (5.45・22.2 = 13.7°) の 0.49 倍 = 楕円が細い線になっていた (オーガ 18px・主人公 13px・狼 9px・人形 5px)。2 倍で W5 の画面の形に戻る (N15 足の真下の暗さ)。"
+    "contactDepth 2.0 = 接地影 (芯と暈) の楕円の奥行きを 2 倍 (charshadow=1 の時だけ・無ければ 1)。寝かせた楕円の画面の縦は足元を見下ろす角度の sin に比例し、新しいカメラ (目の高さ 3.42・オーガの足元まで 28.8 = 6.8°) は W5 (5.45・22.2 = 13.7°) の 0.49 倍 = 楕円が細い線になっていた (オーガ 18px・主人公 13px・狼 9px・人形 5px)。2 倍で W5 の画面の形に戻る (N15 足の真下の暗さ)。",
+    "三周目 直しの輪4 (2026-10-02): 既定の leader_green に足したキー (ambientScale・blackLift・tint・whiteCap・gemHalo・blackLiftColor・rim・fog) を off (-1・false = 書いていないのと同じ) にして、この写しの見え方を保つ。"
   ],
   "char": {
     "key": [1.0, 0.95, 0.88],
@@ -53,7 +54,7 @@
     "exposureRef": 0.3,
     "heroLift": 1.2,
     "art": {
-      "leader_green": { "heroLift": 1.7, "receive": 0.9, "shadeLift": [2.4, 0.2], "saturation": 1.2, "localLights": 0.4 },
+      "leader_green": { "heroLift": 1.7, "receive": 0.9, "shadeLift": [2.4, 0.2], "saturation": 1.2, "localLights": 0.4, "ambientScale": -1, "blackLift": -1, "tint": false, "whiteCap": -1, "gemHalo": -1, "blackLiftColor": false, "rim": -1, "fog": -1 },
       "leader_white": { "heroLift": -1, "shadeLift": false, "_fix1r3": "直しの輪1 (2026-10-02) の off: 既定の look_act1.char.json に足した ひなたの上書き (heroLift 0.95・shadeLift [0.9,0.2]) を消す。heroLift -1 = char の heroLift・shadeLift false = 読めない (= art の shadeLift 無し = char の shadeLift)。ほかのキーは書かない (-1 と同じ)" },
       "enemy_": { "receive": 0.7, "ambientScale": 0.65, "blackLift": 0.5 },
       "enemy_brute": { "receive": 0.6, "ambientScale": 0.6, "blackLift": 0.5 },

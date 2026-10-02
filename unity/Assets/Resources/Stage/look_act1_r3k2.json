@@ -2,12 +2,21 @@
   "_doc": [
     "三周目 直しの輪3 (2026-10-02) の見比べ k2 = 灯の受けだけ直す (彩度は三周目の 1.05)。撮影の STATE に look=look_act1_r3k2。",
     "art.leader_green = 既定 (localLights 0.15・heroLift 1.8) で saturation だけ 1.05。灯の青を減らした効き目だけを見る。",
-    "見込み: 肌の彩度 0.16→0.21〜0.30・髪 0.37→0.40〜0.45・体の中央値は三周目 ±3。既定 (彩度 1.2) との差が彩度の分。"
+    "見込み: 肌の彩度 0.16→0.21〜0.30・髪 0.37→0.40〜0.45・体の中央値は三周目 ±3。既定 (彩度 1.2) との差が彩度の分。",
+    "三周目 直しの輪4 (2026-10-02): 既定の leader_green に足したキー (ambientScale・blackLift・tint・whiteCap・gemHalo・blackLiftColor・rim・fog) を off (-1・false = 書いていないのと同じ) にして、この写しの見え方を保つ。"
   ],
   "char": {
     "art": {
       "leader_green": {
-        "saturation": 1.05
+        "saturation": 1.05,
+        "ambientScale": -1,
+        "blackLift": -1,
+        "tint": false,
+        "whiteCap": -1,
+        "gemHalo": -1,
+        "blackLiftColor": false,
+        "rim": -1,
+        "fog": -1
       }
     }
   }

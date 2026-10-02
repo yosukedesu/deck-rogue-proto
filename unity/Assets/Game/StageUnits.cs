@@ -420,6 +420,19 @@ namespace DeckRogue.Game
             public float LocalLights = -1f;
             /// <summary>三周目 レーン E: 足元ほど暗い勾配の強さの上書き (負 = look の char の bodyShade の enemy / doll。0 = この絵には掛けない = 白い狼)</summary>
             public float BodyShade = -1f;
+            // 三周目 直しの輪4 (2026-10-02・ユーザー「このはの色彩は0周目の時っぽくできる？」)。負・Has* が偽 = 書いていない = 全体の値のまま
+            /// <summary>白の上限 (負 = look の char の whiteCap。1 = 縮めない)</summary>
+            public float WhiteCap = -1f;
+            /// <summary>霧を受ける割合 (負 = look の char の fog)</summary>
+            public float Fog = -1f;
+            /// <summary>光を受ける板のリム (負 = look の char の heroRim / dollRim / rim)</summary>
+            public float Rim = -1f;
+            /// <summary>宝石の光の板の濃さ (負 = 今のまま 1・0 = 板を出さない)。箱庭で heroGem の表がある絵だけ</summary>
+            public float GemHalo = -1f;
+            /// <summary>キャラの色の掛け算 (sRGB の色。look の char の tint の後に掛ける)</summary>
+            public Color Tint = Color.white; public bool HasTint;
+            /// <summary>輪郭の持ち上げの色味 (sRGB の色。heroBlackLift・blackLift より勝つ。量は今の式と blackLift の倍率)</summary>
+            public Color BlackLiftColor = Color.white; public bool HasBlackLiftColor;
         }
         sealed class CharMatExtras
         {
@@ -566,9 +579,15 @@ namespace DeckRogue.Game
                             Func<string, float> anum = name => { var t = ao[name]; return t != null && (t.Type == JTokenType.Float || t.Type == JTokenType.Integer) ? (float)t : -1f; };
                             var al = new ArtLook { HeroLift = anum("heroLift"), BlackLiftScale = anum("blackLift"), Emission = anum("emission"), Receive = anum("receive"),
                                 AmbientScale = anum("ambientScale"), Saturation = anum("saturation"), LocalLights = anum("localLights"),   // 後ろ3つ = 二周目 レーン E
-                                BodyShade = anum("bodyShade") };   // 三周目 レーン E
+                                BodyShade = anum("bodyShade"),   // 三周目 レーン E
+                                WhiteCap = anum("whiteCap"), Fog = anum("fog"), Rim = anum("rim"), GemHalo = anum("gemHalo") };   // 三周目 直しの輪4
                             Vector2 asl;
                             if (ReadVec2(ao["shadeLift"], out asl)) { al.ShadeLift = asl; al.HasShade = true; }
+                            // 三周目 直しの輪4: 色の2つ (3つの数の配列の時だけ。false・短い配列は書いていないのと同じ = 写しの look で消せる)
+                            var atn = ao["tint"] as JArray;
+                            if (atn != null && atn.Count >= 3) { al.Tint = new Color((float)atn[0], (float)atn[1], (float)atn[2], 1f); al.HasTint = true; }
+                            var abc = ao["blackLiftColor"] as JArray;
+                            if (abc != null && abc.Count >= 3) { al.BlackLiftColor = new Color((float)abc[0], (float)abc[1], (float)abc[2], 1f); al.HasBlackLiftColor = true; }
                             x.Art[p.Name] = al;
                         }
                     R2E_ReadExtras(c, x, num);
@@ -740,8 +759,9 @@ namespace DeckRogue.Game
             if (x == null) return Vector4.zero;
             if (!float.IsNaN(x.OutlineTarget) && StageLook.Current != null) return BlackLiftForTarget(x, hero, art, edgeLin, litMul, view);
             bool heroOwn = hero && x.HasHeroBlackLift;
-            if (!heroOwn && !x.HasBlackLift) return Vector4.zero;
-            Color c = heroOwn ? x.HeroBlackLift : x.BlackLift;
+            bool artOwn = art != null && art.HasBlackLiftColor;   // 三周目 直しの輪4: 絵ごとの色味が勝つ
+            if (!artOwn && !heroOwn && !x.HasBlackLift) return Vector4.zero;
+            Color c = artOwn ? art.BlackLiftColor : (heroOwn ? x.HeroBlackLift : x.BlackLift);
             Color lin = QualitySettings.activeColorSpace == ColorSpace.Linear ? c.linear : c;
             float s = 1f;
             var cur = StageLook.Current;
@@ -802,9 +822,10 @@ namespace DeckRogue.Game
             if (art != null && art.BlackLiftScale >= 0f) l *= art.BlackLiftScale;
             Vector3 hue = Vector3.one;
             bool heroOwn = hero && x.HasHeroBlackLift;
-            if (heroOwn || x.HasBlackLift)
+            bool artOwn = art != null && art.HasBlackLiftColor;   // 三周目 直しの輪4: 絵ごとの色味 (art の blackLiftColor) ＞ heroBlackLift ＞ blackLift
+            if (artOwn || heroOwn || x.HasBlackLift)
             {
-                Color h = heroOwn ? x.HeroBlackLift : x.BlackLift;
+                Color h = artOwn ? art.BlackLiftColor : (heroOwn ? x.HeroBlackLift : x.BlackLift);
                 Color hl = QualitySettings.activeColorSpace == ColorSpace.Linear ? h.linear : h;
                 float hy = 0.2126f * hl.r + 0.7152f * hl.g + 0.0722f * hl.b;
                 if (hy > 1e-6f) hue = new Vector3(hl.r / hy, hl.g / hy, hl.b / hy);
@@ -970,7 +991,7 @@ namespace DeckRogue.Game
         /// キャラの色の掛け算 _CharTint (線形)。look の char の tint (sRGB の色) × cancelColorFilter なら後処理の colorFilter の打ち消し
         /// (チャンネルごとに colorFilter の輝度 ÷ colorFilter = 画面の上でキャラの色だけ colorFilter が掛からない。明るさは保つ)。無ければ (1,1,1)
         /// </summary>
-        static Vector3 CharTintFor(CharMatExtras x)
+        static Vector3 CharTintFor(CharMatExtras x, ArtLook art = null)
         {
             var t = Vector3.one;
             if (x == null) return t;
@@ -978,6 +999,12 @@ namespace DeckRogue.Game
             {
                 Color tl = QualitySettings.activeColorSpace == ColorSpace.Linear ? x.Tint.linear : x.Tint;
                 t = new Vector3(tl.r, tl.g, tl.b);
+            }
+            // 三周目 直しの輪4: 絵ごとの tint を全体の tint の上に掛ける (このはだけ 0周目の後処理の冷たい colorFilter の代わり)
+            if (art != null && art.HasTint)
+            {
+                Color al = QualitySettings.activeColorSpace == ColorSpace.Linear ? art.Tint.linear : art.Tint;
+                t = new Vector3(t.x * al.r, t.y * al.g, t.z * al.b);
             }
             var cur = StageLook.Current;
             if (x.CancelColorFilter && cur != null)
@@ -1350,7 +1377,9 @@ namespace DeckRogue.Game
                 Mat.SetFloat("_AmbientScale", ambScale * es);
                 R3E_ApplyLitExtras(x, art, hero);   // 三周目 レーン E (R5 (b)(c)): 足元ほど暗い勾配・輪郭の1画素 (無ければ 0 = 二周目)
                 // 霧を受ける割合 (二周目 レーン E: look の char.fog。無ければ W5 の 1)。輪郭の目標 (ViewFor) がこの値を読むので先に書く
-                Mat.SetFloat("_Fog", x.Fog >= 0f ? Mathf.Clamp01(x.Fog) : 1f);
+                // 三周目 直しの輪4: 絵ごとの fog が勝つ (このはを 0周目と同じ霧 1 に)
+                float fogOnUnit = art != null && art.Fog >= 0f ? art.Fog : (x.Fog >= 0f ? x.Fog : 1f);
+                Mat.SetFloat("_Fog", Mathf.Clamp01(fogOnUnit));
                 // 鮮やかさ (二周目 レーン E: 絵ごと ＞ look の char.saturation ＞ 1 = W5)
                 float sat = art != null && art.Saturation >= 0f ? art.Saturation : (x.Saturation >= 0f ? x.Saturation : 1f);
                 Mat.SetFloat("_CharSat", sat);
@@ -1358,7 +1387,7 @@ namespace DeckRogue.Game
                 KeyFlipArt = ResolveKeyFlip(ArtName, x);
                 Mat.SetFloat("_KeyFlip", KeyFlipArt && HD2DFlags.KeyFlip == HD2DKeyFlip.Auto ? 1f : 0f);
                 // キャラの色の掛け算 (P23 2周目): 後処理の colorFilter の打ち消し × 暖かさ。暗い色の持ち上げ (このはだけ = art の shadeLift)
-                var tint = CharTintFor(x);
+                var tint = CharTintFor(x, art);
                 Mat.SetVector("_CharTint", new Vector4(tint.x, tint.y, tint.z, 0f));
                 var shade = ShadeLiftFor(x, art);
                 Mat.SetVector("_ShadeLift", new Vector4(shade.x, shade.y, 0f, 0f));
@@ -1374,7 +1403,8 @@ namespace DeckRogue.Game
                 Mat.SetVector("_BlackLift", BlackLiftVector(x, hero, art, EdgeLin(), es * (hero ? heroLift : 1f), view));
                 // 近くの点光源を受ける割合: 絵ごと (二周目 レーン E: このは = 斧の宝石の灯) ＞ look の localLights ＞ 0
                 Mat.SetFloat("_LocalLights", art != null && art.LocalLights >= 0f ? art.LocalLights : (x.LocalLights >= 0f ? x.LocalLights : 0f));
-                if (x.WhiteCap >= 0f) Mat.SetFloat("_WhiteCap", x.WhiteCap);
+                float wcap = art != null && art.WhiteCap >= 0f ? art.WhiteCap : x.WhiteCap;   // 三周目 直しの輪4: 絵ごとの whiteCap が勝つ
+                if (wcap >= 0f) Mat.SetFloat("_WhiteCap", wcap);
                 // 発光の強さ: 絵ごと (art の emission。狼の白い毛) ＞ 設計図の emissionIntensity ＞ シェーダの既定 1.6。露出の割り戻しが戻った時も書き直す
                 float em = art != null && art.Emission >= 0f ? art.Emission : (x.EmissionIntensity >= 0f ? x.EmissionIntensity : DefaultEmissionIntensity);
                 LastEmission = em;
@@ -1524,6 +1554,7 @@ namespace DeckRogue.Game
                 }
                 float rim = hero ? UnitRim : CharRim;
                 if (IsLit) rim = R2E_LitRim(hero, doll, rim);   // 二周目 レーン E: 光を受ける板のリムは look の char (敵 0・人形 0.1・主役 0.25)。無ければ今のまま
+                if (IsLit) { var rimArt = CharExtras().ArtFor(ArtName); if (rimArt != null && rimArt.Rim >= 0f) rim = rimArt.Rim; }   // 三周目 直しの輪4: 絵ごとのリムが勝つ
                 Mat.SetFloat("_Rim", rim);
                 if (FlashT > 0f) FlashT -= Time.deltaTime;
                 Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * 0.85f);
@@ -1567,6 +1598,12 @@ namespace DeckRogue.Game
                     // 直しの輪1 (2026-10-01): 光の板の位置は待機の絵の宝石 (R2E_HaloUvByArtDiorama) なので、振り・構えのコマでは斧が動いて宙に残った
                     // (R01 の1〜3コマ目、主人公の頭の右上に青緑の玉)。箱庭で heroGem の表がある絵は、待機以外のコマで板を隠す。今の舞台・表の無い絵は今まで
                     bool r2HideHalo = dio && Anim != "idle" && ArtName != null && CharExtras().Gem && R2E_HaloUvByArtDiorama.ContainsKey(ArtName);
+                    // 三周目 直しの輪4: 絵ごとの gemHalo 0 = 宝石の光の板を出さない (箱庭で heroGem の表がある絵だけ。今の舞台の杖の光は触らない)
+                    if (!r2HideHalo && dio && ArtName != null && CharExtras().Gem && R2E_HaloUvByArtDiorama.ContainsKey(ArtName))
+                    {
+                        var haloArt = CharExtras().ArtFor(ArtName);
+                        if (haloArt != null && haloArt.GemHalo >= 0f && haloArt.GemHalo <= 1e-4f) r2HideHalo = true;
+                    }
                     if (Halo.gameObject.activeSelf == r2HideHalo) Halo.gameObject.SetActive(!r2HideHalo);
                 }
             }
@@ -1891,11 +1928,15 @@ namespace DeckRogue.Game
                 if (want)
                 {
                     if (!_r2eHaloTinted) { _r2eHaloTexOrig = m.mainTexture; _r2eHaloTinted = true; }
-                    if (_r2eHaloGemTex == null || col != _r2eHaloGemCol)
+                    // 三周目 直しの輪4: 絵ごとの gemHalo で濃さを掛ける (無ければ今の 0.5)。色と濃さのどちらが変わっても作り直す
+                    var haloArt = x.ArtFor(ArtName);
+                    float ha = 0.5f * (haloArt != null && haloArt.GemHalo >= 0f ? Mathf.Clamp01(haloArt.GemHalo) : 1f);
+                    var want4 = new Color(col.r, col.g, col.b, ha);
+                    if (_r2eHaloGemTex == null || want4 != _r2eHaloGemCol)
                     {
                         if (_r2eHaloGemTex != null) Destroy(_r2eHaloGemTex);
-                        _r2eHaloGemTex = Px.Radial(new Color(col.r, col.g, col.b, 0.5f));
-                        _r2eHaloGemCol = col;
+                        _r2eHaloGemTex = Px.Radial(want4);
+                        _r2eHaloGemCol = want4;
                     }
                     if (m.mainTexture != _r2eHaloGemTex) m.mainTexture = _r2eHaloGemTex;
                 }

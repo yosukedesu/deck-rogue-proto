@@ -5,7 +5,8 @@
     "off の書き方: 数は -1 (StageUnits は負を「書いていない」と読む = W5 の値)・塊は {\"on\": false}・art の絵ごとの上書きは全部 -1 (\"enemy_\" の塊は -1 だけ = 書いていないのと同じ)。cookieOnKey はシェーダの既定の 1 (W5 は書いていなかった = 1)。",
     "足した off: keyIntensity 1.0 (元の値)・art.leader_green の heroLift 1.5 (元)・saturation/localLights -1・art.enemy_・art.enemy_brute (段2) 全部 -1・art.enemy_wolf.ambientScale -1・fog/rim/dollRim/heroRim/saturation/contactCore/contactWidth/contactAlpha/contactDepth (段2) -1・art.leader_green.shadeLift は W5 の [2.0, 0.2] (段2 で既定を 3.0 にした)・cookieOnKey 1・contactHalo/r2idle/heroGem は on false。",
     "e30c510 の元の説明文は look_act1.char.json の _doc (二周目の追記より上) を見ること。",
-    "三周目 段1 (2026-10-01 レーン E のキー。確かめ役が足した) の off: bodyShade {on false}・edgeSoft 0・seatAmbient [1]・dollBackAmbient 1・idlePhaseSpread 0・art.enemy_wolf.bodyShade -1・art.white_perm_.ambientScale -1 (= look_act1_r2char と同じ書き方)。heroGem.range 3.5 は heroGem が on false なので効かない。"
+    "三周目 段1 (2026-10-01 レーン E のキー。確かめ役が足した) の off: bodyShade {on false}・edgeSoft 0・seatAmbient [1]・dollBackAmbient 1・idlePhaseSpread 0・art.enemy_wolf.bodyShade -1・art.white_perm_.ambientScale -1 (= look_act1_r2char と同じ書き方)。heroGem.range 3.5 は heroGem が on false なので効かない。",
+    "三周目 直しの輪4 (2026-10-02): 既定の leader_green に足したキー (ambientScale・blackLift・tint・whiteCap・gemHalo・blackLiftColor・rim・fog) を off (-1・false = 書いていないのと同じ) にして、この写しの見え方を保つ。"
   ],
   "char": {
     "key": [1.0, 0.95, 0.88],
@@ -18,7 +19,7 @@
     "exposureRef": 0.3,
     "heroLift": 1.2,
     "art": {
-      "leader_green": { "heroLift": 1.5, "receive": 0.9, "shadeLift": [2.0, 0.2], "saturation": -1, "localLights": -1 },
+      "leader_green": { "heroLift": 1.5, "receive": 0.9, "shadeLift": [2.0, 0.2], "saturation": -1, "localLights": -1, "ambientScale": -1, "blackLift": -1, "tint": false, "whiteCap": -1, "gemHalo": -1, "blackLiftColor": false, "rim": -1, "fog": -1 },
       "leader_white": { "heroLift": -1, "shadeLift": false, "_fix1r3": "直しの輪1 (2026-10-02) の off: 既定の look_act1.char.json に足した ひなたの上書き (heroLift 0.95・shadeLift [0.9,0.2]) を消す。heroLift -1 = char の heroLift・shadeLift false = 読めない (= art の shadeLift 無し = char の shadeLift)。ほかのキーは書かない (-1 と同じ)" },
       "enemy_": { "receive": -1, "ambientScale": -1, "blackLift": -1 },
       "enemy_brute": { "receive": -1, "ambientScale": -1, "blackLift": -1 },

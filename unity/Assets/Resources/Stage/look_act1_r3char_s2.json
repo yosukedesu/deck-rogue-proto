@@ -1,7 +1,8 @@
 {
   "_doc": [
     "三周目 直しの輪3 (2026-10-02) の写し: 直す前の三周目 (段1b の値) の主人公の照明。撮影の STATE に look=look_act1_r3char_s2。look_act1.char.json の上に重ねる。",
-    "中身 = art.leader_green を段1b の値へ (localLights 0.4・heroLift 1.1・shadeLift [1.1,0.2]・saturation 1.05)。final3 の撮影 (主人公の体 PC 約 100・肌の彩度 0.17) と同じ光。"
+    "中身 = art.leader_green を段1b の値へ (localLights 0.4・heroLift 1.1・shadeLift [1.1,0.2]・saturation 1.05)。final3 の撮影 (主人公の体 PC 約 100・肌の彩度 0.17) と同じ光。",
+    "三周目 直しの輪4 (2026-10-02): 既定の leader_green に足したキー (ambientScale・blackLift・tint・whiteCap・gemHalo・blackLiftColor・rim・fog) を off (-1・false = 書いていないのと同じ) にして、この写しの見え方を保つ。"
   ],
   "char": {
     "art": {
@@ -12,7 +13,15 @@
           0.2
         ],
         "saturation": 1.05,
-        "localLights": 0.4
+        "localLights": 0.4,
+        "ambientScale": -1,
+        "blackLift": -1,
+        "tint": false,
+        "whiteCap": -1,
+        "gemHalo": -1,
+        "blackLiftColor": false,
+        "rim": -1,
+        "fog": -1
       }
     }
   }

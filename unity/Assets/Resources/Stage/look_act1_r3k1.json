@@ -2,7 +2,8 @@
   "_doc": [
     "三周目 直しの輪3 (2026-10-02) の見比べ k1 = 彩度だけ戻す。撮影の STATE に look=look_act1_r3k1。",
     "art.leader_green = 直す前の三周目の光 (localLights 0.4・heroLift 1.1・shadeLift [1.1,0.2]) に saturation 1.2 (二周目の値) だけ。",
-    "見込み (StageUnitLit の型): 肌の彩度 0.16→0.14〜0.24 (直す前より +0.01〜0.02)・髪 0.37→0.38〜0.44 = 少しだけ。灯が青いままなので、肌の橙は戻りきらない (白さの主因は灯の色。look_act1.char.json の _doc「直しの輪3」)。体の中央値は変わらない。"
+    "見込み (StageUnitLit の型): 肌の彩度 0.16→0.14〜0.24 (直す前より +0.01〜0.02)・髪 0.37→0.38〜0.44 = 少しだけ。灯が青いままなので、肌の橙は戻りきらない (白さの主因は灯の色。look_act1.char.json の _doc「直しの輪3」)。体の中央値は変わらない。",
+    "三周目 直しの輪4 (2026-10-02): 既定の leader_green に足したキー (ambientScale・blackLift・tint・whiteCap・gemHalo・blackLiftColor・rim・fog) を off (-1・false = 書いていないのと同じ) にして、この写しの見え方を保つ。"
   ],
   "char": {
     "art": {
@@ -13,7 +14,15 @@
           0.2
         ],
         "saturation": 1.2,
-        "localLights": 0.4
+        "localLights": 0.4,
+        "ambientScale": -1,
+        "blackLift": -1,
+        "tint": false,
+        "whiteCap": -1,
+        "gemHalo": -1,
+        "blackLiftColor": false,
+        "rim": -1,
+        "fog": -1
       }
     }
   }

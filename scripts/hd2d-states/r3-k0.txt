@@ -1,0 +1,23 @@
+# このはの色を0周目へ (2026-10-02 直しの輪4)。1行 = 名前|PC または PH|STATE
+PC-K0-def-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1
+PC-K0-def-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+PC-K0-def|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1
+PC-K0-k0a-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3k0a
+PC-K0-k0a-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3k0a
+PC-K0-k0a|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r3k0a
+PC-K0-k0c-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3k0c
+PC-K0-k0c-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3k0c
+PC-K0-k0c|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r3k0c
+PC-K0-old-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=old;dumplayout=1;unitsonly=1
+PC-K0-old-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=old;dumplayout=1;hideui=1
+PH-K0-def-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;tier=phone
+PH-K0-def-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;tier=phone
+PH-K0-def|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-K0-k0a-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3k0a;tier=phone
+PH-K0-k0a-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3k0a;tier=phone
+PH-K0-k0a|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r3k0a;tier=phone
+PH-K0-k0c-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3k0c;tier=phone
+PH-K0-k0c-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3k0c;tier=phone
+PH-K0-k0c|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;look=look_act1_r3k0c;tier=phone
+PH-K0-old-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=old;dumplayout=1;unitsonly=1
+PH-K0-old-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=old;dumplayout=1;hideui=1

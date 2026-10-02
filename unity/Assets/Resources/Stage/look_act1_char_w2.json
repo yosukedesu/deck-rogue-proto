@@ -3,14 +3,15 @@
     "P23 (W3) の比較用の変種: キャラの光を W2 の時に戻す (このはの主役の持ち上げ 1.2・輪郭の持ち上げなし・_KeyFlip は画像ファイルを左右反転した絵・露出の割り戻しなし)。",
     "撮影の STATE に look=look_act1_char_w2。舞台の光 (P22) は今のまま = キャラの光の詰めだけの差を見る。旗 look= が重ね読みになった後 (W3 P22) で使う。持ち主は P23。",
     "exposureRef の \"off\" は数でないので読まれない (= 割り戻さない)。重ね読みは null を飛ばすので、消すかわりに文字を置く。",
-    "2周目 (P23 W3b) で足した口も W2 に戻す: キーと環境光・環境光の倍率 1.0・colorFilter の打ち消しなし・輪郭の目標なし (\"off\")・このはの受光 (-1 = 設計図の receive)・暗い色の持ち上げなし ([0, 0])・狼の発光 (-1 = 既定 1.6)。"
+    "2周目 (P23 W3b) で足した口も W2 に戻す: キーと環境光・環境光の倍率 1.0・colorFilter の打ち消しなし・輪郭の目標なし (\"off\")・このはの受光 (-1 = 設計図の receive)・暗い色の持ち上げなし ([0, 0])・狼の発光 (-1 = 既定 1.6)。",
+    "三周目 直しの輪4 (2026-10-02): 既定の leader_green に足したキー (ambientScale・blackLift・tint・whiteCap・gemHalo・blackLiftColor・rim・fog) を off (-1・false = 書いていないのと同じ) にして、この写しの見え方を保つ。"
   ],
   "char": {
     "key": [0.92, 0.96, 1.0],
     "ambTop": [0.62, 0.66, 0.80],
     "ambBottom": [0.38, 0.40, 0.50],
     "ambientScale": 1.0,
-    "art": { "leader_green": { "heroLift": 1.2, "receive": -1, "shadeLift": [0, 0] }, "enemy_wolf": { "emission": -1 } },
+    "art": { "leader_green": { "heroLift": 1.2, "receive": -1, "shadeLift": [0, 0], "ambientScale": -1, "blackLift": -1, "tint": false, "whiteCap": -1, "gemHalo": -1, "blackLiftColor": false, "rim": -1, "fog": -1 }, "enemy_wolf": { "emission": -1 } },
     "cancelColorFilter": false,
     "outlineTarget": "off",
     "blackLift": [0, 0, 0],
