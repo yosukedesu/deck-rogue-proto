@@ -32,6 +32,12 @@
   python3 scripts/hd2d-r2-sheet.py r3-trial --shots <試しの撮影> [--prev <1 回前の試しの撮影>] [--out シート.png] [--md 数字.md] [--json 数字.json]
   python3 scripts/hd2d-r2-sheet.py r3-final --shots <本番の撮影の親> [--out-dir …] [--only 00,01,02,03]
   共通: [--r2 ~/.cache/deck-rogue/hd2d-r2/shots-final/r2-slice] [--w5 ~/.cache/deck-rogue/hd2d-w5/shots] [--ref-dir …]。出力の既定は unity/Shots/hd2d/r3/ (git の管理外)
+段2 (2026-10-03 レーン F・計画 docs/design/hd2d-stage2-plan-2026-10-02.md §4。物差しは scripts/hd2d-a2-targets.py・hd2d-a3-targets.py):
+  s2-trial  試し (scripts/hd2d-states/s2-dio23.txt の <dev>-T<幕>-*) = 本家 (幕2 ot2・幕3 Tomb)｜今の舞台 (s2-old23 の <dev>-O<幕>-*)｜箱庭 × 5場面
+  s2-final  本番 (同じ一覧の T を S に変えて撮った <dev>-S<幕>-*)。
+            00-s2-numbers.md/json (物差しの表)・01 UI あり・02 UI なし (数字つき)・03 ひと目 (384px)。本家の画を含むので出力の既定は
+            ~/.cache/deck-rogue/hd2d-stage2/sheets/<s2-trial|s2-final>-act<幕>/ (リポジトリと unity/Shots に書かない)
+  python3 scripts/hd2d-r2-sheet.py s2-trial --shots <s2-dio23 の撮影> [--old <s2-old23 の撮影>] [--act 2|3] [--out-dir …] [--only 00,01,02,03]
 
 使い方
   python3 scripts/hd2d-r2-sheet.py trial --shots <試しの撮影のフォルダ> [--w5 <W5 の shots (hero62 と slice の親)>] [--out シート.png]
@@ -1434,6 +1440,174 @@ def sheet_r3_final(a):
     print(json.dumps([m for m in made if m], ensure_ascii=False))
 
 
+# ==================================================================================== 段2 = s2-trial・s2-final (2026-10-03 レーン F)
+# 計画 docs/design/hd2d-stage2-plan-2026-10-02.md §3 手順 3・6 と §4。本家｜今の舞台｜箱庭 × 5場面 (PC 4・スマホ 1) と 384px の「ひと目」・数字の表。
+# 物差しは scripts/hd2d-a2-targets.py (幕2)・hd2d-a3-targets.py (幕3)。説明は docs/design/hd2d-stage2/measure.md。
+# 本家の画素を含むので、出力の既定は ~/.cache/deck-rogue/hd2d-stage2/sheets/ (リポジトリにも unity/Shots にも書かない)。
+#   今の舞台 = s2-old23 の <dev>-O<幕>-<場面> (stage=old)・箱庭 = s2-dio23 の <dev>-T<幕>-<場面> (試し) か <dev>-S<幕>-<場面> (本番)。
+#   スマホの行は 今の舞台 = PH-O<幕>-<場面> (tier なし = APK の既定)・箱庭 = PH-T<幕>-<場面> (tier=phone)。
+
+S2_OUT = os.path.join(R3_CACHE, 'hd2d-stage2', 'sheets')
+S2_OLD = os.path.join(R3_CACHE, 'hd2d-stage2', 'shots', 's2-base', 's2-old23')
+S2_SCENES = {
+    2: [('PC', 'squire', '従士と射手 (2体)'), ('PC', 'trio', '道化と妖術師と太鼓 (3体)'), ('PC', 'turtle', '眠たがりの大亀 (幕ボス 128)'),
+        ('PC', 'dolls', '人形9体 (ひなた)'), ('PH', 'squire', 'スマホ 従士と射手')],
+    3: [('PC', 'quad', '噛みつく巻物 4体 (錨)'), ('PC', 'sculptor', '彫師と用心深い影 (2体)'), ('PC', 'shell', '石殻の番人 (1体)'),
+        ('PC', 'warden', '刻限の門番 (幕ボス)'), ('PC', 'dolls', '人形9体＋彫師'), ('PH', 'quad', 'スマホ 巻物 4体')],
+}
+S2_REF = {2: ('ot2', '本家 ot_921570_2 (松明の洞窟の戦闘)'), 3: ('tomb', '本家 Tomb of the Imperator (探索画)')}
+# 数字の小札 (見出し・鍵・書式)。緑 = 合否に入った・朱 = 外れた・白 = 本家か参考・灰の ≈ = 合否なし
+S2_TOK = {
+    2: [('壁÷床', 'light.L1.ratio', '%.2f'), ('壁', 'light.L1.wallPeak', '%.0f'), ('帯', 'light.L1.wallAboveFeet', '%.0fpx'), ('上段', 'light.L2.median', '%.0f'),
+        ('床彩', 'light.L3.sat', '%.2f'), ('p95', 'guard.p95', '%.0f'), ('暖', 'color.warm', '%.3f'), ('体−床', 'guard.bodyMinusFloor', '%.0f'),
+        ('札÷帯', 'guard.uiFaceOverBand', '%.2f'), ('中', 'global.median', '%.0f'), ('暗', 'global.dark60', '%.2f')],
+    3: [('足元', 'light.T1.peakAboveFeet', '%.0fpx'), ('山', 'light.T1.rises', '%d'), ('柱', 'light.T2.ratio', '%.2f'),
+        ('外壁', 'light.T3.wallOutside', '%.0f'), ('床7', 'light.T3.floorCenterOverEnds', '%.2f'), ('p95', 'global.p95', '%.0f'),
+        ('中', 'global.median', '%.0f'), ('暗', 'global.dark60', '%.2f')],
+}
+_S2M = {}
+
+
+def s2mod(act):
+    """幕の物差しの道具 (幕2 = hd2d-a2-targets・幕3 = hd2d-a3-targets)"""
+    if act not in _S2M:
+        _S2M[act] = load_mod('hd2d_a%d_targets' % act, 'hd2d-a%d-targets.py' % act)
+    return _S2M[act]
+
+
+class S2:
+    """段2 のシートの読み込みと数字 (同じ場面は1回だけ測る)"""
+
+    def __init__(self, act, ref_dirs=None):
+        self.act = act
+        self.M = s2mod(act)
+        self.A2 = s2mod(2)
+        self.refdirs = list(ref_dirs or []) + self.A2.REF_DIRS
+        self.metrics = self.A2.load_json(self.A2.DEFAULT_METRICS) or {}
+        self._m = {}
+        self._img = {}
+
+    def img(self, p):
+        if not p:
+            return None
+        if p not in self._img:
+            self._img[p] = Image.open(p).convert('RGB')
+        return self._img[p]
+
+    def scene(self, folder, name, label):
+        """(UI ありの画, UI なしの画, 数字) — 無ければ None"""
+        if not folder or not os.path.isdir(folder):
+            return None, None, None
+        ui, hide, _, _ = r3_paths(folder, name)
+        k = (folder, name)
+        if k not in self._m:
+            try:
+                r = self.M.measure_scene(folder, name)
+                r['label'] = '%s %s' % (label, name)
+                self._m[k] = r
+            except SystemExit:
+                self._m[k] = None
+            except Exception as e:  # noqa
+                print('測れない: %s/%s (%s: %s)' % (folder, name, type(e).__name__, e)); self._m[k] = None
+        return self.img(ui), self.img(hide), self._m[k]
+
+    def ref(self, key):
+        k = ('ref', key)
+        if k not in self._m:
+            try:
+                self._m[k] = self.M.measure_ref(key, self.metrics, self.refdirs)
+            except SystemExit as e:
+                print('本家を測れない:', e); self._m[k] = None
+        r = self._m[k]
+        return (self.img(r['path']) if r else None), r
+
+    def toks(self, r):
+        if not r:
+            return []
+        checks = {c['key']: c for c in self.M.CHECKS}
+        out = []
+        for lab, key, fmt in S2_TOK[self.act]:
+            v = self.A2.get_key(r, key)
+            if v is None:
+                continue
+            c = checks.get(key)
+            ok = why = None
+            if c:
+                _, ok, why = self.M.judge_one(r, c)
+            approx = ok is None and c is not None and c['cls'] != '参考' and why not in (None, '本家')
+            col = INK2 if approx else (INK if ok is None else (OKC if ok else NGC))
+            try:
+                t = (lab + ' ' + fmt) % v
+            except TypeError:
+                t = '%s %s' % (lab, v)
+            out.append((t + ('≈' if approx else ''), col))
+        return out
+
+
+def sheet_s2(a):
+    """段2 の比較シート: 00 数字の表・01 UI あり・02 UI なし (数字つき)・03 ひと目 (384px)。本家｜今の舞台｜箱庭 × 5場面"""
+    act = a.act
+    F = S2(act, a.ref_dir)
+    stage = 'T' if a.cmd == 's2-trial' else 'S'
+    out_dir = a.out_dir or os.path.join(S2_OUT, '%s-act%d' % (a.cmd, act))
+    os.makedirs(out_dir, exist_ok=True)
+    only = set((a.only or '').split(',')) - {''}
+
+    def want(k):
+        return not only or k in only
+    rk, rtitle = S2_REF[act]
+    rimg, rres = F.ref(rk)
+    heads = [rtitle, '今の舞台 (stage=old・s2-old23)', '箱庭 %s%d (%s)' % (stage, act, '試し' if stage == 'T' else '本番')]
+    rows = []
+    for dev, sc, lab in S2_SCENES[act]:
+        o = F.scene(a.old, '%s-O%d-%s' % (dev, act, sc), '今')
+        d = F.scene(a.shots, '%s-%s%d-%s' % (dev, stage, act, sc), '箱庭')
+        rows.append((lab if dev == 'PH' else 'PC ' + lab, dev, sc, o, d))
+    made = []
+    if want('00'):
+        res = [r for r in [rres] if r]
+        mk = F.A2.REF_ALIAS.get(rk, (rk, None))[0]
+        if mk in F.metrics:
+            res.append(F.A2.metrics_column(F.metrics[mk], '本家 %s (metrics.json)' % rk))
+        for lab, dev, sc, o, d in rows:
+            for q in (o, d):
+                if q[2]:
+                    res.append(q[2])
+        md = F.M.md_table(res, '段2 幕%d の物差し: 本家｜今の舞台｜箱庭 (%s)' % (act, a.cmd))
+        open(os.path.join(out_dir, '00-s2-numbers.md'), 'w', encoding='utf-8').write(md)
+        json.dump(res, open(os.path.join(out_dir, '00-s2-numbers.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1,
+                  default=lambda o_: o_.item() if hasattr(o_, 'item') else str(o_))
+        made.append(os.path.join(out_dir, '00-s2-numbers.md'))
+    notes = ['段2 幕%d (計画 docs/design/hd2d-stage2-plan-2026-10-02.md §4)。同じ幅で %s｜今の舞台 (stage=old)｜箱庭 (dioramaacts=all) を並べた。'
+             '合否は目で決める (数字は補助・docs/design/hd2d-stage2/measure.md)。本家の画を含むのでリポジトリと外に出さない。' % (act, rtitle),
+             ('数字 (scripts/hd2d-a2-targets.py): 壁÷床 = 主人公の列の壁の最大 ÷ 床の最大 (≥1.15)・壁 = その最大 (目安 ≥120)・帯 = その行は足元から何 px 上・上段 = 壁の上段の中央値 (≤60)・'
+              '床彩 = 灯の真下の床の彩度 (≤0.12)・p95 (≤174)・暖 = 暖色の割合 (0.02〜0.06)・体−床 (≥0)・札÷帯 = 手札の外の UI の面 ÷ 帯 (≤1)・中 = 中央値・暗 = 暗い画素。'
+              if act == 2 else
+              '数字 (scripts/hd2d-a3-targets.py): 足元 = 主人公の列の最大は足元から何 px 上 (0〜40)・山 = 上へ行って上がる所 (0)・柱 = 柱の中÷外 (≥3)・'
+              '外壁 = 柱の外の壁 (≤25)・床7 = 床の 7 分割の中央÷端 (≥3)・p95・中・暗。'),
+             '緑 = 入った・朱 = 外れた・白 = 本家か参考・灰の ≈ = 合否なし (スマホの参考・主人公の型が近似・UI ありの画だけ)。']
+    for key, var, lab in (('01', 1, 'UI あり'), ('02', 2, 'UI なし')):
+        if not want(key):
+            continue
+        g = []
+        for rl, dev, sc, o, d in rows:
+            cells = [(rimg, rtitle, [(t, INK) for t, _ in F.toks(rres)] if var == 2 else [])]
+            for q, cap in ((o, '今 %s-O%d-%s' % (dev, act, sc)), (d, '箱庭 %s-%s%d-%s' % (dev, stage, act, sc))):
+                cells.append((q[var - 1], cap + ('' if var == 1 else ' (UI なし)'), F.toks(q[2]) if var == 2 else []))
+            g.append((rl, cells))
+        made.append(grid('%s 段2 幕%d — 本家｜今の舞台｜箱庭 (%s・同じ幅)' % (key, act, lab), notes, g, a.cell_w,
+                         os.path.join(out_dir, '%s-s2-compare-%s.png' % (key, 'ui' if var == 1 else 'hideui')), cap_h=100, row_label_w=200,
+                         col_heads=heads))
+    if want('03'):
+        blocks = []
+        for var, lab in ((1, 'UI あり'), (2, 'UI なし')):
+            blocks.append((lab, [(rl, [rimg, o[var - 1], d[var - 1]]) for rl, dev, sc, o, d in rows]))
+        made.append(r3_glance('03 ひと目 (384px): 段2 幕%d — 本家｜今の舞台｜箱庭' % act, [
+            '384px に縮めた「ひと目」の印象 (反証 score の verify-03-glance の形)。層・帯・床・キャラの浮きはこの大きさで決まる。'], blocks, heads,
+            os.path.join(out_dir, '03-s2-glance.png')))
+    print(json.dumps([m for m in made if m], ensure_ascii=False))
+
+
 def main():
     ap = argparse.ArgumentParser(description='HD-2D 見本 二周目・三周目の比較シート')
     sp = ap.add_subparsers(dest='cmd', required=True)
@@ -1452,6 +1626,16 @@ def main():
             f.add_argument('--out-dir', default=os.path.join(R3_OUT, 'final'))
             f.add_argument('--only', help='作るシートの頭 (カンマ区切り: 00,01,02,03)')
             f.add_argument('--cell-w', type=int, default=960)
+    for nm, hp in (('s2-trial', '段2 試しの比較シート (本家｜今の舞台｜箱庭 T2/T3 × 5場面＋ひと目・scripts/hd2d-states/s2-dio23.txt)'),
+                   ('s2-final', '段2 本番の比較シート (本家｜今の舞台｜箱庭 S2/S3 × 5場面＋ひと目)')):
+        f = sp.add_parser(nm, help=hp)
+        f.add_argument('--shots', required=True, help='箱庭の撮影のフォルダ (s2-dio23 を pshots で撮った所)')
+        f.add_argument('--old', default=S2_OLD, help='今の舞台の撮影のフォルダ (s2-old23。既定 ~/.cache/deck-rogue/hd2d-stage2/shots/s2-base/s2-old23)')
+        f.add_argument('--act', type=int, default=2, choices=(2, 3), help='幕 (2 = 本家 ot2・3 = 本家 Tomb)')
+        f.add_argument('--out-dir', default=None, help='出力 (既定 ~/.cache/deck-rogue/hd2d-stage2/sheets/<s2-trial|s2-final>-act<幕>。本家の画を含むので ~/.cache の外に書かない)')
+        f.add_argument('--only', help='作るシートの頭 (カンマ区切り: 00,01,02,03)')
+        f.add_argument('--cell-w', type=int, default=640)
+        f.add_argument('--ref-dir', action='append', default=[])
     t = sp.add_parser('trial', help='試しのビルドのシート (段1)')
     t.add_argument('--shots', required=True, help='試しの撮影のフォルダ (pshots.sh の出力)')
     t.add_argument('--w5', default=DEFAULT_W5, help='W5 の shots (hero62 と slice の親)')
@@ -1480,6 +1664,8 @@ def main():
         return sheet_r3_trial(a)
     if a.cmd == 'r3-final':
         return sheet_r3_final(a)
+    if a.cmd in ('s2-trial', 's2-final'):
+        return sheet_s2(a)
     if a.cmd == 'final':
         return sheet_final(a)
     if a.cmd == 'regress':

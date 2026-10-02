@@ -1,0 +1,224 @@
+# 段2 (2026-10-03・レーン F・計画 docs/design/hd2d-stage2-plan-2026-10-02.md §4・約束 docs/design/hd2d-stage2/contracts.md C6)。幕2/3 の箱庭を「作る時」の撮影。
+# 回帰ではない (移行の前の基準 s2-base には無い一覧。設計図 act2_layout*.json と光 look_act2*.json を置いてから撮る)。
+# 1行 = 名前|PC または PH|STATE。# と空行は読み飛ばす。撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/s2-dio23.txt <親>/s2-dio23 2
+#   一部だけ撮る時は grep で抜く: grep -E '^PC-T2-(min|squire)' scripts/hd2d-states/s2-dio23.txt > /tmp/x.txt && DET=1 scripts/pshots.sh /tmp/x.txt <出力> 2
+#   ★ 幕ごとに分けて撮る (2026-10-03 F3 追記)。この一覧には幕2 の行 (T2) と幕3 の行 (T3) が両方ある = まるごと撮ると撮る時間がほぼ倍になり、
+#     幕3 の箱庭の資産が揃っていない時は PC-T3-* の名前で今の舞台 (stage=old に落ちた画) が並ぶ (hd2d-a3-targets.py --all と r2-sheet s2-trial --act 3 が
+#     それを「箱庭の幕3」として測ってしまう)。pshots は出力のフォルダを消さない (_status.txt だけ書き直す) ので、同じ <親>/s2-dio23 に幕ごとに足せる:
+#       幕2: grep -E '^(PC|PH)-T2-' scripts/hd2d-states/s2-dio23.txt > /tmp/x2.txt && DET=1 scripts/pshots.sh /tmp/x2.txt <親>/s2-dio23 2
+#       幕3: grep -E '^(PC|PH)-T3-' scripts/hd2d-states/s2-dio23.txt > /tmp/x3.txt && DET=1 scripts/pshots.sh /tmp/x3.txt <親>/s2-dio23 2
+#     幕3 の行は unity/Assets/Resources/Stage/ に act3_layout.json と look_act3.json が両方あるまで撮らない (片方でも無いと今の舞台に落ちる = 幕3 の節の ★)。
+# 共通の STATE = act=2;deck=deck_growth;phase=combat;…;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1 (幕1 の見本と同じ束＋幕の旗 all。幕2 の山札は s2-old23 と同じ deck_growth)。
+#   act=2 の行は起動のタイトルで幕1 の箱庭を組んでから幕2 の箱庭へ組み直す (箱庭 → 箱庭 の切り替えもここで試される)。
+#   スマホは PH の行に tier=phone (look_act2.phone.json が重なる)。光の変種は look=look_act2_<名前> (StageLook.Load(2) が look_act2 一式の上に重ねる)。
+#   設計図の変種は光の変種の "layout" で選ぶ (look_act2_min → act2_layout_min・look_act2_wall3 → act2_layout_wall3・look_act2_wall4 → act2_layout_wall4。約束 C2-7・C3)。
+#   ★ 撮る前に unity/Assets/Resources/Stage/ に look_act2_<名前>.json があるか ls で確かめる (無い変種は既定の光で撮れて「変種にならない」= 同じ画が2枚)。
+#     この一覧が使う光の名前 (レーン B が置いたファイル名のまま): look_act2_min・_exp040・_exp050・_wall3・_wall4・_lamp_hi・_lamp_lo・_lamp_y29・_hi12・_dof24・_dustwall
+#     (約束 C2-7 の lamp* = lamp_hi・lamp_lo・lamp_y29。hi12・dof24・dustwall は B が計画 §2 B と反証の指摘から足した変種)。
+# 名前: <PC|PH>-T2-<場面>[-変種] (試し)。本番は同じ行の T2 → S2 に名前を変えて撮る (約束 C6)。計画 §4 の「T2-squire-ph」は PH-T2-squire (端末の頭で区別)。
+#   UI なしの画 = <名前>-hideui (舞台の物差し)・キャラの型 = <名前>-unitsonly・UI だけ = <名前>-uionly (hd2d-a2-targets.py が場面ごとにこの3つを読む)。
+# 5 場面 (計画 §4・分析書 §4-4): 従士と射手 (2体 enc_squire_archer)・道化と妖術師と太鼓 (3体 enc_joker_hexer_drummer = s2-old23 の PC-O2-trio と同じ。
+#   幕2 の本帯のプールにある = src/engine/map.ts の幕2 の表)・眠たがりの大亀 (幕ボス 128 enemy_turtle;boss=1)・人形 9 (ひなた = s2-old23 の PC-O2-dolls と同じ perms)・
+#   スマホ (従士と射手)。比べる今の舞台は s2-old23 の PC-O2-<場面> (同じ STATE の stage=old 版)。
+# 測り方 (docs/design/hd2d-stage2/measure.md):
+#   物差し   python3 scripts/hd2d-a2-targets.py <出力> PC-T2-min PC-T2-squire PC-T2-trio PC-T2-turtle PC-T2-dolls PH-T2-squire PH-T2-turtle --ref ot2 --md <出力>/a2.md --json <出力>/a2.json
+#            (変種は PC-T2-exp058 など。キャラの型は同じフォルダの PC-T2-squire-unitsonly から借りる)
+#   配置     python3 scripts/hd2d-layout-check.py <出力> --md <出力>/layout-check.md
+#   箱庭の門 <出力>/*-1.layout.json の extra.diorama.ok が true (Diorama.Check。設計図の gates = partsMin・materialsMax 8)
+#   シート   python3 scripts/hd2d-r2-sheet.py s2-trial --shots <出力> [--old <s2-old23 の撮影>]   (本家 ot2｜今の舞台｜箱庭 × PC/PH。出力は ~/.cache だけ)
+#   動画     scripts/hd2d-motion/frames2mp4.sh <出力> PC-T2-attack (本当の速さの 60fps) → scripts/hd2d-motion/sbs.sh で本家の clip と左右並べ (出力は ~/.cache だけ)
+# perf=120 の行は「#perf 」で始まるコメントにしてある (pshots では撮らない: DET を付けない・計測用の exe・1本3分。docs/design/hd2d-slice/perf-runbook.md §4):
+#   grep '^#perf ' scripts/hd2d-states/s2-dio23.txt | sed 's/^#perf //' | while IFS='|' read -r n dev st; do
+#     [ "$dev" = PH ] && export SHOT_W=1920 SHOT_H=886 UISCALE=1.6 || unset SHOT_W SHOT_H UISCALE; run "$n" "$st"; done   (run は perf-runbook §4 の関数)
+# 幕3 (T3-*・M3-*) は段1b で足した (下の「幕3」の節・2026-10-03 レーン F3。測り方は scripts/hd2d-a3-targets.py・measure.md §3)。
+
+# ---- 幕2 最小の試し撮り (計画 §3 手順 2・半日)。設計図 act2_layout_min (岩棚つきの壁1式＋提灯2＋座席の帯の slab と段だけ)・光は台本の光だけ・lobe なし
+#   見る物: 帯の3条件 (①主人公の列の最大が壁で床の 1.15 倍以上 ②壁の上段 行130〜290 ≤60 ③灯の真下の床の彩度 ≤0.12) を目と数字で
+PC-T2-min-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_min;hideui=1;dumplayout=1
+PC-T2-min-unitsonly|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_min;unitsonly=1;dumplayout=1
+PC-T2-min|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_min;dumplayout=1
+
+# ---- 幕2 5 場面 (PC)。各場面 通常 (UI あり)・hideui (舞台の物差し)・unitsonly (キャラの型)・uionly (UI の重なり)
+#   見る物: 層・壁 (岩棚の段が読めるか)・帯・床 (砂の粒・灯の真下は無彩色)・小物・通りの規則 (座席の足元の真後ろに背の高い物が無い)・幕ボス 128 の頭の上の空き
+PC-T2-squire|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-squire-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1
+PC-T2-squire-unitsonly|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1
+PC-T2-squire-uionly|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;uionly=1;dumplayout=1
+PC-T2-trio|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_joker_hexer_drummer;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-trio-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_joker_hexer_drummer;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1
+PC-T2-trio-unitsonly|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_joker_hexer_drummer;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1
+PC-T2-trio-uionly|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_joker_hexer_drummer;stage=diorama;hd2d=slice;dioramaacts=all;uionly=1;dumplayout=1
+PC-T2-turtle|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-turtle-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1
+PC-T2-turtle-unitsonly|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1
+PC-T2-turtle-uionly|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;uionly=1;dumplayout=1
+PC-T2-dolls|PC|act=2;deck=deck_growth;leader=leader_white;phase=combat;enemy=enc_squire_archer;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-dolls-hideui|PC|act=2;deck=deck_growth;leader=leader_white;phase=combat;enemy=enc_squire_archer;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1
+PC-T2-dolls-unitsonly|PC|act=2;deck=deck_growth;leader=leader_white;phase=combat;enemy=enc_squire_archer;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1
+PC-T2-dolls-uionly|PC|act=2;deck=deck_growth;leader=leader_white;phase=combat;enemy=enc_squire_archer;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dioramaacts=all;uionly=1;dumplayout=1
+
+# ---- 幕2 スマホ (tier=phone・1920×886・UI 1.6倍)。計画 §4 の T2-squire-ph／T2-turtle-ph
+#   見る物: スマホの帯の高さ (壁 y 1.1〜2.6 = 床と段の縁より明るいか)・phone.hide (画面の外の物を組まない)・炉の phone.t
+PH-T2-squire|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1;tier=phone
+PH-T2-squire-hideui|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1;tier=phone
+PH-T2-squire-unitsonly|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1;tier=phone
+PH-T2-turtle|PH|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1;tier=phone
+PH-T2-turtle-hideui|PH|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1;tier=phone
+PH-T2-turtle-unitsonly|PH|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1;tier=phone
+
+# ---- 幕2 変種 (UI なし・従士と射手)。決める物 (計画 §3 手順 4): 露出 0.4／0.45／0.5・壁の岩棚の張り出し 2 (既定)／3／4・提灯の range と強さ・nightGrade.hi・奥のぼかし
+#   ＋B が足した物: 灯を全部 0.4 下げる (lamp_y29)・塵の箱を座席〜壁へ伸ばす (dustwall)
+#   既定と並べる元は PC-T2-squire-hideui。キャラの型は PC-T2-squire-unitsonly から借りる (同じキャラ・同じ板・同じ時刻)
+PC-T2-exp058-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_exp058;hideui=1;dumplayout=1
+PC-T2-exp078-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_exp078;hideui=1;dumplayout=1
+PC-T2-wall3-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_wall3;hideui=1;dumplayout=1
+PC-T2-wall4-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_wall4;hideui=1;dumplayout=1
+PC-T2-lamp_hi-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_lamp_hi;hideui=1;dumplayout=1
+PC-T2-lamp_lo-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_lamp_lo;hideui=1;dumplayout=1
+PC-T2-lamp_y29-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_lamp_y29;hideui=1;dumplayout=1
+PC-T2-hi12-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_hi12;hideui=1;dumplayout=1
+PC-T2-dof24-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_dof24;hideui=1;dumplayout=1
+PC-T2-dustwall-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act2_dustwall;hideui=1;dumplayout=1
+
+# ---- 幕2 動き (レーン M・計画 §2 M・分析書 §8・motion.md §7)。UI あり (紙の UI が寄りの間だけ退避するかを見る)。DET=1 で決定的
+#   ★ 連写の 1 コマは 1/60 秒ではない: Autopilot の連写は every フレーム待って撮り、撮る前に 1・撮った後に 3 フレーム回す = 1 コマ = every + 4 フレーム
+#     (playevery=1 でも 5 フレーム = 1/12 秒・枚数 N で N × 5 / 60 秒)。1 枚目は札を出した (手番を終えた・登場を鳴らした) every + 1 フレーム後
+#     = 札を出す前の盤面ではない。連写の後ろに 1 枚撮り state-combat が同じ連番で付く (間隔が飛ぶ = 道具が外す)。
+#     下の枚数は計画 §4 の秒 (攻撃 2 秒・X 札 3 秒・とどめと呪文 2.5 秒・敵 3.5 秒・待機 5 秒) を 1/12 秒刻みで撮る数 (計画の字の 120・180… は 1/60 秒の読みの数)。
+#     1/60 秒ごとに撮るには Autopilot の連写に「撮った後を待たない口」が要る (統合へ。持ち場の外)
+#   何枚目が何秒かは scripts/hd2d-motion/seq.py が layout.json の frame (dumplayout=1) から読む。mp4・数字・左右並べは measure.md §4。1 コマの layout.json は 35〜55KB
+#   各場面の「-pre」= 同じ STATE から play=/endplay= を抜いた 1 枚撮り = 出す前の盤面 (motion_metrics.py の基準。同じフォルダの <名前>-pre-1.png を自動で読む)
+#   A 通常の大きい当たり (急所の打撃 = 大きい当たり → 寄り 0.45 秒・技の光)
+PC-T2-attack|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;hand=green_strike;eexposed=1;play=0;playshots=24;playevery=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-attack-pre|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;hand=green_strike;eexposed=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+#   B ブースト級 = X 札 (蔦の連撃 green_x_vine_flurry・エナジー5 = 5発。最後の1発で寄り 0.9 秒・暗転)
+PC-T2-x|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;hand=green_x_vine_flurry;play=0;playshots=36;playevery=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-x-pre|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;hand=green_x_vine_flurry;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+#   B' 幕ボスのとどめ (大亀の HP を 3 にして打撃 = 寄り 1.8 秒・勝利の帯の前まで)
+PC-T2-kill|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;ehp=3;eblock=0;hand=green_strike;play=0;playshots=30;playevery=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-kill-pre|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;ehp=3;eblock=0;hand=green_strike;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+#   C 呪文・全体 (大地の唸り green_earth_roar = 呪文・全体 6。技の光は呪文の色 = 青緑・全体の最後の1発で寄り 0.9 秒。計画 §4 の表に無い任意の1行)
+PC-T2-spell|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;hand=green_x_sylvan_tempest;penergy=5;play=0;playshots=30;playevery=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-spell-pre|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;hand=green_x_sylvan_tempest;penergy=5;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+#   D 敵の手番 (計画 §4 の字のまま = 1ターン目の盾打ち・射撃。普通の攻撃は光らない = 対照)
+PC-T2-enemy|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;endplay=1;endshots=42;endevery=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-enemy-pre|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+#   D' 敵の予告つき大技 (大亀は 殻→殻→大薙ぎ 24〜32。endturn=2 で3ターン目の大薙ぎの手番を演出つきで撮る = 赤の合図→暖→白→色の帯)
+PC-T2-enemy-big|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;endturn=2;endplay=1;endshots=42;endevery=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-enemy-big-pre|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;endturn=2;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+#   E 待機 (待機を撮る専用の鍵は無い = 戦闘の始まりから 60 枚 × 5 フレーム = 5 秒撮り、登場の演出の後の 1〜5 秒 [13〜60 枚目・--idle 1,4] を
+#     待機として測る。カメラは 0px のはず。登場を鳴らす前の盤面は無いので -pre は撮らない)
+PC-T2-idle|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;entershots=60;enterevery=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+
+# ---- 戦闘以外の画面 (MenuShade の α = 箱庭の幕2 の上で淡い字が読めるか。字の地との比 7:1)
+PC-T2-map|PC|act=2;deck=deck_growth;phase=map;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-reward|PC|act=2;deck=deck_growth;phase=reward;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-campfire|PC|act=2;deck=deck_growth;phase=campfire;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PH-T2-map|PH|act=2;deck=deck_growth;phase=map;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1;tier=phone
+PH-T2-reward|PH|act=2;deck=deck_growth;phase=reward;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1;tier=phone
+
+# ---- セーブして終了 → タイトル → 続きから (幕2 の箱庭を読み戻して組み直せるか。-1 = 戦闘・-2 = タイトル・-3 = 続きから。ログに same-hash)
+PC-T2-saveexit|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;saveexit=1;resume=1;dumplayout=1
+
+# ---- 演出の回帰 (幕2 の箱庭・r3-regress.txt の R06/R08/R09 を写した物。コマ送りは目で見る。今の舞台の演出 R1〜R16 は s2-regress-old* で別に見る)
+PC-T2-R06-guard|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;pblock=20;endplay=1;endshots=16;endevery=3;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-R08-kill|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T2-R09-enter|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;entershots=12;enterevery=6;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+
+# ---- 重さ (perf=120・pshots では撮らない。頭の「perf=120 の行」の取り出し方で perf-runbook §4 の run に渡す)。old と箱庭・幕1 の phone tier
+#perf M2-old|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=old;perf=120
+#perf M2-dio|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;perf=120
+#perf M2-dio-ph|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=all;tier=phone;perf=120
+#perf M1-ph|PH|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;tier=phone;perf=120
+
+# ---- 幕3 (段1b・2026-10-03 レーン F3。計画 §4 の T3-*・M3-*。山札は s2-old23 と同じ deck_big_mana。幕2 の行の並べ方と同じ)
+#   共通の STATE = act=3;deck=deck_big_mana;phase=combat;…;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1 (act=3 の行も起動のタイトルで幕1 の箱庭を組んでから幕3 へ)
+#   5 場面 (計画 §4・分析書 §5-4): 噛みつく巻物 4 体 (錨 enc_biting_scrolls_quad)・彫師と用心深い影 (2体 enc_sculptor_shadow = 古機と亡者)・
+#     石殻の番人 (1体 enemy_shell_guard)・刻限の門番 (幕ボス 128 enemy_warden;boss=1。boss=1 だけだと門番/合成獣/古炉のシード抽選)・
+#     人形 9＋彫師 (ひなた = s2-old23 の PC-O3-dolls と同じ perms)・スマホ (巻物 4 体と門番)。比べる今の舞台は s2-old23 の PC-O3-<場面>・PH-O3-<場面>
+#   光の変種は look=look_act3_<名前> (StageLook.Load(3) が look_act3 一式の上に重ねる)。設計図の変種は光の変種の "layout" で名指し
+#     (look_act3_tier → act3_layout_tier・look_act3_stairs → act3_layout_stairs・look_act3_pillar1 → act3_layout_pillar1。約束 C2-7・C3 の幕2 の形と同じ)。
+#     幕3 には最小の設計図 (幕2 の act2_layout_min にあたる物) は無い: look_act3_min は "layout" を書かない = 設計図は本番のまま・光だけ最小 (レーン B3)。
+#   ★ 撮る前に unity/Assets/Resources/Stage/ に look_act3.json・look_act3_<名前>.json と act3_layout*.json があるか ls で確かめる
+#     (look_act3.json か act3_layout.json が無いと幕3 は今の舞台に落ちる = 箱庭の画にならない・変種の光が無いと既定の光で同じ画が 2 枚)。
+#     この一覧が使う光の名前 (レーン B3 が置いたファイル名のまま・2026-10-03): look_act3_tier (設計図 act3_layout_tier)・_stairs (act3_layout_stairs)・
+#       _pillar1 (柱 t −1 = 設計図 act3_layout_pillar1 で柱の足を右へ＋逆光 t −1.0)・_pillar13 (逆光だけ t −1.3。本番が −1.6 になったので前の値を変種へ)・_exp035 (露出 0.35)・
+#       _moon05 (平行光 0.5 = 計画 §2 B の値)・_pool3 (光溜まり level 3・灯 illum 0.9 = 敵の側の床が明るい側)・
+#       _min (最小の光 = 設計図は本番・平行光 0 で影なし・lights 4 つ〔篝火 2・灯柱・割れ目〕を消す = 舞台の灯と柱だけ)。
+#     設計図の変種 act3_layout_{tier,stairs,pillar1}.json はレーン C3 の生成器 docs/design/hd2d-stage2/layout-gen/gen_act3.py が焼く (統合で置く)。
+#   測り方 (docs/design/hd2d-stage2/measure.md §3):
+#     物差し python3 scripts/hd2d-a3-targets.py <出力> PC-T3-quad PC-T3-sculptor PC-T3-shell PC-T3-warden PC-T3-dolls PH-T3-quad PH-T3-warden --honke --md <出力>/a3.md --json <出力>/a3.json
+#            (--honke = 本家 Tomb と ot7 を横に並べる。変種は PC-T3-tier など。キャラの型は PC-T3-quad-unitsonly から借りる。--all <出力> で幕3 の戦闘の場面を全部)
+#     配置   python3 scripts/hd2d-layout-check.py <出力> --md <出力>/layout-check.md ・ 箱庭の門 = <出力>/*-1.layout.json の extra.diorama.ok
+#     シート python3 scripts/hd2d-r2-sheet.py s2-trial --shots <出力> [--old <s2-old23 の撮影>] (本家 Tomb/ot7｜今の舞台｜箱庭。出力は ~/.cache だけ)
+#     動画   scripts/hd2d-motion/frames2mp4.sh <出力> PC-T3-attack → sbs.sh (measure.md §4。柱と壁で光が読めるか)
+
+# ---- 幕3 5 場面 (PC)。各場面 通常 (UI あり)・hideui (舞台の物差し)・unitsonly (キャラの型)・uionly (UI の重なり)
+#   見る物: 光の 3 条件 (①主人公の列で足元が最大・上へ 1 本 ②真後ろに斜めの柱・中÷外 ≥3 ③柱の外の壁 ≤25・床の 7 分割 ≥3)・立面 4 段が縞に見えないか・
+#     奥の壁が上端まで・大門と柱 (3D)・小物 8 以下・通りの規則 (座席の足元の真後ろに背の高い物が無い)・幕ボス 128 の頭の上の空き・古機の金属の光
+PC-T3-quad|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T3-quad-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1
+PC-T3-quad-unitsonly|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1
+PC-T3-quad-uionly|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;uionly=1;dumplayout=1
+PC-T3-sculptor|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_sculptor_shadow;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T3-sculptor-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_sculptor_shadow;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1
+PC-T3-sculptor-unitsonly|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_sculptor_shadow;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1
+PC-T3-sculptor-uionly|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_sculptor_shadow;stage=diorama;hd2d=slice;dioramaacts=all;uionly=1;dumplayout=1
+PC-T3-shell|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_shell_guard;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T3-shell-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_shell_guard;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1
+PC-T3-shell-unitsonly|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_shell_guard;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1
+PC-T3-shell-uionly|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_shell_guard;stage=diorama;hd2d=slice;dioramaacts=all;uionly=1;dumplayout=1
+PC-T3-warden|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T3-warden-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1
+PC-T3-warden-unitsonly|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1
+PC-T3-warden-uionly|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;uionly=1;dumplayout=1
+PC-T3-dolls|PC|act=3;deck=deck_big_mana;leader=leader_white;phase=combat;enemy=enc_sculptor_shadow;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T3-dolls-hideui|PC|act=3;deck=deck_big_mana;leader=leader_white;phase=combat;enemy=enc_sculptor_shadow;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1
+PC-T3-dolls-unitsonly|PC|act=3;deck=deck_big_mana;leader=leader_white;phase=combat;enemy=enc_sculptor_shadow;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1
+PC-T3-dolls-uionly|PC|act=3;deck=deck_big_mana;leader=leader_white;phase=combat;enemy=enc_sculptor_shadow;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=diorama;hd2d=slice;dioramaacts=all;uionly=1;dumplayout=1
+
+# ---- 幕3 スマホ (tier=phone・1920×886・UI 1.6倍)。計画 §4 の T3-quad-ph／T3-warden-ph
+#   見る物: 壁 1 枚＋柱＋立面で成り立つか・phone.hide (壁2・櫓・裂け目・池・機械の庭・mist-far を組まない)・柱が上部バーの裏に隠れないか
+PH-T3-quad|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1;tier=phone
+PH-T3-quad-hideui|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1;tier=phone
+PH-T3-quad-unitsonly|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1;tier=phone
+PH-T3-warden|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1;tier=phone
+PH-T3-warden-hideui|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;hideui=1;dumplayout=1;tier=phone
+PH-T3-warden-unitsonly|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=diorama;hd2d=slice;dioramaacts=all;unitsonly=1;dumplayout=1;tier=phone
+
+# ---- 幕3 変種 (UI なし・巻物 4 体)。決める物 (計画 §3 手順 5): 段の高さ・斜めの大階段 (縞を断つ)・柱の位置 t −1／−1.6・露出 0.25 (既定)／0.35
+#   ＋平行光の強さ (moon05 = 計画の 0.5 と本番の値)・光溜まりの比 (pool3 = 芯と敵の側の床の比を緩めた側)
+#   ＋最小の光 (min = 設計図は本番のまま・平行光と lights を切って舞台の灯と柱だけ。柱の中÷外 (T2) と柱の外の壁 (T3a) が平行光と灯なしで
+#     どこまで出るか = 本番との差が平行光と灯の寄与。幕2 の T2-min〔最小の設計図〕とは役が違う)
+#   既定と並べる元は PC-T3-quad-hideui。キャラの型は PC-T3-quad-unitsonly から借りる (同じキャラ・同じ板・同じ時刻)
+PC-T3-tier-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act3_tier;hideui=1;dumplayout=1
+PC-T3-stairs-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act3_stairs;hideui=1;dumplayout=1
+PC-T3-pillar1-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act3_pillar1;hideui=1;dumplayout=1
+PC-T3-pillar13-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act3_pillar13;hideui=1;dumplayout=1
+PC-T3-exp035-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act3_exp035;hideui=1;dumplayout=1
+PC-T3-moon05-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act3_moon05;hideui=1;dumplayout=1
+PC-T3-pool3-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act3_pool3;hideui=1;dumplayout=1
+PC-T3-min-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;look=look_act3_min;hideui=1;dumplayout=1
+
+# ---- 幕3 動き (レーン M・計画 §2 M・分析書 §8)。UI あり。1 コマ = every + 4 フレーム = 1/12 秒 (幕2 の動きの節の頭の ★ と同じ読み)
+#   2 体 (彫師と用心深い影) で撮る = 敵の背後の壁と柱が画面に入る。-pre は同じ STATE から play= を抜いた 1 枚撮り (motion_metrics.py の基準)
+#   A 通常の大きい当たり (急所の打撃 = 寄り 0.45 秒・技の光。24 枚 = 2 秒)
+PC-T3-attack|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_sculptor_shadow;hand=green_strike;eexposed=1;play=0;playshots=24;playevery=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T3-attack-pre|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_sculptor_shadow;hand=green_strike;eexposed=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+#   C 呪文・全体 (大地の唸り green_earth_roar = 幕2 の PC-T2-spell と同じ札・同じ 30 枚 = 2.5 秒。技の光は呪文の色 = 青緑・全体の最後の1発で寄り 0.9 秒)
+PC-T3-spell|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_sculptor_shadow;hand=green_earth_roar;play=0;playshots=30;playevery=1;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T3-spell-pre|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_sculptor_shadow;hand=green_earth_roar;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+
+# ---- 幕3 戦闘以外の画面 (MenuShade の α = 箱庭の幕3 の上で淡い字が読めるか。字の地との比 7:1)
+PC-T3-map|PC|act=3;deck=deck_big_mana;phase=map;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PC-T3-reward|PC|act=3;deck=deck_big_mana;phase=reward;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1
+PH-T3-map|PH|act=3;deck=deck_big_mana;phase=map;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1;tier=phone
+PH-T3-reward|PH|act=3;deck=deck_big_mana;phase=reward;stage=diorama;hd2d=slice;dioramaacts=all;dumplayout=1;tier=phone
+
+# ---- 幕3 セーブして終了 → タイトル → 続きから (幕3 の箱庭を読み戻して組み直せるか。-1 = 戦闘・-2 = タイトル・-3 = 続きから。ログに same-hash)
+PC-T3-saveexit|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;saveexit=1;resume=1;dumplayout=1
+
+# ---- 幕3 重さ (perf=120・pshots では撮らない。頭の「perf=120 の行」の取り出し方 grep '^#perf ' で幕2 の行と一緒に拾える)
+#perf M3-old|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=old;perf=120
+#perf M3-dio|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;perf=120
+#perf M3-dio-ph|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=all;tier=phone;perf=120
