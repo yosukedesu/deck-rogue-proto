@@ -1,0 +1,7 @@
+{
+ "_": "HD-2D 段2 レーン D3 (2026-10-03)。keyflip = 画像ファイルを左右反転した絵 (StageUnitLit の _KeyFlip=1)・lightFromRight = 光が右から描き込まれた絵 (art-lint の lint_character で測った向き。反転はしていない)。幕3 の舞台の絵は左右反転して置いた物が無いので keyflip は空。キャラの絵の表は幕1 の Art/stage/act1/keyflip がどの幕でも読まれる",
+ "keyflip": [],
+ "lightFromRight": [
+  "skyline_a"
+ ]
+}
