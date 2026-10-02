@@ -1,0 +1,1002 @@
+{
+  "_doc": "岩棚の張り出し 3 unit の変種 (本番は 2。計画 §3 手順 4 で決める)。look_act2_wall3.json の \"layout\" が指す。棚の前 s 9.4 は同じで、本体・上段・頂・歩廊・坑口・提灯を奥へ 1 unit ずらした。作り方は gen_act2.py。幕2「先代の坑道」の箱庭の設計図 (HD-2D 段2・計画 docs/design/hd2d-stage2-plan-2026-10-02.md §2 C・約束 docs/design/hd2d-stage2/contracts.md C3)。作り方は docs/design/hd2d-stage2/layout-gen/gen_act2.py (種 20261003・手で直さず焼き直す)・規則の検査は place2.py。座標は幕1 と同じ道の座標 (t = 道に沿った距離・s = 道と直角 (+ が奥)・y = 地面からの高さ (abs なら絶対))。層: 下の坑道 −1.4・座席の帯 0 (s −5.0〜5.0)・一段目 +0.9 (s 5.0〜7.9)・二段目 +1.8 (s 7.9〜・レール)・岩棚 block abs 1.8〜2.9 (前 s 9.4)・壁の本体 1.8〜4.4 (前 s 12.4 = 張り出し 3 unit)・上段 4.4〜6.3・頂 6.3〜11.5・奥の保険。段は slab (block にすると HeightAtPath が下の坑道の −1.4 を返して上の部品が沈む)。天井は作らない (block に底の面が無い)・水路と桟橋は組まない。光の部品の名前 (lantern-a・lantern-b・lantern-a-halo・lantern-b-halo・hearth・hearth-halo・mouth-lamp) はレーン B の look_act2*.json の lights の at が読む (動かすと光も付いてくる)。lantern-c は光の 4 つ目の枠の候補 (点けなければ暈だけ)。材質は 7 つ + 霧の板 = 8 (card は書かない = 札と小札は relief)。絵は Art/stage/act2/ (レーン D) を先に、無ければ元の Art/props/act2_*・Art/tiles/act2_*",
+  "version": 1,
+  "act": 2,
+  "pathYaw": -22.0,
+  "tile": 64,
+  "albedoLinear": true,
+  "normalStrength": 0.6,
+  "staticBatch": true,
+  "gates": {
+    "partsMin": 160,
+    "partsMax": 260,
+    "litterMax": 120,
+    "materialsMax": 8
+  },
+  "tiles": {
+    "side_earth": {
+      "rot": "flipX",
+      "fallback": [
+        67,
+        66,
+        63
+      ],
+      "variants": [
+        [
+          "Art/stage/act2/tiles/side_earth_a",
+          {
+            "art": "Art/tiles/act2_dirt",
+            "calm": 0.3,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_earth_b",
+          {
+            "art": "Art/tiles/act2_dirt_a",
+            "calm": 0.3,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_earth_c",
+          {
+            "art": "Art/tiles/act2_dirt",
+            "calm": 0.3,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_earth_d",
+          {
+            "art": "Art/tiles/act2_dirt_a",
+            "calm": 0.3,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "top_earth_seat": {
+      "rot": "rot4",
+      "fallback": [
+        107,
+        105,
+        101
+      ],
+      "variants": [
+        [
+          "Art/stage/act2/tiles/top_earth_seat_a",
+          {
+            "art": "Art/tiles/act2_dirt_a",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_earth_seat_b",
+          {
+            "art": "Art/tiles/act2_dirt",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_earth_seat_c",
+          {
+            "art": "Art/tiles/act2_dirt_a",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_earth_seat_d",
+          {
+            "art": "Art/tiles/act2_dirt",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "side_cliff": {
+      "rot": "flipX",
+      "fallback": [
+        56,
+        66,
+        85
+      ],
+      "variants": [
+        [
+          "Art/stage/act2/tiles/side_cliff_a",
+          {
+            "art": "Art/tiles/act2_cliff_a",
+            "calm": 0.33,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_cliff_b",
+          {
+            "art": "Art/tiles/act2_cliff_b",
+            "calm": 0.33,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_cliff_c",
+          {
+            "art": "Art/tiles/act2_cliff_a",
+            "calm": 0.33,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_cliff_d",
+          {
+            "art": "Art/tiles/act2_cliff_d",
+            "calm": 0.33,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "top_cliff": {
+      "rot": "rot4",
+      "fallback": [
+        67,
+        81,
+        97
+      ],
+      "variants": [
+        [
+          "Art/stage/act2/tiles/top_cliff_a",
+          {
+            "art": "Art/tiles/act2_cliff_b",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_cliff_b",
+          {
+            "art": "Art/tiles/act2_cliff_a",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_cliff_c",
+          {
+            "art": "Art/tiles/act2_cliff_d",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_cliff_d",
+          {
+            "art": "Art/tiles/act2_cliff_b",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "side_timber": {
+      "rot": "flipX",
+      "fallback": [
+        78,
+        75,
+        80
+      ],
+      "variants": [
+        [
+          "Art/stage/act2/tiles/side_timber_a",
+          {
+            "art": "Art/tiles/act2_wood",
+            "calm": 0.42,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_timber_b",
+          {
+            "art": "Art/tiles/act2_wood",
+            "calm": 0.42,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_timber_c",
+          {
+            "art": "Art/tiles/act2_wood",
+            "calm": 0.42,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_timber_d",
+          {
+            "art": "Art/tiles/act2_wood",
+            "calm": 0.42,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "top_timber": {
+      "rot": "flipX",
+      "fallback": [
+        83,
+        80,
+        85
+      ],
+      "variants": [
+        [
+          "Art/stage/act2/tiles/top_timber_a",
+          {
+            "art": "Art/tiles/act2_wood",
+            "calm": 0.35,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_timber_b",
+          {
+            "art": "Art/tiles/act2_wood",
+            "calm": 0.35,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_timber_c",
+          {
+            "art": "Art/tiles/act2_wood",
+            "calm": 0.35,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_timber_d",
+          {
+            "art": "Art/tiles/act2_wood",
+            "calm": 0.35,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "side_plank": {
+      "rot": "flipX",
+      "fallback": [
+        71,
+        67,
+        73
+      ],
+      "variants": [
+        [
+          "Art/stage/act2/tiles/side_plank_a",
+          {
+            "art": "Art/tiles/act2_plank",
+            "calm": 0.4,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_plank_b",
+          {
+            "art": "Art/tiles/act2_plank",
+            "calm": 0.4,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_plank_c",
+          {
+            "art": "Art/tiles/act2_plank",
+            "calm": 0.4,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/side_plank_d",
+          {
+            "art": "Art/tiles/act2_plank",
+            "calm": 0.4,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "top_plank": {
+      "rot": "flipX",
+      "fallback": [
+        79,
+        76,
+        81
+      ],
+      "variants": [
+        [
+          "Art/stage/act2/tiles/top_plank_a",
+          {
+            "art": "Art/tiles/act2_plank",
+            "calm": 0.3,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_plank_b",
+          {
+            "art": "Art/tiles/act2_plank",
+            "calm": 0.3,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_plank_c",
+          {
+            "art": "Art/tiles/act2_plank",
+            "calm": 0.3,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act2/tiles/top_plank_d",
+          {
+            "art": "Art/tiles/act2_plank",
+            "calm": 0.3,
+            "sat": 1.0,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "side_iron": {
+      "rot": "flipX",
+      "fallback": [
+        47,
+        45,
+        45
+      ],
+      "variants": [
+        [
+          "Art/stage/act2/tiles/side_iron_a"
+        ],
+        [
+          "Art/stage/act2/tiles/side_iron_b"
+        ],
+        [
+          "Art/stage/act2/tiles/side_iron_c"
+        ],
+        [
+          "Art/stage/act2/tiles/side_iron_d"
+        ]
+      ]
+    },
+    "top_iron": {
+      "rot": "flipX",
+      "fallback": [
+        96,
+        111,
+        121
+      ],
+      "variants": [
+        [
+          "Art/stage/act2/tiles/top_iron_a"
+        ],
+        [
+          "Art/stage/act2/tiles/top_iron_b"
+        ],
+        [
+          "Art/stage/act2/tiles/top_iron_c"
+        ],
+        [
+          "Art/stage/act2/tiles/top_iron_d"
+        ]
+      ]
+    }
+  },
+  "surfaces": {
+    "terrain": {
+      "shader": "array",
+      "side": "side_earth",
+      "top": "top_earth_seat",
+      "receive": 0.8,
+      "shadowStrength": 1.0,
+      "topThreshold": 0.65,
+      "topBlend": 0.15,
+      "vcolorAO": 1.0,
+      "tint": [
+        0.82,
+        0.82,
+        0.82
+      ]
+    },
+    "rock": {
+      "shader": "array",
+      "side": "side_cliff",
+      "top": "top_cliff",
+      "receive": 0.8,
+      "shadowStrength": 1.0,
+      "topThreshold": 0.55,
+      "topBlend": 0.12,
+      "vcolorAO": 1.0
+    },
+    "wood": {
+      "shader": "array",
+      "side": "side_timber",
+      "top": "top_timber",
+      "receive": 0.8,
+      "shadowStrength": 1.0,
+      "vcolorAO": 1.0
+    },
+    "plank": {
+      "shader": "array",
+      "side": "side_plank",
+      "top": "top_plank",
+      "receive": 0.8,
+      "shadowStrength": 1.0,
+      "vcolorAO": 1.0
+    },
+    "iron": {
+      "shader": "array",
+      "side": "side_iron",
+      "top": "top_iron",
+      "receive": 0.6,
+      "shadowStrength": 1.0,
+      "vcolorAO": 1.0
+    },
+    "relief": {
+      "shader": "atlas",
+      "receive": 0.6,
+      "shadowStrength": 1.0,
+      "cutoff": 0.4,
+      "vcolorAO": 1.0,
+      "normal": 0.6,
+      "sway": {
+        "amp": 0.03,
+        "freq": [
+          0.3,
+          0.8
+        ]
+      }
+    },
+    "glow": {
+      "shader": "shaft",
+      "tint": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "intensity": 1.2,
+      "softDepth": 1.5,
+      "nearFade": 2.0,
+      "edgeFade": 0.0,
+      "fog": 0.25,
+      "lobeFloor": 1.0
+    }
+  },
+  "sources": {
+    "hearth": {
+      "art": [
+        "Art/stage/act2/relief/hearth",
+        "Art/props/act2_hearth"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "lanternHang": {
+      "art": [
+        "Art/stage/act2/relief/lantern_hang",
+        "Art/props/act2_lantern_hang"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "lanternPost": {
+      "art": [
+        "Art/stage/act2/relief/lantern_post",
+        "Art/props/act2_lantern_post"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "barrelStack": {
+      "art": [
+        "Art/stage/act2/relief/barrel_stack",
+        "Art/props/act2_barrel_stack"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "crate": {
+      "art": [
+        "Art/stage/act2/relief/crate",
+        "Art/props/act2_crate"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "crateOpen": {
+      "art": [
+        "Art/stage/act2/relief/crate_open",
+        "Art/props/act2_crate_open"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "sacks": {
+      "art": [
+        "Art/stage/act2/relief/sacks",
+        "Art/props/act2_sacks"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "lumber": {
+      "art": [
+        "Art/stage/act2/relief/lumber",
+        "Art/props/act2_lumber"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "toolrack": {
+      "art": [
+        "Art/stage/act2/relief/toolrack",
+        "Art/props/act2_toolrack"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "winch": {
+      "art": [
+        "Art/stage/act2/relief/winch",
+        "Art/props/act2_winch"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "minecart": {
+      "art": [
+        "Art/stage/act2/relief/minecart",
+        "Art/props/act2_minecart"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "orePile": {
+      "art": [
+        "Art/stage/act2/relief/ore_pile",
+        "Art/props/act2_ore_pile"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "crystal": {
+      "art": [
+        "Art/stage/act2/relief/crystal",
+        "Art/props/act2_crystal"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "crystalBig": {
+      "art": [
+        "Art/stage/act2/relief/crystal_big",
+        "Art/props/act2_crystal_big"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "stalactite": {
+      "art": [
+        "Art/stage/act2/relief/stalactite_a",
+        "Art/props/act2_stalactite_a"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "stalactiteCluster": {
+      "art": [
+        "Art/stage/act2/relief/stalactite",
+        "Art/props/act2_stalactite"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "mouthDark": {
+      "_doc": "坑口の中の黒い札 (平らな札・部品の tint で暗く)。D の mouth_dark が無ければ幕1 の無地の暗い紺緑 (32×32) を借りる",
+      "art": [
+        "Art/stage/act2/relief/mouth_dark",
+        "Art/stage/act1/relief/backdrop_plain"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterGravel1": {
+      "art": [
+        "Art/stage/act2/litter/gravel_1"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterGravel2": {
+      "art": [
+        "Art/stage/act2/litter/gravel_2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterGravel3": {
+      "art": [
+        "Art/stage/act2/litter/gravel_3"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterGravel4": {
+      "art": [
+        "Art/stage/act2/litter/gravel_4"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterPebble1": {
+      "art": [
+        "Art/stage/act2/litter/pebble_1"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterPebble2": {
+      "art": [
+        "Art/stage/act2/litter/pebble_2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterPebble3": {
+      "art": [
+        "Art/stage/act2/litter/pebble_3"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterPebble4": {
+      "art": [
+        "Art/stage/act2/litter/pebble_4"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterGear1": {
+      "art": [
+        "Art/stage/act2/litter/gear_1"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterGear2": {
+      "art": [
+        "Art/stage/act2/litter/gear_2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterGear3": {
+      "art": [
+        "Art/stage/act2/litter/gear_3"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterChips1": {
+      "art": [
+        "Art/stage/act2/litter/chips_1"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterChips2": {
+      "art": [
+        "Art/stage/act2/litter/chips_2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterChips3": {
+      "art": [
+        "Art/stage/act2/litter/chips_3"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterChips4": {
+      "art": [
+        "Art/stage/act2/litter/chips_4"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    }
+  },
+  "parts": [
+    {"kind":"slab","name":"lower-floor","surface":"terrain","top":-1.4,"bottom":-3.0,"back":-4.95,"grid":1.28,"chamfer":0.0,"front":[[-34.0,-30.0],[40.0,-30.0]],"mottle":{"scale":[2,5],"amount":0.12,"seed":202610037}},
+    {"kind":"slab","name":"seat-band","surface":"terrain","top":0.0,"bottom":-1.45,"back":5.0,"grid":0.32,"chamfer":0.0,"front":[[-34.0,-5.0],[40.0,-5.0]],"mottle":{"scale":[2,5],"amount":0.08,"seed":202610044},"seed":202610051},
+    {"kind":"slab","name":"tier-1","surface":"terrain","top":0.9,"bottom":-0.1,"back":7.9,"grid":0.64,"chamfer":0.12,"front":[[-34.0,5.005],[-32.72,5.147],[-31.44,5.054],[-30.16,5.023],[-28.88,5.08],[-27.6,5.084],[-26.32,5.099],[-25.04,5.083],[-23.76,5.008],[-22.48,5.106],[-21.2,5.06],[-19.92,5.127],[-18.64,5.101],[-17.36,5.121],[-16.08,5.132],[-14.8,5.082],[-13.52,5.108],[-12.24,5.09],[-10.96,5.079],[-9.68,5.037],[-8.4,5.055],[-7.12,5.053],[-5.84,5.04],[-4.56,5.081],[-3.28,5.111],[-2.0,5.006],[-0.72,5.072],[0.56,5.005],[1.84,5.03],[3.12,5.109],[4.4,5.052],[5.68,5.112],[6.96,5.131],[8.24,5.048],[9.52,5.034],[10.8,5.02],[12.08,5.05],[13.36,5.106],[14.64,5.159],[15.92,5.083],[17.2,5.05],[18.48,5.029],[19.76,5.019],[21.04,5.134],[22.32,5.006],[23.6,5.013],[24.88,5.12],[26.16,5.068],[27.44,5.049],[28.72,5.13],[30.0,5.005],[31.28,5.111],[32.56,5.038],[33.84,5.14],[35.12,5.116],[36.4,5.129],[37.68,5.104],[38.96,5.124]],"mottle":{"scale":[2,5],"amount":0.1,"seed":202610058}},
+    {"kind":"slab","name":"tier-2","surface":"terrain","top":1.8,"bottom":0.8,"back":40.0,"grid":0.64,"chamfer":0.1,"front":[[-34.0,7.99],[-32.72,7.996],[-31.44,7.96],[-30.16,7.989],[-28.88,8.012],[-27.6,7.964],[-26.32,7.971],[-25.04,7.931],[-23.76,7.911],[-22.48,7.902],[-21.2,7.939],[-19.92,7.975],[-18.64,7.96],[-17.36,7.95],[-16.08,7.922],[-14.8,7.953],[-13.52,7.959],[-12.24,7.931],[-10.96,7.95],[-9.68,7.964],[-8.4,8.018],[-7.12,7.984],[-5.84,7.983],[-4.56,8.0],[-3.28,8.0],[-2.0,7.947],[-0.72,8.019],[0.56,8.006],[1.84,7.979],[3.12,8.017],[4.4,7.977],[5.68,7.979],[6.96,7.942],[8.24,7.929],[9.52,8.003],[10.8,7.922],[12.08,7.934],[13.36,8.011],[14.64,8.018],[15.92,7.917],[17.2,7.988],[18.48,8.012],[19.76,7.903],[21.04,7.925],[22.32,7.901],[23.6,7.938],[24.88,7.925],[26.16,7.987],[27.44,7.928],[28.72,8.01],[30.0,7.91],[31.28,7.937],[32.56,7.962],[33.84,8.016],[35.12,7.917],[36.4,7.996],[37.68,8.012],[38.96,8.016]],"mottle":{"scale":[2,5],"amount":0.1,"seed":202610065}},
+    {"kind":"block","name":"wall-shelf-0","surface":"rock","t":-18.658,"s":11.27,"y":1.8,"abs":true,"yaw":0,"w":6.734,"d":3.461,"h":0.953,"cut":0.3,"chamfer":0.1,"sink":0.2,"ao":false,"seed":202610072},
+    {"kind":"block","name":"wall-shelf-1","surface":"rock","t":-12.168,"s":11.186,"y":1.8,"abs":true,"yaw":0,"w":6.346,"d":3.628,"h":1.138,"cut":0.3,"chamfer":0.1,"sink":0.2,"ao":false,"seed":202610079},
+    {"kind":"block","name":"wall-shelf-2","surface":"rock","t":-6.33,"s":11.212,"y":1.8,"abs":true,"yaw":0,"w":5.431,"d":3.577,"h":1.153,"cut":0.3,"chamfer":0.1,"sink":0.2,"ao":false,"seed":202610086},
+    {"kind":"block","name":"wall-shelf-3","surface":"rock","t":-0.391,"s":11.224,"y":1.8,"abs":true,"yaw":0,"w":6.547,"d":3.553,"h":1.139,"cut":0.3,"chamfer":0.1,"sink":0.2,"ao":false,"seed":202610093},
+    {"kind":"block","name":"wall-shelf-4","surface":"rock","t":6.482,"s":11.209,"y":1.8,"abs":true,"yaw":0,"w":7.299,"d":3.581,"h":1.22,"cut":0.3,"chamfer":0.1,"sink":0.2,"ao":false,"seed":202610100},
+    {"kind":"block","name":"wall-shelf-5","surface":"rock","t":13.347,"s":11.247,"y":1.8,"abs":true,"yaw":0,"w":6.531,"d":3.506,"h":1.249,"cut":0.3,"chamfer":0.1,"sink":0.2,"ao":false,"seed":202610107},
+    {"kind":"block","name":"wall-shelf-6","surface":"rock","t":20.336,"s":11.244,"y":1.8,"abs":true,"yaw":0,"w":7.548,"d":3.512,"h":1.076,"cut":0.3,"chamfer":0.1,"sink":0.2,"ao":false,"seed":202610114},
+    {"kind":"block","name":"wall-shelf-7","surface":"rock","t":27.449,"s":11.264,"y":1.8,"abs":true,"yaw":0,"w":6.776,"d":3.471,"h":0.968,"cut":0.3,"chamfer":0.1,"sink":0.2,"ao":false,"seed":202610121},
+    {"kind":"block","name":"wall-shelf-8","surface":"rock","t":34.406,"s":11.242,"y":1.8,"abs":true,"yaw":0,"w":7.239,"d":3.516,"h":1.168,"cut":0.3,"chamfer":0.1,"sink":0.2,"ao":false,"seed":202610128},
+    {"kind":"block","name":"wall-main-0","surface":"rock","t":-16.622,"s":13.571,"y":1.8,"abs":true,"yaw":0,"w":10.805,"d":2.0,"h":2.581,"cut":0.32,"chamfer":0.12,"sink":0.2,"ao":false,"seed":202610135},
+    {"kind":"block","name":"wall-main-1","surface":"rock","t":-6.032,"s":13.598,"y":1.8,"abs":true,"yaw":0,"w":10.476,"d":2.0,"h":2.487,"cut":0.32,"chamfer":0.12,"sink":0.2,"ao":false,"seed":202610142},
+    {"kind":"block","name":"wall-main-2","surface":"rock","t":3.15,"s":13.479,"y":1.8,"abs":true,"yaw":0,"w":7.989,"d":2.0,"h":2.614,"cut":0.32,"chamfer":0.12,"sink":0.2,"ao":false,"seed":202610149},
+    {"kind":"block","name":"wall-main-3","surface":"rock","t":12.128,"s":13.466,"y":1.8,"abs":true,"yaw":0,"w":10.067,"d":2.0,"h":2.48,"cut":0.32,"chamfer":0.12,"sink":0.2,"ao":false,"seed":202610156},
+    {"kind":"block","name":"wall-main-4","surface":"rock","t":21.23,"s":13.425,"y":1.8,"abs":true,"yaw":0,"w":8.235,"d":2.0,"h":2.688,"cut":0.32,"chamfer":0.12,"sink":0.2,"ao":false,"seed":202610163},
+    {"kind":"block","name":"wall-main-5","surface":"rock","t":29.266,"s":13.503,"y":1.8,"abs":true,"yaw":0,"w":7.938,"d":2.0,"h":2.47,"cut":0.32,"chamfer":0.12,"sink":0.2,"ao":false,"seed":202610170},
+    {"kind":"block","name":"wall-main-6","surface":"rock","t":35.605,"s":13.425,"y":1.8,"abs":true,"yaw":0,"w":4.841,"d":2.0,"h":2.614,"cut":0.32,"chamfer":0.12,"sink":0.2,"ao":false,"seed":202610177},
+    {"kind":"block","name":"wall-upper-0","surface":"rock","t":-18.272,"s":12.903,"y":4.25,"abs":true,"yaw":0,"w":7.506,"d":1.6,"h":1.98,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.85,"phone":{"hide":true},"seed":202610184},
+    {"kind":"block","name":"wall-upper-1","surface":"rock","t":-10.728,"s":13.195,"y":4.25,"abs":true,"yaw":0,"w":7.682,"d":1.6,"h":1.96,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.85,"phone":{"hide":true},"seed":202610191},
+    {"kind":"block","name":"wall-upper-2","surface":"rock","t":-3.587,"s":13.021,"y":4.25,"abs":true,"yaw":0,"w":6.7,"d":1.6,"h":2.133,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.85,"phone":{"hide":true},"seed":202610198},
+    {"kind":"block","name":"wall-upper-3","surface":"rock","t":4.669,"s":12.929,"y":4.25,"abs":true,"yaw":0,"w":9.912,"d":1.6,"h":1.905,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.85,"phone":{"hide":true},"seed":202610205},
+    {"kind":"block","name":"wall-upper-4","surface":"rock","t":13.754,"s":13.054,"y":4.25,"abs":true,"yaw":0,"w":8.358,"d":1.6,"h":2.196,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.85,"phone":{"hide":true},"seed":202610212},
+    {"kind":"block","name":"wall-upper-5","surface":"rock","t":22.244,"s":12.921,"y":4.25,"abs":true,"yaw":0,"w":8.721,"d":1.6,"h":1.958,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.85,"phone":{"hide":true},"seed":202610219},
+    {"kind":"block","name":"wall-upper-6","surface":"rock","t":29.421,"s":13.066,"y":4.25,"abs":true,"yaw":0,"w":5.732,"d":1.6,"h":2.082,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.85,"phone":{"hide":true},"seed":202610226},
+    {"kind":"block","name":"wall-upper-7","surface":"rock","t":35.131,"s":13.058,"y":4.25,"abs":true,"yaw":0,"w":5.788,"d":1.6,"h":2.123,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.85,"phone":{"hide":true},"seed":202610233},
+    {"kind":"block","name":"wall-crown-0","surface":"rock","t":-16.192,"s":13.946,"y":6.05,"abs":true,"yaw":0,"w":11.665,"d":2.4,"h":5.45,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.7,"phone":{"hide":true},"seed":202610240},
+    {"kind":"block","name":"wall-crown-1","surface":"rock","t":-6.371,"s":14.106,"y":6.05,"abs":true,"yaw":0,"w":8.078,"d":2.4,"h":5.45,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.7,"phone":{"hide":true},"seed":202610247},
+    {"kind":"block","name":"wall-crown-2","surface":"rock","t":3.808,"s":13.955,"y":6.05,"abs":true,"yaw":0,"w":12.379,"d":2.4,"h":5.45,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.7,"phone":{"hide":true},"seed":202610254},
+    {"kind":"block","name":"wall-crown-3","surface":"rock","t":16.782,"s":14.113,"y":6.05,"abs":true,"yaw":0,"w":13.669,"d":2.4,"h":5.45,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.7,"phone":{"hide":true},"seed":202610261},
+    {"kind":"block","name":"wall-crown-4","surface":"rock","t":30.796,"s":14.136,"y":6.05,"abs":true,"yaw":0,"w":14.458,"d":2.4,"h":5.45,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"tint":0.7,"phone":{"hide":true},"seed":202610268},
+    {"kind":"block","name":"wall-back","surface":"rock","t":8.0,"s":23.0,"y":1.8,"abs":true,"yaw":0,"w":64.0,"d":4.0,"h":12.0,"cut":0.0,"chamfer":0.0,"sink":0.2,"ao":false,"tint":0.6,"shadow":false,"seed":202610275},
+    {"kind":"block","name":"wall-landing","surface":"rock","t":20.315,"s":11.15,"y":2.8,"abs":true,"yaw":0,"w":4.6,"d":3.1,"h":0.8,"cut":0.3,"chamfer":0.1,"sink":0.0,"ao":false,"seed":202610282},
+    {"kind":"card","name":"mouth-dark","src":"mouthDark","t":20.315,"s":12.041,"y":3.6,"abs":true,"yaw":-22.0,"scale":2.3,"tint":0.12,"shadow":false,"phone":{"hide":true},"seed":202610289},
+    {"kind":"block","name":"mouth-post-L","surface":"wood","t":19.035,"s":11.901,"y":3.6,"abs":true,"yaw":0,"w":0.36,"d":0.36,"h":2.95,"cut":0.06,"chamfer":0.04,"sink":0.05,"tint":0.85,"phone":{"hide":true},"seed":202610296},
+    {"kind":"block","name":"mouth-post-R","surface":"wood","t":21.595,"s":11.901,"y":3.6,"abs":true,"yaw":0,"w":0.36,"d":0.36,"h":2.95,"cut":0.06,"chamfer":0.04,"sink":0.05,"tint":0.85,"phone":{"hide":true},"seed":202610303},
+    {"kind":"block","name":"mouth-lintel","surface":"wood","t":20.315,"s":11.901,"y":6.55,"abs":true,"yaw":0,"w":3.4,"d":0.46,"h":0.42,"cut":0.08,"chamfer":0.05,"sink":0.0,"tint":0.85,"phone":{"hide":true},"seed":202610310},
+    {"kind":"halo","name":"mouth-lamp","t":20.615,"s":11.771,"y":4.55,"abs":true,"r":0.42,"color":[1.0,0.68,0.4],"gain":0.55,"core":0.3,"facing":"camera","phone":{"hide":true},"seed":202610317},
+    {"kind":"relief","name":"lantern-a","src":"lanternHang","t":-2.697,"s":12.101,"y":2.969,"abs":true,"yaw":-22.0,"flip":false,"shadow":false,"phone":{"t":0.8,"s":9.28,"y":1.83},"seed":202610324},
+    {"kind":"block","name":"lantern-a-hook","surface":"iron","t":-2.697,"s":11.921,"y":4.329,"abs":true,"yaw":0,"w":0.07,"d":0.55,"h":0.07,"cut":0.0,"chamfer":0.0,"sink":0.0,"phone":{"hide":true},"seed":202610331},
+    {"kind":"halo","name":"lantern-a-halo","t":-2.697,"s":11.971,"y":3.557,"abs":true,"r":0.55,"color":[1.0,0.64,0.34],"gain":0.7,"core":0.35,"facing":"camera","phone":{"t":0.8,"s":9.15,"y":2.418},"seed":202610338},
+    {"kind":"relief","name":"lantern-b","src":"lanternHang","t":17.85,"s":12.001,"y":3.63,"abs":true,"yaw":-22.0,"flip":true,"shadow":false,"phone":{"t":21.0,"s":9.28,"y":1.83},"seed":202610345},
+    {"kind":"block","name":"lantern-b-hook","surface":"iron","t":17.85,"s":11.821,"y":4.99,"abs":true,"yaw":0,"w":0.07,"d":0.55,"h":0.07,"cut":0.0,"chamfer":0.0,"sink":0.0,"phone":{"hide":true},"seed":202610352},
+    {"kind":"halo","name":"lantern-b-halo","t":17.85,"s":11.871,"y":4.218,"abs":true,"r":0.55,"color":[1.0,0.64,0.34],"gain":0.7,"core":0.35,"facing":"camera","phone":{"t":21.0,"s":9.15,"y":2.418},"seed":202610359},
+    {"kind":"relief","name":"lantern-c","src":"lanternHang","t":4.7,"s":12.009,"y":3.05,"abs":true,"yaw":-22.0,"flip":false,"shadow":false,"phone":{"t":3.9,"s":9.28,"y":1.83},"seed":202610366},
+    {"kind":"block","name":"lantern-c-hook","surface":"iron","t":4.7,"s":11.829,"y":4.41,"abs":true,"yaw":0,"w":0.07,"d":0.55,"h":0.07,"cut":0.0,"chamfer":0.0,"sink":0.0,"phone":{"hide":true},"seed":202610373},
+    {"kind":"halo","name":"lantern-c-halo","t":4.7,"s":11.879,"y":3.638,"abs":true,"r":0.55,"color":[1.0,0.64,0.34],"gain":0.5,"core":0.35,"facing":"camera","phone":{"t":3.9,"s":9.15,"y":2.418},"seed":202610380},
+    {"kind":"relief","name":"hearth","src":"hearth","t":-6.2,"s":6.8,"y":0.0,"yaw":0,"flip":false,"seed":202610387},
+    {"kind":"halo","name":"hearth-halo","t":-6.2,"s":6.45,"y":0.85,"r":0.95,"color":[1.0,0.56,0.26],"gain":0.6,"core":0.3,"facing":"camera","seed":202610394},
+    {"kind":"block","name":"post-a","surface":"wood","t":-8.2,"s":9.45,"y":1.8,"abs":true,"yaw":0,"w":0.5,"d":0.5,"h":3.95,"cut":0.06,"chamfer":0.05,"sink":0.2,"seed":202610401},
+    {"kind":"block","name":"post-a-cap","surface":"wood","t":-8.2,"s":9.45,"y":5.47,"abs":true,"yaw":0,"w":0.95,"d":0.75,"h":0.28,"cut":0.06,"chamfer":0.04,"sink":0.0,"seed":202610408},
+    {"kind":"block","name":"post-b","surface":"wood","t":0.0,"s":9.45,"y":1.8,"abs":true,"yaw":0,"w":0.5,"d":0.5,"h":4.4,"cut":0.06,"chamfer":0.05,"sink":0.2,"seed":202610415},
+    {"kind":"block","name":"post-b-cap","surface":"wood","t":0.0,"s":9.45,"y":5.92,"abs":true,"yaw":0,"w":0.95,"d":0.75,"h":0.28,"cut":0.06,"chamfer":0.04,"sink":0.0,"seed":202610422},
+    {"kind":"block","name":"post-c","surface":"wood","t":24.2,"s":9.45,"y":1.8,"abs":true,"yaw":0,"w":0.5,"d":0.5,"h":3.95,"cut":0.06,"chamfer":0.05,"sink":0.2,"seed":202610429},
+    {"kind":"block","name":"post-c-cap","surface":"wood","t":24.2,"s":9.45,"y":5.47,"abs":true,"yaw":0,"w":0.95,"d":0.75,"h":0.28,"cut":0.06,"chamfer":0.04,"sink":0.0,"seed":202610436},
+    {"kind":"block","name":"beam-1","surface":"wood","t":-4.1,"s":9.45,"y":5.75,"abs":true,"yaw":0,"w":8.9,"d":0.44,"h":0.42,"cut":0.06,"chamfer":0.05,"sink":0.0,"phone":{"hide":true},"seed":202610443},
+    {"kind":"block","name":"beam-2","surface":"wood","t":0.0,"s":7.675,"y":6.2,"abs":true,"yaw":0,"w":0.44,"d":9.25,"h":0.42,"cut":0.06,"chamfer":0.05,"sink":0.0,"phone":{"hide":true},"seed":202610450},
+    {"kind":"block","name":"gallery-floor","surface":"plank","t":-8.5,"s":11.7,"y":3.6,"abs":true,"yaw":0,"w":9.0,"d":1.2,"h":0.14,"cut":0.0,"chamfer":0.02,"sink":0.0,"phone":{"hide":true},"seed":202610457},
+    {"kind":"block","name":"gallery-leg-0","surface":"wood","t":-12.6,"s":11.25,"y":2.85,"abs":true,"yaw":0,"w":0.22,"d":0.22,"h":0.75,"cut":0.0,"chamfer":0.02,"sink":0.0,"phone":{"hide":true},"seed":202610464},
+    {"kind":"block","name":"gallery-leg-1","surface":"wood","t":-10.267,"s":11.25,"y":2.85,"abs":true,"yaw":0,"w":0.22,"d":0.22,"h":0.75,"cut":0.0,"chamfer":0.02,"sink":0.0,"phone":{"hide":true},"seed":202610471},
+    {"kind":"block","name":"gallery-leg-2","surface":"wood","t":-7.268,"s":11.25,"y":2.85,"abs":true,"yaw":0,"w":0.22,"d":0.22,"h":0.75,"cut":0.0,"chamfer":0.02,"sink":0.0,"phone":{"hide":true},"seed":202610478},
+    {"kind":"block","name":"gallery-leg-3","surface":"wood","t":-5.025,"s":11.25,"y":2.85,"abs":true,"yaw":0,"w":0.22,"d":0.22,"h":0.75,"cut":0.0,"chamfer":0.02,"sink":0.0,"phone":{"hide":true},"seed":202610485},
+    {"kind":"fence","name":"gallery-rail","t":-8.5,"s":11.18,"y":3.74,"abs":true,"yaw":0,"len":9.0,"h":0.85,"posts":5,"phone":{"hide":true},"seed":202610492},
+    {"kind":"rail","name":"track-2","t":8.0,"s":8.65,"y":1.8,"abs":true,"yaw":0,"length":56.0,"gauge":0.9,"sleeperLen":1.35,"sleepers":[0.8,1.3],"seed":202610499},
+    {"kind":"rail","name":"track-lower","t":6.0,"s":-6.4,"y":-1.4,"abs":true,"yaw":0,"length":60.0,"gauge":1.0,"sleeperLen":1.6,"sleepers":[0.8,1.3],"phone":{"hide":true},"seed":202610506},
+    {"kind":"block","name":"ledge-planks","surface":"plank","t":3.0,"s":-5.13,"y":-1.4,"abs":true,"yaw":0,"w":74.0,"d":0.1,"h":1.37,"cut":0.0,"chamfer":0.0,"sink":0.0,"seed":202610513},
+    {"kind":"block","name":"ledge-cap","surface":"wood","t":3.0,"s":-5.02,"y":-0.15,"abs":true,"yaw":0,"w":74.0,"d":0.42,"h":0.16,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.55,"seed":202610520},
+    {"kind":"block","name":"ledge-post-0","surface":"wood","t":-33.0,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610527},
+    {"kind":"block","name":"ledge-post-1","surface":"wood","t":-30.091,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610534},
+    {"kind":"block","name":"ledge-post-2","surface":"wood","t":-27.02,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610541},
+    {"kind":"block","name":"ledge-post-3","surface":"wood","t":-23.865,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610548},
+    {"kind":"block","name":"ledge-post-4","surface":"wood","t":-20.93,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610555},
+    {"kind":"block","name":"ledge-post-5","surface":"wood","t":-18.242,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610562},
+    {"kind":"block","name":"ledge-post-6","surface":"wood","t":-15.59,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610569},
+    {"kind":"block","name":"ledge-post-7","surface":"wood","t":-12.568,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610576},
+    {"kind":"block","name":"ledge-post-8","surface":"wood","t":-9.489,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610583},
+    {"kind":"block","name":"ledge-post-9","surface":"wood","t":-6.491,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610590},
+    {"kind":"block","name":"ledge-post-10","surface":"wood","t":-3.83,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610597},
+    {"kind":"block","name":"ledge-post-11","surface":"wood","t":-1.209,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610604},
+    {"kind":"block","name":"ledge-post-12","surface":"wood","t":1.633,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610611},
+    {"kind":"block","name":"ledge-post-13","surface":"wood","t":4.494,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610618},
+    {"kind":"block","name":"ledge-post-14","surface":"wood","t":7.148,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610625},
+    {"kind":"block","name":"ledge-post-15","surface":"wood","t":10.292,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610632},
+    {"kind":"block","name":"ledge-post-16","surface":"wood","t":13.205,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610639},
+    {"kind":"block","name":"ledge-post-17","surface":"wood","t":16.391,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610646},
+    {"kind":"block","name":"ledge-post-18","surface":"wood","t":19.564,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610653},
+    {"kind":"block","name":"ledge-post-19","surface":"wood","t":22.673,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610660},
+    {"kind":"block","name":"ledge-post-20","surface":"wood","t":25.156,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610667},
+    {"kind":"block","name":"ledge-post-21","surface":"wood","t":28.169,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610674},
+    {"kind":"block","name":"ledge-post-22","surface":"wood","t":30.954,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610681},
+    {"kind":"block","name":"ledge-post-23","surface":"wood","t":34.03,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610688},
+    {"kind":"block","name":"ledge-post-24","surface":"wood","t":36.623,"s":-5.28,"y":-1.4,"abs":true,"yaw":0,"w":0.24,"d":0.24,"h":1.35,"cut":0.0,"chamfer":0.03,"sink":0.0,"tint":0.6,"seed":202610695},
+    {"kind":"block","name":"edge-timber","surface":"wood","t":3.0,"s":5.02,"y":0.58,"abs":true,"yaw":0,"w":74.0,"d":0.3,"h":0.34,"cut":0.0,"chamfer":0.04,"sink":0.0,"tint":0.8,"seed":202610702},
+    {"kind":"block","name":"stake-0","surface":"wood","t":-16.0,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610709},
+    {"kind":"block","name":"stake-1","surface":"wood","t":-13.425,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610716},
+    {"kind":"block","name":"stake-2","surface":"wood","t":-10.42,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610723},
+    {"kind":"block","name":"stake-3","surface":"wood","t":-8.073,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610730},
+    {"kind":"block","name":"stake-4","surface":"wood","t":-4.996,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610737},
+    {"kind":"block","name":"stake-5","surface":"wood","t":-2.785,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610744},
+    {"kind":"block","name":"stake-6","surface":"wood","t":-0.551,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610751},
+    {"kind":"block","name":"stake-7","surface":"wood","t":1.82,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610758},
+    {"kind":"block","name":"stake-8","surface":"wood","t":4.638,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610765},
+    {"kind":"block","name":"stake-9","surface":"wood","t":7.0,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610772},
+    {"kind":"block","name":"stake-10","surface":"wood","t":9.704,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610779},
+    {"kind":"block","name":"stake-11","surface":"wood","t":12.78,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610786},
+    {"kind":"block","name":"stake-12","surface":"wood","t":15.742,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610793},
+    {"kind":"block","name":"stake-13","surface":"wood","t":18.782,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610800},
+    {"kind":"block","name":"stake-14","surface":"wood","t":21.501,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610807},
+    {"kind":"block","name":"stake-15","surface":"wood","t":23.889,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610814},
+    {"kind":"block","name":"stake-16","surface":"wood","t":26.575,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610821},
+    {"kind":"block","name":"stake-17","surface":"wood","t":29.594,"s":4.88,"y":0.0,"abs":true,"yaw":0,"w":0.16,"d":0.16,"h":1.05,"cut":0.0,"chamfer":0.02,"sink":0.1,"tint":0.8,"seed":202610828},
+    {"kind":"block","name":"steps-stone-0","surface":"rock","t":-1.4,"s":4.38,"y":0.0,"abs":true,"yaw":0,"w":2.0,"d":0.5,"h":0.3,"cut":0.1,"chamfer":0.04,"sink":0.1,"seed":202610835},
+    {"kind":"block","name":"steps-stone-1","surface":"rock","t":-1.4,"s":4.66,"y":0.3,"abs":true,"yaw":0,"w":2.0,"d":0.5,"h":0.3,"cut":0.1,"chamfer":0.04,"sink":0.1,"seed":202610842},
+    {"kind":"block","name":"steps-stone-2","surface":"rock","t":-1.4,"s":4.94,"y":0.6,"abs":true,"yaw":0,"w":2.0,"d":0.5,"h":0.3,"cut":0.1,"chamfer":0.04,"sink":0.1,"seed":202610849},
+    {"kind":"block","name":"steps-wood-0","surface":"wood","t":12.4,"s":7.12,"y":0.9,"abs":true,"yaw":0,"w":1.6,"d":0.52,"h":0.225,"cut":0.0,"chamfer":0.03,"sink":0.05,"seed":202610856},
+    {"kind":"block","name":"steps-wood-1","surface":"wood","t":12.4,"s":7.38,"y":1.125,"abs":true,"yaw":0,"w":1.6,"d":0.52,"h":0.225,"cut":0.0,"chamfer":0.03,"sink":0.05,"seed":202610863},
+    {"kind":"block","name":"steps-wood-2","surface":"wood","t":12.4,"s":7.64,"y":1.35,"abs":true,"yaw":0,"w":1.6,"d":0.52,"h":0.225,"cut":0.0,"chamfer":0.03,"sink":0.05,"seed":202610870},
+    {"kind":"block","name":"steps-wood-3","surface":"wood","t":12.4,"s":7.9,"y":1.575,"abs":true,"yaw":0,"w":1.6,"d":0.52,"h":0.225,"cut":0.0,"chamfer":0.03,"sink":0.05,"seed":202610877},
+    {"kind":"mist","name":"wall-mist","t":4.0,"s":9.0,"y":1.2,"abs":true,"w":64.0,"h":2.7,"alpha":0.34,"noise":[0.16,0.8],"flow":0.015,"tint":[0.62,0.66,0.7],"seed":20262601,"phone":{"alpha":0.22}},
+    {"kind":"mist","name":"floor-mist","t":4.0,"s":4.3,"y":0.0,"w":64.0,"h":1.0,"alpha":0.1,"noise":[0.2,1.0],"flow":0.01,"seed":20262602,"phone":{"hide":true}},
+    {"kind":"rock","name":"frame-rock-L","t":-7.7,"s":-7.4,"y":0.0,"yaw":24.0,"r":1.25,"h":1.15,"sides":9,"squash":0.75,"tint":0.55,"phone":{"hide":true},"seed":202610884},
+    {"kind":"rock","name":"frame-rock-R","t":0.4,"s":-9.9,"y":0.0,"yaw":300.0,"r":1.1,"h":1.0,"sides":8,"squash":0.7,"tint":0.55,"phone":{"hide":true},"seed":202610891},
+    {"kind":"relief","src":"barrelStack","t":-9.0,"s":5.8,"yaw":0,"flip":false,"seed":202610898,"y":0.0},
+    {"kind":"relief","src":"barrelStack","t":18.8,"s":6.8,"yaw":0,"flip":true,"seed":202610905,"y":0.0},
+    {"kind":"relief","src":"toolrack","t":21.0,"s":7.6,"yaw":0,"flip":true,"seed":202610912,"y":0.0},
+    {"kind":"relief","src":"lumber","t":8.2,"s":6.1,"yaw":0,"flip":false,"seed":202610919,"y":0.0},
+    {"kind":"relief","src":"lumber","t":17.8,"s":7.4,"yaw":0,"flip":false,"seed":202610926,"y":0.0},
+    {"kind":"relief","src":"crate","t":-1.6,"s":7.6,"yaw":0,"flip":false,"seed":202610933,"y":0.0},
+    {"kind":"relief","src":"crate","t":3.8,"s":6.2,"yaw":0,"flip":true,"seed":202610940,"y":0.0,"phone":{"hide":true}},
+    {"kind":"relief","src":"crate","t":10.4,"s":7.5,"yaw":0,"flip":false,"seed":202610947,"y":0.0,"phone":{"hide":true}},
+    {"kind":"relief","src":"crate","t":14.0,"s":5.8,"yaw":0,"flip":true,"seed":202610954,"y":0.0,"phone":{"hide":true}},
+    {"kind":"relief","src":"crate","t":22.2,"s":7.4,"yaw":0,"flip":false,"seed":202610961,"y":0.0},
+    {"kind":"relief","src":"crateOpen","t":2.8,"s":7.5,"yaw":0,"flip":false,"seed":202610968,"y":0.0},
+    {"kind":"relief","src":"crateOpen","t":10.8,"s":6.3,"yaw":0,"flip":true,"seed":202610975,"y":0.0},
+    {"kind":"relief","src":"sacks","t":1.0,"s":7.5,"yaw":0,"flip":false,"seed":202610982,"y":0.0},
+    {"kind":"relief","src":"sacks","t":-0.6,"s":7.5,"yaw":0,"flip":true,"seed":202610989,"y":0.0},
+    {"kind":"relief","src":"sacks","t":22.2,"s":6.0,"yaw":0,"flip":false,"seed":202610996,"y":0.0},
+    {"kind":"relief","src":"lanternPost","t":-10.2,"s":5.4,"yaw":0,"flip":false,"seed":202611003,"y":0.0},
+    {"kind":"relief","src":"lanternPost","t":23.0,"s":5.4,"yaw":0,"flip":false,"seed":202611010,"y":0.0},
+    {"kind":"relief","src":"minecart","t":2.6,"s":8.6,"yaw":0,"flip":false,"seed":202611017,"y":0.0},
+    {"kind":"relief","src":"orePile","t":-1.5,"s":8.4,"yaw":0,"flip":false,"seed":202611024,"y":0.0,"shadow":false,"phone":{"hide":true}},
+    {"kind":"relief","src":"orePile","t":4.0,"s":8.4,"yaw":0,"flip":false,"seed":202611031,"y":0.0,"shadow":false},
+    {"kind":"relief","src":"orePile","t":18.3,"s":8.4,"yaw":0,"flip":true,"seed":202611038,"y":0.0,"shadow":false,"phone":{"hide":true}},
+    {"kind":"relief","src":"crystalBig","t":1.5,"s":10.0,"yaw":0,"flip":false,"seed":202611045,"y":2.959,"abs":true,"shadow":false,"tint":0.72,"phone":{"hide":true}},
+    {"kind":"relief","src":"crystal","t":-2.0,"s":10.4,"yaw":0,"flip":true,"seed":202611052,"y":2.959,"abs":true,"shadow":false,"phone":{"hide":true}},
+    {"kind":"relief","src":"crystal","t":26.2,"s":10.3,"yaw":0,"flip":true,"seed":202611059,"y":2.788,"abs":true,"shadow":false},
+    {"kind":"relief","src":"winch","t":27.9,"s":8.6,"yaw":0,"flip":false,"seed":202611066,"y":0.0},
+    {"kind":"relief","src":"stalactite","t":16.2,"s":10.6,"yaw":0,"flip":false,"seed":202611073,"y":4.8,"abs":true,"shadow":false,"phone":{"hide":true}},
+    {"kind":"relief","src":"stalactiteCluster","t":21.6,"s":8.8,"yaw":0,"flip":true,"seed":202611080,"y":5.92,"abs":true,"shadow":false,"phone":{"hide":true}},
+    {"kind":"relief","src":"stalactite","t":23.4,"s":8.2,"yaw":0,"flip":true,"seed":202611087,"y":4.8,"abs":true,"shadow":false,"phone":{"hide":true}},
+    {"kind":"relief","src":"minecart","t":-3.0,"s":-6.4,"yaw":0,"flip":true,"seed":202611094,"y":0.0,"phone":{"hide":true}},
+    {"kind":"relief","src":"orePile","t":8.0,"s":-6.0,"yaw":0,"flip":false,"seed":202611101,"y":0.0,"phone":{"hide":true},"shadow":false},
+    {"kind":"litter","src":"litterChips2","t":6.357,"s":3.021,"yaw":-2.9,"flip":true,"seed":202611108},
+    {"kind":"litter","src":"litterGravel1","t":0.422,"s":4.708,"yaw":12.2,"flip":true,"seed":202611115},
+    {"kind":"litter","src":"litterPebble3","t":-10.471,"s":4.308,"yaw":-5.0,"flip":true,"seed":202611122},
+    {"kind":"litter","src":"litterPebble4","t":9.637,"s":3.408,"yaw":10.7,"flip":true,"seed":202611129},
+    {"kind":"litter","src":"litterPebble2","t":20.622,"s":2.942,"yaw":3.1,"flip":false,"seed":202611143},
+    {"kind":"litter","src":"litterGravel3","t":-4.866,"s":3.448,"yaw":-10.5,"flip":true,"seed":202611150},
+    {"kind":"litter","src":"litterPebble3","t":2.121,"s":4.091,"yaw":-0.2,"flip":false,"seed":202611157},
+    {"kind":"litter","src":"litterGravel4","t":1.82,"s":3.483,"yaw":-8.5,"flip":false,"seed":202611164},
+    {"kind":"litter","src":"litterGravel4","t":1.159,"s":4.199,"yaw":11.8,"flip":true,"seed":202611171},
+    {"kind":"litter","src":"litterChips3","t":14.721,"s":4.159,"yaw":7.2,"flip":false,"seed":202611178},
+    {"kind":"litter","src":"litterPebble3","t":-7.349,"s":2.776,"yaw":4.4,"flip":false,"seed":202611185},
+    {"kind":"litter","src":"litterChips3","t":-13.506,"s":3.817,"yaw":8.9,"flip":true,"seed":202611192},
+    {"kind":"litter","src":"litterGravel1","t":21.117,"s":4.516,"yaw":13.7,"flip":false,"seed":202611206},
+    {"kind":"litter","src":"litterGravel3","t":22.499,"s":4.616,"yaw":-7.2,"flip":true,"seed":202611213},
+    {"kind":"litter","src":"litterPebble2","t":-12.209,"s":3.938,"yaw":-1.5,"flip":false,"seed":202611220},
+    {"kind":"litter","src":"litterPebble1","t":5.159,"s":2.762,"yaw":-9.0,"flip":true,"seed":202611227},
+    {"kind":"litter","src":"litterGravel4","t":18.895,"s":3.077,"yaw":-13.8,"flip":true,"seed":202611234},
+    {"kind":"litter","src":"litterGravel4","t":10.997,"s":3.636,"yaw":-12.3,"flip":false,"seed":202611241},
+    {"kind":"litter","src":"litterPebble2","t":7.294,"s":3.503,"yaw":-10.2,"flip":false,"seed":202611248},
+    {"kind":"litter","src":"litterGravel3","t":-9.529,"s":3.672,"yaw":-10.5,"flip":true,"seed":202611255},
+    {"kind":"litter","src":"litterPebble2","t":2.621,"s":4.52,"yaw":7.9,"flip":true,"seed":202611262},
+    {"kind":"litter","src":"litterGear3","t":5.597,"s":4.551,"yaw":-1.3,"flip":true,"seed":202611269},
+    {"kind":"litter","src":"litterGravel4","t":23.401,"s":-4.743,"yaw":-13.8,"flip":false,"seed":202611276},
+    {"kind":"litter","src":"litterChips1","t":17.439,"s":-4.353,"yaw":-13.6,"flip":false,"seed":202611283},
+    {"kind":"litter","src":"litterPebble1","t":9.287,"s":-4.364,"yaw":-4.7,"flip":true,"seed":202611290},
+    {"kind":"litter","src":"litterPebble1","t":-5.751,"s":-4.621,"yaw":-1.2,"flip":true,"seed":202611297},
+    {"kind":"litter","src":"litterGravel2","t":22.263,"s":-4.564,"yaw":2.2,"flip":true,"seed":202611311},
+    {"kind":"litter","src":"litterPebble1","t":9.951,"s":-4.194,"yaw":8.0,"flip":true,"seed":202611318},
+    {"kind":"litter","src":"litterGravel1","t":-10.366,"s":-4.259,"yaw":6.1,"flip":false,"seed":202611325},
+    {"kind":"litter","src":"litterChips2","t":14.804,"s":-4.358,"yaw":-2.6,"flip":true,"seed":202611332},
+    {"kind":"litter","src":"litterPebble4","t":-2.685,"s":-4.669,"yaw":-7.9,"flip":false,"seed":202611339},
+    {"kind":"litter","src":"litterGear3","t":5.61,"s":-4.257,"yaw":-8.4,"flip":false,"seed":202611367},
+    {"kind":"litter","src":"litterChips1","t":-2.807,"s":-4.178,"yaw":14.8,"flip":false,"seed":202611374},
+    {"kind":"litter","src":"litterChips3","t":2.806,"s":-4.691,"yaw":-8.1,"flip":true,"seed":202611381},
+    {"kind":"litter","src":"litterGear1","t":-15.791,"s":1.232,"yaw":13.0,"flip":true,"seed":202611388},
+    {"kind":"litter","src":"litterChips1","t":-11.66,"s":-0.85,"yaw":-1.5,"flip":false,"seed":202611395},
+    {"kind":"litter","src":"litterPebble4","t":-12.511,"s":-0.5,"yaw":-5.6,"flip":true,"seed":202611409},
+    {"kind":"litter","src":"litterChips1","t":-11.37,"s":-1.272,"yaw":-7.9,"flip":false,"seed":202611416},
+    {"kind":"litter","src":"litterPebble3","t":-9.411,"s":-0.032,"yaw":-11.4,"flip":false,"seed":202611437},
+    {"kind":"litter","src":"litterGear3","t":-13.196,"s":1.971,"yaw":14.5,"flip":false,"seed":202611444},
+    {"kind":"litter","src":"litterPebble2","t":20.552,"s":6.863,"yaw":-7.7,"flip":true,"seed":202611451},
+    {"kind":"litter","src":"litterGravel3","t":2.023,"s":6.697,"yaw":-2.6,"flip":false,"seed":202611458},
+    {"kind":"litter","src":"litterChips2","t":7.968,"s":6.725,"yaw":1.6,"flip":true,"seed":202611465},
+    {"kind":"litter","src":"litterGravel2","t":-13.013,"s":7.662,"yaw":14.2,"flip":true,"seed":202611472},
+    {"kind":"litter","src":"litterPebble2","t":-0.165,"s":6.413,"yaw":5.2,"flip":false,"seed":202611479},
+    {"kind":"litter","src":"litterChips1","t":25.601,"s":6.469,"yaw":-1.4,"flip":false,"seed":202611486},
+    {"kind":"litter","src":"litterGravel4","t":19.586,"s":6.793,"yaw":-9.7,"flip":true,"seed":202611493},
+    {"kind":"litter","src":"litterPebble4","t":9.833,"s":6.049,"yaw":-10.9,"flip":false,"seed":202611500},
+    {"kind":"litter","src":"litterGear2","t":-3.178,"s":6.221,"yaw":-4.9,"flip":false,"seed":202611507},
+    {"kind":"litter","src":"litterPebble3","t":12.934,"s":5.402,"yaw":9.4,"flip":false,"seed":202611514},
+    {"kind":"litter","src":"litterGear1","t":16.954,"s":7.305,"yaw":-1.4,"flip":true,"seed":202611521},
+    {"kind":"litter","src":"litterGravel2","t":9.77,"s":6.52,"yaw":3.2,"flip":false,"seed":202611528},
+    {"kind":"litter","src":"litterGravel2","t":3.24,"s":5.651,"yaw":-8.9,"flip":false,"seed":202611535},
+    {"kind":"litter","src":"litterGravel1","t":6.722,"s":5.509,"yaw":3.0,"flip":false,"seed":202611549},
+    {"kind":"litter","src":"litterChips3","t":-11.564,"s":7.289,"yaw":-13.2,"flip":true,"seed":202611556},
+    {"kind":"litter","src":"litterPebble4","t":0.502,"s":5.474,"yaw":5.1,"flip":true,"seed":202611563},
+    {"kind":"litter","src":"litterPebble2","t":-9.209,"s":6.154,"yaw":6.3,"flip":false,"seed":202611570},
+    {"kind":"litter","src":"litterChips1","t":8.501,"s":7.089,"yaw":7.8,"flip":true,"seed":202611577},
+    {"kind":"litter","src":"litterPebble3","t":-12.091,"s":8.725,"yaw":-6.9,"flip":false,"seed":202611584},
+    {"kind":"litter","src":"litterPebble4","t":-9.512,"s":8.927,"yaw":-13.1,"flip":false,"seed":202611591},
+    {"kind":"litter","src":"litterGravel4","t":1.162,"s":8.148,"yaw":8.1,"flip":true,"seed":202611598},
+    {"kind":"litter","src":"litterChips4","t":-2.458,"s":8.143,"yaw":-14.1,"flip":true,"seed":202611605},
+    {"kind":"litter","src":"litterPebble3","t":-5.733,"s":8.936,"yaw":-12.7,"flip":false,"seed":202611612},
+    {"kind":"litter","src":"litterGravel2","t":-13.498,"s":8.933,"yaw":-6.6,"flip":true,"seed":202611619},
+    {"kind":"litter","src":"litterChips2","t":18.366,"s":8.619,"yaw":9.8,"flip":false,"seed":202611626},
+    {"kind":"litter","src":"litterGear3","t":-7.034,"s":8.236,"yaw":-6.7,"flip":true,"seed":202611633},
+    {"kind":"litter","src":"litterPebble2","t":4.393,"s":9.187,"yaw":-1.9,"flip":false,"seed":202611640},
+    {"kind":"litter","src":"litterPebble1","t":11.346,"s":8.464,"yaw":-4.2,"flip":true,"seed":202611647},
+    {"kind":"litter","src":"litterGear3","t":15.96,"s":8.409,"yaw":-8.9,"flip":true,"seed":202611654},
+    {"kind":"litter","src":"litterChips4","t":9.255,"s":8.864,"yaw":0.4,"flip":true,"seed":202611661},
+    {"kind":"litter","src":"litterChips1","t":-2.627,"s":-6.41,"yaw":-3.3,"flip":true,"seed":202611668,"phone":{"hide":true}},
+    {"kind":"litter","src":"litterChips3","t":18.671,"s":-6.918,"yaw":8.3,"flip":false,"seed":202611675,"phone":{"hide":true}},
+    {"kind":"litter","src":"litterPebble3","t":-17.97,"s":-6.576,"yaw":-9.7,"flip":true,"seed":202611682,"phone":{"hide":true}},
+    {"kind":"litter","src":"litterChips3","t":8.309,"s":-8.638,"yaw":-5.5,"flip":true,"seed":202611689,"phone":{"hide":true}},
+    {"kind":"litter","src":"litterPebble3","t":-16.313,"s":-7.243,"yaw":6.4,"flip":false,"seed":202611696,"phone":{"hide":true}},
+    {"kind":"litter","src":"litterPebble4","t":-13.821,"s":-5.915,"yaw":-11.9,"flip":true,"seed":202611703,"phone":{"hide":true}}
+  ]
+}
