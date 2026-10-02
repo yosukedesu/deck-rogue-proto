@@ -13,9 +13,12 @@
 //   trunk=mesh|relief         keyflip=auto|off          tier=pc|phone            look=<設計図の名前|auto>
 //   det=1                     dumplayout=0|1            uionly=0|1               unitsonly=0|1    perf=<秒>
 //   uilayout=r3|r2 (三周目 R3 UI の作り直し 2026-10-02・仕様 docs/design/hd2d-slice/r3-ui-spec.md。箱庭 (stage=diorama) の画面の割り付け。
-//                既定 r3 = 足元の線 PC 0.36・スマホ 0.45・手札を沈めて触れた札だけ上げる・敵の帳面を足元の下・自分の欄は足元の帳と左下の匣 (PC)。
+//                既定 r3 = 足元の線 PC 0.36・手札を沈めて触れた札だけ上げる・敵の帳面を足元の下・自分の欄は足元の帳と左下の匣 (PC)。
+//                スマホでは読まない (スマホは下の uilayoutphone。2026-10-02)。
 //                r2 = 二周目の割り付け (足元の線 0.407／0.525・今の帳面・今の自分の札)。今の舞台 (stage=old) は旗によらず1画素も変わらない)
-//   uitrial=0|1 (三周目 段1 の試し撮りの旗。uitrial=1 は uilayout=r3 の別名 (今の撮影の一覧がそのまま動く)。uitrial=0 は何もしない)
+//   uilayoutphone=r2|r3 (2026-10-02 ユーザー「スマホ版でカードの下半分隠すのやっぱ見にくいのでもどして」。スマホ (UiKit.Phone) の割り付けはこの旗で決まり、uilayout はスマホでは読まない。
+//                既定 r2 = 二周目のスマホ (足元の線 0.525・手札を 17 沈めるだけ・今の帳面・全幅の暗幕)。r3 = 三周目のスマホ (0.45・手札を 176 沈める・足元の帳・上の帯)。PC は uilayout のまま)
+//   uitrial=0|1 (三周目 段1 の試し撮りの旗。uitrial=1 は uilayout=r3 の別名 (今の撮影の一覧がそのまま動く。スマホの割り付けは変えない)。uitrial=0 は何もしない)
 //   deskshade=hand|full (箱庭の手札の後ろの暗幕。hand = 手札の矩形の内側だけ α0.3 (箱庭の既定)・full = 二周目の全幅の暗幕。今の舞台は触らない。同上)
 //   hd2d=slice = stage=diorama・cam=22・pitch=5・pitchphone=7・litunits=1・charshadow=1・dof=1・aa=msaa・ui=night・herodots=62・trunk=relief・drift=1
 //              をまとめて立てる (二周目 2026-10-01 = カメラ 22°・見下ろし PC 5°／スマホ 7°・主人公62。W5 は cam=28・pitch=12 (旗なしの既定) だった)。
@@ -91,15 +94,23 @@ namespace DeckRogue.Game
         /// </summary>
         public static HD2DUiLayout UiLayout { get; set; } = HD2DUiLayout.R3;
         /// <summary>
-        /// uitrial (三周目 段1 の試し撮り 2026-10-01 レーン A の旗)。R3U_ 以降は uilayout=r3 の別名: 読むと「r3 の割り付けか」を返す
+        /// uilayoutphone=r2|r3 (2026-10-02 ユーザー「スマホ版でカードの下半分隠すのやっぱ見にくいのでもどして」)。スマホ (UiKit.Phone) の箱庭の割り付け。既定 R2 = 二周目のスマホ。
+        /// スマホでは uilayout を読まない (uilayout=r2 は既定のままスマホも r2・uilayoutphone=r3 で三周目のスマホへ戻せる)。PC では読まない
+        /// </summary>
+        public static HD2DUiLayout UiLayoutPhone { get; set; } = HD2DUiLayout.R2;
+        /// <summary>この画面の割り付け = スマホは UiLayoutPhone・PC は UiLayout。r3 か r2 かを決める所 (BattleScreen.R3・StageCamera の足元の線・UiTrial・DeskShade の既定) は全部これを読む</summary>
+        public static HD2DUiLayout UiLayoutHere { get { return UiKit.Phone ? UiLayoutPhone : UiLayout; } }
+        /// <summary>
+        /// uitrial (三周目 段1 の試し撮り 2026-10-01 レーン A の旗)。R3U_ 以降は uilayout=r3 の別名: 読むと「この画面 (UiLayoutHere) が r3 の割り付けか」を返す (スマホは uilayoutphone)
         /// (Diorama の "onlyWith": "uitrial" の部品も r3 で組まれる)。uitrial=1 は UiLayout = R3、uitrial=0 は何もしない
         /// </summary>
-        public static bool UiTrial { get { return UiLayout == HD2DUiLayout.R3; } }
+        public static bool UiTrial { get { return UiLayoutHere == HD2DUiLayout.R3; } }
         /// <summary>deskshade=hand|full (箱庭の手札の後ろの暗幕。今の舞台では読まない)。書かない時の既定は割り付けで決まる:
-        /// uilayout=r3 → hand (手札の矩形だけ)・uilayout=r2 → full (二周目の全幅の暗幕＝r2 は二周目と画素一致。2026-10-02 読み合わせの指摘)</summary>
+        /// この画面の割り付け (UiLayoutHere) が r3 → hand (手札の矩形だけ)・r2 → full (二周目の全幅の暗幕＝r2 は二周目と画素一致。2026-10-02 読み合わせの指摘)。
+        /// スマホは既定 r2 (uilayoutphone) なので全幅</summary>
         public static HD2DDeskShade DeskShade
         {
-            get { return _deskShade ?? (UiLayout == HD2DUiLayout.R2 ? HD2DDeskShade.Full : HD2DDeskShade.Hand); }
+            get { return _deskShade ?? (UiLayoutHere == HD2DUiLayout.R2 ? HD2DDeskShade.Full : HD2DDeskShade.Hand); }
             set { _deskShade = value; }
         }
         static HD2DDeskShade? _deskShade;
@@ -283,6 +294,7 @@ namespace DeckRogue.Game
             UiNight = false;
             Ledger = HD2DLedger.Line;
             UiLayout = HD2DUiLayout.R3;
+            UiLayoutPhone = HD2DUiLayout.R2;
             _deskShade = null;   // 書かない時は割り付けから (r3 → hand・r2 → full)
             ArtScale = -1f;
             TiltShift = HD2DTiltShift.Off;
@@ -352,6 +364,7 @@ namespace DeckRogue.Game
             add("ui", UiNight ? "night" : "paper");
             add("ledger", Ledger == HD2DLedger.Feet ? "feet" : "line");
             add("uilayout", UiLayout == HD2DUiLayout.R2 ? "r2" : "r3");
+            add("uilayoutphone", UiLayoutPhone == HD2DUiLayout.R2 ? "r2" : "r3");
             add("uitrial", UiTrial);
             add("deskshade", DeskShade == HD2DDeskShade.Full ? "full" : "hand");
             add("artscale", ArtScale);
@@ -466,6 +479,11 @@ namespace DeckRogue.Game
                 case "uilayout":
                     if (Is(v, "r3")) UiLayout = HD2DUiLayout.R3;
                     else if (Is(v, "r2")) UiLayout = HD2DUiLayout.R2;
+                    else Warn(key, v);
+                    return true;
+                case "uilayoutphone":
+                    if (Is(v, "r3")) UiLayoutPhone = HD2DUiLayout.R3;
+                    else if (Is(v, "r2")) UiLayoutPhone = HD2DUiLayout.R2;
                     else Warn(key, v);
                     return true;
                 case "uitrial": if (TryBool(v, out b)) { if (b) UiLayout = HD2DUiLayout.R3; } else Warn(key, v); return true;   // 1 = r3 の別名・0 は何もしない (2026-10-02)

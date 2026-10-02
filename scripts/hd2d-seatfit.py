@@ -9,7 +9,7 @@ Stage.ProjectFeet と LayoutCamera の式を写し、画角 (FOV 36/28/22。22 �
 
 使い方
   scripts/hd2d-seatfit.py [--md 表.md] [--json 表.json] [--layout <PH の .layout.json>] [--digit-bottom 40] [--check-w0] [--r2|--r3]
-  --r3 = 三周目 r3 UI (旗 uilayout=r3＝箱庭の既定・PC 22°・5°・0.36／スマホ 22°・7°・0.45) の隠す量と、足元の x の表 (1〜4体・人形・PC 0.407/0.36・スマホ 0.525/0.45) だけ
+  --r3 = 三周目 r3 UI (旗 uilayout=r3＝箱庭の PC の既定・PC 22°・5°・0.36／スマホは旗 uilayoutphone=r3 の時だけ 22°・7°・0.45。スマホの既定は 2026-10-02 から二周目の 0.525) の隠す量と、足元の x の表 (1〜4体・人形・PC 0.407/0.36・スマホ 0.525/0.45) だけ
   --check-w0 = 今の式 (36°・12°・PC 0.45・スマホ 0.56・今の t) で W0 の撮影のログの足元と一致するかを確かめる (式の写し間違いの検査)
   --layout = スマホ相当で撮った layout.json から手札の本文の数字の下端 (digitsBottomGap の最小) を読み、手札を沈められる量に使う
 
@@ -27,7 +27,7 @@ Stage.ProjectFeet と LayoutCamera の式を写し、画角 (FOV 36/28/22。22 �
   帳面の幅 = 隣との間隔から (BattleScreen.StripW)。1体は PC 440・スマホ 420
 
 三周目 r3 UI (2026-10-02 本番・仕様 docs/design/hd2d-slice/r3-ui-spec.md。段1 の試し撮り uitrial=1 を置き換えた):
-  旗 uilayout=r3 (箱庭の既定・PC とスマホ) = 足元の線 PC 0.36・スマホ 0.45・手札を PC 168・スマホ 176 沈める・敵の帳面を足元の下に 60/88 (スマホ 53/79)・
+  旗 uilayout=r3 (箱庭の PC の既定) と uilayoutphone=r3 (スマホ。既定は r2 = 二周目・2026-10-02 ユーザー「カードの下半分隠すのやっぱ見にくい」) = 足元の線 PC 0.36・スマホ 0.45・手札を PC 168・スマホ 176 沈める・敵の帳面を足元の下に 60/88 (スマホ 53/79)・
   PC は足元の帳 (x 204〜500) と左下の匣・スマホは足元の帳 (x 24〜384)。隠す量・要の数字の札の高さ・UI の面積と、C への足元の x の表を
   「三周目 r3 UI」の節と JSON の round3 に書く (--r3 で節だけ)
 
@@ -437,7 +437,7 @@ def round2(md_lines):
 
 
 # ------------------------------------------------------------------ 三周目 r3 UI (2026-10-02 本番・仕様 docs/design/hd2d-slice/r3-ui-spec.md)
-# 旗 uilayout=r3 (箱庭の既定。PC とスマホ) の UI。BattleScreen.R3U_* / R3A_*・BattleView.R3U_Fan*・StageCamera.R3U_* の写し。
+# 旗 uilayout=r3 (箱庭の PC の既定) と uilayoutphone=r3 (スマホ。2026-10-02 から既定は r2) の UI。BattleScreen.R3U_* / R3A_*・BattleView.R3U_Fan*・StageCamera.R3U_* の写し。
 # (段1 の試し撮り uitrial=1 = 手札 183・自分の札 300×62 の表はこの節に置き換えた。uitrial=1 は今は r3 の別名)
 R3_UI = {
     'PC': dict(gl=0.36, fov=22.0, pitch=5.0, status=285.0, sink=168.0, hand_base=30.0, card_scale=0.92, lift=70.0,
@@ -460,8 +460,8 @@ R3_FEET_ZONE = 60.0
 R3_FEET_CAMS = [
     ('PC', 22.0, 5.0, 0.407, '二周目の既定 (PC・uilayout=r2)'),
     ('PC', 22.0, 5.0, 0.36, '三周目 r3 (PC・uilayout=r3＝箱庭の既定)'),
-    ('PH', 22.0, 7.0, 0.525, '二周目の既定 (スマホ・uilayout=r2)'),
-    ('PH', 22.0, 7.0, 0.45, '三周目 r3 (スマホ・uilayout=r3＝箱庭の既定)'),
+    ('PH', 22.0, 7.0, 0.525, 'スマホの既定 (二周目の割り付け・uilayoutphone=r2。2026-10-02 から)'),
+    ('PH', 22.0, 7.0, 0.45, '三周目 r3 (スマホ・uilayoutphone=r3。既定ではない)'),
 ]
 
 
@@ -713,7 +713,7 @@ def r3_ui(md_lines, plat, tbl):
 def r3_trial(md_lines):
     """三周目 r3 UI の割り付け (PC とスマホ)。名前は段1 の試し撮りの名残 (round3 の 'trial')"""
     tbl = read_stage_seats_22()
-    md_lines += ['## 三周目 r3 UI (2026-10-02 本番・旗 uilayout=r3＝箱庭の既定・仕様 docs/design/hd2d-slice/r3-ui-spec.md)', '',
+    md_lines += ['## 三周目 r3 UI (2026-10-02 本番・旗 uilayout=r3＝箱庭の PC の既定・スマホは uilayoutphone=r3 の時だけ (スマホの既定は二周目の 0.525)・仕様 docs/design/hd2d-slice/r3-ui-spec.md)', '',
                  'UI は BattleScreen の r3 の割り付け: 足元の線 PC 0.36・スマホ 0.45／手札を PC 168・スマホ 176 沈め、扇の下がり 4 (12 で頭打ち)・傾き 3° (±6° で頭打ち)／'
                  '敵の帳面を足元の下 (PC 10・スマホ 8) に 60 (予告つき 88。スマホ 53/79)／PC は足元の帳 (x 204〜500) と左下の匣・スマホは足元の帳 (x 24〜384)。'
                  'キャンバスの y は下から・「行」は上から。隠す量はキャンバス単位 (スマホの px は ×1.31)。', '']

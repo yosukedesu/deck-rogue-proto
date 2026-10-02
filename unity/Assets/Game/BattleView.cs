@@ -308,7 +308,7 @@ namespace DeckRogue.Game
         public static float StatusLineY { get { return UiKit.Phone ? BattleScreen.HandY + CardView.H * BattleScreen.CardScale + 6f : (BattleScreen.Hd2dLayout ? 285f : 300f); } }
 
         // ---- 三周目 (2026-10-01 レーン A・分析 R6・計画 docs/design/hd2d-round3-plan-2026-10-01.md §2 A): 箱庭の手札の後ろの暗幕を手札の矩形だけに ----
-        /// <summary>暗幕 desk-shade を手札の矩形の内側だけにするか (箱庭で deskshade=hand。旗を書かない時は uilayout=r3 → hand・r2 → full = 二周目の全幅 (HD2DFlags.DeskShade の既定)。今の舞台は旗によらず false)</summary>
+        /// <summary>暗幕 desk-shade を手札の矩形の内側だけにするか (箱庭で deskshade=hand。旗を書かない時はこの画面の割り付け (HD2DFlags.UiLayoutHere。PC は uilayout・スマホは uilayoutphone＝既定 r2) が r3 → hand・r2 → full = 二周目の全幅 (HD2DFlags.DeskShade の既定)。今の舞台は旗によらず false)</summary>
         static bool R3A_DeskHand { get { return BattleScreen.Hd2dLayout && HD2DFlags.DeskShade == HD2DDeskShade.Hand; } }
         /// <summary>手札の矩形の暗幕の濃さ (Gamma の見た目の α。下の 40% で一定)・左右の端のぼかしの幅 (矩形の幅の割合)</summary>
         const float R3A_DeskHandAlpha = 0.3f, R3A_DeskHandFeather = 0.15f;

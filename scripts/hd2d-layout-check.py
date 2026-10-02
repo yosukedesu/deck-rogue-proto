@@ -37,7 +37,8 @@ dumplayout=1 で撮った <名前>.layout.json (P01 の hd2d-layout/1) を読み
         いちばん下の敵の足元の 6〜14 下から高さ 62 (スマホ 54)・幅いっぱい・足元の線の 4 上で止める) に掛かる (分析 R6「名前の帯と手札の矩形を避ける」)。
      箱は絵の外接矩形 (垂れる枝は斜めの絵なので箱は大きめ = 違反の時は確認の絵 --draw で見る)。設計図に三周目の部品が無ければ数えるだけ (0)。
 
-三周目 r3 の割り付け (2026-10-02 本番・仕様 docs/design/hd2d-slice/r3-ui-spec.md §13。記録の flags が stage=diorama かつ uilayout=r3 (旧い記録は uitrial=1) の時):
+三周目 r3 の割り付け (2026-10-02 本番・仕様 docs/design/hd2d-slice/r3-ui-spec.md §13。記録の flags が stage=diorama かつ uilayout=r3 (旧い記録は uitrial=1) の時。
+  スマホの記録 (canvas.phone) は flags の uilayoutphone=r3 の時 (2026-10-02 からスマホの既定は r2。uilayoutphone の無い旧い記録は uilayout を読む)):
   手札は沈め、本文は触れて読む。そのため L4 の「本文の数字が画面の外」と L5 は、触れて上がった札 (札の上端が画面の高さの 75% より上) だけで測る。
   L5 は代わりに、休んでいる手札の「要の数字の札」(nodes の …/handN/keynum) の下端が画面の下端から 36px 以上・あとから描く札 (右の札) に 30% 以上隠れない。
   記録に要の数字の札が無ければ注意 (撮影の側で手札の子が記録に入っていない)。L2 で触れて上がった札が足元を隠すのは注意 (仕様 §9 の例外 = 触れている間だけ)。
@@ -111,10 +112,13 @@ def self_rects(lay):
 
 
 def is_r3(lay):
-    """三周目 r3 の割り付けの撮影か (箱庭・旗 uilayout=r3。旗の無い旧い記録は uitrial=1)"""
+    """三周目 r3 の割り付けの撮影か (箱庭・旗 uilayout=r3。旗の無い旧い記録は uitrial=1)。
+    スマホ (canvas.phone) は旗 uilayoutphone (2026-10-02 から。既定 r2 = 二周目のスマホ)。uilayoutphone の無い旧い記録のスマホは今までどおり uilayout を読む"""
     f = lay.get('flags') or {}
     if f.get('stage') != 'diorama':
         return False
+    if (lay.get('canvas') or {}).get('phone') and f.get('uilayoutphone') is not None:
+        return f.get('uilayoutphone') == 'r3'
     ul = f.get('uilayout')
     if ul is None:
         return bool(f.get('uitrial'))
