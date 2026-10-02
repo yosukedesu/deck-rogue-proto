@@ -1,9 +1,10 @@
 {
-  "_doc": [
-    "幕2 の撮り比べの変種 (2026-10-03 HD-2D 段2 レーン B。計画 docs/design/hd2d-stage2-plan-2026-10-02.md §3 手順2・§4)。旗 look=look_act2_dof24 で幕2 の設計図 (look_act2 + .char + .dof) の上に重ねる (変える鍵だけ書く。スマホでは .phone が後に重なる)。",
-    "奥のぼかし tiltShiftPass.lensFar 3.0→2.4 (計画 §2 B『lensFar 3.0／2.4 の変種』)。壁 (視線の深さ 36〜44) の目地と岩棚の縁 (1 ドット幅) がぼかしで消えないか (三周目 R1 の教訓: 奥のぼかし 2.4〜3.9px が 1 ドット幅の樹皮の筋を消した)"
-  ],
-  "tiltShiftPass": {
-    "lensFar": 2.4
-  }
+ "_doc": "ピントの変種 (直しの輪1 で既定が lensFar 1.4・帯の奥 6.0 になった。この変種は lensFar 2.0)",
+ "tiltShiftPass": {
+  "lensFar": 2.0,
+  "pathBand": [
+   -2.4,
+   6.0
+  ]
+ }
 }

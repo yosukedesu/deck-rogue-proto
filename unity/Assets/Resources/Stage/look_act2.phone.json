@@ -1,33 +1,54 @@
 {
-  "_doc": [
-    "幕2 のスマホの段 (2026-10-03 HD-2D 段2 レーン B・約束 docs/design/hd2d-stage2/contracts.md §C2-7)。tier=phone (実機は既定で phone) の時だけ、look_act2.json・.char・.dof・(旗 look= の変種) の上に最後に重ねる。",
-    "作り方: look_act1.phone.json の 7 つの鍵 (fog.lobe.powerV・stageVignette・backlight.shadow・shadow の 4 つ・camera.msaaMax・tiltShift.halfRes・envGrade.tint) を写してから、幕2 の差分を書いた (計画 §2 B・分析 §4-3 R2-9・§6 スマホ)。",
-    "段0 の軽さは幕1 と同じ: 影つきの光は 平行光と舞台の灯の 2 つ (影 512・カスケード1)・逆光 (炉) は元から影なし・MSAA なし・ぼかしは半解像度。技の光の影は借りられない (上限 2 = 平行光＋舞台の灯)。",
-    "帯 (壁の照明) はスマホでは壁 y 1.1〜2.6 (画面の行 ≈160〜270) へ下げる (見下ろし 7°・足元の線 0.525 で、壁の y 3.2 より上は上部バーの裏か画面の外。分析 §6): 提灯の光は look_act2.json の lights の phone.y 2.3 (スマホの配置の時だけ・絶対の高さ)・霧の芯の高さ fog.lobe.y 2.6→1.85・霧の板の phone.y はレーン C の設計図。",
-    "霧の距離はカメラの距離の比 r で自動 (スマホ r 1.393 = PC の 1.672 より霧が近い = 壁の霧 0.27〜0.31。分析 §6・verify-facts §1-9) なので start・end は書かない。",
-    "lights の配列はここに書かない (配列は重ねると丸ごと置き換わる)。スマホだけの点け消しと強さは look_act2.json の各 lights の phone (on・illumMul・rangeMul)・置き場は phone (t・s・y)。"
-  ],
-  "fog": {
-    "_doc": "霧の芯: powerV は幕1 のスマホの比 (900→1600 = ×1.78) で 700→1250 (見下ろし 7° で画面の上の行が芯に近い角度にある補正)・高さ y 2.6→1.85 (スマホの帯 y 1.1〜2.6 の真ん中)。2段目の強さ 0.3→0.25 (スマホは霧が近い。propB の案)",
-    "lobe": { "powerV": 1250, "y": 1.85 },
-    "far2": { "strength": 0.25 }
+ "_doc": [
+  "幕2 のスマホの段 (2026-10-03 HD-2D 段2 レーン B・約束 docs/design/hd2d-stage2/contracts.md §C2-7)。tier=phone (実機は既定で phone) の時だけ、look_act2.json・.char・.dof・(旗 look= の変種) の上に最後に重ねる。",
+  "作り方: look_act1.phone.json の 7 つの鍵 (fog.lobe.powerV・stageVignette・backlight.shadow・shadow の 4 つ・camera.msaaMax・tiltShift.halfRes・envGrade.tint) を写してから、幕2 の差分を書いた (計画 §2 B・分析 §4-3 R2-9・§6 スマホ)。",
+  "段0 の軽さは幕1 と同じ: 影つきの光は 平行光と舞台の灯の 2 つ (影 512・カスケード1)・逆光 (炉) は元から影なし・MSAA なし・ぼかしは半解像度。技の光の影は借りられない (上限 2 = 平行光＋舞台の灯)。",
+  "帯 (壁の照明) はスマホでは壁 y 1.1〜2.6 (画面の行 ≈160〜270) へ下げる (見下ろし 7°・足元の線 0.525 で、壁の y 3.2 より上は上部バーの裏か画面の外。分析 §6): 提灯の光は look_act2.json の lights の phone.y 2.3 (スマホの配置の時だけ・絶対の高さ)・霧の芯の高さ fog.lobe.y 2.6→1.85・霧の板の phone.y はレーン C の設計図。",
+  "霧の距離はカメラの距離の比 r で自動 (スマホ r 1.393 = PC の 1.672 より霧が近い = 壁の霧 0.27〜0.31。分析 §6・verify-facts §1-9) なので start・end は書かない。",
+  "lights の配列はここに書かない (配列は重ねると丸ごと置き換わる)。スマホだけの点け消しと強さは look_act2.json の各 lights の phone (on・illumMul・rangeMul)・置き場は phone (t・s・y)。"
+ ],
+ "fog": {
+  "_doc": "霧の芯: powerV は幕1 のスマホの比 (900→1600 = ×1.78) で 700→1250 (見下ろし 7° で画面の上の行が芯に近い角度にある補正)・高さ y 2.6→1.85 (スマホの帯 y 1.1〜2.6 の真ん中)。2段目の強さ 0.3→0.25 (スマホは霧が近い。propB の案)",
+  "lobe": {
+   "powerV": 1250,
+   "y": 1.85
   },
-  "stageVignette": {
-    "_doc": "横 0.75 は幕1 のスマホの写し (門③ 中央÷端)。上 0.12 = スマホの画面の上は壁の y 3〜4 (帯の上・まだ壁) なので PC の 0.22 より弱く (propB の案)",
-    "side": 0.75,
-    "top": 0.12
-  },
-  "backlight": { "shadow": false },
-  "shadow": {
-    "cascades": 1,
-    "mainResolution": 512,
-    "additionalResolution": 512,
-    "maxShadowedLights": 2
-  },
-  "camera": { "msaaMax": 1 },
-  "tiltShift": { "halfRes": true },
-  "envGrade": {
-    "_doc": "スマホの夜を締める = PC の [0.98,1.12,1.28] の 0.89 倍 (幕1 のスマホと同じ比 = look_act1.phone.json の _fix1r3i)。帯と床の明るさの順は変わらない。撮って違えば PC と同じ値へ",
-    "tint": [0.872, 0.997, 1.139]
+  "far2": {
+   "strength": 0.12
   }
+ },
+ "stageVignette": {
+  "_doc": "横 0.75 は幕1 のスマホの写し (門③ 中央÷端)。上 0.12 = スマホの画面の上は壁の y 3〜4 (帯の上・まだ壁) なので PC の 0.22 より弱く (propB の案)",
+  "side": 0.75,
+  "top": 0.3,
+  "topBand": 0.3
+ },
+ "backlight": {
+  "shadow": false
+ },
+ "shadow": {
+  "cascades": 1,
+  "mainResolution": 512,
+  "additionalResolution": 512,
+  "maxShadowedLights": 2
+ },
+ "camera": {
+  "msaaMax": 1
+ },
+ "tiltShift": {
+  "halfRes": true
+ },
+ "envGrade": {
+  "_doc": "スマホの夜を締める = PC の [0.98,1.12,1.28] の 0.89 倍 (幕1 のスマホと同じ比 = look_act1.phone.json の _fix1r3i)。帯と床の明るさの順は変わらない。撮って違えば PC と同じ値へ",
+  "tint": [
+   0.872,
+   0.997,
+   1.139
+  ]
+ },
+ "_s2fix1": "直しの輪1 (2026-10-03・反証「本家と並べる」のまとめ): スマホの上に暗い枠が無く霧が上端まで来ていた (行 0〜120 中央値 65〜78・PC 27〜30) → 上の減光 0.12→0.3・2 段目の霧 0.25→0.12",
+ "lamp": {
+  "illum": 1.05,
+  "_doc": "直しの輪1: スマホの壁の帯 86 ÷ 床 98 = 0.88 → 床の灯を 1.3→1.05・提灯はスマホで ×2.0 (look_act2.json の lights の phone)"
+ }
 }
