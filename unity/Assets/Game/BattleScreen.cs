@@ -153,7 +153,10 @@ namespace DeckRogue.Game
             var shade = UiKit.NewRect("dio-shade", root);
             UiKit.Stretch(shade, 0f, 0f, 0f, 0f);
             var img = shade.gameObject.AddComponent<Image>();
-            img.sprite = UiKit.LinearSprite(ThemeFx.FadeDown(PaperFx.Ground, MenuShadeTop, MenuShadeBottom, "fade-down-ground-menu"), 0.25f);   // Linear: 絵に焼いた α を Gamma と同じ濃さへ (desk-shade と同じ)
+            // 段2 (2026-10-03・約束 §C2-3): 光の設計図の "menuShade" があればその α (幕2/3 の箱庭)。無ければ今の定数 (幕1 の look には書かない = 幕1 は1画素も変わらない)
+            float top = StageLook.MenuShadeTop ?? MenuShadeTop, bottom = StageLook.MenuShadeBottom ?? MenuShadeBottom;
+            string key = top == MenuShadeTop && bottom == MenuShadeBottom ? "fade-down-ground-menu" : "fade-down-ground-menu-" + top.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) + "-" + bottom.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+            img.sprite = UiKit.LinearSprite(ThemeFx.FadeDown(PaperFx.Ground, top, bottom, key), 0.25f);   // Linear: 絵に焼いた α を Gamma と同じ濃さへ (desk-shade と同じ)
             img.type = Image.Type.Simple;
             img.preserveAspect = false;
             img.raycastTarget = false;
