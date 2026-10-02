@@ -524,8 +524,9 @@ def mists():
     return [
         # 統合 (2026-10-03・試し撮りの格子 k1): y 1.5→1.2・h 3.0→2.7 (帯の頂点を下げる)・alpha 0.2→0.34・tint [0.44,0.43,0.42]→[0.62,0.66,0.7]
         # (本家 ot2 の壁の前の青灰のもや (90,111,133)。最小の試しでは壁 100÷床 164 = 0.61・格子で 1.59)
-        dict(kind='mist', name='wall-mist', t=4.0, s=9.0, y=1.2, abs=True, w=64.0, h=2.7, alpha=0.34, noise=[0.16, 0.8], flow=0.015,
-             tint=[0.62, 0.66, 0.7], seed=20262601, phone=dict(alpha=0.22)),
+        # 直しの輪1 (2026-10-03・反証): alpha 0.34→0.2・tint [0.62,0.66,0.7]→[0.42,0.5,0.58] (横いっぱいの乳白の縞の最大の出どころ。本家の洞窟の霧 (90,111,133) 寄り)
+        dict(kind='mist', name='wall-mist', t=4.0, s=9.0, y=1.2, abs=True, w=64.0, h=2.7, alpha=0.2, noise=[0.16, 0.8], flow=0.015,
+             tint=[0.42, 0.5, 0.58], seed=20262601, phone=dict(alpha=0.22)),
         dict(kind='mist', name='floor-mist', t=4.0, s=4.3, y=0.0, w=64.0, h=1.0, alpha=0.1, noise=[0.2, 1.0], flow=0.01, seed=20262602,
              phone=dict(hide=True)),
     ]
@@ -536,10 +537,7 @@ def frames(sd):
     (PC の左下 = エナジーの輪と手札の間 x ≈300・右下 = 手札とターン終了の間 x ≈1560)。スマホは組まない (左下は UI・柱と右の岩は計画 §2 C の phone.hide)"""
     return [
         # 左の支保工の柱 frame-post-L は外した (統合 2026-10-03: 近くて暗くぼけ、画面の左端の模様の無い黒い縦の帯 x 0〜70 に見えた)
-        dict(kind='rock', name='frame-rock-L', t=-7.7, s=-7.4, y=0.0, yaw=24.0, r=1.25, h=1.15, sides=9, squash=0.75, tint=0.55,
-             phone=dict(hide=True), seed=sd()),   # スマホの左下は UI (自分の札・エナジーの輪・手札) が 65% を覆う
-        dict(kind='rock', name='frame-rock-R', t=0.4, s=-9.9, y=0.0, yaw=300.0, r=1.1, h=1.0, sides=8, squash=0.7, tint=0.55,
-             phone=dict(hide=True), seed=sd()),
+        # 額縁の岩 frame-rock-L/R は外した (直しの輪1: 光の届かない模様の無い黒い丸 2 つが手札の左右で観客の頭に見えた)
     ]
 
 
@@ -570,7 +568,8 @@ PROPS = [
     # 天井から (t ≥16・x 1200〜1550 の真上は空ける)
     ('stalactite', 15.6, 10.6, 'hang', False), ('stalactiteCluster', 21.6, 8.8, 'hang', True), ('stalactite', 23.4, 8.2, 'hang', True),
     # 下の坑道 (棚の手前 −1.4)
-    ('minecart', -3.0, -6.4, 'lower', True), ('orePile', 8.0, -6.0, 'lower', False),
+    # 下の坑道の鉱車 ('minecart', -3.0, -6.4, 'lower') は外した (直しの輪1: 手札の真上の真ん中で目を引く)
+    ('orePile', 8.0, -6.0, 'lower', False),
 ]
 ALTS = [0.0, 0.6, -0.6, 1.2, -1.2, 1.8, -1.8, 2.4, -2.4, 3.0, -3.0, 4.0, -4.0]
 HANG_TOP = 7.6     # 天井から吊る物の上端 (abs・PC 行 < 60 = 上部バーの裏から垂れる)
