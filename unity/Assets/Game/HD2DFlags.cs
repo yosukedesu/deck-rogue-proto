@@ -12,6 +12,9 @@
 //   drift=0|1                 aa=none|msaa|2|4|8 (msaa=<N> も同じ。N≦1 = 無し)   litunits=0|1   charshadow=0|1
 //   trunk=mesh|relief         keyflip=auto|off          tier=pc|phone            look=<設計図の名前|auto>
 //   det=1                     dumplayout=0|1            uionly=0|1               unitsonly=0|1    perf=<秒>
+//   dioramaacts=1|1,2|1,3|all|none (段2 2026-10-03。箱庭にする幕。既定 1 = 幕1 だけ。hd2d=slice の束には入れない。幕2/3 は設計図 act<N>_layout と光 look_act<N> が
+//                そろっている時だけ箱庭になり、無ければ今の舞台に落ちる。stage=diorama を書いたまま箱庭でない幕に入ると束のキーを今の舞台の値へ預け替える。
+//                -hd2d の起動引数では「,」が区切りなので 1+2 と書く)
 //   uilayout=r3|r2 (三周目 R3 UI の作り直し 2026-10-02・仕様 docs/design/hd2d-slice/r3-ui-spec.md。箱庭 (stage=diorama) の画面の割り付け。
 //                既定 r3 = 足元の線 PC 0.36・手札を沈めて触れた札だけ上げる・敵の帳面を足元の下・自分の欄は足元の帳と左下の匣 (PC)。
 //                スマホでは読まない (スマホは下の uilayoutphone。2026-10-02)。
@@ -145,6 +148,35 @@ namespace DeckRogue.Game
         /// <summary>look= (幕の設計図 look_act&lt;N&gt; の上に重ねる変種の名前。「+」で複数。null = 変種なし。W3 P22 で「丸ごとの差し替え」から「重ねる変種」へ)</summary>
         public static string Look { get; set; } = null;
 
+        // ---- 箱庭にする幕 (段2 2026-10-03・計画 docs/design/hd2d-stage2-plan-2026-10-02.md §2「口」・移行の設計 migrate.md の案 b) ----
+        // 「有効な箱庭 = 旗 stage=diorama (か幕の既定) かつ dioramaacts にその幕があり、その幕の設計図と光の設計図 (look_act<N>) がそろっている」を1つの判定 DioramaHere にまとめる。
+        // 幕1 は既定 dioramaacts=1 なので今と同じ値に落ちる (= 幕1 の見本の画素が変わらない根拠)。幕2/3 の箱庭は dioramaacts=1,2|1,3|all を書いた時だけ。
+        // stage=diorama (hd2d=slice) を書いたまま箱庭でない幕に入った時は、束のキー (画角・見下ろし・キャラの光・ぼかし・AA・夜色の札・幹・漂い) を今の舞台の値へ
+        // 預け替え (Park)、箱庭の幕へ戻った時に書いた値へ戻す (Unpark) = 今の舞台の上に見本のカメラや夜色の札が残るちぐはぐを作らない (移行の設計の 11 か所に入っていなかった画角などの漏れもここで塞ぐ)
+        /// <summary>普通の起動 (stage=・hd2d= を書かない) と Reset の既定で箱庭にする幕。ユーザーの判定 (段2 の比較シート) の後にここを "1,2" へ (1 行の変更)</summary>
+        public const string DefaultDioramaActs = "1";
+        static readonly HashSet<int> _dioramaActs = new HashSet<int>(ParseActs(DefaultDioramaActs) ?? new HashSet<int> { 1 });
+        static readonly HashSet<int> _dioramaFallback = new HashSet<int>();
+        /// <summary>dioramaacts= (箱庭にする幕。"1"・"1,2"・"1+3"・"all"・"none")</summary>
+        public static string DioramaActs { get { return ActsText(_dioramaActs); } }
+        /// <summary>幕 act を箱庭にしてよいか (旗 dioramaacts だけを見る。設計図の有無と stage= は見ない)</summary>
+        public static bool DioramaOn(int act) { return _dioramaActs.Contains(act); }
+        /// <summary>
+        /// 今組んでいる (組もうとしている) 舞台の幕。Stage.Paint の頭で書く (Changed は投げない素の値・既定 1 = タイトルの幕)。
+        /// カメラ・札・キャラの光などの「箱庭か」の判定 (DioramaHere) が読む
+        /// </summary>
+        public static int StageAct { get; set; } = 1;
+        /// <summary>幕 act の箱庭の設計図か光の設計図 (look_act&lt;N&gt;) が無い・組むのに失敗した = 旗で入れても今の舞台に落とす (Stage.Paint が毎回書く)</summary>
+        public static bool DioramaFallback(int act) { return _dioramaFallback.Contains(act); }
+        public static void SetDioramaFallback(int act, bool on) { if (on) _dioramaFallback.Add(act); else _dioramaFallback.Remove(act); }
+        /// <summary>この幕を箱庭にするか (stage= の旗と幕の旗と設計図の有無)。Stage.WantDiorama と DioramaHere の共通の式</summary>
+        public static bool DioramaFor(int act) { return StageMode == HD2DStage.Diorama && DioramaOn(act) && !DioramaFallback(act); }
+        /// <summary>
+        /// 有効な箱庭 = 今の舞台の幕 (StageAct) を箱庭で描いている (描こうとしている)。カメラ・座席・札・UI の割り付け・キャラの光・技の光の判定は全部これを読む
+        /// (2026-10-03 段2 の口。それまでは StageMode だけを見ていた 11 か所)
+        /// </summary>
+        public static bool DioramaHere { get { return DioramaFor(StageAct); } }
+
         // ---- 撮影と計測の旗 ----
         /// <summary>
         /// det=1 (決定的な撮影)。実体は Autopilot.Det (起動引数 -det・STATE の det=1)。true にすると Autopilot.EnableDet を呼ぶ。
@@ -229,13 +261,58 @@ namespace DeckRogue.Game
         /// </summary>
         public static void ApplyActDefault(int act)
         {
-            if (_stageExplicit) return;
+            if (_stageExplicit) { ApplyExplicitAct(act); return; }
             string before = Describe();
-            var bundle = act == 1 ? SliceBundle : OldBundle;
+            // 箱庭にする幕 (dioramaacts・既定 DefaultDioramaActs = "1") で設計図がそろっていれば見本の束・それ以外は今の舞台の束
+            // (段2 の口 2026-10-03。既定は今までの「act == 1 ? 見本 : 今の舞台」と同じ値に落ちる)
+            bool dio = DioramaOn(act) && !DioramaFallback(act);
+            var bundle = dio ? SliceBundle : OldBundle;
             string v;
             foreach (var p in bundle) SetKey(p.Key, _explicitBundle.TryGetValue(p.Key, out v) ? v : p.Value);
             if (_explicitBundle.TryGetValue("msaa", out v)) SetKey("msaa", v);
-            if (Describe() != before) Debug.Log("[HD2DFlags] 幕" + act + " の既定 (" + (act == 1 ? "見本" : "今の舞台") + ") → " + Describe());
+            if (Describe() != before) Debug.Log("[HD2DFlags] 幕" + act + " の既定 (" + (dio ? "見本" : "今の舞台") + ") → " + Describe());
+            RaiseIfChanged(before);
+        }
+
+        // ---- stage=diorama (hd2d=slice) を書いた時の、箱庭でない幕の預け替え (段2 の口 2026-10-03) ----
+        // 書いた旗は全部の幕で勝つ (今まで) のうち、stage=diorama だけは「箱庭にする幕」(dioramaacts と設計図の有無) でしか効かない。
+        // 箱庭でない幕へ入る時は、束のキーの今の値を控え (_parked) に取ってから今の舞台の束 (OldBundle・個別に書いた束のキーはその値) を当て、
+        // 箱庭の幕へ戻る時に控えの値へ戻す。stage=old を書いた時・箱庭の幕どうしの行き来は何もしない (= 幕1 の撮影は1文字も変わらない)
+        sealed class ParkedBundle
+        {
+            public HD2DStage Stage; public int HeroDots; public float Fov, Pitch, PitchPhone;
+            public bool Lit, CharShadow, UiNight, Drift; public HD2DTiltShift Dof; public HD2DAa Aa; public int Msaa; public HD2DTrunk Trunk;
+        }
+        static ParkedBundle _parked;
+
+        /// <summary>今は預け替え中か (stage=diorama を書いたまま箱庭でない幕にいる)</summary>
+        public static bool Parked { get { return _parked != null; } }
+
+        static void ApplyExplicitAct(int act)
+        {
+            bool dioAct = DioramaOn(act) && !DioramaFallback(act);
+            string before = Describe();
+            if (_parked == null)
+            {
+                if (StageMode != HD2DStage.Diorama || dioAct) return;
+                _parked = new ParkedBundle
+                {
+                    Stage = StageMode, HeroDots = HeroDots, Fov = CamFov, Pitch = CamPitch, PitchPhone = CamPitchPhone,
+                    Lit = LitUnits, CharShadow = CharShadow, UiNight = UiNight, Drift = Drift, Dof = TiltShift, Aa = Aa, Msaa = MsaaSamples, Trunk = Trunk,
+                };
+                string v;
+                foreach (var p in OldBundle) SetKey(p.Key, p.Key != "stage" && _explicitBundle.TryGetValue(p.Key, out v) ? v : p.Value);
+                if (_explicitBundle.TryGetValue("msaa", out v)) SetKey("msaa", v);
+                Debug.Log("[HD2DFlags] 幕" + act + " は箱庭でない (dioramaacts=" + DioramaActs + (DioramaFallback(act) ? "・設計図が無い" : "") + ") → 今の舞台の値へ預け替え: " + Describe());
+            }
+            else
+            {
+                if (!dioAct) return;
+                var k = _parked; _parked = null;
+                StageMode = k.Stage; HeroDots = k.HeroDots; CamFov = k.Fov; CamPitch = k.Pitch; CamPitchPhone = k.PitchPhone;
+                LitUnits = k.Lit; CharShadow = k.CharShadow; UiNight = k.UiNight; Drift = k.Drift; TiltShift = k.Dof; Aa = k.Aa; MsaaSamples = k.Msaa; Trunk = k.Trunk;
+                Debug.Log("[HD2DFlags] 幕" + act + " は箱庭 → 書いた値へ戻した: " + Describe());
+            }
             RaiseIfChanged(before);
         }
 
@@ -282,6 +359,8 @@ namespace DeckRogue.Game
             string before = Describe();
             _stageExplicit = false;        // 書いた旗も忘れる (幕ごとの既定に戻る。次の Stage.Paint が幕の束を当てる)
             _explicitBundle.Clear();
+            _parked = null;                // 箱庭でない幕の預け替えも忘れる (段2 の口)
+            _dioramaActs.Clear(); foreach (var a in ParseActs(DefaultDioramaActs) ?? new HashSet<int> { 1 }) _dioramaActs.Add(a);
             StageMode = HD2DStage.Old;
             HeroDots = 62;
             CamFov = 36f;
@@ -378,6 +457,7 @@ namespace DeckRogue.Game
             add("keyflip", KeyFlip == HD2DKeyFlip.Off ? "off" : "auto");
             add("tier", Tier == HD2DTier.Phone ? "phone" : "pc");
             add("look", Look ?? "");
+            add("dioramaacts", DioramaActs);
             add("det", Det);
             add("dumplayout", DumpLayout);
             add("uionly", UiOnly);
@@ -526,6 +606,13 @@ namespace DeckRogue.Game
                 case "look":
                     Look = string.IsNullOrEmpty(v) || Is(v, "auto") || Is(v, "default") ? null : v;
                     return true;
+                case "dioramaacts":
+                {
+                    var acts = ParseActs(v);
+                    if (acts == null) { Warn(key, v); return true; }
+                    _dioramaActs.Clear(); foreach (var a in acts) _dioramaActs.Add(a);
+                    return true;
+                }
                 case "drift": if (TryBool(v, out b)) Drift = b; else Warn(key, v); return true;
                 case "litunits": if (TryBool(v, out b)) LitUnits = b; else Warn(key, v); return true;
                 case "charshadow": if (TryBool(v, out b)) CharShadow = b; else Warn(key, v); return true;
@@ -579,6 +666,29 @@ namespace DeckRogue.Game
         }
 
         static void Warn(string key, string v) { Debug.LogWarning("[HD2DFlags] 読めない値: " + key + "=" + v + " (今の値のまま)"); }
+
+        /// <summary>dioramaacts= の値 ("1"・"1,2"・"1+3"・"1/2/3"・"all"・"none") を幕の集合に。読めなければ null</summary>
+        static HashSet<int> ParseActs(string v)
+        {
+            string s = (v ?? "").Trim().ToLowerInvariant();
+            if (s == "all") return new HashSet<int> { 1, 2, 3 };
+            if (s == "none" || s == "0" || s == "off") return new HashSet<int>();
+            var set = new HashSet<int>();
+            foreach (var part in s.Split(new[] { ',', '+', '/', ' ' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                int n;
+                if (!int.TryParse(part, NumberStyles.Integer, Inv, out n) || n < 1 || n > 3) return null;
+                set.Add(n);
+            }
+            return set.Count > 0 ? set : null;
+        }
+
+        static string ActsText(HashSet<int> acts)
+        {
+            if (acts.Count == 0) return "none";
+            var l = new List<int>(acts); l.Sort();
+            return string.Join("+", l.ConvertAll(a => a.ToString(Inv)).ToArray());
+        }
 
         static string FormatValue(object v)
         {

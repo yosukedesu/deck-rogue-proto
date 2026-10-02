@@ -313,7 +313,7 @@ namespace DeckRogue.Game
         /// </summary>
         public static void Apply(int act, Transform rigParent, Camera cam, VolumeProfile profile)
         {
-            if (HD2DFlags.StageMode != HD2DStage.Diorama)
+            if (!HD2DFlags.DioramaHere)   // 段2 の口 (2026-10-03): 有効な箱庭 (旗 stage=diorama かつ箱庭にする幕) の時だけ
             {
                 if (!_warnedOld) { _warnedOld = true; Debug.LogWarning("[StageLook] stage=old では光を当てない (Apply は何もしない)"); }
                 return;
@@ -612,7 +612,7 @@ namespace DeckRogue.Game
 
         // ================================================================ 中身
 
-        const string ResourceDir = "Stage/";
+        internal const string ResourceDir = "Stage/";
         static readonly Color DefaultKeyColor = new Color(0.92f, 0.96f, 1f, 1f);
         static readonly StageLookData.CharLook DefaultChar = new StageLookData.CharLook();
 
@@ -637,7 +637,7 @@ namespace DeckRogue.Game
         static int _idSeatBand, _idSeatBandParam, _idSkipTopVig;   // 二周目 段2 (R2B): 座席の帯 (横の減光を外す。StageModule)・光の筋の上の減光を外す (StageShaft の材質の値)
         static int R3B_idFog2, R3B_idFog2Color, R3B_idNightGrade, R3B_idNightGradeRange, R3B_idShaftGain;   // 三周目 段1 (R3B): 霧の2段目・夜の色寄せ (StageModule)・光の筋の倍率 (StageShaft の材質の値)
 
-        static string DefaultName(int act) { return "look_act" + act; }
+        internal static string DefaultName(int act) { return "look_act" + act; }
 
         /// <summary>全体値の番号 (初めて当てる時に1回。静的な初期化で Unity を呼ばない)</summary>
         static void EnsureIds()
@@ -710,7 +710,7 @@ namespace DeckRogue.Game
         /// <summary>旗が変わった時 (keycolor・dof・aa): 当てている間だけ、旗から決まる値を当て直す。stage の切り替えは P12 が Apply／Restore で行う</summary>
         static void OnFlagsChanged()
         {
-            if (!Active || Current == null || HD2DFlags.StageMode != HD2DStage.Diorama) return;
+            if (!Active || Current == null || !HD2DFlags.DioramaHere) return;
             ApplyCharGlobals(Current);
             ApplyTiltShift(Current);
             if (_bakCam != null && _bakCam.Cam != null) ApplyMsaa(_bakCam.Cam, Current);

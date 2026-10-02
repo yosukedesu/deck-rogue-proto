@@ -1,0 +1,23 @@
+# 段2 (2026-10-03・計画 §1・§3 手順 1)。「旗は箱庭なのに幕2/3 の箱庭が無い (or 旗で切っている)」時の画。
+# 1行 = 名前|PC または PH|STATE。撮り方: DET=1 scripts/pshots.sh <この一覧> <親>/s2-mixed 2
+# 移行の前: stage=diorama;hd2d=slice で act=2 に入ると、舞台は今の舞台 (WantDiorama が act==1 で偽) なのに、カメラ・座席・夜色の札・r3 の割り付け・
+#   キャラの光は箱庭のまま = ちぐはぐな画 (今までの一覧に 0 行 = 誰も頼りにしていない画)。
+# 移行の後 (案 b・「有効な箱庭 = StageMode が diorama かつ dioramaacts にその幕がある」): dioramaacts を書かない (既定 1) なら、
+#   幕2/3 はカメラ・札・光まで今の舞台に落ちる = 下の行は s2-old23 の同じ場面と画素一致するのが合格。
+#   対: PC-M2-squire↔PC-O2-squire・PC-M3-quad↔PC-O3-quad・PC-M3-warden↔PC-O3-warden・PH-M2-squire↔PH-O2-squire・PH-M2-squire-tier↔PH-O2-squire-tier・PH-M3-quad↔PH-O3-quad・PH-M3-quad-tier↔PH-O3-quad-tier
+#       (旗なし起動の s2-apk の PC-A2-squire・PC-A3-quad・PH-A2-squire・PH-A3-quad とも同じ画のはず = 幕1 の箱庭 → 今の舞台 の同じ道)
+#       PC-M2-squire-off↔PC-O2-squire・PC-M3-quad-off↔PC-O3-quad・PC-M1-wolf↔(s2-slice の PC-S-wolf)
+PC-M2-squire|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dumplayout=1
+PC-M3-quad|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1
+PC-M3-warden|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=diorama;hd2d=slice;dumplayout=1
+PC-M1-wolf|PC|phase=combat;enemy=enemy_wolf;stage=diorama;hd2d=slice;dumplayout=1
+PH-M2-squire|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dumplayout=1
+PH-M2-squire-tier|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+PH-M3-quad|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1
+PH-M3-quad-tier|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
+# 旗で切った時 (dioramaacts=1 を明示) も同じ画になること:
+PC-M2-squire-off|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=1;dumplayout=1
+PC-M3-quad-off|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=1;dumplayout=1
+# 設計図か look_act<N> が無いのに旗で入れた時 (act2/3 の設計図を置く前だけ有効): ログに「箱庭の設計図が無い → 今の舞台」が1回出て、画は PC-O2-squire と一致すること
+PC-M2-squire-nolayout|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=diorama;hd2d=slice;dioramaacts=1,2;dumplayout=1
+PC-M3-quad-nolayout|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=diorama;hd2d=slice;dioramaacts=1,3;dumplayout=1

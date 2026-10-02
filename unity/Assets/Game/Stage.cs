@@ -564,12 +564,24 @@ namespace DeckRogue.Game
             // 幕ごとの既定 (2026-10-01): 旗 stage=・hd2d= を書かない普通の起動では、ここで幕の束を当てる = 幕1 は見本 (hd2d=slice)・幕2/3 は今の舞台 (stage=old・画角36・紙の札・主人公62)。
             // 箱庭は幕1にしか無いので、幕2/3 に見本のカメラ・座席・キャラの光・夜色の札を残さない。変われば Changed でカメラが置き直り、下の名札 (sig) が組み直しを決める。
             // 撮影の STATE・-hd2d に stage= か hd2d= を書いた時は何もしない (今までどおり書いた旗が全部の幕で勝つ)
+            // 段2 の口 (2026-10-03): 今組む幕を先に書き (カメラ・札・キャラの光の「箱庭か」= HD2DFlags.DioramaHere が読む)、
+            // その幕の箱庭の設計図と光の設計図 (look_act<N>) がそろっているかを書いてから束を当てる (無い幕・組めなかった幕は旗で入れても今の舞台に落とす)
+            HD2DFlags.StageAct = act;
+            HD2DFlags.SetDioramaFallback(act, !DioramaAssetsReady(act) || _dioramaFailed.Contains(act));
             HD2DFlags.ApplyActDefault(act);
             bool wantDio = WantDiorama(act);
             string sig = wantDio ? DioramaSignature(act) : "old";
             if (_paintedAct == act && _paintedSig == sig) return;
-            // 箱庭 (HD-2D 見本 P12): 幕1 × stage=diorama なら Diorama と StageLook で組んで終わり。設計図が無い・組むのに失敗したら下の今の舞台 (old) で描く
+            // 箱庭 (HD-2D 見本 P12): 箱庭にする幕 × stage=diorama なら Diorama と StageLook で組んで終わり。設計図が無い・組むのに失敗したら下の今の舞台 (old) で描く
             if (wantDio && PaintDiorama(act, sig)) return;
+            if (wantDio)
+            {
+                // 組むのに失敗した: この幕は以後も今の舞台に落とし (毎回の組み直しで失敗を繰り返さない)、カメラ・札・キャラの光も今の舞台の値へ (預け替え)
+                _dioramaFailed.Add(act);
+                HD2DFlags.SetDioramaFallback(act, true);
+                HD2DFlags.ApplyActDefault(act);
+                sig = "old";
+            }
             LeaveDiorama();   // old で描く前に: 箱庭の光 (StageLook) を控えへ戻し (Paint が下で書く環境光・霧・色補正を上書きしないよう先に)・箱庭を捨て・今の月とランタンを点け直す
             _paintedAct = act;
             _paintedSig = sig;   // 箱庭に失敗した時もこの組み方のうちは組み直さない (Rebuild のたびに失敗と old の描き直しを繰り返さない)
@@ -1101,8 +1113,24 @@ namespace DeckRogue.Game
         // 幕1 × stage=diorama の時だけ、Paint は今の舞台 (下の old の道筋) の代わりに Diorama (P04 の組み立て器) と StageLook (P09 の光の一式) で組む。
         // 幕2・3 と stage=old は今の舞台のまま (比べる元と戻り先)。old に戻る時は LeaveDiorama が光を控えへ戻してから今の舞台を描く
 
-        /// <summary>この幕を箱庭で描くか (見本は幕1だけ)</summary>
-        static bool WantDiorama(int act) { return act == 1 && HD2DFlags.StageMode == HD2DStage.Diorama; }
+        /// <summary>この幕を箱庭で描くか (旗 stage=diorama・箱庭にする幕 dioramaacts・設計図の有無。段2 の口 2026-10-03。それまでは幕1 固定)</summary>
+        static bool WantDiorama(int act) { return HD2DFlags.DioramaFor(act); }
+
+        static readonly Dictionary<int, bool> _dioramaAssets = new Dictionary<int, bool>();
+        static readonly HashSet<int> _dioramaFailed = new HashSet<int>();
+        /// <summary>幕 act の箱庭の設計図 (Resources/Stage/act&lt;N&gt;_layout) と光の設計図 (look_act&lt;N&gt;) が両方あるか (幕ごとに1回だけ調べる)。
+        /// 光の無い箱庭で判断を誤らないよう、片方だけの幕は今の舞台に落とす (移行の設計 §6 の 5)</summary>
+        static bool DioramaAssetsReady(int act)
+        {
+            bool ok;
+            if (_dioramaAssets.TryGetValue(act, out ok)) return ok;
+            bool layout = Resources.Load<TextAsset>(Diorama.LayoutResource(act)) != null;
+            bool look = Resources.Load<TextAsset>(StageLook.ResourceDir + StageLook.DefaultName(act)) != null;
+            ok = layout && look;
+            _dioramaAssets[act] = ok;
+            if (!ok && act != 1) Debug.Log("[Stage] 幕" + act + " の箱庭は" + (!layout ? " 設計図 (Resources/" + Diorama.LayoutResource(act) + ")" : "") + (!look ? " 光の設計図 (" + StageLook.DefaultName(act) + ")" : "") + " が無い → 旗で入れても今の舞台 (old)");
+            return ok;
+        }
 
         /// <summary>箱庭の組み方の名札。組むのに使う旗 (幹 trunk=・光の設計図 look=・段 tier=) が変われば別の名札 = Paint が組み直す</summary>
         static string DioramaSignature(int act)
@@ -1238,13 +1266,13 @@ namespace DeckRogue.Game
             if (slice) R2B_MoondustSlice();                        // 無ければ作る (StageFx のいちばん後ろ)・値を設計図に合わせる
             // 三周目 直しの輪1 (2026-10-02・反証のまとめ (d)「舞う葉の緑のにじみ」): 箱庭では光の設計図 (look) の fx.leaves が false なら舞う葉を点けない。
             // 既定の look_act1.json は false・二周目と W5 の写し (look_act1_r2・look_act1_w5) は true = 写しの画は今まで。今の舞台 (stage=old)・幕2/3 は読まない = 今まで
-            bool dioNoLeaves = false;
+            // 段2 の口 (2026-10-03): 箱庭では光の設計図の fx の表が勝つ (fx.<名前> が true/false ならそれ・書いていない名前は下の今の規則)。
+            // 幕1 の look_act1.json の fx は leaves:false だけ = 今までの「fx.leaves が false なら舞う葉を点けない」と同じ値。今の舞台 (!dio) は読まない
+            Newtonsoft.Json.Linq.JObject fxLook = null;
             if (dio)
             {
                 var lookRaw = StageLook.Current != null ? StageLook.Current.Raw : null;
-                var fxLook = lookRaw != null ? lookRaw["fx"] as Newtonsoft.Json.Linq.JObject : null;
-                var lv = fxLook != null ? fxLook["leaves"] : null;
-                dioNoLeaves = lv != null && lv.Type == Newtonsoft.Json.Linq.JTokenType.Boolean && !(bool)lv;
+                fxLook = lookRaw != null ? lookRaw["fx"] as Newtonsoft.Json.Linq.JObject : null;
             }
             for (int i = 0; i < _fx.childCount; i++)
             {
@@ -1253,7 +1281,7 @@ namespace DeckRogue.Game
                 switch (c.name)
                 {
                     case "fireflies": on = act == 1; break;
-                    case "leaves": on = act == 1 && !dioNoLeaves; break;
+                    case "leaves": on = act == 1; break;
                     case "water-sparkle": on = act == 1 && !dio; break;
                     case "mote-light-template": on = !dio; break;   // 粒ごとの点光源のひな型。今の舞台は今までどおり (既定の on で点いている = 見た目を変えない)。箱庭では点けない (世界の原点に弱い暖色の点光源が1つ立っていた)
                     case "motes-cluster": on = !dio; break;   // 今の舞台のランタンの足元の暖色の粒の一群 (t −7.1 = 画面の左端)。箱庭ではランタンが無く、左端の地面だけが暖色に光って③ (中央÷端) を下げていた (W3 P22)
@@ -1263,7 +1291,12 @@ namespace DeckRogue.Game
                     case "vein-motes": on = act != 1; break;
                     case "drips": on = act != 1; break;
                     case "ashfall": case "wisps": on = act == 3; break;
-                    case "embers": on = act == 2; if (on) c.position = _emberPos; break;
+                    case "embers": on = act == 2 && !dio; if (on) c.position = _emberPos; break;   // 箱庭では炉の位置 (_emberPos) を今の舞台が決めないので、光の設計図の fx が点けた時だけ
+                }
+                if (fxLook != null)
+                {
+                    var fv = fxLook[c.name];
+                    if (fv != null && fv.Type == Newtonsoft.Json.Linq.JTokenType.Boolean) on = (bool)fv;
                 }
                 c.gameObject.SetActive(on);
             }

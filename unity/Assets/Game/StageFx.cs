@@ -70,7 +70,7 @@ namespace DeckRogue.Game
         // ================================================================ 演出からの口 (P13・W2。Presenter が2Dの当たりと同じ所で呼ぶ)
 
         /// <summary>技の光を灯せる時 (stage=diorama で StageLook が光を当てている)。false なら下の口は全部なにもしない (old の画を変えない)</summary>
-        public static bool Live => HD2DFlags.StageMode == HD2DStage.Diorama && StageLook.Active;
+        public static bool Live => HD2DFlags.DioramaHere && StageLook.Active;
 
         /// <summary>
         /// 自分の札の当たり (Presenter の PlayerHitFx と同じ所)。key = 当たった敵の板 ("enemy0"…)。

@@ -21,7 +21,7 @@ namespace DeckRogue.Game
         public static float HandY { get { return (UiKit.Phone ? 14f : 30f) - HandSink; } }
         /// <summary>HD-2D 見本の箱庭 (stage=diorama) の画面の配置か (2026-09-30 P20)。足元の線・手札の沈め・帳面の置き方 (ledger=feet)・暗幕の丈がこの時だけ変わる。
         /// 紙か夜か (ui=night|paper) とは別 = ui=paper でも同じ配置で撮れる。今の舞台 (stage=old) は1画素も変えない</summary>
-        public static bool Hd2dLayout { get { return HD2DFlags.StageMode == HD2DStage.Diorama; } }
+        public static bool Hd2dLayout { get { return HD2DFlags.DioramaHere; } }   // 段2 の口 (2026-10-03): 有効な箱庭 (幕の旗 dioramaacts も見る)
         /// <summary>
         /// 手札を沈める量 (キャンバス単位。HD-2D 見本の箱庭だけ。2026-09-30 P20)。上限は手札の本文の数字が画面の下端から 36px (layout-check L5):
         /// W2 の撮影で両端の札の数字の下端が PC 57.8px・スマホ 60.4px (5枚の扇) なので、PC 19 (→38.8px)・スマホ 17 (×1.31＝22.3px → 38.1px)。
@@ -1955,7 +1955,7 @@ namespace DeckRogue.Game
                     }
                     // 見本 (stage=diorama) の最後の手 (直しの輪1 2026-10-01。短い形で並べ直す2回目 lastResort だけ): 1段上でも置けない札は、2段上まで・半札ぶん横にずらした置き場も探す。
                     // 低いカメラ (22°・7°) では人形が横に詰まり、1段では3組が重なった (PH 人形9体の L6)。今の舞台は通らない (1画素も変えない)
-                    if (bestCost == float.MaxValue && lastResort && HD2DFlags.StageMode == HD2DStage.Diorama)
+                    if (bestCost == float.MaxValue && lastResort && HD2DFlags.DioramaHere)
                     {
                         float x0 = r.x, bestDx = 0f;
                         float[] dxs = { 0f, w * 0.5f, -w * 0.5f };

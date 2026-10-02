@@ -65,7 +65,7 @@ namespace DeckRogue.Game
             }
         }
         /// <summary>見本のカメラと座席 (旗 stage=diorama): 足元の線の既定と、敵と人形の座席の表が見本の物になる。画角・見下ろしの旗はどちらの舞台でも効く</summary>
-        static bool DioramaCamera => HD2DFlags.StageMode == HD2DStage.Diorama;
+        static bool DioramaCamera => HD2DFlags.DioramaHere;   // 段2 の口 (2026-10-03): 有効な箱庭 (幕の旗 dioramaacts も見る)
         /// <summary>
         /// r = 同じ端末の画角 36° の時の距離に対する今の距離の比 (= tan18° ÷ tan(画角/2)。PC では _dist ÷ 16.62・画角 36° ならちょうど 1)。
         /// 遠端・寄りの量に掛ける。霧と影の距離は StageLook が自分の r (_dist ÷ 16.62) で書く

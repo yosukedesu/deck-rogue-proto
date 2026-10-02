@@ -319,32 +319,43 @@ namespace DeckRogue.Game
         }
 
         static HashSet<string> _keyFlipArts, _lightFromRightArts;
+        static readonly HashSet<int> _keyFlipLoadedActs = new HashSet<int>();
         /// <summary>
         /// P05 の art-lint が書く Resources/Art/stage/act1/keyflip の2つの表を1回だけ読む:
-        /// "keyflip" = 画像ファイルを左右反転した絵・"lightFromRight" = 描き込まれた光が右から来る絵 (測った向き。lightDx ≥ 0.10・大きさ ≥ 0.12)
+        /// "keyflip" = 画像ファイルを左右反転した絵・"lightFromRight" = 描き込まれた光が右から来る絵 (測った向き。lightDx ≥ 0.10・大きさ ≥ 0.12)。
+        /// 表の名前はキャラの絵の名前 (enemy_*・leader_*・人形) で幕に依らない = 幕1 の表はどの幕でも読む。
+        /// 段2 の口 (2026-10-03): 幕2/3 の箱庭に Art/stage/act&lt;N&gt;/keyflip があれば、その幕で初めて呼ばれた時に1回だけ足す (無ければ何もしない)
         /// </summary>
         static void LoadKeyFlipTables()
         {
-            if (_keyFlipArts != null) return;
-            _keyFlipArts = new HashSet<string>(StringComparer.Ordinal);
-            _lightFromRightArts = new HashSet<string>(StringComparer.Ordinal);
+            if (_keyFlipArts == null)
+            {
+                _keyFlipArts = new HashSet<string>(StringComparer.Ordinal);
+                _lightFromRightArts = new HashSet<string>(StringComparer.Ordinal);
+                _keyFlipLoadedActs.Add(1);
+                if (!ReadKeyFlipTable("Art/stage/act1/keyflip")) Debug.LogWarning("[Stage] Art/stage/act1/keyflip が無い → _KeyFlip は全部 0");
+            }
+            int act = HD2DFlags.StageAct;
+            if (act != 1 && _keyFlipLoadedActs.Add(act)) ReadKeyFlipTable("Art/stage/act" + act + "/keyflip");
+        }
+
+        static bool ReadKeyFlipTable(string path)
+        {
             try
             {
-                var ta = Resources.Load<TextAsset>("Art/stage/act1/keyflip");
-                if (ta != null)
+                var ta = Resources.Load<TextAsset>(path);
+                if (ta == null) return false;
+                var o = JObject.Parse(ta.text);
+                Action<string, HashSet<string>> read = (name, set) =>
                 {
-                    var o = JObject.Parse(ta.text);
-                    Action<string, HashSet<string>> read = (name, set) =>
-                    {
-                        var arr = o[name] as JArray;
-                        if (arr != null) foreach (var x in arr) { var n = (string)x; if (!string.IsNullOrEmpty(n)) set.Add(n); }
-                    };
-                    read("keyflip", _keyFlipArts);
-                    read("lightFromRight", _lightFromRightArts);
-                }
-                else Debug.LogWarning("[Stage] Art/stage/act1/keyflip が無い → _KeyFlip は全部 0");
+                    var arr = o[name] as JArray;
+                    if (arr != null) foreach (var x in arr) { var n = (string)x; if (!string.IsNullOrEmpty(n)) set.Add(n); }
+                };
+                read("keyflip", _keyFlipArts);
+                read("lightFromRight", _lightFromRightArts);
+                return true;
             }
-            catch (Exception ex) { Debug.LogWarning("[Stage] keyflip を読めない: " + ex.Message); }
+            catch (Exception ex) { Debug.LogWarning("[Stage] keyflip を読めない (" + path + "): " + ex.Message); return true; }
         }
 
         /// <summary>画像ファイルを左右反転した絵 (P05 の art-lint の "keyflip")。P11 の選び方 (look の char に keyFlipFrom が無い時) の _KeyFlip=1 の絵</summary>
@@ -1504,14 +1515,14 @@ namespace DeckRogue.Game
             public void LateUpdate()
             {
                 if (Rect == null) { Destroy(gameObject); return; }
-                R2E_SyncIdle(HD2DFlags.StageMode == HD2DStage.Diorama);   // 二周目 レーン E: 箱庭の待機のコマ (look の char.r2idle が無ければ何もしない)
+                R2E_SyncIdle(HD2DFlags.DioramaHere);   // 二周目 レーン E: 箱庭の待機のコマ (look の char.r2idle が無ければ何もしない)
                 Advance();
                 Rect.GetWorldCorners(_c);
                 float sx = Mathf.Round((_c[0].x + _c[3].x) * 0.5f), sy = Mathf.Round(_c[0].y);
                 float w = Mathf.Round(_c[3].x - _c[0].x), h = Mathf.Round(_c[1].y - _c[0].y);
                 // 見本 (stage=diorama) はアダプタ (計画 §2-3): 座席の世界の点＋休んでいる時の矩形との差。座席が無い (TryGetSeat が false) 時は今の式。
                 // どちらも同じ画面の箱になる (adapter の範囲の注記)。stage=old は今の式をそのまま (1画素も変えない)
-                bool dio = HD2DFlags.StageMode == HD2DStage.Diorama;
+                bool dio = HD2DFlags.DioramaHere;
                 float k; Vector3 pos;
                 Vector3 seat; float seatK;
                 SeatFound = false;
@@ -1794,7 +1805,7 @@ namespace DeckRogue.Game
             float R3E_SeatAmbientMul(CharMatExtras x)
             {
                 R3E_LastSeatAmb = 1f;
-                if (HD2DFlags.StageMode != HD2DStage.Diorama || Key == null || Key == "player") return 1f;
+                if (!HD2DFlags.DioramaHere || Key == null || Key == "player") return 1f;
                 if (x.R3E_SeatAmbient == null && x.R3E_DollBackAmbient < 0f) return 1f;
                 R3E_ResolveSlot();
                 float m = 1f;
@@ -1812,7 +1823,7 @@ namespace DeckRogue.Game
             /// </summary>
             void R3E_ApplyLitExtras(CharMatExtras x, ArtLook art, bool hero)
             {
-                bool dio = HD2DFlags.StageMode == HD2DStage.Diorama;
+                bool dio = HD2DFlags.DioramaHere;
                 float bs = 0f;
                 if (dio && !hero && Key != null)
                 {
@@ -1839,7 +1850,7 @@ namespace DeckRogue.Game
             bool R3E_SpreadPhase(out float s, out float f)
             {
                 s = 0f; f = 0f;
-                if (HD2DFlags.StageMode != HD2DStage.Diorama || Key == null || Key == "player" || StageLook.Current == null) return false;
+                if (!HD2DFlags.DioramaHere || Key == null || Key == "player" || StageLook.Current == null) return false;
                 var x = CharExtras();
                 if (!(x.R3E_IdlePhaseSpread > 0f)) return false;
                 R3E_ResolveSlot();

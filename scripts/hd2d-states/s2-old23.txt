@@ -1,0 +1,54 @@
+# 段2 (2026-10-03・計画 docs/design/hd2d-stage2-plan-2026-10-02.md §1・§3 手順 0)。今の舞台の幕2/3 を「明示の stage=old」で撮る。
+# 1行 = 名前|PC または PH|STATE。撮り方: DET=1 scripts/pshots.sh <この一覧> <親>/s2-old23 2
+# 役目は2つ: ① 回帰の基準 (移行の前に HEAD で撮った s2-base/s2-old23 と、移行の後が画素一致＝差 >2 の画素 ≤0.1%)
+#            ② 比較シートの「今の舞台」の列 (判定の 5 場面 × PC/PH)。
+#   ★ act=2/3 の行は起動のタイトルで幕1 の箱庭 (見本) を組んでから入る = 幕1 の箱庭 → 幕2/3 の今の舞台 への切り替え (LeaveDiorama) の漏れもここに写る。
+#   5 場面: 幕2 = 従士と射手 (2体)・道化と妖術師と太鼓 (3体)・眠たがりの大亀 (幕ボス 128)・人形 9 (ひなた)・スマホ (従士と射手)
+#           幕3 = 噛みつく巻物 4 体 (錨)・彫師と用心深い影 (2体)・石殻の番人 (1体)・刻限の門番 (幕ボス)・人形 9＋彫師・スマホ (巻物 4 体)
+# ---- 幕2 (PC)
+PC-O2-squire|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=old;dumplayout=1
+PC-O2-squire-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=old;hideui=1;dumplayout=1
+PC-O2-squire-unitsonly|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=old;unitsonly=1;dumplayout=1
+PC-O2-trio|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_joker_hexer_drummer;stage=old;dumplayout=1
+PC-O2-trio-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_joker_hexer_drummer;stage=old;hideui=1;dumplayout=1
+PC-O2-trio-unitsonly|PC|act=2;deck=deck_growth;phase=combat;enemy=enc_joker_hexer_drummer;stage=old;unitsonly=1;dumplayout=1
+PC-O2-turtle|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;stage=old;dumplayout=1
+PC-O2-turtle-hideui|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;stage=old;hideui=1;dumplayout=1
+PC-O2-turtle-unitsonly|PC|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;stage=old;unitsonly=1;dumplayout=1
+PC-O2-dolls|PC|act=2;deck=deck_growth;leader=leader_white;phase=combat;enemy=enc_squire_archer;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=old;dumplayout=1
+PC-O2-dolls-hideui|PC|act=2;deck=deck_growth;leader=leader_white;phase=combat;enemy=enc_squire_archer;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=old;hideui=1;dumplayout=1
+PC-O2-boss|PC|act=2;deck=deck_growth;phase=combat;boss=1;stage=old;dumplayout=1
+PC-O2-map|PC|act=2;deck=deck_growth;phase=map;stage=old
+PC-O2-campfire|PC|act=2;deck=deck_growth;phase=campfire;stage=old
+PC-O2-reward|PC|act=2;deck=deck_growth;phase=reward;stage=old
+# ---- 幕3 (PC)
+PC-O3-quad|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=old;dumplayout=1
+PC-O3-quad-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=old;hideui=1;dumplayout=1
+PC-O3-quad-unitsonly|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=old;unitsonly=1;dumplayout=1
+PC-O3-sculptor|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_sculptor_shadow;stage=old;dumplayout=1
+PC-O3-sculptor-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_sculptor_shadow;stage=old;hideui=1;dumplayout=1
+PC-O3-sculptor-unitsonly|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enc_sculptor_shadow;stage=old;unitsonly=1;dumplayout=1
+PC-O3-shell|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_shell_guard;stage=old;dumplayout=1
+PC-O3-shell-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_shell_guard;stage=old;hideui=1;dumplayout=1
+PC-O3-warden|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=old;dumplayout=1
+PC-O3-warden-hideui|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=old;hideui=1;dumplayout=1
+PC-O3-warden-unitsonly|PC|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=old;unitsonly=1;dumplayout=1
+PC-O3-dolls|PC|act=3;deck=deck_big_mana;leader=leader_white;phase=combat;enemy=enc_sculptor_shadow;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=old;dumplayout=1
+PC-O3-dolls-hideui|PC|act=3;deck=deck_big_mana;leader=leader_white;phase=combat;enemy=enc_sculptor_shadow;perms=white_perm_squire,white_perm_shieldmaiden,white_perm_choir,white_perm_banneret,white_perm_band,white_perm_hound,white_perm_squire,white_perm_shieldmaiden,white_perm_choir;stage=old;hideui=1;dumplayout=1
+PC-O3-boss|PC|act=3;deck=deck_big_mana;phase=combat;boss=1;stage=old;dumplayout=1
+PC-O3-map|PC|act=3;deck=deck_big_mana;phase=map;stage=old
+PC-O3-shop|PC|act=3;deck=deck_big_mana;phase=shop;stage=old
+# ---- スマホ相当 (PH・tier=phone は付けない = r3-apk と同じ。-tier の行は s2-mixed の PH と比べる)
+PH-O2-squire|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=old;dumplayout=1
+PH-O2-squire-hideui|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=old;hideui=1;dumplayout=1
+PH-O2-squire-unitsonly|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=old;unitsonly=1;dumplayout=1
+PH-O2-squire-tier|PH|act=2;deck=deck_growth;phase=combat;enemy=enc_squire_archer;stage=old;dumplayout=1;tier=phone
+PH-O2-turtle|PH|act=2;deck=deck_growth;phase=combat;enemy=enemy_turtle;boss=1;stage=old;dumplayout=1
+PH-O2-boss|PH|act=2;deck=deck_growth;phase=combat;boss=1;stage=old;dumplayout=1
+PH-O3-quad|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=old;dumplayout=1
+PH-O3-quad-hideui|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=old;hideui=1;dumplayout=1
+PH-O3-quad-unitsonly|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=old;unitsonly=1;dumplayout=1
+PH-O3-quad-tier|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enc_biting_scrolls_quad;stage=old;dumplayout=1;tier=phone
+PH-O3-warden|PH|act=3;deck=deck_big_mana;phase=combat;enemy=enemy_warden;boss=1;stage=old;dumplayout=1
+PH-O3-boss|PH|act=3;deck=deck_big_mana;phase=combat;boss=1;stage=old;dumplayout=1
+# ★ enc_joker_hexer_drummer = 「道化と妖術師と太鼓」。boss=1 の行 (enemy= なし) は幕2 = 大亀/巨蟹/番人・幕3 = 門番/合成獣/古炉 からシード抽選。

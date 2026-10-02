@@ -25,6 +25,12 @@ namespace DeckRogue.EditorTools
         [MenuItem("DeckRogue/箱庭/幕1を組む")]
         public static void BuildAct1() { BuildForEdit(1); }
 
+        [MenuItem("DeckRogue/箱庭/幕2を組む")]
+        public static void BuildAct2() { BuildForEdit(2); }   // 段2 (2026-10-03)
+
+        [MenuItem("DeckRogue/箱庭/幕3を組む")]
+        public static void BuildAct3() { BuildForEdit(3); }
+
         [MenuItem("DeckRogue/箱庭/書き戻す")]
         public static void WriteBackMenu()
         {

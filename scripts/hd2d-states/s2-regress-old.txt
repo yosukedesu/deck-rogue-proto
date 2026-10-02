@@ -1,0 +1,32 @@
+# [段2 migrate の下書き 2026-10-02] 演出の回帰 (今の舞台・PC) 22行 → 画素一致
+# 元 = scripts/hd2d-states/r3-regress-old.txt の写し (行は1文字も変えない = 画素比べの前提)。合格 = 移行の前に撮った基準 (s2-base/<同じ組>) と全枚が「差 >2 の画素 ≤0.1%」。
+# HD-2D 見本 三周目の演出の回帰 R1〜R16 (今の舞台 stage=old・PC) (2026-10-01 レーン F 段1)。1行 = 名前|PC または PH|STATE。
+# 撮り方: DET=1 scripts/pshots.sh scripts/hd2d-states/r3-regress-old.txt <本番の撮影の親>/r3-regress-old 2
+# 中身: r2-regress-old.txt の写し (同じ22行・同じ名前・全行 stage=old)。
+#   ★ hideui の画も今の舞台では二周目と同じ (三周目の Autopilot が暗幕を消すのは箱庭の時だけ)。
+#   合格: <名前>-1.png・-hideui-1.png・-uionly-1.png・-unitsonly-1.png を二周目の最終 (~/.cache/deck-rogue/hd2d-r2/shots-final/<r2-old|r2-regress-old|r2-regress-old-ph>・同じ名前) と比べ、
+#   値の差が 2 を超える画素が 0.1% 以下 (計画 §1・§5「幕2/3 への漏れ」)。粒 (蛍・脈の粒) の差は DET で揃う。外れたら三周目のどのレーンの枝が漏れたかを探す。
+#   比べ方の例: python3 - <<'PY' … (2枚を numpy で読み、abs 差の max が 2 を超える画素の割合) … PY  (hd2d-r2-sheet.py r3-trial の r3_diff と同じ)
+PC-R01-swing|PC|phase=combat;enemy=enemy_probe;play=attack;playshots=8;playevery=1;dumplayout=1;stage=old
+PC-R02-multi|PC|phase=combat;hand=green_double_lash;play=0;playshots=12;playevery=3;dumplayout=1;stage=old
+PC-R03-aoe|PC|phase=combat;enemy=enc_probe_pair;hand=green_earth_roar;play=0;playshots=10;playevery=3;dumplayout=1;stage=old
+PC-R04-exposed|PC|phase=combat;eexposed=1;hand=green_strike;play=0;playshots=8;playevery=2;dumplayout=1;stage=old
+PC-R05-enrage|PC|phase=combat;enemy=enemy_brute;ehp=h+3;hand=green_strike;play=0;playshots=14;playevery=5;dumplayout=1;stage=old
+PC-R06-guard|PC|phase=combat;enemy=enemy_wolf;pblock=20;endplay=1;endshots=16;endevery=3;dumplayout=1;stage=old
+PC-R07-hurt|PC|phase=combat;enemy=enemy_wolf;endplay=1;endshots=14;endevery=9;dumplayout=1;stage=old
+PC-R08-kill|PC|phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4;dumplayout=1;stage=old
+PC-R09-enter|PC|phase=combat;enemy=enemy_brute;boss=1;entershots=12;enterevery=6;dumplayout=1;stage=old
+PC-R10-trap|PC|phase=combat;enemy=enemy_wolf;sets=green_reaction_vine*;endturn=1;fire=1;fireshots=10;fireevery=8;dumplayout=1;stage=old
+PC-R11-doll|PC|phase=combat;leader=leader_white;enemy=enemy_wolf;perms=white_perm_hound,white_perm_squire;hand=white_light_bolt;play=0;playshots=8;playevery=3;dumplayout=1;stage=old
+PC-R12-gearwin|PC|phase=combat;gears=gear_spring,gear_cog;gearwin=0;dumplayout=1;stage=old
+PC-R13-gearmore|PC|phase=combat;gears=gear_spring,gear_cog;gearmore=1;dumplayout=1;stage=old
+PC-R14-popup|PC|phase=combat;popup=0;dumplayout=1;stage=old
+PC-R15-tip|PC|phase=combat;tip=enemy;dumplayout=1;stage=old
+PC-R01-swing-hideui|PC|phase=combat;enemy=enemy_probe;play=attack;playshots=8;playevery=1;dumplayout=1;hideui=1;stage=old
+PC-R02-multi-hideui|PC|phase=combat;hand=green_double_lash;play=0;playshots=12;playevery=3;dumplayout=1;hideui=1;stage=old
+PC-R04-exposed-hideui|PC|phase=combat;eexposed=1;hand=green_strike;play=0;playshots=8;playevery=2;dumplayout=1;hideui=1;stage=old
+PC-R06-guard-hideui|PC|phase=combat;enemy=enemy_wolf;pblock=20;endplay=1;endshots=16;endevery=3;dumplayout=1;hideui=1;stage=old
+PC-R07-hurt-hideui|PC|phase=combat;enemy=enemy_wolf;endplay=1;endshots=14;endevery=9;dumplayout=1;hideui=1;stage=old
+PC-R08-kill-hideui|PC|phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike;play=0;playshots=10;playevery=4;dumplayout=1;hideui=1;stage=old
+# R16 (二周目で足した・W5 に対は無い = 画素一致の比べから外す) 幕ボスの撃破の寄り
+PC-R16-bosskill|PC|phase=combat;enemy=enemy_brute;boss=1;ehp=3;hand=green_strike;play=0;playshots=20;playevery=14;dumplayout=1;stage=old
