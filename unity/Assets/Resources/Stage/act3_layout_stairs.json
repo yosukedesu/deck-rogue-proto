@@ -1,0 +1,837 @@
+{
+  "_doc": "斜めの大階段を強める変種 (計画 §3 手順 5)。幅 3.0→4.2・1 段 0.25→0.2・段ごとの側壁 (steps-cheek-)。look_act3_stairs.json の \"layout\" が指す。幕3「埋もれた古代都市」の箱庭の設計図 (HD-2D 段2・段1b。計画 docs/design/hd2d-stage2-plan-2026-10-02.md §2 C・約束 docs/design/hd2d-stage2/contracts.md C3 の幕3 版)。作り方は docs/design/hd2d-stage2/layout-gen/gen_act3.py (種 20261004・手で直さず焼き直す)・規則の検査は place3.py。物差しは「ot7 の戦闘の作り＋Tomb の材質」(裁定 6)。座標は幕1 と同じ道の座標 (t = 道に沿った距離・s = 道と直角 (+ が奥)・y = 地面からの高さ (abs なら絶対))。層: 池の底 −1.1 (水面なし)・座席の帯 0 (s −4.6〜10.6・大石板)・T1 +1.0 (s 9)・T2 +2.0 (s 13)・T3 +3.0 (s 17.5)・T4 +4.0 (s 22)・奥の壁 block y 4〜11.6 (前 s 27)。縞を断つ部品: 斜めの大階段 steps- (t 14・右 1/3)・控え壁 2 buttress-・崩落 1 セル (T2 の縁 t 1.2〜3.6 を 1.45 奥へ)。段は slab・天面は作らない。光の部品の名前 (fire1・fire2・fire1-halo・fire2-halo・lampC・crack・pillar-shaft-a・pillar-shaft-b) はレーン B の look_act3*.json の lights の at が読む (動かすと光も付いてくる)。材質は 7 つ + 霧の板 = 8 (card は書かない = 札と小札は relief)。絵は Art/stage/act3/ (レーン D3) を先に、無ければ元の Art/props/act3_*・Art/tiles/act3_* (calm)",
+  "version": 1,
+  "act": 3,
+  "pathYaw": -22.0,
+  "tile": 64,
+  "albedoLinear": true,
+  "normalStrength": 0.6,
+  "staticBatch": true,
+  "gates": {
+    "partsMin": 130,
+    "partsMax": 300,
+    "litterMax": 120,
+    "materialsMax": 8
+  },
+  "tiles": {
+    "side_wall": {
+      "rot": "flipX",
+      "fallback": [
+        44,
+        60,
+        70
+      ],
+      "variants": [
+        [
+          "Art/stage/act3/tiles/side_wall_a",
+          {
+            "art": "Art/tiles/act3_cliff_a",
+            "calm": 0.33,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_wall_b",
+          {
+            "art": "Art/tiles/act3_cliff_b",
+            "calm": 0.33,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_wall_c",
+          {
+            "art": "Art/tiles/act3_cliff_d",
+            "calm": 0.33,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_wall_d",
+          {
+            "art": "Art/tiles/act3_cliff_c",
+            "calm": 0.33,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "top_wall": {
+      "rot": "flipX",
+      "fallback": [
+        54,
+        66,
+        74
+      ],
+      "variants": [
+        [
+          "Art/stage/act3/tiles/top_wall_a",
+          {
+            "art": "Art/tiles/act3_stone_a",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_wall_b",
+          {
+            "art": "Art/tiles/act3_stone_b",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_wall_c",
+          {
+            "art": "Art/tiles/act3_stone_c",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_wall_d",
+          {
+            "art": "Art/tiles/act3_stone_d",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "side_step": {
+      "rot": "flipX",
+      "fallback": [
+        50,
+        64,
+        74
+      ],
+      "variants": [
+        [
+          "Art/stage/act3/tiles/side_step_a",
+          {
+            "art": "Art/tiles/act3_cliff_c",
+            "calm": 0.36,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_step_b",
+          {
+            "art": "Art/tiles/act3_cliff_a",
+            "calm": 0.36,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_step_c",
+          {
+            "art": "Art/tiles/act3_cliff_b",
+            "calm": 0.36,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_step_d",
+          {
+            "art": "Art/tiles/act3_cliff_d",
+            "calm": 0.36,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "top_step": {
+      "rot": "flipX",
+      "fallback": [
+        66,
+        78,
+        86
+      ],
+      "variants": [
+        [
+          "Art/stage/act3/tiles/top_step_a",
+          {
+            "art": "Art/tiles/act3_stone_a",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_step_b",
+          {
+            "art": "Art/tiles/act3_stone_b",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_step_c",
+          {
+            "art": "Art/tiles/act3_stone_c",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_step_d",
+          {
+            "art": "Art/tiles/act3_stone_d",
+            "calm": 0.25,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "top_floor_seat": {
+      "rot": "flipX",
+      "fallback": [
+        74,
+        84,
+        92
+      ],
+      "variants": [
+        [
+          "Art/stage/act3/tiles/top_floor_seat_a",
+          {
+            "art": "Art/tiles/act3_stone_a",
+            "calm": 0.32,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_floor_seat_b",
+          {
+            "art": "Art/tiles/act3_stone_b",
+            "calm": 0.32,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_floor_seat_c",
+          {
+            "art": "Art/tiles/act3_stone_c",
+            "calm": 0.32,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_floor_seat_d",
+          {
+            "art": "Art/tiles/act3_stone_d",
+            "calm": 0.32,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "side_pillar": {
+      "rot": "flipX",
+      "fallback": [
+        88,
+        94,
+        92
+      ],
+      "variants": [
+        [
+          "Art/stage/act3/tiles/side_pillar_a",
+          {
+            "art": "Art/tiles/act3_cliff_d",
+            "calm": 0.4,
+            "sat": 0.7,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_pillar_b",
+          {
+            "art": "Art/tiles/act3_cliff_b",
+            "calm": 0.4,
+            "sat": 0.7,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_pillar_c",
+          {
+            "art": "Art/tiles/act3_cliff_d",
+            "calm": 0.4,
+            "sat": 0.7,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_pillar_d",
+          {
+            "art": "Art/tiles/act3_cliff_b",
+            "calm": 0.4,
+            "sat": 0.7,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "top_pillar": {
+      "rot": "flipX",
+      "fallback": [
+        92,
+        96,
+        94
+      ],
+      "variants": [
+        [
+          "Art/stage/act3/tiles/top_pillar_a",
+          {
+            "art": "Art/tiles/act3_stone_a",
+            "calm": 0.3,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_pillar_b",
+          {
+            "art": "Art/tiles/act3_stone_a",
+            "calm": 0.3,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_pillar_c",
+          {
+            "art": "Art/tiles/act3_stone_a",
+            "calm": 0.3,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/top_pillar_d",
+          {
+            "art": "Art/tiles/act3_stone_a",
+            "calm": 0.3,
+            "sat": 0.6,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "side_brick": {
+      "rot": "flipX",
+      "fallback": [
+        56,
+        64,
+        74
+      ],
+      "variants": [
+        [
+          "Art/stage/act3/tiles/side_brick_a",
+          {
+            "art": "Art/tiles/act3_dirt_a",
+            "calm": 0.35,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_brick_b",
+          {
+            "art": "Art/tiles/act3_dirt_b",
+            "calm": 0.35,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_brick_c",
+          {
+            "art": "Art/tiles/act3_dirt_a",
+            "calm": 0.35,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act3/tiles/side_brick_d",
+          {
+            "art": "Art/tiles/act3_dirt_b",
+            "calm": 0.35,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ]
+      ]
+    }
+  },
+  "surfaces": {
+    "terrain": {
+      "shader": "array",
+      "side": "side_step",
+      "top": "top_floor_seat",
+      "receive": 0.8,
+      "shadowStrength": 1.0,
+      "topThreshold": 0.65,
+      "topBlend": 0.15,
+      "vcolorAO": 1.0
+    },
+    "step": {
+      "shader": "array",
+      "side": "side_step",
+      "top": "top_step",
+      "receive": 0.8,
+      "shadowStrength": 1.0,
+      "topThreshold": 0.6,
+      "topBlend": 0.12,
+      "vcolorAO": 1.0
+    },
+    "wall": {
+      "shader": "array",
+      "side": "side_wall",
+      "top": "top_wall",
+      "receive": 0.75,
+      "shadowStrength": 1.0,
+      "topThreshold": 0.6,
+      "topBlend": 0.12,
+      "vcolorAO": 1.0
+    },
+    "pillar": {
+      "shader": "array",
+      "side": "side_pillar",
+      "top": "top_pillar",
+      "receive": 0.8,
+      "shadowStrength": 1.0,
+      "topThreshold": 0.6,
+      "topBlend": 0.1,
+      "vcolorAO": 1.0
+    },
+    "brick": {
+      "shader": "array",
+      "side": "side_brick",
+      "top": "top_wall",
+      "receive": 0.75,
+      "shadowStrength": 1.0,
+      "topThreshold": 0.6,
+      "topBlend": 0.12,
+      "vcolorAO": 1.0
+    },
+    "relief": {
+      "shader": "atlas",
+      "receive": 0.6,
+      "shadowStrength": 1.0,
+      "cutoff": 0.4,
+      "vcolorAO": 1.0,
+      "normal": 0.6,
+      "sway": {
+        "amp": 0.03,
+        "freq": [
+          0.25,
+          0.6
+        ]
+      }
+    },
+    "glow": {
+      "shader": "shaft",
+      "tint": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "intensity": 1.2,
+      "softDepth": 1.5,
+      "nearFade": 2.0,
+      "edgeFade": 0.0,
+      "fog": 0.25,
+      "lobeFloor": 1.0
+    }
+  },
+  "sources": {
+    "statue": {
+      "art": [
+        "Art/stage/act3/relief/statue",
+        "Art/props/act3_statue"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "brazier": {
+      "art": [
+        "Art/stage/act3/relief/brazier",
+        "Art/props/act3_brazier"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "crystalCluster": {
+      "art": [
+        "Art/stage/act3/relief/crystal_cluster",
+        "Art/props/act3_crystal_cluster"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "rubblePile": {
+      "art": [
+        "Art/stage/act3/relief/rubble_pile",
+        "Art/props/act3_rubble_pile"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "urn": {
+      "art": [
+        "Art/stage/act3/relief/urn",
+        "Art/props/act3_urn"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "chainHang": {
+      "art": [
+        "Art/stage/act3/relief/chain_hang",
+        "Art/props/act3_chain_hang"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "lampHead": {
+      "art": [
+        "Art/stage/act3/relief/lamp_head",
+        "Art/props/act3_lamp_head"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "litterPebble1": {
+      "art": [
+        "Art/stage/act3/litter/pebble_1",
+        "Art/stage/act2/litter/pebble_1"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterPebble2": {
+      "art": [
+        "Art/stage/act3/litter/pebble_2",
+        "Art/stage/act2/litter/pebble_2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterPebble3": {
+      "art": [
+        "Art/stage/act3/litter/pebble_3",
+        "Art/stage/act2/litter/pebble_3"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterPebble4": {
+      "art": [
+        "Art/stage/act3/litter/pebble_4",
+        "Art/stage/act2/litter/pebble_4"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterGravel1": {
+      "art": [
+        "Art/stage/act3/litter/gravel_1",
+        "Art/stage/act2/litter/gravel_1"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterGravel2": {
+      "art": [
+        "Art/stage/act3/litter/gravel_2",
+        "Art/stage/act2/litter/gravel_2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterGravel3": {
+      "art": [
+        "Art/stage/act3/litter/gravel_3",
+        "Art/stage/act2/litter/gravel_3"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterGravel4": {
+      "art": [
+        "Art/stage/act3/litter/gravel_4",
+        "Art/stage/act2/litter/gravel_4"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterChip1": {
+      "art": [
+        "Art/stage/act3/litter/chip_1"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterChip2": {
+      "art": [
+        "Art/stage/act3/litter/chip_2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterChip3": {
+      "art": [
+        "Art/stage/act3/litter/chip_3"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterChip4": {
+      "art": [
+        "Art/stage/act3/litter/chip_4"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterRubble2": {
+      "art": [
+        "Art/stage/act3/litter/rubble_2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterRubble4": {
+      "art": [
+        "Art/stage/act3/litter/rubble_4"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    }
+  },
+  "parts": [
+    {"kind":"slab","name":"seat-band","surface":"terrain","top":0.0,"bottom":-1.25,"back":10.6,"grid":0.32,"gridT":0.64,"chamfer":0.0,"front":[[-40.0,-4.6],[56.0,-4.6]],"mottle":{"scale":[2,5],"amount":0.06,"seed":202610047},"seed":202610054},
+    {"kind":"slab","name":"floor-front-L","surface":"terrain","top":0.0,"bottom":-1.25,"back":-4.55,"grid":1.28,"chamfer":0.0,"front":[[-40.0,-30.0],[-15.3,-30.0],[-15.0,-4.6]]},
+    {"kind":"slab","name":"floor-front-R","surface":"terrain","top":0.0,"bottom":-1.25,"back":-4.55,"grid":1.28,"chamfer":0.0,"front":[[6.5,-4.6],[6.8,-30.0],[56.0,-30.0]]},
+    {"kind":"slab","name":"pond-bed","surface":"step","top":-1.1,"bottom":-1.6,"back":-4.5,"grid":1.28,"chamfer":0.0,"front":[[-15.2,-30.0],[6.7,-30.0]],"tint":0.32,"phone":{"hide":true}},
+    {"kind":"slab","name":"tier-T1","surface":"step","top":1.0,"bottom":-0.1,"back":15.2,"grid":0.64,"chamfer":0.08,"front":[[-40.0,8.967],[-38.72,9.025],[-37.44,8.989],[-36.16,9.002],[-34.88,9.033],[-33.6,9.021],[-32.32,8.963],[-31.04,8.964],[-29.76,8.989],[-28.48,8.986],[-27.2,8.971],[-25.92,8.975],[-24.64,8.968],[-23.36,8.99],[-22.08,8.969],[-20.8,9.014],[-19.52,9.033],[-19.16,9.0],[-18.84,9.45],[-18.24,9.415],[-16.96,9.443],[-15.68,9.437],[-14.4,9.406],[-13.12,9.428],[-11.84,9.473],[-10.56,9.495],[-9.28,9.45],[-9.16,9.45],[-8.84,9.0],[-8.0,8.987],[-6.72,8.975],[-5.44,8.978],[-4.16,9.01],[-2.88,9.018],[-1.6,8.952],[-0.32,8.952],[0.96,8.983],[2.04,9.0],[2.24,8.688],[2.36,8.5],[3.52,8.469],[4.8,8.479],[6.08,8.531],[7.24,8.5],[7.36,8.688],[7.56,9.0],[8.64,9.036],[9.92,8.962],[11.2,8.963],[12.48,9.046],[13.76,9.044],[15.04,8.994],[16.32,9.005],[17.6,9.045],[18.88,9.031],[20.16,9.021],[21.44,8.971],[21.84,9.0],[22.16,9.35],[22.72,9.4],[24.0,9.37],[25.28,9.392],[26.56,9.358],[27.84,9.382],[29.12,9.369],[30.4,9.35],[31.68,9.333],[32.96,9.39],[33.84,9.35],[34.16,9.0],[34.24,9.0],[35.52,8.994],[36.8,9.004],[38.08,9.003],[39.36,9.025],[40.64,8.989],[41.92,8.97],[43.2,8.982],[44.48,9.043],[45.76,8.955],[47.04,8.956],[48.32,9.015],[49.6,9.001],[50.88,8.979],[52.16,9.03],[53.44,9.023],[54.72,8.951],[56.0,8.965]],"mottle":{"scale":[2,5],"amount":0.08,"seed":202610061}},
+    {"kind":"slab","name":"tier-T2","surface":"step","top":2.0,"bottom":0.9,"back":18.9,"grid":0.64,"chamfer":0.08,"front":[[-40.0,13.012],[-38.72,12.984],[-37.44,13.01],[-36.16,13.028],[-34.88,12.98],[-33.6,12.986],[-32.32,13.014],[-31.04,12.977],[-29.76,12.972],[-28.48,12.972],[-27.2,12.98],[-25.92,12.998],[-24.64,12.999],[-23.36,13.028],[-22.08,13.047],[-20.8,12.961],[-19.52,13.033],[-18.24,12.992],[-16.96,13.03],[-15.68,12.963],[-15.16,13.0],[-14.84,12.55],[-14.4,12.574],[-13.12,12.555],[-11.84,12.522],[-10.56,12.572],[-9.28,12.527],[-8.0,12.594],[-6.72,12.567],[-6.36,12.55],[-6.04,13.0],[-5.44,12.987],[-4.16,12.955],[-2.88,13.043],[-2.56,13.0],[-2.24,13.4],[-1.6,13.388],[-0.32,13.364],[0.44,13.4],[0.76,13.0],[0.96,13.0],[1.04,13.0],[1.36,14.45],[2.24,14.414],[3.44,14.45],[3.52,14.088],[3.76,13.0],[4.8,12.977],[6.08,13.034],[7.36,12.962],[8.64,12.984],[9.92,12.984],[11.2,13.027],[12.48,13.017],[13.76,13.011],[15.04,13.001],[16.32,13.012],[17.6,12.968],[18.88,12.988],[19.34,13.0],[19.66,12.6],[20.16,12.644],[21.44,12.56],[22.72,12.599],[24.0,12.579],[25.28,12.619],[26.56,12.638],[27.84,12.622],[29.12,12.612],[29.84,12.6],[30.16,13.0],[30.4,13.027],[31.68,12.975],[32.96,13.026],[34.24,13.003],[35.52,13.027],[36.8,13.039],[38.08,12.996],[39.36,13.035],[40.64,13.045],[41.92,12.983],[43.2,12.961],[44.48,12.999],[45.76,13.047],[47.04,12.952],[48.32,13.013],[49.6,13.014],[50.88,12.985],[52.16,12.966],[53.44,12.972],[54.72,12.963],[56.0,13.024]],"mottle":{"scale":[2,5],"amount":0.08,"seed":202610068}},
+    {"kind":"slab","name":"tier-T3","surface":"step","top":3.0,"bottom":1.9,"back":23.3,"grid":0.64,"chamfer":0.08,"front":[[-40.0,17.5],[-38.72,17.527],[-37.44,17.483],[-36.16,17.53],[-34.88,17.533],[-33.6,17.49],[-32.32,17.546],[-31.04,17.49],[-29.76,17.538],[-28.48,17.526],[-27.2,17.465],[-25.92,17.522],[-24.64,17.526],[-23.36,17.483],[-22.08,17.454],[-20.8,17.5],[-19.52,17.512],[-18.24,17.547],[-16.96,17.519],[-15.68,17.532],[-14.4,17.499],[-13.12,17.51],[-11.84,17.54],[-11.16,17.5],[-10.84,18.0],[-10.56,18.035],[-9.28,18.004],[-8.0,18.026],[-6.72,17.979],[-5.44,17.998],[-4.16,17.977],[-2.88,17.964],[-2.56,18.0],[-2.24,17.5],[-1.6,17.531],[-0.32,17.458],[0.96,17.493],[2.24,17.536],[3.52,17.499],[4.8,17.52],[6.08,17.501],[6.44,17.5],[6.76,17.1],[7.36,17.129],[8.64,17.121],[9.92,17.1],[10.04,17.1],[10.36,17.5],[11.2,17.452],[12.48,17.476],[13.76,17.492],[15.04,17.506],[16.32,17.479],[17.6,17.514],[17.84,17.5],[18.16,17.9],[18.88,17.867],[20.16,17.858],[21.44,17.911],[22.72,17.898],[24.0,17.864],[25.28,17.863],[25.84,17.9],[26.16,17.5],[26.56,17.542],[27.84,17.521],[29.12,17.453],[30.4,17.534],[31.68,17.451],[32.96,17.457],[34.24,17.541],[35.52,17.51],[36.8,17.517],[38.08,17.491],[39.36,17.5],[40.64,17.482],[41.92,17.547],[43.2,17.485],[44.48,17.477],[45.76,17.54],[47.04,17.47],[48.32,17.481],[49.6,17.536],[50.88,17.525],[52.16,17.501],[53.44,17.484],[54.72,17.533],[56.0,17.495]],"mottle":{"scale":[2,5],"amount":0.08,"seed":202610075}},
+    {"kind":"slab","name":"tier-T4","surface":"step","top":4.0,"bottom":2.9,"back":29.6,"grid":0.64,"chamfer":0.08,"front":[[-40.0,21.966],[-38.72,21.991],[-37.44,22.047],[-36.16,22.04],[-34.88,22.002],[-33.6,22.025],[-32.32,21.961],[-31.04,22.01],[-29.76,21.992],[-28.48,22.008],[-27.2,21.998],[-25.92,21.952],[-24.64,21.996],[-23.36,21.978],[-22.08,21.955],[-20.8,21.98],[-19.52,22.004],[-18.24,22.034],[-16.96,21.953],[-15.68,21.987],[-14.4,21.981],[-13.12,22.03],[-12.16,22.0],[-11.84,21.6],[-10.56,21.648],[-9.28,21.647],[-8.0,21.575],[-6.72,21.566],[-5.44,21.573],[-4.76,21.6],[-4.44,22.0],[-4.16,21.996],[-2.88,22.036],[-1.6,21.994],[-0.32,22.037],[0.96,22.024],[2.24,21.959],[3.52,21.959],[4.8,21.968],[6.08,22.0],[6.24,22.0],[6.56,22.4],[7.36,22.444],[8.64,22.35],[9.92,22.386],[10.24,22.4],[10.56,22.0],[11.2,22.021],[12.48,21.959],[13.76,22.044],[15.04,22.045],[16.32,21.978],[17.6,22.013],[17.84,22.0],[18.16,21.65],[18.88,21.639],[20.16,21.641],[21.44,21.657],[22.72,21.622],[23.84,21.65],[24.0,21.825],[24.16,22.0],[25.28,21.998],[26.56,22.03],[27.84,22.0],[29.12,21.988],[30.4,21.952],[31.68,22.037],[32.96,22.048],[34.24,22.031],[35.52,22.04],[36.8,22.015],[38.08,22.036],[39.36,21.974],[40.64,22.012],[41.92,22.029],[43.2,21.966],[44.48,21.953],[45.76,21.974],[47.04,21.971],[48.32,21.991],[49.6,22.049],[50.88,22.014],[52.16,22.002],[53.44,22.045],[54.72,21.975],[56.0,22.017]],"mottle":{"scale":[2,5],"amount":0.08,"seed":202610082}},
+    {"kind":"block","name":"wall-back-0","surface":"wall","t":-14.7,"s":28.172,"y":4.0,"abs":true,"yaw":0,"w":6.649,"d":2.2,"h":7.594,"cut":0.2,"chamfer":0.08,"sink":0.2,"aoAmount":0.5,"seed":202610096},
+    {"kind":"block","name":"wall-back-1","surface":"wall","t":-8.262,"s":28.244,"y":4.0,"abs":true,"yaw":0,"w":6.328,"d":2.2,"h":7.69,"cut":0.2,"chamfer":0.08,"sink":0.2,"aoAmount":0.5,"seed":202610103},
+    {"kind":"block","name":"wall-back-2","surface":"wall","t":-1.83,"s":28.21,"y":4.0,"abs":true,"yaw":0,"w":6.635,"d":2.2,"h":7.591,"cut":0.2,"chamfer":0.08,"sink":0.2,"aoAmount":0.5,"seed":202610110},
+    {"kind":"block","name":"wall-back-3","surface":"wall","t":4.3,"s":28.248,"y":4.0,"abs":true,"yaw":0,"w":5.725,"d":2.2,"h":7.542,"cut":0.2,"chamfer":0.08,"sink":0.2,"aoAmount":0.5,"seed":202610117},
+    {"kind":"block","name":"wall-back-4","surface":"wall","t":10.632,"s":28.177,"y":4.0,"abs":true,"yaw":0,"w":7.039,"d":2.2,"h":7.773,"cut":0.2,"chamfer":0.08,"sink":0.2,"aoAmount":0.5,"seed":202610124},
+    {"kind":"block","name":"wall-back-5","surface":"wall","t":18.466,"s":28.125,"y":4.0,"abs":true,"yaw":0,"w":8.73,"d":2.2,"h":7.768,"cut":0.2,"chamfer":0.08,"sink":0.2,"aoAmount":0.5,"seed":202610131},
+    {"kind":"block","name":"wall-back-6","surface":"wall","t":25.212,"s":28.189,"y":4.0,"abs":true,"yaw":0,"w":4.861,"d":2.2,"h":7.747,"cut":0.2,"chamfer":0.08,"sink":0.2,"aoAmount":0.5,"seed":202610138},
+    {"kind":"block","name":"wall-back-7","surface":"wall","t":29.879,"s":28.229,"y":4.0,"abs":true,"yaw":0,"w":4.573,"d":2.2,"h":7.682,"cut":0.2,"chamfer":0.08,"sink":0.2,"aoAmount":0.5,"seed":202610145},
+    {"kind":"block","name":"wall-back-8","surface":"wall","t":35.204,"s":28.207,"y":4.0,"abs":true,"yaw":0,"w":6.178,"d":2.2,"h":7.74,"cut":0.2,"chamfer":0.08,"sink":0.2,"aoAmount":0.5,"seed":202610152},
+    {"kind":"block","name":"wall-back-9","surface":"wall","t":40.722,"s":28.111,"y":4.0,"abs":true,"yaw":0,"w":4.957,"d":2.2,"h":7.361,"cut":0.2,"chamfer":0.08,"sink":0.2,"aoAmount":0.5,"seed":202610159},
+    {"kind":"block","name":"wall-back-10","surface":"wall","t":46.588,"s":28.149,"y":4.0,"abs":true,"yaw":0,"w":6.875,"d":2.2,"h":7.82,"cut":0.2,"chamfer":0.08,"sink":0.2,"aoAmount":0.5,"seed":202610166},
+    {"kind":"block","name":"wall-pilaster-0","surface":"wall","t":-16.0,"s":26.82,"y":4.0,"abs":true,"yaw":0,"w":0.95,"d":0.5,"h":7.8,"cut":0.08,"chamfer":0.05,"sink":0.2,"aoAmount":0.5,"seed":202610173},
+    {"kind":"block","name":"wall-pilaster-1","surface":"wall","t":-9.137,"s":26.82,"y":4.0,"abs":true,"yaw":0,"w":0.95,"d":0.5,"h":7.8,"cut":0.08,"chamfer":0.05,"sink":0.2,"aoAmount":0.5,"seed":202610180},
+    {"kind":"block","name":"wall-pilaster-2","surface":"wall","t":13.164,"s":26.82,"y":4.0,"abs":true,"yaw":0,"w":0.95,"d":0.5,"h":7.8,"cut":0.08,"chamfer":0.05,"sink":0.2,"aoAmount":0.5,"seed":202610187},
+    {"kind":"block","name":"wall-pilaster-3","surface":"wall","t":20.808,"s":26.82,"y":4.0,"abs":true,"yaw":0,"w":0.95,"d":0.5,"h":7.8,"cut":0.08,"chamfer":0.05,"sink":0.2,"aoAmount":0.5,"seed":202610194},
+    {"kind":"block","name":"wall-pilaster-4","surface":"wall","t":27.697,"s":26.82,"y":4.0,"abs":true,"yaw":0,"w":0.95,"d":0.5,"h":7.8,"cut":0.08,"chamfer":0.05,"sink":0.2,"aoAmount":0.5,"seed":202610201},
+    {"kind":"block","name":"wall-pilaster-5","surface":"wall","t":35.851,"s":26.82,"y":4.0,"abs":true,"yaw":0,"w":0.95,"d":0.5,"h":7.8,"cut":0.08,"chamfer":0.05,"sink":0.2,"aoAmount":0.5,"seed":202610208},
+    {"kind":"block","name":"wall-pilaster-6","surface":"wall","t":44.771,"s":26.82,"y":4.0,"abs":true,"yaw":0,"w":0.95,"d":0.5,"h":7.8,"cut":0.08,"chamfer":0.05,"sink":0.2,"aoAmount":0.5,"seed":202610215},
+    {"kind":"block","name":"wall-crown-0","surface":"wall","t":-10.601,"s":28.6,"y":11.2,"abs":true,"yaw":0,"w":14.848,"d":2.0,"h":4.4,"cut":0.2,"chamfer":0.08,"sink":0.0,"aoAmount":0.0,"tint":0.7,"phone":{"hide":true},"seed":202610222},
+    {"kind":"block","name":"wall-crown-1","surface":"wall","t":4.663,"s":28.6,"y":11.2,"abs":true,"yaw":0,"w":15.78,"d":2.0,"h":4.4,"cut":0.2,"chamfer":0.08,"sink":0.0,"aoAmount":0.0,"tint":0.7,"phone":{"hide":true},"seed":202610229},
+    {"kind":"block","name":"wall-crown-2","surface":"wall","t":19.48,"s":28.6,"y":11.2,"abs":true,"yaw":0,"w":13.954,"d":2.0,"h":4.4,"cut":0.2,"chamfer":0.08,"sink":0.0,"aoAmount":0.0,"tint":0.7,"phone":{"hide":true},"seed":202610236},
+    {"kind":"block","name":"wall-crown-3","surface":"wall","t":32.226,"s":28.6,"y":11.2,"abs":true,"yaw":0,"w":11.637,"d":2.0,"h":4.4,"cut":0.2,"chamfer":0.08,"sink":0.0,"aoAmount":0.0,"tint":0.7,"phone":{"hide":true},"seed":202610243},
+    {"kind":"block","name":"wall-crown-4","surface":"wall","t":44.01,"s":28.6,"y":11.2,"abs":true,"yaw":0,"w":12.03,"d":2.0,"h":4.4,"cut":0.2,"chamfer":0.08,"sink":0.0,"aoAmount":0.0,"tint":0.7,"phone":{"hide":true},"seed":202610250},
+    {"kind":"block","name":"wall-backstop","surface":"wall","t":16.0,"s":34.0,"y":4.0,"abs":true,"yaw":0,"w":90.0,"d":3.0,"h":14.0,"cut":0.0,"chamfer":0.0,"sink":0.2,"aoAmount":0.0,"tint":0.5,"shadow":false,"phone":{"hide":true},"seed":202610257},
+    {"kind":"block","name":"steps-T1-1","surface":"step","t":14.0,"s":8.365,"y":0.0,"abs":true,"yaw":0,"w":4.2,"d":1.54,"h":0.2,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610264},
+    {"kind":"block","name":"steps-cheek-L-T1-1","surface":"step","t":11.72,"s":7.775,"y":0.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.52,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610271},
+    {"kind":"block","name":"steps-cheek-R-T1-1","surface":"step","t":16.28,"s":7.775,"y":0.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.52,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610278},
+    {"kind":"block","name":"steps-T1-2","surface":"step","t":14.0,"s":8.545,"y":0.0,"abs":true,"yaw":0,"w":4.2,"d":1.18,"h":0.4,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610285},
+    {"kind":"block","name":"steps-cheek-L-T1-2","surface":"step","t":11.72,"s":8.135,"y":0.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.72,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610292},
+    {"kind":"block","name":"steps-cheek-R-T1-2","surface":"step","t":16.28,"s":8.135,"y":0.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.72,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610299},
+    {"kind":"block","name":"steps-T1-3","surface":"step","t":14.0,"s":8.725,"y":0.0,"abs":true,"yaw":0,"w":4.2,"d":0.82,"h":0.6,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610306},
+    {"kind":"block","name":"steps-cheek-L-T1-3","surface":"step","t":11.72,"s":8.495,"y":0.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.92,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610313},
+    {"kind":"block","name":"steps-cheek-R-T1-3","surface":"step","t":16.28,"s":8.495,"y":0.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.92,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610320},
+    {"kind":"block","name":"steps-T1-4","surface":"step","t":14.0,"s":8.905,"y":0.0,"abs":true,"yaw":0,"w":4.2,"d":0.46,"h":0.8,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610327},
+    {"kind":"block","name":"steps-cheek-L-T1-4","surface":"step","t":11.72,"s":8.855,"y":0.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":1.12,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610334},
+    {"kind":"block","name":"steps-cheek-R-T1-4","surface":"step","t":16.28,"s":8.855,"y":0.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":1.12,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610341},
+    {"kind":"block","name":"steps-cheek-L-T1-top","surface":"step","t":11.72,"s":9.285,"y":0.7,"abs":true,"yaw":0,"w":0.36,"d":0.6,"h":0.62,"cut":0.0,"chamfer":0.03,"sink":0.0,"aoAmount":0.6,"seed":202610348},
+    {"kind":"block","name":"steps-cheek-R-T1-top","surface":"step","t":16.28,"s":9.285,"y":0.7,"abs":true,"yaw":0,"w":0.36,"d":0.6,"h":0.62,"cut":0.0,"chamfer":0.03,"sink":0.0,"aoAmount":0.6,"seed":202610355},
+    {"kind":"block","name":"steps-T2-1","surface":"step","t":14.0,"s":12.339,"y":1.0,"abs":true,"yaw":0,"w":4.2,"d":1.54,"h":0.2,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610362},
+    {"kind":"block","name":"steps-cheek-L-T2-1","surface":"step","t":11.72,"s":11.749,"y":1.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.52,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610369},
+    {"kind":"block","name":"steps-cheek-R-T2-1","surface":"step","t":16.28,"s":11.749,"y":1.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.52,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610376},
+    {"kind":"block","name":"steps-T2-2","surface":"step","t":14.0,"s":12.519,"y":1.0,"abs":true,"yaw":0,"w":4.2,"d":1.18,"h":0.4,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610383},
+    {"kind":"block","name":"steps-cheek-L-T2-2","surface":"step","t":11.72,"s":12.109,"y":1.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.72,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610390},
+    {"kind":"block","name":"steps-cheek-R-T2-2","surface":"step","t":16.28,"s":12.109,"y":1.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.72,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610397},
+    {"kind":"block","name":"steps-T2-3","surface":"step","t":14.0,"s":12.699,"y":1.0,"abs":true,"yaw":0,"w":4.2,"d":0.82,"h":0.6,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610404},
+    {"kind":"block","name":"steps-cheek-L-T2-3","surface":"step","t":11.72,"s":12.469,"y":1.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.92,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610411},
+    {"kind":"block","name":"steps-cheek-R-T2-3","surface":"step","t":16.28,"s":12.469,"y":1.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.92,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610418},
+    {"kind":"block","name":"steps-T2-4","surface":"step","t":14.0,"s":12.879,"y":1.0,"abs":true,"yaw":0,"w":4.2,"d":0.46,"h":0.8,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610425},
+    {"kind":"block","name":"steps-cheek-L-T2-4","surface":"step","t":11.72,"s":12.829,"y":1.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":1.12,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610432},
+    {"kind":"block","name":"steps-cheek-R-T2-4","surface":"step","t":16.28,"s":12.829,"y":1.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":1.12,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610439},
+    {"kind":"block","name":"steps-cheek-L-T2-top","surface":"step","t":11.72,"s":13.259,"y":1.7,"abs":true,"yaw":0,"w":0.36,"d":0.6,"h":0.62,"cut":0.0,"chamfer":0.03,"sink":0.0,"aoAmount":0.6,"seed":202610446},
+    {"kind":"block","name":"steps-cheek-R-T2-top","surface":"step","t":16.28,"s":13.259,"y":1.7,"abs":true,"yaw":0,"w":0.36,"d":0.6,"h":0.62,"cut":0.0,"chamfer":0.03,"sink":0.0,"aoAmount":0.6,"seed":202610453},
+    {"kind":"block","name":"steps-T3-1","surface":"step","t":14.0,"s":16.825,"y":2.0,"abs":true,"yaw":0,"w":4.2,"d":1.54,"h":0.2,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610460},
+    {"kind":"block","name":"steps-cheek-L-T3-1","surface":"step","t":11.72,"s":16.235,"y":2.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.52,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610467},
+    {"kind":"block","name":"steps-cheek-R-T3-1","surface":"step","t":16.28,"s":16.235,"y":2.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.52,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610474},
+    {"kind":"block","name":"steps-T3-2","surface":"step","t":14.0,"s":17.005,"y":2.0,"abs":true,"yaw":0,"w":4.2,"d":1.18,"h":0.4,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610481},
+    {"kind":"block","name":"steps-cheek-L-T3-2","surface":"step","t":11.72,"s":16.595,"y":2.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.72,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610488},
+    {"kind":"block","name":"steps-cheek-R-T3-2","surface":"step","t":16.28,"s":16.595,"y":2.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.72,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610495},
+    {"kind":"block","name":"steps-T3-3","surface":"step","t":14.0,"s":17.185,"y":2.0,"abs":true,"yaw":0,"w":4.2,"d":0.82,"h":0.6,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610502},
+    {"kind":"block","name":"steps-cheek-L-T3-3","surface":"step","t":11.72,"s":16.955,"y":2.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.92,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610509},
+    {"kind":"block","name":"steps-cheek-R-T3-3","surface":"step","t":16.28,"s":16.955,"y":2.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.92,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610516},
+    {"kind":"block","name":"steps-T3-4","surface":"step","t":14.0,"s":17.365,"y":2.0,"abs":true,"yaw":0,"w":4.2,"d":0.46,"h":0.8,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610523},
+    {"kind":"block","name":"steps-cheek-L-T3-4","surface":"step","t":11.72,"s":17.315,"y":2.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":1.12,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610530},
+    {"kind":"block","name":"steps-cheek-R-T3-4","surface":"step","t":16.28,"s":17.315,"y":2.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":1.12,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610537},
+    {"kind":"block","name":"steps-cheek-L-T3-top","surface":"step","t":11.72,"s":17.745,"y":2.7,"abs":true,"yaw":0,"w":0.36,"d":0.6,"h":0.62,"cut":0.0,"chamfer":0.03,"sink":0.0,"aoAmount":0.6,"seed":202610544},
+    {"kind":"block","name":"steps-cheek-R-T3-top","surface":"step","t":16.28,"s":17.745,"y":2.7,"abs":true,"yaw":0,"w":0.36,"d":0.6,"h":0.62,"cut":0.0,"chamfer":0.03,"sink":0.0,"aoAmount":0.6,"seed":202610551},
+    {"kind":"block","name":"steps-T4-1","surface":"step","t":14.0,"s":21.374,"y":3.0,"abs":true,"yaw":0,"w":4.2,"d":1.54,"h":0.2,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610558},
+    {"kind":"block","name":"steps-cheek-L-T4-1","surface":"step","t":11.72,"s":20.784,"y":3.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.52,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610565},
+    {"kind":"block","name":"steps-cheek-R-T4-1","surface":"step","t":16.28,"s":20.784,"y":3.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.52,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610572},
+    {"kind":"block","name":"steps-T4-2","surface":"step","t":14.0,"s":21.554,"y":3.0,"abs":true,"yaw":0,"w":4.2,"d":1.18,"h":0.4,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610579},
+    {"kind":"block","name":"steps-cheek-L-T4-2","surface":"step","t":11.72,"s":21.144,"y":3.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.72,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610586},
+    {"kind":"block","name":"steps-cheek-R-T4-2","surface":"step","t":16.28,"s":21.144,"y":3.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.72,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610593},
+    {"kind":"block","name":"steps-T4-3","surface":"step","t":14.0,"s":21.734,"y":3.0,"abs":true,"yaw":0,"w":4.2,"d":0.82,"h":0.6,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610600},
+    {"kind":"block","name":"steps-cheek-L-T4-3","surface":"step","t":11.72,"s":21.504,"y":3.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.92,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610607},
+    {"kind":"block","name":"steps-cheek-R-T4-3","surface":"step","t":16.28,"s":21.504,"y":3.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":0.92,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610614},
+    {"kind":"block","name":"steps-T4-4","surface":"step","t":14.0,"s":21.914,"y":3.0,"abs":true,"yaw":0,"w":4.2,"d":0.46,"h":0.8,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610621},
+    {"kind":"block","name":"steps-cheek-L-T4-4","surface":"step","t":11.72,"s":21.864,"y":3.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":1.12,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610628},
+    {"kind":"block","name":"steps-cheek-R-T4-4","surface":"step","t":16.28,"s":21.864,"y":3.0,"abs":true,"yaw":0,"w":0.36,"d":0.38,"h":1.12,"cut":0.0,"chamfer":0.03,"sink":0.05,"aoAmount":0.6,"seed":202610635},
+    {"kind":"block","name":"steps-cheek-L-T4-top","surface":"step","t":11.72,"s":22.294,"y":3.7,"abs":true,"yaw":0,"w":0.36,"d":0.6,"h":0.62,"cut":0.0,"chamfer":0.03,"sink":0.0,"aoAmount":0.6,"seed":202610642},
+    {"kind":"block","name":"steps-cheek-R-T4-top","surface":"step","t":16.28,"s":22.294,"y":3.7,"abs":true,"yaw":0,"w":0.36,"d":0.6,"h":0.62,"cut":0.0,"chamfer":0.03,"sink":0.0,"aoAmount":0.6,"seed":202610649},
+    {"kind":"block","name":"buttress-a","surface":"wall","t":-8.0,"s":17.235,"y":1.0,"abs":true,"yaw":0,"w":1.15,"d":9.881,"h":2.7,"cut":0.14,"chamfer":0.06,"sink":0.1,"aoAmount":0.6,"seed":202610656,"phone":{"hide":true}},
+    {"kind":"block","name":"buttress-a-cap","surface":"wall","t":-8.0,"s":12.644,"y":3.7,"abs":true,"yaw":0,"w":1.4,"d":0.8,"h":0.2,"cut":0.06,"chamfer":0.04,"sink":0.0,"aoAmount":0.0,"seed":202610663,"phone":{"hide":true}},
+    {"kind":"block","name":"buttress-b","surface":"wall","t":4.4,"s":17.626,"y":1.0,"abs":true,"yaw":0,"w":1.15,"d":9.879,"h":2.7,"cut":0.14,"chamfer":0.06,"sink":0.1,"aoAmount":0.6,"seed":202610670},
+    {"kind":"block","name":"buttress-b-cap","surface":"wall","t":4.4,"s":13.036,"y":3.7,"abs":true,"yaw":0,"w":1.4,"d":0.8,"h":0.2,"cut":0.06,"chamfer":0.04,"sink":0.0,"aoAmount":0.0,"seed":202610677},
+    {"kind":"rock","name":"collapse-rock-0","surface":"step","t":1.6,"s":14.069,"y":0.0,"yaw":20.0,"r":0.5,"h":0.42,"sides":7,"squash":0.8,"tint":0.85,"seed":202610684},
+    {"kind":"rock","name":"collapse-rock-1","surface":"step","t":2.75,"s":14.219,"y":0.0,"yaw":140.0,"r":0.62,"h":0.55,"sides":7,"squash":0.8,"tint":0.85,"seed":202610691},
+    {"kind":"rock","name":"collapse-rock-2","surface":"step","t":3.45,"s":13.919,"y":0.0,"yaw":260.0,"r":0.38,"h":0.3,"sides":7,"squash":0.8,"tint":0.85,"seed":202610698},
+    {"kind":"block","name":"parapet-base","surface":"step","t":2.6,"s":17.746,"y":3.0,"abs":true,"yaw":0,"w":6.4,"d":0.36,"h":0.26,"cut":0.0,"chamfer":0.03,"sink":0.04,"aoAmount":0.5,"seed":202610705},
+    {"kind":"block","name":"parapet-merlon-0","surface":"step","t":-0.3,"s":17.746,"y":3.26,"abs":true,"yaw":0,"w":0.5,"d":0.34,"h":0.3,"cut":0.0,"chamfer":0.03,"sink":0.02,"aoAmount":0.4,"seed":202610712},
+    {"kind":"block","name":"parapet-merlon-1","surface":"step","t":0.65,"s":17.746,"y":3.26,"abs":true,"yaw":0,"w":0.5,"d":0.34,"h":0.42,"cut":0.0,"chamfer":0.03,"sink":0.02,"aoAmount":0.4,"seed":202610719},
+    {"kind":"block","name":"parapet-merlon-2","surface":"step","t":1.6,"s":17.746,"y":3.26,"abs":true,"yaw":0,"w":0.5,"d":0.34,"h":0.42,"cut":0.0,"chamfer":0.03,"sink":0.02,"aoAmount":0.4,"seed":202610726},
+    {"kind":"block","name":"parapet-merlon-3","surface":"step","t":2.55,"s":17.746,"y":3.26,"abs":true,"yaw":0,"w":0.5,"d":0.34,"h":0.3,"cut":0.0,"chamfer":0.03,"sink":0.02,"aoAmount":0.4,"seed":202610733},
+    {"kind":"block","name":"parapet-merlon-4","surface":"step","t":3.5,"s":17.746,"y":3.26,"abs":true,"yaw":0,"w":0.5,"d":0.34,"h":0.42,"cut":0.0,"chamfer":0.03,"sink":0.02,"aoAmount":0.4,"seed":202610740},
+    {"kind":"block","name":"parapet-merlon-5","surface":"step","t":4.45,"s":17.746,"y":3.26,"abs":true,"yaw":0,"w":0.5,"d":0.34,"h":0.42,"cut":0.0,"chamfer":0.03,"sink":0.02,"aoAmount":0.4,"seed":202610747},
+    {"kind":"block","name":"parapet-merlon-6","surface":"step","t":5.4,"s":17.746,"y":3.26,"abs":true,"yaw":0,"w":0.5,"d":0.34,"h":0.3,"cut":0.0,"chamfer":0.03,"sink":0.02,"aoAmount":0.4,"seed":202610754},
+    {"kind":"arch","name":"gate","surface":"pillar","t":-1.0,"s":26.25,"y":4.0,"abs":true,"yaw":0,"w":5.0,"h":6.0,"d":1.1,"pier":0.85,"keystone":true,"sink":0.1,"aoAmount":0.5,"phone":{"hide":true},"seed":202610761},
+    {"kind":"block","name":"wall-gate-recess","surface":"wall","t":-1.0,"s":27.02,"y":4.0,"abs":true,"yaw":0,"w":3.4,"d":0.3,"h":5.45,"cut":0.0,"chamfer":0.0,"sink":0.1,"aoAmount":0.0,"tint":0.18,"shadow":false,"phone":{"hide":true},"seed":202610768},
+    {"kind":"pillar","name":"pillar-gate","surface":"pillar","t":-4.65,"s":26.05,"y":0.0,"yaw":0,"w":0.85,"d":0.85,"h":7.6,"capH":0.4,"capOver":0.16,"baseH":0.36,"baseOver":0.14,"chamfer":0.06,"sink":0.12,"aoAmount":0.5,"phone":{"hide":true},"seed":202610775},
+    {"kind":"pillar","name":"pillar-gate-R","surface":"pillar","t":2.65,"s":26.05,"y":0.0,"yaw":0,"w":0.85,"d":0.85,"h":7.6,"capH":0.4,"capOver":0.16,"baseH":0.36,"baseOver":0.14,"chamfer":0.06,"sink":0.12,"aoAmount":0.5,"phone":{"hide":true},"seed":202610049},
+    {"kind":"block","name":"house-body","surface":"brick","t":8.2,"s":24.6,"y":0.0,"yaw":0,"w":3.6,"d":2.4,"h":4.3,"cut":0.12,"chamfer":0.06,"sink":0.12,"aoAmount":0.6,"seed":202610782,"phone":{"hide":true}},
+    {"kind":"block","name":"house-top","surface":"brick","t":7.5,"s":24.7,"y":4.3,"yaw":0,"w":1.8,"d":2.2,"h":1.0,"cut":0.3,"chamfer":0.06,"sink":0.05,"aoAmount":0.4,"seed":202610789,"phone":{"hide":true}},
+    {"kind":"block","name":"house-door","surface":"wall","t":8.7,"s":23.38,"y":0.0,"yaw":0,"w":1.1,"d":0.12,"h":2.1,"cut":0.0,"chamfer":0.0,"sink":0.05,"aoAmount":0.0,"tint":0.16,"shadow":false,"seed":202610796,"phone":{"hide":true}},
+    {"kind":"pillar","name":"lamp-post","surface":"pillar","t":9.3,"s":22.7,"y":0.0,"yaw":0,"w":0.24,"d":0.24,"h":2.9,"capH":0.18,"capOver":0.08,"baseH":0.26,"baseOver":0.1,"chamfer":0.03,"sink":0.08,"aoAmount":0.3,"seed":202610803,"phone":{"hide":true}},
+    {"kind":"relief","name":"lamp-head","src":"lampHead","t":9.3,"s":22.68,"y":6.91,"abs":true,"yaw":0,"flip":false,"shadow":false,"seed":202610810,"phone":{"hide":true}},
+    {"kind":"halo","name":"lampC","t":9.3,"s":22.3,"y":7.5,"abs":true,"r":0.55,"color":[0.62,0.8,1.0],"gain":0.75,"core":0.4,"facing":"camera","seed":202610817,"phone":{"hide":true}},
+    {"kind":"shaft","name":"pillar-shaft-a","t":0.511,"s":6.593,"y":11.0,"abs":true,"top":3.0,"bottom":5.2,"len":11.968,"dir":[-0.304,-0.951,-0.057],"gain":1.0,"lobe":0.0},
+    {"kind":"shaft","name":"pillar-shaft-b","t":0.511,"s":6.593,"y":11.0,"abs":true,"top":4.8,"bottom":8.3,"len":11.968,"dir":[-0.304,-0.951,-0.057],"gain":0.5,"lobe":0.0,"phone":{"hide":true}},
+    {"kind":"halo","name":"crack","t":4.8,"s":26.85,"y":7.9,"abs":true,"r":1.15,"color":[0.62,0.92,0.88],"gain":0.85,"core":0.45,"facing":"camera","phone":{"hide":true},"seed":202610089},
+    {"kind":"relief","name":"fire1","src":"brazier","t":-7.6,"s":6.4,"y":0.0,"yaw":0,"flip":false,"shadow":false,"seed":202610824,"phone":{"t":-6.8,"s":8.2}},
+    {"kind":"halo","name":"fire1-halo","t":-7.6,"s":6.1,"y":1.339,"r":0.62,"color":[1.0,0.58,0.28],"gain":0.75,"core":0.35,"facing":"camera","seed":202610831,"phone":{"t":-6.8,"s":7.9}},
+    {"kind":"relief","name":"fire2","src":"brazier","t":25.6,"s":22.9,"y":0.0,"yaw":0,"flip":false,"shadow":false,"seed":202610838,"phone":{"hide":true}},
+    {"kind":"halo","name":"fire2-halo","t":25.6,"s":22.6,"y":1.339,"r":0.62,"color":[1.0,0.58,0.28],"gain":0.75,"core":0.35,"facing":"camera","seed":202610845,"phone":{"hide":true}},
+    {"kind":"pillar","name":"pillar-broken","surface":"pillar","t":27.4,"s":23.6,"y":0.0,"yaw":0,"w":0.9,"d":0.9,"h":3.6,"capH":0.0,"capOver":0.0,"baseH":0.34,"baseOver":0.13,"chamfer":0.06,"broken":1.0,"sink":0.12,"aoAmount":0.5,"phone":{"hide":true},"seed":202610852},
+    {"kind":"relief","name":"chain-a","src":"chainHang","t":11.2,"s":23.0,"y":5.28,"abs":true,"yaw":0,"flip":false,"shadow":false,"sway":0.3,"swayFrom":"top","phone":{"hide":true},"seed":202610859},
+    {"kind":"relief","name":"chain-b","src":"chainHang","t":27.6,"s":24.6,"y":4.78,"abs":true,"yaw":0,"flip":true,"shadow":false,"sway":0.3,"swayFrom":"top","phone":{"hide":true},"seed":202610866},
+    {"kind":"mist","name":"mist-far","t":12.0,"s":25.2,"y":4.2,"abs":true,"w":72.0,"h":3.6,"alpha":0.12,"noise":[0.12,0.6],"flow":0.012,"tint":[0.36,0.48,0.54],"seed":20263601,"phone":{"hide":true}},
+    {"kind":"relief","name":"statue","src":"statue","t":-6.5,"s":10.7,"y":0.0,"yaw":0,"flip":false,"seed":202610873,"phone":{"hide":true}},
+    {"kind":"relief","name":"urn","src":"urn","t":-6.9,"s":4.2,"y":0.0,"yaw":0,"flip":true,"seed":202610880,"phone":{"t":-8.4,"s":4.6}},
+    {"kind":"relief","name":"rubble-a","src":"rubblePile","t":2.4,"s":12.55,"y":0.0,"yaw":-22.0,"flip":false,"seed":202610887},
+    {"kind":"relief","name":"rubble-b","src":"rubblePile","t":7.4,"s":23.0,"y":0.0,"yaw":-22.0,"flip":true,"seed":202610894,"phone":{"hide":true}},
+    {"kind":"relief","name":"crystal","src":"crystalCluster","t":30.2,"s":23.4,"y":0.0,"yaw":0,"flip":false,"seed":202610901,"shadow":false,"phone":{"hide":true}},
+    {"kind":"litter","src":"litterChip2","t":5.178,"s":4.109,"yaw":3.7,"flip":false,"seed":202610908},
+    {"kind":"litter","src":"litterRubble4","t":-5.81,"s":3.452,"yaw":4.2,"flip":false,"seed":202610915},
+    {"kind":"litter","src":"litterChip3","t":-2.827,"s":7.278,"yaw":7.0,"flip":true,"seed":202610922},
+    {"kind":"litter","src":"litterPebble2","t":21.361,"s":7.722,"yaw":12.1,"flip":false,"seed":202610929},
+    {"kind":"litter","src":"litterChip1","t":0.98,"s":6.707,"yaw":-4.0,"flip":true,"seed":202610936},
+    {"kind":"litter","src":"litterRubble2","t":-12.388,"s":5.766,"yaw":9.1,"flip":true,"seed":202610943},
+    {"kind":"litter","src":"litterGravel3","t":4.542,"s":5.791,"yaw":-5.5,"flip":true,"seed":202610950},
+    {"kind":"litter","src":"litterPebble1","t":21.673,"s":3.702,"yaw":-7.7,"flip":false,"seed":202610957},
+    {"kind":"litter","src":"litterRubble2","t":-3.08,"s":6.149,"yaw":3.2,"flip":false,"seed":202610964},
+    {"kind":"litter","src":"litterRubble2","t":14.89,"s":3.506,"yaw":14.9,"flip":false,"seed":202610971},
+    {"kind":"litter","src":"litterPebble1","t":7.91,"s":4.009,"yaw":10.0,"flip":true,"seed":202610992},
+    {"kind":"litter","src":"litterChip1","t":2.289,"s":3.989,"yaw":-7.6,"flip":true,"seed":202610999},
+    {"kind":"litter","src":"litterGravel3","t":4.847,"s":6.463,"yaw":2.2,"flip":false,"seed":202611006},
+    {"kind":"litter","src":"litterChip3","t":25.286,"s":5.271,"yaw":-8.5,"flip":true,"seed":202611013},
+    {"kind":"litter","src":"litterRubble2","t":20.055,"s":3.331,"yaw":-3.5,"flip":true,"seed":202611020},
+    {"kind":"litter","src":"litterGravel1","t":25.416,"s":3.339,"yaw":7.8,"flip":false,"seed":202611027},
+    {"kind":"litter","src":"litterPebble1","t":12.148,"s":4.382,"yaw":12.4,"flip":false,"seed":202611034},
+    {"kind":"litter","src":"litterPebble2","t":-0.926,"s":5.163,"yaw":6.4,"flip":false,"seed":202611041},
+    {"kind":"litter","src":"litterGravel1","t":23.395,"s":6.052,"yaw":7.2,"flip":true,"seed":202611048},
+    {"kind":"litter","src":"litterGravel3","t":14.962,"s":6.855,"yaw":4.8,"flip":false,"seed":202611055},
+    {"kind":"litter","src":"litterPebble2","t":4.176,"s":6.949,"yaw":-2.0,"flip":false,"seed":202611069},
+    {"kind":"litter","src":"litterGravel3","t":13.644,"s":3.917,"yaw":5.7,"flip":false,"seed":202611076},
+    {"kind":"litter","src":"litterPebble1","t":17.888,"s":5.055,"yaw":-11.6,"flip":false,"seed":202611083},
+    {"kind":"litter","src":"litterGravel2","t":21.371,"s":4.292,"yaw":12.8,"flip":true,"seed":202611090},
+    {"kind":"litter","src":"litterChip3","t":-11.284,"s":5.579,"yaw":-9.2,"flip":false,"seed":202611097},
+    {"kind":"litter","src":"litterPebble1","t":-5.964,"s":4.221,"yaw":-3.0,"flip":true,"seed":202611104},
+    {"kind":"litter","src":"litterPebble3","t":3.772,"s":-3.868,"yaw":1.1,"flip":true,"seed":202611111},
+    {"kind":"litter","src":"litterRubble4","t":15.601,"s":-3.794,"yaw":-7.5,"flip":false,"seed":202611125},
+    {"kind":"litter","src":"litterGravel3","t":14.405,"s":-3.421,"yaw":1.0,"flip":true,"seed":202611132},
+    {"kind":"litter","src":"litterChip2","t":-10.939,"s":-3.202,"yaw":-11.1,"flip":true,"seed":202611146},
+    {"kind":"litter","src":"litterPebble4","t":-12.356,"s":-4.144,"yaw":-5.2,"flip":true,"seed":202611153},
+    {"kind":"litter","src":"litterChip4","t":-7.509,"s":-3.971,"yaw":-9.7,"flip":false,"seed":202611160},
+    {"kind":"litter","src":"litterPebble2","t":5.679,"s":-3.857,"yaw":6.9,"flip":true,"seed":202611167},
+    {"kind":"litter","src":"litterPebble3","t":1.74,"s":-3.716,"yaw":-9.5,"flip":false,"seed":202611174},
+    {"kind":"litter","src":"litterPebble1","t":19.13,"s":-3.111,"yaw":-5.4,"flip":true,"seed":202611188},
+    {"kind":"litter","src":"litterGravel3","t":-3.187,"s":-3.923,"yaw":-3.2,"flip":false,"seed":202611202},
+    {"kind":"litter","src":"litterPebble2","t":-9.687,"s":0.846,"yaw":3.6,"flip":true,"seed":202611209},
+    {"kind":"litter","src":"litterPebble2","t":-12.874,"s":0.836,"yaw":-0.3,"flip":false,"seed":202611216},
+    {"kind":"litter","src":"litterPebble3","t":-15.0,"s":0.579,"yaw":-10.9,"flip":true,"seed":202611223},
+    {"kind":"litter","src":"litterPebble1","t":-14.442,"s":2.596,"yaw":-9.4,"flip":true,"seed":202611230},
+    {"kind":"litter","src":"litterRubble2","t":-14.798,"s":-2.185,"yaw":14.0,"flip":true,"seed":202611237},
+    {"kind":"litter","src":"litterGravel1","t":0.514,"s":12.222,"yaw":-8.0,"flip":false,"seed":202611244},
+    {"kind":"litter","src":"litterGravel1","t":-11.965,"s":10.681,"yaw":-10.7,"flip":true,"seed":202611251},
+    {"kind":"litter","src":"litterChip3","t":6.406,"s":11.05,"yaw":14.6,"flip":true,"seed":202611265},
+    {"kind":"litter","src":"litterPebble1","t":-1.85,"s":9.941,"yaw":14.8,"flip":true,"seed":202611272},
+    {"kind":"litter","src":"litterChip3","t":-12.353,"s":11.288,"yaw":-9.9,"flip":true,"seed":202611279},
+    {"kind":"litter","src":"litterChip2","t":7.561,"s":9.874,"yaw":13.4,"flip":true,"seed":202611286},
+    {"kind":"litter","src":"litterChip3","t":21.179,"s":10.546,"yaw":15.0,"flip":true,"seed":202611293},
+    {"kind":"litter","src":"litterGravel4","t":0.329,"s":9.785,"yaw":-14.2,"flip":false,"seed":202611300},
+    {"kind":"litter","src":"litterChip2","t":24.509,"s":11.277,"yaw":-5.7,"flip":false,"seed":202611307},
+    {"kind":"litter","src":"litterPebble1","t":18.834,"s":12.355,"yaw":-12.2,"flip":false,"seed":202611314},
+    {"kind":"litter","src":"litterGravel1","t":12.741,"s":11.117,"yaw":-12.3,"flip":true,"seed":202611321},
+    {"kind":"litter","src":"litterPebble4","t":13.765,"s":9.689,"yaw":-11.9,"flip":true,"seed":202611328},
+    {"kind":"litter","src":"litterPebble4","t":14.984,"s":14.334,"yaw":9.0,"flip":false,"seed":202611335},
+    {"kind":"litter","src":"litterPebble3","t":25.305,"s":14.804,"yaw":-6.3,"flip":true,"seed":202611342},
+    {"kind":"litter","src":"litterRubble2","t":18.54,"s":16.209,"yaw":11.1,"flip":false,"seed":202611349},
+    {"kind":"litter","src":"litterPebble1","t":14.709,"s":15.065,"yaw":7.3,"flip":true,"seed":202611356},
+    {"kind":"litter","src":"litterPebble3","t":-10.052,"s":14.171,"yaw":-9.7,"flip":false,"seed":202611370},
+    {"kind":"litter","src":"litterGravel2","t":9.463,"s":15.121,"yaw":14.4,"flip":true,"seed":202611384},
+    {"kind":"litter","src":"litterGravel1","t":21.906,"s":14.249,"yaw":-1.8,"flip":false,"seed":202611391},
+    {"kind":"litter","src":"litterPebble3","t":7.49,"s":15.703,"yaw":-5.4,"flip":false,"seed":202611398}
+  ]
+}
