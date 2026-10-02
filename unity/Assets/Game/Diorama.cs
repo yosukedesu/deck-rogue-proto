@@ -23,6 +23,25 @@
 //    {"t","s","y","abs"?,"yaw"?,"w","h","v0"?,"alpha","noise":[横,縦 (回/unit)],"flow": unit/秒,"tint":[r,g,b]? (無ければ霧の色),"seed"?,"phone":{...}?}
 //  ・設計図の頂の "gates": {"partsMin","partsMax","litterMax" (＋任意で "renderersMax","materialsMax","trianglesMax")} = 点検の門 (無ければ定数の三周目の既定)。
 //  ・幕の光の設計図 look の "diorama": {"normalAtlas": false, "sway": false} で法線と揺れを切る (スマホの重さの口。既定 true)。
+// 段2 (2026-10-03・レーン S。約束 docs/design/hd2d-stage2/contracts.md §C1・計画 docs/design/hd2d-stage2-plan-2026-10-02.md §2 S)。新しい kind・キーが無ければ三周目と同じ:
+//  ・block の "ao": false か 0 (側面の頂点色 AO なし)・"aoAmount": 0〜1 (側面の AO の強さ。既定 = 今の AO。"ao" に数 0〜1 を書いても同じ)。同じキーを arch・pillar・rail も読む。
+//  ・"kind": "rail" = レール 2 本＋不等間隔の枕木 {length 8, gauge 1.2, railW 0.08, railH 0.1, sleeperLen gauge+0.6, sleeperW 0.22, sleeperH 0.07,
+//    sleepers [0.8, 1.3] (間隔の小と大・seed で決定的), railSurface (既定 "iron" が surfaces にあれば・無ければ "rock")}。枕木は surface (既定 "wood")。
+//  ・"kind": "arch" = 大門・半アーチ・池の橋 {w 4, h 4.5, d 1, pier 0.8, rise (w−2·pier)/2, segs 10, half, bridge, keystone, crown 0.75·pier, sink 0.15}。既定 "rock"。
+//  ・"kind": "pillar" = 角柱＋柱頭＋台座 {w 0.9, d 0.9, h 5, capH 0.35, capOver 0.15, baseH 0.3, baseOver 0.12, chamfer 0.06, broken 0 (true = 0.3·h), fluted, sink 0.15}。既定 "rock"。
+//  ・"kind": "halo" = 灯の暈 (丸い円盤・頂点色) {r 0.8, color [r,g,b] (見た目の色), gain 1, core 0.35, facing "camera"|"path", flicker 0 (det では揺らさない),
+//    toward (カメラの方へ寄せる unit。既定 = 材質の softDepth), lobe 1 (StageShaft の霧の芯の効き)}。既定 "glow" (shader shaft)。
+//    カメラ向きは額縁と同じく OnCameraLayout で向け直す (Dynamic に "halo-N")。座席の帯の点検に数えない。
+//    StageShaft は暈にも材質の値を掛ける。その分を次のように扱う:
+//     - _Tint (設計図の surfaces の tint・look の materials.<名前>.tint があればそちら) … 頂点色を「color ÷ tint」で割り戻す = 色相は color のまま。
+//       割り戻しで 1 を超える成分が出たら全体を同じ割合で下げる (色相を保つ。tint と大きく違う色ほど暗い = dumplayout の stage2.halos[].dim)。
+//     - _SoftDepth … 後ろの物との深さの差がこれより小さい所ほど薄くなる。壁ぎわの提灯の暈が消えないよう、toward の既定 = softDepth だけカメラへ寄せる
+//       (寄せた分だけ縮めて、画面の大きさは r のまま)。手前 toward 以内にある物の上には暈が足される。
+//     - _LobeFloor (霧の芯から外れた所の倍率) … lobe 1 (既定) の暈も受ける。lobe 0 にすると芯は見ないが、代わりに月光の筋と同じ扱い
+//       (look の shaftGain が掛かり、shaftSkipTopVig なら上の減光を受けない) になるので既定にできない。暈を芯で暗くしたくなければ glow の lobeFloor を 1 (既定) に。
+//     - 明るさを上げるのは材質の intensity (頂点色は 1 で切れる)。gain が形の頂を 1 より上へ押す時は、形を保ったまま 1 で頭打ちにする (stage2.halos[].gainCap)。
+//  ・rail・arch・pillar は道に沿う部品 (yaw は PathYaw に足す = IsPathAligned)・arch・pillar は Act<N>/Models の差し替えの口にも乗る。
+//  ・新 kind を組んだ時だけ dumplayout の extra.diorama.stage2 に数と技の光の受け (StageHitReceive) を足す (幕1 の記録は変わらない)。
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -53,6 +72,12 @@ namespace DeckRogue.Game
             public float Sway;
             /// <summary>揺らす周期 (秒)</summary>
             public float SwayPeriod;
+            /// <summary>段2 (レーン S): 暈の揺らぎの強さ (0〜1。0 = 揺らさない = 今までの物)。Tick が localScale を BaseScale × (1 ± 0.1·Flicker) にする。det の撮影では揺らさない</summary>
+            public float Flicker;
+            /// <summary>段2 (レーン S): 揺らぎの基準の大きさ (Flicker &gt; 0 の時だけ読む)</summary>
+            public Vector3 BaseScale;
+            /// <summary>段2 (レーン S): 揺らぎの位相 (部品の seed から。となりの暈と揃わない)</summary>
+            public float FlickerPhase;
         }
 
         /// <summary>箱庭が組まれていて、舞台として使われている</summary>
@@ -113,6 +138,25 @@ namespace DeckRogue.Game
             public DioramaPart Part;
             public int DynIndex;
         }
+
+        /// <summary>
+        /// 段2 (レーン S): 暈の置き場。LocalPos = 置き場 (箱庭の dynamic の下のローカル)・Toward = カメラの方へ寄せる unit・Face = カメラへ向ける (facing "camera")。
+        /// facing "path" の暈も Toward だけは寄せる (向きは組んだ時のまま)。Name・Dim・GainCap・SoftDepth・LobeFloor は dumplayout の記録 (stage2.halos)
+        /// </summary>
+        sealed class HaloSlot
+        {
+            public Transform Tr;
+            public Vector3 LocalPos;
+            public float Toward;
+            public bool Face;
+            public int DynIndex;
+            public string Name;
+            public float Dim = 1f, GainCap = -1f, SoftDepth, LobeFloor = 1f;
+        }
+
+        static readonly List<HaloSlot> _halos = new List<HaloSlot>();
+        /// <summary>段2 (レーン S): 組んだ新 kind の数 (dumplayout の extra.diorama.stage2。0 個の時は記録に出さない = 幕1 の記録は変わらない)</summary>
+        static readonly Dictionary<string, int> S2S_Built = new Dictionary<string, int>();
 
         // ================================================================ 道の座標
 
@@ -573,9 +617,244 @@ namespace DeckRogue.Game
             R3S_MistParts++;
         }
 
+        // ================================================================ 段2 (レーン S) の部品の手伝い
+
+        /// <summary>
+        /// 段2 C1-1: 部品の "ao": false (= 0) か "aoAmount" (0〜1)。どちらも無ければ false (今の頂点色のまま)。
+        /// "ao" は数でも読む (0 = AO なし・1 = 既定の AO・間 = その強さ。S2S_Bool と同じく 0/1 を真偽として書いても通る)。"ao": true は書かないのと同じ。
+        /// 強さの順: "ao": false ＞ "aoAmount" ＞ "ao" の数
+        /// </summary>
+        static bool S2S_AoAmount(DioramaPart p, out float amount)
+        {
+            amount = 1f;
+            var t = p.Raw != null ? p.Raw["ao"] : null;
+            if (t != null && t.Type == JTokenType.Boolean && !(bool)t) { amount = 0f; return true; }
+            if (p.Has("aoAmount")) { amount = Mathf.Clamp01(p.Num("aoAmount", 1f)); return true; }
+            if (t != null && (t.Type == JTokenType.Integer || t.Type == JTokenType.Float)) { amount = Mathf.Clamp01(t.Value<float>()); return true; }
+            return false;
+        }
+
+        /// <summary>段2: 新しい形の AO の強さ (書かなければ 1 = その形の既定の AO)</summary>
+        static float S2S_AoOf(DioramaPart p) { return S2S_AoAmount(p, out var a) ? a : 1f; }
+
+        /// <summary>段2: 真偽のキー (true/false か数 0/1)。無ければ def</summary>
+        static bool S2S_Bool(DioramaPart p, string key, bool def)
+        {
+            var t = p.Raw != null ? p.Raw[key] : null;
+            if (t == null) return def;
+            if (t.Type == JTokenType.Boolean) return (bool)t;
+            if (t.Type == JTokenType.Integer || t.Type == JTokenType.Float) return t.Value<float>() > 0.5f;
+            return def;
+        }
+
+        /// <summary>段2: 文字のキー (無い・空なら null)</summary>
+        static string S2S_Str(DioramaPart p, string key)
+        {
+            var t = p.Raw != null ? p.Raw[key] : null;
+            return t != null && t.Type == JTokenType.String && ((string)t).Length > 0 ? (string)t : null;
+        }
+
+        /// <summary>段2: 新しい kind の材質が設計図の surfaces に無ければ「見つからない物」に1行 (材質の無い Renderer は何も描かない)</summary>
+        static void S2S_CheckSurface(BuildContext ctx, DioramaPart p, string surface)
+        {
+            if (string.IsNullOrEmpty(surface) || !ctx.Layout.Surfaces.ContainsKey(surface)) ctx.Missing.Add("surface:" + surface + " (" + PartObjectName(p) + ")");
+        }
+
+        static void S2S_Count(string kind)
+        {
+            S2S_Built.TryGetValue(kind, out var c);
+            S2S_Built[kind] = c + 1;
+        }
+
+        /// <summary>段2 C1-5: 部品の色 [r, g, b] (0〜1 か 0〜255・見た目の色 = sRGB)。頂点色は色空間の変換を受けないので、Linear なら線形へ直す (PartTint と同じ読み)</summary>
+        static Color S2S_ColorOf(DioramaPart p, string key, Color def)
+        {
+            var a = p.Raw != null ? p.Raw[key] as JArray : null;
+            Color c = def;
+            if (a != null && a.Count >= 3)
+            {
+                float k = 1f;
+                for (int i = 0; i < 3; i++) if (a[i].Value<float>() > 1.001f) { k = 1f / 255f; break; }
+                c = new Color(Mathf.Clamp01(a[0].Value<float>() * k), Mathf.Clamp01(a[1].Value<float>() * k), Mathf.Clamp01(a[2].Value<float>() * k), 1f);
+            }
+            if (QualitySettings.activeColorSpace == ColorSpace.Linear) c = c.linear;
+            return c;
+        }
+
+        /// <summary>
+        /// 段2 C1-5: 暈の頂点色を「見た目の色」にする割り戻し。StageShaft は 絵 × _Tint × 頂点色 なので、頂点色 = color ÷ (材質の実際の tint) にする。
+        /// 実際の tint = look の materials.&lt;surface&gt;.tint (StageLook.ApplyMaterials が上書きする値) があればそれ・無ければ設計図の surfaces の tint。
+        /// 割り戻しで 1 を超える成分が出たら全体を同じ割合で下げる (dim = その割合。色相は color のまま・明るさは 1/dim)。
+        /// gain は形の頂 (中心 = 1) が 1 を超えない所で頭打ち (gainCap。負 = 頭打ちなし)。どちらも「形と色相を保つ」= 色ごとに切れて白へ寄らない
+        /// </summary>
+        static Color S2S_HaloVertexColor(DioramaSurface sd, string surface, Color colLinear, ref float gain, out float dim, out float gainCap)
+        {
+            dim = 1f; gainCap = -1f;
+            Color v = colLinear;
+            if (sd != null && sd.Shader == "shaft")
+            {
+                Color tintS = sd.Tint;
+                if (_look != null && _look.Materials.TryGetValue(surface ?? "", out var ml) && ml != null && ml.Tint.HasValue) tintS = ml.Tint.Value;
+                Color tl = QualitySettings.activeColorSpace == ColorSpace.Linear ? tintS.linear : tintS;   // SetColor の色は Linear なら線形でシェーダへ渡る
+                v = new Color(colLinear.r / Mathf.Max(1e-3f, tl.r), colLinear.g / Mathf.Max(1e-3f, tl.g), colLinear.b / Mathf.Max(1e-3f, tl.b), 1f);
+                float m = Mathf.Max(v.r, Mathf.Max(v.g, v.b));
+                if (m > 1f) { v = new Color(v.r / m, v.g / m, v.b / m, 1f); dim = m; }
+            }
+            float mx = Mathf.Max(v.r, Mathf.Max(v.g, v.b));
+            if (mx > 1e-4f && gain * mx > 1f) { gain = 1f / mx; gainCap = gain; }
+            return v;
+        }
+
+        /// <summary>
+        /// 段2 C1-5: 灯の暈を1つ組む (まとめない・影なし)。材質は surface (既定 "glow" = shader shaft。暈ごとに材質を増やさない = 色と明るさは頂点色)。
+        /// 頂点色は S2S_HaloVertexColor で材質の tint を割り戻す (color = 見た目の色)。
+        /// facing "camera" (既定) は OnCameraLayout がカメラへ向け直す。"path" は道の向き + yaw に立てる。どちらも OnCameraLayout が "toward"
+        /// (既定 = 材質の softDepth = 後ろの壁や同じ所の提灯の絵との深さの差で薄くならない距離) だけカメラの方へ寄せ、寄せた分だけ縮める (画面の大きさは r のまま)。
+        /// 大きさは r × (スマホの scale)。Dynamic に "halo-N" で登録する (flicker &gt; 0 なら Tick が揺らす・det では揺らさない)
+        /// </summary>
+        static void S2S_BuildHalo(BuildContext ctx, DioramaPart p, Vector3 pos, string surface, float scale)
+        {
+            if (!Materials.TryGetValue(surface ?? "", out var mat) || mat == null) { ctx.Missing.Add("halo:" + surface + " (材質が無い・" + PartObjectName(p) + ")"); return; }
+            if (!ctx.Layout.Surfaces.TryGetValue(surface, out var sd) || sd == null || sd.Shader != "shaft")
+                ctx.Missing.Add("halo:" + surface + " (shader が shaft でない = 頂点色が明るさとして読まれない)");
+            var ph = PhoneOf(p);
+            float r = Mathf.Max(0.05f, JNum(ph, "r", p.Num("r", 0.8f))) * Mathf.Max(0.01f, scale);
+            float gain = Mathf.Max(0f, JNum(ph, "gain", p.Num("gain", 1f)));
+            var col = S2S_ColorOf(p, "color", Color.white);
+            if (PartTint(p, out var tint)) col = new Color(col.r * tint.r, col.g * tint.g, col.b * tint.b, 1f);
+            var vcol = S2S_HaloVertexColor(sd, surface, col, ref gain, out float dim, out float gainCap);
+            // lobe (頂点色の a) の既定は 1 = 霧の面と同じ。0 は StageShaft で月光の筋の扱い (_ShaftGain が掛かり、_SkipTopVig なら上の減光を外す) になるので既定にしない
+            var b = DioramaMesh.S2S_Halo(r, p.Num("core", 0.35f), vcol, gain, p.Num("lobe", 1f));
+            bool toCam = S2S_Str(p, "facing") != "path";
+            var rot = toCam ? Quaternion.identity : Quaternion.Euler(0f, ctx.Layout.PathYaw + p.Yaw, 0f);
+            var go = MakeObject(ctx.DynRoot, "halo-" + p.Index, b.ToMesh("diorama-halo-" + p.Index), surface, false);
+            go.transform.localPosition = pos;
+            go.transform.localRotation = rot;
+            int dyn = Dynamic.Count;
+            Dynamic.Add(new DynamicEntry
+            {
+                Name = go.name, Transform = go.transform, BaseRotation = rot,
+                Flicker = Mathf.Clamp01(p.Num("flicker", 0f)), BaseScale = Vector3.one, FlickerPhase = (Mathf.Abs(p.Seed) % 997) * 0.731f,
+            });
+            float softDepth = sd != null && sd.Shader == "shaft" ? Mathf.Max(0f, sd.SoftDepth) : 0f;
+            bool towardSet = p.Has("toward") || (ph != null && ph["toward"] != null);   // 書いてあればその値 (0 = 寄せない)・無ければ softDepth
+            float toward = towardSet ? Mathf.Max(0f, JNum(ph, "toward", p.Num("toward", 0f))) : softDepth;
+            _halos.Add(new HaloSlot
+            {
+                Tr = go.transform, LocalPos = pos, Toward = toward, Face = toCam, DynIndex = dyn,
+                Name = !string.IsNullOrEmpty(p.Name) ? p.Name : go.name, Dim = dim, GainCap = gainCap, SoftDepth = softDepth, LobeFloor = sd != null ? sd.LobeFloor : 1f,
+            });
+            AddBox(p, b, Matrix4x4.TRS(pos, rot, Vector3.one));
+            S2S_Count(p.Kind);
+        }
+
+        /// <summary>
+        /// 段2 C1-5: 暈を置き直す (OnCameraLayout が呼ぶ。暈が無ければ何もしない)。置き場からカメラ (camPos = 世界) の方へ "toward" だけ寄せ
+        /// (カメラとの距離の半分まで)、寄せた分だけ縮めて画面の大きさを保つ。facing "camera" の物はカメラへ向け直す ("path" は向きを変えない)
+        /// </summary>
+        static void S2S_FaceHalos(Vector3 camPos)
+        {
+            for (int i = 0; i < _halos.Count; i++)
+            {
+                var h = _halos[i];
+                if (h.Tr == null) continue;
+                var parent = h.Tr.parent;
+                var wp = parent != null ? parent.TransformPoint(h.LocalPos) : h.LocalPos;
+                var to = camPos - wp;
+                float dist = to.magnitude;
+                if (dist < 1e-3f) continue;
+                var dir = to / dist;
+                float tw = Mathf.Min(h.Toward, dist * 0.5f);
+                h.Tr.position = wp + dir * tw;
+                if (h.Face) h.Tr.rotation = Quaternion.LookRotation(-dir, Vector3.up);   // ローカル −z (円盤の表) がカメラを向く
+                h.Tr.localScale = Vector3.one * ((dist - tw) / dist);                    // 近づけた分だけ縮める (toward 0 なら 1 = そのまま)
+                if (h.DynIndex >= 0 && h.DynIndex < Dynamic.Count)
+                {
+                    var e = Dynamic[h.DynIndex];
+                    e.BaseRotation = h.Tr.localRotation;
+                    e.BaseScale = h.Tr.localScale;
+                    Dynamic[h.DynIndex] = e;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 段2: 新 kind (rail・arch・pillar) の座席の帯の点検の届きを、道の向き t と横 s に分けて返す (それ以外の kind は false = 呼んだ側の今の届きのまま)。
+        /// 形のローカルの半分の大きさ (x = 道の向き・z = 奥) を部品の yaw (道の向きからの角度) で回した外接の箱 × scale。
+        /// レールは道に沿って長いので、t と s を同じ半径にすると帯から離れた s の線路まで侵入に数えてしまう (反証 2026-10-03)
+        /// </summary>
+        static bool S2S_ReachTS(DioramaPart p, float scale, out float reachT, out float reachS)
+        {
+            float hx, hz;
+            switch (p.Kind)
+            {
+                case "rail":
+                {
+                    // DioramaMesh.S2S_Rail と同じ丸め。枕木は長さ ±5%・奥へ ±0.03・向き ±2.5° 揺れるので少し足す
+                    float g = Mathf.Max(0.2f, p.Num("gauge", 1.2f)), rw = Mathf.Max(0.02f, p.Num("railW", 0.08f));
+                    hx = Mathf.Max(0.5f, p.Num("length", 8f)) * 0.5f;
+                    hz = Mathf.Max(g + rw * 2f, p.Num("sleeperLen", g + 0.6f)) * 1.05f * 0.5f + 0.08f;
+                    break;
+                }
+                case "arch":
+                    hx = Mathf.Max(0.4f, p.Num("w", 4f)) * 0.5f;
+                    hz = Mathf.Max(0.05f, p.Num("d", 1f)) * 0.5f + (S2S_Bool(p, "keystone", false) ? 0.06f : 0f);   // 要石は前後へ 0.06 出る
+                    break;
+                case "pillar":
+                {
+                    float over = Mathf.Max(0f, Mathf.Max(p.Num("capOver", 0.15f), p.Num("baseOver", 0.12f)));
+                    hx = Mathf.Max(0.1f, p.Num("w", 0.9f)) * 0.5f + over;
+                    hz = Mathf.Max(0.1f, p.Num("d", 0.9f)) * 0.5f + over;
+                    break;
+                }
+                default:
+                    reachT = reachS = 0f;
+                    return false;
+            }
+            float c = Mathf.Abs(Mathf.Cos(p.Yaw * Mathf.Deg2Rad)), sn = Mathf.Abs(Mathf.Sin(p.Yaw * Mathf.Deg2Rad));
+            float k = scale > 0f ? scale : 1f;
+            reachT = (c * hx + sn * hz) * k;
+            reachS = (sn * hx + c * hz) * k;
+            return true;
+        }
+
+        /// <summary>
+        /// 段2: dumplayout の extra.diorama.stage2 (新 kind を1つでも組んだ時だけ)。種類ごとの数・カメラ向きの暈の数・暈ごとの置き直しと色の割り戻し・技の光の受け (StageHitReceive)。
+        /// halos[]: toward (寄せた unit)・dim (tint の割り戻しで下げた割合。1 = 色どおり)・gainCap (gain を頭打ちにした値。無ければ出さない)・
+        /// softDepth・lobeFloor (材質の値 = 暈にも掛かる)・facing
+        /// </summary>
+        static Dictionary<string, object> S2S_DebugInfo()
+        {
+            var kinds = new Dictionary<string, object>();
+            var keys = new List<string>(S2S_Built.Keys); keys.Sort(string.CompareOrdinal);
+            foreach (var k in keys) kinds[k] = S2S_Built[k];
+            int facing = 0;
+            var halos = new List<object>();
+            foreach (var h in _halos)
+            {
+                if (h.Face) facing++;
+                var o = new Dictionary<string, object>
+                {
+                    ["name"] = h.Name, ["facing"] = h.Face ? "camera" : "path", ["toward"] = Math.Round(h.Toward, 3), ["dim"] = Math.Round(h.Dim, 3),
+                    ["softDepth"] = Math.Round(h.SoftDepth, 3), ["lobeFloor"] = Math.Round(h.LobeFloor, 3),
+                };
+                if (h.GainCap >= 0f) o["gainCap"] = Math.Round(h.GainCap, 3);
+                halos.Add(o);
+            }
+            var info = new Dictionary<string, object>
+            {
+                ["built"] = kinds, ["halosFacingCamera"] = facing, ["hitReceive"] = StageHitReceive.DebugInfo(),
+            };
+            if (halos.Count > 0) info["halos"] = halos;
+            return info;
+        }
+
         // ---------------------------------------------------------------- 部品
 
-        static bool PathAligned(string kind) { return kind == "block" || kind == "rig" || kind == "fence" || kind == "marker"; }
+        static bool PathAligned(string kind) { return kind == "block" || kind == "rig" || kind == "fence" || kind == "marker" || kind == "rail" || kind == "arch" || kind == "pillar"; }   // 段2: rail・arch・pillar も道に沿う
+
+        /// <summary>段2 (レーン S): 設計図の yaw が道の向き PathYaw からの角度の部品か (エディタの書き戻しが yaw を戻す時に使う。DioramaLayoutTool の pathAligned の列と同じ)</summary>
+        public static bool IsPathAligned(string kind) { return PathAligned(kind); }
 
         /// <summary>部品の既定の材質 (設計図の surfaces の名前。StageLook の look_act1.json の materials と同じ名前)。
         /// 札は "card" の材質が設計図にあればそれ (受光 0.25)、無ければ半立体と同じ "relief" (材質を 6 以下に保つ既定)</summary>
@@ -590,6 +869,9 @@ namespace DeckRogue.Game
                 case "tree": return "bark";
                 case "rig": case "fence": case "marker": return "wood";
                 case "fog": case "shaft": return "glow";
+                case "rail": return "wood";                     // 段2: 枕木 (レールは railSurface)
+                case "arch": case "pillar": return "rock";      // 段2
+                case "halo": return "glow";                     // 段2
                 default: return "relief";
             }
         }
@@ -630,9 +912,57 @@ namespace DeckRogue.Game
                 case "block":
                 {
                     var fp = DioramaMesh.ChamferedRect(p.Num("w", 1.6f), p.Num("d", 1.2f), p.Num("cut", 0.32f), p.Seed, 0.08f);
-                    pieces.Add(new Piece { Mesh = DioramaMesh.Block(fp, p.Num("h", 1f), p.Num("chamfer", 0.12f), p.Num("sink", 0.2f)), Surface = surface, Shadow = p.ShadowOr(true) });
+                    var bm = DioramaMesh.Block(fp, p.Num("h", 1f), p.Num("chamfer", 0.12f), p.Num("sink", 0.2f));
+                    if (S2S_AoAmount(p, out var aoAmt)) bm = DioramaMesh.S2S_SideAo(bm, aoAmt);   // 段2 C1-1: "ao"・"aoAmount" を書いた時だけ (無ければ Block の出力のまま)
+                    pieces.Add(new Piece { Mesh = bm, Surface = surface, Shadow = p.ShadowOr(true) });
                     break;
                 }
+                case "rail":
+                {
+                    // 段2 C1-2 (レーン S): 線路 = 枕木 (surface・既定 wood) とレール 2 本 (railSurface・既定 iron が無ければ rock) の2つの形
+                    float gauge = p.Num("gauge", 1.2f);
+                    DioramaMesh.S2S_Rail(p.Num("length", 8f), gauge, p.Num("railW", 0.08f), p.Num("railH", 0.1f), p.Num("sleeperLen", gauge + 0.6f),
+                        p.Num("sleeperW", 0.22f), p.Num("sleeperH", 0.07f), p.Vec2("sleepers", new Vector2(0.8f, 1.3f)), p.Seed, S2S_AoOf(p), out var rails, out var sleepers);
+                    string railSurface = S2S_Str(p, "railSurface") ?? (L.Surfaces.ContainsKey("iron") ? "iron" : "rock");
+                    S2S_CheckSurface(ctx, p, surface);
+                    S2S_CheckSurface(ctx, p, railSurface);
+                    pieces.Add(new Piece { Mesh = sleepers, Surface = surface, Shadow = p.ShadowOr(true) });
+                    pieces.Add(new Piece { Mesh = rails, Surface = railSurface, Shadow = p.ShadowOr(true) });
+                    S2S_Count(p.Kind);
+                    break;
+                }
+                case "arch":
+                    // 段2 C1-3 (レーン S): 大門・半アーチ・池の橋 (rise・crown は書かなければ既定 = 負の数を渡す)
+                    S2S_CheckSurface(ctx, p, surface);
+                    pieces.Add(new Piece
+                    {
+                        Mesh = DioramaMesh.S2S_Arch(p.Num("w", 4f), p.Num("h", 4.5f), p.Num("d", 1f), p.Num("pier", 0.8f), p.Has("rise") ? Mathf.Max(0f, p.Num("rise", 0f)) : -1f,
+                            (int)p.Num("segs", 10f), S2S_Bool(p, "half", false), S2S_Bool(p, "bridge", false), S2S_Bool(p, "keystone", false),
+                            p.Has("crown") ? Mathf.Max(0f, p.Num("crown", 0f)) : -1f, p.Num("sink", 0.15f), S2S_AoOf(p)),
+                        Surface = surface, Shadow = p.ShadowOr(true),
+                    });
+                    S2S_Count(p.Kind);
+                    break;
+                case "pillar":
+                {
+                    // 段2 C1-4 (レーン S): 角柱＋柱頭＋台座。"broken": true は高さの 0.3 倍だけ欠く
+                    float h = p.Num("h", 5f);
+                    var bt = p.Raw != null ? p.Raw["broken"] : null;
+                    float broken = bt != null && bt.Type == JTokenType.Boolean ? ((bool)bt ? 0.3f * h : 0f) : Mathf.Max(0f, p.Num("broken", 0f));
+                    S2S_CheckSurface(ctx, p, surface);
+                    pieces.Add(new Piece
+                    {
+                        Mesh = DioramaMesh.S2S_Pillar(p.Num("w", 0.9f), p.Num("d", 0.9f), h, p.Num("capH", 0.35f), p.Num("capOver", 0.15f), p.Num("baseH", 0.3f), p.Num("baseOver", 0.12f),
+                            p.Num("chamfer", 0.06f), broken, S2S_Bool(p, "fluted", false), p.Seed, p.Num("sink", 0.15f), S2S_AoOf(p)),
+                        Surface = surface, Shadow = p.ShadowOr(true),
+                    });
+                    S2S_Count(p.Kind);
+                    break;
+                }
+                case "halo":
+                    // 段2 C1-5 (レーン S): 灯の暈 (まとめない・影なし・カメラ向きは OnCameraLayout が向け直す)
+                    S2S_BuildHalo(ctx, p, pos, surface, scale);
+                    return;
                 case "rock":
                     pieces.Add(new Piece { Mesh = DioramaMesh.Rock(p.Seed, p.Num("r", 0.6f), p.Num("h", 0.7f), (int)p.Num("sides", 6f), p.Num("squash", 0.8f)), Surface = surface, Shadow = p.ShadowOr(true) });
                     break;
@@ -744,7 +1074,7 @@ namespace DeckRogue.Game
             }
 
             // 後で FBX に差し替える口: Resources/Stage/Act<N>/Models/<model|name|kind> に Mesh (FBX の中の形・Read/Write 有効) があれば、コードの形の代わりに使う
-            if (pieces.Count > 0 && (p.Kind == "block" || p.Kind == "rock" || p.Kind == "rig" || p.Kind == "fence" || p.Kind == "marker" || (p.Kind == "tree" && pieces[0].Surface != "relief")))
+            if (pieces.Count > 0 && (p.Kind == "block" || p.Kind == "rock" || p.Kind == "rig" || p.Kind == "fence" || p.Kind == "marker" || p.Kind == "arch" || p.Kind == "pillar" || (p.Kind == "tree" && pieces[0].Surface != "relief")))
             {
                 var model = ModelFor(ctx, p);
                 if (model != null) { pieces[0].Mesh = model; pieces[0].Local = Matrix4x4.identity; }
@@ -1155,6 +1485,7 @@ namespace DeckRogue.Game
         public static void OnCameraLayout(Vector3 camPos, Quaternion camRot, float fov)
         {
             _hasCam = true; _camPos = camPos; _camRot = camRot; _camFov = fov;
+            if (_halos.Count > 0) S2S_FaceHalos(camPos);   // 段2 (レーン S): カメラ向きの暈 (無ければ何もしない)
             if (_frames.Count == 0) return;
             float tanV = Mathf.Tan(Mathf.Clamp(fov, 1f, 170f) * 0.5f * Mathf.Deg2Rad);
             float aspect = Screen.width > 0 && Screen.height > 0 ? Screen.width / (float)Screen.height : 16f / 9f;
@@ -1198,6 +1529,12 @@ namespace DeckRogue.Game
                 if (e.Transform == null) continue;
                 if (e.Spin != 0f) e.Transform.localRotation = e.BaseRotation * Quaternion.Euler(0f, 0f, time * e.Spin);
                 else if (e.Sway != 0f && e.SwayPeriod > 0f) e.Transform.localRotation = e.BaseRotation * Quaternion.Euler(0f, 0f, e.Sway * Mathf.Sin(time * Mathf.PI * 2f / e.SwayPeriod));
+                // 段2 (レーン S): 暈の揺らぎ (Flicker 0 の物 = 今までの全部は通らない)。det の撮影では揺らさない (組んだ時の大きさのまま)
+                if (e.Flicker > 0f && !HD2DFlags.Det)
+                {
+                    float n = 0.6f * Mathf.Sin(time * 7.3f + e.FlickerPhase) + 0.4f * Mathf.Sin(time * 12.9f + e.FlickerPhase * 1.7f);
+                    e.Transform.localScale = e.BaseScale * (1f + 0.1f * e.Flicker * n);
+                }
             }
         }
 
@@ -1265,6 +1602,7 @@ namespace DeckRogue.Game
             var dyn = new List<string>();
             foreach (var e in Dynamic) dyn.Add(e.Name);
             o["dynamicNames"] = dyn;
+            if (S2S_Built.Count > 0) o["stage2"] = S2S_DebugInfo();   // 段2 (レーン S): 新 kind を組んだ時だけ (幕1 の記録は変わらない)
             return o;
         }
 
@@ -1286,6 +1624,8 @@ namespace DeckRogue.Game
             // 三周目 (レーン S) の記録
             R3S_NormalRequested = false; R3S_NormalOn = false; R3S_NormalFound = 0; R3S_NormalTotal = 0;
             R3S_MistParts = 0; R3S_SwayParts = 0; R3S_SwayMaterials.Clear();
+            // 段2 (レーン S)
+            _halos.Clear(); S2S_Built.Clear();
         }
 
         static void Own(UnityEngine.Object o) { if (o != null) _owned.Add(o); }
@@ -1345,11 +1685,13 @@ namespace DeckRogue.Game
                     if (PhoneHidden(p)) { st.PhoneHidden++; continue; }
                     if (R3I_FlagHidden(p)) continue;   // 三周目 統合: 旗の時だけの部品 ("onlyWith")   // スマホで組まない部品 (二周目 レーン D 段2。部品の数には数える = 設計図の数)
                     if (p.Kind == "litter") { st.Litter++; continue; }   // 地面の小札 (背丈 0.48 unit 以下) は座席の帯にも置く (W3b P22)
-                    if (p.Kind == "slab" || p.Kind == "fog" || p.Kind == "shaft" || p.Kind == "frame" || p.Kind == "mist") continue;   // 霧の板 (三周目) も光の面と同じく数えない
+                    if (p.Kind == "slab" || p.Kind == "fog" || p.Kind == "shaft" || p.Kind == "frame" || p.Kind == "mist" || p.Kind == "halo") continue;   // 霧の板 (三周目)・暈 (段2) も光の面と同じく数えない
                     float reach = p.Kind == "rock" ? p.Num("r", 0.6f) : p.Kind == "block" ? Mathf.Max(p.Num("w", 1.6f), p.Num("d", 1.2f)) * 0.5f
                         : p.Kind == "tree" ? p.Num("r", 0.55f) + p.Num("rootLen", 1.6f) : p.Kind == "fence" ? p.Num("len", 3f) * 0.5f : p.Kind == "rig" ? 1.5f : 0.3f;
-                    PlaceOf(p, out float pt, out float ps, out _, out _);   // スマホなら "phone" の t・s
-                    if (pt + reach > SeatT0 && pt - reach < SeatT1 && ps + reach > SeatS0 && ps - reach < SeatS1 && !p.Abs)
+                    PlaceOf(p, out float pt, out float ps, out _, out float pscale);   // スマホなら "phone" の t・s
+                    float reachT = reach, reachS = reach;   // 今までの kind は t と s が同じ半径 (今の式のまま)
+                    if (S2S_ReachTS(p, pscale, out var rt2, out var rs2)) { reachT = rt2; reachS = rs2; }   // 段2: rail・arch・pillar は道の向きと横で別の届き
+                    if (pt + reachT > SeatT0 && pt - reachT < SeatT1 && ps + reachS > SeatS0 && ps - reachS < SeatS1 && !p.Abs)
                     { st.SeatIntrusions++; st.IntrusionNames.Add(PartObjectName(p)); }
                 }
             }

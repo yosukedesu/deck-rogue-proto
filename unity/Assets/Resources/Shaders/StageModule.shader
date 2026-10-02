@@ -42,6 +42,13 @@
 //   R14 _SwayAmp > 0: _UV_MESH の頂点を世界の x へ sin 2種で揺らす。重み = 1 − 頂点色の a (ReliefMesh.R3S_SwayCopy が a = 1 − 部品の sway × 根元からの割合 で書く。
 //       揺らさない部品は今までどおり a = 1 = 重み 0)。_SwayFreq = (x 周波数1 Hz・y 周波数2 Hz・z 場所による位相 rad/unit)。影・DepthOnly・DepthNormals も同じ変位。
 //       配列の材質 (地形。頂点色の a = 苔) は _UV_MESH が無いので揺れない。
+//
+// 段2 (2026-10-03・レーン S。約束 docs/design/hd2d-stage2/contracts.md §C1-6・計画 docs/design/hd2d-stage2-plan-2026-10-02.md §2 S/M)。既定 (_HitReceive = 1) なら三周目と同じ画:
+//   _HitReceive = 技の光 (印の付いた光) の当たりの倍率。印は StageHitReceive.cs (C#) が全体値 _HD2DHitLights[8] (xyz = 光の世界の位置・w = 1)・
+//   _HD2DHitLightCount に書く。点光源のループ (Forward+ の cluster のループと通常のループ) で、_HitReceive ≠ 1 かつ印が 1 個以上の時だけ
+//   光の位置 (URP の _AdditionalLightsPosition) を配列と比べ、一致した光の d と d·(1 − 影) を別にも数え、ループの後で (_HitReceive − 1) 倍を
+//   direct と lost に足す (0 で下を切る) = 印の付いた光だけ _HitReceive 倍で受ける。条件が偽なら新しい行は何もしない (今の式・今の順のまま)。
+//   平行光の追加のループ (技の光は点光源) と頂点の光の版 (_ADDITIONAL_LIGHTS_VERTEX) は分けない。光の設計図 materials.<名前>.hitReceive が材質に書く (レーン B)。
 Shader "DeckRogue/StageModule"
 {
     Properties
@@ -78,6 +85,8 @@ Shader "DeckRogue/StageModule"
         // 三周目 R14 (レーン S): 揺れ (重み = 1 − 頂点色の a)。0 = 揺れない = 二周目
         _SwayAmp ("Sway Amplitude (unit)", Float) = 0
         _SwayFreq ("Sway Freq (x Hz, y Hz, z phase rad/unit)", Vector) = (0.23, 0.61, 0.12, 0)
+        // 段2 (レーン S): 技の光 (印の付いた光) の当たりの倍率。1 = 今と同じ
+        _HitReceive ("Hit Light Receive (marked lights)", Float) = 1
     }
     SubShader
     {
@@ -103,6 +112,8 @@ Shader "DeckRogue/StageModule"
             // 三周目 (レーン S): R7 法線アトラス・R14 揺れ
             float _NormalAtlasOn, _NormalAtlasStrength, _SwayAmp;
             float4 _SwayFreq;
+            // 段2 (レーン S): 技の光の当たりの倍率 (1 = 今と同じ)
+            float _HitReceive;
         CBUFFER_END
 
         // 影と深度のパスのアルファ (メッシュの UV の _BaseMap だけ。配列のタイルは不透明の前提)
@@ -265,6 +276,40 @@ Shader "DeckRogue/StageModule"
             //                  y = 明るさの上 (これより明るい所は寄せない)・z = 明るい所の彩度の倍率 (0 か 1 = そのまま)。明るさ = 出力の線形の Luminance (後処理の前)
             float4 _HD2DNightGrade;
             float4 _HD2DNightGradeRange;
+            // 段2 (レーン S): 技の光の印。StageHitReceive.cs が描く前に書く (書かれていない = 数 0 = 使わない)。
+            // _HD2DHitLights[k]: xyz = 印の付いた光の世界の位置・w = 1 なら有効。_HD2DHitLightCount = 有効な数 (0〜HD2D_HIT_LIGHTS_MAX)
+            #define HD2D_HIT_LIGHTS_MAX 8
+            float4 _HD2DHitLights[HD2D_HIT_LIGHTS_MAX];
+            float _HD2DHitLightCount;
+
+            // 段2 (レーン S): 点光源のループの添字 (LIGHT_LOOP の lightIndex) から、その光の位置 (xyz・w = 1 なら点光源/スポット・0 なら平行光)。
+            // URP の GetAdditionalLight と同じ読み方 (cluster のループはそのままの添字・通常のループは物ごとの添字に直す・構造化バッファの版も)
+            float4 HD2D_AdditionalLightPosition(uint loopIndex)
+            {
+            #if USE_CLUSTER_LIGHT_LOOP
+                int li = (int)loopIndex;
+            #else
+                int li = GetPerObjectLightIndex(loopIndex);
+            #endif
+            #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+                return _AdditionalLightsBuffer[li].position;
+            #else
+                return _AdditionalLightsPosition[li];
+            #endif
+            }
+
+            // 段2 (レーン S): その光に技の光の印が付いているか (位置が印の配列のどれかと 1 cm 以内)
+            bool HD2D_IsHitLight(uint loopIndex)
+            {
+                float4 lp = HD2D_AdditionalLightPosition(loopIndex);
+                bool hit = false;
+                [unroll] for (int k = 0; k < HD2D_HIT_LIGHTS_MAX; k++)
+                {
+                    float3 dl = lp.xyz - _HD2DHitLights[k].xyz;
+                    hit = hit || ((float)k < _HD2DHitLightCount && _HD2DHitLights[k].w > 0.5 && dot(dl, dl) < 1e-4);
+                }
+                return hit && lp.w > 0.5;
+            }
 
             half3 HD2D_Fog2(half3 col, float3 posWS, half lobe)
             {
@@ -504,6 +549,10 @@ Shader "DeckRogue/StageModule"
                 half3 amb = max(half3(0.0h, 0.0h, 0.0h), half3(SampleSH(nPerturbed))) * aoFactor.indirectAmbientOcclusion;
                 half3 direct = 0;
                 half3 lost = 0;
+                // 段2 (レーン S): 技の光 (印の付いた光) の寄与を別にも数える。_HitReceive が 1 (既定) か印が 0 個なら数えない = 下の direct・lost は今と同じ式
+                bool hitOn = _HitReceive != 1.0 && _HD2DHitLightCount > 0.5;
+                half3 hitDirect = 0;
+                half3 hitLost = 0;
 
                 Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);
             #ifdef _LIGHT_LAYERS
@@ -540,12 +589,27 @@ Shader "DeckRogue/StageModule"
                         half3 d = al.color * (al.distanceAttenuation * saturate(dot(nPerturbed, al.direction)));
                         direct += d;
                         lost += d * (1.0h - al.shadowAttenuation);
+                        [branch] if (hitOn)   // 段2 (レーン S): 技の光の分 (hitOn が偽なら印の比べもしない = 今の光のループの重さのまま)
+                        {
+                            if (HD2D_IsHitLight(lightIndex))
+                            {
+                                hitDirect += d;
+                                hitLost += d * (1.0h - al.shadowAttenuation);
+                            }
+                        }
                     }
                 LIGHT_LOOP_END
             #endif
             #ifdef _ADDITIONAL_LIGHTS_VERTEX
                 direct += i.vertexLight;
             #endif
+                // 段2 (レーン S): 技の光だけ _HitReceive 倍で受ける (足すのは (_HitReceive − 1) 倍の差分。hitOn が偽なら direct・lost はそのまま)
+                if (hitOn)
+                {
+                    half k1 = half(_HitReceive) - 1.0h;
+                    direct = max(half3(0.0h, 0.0h, 0.0h), direct + k1 * hitDirect);
+                    lost = max(half3(0.0h, 0.0h, 0.0h), lost + k1 * hitLost);
+                }
 
                 half fullL = Luminance(amb + direct);
                 half lostL = Luminance(lost);

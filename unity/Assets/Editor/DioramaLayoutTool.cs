@@ -92,7 +92,7 @@ namespace DeckRogue.EditorTools
                 bool abs = o["abs"] != null && o["abs"].Type == JTokenType.Boolean && (bool)o["abs"];
                 float y = abs ? pos.y : pos.y - Diorama.HeightAtPath(t, s);
                 float worldYaw = (Quaternion.Inverse(Diorama.Root.rotation) * tr.rotation).eulerAngles.y;
-                bool pathAligned = kind == "block" || kind == "rig" || kind == "fence" || kind == "marker";
+                bool pathAligned = Diorama.IsPathAligned(kind);   // 段2: rail・arch・pillar も道に沿う部品 (Diorama の判定と同じ)
                 float yaw = Norm180(pathAligned ? worldYaw - layout.PathYaw : worldYaw);
                 float scale = Mathf.Abs(tr.localScale.x);
                 bool any = false;
