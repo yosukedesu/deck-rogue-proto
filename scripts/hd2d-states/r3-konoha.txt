@@ -1,0 +1,27 @@
+# このはの色の見比べ (2026-10-02 統合・ユーザー「このはの色が白くなりすぎている」)。1行 = 名前|PC または PH|STATE
+PC-K-def-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1
+PC-K-def-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1
+PC-K-s2-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3char_s2
+PC-K-s2-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3char_s2
+PC-K-k1-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3k1
+PC-K-k1-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3k1
+PC-K-k2-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3k2
+PC-K-k2-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3k2
+PC-K-k3-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3k3
+PC-K-k3-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3k3
+PC-K-r2-unitsonly|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r2+look_act1_r2char;uilayout=r2;deskshade=full
+PC-K-r2-hideui|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r2+look_act1_r2char;uilayout=r2;deskshade=full
+PC-K-def|PC|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1
+PH-K-def-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;tier=phone
+PH-K-def-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;tier=phone
+PH-K-s2-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3char_s2;tier=phone
+PH-K-s2-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3char_s2;tier=phone
+PH-K-k1-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3k1;tier=phone
+PH-K-k1-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3k1;tier=phone
+PH-K-k2-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3k2;tier=phone
+PH-K-k2-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3k2;tier=phone
+PH-K-k3-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r3k3;tier=phone
+PH-K-k3-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r3k3;tier=phone
+PH-K-r2-unitsonly|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;unitsonly=1;look=look_act1_r2+look_act1_r2char;uilayout=r2;deskshade=full;tier=phone
+PH-K-r2-hideui|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;hideui=1;look=look_act1_r2+look_act1_r2char;uilayout=r2;deskshade=full;tier=phone
+PH-K-def|PH|phase=combat;enemy=enemy_brute;boss=1;stage=diorama;hd2d=slice;dumplayout=1;tier=phone
