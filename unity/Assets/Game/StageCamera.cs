@@ -15,6 +15,10 @@
 //  ・待機の漂い (旗 drift=1): 描画用のカメラだけを場の中心 (座席の帯の重心) を軸にごく小さく回す。幅は座席 (足元と頭) の画面の動きが
 //    合計 1.5px 以内になるよう LayoutCamera で計算する。撮影 (-det・-autopilot・-statesfile) では切る。
 //  ・LayoutRotation (揺れと寄りと漂いを含まない回転)・DebugCameraInfo (dumplayout の stage.camera)・額縁の記録 (LayoutDumpers["frames"])。
+// 段2 (2026-10-03 レーン M・約束 docs/design/hd2d-stage2/contracts.md §C5): StageDriver が毎フレームの頭で StageMotion.Tick を呼び、寄り (StageMotion) が
+//   走っている間だけ、描画用のカメラを寄りの姿勢 (1フレームで切り替え) に置く。寄りが終わったフレームでレイアウトの回転へ戻す (戻しも切り替え)。
+//   ズームパンチ・ドリー・漂いの時計はそのまま進め (寄りの間は位置に足さない)、揺れは寄りの姿勢にも足す (乱数を引く回数は今と同じ)。
+//   寄りが走っていない時 (門 StageMotion.On が偽なら一度も走らない) は今の道を1文字も変えずに通る。StageMotion の口 (MotionLayoutPos・MotionGlowMaterial) もここ。
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -473,6 +477,7 @@ namespace DeckRogue.Game
         {
             ComputeDrift();
             PushLook();
+            StageMotion.LayoutChanged();   // 段2 (レーン M): 寄りの最中なら戻す (寄りの姿勢は前のレイアウトから作った物。寄っていなければ何もしない = 門が偽なら何も起きない)
             Diorama.OnCameraLayout(_camBase, _layoutRot, fov);   // 額縁をレイアウト用のカメラに合わせて置き直す (箱庭が無ければ値を覚えるだけ)
         }
 
@@ -605,6 +610,22 @@ namespace DeckRogue.Game
             _driver.DollyAmp = units; _driver.DollyIn = inDur; _driver.DollyHold = hold; _driver.DollyOut = outDur; _driver.DollyT = 0f; _driver.DollyOn = true;
         }
 
+        // ---------------------------------------------------------------- 段2 の口 (2026-10-03 レーン M。呼ぶのは StageMotion だけ)
+
+        /// <summary>レイアウト用のカメラの位置 (揺れ・寄り・漂いを含まない。UI の座席と額縁はこの位置と LayoutRotation で写す)。寄りの姿勢はここから作る</summary>
+        internal static Vector3 MotionLayoutPos => _camBase;
+
+        /// <summary>
+        /// 動き (StageMotion) の材質: 粒の光の絵 (GlowDotTex) か、無地の白 (plate = true・敵の大技の板)。粒と同じ材質 (Resources の ParticleSprite = Sprites/Default の写し。
+        /// ビルドに入っている材質なので変種の抜けが無い)。板は描く順を 4000 (重ね) にして舞台の物の後に描く。呼ぶたびに新しい材質
+        /// </summary>
+        internal static Material MotionGlowMaterial(bool plate)
+        {
+            var m = GlowMaterial(plate ? Texture2D.whiteTexture : GlowDotTex());
+            if (plate) m.renderQueue = 4000;
+            return m;
+        }
+
         class StageDriver : MonoBehaviour
         {
             public float ShakeAmp, ShakeT, ShakeDur = 0.3f;
@@ -612,9 +633,11 @@ namespace DeckRogue.Game
             public float DollyAmp, DollyIn, DollyHold, DollyOut, DollyT; public bool DollyOn;   // ゆっくり寄って戻る
             int _lastW, _lastH, _settle;
             int _edgeSig; bool _edgeSeen;
+            bool _cuApplied;   // 段2 (レーン M): 寄りの姿勢を当てている (寄りが終わったフレームで回転をレイアウトへ戻す)
             void LateUpdate()
             {
                 if (_cam == null) return;
+                StageMotion.Tick(Time.deltaTime);   // 段2 (レーン M): 寄り・暗転・板の時計 (何も走っていなければ何もしない。門が偽なら一度も走らない)
                 // 画面の切り欠き・safeArea が変わったら (折りたたみ端末・マルチウィンドウ)、2フレーム後に組み直す (左端の部品が UiKit.CutoutLeft で穴を避ける。2026-09-29 p10)。
                 // Screen.cutouts は配列を作るので 30 フレームに1回だけ見る (向きは固定なので実質は起動時の1回)
                 if (!_edgeSeen || Time.frameCount % 30 == 0)
@@ -673,6 +696,20 @@ namespace DeckRogue.Game
                 push *= DistanceRatio;   // 寄りの量は画角 36° の時の量 = 今の距離の比を掛けて同じ割合だけ寄る (P10。36° なら ×1)
                 var basePos = DriftBase();
                 _cam.transform.position = basePos + off + _fwd * push;
+                // 段2 (2026-10-03 レーン M): 寄りの間は寄りの姿勢 (StageMotion が対象を軸に作った位置と回転) に揺れだけを足して置く = 1フレームの切り替え。
+                // 寄りが終わったフレームで回転をレイアウトの回転へ戻す (漂いが回転を当てている時は漂いのまま)。寄りが走っていなければ何もしない
+                Vector3 cuPos; Quaternion cuRot;
+                if (StageMotion.TryCloseUpPose(out cuPos, out cuRot))
+                {
+                    _cam.transform.rotation = cuRot;
+                    _cam.transform.position = cuPos + off;
+                    _cuApplied = true;
+                }
+                else if (_cuApplied)
+                {
+                    _cuApplied = false;
+                    if (!_driftApplied) _cam.transform.rotation = _layoutRot;
+                }
                 float t = Time.time;
                 for (int i = 0; i < _world.childCount; i++)
                 {

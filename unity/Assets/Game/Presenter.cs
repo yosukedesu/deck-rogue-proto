@@ -118,11 +118,13 @@ namespace DeckRogue.Game
             PlanDollBatches(log, Math.Min(_seen, log.Count), batchAt, batchLast);   // 人形の粒を束ねる (2026-09-21)
             var hitAt = new Dictionary<int, HitPlan>();
             PlanCardHits(log, Math.Min(_seen, log.Count), hitAt);   // 自分の札の当たりの形と多段の位置 (2026-09-22)
+            Dictionary<int, StageMotion.Shot> motionAt = null; HashSet<int> motionDim = null;
+            if (StageMotion.On) PlanMotion(g, log, Math.Min(_seen, log.Count), hitAt, finishing, out motionAt, out motionDim);   // 段2 レーン M: 寄りと暗転 (門が偽なら計画しない = 今の演出のまま)
             for (int i = Math.Min(_seen, log.Count); i < log.Count; i++)
             {
                 var ev = log[i];
                 float gap;
-                if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); var cctx = new ReactionCtx { Prev = visibleBoard }; try { Show(g, fx, cp, true, cctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは即・間を取らない
+                if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); var cctx = new ReactionCtx { Prev = visibleBoard, MotionDim = motionDim != null && motionDim.Contains(i) }; try { Show(g, fx, cp, true, cctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは即・間を取らない
                 if (batchAt.ContainsKey(i)) gap = batchLast.Contains(i) ? 0.3f : 0.04f;   // 束ねた粒は 0.04 秒刻み。最後の1つで合計の数字を出すので少し置く
                 else if (ev is GameEvent_DamageDealt) gap = (hitAt.ContainsKey(i) && hitAt[i].Volley && !hitAt[i].VolleyLast) ? 0.05f : 0.4f;   // 全体攻撃は一斉に (2026-09-22)
                 else if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) gap = 0.6f;
@@ -140,6 +142,7 @@ namespace DeckRogue.Game
                 if (batchAt.ContainsKey(i)) { ctx.Batch = batchAt[i]; ctx.BatchLast = batchLast.Contains(i); }
                 if (hitAt.ContainsKey(i)) ctx.Hit = hitAt[i];
                 if (i == finishing) { ctx.FinishingBlow = true; gap += 0.35f; }   // とどめはヒットストップぶん長く見せる
+                if (motionAt != null && motionAt.ContainsKey(i)) ctx.Motion = motionAt[i];   // 段2 レーン M (門が偽なら motionAt は null)
                 Tween.After(delay, () => { try { Show(g, fx, captured, true, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += gap;
             }
@@ -179,6 +182,8 @@ namespace DeckRogue.Game
             PlanDollBatches(log, _seen, batchAt, batchLast);   // 人形の粒を束ねる (2026-09-21)
             var hitAt = new Dictionary<int, HitPlan>();
             PlanCardHits(log, _seen, hitAt);   // 自分の札の当たりの形と多段の位置 (2026-09-22)
+            Dictionary<int, StageMotion.Shot> motionAt = null; HashSet<int> motionDim = null;
+            if (StageMotion.On) PlanMotion(g, log, _seen, hitAt, finishing, out motionAt, out motionDim);   // 段2 レーン M: 寄りと暗転 (門が偽なら計画しない = 今の演出のまま)
             // 差し替えられた意図の札は、組み直しで既に新しい札になっている。豹変の瞬間 (ShowEnemyAct) に跳ねて出すまで隠す (2026-09-17 ④)
             for (int i = _seen; i < log.Count; i++)
                 if (log[i] is GameEvent_EnemyInterrupted ei && ei.Replaced)
@@ -190,13 +195,14 @@ namespace DeckRogue.Game
             for (int i = _seen; i < log.Count; i++)
             {
                 var ev = log[i];
-                if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); var cctx = new ReactionCtx { Prev = prevBoard }; try { Show(g, fx, cp, false, cctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
+                if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); var cctx = new ReactionCtx { Prev = prevBoard, MotionDim = motionDim != null && motionDim.Contains(i) }; try { Show(g, fx, cp, false, cctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
                 if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, prevBoard);
                 if (batchAt.ContainsKey(i)) { ctx.Batch = batchAt[i]; ctx.BatchLast = batchLast.Contains(i); }
                 if (hitAt.ContainsKey(i)) ctx.Hit = hitAt[i];
                 if (i == finishing) ctx.FinishingBlow = true;
+                if (motionAt != null && motionAt.ContainsKey(i)) ctx.Motion = motionAt[i];   // 段2 レーン M (門が偽なら motionAt は null)
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)。束ねた人形の粒は 0.04 秒 (2026-09-21)
                 Tween.After(delay, () => { try { Show(g, fx, captured, false, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : (ctx.Hit != null && ctx.Hit.Volley && !ctx.Hit.VolleyLast) ? 0.03f : ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
@@ -239,6 +245,7 @@ namespace DeckRogue.Game
                 {
                     // 上部バーの手番の札の番号を進める「敵の番 ② / 3」(敵が2体以上の時。順送りの間だけ。2026-09-29)
                     if (live) { int cnt = PhaseEnemyCount(g, ctx, ex.EnemyIndex); BattleScreen.SetPhase(g, 1, cnt > 1 ? ex.EnemyIndex : -1, cnt); }
+                    if (ex.Kind == "attack" && StageMotion.On) MotionEnemyBig(g, ex.EnemyIndex, ctx);   // 段2 レーン M: 予告つき大技の赤い合図とフラッシュ (門が偽なら呼ばない)
                     var pan = g.Anchor("enemy" + ex.EnemyIndex);
                     var spr = g.Battle != null ? g.Battle.EnemySprite(ex.EnemyIndex) : null;
                     if (pan == null) return;
@@ -1373,7 +1380,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; }   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
+        sealed class ReactionCtx { public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; public StageMotion.Shot Motion; public bool MotionDim; }   // Motion＝この当たりで寄る (段2 レーン M・門が偽なら null)・MotionDim＝この札で舞台を暗くする   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
 
         /// <summary>
         /// 自分の札の当たりの計画 (2026-09-22 ユーザー「攻撃エフェクトがどの攻撃でも同じ」): 札 (CardPlayed / ReactionTriggered) の後に続く自分由来の DamageDealt
@@ -1528,6 +1535,112 @@ namespace DeckRogue.Game
             }
         }
 
+        // ---- 段2 (2026-10-03 レーン M・約束 docs/design/hd2d-stage2/contracts.md §C5・分析書 §8): 寄りと暗転の計画。門 (StageMotion.On) が真の時だけ呼ぶ ----
+
+        /// <summary>
+        /// from 以降の自分の打撃 (人形・置物の SourceUid つきは除く。とどめは除かない) ごとに寄りの種類を決め (shots)、寄りを含む札の CardPlayed の位置を dims に入れる。
+        /// とどめ = 幕ボスなら bossFinish・ほかは finish ／ X 札・全体攻撃の最後の1発 (札の与ダメの合計が boostMin 以上か大きい当たりを含む) = boost ／
+        /// 大きい当たり (与ダメ bigMin 以上か急所・全体の途中の1体を除く) = big。盾に全部吸われた打撃は寄らない。札の区切りは PlanCardHits と同じ
+        /// </summary>
+        static void PlanMotion(GameRoot g, IReadOnlyList<GameEvent> log, int from, Dictionary<int, HitPlan> hitAt, int finishing,
+            out Dictionary<int, StageMotion.Shot> shots, out HashSet<int> dims)
+        {
+            var outShots = new Dictionary<int, StageMotion.Shot>();
+            var outDims = new HashSet<int>();
+            shots = outShots; dims = outDims;
+            bool boss = false;
+            try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); boss = node != null && node.Type == MapNodeTypes.Boss; } catch (Exception) { }
+            int bigMin = StageMotion.BigMin, boostMin = StageMotion.BoostMin;
+            int card = -1;
+            var run = new List<int>();
+            void Flush()
+            {
+                if (run.Count > 0)
+                {
+                    int sum = 0; bool anyBig = false;
+                    foreach (var idx in run) { var d = (GameEvent_DamageDealt)log[idx]; sum += Math.Max(0, d.Amount); if (d.Amount >= bigMin || d.Exposed == true) anyBig = true; }
+                    bool any = false;
+                    foreach (var idx in run)
+                    {
+                        var d = (GameEvent_DamageDealt)log[idx];
+                        if (d.HpLoss <= 0 && (d.Blocked ?? 0) > 0) continue;   // 盾に全部吸われた (2Dも盾の面で受ける)
+                        HitPlan hp; hitAt.TryGetValue(idx, out hp);
+                        bool last = hp != null && hp.Index == hp.Total - 1 && (!hp.Volley || hp.VolleyLast);
+                        bool volleyTail = hp != null && hp.Volley && !hp.VolleyLast;
+                        bool big = d.Amount >= bigMin || d.Exposed == true;
+                        string kind = null;
+                        if (idx == finishing) kind = boss ? "bossFinish" : "finish";
+                        else if (last && (hp.Volley || (hp.Def != null && hp.Def.XCost == true)) && (sum >= boostMin || anyBig)) kind = "boost";   // X=1 の5点のような小さい札では寄らない
+                        else if (big && !volleyTail) kind = "big";
+                        var shot = StageMotion.ShotFor(kind);
+                        if (shot != null) { outShots[idx] = shot; if (StageMotion.DimFor(kind)) any = true; }
+                    }
+                    // 同じ札で同じ敵に後の寄りがある寄りは、時間が切れても次の当たりを待つ (寄り直しの切り返しを出さない)
+                    var lastShotOf = new Dictionary<int, int>();
+                    foreach (var idx in run) if (outShots.ContainsKey(idx)) lastShotOf[((GameEvent_DamageDealt)log[idx]).EnemyIndex ?? 0] = idx;
+                    foreach (var idx in run)
+                    {
+                        StageMotion.Shot sh;
+                        if (!outShots.TryGetValue(idx, out sh)) continue;
+                        int lastIdx;
+                        if (lastShotOf.TryGetValue(((GameEvent_DamageDealt)log[idx]).EnemyIndex ?? 0, out lastIdx) && lastIdx != idx) sh.Chain = true;
+                    }
+                    if (any && card >= 0) outDims.Add(card);
+                }
+                run.Clear();
+            }
+            for (int i = Math.Max(0, from); i < log.Count; i++)
+            {
+                var e = log[i];
+                if (e is GameEvent_CardPlayed) { Flush(); card = i; }
+                else if (e is GameEvent_ReactionTriggered || e is GameEvent_TurnEnded || e is GameEvent_TurnStarted || e is GameEvent_EnemyActionExecuting || e is GameEvent_GearUsed) { Flush(); card = -1; }
+                else if (e is GameEvent_DamageDealt dd && dd.Source == "player" && dd.SourceUid == null) run.Add(i);
+            }
+            Flush();
+            // とどめが人形・置物の打撃 (束ねていない1つ) でも寄る
+            if (finishing >= Math.Max(0, from) && finishing < log.Count && !outShots.ContainsKey(finishing) && log[finishing] is GameEvent_DamageDealt fd && fd.Source == "player")
+            {
+                var shot = StageMotion.ShotFor(boss ? "bossFinish" : "finish");
+                if (shot != null) outShots[finishing] = shot;
+            }
+        }
+
+        /// <summary>
+        /// 寄りの最中に、寄りの外の者に演出が出る出来事なら寄りを戻す (StageMotion.Interrupt)。寄りは軸の敵の画面の位置だけを保ち、2Dの演出はレイアウトの座標で描くので、
+        /// 別の敵・自分・手番の帯は寄りのカメラでは絵とずれる (2026-10-03 反証)。別の敵への寄る当たり (ctx.Motion) は StageMotion.PlayerHit がその敵へ切り替えるので戻さない
+        /// </summary>
+        static void MotionInterruptFor(GameEvent ev, ReactionCtx ctx)
+        {
+            switch (ev)
+            {
+                case GameEvent_DamageDealt d:
+                    if (d.Source != "player") StageMotion.Interrupt("敵の当たり");
+                    else if ((ctx == null || ctx.Motion == null) && StageMotion.CloseUpOnOther(d.EnemyIndex ?? 0)) StageMotion.Interrupt("別の敵への当たり");
+                    break;
+                case GameEvent_EnemyActionExecuting _: StageMotion.Interrupt("敵の行動"); break;
+                case GameEvent_TurnEnded _: case GameEvent_TurnStarted _: StageMotion.Interrupt("手番の区切り"); break;
+                case GameEvent_CardPlayed _: StageMotion.Interrupt("次の札"); break;
+            }
+        }
+
+        /// <summary>敵の攻撃の実行の瞬間: 予告つき大技 (StageMotion.IsEnemyBig) なら赤い合図とフラッシュ。技の色は飛び道具・光線ならその色 (2Dと同じ MissileColor)</summary>
+        static void MotionEnemyBig(GameRoot g, int enemyIndex, ReactionCtx ctx)
+        {
+            var st = ctx != null && ctx.Prev != null ? ctx.Prev : (g != null && g.Rs != null ? g.Rs.Combat : null);
+            if (st == null || enemyIndex < 0 || enemyIndex >= st.Enemies.Count) return;
+            var e = st.Enemies[enemyIndex];
+            var it = e.Intent;
+            if (it == null || it.Kind != "attack") return;
+            EnemyDef def = null;
+            try { def = Content.GetEnemyDef(e.EnemyId); } catch (Exception) { }
+            string moveId = e.IntentMoveId;
+            int total = it.Actual * Math.Max(1, it.Hits ?? 1);
+            if (!StageMotion.IsEnemyBig(def, moveId, total)) return;
+            string style = HitStyle(moveId);
+            Color? band = (style == "beam" || style == "throw") ? MissileColor(moveId) : (Color?)null;
+            StageMotion.EnemyBig(enemyIndex, band);
+        }
+
         /// <summary>とどめの一撃 (2026-09-17 ⑫): 新しい出来事の中で、最後に敵を倒したプレイヤーの打撃。戦闘が決着 (全滅・逃走) した時だけ。無ければ -1</summary>
         static int FinishingBlowIndex(IReadOnlyList<GameEvent> log, int from, GameState combat)
         {
@@ -1652,6 +1765,7 @@ namespace DeckRogue.Game
 
         static void Show(GameRoot g, RectTransform fx, GameEvent ev, bool nudgeHp, ReactionCtx ctx = null)
         {
+            if (StageMotion.CloseUpActive) MotionInterruptFor(ev, ctx);   // 段2 レーン M: 寄りの外の者に演出が出る前に寄りを戻す (寄りが走っていなければ読むだけ = 門が偽なら何も起きない)
             var key = TableSound(ev);
             if (key != null) { Audio.Key(key); return; }
             if (IsTrapEvent(ev)) { ShowTrap(g, fx, ev, ctx ?? new ReactionCtx()); return; }
@@ -1732,7 +1846,11 @@ namespace DeckRogue.Game
                         else if (big && !guardedE && !volleyTail) Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
                         // 舞台の技の光 (2026-09-30 HD-2D 見本 P13): 2Dの当たりと同じ所に点光源。色は当たりの形、大きい当たり (15以上・急所) は強く影あり (PC)。
                         // とどめはその代わりに白・0.3秒・影あり (1つだけ灯す)。stage=diorama だけ・old では何もしない (乱数も Tween も使わない)
-                        if (!guardedE && spr != null) { if (finishing) StageFx.Finish("enemy" + ei); else StageFx.PlayerHit("enemy" + ei, style, big); }
+                        // 段2 (2026-10-03 レーン M): 寄る当たり (計画 ctx.Motion) と寄っている敵への当たりは、寄り・寄りの技の光・火花 (StageMotion) へ。
+                        // 門 (StageMotion.On) が偽なら ctx.Motion は常に null・CloseUpOn は false = 下の今の光のまま
+                        bool motionHit = !guardedE && spr != null && ((ctx != null && ctx.Motion != null) || StageMotion.CloseUpOn(ei));
+                        if (motionHit) StageMotion.PlayerHit(ei, style, ctx != null ? ctx.Motion : null, big, finishing);
+                        else if (!guardedE && spr != null) { if (finishing) StageFx.Finish("enemy" + ei); else StageFx.PlayerHit("enemy" + ei, style, big); }
                         // 数字: 通った量は真鍮の紙、盾に全部吸われたら鋼青、0 は薄く。急所は大きく
                         Color numColor = d.Amount <= 0 ? UiKit.ColDim : (d.HpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;
                         Tween.Float(fx, pos, d.Amount.ToString(), numColor, crit ? 50 : (d.Amount >= 20 ? 46 : 36));
@@ -1957,6 +2075,7 @@ namespace DeckRogue.Game
                     break;
                 case GameEvent_CardPlayed cp:
                 {
+                    if (ctx != null && ctx.MotionDim) StageMotion.BeginDim();   // 段2 レーン M: 寄る札を出した瞬間に舞台を暗くする (門が偽なら MotionDim は立たない)
                     // 攻撃札なら斧を振る (本家式: その場で踏み込んで振る)。守りの札なら構え
                     CardDef def = null;
                     try { def = Content.GetCardDef(cp.CardId); } catch (Exception) { }

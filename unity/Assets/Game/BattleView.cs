@@ -101,6 +101,51 @@ namespace DeckRogue.Game
 
         int _boxLogSeen;   // 匣の閃きに使った EventLog の読み位置
 
+        // ---- 段2 (2026-10-03 レーン M・約束 docs/design/hd2d-stage2/contracts.md §C5): 寄りの間だけ紙の UI を退避する ----
+        // 寄り (StageMotion) の間は描画用のカメラが座席の写し (Stage.ProjectFeet) と違う所にあるので、座席に追従する紙の UI (帳面・意図の札・手札・自分の札・
+        // 人形の足元の札・手札の後ろの暗幕) を CanvasGroup の α 0 で隠す。キャラの絵は舞台の板が描き、板は UI の矩形の位置と Image の色 (どちらも CanvasGroup の
+        // 影響を受けない) を読むので、隠しても舞台の絵は変わらない。夜色の札で座席に追従しない物 (上部バー・エナジーの輪・山札・ターン終了 = UiLayer) と
+        // 浮き数字・当たりの筋 (FxLayer) は残す。寄りの間に組み直しが来ても毎フレーム掛け直す (StageMotion.Tick)。戻す時は足した CanvasGroup を捨てる
+        // (前から付いていた CanvasGroup は α と当たり判定を元の値へ)。呼ぶのは StageMotion だけ (門が偽なら一度も呼ばれない)
+        readonly Dictionary<CanvasGroup, Vector2> _motionHidden = new Dictionary<CanvasGroup, Vector2>();   // 値 = (足した物なら -1・前からの物なら元の α, 元の blocksRaycasts 1/0)
+
+        /// <summary>寄りの間だけ紙の UI を隠す (hide=true。毎フレーム呼んでよい) / 元へ戻す (hide=false)。desk = 手札の後ろの暗幕 (desk-shade) も隠す</summary>
+        public void MotionHideUi(bool hide, bool desk)
+        {
+            if (!hide)
+            {
+                foreach (var kv in _motionHidden)
+                {
+                    var cg = kv.Key;
+                    if (cg == null) continue;
+                    if (kv.Value.x < 0f) { cg.alpha = 1f; cg.blocksRaycasts = true; UnityEngine.Object.Destroy(cg); }
+                    else { cg.alpha = kv.Value.x; cg.blocksRaycasts = kv.Value.y > 0.5f; }
+                }
+                _motionHidden.Clear();
+                return;
+            }
+            MotionHide(HandLayer);
+            MotionHide(_enemiesArea);
+            MotionHide(_playerArea);
+            MotionHide(_playerSelf);
+            MotionHide(_dollsArea);
+            if (desk && FieldLayer != null) MotionHide(FieldLayer.Find("desk-shade"));
+        }
+
+        void MotionHide(Transform t)
+        {
+            if (t == null) return;
+            var cg = t.GetComponent<CanvasGroup>();
+            if (cg == null)
+            {
+                cg = t.gameObject.AddComponent<CanvasGroup>();
+                _motionHidden[cg] = new Vector2(-1f, 1f);
+            }
+            else if (!_motionHidden.ContainsKey(cg)) _motionHidden[cg] = new Vector2(cg.alpha, cg.blocksRaycasts ? 1f : 0f);
+            cg.alpha = 0f;
+            cg.blocksRaycasts = false;
+        }
+
         public void ClearUi()
         {
             for (int i = UiLayer.childCount - 1; i >= 0; i--)

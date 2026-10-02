@@ -7,6 +7,11 @@
 // 影は大きい当たり (shadow=true) だけ。影を落とす光の数の上限 (PC 3・スマホ 2) は StageLook と貸し借りする (上限に届いていれば逆光の影を一時的に止めて借りる)。
 // 光の減衰は Time.deltaTime (det の撮影では 1/60 秒ずつ・ヒットストップの間はゆっくり)。
 // 口の強さ・長さ・色は設計図 look_act1.json の hitLight に任意のキーで書ける (無ければコードの既定。StageLookData.Raw から読む。下の Tune)。
+// 段2 (2026-10-03 レーン M・約束 docs/design/hd2d-stage2/contracts.md §C5): 寄りの技の光の口 MotionLight と、敵の大技の赤い合図の口 MotionCue を足した。
+// 呼ぶのは StageMotion だけ (門 = StageMotion.On が真の時だけ)。寄りの光は届く距離を光ごとに持ち、印 (StageHitReceive.Mark) を付ける。
+// 同じ光を当たりごとに灯し直す (reuse = 前に返した番号。まだ灯っていればその光の明るさ・色・場所を新しくする = 多段で光の数が増えない)。
+// 印の付いた光を普通の当たりに使い回す時は印を外す (Slot.Marked)。門が偽なら印は一度も付かない = 今の口 (PlayerHit・FoeHit・Guard・Cast・Finish) の通り方は今と同じ。
+// 印は寄りの光が灯っている間だけ: 減衰で消えた時 (Tick)・全部消す時 (StopAll)・動きを止める時 (MotionStop) に外す (2026-10-03 反証: 消えた光の印が次の幕へ残っていた)。
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -29,23 +34,26 @@ namespace DeckRogue.Game
             LightAt(world, color, intensity, dur, 0f, shadow, "direct", null);
         }
 
-        /// <summary>HitLight の中身。hold = 灯してから dur のこの割合までは弱めない (その後 (残り÷(1−hold))² で消える)。kind・key は記録 (dumplayout・ログ) 用</summary>
-        static void LightAt(Vector3 world, Color color, float intensity, float dur, float hold, bool shadow, string kind, string key)
+        /// <summary>HitLight の中身。hold = 灯してから dur のこの割合までは弱めない (その後 (残り÷(1−hold))² で消える)。kind・key は記録 (dumplayout・ログ) 用。
+        /// range = 届く距離 (0 以下 = 設計図の hitLight.range。段2 の寄りの光だけが渡す)・mark = 技の光の印 (StageHitReceive.Mark。寄りの光だけ true)。
+        /// 返り値 = 灯した光の番号 (MotionLight の灯し直しに使う。灯さなかったら 0)</summary>
+        static long LightAt(Vector3 world, Color color, float intensity, float dur, float hold, bool shadow, string kind, string key, float range = -1f, bool mark = false)
         {
-            if (!Live) return;
-            if (!(intensity > 0f) || !(dur > 0f) || float.IsInfinity(intensity) || float.IsInfinity(dur)) return;
-            if (float.IsNaN(world.x) || float.IsNaN(world.y) || float.IsNaN(world.z)) return;
+            if (!Live) return 0;
+            if (!(intensity > 0f) || !(dur > 0f) || float.IsInfinity(intensity) || float.IsInfinity(dur)) return 0;
+            if (float.IsNaN(world.x) || float.IsNaN(world.y) || float.IsNaN(world.z)) return 0;
             var h = StageLook.Current != null ? StageLook.Current.Hit : Defaults;
             Prepare(h);
             var s = Pick();
-            if (s == null) return;
+            if (s == null) return 0;
             bool evicted = s.Lit;
             if (evicted) _evicted++;
             Release(s);   // 使い回す光が借りていた影を先に返す
             var l = s.Light;
+            if (s.Marked != mark) { StageHitReceive.Mark(l, mark); s.Marked = mark; }   // 段2: 寄りの光に使った光を普通の当たりに使う時は印を外す (印を付けたことが無ければ呼ばない)
             l.transform.position = world;
             l.color = new Color(color.r, color.g, color.b, 1f);
-            l.range = Mathf.Max(0.1f, h.Range);
+            l.range = Mathf.Max(0.1f, range > 0f ? range : h.Range);
             s.Peak = intensity * h.RefDist * h.RefDist;
             s.T = 0f;
             s.Dur = dur;
@@ -65,6 +73,7 @@ namespace DeckRogue.Game
             if (HD2DFlags.Det || HD2DFlags.DumpLayout)
                 Debug.Log("[StageFx] 技の光 " + kind + (key != null ? " " + key : "") + " 強さ " + F(intensity) + " " + F(dur) + "秒" + (s.Borrowed ? " 影" : "")
                     + " 灯っている " + lit + "/" + Math.Min(_want, _slots.Count) + (evicted ? " (いちばん古い光を使い回した)" : "") + " frame " + Time.frameCount);
+            return s.Seq;
         }
 
         // ================================================================ 演出からの口 (P13・W2。Presenter が2Dの当たりと同じ所で呼ぶ)
@@ -131,6 +140,76 @@ namespace DeckRogue.Game
             if (!Live) return;
             var t = Tune;
             At(key, new Vector2(0.5f, t.Height), t.FinishColor, t.Intensity * t.FinishMul, t.FinishDur, t.Hold, ShadowOk, "finish", 0f);
+        }
+
+        // ================================================================ 段2 の口 (2026-10-03 レーン M。呼ぶのは StageMotion だけ = 門 StageMotion.On が真の時だけ)
+
+        /// <summary>
+        /// 寄りの技の光 (約束 §C5「技の光」): world に色 color・強さ intensity (refDist の距離での明るさ)・届く距離 range の点光源を灯し、dur 秒で消す
+        /// (hold = dur のこの割合までは弱めない)。技の光の印 (StageHitReceive.Mark) を付ける = 「技の光にだけ強く受ける」材質 (_HitReceive) が強く受ける。
+        /// reuse = 前にこの口が返した番号。その光がまだ灯っていれば、新しい光を取らずにその光を灯し直す (場所・色・強さ・距離を新しくし、経過を 0 へ)。
+        /// shadow はスマホの段では付けない (ShadowOk)。返り値 = 灯した光の番号 (灯さなかったら 0)
+        /// </summary>
+        internal static long MotionLight(Vector3 world, Color color, float intensity, float range, float dur, float hold, bool shadow, string kind, string key, long reuse)
+        {
+            if (!Live) return 0;
+            if (!(intensity > 0f) || !(dur > 0f) || float.IsInfinity(intensity) || float.IsInfinity(dur)) return 0;
+            if (float.IsNaN(world.x) || float.IsNaN(world.y) || float.IsNaN(world.z)) return 0;
+            if (reuse > 0)
+            {
+                int n = Math.Min(_want, _slots.Count);
+                for (int i = 0; i < n; i++)
+                {
+                    var s = _slots[i];
+                    if (!s.Lit || s.Light == null || s.Seq != reuse) continue;
+                    var h = StageLook.Current != null ? StageLook.Current.Hit : Defaults;
+                    var l = s.Light;
+                    StageHitReceive.Mark(l, true); s.Marked = true;   // 毎回付け直す (Prepare が光の設定を書き直しても印が残るように)
+                    l.transform.position = world;
+                    l.color = new Color(color.r, color.g, color.b, 1f);
+                    l.range = Mathf.Max(0.1f, range > 0f ? range : h.Range);
+                    s.Peak = intensity * h.RefDist * h.RefDist;
+                    s.T = 0f;
+                    s.Dur = dur;
+                    s.Hold = Mathf.Clamp(hold, 0f, 0.9f);
+                    s.Kind = kind;
+                    s.Key = key;
+                    l.intensity = s.Peak;
+                    if (shadow && ShadowOk && !s.Borrowed && StageLook.TryBorrowShadowSlot()) { s.Borrowed = true; l.shadows = LightShadows.Hard; }
+                    _calls++;
+                    Remember(s, world, intensity, false);
+                    if (HD2DFlags.Det || HD2DFlags.DumpLayout)
+                        Debug.Log("[StageFx] 寄りの光を灯し直した " + kind + (key != null ? " " + key : "") + " 強さ " + F(intensity) + " 距離 " + F(l.range) + " " + F(dur) + "秒 frame " + Time.frameCount);
+                    return s.Seq;
+                }
+            }
+            return LightAt(world, color, intensity, dur, hold, shadow && ShadowOk, kind, key, range, true);
+        }
+
+        /// <summary>
+        /// 敵の大技の赤い合図 (約束 §C5「赤の合図 0.17」・分析書 §8 の guardian 22.48s「敵の絵が赤く染まり、足元が光る」): world に赤い点光源を dur 秒。
+        /// 影なし・印なし (技の光ではない)。届く距離 range
+        /// </summary>
+        internal static void MotionCue(Vector3 world, Color color, float intensity, float range, float dur, string key)
+        {
+            if (!Live) return;
+            LightAt(world, color, intensity, dur, 0.6f, false, "cue", key, range, false);
+        }
+
+        /// <summary>
+        /// 動きを止める時 (StageMotion.StopAll: 門が閉じた・戦闘の画面が無くなった): 寄りの光 (印の付いた光) を消して印を外し、借りていた影を返す。
+        /// 普通の当たりの光はそのまま減衰させる (今の口の通り方を変えない)。印の付いた光が無ければ何もしない
+        /// </summary>
+        internal static void MotionStop()
+        {
+            foreach (var s in _slots)
+            {
+                if (!s.Marked) continue;
+                if (s.Light != null) { s.Light.enabled = false; s.Light.intensity = 0f; s.Light.shadows = LightShadows.None; }
+                s.Lit = false;
+                Release(s);
+                Unmark(s);
+            }
         }
 
         /// <summary>影を落としてよい段 (スマホの段では技の光に影を付けない。計画 P13「影あり (PC だけ)」)</summary>
@@ -212,6 +291,7 @@ namespace DeckRogue.Game
             public Light Light;
             public float Peak, T, Dur, Hold;
             public bool Lit, Borrowed;
+            public bool Marked;       // 段2: 技の光の印 (StageHitReceive.Mark) を付けている (寄りの光に使った)
             public long Seq;          // 灯した順 (いちばん古い光を使い回すため)
             public string Kind, Key;  // 記録用 (dumplayout の extra.hitLight・ログ)
         }
@@ -436,6 +516,7 @@ namespace DeckRogue.Game
                     ad.renderingLayers = 0xFFFFFFFFu;        // 地面もキャラも照らす
                     ad.shadowRenderingLayers = 0xFFFFFFFFu;  // 大きい当たりはキャラと大物の影を地面に落とす (本家のブーストの灯)
                     if (Application.isPlaying) ad.additionalLightsShadowResolutionTier = h.ShadowTier;
+                    if (s.Marked) StageHitReceive.Mark(s.Light, true);   // 段2: 寄りの光の印を、上で書き直した設定の上に付け直す (印を付けたことが無ければ呼ばない)
                 }
                 catch (Exception e) { Debug.LogWarning("[StageFx] 技の光の URP の設定に失敗: " + e.Message); }
             }
@@ -452,6 +533,7 @@ namespace DeckRogue.Game
                 if (s.Light != null) { s.Light.enabled = false; s.Light.intensity = 0f; s.Light.shadows = LightShadows.None; }
                 s.Lit = false;
                 Release(s);
+                Unmark(s);   // 段2: 印も外す (印を付けたことが無ければ何もしない)
             }
             _pending.Clear();
             _calls = 0; _maxLit = 0; _evicted = 0; _missed = 0;
@@ -480,6 +562,14 @@ namespace DeckRogue.Game
                 if (s.Seq < bestSeq) { bestSeq = s.Seq; best = s; }
             }
             return best;
+        }
+
+        /// <summary>段2: 寄りの光の印 (StageHitReceive.Mark) を外す。印を付けていなければ何もしない (門が偽なら印は一度も付かない = 呼んでも何も起きない)</summary>
+        static void Unmark(Slot s)
+        {
+            if (!s.Marked) return;
+            s.Marked = false;
+            if (s.Light != null) StageHitReceive.Mark(s.Light, false);
         }
 
         static void Release(Slot s)
@@ -516,7 +606,7 @@ namespace DeckRogue.Game
             foreach (var s in _slots)
             {
                 if (!s.Lit) continue;
-                if (s.Light == null) { s.Lit = false; Release(s); continue; }
+                if (s.Light == null) { s.Lit = false; Release(s); Unmark(s); continue; }
                 s.T += dt;
                 float u = s.Dur > 0f ? s.T / s.Dur : 1f;
                 if (u >= 1f || !StageLook.Active)
@@ -525,6 +615,7 @@ namespace DeckRogue.Game
                     s.Light.enabled = false;
                     s.Light.intensity = 0f;
                     Release(s);
+                    Unmark(s);   // 段2: 寄りの光が消えたら印も外す (印を付けたことが無ければ何もしない)
                     continue;
                 }
                 // hold までは灯した明るさのまま、その後 (残り÷(1−hold))² で消える (hold 0 = P09 の (1 − 経過÷dur)²)
