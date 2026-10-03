@@ -1696,6 +1696,7 @@ namespace DeckRogue.Game
                     root["stage"] = stage;
                     // 他のレーンが足した記録
                     var extra = new Dictionary<string, object>();
+                    { bool motionOn = StageMotion.On; }   // 段2: 動きの記録の登録を今の幕で読み直す (箱庭の幕を出た後に古い extra.motion を残さない。記録の時だけ)
                     foreach (var p in HD2DFlags.LayoutDumpers.ToList())
                     {
                         var key = p.Key; var fn = p.Value;

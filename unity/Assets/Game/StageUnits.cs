@@ -319,12 +319,14 @@ namespace DeckRogue.Game
         }
 
         static HashSet<string> _keyFlipArts, _lightFromRightArts;
-        static readonly HashSet<int> _keyFlipLoadedActs = new HashSet<int>();
+        /// <summary>段2 (2026-10-03・反証「壊していないか」): 幕2/3 の表は幕ごとの集合に持つ (幕1 の集合に足すと、その幕を通った後の幕1 と今の舞台まで変わる)</summary>
+        static readonly Dictionary<int, KeyValuePair<HashSet<string>, HashSet<string>>> _actKeyFlip = new Dictionary<int, KeyValuePair<HashSet<string>, HashSet<string>>>();
         /// <summary>
         /// P05 の art-lint が書く Resources/Art/stage/act1/keyflip の2つの表を1回だけ読む:
         /// "keyflip" = 画像ファイルを左右反転した絵・"lightFromRight" = 描き込まれた光が右から来る絵 (測った向き。lightDx ≥ 0.10・大きさ ≥ 0.12)。
         /// 表の名前はキャラの絵の名前 (enemy_*・leader_*・人形) で幕に依らない = 幕1 の表はどの幕でも読む。
-        /// 段2 の口 (2026-10-03): 幕2/3 の箱庭に Art/stage/act&lt;N&gt;/keyflip があれば、その幕で初めて呼ばれた時に1回だけ足す (無ければ何もしない)
+        /// 段2 の口 (2026-10-03): 幕2/3 の箱庭 (DioramaFor) に Art/stage/act&lt;N&gt;/keyflip があれば、その幕の集合に1回だけ読む。
+        /// 引くのはその幕の箱庭にいる間だけ (幕1・今の舞台は幕1 の表だけを見る)
         /// </summary>
         static void LoadKeyFlipTables()
         {
@@ -332,14 +334,19 @@ namespace DeckRogue.Game
             {
                 _keyFlipArts = new HashSet<string>(StringComparer.Ordinal);
                 _lightFromRightArts = new HashSet<string>(StringComparer.Ordinal);
-                _keyFlipLoadedActs.Add(1);
-                if (!ReadKeyFlipTable("Art/stage/act1/keyflip")) Debug.LogWarning("[Stage] Art/stage/act1/keyflip が無い → _KeyFlip は全部 0");
+                if (!ReadKeyFlipTable("Art/stage/act1/keyflip", _keyFlipArts, _lightFromRightArts)) Debug.LogWarning("[Stage] Art/stage/act1/keyflip が無い → _KeyFlip は全部 0");
             }
             int act = HD2DFlags.StageAct;
-            if (act != 1 && _keyFlipLoadedActs.Add(act)) ReadKeyFlipTable("Art/stage/act" + act + "/keyflip");
+            if (act != 1 && HD2DFlags.DioramaFor(act) && !_actKeyFlip.ContainsKey(act))
+            {
+                var kf = new HashSet<string>(StringComparer.Ordinal);
+                var lfr = new HashSet<string>(StringComparer.Ordinal);
+                ReadKeyFlipTable("Art/stage/act" + act + "/keyflip", kf, lfr);
+                _actKeyFlip[act] = new KeyValuePair<HashSet<string>, HashSet<string>>(kf, lfr);
+            }
         }
 
-        static bool ReadKeyFlipTable(string path)
+        static bool ReadKeyFlipTable(string path, HashSet<string> keyflip, HashSet<string> fromRight)
         {
             try
             {
@@ -351,25 +358,39 @@ namespace DeckRogue.Game
                     var arr = o[name] as JArray;
                     if (arr != null) foreach (var x in arr) { var n = (string)x; if (!string.IsNullOrEmpty(n)) set.Add(n); }
                 };
-                read("keyflip", _keyFlipArts);
-                read("lightFromRight", _lightFromRightArts);
+                read("keyflip", keyflip);
+                read("lightFromRight", fromRight);
                 return true;
             }
             catch (Exception ex) { Debug.LogWarning("[Stage] keyflip を読めない (" + path + "): " + ex.Message); return true; }
+        }
+
+        /// <summary>今の幕の箱庭の表 (幕2/3 の箱庭にいる時だけ。無ければ false)</summary>
+        static bool ActKeyFlipTables(out KeyValuePair<HashSet<string>, HashSet<string>> tables)
+        {
+            tables = default(KeyValuePair<HashSet<string>, HashSet<string>>);
+            int act = HD2DFlags.StageAct;
+            return act != 1 && HD2DFlags.DioramaHere && _actKeyFlip.TryGetValue(act, out tables);
         }
 
         /// <summary>画像ファイルを左右反転した絵 (P05 の art-lint の "keyflip")。P11 の選び方 (look の char に keyFlipFrom が無い時) の _KeyFlip=1 の絵</summary>
         static bool IsKeyFlipArt(string art)
         {
             LoadKeyFlipTables();
-            return art != null && _keyFlipArts.Contains(art);
+            if (art == null) return false;
+            if (_keyFlipArts.Contains(art)) return true;
+            KeyValuePair<HashSet<string>, HashSet<string>> at;
+            return ActKeyFlipTables(out at) && at.Key.Contains(art);
         }
 
         /// <summary>描き込まれた光が右から来る絵 (P05 の art-lint の "lightFromRight")</summary>
         static bool IsLightFromRightArt(string art)
         {
             LoadKeyFlipTables();
-            return art != null && _lightFromRightArts.Contains(art);
+            if (art == null) return false;
+            if (_lightFromRightArts.Contains(art)) return true;
+            KeyValuePair<HashSet<string>, HashSet<string>> at;
+            return ActKeyFlipTables(out at) && at.Value.Contains(art);
         }
 
         /// <summary>

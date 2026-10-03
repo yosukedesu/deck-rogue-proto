@@ -142,6 +142,7 @@ namespace DeckRogue.Game
                 _motionHidden[cg] = new Vector2(-1f, 1f);
             }
             else if (!_motionHidden.ContainsKey(cg)) _motionHidden[cg] = new Vector2(cg.alpha, cg.blocksRaycasts ? 1f : 0f);
+            else if (cg.alpha == 0f && !cg.blocksRaycasts) return;   // もう隠してある (寄りの間は毎フレーム呼ばれる。書き込みを飛ばす)
             cg.alpha = 0f;
             cg.blocksRaycasts = false;
         }

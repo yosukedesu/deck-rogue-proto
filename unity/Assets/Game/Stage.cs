@@ -567,7 +567,8 @@ namespace DeckRogue.Game
             // 段2 の口 (2026-10-03): 今組む幕を先に書き (カメラ・札・キャラの光の「箱庭か」= HD2DFlags.DioramaHere が読む)、
             // その幕の箱庭の設計図と光の設計図 (look_act<N>) がそろっているかを書いてから束を当てる (無い幕・組めなかった幕は旗で入れても今の舞台に落とす)
             HD2DFlags.StageAct = act;
-            HD2DFlags.SetDioramaFallback(act, !DioramaAssetsReady(act) || _dioramaFailed.Contains(act));
+            // 箱庭にする幕の時だけ設計図と光の設計図の有無を見る (今の舞台の幕で TextAsset を読まない。反証「壊していないか」)
+            HD2DFlags.SetDioramaFallback(act, HD2DFlags.DioramaOn(act) && (!DioramaAssetsReady(act) || _dioramaFailed.Contains(act)));
             HD2DFlags.ApplyActDefault(act);
             bool wantDio = WantDiorama(act);
             string sig = wantDio ? DioramaSignature(act) : "old";
@@ -1118,6 +1119,8 @@ namespace DeckRogue.Game
 
         static readonly Dictionary<int, bool> _dioramaAssets = new Dictionary<int, bool>();
         static readonly HashSet<int> _dioramaFailed = new HashSet<int>();
+        /// <summary>組めなかった幕の記録を忘れる (HD2DFlags.Reset = 撮影の一覧の行ごと。1 行の失敗で後ろの行の幕が今の舞台に落ちたままにならないように)</summary>
+        public static void ForgetDioramaFailures() { _dioramaFailed.Clear(); }
         /// <summary>幕 act の箱庭の設計図 (Resources/Stage/act&lt;N&gt;_layout) と光の設計図 (look_act&lt;N&gt;) が両方あるか (幕ごとに1回だけ調べる)。
         /// 光の無い箱庭で判断を誤らないよう、片方だけの幕は今の舞台に落とす (移行の設計 §6 の 5)</summary>
         static bool DioramaAssetsReady(int act)

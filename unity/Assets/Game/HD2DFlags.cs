@@ -291,29 +291,44 @@ namespace DeckRogue.Game
         static void ApplyExplicitAct(int act)
         {
             bool dioAct = DioramaOn(act) && !DioramaFallback(act);
-            string before = Describe();
             if (_parked == null)
             {
                 if (StageMode != HD2DStage.Diorama || dioAct) return;
-                _parked = new ParkedBundle
-                {
-                    Stage = StageMode, HeroDots = HeroDots, Fov = CamFov, Pitch = CamPitch, PitchPhone = CamPitchPhone,
-                    Lit = LitUnits, CharShadow = CharShadow, UiNight = UiNight, Drift = Drift, Dof = TiltShift, Aa = Aa, Msaa = MsaaSamples, Trunk = Trunk,
-                };
-                string v;
-                foreach (var p in OldBundle) SetKey(p.Key, p.Key != "stage" && _explicitBundle.TryGetValue(p.Key, out v) ? v : p.Value);
-                if (_explicitBundle.TryGetValue("msaa", out v)) SetKey("msaa", v);
+                string before = Describe();   // 何もしない道では文字列を作らない (段2 の反証「壊していないか」)
+                Park();
                 Debug.Log("[HD2DFlags] 幕" + act + " は箱庭でない (dioramaacts=" + DioramaActs + (DioramaFallback(act) ? "・設計図が無い" : "") + ") → 今の舞台の値へ預け替え: " + Describe());
+                RaiseIfChanged(before);
             }
             else
             {
                 if (!dioAct) return;
-                var k = _parked; _parked = null;
-                StageMode = k.Stage; HeroDots = k.HeroDots; CamFov = k.Fov; CamPitch = k.Pitch; CamPitchPhone = k.PitchPhone;
-                LitUnits = k.Lit; CharShadow = k.CharShadow; UiNight = k.UiNight; Drift = k.Drift; TiltShift = k.Dof; Aa = k.Aa; MsaaSamples = k.Msaa; Trunk = k.Trunk;
+                string before = Describe();
+                Unpark();
                 Debug.Log("[HD2DFlags] 幕" + act + " は箱庭 → 書いた値へ戻した: " + Describe());
+                RaiseIfChanged(before);
             }
-            RaiseIfChanged(before);
+        }
+
+        /// <summary>束のキーの今の値を控えへ取り、今の舞台の束 (OldBundle・個別に書いた束のキーはその値) を当てる (Changed は投げない)</summary>
+        static void Park()
+        {
+            _parked = new ParkedBundle
+            {
+                Stage = StageMode, HeroDots = HeroDots, Fov = CamFov, Pitch = CamPitch, PitchPhone = CamPitchPhone,
+                Lit = LitUnits, CharShadow = CharShadow, UiNight = UiNight, Drift = Drift, Dof = TiltShift, Aa = Aa, Msaa = MsaaSamples, Trunk = Trunk,
+            };
+            string v;
+            foreach (var p in OldBundle) SetKey(p.Key, p.Key != "stage" && _explicitBundle.TryGetValue(p.Key, out v) ? v : p.Value);
+            if (_explicitBundle.TryGetValue("msaa", out v)) SetKey("msaa", v);
+        }
+
+        /// <summary>控えの値へ戻す (Changed は投げない)</summary>
+        static void Unpark()
+        {
+            var k = _parked; _parked = null;
+            if (k == null) return;
+            StageMode = k.Stage; HeroDots = k.HeroDots; CamFov = k.Fov; CamPitch = k.Pitch; CamPitchPhone = k.PitchPhone;
+            LitUnits = k.Lit; CharShadow = k.CharShadow; UiNight = k.UiNight; Drift = k.Drift; TiltShift = k.Dof; Aa = k.Aa; MsaaSamples = k.Msaa; Trunk = k.Trunk;
         }
 
         static bool IsBundleKey(string key)
@@ -344,9 +359,14 @@ namespace DeckRogue.Game
                 else if (p.Key == "msaa" || IsBundleKey(p.Key)) _explicitBundle[p.Key] = p.Value;
             }
             string before = Describe();
+            // 段2 (反証「壊していないか」): 預け替え中に当て直す時は、控えの値へ戻してから書いた旗を当て、今の幕が箱庭でなければ預け替え直す
+            // (戻さずに SetKey すると、今の舞台の上に見本のカメラ・夜色の札が載る。例: -state と StateJump の 2 回の ApplyState の間にタイトルが箱庭でない幕を描いた時)
+            bool wasParked = _parked != null;
+            if (wasParked) Unpark();
             string bundle;
             if (norm.TryGetValue("hd2d", out bundle)) ApplyBundle(bundle);
             foreach (var p in norm) if (p.Key != "hd2d") SetKey(p.Key, p.Value);
+            if (wasParked && _stageExplicit && StageMode == HD2DStage.Diorama && !(DioramaOn(StageAct) && !DioramaFallback(StageAct))) Park();
             RaiseIfChanged(before);
         }
 
@@ -360,6 +380,8 @@ namespace DeckRogue.Game
             _stageExplicit = false;        // 書いた旗も忘れる (幕ごとの既定に戻る。次の Stage.Paint が幕の束を当てる)
             _explicitBundle.Clear();
             _parked = null;                // 箱庭でない幕の預け替えも忘れる (段2 の口)
+            _dioramaFallback.Clear();      // 設計図が無い・組めなかった幕の記録も忘れる (次の Stage.Paint が書き直す。撮影の一覧の 1 行の失敗を後ろの行へ持ち越さない)
+            Stage.ForgetDioramaFailures();
             _dioramaActs.Clear(); foreach (var a in ParseActs(DefaultDioramaActs) ?? new HashSet<int> { 1 }) _dioramaActs.Add(a);
             StageMode = HD2DStage.Old;
             HeroDots = 62;
@@ -398,6 +420,9 @@ namespace DeckRogue.Game
         {
             var raw = Autopilot.Arg("-hd2d");
             if (string.IsNullOrEmpty(raw)) return;
+            foreach (var part in raw.Split(',', ';'))
+                if (part.Trim().Length > 0 && part.IndexOf('=') <= 0)
+                    Debug.LogWarning("[HD2DFlags] -hd2d の「" + part.Trim() + "」は k=v でないので捨てた (-hd2d は「,」でも区切る = dioramaacts は 1+2 と書く)");
             ApplyState(ParseSpec(raw, ',', ';'));
         }
 
