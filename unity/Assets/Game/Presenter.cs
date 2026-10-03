@@ -1830,6 +1830,7 @@ namespace DeckRogue.Game
                             var pSprH = g.Battle != null ? g.Battle.PlayerSprite() : null;
                             Vector2 fromP = pSprH != null ? Tween.CenterIn(pSprH, fx) : hit + new Vector2(-400f, 0f);
                             Tween.PlayerHitFx(fx, hit, style, streak, big, hp != null ? hp.Index : 0, hp != null ? hp.Total : 1, fromP);
+                            if (StageMotion.LightsEveryHit) Tween.HitGlow(fx, hit, streak, big);   // 2026-10-03 ユーザー「攻撃エフェクト自体も発光して」(箱庭の動きが点いている幕だけ)
                             Stage.Flash("enemy" + ei);
                         }
                         // 急所: 筋と衝撃線が真鍮色 (big 扱い = 交差する2本目と針10) になり、真鍮の輪が広がる (旧: 星の絵 = 2026-09-17 ユーザー「星型がダサい」で撤去)
@@ -1848,8 +1849,8 @@ namespace DeckRogue.Game
                         // とどめはその代わりに白・0.3秒・影あり (1つだけ灯す)。stage=diorama だけ・old では何もしない (乱数も Tween も使わない)
                         // 段2 (2026-10-03 レーン M): 寄る当たり (計画 ctx.Motion) と寄っている敵への当たりは、寄り・寄りの技の光・火花 (StageMotion) へ。
                         // 門 (StageMotion.On) が偽なら ctx.Motion は常に null・CloseUpOn は false = 下の今の光のまま
-                        bool motionHit = !guardedE && spr != null && ((ctx != null && ctx.Motion != null) || StageMotion.CloseUpOn(ei));
-                        if (motionHit) StageMotion.PlayerHit(ei, style, ctx != null ? ctx.Motion : null, big, finishing);
+                        bool motionHit = !guardedE && spr != null && ((ctx != null && ctx.Motion != null) || StageMotion.CloseUpOn(ei) || StageMotion.LightsEveryHit);
+                        if (motionHit) StageMotion.PlayerHit(ei, style, ctx != null ? ctx.Motion : null, big, finishing, streak);
                         else if (!guardedE && spr != null) { if (finishing) StageFx.Finish("enemy" + ei); else StageFx.PlayerHit("enemy" + ei, style, big); }
                         // 数字: 通った量は真鍮の紙、盾に全部吸われたら鋼青、0 は薄く。急所は大きく
                         Color numColor = d.Amount <= 0 ? UiKit.ColDim : (d.HpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;

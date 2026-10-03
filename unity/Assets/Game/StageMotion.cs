@@ -188,11 +188,13 @@ namespace DeckRogue.Game
         /// 自分の当たり (Presenter の2Dの当たりと同じ所。StageFx.PlayerHit・Finish の代わりに呼ぶ)。shot = 寄るなら寄りの種類 (null = 寄らない。寄りの間の次の当たり)。
         /// 寄れた (または寄っている敵への当たり) なら寄りの技の光と火花、寄れなければ今の光 (StageFx) に任せる
         /// </summary>
-        public static void PlayerHit(int enemyIndex, string style, Shot shot, bool big, bool finishing)
+        public static void PlayerHit(int enemyIndex, string style, Shot shot, bool big, bool finishing, Color? fxColor = null)
         {
             string key = "enemy" + enemyIndex;
             if (!On) { Fallback(key, style, big, finishing); return; }
             var t = Tune;
+            // カメラを動かさない時は全部の当たりで技の光を出す (寄らない当たりは光の長さぶんの「見えない寄り」)
+            if (shot == null && t.Zoom.On && !t.Zoom.Move) shot = new Shot { Kind = "hit", Dur = Mathf.Max(0.2f, t.Light.Dur * 0.6f) };
             if (shot != null && shot.Dur > 0f && t.Zoom.On)
             {
                 if (!_cu) StartCloseUp(enemyIndex, shot);
@@ -206,9 +208,10 @@ namespace DeckRogue.Game
                 else Extend(shot);
             }
             if (!_cu || _cuEnemy != enemyIndex) { Fallback(key, style, big, finishing); return; }   // 寄れなかった (板も座席も無い)・別の敵を寄っている = 今の光
+            _fxColor = fxColor;   // 2026-10-03 ユーザー「攻撃エフェクトの主色に光の色を合わせて」
             Lights(key, style, finishing);
             bool heavy = big || finishing || (shot != null && Rank(shot.Kind) >= 2);   // 大きい当たり・とどめ・X 札と全体の最後の1発 (boost 以上)
-            if (heavy && t.Sparks.On) Burst(key, t.Light.ColorFor(style));
+            if (heavy && t.Sparks.On) Burst(key, fxColor ?? t.Light.ColorFor(style));
         }
 
         /// <summary>寄る札を出した瞬間 (Presenter の CardPlayed): 舞台を暗くし始める。寄りが終わって after 秒後に戻す</summary>
@@ -279,6 +282,9 @@ namespace DeckRogue.Game
         }
 
         /// <summary>敵の大技の合図から帯の終わりまで (門が偽なら false = Presenter の被弾の点滅は今のまま)</summary>
+        /// <summary>カメラを動かさない時 (zoom.move false) は全部の当たりで技の光を出す (Presenter が寄らない当たりもここへ回す)</summary>
+        public static bool LightsEveryHit => On && Tune.Zoom.On && !Tune.Zoom.Move;
+
         public static bool EnemyBigFlashing => _plateT >= 0f && On;
 
         /// <summary>敵の大技の間の被弾の画面の赤い点滅の α の上限 (光の設計図の enemyBig.hurtFlashAlpha・既定 0.1。0 = 出さない)</summary>
@@ -290,7 +296,7 @@ namespace DeckRogue.Game
         internal static bool TryCloseUpPose(out Vector3 pos, out Quaternion rot)
         {
             pos = _cuPos; rot = _cuRot;
-            return _cu;
+            return _cu && _cuMove;
         }
 
         /// <summary>毎フレームの時計 (StageDriver の LateUpdate の頭)。何も走っていなければ何もしない (門が偽なら一度も走らない)</summary>
@@ -324,6 +330,7 @@ namespace DeckRogue.Game
         static float _cuLeft, _cuTotal, _cuChainT;
         static bool _cuChain;
         static Vector3 _cuPos, _cuPivot, _cuFeet;
+        static bool _cuMove = true;
         static Quaternion _cuRot;
         static bool _cuFramesMoved;
         static BattleView _hidView;
@@ -344,18 +351,25 @@ namespace DeckRogue.Game
             string key = "enemy" + enemyIndex;
             Vector3 pivot, feet;
             if (!Pivot(key, z.Pivot, out pivot, out feet)) { Log("寄れない (板も座席も無い) " + key); return false; }
-            Vector3 pos; Quaternion rot; float look;
-            if (!Pose(pivot, feet, z, out pos, out rot, out look)) { Log("寄れない (姿勢が作れない) " + key); return false; }
+            Vector3 pos; Quaternion rot; float look = 0f;
+            if (!z.Move)
+            {   // カメラは今のまま (引きの画)。壁の光の置き場と火花の向きは今のカメラから測る
+                var cam = Stage.Camera;
+                if (cam == null) { Log("寄れない (カメラが無い) " + key); return false; }
+                pos = cam.transform.position; rot = cam.transform.rotation;
+            }
+            else if (!Pose(pivot, feet, z, out pos, out rot, out look)) { Log("寄れない (姿勢が作れない) " + key); return false; }
+            _cuMove = z.Move;
             _cu = true; _cuEnemy = enemyIndex; _cuKey = key; _cuKind = shot.Kind; _cuLeft = shot.Dur; _cuTotal = shot.Dur; _cuStartFrame = Time.frameCount;
             _cuChain = shot.Chain; _cuChainT = 0f;
             _cuPos = pos; _cuRot = rot; _cuPivot = pivot; _cuFeet = feet;
             _lightSeq = 0; _wallSeq = 0;
             _cuWallSet = false; _cuWallHow = null;
-            _cuFog = z.FogScale;
+            _cuFog = z.Move ? z.FogScale : 1f;
             KeepFogScale();   // 寄りの間だけ距離の霧と霧の板を薄める (fogScale 1 なら触らない)
-            if (z.HideUi) HideUi(true);
-            if (t.Focus.On) FocusOn(pivot, feet, pos, rot, t.Focus);
-            if (z.Frames) { Diorama.OnCameraLayout(pos, rot, Stage.CurrentFov); _cuFramesMoved = true; }
+            if (z.Move && z.HideUi) HideUi(true);
+            if (z.Move && t.Focus.On) FocusOn(pivot, feet, pos, rot, t.Focus);
+            if (z.Move && z.Frames) { Diorama.OnCameraLayout(pos, rot, Stage.CurrentFov); _cuFramesMoved = true; }
             if (_dimPhase == 1) { _dimSawCu = true; _dimAfter = 0f; }   // 戻した寄りの後にまた寄った (Interrupt の後の寄り直し): 戻すまでの after を数え直す
             _closeUps++;
             Log("寄り " + shot.Kind + " " + key + " " + F(shot.Dur) + "秒 倍率 " + F(z.Scale) + " 見上げ " + F(look) + "° カメラ " + V(pos));
@@ -526,11 +540,19 @@ namespace DeckRogue.Game
 
         // ---------------------------------------------------------------- 技の光
 
+        static Color? _fxColor;
+        /// <summary>2Dの当たりの主色を光の色にする (不透明に・明るさを 1 にそろえる = 光の強さは intensity で決める)</summary>
+        static Color FxLightColor(Color c)
+        {
+            float m = Mathf.Max(c.r, Mathf.Max(c.g, c.b));
+            return m > 1e-3f ? new Color(c.r / m, c.g / m, c.b / m, 1f) : Color.white;
+        }
+
         static void Lights(string key, string style, bool finishing)
         {
             var L = Tune.Light;
             if (!L.On) return;
-            Color c = L.ColorFor(style);
+            Color c = _fxColor.HasValue ? FxLightColor(_fxColor.Value) : L.ColorFor(style);
             float mul = finishing ? L.FinishMul : 1f;
             var body = StageFx.UnitPoint(key, new Vector2(0.5f, L.Height));
             if (!body.HasValue) return;
@@ -1066,6 +1088,7 @@ namespace DeckRogue.Game
         sealed class ZoomTune
         {
             public bool On = true;
+            public bool Move = true;   // false = カメラは動かさない (寄りの時間・技の光・壁の光・火花・暗転だけ。2026-10-03 ユーザー「寄ると酔う」)
             public float Big = 0.45f, Boost = 0.9f, Finish = 0.9f, BossFinish = 1.8f, BigMin = 15f, BoostMin = 15f;
             public float Scale = 1.28f, LookUp = 6f, Yaw = 0f, Pivot = 0.45f, MinCamY = 0.35f;
             public float ChainHold = 0.5f;   // 同じ札の次の当たりを待つ上限 (秒。Play の当たりは 0.12 秒・順送りは 0.4 秒おき)
@@ -1223,7 +1246,7 @@ namespace DeckRogue.Game
                 if (m["zoom"] is JObject z)
                 {
                     var Z = t.Zoom;
-                    Z.On = Bool(z, "on", Z.On);
+                    Z.On = Bool(z, "on", Z.On); Z.Move = Bool(z, "move", Z.Move);
                     Z.Big = Num(z, "big", Z.Big); Z.Boost = Num(z, "boost", Z.Boost); Z.Finish = Num(z, "finish", Z.Finish); Z.BossFinish = Num(z, "bossFinish", Z.BossFinish);
                     Z.BigMin = Num(z, "bigMin", Z.BigMin); Z.BoostMin = Num(z, "boostMin", Z.BoostMin);
                     Z.Scale = Num(z, "scale", Z.Scale); Z.LookUp = Signed(z, "lookUp", Z.LookUp); Z.Yaw = Signed(z, "yaw", Z.Yaw);
