@@ -315,7 +315,7 @@ namespace DeckRogue.Game
                     if (_cuChain && _cuChainT < Tune.Zoom.ChainHold) { if (Time.frameCount != _cuStartFrame) _cuChainT += dt; }
                     else EndCloseUp(_cuChain ? "次の当たりが来ない" : "時間");
                 }
-                if (_cu && Tune.Zoom.HideUi) HideUi(true);   // 寄りの間 (次の当たりを待つ間も) に組み直しが来ても隠し直す
+                if (_cu && _cuMove && Tune.Zoom.HideUi) HideUi(true);   // 寄りの間 (次の当たりを待つ間も) に組み直しが来ても隠し直す
                 if (_cu) KeepFogScale();                     // 寄りの間の霧の倍率 (光の組み直しで 1 に戻っていたら掛け直す)
             }
             TickDim(dt);
