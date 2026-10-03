@@ -147,13 +147,117 @@
         "_fix1r3": "直しの輪1 (2026-10-02・三周目 反証のまとめ (b)7): 白い毛の発光 0.9→0.6 (体 p90 218→約 190・200 超 11%→ほぼ 0。本家の魔物 p90 147)。ambientScale 0.8 は据え置き (9/29 の「敵の元の色を沈めない」裁定の境目)。門⑧ を撮って確かめる。写しは 0.9 を自前で持つ"
       },
       "enemy_biting_scroll": {
-        "ambientScale": 0.85
+        "ambientScale": 0.85,
+        "whiteCap": 0.85,
+        "rim": 0.2,
+        "blackLift": 0.45
       },
       "white_perm_band": {
         "ambientScale": 1.6
       },
       "white_perm_": {
         "ambientScale": 1.1
+      },
+      "enemy_shell_guard": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.45,
+        "whiteCap": 0.85,
+        "rim": 0.2
+      },
+      "enemy_set_breaker": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.45,
+        "whiteCap": 0.85,
+        "rim": 0.2
+      },
+      "enemy_devoted_sculptor": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.45,
+        "whiteCap": 0.85,
+        "rim": 0.2
+      },
+      "enemy_thunder_globe": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.45,
+        "whiteCap": 0.85,
+        "rim": 0.2
+      },
+      "enemy_axe_automaton": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.45,
+        "whiteCap": 0.85,
+        "rim": 0.2
+      },
+      "enemy_elite_stab_book": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.45,
+        "whiteCap": 0.85,
+        "rim": 0.2
+      },
+      "enemy_elite_giant_face": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.45,
+        "whiteCap": 0.85,
+        "rim": 0.2
+      },
+      "enemy_elite_deathless": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.45,
+        "whiteCap": 0.85,
+        "rim": 0.2
+      },
+      "enemy_elite_husk_": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.45,
+        "whiteCap": 0.85,
+        "rim": 0.2
+      },
+      "enemy_warden": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.45,
+        "whiteCap": 0.85,
+        "rim": 0.2
+      },
+      "enemy_ember_furnace": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.45,
+        "whiteCap": 0.85,
+        "rim": 0.2
+      },
+      "enemy_nemesis_wraith": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.5,
+        "fog": 0.4
+      },
+      "enemy_set_wary": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.5,
+        "fog": 0.4
+      },
+      "enemy_lost_soul": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.5,
+        "fog": 0.4
+      },
+      "enemy_forgotten_soul": {
+        "receive": 0.7,
+        "ambientScale": 0.65,
+        "blackLift": 0.5,
+        "fog": 0.4
       }
     },
     "cancelColorFilter": true,
@@ -241,6 +345,7 @@
       0.8
     ],
     "dollBackAmbient": 0.85,
-    "idlePhaseSpread": 1.0
+    "idlePhaseSpread": 1.0,
+    "_artE": "段2 レーン E (2026-10-03・計画 §2 E): 古機 = 金属の硬い照り (白の上限 0.7→0.85)・月光側の縁 0.2 (0.35 は幕2 の明るい霧の前で淡い青の縁取りに見えた。幕3 は暗い壁の前なので少しだけ)・輪郭の持ち上げ 0.45 倍 (黒鉄を浮かせない)。亡者 = 霧を 0.25→0.4 (霧に半ば溶ける)。獣は写しのまま。絵ごとの上書きは「名前の頭がいちばん長く一致した 1 つ」だけ効く (重ならない) ので、敵の共通の値 enemy_ (受光 0.7・環境光 0.65・輪郭 0.5) も各項目に書く (書かないと暗部が 14→73 に持ち上がった)。噛みつく巻物は幕1 の写しの環境光 0.85 に足すだけ"
   }
 }
