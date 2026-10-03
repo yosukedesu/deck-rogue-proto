@@ -235,11 +235,11 @@
 
   "materials": {
     "_doc": "箱庭の材質 (Diorama.Materials の名前) ごとの受光 _Receive と影の強さ _ShadowStrength。地形0.8・半立体0.35・札0.25",
-    "terrain": { "receive": 0.8, "shadowStrength": 1.0 },
-    "rock":    { "receive": 0.8, "shadowStrength": 1.0 },
+    "terrain": { "receive": 0.8, "shadowStrength": 1.0, "hitReceive": 1.8 },
+    "rock":    { "receive": 0.8, "shadowStrength": 1.0, "hitReceive": 2.0 },
     "wood":    { "receive": 0.8, "shadowStrength": 1.0 },
-    "bark":    { "receive": 0.8, "shadowStrength": 1.0 },
-    "relief":  { "receive": 0.6, "shadowStrength": 1.0, "_r3": "三周目 段1 (R3B・分析 R7): 0.35→0.6 (半立体の法線アトラスと組み・二重の陰影を避けて 0.6 で止める。二周目の値は look_act1_r2)" },
+    "bark":    { "receive": 0.8, "shadowStrength": 1.0, "hitReceive": 1.5 },
+    "relief":  { "receive": 0.6, "shadowStrength": 1.0, "hitReceive": 1.5, "_r3": "三周目 段1 (R3B・分析 R7): 0.35→0.6 (半立体の法線アトラスと組み・二重の陰影を避けて 0.6 で止める。二周目の値は look_act1_r2)" },
     "card":    { "receive": 0.25, "shadowStrength": 1.0 },
     "glow":    { "_doc": "光の面 (霧の面・月光の筋。StageShaft) の色と強さの上書き (W3 の統合・本家の色彩。書かなければ act1_layout.json の surfaces.glow の値)", "tint": [0.57, 0.59, 0.645], "intensity": 3.0,
                  "_r2": "二周目 段2: shaftSkipTopVig = 頂点色の a が 0 の光の面 (設計図の lobe 0 = 月光の筋) は舞台の上の減光を受けない (霧の面は a 1 で今までどおり)。false か無しで W5 と同じ", "shaftSkipTopVig": true,
@@ -324,5 +324,9 @@
     "hold": 0.42,
     "foeMul": 1.6,
     "guardMul": 1.2
+  },
+  "motion": {
+    "_doc": "段2 レーン M を幕1 にも (2026-10-03 ユーザーの裁定「今すぐ幕1 にも入れる」)。値は幕3 と同じ既定 (StageMotion.Tune の既定値)。森には壁の部品が無いので、技の光の2つ目は寄りのカメラの線の先の地面か幹に当たる。待機の画は変わらない (動きは当たり・暗転・敵の大技の時だけ)。hitReceive = 地面・岩・幹・半立体が技の光を強く受ける (幕3 と同じ桁)",
+    "on": true
   }
 }
