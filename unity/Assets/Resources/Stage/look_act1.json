@@ -485,7 +485,7 @@
   },
   "hitLight": {
     "_doc": "技の光 (StageFx.HitLight)。点光源を maxLights 個プールする。HitLight の intensity は refDist の所での明るさ (Light.intensity = intensity × refDist²)。影は大きい当たりだけ (呼ぶ側が shadow=true)",
-    "maxLights": 3,
+    "maxLights": 6,
     "range": 4.8,
     "refDist": 1.5,
     "shadowTier": "low",

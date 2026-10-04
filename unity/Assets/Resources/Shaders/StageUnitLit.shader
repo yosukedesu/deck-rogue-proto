@@ -176,6 +176,39 @@ Shader "DeckRogue/StageUnitLit"
                 return o;
             }
 
+            #define HD2D_HIT_LIGHTS_MAX 8
+            float4 _HD2DHitLights[HD2D_HIT_LIGHTS_MAX];
+            float _HD2DHitLightCount;
+
+            // 段2 (レーン S): 点光源のループの添字 (LIGHT_LOOP の lightIndex) から、その光の位置 (xyz・w = 1 なら点光源/スポット・0 なら平行光)。
+            // URP の GetAdditionalLight と同じ読み方 (cluster のループはそのままの添字・通常のループは物ごとの添字に直す・構造化バッファの版も)
+            float4 HD2D_AdditionalLightPosition(uint loopIndex)
+            {
+            #if USE_CLUSTER_LIGHT_LOOP
+                int li = (int)loopIndex;
+            #else
+                int li = GetPerObjectLightIndex(loopIndex);
+            #endif
+            #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+                return _AdditionalLightsBuffer[li].position;
+            #else
+                return _AdditionalLightsPosition[li];
+            #endif
+            }
+
+            // 段2 (レーン S): その光に技の光の印が付いているか (位置が印の配列のどれかと 1 cm 以内)
+            bool HD2D_IsHitLight(uint loopIndex)
+            {
+                float4 lp = HD2D_AdditionalLightPosition(loopIndex);
+                bool hit = false;
+                [unroll] for (int k = 0; k < HD2D_HIT_LIGHTS_MAX; k++)
+                {
+                    float3 dl = lp.xyz - _HD2DHitLights[k].xyz;
+                    hit = hit || ((float)k < _HD2DHitLightCount && _HD2DHitLights[k].w > 0.5 && dot(dl, dl) < 1e-4);
+                }
+                return hit && lp.w > 0.5;
+            }
+
             void Frag(Varyings i
                 , out half4 outColor : SV_Target0
             #ifdef _WRITE_RENDERING_LAYERS
@@ -260,8 +293,9 @@ Shader "DeckRogue/StageUnitLit"
                 half3 direct = keyColor * (ndl * keyMask);
 
                 // 近くの点光源 (技の光・逆光)。影は受けない (板が自分に影を落とさないため)
+                half3 attackLocal = 0;
             #if defined(_ADDITIONAL_LIGHTS)
-                if (_LocalLights > 0.0h)
+                if (_LocalLights > 0.0h || _HD2DHitLightCount > 0.5)
                 {
                     half3 local = 0;
                     InputData inputData = (InputData)0;
@@ -285,7 +319,12 @@ Shader "DeckRogue/StageUnitLit"
                     #ifdef _LIGHT_LAYERS
                         if (IsMatchingLightLayer(al.layerMask, meshRenderingLayers))
                     #endif
-                        local += al.color * (al.distanceAttenuation * saturate(dot(nW, al.direction)));
+                    {
+                        half nd = saturate(dot(nW, al.direction));
+                        if (_HD2DHitLightCount > 0.5 && HD2D_IsHitLight(lightIndex))
+                            attackLocal += al.color * (al.distanceAttenuation * (.3h + .7h * nd));
+                        else local += al.color * (al.distanceAttenuation * nd);
+                    }
                     LIGHT_LOOP_END
                     direct += local * _LocalLights;
                 }
@@ -337,6 +376,9 @@ Shader "DeckRogue/StageUnitLit"
                     half em = saturate(max(e.r, max(e.g, e.b)) * 8.0h);
                     col = lerp(col, albedo * _EmissionIntensity, em);
                 }
+                // Tagged attack light is independent of permanent _LocalLights=0 and white-cap.
+                // Albedo and wrapped normals retain the sprite silhouette/shading, including its dark side.
+                col += albedo * attackLocal * .75h;
                 // 鮮やかさ (2026-10-01 二周目 レーン E の 4): 輝度を保って彩度だけ _CharSat 倍 (発光の後 = 白い毛の暖かさも同じ割合)。既定 1 = そのまま
                 if (abs(_CharSat - 1.0h) > 1e-3h)
                 {

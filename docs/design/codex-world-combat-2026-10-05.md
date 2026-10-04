@@ -80,3 +80,25 @@ Verification: Windows build succeeded, 0 errors / 16 warnings. HD2D checks passe
 Current validation used isolated player-data. Four normal save/report files match the world-save-before baseline. This does not retroactively undo the earlier save incident already reported.
 
 Limitations: no Android rebuild/device profiling, audio capture, subjective quality approval, or full attack-library retuning in this checkpoint. The newly received Blender stage v0 and front-facing Mizore pack v1 were materialized, read and visually inspected, but are not integrated. Further roots/contact and character-proportion corrections are pending upstream. No remote push, deployment, new APK delivery or video Drive upload.
+
+## 2026-10-05 attack illumination review after reference frame analysis
+
+User approved effect assets but found environment light too weak. Parent supplied frame analysis of the original Thunderbird spell (long spell envelope is not reused for a basic strike). Runtime layout confirmed leader_green and enemy_probe both had localLights=0. Ordinary world hit lights were also unmarked, so terrain/rock hitReceive multipliers were unused.
+
+StageUnitLit now recognizes tagged attack lights independently of _LocalLights, accumulates their wrapped-normal response (.3 + .7*NdotL), then adds albedo * attackLocal * .75 after static whiteCap and emission replacement. Static character grading is unchanged without tagged lights. Ordinary world StageFx lights are marked. The representative slash uses two lights: contact intensity18/range7/RGB(1,.76,.42), duration320ms/100ms plateau; shared broad bounce intensity28/range13/RGB(1,.58,.25), duration340ms/100ms plateau. Unity light intensities are those values times refDist squared (2.25). Remaining envelopes decay quadratically. Heavy slash uses1.65 intensity and ranges8.5/15 (coded, not visually approved). ACES, exposure, Bloom, baseline ambient, camera, VFX textures and geometry remain unchanged.
+
+Pool cap is six. Each combatant contact and the shared bounce reuse their own live light sequence; refreshing a rapid hit keeps the light on. Final follow-up also reuses ordinary spell/guard/cast contacts by target so mixed AoE plus slash does not unnecessarily evict another active light. Four enemies, player and bounce fit the cap. The comparison capture used max2 lights,8 light events,0 evictions,0 misses. The video predates only this final mixed-effect reuse correction; its four ordinary slash actions use the identical light/receive settings.
+
+Review artifact: DeckRogue_light_before_after.mp4, Library libfile_a313518e8e888191974cf24234147052. 12 seconds/360 frames/30fps; first6 seconds previous v2, last6 seconds new v3. Each segment is the same fixed-step native Windows game capture at1920x886, phone rendering profile, seed4242, single strike at1s and three consecutive-frame clicks at3s. A40px comparison label is added above the game; no screen-space flash is added to gameplay. Silent; not real-time Android performance evidence.
+
+Decoded 8-bit Rec.709-weighted RGB ROI mean, baseline at0.5s, peak search1.133-1.467s (ratios are not Unity intensity or radiometric multipliers):
+- Right floor [1470,355,1690,420]: old1.109x, new1.503x.
+- Between fighters [800,355,1110,410]: old1.007x,new1.462x. RGB29.3/76.4/116.1 ->95.1/101.0/122.1.
+- Near rock [1100,270,1220,325]: old1.020x,new1.161x.
+- Far background [680,80,1080,205]: old1.000x,new1.003x.
+- UI [45,405,270,487]: old1.000x,new1.000x.
+New inter-floor ratio holds1.462 at1.133/1.167/1.200s, decays1.365/1.285/1.199/1.128/1.052/1.015, returns1.000 at1.433s. At1.6s all five ROIs are within0.2% of baseline. Image inspection shows enemy body/near floor warm illumination, with a very bright brief body peak; fine enemy markings become faint during peak and remain a user review point. No claim of original-game-equivalent quality.
+
+Windows build0errors/16warnings; shader checks10shaders/348conversions/0failures/6warnings, layoutOK. New shader checked in actual Windows player. Android GPU/runtime cost of more additional lights and per-light marked lookup remains unverified. No new APK or remote push. Four normal save/report hashes unchanged for this verification phase.
+
+Final mixed-light reuse verification: tempo9/9,26 UI attempts,25 accepted,all same-frame state updates; handler mean24.67ms/max89.88ms.51 light events,max6 simultaneously,0 evictions,0 missed lights.

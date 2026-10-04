@@ -90,6 +90,7 @@ namespace DeckRogue.Game
         public static void PlayerHit(string key, string style, bool big)
         {
             if (!Live) return;
+            if(Stage.CombatWorld && style=="slash") { WorldStrike(key,big); return; }
             var t = Tune;
             Color c = t.ColorFor(style);
             float k = big ? t.BigMul : 1f;
@@ -141,6 +142,21 @@ namespace DeckRogue.Game
             if (!Live) return;
             var t = Tune;
             At(key, new Vector2(0.5f, t.Height), t.FinishColor, t.Intensity * t.FinishMul, t.FinishDur, t.Hold, ShadowOk, "finish", 0f);
+        }
+
+        static readonly Dictionary<string,long> _worldContacts = new Dictionary<string,long>();
+        static long _worldBounce;
+        // Contact + shared broad bounce. Repeated hits refresh the same light, never extinguish it.
+        // Four enemies + player + one bounce fit the bounded six-light pool.
+        static void WorldStrike(string key,bool heavy) {
+            var point=Where(key,new Vector2(.5f,.48f));if(!point.HasValue)return;
+            float power=heavy?1.65f:1f;var p=point.Value;
+            _worldContacts.TryGetValue(key,out var reuse);
+            _worldContacts[key]=MotionLight(p,new Color(1f,.76f,.42f),18f*power,heavy?8.5f:7f,.32f,.3125f,heavy,"world-contact",key,reuse);
+            var bounce=p+Vector3.up*1.2f;
+            var source=UnitPoint("player",new Vector2(.5f,.5f));
+            if(source.HasValue)bounce=Vector3.Lerp(p,source.Value,.3f)+Vector3.up*1.2f;
+            _worldBounce=MotionLight(bounce,new Color(1f,.58f,.25f),28f*power,heavy?15f:13f,.34f,.2941176f,false,"world-bounce",key,_worldBounce);
         }
 
         // ================================================================ 段2 の口 (2026-10-03 レーン M。呼ぶのは StageMotion だけ = 門 StageMotion.On が真の時だけ)
@@ -227,7 +243,10 @@ namespace DeckRogue.Game
             }
             Vector3? p = Where(key, v);
             if (!p.HasValue) { _missed++; return; }
-            LightAt(p.Value, color, intensity, dur, hold, shadow, kind, key);
+            if(Stage.CombatWorld) {
+                _worldContacts.TryGetValue(key,out var reuse);
+                _worldContacts[key]=MotionLight(p.Value,color,intensity,-1f,dur,hold,shadow,kind,key,reuse);
+            } else LightAt(p.Value, color, intensity, dur, hold, shadow, kind, key);
         }
 
         /// <summary>
