@@ -1,0 +1,52 @@
+Tree texture Android candidate study, 2026-10-05
+
+Scope: TreeCutout_Midground_Study in the isolated trees geometry preview.
+Original PNG and importer .meta remain unchanged. Android override was disabled;
+global compression is Uncompressed. No Android override was applied by this study.
+
+Recommendation: Android-only override, maxTextureSize 512, ASTC_6x6,
+compressionQuality 100, preserving sRGB, alpha, mipmaps, Bilinear and Clamp.
+Conditional on ASTC-capable target devices/distribution. Keep source 1024x1536.
+Use 1024 ASTC6 for future closer cameras until reviewed. No APK was generated.
+
+Unity 6000.6 CPU compression output, all mip levels, payload excluding headers:
+reference 1024x1536 RGBA32: 8388604 bytes (8.0 MiB)
+1024_astc6 683x1024: 417360 bytes (407.6 KiB)
+512_astc6 341x512: 105456 bytes (103.0 KiB)
+512_astc8 341x512: 59200 bytes (57.8 KiB)
+256_astc6 171x256: 27024 bytes (26.4 KiB)
+512_etc2 256x512 ETC2_RGBA8: 174800 bytes (170.7 KiB)
+ETC2 used NPOT ToNearest on a temporary copy because EditorUtility.CompressTexture
+does not support ETC2 NPOT with mipmaps. This is a separate POT fallback candidate,
+not a claim about actual Android importer output. Do not change global NPOT blindly.
+
+Method: TreeTextureStudy.Run copies PNG into a temporary Editor folder, imports at
+candidate resolution, compresses with Unity Best, verifies format, exports raw mips.
+ASTC decoded using astcenc 4.7.0 -ds; ETC2 using texture2ddecoder 1.0.6.
+All decoded mip PNGs supplied through -tree-texture-study FOLDER. Windows player
+loads RGBA32 with supplied mips; this is a VISUAL PROXY, not compressed GPU execution.
+Preview flag requires -forest-preview night -forest-geometry trees. Default untouched.
+
+Validation: Windows build succeeded in 29s, 0 errors / 16 warnings. Six captures at
+1920x886, seed4242, phone tier, same look/DOF/camera. All six loaded their preview,
+all diorama gates passed and layout errors empty. Projected card about290x434px
+(partially above viewport). 512 ASTC6 preserves trunk/foliage silhouette in current
+DOF; 256 slightly softens fine branches. Strong DOF masks some codec differences.
+512 ASTC8 also looks close here but saves only45KiB vs512 ASTC6; favor quality margin.
+Animated particles differ between runs; no whole-frame pixel score claimed.
+Normal save hashes (four files) unchanged from isolation baseline.
+
+Unverified: Android platform importer build, physical Android GPU support/quality,
+GPU residency and frame timings, thermal/battery behavior, zoom or reduced DOF.
+SDK26 alone does not guarantee ASTC support; unsupported ASTC may expand to RGBA32.
+Compression does not reduce alpha-card fill rate or draw calls. Not performance passed.
+
+Official references:
+https://docs.unity3d.com/6000.0/Documentation/Manual/texture-choose-format-by-platform.html
+https://docs.unity3d.com/6000.0/Documentation/ScriptReference/EditorUtility.CompressTexture.html
+
+Comparison Library: libfile_d45fffb7470c8191afca524e4af56d71 version0
+Windows evidence folder: C:/Users/yosuke/Documents/Codex/2026-10-05/task
+captures: texture-screen-{reference,1024_astc6,512_astc6,512_astc8,256_astc6,512_etc2}
+reproduction helpers there: decode_texture_study.py, capture_texture_study.sh,
+texture_comparison.py. Existing light, AO, cohesion and trees studies preserved.

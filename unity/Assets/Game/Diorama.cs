@@ -359,6 +359,21 @@ namespace DeckRogue.Game
                         var original=mats[i];
                         if(!clones.TryGetValue(original,out var clone)) { clone=new Material(original); clones.Add(original,clone); _owned.Add(clone);
                             if(NightForestPreview && clone.HasProperty("_NaturalSurface")) {
+                                if(TreeForestPreview && original.name=="TreeCutout_Midground_Study") {
+                                    string folder=Autopilot.Arg("-tree-texture-study");
+                                    if(!string.IsNullOrEmpty(folder)) {
+                                        var meta=Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(folder,"manifest.json")));
+                                        int width=meta["width"].Value<int>(),height=meta["height"].Value<int>();
+                                        var texture=new Texture2D(width,height,TextureFormat.RGBA32,true,false){name="Decoded texture study",filterMode=FilterMode.Bilinear,wrapMode=TextureWrapMode.Clamp};
+                                        for(int mip=0;mip<meta["mips"].Value<int>();mip++) {
+                                            var level=new Texture2D(2,2,TextureFormat.RGBA32,false,false);level.LoadImage(System.IO.File.ReadAllBytes(System.IO.Path.Combine(folder,mip+".png")));
+                                            if(level.width!=Mathf.Max(1,width>>mip)||level.height!=Mathf.Max(1,height>>mip))throw new System.Exception("Texture study mip size mismatch");
+                                            texture.SetPixels32(level.GetPixels32(),mip);UnityEngine.Object.Destroy(level);
+                                        }
+                                        texture.Apply(false,true);_owned.Add(texture);clone.SetTexture("_BaseMap",texture);
+                                        Debug.Log("[TextureStudy] decoded mip preview "+meta["id"]+" "+width+"x"+height+"; Windows RGBA preview, not compressed GPU execution");
+                                    }
+                                }
                                 bool foliage=clone.GetFloat("_TwoSidedNormals")>.5f;
                                 clone.SetFloat("_StaticNeutral",PreviewFloat("staticNeutral",.55f));clone.SetFloat("_GradeWeight",PreviewFloat("gradeWeight",.22f));clone.SetFloat("_VignetteWeight",PreviewFloat("vignetteWeight",.75f));
                                 clone.SetVector("_AmbientFill",(foliage?new Vector4(.12f,.15f,.17f,0):new Vector4(.055f,.07f,.085f,0))*PreviewFloat("ambientScale",1));

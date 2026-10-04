@@ -1,0 +1,453 @@
+[
+  {
+    "id": "reference",
+    "format": "RGBA32",
+    "width": 1024,
+    "height": 1536,
+    "mips": 11,
+    "bytes": 8388604,
+    "levels": [
+      {
+        "mip": 0,
+        "width": 1024,
+        "height": 1536,
+        "bytes": 6291456
+      },
+      {
+        "mip": 1,
+        "width": 512,
+        "height": 768,
+        "bytes": 1572864
+      },
+      {
+        "mip": 2,
+        "width": 256,
+        "height": 384,
+        "bytes": 393216
+      },
+      {
+        "mip": 3,
+        "width": 128,
+        "height": 192,
+        "bytes": 98304
+      },
+      {
+        "mip": 4,
+        "width": 64,
+        "height": 96,
+        "bytes": 24576
+      },
+      {
+        "mip": 5,
+        "width": 32,
+        "height": 48,
+        "bytes": 6144
+      },
+      {
+        "mip": 6,
+        "width": 16,
+        "height": 24,
+        "bytes": 1536
+      },
+      {
+        "mip": 7,
+        "width": 8,
+        "height": 12,
+        "bytes": 384
+      },
+      {
+        "mip": 8,
+        "width": 4,
+        "height": 6,
+        "bytes": 96
+      },
+      {
+        "mip": 9,
+        "width": 2,
+        "height": 3,
+        "bytes": 24
+      },
+      {
+        "mip": 10,
+        "width": 1,
+        "height": 1,
+        "bytes": 4
+      }
+    ]
+  },
+  {
+    "id": "1024_astc6",
+    "format": "ASTC_6x6",
+    "width": 683,
+    "height": 1024,
+    "mips": 11,
+    "bytes": 417360,
+    "levels": [
+      {
+        "mip": 0,
+        "width": 683,
+        "height": 1024,
+        "bytes": 311904
+      },
+      {
+        "mip": 1,
+        "width": 341,
+        "height": 512,
+        "bytes": 78432
+      },
+      {
+        "mip": 2,
+        "width": 170,
+        "height": 256,
+        "bytes": 19952
+      },
+      {
+        "mip": 3,
+        "width": 85,
+        "height": 128,
+        "bytes": 5280
+      },
+      {
+        "mip": 4,
+        "width": 42,
+        "height": 64,
+        "bytes": 1232
+      },
+      {
+        "mip": 5,
+        "width": 21,
+        "height": 32,
+        "bytes": 384
+      },
+      {
+        "mip": 6,
+        "width": 10,
+        "height": 16,
+        "bytes": 96
+      },
+      {
+        "mip": 7,
+        "width": 5,
+        "height": 8,
+        "bytes": 32
+      },
+      {
+        "mip": 8,
+        "width": 2,
+        "height": 4,
+        "bytes": 16
+      },
+      {
+        "mip": 9,
+        "width": 1,
+        "height": 2,
+        "bytes": 16
+      },
+      {
+        "mip": 10,
+        "width": 1,
+        "height": 1,
+        "bytes": 16
+      }
+    ],
+    "decodeFlipY": true,
+    "alphaOrientationErrors": [
+      81.50142123444363,
+      1.2761884608345535
+    ]
+  },
+  {
+    "id": "512_astc6",
+    "format": "ASTC_6x6",
+    "width": 341,
+    "height": 512,
+    "mips": 10,
+    "bytes": 105456,
+    "levels": [
+      {
+        "mip": 0,
+        "width": 341,
+        "height": 512,
+        "bytes": 78432
+      },
+      {
+        "mip": 1,
+        "width": 170,
+        "height": 256,
+        "bytes": 19952
+      },
+      {
+        "mip": 2,
+        "width": 85,
+        "height": 128,
+        "bytes": 5280
+      },
+      {
+        "mip": 3,
+        "width": 42,
+        "height": 64,
+        "bytes": 1232
+      },
+      {
+        "mip": 4,
+        "width": 21,
+        "height": 32,
+        "bytes": 384
+      },
+      {
+        "mip": 5,
+        "width": 10,
+        "height": 16,
+        "bytes": 96
+      },
+      {
+        "mip": 6,
+        "width": 5,
+        "height": 8,
+        "bytes": 32
+      },
+      {
+        "mip": 7,
+        "width": 2,
+        "height": 4,
+        "bytes": 16
+      },
+      {
+        "mip": 8,
+        "width": 1,
+        "height": 2,
+        "bytes": 16
+      },
+      {
+        "mip": 9,
+        "width": 1,
+        "height": 1,
+        "bytes": 16
+      }
+    ],
+    "decodeFlipY": true,
+    "alphaOrientationErrors": [
+      81.35855021994135,
+      1.8774170637829912
+    ]
+  },
+  {
+    "id": "512_astc8",
+    "format": "ASTC_8x8",
+    "width": 341,
+    "height": 512,
+    "mips": 10,
+    "bytes": 59200,
+    "levels": [
+      {
+        "mip": 0,
+        "width": 341,
+        "height": 512,
+        "bytes": 44032
+      },
+      {
+        "mip": 1,
+        "width": 170,
+        "height": 256,
+        "bytes": 11264
+      },
+      {
+        "mip": 2,
+        "width": 85,
+        "height": 128,
+        "bytes": 2816
+      },
+      {
+        "mip": 3,
+        "width": 42,
+        "height": 64,
+        "bytes": 768
+      },
+      {
+        "mip": 4,
+        "width": 21,
+        "height": 32,
+        "bytes": 192
+      },
+      {
+        "mip": 5,
+        "width": 10,
+        "height": 16,
+        "bytes": 64
+      },
+      {
+        "mip": 6,
+        "width": 5,
+        "height": 8,
+        "bytes": 16
+      },
+      {
+        "mip": 7,
+        "width": 2,
+        "height": 4,
+        "bytes": 16
+      },
+      {
+        "mip": 8,
+        "width": 1,
+        "height": 2,
+        "bytes": 16
+      },
+      {
+        "mip": 9,
+        "width": 1,
+        "height": 1,
+        "bytes": 16
+      }
+    ],
+    "decodeFlipY": true,
+    "alphaOrientationErrors": [
+      81.42732198497067,
+      2.6636443823313782
+    ]
+  },
+  {
+    "id": "256_astc6",
+    "format": "ASTC_6x6",
+    "width": 171,
+    "height": 256,
+    "mips": 9,
+    "bytes": 27024,
+    "levels": [
+      {
+        "mip": 0,
+        "width": 171,
+        "height": 256,
+        "bytes": 19952
+      },
+      {
+        "mip": 1,
+        "width": 85,
+        "height": 128,
+        "bytes": 5280
+      },
+      {
+        "mip": 2,
+        "width": 42,
+        "height": 64,
+        "bytes": 1232
+      },
+      {
+        "mip": 3,
+        "width": 21,
+        "height": 32,
+        "bytes": 384
+      },
+      {
+        "mip": 4,
+        "width": 10,
+        "height": 16,
+        "bytes": 96
+      },
+      {
+        "mip": 5,
+        "width": 5,
+        "height": 8,
+        "bytes": 32
+      },
+      {
+        "mip": 6,
+        "width": 2,
+        "height": 4,
+        "bytes": 16
+      },
+      {
+        "mip": 7,
+        "width": 1,
+        "height": 2,
+        "bytes": 16
+      },
+      {
+        "mip": 8,
+        "width": 1,
+        "height": 1,
+        "bytes": 16
+      }
+    ],
+    "decodeFlipY": true,
+    "alphaOrientationErrors": [
+      80.72366136695906,
+      2.5173839546783627
+    ]
+  },
+  {
+    "id": "512_etc2",
+    "format": "ETC2_RGBA8",
+    "width": 256,
+    "height": 512,
+    "mips": 10,
+    "bytes": 174800,
+    "levels": [
+      {
+        "mip": 0,
+        "width": 256,
+        "height": 512,
+        "bytes": 131072
+      },
+      {
+        "mip": 1,
+        "width": 128,
+        "height": 256,
+        "bytes": 32768
+      },
+      {
+        "mip": 2,
+        "width": 64,
+        "height": 128,
+        "bytes": 8192
+      },
+      {
+        "mip": 3,
+        "width": 32,
+        "height": 64,
+        "bytes": 2048
+      },
+      {
+        "mip": 4,
+        "width": 16,
+        "height": 32,
+        "bytes": 512
+      },
+      {
+        "mip": 5,
+        "width": 8,
+        "height": 16,
+        "bytes": 128
+      },
+      {
+        "mip": 6,
+        "width": 4,
+        "height": 8,
+        "bytes": 32
+      },
+      {
+        "mip": 7,
+        "width": 2,
+        "height": 4,
+        "bytes": 16
+      },
+      {
+        "mip": 8,
+        "width": 1,
+        "height": 2,
+        "bytes": 16
+      },
+      {
+        "mip": 9,
+        "width": 1,
+        "height": 1,
+        "bytes": 16
+      }
+    ],
+    "decodeFlipY": true,
+    "alphaOrientationErrors": [
+      81.12882232666016,
+      0.8544845581054688
+    ]
+  }
+]
