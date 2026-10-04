@@ -2138,6 +2138,7 @@ namespace DeckRogue.Game
                             {
                                 string target = "enemy" + (ctx != null ? Mathf.Max(0,ctx.EnemyIndex) : 0);
                                 Stage.CombatApproach("player", target, true);
+                                WorldBattleFx.Cast("player",target,HitColor(CardHitStyle(def),def));
                                 Tween.After(0.12f, () => WorldBattleFx.Projectile("player", target, HitColor(CardHitStyle(def),def), Stage.CombatImpactTime-0.12f));
                             }
                             else Tween.CastFx(fx, Tween.CenterIn(cSpr, fx), HitColor(CardHitStyle(def), def));
@@ -2149,7 +2150,7 @@ namespace DeckRogue.Game
                         if (!Stage.CombatWorld) Stage.PlayAnim("player", "attack");
                         var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
                         // 振り抜きの瞬間 (0.07s): 踏み込み + 体が少し沈む + 画面が揺れる = 斧の重さ
-                        if (Stage.CombatWorld) Stage.CombatApproach("player", "enemy" + (ctx != null ? Mathf.Max(0,ctx.EnemyIndex) : 0), false, ctx != null ? ctx.HitCount : 1);
+                        if (Stage.CombatWorld) Stage.CombatApproach("player", "enemy" + (ctx != null ? Mathf.Max(0,ctx.EnemyIndex) : 0), false, ctx != null ? ctx.HitCount : 1, CardHitStyle(def)=="stomp" || CardHitStyle(def)=="vine" ? .18f : 100f);
                         else Tween.AttackStep(pSpr, new Vector2(UiKit.Phone ? 72f : 100f, -3f));
                     }
                     else if (blk) Stage.PlayAnim("player", "block");

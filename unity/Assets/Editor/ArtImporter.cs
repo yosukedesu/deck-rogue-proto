@@ -36,7 +36,7 @@ namespace DeckRogue.EditorTools
             bool normal = name.EndsWith("_n", System.StringComparison.Ordinal);
             bool emission = name.EndsWith("_e", System.StringComparison.Ordinal);
             // 札の裏 (2026-10-04): ドットでなく「紙」側のなめらかな絵 (Gemini の工芸風)。424×632 を 200×290 前後へ縮めるので Bilinear＋ミップ (Point だと真鍮の細線がちらつく)
-            bool generatedFx = name == "codex-vfx-atlas";
+            bool generatedFx = name == "codex-vfx-atlas" || (name.StartsWith("cloud-") && name.EndsWith("-8f"));
             bool smooth = stage || name == "cardback" || generatedFx;
             imp.textureType = TextureImporterType.Sprite;
             imp.spriteImportMode = SpriteImportMode.Single;

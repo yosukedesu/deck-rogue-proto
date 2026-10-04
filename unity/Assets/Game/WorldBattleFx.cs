@@ -9,7 +9,7 @@ namespace DeckRogue.Game
     {
         sealed class Slot { public Transform T; public MeshRenderer R; public bool Busy; public int Version; }
         static readonly Slot[] Pool = new Slot[24];
-        static Mesh _quad; static Material _material; static Texture2D _atlas;
+        static Mesh _quad; static Material _material; static Texture2D _atlas, _silver, _arcane, _guard;
         static readonly MaterialPropertyBlock Props = new MaterialPropertyBlock();
         static bool Ready()
         {
@@ -19,6 +19,9 @@ namespace DeckRogue.Game
                 var shader = Shader.Find("DeckRogue/WorldBattleFx");
                 _atlas = Resources.Load<Texture2D>("Art/fx/codex-vfx-atlas");
                 if (shader == null || !shader.isSupported || _atlas == null) return false;
+                _silver=Resources.Load<Texture2D>("Art/fx/cloud-silver-8f");
+                _arcane=Resources.Load<Texture2D>("Art/fx/cloud-arcane_impact-8f");
+                _guard=Resources.Load<Texture2D>("Art/fx/cloud-guard_break-8f");
                 _material = new Material(shader); _material.SetTexture("_BaseMap", _atlas);
                 _quad = new Mesh { name = "combat-fx-quad" };
                 _quad.vertices = new[] { new Vector3(-.5f,-.5f,0),new Vector3(.5f,-.5f,0),new Vector3(.5f,.5f,0),new Vector3(-.5f,.5f,0) };
@@ -27,7 +30,7 @@ namespace DeckRogue.Game
             }
             return true;
         }
-        static void Emit(Vector3 from, Vector3 to, int cell, Color tint, float size, float duration, float angle, float sweep, bool projectile=false)
+        static void Emit(Vector3 from, Vector3 to, int cell, Color tint, float size, float duration, float angle, float sweep, bool projectile=false, Texture2D flipbook=null, bool ground=false, float gain=1.3f)
         {
             if (!Ready()) return;
             Slot slot=null;
@@ -43,16 +46,17 @@ namespace DeckRogue.Game
             int version=++slot.Version; slot.Busy=true; slot.T.gameObject.SetActive(true);
             float inset=.5f/_atlas.width;
             Vector4 uv=new Vector4(.5f-2*inset,.5f-2*inset,(cell%2)*.5f+inset,cell<2?.5f+inset:inset);
-            var facing=Stage.LayoutRotation;
+            var facing=ground?Quaternion.Euler(90,0,0):Stage.LayoutRotation;
             Tween.Run(duration,k=>
             {
                 if(slot.T==null || slot.Version!=version)return;
                 float q=1-Mathf.Pow(1-k,2);
+                if(flipbook!=null){int frame=Mathf.Min(7,Mathf.FloorToInt(k*8));float pad=.5f/flipbook.width;uv=new Vector4(.25f-2*pad,.5f-2*pad,(frame%4)*.25f+pad,frame<4?.5f+pad:pad);}
                 slot.T.position=Vector3.Lerp(from,to,projectile?k:0);
-                slot.T.rotation=facing*Quaternion.Euler(0,0,angle+sweep*q);
-                slot.T.localScale=Vector3.one*size*(projectile?1:Mathf.Lerp(.65f,1.08f,q));
+                slot.T.rotation=facing*Quaternion.Euler(0,0,angle+(flipbook==null?sweep*q:0));
+                slot.T.localScale=Vector3.one*size*(projectile?1:Mathf.Lerp(flipbook!=null?.96f:.65f,1.08f,q));
                 float alpha=projectile?Mathf.Min(1,k*12):Mathf.Min(1,k*18)*(1-Mathf.SmoothStep(.15f,1,k));
-                Props.Clear(); Props.SetVector("_AtlasRect",uv); Props.SetColor("_Tint",new Color(tint.r*1.65f,tint.g*1.65f,tint.b*1.65f,tint.a*alpha)); slot.R.SetPropertyBlock(Props);
+                Props.Clear(); Props.SetTexture("_BaseMap",flipbook!=null?flipbook:_atlas); Props.SetVector("_AtlasRect",uv); Props.SetColor("_Tint",new Color(tint.r*gain,tint.g*gain,tint.b*gain,tint.a*alpha)); slot.R.SetPropertyBlock(Props);
             },Ease.Linear,()=>{if(slot.Version==version){slot.Busy=false;if(slot.T!=null)slot.T.gameObject.SetActive(false);}});
         }
         static bool Socket(string key, out Vector3 point, out float height)
@@ -65,9 +69,23 @@ namespace DeckRogue.Game
         {
             if(!Socket(target,out var p,out var h))return false;
             bool spell=style=="spell"||style=="light"||style=="spark"||style=="beam"||style=="throw";
-            Emit(p,p,spell?2:0,color,h*(heavy?1.45f:1.1f),spell?.25f:.18f,spell?0:(index%2==0?-40:35),spell?22:-36);
-            Emit(p,p,1,new Color(1,.82f,.48f,.85f),h*(heavy?.50f:.32f),.13f,15,12);
+            if(spell) {
+                Emit(p,p,2,color,h*(heavy?1.5f:1.2f),.34f,0,0,false,_arcane);
+                if(Stage.TryGetUnitBox(target,out var feet,out var height)) Emit(feet+Vector3.up*.035f,feet,2,new Color(color.r,color.g,color.b,.65f),h*1.1f,.28f,0,0,false,_arcane,true,1.15f);
+            } else if(style=="stomp" || style=="vine") {
+                var impact=style=="vine"?new Color(.48f,.86f,.55f,.82f):new Color(.82f,.66f,.44f,.82f);
+                if(Stage.TryGetUnitBox(target,out var feet,out var height)) Emit(feet+Vector3.up*.045f,feet,2,impact,h*1.6f,.36f,0,0,false,_arcane,true,1.05f);
+                Emit(p,p,1,impact,h*.48f,.16f,0,15);
+            } else Emit(p,p,0,new Color(.88f,.94f,1f,.95f),h*(heavy?1.9f:1.55f),.34f,index%2==0?0:90,0,false,_silver,false,1.15f);
+            Emit(p,p,1,new Color(1,.82f,.52f,.65f),h*(heavy?.50f:.32f),.13f,15,12);
             return true;
+        }
+        public static void Cast(string source,string target,Color color) {
+            if(!Ready())return;
+            foreach(var key in new[]{source,target}) if(Stage.TryGetUnitBox(key,out var feet,out var h)) {
+                var p=feet+Vector3.up*.035f;
+                Emit(p,p,2,new Color(color.r,color.g,color.b,key==source?.48f:.25f),h*.85f,.3f,0,0,false,_arcane,true,1f);
+            }
         }
         public static bool Projectile(string source,string target,Color color,float duration)
         {
@@ -79,7 +97,7 @@ namespace DeckRogue.Game
             if(!Socket(target,out var p,out var h))return false;
             float side=target=="player"?1:-1;
             p+=(Stage.LayoutRotation*Vector3.right)*h*.28f*side;
-            Emit(p,p,3,new Color(.65f,.88f,1,.8f),h*.85f,.22f,side<0?180:0,0);return true;
+            Emit(p,p,3,new Color(.6f,.78f,1,.8f),h*.85f,.3f,side<0?180:0,0,false,_guard);return true;
         }
     }
 }

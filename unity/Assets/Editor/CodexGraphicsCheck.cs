@@ -42,12 +42,21 @@ namespace DeckRogue.EditorTools
                 Require(atlas.filterMode==FilterMode.Bilinear && atlas.mipmapCount==1,"atlas filtering");
                 Require(!atlas.isReadable,"atlas CPU copy should be released");
                 Require(CodexBattleFx.Ready,"VFX loader failed");
+                foreach(var name in new[]{"cloud-silver-8f","cloud-arcane_impact-8f","cloud-guard_break-8f"}) {
+                    var frames=Resources.Load<Texture2D>("Art/fx/"+name);
+                    Require(frames!=null && frames.width==1024 && frames.height==512,"flipbook 4x2 dimensions: "+name);
+                    Require(frames.filterMode==FilterMode.Bilinear && frames.mipmapCount==1 && !frames.isReadable,"flipbook filtering/memory: "+name);
+                }
+                Require(Resources.Load<GameObject>("CloudKit/ForestMasonry")!=null,"cloud masonry prefab");
                 var worldFx=Shader.Find("DeckRogue/WorldBattleFx");
                 Require(worldFx!=null && !ShaderUtil.ShaderHasError(worldFx),"world VFX shader compile");
                 var unit=Shader.Find("DeckRogue/StageUnitLit");
-                var material=new Material(unit);
-                Require(material.FindPass("ShadowCaster")>=0 && material.FindPass("DepthOnly")>=0,"unit depth/shadow passes");
-                UnityEngine.Object.DestroyImmediate(material);
+                Require(unit!=null && !ShaderUtil.ShaderHasError(unit),"unit shader compile");
+                var sub=ShaderUtil.GetShaderData(unit).GetSubshader(0);
+                var names=new System.Collections.Generic.List<string>();
+                for(int i=0;i<sub.PassCount;i++) names.Add(sub.GetPass(i).Name);
+                Require(names.Contains("ShadowCaster") && names.Contains("DepthOnly"),"unit depth/shadow metadata passes");
+                Debug.Log("[CodexGraphicsCheck] shader passes="+string.Join(",",names)+" device="+SystemInfo.graphicsDeviceType);
                 Debug.Log("[CodexGraphicsCheck] PASS: deterministic canopy, legacy off, bounded seat contrast, visible coverage, atlas load/filter/memory; changed="+changed);
             }
             catch(Exception e) { Debug.LogError("[CodexGraphicsCheck] FAIL: "+e); code=1; }

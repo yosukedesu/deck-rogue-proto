@@ -275,6 +275,12 @@ namespace DeckRogue.Game
             }
             if (layout.Act == 1 && layout.Parts.Exists(p => p.Name == "codex-lantern-plinth"))
             {
+                var masonry=Resources.Load<GameObject>("CloudKit/ForestMasonry");
+                if(masonry!=null) {
+                    var instance=UnityEngine.Object.Instantiate(masonry, Root, false);
+                    instance.transform.localRotation=Quaternion.Euler(0,_pathYaw,0);
+                    instance.transform.localPosition=Vector3.up*.48f;
+                }
                 var lamp = new GameObject("codex-gate-lantern");
                 lamp.transform.SetParent(Root, false);
                 lamp.transform.localPosition = OnPath(-4.8f, 7.7f, 1.65f);

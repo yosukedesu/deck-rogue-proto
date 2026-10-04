@@ -8,7 +8,7 @@ namespace DeckRogue.Game
         public const float CombatImpactTime = 0.32f;
         public static bool CombatWorld => HD2DFlags.DioramaHere;
 
-        public static void CombatApproach(string key, string target, bool ranged, int hits = 1)
+        public static void CombatApproach(string key, string target, bool ranged, int hits = 1, float reachLimit = 100f)
         {
             if (!CombatWorld || !_bound.TryGetValue(key, out var u) || u == null) return;
             Vector3 a, b; float ah, bh;
@@ -19,7 +19,7 @@ namespace DeckRogue.Game
             float distance = delta.magnitude;
             Vector3 dir = distance > 0.01f ? delta / distance : Vector3.right;
             // Weapon/hand reach: stop before the target silhouette, never cross its centre.
-            Vector3 travel = ranged ? Vector3.zero : dir * Mathf.Max(0f, distance - (ah * 0.40f + bh * 0.25f));
+            Vector3 travel = ranged ? Vector3.zero : dir * Mathf.Min(ah*reachLimit,Mathf.Max(0f, distance - (ah * 0.40f + bh * 0.25f)));
             float chain = ranged ? 0f : Mathf.Clamp(hits-1,0,7)*0.4f;
             float release = 0.48f + chain, duration = release + 0.30f;
             Tween.After(0.17f, () => { if (u != null && u.MotionVersion == version) u.Play(ranged ? "block" : "attack"); });
