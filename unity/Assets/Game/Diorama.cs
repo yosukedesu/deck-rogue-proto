@@ -239,6 +239,27 @@ namespace DeckRogue.Game
 
         // ================================================================ 組む
 
+        static void PreviewGroundLight(string name, Vector3 position, Color color, float intensity, float range)
+        {
+            if(intensity<=0)return;
+            var go=new GameObject(name);go.transform.SetParent(Root,false);go.transform.position=position;
+            var l=go.AddComponent<Light>();l.type=LightType.Point;l.color=color;l.intensity=intensity;l.range=range;l.shadows=LightShadows.None;
+            go.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalLightData>().renderingLayers=HD2DLayers.RenderingEnvironment;
+        }
+        static void PreviewSeatRock(MeshRenderer mr)
+        {
+            float drop=PreviewFloat("rockDrop",0);if(drop<=0)return;
+            var mf=mr.GetComponent<MeshFilter>();if(mf==null||mf.sharedMesh==null)return;
+            var vertices=mf.sharedMesh.vertices;var matches=new List<int>();
+            // v5 GLB component34 / source order bank_rock_12: guard exact bounds AND94 seam vertices.
+            for(int i=0;i<vertices.Length;i++) {var v=vertices[i];if(v.x>=3.2073f&&v.x<=4.2186f&&v.y>=1.0907f&&v.y<=1.8336f&&v.z>=10.2070f&&v.z<=11.0846f)matches.Add(i);}
+            if(matches.Count!=94)return; // Source revisions must never be partly shifted.
+            var mesh=UnityEngine.Object.Instantiate(mf.sharedMesh);_owned.Add(mesh);
+            foreach(int i in matches)vertices[i].y-=drop;
+            mesh.vertices=vertices;mesh.RecalculateBounds();mf.sharedMesh=mesh;
+            Debug.Log("[ForestPreview] seated bank_rock_12 candidate: vertices94 drop="+drop);
+        }
+
         /// <summary>幕 act の箱庭を parent の下に組む (look = 幕の設計図。いまは使わない = 受光などは StageLook が Materials を書き換える)</summary>
         public static void Build(int act, Transform parent, StageLookData look)
         {
@@ -282,6 +303,7 @@ namespace DeckRogue.Game
             foreach (var p in layout.Parts)
             {
                 if (_fullStage && !AirPart(p)) continue;
+                if (NightForestPreview && p.Kind=="mist" && PreviewFloat("hideMist",0)>0) continue;
                 if (drop != null && drop.Contains(p.Kind)) continue;
                 try { BuildPart(ctx, p); }
                 catch (Exception e) { missing.Add("p" + p.Index + ":" + p.Kind + " 例外 " + e.Message); Debug.LogWarning("[Diorama] 部品 " + p.Index + " (" + p.Kind + ") で例外: " + e); }
@@ -290,8 +312,15 @@ namespace DeckRogue.Game
             {
                 var full = UnityEngine.Object.Instantiate(fullPrefab, Root, false);
                 var clones = new Dictionary<Material,Material>();
+                Vector3? lanternGround = null;
                 foreach(var mr in full.GetComponentsInChildren<MeshRenderer>()) {
                     mr.gameObject.layer = HD2DLayers.StageSet;
+                    mr.renderingLayerMask |= HD2DLayers.RenderingEnvironment;
+                    if(NightForestPreview) {
+                        if(mr.name.Contains("__Farfield") && PreviewFloat("hideFarfield",0)>0)mr.enabled=false;
+                        if(mr.name=="DistantAtmosphere" && PreviewFloat("hideBackdrop",0)>0)mr.enabled=false;
+                        PreviewSeatRock(mr);
+                    }
                     var mats = mr.sharedMaterials;
                     for(int i=0;i<mats.Length;i++) {
                         var original=mats[i];
@@ -301,7 +330,15 @@ namespace DeckRogue.Game
                                 clone.SetFloat("_StaticNeutral",PreviewFloat("staticNeutral",.55f));clone.SetFloat("_GradeWeight",PreviewFloat("gradeWeight",.22f));clone.SetFloat("_VignetteWeight",PreviewFloat("vignetteWeight",.75f));
                                 clone.SetVector("_AmbientFill",(foliage?new Vector4(.12f,.15f,.17f,0):new Vector4(.055f,.07f,.085f,0))*PreviewFloat("ambientScale",1));
                                 clone.SetFloat("_LowerFade",original.name.Contains("cliff_strata")?1:0);
-                                if(original.name.Contains("atmosphere"))clone.SetColor("_BaseColor",new Color(.20f,.28f,.36f,1)*PreviewFloat("backdropScale",1));
+                                if(original.name.Contains("atmosphere")) {
+                                    clone.SetColor("_BaseColor",new Color(.20f,.28f,.36f,1)*PreviewFloat("backdropScale",1));
+                                    clone.SetFloat("_Fog",PreviewFloat("backdropFog",.35f));
+                                }
+                                string n=original.name.ToLowerInvariant();
+                                bool moss=n.Contains("moss");bool paving=n.Contains("weathered");
+                                float scale=PreviewFloat(moss?"mossStaticScale":paving?"pavingStaticScale":"surfaceStaticScale",1);
+                                clone.SetVector("_StaticAlbedoTint",paving?new Vector4(.85f,.94f,1,1)*scale:new Vector4(1,1,1,1)*scale);
+                                clone.SetFloat("_StaticSaturation",PreviewFloat(moss?"mossStaticSaturation":paving?"pavingStaticSaturation":"surfaceStaticSaturation",1));
                             }
                              Materials["full-"+original.name]=clone; }
                         mats[i]=clone;
@@ -311,9 +348,16 @@ namespace DeckRogue.Game
                     if(mr.sharedMaterial.name.Contains("lantern_glass")) {
                         var lamp=new GameObject("full-stage-lantern");lamp.transform.SetParent(Root,false);lamp.transform.position=mr.bounds.center;
                         var light=lamp.AddComponent<Light>();light.type=LightType.Point;light.color=new Color(1,.55f,.25f);light.intensity=NightForestPreview?PreviewFloat("lanternIntensity",4.5f):2.8f;light.range=NightForestPreview?PreviewFloat("lanternRange",4.8f):3.2f;light.shadows=LightShadows.None;
+                        if(NightForestPreview)lanternGround=mr.bounds.center+Vector3.back*PreviewFloat("warmForward",1.5f);
                     }
                 }
                 _fullGround=new FullStageGround(full);
+                if(lanternGround.HasValue) {
+                    var p=lanternGround.Value;float h=_fullGround.Height(p.x,p.z);p.y=(float.IsNaN(h)?0:h)+PreviewFloat("warmHeight",.9f);
+                    PreviewGroundLight("lantern-ground-bounce",p,new Color(1,.48f,.18f),PreviewFloat("warmGround",0),PreviewFloat("warmRange",4.5f));
+                    Debug.Log("[ForestPreview] lantern ground="+h+" bounce="+p);
+                }
+                if(NightForestPreview)PreviewGroundLight("battle-moon-fill",new Vector3(0,3,0),new Color(.45f,.58f,.85f),PreviewFloat("battleFill",0),13f);
             }
             if (!_fullStage && layout.Act == 1 && layout.Parts.Exists(p => p.Name == "codex-lantern-plinth"))
             {
@@ -1777,6 +1821,7 @@ namespace DeckRogue.Game
                 foreach (var p in Layout.Parts)
                 {
                     if (_fullStage && !AirPart(p)) continue;
+                if (NightForestPreview && p.Kind=="mist" && PreviewFloat("hideMist",0)>0) continue;
                     st.Parts++;
                     st.ByKind.TryGetValue(p.Kind, out var c); st.ByKind[p.Kind] = c + 1;
                     if (PhoneHidden(p)) { st.PhoneHidden++; continue; }

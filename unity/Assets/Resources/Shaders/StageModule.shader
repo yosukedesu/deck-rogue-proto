@@ -90,6 +90,8 @@ Shader "DeckRogue/StageModule"
         // Imported natural surfaces opt in; legacy stage defaults are unchanged.
         _NaturalSurface ("Natural surface lighting", Float) = 0
         _LowerFade ("Preview lower cliff fade", Float) = 0
+        _StaticAlbedoTint ("Static light albedo tint", Vector) = (1,1,1,1)
+        _StaticSaturation ("Static light albedo saturation", Float) = 1
         _AmbientFill ("Neutral ambient floor", Vector) = (0,0,0,0)
         _TextureMean ("Linear albedo mean", Vector) = (0,0,0,0)
         _TextureContrast ("Albedo contrast", Float) = 1
@@ -124,7 +126,8 @@ Shader "DeckRogue/StageModule"
             float4 _SwayFreq;
             // 段2 (レーン S): 技の光の当たりの倍率 (1 = 今と同じ)
             float _HitReceive;
-            float _LowerFade;
+            float _LowerFade, _StaticSaturation;
+            float4 _StaticAlbedoTint;
             float _NaturalSurface, _TextureContrast, _StaticNeutral, _GradeWeight, _VignetteWeight, _TwoSidedNormals;
             float4 _AmbientFill, _TextureMean;
         CBUFFER_END
@@ -640,7 +643,8 @@ Shader "DeckRogue/StageModule"
                     half3 naturalAmbient = max(lerp(amb, Luminance(amb).xxx, half(_StaticNeutral)), half3(_AmbientFill.rgb));
                     half naturalShadow = 1.0h - half(_ShadowStrength) * saturate(Luminance(staticLost) / max(Luminance(naturalAmbient + staticDirect), 1e-4h));
                     // Ambient is not multiplied by direct-light shadow loss: leaves retain their albedo in shade.
-                    col = surface * (naturalAmbient + half(_Receive) * neutralDirect * naturalShadow);
+                    half3 staticSurface = lerp(Luminance(surface).xxx, surface, half(_StaticSaturation)) * half3(_StaticAlbedoTint.rgb);
+                    col = staticSurface * (naturalAmbient + half(_Receive) * neutralDirect * naturalShadow);
                     col *= lerp(1.0h, lerp(.10h, 1.0h, smoothstep(-3.0, .05, posWS.y)), half(_LowerFade));
                     col += surface * half(_Receive) * attack * darken;
                 }

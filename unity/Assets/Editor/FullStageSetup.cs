@@ -103,7 +103,9 @@ namespace DeckRogue.EditorTools {
     mesh.uv=uv;if(recovered>0)Debug.Log("[FullStage] original UV1 recovered "+mf.name+" faces="+recovered);if(repaired>0)Debug.Log("[FullStage] repaired degenerate UV faces "+mf.name+" count="+repaired);
     mesh.RecalculateBounds();triangles+=mesh.triangles.Length/3;
     var pathMesh=Root+"/"+mf.name+".asset";Save(mesh,pathMesh);
-    var go=new GameObject(mf.name);go.transform.SetParent(root.transform,false);go.AddComponent<MeshFilter>().sharedMesh=AssetDatabase.LoadAssetAtPath<Mesh>(pathMesh);go.AddComponent<MeshRenderer>().sharedMaterials=output;
+    var sourceEntry=sourceMap.FirstOrDefault(b=>(string)b["mesh"]==mf.name);
+    bool farfield=sourceEntry!=null && ((JArray)sourceEntry["sources"]).All(n=>((string)n).StartsWith("Farfield_"));
+    var go=new GameObject(mf.name+(farfield?"__Farfield":""));go.transform.SetParent(root.transform,false);go.AddComponent<MeshFilter>().sharedMesh=AssetDatabase.LoadAssetAtPath<Mesh>(pathMesh);go.AddComponent<MeshRenderer>().sharedMaterials=output;
    }
    // Opaque distant atmosphere behind the alpha forest: holes must reveal air, not a black clear color.
    var skyMat=new Material(Shader.Find("DeckRogue/StageModule")){name="Distant forest atmosphere"};

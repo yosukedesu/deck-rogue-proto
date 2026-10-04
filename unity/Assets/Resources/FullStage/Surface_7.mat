@@ -73,6 +73,7 @@ Material:
     - _Receive: 0.8
     - _ShadowStrength: 0.85
     - _StaticNeutral: 0.78
+    - _StaticSaturation: 1
     - _SwayAmp: 0
     - _TexelLighting: 1
     - _TexelsPerUnit: 25
@@ -90,6 +91,7 @@ Material:
     - _AmbientFill: {r: 0.17, g: 0.18, b: 0.16, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _MatSlices: {r: 0, g: 1, b: 0, a: 0}
+    - _StaticAlbedoTint: {r: 1, g: 1, b: 1, a: 1}
     - _SwayFreq: {r: 0.23, g: 0.61, b: 0.12, a: 0}
     - _TextureMean: {r: 0.024654528, g: 0.01637586, b: 0.0046331263, a: 0}
   m_BuildTextureStacks: []
