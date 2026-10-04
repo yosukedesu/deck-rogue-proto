@@ -35,11 +35,13 @@ namespace DeckRogue.EditorTools
             bool stage = pathN.Contains("/Resources/Art/stage/");
             bool normal = name.EndsWith("_n", System.StringComparison.Ordinal);
             bool emission = name.EndsWith("_e", System.StringComparison.Ordinal);
+            // 札の裏 (2026-10-04): ドットでなく「紙」側のなめらかな絵 (Gemini の工芸風)。424×632 を 200×290 前後へ縮めるので Bilinear＋ミップ (Point だと真鍮の細線がちらつく)
+            bool smooth = stage || name == "cardback";
             imp.textureType = TextureImporterType.Sprite;
             imp.spriteImportMode = SpriteImportMode.Single;
-            imp.filterMode = stage ? FilterMode.Bilinear : FilterMode.Point;
+            imp.filterMode = smooth ? FilterMode.Bilinear : FilterMode.Point;
             imp.textureCompression = TextureImporterCompression.Uncompressed;
-            imp.mipmapEnabled = stage;
+            imp.mipmapEnabled = smooth;
             if (stage)
             {
                 imp.mipMapsPreserveCoverage = true;   // 半立体の葉 (アルファで切る) が遠くで痩せない

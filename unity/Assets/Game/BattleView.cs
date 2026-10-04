@@ -1451,13 +1451,24 @@ namespace DeckRogue.Game
             Tween.After(delay, () => { if (srt == null) return; Tween.Run(dur, k => { if (cg != null) cg.alpha = 1f - k; }, Ease.Linear, () => { if (srt != null) UnityEngine.Object.Destroy(srt.gameObject); }); });
         }
 
-        /// <summary>札の裏 (めくりの前半だけ見える): 夜色の紙にからくりの印。表の上に重ねる</summary>
+        /// <summary>札の裏 (めくりの前半だけ見える): 夜色の紙にからくりの印 (絵は Art/ui/cardback.png)。表の上に重ねる</summary>
         static void CardBack(RectTransform card)
         {
             var back = UiKit.NewRect("back", card);
             UiKit.Stretch(back, 0f, 0f, 0f, 0f);
             var sheet = PaperFx.Sheet(back, PaperFx.Card, "paper", PaperFx.Window);
             UiKit.Stretch(sheet.rectTransform, 0f, 0f, 0f, 0f); sheet.raycastTarget = false;
+            // 絵 (2026-10-04 Art/ui/cardback.png＝夜の紙・真鍮の二重枠・鍵穴の歯車)。札の角丸に合わせて紙の9スライスで切り抜く。無ければ下の線と星
+            var art = Theme.Art("ui", "cardback");
+            if (art != null)
+            {
+                var mask = sheet.gameObject.AddComponent<Mask>(); mask.showMaskGraphic = true;
+                var ai = UiKit.NewRect("art", sheet.transform).gameObject.AddComponent<Image>();
+                ai.sprite = art; ai.preserveAspect = false; ai.raycastTarget = false;
+                UiKit.Stretch(ai.rectTransform, 0f, 0f, 0f, 0f);
+                back.SetAsLastSibling();
+                return;
+            }
             // 真鍮の細い枠 (上下左右の4本)
             foreach (var side in new[] { 0, 1, 2, 3 })
             {
