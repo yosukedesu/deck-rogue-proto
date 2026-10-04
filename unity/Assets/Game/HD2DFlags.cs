@@ -8,7 +8,7 @@
 //   stage=old|diorama         herodots=62|48           cam=36|28|22 (画角)     pitch=<度>
 //   pitchphone=<度|off> (スマホ (UiKit.Phone) だけの見下ろし。off = pitch と同じ。2026-10-01 二周目 レーン A)
 //   groundline=<割合|auto>    receive=<数|auto>         keycolor=neutral|warm    herolift=<数|auto>
-//   ui=night|paper            ledger=line|feet          artscale=<数|auto>       dof=0|1|urp
+//   ui=night|paper            ledger=line|feet          artscale=<数|auto>  heroscale=<数|auto>  dof=0|1|urp
 //   drift=0|1                 aa=none|msaa|2|4|8 (msaa=<N> も同じ。N≦1 = 無し)   litunits=0|1   charshadow=0|1
 //   trunk=mesh|relief         keyflip=auto|off          tier=pc|phone            look=<設計図の名前|auto>
 //   det=1                     dumplayout=0|1            uionly=0|1               unitsonly=0|1    perf=<秒>
@@ -120,6 +120,8 @@ namespace DeckRogue.Game
         static HD2DDeskShade? _deskShade;
         /// <summary>artscale= (戦闘の絵の倍率。負 = 今の値)</summary>
         public static float ArtScale { get; set; } = -1f;
+        /// <summary>heroscale= (主人公と人形だけの倍率。ArtScale に掛ける。負 = 既定＝PC 0.5・スマホ 1)</summary>
+        public static float HeroScale { get; set; } = -1f;
         /// <summary>dof=0|1|urp</summary>
         public static HD2DTiltShift TiltShift { get; set; } = HD2DTiltShift.Off;
         /// <summary>drift=1 (待機の漂い。撮影では切る)</summary>
@@ -399,6 +401,7 @@ namespace DeckRogue.Game
             UiLayoutPhone = HD2DUiLayout.R2;
             _deskShade = null;   // 書かない時は割り付けから (r3 → hand・r2 → full)
             ArtScale = -1f;
+            HeroScale = -1f;
             TiltShift = HD2DTiltShift.Off;
             Drift = false;
             Aa = HD2DAa.None;
@@ -473,6 +476,7 @@ namespace DeckRogue.Game
             add("uitrial", UiTrial);
             add("deskshade", DeskShade == HD2DDeskShade.Full ? "full" : "hand");
             add("artscale", ArtScale);
+            add("heroscale", HeroScale);
             add("dof", TiltShift == HD2DTiltShift.On ? "1" : TiltShift == HD2DTiltShift.Urp ? "urp" : "0");
             add("drift", Drift);
             add("aa", Aa == HD2DAa.Msaa ? "msaa" : "none");
@@ -567,6 +571,7 @@ namespace DeckRogue.Game
                 case "receive": if (TryAuto(v, out f)) Receive = f; else Warn(key, v); return true;
                 case "herolift": if (TryAuto(v, out f)) HeroLift = f; else Warn(key, v); return true;
                 case "artscale": if (TryAuto(v, out f)) ArtScale = f; else Warn(key, v); return true;
+                case "heroscale": if (TryAuto(v, out f)) HeroScale = f; else Warn(key, v); return true;
                 case "keycolor":
                     if (Is(v, "neutral")) KeyColor = HD2DKeyColor.Neutral;
                     else if (Is(v, "warm")) KeyColor = HD2DKeyColor.Warm;

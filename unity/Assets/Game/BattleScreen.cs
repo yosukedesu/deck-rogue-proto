@@ -78,6 +78,9 @@ namespace DeckRogue.Game
         public static float CardScale { get { return UiKit.Phone ? 1.0f : 0.92f; } }
         /// <summary>戦闘の絵の目安の幅 (通常 256・エリート 320・ボス 384 = 1ドット4px)。スマホは半分 (1ドット2px) = 吹き出しが画面に収まる。
         /// 旗 artscale= (HD-2D 見本の変種。0.625 = S25 の実機で1ドット4px) が有ればその値</summary>
+        /// <summary>主人公と人形だけに掛ける倍率 (2026-10-04 ユーザー「PC版の主人公が大きい。本家オクトラと比べてかなりでかい」→裁定「主人公だけ×0.5」)。
+        /// PC は 0.5 (画面の高さの約23%→約12%＝オクトラ II の味方と同じ帯)。スマホは 1 のまま。人形は主人公の半分の背丈の約束なので同じ倍率。敵は掛けない。旗 heroscale= が勝つ</summary>
+        public static float HeroScale { get { float f = HD2DFlags.HeroScale; return f > 0f ? f : (UiKit.Phone ? 1f : 0.5f); } }
         public static float ArtScale { get { float f = HD2DFlags.ArtScale; return f > 0f ? f : (UiKit.Phone ? 0.6f : 1f); } }   // スマホは 0.5→0.6 (2026-09-15 吹き出しの小型化と対で「敵が小さすぎる」を戻す)
         /// <summary>PC の自分の札の上端 (キャンバス y・下から) = 足元の線＋StripH (札は上端を固定して中身の 120/140 を下で吸収する。2026-09-30 F19)。
         /// ギアの窓・人形の札の床・確認の窓が読む (2026-09-30 P20: 箱庭で足元の線が下がった時に1か所で追う)</summary>
@@ -1789,7 +1792,7 @@ namespace DeckRogue.Game
             string key = "doll:" + d.Uid;
             var art = Creature.Get("dolls", d.Def.Id, true, 32);
             // 32 ドット×4px (スマホは 0.6) = ひなたの半分の背丈。大きい人形 (竜・獅子 2026-09-26) は 48 ドットの絵を同じ 4px で＝1.5 倍の背丈
-            float artTarget = Mathf.Max(32f, Mathf.Max(art.rect.width, art.rect.height)) * 4f * ArtScale;
+            float artTarget = Mathf.Max(32f, Mathf.Max(art.rect.width, art.rect.height)) * 4f * ArtScale * HeroScale;
             float feetY = Stage.FeetOffset(key, 130f);
             var spr = UiKit.NewRect("sprite", pan);
             PaperFx.FitPixel(spr, art, 0f, feetY, artTarget);
@@ -2038,7 +2041,7 @@ namespace DeckRogue.Game
             var spr = UiKit.NewRect("sprite", area);
             var leaderArt = Creature.Get("leaders", leaderId, true);
             float pFeet = Stage.FeetOffset("player", 130f);
-            float pArt = leaderArt.rect.width * 4f * ArtScale;   // 1ドット=4px を絵の幅に寄らず保つ (2026-09-16 このは v2 は 88×64=斧ぶん横に広い)。スマホは 0.6
+            float pArt = leaderArt.rect.width * 4f * ArtScale * HeroScale;   // 1ドット=4px を絵の幅に寄らず保つ (2026-09-16 このは v2 は 88×64=斧ぶん横に広い)。スマホは 0.6
             float pTop = pFeet + leaderArt.rect.height * PaperFx.PixelScaleF(leaderArt, pArt);
             PaperFx.FitPixel(spr, leaderArt, 0f, pFeet, pArt);
             spr.anchorMin = spr.anchorMax = new Vector2(0f, 0f);
