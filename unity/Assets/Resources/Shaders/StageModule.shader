@@ -92,6 +92,9 @@ Shader "DeckRogue/StageModule"
         _LowerFade ("Preview lower cliff fade", Float) = 0
         _StaticAlbedoTint ("Static light albedo tint", Vector) = (1,1,1,1)
         _StaticSaturation ("Static light albedo saturation", Float) = 1
+        _StaticStudy ("Local static ambient direction study", Float) = 0
+        _StaticHueStudy ("Local static light hue study", Float) = 0
+        _StaticStudyBounds ("Study bounds x min/max z min/max", Vector) = (-9,-3,-1,7)
         _AmbientFill ("Neutral ambient floor", Vector) = (0,0,0,0)
         _TextureMean ("Linear albedo mean", Vector) = (0,0,0,0)
         _TextureContrast ("Albedo contrast", Float) = 1
@@ -127,7 +130,8 @@ Shader "DeckRogue/StageModule"
             // 段2 (レーン S): 技の光の当たりの倍率 (1 = 今と同じ)
             float _HitReceive;
             float _LowerFade, _StaticSaturation;
-            float4 _StaticAlbedoTint;
+            float4 _StaticAlbedoTint, _StaticStudyBounds;
+            float _StaticStudy, _StaticHueStudy;
             float _NaturalSurface, _TextureContrast, _StaticNeutral, _GradeWeight, _VignetteWeight, _TwoSidedNormals;
             float4 _AmbientFill, _TextureMean;
         CBUFFER_END
@@ -640,11 +644,26 @@ Shader "DeckRogue/StageModule"
                     half3 staticDirect = max(0.0h, direct - attack);
                     half3 staticLost = max(0.0h, lost - half(_HitReceive) * hitLost);
                     half3 neutralDirect = lerp(staticDirect, Luminance(staticDirect).xxx, half(_StaticNeutral));
-                    half3 naturalAmbient = max(lerp(amb, Luminance(amb).xxx, half(_StaticNeutral)), half3(_AmbientFill.rgb));
+                    // Local, opt-in study: the previous constant floor erased normal-dependent
+                    // sky response. Fade the test in world space; no extra texture or light.
+                    float edge = min(min(posWS.x - _StaticStudyBounds.x, _StaticStudyBounds.y - posWS.x),
+                                     min(posWS.z - _StaticStudyBounds.z, _StaticStudyBounds.w - posWS.z));
+                    half studyMask = half(smoothstep(0.0, 0.75, edge));
+                    half skyFacing = saturate(nPerturbed.y);
+                    half hemi = lerp(0.48h, 1.18h, skyFacing);
+                    half3 ambientFloor = half3(_AmbientFill.rgb) * lerp(1.0h, hemi, half(_StaticStudy) * studyMask);
+                    half3 naturalAmbient = max(lerp(amb, Luminance(amb).xxx, half(_StaticNeutral)), ambientFloor);
+                    // Separate hue factor, so directional contrast can be judged independently.
+                    half hueWeight = half(_StaticHueStudy) * studyMask;
+                    naturalAmbient *= lerp(half3(1,1,1), lerp(half3(.90h,.80h,1.12h), half3(.88h,.98h,1.10h), skyFacing), hueWeight);
+                    neutralDirect = lerp(neutralDirect, staticDirect, hueWeight);
                     half naturalShadow = 1.0h - half(_ShadowStrength) * saturate(Luminance(staticLost) / max(Luminance(naturalAmbient + staticDirect), 1e-4h));
                     // Ambient is not multiplied by direct-light shadow loss: leaves retain their albedo in shade.
                     half3 staticSurface = lerp(Luminance(surface).xxx, surface, half(_StaticSaturation)) * half3(_StaticAlbedoTint.rgb);
-                    col = staticSurface * (naturalAmbient + half(_Receive) * neutralDirect * naturalShadow);
+                    // Vertex RGB is ambient visibility when supplied. Apply only to static
+                    // indirect light; marked attacks keep the original surface and energy.
+                    half3 vertexVisibility = lerp(half3(1,1,1), saturate(i.color.rgb), half(_VColorAO));
+                    col = staticSurface * (naturalAmbient * vertexVisibility + half(_Receive) * neutralDirect * naturalShadow);
                     col *= lerp(1.0h, lerp(.10h, 1.0h, smoothstep(-3.0, .05, posWS.y)), half(_LowerFade));
                     col += surface * half(_Receive) * attack * darken;
                 }

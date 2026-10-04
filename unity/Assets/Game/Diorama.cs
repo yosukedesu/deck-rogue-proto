@@ -334,6 +334,18 @@ namespace DeckRogue.Game
                                     clone.SetColor("_BaseColor",new Color(.20f,.28f,.36f,1)*PreviewFloat("backdropScale",1));
                                     clone.SetFloat("_Fog",PreviewFloat("backdropFog",.35f));
                                 }
+                                var surfaceTexture=clone.GetTexture("_BaseMap");
+                                if(surfaceTexture!=null && surfaceTexture.name.EndsWith("_soft_v5")) {
+                                    clone.SetFloat("_StaticStudy",PreviewFloat("staticDirectionStudy",0));
+                                    clone.SetFloat("_StaticHueStudy",PreviewFloat("staticHueStudy",0));
+                                    clone.SetVector("_StaticStudyBounds",new Vector4(-9,-3,-1,7));
+                                    float uvScale=PreviewFloat("surfaceUvScale",1);
+                                    clone.SetTextureScale("_BaseMap",Vector2.one*uvScale);
+                                    clone.SetFloat("_TextureContrast",PreviewFloat("surfaceContrast",1));
+                                    clone.SetFloat("_TexelLighting",PreviewFloat("surfaceTexelLighting",1));
+                                    surfaceTexture.filterMode=PreviewFloat("surfaceTrilinear",0)>0?FilterMode.Trilinear:FilterMode.Bilinear;
+                                    surfaceTexture.anisoLevel=Mathf.Clamp(Mathf.RoundToInt(PreviewFloat("surfaceAniso",1)),1,16);
+                                }
                                 string n=original.name.ToLowerInvariant();
                                 bool moss=n.Contains("moss");bool paving=n.Contains("weathered");
                                 float scale=PreviewFloat(moss?"mossStaticScale":paving?"pavingStaticScale":"surfaceStaticScale",1);
