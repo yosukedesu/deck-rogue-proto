@@ -1,0 +1,35 @@
+Integrated natural banks stabilization regression (candidate 3c0676d)
+
+All9 existing AutopilotTempo cases pass: rapid5, sameTarget, deathMidChain,
+aoeThenSingle, insufficient, endTurn, dragCancel, selectionCancel, lethalSingle.
+26 actual EventSystem input actions,25 accepted, all same-frame; independent engine
+expected HP/energy matched. Dead enemy unclickable, cancelled selections/drags reset,
+no inputblock/timeScale manipulation, pending presentation drains within50frames.
+Maximum synchronous handler85.80ms on this WindowsPC is not device input latency/FPS.
+
+Three heroes:21 sampled frames each after green_strike/white_strike/blue_strike.
+Konoha/Mizore attack seen; Hinata white_strike produces block animation as in reference.
+All return idle with zero combat offset, zero active/pending hitlights, dim1/exposure0.
+Facing keyFlip false throughout; actual screenshots inspected. Extra Hinata white_light_bolt capture:21 frames,error0,block1..3 then idle.
+This is expected: StageCombat.cs:25 deliberately maps ranged non-Mizore attacks
+to block (casting) animation. No animation regression or remapping introduced.
+
+Act2/3: original old-stage defaults. Candidate CLI vs no forest CLI screenshots
+are pixel-for-pixel identical, no diorama loaded for either. Camera diagnostic
+inactive drift pivot Y differs0.000252m from preceding Act1 geometry; drift disabled,
+render pose unchanged. Do not mislabel absent diorama as an Act2/3 diorama gate pass.
+130 layouts total: zero reported errors; Act1 structural gates passed.
+
+Unity engine golden runner:8/13 files agree (2540 commands total). Five checkpoint
+fixtures are BLOCKED by pre-existing BatchTools.VerifyCore `kind != run` rejection,
+also present on main; not engine output mismatches. Runner exits1. No test weakened
+or fixtures skipped to report green. Checkpoint runner support remains out of scope.
+
+No game input/animation code modified by this regression phase. Main and normal
+saves retained. Final source pack pending; normal-start candidate defaults will be
+enabled with final geometry, then necessary final checks rerun. No APK distribution.
+Ground source correction recorded: intended23 meshes are Ground_inset_stone_* with
+gaps; Paving_slab_00..04 are separate unchanged slabs. No guessed replacement made.
+
+Hero comparison Library libfile_cdb37b13c92881919a3e1ef6d59264f9 v0.
+Normal save four-file hashes unchanged from isolation baseline.

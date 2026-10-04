@@ -1,0 +1,130 @@
+{
+  "tempo": {
+    "cases": 9,
+    "passed": 9,
+    "actions": 26,
+    "accepted": 25,
+    "sameFrame": true,
+    "maxVisualFrames": 50,
+    "maxHandlerMs": 85.8013
+  },
+  "variants": {
+    "banks": {
+      "layouts": 65,
+      "errors": 0,
+      "gates": true
+    },
+    "reference": {
+      "layouts": 65,
+      "errors": 0,
+      "gates": true
+    }
+  },
+  "acts": {
+    "act2": {
+      "sameCamera": false,
+      "sameLook": true,
+      "sameGeometry": true,
+      "triangles": null,
+      "screenshotsPixelIdentical": true,
+      "mode": "old (existing Act2/3 default)",
+      "cameraDifference": "inactive drift pivot Y differs by 0.000252m; drift disabled, render position/euler and screenshot identical"
+    },
+    "act3": {
+      "sameCamera": false,
+      "sameLook": true,
+      "sameGeometry": true,
+      "triangles": null,
+      "screenshotsPixelIdentical": true,
+      "mode": "old (existing Act2/3 default)",
+      "cameraDifference": "inactive drift pivot Y differs by 0.000252m; drift disabled, render position/euler and screenshot identical"
+    }
+  },
+  "heroes": {
+    "konoha": {
+      "animations": [
+        "attack#1",
+        "attack#3",
+        "idle#0",
+        "idle#1",
+        "idle#2",
+        "idle#3",
+        "idle#4",
+        "idle#5",
+        "idle#6",
+        "idle#7"
+      ],
+      "keyFlips": [
+        false
+      ],
+      "attackSeen": true,
+      "returnsIdle": true,
+      "finalOffset": [
+        0,
+        0,
+        0
+      ],
+      "finalHitLit": 0,
+      "finalHitPending": 0,
+      "finalDimK": 1,
+      "finalExposure": 0
+    },
+    "hinata": {
+      "animations": [
+        "block#1",
+        "block#2",
+        "block#3",
+        "idle#0",
+        "idle#1",
+        "idle#2",
+        "idle#3",
+        "idle#4",
+        "idle#5",
+        "idle#6",
+        "idle#7"
+      ],
+      "keyFlips": [
+        false
+      ],
+      "attackSeen": false,
+      "returnsIdle": true,
+      "finalOffset": [
+        0,
+        0,
+        0
+      ],
+      "finalHitLit": 0,
+      "finalHitPending": 0,
+      "finalDimK": 1,
+      "finalExposure": 0
+    },
+    "mizore": {
+      "animations": [
+        "attack#1",
+        "attack#3",
+        "idle#0",
+        "idle#1",
+        "idle#2",
+        "idle#3",
+        "idle#4",
+        "idle#5",
+        "idle#6",
+        "idle#7"
+      ],
+      "keyFlips": [
+        false
+      ],
+      "attackSeen": true,
+      "returnsIdle": true,
+      "finalOffset": [
+        0,
+        0,
+        0
+      ],
+      "finalHitLit": 0,
+      "finalHitPending": 0,
+      "finalDimK": 1,
+      "finalExposure": 0
+    }
+  }
+}

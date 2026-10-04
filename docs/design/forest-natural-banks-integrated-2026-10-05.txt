@@ -35,9 +35,9 @@ for other variants. Actual GPU time, mobile heat/fill rate and device performanc
 remain unverified. Root adaptive subdivision is the principal extra geometry.
 
 Cohesion combination assessment: feasible using named SOURCE meshes, but joined
-batch replacement is unsafe. Paving_slab_00..22 share materials/batches with ruins
+batch replacement is unsafe. Ground_inset_stone_* (23, with gaps in numbering) share materials/batches with ruins
 and re-grounded rocks; batch_source_map gives names, not per-face provenance.
-Best next source edit: transfer only Paving_slab_* from cohesion .blend into natural
+Best next source edit: transfer only the 23 Ground_inset_stone_* from cohesion .blend into natural
 banks .blend, preserving natural banks/trees/regrounding and all other objects.
 Do not transfer whole StageBatch or old rock correction. Re-export and compare.
 No speculative component-order mapping or cohesion geometry mixing applied here.
@@ -46,3 +46,6 @@ Library comparisons:
 full libfile_42a41536e5e481919c134312bee14989 v0
 roots libfile_90680ecb8f4c81918d6c90674b738226 v0
 No APK, deploy, Drive distribution or push in this phase.
+
+Source-name correction: Paving_slab_00..04 are five separate unchanged slabs.
+Earlier Paving_slab_00..22 inference was incorrect; no replacement used it.
