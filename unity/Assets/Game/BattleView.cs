@@ -295,10 +295,10 @@ namespace DeckRogue.Game
                 // 出来事が先に来ていた (順送りの敵フェーズで倒れた) なら _died に印があるので何も描かない。出来事が来なければ 0.6 秒後に崩す (保険)
                 if (alive) _died.Remove(i);
                 bool dyingNow = wasAlive && !alive && !_died.Contains(i);
-                BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i], gap, dyingNow, anyForecast, anyStack);
+                BattleScreen.FillEnemyPanel(g, pan, st, i, Stage.CombatWorld ? st.Enemies[i].Hp : _shownEnemyHp[i], gap, dyingNow, anyForecast, anyStack);
                 _shownEnemyHp[i] = st.Enemies[i].Hp;
                 _shownEnemyBlock[i] = st.Enemies[i].Block;
-                if (dyingNow) { int ci = i; bool fled = st.Enemies[i].Fled == true; Tween.After(0.6f, () => KillEnemy(g, ci, fled)); }
+                if (dyingNow) { int ci = i; bool fled = st.Enemies[i].Fled == true; Tween.After(0.6f, () => {if(g.Battle==this && g.Rs?.Combat!=null && ci<g.Rs.Combat.Enemies.Count && g.Rs.Combat.Enemies[ci].Hp<=0)KillEnemy(g, ci, fled);}); }
                 else if (prevCount > 0 && i >= prevCount && alive)
                 {   // 登場 (召喚・分裂・孵化の子。2026-09-17): 小さく現れて弾んで等身大に、足元に青緑の輪
                     var sprRt = pan.Find("sprite") as RectTransform;

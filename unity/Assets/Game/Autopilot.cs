@@ -15,7 +15,7 @@ using DeckRogue.Engine.Generated;
 
 namespace DeckRogue.Game
 {
-    public class Autopilot : MonoBehaviour
+    public partial class Autopilot : MonoBehaviour
     {
         /// <summary>起動引数 name の次の値 (無ければ null)。計測用の APK では引数ファイル perf-args.txt の中身も読む (CommandLine)</summary>
         internal static string Arg(string name)
@@ -186,6 +186,7 @@ namespace DeckRogue.Game
             var scenario = Arg("-autopilot");
             if (string.IsNullOrEmpty(scenario) && !string.IsNullOrEmpty(Arg("-statesfile"))) scenario = "states";   // -statesfile だけでも自動操縦で撮る (P01)
             if (string.IsNullOrEmpty(scenario)) return;
+            Application.runInBackground=true; // Only automated checks; normal gameplay keeps its setting.
             var go = new GameObject("Autopilot");
             DontDestroyOnLoad(go);
             var a = go.AddComponent<Autopilot>();
@@ -260,6 +261,7 @@ namespace DeckRogue.Game
                         break;
                     case "run": yield return RunTour(g); break;
                     case "workshop": yield return WorkshopOnly(g); break;   // 工房だけ (⭐レシピの提示の確認。2026-09-12)
+                    case "tempo": yield return TempoCheck(g); break;
                     case "state": yield return StateJump(g, Arg("-state") ?? ""); break;   // 任意の状態へ跳んで撮る (2026-09-12)
                     case "tour":
                     default:

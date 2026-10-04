@@ -316,7 +316,7 @@ namespace DeckRogue.Game
             if (!wasCombat && Rs != null && Rs.Phase == RunPhases.Combat) Audio.Ui("combat_start");
             // リーサル (2026-09-14 ユーザー「打撃 SE が鳴る前にピックに移ってしまい爽快感がなくなる」):
             // 決着した戦闘の最後の出来事 (打撃・撃破) を古い戦闘画面の上で見せ切ってから、報酬/敗北の画面へ組み直す
-            if (combatEnded && Rs.Combat != null && ScreenRoot != null && ScreenRoot.childCount > 0 && Presenter.HasNewEvents(Rs.Combat))
+            if (combatEnded && !Stage.CombatWorld && Rs.Combat != null && ScreenRoot != null && ScreenRoot.childCount > 0 && Presenter.HasNewEvents(Rs.Combat))
             {
                 var finalSnapshot = Rs.Combat;
                 var endedRs = Rs;
@@ -344,7 +344,7 @@ namespace DeckRogue.Game
             if (Rs == null || Rs.Phase != RunPhases.Departure) DepartureChoiceIndex = -1;
             if (Rs == null || Rs.Phase != RunPhases.Combat) PreferredTarget = -1;
             // 演出キュー: 敵フェーズを含むコマンドは古い盤面の上で順に見せてから組み直す。それ以外は即組み直して差分を浮き文字に
-            if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat && ScreenRoot != null && ScreenRoot.childCount > 0 && (Presenter.HasEnemyPhase(Rs.Combat) || (Stage.CombatWorld && Presenter.HasNewEvents(Rs.Combat))))
+            if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat && ScreenRoot != null && ScreenRoot.childCount > 0 && (!Stage.CombatWorld && Presenter.HasEnemyPhase(Rs.Combat)))
             {
                 var snapshot = Rs.Combat;
                 if (fromWindow && Battle != null) Battle.CloseReactionWindow();

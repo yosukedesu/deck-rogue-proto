@@ -5,10 +5,10 @@ namespace DeckRogue.Game
     public static partial class Stage
     {
         // World-space motion is owned by the visual unit. RectTransform/UI anchors stay put.
-        public const float CombatImpactTime = 0.32f;
+        public const float CombatImpactTime = 0.12f;
         public static bool CombatWorld => HD2DFlags.DioramaHere;
 
-        public static void CombatApproach(string key, string target, bool ranged, int hits = 1, float reachLimit = 100f)
+        public static void CombatApproach(string key, string target, bool ranged, int hits = 1, float reachLimit = .4f)
         {
             if (!CombatWorld || !_bound.TryGetValue(key, out var u) || u == null) return;
             Vector3 a, b; float ah, bh;
@@ -21,20 +21,24 @@ namespace DeckRogue.Game
             // Weapon/hand reach: stop before the target silhouette, never cross its centre.
             Vector3 travel = ranged ? Vector3.zero : dir * Mathf.Min(ah*reachLimit,Mathf.Max(0f, distance - (ah * 0.40f + bh * 0.25f)));
             float chain = ranged ? 0f : Mathf.Clamp(hits-1,0,7)*0.4f;
-            float release = 0.48f + chain, duration = release + 0.30f;
-            Tween.After(0.17f, () => { if (u != null && u.MotionVersion == version) u.Play(ranged ? "block" : "attack"); });
+            float release = 0.20f + Mathf.Min(chain,.12f), duration = release + 0.18f;
+            Tween.After(0.04f, () => { if (u != null && u.MotionVersion == version) u.Play(ranged ? "block" : "attack"); });
             Tween.Run(duration, k =>
             {
                 if (u == null || u.MotionVersion != version) return;
                 float t = k * duration, amount;
-                if (t < 0.12f) amount = -0.035f * Mathf.SmoothStep(0, 1, t / 0.12f);
-                else if (t < CombatImpactTime) amount = Mathf.Lerp(-0.035f, 1, Mathf.SmoothStep(0, 1, (t - 0.12f) / 0.20f));
+                if (t < 0.035f) amount = -0.035f * Mathf.SmoothStep(0, 1, t / 0.035f);
+                else if (t < CombatImpactTime) amount = Mathf.Lerp(-0.035f, 1, Mathf.SmoothStep(0, 1, (t - 0.035f) / 0.085f));
                 else if (t < release) amount = 1;
-                else amount = 1 - Mathf.SmoothStep(0, 1, (t - release) / 0.30f);
+                else amount = 1 - Mathf.SmoothStep(0, 1, (t - release) / 0.18f);
                 u.CombatOffset = start * (1-k) + travel * amount;
             }, Ease.Linear, () => { if (u != null && u.MotionVersion == version) u.CombatOffset = Vector3.zero; });
         }
 
+        public static bool HasCombatMotion { get {foreach(var u in _bound.Values)if(u!=null && (u.CombatOffset.sqrMagnitude+u.CombatRecoilOffset.sqrMagnitude)>.000001f)return true;return false;} }
+        public static void CancelCombatMotion() {
+            foreach(var u in _bound.Values) if(u!=null){u.MotionVersion++;u.RecoilVersion++;u.CombatOffset=Vector3.zero;u.CombatRecoilOffset=Vector3.zero;}
+        }
         public static void CombatRecoil(string key, float direction, bool heavy)
         {
             if (!CombatWorld || !_bound.TryGetValue(key, out var u) || u == null) return;

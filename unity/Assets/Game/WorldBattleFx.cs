@@ -11,6 +11,10 @@ namespace DeckRogue.Game
         static readonly Slot[] Pool = new Slot[24];
         static Mesh _quad; static Material _material; static Texture2D _atlas, _silver, _arcane, _guard;
         static readonly MaterialPropertyBlock Props = new MaterialPropertyBlock();
+        public static void Cancel() {
+            foreach(var slot in Pool)if(slot!=null){slot.Version++;slot.Busy=false;if(slot.T!=null)slot.T.gameObject.SetActive(false);}
+        }
+        public static int ActiveCount { get {int n=0;foreach(var slot in Pool)if(slot!=null && slot.Busy)n++;return n;} }
         static bool Ready()
         {
             if (!Stage.CombatWorld || Stage.Camera == null) return false;
