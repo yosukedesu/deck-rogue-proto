@@ -102,3 +102,29 @@ New inter-floor ratio holds1.462 at1.133/1.167/1.200s, decays1.365/1.285/1.199/1
 Windows build0errors/16warnings; shader checks10shaders/348conversions/0failures/6warnings, layoutOK. New shader checked in actual Windows player. Android GPU/runtime cost of more additional lights and per-light marked lookup remains unverified. No new APK or remote push. Four normal save/report hashes unchanged for this verification phase.
 
 Final mixed-light reuse verification: tempo9/9,26 UI attempts,25 accepted,all same-frame state updates; handler mean24.67ms/max89.88ms.51 light events,max6 simultaneously,0 evictions,0 missed lights.
+
+
+## Mizore・属性共通色・幕1全景v2統合
+
+Integration checkpoint — 2026-10-05
+
+Source assets:
+- Mizore v2: libfile_fc2328b3f7ec8191a7eacc78fd540e9b version 2.
+- Forest stage v2: libfile_6c9401368df881918c2ebb6f758d0e6d version 2, file_0000000007a881fbb1522a18005b0ed2.
+
+Mizore/FX checkpoint: 02b427c. Existing Konoha/Hinata pixel scale preserved. Blue custom pivot 60/128, 8/84; foot alignment separately uses opaque alpha boundary. Idle 8, attack 4, guard 4 observed in actual player. Water, ice, fire cards resolved. Strong contact/bounce light intensity, range, and envelope preserved from d0bf1ea. CombatPalette provides VFX/point-light/particle color; physical silver, water/ice blue, fire orange-red. A single particle renderer and bounded ParticleSystem (64 low/128 other), no particle lights; short fast particles and 0.32–0.44s drifting residues.
+
+FullStageSetup imports the pinned source from Assets/Editor/FullStage and writes runtime meshes/materials/prefab under Resources/FullStage. Source FBX and preview files excluded from runtime Resources; only used textures retained. Markers imported at right=(-1,0,0), up=(0,1,0), forward=(0,0,-1); inverse basis maps player to (-4.973,0,-1.039), enemy to (4.322,0,1.207). No guessed secondary flip or recenter.
+
+Unity-local source corrections for parent Blender follow-up:
+1. StageBatch_13 (Front_Cliff_Strata, open sheet): reverse every triangle winding and negate normals after measured basis bake. The Blender front sheet was inward-facing (+Y authoring direction); Blender double-sided preview concealed this. Opaque materials remain back-face culled elsewhere. Source FBX itself is retained unmodified.
+2. StageBatch_00/01: repair only zero-area UV0 textured faces using dominant-axis world projection at 0.125 repeats/m. Some terrain-conformed inset stones carried blank UV0 after join. Original UVs retained for nondegenerate faces and all tree/leaf cards.
+
+Act1 selects full prefab; old geometry/masonry/lantern omitted. Only existing mist/shafts retained. Act2/3 use previous path. Full-stage materials retain engine fog, shadow/depth and marked attack-light reception. All alpha cutouts use StageModule _ALPHATEST_ON across forward/depth/shadow passes. Existing ambient lantern reconnected at imported emissive mesh center.
+
+Runtime ground lookup uses spatially bucketed imported triangles. Clear-band gate samples actual mesh, not the old procedural slab: t=-8..14, s=-2..2.8; supports 25mm paving; rejects >60mm intrusion or holes. Camera motion and input rules unchanged. Unused legacy 2048px terrain/normal atlases not generated for new stage.
+
+Capture caveats: Native Windows player on user's PC, fixed-step 30Hz PNG sequence encoded to MP4; no browser, no frame interpolation. Phone rendering/UI profile is emulated, not Android hardware FPS. No APK built or published at this checkpoint; parent visual review required before APK.
+
+Final validation: Windows build exit 0; 10 shaders / 348 D3D, Vulkan, GLES3x conversions / 0 failures / 6 existing headless SRP-batcher warnings. Full-stage editor gate 19 renderers / 15 materials / 10,400 triangles. Phone UI + phone rendering profile 18 renderers / 15 materials / 10,398 triangles; legacy normal/albedo atlases not allocated. All 9 tempo regression scenarios passed, 26 attempts / 25 accepted / 1 rejected for energy; synchronous state and HP/energy equal engine result. Mean synchronous handler 23.959ms, maximum 86.6974ms under capture environment; not device FPS or input latency measurement. All visuals drained within 50 test frames.
+Mizore integrated capture observed idle0..7 / attack0..3 / block0..3, max16 particles, no exceptions. Video: 420 captured Windows-player frames, encoded 30fps, 14 seconds, 1920x886, silent. First 6s silver strike and rapid chain; last 8s Mizore water, guard, ice, fire. Capture cadence is a test presentation, not real-time hardware performance. Physical and fire impact stills verified new ground/rocks receive matching light. PC 1920x1080 and phone-profile 1920x886 four-enemy scenes inspected; act2/3 remain distinct old stages.

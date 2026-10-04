@@ -134,6 +134,10 @@ namespace DeckRogue.Game
         public const float DefaultPathYaw = -22f;
 
         static float _pathYaw = DefaultPathYaw;
+        static FullStageGround _fullGround;
+        static bool _fullStage;
+        static int _fullBatches;
+        static bool AirPart(DioramaPart p) => p.Kind == "fog" || p.Kind == "mist" || p.Kind == "shaft";
         static readonly List<UnityEngine.Object> _owned = new List<UnityEngine.Object>();
         static readonly List<SlabShape> _slabs = new List<SlabShape>();
         static readonly List<FrameSlot> _frames = new List<FrameSlot>();
@@ -208,6 +212,7 @@ namespace DeckRogue.Game
         /// どの段にも入らなければいちばん低い段の天面。設計図を読んでいなければ 0</summary>
         public static float GroundY(float x, float z)
         {
+            if (_fullGround != null) { var h = _fullGround.Height(x,z); return float.IsNaN(h) ? 0f : h; }
             if (_slabs.Count == 0) return 0f;
             ToPath(x, z, out var t, out var s);
             return HeightAtPath(t, s);
@@ -244,6 +249,8 @@ namespace DeckRogue.Game
             var layout = opt.Layout ?? LoadLayout(act);
             if (layout == null) { Debug.LogWarning("[Diorama] 設計図が無い: Resources/" + LayoutResource(act)); return; }
             PrepareGround(layout);
+            var fullPrefab = act == 1 ? Resources.Load<GameObject>("FullStage/ForestStage") : null;
+            _fullStage = fullPrefab != null;
 
             var rootGo = new GameObject("diorama-act" + layout.Act);
             rootGo.layer = HD2DLayers.StageSet;
@@ -269,11 +276,33 @@ namespace DeckRogue.Game
 
             foreach (var p in layout.Parts)
             {
+                if (_fullStage && !AirPart(p)) continue;
                 if (drop != null && drop.Contains(p.Kind)) continue;
                 try { BuildPart(ctx, p); }
                 catch (Exception e) { missing.Add("p" + p.Index + ":" + p.Kind + " 例外 " + e.Message); Debug.LogWarning("[Diorama] 部品 " + p.Index + " (" + p.Kind + ") で例外: " + e); }
             }
-            if (layout.Act == 1 && layout.Parts.Exists(p => p.Name == "codex-lantern-plinth"))
+            if (_fullStage)
+            {
+                var full = UnityEngine.Object.Instantiate(fullPrefab, Root, false);
+                var clones = new Dictionary<Material,Material>();
+                foreach(var mr in full.GetComponentsInChildren<MeshRenderer>()) {
+                    mr.gameObject.layer = HD2DLayers.StageSet;
+                    var mats = mr.sharedMaterials;
+                    for(int i=0;i<mats.Length;i++) {
+                        var original=mats[i];
+                        if(!clones.TryGetValue(original,out var clone)) { clone=new Material(original); clones.Add(original,clone); _owned.Add(clone); Materials["full-"+original.name]=clone; }
+                        mats[i]=clone;
+                    }
+                    mr.sharedMaterials=mats;
+                    _fullBatches++;
+                    if(mr.sharedMaterial.name.Contains("lantern_glass")) {
+                        var lamp=new GameObject("full-stage-lantern");lamp.transform.SetParent(Root,false);lamp.transform.position=mr.bounds.center;
+                        var light=lamp.AddComponent<Light>();light.type=LightType.Point;light.color=new Color(1,.55f,.25f);light.intensity=2.8f;light.range=3.2f;light.shadows=LightShadows.None;
+                    }
+                }
+                _fullGround=new FullStageGround(full);
+            }
+            if (!_fullStage && layout.Act == 1 && layout.Parts.Exists(p => p.Name == "codex-lantern-plinth"))
             {
                 var masonry=Resources.Load<GameObject>("CloudKit/ForestMasonry");
                 if(masonry!=null) {
@@ -414,6 +443,15 @@ namespace DeckRogue.Game
         static void MakeTexturesAndMaterials(BuildContext ctx)
         {
             var L = ctx.Layout;
+            if (_fullStage) {
+                // Full-stage meshes carry their own textures. Do not allocate the legacy
+                // terrain arrays and 2048px normal/albedo atlases merely for two light shafts.
+                foreach(var kv in L.Surfaces) if(kv.Value.Shader=="shaft") {
+                    var material=MakeMaterial(ctx,kv.Key,kv.Value);
+                    if(material!=null){Materials[kv.Key]=material;Own(material);}
+                }
+                return;
+            }
             // 配列に積む材質 = 配列の surface が使う side・top (登場順)
             var names = new List<string>();
             foreach (var sd in L.Surfaces.Values)
@@ -1655,6 +1693,7 @@ namespace DeckRogue.Game
         /// <summary>箱庭を捨てる (old に戻る時)。作ったメッシュ・テクスチャ・材質も捨てる</summary>
         public static void Clear()
         {
+            _fullGround=null; _fullStage=false; _fullBatches=0;
             if (Root != null) Kill(Root.gameObject);
             foreach (var o in _owned) if (o != null) Kill(o);
             _owned.Clear();
@@ -1724,6 +1763,7 @@ namespace DeckRogue.Game
             {
                 foreach (var p in Layout.Parts)
                 {
+                    if (_fullStage && !AirPart(p)) continue;
                     st.Parts++;
                     st.ByKind.TryGetValue(p.Kind, out var c); st.ByKind[p.Kind] = c + 1;
                     if (PhoneHidden(p)) { st.PhoneHidden++; continue; }
@@ -1747,6 +1787,18 @@ namespace DeckRogue.Game
                         maxY = Mathf.Max(maxY, Mathf.Abs(HeightAtPath(t, s)));
             }
             else maxY = float.NaN;
+            if (_fullStage) {
+                // Imported render batches replace authored procedural parts; budgets reflect this representation.
+                st.Parts += _fullBatches; st.ByKind["full-stage-batch"]=_fullBatches;
+                st.GateSource="full-stage-v2";st.GPartsMin=15;st.GPartsMax=40;st.GRenderers=40;st.GMaterials=18;st.GTriangles=20000;
+                maxY=0;
+                for(float t=-8;t<=14;t+=.5f)for(float side=-2;side<=2.8f;side+=.4f) {
+                    var pos=OnPath(t,side,0);float h=_fullGround.Height(pos.x,pos.z);
+                    // Paving is intentionally 25mm above terrain; >60mm would invade the actor band.
+                    if(float.IsNaN(h)||h>.06f||h<-.01f) {st.SeatIntrusions++;st.IntrusionNames.Add("floor@"+t+","+side+"="+h);}
+                    maxY=Mathf.Max(maxY,float.IsNaN(h)?1:Mathf.Max(0,Mathf.Abs(h)-.03f));
+                }
+            }
             st.SeatMaxAbsY = maxY;
             var mats = new HashSet<Material>();
             if (Root != null)
