@@ -361,6 +361,8 @@ namespace DeckRogue.Game
                     if (n.Length > 8 && n.StartsWith("look_act", StringComparison.Ordinal) && char.IsDigit(n[8]) && (n.Length == 9 || n[9] == '_' || n[9] == '.') && n[8] - '0' != act) continue;
                     overlays.Add(n);
                 }
+            if(act==1 && Diorama.LegacyForestPreview) overlays.Add("look_act1_preview_legacy");
+            if(act==1 && Diorama.NightForestPreview) overlays.Add("look_act1_preview_night");
             var d = LoadNamed(act, DefaultName(act), overlays);
             foreach (var n in overlays)
                 if (!d.Sources.Contains(n)) Debug.LogWarning("[StageLook] 変種の設計図 " + ResourceDir + n + " が無い (飛ばす)");
@@ -854,6 +856,13 @@ namespace DeckRogue.Game
                     foreach (var t in dir) if (t != null && t.name == n) { ta = t; break; }
                 }
                 if (ta != null) texts.Add(new KeyValuePair<string, string>(n, ta.text));
+            }
+            // Local review override; no persistence and no effect unless explicitly requested.
+            var previewFile = Autopilot.Arg("-forest-look");
+            if (act == 1 && Diorama.NightForestPreview && !string.IsNullOrEmpty(previewFile))
+            {
+                try { texts.Add(new KeyValuePair<string,string>("forest-preview-file", System.IO.File.ReadAllText(previewFile))); }
+                catch (Exception e) { Debug.LogWarning("[StageLook] Forest preview file: " + e.Message); }
             }
             var d = FromLayers(act, texts);
             d.Name = overlays != null && overlays.Count > 0 ? baseName + "+" + string.Join("+", overlays) : baseName;

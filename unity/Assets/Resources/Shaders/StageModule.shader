@@ -89,6 +89,7 @@ Shader "DeckRogue/StageModule"
         _HitReceive ("Hit Light Receive (marked lights)", Float) = 1
         // Imported natural surfaces opt in; legacy stage defaults are unchanged.
         _NaturalSurface ("Natural surface lighting", Float) = 0
+        _LowerFade ("Preview lower cliff fade", Float) = 0
         _AmbientFill ("Neutral ambient floor", Vector) = (0,0,0,0)
         _TextureMean ("Linear albedo mean", Vector) = (0,0,0,0)
         _TextureContrast ("Albedo contrast", Float) = 1
@@ -123,6 +124,7 @@ Shader "DeckRogue/StageModule"
             float4 _SwayFreq;
             // 段2 (レーン S): 技の光の当たりの倍率 (1 = 今と同じ)
             float _HitReceive;
+            float _LowerFade;
             float _NaturalSurface, _TextureContrast, _StaticNeutral, _GradeWeight, _VignetteWeight, _TwoSidedNormals;
             float4 _AmbientFill, _TextureMean;
         CBUFFER_END
@@ -639,6 +641,7 @@ Shader "DeckRogue/StageModule"
                     half naturalShadow = 1.0h - half(_ShadowStrength) * saturate(Luminance(staticLost) / max(Luminance(naturalAmbient + staticDirect), 1e-4h));
                     // Ambient is not multiplied by direct-light shadow loss: leaves retain their albedo in shade.
                     col = surface * (naturalAmbient + half(_Receive) * neutralDirect * naturalShadow);
+                    col *= lerp(1.0h, lerp(.10h, 1.0h, smoothstep(-3.0, .05, posWS.y)), half(_LowerFade));
                     col += surface * half(_Receive) * attack * darken;
                 }
 

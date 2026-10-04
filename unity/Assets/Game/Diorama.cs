@@ -135,6 +135,11 @@ namespace DeckRogue.Game
 
         static float _pathYaw = DefaultPathYaw;
         static FullStageGround _fullGround;
+        // Review-only switch. Omit the flag to restore the unmodified v3 integration.
+        public static string ForestPreview => Autopilot.Arg("-forest-preview") ?? "";
+        public static bool LegacyForestPreview => ForestPreview == "legacy";
+        public static bool NightForestPreview => ForestPreview == "night";
+        static float PreviewFloat(string key, float fallback) => _look?.Raw?["forestPreview"]?[key]?.Value<float>() ?? fallback;
         static bool _fullStage;
         static int _fullBatches;
         static bool AirPart(DioramaPart p) => p.Kind == "fog" || p.Kind == "mist" || p.Kind == "shaft";
@@ -249,7 +254,7 @@ namespace DeckRogue.Game
             var layout = opt.Layout ?? LoadLayout(act);
             if (layout == null) { Debug.LogWarning("[Diorama] 設計図が無い: Resources/" + LayoutResource(act)); return; }
             PrepareGround(layout);
-            var fullPrefab = act == 1 ? Resources.Load<GameObject>("FullStage/ForestStage") : null;
+            var fullPrefab = act == 1 && !LegacyForestPreview ? Resources.Load<GameObject>("FullStage/ForestStage") : null;
             _fullStage = fullPrefab != null;
 
             var rootGo = new GameObject("diorama-act" + layout.Act);
@@ -290,14 +295,22 @@ namespace DeckRogue.Game
                     var mats = mr.sharedMaterials;
                     for(int i=0;i<mats.Length;i++) {
                         var original=mats[i];
-                        if(!clones.TryGetValue(original,out var clone)) { clone=new Material(original); clones.Add(original,clone); _owned.Add(clone); Materials["full-"+original.name]=clone; }
+                        if(!clones.TryGetValue(original,out var clone)) { clone=new Material(original); clones.Add(original,clone); _owned.Add(clone);
+                            if(NightForestPreview && clone.HasProperty("_NaturalSurface")) {
+                                bool foliage=clone.GetFloat("_TwoSidedNormals")>.5f;
+                                clone.SetFloat("_StaticNeutral",PreviewFloat("staticNeutral",.55f));clone.SetFloat("_GradeWeight",PreviewFloat("gradeWeight",.22f));clone.SetFloat("_VignetteWeight",PreviewFloat("vignetteWeight",.75f));
+                                clone.SetVector("_AmbientFill",(foliage?new Vector4(.12f,.15f,.17f,0):new Vector4(.055f,.07f,.085f,0))*PreviewFloat("ambientScale",1));
+                                clone.SetFloat("_LowerFade",original.name.Contains("cliff_strata")?1:0);
+                                if(original.name.Contains("atmosphere"))clone.SetColor("_BaseColor",new Color(.20f,.28f,.36f,1)*PreviewFloat("backdropScale",1));
+                            }
+                             Materials["full-"+original.name]=clone; }
                         mats[i]=clone;
                     }
                     mr.sharedMaterials=mats;
                     _fullBatches++;
                     if(mr.sharedMaterial.name.Contains("lantern_glass")) {
                         var lamp=new GameObject("full-stage-lantern");lamp.transform.SetParent(Root,false);lamp.transform.position=mr.bounds.center;
-                        var light=lamp.AddComponent<Light>();light.type=LightType.Point;light.color=new Color(1,.55f,.25f);light.intensity=2.8f;light.range=3.2f;light.shadows=LightShadows.None;
+                        var light=lamp.AddComponent<Light>();light.type=LightType.Point;light.color=new Color(1,.55f,.25f);light.intensity=NightForestPreview?PreviewFloat("lanternIntensity",4.5f):2.8f;light.range=NightForestPreview?PreviewFloat("lanternRange",4.8f):3.2f;light.shadows=LightShadows.None;
                     }
                 }
                 _fullGround=new FullStageGround(full);
