@@ -140,6 +140,7 @@ namespace DeckRogue.Game
         public static bool LegacyForestPreview => ForestPreview == "legacy";
         public static bool NightForestPreview => ForestPreview == "night";
         public static bool CohesionForestPreview => NightForestPreview && Autopilot.Arg("-forest-geometry") == "cohesion";
+        public static bool TreeForestPreview => NightForestPreview && Autopilot.Arg("-forest-geometry") == "trees";
         static void PreviewVertexAO(MeshRenderer mr, Newtonsoft.Json.Linq.JObject aoData) {
             if(aoData==null)return;
             var mf=mr.GetComponent<MeshFilter>();if(mf==null||mr.name=="DistantAtmosphere")return;
@@ -295,11 +296,12 @@ namespace DeckRogue.Game
             var layout = opt.Layout ?? LoadLayout(act);
             if (layout == null) { Debug.LogWarning("[Diorama] 設計図が無い: Resources/" + LayoutResource(act)); return; }
             PrepareGround(layout);
-            if(CohesionForestPreview && PreviewFloat("staticVertexAO",0)>0)
-                throw new System.InvalidOperationException("Cohesion study requires AO=0; old vertex AO cannot be reused on changed geometry");
-            var fullPrefab = act == 1 && !LegacyForestPreview ? Resources.Load<GameObject>((CohesionForestPreview?"FullStageCohesion":"FullStage")+"/ForestStage") : null;
-            if(act==1 && CohesionForestPreview && fullPrefab==null)throw new System.Exception("Cohesion study prefab missing");
+            if((CohesionForestPreview || TreeForestPreview) && PreviewFloat("staticVertexAO",0)>0)
+                throw new System.InvalidOperationException("Geometry study requires AO=0; old vertex AO cannot be reused across changed batches");
+            var fullPrefab = act == 1 && !LegacyForestPreview ? Resources.Load<GameObject>((CohesionForestPreview?"FullStageCohesion":TreeForestPreview?"FullStageTrees":"FullStage")+"/ForestStage") : null;
+            if(act==1 && (CohesionForestPreview || TreeForestPreview) && fullPrefab==null)throw new System.Exception("Geometry study prefab missing");
             if(act==1 && CohesionForestPreview)Debug.Log("[ForestPreview] geometry=cohesion; baked rock correction; runtime rock patch disabled; AO=0");
+            if(act==1 && TreeForestPreview)Debug.Log("[ForestPreview] geometry=trees; v5 ground; guarded spatial rock correction retained; AO=0");
             _fullStage = fullPrefab != null;
 
             var rootGo = new GameObject("diorama-act" + layout.Act);
@@ -1892,7 +1894,7 @@ namespace DeckRogue.Game
             if (_fullStage) {
                 // Imported render batches replace authored procedural parts; budgets reflect this representation.
                 st.Parts += _fullBatches; st.ByKind["full-stage-batch"]=_fullBatches;
-                st.GateSource=CohesionForestPreview?"full-stage-cohesion-study":"full-stage-v5";st.GPartsMin=15;st.GPartsMax=40;st.GRenderers=40;st.GMaterials=18;st.GTriangles=20000;
+                st.GateSource=CohesionForestPreview?"full-stage-cohesion-study":TreeForestPreview?"full-stage-tree-study":"full-stage-v5";st.GPartsMin=15;st.GPartsMax=40;st.GRenderers=40;st.GMaterials=18;st.GTriangles=20000;
                 maxY=0;
                 for(float t=-8;t<=14;t+=.5f)for(float side=-2;side<=2.8f;side+=.4f) {
                     var pos=OnPath(t,side,0);float h=_fullGround.Height(pos.x,pos.z);

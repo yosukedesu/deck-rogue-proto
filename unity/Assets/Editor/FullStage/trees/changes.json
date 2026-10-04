@@ -1,0 +1,42 @@
+[
+  {
+    "object": "ForestTree_Card_04",
+    "local_centre": [
+      3,
+      10.5
+    ],
+    "height": 6,
+    "material": "TreeCutout_1",
+    "uv_range": [
+      0.22,
+      0.86
+    ],
+    "root_ground_z": 1.6286392211914062,
+    "root_penetration": 0.035
+  },
+  {
+    "object": "ForestTree_Card_05",
+    "local_centre": [
+      8.4,
+      12.4
+    ],
+    "height": 7,
+    "material": "TreeCutout_Midground_Study",
+    "uv_range": [
+      0,
+      1
+    ],
+    "root_ground_z": 0.5070419311523438,
+    "root_penetration": 0.035
+  },
+  {
+    "object": "ForestTree_Card_06",
+    "trim_left_u": 0.18,
+    "note": "Unrelated disconnected branch fragment removed by matched geometry and UV trim; retained main tree world position and scale unchanged."
+  },
+  {
+    "object": "ForestTree_Card_13",
+    "trim_left_u": 0.18,
+    "note": "Unrelated disconnected branch fragment removed by matched geometry and UV trim; retained main tree world position and scale unchanged."
+  }
+]

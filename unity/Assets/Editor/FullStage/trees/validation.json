@@ -1,0 +1,10 @@
+{
+  "changed_source_meshes": [
+    "ForestTree_Card_04",
+    "ForestTree_Card_05",
+    "ForestTree_Card_06",
+    "ForestTree_Card_13"
+  ],
+  "other_meshes_identical": 237,
+  "note": "Tree04/05 composition; Tree06/13 matched geometry/UV left trim only removes stray image components. Source bank12 unchanged, existing runtime contact patch still required. No AO."
+}
