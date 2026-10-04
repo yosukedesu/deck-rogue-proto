@@ -261,6 +261,7 @@ namespace DeckRogue.Game
                         break;
                     case "run": yield return RunTour(g); break;
                     case "workshop": yield return WorkshopOnly(g); break;   // 工房だけ (⭐レシピの提示の確認。2026-09-12)
+                    case "strike-review": yield return StrikeReview(g); break;
                     case "tempo": yield return TempoCheck(g); break;
                     case "state": yield return StateJump(g, Arg("-state") ?? ""); break;   // 任意の状態へ跳んで撮る (2026-09-12)
                     case "tour":

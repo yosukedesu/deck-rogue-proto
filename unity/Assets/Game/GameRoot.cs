@@ -316,6 +316,15 @@ namespace DeckRogue.Game
             if (!wasCombat && Rs != null && Rs.Phase == RunPhases.Combat) Audio.Ui("combat_start");
             // リーサル (2026-09-14 ユーザー「打撃 SE が鳴る前にピックに移ってしまい爽快感がなくなる」):
             // 決着した戦闘の最後の出来事 (打撃・撃破) を古い戦闘画面の上で見せ切ってから、報酬/敗北の画面へ組み直す
+            // The battle is already resolved: preserve the final anticipation, contact and residue for 480ms,
+            // with no animation input blocker and no delay for legal cards in a live battle.
+            if(combatEnded && Stage.CombatWorld && Rs.Combat!=null && Battle!=null && Presenter.HasNewEvents(Rs.Combat)) {
+                var ended=Rs;var final=Rs.Combat;
+                Battle.SyncField(this,final);Battle.SyncHand(this,final,true);
+                Presenter.Play(this,final);
+                Tween.After(.48f,()=>{if(!ReferenceEquals(Rs,ended))return;Rebuild();Presenter.Reset();Audio.Ui(ended.Phase==RunPhases.Lost?"lose":"win");});
+                return;
+            }
             if (combatEnded && !Stage.CombatWorld && Rs.Combat != null && ScreenRoot != null && ScreenRoot.childCount > 0 && Presenter.HasNewEvents(Rs.Combat))
             {
                 var finalSnapshot = Rs.Combat;

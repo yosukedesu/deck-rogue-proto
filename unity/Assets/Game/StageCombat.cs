@@ -22,7 +22,7 @@ namespace DeckRogue.Game
             Vector3 travel = ranged ? Vector3.zero : dir * Mathf.Min(ah*reachLimit,Mathf.Max(0f, distance - (ah * 0.40f + bh * 0.25f)));
             float chain = ranged ? 0f : Mathf.Clamp(hits-1,0,7)*0.4f;
             float release = 0.20f + Mathf.Min(chain,.12f), duration = release + 0.18f;
-            Tween.After(0.04f, () => { if (u != null && u.MotionVersion == version) u.Play(ranged ? "block" : "attack"); });
+            u.Play(ranged ? "block" : "attack");
             Tween.Run(duration, k =>
             {
                 if (u == null || u.MotionVersion != version) return;

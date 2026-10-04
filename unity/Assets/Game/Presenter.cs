@@ -18,6 +18,14 @@ namespace DeckRogue.Game
         static int _seen;
         static object _seenCombat;
         static int _visualVersion;
+        static int _impactEpoch;
+        public static int PendingImpactCount {get;private set;}
+        public static int QueuedImpactCount {get;private set;}
+        // Impacts survive the next card, but never survive leaving/rebuilding combat.
+        static void AfterImpact(float delay, Action action) {
+            int epoch=_impactEpoch; PendingImpactCount++; QueuedImpactCount++;
+            Tween.After(delay,()=>{if(epoch!=_impactEpoch)return;PendingImpactCount=Math.Max(0,PendingImpactCount-1);action?.Invoke();});
+        }
         public static int VisualVersion => _visualVersion;
         public static int PendingVisualCount { get; private set; }
         static void AfterVisual(float delay,Action action) {
@@ -26,7 +34,7 @@ namespace DeckRogue.Game
             Tween.After(delay,()=>{if(!world || version==_visualVersion){if(world)PendingVisualCount=Math.Max(0,PendingVisualCount-1);action?.Invoke();}});
         }
 
-        public static void Reset() { ++_visualVersion; PendingVisualCount=0; WorldBattleFx.Cancel(); Stage.CancelCombatMotion(); _seen = 0; _seenCombat = null; }
+        public static void Reset() { ++_impactEpoch; PendingImpactCount=0; ++_visualVersion; PendingVisualCount=0; WorldBattleFx.Cancel(); Stage.CancelCombatMotion(); _seen = 0; _seenCombat = null; }
         /// <summary>続きから (2026-09-15): 読み戻した戦闘の既存のログは演出済みとして扱う (再開の一発目に古い浮き文字を出さない)</summary>
         public static void MarkSeen(GameState combat) { _seen = combat != null ? combat.EventLog.Count : 0; _seenCombat = combat; }
 
@@ -172,7 +180,7 @@ namespace DeckRogue.Game
         {
             if (g == null || combat == null) return;
             ++_visualVersion; PendingVisualCount=0;
-            if(Stage.CombatWorld){WorldBattleFx.Cancel();Stage.CancelCombatMotion();}
+            if(Stage.CombatWorld){Stage.CancelCombatMotion();}
             var log = combat.EventLog;
             if (!ReferenceEquals(_seenCombat, null) && log.Count < _seen) _seen = 0; // 新しい戦闘
             // 同じ戦闘か: CombatStarted の位置が変わらなければ同じ (イベントログは追記のみ)
@@ -215,6 +223,19 @@ namespace DeckRogue.Game
                 if (hitAt.ContainsKey(i)) ctx.Hit = hitAt[i];
                 if (i == finishing) ctx.FinishingBlow = true;
                 if (motionAt != null && motionAt.ContainsKey(i)) ctx.Motion = motionAt[i];   // 段2 レーン M (門が偽なら motionAt は null)
+                // Resolved hits are visible even when another card arrives before a delayed callback.
+                // UI is already authoritative; the independent pooled effect never blocks input.
+                if(Stage.CombatWorld && ev is GameEvent_DamageDealt) {
+                    var board=g.Battle;
+                    float impactDelay=Mathf.Min(delay,.24f);
+                    if(ev is GameEvent_DamageDealt hit && hit.Source=="player" && ctx.Hit!=null && ctx.Hit.Style=="slash") {
+                        int epoch=_impactEpoch; string target="enemy"+(hit.EnemyIndex ?? 0);
+                        Tween.After(Mathf.Max(0,impactDelay-.075f),()=>{if(epoch==_impactEpoch && g.Battle==board)WorldBattleFx.Trace(target);});
+                    }
+                    AfterImpact(impactDelay,()=>{if(g.Battle!=board)return;try { Show(g,fx,captured,false,ctx); } catch(Exception e){Debug.LogWarning("[Presenter] "+e.Message);}});
+                    delay=Mathf.Min(.24f,delay+.025f);
+                    continue;
+                }
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)。束ねた人形の粒は 0.04 秒 (2026-09-21)
                 AfterVisual(delay, () => { try { Show(g, fx, captured, false, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 if(Stage.CombatWorld) delay=Mathf.Min(delay,.24f);
