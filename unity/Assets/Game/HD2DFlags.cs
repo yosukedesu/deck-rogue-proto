@@ -16,7 +16,8 @@
 //                そろっている時だけ箱庭になり、無ければ今の舞台に落ちる。stage=diorama を書いたまま箱庭でない幕に入ると束のキーを今の舞台の値へ預け替える。
 //                -hd2d の起動引数では「,」が区切りなので 1+2 と書く)
 //   uilayout=r3|r2 (三周目 R3 UI の作り直し 2026-10-02・仕様 docs/design/hd2d-slice/r3-ui-spec.md。箱庭 (stage=diorama) の画面の割り付け。
-//                既定 r3 = 足元の線 PC 0.36・手札を沈めて触れた札だけ上げる・敵の帳面を足元の下・自分の欄は足元の帳と左下の匣 (PC)。
+//                既定 r2 (2026-10-04 ユーザー「win版手札の下半分が隠れている」→ スマホと同じく二周目へ戻した)。
+//                r3 = 足元の線 PC 0.36・手札を沈めて触れた札だけ上げる・敵の帳面を足元の下・自分の欄は足元の帳と左下の匣 (PC)。
 //                スマホでは読まない (スマホは下の uilayoutphone。2026-10-02)。
 //                r2 = 二周目の割り付け (足元の線 0.407／0.525・今の帳面・今の自分の札)。今の舞台 (stage=old) は旗によらず1画素も変わらない)
 //   uilayoutphone=r2|r3 (2026-10-02 ユーザー「スマホ版でカードの下半分隠すのやっぱ見にくいのでもどして」。スマホ (UiKit.Phone) の割り付けはこの旗で決まり、uilayout はスマホでは読まない。
@@ -93,9 +94,9 @@ namespace DeckRogue.Game
         public static HD2DLedger Ledger { get; set; } = HD2DLedger.Line;
         /// <summary>
         /// uilayout=r3|r2 (三周目 R3 UI の作り直し 2026-10-02 ユーザー裁定「本番に入れる」・仕様 docs/design/hd2d-slice/r3-ui-spec.md)。
-        /// 箱庭 (BattleScreen.Hd2dLayout) の時だけ効く。既定 R3。R2 = 二周目の割り付けに戻す旗。今の舞台 (stage=old) では読まない
+        /// 箱庭 (BattleScreen.Hd2dLayout) の時だけ効く。既定 R2 (2026-10-04 ユーザー「win版手札の下半分が隠れている」でスマホと同じく二周目へ)。R3 = 旗 uilayout=r3。R2 = 二周目の割り付けに戻す旗。今の舞台 (stage=old) では読まない
         /// </summary>
-        public static HD2DUiLayout UiLayout { get; set; } = HD2DUiLayout.R3;
+        public static HD2DUiLayout UiLayout { get; set; } = HD2DUiLayout.R2;
         /// <summary>
         /// uilayoutphone=r2|r3 (2026-10-02 ユーザー「スマホ版でカードの下半分隠すのやっぱ見にくいのでもどして」)。スマホ (UiKit.Phone) の箱庭の割り付け。既定 R2 = 二周目のスマホ。
         /// スマホでは uilayout を読まない (uilayout=r2 は既定のままスマホも r2・uilayoutphone=r3 で三周目のスマホへ戻せる)。PC では読まない
@@ -394,7 +395,7 @@ namespace DeckRogue.Game
             HeroLift = -1f;
             UiNight = false;
             Ledger = HD2DLedger.Line;
-            UiLayout = HD2DUiLayout.R3;
+            UiLayout = HD2DUiLayout.R2;
             UiLayoutPhone = HD2DUiLayout.R2;
             _deskShade = null;   // 書かない時は割り付けから (r3 → hand・r2 → full)
             ArtScale = -1f;

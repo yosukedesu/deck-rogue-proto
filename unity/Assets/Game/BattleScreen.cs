@@ -30,7 +30,7 @@ namespace DeckRogue.Game
         public static float HandSink { get { return Hd2dLayout ? (R3 ? (UiKit.Phone ? R3U_HandSinkPhone : R3U_HandSinkPc) : (UiKit.Phone ? 17f : 19f)) : 0f; } }
 
         // ---- 三周目 R3 UI の作り直し (2026-10-02 ユーザー裁定「本番に入れる」・仕様 docs/design/hd2d-slice/r3-ui-spec.md) ----
-        // 箱庭 (Hd2dLayout) の既定 = PC は旗 uilayout=r3 (uilayout=r2 で二周目の割り付け。uitrial=1 は r3 の別名)。
+        // 箱庭 (Hd2dLayout) の既定 = PC も二周目 (2026-10-04 ユーザー「win版手札の下半分が隠れている」)。旗 uilayout=r3 で下の PC の形 (uitrial=1 は r3 の別名)。
         // スマホは旗 uilayoutphone (既定 r2 = 二周目のスマホ・2026-10-02 ユーザー「カードの下半分隠すのやっぱ見にくい」。uilayoutphone=r3 で下のスマホの形):
         //   足元の線 PC 0.36・スマホ 0.45 (Stage.GroundLineRatio)／手札を PC 168・スマホ 176 沈め、上の帯と「要の数字の札」(CardView keynum) だけ見せ、触れた札だけ上げる
         //   (本文は触れて読む)／敵の帳面は足元の下 (PC 10・スマホ 8) に名前＋HP の 60 (予告の行があれば全員 88。スマホ 53/79)／
@@ -38,7 +38,7 @@ namespace DeckRogue.Game
         //   スマホ = 足元の帳 (HP・見込み・からくり) と今の上の帯 (状態・ギア・置物)、輪・灯籠・山札は下へ／確認の窓・ギアの窓・持ち物の一覧は R3PcWindowRect・R3PhoneWindowRect。
         //   今の舞台 (stage=old) は Hd2dLayout が偽なので1画素も変わらない。段1 の試し撮り (R3A_) を本番の形にしたもの (新しいメンバーは R3U_)
 
-        /// <summary>箱庭で三周目の割り付けか (r3 の分岐は全部この値を読む)。PC は旗 uilayout (既定 r3)・スマホは旗 uilayoutphone (既定 r2 = 二周目のスマホ。
+        /// <summary>箱庭で三周目の割り付けか (r3 の分岐は全部この値を読む)。PC は旗 uilayout (既定 r2・2026-10-04)・スマホは旗 uilayoutphone (既定 r2 = 二周目のスマホ。
         /// 2026-10-02 ユーザー「スマホ版でカードの下半分隠すのやっぱ見にくいのでもどして」) = HD2DFlags.UiLayoutHere</summary>
         public static bool R3 { get { return Hd2dLayout && HD2DFlags.UiLayoutHere == HD2DUiLayout.R3; } }
         /// <summary>手札の沈め (r3)。PC 168 (=手札の上端 行 951。試し撮りの 183 だと10枚の端の札の要の数字の札が画面の外に出る)・スマホ 176 (手札の上端 上から 547)</summary>

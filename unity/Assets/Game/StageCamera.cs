@@ -281,7 +281,7 @@ namespace DeckRogue.Game
         /// <summary>三周目 R3 UI のスマホの足元の線 (2026-10-02 仕様 §3・§15 Q4)</summary>
         const float R3U_GroundLinePhone = 0.45f;
         /// <summary>箱庭で三周目の割り付けか (旗 groundline= を書けばそちらが勝つ。BattleScreen.R3 と同じ条件 = HD2DFlags.UiLayoutHere:
-        /// PC は旗 uilayout (既定 r3)・スマホは旗 uilayoutphone (既定 r2 → 足元の線 0.525。2026-10-02)</summary>
+        /// PC は旗 uilayout (既定 r2・2026-10-04)・スマホは旗 uilayoutphone (既定 r2 → 足元の線 0.525。2026-10-02)</summary>
         static bool R3U_Layout { get { return DioramaCamera && HD2DFlags.UiLayoutHere == HD2DUiLayout.R3; } }
 
         /// <summary>world の点を画面 (UI キャンバスの px・左下原点) へ写す。ProjectFeet と同じ式だが深度を覚えない (UI の置き場の見積り用。2026-10-02 R3U)</summary>
