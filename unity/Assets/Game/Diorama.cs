@@ -139,6 +139,7 @@ namespace DeckRogue.Game
         public static string ForestPreview => Autopilot.Arg("-forest-preview") ?? "";
         public static bool LegacyForestPreview => ForestPreview == "legacy";
         public static bool NightForestPreview => ForestPreview == "night";
+        public static bool CohesionForestPreview => NightForestPreview && Autopilot.Arg("-forest-geometry") == "cohesion";
         static void PreviewVertexAO(MeshRenderer mr, Newtonsoft.Json.Linq.JObject aoData) {
             if(aoData==null)return;
             var mf=mr.GetComponent<MeshFilter>();if(mf==null||mr.name=="DistantAtmosphere")return;
@@ -266,6 +267,7 @@ namespace DeckRogue.Game
         }
         static void PreviewSeatRock(MeshRenderer mr)
         {
+            if(CohesionForestPreview)return; // This study already bakes bank_rock_12's correction.
             float drop=PreviewFloat("rockDrop",0);if(drop<=0)return;
             var mf=mr.GetComponent<MeshFilter>();if(mf==null||mf.sharedMesh==null)return;
             var vertices=mf.sharedMesh.vertices;var matches=new List<int>();
@@ -293,7 +295,11 @@ namespace DeckRogue.Game
             var layout = opt.Layout ?? LoadLayout(act);
             if (layout == null) { Debug.LogWarning("[Diorama] 設計図が無い: Resources/" + LayoutResource(act)); return; }
             PrepareGround(layout);
-            var fullPrefab = act == 1 && !LegacyForestPreview ? Resources.Load<GameObject>("FullStage/ForestStage") : null;
+            if(CohesionForestPreview && PreviewFloat("staticVertexAO",0)>0)
+                throw new System.InvalidOperationException("Cohesion study requires AO=0; old vertex AO cannot be reused on changed geometry");
+            var fullPrefab = act == 1 && !LegacyForestPreview ? Resources.Load<GameObject>((CohesionForestPreview?"FullStageCohesion":"FullStage")+"/ForestStage") : null;
+            if(act==1 && CohesionForestPreview && fullPrefab==null)throw new System.Exception("Cohesion study prefab missing");
+            if(act==1 && CohesionForestPreview)Debug.Log("[ForestPreview] geometry=cohesion; baked rock correction; runtime rock patch disabled; AO=0");
             _fullStage = fullPrefab != null;
 
             var rootGo = new GameObject("diorama-act" + layout.Act);
@@ -391,7 +397,7 @@ namespace DeckRogue.Game
                 }
                 _fullGround=new FullStageGround(full);
                 if(lanternGround.HasValue) {
-                    var p=lanternGround.Value;float h=_fullGround.Height(p.x,p.z);p.y=(float.IsNaN(h)?0:h)+PreviewFloat("warmHeight",.9f);
+                    var p=lanternGround.Value;float h=_fullGround.Height(p.x,p.z);p.y=PreviewFloat("warmWorldY",(float.IsNaN(h)?0:h)+PreviewFloat("warmHeight",.9f));
                     PreviewGroundLight("lantern-ground-bounce",p,new Color(1,.48f,.18f),PreviewFloat("warmGround",0),PreviewFloat("warmRange",4.5f));
                     Debug.Log("[ForestPreview] lantern ground="+h+" bounce="+p);
                 }
@@ -1886,7 +1892,7 @@ namespace DeckRogue.Game
             if (_fullStage) {
                 // Imported render batches replace authored procedural parts; budgets reflect this representation.
                 st.Parts += _fullBatches; st.ByKind["full-stage-batch"]=_fullBatches;
-                st.GateSource="full-stage-v5";st.GPartsMin=15;st.GPartsMax=40;st.GRenderers=40;st.GMaterials=18;st.GTriangles=20000;
+                st.GateSource=CohesionForestPreview?"full-stage-cohesion-study":"full-stage-v5";st.GPartsMin=15;st.GPartsMax=40;st.GRenderers=40;st.GMaterials=18;st.GTriangles=20000;
                 maxY=0;
                 for(float t=-8;t<=14;t+=.5f)for(float side=-2;side<=2.8f;side+=.4f) {
                     var pos=OnPath(t,side,0);float h=_fullGround.Height(pos.x,pos.z);

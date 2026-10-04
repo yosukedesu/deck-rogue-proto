@@ -1,0 +1,59 @@
+Ruin cohesion geometry study, 2026-10-05 (not adopted)
+
+Source: Library libfile_ba8252801d6481918060ee4ba086dd48 v0,
+file_000000004e0081fdbb318a0c7bda17d3, DeckRogue_RuinCohesion_Study.zip.
+Separate candidate prefab: Resources/FullStageCohesion/ForestStage.
+Original v5 prefab, source model, meshes, materials, AO sidecar are preserved.
+No flags changes the default scene. Use both -forest-preview night and
+-forest-geometry cohesion to select this experimental geometry. Omit the
+geometry flag for the reference. For both, use -forest-look with the absolute
+path to docs/design/forest-cohesion-study-look.json.
+
+Conditions: 1920x886, phone tier, seed4242, deterministic camera, UI1.6.
+staticHueStudy=1, staticDirectionStudy=0, staticVertexAO=0 on both.
+Same existing sampler/DOF/night settings. warmWorldY=1.322433 fixes the
+lantern auxiliary light height, preventing new ground from moving the light.
+Actual baseline/candidate lantern ground .4224329 and bounce position
+(-6.81,1.32,2.54) also match. 15 supplied texture hashes match existing files;
+the new materials reference the original textures, not duplicated images.
+
+Source changes: 16 small rocks grouped at edges, same 23 slabs connected
+into a broken approach to stairs, 12 ferns grouped at ruin/soil shelter,
+four lower pier blocks chipped. No added objects. bank_rock_12's -.36m
+correction is already baked. The old runtime patch is explicitly disabled
+for this variant. Attempting this variant with old vertexAO>0 throws rather
+than silently applying the old topology's data. New AO must be baked after
+any decision on the new geometry.
+
+Importer: FullStageSetup.Run retains original paths. CohesionStudy imports
+to a separate output directory, retaining common texture mappings and basis
+checks. Fixed a real first-save issue: AssetDatabase.CreateAsset can rename
+a material to its filename. Preserve its semantic name, because night grade
+selection and lantern light creation depend on it. Initial captures with
+generic Surface_N names were rejected and are NOT the delivered comparison.
+Five inherited degenerate UV faces required the existing repair. Imported
+candidate 16318 triangles (source16324); runtime16338 vs reference17004.
+Both runtime renderers19/materials16; no geometry budget/seat gate failures.
+
+Final validation: Windows build Succeeded, 0 errors / 3 warnings, 11s.
+34 screenshots/layouts per variant, 68 total, zero layout errors, all gates
+pass. Exact camera match. Static moon/spot/backlight objects match, as do
+ambient/fog/fog2/nightGrade/tiltShift values. Attack color/intensity/hold/
+duration match; geometry-following contact/bounce positions differ by up to
+.02090m, so the moving attack light positions are not bit-identical.
+No attack/input timing code changed. At fire-33 both have zero active/pending
+hit lights, dimK1, exposureBoost0. Inspected idle, fire-2 and fire-33 full
+frames plus enlarged ruin/road crops. Four normal save hashes match isolation
+baseline. Android, GPU/frame-time, full tempo battery remain untested.
+
+Visual result: stair-to-road connection and quieter center are improved;
+the overall impression changes modestly. Broad bank silhouette, background
+detail scale and separate-looking material motifs remain. Keep as a comparison
+candidate; do not treat it as a substantial quality leap or approved default.
+No APK, Drive upload, deployment, push or main changes.
+
+Deliverables:
+Full 3-state comparison libfile_7c914346cc608191afee27f73df13e88 v0.
+Ruin/road 3-state crops libfile_df8b27a17ba0819187d70629df42ed15 v0.
+Final local captures: task/cohesion-fixed-{base,cohesion}/.
+Rejected pre-fix captures: task/cohesion-study-{base,cohesion}/.

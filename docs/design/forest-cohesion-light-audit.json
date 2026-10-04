@@ -1,0 +1,149 @@
+{
+  "sameHitEvents": false,
+  "baselineHitEvents": [
+    {
+      "kind": "world-bounce",
+      "key": "enemy0",
+      "color": [
+        1,
+        0.28,
+        0.065,
+        1
+      ],
+      "intensity": 28,
+      "dur": 0.34,
+      "hold": 0.2941176,
+      "pos": [
+        1.44105184,
+        2.25845456,
+        0.23754476
+      ]
+    },
+    {
+      "kind": "world-contact",
+      "key": "enemy0",
+      "color": [
+        1,
+        0.747999966,
+        0.67275,
+        1
+      ],
+      "intensity": 18,
+      "dur": 0.32,
+      "hold": 0.3125,
+      "pos": [
+        4.188355,
+        1.01121116,
+        0.7229513
+      ]
+    },
+    {
+      "kind": "cast:spell",
+      "key": "player",
+      "color": [
+        1,
+        0.28,
+        0.065,
+        1
+      ],
+      "intensity": 2.52,
+      "dur": 0.22,
+      "hold": 0.32,
+      "pos": [
+        -4.19462538,
+        1.20668328,
+        -1.48280811
+      ]
+    }
+  ],
+  "candidateHitEvents": [
+    {
+      "kind": "world-bounce",
+      "key": "enemy0",
+      "color": [
+        1,
+        0.28,
+        0.065,
+        1
+      ],
+      "intensity": 28,
+      "dur": 0.34,
+      "hold": 0.2941176,
+      "pos": [
+        1.44142437,
+        2.243834,
+        0.237879008
+      ]
+    },
+    {
+      "kind": "world-contact",
+      "key": "enemy0",
+      "color": [
+        1,
+        0.747999966,
+        0.67275,
+        1
+      ],
+      "intensity": 18,
+      "dur": 0.32,
+      "hold": 0.3125,
+      "pos": [
+        4.188887,
+        0.990324855,
+        0.7234288
+      ]
+    },
+    {
+      "kind": "cast:spell",
+      "key": "player",
+      "color": [
+        1,
+        0.28,
+        0.065,
+        1
+      ],
+      "intensity": 2.52,
+      "dur": 0.22,
+      "hold": 0.32,
+      "pos": [
+        -4.19462538,
+        1.20668328,
+        -1.48280811
+      ]
+    }
+  ],
+  "lightLogs": {
+    "base": [
+      "[ForestPreview] seated bank_rock_12 candidate: vertices94 drop=0.36",
+      "[ForestPreview] lantern ground=0.4224329 bounce=(-6.81, 1.32, 2.54)"
+    ],
+    "cohesion": [
+      "[ForestPreview] geometry=cohesion; baked rock correction; runtime rock patch disabled; AO=0",
+      "[ForestPreview] lantern ground=0.4224329 bounce=(-6.81, 1.32, 2.54)"
+    ]
+  },
+  "lookEqual": {
+    "ambient": true,
+    "fog": true,
+    "fog2": true,
+    "nightGrade": true,
+    "tiltShift": true
+  },
+  "recovery": {
+    "base": {
+      "lit": 0,
+      "pending": 0,
+      "dimK": 1,
+      "exposureBoost": 0
+    },
+    "cohesion": {
+      "lit": 0,
+      "pending": 0,
+      "dimK": 1,
+      "exposureBoost": 0
+    }
+  },
+  "sameStaticLights": true,
+  "sameHitPhotometry": true,
+  "maxHitPositionDeltaMeters": 0.020898535039639152
+}

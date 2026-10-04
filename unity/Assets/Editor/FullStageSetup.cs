@@ -18,9 +18,20 @@ namespace DeckRogue.EditorTools {
    foreach(var r in source.GetComponentsInChildren<MeshRenderer>(true))Debug.Log("[FullStage] MESH "+r.name+" mats="+string.Join("|",r.sharedMaterials.Select(m=>m==null?"NULL":m.name))+" bounds="+r.bounds);
    return 0;
   }
-  static void Save(UnityEngine.Object o,string p){var old=AssetDatabase.LoadMainAssetAtPath(p);if(old==null)AssetDatabase.CreateAsset(o,p);else{string label=o.name;EditorUtility.CopySerialized(o,old);old.name=label;EditorUtility.SetDirty(old);UnityEngine.Object.DestroyImmediate(o);}}
-  public static int Run(){
-   var source=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Editor/FullStage/mossbound_full_stage.fbx");
+  static void Save(UnityEngine.Object o,string p){
+   // CreateAsset can replace a material's semantic name with the filename.
+   // Runtime night grading and lantern creation rely on the semantic label.
+   string label=o.name;var old=AssetDatabase.LoadMainAssetAtPath(p);
+   if(old==null){AssetDatabase.CreateAsset(o,p);o.name=label;EditorUtility.SetDirty(o);}
+   else{EditorUtility.CopySerialized(o,old);old.name=label;EditorUtility.SetDirty(old);UnityEngine.Object.DestroyImmediate(o);}
+  }
+  public static int Run() => RunAt("Assets/Editor/FullStage", Root);
+  public static int CohesionStudy() => RunAt("Assets/Editor/FullStage/cohesion", "Assets/Resources/FullStageCohesion");
+  static int RunAt(string sourceRoot, string outputRoot){
+   string Root=outputRoot;
+   const string textureRoot="Assets/Resources/FullStage";
+   System.IO.Directory.CreateDirectory(outputRoot);AssetDatabase.Refresh();
+   var source=AssetDatabase.LoadAssetAtPath<GameObject>(sourceRoot+"/mossbound_full_stage.fbx");
    if(source==null)throw new Exception("Missing full stage FBX");
    var ts=source.GetComponentsInChildren<Transform>(true);
    Func<string,Vector3> marker=n=>ts.Single(t=>t.name==n).position;
@@ -35,10 +46,10 @@ namespace DeckRogue.EditorTools {
    if(Vector3.Distance(player,new Vector3(-4.973f,0,-1.039f))>.002f||Vector3.Distance(enemy,new Vector3(4.322f,0,1.207f))>.002f)throw new Exception("Foot marker mapping failed");
    Debug.Log("[FullStage] AXIS PASS basis="+basis+" player="+player.ToString("F5")+" enemy="+enemy.ToString("F5"));
    var textures=new Dictionary<string,string>{{"Moss pixel limestone","moss_soft_v5"},{"Weathered grey limestone","paving_soft_v5"},{"earth_128","soil_soft_v5"},{"moss_turf_128","moss_soft_v5"},{"cliff_strata_128","rock_soft_v5"},{"leaf_2_128","leaf_2_128"},{"bronze_128","bronze_128"},{"TreeCutout_0","tree_cutout_0"},{"TreeCutout_1","tree_cutout_1"},{"TreeCutout_2","tree_cutout_2"},{"TreeCutout_3","tree_cutout_3"},{"FoliageCutout_FernAtlas","fern_cutout_atlas"}};
-   var sourceMap=JArray.Parse(System.IO.File.ReadAllText("Assets/Editor/FullStage/batch_source_map.json"));
+   var sourceMap=JArray.Parse(System.IO.File.ReadAllText(sourceRoot+"/batch_source_map.json"));
    var frontEntry=sourceMap.FirstOrDefault(b=>((JArray)b["sources"]).Any(n=>(string)n=="Front_Cliff_Strata"));
    var frontBatch=(string)frontEntry?["mesh"];
-   var mats=new Dictionary<string,Material>();var root=new GameObject("Mossbound full stage v5");int triangles=0;
+   var mats=new Dictionary<string,Material>();var root=new GameObject(outputRoot.EndsWith("Cohesion")?"Mossbound cohesion study":"Mossbound full stage v5");int triangles=0;
    foreach(var mf in source.GetComponentsInChildren<MeshFilter>(true)){
     var imported=mf.GetComponent<MeshRenderer>().sharedMaterials;var output=new Material[imported.Length];
     for(int i=0;i<imported.Length;i++){
@@ -46,7 +57,7 @@ namespace DeckRogue.EditorTools {
      if(!mats.TryGetValue(name,out var mat)){
       bool alpha=name.StartsWith("TreeCutout_")||name.StartsWith("FoliageCutout_")||name=="leaf_2_128";
       mat=new Material(Shader.Find(name=="lantern_glass_emission"?"Universal Render Pipeline/Unlit":"DeckRogue/StageModule")){name=name};
-      if(textures.TryGetValue(name,out var tex))mat.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Root+"/"+tex+".png"));
+      if(textures.TryGetValue(name,out var tex))mat.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(textureRoot+"/"+tex+".png"));
       mat.SetColor("_BaseColor",name=="lantern_glass_emission"?new Color(1.8f,.7f,.16f,1):name=="Still forest water"?new Color(.07f,.22f,.22f,1):Color.white);
       if(name!="lantern_glass_emission"){
        mat.EnableKeyword("_UV_MESH");mat.SetFloat("_MeshArraySlice",-1);mat.SetFloat("_NormalArrayOn",0);mat.SetFloat("_NormalAtlasOn",0);mat.SetFloat("_VColorAO",0);mat.SetFloat("_HitReceive",alpha?1.5f:2f);mat.SetFloat("_Receive",alpha?.55f:.8f);
@@ -55,7 +66,7 @@ namespace DeckRogue.EditorTools {
        mat.SetFloat("_ShadowStrength",alpha?.65f:.85f);mat.SetFloat("_TwoSidedNormals",alpha?1:0);
        mat.SetFloat("_TextureContrast",alpha?.94f:1f);
        if(textures.TryGetValue(name,out var colorTexture)) {
-        var readable=new Texture2D(2,2);readable.LoadImage(System.IO.File.ReadAllBytes(Root+"/"+colorTexture+".png"));
+        var readable=new Texture2D(2,2);readable.LoadImage(System.IO.File.ReadAllBytes(textureRoot+"/"+colorTexture+".png"));
         Vector3 sum=Vector3.zero;int count=0;
         foreach(var pixel in readable.GetPixels32()) if(pixel.a>=102) {var c=((Color)pixel).linear;sum+=new Vector3(c.r,c.g,c.b);count++;}
         if(count>0)sum/=count;mat.SetVector("_TextureMean",new Vector4(sum.x,sum.y,sum.z,0));UnityEngine.Object.DestroyImmediate(readable);
@@ -110,7 +121,7 @@ namespace DeckRogue.EditorTools {
    // Opaque distant atmosphere behind the alpha forest: holes must reveal air, not a black clear color.
    var skyMat=new Material(Shader.Find("DeckRogue/StageModule")){name="Distant forest atmosphere"};
    skyMat.EnableKeyword("_UV_MESH");skyMat.SetFloat("_MeshArraySlice",-1);skyMat.SetFloat("_NormalArrayOn",0);skyMat.SetFloat("_VColorAO",0);
-   skyMat.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Root+"/distant_forest_haze.png"));
+   skyMat.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(textureRoot+"/distant_forest_haze.png"));
    skyMat.SetColor("_BaseColor",new Color(.5f,.65f,.7f,1));skyMat.SetFloat("_NaturalSurface",1);skyMat.SetVector("_AmbientFill",new Vector4(.2f,.2f,.2f,0));
    skyMat.SetFloat("_Receive",0);skyMat.SetFloat("_HitReceive",0);skyMat.SetFloat("_ShadowStrength",0);skyMat.SetFloat("_Fog",.35f);skyMat.SetFloat("_GradeWeight",.15f);skyMat.SetFloat("_VignetteWeight",.2f);
    Save(skyMat,Root+"/DistantAtmosphere.mat");

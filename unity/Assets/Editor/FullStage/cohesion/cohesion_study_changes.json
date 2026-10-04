@@ -1,0 +1,10 @@
+{
+  "study": "geometry/placement-only left ruin slice; same material images/camera and existing light rig; unapproved experiment",
+  "changes": [
+    "16 isolated small bank stones grouped into 7/5/4 asymmetric colonies, no new stones",
+    "Same 23 slabs reauthored as irregular shallow solid stones: 18 form broken stair approach and 5 fragments belong to edges; no paper-thin faces",
+    "12 existing ferns grouped at ruin/soil shelter instead of isolated placement",
+    "Four lower pier blocks given deliberate chipped outer corners; materials/light unchanged"
+  ],
+  "note": "bank_rock_12 existing e2ae0ca -0.36m placement correction is baked into this study. Disable old v5 runtime vertex-index patch when importing this changed-topology study. Do not double-apply. AO colors are absent; compare geometry-only with AO strength zero in both variants."
+}
