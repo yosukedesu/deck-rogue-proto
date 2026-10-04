@@ -9,13 +9,16 @@ namespace DeckRogue.Game
     {
         sealed class Slot { public Transform T; public MeshRenderer R; public bool Busy; public int Version; public float Started; }
         static readonly Slot[] Pool = new Slot[24];
+        static ParticleSystem _embers; static Material _emberMaterial;
+        public static int ParticleCount => _embers!=null?_embers.particleCount:0;
         static Mesh _quad; static Material _material; static Texture2D _atlas, _silver, _arcane, _guard, _trail;
         static readonly MaterialPropertyBlock Props = new MaterialPropertyBlock();
         public static int EmittedCount {get;private set;}
         public static void Cancel() {
+            if(_embers!=null)_embers.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
             foreach(var slot in Pool)if(slot!=null){slot.Version++;slot.Busy=false;if(slot.T!=null)slot.T.gameObject.SetActive(false);}
         }
-        public static int ActiveCount { get {int n=0;foreach(var slot in Pool)if(slot!=null && slot.Busy)n++;return n;} }
+        public static int ActiveCount { get {int n=0;foreach(var slot in Pool)if(slot!=null && slot.Busy)n++;return n+ParticleCount;} }
         static bool Ready()
         {
             if (!Stage.CombatWorld || Stage.Camera == null) return false;
@@ -35,6 +38,7 @@ namespace DeckRogue.Game
                 }_trail.SetPixels(pixels);_trail.Apply(false,true);
                 _quad = new Mesh { name = "combat-fx-quad" };
                 _quad.vertices = new[] { new Vector3(-.5f,-.5f,0),new Vector3(.5f,-.5f,0),new Vector3(.5f,.5f,0),new Vector3(-.5f,.5f,0) };
+                _quad.colors = new[]{Color.white,Color.white,Color.white,Color.white};
                 _quad.uv = new[] { Vector2.zero,Vector2.right,Vector2.one,Vector2.up };
                 _quad.triangles = new[] { 0,2,1,0,3,2 }; _quad.RecalculateBounds();
             }
@@ -81,6 +85,7 @@ namespace DeckRogue.Game
         public static bool Hit(string target,string style,Color color,bool heavy,int index=0)
         {
             if(!Socket(target,out var p,out var h))return false;
+            color=CombatPalette.ForFx(style,color);
             bool spell=style=="spell"||style=="light"||style=="spark"||style=="beam"||style=="throw";
             if(spell) {
                 Emit(p,p,2,color,h*(heavy?2.0f:1.65f),.42f,0,0,false,_arcane);
@@ -89,25 +94,51 @@ namespace DeckRogue.Game
                 var impact=style=="vine"?new Color(.48f,.86f,.55f,.82f):new Color(.82f,.66f,.44f,.82f);
                 if(Stage.TryGetUnitBox(target,out var feet,out var height)) Emit(feet+Vector3.up*.045f,feet,2,impact,h*1.6f,.36f,0,0,false,_arcane,true,1.05f);
                 Emit(p,p,1,impact,h*.48f,.16f,0,15);
-            } else { Sparks(p,h); Emit(p,p,0,new Color(.88f,.94f,1f,.95f),h*(heavy?2.6f:2.15f),.30f,index%2==0?0:90,0,false,_silver,false,2.0f); }
-            Emit(p,p,1,new Color(1,.82f,.52f,.65f),h*(heavy?.70f:.48f),.19f,15,12);
+            } else { Sparks(p,h,color); Emit(p,p,0,new Color(color.r,color.g,color.b,.95f),h*(heavy?2.6f:2.15f),.30f,index%2==0?0:90,0,false,_silver,false,2.0f); }
+            Embers(p,h,color,heavy);
+            Emit(p,p,1,new Color(color.r,color.g,color.b,.65f),h*(heavy?.70f:.48f),.19f,15,12);
             return true;
         }
-        public static void Trace(string target) {
+        public static void Trace(string target,Color? color=null) {
             if(target=="player")return;
             if(!Socket("player",out var a,out var ah)||!Socket(target,out var b,out var bh))return;
             var delta=Quaternion.Inverse(Stage.LayoutRotation)*(b-a);
             float width=new Vector2(delta.x,delta.y).magnitude;if(width<.2f)return;
             var start=Vector3.Lerp(a,b,.15f);var end=Vector3.Lerp(a,b,.86f);
-            Emit(start,end,0,new Color(1,.69f,.3f,.82f),width*.40f,.075f,Mathf.Atan2(delta.y,delta.x)*Mathf.Rad2Deg,0,true,_trail,false,2.1f,Mathf.Min(ah,bh)*.018f/(width*.40f));
+            Emit(start,end,0,new Color((color??CombatPalette.Silver).r,(color??CombatPalette.Silver).g,(color??CombatPalette.Silver).b,.82f),width*.40f,.075f,Mathf.Atan2(delta.y,delta.x)*Mathf.Rad2Deg,0,true,_trail,false,2.1f,Mathf.Min(ah,bh)*.018f/(width*.40f));
         }
-        static void Sparks(Vector3 p,float h) {
+        static void Sparks(Vector3 p,float h,Color color) {
             // A small asymmetric fan: bright contact then outward fragments, not a full-screen flash.
             float[] angles={18,69,153,226,318};
             for(int i=0;i<angles.Length;i++) {
                 float a=angles[i]*Mathf.Deg2Rad;var dir=Stage.LayoutRotation*new Vector3(Mathf.Cos(a),Mathf.Sin(a),0);
                 float len=h*(i%2==0?.65f:.43f);
-                Emit(p+dir*h*.08f,p+dir*h*(i%2==0?.85f:.6f),0,new Color(1,.76f,.36f,.95f),len,.19f+i*.021f,angles[i],0,true,_trail,false,4f,.022f);
+                Emit(p+dir*h*.08f,p+dir*h*(i%2==0?.85f:.6f),0,new Color(color.r,color.g,color.b,.95f),len,.19f+i*.021f,angles[i],0,true,_trail,false,4f,.022f);
+            }
+        }
+        static void Embers(Vector3 p,float h,Color color,bool heavy) {
+            if(_embers==null) {
+                var go=new GameObject("world-hit-embers");_embers=go.AddComponent<ParticleSystem>();
+                _embers.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
+                var main=_embers.main;main.loop=false;main.playOnAwake=false;main.simulationSpace=ParticleSystemSimulationSpace.World;
+                main.maxParticles=GfxQuality.Level==GfxLevel.Low?64:128;main.gravityModifier=0;main.startSpeed=0;main.startLifetime=.4f;
+                var emission=_embers.emission;emission.enabled=false;var shape=_embers.shape;shape.enabled=false;
+                var size=_embers.sizeOverLifetime;size.enabled=true;size.size=new ParticleSystem.MinMaxCurve(1,AnimationCurve.Linear(0,1,1,0));
+                var fade=_embers.colorOverLifetime;fade.enabled=true;var grad=new Gradient();
+                grad.SetKeys(new[]{new GradientColorKey(Color.white,0),new GradientColorKey(Color.white,1)},new[]{new GradientAlphaKey(1,0),new GradientAlphaKey(.9f,.2f),new GradientAlphaKey(0,1)});fade.color=grad;
+                var texture=new Texture2D(16,16,TextureFormat.RGBA32,false);texture.wrapMode=TextureWrapMode.Clamp;
+                var pixels=new Color[256];for(int y=0;y<16;y++)for(int x=0;x<16;x++) {float rad=new Vector2((x-7.5f)/7.5f,(y-7.5f)/7.5f).magnitude;pixels[y*16+x]=new Color(1,1,1,Mathf.Pow(Mathf.Clamp01(1-rad),1.6f));}
+                texture.SetPixels(pixels);texture.Apply(false,true);
+                _emberMaterial=new Material(_material);_emberMaterial.SetTexture("_BaseMap",texture);_emberMaterial.SetVector("_AtlasRect",new Vector4(1,1,0,0));_emberMaterial.SetColor("_Tint",new Color(5,5,5,1));
+                var renderer=go.GetComponent<ParticleSystemRenderer>();renderer.sharedMaterial=_emberMaterial;renderer.renderMode=ParticleSystemRenderMode.Billboard;renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
+                _embers.useAutoRandomSeed=false;_embers.randomSeed=4242;
+            }
+            _embers.Play();int fast=heavy?18:12,drift=heavy?6:4;
+            for(int i=0;i<fast+drift;i++) {
+                bool slow=i>=fast;float a=(i*137.508f+17)*Mathf.Deg2Rad;
+                var dir=Stage.LayoutRotation*new Vector3(Mathf.Cos(a),Mathf.Sin(a)*.7f+.25f,0);
+                var e=new ParticleSystem.EmitParams {position=p,velocity=dir*h*(slow?.35f:2.2f+(i%3)*.6f),startLifetime=slow?.32f+(i%3)*.06f:.18f+(i%4)*.03f,startSize=h*(slow?.018f:.024f),startColor=Color.Lerp(color,Color.white,slow?.15f:.45f)};
+                _embers.Emit(e,1);
             }
         }
         public static void Cast(string source,string target,Color color) {

@@ -87,10 +87,10 @@ namespace DeckRogue.Game
         /// style = 当たりの形 (Presenter.CardHitStyle: slash・fang・horn・vine・stomp・spell・light・spark)。色は形ごと (物理＝暖かい白・spell＝脈の青緑・light＝暖色・spark＝橙)。
         /// big = 大きい当たり (2Dと同じ: 15以上か急所) → 強さ×bigMul (既定 1.6)・影 (PC だけ)。蔦は鞭の先が届く vineDelay (既定 0.13 秒) 後に灯す
         /// </summary>
-        public static void PlayerHit(string key, string style, bool big)
+        public static void PlayerHit(string key, string style, bool big, Color? effectColor=null)
         {
             if (!Live) return;
-            if(Stage.CombatWorld && style=="slash") { WorldStrike(key,big); return; }
+            if(Stage.CombatWorld) { WorldStrike(key,big,CombatPalette.ForFx(style,effectColor??Tune.ColorFor(style))); return; }
             var t = Tune;
             Color c = t.ColorFor(style);
             float k = big ? t.BigMul : 1f;
@@ -126,21 +126,22 @@ namespace DeckRogue.Game
         /// <summary>
         /// 呪文の構え (Presenter の CastFx と同じ所)。key = 自分の板。体の前 (敵の側) で、色は形 (spell＝脈の青緑・light＝暖色)。castDur (既定 0.3 秒)・影なし
         /// </summary>
-        public static void Cast(string key, string style)
+        public static void Cast(string key, string style, Color? effectColor=null)
         {
             if (!Live) return;
             var t = Tune;
-            At(key, new Vector2(0.78f, 0.5f), t.ColorFor(style), t.Intensity * t.CastMul, t.CastDur, t.Hold, false, "cast:" + (style ?? "spell"), 0f);
+            At(key, new Vector2(0.78f, 0.5f), effectColor??t.ColorFor(style), t.Intensity * t.CastMul, t.CastDur, t.Hold, false, "cast:" + (style ?? "spell"), 0f);
         }
 
         /// <summary>
         /// とどめ (戦闘を決めた一撃。Presenter の HitStop と同じ所)。key = 倒れる敵の板。白・finishDur (既定 0.3 秒)・強さ×finishMul (既定 2)・影 (PC だけ)。
         /// 同じ一撃の PlayerHit の代わりに呼ぶ (2つ灯さない)。ヒットストップの間は時間がゆっくりなので長く残る
         /// </summary>
-        public static void Finish(string key)
+        public static void Finish(string key, Color? effectColor=null)
         {
             if (!Live) return;
             var t = Tune;
+            if(Stage.CombatWorld && effectColor.HasValue){WorldStrike(key,true,effectColor.Value);return;}
             At(key, new Vector2(0.5f, t.Height), t.FinishColor, t.Intensity * t.FinishMul, t.FinishDur, t.Hold, ShadowOk, "finish", 0f);
         }
 
@@ -148,15 +149,15 @@ namespace DeckRogue.Game
         static long _worldBounce;
         // Contact + shared broad bounce. Repeated hits refresh the same light, never extinguish it.
         // Four enemies + player + one bounce fit the bounded six-light pool.
-        static void WorldStrike(string key,bool heavy) {
+        static void WorldStrike(string key,bool heavy,Color effectColor) {
             var point=Where(key,new Vector2(.5f,.48f));if(!point.HasValue)return;
             float power=heavy?1.65f:1f;var p=point.Value;
             _worldContacts.TryGetValue(key,out var reuse);
-            _worldContacts[key]=MotionLight(p,new Color(1f,.76f,.42f),18f*power,heavy?8.5f:7f,.32f,.3125f,heavy,"world-contact",key,reuse);
+            _worldContacts[key]=MotionLight(p,Color.Lerp(effectColor,Color.white,.65f),18f*power,heavy?8.5f:7f,.32f,.3125f,heavy,"world-contact",key,reuse);
             var bounce=p+Vector3.up*1.2f;
             var source=UnitPoint("player",new Vector2(.5f,.5f));
             if(source.HasValue)bounce=Vector3.Lerp(p,source.Value,.3f)+Vector3.up*1.2f;
-            _worldBounce=MotionLight(bounce,new Color(1f,.58f,.25f),28f*power,heavy?15f:13f,.34f,.2941176f,false,"world-bounce",key,_worldBounce);
+            _worldBounce=MotionLight(bounce,effectColor,28f*power,heavy?15f:13f,.34f,.2941176f,false,"world-bounce",key,_worldBounce);
         }
 
         // ================================================================ 段2 の口 (2026-10-03 レーン M。呼ぶのは StageMotion だけ = 門 StageMotion.On が真の時だけ)

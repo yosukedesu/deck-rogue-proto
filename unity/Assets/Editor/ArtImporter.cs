@@ -55,6 +55,9 @@ namespace DeckRogue.EditorTools
             imp.isReadable = true; // 貼り絵の縁 (PaperFx.Silhouette) が GetPixels32 で読む。箱庭のタイルも CPU で Texture2DArray へ写す (P04)
             var ts = new TextureImporterSettings();
             imp.ReadTextureSettings(ts);
+            if(name=="leader_blue" || name.StartsWith("leader_blue_")) {
+                ts.spriteAlignment=(int)SpriteAlignment.Custom;ts.spritePivot=new Vector2(60f/128f,8f/84f);
+            }
             ts.spriteMeshType = SpriteMeshType.FullRect; // 透明部分を切り詰めない (整数倍配置と影絵の基準を rect に揃える)
             imp.SetTextureSettings(ts);
             int border = name == "panel" || name.StartsWith("btn_") ? 6 : name.StartsWith("card_") ? 12

@@ -230,7 +230,7 @@ namespace DeckRogue.Game
                     float impactDelay=Mathf.Min(delay,.24f);
                     if(ev is GameEvent_DamageDealt hit && hit.Source=="player" && ctx.Hit!=null && ctx.Hit.Style=="slash") {
                         int epoch=_impactEpoch; string target="enemy"+(hit.EnemyIndex ?? 0);
-                        Tween.After(Mathf.Max(0,impactDelay-.075f),()=>{if(epoch==_impactEpoch && g.Battle==board)WorldBattleFx.Trace(target);});
+                        Tween.After(Mathf.Max(0,impactDelay-.075f),()=>{if(epoch==_impactEpoch && g.Battle==board)WorldBattleFx.Trace(target,HitColor(ctx.Hit.Style,ctx.Hit.Def));});
                     }
                     AfterImpact(impactDelay,()=>{if(g.Battle!=board)return;try { Show(g,fx,captured,false,ctx); } catch(Exception e){Debug.LogWarning("[Presenter] "+e.Message);}});
                     delay=Mathf.Min(.24f,delay+.025f);
@@ -1475,14 +1475,7 @@ namespace DeckRogue.Game
         /// <summary>形ごとの筋の色: 呪文=脈の青緑・灯=暖色・火種=延焼の橙・白の物理=真鍮を帯びた紙色・それ以外=紙色 (急所・頭打ちは呼び側で上書き)</summary>
         static Color HitColor(string style, CardDef def)
         {
-            switch (style)
-            {
-                case "spell": return new Color(PaperFx.Mana.r, PaperFx.Mana.g, PaperFx.Mana.b, 0.95f);
-                case "light": return ThemeFx.LampGlow;
-                case "spark": return new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.95f);
-            }
-            if (def != null && def.Color == "white") return new Color(1f, 0.94f, 0.76f, 0.95f);
-            return ThemeFx.SlashCore;
+            return CombatPalette.FromCard(style,def);
         }
 
         /// <summary>
@@ -1876,6 +1869,7 @@ namespace DeckRogue.Game
                         var hp = ctx != null ? ctx.Hit : null;
                         string style = hp != null ? hp.Style : "slash";
                         Color streak = crit ? new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 1f) : capped ? new Color(0.78f, 0.8f, 0.86f, 0.9f) : HitColor(style, hp != null ? hp.Def : null);   // 頭打ちは鈍い筋 (刃が通らない)
+                        if(Stage.CombatWorld)streak=CombatPalette.ForFx(style,streak);
                         bool volleyTail = hp != null && hp.Volley && !hp.VolleyLast;   // 全体攻撃の途中の1体: 揺れ・寄り・音は最後の1体だけ (2026-09-22)
                         // 敵のブロックが全部吸った (殻は別) = 敵が盾で受け止める (2026-09-17): 斬撃の筋は出さず、敵の正面に空色の盾の面。白い点滅も無し
                         bool guardedE = blocked > 0 && d.HpLoss <= 0 && !shell;
@@ -1912,7 +1906,7 @@ namespace DeckRogue.Game
                         // 門 (StageMotion.On) が偽なら ctx.Motion は常に null・CloseUpOn は false = 下の今の光のまま
                         bool motionHit = !Stage.CombatWorld && !guardedE && spr != null && ((ctx != null && ctx.Motion != null) || StageMotion.CloseUpOn(ei) || StageMotion.LightsEveryHit);
                         if (motionHit) StageMotion.PlayerHit(ei, style, ctx != null ? ctx.Motion : null, big, finishing, streak);
-                        else if (!guardedE && spr != null) { if (finishing) StageFx.Finish("enemy" + ei); else StageFx.PlayerHit("enemy" + ei, style, big); }
+                        else if (!guardedE && spr != null) { if (finishing) StageFx.Finish("enemy" + ei,streak); else StageFx.PlayerHit("enemy" + ei, style, big,streak); }
                         // 数字: 通った量は真鍮の紙、盾に全部吸われたら鋼青、0 は薄く。急所は大きく
                         Color numColor = d.Amount <= 0 ? UiKit.ColDim : (d.HpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;
                         Tween.Float(fx, pos, d.Amount.ToString(), numColor, crit ? 50 : (d.Amount >= 20 ? 46 : 36));
@@ -2065,7 +2059,7 @@ namespace DeckRogue.Game
                     if (rt == null) return;
                     Audio.Key("BlockGained");
                     var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
-                    if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(PaperFx.SkyLight.r, PaperFx.SkyLight.g, PaperFx.SkyLight.b, 0.9f), 110f);
+                    if(Stage.CombatWorld) { if(ib.Amount>=4)WorldBattleFx.Guard("player"); } else if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(PaperFx.SkyLight.r, PaperFx.SkyLight.g, PaperFx.SkyLight.b, 0.9f), 110f);
                     Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(80f, 10f), "氷壁 +" + ib.Amount, PaperFx.SkyLight, 28, 40f, 0.7f);
                     if (nudgeHp && g.Battle != null) g.Battle.NudgePlayerIce(ib.Amount);
                     break;
@@ -2176,7 +2170,7 @@ namespace DeckRogue.Game
                                 AfterVisual(0.035f, () => WorldBattleFx.Projectile("player", target, HitColor(CardHitStyle(def),def), Stage.CombatImpactTime-0.035f));
                             }
                             else Tween.CastFx(fx, Tween.CenterIn(cSpr, fx), HitColor(CardHitStyle(def), def));
-                            StageFx.Cast("player", CardHitStyle(def));
+                            StageFx.Cast("player", CardHitStyle(def),HitColor(CardHitStyle(def),def));
                         }   // 技の光 (P13): 体の前に青緑 (白の灯は暖色)
                     }
                     else if (atk)

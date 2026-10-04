@@ -64,6 +64,7 @@ namespace DeckRogue.Game
         static readonly Vector2 DefaultHaloUv = new Vector2(0.64f, 0.93f);
         static readonly Dictionary<string, Vector2> HaloUvByArt = new Dictionary<string, Vector2>
         {
+            { "leader_blue", new Vector2(.75f,.57f) },
             { "leader_green", new Vector2(0.64f, 0.93f) },
             { "leader_green_48", new Vector2(0.64f, 0.93f) },
         };
@@ -77,6 +78,7 @@ namespace DeckRogue.Game
         // 値は P05 の art-lint (このは 62 = (0.686, 0.721)・48 = (0.689, 0.717)) と、ひなたの一枚絵の橙の火の画素の重心 (レーン E が測った (0.766, 0.574))
         static readonly Dictionary<string, Vector2> R2E_HaloUvByArtDiorama = new Dictionary<string, Vector2>
         {
+            { "leader_blue", new Vector2(.75f,.57f) },
             { "leader_green", new Vector2(0.686f, 0.721f) },
             { "leader_green_48", new Vector2(0.689f, 0.717f) },
             { "leader_white", new Vector2(0.766f, 0.574f) },
@@ -1122,6 +1124,7 @@ namespace DeckRogue.Game
             u.Rect = rect; u.Img = img; u.Mat = mat; u.Rend = mr; u.Depth = depth; u.Shadow = sh.transform;
             u.FeetPad = FeetPad(sprite);   // 絵の下端の透明行 (足元の余白) の割合。板をそのぶん下げて足を地面に着ける (2026-09-08「キャラが地面から浮いてる」)
             u.BaseTex = sprite.texture;
+            if(sprite.name=="leader_blue")u.FootAnchorX=sprite.pivot.x/sprite.rect.width;
             u.BaseUvScale = new Vector2(tr.width / tw, tr.height / th); u.BaseUvOffset = new Vector2(tr.x / tw, tr.y / th);
             u.BreathePhase = (key.GetHashCode() & 0xff) * 0.05f;   // 位相をずらして全員が同期しない
             // コマ: Art/<種別>/anim/<id>_<動き>_<n>.png (64×64。PixelLab の animate-with-text)。無ければ一枚絵のまま
@@ -1142,6 +1145,11 @@ namespace DeckRogue.Game
             u.FrameDur["attack"] = new[] { 0.05f, 0.08f, 0.04f, 0.18f };
             u.FrameDur["hurt"] = new[] { 0.06f, 0.16f, 0.10f };
             u.FrameDur["block"] = new[] { 0.06f, 0.08f, 0.10f, 0.20f };   // 9コマの 2,4,6,8 = 斧を前に回して構える
+            if(sprite.name=="leader_blue") {
+                u.FrameDur["idle"]=new[]{.125f,.125f,.125f,.125f,.125f,.125f,.125f,.125f};
+                u.FrameDur["attack"]=new[]{.05f,.07f,.08f,.12f};
+                u.FrameDur["block"]=new[]{.06f,.08f,.10f,.16f};
+            }
             // 盤面の作り直し (Rebuild) で板が作り直されても、再生中のコマ送りは引き継ぐ (攻撃コマが Rebuild で消えていた)
             u.Key = key;
             // 光を受ける板の法線・発光と _KeyFlip の引き先 (2026-09-30 P11)。絵の名前 = Resources の名前 (leader_green・enemy_wolf・人形の id)
@@ -1231,6 +1239,7 @@ namespace DeckRogue.Game
         {
             public RectTransform Rect; public Image Img; public Material Mat; public MeshRenderer Rend; public float FlashT; public float DissolveK; public float Depth; public Transform Shadow;
             public Transform Halo; public Vector2 HaloUv; public float FeetPad;
+            public float FootAnchorX=.5f;
             public Vector3 CombatOffset, CombatRecoilOffset; public int MotionVersion, RecoilVersion;
             public float HeroLight = HeroAmbient;   // リーダーの板の主役の照明 (絵ごと。HeroAmbientFor)。敵と人形では使わない
             // コマ送り (2026-09-09 このはの戦闘アニメ): 待機はループ、攻撃/被弾/防御は1回流して待機へ戻る。ドットは拡大・回転せず絵を差し替えるだけ
@@ -1563,6 +1572,7 @@ namespace DeckRogue.Game
                 UsedK = k;
                 if (dio) pos += CombatOffset + CombatRecoilOffset;
                 var ground = pos;
+                pos += _right*((.5f-FootAnchorX)*w*k);
                 pos -= _up * (FeetPad * h * k);   // 絵の余白ぶん下げる = 足が地面の点に着く (影は地面の点のまま)
                 float breathe = 0f;
                 if (Anim == "idle" && Breathe)
@@ -1997,7 +2007,7 @@ namespace DeckRogue.Game
             void RecordBox(bool dio, Vector3 pos, float k, float w, float h, float breathe)
             {
                 InDiorama = dio;
-                FeetWorld = pos + _up * (FeetPad * h * k);   // 絵の足元 (地面の点。呼吸と演出の動きを含む)
+                FeetWorld = pos + _up * (FeetPad * h * k) + _right*((FootAnchorX-.5f)*w*k);   // 絵の足元 (地面の点。呼吸と演出の動きを含む)
                 HeightWorld = Mathf.Max(0f, h * k * FrameScaleY - FeetPad * h * k);
                 RectMin = new Vector2(_c[0].x, _c[0].y); RectMax = new Vector2(_c[2].x, _c[2].y);
                 FeetPadPx = FeetPad * h; BreathePx = breathe;
