@@ -556,8 +556,10 @@ namespace DeckRogue.Game
             float m = Mathf.Max(color.r, Mathf.Max(color.g, color.b));
             var c = m > 1e-3f ? new Color(color.r / m, color.g / m, color.b / m, 1f) : Color.white;
             float s = big ? 1.25f : 1f;
-            if (full) Pop(layer, pos, ThemeFx.Glow(), new Color(c.r, c.g, c.b, 0.55f), 420f * s, 0.6f, 1.15f, 0.38f, 0f, 0f);   // 大きな暈は画質「高」だけ
-            Pop(layer, pos, ThemeFx.Glow(), new Color(Mathf.Lerp(c.r, 1f, 0.5f), Mathf.Lerp(c.g, 1f, 0.5f), Mathf.Lerp(c.b, 1f, 0.5f), 0.8f), 200f * s, 0.7f, 1.1f, 0.22f, 0f, 0f);
+            // A restrained colored halo leaves the generated slash silhouette and target readable.
+            // StageFx still supplies the impact light on the world; avoid a white UI disc over it.
+            if (full) Pop(layer, pos, ThemeFx.Glow(), new Color(c.r, c.g, c.b, 0.12f), 240f * s, 0.6f, 1.15f, 0.24f, 0f, 0f);
+            Pop(layer, pos, ThemeFx.Glow(), new Color(c.r, c.g, c.b, 0.22f), 100f * s, 0.7f, 1.1f, 0.14f, 0f, 0f);
         }
 
         static void Pop(RectTransform layer, Vector2 pos, Sprite sprite, Color color, float size, float from, float to, float dur, float spin, float delay)
