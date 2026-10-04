@@ -1,0 +1,134 @@
+{
+  "geometry_and_uv_equal_5_decimal": true,
+  "triangles": 16990,
+  "color_primitives": [
+    {
+      "mesh": "Cube.032",
+      "vertices": 6000,
+      "ao_min": 0.30000762951094834,
+      "ao_mean": 0.7810968744436815,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "Cube.033",
+      "vertices": 3118,
+      "ao_min": 0.30000762951094834,
+      "ao_mean": 0.8212438862976773,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "GROUND__flat_battle_zone.001",
+      "vertices": 246,
+      "ao_min": 0.30000762951094834,
+      "ao_mean": 0.9037762357481667,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "GROUND__flat_battle_zone.001",
+      "vertices": 2304,
+      "ao_min": 0.30000762951094834,
+      "ao_mean": 0.9104095338686706,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "stream_ribbon.001",
+      "vertices": 70,
+      "ao_min": 1.0,
+      "ao_mean": 1.0,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "Icosphere.054",
+      "vertices": 2744,
+      "ao_min": 0.30246433203631645,
+      "ao_mean": 0.812938972142498,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "Cube.073",
+      "vertices": 96,
+      "ao_min": 1.0,
+      "ao_mean": 1.0,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "Cube.074",
+      "vertices": 480,
+      "ao_min": 0.3039139391165026,
+      "ao_mean": 0.5709853513389791,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "ForestTree_Card_00.001",
+      "vertices": 12,
+      "ao_min": 1.0,
+      "ao_mean": 1.0,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "ForestTree_Card_01.001",
+      "vertices": 24,
+      "ao_min": 1.0,
+      "ao_mean": 1.0,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "ForestTree_Card_02.001",
+      "vertices": 12,
+      "ao_min": 1.0,
+      "ao_mean": 1.0,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "ForestTree_Card_04.001",
+      "vertices": 8,
+      "ao_min": 1.0,
+      "ao_mean": 1.0,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "Bank_Ruins.001",
+      "vertices": 1450,
+      "ao_min": 0.318822003509575,
+      "ao_mean": 0.9341110488472861,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "Farfield_Ground_Back.001",
+      "vertices": 3050,
+      "ao_min": 0.30000762951094834,
+      "ao_mean": 0.9821158409909859,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "fern_card_mesh.070",
+      "vertices": 280,
+      "ao_min": 1.0,
+      "ao_mean": 1.0,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    },
+    {
+      "mesh": "ForegroundGroundApron.001",
+      "vertices": 888,
+      "ao_min": 0.30000762951094834,
+      "ao_mean": 0.9828400785770892,
+      "alpha_min": 1.0,
+      "alpha_max": 1.0
+    }
+  ]
+}

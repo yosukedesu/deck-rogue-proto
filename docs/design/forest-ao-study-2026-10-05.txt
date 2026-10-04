@@ -1,0 +1,46 @@
+AO response study, 2026-10-05
+
+Source Library libfile_74639ec6bfdc8191ae8702e714b87762 v0,
+file_0000000057d481fb90a98a5966ddf90f, DeckRogue_AO_Response_Study.zip.
+The cloud source reports 48 cosine hemisphere rays, radius .8m, bias .008m,
+distance weighting, RGB visibility .30..1 and alpha1. Transparent cards and
+water are excluded as opaque occluders. The bake includes bank_rock_12's
+runtime -.36m correction but its exported geometry has the original position.
+We retain exactly one runtime correction.
+
+Import is AO-only: Editor/FullStageAOStudy.Build imports the separate study
+FBX, uses world markers for basis correction, matches each current mesh vertex
+by position and normal, and exports 8-bit visibility arrays. It does not write
+any existing baked mesh, texture or material. All 17792 Unity vertices across
+15 batches matched with max position error 0; imported colors .3019608..1,
+RGB grayscale, alpha1. Original source FBX, UV repairs and normals unchanged.
+This sidecar is bound to the current v5 vertex order. Rebuild it whenever
+geometry changes; the current runtime count guard alone does not certify that
+a different mesh with the same count has the same positions/order.
+
+Run CHECKS=DeckRogue.EditorTools.FullStageAOStudy.Build scripts/unity-win.sh checks,
+then copy Assets/Resources/FullStage/ao_study.json from the disposable Unity
+project back to the repository before the next sync/build.
+
+Preview: -forest-preview night -forest-look <forest-ao-study-modest.json>.
+Only forestPreview.staticVertexAO=.45 differs from the accepted fixed night
+profile. Use 0 for reference. RGB visibility is feathered within world
+X[-9,-3], Z[-1,7], edge .75m. AO colors are applied before the existing rock
+placement correction so indices and spatial coordinates remain consistent.
+Only static indirect light uses AO; direct moon/lantern and marked attack
+contribution and opacity are unchanged. No new light or render pass.
+Only six meshes with nonwhite local AO are cloned; JSON is parsed once at
+scene construction, not each renderer or frame. Default preview remains off.
+
+Observed at .45: modest tightening of stone sides/base, not a broad quality
+transformation. Current lighting and coarse vertex distribution limit the
+visible effect. Do not claim that AO alone fixes the disconnected composition.
+The strong orange fire contribution remains visible in the peak comparison.
+Geometry remains 17004 triangles, 19 renderers, 16 materials; zero scene gate
+failures. No Android/GPU timing/full-tempo validation in this phase.
+
+Final validation after load optimization: Windows build succeeded in 22s,
+0 errors / 16 warnings. Re-captured AO0 and AO.45: 16 layouts each, zero
+errors, same camera. Scene construction single observations were 180.35ms
+(reference) and 194.51ms (AO); not a benchmark or GPU/frame-time claim.
+Normal saves: four hashes still match the isolation baseline.

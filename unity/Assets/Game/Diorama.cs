@@ -139,6 +139,24 @@ namespace DeckRogue.Game
         public static string ForestPreview => Autopilot.Arg("-forest-preview") ?? "";
         public static bool LegacyForestPreview => ForestPreview == "legacy";
         public static bool NightForestPreview => ForestPreview == "night";
+        static void PreviewVertexAO(MeshRenderer mr, Newtonsoft.Json.Linq.JObject aoData) {
+            if(aoData==null)return;
+            var mf=mr.GetComponent<MeshFilter>();if(mf==null||mr.name=="DistantAtmosphere")return;
+            var values=aoData[mf.sharedMesh.name] as Newtonsoft.Json.Linq.JArray;
+            if(values==null||values.Count!=mf.sharedMesh.vertexCount)throw new System.Exception("AO study vertex count mismatch: "+mf.sharedMesh.name);
+            var positions=mf.sharedMesh.vertices;var colors=new Color32[positions.Length];float minimum=1;int nonwhite=0;
+            for(int i=0;i<colors.Length;i++) {
+                var p=positions[i];float edge=Mathf.Min(Mathf.Min(p.x+9,-3-p.x),Mathf.Min(p.z+1,7-p.z));
+                float weight=Mathf.SmoothStep(0,1,Mathf.Clamp01(edge/.75f));
+                float visibility=Mathf.Lerp(1,values[i].Value<float>()/255f,weight);
+                byte v=(byte)Mathf.RoundToInt(visibility*255);colors[i]=new Color32(v,v,v,255);minimum=Mathf.Min(minimum,visibility);if(v<255)nonwhite++;
+            }
+            if(nonwhite>0) {
+                var mesh=UnityEngine.Object.Instantiate(mf.sharedMesh);mesh.name=mf.sharedMesh.name;_owned.Add(mesh);
+                mesh.colors32=colors;mf.sharedMesh=mesh;
+            }
+            Debug.Log("[AOStudy] runtime "+mr.name+" vertices="+colors.Length+" nonwhite="+nonwhite+" min="+minimum+" strength="+PreviewFloat("staticVertexAO",0));
+        }
         static float PreviewFloat(string key, float fallback) => _look?.Raw?["forestPreview"]?[key]?.Value<float>() ?? fallback;
         static bool _fullStage;
         static int _fullBatches;
@@ -312,6 +330,12 @@ namespace DeckRogue.Game
             {
                 var full = UnityEngine.Object.Instantiate(fullPrefab, Root, false);
                 var clones = new Dictionary<Material,Material>();
+                Newtonsoft.Json.Linq.JObject aoData=null;
+                if(NightForestPreview && PreviewFloat("staticVertexAO",0)>0) {
+                    var data=Resources.Load<TextAsset>("FullStage/ao_study");
+                    if(data==null)throw new System.Exception("AO study data missing");
+                    aoData=Newtonsoft.Json.Linq.JObject.Parse(data.text);
+                }
                 Vector3? lanternGround = null;
                 foreach(var mr in full.GetComponentsInChildren<MeshRenderer>()) {
                     mr.gameObject.layer = HD2DLayers.StageSet;
@@ -319,6 +343,7 @@ namespace DeckRogue.Game
                     if(NightForestPreview) {
                         if(mr.name.Contains("__Farfield") && PreviewFloat("hideFarfield",0)>0)mr.enabled=false;
                         if(mr.name=="DistantAtmosphere" && PreviewFloat("hideBackdrop",0)>0)mr.enabled=false;
+                        PreviewVertexAO(mr,aoData);
                         PreviewSeatRock(mr);
                     }
                     var mats = mr.sharedMaterials;
@@ -336,6 +361,7 @@ namespace DeckRogue.Game
                                 }
                                 var surfaceTexture=clone.GetTexture("_BaseMap");
                                 if(surfaceTexture!=null && surfaceTexture.name.EndsWith("_soft_v5")) {
+                                    clone.SetFloat("_VColorAO",Mathf.Clamp01(PreviewFloat("staticVertexAO",0)));
                                     clone.SetFloat("_StaticStudy",PreviewFloat("staticDirectionStudy",0));
                                     clone.SetFloat("_StaticHueStudy",PreviewFloat("staticHueStudy",0));
                                     clone.SetVector("_StaticStudyBounds",new Vector4(-9,-3,-1,7));
