@@ -44,7 +44,7 @@ namespace DeckRogue.Game
         /// <summary>レポートの置き場 (Android: /storage/emulated/0/Android/data/com.deckrogue.proto/files/reports = adb pull / USB で読める)</summary>
         public static string ReportsDir
         {
-            get { return Path.Combine(Application.persistentDataPath, "reports"); }
+            get { return Path.Combine(Autopilot.PlayerDataPath, "reports"); }
         }
 
         /// <summary>ログ行と意図の文言は表示層 (CardText) のもの</summary>

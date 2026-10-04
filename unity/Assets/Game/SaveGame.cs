@@ -19,7 +19,7 @@ namespace DeckRogue.Game
 {
     public static class SaveGame
     {
-        public static string Dir { get { return Path.Combine(Application.persistentDataPath, "save"); } }
+        public static string Dir { get { return Path.Combine(Autopilot.PlayerDataPath, "save"); } }
         public static string FilePath { get { return Path.Combine(Dir, "run.json"); } }
         static string BakPath { get { return FilePath + ".bak"; } }
         static string TmpPath { get { return FilePath + ".tmp"; } }

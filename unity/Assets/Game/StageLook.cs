@@ -218,6 +218,7 @@ namespace DeckRogue.Game
             public float CenterContrast = 0.18f, EdgeContrast = 0.62f;
             /// <summary>明暗の縁のやわらかさ (形の半径に対する割合)</summary>
             public float Softness = 0.16f;
+            public float Canopy = 0f; // 0 preserves legacy cookies; generated once, no per-frame cost.
         }
 
         public sealed class AmbientLook
@@ -576,6 +577,15 @@ namespace DeckRogue.Game
                 if (m == null || !m.HasProperty(R3B_idShaftGain)) continue;
                 var mo = matsRaw != null ? matsRaw[mkv.Key] as JObject : null;
                 m.SetFloat(R3B_idShaftGain, mo != null ? Mathf.Clamp(F(mo, "shaftGain", 1f), 0f, 4f) : 1f);
+                if (m.HasProperty("_ShaftTexture"))
+                {
+                    var breakup = mo != null ? mo["shaftTexture"] as JObject : null;
+                    m.SetVector("_ShaftTexture", new Vector4(
+                        breakup != null ? Mathf.Clamp01(F(breakup, "strength", 0f)) : 0f,
+                        breakup != null ? Mathf.Clamp(F(breakup, "frequency", 18f), 1f, 32f) : 18f,
+                        breakup != null ? Mathf.Clamp(F(breakup, "drift", 0.015f), 0f, 0.05f) : 0.015f,
+                        breakup != null ? Mathf.Clamp01(F(breakup, "floor", 0.25f)) : 0.25f));
+                }
             }
         }
 
@@ -1172,6 +1182,8 @@ namespace DeckRogue.Game
             if (L.Cookie)
             {
                 var pat = CookiePattern(size, d.Cookie.Seed, d.Cookie.Blobs, d.Cookie.CenterRadius, d.Cookie.CenterContrast, d.Cookie.EdgeContrast, d.Cookie.Softness);
+                if (d.Cookie.Canopy > 0f) AddCanopyCookie(pat, size, d.Cookie.Seed,
+                    d.Cookie.CenterRadius, d.Cookie.CenterContrast, d.Cookie.EdgeContrast, d.Cookie.Canopy);
                 var gain = flatten ? FlattenGain(E, eMin, L.FlattenFloor) : null;
                 // 灯の形 (W3 P22): 座席の帯 ∪ 中央の光の池 の外を暗く。帯の t は今の座席に合わせて LookDriver が焼き直す (灯の位置と向きは変えない = キャラのキーは同じ)
                 if (L.MaskOn)
@@ -2426,6 +2438,7 @@ namespace DeckRogue.Game
                 C.CenterContrast = F(c, "centerContrast", C.CenterContrast);
                 C.EdgeContrast = F(c, "edgeContrast", C.EdgeContrast);
                 C.Softness = F(c, "softness", C.Softness);
+                C.Canopy = Mathf.Clamp01(F(c, "canopy", C.Canopy));
             }
 
             var a = Obj(o, "ambient");
@@ -2735,6 +2748,27 @@ namespace DeckRogue.Game
         /// 外は edgeContrast。暗い形は blobs 個の不定形 (楕円の縁を3倍と5倍の波で崩す)。中央の外の環 (centerRadius〜centerRadius+0.3) に等分に置く。
         /// 同じ引数なら同じ値 (System.Random の種)
         /// </summary>
+        // Broad overlapping foliage clusters, not a regular stripe or fine grain. Take max
+        // rather than multiply shadows: central contrast remains bounded by CenterContrast.
+        internal static void AddCanopyCookie(double[] pattern, int size, int seed,
+            double centerRadius, double centerContrast, double edgeContrast, double strength)
+        {
+            double phase = new System.Random(seed ^ 0x4c3a).NextDouble() * Math.PI * 2.0;
+            for (int j = 0; j < size; j++)
+                for (int i = 0; i < size; i++)
+                {
+                    double x = (i + 0.5) / size * 2.0 - 1.0, y = (j + 0.5) / size * 2.0 - 1.0;
+                    double a = Math.Sin(x * 23.0 + y * 9.0 + phase + 0.8 * Math.Sin(y * 13.0));
+                    double b = Math.Sin(x * 11.0 - y * 19.0 - phase * 1.7);
+                    double c = Math.Sin(x * 37.0 + y * 27.0 + phase * 0.6);
+                    double foliage = SmoothStep(-0.45, 0.65, a * 0.55 + b * 0.35 + c * 0.1);
+                    double contrast = centerContrast + (edgeContrast - centerContrast) *
+                        SmoothStep(centerRadius, centerRadius + 0.14, Math.Sqrt(x*x + y*y));
+                    int at = j * size + i;
+                    pattern[at] = 1.0 - Math.Max(1.0 - pattern[at], contrast * strength * foliage);
+                }
+        }
+
         internal static double[] CookiePattern(int size, int seed, int blobs, double centerRadius, double centerContrast, double edgeContrast, double softness)
         {
             var rnd = new System.Random(seed);

@@ -88,6 +88,18 @@ namespace DeckRogue.Game
         // STATE に det=1 と書いても同じ (-state の中身を起動の前に読む)。既存のキーの意味は変えない
         /// <summary>-det で起動した (決定的な撮影)</summary>
         public static bool Det { get; private set; }
+
+        // Capture sessions must never delete/overwrite the player's normal save or reports.
+        // Command line is available before GameRoot/SaveGame startup, unlike Awake state.
+        public static string PlayerDataPath
+        {
+            get
+            {
+                var shots = Arg("-shots");
+                return !string.IsNullOrEmpty(Arg("-autopilot")) && !string.IsNullOrEmpty(shots)
+                    ? Path.Combine(Path.GetFullPath(shots), "player-data") : Application.persistentDataPath;
+            }
+        }
         const int DetFps = 60;
         const int DetRandomSeed = 20260930;
         const int DetSettleFrames = 90;

@@ -131,7 +131,7 @@
     "lightLayers": "all",
     "shadowLayers": "environment"
   },
-  "cookie": {
+  "cookie": { "canopy": 0,
     "_doc": "木漏れ日のクッキー (256×256・linear・舞台の灯に付ける)。大きく不定形な明暗を blobs 個。中央 (半径 centerRadius。帯の四隅は lamp.bandFill) はコントラスト centerContrast 以下、外は edgeContrast。等間隔の粒は作らない",
     "size": 256,
     "seed": 20260930,
@@ -317,7 +317,7 @@
       "receive": 0.25,
       "shadowStrength": 1.0
     },
-    "glow": {
+    "glow": { "shaftTexture": { "strength": 0 },
       "_doc": "光の面 (霧の面・月光の筋。StageShaft) の色と強さの上書き (W3 の統合・本家の色彩。書かなければ act1_layout.json の surfaces.glow の値)",
       "tint": [
         0.57,

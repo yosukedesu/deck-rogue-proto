@@ -598,7 +598,7 @@ namespace DeckRogue.Game
         /// </summary>
         public static void ZoomPunch(float units, float dur = 0.32f)
         {
-            if (_driver == null) return;
+            if (_driver == null || StageMotion.LightsEveryHit) return;
             _driver.PushAmp = Mathf.Max(_driver.PushAmp, units);
             _driver.PushT = Mathf.Max(0.05f, dur); _driver.PushDur = _driver.PushT;
         }

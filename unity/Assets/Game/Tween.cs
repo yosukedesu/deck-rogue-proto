@@ -275,6 +275,7 @@ namespace DeckRogue.Game
         public static void SlashFx(RectTransform layer, Vector2 pos, float angle, Color color, bool big = false, float scale = 1f)
         {
             if (layer == null) return;
+            if (CodexBattleFx.Slash(layer, pos, angle, color, big, scale)) return;
             float len = (big ? 1.35f : 1f) * 340f * scale;
             var white = new Color(1f, 1f, 1f, 1f);
             Streak(layer, pos, angle, color, len, 1f, 0.3f, 0f);
@@ -319,6 +320,8 @@ namespace DeckRogue.Game
             if (layer == null) return;
             bool last = hitTotal > 1 && hitIndex == hitTotal - 1;
             float scale = last ? 1.2f : 1f;
+            if ((style == "spell" || style == "light" || style == "spark") &&
+                CodexBattleFx.Spell(layer, pos, color, big, scale, style == "spark")) return;
             float sign = (hitIndex % 2 == 0) ? -1f : 1f;                       // 偶数=振り下ろし (角度マイナス)・奇数=振り上げ
             float angle = sign * UnityEngine.Random.Range(22f, 48f);
             var white = new Color(1f, 1f, 1f, 1f);
@@ -432,6 +435,7 @@ namespace DeckRogue.Game
         public static void CastFx(RectTransform layer, Vector2 pos, Color color)
         {
             if (layer == null) return;
+            if (CodexBattleFx.Cast(layer, pos, color)) return;
             Pop(layer, pos + new Vector2(20f, 10f), ThemeFx.Glow(), new Color(color.r, color.g, color.b, 0.8f), 150f, 0.3f, 1.2f, 0.28f, 0f, 0f);
             Pop(layer, pos + new Vector2(20f, 10f), ThemeFx.Glow(), new Color(1f, 1f, 0.97f, 0.9f), 70f, 0.5f, 1.0f, 0.16f, 0f, 0.02f);
             RingBurst(layer, pos + new Vector2(20f, 0f), new Color(color.r, color.g, color.b, 0.6f), 130f, 0.3f);
@@ -477,6 +481,7 @@ namespace DeckRogue.Game
         public static void GuardFx(RectTransform layer, Vector2 pos, string style, float dir = 1f)
         {
             if (layer == null) return;
+            if (CodexBattleFx.Guard(layer, pos, dir)) return;
             var white = new Color(1f, 1f, 1f, 1f);
             var light = new Color(PaperFx.SkyLight.r, PaperFx.SkyLight.g, PaperFx.SkyLight.b, 1f);
             Vector2 front = pos + new Vector2(62f * dir, 4f);   // 盾の面は体より前 (攻撃が来る側) に構える
@@ -878,6 +883,54 @@ namespace DeckRogue.Game
                 Sync(rt, b);
                 float a = k < 0.35f ? Apply(Ease.OutQuad, k / 0.35f) : 1f - Apply(Ease.OutCubic, (k - 0.35f) / 0.65f);
                 WritePos(rt, b, b.Pos + dir * a);
+            }, Ease.Linear, () => Release(rt, b));
+        }
+
+        // Anticipation -> launch -> impact hold -> follow-through -> settle. The peak is
+        // aligned to Presenter's 0.13s player impact / 0.11s enemy impact, not a late nudge.
+        public static void AttackStep(RectTransform rt, Vector2 dir, float impact = 0.13f, float hop = 12f)
+        {
+            if (rt == null) return;
+            var b = Acquire(rt, true, true, false);
+            float duration = impact + 0.28f;
+            Run(duration, k =>
+            {
+                if (rt == null) return;
+                Sync(rt, b);
+                float t = k * duration, move, squash;
+                if (t < impact * 0.45f)
+                {
+                    float q = t / (impact * 0.45f);
+                    move = -0.14f * q; squash = -0.045f * q;
+                }
+                else if (t < impact)
+                {
+                    float q = (t - impact * 0.45f) / (impact * 0.55f);
+                    move = Mathf.Lerp(-0.14f, 1f, Apply(Ease.OutCubic, q)); squash = 0.035f * Mathf.Sin(q * Mathf.PI);
+                }
+                else if (t < impact + 0.035f) { move = 1f; squash = -0.025f; }
+                else
+                {
+                    float q = Mathf.Clamp01((t - impact - 0.035f) / 0.245f);
+                    move = 1f - Apply(Ease.InOutQuad, q); squash = -0.025f * (1f - q);
+                }
+                float lift = hop * Mathf.Sin(Mathf.Clamp01((t - impact * 0.45f) / (impact * 0.55f)) * Mathf.PI);
+                WritePos(rt, b, b.Pos + dir * move + Vector2.up * lift);
+                WriteScale(rt, b, new Vector3(b.Scale.x * (1f - squash * 0.5f), b.Scale.y * (1f + squash), b.Scale.z));
+            }, Ease.Linear, () => Release(rt, b));
+        }
+
+        public static void Recoil(RectTransform rt, float direction, bool heavy)
+        {
+            if (rt == null) return;
+            var b = Acquire(rt, true, false, true);
+            Run(heavy ? 0.32f : 0.23f, k =>
+            {
+                if (rt == null) return;
+                Sync(rt, b);
+                float kick = k < 0.2f ? Apply(Ease.OutCubic, k / 0.2f) : 1f - Apply(Ease.InOutQuad, (k - 0.2f) / 0.8f);
+                WritePos(rt, b, b.Pos + new Vector2(direction * (heavy ? 30f : 16f) * kick, 0));
+                WriteRot(rt, b, b.Rot * Quaternion.Euler(0, 0, -direction * (heavy ? 4f : 2f) * kick));
             }, Ease.Linear, () => Release(rt, b));
         }
 

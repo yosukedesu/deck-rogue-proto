@@ -36,7 +36,8 @@ namespace DeckRogue.EditorTools
             bool normal = name.EndsWith("_n", System.StringComparison.Ordinal);
             bool emission = name.EndsWith("_e", System.StringComparison.Ordinal);
             // 札の裏 (2026-10-04): ドットでなく「紙」側のなめらかな絵 (Gemini の工芸風)。424×632 を 200×290 前後へ縮めるので Bilinear＋ミップ (Point だと真鍮の細線がちらつく)
-            bool smooth = stage || name == "cardback";
+            bool generatedFx = name == "codex-vfx-atlas";
+            bool smooth = stage || name == "cardback" || generatedFx;
             imp.textureType = TextureImporterType.Sprite;
             imp.spriteImportMode = SpriteImportMode.Single;
             imp.filterMode = smooth ? FilterMode.Bilinear : FilterMode.Point;
@@ -59,6 +60,15 @@ namespace DeckRogue.EditorTools
             int border = name == "panel" || name.StartsWith("btn_") ? 6 : name.StartsWith("card_") ? 12
                 : name == "paper_panel" ? 14 : name == "paper_tag" ? 10 : name == "paper_button" ? 12 : name == "paper_card" ? 16 : 0;
             if (border > 0) imp.spriteBorder = new Vector4(border, border, border, border);
+            if (generatedFx)
+            {
+                // Four atlas cells sampled by RawImage. Preserve alpha and cell boundaries.
+                imp.textureType = TextureImporterType.Default;
+                imp.maxTextureSize = 1024;
+                imp.npotScale = TextureImporterNPOTScale.None;
+                imp.mipmapEnabled = false;
+                imp.isReadable = false;
+            }
         }
     }
 }

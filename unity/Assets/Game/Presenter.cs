@@ -1832,6 +1832,7 @@ namespace DeckRogue.Game
                             Tween.PlayerHitFx(fx, hit, style, streak, big, hp != null ? hp.Index : 0, hp != null ? hp.Total : 1, fromP);
                             if (StageMotion.LightsEveryHit && GfxQuality.Level != GfxLevel.Low) Tween.HitGlow(fx, hit, streak, big, GfxQuality.Level == GfxLevel.High);   // 2026-10-03 ユーザー「攻撃エフェクト自体も発光して」(箱庭の動きが点いている幕だけ)
                             Stage.Flash("enemy" + ei);
+                            if (!volleyTail) Tween.Recoil(spr, 1f, big);
                         }
                         // 急所: 筋と衝撃線が真鍮色 (big 扱い = 交差する2本目と針10) になり、真鍮の輪が広がる (旧: 星の絵 = 2026-09-17 ユーザー「星型がダサい」で撤去)
                         if (crit && !guardedE) Tween.RingBurst(fx, hit, PaperFx.BrassLight, 200f, 0.35f);
@@ -1844,7 +1845,11 @@ namespace DeckRogue.Game
                         // ⑫ カメラ (2026-09-17): 大技は舞台がぐっと寄る。とどめ (戦闘を決めた一撃) はヒットストップ＝時間が一瞬凍って、大きく寄る
                         bool finishing = ctx != null && ctx.FinishingBlow;
                         if (finishing) { Tween.HitStop(0.12f, 0.3f); Stage.ZoomPunch(1.1f, 0.6f); Stage.Shake(12f, 0.35f); Tween.RingBurst(fx, hit, new Color(1f, 1f, 0.95f, 0.9f), 260f, 0.5f); }
-                        else if (big && !guardedE && !volleyTail) Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
+                        else if (big && !guardedE && !volleyTail)
+                        {
+                            if (hp == null || hp.Total <= 1 || hp.Index == hp.Total - 1) Tween.HitStop(0.28f, 0.055f);
+                            Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
+                        }
                         // 舞台の技の光 (2026-09-30 HD-2D 見本 P13): 2Dの当たりと同じ所に点光源。色は当たりの形、大きい当たり (15以上・急所) は強く影あり (PC)。
                         // とどめはその代わりに白・0.3秒・影あり (1つだけ灯す)。stage=diorama だけ・old では何もしない (乱数も Tween も使わない)
                         // 段2 (2026-10-03 レーン M): 寄る当たり (計画 ctx.Motion) と寄っている敵への当たりは、寄り・寄りの技の光・火花 (StageMotion) へ。
@@ -1900,7 +1905,11 @@ namespace DeckRogue.Game
                         float hitDelay = 0f;
                         if (atkSpr != null)
                         {
-                            if (!ranged) Tween.Lunge(atkSpr, new Vector2(-90f, 12f));
+                            if (!ranged)
+                            {
+                                Tween.AttackStep(atkSpr, new Vector2(UiKit.Phone ? -72f : -105f, 0f), 0.11f, style == "fang" ? 20f : 8f);
+                                hitDelay = 0.11f;
+                            }
                             else
                             {
                                 Tween.Lunge(atkSpr, new Vector2(18f, 0f), 0.2f);   // 反動 (少し後ろへ)
@@ -1925,7 +1934,7 @@ namespace DeckRogue.Game
                             if (dd.HpLoss > 0)
                             {
                                 Stage.PlayAnim("player", "hurt");
-                                if (pSprC != null) Tween.Lunge(pSprC, new Vector2(-36f, 0f));   // のけぞり (後ろへ小さく)
+                                if (pSprC != null) Tween.Recoil(pSprC, -1f, dd.HpLoss >= 12);   // のけぞり (後ろへ小さく)
                                 Stage.Shake(Mathf.Min(18f, 4f + dd.HpLoss * 0.7f) * (style == "blunt" ? 1.3f : 1f), 0.3f);
                                 Stage.Flash("player");
                                 float hurtA = Mathf.Min(0.35f, 0.1f + dd.HpLoss * 0.015f);
@@ -2106,7 +2115,7 @@ namespace DeckRogue.Game
                         Stage.PlayAnim("player", "attack");
                         var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
                         // 振り抜きの瞬間 (0.07s): 踏み込み + 体が少し沈む + 画面が揺れる = 斧の重さ
-                        Tween.After(0.11f, () => { if (pSpr != null) Tween.Lunge(pSpr, new Vector2(64f, -6f)); Stage.Shake(7f, 0.18f); });
+                        Tween.AttackStep(pSpr, new Vector2(UiKit.Phone ? 72f : 100f, -3f));
                     }
                     else if (blk) Stage.PlayAnim("player", "block");
                     break;
