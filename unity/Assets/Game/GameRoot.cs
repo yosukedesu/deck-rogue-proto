@@ -321,6 +321,7 @@ namespace DeckRogue.Game
                 var finalSnapshot = Rs.Combat;
                 var endedRs = Rs;
                 if (fromWindow && Battle != null) Battle.CloseReactionWindow();
+                if (Stage.CombatWorld && Battle != null && Battle.LastPlayedUid != null) Battle.SyncHand(this, finalSnapshot, true);
                 Presenter.PlaySequenced(this, finalSnapshot, delegate
                 {
                     // 決着の余韻 (2026-09-17 ⑧): 勝利の帯と戦いの記録／敗北の暗転 (音もそこで鳴る)。終わってから報酬/敗北の画面へ組み直す
@@ -343,10 +344,11 @@ namespace DeckRogue.Game
             if (Rs == null || Rs.Phase != RunPhases.Departure) DepartureChoiceIndex = -1;
             if (Rs == null || Rs.Phase != RunPhases.Combat) PreferredTarget = -1;
             // 演出キュー: 敵フェーズを含むコマンドは古い盤面の上で順に見せてから組み直す。それ以外は即組み直して差分を浮き文字に
-            if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat && ScreenRoot != null && ScreenRoot.childCount > 0 && Presenter.HasEnemyPhase(Rs.Combat))
+            if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat && ScreenRoot != null && ScreenRoot.childCount > 0 && (Presenter.HasEnemyPhase(Rs.Combat) || (Stage.CombatWorld && Presenter.HasNewEvents(Rs.Combat))))
             {
                 var snapshot = Rs.Combat;
                 if (fromWindow && Battle != null) Battle.CloseReactionWindow();
+                if (Stage.CombatWorld && Battle != null && Battle.LastPlayedUid != null) Battle.SyncHand(this, snapshot, true);
                 Presenter.PlaySequenced(this, snapshot, delegate { if (Rs != null && ReferenceEquals(Rs.Combat, snapshot)) Rebuild(); });
                 return;
             }

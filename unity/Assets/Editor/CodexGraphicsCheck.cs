@@ -42,6 +42,12 @@ namespace DeckRogue.EditorTools
                 Require(atlas.filterMode==FilterMode.Bilinear && atlas.mipmapCount==1,"atlas filtering");
                 Require(!atlas.isReadable,"atlas CPU copy should be released");
                 Require(CodexBattleFx.Ready,"VFX loader failed");
+                var worldFx=Shader.Find("DeckRogue/WorldBattleFx");
+                Require(worldFx!=null && !ShaderUtil.ShaderHasError(worldFx),"world VFX shader compile");
+                var unit=Shader.Find("DeckRogue/StageUnitLit");
+                var material=new Material(unit);
+                Require(material.FindPass("ShadowCaster")>=0 && material.FindPass("DepthOnly")>=0,"unit depth/shadow passes");
+                UnityEngine.Object.DestroyImmediate(material);
                 Debug.Log("[CodexGraphicsCheck] PASS: deterministic canopy, legacy off, bounded seat contrast, visible coverage, atlas load/filter/memory; changed="+changed);
             }
             catch(Exception e) { Debug.LogError("[CodexGraphicsCheck] FAIL: "+e); code=1; }

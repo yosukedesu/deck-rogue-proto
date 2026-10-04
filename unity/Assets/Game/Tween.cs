@@ -196,6 +196,7 @@ namespace DeckRogue.Game
         /// </summary>
         public static void HitStop(float scale, float sec)
         {
+            if (Stage.CombatWorld) return; // Local approach/impact holds never freeze UI or game time.
             I.StartCoroutine(HitStopCo(scale, sec));
         }
 

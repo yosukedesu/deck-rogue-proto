@@ -273,6 +273,15 @@ namespace DeckRogue.Game
                 try { BuildPart(ctx, p); }
                 catch (Exception e) { missing.Add("p" + p.Index + ":" + p.Kind + " 例外 " + e.Message); Debug.LogWarning("[Diorama] 部品 " + p.Index + " (" + p.Kind + ") で例外: " + e); }
             }
+            if (layout.Act == 1 && layout.Parts.Exists(p => p.Name == "codex-lantern-plinth"))
+            {
+                var lamp = new GameObject("codex-gate-lantern");
+                lamp.transform.SetParent(Root, false);
+                lamp.transform.localPosition = OnPath(-4.8f, 7.7f, 1.65f);
+                var light = lamp.AddComponent<Light>();
+                light.type = LightType.Point; light.color = new Color(1f, 0.55f, 0.25f);
+                light.intensity = 2.8f; light.range = 3.2f; light.shadows = LightShadows.None;
+            }
             if (opt.Merge) FlushGroups(ctx);
 
             if (opt.Merge && opt.StaticBatch && Application.isPlaying && layout.StaticBatch)

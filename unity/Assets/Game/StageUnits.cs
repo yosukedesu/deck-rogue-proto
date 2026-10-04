@@ -131,6 +131,8 @@ namespace DeckRogue.Game
                 e["lit"] = u.IsLit;
                 e["art"] = u.ArtName;
                 e["anim"] = u.Anim + "#" + u.Frame;
+                e["combatOffset"] = new float[] {u.CombatOffset.x,u.CombatOffset.y,u.CombatOffset.z};
+                e["recoilOffset"] = new float[] {u.CombatRecoilOffset.x,u.CombatRecoilOffset.y,u.CombatRecoilOffset.z};
                 // 矩形 (LateUpdate が読んだ角) と、板の四隅をレイアウト用のカメラで写した箱
                 var rect = new Vector4(u.RectMin.x, u.RectMin.y, u.RectMax.x, u.RectMax.y);
                 var t = u.transform;
@@ -1229,6 +1231,7 @@ namespace DeckRogue.Game
         {
             public RectTransform Rect; public Image Img; public Material Mat; public MeshRenderer Rend; public float FlashT; public float DissolveK; public float Depth; public Transform Shadow;
             public Transform Halo; public Vector2 HaloUv; public float FeetPad;
+            public Vector3 CombatOffset, CombatRecoilOffset; public int MotionVersion, RecoilVersion;
             public float HeroLight = HeroAmbient;   // リーダーの板の主役の照明 (絵ごと。HeroAmbientFor)。敵と人形では使わない
             // コマ送り (2026-09-09 このはの戦闘アニメ): 待機はループ、攻撃/被弾/防御は1回流して待機へ戻る。ドットは拡大・回転せず絵を差し替えるだけ
             public Texture2D BaseTex;
@@ -1558,6 +1561,7 @@ namespace DeckRogue.Game
                     UsedDepth = Depth;
                 }
                 UsedK = k;
+                if (dio) pos += CombatOffset + CombatRecoilOffset;
                 var ground = pos;
                 pos -= _up * (FeetPad * h * k);   // 絵の余白ぶん下げる = 足が地面の点に着く (影は地面の点のまま)
                 float breathe = 0f;
@@ -1589,7 +1593,7 @@ namespace DeckRogue.Game
                 if (IsLit) { var rimArt = CharExtras().ArtFor(ArtName); if (rimArt != null && rimArt.Rim >= 0f) rim = rimArt.Rim; }   // 三周目 直しの輪4: 絵ごとのリムが勝つ
                 Mat.SetFloat("_Rim", rim);
                 if (FlashT > 0f) FlashT -= Time.deltaTime;
-                Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * 0.85f);
+                Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * (dio ? 0.10f : 0.85f));
                 Mat.SetFloat("_Dissolve", DissolveK);
                 SyncShadowMode(dio);
                 if (Shadow != null)

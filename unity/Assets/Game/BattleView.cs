@@ -1564,6 +1564,13 @@ namespace DeckRogue.Game
 
             if (inSet) { Audio.Key("CardSet"); FlyTo(g, rt, "setslot" + setIdx, delay, 0.3f, true, 0.5f); return; }
             if (inPerm) { FlyTo(g, rt, "player", delay, 0.3f, true, 0.4f); return; }
+            if (uid == LastPlayedUid && Stage.CombatWorld)
+            {
+                // Commit card close to the hand; clear the action stage before contact.
+                Audio.Key("CardPlayed");
+                if (inExhaust) Shatter(rt); else FlyTo(g, rt, "pile-discard", 0f, 0.16f, true, 0.22f);
+                return;
+            }
             if (uid == LastPlayedUid)
             {
                 // プレイ: 対象の敵 (無ければ中央上) へ飛んでから、消滅なら砕け、それ以外は捨て札へ
