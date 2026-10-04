@@ -558,9 +558,9 @@ namespace DeckRogue.Game
             if (!body.HasValue) return;
             var p = body.Value;
             if (L.TowardCamera > 0f) { var to = _cuPos - p; if (to.sqrMagnitude > 1e-6f) p += to.normalized * L.TowardCamera; }
-            _lightSeq = StageFx.MotionLight(p, c, L.Intensity * mul, L.Range, L.Dur, L.Hold, L.Shadow, "motion:" + (style ?? "slash"), key, _lightSeq);
+            _lightSeq = StageFx.MotionLight(p, c, L.Intensity * mul, L.Range, L.Dur, L.Hold, L.Shadow && GfxQuality.Level == GfxLevel.High, "motion:" + (style ?? "slash"), key, _lightSeq);
             var w = L.Wall;
-            if (w.On)
+            if (w.On && GfxQuality.Level != GfxLevel.Low)   // 画質の段: 軽量は壁の光なし
             {
                 if (!_cuWallSet)
                 {
@@ -733,6 +733,8 @@ namespace DeckRogue.Game
         {
             var sp = Tune.Sparks;
             int n = Mathf.Clamp(sp.Count, 0, 300);
+            var gq = GfxQuality.Level;   // 画質の段: 標準は 1/3・軽量は火花なし
+            if (gq == GfxLevel.Low) n = 0; else if (gq == GfxLevel.Standard) n = Mathf.Max(1, n / 3);
             if (n <= 0) return;
             var body = StageFx.UnitPoint(key, new Vector2(0.5f, sp.Height));
             if (!body.HasValue) return;

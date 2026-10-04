@@ -106,6 +106,20 @@ namespace DeckRogue.Game
                 }
             }
 
+            // ---- 画質 (2026-10-04: 技の光・火花・エフェクトの暈。自動 = スマホは戦闘の重さで下げる) ----
+            Section(inner, "画質");
+            var qRow = Row(inner);
+            int qm = GfxQuality.Mode;
+            string[] qNames = { "自動", "高", "標準", "軽量" };
+            for (int qi = 0; qi < 4; qi++)
+            {
+                int val = qi - 1;
+                var qb = UiKit.Btn(qRow, qNames[qi], delegate { GfxQuality.Mode = val; g.Rebuild(); }, 17, true, qm == val ? PaperFx.BrassLight : (Color?)null);
+                BattleScreen.SetSize(qb, 130f, 46f);
+            }
+            var qHint = UiKit.Txt(qRow, GfxQuality.IsAuto ? "いま " + GfxQuality.Name(GfxQuality.Level) : "", 14, UiKit.ColDim, TextAnchor.MiddleLeft);
+            UiKit.Le(qHint, 120f, 46f, -1f, 46f);
+
             // ---- 音量 ----
             Section(inner, "音量");
             Slider(inner, "全体", Audio.Master, v => { Audio.Master = v; }, true);

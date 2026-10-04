@@ -1830,7 +1830,7 @@ namespace DeckRogue.Game
                             var pSprH = g.Battle != null ? g.Battle.PlayerSprite() : null;
                             Vector2 fromP = pSprH != null ? Tween.CenterIn(pSprH, fx) : hit + new Vector2(-400f, 0f);
                             Tween.PlayerHitFx(fx, hit, style, streak, big, hp != null ? hp.Index : 0, hp != null ? hp.Total : 1, fromP);
-                            if (StageMotion.LightsEveryHit) Tween.HitGlow(fx, hit, streak, big);   // 2026-10-03 ユーザー「攻撃エフェクト自体も発光して」(箱庭の動きが点いている幕だけ)
+                            if (StageMotion.LightsEveryHit && GfxQuality.Level != GfxLevel.Low) Tween.HitGlow(fx, hit, streak, big, GfxQuality.Level == GfxLevel.High);   // 2026-10-03 ユーザー「攻撃エフェクト自体も発光して」(箱庭の動きが点いている幕だけ)
                             Stage.Flash("enemy" + ei);
                         }
                         // 急所: 筋と衝撃線が真鍮色 (big 扱い = 交差する2本目と針10) になり、真鍮の輪が広がる (旧: 星の絵 = 2026-09-17 ユーザー「星型がダサい」で撤去)

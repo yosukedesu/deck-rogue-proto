@@ -638,6 +638,7 @@ namespace DeckRogue.Game
             {
                 if (_cam == null) return;
                 StageMotion.Tick(Time.deltaTime);   // 段2 (レーン M): 寄り・暗転・板の時計 (何も走っていなければ何もしない。門が偽なら一度も走らない)
+                var gr = GameRoot.I; GfxQuality.Sample(Time.unscaledDeltaTime, gr != null && gr.Rs != null && gr.Rs.Phase == DeckRogue.Engine.Generated.RunPhases.Combat);   // 画質の自動 (スマホの箱庭の戦闘だけ)
                 // 画面の切り欠き・safeArea が変わったら (折りたたみ端末・マルチウィンドウ)、2フレーム後に組み直す (左端の部品が UiKit.CutoutLeft で穴を避ける。2026-09-29 p10)。
                 // Screen.cutouts は配列を作るので 30 フレームに1回だけ見る (向きは固定なので実質は起動時の1回)
                 if (!_edgeSeen || Time.frameCount % 30 == 0)
