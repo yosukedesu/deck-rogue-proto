@@ -1,0 +1,365 @@
+[
+  {
+    "mesh": "StageBatch_00",
+    "materials": [
+      "Moss pixel limestone"
+    ],
+    "sources": [
+      "Gate_pier_-1_00",
+      "Gate_pier_-1_03",
+      "Gate_foot_-1",
+      "Gate_pier_1_00",
+      "Gate_pier_1_03",
+      "Gate_foot_1",
+      "Gate_arch_stone_02",
+      "Gate_arch_stone_05",
+      "Gate_arch_stone_06",
+      "Gate_arch_stone_07",
+      "Gate_arch_stone_08",
+      "Gate_arch_stone_09",
+      "Gate_fallen_00",
+      "Gate_fallen_01",
+      "Gate_fallen_02",
+      "Stair_module_00",
+      "Pillar_course_014",
+      "Paving_slab_00",
+      "Paving_slab_02",
+      "Paving_slab_04",
+      "Rock_fragment_00",
+      "Rock_fragment_01",
+      "Rock_fragment_02",
+      "broken_parapet_L_0",
+      "broken_parapet_L_1",
+      "broken_parapet_L_2",
+      "broken_parapet_L_3",
+      "broken_parapet_R_0",
+      "broken_parapet_R_1",
+      "broken_parapet_R_2",
+      "bank_rock_00",
+      "bank_rock_03",
+      "bank_rock_06",
+      "bank_rock_09",
+      "bank_rock_12",
+      "bank_rock_15",
+      "bank_rock_18",
+      "bank_rock_21",
+      "bank_rock_24",
+      "bank_rock_27",
+      "bank_rock_30",
+      "bank_rock_33",
+      "bank_rock_36",
+      "bank_rock_39",
+      "bank_rock_42",
+      "lantern_pedestal",
+      "Stream_edge_rock_00",
+      "Stream_edge_rock_03",
+      "Stream_edge_rock_06",
+      "Stream_edge_rock_09",
+      "Stream_edge_rock_12",
+      "Stream_edge_rock_15",
+      "Stream_edge_rock_18",
+      "Stream_edge_rock_21",
+      "Stream_edge_rock_24",
+      "Stream_edge_rock_27",
+      "Stream_edge_rock_30",
+      "Stream_edge_rock_33",
+      "Stream_edge_rock_36",
+      "Stream_edge_rock_39",
+      "Stream_edge_rock_42",
+      "Stream_edge_rock_45",
+      "Ground_inset_stone_00",
+      "Ground_inset_stone_03",
+      "Ground_inset_stone_06",
+      "Ground_inset_stone_09",
+      "Ground_inset_stone_12",
+      "Ground_inset_stone_15",
+      "Ground_inset_stone_39"
+    ]
+  },
+  {
+    "mesh": "StageBatch_01",
+    "materials": [
+      "Weathered grey limestone"
+    ],
+    "sources": [
+      "Gate_pier_-1_01",
+      "Gate_pier_-1_02",
+      "Gate_impost_-1",
+      "Gate_pier_1_01",
+      "Gate_pier_1_02",
+      "Gate_impost_1",
+      "Gate_arch_stone_00",
+      "Gate_arch_stone_01",
+      "Gate_arch_stone_03",
+      "Gate_arch_stone_04",
+      "Gate_arch_stone_10",
+      "Stair_module_01",
+      "Stair_module_02",
+      "Pillar_course_040",
+      "Pillar_course_082",
+      "Pillar_course_144",
+      "Pillar_course_206",
+      "Pillar_broken_cap",
+      "Paving_slab_01",
+      "Paving_slab_03",
+      "bridge_flag_0",
+      "bridge_flag_1",
+      "bridge_flag_2",
+      "bridge_flag_3",
+      "Ground_inset_stone_01",
+      "Ground_inset_stone_02",
+      "Ground_inset_stone_04",
+      "Ground_inset_stone_07",
+      "Ground_inset_stone_08",
+      "Ground_inset_stone_10",
+      "Ground_inset_stone_11",
+      "Ground_inset_stone_13",
+      "Ground_inset_stone_14",
+      "Ground_inset_stone_17",
+      "Ground_inset_stone_20",
+      "Ground_inset_stone_22",
+      "Ground_inset_stone_23",
+      "Ground_inset_stone_25",
+      "Ground_inset_stone_28",
+      "Ground_inset_stone_44",
+      "Bridge_Abutment_0",
+      "Bridge_Abutment_1"
+    ]
+  },
+  {
+    "mesh": "StageBatch_02",
+    "materials": [
+      "earth_128",
+      "moss_turf_128"
+    ],
+    "sources": [
+      "GROUND__flat_battle_zone"
+    ]
+  },
+  {
+    "mesh": "StageBatch_03",
+    "materials": [
+      "Still forest water"
+    ],
+    "sources": [
+      "stream_ribbon"
+    ]
+  },
+  {
+    "mesh": "StageBatch_04",
+    "materials": [
+      "cliff_strata_128"
+    ],
+    "sources": [
+      "bank_rock_01",
+      "bank_rock_02",
+      "bank_rock_04",
+      "bank_rock_05",
+      "bank_rock_07",
+      "bank_rock_08",
+      "bank_rock_10",
+      "bank_rock_11",
+      "bank_rock_13",
+      "bank_rock_14",
+      "bank_rock_16",
+      "bank_rock_17",
+      "bank_rock_19",
+      "bank_rock_20",
+      "bank_rock_22",
+      "bank_rock_23",
+      "bank_rock_25",
+      "bank_rock_26",
+      "bank_rock_28",
+      "bank_rock_29",
+      "bank_rock_31",
+      "bank_rock_32",
+      "bank_rock_34",
+      "bank_rock_35",
+      "bank_rock_37",
+      "bank_rock_38",
+      "bank_rock_40",
+      "bank_rock_41",
+      "bank_rock_43"
+    ]
+  },
+  {
+    "mesh": "StageBatch_05",
+    "materials": [
+      "lantern_glass_emission"
+    ],
+    "sources": [
+      "lantern_light"
+    ]
+  },
+  {
+    "mesh": "StageBatch_06",
+    "materials": [
+      "bronze_128"
+    ],
+    "sources": [
+      "lantern_bar",
+      "lantern_bar.001",
+      "lantern_bar.002",
+      "lantern_bar.003",
+      "lantern_roof"
+    ]
+  },
+  {
+    "mesh": "StageBatch_07",
+    "materials": [
+      "TreeCutout_0"
+    ],
+    "sources": [
+      "ForestTree_Card_00",
+      "ForestTree_Card_05",
+      "ForestTree_Card_11"
+    ]
+  },
+  {
+    "mesh": "StageBatch_08",
+    "materials": [
+      "TreeCutout_1"
+    ],
+    "sources": [
+      "ForestTree_Card_01",
+      "ForestTree_Card_03",
+      "ForestTree_Card_06",
+      "ForestTree_Card_08",
+      "ForestTree_Card_10",
+      "ForestTree_Card_13"
+    ]
+  },
+  {
+    "mesh": "StageBatch_09",
+    "materials": [
+      "TreeCutout_2"
+    ],
+    "sources": [
+      "ForestTree_Card_02",
+      "ForestTree_Card_07",
+      "ForestTree_Card_09"
+    ]
+  },
+  {
+    "mesh": "StageBatch_10",
+    "materials": [
+      "TreeCutout_3"
+    ],
+    "sources": [
+      "ForestTree_Card_04",
+      "ForestTree_Card_12"
+    ]
+  },
+  {
+    "mesh": "StageBatch_11",
+    "materials": [
+      "cliff_strata_128",
+      "moss_turf_128"
+    ],
+    "sources": [
+      "Bank_Ruins",
+      "Bank_Middle",
+      "Bank_Right",
+      "Bank_Far"
+    ]
+  },
+  {
+    "mesh": "StageBatch_12",
+    "materials": [
+      "cliff_strata_128",
+      "Moss pixel limestone"
+    ],
+    "sources": [
+      "Front_Cliff_Strata"
+    ]
+  },
+  {
+    "mesh": "StageBatch_13",
+    "materials": [
+      "moss_turf_128"
+    ],
+    "sources": [
+      "Farfield_Ground_Back",
+      "Farfield_Ground_Side_0",
+      "Farfield_Ground_Side_1"
+    ]
+  },
+  {
+    "mesh": "StageBatch_14",
+    "materials": [
+      "FoliageCutout_FernAtlas"
+    ],
+    "sources": [
+      "FernCard_00",
+      "FernCard_01",
+      "FernCard_02",
+      "FernCard_03",
+      "FernCard_04",
+      "FernCard_05",
+      "FernCard_06",
+      "FernCard_07",
+      "FernCard_08",
+      "FernCard_09",
+      "FernCard_10",
+      "FernCard_11",
+      "FernCard_12",
+      "FernCard_13",
+      "FernCard_14",
+      "FernCard_15",
+      "FernCard_16",
+      "FernCard_17",
+      "FernCard_18",
+      "FernCard_19",
+      "FernCard_20",
+      "FernCard_21",
+      "FernCard_22",
+      "FernCard_23",
+      "FernCard_24",
+      "FernCard_25",
+      "FernCard_26",
+      "FernCard_27",
+      "FernCard_28",
+      "FernCard_29",
+      "FernCard_30",
+      "FernCard_31",
+      "FernCard_32",
+      "FernCard_33",
+      "FernCard_34",
+      "FernCard_35",
+      "FernCard_36",
+      "FernCard_37",
+      "FernCard_38",
+      "FernCard_39",
+      "FernCard_40",
+      "FernCard_41",
+      "FernCard_42",
+      "FernCard_43",
+      "FernCard_44",
+      "FernCard_45",
+      "FernCard_46",
+      "FernCard_47",
+      "FernCard_48",
+      "FernCard_49",
+      "FernCard_50",
+      "FernCard_51",
+      "FernCard_52",
+      "FernCard_53",
+      "FernCard_54",
+      "FernCard_55",
+      "FernCard_56",
+      "FernCard_57",
+      "FernCard_58",
+      "FernCard_59",
+      "FernCard_60",
+      "FernCard_61",
+      "FernCard_62",
+      "FernCard_63",
+      "FernCard_64",
+      "FernCard_65",
+      "FernCard_66",
+      "FernCard_67",
+      "FernCard_68",
+      "FernCard_69"
+    ]
+  }
+]

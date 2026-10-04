@@ -47,28 +47,36 @@ Material:
     - _Cull: 2
     - _Cutoff: 0.4
     - _Fog: 1
+    - _GradeWeight: 0.12
     - _HitReceive: 2
     - _MeshArraySlice: -1
+    - _NaturalSurface: 1
     - _NormalArrayOn: 0
     - _NormalAtlasOn: 0
     - _NormalAtlasStrength: 0
     - _NormalStrength: 0.6
     - _PathYaw: -22
     - _Receive: 0.8
-    - _ShadowStrength: 1
+    - _ShadowStrength: 0.85
+    - _StaticNeutral: 0.78
     - _SwayAmp: 0
     - _TexelLighting: 1
     - _TexelsPerUnit: 25
+    - _TextureContrast: 0.78
     - _TileTexels: 64
     - _TopBlend: 0.15
     - _TopCount: 0
     - _TopNoise: 0.25
     - _TopSlice: 0
     - _TopThreshold: 0.65
+    - _TwoSidedNormals: 0
     - _VColorAO: 0
+    - _VignetteWeight: 0.4
     m_Colors:
+    - _AmbientFill: {r: 0.17, g: 0.18, b: 0.16, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _MatSlices: {r: 0, g: 1, b: 0, a: 0}
     - _SwayFreq: {r: 0.23, g: 0.61, b: 0.12, a: 0}
+    - _TextureMean: {r: 0.18982793, g: 0.152487, b: 0.09903175, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

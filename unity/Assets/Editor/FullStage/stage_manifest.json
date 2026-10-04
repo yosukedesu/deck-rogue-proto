@@ -1,0 +1,61 @@
+{
+  "name": "Mossbound Full Stage",
+  "authoring": "Entire scene authored in Blender on cloud, original geometry/materials; Unity integration pending",
+  "basis": "t/s road frame rotated +22deg around Blender Z; floor Z=0. Source engine Unity X,Y,Z maps to Blender X,Z,Y, verify handedness via anchors on import.",
+  "clear_battle_zone": {
+    "t": [
+      -9,
+      15
+    ],
+    "s": [
+      -2.4,
+      3
+    ],
+    "height": 0
+  },
+  "camera": {
+    "blender_xyz": [
+      0,
+      -27.58734,
+      3.421816
+    ],
+    "vertical_fov_deg": 22,
+    "pitch_down_deg": 5
+  },
+  "objects": 248,
+  "triangles": 9180,
+  "warning": "Export Unity handedness/scale must be verified. Lighting preview is illustrative. No mobile FPS claim. Main gameplay camera preserves engine geometry. Light/fog should be connected to engine existing systems.",
+  "revision": "Natural grounded stone clusters, fern cutout foliage, corrected front cliff normals",
+  "render_batches": 15,
+  "foliage": "Original AI tree images on alpha-tested 2.5D cards composed in Blender; genuine mesh ground/terraces/ruins; not a flat full-scene background",
+  "preview_atmosphere": "Blender volume preview not exported; recreate using URP fog/shafts",
+  "status": "full-scene draft ready for Unity integration; not final art approval",
+  "exported_meshes": 15,
+  "exported_materials": 13,
+  "integration_note": "Use included world-axis markers to verify exporter handedness; do not assume model flips. Scene-only Blender volume/light/camera not part of mesh export. Set TreeCutout0-3 URP alpha clip/depth/shadow passes. Sprite action zone must remain clear. Version3: original front cliff winding corrected; do NOT blindly reverse StageBatch_13 again. FoliageCutout_FernAtlas uses the same alpha clip/depth/shadow consistency as TreeCutout. Preserve per-material diffuse color/texture differences.",
+  "placement_checks": 237,
+  "coplanar_overlap_removed": [
+    "Ground_inset_stone_05",
+    "Ground_inset_stone_16",
+    "Ground_inset_stone_18",
+    "Ground_inset_stone_19",
+    "Ground_inset_stone_21",
+    "Ground_inset_stone_24",
+    "Ground_inset_stone_26",
+    "Ground_inset_stone_27",
+    "Ground_inset_stone_29",
+    "Ground_inset_stone_30",
+    "Ground_inset_stone_31",
+    "Ground_inset_stone_32",
+    "Ground_inset_stone_33",
+    "Ground_inset_stone_34",
+    "Ground_inset_stone_35",
+    "Ground_inset_stone_36",
+    "Ground_inset_stone_37",
+    "Ground_inset_stone_38",
+    "Ground_inset_stone_40",
+    "Ground_inset_stone_41",
+    "Ground_inset_stone_42",
+    "Ground_inset_stone_43"
+  ]
+}

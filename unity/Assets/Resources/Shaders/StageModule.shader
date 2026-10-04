@@ -87,6 +87,15 @@ Shader "DeckRogue/StageModule"
         _SwayFreq ("Sway Freq (x Hz, y Hz, z phase rad/unit)", Vector) = (0.23, 0.61, 0.12, 0)
         // 段2 (レーン S): 技の光 (印の付いた光) の当たりの倍率。1 = 今と同じ
         _HitReceive ("Hit Light Receive (marked lights)", Float) = 1
+        // Imported natural surfaces opt in; legacy stage defaults are unchanged.
+        _NaturalSurface ("Natural surface lighting", Float) = 0
+        _AmbientFill ("Neutral ambient floor", Vector) = (0,0,0,0)
+        _TextureMean ("Linear albedo mean", Vector) = (0,0,0,0)
+        _TextureContrast ("Albedo contrast", Float) = 1
+        _StaticNeutral ("Static light neutralization", Float) = 0
+        _GradeWeight ("Legacy grade weight", Float) = 1
+        _VignetteWeight ("Stage vignette weight", Float) = 1
+        _TwoSidedNormals ("Face-correct normals", Float) = 0
     }
     SubShader
     {
@@ -114,6 +123,8 @@ Shader "DeckRogue/StageModule"
             float4 _SwayFreq;
             // 段2 (レーン S): 技の光の当たりの倍率 (1 = 今と同じ)
             float _HitReceive;
+            float _NaturalSurface, _TextureContrast, _StaticNeutral, _GradeWeight, _VignetteWeight, _TwoSidedNormals;
+            float4 _AmbientFill, _TextureMean;
         CBUFFER_END
 
         // 影と深度のパスのアルファ (メッシュの UV の _BaseMap だけ。配列のタイルは不透明の前提)
@@ -420,7 +431,7 @@ Shader "DeckRogue/StageModule"
                 uvC = clamp(floor(q * size) + 0.5, 0.5, size - 0.5) / size;
             }
 
-            void Frag(Varyings i
+            void Frag(Varyings i, FRONT_FACE_TYPE frontFace : FRONT_FACE_SEMANTIC
                 , out half4 outColor : SV_Target0
             #ifdef _WRITE_RENDERING_LAYERS
                 , out uint outRenderingLayers : SV_Target1
@@ -430,6 +441,7 @@ Shader "DeckRogue/StageModule"
                 UNITY_SETUP_INSTANCE_ID(i);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 float3 N = SafeNormalize(i.normalWS);
+                if (_TwoSidedNormals > .5) N *= IS_FRONT_VFACE(frontFace, 1.0, -1.0);
                 float3 posWS = i.positionWS;
                 float arraySize = _Albedo_TexelSize.z > 0.5 ? _Albedo_TexelSize.z : _TileTexels;
                 half4 albedo;
@@ -527,7 +539,8 @@ Shader "DeckRogue/StageModule"
             #endif
 
                 half alpha = AlphaDiscard(albedo.a * _BaseColor.a, _Cutoff);
-                half3 col = HD2D_EnvGrade(albedo.rgb * _BaseColor.rgb);   // 本家の色彩への寄せ (全体値 0 = そのまま)
+                half3 surface = lerp(half3(_TextureMean.rgb), albedo.rgb, half(_TextureContrast)) * _BaseColor.rgb;
+                half3 col = lerp(surface, HD2D_EnvGrade(surface), half(_GradeWeight));   // 本家の色彩への寄せ (全体値 0 = そのまま)
                 col *= lerp(half3(1.0h, 1.0h, 1.0h), i.color.rgb, half(_VColorAO));
 
                 // 光の位置 (ドットの中心)
@@ -550,7 +563,7 @@ Shader "DeckRogue/StageModule"
                 half3 direct = 0;
                 half3 lost = 0;
                 // 段2 (レーン S): 技の光 (印の付いた光) の寄与を別にも数える。_HitReceive が 1 (既定) か印が 0 個なら数えない = 下の direct・lost は今と同じ式
-                bool hitOn = _HitReceive != 1.0 && _HD2DHitLightCount > 0.5;
+                bool hitOn = (_HitReceive != 1.0 || _NaturalSurface > .5) && _HD2DHitLightCount > 0.5;
                 half3 hitDirect = 0;
                 half3 hitLost = 0;
 
@@ -615,6 +628,19 @@ Shader "DeckRogue/StageModule"
                 half lostL = Luminance(lost);
                 half darken = 1.0h - half(_ShadowStrength) * saturate(lostL / max(fullL, 1e-4h));
                 col = col * (amb + half(_Receive) * direct) * darken;
+                if (_NaturalSurface > .5)
+                {
+                    // Keep marked attack lights on their original high-energy/color path.
+                    half3 attack = half(_HitReceive) * hitDirect;
+                    half3 staticDirect = max(0.0h, direct - attack);
+                    half3 staticLost = max(0.0h, lost - half(_HitReceive) * hitLost);
+                    half3 neutralDirect = lerp(staticDirect, Luminance(staticDirect).xxx, half(_StaticNeutral));
+                    half3 naturalAmbient = max(lerp(amb, Luminance(amb).xxx, half(_StaticNeutral)), half3(_AmbientFill.rgb));
+                    half naturalShadow = 1.0h - half(_ShadowStrength) * saturate(Luminance(staticLost) / max(Luminance(naturalAmbient + staticDirect), 1e-4h));
+                    // Ambient is not multiplied by direct-light shadow loss: leaves retain their albedo in shade.
+                    col = surface * (naturalAmbient + half(_Receive) * neutralDirect * naturalShadow);
+                    col += surface * half(_Receive) * attack * darken;
+                }
 
                 // 霧 (W3 P22): 高さの霧 → 距離の霧。距離の霧の色は芯の向きで明暗が付く (全体値が 0 なら URP の MixFog と同じ)
                 half lobe = HD2D_FogLobe(posWS);
@@ -622,8 +648,8 @@ Shader "DeckRogue/StageModule"
                 half3 fogged = MixFogColor(hazed, HD2D_FogColor(lobe), InitializeInputDataFog(float4(posWS, 1.0), i.fogFactor));
                 fogged = HD2D_Fog2(fogged, posWS, lobe);   // 三周目 R8 (レーン S): 距離の霧の 2段目 (全体値 0 = そのまま)
                 col = lerp(col, fogged, half(_Fog));
-                col *= HD2D_StageVignette(posWS);   // 舞台だけの周辺減光 (W3b P22。全体値 0 = そのまま)
-                col = HD2D_NightGrade(col);         // 三周目 R9 (レーン S): 夜の色寄せ = いちばん最後 (全体値 0 = そのまま)
+                col *= lerp(1.0h, HD2D_StageVignette(posWS), half(_VignetteWeight));   // 舞台だけの周辺減光 (W3b P22。全体値 0 = そのまま)
+                col = lerp(col, HD2D_NightGrade(col), half(_GradeWeight));         // 三周目 R9 (レーン S): 夜の色寄せ = いちばん最後 (全体値 0 = そのまま)
                 outColor = half4(col, OutputAlpha(alpha, false));
             #ifdef _WRITE_RENDERING_LAYERS
                 outRenderingLayers = EncodeMeshRenderingLayer();
@@ -751,7 +777,7 @@ Shader "DeckRogue/StageModule"
                 o.normalWS = TransformObjectToWorldNormal(i.normalOS);
                 return o;
             }
-            void DNFrag(Varyings i
+            void DNFrag(Varyings i, FRONT_FACE_TYPE frontFace : FRONT_FACE_SEMANTIC
                 , out half4 outNormalWS : SV_Target0
             #ifdef _WRITE_RENDERING_LAYERS
                 , out uint outRenderingLayers : SV_Target1
@@ -763,12 +789,13 @@ Shader "DeckRogue/StageModule"
             #if defined(_ALPHATEST_ON)
                 clip(HD2D_ModuleAlpha(i.uv) - _Cutoff);
             #endif
-            #if defined(_GBUFFER_NORMALS_OCT)
                 float3 n = normalize(i.normalWS);
+                if (_TwoSidedNormals > .5) n *= IS_FRONT_VFACE(frontFace, 1.0, -1.0);
+            #if defined(_GBUFFER_NORMALS_OCT)
                 float2 oct = PackNormalOctQuadEncode(n);
                 outNormalWS = half4(PackFloat2To888(saturate(oct * 0.5 + 0.5)), 0.0);
             #else
-                outNormalWS = half4(NormalizeNormalPerPixel(i.normalWS), 0.0);
+                outNormalWS = half4(NormalizeNormalPerPixel(n), 0.0);
             #endif
             #ifdef _WRITE_RENDERING_LAYERS
                 outRenderingLayers = EncodeMeshRenderingLayer();

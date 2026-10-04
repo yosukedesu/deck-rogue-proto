@@ -32,18 +32,24 @@
     "bandMargin": 0.8,
     "rampNear": 2.5,
     "rampFar": 4.0,
-    "maxPxPC": 10,
-    "maxPxPhone": 10,
+    "maxPxPC": 6,
+    "maxPxPhone": 6,
     "halfRes": false,
-    "fallbackBandRel": [-4.0, 8.0]
+    "fallbackBandRel": [
+      -4.0,
+      8.0
+    ]
   },
   "tiltShiftPass": {
     "focus": "path",
-    "pathBand": [-2.4, 3.0],
+    "pathBand": [
+      -2.4,
+      3.0
+    ],
     "_r3band": "三周目 段1 (R3B・分析 R6/R4): ピントの帯の奥 4.5→3.0 (土手 = 段1 の天面 s 4.5〜 と茂みが 1〜2px ぼける。座席 s −0.5〜2.05・匣 PC 1.7/スマホ 2.4・人形の後列 2.05 は帯の中のまま)。二周目の値は look_act1_r2",
     "_fix2": "直しの輪2 (2026-10-01・反証 medium「座席の帯の前の縁に明るい灰緑の四角い欠片が段々に並ぶ」= 縁のタイルが見下ろし 5° で縦に約 0.09 倍に潰れた物): pathBand の手前 −3.0→−2.4 (縁 s −3.2〜−3.8 を手前のぼけに入れる。匣 PC s 1.7・スマホ s 2.4・人形の後列 s 2.05 は帯の中のまま)",
     "curve": "lens",
-    "lensFar": 3.0,
+    "lensFar": 1.2,
     "_fix1": "直しの輪1 (2026-10-01・反証 medium「霧の中の幹の縁がくっきり」N12 0.48): lensFar 1.6→3.0 (奥の錯乱円が約 1.9 倍。上限 maxPx は 10 のまま。1回目の直しの 2.2 で N12 奥 0.48→0.23)",
     "lensNear": 1.3,
     "nearScale": 1.0,
@@ -69,5 +75,6 @@
     "focalLength": 90,
     "aperture": 4.5,
     "bladeCount": 5
-  }
+  },
+  "_fullStageV3": "Full forest foliage has fine leaves and bark: preserve far detail with 6px cap / lensFar 1.2; focus band, near-lens, camera framing and character shading unchanged."
 }

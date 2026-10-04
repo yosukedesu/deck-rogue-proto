@@ -10,7 +10,7 @@ namespace DeckRogue.Game {
    foreach(var mf in root.GetComponentsInChildren<MeshFilter>()){
     var mats=mf.GetComponent<MeshRenderer>().sharedMaterials;var mesh=mf.sharedMesh;var vs=mesh.vertices;
     for(int sm=0;sm<mesh.subMeshCount;sm++){
-     string n=mats[sm].name;if(n.Contains("TreeCutout")||n.Contains("leaf")||n.Contains("water")||n.Contains("bronze")||n.Contains("lantern"))continue;
+     string n=mats[sm].name;if(n.Contains("Cutout")||n.Contains("leaf")||n.Contains("water")||n.Contains("bronze")||n.Contains("lantern"))continue;
      var ids=mesh.GetTriangles(sm);
      for(int i=0;i<ids.Length;i+=3){var t=new Tri{A=mf.transform.TransformPoint(vs[ids[i]]),B=mf.transform.TransformPoint(vs[ids[i+1]]),C=mf.transform.TransformPoint(vs[ids[i+2]])};
       if(Mathf.Abs(Vector3.Cross(t.B-t.A,t.C-t.A).y)<.00001f)continue;
