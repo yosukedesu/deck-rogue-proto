@@ -49,6 +49,7 @@ Material:
     - _Fog: 1
     - _GradeWeight: 0.12
     - _HitReceive: 2
+    - _LowerFade: 0
     - _MeshArraySlice: -1
     - _NaturalSurface: 1
     - _NormalArrayOn: 0
@@ -62,7 +63,7 @@ Material:
     - _SwayAmp: 0
     - _TexelLighting: 1
     - _TexelsPerUnit: 25
-    - _TextureContrast: 0.78
+    - _TextureContrast: 1
     - _TileTexels: 64
     - _TopBlend: 0.15
     - _TopCount: 0

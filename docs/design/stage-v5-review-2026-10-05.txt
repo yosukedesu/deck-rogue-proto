@@ -1,0 +1,28 @@
+V5 night forest integration review, 2026-10-05
+
+Source Library libfile_6c9401368df881918c2ebb6f758d0e6d version5, file_00000000d62081f5bd118a38b7180398. ZIP29206095 bytes; CRC passed locally.
+Imported original source FBX, manifest and batch source map. Removed dependency on the existence/number of the old Front_Cliff_Strata batch. Preserved source smooth normals, axis markers and foot markers.
+New albedo mappings: earth_128=soil_soft_v5; cliff_strata_128=rock_soft_v5; moss_turf_128 and Moss pixel limestone=moss_soft_v5; Weathered grey limestone=paving_soft_v5. All four 512px, sRGB albedo sampled in Linear pipeline, Bilinear, mipmaps. Character textures untouched. No additional contrast flattening of the new albedo.
+Unity importer reports16984 triangles (source manifest16990),13 material assets. Five tiny/degenerate UV faces in StageBatch_11 took the existing projection fallback; no old1150-face UV1 recovery issue. Exact6-triangle source/import difference and5-face fallback not yet investigated; do not claim zero importer repairs.
+Runtime phone scene17004 triangles,19 renderers,16 materials including existing atmosphere; seat intrusions0,seat height residual0,layout errors0. Gates pass, but this does NOT establish art quality or mobile performance.
+
+Windows build: succeeded, errors0,warnings16,23seconds. One player build after asset generation; all lighting iterations reused this executable.
+Runtime -forest-preview night -forest-look C:/absolute/path/to/forest-v5-review-soft.json loads review JSON after phone settings. -forest-preview legacy restores previous forest. Omit flags for normal v5 integration. StageLook debug sources includes forest-preview-file.
+Saved sharp and soft JSON snapshots beside this note. Soft variant restores legacy far DOF max10/lens3; sharp max6/lens1.2. Both preserve camera,FOV,character/UI/attack settings. Main/background foliage forms are quieter in soft variant, but excessive blur is not a substitute for shape fixes.
+Same executable captured legacy baseline and quad, v5 baseline and quad, and 15 fire snapshots. All use1920x886,phone,UISCALE1.6,seed4242,isolated save. No browser.
+Confirmed fire still produces strong colored ground reception and character impact; Mizore attack pose remains intact. No full regression rerun for this art draft; previous aa553ab tempo9/9 and animation16-frame results are historical, not v5 retests.
+
+VISUAL ISSUES TO REVIEW BEFORE ADOPTION:
+- Right distant rock looks detached around pixel(1218,242) in1920x886 sharp image. Source reported embedded geometry; actual game silhouette still needs review.
+- Horizontal far-background boundary around y163. Reducing old mist plane intensity did not remove it. Hypothesis: differing fog reception of backdrop and distant terrain; not proven. DistantAtmosphere uses_Fog0.35 while terrain uses full fog.
+- Warm lantern reaches arch stone; ground pool remains modest. Current lantern10/range5.5 is only in review JSON.
+- v5 foreground cliff is absent and replaced by continuous dark ground; remaining green midground texture/rock contrast and flat-looking paving need art judgment.
+- No claim of matching/exceeding Octopath quality. User approval pending.
+
+Library comparison libfile_af6f54f960e88191a59e9f5706e2364b version1, file_000000009c4481f599e196fa52becbd3.
+Sharp original libfile_dab3b6e919608191bc0a2bdb0ced1bc3 version0.
+Soft original libfile_0fabc8d6bcf481919bf9d8e3ae8d7745 version0.
+Fire original libfile_24a287033180819199baef05ebf7cde4 version0.
+Comparison includes color,grayscale,480px phone-size and4 enemies. Camera position/rotation/FOV match exactly.
+
+No new APK built for v5; no Drive upload. aa553ab APK remains WITHHELD locally. Existing Drive files/main/remotes untouched. Android installation/FPS/heat untested; no connected device.

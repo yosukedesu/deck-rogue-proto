@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: DistantAtmosphere
+  m_Name: Distant forest atmosphere
   m_Shader: {fileID: 4800000, guid: 84e74935c81e87249924dcb4228e3691, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -49,6 +49,7 @@ Material:
     - _Fog: 0.35
     - _GradeWeight: 0.15
     - _HitReceive: 0
+    - _LowerFade: 0
     - _MeshArraySlice: -1
     - _NaturalSurface: 1
     - _NormalArrayOn: 0

@@ -23,13 +23,13 @@
     "pitch_down_deg": 5
   },
   "objects": 248,
-  "triangles": 9180,
+  "triangles": 16990,
   "warning": "Export Unity handedness/scale must be verified. Lighting preview is illustrative. No mobile FPS claim. Main gameplay camera preserves engine geometry. Light/fog should be connected to engine existing systems.",
-  "revision": "Natural grounded stone clusters, fern cutout foliage, corrected front cliff normals",
+  "revision": "Night material study: soft rock shapes, damp low-contrast albedo, continuous foreground ground",
   "render_batches": 15,
   "foliage": "Original AI tree images on alpha-tested 2.5D cards composed in Blender; genuine mesh ground/terraces/ruins; not a flat full-scene background",
   "preview_atmosphere": "Blender volume preview not exported; recreate using URP fog/shafts",
-  "status": "full-scene draft ready for Unity integration; not final art approval",
+  "status": "night mood draft awaiting same-camera Unity review",
   "exported_meshes": 15,
   "exported_materials": 13,
   "integration_note": "Use included world-axis markers to verify exporter handedness; do not assume model flips. Scene-only Blender volume/light/camera not part of mesh export. Set TreeCutout0-3 URP alpha clip/depth/shadow passes. Sprite action zone must remain clear. Version3: original front cliff winding corrected; do NOT blindly reverse StageBatch_13 again. FoliageCutout_FernAtlas uses the same alpha clip/depth/shadow consistency as TreeCutout. Preserve per-material diffuse color/texture differences.",
@@ -57,5 +57,10 @@
     "Ground_inset_stone_41",
     "Ground_inset_stone_42",
     "Ground_inset_stone_43"
+  ],
+  "uv_export": "Each export clone active UV copied to a single UVMap before batch join; prevents mixed UV layer names creating per-face zero UV0.",
+  "rock_objects_softened": 60,
+  "optional_hidden_source_objects": [
+    "Front_Cliff_Strata"
   ]
 }

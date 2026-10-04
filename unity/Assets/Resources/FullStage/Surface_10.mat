@@ -50,6 +50,7 @@ Material:
     - _Fog: 1
     - _GradeWeight: 0.12
     - _HitReceive: 1.5
+    - _LowerFade: 0
     - _MeshArraySlice: -1
     - _NaturalSurface: 1
     - _NormalArrayOn: 0

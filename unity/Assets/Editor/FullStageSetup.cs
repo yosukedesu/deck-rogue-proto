@@ -34,10 +34,11 @@ namespace DeckRogue.EditorTools {
    var enemy=correction.MultiplyPoint3x4(marker("ENEMY_1_FOOT"));
    if(Vector3.Distance(player,new Vector3(-4.973f,0,-1.039f))>.002f||Vector3.Distance(enemy,new Vector3(4.322f,0,1.207f))>.002f)throw new Exception("Foot marker mapping failed");
    Debug.Log("[FullStage] AXIS PASS basis="+basis+" player="+player.ToString("F5")+" enemy="+enemy.ToString("F5"));
-   var textures=new Dictionary<string,string>{{"Moss pixel limestone","forest_moss_256"},{"Weathered grey limestone","broken_paving_256"},{"earth_128","forest_earth_256"},{"moss_turf_128","forest_moss_256"},{"cliff_strata_128","stratified_cliff_256"},{"leaf_2_128","leaf_2_128"},{"bronze_128","bronze_128"},{"TreeCutout_0","tree_cutout_0"},{"TreeCutout_1","tree_cutout_1"},{"TreeCutout_2","tree_cutout_2"},{"TreeCutout_3","tree_cutout_3"},{"FoliageCutout_FernAtlas","fern_cutout_atlas"}};
+   var textures=new Dictionary<string,string>{{"Moss pixel limestone","moss_soft_v5"},{"Weathered grey limestone","paving_soft_v5"},{"earth_128","soil_soft_v5"},{"moss_turf_128","moss_soft_v5"},{"cliff_strata_128","rock_soft_v5"},{"leaf_2_128","leaf_2_128"},{"bronze_128","bronze_128"},{"TreeCutout_0","tree_cutout_0"},{"TreeCutout_1","tree_cutout_1"},{"TreeCutout_2","tree_cutout_2"},{"TreeCutout_3","tree_cutout_3"},{"FoliageCutout_FernAtlas","fern_cutout_atlas"}};
    var sourceMap=JArray.Parse(System.IO.File.ReadAllText("Assets/Editor/FullStage/batch_source_map.json"));
-   var frontBatch=(string)sourceMap.Single(b=>((JArray)b["sources"]).Any(n=>(string)n=="Front_Cliff_Strata"))["mesh"];
-   var mats=new Dictionary<string,Material>();var root=new GameObject("Mossbound full stage v3");int triangles=0;
+   var frontEntry=sourceMap.FirstOrDefault(b=>((JArray)b["sources"]).Any(n=>(string)n=="Front_Cliff_Strata"));
+   var frontBatch=(string)frontEntry?["mesh"];
+   var mats=new Dictionary<string,Material>();var root=new GameObject("Mossbound full stage v5");int triangles=0;
    foreach(var mf in source.GetComponentsInChildren<MeshFilter>(true)){
     var imported=mf.GetComponent<MeshRenderer>().sharedMaterials;var output=new Material[imported.Length];
     for(int i=0;i<imported.Length;i++){
@@ -52,7 +53,7 @@ namespace DeckRogue.EditorTools {
        mat.SetFloat("_NaturalSurface",1);mat.SetFloat("_StaticNeutral",.78f);mat.SetFloat("_GradeWeight",.12f);mat.SetFloat("_VignetteWeight",.4f);
        mat.SetVector("_AmbientFill",alpha?new Vector4(.32f,.34f,.28f,0):new Vector4(.17f,.18f,.16f,0));
        mat.SetFloat("_ShadowStrength",alpha?.65f:.85f);mat.SetFloat("_TwoSidedNormals",alpha?1:0);
-       mat.SetFloat("_TextureContrast",name=="earth_128"?.68f:name=="cliff_strata_128"?.78f:alpha?.94f:.78f);
+       mat.SetFloat("_TextureContrast",alpha?.94f:1f);
        if(textures.TryGetValue(name,out var colorTexture)) {
         var readable=new Texture2D(2,2);readable.LoadImage(System.IO.File.ReadAllBytes(Root+"/"+colorTexture+".png"));
         Vector3 sum=Vector3.zero;int count=0;

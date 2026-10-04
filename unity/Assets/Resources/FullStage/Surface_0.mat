@@ -29,7 +29,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: c660101a9a2998c48a1a74d304866cd1, type: 3}
+        m_Texture: {fileID: 2800000, guid: bf4e05843cde3e24286af8db0d6f95fd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normal:
@@ -49,6 +49,7 @@ Material:
     - _Fog: 1
     - _GradeWeight: 0.12
     - _HitReceive: 2
+    - _LowerFade: 0
     - _MeshArraySlice: -1
     - _NaturalSurface: 1
     - _NormalArrayOn: 0
@@ -62,7 +63,7 @@ Material:
     - _SwayAmp: 0
     - _TexelLighting: 1
     - _TexelsPerUnit: 25
-    - _TextureContrast: 0.78
+    - _TextureContrast: 1
     - _TileTexels: 64
     - _TopBlend: 0.15
     - _TopCount: 0
@@ -77,6 +78,6 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _MatSlices: {r: 0, g: 1, b: 0, a: 0}
     - _SwayFreq: {r: 0.23, g: 0.61, b: 0.12, a: 0}
-    - _TextureMean: {r: 0.09338323, g: 0.08555956, b: 0.01567164, a: 0}
+    - _TextureMean: {r: 0.054105602, g: 0.056034222, b: 0.010792368, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

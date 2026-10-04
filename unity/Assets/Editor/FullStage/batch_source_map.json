@@ -266,16 +266,6 @@
   {
     "mesh": "StageBatch_12",
     "materials": [
-      "cliff_strata_128",
-      "Moss pixel limestone"
-    ],
-    "sources": [
-      "Front_Cliff_Strata"
-    ]
-  },
-  {
-    "mesh": "StageBatch_13",
-    "materials": [
       "moss_turf_128"
     ],
     "sources": [
@@ -285,7 +275,7 @@
     ]
   },
   {
-    "mesh": "StageBatch_14",
+    "mesh": "StageBatch_13",
     "materials": [
       "FoliageCutout_FernAtlas"
     ],
@@ -360,6 +350,15 @@
       "FernCard_67",
       "FernCard_68",
       "FernCard_69"
+    ]
+  },
+  {
+    "mesh": "StageBatch_14",
+    "materials": [
+      "earth_128"
+    ],
+    "sources": [
+      "GROUND__foreground_apron"
     ]
   }
 ]

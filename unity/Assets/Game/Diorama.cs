@@ -1803,7 +1803,7 @@ namespace DeckRogue.Game
             if (_fullStage) {
                 // Imported render batches replace authored procedural parts; budgets reflect this representation.
                 st.Parts += _fullBatches; st.ByKind["full-stage-batch"]=_fullBatches;
-                st.GateSource="full-stage-v3";st.GPartsMin=15;st.GPartsMax=40;st.GRenderers=40;st.GMaterials=18;st.GTriangles=20000;
+                st.GateSource="full-stage-v5";st.GPartsMin=15;st.GPartsMax=40;st.GRenderers=40;st.GMaterials=18;st.GTriangles=20000;
                 maxY=0;
                 for(float t=-8;t<=14;t+=.5f)for(float side=-2;side<=2.8f;side+=.4f) {
                     var pos=OnPath(t,side,0);float h=_fullGround.Height(pos.x,pos.z);
