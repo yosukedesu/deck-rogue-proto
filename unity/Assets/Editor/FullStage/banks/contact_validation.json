@@ -1,0 +1,694 @@
+{
+  "trees": [
+    {
+      "object": "ForestTree_Card_00",
+      "samples": 79,
+      "root_edge_clearance_range": [
+        0.0074100929993790865,
+        0.7161982752168522
+      ],
+      "root_edge_clearance_p95": 0.6313910612092611,
+      "conformed": false
+    },
+    {
+      "object": "ForestTree_Card_01",
+      "samples": 52,
+      "root_edge_clearance_range": [
+        -0.040989304312501806,
+        0.3642539836156864
+      ],
+      "root_edge_clearance_p95": 0.33621257896335743,
+      "conformed": false
+    },
+    {
+      "object": "ForestTree_Card_02",
+      "samples": 82,
+      "root_edge_clearance_range": [
+        -0.03458466754712286,
+        -0.010448264669143392
+      ],
+      "root_edge_clearance_p95": -0.017007768937820415,
+      "conformed": true
+    },
+    {
+      "object": "ForestTree_Card_03",
+      "samples": 52,
+      "root_edge_clearance_range": [
+        -0.036341842375528066,
+        -0.009255275820502451
+      ],
+      "root_edge_clearance_p95": -0.01300388808447529,
+      "conformed": true
+    },
+    {
+      "object": "ForestTree_Card_04",
+      "samples": 104,
+      "root_edge_clearance_range": [
+        -0.031362810161318144,
+        -0.014676870460781588
+      ],
+      "root_edge_clearance_p95": -0.019077997167924444,
+      "conformed": true
+    },
+    {
+      "object": "ForestTree_Card_05",
+      "samples": 89,
+      "root_edge_clearance_range": [
+        -0.03284414329107621,
+        -0.014927980587093603
+      ],
+      "root_edge_clearance_p95": -0.017953114850745067,
+      "conformed": true
+    },
+    {
+      "object": "ForestTree_Card_06",
+      "samples": 70,
+      "root_edge_clearance_range": [
+        -0.038858429703067854,
+        -0.007728873821699622
+      ],
+      "root_edge_clearance_p95": -0.014510543947696996,
+      "conformed": true
+    },
+    {
+      "object": "ForestTree_Card_07",
+      "samples": 82,
+      "root_edge_clearance_range": [
+        -0.18712226565653528,
+        0.8959227124818216
+      ],
+      "root_edge_clearance_p95": 0.7215385643390422,
+      "conformed": false
+    },
+    {
+      "object": "ForestTree_Card_08",
+      "samples": 52,
+      "root_edge_clearance_range": [
+        -0.03995178968380819,
+        0.5240288175904331
+      ],
+      "root_edge_clearance_p95": 0.4828739553642349,
+      "conformed": false
+    },
+    {
+      "object": "ForestTree_Card_09",
+      "samples": 82,
+      "root_edge_clearance_range": [
+        -0.003131729440567277,
+        0.9491683105215096
+      ],
+      "root_edge_clearance_p95": 0.8934164362022293,
+      "conformed": false
+    },
+    {
+      "object": "ForestTree_Card_10",
+      "samples": 52,
+      "root_edge_clearance_range": [
+        -0.015598743106610469,
+        0.4993138088585849
+      ],
+      "root_edge_clearance_p95": 0.4664945441884353,
+      "conformed": false
+    },
+    {
+      "object": "ForestTree_Card_11",
+      "samples": 79,
+      "root_edge_clearance_range": [
+        -0.10077907483036919,
+        0.8301752878073305
+      ],
+      "root_edge_clearance_p95": 0.6761264247254442,
+      "conformed": false
+    },
+    {
+      "object": "ForestTree_Card_12",
+      "samples": 86,
+      "root_edge_clearance_range": [
+        -0.032932727100750014,
+        0.9602837577795449
+      ],
+      "root_edge_clearance_p95": 0.8685584390125335,
+      "conformed": false
+    },
+    {
+      "object": "ForestTree_Card_13",
+      "samples": 70,
+      "root_edge_clearance_range": [
+        -0.04058345933572749,
+        -0.003346552138535519
+      ],
+      "root_edge_clearance_p95": -0.012573523970523066,
+      "conformed": true
+    }
+  ],
+  "structural": [
+    {
+      "object": "Gate_pier_-1_00",
+      "bottom_clearance": [
+        -0.01864403486251831,
+        0.01606971025466919
+      ]
+    },
+    {
+      "object": "Gate_pier_-1_01",
+      "bottom_clearance": [
+        0.6414170265197754,
+        0.6760315895080566
+      ]
+    },
+    {
+      "object": "Gate_pier_-1_02",
+      "bottom_clearance": [
+        1.3014626502990723,
+        1.3359856605529785
+      ]
+    },
+    {
+      "object": "Gate_pier_-1_03",
+      "bottom_clearance": [
+        1.9613556861877441,
+        1.9960694313049316
+      ]
+    },
+    {
+      "object": "Gate_foot_-1",
+      "bottom_clearance": [
+        -0.048908352851867676,
+        -0.004406094551086426
+      ]
+    },
+    {
+      "object": "Gate_impost_-1",
+      "bottom_clearance": [
+        2.4830448627471924,
+        2.5240299701690674
+      ]
+    },
+    {
+      "object": "Gate_pier_1_00",
+      "bottom_clearance": [
+        0.5317099690437317,
+        0.5839408040046692
+      ]
+    },
+    {
+      "object": "Gate_pier_1_01",
+      "bottom_clearance": [
+        1.1916413307189941,
+        1.2439484596252441
+      ]
+    },
+    {
+      "object": "Gate_pier_1_02",
+      "bottom_clearance": [
+        1.8517861366271973,
+        1.903902530670166
+      ]
+    },
+    {
+      "object": "Gate_pier_1_03",
+      "bottom_clearance": [
+        2.5117478370666504,
+        2.563917636871338
+      ]
+    },
+    {
+      "object": "Gate_foot_1",
+      "bottom_clearance": [
+        0.5043829679489136,
+        0.5741766691207886
+      ]
+    },
+    {
+      "object": "Gate_impost_1",
+      "bottom_clearance": [
+        3.0352680683135986,
+        3.0987675189971924
+      ]
+    },
+    {
+      "object": "Gate_arch_stone_00",
+      "bottom_clearance": [
+        3.244614601135254,
+        3.279557228088379
+      ]
+    },
+    {
+      "object": "Gate_arch_stone_01",
+      "bottom_clearance": [
+        3.641519069671631,
+        3.677560329437256
+      ]
+    },
+    {
+      "object": "Gate_arch_stone_02",
+      "bottom_clearance": [
+        4.009687423706055,
+        4.0566558837890625
+      ]
+    },
+    {
+      "object": "Gate_arch_stone_03",
+      "bottom_clearance": [
+        4.208134174346924,
+        4.332970142364502
+      ]
+    },
+    {
+      "object": "Gate_arch_stone_04",
+      "bottom_clearance": [
+        4.14860725402832,
+        4.196176528930664
+      ]
+    },
+    {
+      "object": "Gate_arch_stone_05",
+      "bottom_clearance": [
+        3.9952707290649414,
+        4.03273868560791
+      ]
+    },
+    {
+      "object": "Gate_arch_stone_06",
+      "bottom_clearance": [
+        3.908296585083008,
+        3.9266910552978516
+      ]
+    },
+    {
+      "object": "Gate_arch_stone_07",
+      "bottom_clearance": [
+        3.7163357734680176,
+        3.748138904571533
+      ]
+    },
+    {
+      "object": "Gate_arch_stone_08",
+      "bottom_clearance": [
+        3.430562973022461,
+        3.4600601196289062
+      ]
+    },
+    {
+      "object": "Gate_arch_stone_09",
+      "bottom_clearance": [
+        3.0718092918395996,
+        3.0949645042419434
+      ]
+    },
+    {
+      "object": "Gate_arch_stone_10",
+      "bottom_clearance": [
+        2.677781105041504,
+        2.700943946838379
+      ]
+    },
+    {
+      "object": "Gate_fallen_00",
+      "bottom_clearance": [
+        -0.06514984369277954,
+        -0.04525238275527954
+      ]
+    },
+    {
+      "object": "Gate_fallen_01",
+      "bottom_clearance": [
+        -0.08268982172012329,
+        -0.04727417230606079
+      ]
+    },
+    {
+      "object": "Gate_fallen_02",
+      "bottom_clearance": [
+        -0.06257873773574829,
+        -0.04047638177871704
+      ]
+    },
+    {
+      "object": "Stair_module_00",
+      "bottom_clearance": [
+        -0.5734750330448151,
+        0.027995914220809937
+      ]
+    },
+    {
+      "object": "Stair_module_01",
+      "bottom_clearance": [
+        -0.7871133387088776,
+        -0.008419185876846313
+      ]
+    },
+    {
+      "object": "Stair_module_02",
+      "bottom_clearance": [
+        -0.7930795550346375,
+        -0.14665621519088745
+      ]
+    },
+    {
+      "object": "Pillar_course_014",
+      "bottom_clearance": [
+        -0.04970948398113251,
+        -0.025158092379570007
+      ]
+    },
+    {
+      "object": "Pillar_course_040",
+      "bottom_clearance": [
+        0.23295316100120544,
+        0.2508593499660492
+      ]
+    },
+    {
+      "object": "Pillar_course_082",
+      "bottom_clearance": [
+        0.48528778553009033,
+        0.4989520311355591
+      ]
+    },
+    {
+      "object": "Pillar_course_144",
+      "bottom_clearance": [
+        1.105135202407837,
+        1.1190893650054932
+      ]
+    },
+    {
+      "object": "Pillar_course_206",
+      "bottom_clearance": [
+        1.7315696477890015,
+        1.7435401678085327
+      ]
+    },
+    {
+      "object": "Pillar_broken_cap",
+      "bottom_clearance": [
+        2.30115008354187,
+        2.314478635787964
+      ]
+    }
+  ],
+  "rocks": [
+    {
+      "object": "bank_rock_00",
+      "max_penetration": 0.0631522536277771,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_01",
+      "max_penetration": 0.050653815269470215,
+      "fraction_vertices_below_ground": 0.20967741935483872
+    },
+    {
+      "object": "bank_rock_02",
+      "max_penetration": 0.11592590808868408,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_03",
+      "max_penetration": 0.11997711658477783,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_04",
+      "max_penetration": 0.09134374558925629,
+      "fraction_vertices_below_ground": 0.1935483870967742
+    },
+    {
+      "object": "bank_rock_05",
+      "max_penetration": 0.06884276866912842,
+      "fraction_vertices_below_ground": 0.16129032258064516
+    },
+    {
+      "object": "bank_rock_06",
+      "max_penetration": 0.061775267124176025,
+      "fraction_vertices_below_ground": 0.12903225806451613
+    },
+    {
+      "object": "bank_rock_07",
+      "max_penetration": 0.08071908354759216,
+      "fraction_vertices_below_ground": 0.22580645161290322
+    },
+    {
+      "object": "bank_rock_08",
+      "max_penetration": 0.1244305968284607,
+      "fraction_vertices_below_ground": 0.20967741935483872
+    },
+    {
+      "object": "bank_rock_09",
+      "max_penetration": 0.0803917795419693,
+      "fraction_vertices_below_ground": 0.20967741935483872
+    },
+    {
+      "object": "bank_rock_10",
+      "max_penetration": 0.08231133222579956,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_11",
+      "max_penetration": 0.094696044921875,
+      "fraction_vertices_below_ground": 0.16129032258064516
+    },
+    {
+      "object": "bank_rock_12",
+      "max_penetration": 0.12000003457069397,
+      "fraction_vertices_below_ground": 0.1935483870967742
+    },
+    {
+      "object": "bank_rock_13",
+      "max_penetration": 0.11474186182022095,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_14",
+      "max_penetration": 0.082508385181427,
+      "fraction_vertices_below_ground": 0.20967741935483872
+    },
+    {
+      "object": "bank_rock_15",
+      "max_penetration": 0.081321120262146,
+      "fraction_vertices_below_ground": 0.16129032258064516
+    },
+    {
+      "object": "bank_rock_16",
+      "max_penetration": 0.06509125232696533,
+      "fraction_vertices_below_ground": 0.11290322580645161
+    },
+    {
+      "object": "bank_rock_17",
+      "max_penetration": 0.11999237537384033,
+      "fraction_vertices_below_ground": 0.20967741935483872
+    },
+    {
+      "object": "bank_rock_18",
+      "max_penetration": 0.05936002731323242,
+      "fraction_vertices_below_ground": 0.24193548387096775
+    },
+    {
+      "object": "bank_rock_19",
+      "max_penetration": 0.09048023819923401,
+      "fraction_vertices_below_ground": 0.1935483870967742
+    },
+    {
+      "object": "bank_rock_20",
+      "max_penetration": 0.08131727576255798,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_21",
+      "max_penetration": 0.12000000476837158,
+      "fraction_vertices_below_ground": 0.22580645161290322
+    },
+    {
+      "object": "bank_rock_22",
+      "max_penetration": 0.0645376443862915,
+      "fraction_vertices_below_ground": 0.25806451612903225
+    },
+    {
+      "object": "bank_rock_23",
+      "max_penetration": 0.1199999749660492,
+      "fraction_vertices_below_ground": 0.22580645161290322
+    },
+    {
+      "object": "bank_rock_24",
+      "max_penetration": 0.1253606081008911,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_25",
+      "max_penetration": 0.0651116669178009,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_26",
+      "max_penetration": 0.13368713855743408,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_27",
+      "max_penetration": 0.10459241271018982,
+      "fraction_vertices_below_ground": 0.22580645161290322
+    },
+    {
+      "object": "bank_rock_28",
+      "max_penetration": 0.045353859663009644,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_29",
+      "max_penetration": 0.07474690675735474,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_30",
+      "max_penetration": 0.06780099868774414,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_31",
+      "max_penetration": 0.09563952684402466,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_32",
+      "max_penetration": 0.10043707489967346,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_33",
+      "max_penetration": 0.11711519956588745,
+      "fraction_vertices_below_ground": 0.1935483870967742
+    },
+    {
+      "object": "bank_rock_34",
+      "max_penetration": 0.1112469881772995,
+      "fraction_vertices_below_ground": 0.20967741935483872
+    },
+    {
+      "object": "bank_rock_35",
+      "max_penetration": 0.09819081425666809,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_36",
+      "max_penetration": 0.11999237537384033,
+      "fraction_vertices_below_ground": 0.14516129032258066
+    },
+    {
+      "object": "bank_rock_37",
+      "max_penetration": 0.08746790885925293,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_38",
+      "max_penetration": 0.07973775267601013,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_39",
+      "max_penetration": 0.12140864133834839,
+      "fraction_vertices_below_ground": 0.20967741935483872
+    },
+    {
+      "object": "bank_rock_40",
+      "max_penetration": 0.03836500644683838,
+      "fraction_vertices_below_ground": 0.16129032258064516
+    },
+    {
+      "object": "bank_rock_41",
+      "max_penetration": 0.106585294008255,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_42",
+      "max_penetration": 0.12543976306915283,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "bank_rock_43",
+      "max_penetration": 0.12000006437301636,
+      "fraction_vertices_below_ground": 0.14516129032258066
+    },
+    {
+      "object": "Stream_edge_rock_00",
+      "max_penetration": 0.05562673509120941,
+      "fraction_vertices_below_ground": 0.22580645161290322
+    },
+    {
+      "object": "Stream_edge_rock_03",
+      "max_penetration": 0.5141687095165253,
+      "fraction_vertices_below_ground": 0.5645161290322581
+    },
+    {
+      "object": "Stream_edge_rock_06",
+      "max_penetration": 0.06974439322948456,
+      "fraction_vertices_below_ground": 0.2903225806451613
+    },
+    {
+      "object": "Stream_edge_rock_09",
+      "max_penetration": 0.0779120922088623,
+      "fraction_vertices_below_ground": 0.12903225806451613
+    },
+    {
+      "object": "Stream_edge_rock_12",
+      "max_penetration": 0.05720056593418121,
+      "fraction_vertices_below_ground": 0.24193548387096775
+    },
+    {
+      "object": "Stream_edge_rock_15",
+      "max_penetration": 0.05334128439426422,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "Stream_edge_rock_18",
+      "max_penetration": 0.049100182950496674,
+      "fraction_vertices_below_ground": 0.1935483870967742
+    },
+    {
+      "object": "Stream_edge_rock_21",
+      "max_penetration": 0.06097450852394104,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "Stream_edge_rock_24",
+      "max_penetration": 0.055181875824928284,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "Stream_edge_rock_27",
+      "max_penetration": 0.059445545077323914,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "Stream_edge_rock_30",
+      "max_penetration": 0.04681290686130524,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "Stream_edge_rock_33",
+      "max_penetration": 0.07297450304031372,
+      "fraction_vertices_below_ground": 0.1935483870967742
+    },
+    {
+      "object": "Stream_edge_rock_36",
+      "max_penetration": 0.05404363572597504,
+      "fraction_vertices_below_ground": 0.20967741935483872
+    },
+    {
+      "object": "Stream_edge_rock_39",
+      "max_penetration": 0.041894055902957916,
+      "fraction_vertices_below_ground": 0.1774193548387097
+    },
+    {
+      "object": "Stream_edge_rock_42",
+      "max_penetration": 0.04181770980358124,
+      "fraction_vertices_below_ground": 0.12903225806451613
+    },
+    {
+      "object": "Stream_edge_rock_45",
+      "max_penetration": 0.0614599734544754,
+      "fraction_vertices_below_ground": 0.1935483870967742
+    }
+  ],
+  "ferns": []
+}
