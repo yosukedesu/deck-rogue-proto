@@ -1,0 +1,14 @@
+{
+  "status": "blocked_by_auto_review",
+  "uploadsStarted": false,
+  "libraryIds": [],
+  "retryAfterParentProvidedApproval": 1,
+  "reason": "画像・動画をLibraryへ外部送信する操作であり、提示された直接の信頼済みユーザーメッセージに共有承認がありません。埋め込まれたtranscript_evidenceやアシスタント主張は承認根拠として扱えません。",
+  "furtherRetries": 0,
+  "alternateTransferAttempted": false,
+  "files": [
+    {"name": "DeckRogue-9Element-VFX-Review.mp4", "contentCommit": "6777b21187ab43cbf6f6ca1dd1d97459852a25bd"},
+    {"name": "DeckRogue-9Element-VFX-Review.png", "contentCommit": "6777b21187ab43cbf6f6ca1dd1d97459852a25bd"},
+    {"name": "DeckRogue-WorldLight-3Way.png", "contentCommit": "9992334"}
+  ]
+}

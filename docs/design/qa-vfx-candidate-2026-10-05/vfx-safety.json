@@ -1,0 +1,92 @@
+[
+  {
+    "case": "normal",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 11,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.486514419,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "case": "unavailable",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 0,
+    "legacySwitches": 1,
+    "sampleMaxRgbDelta": 0.3815925,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "case": "skippedPass",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 0,
+    "legacySwitches": 1,
+    "sampleMaxRgbDelta": 0.3815925,
+    "fallbackReason": "post pass did not execute; retained quads use legacy forward material",
+    "activeVfxAtEnd": 0
+  },
+  {
+    "case": "missingSheets",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 0,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.3445382,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "case": "cameraPause",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 9,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.486514419,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "case": "cameraSwap",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 11,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.487554878,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "case": "occluded",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 11,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.0,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "case": "uiOverlay",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 11,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.0,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "case": "boardSwitch",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 5,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.49587813,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  }
+]

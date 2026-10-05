@@ -1,0 +1,457 @@
+[
+  {
+    "case": "rapid5",
+    "actions": [
+      {
+        "index": 0,
+        "accepted": true,
+        "inputToEffectMs": 83.2097,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          37
+        ]
+      },
+      {
+        "index": 1,
+        "accepted": true,
+        "inputToEffectMs": 16.0379,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          31
+        ]
+      },
+      {
+        "index": 2,
+        "accepted": true,
+        "inputToEffectMs": 22.2724,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          25
+        ]
+      },
+      {
+        "index": 3,
+        "accepted": true,
+        "inputToEffectMs": 30.2743,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          19
+        ]
+      },
+      {
+        "index": 4,
+        "accepted": true,
+        "inputToEffectMs": 21.2333,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          13
+        ]
+      }
+    ],
+    "visualCompletionMs": 766.8128,
+    "visualFrames": 35,
+    "visualsDrained": true,
+    "passed": true,
+    "error": null
+  },
+  {
+    "case": "sameTarget",
+    "actions": [
+      {
+        "index": 0,
+        "accepted": true,
+        "inputToEffectMs": 17.8944,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          37
+        ]
+      },
+      {
+        "index": 1,
+        "accepted": true,
+        "inputToEffectMs": 15.6674,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          31
+        ]
+      },
+      {
+        "index": 2,
+        "accepted": true,
+        "inputToEffectMs": 14.1522,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          25
+        ]
+      },
+      {
+        "index": 3,
+        "accepted": true,
+        "inputToEffectMs": 13.4649,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          19
+        ]
+      },
+      {
+        "index": 4,
+        "accepted": true,
+        "inputToEffectMs": 18.1662,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          13
+        ]
+      }
+    ],
+    "visualCompletionMs": 650.108337,
+    "visualFrames": 35,
+    "visualsDrained": true,
+    "passed": true,
+    "error": null
+  },
+  {
+    "case": "deathMidChain",
+    "actions": [
+      {
+        "index": 0,
+        "accepted": true,
+        "inputToEffectMs": 27.3943,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 1,
+        "target": 0,
+        "hp": [
+          -5,
+          19,
+          17,
+          18
+        ]
+      },
+      {
+        "index": 1,
+        "accepted": true,
+        "inputToEffectMs": 22.043000000000003,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 1,
+        "hp": [
+          -5,
+          13,
+          17,
+          18
+        ]
+      },
+      {
+        "index": 2,
+        "accepted": true,
+        "inputToEffectMs": 23.098300000000002,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 1,
+        "hp": [
+          -5,
+          7,
+          17,
+          18
+        ]
+      },
+      {
+        "index": 3,
+        "accepted": true,
+        "inputToEffectMs": 19.386100000000003,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 1,
+        "hp": [
+          -5,
+          1,
+          17,
+          18
+        ]
+      }
+    ],
+    "visualCompletionMs": 650.0826,
+    "visualFrames": 35,
+    "visualsDrained": true,
+    "passed": true,
+    "error": null
+  },
+  {
+    "case": "aoeThenSingle",
+    "actions": [
+      {
+        "index": 0,
+        "accepted": true,
+        "inputToEffectMs": 35.1293,
+        "sameFrame": true,
+        "newVfx": 2,
+        "activeVfx": 2,
+        "pendingVisuals": 1,
+        "target": 0,
+        "hp": [
+          11,
+          13,
+          11,
+          12
+        ]
+      },
+      {
+        "index": 1,
+        "accepted": true,
+        "inputToEffectMs": 24.0453,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 2,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          5,
+          13,
+          11,
+          12
+        ]
+      },
+      {
+        "index": 2,
+        "accepted": true,
+        "inputToEffectMs": 21.7908,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 2,
+        "pendingVisuals": 1,
+        "target": 0,
+        "hp": [
+          -1,
+          13,
+          11,
+          12
+        ]
+      }
+    ],
+    "visualCompletionMs": 683.5432,
+    "visualFrames": 35,
+    "visualsDrained": true,
+    "passed": true,
+    "error": null
+  },
+  {
+    "case": "insufficient",
+    "actions": [
+      {
+        "index": 0,
+        "accepted": true,
+        "inputToEffectMs": 20.8932,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          37
+        ]
+      },
+      {
+        "index": 1,
+        "accepted": false,
+        "inputToEffectMs": 2.0263,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          37
+        ]
+      }
+    ],
+    "visualCompletionMs": 600.0404,
+    "visualFrames": 35,
+    "visualsDrained": true,
+    "passed": true,
+    "error": null
+  },
+  {
+    "case": "endTurn",
+    "actions": [
+      {
+        "index": 0,
+        "accepted": true,
+        "inputToEffectMs": 17.0232,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          37
+        ]
+      },
+      {
+        "index": 1,
+        "accepted": true,
+        "inputToEffectMs": 15.6249,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          31
+        ]
+      }
+    ],
+    "visualCompletionMs": 799.9134,
+    "visualFrames": 42,
+    "visualsDrained": true,
+    "passed": true,
+    "error": null
+  },
+  {
+    "case": "dragCancel",
+    "actions": [
+      {
+        "index": 0,
+        "accepted": true,
+        "inputToEffectMs": 17.0687,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          37
+        ]
+      },
+      {
+        "index": 1,
+        "accepted": true,
+        "inputToEffectMs": 17.3868,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          31
+        ]
+      }
+    ],
+    "visualCompletionMs": 616.8423,
+    "visualFrames": 35,
+    "visualsDrained": true,
+    "passed": true,
+    "error": null
+  },
+  {
+    "case": "selectionCancel",
+    "actions": [
+      {
+        "index": 0,
+        "accepted": true,
+        "inputToEffectMs": 30.008200000000002,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          11,
+          19,
+          17,
+          18
+        ]
+      },
+      {
+        "index": 1,
+        "accepted": true,
+        "inputToEffectMs": 22.8143,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 0,
+        "target": 0,
+        "hp": [
+          5,
+          19,
+          17,
+          18
+        ]
+      }
+    ],
+    "visualCompletionMs": 666.715637,
+    "visualFrames": 35,
+    "visualsDrained": true,
+    "passed": true,
+    "error": null
+  },
+  {
+    "case": "lethalSingle",
+    "actions": [
+      {
+        "index": 0,
+        "accepted": true,
+        "inputToEffectMs": 93.769600000000011,
+        "sameFrame": true,
+        "newVfx": 0,
+        "activeVfx": 0,
+        "pendingVisuals": 2,
+        "target": 0,
+        "hp": [
+          -5
+        ]
+      }
+    ],
+    "visualCompletionMs": 586.956055,
+    "visualFrames": 29,
+    "visualsDrained": true,
+    "passed": true,
+    "error": null
+  }
+]

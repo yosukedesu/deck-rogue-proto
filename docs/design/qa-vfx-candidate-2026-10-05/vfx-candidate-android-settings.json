@@ -1,0 +1,144 @@
+{
+  "activeTarget": "Android",
+  "renderGraphCompatibilityMode": false,
+  "allowHDRDisplaySupport": false,
+  "textures": [
+    {
+      "element": "fire",
+      "override": true,
+      "format": "ASTC_6x6",
+      "maxSize": 1024,
+      "sRGB": true,
+      "mipmap": false,
+      "wrap": "Clamp",
+      "filter": "Bilinear"
+    },
+    {
+      "element": "water",
+      "override": true,
+      "format": "ASTC_6x6",
+      "maxSize": 1024,
+      "sRGB": true,
+      "mipmap": false,
+      "wrap": "Clamp",
+      "filter": "Bilinear"
+    },
+    {
+      "element": "ice",
+      "override": true,
+      "format": "ASTC_6x6",
+      "maxSize": 1024,
+      "sRGB": true,
+      "mipmap": false,
+      "wrap": "Clamp",
+      "filter": "Bilinear"
+    },
+    {
+      "element": "lightning",
+      "override": true,
+      "format": "ASTC_6x6",
+      "maxSize": 1024,
+      "sRGB": true,
+      "mipmap": false,
+      "wrap": "Clamp",
+      "filter": "Bilinear"
+    },
+    {
+      "element": "dark",
+      "override": true,
+      "format": "ASTC_6x6",
+      "maxSize": 1024,
+      "sRGB": true,
+      "mipmap": false,
+      "wrap": "Clamp",
+      "filter": "Bilinear"
+    },
+    {
+      "element": "light",
+      "override": true,
+      "format": "ASTC_6x6",
+      "maxSize": 1024,
+      "sRGB": true,
+      "mipmap": false,
+      "wrap": "Clamp",
+      "filter": "Bilinear"
+    },
+    {
+      "element": "heal",
+      "override": true,
+      "format": "ASTC_6x6",
+      "maxSize": 1024,
+      "sRGB": true,
+      "mipmap": false,
+      "wrap": "Clamp",
+      "filter": "Bilinear"
+    },
+    {
+      "element": "vine",
+      "override": true,
+      "format": "ASTC_6x6",
+      "maxSize": 1024,
+      "sRGB": true,
+      "mipmap": false,
+      "wrap": "Clamp",
+      "filter": "Bilinear"
+    },
+    {
+      "element": "earth",
+      "override": true,
+      "format": "ASTC_6x6",
+      "maxSize": 1024,
+      "sRGB": true,
+      "mipmap": false,
+      "wrap": "Clamp",
+      "filter": "Bilinear"
+    }
+  ],
+  "pipelines": [
+    {
+      "path": "Assets/Settings/URP-Default.asset",
+      "name": "URP-Default",
+      "depthTexture": false,
+      "msaaSamples": 1,
+      "renderScale": 1.0,
+      "renderers": [
+        {
+          "name": "URP-Renderer",
+          "type": "UniversalRendererData",
+          "path": "Assets/Settings/URP-Renderer.asset"
+        }
+      ]
+    },
+    {
+      "path": "Assets/Settings/URP-Phone.asset",
+      "name": "URP-Phone",
+      "depthTexture": false,
+      "msaaSamples": 1,
+      "renderScale": 1.0,
+      "renderers": [
+        {
+          "name": "URP-Phone-Renderer",
+          "type": "UniversalRendererData",
+          "path": "Assets/Settings/URP-Phone-Renderer.asset"
+        }
+      ]
+    },
+    {
+      "path": "Packages/com.unity.render-pipelines.universal/Runtime/Data/UniversalRenderPipelineAsset.asset",
+      "name": "UniversalRenderPipelineAsset",
+      "depthTexture": false,
+      "msaaSamples": 1,
+      "renderScale": 1.0,
+      "renderers": [
+        {
+          "name": "UniversalRendererData",
+          "type": "UniversalRendererData",
+          "path": "Packages/com.unity.render-pipelines.universal/Runtime/Data/UniversalRendererData.asset"
+        }
+      ]
+    }
+  ],
+  "postShader": "Assets/Resources/Shaders/ElementBattleFx.shader",
+  "legacyShader": "Assets/Resources/Shaders/WorldBattleFx.shader",
+  "deviceExecuted": false
+}
