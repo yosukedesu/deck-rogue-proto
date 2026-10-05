@@ -74,7 +74,7 @@ out['mizoreTextures']=mizore
 out['shaderTagEncoding']='SerializedPass.m_State.m_Tags.tags uses uppercase LIGHTMODE; both exact values asserted'
 out['shaders']=shaders;out['rendererScriptTypes']=sorted(rendererTypes)
 metadata=(root/'Managed/Metadata/global-metadata.dat').read_bytes()
-out['runtimeMetadata']={name:name.encode() in metadata for name in ['ElementVfxPass','RestoreLegacyElements','CanUsePost']}
+out['runtimeMetadata']={name:name.encode() in metadata for name in ['ElementVfxPass','RestoreLegacyElements','CanUsePost','CombatDisplaySequence']}
 assert all(out['runtimeMetadata'].values())
 out['sourceCommit']=subprocess.check_output(['git','rev-parse','HEAD'],cwd=r,text=True).strip()
 

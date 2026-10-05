@@ -39,3 +39,8 @@
 火・水・氷・回復はux-final-element-reviewの21/25（ピーク付近）と35（余韻）を実画像確認。火は明るい床への接点と白い芯が続き、広い暗膜は見えない。水の青い本体・氷の結晶面は水/結晶の被覆として読め、白く照らされた敵に対する大きな暗いハローは確認できない。回復は白い服の前を通る明るい緑の輪と粒が保たれる。このシーンで追加分割の必要性は確認できず、4属性は変更しない。pixel一致は「融合の問題が無い」証明ではなく、上記の目視判断とは区別する。全背景・全照明条件を保証するものではない。
 
 追加修正後: 表示順4/4（通常・盾・250ms後の次カード・同一stateのUI再構築）、演出25/25（36/36、pending0）、操作9/9を再確認。盾10→着弾で3→自ターン開始で0。予告は攻撃7を保持し、宣言イベントで防御7＋筋力1へ移る。通常/盾の動画は `DeckRogue-UXFix-EnemyTurn.mp4` / `DeckRogue-UXFix-GuardTurn.mp4`（1920×886、60fps、180frames）。固定刻み映像のgameTimeは順序検証用であり実測レイテンシではない。
+
+
+## 最終Android成果物
+
+実装コミット03ddaccからAPKを再作成し、署名・版・ZIP CRC・ARM64・9枚ASTC_6x6・ミゾレ2枚の可視RGBA・481プロファイル・3シェーダーのLightMode/合成係数/ZTest/ZWrite・CombatDisplaySequenceを含むruntime metadataを検査し成功。ローカル `DeckRogue-UXFix-03ddacc.apk`（107901234 bytes）、SHA256 `80515f11aa4aaa73b27e5d2de17149c90ec1579cbd42449f439d760fedfa8bf0`。package com.deckrogue.proto、versionCode 1/versionName 1.0、minSdk26/targetSdk36、arm64-v8a。既存と同じAndroid Debug証明書、v2署名検証成功。旧配布APKと94e6f47 APKを別名で保持。mainと通常save/report4件のハッシュ不変。Android実機起動・タッチ操作・GPU時間・発熱は未検証。配布・Drive/Libraryアップロード・pushなし。
