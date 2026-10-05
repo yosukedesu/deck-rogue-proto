@@ -1,0 +1,106 @@
+{
+  "layouts": 37,
+  "errors": 0,
+  "act1Gates": true,
+  "diorama": {
+    "active": true,
+    "layout": "Stage/act1_layout",
+    "pathYaw": -22,
+    "parts": 21,
+    "triangles": 27838,
+    "renderers": 20,
+    "materials": 17,
+    "dynamic": 2,
+    "seatMaxAbsY": 0,
+    "seatIntrusions": 0,
+    "ok": true,
+    "failures": [],
+    "missing": [],
+    "byKind": {
+      "full-stage-batch": 17,
+      "mist": 2,
+      "shaft": 2
+    },
+    "frames": 0,
+    "arrayAniso": 0,
+    "anisoMode": "Enable",
+    "offscreenParts": 0,
+    "offscreenPartsWide": 0,
+    "offscreenNames": [],
+    "phoneHidden": 1,
+    "gates": {
+      "source": "full-stage-integrated",
+      "partsMin": 15,
+      "partsMax": 40,
+      "renderersMax": 40,
+      "materialsMax": 18,
+      "trianglesMax": 30000,
+      "litterMax": 250,
+      "seatAbsY": 0.01
+    },
+    "normalAtlas": {
+      "requested": false,
+      "on": false,
+      "found": 0,
+      "total": 0,
+      "lookAllows": true
+    },
+    "mistParts": 1,
+    "sway": {
+      "parts": 0,
+      "materials": [],
+      "lookAllows": true
+    },
+    "dynamicNames": [
+      "shaft-355",
+      "shaft-356"
+    ],
+    "sig": "d|1|Relief||Phone",
+    "buildMs": 179.653
+  },
+  "sameStaticLights": true,
+  "sameHitEvents": false,
+  "lookEqual": {
+    "ambient": true,
+    "fog": true,
+    "fog2": true,
+    "nightGrade": true,
+    "tiltShift": true
+  },
+  "recovery": {
+    "lit": 0,
+    "pending": 0,
+    "dimK": 1,
+    "exposure": 0
+  },
+  "tempo": {
+    "cases": 9,
+    "passed": 9,
+    "actions": 26,
+    "accepted": 25,
+    "sameFrame": true,
+    "maxVisualFrames": 50
+  },
+  "acts": {
+    "act2": {
+      "pixelsIdenticalToOld": false,
+      "mode": "old"
+    },
+    "act3": {
+      "pixelsIdenticalToOld": false,
+      "mode": "old"
+    }
+  },
+  "noArgsStartup": {
+    "commandLine": "\"D:\\deck-rogue\\unity-batch\\Build\\DeckRogue.exe\" ",
+    "integratedLog": true,
+    "bundledLookLog": true
+  },
+  "act23MatchedSequence": {
+    "act2": true,
+    "act3": true
+  },
+  "actsComparisonNote": "Initial comparison used different preceding animation sequences. Matched two-state runs are pixel-identical for both acts.",
+  "sameHitPhotometry": true,
+  "maxGroundFollowingHitPositionDeltaMeters": 0.0209
+}

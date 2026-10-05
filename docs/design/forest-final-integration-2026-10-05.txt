@@ -23,3 +23,24 @@ unchanged. Unity actual Android texture study:256x512/79696bytes/10mips.
 No attack-light, input, facing or animation behavior edits. Gameplay regression
 and final media are recorded separately. Build target ARM64/IL2CPP/minSDK26.
 APK remains local pending visual approval; no Drive write or remote push.
+
+Final Windows verification, source commit b76f2b1:
+Build succeeded28s,0errors/16warnings. Zero-command-line-argument launch confirmed
+integrated default, bundled look, PC structural checkOK in actual Player.log.
+37 screenshots with NO forest flags/external look:normal/fire/recovery/four enemies,
+Act2/3.0 layout errors; Act1 structural gates passed. Phone27838tri/20renderers/17mats.
+Static lights/fog/grade/DOF equal reviewed banks version. Hit color/intensity/duration
+equal; ground-following position shifts at most0.02090m from updated inset stones.
+Recovery:0active/0pending lights,dim1/exposure0. Final tempo9/9 pass,26inputs/25valid,
+all same-frame; independent presentation drains<=50frames. Act2/3 matched-sequence
+default vs original screenshots pixel-identical (earlier unlike-sequence comparison
+was invalid for pixel identity). Three-hero regression retained from8f6756b.
+
+Media:
+Windows still libfile_15a44ebfea0881918e8372557548cde5 v0
+6-second180-frame30Hz1920x886 silent Windows game recording:
+libfile_6273abe2844081918599eac28fc1f40e v0.
+One strike at frame30, rapid cards at90/91/92; all4 accepted, HP43->37->31->25->19.
+Fixed-step recording is visual evidence, NOT real-time performance measurement.
+APK build uses BuildTools.BuildAndroid; first invocation mistakenly named BatchTools
+and exited before build, corrected. No stale APK is considered final.
