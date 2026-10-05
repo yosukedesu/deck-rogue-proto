@@ -1,0 +1,32 @@
+{
+  "id": "1ygjXr0faflHPdGAtYXAsa9vKJIcBYnQ8",
+  "title": "DeckRogue-FinalForest-b76f2b1.apk",
+  "mime_type": "application/vnd.android.package-archive",
+  "size": "107356634",
+  "url": "https://drive.google.com/file/d/1ygjXr0faflHPdGAtYXAsa9vKJIcBYnQ8/view?usp=drivesdk",
+  "display_url": "https://drive.google.com/file/d/1ygjXr0faflHPdGAtYXAsa9vKJIcBYnQ8/view?usp=drivesdk",
+  "file_or_folder": "file",
+  "created_time": null,
+  "modified_time": null,
+  "parent_ids": [
+    "11kgt9ani6JGx73dhZxHJmAb8P9CYMXQl"
+  ],
+  "drive_id": null,
+  "current_user_can_share": null,
+  "has_augmented_permissions": null,
+  "shared": false,
+  "permissions": [
+    {
+      "type": "user",
+      "role": "owner",
+      "emailAddress": null,
+      "domain": null,
+      "displayName": null,
+      "allowFileDiscovery": null
+    }
+  ],
+  "source_visibility_status": "permission_metadata_available",
+  "localSHA256": "07A5E7093CD9D0CD94ADB2F7900FD0F226C8ABAF43BF98BBBD5A21551DC34ED8",
+  "verification": "Local APK and Drive desktop destination SHA256 identical; cloud metadata name, parent, size and owner-only permission verified. Remote checksum not exposed by connector.",
+  "oldFilesPreserved": true
+}

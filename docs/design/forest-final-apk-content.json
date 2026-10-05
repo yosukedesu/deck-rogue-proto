@@ -1,0 +1,78 @@
+{
+  "apk": "DeckRogue-FinalForest-b76f2b1.apk",
+  "bytes": 107356634,
+  "sha256": "07a5e7093cd9d0cd94adb2f7900fd0f226c8abaf43bf98bbbd5a21551dc34ed8",
+  "zipCRC": "passed",
+  "abis": [
+    "arm64-v8a"
+  ],
+  "resources": {
+    "fullstageintegrated/foreststage": {
+      "type": "GameObject",
+      "name": "ForestStage",
+      "meshCount": 17,
+      "trianglesIncludingAtmosphere": 27820,
+      "materials": [
+        "Distant forest atmosphere",
+        "FoliageCutout_FernAtlas",
+        "Moss pixel limestone",
+        "Still forest water",
+        "TreeCutout_0",
+        "TreeCutout_1",
+        "TreeCutout_2",
+        "TreeCutout_3",
+        "TreeCutout_Midground_Study",
+        "Weathered grey limestone",
+        "bronze_128",
+        "cliff_strata_128",
+        "earth_128",
+        "lantern_glass_emission",
+        "moss_turf_128"
+      ]
+    },
+    "stage/look_act1_integrated": {
+      "type": "TextAsset",
+      "name": "look_act1_integrated",
+      "exactJSONBytes": true,
+      "sha256": "6b97d2bd6e997d1a107e94fd49219cafd296b4c47790905621e560a0becec8a8",
+      "forestSettings": {
+        "staticNeutral": 0.5,
+        "gradeWeight": 0.18,
+        "vignetteWeight": 0.6,
+        "ambientScale": 1.15,
+        "backdropScale": 5.0,
+        "lanternIntensity": 10.0,
+        "lanternRange": 5.5,
+        "backdropFog": 1,
+        "rockDrop": 0.36,
+        "mossStaticScale": 0.62,
+        "mossStaticSaturation": 0.55,
+        "pavingStaticScale": 0.48,
+        "pavingStaticSaturation": 0.3,
+        "warmGround": 5.0,
+        "battleFill": 2.0,
+        "staticHueStudy": 1,
+        "staticVertexAO": 0,
+        "staticDirectionStudy": 0,
+        "warmWorldY": 1.322433
+      }
+    }
+  },
+  "treeTextures": [
+    {
+      "width": 256,
+      "height": 512,
+      "format": 50,
+      "mips": 10,
+      "completeImageSize": 79696,
+      "streamSize": 0,
+      "dataBytes": 79696
+    }
+  ],
+  "IL2CPPMetadataPresent": true,
+  "compiledForestStrings": {
+    "FullStageIntegrated": true,
+    "look_act1_integrated": true,
+    "[Forest] integrated default; natural banks +23 inset stones; rock patch OFF; AO0": true
+  }
+}
