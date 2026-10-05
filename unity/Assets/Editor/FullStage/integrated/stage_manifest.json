@@ -1,0 +1,75 @@
+{
+  "name": "Mossbound Full Stage",
+  "authoring": "Entire scene authored in Blender on cloud, original geometry/materials; Unity integration pending",
+  "basis": "t/s road frame rotated +22deg around Blender Z; floor Z=0. Source engine Unity X,Y,Z maps to Blender X,Z,Y, verify handedness via anchors on import.",
+  "clear_battle_zone": {
+    "t": [
+      -9,
+      15
+    ],
+    "s": [
+      -2.4,
+      3
+    ],
+    "height": 0
+  },
+  "camera": {
+    "blender_xyz": [
+      0,
+      -27.58734,
+      3.421816
+    ],
+    "vertical_fov_deg": 22,
+    "pitch_down_deg": 5
+  },
+  "objects": 248,
+  "triangles": 27818,
+  "warning": "Export Unity handedness/scale must be verified. Lighting preview is illustrative. No mobile FPS claim. Main gameplay camera preserves engine geometry. Light/fog should be connected to engine existing systems.",
+  "revision": "Integrated forest candidate: natural-bank slopes and 23-stone ruin approach",
+  "render_batches": 16,
+  "foliage": "Original AI tree images on alpha-tested 2.5D cards composed in Blender; genuine mesh ground/terraces/ruins; not a flat full-scene background",
+  "preview_atmosphere": "Blender volume preview not exported; recreate using URP fog/shafts",
+  "status": "Final integration candidate; cloud preview and export QA passed. Unity regression and Android build pending; user visual approval pending and APK distribution on hold.",
+  "exported_meshes": 16,
+  "exported_materials": 14,
+  "integration_note": "Retain natural-bank runtime setup. Old bank_rock_12 -0.36m vertex-index position patch OFF. Audit any other old index-dependent geometry patches. Preserve current light, fog, render layers and material settings. Do not restore old v3 UV0 patch. Resolve actual Ground_inset_stone source names through batch_source_map.json.",
+  "coplanar_overlap_removed": [
+    "Ground_inset_stone_05",
+    "Ground_inset_stone_16",
+    "Ground_inset_stone_18",
+    "Ground_inset_stone_19",
+    "Ground_inset_stone_21",
+    "Ground_inset_stone_24",
+    "Ground_inset_stone_26",
+    "Ground_inset_stone_27",
+    "Ground_inset_stone_29",
+    "Ground_inset_stone_30",
+    "Ground_inset_stone_31",
+    "Ground_inset_stone_32",
+    "Ground_inset_stone_33",
+    "Ground_inset_stone_34",
+    "Ground_inset_stone_35",
+    "Ground_inset_stone_36",
+    "Ground_inset_stone_37",
+    "Ground_inset_stone_38",
+    "Ground_inset_stone_40",
+    "Ground_inset_stone_41",
+    "Ground_inset_stone_42",
+    "Ground_inset_stone_43"
+  ],
+  "uv_export": "Each export clone active UV copied to a single UVMap before batch join; prevents mixed UV layer names creating per-face zero UV0.",
+  "rock_objects_softened": 60,
+  "optional_hidden_source_objects": [
+    "Front_Cliff_Strata"
+  ],
+  "source_triangles": 28508,
+  "changed_source_meshes": 23,
+  "unchanged_stage_meshes": 218,
+  "root_contact_samples": 467,
+  "root_contact_clearance_metres": [
+    -0.04058345933572749,
+    -0.003346552138535519
+  ],
+  "comparison_ao": "No vertex AO added. Compare with AO strength zero in both models.",
+  "triangle_delta": -690
+}

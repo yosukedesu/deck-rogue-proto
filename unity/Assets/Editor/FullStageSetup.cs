@@ -29,6 +29,7 @@ namespace DeckRogue.EditorTools {
   public static int CohesionStudy() => RunAt("Assets/Editor/FullStage/cohesion", "Assets/Resources/FullStageCohesion");
   public static int TreeStudy() => RunAt("Assets/Editor/FullStage/trees", "Assets/Resources/FullStageTrees");
   public static int NaturalBanksStudy() => RunAt("Assets/Editor/FullStage/banks", "Assets/Resources/FullStageBanks");
+  public static int IntegratedForest() => RunAt("Assets/Editor/FullStage/integrated", "Assets/Resources/FullStageIntegrated");
   static int RunAt(string sourceRoot, string outputRoot){
    string Root=outputRoot;
    const string textureRoot="Assets/Resources/FullStage";
@@ -48,12 +49,12 @@ namespace DeckRogue.EditorTools {
    if(Vector3.Distance(player,new Vector3(-4.973f,0,-1.039f))>.002f||Vector3.Distance(enemy,new Vector3(4.322f,0,1.207f))>.002f)throw new Exception("Foot marker mapping failed");
    Debug.Log("[FullStage] AXIS PASS basis="+basis+" player="+player.ToString("F5")+" enemy="+enemy.ToString("F5"));
    var textures=new Dictionary<string,string>{{"Moss pixel limestone","moss_soft_v5"},{"Weathered grey limestone","paving_soft_v5"},{"earth_128","soil_soft_v5"},{"moss_turf_128","moss_soft_v5"},{"cliff_strata_128","rock_soft_v5"},{"leaf_2_128","leaf_2_128"},{"bronze_128","bronze_128"},{"TreeCutout_0","tree_cutout_0"},{"TreeCutout_1","tree_cutout_1"},{"TreeCutout_2","tree_cutout_2"},{"TreeCutout_3","tree_cutout_3"},{"FoliageCutout_FernAtlas","fern_cutout_atlas"}};
-   if(outputRoot.EndsWith("Trees")||outputRoot.EndsWith("Banks"))textures.Add("TreeCutout_Midground_Study","tree_midground_v1");
+   if(outputRoot.EndsWith("Trees")||outputRoot.EndsWith("Banks")||outputRoot.EndsWith("Integrated"))textures.Add("TreeCutout_Midground_Study","tree_midground_v1");
    Func<string,string> texturePath=tex=>(tex=="tree_midground_v1"?"Assets/Resources/FullStageTrees":textureRoot)+"/"+tex+".png";
    var sourceMap=JArray.Parse(System.IO.File.ReadAllText(sourceRoot+"/batch_source_map.json"));
    var frontEntry=sourceMap.FirstOrDefault(b=>((JArray)b["sources"]).Any(n=>(string)n=="Front_Cliff_Strata"));
    var frontBatch=(string)frontEntry?["mesh"];
-   var mats=new Dictionary<string,Material>();var root=new GameObject(outputRoot.EndsWith("Banks")?"Mossbound natural banks integrated candidate":outputRoot.EndsWith("Cohesion")?"Mossbound cohesion study":outputRoot.EndsWith("Trees")?"Mossbound tree study":"Mossbound full stage v5");int triangles=0;
+   var mats=new Dictionary<string,Material>();var root=new GameObject(outputRoot.EndsWith("Integrated")?"Mossbound integrated forest":outputRoot.EndsWith("Banks")?"Mossbound natural banks integrated candidate":outputRoot.EndsWith("Cohesion")?"Mossbound cohesion study":outputRoot.EndsWith("Trees")?"Mossbound tree study":"Mossbound full stage v5");int triangles=0;
    foreach(var mf in source.GetComponentsInChildren<MeshFilter>(true)){
     var imported=mf.GetComponent<MeshRenderer>().sharedMaterials;var output=new Material[imported.Length];
     for(int i=0;i<imported.Length;i++){

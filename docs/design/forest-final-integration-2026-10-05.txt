@@ -1,0 +1,25 @@
+Final forest material integration and normal-start defaults
+
+Library source libfile_01534d230ec88191979d51c2af98e64f v0,26082720bytes.
+README and actual Blender preview inspected; ZIP CRC passed. Source only changes
+23 Ground_inset_stone_* meshes relative to natural banks; other218 source meshes
+hash-identical per included validation. Paving_slab_00..04 untouched. Source and
+Unity import27818tri,16batches,14materials. Shared original texture resources.
+
+Normal launch now selects integrated forest and bundled look_act1_integrated.json,
+after tier layers. This reproduces reviewed night/hue1/direction0/AO0 settings
+without -forest-preview/-forest-geometry/-forest-look or an external file.
+Act1-only look overlay and prefab; Act2/3 existing routing unchanged.
+Comparison: -forest-preview original restores old v5/default lighting;
+-forest-preview legacy restores pre-full-stage; -forest-preview night with
+-forest-geometry trees/banks/cohesion keeps independent studies (use their saved
+-forest-look profile for exact old review). Explicit night without geometry = v5.
+
+Old bank_rock_12 spatial94-vertex drop disabled for integrated/banks/cohesion;
+geometry-changing variants reject old AO. No old component/vertex index transplant.
+Android new tree retains max512 ASTC6 with Android-only POT resample; sourcePNG
+unchanged. Unity actual Android texture study:256x512/79696bytes/10mips.
+
+No attack-light, input, facing or animation behavior edits. Gameplay regression
+and final media are recorded separately. Build target ARM64/IL2CPP/minSDK26.
+APK remains local pending visual approval; no Drive write or remote push.

@@ -857,6 +857,12 @@ namespace DeckRogue.Game
                 }
                 if (ta != null) texts.Add(new KeyValuePair<string, string>(n, ta.text));
             }
+            // Approved forest settings ship in Resources, after tier layers, matching reviewed output.
+            if(act==1 && Diorama.IntegratedForest) {
+                var integrated=Resources.Load<TextAsset>(ResourceDir+"look_act1_integrated");
+                if(integrated==null)throw new InvalidOperationException("Integrated forest look missing");
+                texts.Add(new KeyValuePair<string,string>("look_act1_integrated",integrated.text));
+            }
             // Local review override; no persistence and no effect unless explicitly requested.
             var previewFile = Autopilot.Arg("-forest-look");
             if (act == 1 && Diorama.NightForestPreview && !string.IsNullOrEmpty(previewFile))

@@ -135,13 +135,15 @@ namespace DeckRogue.Game
 
         static float _pathYaw = DefaultPathYaw;
         static FullStageGround _fullGround;
-        // Review-only switch. Omit the flag to restore the unmodified v3 integration.
-        public static string ForestPreview => Autopilot.Arg("-forest-preview") ?? "";
+        // Approved default forest; explicit original/legacy and geometry flags retain comparisons.
+        public static string ForestPreview => Autopilot.Arg("-forest-preview") ?? "night";
+        public static string ForestGeometry => Autopilot.Arg("-forest-geometry") ?? (Autopilot.Arg("-forest-preview")==null?"integrated":"");
         public static bool LegacyForestPreview => ForestPreview == "legacy";
         public static bool NightForestPreview => ForestPreview == "night";
-        public static bool CohesionForestPreview => NightForestPreview && Autopilot.Arg("-forest-geometry") == "cohesion";
-        public static bool TreeForestPreview => NightForestPreview && Autopilot.Arg("-forest-geometry") == "trees";
-        public static bool BanksForestPreview => NightForestPreview && Autopilot.Arg("-forest-geometry") == "banks";
+        public static bool CohesionForestPreview => NightForestPreview && ForestGeometry == "cohesion";
+        public static bool TreeForestPreview => NightForestPreview && ForestGeometry == "trees";
+        public static bool BanksForestPreview => NightForestPreview && ForestGeometry == "banks";
+        public static bool IntegratedForest => NightForestPreview && ForestGeometry == "integrated";
         static void PreviewVertexAO(MeshRenderer mr, Newtonsoft.Json.Linq.JObject aoData) {
             if(aoData==null)return;
             var mf=mr.GetComponent<MeshFilter>();if(mf==null||mr.name=="DistantAtmosphere")return;
@@ -269,7 +271,7 @@ namespace DeckRogue.Game
         }
         static void PreviewSeatRock(MeshRenderer mr)
         {
-            if(CohesionForestPreview || BanksForestPreview)return; // This study already bakes bank_rock_12's correction.
+            if(CohesionForestPreview || BanksForestPreview || IntegratedForest)return; // This study already bakes bank_rock_12's correction.
             float drop=PreviewFloat("rockDrop",0);if(drop<=0)return;
             var mf=mr.GetComponent<MeshFilter>();if(mf==null||mf.sharedMesh==null)return;
             var vertices=mf.sharedMesh.vertices;var matches=new List<int>();
@@ -297,13 +299,14 @@ namespace DeckRogue.Game
             var layout = opt.Layout ?? LoadLayout(act);
             if (layout == null) { Debug.LogWarning("[Diorama] 設計図が無い: Resources/" + LayoutResource(act)); return; }
             PrepareGround(layout);
-            if((CohesionForestPreview || TreeForestPreview || BanksForestPreview) && PreviewFloat("staticVertexAO",0)>0)
+            if((CohesionForestPreview || TreeForestPreview || BanksForestPreview || IntegratedForest) && PreviewFloat("staticVertexAO",0)>0)
                 throw new System.InvalidOperationException("Geometry study requires AO=0; old vertex AO cannot be reused across changed batches");
-            var fullPrefab = act == 1 && !LegacyForestPreview ? Resources.Load<GameObject>((BanksForestPreview?"FullStageBanks":CohesionForestPreview?"FullStageCohesion":TreeForestPreview?"FullStageTrees":"FullStage")+"/ForestStage") : null;
-            if(act==1 && (CohesionForestPreview || TreeForestPreview || BanksForestPreview) && fullPrefab==null)throw new System.Exception("Geometry study prefab missing");
+            var fullPrefab = act == 1 && !LegacyForestPreview ? Resources.Load<GameObject>((IntegratedForest?"FullStageIntegrated":BanksForestPreview?"FullStageBanks":CohesionForestPreview?"FullStageCohesion":TreeForestPreview?"FullStageTrees":"FullStage")+"/ForestStage") : null;
+            if(act==1 && (CohesionForestPreview || TreeForestPreview || BanksForestPreview || IntegratedForest) && fullPrefab==null)throw new System.Exception("Geometry study prefab missing");
             if(act==1 && CohesionForestPreview)Debug.Log("[ForestPreview] geometry=cohesion; baked rock correction; runtime rock patch disabled; AO=0");
             if(act==1 && TreeForestPreview)Debug.Log("[ForestPreview] geometry=trees; v5 ground; guarded spatial rock correction retained; AO=0");
             if(act==1 && BanksForestPreview)Debug.Log("[ForestPreview] geometry=banks; integrated trees and natural banks; source regrounded rock; runtime rock patch OFF; AO=0; performance unverified");
+            if(act==1 && IntegratedForest)Debug.Log("[Forest] integrated default; natural banks +23 inset stones; rock patch OFF; AO0");
             _fullStage = fullPrefab != null;
 
             var rootGo = new GameObject("diorama-act" + layout.Act);
@@ -1911,7 +1914,7 @@ namespace DeckRogue.Game
             if (_fullStage) {
                 // Imported render batches replace authored procedural parts; budgets reflect this representation.
                 st.Parts += _fullBatches; st.ByKind["full-stage-batch"]=_fullBatches;
-                st.GateSource=BanksForestPreview?"full-stage-natural-banks-candidate":CohesionForestPreview?"full-stage-cohesion-study":TreeForestPreview?"full-stage-tree-study":"full-stage-v5";st.GPartsMin=15;st.GPartsMax=40;st.GRenderers=40;st.GMaterials=18;st.GTriangles=BanksForestPreview?30000:20000; // Candidate structural cap only; Android performance remains unverified.
+                st.GateSource=IntegratedForest?"full-stage-integrated":BanksForestPreview?"full-stage-natural-banks-candidate":CohesionForestPreview?"full-stage-cohesion-study":TreeForestPreview?"full-stage-tree-study":"full-stage-v5";st.GPartsMin=15;st.GPartsMax=40;st.GRenderers=40;st.GMaterials=18;st.GTriangles=(BanksForestPreview||IntegratedForest)?30000:20000; // Candidate structural cap only; Android performance remains unverified.
                 maxY=0;
                 for(float t=-8;t<=14;t+=.5f)for(float side=-2;side<=2.8f;side+=.4f) {
                     var pos=OnPath(t,side,0);float h=_fullGround.Height(pos.x,pos.z);

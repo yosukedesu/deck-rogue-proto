@@ -1,0 +1,152 @@
+{
+  "meshes": [
+    {
+      "mesh": "StageBatch_00",
+      "triangles": 5152,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "Moss pixel limestone"
+      ]
+    },
+    {
+      "mesh": "StageBatch_01",
+      "triangles": 1400,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "Weathered grey limestone"
+      ]
+    },
+    {
+      "mesh": "StageBatch_02",
+      "triangles": 1440,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "earth_128",
+        "moss_turf_128"
+      ]
+    },
+    {
+      "mesh": "StageBatch_03",
+      "triangles": 68,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "Still forest water"
+      ]
+    },
+    {
+      "mesh": "StageBatch_04",
+      "triangles": 3480,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "cliff_strata_128"
+      ]
+    },
+    {
+      "mesh": "StageBatch_05",
+      "triangles": 44,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "lantern_glass_emission"
+      ]
+    },
+    {
+      "mesh": "StageBatch_06",
+      "triangles": 220,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "bronze_128"
+      ]
+    },
+    {
+      "mesh": "StageBatch_07",
+      "triangles": 4,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "TreeCutout_0"
+      ]
+    },
+    {
+      "mesh": "StageBatch_08",
+      "triangles": 6582,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "TreeCutout_1"
+      ]
+    },
+    {
+      "mesh": "StageBatch_09",
+      "triangles": 2020,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "TreeCutout_2"
+      ]
+    },
+    {
+      "mesh": "StageBatch_10",
+      "triangles": 1956,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "TreeCutout_Midground_Study"
+      ]
+    },
+    {
+      "mesh": "StageBatch_11",
+      "triangles": 2,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "TreeCutout_3"
+      ]
+    },
+    {
+      "mesh": "StageBatch_12",
+      "triangles": 2816,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "moss_turf_128"
+      ]
+    },
+    {
+      "mesh": "StageBatch_13",
+      "triangles": 1630,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "moss_turf_128"
+      ]
+    },
+    {
+      "mesh": "StageBatch_14",
+      "triangles": 140,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "FoliageCutout_FernAtlas"
+      ]
+    },
+    {
+      "mesh": "StageBatch_15",
+      "triangles": 864,
+      "uv_layer_count": 1,
+      "zero_area_uv_faces": 0,
+      "materials": [
+        "earth_128"
+      ]
+    }
+  ],
+  "total_triangles": 27818,
+  "all_meshes_have_exactly_one_uv0": true,
+  "total_zero_area_uv_faces": 0
+}

@@ -1,0 +1,93 @@
+{
+  "fog": {
+    "color": [
+      0.36,
+      0.44,
+      0.56
+    ],
+    "start": 22,
+    "end": 48,
+    "height": {
+      "color": [
+        0.36,
+        0.43,
+        0.52
+      ],
+      "base": -0.15,
+      "top": 1.2,
+      "density": 0.18,
+      "depthStart": 26,
+      "depthFull": 42
+    },
+    "far2": {
+      "start": 32,
+      "end": 58,
+      "strength": 0.6
+    },
+    "lobe": {
+      "color": [
+        0.48,
+        0.59,
+        0.74
+      ],
+      "strength": 1.2,
+      "powerV": 650,
+      "powerH": 90
+    }
+  },
+  "moon": {
+    "color": [
+      0.57,
+      0.68,
+      0.88
+    ],
+    "intensity": 0.32
+  },
+  "backlight": {
+    "color": [
+      0.5,
+      0.64,
+      0.9
+    ],
+    "illum": 1.4
+  },
+  "materials": {
+    "glow": {
+      "tint": [
+        0.38,
+        0.45,
+        0.59
+      ],
+      "intensity": 2.0,
+      "shaftGain": 1.65
+    }
+  },
+  "forestPreview": {
+    "staticNeutral": 0.5,
+    "gradeWeight": 0.18,
+    "vignetteWeight": 0.6,
+    "ambientScale": 1.15,
+    "backdropScale": 5.0,
+    "lanternIntensity": 10.0,
+    "lanternRange": 5.5,
+    "backdropFog": 1,
+    "rockDrop": 0.36,
+    "mossStaticScale": 0.62,
+    "mossStaticSaturation": 0.55,
+    "pavingStaticScale": 0.48,
+    "pavingStaticSaturation": 0.3,
+    "warmGround": 5.0,
+    "battleFill": 2.0,
+    "staticHueStudy": 1,
+    "staticVertexAO": 0,
+    "staticDirectionStudy": 0,
+    "warmWorldY": 1.322433
+  },
+  "tiltShift": {
+    "maxPxPC": 10,
+    "maxPxPhone": 10
+  },
+  "tiltShiftPass": {
+    "lensFar": 3
+  }
+}
