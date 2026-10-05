@@ -159,8 +159,10 @@ namespace DeckRogue.Game
 
         // ---- 戦場 ----
 
+        public int DisplayRevision { get; private set; }
         public void SyncField(GameRoot g, GameState st)
         {
+            ++DisplayRevision;
             var run = g.Rs;
             if (_bgAct != run.Act)
             {
@@ -743,6 +745,9 @@ namespace DeckRogue.Game
             if (fromBlock > 0) NudgePlayerBlock(-fromBlock);
             if (fromIce > 0) NudgePlayerIce(-fromIce);
         }
+
+        public int ShownPlayerIce => _shownPlayerIce;
+        public void SetPlayerIce(int value) { NudgePlayerIce(value - _shownPlayerIce); }
 
         public void NudgePlayerIce(int delta)
         {

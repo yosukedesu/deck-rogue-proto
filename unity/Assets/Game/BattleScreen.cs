@@ -652,6 +652,8 @@ namespace DeckRogue.Game
             UiKit.Anchor(strip, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-w / 2f, sb), new Vector2(w / 2f, sb + h));
             if (EntranceHidesStrips) { var scg = strip.gameObject.AddComponent<CanvasGroup>(); scg.alpha = 0f; scg.blocksRaycasts = false; }   // 見本: 登場の演出の間は隠れて生まれる (直しの輪2・R09)
             LedgerStrip(g, strip, st, index, def, nm, shownHp, w, h, aimed, candidate, acting, forecast, dying);
+            var layout = pan.GetComponent<IntentLayout>() ?? pan.gameObject.AddComponent<IntentLayout>();
+            layout.HeadTop = headTop; layout.Gap = neighborGap; layout.Stack = uniformStack;
             if (alive) IntentTag(g, pan, st, index, def, headTop, aimed, candidate, acting, neighborGap, uniformStack);
             // 夜の札 (ui=night): 帳面と意図の札を夜の組へ (旗が無ければ何もしない)
             PaperFx.Nightify(strip);
@@ -1219,6 +1221,30 @@ namespace DeckRogue.Game
                 if (cg == null) cg = tag.gameObject.AddComponent<CanvasGroup>();
                 act(cg);
             }
+        }
+
+        public class IntentLayout : MonoBehaviour { public float HeadTop, Gap; public bool Stack; }
+        public static void RefreshIntent(GameRoot g, GameState st, int index)
+        {
+            if (st == null || index < 0 || index >= st.Enemies.Count) return;
+            var pan = g.Anchor("enemy" + index);
+            var layout = pan != null ? pan.GetComponent<IntentLayout>() : null;
+            if (layout == null) return;
+            var old = pan.Find("intent-tag");
+            if (old != null) { old.SetParent(null, false); UnityEngine.Object.Destroy(old.gameObject); }
+            if (st.Enemies[index].Hp <= 0) return;
+            var def = Content.GetEnemyDef(st.Enemies[index].EnemyId);
+            IntentTag(g, pan, st, index, def, layout.HeadTop, g.PreferredTarget == index, false, false, layout.Gap, layout.Stack);
+            PaperFx.Nightify(pan.Find("intent-tag"));
+            if (CombatTimingProbe.Enabled) CombatTimingProbe.Event("intentDisplay", index + ":" + CardText.IntentText(st,index));
+        }
+
+        public static void SetIncomingState(RectTransform area, GameState st)
+        {
+            var info = area != null ? area.GetComponentInChildren<IncomingInfo>() : null;
+            if (info == null || st == null) return;
+            info.Incoming = Effects.IncomingTotal(st); info.Hidden = st.HideIntents == true;
+            info.SkipFirst = st.NullifyNextAttack == true; info.Landed = false;
         }
 
         static void IntentTag(GameRoot g, RectTransform pan, GameState st, int index, EnemyDef def, float headTop, bool aimed, bool candidate, bool acting, float neighborGap, bool uniformStack = false)

@@ -211,6 +211,7 @@ namespace DeckRogue.Game
             var prevBoard = _seenCombat as GameState;   // コマンド前の盤面 (敵の実行中の技の名前・仕込み札の枠を引く)
             // Rebuild 直後は LayoutGroup が未計算 (全て原点) なので、的の座標を読む前にレイアウトを確定させる
             Canvas.ForceUpdateCanvases();
+            var display = Stage.CombatWorld && enemyPhase && prevBoard != null && g.Battle != null ? new CombatDisplaySequence(g,prevBoard,combat) : null;
             int pendingPlayerDamage = 0;
             if (Stage.CombatWorld && enemyPhase && prevBoard != null && g.Battle != null)
             {
@@ -249,12 +250,13 @@ namespace DeckRogue.Game
                 if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || ResolvedCombatFx.IsResolved(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, prevBoard);
+                ctx.Display = display;
                 if (pendingPlayerDamage > 0 && ev is GameEvent_DamageDealt playerHit && playerHit.Source != "player")
                 {
                     pendingPlayerDamage -= Math.Max(0, playerHit.HpLoss);
                     int shownHp = combat.Player.Hp + pendingPlayerDamage;
                     var hpBoard = g.Battle;
-                    ctx.LandPlayerHp = () => { if (g.Rs != null && ReferenceEquals(g.Rs.Combat, combat) && g.Battle == hpBoard) hpBoard.DisplayPlayerHp(shownHp, false); };
+                    ctx.LandPlayerHp = () => { if (g.Rs != null && ReferenceEquals(g.Rs.Combat, combat) && g.Battle == hpBoard && (display == null || display.Current)) hpBoard.DisplayPlayerHp(shownHp, false); };
                 }
                 ctx.Feedback=ResolvedCombatFx.Capture(g,ev);
                 if(ctx.Feedback!=null && ev is GameEvent_DamageDealt enemyHit && enemyHit.Source!="player") {
@@ -282,6 +284,7 @@ namespace DeckRogue.Game
                 AfterVisual(delay, () => { try { Show(g, fx, captured, false, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
                 delay += enemyPhase ? MainSequenceGap(ev,ctx) : ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : (ctx.Hit != null && ctx.Hit.Volley && !ctx.Hit.VolleyLast) ? 0.03f : ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
             }
+            if(display != null) AfterVisual(delay + .01f, display.Finish);
             HoldLightIfAny(log, _seen, delay);
             _seen = log.Count;
             _seenCombat = combat;
@@ -319,7 +322,7 @@ namespace DeckRogue.Game
                 case GameEvent_EnemyActionExecuting ex:
                 {
                     // 上部バーの手番の札の番号を進める「敵の番 ② / 3」(敵が2体以上の時。順送りの間だけ。2026-09-29)
-                    if (live || Stage.CombatWorld) { int cnt = PhaseEnemyCount(g, ctx, ex.EnemyIndex); BattleScreen.SetPhase(g, 1, cnt > 1 ? ex.EnemyIndex : -1, cnt); }
+                    if (live || (Stage.CombatWorld && (ctx?.Display == null || ctx.Display.Current))) { int cnt = PhaseEnemyCount(g, ctx, ex.EnemyIndex); BattleScreen.SetPhase(g, 1, cnt > 1 ? ex.EnemyIndex : -1, cnt); }
                     if (ex.Kind == "attack" && StageMotion.On) MotionEnemyBig(g, ex.EnemyIndex, ctx);   // 段2 レーン M: 予告つき大技の赤い合図とフラッシュ (門が偽なら呼ばない)
                     var pan = g.Anchor("enemy" + ex.EnemyIndex);
                     var spr = g.Battle != null ? g.Battle.EnemySprite(ex.EnemyIndex) : null;
@@ -1456,7 +1459,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public int HitCount = 1; public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; public StageMotion.Shot Motion; public bool MotionDim; public ResolvedCombatFx.Ticket Feedback; public Action LandPlayerHp; }   // Motion＝この当たりで寄る (段2 レーン M・門が偽なら null)・MotionDim＝この札で舞台を暗くする   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
+        sealed class ReactionCtx { public int HitCount = 1; public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; public StageMotion.Shot Motion; public bool MotionDim; public ResolvedCombatFx.Ticket Feedback; public Action LandPlayerHp; public CombatDisplaySequence Display; }   // Motion＝この当たりで寄る (段2 レーン M・門が偽なら null)・MotionDim＝この札で舞台を暗くする   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
 
         /// <summary>
         /// 自分の札の当たりの計画 (2026-09-22 ユーザー「攻撃エフェクトがどの攻撃でも同じ」): 札 (CardPlayed / ReactionTriggered) の後に続く自分由来の DamageDealt
@@ -1844,6 +1847,7 @@ namespace DeckRogue.Game
 
         static void Show(GameRoot g, RectTransform fx, GameEvent ev, bool nudgeHp, ReactionCtx ctx = null)
         {
+            ctx?.Display?.Before(ev,ctx.EnemyIndex);
             if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("show",ev.GetType().Name);
             if(Stage.CombatWorld && ResolvedCombatFx.IsResolved(ev) && !(ev is GameEvent_DamageDealt enemyResolved && enemyResolved.Source!="player")) {var ticket=ctx?.Feedback??ResolvedCombatFx.Capture(g,ev);if(ticket!=null)ticket.Finishing=ctx?.FinishingBlow==true;ResolvedCombatFx.Show(g,fx,ticket);}
             if (StageMotion.CloseUpActive) MotionInterruptFor(ev, ctx);   // 段2 レーン M: 寄りの外の者に演出が出る前に寄りを戻す (寄りが走っていなければ読むだけ = 門が偽なら何も起きない)
@@ -2036,6 +2040,7 @@ namespace DeckRogue.Game
                                 AfterVisual(0.08f, () => Tween.Float(fx, pos + new Vector2(0f, -36f), "ブロックで −" + blockedP, PaperFx.SkyLight, 22, 34f, 1.0f));
                             }
                             if (!Stage.CombatWorld && dd.Amount > 0 && !guarded) Tween.Punch(rtC, Mathf.Min(0.1f, 0.03f + dd.Amount * 0.004f), keepBottom: true);
+                            ctx?.Display?.Land(dd);
                             ctx?.LandPlayerHp?.Invoke();
                             if (nudge && g.Battle != null) g.Battle.LandPlayerIncoming(dd.Amount);   // 見込みから届いた攻撃を引く (先に。この後の Nudge が残りで引き直す。p08)
                             if (nudge && g.Battle != null && dd.HpLoss > 0) g.Battle.NudgePlayerHp(-dd.HpLoss);
@@ -2099,7 +2104,7 @@ namespace DeckRogue.Game
                     Audio.Key("TurnStarted");
                     Banner(g, fx, "ターン " + ts.Turn + "  —  あなたの番", false);
                     // 上部バーの手番の札も順送りの間に「あなたの番」へ (2026-09-29。即時の時は組み直し済み＝触らない)
-                    if (nudgeHp || Stage.CombatWorld) BattleScreen.SetPhase(g, 0, -1, 0);
+                    if (nudgeHp || (Stage.CombatWorld && (ctx?.Display == null || ctx.Display.Current))) BattleScreen.SetPhase(g, 0, -1, 0);
                     // 自ターンの始まりで通常ブロックは消える (留め具 blockKeep なら N まで残る)。順送りの途中の盾の数字もここで揃える。この後の置物の分は BlockGained が足す
                     if (nudgeHp && g.Battle != null)
                     {
@@ -2165,7 +2170,7 @@ namespace DeckRogue.Game
                     Audio.Key("TurnEnded");
                     Banner(g, fx, "敵の番", true);
                     // 上部バーの手番の札を夜の札「敵の番」に (2026-09-29: 旧は敵が行動している間ずっと「あなたの番」のままだった)
-                    if (nudgeHp || Stage.CombatWorld) BattleScreen.SetPhase(g, 1, -1, PhaseEnemyCount(g, ctx, -1));
+                    if (nudgeHp || (Stage.CombatWorld && (ctx?.Display == null || ctx.Display.Current))) BattleScreen.SetPhase(g, 1, -1, PhaseEnemyCount(g, ctx, -1));
                     // 敵フェーズの始まりで敵のブロックは失効 (潜伏の殻は残る)。帳面の盾もここで消す
                     if (nudgeHp && g.Battle != null) g.Battle.ResetEnemyBlocks(ctx != null ? ctx.Prev : null);
                     break;

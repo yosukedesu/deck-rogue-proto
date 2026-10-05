@@ -64,7 +64,7 @@ for name,shader in shaders.items():
  assert shader['compressedBytes']>0 and shader['platformCodes']
  for ps in shader['passes']:
   assert ps['zWrite']==0 and ps['zTest']==4,ps
-  expected=(1,1) if ps['name']=='EmissiveHalo' else (5,10)
+  expected=(1,1) if name=='DeckRogue/ElementLuminousFx' and ps['tags'].get('LIGHTMODE')=='UniversalForward' else (5,10)
   assert (ps['srcBlend'],ps['destBlend'])==expected,ps
 assert shaders['DeckRogue/ElementBattleFx']['passes'][0]['tags'].get('LIGHTMODE')=='ElementAfterPost'
 assert shaders['DeckRogue/WorldBattleFx']['passes'][0]['tags'].get('LIGHTMODE')=='UniversalForward'
