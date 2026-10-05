@@ -264,6 +264,7 @@ namespace DeckRogue.Game
                     case "strike-review": yield return StrikeReview(g); break;
                     case "tempo": yield return TempoCheck(g); break;
                     case "vfx-coverage": yield return VfxCoverage(g); break;
+                    case "light-review": yield return ElementReview(g,true); break;
                     case "element-review": yield return ElementReview(g); break;
                     case "state": yield return StateJump(g, Arg("-state") ?? ""); break;   // 任意の状態へ跳んで撮る (2026-09-12)
                     case "tour":

@@ -11,8 +11,12 @@ namespace DeckRogue.Game
         static readonly Slot[] Pool = new Slot[24];
         static ParticleSystem _embers; static Material _emberMaterial;
         public static int ParticleCount => _embers!=null?_embers.particleCount:0;
-        static Mesh _quad; static Material _material; static Texture2D _atlas, _silver, _arcane, _guard, _trail;
+        static Mesh _quad; static Material _material, _elementMaterial; static Texture2D _atlas, _silver, _arcane, _guard, _trail;
         static readonly MaterialPropertyBlock Props = new MaterialPropertyBlock();
+        internal static void CollectElementRenderers(System.Collections.Generic.List<Renderer> output) {
+            output.Clear();if(_elementMaterial==null)return;
+            foreach(var slot in Pool)if(slot!=null && slot.Busy && slot.R!=null && slot.R.gameObject.activeInHierarchy && slot.R.sharedMaterial==_elementMaterial)output.Add(slot.R);
+        }
         public static int EmittedCount {get;private set;}
         public static void Cancel() {
             if(_embers!=null)_embers.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
@@ -58,6 +62,10 @@ namespace DeckRogue.Game
                 go.AddComponent<MeshFilter>().sharedMesh=_quad; slot.R=go.AddComponent<MeshRenderer>();
                 slot.R.sharedMaterial=_material; slot.R.shadowCastingMode=ShadowCastingMode.Off; slot.R.receiveShadows=false;
             }
+            if(authored && ElementBattleFx.SeparateMaterial) {
+                if(_elementMaterial==null){var shader=Shader.Find("DeckRogue/ElementBattleFx");if(shader!=null && shader.isSupported)_elementMaterial=new Material(shader);}
+                slot.R.sharedMaterial=_elementMaterial!=null?_elementMaterial:_material;
+            } else slot.R.sharedMaterial=_material;
             EmittedCount++;
             int version=++slot.Version; slot.Busy=true; slot.Started=Time.unscaledTime; slot.T.gameObject.SetActive(true);
             float inset=.5f/_atlas.width;

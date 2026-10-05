@@ -149,9 +149,10 @@ namespace DeckRogue.Game
         static long _worldBounce;
         // Contact + shared broad bounce. Repeated hits refresh the same light, never extinguish it.
         // Four enemies + player + one bounce fit the bounded six-light pool.
-        // Dedicated sheets carry their own bright cores. Keep the actor readable beneath them.
+        // Preserve the approved world light; weak mode exists only for isolated autopilot comparison.
         public static void ElementHit(string key,string element,Color color,bool heavy=false) {
             if(!Live)return;
+            if(ElementBattleFx.LightReviewMode!="weak"){WorldStrike(key,heavy,color);return;}
             var point=Where(key,new Vector2(.5f,.48f));if(!point.HasValue)return;
             float contact=element=="dark"?1.6f:element=="earth"?1.2f:element=="vine"?2f:4f;
             float bouncePower=element=="earth"?4f:element=="vine"?6f:element=="dark"?9f:12f;

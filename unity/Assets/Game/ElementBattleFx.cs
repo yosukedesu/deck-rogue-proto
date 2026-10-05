@@ -2,6 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace DeckRogue.Game {
  public static class ElementBattleFx {
+  // Review-only switches cannot alter normal player behavior.
+  public static readonly string LightReviewMode=ReadReviewMode();
+  static string ReadReviewMode(){var a=System.Environment.GetCommandLineArgs();if(System.Array.IndexOf(a,"-autopilot")<0)return "separated";int i=System.Array.IndexOf(a,"-vfx-light-review");return i>=0&&i+1<a.Length?a[i+1]:"separated";}
+  public static bool SeparateMaterial=>LightReviewMode!="baseline"&&LightReviewMode!="weak";
   static readonly Dictionary<string,Texture2D> Textures=new Dictionary<string,Texture2D>();
   public static readonly Dictionary<string,int> FrameMasks=new Dictionary<string,int>();
   public static int Frame(float time)=>Mathf.Clamp(Mathf.FloorToInt(time*8),0,7);
