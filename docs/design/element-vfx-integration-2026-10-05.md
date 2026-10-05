@@ -29,3 +29,17 @@ Libraryへの保存は自動承認レビューが外部宛先への承認不足�
 全476カードの個別実行、全リーダー組合せ、全敵行動、Android実機・新APKは未検証。将来新しいダメージイベント型を追加する場合は共通経路と監査の更新が必要。Windows版の追加テクスチャ上限は9×2MiB＝約18MiB、AndroidはASTC6×6設定で約2.02MiB想定だが実機測定していない。既存の有限プール（標準24／低12）を維持し、極端な同時発生では古い残光を再利用する。専用属性は1クアッド／イベント。キャプチャは固定30fpsのため性能ベンチマークではない。ビルド終了時には既存JobTempAlloc警告が出るが、今回のプレイヤーログでは該当エラーなし。
 
 再現: scripts/audit-vfx-coverage.py、Windowsプレイヤー -autopilot vfx-coverage / element-review / tempo に -shots 専用ディレクトリ -det -seed 4242 -uiscale 1.6 -hd2d tier=phone -screen-width 1920 -screen-height 886。Unityはユーザーの既存Editorを終了させず、使い捨て unity-batch で直接ビルドする。
+
+## 追加検証: Android生成と旧画面維持
+
+後続の明示依頼により a0dec4b からAndroid APKをローカル生成（未配布・未インストール）。build成功、errors 0、warnings 21、257秒。署名v2検証成功、ARM64、minSDK26、targetSDK36。
+
+APK内 assets/bin/Data の実シリアライズデータを抽出して9素材を検査。全て1024×512、ASTC6×6、mipmap1、Bilinear、Clamp U/V。合計2,117,664 bytes（約2.02MiB）のテクスチャデータ。9枚とも実ASTCデータから復号し、アルファ・色・8コマを確認。card-vfxの481プロファイルはソースのJSONとbyte一致。これはAPK内部検証であり、Android端末で実行した証拠ではない。
+
+Windows再確認: Act2/3の旧画像との差はそれぞれ約0.000412%／0.000294%の画素で、背景・UIの維持を目視確認。物理斬撃は旧ピークフレームとの8階調以上の差が約0.000470%の画素、床の強い照り返しも維持。青ガードを通常カード操作して結晶形状を確認。3実行ログにException/Error/missing surfaceなし。通常save4件と旧配布APKのSHA不変。
+
+照明変更の正確な範囲は vfx-light-change-summary.json。専用属性は接触光・bounce本体を弱め、半径・寿命・保持時間・heavy倍率・影も変えた。シェーダーの受光だけの変更ではない。旧シェーダーはunlitで変更なし。追加チューニングは親の動画レビュー待ち。
+
+Library送信は承認待ち。別経路の回避なし。
+
+未配布APK SHA256: `6cdde10707065bdcc2bd7bc520163b24e5706f468aba8204ec80d9cc17700e1c`、107838010 bytes。
