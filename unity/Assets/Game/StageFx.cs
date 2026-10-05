@@ -149,6 +149,20 @@ namespace DeckRogue.Game
         static long _worldBounce;
         // Contact + shared broad bounce. Repeated hits refresh the same light, never extinguish it.
         // Four enemies + player + one bounce fit the bounded six-light pool.
+        // Dedicated sheets carry their own bright cores. Keep the actor readable beneath them.
+        public static void ElementHit(string key,string element,Color color,bool heavy=false) {
+            if(!Live)return;
+            var point=Where(key,new Vector2(.5f,.48f));if(!point.HasValue)return;
+            float contact=element=="dark"?1.6f:element=="earth"?1.2f:element=="vine"?2f:4f;
+            float bouncePower=element=="earth"?4f:element=="vine"?6f:element=="dark"?9f:12f;
+            float power=heavy?1.2f:1f;var p=point.Value;
+            _worldContacts.TryGetValue(key,out var reuse);
+            _worldContacts[key]=MotionLight(p,Color.Lerp(color,Color.white,.15f),contact*power,5f,.24f,.18f,false,"element-contact",key,reuse);
+            var bounce=p+Vector3.up*1.2f;var source=UnitPoint("player",new Vector2(.5f,.5f));
+            if(source.HasValue)bounce=Vector3.Lerp(p,source.Value,.3f)+Vector3.up*1.2f;
+            _worldBounce=MotionLight(bounce,color,bouncePower*power,11f,.30f,.18f,false,"element-bounce",key,_worldBounce);
+        }
+
         static void WorldStrike(string key,bool heavy,Color effectColor) {
             var point=Where(key,new Vector2(.5f,.48f));if(!point.HasValue)return;
             float power=heavy?1.65f:1f;var p=point.Value;

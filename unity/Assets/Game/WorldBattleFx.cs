@@ -44,7 +44,7 @@ namespace DeckRogue.Game
             }
             return true;
         }
-        static void Emit(Vector3 from, Vector3 to, int cell, Color tint, float size, float duration, float angle, float sweep, bool projectile=false, Texture2D flipbook=null, bool ground=false, float gain=1.3f, float aspect=1f)
+        static void Emit(Vector3 from, Vector3 to, int cell, Color tint, float size, float duration, float angle, float sweep, bool projectile=false, Texture2D flipbook=null, bool ground=false, float gain=1.3f, float aspect=1f, bool authored=false)
         {
             if (!Ready()) return;
             Slot slot=null;
@@ -67,12 +67,12 @@ namespace DeckRogue.Game
             {
                 if(slot.T==null || slot.Version!=version)return;
                 float q=1-Mathf.Pow(1-k,2);
-                if(flipbook!=null){int frame=Mathf.Min(7,Mathf.FloorToInt(k*7)+1);float pad=.5f/flipbook.width;uv=new Vector4(.25f-2*pad,.5f-2*pad,(frame%4)*.25f+pad,frame<4?.5f+pad:pad);}
+                if(flipbook!=null){int frame=authored?ElementBattleFx.Frame(k):Mathf.Min(7,Mathf.FloorToInt(k*7)+1);if(authored)ElementBattleFx.Observe(flipbook.name,frame);float px=.5f/flipbook.width,py=.5f/flipbook.height;uv=new Vector4(.25f-2*px,.5f-2*py,(frame%4)*.25f+px,frame<4?.5f+py:py);}
                 if(flipbook==_trail)uv=new Vector4(1,1,0,0);
                 slot.T.position=Vector3.Lerp(from,to,projectile?k:0);
                 slot.T.rotation=facing*Quaternion.Euler(0,0,angle+(flipbook==null?sweep*q:0));
-                slot.T.localScale=new Vector3(1,aspect,1)*size*(projectile?1:Mathf.Lerp(flipbook!=null?.96f:.65f,1.08f,q));
-                float alpha=projectile?(flipbook==_trail?1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(.35f,1,k)):1):flipbook!=null ? 1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(flipbook==_silver?.28f:.68f,1,k)) : Mathf.Min(1,k*24)*(1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(.35f,1,k)));
+                slot.T.localScale=new Vector3(1,aspect,1)*size*(authored||projectile?1:Mathf.Lerp(flipbook!=null?.96f:.65f,1.08f,q));
+                float alpha=authored?1:projectile?(flipbook==_trail?1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(.35f,1,k)):1):flipbook!=null ? 1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(flipbook==_silver?.28f:.68f,1,k)) : Mathf.Min(1,k*24)*(1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(.35f,1,k)));
                 Props.Clear(); Props.SetTexture("_BaseMap",flipbook!=null?flipbook:_atlas); Props.SetVector("_AtlasRect",uv); Props.SetColor("_Tint",new Color(tint.r*gain,tint.g*gain,tint.b*gain,tint.a*alpha)); slot.R.SetPropertyBlock(Props);
             },Ease.Linear,()=>{if(slot.Version==version){slot.Busy=false;if(slot.T!=null)slot.T.gameObject.SetActive(false);}});
         }
@@ -85,18 +85,28 @@ namespace DeckRogue.Game
         public static bool Hit(string target,string style,Color color,bool heavy,int index=0)
         {
             if(!Socket(target,out var p,out var h))return false;
+            return HitAt(p,h,style,color,heavy,index,target);
+        }
+        public static bool HitAt(Vector3 p,float h,string style,Color color,bool heavy,int index=0,string target=null)
+        {
+            if(!Ready())return false;
             color=CombatPalette.ForFx(style,color);
             bool spell=style=="spell"||style=="light"||style=="spark"||style=="beam"||style=="throw";
             if(spell) {
                 Emit(p,p,2,color,h*(heavy?2.0f:1.65f),.42f,0,0,false,_arcane);
-                if(Stage.TryGetUnitBox(target,out var feet,out var height)) Emit(feet+Vector3.up*.035f,feet,2,new Color(color.r,color.g,color.b,.65f),h*1.1f,.28f,0,0,false,_arcane,true,1.15f);
+                if(target!=null && Stage.TryGetUnitBox(target,out var feet,out var height)) Emit(feet+Vector3.up*.035f,feet,2,new Color(color.r,color.g,color.b,.65f),h*1.1f,.28f,0,0,false,_arcane,true,1.15f);
             } else if(style=="stomp" || style=="vine") {
                 var impact=style=="vine"?new Color(.48f,.86f,.55f,.82f):new Color(.82f,.66f,.44f,.82f);
-                if(Stage.TryGetUnitBox(target,out var feet,out var height)) Emit(feet+Vector3.up*.045f,feet,2,impact,h*1.6f,.36f,0,0,false,_arcane,true,1.05f);
+                if(target!=null && Stage.TryGetUnitBox(target,out var feet,out var height)) Emit(feet+Vector3.up*.045f,feet,2,impact,h*1.6f,.36f,0,0,false,_arcane,true,1.05f);
                 Emit(p,p,1,impact,h*.48f,.16f,0,15);
             } else { Sparks(p,h,color); Emit(p,p,0,new Color(color.r,color.g,color.b,.95f),h*(heavy?2.6f:2.15f),.30f,index%2==0?0:90,0,false,_silver,false,2.0f); }
             Embers(p,h,color,heavy);
             Emit(p,p,1,new Color(color.r,color.g,color.b,.65f),h*(heavy?.70f:.48f),.19f,15,12);
+            return true;
+        }
+        public static bool ElementAt(Vector3 p,float h,string element) {
+            if(!Ready() || !ElementBattleFx.TryGet(element,out var texture,out var duration))return false;
+            Emit(p,p,2,Color.white,h*(element=="heal"?1.25f:1.6f),duration,0,0,false,texture,false,1f,1f,true);
             return true;
         }
         public static void Trace(string target,Color? color=null) {
@@ -156,7 +166,11 @@ namespace DeckRogue.Game
         public static bool Guard(string target)
         {
             if(!Socket(target,out var p,out var h))return false;
-            float side=target=="player"?1:-1;
+            return GuardAt(p,h,target=="player"?1:-1);
+        }
+        public static bool GuardAt(Vector3 p,float h,float side)
+        {
+            if(!Ready())return false;
             p+=(Stage.LayoutRotation*Vector3.right)*h*.28f*side;
             Emit(p,p,3,new Color(.6f,.78f,1,.8f),h*.85f,.3f,side<0?180:0,0,false,_guard);return true;
         }

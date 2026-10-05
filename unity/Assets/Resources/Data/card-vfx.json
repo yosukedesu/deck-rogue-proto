@@ -1,0 +1,1926 @@
+{
+  "black_strike": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_guard": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_drain": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_big_drain": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_blood_rite": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_mill": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_grave_bolt": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_grave_burst": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_corpse_explosion": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_perm_altar": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_perm_tithe": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_hand_ripper": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_dark_pact": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_soul_kindling": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_reaction_curse": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_reaction_grudge": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_scythe": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_despair": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_shadow_blade": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_blood_price": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_death_wind": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_feast": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_grave_digger": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_deep_mill": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_offering": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_underworld_path": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_wraith_feast": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_raise_dead": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_last_rites": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_corpse_collect": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_harvest_sin": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_perm_blade": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_perm_pain_core": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_perm_chorus": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_perm_ledger": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_reaction_last_stand": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_reaction_awakening": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_withering_curse": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_perm_seedbed": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_gravestone": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_bursting_corpse": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "black_whispering_ghost": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_grudge_bone": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_groaning_skull": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_corpse_tinder": {
+    "element": "dark",
+    "style": "spark"
+  },
+  "black_necro_knight": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_blood_thirst": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_oblivion_blade": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_oblivion_veil": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_corpse_kiss": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_rotten_claw": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_underworld_hand": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_shadow_cleaver": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_perm_bone_mill": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_remorse_bone": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_reviving_shield": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_grave_pressure": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_perm_bone_throne": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_oblivion_axe": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_thousand_graves": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_yomi_gate": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_reviving_fang": {
+    "element": "physical",
+    "style": "fang"
+  },
+  "black_corpse_flame": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_blood_spray": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_shiv_token": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_shiv_dance": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_cloak_dagger": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_quick_shiv": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_shiv_strike": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_bone_gleaning": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_blade_forging": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_infinite_blades": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_accuracy": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_blade_procession": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_whetstone_altar": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_blood_candle": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_crimson_feast": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_thirst_censer": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_seething_blood": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_corpse_candle": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_bone_stoke": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_burning_bone": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "black_tallow_shield": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "black_yomigaeri": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "blue_strike": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_guard": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_current_lash": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_ice_wall": {
+    "element": "ice",
+    "style": "spell"
+  },
+  "blue_ponder": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_churn": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_mana_convert": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_storm_lash": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_tsunami": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_counterspell": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_mana_leak": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_frost_veil": {
+    "element": "ice",
+    "style": "slash"
+  },
+  "blue_cold_reading": {
+    "element": "ice",
+    "style": "slash"
+  },
+  "blue_sage_spring": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_frost_armor": {
+    "element": "ice",
+    "style": "slash"
+  },
+  "blue_archive": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_aether_burst": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_storm_barrier": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_chain_thought": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_flash": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_spark": {
+    "element": "water",
+    "style": "spark"
+  },
+  "blue_focus": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_confuse": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_ripple_blade": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_storm_echo": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_whisper_trap": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_echo_seal": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_perm_static": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_aether_torrent": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_spell_steal": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_ice_lance": {
+    "element": "ice",
+    "style": "spell"
+  },
+  "blue_perm_mist_double": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_frost_chain": {
+    "element": "ice",
+    "style": "spell"
+  },
+  "blue_maelstrom": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_reaction_mind_eye": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_reaction_surge": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_frost_shackle": {
+    "element": "ice",
+    "style": "spell"
+  },
+  "blue_perm_mirror": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_tide_drop": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_aftermath": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_rapid_strike": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_thick_ice": {
+    "element": "ice",
+    "style": "spell"
+  },
+  "blue_undertow": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_aether_lance": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_perm_vortex_ring": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_aether_flood": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_weight_of_wisdom": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_tome_shield": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_knowledge_torrent": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_perm_deep_cloak": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_omniscient_blow": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_echo": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_echo_stance": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_double_chant": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_perm_echo_circle": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_stack_bastion": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_frost_thorn": {
+    "element": "ice",
+    "style": "spell"
+  },
+  "blue_aether_breath": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_cold_sweep": {
+    "element": "ice",
+    "style": "spell"
+  },
+  "blue_page_wind": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_rolling_wave": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_ice_hail": {
+    "element": "ice",
+    "style": "spell"
+  },
+  "blue_glacial_maul": {
+    "element": "ice",
+    "style": "spell"
+  },
+  "blue_wisdom_vortex": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_grand_archive": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_perm_tidal_lectern": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_echo_chorus": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_perm_permafrost": {
+    "element": "ice",
+    "style": "slash"
+  },
+  "blue_kindle_chant": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_thought_bonfire": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_whisper_kindle": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_catalyst_echo": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_catalyst_retain": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_trap_fetch": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_tide_wait": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_trap_echo": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_perm_trap_clock": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_perm_unravel_foam": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_perm_deep_trap": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_foresight_shield": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_wave_read_strike": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_read_through": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_tide_surge": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_perm_tide_tower": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_perm_eddy_mirror": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_perm_flood_archive": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_perm_storm_eye": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_ebb_return": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_perm_trap_workshop": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_perm_aether_vessel": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_perm_tide_master": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_perm_tide_pool": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_reaction_watch_bell": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "blue_shallow_read": {
+    "element": "water",
+    "style": "spell"
+  },
+  "blue_eddy_foothold": {
+    "element": "water",
+    "style": "spell"
+  },
+  "green_ramp_sprout": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_ramp_deep_roots": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_ramp_sunlight": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_strike": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_double_lash": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "green_fang": {
+    "element": "physical",
+    "style": "fang"
+  },
+  "green_guard": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_bark_armor": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_entangle": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "green_finisher_wrath": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_finisher_stomp": {
+    "element": "earth",
+    "style": "stomp"
+  },
+  "green_reaction_thorns": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_reaction_vine": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "green_reaction_root_weave": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_growth_ring": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_sig_canopy": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_sig_rite_of_bloom": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_sig_vine_dance": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "green_sig_trample": {
+    "element": "earth",
+    "style": "stomp"
+  },
+  "green_sig_stampede": {
+    "element": "earth",
+    "style": "stomp"
+  },
+  "green_trample_charge": {
+    "element": "earth",
+    "style": "stomp"
+  },
+  "green_ritual_surge": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_perm_growth_tree": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_perm_herd_chief": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_flash_insight": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_serpent_gulp": {
+    "element": "physical",
+    "style": "fang"
+  },
+  "green_reaction_resonance": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_wild_sprout": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_sweep": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_bloom_lash": {
+    "element": "vine",
+    "style": "spell"
+  },
+  "green_weak_point": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_snare_root": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_perm_wild_call": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_triple_horn": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_horn_flare": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_sapling_strike": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_trunk_stance": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_perm_tree_pulse": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_horn_stance": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_x_vine_flurry": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "green_x_bark_armor": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_x_sylvan_tempest": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_mode_crossroads": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_mode_great_fork": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_basic_bash": {
+    "element": "earth",
+    "style": "stomp"
+  },
+  "green_perm_hunters_gaze": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_perm_pain_root": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_vine_wedge": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_devour_vine": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "green_reaction_preempt": {
+    "element": "vine",
+    "style": "horn"
+  },
+  "green_reaction_powder_pod": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_harvest_strike": {
+    "element": "physical",
+    "style": "fang"
+  },
+  "green_grand_harvest": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_leaf_strike": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_dappled_light": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_twin_fang_vine": {
+    "element": "physical",
+    "style": "fang"
+  },
+  "green_leaf_blade": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_vine_spring": {
+    "element": "vine",
+    "style": "spell"
+  },
+  "green_perm_thorn_vine": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_perm_wind_runner": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_perm_sprout_keeper": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_perm_thorn_leaves": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_sweeping_horn": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_earth_roar": {
+    "element": "earth",
+    "style": "spell"
+  },
+  "green_perm_trapper_grove": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_regrowth_root": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_forest_guidance": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_spreading_vine": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "green_growing_fang": {
+    "element": "physical",
+    "style": "fang"
+  },
+  "green_honing": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_verdant_hour": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_reaction_vine_formation": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "green_reaction_tree_warden": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_prey_strike": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_sprint": {
+    "element": "earth",
+    "style": "stomp"
+  },
+  "green_gale_horn": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_horn_thrust": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_horn_storm": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_wind_wall": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_rooting_rush": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_charging_horn": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_tailwind": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_horn_volley": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_perm_bark_bud": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_perm_gale_vine": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "green_wind_dash": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_wind_cutter": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_twig_strike": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_perm_thorn_canopy": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "green_perm_gale_king": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_perm_root_spring": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_catalyst_light": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_catalyst_echo": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "green_catalyst_root": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "green_catalyst_spore": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "red_strike": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_spark": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_ember_slash": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_guard": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_ignite": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_spreading_fire": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_inferno": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_brazier": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_perm_ember": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_ritual": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_impulse": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_big_impulse": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_gamble": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_chaos_bolt": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_reckless": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_flame_wave": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_fire_rain": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_billiard": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "red_burst_release": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_furnace": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_sea_of_fire": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_ember": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_perm_rage_mask": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_perm_instant_flame": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_scorching_insight": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_burn_it_all": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_final_blow": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_grand_fireworks": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_heat_screen": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_fang_breaker": {
+    "element": "physical",
+    "style": "fang"
+  },
+  "red_wrath_flame": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_wrath_roar": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_hearth_shield": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_blaze_strike": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_blaze_blade": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_blaze_guard": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_blaze_devour": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_blaze_pillar": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_blaze_sweep": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_blaze_path": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_blaze_cloak": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_blaze_roar": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_blaze_awaken": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_wildfire": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_leaping_flame": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_iron_will": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_bomb": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_finishing_flame": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "red_frenzy": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_ward": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_flurry": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_blaze_spark": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_blaze_ritual": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_blaze_pursuit": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_blaze_wall": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_perm_blaze_heart": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_smoke": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_double_tap": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_forge": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_blaze_storm": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_meteor": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_cataclysm": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_last_day": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_gambler": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_all_in": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_long_shot": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_streak_bet": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_ledger": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_perm_runfire": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_spite": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_pyre": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_fire_shift": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_ember_stance": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_mode_crossroad": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_mode_firecontrol": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_mode_deadline": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_charcoal_guard": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_afterheat_mail": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_perm_flarecoat": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_perm_thorn_flame": {
+    "element": "physical",
+    "style": "horn"
+  },
+  "red_fluke_spark": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_double_dice": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_leap_arrow": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_double_down": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "white_strike": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_shield_strike": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_guard": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_mass_heal": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_bolt": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_mode_crossroad": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_perm_squire": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_shieldmaiden": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_choir": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_banneret": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_rally": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_grand_charge": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_reaction_ward": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_muster": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_shield_call": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_perm_band": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_banner": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_hound": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_reaction_bright_wall": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_warcry": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_anthem": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_chalice": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_apostle": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_blade_prayer": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_monk": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_calling": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_hymn_wall": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_hound_whistle": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_holy_maul": {
+    "element": "earth",
+    "style": "stomp"
+  },
+  "white_perm_bandleader": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_maiden_prayer": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_praise_chorus": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_oath_shield": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_cathedral": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_page": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_page_rank": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_holy_procession": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_miracle_division": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_march_order": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_prayer_verse": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_page_signal": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_hoard": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_wick": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_lantern": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_bonfire": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_dragon": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_perm_lion": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_copy_light": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_relight": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_eternal_light": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_torrent": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_volley": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_spray": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_glint": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_lance": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_fuel": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_kindling": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_perm_light_core": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_light_pour": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_dart": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_buckler": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_cinders": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_page": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_glow": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_ember_cache": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_shining_strike": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_light_knockout": {
+    "element": "earth",
+    "style": "stomp"
+  },
+  "white_light_convergence": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_radiance": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_reaction_light_wall": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_light_double": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_light_burst": {
+    "element": "light",
+    "style": "light"
+  },
+  "white_spark_token": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_spark_scatter": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_spark_shield": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_spark_burst": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_spark_kindling": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_perm_spark_furnace": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_spark_kindle": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_perm_spark_hearth": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_severance": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "white_spark_storm": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_perm_embers": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_perm_spark_relay": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_perm_embers_last": {
+    "element": "light",
+    "style": "spark"
+  },
+  "white_perm_great_furnace": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_vine_wheel": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "fusion_bloom_dance": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "fusion_thorn_bastion": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "fusion_wild_stampede": {
+    "element": "earth",
+    "style": "stomp"
+  },
+  "fusion_sapling_maul": {
+    "element": "earth",
+    "style": "stomp"
+  },
+  "fusion_raging_chief": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_red_flame_fang": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "fusion_red_ember_dance": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "fusion_red_wrath_mail": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_practice_swing": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_harvest_fork": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "fusion_sprint_strike": {
+    "element": "earth",
+    "style": "stomp"
+  },
+  "fusion_bramble_fence": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "fusion_lash_thicket": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "fusion_windward_vine": {
+    "element": "vine",
+    "style": "vine"
+  },
+  "fusion_dappled_hedge": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_gale_echo": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_ringed_bark": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_rooting_vine": {
+    "element": "vine",
+    "style": "spell"
+  },
+  "fusion_reading_wedge": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_clinging_bark": {
+    "element": "arcane",
+    "style": "spell"
+  },
+  "fusion_red_ash_mantle": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_red_ember_shift": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "fusion_red_spark_fork": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "fusion_holy_stance": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_page_ambush": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_tide_stance": {
+    "element": "water",
+    "style": "spell"
+  },
+  "fusion_reader_stance": {
+    "element": "water",
+    "style": "spell"
+  },
+  "fusion_whirl_watch": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_deep_thought": {
+    "element": "water",
+    "style": "spell"
+  },
+  "fusion_deep_undertow": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "fusion_iceberg_break": {
+    "element": "ice",
+    "style": "spell"
+  },
+  "status_wound": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "status_scald": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "status_brand": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "status_guilt": {
+    "element": "dark",
+    "style": "spell"
+  },
+  "status_junk": {
+    "element": "dark",
+    "style": "spell"
+  }
+}

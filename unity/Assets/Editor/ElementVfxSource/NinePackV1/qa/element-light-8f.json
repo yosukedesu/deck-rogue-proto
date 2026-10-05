@@ -1,0 +1,111 @@
+{
+  "path": "png/element-light-8f.png",
+  "dimensions": [
+    1774,
+    887
+  ],
+  "mode": "RGBA",
+  "alpha_extrema": [
+    0,
+    254
+  ],
+  "aspect_ratio": 2.0,
+  "cells": [
+    {
+      "frame": 0,
+      "alpha16_bbox": [
+        206,
+        158,
+        238,
+        309
+      ],
+      "visible_gutter_normalized_to_256": 77.84,
+      "alpha_sum": 151817,
+      "alpha_mass_vs_peak": 0.059
+    },
+    {
+      "frame": 1,
+      "alpha16_bbox": [
+        134,
+        98,
+        308,
+        368
+      ],
+      "visible_gutter_normalized_to_256": 43.82,
+      "alpha_sum": 1229408,
+      "alpha_mass_vs_peak": 0.479
+    },
+    {
+      "frame": 2,
+      "alpha16_bbox": [
+        100,
+        33,
+        348,
+        426
+      ],
+      "visible_gutter_normalized_to_256": 10.38,
+      "alpha_sum": 2565569,
+      "alpha_mass_vs_peak": 1.0
+    },
+    {
+      "frame": 3,
+      "alpha16_bbox": [
+        115,
+        105,
+        321,
+        365
+      ],
+      "visible_gutter_normalized_to_256": 45.55,
+      "alpha_sum": 475837,
+      "alpha_mass_vs_peak": 0.185
+    },
+    {
+      "frame": 4,
+      "alpha16_bbox": [
+        120,
+        106,
+        334,
+        318
+      ],
+      "visible_gutter_normalized_to_256": 61.26,
+      "alpha_sum": 404988,
+      "alpha_mass_vs_peak": 0.158
+    },
+    {
+      "frame": 5,
+      "alpha16_bbox": [
+        142,
+        129,
+        283,
+        265
+      ],
+      "visible_gutter_normalized_to_256": 74.55,
+      "alpha_sum": 115332,
+      "alpha_mass_vs_peak": 0.045
+    },
+    {
+      "frame": 6,
+      "alpha16_bbox": [
+        173,
+        208,
+        272,
+        247
+      ],
+      "visible_gutter_normalized_to_256": 98.82,
+      "alpha_sum": 70677,
+      "alpha_mass_vs_peak": 0.028
+    },
+    {
+      "frame": 7,
+      "alpha16_bbox": [
+        215,
+        217,
+        234,
+        235
+      ],
+      "visible_gutter_normalized_to_256": 120.2,
+      "alpha_sum": 23307,
+      "alpha_mass_vs_peak": 0.009
+    }
+  ]
+}

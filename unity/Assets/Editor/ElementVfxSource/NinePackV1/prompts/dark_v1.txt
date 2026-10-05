@@ -1,0 +1,17 @@
+Use case: stylized-concept.
+Asset type: original high-end HD-2D fantasy combat VFX, production Unity flipbook sprite atlas.
+Canvas: 2:1 landscape, ideally exactly 1024x512 PNG. Exactly FOUR equal columns and TWO equal rows, EIGHT equally sized SQUARE cells. Sequence is top row left to right frames 0,1,2,3, then bottom row left to right frames 4,5,6,7. No labels, lines, cell borders, text, characters, UI, scenery, ground plane or props.
+TRUE TRANSPARENT RGBA background and fully empty gutters. In EVERY cell leave the outer 16% on all four sides completely empty and transparent, alpha zero. ALL content including faint glow and particles stays inside the middle 68% of its cell. No overlapping neighboring cells, no cropped tips, no painted checkerboard, no black or gray background.
+Stable same center anchor (50%,50%) in EVERY frame, no viewpoint, scale registration or global positional drift. Up stays up, zero rotation. Rich finished element color is in the texture, to be displayed with WHITE tint and normal straight-alpha blending. Crisp defining silhouette, elegant textured detail and sparse local luminous particles; very limited soft bloom. Bright white cores are tiny/local; never broad opaque white disks or clouds.
+Make eight DISTINCT temporal frames with a brief early peak, convincing changing shapes and rapid clearing tail, not eight copies of one icon. Except where otherwise stated, frames 1–2 peak, frames 3–5 fragment/develop and frames 6–7 are nearly empty.
+
+DARK/SHADOW attack only. An INWARD-CONVERGING spiral of translucent deep INDIGO and PURPLE shadow wisps/shards, slender curled torn ribbons pulled toward a small central dark void. Clearly dark semi-transparent indigo-violet body is VISIBLE, with thin luminous purple-lilac edge filaments and small violet-white highlights. This is one RGBA image containing BOTH shadow body and lit edges, intended for normal alpha blend, so keep the dark body instead of representing the entire effect only as bright additive light. No opaque black background. No gold, teal, blue water, fire tongues, symbols or runes. Asymmetric inward motion; not an outward explosion or big smoke cloud.
+Frame0: four separated thin indigo wisps beginning on an imaginary small circle within the middle 60% of the cell, empty center.
+Frame1: wisps curl strongly inward clockwise toward exact center, longer purple lit inner edges, high visual intensity.
+Frame2: tight asymmetric inward purple shadow vortex at center, dark hollow center, bright narrow lilac rim, strongest compression.
+Frame3: vortex contracts into a small dense dark-purple knot with a tiny white-violet compression point and three torn residual threads.
+Frame4: smaller contracted knot with two curling purple residue fragments.
+Frame5: two dim little indigo-purple residue wisps, open empty space around them.
+Frame6: tiny violet flicker at center and one faint residue speck.
+Frame7: one tiny dim purple dot, almost completely empty.
+Duration .40 seconds. No expanding ring in the tail, and no persistent fog.
