@@ -11,12 +11,13 @@ using UnityEngine.EventSystems;
 namespace DeckRogue.Game {
  public partial class Autopilot {
   IEnumerator VfxSafety(GameRoot g){
-   var report=new JArray();
+   var report=new JArray();bool luminousTest=Arg("-vfx-safety-element")=="light";
    foreach(var name in new[]{"normal","unavailable","skippedPass","missingSheets","cameraPause","cameraSwap","occluded","uiOverlay","boardSwitch"}){
     ElementVfxPass.ForceUnavailableForTest=false;ElementVfxPass.ForceSkipForTest=false;ElementBattleFx.ForceMissingForTest=false;ElementVfxPass.ResetTestFault();
-    yield return StateJump(g,"phase=combat;leader=leader_red;enemy=enemy_probe;hand=red_strike;penergy=10;dumplayout=1");
+    yield return StateJump(g,luminousTest?"phase=combat;leader=leader_white;enemy=enemy_probe;hand=white_strike;penergy=10;dumplayout=1":"phase=combat;leader=leader_red;enemy=enemy_probe;hand=red_strike;penergy=10;dumplayout=1");
     Presenter.MarkSeen(g.Rs.Combat);Time.captureFramerate=30;
     ElementVfxPass.ForceUnavailableForTest=name=="unavailable";ElementVfxPass.ForceSkipForTest=name=="skippedPass";ElementBattleFx.ForceMissingForTest=name=="missingSheets";
+    int luminousBefore=WorldBattleFx.LuminousEmittedCount;
     int received=ResolvedCombatFx.Received,shown=ResolvedCombatFx.Presented,drawn=ElementVfxPass.DrawnFrames,legacy=WorldBattleFx.LegacyElementUses,emitted=WorldBattleFx.EmittedCount;
     Stage.TryGetUnitBox("enemy0",out var feet,out var height);var target=feet+(Stage.LayoutRotation*Vector3.up)*height*.5f;
     var camera=Stage.Camera;var screen=camera.WorldToScreenPoint(target);GameObject cover=null;Material coverMaterial=null;
@@ -50,7 +51,7 @@ namespace DeckRogue.Game {
     else pass&=post>0;
     if(name=="occluded"||name=="uiOverlay")pass&=delta<.025f;
     if(name=="boardSwitch")pass&=WorldBattleFx.ActiveCount==0 && Presenter.PendingImpactCount==0;
-    report.Add(new JObject{{"case",name},{"passed",pass},{"presented",ResolvedCombatFx.Presented-shown},{"postFrames",post},{"legacySwitches",fallback},{"sampleMaxRgbDelta",delta},{"fallbackReason",ElementVfxPass.FallbackReason},{"activeVfxAtEnd",WorldBattleFx.ActiveCount}});
+    report.Add(new JObject{{"splitLuminous",luminousTest},{"luminousEmissions",WorldBattleFx.LuminousEmittedCount-luminousBefore},{"case",name},{"passed",pass},{"presented",ResolvedCombatFx.Presented-shown},{"postFrames",post},{"legacySwitches",fallback},{"sampleMaxRgbDelta",delta},{"fallbackReason",ElementVfxPass.FallbackReason},{"activeVfxAtEnd",WorldBattleFx.ActiveCount}});
     File.WriteAllText(Path.Combine(_dir,"vfx-safety.json"),report.ToString());
     if(!pass){Debug.LogError("[VfxSafety] failed "+report.Last);Application.Quit(1);yield break;}
    }

@@ -11,16 +11,16 @@ namespace DeckRogue.Game
         static readonly Slot[] Pool = new Slot[24];
         static ParticleSystem _embers; static Material _emberMaterial;
         public static int ParticleCount => _embers!=null?_embers.particleCount:0;
-        static Mesh _quad; static Material _material, _elementMaterial; static Texture2D _atlas, _silver, _arcane, _guard, _trail;
+        static Mesh _quad; static Material _material, _elementMaterial, _luminousMaterial; static Texture2D _atlas, _silver, _arcane, _guard, _trail;
         static readonly MaterialPropertyBlock Props = new MaterialPropertyBlock();
         internal static void CollectElementRenderers(System.Collections.Generic.List<Renderer> output) {
-            output.Clear();if(_elementMaterial==null)return;
-            foreach(var slot in Pool)if(slot!=null && slot.Busy && slot.R!=null && slot.R.gameObject.activeInHierarchy && slot.R.sharedMaterial==_elementMaterial)output.Add(slot.R);
+            output.Clear();
+            foreach(var slot in Pool)if(slot!=null && slot.Busy && slot.R!=null && slot.R.gameObject.activeInHierarchy && (slot.R.sharedMaterial==_elementMaterial || slot.R.sharedMaterial==_luminousMaterial))output.Add(slot.R);
         }
+        public static int LuminousEmittedCount {get;private set;}
         public static int LegacyElementUses {get;private set;}
         internal static void RestoreLegacyElements(){
-            if(_elementMaterial==null)return;
-            foreach(var slot in Pool)if(slot!=null && slot.Busy && slot.R!=null && slot.R.sharedMaterial==_elementMaterial){slot.R.sharedMaterial=_material;LegacyElementUses++;}
+            foreach(var slot in Pool)if(slot!=null && slot.Busy && slot.R!=null && (slot.R.sharedMaterial==_elementMaterial || slot.R.sharedMaterial==_luminousMaterial)){slot.R.sharedMaterial=_material;LegacyElementUses++;}
         }
         public static int EmittedCount {get;private set;}
         public static void Cancel() {
@@ -53,7 +53,7 @@ namespace DeckRogue.Game
             }
             return true;
         }
-        static void Emit(Vector3 from, Vector3 to, int cell, Color tint, float size, float duration, float angle, float sweep, bool projectile=false, Texture2D flipbook=null, bool ground=false, float gain=1.3f, float aspect=1f, bool authored=false)
+        static void Emit(Vector3 from, Vector3 to, int cell, Color tint, float size, float duration, float angle, float sweep, bool projectile=false, Texture2D flipbook=null, bool ground=false, float gain=1.3f, float aspect=1f, bool authored=false, bool luminous=false)
         {
             if (!Ready()) return;
             Slot slot=null;
@@ -67,7 +67,9 @@ namespace DeckRogue.Game
                 go.AddComponent<MeshFilter>().sharedMesh=_quad; slot.R=go.AddComponent<MeshRenderer>();
                 slot.R.sharedMaterial=_material; slot.R.shadowCastingMode=ShadowCastingMode.Off; slot.R.receiveShadows=false;
             }
-            if(authored && ElementVfxPass.CanUsePost(Stage.Camera)) {
+            if(luminous && _luminousMaterial==null){var shader=Shader.Find("DeckRogue/ElementLuminousFx");if(shader!=null&&shader.isSupported)_luminousMaterial=new Material(shader);}
+            if(luminous && _luminousMaterial!=null && ElementVfxPass.CanUsePost(Stage.Camera)){slot.R.sharedMaterial=_luminousMaterial;LuminousEmittedCount++;}
+            else if(authored && ElementVfxPass.CanUsePost(Stage.Camera)) {
                 if(_elementMaterial==null){var shader=Shader.Find("DeckRogue/ElementBattleFx");if(shader!=null && shader.isSupported)_elementMaterial=new Material(shader);}
                 slot.R.sharedMaterial=_elementMaterial!=null?_elementMaterial:_material;
             } else {slot.R.sharedMaterial=_material;if(authored)LegacyElementUses++;}
@@ -119,7 +121,7 @@ namespace DeckRogue.Game
         }
         public static bool ElementAt(Vector3 p,float h,string element) {
             if(!Ready() || !ElementBattleFx.TryGet(element,out var texture,out var duration))return false;
-            Emit(p,p,2,Color.white,h*(element=="heal"?1.25f:1.6f),duration,0,0,false,texture,false,1f,1f,true);
+            Emit(p,p,2,Color.white,h*(element=="heal"?1.25f:1.6f),duration,0,0,false,texture,false,1f,1f,true,ElementBattleFx.Luminous(element));
             return true;
         }
         public static void Trace(string target,Color? color=null) {

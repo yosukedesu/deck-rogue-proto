@@ -1,0 +1,123 @@
+{
+  "worldLightSourceUnchanged": true,
+  "comparisons": [
+    {
+      "element": "lightning",
+      "frame": 25,
+      "targetRoi": [
+        1200,
+        230,
+        1490,
+        420
+      ],
+      "targetMeanRgbLumaDelta": 6.112991829401088,
+      "pixelsBrighterOver1": 26686,
+      "pixelsDarkerBelowMinus1": 0,
+      "targetMaxAbsRgbDelta": 64.0,
+      "floorRoi": [
+        1010,
+        380,
+        1210,
+        420
+      ],
+      "floorOldMean": 159.083875,
+      "floorNewMean": 159.08504166666665,
+      "allChangedPixelPercent": 2.795158483822423
+    },
+    {
+      "element": "light",
+      "frame": 21,
+      "targetRoi": [
+        1200,
+        230,
+        1490,
+        420
+      ],
+      "targetMeanRgbLumaDelta": 1.432486170598911,
+      "pixelsBrighterOver1": 15341,
+      "pixelsDarkerBelowMinus1": 0,
+      "targetMaxAbsRgbDelta": 57.0,
+      "floorRoi": [
+        1010,
+        380,
+        1210,
+        420
+      ],
+      "floorOldMean": 152.21391666666668,
+      "floorNewMean": 152.23791666666668,
+      "allChangedPixelPercent": 4.423908954100828
+    },
+    {
+      "element": "dark",
+      "frame": 25,
+      "targetRoi": [
+        1200,
+        230,
+        1490,
+        420
+      ],
+      "targetMeanRgbLumaDelta": 0.0,
+      "pixelsBrighterOver1": 0,
+      "pixelsDarkerBelowMinus1": 0,
+      "targetMaxAbsRgbDelta": 0.0,
+      "floorRoi": [
+        1010,
+        380,
+        1210,
+        420
+      ],
+      "floorOldMean": 28.721833333333333,
+      "floorNewMean": 28.721833333333333,
+      "allChangedPixelPercent": 0.0
+    },
+    {
+      "element": "fire",
+      "frame": 21,
+      "targetRoi": [
+        1200,
+        230,
+        1490,
+        420
+      ],
+      "targetMeanRgbLumaDelta": 0.0,
+      "pixelsBrighterOver1": 0,
+      "pixelsDarkerBelowMinus1": 0,
+      "targetMaxAbsRgbDelta": 0.0,
+      "floorRoi": [
+        1010,
+        380,
+        1210,
+        420
+      ],
+      "floorOldMean": 108.28829166666667,
+      "floorNewMean": 108.28829166666667,
+      "allChangedPixelPercent": 0.0
+    }
+  ],
+  "exampleAlphaPartition": {
+    "sourceAlpha": 0.447,
+    "bodyCoverage": 0.15477362841600004,
+    "haloEnergyBeforeGain": 0.292226371584,
+    "sum": 0.44700000000000006,
+    "backdropTransmissionOld": 0.5529999999999999,
+    "backdropTransmissionNew": 0.8452263715839999,
+    "haloGain": 4,
+    "note": "Body/halo share atlas UV, pool slot, position, and lifetime. Halo is added before bloom; body after bloom. Two partitioned draws, not two complete image draws."
+  },
+  "idleRuntime": {
+    "observations": 20,
+    "uniqueFeetPositions": 1,
+    "uniqueHeights": 1,
+    "allImports128x84Pivot60x8": true,
+    "allEightFrames": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  }
+}

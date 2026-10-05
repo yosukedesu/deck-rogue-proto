@@ -268,6 +268,8 @@ namespace DeckRogue.Game
                     case "light-review": yield return ElementReview(g,true); break;
                     case "element-review": yield return ElementReview(g); break;
                     case "state": yield return StateJump(g, Arg("-state") ?? ""); break;   // 任意の状態へ跳んで撮る (2026-09-12)
+                    case "idle-anchor-review": yield return IdleAnchorReview(g); break;
+                    case "timing-review": yield return TimingReview(g); break;
                     case "tour":
                     default:
                         yield return Tour(g);

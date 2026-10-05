@@ -37,11 +37,11 @@ namespace DeckRogue.Game {
      TempoRequire(GameObject.Find("inputblock")==null && GameObject.Find("inputblock2")==null,"input lock");
     }catch(Exception e){error=e.ToString();}
     var events=g.Rs.Combat.EventLog.Skip(from).Where(ResolvedCombatFx.IsResolved).ToList();
-    int frames=0;do {yield return null;frames++;}while((Presenter.PendingImpactCount>0||Presenter.PendingVisualCount>0||WorldBattleFx.ActiveCount>0)&&frames<180);
+    int frames=0;do {yield return null;frames++;}while((Presenter.PendingImpactCount>0||Presenter.PendingVisualCount>0||WorldBattleFx.ActiveCount>0)&&frames<360);
     int actual=ResolvedCombatFx.Presented-shown;
     bool expectedEvents=name=="cancel"?events.Count==0:events.Count>0;
-    bool pass=error==null&&expectedEvents&&actual==events.Count&&ResolvedCombatFx.Received-received==events.Count&&ResolvedCombatFx.DuplicateSuppressed==duplicates&&frames<180;
-    report.Add(new JObject{{"case",name},{"card",card},{"passed",pass},{"events",new JArray(events.Select(e=>e.Type))},{"expected",events.Count},{"presented",actual},{"received",ResolvedCombatFx.Received-received},{"drainFrames",frames},{"error",error}});
+    bool pass=error==null&&expectedEvents&&actual==events.Count&&ResolvedCombatFx.Received-received==events.Count&&ResolvedCombatFx.DuplicateSuppressed==duplicates&&frames<360;
+    report.Add(new JObject{{"case",name},{"card",card},{"passed",pass},{"events",new JArray(events.Select(e=>e.Type))},{"expected",events.Count},{"presented",actual},{"received",ResolvedCombatFx.Received-received},{"drainFrames",frames},{"pendingVisuals",Presenter.PendingVisualCount},{"pendingImpacts",Presenter.PendingImpactCount},{"activeFx",WorldBattleFx.ActiveCount},{"drainBudgetFrames",360},{"error",error}});
     File.WriteAllText(Path.Combine(_dir,"vfx-coverage.json"),report.ToString());
     if(!pass){Debug.LogError("[VfxCoverage] failed "+name+" "+report.Last);Application.Quit(1);yield break;}
    }

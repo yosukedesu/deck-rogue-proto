@@ -196,7 +196,6 @@ namespace DeckRogue.Game
         /// </summary>
         public static void HitStop(float scale, float sec)
         {
-            if (Stage.CombatWorld) return; // Local approach/impact holds never freeze UI or game time.
             I.StartCoroutine(HitStopCo(scale, sec));
         }
 
@@ -226,6 +225,7 @@ namespace DeckRogue.Game
         /// <summary>浮き文字 (ダメージ数字など)。parent の座標系で pos から上へ浮いて消える</summary>
         public static void Float(RectTransform parent, Vector2 pos, string text, Color color, int size = 34, float rise = 60f, float dur = 0.9f, float width = 240f)
         {
+            if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("float",text);
             if (parent == null) return;
             var rt = UiKit.NewRect("float", parent);
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);

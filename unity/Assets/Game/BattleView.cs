@@ -295,7 +295,7 @@ namespace DeckRogue.Game
                 // 出来事が先に来ていた (順送りの敵フェーズで倒れた) なら _died に印があるので何も描かない。出来事が来なければ 0.6 秒後に崩す (保険)
                 if (alive) _died.Remove(i);
                 bool dyingNow = wasAlive && !alive && !_died.Contains(i);
-                BattleScreen.FillEnemyPanel(g, pan, st, i, Stage.CombatWorld ? st.Enemies[i].Hp : _shownEnemyHp[i], gap, dyingNow, anyForecast, anyStack);
+                BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i], gap, dyingNow, anyForecast, anyStack);
                 _shownEnemyHp[i] = st.Enemies[i].Hp;
                 _shownEnemyBlock[i] = st.Enemies[i].Block;
                 if (dyingNow) { int ci = i; bool fled = st.Enemies[i].Fled == true; Tween.After(0.6f, () => {if(g.Battle==this && g.Rs?.Combat!=null && ci<g.Rs.Combat.Enemies.Count && g.Rs.Combat.Enemies[ci].Hp<=0)KillEnemy(g, ci, fled);}); }
@@ -684,6 +684,16 @@ namespace DeckRogue.Game
             if (index < 0 || index >= _enemyPanels.Count || index >= _shownEnemyHp.Length) return;
             _shownEnemyHp[index] = Math.Max(0, _shownEnemyHp[index] + delta);
             BattleScreen.TweenHpBar(_enemyPanels[index], _shownEnemyHp[index]);
+        }
+
+        // Display-only debt: combat state and input remain authoritative. Later commands cancel old debt.
+        public void DisplayPlayerHp(int hp, bool immediate)
+        {
+            _shownPlayerHp = Math.Max(0, hp);
+            if (immediate) BattleScreen.SetHpBarImmediate(SelfArea, _shownPlayerHp);
+            else BattleScreen.TweenHpBar(SelfArea, _shownPlayerHp);
+            BattleScreen.RefreshIncomingLine(SelfArea, _shownPlayerBlock, _shownPlayerIce, _shownPlayerHp);
+            if (CombatTimingProbe.Enabled) CombatTimingProbe.Event("playerHpDisplay", _shownPlayerHp.ToString());
         }
 
         public void NudgePlayerHp(int delta)
@@ -1564,13 +1574,6 @@ namespace DeckRogue.Game
 
             if (inSet) { Audio.Key("CardSet"); FlyTo(g, rt, "setslot" + setIdx, delay, 0.3f, true, 0.5f); return; }
             if (inPerm) { FlyTo(g, rt, "player", delay, 0.3f, true, 0.4f); return; }
-            if (uid == LastPlayedUid && Stage.CombatWorld)
-            {
-                // Commit card close to the hand; clear the action stage before contact.
-                Audio.Key("CardPlayed");
-                if (inExhaust) Shatter(rt); else FlyTo(g, rt, "pile-discard", 0f, 0.16f, true, 0.22f);
-                return;
-            }
             if (uid == LastPlayedUid)
             {
                 // プレイ: 対象の敵 (無ければ中央上) へ飛んでから、消滅なら砕け、それ以外は捨て札へ
@@ -1601,6 +1604,7 @@ namespace DeckRogue.Game
 
         void FlyTo(GameRoot g, RectTransform rt, string anchor, float delay, float dur, bool destroy, float endScale = 0.3f)
         {
+            if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("cardFlight",anchor+":"+delay+":"+dur);
             var dest = g.Anchor(anchor);
             Vector2 to = dest != null ? Tween.CenterIn(dest, HandLayer) : new Vector2(900f, -100f);
             var cg = rt.GetComponent<CanvasGroup>();

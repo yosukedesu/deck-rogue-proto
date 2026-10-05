@@ -1,0 +1,28 @@
+{
+  "playerHpDisplay": [
+    {
+      "kind": "playerHpDisplay",
+      "detail": "80",
+      "frame": 1396,
+      "ms": 565.8001999999982,
+      "time": 24.271616,
+      "msFromInput": 65.79019999999855
+    },
+    {
+      "kind": "playerHpDisplay",
+      "detail": "73",
+      "frame": 1450,
+      "ms": 1453.0512000000008,
+      "time": 25.2075958,
+      "msFromInput": 953.0412000000011
+    }
+  ],
+  "floatingDamage": {
+    "kind": "float",
+    "detail": "-7",
+    "frame": 1450,
+    "ms": 1452.6523000000004,
+    "time": 25.2075958
+  },
+  "note": "Display-only HP debt; immutable combat snapshot guard prevents stale callbacks after another command. No input lock."
+}

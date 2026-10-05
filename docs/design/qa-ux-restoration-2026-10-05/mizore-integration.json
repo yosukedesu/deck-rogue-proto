@@ -1,0 +1,98 @@
+{
+  "passed": true,
+  "frames": [
+    {
+      "frame": 0,
+      "sha256": "0c5314f5e89b28666ec4648d843fa7c6b2ef80c9c6ebff3378892d4b1359d8ad",
+      "bbox": [
+        31,
+        13,
+        96,
+        77
+      ],
+      "soleIdentical": true
+    },
+    {
+      "frame": 1,
+      "sha256": "7fa1be33b9b23bd551a0aee99ad01fdee1b898342a05dbbac719a83c7b3b0e75",
+      "bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "soleIdentical": true
+    },
+    {
+      "frame": 2,
+      "sha256": "1e1bcb7b94ecf1e3ce367c8bb744dfe425e07fca88fd67a34abcc5301cbee560",
+      "bbox": [
+        27,
+        13,
+        96,
+        77
+      ],
+      "soleIdentical": true
+    },
+    {
+      "frame": 3,
+      "sha256": "7ed37facacada4ea4d5ff3a757c5135a64f20ff0ff8e0d93d09b5738a9ce8b1b",
+      "bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "soleIdentical": true
+    },
+    {
+      "frame": 4,
+      "sha256": "3444ca313358e4dc82d629b125663b5296bff0b57f4983ecaf9ebd6f6c8d84fe",
+      "bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "soleIdentical": true
+    },
+    {
+      "frame": 5,
+      "sha256": "ac0a8b2c31e20216c3e9958f6a5a917f959fe27a923be833d4b19b628be8fa9b",
+      "bbox": [
+        29,
+        13,
+        96,
+        77
+      ],
+      "soleIdentical": true
+    },
+    {
+      "frame": 6,
+      "sha256": "406dc69fbc939d84c7e9760e53bfdb1c5497e141d54447021bd58e9ae71eebe6",
+      "bbox": [
+        29,
+        13,
+        96,
+        77
+      ],
+      "soleIdentical": true
+    },
+    {
+      "frame": 7,
+      "sha256": "9e24acc08c7ffd5d631abe64451b70f0220a05ff20ce9d50e5d8cdc66d36891a",
+      "bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "soleIdentical": true
+    }
+  ],
+  "otherFramesByteIdentical": 15,
+  "runtimePositionCorrectionAdded": false,
+  "importerUnchanged": true,
+  "libraryFileId": "libfile_2198f503d71c8191a2a07d45e7810161",
+  "version": 0
+}

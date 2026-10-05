@@ -1269,6 +1269,7 @@ namespace DeckRogue.Game
             Vector4 _lastRect; int _movedFrame = -100;
             public void Play(string anim)
             {
+                if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("animation",Key+":"+anim);
                 if (!Anims.ContainsKey(anim) || Anims[anim].Count == 0) return;
                 Anim = anim; Frame = 0; FrameT = 0f;
                 if (Key != null) _animStates[Key] = new AnimState { Anim = Anim, Frame = Frame, FrameT = FrameT, At = Time.time };
@@ -1277,6 +1278,7 @@ namespace DeckRogue.Game
             public float FrameScaleX = 1f, FrameScaleY = 1f;   // 枠が元絵より大きいコマ (攻撃の 96px) の拡大率
             public void Apply()
             {
+                if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("spriteFrame",Key+":"+Anim+":"+Frame);
                 List<Texture2D> frames;
                 Texture2D tex = Anims.TryGetValue(Anim, out frames) && frames.Count > 0 ? frames[Mathf.Clamp(Frame, 0, frames.Count - 1)] : BaseTex;
                 if (tex == null || Mat == null) return;

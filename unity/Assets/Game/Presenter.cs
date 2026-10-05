@@ -20,6 +20,7 @@ namespace DeckRogue.Game
         static int _visualVersion;
         static int _impactEpoch;
         public static int PendingImpactCount {get;private set;}
+        public static float LastImpactDelay {get;private set;}
         public static int QueuedImpactCount {get;private set;}
         // Impacts survive the next card, but never survive leaving/rebuilding combat.
         static void AfterImpact(float delay, Action action) {
@@ -77,7 +78,6 @@ namespace DeckRogue.Game
         {
             if (combat == null) return 0;
             int v = combat.Player.Light ?? 0;
-            if(Stage.CombatWorld)return v;
             if (!HasNewEvents(combat)) return v;
             var log = combat.EventLog;
             for (int i = log.Count - 1; i >= _seen && i >= 0; i--)
@@ -181,11 +181,28 @@ namespace DeckRogue.Game
         }
 
         /// <summary>コマンド適用後に呼ぶ。新しいイベントを演出に変換する</summary>
+        // Main's enemy/reaction reading rhythm, without adding a raycast blocker.
+        static float MainSequenceGap(GameEvent ev, ReactionCtx ctx)
+        {
+            if (ctx.Batch != null) return ctx.BatchLast ? .3f : .04f;
+            if (ev is GameEvent_DamageDealt) return ctx.Hit != null && ctx.Hit.Volley && !ctx.Hit.VolleyLast ? .05f : .4f;
+            if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) return .6f;
+            if (ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed) return .15f;
+            if (IsStatusEvent(ev)) return .3f;
+            if (ev is GameEvent_ReactionTriggered) return .55f;
+            if (IsTrapEvent(ev)) return .3f;
+            if (ev is GameEvent_EnemyActionExecuting) return .32f;
+            if (ev is GameEvent_EnemyInterrupted) return .55f;
+            if (IsEnemyActEvent(ev)) return .25f;
+            return .12f;
+        }
+
         public static void Play(GameRoot g, GameState combat)
         {
             if (g == null || combat == null) return;
-            ++_visualVersion; PendingVisualCount=0;
-            if(Stage.CombatWorld){Stage.CancelCombatMotion();}
+            LastImpactDelay=0f;
+            bool enemyPhase=HasEnemyPhase(combat);
+            // Keep main's independent card timelines. Only leaving combat invalidates callbacks.
             var log = combat.EventLog;
             if (!ReferenceEquals(_seenCombat, null) && log.Count < _seen) _seen = 0; // 新しい戦闘
             // 同じ戦闘か: CombatStarted の位置が変わらなければ同じ (イベントログは追記のみ)
@@ -194,9 +211,17 @@ namespace DeckRogue.Game
             var prevBoard = _seenCombat as GameState;   // コマンド前の盤面 (敵の実行中の技の名前・仕込み札の枠を引く)
             // Rebuild 直後は LayoutGroup が未計算 (全て原点) なので、的の座標を読む前にレイアウトを確定させる
             Canvas.ForceUpdateCanvases();
+            int pendingPlayerDamage = 0;
+            if (Stage.CombatWorld && enemyPhase && prevBoard != null && g.Battle != null)
+            {
+                for (int j = _seen; j < log.Count; j++)
+                    if (log[j] is GameEvent_DamageDealt hit && hit.Source != "player") pendingPlayerDamage += Math.Max(0, hit.HpLoss);
+                if (pendingPlayerDamage > 0) g.Battle.DisplayPlayerHp(combat.Player.Hp + pendingPlayerDamage, true);
+            }
             // カードが敵へ飛ぶ 0.2 秒に着弾を合わせる
             float delay = 0f;
-            for (int i = _seen; i < log.Count; i++) if (log[i] is GameEvent_DamageDealt dd && dd.Source == "player") { delay = Stage.CombatWorld ? Stage.CombatImpactTime : 0.13f; break; }   // 着弾は振り抜き (0.11〜0.15s) に合わせる
+            for (int i = _seen; i < log.Count; i++) if (log[i] is GameEvent_DamageDealt dd && dd.Source == "player") { delay = 0.13f; break; }   // 着弾は振り抜き (0.11〜0.15s) に合わせる
+            if(enemyPhase)delay=0f;
             // 戦闘の始まり (2026-09-17 ⑨): 敵が順に現れ、強個体・幕ボスは名前の帯。その間は後の出来事 (ターン開始の帯など) を待たせる
             if (_seen == 0 && log.Count > 0 && log[0] is GameEvent_CombatStarted)
             {
@@ -224,6 +249,13 @@ namespace DeckRogue.Game
                 if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || ResolvedCombatFx.IsResolved(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, prevBoard);
+                if (pendingPlayerDamage > 0 && ev is GameEvent_DamageDealt playerHit && playerHit.Source != "player")
+                {
+                    pendingPlayerDamage -= Math.Max(0, playerHit.HpLoss);
+                    int shownHp = combat.Player.Hp + pendingPlayerDamage;
+                    var hpBoard = g.Battle;
+                    ctx.LandPlayerHp = () => { if (g.Rs != null && ReferenceEquals(g.Rs.Combat, combat) && g.Battle == hpBoard) hpBoard.DisplayPlayerHp(shownHp, false); };
+                }
                 ctx.Feedback=ResolvedCombatFx.Capture(g,ev);
                 if(ctx.Feedback!=null && ev is GameEvent_DamageDealt enemyHit && enemyHit.Source!="player") {
                     string move=MoveIdFor(ctx,enemyHit.EnemyIndex??-1);ctx.Feedback.Style=HitStyle(move);ctx.Feedback.Color=MissileColor(move);
@@ -237,21 +269,20 @@ namespace DeckRogue.Game
                 // UI is already authoritative; the independent pooled effect never blocks input.
                 if(Stage.CombatWorld && ResolvedCombatFx.IsResolved(ev)) {
                     var board=g.Battle;
-                    float impactDelay=Mathf.Min(delay,.24f);
+                    float impactDelay=delay; LastImpactDelay=Mathf.Max(LastImpactDelay,impactDelay);
                     if(ev is GameEvent_DamageDealt hit && hit.Source=="player" && ctx.Hit!=null && ctx.Hit.Style=="slash") {
                         int epoch=_impactEpoch; string target="enemy"+(hit.EnemyIndex ?? 0);
                         Tween.After(Mathf.Max(0,impactDelay-.075f),()=>{if(epoch==_impactEpoch && g.Battle==board)WorldBattleFx.Trace(target,HitColor(ctx.Hit.Style,ctx.Hit.Def));});
                     }
                     AfterImpact(impactDelay,()=>{if(g.Battle!=board)return;try { Show(g,fx,captured,false,ctx); } catch(Exception e){Debug.LogWarning("[Presenter] "+e.Message);}});
-                    delay=Mathf.Min(.24f,delay+.025f);
+                    delay += enemyPhase ? MainSequenceGap(ev,ctx) : ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : (ctx.Hit != null && ctx.Hit.Volley && !ctx.Hit.VolleyLast) ? 0.03f : 0.12f;
                     continue;
                 }
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)。束ねた人形の粒は 0.04 秒 (2026-09-21)
                 AfterVisual(delay, () => { try { Show(g, fx, captured, false, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
-                if(Stage.CombatWorld) delay=Mathf.Min(delay,.24f);
-                delay += ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : (ctx.Hit != null && ctx.Hit.Volley && !ctx.Hit.VolleyLast) ? 0.03f : ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
+                delay += enemyPhase ? MainSequenceGap(ev,ctx) : ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : (ctx.Hit != null && ctx.Hit.Volley && !ctx.Hit.VolleyLast) ? 0.03f : ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
             }
-            if(!Stage.CombatWorld) HoldLightIfAny(log, _seen, delay);
+            HoldLightIfAny(log, _seen, delay);
             _seen = log.Count;
             _seenCombat = combat;
         }
@@ -288,7 +319,7 @@ namespace DeckRogue.Game
                 case GameEvent_EnemyActionExecuting ex:
                 {
                     // 上部バーの手番の札の番号を進める「敵の番 ② / 3」(敵が2体以上の時。順送りの間だけ。2026-09-29)
-                    if (live) { int cnt = PhaseEnemyCount(g, ctx, ex.EnemyIndex); BattleScreen.SetPhase(g, 1, cnt > 1 ? ex.EnemyIndex : -1, cnt); }
+                    if (live || Stage.CombatWorld) { int cnt = PhaseEnemyCount(g, ctx, ex.EnemyIndex); BattleScreen.SetPhase(g, 1, cnt > 1 ? ex.EnemyIndex : -1, cnt); }
                     if (ex.Kind == "attack" && StageMotion.On) MotionEnemyBig(g, ex.EnemyIndex, ctx);   // 段2 レーン M: 予告つき大技の赤い合図とフラッシュ (門が偽なら呼ばない)
                     var pan = g.Anchor("enemy" + ex.EnemyIndex);
                     var spr = g.Battle != null ? g.Battle.EnemySprite(ex.EnemyIndex) : null;
@@ -1425,7 +1456,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public int HitCount = 1; public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; public StageMotion.Shot Motion; public bool MotionDim; public ResolvedCombatFx.Ticket Feedback; }   // Motion＝この当たりで寄る (段2 レーン M・門が偽なら null)・MotionDim＝この札で舞台を暗くする   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
+        sealed class ReactionCtx { public int HitCount = 1; public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; public StageMotion.Shot Motion; public bool MotionDim; public ResolvedCombatFx.Ticket Feedback; public Action LandPlayerHp; }   // Motion＝この当たりで寄る (段2 レーン M・門が偽なら null)・MotionDim＝この札で舞台を暗くする   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
 
         /// <summary>
         /// 自分の札の当たりの計画 (2026-09-22 ユーザー「攻撃エフェクトがどの攻撃でも同じ」): 札 (CardPlayed / ReactionTriggered) の後に続く自分由来の DamageDealt
@@ -1813,7 +1844,8 @@ namespace DeckRogue.Game
 
         static void Show(GameRoot g, RectTransform fx, GameEvent ev, bool nudgeHp, ReactionCtx ctx = null)
         {
-            if(Stage.CombatWorld && ResolvedCombatFx.IsResolved(ev)) {var ticket=ctx?.Feedback??ResolvedCombatFx.Capture(g,ev);if(ticket!=null)ticket.Finishing=ctx?.FinishingBlow==true;ResolvedCombatFx.Show(g,fx,ticket);}
+            if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("show",ev.GetType().Name);
+            if(Stage.CombatWorld && ResolvedCombatFx.IsResolved(ev) && !(ev is GameEvent_DamageDealt enemyResolved && enemyResolved.Source!="player")) {var ticket=ctx?.Feedback??ResolvedCombatFx.Capture(g,ev);if(ticket!=null)ticket.Finishing=ctx?.FinishingBlow==true;ResolvedCombatFx.Show(g,fx,ticket);}
             if (StageMotion.CloseUpActive) MotionInterruptFor(ev, ctx);   // 段2 レーン M: 寄りの外の者に演出が出る前に寄りを戻す (寄りが走っていなければ読むだけ = 門が偽なら何も起きない)
             var key = TableSound(ev);
             if (key != null) { Audio.Key(key); return; }
@@ -1882,7 +1914,6 @@ namespace DeckRogue.Game
                             if (!Stage.CombatWorld) Tween.PlayerHitFx(fx, hit, style, streak, big, hp != null ? hp.Index : 0, hp != null ? hp.Total : 1, fromP);
                             if (!Stage.CombatWorld && StageMotion.LightsEveryHit && GfxQuality.Level != GfxLevel.Low) Tween.HitGlow(fx, hit, streak, big, GfxQuality.Level == GfxLevel.High);   // 2026-10-03 ユーザー「攻撃エフェクト自体も発光して」(箱庭の動きが点いている幕だけ)
                             if(!Stage.CombatWorld || ctx?.Feedback==null || ctx.Feedback.Element=="physical" || ctx.Feedback.Element=="arcane")Stage.Flash("enemy" + ei);
-                            if (!volleyTail) { if (Stage.CombatWorld) Stage.CombatRecoil("enemy" + ei, 1f, big); else Tween.Recoil(spr, 1f, big); }
                         }
                         // 急所: 筋と衝撃線が真鍮色 (big 扱い = 交差する2本目と針10) になり、真鍮の輪が広がる (旧: 星の絵 = 2026-09-17 ユーザー「星型がダサい」で撤去)
                         if (crit && !guardedE) Tween.RingBurst(fx, hit, PaperFx.BrassLight, 200f, 0.35f);
@@ -1897,7 +1928,6 @@ namespace DeckRogue.Game
                         if (finishing) { Tween.HitStop(0.12f, 0.3f); Stage.ZoomPunch(1.1f, 0.6f); Stage.Shake(12f, 0.35f); Tween.RingBurst(fx, hit, new Color(1f, 1f, 0.95f, 0.9f), 260f, 0.5f); }
                         else if (big && !guardedE && !volleyTail)
                         {
-                            if (hp == null || hp.Total <= 1 || hp.Index == hp.Total - 1) Tween.HitStop(0.28f, 0.055f);
                             Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
                         }
                         // 舞台の技の光 (2026-09-30 HD-2D 見本 P13): 2Dの当たりと同じ所に点光源。色は当たりの形、大きい当たり (15以上・急所) は強く影あり (PC)。
@@ -1957,9 +1987,7 @@ namespace DeckRogue.Game
                         {
                             if (!ranged)
                             {
-                                if (Stage.CombatWorld) Stage.CombatApproach("enemy" + (d.EnemyIndex ?? 0), "player", false);
-                                else Tween.AttackStep(atkSpr, new Vector2(UiKit.Phone ? -72f : -105f, 0f), 0.11f, style == "fang" ? 20f : 8f);
-                                hitDelay = Stage.CombatWorld ? Stage.CombatImpactTime : 0.11f;
+                                Tween.Lunge(atkSpr, new Vector2(-90f, 12f));
                             }
                             else
                             {
@@ -1973,8 +2001,10 @@ namespace DeckRogue.Game
                         }
                         Audio.Key("DamageDealt.enemy.swing");
                         var dd = d; var rtC = rt; var pSprC = pSpr; bool nudge = nudgeHp;
+                        var enemyFeedback = ctx?.Feedback;
                         AfterVisual(hitDelay, () =>
                         {
+                            if(Stage.CombatWorld)ResolvedCombatFx.Show(g,fx,enemyFeedback);
                             // 完全に防いだ (2026-09-17 ユーザー「完全に防いだ時に敵からダメージ食らってるように見える」): 被弾の筋 (朱) の代わりに盾で受ける演出 (GuardFx)
                             bool guarded = dd.HpLoss <= 0;
                             // 舞台の技の光 (2026-09-30 HD-2D 見本 P13): 防いだら盾の面の側 (敵の側) に空色、当たったら朱 (飛び道具・光線はその色)。old では何もしない
@@ -1986,7 +2016,7 @@ namespace DeckRogue.Game
                             if (dd.HpLoss > 0)
                             {
                                 Stage.PlayAnim("player", "hurt");
-                                if (pSprC != null) { if (Stage.CombatWorld) Stage.CombatRecoil("player", -1f, dd.HpLoss >= 12); else Tween.Recoil(pSprC, -1f, dd.HpLoss >= 12); }   // のけぞり (後ろへ小さく)
+                                if (pSprC != null) { Tween.Lunge(pSprC, new Vector2(-36f, 0f)); }   // のけぞり (後ろへ小さく)
                                 Stage.Shake(Mathf.Min(18f, 4f + dd.HpLoss * 0.7f) * (style == "blunt" ? 1.3f : 1f), 0.3f);
                                 Stage.Flash("player");
                                 float hurtA = Mathf.Min(0.35f, 0.1f + dd.HpLoss * 0.015f);
@@ -2006,6 +2036,7 @@ namespace DeckRogue.Game
                                 AfterVisual(0.08f, () => Tween.Float(fx, pos + new Vector2(0f, -36f), "ブロックで −" + blockedP, PaperFx.SkyLight, 22, 34f, 1.0f));
                             }
                             if (!Stage.CombatWorld && dd.Amount > 0 && !guarded) Tween.Punch(rtC, Mathf.Min(0.1f, 0.03f + dd.Amount * 0.004f), keepBottom: true);
+                            ctx?.LandPlayerHp?.Invoke();
                             if (nudge && g.Battle != null) g.Battle.LandPlayerIncoming(dd.Amount);   // 見込みから届いた攻撃を引く (先に。この後の Nudge が残りで引き直す。p08)
                             if (nudge && g.Battle != null && dd.HpLoss > 0) g.Battle.NudgePlayerHp(-dd.HpLoss);
                             if (nudge && g.Battle != null && blockedP > 0) g.Battle.AbsorbPlayerBlock(blockedP);   // 自分の札の盾の数字も吸われた分だけ減る (通常→氷壁の順。2026-09-17)
@@ -2068,7 +2099,7 @@ namespace DeckRogue.Game
                     Audio.Key("TurnStarted");
                     Banner(g, fx, "ターン " + ts.Turn + "  —  あなたの番", false);
                     // 上部バーの手番の札も順送りの間に「あなたの番」へ (2026-09-29。即時の時は組み直し済み＝触らない)
-                    if (nudgeHp) BattleScreen.SetPhase(g, 0, -1, 0);
+                    if (nudgeHp || Stage.CombatWorld) BattleScreen.SetPhase(g, 0, -1, 0);
                     // 自ターンの始まりで通常ブロックは消える (留め具 blockKeep なら N まで残る)。順送りの途中の盾の数字もここで揃える。この後の置物の分は BlockGained が足す
                     if (nudgeHp && g.Battle != null)
                     {
@@ -2134,7 +2165,7 @@ namespace DeckRogue.Game
                     Audio.Key("TurnEnded");
                     Banner(g, fx, "敵の番", true);
                     // 上部バーの手番の札を夜の札「敵の番」に (2026-09-29: 旧は敵が行動している間ずっと「あなたの番」のままだった)
-                    if (nudgeHp) BattleScreen.SetPhase(g, 1, -1, PhaseEnemyCount(g, ctx, -1));
+                    if (nudgeHp || Stage.CombatWorld) BattleScreen.SetPhase(g, 1, -1, PhaseEnemyCount(g, ctx, -1));
                     // 敵フェーズの始まりで敵のブロックは失効 (潜伏の殻は残る)。帳面の盾もここで消す
                     if (nudgeHp && g.Battle != null) g.Battle.ResetEnemyBlocks(ctx != null ? ctx.Prev : null);
                     break;
@@ -2157,9 +2188,9 @@ namespace DeckRogue.Game
                             if (Stage.CombatWorld)
                             {
                                 string target = "enemy" + (ctx != null ? Mathf.Max(0,ctx.EnemyIndex) : 0);
-                                Stage.CombatApproach("player", target, true);
+                                if(g.LeaderId=="leader_blue")Stage.PlayAnim("player","attack");
                                 WorldBattleFx.Cast("player",target,HitColor(CardHitStyle(def),def));
-                                AfterVisual(0.035f, () => WorldBattleFx.Projectile("player", target, HitColor(CardHitStyle(def),def), Stage.CombatImpactTime-0.035f));
+                                AfterVisual(0.035f, () => WorldBattleFx.Projectile("player", target, HitColor(CardHitStyle(def),def), 0.13f-0.035f));
                             }
                             else Tween.CastFx(fx, Tween.CenterIn(cSpr, fx), HitColor(CardHitStyle(def), def));
                             StageFx.Cast("player", CardHitStyle(def),HitColor(CardHitStyle(def),def));
@@ -2167,11 +2198,10 @@ namespace DeckRogue.Game
                     }
                     else if (atk)
                     {
-                        if (!Stage.CombatWorld) Stage.PlayAnim("player", "attack");
+                        Stage.PlayAnim("player", "attack");
                         var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
                         // 振り抜きの瞬間 (0.07s): 踏み込み + 体が少し沈む + 画面が揺れる = 斧の重さ
-                        if (Stage.CombatWorld) Stage.CombatApproach("player", "enemy" + (ctx != null ? Mathf.Max(0,ctx.EnemyIndex) : 0), false, ctx != null ? ctx.HitCount : 1, CardHitStyle(def)=="stomp" || CardHitStyle(def)=="vine" ? .18f : .4f);
-                        else Tween.AttackStep(pSpr, new Vector2(UiKit.Phone ? 72f : 100f, -3f));
+                        AfterVisual(0.11f, () => { if (pSpr != null) Tween.Lunge(pSpr, new Vector2(64f, -6f)); Stage.Shake(7f, 0.18f); });
                     }
                     else if (blk) Stage.PlayAnim("player", "block");
                     break;

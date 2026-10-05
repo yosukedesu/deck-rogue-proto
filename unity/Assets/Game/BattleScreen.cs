@@ -338,6 +338,7 @@ namespace DeckRogue.Game
             bool changed = g.PhaseShownKind != kind;
             StylePhaseTag(pt, kind, acting, count, null);
             g.PhaseShownKind = kind;
+            if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("phaseDisplay",kind==1?"enemy":"player");
             if (changed) Tween.Punch(pt, 0.1f, 0.2f);
         }
 
@@ -1507,22 +1508,34 @@ namespace DeckRogue.Game
         /// <summary>HP バーの値 (演出で滑らせるために持つ)。Mark = 行動が変わる線の位置 (無ければ -1)・HpOnly = 線を避けて今の HP だけを出している (2026-09-29 p04)。
         /// Loss/LossTo = 自分の HP バーの「削られる分」の帯と、敵の番の後に残る HP の見込み (2026-09-29 p08。敵の HP バーには無い＝Loss が null)。
         /// 帯は LossTo から今の塗りの端 (Now＝滑っている途中の HP) まで＝攻撃が届いて塗りが縮んでも、見込みの左端は動かない</summary>
-        public class HpBarInfo : MonoBehaviour { public int Max; public int Value; public float Now; public RectTransform Fill; public TMP_Text Label; public float Mark = -1f; public bool HpOnly; public RectTransform Loss; public int LossTo; }
+        public class HpBarInfo : MonoBehaviour { public int Max; public int Value; public int Revision; public float Now; public RectTransform Fill; public TMP_Text Label; public float Mark = -1f; public bool HpOnly; public RectTransform Loss; public int LossTo; }
 
         /// <summary>入れ物の中の HP バーを target まで滑らせる (無ければ何もしない)</summary>
+        public static void SetHpBarImmediate(RectTransform container, int target)
+        {
+            var info = container != null ? container.GetComponentInChildren<HpBarInfo>() : null;
+            if (info == null || info.Fill == null) return;
+            ++info.Revision;
+            info.Value = target; info.Now = target;
+            info.Fill.anchorMax = new Vector2(info.Max > 0 ? Mathf.Clamp01((float)target / info.Max) : 0f, 1f);
+            if (info.Label != null) info.Label.text = Mathf.Max(0, target) + (info.HpOnly ? "" : " / " + info.Max);
+            if (info.Loss != null) SetLossBand(info);
+        }
+
         public static void TweenHpBar(RectTransform container, int target)
         {
             if (container == null) return;
             var info = container.GetComponentInChildren<HpBarInfo>();
             if (info == null || info.Fill == null) return;
             int from = info.Value;
+            int revision = ++info.Revision;
             info.Value = target;
             float r0 = info.Max > 0 ? Mathf.Clamp01((float)from / info.Max) : 0f;
             float r1 = info.Max > 0 ? Mathf.Clamp01((float)target / info.Max) : 0f;
             var fill = info.Fill; var label = info.Label; int max = info.Max; var hi = info;
             Tween.Run(0.35f, k =>
             {
-                if (fill == null) return;
+                if (fill == null || hi == null || hi.Revision != revision) return;
                 fill.anchorMax = new Vector2(Mathf.Lerp(r0, r1, k), 1f);
                 if (label != null) label.text = Mathf.Max(0, Mathf.RoundToInt(Mathf.Lerp(from, target, k))) + (hi != null && hi.HpOnly ? "" : " / " + max);
                 if (hi != null) { hi.Now = Mathf.Lerp(from, target, k); if (hi.Loss != null) SetLossBand(hi); }   // 削られる分の帯の右端も塗りの端についていく (p08)

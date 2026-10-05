@@ -1,0 +1,19 @@
+--- export_sprites.py (original)
++++ export_sprites.py (idle anchor fixed)
+@@ -27,7 +27,15 @@
+    if len(c)<largest:
+     for px,py in c:mask[px,py]=0
+  im.putalpha(a);bbox=a.getbbox();floor=bbox[3]-1
+- foot=a.crop((0,max(0,floor-24),im.width,floor+1)).getbbox();anchor=(foot[0]+foot[2])/2 if foot else im.width/2
++ # Idle registration must follow the boot soles, not the diagonal staff.
++ # The old bottom-25-row band included the staff in idle_0 only, yielding
++ # source anchor 160.5 instead of 192.5 and shifting the whole frame +8px.
++ # Use the bottom 8 source rows for idle; preserve attack/block placement.
++ anchor_band_height = 8 if i < 8 else 25
++ foot=a.crop((0,max(0,floor-anchor_band_height+1),im.width,floor+1)).getbbox();anchor=(foot[0]+foot[2])/2 if foot else im.width/2
++ if i < 8:
++  assert foot is not None and foot[0] == 147 and foot[2] == 238, (i, foot)
++  assert anchor == 192.5, (i, anchor)
+  small=im.resize((round(im.width*scale),round(im.height*scale)),Image.Resampling.NEAREST)
+  out=Image.new('RGBA',(128,84));dx=60-round(anchor*scale);dy=76-round(floor*scale);out.alpha_composite(small,(dx,dy));actual=out.getchannel('A').getbbox()[3]-1
+  if actual!=76:

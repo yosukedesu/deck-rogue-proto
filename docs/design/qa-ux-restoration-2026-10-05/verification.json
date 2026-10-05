@@ -1,0 +1,284 @@
+{
+  "result": "PASS",
+  "change": "idle_0 translated left by 8 pixels, no vertical shift; matching default sprite and atlas cell updated",
+  "canvas": [
+    128,
+    84
+  ],
+  "pivot_normalized": [
+    0.46875,
+    0.09523809523809523
+  ],
+  "baseline_from_top": 76,
+  "unchanged_frames": [
+    "leader_blue_idle_1.png",
+    "leader_blue_idle_2.png",
+    "leader_blue_idle_3.png",
+    "leader_blue_idle_4.png",
+    "leader_blue_idle_5.png",
+    "leader_blue_idle_6.png",
+    "leader_blue_idle_7.png",
+    "leader_blue_attack_0.png",
+    "leader_blue_attack_1.png",
+    "leader_blue_attack_2.png",
+    "leader_blue_attack_3.png",
+    "leader_blue_block_0.png",
+    "leader_blue_block_1.png",
+    "leader_blue_block_2.png",
+    "leader_blue_block_3.png"
+  ],
+  "changed_files": {
+    "leader_blue_idle_0.png": {
+      "old_sha256": "250a0ba8eaccfac6acf043fc93fe8ecd9c5d37b0443212d34fce993a006a425c",
+      "new_sha256": "0c5314f5e89b28666ec4648d843fa7c6b2ef80c9c6ebff3378892d4b1359d8ad"
+    },
+    "leader_blue.png": {
+      "old_sha256": "250a0ba8eaccfac6acf043fc93fe8ecd9c5d37b0443212d34fce993a006a425c",
+      "new_sha256": "0c5314f5e89b28666ec4648d843fa7c6b2ef80c9c6ebff3378892d4b1359d8ad"
+    },
+    "leader_blue_atlas.png": {
+      "old_sha256": "d788f8428a34067ca92603ae9ce16628ba0ce5f5611ec481f514a45aeaa0ac8f",
+      "new_sha256": "f5e35068bb27209b2aa14ca49f2104540d6a19f6c7bf35285ccb2a791ad668ff"
+    }
+  },
+  "frame_metrics": [
+    {
+      "frame": 0,
+      "old_bbox": [
+        39,
+        13,
+        104,
+        77
+      ],
+      "new_bbox": [
+        31,
+        13,
+        96,
+        77
+      ],
+      "old_sole_x_min_max": [
+        56,
+        79
+      ],
+      "new_sole_x_min_max": [
+        48,
+        71
+      ],
+      "sole_y": 76,
+      "translation": [
+        -8,
+        0
+      ]
+    },
+    {
+      "frame": 1,
+      "old_bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "new_bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "old_sole_x_min_max": [
+        48,
+        71
+      ],
+      "new_sole_x_min_max": [
+        48,
+        71
+      ],
+      "sole_y": 76,
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 2,
+      "old_bbox": [
+        27,
+        13,
+        96,
+        77
+      ],
+      "new_bbox": [
+        27,
+        13,
+        96,
+        77
+      ],
+      "old_sole_x_min_max": [
+        48,
+        71
+      ],
+      "new_sole_x_min_max": [
+        48,
+        71
+      ],
+      "sole_y": 76,
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 3,
+      "old_bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "new_bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "old_sole_x_min_max": [
+        48,
+        71
+      ],
+      "new_sole_x_min_max": [
+        48,
+        71
+      ],
+      "sole_y": 76,
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 4,
+      "old_bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "new_bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "old_sole_x_min_max": [
+        48,
+        71
+      ],
+      "new_sole_x_min_max": [
+        48,
+        71
+      ],
+      "sole_y": 76,
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 5,
+      "old_bbox": [
+        29,
+        13,
+        96,
+        77
+      ],
+      "new_bbox": [
+        29,
+        13,
+        96,
+        77
+      ],
+      "old_sole_x_min_max": [
+        48,
+        71
+      ],
+      "new_sole_x_min_max": [
+        48,
+        71
+      ],
+      "sole_y": 76,
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 6,
+      "old_bbox": [
+        29,
+        13,
+        96,
+        77
+      ],
+      "new_bbox": [
+        29,
+        13,
+        96,
+        77
+      ],
+      "old_sole_x_min_max": [
+        48,
+        71
+      ],
+      "new_sole_x_min_max": [
+        48,
+        71
+      ],
+      "sole_y": 76,
+      "translation": [
+        0,
+        0
+      ]
+    },
+    {
+      "frame": 7,
+      "old_bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "new_bbox": [
+        30,
+        13,
+        96,
+        77
+      ],
+      "old_sole_x_min_max": [
+        48,
+        71
+      ],
+      "new_sole_x_min_max": [
+        48,
+        71
+      ],
+      "sole_y": 76,
+      "translation": [
+        0,
+        0
+      ]
+    }
+  ],
+  "limits": "PNG/export validation only; Unity import and Android runtime verification are separate.",
+  "loop_boundaries": {
+    "0_to_1": "PASS: identical boot contact mask at rows 75–76",
+    "7_to_0": "PASS: identical boot contact mask at rows 75–76"
+  },
+  "pixel_preservation": {
+    "visible_pixels_idle_0_before": 2139,
+    "visible_pixels_idle_0_after": 2139,
+    "visible_rgba_multiset_equal": true,
+    "exact_integer_translation_including_transparent_rgb": true,
+    "clipped_pixels": 0,
+    "unchanged_frames_byte_identical": 15,
+    "atlas_other_15_cells_pixel_identical": true
+  }
+}
