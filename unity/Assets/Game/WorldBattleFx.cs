@@ -17,6 +17,11 @@ namespace DeckRogue.Game
             output.Clear();if(_elementMaterial==null)return;
             foreach(var slot in Pool)if(slot!=null && slot.Busy && slot.R!=null && slot.R.gameObject.activeInHierarchy && slot.R.sharedMaterial==_elementMaterial)output.Add(slot.R);
         }
+        public static int LegacyElementUses {get;private set;}
+        internal static void RestoreLegacyElements(){
+            if(_elementMaterial==null)return;
+            foreach(var slot in Pool)if(slot!=null && slot.Busy && slot.R!=null && slot.R.sharedMaterial==_elementMaterial){slot.R.sharedMaterial=_material;LegacyElementUses++;}
+        }
         public static int EmittedCount {get;private set;}
         public static void Cancel() {
             if(_embers!=null)_embers.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
@@ -62,10 +67,10 @@ namespace DeckRogue.Game
                 go.AddComponent<MeshFilter>().sharedMesh=_quad; slot.R=go.AddComponent<MeshRenderer>();
                 slot.R.sharedMaterial=_material; slot.R.shadowCastingMode=ShadowCastingMode.Off; slot.R.receiveShadows=false;
             }
-            if(authored && ElementBattleFx.SeparateMaterial) {
+            if(authored && ElementVfxPass.CanUsePost(Stage.Camera)) {
                 if(_elementMaterial==null){var shader=Shader.Find("DeckRogue/ElementBattleFx");if(shader!=null && shader.isSupported)_elementMaterial=new Material(shader);}
                 slot.R.sharedMaterial=_elementMaterial!=null?_elementMaterial:_material;
-            } else slot.R.sharedMaterial=_material;
+            } else {slot.R.sharedMaterial=_material;if(authored)LegacyElementUses++;}
             EmittedCount++;
             int version=++slot.Version; slot.Busy=true; slot.Started=Time.unscaledTime; slot.T.gameObject.SetActive(true);
             float inset=.5f/_atlas.width;

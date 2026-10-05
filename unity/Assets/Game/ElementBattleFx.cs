@@ -10,7 +10,9 @@ namespace DeckRogue.Game {
   public static readonly Dictionary<string,int> FrameMasks=new Dictionary<string,int>();
   public static int Frame(float time)=>Mathf.Clamp(Mathf.FloorToInt(time*8),0,7);
   public static void Observe(string name,int frame){FrameMasks.TryGetValue(name,out var mask);FrameMasks[name]=mask|(1<<frame);}
+  internal static bool ForceMissingForTest;
   public static bool TryGet(string element,out Texture2D texture,out float duration){
+   if(ForceMissingForTest){texture=null;duration=0;return false;}
    duration=element=="lightning"?.24f:element=="ice"?.32f:element=="dark"?.40f:element=="light"?.30f:element=="heal"?.50f:.36f;
    if(!Textures.TryGetValue(element,out texture)){texture=Resources.Load<Texture2D>("Art/fx/element-"+element+"-8f");Textures[element]=texture;}
    return texture!=null;
