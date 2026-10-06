@@ -1241,6 +1241,7 @@ namespace DeckRogue.Game
             public Transform Halo; public Vector2 HaloUv; public float FeetPad;
             public float FootAnchorX=.5f;
             public Vector3 CombatOffset, CombatRecoilOffset; public int MotionVersion, RecoilVersion;
+            public CombatImpactPause ImpactPause;
             public float HeroLight = HeroAmbient;   // リーダーの板の主役の照明 (絵ごと。HeroAmbientFor)。敵と人形では使わない
             // コマ送り (2026-09-09 このはの戦闘アニメ): 待機はループ、攻撃/被弾/防御は1回流して待機へ戻る。ドットは拡大・回転せず絵を差し替えるだけ
             public Texture2D BaseTex;
@@ -1551,7 +1552,7 @@ namespace DeckRogue.Game
             {
                 if (Rect == null) { Destroy(gameObject); return; }
                 R2E_SyncIdle(HD2DFlags.DioramaHere);   // 二周目 レーン E: 箱庭の待機のコマ (look の char.r2idle が無ければ何もしない)
-                Advance();
+                if (!ImpactPause.IsPaused(Time.time)) Advance();
                 Rect.GetWorldCorners(_c);
                 float sx = Mathf.Round((_c[0].x + _c[3].x) * 0.5f), sy = Mathf.Round(_c[0].y);
                 float w = Mathf.Round(_c[3].x - _c[0].x), h = Mathf.Round(_c[1].y - _c[0].y);
@@ -1580,6 +1581,7 @@ namespace DeckRogue.Game
                 if (Anim == "idle" && Breathe)
                 {
                     breathe = Mathf.Sin(Time.time * (2.4f + BreathePhase * 0.08f) + R3E_BreathePhase()) * (Key == "player" ? 2f : 3f);   // 三周目 レーン E (R11): 位相は座席の番号で散らす (無ければ BreathePhase = 二周目)
+                    if (ImpactPause.IsPaused(Time.time)) breathe = BreathePx;
                     pos += _up * (breathe * k);   // 呼吸: ±2〜3px の上下 (拡大・回転はしない)。周期も個体ごとに少しずらす (⑩ 2026-09-17)
                 }
                 var rot = dio ? LayoutRot() : CameraRotation;   // 見本の板はレイアウト用のカメラの回転 (漂い・揺れで回さない)

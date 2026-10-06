@@ -305,6 +305,8 @@ namespace DeckRogue.Game
                 if (Rs.Phase == RunPhases.Won || Rs.Phase == RunPhases.Lost) SaveGame.Delete();
                 else SaveGame.Write(this, Rs);
             }
+            if(wasCombat && prevRs?.Combat!=null && Rs?.Combat!=null && !ReferenceEquals(prevRs,Rs))
+                Presenter.PrepareEnemyPresentation(this,prevRs.Combat,Rs.Combat);
             bool combatEnded = wasCombat && Rs != null && Rs.Phase != RunPhases.Combat;
             // 確認の窓 (発動/温存) から進んだ手: 順送りで古い盤面を見せる前に窓と暗がりだけ先に畳む (2026-09-17)
             bool fromWindow = wasCombat && prevRs != null && prevRs.Combat != null && prevRs.Combat.Phase == CombatPhases.AwaitingReaction && Rs != null && !ReferenceEquals(Rs, prevRs);
@@ -322,7 +324,15 @@ namespace DeckRogue.Game
                 var ended=Rs;var final=Rs.Combat;
                 Battle.SyncField(this,final);Battle.SyncHand(this,final,true);
                 Presenter.Play(this,final);
-                Tween.After(Mathf.Max(.48f,Presenter.LastImpactDelay+.36f),()=>{if(!ReferenceEquals(Rs,ended))return;Rebuild();Presenter.Reset();Audio.Ui(ended.Phase==RunPhases.Lost?"lose":"win");});
+                if(CardVfxProfile.ShowcaseOn) {
+                    // A fast lethal card may follow a slower card: drain every reserved hit before the coda.
+                    void CompleteWhenLanded() {
+                        if(!ReferenceEquals(Rs,ended))return;
+                        if(Presenter.PendingImpactCount>0) {Tween.After(.03f,CompleteWhenLanded);return;}
+                        Tween.After(.65f,()=>{if(!ReferenceEquals(Rs,ended))return;Rebuild();Presenter.Reset();Audio.Ui(ended.Phase==RunPhases.Lost?"lose":"win");});
+                    }
+                    CompleteWhenLanded();
+                } else Tween.After(Mathf.Max(.48f,Presenter.LastImpactDelay+.36f),()=>{if(!ReferenceEquals(Rs,ended))return;Rebuild();Presenter.Reset();Audio.Ui(ended.Phase==RunPhases.Lost?"lose":"win");});
                 return;
             }
             if (combatEnded && !Stage.CombatWorld && Rs.Combat != null && ScreenRoot != null && ScreenRoot.childCount > 0 && Presenter.HasNewEvents(Rs.Combat))

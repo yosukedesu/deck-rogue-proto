@@ -27,6 +27,64 @@ namespace DeckRogue.Game
             int epoch=_impactEpoch; PendingImpactCount++; QueuedImpactCount++;
             Tween.After(delay,()=>{if(epoch!=_impactEpoch)return;PendingImpactCount=Math.Max(0,PendingImpactCount-1);action?.Invoke();});
         }
+        // Display-only receipts are reserved before SyncField. A second card adds debt rather than
+        // replacing the older card's callbacks. Event indices are scoped by object identity, not record equality.
+        sealed class EnemyPresentation {
+            public int Enemy, Debt, Generation; public GameEvent Event;
+        }
+        static readonly Dictionary<int,EnemyPresentation> _enemyPresentation = new Dictionary<int,EnemyPresentation>();
+        static object _presentationOrigin; static BattleView _presentationBoard; static int _presentationGeneration;
+        public static Action<ResolvedCombatFx.Ticket> EnemyImpactPresentedForReview;
+        static object Origin(GameState st) => st!=null && st.EventLog.Count>0 ? st.EventLog[0] : null;
+        static bool EnemyReceipt(GameEvent ev,out int enemy,out int debt) {
+            enemy=-1;debt=0;
+            switch(ev) {
+                case GameEvent_DamageDealt d when d.Source=="player":enemy=d.EnemyIndex??0;debt=d.HpLoss;return true;
+                case GameEvent_BurnTick b:enemy=b.EnemyIndex;debt=b.Amount;return true;
+                case GameEvent_EnemyHealed h:enemy=h.TargetIndex;debt=-h.Amount;return true;
+                case GameEvent_RegenTicked h:enemy=h.EnemyIndex;debt=-h.Amount;return true;
+                default:return false;
+            }
+        }
+        static void ClearEnemyPresentation() {
+            ++_presentationGeneration;_enemyPresentation.Clear();_presentationOrigin=null;_presentationBoard=null;
+        }
+        public static void PrepareEnemyPresentation(GameRoot g,GameState before,GameState after) {
+            if(!CardVfxProfile.ShowcaseOn || g.Battle==null || before==null || after==null || !ReferenceEquals(Origin(before),Origin(after)))return;
+            if(!ReferenceEquals(_presentationOrigin,Origin(after)) || _presentationBoard!=g.Battle) {
+                ClearEnemyPresentation();_presentationOrigin=Origin(after);_presentationBoard=g.Battle;
+            }
+            for(int i=before.EventLog.Count;i<after.EventLog.Count;i++)
+                if(EnemyReceipt(after.EventLog[i],out var enemy,out var debt))
+                    _enemyPresentation[i]=new EnemyPresentation{Enemy=enemy,Debt=debt,Event=after.EventLog[i],Generation=_presentationGeneration};
+        }
+        public static bool HasEnemyPresentation(GameState state,int enemy) {
+            if(!ReferenceEquals(Origin(state),_presentationOrigin))return false;
+            foreach(var p in _enemyPresentation.Values)if(p.Enemy==enemy)return true;
+            return false;
+        }
+        public static int EnemyDisplayHp(GameState state,int enemy) {
+            int hp=state.Enemies[enemy].Hp;
+            if(ReferenceEquals(Origin(state),_presentationOrigin))foreach(var p in _enemyPresentation.Values)if(p.Enemy==enemy)hp+=p.Debt;
+            // Keep the raw negative overkill HP until all inverse deltas have been added.
+            return Math.Max(0,hp);
+        }
+        static bool EnemyPresentationCurrent(GameRoot g,int index,EnemyPresentation receipt) {
+            var state=g.Rs?.Combat;
+            return receipt!=null && receipt.Generation==_presentationGeneration && g.Battle==_presentationBoard
+                && ReferenceEquals(Origin(state),_presentationOrigin) && index>=0 && index<state.EventLog.Count
+                && ReferenceEquals(state.EventLog[index],receipt.Event);
+        }
+        static void LandEnemyPresentation(GameRoot g,int index,EnemyPresentation receipt) {
+            if(!EnemyPresentationCurrent(g,index,receipt))return;
+            if(!_enemyPresentation.TryGetValue(index,out var pending) || !ReferenceEquals(pending,receipt))return;
+            _enemyPresentation.Remove(index);
+            var state=g.Rs.Combat;
+            if(receipt.Enemy<state.Enemies.Count)g.Battle.DisplayEnemyHp(receipt.Enemy,EnemyDisplayHp(state,receipt.Enemy));
+        }
+        public static void RetireComparison(BattleView board) {
+            if(board==_presentationBoard)Reset();
+        }
         public static int VisualVersion => _visualVersion;
         public static int PendingVisualCount { get; private set; }
         static void AfterVisual(float delay,Action action) {
@@ -35,9 +93,15 @@ namespace DeckRogue.Game
             Tween.After(delay,()=>{if(!world || version==_visualVersion){if(world)PendingVisualCount=Math.Max(0,PendingVisualCount-1);action?.Invoke();}});
         }
 
-        public static void Reset() { ++_impactEpoch; PendingImpactCount=0; ++_visualVersion; PendingVisualCount=0; WorldBattleFx.Cancel(); Stage.CancelCombatMotion(); _seen = 0; _seenCombat = null; }
+        public static void Reset() { ClearEnemyPresentation(); ++_impactEpoch; PendingImpactCount=0; ++_visualVersion; PendingVisualCount=0; WorldBattleFx.Cancel(); Stage.CancelCombatMotion(); _seen = 0; _seenCombat = null; }
         /// <summary>続きから (2026-09-15): 読み戻した戦闘の既存のログは演出済みとして扱う (再開の一発目に古い浮き文字を出さない)</summary>
-        public static void MarkSeen(GameState combat) { _seen = combat != null ? combat.EventLog.Count : 0; _seenCombat = combat; }
+        public static void MarkSeen(GameState combat) {
+            bool comparison=CardVfxProfile.ShowcaseOn || _presentationOrigin!=null;
+            if(comparison)Reset();
+            _seen = combat != null ? combat.EventLog.Count : 0; _seenCombat = combat;
+            var g=GameRoot.I;
+            if(comparison && combat!=null && g?.Battle!=null && ReferenceEquals(g.Rs?.Combat,combat))g.Battle.ReconcileComparisonCheckpoint(g,combat);
+        }
 
         /// <summary>
         /// この CardPlayed が実際に何をしたか (選択式の札は選んだモードで演出を分ける 2026-09-14 ユーザー指摘)。
@@ -162,7 +226,7 @@ namespace DeckRogue.Game
                 }
                 if (batchAt.ContainsKey(i)) { ctx.Batch = batchAt[i]; ctx.BatchLast = batchLast.Contains(i); }
                 if (hitAt.ContainsKey(i)) ctx.Hit = hitAt[i];
-                if(ctx.Feedback!=null && ctx.Hit!=null){ctx.Feedback.Style=ctx.Hit.Style;ctx.Feedback.Color=HitColor(ctx.Hit.Style,ctx.Hit.Def);ctx.Feedback.Index=ctx.Hit.Index;ctx.Feedback.Element=CardVfxProfile.Element(ctx.Hit.Def,g.LeaderId);ctx.Feedback.Color=ElementBattleFx.ColorFor(ctx.Feedback.Element,ctx.Feedback.Color);}
+                if(ctx.Feedback!=null && ctx.Hit!=null){ctx.Feedback.Style=ctx.Hit.Style;ctx.Feedback.Color=HitColor(ctx.Hit.Style,ctx.Hit.Def);ctx.Feedback.Index=ctx.Hit.Index;ctx.Feedback.Total=ctx.Hit.Total;ctx.Feedback.Element=CardVfxProfile.Element(ctx.Hit.Def,g.LeaderId);ctx.Feedback.Color=ElementBattleFx.ColorFor(ctx.Feedback.Element,ctx.Feedback.Color);ctx.Feedback.Showcase=ctx.Hit.Showcase;}
                 if (i == finishing) { ctx.FinishingBlow = true; gap += 0.35f; }   // とどめはヒットストップぶん長く見せる
                 if (motionAt != null && motionAt.ContainsKey(i)) ctx.Motion = motionAt[i];   // 段2 レーン M (門が偽なら motionAt は null)
                 AfterVisual(delay, () => { try { Show(g, fx, captured, true, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } });
@@ -246,7 +310,23 @@ namespace DeckRogue.Game
             for (int i = _seen; i < log.Count; i++)
             {
                 var ev = log[i];
-                if (ev is GameEvent_CardPlayed) { var cp = ev; _playHint = PlayOutcome(log, i); var cctx = new ReactionCtx { HitCount = CountPlayerHits(log, i), EnemyIndex = FirstPlayerTarget(log, i), Prev = prevBoard, MotionDim = motionDim != null && motionDim.Contains(i) }; try { Show(g, fx, cp, false, cctx); } catch (Exception e) { Debug.LogWarning("[Presenter] " + e.Message); } continue; }   // 攻撃コマは札を出した瞬間に
+                if (ev is GameEvent_CardPlayed played) {
+                    _playHint=PlayOutcome(log,i);
+                    var comparison=CardVfxProfile.Comparison(played.CardId);
+                    var cctx=new ReactionCtx { HitCount=CountPlayerHits(log,i),EnemyIndex=FirstPlayerTarget(log,i),Prev=prevBoard,MotionDim=motionDim!=null && motionDim.Contains(i),Showcase=comparison };
+                    if(comparison!=null) {
+                        // Use the number of volleys, not the number of targets, for the actor's hold.
+                        for(int j=i+1;j<log.Count;j++) {
+                            if(log[j] is GameEvent_CardPlayed || log[j] is GameEvent_ReactionTriggered || log[j] is GameEvent_TurnEnded)break;
+                            if(hitAt.TryGetValue(j,out var plan)) {
+                                cctx.HitCount=plan.Total;cctx.EnemyIndex=((GameEvent_DamageDealt)log[j]).EnemyIndex??0;break;
+                            }
+                        }
+                        if(_playHint==1 && !enemyPhase)delay=Mathf.Max(delay,comparison.Contact);
+                    }
+                    try { Show(g,fx,ev,false,cctx); } catch(Exception e) { Debug.LogWarning("[Presenter] "+e.Message); }
+                    continue;
+                }   // 攻撃コマは札を出した瞬間に
                 if (!(ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || ResolvedCombatFx.IsResolved(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, prevBoard);
@@ -264,20 +344,33 @@ namespace DeckRogue.Game
                 }
                 if (batchAt.ContainsKey(i)) { ctx.Batch = batchAt[i]; ctx.BatchLast = batchLast.Contains(i); }
                 if (hitAt.ContainsKey(i)) ctx.Hit = hitAt[i];
-                if(ctx.Feedback!=null && ctx.Hit!=null){ctx.Feedback.Style=ctx.Hit.Style;ctx.Feedback.Color=HitColor(ctx.Hit.Style,ctx.Hit.Def);ctx.Feedback.Index=ctx.Hit.Index;ctx.Feedback.Element=CardVfxProfile.Element(ctx.Hit.Def,g.LeaderId);ctx.Feedback.Color=ElementBattleFx.ColorFor(ctx.Feedback.Element,ctx.Feedback.Color);}
+                if(ctx.Feedback!=null && ctx.Hit!=null){ctx.Feedback.Style=ctx.Hit.Style;ctx.Feedback.Color=HitColor(ctx.Hit.Style,ctx.Hit.Def);ctx.Feedback.Index=ctx.Hit.Index;ctx.Feedback.Total=ctx.Hit.Total;ctx.Feedback.Element=CardVfxProfile.Element(ctx.Hit.Def,g.LeaderId);ctx.Feedback.Color=ElementBattleFx.ColorFor(ctx.Feedback.Element,ctx.Feedback.Color);ctx.Feedback.Showcase=ctx.Hit.Showcase;}
                 if (i == finishing) ctx.FinishingBlow = true;
                 if (motionAt != null && motionAt.ContainsKey(i)) ctx.Motion = motionAt[i];   // 段2 レーン M (門が偽なら motionAt は null)
                 // Resolved hits are visible even when another card arrives before a delayed callback.
                 // UI is already authoritative; the independent pooled effect never blocks input.
                 if(Stage.CombatWorld && ResolvedCombatFx.IsResolved(ev)) {
                     var board=g.Battle;
-                    float impactDelay=delay; LastImpactDelay=Mathf.Max(LastImpactDelay,impactDelay);
+                    float impactDelay=ctx.Hit?.Showcase!=null && !enemyPhase
+                        ? ctx.Hit.Showcase.Contact+ctx.Hit.Index*ctx.Hit.Showcase.Interval : delay;
+                    delay=Mathf.Max(delay,impactDelay);
+                    LastImpactDelay=Mathf.Max(LastImpactDelay,impactDelay);
                     if(ev is GameEvent_DamageDealt hit && hit.Source=="player" && ctx.Hit!=null && ctx.Hit.Style=="slash") {
                         int epoch=_impactEpoch; string target="enemy"+(hit.EnemyIndex ?? 0);
-                        Tween.After(Mathf.Max(0,impactDelay-.075f),()=>{if(epoch==_impactEpoch && g.Battle==board)WorldBattleFx.Trace(target,HitColor(ctx.Hit.Style,ctx.Hit.Def));});
+                        var trace=ctx.Hit.Showcase!=null?WorldBattleFx.CaptureProjectile("player",target):null;
+                        Tween.After(Mathf.Max(0,impactDelay-.075f),()=>{if(epoch==_impactEpoch && g.Battle==board) {if(trace!=null)WorldBattleFx.TraceAt(trace,HitColor(ctx.Hit.Style,ctx.Hit.Def));else WorldBattleFx.Trace(target,HitColor(ctx.Hit.Style,ctx.Hit.Def));}});
                     }
-                    AfterImpact(impactDelay,()=>{if(g.Battle!=board)return;try { Show(g,fx,captured,false,ctx); } catch(Exception e){Debug.LogWarning("[Presenter] "+e.Message);}});
-                    delay += enemyPhase ? MainSequenceGap(ev,ctx) : ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : (ctx.Hit != null && ctx.Hit.Volley && !ctx.Hit.VolleyLast) ? 0.03f : 0.12f;
+                    int eventIndex=i;_enemyPresentation.TryGetValue(i,out var enemyReceipt);
+                    AfterImpact(impactDelay,()=>{
+                        if(g.Battle!=board || (enemyReceipt!=null && !EnemyPresentationCurrent(g,eventIndex,enemyReceipt)))return;
+                        try {
+                            LandEnemyPresentation(g,eventIndex,enemyReceipt);
+                            Show(g,fx,captured,false,ctx);
+                            if(enemyReceipt!=null)EnemyImpactPresentedForReview?.Invoke(ctx.Feedback);
+                        } catch(Exception e) { Debug.LogWarning("[Presenter] "+e.Message); }
+                        finally {if(enemyReceipt!=null)board.ReleasePresentedDeath(g,enemyReceipt.Enemy);}
+                    });
+                    delay += enemyPhase ? MainSequenceGap(ev,ctx) : ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : (ctx.Hit != null && ctx.Hit.Volley && !ctx.Hit.VolleyLast) ? (ctx.Hit.Showcase!=null ? 0f : .03f) : (ctx.Hit?.Showcase?.Interval ?? .12f);
                     continue;
                 }
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)。束ねた人形の粒は 0.04 秒 (2026-09-21)
@@ -1459,17 +1552,17 @@ namespace DeckRogue.Game
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public int HitCount = 1; public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; public StageMotion.Shot Motion; public bool MotionDim; public ResolvedCombatFx.Ticket Feedback; public Action LandPlayerHp; public CombatDisplaySequence Display; }   // Motion＝この当たりで寄る (段2 レーン M・門が偽なら null)・MotionDim＝この札で舞台を暗くする   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
+        sealed class ReactionCtx { public int HitCount = 1; public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; public StageMotion.Shot Motion; public bool MotionDim; public ResolvedCombatFx.Ticket Feedback; public Action LandPlayerHp; public CombatDisplaySequence Display; public CardVfxProfile.Showcase Showcase; }   // Motion＝この当たりで寄る (段2 レーン M・門が偽なら null)・MotionDim＝この札で舞台を暗くする   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
 
         /// <summary>
         /// 自分の札の当たりの計画 (2026-09-22 ユーザー「攻撃エフェクトがどの攻撃でも同じ」): 札 (CardPlayed / ReactionTriggered) の後に続く自分由来の DamageDealt
         /// (人形・置物の SourceUid つきは除く) に、形 (CardHitStyle) と多段の位置を付ける。Index＝何発目 (0 から)・Total＝発数。
         /// 全体攻撃は「同じ敵が2度目に出るまで」を1発 (Volley) と数え、Volley の中は 0.05 秒刻みで一斉に走らせて揺れは最後の1つだけ
         /// </summary>
-        sealed class HitPlan { public CardDef Def; public string Style = "slash"; public int Index; public int Total; public bool Volley; public bool VolleyFirst; public bool VolleyLast; }
+        sealed class HitPlan { public CardDef Def; public string Style = "slash"; public int Index; public int Total; public bool Volley; public bool VolleyFirst; public bool VolleyLast; public CardVfxProfile.Showcase Showcase; }
         static void PlanCardHits(IReadOnlyList<GameEvent> log, int from, Dictionary<int, HitPlan> at)
         {
-            CardDef cur = null;
+            CardDef cur = null; bool directPlay=false;
             var run = new List<int>();
             void Flush()
             {
@@ -1484,14 +1577,14 @@ namespace DeckRogue.Game
                 }
                 for (int k = 0; k < volleys.Count; k++)
                     for (int m = 0; m < volleys[k].Count; m++)
-                        at[volleys[k][m]] = new HitPlan { Def = cur, Style = style, Index = k, Total = volleys.Count, Volley = volleys[k].Count > 1, VolleyFirst = m == 0, VolleyLast = m == volleys[k].Count - 1 };
+                        at[volleys[k][m]] = new HitPlan { Def = cur, Style = style, Showcase = directPlay ? CardVfxProfile.Comparison(cur) : null, Index = k, Total = volleys.Count, Volley = volleys[k].Count > 1, VolleyFirst = m == 0, VolleyLast = m == volleys[k].Count - 1 };
                 run.Clear();
             }
             for (int i = Math.Max(0, from); i < log.Count; i++)
             {
                 var e = log[i];
-                if (e is GameEvent_CardPlayed cp) { Flush(); cur = null; try { cur = CardVfxProfile.ResolveDef(cp.CardId); } catch (Exception) { } }
-                else if (e is GameEvent_ReactionTriggered rt) { Flush(); cur = null; try { cur = CardVfxProfile.ResolveDef(rt.CardId); } catch (Exception) { } }
+                if (e is GameEvent_CardPlayed cp) { Flush(); directPlay=true; cur = null; try { cur = CardVfxProfile.ResolveDef(cp.CardId); } catch (Exception) { } }
+                else if (e is GameEvent_ReactionTriggered rt) { Flush(); directPlay=false; cur = null; try { cur = CardVfxProfile.ResolveDef(rt.CardId); } catch (Exception) { } }
                 else if (e is GameEvent_TurnEnded || e is GameEvent_TurnStarted || e is GameEvent_EnemyActionExecuting || e is GameEvent_GearUsed) { Flush(); cur = null; }
                 else if (e is GameEvent_DamageDealt dd && dd.Source == "player" && dd.SourceUid == null && cur != null) run.Add(i);
             }
@@ -1929,7 +2022,7 @@ namespace DeckRogue.Game
                         if (!volleyTail && !guardedE && (big || style == "stomp")) Stage.Shake(Mathf.Min(14f, Mathf.Max(6f, d.Amount * 0.4f)) * (crit ? 1.2f : 1f) * (style == "stomp" ? 1.3f : 1f), 0.25f);   // 踏みつけは小さくても揺れる
                         // ⑫ カメラ (2026-09-17): 大技は舞台がぐっと寄る。とどめ (戦闘を決めた一撃) はヒットストップ＝時間が一瞬凍って、大きく寄る
                         bool finishing = ctx != null && ctx.FinishingBlow;
-                        if (finishing) { Tween.HitStop(0.12f, 0.3f); Stage.ZoomPunch(1.1f, 0.6f); Stage.Shake(12f, 0.35f); Tween.RingBurst(fx, hit, new Color(1f, 1f, 0.95f, 0.9f), 260f, 0.5f); }
+                        if (finishing) { if(ctx?.Hit?.Showcase==null)Tween.HitStop(0.12f, 0.3f); Stage.ZoomPunch(1.1f, 0.6f); Stage.Shake(12f, 0.35f); Tween.RingBurst(fx, hit, new Color(1f, 1f, 0.95f, 0.9f), 260f, 0.5f); }
                         else if (big && !guardedE && !volleyTail)
                         {
                             Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
@@ -2176,6 +2269,7 @@ namespace DeckRogue.Game
                     break;
                 case GameEvent_CardPlayed cp:
                 {
+                    Stage.BeginCombatAction("player");
                     if (ctx != null && ctx.MotionDim) StageMotion.BeginDim();   // 段2 レーン M: 寄る札を出した瞬間に舞台を暗くする (門が偽なら MotionDim は立たない)
                     // 攻撃札なら斧を振る (本家式: その場で踏み込んで振る)。守りの札なら構え
                     CardDef def = null;
@@ -2185,7 +2279,21 @@ namespace DeckRogue.Game
                     // ⑦ 手札 (2026-09-17): エナジーの輪が払った瞬間に跳ね、X の札は払った玉が輪から札の行き先へ飛んで「X = N」の判
                     try { ShowEnergyPaid(g, fx, def, ctx); } catch (Exception e) { Debug.LogWarning("[Presenter] energy " + e.Message); }
                     bool spell = def != null && def.Type == "spell";
-                    if (atk && spell)
+                    if(atk && ctx?.Showcase!=null) {
+                        var profile=ctx.Showcase;string target="enemy"+Mathf.Max(0,ctx.EnemyIndex);
+                        var color=ElementBattleFx.ColorFor(CardVfxProfile.Element(def,g.LeaderId),HitColor(CardHitStyle(def),def));
+                        Stage.ShowcaseApproach("player",target,spell,ctx.HitCount,profile);
+                        WorldBattleFx.ShowcaseCharge("player",color,profile);
+                        if(spell) {
+                            int epoch=_impactEpoch,generation=_presentationGeneration;var board=g.Battle;
+                            // Snapshot the endpoints now: neither target death nor a later card can retarget this cast.
+                            var projectile=WorldBattleFx.CaptureProjectile("player",target);
+                            Tween.After(profile.Windup,()=>{if(epoch==_impactEpoch && generation==_presentationGeneration && g.Battle==board)WorldBattleFx.ProjectileAt(projectile,color,profile.Contact-profile.Windup);});
+                        }
+                        StageFx.Cast("player",CardHitStyle(def),color);
+                        if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("showcase",def.Id+":"+profile.Contact);
+                    }
+                    else if (atk && spell)
                     {   // 呪文は斧を振らない (2026-09-22 ユーザー裁定): 体の前で色の光がひと膨らみ＝詠唱。当たりは PlayerHitFx の spell/light
                         var cSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
                         if (cSpr != null)

@@ -96,6 +96,8 @@ namespace DeckRogue.Game
             get
             {
                 var shots = Arg("-shots");
+                if (string.IsNullOrEmpty(shots) && Arg("-autopilot") == "presentation-review")
+                    shots = Path.Combine(Application.persistentDataPath, "presentation-review");
                 return !string.IsNullOrEmpty(Arg("-autopilot")) && !string.IsNullOrEmpty(shots)
                     ? Path.Combine(Path.GetFullPath(shots), "player-data") : Application.persistentDataPath;
             }
@@ -191,7 +193,7 @@ namespace DeckRogue.Game
             DontDestroyOnLoad(go);
             var a = go.AddComponent<Autopilot>();
             a._scenario = scenario;
-            a._dir = Arg("-shots") ?? Path.Combine(Application.persistentDataPath, "shots");
+            a._dir = Arg("-shots") ?? Path.Combine(Application.persistentDataPath, scenario == "presentation-review" ? "presentation-review" : "shots");
             a._seed = int.TryParse(Arg("-seed") ?? "", out var s) ? s : 4242;
         }
 
@@ -224,6 +226,12 @@ namespace DeckRogue.Game
 
         IEnumerator Shot(string name, int settle = 6)
         {
+            // Review fixtures settle identically with or without optional screenshot output.
+            if (_scenario == "presentation-review")
+            {
+                for (int i = 0; i < settle + 3; i++) yield return null;
+                yield break; // Dedicated paired frame captures are owned by PresentationReview.
+            }
             // レイアウトと描画が落ち着くまで数フレーム待つ (Rebuild 直後の1フレームは LayoutGroup が未計算)。コマ送りの途中を撮る時は settle=1
             ApplyCaptureMode();   // uionly / unitsonly (立っていなければ何もしない。2026-09-30 HD-2D 見本 P01)
             for (int i = 0; i < settle; i++) yield return null;
@@ -264,6 +272,10 @@ namespace DeckRogue.Game
                     case "strike-review": yield return StrikeReview(g); break;
                     case "tempo": yield return TempoCheck(g); break;
                     case "vfx-coverage": yield return VfxCoverage(g); break;
+                    case "presentation-review":
+                        yield return PresentationReview(g);
+                        if (_presentationReviewFailed) { Application.Quit(1); yield break; }
+                        break;
                     case "vfx-safety": yield return VfxSafety(g); break;
                     case "light-review": yield return ElementReview(g,true); break;
                     case "element-review": yield return ElementReview(g); break;

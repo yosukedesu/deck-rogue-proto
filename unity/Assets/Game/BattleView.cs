@@ -80,6 +80,7 @@ namespace DeckRogue.Game
 
         public void Destroy()
         {
+            Presenter.RetireComparison(this);
             if (Root == null) return;
             foreach (var l in new[] { FieldLayer, HandLayer, UiLayer })
             {
@@ -291,14 +292,15 @@ namespace DeckRogue.Game
                 _enemyHits[i].GetComponent<Button>().interactable = alive;
                 for (int c = pan.childCount - 1; c >= 0; c--) { var ch = pan.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
                 g.RegisterAnchor("enemy" + i, pan);
-                bool wasAlive = _shownEnemyHp[i] > 0;
+                if(CardVfxProfile.ShowcaseOn)_shownEnemyHp[i]=Presenter.EnemyDisplayHp(st,i);
+                bool wasAlive = _shownEnemyHp[i] > 0 || Presenter.HasEnemyPresentation(st,i);
                 float gap = _enemyGaps[i];
                 // 倒れた瞬間 (2026-09-17): 絵と帳面を生前の姿で描いておき、EnemyDied/EnemyFled の出来事 (Presenter → KillEnemy) が着弾の後に崩す。
                 // 出来事が先に来ていた (順送りの敵フェーズで倒れた) なら _died に印があるので何も描かない。出来事が来なければ 0.6 秒後に崩す (保険)
                 if (alive) _died.Remove(i);
                 bool dyingNow = wasAlive && !alive && !_died.Contains(i);
                 BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i], gap, dyingNow, anyForecast, anyStack);
-                _shownEnemyHp[i] = st.Enemies[i].Hp;
+                _shownEnemyHp[i] = CardVfxProfile.ShowcaseOn ? Presenter.EnemyDisplayHp(st,i) : st.Enemies[i].Hp;
                 _shownEnemyBlock[i] = st.Enemies[i].Block;
                 if (dyingNow) { int ci = i; bool fled = st.Enemies[i].Fled == true; Tween.After(0.6f, () => {if(g.Battle==this && g.Rs?.Combat!=null && ci<g.Rs.Combat.Enemies.Count && g.Rs.Combat.Enemies[ci].Hp<=0)KillEnemy(g, ci, fled);}); }
                 else if (prevCount > 0 && i >= prevCount && alive)
@@ -686,6 +688,14 @@ namespace DeckRogue.Game
             if (index < 0 || index >= _enemyPanels.Count || index >= _shownEnemyHp.Length) return;
             _shownEnemyHp[index] = Math.Max(0, _shownEnemyHp[index] + delta);
             BattleScreen.TweenHpBar(_enemyPanels[index], _shownEnemyHp[index]);
+        }
+
+        public void DisplayEnemyHp(int index,int hp,bool immediate=false) {
+            if(index<0 || index>=_enemyPanels.Count || index>=_shownEnemyHp.Length)return;
+            _shownEnemyHp[index]=Math.Max(0,hp);
+            if(immediate)BattleScreen.SetHpBarImmediate(_enemyPanels[index],_shownEnemyHp[index]);
+            else BattleScreen.TweenHpBar(_enemyPanels[index],_shownEnemyHp[index]);
+            if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("enemyHpDisplay",index+":"+_shownEnemyHp[index]);
         }
 
         // Display-only debt: combat state and input remain authoritative. Later commands cancel old debt.
@@ -1377,6 +1387,19 @@ namespace DeckRogue.Game
             LastPlayedTarget = -1;
         }
 
+        readonly HashSet<int> _heldDeaths = new HashSet<int>();
+        public void ReconcileComparisonCheckpoint(GameRoot g,GameState state) {
+            _heldDeaths.Clear();
+            for(int i=0;i<state.Enemies.Count;i++) {
+                DisplayEnemyHp(i,state.Enemies[i].Hp,true);
+                if(state.Enemies[i].Hp<=0)KillEnemy(g,i,state.Enemies[i].Fled==true);
+            }
+        }
+        public void ReleasePresentedDeath(GameRoot g,int index) {
+            if(!_heldDeaths.Contains(index) || Presenter.HasEnemyPresentation(g.Rs?.Combat,index))return;
+            _heldDeaths.Remove(index);
+            if(g.Battle==this && g.Rs?.Combat!=null && index<g.Rs.Combat.Enemies.Count && g.Rs.Combat.Enemies[index].Hp<=0)KillEnemy(g,index,false);
+        }
         readonly HashSet<int> _died = new HashSet<int>();   // この戦闘で崩した (消した) 敵の番号
 
         /// <summary>
@@ -1387,6 +1410,8 @@ namespace DeckRogue.Game
         public void KillEnemy(GameRoot g, int index, bool fled)
         {
             if (_died.Contains(index)) return;
+            if(!fled && Presenter.HasEnemyPresentation(g.Rs?.Combat,index)) {_heldDeaths.Add(index);return;}
+            _heldDeaths.Remove(index);
             _died.Add(index);
             var pan = index >= 0 && index < _enemyPanels.Count ? _enemyPanels[index] : null;
             if (pan == null) return;

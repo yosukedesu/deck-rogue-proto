@@ -429,7 +429,12 @@ namespace DeckRogue.EditorTools
         }
 
         /// <summary>Android の APK を Build/DeckRogue.apk に作る (2026-09-09)。横向き固定・ARM64 (IL2CPP)・minSdk 26。Hub の Android Build Support が必要</summary>
-        public static void BuildAndroid()
+        public static void BuildAndroid() { BuildAndroidWithPresentation(false); }
+
+        // The candidate alone boots with heavy hit feedback; no persistent scripting-symbol setting is changed.
+        public static void BuildAndroidShowcase() { BuildAndroidWithPresentation(true); }
+
+        static void BuildAndroidWithPresentation(bool showcase)
         {
             int code = 0;
             try
@@ -450,10 +455,12 @@ namespace DeckRogue.EditorTools
                 var opts = new BuildPlayerOptions
                 {
                     scenes = new[] { ScenePath },
-                    locationPathName = "Build/DeckRogue.apk",
+                    locationPathName = showcase ? "Build/DeckRogue-heavy-impact.apk" : "Build/DeckRogue.apk",
                     target = BuildTarget.Android,
                     options = BuildOptions.None,
+                    extraScriptingDefines = showcase ? new[] { "DECKROGUE_IMPACT_SHOWCASE" } : new string[0],
                 };
+                Debug.Log("[DeckRogue] android presentation default="+(showcase ? "showcase" : "baseline")+"; build-local symbols="+string.Join(",",opts.extraScriptingDefines));
                 var report = BuildPipeline.BuildPlayer(opts);
                 var s = report.summary;
                 Debug.Log($"[DeckRogue] android build: result={s.result} errors={s.totalErrors} warnings={s.totalWarnings} size={s.totalSize / (1024 * 1024)}MB time={s.totalTime.TotalSeconds:F0}s → {s.outputPath}");

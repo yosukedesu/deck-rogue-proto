@@ -141,7 +141,7 @@ namespace DeckRogue.Game
                 Emit(p+dir*h*.08f,p+dir*h*(i%2==0?.85f:.6f),0,new Color(color.r,color.g,color.b,.95f),len,.19f+i*.021f,angles[i],0,true,_trail,false,4f,.022f);
             }
         }
-        static void Embers(Vector3 p,float h,Color color,bool heavy) {
+        static void Embers(Vector3 p,float h,Color color,bool heavy,float residue=0f) {
             if(_embers==null) {
                 var go=new GameObject("world-hit-embers");_embers=go.AddComponent<ParticleSystem>();
                 _embers.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
@@ -162,9 +162,19 @@ namespace DeckRogue.Game
             for(int i=0;i<fast+drift;i++) {
                 bool slow=i>=fast;float a=(i*137.508f+17)*Mathf.Deg2Rad;
                 var dir=Stage.LayoutRotation*new Vector3(Mathf.Cos(a),Mathf.Sin(a)*.7f+.25f,0);
-                var e=new ParticleSystem.EmitParams {position=p,velocity=dir*h*(slow?.35f:2.2f+(i%3)*.6f),startLifetime=slow?.32f+(i%3)*.06f:.18f+(i%4)*.03f,startSize=h*(slow?.018f:.024f),startColor=Color.Lerp(color,Color.white,slow?.15f:.45f)};
+                var e=new ParticleSystem.EmitParams {position=p,velocity=dir*h*(slow?.35f:2.2f+(i%3)*.6f),startLifetime=slow?Mathf.Max(.32f+(i%3)*.06f,residue):.18f+(i%4)*.03f,startSize=h*(slow?.018f:.024f),startColor=Color.Lerp(color,Color.white,slow?.15f:.45f)};
                 _embers.Emit(e,1);
             }
+        }
+        public static void ShowcaseCharge(string source,Color color,CardVfxProfile.Showcase profile) {
+            if(profile==null || !Socket(source,out var p,out var h))return;
+            // Local gathering light, only before contact. No screen overlay or world-light reduction.
+            Emit(p,p,2,new Color(color.r,color.g,color.b,.42f),h*(profile.Heavy?.65f:.36f),profile.Contact,0,0,false,_arcane,false,1.4f);
+        }
+        public static void ShowcaseResidue(Vector3 p,float h,Color color,CardVfxProfile.Showcase profile) {
+            if(profile==null || !Ready())return;
+            // Particles do not consume contact quad slots, even in a four-target two-wave attack.
+            Embers(p,h,color,profile.Heavy,profile.Residue);
         }
         public static void Cast(string source,string target,Color color) {
             if(!Ready())return;
@@ -172,6 +182,22 @@ namespace DeckRogue.Game
                 var p=feet+Vector3.up*.035f;
                 Emit(p,p,2,new Color(color.r,color.g,color.b,key==source?.48f:.25f),h*.85f,.3f,0,0,false,_arcane,true,1f);
             }
+        }
+        public sealed class ProjectileSnapshot { public Vector3 From,To; public float Height; }
+        public static ProjectileSnapshot CaptureProjectile(string source,string target) {
+            if(!Socket(source,out var a,out var ah)||!Socket(target,out var b,out var bh))return null;
+            return new ProjectileSnapshot{From=a,To=b,Height=Mathf.Min(ah,bh)};
+        }
+        public static void TraceAt(ProjectileSnapshot snapshot,Color color) {
+            if(snapshot==null || !Ready())return;
+            var delta=Quaternion.Inverse(Stage.LayoutRotation)*(snapshot.To-snapshot.From);
+            float width=new Vector2(delta.x,delta.y).magnitude;if(width<.2f)return;
+            Emit(Vector3.Lerp(snapshot.From,snapshot.To,.15f),Vector3.Lerp(snapshot.From,snapshot.To,.86f),0,
+                new Color(color.r,color.g,color.b,.82f),width*.40f,.075f,Mathf.Atan2(delta.y,delta.x)*Mathf.Rad2Deg,0,true,_trail,false,2.1f,snapshot.Height*.018f/(width*.40f));
+        }
+        public static bool ProjectileAt(ProjectileSnapshot snapshot,Color color,float duration) {
+            if(snapshot==null || !Ready())return false;
+            Emit(snapshot.From,snapshot.To,1,color,snapshot.Height*.23f,duration,0,160,true);return true;
         }
         public static bool Projectile(string source,string target,Color color,float duration)
         {

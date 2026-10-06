@@ -659,7 +659,8 @@ namespace DeckRogue.Game
             PaperFx.Nightify(strip);
             PaperFx.Nightify(pan.Find("intent-tag"));
             // 前の表示 (shownHp) から今の HP へ滑らせる (案C への書き換えで落ちていた＝バーが1手遅れて減っていた。2026-09-16 ユーザー報告)
-            if (shownHp != e.Hp) TweenHpBar(pan, e.Hp);
+            int displayHp=CardVfxProfile.ShowcaseOn?Presenter.EnemyDisplayHp(st,index):e.Hp;
+            if (shownHp != displayHp) TweenHpBar(pan, displayHp);
         }
 
         /// <summary>帳面の一行の中身: 番号＋名前 (左) とブロック・状態の札 (右)／HP バー／意図 (絵・実値・ライダー)／(PC) 特性・分岐の一文</summary>
