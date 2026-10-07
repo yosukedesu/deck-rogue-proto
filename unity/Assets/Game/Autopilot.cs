@@ -96,8 +96,8 @@ namespace DeckRogue.Game
             get
             {
                 var shots = Arg("-shots");
-                if (string.IsNullOrEmpty(shots) && Arg("-autopilot") == "presentation-review")
-                    shots = Path.Combine(Application.persistentDataPath, "presentation-review");
+                if (string.IsNullOrEmpty(shots) && (Arg("-autopilot") == "presentation-review" || Arg("-autopilot") == "transition-review"))
+                    shots = Path.Combine(Application.persistentDataPath, Arg("-autopilot"));
                 return !string.IsNullOrEmpty(Arg("-autopilot")) && !string.IsNullOrEmpty(shots)
                     ? Path.Combine(Path.GetFullPath(shots), "player-data") : Application.persistentDataPath;
             }
@@ -193,7 +193,7 @@ namespace DeckRogue.Game
             DontDestroyOnLoad(go);
             var a = go.AddComponent<Autopilot>();
             a._scenario = scenario;
-            a._dir = Arg("-shots") ?? Path.Combine(Application.persistentDataPath, scenario == "presentation-review" ? "presentation-review" : "shots");
+            a._dir = Arg("-shots") ?? Path.Combine(Application.persistentDataPath, scenario == "presentation-review" || scenario == "transition-review" ? scenario : "shots");
             a._seed = int.TryParse(Arg("-seed") ?? "", out var s) ? s : 4242;
         }
 
@@ -216,18 +216,19 @@ namespace DeckRogue.Game
             StartCoroutine(Run());
         }
 
-        /// <summary>順送りの演出 (Presenter.PlaySequenced の入力ブロック) が終わるまで待つ (最大6秒)</summary>
+        /// <summary>Wait for the owned presentation, including long multi-enemy turns.</summary>
         IEnumerator WaitPresentation()
         {
-            float t0 = Time.realtimeSinceStartup;
-            int frames = 0;   // det では実時間でなくフレーム数で打ち切る (6秒 = 360フレーム)
-            while (GameObject.Find("inputblock") != null && (Det ? frames++ < 6 * DetFps : Time.realtimeSinceStartup - t0 < 6f)) yield return null;
+            float elapsed=0f,limit=Mathf.Max(10f,Presenter.LastSequenceDuration*2f+7f);
+            while((GameRoot.I?.CombatPresentationPending==true || GameObject.Find("inputblock")!=null || GameObject.Find("inputblock2")!=null) && elapsed<limit) {
+                yield return null;elapsed+=Tween.UnscaledDt;
+            }
         }
 
         IEnumerator Shot(string name, int settle = 6)
         {
             // Review fixtures settle identically with or without optional screenshot output.
-            if (_scenario == "presentation-review")
+            if (_scenario == "presentation-review" || _scenario == "transition-review")
             {
                 for (int i = 0; i < settle + 3; i++) yield return null;
                 yield break; // Dedicated paired frame captures are owned by PresentationReview.
@@ -282,6 +283,10 @@ namespace DeckRogue.Game
                     case "state": yield return StateJump(g, Arg("-state") ?? ""); break;   // 任意の状態へ跳んで撮る (2026-09-12)
                     case "idle-anchor-review": yield return IdleAnchorReview(g); break;
                     case "timing-review": yield return TimingReview(g); break;
+                    case "transition-review":
+                        yield return TransitionReview(g);
+                        if(_transitionReviewFailed){Application.Quit(1);yield break;}
+                        break;
                     case "tour":
                     default:
                         yield return Tour(g);

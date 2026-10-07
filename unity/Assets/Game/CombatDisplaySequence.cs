@@ -1,13 +1,14 @@
 using System;
 using DeckRogue.Engine.Generated;
 namespace DeckRogue.Game {
- // Presentation only. The immutable state and legal input never wait for this sequence.
+ // Immutable engine state is already resolved. The old board stays visible under the transition input gate.
  sealed class CombatDisplaySequence {
   readonly GameRoot g; readonly BattleView board; readonly GameState previous,current; readonly int revision;
   public bool Current => g != null && g.Rs != null && ReferenceEquals(g.Rs.Combat,current) && g.Battle==board && board.DisplayRevision==revision;
   public CombatDisplaySequence(GameRoot root,GameState before,GameState after){
    g=root;board=g.Battle;previous=before;current=after;revision=board.DisplayRevision;
-   board.SetPlayerBlock(before.Player.Block);board.NudgePlayerIce(before.Player.IceBlock-after.Player.IceBlock);
+   board.SetPlayerBlock(before.Player.Block);board.SetPlayerIce(before.Player.IceBlock);
+   board.DisplayPlayerHp(before.Player.Hp,true);
    BattleScreen.SetIncomingState(board.SelfArea,before);
    board.NudgePlayerHp(0);
    for(int i=0;i<before.Enemies.Count;i++){board.SetEnemyBlock(i,before.Enemies[i].Block);BattleScreen.RefreshIntent(g,before,i);}
@@ -16,6 +17,11 @@ namespace DeckRogue.Game {
   public void Before(GameEvent ev,int enemy){
    if(!Current)return;
    switch(ev){
+    case GameEvent_DeathSaved h: board.DisplayPlayerHp(h.Hp,false);break;
+    case GameEvent_HpHealed h: board.NudgePlayerHp(h.Amount);break;
+    case GameEvent_HpLost h: board.NudgePlayerHp(-h.Amount);break;
+    case GameEvent_ScaldTick h: board.NudgePlayerHp(-h.Amount);break;
+    case GameEvent_ThornsReflected h: board.AbsorbPlayerBlock(Math.Max(0,h.Amount-h.HpLoss));board.NudgePlayerHp(-h.HpLoss);break;
     case GameEvent_TurnEnded _: board.ResetEnemyBlocks(previous);break;
     case GameEvent_TurnStarted _: board.SetPlayerBlock(current.BlockKeep.HasValue?Math.Min(board.ShownPlayerBlock,current.BlockKeep.Value):0);break;
     case GameEvent_BlockGained b: if(b.Target=="player")board.NudgePlayerBlock(b.Amount);else board.NudgeEnemyBlock(Math.Max(0,enemy),b.Amount);break;
@@ -27,11 +33,11 @@ namespace DeckRogue.Game {
    }
    Mark(ev.GetType().Name);
   }
-  public void Land(GameEvent_DamageDealt d){if(!Current)return;board.LandPlayerIncoming(d.Amount);board.AbsorbPlayerBlock(d.Blocked??0);Mark("land");}
+  public void Land(GameEvent_DamageDealt d){if(!Current)return;board.LandPlayerIncoming(d.Amount);board.AbsorbPlayerBlock(d.Blocked??0);board.NudgePlayerHp(-d.HpLoss);Mark("land");}
   public void Finish(){
    if(!Current)return;
    board.SetPlayerBlock(current.Player.Block);board.SetPlayerIce(current.Player.IceBlock);
-   BattleScreen.SetIncomingState(board.SelfArea,current);board.NudgePlayerHp(0);
+   BattleScreen.SetIncomingState(board.SelfArea,current);board.DisplayPlayerHp(current.Player.Hp,false);
    for(int i=0;i<current.Enemies.Count;i++){board.SetEnemyBlock(i,current.Enemies[i].Block);BattleScreen.RefreshIntent(g,current,i);}
    Mark("finish");
   }

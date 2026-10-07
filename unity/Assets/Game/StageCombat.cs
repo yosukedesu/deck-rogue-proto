@@ -76,7 +76,7 @@ namespace DeckRogue.Game
             // Keep the authored attack frames (including Mizore's fix), shift their start to release.
             u.Play("block");
             Tween.After(Mathf.Max(0,profile.Contact-.12f),()=>{if(u!=null && u.MotionVersion==version)u.Play("attack");});
-            Tween.I.StartCoroutine(ShowcaseMotion(u,duration,()=>u.MotionVersion==version,k=>{
+            Tween.RunPresentation(ShowcaseMotion(u,duration,()=>u.MotionVersion==version,k=>{
                 float t=k*duration,amount;
                 if(t<profile.Windup)amount=-.16f*Mathf.SmoothStep(0,1,t/profile.Windup);
                 else if(t<profile.Contact)amount=Mathf.Lerp(-.16f,1,Mathf.SmoothStep(0,1,(t-profile.Windup)/(profile.Contact-profile.Windup)));
@@ -116,7 +116,7 @@ namespace DeckRogue.Game
             float h=u.HasBox?u.HeightWorld:2f;
             var kick=(LayoutRotation*Vector3.right)*(target=="player"?-1f:1f)*h*(heavy?.15f:.085f);
             // A small immediate reaction reads on the contact frame; its recoil then continues after the hold.
-            Tween.I.StartCoroutine(ShowcaseMotion(u,heavy?.29f:.22f,()=>u.RecoilVersion==version,k=>{
+            Tween.RunPresentation(ShowcaseMotion(u,heavy?.29f:.22f,()=>u.RecoilVersion==version,k=>{
                 float amount=k<.18f?Mathf.Lerp(.35f,1f,Mathf.SmoothStep(0,1,k/.18f)):1-Mathf.SmoothStep(0,1,(k-.18f)/.82f);
                 u.CombatRecoilOffset=kick*amount;
             },()=>u.CombatRecoilOffset=Vector3.zero));
@@ -134,9 +134,14 @@ namespace DeckRogue.Game
             done();
         }
 
+        public static bool HasCombatAnimation { get {
+            foreach(var u in _bound.Values)
+                if(u!=null && u.Rect!=null && u.gameObject.activeInHierarchy && u.Anim!="idle" && u.Anims.TryGetValue(u.Anim,out var frames) && frames.Count>0)return true;
+            return false;
+        } }
         public static bool HasCombatMotion { get {foreach(var u in _bound.Values)if(u!=null && (u.CombatOffset.sqrMagnitude+u.CombatRecoilOffset.sqrMagnitude)>.000001f)return true;return false;} }
         public static void CancelCombatMotion() {
-            foreach(var u in _bound.Values) if(u!=null){u.MotionVersion++;u.RecoilVersion++;u.ImpactPause.Clear();u.CombatOffset=Vector3.zero;u.CombatRecoilOffset=Vector3.zero;}
+            foreach(var u in _bound.Values) if(u!=null){u.MotionVersion++;u.RecoilVersion++;u.ImpactPause.Clear();u.CombatOffset=Vector3.zero;u.CombatRecoilOffset=Vector3.zero;if(u.Rect!=null)u.Play("idle");}
         }
         public static void CombatRecoil(string key, float direction, bool heavy)
         {

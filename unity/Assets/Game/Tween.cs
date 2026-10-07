@@ -28,6 +28,79 @@ namespace DeckRogue.Game
             }
         }
 
+        // A presentation owns all descendant Run/After work, including callbacks that start
+        // dissolve, projectile landing or particle residue later. UI idle tweens are not included.
+        sealed class PresentationScope { public int Pending; public bool Cancelled; }
+        sealed class PresentationLease : IDisposable {
+            readonly PresentationScope previous, current;
+            public PresentationLease(PresentationScope scope) { previous=_presentationScope;current=scope;_presentationScope=scope; }
+            public void Dispose() { _presentationScope=previous;if(current.Pending==0)_presentations.Remove(current); }
+        }
+        static PresentationScope _presentationScope;
+        static readonly HashSet<PresentationScope> _presentations=new HashSet<PresentationScope>();
+        public static int PendingPresentationCount { get { int n=0;foreach(var scope in _presentations)n+=scope.Pending;return n; } }
+        public static IDisposable BeginPresentation() {
+            var scope=_presentationScope ?? new PresentationScope();_presentations.Add(scope);return new PresentationLease(scope);
+        }
+        static PresentationScope ReservePresentation() {
+            var scope=_presentationScope;if(scope!=null){scope.Pending++;_presentations.Add(scope);}return scope;
+        }
+        static void ReleasePresentation(PresentationScope scope) {
+            if(scope!=null && --scope.Pending<=0)_presentations.Remove(scope);
+        }
+        static void InPresentation(PresentationScope scope,Action action) {
+            if(scope!=null && scope.Cancelled)return;
+            var previous=_presentationScope;_presentationScope=scope;
+            try { action?.Invoke(); } finally { _presentationScope=previous; }
+        }
+        static void InPresentation(PresentationScope scope,Action<float> action,float value) {
+            if(scope!=null && scope.Cancelled)return;
+            var previous=_presentationScope;_presentationScope=scope;
+            try { action(value); } finally { _presentationScope=previous; }
+        }
+        public static Coroutine RunPresentation(IEnumerator routine) => I.StartCoroutine(PresentationCo(routine,ReservePresentation()));
+        static IEnumerator PresentationCo(IEnumerator routine,PresentationScope scope) {
+            try {
+                while(scope==null || !scope.Cancelled) {
+                    bool more;var previous=_presentationScope;_presentationScope=scope;
+                    try { more=routine.MoveNext(); } finally { _presentationScope=previous; }
+                    if(!more)yield break;yield return routine.Current;
+                }
+            } finally { (routine as IDisposable)?.Dispose();ReleasePresentation(scope); }
+        }
+        public static void CancelPresentations() {
+            foreach(var scope in _presentations)scope.Cancelled=true;
+            _presentations.Clear();CancelFinishSlow();
+        }
+
+        // One owned terminal slow-motion envelope. Never stacks with the old finishing hitstop.
+        // Recovery uses an unscaled clock and restores exactly the scale captured on entry.
+        public const float FinishSlowScale=.22f, FinishSlowHold=.45f, FinishSlowRecovery=.20f;
+        static int _finishSlowVersion;static float _finishRestoreScale=1f;
+        public static bool FinishSlowActive {get;private set;}
+        public static void FinishSlow() {
+            if(FinishSlowActive)return;
+            _finishRestoreScale=Time.timeScale;FinishSlowActive=true;
+            I.StartCoroutine(FinishSlowCo(++_finishSlowVersion));
+        }
+        public static void CancelFinishSlow() {
+            ++_finishSlowVersion;
+            if(FinishSlowActive)Time.timeScale=_finishRestoreScale;
+            FinishSlowActive=false;
+        }
+        static IEnumerator FinishSlowCo(int version) {
+            float elapsed=0f;
+            try {
+                while(version==_finishSlowVersion && elapsed<FinishSlowHold+FinishSlowRecovery) {
+                    float recover=Mathf.Clamp01((elapsed-FinishSlowHold)/FinishSlowRecovery);
+                    Time.timeScale=_finishRestoreScale*Mathf.Lerp(FinishSlowScale,1f,recover);
+                    yield return null;elapsed+=UnscaledDt;
+                }
+            } finally {
+                if(version==_finishSlowVersion){Time.timeScale=_finishRestoreScale;FinishSlowActive=false;}
+            }
+        }
+
         public static float Apply(Ease e, float t)
         {
             t = Mathf.Clamp01(t);
@@ -42,27 +115,25 @@ namespace DeckRogue.Game
             }
         }
 
-        /// <summary>dur 秒かけて 0→1 を onUpdate に渡す。時計は Time.deltaTime の積算 (timeScale は使っていないので実時間と同じ。
+        /// <summary>dur 秒かけて 0→1 を onUpdate に渡す。時計は Time.deltaTime の積算 (決着の slow 中は演出の進み方も遅くする。
         /// Autopilot の Time.captureFramerate によるコマ送り撮影でも 1フレーム=1/60秒で決定的に進む。2026-09-16)</summary>
-        public static Coroutine Run(float dur, Action<float> onUpdate, Ease ease = Ease.OutQuad, Action onDone = null)
+        public static Coroutine Run(float dur, Action<float> onUpdate, Ease ease = Ease.OutQuad, Action onDone = null, Action onCancel = null)
         {
-            return I.StartCoroutine(RunCo(dur, onUpdate, ease, onDone));
+            return I.StartCoroutine(RunCo(dur, onUpdate, ease, onDone, onCancel, ReservePresentation()));
         }
 
-        static IEnumerator RunCo(float dur, Action<float> onUpdate, Ease ease, Action onDone)
+        static IEnumerator RunCo(float dur, Action<float> onUpdate, Ease ease, Action onDone, Action onCancel, PresentationScope scope)
         {
-            float t = 0f;
-            if (dur <= 0f) { onUpdate(1f); onDone?.Invoke(); yield break; }
-            while (true)
-            {
-                float k = t / dur;
-                if (k >= 1f) break;
-                onUpdate(Apply(ease, k));
-                yield return null;
-                t += Time.deltaTime;
-            }
-            onUpdate(1f);
-            onDone?.Invoke();
+            bool completed=false;
+            try {
+                float t=0f;
+                while(dur>0f && t<dur) {
+                    if(scope!=null && scope.Cancelled)yield break;
+                    float k=Apply(ease,t/dur);InPresentation(scope,onUpdate,k);
+                    yield return null;t+=Time.deltaTime;
+                }
+                InPresentation(scope,()=>{onUpdate(1f);completed=true;onDone?.Invoke();});
+            } finally { if(!completed)onCancel?.Invoke();ReleasePresentation(scope); }
         }
 
         public static Coroutine Move(RectTransform rt, Vector2 to, float dur, Ease ease = Ease.OutCubic, Action onDone = null)
@@ -153,7 +224,7 @@ namespace DeckRogue.Game
                 Sync(rt, b);
                 float decay = 1f - k;
                 WritePos(rt, b, b.Pos + new Vector2(Mathf.Sin(k * 40f) * amp * decay, Mathf.Cos(k * 33f) * amp * 0.35f * decay));
-            }, Ease.Linear, () => Release(rt, b));
+            }, Ease.Linear, () => Release(rt, b), () => Release(rt, b));
         }
 
         /// <summary>被弾のパンチ (拡縮＋小さな傾き)。LayoutGroup の子でも位置を汚さない (anchoredPosition はレイアウトが管理するため触らない)。
@@ -173,21 +244,22 @@ namespace DeckRogue.Game
                 WriteScale(rt, b, b.Scale * sc);
                 WriteRot(rt, b, b.Rot * Quaternion.Euler(0f, 0f, w * 2.5f));
                 if (keepBottom) WritePos(rt, b, b.Pos + new Vector2(0f, h * pivotY * (sc - 1f)));   // 下端を留める
-            }, Ease.Linear, () => Release(rt, b));
+            }, Ease.Linear, () => Release(rt, b), () => Release(rt, b));
         }
 
         /// <summary>delay 秒後に action (演出のずらし用)</summary>
         public static void After(float delay, Action action)
         {
-            I.StartCoroutine(AfterCo(delay, action));
+            I.StartCoroutine(AfterCo(delay, action, ReservePresentation()));
         }
 
-        static IEnumerator AfterCo(float delay, Action action)
+        static IEnumerator AfterCo(float delay, Action action, PresentationScope scope)
         {
-            // deltaTime の積算で待つ (WaitForSecondsRealtime は壁時計なので Time.captureFramerate のコマ送り撮影で決定的にならない)
-            float t = 0f;
-            while (t < delay) { yield return null; t += Time.deltaTime; }
-            action?.Invoke();
+            try {
+                float t=0f;
+                while(t<delay) {if(scope!=null && scope.Cancelled)yield break;yield return null;t+=Time.deltaTime;}
+                InPresentation(scope,action);
+            } finally { ReleasePresentation(scope); }
         }
 
         /// <summary>
@@ -727,7 +799,7 @@ namespace DeckRogue.Game
                 float x = 1f + (sx - 1f) * a, y = 1f + (sy - 1f) * a;
                 WriteScale(rt, b, new Vector3(b.Scale.x * x, b.Scale.y * y, b.Scale.z));
                 WritePos(rt, b, b.Pos + new Vector2(0f, -h * pivotY * (1f - y)));   // 下端を留める
-            }, Ease.Linear, () => Release(rt, b));
+            }, Ease.Linear, () => Release(rt, b), () => Release(rt, b));
         }
 
         /// <summary>膨らむ (筋力上げ・応援): 中心から 1.15 倍まで膨らんで戻る。足元は留める</summary>
@@ -743,7 +815,7 @@ namespace DeckRogue.Game
                 float sc = 1f + (amount - 1f) * a;
                 WriteScale(rt, b, new Vector3(b.Scale.x * sc, b.Scale.y * sc, b.Scale.z));
                 WritePos(rt, b, b.Pos + new Vector2(0f, -h * pivotY * (1f - sc)));
-            }, Ease.Linear, () => Release(rt, b));
+            }, Ease.Linear, () => Release(rt, b), () => Release(rt, b));
         }
 
         /// <summary>飛び道具: 光の玉が from から to へ山なりに飛ぶ (尾を引く)。着いたら onArrive</summary>
@@ -886,7 +958,7 @@ namespace DeckRogue.Game
                 Sync(rt, b);
                 float a = k < 0.35f ? Apply(Ease.OutQuad, k / 0.35f) : 1f - Apply(Ease.OutCubic, (k - 0.35f) / 0.65f);
                 WritePos(rt, b, b.Pos + dir * a);
-            }, Ease.Linear, () => Release(rt, b));
+            }, Ease.Linear, () => Release(rt, b), () => Release(rt, b));
         }
 
         // Anticipation -> launch -> impact hold -> follow-through -> settle. The peak is
@@ -920,7 +992,7 @@ namespace DeckRogue.Game
                 float lift = hop * Mathf.Sin(Mathf.Clamp01((t - impact * 0.45f) / (impact * 0.55f)) * Mathf.PI);
                 WritePos(rt, b, b.Pos + dir * move + Vector2.up * lift);
                 WriteScale(rt, b, new Vector3(b.Scale.x * (1f - squash * 0.5f), b.Scale.y * (1f + squash), b.Scale.z));
-            }, Ease.Linear, () => Release(rt, b));
+            }, Ease.Linear, () => Release(rt, b), () => Release(rt, b));
         }
 
         public static void Recoil(RectTransform rt, float direction, bool heavy)
@@ -934,7 +1006,7 @@ namespace DeckRogue.Game
                 float kick = k < 0.2f ? Apply(Ease.OutCubic, k / 0.2f) : 1f - Apply(Ease.InOutQuad, (k - 0.2f) / 0.8f);
                 WritePos(rt, b, b.Pos + new Vector2(direction * (heavy ? 30f : 16f) * kick, 0));
                 WriteRot(rt, b, b.Rot * Quaternion.Euler(0, 0, -direction * (heavy ? 4f : 2f) * kick));
-            }, Ease.Linear, () => Release(rt, b));
+            }, Ease.Linear, () => Release(rt, b), () => Release(rt, b));
         }
 
         /// <summary>他の RectTransform の中心を、fx レイヤーの座標系 (anchor 中央) へ変換する</summary>

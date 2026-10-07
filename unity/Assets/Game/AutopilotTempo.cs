@@ -48,13 +48,20 @@ namespace DeckRogue.Game {
       actions.Add(new JObject{{"index",n},{"accepted",can},{"inputToEffectMs",clock.Elapsed.TotalMilliseconds},{"sameFrame",Time.frameCount==frame},{"newVfx",WorldBattleFx.EmittedCount-emittedBefore},{"activeVfx",WorldBattleFx.ActiveCount},{"pendingVisuals",Presenter.PendingVisualCount},{"target",target},{"hp",new JArray(g.Rs.Combat.Enemies.Select(e=>e.Hp))}});
      }
      if(name=="deathMidChain")TempoRequire(g.Rs.Combat.Enemies[0].Hp<=0 && !g.Anchor("enemy0").GetComponent<UnityEngine.UI.Button>().interactable,"dead target remains clickable");
-     if(name=="endTurn"){g.DoCombat(new Command_EndTurn());TempoRequire(GameObject.Find("inputblock")==null,"end turn presentation lock");TempoRequire(g.Rs.Combat.Phase==CombatPhases.PlayerTurn,"turn did not resolve");}
+     if(name=="endTurn") {
+      var oldHand=TransitionHand(g);g.DoCombat(new Command_EndTurn());
+      TempoRequire(g.CombatPresentationPending,"end turn presentation gate missing");
+      TempoRequire(g.Rs.Combat.Phase==CombatPhases.PlayerTurn,"turn did not resolve synchronously");
+      TempoRequire(TransitionHand(g).SequenceEqual(oldHand),"next-turn hand appeared before enemy presentation");
+      var resolved=g.Rs;TransitionClick(g.Battle.CardAt(0));g.DoCombat(new Command_EndTurn());
+      TempoRequire(ReferenceEquals(resolved,g.Rs)&&g.Error==null,"input bypassed end turn presentation gate");
+     }
     }catch(Exception e){failed=true;error=e.ToString();Debug.LogError(e);}
-    int frames=0;
-    do {yield return null;frames++;} while((Presenter.PendingVisualCount>0 || Presenter.PendingImpactCount>0 || WorldBattleFx.ActiveCount>0 || Stage.HasCombatMotion) && frames<150);
-    row["visualCompletionMs"]=1000*(Time.realtimeSinceStartup-visualStart);row["visualFrames"]=frames;row["visualsDrained"]=frames<150;row["passed"]=!failed && frames<150;row["error"]=error;
+    int frames=0,budget=TransitionBudgetFrames();
+    do {yield return null;frames++;} while(!TransitionIdle(g) && frames<budget);
+    row["drainBudgetFrames"]=budget;row["visualCompletionMs"]=1000*(Time.realtimeSinceStartup-visualStart);row["visualFrames"]=frames;row["visualsDrained"]=frames<budget;row["passed"]=!failed && frames<budget;row["error"]=error;
     File.WriteAllText(Path.Combine(_dir,"tempo-check.json"),report.ToString());
-    if(failed||frames>=150){Application.Quit(1);yield break;}
+    if(failed||frames>=budget){Application.Quit(1);yield break;}
    }
    Debug.Log("[TempoCheck] PASS 9 scenarios: synchronous UI card effects, bounded independent visuals");
   }

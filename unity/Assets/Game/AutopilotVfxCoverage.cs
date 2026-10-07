@@ -27,21 +27,23 @@ namespace DeckRogue.Game {
     if(name=="reaction")pl=pl with {SetCards=new[]{new CardInstance{Uid="vfx-reaction",Def=Content.GetCardDef("green_reaction_preempt"),SetTurn=st.Turn-1}}};
     g.Rs=g.Rs with {Combat=st with {Player=pl,Enemies=foes,ReactionMode=ReactionModes.SetAuto}};g.Rebuild();yield return null;
     Presenter.MarkSeen(g.Rs.Combat);int from=g.Rs.Combat.EventLog.Count, received=ResolvedCombatFx.Received,shown=ResolvedCombatFx.Presented,duplicates=ResolvedCombatFx.DuplicateSuppressed;
-    string error=null;
+    string error=null;int timeouts=g.PresentationTimeoutCount;
     try {
      if(name=="cancel"){g.PreferredTarget=-1;g.BeginPlay(g.Rs.Combat.Player.Hand[0],null);TempoRequire(g.Pending!=null,"cancel must open selection");g.CancelPending();}
      else if(name=="enemy"||name=="enemyGuard"||name=="burn"||name=="doll"||name=="scald"||name=="reaction")g.DoCombat(new Command_EndTurn());
      else {g.PreferredTarget=0;var hc=g.Battle.CardAt(0);ExecuteEvents.Execute(hc.Rt.gameObject,new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left},ExecuteEvents.pointerClickHandler);}
      if(name=="missingTarget")g.Battle.KillEnemy(g,0,false);
      TempoRequire(g.Error==null,"command error "+g.Error);
-     TempoRequire(GameObject.Find("inputblock")==null && GameObject.Find("inputblock2")==null,"input lock");
+     bool transition=name=="enemy"||name=="enemyGuard"||name=="burn"||name=="doll"||name=="scald"||name=="reaction"||g.Rs.Phase!=RunPhases.Combat;
+     TempoRequire(g.CombatPresentationPending==transition,"unexpected transition gate state");
+     if(!transition)TempoRequire(GameObject.Find("inputblock")==null&&GameObject.Find("inputblock2")==null,"ordinary card input lock");
     }catch(Exception e){error=e.ToString();}
     var events=g.Rs.Combat.EventLog.Skip(from).Where(ResolvedCombatFx.IsResolved).ToList();
-    int frames=0;do {yield return null;frames++;}while((Presenter.PendingImpactCount>0||Presenter.PendingVisualCount>0||WorldBattleFx.ActiveCount>0)&&frames<360);
+    int frames=0,budget=TransitionBudgetFrames();do {yield return null;frames++;}while(!TransitionIdle(g)&&frames<budget);
     int actual=ResolvedCombatFx.Presented-shown;
     bool expectedEvents=name=="cancel"?events.Count==0:events.Count>0;
-    bool pass=error==null&&expectedEvents&&actual==events.Count&&ResolvedCombatFx.Received-received==events.Count&&ResolvedCombatFx.DuplicateSuppressed==duplicates&&frames<360;
-    report.Add(new JObject{{"case",name},{"card",card},{"passed",pass},{"events",new JArray(events.Select(e=>e.Type))},{"expected",events.Count},{"presented",actual},{"received",ResolvedCombatFx.Received-received},{"drainFrames",frames},{"pendingVisuals",Presenter.PendingVisualCount},{"pendingImpacts",Presenter.PendingImpactCount},{"activeFx",WorldBattleFx.ActiveCount},{"drainBudgetFrames",360},{"error",error}});
+    bool pass=error==null&&expectedEvents&&actual==events.Count&&ResolvedCombatFx.Received-received==events.Count&&ResolvedCombatFx.DuplicateSuppressed==duplicates&&frames<budget&&g.PresentationTimeoutCount==timeouts&&Mathf.Approximately(Time.timeScale,1f);
+    report.Add(new JObject{{"case",name},{"card",card},{"passed",pass},{"events",new JArray(events.Select(e=>e.Type))},{"expected",events.Count},{"presented",actual},{"received",ResolvedCombatFx.Received-received},{"drainFrames",frames},{"pendingVisuals",Presenter.PendingVisualCount},{"pendingImpacts",Presenter.PendingImpactCount},{"activeFx",WorldBattleFx.ActiveCount},{"drainBudgetFrames",budget},{"watchdogTimeouts",g.PresentationTimeoutCount-timeouts},{"error",error}});
     File.WriteAllText(Path.Combine(_dir,"vfx-coverage.json"),report.ToString());
     if(!pass){Debug.LogError("[VfxCoverage] failed "+name+" "+report.Last);Application.Quit(1);yield break;}
    }
@@ -75,7 +77,7 @@ namespace DeckRogue.Game {
   static void PresentationCheck(JArray errors,bool condition,string text) {
    if(!condition&&!errors.Any(x=>(string)x==text))errors.Add(text);
   }
-  static bool PresentationIdle()=>Presenter.PendingImpactCount==0&&Presenter.PendingVisualCount==0&&WorldBattleFx.ActiveCount==0&&!Stage.HasCombatMotion&&Stage.ActiveImpactPauseCount==0;
+  static bool PresentationIdle()=>Presenter.PresentationIdle&&GameRoot.I?.CombatPresentationPending!=true;
 
   static JArray ReviewImpactPauseWindow() {
    var errors=new JArray();var p=new CombatImpactPause();
@@ -200,7 +202,7 @@ namespace DeckRogue.Game {
     if(match!=null) {
      match.Shown=true;
      if(int.TryParse(t.Target.Replace("enemy",""),out int index)&&index>=0&&index<shownHp.Length)shownHp[index]-=t.Amount;
-     if(match.Due.HasValue) {
+     if(match.Due.HasValue&&!terminal) {
       float elapsed=Time.time-match.Due.Value;
       PresentationCheck(errors,elapsed>=-.002f&&elapsed<=2.1f/60f,"contact outside 2-frame tolerance: "+match.Card+" delta="+elapsed);
      }
@@ -284,7 +286,7 @@ namespace DeckRogue.Game {
      if(showcase||name=="reset")PresentationCheck(errors,Presenter.PendingImpactCount==0&&Presenter.PendingVisualCount==0&&WorldBattleFx.ActiveCount==0,"leave/reset retained active presentation work");
      CombatTimingProbe.Event(name,"beforeContact");
     }
-    int frames=0;
+    int frames=0,budget=TransitionBudgetFrames();row["drainBudgetFrames"]=budget;
     do {
      yield return new WaitForEndOfFrame();CombatTimingProbe.Sample();
      if((duringLifecycle||name=="missingDuringPause")&&!duringAction&&ResolvedCombatFx.Presented>presented) {
@@ -317,9 +319,11 @@ namespace DeckRogue.Game {
      }
      if(showcase&&name=="blockDuringPause")PresentationCheck(errors,Stage.ImpactPauseRemaining("player")==0f,"old AOE contact stopped the newer block animation");
      checkHp();
-     // Baseline finishing blows already use global hitstop; this review does not redefine that behavior.
-     if(showcase||!terminal)PresentationCheck(errors,Mathf.Approximately(Time.timeScale,1f),"non-terminal global hitstop changed timeScale");
-     PresentationCheck(errors,GameObject.Find("inputblock")==null&&GameObject.Find("inputblock2")==null,"presentation added an input blocker");
+     // Terminal commands now retain the old board under the transition gate in both modes.
+     if(!terminal) {
+      PresentationCheck(errors,Mathf.Approximately(Time.timeScale,1f),"non-terminal global hitstop changed timeScale");
+      PresentationCheck(errors,!g.CombatPresentationPending&&GameObject.Find("inputblock")==null&&GameObject.Find("inputblock2")==null,"ordinary presentation added an input blocker");
+     } else if(!PresentationIdle())PresentationCheck(errors,g.CombatPresentationPending,"terminal presentation lost its input gate");
      var displayed=new JArray();foreach(int i in Enumerable.Range(0,shownHp.Length)){var bar=PresentationBar(g,i);displayed.Add(bar!=null?(JToken)bar.Value:JValue.CreateNull());}
      samples.Add(new JObject{{"frame",Time.frameCount-startFrame},{"seconds",Time.time-started},{"timeScale",Time.timeScale},{"received",ResolvedCombatFx.Received-received},{"presented",ResolvedCombatFx.Presented-presented},{"pendingImpacts",Presenter.PendingImpactCount},{"pendingVisuals",Presenter.PendingVisualCount},{"activeFx",WorldBattleFx.ActiveCount},{"hpTargets",displayed},{"activeLocalPauses",Stage.ActiveImpactPauseCount},{"actorPauseMs",Stage.ImpactPauseRemaining("player")*1000f},{"targetPauseMs",Stage.ImpactPauseRemaining("enemy0")*1000f}});
      if(capture&&frames<=60&&(frames%4==0||frames==10||frames==14||frames==18)) {
@@ -329,7 +333,7 @@ namespace DeckRogue.Game {
       screenshots.Add(filename);
      }
      yield return null;frames++;
-    }while(frames<360&&(frames<90||!PresentationIdle()));
+    }while(frames<budget&&(frames<90||!PresentationIdle()));
     if(name=="sameStateRebuild")PresentationCheck(errors,rebuiltAfterContact,"did not exercise rebuild between two contacts");
     if(name=="missingTarget"||name=="missingDuringPause") {
      PresentationCheck(errors,g.Anchor("enemy0")==null,"removed target anchor reappeared");
@@ -340,7 +344,8 @@ namespace DeckRogue.Game {
      var bar=PresentationBar(g,i);
      PresentationCheck(errors,bar!=null&&bar.Value==Math.Max(0,g.Rs.Combat.Enemies[i].Hp),"reset left HP debt on enemy"+i);
     }
-    PresentationCheck(errors,PresentationIdle(),"presentation did not drain within 360 frames");
+    PresentationCheck(errors,PresentationIdle(),"presentation did not drain within timeline-derived budget");
+    PresentationCheck(errors,Mathf.Approximately(Time.timeScale,1f)&&!Tween.FinishSlowActive,"completed presentation left global slow behind");
     PresentationCheck(errors,ResolvedCombatFx.Received-received==resolved.Count,"resolved receipt capture count mismatch");
     PresentationCheck(errors,ResolvedCombatFx.Presented-presented+cancelledReceipts==resolved.Count,"receipt conservation failed: presented + explicitly cancelled != resolved");
     PresentationCheck(errors,ResolvedCombatFx.DuplicateSuppressed==duplicates,"duplicate receipt was suppressed instead of being scheduled once");

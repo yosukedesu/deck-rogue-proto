@@ -4036,6 +4036,7 @@ namespace DeckRogue.Game
         /// </summary>
         public static void StartEndTurn(GameRoot g)
         {
+            if(g.CombatPresentationPending)return;
             var st = g.Rs != null ? g.Rs.Combat : null;
             if (st == null) return;
             if (g.RetainChoice == null && Combat.RetainHandMax(st) > 0) { g.RetainChoice = new List<string>(); g.Rebuild(); return; }
