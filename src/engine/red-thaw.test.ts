@@ -233,6 +233,15 @@ describe('バーンと刹那の穴埋め', () => {
 
 })
 
+  it('猛火の儀式は本家形 (1E・一時マナ+2・消滅)', () => {
+    const def = getCardDef('red_ritual')
+    expect(def.cost).toBe(1)
+    expect(def.exhaust).toBe(true)
+    let s = withHand(base(), ['red_ritual'])
+    s = play(s, 't0_red_ritual')
+    expect(s.player.energy).toBe(3 - 1 + 2)
+  })
+
 describe('鍛える (本家形へ。例外2枚)', () => {
   it('赤は本家形: 連火弾+ 17ダメ (量+50%)・火の渦+ ×7 (参照倍率+1)・熾火の一閃+ 9ダメ+衝動3 (単位+1)・野火+ 2E (数字が無いのでコスト-1)', () => {
     expect(up('red_cascade_bolt').effects[0].amount).toBe(17)

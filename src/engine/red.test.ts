@@ -92,10 +92,10 @@ describe('ランダム火力', () => {
 })
 
 describe('刹那のリソース (儀式・衝動・自傷)', () => {
-  it('猛火の儀式: 0マナでエナジー+2、消滅する', () => {
+  it('猛火の儀式: 1マナでエナジー+2 (正味+1)、消滅する (2026-10-10 本家 Seeing Red 形。旧 0E)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), ['red_ritual'])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_ritual' })
-    expect(s.player.energy).toBe(5)
+    expect(s.player.energy).toBe(4)
     expect(s.player.exhaustPile).toHaveLength(1)
   })
 

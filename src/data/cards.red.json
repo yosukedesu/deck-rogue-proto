@@ -184,7 +184,7 @@
   {
     "id": "red_ritual",
     "name": "猛火の儀式",
-    "cost": 0,
+    "cost": 1,
     "type": "spell",
     "rarity": "uncommon",
     "exhaust": true,

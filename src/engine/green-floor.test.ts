@@ -186,7 +186,8 @@ describe('基礎体力の床 (docs/green-audit.md §5-3。カラーパイは本�
 
   it('他色: 現状の値を床として退行を防ぐ (キャントリップ/全体/0E。床の引き上げは各色の解凍時に。白は 2026-09-18 の仕上げで キャントリップ1・0E2)', () => {
     // 赤 2026-10-10 の解凍: 全体 13→12 (大花火・紅蓮の嵐を撤去し火の連祷を足した。全体はレア16枚の9枚を占めていた層なので減らしてよい裁定)・
-    const floors: Record<string, [number, number, number]> = { blue: [3, 4, 4], red: [4, 12, 5], white: [1, 2, 2], black: [1, 6, 5] }
+    // 0E 5→4 (猛火の儀式を本家 Seeing Red 形の 1E に。規約「各色 0E 1〜2枚」はまだ上回る)
+    const floors: Record<string, [number, number, number]> = { blue: [3, 4, 4], red: [4, 12, 4], white: [1, 2, 2], black: [1, 6, 5] }
     for (const [color, [cantrip, aoe, zero]] of Object.entries(floors)) {
       const p = pool(color)
       expect(p.filter(isCantrip).length, `${color} キャントリップ`).toBeGreaterThanOrEqual(cantrip)
