@@ -51,7 +51,7 @@ function cname(cardId: string): string {
 import { deckChoosePool, retainHandMax } from '../engine/combat.ts'
 import { ANTHEM_EFFECTS, DOLL_GROWTH_EFFECTS, cardNeedsTarget, damageBreakdown, displayedInflict, dollEffectAmount, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, hearthSparkMax, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, campfireOptions, canTransformCard, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, workshopFuseResult, campfireForgeAllowed } from '../engine/run.ts'
-import { battleSummary, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, burnoutEnemies, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, permanentTargetNote, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags, interruptBlockedNote } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { GearDef, CardDef, Command, DeclarativeEffect, EnemyIntent, EnemyIntentBranch, GameState } from '../engine/types.ts'
@@ -84,7 +84,8 @@ interface SaveFile {
 // ---- 効果の短文レンダラ (UIの簡易版) ----
 function fx(e: DeclarativeEffect, holderType?: string): string {
   const a = e.amount ?? 0
-  const all = e.target === 'all' ? '敵全体に' : e.target === 'mostHp' ? 'HPがいちばん多い敵に' : ''
+  // 置物のターン開始などの単体効果は「先頭の敵に」(2026-10-10 Opus 赤 C: 燎火の使いの毎T延焼の相手が札に無かった)
+  const all = e.target === 'all' ? '敵全体に' : e.target === 'mostHp' ? 'HPがいちばん多い敵に' : permanentTargetNote(e, holderType)
   // amountMax < amount は弱まる/止まる側の安全弁 (冒涜の祭壇=刻5でミル停止)。「強化」と書かない
   const th = e.exhaustThreshold !== undefined
     ? `〔忘却の刻${e.exhaustThreshold}: ${(e.amountMax ?? 0) < (e.amount ?? 0) ? (e.amountMax === 0 ? '以降は停止' : `${e.amountMax}に減少`) : `${e.amountMax}に増える`}〕`
@@ -270,9 +271,12 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push('--- 直近の出来事 ---')
     for (let k = 0; k < events.length; k++) {
       const e = events[k]
-      if (e.type === 'DamageDealt') L.push(` ${e.source === 'player' ? '与ダメ' : '被ダメ'}${e.amount}(HP損失${'hpLoss' in e ? e.hpLoss : '?'})${e.exposed ? '【急所】' : ''}${e.pierced ? '【貫通】' : ''}${e.blocked ? `【ブロックで${e.blocked}】` : ''}${e.armorCut ? `【装甲で${e.armorCut}切り捨て=本来${e.amount + e.armorCut}】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.slipperyCut ? `【朧で${e.slipperyCut}消えた=1】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`)
+      if (e.type === 'DamageDealt') L.push(` ${e.source === 'player' ? '与ダメ' : '被ダメ'}${e.amount}(HP損失${'hpLoss' in e ? e.hpLoss : '?'})${e.exposed ? '【急所】' : ''}${e.pierced ? '【貫通】' : ''}${e.nullified ? '【身代わりの符で無効】' : e.blocked ? `【ブロックで${e.blocked}】` : ''}${e.armorCut ? `【装甲で${e.armorCut}切り捨て=本来${e.amount + e.armorCut}】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.slipperyCut ? `【朧で${e.slipperyCut}消えた=1】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`)
       else if (e.type === 'CardPlayed') L.push(` プレイ:${cname(e.cardId)}`)
       else if (e.type === 'CardSet') L.push(` 伏せた:${cname(e.cardId)}`)
+      else if (e.type === 'Cascaded') L.push(e.hitId !== undefined ? ` 🔗チェイン:${cname(e.cardId)}→${cname(e.hitId)}をコストを払わずにプレイ${e.revealed.length > 0 ? `(${e.revealed.length}枚は山札の底へ)` : ''}` : ` 🔗チェイン:${cname(e.cardId)}→当たりなし${e.revealed.length > 0 ? `(${e.revealed.length}枚は山札の底へ)` : ''}`)
+      else if (e.type === 'ImpulseDrawn') L.push(` 衝動${e.count}枚(このターン限り。撃たなければターン終了時に消滅)`)
+      else if (e.type === 'ImpulseKept') L.push(` 燠の守り:${cname(e.cardId)}を手札に残した(次のターンまで)`)
       else if (e.type === 'ReactionTriggered') L.push(` リアクション発動:${cname(e.cardId)}`)
       else if (e.type === 'CardExhausted') L.push(` 消滅:${cname(e.cardId)}`)
       else if (e.type === 'CardSealed') L.push(` 🔒敵${e.enemyIndex + 1}が「${cname(e.cardId)}」を封じた(倒せば手札に戻る)`)
@@ -364,6 +368,9 @@ function renderBattle(s: GameState, logFrom: number): string {
     L.push(
       `⚠️ このターンに受けるダメージ: ${incoming}（防御${defense}を差し引いて${through} / HP ${p.hp}）`,
     )
+    // 延焼のティックで行動の前に倒れる敵は予測に入れない (2026-10-10 Opus 赤 B: 予測52 → 実際0 を毎回自分で引き算していた)
+    const burnout = burnoutEnemies(s)
+    if (burnout.length > 0) L.push(`   🔥延焼で行動の前に焼け落ちる（予測から除外）: ${burnout.map((i) => `敵${i} ${getEnemyDef(s.enemies[i].enemyId).name}`).join('・')}`)
   }
   s.enemies.forEach((e, i) => {
     if (e.hp <= 0) { L.push(`敵${i}: ${getEnemyDef(e.enemyId).name} ${e.fled ? `🏃逃走済み${e.stolenGold ? `(${e.stolenGold}G持ち逃げ)` : ''}` : '💀撃破済み'}`); return }

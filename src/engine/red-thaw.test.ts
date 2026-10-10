@@ -5,7 +5,8 @@ import { describe, expect, it } from 'vitest'
 import { allCards, getCardDef, getDeckDef } from './content.ts'
 import { axesOf, createRun, REWARD_EXCLUDED } from './run.ts'
 import { applyCommand, createInitialState } from './state.ts'
-import { freshCombat, restIntent, withHand, withIntent } from './test-helpers.ts'
+import { attackIntent, freshCombat, restIntent, withHand, withIntent } from './test-helpers.ts'
+import { burnoutEnemies, incomingTotal, permanentTargetNote } from './summary.ts'
 import { upgradeCard, upgradeTier } from './upgrade.ts'
 import { fuseCards } from './fusion.ts'
 import { isPlayableFromHand } from './effects.ts'
@@ -316,5 +317,43 @@ describe('データとラン', () => {
     const green = createRun(3, 'set-confirm', 'leader_green').relicQueue
     expect(green).toContain('relic_double_talisman')
     expect(green).toContain('relic_reading_glasses')
+  })
+})
+
+describe('表示の是正 (2026-10-10 Opus 赤3本)', () => {
+  it('被ダメ予測: 延焼のティック (延焼≥HP) で行動の前に倒れる敵は数えない。敵フェーズの途中 (ティック済み) は数える', () => {
+    let s = withIntent(base(), attackIntent(10))
+    expect(incomingTotal(s)).toBe(10)
+    expect(burnoutEnemies(s)).toEqual([])
+    s = withBurn({ ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, hp: 5 } : e)) }, 5)
+    expect(burnoutEnemies(s)).toEqual([0])
+    expect(incomingTotal(s)).toBe(0)
+    expect(incomingTotal({ ...s, enemyPhase: true })).toBe(10)
+    expect(incomingTotal(withBurn(s, 4))).toBe(10) // 延焼4 < HP5 は焼け落ちない
+  })
+
+  it('身代わりの符で無効にした攻撃は DamageDealt に nullified が立つ (ログは「ブロックで」と言わない)', () => {
+    let s = withIntent({ ...base(), nullifyNextAttack: true }, attackIntent(10))
+    const before = s.player.hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    const dd = s.eventLog.find((e) => e.type === 'DamageDealt' && e.source === 'enemy')
+    expect(dd).toMatchObject({ hpLoss: 0, nullified: true })
+    expect(s.player.hp).toBe(before)
+    // 普通に受けた時は立たない
+    let t = withIntent(base(), attackIntent(10))
+    t = applyCommand(t, { type: 'EndTurn' })
+    const d2 = t.eventLog.find((e) => e.type === 'DamageDealt' && e.source === 'enemy')
+    expect(d2 !== undefined && 'nullified' in d2).toBe(false)
+  })
+
+  it('置物の文: ターン開始などの単体効果は「先頭の敵に」(燎火の使いの毎T延焼+2)。全体・登場時・攻撃ごとには付かない', () => {
+    const envoy = getCardDef('red_perm_cascade_envoy')
+    expect(permanentTargetNote(envoy.effects[1], 'permanent')).toBe('先頭の敵に') // onTurnStart applyBurn
+    expect(permanentTargetNote(envoy.effects[0], 'permanent')).toBe('') // onPlay (登場時) は狙った敵
+    expect(permanentTargetNote(getCardDef('red_perm_embers_left').effects[0], 'permanent')).toBe('先頭の敵に') // onImpulseExpired
+    expect(permanentTargetNote({ trigger: 'onTurnStart', effect: 'applyBurn', target: 'all' }, 'permanent')).toBe('')
+    expect(permanentTargetNote({ trigger: 'onAttackPlayed', effect: 'applyBurn' }, 'permanent')).toBe('')
+    expect(permanentTargetNote({ trigger: 'onTurnStart', effect: 'gainBlock' }, 'permanent')).toBe('')
+    expect(permanentTargetNote({ trigger: 'onTurnStart', effect: 'applyBurn' }, 'spell')).toBe('')
   })
 })

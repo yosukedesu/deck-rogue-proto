@@ -72,7 +72,7 @@ import { webVocab } from './vocab.ts'
 import { departureCostText, departureGainText, departureGearRoomNote, departurePriceLabel, departureUnavailableReason, shopDepartureUnavailableReason } from './log.ts'
 import { applyRunCommand, departureOfferBought, campfireOptions, canTransformCard, canUnexhaustCard, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, difficultyDescription, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicChargesLeft, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, workshopFuseResult, campfireForgeAllowed } from '../engine/run.ts'
 import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason, manaLabel } from '../engine/gears.ts'
-import { battleSummary, cardCostLabel, displayedIntentValue, intentModifierNotes, interruptPreviews, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, burnoutEnemies, cardCostLabel, displayedIntentValue, intentModifierNotes, interruptPreviews, permanentTargetNote, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { describeGraph, sleepingInterrupt } from '../engine/enemyGraph.ts'
 import { interruptBlockedNote } from '../engine/traits.ts'
 import { GRID_COLS } from '../engine/map.ts'
@@ -347,7 +347,8 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     (e.trigger === 'onPlay' && holderType === 'permanent' ? '登場時: ' : TRIGGER_LABEL[e.trigger]) +
     conditionLabel(e)
   const pierce = e.pierce ? '(貫通)' : ''
-  const aoe = e.target === 'all' ? '敵全体に' : e.target === 'mostHp' ? 'HPがいちばん多い敵に' : ''
+  // 置物のターン開始などの単体効果は「先頭の敵に」(2026-10-10 Opus 赤 C。式は engine/summary.ts permanentTargetNote に1本化)
+  const aoe = e.target === 'all' ? '敵全体に' : e.target === 'mostHp' ? 'HPがいちばん多い敵に' : permanentTargetNote(e, holderType)
   // トータル先頭表記: 補正込みの実ダメージを先に出し、内訳を括弧で添える
   const atkBreak = atkBonus > 0 ? `（${'基礎'}${e.amount}+補正${atkBonus}）` : ''
   switch (e.effect) {
@@ -2338,9 +2339,12 @@ function BattleScreen({
                 const incoming = incomingTotal(s)
                 const defense = player.block + player.iceBlock
                 const through = Math.max(0, incoming - defense)
+                // 延焼のティックで行動の前に倒れる敵は予測に入れない (2026-10-10 Opus 赤 B)
+                const burnout = burnoutEnemies(s)
                 return (
                   <div className={`forecast-inline${through >= player.hp ? ' forecast-danger' : through > 0 ? ' forecast-warn' : ''}`}>
                     ⚠️ このターンに受けるダメージ {incoming} − 防御 {defense} = <b>{through}</b>（HP {player.hp}）
+                    {burnout.length > 0 && <span className="forecast-note">　🔥延焼で焼け落ちる: {burnout.map((i) => getEnemyDef(s.enemies[i].enemyId).name).join('・')}</span>}
                   </div>
                 )
               })()}

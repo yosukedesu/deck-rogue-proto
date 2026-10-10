@@ -2092,7 +2092,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         const { nullifyNextAttack: _n, ...used } = s // 1回きり: 使ったら降ろす
         s = used
       }
-      s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex, ...(blockedTotal > 0 ? { blocked: blockedTotal } : {}) })
+      s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex, ...(blockedTotal > 0 ? { blocked: blockedTotal } : {}), ...(nullify ? { nullified: true } : {}) })
       if (capCharge) s = emit(s, { type: 'HpLossCapped', left: s.maxHpLossCharges ?? 0 })
       // HPを失った後の誘発 (2026-09-12 onDamageTaken: 百年の謎かけ・粘土・ルーンの立方体。HP損失0では鳴らない)
       if (hpLoss > 0) s = runPermanentTriggers(s, 'onDamageTaken', enemyIndex)

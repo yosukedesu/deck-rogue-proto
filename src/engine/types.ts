@@ -629,6 +629,8 @@ export type GameEvent =
       readonly pierced?: boolean
       /** ブロックが吸った量 (source=player は敵のブロック〔潜伏の殻を含む〕、source=enemy は自分のブロック＋氷壁の合計)。0 なら省略 */
       readonly blocked?: number
+      /** 身代わりの符 (ギア) で HP 損失を 0 にした (source=enemy)。blocked には全ヒットが「完全に防いだ」扱いで入る = ログは「ブロックで」と言わない (2026-10-10 Opus 赤 B) */
+      readonly nullified?: boolean
       /** 置物の誘発で与えた時、その置物の uid (人形の盤面表示 2026-09-19: 人形が踏み込んで斬る演出の出どころ)。無ければ省略 */
       readonly sourceUid?: string
     }

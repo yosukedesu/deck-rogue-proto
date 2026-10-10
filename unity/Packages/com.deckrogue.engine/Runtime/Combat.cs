@@ -2236,7 +2236,7 @@ namespace DeckRogue.Engine
                             HpLostThisTurn = (state.Player.HpLostThisTurn ?? 0) + hpLoss,
                         },
                     };
-                    sa = Events.Emit(sa, new GameEvent_DamageDealt { Source = "enemy", Amount = dealtTotal, HpLoss = hpLoss, EnemyIndex = enemyIndex, Blocked = blockedTotal > 0 ? blockedTotal : (int?)null });
+                    sa = Events.Emit(sa, new GameEvent_DamageDealt { Source = "enemy", Amount = dealtTotal, HpLoss = hpLoss, EnemyIndex = enemyIndex, Blocked = blockedTotal > 0 ? blockedTotal : (int?)null, Nullified = nullify ? true : (bool?)null });
                     if (capCharge) sa = Events.Emit(sa, new GameEvent_HpLossCapped { Left = sa.MaxHpLossCharges ?? 0 });
                     // HPを失った後の誘発 (2026-09-12 onDamageTaken: 百年の謎かけ・粘土・ルーンの立方体。HP損失0では鳴らない)
                     if (hpLoss > 0) sa = Effects.RunPermanentTriggers(sa, "onDamageTaken", enemyIndex);

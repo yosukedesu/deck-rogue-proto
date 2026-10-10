@@ -1355,14 +1355,44 @@ namespace DeckRogue.Engine
             // 敵フェーズの途中は行動を終えた敵 (窓の敵より前) を数えない・身代わりの符は最初の攻撃1回ぶんを0に (2026-09-20 Opus 火種A/B/C)。TS summary.incomingTotal と同形
             int from = (s.EnemyPhase == true && s.PendingWindow != null) ? s.PendingWindow.EnemyIndex : 0;
             bool nullify = s.NullifyNextAttack == true;
+            var burnout = BurnoutEnemies(s);
             int sum = 0;
             for (int i = from; i < s.Enemies.Count; i++)
             {
+                if (burnout.Contains(i)) continue; // 延焼で行動の前に倒れる敵は殴ってこない (2026-10-10 Opus 赤 B)
                 int v = IncomingFrom(s, i);
                 if (v > 0 && nullify) { nullify = false; continue; }
                 sum += v;
             }
             return sum;
+        }
+
+        /// <summary>延焼のティック (敵フェーズ開始・ブロック無視) で行動の前に倒れる敵 = 延焼 ≥ HP。自ターン中だけ (敵フェーズの途中はティック済み)。TS summary.ts burnoutEnemies (2026-10-10 Opus 赤 B)</summary>
+        public static List<int> BurnoutEnemies(GameState s)
+        {
+            var list = new List<int>();
+            if (s.EnemyPhase == true) return list;
+            for (int i = 0; i < s.Enemies.Count; i++)
+            {
+                var e = s.Enemies[i];
+                if (e.Hp > 0 && e.Burn > 0 && e.Burn >= e.Hp) list.Add(i);
+            }
+            return list;
+        }
+
+        /// <summary>置物の誘発のうち、相手を「生存する先頭の敵」に取るもの (Combat.cs の RunPermanentTriggers に先頭を渡している誘発。TS summary.ts と同形)</summary>
+        private static readonly HashSet<string> FIRST_ALIVE_TRIGGERS = new HashSet<string> { "onCombatStart", "onTurnStart", "onTurnEnd", "onShuffle", "onImpulseExpired", "onScry", "onScryDiscard", "onSetExpired" };
+        private static readonly HashSet<string> ENEMY_SINGLE_EFFECTS = new HashSet<string>
+        {
+            "dealDamage", "dealDamageRandom", "dealDamageDrain", "dealDamageExecute", "dealDamageCleave", "applyBurn", "exposeEnemy", "weakenEnemy", "confuse",
+            "shatterBlock", "shatterBlockConvert", "doubleBurn", "dealDamagePerBurn", "gainBlockPerBurn", "strengthenEnemy",
+        };
+        /// <summary>置物の文に添える相手の注記「先頭の敵に」(2026-10-10 Opus 赤 C: 燎火の使いの毎T延焼の相手が札に無かった)。TS summary.ts permanentTargetNote と同形</summary>
+        public static string PermanentTargetNote(DeclarativeEffect e, string holderType)
+        {
+            if (holderType != "permanent" || e.Target != null) return "";
+            if (e.Trigger == null || !FIRST_ALIVE_TRIGGERS.Contains(e.Trigger)) return "";
+            return e.Effect != null && ENEMY_SINGLE_EFFECTS.Contains(e.Effect) ? "先頭の敵に" : "";
         }
 
         /// <summary>因縁 (Nemesis) の無形ターンか: 奇数ターン (1,3,5…) は無形、偶数ターンに実体化</summary>

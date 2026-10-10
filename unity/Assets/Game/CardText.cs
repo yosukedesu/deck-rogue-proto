@@ -358,6 +358,12 @@ namespace DeckRogue.Game
             if (every != null) sb.Append(MarkClauses ? ClauseOpen + every + ClauseClose : every);
             if (e.Target == "all") sb.Append("敵全体に ");
             else if (e.Target == "mostHp") sb.Append("HPがいちばん多い敵に ");   // 獅子の人形 (白 2026-09-26)
+            else
+            {
+                // 置物のターン開始などの単体効果は「先頭の敵に」(2026-10-10 Opus 赤 C: 燎火の使いの毎T延焼の相手が札に無かった。式は Effects.PermanentTargetNote に1本化)
+                string note = Effects.PermanentTargetNote(e, holderType);
+                if (note.Length > 0) sb.Append(note + " ");
+            }
             sb.Append(EffectBody(e));
             if (e.Pierce == true) sb.Append("(貫通)");
             if (e.XHits == true) sb.Append("×X回");
@@ -1035,7 +1041,7 @@ namespace DeckRogue.Game
                         + (j.BurrowCut.HasValue && j.BurrowCut.Value > 0 ? " [潜伏の殻で" + j.BurrowCut.Value + "]" : "")
                         + (j.NemesisCut.HasValue && j.NemesisCut.Value > 0 ? " [無形で1固定]" : "")
                         + (j.SlipperyCut.HasValue && j.SlipperyCut.Value > 0 ? " [朧で1]" : "")
-                    : "敵の攻撃" + j.Amount + " → HP-" + j.HpLoss + (j.Blocked.HasValue && j.Blocked.Value > 0 ? " (ブロックで" + j.Blocked.Value + ")" : "");
+                    : "敵の攻撃" + j.Amount + " → HP-" + j.HpLoss + (j.Nullified == true ? " (身代わりの符で無効)" : j.Blocked.HasValue && j.Blocked.Value > 0 ? " (ブロックで" + j.Blocked.Value + ")" : "");
             }
             var k = ev as GameEvent_BlockGained; if (k != null) return (k.Target == "player" ? "自分" : "敵") + "がブロック+" + k.Amount;
             var l = ev as GameEvent_IceBlockGained; if (l != null) return "氷壁+" + l.Amount;

@@ -337,7 +337,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>占術 (青 2026-09-25 Opus B の処方): この戦闘で占術で捨てた枚数の累計 (読み切りが参照)</summary>
         [JsonProperty("scryDiscardedThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public int? ScryDiscardedThisCombat { get; init; }
-        /// <summary>飛び火 (赤 2026-10-10): この戦闘で飛び火が当たった (札がプレイされた) 回数。火の渦が参照。空振りは数えない</summary>
+        /// <summary>チェイン (赤 2026-10-10): この戦闘でチェインが当たった (札がプレイされた) 回数。火の渦が参照。空振りは数えない</summary>
         [JsonProperty("cascadesThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public int? CascadesThisCombat { get; init; }
         /// <summary>罠使い (青 2026-09-25): この戦闘で罠 (reaction) が鳴った回数 (仕掛けの反響が参照)</summary>
@@ -1170,6 +1170,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>ブロックが吸った量 (source=player は敵のブロック〔潜伏の殻を含む〕、source=enemy は自分のブロック＋氷壁の合計)。0 なら省略</summary>
         [JsonProperty("blocked", NullValueHandling = NullValueHandling.Ignore)]
         public int? Blocked { get; init; }
+        /// <summary>身代わりの符 (ギア) で HP 損失を 0 にした (source=enemy)。blocked には全ヒットが「完全に防いだ」扱いで入る = ログは「ブロックで」と言わない (2026-10-10 Opus 赤 B)</summary>
+        [JsonProperty("nullified", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Nullified { get; init; }
         /// <summary>置物の誘発で与えた時、その置物の uid (人形の盤面表示 2026-09-19: 人形が踏み込んで斬る演出の出どころ)。無ければ省略</summary>
         [JsonProperty("sourceUid", NullValueHandling = NullValueHandling.Ignore)]
         public string? SourceUid { get; init; }
@@ -2421,7 +2424,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>反復内蔵 (反復の触媒の結果 2026-09-12): プレイ時効果を2回解決する。置物なら誘発ごとに2回。反復トークンとは加算 (3回)</summary>
         [JsonProperty("echo", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Echo { get; init; }
-        /// <summary>飛び火 (赤の第3の軸 2026-10-10。MTG の続唱。`docs/red-cascade-design-2026-10-10.md`): プレイした時、山札の上から 「この札よりコストの低い札」が出るまでめくり、その札をコストを払わずにプレイする (対象は親と同じ敵。 選択式・X・仕込み札・プレイできない札は飛ばして底へ)。めくった残りは山札の底へ (順はシードRNG)。 山札が尽きたら捨て札を切り直して続け、当たりが無ければ空振り。本体の効果より先に解決する (MTG の順)。 値は回数 (野火=3・双つ火=2)。当たった札が飛び火を持てば続く (コストが下がるので必ず止まる)</summary>
+        /// <summary>チェイン (赤の第3の軸 2026-10-10。MTG の続唱。`docs/red-cascade-design-2026-10-10.md`): プレイした時、山札の上から 「この札よりコストの低い札」が出るまでめくり、その札をコストを払わずにプレイする (対象は親と同じ敵。 選択式・X・仕込み札・プレイできない札は飛ばして底へ)。めくった残りは山札の底へ (順はシードRNG)。 山札が尽きたら捨て札を切り直して続け、当たりが無ければ空振り。本体の効果より先に解決する (MTG の順)。 値は回数 (野火=3・双つ火=2)。当たった札がチェインを持てば続く (コストが下がるので必ず止まる)</summary>
         [JsonProperty("cascade", NullValueHandling = NullValueHandling.Ignore)]
         public int? Cascade { get; init; }
     }

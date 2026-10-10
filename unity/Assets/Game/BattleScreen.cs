@@ -2101,13 +2101,14 @@ namespace DeckRogue.Game
             var info = head.gameObject.AddComponent<IncomingInfo>();
             info.Incoming = incoming; info.Phone = phone; info.Hidden = st.HideIntents == true; info.Detail = detail;
             info.SkipFirst = st.NullifyNextAttack == true;   // 身代わりの符: 最初の攻撃は見込みに入っていない (IncomingTotal と同じ)
+            try { info.Burnout = Effects.BurnoutEnemies(st).Count; } catch (Exception) { }   // 延焼で行動の前に倒れる敵は見込みに入っていない (2026-10-10 Opus 赤 B)
             info.Lethal = LethalEdge(parent);
             ApplyIncomingText(info, p.Block + p.IceBlock, p.Hp);
             return info;
         }
 
         /// <summary>受けるダメージの見込みの元 (順送りの途中で盾の数字・HP・届いた攻撃と一緒に引き直す)。Landed = この敵の番の攻撃がもう届き始めた・Lethal = 自分の札の薔薇の縁</summary>
-        public class IncomingInfo : MonoBehaviour { public int Incoming; public bool Phone, Hidden, Landed, SkipFirst; public TMP_Text Detail; public GameObject Lethal; }
+        public class IncomingInfo : MonoBehaviour { public int Incoming, Burnout; public bool Phone, Hidden, Landed, SkipFirst; public TMP_Text Detail; public GameObject Lethal; }
 
         /// <summary>HP バーの削られる分 (2026-09-29 p08): 受けるダメージ − (ブロック＋氷壁)。自分の番だけ (敵の番・確認の窓・ルーンの円蓋・受けるダメージ 0 は 0＝帯を出さない)</summary>
         static int PredictedLoss(GameState st)
@@ -2120,16 +2121,18 @@ namespace DeckRogue.Game
         }
 
         /// <summary>見込みの2行の文 (head は結論・detail は内訳)。defense はブロック＋氷壁</summary>
-        static void IncomingTexts(int incoming, int defense, int hp, bool phone, bool hidden, bool landed, out string head, out string detail, out bool lethal)
+        static void IncomingTexts(int incoming, int defense, int hp, bool phone, bool hidden, bool landed, out string head, out string detail, out bool lethal, int burnout = 0)
         {
             lethal = false;
+            // 延焼のティックで行動の前に倒れる敵 (見込みから除いてある。2026-10-10 Opus 赤 B「予測52 → 実際0」を毎回引き算していた)
+            string burnTxt = burnout > 0 ? "延焼で" + burnout + "体が焼け落ちる" : null;
             // 小さく添える部分: PC 20×75%=15・スマホ 18×85%≈15 (スマホの最小 15 を割らない)
             string small = phone ? "<size=85%>" : "<size=75%>";
             if (hidden) { head = small + "受けるダメージ ？</size>"; detail = "ルーンの円蓋で見えない"; return; }
             if (incoming <= 0)
             {
                 head = small + (landed ? "この番の攻撃は終わった" : "この番は攻撃されない") + "</size>";
-                detail = "";
+                detail = burnTxt != null ? UiKit.ColorTag(PaperFx.GoodInk, burnTxt) : "";
                 return;
             }
             int left = Math.Max(0, incoming - defense);
@@ -2145,7 +2148,8 @@ namespace DeckRogue.Game
             // 内訳: ブロックが 0 なら「− ブロック」ごと省く (盾の札はバーの左端にもある)。スマホは幅 208 に入るよう「受ける」
             // (F30: 旧「ダメージ」は手札の本文の「ダメージ6」＝与える量と同じ語で、受ける量と区別がつかなかった)
             detail = (phone ? "受ける " : "受けるダメージ ") + UiKit.ColorTag(PaperFx.BadInk, "<b>" + incoming + "</b>")
-                   + (defense > 0 ? " − ブロック " + UiKit.ColorTag(PaperFx.SkyInk, "<b>" + defense + "</b>") : "");
+                   + (defense > 0 ? " − ブロック " + UiKit.ColorTag(PaperFx.SkyInk, "<b>" + defense + "</b>") : "")
+                   + (burnTxt != null ? "　" + UiKit.ColorTag(PaperFx.GoodInk, burnTxt) : "");
         }
 
         /// <summary>見込みの2行と致死の縁を、見えているブロック (氷壁込み) と HP で書き直す</summary>
@@ -2154,7 +2158,7 @@ namespace DeckRogue.Game
             if (info == null) return;
             var head = info.GetComponent<TMP_Text>();
             string h, d; bool lethal;
-            IncomingTexts(info.Incoming, defense, hp, info.Phone, info.Hidden, info.Landed, out h, out d, out lethal);
+            IncomingTexts(info.Incoming, defense, hp, info.Phone, info.Hidden, info.Landed, out h, out d, out lethal, info.Burnout);
             if (head != null) { head.text = h; head.color = lethal ? PaperFx.BadInk : PaperFx.Ink; }
             if (info.Detail != null) info.Detail.text = d;
             if (info.Lethal != null && info.Lethal.activeSelf != lethal) info.Lethal.SetActive(lethal);
