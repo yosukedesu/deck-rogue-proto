@@ -667,7 +667,7 @@
     "id": "run_basic_red",
     "name": "ラン基本デッキ(赤)",
     "color": "red",
-    "description": "赤ドラフト連戦の出発点。手数で押す構成: 火弾×3・火花×2(0マナ)・灰の盾×2・憤怒置物2(火纏い・棘火の帳)・着火の10枚",
+    "description": "赤ドラフト連戦の出発点。手数で押す構成: 火弾×3・火花×1(0マナ)・火加減(8ダメかブロック6)・灰の盾×2・憤怒置物2(火纏い・棘火の帳)・着火の10枚(2026-10-10 Opus 赤3本: 幕1の通常戦 2.3〜2.5T で火花×2→火花×1＋火加減)",
     "cards": [
       {
         "cardId": "red_strike",
@@ -675,7 +675,7 @@
       },
       {
         "cardId": "red_spark",
-        "count": 2
+        "count": 1
       },
       {
         "cardId": "red_guard",
@@ -691,6 +691,10 @@
       },
       {
         "cardId": "red_ignite",
+        "count": 1
+      },
+      {
+        "cardId": "red_mode_firecontrol",
         "count": 1
       }
     ]

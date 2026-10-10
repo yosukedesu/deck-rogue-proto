@@ -126,11 +126,12 @@ describe('チェイン (赤の第3の軸。MTG の続唱)', () => {
     expect(s.player.energy).toBe(1)
   })
 
-  it('火の渦: この戦闘でチェインが当たった回数×6。0回なら不発', () => {
+  it('火の渦: 1E・この戦闘でチェインが当たった回数×5 (2026-10-10 Opus 赤 A/B: 2E×6 は当たり 0.7〜1.6回/戦では火弾2枚に負けた)。0回なら不発', () => {
+    expect(getCardDef('red_cascade_vortex').cost).toBe(1)
     let s = withHand(base(), ['red_cascade_vortex'])
     const before = hp(s)
     s = play({ ...s, player: { ...s.player, cascadesThisCombat: 3 } }, 't0_red_cascade_vortex')
-    expect(before - hp(s)).toBe(18)
+    expect(before - hp(s)).toBe(15)
     s = withHand(base(), ['red_cascade_vortex'])
     expect(hp(play(s, 't0_red_cascade_vortex'))).toBe(hp(s))
   })
@@ -207,14 +208,14 @@ describe('バーンと刹那の穴埋め', () => {
     expect(s.enemies[0].burn).toBe(8)
   })
 
-  it('燃え残り・灰の衣: 衝動の札が失効するたび延焼+2・ブロック3 (失効1枚ごと。失効は衝動の出来事なので消滅より先)', () => {
+  it('燃え残り・灰の衣: 衝動の札が失効するたび延焼+3 (2026-10-10 Opus 赤3本: 失効は1戦1回程度で +2 では取られなかった)・ブロック3 (失効1枚ごと。失効は衝動の出来事なので消滅より先)', () => {
     let s = withPerms(withHand(base(), ['red_strike', 'red_guard']), ['red_perm_embers_left', 'red_perm_ash_robe'])
     s = withIntent({ ...s, player: { ...s.player, impulseUids: ['t0_red_strike', 't1_red_guard'] } }, restIntent())
     const before = hp(s)
     s = applyCommand(s, { type: 'EndTurn' })
     expect(ids(s.player.exhaustPile).sort()).toEqual(['red_guard', 'red_strike'])
-    expect(before - hp(s)).toBe(4) // 延焼4 (2枚×2) が敵フェーズ開始で焼く
-    expect(s.enemies[0].burn).toBe(3)
+    expect(before - hp(s)).toBe(6) // 延焼6 (2枚×3) が敵フェーズ開始で焼く
+    expect(s.enemies[0].burn).toBe(5)
     expect(s.eventLog.filter((e) => e.type === 'BlockGained' && e.target === 'player' && e.amount === 3)).toHaveLength(2)
   })
 
@@ -243,12 +244,22 @@ describe('バーンと刹那の穴埋め', () => {
   })
 
 describe('鍛える (本家形へ。例外2枚)', () => {
-  it('赤は本家形: 連火弾+ 17ダメ (量+50%)・火の渦+ ×7 (参照倍率+1)・熾火の一閃+ 9ダメ+衝動3 (単位+1)・野火+ 2E (数字が無いのでコスト-1)', () => {
+  it('赤は本家形: 連火弾+ 17ダメ (量+50%)・火の渦+ ×6 (参照倍率+1)・熾火の一閃+ 9ダメ+衝動3 (単位+1)', () => {
     expect(up('red_cascade_bolt').effects[0].amount).toBe(17)
-    expect(up('red_cascade_vortex').effects[0].amount).toBe(7)
+    expect(up('red_cascade_vortex').effects[0].amount).toBe(6)
     expect(up('red_ember_slash').effects.map((e) => e.amount)).toEqual([9, 3])
-    expect(up('red_brushfire').cost).toBe(2)
-    expect(up('red_brushfire').cascade).toBe(3)
+  })
+
+  it('例外: 野火+ はチェイン×4・双つ火+ は 5ダメ＋チェイン×3 (3E のまま。2026-10-10 Opus 赤 A/C「コスト-1 で当たりが 1E 以下に縮む＝鍛えると弱くなる」)', () => {
+    expect(upgradeTier(getCardDef('red_brushfire'))).toBe('cascade')
+    expect(up('red_brushfire')).toMatchObject({ cost: 3, cascade: 4, name: '野火+' })
+    expect(upgradeTier(getCardDef('red_twin_fire'))).toBe('cascade')
+    const twin = up('red_twin_fire')
+    expect(twin).toMatchObject({ cost: 3, cascade: 3 })
+    expect(twin.effects[0].amount).toBe(5)
+    // 他のチェイン札は本家形のまま (火送りの一撃+ 11ダメ＝7×1.5 切り上げ)
+    expect(up('red_cascade_strike')).toMatchObject({ cascade: 1 })
+    expect(up('red_cascade_strike').effects[0].amount).toBe(11)
   })
 
   it('例外: 焔の目録はコスト-1のまま (勢い+4 に戻さない)・火だるまは旧3段 (延焼3・被弾×1 のまま)', () => {
@@ -262,10 +273,10 @@ describe('鍛える (本家形へ。例外2枚)', () => {
 })
 
 describe('データとラン', () => {
-  it('赤 97種・報酬91 (チェイン14・穴埋め7・触媒2 を足し、カオス8と重なり2を撤去)。撤去した札は無い', () => {
+  it('赤 97種・報酬90＋初期専用7 (チェイン14・穴埋め7・触媒2 を足し、カオス8と重なり2を撤去。2026-10-10 火加減を初期デッキへ)。撤去した札は無い', () => {
     const red = allCards.filter((c) => c.color === 'red')
     expect(red.length).toBe(97)
-    expect(red.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(91)
+    expect(red.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(90)
     for (const id of ['red_long_shot', 'red_streak_bet', 'red_all_in', 'red_double_dice', 'red_leap_arrow', 'red_double_down', 'red_grand_fireworks', 'red_perm_gambler', 'red_perm_ward', 'red_blaze_storm']) {
       expect(red.some((c) => c.id === id), id).toBe(false)
     }
@@ -273,6 +284,14 @@ describe('データとラン', () => {
     expect(red.filter((c) => (c.cascade ?? 0) > 0)).toHaveLength(10) // 1E×2・2E×4 (置物1含む)・3E×4 (野火・双つ火含む)
     expect(red.filter((c) => c.fusionCatalyst !== undefined).map((c) => c.fusionCatalyst).sort()).toEqual(['aoe', 'cheaper'])
     expect(getCardDef('red_leaping_flame').name).toBe('飛び火') // 既存の札はそのまま (キーワード名は「チェイン」)
+  })
+
+  it('初期デッキ (run_basic_red): 火弾3・火花1・火加減1・灰の盾2・火纏い・棘火の帳・着火＝10枚。初期専用の札は報酬に出ない (2026-10-10 Opus 赤 A 2.29T・C 2.5T → 火花×2→火花×1＋火加減)', () => {
+    const d = getDeckDef('run_basic_red')
+    const counts = Object.fromEntries(d.cards.map((c) => [c.cardId, c.count]))
+    expect(counts).toEqual({ red_strike: 3, red_spark: 1, red_mode_firecontrol: 1, red_guard: 2, red_perm_flarecoat: 1, red_perm_thorn_flame: 1, red_ignite: 1 })
+    expect(d.cards.reduce((a, c) => a + c.count, 0)).toBe(10)
+    for (const c of d.cards) expect(REWARD_EXCLUDED.has(c.cardId), c.cardId).toBe(true)
   })
 
   it('チェインを持つ札は赤だけで、コストは1以上 (0E のチェインは当たりが無い)', () => {

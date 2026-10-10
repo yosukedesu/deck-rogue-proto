@@ -149,6 +149,7 @@ namespace DeckRogue.Engine
             public const string Threshold = "threshold";
             public const string Light = "light"; // 灯コスト-1 (白 2026-09-20 点灯の合図+)
             public const string Range = "range"; // 打ち消しの条件を広げる (青 2026-09-25 マナ漏出+・逆巻き+)
+            public const string Cascade = "cascade"; // チェイン+1 (赤 2026-10-10 野火+・双つ火+)
         }
 
         /// <summary>
@@ -207,6 +208,8 @@ namespace DeckRogue.Engine
         private static readonly HashSet<string> V2_LEGACY = new HashSet<string> { "blue_ice_lance", "blue_spark", "red_perm_pyre" };
         /// <summary>本家形の色でも「おまけ」で鍛える札 (2026-09-25 Opus 青C): 反復+ は 0E にせず 1ドローを足す。TS V2_BONUS と同形</summary>
         private static readonly HashSet<string> V2_BONUS = new HashSet<string> { "blue_echo" };
+        /// <summary>本家形の例外 = チェイン+1 (2026-10-10 Opus 赤 A/C): 野火・双つ火はコスト-1 だと当たりが 1E 以下に縮む。TS V2_CASCADE_PLUS と同形</summary>
+        private static readonly HashSet<string> V2_CASCADE_PLUS = new HashSet<string> { "red_brushfire", "red_twin_fire" };
         private static bool IsGreenRule(CardDef def) =>
             !V2_LEGACY.Contains(def.Id) && (def.Id.StartsWith("green_", StringComparison.Ordinal) || (def.Color != null && V2_COLORS.Contains(def.Color)));
         /// <summary>本家形の例外 = 名指しでコスト-1 (2026-09-18 白: 誘発ごとにドローする置物は単位+1 だと青のドローの定価を越える)</summary>
@@ -330,6 +333,7 @@ namespace DeckRogue.Engine
                 if (V2_COST_ONLY.Contains(def.Id) && def.Cost >= 1 && !CostCutViolates(def)) return UpgradeTiers.Cost;
                 if (V2_RANGE.ContainsKey(def.Id)) return UpgradeTiers.Range;
                 if (V2_BONUS.Contains(def.Id) && BONUS_UPGRADES.ContainsKey(def.Id)) return UpgradeTiers.Bonus;
+                if (V2_CASCADE_PLUS.Contains(def.Id) && (def.Cascade ?? 0) > 0) return UpgradeTiers.Cascade;
                 // 灯コスト持ち (点灯の合図 1E・灯2。白 2026-09-20): 鍛えると灯コスト-1。エナジーは触らない
                 if ((def.LightCost ?? 0) >= 1) return UpgradeTiers.Light;
                 var t = TierV2(eff, def);
@@ -406,7 +410,7 @@ namespace DeckRogue.Engine
                 if (card.Def.Modes != null) rangeDef = rangeDef with { Modes = card.Def.Modes.Select(m => m with { Effects = m.Effects.Select(Widen).ToList() }).ToList() };
                 return card with { Def = LegalizeUpgrade(rangeDef) };
             }
-            if (IsGreenRule(card.Def) && tier != UpgradeTiers.Cost && tier != UpgradeTiers.Bonus && tier != UpgradeTiers.None && tier != UpgradeTiers.Light)
+            if (IsGreenRule(card.Def) && tier != UpgradeTiers.Cost && tier != UpgradeTiers.Bonus && tier != UpgradeTiers.None && tier != UpgradeTiers.Light && tier != UpgradeTiers.Cascade)
             {
                 var baseDef = card.Def;
                 CardDef greenDef = baseDef with
@@ -458,6 +462,10 @@ namespace DeckRogue.Engine
             else if (tier == UpgradeTiers.Light)
             {
                 def = def with { LightCost = Math.Max(0, (card.Def.LightCost ?? 0) - 1) }; // 点灯の合図+ = 1E・灯1
+            }
+            else if (tier == UpgradeTiers.Cascade)
+            {
+                def = def with { Cascade = (card.Def.Cascade ?? 0) + 1 }; // 野火+ = チェイン×4・双つ火+ = 5ダメ＋チェイン×3 (2026-10-10)
             }
             else if (tier == UpgradeTiers.Bonus)
             {

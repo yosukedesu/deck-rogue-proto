@@ -95,6 +95,7 @@ namespace DeckRogue.Engine
             "red_ignite",
             "red_perm_flarecoat",
             "red_perm_thorn_flame",
+            "red_mode_firecontrol", // 2026-10-10 Opus 赤3本: 火加減を初期デッキへ (火花×2→火花×1＋火加減)
             "white_shield_strike",
             "white_light_bolt", // 灯の矢 (白の派生=灯の教材=放出。2026-09-21 夜 ユーザー裁定「継ぎ火を消して灯の矢に」: 継ぎ火は報酬プールへ)
             "white_mode_crossroad", // 灯の岐路 (2026-09-20 白の初期デッキを緑の形に。剣の人形・灯り継ぎ・報復の光は報酬プールへ)

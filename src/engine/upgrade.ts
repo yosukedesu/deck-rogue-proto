@@ -116,7 +116,7 @@ function costCutViolates(def: CardDef): boolean {
  * 「量を強化しない」形で維持)。現行データでは全カードがいずれかのティアに落ちる
  * (テストで機械固定)。'none' は将来のデータ追加への防衛用に残す
  */
-export type UpgradeTier = 'amount' | 'cost' | 'unit' | 'bonus' | 'none' | 'mult' | 'threshold' | 'light' | 'range'
+export type UpgradeTier = 'amount' | 'cost' | 'unit' | 'bonus' | 'none' | 'mult' | 'threshold' | 'light' | 'range' | 'cascade'
 
 /**
  * 本家形の鍛える (2026-09-04 ユーザー裁定「ok」。StS2 507枚の OnUpgrade 集計: 量+1が最多185・ダメ102・
@@ -165,6 +165,11 @@ const V2_LEGACY = new Set(['blue_ice_lance', 'blue_spark', 'red_perm_pyre'])
  * 全体の刈り取り (巻き波+ 詠唱16×4) を丸ごと倍にした＝1ターン128。1E のまま反復1＋1ドローに
  */
 const V2_BONUS = new Set(['blue_echo'])
+/**
+ * 本家形の例外 = チェイン+1 (2026-10-10 Opus 赤 A/C): 野火 (3E・チェイン×3・数字なし) と双つ火 (3E・5ダメ＋チェイン×2) は本家形だと
+ * コスト-1 で 2E になり、当たりが 1E 以下に縮む =「鍛えると弱くなる」は本家に無い形。野火+＝チェイン×4・双つ火+＝5ダメ＋チェイン×3
+ */
+const V2_CASCADE_PLUS = new Set(['red_brushfire', 'red_twin_fire'])
 const isGreenRule = (def: CardDef) => !V2_LEGACY.has(def.id) && (def.id.startsWith('green_') || V2_COLORS.has(def.color))
 /**
  * 本家形の例外 = 名指しでコスト-1 (2026-09-18 白の仕上げ・ユーザー裁定): 誘発ごとにドローする置物 (軍楽隊=登場ごと・恵光の使徒=回復ごと) は
@@ -273,6 +278,7 @@ export function upgradeTier(def: CardDef): UpgradeTier {
     if (V2_COST_ONLY.has(def.id) && def.cost >= 1 && !costCutViolates(def)) return 'cost'
     if (V2_RANGE[def.id] !== undefined) return 'range'
     if (V2_BONUS.has(def.id) && BONUS_UPGRADES[def.id] !== undefined) return 'bonus'
+    if (V2_CASCADE_PLUS.has(def.id) && (def.cascade ?? 0) > 0) return 'cascade'
     // 灯コスト持ち (点灯の合図 1E・灯2。白 2026-09-20): 鍛えると灯コスト-1 (1E・灯1)。エナジーは触らない
     if ((def.lightCost ?? 0) >= 1) return 'light'
     const t = tierV2(eff, def)
@@ -353,7 +359,7 @@ export function upgradeCard(card: CardInstance): CardInstance {
     }
     return { ...card, def: legalizeUpgrade(def) }
   }
-  if (isGreenRule(card.def) && tier !== 'cost' && tier !== 'bonus' && tier !== 'none' && tier !== 'light') {
+  if (isGreenRule(card.def) && tier !== 'cost' && tier !== 'bonus' && tier !== 'none' && tier !== 'light' && tier !== 'cascade') {
     const base = card.def
     let def: CardDef = {
       ...base,
@@ -391,6 +397,8 @@ export function upgradeCard(card: CardInstance): CardInstance {
         ? { cost: card.def.cost - 1 }
         : tier === 'light'
           ? { lightCost: Math.max(0, (card.def.lightCost ?? 0) - 1) }
+        : tier === 'cascade'
+          ? { cascade: (card.def.cascade ?? 0) + 1 }
         : tier === 'unit'
           ? mapEffects(boostUnit)
           : tier === 'bonus'

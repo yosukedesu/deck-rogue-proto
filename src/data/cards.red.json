@@ -1590,14 +1590,14 @@
   {
     "id": "red_cascade_vortex",
     "name": "火の渦",
-    "cost": 2,
+    "cost": 1,
     "type": "spell",
     "rarity": "uncommon",
     "effects": [
       {
         "trigger": "onPlay",
         "effect": "dealDamagePerCascade",
-        "amount": 6
+        "amount": 5
       }
     ]
   },
@@ -1713,7 +1713,7 @@
       {
         "trigger": "onImpulseExpired",
         "effect": "applyBurn",
-        "amount": 2
+        "amount": 3
       }
     ]
   },

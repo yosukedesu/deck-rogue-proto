@@ -52,6 +52,8 @@ export const REWARD_EXCLUDED = new Set([
   'red_ignite',
   'red_perm_flarecoat',
   'red_perm_thorn_flame',
+  // 2026-10-10 Opus 赤3本 (A 2.29T・C 2.5T で棚卸し §6 の線「幕1が平均3T台なら火花×2→火花×1＋火加減」を2本が下回った): 火加減は初期専用に
+  'red_mode_firecontrol',
   'white_shield_strike', // 灯盾の一撃 (白の打ち据え枠=殴りながら守る)
   'white_light_bolt', // 灯の矢 (白の派生=灯の教材=放出。2026-09-21 ユーザー裁定「継ぎ火を消して灯の矢に」: 継ぎ火は人形0体では死に札で灯の出口が無かった〔初期デッキだけで幕1 9.1T・緑 6.1T〕。継ぎ火は報酬プールのコモンへ)
   // 2026-09-20 白の初期デッキを緑と同じ形に: 灯の岐路 (モード=決断の教材) を追加し、
