@@ -1216,6 +1216,12 @@ namespace DeckRogue.Engine
                 // 庇う: 発生を必ずログに残す
                 s = Events.Emit(s, new GameEvent_GuardianRedirected { FromIndex = redirectedFrom.Value, ToIndex = enemyIndex });
             }
+            // チェイン (赤 2026-10-10。MTG の続唱): 本体の効果より先に、山札の上から安い札をめくってコストを払わずにプレイする。
+            // 連火の炉心 (firstCardCascade): このターン最初のプレイ (直接プレイも数えた playsThisTurn が0) ならチェインが1回つく。
+            // 炉心を置いたそのプレイ自身には付かない (プレイ前の場 = 引数の state で判定 = MTG の Maelstrom Nexus と同じ)。TS と同形
+            int cascadeTimes =
+                (card.Def.Cascade ?? 0) + (((state.Player.PlaysThisTurn ?? 0) == 0 && Effects.HasStaticEffect(state, "firstCardCascade")) ? 1 : 0);
+            for (int k = 0; k < cascadeTimes; k++) s = ResolveCascade(s, card.Def, enemyIndex);
             if (isPermanent)
             {
                 // 置物登場の誘発 (白の接着剤。自身の登場にも誘発) + 点灯の定義 (人形なら灯+1・すぐに1回動く。白共通ルール 2026-09-20)
@@ -1462,44 +1468,141 @@ namespace DeckRogue.Engine
                 if (chosen != null)
                 {
                     s = Events.Emit(s, new GameEvent_CardPlayedFromExhaust { CardId = chosen.Def.Id });
-                    if (chosen.Def.Type == CardTypes.Permanent)
-                    {
-                        s = s with
-                        {
-                            Player = s.Player with
-                            {
-                                ExhaustPile = s.Player.ExhaustPile.Where(c => c.Uid != retrieveUid).ToList(),
-                                Permanents = Append(s.Player.Permanents, chosen),
-                            },
-                        };
-                        s = Effects.EnterPermanent(s, chosen.Uid, enemyIndex); // 登場誘発 + 点灯の定義 (白共通ルール 2026-09-20)
-                    }
-                    s = Events.Emit(s, new GameEvent_CardPlayed { CardId = chosen.Def.Id });
-                    s = Effects.ResolveOnPlayEffects(s, chosen, enemyIndex);
-                    if (chosen.Def.Effects.Where(e => e.Trigger == "onPlay").Any(Effects.IsDamageEffect))
-                    {
-                        s = Effects.RunPermanentTriggers(s, "onAttackPlayed", enemyIndex);
-                        s = FireSelfSetTriggers(s, "onAttackPlayed", enemyIndex);
-                    }
-                    if (chosen.Def.Type == CardTypes.Spell)
-                    {
-                        s = FireSelfSetTriggers(s, "onSpellPlayed", enemyIndex);
-                        s = Effects.RunPermanentTriggers(s, "onSpellPlayed", enemyIndex);
-                    }
-                    // 直接プレイも「プレイ」として詠唱数に数える
-                    s = s with
-                    {
-                        Player = s.Player with
-                        {
-                            CardsPlayedThisTurn = s.Player.CardsPlayedThisTurn + 1,
-                            CardsPlayedTotal = s.Player.CardsPlayedTotal + 1,
-                            PlaysThisTurn = (s.Player.PlaysThisTurn ?? 0) + 1,
-                        },
-                    };
-                    s = TickCardTimers(s);
+                    s = PlayCardDirect(s, chosen, enemyIndex, "stay");
                 }
             }
             return CheckCombatEnd(s);
+        }
+
+        /// <summary>
+        /// 直接プレイ (死者再生 2026-08-31・チェイン 2026-10-10 で共用): コストを払わず、プレイの誘発と詠唱数を数えて効果を解決する。
+        /// placement="stay" = 札は今いる場所に残る (死者再生: 消滅置き場に残る＝墓地燃料は減らない。置物だけは場に出る)。
+        /// placement="land" = 札は山札から来た (チェイン): 置物は場に出、それ以外は解決後に捨て札 (消滅札は消滅置き場) へ置く。
+        /// 割引は消費しない・反復は掛からない・拘束は数えない (効果由来。2026-09-02 の裁定)。
+        /// 2026-10-10: 死者再生も「カードをプレイするたび」(onCardPlayed) と攻撃数 (attacksPlayedThisTurn) を数える = 亡骸プレイ・通常のプレイと同じ扱いに揃えた。TS playCardDirect と同形
+        /// </summary>
+        public static GameState PlayCardDirect(GameState state, CardInstance card, int enemyIndex, string placement)
+        {
+            var s = state;
+            bool isPermanent = card.Def.Type == CardTypes.Permanent;
+            if (isPermanent)
+            {
+                s = s with
+                {
+                    Player = s.Player with
+                    {
+                        ExhaustPile = placement == "stay" ? s.Player.ExhaustPile.Where(c => c.Uid != card.Uid).ToList() : s.Player.ExhaustPile,
+                        Permanents = Append(s.Player.Permanents, card),
+                    },
+                };
+            }
+            s = Events.Emit(s, new GameEvent_CardPlayed { CardId = card.Def.Id });
+            // チェインの連鎖 (MTG): 当たった札がチェインを持てば、その効果より先にもう一度めくる (コストが下がるので必ず止まる)
+            for (int k = 0; k < (card.Def.Cascade ?? 0); k++) s = ResolveCascade(s, card.Def, enemyIndex);
+            if (isPermanent) s = Effects.EnterPermanent(s, card.Uid, enemyIndex); // 登場誘発 + 点灯の定義 (白共通ルール 2026-09-20)
+            s = Effects.ResolveOnPlayEffects(s, card, enemyIndex);
+            if (card.Def.Effects.Where(e => e.Trigger == "onPlay").Any(Effects.IsDamageEffect))
+            {
+                s = s with { Player = s.Player with { AttacksPlayedThisTurn = (s.Player.AttacksPlayedThisTurn ?? 0) + 1 } };
+                s = Effects.RunPermanentTriggers(s, "onAttackPlayed", enemyIndex);
+                s = FireSelfSetTriggers(s, "onAttackPlayed", enemyIndex);
+            }
+            s = Effects.RunPermanentTriggers(s, "onCardPlayed", enemyIndex);
+            if (card.Def.Type == CardTypes.Spell)
+            {
+                s = FireSelfSetTriggers(s, "onSpellPlayed", enemyIndex);
+                s = Effects.RunPermanentTriggers(s, "onSpellPlayed", enemyIndex);
+            }
+            // 直接プレイも「プレイ」として詠唱数に数える (数えないのはそのカード自身のみ、の既存則)
+            s = s with
+            {
+                Player = s.Player with
+                {
+                    CardsPlayedThisTurn = s.Player.CardsPlayedThisTurn + 1,
+                    CardsPlayedTotal = s.Player.CardsPlayedTotal + 1,
+                    PlaysThisTurn = (s.Player.PlaysThisTurn ?? 0) + 1,
+                },
+            };
+            s = TickCardTimers(s);
+            if (placement == "land" && !isPermanent)
+            {
+                if (card.Def.Exhaust == true)
+                {
+                    s = s with { Player = s.Player with { ExhaustPile = Append(s.Player.ExhaustPile, card) } };
+                    s = Events.Emit(s, new GameEvent_CardExhausted { CardId = card.Def.Id });
+                    s = Effects.FireExhaustTriggers(s, 1, enemyIndex);
+                }
+                else
+                {
+                    s = s with { Player = s.Player with { DiscardPile = Append(s.Player.DiscardPile, card) } };
+                }
+            }
+            return s;
+        }
+
+        /// <summary>チェインの当たりになれる札か: 親よりコストの低い呪文・物理・置物。選択式・X・仕込み札・プレイできない札 (負傷・火傷・烙印) は飛ばす。TS cascadeEligible と同形</summary>
+        private static bool CascadeEligible(CardInstance card, int parentCost)
+        {
+            var d = card.Def;
+            if (d.Type == CardTypes.Reaction || (d.Modes?.Count ?? 0) > 0 || d.XCost == true) return false;
+            if (d.Cost >= parentCost) return false;
+            return d.Type == CardTypes.Permanent || (d.Cascade ?? 0) > 0 || d.Effects.Any(e => e.Trigger == "onPlay");
+        }
+
+        /// <summary>
+        /// チェイン (赤の第3の軸 2026-10-10。MTG の続唱。`docs/red-cascade-design-2026-10-10.md` §1): 山札の上から parent よりコストの低い札が
+        /// 出るまでめくり、その札をコストを払わずにプレイする (対象は親と同じ enemyIndex)。外れた札は山札の底へ (順はシードRNG)。
+        /// 山札が尽きたら捨て札を切り直して続ける (通常のドローと同じ・onShuffle も鳴る)。当たりが無ければ空振り (何も起きない)。
+        /// 当たり1枚ごとに cascadesThisCombat (火の渦が参照) を数え、onCascade (連なる火花・火継ぎの炉) を鳴らす。TS resolveCascade と同形 (RNG の消費順も同じ)
+        /// </summary>
+        public static GameState ResolveCascade(GameState state, CardDef parent, int enemyIndex)
+        {
+            var s = state;
+            var drawPile = new List<CardInstance>(s.Player.DrawPile);
+            var discardPile = new List<CardInstance>(s.Player.DiscardPile);
+            var rng = s.Rng;
+            var revealed = new List<CardInstance>();
+            CardInstance? hit = null;
+            int shuffles = 0;
+            for (; ; )
+            {
+                if (drawPile.Count == 0)
+                {
+                    if (discardPile.Count == 0) break;
+                    var (reshuffled, nextRng) = Rng.Shuffle(rng, discardPile);
+                    drawPile = new List<CardInstance>(reshuffled);
+                    discardPile = new List<CardInstance>();
+                    rng = nextRng;
+                    shuffles++;
+                }
+                var c = drawPile[0];
+                drawPile.RemoveAt(0);
+                if (CascadeEligible(c, parent.Cost))
+                {
+                    hit = c;
+                    break;
+                }
+                revealed.Add(c);
+            }
+            IReadOnlyList<CardInstance> bottom = revealed;
+            if (revealed.Count > 1)
+            {
+                var (mixed, nextRng) = Rng.Shuffle(rng, revealed);
+                bottom = mixed;
+                rng = nextRng;
+            }
+            s = s with { Rng = rng, Player = s.Player with { DrawPile = Concat(drawPile, bottom), DiscardPile = discardPile } };
+            for (int k = 0; k < shuffles; k++)
+            {
+                s = Events.Emit(s, new GameEvent_DeckShuffled());
+                s = Effects.RunPermanentTriggers(s, "onShuffle", FirstAliveOrZero(s));
+            }
+            s = Events.Emit(s, new GameEvent_Cascaded { CardId = parent.Id, HitId = hit?.Def.Id, Revealed = revealed.Select(c => c.Def.Id).ToList() });
+            if (hit == null) return s;
+            s = s with { Player = s.Player with { CascadesThisCombat = (s.Player.CascadesThisCombat ?? 0) + 1 } };
+            s = PlayCardDirect(s, hit, enemyIndex, "land");
+            s = Effects.RunPermanentTriggers(s, "onCascade", enemyIndex);
+            return s;
         }
 
         /// <summary>
@@ -1663,21 +1766,39 @@ namespace DeckRogue.Engine
             {
                 var impulse = new HashSet<string>(s.Player.ImpulseUids);
                 var expired = s.Player.Hand.Where(c => impulse.Contains(c.Uid)).ToList();
+                // 燠の守り (赤 R 置物 2026-10-10): 失効する札のうちコストが最も高い1枚 (同じなら手札の左) を手札に残す。
+                // 残した札は次の全捨て (敵フェーズの後) も1回だけ生き残る (keptImpulse) = 次の自ターンまで保持。TS と同形 (reduce の `>` = 同点は先の札)
+                CardInstance? kept = null;
+                if (expired.Count > 0 && Effects.HasStaticEffect(s, "keepImpulseOne"))
+                {
+                    var best = expired[0];
+                    foreach (var c in expired) if (c.Def.Cost > best.Def.Cost) best = c;
+                    kept = best;
+                    var keptUidLocal = kept.Uid;
+                    expired = expired.Where(c => c.Uid != keptUidLocal).ToList();
+                }
+                string? keptUid = kept?.Uid;
                 s = s with
                 {
                     Player = s.Player with
                     {
-                        Hand = s.Player.Hand.Where(c => !impulse.Contains(c.Uid)).ToList(),
+                        Hand = s.Player.Hand
+                            .Where(c => !impulse.Contains(c.Uid) || c.Uid == keptUid)
+                            .Select(c => c.Uid == keptUid ? c with { KeptImpulse = true } : c)
+                            .ToList(),
                         ExhaustPile = Concat(s.Player.ExhaustPile, expired),
                         ImpulseUids = new List<string>(),
                     },
                 };
+                if (kept != null) s = Events.Emit(s, new GameEvent_ImpulseKept { CardId = kept.Def.Id });
                 foreach (var card in expired)
                 {
                     s = Events.Emit(s, new GameEvent_CardExhausted { CardId = card.Def.Id });
                 }
-                // 衝動失効も消滅 = 亡者の合唱が誘発する
                 int aliveIdx = FirstAliveOrZero(s);
+                // 燃え残り・灰の衣 (赤 2026-10-10): 失効1枚ごとに鳴る (失効は衝動の出来事なので、消滅の誘発より先)
+                for (int i = 0; i < expired.Count; i++) s = Effects.RunPermanentTriggers(s, "onImpulseExpired", aliveIdx);
+                // 衝動失効も消滅 = 亡者の合唱が誘発する
                 s = Effects.FireExhaustTriggers(s, expired.Count, aliveIdx);
                 // 亡骸効果: 衝動で引いた亡骸札の失効もプレイ以外の消滅なので発火する
                 s = Effects.FireNecroEffects(s, expired, aliveIdx);
@@ -1692,7 +1813,8 @@ namespace DeckRogue.Engine
                 var enemy = s.Enemies[i];
                 if (enemy.Hp <= 0 || enemy.Burn <= 0) continue;
                 int amount = enemy.Burn;
-                int decay = 1 + (Content.GetEnemyDef(enemy.EnemyId).BurnResist ?? 0);
+                // 燻り (赤 R 置物 2026-10-10): この置物がある間、延焼は減らない (延焼耐性の追加の減りも止める)。TS と同形
+                int decay = Effects.BurnNoDecay(s) ? 0 : 1 + (Content.GetEnemyDef(enemy.EnemyId).BurnResist ?? 0);
                 s = WithEnemy(s, i, e => e with
                 {
                     Hp = e.Hp - amount,
@@ -2509,7 +2631,9 @@ namespace DeckRogue.Engine
             // ルーンの角錐 (retainHand 2026-09-12): 手札を捨てない。自ターンを過ごした火傷だけは消える (1回きりの則は不変)
             bool retainAll = s.RetainHand == true || s.RetainHandThisTurn == true;   // 挟み紙 (ギア) はこのターンだけ
             bool Keeps(CardInstance c) =>
-                (c.Def.Id == Content.SCALD_DEF.Id && c.ScaldFresh == true) || c.Def.Retain == true || (retainAll && c.Def.Id != Content.SCALD_DEF.Id)
+                (c.Def.Id == Content.SCALD_DEF.Id && c.ScaldFresh == true) || c.Def.Retain == true
+                || c.KeptImpulse == true // 燠の守りで失効を免れた衝動の札 (赤 2026-10-10): この全捨てを1回だけ生き残る
+                || (retainAll && c.Def.Id != Content.SCALD_DEF.Id)
                 || !handBeforeExpire.Contains(c.Uid) // 回収の紐で期限切れで手札に戻った罠 (2026-09-13)
                 || (s.RetainUids?.Contains(c.Uid) ?? false); // 満ち潮の書庫で残すと選んだ札 (2026-09-25)
             int retainedDown = s.Player.Permanents.Sum(p => p.Def.Effects.Where(e => e.Effect == "retainedCostDown").Sum(e => e.Amount ?? 0));
@@ -2521,6 +2645,8 @@ namespace DeckRogue.Engine
                     Hand = oldHand
                         .Where(Keeps)
                         .Select(c => c.ScaldFresh == true ? c with { ScaldFresh = false } : c)
+                        // 燠の守りの旗はこの全捨てで下ろす (1回きり。TS は keptImpulse のキーを落とす = null と同じ書き出し)
+                        .Select(c => c.KeptImpulse == true ? c with { KeptImpulse = null } : c)
                         // 潮溜まり (青 R 置物 2026-09-25。本家 Establishment): 敵ターンの後も手札に残った札はコスト-N (状態異常は除く)。TS と同形
                         .Select(c => retainedDown > 0 && !c.Def.Id.StartsWith("status_", StringComparison.Ordinal) ? c with { RetainDiscount = (c.RetainDiscount ?? 0) + retainedDown } : c)
                         .ToList(),

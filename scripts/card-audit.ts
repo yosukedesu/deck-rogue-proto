@@ -55,8 +55,20 @@ const VP_PER: Record<string, number> = {
   dealDamagePerHeal: 1.0 * 4, // 回復回数の典型4 (ドレイン+とばり/亡骸回復)
   recycleExhaust: 8, // 還す枚数の典型8 × amount (燃料全放棄の対価は査定外 = 実効はこれより辛い)
   dealDamagePerBlock: 1.0 * 8, dealDamagePerPermanent: 1.0 * 3, gainBlockPerPermanent: 1.0 * 3, // 白の参照典型 (自前ブロック8・置物3体)
+  // 赤の3本柱 (2026-10-10): チェインの回数の典型3 (火の渦)・対象の延焼の典型6 (灰かぶり・火の舌)
+  dealDamagePerCascade: 1.0 * 3, gainBlockPerBurn: 1.0 * 6, dealDamagePerBurn: 1.0 * 6,
 }
-const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
+const VP_FLAT: Record<string, number> = {
+  negate: 12, shatterBlock: 4, shatterBlockConvert: 10,
+  // 赤の3本柱 (2026-10-10 docs/red-cascade-design-2026-10-10.md §2・§4): 倍加は典型延焼6→+6 (9VP)。常在の印は置物×3 が掛かる前の1ターンぶん
+  // 常在の印は onPlay に書くので置物の ×3 が掛からない = 戦闘ぶん (3ターン) の値をここに置く
+  doubleBurn: 9, firstCardCascade: 15, burnNoDecay: 12, keepImpulseOne: 9,
+}
+/**
+ * チェイン (赤 2026-10-10) の価値 = 当たる札の平均の定価×0.8 (何が出るか・いつ出るかを選べない分)。
+ * 1E は 0E の攻撃 (火花4ダメ) にしか当たらず、0E を積まないデッキでは空振りするので低く
+ */
+const CASCADE_VP: Record<number, number> = { 1: 3, 2: 6.5, 3: 9, 4: 11, 5: 12 }
 const ALLOW = (cost: number) => 6 * cost + 2
 /** 条件付き効果の期待値係数。猛り火は実測で「戦闘の55%程度で成立」なので 0.6 で数える */
 const COND = (e: DeclarativeEffect) => (e.condition ? 0.6 : 1)
@@ -104,7 +116,9 @@ export function assess(def: CardDef): { vp: number; pct: number; computable: boo
   // 捨て1枚 = 手札の機会費用 −1.5VP。消滅1枚 = −2VP (この戦闘で二度と使えない) だが、
   // 墓地燃料 (刻・亡骸・per-Exhaust の的) として +0.6VP 戻る = 正味 −1.4VP
   // 灯コスト (白 2026-09-20): 灯1 = 1.2VP (addLight と同じ物差し)。号令・灯コストの人形 (癒し・鐘・大鐘・灯篭・篝火) の追加コスト
-  const vp = vpRaw - (def.discardCost ?? 0) * 1.5 - (def.exhaustCost ?? 0) * 1.4 - (def.lightCost ?? 0) * 1.2
+  const vp =
+    vpRaw - (def.discardCost ?? 0) * 1.5 - (def.exhaustCost ?? 0) * 1.4 - (def.lightCost ?? 0) * 1.2 +
+    (def.cascade ?? 0) * (CASCADE_VP[Math.min(5, def.cost)] ?? 0) // チェイン (赤 2026-10-10)
   // 猛り火の軽減は「そのぶん安く撃てる」= 実効コストが下がる。期待値ぶんだけ帯を絞る
   const cost = (def.xCost === true ? 3 : def.cost) - (def.blazeDiscount ?? 0) * 0.6
   return { vp, pct: (vp / ALLOW(Math.max(0.5, cost))) * 100, computable }

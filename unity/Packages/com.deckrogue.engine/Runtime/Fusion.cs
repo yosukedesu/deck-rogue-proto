@@ -854,6 +854,8 @@ namespace DeckRogue.Engine
                 // 保持の触媒 / 反復の触媒 (2026-09-12): 結果に保持・反復内蔵が乗る。触媒の印そのものは結果に残らない
                 Retain = ((a.Def.Retain == true || b.Def.Retain == true || catalysts.Contains("retain")) && resultType != "permanent") ? true : (bool?)null,
                 Echo = ((a.Def.Echo == true || b.Def.Echo == true || catalysts.Contains("echo")) && resultType != "reaction") ? true : (bool?)null,
+                // チェイン (赤 2026-10-10): 反復と同じく片方が持てば結果も持つ (回数は多い方)。コスト=合計−1 なので当たりは広がる。TS と同形
+                Cascade = (((a.Def.Cascade ?? 0) > 0 || (b.Def.Cascade ?? 0) > 0) && resultType != "reaction") ? Math.Max(a.Def.Cascade ?? 0, b.Def.Cascade ?? 0) : (int?)null,
                 DiscardCost = ((a.Def.DiscardCost ?? 0) != 0 || (b.Def.DiscardCost ?? 0) != 0)
                     ? (a.Def.DiscardCost ?? 0) + (b.Def.DiscardCost ?? 0)
                     : (int?)null,

@@ -137,6 +137,7 @@ const MULT_EFFECTS = new Set([
   'dealDamagePerLight', // 灯篭の人形 (灯2につきN)。灯コスト持ちなので実際は light ティア (灯-1) が先に取る
   'dealDamagePerScry', 'dealDamagePerTrapFired', // 読み切り・仕掛けの反響 (青 2026-09-25): 参照倍率+1
   'dealDamagePerSpark', 'gainBlockPerSpark', 'gainBlockPerLight', 'drawCardsPerLight', 'dischargeLightWeaken', // 火種の嵐・火守りの盾 (2026-09-24)・灯の壁・灯の手帳・眩む閃光 (2026-09-20 夜): 参照倍率+1
+  'dealDamagePerCascade', 'gainBlockPerBurn', 'dealDamagePerBurn', // 火の渦・灰かぶり・火の舌 (赤 2026-10-10): 参照倍率+1
 ])
 const UNIT_EFFECTS_V2 = new Set([
   'scry', 'extendTrapLife', // 占術・潮待ち (青 2026-09-25): 枚数・延長ターン+1
@@ -149,15 +150,16 @@ const AMOUNT_V2 = new Set([...UPGRADABLE_EFFECTS, 'growSelf'])
 const hasMult = (e: DeclarativeEffect) =>
   (MULT_EFFECTS.has(e.effect) && e.amount !== undefined) || e.growthMultiplier !== undefined || e.momentumMultiplier !== undefined
 const hasThreshold = (e: DeclarativeEffect) => e.condition?.minGrowth !== undefined || e.condition?.minMomentum !== undefined || e.condition?.minLight !== undefined
-/** 本家形の鍛えを使う色 (緑 2026-09-04 先行 → 白 2026-09-18 仕上げ → 青 2026-09-25 解凍。赤・黒は解凍時に足す)。工房産 (fused_*) も色で判定 */
-const V2_COLORS = new Set(['green', 'white', 'blue'])
+/** 本家形の鍛えを使う色 (緑 2026-09-04 先行 → 白 2026-09-18 仕上げ → 青 2026-09-25 解凍 → 赤 2026-10-10 解凍。黒は解凍時に足す)。工房産 (fused_*) も色で判定 */
+const V2_COLORS = new Set(['green', 'white', 'blue', 'red'])
 /**
  * 本家形の色でも旧3段で鍛える札 (2026-09-25 青の解凍): 本家形の段に数字が乗らない札。
  * 氷の槍 (2E・氷壁×1) は本家形だとコスト-1 で 1E になるが、2026-08-31 に「消費しない参照×毎ターン補充の連射砲」として
  * 1E 化を封じた札 = 旧3段の「氷壁4を足してから撃つ」のまま。魔力の火花 (0E・次のカード-2・消滅) は本家形だと鍛えられない
  * (割引は本家形の単位に無い) = 旧3段の「次のカード-3」のまま
  */
-const V2_LEGACY = new Set(['blue_ice_lance', 'blue_spark'])
+// 2026-10-10 赤の解凍 (ユーザー裁定「2枚とも例外」): 火だるま (2E 置物・被攻撃後 延焼2＋被弾×1) は査定193%の上に本家形だと被弾×2 が乗る = 旧3段の「延焼3」のまま
+const V2_LEGACY = new Set(['blue_ice_lance', 'blue_spark', 'red_perm_pyre'])
 /**
  * 本家形の例外 = 同軸のおまけ (BONUS_UPGRADES) で鍛える (2026-09-25 Opus 青C): 反復はコスト-1で0Eになり「0Eで次の呪文を2回」が
  * 全体の刈り取り (巻き波+ 詠唱16×4) を丸ごと倍にした＝1ターン128。1E のまま反復1＋1ドローに
@@ -174,6 +176,8 @@ const V2_COST_ONLY = new Set([
   // 2026-09-25 青の解凍 (ユーザー裁定「本家形＋例外4枚」): 何でも消せる打ち消しの魂は「値段」(本家形だと霊気+1 だけ)。
   // 潮汐の書見台 (本家形だと毎T 2ドロー=引く枚数 6→8)・懐深き外套 (毎T 手札×2の氷壁が消えずに積もる) は軽くなる側で伸ばす
   'blue_counterspell', 'blue_spell_steal', 'blue_perm_tidal_lectern', 'blue_perm_deep_cloak', // 凍る静寂は 2026-09-25 に撤去 (3本柱)
+  // 2026-10-10 赤の解凍 (ユーザー裁定「2枚とも例外」): 焔の目録 (2E 置物・衝動ごと勢い+2) は本家形だと勢い+4 = 8/30 に 門番T1 472ダメで是正した値に戻る。1E のまま
+  'red_perm_ledger',
 ])
 /**
  * 本家形の例外 = 打ち消しの条件を広げる (2026-09-25 青の解凍・ユーザー裁定): 「実値N以下/以上なら打ち消す」札は消せる範囲が個性の数字。

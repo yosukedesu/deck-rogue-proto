@@ -171,6 +171,7 @@ namespace DeckRogue.Engine
             "dealDamagePerLight", // 灯篭の人形 (灯2につきN)。灯コスト持ちなので実際は Light ティア (灯-1) が先に取る
             "dealDamagePerSpark", "gainBlockPerSpark", "gainBlockPerLight", "drawCardsPerLight", "dischargeLightWeaken", // 2026-09-20 夜・火守りの盾 (2026-09-24)
             "dealDamagePerScry", "dealDamagePerTrapFired", // 読み切り・仕掛けの反響 (青 2026-09-25): 参照倍率+1
+            "dealDamagePerCascade", "gainBlockPerBurn", "dealDamagePerBurn", // 火の渦・灰かぶり・火の舌 (赤 2026-10-10): 参照倍率+1
         };
 
         private static readonly HashSet<string> UNIT_EFFECTS_V2 = new HashSet<string>
@@ -197,10 +198,13 @@ namespace DeckRogue.Engine
         private static bool HasThreshold(DeclarativeEffect e) =>
             e.Condition?.MinGrowth != null || e.Condition?.MinMomentum != null || e.Condition?.MinLight != null;
 
-        /// <summary>本家形の鍛えを使う色 (緑 2026-09-04 先行 → 白 2026-09-18 仕上げ → 青 2026-09-25 解凍)。工房産 (fused_*) も色で判定</summary>
-        private static readonly HashSet<string> V2_COLORS = new HashSet<string> { "green", "white", "blue" };
-        /// <summary>本家形の色でも旧3段で鍛える札 (2026-09-25 青の解凍): 氷の槍 (1E 化を封じた札)・魔力の火花 (本家形だと鍛えられない)。TS と同形</summary>
-        private static readonly HashSet<string> V2_LEGACY = new HashSet<string> { "blue_ice_lance", "blue_spark" };
+        /// <summary>本家形の鍛えを使う色 (緑 2026-09-04 先行 → 白 2026-09-18 仕上げ → 青 2026-09-25 解凍 → 赤 2026-10-10 解凍。黒は解凍時に足す)。工房産 (fused_*) も色で判定</summary>
+        private static readonly HashSet<string> V2_COLORS = new HashSet<string> { "green", "white", "blue", "red" };
+        /// <summary>
+        /// 本家形の色でも旧3段で鍛える札 (2026-09-25 青の解凍): 氷の槍 (1E 化を封じた札)・魔力の火花 (本家形だと鍛えられない)。
+        /// 2026-10-10 赤の解凍 (ユーザー裁定「2枚とも例外」): 火だるま (2E 置物・被攻撃後 延焼2＋被弾×1) は査定193%の上に本家形だと被弾×2 が乗る = 旧3段の「延焼3」のまま。TS と同形
+        /// </summary>
+        private static readonly HashSet<string> V2_LEGACY = new HashSet<string> { "blue_ice_lance", "blue_spark", "red_perm_pyre" };
         /// <summary>本家形の色でも「おまけ」で鍛える札 (2026-09-25 Opus 青C): 反復+ は 0E にせず 1ドローを足す。TS V2_BONUS と同形</summary>
         private static readonly HashSet<string> V2_BONUS = new HashSet<string> { "blue_echo" };
         private static bool IsGreenRule(CardDef def) =>
@@ -211,6 +215,8 @@ namespace DeckRogue.Engine
             "white_perm_band", "white_perm_apostle", // 鏡の灯籠は 2026-09-24 に撤去
             // 2026-09-25 青の解凍: 何でも消せる打ち消しは値段・書見台と外套は軽くなる側で伸ばす (TS upgrade.ts と同形)
             "blue_counterspell", "blue_spell_steal", "blue_perm_tidal_lectern", "blue_perm_deep_cloak", // 凍る静寂は 2026-09-25 に撤去 (3本柱)
+            // 2026-10-10 赤の解凍 (ユーザー裁定「2枚とも例外」): 焔の目録 (2E 置物・衝動ごと勢い+2) は本家形だと勢い+4 = 8/30 に 門番T1 472ダメで是正した値に戻る。1E のまま
+            "red_perm_ledger",
         };
         /// <summary>本家形の例外 = 打ち消しの条件を広げる (2026-09-25): マナ漏出 15以下→20以下・逆巻き 12以上→8以上</summary>
         private static readonly Dictionary<string, (int Max, int Min)> V2_RANGE = new Dictionary<string, (int Max, int Min)>

@@ -169,6 +169,11 @@ export function logLine(e: GameEvent): LogLine | null {
       return { text: e.enemyIndex === e.targetIndex ? `混乱した敵は自分自身に${e.amount}ダメージ！` : `仲間割れ！ 混乱した敵が味方に${e.amount}ダメージ`, cls: 'log-good' }
     case 'BlockShattered': return { text: `敵のブロック${e.amount}を粉砕！`, cls: 'log-good' }
     case 'ImpulseDrawn': return { text: `衝動${e.count}枚（このターン限り）`, cls: 'log-line' }
+    case 'Cascaded':
+      return e.hitId !== undefined
+        ? { text: `チェイン: ${cardName(e.cardId)} → ${cardName(e.hitId)}をコストを払わずにプレイ${e.revealed.length > 0 ? `（${e.revealed.length}枚は山札の底へ）` : ''}`, cls: 'log-good' }
+        : { text: `チェイン: ${cardName(e.cardId)} → 当たりなし${e.revealed.length > 0 ? `（${e.revealed.length}枚は山札の底へ）` : ''}`, cls: 'log-line' }
+    case 'ImpulseKept': return { text: `燠の守り: ${cardName(e.cardId)}は失効せず手札に残った`, cls: 'log-line' }
     case 'HpLost': return { text: `自傷でHP-${e.amount}`, cls: 'log-bad' }
     case 'EnergyGained': return { text: `エナジー+${e.amount}（このターン）`, cls: 'log-line' }
     case 'MomentumAdded': return { text: `勢い+${e.amount}`, cls: 'log-good' }

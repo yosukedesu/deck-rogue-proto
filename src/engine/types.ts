@@ -146,6 +146,8 @@ export interface PlayerState extends CombatantState {
   readonly scriedThisCombat?: number
   /** 占術 (青 2026-09-25 Opus B の処方): この戦闘で占術で捨てた枚数の累計 (読み切りが参照) */
   readonly scryDiscardedThisCombat?: number
+  /** チェイン (赤 2026-10-10): この戦闘でチェインが当たった (札がプレイされた) 回数。火の渦が参照。空振りは数えない */
+  readonly cascadesThisCombat?: number
   /** 罠使い (青 2026-09-25): この戦闘で罠 (reaction) が鳴った回数 (仕掛けの反響が参照) */
   readonly trapsFiredThisCombat?: number
   /** 直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット) */
@@ -657,6 +659,8 @@ export type GameEvent =
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
   | { readonly type: 'ImpulseDrawn'; readonly count: number } // 衝動 (このターン限りの手札)
+  | { readonly type: 'Cascaded'; readonly cardId: string; readonly hitId?: string; readonly revealed: readonly string[] } // チェイン (赤 2026-10-10): 親の札・当たった札 (無ければ空振り)・底へ送った札
+  | { readonly type: 'ImpulseKept'; readonly cardId: string } // 燠の守り (赤 2026-10-10): 失効を免れて手札に残った衝動の札
   | { readonly type: 'HpLost'; readonly amount: number } // 自傷
   | { readonly type: 'StrengthGained'; readonly enemyIndex: number; readonly amount: number; readonly reason?: 'enrage-cards' | 'enrage-damage' | 'enrage-phase' | 'mourn' }
   | { readonly type: 'EnergyGained'; readonly amount: number } // 一時マナ
@@ -802,6 +806,8 @@ export interface DeclarativeEffect {
     | 'onLightGained' // 灯を得るたび (白の接着剤 2026-09-20: 灯の弩。addLight/doubleLight/回復/パッシブの加算のたび。再入は1段で止める = onGrowthGained と同型)
     | 'onLightDischarged' // 灯を放出するたび (白 2026-09-20 夜: 灯の火皿。dischargeLight/Rally/Weaken の後に1回)
     | 'onSparkPlayed' // 火種 (sparkToken) をプレイするたび (白 2026-09-20 夜: 火の粉・灯の継ぎ手。本家 Forgotten Soul 型)
+    | 'onCascade' // チェインで札がプレイされるたび (赤 2026-10-10: 連なる火花・火継ぎの炉。当たり1枚ごと。空振りでは鳴らない)
+    | 'onImpulseExpired' // 衝動の札が失効するたび (赤 2026-10-10: 燃え残り・灰の衣。自ターン終了時の失効1枚ごと)
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
   /**
@@ -854,6 +860,14 @@ export interface DeclarativeEffect {
     | 'dealDamagePerTrapFired' // 仕掛けの反響 (罠使い): この戦闘で罠 (reaction) が鳴った回数×amount のダメージ
     | 'extendTrapLife' // 潮待ち (罠使い): 仕込んでいる罠すべての期限を amount ターン延ばす (期限なしの罠は不変)
     | 'trapsNeverExpire' // 深き仕掛け (罠使い R 置物): この置物がある間、罠は期限切れにならない (常在の印)
+    // --- 赤の3本柱 (2026-10-10 docs/red-cascade-design-2026-10-10.md: バーン／刹那／チェイン) ---
+    | 'dealDamagePerCascade' // 火の渦 (チェインの刈り取り): この戦闘でチェインが当たった回数×amount のダメージ
+    | 'firstCardCascade' // 連火の炉心 (チェイン R 置物): この置物がある間、毎ターン最初にプレイする札にチェインが1回つく (常在の印)
+    | 'doubleBurn' // 火勢倍し (バーンの倍加・消滅必須): 対象の延焼を2倍にする (本家 Catalyst)
+    | 'gainBlockPerBurn' // 灰かぶり (バーンの刈り取り・消費しない): 対象の延焼×amount のブロック
+    | 'dealDamagePerBurn' // 火の舌 (バーンの刈り取り・消費しない): 対象の延焼×amount のダメージ
+    | 'burnNoDecay' // 燻り (バーン R 置物): この置物がある間、延焼は敵フェーズで減らない (延焼耐性の追加の減りも止める。常在の印)
+    | 'keepImpulseOne' // 燠の守り (刹那 R 置物): 自ターン終了時、失効する衝動の札のうちコストが最も高い1枚を手札に残す (次の自ターンまで保持。常在の印)
     | 'retrieveZeroCostFromDiscard' // 引き潮の帰還 (青 ストーム R 2026-09-25。本家 All for One): 捨て札のコスト0の札 (状態異常を除く) を全て手札に戻す
     | 'drawTypeFromDeck' // 仕掛け師の工房 (青 罠使い R 置物 2026-09-25): 山札の上から見て、cardType の札を amount 枚手札に加える (無ければ何もしない)
     | 'aetherCarryHalf' // 霊気の器 (青 罠使い R 置物 2026-09-25): この置物がある間、霊気を放出しても半分 (切り捨て) が残る (白の残り火の青版・常在の印)
@@ -1206,6 +1220,14 @@ export interface CardDef {
   readonly fusionCatalyst?: 'cheaper' | 'echo' | 'retain' | 'aoe' // aoe=結果の単体ダメージが全体になる (2026-09-12 ユーザー「全体攻撃いいね」。旧・特性伝播をこの札だけに限定して復活)
   /** 反復内蔵 (反復の触媒の結果 2026-09-12): プレイ時効果を2回解決する。置物なら誘発ごとに2回。反復トークンとは加算 (3回) */
   readonly echo?: boolean
+  /**
+   * チェイン (赤の第3の軸 2026-10-10。MTG の続唱。`docs/red-cascade-design-2026-10-10.md`): プレイした時、山札の上から
+   * 「この札よりコストの低い札」が出るまでめくり、その札をコストを払わずにプレイする (対象は親と同じ敵。
+   * 選択式・X・仕込み札・プレイできない札は飛ばして底へ)。めくった残りは山札の底へ (順はシードRNG)。
+   * 山札が尽きたら捨て札を切り直して続け、当たりが無ければ空振り。本体の効果より先に解決する (MTG の順)。
+   * 値は回数 (野火=3・双つ火=2)。当たった札がチェインを持てば続く (コストが下がるので必ず止まる)
+   */
+  readonly cascade?: number
 }
 
 /** デッキ/手札上のカード実体 (同名カード複数を区別する uid 付き) */
@@ -1228,6 +1250,11 @@ export interface CardInstance {
    * 戦闘終了で消える (ラン層のデッキには残らない = インスタンスは戦闘ごとに作り直されるため)
    */
   readonly freeThisCombat?: boolean
+  /**
+   * 燠の守り (赤 2026-10-10): 衝動の失効を免れて手札に残った札。次の全捨て (敵フェーズの後) を1回だけ生き残り、
+   * 次の自ターンの手札に残る (保持と同じ場所で判定し、その全捨てで旗を下ろす)
+   */
+  readonly keptImpulse?: boolean
   /**
    * 育つ札 (growSelf 2026-09-02): この戦闘中にプレイした回数ぶん積み上がった与ダメ加算。
    * プレイ時に dealDamage の量へ注入し、解決後に +growSelf の量を足して捨て札へ置く (Rampage型)

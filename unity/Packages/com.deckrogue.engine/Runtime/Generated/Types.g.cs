@@ -337,6 +337,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>占術 (青 2026-09-25 Opus B の処方): この戦闘で占術で捨てた枚数の累計 (読み切りが参照)</summary>
         [JsonProperty("scryDiscardedThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public int? ScryDiscardedThisCombat { get; init; }
+        /// <summary>飛び火 (赤 2026-10-10): この戦闘で飛び火が当たった (札がプレイされた) 回数。火の渦が参照。空振りは数えない</summary>
+        [JsonProperty("cascadesThisCombat", NullValueHandling = NullValueHandling.Ignore)]
+        public int? CascadesThisCombat { get; init; }
         /// <summary>罠使い (青 2026-09-25): この戦闘で罠 (reaction) が鳴った回数 (仕掛けの反響が参照)</summary>
         [JsonProperty("trapsFiredThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public int? TrapsFiredThisCombat { get; init; }
@@ -448,7 +451,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可)</summary>
         [JsonProperty("armor", NullValueHandling = NullValueHandling.Ignore)]
         public int? Armor { get; init; }
-        /// <summary>ぬめりの残り回数 (def.slippery からコピー。HP に届く当たりのたび1減る)</summary>
+        /// <summary>朧の残り回数 (def.slippery からコピー。HP に届く当たりのたび1減る)</summary>
         [JsonProperty("slippery", NullValueHandling = NullValueHandling.Ignore)]
         public int? Slippery { get; init; }
         /// <summary>技封じ (kind:'seal') で封じている札。この敵が倒れたら手札へ戻る</summary>
@@ -1155,7 +1158,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>因縁 (無形ターン) で1に固定されて消えたぶん</summary>
         [JsonProperty("nemesisCut", NullValueHandling = NullValueHandling.Ignore)]
         public int? NemesisCut { get; init; }
-        /// <summary>ぬめりで1にされて消えたぶん (2026-09-27 月影の大蛞蝓)</summary>
+        /// <summary>朧で1にされて消えたぶん (2026-09-27 朧の大鹿)</summary>
         [JsonProperty("slipperyCut", NullValueHandling = NullValueHandling.Ignore)]
         public int? SlipperyCut { get; init; }
         /// <summary>急所が乗った (×1.5)。演出「ダメージの質の見分け」用 (2026-09-17)</summary>
@@ -1467,6 +1470,28 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_ImpulseDrawn() { Type = TypeTag; }
         [JsonProperty("count")]
         public int Count { get; init; }
+    }
+
+    /// <summary>GameEvent: type="Cascaded"</summary>
+    public sealed record GameEvent_Cascaded : GameEvent
+    {
+        public const string TypeTag = "Cascaded";
+        public GameEvent_Cascaded() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+        [JsonProperty("hitId", NullValueHandling = NullValueHandling.Ignore)]
+        public string? HitId { get; init; }
+        [JsonProperty("revealed")]
+        public IReadOnlyList<string> Revealed { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="ImpulseKept"</summary>
+    public sealed record GameEvent_ImpulseKept : GameEvent
+    {
+        public const string TypeTag = "ImpulseKept";
+        public GameEvent_ImpulseKept() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
     }
 
     /// <summary>GameEvent: type="HpLost"</summary>
@@ -2396,6 +2421,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>反復内蔵 (反復の触媒の結果 2026-09-12): プレイ時効果を2回解決する。置物なら誘発ごとに2回。反復トークンとは加算 (3回)</summary>
         [JsonProperty("echo", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Echo { get; init; }
+        /// <summary>飛び火 (赤の第3の軸 2026-10-10。MTG の続唱。`docs/red-cascade-design-2026-10-10.md`): プレイした時、山札の上から 「この札よりコストの低い札」が出るまでめくり、その札をコストを払わずにプレイする (対象は親と同じ敵。 選択式・X・仕込み札・プレイできない札は飛ばして底へ)。めくった残りは山札の底へ (順はシードRNG)。 山札が尽きたら捨て札を切り直して続け、当たりが無ければ空振り。本体の効果より先に解決する (MTG の順)。 値は回数 (野火=3・双つ火=2)。当たった札が飛び火を持てば続く (コストが下がるので必ず止まる)</summary>
+        [JsonProperty("cascade", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Cascade { get; init; }
     }
 
     /// <summary>デッキ/手札上のカード実体 (同名カード複数を区別する uid 付き)</summary>
@@ -2417,6 +2445,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>屍集めで消滅置き場から戻した札 (2026-08-31 rework)。この戦闘中プレイ・伏せコストが0になる。 Xコスト札は対象外 (Xは支払った量が効果量なので0E化すると意味が壊れる)。 戦闘終了で消える (ラン層のデッキには残らない = インスタンスは戦闘ごとに作り直されるため)</summary>
         [JsonProperty("freeThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public bool? FreeThisCombat { get; init; }
+        /// <summary>燠の守り (赤 2026-10-10): 衝動の失効を免れて手札に残った札。次の全捨て (敵フェーズの後) を1回だけ生き残り、 次の自ターンの手札に残る (保持と同じ場所で判定し、その全捨てで旗を下ろす)</summary>
+        [JsonProperty("keptImpulse", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? KeptImpulse { get; init; }
         /// <summary>育つ札 (growSelf 2026-09-02): この戦闘中にプレイした回数ぶん積み上がった与ダメ加算。 プレイ時に dealDamage の量へ注入し、解決後に +growSelf の量を足して捨て札へ置く (Rampage型)</summary>
         [JsonProperty("growBonus", NullValueHandling = NullValueHandling.Ignore)]
         public int? GrowBonus { get; init; }
@@ -2753,7 +2784,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>装甲 (2026-08-30 n²スケーリングへのワクチン)。**1ヒットで受けるダメージはN以下**に頭打ち。 5色すべてが持つ「線形参照×枚数」の乗算 (勢い×多段・詠唱×0マナ・ブロック変換・自傷高効率・ 成長×X) に対し、カードをナーフせず敵側で受ける構造的な処方。多段デッキには「ヒット数で 押し切れ」、一撃デッキには「上限まで」と別の問いを出す。とげ・延焼耐性と同じく常時表示 (フェアネス)。 延焼 (DoT) はヒットではないので装甲を無視する = バーンが装甲の解答になる</summary>
         [JsonProperty("armor", NullValueHandling = NullValueHandling.Ignore)]
         public int? Armor { get; init; }
-        /// <summary>ぬめり (2026-09-27 月影の大蛞蝓。本家 Vantom の Slippery): HP に届く当たりの最初のN回は HP 損失が1になる (1回ごとに1減る)。札・人形・置物・罠の当たりを全部数える。敵のブロックで全部止まった当たりは数えない。 延焼はヒットではないので素通し (装甲と同じ裁定)。装甲 (大技が届かない) の逆の問い = 小さい当たりで剥がしてから大技</summary>
+        /// <summary>朧 (2026-09-27 朧の大鹿。本家 Vantom の Slippery。当初は月影の大蛞蝓＝ぬめり、同日ユーザー「ナメクジキモい」で鹿に): HP に届く当たりの最初のN回は HP 損失が1になる (1回ごとに1減る)。札・人形・置物・罠の当たりを全部数える。敵のブロックで全部止まった当たりは数えない。 延焼はヒットではないので素通し (装甲と同じ裁定)。装甲 (大技が届かない) の逆の問い = 小さい当たりで霧を晴らしてから大技</summary>
         [JsonProperty("slippery", NullValueHandling = NullValueHandling.Ignore)]
         public int? Slippery { get; init; }
     }

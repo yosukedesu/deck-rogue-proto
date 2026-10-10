@@ -58,6 +58,8 @@ namespace DeckRogue.Game
             { "onLightGained", "灯を得るたび" },
             { "onLightDischarged", "灯を放出するたび" },
             { "onSparkPlayed", "火種を撃つたび" },
+            { "onCascade", "チェインで札がプレイされるたび" }, // 赤 2026-10-10
+            { "onImpulseExpired", "衝動の札が失効するたび" }, // 赤 2026-10-10
             { "onTurnEnd", "ターン終了時" },
             { "onShuffle", "山札を切り直すたび" },
             { "onEnemyDied", "敵を倒すたび" },
@@ -128,6 +130,14 @@ namespace DeckRogue.Game
             { "applyBurn", "延焼+N" },
             { "applyBurnPerDamageTaken", "受けたダメージ×N延焼" },
             { "dischargeBurn", "爆熱(延焼×Nダメージ・全消費)" },
+            // 赤の3本柱 (2026-10-10 docs/red-cascade-design-2026-10-10.md)
+            { "dealDamagePerCascade", "この戦闘でチェインが当たった回数×Nダメージ" },
+            { "doubleBurn", "対象の延焼を2倍にする" },
+            { "gainBlockPerBurn", "対象の延焼×Nブロック(延焼は失わない)" },
+            { "dealDamagePerBurn", "対象の延焼×Nダメージ(延焼は失わない)" },
+            { "firstCardCascade", "この置物がある間、毎ターン最初にプレイする札にチェインがつく" },
+            { "burnNoDecay", "この置物がある間、延焼は敵のターンで減らない" },
+            { "keepImpulseOne", "この置物がある間、ターン終了時に失効する衝動の札のうちコストが最も高い1枚を手札に残す(次のターンまで)" },
             { "addAether", "霊気+N" },
             { "dischargeAether", "霊気放出(×Nダメージ・全消費)" },
             { "dischargeAetherDraw", "霊気×Nドロー(全消費)" },
@@ -690,6 +700,8 @@ namespace DeckRogue.Game
             if (def.Exhaust == true) n.Add("消滅");
             if (def.Retain == true) n.Add("保持");
             if (def.Echo == true) n.Add("反復内蔵 (効果を2回解決)");
+            // チェイン (赤 2026-10-10。MTG の続唱): 面では短く、全文は用語の説明 (KeywordHelp「チェイン」) に任せる
+            if ((def.Cascade ?? 0) > 0) n.Add(face ? "チェイン" + ((def.Cascade ?? 0) > 1 ? "×" + def.Cascade : "") : "チェイン" + ((def.Cascade ?? 0) > 1 ? "×" + def.Cascade : "") + " (山札の上からこの札よりコストの低い札が出るまでめくり、その札をコストを払わずにプレイ。対象は同じ敵・残りは山札の底へ・本体より先に解決)");
             // 反復の2回目は同じ敵を狙う (2026-09-24 Opus ひなた E11 裁定B＝本家2と同じく据え置き)。反復内蔵の札と反復を配る札に同じ一文 (CLI の ECHO_MISS_NOTE)
             if (def.Echo == true || HasEffect(def, "addSpellEcho")) n.Add(face ? "2回目も同じ敵を狙う" : EchoMissNote);
             // 合成の触媒 (2026-09-12): 工房の素材にすると結果に乗る恩恵
@@ -1063,6 +1075,10 @@ namespace DeckRogue.Game
             var m2 = ev as GameEvent_EnergyMaxGained; if (m2 != null) return "エナジー上限+" + m2.Amount;
             var n2 = ev as GameEvent_DiscountGained; if (n2 != null) return "次のカードのコスト-" + n2.Amount;
             var o2 = ev as GameEvent_ImpulseDrawn; if (o2 != null) return "衝動" + o2.Count + "枚 (このターン限り)";
+            var cas = ev as GameEvent_Cascaded; if (cas != null) return cas.HitId != null
+                ? "チェイン: " + CardName(cas.CardId) + " → " + CardName(cas.HitId) + "をコストを払わずにプレイ" + (cas.Revealed != null && cas.Revealed.Count > 0 ? " (" + cas.Revealed.Count + "枚は山札の底へ)" : "")
+                : "チェイン: " + CardName(cas.CardId) + " → 当たりなし" + (cas.Revealed != null && cas.Revealed.Count > 0 ? " (" + cas.Revealed.Count + "枚は山札の底へ)" : "");
+            var ikp = ev as GameEvent_ImpulseKept; if (ikp != null) return "燠の守り: " + CardName(ikp.CardId) + "は失効せず手札に残った";
             var p2 = ev as GameEvent_CardsDiscarded; if (p2 != null) return "コストとして捨てた: " + Names(p2.CardIds);
             var q2 = ev as GameEvent_GrowthDischarged; if (q2 != null) return "成長" + q2.Spent + "を全て放出!";
             var r2 = ev as GameEvent_MomentumDischarged; if (r2 != null) return "勢い" + r2.Spent + "を全て放出!";

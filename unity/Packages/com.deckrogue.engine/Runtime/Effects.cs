@@ -174,9 +174,19 @@ namespace DeckRogue.Engine
             if (state != null && state.BrandsPlayable == true && IsBrandCard(card)) return true;
             if (card.Def.Type == CardTypes.Permanent) return true;
             if ((card.Def.Modes?.Count ?? 0) > 0) return true;
+            if ((card.Def.Cascade ?? 0) > 0) return true; // チェインだけの札 (野火) もプレイできる (赤 2026-10-10)
             foreach (var e in card.Def.Effects) if (e.Trigger == "onPlay") return true;
             return false;
         }
+
+        /// <summary>常在の印 (置物の effects に名前だけ書く効果) が場にあるか。深き仕掛け・燻り・連火の炉心・燠の守りが読む (TS hasStaticEffect)</summary>
+        public static bool HasStaticEffect(GameState state, string effectName)
+        {
+            return state.Player.Permanents.Any(p => p.Def.Effects.Any(e => e.Effect == effectName));
+        }
+
+        /// <summary>燻り (赤 R 置物 2026-10-10): この置物がある間、延焼は敵フェーズで減らない (延焼耐性の追加の減りも止める) (TS burnNoDecay)</summary>
+        public static bool BurnNoDecay(GameState state) => HasStaticEffect(state, "burnNoDecay");
 
         /// <summary>烙印 (呪いの烙印・仮初の烙印) か。青い蝋燭のプレイ可否・黒曜の護符の数え上げが読む</summary>
         public static bool IsBrandCard(CardInstance card) => card.Def.Id == "status_brand" || card.Def.Id == "status_guilt";
@@ -185,6 +195,8 @@ namespace DeckRogue.Engine
         private static readonly HashSet<string> DAMAGE_EFFECTS = new HashSet<string>
         {
             "dealDamage",
+            "dealDamagePerCascade", // 火の渦 (赤 2026-10-10)
+            "dealDamagePerBurn", // 火の舌 (赤 2026-10-10)
             "dealDamageRandom",
             "dealDamagePerCardPlayed",
             "dealDamagePerCardPlayedTotal",
@@ -226,6 +238,7 @@ namespace DeckRogue.Engine
         private static readonly HashSet<string> ENEMY_TARGETED = new HashSet<string>
         {
             "dealDamage",
+            "dealDamagePerCascade", "dealDamagePerBurn", "gainBlockPerBurn", "doubleBurn", // 赤の3本柱 (2026-10-10): 延焼の参照・倍加は対象の敵を選ぶ
             "dealDamagePerScry", // 読み切り (青 2026-09-25)
             "dealDamagePerTrapFired", // 仕掛けの反響 (青 2026-09-25)
             "dealDamageRandom",
@@ -2622,8 +2635,39 @@ namespace DeckRogue.Engine
                 case "retainedCostDown":
                 case "trapsNeverExpire":
                 case "retainHandUpTo":
-                    // 深き仕掛け・満ち潮の書庫 (青 R 置物 2026-09-25): 常在の印 (登場時の no-op)
+                case "firstCardCascade":
+                case "burnNoDecay":
+                case "keepImpulseOne":
+                    // 深き仕掛け・満ち潮の書庫 (青 R 置物 2026-09-25)・連火の炉心・燻り・燠の守り (赤 2026-10-10): 常在の印。
+                    // trapLifeOf・EndTurn・PlayCard・延焼ティック・衝動の失効が場を読むだけ (登場時の no-op)
                     return state;
+                case "dealDamagePerCascade":
+                    // 火の渦 (赤 チェインの刈り取り 2026-10-10): この戦闘でチェインが当たった回数×amount (読み切りと同じ型。0回なら不発)。TS と同形
+                    return (state.Player.CascadesThisCombat ?? 0) <= 0
+                        ? state
+                        : DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * (state.Player.CascadesThisCombat ?? 0), effect.Pierce == true);
+                case "doubleBurn":
+                {
+                    // 火勢倍し (赤 バーンの倍加 2026-10-10。本家 Catalyst): 対象の延焼を2倍にする。延焼0なら不発。
+                    // 増えた分は applyBurn と同じ道 (BurnApplied・猛り火の点火瞬間) を通す。TS と同形
+                    var enemy = enemyIndex >= 0 && enemyIndex < state.Enemies.Count ? state.Enemies[enemyIndex] : null;
+                    if (enemy == null || enemy.Hp <= 0 || enemy.Burn <= 0) return state;
+                    return ResolveEffect(state, new DeclarativeEffect { Trigger = effect.Trigger, Effect = "applyBurn", Amount = enemy.Burn }, enemyIndex);
+                }
+                case "gainBlockPerBurn":
+                {
+                    // 灰かぶり (赤 バーンの守りの刈り取り 2026-10-10): 対象の延焼×amount のブロック。延焼は失わない。TS と同形
+                    var enemy = enemyIndex >= 0 && enemyIndex < state.Enemies.Count ? state.Enemies[enemyIndex] : null;
+                    if (enemy == null || enemy.Hp <= 0 || enemy.Burn <= 0) return state;
+                    return GainPlayerBlock(state, (effect.Amount ?? 0) * enemy.Burn, enemyIndex);
+                }
+                case "dealDamagePerBurn":
+                {
+                    // 火の舌 (赤 バーンの刈り取り 2026-10-10): 対象の延焼×amount のダメージ。延焼は失わない (爆熱は全消費)。TS と同形
+                    var enemy = enemyIndex >= 0 && enemyIndex < state.Enemies.Count ? state.Enemies[enemyIndex] : null;
+                    if (enemy == null || enemy.Hp <= 0 || enemy.Burn <= 0) return state;
+                    return DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * enemy.Burn, effect.Pierce == true);
+                }
                 case "gainBlockPerSpark":
                     // 火守りの盾 (白 C 2026-09-24 Opus ひなた裁定「作る札に刈り取りを内蔵」): この戦闘で撃った火種×amount のブロック。TS と同形
                     return (state.Player.SparksPlayedThisCombat ?? 0) <= 0

@@ -565,6 +565,8 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     // 保持の触媒 / 反復の触媒 (2026-09-12): 結果に保持・反復内蔵が乗る。触媒の印そのものは結果に残らない
     ...((a.def.retain === true || b.def.retain === true || catalysts.includes('retain')) && resultType !== 'permanent' ? { retain: true } : {}),
     ...((a.def.echo === true || b.def.echo === true || catalysts.includes('echo')) && resultType !== 'reaction' ? { echo: true } : {}),
+    // チェイン (赤 2026-10-10): 反復と同じく片方が持てば結果も持つ (回数は多い方)。コスト=合計−1 なので当たりは広がる
+    ...(((a.def.cascade ?? 0) > 0 || (b.def.cascade ?? 0) > 0) && resultType !== 'reaction' ? { cascade: Math.max(a.def.cascade ?? 0, b.def.cascade ?? 0) } : {}),
     ...(a.def.discardCost || b.def.discardCost ? { discardCost: (a.def.discardCost ?? 0) + (b.def.discardCost ?? 0) } : {}),
     ...(a.def.exhaustCost || b.def.exhaustCost ? { exhaustCost: (a.def.exhaustCost ?? 0) + (b.def.exhaustCost ?? 0) } : {}),
     ...(a.def.lightCost || b.def.lightCost ? { lightCost: (a.def.lightCost ?? 0) + (b.def.lightCost ?? 0) } : {}), // 灯コストは合算 (捨て・消滅コストと同じ)

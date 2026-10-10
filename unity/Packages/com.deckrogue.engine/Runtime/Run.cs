@@ -1453,8 +1453,11 @@ namespace DeckRogue.Engine
             return new RunCommand_LeaveDeparture();
         }
 
-        /// <summary>伏せ参照レリック (このランの報酬プールにリアクションが1枚も無い色では候補列から除く)</summary>
-        private static readonly HashSet<string> SET_RELICS = new HashSet<string> { "relic_talisman_pouch", "relic_quiet_bell" };
+        /// <summary>
+        /// 仕込み札参照レリック (このランの報酬プールにリアクションが1枚も無い色では候補列から除く)。
+        /// 2026-10-10 赤の解凍: 9/9〜9/13 に増えた仕込み札参照レリック (二重の符・読みの眼鏡・回収の紐) も同じ理由で除く。TS と同形
+        /// </summary>
+        private static readonly HashSet<string> SET_RELICS = new HashSet<string> { "relic_talisman_pouch", "relic_quiet_bell", "relic_double_talisman", "relic_reading_glasses", "relic_retrieve_cord" };
 
         public static RunState CreateRun(
             int seed,
@@ -1656,6 +1659,10 @@ namespace DeckRogue.Engine
             { "dealDamagePerTrapFired", "permission" }, { "extendTrapLife", "permission" }, { "trapsNeverExpire", "permission" }, // 罠使い (青 2026-09-25)
             { "retrieveZeroCostFromDiscard", "storm" }, { "drawTypeFromDeck", "permission" }, { "aetherCarryHalf", "aether" }, { "retainedCostDown", "grimoire" }, // 青を89枚に (2026-09-25)
             { "addSpellEcho", "echo" }, // 反復 (青の呪文コピー)
+            // 赤の3本柱 (2026-10-10 docs/red-cascade-design-2026-10-10.md): チェインの刈り取り・常在、バーンの倍加と消費しない刈り取り、刹那の失効の換金
+            { "dealDamagePerCascade", "cascade" }, { "firstCardCascade", "cascade" },
+            { "doubleBurn", "burn" }, { "gainBlockPerBurn", "burn" }, { "dealDamagePerBurn", "burn" }, { "burnNoDecay", "burn" },
+            { "keepImpulseOne", "impulse" },
         };
 
         /// <summary>誘発トリガー → 軸。置物の「接着剤」札はここでほぼ自動的に分類される</summary>
@@ -1670,6 +1677,8 @@ namespace DeckRogue.Engine
             { "onLightGained", "light" }, // 灯の弩 (白 2026-09-20)
             { "onLightDischarged", "light" }, { "onSparkPlayed", "spark" }, // 2026-09-20 夜
             { "onImpulsePlayed", "impulse" },
+            { "onImpulseExpired", "impulse" }, // 燃え残り・灰の衣 (赤 2026-10-10)
+            { "onCascade", "cascade" }, // 連なる火花・火継ぎの炉 (赤 2026-10-10)
             { "onRandomPlayed", "chaos" },
             { "onSpellPlayed", "storm" },
             { "onBlockGained", "fortress" },
@@ -1695,6 +1704,7 @@ namespace DeckRogue.Engine
             }
             if (def.ExhaustCost != null) Add("graveyard"); // 消滅コストは墓地の燃料
             if (def.Retainer == true) Add("retinue");
+            if ((def.Cascade ?? 0) > 0) Add("cascade"); // チェイン (赤 2026-10-10)
             return order;
         }
 

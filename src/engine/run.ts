@@ -1394,7 +1394,8 @@ export function createRun(
   // 伏せ参照レリックは、このランの報酬プールにリアクションが1枚も無い色 (赤単など) では
   // 永久の死に選択肢になるため候補列から除く (2026-08-30 Opusランで符師の懐が3択に3回連続出現)。
   // (蜃気楼の面は 2026-09-03 に撤去)
-  const SET_RELICS = new Set(['relic_talisman_pouch', 'relic_quiet_bell'])
+  // 2026-10-10 赤の解凍: 9/9〜9/13 に増えた伏せ参照レリック (二重の符・読みの眼鏡・回収の紐) も同じ理由で除く
+  const SET_RELICS = new Set(['relic_talisman_pouch', 'relic_quiet_bell', 'relic_double_talisman', 'relic_reading_glasses', 'relic_retrieve_cord'])
   const canSet = allCards.some(
     (c) => leader.colors.includes(c.color) && c.type === 'reaction',
   )
@@ -1611,6 +1612,10 @@ const EFFECT_AXIS: Record<string, string> = {
   dealDamagePerTrapFired: 'permission', extendTrapLife: 'permission', trapsNeverExpire: 'permission', // 罠使い (青 2026-09-25)
   retrieveZeroCostFromDiscard: 'storm', drawTypeFromDeck: 'permission', aetherCarryHalf: 'aether', retainedCostDown: 'grimoire', // 青を89枚に (2026-09-25)
   addSpellEcho: 'echo', // 反復 (青の呪文コピー)
+  // 赤の3本柱 (2026-10-10 docs/red-cascade-design-2026-10-10.md): チェインの刈り取り・常在、バーンの倍加と消費しない刈り取り、刹那の失効の換金
+  dealDamagePerCascade: 'cascade', firstCardCascade: 'cascade',
+  doubleBurn: 'burn', gainBlockPerBurn: 'burn', dealDamagePerBurn: 'burn', burnNoDecay: 'burn',
+  keepImpulseOne: 'impulse',
 }
 
 /** 誘発トリガー → 軸。置物の「接着剤」札はここでほぼ自動的に分類される */
@@ -1625,6 +1630,8 @@ const TRIGGER_AXIS: Record<string, string> = {
   onLightDischarged: 'light', // 灯の火皿 (2026-09-20 夜)
   onSparkPlayed: 'spark', // 火の粉・灯の継ぎ手 (2026-09-20 夜)
   onImpulsePlayed: 'impulse',
+  onImpulseExpired: 'impulse', // 燃え残り・灰の衣 (赤 2026-10-10)
+  onCascade: 'cascade', // 連なる火花・火継ぎの炉 (赤 2026-10-10)
   onRandomPlayed: 'chaos',
   onSpellPlayed: 'storm',
   onBlockGained: 'fortress',
@@ -1646,6 +1653,7 @@ export function axesOf(def: CardDef): readonly string[] {
   }
   if (def.exhaustCost !== undefined) set.add('graveyard') // 消滅コストは墓地の燃料
   if (def.retainer === true) set.add('retinue')
+  if ((def.cascade ?? 0) > 0) set.add('cascade') // チェイン (赤 2026-10-10)
   return [...set]
 }
 

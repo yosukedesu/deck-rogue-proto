@@ -613,9 +613,9 @@
   },
   {
     "id": "deck_chaos",
-    "name": "衝動バクチ理想形",
+    "name": "刹那理想形",
     "color": "red",
-    "description": "衝動で刹那の手札を捲り、儀式マナで叩きつける。賭けと粉砕と捨て身——考えるな、燃やせ",
+    "description": "衝動で刹那の手札を捲り、儀式マナで叩きつける。引いたら今撃つ——考えるな、燃やせ",
     "cards": [
       {
         "cardId": "red_impulse",
@@ -1920,46 +1920,50 @@
     ]
   },
   {
-    "id": "deck_gamble",
-    "name": "運任せ理想形",
+    "id": "deck_cascade",
+    "name": "飛び火理想形",
     "color": "red",
-    "description": "乱数を撃つほど賭博師の焔が火を積み、一擲乾坤が枚数を刈り取る。ロールの上下でなく「何回振ったか」が勝ち筋",
+    "description": "安い札を厚くして飛び火を当て続ける。火送りの一撃・連火弾がめくり、連なる火花と火継ぎの炉が当たりごとに火を足し、火の渦が回数を刈る",
     "cards": [
       {
-        "cardId": "red_gamble",
-        "count": 3
-      },
-      {
-        "cardId": "red_long_shot",
-        "count": 3
-      },
-      {
-        "cardId": "red_bomb",
+        "cardId": "red_cascade_strike",
         "count": 2
       },
       {
-        "cardId": "red_chaos_bolt",
+        "cardId": "red_cascade_vent",
         "count": 2
       },
       {
-        "cardId": "red_grand_fireworks",
+        "cardId": "red_cascade_bolt",
+        "count": 2
+      },
+      {
+        "cardId": "red_cascade_ford",
         "count": 1
       },
       {
-        "cardId": "red_perm_gambler",
-        "count": 2
+        "cardId": "red_perm_cascade_sparks",
+        "count": 1
       },
       {
-        "cardId": "red_all_in",
-        "count": 2
+        "cardId": "red_perm_cascade_hearth",
+        "count": 1
       },
       {
-        "cardId": "red_ritual",
-        "count": 2
+        "cardId": "red_cascade_vortex",
+        "count": 1
+      },
+      {
+        "cardId": "red_spark",
+        "count": 3
+      },
+      {
+        "cardId": "red_cascade_shield",
+        "count": 1
       },
       {
         "cardId": "red_guard",
-        "count": 3
+        "count": 2
       }
     ]
   },

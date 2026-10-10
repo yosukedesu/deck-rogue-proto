@@ -7,7 +7,7 @@
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } from './content.ts'
 import { resolveFusedDef } from './fusion.ts'
-import { applyDamageInterrupts, cardNeedsTarget, gainLight, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, expireRetainers, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge, trapLifeOf } from './effects.ts'
+import { applyDamageInterrupts, burnNoDecay, hasStaticEffect, cardNeedsTarget, gainLight, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, expireRetainers, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge, trapLifeOf } from './effects.ts'
 import { applyInterruptsTo, startNodeFor, walkToMove } from './enemyGraph.ts'
 import { applyDeathInterrupts, bindRedeclare, blazeConditionMet, effectiveStrength, enterPermanent, gainEnemyStrength, refreshIntentValues, setBellActive } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
@@ -1084,6 +1084,12 @@ export function playCard(
     // 庇う (2026-09-02 検証ラン「リダイレクトが無言で起きる」への処方): 発生を必ずログに残す
     s = emit(s, { type: 'GuardianRedirected', fromIndex: redirectedFrom, toIndex: enemyIndex })
   }
+  // チェイン (赤 2026-10-10。MTG の続唱): 本体の効果より先に、山札の上から安い札をめくってコストを払わずにプレイする。
+  // 連火の炉心 (firstCardCascade): このターン最初のプレイ (直接プレイも数えた playsThisTurn が0) ならチェインが1回つく。
+  // 炉心を置いたそのプレイ自身には付かない (プレイ前の場で判定 = MTG の Maelstrom Nexus と同じ)
+  const cascadeTimes =
+    (card.def.cascade ?? 0) + ((state.player.playsThisTurn ?? 0) === 0 && hasStaticEffect(state, 'firstCardCascade') ? 1 : 0)
+  for (let k = 0; k < cascadeTimes; k++) s = resolveCascade(s, card.def, enemyIndex)
   if (isPermanent) {
     // 置物登場の誘発 (白の接着剤。自身の登場にも誘発) + 点灯の定義 (人形なら灯+1・すぐに1回動く。白共通ルール 2026-09-20)
     // 灯篭の人形 (2026-09-21 Opus B/C「出した瞬間いちばん暗い」): 点灯 (登場の1回) だけは灯コストを払う前の灯で解決する。
@@ -1317,29 +1323,49 @@ export function playCard(
     const chosen = s.player.exhaustPile.find((c) => c.uid === retrieveUid)
     if (chosen) {
       s = emit(s, { type: 'CardPlayedFromExhaust', cardId: chosen.def.id })
-      if (chosen.def.type === 'permanent') {
-        s = {
-          ...s,
-          player: {
-            ...s.player,
-            exhaustPile: s.player.exhaustPile.filter((c) => c.uid !== retrieveUid),
-            permanents: [...s.player.permanents, chosen],
-          },
-        }
-        s = enterPermanent(s, chosen.uid, enemyIndex) // 登場誘発 + 点灯の定義 (白共通ルール 2026-09-20)
-      }
-      s = emit(s, { type: 'CardPlayed', cardId: chosen.def.id })
-      s = resolveOnPlayEffects(s, chosen, enemyIndex)
-      if (chosen.def.effects.filter((e) => e.trigger === 'onPlay').some(isDamageEffect)) {
-        s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
-        s = fireSelfSetTriggers(s, 'onAttackPlayed', enemyIndex)
-      }
-      if (chosen.def.type === 'spell') {
-        s = fireSelfSetTriggers(s, 'onSpellPlayed', enemyIndex)
-        s = runPermanentTriggers(s, 'onSpellPlayed', enemyIndex)
-      }
-      // 直接プレイも「プレイ」として詠唱数に数える (数えないのはそのカード自身のみ、の既存則)
-      s = {
+      s = playCardDirect(s, chosen, enemyIndex, 'stay')
+    }
+  }
+  return checkCombatEnd(s)
+}
+
+/**
+ * 直接プレイ (死者再生 2026-08-31・チェイン 2026-10-10 で共用): コストを払わず、プレイの誘発と詠唱数を数えて効果を解決する。
+ * placement='stay' = 札は今いる場所に残る (死者再生: 消滅置き場に残る＝墓地燃料は減らない。置物だけは場に出る)。
+ * placement='land' = 札は山札から来た (チェイン): 置物は場に出、それ以外は解決後に捨て札 (消滅札は消滅置き場) へ置く。
+ * 割引は消費しない・反復は掛からない・拘束は数えない (効果由来。2026-09-02 の裁定)。
+ * 2026-10-10: 死者再生も「カードをプレイするたび」(onCardPlayed) と攻撃数 (attacksPlayedThisTurn) を数える = 亡骸プレイ・通常のプレイと同じ扱いに揃えた
+ */
+export function playCardDirect(state: GameState, card: CardInstance, enemyIndex: number, placement: 'stay' | 'land'): GameState {
+  let s = state
+  const isPermanent = card.def.type === 'permanent'
+  if (isPermanent) {
+    s = {
+      ...s,
+      player: {
+        ...s.player,
+        exhaustPile: placement === 'stay' ? s.player.exhaustPile.filter((c) => c.uid !== card.uid) : s.player.exhaustPile,
+        permanents: [...s.player.permanents, card],
+      },
+    }
+  }
+  s = emit(s, { type: 'CardPlayed', cardId: card.def.id })
+  // チェインの連鎖 (MTG): 当たった札がチェインを持てば、その効果より先にもう一度めくる (コストが下がるので必ず止まる)
+  for (let k = 0; k < (card.def.cascade ?? 0); k++) s = resolveCascade(s, card.def, enemyIndex)
+  if (isPermanent) s = enterPermanent(s, card.uid, enemyIndex) // 登場誘発 + 点灯の定義 (白共通ルール 2026-09-20)
+  s = resolveOnPlayEffects(s, card, enemyIndex)
+  if (card.def.effects.filter((e) => e.trigger === 'onPlay').some(isDamageEffect)) {
+    s = { ...s, player: { ...s.player, attacksPlayedThisTurn: (s.player.attacksPlayedThisTurn ?? 0) + 1 } }
+    s = runPermanentTriggers(s, 'onAttackPlayed', enemyIndex)
+    s = fireSelfSetTriggers(s, 'onAttackPlayed', enemyIndex)
+  }
+  s = runPermanentTriggers(s, 'onCardPlayed', enemyIndex)
+  if (card.def.type === 'spell') {
+    s = fireSelfSetTriggers(s, 'onSpellPlayed', enemyIndex)
+    s = runPermanentTriggers(s, 'onSpellPlayed', enemyIndex)
+  }
+  // 直接プレイも「プレイ」として詠唱数に数える (数えないのはそのカード自身のみ、の既存則)
+  s = {
     ...s,
     player: {
       ...s.player,
@@ -1349,9 +1375,73 @@ export function playCard(
     },
   }
   s = tickCardTimers(s)
+  if (placement === 'land' && !isPermanent) {
+    if (card.def.exhaust === true) {
+      s = { ...s, player: { ...s.player, exhaustPile: [...s.player.exhaustPile, card] } }
+      s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
+      s = fireExhaustTriggers(s, 1, enemyIndex)
+    } else {
+      s = { ...s, player: { ...s.player, discardPile: [...s.player.discardPile, card] } }
     }
   }
-  return checkCombatEnd(s)
+  return s
+}
+
+/** チェインの当たりになれる札か: 親よりコストの低い呪文・物理・置物。選択式・X・仕込み札・プレイできない札 (負傷・火傷・烙印) は飛ばす */
+function cascadeEligible(card: CardInstance, parentCost: number): boolean {
+  const d = card.def
+  if (d.type === 'reaction' || (d.modes?.length ?? 0) > 0 || d.xCost === true) return false
+  if (d.cost >= parentCost) return false
+  return d.type === 'permanent' || (d.cascade ?? 0) > 0 || d.effects.some((e) => e.trigger === 'onPlay')
+}
+
+/**
+ * チェイン (赤の第3の軸 2026-10-10。MTG の続唱。`docs/red-cascade-design-2026-10-10.md` §1): 山札の上から parent よりコストの低い札が
+ * 出るまでめくり、その札をコストを払わずにプレイする (対象は親と同じ enemyIndex)。外れた札は山札の底へ (順はシードRNG)。
+ * 山札が尽きたら捨て札を切り直して続ける (通常のドローと同じ・onShuffle も鳴る)。当たりが無ければ空振り (何も起きない)。
+ * 当たり1枚ごとに cascadesThisCombat (火の渦が参照) を数え、onCascade (連なる火花・火継ぎの炉) を鳴らす
+ */
+export function resolveCascade(state: GameState, parent: CardDef, enemyIndex: number): GameState {
+  let s = state
+  let drawPile = [...s.player.drawPile]
+  let discardPile = [...s.player.discardPile]
+  let rng = s.rng
+  const revealed: CardInstance[] = []
+  let hit: CardInstance | null = null
+  let shuffles = 0
+  for (;;) {
+    if (drawPile.length === 0) {
+      if (discardPile.length === 0) break
+      const [reshuffled, nextRng] = shuffle(rng, discardPile)
+      drawPile = [...reshuffled]
+      discardPile = []
+      rng = nextRng
+      shuffles++
+    }
+    const c = drawPile.shift()!
+    if (cascadeEligible(c, parent.cost)) {
+      hit = c
+      break
+    }
+    revealed.push(c)
+  }
+  let bottom: readonly CardInstance[] = revealed
+  if (revealed.length > 1) {
+    const [mixed, nextRng] = shuffle(rng, revealed)
+    bottom = mixed
+    rng = nextRng
+  }
+  s = { ...s, rng, player: { ...s.player, drawPile: [...drawPile, ...bottom], discardPile } }
+  for (let k = 0; k < shuffles; k++) {
+    s = emit(s, { type: 'DeckShuffled' })
+    s = runPermanentTriggers(s, 'onShuffle', Math.max(0, s.enemies.findIndex((e) => e.hp > 0)))
+  }
+  s = emit(s, { type: 'Cascaded', cardId: parent.id, ...(hit !== null ? { hitId: hit.def.id } : {}), revealed: revealed.map((c) => c.def.id) })
+  if (hit === null) return s
+  s = { ...s, player: { ...s.player, cascadesThisCombat: (s.player.cascadesThisCombat ?? 0) + 1 } }
+  s = playCardDirect(s, hit, enemyIndex, 'land')
+  s = runPermanentTriggers(s, 'onCascade', enemyIndex)
+  return s
 }
 
 /**
@@ -1507,21 +1597,35 @@ export function endTurn(state: GameState, hearthSparks?: number, retainUids?: re
   // 衝動 (このターン限りの手札) は未使用なら消滅する
   if (s.player.impulseUids.length > 0) {
     const impulse = new Set(s.player.impulseUids)
-    const expired = s.player.hand.filter((c) => impulse.has(c.uid))
+    let expired = s.player.hand.filter((c) => impulse.has(c.uid))
+    // 燠の守り (赤 R 置物 2026-10-10): 失効する札のうちコストが最も高い1枚 (同じなら手札の左) を手札に残す。
+    // 残した札は次の全捨て (敵フェーズの後) も1回だけ生き残る (keptImpulse) = 次の自ターンまで保持
+    let kept: CardInstance | null = null
+    if (expired.length > 0 && hasStaticEffect(s, 'keepImpulseOne')) {
+      kept = expired.reduce((best, c) => (c.def.cost > best.def.cost ? c : best), expired[0])
+      const keptUid = kept.uid
+      expired = expired.filter((c) => c.uid !== keptUid)
+    }
+    const keptUid = kept?.uid
     s = {
       ...s,
       player: {
         ...s.player,
-        hand: s.player.hand.filter((c) => !impulse.has(c.uid)),
+        hand: s.player.hand
+          .filter((c) => !impulse.has(c.uid) || c.uid === keptUid)
+          .map((c) => (c.uid === keptUid ? { ...c, keptImpulse: true } : c)),
         exhaustPile: [...s.player.exhaustPile, ...expired],
         impulseUids: [],
       },
     }
+    if (kept !== null) s = emit(s, { type: 'ImpulseKept', cardId: kept.def.id })
     for (const card of expired) {
       s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
     }
-    // 衝動失効も消滅 = 亡者の合唱が誘発する (確定済みルール表「消滅の誘発」)
     const aliveIdx = Math.max(0, s.enemies.findIndex((e) => e.hp > 0))
+    // 燃え残り・灰の衣 (赤 2026-10-10): 失効1枚ごとに鳴る (失効は衝動の出来事なので、消滅の誘発より先)
+    for (let i = 0; i < expired.length; i++) s = runPermanentTriggers(s, 'onImpulseExpired', aliveIdx)
+    // 衝動失効も消滅 = 亡者の合唱が誘発する (確定済みルール表「消滅の誘発」)
     s = fireExhaustTriggers(s, expired.length, aliveIdx)
     // 亡骸効果: 衝動で引いた亡骸札の失効もプレイ以外の消滅なので発火する
     s = fireNecroEffects(s, expired, aliveIdx)
@@ -1537,7 +1641,8 @@ export function endTurn(state: GameState, hearthSparks?: number, retainUids?: re
     const enemy = s.enemies[i]
     if (enemy.hp <= 0 || enemy.burn <= 0) continue
     const amount = enemy.burn
-    const decay = 1 + (getEnemyDef(enemy.enemyId).burnResist ?? 0)
+    // 燻り (赤 R 置物 2026-10-10): この置物がある間、延焼は減らない (延焼耐性の追加の減りも止める)
+    const decay = burnNoDecay(s) ? 0 : 1 + (getEnemyDef(enemy.enemyId).burnResist ?? 0)
     s = {
       ...s,
       enemies: s.enemies.map((e, j) =>
@@ -2402,6 +2507,7 @@ function finishEnemyPhase(state: GameState): GameState {
   const keeps = (c: CardInstance): boolean =>
     (c.def.id === SCALD_DEF.id && c.scaldFresh === true) ||
     c.def.retain === true ||
+    c.keptImpulse === true || // 燠の守りで失効を免れた衝動の札 (赤 2026-10-10): この全捨てを1回だけ生き残る
     ((s.retainHand === true || s.retainHandThisTurn === true) && c.def.id !== SCALD_DEF.id) ||
     !handBeforeExpire.has(c.uid) || // 回収の紐で期限切れで手札に戻った罠 (2026-09-13)
     (s.retainUids?.includes(c.uid) ?? false) // 満ち潮の書庫で残すと選んだ札 (2026-09-25)
@@ -2415,6 +2521,12 @@ function finishEnemyPhase(state: GameState): GameState {
       hand: s.player.hand
         .filter(keeps)
         .map((c) => (c.scaldFresh === true ? { ...c, scaldFresh: false } : c))
+        // 燠の守りの旗はこの全捨てで下ろす (1回きり)
+        .map((c) => {
+          if (c.keptImpulse !== true) return c
+          const { keptImpulse: _k, ...rest } = c
+          return rest
+        })
         // 潮溜まり (青 R 置物 2026-09-25。本家 Establishment): 敵ターンの後も手札に残った札はコスト-N (状態異常は除く)
         .map((c) => (retainedDown > 0 && !c.def.id.startsWith('status_') ? { ...c, retainDiscount: (c.retainDiscount ?? 0) + retainedDown } : c)),
       discardPile: [

@@ -113,6 +113,8 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     dealDamageDrainPerExhaust: `消滅数×${a}ダメ+半分回復`, gainBlockPerExhaust: `消滅数×${a}ブロック`,
     recycleExhaust: `消滅置き場を全て山札に還して混ぜ、還した枚数×${a}ダメ(刻・消滅数参照は0に戻る)`, dealDamagePerSelfHpLost: `失ったHP×${a}ダメ`, dealDamagePerHeal: `この戦闘で回復した回数×${a}ダメ(過剰回復も数える)`, dealDamagePerDamageTaken: `直前敵フェーズ被ダメ×${a}ダメ`,
     applyBurnPerDamageTaken: `直前敵フェーズ被ダメ×${a}延焼`, dealDamagePerRandomPlayed: `${all}この戦闘の運任せ札×${a}ダメ`,
+    dealDamagePerCascade: `${all}この戦闘でチェインが当たった回数×${a}ダメ`, doubleBurn: '対象の延焼を2倍', gainBlockPerBurn: `対象の延焼×${a}ブロック(延焼は失わない)`, dealDamagePerBurn: `対象の延焼×${a}ダメ(延焼は失わない)`,
+    firstCardCascade: 'この置物がある間、毎ターン最初にプレイする札にチェインがつく', burnNoDecay: 'この置物がある間、延焼は敵フェーズで減らない', keepImpulseOne: 'この置物がある間、ターン終了時に失効する衝動の札のうちコストが最も高い1枚を手札に残す(次のターンまで)',
     dealDamagePerIceBlock: `氷壁×${a}ダメ(氷壁は消費しない・急所は乗らない)`, negateConvertIce: '打ち消し+実値ぶん氷壁',
     dischargeAetherDraw: `霊気×${a}ドロー(全消費)`, dealDamageCleave: `${a}ダメ(倒せば別の敵にも同値)`,
     dealDamagePerHandCard: `${all}手札の枚数×${a}ダメ(自身は数えない)`, gainIceBlockPerHandCard: `手札の枚数×${a}氷壁`, gainBlockPerHandCard: `手札の枚数×${a}ブロック`,
@@ -129,7 +131,7 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onEnemyBuffed: '敵の筋力上げ時:', onEnemyDefended: '敵防御時:', onEnemyActed: '敵の行動後:', onTurnStart: '毎T開始:', onCombatStart: '開幕:',
     onAttackPlayed: '攻撃プレイごと:', onGrowthGained: '成長獲得ごと:', onMomentumGained: '勢い獲得ごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時/期限切れ時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
     onHealed: '回復ごと(満タンでも誘発):', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
-    onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onSparkPlayed: '火種を撃つたび:', onLightDischarged: '灯を放出するたび:', onAetherGained: '霊気獲得ごと:', onLightGained: '灯を得るたび:',
+    onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onSparkPlayed: '火種を撃つたび:', onCascade: 'チェインで札がプレイされるたび:', onImpulseExpired: '衝動の札が失効するたび:', onLightDischarged: '灯を放出するたび:', onAetherGained: '霊気獲得ごと:', onLightGained: '灯を得るたび:',
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onScry: '占術するたび:', onScryDiscard: '占術で札を捨てるたび(1枚ごと):', onSetExpired: '伏せ札の期限切れごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
     onTurnEnd: 'ターン終了時:', onShuffle: '切り直しごと:', onEnemyDied: '敵撃破ごと:', onDamageTaken: '攻撃でHP損失後:',
   }
@@ -156,6 +158,7 @@ function cardLine(def: CardDef): string {
     def.retainer ? `人形。出した瞬間に1回動く。${def.lifePersist === true ? '期限なし' : `期限${def.life ?? 3}ターン(出したターンを含む)`}${def.effects.some((e) => e.amount !== undefined && DOLL_GROWTH_EFFECTS.has(e.effect)) ? '。1ターンごとにダメージとブロック+1' : ''}` : '',
     def.fusionCatalyst !== undefined ? `⚗触媒:素材にすると結果が${({ cheaper: 'コスト−1(0Eまで)', echo: 'プレイ時効果を2回解決', retain: '保持を持つ', aoe: '単体ダメージが全体に' } as Record<string, string>)[def.fusionCatalyst]}` : '',
     def.echo === true ? `🔁反復内蔵(効果を2回解決。${ECHO_MISS_NOTE})` : '',
+    (def.cascade ?? 0) > 0 ? `🔥チェイン${(def.cascade ?? 0) > 1 ? `×${def.cascade}` : ''}(山札の上からこの札よりコストの低い札が出るまでめくり、その札をコストを払わずプレイ。対象は同じ敵・残りは山札の底へ・本体より先に解決)` : '',
   ].filter(Boolean).join('・')
   // 選択式の共通部 (工房「効果の合体」で相手の効果が入る場所) はモードの前に描く (2026-09-05 Opusラン R: 合成の目玉が不可視だった)
   const common = def.effects.map((e) => fx(e, def.type)).join('、')

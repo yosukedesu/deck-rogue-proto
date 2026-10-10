@@ -106,8 +106,19 @@ export function isPlayableFromHand(card: CardInstance, state?: GameState): boole
   return (
     card.def.type === 'permanent' ||
     (card.def.modes?.length ?? 0) > 0 ||
+    (card.def.cascade ?? 0) > 0 || // チェインだけの札 (野火) もプレイできる (赤 2026-10-10)
     card.def.effects.some((e) => e.trigger === 'onPlay')
   )
+}
+
+/** 常在の印 (置物の effects に名前だけ書く効果) が場にあるか。深き仕掛け・燻り・連火の炉心・燠の守りが読む */
+export function hasStaticEffect(state: GameState, effectName: string): boolean {
+  return state.player.permanents.some((p) => p.def.effects.some((e) => e.effect === effectName))
+}
+
+/** 燻り (赤 R 置物 2026-10-10): この置物がある間、延焼は敵フェーズで減らない (延焼耐性の追加の減りも止める) */
+export function burnNoDecay(state: GameState): boolean {
+  return hasStaticEffect(state, 'burnNoDecay')
 }
 
 /** 烙印 (呪いの烙印・仮初の烙印) か。青い蝋燭のプレイ可否・黒曜の護符の数え上げが読む */
@@ -119,6 +130,8 @@ export function isBrandCard(card: CardInstance): boolean {
 export function isDamageEffect(effect: DeclarativeEffect): boolean {
   return [
     'dealDamage',
+    'dealDamagePerCascade', // 火の渦 (赤 2026-10-10)
+    'dealDamagePerBurn', // 火の舌 (赤 2026-10-10)
     'dealDamageRandom',
     'dealDamagePerCardPlayed',
     'dealDamagePerCardPlayedTotal',
@@ -158,6 +171,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
 /** 敵1体を対象に取る効果 (target:'all' を除く)。StS式ターゲティングの要否判定に使う */
 const ENEMY_TARGETED = new Set([
   'dealDamage',
+  'dealDamagePerCascade', 'dealDamagePerBurn', 'gainBlockPerBurn', 'doubleBurn', // 赤の3本柱 (2026-10-10): 延焼の参照・倍加は対象の敵を選ぶ
   'dealDamagePerScry', // 読み切り (青 2026-09-25)
   'dealDamagePerTrapFired', // 仕掛けの反響 (青 2026-09-25)
   'dealDamageRandom',
@@ -2484,8 +2498,36 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'retainedCostDown':
     case 'trapsNeverExpire':
     case 'retainHandUpTo':
-      // 深き仕掛け・満ち潮の書庫 (青 R 置物 2026-09-25): 常在の印。trapLifeOf・endTurn が場を読むだけ (登場時の no-op)
+    case 'firstCardCascade':
+    case 'burnNoDecay':
+    case 'keepImpulseOne':
+      // 深き仕掛け・満ち潮の書庫 (青 R 置物 2026-09-25)・連火の炉心・燻り・燠の守り (赤 2026-10-10): 常在の印。
+      // trapLifeOf・endTurn・playCard・延焼ティック・衝動の失効が場を読むだけ (登場時の no-op)
       return state
+    case 'dealDamagePerCascade':
+      // 火の渦 (赤 チェインの刈り取り 2026-10-10): この戦闘でチェインが当たった回数×amount (読み切りと同じ型。0回なら不発)
+      return (state.player.cascadesThisCombat ?? 0) <= 0
+        ? state
+        : dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (state.player.cascadesThisCombat ?? 0), effect.pierce)
+    case 'doubleBurn': {
+      // 火勢倍し (赤 バーンの倍加 2026-10-10。本家 Catalyst): 対象の延焼を2倍にする。延焼0なら不発。
+      // 増えた分は applyBurn と同じ道 (BurnApplied・猛り火の点火瞬間) を通す
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0 || enemy.burn <= 0) return state
+      return resolveEffect(state, { trigger: effect.trigger, effect: 'applyBurn', amount: enemy.burn }, enemyIndex)
+    }
+    case 'gainBlockPerBurn': {
+      // 灰かぶり (赤 バーンの守りの刈り取り 2026-10-10): 対象の延焼×amount のブロック。延焼は失わない
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0 || enemy.burn <= 0) return state
+      return gainPlayerBlock(state, (effect.amount ?? 0) * enemy.burn, enemyIndex)
+    }
+    case 'dealDamagePerBurn': {
+      // 火の舌 (赤 バーンの刈り取り 2026-10-10): 対象の延焼×amount のダメージ。延焼は失わない (爆熱は全消費)
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0 || enemy.burn <= 0) return state
+      return dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * enemy.burn, effect.pierce)
+    }
     case 'gainBlockPerSpark':
       // 火守りの盾 (白 C 2026-09-24 Opus ひなた裁定「作る札に刈り取りを内蔵」): この戦闘で撃った火種×amount のブロック
       return (state.player.sparksPlayedThisCombat ?? 0) <= 0
