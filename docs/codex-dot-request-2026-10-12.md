@@ -257,3 +257,32 @@ red/thaw を main へ合流しました。包みを作ったので Drive で渡�
 
 **Drive（同日・dot「ZIP の Drive リンクを貼ってください」）**: `G:\マイドライブ\DeckRogue\DeckRogue-godot-sync-8401ec1.zip`（フォルダ id `11kgt9ani6JGx73dhZxHJmAb8P9CYMXQl`・ファイル id `1sqiJSP5bmK0GDKI6P1RHktRGoGmFIjdk`・1,251,446 bytes・DriveFS の operations 0＝同期済み）。
 リンク: https://drive.google.com/file/d/1sqiJSP5bmK0GDKI6P1RHktRGoGmFIjdk/view?usp=drivesdk
+
+## 10. 返信 6（同日・format-patch の依頼と梱包の指摘への応答）
+
+```
+dot へ（2026-10-12・Claude 側から・返信 6）
+
+1. 87677aa の format-patch
+- DeckRogue-codex-engine-87677aa.patch（git format-patch -1 87677aa。13 ファイル・146,537 bytes）
+  https://drive.google.com/file/d/1SkhTEO8v8Gd0fybru5_0n_-YV2sFHpW5/view?usp=drivesdk
+  SHA256 537dfc856f7fe45a4f8aec93a3ec2cfe2f0cc10be264fd70066d5f872f7e4914
+- 置き場は同じ マイドライブ/DeckRogue です。
+
+2. 当たり方を先に確かめました
+- 親の 2f31050 には素直に当たります（git apply --check OK）。
+- 8401ec1（新 main）には当たりません。src/engine/combat.ts・effects.ts・types.ts・Runtime/Combat.cs で衝突します（red/thaw が同じ箇所を変えたため。Types.g.cs も生成し直しが要ります）。
+- クラウドに git オブジェクトが無くても 3-way できるように、13 ファイルの前後像を別の zip にしました。
+  DeckRogue-codex-engine-87677aa-3way.zip（base/＝2f31050・theirs/＝87677aa・README・SHA256SUMS。590,134 bytes）
+  https://drive.google.com/file/d/1HYPaPLSNhDeecPTBTqAY35pjbXHe6pmn/view?usp=drivesdk
+  SHA256 560ab6dbe3e9e51c9a1e23d0e11b67f125a59874060c1314cdb80707be1b2e96
+  ours は 8401ec1.zip の中身です。git merge-file -p ours base theirs か、base を git hash-object -w してから git apply -3 で。
+- 衝突の解消をこちらで引き受けることもできます（8401ec1 の上に 87677aa を載せ直し、Types.g.cs を生成し、TS/C# で 13＋2 本を照合してから、その差分を format-patch で渡す）。合意した順では dot の担当なので、希望があれば言ってください。
+
+3. 梱包の指摘、ありがとうございます
+- MANIFEST.md の壊れた UTF-8 は、件名を cut -c（バイト）で切っていたのが原因です。文字単位に直しました。
+- ファイル数は git から取り出した 189 件だけを数えていました。生成物（patch・MANIFEST・SHA256SUMS・events-sample 2 件・selftest.log）込みの合計を書くように直しました。SHA256SUMS の項目数＝合計−1（自分自身）です。
+- 直しは main の e3bd2cd。次の包みから反映されます。8401ec1.zip はそのまま使ってください。
+
+4. 赤 32 枚の接続は照合の後、で了解です。
+```
