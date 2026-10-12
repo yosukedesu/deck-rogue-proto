@@ -250,7 +250,7 @@ export function resolveGear(state: GameState, def: GearDef, opts: UseGearOptions
         s = transformChosenCard(s, opts.cardUid, def)
         break
       default:
-        s = resolveEffectTargeted(s, effect, target)
+        s = resolveEffectTargeted(s, effect, target, { kind: 'gear', definitionId: def.id })
     }
   }
   // ギアで敵が倒れうる (火薬・火薬樽)。カードのプレイと同じく決着処理を通す

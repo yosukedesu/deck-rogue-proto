@@ -11,12 +11,15 @@ import { applyDamageInterrupts, cardNeedsTarget, gainLight, cardStatusRoom, draw
 import { applyInterruptsTo, startNodeFor, walkToMove } from './enemyGraph.ts'
 import { applyDeathInterrupts, bindRedeclare, blazeConditionMet, effectiveStrength, enterPermanent, gainEnemyStrength, refreshIntentValues, setBellActive } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
-import { emit } from './events.ts'
+import { emit, enemyPresentationReceipt, playerPresentationReceipt } from './events.ts'
 import { dispatchHooks, runPermanentTriggers } from './hooks.ts'
 import { createRng, nextInt, shuffle, weightedIndex } from './rng.ts'
 import type { CardDef, DeclarativeEffect,
   CardInstance,
   EnemyIntent,
+  EnemyMoveDeclarationPresentation,
+  EnemyActionPresentation,
+  EnemyAttackContribution,
   EnemyMove,
   GameState,
   ReactionMode,
@@ -339,20 +342,20 @@ function declareOne(state: GameState, i: number): GameState {
   if (enemy.biteNext === true && biteMove) {
     const [biteIntent, rngB] = buildIntent(s.rng, biteMove, enemy.strength, enemy.atkScale ?? 1)
     const enemiesB = s.enemies.map((e, j) => (j === i ? { ...e, intent: biteIntent, biteNext: false, intentMoveId: undefined, intentNode: undefined } : e))
-    return emit({ ...s, rng: rngB, enemies: enemiesB }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: biteIntent })
+    return emit({ ...s, rng: rngB, enemies: enemiesB }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: biteIntent, presentationMove: captureEnemyMoveDeclaration(s, i, 'forced-bite', biteMove.id) })
   }
   // バランス崩し: 直前の攻撃を完全に防がれていたら、この宣言は隙 (2026-09-04。カーソルは進めない=次のターンに再開)
   if (enemy.staggeredNext === true) {
     const staggerMove: EnemyMove = { id: 'stagger', kind: 'rest' }
     const [restIntent, rngS] = buildIntent(s.rng, staggerMove, enemy.strength, enemy.atkScale ?? 1)
     const enemiesS = s.enemies.map((e, j) => (j === i ? { ...e, intent: restIntent, staggeredNext: false, intentMoveId: undefined, intentNode: undefined } : e))
-    return emit({ ...s, rng: rngS, enemies: enemiesS }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: restIntent })
+    return emit({ ...s, rng: rngS, enemies: enemiesS }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: restIntent, presentationMove: captureEnemyMoveDeclaration(s, i, 'stagger', undefined) })
   }
   // 前の意図が逃走なら (打ち消された逃走) 2度続けては宣言しない。自ターン開始で意図は消えているので prevIntentKind を読む (E1)
   if ((enemy.stolenGold ?? 0) > 0 && (enemy.intent?.kind ?? enemy.prevIntentKind) !== 'flee') {
     const [fleeIntent, rngF] = buildIntent(s.rng, fleeMove, enemy.strength, enemy.atkScale ?? 1)
     const enemies2 = s.enemies.map((e, j) => (j === i ? { ...e, intent: fleeIntent, intentMoveId: undefined, intentNode: undefined } : e))
-    return emit({ ...s, rng: rngF, enemies: enemies2 }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: fleeIntent })
+    return emit({ ...s, rng: rngF, enemies: enemies2 }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: fleeIntent, presentationMove: captureEnemyMoveDeclaration(s, i, 'forced-flee', def.moves.includes(fleeMove) ? fleeMove.id : undefined) })
   }
   // 割り込み (HP半分の豹変・単独時の転職・被弾覚醒): 宣言時に全種を判定してカーソルを飛ばす。
   // 被弾覚醒は被弾の瞬間にも判定している (effects.ts applyDamageInterrupts) = 旧 wakeOnDamage と同じ拍。
@@ -395,11 +398,13 @@ function declareOne(state: GameState, i: number): GameState {
   const nextUses = { ...(enemy.moveUses ?? {}), [move.id]: usesSoFar + 1 }
 
   let alt: ReturnType<typeof buildIntent>[0] | undefined
+  let alternateMoveId: string | undefined
   if (reactTable && reactTable.length > 0) {
     const [altIdx, rngB] = weightedIndex(rng, reactTable.map((m) => m.weight))
     rng = rngB
     const altMove = def.moves.find((m) => m.id === reactTable[altIdx].to)
     if (!altMove) throw new Error(`敵 ${def.id} の反応テーブルが未定義の技を参照: ${reactTable[altIdx].to}`)
+    alternateMoveId = altMove.id
     if (altMove.id === move.id) {
       // 同じ技の両分岐は同じロール (2026-09-14 Opus AB3: 「あり11／なし17」が同じ smash で「伏せると弱くなる」に見えた)
       alt = intent
@@ -439,7 +444,7 @@ function declareOne(state: GameState, i: number): GameState {
         }
       : e,
   )
-  s = emit({ ...s, rng, enemies }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: declared })
+  s = emit({ ...s, rng, enemies }, { type: 'EnemyIntentDeclared', enemyIndex: i, intent: declared, presentationMove: captureEnemyMoveDeclaration(s, i, 'graph', move.id, alternateMoveId, walked.nodeId) })
   if (stolen > 0) s = emit(s, { type: 'GoldStolen', enemyIndex: i, amount: stolen })
   return s
 }
@@ -641,7 +646,7 @@ function spawnEnemies(
       ...(childDef.slippery !== undefined ? { slippery: childDef.slippery } : {}),
     }
     s = { ...s, enemies: [...s.enemies, child] }
-    if (stunned) s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: s.enemies.length - 1, intent: child.intent! })
+    if (stunned) s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: s.enemies.length - 1, intent: child.intent!, presentationMove: captureEnemyMoveDeclaration(s, s.enemies.length - 1, 'spawn-rest') })
     // 自ターン中の出現 (分裂) は即座に宣言して次の敵フェーズから動く。敵フェーズ中の出現 (召喚・返しで割れた分裂) は
     // 意図なしのまま = そのフェーズでは動かず、次の自ターン開始で宣言する (2026-09-14 Opus AB2: 産まれた子が同じ敵フェーズに
     // 殴って被ダメ予測8→実被ダメ14 = 予告なしの被弾。本家も召喚された取り巻きはその手番では動かない)
@@ -714,7 +719,7 @@ export function applyPendingBites(state: GameState): GameState {
       rng,
       enemies: s.enemies.map((x, j) => (j === i ? { ...x, intent, biteNext: false } : x)),
     }
-    s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: i, intent })
+    s = emit(s, { type: 'EnemyIntentDeclared', enemyIndex: i, intent, presentationMove: captureEnemyMoveDeclaration(s, i, 'forced-bite', bite.id) })
   }
   return s
 }
@@ -733,10 +738,12 @@ export function checkCombatEnd(state: GameState): GameState {
     // 蜥蜴の尾 (2026-09-12 本家 Lizard Tail): 致死を1度だけ耐えて最大HPの半分で立つ (ランで1度)
     if (state.gearDeathSave === true) {
       // 蘇りの発条 (ギア 2026-09-17): この戦闘中、致死を一度だけ耐えて HP1 で立つ (全快でなく1 = 糸は続く)
-      state = emit({ ...state, gearDeathSave: false, player: { ...state.player, hp: 1 } }, { type: 'DeathSaved', hp: 1, source: 'gear' })
+      const next = { ...state, gearDeathSave: false, player: { ...state.player, hp: 1 } }
+      state = emit(next, { type: 'DeathSaved', hp: 1, source: 'gear', presentationReceipt: playerPresentationReceipt(state.player, next.player) })
     } else if (state.deathSave === true && state.deathSaveUsed !== true) {
       const hp = Math.max(1, Math.floor(state.player.maxHp / 2))
-      state = emit({ ...state, deathSaveUsed: true, player: { ...state.player, hp } }, { type: 'DeathSaved', hp, source: 'relic' })
+      const next = { ...state, deathSaveUsed: true, player: { ...state.player, hp } }
+      state = emit(next, { type: 'DeathSaved', hp, source: 'relic', presentationReceipt: playerPresentationReceipt(state.player, next.player) })
     } else {
       return emit({ ...state, phase: 'lost' }, { type: 'CombatEnded', result: 'lost' })
     }
@@ -1200,10 +1207,10 @@ export function playCard(
       // 共通部 (2026-09-05 工房「効果の合体」: 選択式に相手の効果を足す時の置き場) はモードを問わず先に解決する。
       // 現行の選択式は effects が空なので挙動は不変
       for (const effect of effCard.def.effects) {
-        if (effect.trigger === 'onPlay') s = resolveEffectTargeted(s, effect, enemyIndex)
+        if (effect.trigger === 'onPlay') s = resolveEffectTargeted(s, effect, enemyIndex, { kind: 'card', definitionId: effCard.def.id, uid: effCard.uid })
       }
       for (const effect of chosenMode.effects) {
-        s = resolveEffectTargeted(s, effect, enemyIndex)
+        s = resolveEffectTargeted(s, effect, enemyIndex, { kind: 'card', definitionId: effCard.def.id, uid: effCard.uid })
       }
       s = { ...s, resolvingCardPlay: false }
     } else {
@@ -1498,8 +1505,9 @@ export function endTurn(state: GameState, hearthSparks?: number, retainUids?: re
     ).length
     const burnHp = scalds * 2 + brands * 1
     if (burnHp > 0) {
+      const beforeScald = s.player
       s = { ...s, player: { ...s.player, hp: s.player.hp - burnHp } }
-      s = emit(s, { type: 'ScaldTick', count: scalds + brands, amount: burnHp, scalds, brands })
+      s = emit(s, { type: 'ScaldTick', count: scalds + brands, amount: burnHp, scalds, brands, presentationReceipt: playerPresentationReceipt(beforeScald, s.player) })
       s = checkCombatEnd(s)
       if (s.phase === 'lost') return s
     }
@@ -1555,7 +1563,7 @@ export function endTurn(state: GameState, hearthSparks?: number, retainUids?: re
           : e,
       ),
     }
-    s = emit(s, { type: 'BurnTick', enemyIndex: i, amount })
+    s = emit(s, { type: 'BurnTick', enemyIndex: i, amount, presentationReceipt: enemyPresentationReceipt(i, enemy, s.enemies[i]) })
     if (s.enemies[i].hp <= 0) s = fireEnemyDied(s, i) // 焼き切って倒れた (onEnemyDied 2026-09-12)
     s = applyDamageInterrupts(s, i) // 被弾覚醒はどの経路の被弾でも (2026-09-02)
     // 与ダメ激昂の壁跨ぎ (effects.ts の dealDamageToEnemy と同則)
@@ -1630,6 +1638,7 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
     const enemy = s.enemies[i]
     if (enemy.hp <= 0 || enemy.intent === null) continue
     const acting = effectiveIntent(s, i)!
+    const presentationAction = captureEnemyExecution(s, i, acting !== enemy.intent)
     // 2026-08-26 修正: 条件付き意図の分岐をここで確定させる。
     // 旧実装は executeEnemyAction で分岐を再計算していたため、pre窓でリアクションを発動して
     // 伏せ枠が空になると「伏せ札あり」の弱い分岐から「なし」の強い分岐へ化けていた
@@ -1658,7 +1667,7 @@ function processEnemyActions(state: GameState, fromIndex: number): GameState {
     // 静かな鈴が効くかをここで固定する (2026-09-24 Opus ひなた E2: 罠1枚を pre 窓で発動すると鈴が外れ、窓の「鈴で-2」が嘘になっていた)
     s = { ...s, bellLocked: s.player.setCards.length > 0 }
     // 行動実行の直前フック (pre窓): 打ち消し・軽減リアクションがここで発動/割り込みする
-    const executing = { type: 'EnemyActionExecuting', enemyIndex: i, kind: locked.kind } as const
+    const executing = { type: 'EnemyActionExecuting', enemyIndex: i, kind: locked.kind, presentationEnemyAction: { ...presentationAction, executionEventIndex: s.eventLog.length } } as const
     s = emit(s, executing)
     s = dispatchHooks(s, executing)
     if (s.phase === 'awaiting-reaction') return s // pre窓の割り込み → コマンド待ち
@@ -1704,7 +1713,7 @@ function fireSelfSetTriggers(
   for (const card of firing) {
     s = emit(s, { type: 'ReactionTriggered', cardId: card.def.id, mode: s.reactionMode })
     for (const effect of card.def.effects) {
-      if (effect.trigger === trigger) s = resolveEffectTargeted(s, effect, enemyIndex)
+      if (effect.trigger === trigger) s = resolveEffectTargeted(s, effect, enemyIndex, { kind: 'reaction', definitionId: card.def.id, uid: card.uid })
     }
   }
   return checkCombatEnd(s)
@@ -1870,6 +1879,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
     return runPermanentTriggers(negated, 'onActionNegated', enemyIndex)
   }
   const intent = effectiveIntent(state, enemyIndex)!
+  const presentationEnemyAction = currentEnemyExecution(state, enemyIndex)
   // 解決した行動を記録する (post窓の誘発判定に使う)
   const markResolved = (s: GameState, hpLoss: number): GameState => ({
     ...s,
@@ -1906,7 +1916,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
             return x
           }),
         }
-        return emit(s, { type: 'ConfusedAttack', enemyIndex, targetIndex: targetIdx, amount: total })
+        return emit(s, { type: 'ConfusedAttack', enemyIndex, targetIndex: targetIdx, amount: total, hpLoss, blocked, presentationEnemyAction, presentationReceipt: enemyPresentationReceipt(targetIdx, target, s.enemies[targetIdx]) })
       }
       // 連撃 (hits>1) は1発ずつ解決する (確定済みルール表「連撃」)。
       // 各ヒットに脆弱を補正し、通常ブロック→氷壁の順で消費する
@@ -1917,6 +1927,8 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         intent.mirrorHits === true
           ? Math.max(1, state.player.cardsPlayedThisTurn + (state.player.setsThisTurn ?? 0))
           : (intent.hits ?? 1)
+      const presentationContributions: EnemyAttackContribution[] = []
+      let presentationExecutedHits = 0
       let block = state.player.block
       let iceBlock = state.player.iceBlock
       let dealtTotal = 0
@@ -1926,6 +1938,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       // 身代わりの符 (ギア 2026-09-18): この攻撃のHP損失を0に。ブロックは消費しない・全ヒットが吸われた扱い (完全に防いだ = バランス崩し・根張りが鳴る)
       const nullify = state.nullifyNextAttack === true
       for (let h = 0; h < hits; h++) {
+        presentationExecutedHits++
         // 威嚇 (延焼による攻撃弱体) は撤去済み: 実値をそのまま使う (2026-08-25)
         let v = intent.actual
         // 威圧 (2026-09-03 本家 Weak 化): スタックがあれば各ヒット-25% (切り捨て・最低1)。行動が終わると1減る
@@ -1944,6 +1957,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         dealtTotal += v
         if (nullify) {
           blockedTotal += v
+          if (presentationContributions.length < 256) presentationContributions.push({ amountContribution: v, hpLossContribution: 0, blockContribution: 0, iceContribution: 0, nullifiedContribution: v, mitigatedContribution: 0 })
           continue
         }
         const blocked = Math.min(block, v)
@@ -1966,6 +1980,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
           hit = capped
         }
         hpLoss += hit
+        if (presentationContributions.length < 256) presentationContributions.push({ amountContribution: v, hpLossContribution: hit, blockContribution: blocked, iceContribution: iceBlocked, nullifiedContribution: 0, mitigatedContribution: v - blocked - iceBlocked - hit })
       }
       const capCharge = capFired && state.maxHpLossFiredThisTurn !== true && state.maxHpLossCharges !== undefined
       let s: GameState = {
@@ -1987,7 +2002,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
         const { nullifyNextAttack: _n, ...used } = s // 1回きり: 使ったら降ろす
         s = used
       }
-      s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex, ...(blockedTotal > 0 ? { blocked: blockedTotal } : {}) })
+      s = emit(s, { type: 'DamageDealt', source: 'enemy', amount: dealtTotal, hpLoss, enemyIndex, ...(blockedTotal > 0 ? { blocked: blockedTotal } : {}), presentationEnemyAction, presentationEnemyAttack: { version: 1, resolution: 'aggregate-final-mutation', enemyId: enemy.enemyId, effectiveActual: intent.actual, loopBound: hits, executedHits: presentationExecutedHits, ...(intent.mirrorHits === true ? { mirrorHits: true as const } : {}), ...(presentationExecutedHits <= 256 ? { contributions: presentationContributions } : { contributionsOmittedReason: 'presentation_capture_limit' as const }) }, presentationReceipt: playerPresentationReceipt(state.player, s.player) })
       if (capCharge) s = emit(s, { type: 'HpLossCapped', left: s.maxHpLossCharges ?? 0 })
       // HPを失った後の誘発 (2026-09-12 onDamageTaken: 百年の謎かけ・粘土・ルーンの立方体。HP損失0では鳴らない)
       if (hpLoss > 0) s = runPermanentTriggers(s, 'onDamageTaken', enemyIndex)
@@ -1998,13 +2013,14 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       }
       // 攻防一体 (alsoDefend): 攻撃と同時に固定ブロックを得る (確定済みルール表「攻防一体・隙」)。潜伏中は得ない (殻は育たない)
       if (intent.alsoDefend !== undefined && intent.alsoDefend > 0 && s.enemies[enemyIndex]?.burrowActive !== true) {
+        const beforeDefend = s.enemies[enemyIndex]
         s = {
           ...s,
           enemies: s.enemies.map((e, i) =>
             i === enemyIndex ? { ...e, block: e.block + intent.alsoDefend! } : e,
           ),
         }
-        s = emit(s, { type: 'BlockGained', target: 'enemy', amount: intent.alsoDefend })
+        s = emit(s, { type: 'BlockGained', target: 'enemy', amount: intent.alsoDefend, presentationReceipt: enemyPresentationReceipt(enemyIndex, beforeDefend, s.enemies[enemyIndex]) })
       }
       // 攻撃に付与された状態異常はダメージ後に適用 (確定済みルール表「状態異常」)
       if (intent.inflict) s = applyStatusToPlayer(s, intent.inflict)
@@ -2033,7 +2049,7 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       const enemies = state.enemies.map((e, i) =>
         i === enemyIndex && !shellUp ? { ...e, block: e.block + intent.actual } : e,
       )
-      let s = emit({ ...state, enemies }, { type: 'BlockGained', target: 'enemy', amount: intent.actual })
+      let s = emit({ ...state, enemies }, { type: 'BlockGained', target: 'enemy', amount: intent.actual, presentationReceipt: enemyPresentationReceipt(enemyIndex, state.enemies[enemyIndex], enemies[enemyIndex]) })
       // 防御と同時の強化 (2026-09-03 用心深い影「隠れる」: 今守らせる代わりに次の斬撃が重くなる = 伏せ分岐を
       // 「押せるスイッチ」から交換に変える。攻撃の alsoBuff と同じく打ち消せば強化ごと消える)
       if (intent.alsoBuff !== undefined && s.enemies[enemyIndex] && s.enemies[enemyIndex].hp > 0) {
@@ -2063,13 +2079,14 @@ function executeEnemyAction(state: GameState, enemyIndex: number): GameState {
       })
       const target = state.enemies[targetIdx]
       const healed = Math.min(intent.actual, target.maxHp - target.hp)
-      const s = emit(
-        {
-          ...state,
-          enemies: state.enemies.map((e, i) => (i === targetIdx ? { ...e, hp: e.hp + healed } : e)),
-        },
-        { type: 'EnemyHealed', enemyIndex, targetIndex: targetIdx, amount: healed },
-      )
+      const next = {
+        ...state,
+        enemies: state.enemies.map((e, i) => (i === targetIdx ? { ...e, hp: e.hp + healed } : e)),
+      }
+      const s = emit(next, {
+        type: 'EnemyHealed', enemyIndex, targetIndex: targetIdx, amount: healed,
+        presentationReceipt: enemyPresentationReceipt(targetIdx, target, next.enemies[targetIdx]),
+      })
       return markResolved(s, 0)
     }
     case 'steal-gold': {
@@ -2248,7 +2265,7 @@ function destroySetCards(state: GameState, enemyIndex: number): GameState {
   for (const card of targets) {
     for (const effect of card.def.effects) {
       if (effect.trigger === 'onSetDestroyed') {
-        s = resolveEffectTargeted(s, effect, enemyIndex)
+        s = resolveEffectTargeted(s, effect, enemyIndex, { kind: 'reaction', definitionId: card.def.id, uid: card.uid })
       }
     }
   }
@@ -2292,7 +2309,7 @@ function expireTraps(state: GameState): GameState {
   for (const card of expired) {
     // 弾け実の罠: 期限切れで弾ける (onSetDestroyed 相当。対象は生存先頭)
     for (const effect of card.def.effects) {
-      if (effect.trigger === 'onSetDestroyed') s = resolveEffectTargeted(s, effect, firstAlive)
+      if (effect.trigger === 'onSetDestroyed') s = resolveEffectTargeted(s, effect, firstAlive, { kind: 'reaction', definitionId: card.def.id, uid: card.uid })
     }
     const to: 'discard' | 'exhaust' | 'hand' = s.expireToHand === true ? 'hand' : card.def.exhaust === true ? 'exhaust' : 'discard'
     const { setTurn: _t, trapLifeBonus: _b, ...bare } = card
@@ -2330,7 +2347,7 @@ function finishEnemyPhase(state: GameState): GameState {
   if (pendingPhase.length > 0) {
     s = { ...s, pendingPhaseEffects: undefined }
     if (s.player.perfectBlockLastPhase === true) {
-      for (const { effect, enemyIndex } of pendingPhase) s = resolveEffectTargeted(s, effect, enemyIndex)
+      for (const { effect, enemyIndex, presentationSource } of pendingPhase) s = resolveEffectTargeted(s, effect, enemyIndex, presentationSource)
     }
   }
   // 罠モデル: 2窓目の終端で鳴らなかった罠は期限切れになる (捨て札。消滅持ちは消滅=亡骸・onCardExhausted は鳴る。
@@ -2376,7 +2393,7 @@ function finishEnemyPhase(state: GameState): GameState {
             ...s,
             enemies: s.enemies.map((x, j) => (j === i ? { ...x, hp: x.hp + amount } : x)),
           }
-          s = emit(s, { type: 'RegenTicked', enemyIndex: i, amount })
+          s = emit(s, { type: 'RegenTicked', enemyIndex: i, amount, presentationReceipt: enemyPresentationReceipt(i, e, s.enemies[i]) })
         }
       }
     }
@@ -2428,3 +2445,66 @@ function finishEnemyPhase(state: GameState): GameState {
 
 // 割り込みの即時差し替え (effects.ts) が「宣言し直し」に使う (循環 import を避ける後結び)
 bindRedeclare(declareOne)
+
+// Presentation-only helpers. None of these values feed gameplay decisions.
+function captureEnemyMoveDeclaration(state: GameState, enemyIndex: number, origin: EnemyMoveDeclarationPresentation['origin'], primaryMoveId?: string, alternateMoveId?: string, primaryNodeId?: string): EnemyMoveDeclarationPresentation {
+  return { version: 1, eventIndex: state.eventLog.length, enemyId: state.enemies[enemyIndex].enemyId, origin,
+    ...(primaryMoveId !== undefined ? { primaryMoveId } : {}), ...(alternateMoveId !== undefined ? { alternateMoveId } : {}), ...(primaryNodeId !== undefined ? { primaryNodeId } : {}) }
+}
+function enemyPresentationBarrier(ev: GameState['eventLog'][number], enemyIndex: number): boolean {
+  return ev.type === 'CombatStarted' || ev.type === 'TurnStarted' ||
+    ((ev.type === 'EnemyActionExecuting' || ev.type === 'EnemyActionResolved' || ev.type === 'ActionNegated' || ev.type === 'EnemyDied' || ev.type === 'EnemyFled' || ev.type === 'EnemyHatched') && ev.enemyIndex === enemyIndex)
+}
+function validEnemyMoveDeclaration(state: GameState, enemyIndex: number, index: number, d: EnemyMoveDeclarationPresentation | undefined): boolean {
+  if (!d || d.version !== 1 || d.eventIndex !== index || d.enemyId !== state.enemies[enemyIndex].enemyId) return false
+  if ([d.primaryMoveId, d.alternateMoveId, d.primaryNodeId].some(value => value !== undefined && (typeof value !== 'string' || value.length === 0))) return false
+  const def = getEnemyDef(d.enemyId)
+  const primary = def.moves.find(m => m.id === d.primaryMoveId)
+  if (d.origin === 'graph') {
+    if (!primary || !d.primaryNodeId || def.nodes[d.primaryNodeId]?.move !== d.primaryMoveId) return false
+    if (d.alternateMoveId !== undefined && !def.moves.some(m => m.id === d.alternateMoveId)) return false
+    return true
+  }
+  if (d.primaryNodeId !== undefined || d.alternateMoveId !== undefined) return false
+  if (d.origin === 'forced-bite') return !!primary && d.primaryMoveId === def.burrow?.bite
+  if (d.origin === 'forced-flee') return d.primaryMoveId === undefined || primary?.kind === 'flee'
+  return (d.origin === 'stagger' || d.origin === 'spawn-rest') && d.primaryMoveId === undefined
+}
+function captureEnemyExecution(state: GameState, enemyIndex: number, alternate: boolean): EnemyActionPresentation {
+  const enemyId = state.enemies[enemyIndex].enemyId
+  const unknown = (unresolvedReason: string): EnemyActionPresentation => ({ version: 1, executionEventIndex: state.eventLog.length, enemyId, unresolvedReason })
+  for (let j = state.eventLog.length - 1; j >= 0; j--) {
+    const ev = state.eventLog[j]
+    if (ev.type === 'EnemyIntentDeclared' && ev.enemyIndex === enemyIndex) {
+      const d = ev.presentationMove
+      if (!validEnemyMoveDeclaration(state, enemyIndex, j, d)) return unknown('missing_or_invalid_latest_declaration')
+      if (!d) return unknown('missing_or_invalid_latest_declaration')
+      const moveId = alternate ? d.alternateMoveId : d.primaryMoveId
+      if (!moveId) return { ...unknown('synthetic_or_unproved_move'), declaredEventIndex: j, origin: d.origin }
+      return { version: 1, executionEventIndex: state.eventLog.length, enemyId, declaredEventIndex: j, moveId, branch: alternate ? 'alternate' : 'primary', origin: d.origin }
+    }
+    if (enemyPresentationBarrier(ev, enemyIndex)) break
+  }
+  return unknown('missing_current_declaration')
+}
+function currentEnemyExecution(state: GameState, enemyIndex: number): EnemyActionPresentation | undefined {
+  const enemyId = state.enemies[enemyIndex].enemyId
+  for (let j = state.eventLog.length - 1; j >= 0; j--) {
+    const ev = state.eventLog[j]
+    if (ev.type === 'EnemyActionExecuting' && ev.enemyIndex === enemyIndex) {
+      const a = ev.presentationEnemyAction
+      if (!a || a.version !== 1 || a.executionEventIndex !== j || a.enemyId !== enemyId) return undefined
+      if (a.moveId !== undefined) {
+        const d = a.declaredEventIndex === undefined || !Number.isInteger(a.declaredEventIndex) || a.declaredEventIndex < 0 || a.declaredEventIndex >= j ? undefined : state.eventLog[a.declaredEventIndex]
+        if (!d || d.type !== 'EnemyIntentDeclared' || d.enemyIndex !== enemyIndex || !validEnemyMoveDeclaration(state, enemyIndex, a.declaredEventIndex!, d.presentationMove) || !d.presentationMove || a.origin !== d.presentationMove.origin || a.unresolvedReason !== undefined || (a.branch === 'primary' ? d.presentationMove.primaryMoveId : a.branch === 'alternate' ? d.presentationMove.alternateMoveId : undefined) !== a.moveId) return undefined
+        for (let k = j - 1; k > a.declaredEventIndex!; k--) {
+          const prior = state.eventLog[k]
+          if ((prior.type === 'EnemyIntentDeclared' && prior.enemyIndex === enemyIndex) || enemyPresentationBarrier(prior, enemyIndex)) return undefined
+        }
+      }
+      return a
+    }
+    if (ev.type === 'EnemyActionExecuting' || ev.type === 'EnemyActionResolved' || ev.type === 'ActionNegated' || (ev.type === 'EnemyIntentDeclared' && ev.enemyIndex === enemyIndex) || enemyPresentationBarrier(ev, enemyIndex)) break
+  }
+  return undefined
+}

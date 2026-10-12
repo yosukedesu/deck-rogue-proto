@@ -168,3 +168,67 @@ describe('応援 (ラリー)', () => {
     expect(s.enemies[1].strength).toBe(before[1] + 2)
   })
 })
+
+// Presentation payload is a receipt of existing aggregate resolution, not a new rule.
+describe('混乱攻撃の実損失・吸収 receipt', () => {
+  const cases = [
+    { name: 'other', encounter: 'enc_probe_pair', attacker: 0, target: 1, amount: 10, hits: 1, block: 0, hp: 30, loss: 10, endHp: 20 },
+    { name: 'self', encounter: 'enemy_probe', attacker: 0, target: 0, amount: 10, hits: 1, block: 0, hp: 30, loss: 10, endHp: 20 },
+    { name: 'multi aggregate', encounter: 'enc_probe_pair', attacker: 0, target: 1, amount: 4, hits: 3, block: 0, hp: 30, loss: 12, endHp: 18 },
+    { name: 'full guard', encounter: 'enc_probe_pair', attacker: 1, target: 0, amount: 10, hits: 1, block: 15, hp: 30, loss: 0, endHp: 30 },
+    { name: 'partial guard', encounter: 'enc_probe_pair', attacker: 1, target: 0, amount: 10, hits: 1, block: 6, hp: 30, loss: 4, endHp: 26 },
+    { name: 'heavy partial guard', encounter: 'enc_probe_pair', attacker: 1, target: 0, amount: 20, hits: 1, block: 19, hp: 30, loss: 1, endHp: 29 },
+    { name: 'lethal other', encounter: 'enc_probe_pair', attacker: 0, target: 1, amount: 10, hits: 1, block: 0, hp: 8, loss: 10, endHp: -2 },
+    { name: 'lethal self', encounter: 'enemy_probe', attacker: 0, target: 0, amount: 10, hits: 1, block: 0, hp: 8, loss: 10, endHp: -2 },
+    { name: 'zero', encounter: 'enemy_probe', attacker: 0, target: 0, amount: 0, hits: 1, block: 0, hp: 30, loss: 0, endHp: 30 },
+  ]
+  for (const c of cases) it(c.name, () => {
+    let s = withHand(freshCombat('set-auto', c.encounter, 42), [])
+    // Directly replacing intents is a synthetic receipt fixture, not a real declaration.
+    // Discard only the new provenance annotation so no old graph move is borrowed.
+    s = { ...s, eventLog: s.eventLog.map(e => e.type === 'EnemyIntentDeclared' ? { ...e, presentationMove: undefined } : e),
+      player: { ...s.player, hp: 75, setCards: [], permanents: [] }, enemies: s.enemies.map((e, i) => ({
+      ...e, hp: i === c.target ? c.hp : 30, maxHp: 30, block: 0, confusion: i === c.attacker ? 1 : 0,
+      burn: 0, thorns: 0,
+      intent: i === c.attacker ? { kind: 'attack', actual: c.amount, hits: c.hits } : c.block > 0 ? defend(c.block) : { kind: 'rest', actual: 0 },
+    })) }
+    const from = s.eventLog.length
+    const targetId = s.enemies[c.target].enemyId
+    const sourceId = s.enemies[c.attacker].enemyId
+    s = applyCommand(s, { type: 'EndTurn' })
+    const events = s.eventLog.slice(from)
+    expect(events.filter((e) => e.type === 'ConfusedAttack')).toEqual([{
+      type: 'ConfusedAttack', enemyIndex: c.attacker, targetIndex: c.target,
+      amount: c.amount * c.hits, hpLoss: c.loss, blocked: Math.min(c.block, c.amount * c.hits),
+      // Confusion remains one aggregate receipt; synthetic overwritten intents are explicitly unresolved.
+      presentationEnemyAction: {
+        version: 1, enemyId: sourceId, unresolvedReason: 'missing_or_invalid_latest_declaration',
+        executionEventIndex: s.eventLog.findIndex((e, i) => i >= from && e.type === 'EnemyActionExecuting' && e.enemyIndex === c.attacker),
+      },
+      presentationReceipt: {
+        version: 1, target: 'enemy', enemyIndex: c.target, enemyId: targetId,
+        before: { hp: c.hp, maxHp: 30, block: c.block },
+        after: { hp: c.endHp, maxHp: 30, block: Math.max(0, c.block - c.amount * c.hits) },
+      },
+    }])
+    expect(s.enemies[c.target].hp).toBe(c.endHp)
+    expect(s.enemies[c.target].block).toBe(Math.max(0, c.block - c.amount * c.hits))
+    expect(s.player.hp).toBe(75)
+    expect(s.enemies[c.attacker].confusion).toBe(0)
+    expect(events.some((e) => e.type === 'DamageDealt' || e.type === 'EnemyDied')).toBe(false)
+    expect(s.phase).toBe(c.encounter === 'enemy_probe' && c.endHp <= 0 ? 'won' : 'player-turn')
+  })
+
+  it('normal enemy multihit retains one aggregate DamageDealt', () => {
+    let s = withHand(freshCombat('set-auto', 'enemy_probe', 42), [])
+    s = { ...s, player: { ...s.player, hp: 75, block: 10, setCards: [], permanents: [] },
+      enemies: s.enemies.map((e) => ({ ...e, confusion: 0, intent: { kind: 'attack', actual: 4, hits: 3 } })) }
+    const from = s.eventLog.length
+    s = applyCommand(s, { type: 'EndTurn' })
+    const damage = s.eventLog.slice(from).filter((e) => e.type === 'DamageDealt')
+    expect(damage).toHaveLength(1)
+    expect(damage[0]).toMatchObject({ source: 'enemy', amount: 12, hpLoss: 2, blocked: 10 })
+    expect(s.eventLog.slice(from).some((e) => e.type === 'ConfusedAttack')).toBe(false)
+    expect(s.player.hp).toBe(73)
+  })
+})

@@ -7,6 +7,21 @@ namespace DeckRogue.Engine
 {
     public static class Events
     {
+        // Display-only copies of actual direct-mutation values. Rules never read these snapshots.
+        public static CombatPresentationReceipt PlayerPresentationReceipt(PlayerState before, PlayerState after) => new CombatPresentationReceipt
+        {
+            Version = 1, Target = "player",
+            Before = new CombatPresentationVitals { Hp = before.Hp, MaxHp = before.MaxHp, Block = before.Block, IceBlock = before.IceBlock },
+            After = new CombatPresentationVitals { Hp = after.Hp, MaxHp = after.MaxHp, Block = after.Block, IceBlock = after.IceBlock },
+        };
+
+        public static CombatPresentationReceipt EnemyPresentationReceipt(int enemyIndex, EnemyState before, EnemyState after) => new CombatPresentationReceipt
+        {
+            Version = 1, Target = "enemy", EnemyIndex = enemyIndex, EnemyId = before.EnemyId,
+            Before = new CombatPresentationVitals { Hp = before.Hp, MaxHp = before.MaxHp, Block = before.Block },
+            After = new CombatPresentationVitals { Hp = after.Hp, MaxHp = after.MaxHp, Block = after.Block },
+        };
+
         /// <summary>イベントをログに追記した新しい状態を返す</summary>
         public static GameState Emit(GameState state, GameEvent ev)
         {

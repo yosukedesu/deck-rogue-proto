@@ -271,7 +271,7 @@ namespace DeckRogue.Engine
                         s = TransformChosenCard(s, opts.CardUid, def);
                         break;
                     default:
-                        s = Effects.ResolveEffectTargeted(s, effect, target);
+                        s = Effects.ResolveEffectTargeted(s, effect, target, new DamagePresentationSource { Kind = "gear", DefinitionId = def.Id });
                         break;
                 }
             }
