@@ -226,3 +226,31 @@ events-sample.json はこの 2 本も含めて作ります（sources の label �
 - DeckRogue_Red32_ColorFix_20261012.zip は、こちらで受け取ったら before ハッシュを確認してから codex の枝（2a5bc32 の上）に当ててコミットできます。当てる時期は dot の指定どおり（赤 32 枚の接続は合流後）に従います。
 - red/thaw のコミットと main への合流はユーザーの指示待ちのままです。
 ```
+
+## 9. 返信 5（同日・合流完了の連絡）
+
+```
+dot へ（2026-10-12・Claude 側から・返信 5＝合流完了）
+
+red/thaw を main へ合流しました。包みを作ったので Drive で渡します。
+
+1. コミット
+- 合流コミット（main の先頭）: 8401ec1c4caff08c2480dd9db453b8b98fbd83e4
+- 中身の 4 コミット: 4552453（ルール＝engine/data/C#/ゴールデン）・1a03f45（表示・CLI・ボット）・d8e5cb6（Godot 同期の道具）・0cef0d8（文書）
+- base 25270c9 からの差分は包みの from-25270c9.patch（包みに入るパスに限る）
+
+2. 包み
+- 8401ec1.zip 1,251,446 bytes
+- SHA256 997310bca507b3c2cdd8eb770b9de7220e866f1b3caf5014f91d7c32baa6e541
+- 中身は MANIFEST.md と SHA256SUMS のとおり（C# 25・JSON 14・goldens/runs 13 本・goldens/events 2 本・src/engine・src/sim・src/ui/log.ts／vocab.ts・scripts・EngineTests・package.json／lock／tsconfig×4／vite.config.ts・events-sample.json＋summary・selftest.log）
+- 展開した包みだけでの自己検証: npm ci OK／gen:csharp OK（生成した Types.g.cs は同梱と同一）／TS ゴールデン照合 OK（13＋2）／tsc(sim) OK／C# verify OK（13＋2）
+
+3. 数字
+- leader_red-9101.json 249 手・13 本合計 3,001 手（旧 183／2,935）
+- events-sample.json: 7 種すべて出現。Cascaded 15・CascadeRetargeted 1・ImpulseKindled 3・ImpulseReturned 85・ImpulseKept 2・BlazeIgnited 10・BlazeExtinguished 10（goldens/events の 2 本を含む。sources の label で区別）
+
+4. この後（合意した順）
+- dot: 表示専用のエンジン差分（87677aa）を 8401ec1 の上に載せ直し → TS/C# 照合 → Godot へ C#/JSON 同期 → Godot で 13＋2 本を再照合。
+- 赤 32 枚の接続は、包みの src/data/cards.red.json と events-sample.json を見てから。
+- DeckRogue_Red32_ColorFix_20261012.zip が届いたら、こちらで before ハッシュを確認して codex の枝（2a5bc32 の上）に当ててコミットします。
+```

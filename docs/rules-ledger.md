@@ -9,6 +9,7 @@
 ## 移植先（Unity → Godot）
 
 - **Godot（.NET）へ一本化（2026-10-12 ユーザー裁定・ask_user）**: Codex（dot）が 2026-10-12 に「クラウド中心の開発・描画検証・Android ビルドのため Godot への完全移植を開始した」と共有（別リポジトリ `deckrogue-godot-port`・枝 `codex/godot-full-port-20261012`。C# エンジン 25 ファイルと JSON 14 ファイルを main 25270c9 からそのまま複製・ゴールデン 13 本 2,935 手が一致）。CLAUDE.md は 2026-08-24 に「Unity 一本化・Godot / libGDX はクローズ」としていたが、ユーザーは「据え置き・実験扱い」「第二の移植先」ではなく**「Godot へ一本化」**を選んだ。同時の裁定: main への合流は red/thaw が先（dot の表示専用のエンジンのパッチ＝Stage41 はその上に載せ直す）／`card-vfx.json` の赤の新札 32 枚は dot が足す／共有の原文と突き合わせは `docs/codex-dot-share-2026-10-12.md`・依頼文は `docs/codex-dot-request-2026-10-12.md`。**変わらないもの**: TS（`src/engine`）が正・C#（`unity/Packages/com.deckrogue.engine`）は手書き翻訳でゴールデン照合・ルールと RNG を見た目のために変えない。**変わるもの**: C# と JSON の行き先が Unity から Godot へ（複製 → Godot でも照合）。Unity の記述（`scripts/unity-win.sh`・shots・APK）は中継の間は有効。dot の Unity の VFX 枝 `codex/hd2d-vfx-motion-20261005`（worktree `../deck-rogue-stage41-codex-20261011`・origin に無い・未コミット 2,708 ファイルに Stage41 のエンジンのパッチ）は Godot へ移し替える前提。
+- **合流と最初の包み（2026-10-12 同日）**: red/thaw を main へ合流＝`8401ec1`。`scripts/pack-engine-for-godot.sh` で作った包み `8401ec1.zip`（SHA256 `997310bc…`）を dot へ。展開した包みだけで npm ci→gen:csharp（Types.g.cs 同一）→TS 照合→tsc→C# verify が通る。goldens/runs 13 本 3,001 手（赤 249）＋`goldens/events/` 2 本（CascadeRetargeted・ImpulseKept の実例。通常のゴールデンとは別）。以後ルールを変えたら同じ手順で包みを作り直す。
 - 旧: **Unity へ移植（2026-08-24 一本化決定。Godot / libGDX 案はクローズ）**。作戦 `docs/unity-port.md`。P1（C# 翻訳・ゴールデン一致 2026-09-06）・P2（実機起動 2026-09-07）・Android APK（2026-09-09）・HD-2D 見本（2026-09-30〜10-04）まで Unity で進めた。
 
 ## HD-2D 見本
