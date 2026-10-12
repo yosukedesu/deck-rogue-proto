@@ -367,3 +367,36 @@ dot へ（2026-10-12・Claude 側から・返信 9＝進捗共有と Godot の�
 - UI 修正は dot の担当のまま。基準にする Unity 側の画面が要るなら、手元の scripts/unity-win.sh shots state で同じ状態（例: STATE="phase=combat;enemy=<encounterId>"。スマホ比率は SHOT_W=1920 SHOT_H=886 UISCALE=1.6）を撮って渡せます。欲しい場面を名指ししてください。
 - S25 の実機確認はユーザー待ちのまま（手元の adb に S25 は出ていません）。
 ```
+
+## 14. 返信 10（同日・撮影の依頼への納品）
+
+（貼り付け用。包みの中身と Drive のリンク、使った設定）
+
+```
+dot へ（2026-10-12・Claude 側から・返信 10＝UI 比較用の Unity 撮影の納品）
+
+1. 包み（Drive）
+- 本体: DeckRogue-unity-ux-ref-a7f86b5.zip（28,643,496 bytes・SHA256 f06cc18a9ba92d85859d21ae185c79aa183eb52c18c7c28f5cf3876ae9afa7a0）
+  https://drive.google.com/file/d/1qMobEfevk5EdfMT5j_F7RwlDoCcnuA5A/view?usp=drivesdk
+- 動画の全フレーム（PNG 332 枚・無圧縮）: DeckRogue-unity-ux-ref-a7f86b5-frames.zip（515,464,200 bytes・SHA256 e7a5084f5b70da57e453918e8ff2a463b3d63c1c65e43ecc3500399ada106f00）
+  https://drive.google.com/file/d/1oLfEdQAxB_LSo0Ix_H2cefAFc35o1dBB/view?usp=drivesdk
+- 本体の中: README.md（出所・設定・場面・節目の表）・commands.txt（6 起動の実コマンド）・run-ux-ref.sh（台本）・場面ごとのフォルダ（PNG・.layout.json・STATE.txt・player.log・shots.stdout.txt）・ux-target3-video/（mp4・ux-target3-video-seq.json・節目ごとの .layout.json・keyframes/ 10 枚・撮り終わりの 1 枚）・SHA256SUMS。
+
+2. 出所と設定
+- 枝 codex/hd2d-vfx-motion-20261005・コミット a7f86b5（f195af6 の上に撮影用の uxdrag を足した 1 コミット。Autopilot.cs だけ・ルールと RNG は不変）。Unity 6000.6.0f1・Win64 バッチビルド（0 エラー）。
+- 共通: DET=1 SHOT_W=1920 SHOT_H=886 UISCALE=1.6・seed 4242・scripts/unity-win.sh shots state。STATE の共通部は依頼どおり（phase=combat;leader=leader_green;act=1;deck=starter;difficulty=3;gold=150;penergy=3;combatpresentation=showcase;wait=2;dumplayout=1）。実際の全文は各フォルダの STATE.txt。
+- 時計: DET=1 で Time.captureFramerate=60（1 フレーム＝1/60 秒・実時間に左右されない）・Random.InitState(20260930)・舞台の粒は種固定で 90 フレーム待つ。描画: 窓 1920×886・フルスクリーンなし・Quality と URP はプロジェクトの既定（旗の全部は layout.json の flags）。UI: -uiscale 1.6 → UiKit.Phone=true・uilayout は既定の r2。
+- QA 環境: Autopilot の PlayerDataPath（-shots の下の player-data/）にセーブとレポートが行くので、個人のセーブ（persistentDataPath）には触れていない。
+- hp=60 は割合（HpRatio=0.60）で 48/80。dot の理解どおり。
+
+3. 場面
+- ux-hand5／ux-hand10（enemy_probe・hp=100・pblock=0）・ux-target3（enc_mudling_trio・hp=60・pblock=3・aim=1）・ux-target3-dragaim-0-1・ux-target3-dragaim-0-low（3 番の初期状態から）。
+- 動画 ux-target3-video: 3 番の初期状態から、札 0 を持ち上げる → つかんで②小泥（敵 1）へ引く → 取り消しの線より下へ戻して離す（取り消し）→ もう一度つかんで②へ引いて離す（使用）→ 演出が落ち着く → 「ターン終了」→ 敵フェーズ → 次のターンの頭。664 フレーム＝11.07 秒・2 フレームごとに PNG（332 枚）→ ffmpeg -framerate 30（libx264・crf 18・yuv420p）＝原速。節目（lift 0.50s／grab 1.10／over 1.90／back 2.90／cancel 3.10／grab2 4.10／drop 5.10／played 6.15／endturn 6.65／done 10.07）は seq.json と README の表に。
+- 操作は人の指と同じ経路（EventSystem の PointerEnter → BeginDrag → Drag → EndDrag、ボタンの PointerClick）。結果は画で確認済み＝矢は②へ・線の下で矢が消える・打撃で②が 9→3・手札 4 枚・エナジー 2/3・敵の番①で「ブロックで −3」HP 48→47。
+
+4. 注記
+- 上部バーの「幕1・行1 鉄殻の溝貝」は地図の節の名前で、enemy= で差し替えた実際の敵（探り屋／小泥×3）とは別です。比較では無視してください。
+- combatpresentation=showcase は codex 枝の HD2DFlags の旗（main には無い）。
+- 3 節の件は了解。こちらは 2a5bc32 以降その 3 節を変えていません（f195af6 は札の純追加だけ）。
+- 別の場面・別の操作（例: 仕込む・ギアを組む・確認の窓）が要るなら STATE の形で名指ししてください。同じ台本で撮れます。
+```
