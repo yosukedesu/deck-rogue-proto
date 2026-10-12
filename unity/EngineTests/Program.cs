@@ -15,6 +15,64 @@ if (args.Length > 0 && args[0] == "verify")
 {
     return VerifyGoldenRuns(args.Skip(1).ToArray());
 }
+// Replay independent TypeScript confusion fixtures, including full event payload/RNG parity.
+// dotnet run -- confusion <engine-fixtures.json> [--data <src/data>]
+if (args.Length > 0 && args[0] == "confusion")
+{
+    if (args.Length < 2) { Console.Error.WriteLine("usage: confusion <engine-fixtures.json> [--data <src/data>]"); return 2; }
+    var dataDir = "../../src/data";
+    for (int i = 2; i < args.Length; i++) if (args[i] == "--data" && i + 1 < args.Length) dataDir = args[++i];
+    Content.Load(dataDir);
+    var fixtures = JArray.Parse(File.ReadAllText(args[1]));
+    int failures = 0;
+    foreach (var fixture in fixtures)
+    {
+        var initial = JsonConvert.DeserializeObject<GameState>(fixture["initial"].ToString(), JsonUnions.Settings)!;
+        var command = JsonConvert.DeserializeObject<Command>(fixture["command"].ToString(), JsonUnions.Settings)!;
+        var actual = State.ApplyCommand(initial, command);
+        var expected = JsonConvert.DeserializeObject<GameState>(fixture["expected"].ToString(), JsonUnions.Settings)!;
+        var actualJson = JToken.Parse(JsonConvert.SerializeObject(actual, JsonUnions.Settings));
+        var expectedJson = JToken.Parse(JsonConvert.SerializeObject(expected, JsonUnions.Settings));
+        bool pass = JToken.DeepEquals(actualJson, expectedJson);
+        Console.WriteLine($"{(pass ? "OK" : "DIFF")} confusion {fixture["name"]}");
+        if (!pass) { failures++; Console.Error.WriteLine(actualJson.ToString()); }
+    }
+    return failures == 0 ? 0 : 1;
+}
+// Replay independently generated TS provenance fixtures, comparing complete typed state.
+if (args.Length > 0 && args[0] == "provenance")
+{
+    if (args.Length < 2) return 2;
+    var dataDir = "../../src/data";
+    for (int i = 2; i < args.Length; i++) if (args[i] == "--data" && i + 1 < args.Length) dataDir = args[++i];
+    Content.Load(dataDir); int failures = 0, steps = 0;
+    foreach (var fixture in JArray.Parse(File.ReadAllText(args[1])))
+    {
+        var state = JsonConvert.DeserializeObject<GameState>(fixture["initial"].ToString(), JsonUnions.Settings)!;
+        int failuresBefore = failures;
+        foreach (var step in fixture["steps"]!)
+        {
+            var a = step["action"]!; int enemy = (int?)a["enemyIndex"] ?? 0;
+            switch ((string)a["type"]!)
+            {
+                case "command": state = State.ApplyCommand(state, JsonConvert.DeserializeObject<Command>(a["command"]!.ToString(), JsonUnions.Settings)!); break;
+                case "card": state = Effects.ResolveOnPlayEffects(state, a["card"]!.ToObject<CardInstance>()!, enemy); break;
+                case "reaction": state = Effects.ResolveReactionEffects(state, a["card"]!.ToObject<CardInstance>()!, enemy); break;
+                case "necro": state = Effects.FireNecroEffects(state, a["cards"]!.ToObject<List<CardInstance>>()!, enemy); break;
+                case "permanent": state = Effects.RunPermanentTriggers(state, (string)a["trigger"]!, enemy); break;
+                case "gear": state = Gears.ResolveGear(state, Content.GetGearDef((string)a["gearId"]!), a["options"]?.ToObject<Gears.UseGearOptions>()); break;
+                default: throw new InvalidOperationException("Unknown provenance fixture action");
+            }
+            if ((bool?)a["roundtrip"] == true) state = JsonConvert.DeserializeObject<GameState>(JsonConvert.SerializeObject(state, JsonUnions.Settings), JsonUnions.Settings)!;
+            var expected = JsonConvert.DeserializeObject<GameState>(step["expected"]!.ToString(), JsonUnions.Settings)!;
+            bool pass = JToken.DeepEquals(JToken.Parse(JsonConvert.SerializeObject(state, JsonUnions.Settings)), JToken.Parse(JsonConvert.SerializeObject(expected, JsonUnions.Settings)));
+            steps++; if (!pass) { failures++; Console.Error.WriteLine($"DIFF provenance {fixture["name"]} step {steps}"); }
+        }
+        Console.WriteLine($"{(failures == failuresBefore ? "OK" : "DIFF")} replayed provenance {fixture["name"]}");
+    }
+    Console.WriteLine($"Provenance: {steps} complete TS/C# state comparisons, {failures} differences");
+    return failures == 0 ? 0 : 1;
+}
 if (args.Length > 0 && args[0] == "dump-save")
 {
     return DumpSave(args.Skip(1).ToArray());

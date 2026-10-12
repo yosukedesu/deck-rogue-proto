@@ -402,7 +402,7 @@ namespace DeckRogue.Engine
             {
                 var (biteIntent, rngB) = BuildIntent(s.Rng, biteMove, enemy.Strength, enemy.AtkScale ?? 1.0);
                 var enemiesB = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = biteIntent, BiteNext = false, IntentMoveId = null, IntentNode = null } : e);
-                return Events.Emit(s with { Rng = rngB, Enemies = enemiesB }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = biteIntent });
+                return Events.Emit(s with { Rng = rngB, Enemies = enemiesB }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = biteIntent, PresentationMove = CaptureEnemyMoveDeclaration(s, i, "forced-bite", biteMove.Id) });
             }
             // バランス崩し: 直前の攻撃を完全に防がれていたら、この宣言は隙 (カーソルは進めない)
             if (enemy.StaggeredNext == true)
@@ -410,14 +410,14 @@ namespace DeckRogue.Engine
                 var staggerMove = new EnemyMove { Id = "stagger", Kind = EnemyActionKinds.Rest };
                 var (restIntent, rngS) = BuildIntent(s.Rng, staggerMove, enemy.Strength, enemy.AtkScale ?? 1.0);
                 var enemiesS = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = restIntent, StaggeredNext = false, IntentMoveId = null, IntentNode = null } : e);
-                return Events.Emit(s with { Rng = rngS, Enemies = enemiesS }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = restIntent });
+                return Events.Emit(s with { Rng = rngS, Enemies = enemiesS }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = restIntent, PresentationMove = CaptureEnemyMoveDeclaration(s, i, "stagger", null) });
             }
             // 前の意図が逃走なら (打ち消された逃走) 2度続けては宣言しない。自ターン開始で意図は消えているので PrevIntentKind を読む (E1)
             if ((enemy.StolenGold ?? 0) > 0 && (enemy.Intent?.Kind ?? enemy.PrevIntentKind) != EnemyActionKinds.Flee)
             {
                 var (fleeIntent, rngF) = BuildIntent(s.Rng, fleeMove, enemy.Strength, enemy.AtkScale ?? 1.0);
                 var enemies2 = MapIdx(s.Enemies, (e, j) => j == i ? e with { Intent = fleeIntent, IntentMoveId = null, IntentNode = null } : e);
-                return Events.Emit(s with { Rng = rngF, Enemies = enemies2 }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = fleeIntent });
+                return Events.Emit(s with { Rng = rngF, Enemies = enemies2 }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = fleeIntent, PresentationMove = CaptureEnemyMoveDeclaration(s, i, "forced-flee", def.Moves.Any(m => ReferenceEquals(m, fleeMove)) ? fleeMove.Id : null) });
             }
             // 割り込み (HP半分の豹変・単独時の転職・被弾覚醒): 宣言時に全種を判定してカーソルを飛ばす。
             // ギア「鎮めの錘」(InterruptBlocked) はこの経路でも止める (2026-09-20 Opus 火種C)。TS と同形
@@ -455,6 +455,7 @@ namespace DeckRogue.Engine
             nextUses[move.Id] = usesSoFar + 1;
 
             EnemyIntentBranch alt = null;
+            string alternateMoveId = null;
             if (reactTable != null && reactTable.Count > 0)
             {
                 var weightsA = new List<double>(reactTable.Count);
@@ -462,6 +463,7 @@ namespace DeckRogue.Engine
                 var (altIdx, rngB) = Rng.WeightedIndex(rng, weightsA);
                 rng = rngB;
                 var altMove = EnemyGraph.MoveById(def, reactTable[altIdx].To);
+                alternateMoveId = altMove.Id;
                 if (altMove.Id == move.Id)
                 {
                     // 同じ技の両分岐は同じロール (2026-09-14 Opus AB3)
@@ -517,7 +519,7 @@ namespace DeckRogue.Engine
                 if (stolen > 0) updated = updated with { StolenGold = (e.StolenGold ?? 0) + stolen };
                 return updated;
             });
-            s = Events.Emit(s with { Rng = rng, Enemies = enemies }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = declared });
+            s = Events.Emit(s with { Rng = rng, Enemies = enemies }, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = declared, PresentationMove = CaptureEnemyMoveDeclaration(s, i, "graph", move.Id, alternateMoveId, walked.NodeId) });
             if (stolen > 0) s = Events.Emit(s, new GameEvent_GoldStolen { EnemyIndex = i, Amount = stolen });
             return s;
         }
@@ -720,7 +722,7 @@ namespace DeckRogue.Engine
                     Slippery = childDef.Slippery,
                 };
                 s = s with { Enemies = Append(s.Enemies, child) };
-                if (stunned) s = Events.Emit(s, new GameEvent_EnemyIntentDeclared { EnemyIndex = s.Enemies.Count - 1, Intent = child.Intent });
+                if (stunned) s = Events.Emit(s, new GameEvent_EnemyIntentDeclared { EnemyIndex = s.Enemies.Count - 1, Intent = child.Intent, PresentationMove = CaptureEnemyMoveDeclaration(s, s.Enemies.Count - 1, "spawn-rest") });
                 // 自ターン中の出現 (分裂) は即座に宣言。敵フェーズ中の出現 (召喚) は意図なし = そのフェーズでは動かず次の自ターン開始で宣言
                 else if (s.EnemyPhase != true) s = DeclareOne(s, s.Enemies.Count - 1);
             }
@@ -789,7 +791,7 @@ namespace DeckRogue.Engine
                 if (bite == null) continue;
                 var (intent, rng) = BuildIntent(s.Rng, bite, e.Strength, e.AtkScale ?? 1.0);
                 s = s with { Rng = rng, Enemies = MapIdx(s.Enemies, (x, j) => j == i ? x with { Intent = intent, BiteNext = false } : x) };
-                s = Events.Emit(s, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = intent });
+                s = Events.Emit(s, new GameEvent_EnemyIntentDeclared { EnemyIndex = i, Intent = intent, PresentationMove = CaptureEnemyMoveDeclaration(s, i, "forced-bite", bite.Id) });
             }
             return s;
         }
@@ -811,13 +813,15 @@ namespace DeckRogue.Engine
                 if (state.GearDeathSave == true)
                 {
                     // 蘇りの発条 (ギア 2026-09-17): この戦闘中、致死を一度だけ耐えて HP1 で立つ (全快でなく1 = 糸は続く)。蜥蜴の尾より先
-                    state = Events.Emit(state with { GearDeathSave = false, Player = state.Player with { Hp = 1 } }, new GameEvent_DeathSaved { Hp = 1, Source = "gear" });
+                    var next = state with { GearDeathSave = false, Player = state.Player with { Hp = 1 } };
+                    state = Events.Emit(next, new GameEvent_DeathSaved { Hp = 1, Source = "gear", PresentationReceipt = Events.PlayerPresentationReceipt(state.Player, next.Player) });
                 }
                 // 蜥蜴の尾 (2026-09-12 本家 Lizard Tail): 致死を1度だけ耐えて最大HPの半分で立つ (ランで1度)
                 else if (state.DeathSave == true && state.DeathSaveUsed != true)
                 {
                     int hp = Math.Max(1, (int)Math.Floor(state.Player.MaxHp / 2.0));
-                    state = Events.Emit(state with { DeathSaveUsed = true, Player = state.Player with { Hp = hp } }, new GameEvent_DeathSaved { Hp = hp, Source = "relic" });
+                    var next = state with { DeathSaveUsed = true, Player = state.Player with { Hp = hp } };
+                    state = Events.Emit(next, new GameEvent_DeathSaved { Hp = hp, Source = "relic", PresentationReceipt = Events.PlayerPresentationReceipt(state.Player, next.Player) });
                 }
                 else
                 {
@@ -1369,11 +1373,11 @@ namespace DeckRogue.Engine
                     for (int i = 0; i < effCard.Def.Effects.Count; i++)
                     {
                         var effect = effCard.Def.Effects[i];
-                        if (effect.Trigger == "onPlay") s = Effects.ResolveEffectTargeted(s, effect, enemyIndex);
+                        if (effect.Trigger == "onPlay") s = Effects.ResolveEffectTargeted(s, effect, enemyIndex, new DamagePresentationSource { Kind = "card", DefinitionId = effCard.Def.Id, Uid = effCard.Uid });
                     }
                     for (int i = 0; i < chosenMode.Effects.Count; i++)
                     {
-                        s = Effects.ResolveEffectTargeted(s, chosenMode.Effects[i], enemyIndex);
+                        s = Effects.ResolveEffectTargeted(s, chosenMode.Effects[i], enemyIndex, new DamagePresentationSource { Kind = "card", DefinitionId = effCard.Def.Id, Uid = effCard.Uid });
                     }
                     s = s with { ResolvingCardPlay = false };
                 }
@@ -1812,8 +1816,9 @@ namespace DeckRogue.Engine
                 int burnHp = scalds * 2 + brands * 1;
                 if (burnHp > 0)
                 {
+                    var beforeScald = s.Player;
                     s = s with { Player = s.Player with { Hp = s.Player.Hp - burnHp } };
-                    s = Events.Emit(s, new GameEvent_ScaldTick { Count = scalds + brands, Amount = burnHp, Scalds = scalds, Brands = brands });
+                    s = Events.Emit(s, new GameEvent_ScaldTick { Count = scalds + brands, Amount = burnHp, Scalds = scalds, Brands = brands, PresentationReceipt = Events.PlayerPresentationReceipt(beforeScald, s.Player) });
                     s = CheckCombatEnd(s);
                     if (s.Phase == CombatPhases.Lost) return s;
                 }
@@ -1890,7 +1895,7 @@ namespace DeckRogue.Engine
                     DamageTakenTotal = (e.DamageTakenTotal ?? 0) + amount,
                     HpLostSinceRegen = (e.HpLostSinceRegen ?? 0) + amount,
                 });
-                s = Events.Emit(s, new GameEvent_BurnTick { EnemyIndex = i, Amount = amount });
+                s = Events.Emit(s, new GameEvent_BurnTick { EnemyIndex = i, Amount = amount, PresentationReceipt = Events.EnemyPresentationReceipt(i, enemy, s.Enemies[i]) });
                 if (s.Enemies[i].Hp <= 0) s = Effects.FireEnemyDied(s, i); // 焼き切って倒れた (onEnemyDied 2026-09-12)
                 if (wasBlazingAtTick && !Effects.IsBlazing(s)) s = Events.Emit(s, new GameEvent_BlazeExtinguished()); // 2026-10-12 段2b。TS と同形
                 s = Effects.ApplyDamageInterrupts(s, i); // 被弾覚醒はどの経路の被弾でも
@@ -1971,6 +1976,7 @@ namespace DeckRogue.Engine
                 var enemy = s.Enemies[i];
                 if (enemy.Hp <= 0 || enemy.Intent == null) continue;
                 var acting = Effects.EffectiveIntent(s, i);
+                var presentationAction = CaptureEnemyExecution(s, i, !ReferenceEquals(acting, enemy.Intent));
                 // 条件付き意図の分岐をここで確定させる (窓が嘘をつかないため)
                 var locked = new EnemyIntent
                 {
@@ -1997,7 +2003,7 @@ namespace DeckRogue.Engine
                 // 静かな鈴が効くかをここで固定する (2026-09-24 Opus ひなた E2: 罠1枚を pre 窓で発動すると鈴が外れ、窓の「鈴で-2」が嘘になっていた)
                 s = s with { BellLocked = s.Player.SetCards.Count > 0 };
                 // 行動実行の直前フック (pre窓): 打ち消し・軽減リアクションがここで発動/割り込みする
-                var executing = new GameEvent_EnemyActionExecuting { EnemyIndex = i, Kind = locked.Kind };
+                var executing = new GameEvent_EnemyActionExecuting { EnemyIndex = i, Kind = locked.Kind, PresentationEnemyAction = presentationAction with { ExecutionEventIndex = s.EventLog.Count } };
                 s = Events.Emit(s, executing);
                 s = Hooks.DispatchHooks(s, executing);
                 if (s.Phase == CombatPhases.AwaitingReaction) return s; // pre窓の割り込み → コマンド待ち
@@ -2043,7 +2049,7 @@ namespace DeckRogue.Engine
                 for (int i = 0; i < card.Def.Effects.Count; i++)
                 {
                     var effect = card.Def.Effects[i];
-                    if (effect.Trigger == trigger) s = Effects.ResolveEffectTargeted(s, effect, enemyIndex);
+                    if (effect.Trigger == trigger) s = Effects.ResolveEffectTargeted(s, effect, enemyIndex, new DamagePresentationSource { Kind = "reaction", DefinitionId = card.Def.Id, Uid = card.Uid });
                 }
             }
             return CheckCombatEnd(s);
@@ -2189,6 +2195,7 @@ namespace DeckRogue.Engine
                 return Effects.RunPermanentTriggers(negated, "onActionNegated", enemyIndex);
             }
             var intent = Effects.EffectiveIntent(state, enemyIndex);
+            var presentationEnemyAction = CurrentEnemyExecution(state, enemyIndex);
             // 解決した行動を記録する (post窓の誘発判定に使う)
             Func<GameState, int, GameState> markResolved = (s0, hpLoss0) => s0 with
             {
@@ -2231,13 +2238,15 @@ namespace DeckRogue.Engine
                                 return x;
                             }),
                         };
-                        return Events.Emit(s, new GameEvent_ConfusedAttack { EnemyIndex = enemyIndex, TargetIndex = targetIdx, Amount = total });
+                        return Events.Emit(s, new GameEvent_ConfusedAttack { PresentationEnemyAction = presentationEnemyAction, EnemyIndex = enemyIndex, TargetIndex = targetIdx, Amount = total, HpLoss = hpLossC, Blocked = blockedC, PresentationReceipt = Events.EnemyPresentationReceipt(targetIdx, target, s.Enemies[targetIdx]) });
                     }
                     // 連撃 (hits>1) は1発ずつ解決する。各ヒットに脆弱を補正し、通常ブロック→氷壁の順で消費する。
                     // 手数の鏡: 実行時のヒット数 = このターンにプレイした枚数 (伏せも数える。最低1)
                     int hits = intent.MirrorHits == true
                         ? Math.Max(1, state.Player.CardsPlayedThisTurn + (state.Player.SetsThisTurn ?? 0))
                         : (intent.Hits ?? 1);
+                    var presentationContributions = new List<EnemyAttackContribution>();
+                    int presentationExecutedHits = 0;
                     int block = state.Player.Block;
                     int iceBlock = state.Player.IceBlock;
                     int dealtTotal = 0;
@@ -2248,6 +2257,7 @@ namespace DeckRogue.Engine
                     bool nullify = state.NullifyNextAttack == true;
                     for (int h = 0; h < hits; h++)
                     {
+                        presentationExecutedHits++;
                         int v = intent.Actual;
                         // 威圧 (本家 Weak 化): スタックがあれば各ヒット-25% (切り捨て・最低1)
                         v = Effects.ApplyEnemyWeak(v, state.Enemies[enemyIndex]?.Weak);
@@ -2264,7 +2274,12 @@ namespace DeckRogue.Engine
                             v = (int)Math.Floor(v * (1 + 0.1 * (state.Player.PlaysThisTurn ?? 0)));
                         }
                         dealtTotal += v;
-                        if (nullify) { blockedTotal += v; continue; }
+                        if (nullify)
+                        {
+                            blockedTotal += v;
+                            if (presentationContributions.Count < 256) presentationContributions.Add(new EnemyAttackContribution { AmountContribution = v, HpLossContribution = 0, BlockContribution = 0, IceContribution = 0, NullifiedContribution = v, MitigatedContribution = 0 });
+                            continue;
+                        }
                         int blocked = Math.Min(block, v);
                         block -= blocked;
                         int remaining = v - blocked;
@@ -2286,6 +2301,7 @@ namespace DeckRogue.Engine
                             hit = capped;
                         }
                         hpLoss += hit;
+                        if (presentationContributions.Count < 256) presentationContributions.Add(new EnemyAttackContribution { AmountContribution = v, HpLossContribution = hit, BlockContribution = blocked, IceContribution = iceBlocked, NullifiedContribution = 0, MitigatedContribution = v - blocked - iceBlocked - hit });
                     }
                     bool capCharge = capFired && state.MaxHpLossFiredThisTurn != true && state.MaxHpLossCharges != null;
                     var sa = state with
@@ -2304,7 +2320,7 @@ namespace DeckRogue.Engine
                             HpLostThisTurn = (state.Player.HpLostThisTurn ?? 0) + hpLoss,
                         },
                     };
-                    sa = Events.Emit(sa, new GameEvent_DamageDealt { Source = "enemy", Amount = dealtTotal, HpLoss = hpLoss, EnemyIndex = enemyIndex, Blocked = blockedTotal > 0 ? blockedTotal : (int?)null, Nullified = nullify ? true : (bool?)null });
+                    sa = Events.Emit(sa, new GameEvent_DamageDealt { Source = "enemy", Amount = dealtTotal, HpLoss = hpLoss, EnemyIndex = enemyIndex, Nullified = nullify ? true : (bool?)null, PresentationEnemyAction = presentationEnemyAction, PresentationEnemyAttack = new EnemyAttackPresentation { Version = 1, Resolution = "aggregate-final-mutation", EnemyId = enemy.EnemyId, EffectiveActual = intent.Actual, LoopBound = hits, ExecutedHits = presentationExecutedHits, MirrorHits = intent.MirrorHits == true ? (bool?)true : null, Contributions = presentationExecutedHits <= 256 ? presentationContributions : null, ContributionsOmittedReason = presentationExecutedHits > 256 ? "presentation_capture_limit" : null }, Blocked = blockedTotal > 0 ? blockedTotal : (int?)null, PresentationReceipt = Events.PlayerPresentationReceipt(state.Player, sa.Player) });
                     if (capCharge) sa = Events.Emit(sa, new GameEvent_HpLossCapped { Left = sa.MaxHpLossCharges ?? 0 });
                     // HPを失った後の誘発 (2026-09-12 onDamageTaken: 百年の謎かけ・粘土・ルーンの立方体。HP損失0では鳴らない)
                     if (hpLoss > 0) sa = Effects.RunPermanentTriggers(sa, "onDamageTaken", enemyIndex);
@@ -2317,9 +2333,10 @@ namespace DeckRogue.Engine
                     // 攻防一体 (alsoDefend): 攻撃と同時に固定ブロックを得る。潜伏中は得ない
                     if (intent.AlsoDefend != null && intent.AlsoDefend > 0 && sa.Enemies[enemyIndex]?.BurrowActive != true)
                     {
+                        var beforeDefend = sa.Enemies[enemyIndex];
                         int ad = intent.AlsoDefend.Value;
                         sa = WithEnemy(sa, enemyIndex, e => e with { Block = e.Block + ad });
-                        sa = Events.Emit(sa, new GameEvent_BlockGained { Target = "enemy", Amount = ad });
+                        sa = Events.Emit(sa, new GameEvent_BlockGained { Target = "enemy", Amount = ad, PresentationReceipt = Events.EnemyPresentationReceipt(enemyIndex, beforeDefend, sa.Enemies[enemyIndex]) });
                     }
                     // 攻撃に付与された状態異常はダメージ後に適用
                     if (intent.Inflict != null) sa = ApplyStatusToPlayer(sa, intent.Inflict);
@@ -2349,7 +2366,7 @@ namespace DeckRogue.Engine
                     // 潜伏中は殻が育たない: 防御行動でもブロックを得ない
                     bool shellUp = state.Enemies[enemyIndex]?.BurrowActive == true;
                     var enemies = MapIdx(state.Enemies, (e, i) => (i == enemyIndex && !shellUp) ? e with { Block = e.Block + intent.Actual } : e);
-                    var s = Events.Emit(state with { Enemies = enemies }, new GameEvent_BlockGained { Target = "enemy", Amount = intent.Actual });
+                    var s = Events.Emit(state with { Enemies = enemies }, new GameEvent_BlockGained { Target = "enemy", Amount = intent.Actual, PresentationReceipt = Events.EnemyPresentationReceipt(enemyIndex, state.Enemies[enemyIndex], enemies[enemyIndex]) });
                     // 防御と同時の強化 (用心深い影「隠れる」)
                     if (intent.AlsoBuff != null && enemyIndex < s.Enemies.Count && s.Enemies[enemyIndex] != null && s.Enemies[enemyIndex].Hp > 0)
                     {
@@ -2382,9 +2399,10 @@ namespace DeckRogue.Engine
                     var target = state.Enemies[targetIdx];
                     int healed = Math.Min(intent.Actual, target.MaxHp - target.Hp);
                     int tIdx = targetIdx;
-                    var s = Events.Emit(
-                        state with { Enemies = MapIdx(state.Enemies, (e, i) => i == tIdx ? e with { Hp = e.Hp + healed } : e) },
-                        new GameEvent_EnemyHealed { EnemyIndex = enemyIndex, TargetIndex = targetIdx, Amount = healed });
+                    var next = state with { Enemies = MapIdx(state.Enemies, (e, i) => i == tIdx ? e with { Hp = e.Hp + healed } : e) };
+                    var s = Events.Emit(next,
+                        new GameEvent_EnemyHealed { EnemyIndex = enemyIndex, TargetIndex = targetIdx, Amount = healed,
+                            PresentationReceipt = Events.EnemyPresentationReceipt(targetIdx, target, next.Enemies[targetIdx]) });
                     return markResolved(s, 0);
                 }
                 case EnemyActionKinds.StealGold:
@@ -2549,7 +2567,7 @@ namespace DeckRogue.Engine
                 for (int i = 0; i < card.Def.Effects.Count; i++)
                 {
                     var effect = card.Def.Effects[i];
-                    if (effect.Trigger == "onSetDestroyed") s = Effects.ResolveEffectTargeted(s, effect, enemyIndex);
+                    if (effect.Trigger == "onSetDestroyed") s = Effects.ResolveEffectTargeted(s, effect, enemyIndex, new DamagePresentationSource { Kind = "reaction", DefinitionId = card.Def.Id, Uid = card.Uid });
                 }
             }
             s = s with
@@ -2594,7 +2612,7 @@ namespace DeckRogue.Engine
                 for (int i = 0; i < card.Def.Effects.Count; i++)
                 {
                     var effect = card.Def.Effects[i];
-                    if (effect.Trigger == "onSetDestroyed") s = Effects.ResolveEffectTargeted(s, effect, firstAlive);
+                    if (effect.Trigger == "onSetDestroyed") s = Effects.ResolveEffectTargeted(s, effect, firstAlive, new DamagePresentationSource { Kind = "reaction", DefinitionId = card.Def.Id, Uid = card.Uid });
                 }
                 string to = s.ExpireToHand == true ? "hand" : card.Def.Exhaust == true ? "exhaust" : "discard";
                 var bare = card with { SetTurn = null, TrapLifeBonus = null };
@@ -2636,7 +2654,7 @@ namespace DeckRogue.Engine
                 s = s with { PendingPhaseEffects = null };
                 if (s.Player.PerfectBlockLastPhase == true)
                 {
-                    foreach (var pe in pendingPhase) s = Effects.ResolveEffectTargeted(s, pe.Effect, pe.EnemyIndex);
+                    foreach (var pe in pendingPhase) s = Effects.ResolveEffectTargeted(s, pe.Effect, pe.EnemyIndex, pe.PresentationSource);
                 }
             }
             // 罠モデル: 2窓目の終端で鳴らなかった罠は期限切れになる (捨て札。消滅持ちは消滅=亡骸・onCardExhausted は鳴る。
@@ -2679,7 +2697,7 @@ namespace DeckRogue.Engine
                         if (amount > 0)
                         {
                             s = WithEnemy(s, i, x => x with { Hp = x.Hp + amount });
-                            s = Events.Emit(s, new GameEvent_RegenTicked { EnemyIndex = i, Amount = amount });
+                            s = Events.Emit(s, new GameEvent_RegenTicked { EnemyIndex = i, Amount = amount, PresentationReceipt = Events.EnemyPresentationReceipt(i, e, s.Enemies[i]) });
                         }
                     }
                 }
@@ -2722,6 +2740,79 @@ namespace DeckRogue.Engine
                 },
             };
             return StartPlayerTurn(s, s.Turn + 1);
+        }
+
+        // Presentation-only copies and log references. Never used by gameplay rules.
+        private static EnemyMoveDeclarationPresentation CaptureEnemyMoveDeclaration(GameState state, int enemyIndex, string origin, string primaryMoveId = null, string alternateMoveId = null, string primaryNodeId = null)
+            => new EnemyMoveDeclarationPresentation { Version = 1, EventIndex = state.EventLog.Count, EnemyId = state.Enemies[enemyIndex].EnemyId, Origin = origin, PrimaryMoveId = primaryMoveId, AlternateMoveId = alternateMoveId, PrimaryNodeId = primaryNodeId };
+        private static bool EnemyPresentationBarrier(GameEvent ev, int enemyIndex)
+            => ev is GameEvent_CombatStarted || ev is GameEvent_TurnStarted
+            || ev is GameEvent_EnemyActionExecuting ex && ex.EnemyIndex == enemyIndex
+            || ev is GameEvent_EnemyActionResolved re && re.EnemyIndex == enemyIndex
+            || ev is GameEvent_ActionNegated ne && ne.EnemyIndex == enemyIndex
+            || ev is GameEvent_EnemyDied de && de.EnemyIndex == enemyIndex
+            || ev is GameEvent_EnemyFled fl && fl.EnemyIndex == enemyIndex
+            || ev is GameEvent_EnemyHatched ha && ha.EnemyIndex == enemyIndex;
+        private static bool ValidEnemyMoveDeclaration(GameState state, int enemyIndex, int index, EnemyMoveDeclarationPresentation d)
+        {
+            if (d == null || d.Version != 1 || d.EventIndex != index || d.EnemyId != state.Enemies[enemyIndex].EnemyId) return false;
+            var def = Content.GetEnemyDef(d.EnemyId);
+            var primary = def.Moves.FirstOrDefault(m => m.Id == d.PrimaryMoveId);
+            if (d.Origin == "graph")
+            {
+                if (primary == null || string.IsNullOrEmpty(d.PrimaryNodeId) || !def.Nodes.TryGetValue(d.PrimaryNodeId, out var node) || node.Move != d.PrimaryMoveId) return false;
+                if (d.AlternateMoveId != null && !def.Moves.Any(m => m.Id == d.AlternateMoveId)) return false;
+                return true;
+            }
+            if (d.PrimaryNodeId != null || d.AlternateMoveId != null) return false;
+            if (d.Origin == "forced-bite") return primary != null && d.PrimaryMoveId == def.Burrow?.Bite;
+            if (d.Origin == "forced-flee") return d.PrimaryMoveId == null || primary?.Kind == "flee";
+            return (d.Origin == "stagger" || d.Origin == "spawn-rest") && d.PrimaryMoveId == null;
+        }
+        private static EnemyActionPresentation CaptureEnemyExecution(GameState state, int enemyIndex, bool alternate)
+        {
+            string enemyId = state.Enemies[enemyIndex].EnemyId;
+            EnemyActionPresentation Unknown(string reason) => new EnemyActionPresentation { Version = 1, ExecutionEventIndex = state.EventLog.Count, EnemyId = enemyId, UnresolvedReason = reason };
+            for (int j = state.EventLog.Count - 1; j >= 0; j--)
+            {
+                var ev = state.EventLog[j];
+                if (ev is GameEvent_EnemyIntentDeclared declared && declared.EnemyIndex == enemyIndex)
+                {
+                    var d = declared.PresentationMove;
+                    if (!ValidEnemyMoveDeclaration(state, enemyIndex, j, d)) return Unknown("missing_or_invalid_latest_declaration");
+                    string moveId = alternate ? d.AlternateMoveId : d.PrimaryMoveId;
+                    if (string.IsNullOrEmpty(moveId)) return Unknown("synthetic_or_unproved_move") with { DeclaredEventIndex = j, Origin = d.Origin };
+                    return new EnemyActionPresentation { Version = 1, ExecutionEventIndex = state.EventLog.Count, EnemyId = enemyId, DeclaredEventIndex = j, MoveId = moveId, Branch = alternate ? "alternate" : "primary", Origin = d.Origin };
+                }
+                if (EnemyPresentationBarrier(ev, enemyIndex)) break;
+            }
+            return Unknown("missing_current_declaration");
+        }
+        private static EnemyActionPresentation CurrentEnemyExecution(GameState state, int enemyIndex)
+        {
+            string enemyId = state.Enemies[enemyIndex].EnemyId;
+            for (int j = state.EventLog.Count - 1; j >= 0; j--)
+            {
+                var ev = state.EventLog[j];
+                if (ev is GameEvent_EnemyActionExecuting executing && executing.EnemyIndex == enemyIndex)
+                {
+                    var a = executing.PresentationEnemyAction;
+                    if (a == null || a.Version != 1 || a.ExecutionEventIndex != j || a.EnemyId != enemyId) return null;
+                    if (a.MoveId != null)
+                    {
+                        int di = a.DeclaredEventIndex ?? -1;
+                        if (di < 0 || di >= j || !(state.EventLog[di] is GameEvent_EnemyIntentDeclared d) || d.EnemyIndex != enemyIndex || !ValidEnemyMoveDeclaration(state, enemyIndex, di, d.PresentationMove) || a.Origin != d.PresentationMove.Origin || a.UnresolvedReason != null || (a.Branch == "primary" ? d.PresentationMove.PrimaryMoveId : a.Branch == "alternate" ? d.PresentationMove.AlternateMoveId : null) != a.MoveId) return null;
+                        for (int k = j - 1; k > di; k--)
+                        {
+                            var prior = state.EventLog[k];
+                            if (prior is GameEvent_EnemyIntentDeclared newer && newer.EnemyIndex == enemyIndex || EnemyPresentationBarrier(prior, enemyIndex)) return null;
+                        }
+                    }
+                    return a;
+                }
+                if (ev is GameEvent_EnemyActionExecuting || ev is GameEvent_EnemyActionResolved || ev is GameEvent_ActionNegated || ev is GameEvent_EnemyIntentDeclared declared && declared.EnemyIndex == enemyIndex || EnemyPresentationBarrier(ev, enemyIndex)) break;
+            }
+            return null;
         }
     }
 }

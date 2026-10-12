@@ -4,15 +4,16 @@
 
 import { getCardDef, getEnemyDef, JUNK_DEF, WOUND_DEF } from './content.ts'
 import { applyInterruptsTo } from './enemyGraph.ts'
-import { emit } from './events.ts'
+import { emit, enemyPresentationReceipt, playerPresentationReceipt } from './events.ts'
 import { setEffectsOf, setFireCost } from './setany.ts'
 import { nextInt, shuffle } from './rng.ts'
 import type {
   CardInstance,
   DeclarativeEffect,
+  DamagePresentationSource,
   EnemyActionKind,
   EnemyIntent,
-  GameState, CardDef,
+  GameState, CardDef, GameEvent,
   EnemyInterruptTrigger,
   PlayerStatus,
   StatusInflict,
@@ -469,6 +470,7 @@ export function runPermanentTriggers(
             isInnate ? { ...s, innateResolving: true } : s,
             boosted,
             target,
+            { kind: 'permanent', definitionId: permanent.def.id, uid: permanent.uid },
           )
           if (isInnate) next = { ...next, innateResolving: false }
           s = next
@@ -505,7 +507,7 @@ export function healPlayer(state: GameState, amount: number, enemyIndex: number)
       healsThisTurn: (state.player.healsThisTurn ?? 0) + (state.resolvingCardPlay === true ? 1 : 0),
     },
   }
-  s = emit(s, { type: 'HpHealed', amount: healed, ...sourceUidOf(state) })
+  s = emit(s, { type: 'HpHealed', amount: healed, ...sourceUidOf(state), presentationReceipt: playerPresentationReceipt(state.player, s.player) })
   s = runPermanentTriggers(s, 'onHealed', enemyIndex)
   // 灯 (白 2026-09-20 白の再設計): 回復するたび灯+1。過剰回復でも溜まる (onHealed と同じ回数論) = 満タンで回復札が死なない
   return gainLight(s, 1, 'heal', enemyIndex)
@@ -623,7 +625,7 @@ export function gainPlayerBlock(state: GameState, amount: number, enemyIndex: nu
     amount = Math.max(1, Math.floor(amount * 0.75))
   }
   let s: GameState = { ...state, player: { ...state.player, block: state.player.block + amount } }
-  s = emit(s, { type: 'BlockGained', target: 'player', amount, ...sourceUidOf(state) })
+  s = emit(s, { type: 'BlockGained', target: 'player', amount, ...sourceUidOf(state), presentationReceipt: playerPresentationReceipt(state.player, s.player) })
   s = angerGuardWatchers(s)
   return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
 }
@@ -657,7 +659,7 @@ function angerGuardWatchers(state: GameState): GameState {
 export function gainPlayerIceBlock(state: GameState, amount: number): GameState {
   if (amount <= 0) return state
   let s: GameState = { ...state, player: { ...state.player, iceBlock: state.player.iceBlock + amount } }
-  s = emit(s, { type: 'IceBlockGained', amount })
+  s = emit(s, { type: 'IceBlockGained', amount, presentationReceipt: playerPresentationReceipt(state.player, s.player) })
   return angerGuardWatchers(s)
 }
 
@@ -672,7 +674,7 @@ export function losePlayerHp(state: GameState, amount: number, enemyIndex: numbe
       selfHpLost: state.player.selfHpLost + amount,
     },
   }
-  s = emit(s, { type: 'HpLost', amount })
+  s = emit(s, { type: 'HpLost', amount, presentationReceipt: playerPresentationReceipt(state.player, s.player) })
   return runPermanentTriggers(s, 'onHpLost', enemyIndex)
 }
 
@@ -703,7 +705,7 @@ export function fireNecroEffects(
     for (const effect of necro) {
       // 対象は現在の生存先頭 (ミルは対象を取らない自動誘発。全体効果はそのまま全体解決)
       const idx = s.enemies[enemyIndex]?.hp > 0 ? enemyIndex : Math.max(0, s.enemies.findIndex((e) => e.hp > 0))
-      s = resolveEffectTargeted(s, effect, idx)
+      s = resolveEffectTargeted(s, effect, idx, { kind: 'necro', definitionId: card.def.id, uid: card.uid })
     }
   }
   return s
@@ -714,13 +716,27 @@ export function resolveEffectTargeted(
   state: GameState,
   effect: DeclarativeEffect,
   enemyIndex: number,
+  presentationSource?: DamagePresentationSource,
 ): GameState {
-  if (effect.target !== 'all') return resolveEffect(state, effect, enemyIndex)
   let s = state
-  for (let i = 0; i < s.enemies.length; i++) {
+  if (effect.target !== 'all') s = resolveEffect(state, effect, enemyIndex)
+  else for (let i = 0; i < s.enemies.length; i++) {
     if (s.enemies[i].hp > 0) s = resolveEffect(s, effect, i)
   }
-  return s
+  return annotateDamagePresentation(s, state.eventLog.length, presentationSource)
+}
+
+/** Inner scopes label first; outer scopes never overwrite them. No emit or RNG call. */
+export function annotateDamagePresentation(state: GameState, from: number, source?: DamagePresentationSource): GameState {
+  if (!source) return state
+  let eventLog: GameEvent[] | undefined
+  for (let index = from; index < state.eventLog.length; index++) {
+    const event = state.eventLog[index]
+    if (event.type !== 'DamageDealt' || event.source !== 'player' || event.presentationSource) continue
+    eventLog ??= [...state.eventLog]
+    eventLog[index] = { ...event, presentationSource: source }
+  }
+  return eventLog ? { ...state, eventLog } : state
 }
 
 /**
@@ -1362,6 +1378,7 @@ export function dealDamageToEnemy(
     { ...state, enemies },
     {
       type: 'DamageDealt',
+      presentationReceipt: enemyPresentationReceipt(enemyIndex, enemy, enemies[enemyIndex]),
       source: 'player',
       amount,
       hpLoss,
@@ -1405,6 +1422,7 @@ export function dealDamageToEnemy(
   // 人形・置物の誘発・仕込み札の返し・パッシブ・ギアのダメージには反射しない = 勢い・虚弱と同じ線 (resolvingCardPlay)
   const struck = s.enemies[enemyIndex]
   if ((struck.thorns ?? 0) > 0 && struck.hp > 0 && s.resolvingCardPlay === true) {
+    const beforeReflect = s.player
     const reflect = struck.thorns!
     const pBlocked = Math.min(s.player.block, reflect)
     const pIceBlocked = Math.min(s.player.iceBlock, reflect - pBlocked)
@@ -1418,7 +1436,7 @@ export function dealDamageToEnemy(
         hp: s.player.hp - pHpLoss,
       },
     }
-    s = emit(s, { type: 'ThornsReflected', enemyIndex, amount: reflect, hpLoss: pHpLoss })
+    s = emit(s, { type: 'ThornsReflected', enemyIndex, amount: reflect, hpLoss: pHpLoss, presentationReceipt: playerPresentationReceipt(beforeReflect, s.player) })
   }
   if (wasBlazingAtHit && !isBlazing(s)) s = emit(s, { type: 'BlazeExtinguished' })
   return s
@@ -1779,7 +1797,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
           for (const permanent of s.player.permanents) {
             for (const pe of permanent.def.effects) {
               if (pe.trigger === 'onTurnStart' && pe.condition?.blaze === true) {
-                s = resolveEffectTargeted(s, pe, enemyIndex)
+                s = resolveEffectTargeted(s, pe, enemyIndex, { kind: 'permanent', definitionId: permanent.def.id, uid: permanent.uid })
               }
             }
           }
@@ -2031,7 +2049,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // 割るブロックが無ければ打たない (2026-09-18 レシピ見直しで発見: 0 を dealDamageToEnemy に渡すと成長だけが乗った
       // 幽霊ヒットが出て、表示 (8ダメ) と実処理 (8+成長×2回) が食い違い、急所・とげも1回ぶん余計に鳴っていた)
       if (shattered <= 0) return s
-      s = emit(s, { type: 'BlockShattered', enemyIndex, amount: shattered })
+      s = emit(s, { type: 'BlockShattered', enemyIndex, amount: shattered, presentationReceipt: enemyPresentationReceipt(enemyIndex, enemy, s.enemies[enemyIndex]) })
       return dealDamageToEnemy(s, enemyIndex, shattered, effect.pierce)
     }
     case 'dealDamageExecute': {
@@ -2108,14 +2126,14 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const amount = effect.amount ?? 0
       if (amount <= 0) return state
       const next: GameState = { ...state, player: { ...state.player, maxHp: state.player.maxHp + amount, hp: state.player.hp + amount } }
-      return emit(next, { type: 'MaxHpGained', amount })
+      return emit(next, { type: 'MaxHpGained', amount, presentationReceipt: playerPresentationReceipt(state.player, next.player) })
     }
     case 'gainBlockPerMomentum': {
       // 風の壁 (緑 2026-09-07 ピック監査): 勢い×amount のブロック。勢いは失わない (放出の非消費化。勢いは以降の攻撃にも乗り続ける)
       const block = state.player.momentum * (effect.amount ?? 0)
       if (block <= 0) return state
       let s: GameState = { ...state, player: { ...state.player, block: state.player.block + block } }
-      s = emit(s, { type: 'BlockGained', target: 'player', amount: block, ...sourceUidOf(state) })
+      s = emit(s, { type: 'BlockGained', target: 'player', amount: block, ...sourceUidOf(state), presentationReceipt: playerPresentationReceipt(state.player, s.player) })
       return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
     }
     case 'addGrowthPerMomentum': {
@@ -2245,7 +2263,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
         ...state,
         player: { ...state.player, momentum: 0, block: state.player.block + block },
       }
-      s = emit(s, { type: 'BlockGained', target: 'player', amount: block, ...sourceUidOf(state) })
+      s = emit(s, { type: 'BlockGained', target: 'player', amount: block, ...sourceUidOf(state), presentationReceipt: playerPresentationReceipt(state.player, s.player) })
       return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
     }
     case 'dischargeMomentumDamage': {
@@ -2313,7 +2331,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const enemies = state.enemies.map((e, i) => (i === enemyIndex ? { ...e, block: 0 } : e))
       const s2 = emit(
         { ...state, enemies },
-        { type: 'BlockShattered', enemyIndex, amount: enemy.block },
+        { type: 'BlockShattered', enemyIndex, amount: enemy.block, presentationReceipt: enemyPresentationReceipt(enemyIndex, enemy, enemies[enemyIndex]) },
       )
       return breakBurrowIfCracked(s2, enemyIndex)
     }
@@ -2423,7 +2441,7 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const block = Math.floor((state.player.light ?? 0) / 2) * (effect.amount ?? 0)
       if (block <= 0) return state
       let s: GameState = { ...state, player: { ...state.player, block: state.player.block + block } }
-      s = emit(s, { type: 'BlockGained', target: 'player', amount: block, ...sourceUidOf(state) })
+      s = emit(s, { type: 'BlockGained', target: 'player', amount: block, ...sourceUidOf(state), presentationReceipt: playerPresentationReceipt(state.player, s.player) })
       return runPermanentTriggers(s, 'onBlockGained', enemyIndex)
     }
     case 'drawCardsPerLight': {
@@ -2723,7 +2741,7 @@ export function resolveOnPlayEffects(state: GameState, card: CardInstance, enemy
   for (const effect of card.def.effects) {
     // 猛り火は「解決の時点」で判定する = 同じカードの前の効果 (着火など) で点いたら乗る
     if (effect.trigger === 'onPlay' && blazeConditionMet(s, effect, enemyIndex)) {
-      s = resolveEffectTargeted(s, effect, enemyIndex)
+      s = resolveEffectTargeted(s, effect, enemyIndex, { kind: 'card', definitionId: card.def.id, uid: card.uid })
     }
   }
   return { ...s, resolvingCardPlay: prev, resolvingExposedAtStart: prevExposed }
@@ -2740,7 +2758,7 @@ export function resolveIgniteEffects(state: GameState, card: CardInstance, enemy
   if (effects.length === 0) return state
   const prev = state.resolvingCardPlay === true
   let s: GameState = { ...state, resolvingCardPlay: true }
-  for (const effect of effects) s = resolveEffectTargeted(s, effect, enemyIndex)
+  for (const effect of effects) s = resolveEffectTargeted(s, effect, enemyIndex, { kind: 'card', definitionId: card.def.id, uid: card.uid })
   return { ...s, resolvingCardPlay: prev }
 }
 
@@ -2773,12 +2791,12 @@ export function resolveReactionEffects(state: GameState, card: CardInstance, ene
     if (c?.maxActionValue !== undefined && actionActual > c.maxActionValue) continue
     if (c?.perfectBlockThisPhase === true) {
       // 「この敵フェーズを完全に凌いだら」: 今は解決せず敵フェーズ終端 (finishEnemyPhase) へ遅延する
-      s = { ...s, pendingPhaseEffects: [...(s.pendingPhaseEffects ?? []), { effect, enemyIndex }] }
+      s = { ...s, pendingPhaseEffects: [...(s.pendingPhaseEffects ?? []), { effect, enemyIndex, presentationSource: { kind: 'reaction', definitionId: card.def.id, uid: card.uid } }] }
       continue
     }
     if (blazeConditionMet(s, effect, enemyIndex)) {
       // target:'all' の返し (茨の爆ぜ) は生存全体に解決する
-      s = resolveEffectTargeted(s, effect, enemyIndex)
+      s = resolveEffectTargeted(s, effect, enemyIndex, { kind: 'reaction', definitionId: card.def.id, uid: card.uid })
     }
   }
   // 読み勝ちの換金 (確定済みルール表「読み勝ちの換金」2026-08-29): リアクション発動に反応する置物。

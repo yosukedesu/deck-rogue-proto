@@ -653,6 +653,8 @@ namespace DeckRogue.Engine.Generated
         public DeclarativeEffect Effect { get; init; } = default!;
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
+        [JsonProperty("presentationSource", NullValueHandling = NullValueHandling.Ignore)]
+        public DamagePresentationSource? PresentationSource { get; init; }
     }
 
     /// <summary>GameState.pendingScry のインライン型</summary>
@@ -970,6 +972,127 @@ namespace DeckRogue.Engine.Generated
         public string? KeepUid { get; init; }
     }
 
+    /// <summary>Display-only innermost owner. Rules never read this metadata.</summary>
+    public sealed record DamagePresentationSource
+    {
+        [JsonProperty("kind")]
+        public string Kind { get; init; } = default!;
+        [JsonProperty("definitionId")]
+        public string DefinitionId { get; init; } = default!;
+        [JsonProperty("uid", NullValueHandling = NullValueHandling.Ignore)]
+        public string? Uid { get; init; }
+    }
+
+    /// <summary>Display-only actual target values at one existing event's direct mutation. Rules never read these snapshots. Negative raw HP is retained for overkill/death-save ordering.</summary>
+    public sealed record CombatPresentationVitals
+    {
+        [JsonProperty("hp")]
+        public int Hp { get; init; }
+        [JsonProperty("maxHp")]
+        public int MaxHp { get; init; }
+        [JsonProperty("block")]
+        public int Block { get; init; }
+        [JsonProperty("iceBlock", NullValueHandling = NullValueHandling.Ignore)]
+        public int? IceBlock { get; init; }
+    }
+
+    /// <summary>CombatPresentationReceipt</summary>
+    public sealed record CombatPresentationReceipt
+    {
+        [JsonProperty("version")]
+        public int Version { get; init; }
+        [JsonProperty("target")]
+        public string Target { get; init; } = default!;
+        [JsonProperty("enemyIndex", NullValueHandling = NullValueHandling.Ignore)]
+        public int? EnemyIndex { get; init; }
+        [JsonProperty("enemyId", NullValueHandling = NullValueHandling.Ignore)]
+        public string? EnemyId { get; init; }
+        [JsonProperty("before")]
+        public CombatPresentationVitals Before { get; init; } = default!;
+        [JsonProperty("after")]
+        public CombatPresentationVitals After { get; init; } = default!;
+    }
+
+    /// <summary>Event-only move provenance. Self-index detects trimmed/rebased diagnostic logs. Existing gameplay intent fields, RNG and event count remain unchanged.</summary>
+    public sealed record EnemyMoveDeclarationPresentation
+    {
+        [JsonProperty("version")]
+        public int Version { get; init; }
+        [JsonProperty("eventIndex")]
+        public int EventIndex { get; init; }
+        [JsonProperty("enemyId")]
+        public string EnemyId { get; init; } = default!;
+        [JsonProperty("origin")]
+        public string Origin { get; init; } = default!;
+        [JsonProperty("primaryMoveId", NullValueHandling = NullValueHandling.Ignore)]
+        public string? PrimaryMoveId { get; init; }
+        [JsonProperty("alternateMoveId", NullValueHandling = NullValueHandling.Ignore)]
+        public string? AlternateMoveId { get; init; }
+        [JsonProperty("primaryNodeId", NullValueHandling = NullValueHandling.Ignore)]
+        public string? PrimaryNodeId { get; init; }
+    }
+
+    /// <summary>EnemyActionPresentation</summary>
+    public sealed record EnemyActionPresentation
+    {
+        [JsonProperty("version")]
+        public int Version { get; init; }
+        [JsonProperty("executionEventIndex")]
+        public int ExecutionEventIndex { get; init; }
+        [JsonProperty("enemyId")]
+        public string EnemyId { get; init; } = default!;
+        [JsonProperty("declaredEventIndex", NullValueHandling = NullValueHandling.Ignore)]
+        public int? DeclaredEventIndex { get; init; }
+        [JsonProperty("moveId", NullValueHandling = NullValueHandling.Ignore)]
+        public string? MoveId { get; init; }
+        [JsonProperty("branch", NullValueHandling = NullValueHandling.Ignore)]
+        public string? Branch { get; init; }
+        [JsonProperty("origin", NullValueHandling = NullValueHandling.Ignore)]
+        public string? Origin { get; init; }
+        [JsonProperty("unresolvedReason", NullValueHandling = NullValueHandling.Ignore)]
+        public string? UnresolvedReason { get; init; }
+    }
+
+    /// <summary>Ordered arithmetic contributions from the existing ordinary attack loop. These are not separate damage events or intermediate engine HP snapshots.</summary>
+    public sealed record EnemyAttackContribution
+    {
+        [JsonProperty("amountContribution")]
+        public int AmountContribution { get; init; }
+        [JsonProperty("hpLossContribution")]
+        public int HpLossContribution { get; init; }
+        [JsonProperty("blockContribution")]
+        public int BlockContribution { get; init; }
+        [JsonProperty("iceContribution")]
+        public int IceContribution { get; init; }
+        [JsonProperty("nullifiedContribution")]
+        public int NullifiedContribution { get; init; }
+        [JsonProperty("mitigatedContribution")]
+        public int MitigatedContribution { get; init; }
+    }
+
+    /// <summary>EnemyAttackPresentation</summary>
+    public sealed record EnemyAttackPresentation
+    {
+        [JsonProperty("version")]
+        public int Version { get; init; }
+        [JsonProperty("resolution")]
+        public string Resolution { get; init; } = default!;
+        [JsonProperty("enemyId")]
+        public string EnemyId { get; init; } = default!;
+        [JsonProperty("effectiveActual")]
+        public int EffectiveActual { get; init; }
+        [JsonProperty("loopBound")]
+        public int LoopBound { get; init; }
+        [JsonProperty("executedHits")]
+        public int ExecutedHits { get; init; }
+        [JsonProperty("mirrorHits", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? MirrorHits { get; init; }
+        [JsonProperty("contributions", NullValueHandling = NullValueHandling.Ignore)]
+        public IReadOnlyList<EnemyAttackContribution>? Contributions { get; init; }
+        [JsonProperty("contributionsOmittedReason", NullValueHandling = NullValueHandling.Ignore)]
+        public string? ContributionsOmittedReason { get; init; }
+    }
+
     /// <summary>判別共用体 GameEvent (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>
     public abstract record GameEvent
     {
@@ -1075,6 +1198,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "EnemyIntentDeclared";
         public GameEvent_EnemyIntentDeclared() { Type = TypeTag; }
+        [JsonProperty("presentationMove", NullValueHandling = NullValueHandling.Ignore)]
+        public EnemyMoveDeclarationPresentation? PresentationMove { get; init; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("intent")]
@@ -1086,6 +1211,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "EnemyActionExecuting";
         public GameEvent_EnemyActionExecuting() { Type = TypeTag; }
+        [JsonProperty("presentationEnemyAction", NullValueHandling = NullValueHandling.Ignore)]
+        public EnemyActionPresentation? PresentationEnemyAction { get; init; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("kind")]
@@ -1132,12 +1259,20 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "ConfusedAttack";
         public GameEvent_ConfusedAttack() { Type = TypeTag; }
+        [JsonProperty("presentationEnemyAction", NullValueHandling = NullValueHandling.Ignore)]
+        public EnemyActionPresentation? PresentationEnemyAction { get; init; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("targetIndex")]
         public int TargetIndex { get; init; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
+        [JsonProperty("hpLoss")]
+        public int HpLoss { get; init; }
+        [JsonProperty("blocked")]
+        public int Blocked { get; init; }
     }
 
     /// <summary>GameEvent: type="DamageDealt"</summary>
@@ -1145,6 +1280,12 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "DamageDealt";
         public GameEvent_DamageDealt() { Type = TypeTag; }
+        [JsonProperty("presentationEnemyAction", NullValueHandling = NullValueHandling.Ignore)]
+        public EnemyActionPresentation? PresentationEnemyAction { get; init; }
+        [JsonProperty("presentationEnemyAttack", NullValueHandling = NullValueHandling.Ignore)]
+        public EnemyAttackPresentation? PresentationEnemyAttack { get; init; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("source")]
         public string Source { get; init; } = default!;
         [JsonProperty("amount")]
@@ -1184,6 +1325,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>置物の誘発で与えた時、その置物の uid (人形の盤面表示 2026-09-19: 人形が踏み込んで斬る演出の出どころ)。無ければ省略</summary>
         [JsonProperty("sourceUid", NullValueHandling = NullValueHandling.Ignore)]
         public string? SourceUid { get; init; }
+        /// <summary>Display-only provenance; optional for old saved events.</summary>
+        [JsonProperty("presentationSource", NullValueHandling = NullValueHandling.Ignore)]
+        public DamagePresentationSource? PresentationSource { get; init; }
     }
 
     /// <summary>GameEvent: type="BlockGained"</summary>
@@ -1191,6 +1335,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "BlockGained";
         public GameEvent_BlockGained() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("target")]
         public string Target { get; init; } = default!;
         [JsonProperty("amount")]
@@ -1204,6 +1350,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "IceBlockGained";
         public GameEvent_IceBlockGained() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -1315,6 +1463,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "BurnTick";
         public GameEvent_BurnTick() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1337,6 +1487,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "ScaldTick";
         public GameEvent_ScaldTick() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("count")]
         public int Count { get; init; }
         [JsonProperty("amount")]
@@ -1448,6 +1600,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "RegenTicked";
         public GameEvent_RegenTicked() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1468,6 +1622,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "BlockShattered";
         public GameEvent_BlockShattered() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1557,6 +1713,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "HpLost";
         public GameEvent_HpLost() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -1778,6 +1936,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "ThornsReflected";
         public GameEvent_ThornsReflected() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("amount")]
@@ -1811,6 +1971,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "EnemyHealed";
         public GameEvent_EnemyHealed() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("enemyIndex")]
         public int EnemyIndex { get; init; }
         [JsonProperty("targetIndex")]
@@ -1878,6 +2040,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "MaxHpGained";
         public GameEvent_MaxHpGained() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
     }
@@ -1947,6 +2111,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "HpHealed";
         public GameEvent_HpHealed() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
         [JsonProperty("sourceUid", NullValueHandling = NullValueHandling.Ignore)]
@@ -2099,6 +2265,8 @@ namespace DeckRogue.Engine.Generated
     {
         public const string TypeTag = "DeathSaved";
         public GameEvent_DeathSaved() { Type = TypeTag; }
+        [JsonProperty("presentationReceipt", NullValueHandling = NullValueHandling.Ignore)]
+        public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("hp")]
         public int Hp { get; init; }
         [JsonProperty("source", NullValueHandling = NullValueHandling.Ignore)]

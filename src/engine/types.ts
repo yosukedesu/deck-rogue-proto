@@ -463,7 +463,7 @@ export interface GameState {
   /** C型レリック (回収の紐 2026-09-13 作り直し): 期限切れ (期限切れの) 罠は捨て札でなく手札に戻る */
   readonly expireToHand?: boolean
   /** 罠モデル: 「完全に凌いだら」(perfectBlockThisPhase) の遅延効果。finishEnemyPhase が判定して解決し空にする */
-  readonly pendingPhaseEffects?: readonly { readonly effect: DeclarativeEffect; readonly enemyIndex: number }[]
+  readonly pendingPhaseEffects?: readonly { readonly effect: DeclarativeEffect; readonly enemyIndex: number; readonly presentationSource?: DamagePresentationSource }[]
   /**
    * 占術の保留 (青 2026-09-25): 山札の上 count 枚を見て捨てる札を選ぶまで、ResolveScry 以外のコマンドを受け付けない。
    * 同じ解決の中で重なった占術は枚数を足し、times (占術の回数＝onScry の誘発回数) を数える
@@ -580,6 +580,79 @@ export type Command =
 // イベント (戦闘内の出来事はすべてイベント。効果はフックとして実装)
 // ============================================================
 
+/** Display-only innermost owner. Rules never read this metadata. */
+export interface DamagePresentationSource {
+  readonly kind: 'card' | 'reaction' | 'necro' | 'permanent' | 'gear'
+  readonly definitionId: string
+  readonly uid?: string
+}
+
+/** Display-only actual target values at one existing event's direct mutation.
+ * Rules never read these snapshots. Negative raw HP is retained for overkill/death-save ordering.
+ */
+export interface CombatPresentationVitals {
+  readonly hp: number
+  readonly maxHp: number
+  readonly block: number
+  readonly iceBlock?: number // player only; absent on both enemy snapshots
+}
+
+export interface CombatPresentationReceipt {
+  readonly version: 1
+  readonly target: 'player' | 'enemy'
+  readonly enemyIndex?: number // required for enemy; absent for player
+  readonly enemyId?: string // definition consistency only, not an instance identity
+  readonly before: CombatPresentationVitals
+  readonly after: CombatPresentationVitals
+}
+
+/** Event-only move provenance. Self-index detects trimmed/rebased diagnostic logs.
+ * Existing gameplay intent fields, RNG and event count remain unchanged.
+ */
+export interface EnemyMoveDeclarationPresentation {
+  readonly version: 1
+  readonly eventIndex: number
+  readonly enemyId: string
+  readonly origin: 'graph' | 'forced-bite' | 'stagger' | 'forced-flee' | 'spawn-rest'
+  readonly primaryMoveId?: string
+  readonly alternateMoveId?: string
+  readonly primaryNodeId?: string
+}
+
+export interface EnemyActionPresentation {
+  readonly version: 1
+  readonly executionEventIndex: number
+  readonly enemyId: string
+  readonly declaredEventIndex?: number
+  readonly moveId?: string
+  readonly branch?: 'primary' | 'alternate'
+  readonly origin?: string
+  readonly unresolvedReason?: string
+}
+
+/** Ordered arithmetic contributions from the existing ordinary attack loop.
+ * These are not separate damage events or intermediate engine HP snapshots.
+ */
+export interface EnemyAttackContribution {
+  readonly amountContribution: number
+  readonly hpLossContribution: number
+  readonly blockContribution: number
+  readonly iceContribution: number
+  readonly nullifiedContribution: number
+  readonly mitigatedContribution: number
+}
+export interface EnemyAttackPresentation {
+  readonly version: 1
+  readonly resolution: 'aggregate-final-mutation'
+  readonly enemyId: string
+  readonly effectiveActual: number
+  readonly loopBound: number
+  readonly executedHits: number
+  readonly mirrorHits?: true
+  readonly contributions?: readonly EnemyAttackContribution[]
+  readonly contributionsOmittedReason?: 'presentation_capture_limit'
+}
+
 export type GameEvent =
   | { readonly type: 'CombatStarted'; readonly enemyId: string }
   | { readonly type: 'TurnStarted'; readonly turn: number; readonly hand?: readonly string[] } // hand=ドロー前に手札に残っていた札 (保持・火傷。2026-09-05 ログ拡充)
@@ -590,9 +663,9 @@ export type GameEvent =
   | { readonly type: 'Scried'; readonly looked: readonly string[]; readonly discarded: readonly string[] } // 占術 (青 2026-09-25): 見た札と捨てた札 (id)
   | { readonly type: 'TrapLifeExtended'; readonly amount: number; readonly count: number } // 潮待ち (青 2026-09-25): 期限を延ばした罠の枚数
   | { readonly type: 'SetCardExpired'; readonly cardId: string; readonly to: 'discard' | 'exhaust' | 'hand' } // 罠モデル (2026-09-13): 2窓で鳴らなかった罠が期限切れの
-  | { readonly type: 'EnemyIntentDeclared'; readonly enemyIndex: number; readonly intent: EnemyIntent }
+  | { readonly type: 'EnemyIntentDeclared'; readonly presentationMove?: EnemyMoveDeclarationPresentation; readonly enemyIndex: number; readonly intent: EnemyIntent }
   /** 敵行動の実行直前フック点 (pre窓)。ReactionSystem はこれを見て割り込む */
-  | { readonly type: 'EnemyActionExecuting'; readonly enemyIndex: number; readonly kind: EnemyActionKind }
+  | { readonly type: 'EnemyActionExecuting'; readonly presentationEnemyAction?: EnemyActionPresentation; readonly enemyIndex: number; readonly kind: EnemyActionKind }
   /** 敵行動の解決後フック点 (post窓)。返し系リアクション・置物の茨はここで発動する */
   | {
       readonly type: 'EnemyActionResolved'
@@ -606,12 +679,19 @@ export type GameEvent =
   | {
       // 混乱による仲間割れ: enemyIndex の攻撃が targetIndex の敵 (自分自身もありうる) に命中
       readonly type: 'ConfusedAttack'
+      readonly presentationEnemyAction?: EnemyActionPresentation
+      readonly presentationReceipt?: CombatPresentationReceipt
       readonly enemyIndex: number
       readonly targetIndex: number
-      readonly amount: number
+      readonly amount: number // Existing aggregate damage before block (all hits)
+      readonly hpLoss: number // Actual HP delta, including raw overkill; display-only receipt
+      readonly blocked: number // Block consumed by this aggregate attack
     }
   | {
       readonly type: 'DamageDealt'
+      readonly presentationEnemyAction?: EnemyActionPresentation
+      readonly presentationEnemyAttack?: EnemyAttackPresentation
+      readonly presentationReceipt?: CombatPresentationReceipt
       readonly source: 'player' | 'enemy'
       readonly amount: number // ブロック適用前の値
       readonly hpLoss: number // 実際に減った HP
@@ -637,9 +717,11 @@ export type GameEvent =
       readonly nullified?: boolean
       /** 置物の誘発で与えた時、その置物の uid (人形の盤面表示 2026-09-19: 人形が踏み込んで斬る演出の出どころ)。無ければ省略 */
       readonly sourceUid?: string
+      /** Display-only provenance; optional for old saved events. */
+      readonly presentationSource?: DamagePresentationSource
     }
-  | { readonly type: 'BlockGained'; readonly target: 'player' | 'enemy'; readonly amount: number; readonly sourceUid?: string }
-  | { readonly type: 'IceBlockGained'; readonly amount: number } // 氷壁 (持ち越しブロック)
+  | { readonly type: 'BlockGained'; readonly presentationReceipt?: CombatPresentationReceipt; readonly target: 'player' | 'enemy'; readonly amount: number; readonly sourceUid?: string }
+  | { readonly type: 'IceBlockGained'; readonly presentationReceipt?: CombatPresentationReceipt; readonly amount: number } // 氷壁 (持ち越しブロック)
   | { readonly type: 'AetherGained'; readonly amount: number } // 霊気 (妨害の蓄積)
   | { readonly type: 'SpellEchoed'; readonly cardId: string } // 反復 (青): 呪文の効果が2回解決された
   | { readonly type: 'NecroFired'; readonly cardId: string } // 亡骸効果 (黒): 消滅した札の亡骸効果が発火した
@@ -650,9 +732,9 @@ export type GameEvent =
   | { readonly type: 'LightSpent'; readonly amount: number; readonly cardId: string } // 灯コストの支払い (白 2026-09-20 夜。Opus 3本「支払いがログに出ない」): 号令・灯コストの人形
   | { readonly type: 'DiscountGained'; readonly amount: number } // マナ軽減トークン
   | { readonly type: 'BurnApplied'; readonly enemyIndex: number; readonly amount: number } // 延焼付与
-  | { readonly type: 'BurnTick'; readonly enemyIndex: number; readonly amount: number } // 延焼ダメージ
+  | { readonly type: 'BurnTick'; readonly presentationReceipt?: CombatPresentationReceipt; readonly enemyIndex: number; readonly amount: number } // 延焼ダメージ
   | { readonly type: 'StatusInflicted'; readonly status: PlayerStatus; readonly amount: number }
-  | { readonly type: 'ScaldTick'; readonly count: number; readonly amount: number; readonly scalds?: number; readonly brands?: number } // 火傷・烙印: 自ターン終了時に手札にあると自傷 (2026-09-02)。scalds/brands=内訳 (2026-09-23 人間ラン#17: 浮き数字に「烙印 −N」「火傷 −N」の名札。旧ログは欠落)
+  | { readonly type: 'ScaldTick'; readonly presentationReceipt?: CombatPresentationReceipt; readonly count: number; readonly amount: number; readonly scalds?: number; readonly brands?: number } // 火傷・烙印: 自ターン終了時に手札にあると自傷 (2026-09-02)。scalds/brands=内訳 (2026-09-23 人間ラン#17: 浮き数字に「烙印 −N」「火傷 −N」の名札。旧ログは欠落)
   | { readonly type: 'EnemySplit'; readonly enemyIndex: number; readonly into: string; readonly count: number } // 分裂 (2026-09-02)
   | { readonly type: 'EnemySummoned'; readonly enemyIndex: number; readonly into: string; readonly count: number } // 召喚 (2026-09-14)。count=実際に出た数 (上限で0もある)
   | { readonly type: 'EnemyHatched'; readonly enemyIndex: number; readonly fromId: string; readonly intoId: string } // 孵化 (2026-09-02)
@@ -661,9 +743,9 @@ export type GameEvent =
   | { readonly type: 'BurrowBroken'; readonly enemyIndex: number } // 潜伏の殻が割れた (次の行動が噛みつきに)
   | { readonly type: 'EnemyStaggered'; readonly enemyIndex: number } // バランス崩し (2026-09-04)
   | { readonly type: 'EnemyInterrupted'; readonly enemyIndex: number; readonly trigger: EnemyInterruptTrigger; readonly replaced: boolean; readonly before?: EnemyIntent; readonly after?: EnemyIntent } // 割り込み (2026-09-14 行動グラフ): HP半分の豹変・被弾覚醒・仲間の死亡。replaced=自ターン中に宣言済みの意図をその場で差し替えた (before→after を並べてログに出す)
-  | { readonly type: 'RegenTicked'; readonly enemyIndex: number; readonly amount: number }
+  | { readonly type: 'RegenTicked'; readonly presentationReceipt?: CombatPresentationReceipt; readonly enemyIndex: number; readonly amount: number }
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
-  | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
+  | { readonly type: 'BlockShattered'; readonly presentationReceipt?: CombatPresentationReceipt; readonly enemyIndex: number; readonly amount: number } // 粉砕
   | { readonly type: 'ImpulseDrawn'; readonly count: number } // 衝動 (このターン限りの手札)
   | { readonly type: 'Cascaded'; readonly cardId: string; readonly hitId?: string; readonly revealed: readonly string[] } // チェイン (赤 2026-10-10): 親の札・当たった札 (無ければ空振り)・底へ送った札
   | { readonly type: 'ImpulseReturned'; readonly cardId: string } // 払えずに失効した衝動の札が捨て札へ戻った (赤 2026-10-12 裁定 F2。消滅ではない)
@@ -672,7 +754,7 @@ export type GameEvent =
   | { readonly type: 'BlazeIgnited' } // 猛り火に点いた (赤 2026-10-12 段2): 生存する敵の延焼の合計が8を跨いだ瞬間 (applyBurn が出す。どの経路でも)
   | { readonly type: 'BlazeExtinguished' } // 猛り火が消えた (赤 2026-10-12 段2b。Opus A「黙って消える」): 延焼の消費・敵の撃破・敵フェーズの減りで合計が8を割った瞬間
   | { readonly type: 'CascadeRetargeted'; readonly cardId: string; readonly fromIndex: number; readonly toIndex: number } // チェインの当たりが対象を倒したので、本体の対象を生存先頭へ移した (赤 2026-10-12 段2b 裁定 R7)
-  | { readonly type: 'HpLost'; readonly amount: number } // 自傷
+  | { readonly type: 'HpLost'; readonly presentationReceipt?: CombatPresentationReceipt; readonly amount: number } // 自傷
   | { readonly type: 'StrengthGained'; readonly enemyIndex: number; readonly amount: number; readonly reason?: 'enrage-cards' | 'enrage-damage' | 'enrage-phase' | 'mourn' }
   | { readonly type: 'EnergyGained'; readonly amount: number } // 一時マナ
   | { readonly type: 'MomentumAdded'; readonly amount: number }
@@ -693,24 +775,24 @@ export type GameEvent =
   | { readonly type: 'RetainerLifeExtended'; readonly cardId: string; readonly uid: string; readonly amount: number; readonly persist?: boolean } // 継ぎ火 (+N)・永遠の灯 (persist)
   | { readonly type: 'PermanentDismissed'; readonly cardId: string; readonly uid: string } // 灯の炉心 (2026-09-24): 灯を払えず置物が場を離れた (捨て札へ)
   | { readonly type: 'RetainerRushed'; readonly cardId: string } // 駆けつけ (ひなた 2026-09-06): 場に出た従者が即1回動いた
-  | { readonly type: 'ThornsReflected'; readonly enemyIndex: number; readonly amount: number; readonly hpLoss: number } // とげ反射 (確定済みルール表「とげ（敵の報復）」)
+  | { readonly type: 'ThornsReflected'; readonly presentationReceipt?: CombatPresentationReceipt; readonly enemyIndex: number; readonly amount: number; readonly hpLoss: number } // とげ反射 (確定済みルール表「とげ（敵の報復）」)
   | { readonly type: 'GoldStolen'; readonly enemyIndex: number; readonly amount: number } // 盗み (精算は勝利時)
   | { readonly type: 'EnemyFled'; readonly enemyIndex: number } // 逃走 (戦闘離脱)
-  | { readonly type: 'EnemyHealed'; readonly enemyIndex: number; readonly targetIndex: number; readonly amount: number } // 回復役
+  | { readonly type: 'EnemyHealed'; readonly presentationReceipt?: CombatPresentationReceipt; readonly enemyIndex: number; readonly targetIndex: number; readonly amount: number } // 回復役
   | { readonly type: 'CardRetrieved'; readonly cardId: string } // 屍集め: 消滅置き場から手札へ
   | { readonly type: 'CardPlayedFromExhaust'; readonly cardId: string } // 死者再生: 消滅置き場から直接プレイ
   | { readonly type: 'CardsDiscarded'; readonly cardIds: readonly string[] } // 手札捨てコスト
   | { readonly type: 'EnergyMaxGained'; readonly amount: number }
   | { readonly type: 'GrowthAdded'; readonly amount: number }
   | { readonly type: 'SetSlotGained'; readonly amount: number } // 伏せ枠+X (罠師の茂み)
-  | { readonly type: 'MaxHpGained'; readonly amount: number } // 最大HP+X (獲物=Feed。2026-09-07)
+  | { readonly type: 'MaxHpGained'; readonly presentationReceipt?: CombatPresentationReceipt; readonly amount: number } // 最大HP+X (獲物=Feed。2026-09-07)
   | { readonly type: 'CardsMovedToHand'; readonly cardIds: readonly string[]; readonly from: 'discard' | 'draw' } // 回収・サーチ
   | { readonly type: 'CardCopied'; readonly cardId: string; readonly count: number } // 増殖: コピーを捨て札へ
   | { readonly type: 'CardGrew'; readonly cardId: string; readonly bonus: number } // 育つ札: 累計加算
   | { readonly type: 'CardUpgradedInHand'; readonly cardId: string } // 手札で鍛える
   | { readonly type: 'GrowthDischarged'; readonly spent: number } // 成長放出 (開花の蔦)
   | { readonly type: 'MomentumDischarged'; readonly spent: number } // 勢い放出 (角の一突き・根付く勢い。緑 2026-09-04)
-  | { readonly type: 'HpHealed'; readonly amount: number; readonly sourceUid?: string } // 回復 (白)。sourceUid=置物の誘発なら誰が (人形の盤面表示 2026-09-19)
+  | { readonly type: 'HpHealed'; readonly presentationReceipt?: CombatPresentationReceipt; readonly amount: number; readonly sourceUid?: string } // 回復 (白)。sourceUid=置物の誘発なら誰が (人形の盤面表示 2026-09-19)
   | { readonly type: 'CardsMilled'; readonly count: number; readonly cardIds?: readonly string[] } // 忘却=山札からの消滅 (黒)。cardIds=何が墓地へ行ったか (2026-08-31 可視化)
   | { readonly type: 'CardSealed'; readonly enemyIndex: number; readonly cardId: string } // 技封じ (2026-09-27): 敵が札を1枚封じた
   | { readonly type: 'CardUnsealed'; readonly enemyIndex: number; readonly cardId: string } // 封じた敵が倒れて札が手札に戻った
@@ -738,7 +820,7 @@ export type GameEvent =
   | { readonly type: 'EnemyPhaseEnded'; readonly turn: number } // 空振り計上などのフック点
   | { readonly type: 'DeckShuffled' } // 山札の切り直し (onShuffle の発火点 2026-09-12)
   | { readonly type: 'EnemyDied'; readonly enemyIndex: number } // 敵が倒れた (onEnemyDied の発火点。分裂・残機は倒れた後に別個体として出る)
-  | { readonly type: 'DeathSaved'; readonly hp: number; readonly source?: 'gear' | 'relic' } // 致死を1度だけ耐えた (省略=レリック)
+  | { readonly type: 'DeathSaved'; readonly presentationReceipt?: CombatPresentationReceipt; readonly hp: number; readonly source?: 'gear' | 'relic' } // 致死を1度だけ耐えた (省略=レリック)
   | { readonly type: 'GearUsed'; readonly gearId: string; readonly name: string } // ギアを組んだ (2026-09-17 O: 組んだ事実がログに出ていなかった)
   | { readonly type: 'HpLossCapped'; readonly left: number } // 脈打つ欠片の上限がこのターン初めて働いた (残り回数。0ならこの戦闘の後に砕ける。2026-09-18)
   | { readonly type: 'PlayerArtifactBlocked'; readonly status: string } // 時計仕掛けの土産: プレイヤー側のアーティファクトが状態異常を1回弾いた

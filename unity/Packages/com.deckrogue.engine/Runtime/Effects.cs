@@ -533,7 +533,8 @@ namespace DeckRogue.Engine
                             GameState next = ResolveEffectTargeted(
                                 isInnate ? s with { InnateResolving = true } : s,
                                 boosted,
-                                target);
+                                target,
+                                new DamagePresentationSource { Kind = "permanent", DefinitionId = permanent.Def.Id, Uid = permanent.Uid });
                             if (isInnate) next = next with { InnateResolving = false };
                             s = next;
                         }
@@ -561,7 +562,7 @@ namespace DeckRogue.Engine
                     HealsThisTurn = (state.Player.HealsThisTurn ?? 0) + (state.ResolvingCardPlay == true ? 1 : 0),
                 },
             };
-            s = Events.Emit(s, new GameEvent_HpHealed { Amount = healed, SourceUid = state.ResolvingPermanentUid });
+            s = Events.Emit(s, new GameEvent_HpHealed { Amount = healed, SourceUid = state.ResolvingPermanentUid, PresentationReceipt = Events.PlayerPresentationReceipt(state.Player, s.Player) });
             s = RunPermanentTriggers(s, "onHealed", enemyIndex);
             // 灯 (白 2026-09-20 白の再設計): 回復するたび灯+1。過剰回復でも溜まる (onHealed と同じ回数論)
             return GainLight(s, 1, "heal", enemyIndex);
@@ -673,7 +674,7 @@ namespace DeckRogue.Engine
                 amount = Math.Max(1, (int)Math.Floor(amount * 0.75));
             }
             GameState s = state with { Player = state.Player with { Block = state.Player.Block + amount } };
-            s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = amount, SourceUid = state.ResolvingPermanentUid });
+            s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = amount, SourceUid = state.ResolvingPermanentUid, PresentationReceipt = Events.PlayerPresentationReceipt(state.Player, s.Player) });
             s = AngerGuardWatchers(s);
             return RunPermanentTriggers(s, "onBlockGained", enemyIndex);
         }
@@ -711,7 +712,7 @@ namespace DeckRogue.Engine
         {
             if (amount <= 0) return state;
             GameState s = state with { Player = state.Player with { IceBlock = state.Player.IceBlock + amount } };
-            s = Events.Emit(s, new GameEvent_IceBlockGained { Amount = amount });
+            s = Events.Emit(s, new GameEvent_IceBlockGained { Amount = amount, PresentationReceipt = Events.PlayerPresentationReceipt(state.Player, s.Player) });
             return AngerGuardWatchers(s);
         }
 
@@ -727,7 +728,7 @@ namespace DeckRogue.Engine
                     SelfHpLost = state.Player.SelfHpLost + amount,
                 },
             };
-            s = Events.Emit(s, new GameEvent_HpLost { Amount = amount });
+            s = Events.Emit(s, new GameEvent_HpLost { Amount = amount, PresentationReceipt = Events.PlayerPresentationReceipt(state.Player, s.Player) });
             return RunPermanentTriggers(s, "onHpLost", enemyIndex);
         }
 
@@ -759,22 +760,36 @@ namespace DeckRogue.Engine
                     // 対象は現在の生存先頭 (ミルは対象を取らない自動誘発。全体効果はそのまま全体解決)
                     var at = EnemyAt(s, enemyIndex);
                     int idx = at != null && at.Hp > 0 ? enemyIndex : Math.Max(0, FindAliveIndex(s.Enemies));
-                    s = ResolveEffectTargeted(s, effect, idx);
+                    s = ResolveEffectTargeted(s, effect, idx, new DamagePresentationSource { Kind = "necro", DefinitionId = card.Def.Id, Uid = card.Uid });
                 }
             }
             return s;
         }
 
         /// <summary>効果1つを対象規則に従って解決する。target:'all' は生存する敵全体に順に解決</summary>
-        public static GameState ResolveEffectTargeted(GameState state, DeclarativeEffect effect, int enemyIndex)
+        public static GameState ResolveEffectTargeted(GameState state, DeclarativeEffect effect, int enemyIndex, DamagePresentationSource? presentationSource = null)
         {
-            if (effect.Target != "all") return ResolveEffect(state, effect, enemyIndex);
             GameState s = state;
-            for (int i = 0; i < s.Enemies.Count; i++)
+            if (effect.Target != "all") s = ResolveEffect(state, effect, enemyIndex);
+            else for (int i = 0; i < s.Enemies.Count; i++)
             {
                 if (s.Enemies[i].Hp > 0) s = ResolveEffect(s, effect, i);
             }
-            return s;
+            return AnnotateDamagePresentation(s, state.EventLog.Count, presentationSource);
+        }
+
+        // Display metadata only. Inner scopes label first; outer scopes cannot overwrite.
+        public static GameState AnnotateDamagePresentation(GameState state, int from, DamagePresentationSource? source)
+        {
+            if (source == null) return state;
+            List<GameEvent>? log = null;
+            for (int i = from; i < state.EventLog.Count; i++)
+            {
+                if (!(state.EventLog[i] is GameEvent_DamageDealt hit) || hit.Source != "player" || hit.PresentationSource != null) continue;
+                if (log == null) log = new List<GameEvent>(state.EventLog);
+                log[i] = hit with { PresentationSource = source };
+            }
+            return log == null ? state : state with { EventLog = log };
         }
 
         /// <summary>この誘発窓でカードが発動できるか (トリガー一致 + 追加条件)</summary>
@@ -1638,6 +1653,7 @@ namespace DeckRogue.Engine
                 new GameEvent_DamageDealt
                 {
                     Source = "player",
+                    PresentationReceipt = Events.EnemyPresentationReceipt(enemyIndex, enemy, enemies[enemyIndex]),
                     Amount = amount,
                     HpLoss = hpLoss,
                     EnemyIndex = enemyIndex,
@@ -1679,6 +1695,7 @@ namespace DeckRogue.Engine
             var struck = s.Enemies[enemyIndex];
             if ((struck.Thorns ?? 0) > 0 && struck.Hp > 0 && s.ResolvingCardPlay == true)
             {
+                var beforeReflect = s.Player;
                 int reflect = struck.Thorns!.Value;
                 int pBlocked = Math.Min(s.Player.Block, reflect);
                 int pIceBlocked = Math.Min(s.Player.IceBlock, reflect - pBlocked);
@@ -1692,7 +1709,7 @@ namespace DeckRogue.Engine
                         Hp = s.Player.Hp - pHpLoss,
                     },
                 };
-                s = Events.Emit(s, new GameEvent_ThornsReflected { EnemyIndex = enemyIndex, Amount = reflect, HpLoss = pHpLoss });
+                s = Events.Emit(s, new GameEvent_ThornsReflected { EnemyIndex = enemyIndex, Amount = reflect, HpLoss = pHpLoss, PresentationReceipt = Events.PlayerPresentationReceipt(beforeReflect, s.Player) });
             }
             if (wasBlazingAtHit && !IsBlazing(s)) s = Events.Emit(s, new GameEvent_BlazeExtinguished());
             return s;
@@ -1974,7 +1991,7 @@ namespace DeckRogue.Engine
                                 {
                                     if (pe.Trigger == "onTurnStart" && pe.Condition?.Blaze == true)
                                     {
-                                        s = ResolveEffectTargeted(s, pe, enemyIndex);
+                                        s = ResolveEffectTargeted(s, pe, enemyIndex, new DamagePresentationSource { Kind = "permanent", DefinitionId = permanent.Def.Id, Uid = permanent.Uid });
                                     }
                                 }
                             }
@@ -2218,7 +2235,7 @@ namespace DeckRogue.Engine
                     GameState s = state with { Enemies = MapEnemy(state.Enemies, enemyIndex, e => e with { Block = 0 }) };
                     // 割るブロックが無ければ打たない (2026-09-18: 0 を渡すと成長だけの幽霊ヒットが出ていた。TS と同じ)
                     if (shattered <= 0) return s;
-                    s = Events.Emit(s, new GameEvent_BlockShattered { EnemyIndex = enemyIndex, Amount = shattered });
+                    s = Events.Emit(s, new GameEvent_BlockShattered { EnemyIndex = enemyIndex, Amount = shattered, PresentationReceipt = Events.EnemyPresentationReceipt(enemyIndex, enemy, s.Enemies[enemyIndex]) });
                     return DealDamageToEnemy(s, enemyIndex, shattered, effect.Pierce == true);
                 }
                 case "dealDamageExecute":
@@ -2286,7 +2303,7 @@ namespace DeckRogue.Engine
                     int amount = effect.Amount ?? 0;
                     if (amount <= 0) return state;
                     GameState next = state with { Player = state.Player with { MaxHp = state.Player.MaxHp + amount, Hp = state.Player.Hp + amount } };
-                    return Events.Emit(next, new GameEvent_MaxHpGained { Amount = amount });
+                    return Events.Emit(next, new GameEvent_MaxHpGained { Amount = amount, PresentationReceipt = Events.PlayerPresentationReceipt(state.Player, next.Player) });
                 }
                 case "gainBlockPerMomentum":
                 {
@@ -2294,7 +2311,7 @@ namespace DeckRogue.Engine
                     int block = state.Player.Momentum * (effect.Amount ?? 0);
                     if (block <= 0) return state;
                     GameState s = state with { Player = state.Player with { Block = state.Player.Block + block } };
-                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block, SourceUid = state.ResolvingPermanentUid });
+                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block, SourceUid = state.ResolvingPermanentUid, PresentationReceipt = Events.PlayerPresentationReceipt(state.Player, s.Player) });
                     return RunPermanentTriggers(s, "onBlockGained", enemyIndex);
                 }
                 case "addGrowthPerMomentum":
@@ -2418,7 +2435,7 @@ namespace DeckRogue.Engine
                     {
                         Player = state.Player with { Momentum = 0, Block = state.Player.Block + block },
                     };
-                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block, SourceUid = state.ResolvingPermanentUid });
+                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block, SourceUid = state.ResolvingPermanentUid, PresentationReceipt = Events.PlayerPresentationReceipt(state.Player, s.Player) });
                     return RunPermanentTriggers(s, "onBlockGained", enemyIndex);
                 }
                 case "dischargeMomentumDamage":
@@ -2501,7 +2518,7 @@ namespace DeckRogue.Engine
                     var enemies = MapEnemy(state.Enemies, enemyIndex, e => e with { Block = 0 });
                     var s2 = Events.Emit(
                         state with { Enemies = enemies },
-                        new GameEvent_BlockShattered { EnemyIndex = enemyIndex, Amount = enemy.Block });
+                        new GameEvent_BlockShattered { EnemyIndex = enemyIndex, Amount = enemy.Block, PresentationReceipt = Events.EnemyPresentationReceipt(enemyIndex, enemy, enemies[enemyIndex]) });
                     return BreakBurrowIfCracked(s2, enemyIndex);
                 }
                 case "dealDamageRandom":
@@ -2620,7 +2637,7 @@ namespace DeckRogue.Engine
                     int block = ((state.Player.Light ?? 0) / 2) * (effect.Amount ?? 0);
                     if (block <= 0) return state;
                     GameState s = state with { Player = state.Player with { Block = state.Player.Block + block } };
-                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block, SourceUid = state.ResolvingPermanentUid });
+                    s = Events.Emit(s, new GameEvent_BlockGained { Target = "player", Amount = block, SourceUid = state.ResolvingPermanentUid, PresentationReceipt = Events.PlayerPresentationReceipt(state.Player, s.Player) });
                     return RunPermanentTriggers(s, "onBlockGained", enemyIndex);
                 }
                 case "drawCardsPerLight":
@@ -2966,7 +2983,7 @@ namespace DeckRogue.Engine
                 // 猛り火は「解決の時点」で判定する = 同じカードの前の効果 (着火など) で点いたら乗る
                 if (effect.Trigger == "onPlay" && BlazeConditionMet(s, effect, enemyIndex))
                 {
-                    s = ResolveEffectTargeted(s, effect, enemyIndex);
+                    s = ResolveEffectTargeted(s, effect, enemyIndex, new DamagePresentationSource { Kind = "card", DefinitionId = card.Def.Id, Uid = card.Uid });
                 }
             }
             return s with { ResolvingCardPlay = prev, ResolvingExposedAtStart = prevExposed };
@@ -2983,7 +3000,7 @@ namespace DeckRogue.Engine
             if (effects.Count == 0) return state;
             bool prev = state.ResolvingCardPlay == true;
             GameState s = state with { ResolvingCardPlay = true };
-            foreach (var effect in effects) s = ResolveEffectTargeted(s, effect, enemyIndex);
+            foreach (var effect in effects) s = ResolveEffectTargeted(s, effect, enemyIndex, new DamagePresentationSource { Kind = "card", DefinitionId = card.Def.Id, Uid = card.Uid });
             return s with { ResolvingCardPlay = prev };
         }
 
@@ -3024,14 +3041,14 @@ namespace DeckRogue.Engine
                     var pending = s.PendingPhaseEffects != null
                         ? new List<GameStatePendingPhaseEffects>(s.PendingPhaseEffects)
                         : new List<GameStatePendingPhaseEffects>();
-                    pending.Add(new GameStatePendingPhaseEffects { Effect = effect, EnemyIndex = enemyIndex });
+                    pending.Add(new GameStatePendingPhaseEffects { Effect = effect, EnemyIndex = enemyIndex, PresentationSource = new DamagePresentationSource { Kind = "reaction", DefinitionId = card.Def.Id, Uid = card.Uid } });
                     s = s with { PendingPhaseEffects = pending };
                     continue;
                 }
                 if (BlazeConditionMet(s, effect, enemyIndex))
                 {
                     // target:'all' の返し (茨の爆ぜ) は生存全体に解決する
-                    s = ResolveEffectTargeted(s, effect, enemyIndex);
+                    s = ResolveEffectTargeted(s, effect, enemyIndex, new DamagePresentationSource { Kind = "reaction", DefinitionId = card.Def.Id, Uid = card.Uid });
                 }
             }
             // 読み勝ちの換金 (2026-08-29): リアクション発動に反応する置物。3方式共通の解決経路なので方式非依存。
