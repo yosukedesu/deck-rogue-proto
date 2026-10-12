@@ -2402,6 +2402,134 @@
     "element": "dark",
     "style": "spell"
   },
+  "red_cascade_strike": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_cascade_vent": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_cascade_ford": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_cascade_bolt": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_cascade_shield": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_perm_cascade_sparks": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_perm_cascade_hearth": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_cascade_envoy": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_cascade_great": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_cascade_litany": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_cascade_vortex": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_cascade_core": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_brushfire": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_twin_fire": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_burn_double": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_ash_cover": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_fire_tongue": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_smolder": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_embers_left": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_perm_ash_robe": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_perm_ember_keeper": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_catalyst_aoe": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_catalyst_light": {
+    "element": "physical",
+    "style": "slash"
+  },
+  "red_rake": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_burn_off": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_popping_fire": {
+    "element": "fire",
+    "style": "spark"
+  },
+  "red_perm_fire_awakening": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_kindle": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_ash_breath": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_perm_fire_calls_fire": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_ash_veil": {
+    "element": "fire",
+    "style": "spell"
+  },
+  "red_ember_screen": {
+    "element": "fire",
+    "style": "spark"
+  },
   "_sources": {
     "gear_powder": {
       "style": "spell",
