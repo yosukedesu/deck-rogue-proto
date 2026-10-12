@@ -225,6 +225,162 @@ namespace DeckRogue.Game
             }
         }
 
+        // ---- uxdrag=<手札index>:<敵index> (2026-10-12 dot の Godot の UI・手触りの同等の比較用。Claude が追加) ----
+        // スマホの連続操作を人の指と同じ経路 (EventSystem の PointerEnter → BeginDrag → Drag → EndDrag、ボタンの PointerClick) で再現し、
+        // 原速の動画の元 (seqevery フレームごとの PNG。det と同じく 1フレーム=1/60秒) を撮る:
+        //   持ち上げる (触れる) → つかんで敵へ引く → 取り消しの線より下へ戻して離す (取り消し) → もう一度つかんで敵へ引いて離す (使用)
+        //   → 演出が落ち着く → 「ターン終了」を押す → 敵フェーズと次のターンの頭が落ち着く → seqtail フレーム
+        // PNG は「<名前>-seq-0001.png」… (-statesfile なら行の名前)。節目 (start/lift/grab/over/back/cancel/grab2/drop/played/endturn/done) は
+        // dumplayout=1 なら「<名前>-seq-<節目>.layout.json」にその瞬間の矩形を、「<名前>-seq.json」に節目のフレーム番号・PNG 番号・秒を書く。
+        // seqevery=N (既定 2 = 30fps)・seqmax=N (PNG の上限。既定 900)・seqtail=N (落ち着いてから撮り続けるフレーム。既定 60)。
+        // ルールには触らない (人が押すのと同じ経路で PlayCard と StartEndTurn が呼ばれるだけ)
+        IEnumerator UxDrag(GameRoot g, int dh, int de, int every, int maxFrames, int tail, string baseName)
+        {
+            var st = g.Rs != null ? g.Rs.Combat : null;
+            if (st == null || g.Battle == null || g.Battle.HandLayer == null) yield break;
+            if (dh < 0 || dh >= st.Player.Hand.Count) { Debug.LogWarning("[Autopilot] uxdrag: hand" + dh + " が無い"); yield break; }
+            if (de < 0 || de >= st.Enemies.Count || st.Enemies[de].Hp <= 0) { de = -1; for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) { de = i; break; } }
+            if (de < 0) yield break;
+            if (every < 1) every = 1;
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            var es = UnityEngine.EventSystems.EventSystem.current;
+            string prefix = (_linePrefix ?? baseName) + "-seq";
+            int frame = 0, captured = 0;
+            var marks = new List<string>();
+            Time.captureFramerate = 60;
+            Presenter.MarkSeen(st);
+            Debug.Log("[Autopilot] uxdrag hand" + dh + " → enemy" + de + " every=" + every + " max=" + maxFrames + " tail=" + tail);
+
+            IEnumerator Tick(int n)
+            {   // n フレーム進める。every フレームごとに1枚 (撮るのはそのフレームの終わり)
+                for (int i = 0; i < n; i++)
+                {
+                    if (captured < maxFrames && frame % every == 0)
+                    {
+                        captured++;
+                        ScreenCapture.CaptureScreenshot(Path.Combine(_dir, prefix + "-" + captured.ToString("0000") + ".png"), 1);
+                    }
+                    frame++;
+                    yield return null;
+                }
+            }
+            IEnumerator TickWhilePresenting(int limit)
+            {   // 演出 (順送り・入力の門) が終わるまで撮り続ける (limit フレームで打ち切り)
+                int n = 0;
+                while (n < limit && (g.CombatPresentationPending || GameObject.Find("inputblock") != null || GameObject.Find("inputblock2") != null || !Presenter.PresentationIdle))
+                { yield return Tick(1); n++; }
+            }
+            void Mark(string step)
+            {
+                marks.Add("{\"step\":\"" + step + "\",\"frame\":" + frame + ",\"png\":" + captured + ",\"t\":" + (frame / 60.0).ToString("F3", inv) + "}");
+                Debug.Log("[Autopilot] uxdrag step=" + step + " frame=" + frame + " png=" + captured + " t=" + (frame / 60.0).ToString("F2", inv));
+                if (HD2DFlags.DumpLayout) LayoutDump.Write(this, Path.Combine(_dir, prefix + "-" + step + ".png"), baseName + "-" + step);
+            }
+            Vector2 EnemyBody(int idx)
+            {
+                var epan = g.Anchor("enemy" + idx);
+                var body = epan != null ? (epan.Find("sprite") as RectTransform ?? epan) : null;
+                return body != null ? (Vector2)RectTransformUtility.WorldToScreenPoint(null, body.TransformPoint(body.rect.center)) : new Vector2(Screen.width * 0.7f, Screen.height * 0.6f);
+            }
+            IEnumerator DragTo(Transform go, UnityEngine.EventSystems.PointerEventData pd, Vector2 from, Vector2 to, int frames)
+            {   // 指を from から to へ (減速)。毎フレーム Drag を送る
+                for (int i = 1; i <= frames; i++)
+                {
+                    float u = i / (float)frames; u = 1f - (1f - u) * (1f - u);
+                    var next = Vector2.Lerp(from, to, u);
+                    pd.delta = next - pd.position; pd.position = next;
+                    if (go != null) UnityEngine.EventSystems.ExecuteEvents.Execute(go.gameObject, pd, UnityEngine.EventSystems.ExecuteEvents.dragHandler);
+                    yield return Tick(1);
+                }
+            }
+
+            Mark("start");
+            yield return Tick(30);
+            // ① 持ち上げる = 触れる (スマホは指を置いた瞬間に PointerEnter が来る)
+            var cardGo = g.Battle.HandLayer.Find("hand" + dh);
+            if (cardGo == null) { Debug.LogWarning("[Autopilot] uxdrag: hand" + dh + " が見つからない"); yield break; }
+            Vector2 cardSp = RectTransformUtility.WorldToScreenPoint(null, cardGo.position);
+            var pde = new UnityEngine.EventSystems.PointerEventData(es) { position = cardSp };
+            UnityEngine.EventSystems.ExecuteEvents.Execute(cardGo.gameObject, pde, UnityEngine.EventSystems.ExecuteEvents.pointerEnterHandler);
+            Mark("lift");
+            yield return Tick(36);
+            // ② つかんで敵へ引く
+            Vector2 enemySp = EnemyBody(de);
+            var pdd = new UnityEngine.EventSystems.PointerEventData(es) { button = UnityEngine.EventSystems.PointerEventData.InputButton.Left, pressPosition = cardSp, position = cardSp, dragging = true };
+            UnityEngine.EventSystems.ExecuteEvents.Execute(cardGo.gameObject, pdd, UnityEngine.EventSystems.ExecuteEvents.beginDragHandler);
+            Mark("grab");
+            yield return DragTo(cardGo, pdd, cardSp, enemySp, 48);
+            Mark("over");
+            yield return Tick(24);
+            // ③ 取り消しの線より下へ戻して離す (= 取り消し)
+            Vector2 lowSp = new Vector2(cardSp.x + 60f, Screen.height * 0.18f);
+            yield return DragTo(cardGo, pdd, enemySp, lowSp, 36);
+            Mark("back");
+            yield return Tick(12);
+            UnityEngine.EventSystems.ExecuteEvents.Execute(cardGo.gameObject, pdd, UnityEngine.EventSystems.ExecuteEvents.endDragHandler);
+            pde.position = lowSp;
+            UnityEngine.EventSystems.ExecuteEvents.Execute(cardGo.gameObject, pde, UnityEngine.EventSystems.ExecuteEvents.pointerExitHandler);
+            Mark("cancel");
+            yield return Tick(42);
+            // ④ もう一度つかんで敵へ引いて離す (= 使用)
+            cardGo = g.Battle != null && g.Battle.HandLayer != null ? g.Battle.HandLayer.Find("hand" + dh) : null;
+            if (cardGo == null) { Debug.LogWarning("[Autopilot] uxdrag: 取り消しの後に hand" + dh + " が見つからない"); yield break; }
+            cardSp = RectTransformUtility.WorldToScreenPoint(null, cardGo.position);
+            pde.position = cardSp;
+            UnityEngine.EventSystems.ExecuteEvents.Execute(cardGo.gameObject, pde, UnityEngine.EventSystems.ExecuteEvents.pointerEnterHandler);
+            yield return Tick(18);
+            enemySp = EnemyBody(de);
+            pdd = new UnityEngine.EventSystems.PointerEventData(es) { button = UnityEngine.EventSystems.PointerEventData.InputButton.Left, pressPosition = cardSp, position = cardSp, dragging = true };
+            UnityEngine.EventSystems.ExecuteEvents.Execute(cardGo.gameObject, pdd, UnityEngine.EventSystems.ExecuteEvents.beginDragHandler);
+            Mark("grab2");
+            yield return DragTo(cardGo, pdd, cardSp, enemySp, 48);
+            yield return Tick(12);
+            Mark("drop");
+            UnityEngine.EventSystems.ExecuteEvents.Execute(cardGo.gameObject, pdd, UnityEngine.EventSystems.ExecuteEvents.endDragHandler);   // 敵の上で離す = その敵へ使用
+            yield return Tick(6);
+            yield return TickWhilePresenting(600);
+            Mark("played");
+            yield return Tick(30);
+            // ⑤ 「ターン終了」を押す (人と同じ PointerClick)
+            Button endBtn = null;
+            if (g.ScreenRoot != null)
+                foreach (var b in g.ScreenRoot.GetComponentsInChildren<Button>(true))
+                {
+                    var tx = b.GetComponentInChildren<TMPro.TMP_Text>(true);
+                    if (tx != null && tx.text == "ターン終了") { endBtn = b; break; }
+                }
+            if (endBtn != null)
+            {
+                var brt = endBtn.transform as RectTransform;
+                var pdc = new UnityEngine.EventSystems.PointerEventData(es) { button = UnityEngine.EventSystems.PointerEventData.InputButton.Left, position = brt != null ? (Vector2)RectTransformUtility.WorldToScreenPoint(null, brt.TransformPoint(brt.rect.center)) : Vector2.zero };
+                UnityEngine.EventSystems.ExecuteEvents.Execute(endBtn.gameObject, pdc, UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);
+                Mark("endturn");
+                yield return Tick(6);
+                yield return TickWhilePresenting(900);
+            }
+            else Debug.LogWarning("[Autopilot] uxdrag: 「ターン終了」のボタンが見つからない");
+            Mark("done");
+            yield return Tick(tail);
+            Time.captureFramerate = DetFramerate;   // det なら 60 のまま
+            // 節目の一覧 (<名前>-seq.json)
+            try
+            {
+                Func<string, string> js = s => s == null ? "null" : "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
+                var sb = new System.Text.StringBuilder();
+                sb.Append("{\"schema\":\"ux-seq/1\",\"name\":").Append(js(baseName)).Append(",\"prefix\":").Append(js(prefix))
+                  .Append(",\"hand\":").Append(dh).Append(",\"enemy\":").Append(de)
+                  .Append(",\"every\":").Append(every).Append(",\"frameSeconds\":").Append((1.0 / 60.0).ToString("R", inv)).Append(",\"fps\":").Append((60.0 / every).ToString("R", inv))
+                  .Append(",\"frames\":").Append(frame).Append(",\"pngs\":").Append(captured)
+                  .Append(",\"screen\":{\"w\":").Append(Screen.width).Append(",\"h\":").Append(Screen.height).Append("}")
+                  .Append(",\"phone\":").Append(UiKit.Phone ? "true" : "false").Append(",\"det\":").Append(Det ? "true" : "false")
+                  .Append(",\"state\":").Append(js(_stateSpec))
+                  .Append(",\"steps\":[").Append(string.Join(",", marks.ToArray())).Append("]}");
+                File.WriteAllText(Path.Combine(_dir, prefix + ".json"), sb.ToString());
+            }
+            catch (Exception ex) { Debug.LogWarning("[Autopilot] uxdrag: seq.json を書けない " + ex.Message); }
+            Debug.Log("[Autopilot] uxdrag done frames=" + frame + " pngs=" + captured);
+        }
+
         IEnumerator Shot(string name, int settle = 6)
         {
             // Review fixtures settle identically with or without optional screenshot output.
@@ -984,6 +1140,19 @@ namespace DeckRogue.Game
                     }
                     else Debug.LogWarning("[Autopilot] dragaim: hand" + dh + " か enemy" + de + " が見つからない");
                 }
+            }
+            // uxdrag=<手札index>:<敵index>: スマホの連続操作 (持ち上げる→敵へ引く→戻して取り消す→敵へ使用→ターン終了) を原速の動画用にコマ撮り (2026-10-12 dot の Godot の UI 同等の依頼。UxDrag)
+            if (Get("uxdrag") != null && g.Rs != null && g.Rs.Combat != null && g.Battle != null && g.Battle.HandLayer != null)
+            {
+                var ux = Get("uxdrag").Split(':');
+                int uh, ue;
+                if (!int.TryParse(ux[0], out uh)) uh = 0;
+                if (ux.Length < 2 || !int.TryParse(ux[1], out ue)) ue = -1;
+                int sev, smax, stail;
+                if (!int.TryParse(Get("seqevery") ?? "", out sev) || sev <= 0) sev = 2;
+                if (!int.TryParse(Get("seqmax") ?? "", out smax) || smax <= 0) smax = 900;
+                if (!int.TryParse(Get("seqtail") ?? "", out stail) || stail < 0) stail = 60;
+                yield return UxDrag(g, uh, ue, sev, smax, stail, Get("name") ?? ("state-" + phase));
             }
             // tip=enemy: 敵をタップした説明パネル (スマホ) / popup=N: 手札 N 枚目の長押しポップアップ
             if (Get("tip") == "enemy" && g.Rs != null && g.Rs.Combat != null && g.Battle != null)
