@@ -100,7 +100,7 @@ export function logLine(e: GameEvent): LogLine | null {
     case 'DamageDealt':
       return e.source === 'player'
         ? { text: `敵に${e.amount}ダメージ（HP-${e.hpLoss}）${e.exposed ? '【急所】' : ''}${e.pierced ? '【貫通】' : ''}${e.blocked ? `【ブロックで${e.blocked}】` : ''}${e.armorCut ? `【装甲で${e.armorCut}切り捨て】` : ''}${e.burrowCut ? `【潜伏の殻で${e.burrowCut}を捨てた】` : ''}${e.nemesisCut ? `【無形で${e.nemesisCut}消滅=1固定】` : ''}${e.slipperyCut ? `【朧で${e.slipperyCut}消えた=1】` : ''}${e.turnArmorCut ? `【ターン装甲で${e.turnArmorCut}切り捨て】` : ''}`, cls: 'log-line' }
-        : { text: `敵の攻撃${e.amount} → HP-${e.hpLoss}${e.blocked ? `（ブロックで${e.blocked}）` : ''}`, cls: 'log-bad' }
+        : { text: `敵の攻撃${e.amount} → HP-${e.hpLoss}${e.nullified ? '（身代わりの符で無効）' : e.blocked ? `（ブロックで${e.blocked}）` : ''}`, cls: e.nullified ? 'log-good' : 'log-bad' }
     case 'BlockGained': return { text: `${e.target === 'player' ? '自分' : '敵'}がブロック+${e.amount}`, cls: 'log-line' }
     case 'StrengthGained': {
       // 激昂の発火は理由を明示する (2026-09-01 検証ラン「跨いだ瞬間を後から確認できない」への処方)
@@ -169,6 +169,16 @@ export function logLine(e: GameEvent): LogLine | null {
       return { text: e.enemyIndex === e.targetIndex ? `混乱した敵は自分自身に${e.amount}ダメージ！` : `仲間割れ！ 混乱した敵が味方に${e.amount}ダメージ`, cls: 'log-good' }
     case 'BlockShattered': return { text: `敵のブロック${e.amount}を粉砕！`, cls: 'log-good' }
     case 'ImpulseDrawn': return { text: `衝動${e.count}枚（このターン限り）`, cls: 'log-line' }
+    case 'Cascaded':
+      return e.hitId !== undefined
+        ? { text: `チェイン: ${cardName(e.cardId)} → ${cardName(e.hitId)}をコストを払わずにプレイ${e.revealed.length > 0 ? `（${e.revealed.length}枚は山札の底へ）` : ''}`, cls: 'log-good' }
+        : { text: `チェイン: ${cardName(e.cardId)} → 当たりなし${e.revealed.length > 0 ? `（${e.revealed.length}枚は山札の底へ）` : ''}`, cls: 'log-line' }
+    case 'ImpulseReturned': return { text: `衝動の失効: ${cardName(e.cardId)}は払えなかったので捨て札へ`, cls: 'log-line' }
+    case 'ImpulseKept': return { text: `燠の守り: ${cardName(e.cardId)}は失効せず手札に残った`, cls: 'log-line' }
+    case 'ImpulseKindled': return { text: `🔥 ${cardName(e.cardId)}の追加コストとして${e.cardIds.map(cardName).join('・')}を火にくべた（消滅）`, cls: 'log-line' }
+    case 'BlazeIgnited': return { text: '🔥 猛り火に点いた（延焼の合計が8以上）', cls: 'log-good' }
+    case 'BlazeExtinguished': return { text: '🔥 猛り火が消えた（延焼の合計が8未満）', cls: 'log-line' }
+    case 'CascadeRetargeted': return { text: `🔗 チェインの当たりが対象を倒したので、${cardName(e.cardId)}の本体は敵${e.toIndex + 1}へ`, cls: 'log-line' }
     case 'HpLost': return { text: `自傷でHP-${e.amount}`, cls: 'log-bad' }
     case 'EnergyGained': return { text: `エナジー+${e.amount}（このターン）`, cls: 'log-line' }
     case 'MomentumAdded': return { text: `勢い+${e.amount}`, cls: 'log-good' }

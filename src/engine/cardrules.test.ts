@@ -41,7 +41,9 @@ function netEnergy(def: CardDef): number {
     list
       .filter((e) => e.effect === 'gainEnergy' || e.effect === 'discountNext')
       .reduce((a, e) => a + (e.amount ?? 0), 0)
-  const base = sum(def.effects)
+  // 置物の誘発 (猛り火に点いた時 など) のエナジーは「その札のプレイ」で返る分ではない (2026-10-12 段2b 火の目覚め=1E 置物・点くたび1ドロー＋エナジー1。
+  // 点火は延焼8を跨ぐたびで自分だけでは回らない)。置物は onPlay の分だけ数える
+  const base = sum(def.type === 'permanent' ? def.effects.filter((e) => e.trigger === 'onPlay') : def.effects)
   const modeMax = (def.modes ?? []).reduce((max, m) => Math.max(max, sum(m.effects)), 0)
   return base + modeMax - def.cost
 }

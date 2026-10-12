@@ -31,14 +31,14 @@ describe('憤怒 (被弾の換金)', () => {
 })
 
 describe('爆熱 (延焼の換金)', () => {
-  it('爆熱の解放: 延焼×3のダメージを与え、延焼が0になる', () => {
+  it('爆熱の解放: 延焼×4のダメージを与え、延焼が0になる (2026-10-12 段2b: 刈る梯子 ×2/×3/×4 の最上段。旧 ×3)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
       'red_burst_release',
     ])
     s = { ...s, enemies: s.enemies.map((e) => ({ ...e, burn: 5 })) }
     const enemyHp = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_burst_release' })
-    expect(s.enemies[0].hp).toBe(enemyHp - 15)
+    expect(s.enemies[0].hp).toBe(enemyHp - 20)
     expect(s.enemies[0].burn).toBe(0)
   })
 })

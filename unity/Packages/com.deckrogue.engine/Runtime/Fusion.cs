@@ -613,7 +613,8 @@ namespace DeckRogue.Engine
                         ownerOf.Add(block);
                         continue;
                     }
-                    int t = canMerge ? TwinOf(raw, block) : -1;
+                    // 同名合成の放出 (延焼×2 の全消費など) も対で合算する (2026-10-12 Opus 赤フル B: 真・火掻き の全消費が2行並んでいた)
+                    int t = canMerge || (sameName && block == 1 && raw.Effect.StartsWith("discharge")) ? TwinOf(raw, block) : -1;
                     if (t >= 0 && merged[t].Amount != null && raw.Amount != null)
                     {
                         var n = merged[t] with { Amount = (merged[t].Amount ?? 0) + raw.Amount };
@@ -854,12 +855,17 @@ namespace DeckRogue.Engine
                 // 保持の触媒 / 反復の触媒 (2026-09-12): 結果に保持・反復内蔵が乗る。触媒の印そのものは結果に残らない
                 Retain = ((a.Def.Retain == true || b.Def.Retain == true || catalysts.Contains("retain")) && resultType != "permanent") ? true : (bool?)null,
                 Echo = ((a.Def.Echo == true || b.Def.Echo == true || catalysts.Contains("echo")) && resultType != "reaction") ? true : (bool?)null,
+                // チェイン (赤 2026-10-10): 反復と同じく片方が持てば結果も持つ (回数は多い方)。コスト=合計−1 なので当たりは広がる。TS と同形
+                Cascade = (((a.Def.Cascade ?? 0) > 0 || (b.Def.Cascade ?? 0) > 0) && resultType != "reaction") ? Math.Max(a.Def.Cascade ?? 0, b.Def.Cascade ?? 0) : (int?)null,
                 DiscardCost = ((a.Def.DiscardCost ?? 0) != 0 || (b.Def.DiscardCost ?? 0) != 0)
                     ? (a.Def.DiscardCost ?? 0) + (b.Def.DiscardCost ?? 0)
                     : (int?)null,
                 ExhaustCost = ((a.Def.ExhaustCost ?? 0) != 0 || (b.Def.ExhaustCost ?? 0) != 0)
                     ? (a.Def.ExhaustCost ?? 0) + (b.Def.ExhaustCost ?? 0)
                     : (int?)null,
+                ImpulseCost = ((a.Def.ImpulseCost ?? 0) != 0 || (b.Def.ImpulseCost ?? 0) != 0)
+                    ? (a.Def.ImpulseCost ?? 0) + (b.Def.ImpulseCost ?? 0)
+                    : (int?)null, // くべる (赤 2026-10-12 段2) は消滅コストと同じく合算
                 LightCost = ((a.Def.LightCost ?? 0) != 0 || (b.Def.LightCost ?? 0) != 0)
                     ? (a.Def.LightCost ?? 0) + (b.Def.LightCost ?? 0)
                     : (int?)null, // 灯コストは合算 (捨て・消滅コストと同じ。白 2026-09-20)

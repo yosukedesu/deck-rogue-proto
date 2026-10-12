@@ -149,6 +149,7 @@ namespace DeckRogue.Engine
             public const string Threshold = "threshold";
             public const string Light = "light"; // 灯コスト-1 (白 2026-09-20 点灯の合図+)
             public const string Range = "range"; // 打ち消しの条件を広げる (青 2026-09-25 マナ漏出+・逆巻き+)
+            public const string Cascade = "cascade"; // チェイン+1 (赤 2026-10-10 野火+・双つ火+)
         }
 
         /// <summary>
@@ -171,6 +172,8 @@ namespace DeckRogue.Engine
             "dealDamagePerLight", // 灯篭の人形 (灯2につきN)。灯コスト持ちなので実際は Light ティア (灯-1) が先に取る
             "dealDamagePerSpark", "gainBlockPerSpark", "gainBlockPerLight", "drawCardsPerLight", "dischargeLightWeaken", // 2026-09-20 夜・火守りの盾 (2026-09-24)
             "dealDamagePerScry", "dealDamagePerTrapFired", // 読み切り・仕掛けの反響 (青 2026-09-25): 参照倍率+1
+            "dealDamagePerCascade", "gainBlockPerBurn", "dealDamagePerBurn", // 火の渦・灰かぶり・火の舌 (赤 2026-10-10): 参照倍率+1
+            "dischargeBurn", // 火掻き・焼き払い (赤 2026-10-12 段2): 消費する刈り取りも参照倍率+1。爆熱の解放は V2_COST_ONLY
         };
 
         private static readonly HashSet<string> UNIT_EFFECTS_V2 = new HashSet<string>
@@ -197,12 +200,17 @@ namespace DeckRogue.Engine
         private static bool HasThreshold(DeclarativeEffect e) =>
             e.Condition?.MinGrowth != null || e.Condition?.MinMomentum != null || e.Condition?.MinLight != null;
 
-        /// <summary>本家形の鍛えを使う色 (緑 2026-09-04 先行 → 白 2026-09-18 仕上げ → 青 2026-09-25 解凍)。工房産 (fused_*) も色で判定</summary>
-        private static readonly HashSet<string> V2_COLORS = new HashSet<string> { "green", "white", "blue" };
-        /// <summary>本家形の色でも旧3段で鍛える札 (2026-09-25 青の解凍): 氷の槍 (1E 化を封じた札)・魔力の火花 (本家形だと鍛えられない)。TS と同形</summary>
-        private static readonly HashSet<string> V2_LEGACY = new HashSet<string> { "blue_ice_lance", "blue_spark" };
+        /// <summary>本家形の鍛えを使う色 (緑 2026-09-04 先行 → 白 2026-09-18 仕上げ → 青 2026-09-25 解凍 → 赤 2026-10-10 解凍。黒は解凍時に足す)。工房産 (fused_*) も色で判定</summary>
+        private static readonly HashSet<string> V2_COLORS = new HashSet<string> { "green", "white", "blue", "red" };
+        /// <summary>
+        /// 本家形の色でも旧3段で鍛える札 (2026-09-25 青の解凍): 氷の槍 (1E 化を封じた札)・魔力の火花 (本家形だと鍛えられない)。
+        /// 2026-10-10 赤の解凍 (ユーザー裁定「2枚とも例外」): 火だるま (2E 置物・被攻撃後 延焼2＋被弾×1) は査定193%の上に本家形だと被弾×2 が乗る = 旧3段の「延焼3」のまま。TS と同形
+        /// </summary>
+        private static readonly HashSet<string> V2_LEGACY = new HashSet<string> { "blue_ice_lance", "blue_spark", "red_perm_pyre" };
         /// <summary>本家形の色でも「おまけ」で鍛える札 (2026-09-25 Opus 青C): 反復+ は 0E にせず 1ドローを足す。TS V2_BONUS と同形</summary>
         private static readonly HashSet<string> V2_BONUS = new HashSet<string> { "blue_echo" };
+        /// <summary>本家形の例外 = チェイン+1 (2026-10-10 Opus 赤 A/C): 野火・双つ火はコスト-1 だと当たりが 1E 以下に縮む。TS V2_CASCADE_PLUS と同形</summary>
+        private static readonly HashSet<string> V2_CASCADE_PLUS = new HashSet<string> { "red_brushfire", "red_twin_fire" };
         private static bool IsGreenRule(CardDef def) =>
             !V2_LEGACY.Contains(def.Id) && (def.Id.StartsWith("green_", StringComparison.Ordinal) || (def.Color != null && V2_COLORS.Contains(def.Color)));
         /// <summary>本家形の例外 = 名指しでコスト-1 (2026-09-18 白: 誘発ごとにドローする置物は単位+1 だと青のドローの定価を越える)</summary>
@@ -211,6 +219,10 @@ namespace DeckRogue.Engine
             "white_perm_band", "white_perm_apostle", // 鏡の灯籠は 2026-09-24 に撤去
             // 2026-09-25 青の解凍: 何でも消せる打ち消しは値段・書見台と外套は軽くなる側で伸ばす (TS upgrade.ts と同形)
             "blue_counterspell", "blue_spell_steal", "blue_perm_tidal_lectern", "blue_perm_deep_cloak", // 凍る静寂は 2026-09-25 に撤去 (3本柱)
+            // 2026-10-10 赤の解凍 (ユーザー裁定「2枚とも例外」): 焔の目録 (2E 置物・衝動ごと勢い+2) は本家形だと勢い+4 = 8/30 に 門番T1 472ダメで是正した値に戻る。1E のまま
+            "red_perm_ledger",
+            // 2026-10-12 段2: dischargeBurn を参照倍率のティアに入れたが、爆熱の解放 (R 2E ×3) の鍛えは従来のコスト−1 のまま (TS と同形)
+            "red_burst_release",
         };
         /// <summary>本家形の例外 = 打ち消しの条件を広げる (2026-09-25): マナ漏出 15以下→20以下・逆巻き 12以上→8以上</summary>
         private static readonly Dictionary<string, (int Max, int Min)> V2_RANGE = new Dictionary<string, (int Max, int Min)>
@@ -324,6 +336,7 @@ namespace DeckRogue.Engine
                 if (V2_COST_ONLY.Contains(def.Id) && def.Cost >= 1 && !CostCutViolates(def)) return UpgradeTiers.Cost;
                 if (V2_RANGE.ContainsKey(def.Id)) return UpgradeTiers.Range;
                 if (V2_BONUS.Contains(def.Id) && BONUS_UPGRADES.ContainsKey(def.Id)) return UpgradeTiers.Bonus;
+                if (V2_CASCADE_PLUS.Contains(def.Id) && (def.Cascade ?? 0) > 0) return UpgradeTiers.Cascade;
                 // 灯コスト持ち (点灯の合図 1E・灯2。白 2026-09-20): 鍛えると灯コスト-1。エナジーは触らない
                 if ((def.LightCost ?? 0) >= 1) return UpgradeTiers.Light;
                 var t = TierV2(eff, def);
@@ -400,7 +413,7 @@ namespace DeckRogue.Engine
                 if (card.Def.Modes != null) rangeDef = rangeDef with { Modes = card.Def.Modes.Select(m => m with { Effects = m.Effects.Select(Widen).ToList() }).ToList() };
                 return card with { Def = LegalizeUpgrade(rangeDef) };
             }
-            if (IsGreenRule(card.Def) && tier != UpgradeTiers.Cost && tier != UpgradeTiers.Bonus && tier != UpgradeTiers.None && tier != UpgradeTiers.Light)
+            if (IsGreenRule(card.Def) && tier != UpgradeTiers.Cost && tier != UpgradeTiers.Bonus && tier != UpgradeTiers.None && tier != UpgradeTiers.Light && tier != UpgradeTiers.Cascade)
             {
                 var baseDef = card.Def;
                 CardDef greenDef = baseDef with
@@ -452,6 +465,10 @@ namespace DeckRogue.Engine
             else if (tier == UpgradeTiers.Light)
             {
                 def = def with { LightCost = Math.Max(0, (card.Def.LightCost ?? 0) - 1) }; // 点灯の合図+ = 1E・灯1
+            }
+            else if (tier == UpgradeTiers.Cascade)
+            {
+                def = def with { Cascade = (card.Def.Cascade ?? 0) + 1 }; // 野火+ = チェイン×4・双つ火+ = 5ダメ＋チェイン×3 (2026-10-10)
             }
             else if (tier == UpgradeTiers.Bonus)
             {

@@ -106,8 +106,25 @@ export function isPlayableFromHand(card: CardInstance, state?: GameState): boole
   return (
     card.def.type === 'permanent' ||
     (card.def.modes?.length ?? 0) > 0 ||
+    (card.def.cascade ?? 0) > 0 || // チェインだけの札 (野火) もプレイできる (赤 2026-10-10)
     card.def.effects.some((e) => e.trigger === 'onPlay')
   )
+}
+
+/** 失効する衝動の札が「払えなかった」札か (赤 2026-10-12 3幕フルラン 裁定 F2「払えない札だけ捨て札へ」):
+ *  出せる札で、その時点の実コストが残りエナジーを上回る。出せない札 (呪い・負傷・がらくた) は false = 消滅のまま (掃除の効果を残す) */
+export function impulseUnaffordable(state: GameState, card: CardInstance): boolean {
+  return isPlayableFromHand(card, state) && effectiveCost(state, card) > state.player.energy
+}
+
+/** 常在の印 (置物の effects に名前だけ書く効果) が場にあるか。深き仕掛け・燻り・連火の炉心・燠の守りが読む */
+export function hasStaticEffect(state: GameState, effectName: string): boolean {
+  return state.player.permanents.some((p) => p.def.effects.some((e) => e.effect === effectName))
+}
+
+/** 燻り (赤 R 置物 2026-10-10): この置物がある間、延焼は敵フェーズで減らない (延焼耐性の追加の減りも止める) */
+export function burnNoDecay(state: GameState): boolean {
+  return hasStaticEffect(state, 'burnNoDecay')
 }
 
 /** 烙印 (呪いの烙印・仮初の烙印) か。青い蝋燭のプレイ可否・黒曜の護符の数え上げが読む */
@@ -119,6 +136,8 @@ export function isBrandCard(card: CardInstance): boolean {
 export function isDamageEffect(effect: DeclarativeEffect): boolean {
   return [
     'dealDamage',
+    'dealDamagePerCascade', // 火の渦 (赤 2026-10-10)
+    'dealDamagePerBurn', // 火の舌 (赤 2026-10-10)
     'dealDamageRandom',
     'dealDamagePerCardPlayed',
     'dealDamagePerCardPlayedTotal',
@@ -158,6 +177,7 @@ export function isDamageEffect(effect: DeclarativeEffect): boolean {
 /** 敵1体を対象に取る効果 (target:'all' を除く)。StS式ターゲティングの要否判定に使う */
 const ENEMY_TARGETED = new Set([
   'dealDamage',
+  'dealDamagePerCascade', 'dealDamagePerBurn', 'gainBlockPerBurn', 'doubleBurn', // 赤の3本柱 (2026-10-10): 延焼の参照・倍加は対象の敵を選ぶ
   'dealDamagePerScry', // 読み切り (青 2026-09-25)
   'dealDamagePerTrapFired', // 仕掛けの反響 (青 2026-09-25)
   'dealDamageRandom',
@@ -430,6 +450,10 @@ export function runPermanentTriggers(
         if (boosted.target === 'mostHp') {
           // 獅子の人形 (白 2026-09-26): いまの HP がいちばん多い生存敵 (同じなら左から)。RNG は使わない
           target = s.enemies.reduce((best, e, i) => (e.hp > 0 && (best < 0 || e.hp > s.enemies[best].hp) ? i : best), -1)
+          if (target < 0) target = alive
+        } else if (boosted.target === 'mostBurn') {
+          // 燃え残り (赤 2026-10-12 段2b 裁定): 延焼がいちばん多い生存敵 (同じなら左から)。先頭固定だと落ちかけの敵に積まれ続けた (Opus B 戦#5)
+          target = s.enemies.reduce((best, e, i) => (e.hp > 0 && (best < 0 || e.burn > s.enemies[best].burn) ? i : best), -1)
           if (target < 0) target = alive
         } else if (permanent.def.retainer === true && permanent.innate !== true && isDamageEffect(boosted) && boosted.target !== 'all') {
           const aliveIdx = s.enemies.map((e, i) => (e.hp > 0 ? i : -1)).filter((i) => i >= 0)
@@ -1281,6 +1305,7 @@ export function dealDamageToEnemy(
   let amount = playerDamageAfterModifiers(state, baseAmount)
   const enemy = state.enemies[enemyIndex]
   if (!enemy || enemy.hp <= 0) return state
+  const wasBlazingAtHit = isBlazing(state) // 敵を倒して延焼の合計が8を割ったら「猛り火が消えた」(2026-10-12 段2b Opus A)
   // 急所 (敵版脆弱): 次に受けるダメージN回が+50% (1ヒットごとに1減。確定済みルール表「急所」)。
   // ブロック変換 (per-Block/per-IceBlock) には乗せない (2026-08-31 ユーザー許可 —
   // 大盾の反撃が 盾41×2×急所1.5=127 の二乗×増幅になっていた)。乗らない場合は急所を消費しない
@@ -1395,6 +1420,7 @@ export function dealDamageToEnemy(
     }
     s = emit(s, { type: 'ThornsReflected', enemyIndex, amount: reflect, hpLoss: pHpLoss })
   }
+  if (wasBlazingAtHit && !isBlazing(s)) s = emit(s, { type: 'BlazeExtinguished' })
   return s
 }
 
@@ -1746,13 +1772,19 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       // 延焼8が敵フェーズを生き残らない限り一度も発火しない実質デッドカードだった。
       // しきい値を跨いだ瞬間に、そのターンぶんのターン開始・猛り火効果を1回発火する =
       // 「点いた瞬間から守られる」の直感に揃える
-      if (!wasBlazing && isBlazing(s) && s.phase === 'player-turn') {
-        for (const permanent of s.player.permanents) {
-          for (const pe of permanent.def.effects) {
-            if (pe.trigger === 'onTurnStart' && pe.condition?.blaze === true) {
-              s = resolveEffectTargeted(s, pe, enemyIndex)
+      if (!wasBlazing && isBlazing(s)) {
+        // 点いた瞬間を出来事に残す (赤 2026-10-12 段2: 火の目覚め・爆ぜ火・チェックポイント Opus の集計が読む)
+        s = emit(s, { type: 'BlazeIgnited' })
+        if (s.phase === 'player-turn') {
+          for (const permanent of s.player.permanents) {
+            for (const pe of permanent.def.effects) {
+              if (pe.trigger === 'onTurnStart' && pe.condition?.blaze === true) {
+                s = resolveEffectTargeted(s, pe, enemyIndex)
+              }
             }
           }
+          // 「猛り火に点いた時」の置物 (火の目覚め 2026-10-12 段2): 自ターン中の点火で鳴る。消して (火掻き・焼き払い・爆熱の解放) また点ければもう一度
+          s = runPermanentTriggers(s, 'onBlazeIgnite', enemyIndex)
         }
       }
       return s
@@ -1977,11 +2009,14 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
       const enemy = state.enemies[enemyIndex]
       if (!enemy || enemy.hp <= 0 || enemy.burn <= 0) return state
       const burn = enemy.burn
+      const wasBlazing = isBlazing(state)
       let s: GameState = {
         ...state,
         enemies: state.enemies.map((e, i) => (i === enemyIndex ? { ...e, burn: 0 } : e)),
       }
       s = emit(s, { type: 'BurnDischarged', enemyIndex, amount: burn })
+      // 刈って合計が8を割ったら「猛り火が消えた」(2026-10-12 段2b)。消して点け直す輪の合図
+      if (wasBlazing && !isBlazing(s)) s = emit(s, { type: 'BlazeExtinguished' })
       return dealDamageToEnemy(s, enemyIndex, burn * (effect.amount ?? 0), effect.pierce)
     }
     case 'shatterBlockConvert': {
@@ -2484,8 +2519,37 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
     case 'retainedCostDown':
     case 'trapsNeverExpire':
     case 'retainHandUpTo':
-      // 深き仕掛け・満ち潮の書庫 (青 R 置物 2026-09-25): 常在の印。trapLifeOf・endTurn が場を読むだけ (登場時の no-op)
+    case 'firstCardCascade':
+    case 'burnNoDecay':
+    case 'keepImpulseOne':
+    case 'cascadeSameCost':
+      // 深き仕掛け・満ち潮の書庫 (青 R 置物 2026-09-25)・連火の炉心・燻り・燠の守り (赤 2026-10-10)・火は火を呼ぶ (2026-10-12 段2): 常在の印。
+      // trapLifeOf・endTurn・playCard・延焼ティック・衝動の失効・resolveCascade が場を読むだけ (登場時の no-op)
       return state
+    case 'dealDamagePerCascade':
+      // 火の渦 (赤 チェインの刈り取り 2026-10-10): この戦闘でチェインが当たった回数×amount (読み切りと同じ型。0回なら不発)
+      return (state.player.cascadesThisCombat ?? 0) <= 0
+        ? state
+        : dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * (state.player.cascadesThisCombat ?? 0), effect.pierce)
+    case 'doubleBurn': {
+      // 火勢倍し (赤 バーンの倍加 2026-10-10。本家 Catalyst): 対象の延焼を2倍にする。延焼0なら不発。
+      // 増えた分は applyBurn と同じ道 (BurnApplied・猛り火の点火瞬間) を通す
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0 || enemy.burn <= 0) return state
+      return resolveEffect(state, { trigger: effect.trigger, effect: 'applyBurn', amount: enemy.burn }, enemyIndex)
+    }
+    case 'gainBlockPerBurn': {
+      // 灰かぶり (赤 バーンの守りの刈り取り 2026-10-10): 対象の延焼×amount のブロック。延焼は失わない
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0 || enemy.burn <= 0) return state
+      return gainPlayerBlock(state, (effect.amount ?? 0) * enemy.burn, enemyIndex)
+    }
+    case 'dealDamagePerBurn': {
+      // 火の舌 (赤 バーンの刈り取り 2026-10-10): 対象の延焼×amount のダメージ。延焼は失わない (爆熱は全消費)
+      const enemy = state.enemies[enemyIndex]
+      if (!enemy || enemy.hp <= 0 || enemy.burn <= 0) return state
+      return dealDamageToEnemy(state, enemyIndex, (effect.amount ?? 0) * enemy.burn, effect.pierce)
+    }
     case 'gainBlockPerSpark':
       // 火守りの盾 (白 C 2026-09-24 Opus ひなた裁定「作る札に刈り取りを内蔵」): この戦闘で撃った火種×amount のブロック
       return (state.player.sparksPlayedThisCombat ?? 0) <= 0
@@ -2583,6 +2647,8 @@ export function resolveEffect(state: GameState, effect: DeclarativeEffect, enemy
  */
 export function blazeConditionMet(state: GameState, effect: DeclarativeEffect, enemyIndex?: number): boolean {
   if (effect.condition?.blaze === true && !isBlazing(state)) return false
+  // くべた時だけ (赤 2026-10-12 段2b): 任意の追加コストを払ってプレイした解決の間だけ乗る
+  if (effect.condition?.kindled === true && state.resolvingKindled !== true) return false
   const c = effect.condition
   if (c) {
     // 敵の行動後の置物 (onEnemyActed): 行動の種別は直前に解決した行動 (lastAction) で判定。リアクション窓の actionKinds は reactionMatches が見る
@@ -2661,6 +2727,21 @@ export function resolveOnPlayEffects(state: GameState, card: CardInstance, enemy
     }
   }
   return { ...s, resolvingCardPlay: prev, resolvingExposedAtStart: prevExposed }
+}
+
+/**
+ * 「この札で猛り火に点いたら」(爆ぜ火 2026-10-12 段2): 本体の効果の前後で猛り火を比べ、跨いでいたら札自身の
+ * onBlazeIgnite 効果を解決する。カードのプレイの続き (resolvingCardPlay) なので勢い・虚弱の線は onPlay と同じ。
+ * チェインの当たりで点いた分は数えない (呼び出し側が本体の直前の isBlazing を渡す)。点いていなければ何もしない
+ */
+export function resolveIgniteEffects(state: GameState, card: CardInstance, enemyIndex: number, wasBlazing: boolean): GameState {
+  if (wasBlazing || !isBlazing(state)) return state
+  const effects = card.def.effects.filter((e) => e.trigger === 'onBlazeIgnite')
+  if (effects.length === 0) return state
+  const prev = state.resolvingCardPlay === true
+  let s: GameState = { ...state, resolvingCardPlay: true }
+  for (const effect of effects) s = resolveEffectTargeted(s, effect, enemyIndex)
+  return { ...s, resolvingCardPlay: prev }
 }
 
 const REACTION_TRIGGERS = new Set([

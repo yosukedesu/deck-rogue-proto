@@ -6,6 +6,7 @@ import type { CardDef, DeclarativeEffect } from '../src/engine/types.ts'
 
 const VP_PER: Record<string, number> = {
   dealDamage: 1.0, gainBlock: 1.0, gainIceBlock: 1.3, drawCards: 3.0, impulseDraw: 2.0,
+  dischargeBurn: 1.0 * 6, // 消費する刈り取り (火掻き・焼き払い・爆熱の解放 2026-10-12 段2→段2b で梯子を ×2/×3/×4 に): 典型延焼6 (火の舌と同じ物差し。消費の対価=失うティックは成長放出と同じく査定外)
   gainEnergy: 5.0, addGrowth: 4.0, addMomentum: 1.5, applyBurn: 1.5, addAether: 3.0,
   discountNext: 2.5, counter: 1.0, gainHp: 1.5, weakenEnemy: 5.0, dealDamageDrain: 1.5,
   exposeEnemy: 2.0, dealDamageRandom: 1.0, dealDamageExecute: 1.0, loseHp: -1.5,
@@ -55,8 +56,21 @@ const VP_PER: Record<string, number> = {
   dealDamagePerHeal: 1.0 * 4, // 回復回数の典型4 (ドレイン+とばり/亡骸回復)
   recycleExhaust: 8, // 還す枚数の典型8 × amount (燃料全放棄の対価は査定外 = 実効はこれより辛い)
   dealDamagePerBlock: 1.0 * 8, dealDamagePerPermanent: 1.0 * 3, gainBlockPerPermanent: 1.0 * 3, // 白の参照典型 (自前ブロック8・置物3体)
+  // 赤の3本柱 (2026-10-10): チェインの回数の典型3 (火の渦)・対象の延焼の典型6 (灰かぶり・火の舌)
+  dealDamagePerCascade: 1.0 * 3, gainBlockPerBurn: 1.0 * 6, dealDamagePerBurn: 1.0 * 6,
 }
-const VP_FLAT: Record<string, number> = { negate: 12, shatterBlock: 4, shatterBlockConvert: 10 }
+const VP_FLAT: Record<string, number> = {
+  negate: 12, shatterBlock: 4, shatterBlockConvert: 10,
+  // 赤の3本柱 (2026-10-10 docs/red-cascade-design-2026-10-10.md §2・§4): 倍加は典型延焼6→+6 (9VP)。常在の印は置物×3 が掛かる前の1ターンぶん
+  // 常在の印は onPlay に書くので置物の ×3 が掛からない = 戦闘ぶん (3ターン) の値をここに置く
+  doubleBurn: 9, firstCardCascade: 15, burnNoDecay: 12, keepImpulseOne: 9,
+  cascadeSameCost: 14, // 火は火を呼ぶ (2026-10-12 段2): 1E のチェインが 1E に当たる書き換え = R の帯の床 (14/14)
+}
+/**
+ * チェイン (赤 2026-10-10) の価値 = 当たる札の平均の定価×0.8 (何が出るか・いつ出るかを選べない分)。
+ * 1E は 0E の攻撃 (火花4ダメ) にしか当たらず、0E を積まないデッキでは空振りするので低く
+ */
+const CASCADE_VP: Record<number, number> = { 1: 3, 2: 6.5, 3: 9, 4: 11, 5: 12 }
 const ALLOW = (cost: number) => 6 * cost + 2
 /** 条件付き効果の期待値係数。猛り火は実測で「戦闘の55%程度で成立」なので 0.6 で数える */
 const COND = (e: DeclarativeEffect) => (e.condition ? 0.6 : 1)
@@ -70,8 +84,9 @@ const AOE_MULT: Record<string, number> = { red: 1.5 }
 
 function effectVp(e: DeclarativeEffect, type: string, color?: string): number {
   const aoe = e.target === 'all' ? (AOE_MULT[color ?? ''] ?? 2) : 1
-  // 亡骸効果 (onSelfExhausted) はミル・消滅コスト経由でしか発火しない = 期待値0.5
-  const necro = e.trigger === 'onSelfExhausted' ? 0.5 : 1
+  // 亡骸効果 (onSelfExhausted) はミル・消滅コスト経由でしか発火しない = 期待値0.5。
+  // 猛り火に点いた時 (onBlazeIgnite 2026-10-12 段2) は1戦1〜2回の瞬間 = 期待値0.5 (置物なら ×3 が掛かる = 消して点け直す輪を見込む)
+  const necro = e.trigger === 'onSelfExhausted' || e.trigger === 'onBlazeIgnite' ? 0.5 : 1
   const mult = aoe * (e.pierce ? 1.25 : 1) * COND(e) * necro
   // 置物は寿命込み (×3)。ただし onPlay の一回きり効果は等倍
   const life = type === 'permanent' && e.trigger !== 'onPlay' ? 3 : 1
@@ -104,7 +119,10 @@ export function assess(def: CardDef): { vp: number; pct: number; computable: boo
   // 捨て1枚 = 手札の機会費用 −1.5VP。消滅1枚 = −2VP (この戦闘で二度と使えない) だが、
   // 墓地燃料 (刻・亡骸・per-Exhaust の的) として +0.6VP 戻る = 正味 −1.4VP
   // 灯コスト (白 2026-09-20): 灯1 = 1.2VP (addLight と同じ物差し)。号令・灯コストの人形 (癒し・鐘・大鐘・灯篭・篝火) の追加コスト
-  const vp = vpRaw - (def.discardCost ?? 0) * 1.5 - (def.exhaustCost ?? 0) * 1.4 - (def.lightCost ?? 0) * 1.2
+  // くべる (赤 2026-10-12 段2): 衝動の札1枚 = 失効するはずの札なので消滅より軽い −0.5 に、「衝動が無ければ撃てない」の縛り −0.5 = 正味 −1.0VP
+  const vp =
+    vpRaw - (def.discardCost ?? 0) * 1.5 - (def.exhaustCost ?? 0) * 1.4 - (def.lightCost ?? 0) * 1.2 - (def.kindleOptional === true ? 0 : (def.impulseCost ?? 0)) * 1.0 + // くべてもよい札 (段2b) は払わなくても撃てるので対価を引かない (くべた時の効果は条件 0.6 で数える)
+    (def.cascade ?? 0) * (CASCADE_VP[Math.min(5, def.cost)] ?? 0) // チェイン (赤 2026-10-10)
   // 猛り火の軽減は「そのぶん安く撃てる」= 実効コストが下がる。期待値ぶんだけ帯を絞る
   const cost = (def.xCost === true ? 3 : def.cost) - (def.blazeDiscount ?? 0) * 0.6
   return { vp, pct: (vp / ALLOW(Math.max(0.5, cost))) * 100, computable }

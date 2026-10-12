@@ -462,9 +462,17 @@ namespace DeckRogue.Game
             }
             else if (need == "exhaust")
             {
-                pool = ExceptSelf(st.Player.Hand, p.Card.Uid);
+                // くべる (赤 2026-10-12 段2): 候補は衝動の札だけ (BattleScreen.BuildPicker と同じ)
+                var handPool = ExceptSelf(st.Player.Hand, p.Card.Uid);
+                if (p.ExhaustImpulseOnly)
+                {
+                    var impulse = new List<CardInstance>();
+                    for (int i = 0; i < handPool.Count; i++) if (BattleView.IsImpulse(st, handPool[i].Uid)) impulse.Add(handPool[i]);
+                    pool = impulse;
+                }
+                else pool = handPool;
                 selected = p.Exhaust; want = p.ExhaustNeed;
-                title = "追加コスト: 手札を" + want + "枚消滅させる";
+                title = p.ExhaustImpulseOnly ? "追加コスト: 衝動の札を" + want + "枚火にくべる (消滅)" : "追加コスト: 手札を" + want + "枚消滅させる";
             }
             else if (need == "retrieve")
             {

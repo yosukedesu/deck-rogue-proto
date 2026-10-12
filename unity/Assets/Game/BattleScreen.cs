@@ -124,6 +124,7 @@ namespace DeckRogue.Game
             else if (g.GearPending != null) GearUi.BuildPending(g, ui, run, st);   // ギア (2026-09-17): 窓／札を選ぶ／対象の帯
             else if (g.GearMore) GearUi.BuildMore(g, ui, run, st);   // ギアの「+N」= 持ち物の一覧 (2026-09-18)
             else if (g.RetainChoice != null) BuildRetainChooser(g, ui, st);   // 満ち潮の書庫: 残す手札 (青 2026-09-25)
+            else if (g.KeepChoice != null) BuildKeepChooser(g, ui, st);   // 燠の守り: 残す衝動の札 (赤 2026-10-12 段2b)
             else if (g.HearthChoice) BuildHearthChooser(g, ui, st);   // 灯の火床: 火種にする枚数 (2026-09-20 夜)
         }
 
@@ -2101,13 +2102,15 @@ namespace DeckRogue.Game
             var info = head.gameObject.AddComponent<IncomingInfo>();
             info.Incoming = incoming; info.Phone = phone; info.Hidden = st.HideIntents == true; info.Detail = detail;
             info.SkipFirst = st.NullifyNextAttack == true;   // 身代わりの符: 最初の攻撃は見込みに入っていない (IncomingTotal と同じ)
+            try { info.Burnout = Effects.BurnoutEnemies(st).Count; } catch (Exception) { }   // 延焼で行動の前に倒れる敵は見込みに入っていない (2026-10-10 Opus 赤 B)
+            try { info.ExpiryBlock = Effects.ExpiryBlockPreview(st); } catch (Exception) { }   // 灰の衣の失効ブロックは見込みに乗らない (2026-10-12 段2b Opus B)
             info.Lethal = LethalEdge(parent);
             ApplyIncomingText(info, p.Block + p.IceBlock, p.Hp);
             return info;
         }
 
         /// <summary>受けるダメージの見込みの元 (順送りの途中で盾の数字・HP・届いた攻撃と一緒に引き直す)。Landed = この敵の番の攻撃がもう届き始めた・Lethal = 自分の札の薔薇の縁</summary>
-        public class IncomingInfo : MonoBehaviour { public int Incoming; public bool Phone, Hidden, Landed, SkipFirst; public TMP_Text Detail; public GameObject Lethal; }
+        public class IncomingInfo : MonoBehaviour { public int Incoming, Burnout, ExpiryBlock; public bool Phone, Hidden, Landed, SkipFirst; public TMP_Text Detail; public GameObject Lethal; }
 
         /// <summary>HP バーの削られる分 (2026-09-29 p08): 受けるダメージ − (ブロック＋氷壁)。自分の番だけ (敵の番・確認の窓・ルーンの円蓋・受けるダメージ 0 は 0＝帯を出さない)</summary>
         static int PredictedLoss(GameState st)
@@ -2120,16 +2123,20 @@ namespace DeckRogue.Game
         }
 
         /// <summary>見込みの2行の文 (head は結論・detail は内訳)。defense はブロック＋氷壁</summary>
-        static void IncomingTexts(int incoming, int defense, int hp, bool phone, bool hidden, bool landed, out string head, out string detail, out bool lethal)
+        static void IncomingTexts(int incoming, int defense, int hp, bool phone, bool hidden, bool landed, out string head, out string detail, out bool lethal, int burnout = 0, int expiryBlock = 0)
         {
             lethal = false;
+            // 延焼のティックで行動の前に倒れる敵 (見込みから除いてある。2026-10-10 Opus 赤 B「予測52 → 実際0」を毎回引き算していた)
+            // 失効のブロック (灰の衣) も見込みに乗らない (2026-10-12 段2b Opus B: HP6 で「9点来る」と出て実際は0) = 最大値を添える
+            string burnTxt = burnout > 0 ? "延焼で" + burnout + "体が焼け落ちる" : null;
+            if (expiryBlock > 0) burnTxt = (burnTxt != null ? burnTxt + "　" : "") + "失効でブロック最大+" + expiryBlock;
             // 小さく添える部分: PC 20×75%=15・スマホ 18×85%≈15 (スマホの最小 15 を割らない)
             string small = phone ? "<size=85%>" : "<size=75%>";
             if (hidden) { head = small + "受けるダメージ ？</size>"; detail = "ルーンの円蓋で見えない"; return; }
             if (incoming <= 0)
             {
                 head = small + (landed ? "この番の攻撃は終わった" : "この番は攻撃されない") + "</size>";
-                detail = "";
+                detail = burnTxt != null ? UiKit.ColorTag(PaperFx.GoodInk, burnTxt) : "";
                 return;
             }
             int left = Math.Max(0, incoming - defense);
@@ -2145,7 +2152,8 @@ namespace DeckRogue.Game
             // 内訳: ブロックが 0 なら「− ブロック」ごと省く (盾の札はバーの左端にもある)。スマホは幅 208 に入るよう「受ける」
             // (F30: 旧「ダメージ」は手札の本文の「ダメージ6」＝与える量と同じ語で、受ける量と区別がつかなかった)
             detail = (phone ? "受ける " : "受けるダメージ ") + UiKit.ColorTag(PaperFx.BadInk, "<b>" + incoming + "</b>")
-                   + (defense > 0 ? " − ブロック " + UiKit.ColorTag(PaperFx.SkyInk, "<b>" + defense + "</b>") : "");
+                   + (defense > 0 ? " − ブロック " + UiKit.ColorTag(PaperFx.SkyInk, "<b>" + defense + "</b>") : "")
+                   + (burnTxt != null ? "　" + UiKit.ColorTag(PaperFx.GoodInk, burnTxt) : "");
         }
 
         /// <summary>見込みの2行と致死の縁を、見えているブロック (氷壁込み) と HP で書き直す</summary>
@@ -2154,7 +2162,7 @@ namespace DeckRogue.Game
             if (info == null) return;
             var head = info.GetComponent<TMP_Text>();
             string h, d; bool lethal;
-            IncomingTexts(info.Incoming, defense, hp, info.Phone, info.Hidden, info.Landed, out h, out d, out lethal);
+            IncomingTexts(info.Incoming, defense, hp, info.Phone, info.Hidden, info.Landed, out h, out d, out lethal, info.Burnout, info.ExpiryBlock);
             if (head != null) { head.text = h; head.color = lethal ? PaperFx.BadInk : PaperFx.Ink; }
             if (info.Detail != null) info.Detail.text = d;
             if (info.Lethal != null && info.Lethal.activeSelf != lethal) info.Lethal.SetActive(lethal);
@@ -3346,6 +3354,7 @@ namespace DeckRogue.Game
             else if (cost > st.Player.Energy) { why = "エナジー不足"; energy = true; }
             else if ((c.Def.LightCost ?? 0) > (st.Player.Light ?? 0)) { why = "灯が足りない (あと" + (c.Def.LightCost.Value - (st.Player.Light ?? 0)) + ")"; light = true; } // 号令 (白 2026-09-20)
             else if (!Effects.RetainerRequirementMet(st, c)) why = "場に人形がいない";   // 「従者」→「人形」(2026-09-24 T3)
+            else if ((c.Def.ImpulseCost ?? 0) > 0 && c.Def.KindleOptional != true && BattleView.ImpulseInHand(st, c.Uid) < c.Def.ImpulseCost.Value) why = "くべる衝動の札がない";   // くべる (赤 2026-10-12 段2。くべてもよい札は出せる 段2b)
             else why = "いまは出せない";
             Tween.Shake(hc.Rt, 7f, 0.25f);
             Audio.Ui("click", 0.5f);
@@ -3798,7 +3807,7 @@ namespace DeckRogue.Game
             var csE = CanvasSize(root);
             // 打てる手が尽きた (2026-09-29 p12): 自分の番で、手札に出せる札も仕込める札も無い (ギアは数えない＝本家もポーションは数えない)。
             // 占術・満ち潮の書庫・灯の火床・ギアの窓が開いている間は合図を出さない
-            bool idle = myTurn && st.PendingScry == null && g.RetainChoice == null && !g.HearthChoice && g.GearPending == null && g.ModeChoiceUid == null && !AnyMoveLeft(g, st);
+            bool idle = myTurn && st.PendingScry == null && g.RetainChoice == null && g.KeepChoice == null && !g.HearthChoice && g.GearPending == null && g.ModeChoiceUid == null && !AnyMoveLeft(g, st);
             Image nudgeEdge = null;
             Vector2 bMin = new Vector2(-(230f + e), 146f), bMax = new Vector2(-e, 210f);   // 右端は四辺の余白 (PC 32・スマホ 24)
             if (r3ph)
@@ -3999,6 +4008,8 @@ namespace DeckRogue.Game
             var st = g.Rs != null ? g.Rs.Combat : null;
             if (st == null) return;
             if (g.RetainChoice == null && Combat.RetainHandMax(st) > 0) { g.RetainChoice = new List<string>(); g.Rebuild(); return; }
+            // 燠の守り (赤 2026-10-12 段2b): 衝動の札が2枚以上あれば、どれを残すかを選ぶ窓
+            if (g.KeepChoice == null && Effects.HasStaticEffect(st, "keepImpulseOne") && BattleView.ImpulseInHand(st, null) >= 2) { g.KeepChoice = ""; g.Rebuild(); return; }
             if (Effects.HearthSparkMax(st) > 0) { g.HearthChoice = true; g.Rebuild(); return; }
             FinishEndTurn(g, null);
         }
@@ -4006,9 +4017,34 @@ namespace DeckRogue.Game
         static void FinishEndTurn(GameRoot g, int? hearth)
         {
             var keep = g.RetainChoice != null && g.RetainChoice.Count > 0 ? new List<string>(g.RetainChoice) : null;
+            string keepUid = !string.IsNullOrEmpty(g.KeepChoice) ? g.KeepChoice : null;
             g.RetainChoice = null;
+            g.KeepChoice = null;
             g.HearthChoice = false;
-            g.DoCombat(new Command_EndTurn { HearthSparks = hearth, RetainUids = keep });
+            g.DoCombat(new Command_EndTurn { HearthSparks = hearth, RetainUids = keep, KeepUid = keepUid });
+        }
+
+        /// <summary>燠の守りの窓 (赤 2026-10-12 段2b Opus B「どれが残るか選べない」): ターン終了時に残す衝動の札を1枚選ぶ (選ばなければコストが最も高い札)</summary>
+        static void BuildKeepChooser(GameRoot g, RectTransform root, GameState st)
+        {
+            var pool = new List<CardInstance>();
+            for (int i = 0; i < st.Player.Hand.Count; i++) if (BattleView.IsImpulse(st, st.Player.Hand[i].Uid)) pool.Add(st.Player.Hand[i]);
+            var selected = new List<string>();
+            if (!string.IsNullOrEmpty(g.KeepChoice)) selected.Add(g.KeepChoice);
+            var inner = Modal(root, 1400f, 720f, "keep");
+            UiKit.Head(inner, "燠の守り — 手札に残す衝動の札を1枚選ぶ", 24);
+            UiKit.Txt(inner, "選んだ札は失効せず次の番まで手札に残ります。選ばなければコストが最も高い札が残ります", 15, PaperFx.InkSoft);
+            CardRow(g, inner, st, pool, selected, "残す", "残す（選択中）", uid =>
+            {
+                g.KeepChoice = g.KeepChoice == uid ? "" : uid;
+                g.Rebuild();
+            });
+            CenteredButton(inner, !string.IsNullOrEmpty(g.KeepChoice) ? "これで終える" : "自動で残して終える", delegate
+            {
+                if (g.Rs != null && g.Rs.Combat != null && Effects.HearthSparkMax(g.Rs.Combat) > 0) { g.HearthChoice = true; g.Rebuild(); return; }
+                FinishEndTurn(g, null);
+            }, 18, 300f, 50f, PaperFx.BrassLight);
+            CenteredButton(inner, "戻る", delegate { g.KeepChoice = null; g.Rebuild(); }, 15, 200f, 44f);
         }
 
         /// <summary>満ち潮の書庫の窓 (青 2026-09-25): ターン終了時に残す手札を上限まで選ぶ (敵ターンの後の全捨てで捨てない)</summary>
@@ -5066,7 +5102,20 @@ namespace DeckRogue.Game
             int want;
             string title;
             if (need == "discard") { pool = ExceptSelf(st.Player.Hand, p.Card.Uid); selected = p.Discard; want = p.DiscardNeed; title = "追加コスト: 手札を" + want + "枚捨てる"; }
-            else if (need == "exhaust") { pool = ExceptSelf(st.Player.Hand, p.Card.Uid); selected = p.Exhaust; want = p.ExhaustNeed; title = "追加コスト: 手札を" + want + "枚消滅させる"; }
+            else if (need == "exhaust")
+            {
+                // くべる (赤 2026-10-12 段2): 候補は衝動の札だけ。消滅コストと同じ欄 (ExhaustUids)
+                var handPool = ExceptSelf(st.Player.Hand, p.Card.Uid);
+                if (p.ExhaustImpulseOnly)
+                {
+                    var impulse = new List<CardInstance>();
+                    for (int i = 0; i < handPool.Count; i++) if (BattleView.IsImpulse(st, handPool[i].Uid)) impulse.Add(handPool[i]);
+                    pool = impulse;
+                }
+                else pool = handPool;
+                selected = p.Exhaust; want = p.ExhaustNeed;
+                title = p.ExhaustImpulseOnly ? "追加コスト: 衝動の札を" + want + "枚火にくべる (消滅)" : "追加コスト: 手札を" + want + "枚消滅させる";
+            }
             else if (need == "retrieve") { pool = st.Player.ExhaustPile; selected = new List<string>(); want = 1; title = "消滅置き場から1枚選ぶ"; }
             else if (need == "deck") { pool = DeckChoosePool(st, p.DeckKind, p.Card.Def); selected = p.DeckSel; want = p.DeckNeed; bool onlyTraps = false; foreach (var fe in p.Card.Def.Effects) if (fe.Effect == "searchDeck" && fe.CardType == "reaction") onlyTraps = true; title = (p.DeckKind == "searchDeck" ? (onlyTraps ? "山札の仕込み札" : "山札") : p.DeckKind == "retrieveFromDiscard" ? "捨て札" : "山札か捨て札") + "から" + want + "枚選ぶ"; }
             else if (need == "hand") { pool = UpgradablePool(st, p.Card); selected = p.HandSel; want = p.HandNeed; title = "手札から" + want + "枚を鍛える"; }
@@ -5106,6 +5155,8 @@ namespace DeckRogue.Game
                 if (ple != null) UnityEngine.Object.Destroy(ple);
                 UiKit.Anchor(pick.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-70f, 0f), new Vector2(70f, 44f));
             }
+            // くべてもよい札 (赤 2026-10-12 段2b): 払わずに素の効果だけで出す
+            if (need == "exhaust" && p.KindleOptional) CenteredButton(inner, "くべずに出す（素の効果だけ）", delegate { p.ExhaustNeed = 0; p.Exhaust.Clear(); g.SubmitIfReady(); }, 18, 360f, 50f);
             CenteredButton(inner, "取り消し", delegate { g.CancelPending(); }, 18, 260f, 50f);
         }
 

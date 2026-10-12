@@ -95,6 +95,7 @@ namespace DeckRogue.Engine
             "red_ignite",
             "red_perm_flarecoat",
             "red_perm_thorn_flame",
+            "red_mode_firecontrol", // 2026-10-10 Opus 赤3本: 火加減を初期デッキへ (火花×2→火花×1＋火加減)
             "white_shield_strike",
             "white_light_bolt", // 灯の矢 (白の派生=灯の教材=放出。2026-09-21 夜 ユーザー裁定「継ぎ火を消して灯の矢に」: 継ぎ火は報酬プールへ)
             "white_mode_crossroad", // 灯の岐路 (2026-09-20 白の初期デッキを緑の形に。剣の人形・灯り継ぎ・報復の光は報酬プールへ)
@@ -1453,8 +1454,11 @@ namespace DeckRogue.Engine
             return new RunCommand_LeaveDeparture();
         }
 
-        /// <summary>伏せ参照レリック (このランの報酬プールにリアクションが1枚も無い色では候補列から除く)</summary>
-        private static readonly HashSet<string> SET_RELICS = new HashSet<string> { "relic_talisman_pouch", "relic_quiet_bell" };
+        /// <summary>
+        /// 仕込み札参照レリック (このランの報酬プールにリアクションが1枚も無い色では候補列から除く)。
+        /// 2026-10-10 赤の解凍: 9/9〜9/13 に増えた仕込み札参照レリック (二重の符・読みの眼鏡・回収の紐) も同じ理由で除く。TS と同形
+        /// </summary>
+        private static readonly HashSet<string> SET_RELICS = new HashSet<string> { "relic_talisman_pouch", "relic_quiet_bell", "relic_double_talisman", "relic_reading_glasses", "relic_retrieve_cord" };
 
         public static RunState CreateRun(
             int seed,
@@ -1631,6 +1635,7 @@ namespace DeckRogue.Engine
             { "addMomentum", "trample" }, { "dealDamagePerMomentum", "trample" }, { "doubleMomentum", "trample" },
             { "dischargeMomentumBurn", "burn" }, { "dischargeMomentumBlock", "trample" }, { "gainBlockPerMomentum", "trample" }, { "addGrowthPerMomentum", "trample" },
             { "applyBurn", "burn" }, { "dischargeBurn", "burn" },
+            { "cascadeSameCost", "cascade" }, // 火は火を呼ぶ (赤 2026-10-12 段2)
             { "addAether", "aether" }, { "dischargeAether", "aether" }, { "dischargeAetherDraw", "aether" },
             { "addLight", "light" }, { "addLightNextTurn", "light" }, { "dischargeLight", "light" }, { "dischargeLightRally", "light" }, { "doubleLight", "light" }, { "dealDamagePerLight", "light" }, // 灯
             { "dischargeLightWeaken", "light" }, { "consumeLight", "light" }, { "gainBlockPerLight", "light" }, { "drawCardsPerLight", "light" }, { "lightCarryHalf", "light" }, // 放出の軸 (2026-09-20 夜)
@@ -1656,6 +1661,10 @@ namespace DeckRogue.Engine
             { "dealDamagePerTrapFired", "permission" }, { "extendTrapLife", "permission" }, { "trapsNeverExpire", "permission" }, // 罠使い (青 2026-09-25)
             { "retrieveZeroCostFromDiscard", "storm" }, { "drawTypeFromDeck", "permission" }, { "aetherCarryHalf", "aether" }, { "retainedCostDown", "grimoire" }, // 青を89枚に (2026-09-25)
             { "addSpellEcho", "echo" }, // 反復 (青の呪文コピー)
+            // 赤の3本柱 (2026-10-10 docs/red-cascade-design-2026-10-10.md): チェインの刈り取り・常在、バーンの倍加と消費しない刈り取り、刹那の失効の換金
+            { "dealDamagePerCascade", "cascade" }, { "firstCardCascade", "cascade" },
+            { "doubleBurn", "burn" }, { "gainBlockPerBurn", "burn" }, { "dealDamagePerBurn", "burn" }, { "burnNoDecay", "burn" },
+            { "keepImpulseOne", "impulse" },
         };
 
         /// <summary>誘発トリガー → 軸。置物の「接着剤」札はここでほぼ自動的に分類される</summary>
@@ -1670,6 +1679,9 @@ namespace DeckRogue.Engine
             { "onLightGained", "light" }, // 灯の弩 (白 2026-09-20)
             { "onLightDischarged", "light" }, { "onSparkPlayed", "spark" }, // 2026-09-20 夜
             { "onImpulsePlayed", "impulse" },
+            { "onImpulseExpired", "impulse" }, // 燃え残り・灰の衣 (赤 2026-10-10)
+            { "onBlazeIgnite", "burn" }, // 火の目覚め・爆ぜ火 (赤 2026-10-12 段2)
+            { "onCascade", "cascade" }, // 連なる火花・火継ぎの炉 (赤 2026-10-10)
             { "onRandomPlayed", "chaos" },
             { "onSpellPlayed", "storm" },
             { "onBlockGained", "fortress" },
@@ -1694,7 +1706,9 @@ namespace DeckRogue.Engine
                 if (e.Pierce == true) Add("trample");             // 貫通はトランプルの核
             }
             if (def.ExhaustCost != null) Add("graveyard"); // 消滅コストは墓地の燃料
+            if (def.ImpulseCost != null) Add("impulse"); // くべる (赤 2026-10-12 段2): 衝動の札を払う
             if (def.Retainer == true) Add("retinue");
+            if ((def.Cascade ?? 0) > 0) Add("cascade"); // チェイン (赤 2026-10-10)
             return order;
         }
 

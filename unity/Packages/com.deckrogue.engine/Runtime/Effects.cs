@@ -174,9 +174,25 @@ namespace DeckRogue.Engine
             if (state != null && state.BrandsPlayable == true && IsBrandCard(card)) return true;
             if (card.Def.Type == CardTypes.Permanent) return true;
             if ((card.Def.Modes?.Count ?? 0) > 0) return true;
+            if ((card.Def.Cascade ?? 0) > 0) return true; // チェインだけの札 (野火) もプレイできる (赤 2026-10-10)
             foreach (var e in card.Def.Effects) if (e.Trigger == "onPlay") return true;
             return false;
         }
+
+        /// <summary>常在の印 (置物の effects に名前だけ書く効果) が場にあるか。深き仕掛け・燻り・連火の炉心・燠の守りが読む (TS hasStaticEffect)</summary>
+        /// <summary>失効する衝動の札が「払えなかった」札か (赤 2026-10-12 裁定 F2)。出せる札で実コスト>残りエナジー。出せない札は false = 消滅のまま。TS impulseUnaffordable と同形</summary>
+        public static bool ImpulseUnaffordable(GameState state, CardInstance card)
+        {
+            return IsPlayableFromHand(card, state) && EffectiveCost(state, card) > state.Player.Energy;
+        }
+
+        public static bool HasStaticEffect(GameState state, string effectName)
+        {
+            return state.Player.Permanents.Any(p => p.Def.Effects.Any(e => e.Effect == effectName));
+        }
+
+        /// <summary>燻り (赤 R 置物 2026-10-10): この置物がある間、延焼は敵フェーズで減らない (延焼耐性の追加の減りも止める) (TS burnNoDecay)</summary>
+        public static bool BurnNoDecay(GameState state) => HasStaticEffect(state, "burnNoDecay");
 
         /// <summary>烙印 (呪いの烙印・仮初の烙印) か。青い蝋燭のプレイ可否・黒曜の護符の数え上げが読む</summary>
         public static bool IsBrandCard(CardInstance card) => card.Def.Id == "status_brand" || card.Def.Id == "status_guilt";
@@ -185,6 +201,8 @@ namespace DeckRogue.Engine
         private static readonly HashSet<string> DAMAGE_EFFECTS = new HashSet<string>
         {
             "dealDamage",
+            "dealDamagePerCascade", // 火の渦 (赤 2026-10-10)
+            "dealDamagePerBurn", // 火の舌 (赤 2026-10-10)
             "dealDamageRandom",
             "dealDamagePerCardPlayed",
             "dealDamagePerCardPlayedTotal",
@@ -226,6 +244,7 @@ namespace DeckRogue.Engine
         private static readonly HashSet<string> ENEMY_TARGETED = new HashSet<string>
         {
             "dealDamage",
+            "dealDamagePerCascade", "dealDamagePerBurn", "gainBlockPerBurn", "doubleBurn", // 赤の3本柱 (2026-10-10): 延焼の参照・倍加は対象の敵を選ぶ
             "dealDamagePerScry", // 読み切り (青 2026-09-25)
             "dealDamagePerTrapFired", // 仕掛けの反響 (青 2026-09-25)
             "dealDamageRandom",
@@ -487,6 +506,14 @@ namespace DeckRogue.Engine
                             int best = -1;
                             for (int i = 0; i < s.Enemies.Count; i++)
                                 if (s.Enemies[i].Hp > 0 && (best < 0 || s.Enemies[i].Hp > s.Enemies[best].Hp)) best = i;
+                            if (best >= 0) target = best;
+                        }
+                        else if (boosted.Target == "mostBurn")
+                        {
+                            // 燃え残り (赤 2026-10-12 段2b): 延焼がいちばん多い生存敵 (同じなら左から)。TS と同形
+                            int best = -1;
+                            for (int i = 0; i < s.Enemies.Count; i++)
+                                if (s.Enemies[i].Hp > 0 && (best < 0 || s.Enemies[i].Burn > s.Enemies[best].Burn)) best = i;
                             if (best >= 0) target = best;
                         }
                         else if (permanent.Def.Retainer == true && permanent.Innate != true && IsDamageEffect(boosted) && boosted.Target != "all")
@@ -1342,14 +1369,78 @@ namespace DeckRogue.Engine
             // 敵フェーズの途中は行動を終えた敵 (窓の敵より前) を数えない・身代わりの符は最初の攻撃1回ぶんを0に (2026-09-20 Opus 火種A/B/C)。TS summary.incomingTotal と同形
             int from = (s.EnemyPhase == true && s.PendingWindow != null) ? s.PendingWindow.EnemyIndex : 0;
             bool nullify = s.NullifyNextAttack == true;
+            var burnout = BurnoutEnemies(s);
             int sum = 0;
             for (int i = from; i < s.Enemies.Count; i++)
             {
+                if (burnout.Contains(i)) continue; // 延焼で行動の前に倒れる敵は殴ってこない (2026-10-10 Opus 赤 B)
                 int v = IncomingFrom(s, i);
                 if (v > 0 && nullify) { nullify = false; continue; }
                 sum += v;
             }
             return sum;
+        }
+
+        /// <summary>延焼のティック (敵フェーズ開始・ブロック無視) で行動の前に倒れる敵 = 延焼 ≥ HP。自ターン中だけ (敵フェーズの途中はティック済み)。TS summary.ts burnoutEnemies (2026-10-10 Opus 赤 B)</summary>
+        /// <summary>ターン終了時の失効で得られるブロックの最大値 (灰の衣 × 手札の衝動の札。燠の守りがあれば1枚引く)。TS summary.expiryBlockPreview と同形 (2026-10-12 段2b)</summary>
+        public static int ExpiryBlockPreview(GameState s)
+        {
+            if (s.EnemyPhase == true || s.Phase != CombatPhases.PlayerTurn) return 0;
+            int per = 0;
+            bool keep = false;
+            foreach (var p in s.Player.Permanents)
+                foreach (var e in p.Def.Effects)
+                {
+                    if (e.Trigger == "onImpulseExpired" && e.Effect == "gainBlock") per += e.Amount ?? 0;
+                    if (e.Effect == "keepImpulseOne") keep = true;
+                }
+            if (per <= 0) return 0;
+            int inHand = 0;
+            foreach (var c in s.Player.Hand) if (s.Player.ImpulseUids.Contains(c.Uid)) inHand++;
+            return per * Math.Max(0, inHand - (keep ? 1 : 0));
+        }
+
+        static readonly HashSet<string> LIGHT_EFFECTS = new HashSet<string> { "addLight", "addLightNextTurn", "doubleLight", "lightCarryHalf", "dischargeLight", "dischargeLightRally", "dischargeLightWeaken", "dealDamagePerLight", "gainBlockPerLight", "drawCardsPerLight", "lightToSparks", "dismissUnlessLight" };
+        /// <summary>灯の表示を出すか: 灯を産むパッシブか、灯に関わる札がデッキ・場にあれば (2026-10-12 段2b。TS summary.lightMatters と同形)</summary>
+        public static bool LightMatters(GameState s)
+        {
+            var p = s.Player;
+            foreach (var x in p.Permanents) if (x.Innate == true && x.Def.Effects.Any(e => e.Effect == "addLight")) return true;
+            IEnumerable<CardInstance> all = p.Hand.Concat(p.DrawPile).Concat(p.DiscardPile).Concat(p.ExhaustPile).Concat(p.Permanents).Concat(p.SetCards);
+            foreach (var c in all)
+            {
+                if ((c.Def.LightCost ?? 0) > 0) return true;
+                foreach (var e in c.Def.Effects) if (LIGHT_EFFECTS.Contains(e.Effect) || e.Condition?.MinLight != null) return true;
+                if (c.Def.Modes != null) foreach (var m in c.Def.Modes) foreach (var e in m.Effects) if (LIGHT_EFFECTS.Contains(e.Effect) || e.Condition?.MinLight != null) return true;
+            }
+            return false;
+        }
+
+        public static List<int> BurnoutEnemies(GameState s)
+        {
+            var list = new List<int>();
+            if (s.EnemyPhase == true) return list;
+            for (int i = 0; i < s.Enemies.Count; i++)
+            {
+                var e = s.Enemies[i];
+                if (e.Hp > 0 && e.Burn > 0 && e.Burn >= e.Hp) list.Add(i);
+            }
+            return list;
+        }
+
+        /// <summary>置物の誘発のうち、相手を「生存する先頭の敵」に取るもの (Combat.cs の RunPermanentTriggers に先頭を渡している誘発。TS summary.ts と同形)</summary>
+        private static readonly HashSet<string> FIRST_ALIVE_TRIGGERS = new HashSet<string> { "onCombatStart", "onTurnStart", "onTurnEnd", "onShuffle", "onImpulseExpired", "onScry", "onScryDiscard", "onSetExpired" };
+        private static readonly HashSet<string> ENEMY_SINGLE_EFFECTS = new HashSet<string>
+        {
+            "dealDamage", "dealDamageRandom", "dealDamageDrain", "dealDamageExecute", "dealDamageCleave", "applyBurn", "exposeEnemy", "weakenEnemy", "confuse",
+            "shatterBlock", "shatterBlockConvert", "doubleBurn", "dealDamagePerBurn", "gainBlockPerBurn", "strengthenEnemy",
+        };
+        /// <summary>置物の文に添える相手の注記「先頭の敵に」(2026-10-10 Opus 赤 C: 燎火の使いの毎T延焼の相手が札に無かった)。TS summary.ts permanentTargetNote と同形</summary>
+        public static string PermanentTargetNote(DeclarativeEffect e, string holderType)
+        {
+            if (holderType != "permanent" || e.Target != null) return "";
+            if (e.Trigger == null || !FIRST_ALIVE_TRIGGERS.Contains(e.Trigger)) return "";
+            return e.Effect != null && ENEMY_SINGLE_EFFECTS.Contains(e.Effect) ? "先頭の敵に" : "";
         }
 
         /// <summary>因縁 (Nemesis) の無形ターンか: 奇数ターン (1,3,5…) は無形、偶数ターンに実体化</summary>
@@ -1493,6 +1584,7 @@ namespace DeckRogue.Engine
             int amount = PlayerDamageAfterModifiers(state, baseAmount);
             var enemy = EnemyAt(state, enemyIndex);
             if (enemy == null || enemy.Hp <= 0) return state;
+            bool wasBlazingAtHit = IsBlazing(state); // 敵を倒して延焼の合計が8を割ったら「猛り火が消えた」(2026-10-12 段2b)。TS と同形
             // 急所 (敵版脆弱): 次に受けるダメージN回が+50%。ブロック変換には乗せない (2026-08-31)
             bool exposed = applyExpose && enemy.Exposed > 0;
             if (exposed) amount = (int)Math.Floor(amount * 1.5);
@@ -1602,6 +1694,7 @@ namespace DeckRogue.Engine
                 };
                 s = Events.Emit(s, new GameEvent_ThornsReflected { EnemyIndex = enemyIndex, Amount = reflect, HpLoss = pHpLoss });
             }
+            if (wasBlazingAtHit && !IsBlazing(s)) s = Events.Emit(s, new GameEvent_BlazeExtinguished());
             return s;
         }
 
@@ -1868,18 +1961,25 @@ namespace DeckRogue.Engine
                     GameState s = Events.Emit(state with { Enemies = enemies }, new GameEvent_BurnApplied { EnemyIndex = enemyIndex, Amount = amount });
                     // 猛り火の点火瞬間 (2026-08-31): しきい値を跨いだ瞬間に、そのターンぶんの
                     // ターン開始・猛り火効果を1回発火する = 「点いた瞬間から守られる」
-                    if (!wasBlazing && IsBlazing(s) && s.Phase == CombatPhases.PlayerTurn)
+                    if (!wasBlazing && IsBlazing(s))
                     {
-                        var perms = s.Player.Permanents;
-                        foreach (var permanent in perms)
+                        // 点いた瞬間を出来事に残す (赤 2026-10-12 段2)。TS と同形
+                        s = Events.Emit(s, new GameEvent_BlazeIgnited());
+                        if (s.Phase == CombatPhases.PlayerTurn)
                         {
-                            foreach (var pe in permanent.Def.Effects)
+                            var perms = s.Player.Permanents;
+                            foreach (var permanent in perms)
                             {
-                                if (pe.Trigger == "onTurnStart" && pe.Condition?.Blaze == true)
+                                foreach (var pe in permanent.Def.Effects)
                                 {
-                                    s = ResolveEffectTargeted(s, pe, enemyIndex);
+                                    if (pe.Trigger == "onTurnStart" && pe.Condition?.Blaze == true)
+                                    {
+                                        s = ResolveEffectTargeted(s, pe, enemyIndex);
+                                    }
                                 }
                             }
+                            // 「猛り火に点いた時」の置物 (火の目覚め 2026-10-12 段2): 自ターン中の点火で鳴る
+                            s = RunPermanentTriggers(s, "onBlazeIgnite", enemyIndex);
                         }
                     }
                     return s;
@@ -2102,8 +2202,11 @@ namespace DeckRogue.Engine
                     var enemy = EnemyAt(state, enemyIndex);
                     if (enemy == null || enemy.Hp <= 0 || enemy.Burn <= 0) return state;
                     int burn = enemy.Burn;
+                    bool wasBlazing = IsBlazing(state);
                     GameState s = state with { Enemies = MapEnemy(state.Enemies, enemyIndex, e => e with { Burn = 0 }) };
                     s = Events.Emit(s, new GameEvent_BurnDischarged { EnemyIndex = enemyIndex, Amount = burn });
+                    // 刈って合計が8を割ったら「猛り火が消えた」(2026-10-12 段2b)。TS と同形
+                    if (wasBlazing && !IsBlazing(s)) s = Events.Emit(s, new GameEvent_BlazeExtinguished());
                     return DealDamageToEnemy(s, enemyIndex, burn * (effect.Amount ?? 0), effect.Pierce == true);
                 }
                 case "shatterBlockConvert":
@@ -2622,8 +2725,40 @@ namespace DeckRogue.Engine
                 case "retainedCostDown":
                 case "trapsNeverExpire":
                 case "retainHandUpTo":
-                    // 深き仕掛け・満ち潮の書庫 (青 R 置物 2026-09-25): 常在の印 (登場時の no-op)
+                case "firstCardCascade":
+                case "burnNoDecay":
+                case "keepImpulseOne":
+                case "cascadeSameCost":
+                    // 深き仕掛け・満ち潮の書庫 (青 R 置物 2026-09-25)・連火の炉心・燻り・燠の守り (赤 2026-10-10)・火は火を呼ぶ (2026-10-12 段2): 常在の印。
+                    // trapLifeOf・EndTurn・PlayCard・延焼ティック・衝動の失効・ResolveCascade が場を読むだけ (登場時の no-op)
                     return state;
+                case "dealDamagePerCascade":
+                    // 火の渦 (赤 チェインの刈り取り 2026-10-10): この戦闘でチェインが当たった回数×amount (読み切りと同じ型。0回なら不発)。TS と同形
+                    return (state.Player.CascadesThisCombat ?? 0) <= 0
+                        ? state
+                        : DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * (state.Player.CascadesThisCombat ?? 0), effect.Pierce == true);
+                case "doubleBurn":
+                {
+                    // 火勢倍し (赤 バーンの倍加 2026-10-10。本家 Catalyst): 対象の延焼を2倍にする。延焼0なら不発。
+                    // 増えた分は applyBurn と同じ道 (BurnApplied・猛り火の点火瞬間) を通す。TS と同形
+                    var enemy = enemyIndex >= 0 && enemyIndex < state.Enemies.Count ? state.Enemies[enemyIndex] : null;
+                    if (enemy == null || enemy.Hp <= 0 || enemy.Burn <= 0) return state;
+                    return ResolveEffect(state, new DeclarativeEffect { Trigger = effect.Trigger, Effect = "applyBurn", Amount = enemy.Burn }, enemyIndex);
+                }
+                case "gainBlockPerBurn":
+                {
+                    // 灰かぶり (赤 バーンの守りの刈り取り 2026-10-10): 対象の延焼×amount のブロック。延焼は失わない。TS と同形
+                    var enemy = enemyIndex >= 0 && enemyIndex < state.Enemies.Count ? state.Enemies[enemyIndex] : null;
+                    if (enemy == null || enemy.Hp <= 0 || enemy.Burn <= 0) return state;
+                    return GainPlayerBlock(state, (effect.Amount ?? 0) * enemy.Burn, enemyIndex);
+                }
+                case "dealDamagePerBurn":
+                {
+                    // 火の舌 (赤 バーンの刈り取り 2026-10-10): 対象の延焼×amount のダメージ。延焼は失わない (爆熱は全消費)。TS と同形
+                    var enemy = enemyIndex >= 0 && enemyIndex < state.Enemies.Count ? state.Enemies[enemyIndex] : null;
+                    if (enemy == null || enemy.Hp <= 0 || enemy.Burn <= 0) return state;
+                    return DealDamageToEnemy(state, enemyIndex, (effect.Amount ?? 0) * enemy.Burn, effect.Pierce == true);
+                }
                 case "gainBlockPerSpark":
                     // 火守りの盾 (白 C 2026-09-24 Opus ひなた裁定「作る札に刈り取りを内蔵」): この戦闘で撃った火種×amount のブロック。TS と同形
                     return (state.Player.SparksPlayedThisCombat ?? 0) <= 0
@@ -2734,6 +2869,8 @@ namespace DeckRogue.Engine
         public static bool BlazeConditionMet(GameState state, DeclarativeEffect effect, int? enemyIndex = null)
         {
             if (effect.Condition?.Blaze == true && !IsBlazing(state)) return false;
+            // くべた時だけ (赤 2026-10-12 段2b): 任意の追加コストを払ってプレイした解決の間だけ乗る。TS と同形
+            if (effect.Condition?.Kindled == true && state.ResolvingKindled != true) return false;
             var c = effect.Condition;
             if (c != null)
             {
@@ -2833,6 +2970,21 @@ namespace DeckRogue.Engine
                 }
             }
             return s with { ResolvingCardPlay = prev, ResolvingExposedAtStart = prevExposed };
+        }
+
+        /// <summary>
+        /// 「この札で猛り火に点いたら」(爆ぜ火 2026-10-12 段2): 本体の効果の前後で猛り火を比べ、跨いでいたら札自身の onBlazeIgnite 効果を解決する。
+        /// カードのプレイの続き (ResolvingCardPlay) なので勢い・虚弱の線は onPlay と同じ。点いていなければ何もしない。TS resolveIgniteEffects と同形
+        /// </summary>
+        public static GameState ResolveIgniteEffects(GameState state, CardInstance card, int enemyIndex, bool wasBlazing)
+        {
+            if (wasBlazing || !IsBlazing(state)) return state;
+            var effects = card.Def.Effects.Where(e => e.Trigger == "onBlazeIgnite").ToList();
+            if (effects.Count == 0) return state;
+            bool prev = state.ResolvingCardPlay == true;
+            GameState s = state with { ResolvingCardPlay = true };
+            foreach (var effect in effects) s = ResolveEffectTargeted(s, effect, enemyIndex);
+            return s with { ResolvingCardPlay = prev };
         }
 
         private static readonly HashSet<string> REACTION_TRIGGERS = new HashSet<string>

@@ -190,6 +190,10 @@ namespace DeckRogue.Engine
                         }
                         else At(cur).Taken += dd.HpLoss;
                         break;
+                    case GameEvent_BurnTick bt:
+                        // 延焼ティックもプレイヤーの与ダメ (analysis.ts と同じ。2026-10-10)
+                        At(cur).Dealt += bt.Amount;
+                        break;
                     case GameEvent_CardPlayed cp:
                     {
                         var m = At(cur);

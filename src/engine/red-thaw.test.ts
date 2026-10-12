@@ -1,0 +1,373 @@
+// 赤の解凍 (2026-10-10。docs/red-archetype-audit-2026-10-10.md → docs/red-cascade-design-2026-10-10.md。
+// ユーザー裁定: 軸＝バーン／刹那／チェイン・猛火の儀式=1E・鍛えるの例外=焔の目録/火だるま・
+// チェインの当たりは親と同じ敵で選択式/X/仕込み札は飛ばす・カオスは味付け4/撤去8・キーワード名「チェイン」) を機械固定
+import { describe, expect, it } from 'vitest'
+import { WOUND_DEF } from './content.ts'
+import { allCards, getCardDef, getDeckDef } from './content.ts'
+import { axesOf, createRun, REWARD_EXCLUDED } from './run.ts'
+import { applyCommand, createInitialState } from './state.ts'
+import { attackIntent, freshCombat, restIntent, withHand, withIntent } from './test-helpers.ts'
+import { burnoutEnemies, incomingTotal, permanentTargetNote } from './summary.ts'
+import { upgradeCard, upgradeTier } from './upgrade.ts'
+import { fuseCards } from './fusion.ts'
+import { isPlayableFromHand } from './effects.ts'
+import type { CardInstance, GameState } from './types.ts'
+
+const inst = (id: string, n = 0): CardInstance => ({ uid: `d${n}_${id}`, def: getCardDef(id) })
+const up = (id: string) => upgradeCard({ uid: 'u', def: getCardDef(id) }).def
+/** 山札を指定の並び (左が上) に差し替え、捨て札を空にする */
+const withDraw = (s: GameState, ids: readonly string[], discard: readonly string[] = []): GameState => ({
+  ...s,
+  player: { ...s.player, drawPile: ids.map((id, i) => inst(id, i)), discardPile: discard.map((id, i) => inst(id, 100 + i)) },
+})
+const withPerms = (s: GameState, ids: readonly string[]): GameState => ({
+  ...s,
+  player: { ...s.player, permanents: [...s.player.permanents, ...ids.map((id, i) => ({ uid: `p${i}_${id}`, def: getCardDef(id) }))] },
+})
+const withBurn = (s: GameState, burn: number): GameState => ({ ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, burn } : e)) })
+const base = () => freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red')
+const hibana = () =>
+  applyCommand(createInitialState(42, 'set-confirm'), { type: 'StartCombat', seed: 42, enemyId: 'enemy_brute', deckId: 'run_basic_red', leaderId: 'leader_red' })
+const play = (s: GameState, uid: string) => applyCommand(s, { type: 'PlayCard', cardUid: uid, targetIndex: 0 })
+const hp = (s: GameState) => s.enemies[0].hp
+const ids = (cs: readonly CardInstance[]) => cs.map((c) => c.def.id)
+const cascaded = (s: GameState) => s.eventLog.filter((e) => e.type === 'Cascaded')
+
+describe('チェイン (赤の第3の軸。MTG の続唱)', () => {
+  it('山札の上から、この札よりコストの低い札が出るまでめくり、その札をコストを払わずにプレイする', () => {
+    let s = withDraw(withHand(base(), ['red_cascade_bolt']), ['red_strike', 'red_inferno'])
+    const before = hp(s)
+    s = play(s, 't0_red_cascade_bolt')
+    expect(before - hp(s)).toBe(11 + 6) // 連火弾11 + 火弾6 (火弾はタダ)
+    expect(s.player.energy).toBe(3 - 2)
+    expect(ids(s.player.drawPile)).toEqual(['red_inferno'])
+    expect(ids(s.player.discardPile).sort()).toEqual(['red_cascade_bolt', 'red_strike'])
+    expect(cascaded(s)).toEqual([{ type: 'Cascaded', cardId: 'red_cascade_bolt', hitId: 'red_strike', revealed: [] }])
+    expect(s.player.cascadesThisCombat).toBe(1)
+  })
+
+  it('めくって外れた札は山札の底へ (順はシードRNG)。最初に出た安い札が当たり', () => {
+    let s = withDraw(withHand(base(), ['red_cascade_bolt']), ['red_inferno', 'red_meteor', 'red_spark', 'red_strike'])
+    const before = hp(s)
+    s = play(s, 't0_red_cascade_bolt')
+    expect(before - hp(s)).toBe(11 + 4) // 当たりは火花 (0E)。火弾 (1E) も当たれるが火花が先
+    const pile = ids(s.player.drawPile)
+    expect(pile[0]).toBe('red_strike')
+    expect(pile.slice(1).sort()).toEqual(['red_inferno', 'red_meteor'])
+    expect(cascaded(s)[0]).toMatchObject({ hitId: 'red_spark', revealed: ['red_inferno', 'red_meteor'] })
+  })
+
+  it('1E のチェインは 0E の札にしか当たらない (同じコストは飛ばす)', () => {
+    let s = withDraw(withHand(base(), ['red_cascade_strike']), ['red_strike', 'red_spark'])
+    const before = hp(s)
+    s = play(s, 't0_red_cascade_strike')
+    expect(before - hp(s)).toBe(7 + 4)
+    expect(ids(s.player.drawPile)).toEqual(['red_strike'])
+  })
+
+  it('当たりが無ければ空振り: 何も起きず、めくった札は底へ戻る (回数には数えない)', () => {
+    let s = withDraw(withHand(base(), ['red_cascade_bolt']), ['red_inferno', 'red_meteor'])
+    const before = hp(s)
+    s = play(s, 't0_red_cascade_bolt')
+    expect(before - hp(s)).toBe(11)
+    expect(ids(s.player.drawPile).sort()).toEqual(['red_inferno', 'red_meteor'])
+    expect(cascaded(s)[0]).toEqual({ type: 'Cascaded', cardId: 'red_cascade_bolt', revealed: ['red_inferno', 'red_meteor'] })
+    expect(s.player.cascadesThisCombat ?? 0).toBe(0)
+  })
+
+  it('山札が尽きたら捨て札を切り直して続ける (通常のドローと同じ)', () => {
+    let s = withDraw(withHand(base(), ['red_cascade_bolt']), [], ['red_spark'])
+    const before = hp(s)
+    s = play(s, 't0_red_cascade_bolt')
+    expect(before - hp(s)).toBe(11 + 4)
+    expect(s.eventLog.some((e) => e.type === 'DeckShuffled')).toBe(true)
+    expect(ids(s.player.discardPile).sort()).toEqual(['red_cascade_bolt', 'red_spark'])
+  })
+
+  it('選択式・X・仕込み札・使えない札は飛ばす (底へ)', () => {
+    const xCard = allCards.find((c) => c.xCost === true)!
+    let s = withDraw(withHand(base(), ['red_cascade_bolt']), ['red_mode_firecontrol', 'green_reaction_vine', xCard.id, 'status_wound', 'red_spark'])
+    const before = hp(s)
+    s = play(s, 't0_red_cascade_bolt')
+    expect(before - hp(s)).toBe(11 + 4)
+    expect(cascaded(s)[0]).toMatchObject({ hitId: 'red_spark' })
+    expect(ids(s.player.drawPile).sort()).toEqual(['green_reaction_vine', 'red_mode_firecontrol', 'status_wound', xCard.id].sort())
+  })
+
+  it('連鎖: 当たった札がチェインを持てば続く (3E→2E→1E)。回数は当たりごとに数える', () => {
+    let s = withDraw(withHand(base(), ['red_cascade_great']), ['red_cascade_bolt', 'red_strike'])
+    const before = hp(s)
+    s = play(s, 't0_red_cascade_great')
+    expect(before - hp(s)).toBe(16 + 11 + 6)
+    expect(s.player.energy).toBe(0)
+    expect(s.player.cascadesThisCombat).toBe(2)
+    expect(cascaded(s).map((e) => (e.type === 'Cascaded' ? e.hitId : ''))).toEqual(['red_cascade_bolt', 'red_strike']) // 外側の当たり → その札の連鎖、の順にログに載る
+  })
+
+  it('連火の炉心: 毎ターン最初にプレイする札にチェインがつく。チェインは本体より先に解決する (当たりで点けて本体の猛り火で刈る)', () => {
+    // 延焼弾 (2E・8ダメ・延焼6・猛り火なら1ドロー) にチェインがつき、くすぶる残り火 (0E・延焼4) が先に解決 → 本体の延焼6で合計10 ≥ 8 → ドローが鳴る
+    let s = withPerms(withDraw(withHand(base(), ['red_spreading_fire', 'red_strike']), ['red_ember', 'red_guard']), ['red_perm_cascade_core'])
+    s = play(s, 't0_red_spreading_fire')
+    expect(s.enemies[0].burn).toBe(10)
+    expect(ids(s.player.hand)).toEqual(['red_strike', 'red_guard']) // 猛り火のドローで灰の盾を引いた
+    expect(s.player.cascadesThisCombat).toBe(1)
+    // 2枚目にはつかない
+    s = withDraw(s, ['red_spark'])
+    s = play(s, 't1_red_strike')
+    expect(cascaded(s)).toHaveLength(1)
+    expect(ids(s.player.drawPile)).toEqual(['red_spark'])
+  })
+
+  it('チェインでプレイした札も「プレイ」: ひばなの勢い・攻撃の誘発・詠唱数に数える。エナジーは払わない', () => {
+    let s = withDraw(withHand(hibana(), ['red_cascade_bolt']), ['red_strike'])
+    const before = hp(s)
+    s = play(s, 't0_red_cascade_bolt')
+    expect(s.player.momentum).toBe(4) // 火弾 (+2) → 連火弾 (+2)
+    expect(before - hp(s)).toBe(6 + (11 + 2)) // 火弾は勢い0で6・連火弾は火弾の勢い+2を乗せて13
+    expect(s.player.cardsPlayedThisTurn).toBe(2)
+    expect(s.player.energy).toBe(1)
+  })
+
+  it('火の渦: 1E・この戦闘でチェインが当たった回数×5 (2026-10-10 Opus 赤 A/B: 2E×6 は当たり 0.7〜1.6回/戦では火弾2枚に負けた)。0回なら不発', () => {
+    expect(getCardDef('red_cascade_vortex').cost).toBe(1)
+    let s = withHand(base(), ['red_cascade_vortex'])
+    const before = hp(s)
+    s = play({ ...s, player: { ...s.player, cascadesThisCombat: 3 } }, 't0_red_cascade_vortex')
+    expect(before - hp(s)).toBe(15)
+    s = withHand(base(), ['red_cascade_vortex'])
+    expect(hp(play(s, 't0_red_cascade_vortex'))).toBe(hp(s))
+  })
+
+  it('連なる火花・火継ぎの炉: チェインで札がプレイされるたび 3ダメ・延焼+2。空振りでは鳴らない', () => {
+    let s = withPerms(withDraw(withHand(base(), ['red_cascade_bolt']), ['red_strike']), ['red_perm_cascade_sparks', 'red_perm_cascade_hearth'])
+    const before = hp(s)
+    s = play(s, 't0_red_cascade_bolt')
+    expect(before - hp(s)).toBe(11 + 6 + 3)
+    expect(s.enemies[0].burn).toBe(2)
+    let t = withPerms(withDraw(withHand(base(), ['red_cascade_bolt']), ['red_inferno']), ['red_perm_cascade_sparks', 'red_perm_cascade_hearth'])
+    const b2 = hp(t)
+    t = play(t, 't0_red_cascade_bolt')
+    expect(b2 - hp(t)).toBe(11)
+    expect(t.enemies[0].burn).toBe(0)
+  })
+
+  it('野火 (チェイン×3・効果なし) はプレイできる。双つ火は2回めくる', () => {
+    expect(isPlayableFromHand(inst('red_brushfire'))).toBe(true)
+    // 当たりは消滅札 (捨て札に戻らない) にして、連火弾の連鎖が切り直しで当たり直さないようにする
+    let s = withDraw(withHand(base(), ['red_brushfire']), ['red_ember', 'red_ritual', 'red_cascade_bolt', 'red_inferno'])
+    const before = hp(s)
+    s = play(s, 't0_red_brushfire')
+    // 1回目=くすぶる残り火 (延焼4)・2回目=猛火の儀式 (エナジー+2)・3回目=連火弾 (11。その連鎖は業火しか残らず空振り)
+    expect(before - hp(s)).toBe(11)
+    expect(s.enemies[0].burn).toBe(4)
+    expect(s.player.energy).toBe(0 + 2)
+    expect(s.player.cascadesThisCombat).toBe(3)
+    expect(cascaded(s)).toHaveLength(4) // 野火×3 + 連火弾の空振り1
+    expect(ids(s.player.exhaustPile).sort()).toEqual(['red_ember', 'red_ritual'])
+  })
+
+  it('チェインは軸 cascade・工房で継承される (反復と同じ)', () => {
+    expect(axesOf(getCardDef('red_cascade_bolt'))).toContain('cascade')
+    expect(axesOf(getCardDef('red_cascade_vortex'))).toContain('cascade')
+    const fused = fuseCards(inst('red_cascade_bolt', 1), inst('red_strike', 2))
+    expect(fused.cascade).toBe(1)
+    const twin = fuseCards(inst('red_twin_fire', 1), inst('red_cascade_bolt', 2))
+    expect(twin.cascade).toBe(2)
+  })
+})
+
+describe('バーンと刹那の穴埋め', () => {
+  it('燻り: この置物がある間、延焼は敵フェーズで減らない', () => {
+    let s = withIntent(withBurn(withPerms(withHand(base(), []), ['red_perm_smolder']), 5), restIntent())
+    const before = hp(s)
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(before - hp(s)).toBe(5)
+    expect(s.enemies[0].burn).toBe(5)
+    let t = withIntent(withBurn(withHand(base(), []), 5), restIntent())
+    t = applyCommand(t, { type: 'EndTurn' })
+    expect(t.enemies[0].burn).toBe(4)
+  })
+
+  it('火勢倍し: 対象の延焼を2倍にする (消滅)。延焼0なら不発', () => {
+    let s = withBurn(withHand(base(), ['red_burn_double']), 6)
+    s = play(s, 't0_red_burn_double')
+    expect(s.enemies[0].burn).toBe(12)
+    expect(ids(s.player.exhaustPile)).toEqual(['red_burn_double'])
+    let t = withHand(base(), ['red_burn_double'])
+    t = play(t, 't0_red_burn_double')
+    expect(t.enemies[0].burn).toBe(0)
+    expect(t.eventLog.some((e) => e.type === 'BurnApplied')).toBe(false)
+  })
+
+  it('灰かぶり・火の舌: 対象の延焼×1 のブロック／ダメージ。延焼は失わない (爆熱と違う)', () => {
+    let s = withBurn(withHand(base(), ['red_ash_cover', 'red_fire_tongue']), 6)
+    s = play(s, 't0_red_ash_cover')
+    expect(s.player.block).toBe(3 + 6)
+    expect(s.enemies[0].burn).toBe(6)
+    const before = hp(s)
+    s = play(s, 't1_red_fire_tongue')
+    expect(before - hp(s)).toBe(6)
+    expect(s.enemies[0].burn).toBe(8)
+  })
+
+  it('燃え残り・灰の衣: 衝動の札が失効するたび延焼+3 (2026-10-10 Opus 赤3本: 失効は1戦1回程度で +2 では取られなかった)・ブロック3 (失効1枚ごと。失効は衝動の出来事なので消滅より先)', () => {
+    let s = withPerms(withHand(base(), ['red_strike', 'red_guard']), ['red_perm_embers_left', 'red_perm_ash_robe'])
+    s = withIntent({ ...s, player: { ...s.player, impulseUids: ['t0_red_strike', 't1_red_guard'] } }, restIntent())
+    const before = hp(s)
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(ids(s.player.exhaustPile).sort()).toEqual(['red_guard', 'red_strike'])
+    expect(before - hp(s)).toBe(6) // 延焼6 (2枚×3) が敵フェーズ開始で焼く
+    expect(s.enemies[0].burn).toBe(5)
+    expect(s.eventLog.filter((e) => e.type === 'BlockGained' && e.target === 'player' && e.amount === 3)).toHaveLength(2)
+  })
+
+  it('燠の守り: 失効する衝動の札のうちコストが最も高い1枚を手札に残し、敵フェーズ後の全捨ても1回だけ生き残る', () => {
+    let s = withPerms(withHand(base(), ['red_strike', 'red_inferno', 'red_guard']), ['red_perm_ember_keeper'])
+    s = withIntent({ ...s, player: { ...s.player, impulseUids: ['t0_red_strike', 't1_red_inferno'] } }, restIntent())
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(ids(s.player.exhaustPile)).toEqual(['red_strike'])
+    expect(s.eventLog.some((e) => e.type === 'ImpulseKept' && e.cardId === 'red_inferno')).toBe(true)
+    const kept = s.player.hand.find((c) => c.uid === 't1_red_inferno')
+    expect(kept).toBeDefined() // 次の自ターンの手札に残っている (灰の盾は普通に捨てられた)
+    expect(kept?.keptImpulse).toBeUndefined() // 旗は全捨てで下ろした = 次の全捨てでは普通に捨てられる
+    expect(s.player.impulseUids).toEqual([])
+    expect(s.player.hand.some((c) => c.uid === 't2_red_guard')).toBe(false)
+  })
+
+  it('衝動の失効: 払えなかった札 (実コスト>残りエナジー) は捨て札へ・払えた札と出せない札 (負傷) は消滅 (2026-10-12 3幕フルラン 裁定 F2)。燃え残りは3枚とも鳴る', () => {
+    let s = withPerms(withHand(base(), ['red_strike', 'red_inferno', WOUND_DEF.id]), ['red_perm_embers_left'])
+    s = withIntent({ ...s, player: { ...s.player, energy: 2, impulseUids: ['t0_red_strike', 't1_red_inferno', `t2_${WOUND_DEF.id}`] } }, restIntent())
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(ids(s.player.exhaustPile).sort()).toEqual([WOUND_DEF.id, 'red_strike'].sort()) // 火弾1E≦2 は払えた＝消滅、負傷は出せない＝消滅
+    expect(s.player.discardPile.concat(s.player.hand, s.player.drawPile).some((c) => c.uid === 't1_red_inferno')).toBe(true) // 業火3E>2 は捨て札へ (敵フェーズ後の引きで手札に来うる)
+    expect(s.player.exhaustPile.some((c) => c.def.id === 'red_inferno')).toBe(false)
+    expect(s.eventLog.filter((e) => e.type === 'ImpulseReturned').map((e) => (e as { cardId: string }).cardId)).toEqual(['red_inferno'])
+    expect(s.eventLog.filter((e) => e.type === 'CardExhausted')).toHaveLength(2)
+    expect(s.enemies[0].burn).toBe(9 - 1) // 燃え残り +3 ×3枚 = 9、敵フェーズ開始で1減る
+  })
+
+})
+
+  it('猛火の儀式は本家形 (1E・一時マナ+2・消滅)', () => {
+    const def = getCardDef('red_ritual')
+    expect(def.cost).toBe(1)
+    expect(def.exhaust).toBe(true)
+    let s = withHand(base(), ['red_ritual'])
+    s = play(s, 't0_red_ritual')
+    expect(s.player.energy).toBe(3 - 1 + 2)
+  })
+
+describe('鍛える (本家形へ。例外2枚)', () => {
+  it('赤は本家形: 連火弾+ 17ダメ (量+50%)・火の渦+ ×6 (参照倍率+1)・熾火の一閃+ 9ダメ+衝動3 (単位+1)', () => {
+    expect(up('red_cascade_bolt').effects[0].amount).toBe(17)
+    expect(up('red_cascade_vortex').effects[0].amount).toBe(6)
+    expect(up('red_ember_slash').effects.map((e) => e.amount)).toEqual([9, 3])
+  })
+
+  it('例外: 野火+ はチェイン×4・双つ火+ は 5ダメ＋チェイン×3 (3E のまま。2026-10-10 Opus 赤 A/C「コスト-1 で当たりが 1E 以下に縮む＝鍛えると弱くなる」)', () => {
+    expect(upgradeTier(getCardDef('red_brushfire'))).toBe('cascade')
+    expect(up('red_brushfire')).toMatchObject({ cost: 3, cascade: 4, name: '野火+' })
+    expect(upgradeTier(getCardDef('red_twin_fire'))).toBe('cascade')
+    const twin = up('red_twin_fire')
+    expect(twin).toMatchObject({ cost: 3, cascade: 3 })
+    expect(twin.effects[0].amount).toBe(5)
+    // 他のチェイン札は本家形のまま (火送りの一撃+ 11ダメ＝7×1.5 切り上げ)
+    expect(up('red_cascade_strike')).toMatchObject({ cascade: 1 })
+    expect(up('red_cascade_strike').effects[0].amount).toBe(11)
+  })
+
+  it('例外: 焔の目録はコスト-1のまま (勢い+4 に戻さない)・火だるまは旧3段 (延焼3・被弾×1 のまま)', () => {
+    expect(upgradeTier(getCardDef('red_perm_ledger'))).toBe('cost')
+    const ledger = up('red_perm_ledger')
+    expect(ledger.cost).toBe(1)
+    expect(ledger.effects[0].amount).toBe(2)
+    const pyre = up('red_perm_pyre')
+    expect(pyre.effects.map((e) => [e.effect, e.amount])).toEqual([['applyBurn', 3], ['applyBurnPerDamageTaken', 1]])
+  })
+})
+
+describe('データとラン', () => {
+  it('赤 106種・報酬99＋初期専用7 (段1: チェイン14・穴埋め7・触媒2 を足し、カオス8と重なり2を撤去。2026-10-10 火加減を初期デッキへ。段2 2026-10-12: +7・段2b: 守り+2)。撤去した札は無い', () => {
+    const red = allCards.filter((c) => c.color === 'red')
+    expect(red.length).toBe(106)
+    expect(red.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(99)
+    for (const id of ['red_long_shot', 'red_streak_bet', 'red_all_in', 'red_double_dice', 'red_leap_arrow', 'red_double_down', 'red_grand_fireworks', 'red_perm_gambler', 'red_perm_ward', 'red_blaze_storm']) {
+      expect(red.some((c) => c.id === id), id).toBe(false)
+    }
+    for (const id of ['red_gamble', 'red_fluke_spark', 'red_bomb', 'red_chaos_bolt']) expect(red.some((c) => c.id === id), id).toBe(true) // カオスの味付け4
+    expect(red.filter((c) => (c.cascade ?? 0) > 0)).toHaveLength(10) // 1E×2・2E×4 (置物1含む)・3E×4 (野火・双つ火含む)
+    expect(red.filter((c) => c.fusionCatalyst !== undefined).map((c) => c.fusionCatalyst).sort()).toEqual(['aoe', 'cheaper'])
+    expect(getCardDef('red_leaping_flame').name).toBe('飛び火') // 既存の札はそのまま (キーワード名は「チェイン」)
+  })
+
+  it('初期デッキ (run_basic_red): 火弾3・火花1・火加減1・灰の盾2・火纏い・棘火の帳・着火＝10枚。初期専用の札は報酬に出ない (2026-10-10 Opus 赤 A 2.29T・C 2.5T → 火花×2→火花×1＋火加減)', () => {
+    const d = getDeckDef('run_basic_red')
+    const counts = Object.fromEntries(d.cards.map((c) => [c.cardId, c.count]))
+    expect(counts).toEqual({ red_strike: 3, red_spark: 1, red_mode_firecontrol: 1, red_guard: 2, red_perm_flarecoat: 1, red_perm_thorn_flame: 1, red_ignite: 1 })
+    expect(d.cards.reduce((a, c) => a + c.count, 0)).toBe(10)
+    for (const c of d.cards) expect(REWARD_EXCLUDED.has(c.cardId), c.cardId).toBe(true)
+  })
+
+  it('チェインを持つ札は赤だけで、コストは1以上 (0E のチェインは当たりが無い)', () => {
+    for (const c of allCards.filter((c) => (c.cascade ?? 0) > 0)) {
+      expect(c.color, c.id).toBe('red')
+      expect(c.cost, c.id).toBeGreaterThanOrEqual(1)
+    }
+  })
+
+  it('理想形: チェイン理想形 (deck_cascade。段2で「飛び火理想形」から改名) がカオスの運任せ理想形を置き換えた。刹那理想形は改名だけ', () => {
+    const d = getDeckDef('deck_cascade')
+    expect(d.cards.some((c) => c.cardId === 'red_cascade_vortex')).toBe(true)
+    expect(() => getDeckDef('deck_gamble')).toThrow()
+    expect(getDeckDef('deck_chaos').name).toBe('刹那理想形')
+  })
+
+  it('伏せ参照レリック (符師の懐・静かな鈴・二重の符・読みの眼鏡・回収の紐) は赤単の候補列に出ない。緑には出る', () => {
+    const red = createRun(3, 'set-confirm', 'leader_red').relicQueue
+    for (const id of ['relic_talisman_pouch', 'relic_quiet_bell', 'relic_double_talisman', 'relic_reading_glasses', 'relic_retrieve_cord']) {
+      expect(red, id).not.toContain(id)
+    }
+    const green = createRun(3, 'set-confirm', 'leader_green').relicQueue
+    expect(green).toContain('relic_double_talisman')
+    expect(green).toContain('relic_reading_glasses')
+  })
+})
+
+describe('表示の是正 (2026-10-10 Opus 赤3本)', () => {
+  it('被ダメ予測: 延焼のティック (延焼≥HP) で行動の前に倒れる敵は数えない。敵フェーズの途中 (ティック済み) は数える', () => {
+    let s = withIntent(base(), attackIntent(10))
+    expect(incomingTotal(s)).toBe(10)
+    expect(burnoutEnemies(s)).toEqual([])
+    s = withBurn({ ...s, enemies: s.enemies.map((e, i) => (i === 0 ? { ...e, hp: 5 } : e)) }, 5)
+    expect(burnoutEnemies(s)).toEqual([0])
+    expect(incomingTotal(s)).toBe(0)
+    expect(incomingTotal({ ...s, enemyPhase: true })).toBe(10)
+    expect(incomingTotal(withBurn(s, 4))).toBe(10) // 延焼4 < HP5 は焼け落ちない
+  })
+
+  it('身代わりの符で無効にした攻撃は DamageDealt に nullified が立つ (ログは「ブロックで」と言わない)', () => {
+    let s = withIntent({ ...base(), nullifyNextAttack: true }, attackIntent(10))
+    const before = s.player.hp
+    s = applyCommand(s, { type: 'EndTurn' })
+    const dd = s.eventLog.find((e) => e.type === 'DamageDealt' && e.source === 'enemy')
+    expect(dd).toMatchObject({ hpLoss: 0, nullified: true })
+    expect(s.player.hp).toBe(before)
+    // 普通に受けた時は立たない
+    let t = withIntent(base(), attackIntent(10))
+    t = applyCommand(t, { type: 'EndTurn' })
+    const d2 = t.eventLog.find((e) => e.type === 'DamageDealt' && e.source === 'enemy')
+    expect(d2 !== undefined && 'nullified' in d2).toBe(false)
+  })
+
+  it('置物の文: ターン開始などの単体効果は「先頭の敵に」(燎火の使いの毎T延焼+2)。全体・登場時・攻撃ごとには付かない', () => {
+    const envoy = getCardDef('red_perm_cascade_envoy')
+    expect(permanentTargetNote(envoy.effects[1], 'permanent')).toBe('先頭の敵に') // onTurnStart applyBurn
+    expect(permanentTargetNote(envoy.effects[0], 'permanent')).toBe('') // onPlay (登場時) は狙った敵
+    expect(permanentTargetNote({ trigger: 'onImpulseExpired', effect: 'applyBurn' }, 'permanent')).toBe('先頭の敵に') // onImpulseExpired の単体効果
+    expect(permanentTargetNote(getCardDef('red_perm_embers_left').effects[0], 'permanent')).toBe('') // 燃え残りは段2b で対象「延焼がいちばん多い敵」を持つ = 注記は要らない
+    expect(permanentTargetNote({ trigger: 'onTurnStart', effect: 'applyBurn', target: 'all' }, 'permanent')).toBe('')
+    expect(permanentTargetNote({ trigger: 'onAttackPlayed', effect: 'applyBurn' }, 'permanent')).toBe('')
+    expect(permanentTargetNote({ trigger: 'onTurnStart', effect: 'gainBlock' }, 'permanent')).toBe('')
+    expect(permanentTargetNote({ trigger: 'onTurnStart', effect: 'applyBurn' }, 'spell')).toBe('')
+  })
+})

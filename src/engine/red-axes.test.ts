@@ -1,5 +1,5 @@
 // 赤の軸の穴埋め (2026-08-30)。アーキタイプの整理で見つかった3つの穴を固定する:
-// ①カオス = 乱数4枚に対しペイオフ0 ②衝動 = 撒く14枚に対しペイオフ1 ③憤怒 = 被弾の見返りが1テンポ遅れる。
+// ①カオス = 乱数4枚に対しペイオフ0 (2026-10-10 に撤去) ②衝動 = 撒く14枚に対しペイオフ1 ③憤怒 = 被弾の見返りが1テンポ遅れる。
 import { describe, expect, it } from 'vitest'
 import { isBlazing } from './effects.ts'
 import { getCardDef } from './content.ts'
@@ -12,46 +12,8 @@ const withEnergy = (s: GameState, energy: number): GameState => ({
   player: { ...s.player, energy },
 })
 
-describe('カオスの受け皿 (onRandomPlayed / 撃った枚数の参照)', () => {
-  it('ランダム火力を撃つたびに賭博師の焔が延焼を積む', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
-      'red_perm_gambler',
-      'red_gamble',
-    ])
-    s = withEnergy(s, 9)
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_perm_gambler' })
-    expect(s.enemies[0].burn).toBe(0) // 置物を出しただけでは誘発しない
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_gamble' })
-    expect(s.enemies[0].burn).toBe(2) // 2026-08-31 1E化で4→2
-
-  })
-
-  it('全体ランダム火力でも枚数は1しか増えない (敵の頭数ぶん多重に数えない)', () => {
-    let s = withHand(freshCombat('set-confirm', 'enc_probe_pair', 42, 'starter_red'), [
-      'red_grand_fireworks',
-    ])
-    s = withEnergy(s, 9)
-    expect(s.enemies.length).toBe(2)
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_grand_fireworks' })
-    expect(s.player.randomPlayedThisCombat).toBe(1)
-  })
-
-  it('一擲乾坤は「この戦闘で撃った運任せの札の枚数」を刈り取る', () => {
-    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_red'), [
-      'red_gamble',
-      'red_gamble',
-      'red_all_in',
-    ])
-    s = withEnergy(s, 99)
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_red_gamble' })
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_red_gamble' })
-    expect(s.player.randomPlayedThisCombat).toBe(2)
-    const hpBefore = s.enemies[0].hp
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_red_all_in' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 12) // 2枚 × 6
-    expect(s.player.randomPlayedThisCombat).toBe(2) // 一擲乾坤自身は乱数札ではない
-  })
-})
+// カオスの受け皿 (賭博師の焔・一擲乾坤・続け賭け) は 2026-10-10 の赤の解凍で撤去 (乱数は味付け4枚・第3の軸はチェイン = red-thaw.test.ts)。
+// engine の onRandomPlayed / dealDamagePerRandomPlayed は残っている (工房・他色の資産)
 
 describe('衝動の受け皿 (onImpulsePlayed のペイオフ3枚目・4枚目)', () => {
   it('衝動で引いた札をプレイすると焔の目録が勢いを、走り火がダメージを出す', () => {

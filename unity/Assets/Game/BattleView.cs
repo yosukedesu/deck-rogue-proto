@@ -1171,9 +1171,30 @@ namespace DeckRogue.Game
             if (cost > st.Player.Energy) return false;
             if ((c.Def.LightCost ?? 0) > (st.Player.Light ?? 0)) return false;   // 灯コスト (白 2026-09-20)
             if (!Effects.RetainerRequirementMet(st, c)) return false;
+            if ((c.Def.ImpulseCost ?? 0) > 0 && c.Def.KindleOptional != true && ImpulseInHand(st, c.Uid) < c.Def.ImpulseCost.Value) return false;   // くべる (赤 2026-10-12 段2): 衝動の札が無ければ沈む (くべてもよい札は沈まない 段2b)
             var cap = Combat.PlayCapOf(st);
             if (cap != null && (st.Player.PlaysThisTurn ?? 0) >= cap.Value) return false;
             return true;
+        }
+
+        /// <summary>その札が衝動 (このターン限り) か。LINQ の無い画面でも使える素のループ (赤 2026-10-12 段2)</summary>
+        public static bool IsImpulse(GameState st, string uid)
+        {
+            var ids = st.Player.ImpulseUids;
+            for (int i = 0; i < ids.Count; i++) if (ids[i] == uid) return true;
+            return false;
+        }
+
+        /// <summary>手札にある衝動の札の数 (自分を除く)。くべる (impulseCost) の可否 (赤 2026-10-12 段2)</summary>
+        public static int ImpulseInHand(GameState st, string selfUid)
+        {
+            int n = 0;
+            for (int i = 0; i < st.Player.Hand.Count; i++)
+            {
+                var h = st.Player.Hand[i];
+                if (h.Uid != selfUid && IsImpulse(st, h.Uid)) n++;
+            }
+            return n;
         }
 
         /// <summary>r3 の扇の下がり (中央から1枚ごと。二周目は 10)</summary>

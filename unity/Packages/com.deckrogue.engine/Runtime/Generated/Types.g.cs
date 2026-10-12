@@ -293,7 +293,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>マナ軽減トークン: 次にプレイする1枚のコストを軽減して消費される。 素のコスト0のカードは消費しない。伏せるコストは対象外。未使用分は持ち越し</summary>
         [JsonProperty("nextCardDiscount")]
         public int NextCardDiscount { get; init; }
-        /// <summary>衝動 (赤): 「このターン限り」の手札の uid。自ターン終了時に未使用なら消滅する</summary>
+        /// <summary>衝動 (赤): 「このターン限り」の手札の uid。自ターン終了時に未使用なら消滅する (払えなかった札は捨て札へ。2026-10-12)</summary>
         [JsonProperty("impulseUids")]
         public IReadOnlyList<string> ImpulseUids { get; init; } = default!;
         /// <summary>弱体: 残りNターンの間、与ダメージ25%減 (切り捨て)。自ターン終了時に1減る</summary>
@@ -337,6 +337,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>占術 (青 2026-09-25 Opus B の処方): この戦闘で占術で捨てた枚数の累計 (読み切りが参照)</summary>
         [JsonProperty("scryDiscardedThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public int? ScryDiscardedThisCombat { get; init; }
+        /// <summary>チェイン (赤 2026-10-10): この戦闘でチェインが当たった (札がプレイされた) 回数。火の渦が参照。空振りは数えない</summary>
+        [JsonProperty("cascadesThisCombat", NullValueHandling = NullValueHandling.Ignore)]
+        public int? CascadesThisCombat { get; init; }
         /// <summary>罠使い (青 2026-09-25): この戦闘で罠 (reaction) が鳴った回数 (仕掛けの反響が参照)</summary>
         [JsonProperty("trapsFiredThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public int? TrapsFiredThisCombat { get; init; }
@@ -448,7 +451,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>装甲: 1ヒットの被ダメ上限 (def からコピー。テスト・編成補正で上書き可)</summary>
         [JsonProperty("armor", NullValueHandling = NullValueHandling.Ignore)]
         public int? Armor { get; init; }
-        /// <summary>ぬめりの残り回数 (def.slippery からコピー。HP に届く当たりのたび1減る)</summary>
+        /// <summary>朧の残り回数 (def.slippery からコピー。HP に届く当たりのたび1減る)</summary>
         [JsonProperty("slippery", NullValueHandling = NullValueHandling.Ignore)]
         public int? Slippery { get; init; }
         /// <summary>技封じ (kind:'seal') で封じている札。この敵が倒れたら手札へ戻る</summary>
@@ -570,6 +573,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>猛り火 (2026-08-30。赤のカラーパイ再編)。**生存する敵の延焼の合計が BLAZE_THRESHOLD(8) 以上** なら発動可。しきい値は全札で単一 (ユーザー判断)。延焼を溜めるほど札が化ける＝ 「勝ち筋が時間を要求し、弱点が時間を許さない」という赤の自己矛盾を、 時間依存でなく**しきい値依存**に置き換える機構</summary>
         [JsonProperty("blaze", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Blaze { get; init; }
+        /// <summary>くべた時だけ (赤 2026-10-12 段2b): kindleOptional の札で、追加コスト (衝動の札) を払ってプレイした解決の間だけ成立 (GameState.resolvingKindled)</summary>
+        [JsonProperty("kindled", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Kindled { get; init; }
         /// <summary>対象の敵の意図（宣言済み・伏せ分岐は現在の盤面で解決）がこの種別なら (緑 2026-09-03 参照シナジー: 見切り撃ち=本家 Spot Weakness)</summary>
         [JsonProperty("enemyIntent", NullValueHandling = NullValueHandling.Ignore)]
         public string? EnemyIntent { get; init; }
@@ -682,6 +688,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>カードの onPlay 効果を解決中フラグ (2026-09-01 虚弱を「カードのプレイで得るブロック」に限定するため。遷移中のみ立つ)</summary>
         [JsonProperty("resolvingCardPlay", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ResolvingCardPlay { get; init; }
+        /// <summary>くべてプレイした札の解決中 (赤 2026-10-12 段2b): condition.kindled の効果が乗る。playCard が立てて下ろす (入れ子は退避・復元)</summary>
+        [JsonProperty("resolvingKindled", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? ResolvingKindled { get; init; }
         /// <summary>成長/勢いの獲得誘発 (onGrowthGained/onMomentumGained) を解決中フラグ (2026-09-02)。誘発の中の加算は再誘発しない = 1段で止める</summary>
         [JsonProperty("resolvingGainTrigger", NullValueHandling = NullValueHandling.Ignore)]
         public bool? ResolvingGainTrigger { get; init; }
@@ -869,7 +878,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>単体対象カード用: 対象の敵 index。生存敵が2体以上いる場合は必須 (StS式ターゲティング)</summary>
         [JsonProperty("targetIndex", NullValueHandling = NullValueHandling.Ignore)]
         public int? TargetIndex { get; init; }
-        /// <summary>消滅コスト (exhaustCost) 用: 追加コストとして消滅させる手札の uid。exhaustCost 枚数ぶん必須</summary>
+        /// <summary>消滅コスト (exhaustCost) 用: 追加コストとして消滅させる手札の uid。exhaustCost 枚数ぶん必須。くべる (impulseCost 赤 2026-10-12) も同じ欄 (衝動の札の uid だけ受ける)</summary>
         [JsonProperty("exhaustUids", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? ExhaustUids { get; init; }
         /// <summary>retrieveFromExhaust / playFromExhaust 用: 消滅置き場から選ぶカードの uid</summary>
@@ -957,6 +966,8 @@ namespace DeckRogue.Engine.Generated
         public int? HearthSparks { get; init; }
         [JsonProperty("retainUids", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyList<string>? RetainUids { get; init; }
+        [JsonProperty("keepUid", NullValueHandling = NullValueHandling.Ignore)]
+        public string? KeepUid { get; init; }
     }
 
     /// <summary>判別共用体 GameEvent (TS: type フィールドで分岐)。移植側は Type を見て派生 record へ分岐する</summary>
@@ -1155,7 +1166,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>因縁 (無形ターン) で1に固定されて消えたぶん</summary>
         [JsonProperty("nemesisCut", NullValueHandling = NullValueHandling.Ignore)]
         public int? NemesisCut { get; init; }
-        /// <summary>ぬめりで1にされて消えたぶん (2026-09-27 月影の大蛞蝓)</summary>
+        /// <summary>朧で1にされて消えたぶん (2026-09-27 朧の大鹿)</summary>
         [JsonProperty("slipperyCut", NullValueHandling = NullValueHandling.Ignore)]
         public int? SlipperyCut { get; init; }
         /// <summary>急所が乗った (×1.5)。演出「ダメージの質の見分け」用 (2026-09-17)</summary>
@@ -1167,6 +1178,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>ブロックが吸った量 (source=player は敵のブロック〔潜伏の殻を含む〕、source=enemy は自分のブロック＋氷壁の合計)。0 なら省略</summary>
         [JsonProperty("blocked", NullValueHandling = NullValueHandling.Ignore)]
         public int? Blocked { get; init; }
+        /// <summary>身代わりの符 (ギア) で HP 損失を 0 にした (source=enemy)。blocked には全ヒットが「完全に防いだ」扱いで入る = ログは「ブロックで」と言わない (2026-10-10 Opus 赤 B)</summary>
+        [JsonProperty("nullified", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Nullified { get; init; }
         /// <summary>置物の誘発で与えた時、その置物の uid (人形の盤面表示 2026-09-19: 人形が踏み込んで斬る演出の出どころ)。無ければ省略</summary>
         [JsonProperty("sourceUid", NullValueHandling = NullValueHandling.Ignore)]
         public string? SourceUid { get; init; }
@@ -1467,6 +1481,75 @@ namespace DeckRogue.Engine.Generated
         public GameEvent_ImpulseDrawn() { Type = TypeTag; }
         [JsonProperty("count")]
         public int Count { get; init; }
+    }
+
+    /// <summary>GameEvent: type="Cascaded"</summary>
+    public sealed record GameEvent_Cascaded : GameEvent
+    {
+        public const string TypeTag = "Cascaded";
+        public GameEvent_Cascaded() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+        [JsonProperty("hitId", NullValueHandling = NullValueHandling.Ignore)]
+        public string? HitId { get; init; }
+        [JsonProperty("revealed")]
+        public IReadOnlyList<string> Revealed { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="ImpulseReturned"</summary>
+    public sealed record GameEvent_ImpulseReturned : GameEvent
+    {
+        public const string TypeTag = "ImpulseReturned";
+        public GameEvent_ImpulseReturned() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="ImpulseKept"</summary>
+    public sealed record GameEvent_ImpulseKept : GameEvent
+    {
+        public const string TypeTag = "ImpulseKept";
+        public GameEvent_ImpulseKept() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="ImpulseKindled"</summary>
+    public sealed record GameEvent_ImpulseKindled : GameEvent
+    {
+        public const string TypeTag = "ImpulseKindled";
+        public GameEvent_ImpulseKindled() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+        [JsonProperty("cardIds")]
+        public IReadOnlyList<string> CardIds { get; init; } = default!;
+    }
+
+    /// <summary>GameEvent: type="BlazeIgnited"</summary>
+    public sealed record GameEvent_BlazeIgnited : GameEvent
+    {
+        public const string TypeTag = "BlazeIgnited";
+        public GameEvent_BlazeIgnited() { Type = TypeTag; }
+    }
+
+    /// <summary>GameEvent: type="BlazeExtinguished"</summary>
+    public sealed record GameEvent_BlazeExtinguished : GameEvent
+    {
+        public const string TypeTag = "BlazeExtinguished";
+        public GameEvent_BlazeExtinguished() { Type = TypeTag; }
+    }
+
+    /// <summary>GameEvent: type="CascadeRetargeted"</summary>
+    public sealed record GameEvent_CascadeRetargeted : GameEvent
+    {
+        public const string TypeTag = "CascadeRetargeted";
+        public GameEvent_CascadeRetargeted() { Type = TypeTag; }
+        [JsonProperty("cardId")]
+        public string CardId { get; init; } = default!;
+        [JsonProperty("fromIndex")]
+        public int FromIndex { get; init; }
+        [JsonProperty("toIndex")]
+        public int ToIndex { get; init; }
     }
 
     /// <summary>GameEvent: type="HpLost"</summary>
@@ -2372,6 +2455,12 @@ namespace DeckRogue.Engine.Generated
         /// <summary>追加コスト: 手札を N 枚消滅させる (黒。捨てより重いが墓地燃料になる)</summary>
         [JsonProperty("exhaustCost", NullValueHandling = NullValueHandling.Ignore)]
         public int? ExhaustCost { get; init; }
+        /// <summary>くべる (赤 刹那 2026-10-12 段2): 追加コストとして手札の**衝動の札**を N 枚消滅させる (火にくべる・灰の息)。 衝動の札が手札に無ければプレイできない (殉教の誓いと同じ playability)。払った札は消滅 (消滅の誘発は鳴る) で、失効ではない (燃え残り・灰の衣は鳴らない)。コマンドは消滅コストと同じ PlayCard.exhaustUids。Opus 赤3本一致の「衝動の失効が最悪」を、 撃てない札を火にくべる選択に変える (失効=消滅の裁定は触らない)</summary>
+        [JsonProperty("impulseCost", NullValueHandling = NullValueHandling.Ignore)]
+        public int? ImpulseCost { get; init; }
+        /// <summary>くべてもよい (赤 2026-10-12 段2b。Opus 段2 B「燃料が無いターンは死に札」への裁定): impulseCost を**任意**にする。 払わずにプレイすれば素の効果だけ、払えば condition.kindled の効果も乗る (火にくべる＝全体4、くべれば＋延焼3／灰の息＝ブロック5、くべれば＋3＋延焼2)。 衝動の札が無くてもプレイできる</summary>
+        [JsonProperty("kindleOptional", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? KindleOptional { get; init; }
         /// <summary>追加コスト: 灯を N 払う (白 2026-09-20 白の再設計。号令=点灯の合図)。エナジーと別に払い、足りなければプレイ不可 (エナジー不足と同じ playability)。割引の対象外。伏せるコストには掛からない (白のリアクションは持たない)。 人形にも付く (同日夜 灯と人形の結び: 癒し・鐘・大鐘=1E・灯2、灯篭=U1E・灯2、篝火=R2E・灯4)。 人形の登場は灯を産まない (同日夜 ユーザー裁定「登場の灯+1は廃止」= 人形は灯を使う側。灯を灯すのは灯芯・回復系の人形)</summary>
         [JsonProperty("lightCost", NullValueHandling = NullValueHandling.Ignore)]
         public int? LightCost { get; init; }
@@ -2396,6 +2485,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>反復内蔵 (反復の触媒の結果 2026-09-12): プレイ時効果を2回解決する。置物なら誘発ごとに2回。反復トークンとは加算 (3回)</summary>
         [JsonProperty("echo", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Echo { get; init; }
+        /// <summary>チェイン (赤の第3の軸 2026-10-10。MTG の続唱。`docs/red-cascade-design-2026-10-10.md`): プレイした時、山札の上から 「この札よりコストの低い札」が出るまでめくり、その札をコストを払わずにプレイする (対象は親と同じ敵。 選択式・X・仕込み札・プレイできない札は飛ばして底へ)。めくった残りは山札の底へ (順はシードRNG)。 山札が尽きたら捨て札を切り直して続け、当たりが無ければ空振り。本体の効果より先に解決する (MTG の順)。 値は回数 (野火=3・双つ火=2)。当たった札がチェインを持てば続く (コストが下がるので必ず止まる)</summary>
+        [JsonProperty("cascade", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Cascade { get; init; }
     }
 
     /// <summary>デッキ/手札上のカード実体 (同名カード複数を区別する uid 付き)</summary>
@@ -2417,6 +2509,9 @@ namespace DeckRogue.Engine.Generated
         /// <summary>屍集めで消滅置き場から戻した札 (2026-08-31 rework)。この戦闘中プレイ・伏せコストが0になる。 Xコスト札は対象外 (Xは支払った量が効果量なので0E化すると意味が壊れる)。 戦闘終了で消える (ラン層のデッキには残らない = インスタンスは戦闘ごとに作り直されるため)</summary>
         [JsonProperty("freeThisCombat", NullValueHandling = NullValueHandling.Ignore)]
         public bool? FreeThisCombat { get; init; }
+        /// <summary>燠の守り (赤 2026-10-10): 衝動の失効を免れて手札に残った札。次の全捨て (敵フェーズの後) を1回だけ生き残り、 次の自ターンの手札に残る (保持と同じ場所で判定し、その全捨てで旗を下ろす)</summary>
+        [JsonProperty("keptImpulse", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? KeptImpulse { get; init; }
         /// <summary>育つ札 (growSelf 2026-09-02): この戦闘中にプレイした回数ぶん積み上がった与ダメ加算。 プレイ時に dealDamage の量へ注入し、解決後に +growSelf の量を足して捨て札へ置く (Rampage型)</summary>
         [JsonProperty("growBonus", NullValueHandling = NullValueHandling.Ignore)]
         public int? GrowBonus { get; init; }
@@ -2753,7 +2848,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>装甲 (2026-08-30 n²スケーリングへのワクチン)。**1ヒットで受けるダメージはN以下**に頭打ち。 5色すべてが持つ「線形参照×枚数」の乗算 (勢い×多段・詠唱×0マナ・ブロック変換・自傷高効率・ 成長×X) に対し、カードをナーフせず敵側で受ける構造的な処方。多段デッキには「ヒット数で 押し切れ」、一撃デッキには「上限まで」と別の問いを出す。とげ・延焼耐性と同じく常時表示 (フェアネス)。 延焼 (DoT) はヒットではないので装甲を無視する = バーンが装甲の解答になる</summary>
         [JsonProperty("armor", NullValueHandling = NullValueHandling.Ignore)]
         public int? Armor { get; init; }
-        /// <summary>ぬめり (2026-09-27 月影の大蛞蝓。本家 Vantom の Slippery): HP に届く当たりの最初のN回は HP 損失が1になる (1回ごとに1減る)。札・人形・置物・罠の当たりを全部数える。敵のブロックで全部止まった当たりは数えない。 延焼はヒットではないので素通し (装甲と同じ裁定)。装甲 (大技が届かない) の逆の問い = 小さい当たりで剥がしてから大技</summary>
+        /// <summary>朧 (2026-09-27 朧の大鹿。本家 Vantom の Slippery。当初は月影の大蛞蝓＝ぬめり、同日ユーザー「ナメクジキモい」で鹿に): HP に届く当たりの最初のN回は HP 損失が1になる (1回ごとに1減る)。札・人形・置物・罠の当たりを全部数える。敵のブロックで全部止まった当たりは数えない。 延焼はヒットではないので素通し (装甲と同じ裁定)。装甲 (大技が届かない) の逆の問い = 小さい当たりで霧を晴らしてから大技</summary>
         [JsonProperty("slippery", NullValueHandling = NullValueHandling.Ignore)]
         public int? Slippery { get; init; }
     }

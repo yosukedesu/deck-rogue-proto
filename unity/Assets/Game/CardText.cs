@@ -58,6 +58,9 @@ namespace DeckRogue.Game
             { "onLightGained", "灯を得るたび" },
             { "onLightDischarged", "灯を放出するたび" },
             { "onSparkPlayed", "火種を撃つたび" },
+            { "onCascade", "チェインで札がプレイされるたび" }, // 赤 2026-10-10
+            { "onImpulseExpired", "衝動の札が失効するたび" }, // 赤 2026-10-10
+            { "onBlazeIgnite", "猛り火に点いた時" }, // 赤 2026-10-12 段2
             { "onTurnEnd", "ターン終了時" },
             { "onShuffle", "山札を切り直すたび" },
             { "onEnemyDied", "敵を倒すたび" },
@@ -128,6 +131,15 @@ namespace DeckRogue.Game
             { "applyBurn", "延焼+N" },
             { "applyBurnPerDamageTaken", "受けたダメージ×N延焼" },
             { "dischargeBurn", "爆熱(延焼×Nダメージ・全消費)" },
+            // 赤の3本柱 (2026-10-10 docs/red-cascade-design-2026-10-10.md)
+            { "dealDamagePerCascade", "この戦闘でチェインが当たった回数×Nダメージ" },
+            { "doubleBurn", "対象の延焼を2倍にする" },
+            { "gainBlockPerBurn", "対象の延焼×Nブロック(延焼は失わない)" },
+            { "dealDamagePerBurn", "対象の延焼×Nダメージ(延焼は失わない)" },
+            { "firstCardCascade", "この置物がある間、毎ターン最初にプレイする札にチェインがつく" },
+            { "burnNoDecay", "この置物がある間、延焼は敵のターンで減らない (延焼を消費して刈る札とは噛み合わない)" },
+            { "keepImpulseOne", "この置物がある間、ターン終了時に失効する衝動の札のうちコストが最も高い1枚を手札に残す(次のターンまで)" },
+            { "cascadeSameCost", "この置物がある間、チェインは「同じコストの札だけ」に当たる(安い札は飛ばす)" }, // 火は火を呼ぶ (赤 2026-10-12 段2b)
             { "addAether", "霊気+N" },
             { "dischargeAether", "霊気放出(×Nダメージ・全消費)" },
             { "dischargeAetherDraw", "霊気×Nドロー(全消費)" },
@@ -348,6 +360,13 @@ namespace DeckRogue.Game
             if (every != null) sb.Append(MarkClauses ? ClauseOpen + every + ClauseClose : every);
             if (e.Target == "all") sb.Append("敵全体に ");
             else if (e.Target == "mostHp") sb.Append("HPがいちばん多い敵に ");   // 獅子の人形 (白 2026-09-26)
+            else if (e.Target == "mostBurn") sb.Append("延焼がいちばん多い敵に ");   // 燃え残り (赤 2026-10-12 段2b)
+            else
+            {
+                // 置物のターン開始などの単体効果は「先頭の敵に」(2026-10-10 Opus 赤 C: 燎火の使いの毎T延焼の相手が札に無かった。式は Effects.PermanentTargetNote に1本化)
+                string note = Effects.PermanentTargetNote(e, holderType);
+                if (note.Length > 0) sb.Append(note + " ");
+            }
             sb.Append(EffectBody(e));
             if (e.Pierce == true) sb.Append("(貫通)");
             if (e.XHits == true) sb.Append("×X回");
@@ -671,6 +690,9 @@ namespace DeckRogue.Game
             if (def.XCost == true) n.Add((def.XBonus ?? 0) > 0 ? "X: エナジーを全て払う (払った量+" + def.XBonus.Value + "として解決)" : "X: エナジーを全て払う");
             if ((def.DiscardCost.HasValue ? def.DiscardCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.DiscardCost.Value + "枚を捨てる");
             if ((def.ExhaustCost.HasValue ? def.ExhaustCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.ExhaustCost.Value + "枚を消滅");
+            if ((def.ImpulseCost.HasValue ? def.ImpulseCost.Value : 0) > 0) n.Add(def.KindleOptional == true
+                ? "くべてもよい: 手札の衝動の札" + def.ImpulseCost.Value + "枚を火にくべる (消滅) と「くべた時」の効果が乗る。くべずに出すと素の効果だけ"
+                : "追加コスト: 手札の衝動の札" + def.ImpulseCost.Value + "枚を火にくべる (消滅。衝動の札が無ければ出せない)");   // くべる (赤 2026-10-12 段2・段2b)
             if ((def.LightCost.HasValue ? def.LightCost.Value : 0) > 0) n.Add("追加コスト: 灯を" + def.LightCost.Value + "払う");
             if (def.NecroCost.HasValue) n.Add("亡骸プレイ（コスト" + def.NecroCost.Value + "）");
             if (def.FreeIfHandAllPhysical == true) n.Add("手札が物理だけならコスト0");
@@ -690,6 +712,8 @@ namespace DeckRogue.Game
             if (def.Exhaust == true) n.Add("消滅");
             if (def.Retain == true) n.Add("保持");
             if (def.Echo == true) n.Add("反復内蔵 (効果を2回解決)");
+            // チェイン (赤 2026-10-10。MTG の続唱): 面では短く、全文は用語の説明 (KeywordHelp「チェイン」) に任せる
+            if ((def.Cascade ?? 0) > 0) n.Add(face ? "チェイン" + ((def.Cascade ?? 0) > 1 ? "×" + def.Cascade : "") : "チェイン" + ((def.Cascade ?? 0) > 1 ? "×" + def.Cascade : "") + " (山札の上からこの札よりコストの低い札が出るまでめくり、その札をコストを払わずにプレイ。対象は同じ敵・残りは山札の底へ・本体より先に解決)");
             // 反復の2回目は同じ敵を狙う (2026-09-24 Opus ひなた E11 裁定B＝本家2と同じく据え置き)。反復内蔵の札と反復を配る札に同じ一文 (CLI の ECHO_MISS_NOTE)
             if (def.Echo == true || HasEffect(def, "addSpellEcho")) n.Add(face ? "2回目も同じ敵を狙う" : EchoMissNote);
             // 合成の触媒 (2026-09-12): 工房の素材にすると結果に乗る恩恵
@@ -1023,7 +1047,7 @@ namespace DeckRogue.Game
                         + (j.BurrowCut.HasValue && j.BurrowCut.Value > 0 ? " [潜伏の殻で" + j.BurrowCut.Value + "]" : "")
                         + (j.NemesisCut.HasValue && j.NemesisCut.Value > 0 ? " [無形で1固定]" : "")
                         + (j.SlipperyCut.HasValue && j.SlipperyCut.Value > 0 ? " [朧で1]" : "")
-                    : "敵の攻撃" + j.Amount + " → HP-" + j.HpLoss + (j.Blocked.HasValue && j.Blocked.Value > 0 ? " (ブロックで" + j.Blocked.Value + ")" : "");
+                    : "敵の攻撃" + j.Amount + " → HP-" + j.HpLoss + (j.Nullified == true ? " (身代わりの符で無効)" : j.Blocked.HasValue && j.Blocked.Value > 0 ? " (ブロックで" + j.Blocked.Value + ")" : "");
             }
             var k = ev as GameEvent_BlockGained; if (k != null) return (k.Target == "player" ? "自分" : "敵") + "がブロック+" + k.Amount;
             var l = ev as GameEvent_IceBlockGained; if (l != null) return "氷壁+" + l.Amount;
@@ -1063,6 +1087,15 @@ namespace DeckRogue.Game
             var m2 = ev as GameEvent_EnergyMaxGained; if (m2 != null) return "エナジー上限+" + m2.Amount;
             var n2 = ev as GameEvent_DiscountGained; if (n2 != null) return "次のカードのコスト-" + n2.Amount;
             var o2 = ev as GameEvent_ImpulseDrawn; if (o2 != null) return "衝動" + o2.Count + "枚 (このターン限り)";
+            var cas = ev as GameEvent_Cascaded; if (cas != null) return cas.HitId != null
+                ? "チェイン: " + CardName(cas.CardId) + " → " + CardName(cas.HitId) + "をコストを払わずにプレイ" + (cas.Revealed != null && cas.Revealed.Count > 0 ? " (" + cas.Revealed.Count + "枚は山札の底へ)" : "")
+                : "チェイン: " + CardName(cas.CardId) + " → 当たりなし" + (cas.Revealed != null && cas.Revealed.Count > 0 ? " (" + cas.Revealed.Count + "枚は山札の底へ)" : "");
+            var irt = ev as GameEvent_ImpulseReturned; if (irt != null) return "衝動の失効: " + CardName(irt.CardId) + "は払えなかったので捨て札へ";
+            var ikp = ev as GameEvent_ImpulseKept; if (ikp != null) return "燠の守り: " + CardName(ikp.CardId) + "は失効せず手札に残った";
+            var ikn = ev as GameEvent_ImpulseKindled; if (ikn != null) return CardName(ikn.CardId) + "の追加コストとして" + Names(ikn.CardIds) + "を火にくべた (消滅)";   // くべる (赤 2026-10-12 段2)
+            if (ev is GameEvent_BlazeIgnited) return "猛り火に点いた (延焼の合計が8以上)";   // 赤 2026-10-12 段2
+            if (ev is GameEvent_BlazeExtinguished) return "猛り火が消えた (延焼の合計が8未満)";   // 赤 2026-10-12 段2b
+            var cascRt = ev as GameEvent_CascadeRetargeted; if (cascRt != null) return "チェインの当たりが対象を倒したので、" + CardName(cascRt.CardId) + "の本体は敵" + (cascRt.ToIndex + 1) + "へ";   // 赤 2026-10-12 段2b R7
             var p2 = ev as GameEvent_CardsDiscarded; if (p2 != null) return "コストとして捨てた: " + Names(p2.CardIds);
             var q2 = ev as GameEvent_GrowthDischarged; if (q2 != null) return "成長" + q2.Spent + "を全て放出!";
             var r2 = ev as GameEvent_MomentumDischarged; if (r2 != null) return "勢い" + r2.Spent + "を全て放出!";

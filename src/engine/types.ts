@@ -103,7 +103,7 @@ export interface PlayerState extends CombatantState {
    * 素のコスト0のカードは消費しない。伏せるコストは対象外。未使用分は持ち越し
    */
   readonly nextCardDiscount: number
-  /** 衝動 (赤): 「このターン限り」の手札の uid。自ターン終了時に未使用なら消滅する */
+  /** 衝動 (赤): 「このターン限り」の手札の uid。自ターン終了時に未使用なら消滅する (払えなかった札は捨て札へ。2026-10-12) */
   readonly impulseUids: readonly string[]
   /** 弱体: 残りNターンの間、与ダメージ25%減 (切り捨て)。自ターン終了時に1減る */
   readonly weak: number
@@ -146,6 +146,8 @@ export interface PlayerState extends CombatantState {
   readonly scriedThisCombat?: number
   /** 占術 (青 2026-09-25 Opus B の処方): この戦闘で占術で捨てた枚数の累計 (読み切りが参照) */
   readonly scryDiscardedThisCombat?: number
+  /** チェイン (赤 2026-10-10): この戦闘でチェインが当たった (札がプレイされた) 回数。火の渦が参照。空振りは数えない */
+  readonly cascadesThisCombat?: number
   /** 罠使い (青 2026-09-25): この戦闘で罠 (reaction) が鳴った回数 (仕掛けの反響が参照) */
   readonly trapsFiredThisCombat?: number
   /** 直前の敵フェーズで受けた攻撃ダメージの合計 (赤: 逆上の参照値。敵フェーズ開始時にリセット) */
@@ -335,6 +337,8 @@ export interface EffectCondition {
    * 時間依存でなく**しきい値依存**に置き換える機構
    */
   readonly blaze?: boolean
+  /** くべた時だけ (赤 2026-10-12 段2b): kindleOptional の札で、追加コスト (衝動の札) を払ってプレイした解決の間だけ成立 (GameState.resolvingKindled) */
+  readonly kindled?: boolean
   /** 対象の敵の意図（宣言済み・伏せ分岐は現在の盤面で解決）がこの種別なら (緑 2026-09-03 参照シナジー: 見切り撃ち=本家 Spot Weakness) */
   readonly enemyIntent?: EnemyActionKind
   /** 対象の敵の意図がこの種別**以外**なら (2026-09-04 見切り撃ちの反転: 敵はだいたい攻撃するので「攻撃以外=隙を突く」が稀な条件になる) */
@@ -398,6 +402,8 @@ export interface GameState {
   readonly innateResolving?: boolean
   /** カードの onPlay 効果を解決中フラグ (2026-09-01 虚弱を「カードのプレイで得るブロック」に限定するため。遷移中のみ立つ) */
   readonly resolvingCardPlay?: boolean
+  /** くべてプレイした札の解決中 (赤 2026-10-12 段2b): condition.kindled の効果が乗る。playCard が立てて下ろす (入れ子は退避・復元) */
+  readonly resolvingKindled?: boolean
   /** 成長/勢いの獲得誘発 (onGrowthGained/onMomentumGained) を解決中フラグ (2026-09-02)。誘発の中の加算は再誘発しない = 1段で止める */
   readonly resolvingGainTrigger?: boolean
   /** 号令・大行列で人形を動かしている間は灯を産まない (白 2026-09-20 ユーザー裁定。灯芯の人形が大行列の中で鳴って「全て放出」の直後に灯が戻る、の是正) */
@@ -544,7 +550,7 @@ export type Command =
       readonly discardUids?: readonly string[]
       /** 単体対象カード用: 対象の敵 index。生存敵が2体以上いる場合は必須 (StS式ターゲティング) */
       readonly targetIndex?: number
-      /** 消滅コスト (exhaustCost) 用: 追加コストとして消滅させる手札の uid。exhaustCost 枚数ぶん必須 */
+      /** 消滅コスト (exhaustCost) 用: 追加コストとして消滅させる手札の uid。exhaustCost 枚数ぶん必須。くべる (impulseCost 赤 2026-10-12) も同じ欄 (衝動の札の uid だけ受ける) */
       readonly exhaustUids?: readonly string[]
       /** retrieveFromExhaust / playFromExhaust 用: 消滅置き場から選ぶカードの uid */
       readonly retrieveUid?: string
@@ -568,7 +574,7 @@ export type Command =
       /** 伏せ2枚 (かすみ) 用: 発動する伏せ札の uid。窓に合致する伏せが複数ある時に指定。省略時は先頭の合致札 */
       readonly cardUid?: string
     }
-  | { readonly type: 'EndTurn'; readonly hearthSparks?: number; readonly retainUids?: readonly string[] } // retainUids: 満ち潮の書庫で残す手札 (上限は場の retainHandUpTo の合計。2026-09-25)。 hearthSparks: 灯の火床 (白 R 置物) で灯を火種に変える枚数 (0〜灯÷3。省略=0。2026-09-20 夜 ユーザー裁定「枚数を選ぶ」)
+  | { readonly type: 'EndTurn'; readonly hearthSparks?: number; readonly retainUids?: readonly string[]; readonly keepUid?: string } // retainUids: 満ち潮の書庫で残す手札 (上限は場の retainHandUpTo の合計。2026-09-25)。 hearthSparks: 灯の火床 (白 R 置物) で灯を火種に変える枚数 (0〜灯÷3。省略=0。2026-09-20 夜 ユーザー裁定「枚数を選ぶ」)。 keepUid: 燠の守りで手札に残す衝動の札 (省略=コストが最も高い1枚。赤 2026-10-12 段2b Opus B「どれが残るか選べない」)
 
 // ============================================================
 // イベント (戦闘内の出来事はすべてイベント。効果はフックとして実装)
@@ -627,6 +633,8 @@ export type GameEvent =
       readonly pierced?: boolean
       /** ブロックが吸った量 (source=player は敵のブロック〔潜伏の殻を含む〕、source=enemy は自分のブロック＋氷壁の合計)。0 なら省略 */
       readonly blocked?: number
+      /** 身代わりの符 (ギア) で HP 損失を 0 にした (source=enemy)。blocked には全ヒットが「完全に防いだ」扱いで入る = ログは「ブロックで」と言わない (2026-10-10 Opus 赤 B) */
+      readonly nullified?: boolean
       /** 置物の誘発で与えた時、その置物の uid (人形の盤面表示 2026-09-19: 人形が踏み込んで斬る演出の出どころ)。無ければ省略 */
       readonly sourceUid?: string
     }
@@ -657,6 +665,13 @@ export type GameEvent =
   | { readonly type: 'RegenBroken'; readonly enemyIndex: number } // 再生回復
   | { readonly type: 'BlockShattered'; readonly enemyIndex: number; readonly amount: number } // 粉砕
   | { readonly type: 'ImpulseDrawn'; readonly count: number } // 衝動 (このターン限りの手札)
+  | { readonly type: 'Cascaded'; readonly cardId: string; readonly hitId?: string; readonly revealed: readonly string[] } // チェイン (赤 2026-10-10): 親の札・当たった札 (無ければ空振り)・底へ送った札
+  | { readonly type: 'ImpulseReturned'; readonly cardId: string } // 払えずに失効した衝動の札が捨て札へ戻った (赤 2026-10-12 裁定 F2。消滅ではない)
+  | { readonly type: 'ImpulseKept'; readonly cardId: string } // 燠の守り (赤 2026-10-10): 失効を免れて手札に残った衝動の札
+  | { readonly type: 'ImpulseKindled'; readonly cardId: string; readonly cardIds: readonly string[] } // くべる (赤 2026-10-12 段2): cardId の追加コストとして火にくべた (消滅させた) 衝動の札
+  | { readonly type: 'BlazeIgnited' } // 猛り火に点いた (赤 2026-10-12 段2): 生存する敵の延焼の合計が8を跨いだ瞬間 (applyBurn が出す。どの経路でも)
+  | { readonly type: 'BlazeExtinguished' } // 猛り火が消えた (赤 2026-10-12 段2b。Opus A「黙って消える」): 延焼の消費・敵の撃破・敵フェーズの減りで合計が8を割った瞬間
+  | { readonly type: 'CascadeRetargeted'; readonly cardId: string; readonly fromIndex: number; readonly toIndex: number } // チェインの当たりが対象を倒したので、本体の対象を生存先頭へ移した (赤 2026-10-12 段2b 裁定 R7)
   | { readonly type: 'HpLost'; readonly amount: number } // 自傷
   | { readonly type: 'StrengthGained'; readonly enemyIndex: number; readonly amount: number; readonly reason?: 'enrage-cards' | 'enrage-damage' | 'enrage-phase' | 'mourn' }
   | { readonly type: 'EnergyGained'; readonly amount: number } // 一時マナ
@@ -802,6 +817,9 @@ export interface DeclarativeEffect {
     | 'onLightGained' // 灯を得るたび (白の接着剤 2026-09-20: 灯の弩。addLight/doubleLight/回復/パッシブの加算のたび。再入は1段で止める = onGrowthGained と同型)
     | 'onLightDischarged' // 灯を放出するたび (白 2026-09-20 夜: 灯の火皿。dischargeLight/Rally/Weaken の後に1回)
     | 'onSparkPlayed' // 火種 (sparkToken) をプレイするたび (白 2026-09-20 夜: 火の粉・灯の継ぎ手。本家 Forgotten Soul 型)
+    | 'onCascade' // チェインで札がプレイされるたび (赤 2026-10-10: 連なる火花・火継ぎの炉。当たり1枚ごと。空振りでは鳴らない)
+    | 'onImpulseExpired' // 衝動の札が失効するたび (赤 2026-10-10: 燃え残り・灰の衣。自ターン終了時の失効1枚ごと)
+    | 'onBlazeIgnite' // 猛り火に点いた時 (赤 2026-10-12 段2): 生存する敵の延焼の合計が8を跨いだ瞬間。置物 (火の目覚め) は自ターン中の点火で鳴る。札自身 (爆ぜ火) は「その札の本体の効果で点いた」時だけ。消してまた点ければもう一度
   /** 誘発の追加条件 (きつい条件ほど効果は派手に、が設計方針) */
   readonly condition?: EffectCondition
   /**
@@ -854,6 +872,15 @@ export interface DeclarativeEffect {
     | 'dealDamagePerTrapFired' // 仕掛けの反響 (罠使い): この戦闘で罠 (reaction) が鳴った回数×amount のダメージ
     | 'extendTrapLife' // 潮待ち (罠使い): 仕込んでいる罠すべての期限を amount ターン延ばす (期限なしの罠は不変)
     | 'trapsNeverExpire' // 深き仕掛け (罠使い R 置物): この置物がある間、罠は期限切れにならない (常在の印)
+    // --- 赤の3本柱 (2026-10-10 docs/red-cascade-design-2026-10-10.md: バーン／刹那／チェイン) ---
+    | 'dealDamagePerCascade' // 火の渦 (チェインの刈り取り): この戦闘でチェインが当たった回数×amount のダメージ
+    | 'firstCardCascade' // 連火の炉心 (チェイン R 置物): この置物がある間、毎ターン最初にプレイする札にチェインが1回つく (常在の印)
+    | 'doubleBurn' // 火勢倍し (バーンの倍加・消滅必須): 対象の延焼を2倍にする (本家 Catalyst)
+    | 'gainBlockPerBurn' // 灰かぶり (バーンの刈り取り・消費しない): 対象の延焼×amount のブロック
+    | 'dealDamagePerBurn' // 火の舌 (バーンの刈り取り・消費しない): 対象の延焼×amount のダメージ
+    | 'burnNoDecay' // 燻り (バーン R 置物): この置物がある間、延焼は敵フェーズで減らない (延焼耐性の追加の減りも止める。常在の印)
+    | 'keepImpulseOne' // 燠の守り (刹那 R 置物): 自ターン終了時、失効する衝動の札のうちコストが最も高い1枚を手札に残す (次の自ターンまで保持。常在の印)
+    | 'cascadeSameCost' // 火は火を呼ぶ (チェイン R 置物 2026-10-12 段2): この置物がある間、チェインは「コストが同じかそれ以下」の札に当たる (常在の印。解決中の札は limbo なので必ず止まる)
     | 'retrieveZeroCostFromDiscard' // 引き潮の帰還 (青 ストーム R 2026-09-25。本家 All for One): 捨て札のコスト0の札 (状態異常を除く) を全て手札に戻す
     | 'drawTypeFromDeck' // 仕掛け師の工房 (青 罠使い R 置物 2026-09-25): 山札の上から見て、cardType の札を amount 枚手札に加える (無ければ何もしない)
     | 'aetherCarryHalf' // 霊気の器 (青 罠使い R 置物 2026-09-25): この置物がある間、霊気を放出しても半分 (切り捨て) が残る (白の残り火の青版・常在の印)
@@ -982,7 +1009,7 @@ export interface DeclarativeEffect {
    * 全体攻撃: 'all' で生存する敵全体に解決する (dealDamage/applyBurn/shatterBlock 等)。省略時は単体。
    * 'mostHp' = いまの HP がいちばん多い生存敵 (同じなら左から)。獅子の人形 (白 2026-09-26) 用＝人形のランダムな対象の代わり
    */
-  readonly target?: 'all' | 'mostHp'
+  readonly target?: 'all' | 'mostHp' | 'mostBurn' // mostBurn = 延焼がいちばん多い生存敵 (同じなら左から)。燃え残り (赤 2026-10-12 段2b: 先頭固定だと落ちかけの敵に積まれ続けた)
   /** summonPermanent 用: 場に出す置物カードの id (例: white_perm_squire) */
   readonly summonId?: string
   /** searchDeck 用の絞り (青 仕掛けの手配 2026-09-25): このタイプの札だけを山札から選べる */
@@ -1178,6 +1205,19 @@ export interface CardDef {
   /** 追加コスト: 手札を N 枚消滅させる (黒。捨てより重いが墓地燃料になる) */
   readonly exhaustCost?: number
   /**
+   * くべる (赤 刹那 2026-10-12 段2): 追加コストとして手札の**衝動の札**を N 枚消滅させる (火にくべる・灰の息)。
+   * 衝動の札が手札に無ければプレイできない (殉教の誓いと同じ playability)。払った札は消滅 (消滅の誘発は鳴る) で、失効ではない
+   * (燃え残り・灰の衣は鳴らない)。コマンドは消滅コストと同じ PlayCard.exhaustUids。Opus 赤3本一致の「衝動の失効が最悪」を、
+   * 撃てない札を火にくべる選択に変える (失効=消滅の裁定は触らない)
+   */
+  readonly impulseCost?: number
+  /**
+   * くべてもよい (赤 2026-10-12 段2b。Opus 段2 B「燃料が無いターンは死に札」への裁定): impulseCost を**任意**にする。
+   * 払わずにプレイすれば素の効果だけ、払えば condition.kindled の効果も乗る (火にくべる＝全体4、くべれば＋延焼3／灰の息＝ブロック5、くべれば＋3＋延焼2)。
+   * 衝動の札が無くてもプレイできる
+   */
+  readonly kindleOptional?: boolean
+  /**
    * 追加コスト: 灯を N 払う (白 2026-09-20 白の再設計。号令=点灯の合図)。エナジーと別に払い、足りなければプレイ不可
    * (エナジー不足と同じ playability)。割引の対象外。伏せるコストには掛からない (白のリアクションは持たない)。
    * 人形にも付く (同日夜 灯と人形の結び: 癒し・鐘・大鐘=1E・灯2、灯篭=U1E・灯2、篝火=R2E・灯4)。
@@ -1206,6 +1246,14 @@ export interface CardDef {
   readonly fusionCatalyst?: 'cheaper' | 'echo' | 'retain' | 'aoe' // aoe=結果の単体ダメージが全体になる (2026-09-12 ユーザー「全体攻撃いいね」。旧・特性伝播をこの札だけに限定して復活)
   /** 反復内蔵 (反復の触媒の結果 2026-09-12): プレイ時効果を2回解決する。置物なら誘発ごとに2回。反復トークンとは加算 (3回) */
   readonly echo?: boolean
+  /**
+   * チェイン (赤の第3の軸 2026-10-10。MTG の続唱。`docs/red-cascade-design-2026-10-10.md`): プレイした時、山札の上から
+   * 「この札よりコストの低い札」が出るまでめくり、その札をコストを払わずにプレイする (対象は親と同じ敵。
+   * 選択式・X・仕込み札・プレイできない札は飛ばして底へ)。めくった残りは山札の底へ (順はシードRNG)。
+   * 山札が尽きたら捨て札を切り直して続け、当たりが無ければ空振り。本体の効果より先に解決する (MTG の順)。
+   * 値は回数 (野火=3・双つ火=2)。当たった札がチェインを持てば続く (コストが下がるので必ず止まる)
+   */
+  readonly cascade?: number
 }
 
 /** デッキ/手札上のカード実体 (同名カード複数を区別する uid 付き) */
@@ -1228,6 +1276,11 @@ export interface CardInstance {
    * 戦闘終了で消える (ラン層のデッキには残らない = インスタンスは戦闘ごとに作り直されるため)
    */
   readonly freeThisCombat?: boolean
+  /**
+   * 燠の守り (赤 2026-10-10): 衝動の失効を免れて手札に残った札。次の全捨て (敵フェーズの後) を1回だけ生き残り、
+   * 次の自ターンの手札に残る (保持と同じ場所で判定し、その全捨てで旗を下ろす)
+   */
+  readonly keptImpulse?: boolean
   /**
    * 育つ札 (growSelf 2026-09-02): この戦闘中にプレイした回数ぶん積み上がった与ダメ加算。
    * プレイ時に dealDamage の量へ注入し、解決後に +growSelf の量を足して捨て札へ置く (Rampage型)

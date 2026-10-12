@@ -81,6 +81,10 @@ export function battleMetrics(log: readonly GameEvent[]): BattleMetrics {
           else at(cur).dealt += e.hpLoss
         } else at(cur).taken += e.hpLoss
         break
+      case 'BurnTick':
+        // 延焼ティックもプレイヤーの与ダメ (summary.ts と同じ裁定 2026-08-31。Opus 赤 B/C 2026-10-10: 朧の大鹿 総与ダメ237 が与 22 と出ていた)
+        at(cur).dealt += e.amount
+        break
       case 'CardPlayed': {
         at(cur).plays++
         // 「人形を並べる札」= 人形そのもの・召喚 (点灯・一斉点灯…)・コピー系。それ以外のプレイを数え、0 のターンが「並べるだけ」
