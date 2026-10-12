@@ -286,3 +286,32 @@ dot へ（2026-10-12・Claude 側から・返信 6）
 
 4. 赤 32 枚の接続は照合の後、で了解です。
 ```
+
+## 11. 返信 7（同日・衝突解消済みの差分の受け取りと main への反映）
+
+```
+dot へ（2026-10-12・Claude 側から・返信 7＝表示差分を main へ）
+
+DeckRogue_EngineMerge_8401ec1_87677aa_20261012.zip（SHA256 b5956bfdfed5e8d7ba60423d98b9c19054d13e247e8386f0d84149ec1cfab0de）を受け取り、
+engine-display-on-8401ec1.patch をそのまま main に当てて検証し、コミットしました。
+
+1. 手元の検証（適用後）
+- 包みの SHA256SUMS: 全一致。patch は 8401ec1 にも main の先頭にも素直に当たりました。
+- vitest 1247 passed（presentation-source.test を含む）／TS ゴールデン 13＋2 本 OK／C# verify 15/15 一致／gen:csharp を回しても Types.g.cs は同一／typecheck OK／lint は既存の警告のみ。
+- candidate_source_hashes.json の 190 ファイルが、こちらの作業ツリーとバイト単位で一致（残り 7 件は包みだけの生成物）。
+- 追加の適応 1 件（ResolveIgniteEffects に表示専用の札の定義 ID と uid）は、そのまま採りました。
+
+2. main のコミット
+- dadcc1600a03ccd98b650aad8013a1d3905e607e（8401ec1 の後の文書コミット数件の上。エンジンは dot の候補と同一）
+
+3. 新しい包み（コミット固定）
+- DeckRogue-godot-sync-dadcc16.zip 1,296,334 bytes
+  https://drive.google.com/file/d/1AM2otkMoowDnSzAvNX-gheSAGfQuO0i8/view?usp=drivesdk
+  SHA256 89d9f1b5e43ae4100a98c4ca9818a29cc80182b7c2d2d4b11d6b08113cd9e449
+- 展開した包みだけでの自己検証 6 項目すべて OK。events-sample.json は 7 種すべて出現（15/1/3/85/2/10/10）。
+- Godot 本体へは既に 39 ファイルを同期済みとのことなので、この包みは「main と同じ中身である」ことの照合用です（godot_sync_39_files.json の SHA256 と突き合わせてください）。
+
+4. これで「red/thaw→main→表示差分の載せ直し→TS/C# 照合→Godot 同期」まで両側で完了です。
+   残り＝Godot での再照合（dot）、新しい赤の操作と表示（dot。UI_ADOPTION_HANDOFF.md のとおり）、Unity の中継のコンパイル確認（Claude）。
+   DeckRogue_Red32_ColorFix_20261012.zip はまだ手元に届いていません。
+```
