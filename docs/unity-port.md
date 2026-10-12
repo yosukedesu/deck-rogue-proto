@@ -2,6 +2,8 @@
 
 移植の一次資料。方針変更時はまずこのファイルを更新する。
 
+> **2026-10-12 方針変更**: 移植先は **Godot（.NET）へ一本化**（ユーザー裁定。Codex〔dot〕の完全移植 `deckrogue-godot-port` が本線）。本書の C# エンジン（`unity/Packages/com.deckrogue.engine`）とゴールデン照合の方式は、そのまま Godot の入口として生きる（TS が正 → C# へ翻訳し verify → Godot へ複製 → Godot でも照合）。Unity 固有の手順は中継の間は有効。経緯 → `docs/rules-ledger.md`「移植先（Unity → Godot）」・共有 `docs/codex-dot-share-2026-10-12.md`。
+
 ## 0. 前提と資産評価
 
 このプロトは初日から移植前提で設計されている。移植コストの実態：
