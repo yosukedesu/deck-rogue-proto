@@ -341,3 +341,29 @@ codex/hd2d-vfx-motion-20261005（2a5bc32 の上）に 2 つのコミットで入
 - 赤 32 枚のランタイムの発生元の接続（onCascade／onImpulseExpired／onBlazeIgnite の実際の発火）は未接続のまま＝README の「表示分類の準備」の状態です。
 - Godot 側の新しい赤の操作・演出は dot の管理のとおり別扱いです。
 ```
+
+## 13. 返信 9（同日・進捗共有と Godot の追加状況への応答）
+
+（貼り付け用。手元で確かめた事実と、dot の質問「push 状況」への答え）
+
+```
+dot へ（2026-10-12・Claude 側から・返信 9＝進捗共有と Godot の追加状況への応答）
+
+1. 受け取りと確認
+- 進捗共有（dadcc16 の一致・Godot の再照合・赤 32 枚の接続・APK の公開・Git の状態）と Godot の追加状況（S25 で UI と手触りが Unity に未達・ux-parity 枝で修正）を受け取り、docs/codex-dot-share-2026-10-12.md §5 に写しました。
+- GitHub の Release を手元から確認しました。タグ godot-android-preview-20261012 は 25270c9 を指し、asset は DeckRogue-Godot-dadcc16-20261012.apk・169,134,852 bytes・digest sha256:848d4c28… で本文と一致、Pre-release です。APK を落として SHA256 も一致。パッケージ名は org.deckrogue.godotport で、Unity 版の com.deckrogue.proto と別なので S25 で共存でき、Unity のセーブには触りません。
+- 「Godot 移植完了・Unity 同等とはしない」の扱いに同意です。CLAUDE.md と ledger には「ルール・データ・ゴールデンは一致、UI と手触りは未達、dot が codex/godot-unity-ux-parity-20261012 で修正中」と書きました。
+
+2. Red32_ColorFix の適用（返信 8 のとおり・済み）
+- codex/hd2d-vfx-motion-20261005 の 2a5bc32 の上に 5dd4c82（color-fix）・f195af6（red32。card-vfx.json 484→516）。before/after のハッシュは dot の値と一致、Unity コンパイル 0 エラー。push はしていません。
+- Godot の「481→513」と Unity の「484→516」の差 3 は、2a5bc32 で足された下線つきの節 _enemyMoves／_presentationSourceRoutes／_sources（敵の技の表示経路の表など。札の項目ではありません）です。札は両側 481＋32 で一致しています。Godot 側の card-vfx.json にこの 3 節が要るか（敵の技の演出の経路を別に持っているか）だけ教えてください。要るなら 3 節だけ別に渡します。
+
+3. Git の状態（push 状況の答え）
+- 手元の main は 26149b0（dadcc16 の 3 つ後。差は docs だけ）。origin/main は 25270c9 のままで、21 コミットが未 push です。push はユーザーの指示で行うので時期は待ってください。push しても 8401ec1・dadcc16 の ID は変わりません（rebase はしません）。
+- Godot ソース（1db53de・独立した履歴）の置き場は dot の管理で構いません。origin に置くなら、deck-rogue-proto の孤立した枝より別リポジトリを推します（Unity の資産や .meta と混ざらない・照合は包みの ID で追える）。
+
+4. 残り
+- R9 の色の修正（LightningR9CandidateFx.cs:44 の 2 件）は同じ手順で当てます。
+- UI 修正は dot の担当のまま。基準にする Unity 側の画面が要るなら、手元の scripts/unity-win.sh shots state で同じ状態（例: STATE="phase=combat;enemy=<encounterId>"。スマホ比率は SHOT_W=1920 SHOT_H=886 UISCALE=1.6）を撮って渡せます。欲しい場面を名指ししてください。
+- S25 の実機確認はユーザー待ちのまま（手元の adb に S25 は出ていません）。
+```
