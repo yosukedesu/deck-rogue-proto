@@ -1,0 +1,68 @@
+{
+  "purpose": "Hash-guarded off-tree reconstruction overlay. Baseline paths are recovered-project layout. Runtime owner must review/apply; no files in runtime project were edited.",
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/Presentation/ActorMaterialBinding.cs",
+      "baselineSha256": "3493e71c388c8bea9258c542d07d2e0a74ec4048887db71f0e7dad66fdbb7e2b",
+      "candidateSha256": "63fb98b96f5b3770522913502c216c80622a4722dedd9a3e1af3abfa7d26026f",
+      "bytes": 5898,
+      "status": "reconstructed; not claimed exact b05a0da source"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleActor.cs",
+      "baselineSha256": "d8fb82c291f1229d344cbff8bd0fe42bb3d1ecc6a1452088eaed0936c6abe9f0",
+      "candidateSha256": "c57e4cc0799fce93077d9d3cd9085a4849693fd4c9fb0322cf4b8f26eaa8331b",
+      "bytes": 73454,
+      "status": "reconstructed; not claimed exact b05a0da source"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.cs",
+      "baselineSha256": "12282d1de88e502795d45aedbe1aded38169d6f6c0d35d20c79a50dc16f67fb2",
+      "candidateSha256": "9df6a69881cf9281af9654cfe551275b6dda3f5703183d14aaf09c6cddfb241c",
+      "bytes": 127386,
+      "status": "reconstructed; not claimed exact b05a0da source"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/SourceActorDisplayMath.cs",
+      "baselineSha256": null,
+      "candidateSha256": "0267ba7ea3cc047b3d55ca8da38f1fb27cbe66ebeeb4bf953dd4cd8a9e3761fe",
+      "bytes": 9876,
+      "status": "reconstructed; not claimed exact b05a0da source"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/SourceActorDisplayTransfer.cs",
+      "baselineSha256": null,
+      "candidateSha256": "31f37f47c58e145291041b21ca9ff469a02c4e11798f4204520751b502c3a120",
+      "bytes": 7468,
+      "status": "reconstructed; not claimed exact b05a0da source"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleActor.DisplayTransfer.cs",
+      "baselineSha256": null,
+      "candidateSha256": "6e444db81520dc48126a08b07509afdd0f09d94eba481385e1cfd3e8d0c2a819",
+      "bytes": 4224,
+      "status": "reconstructed; not claimed exact b05a0da source"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.DisplayTransfer.cs",
+      "baselineSha256": null,
+      "candidateSha256": "32cc1563ecf0bb4a8090e8143dfcc23adbbba896ebc0ed8470d9aea5516be949",
+      "bytes": 740,
+      "status": "reconstructed; not claimed exact b05a0da source"
+    },
+    {
+      "path": "shaders/authored_StageUnitLit.gdshader",
+      "baselineSha256": "65dfa792d59517613f2485d5c3f5000cbc5b6a477dd3048987a76d2ffde6efbf",
+      "candidateSha256": "350cf05691ad9c3ac09db7ca03125f2bee8f4202e0f45910c5bbeaa23f2ebb22",
+      "bytes": 10100,
+      "status": "reconstructed; not claimed exact b05a0da source"
+    },
+    {
+      "path": "shaders/source_actor_display_functions.gdshaderinc",
+      "baselineSha256": null,
+      "candidateSha256": "c12492a79a70c75d624dc2bc1fd149095a702fa599433c98a950cf8c67ead602",
+      "bytes": 4903,
+      "status": "recovered exact evaluation helper"
+    }
+  ]
+}

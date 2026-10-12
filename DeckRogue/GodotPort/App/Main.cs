@@ -95,6 +95,9 @@ public class Main : Node
 		AddChild(capture, forceReadableName: false, InternalMode.Disabled);
 		capture.Bind(_session, () => _stage.IsPresenting);
 		GD.Print("DECKROGUE_PORT_READY cards=" + _session.Catalog.Cards.Count + " leaders=" + _session.Catalog.Leaders.Count + " enemies=" + _session.Catalog.Enemies.Count);
+#if RECOVERY_QA
+        DeckRogue.GodotPort.RecoveryQA.RecoveryActorColorQa.Start(this);
+#endif
 	}
 
 	public override void _ExitTree()

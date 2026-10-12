@@ -14,7 +14,7 @@ using Godot.NativeInterop;
 namespace DeckRogue.GodotPort.Presentation;
 
 [ScriptPath("res://scripts/presentation/BattleStage.cs")]
-public class BattleStage : Node3D
+public partial class BattleStage : Node3D
 {
 	private sealed record DeathState(float Started, float Delay, float Duration, bool Retired, bool Fled);
 
@@ -1053,6 +1053,7 @@ public class BattleStage : Node3D
 			float depth = 0f - (_world.Camera.GlobalTransform.AffineInverse() * actor.Home).Z;
 			string category = ((actor.EnemyIndex >= 0) ? "enemies" : ((actor == _hero) ? "leaders" : "dolls"));
 			actor.SetSourceImageHeight(SourceActorSizing.Compute(category, actor.BaseTextureWidth, actor.BaseTextureHeight, actor.TopMarginRows, actor.Phone96, kind, size, _world.Camera.Fov, _world.CameraLayout.ReferenceDistance, depth, _world.PhoneLayout, ui).WorldImageHeight);
+			actor.SetSourceDisplayTransferEnabled(ActorSourceDisplayRequested);
 			actor.ConfigureSourceAppearance(_act, _world.Camera, _displayState?.Enemies.Count ?? 1);
 		}
 	}

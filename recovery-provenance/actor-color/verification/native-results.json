@@ -1,0 +1,2321 @@
+{
+  "passed": true,
+  "checks": 166,
+  "error": null,
+  "diagnostics": [],
+  "results": [
+    {
+      "kind": "assertion",
+      "name": "isolated-session-ready",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-compatibility-renderer",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-act1-leader_green",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actor-population-present",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "fixture-rules-roundtrip",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act1-idle-baseline",
+      "pass": true
+    },
+    {
+      "label": "act1-idle-baseline",
+      "contact": false,
+      "png": "001_act1-idle-baseline.png",
+      "pngSha256": "11b4332155c713b9fe9ebe90227a2cc582833d4047fc7268d4bfbe608ec66130",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 3.4833336,
+      "runHash": "5c3f975e08cdb2a7ed45027d98d92ffa8033b93a29cae7bb27ec71a257831f02",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-idle-baseline-disabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act1-idle-candidate",
+      "pass": true
+    },
+    {
+      "label": "act1-idle-candidate",
+      "contact": false,
+      "png": "002_act1-idle-candidate.png",
+      "pngSha256": "576c2036773adacb59078fab726122d0116b9aa0baeb782e004d9c22c250f2ff",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 3.4833336,
+      "runHash": "5c3f975e08cdb2a7ed45027d98d92ffa8033b93a29cae7bb27ec71a257831f02",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 80,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-idle-candidate-enabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act1-idle-restored",
+      "pass": true
+    },
+    {
+      "label": "act1-idle-restored",
+      "contact": false,
+      "png": "003_act1-idle-restored.png",
+      "pngSha256": "11b4332155c713b9fe9ebe90227a2cc582833d4047fc7268d4bfbe608ec66130",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 3.4833336,
+      "runHash": "5c3f975e08cdb2a7ed45027d98d92ffa8033b93a29cae7bb27ec71a257831f02",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-idle-restored-full-rgb-exact",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-idle-frozen-rule-camera-light-pose-inputs",
+      "pass": true
+    },
+    {
+      "kind": "pixel-delta",
+      "name": "act1-idle",
+      "changed": 14778,
+      "outsideActorMask": 0,
+      "strictActorIsolation": true,
+      "contact": false,
+      "glowEnabled": false
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-idle-visible-pixel-change",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-idle-idle-actor-isolation",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-idle-no-rule-save-drift",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-positive-rule-hit",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-actual-contact-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act1-contact-baseline",
+      "pass": true
+    },
+    {
+      "label": "act1-contact-baseline",
+      "contact": true,
+      "png": "004_act1-contact-baseline.png",
+      "pngSha256": "220ccf50d057ea3783144558b7228f7c72b716254a178e8a3632ad45f8228b0f",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 3.6603208,
+      "runHash": "fbc87b033c007a1690e65f40810799190eb1e70f641102ac6a39cebdd020bfa9",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "none"
+        },
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 94,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.10000000149012",
+          "lightCount": "5",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-contact-baseline-disabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act1-contact-candidate",
+      "pass": true
+    },
+    {
+      "label": "act1-contact-candidate",
+      "contact": true,
+      "png": "005_act1-contact-candidate.png",
+      "pngSha256": "02b14924d12afb925fc043743f7e15158f4c7c9300a8e660781cafd7d3d78e7f",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 3.6603208,
+      "runHash": "fbc87b033c007a1690e65f40810799190eb1e70f641102ac6a39cebdd020bfa9",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 94,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.10000000149012",
+          "lightCount": "5",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 80,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-contact-candidate-enabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act1-contact-restored",
+      "pass": true
+    },
+    {
+      "label": "act1-contact-restored",
+      "contact": true,
+      "png": "006_act1-contact-restored.png",
+      "pngSha256": "220ccf50d057ea3783144558b7228f7c72b716254a178e8a3632ad45f8228b0f",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 3.6603208,
+      "runHash": "fbc87b033c007a1690e65f40810799190eb1e70f641102ac6a39cebdd020bfa9",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "none"
+        },
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 94,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.10000000149012",
+          "lightCount": "5",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-contact-restored-full-rgb-exact",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-contact-frozen-rule-camera-light-pose-inputs",
+      "pass": true
+    },
+    {
+      "kind": "pixel-delta",
+      "name": "act1-contact",
+      "changed": 12550,
+      "outsideActorMask": 0,
+      "strictActorIsolation": true,
+      "contact": true,
+      "glowEnabled": false
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-contact-visible-pixel-change",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-contact-no-rule-save-drift",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act1-settled",
+      "pass": true
+    },
+    {
+      "label": "act1-settled",
+      "contact": false,
+      "png": "007_act1-settled.png",
+      "pngSha256": "ccc150ef958da60b21af1261426e01446989eb1b4f91cedc0bfa18a928c663ec",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 3.9119906,
+      "runHash": "fbc87b033c007a1690e65f40810799190eb1e70f641102ac6a39cebdd020bfa9",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 94,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 80,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act1-post-drain-rules-unchanged",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-act2-leader_green",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actor-population-present",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "fixture-rules-roundtrip",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act2-idle-baseline",
+      "pass": true
+    },
+    {
+      "label": "act2-idle-baseline",
+      "contact": false,
+      "png": "008_act2-idle-baseline.png",
+      "pngSha256": "e09caf4dfc062279855c18b10b0d40a6213d0a23b7d2d0a78508f8b6cf7f58a7",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 3.9119906,
+      "runHash": "2c6771f57c6902d0fb1dce24beb740d59e38257415808194f66b074b097e1625",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_cinder_imp",
+          "art": "enemy_cinder_imp",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "none"
+        },
+        {
+          "id": "enemy_mimic_jester",
+          "art": "enemy_mimic_jester",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-idle-baseline-disabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act2-idle-candidate",
+      "pass": true
+    },
+    {
+      "label": "act2-idle-candidate",
+      "contact": false,
+      "png": "009_act2-idle-candidate.png",
+      "pngSha256": "8242e5244d0b93621cfbb622128cca4514bd73b8eee80bb3fca4c70af9eb7d68",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 3.9119906,
+      "runHash": "2c6771f57c6902d0fb1dce24beb740d59e38257415808194f66b074b097e1625",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_cinder_imp",
+          "art": "enemy_cinder_imp",
+          "active": true,
+          "status": "act2-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "42cf0b56ab4e69fe27cccd844464a8267fa4564588fa52ac9c5d977f91317261"
+        },
+        {
+          "id": "enemy_mimic_jester",
+          "art": "enemy_mimic_jester",
+          "active": true,
+          "status": "act2-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "42cf0b56ab4e69fe27cccd844464a8267fa4564588fa52ac9c5d977f91317261"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": true,
+          "status": "act2-source-ldr32-gl-v1",
+          "hp": 80,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "42cf0b56ab4e69fe27cccd844464a8267fa4564588fa52ac9c5d977f91317261"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-idle-candidate-enabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act2-idle-restored",
+      "pass": true
+    },
+    {
+      "label": "act2-idle-restored",
+      "contact": false,
+      "png": "010_act2-idle-restored.png",
+      "pngSha256": "e09caf4dfc062279855c18b10b0d40a6213d0a23b7d2d0a78508f8b6cf7f58a7",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 3.9119906,
+      "runHash": "2c6771f57c6902d0fb1dce24beb740d59e38257415808194f66b074b097e1625",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_cinder_imp",
+          "art": "enemy_cinder_imp",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "none"
+        },
+        {
+          "id": "enemy_mimic_jester",
+          "art": "enemy_mimic_jester",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-idle-restored-full-rgb-exact",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-idle-frozen-rule-camera-light-pose-inputs",
+      "pass": true
+    },
+    {
+      "kind": "pixel-delta",
+      "name": "act2-idle",
+      "changed": 15781,
+      "outsideActorMask": 0,
+      "strictActorIsolation": true,
+      "contact": false,
+      "glowEnabled": false
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-idle-visible-pixel-change",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-idle-idle-actor-isolation",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-idle-no-rule-save-drift",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-positive-rule-hit",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-actual-contact-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act2-contact-baseline",
+      "pass": true
+    },
+    {
+      "label": "act2-contact-baseline",
+      "contact": true,
+      "png": "011_act2-contact-baseline.png",
+      "pngSha256": "91d859120c95d64ccb38a87d084fed9e6d10c4bbcdb5b916d5a469062651db2c",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.088978,
+      "runHash": "4210fe69d73ae5a2c32ac04eea763d45e8004d933a5c65506d5737b3ed1783a6",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_cinder_imp",
+          "art": "enemy_cinder_imp",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 94,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.10000000149012",
+          "lightCount": "6",
+          "lut": "none"
+        },
+        {
+          "id": "enemy_mimic_jester",
+          "art": "enemy_mimic_jester",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "6",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "6",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-contact-baseline-disabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act2-contact-candidate",
+      "pass": true
+    },
+    {
+      "label": "act2-contact-candidate",
+      "contact": true,
+      "png": "012_act2-contact-candidate.png",
+      "pngSha256": "55421ab6ad11167b51b7af460e790fa154a0fb8c6c6b5b5b65d9e6906c5ed6b0",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.088978,
+      "runHash": "4210fe69d73ae5a2c32ac04eea763d45e8004d933a5c65506d5737b3ed1783a6",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_cinder_imp",
+          "art": "enemy_cinder_imp",
+          "active": true,
+          "status": "act2-source-ldr32-gl-v1",
+          "hp": 94,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.68000000715256",
+          "flash": "0.10000000149012",
+          "lightCount": "6",
+          "lut": "42cf0b56ab4e69fe27cccd844464a8267fa4564588fa52ac9c5d977f91317261"
+        },
+        {
+          "id": "enemy_mimic_jester",
+          "art": "enemy_mimic_jester",
+          "active": true,
+          "status": "act2-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "6",
+          "lut": "42cf0b56ab4e69fe27cccd844464a8267fa4564588fa52ac9c5d977f91317261"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": true,
+          "status": "act2-source-ldr32-gl-v1",
+          "hp": 80,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "6",
+          "lut": "42cf0b56ab4e69fe27cccd844464a8267fa4564588fa52ac9c5d977f91317261"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-contact-candidate-enabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act2-contact-restored",
+      "pass": true
+    },
+    {
+      "label": "act2-contact-restored",
+      "contact": true,
+      "png": "013_act2-contact-restored.png",
+      "pngSha256": "91d859120c95d64ccb38a87d084fed9e6d10c4bbcdb5b916d5a469062651db2c",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.088978,
+      "runHash": "4210fe69d73ae5a2c32ac04eea763d45e8004d933a5c65506d5737b3ed1783a6",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_cinder_imp",
+          "art": "enemy_cinder_imp",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 94,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.10000000149012",
+          "lightCount": "6",
+          "lut": "none"
+        },
+        {
+          "id": "enemy_mimic_jester",
+          "art": "enemy_mimic_jester",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "6",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "6",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-contact-restored-full-rgb-exact",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-contact-frozen-rule-camera-light-pose-inputs",
+      "pass": true
+    },
+    {
+      "kind": "pixel-delta",
+      "name": "act2-contact",
+      "changed": 13322,
+      "outsideActorMask": 0,
+      "strictActorIsolation": true,
+      "contact": true,
+      "glowEnabled": false
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-contact-visible-pixel-change",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-contact-no-rule-save-drift",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act2-settled",
+      "pass": true
+    },
+    {
+      "label": "act2-settled",
+      "contact": false,
+      "png": "014_act2-settled.png",
+      "pngSha256": "bf32f77534dc59d6e22ebd328ffd0b21c078b855071508eb8a8ea5228f313a82",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.3406405,
+      "runHash": "4210fe69d73ae5a2c32ac04eea763d45e8004d933a5c65506d5737b3ed1783a6",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_cinder_imp",
+          "art": "enemy_cinder_imp",
+          "active": true,
+          "status": "act2-source-ldr32-gl-v1",
+          "hp": 94,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "42cf0b56ab4e69fe27cccd844464a8267fa4564588fa52ac9c5d977f91317261"
+        },
+        {
+          "id": "enemy_mimic_jester",
+          "art": "enemy_mimic_jester",
+          "active": true,
+          "status": "act2-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "42cf0b56ab4e69fe27cccd844464a8267fa4564588fa52ac9c5d977f91317261"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": true,
+          "status": "act2-source-ldr32-gl-v1",
+          "hp": 80,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.68000000715256",
+          "flash": "0.0",
+          "lightCount": "5",
+          "lut": "42cf0b56ab4e69fe27cccd844464a8267fa4564588fa52ac9c5d977f91317261"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act2-post-drain-rules-unchanged",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-act3-leader_green",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actor-population-present",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "fixture-rules-roundtrip",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act3-idle-baseline",
+      "pass": true
+    },
+    {
+      "label": "act3-idle-baseline",
+      "contact": false,
+      "png": "015_act3-idle-baseline.png",
+      "pngSha256": "e7b0bdcea42c83b1a310179f2d9f0797e1ccfe3b788029262f97b487cd69176f",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.3406405,
+      "runHash": "90ca556f42d7767fd0849814900cfa22038671a3fefe95166c60dd6f72390d91",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_set_breaker",
+          "art": "enemy_set_breaker",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 109,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.5",
+          "flash": "0.0",
+          "lightCount": "3",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.5",
+          "flash": "0.0",
+          "lightCount": "3",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-idle-baseline-disabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act3-idle-candidate",
+      "pass": true
+    },
+    {
+      "label": "act3-idle-candidate",
+      "contact": false,
+      "png": "016_act3-idle-candidate.png",
+      "pngSha256": "03817092dcd37c44a2823b86fbd95bf7b3e68911a0d554aa6ea801e50d0b15ee",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.3406405,
+      "runHash": "90ca556f42d7767fd0849814900cfa22038671a3fefe95166c60dd6f72390d91",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_set_breaker",
+          "art": "enemy_set_breaker",
+          "active": true,
+          "status": "act3-source-ldr32-gl-v1",
+          "hp": 109,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.5",
+          "flash": "0.0",
+          "lightCount": "3",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": true,
+          "status": "act3-source-ldr32-gl-v1",
+          "hp": 80,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.5",
+          "flash": "0.0",
+          "lightCount": "3",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-idle-candidate-enabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act3-idle-restored",
+      "pass": true
+    },
+    {
+      "label": "act3-idle-restored",
+      "contact": false,
+      "png": "017_act3-idle-restored.png",
+      "pngSha256": "e7b0bdcea42c83b1a310179f2d9f0797e1ccfe3b788029262f97b487cd69176f",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.3406405,
+      "runHash": "90ca556f42d7767fd0849814900cfa22038671a3fefe95166c60dd6f72390d91",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_set_breaker",
+          "art": "enemy_set_breaker",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 109,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.5",
+          "flash": "0.0",
+          "lightCount": "3",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.5",
+          "flash": "0.0",
+          "lightCount": "3",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-idle-restored-full-rgb-exact",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-idle-frozen-rule-camera-light-pose-inputs",
+      "pass": true
+    },
+    {
+      "kind": "pixel-delta",
+      "name": "act3-idle",
+      "changed": 12197,
+      "outsideActorMask": 0,
+      "strictActorIsolation": true,
+      "contact": false,
+      "glowEnabled": false
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-idle-visible-pixel-change",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-idle-idle-actor-isolation",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-idle-no-rule-save-drift",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-positive-rule-hit",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-actual-contact-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act3-contact-baseline",
+      "pass": true
+    },
+    {
+      "label": "act3-contact-baseline",
+      "contact": true,
+      "png": "018_act3-contact-baseline.png",
+      "pngSha256": "9f476b917e14d65b3b3342a7b4addd36adefa58a468868fd8c702cd6288a15e6",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.5176277,
+      "runHash": "d3d949274795219c38b4a6f05b4c87fdb73fbe58deab27f98c940f4c8cbc10fe",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_set_breaker",
+          "art": "enemy_set_breaker",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 103,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.5",
+          "flash": "0.10000000149012",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.5",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-contact-baseline-disabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act3-contact-candidate",
+      "pass": true
+    },
+    {
+      "label": "act3-contact-candidate",
+      "contact": true,
+      "png": "019_act3-contact-candidate.png",
+      "pngSha256": "5daee3012f2ff7c723d4d59ea52831b9c9926e1582217f810950363346ab4f4b",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.5176277,
+      "runHash": "d3d949274795219c38b4a6f05b4c87fdb73fbe58deab27f98c940f4c8cbc10fe",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_set_breaker",
+          "art": "enemy_set_breaker",
+          "active": true,
+          "status": "act3-source-ldr32-gl-v1",
+          "hp": 103,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.5",
+          "flash": "0.10000000149012",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": true,
+          "status": "act3-source-ldr32-gl-v1",
+          "hp": 80,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.5",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-contact-candidate-enabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act3-contact-restored",
+      "pass": true
+    },
+    {
+      "label": "act3-contact-restored",
+      "contact": true,
+      "png": "020_act3-contact-restored.png",
+      "pngSha256": "9f476b917e14d65b3b3342a7b4addd36adefa58a468868fd8c702cd6288a15e6",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.5176277,
+      "runHash": "d3d949274795219c38b4a6f05b4c87fdb73fbe58deab27f98c940f4c8cbc10fe",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_set_breaker",
+          "art": "enemy_set_breaker",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 103,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.5",
+          "flash": "0.10000000149012",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 80,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.5",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-contact-restored-full-rgb-exact",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-contact-frozen-rule-camera-light-pose-inputs",
+      "pass": true
+    },
+    {
+      "kind": "pixel-delta",
+      "name": "act3-contact",
+      "changed": 10162,
+      "outsideActorMask": 0,
+      "strictActorIsolation": true,
+      "contact": true,
+      "glowEnabled": false
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-contact-visible-pixel-change",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-contact-no-rule-save-drift",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-act3-settled",
+      "pass": true
+    },
+    {
+      "label": "act3-settled",
+      "contact": false,
+      "png": "021_act3-settled.png",
+      "pngSha256": "252e3c87075e629282f80e91e72d8a00fb89966c86b2ad4d4fa63a1faded2eb4",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.7692904,
+      "runHash": "d3d949274795219c38b4a6f05b4c87fdb73fbe58deab27f98c940f4c8cbc10fe",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_set_breaker",
+          "art": "enemy_set_breaker",
+          "active": true,
+          "status": "act3-source-ldr32-gl-v1",
+          "hp": 103,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.5",
+          "flash": "0.0",
+          "lightCount": "3",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": true,
+          "status": "act3-source-ldr32-gl-v1",
+          "hp": 80,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.5",
+          "flash": "0.0",
+          "lightCount": "3",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "act3-post-drain-rules-unchanged",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-act1-leader_blue",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actor-population-present",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "fixture-rules-roundtrip",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-leader-blue-idle-baseline",
+      "pass": true
+    },
+    {
+      "label": "leader-blue-idle-baseline",
+      "contact": false,
+      "png": "022_leader-blue-idle-baseline.png",
+      "pngSha256": "9998845c95b88a5b5104d4d9ebb804557996eac3eb17d3d0e422f3653211401c",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.7692904,
+      "runHash": "e2533af90c2c2c92b5dea944abc25e4557a28f74f6822b72575ad2cfc30b2072",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_sludge_spider",
+          "art": "enemy_sludge_spider",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "leader_blue",
+          "art": "leader_blue",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 65,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-blue-idle-baseline-disabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-leader-blue-idle-candidate",
+      "pass": true
+    },
+    {
+      "label": "leader-blue-idle-candidate",
+      "contact": false,
+      "png": "023_leader-blue-idle-candidate.png",
+      "pngSha256": "cd0719303030698fc94fe181502adb08592dae5e9b2d5105e5db7aabff0eec3b",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.7692904,
+      "runHash": "e2533af90c2c2c92b5dea944abc25e4557a28f74f6822b72575ad2cfc30b2072",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_sludge_spider",
+          "art": "enemy_sludge_spider",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "leader_blue",
+          "art": "leader_blue",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 65,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-blue-idle-candidate-enabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-leader-blue-idle-restored",
+      "pass": true
+    },
+    {
+      "label": "leader-blue-idle-restored",
+      "contact": false,
+      "png": "024_leader-blue-idle-restored.png",
+      "pngSha256": "9998845c95b88a5b5104d4d9ebb804557996eac3eb17d3d0e422f3653211401c",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.7692904,
+      "runHash": "e2533af90c2c2c92b5dea944abc25e4557a28f74f6822b72575ad2cfc30b2072",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_sludge_spider",
+          "art": "enemy_sludge_spider",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "leader_blue",
+          "art": "leader_blue",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 65,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-blue-idle-restored-full-rgb-exact",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-blue-idle-frozen-rule-camera-light-pose-inputs",
+      "pass": true
+    },
+    {
+      "kind": "pixel-delta",
+      "name": "leader-blue-idle",
+      "changed": 12539,
+      "outsideActorMask": 0,
+      "strictActorIsolation": true,
+      "contact": false,
+      "glowEnabled": false
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-blue-idle-visible-pixel-change",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-blue-idle-idle-actor-isolation",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-blue-idle-no-rule-save-drift",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-act1-leader_white",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actor-population-present",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "fixture-rules-roundtrip",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-leader-white-idle-baseline",
+      "pass": true
+    },
+    {
+      "label": "leader-white-idle-baseline",
+      "contact": false,
+      "png": "025_leader-white-idle-baseline.png",
+      "pngSha256": "661416a8a09d4ec88db4acd3a15f07929e91da7e70b64d02efc00e1bba9d365d",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.7692904,
+      "runHash": "01b0b3801f01bea88eb40691631b7b6ac1d2650e746d63aaebf3b3f2dea2d421",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "leader_white",
+          "art": "leader_white",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 75,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-white-idle-baseline-disabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-leader-white-idle-candidate",
+      "pass": true
+    },
+    {
+      "label": "leader-white-idle-candidate",
+      "contact": false,
+      "png": "026_leader-white-idle-candidate.png",
+      "pngSha256": "4316192205ff80f1829c4893620d082c6e55175b0ffd88002b68f2cbb793920a",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.7692904,
+      "runHash": "01b0b3801f01bea88eb40691631b7b6ac1d2650e746d63aaebf3b3f2dea2d421",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "leader_white",
+          "art": "leader_white",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 75,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-white-idle-candidate-enabled",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-leader-white-idle-restored",
+      "pass": true
+    },
+    {
+      "label": "leader-white-idle-restored",
+      "contact": false,
+      "png": "027_leader-white-idle-restored.png",
+      "pngSha256": "661416a8a09d4ec88db4acd3a15f07929e91da7e70b64d02efc00e1bba9d365d",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.7692904,
+      "runHash": "01b0b3801f01bea88eb40691631b7b6ac1d2650e746d63aaebf3b3f2dea2d421",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 100,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        },
+        {
+          "id": "leader_white",
+          "art": "leader_white",
+          "active": false,
+          "status": "legacy:baseline-requested",
+          "hp": 75,
+          "ambientTop": "(0.354692, 0.393123, 0.522522)",
+          "ambientBottom": "(0.125967, 0.132868, 0.187317)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "none"
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-white-idle-restored-full-rgb-exact",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-white-idle-frozen-rule-camera-light-pose-inputs",
+      "pass": true
+    },
+    {
+      "kind": "pixel-delta",
+      "name": "leader-white-idle",
+      "changed": 15222,
+      "outsideActorMask": 0,
+      "strictActorIsolation": true,
+      "contact": false,
+      "glowEnabled": false
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-white-idle-visible-pixel-change",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-white-idle-idle-actor-isolation",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "leader-white-idle-no-rule-save-drift",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "same-live-actor-act2",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-lut-act2",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-ev-act2",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "same-live-actor-act3",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-lut-act3",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-ev-act3",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "same-live-actor-act1",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-lut-act1",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-ev-act1",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "unsupported-profile-disables",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "profile-restores",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "unsupported-live-environment-disables",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "environment-restores",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "other-act-opt-out",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "other-act-opt-in",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "global-opt-out-precedence",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "guard-checks-rule-save-invariant",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "owned-lut-before-exit",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exit-clears-active-transfer",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exit-disposes-owned-lut",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-act1-leader_green",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actor-population-present",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "fixture-rules-roundtrip",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reentry-recreates-transfer",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "no-session-listener-diagnostics",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-1170x540",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "png-save-guards-restored",
+      "pass": true
+    },
+    {
+      "label": "guards-restored",
+      "contact": false,
+      "png": "028_guards-restored.png",
+      "pngSha256": "c17d2e0ecf000563cd01abdd2863599a1457da3efd31bd8d7d5c27bfbf14412a",
+      "width": 1170,
+      "height": 540,
+      "logicalViewport": "(1950, 900)",
+      "renderer": "gl_compatibility",
+      "clock": 4.7692904,
+      "runHash": "5c3f975e08cdb2a7ed45027d98d92ffa8033b93a29cae7bb27ec71a257831f02",
+      "saveHash": "absent",
+      "worldAtmosphere": "baseline",
+      "actors": [
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "enemy_probe",
+          "art": "enemy_probe",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 100,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        },
+        {
+          "id": "leader_green",
+          "art": "leader_green",
+          "active": true,
+          "status": "act1-source-ldr32-gl-v1",
+          "hp": 80,
+          "ambientTop": "(0.63, 0.66, 0.75)",
+          "ambientBottom": "(0.39, 0.4, 0.47)",
+          "exposure": "0.30000001192093",
+          "flash": "0.0",
+          "lightCount": "4",
+          "lut": "c17d21ccd08f3b105e00b2effe3e34255aad524203c9c3d458b8ff4dae37cd46"
+        }
+      ]
+    }
+  ],
+  "provenance": "Fresh reconstructed color QA against recovered early runtime; no claim of exact lost b05a0da or Unity Act2/3 optical parity."
+}

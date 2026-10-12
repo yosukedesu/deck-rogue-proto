@@ -6,6 +6,13 @@ render_mode unshaded, cull_disabled, depth_draw_opaque, fog_disabled;
 // hint on them. Only encoded albedo/emission textures decode once per renderer.
 // C# binds the fixed layout-camera basis. Godot sprite front +Z corresponds to
 // Unity source front -Z after the port's world-Z reflection.
+// Reconstructed accepted provisional actor-only display finish, 2026-10-12.
+#include "res://shaders/source_actor_display_functions.gdshaderinc"
+uniform bool _SourceDisplayTransfer = false;
+uniform sampler2D _SourceDisplayLut : filter_linear, repeat_disable;
+uniform bool _SourceDisplayOtherProfile = false;
+uniform float _SourceDisplayExposureEv = 0.3;
+uniform vec3 _SourceDisplayVignetteColor = vec3(0.0, 0.025, 0.04);
 uniform sampler2D _BaseMap : source_color, filter_nearest, repeat_disable;
 uniform sampler2D _NormalMap : filter_nearest, repeat_disable;
 uniform sampler2D _EmissionMap : source_color, filter_nearest, repeat_disable;
@@ -182,6 +189,17 @@ void fragment() {
         float fog = clamp((actor_view_depth - _FogRange.x) / max(_FogRange.y - _FogRange.x, 0.0001), 0.0, 1.0);
         col = mix(col, _FogColor, fog * _Fog);
     }
-    ALBEDO = authored_output_rgb(col);
+    if (_SourceDisplayTransfer) {
+        vec2 source_screen_uv = vec2(SCREEN_UV.x, 1.0 - SCREEN_UV.y);
+        if (_SourceDisplayOtherProfile) {
+            ALBEDO = eval_actor_albedo(col, source_screen_uv, _SourceDisplayLut,
+                _SourceDisplayExposureEv, vec2(0.5, 0.52), 0.15, 0.45, _SourceDisplayVignetteColor, 1.0);
+        } else {
+            ALBEDO = eval_actor_albedo(col, source_screen_uv, _SourceDisplayLut,
+                0.3, vec2(0.5, 0.52), 0.15, 0.45, vec3(0.0, 0.025, 0.04), 1.0);
+        }
+    } else {
+        ALBEDO = authored_output_rgb(col);
+    }
     // No ALPHA write: source uses opaque depth-writing cutout, not transparent blending.
 }

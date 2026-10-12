@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 namespace DeckRogue.GodotPort.Presentation;
 
 [ScriptPath("res://scripts/presentation/BattleActor.cs")]
-public class BattleActor : Node3D
+public partial class BattleActor : Node3D
 {
 	public new class MethodName : Node3D.MethodName
 	{
@@ -762,6 +762,8 @@ public class BattleActor : Node3D
 
 	public void ConfigureSourceAppearance(int act, Camera3D layoutCamera, int enemyGroup = 1)
 	{
+		_sourceDisplayAct = act;
+		EnsureSourceDisplayLifecycle();
 		_layoutCamera = layoutCamera;
 		_layoutBasis = (IsInsideTree() ? base.GlobalBasis : base.Basis).Inverse() * layoutCamera.GlobalBasis.Orthonormalized();
 		Sprite.Basis = _layoutBasis;
@@ -829,7 +831,8 @@ public class BattleActor : Node3D
 				_sourceContext.View = _sourceView;
 			}
 			ActorMaterialSettings.Values values = ActorMaterialSettings.Resolve(_sourceLook, ArtId, _actorCategory == "leaders", _sourceContext);
-			ActorMaterialBinding.Bind(_surface, values, _sourceLook, warmKey: false, _sourceDistanceScale);
+			UpdateSourceDisplayBinding();
+			ActorMaterialBinding.Bind(_surface, values, _sourceLook, warmKey: false, _sourceDistanceScale, SourceDisplayTransferActive);
 		}
 	}
 

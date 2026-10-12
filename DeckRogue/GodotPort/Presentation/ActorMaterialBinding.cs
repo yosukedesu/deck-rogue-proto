@@ -53,7 +53,7 @@ public static class ActorMaterialBinding
 		return result;
 	}
 
-	public static void Bind(ShaderMaterial material, ActorMaterialSettings.Values values, JObject look, bool warmKey = false, float distanceScale = 1f)
+	public static void Bind(ShaderMaterial material, ActorMaterialSettings.Values values, JObject look, bool warmKey = false, float distanceScale = 1f, bool sourceDisplayTransfer = false)
 	{
 		F("_Receive", values.Receive);
 		F("_HeroLift", values.HeroLift);
@@ -73,8 +73,8 @@ public static class ActorMaterialBinding
 		JObject ch = look["char"] as JObject;
 		Vector3 key = Linear(ch?[warmKey ? "keyWarm" : "key"], warmKey ? new Vector3(1f, 0.92f, 0.8f) : new Vector3(1f, 0.95f, 0.88f));
 		V("_CharKeyColor", key * Math.Max(0f, Number(ch?["keyIntensity"], 1.15f)));
-		V("_CharAmbTop", Linear(ch?["ambTop"], new Vector3(0.63f, 0.66f, 0.75f)));
-		V("_CharAmbBottom", Linear(ch?["ambBottom"], new Vector3(0.39f, 0.4f, 0.47f)));
+		V("_CharAmbTop", sourceDisplayTransfer ? Read3(ch?["ambTop"], new Vector3(0.63f, 0.66f, 0.75f)) : Linear(ch?["ambTop"], new Vector3(0.63f, 0.66f, 0.75f)));
+		V("_CharAmbBottom", sourceDisplayTransfer ? Read3(ch?["ambBottom"], new Vector3(0.39f, 0.4f, 0.47f)) : Linear(ch?["ambBottom"], new Vector3(0.39f, 0.4f, 0.47f)));
 		JObject lamp = look["lamp"] as JObject;
 		Vector3 direction = Read3(lamp?["charKeyDir"], -Read3(lamp?["offset"], new Vector3(-8f, 17f, -14f)));
 		if (direction.LengthSquared() < 1E-06f)

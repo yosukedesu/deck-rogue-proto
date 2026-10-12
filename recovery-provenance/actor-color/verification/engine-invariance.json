@@ -1,0 +1,30 @@
+{
+  "unchanged_files": [
+    "engine/runtime/Events.cs",
+    "engine/runtime/Combat.cs",
+    "engine/runtime/Run.cs",
+    "engine/runtime/JsonUnions.cs",
+    "engine/runtime/Gears.cs",
+    "engine/runtime/MapGen.cs",
+    "engine/runtime/Hooks.cs",
+    "engine/runtime/State.cs",
+    "engine/runtime/SetAny.cs",
+    "engine/runtime/Report.cs",
+    "engine/runtime/Upgrade.cs",
+    "engine/runtime/Golden.cs",
+    "engine/runtime/Fusion.cs",
+    "engine/runtime/Content.cs",
+    "engine/runtime/Analysis.cs",
+    "engine/runtime/EnemyGraph.cs",
+    "engine/runtime/Effects.cs",
+    "engine/runtime/Rng.cs",
+    "engine/runtime/Reactions/SetBase.cs",
+    "engine/runtime/Reactions/HoldManual.cs",
+    "engine/runtime/Reactions/SetAuto.cs",
+    "engine/runtime/Reactions/SetConfirm.cs",
+    "engine/runtime/Reactions/ReactionSystems.cs",
+    "engine/runtime/Generated/IsExternalInit.cs",
+    "engine/runtime/Generated/Types.g.cs"
+  ],
+  "count": 25
+}
