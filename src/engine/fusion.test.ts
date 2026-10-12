@@ -55,6 +55,11 @@ function runTo(run: RunState, target: 'campfire' | 'workshop'): RunState {
 /** 窮鼠の大牙 (2026-09-03 撤去) 相当の条件付きリアクション。条件違いの同種効果が別効果のまま残る規約のテスト用 */
 
 describe('効果の合体 (2026-09-05 ユーザー裁定「工房は全て合成できるようにしたい」→ ask_user A/A/A/A)', () => {
+  it('同名合成の放出は1行に合算する (2026-10-12 Opus 赤フル B: 真・火掻き の全消費が2行並び2回目が空振り)', () => {
+    const rake = fuseCards(inst('red_rake'), inst('red_rake'))
+    const rows = rake.effects.filter((e) => e.effect === 'dischargeBurn')
+    expect(rows.map((e) => e.amount)).toEqual([4])
+  })
   it('2枚の効果を全部持ち、コストは合計−1: 牙の一撃(2E 17貫)×荒角の構え(1E ブロック6+勢い3) → 2E', () => {
     const def = fuseCards(inst('green_fang'), inst('green_horn_stance'))
     expect(def.cost).toBe(2)

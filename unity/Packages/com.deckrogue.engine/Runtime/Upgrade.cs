@@ -173,6 +173,7 @@ namespace DeckRogue.Engine
             "dealDamagePerSpark", "gainBlockPerSpark", "gainBlockPerLight", "drawCardsPerLight", "dischargeLightWeaken", // 2026-09-20 夜・火守りの盾 (2026-09-24)
             "dealDamagePerScry", "dealDamagePerTrapFired", // 読み切り・仕掛けの反響 (青 2026-09-25): 参照倍率+1
             "dealDamagePerCascade", "gainBlockPerBurn", "dealDamagePerBurn", // 火の渦・灰かぶり・火の舌 (赤 2026-10-10): 参照倍率+1
+            "dischargeBurn", // 火掻き・焼き払い (赤 2026-10-12 段2): 消費する刈り取りも参照倍率+1。爆熱の解放は V2_COST_ONLY
         };
 
         private static readonly HashSet<string> UNIT_EFFECTS_V2 = new HashSet<string>
@@ -220,6 +221,8 @@ namespace DeckRogue.Engine
             "blue_counterspell", "blue_spell_steal", "blue_perm_tidal_lectern", "blue_perm_deep_cloak", // 凍る静寂は 2026-09-25 に撤去 (3本柱)
             // 2026-10-10 赤の解凍 (ユーザー裁定「2枚とも例外」): 焔の目録 (2E 置物・衝動ごと勢い+2) は本家形だと勢い+4 = 8/30 に 門番T1 472ダメで是正した値に戻る。1E のまま
             "red_perm_ledger",
+            // 2026-10-12 段2: dischargeBurn を参照倍率のティアに入れたが、爆熱の解放 (R 2E ×3) の鍛えは従来のコスト−1 のまま (TS と同形)
+            "red_burst_release",
         };
         /// <summary>本家形の例外 = 打ち消しの条件を広げる (2026-09-25): マナ漏出 15以下→20以下・逆巻き 12以上→8以上</summary>
         private static readonly Dictionary<string, (int Max, int Min)> V2_RANGE = new Dictionary<string, (int Max, int Min)>

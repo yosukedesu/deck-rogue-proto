@@ -1635,6 +1635,7 @@ namespace DeckRogue.Engine
             { "addMomentum", "trample" }, { "dealDamagePerMomentum", "trample" }, { "doubleMomentum", "trample" },
             { "dischargeMomentumBurn", "burn" }, { "dischargeMomentumBlock", "trample" }, { "gainBlockPerMomentum", "trample" }, { "addGrowthPerMomentum", "trample" },
             { "applyBurn", "burn" }, { "dischargeBurn", "burn" },
+            { "cascadeSameCost", "cascade" }, // 火は火を呼ぶ (赤 2026-10-12 段2)
             { "addAether", "aether" }, { "dischargeAether", "aether" }, { "dischargeAetherDraw", "aether" },
             { "addLight", "light" }, { "addLightNextTurn", "light" }, { "dischargeLight", "light" }, { "dischargeLightRally", "light" }, { "doubleLight", "light" }, { "dealDamagePerLight", "light" }, // 灯
             { "dischargeLightWeaken", "light" }, { "consumeLight", "light" }, { "gainBlockPerLight", "light" }, { "drawCardsPerLight", "light" }, { "lightCarryHalf", "light" }, // 放出の軸 (2026-09-20 夜)
@@ -1679,6 +1680,7 @@ namespace DeckRogue.Engine
             { "onLightDischarged", "light" }, { "onSparkPlayed", "spark" }, // 2026-09-20 夜
             { "onImpulsePlayed", "impulse" },
             { "onImpulseExpired", "impulse" }, // 燃え残り・灰の衣 (赤 2026-10-10)
+            { "onBlazeIgnite", "burn" }, // 火の目覚め・爆ぜ火 (赤 2026-10-12 段2)
             { "onCascade", "cascade" }, // 連なる火花・火継ぎの炉 (赤 2026-10-10)
             { "onRandomPlayed", "chaos" },
             { "onSpellPlayed", "storm" },
@@ -1704,6 +1706,7 @@ namespace DeckRogue.Engine
                 if (e.Pierce == true) Add("trample");             // 貫通はトランプルの核
             }
             if (def.ExhaustCost != null) Add("graveyard"); // 消滅コストは墓地の燃料
+            if (def.ImpulseCost != null) Add("impulse"); // くべる (赤 2026-10-12 段2): 衝動の札を払う
             if (def.Retainer == true) Add("retinue");
             if ((def.Cascade ?? 0) > 0) Add("cascade"); // チェイン (赤 2026-10-10)
             return order;

@@ -613,7 +613,8 @@ namespace DeckRogue.Engine
                         ownerOf.Add(block);
                         continue;
                     }
-                    int t = canMerge ? TwinOf(raw, block) : -1;
+                    // 同名合成の放出 (延焼×2 の全消費など) も対で合算する (2026-10-12 Opus 赤フル B: 真・火掻き の全消費が2行並んでいた)
+                    int t = canMerge || (sameName && block == 1 && raw.Effect.StartsWith("discharge")) ? TwinOf(raw, block) : -1;
                     if (t >= 0 && merged[t].Amount != null && raw.Amount != null)
                     {
                         var n = merged[t] with { Amount = (merged[t].Amount ?? 0) + raw.Amount };
@@ -862,6 +863,9 @@ namespace DeckRogue.Engine
                 ExhaustCost = ((a.Def.ExhaustCost ?? 0) != 0 || (b.Def.ExhaustCost ?? 0) != 0)
                     ? (a.Def.ExhaustCost ?? 0) + (b.Def.ExhaustCost ?? 0)
                     : (int?)null,
+                ImpulseCost = ((a.Def.ImpulseCost ?? 0) != 0 || (b.Def.ImpulseCost ?? 0) != 0)
+                    ? (a.Def.ImpulseCost ?? 0) + (b.Def.ImpulseCost ?? 0)
+                    : (int?)null, // くべる (赤 2026-10-12 段2) は消滅コストと同じく合算
                 LightCost = ((a.Def.LightCost ?? 0) != 0 || (b.Def.LightCost ?? 0) != 0)
                     ? (a.Def.LightCost ?? 0) + (b.Def.LightCost ?? 0)
                     : (int?)null, // 灯コストは合算 (捨て・消滅コストと同じ。白 2026-09-20)

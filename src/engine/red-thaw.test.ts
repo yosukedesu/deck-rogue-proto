@@ -2,6 +2,7 @@
 // ユーザー裁定: 軸＝バーン／刹那／チェイン・猛火の儀式=1E・鍛えるの例外=焔の目録/火だるま・
 // チェインの当たりは親と同じ敵で選択式/X/仕込み札は飛ばす・カオスは味付け4/撤去8・キーワード名「チェイン」) を機械固定
 import { describe, expect, it } from 'vitest'
+import { WOUND_DEF } from './content.ts'
 import { allCards, getCardDef, getDeckDef } from './content.ts'
 import { axesOf, createRun, REWARD_EXCLUDED } from './run.ts'
 import { applyCommand, createInitialState } from './state.ts'
@@ -233,6 +234,18 @@ describe('バーンと刹那の穴埋め', () => {
     expect(s.player.hand.some((c) => c.uid === 't2_red_guard')).toBe(false)
   })
 
+  it('衝動の失効: 払えなかった札 (実コスト>残りエナジー) は捨て札へ・払えた札と出せない札 (負傷) は消滅 (2026-10-12 3幕フルラン 裁定 F2)。燃え残りは3枚とも鳴る', () => {
+    let s = withPerms(withHand(base(), ['red_strike', 'red_inferno', WOUND_DEF.id]), ['red_perm_embers_left'])
+    s = withIntent({ ...s, player: { ...s.player, energy: 2, impulseUids: ['t0_red_strike', 't1_red_inferno', `t2_${WOUND_DEF.id}`] } }, restIntent())
+    s = applyCommand(s, { type: 'EndTurn' })
+    expect(ids(s.player.exhaustPile).sort()).toEqual([WOUND_DEF.id, 'red_strike'].sort()) // 火弾1E≦2 は払えた＝消滅、負傷は出せない＝消滅
+    expect(s.player.discardPile.concat(s.player.hand, s.player.drawPile).some((c) => c.uid === 't1_red_inferno')).toBe(true) // 業火3E>2 は捨て札へ (敵フェーズ後の引きで手札に来うる)
+    expect(s.player.exhaustPile.some((c) => c.def.id === 'red_inferno')).toBe(false)
+    expect(s.eventLog.filter((e) => e.type === 'ImpulseReturned').map((e) => (e as { cardId: string }).cardId)).toEqual(['red_inferno'])
+    expect(s.eventLog.filter((e) => e.type === 'CardExhausted')).toHaveLength(2)
+    expect(s.enemies[0].burn).toBe(9 - 1) // 燃え残り +3 ×3枚 = 9、敵フェーズ開始で1減る
+  })
+
 })
 
   it('猛火の儀式は本家形 (1E・一時マナ+2・消滅)', () => {
@@ -274,10 +287,10 @@ describe('鍛える (本家形へ。例外2枚)', () => {
 })
 
 describe('データとラン', () => {
-  it('赤 97種・報酬90＋初期専用7 (チェイン14・穴埋め7・触媒2 を足し、カオス8と重なり2を撤去。2026-10-10 火加減を初期デッキへ)。撤去した札は無い', () => {
+  it('赤 106種・報酬99＋初期専用7 (段1: チェイン14・穴埋め7・触媒2 を足し、カオス8と重なり2を撤去。2026-10-10 火加減を初期デッキへ。段2 2026-10-12: +7・段2b: 守り+2)。撤去した札は無い', () => {
     const red = allCards.filter((c) => c.color === 'red')
-    expect(red.length).toBe(97)
-    expect(red.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(90)
+    expect(red.length).toBe(106)
+    expect(red.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(99)
     for (const id of ['red_long_shot', 'red_streak_bet', 'red_all_in', 'red_double_dice', 'red_leap_arrow', 'red_double_down', 'red_grand_fireworks', 'red_perm_gambler', 'red_perm_ward', 'red_blaze_storm']) {
       expect(red.some((c) => c.id === id), id).toBe(false)
     }
@@ -302,7 +315,7 @@ describe('データとラン', () => {
     }
   })
 
-  it('理想形: 飛び火理想形 (deck_cascade) がカオスの運任せ理想形を置き換えた。刹那理想形は改名だけ', () => {
+  it('理想形: チェイン理想形 (deck_cascade。段2で「飛び火理想形」から改名) がカオスの運任せ理想形を置き換えた。刹那理想形は改名だけ', () => {
     const d = getDeckDef('deck_cascade')
     expect(d.cards.some((c) => c.cardId === 'red_cascade_vortex')).toBe(true)
     expect(() => getDeckDef('deck_gamble')).toThrow()
@@ -350,7 +363,8 @@ describe('表示の是正 (2026-10-10 Opus 赤3本)', () => {
     const envoy = getCardDef('red_perm_cascade_envoy')
     expect(permanentTargetNote(envoy.effects[1], 'permanent')).toBe('先頭の敵に') // onTurnStart applyBurn
     expect(permanentTargetNote(envoy.effects[0], 'permanent')).toBe('') // onPlay (登場時) は狙った敵
-    expect(permanentTargetNote(getCardDef('red_perm_embers_left').effects[0], 'permanent')).toBe('先頭の敵に') // onImpulseExpired
+    expect(permanentTargetNote({ trigger: 'onImpulseExpired', effect: 'applyBurn' }, 'permanent')).toBe('先頭の敵に') // onImpulseExpired の単体効果
+    expect(permanentTargetNote(getCardDef('red_perm_embers_left').effects[0], 'permanent')).toBe('') // 燃え残りは段2b で対象「延焼がいちばん多い敵」を持つ = 注記は要らない
     expect(permanentTargetNote({ trigger: 'onTurnStart', effect: 'applyBurn', target: 'all' }, 'permanent')).toBe('')
     expect(permanentTargetNote({ trigger: 'onAttackPlayed', effect: 'applyBurn' }, 'permanent')).toBe('')
     expect(permanentTargetNote({ trigger: 'onTurnStart', effect: 'gainBlock' }, 'permanent')).toBe('')

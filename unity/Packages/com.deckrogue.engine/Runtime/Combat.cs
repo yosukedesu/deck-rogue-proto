@@ -1008,14 +1008,19 @@ namespace DeckRogue.Engine
                 }
             }
 
-            // 消滅コストの検証 (黒。捨てより重い代わりに墓地燃料になる)
-            int exhaustCost = card.Def.ExhaustCost ?? 0;
+            // 消滅コストの検証 (黒。捨てより重い代わりに墓地燃料になる)。
+            // くべる (赤 2026-10-12 段2: ImpulseCost) も同じ欄で払う = 衝動の札だけを受ける消滅コスト。TS と同形
+            // くべてもよい札 (KindleOptional 2026-10-12 段2b): 指定が無ければ払わない (素の効果だけ)。TS と同形
+            int impulseCost = card.Def.KindleOptional == true && (exhaustUids == null || exhaustUids.Count == 0) ? 0 : (card.Def.ImpulseCost ?? 0);
+            int exhaustCost = (card.Def.ExhaustCost ?? 0) + impulseCost;
             var exhausts = exhaustUids ?? (IReadOnlyList<string>)new List<string>();
             if (exhaustCost > 0)
             {
                 if (exhausts.Count != exhaustCost)
                 {
-                    throw new InvalidOperationException($"{card.Def.Name} は追加コストとして手札{exhaustCost}枚の消滅指定が必要");
+                    throw new InvalidOperationException(impulseCost > 0
+                        ? $"{card.Def.Name} は追加コストとして衝動の札{impulseCost}枚をくべる (消滅させる) 指定が必要"
+                        : $"{card.Def.Name} は追加コストとして手札{exhaustCost}枚の消滅指定が必要");
                 }
                 if (new HashSet<string>(exhausts).Count != exhausts.Count ||
                     exhausts.Contains(cardUid) ||
@@ -1026,6 +1031,10 @@ namespace DeckRogue.Engine
                 foreach (var uid in exhausts)
                 {
                     if (!state.Player.Hand.Any(c => c.Uid == uid)) throw new InvalidOperationException($"手札にないカード: {uid}");
+                }
+                if (impulseCost > 0 && exhausts.Count(uid => state.Player.ImpulseUids.Contains(uid)) < impulseCost)
+                {
+                    throw new InvalidOperationException($"{card.Def.Name} にくべられるのは衝動の札だけ");
                 }
             }
 
@@ -1200,11 +1209,18 @@ namespace DeckRogue.Engine
                     Permanents = isPermanent ? Append(state.Player.Permanents, card) : state.Player.Permanents,
                     // プレイした消滅札自身も limbo (効果解決後に消滅置き場へ)
                     ExhaustPile = Concat(state.Player.ExhaustPile, exhaustedCards),
+                    // くべた衝動の札は「このターン限り」の名簿からも外す (赤 2026-10-12 段2)。TS と同形
+                    ImpulseUids = impulseCost > 0 ? state.Player.ImpulseUids.Where(uid => !exhausts.Contains(uid)).ToList() : state.Player.ImpulseUids,
                 },
             };
             if (discardedCards.Count > 0)
             {
                 s = Events.Emit(s, new GameEvent_CardsDiscarded { CardIds = discardedCards.Select(c => c.Def.Id).ToList() });
+            }
+            if (impulseCost > 0)
+            {
+                // くべる (赤 2026-10-12 段2): 火にくべた札をログに残す (消滅の出来事はこの後の支払いで1枚ごとに出る)
+                s = Events.Emit(s, new GameEvent_ImpulseKindled { CardId = card.Def.Id, CardIds = exhaustedCards.Select(c => c.Def.Id).ToList() });
             }
             s = Events.Emit(s, new GameEvent_CardPlayed { CardId = card.Def.Id });
             // 灯コストの支払いをログに残す (2026-09-20 夜。TS と同形)
@@ -1222,6 +1238,16 @@ namespace DeckRogue.Engine
             int cascadeTimes =
                 (card.Def.Cascade ?? 0) + (((state.Player.PlaysThisTurn ?? 0) == 0 && Effects.HasStaticEffect(state, "firstCardCascade")) ? 1 : 0);
             for (int k = 0; k < cascadeTimes; k++) s = ResolveCascade(s, card.Def, enemyIndex);
+            // 当たりが対象を倒していたら本体は生存先頭へ (2026-10-12 段2b 裁定 R7)。TS と同形
+            if (cascadeTimes > 0 && enemyIndex >= 0 && enemyIndex < s.Enemies.Count && s.Enemies[enemyIndex].Hp <= 0)
+            {
+                int to = FindAlive(s.Enemies);
+                if (to >= 0)
+                {
+                    s = Events.Emit(s, new GameEvent_CascadeRetargeted { CardId = card.Def.Id, FromIndex = enemyIndex, ToIndex = to });
+                    enemyIndex = to;
+                }
+            }
             if (isPermanent)
             {
                 // 置物登場の誘発 (白の接着剤。自身の登場にも誘発) + 点灯の定義 (人形なら灯+1・すぐに1回動く。白共通ルール 2026-09-20)
@@ -1328,8 +1354,13 @@ namespace DeckRogue.Engine
             // 反復内蔵 (反復の触媒の合成札 2026-09-12): 反復トークンとは加算 (両方なら3回)
             int echoPasses = 1 + (echoed ? 1 : 0) + (card.Def.Echo == true ? 1 : 0);
             if (choosesDoll) s = s with { ChosenPermanentUid = permanentUid };
+            // くべた時だけ (kindled 2026-10-12 段2b): 衝動の札を払ってプレイした解決の間だけ condition.kindled の効果が乗る (入れ子は退避・復元)。TS と同形
+            bool? prevKindled = s.ResolvingKindled;
+            s = s with { ResolvingKindled = impulseCost > 0 };
             for (int echoPass = 0; echoPass < echoPasses; echoPass++)
             {
+                // 「この札で猛り火に点いたら」(爆ぜ火 2026-10-12 段2): 本体の直前の猛り火を測る (チェインの当たりで点いた分は数えない)。TS と同形
+                bool wasBlazing = Effects.IsBlazing(s);
                 if (chosenMode != null)
                 {
                     // 虚弱の判定用フラグ (モード効果もカードのプレイ)
@@ -1350,7 +1381,9 @@ namespace DeckRogue.Engine
                 {
                     s = Effects.ResolveOnPlayEffects(s, effCard, enemyIndex);
                 }
+                s = Effects.ResolveIgniteEffects(s, effCard, enemyIndex, wasBlazing);
             }
+            s = s with { ResolvingKindled = prevKindled };
             if (choosesDoll) s = s with { ChosenPermanentUid = null };
             // 「攻撃プレイ後」誘発: 解決した効果にダメージが含まれていたか (物理・呪文を問わない)
             var resolvedEffects = new List<DeclarativeEffect>();
@@ -1499,8 +1532,20 @@ namespace DeckRogue.Engine
             s = Events.Emit(s, new GameEvent_CardPlayed { CardId = card.Def.Id });
             // チェインの連鎖 (MTG): 当たった札がチェインを持てば、その効果より先にもう一度めくる (コストが下がるので必ず止まる)
             for (int k = 0; k < (card.Def.Cascade ?? 0); k++) s = ResolveCascade(s, card.Def, enemyIndex);
+            // 当たりが対象を倒していたら本体は生存先頭へ (2026-10-12 段2b R7。連鎖の途中の札も同じ)。TS と同形
+            if ((card.Def.Cascade ?? 0) > 0 && enemyIndex >= 0 && enemyIndex < s.Enemies.Count && s.Enemies[enemyIndex].Hp <= 0)
+            {
+                int to = FindAlive(s.Enemies);
+                if (to >= 0)
+                {
+                    s = Events.Emit(s, new GameEvent_CascadeRetargeted { CardId = card.Def.Id, FromIndex = enemyIndex, ToIndex = to });
+                    enemyIndex = to;
+                }
+            }
             if (isPermanent) s = Effects.EnterPermanent(s, card.Uid, enemyIndex); // 登場誘発 + 点灯の定義 (白共通ルール 2026-09-20)
+            bool wasBlazing = Effects.IsBlazing(s); // 「この札で猛り火に点いたら」(爆ぜ火 2026-10-12 段2) は直接プレイでも鳴る。TS と同形
             s = Effects.ResolveOnPlayEffects(s, card, enemyIndex);
+            s = Effects.ResolveIgniteEffects(s, card, enemyIndex, wasBlazing);
             if (card.Def.Effects.Where(e => e.Trigger == "onPlay").Any(Effects.IsDamageEffect))
             {
                 s = s with { Player = s.Player with { AttacksPlayedThisTurn = (s.Player.AttacksPlayedThisTurn ?? 0) + 1 } };
@@ -1541,11 +1586,16 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>チェインの当たりになれる札か: 親よりコストの低い呪文・物理・置物。選択式・X・仕込み札・プレイできない札 (負傷・火傷・烙印) は飛ばす。TS cascadeEligible と同形</summary>
-        private static bool CascadeEligible(CardInstance card, int parentCost)
+        /// <summary>
+        /// チェインの当たりになれる札か。火は火を呼ぶ (sameCost 2026-10-12 段2): 同じコストにも当たる。解決中の札は limbo で
+        /// 山札にも捨て札にも無いので自分自身には当たれず、連鎖の深さは「山札＋捨て札にあるチェイン持ちの枚数」で頭打ち = 必ず止まる。TS と同形
+        /// </summary>
+        private static bool CascadeEligible(CardInstance card, int parentCost, bool sameCost)
         {
             var d = card.Def;
             if (d.Type == CardTypes.Reaction || (d.Modes?.Count ?? 0) > 0 || d.XCost == true) return false;
-            if (d.Cost >= parentCost) return false;
+            // 火は火を呼ぶ (2026-10-12 段2b 作り直し): 「同じコストの札だけ」に当たる (安い札は飛ばす)。TS と同形
+            if (sameCost ? d.Cost != parentCost : d.Cost >= parentCost) return false;
             return d.Type == CardTypes.Permanent || (d.Cascade ?? 0) > 0 || d.Effects.Any(e => e.Trigger == "onPlay");
         }
 
@@ -1564,6 +1614,7 @@ namespace DeckRogue.Engine
             var revealed = new List<CardInstance>();
             CardInstance? hit = null;
             int shuffles = 0;
+            bool sameCost = Effects.HasStaticEffect(s, "cascadeSameCost"); // 火は火を呼ぶ (2026-10-12 段2)
             for (; ; )
             {
                 if (drawPile.Count == 0)
@@ -1577,7 +1628,7 @@ namespace DeckRogue.Engine
                 }
                 var c = drawPile[0];
                 drawPile.RemoveAt(0);
-                if (CascadeEligible(c, parent.Cost))
+                if (CascadeEligible(c, parent.Cost, sameCost))
                 {
                     hit = c;
                     break;
@@ -1712,10 +1763,16 @@ namespace DeckRogue.Engine
         }
 
         /// <summary>EndTurn: 勢いリセット・衝動の失効・延焼処理をして、敵フェーズを解決する</summary>
-        public static GameState EndTurn(GameState state, int? hearthSparks = null, IReadOnlyList<string>? retainUids = null)
+        public static GameState EndTurn(GameState state, int? hearthSparks = null, IReadOnlyList<string>? retainUids = null, string? keepUid = null)
         {
             if (state.Phase != CombatPhases.PlayerTurn) throw new InvalidOperationException("自ターン以外はターン終了できない");
             if (hearthSparks != null && hearthSparks.Value < 0) throw new InvalidOperationException($"hearthSparks は 0 以上の整数 (hearthSparks={hearthSparks})");
+            // 燠の守りで残す札の指定 (赤 2026-10-12 段2b): 手札の衝動の札でなければ拒否。TS と同形
+            if (keepUid != null)
+            {
+                if (!Effects.HasStaticEffect(state, "keepImpulseOne")) throw new InvalidOperationException("燠の守りが場に無いので keepUid は指定できない");
+                if (!state.Player.Hand.Any(c => c.Uid == keepUid) || !state.Player.ImpulseUids.Contains(keepUid)) throw new InvalidOperationException($"keepUid は手札の衝動の札だけ: {keepUid}");
+            }
             if (retainUids != null && retainUids.Count > 0)
             {
                 int max = RetainHandMax(state);
@@ -1771,13 +1828,20 @@ namespace DeckRogue.Engine
                 CardInstance? kept = null;
                 if (expired.Count > 0 && Effects.HasStaticEffect(s, "keepImpulseOne"))
                 {
+                    // 残す札は選べる (EndTurn.keepUid。赤 2026-10-12 段2b)。指定が無ければコストが最も高い1枚。TS と同形
+                    var chosen = keepUid != null ? expired.FirstOrDefault(c => c.Uid == keepUid) : null;
                     var best = expired[0];
                     foreach (var c in expired) if (c.Def.Cost > best.Def.Cost) best = c;
-                    kept = best;
+                    kept = chosen ?? best;
                     var keptUidLocal = kept.Uid;
                     expired = expired.Where(c => c.Uid != keptUidLocal).ToList();
                 }
                 string? keptUid = kept?.Uid;
+                // 払えなかった札 (実コスト>残りエナジー) は捨て札へ (2026-10-12 裁定 F2)。判定は盤面を書き換える前の s で。TS と同形
+                var stBefore = s;
+                var returned = expired.Where(c => Effects.ImpulseUnaffordable(stBefore, c)).ToList();
+                var returnedUids = new HashSet<string>(returned.Select(c => c.Uid));
+                var burned = expired.Where(c => !returnedUids.Contains(c.Uid)).ToList();
                 s = s with
                 {
                     Player = s.Player with
@@ -1786,22 +1850,24 @@ namespace DeckRogue.Engine
                             .Where(c => !impulse.Contains(c.Uid) || c.Uid == keptUid)
                             .Select(c => c.Uid == keptUid ? c with { KeptImpulse = true } : c)
                             .ToList(),
-                        ExhaustPile = Concat(s.Player.ExhaustPile, expired),
+                        DiscardPile = Concat(s.Player.DiscardPile, returned),
+                        ExhaustPile = Concat(s.Player.ExhaustPile, burned),
                         ImpulseUids = new List<string>(),
                     },
                 };
                 if (kept != null) s = Events.Emit(s, new GameEvent_ImpulseKept { CardId = kept.Def.Id });
-                foreach (var card in expired)
+                foreach (var card in returned) s = Events.Emit(s, new GameEvent_ImpulseReturned { CardId = card.Def.Id });
+                foreach (var card in burned)
                 {
                     s = Events.Emit(s, new GameEvent_CardExhausted { CardId = card.Def.Id });
                 }
                 int aliveIdx = FirstAliveOrZero(s);
-                // 燃え残り・灰の衣 (赤 2026-10-10): 失効1枚ごとに鳴る (失効は衝動の出来事なので、消滅の誘発より先)
+                // 燃え残り・灰の衣 (赤 2026-10-10): 失効1枚ごとに鳴る (捨て札へ戻った札も失効)
                 for (int i = 0; i < expired.Count; i++) s = Effects.RunPermanentTriggers(s, "onImpulseExpired", aliveIdx);
-                // 衝動失効も消滅 = 亡者の合唱が誘発する
-                s = Effects.FireExhaustTriggers(s, expired.Count, aliveIdx);
+                // 衝動失効の消滅 = 亡者の合唱が誘発する。捨て札へ戻った札は消滅ではない
+                s = Effects.FireExhaustTriggers(s, burned.Count, aliveIdx);
                 // 亡骸効果: 衝動で引いた亡骸札の失効もプレイ以外の消滅なので発火する
-                s = Effects.FireNecroEffects(s, expired, aliveIdx);
+                s = Effects.FireNecroEffects(s, burned, aliveIdx);
             }
             // 敵ブロックはこのタイミングで失効。潜伏の殻はブロックの器を借りているだけで失効しない
             s = s with { Enemies = MapIdx(s.Enemies, (e, _) => e.BurrowActive == true ? e : e with { Block = 0 }) };
@@ -1815,6 +1881,7 @@ namespace DeckRogue.Engine
                 int amount = enemy.Burn;
                 // 燻り (赤 R 置物 2026-10-10): この置物がある間、延焼は減らない (延焼耐性の追加の減りも止める)。TS と同形
                 int decay = Effects.BurnNoDecay(s) ? 0 : 1 + (Content.GetEnemyDef(enemy.EnemyId).BurnResist ?? 0);
+                bool wasBlazingAtTick = Effects.IsBlazing(s); // 減りや焼け落ちで合計が8を割ったら「猛り火が消えた」(2026-10-12 段2b)
                 s = WithEnemy(s, i, e => e with
                 {
                     Hp = e.Hp - amount,
@@ -1825,6 +1892,7 @@ namespace DeckRogue.Engine
                 });
                 s = Events.Emit(s, new GameEvent_BurnTick { EnemyIndex = i, Amount = amount });
                 if (s.Enemies[i].Hp <= 0) s = Effects.FireEnemyDied(s, i); // 焼き切って倒れた (onEnemyDied 2026-09-12)
+                if (wasBlazingAtTick && !Effects.IsBlazing(s)) s = Events.Emit(s, new GameEvent_BlazeExtinguished()); // 2026-10-12 段2b。TS と同形
                 s = Effects.ApplyDamageInterrupts(s, i); // 被弾覚醒はどの経路の被弾でも
                 // 与ダメ激昂の壁跨ぎ (effects.ts の dealDamageToEnemy と同則)
                 {

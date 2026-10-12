@@ -344,7 +344,7 @@
       {
         "trigger": "onPlay",
         "effect": "dischargeBurn",
-        "amount": 3
+        "amount": 4
       }
     ]
   },
@@ -356,9 +356,15 @@
     "rarity": "rare",
     "effects": [
       {
-        "trigger": "onTurnStart",
+        "trigger": "onPlay",
         "effect": "applyBurn",
-        "amount": 3,
+        "amount": 2,
+        "target": "all"
+      },
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "applyBurn",
+        "amount": 1,
         "target": "all"
       }
     ]
@@ -1713,7 +1719,8 @@
       {
         "trigger": "onImpulseExpired",
         "effect": "applyBurn",
-        "amount": 3
+        "amount": 3,
+        "target": "mostBurn"
       }
     ]
   },
@@ -1771,6 +1778,181 @@
         "trigger": "onPlay",
         "effect": "gainBlock",
         "amount": 5
+      }
+    ]
+  },
+  {
+    "id": "red_rake",
+    "name": "火掻き",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_burn_off",
+    "name": "焼き払い",
+    "cost": 2,
+    "type": "spell",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dischargeBurn",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_popping_fire",
+    "name": "爆ぜ火",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 3
+      },
+      {
+        "trigger": "onBlazeIgnite",
+        "effect": "dealDamage",
+        "amount": 5,
+        "target": "all",
+        "pierce": true
+      }
+    ]
+  },
+  {
+    "id": "red_perm_fire_awakening",
+    "name": "火の目覚め",
+    "cost": 1,
+    "type": "permanent",
+    "rarity": "uncommon",
+    "effects": [
+      {
+        "trigger": "onBlazeIgnite",
+        "effect": "drawCards",
+        "amount": 1
+      },
+      {
+        "trigger": "onBlazeIgnite",
+        "effect": "gainEnergy",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "red_kindle",
+    "name": "火にくべる",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "impulseCost": 1,
+    "kindleOptional": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "dealDamage",
+        "amount": 4,
+        "target": "all"
+      },
+      {
+        "trigger": "onPlay",
+        "condition": { "kindled": true },
+        "effect": "applyBurn",
+        "amount": 3
+      }
+    ]
+  },
+  {
+    "id": "red_ash_breath",
+    "name": "灰の息",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "uncommon",
+    "impulseCost": 1,
+    "kindleOptional": true,
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "condition": { "kindled": true },
+        "effect": "gainBlock",
+        "amount": 3
+      },
+      {
+        "trigger": "onPlay",
+        "condition": { "kindled": true },
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_perm_fire_calls_fire",
+    "name": "火は火を呼ぶ",
+    "cost": 2,
+    "type": "permanent",
+    "rarity": "rare",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "cascadeSameCost"
+      }
+    ]
+  },
+  {
+    "id": "red_ash_veil",
+    "name": "灰の帳",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 5
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "red_ember_screen",
+    "name": "熾の衝立",
+    "cost": 1,
+    "type": "physical",
+    "rarity": "common",
+    "effects": [
+      {
+        "trigger": "onPlay",
+        "effect": "gainBlock",
+        "amount": 4
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "impulseDraw",
+        "amount": 1
+      },
+      {
+        "trigger": "onPlay",
+        "effect": "applyBurn",
+        "amount": 2
       }
     ]
   }

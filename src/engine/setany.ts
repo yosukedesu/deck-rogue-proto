@@ -26,7 +26,7 @@ const PRE_WINDOW = new Set([
 export function canSetAsNormal(def: CardDef): boolean {
   if (def.type !== 'physical' && def.type !== 'spell') return false
   if (def.xCost === true || (def.modes?.length ?? 0) > 0) return false
-  if (def.discardCost || def.exhaustCost || def.necroCost !== undefined || def.shivToken === true) return false
+  if (def.discardCost || def.exhaustCost || def.impulseCost || def.necroCost !== undefined || def.shivToken === true) return false
   if (def.effects.length === 0) return false
   if (def.effects.some((e) => e.trigger !== 'onPlay')) return false
   if (def.effects.some((e) => EXCLUDED.has(e.effect))) return false

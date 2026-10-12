@@ -43,7 +43,7 @@ function applyCommandRaw(state: GameState, command: Command): GameState {
     case 'PlayCard':
       return playCard(state, command.cardUid, command.modeIndex, command.discardUids, command.targetIndex, command.exhaustUids, command.retrieveUid, command.deckUids, command.handUids, command.xAmount, command.permanentUid)
     case 'EndTurn':
-      return endTurn(state, command.hearthSparks, command.retainUids)
+      return endTurn(state, command.hearthSparks, command.retainUids, command.keepUid)
     case 'RetrieveSetCard':
       return retrieveSetCard(state, command.cardUid)
     case 'PlayNecro':

@@ -1925,7 +1925,7 @@
   },
   {
     "id": "deck_cascade",
-    "name": "飛び火理想形",
+    "name": "チェイン理想形",
     "color": "red",
     "description": "安い札を厚くして飛び火を当て続ける。火送りの一撃・連火弾がめくり、連なる火花と火継ぎの炉が当たりごとに火を足し、火の渦が回数を刈る",
     "cards": [
@@ -2413,6 +2413,72 @@
         "cardId": "green_horn_volley",
         "count": 1
       }
+    ]
+  },
+  {
+    "id": "run_red_s2_a",
+    "name": "赤 段2検証A 刈る・点ける（幕2開始用）",
+    "description": "2026-10-12 赤の解凍 段2のチェックポイント A: 初期の芯9枚+火掻き×2・焼き払い・爆ぜ火×2・火の目覚め・業火の炉(作り直し)・燻り・火勢倍し・火の舌・火喰らい",
+    "cards": [
+      { "cardId": "red_strike", "count": 2 },
+      { "cardId": "red_spark", "count": 1 },
+      { "cardId": "red_guard", "count": 2 },
+      { "cardId": "red_mode_firecontrol", "count": 1 },
+      { "cardId": "red_perm_flarecoat", "count": 1 },
+      { "cardId": "red_ignite", "count": 1 },
+      { "cardId": "red_rake", "count": 2 },
+      { "cardId": "red_burn_off", "count": 1 },
+      { "cardId": "red_popping_fire", "count": 2 },
+      { "cardId": "red_perm_fire_awakening", "count": 1 },
+      { "cardId": "red_perm_furnace", "count": 1 },
+      { "cardId": "red_perm_smolder", "count": 1 },
+      { "cardId": "red_burn_double", "count": 1 },
+      { "cardId": "red_fire_tongue", "count": 1 },
+      { "cardId": "red_blaze_devour", "count": 1 }
+    ]
+  },
+  {
+    "id": "run_red_s2_b",
+    "name": "赤 段2検証B くべる・刹那（幕2開始用）",
+    "description": "2026-10-12 赤の解凍 段2のチェックポイント B: 初期の芯10枚+火にくべる×2・灰の息・灰の衣・燠の守り・燃え残り・火中の取り出し・燃え上がる着想・走り火・熾火の一閃",
+    "cards": [
+      { "cardId": "red_strike", "count": 2 },
+      { "cardId": "red_spark", "count": 1 },
+      { "cardId": "red_guard", "count": 3 },
+      { "cardId": "red_mode_firecontrol", "count": 1 },
+      { "cardId": "red_perm_flarecoat", "count": 1 },
+      { "cardId": "red_ignite", "count": 1 },
+      { "cardId": "red_kindle", "count": 2 },
+      { "cardId": "red_ash_breath", "count": 1 },
+      { "cardId": "red_perm_ash_robe", "count": 1 },
+      { "cardId": "red_perm_ember_keeper", "count": 1 },
+      { "cardId": "red_perm_embers_left", "count": 1 },
+      { "cardId": "red_impulse", "count": 1 },
+      { "cardId": "red_big_impulse", "count": 1 },
+      { "cardId": "red_perm_runfire", "count": 1 },
+      { "cardId": "red_ember_slash", "count": 1 }
+    ]
+  },
+  {
+    "id": "run_red_s2_c",
+    "name": "赤 段2検証C チェイン（幕2開始用）",
+    "description": "2026-10-12 赤の解凍 段2のチェックポイント C: 初期の芯10枚+火は火を呼ぶ・連火の炉心・火口開き×2・火送りの一撃・連火弾・燎火の使い・連なる火花・野火・火の渦",
+    "cards": [
+      { "cardId": "red_strike", "count": 2 },
+      { "cardId": "red_spark", "count": 2 },
+      { "cardId": "red_guard", "count": 2 },
+      { "cardId": "red_mode_firecontrol", "count": 1 },
+      { "cardId": "red_perm_flarecoat", "count": 1 },
+      { "cardId": "red_ignite", "count": 1 },
+      { "cardId": "red_perm_fire_calls_fire", "count": 1 },
+      { "cardId": "red_perm_cascade_core", "count": 1 },
+      { "cardId": "red_cascade_vent", "count": 2 },
+      { "cardId": "red_cascade_strike", "count": 1 },
+      { "cardId": "red_cascade_bolt", "count": 1 },
+      { "cardId": "red_perm_cascade_envoy", "count": 1 },
+      { "cardId": "red_perm_cascade_sparks", "count": 1 },
+      { "cardId": "red_brushfire", "count": 1 },
+      { "cardId": "red_cascade_vortex", "count": 1 }
     ]
   }
 ]

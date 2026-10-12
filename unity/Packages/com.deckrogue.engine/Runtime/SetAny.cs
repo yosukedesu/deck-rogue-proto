@@ -38,7 +38,7 @@ namespace DeckRogue.Engine
             if (def.Type != CardTypes.Physical && def.Type != CardTypes.Spell) return false;
             if (def.XCost == true || (def.Modes?.Count ?? 0) > 0) return false;
             // TS の truthy 判定: 0 は偽 (discardCost/exhaustCost)、necroCost は undefined でなければ真
-            if ((def.DiscardCost ?? 0) != 0 || (def.ExhaustCost ?? 0) != 0 || def.NecroCost != null || def.ShivToken == true) return false;
+            if ((def.DiscardCost ?? 0) != 0 || (def.ExhaustCost ?? 0) != 0 || (def.ImpulseCost ?? 0) != 0 || def.NecroCost != null || def.ShivToken == true) return false;
             if (def.Effects.Count == 0) return false;
             for (int i = 0; i < def.Effects.Count; i++)
                 if (def.Effects[i].Trigger != "onPlay") return false;

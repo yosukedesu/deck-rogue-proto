@@ -1589,6 +1589,7 @@ const EFFECT_AXIS: Record<string, string> = {
   addMomentum: 'trample', dealDamagePerMomentum: 'trample', doubleMomentum: 'trample',
   dischargeMomentumBurn: 'burn', dischargeMomentumBlock: 'trample', gainBlockPerMomentum: 'trample', addGrowthPerMomentum: 'trample',
   applyBurn: 'burn', dischargeBurn: 'burn',
+  cascadeSameCost: 'cascade', // 火は火を呼ぶ (赤 2026-10-12 段2)
   addAether: 'aether', dischargeAether: 'aether', dischargeAetherDraw: 'aether',
   addLight: 'light', addLightNextTurn: 'light', dischargeLight: 'light', dischargeLightRally: 'light', doubleLight: 'light', dealDamagePerLight: 'light', // 灯 (白 2026-09-20)
   dischargeLightWeaken: 'light', consumeLight: 'light', gainBlockPerLight: 'light', drawCardsPerLight: 'light', lightCarryHalf: 'light', // 放出の軸 (2026-09-20 夜)
@@ -1633,6 +1634,7 @@ const TRIGGER_AXIS: Record<string, string> = {
   onSparkPlayed: 'spark', // 火の粉・灯の継ぎ手 (2026-09-20 夜)
   onImpulsePlayed: 'impulse',
   onImpulseExpired: 'impulse', // 燃え残り・灰の衣 (赤 2026-10-10)
+  onBlazeIgnite: 'burn', // 火の目覚め・爆ぜ火 (赤 2026-10-12 段2)
   onCascade: 'cascade', // 連なる火花・火継ぎの炉 (赤 2026-10-10)
   onRandomPlayed: 'chaos',
   onSpellPlayed: 'storm',
@@ -1654,6 +1656,7 @@ export function axesOf(def: CardDef): readonly string[] {
     if (e.pierce === true) set.add('trample') // 貫通はトランプルの核
   }
   if (def.exhaustCost !== undefined) set.add('graveyard') // 消滅コストは墓地の燃料
+  if (def.impulseCost !== undefined) set.add('impulse') // くべる (赤 2026-10-12 段2): 衝動の札を払う
   if (def.retainer === true) set.add('retinue')
   if ((def.cascade ?? 0) > 0) set.add('cascade') // チェイン (赤 2026-10-10)
   return [...set]

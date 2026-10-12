@@ -404,7 +404,8 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
         }
         merged.push(raw); ownerOf.push(block); continue
       }
-      const t = canMerge ? twinOf(raw, block) : -1
+      // 同名合成の放出 (延焼×2 の全消費など) も対で合算する (2026-10-12 Opus 赤フル B: 真・火掻き で「全消費」が2行並び、2回目が延焼0で空振りしていた)
+      const t = canMerge || (sameName && block === 1 && raw.effect.startsWith('discharge')) ? twinOf(raw, block) : -1
       if (t >= 0 && merged[t].amount !== undefined && raw.amount !== undefined) {
         merged[t] = { ...merged[t], amount: (merged[t].amount ?? 0) + raw.amount, ...(merged[t].amountMax !== undefined && raw.amountMax !== undefined ? { amountMax: (merged[t].amountMax ?? 0) + raw.amountMax } : {}) }
       } else if (t >= 0 && merged[t].amount === undefined && raw.amount === undefined) {
@@ -569,6 +570,7 @@ function mergeFusion(x: CardInstance, y: CardInstance): CardDef {
     ...(((a.def.cascade ?? 0) > 0 || (b.def.cascade ?? 0) > 0) && resultType !== 'reaction' ? { cascade: Math.max(a.def.cascade ?? 0, b.def.cascade ?? 0) } : {}),
     ...(a.def.discardCost || b.def.discardCost ? { discardCost: (a.def.discardCost ?? 0) + (b.def.discardCost ?? 0) } : {}),
     ...(a.def.exhaustCost || b.def.exhaustCost ? { exhaustCost: (a.def.exhaustCost ?? 0) + (b.def.exhaustCost ?? 0) } : {}),
+    ...(a.def.impulseCost || b.def.impulseCost ? { impulseCost: (a.def.impulseCost ?? 0) + (b.def.impulseCost ?? 0) } : {}), // くべる (赤 2026-10-12 段2) は消滅コストと同じく合算
     ...(a.def.lightCost || b.def.lightCost ? { lightCost: (a.def.lightCost ?? 0) + (b.def.lightCost ?? 0) } : {}), // 灯コストは合算 (捨て・消滅コストと同じ)
     // 人形は溶かしても人形 (2026-09-20 灯と人形の結び): 素材のどちらかが人形で結果が置物なら retainer を継承する
     // (点灯・号令・従者狩りの対象のまま。旧: 真・剣の人形が道具になり、灯コストだけ払って点灯しない置物ができていた)

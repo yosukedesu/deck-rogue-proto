@@ -213,6 +213,39 @@ export function burnoutEnemies(s: GameState): number[] {
   return s.enemies.flatMap((e, i) => (e.hp > 0 && e.burn > 0 && e.burn >= e.hp ? [i] : []))
 }
 
+/**
+ * ターン終了時の失効で得られるブロックの最大値 (灰の衣＝失効ごとブロック3 × 今の手札の衝動の札。2026-10-12 段2b Opus B:
+ * 被ダメ予測に乗らず HP6 で「9点来る」と出て実際は0)。自ターン中だけ。燠の守りが場にあれば1枚は残るので1枚引く
+ */
+export function expiryBlockPreview(s: GameState): number {
+  if (s.enemyPhase === true || s.phase !== 'player-turn') return 0
+  const per = s.player.permanents.reduce(
+    (a, p) => a + p.def.effects.filter((e) => e.trigger === 'onImpulseExpired' && e.effect === 'gainBlock').reduce((x, e) => x + (e.amount ?? 0), 0),
+    0,
+  )
+  if (per <= 0) return 0
+  const inHand = s.player.hand.filter((c) => s.player.impulseUids.includes(c.uid)).length
+  const kept = s.player.permanents.some((p) => p.def.effects.some((e) => e.effect === 'keepImpulseOne')) ? 1 : 0
+  return per * Math.max(0, inHand - kept)
+}
+
+/** 灯に関わる効果・コスト・条件か (lightMatters の判定) */
+const LIGHT_EFFECTS: ReadonlySet<string> = new Set(['addLight', 'addLightNextTurn', 'doubleLight', 'lightCarryHalf', 'dischargeLight', 'dischargeLightRally', 'dischargeLightWeaken', 'dealDamagePerLight', 'gainBlockPerLight', 'drawCardsPerLight', 'lightToSparks', 'dismissUnlessLight'])
+/**
+ * 灯の表示を出すか (2026-10-12 段2b Opus A/B: 赤のランでギアの回復のたび「灯1」が出続けた)。「回復するたび灯+1」は全色に効くが、
+ * 灯を使う札が1枚も無いランでは意味の無い数字。灯を持つ色 (リーダーのパッシブが灯を産む) か、灯に関わる札がデッキ・場にあれば出す
+ */
+export function lightMatters(s: GameState): boolean {
+  const p = s.player
+  if (p.permanents.some((x) => x.innate === true && x.def.effects.some((e) => e.effect === 'addLight'))) return true
+  const all = [...p.hand, ...p.drawPile, ...p.discardPile, ...p.exhaustPile, ...p.permanents, ...p.setCards]
+  return all.some(
+    (c) =>
+      (c.def.lightCost ?? 0) > 0 ||
+      [...c.def.effects, ...(c.def.modes ?? []).flatMap((m) => m.effects)].some((e) => LIGHT_EFFECTS.has(e.effect) || e.condition?.minLight !== undefined),
+  )
+}
+
 /** 置物の誘発のうち、相手を「生存する先頭の敵」に取るもの (combat.ts の runPermanentTriggers に先頭を渡している誘発) */
 const FIRST_ALIVE_TRIGGERS: ReadonlySet<string> = new Set(['onCombatStart', 'onTurnStart', 'onTurnEnd', 'onShuffle', 'onImpulseExpired', 'onScry', 'onScryDiscard', 'onSetExpired'])
 /** 相手を1体取る敵向けの効果 (target 無し = 単体) */

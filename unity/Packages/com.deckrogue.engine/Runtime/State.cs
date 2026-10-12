@@ -52,7 +52,7 @@ namespace DeckRogue.Engine
                 case Command_PlayCard c:
                     return Combat.PlayCard(state, c.CardUid, c.ModeIndex, c.DiscardUids, c.TargetIndex, c.ExhaustUids, c.RetrieveUid, c.DeckUids, c.HandUids, c.XAmount, c.PermanentUid);
                 case Command_EndTurn et:
-                    return Combat.EndTurn(state, et.HearthSparks, et.RetainUids);
+                    return Combat.EndTurn(state, et.HearthSparks, et.RetainUids, et.KeepUid);
                 case Command_RetrieveSetCard c:
                     return SetBase.RetrieveSetCard(state, c.CardUid);
                 case Command_PlayNecro c:

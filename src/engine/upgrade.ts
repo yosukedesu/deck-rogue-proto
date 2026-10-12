@@ -138,6 +138,7 @@ const MULT_EFFECTS = new Set([
   'dealDamagePerScry', 'dealDamagePerTrapFired', // 読み切り・仕掛けの反響 (青 2026-09-25): 参照倍率+1
   'dealDamagePerSpark', 'gainBlockPerSpark', 'gainBlockPerLight', 'drawCardsPerLight', 'dischargeLightWeaken', // 火種の嵐・火守りの盾 (2026-09-24)・灯の壁・灯の手帳・眩む閃光 (2026-09-20 夜): 参照倍率+1
   'dealDamagePerCascade', 'gainBlockPerBurn', 'dealDamagePerBurn', // 火の渦・灰かぶり・火の舌 (赤 2026-10-10): 参照倍率+1
+  'dischargeBurn', // 火掻き・焼き払い (赤 2026-10-12 段2): 消費する刈り取りも参照倍率+1 (成長放出と同じ)。爆熱の解放は V2_COST_ONLY で今の鍛え (2E→1E) を保つ
 ])
 const UNIT_EFFECTS_V2 = new Set([
   'scry', 'extendTrapLife', // 占術・潮待ち (青 2026-09-25): 枚数・延長ターン+1
@@ -183,6 +184,8 @@ const V2_COST_ONLY = new Set([
   'blue_counterspell', 'blue_spell_steal', 'blue_perm_tidal_lectern', 'blue_perm_deep_cloak', // 凍る静寂は 2026-09-25 に撤去 (3本柱)
   // 2026-10-10 赤の解凍 (ユーザー裁定「2枚とも例外」): 焔の目録 (2E 置物・衝動ごと勢い+2) は本家形だと勢い+4 = 8/30 に 門番T1 472ダメで是正した値に戻る。1E のまま
   'red_perm_ledger',
+  // 2026-10-12 段2: dischargeBurn を参照倍率のティアに入れた (火掻き・焼き払い) が、爆熱の解放 (R 2E ×3) の鍛えは従来のコスト−1 (2E→1E) のまま = 既存の札の鍛えを変えない
+  'red_burst_release',
 ])
 /**
  * 本家形の例外 = 打ち消しの条件を広げる (2026-09-25 青の解凍・ユーザー裁定): 「実値N以下/以上なら打ち消す」札は消せる範囲が個性の数字。
