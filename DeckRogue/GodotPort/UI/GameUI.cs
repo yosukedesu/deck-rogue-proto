@@ -17,252 +17,15 @@ using Newtonsoft.Json.Linq;
 
 namespace DeckRogue.GodotPort.UI;
 
-[ScriptPath("res://scripts/ui/GameUI.cs")]
-public class GameUI : Control
+public partial class GameUI : Control
 {
 	private sealed record EnemyHud(int Index, EnemyDropTarget Hit, PanelContainer Intent, PanelContainer Ledger);
 
-	public new class MethodName : Control.MethodName
-	{
-		public static readonly StringName AdvancePlay = "AdvancePlay";
 
-		public static readonly StringName SelectionTitle = "SelectionTitle";
 
-		public static readonly StringName BeginEndTurn = "BeginEndTurn";
 
-		public static readonly StringName FontSize = "FontSize";
 
-		public new static readonly StringName _Ready = "_Ready";
 
-		public static readonly StringName Bind = "Bind";
-
-		public static readonly StringName PresentationCompleted = "PresentationCompleted";
-
-		public new static readonly StringName _ExitTree = "_ExitTree";
-
-		public static readonly StringName SelectEnemy = "SelectEnemy";
-
-		public new static readonly StringName _UnhandledKeyInput = "_UnhandledKeyInput";
-
-		public static readonly StringName Rebuild = "Rebuild";
-
-		public static readonly StringName BuildHeader = "BuildHeader";
-
-		public static readonly StringName Heading = "Heading";
-
-		public static readonly StringName CloseOverlay = "CloseOverlay";
-
-		public static readonly StringName CloseAllOverlays = "CloseAllOverlays";
-
-		public static readonly StringName BuildOverlay = "BuildOverlay";
-
-		public static readonly StringName OpenMenu = "OpenMenu";
-
-		public static readonly StringName OpenKeywords = "OpenKeywords";
-
-		public static readonly StringName OpenJournal = "OpenJournal";
-
-		public static readonly StringName OpenExport = "OpenExport";
-
-		public static readonly StringName OpenRetainedExport = "OpenRetainedExport";
-
-		public static readonly StringName OpenExportPair = "OpenExportPair";
-
-		public static readonly StringName CopyText = "CopyText";
-
-		public static readonly StringName ExportFile = "ExportFile";
-
-		public static readonly StringName ImportFile = "ImportFile";
-
-		public static readonly StringName OpenImport = "OpenImport";
-
-		public static readonly StringName ImportText = "ImportText";
-
-		public new static readonly StringName _Notification = "_Notification";
-
-		public static readonly StringName HandleBack = "HandleBack";
-
-		public static readonly StringName ApplySafeArea = "ApplySafeArea";
-
-		public static readonly StringName ReadSettings = "ReadSettings";
-
-		public static readonly StringName ApplyAudio = "ApplyAudio";
-
-		public static readonly StringName SaveSettings = "SaveSettings";
-
-		public static readonly StringName OpenSettings = "OpenSettings";
-
-		public static readonly StringName ApplyTheme = "ApplyTheme";
-
-		public static readonly StringName Box = "Box";
-
-		public static readonly StringName Plain = "Plain";
-
-		public static readonly StringName SizeInteractiveControls = "SizeInteractiveControls";
-
-		public static readonly StringName Row = "Row";
-
-		public static readonly StringName Column = "Column";
-
-		public static readonly StringName ScrollColumn = "ScrollColumn";
-
-		public static readonly StringName Flow = "Flow";
-
-		public static readonly StringName Art = "Art";
-
-		public static readonly StringName Picture = "Picture";
-
-		public static readonly StringName Tile = "Tile";
-
-		public static readonly StringName CardColor = "CardColor";
-
-		public static readonly StringName EnemyVitalsText = "EnemyVitalsText";
-
-		public static readonly StringName EnemySurface = "EnemySurface";
-
-		public new static readonly StringName _Process = "_Process";
-
-		public static readonly StringName PositionEnemyHud = "PositionEnemyHud";
-
-		public static readonly StringName OpenNote = "OpenNote";
-
-		public static readonly StringName OpenRating = "OpenRating";
-
-		public static readonly StringName Paints = "Paints";
-
-		public static readonly StringName VisibleAlpha = "VisibleAlpha";
-
-		public static readonly StringName ViewportBounds = "ViewportBounds";
-
-		public new static readonly StringName Set = "Set";
-
-		public static readonly StringName CanDropHandCard = "CanDropHandCard";
-
-		public static readonly StringName DropHandCard = "DropHandCard";
-
-		public static readonly StringName PlayAllSparks = "PlayAllSparks";
-
-		public static readonly StringName PumpSparks = "PumpSparks";
-
-		public static readonly StringName ContinueFromTitle = "ContinueFromTitle";
-
-		public static readonly StringName Sound = "Sound";
-
-		public static readonly StringName OfferQueuedRating = "OfferQueuedRating";
-
-		public static readonly StringName InspectEnemy = "InspectEnemy";
-
-		public static readonly StringName DisableUnderlyingFocus = "DisableUnderlyingFocus";
-
-		public static readonly StringName FirstFocusable = "FirstFocusable";
-
-		public static readonly StringName ShowTitle = "ShowTitle";
-
-		public static readonly StringName SharePair = "SharePair";
-
-		public static readonly StringName ShareRequestFinished = "ShareRequestFinished";
-
-		public static readonly StringName BuildTitle = "BuildTitle";
-
-		public static readonly StringName InvokeAction = "InvokeAction";
-	}
-
-	public new class PropertyName : Control.PropertyName
-	{
-		public static readonly StringName GraphicsQuality = "GraphicsQuality";
-
-		public static readonly StringName PhoneLayout = "PhoneLayout";
-
-		public static readonly StringName MinimumHit = "MinimumHit";
-
-		public static readonly StringName IsInputBlocked = "IsInputBlocked";
-
-		public static readonly StringName CurrentRoute = "CurrentRoute";
-
-		public static readonly StringName ActiveModal = "ActiveModal";
-
-		public static readonly StringName RejectedReceiptCount = "RejectedReceiptCount";
-
-		public static readonly StringName PendingSparkPlays = "PendingSparkPlays";
-
-		public static readonly StringName PresentedNumericContactCount = "PresentedNumericContactCount";
-
-		public static readonly StringName _session = "_session";
-
-		public static readonly StringName _body = "_body";
-
-		public static readonly StringName _shell = "_shell";
-
-		public static readonly StringName _overlayNode = "_overlayNode";
-
-		public static readonly StringName _overlayTitle = "_overlayTitle";
-
-		public static readonly StringName _overlayCanClose = "_overlayCanClose";
-
-		public static readonly StringName _showTitle = "_showTitle";
-
-		public static readonly StringName _notice = "_notice";
-
-		public static readonly StringName _error = "_error";
-
-		public static readonly StringName _leaderId = "_leaderId";
-
-		public static readonly StringName _deckId = "_deckId";
-
-		public static readonly StringName _seed = "_seed";
-
-		public static readonly StringName _difficulty = "_difficulty";
-
-		public static readonly StringName _preferredTarget = "_preferredTarget";
-
-		public static readonly StringName _workshopA = "_workshopA";
-
-		public static readonly StringName _workshopB = "_workshopB";
-
-		public static readonly StringName _textScale = "_textScale";
-
-		public static readonly StringName _masterVolume = "_masterVolume";
-
-		public static readonly StringName _bgmVolume = "_bgmVolume";
-
-		public static readonly StringName _sfxVolume = "_sfxVolume";
-
-		public static readonly StringName _muted = "_muted";
-
-		public static readonly StringName _graphicsQuality = "_graphicsQuality";
-
-		public static readonly StringName _safeMargin = "_safeMargin";
-
-		public static readonly StringName _handScroll = "_handScroll";
-
-		public static readonly StringName _noteDraft = "_noteDraft";
-
-		public static readonly StringName _hpReadout = "_hpReadout";
-
-		public static readonly StringName _energyReadout = "_energyReadout";
-
-		public static readonly StringName _blockReadout = "_blockReadout";
-
-		public static readonly StringName _statusReadout = "_statusReadout";
-
-		public static readonly StringName _costPresented = "_costPresented";
-
-		public static readonly StringName _sparksRemaining = "_sparksRemaining";
-
-		public static readonly StringName _pumpingSparks = "_pumpingSparks";
-
-		public static readonly StringName _ratingQueued = "_ratingQueued";
-
-		public static readonly StringName _shareAwaiting = "_shareAwaiting";
-
-		public static readonly StringName _reactionMode = "_reactionMode";
-
-		public static readonly StringName _setAnyCards = "_setAnyCards";
-	}
-
-	public new class SignalName : Control.SignalName
-	{
-	}
 
 	private readonly HashSet<string> _scryPicks = new HashSet<string>();
 
@@ -400,7 +163,7 @@ public class GameUI : Control
 
 	private static bool NativeFilesAvailable => DisplayServer.HasFeature(DisplayServer.Feature.NativeDialogFile);
 
-	public IReadOnlyList<Control> EnemyHudSurfaces => _enemyHud.SelectMany((EnemyHud h) => new Control[2] { h.Intent, h.Ledger }).ToArray();
+	public IReadOnlyList<Control> EnemyHudSurfaces => _uxEnemies.Where(h=>GodotObject.IsInstanceValid(h.Intent)&&h.Intent.IsVisibleInTree()).SelectMany(h=>new Control[]{h.Intent,h.Ledger}).ToArray();
 
 	public GameState? DisplayedCombat => _view?.Combat;
 
@@ -420,7 +183,7 @@ public class GameUI : Control
 
 	public event Action<string>? UiSoundRequested;
 
-	private void BuildBattle(RunState run)
+	private void BuildBattleLegacy(RunState run)
 	{
 		GameState state = run.Combat;
 		if (state == null)
@@ -761,7 +524,7 @@ public class GameUI : Control
 
 	private void CardActions(CardInstance card)
 	{
-		GameState state = _view?.Combat;
+		GameState state = InputCombat;
 		if (state == null || IsInputBlocked || state.PendingScry != null)
 		{
 			return;
@@ -807,7 +570,7 @@ public class GameUI : Control
 
 	private void BeginPlay(CardInstance card, int? target = null)
 	{
-		GameState state = _view?.Combat;
+		GameState state = InputCombat;
 		if (state == null || IsInputBlocked)
 		{
 			return;
@@ -833,7 +596,7 @@ public class GameUI : Control
 
 	private void AdvancePlay()
 	{
-		GameState state = _view?.Combat;
+		GameState state = InputCombat;
 		if (_play == null || state == null || IsInputBlocked)
 		{
 			return;
@@ -848,6 +611,7 @@ public class GameUI : Control
 			return;
 		}
 		PlaySelection play = _play;
+        if(need=="target"){_overlay=null;Rebuild();return;}
 		Open(play.Card.Def.Name + " · " + SelectionTitle(need), delegate(VBoxContainer box)
 		{
 			Text(box, CardText.Body(play.Card.Def), 20, Muted);
@@ -1411,6 +1175,7 @@ public class GameUI : Control
 		if (_session != null && !IsInputBlocked)
 		{
 			_view = _session.CurrentRun;
+            _uxPaid.Clear();_uxIncomingOwner=-1;
 			PumpSparks();
 			if (!IsInputBlocked)
 			{
@@ -1431,6 +1196,7 @@ public class GameUI : Control
 	private void Changed(SessionChange change)
 	{
 		_activeChange = change;
+        if(change.IsReset)UxResetHand();
 		_costPresented = false;
 		if (change.IsReset)
 		{
@@ -1461,19 +1227,19 @@ public class GameUI : Control
 		}
 		if (!IsInputBlocked)
 		{
-			_view = change.Current;
+			_view = change.IsReset?change.Current:UxOrdinaryProjection(change.Current);
 		}
 		Rebuild();
 	}
 
 	public void SelectEnemy(int index)
 	{
-		if (!IsInputBlocked && !(_view?.Combat == null) && index >= 0 && index < _view.Combat.Enemies.Count && _view.Combat.Enemies[index].Hp > 0)
+		if (!IsInputBlocked && InputCombat is {} targetState && index >= 0 && index < targetState.Enemies.Count && targetState.Enemies[index].Hp > 0)
 		{
 			_preferredTarget = index;
 			if (_play != null)
 			{
-				_play.TargetIndex = FlowRules.GuardRedirect(_view.Combat, index);
+				_play.TargetIndex = FlowRules.GuardRedirect(targetState, index);
 				AdvancePlay();
 			}
 			else
@@ -1555,6 +1321,7 @@ public class GameUI : Control
 		}
 		foreach (Node child in GetChildren())
 		{
+            if(child==_uxHand){_uxHand.Visible=CurrentRoute=="combat";continue;}
 			if (child is Control c)
 			{
 				c.Hide();
@@ -1661,10 +1428,7 @@ public class GameUI : Control
 			};
 			AddChild(busy, forceReadableName: false, InternalMode.Disabled);
 			busy.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect, LayoutPresetMode.Minsize);
-			Label label = Text(busy, "解決中…", 18, Gold);
-			label.SetAnchorsAndOffsetsPreset(LayoutPreset.BottomRight, LayoutPresetMode.Minsize);
-			label.Position -= new Vector2(160f, 48f);
-			label.Size = new Vector2(140f, 30f);
+            busy.ZIndex=99; // Source phase/banner owns busy feedback.
 		}
 		SizeInteractiveControls(_shell);
 		if (_overlayNode != null)
@@ -1679,6 +1443,7 @@ public class GameUI : Control
 
 	private void BuildHeader()
 	{
+        if(CurrentRoute=="combat"){BuildBattleHeader();return;}
 		PanelContainer panel = new PanelContainer();
 		panel.AddThemeStyleboxOverride("panel", Box(SourcePalette.Night, Border));
 		_shell.AddChild(panel, forceReadableName: false, InternalMode.Disabled);
@@ -1751,6 +1516,7 @@ public class GameUI : Control
 
 	private void CloseAllOverlays()
 	{
+        EndHandDrag();
 		_overlayStack.Clear();
 		_overlay = null;
 		_play = null;
@@ -1767,6 +1533,7 @@ public class GameUI : Control
 		AddChild(scrim, forceReadableName: false, InternalMode.Disabled);
 		scrim.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect, LayoutPresetMode.Minsize);
 		_overlayNode = scrim;
+        scrim.ZIndex=100;
 		MarginContainer margin = new MarginContainer();
 		scrim.AddChild(margin, forceReadableName: false, InternalMode.Disabled);
 		margin.AnchorLeft = 0.05f;
@@ -1794,6 +1561,7 @@ public class GameUI : Control
 
 	private void OpenMenu()
 	{
+        EndHandDrag();
 		Open("メニュー", delegate(VBoxContainer box)
 		{
 			HFlowContainer parent = Flow(box);
@@ -1817,6 +1585,22 @@ public class GameUI : Control
 					}
 				});
 				Button(parent, "書き出す", OpenExport);
+                Button(parent, "デッキ", () => OpenDeck(_session.CurrentRun.Deck, "デッキ"));
+                Button(parent, "遺物", () => OpenRelics(_session.CurrentRun));
+                if (InputCombat is {} state)
+                {
+                    Button(parent, "状態・能力", () => Open("状態・能力", b => {
+                        Text(b, PlayerStatus(state), 23);
+                        Text(b, "置物・人形", 22, Gold);
+                        CardGrid(b, state.Player.Permanents, InspectCard, null, card => Effects.IsDoll(card) ? "残り " + (Effects.DollLifeLeft(state, card)?.ToString() ?? "∞") + " ターン" : "常在");
+                    }));
+                    Button(parent, "仕込んでいるからくり", () => Open("仕込んでいるからくり", b => CardGrid(b, state.Player.SetCards, InspectCard, null, card => Effects.TrapStatusTextKarakuri(state, card))));
+                    Button(parent, "ギア", () => Open("ギア · " + Gears.ManaLabel(_session.CurrentRun.Mana.GetValueOrDefault()), b => GearInventory(b, _session.CurrentRun, usable: true)));
+                    Button(parent, "戦闘ログ", () => Open("戦闘ログ", b => {
+                        var col = ScrollColumn(b);
+                        foreach (var e in state.EventLog) { var line = CardText.LogLine(e); if (!string.IsNullOrEmpty(line)) Text(col, line, 18, CardText.IsPositiveLog(e) ? Accent : Ink); }
+                    }));
+                }
 				Button(parent, "ランの記録", OpenJournal);
 				Button(parent, "プレイメモ", OpenNote);
 				if (_session.History.Count > 0)
@@ -2214,6 +1998,12 @@ public class GameUI : Control
 			{
 				CloseOverlay();
 			}
+            else if (_play != null || _uxDrag != null)
+            {
+                EndHandDrag();
+                _play = null;
+                Rebuild();
+            }
 			else
 			{
 				OpenMenu();
@@ -2885,7 +2675,7 @@ public class GameUI : Control
 
 	public override void _Process(double delta)
 	{
-		PositionEnemyHud();
+		UxProcess(delta);
 	}
 
 	private void PositionEnemyHud()
@@ -3073,7 +2863,7 @@ public class GameUI : Control
 				if (1 == 0)
 				{
 				}
-				bool flag = !(control is EnemyDropTarget) && !(control is BattlefieldDropTarget) && ((control is PanelContainer) ? Paints(control.GetThemeStylebox("panel")) : ((control is BaseButton button) ? Paints(control.GetThemeStylebox(button.Disabled ? "disabled" : (button.IsPressed() ? "pressed" : (button.IsHovered() ? "hover" : "normal")))) : ((control is Label label) ? (!string.IsNullOrEmpty(label.Text)) : (control is RichTextLabel text && !string.IsNullOrEmpty(text.Text)))));
+				bool flag = (control is CardTile card && card.IsBattleHand) || control is SourceHealthBar || control is SourceEnergyOrb || !(control is EnemyDropTarget) && !(control is BattlefieldDropTarget) && ((control is PanelContainer) ? Paints(control.GetThemeStylebox("panel")) : ((control is BaseButton button) ? Paints(control.GetThemeStylebox(button.Disabled ? "disabled" : (button.IsPressed() ? "pressed" : (button.IsHovered() ? "hover" : "normal")))) : ((control is Label label) ? (!string.IsNullOrEmpty(label.Text)) : (control is RichTextLabel text && !string.IsNullOrEmpty(text.Text)))));
 				if (1 == 0)
 				{
 				}
@@ -3149,7 +2939,7 @@ public class GameUI : Control
 		_presentedState = state;
 	}
 
-	public void PresentEvent(GameEvent evt)
+	private void PresentEventLegacy(GameEvent evt)
 	{
 		GameState state = _view?.Combat;
 		if ((object)state == null)
@@ -3457,6 +3247,7 @@ public class GameUI : Control
 		if (label != null && GodotObject.IsInstanceValid(label))
 		{
 			label.Text = text;
+            if(label is SourceHudLabel source)source.RefreshSourceAlignment();
 		}
 	}
 
@@ -3469,7 +3260,7 @@ public class GameUI : Control
 	{
 		if (!IsInputBlocked && _overlay == null)
 		{
-			GameState state = _view?.Combat;
+			GameState state = InputCombat;
 			if ((object)state != null)
 			{
 				foreach (CardInstance card in state.Player.Hand)
@@ -3487,11 +3278,12 @@ public class GameUI : Control
 
 	public void DropHandCard(string uid, Vector2 viewportPoint)
 	{
+        if(viewportPoint.Y>=Size.Y*.64f){EndHandDrag();return;}
 		if (!CanDropHandCard(uid))
 		{
 			return;
 		}
-		GameState state = _view?.Combat;
+		GameState state = InputCombat;
 		if ((object)state == null)
 		{
 			return;
@@ -3638,7 +3430,7 @@ public class GameUI : Control
 		});
 	}
 
-	public void PresentNumericContact(GameEvent evt)
+	private void PresentNumericContactLegacy(GameEvent evt)
 	{
 		GameState state = _view?.Combat;
 		if ((object)state == null)
@@ -4702,1692 +4494,6 @@ public class GameUI : Control
 		}
 	}
 
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	internal static List<MethodInfo> GetGodotMethodList()
-	{
-		List<MethodInfo> methods = new List<MethodInfo>(71);
-		methods.Add(new MethodInfo(MethodName.AdvancePlay, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.SelectionTitle, new PropertyInfo(Variant.Type.String, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "need", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.BeginEndTurn, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.FontSize, new PropertyInfo(Variant.Type.Int, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Int, "requested", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName._Ready, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.Bind, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "session", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.PresentationCompleted, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName._ExitTree, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.SelectEnemy, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Int, "index", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName._UnhandledKeyInput, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "evt", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("InputEvent"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.Rebuild, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.BuildHeader, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.Heading, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "title", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "subtitle", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.CloseOverlay, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.CloseAllOverlays, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.BuildOverlay, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.OpenMenu, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.OpenKeywords, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.OpenJournal, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.OpenExport, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.OpenRetainedExport, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.OpenExportPair, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "save", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "report", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "title", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.CopyText, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "text", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.ExportFile, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "text", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "name", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.ImportFile, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.OpenImport, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.ImportText, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "text", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName._Notification, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Int, "what", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.HandleBack, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.ApplySafeArea, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.ReadSettings, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.ApplyAudio, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.SaveSettings, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.OpenSettings, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.ApplyTheme, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.Box, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("StyleBoxFlat"), exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Color, "color", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.Color, "border", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.Int, "width", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.Plain, new PropertyInfo(Variant.Type.String, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "text", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.SizeInteractiveControls, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "node", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.Row, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("HBoxContainer"), exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "parent", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.Column, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("VBoxContainer"), exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "parent", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.ScrollColumn, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("VBoxContainer"), exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "parent", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.Flow, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("HFlowContainer"), exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "parent", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.Art, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Texture2D"), exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "group", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "id", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.Picture, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "parent", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false),
-			new PropertyInfo(Variant.Type.String, "group", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "id", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.Vector2, "size", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.Tile, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("VBoxContainer"), exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "parent", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false),
-			new PropertyInfo(Variant.Type.String, "name", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "description", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "group", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "id", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.CardColor, new PropertyInfo(Variant.Type.Color, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "color", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.EnemyVitalsText, new PropertyInfo(Variant.Type.String, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Int, "hp", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.Int, "maxHp", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.Int, "block", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.EnemySurface, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("PanelContainer"), exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "parent", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false),
-			new PropertyInfo(Variant.Type.Int, "index", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "kind", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.Color, "border", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName._Process, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Float, "delta", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.PositionEnemyHud, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.OpenNote, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.OpenRating, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.Paints, new PropertyInfo(Variant.Type.Bool, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "style", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("StyleBox"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.VisibleAlpha, new PropertyInfo(Variant.Type.Float, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "item", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("CanvasItem"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.ViewportBounds, new PropertyInfo(Variant.Type.Rect2, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "control", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Control"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.Set, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "label", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Label"), exported: false),
-			new PropertyInfo(Variant.Type.String, "text", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.CanDropHandCard, new PropertyInfo(Variant.Type.Bool, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "uid", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.DropHandCard, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "uid", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.Vector2, "viewportPoint", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.PlayAllSparks, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.PumpSparks, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.ContinueFromTitle, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.Sound, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "key", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.OfferQueuedRating, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.InspectEnemy, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Int, "index", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.DisableUnderlyingFocus, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "node", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.FirstFocusable, new PropertyInfo(Variant.Type.Object, "", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Control"), exported: false), MethodFlags.Normal | MethodFlags.Static, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "node", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("Node"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.ShowTitle, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.SharePair, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "report", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "save", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.ShareRequestFinished, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Bool, "opened", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "message", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.BuildTitle, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.InvokeAction, new PropertyInfo(Variant.Type.Bool, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.String, "exactLabel", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		return methods;
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override bool InvokeGodotClassMethod(in godot_string_name method, NativeVariantPtrArgs args, out godot_variant ret)
-	{
-		if (method == MethodName.AdvancePlay && args.Count == 0)
-		{
-			AdvancePlay();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.SelectionTitle && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<string>(SelectionTitle(VariantUtils.ConvertTo<string>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.BeginEndTurn && args.Count == 0)
-		{
-			BeginEndTurn();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.FontSize && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<int>(FontSize(VariantUtils.ConvertTo<int>(in args[0])));
-			return true;
-		}
-		if (method == MethodName._Ready && args.Count == 0)
-		{
-			_Ready();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.Bind && args.Count == 1)
-		{
-			Bind(VariantUtils.ConvertTo<GameSession>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.PresentationCompleted && args.Count == 0)
-		{
-			PresentationCompleted();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName._ExitTree && args.Count == 0)
-		{
-			_ExitTree();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.SelectEnemy && args.Count == 1)
-		{
-			SelectEnemy(VariantUtils.ConvertTo<int>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName._UnhandledKeyInput && args.Count == 1)
-		{
-			_UnhandledKeyInput(VariantUtils.ConvertTo<InputEvent>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.Rebuild && args.Count == 0)
-		{
-			Rebuild();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.BuildHeader && args.Count == 0)
-		{
-			BuildHeader();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.Heading && args.Count == 2)
-		{
-			Heading(VariantUtils.ConvertTo<string>(in args[0]), VariantUtils.ConvertTo<string>(in args[1]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.CloseOverlay && args.Count == 0)
-		{
-			CloseOverlay();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.CloseAllOverlays && args.Count == 0)
-		{
-			CloseAllOverlays();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.BuildOverlay && args.Count == 0)
-		{
-			BuildOverlay();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.OpenMenu && args.Count == 0)
-		{
-			OpenMenu();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.OpenKeywords && args.Count == 0)
-		{
-			OpenKeywords();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.OpenJournal && args.Count == 0)
-		{
-			OpenJournal();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.OpenExport && args.Count == 0)
-		{
-			OpenExport();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.OpenRetainedExport && args.Count == 0)
-		{
-			OpenRetainedExport();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.OpenExportPair && args.Count == 3)
-		{
-			OpenExportPair(VariantUtils.ConvertTo<string>(in args[0]), VariantUtils.ConvertTo<string>(in args[1]), VariantUtils.ConvertTo<string>(in args[2]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.CopyText && args.Count == 1)
-		{
-			CopyText(VariantUtils.ConvertTo<string>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.ExportFile && args.Count == 2)
-		{
-			ExportFile(VariantUtils.ConvertTo<string>(in args[0]), VariantUtils.ConvertTo<string>(in args[1]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.ImportFile && args.Count == 0)
-		{
-			ImportFile();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.OpenImport && args.Count == 0)
-		{
-			OpenImport();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.ImportText && args.Count == 1)
-		{
-			ImportText(VariantUtils.ConvertTo<string>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName._Notification && args.Count == 1)
-		{
-			_Notification(VariantUtils.ConvertTo<int>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.HandleBack && args.Count == 0)
-		{
-			HandleBack();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.ApplySafeArea && args.Count == 0)
-		{
-			ApplySafeArea();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.ReadSettings && args.Count == 0)
-		{
-			ReadSettings();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.ApplyAudio && args.Count == 0)
-		{
-			ApplyAudio();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.SaveSettings && args.Count == 0)
-		{
-			SaveSettings();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.OpenSettings && args.Count == 0)
-		{
-			OpenSettings();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.ApplyTheme && args.Count == 0)
-		{
-			ApplyTheme();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.Box && args.Count == 3)
-		{
-			ret = VariantUtils.CreateFrom<StyleBoxFlat>(Box(VariantUtils.ConvertTo<Color>(in args[0]), VariantUtils.ConvertTo<Color>(in args[1]), VariantUtils.ConvertTo<int>(in args[2])));
-			return true;
-		}
-		if (method == MethodName.Plain && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<string>(Plain(VariantUtils.ConvertTo<string>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.SizeInteractiveControls && args.Count == 1)
-		{
-			SizeInteractiveControls(VariantUtils.ConvertTo<Node>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.Row && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<HBoxContainer>(Row(VariantUtils.ConvertTo<Node>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.Column && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<VBoxContainer>(Column(VariantUtils.ConvertTo<Node>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.ScrollColumn && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<VBoxContainer>(ScrollColumn(VariantUtils.ConvertTo<Node>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.Flow && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<HFlowContainer>(Flow(VariantUtils.ConvertTo<Node>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.Art && args.Count == 2)
-		{
-			ret = VariantUtils.CreateFrom<Texture2D>(Art(VariantUtils.ConvertTo<string>(in args[0]), VariantUtils.ConvertTo<string>(in args[1])));
-			return true;
-		}
-		if (method == MethodName.Picture && args.Count == 4)
-		{
-			Picture(VariantUtils.ConvertTo<Node>(in args[0]), VariantUtils.ConvertTo<string>(in args[1]), VariantUtils.ConvertTo<string>(in args[2]), VariantUtils.ConvertTo<Vector2>(in args[3]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.Tile && args.Count == 5)
-		{
-			ret = VariantUtils.CreateFrom<VBoxContainer>(Tile(VariantUtils.ConvertTo<Node>(in args[0]), VariantUtils.ConvertTo<string>(in args[1]), VariantUtils.ConvertTo<string>(in args[2]), VariantUtils.ConvertTo<string>(in args[3]), VariantUtils.ConvertTo<string>(in args[4])));
-			return true;
-		}
-		if (method == MethodName.CardColor && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<Color>(CardColor(VariantUtils.ConvertTo<string>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.EnemyVitalsText && args.Count == 3)
-		{
-			ret = VariantUtils.CreateFrom<string>(EnemyVitalsText(VariantUtils.ConvertTo<int>(in args[0]), VariantUtils.ConvertTo<int>(in args[1]), VariantUtils.ConvertTo<int>(in args[2])));
-			return true;
-		}
-		if (method == MethodName.EnemySurface && args.Count == 4)
-		{
-			ret = VariantUtils.CreateFrom<PanelContainer>(EnemySurface(VariantUtils.ConvertTo<Node>(in args[0]), VariantUtils.ConvertTo<int>(in args[1]), VariantUtils.ConvertTo<string>(in args[2]), VariantUtils.ConvertTo<Color>(in args[3])));
-			return true;
-		}
-		if (method == MethodName._Process && args.Count == 1)
-		{
-			_Process(VariantUtils.ConvertTo<double>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.PositionEnemyHud && args.Count == 0)
-		{
-			PositionEnemyHud();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.OpenNote && args.Count == 0)
-		{
-			OpenNote();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.OpenRating && args.Count == 0)
-		{
-			OpenRating();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.Paints && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<bool>(Paints(VariantUtils.ConvertTo<StyleBox>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.VisibleAlpha && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<float>(VisibleAlpha(VariantUtils.ConvertTo<CanvasItem>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.ViewportBounds && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<Rect2>(ViewportBounds(VariantUtils.ConvertTo<Control>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.Set && args.Count == 2)
-		{
-			Set(VariantUtils.ConvertTo<Label>(in args[0]), VariantUtils.ConvertTo<string>(in args[1]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.CanDropHandCard && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<bool>(CanDropHandCard(VariantUtils.ConvertTo<string>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.DropHandCard && args.Count == 2)
-		{
-			DropHandCard(VariantUtils.ConvertTo<string>(in args[0]), VariantUtils.ConvertTo<Vector2>(in args[1]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.PlayAllSparks && args.Count == 0)
-		{
-			PlayAllSparks();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.PumpSparks && args.Count == 0)
-		{
-			PumpSparks();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.ContinueFromTitle && args.Count == 0)
-		{
-			ContinueFromTitle();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.Sound && args.Count == 1)
-		{
-			Sound(VariantUtils.ConvertTo<string>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.OfferQueuedRating && args.Count == 0)
-		{
-			OfferQueuedRating();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.InspectEnemy && args.Count == 1)
-		{
-			InspectEnemy(VariantUtils.ConvertTo<int>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.DisableUnderlyingFocus && args.Count == 1)
-		{
-			DisableUnderlyingFocus(VariantUtils.ConvertTo<Node>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.FirstFocusable && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<Control>(FirstFocusable(VariantUtils.ConvertTo<Node>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.ShowTitle && args.Count == 0)
-		{
-			ShowTitle();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.SharePair && args.Count == 2)
-		{
-			SharePair(VariantUtils.ConvertTo<string>(in args[0]), VariantUtils.ConvertTo<string>(in args[1]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.ShareRequestFinished && args.Count == 2)
-		{
-			ShareRequestFinished(VariantUtils.ConvertTo<bool>(in args[0]), VariantUtils.ConvertTo<string>(in args[1]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.BuildTitle && args.Count == 0)
-		{
-			BuildTitle();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.InvokeAction && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<bool>(InvokeAction(VariantUtils.ConvertTo<string>(in args[0])));
-			return true;
-		}
-		return base.InvokeGodotClassMethod(in method, args, out ret);
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	internal static bool InvokeGodotClassStaticMethod(in godot_string_name method, NativeVariantPtrArgs args, out godot_variant ret)
-	{
-		if (method == MethodName.SelectionTitle && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<string>(SelectionTitle(VariantUtils.ConvertTo<string>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.Box && args.Count == 3)
-		{
-			ret = VariantUtils.CreateFrom<StyleBoxFlat>(Box(VariantUtils.ConvertTo<Color>(in args[0]), VariantUtils.ConvertTo<Color>(in args[1]), VariantUtils.ConvertTo<int>(in args[2])));
-			return true;
-		}
-		if (method == MethodName.Plain && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<string>(Plain(VariantUtils.ConvertTo<string>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.Row && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<HBoxContainer>(Row(VariantUtils.ConvertTo<Node>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.Column && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<VBoxContainer>(Column(VariantUtils.ConvertTo<Node>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.ScrollColumn && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<VBoxContainer>(ScrollColumn(VariantUtils.ConvertTo<Node>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.Flow && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<HFlowContainer>(Flow(VariantUtils.ConvertTo<Node>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.CardColor && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<Color>(CardColor(VariantUtils.ConvertTo<string>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.Paints && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<bool>(Paints(VariantUtils.ConvertTo<StyleBox>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.VisibleAlpha && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<float>(VisibleAlpha(VariantUtils.ConvertTo<CanvasItem>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.ViewportBounds && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<Rect2>(ViewportBounds(VariantUtils.ConvertTo<Control>(in args[0])));
-			return true;
-		}
-		if (method == MethodName.Set && args.Count == 2)
-		{
-			Set(VariantUtils.ConvertTo<Label>(in args[0]), VariantUtils.ConvertTo<string>(in args[1]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.DisableUnderlyingFocus && args.Count == 1)
-		{
-			DisableUnderlyingFocus(VariantUtils.ConvertTo<Node>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.FirstFocusable && args.Count == 1)
-		{
-			ret = VariantUtils.CreateFrom<Control>(FirstFocusable(VariantUtils.ConvertTo<Node>(in args[0])));
-			return true;
-		}
-		ret = default(godot_variant);
-		return false;
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override bool HasGodotClassMethod(in godot_string_name method)
-	{
-		if (method == MethodName.AdvancePlay)
-		{
-			return true;
-		}
-		if (method == MethodName.SelectionTitle)
-		{
-			return true;
-		}
-		if (method == MethodName.BeginEndTurn)
-		{
-			return true;
-		}
-		if (method == MethodName.FontSize)
-		{
-			return true;
-		}
-		if (method == MethodName._Ready)
-		{
-			return true;
-		}
-		if (method == MethodName.Bind)
-		{
-			return true;
-		}
-		if (method == MethodName.PresentationCompleted)
-		{
-			return true;
-		}
-		if (method == MethodName._ExitTree)
-		{
-			return true;
-		}
-		if (method == MethodName.SelectEnemy)
-		{
-			return true;
-		}
-		if (method == MethodName._UnhandledKeyInput)
-		{
-			return true;
-		}
-		if (method == MethodName.Rebuild)
-		{
-			return true;
-		}
-		if (method == MethodName.BuildHeader)
-		{
-			return true;
-		}
-		if (method == MethodName.Heading)
-		{
-			return true;
-		}
-		if (method == MethodName.CloseOverlay)
-		{
-			return true;
-		}
-		if (method == MethodName.CloseAllOverlays)
-		{
-			return true;
-		}
-		if (method == MethodName.BuildOverlay)
-		{
-			return true;
-		}
-		if (method == MethodName.OpenMenu)
-		{
-			return true;
-		}
-		if (method == MethodName.OpenKeywords)
-		{
-			return true;
-		}
-		if (method == MethodName.OpenJournal)
-		{
-			return true;
-		}
-		if (method == MethodName.OpenExport)
-		{
-			return true;
-		}
-		if (method == MethodName.OpenRetainedExport)
-		{
-			return true;
-		}
-		if (method == MethodName.OpenExportPair)
-		{
-			return true;
-		}
-		if (method == MethodName.CopyText)
-		{
-			return true;
-		}
-		if (method == MethodName.ExportFile)
-		{
-			return true;
-		}
-		if (method == MethodName.ImportFile)
-		{
-			return true;
-		}
-		if (method == MethodName.OpenImport)
-		{
-			return true;
-		}
-		if (method == MethodName.ImportText)
-		{
-			return true;
-		}
-		if (method == MethodName._Notification)
-		{
-			return true;
-		}
-		if (method == MethodName.HandleBack)
-		{
-			return true;
-		}
-		if (method == MethodName.ApplySafeArea)
-		{
-			return true;
-		}
-		if (method == MethodName.ReadSettings)
-		{
-			return true;
-		}
-		if (method == MethodName.ApplyAudio)
-		{
-			return true;
-		}
-		if (method == MethodName.SaveSettings)
-		{
-			return true;
-		}
-		if (method == MethodName.OpenSettings)
-		{
-			return true;
-		}
-		if (method == MethodName.ApplyTheme)
-		{
-			return true;
-		}
-		if (method == MethodName.Box)
-		{
-			return true;
-		}
-		if (method == MethodName.Plain)
-		{
-			return true;
-		}
-		if (method == MethodName.SizeInteractiveControls)
-		{
-			return true;
-		}
-		if (method == MethodName.Row)
-		{
-			return true;
-		}
-		if (method == MethodName.Column)
-		{
-			return true;
-		}
-		if (method == MethodName.ScrollColumn)
-		{
-			return true;
-		}
-		if (method == MethodName.Flow)
-		{
-			return true;
-		}
-		if (method == MethodName.Art)
-		{
-			return true;
-		}
-		if (method == MethodName.Picture)
-		{
-			return true;
-		}
-		if (method == MethodName.Tile)
-		{
-			return true;
-		}
-		if (method == MethodName.CardColor)
-		{
-			return true;
-		}
-		if (method == MethodName.EnemyVitalsText)
-		{
-			return true;
-		}
-		if (method == MethodName.EnemySurface)
-		{
-			return true;
-		}
-		if (method == MethodName._Process)
-		{
-			return true;
-		}
-		if (method == MethodName.PositionEnemyHud)
-		{
-			return true;
-		}
-		if (method == MethodName.OpenNote)
-		{
-			return true;
-		}
-		if (method == MethodName.OpenRating)
-		{
-			return true;
-		}
-		if (method == MethodName.Paints)
-		{
-			return true;
-		}
-		if (method == MethodName.VisibleAlpha)
-		{
-			return true;
-		}
-		if (method == MethodName.ViewportBounds)
-		{
-			return true;
-		}
-		if (method == MethodName.Set)
-		{
-			return true;
-		}
-		if (method == MethodName.CanDropHandCard)
-		{
-			return true;
-		}
-		if (method == MethodName.DropHandCard)
-		{
-			return true;
-		}
-		if (method == MethodName.PlayAllSparks)
-		{
-			return true;
-		}
-		if (method == MethodName.PumpSparks)
-		{
-			return true;
-		}
-		if (method == MethodName.ContinueFromTitle)
-		{
-			return true;
-		}
-		if (method == MethodName.Sound)
-		{
-			return true;
-		}
-		if (method == MethodName.OfferQueuedRating)
-		{
-			return true;
-		}
-		if (method == MethodName.InspectEnemy)
-		{
-			return true;
-		}
-		if (method == MethodName.DisableUnderlyingFocus)
-		{
-			return true;
-		}
-		if (method == MethodName.FirstFocusable)
-		{
-			return true;
-		}
-		if (method == MethodName.ShowTitle)
-		{
-			return true;
-		}
-		if (method == MethodName.SharePair)
-		{
-			return true;
-		}
-		if (method == MethodName.ShareRequestFinished)
-		{
-			return true;
-		}
-		if (method == MethodName.BuildTitle)
-		{
-			return true;
-		}
-		if (method == MethodName.InvokeAction)
-		{
-			return true;
-		}
-		return base.HasGodotClassMethod(in method);
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override bool SetGodotClassPropertyValue(in godot_string_name name, in godot_variant value)
-	{
-		if (name == PropertyName.RejectedReceiptCount)
-		{
-			RejectedReceiptCount = VariantUtils.ConvertTo<int>(in value);
-			return true;
-		}
-		if (name == PropertyName.PresentedNumericContactCount)
-		{
-			PresentedNumericContactCount = VariantUtils.ConvertTo<int>(in value);
-			return true;
-		}
-		if (name == PropertyName._session)
-		{
-			_session = VariantUtils.ConvertTo<GameSession>(in value);
-			return true;
-		}
-		if (name == PropertyName._body)
-		{
-			_body = VariantUtils.ConvertTo<VBoxContainer>(in value);
-			return true;
-		}
-		if (name == PropertyName._shell)
-		{
-			_shell = VariantUtils.ConvertTo<VBoxContainer>(in value);
-			return true;
-		}
-		if (name == PropertyName._overlayNode)
-		{
-			_overlayNode = VariantUtils.ConvertTo<Control>(in value);
-			return true;
-		}
-		if (name == PropertyName._overlayTitle)
-		{
-			_overlayTitle = VariantUtils.ConvertTo<string>(in value);
-			return true;
-		}
-		if (name == PropertyName._overlayCanClose)
-		{
-			_overlayCanClose = VariantUtils.ConvertTo<bool>(in value);
-			return true;
-		}
-		if (name == PropertyName._showTitle)
-		{
-			_showTitle = VariantUtils.ConvertTo<bool>(in value);
-			return true;
-		}
-		if (name == PropertyName._notice)
-		{
-			_notice = VariantUtils.ConvertTo<string>(in value);
-			return true;
-		}
-		if (name == PropertyName._error)
-		{
-			_error = VariantUtils.ConvertTo<bool>(in value);
-			return true;
-		}
-		if (name == PropertyName._leaderId)
-		{
-			_leaderId = VariantUtils.ConvertTo<string>(in value);
-			return true;
-		}
-		if (name == PropertyName._deckId)
-		{
-			_deckId = VariantUtils.ConvertTo<string>(in value);
-			return true;
-		}
-		if (name == PropertyName._seed)
-		{
-			_seed = VariantUtils.ConvertTo<int>(in value);
-			return true;
-		}
-		if (name == PropertyName._difficulty)
-		{
-			_difficulty = VariantUtils.ConvertTo<int>(in value);
-			return true;
-		}
-		if (name == PropertyName._preferredTarget)
-		{
-			_preferredTarget = VariantUtils.ConvertTo<int>(in value);
-			return true;
-		}
-		if (name == PropertyName._workshopA)
-		{
-			_workshopA = VariantUtils.ConvertTo<int>(in value);
-			return true;
-		}
-		if (name == PropertyName._workshopB)
-		{
-			_workshopB = VariantUtils.ConvertTo<int>(in value);
-			return true;
-		}
-		if (name == PropertyName._textScale)
-		{
-			_textScale = VariantUtils.ConvertTo<float>(in value);
-			return true;
-		}
-		if (name == PropertyName._masterVolume)
-		{
-			_masterVolume = VariantUtils.ConvertTo<float>(in value);
-			return true;
-		}
-		if (name == PropertyName._bgmVolume)
-		{
-			_bgmVolume = VariantUtils.ConvertTo<float>(in value);
-			return true;
-		}
-		if (name == PropertyName._sfxVolume)
-		{
-			_sfxVolume = VariantUtils.ConvertTo<float>(in value);
-			return true;
-		}
-		if (name == PropertyName._muted)
-		{
-			_muted = VariantUtils.ConvertTo<bool>(in value);
-			return true;
-		}
-		if (name == PropertyName._graphicsQuality)
-		{
-			_graphicsQuality = VariantUtils.ConvertTo<string>(in value);
-			return true;
-		}
-		if (name == PropertyName._safeMargin)
-		{
-			_safeMargin = VariantUtils.ConvertTo<MarginContainer>(in value);
-			return true;
-		}
-		if (name == PropertyName._handScroll)
-		{
-			_handScroll = VariantUtils.ConvertTo<ScrollContainer>(in value);
-			return true;
-		}
-		if (name == PropertyName._noteDraft)
-		{
-			_noteDraft = VariantUtils.ConvertTo<string>(in value);
-			return true;
-		}
-		if (name == PropertyName._hpReadout)
-		{
-			_hpReadout = VariantUtils.ConvertTo<Label>(in value);
-			return true;
-		}
-		if (name == PropertyName._energyReadout)
-		{
-			_energyReadout = VariantUtils.ConvertTo<Label>(in value);
-			return true;
-		}
-		if (name == PropertyName._blockReadout)
-		{
-			_blockReadout = VariantUtils.ConvertTo<Label>(in value);
-			return true;
-		}
-		if (name == PropertyName._statusReadout)
-		{
-			_statusReadout = VariantUtils.ConvertTo<Label>(in value);
-			return true;
-		}
-		if (name == PropertyName._costPresented)
-		{
-			_costPresented = VariantUtils.ConvertTo<bool>(in value);
-			return true;
-		}
-		if (name == PropertyName._sparksRemaining)
-		{
-			_sparksRemaining = VariantUtils.ConvertTo<int>(in value);
-			return true;
-		}
-		if (name == PropertyName._pumpingSparks)
-		{
-			_pumpingSparks = VariantUtils.ConvertTo<bool>(in value);
-			return true;
-		}
-		if (name == PropertyName._ratingQueued)
-		{
-			_ratingQueued = VariantUtils.ConvertTo<bool>(in value);
-			return true;
-		}
-		if (name == PropertyName._shareAwaiting)
-		{
-			_shareAwaiting = VariantUtils.ConvertTo<bool>(in value);
-			return true;
-		}
-		if (name == PropertyName._reactionMode)
-		{
-			_reactionMode = VariantUtils.ConvertTo<string>(in value);
-			return true;
-		}
-		if (name == PropertyName._setAnyCards)
-		{
-			_setAnyCards = VariantUtils.ConvertTo<bool>(in value);
-			return true;
-		}
-		return base.SetGodotClassPropertyValue(in name, in value);
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override bool GetGodotClassPropertyValue(in godot_string_name name, out godot_variant value)
-	{
-		string from;
-		if (name == PropertyName.GraphicsQuality)
-		{
-			from = GraphicsQuality;
-			value = VariantUtils.CreateFrom(in from);
-			return true;
-		}
-		bool from2;
-		if (name == PropertyName.PhoneLayout)
-		{
-			from2 = PhoneLayout;
-			value = VariantUtils.CreateFrom(in from2);
-			return true;
-		}
-		if (name == PropertyName.MinimumHit)
-		{
-			value = VariantUtils.CreateFrom<float>(MinimumHit);
-			return true;
-		}
-		if (name == PropertyName.IsInputBlocked)
-		{
-			from2 = IsInputBlocked;
-			value = VariantUtils.CreateFrom(in from2);
-			return true;
-		}
-		if (name == PropertyName.CurrentRoute)
-		{
-			from = CurrentRoute;
-			value = VariantUtils.CreateFrom(in from);
-			return true;
-		}
-		if (name == PropertyName.ActiveModal)
-		{
-			from = ActiveModal;
-			value = VariantUtils.CreateFrom(in from);
-			return true;
-		}
-		int from3;
-		if (name == PropertyName.RejectedReceiptCount)
-		{
-			from3 = RejectedReceiptCount;
-			value = VariantUtils.CreateFrom(in from3);
-			return true;
-		}
-		if (name == PropertyName.PendingSparkPlays)
-		{
-			from3 = PendingSparkPlays;
-			value = VariantUtils.CreateFrom(in from3);
-			return true;
-		}
-		if (name == PropertyName.PresentedNumericContactCount)
-		{
-			from3 = PresentedNumericContactCount;
-			value = VariantUtils.CreateFrom(in from3);
-			return true;
-		}
-		if (name == PropertyName._session)
-		{
-			value = VariantUtils.CreateFrom(in _session);
-			return true;
-		}
-		if (name == PropertyName._body)
-		{
-			value = VariantUtils.CreateFrom(in _body);
-			return true;
-		}
-		if (name == PropertyName._shell)
-		{
-			value = VariantUtils.CreateFrom(in _shell);
-			return true;
-		}
-		if (name == PropertyName._overlayNode)
-		{
-			value = VariantUtils.CreateFrom(in _overlayNode);
-			return true;
-		}
-		if (name == PropertyName._overlayTitle)
-		{
-			value = VariantUtils.CreateFrom(in _overlayTitle);
-			return true;
-		}
-		if (name == PropertyName._overlayCanClose)
-		{
-			value = VariantUtils.CreateFrom(in _overlayCanClose);
-			return true;
-		}
-		if (name == PropertyName._showTitle)
-		{
-			value = VariantUtils.CreateFrom(in _showTitle);
-			return true;
-		}
-		if (name == PropertyName._notice)
-		{
-			value = VariantUtils.CreateFrom(in _notice);
-			return true;
-		}
-		if (name == PropertyName._error)
-		{
-			value = VariantUtils.CreateFrom(in _error);
-			return true;
-		}
-		if (name == PropertyName._leaderId)
-		{
-			value = VariantUtils.CreateFrom(in _leaderId);
-			return true;
-		}
-		if (name == PropertyName._deckId)
-		{
-			value = VariantUtils.CreateFrom(in _deckId);
-			return true;
-		}
-		if (name == PropertyName._seed)
-		{
-			value = VariantUtils.CreateFrom(in _seed);
-			return true;
-		}
-		if (name == PropertyName._difficulty)
-		{
-			value = VariantUtils.CreateFrom(in _difficulty);
-			return true;
-		}
-		if (name == PropertyName._preferredTarget)
-		{
-			value = VariantUtils.CreateFrom(in _preferredTarget);
-			return true;
-		}
-		if (name == PropertyName._workshopA)
-		{
-			value = VariantUtils.CreateFrom(in _workshopA);
-			return true;
-		}
-		if (name == PropertyName._workshopB)
-		{
-			value = VariantUtils.CreateFrom(in _workshopB);
-			return true;
-		}
-		if (name == PropertyName._textScale)
-		{
-			value = VariantUtils.CreateFrom(in _textScale);
-			return true;
-		}
-		if (name == PropertyName._masterVolume)
-		{
-			value = VariantUtils.CreateFrom(in _masterVolume);
-			return true;
-		}
-		if (name == PropertyName._bgmVolume)
-		{
-			value = VariantUtils.CreateFrom(in _bgmVolume);
-			return true;
-		}
-		if (name == PropertyName._sfxVolume)
-		{
-			value = VariantUtils.CreateFrom(in _sfxVolume);
-			return true;
-		}
-		if (name == PropertyName._muted)
-		{
-			value = VariantUtils.CreateFrom(in _muted);
-			return true;
-		}
-		if (name == PropertyName._graphicsQuality)
-		{
-			value = VariantUtils.CreateFrom(in _graphicsQuality);
-			return true;
-		}
-		if (name == PropertyName._safeMargin)
-		{
-			value = VariantUtils.CreateFrom(in _safeMargin);
-			return true;
-		}
-		if (name == PropertyName._handScroll)
-		{
-			value = VariantUtils.CreateFrom(in _handScroll);
-			return true;
-		}
-		if (name == PropertyName._noteDraft)
-		{
-			value = VariantUtils.CreateFrom(in _noteDraft);
-			return true;
-		}
-		if (name == PropertyName._hpReadout)
-		{
-			value = VariantUtils.CreateFrom(in _hpReadout);
-			return true;
-		}
-		if (name == PropertyName._energyReadout)
-		{
-			value = VariantUtils.CreateFrom(in _energyReadout);
-			return true;
-		}
-		if (name == PropertyName._blockReadout)
-		{
-			value = VariantUtils.CreateFrom(in _blockReadout);
-			return true;
-		}
-		if (name == PropertyName._statusReadout)
-		{
-			value = VariantUtils.CreateFrom(in _statusReadout);
-			return true;
-		}
-		if (name == PropertyName._costPresented)
-		{
-			value = VariantUtils.CreateFrom(in _costPresented);
-			return true;
-		}
-		if (name == PropertyName._sparksRemaining)
-		{
-			value = VariantUtils.CreateFrom(in _sparksRemaining);
-			return true;
-		}
-		if (name == PropertyName._pumpingSparks)
-		{
-			value = VariantUtils.CreateFrom(in _pumpingSparks);
-			return true;
-		}
-		if (name == PropertyName._ratingQueued)
-		{
-			value = VariantUtils.CreateFrom(in _ratingQueued);
-			return true;
-		}
-		if (name == PropertyName._shareAwaiting)
-		{
-			value = VariantUtils.CreateFrom(in _shareAwaiting);
-			return true;
-		}
-		if (name == PropertyName._reactionMode)
-		{
-			value = VariantUtils.CreateFrom(in _reactionMode);
-			return true;
-		}
-		if (name == PropertyName._setAnyCards)
-		{
-			value = VariantUtils.CreateFrom(in _setAnyCards);
-			return true;
-		}
-		return base.GetGodotClassPropertyValue(in name, out value);
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	internal static List<PropertyInfo> GetGodotPropertyList()
-	{
-		List<PropertyInfo> properties = new List<PropertyInfo>();
-		properties.Add(new PropertyInfo(Variant.Type.Object, PropertyName._session, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Object, PropertyName._body, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Object, PropertyName._shell, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Object, PropertyName._overlayNode, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.String, PropertyName._overlayTitle, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._overlayCanClose, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._showTitle, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.String, PropertyName._notice, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._error, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.String, PropertyName._leaderId, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.String, PropertyName._deckId, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Int, PropertyName._seed, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Int, PropertyName._difficulty, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Int, PropertyName._preferredTarget, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Int, PropertyName._workshopA, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Int, PropertyName._workshopB, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Float, PropertyName._textScale, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Float, PropertyName._masterVolume, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Float, PropertyName._bgmVolume, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Float, PropertyName._sfxVolume, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._muted, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.String, PropertyName._graphicsQuality, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Object, PropertyName._safeMargin, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.String, PropertyName.GraphicsQuality, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName.PhoneLayout, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Float, PropertyName.MinimumHit, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName.IsInputBlocked, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.String, PropertyName.CurrentRoute, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Object, PropertyName._handScroll, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.String, PropertyName._noteDraft, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Object, PropertyName._hpReadout, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Object, PropertyName._energyReadout, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Object, PropertyName._blockReadout, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Object, PropertyName._statusReadout, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._costPresented, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.String, PropertyName.ActiveModal, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Int, PropertyName.RejectedReceiptCount, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Int, PropertyName._sparksRemaining, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._pumpingSparks, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Int, PropertyName.PendingSparkPlays, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._ratingQueued, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Int, PropertyName.PresentedNumericContactCount, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._shareAwaiting, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.String, PropertyName._reactionMode, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._setAnyCards, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		return properties;
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override void SaveGodotObjectData(GodotSerializationInfo info)
-	{
-		base.SaveGodotObjectData(info);
-		info.AddProperty(PropertyName.RejectedReceiptCount, Variant.From<int>(RejectedReceiptCount));
-		info.AddProperty(PropertyName.PresentedNumericContactCount, Variant.From<int>(PresentedNumericContactCount));
-		info.AddProperty(PropertyName._session, Variant.From(in _session));
-		info.AddProperty(PropertyName._body, Variant.From(in _body));
-		info.AddProperty(PropertyName._shell, Variant.From(in _shell));
-		info.AddProperty(PropertyName._overlayNode, Variant.From(in _overlayNode));
-		info.AddProperty(PropertyName._overlayTitle, Variant.From(in _overlayTitle));
-		info.AddProperty(PropertyName._overlayCanClose, Variant.From(in _overlayCanClose));
-		info.AddProperty(PropertyName._showTitle, Variant.From(in _showTitle));
-		info.AddProperty(PropertyName._notice, Variant.From(in _notice));
-		info.AddProperty(PropertyName._error, Variant.From(in _error));
-		info.AddProperty(PropertyName._leaderId, Variant.From(in _leaderId));
-		info.AddProperty(PropertyName._deckId, Variant.From(in _deckId));
-		info.AddProperty(PropertyName._seed, Variant.From(in _seed));
-		info.AddProperty(PropertyName._difficulty, Variant.From(in _difficulty));
-		info.AddProperty(PropertyName._preferredTarget, Variant.From(in _preferredTarget));
-		info.AddProperty(PropertyName._workshopA, Variant.From(in _workshopA));
-		info.AddProperty(PropertyName._workshopB, Variant.From(in _workshopB));
-		info.AddProperty(PropertyName._textScale, Variant.From(in _textScale));
-		info.AddProperty(PropertyName._masterVolume, Variant.From(in _masterVolume));
-		info.AddProperty(PropertyName._bgmVolume, Variant.From(in _bgmVolume));
-		info.AddProperty(PropertyName._sfxVolume, Variant.From(in _sfxVolume));
-		info.AddProperty(PropertyName._muted, Variant.From(in _muted));
-		info.AddProperty(PropertyName._graphicsQuality, Variant.From(in _graphicsQuality));
-		info.AddProperty(PropertyName._safeMargin, Variant.From(in _safeMargin));
-		info.AddProperty(PropertyName._handScroll, Variant.From(in _handScroll));
-		info.AddProperty(PropertyName._noteDraft, Variant.From(in _noteDraft));
-		info.AddProperty(PropertyName._hpReadout, Variant.From(in _hpReadout));
-		info.AddProperty(PropertyName._energyReadout, Variant.From(in _energyReadout));
-		info.AddProperty(PropertyName._blockReadout, Variant.From(in _blockReadout));
-		info.AddProperty(PropertyName._statusReadout, Variant.From(in _statusReadout));
-		info.AddProperty(PropertyName._costPresented, Variant.From(in _costPresented));
-		info.AddProperty(PropertyName._sparksRemaining, Variant.From(in _sparksRemaining));
-		info.AddProperty(PropertyName._pumpingSparks, Variant.From(in _pumpingSparks));
-		info.AddProperty(PropertyName._ratingQueued, Variant.From(in _ratingQueued));
-		info.AddProperty(PropertyName._shareAwaiting, Variant.From(in _shareAwaiting));
-		info.AddProperty(PropertyName._reactionMode, Variant.From(in _reactionMode));
-		info.AddProperty(PropertyName._setAnyCards, Variant.From(in _setAnyCards));
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override void RestoreGodotObjectData(GodotSerializationInfo info)
-	{
-		base.RestoreGodotObjectData(info);
-		if (info.TryGetProperty(PropertyName.RejectedReceiptCount, out var _value_RejectedReceiptCount))
-		{
-			RejectedReceiptCount = _value_RejectedReceiptCount.As<int>();
-		}
-		if (info.TryGetProperty(PropertyName.PresentedNumericContactCount, out var _value_PresentedNumericContactCount))
-		{
-			PresentedNumericContactCount = _value_PresentedNumericContactCount.As<int>();
-		}
-		if (info.TryGetProperty(PropertyName._session, out var _value__session))
-		{
-			_session = _value__session.As<GameSession>();
-		}
-		if (info.TryGetProperty(PropertyName._body, out var _value__body))
-		{
-			_body = _value__body.As<VBoxContainer>();
-		}
-		if (info.TryGetProperty(PropertyName._shell, out var _value__shell))
-		{
-			_shell = _value__shell.As<VBoxContainer>();
-		}
-		if (info.TryGetProperty(PropertyName._overlayNode, out var _value__overlayNode))
-		{
-			_overlayNode = _value__overlayNode.As<Control>();
-		}
-		if (info.TryGetProperty(PropertyName._overlayTitle, out var _value__overlayTitle))
-		{
-			_overlayTitle = _value__overlayTitle.As<string>();
-		}
-		if (info.TryGetProperty(PropertyName._overlayCanClose, out var _value__overlayCanClose))
-		{
-			_overlayCanClose = _value__overlayCanClose.As<bool>();
-		}
-		if (info.TryGetProperty(PropertyName._showTitle, out var _value__showTitle))
-		{
-			_showTitle = _value__showTitle.As<bool>();
-		}
-		if (info.TryGetProperty(PropertyName._notice, out var _value__notice))
-		{
-			_notice = _value__notice.As<string>();
-		}
-		if (info.TryGetProperty(PropertyName._error, out var _value__error))
-		{
-			_error = _value__error.As<bool>();
-		}
-		if (info.TryGetProperty(PropertyName._leaderId, out var _value__leaderId))
-		{
-			_leaderId = _value__leaderId.As<string>();
-		}
-		if (info.TryGetProperty(PropertyName._deckId, out var _value__deckId))
-		{
-			_deckId = _value__deckId.As<string>();
-		}
-		if (info.TryGetProperty(PropertyName._seed, out var _value__seed))
-		{
-			_seed = _value__seed.As<int>();
-		}
-		if (info.TryGetProperty(PropertyName._difficulty, out var _value__difficulty))
-		{
-			_difficulty = _value__difficulty.As<int>();
-		}
-		if (info.TryGetProperty(PropertyName._preferredTarget, out var _value__preferredTarget))
-		{
-			_preferredTarget = _value__preferredTarget.As<int>();
-		}
-		if (info.TryGetProperty(PropertyName._workshopA, out var _value__workshopA))
-		{
-			_workshopA = _value__workshopA.As<int>();
-		}
-		if (info.TryGetProperty(PropertyName._workshopB, out var _value__workshopB))
-		{
-			_workshopB = _value__workshopB.As<int>();
-		}
-		if (info.TryGetProperty(PropertyName._textScale, out var _value__textScale))
-		{
-			_textScale = _value__textScale.As<float>();
-		}
-		if (info.TryGetProperty(PropertyName._masterVolume, out var _value__masterVolume))
-		{
-			_masterVolume = _value__masterVolume.As<float>();
-		}
-		if (info.TryGetProperty(PropertyName._bgmVolume, out var _value__bgmVolume))
-		{
-			_bgmVolume = _value__bgmVolume.As<float>();
-		}
-		if (info.TryGetProperty(PropertyName._sfxVolume, out var _value__sfxVolume))
-		{
-			_sfxVolume = _value__sfxVolume.As<float>();
-		}
-		if (info.TryGetProperty(PropertyName._muted, out var _value__muted))
-		{
-			_muted = _value__muted.As<bool>();
-		}
-		if (info.TryGetProperty(PropertyName._graphicsQuality, out var _value__graphicsQuality))
-		{
-			_graphicsQuality = _value__graphicsQuality.As<string>();
-		}
-		if (info.TryGetProperty(PropertyName._safeMargin, out var _value__safeMargin))
-		{
-			_safeMargin = _value__safeMargin.As<MarginContainer>();
-		}
-		if (info.TryGetProperty(PropertyName._handScroll, out var _value__handScroll))
-		{
-			_handScroll = _value__handScroll.As<ScrollContainer>();
-		}
-		if (info.TryGetProperty(PropertyName._noteDraft, out var _value__noteDraft))
-		{
-			_noteDraft = _value__noteDraft.As<string>();
-		}
-		if (info.TryGetProperty(PropertyName._hpReadout, out var _value__hpReadout))
-		{
-			_hpReadout = _value__hpReadout.As<Label>();
-		}
-		if (info.TryGetProperty(PropertyName._energyReadout, out var _value__energyReadout))
-		{
-			_energyReadout = _value__energyReadout.As<Label>();
-		}
-		if (info.TryGetProperty(PropertyName._blockReadout, out var _value__blockReadout))
-		{
-			_blockReadout = _value__blockReadout.As<Label>();
-		}
-		if (info.TryGetProperty(PropertyName._statusReadout, out var _value__statusReadout))
-		{
-			_statusReadout = _value__statusReadout.As<Label>();
-		}
-		if (info.TryGetProperty(PropertyName._costPresented, out var _value__costPresented))
-		{
-			_costPresented = _value__costPresented.As<bool>();
-		}
-		if (info.TryGetProperty(PropertyName._sparksRemaining, out var _value__sparksRemaining))
-		{
-			_sparksRemaining = _value__sparksRemaining.As<int>();
-		}
-		if (info.TryGetProperty(PropertyName._pumpingSparks, out var _value__pumpingSparks))
-		{
-			_pumpingSparks = _value__pumpingSparks.As<bool>();
-		}
-		if (info.TryGetProperty(PropertyName._ratingQueued, out var _value__ratingQueued))
-		{
-			_ratingQueued = _value__ratingQueued.As<bool>();
-		}
-		if (info.TryGetProperty(PropertyName._shareAwaiting, out var _value__shareAwaiting))
-		{
-			_shareAwaiting = _value__shareAwaiting.As<bool>();
-		}
-		if (info.TryGetProperty(PropertyName._reactionMode, out var _value__reactionMode))
-		{
-			_reactionMode = _value__reactionMode.As<string>();
-		}
-		if (info.TryGetProperty(PropertyName._setAnyCards, out var _value__setAnyCards))
-		{
-			_setAnyCards = _value__setAnyCards.As<bool>();
-		}
-	}
+    public void PresentEvent(GameEvent evt)=>UxPresentEvent(evt);
+    public void PresentNumericContact(GameEvent evt)=>UxNumericContact(evt);
 }

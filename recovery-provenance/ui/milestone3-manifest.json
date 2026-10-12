@@ -1,0 +1,32 @@
+{
+  "schema": "ui-reconstruction-overlay/1",
+  "classification": "new source-backed reconstruction, not exact ca8ab902 Git recovery",
+  "requires": "overlay-milestone1 then overlay-milestone2-delta",
+  "changes": [
+    "Remove inherited container padding from absolute battle panels",
+    "Original forecast row positions centered to actual line height",
+    "Battle header above field input surface",
+    "Authoritative target validation and nonnumeric state with receipt-owned HP/block"
+  ],
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.cs",
+      "sha256": "f983008d0b6238b0205904af518bbb94402e95059376104ea0fd4f7fadf45411",
+      "bytes": 133856,
+      "baselineSha256": "627e6ceb8269527a2033f6f07defd4e8ee933e30a75b0bd02810837a1494dd3b"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.RecoveredBattle.cs",
+      "sha256": "1a8a96577b2ed7470b4e698f71758761734442f2c82d6d59d9eddf1cff0da3d1",
+      "bytes": 29594,
+      "baselineSha256": "0c9ac359484c750c30d4425bba13df5bc4491d8fd1ad51acc128d5a37af02910"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.GameUI_ScriptMethods.generated.cs",
+      "sha256": "005a6d633f965b5b809eccb220fe244431808d89c7e00b085b0c8486ce113892",
+      "bytes": 98185,
+      "baselineSha256": "dbf001b34782cc8c7120d5a56f892f61b56bc8fae71c257b24b953fd207f4726"
+    }
+  ],
+  "nativeQa": "PENDING"
+}

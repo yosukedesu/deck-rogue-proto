@@ -30,6 +30,13 @@ using Godot;
 	typeof(StageWorld),
 	typeof(CardTile),
 	typeof(GameUI),
+	typeof(SourceAimArrow),
+	typeof(EnemyDropTarget),
+	typeof(SourceEnergyOrb),
+	typeof(SourceHealthBar),
+	typeof(BattlefieldDropTarget),
+	typeof(SourceCardBody),
+	typeof(SourceHudLabel),
 	typeof(RunMap)
 })]
 [assembly: AssemblyVersion("1.0.0.0")]

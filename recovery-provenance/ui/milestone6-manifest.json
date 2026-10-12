@@ -1,0 +1,17 @@
+{
+  "schema": "ui-reconstruction-overlay/1",
+  "classification": "new source-backed reconstruction, not exact ca8ab902 Git recovery",
+  "requires": "overlay-milestone1 then milestone2/3/4/5 deltas",
+  "changes": [
+    "Synchronously place nonzero forecast rectangles after every rebuild/contact, even while SceneTree is paused"
+  ],
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.RecoveredBattle.cs",
+      "sha256": "ad8dbc7d77aa2cb31b2af2f5a673faf54f5bbaaba0e40dcedc400d8f193b915b",
+      "bytes": 30836,
+      "baselineSha256": "b5719c200dc0f8d80eeb40fc1016745b4e27ec776ab30c26c6776b0dfff54eca"
+    }
+  ],
+  "nativeQa": "PENDING"
+}

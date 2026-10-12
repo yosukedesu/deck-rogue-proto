@@ -1,0 +1,239 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "frame": "001_act1-idle.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        422.69995,
+        377.33334,
+        45.0
+      ],
+      "contentHeight": 45,
+      "contentWidth": 253
+    },
+    {
+      "frame": "001_act1-idle.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        463.83328,
+        377.33334,
+        38.999992
+      ],
+      "contentHeight": 39,
+      "contentWidth": 103
+    },
+    {
+      "frame": "002_act1-contact.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        422.69995,
+        377.33334,
+        45.0
+      ],
+      "contentHeight": 45,
+      "contentWidth": 253
+    },
+    {
+      "frame": "002_act1-contact.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        463.83328,
+        377.33334,
+        38.999992
+      ],
+      "contentHeight": 39,
+      "contentWidth": 103
+    },
+    {
+      "frame": "003_act1-settled.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        422.69995,
+        377.33334,
+        45.0
+      ],
+      "contentHeight": 45,
+      "contentWidth": 253
+    },
+    {
+      "frame": "003_act1-settled.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        463.83328,
+        377.33334,
+        38.999992
+      ],
+      "contentHeight": 39,
+      "contentWidth": 103
+    },
+    {
+      "frame": "004_act2-idle.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        422.69995,
+        377.33334,
+        45.0
+      ],
+      "contentHeight": 45,
+      "contentWidth": 253
+    },
+    {
+      "frame": "004_act2-idle.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        463.83328,
+        377.33334,
+        38.999992
+      ],
+      "contentHeight": 39,
+      "contentWidth": 103
+    },
+    {
+      "frame": "005_act2-contact.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        422.69995,
+        377.33334,
+        45.0
+      ],
+      "contentHeight": 45,
+      "contentWidth": 253
+    },
+    {
+      "frame": "005_act2-contact.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        463.83328,
+        377.33334,
+        38.999992
+      ],
+      "contentHeight": 39,
+      "contentWidth": 103
+    },
+    {
+      "frame": "006_act2-settled.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        422.69995,
+        377.33334,
+        45.0
+      ],
+      "contentHeight": 45,
+      "contentWidth": 253
+    },
+    {
+      "frame": "006_act2-settled.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        463.83328,
+        377.33334,
+        38.999992
+      ],
+      "contentHeight": 39,
+      "contentWidth": 103
+    },
+    {
+      "frame": "007_act3-idle.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        422.69995,
+        377.33334,
+        45.0
+      ],
+      "contentHeight": 45,
+      "contentWidth": 269
+    },
+    {
+      "frame": "007_act3-idle.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        463.83328,
+        377.33334,
+        38.999992
+      ],
+      "contentHeight": 39,
+      "contentWidth": 118
+    },
+    {
+      "frame": "008_act3-contact.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        422.69995,
+        377.33334,
+        45.0
+      ],
+      "contentHeight": 45,
+      "contentWidth": 269
+    },
+    {
+      "frame": "008_act3-contact.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        463.83328,
+        377.33334,
+        38.999992
+      ],
+      "contentHeight": 39,
+      "contentWidth": 118
+    },
+    {
+      "frame": "009_act3-settled.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        422.69995,
+        377.33334,
+        45.0
+      ],
+      "contentHeight": 45,
+      "contentWidth": 269
+    },
+    {
+      "frame": "009_act3-settled.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        463.83328,
+        377.33334,
+        38.999992
+      ],
+      "contentHeight": 39,
+      "contentWidth": 118
+    }
+  ]
+}

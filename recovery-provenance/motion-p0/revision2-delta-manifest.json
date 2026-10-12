@@ -1,0 +1,17 @@
+{
+  "base": "motion candidate r1 applied by runtime; initial102checks passed",
+  "purpose": "independent-review stall retiming and cancellation callback barrier",
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.cs",
+      "before_sha256": "8397d2ce9179f381a78a727a97526287b3741f0dd3e124a86d548c02d6437f17",
+      "after_sha256": "aa4cf301d63f27bdbac57a18577ce516c0af62867101538cd349f24c31097891"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.CommandQueue.cs",
+      "before_sha256": "204c133ecd87db6b93812df0617def51dcea41ef3b61790ea2b0258342efb327",
+      "after_sha256": "b098415d77e42834dbdb8574b613a9dd745bf444534f22f8c8a680e539e97223"
+    }
+  ],
+  "qa_source_sha256": "d5fdad19ba2c8196f04e974420e6c131ccb22e72da526e097262fa84776418df"
+}

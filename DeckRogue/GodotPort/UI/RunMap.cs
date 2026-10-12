@@ -12,8 +12,7 @@ using Newtonsoft.Json.Linq;
 
 namespace DeckRogue.GodotPort.UI;
 
-[ScriptPath("res://scripts/ui/RunMap.cs")]
-public class RunMap : Control
+public partial class RunMap : Control
 {
 	private sealed class Stroke
 	{
@@ -22,33 +21,11 @@ public class RunMap : Control
 		public List<Vector2> Points = new List<Vector2>();
 	}
 
-	public new class MethodName : Control.MethodName
-	{
-		public static readonly StringName SetDrawing = "SetDrawing";
 
-		public static readonly StringName UndoAnnotation = "UndoAnnotation";
 
-		public static readonly StringName SaveAnnotations = "SaveAnnotations";
 
-		public new static readonly StringName _GuiInput = "_GuiInput";
 
-		public static readonly StringName DrawAnnotations = "DrawAnnotations";
 
-		public static readonly StringName Point = "Point";
-
-		public new static readonly StringName _Draw = "_Draw";
-	}
-
-	public new class PropertyName : Control.PropertyName
-	{
-		public static readonly StringName _drawing = "_drawing";
-
-		public static readonly StringName _pen = "_pen";
-	}
-
-	public new class SignalName : Control.SignalName
-	{
-	}
 
 	private readonly List<Stroke> _strokes = new List<Stroke>();
 
@@ -308,172 +285,4 @@ public class RunMap : Control
 		DrawAnnotations();
 	}
 
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	internal static List<MethodInfo> GetGodotMethodList()
-	{
-		List<MethodInfo> methods = new List<MethodInfo>(7);
-		methods.Add(new MethodInfo(MethodName.SetDrawing, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Bool, "drawing", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.String, "color", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.UndoAnnotation, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.SaveAnnotations, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName._GuiInput, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Object, "evt", PropertyHint.None, "", PropertyUsageFlags.Default, new StringName("InputEvent"), exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName.DrawAnnotations, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		methods.Add(new MethodInfo(MethodName.Point, new PropertyInfo(Variant.Type.Vector2, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, new List<PropertyInfo>
-		{
-			new PropertyInfo(Variant.Type.Int, "row", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false),
-			new PropertyInfo(Variant.Type.Int, "col", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false)
-		}, null));
-		methods.Add(new MethodInfo(MethodName._Draw, new PropertyInfo(Variant.Type.Nil, "", PropertyHint.None, "", PropertyUsageFlags.Default, exported: false), MethodFlags.Normal, null, null));
-		return methods;
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override bool InvokeGodotClassMethod(in godot_string_name method, NativeVariantPtrArgs args, out godot_variant ret)
-	{
-		if (method == MethodName.SetDrawing && args.Count == 2)
-		{
-			SetDrawing(VariantUtils.ConvertTo<bool>(in args[0]), VariantUtils.ConvertTo<string>(in args[1]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.UndoAnnotation && args.Count == 0)
-		{
-			UndoAnnotation();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.SaveAnnotations && args.Count == 0)
-		{
-			SaveAnnotations();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName._GuiInput && args.Count == 1)
-		{
-			_GuiInput(VariantUtils.ConvertTo<InputEvent>(in args[0]));
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.DrawAnnotations && args.Count == 0)
-		{
-			DrawAnnotations();
-			ret = default(godot_variant);
-			return true;
-		}
-		if (method == MethodName.Point && args.Count == 2)
-		{
-			ret = VariantUtils.CreateFrom<Vector2>(Point(VariantUtils.ConvertTo<int>(in args[0]), VariantUtils.ConvertTo<int>(in args[1])));
-			return true;
-		}
-		if (method == MethodName._Draw && args.Count == 0)
-		{
-			_Draw();
-			ret = default(godot_variant);
-			return true;
-		}
-		return base.InvokeGodotClassMethod(in method, args, out ret);
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override bool HasGodotClassMethod(in godot_string_name method)
-	{
-		if (method == MethodName.SetDrawing)
-		{
-			return true;
-		}
-		if (method == MethodName.UndoAnnotation)
-		{
-			return true;
-		}
-		if (method == MethodName.SaveAnnotations)
-		{
-			return true;
-		}
-		if (method == MethodName._GuiInput)
-		{
-			return true;
-		}
-		if (method == MethodName.DrawAnnotations)
-		{
-			return true;
-		}
-		if (method == MethodName.Point)
-		{
-			return true;
-		}
-		if (method == MethodName._Draw)
-		{
-			return true;
-		}
-		return base.HasGodotClassMethod(in method);
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override bool SetGodotClassPropertyValue(in godot_string_name name, in godot_variant value)
-	{
-		if (name == PropertyName._drawing)
-		{
-			_drawing = VariantUtils.ConvertTo<bool>(in value);
-			return true;
-		}
-		if (name == PropertyName._pen)
-		{
-			_pen = VariantUtils.ConvertTo<string>(in value);
-			return true;
-		}
-		return base.SetGodotClassPropertyValue(in name, in value);
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override bool GetGodotClassPropertyValue(in godot_string_name name, out godot_variant value)
-	{
-		if (name == PropertyName._drawing)
-		{
-			value = VariantUtils.CreateFrom(in _drawing);
-			return true;
-		}
-		if (name == PropertyName._pen)
-		{
-			value = VariantUtils.CreateFrom(in _pen);
-			return true;
-		}
-		return base.GetGodotClassPropertyValue(in name, out value);
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	internal static List<PropertyInfo> GetGodotPropertyList()
-	{
-		List<PropertyInfo> properties = new List<PropertyInfo>();
-		properties.Add(new PropertyInfo(Variant.Type.Bool, PropertyName._drawing, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		properties.Add(new PropertyInfo(Variant.Type.String, PropertyName._pen, PropertyHint.None, "", PropertyUsageFlags.ScriptVariable, exported: false));
-		return properties;
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override void SaveGodotObjectData(GodotSerializationInfo info)
-	{
-		base.SaveGodotObjectData(info);
-		info.AddProperty(PropertyName._drawing, Variant.From(in _drawing));
-		info.AddProperty(PropertyName._pen, Variant.From(in _pen));
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	protected override void RestoreGodotObjectData(GodotSerializationInfo info)
-	{
-		base.RestoreGodotObjectData(info);
-		if (info.TryGetProperty(PropertyName._drawing, out var _value__drawing))
-		{
-			_drawing = _value__drawing.As<bool>();
-		}
-		if (info.TryGetProperty(PropertyName._pen, out var _value__pen))
-		{
-			_pen = _value__pen.As<string>();
-		}
-	}
 }

@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": {
+    "overlap_pressed_hovered_uid": true,
+    "hover_raised_real_sibling": true,
+    "cancels_preserve_save": true,
+    "idle_order_restored": true,
+    "two_plays_two_revisions": true,
+    "energy_once_each": true,
+    "next_card_receives_input": true,
+    "retired_card_absent": true
+  },
+  "scope": "Actual CUA pointer input on native1170x540 H10 synthetic isolated fixture. Menu pointer open/close/reopen visually checked; retiring strike gone and next guard receives same area click.",
+  "buildMvidFromFileMetadata": "f68cd463-7f85-4eb1-9c7e-509b97fce7b2",
+  "buildSha256": "9c5bce92635661211512894e700aaa0750985d61e2c8b9ae4108d0ec9ada2cbc"
+}

@@ -1,0 +1,58 @@
+{
+  "version": "reconstructed-atmosphere-20261012-r2",
+  "provenance": "New reconstruction, not original b05a0da source",
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/Presentation/StageWorld.cs",
+      "base_sha256": "b269295a6a7398062a6deebb950f522bf368a6e95ed9ed3d38ff8ce677252bb7",
+      "sha256": "41a9d89dd98b26aa7fe30316e003e1b166705d367ff88401a4b163f0b3b75102",
+      "bytes": 115282
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/StageWorld.ReconstructedAtmosphere.cs",
+      "base_sha256": null,
+      "sha256": "66da115772fbd677da0aed7eea216c1c4bd77bf5cfd4a05bfe21b431b81d1083",
+      "bytes": 9883,
+      "previous_sha256": [
+        "9f46385827d0e3964719d74125f2ccbe857af701cd2f00490a71a3ee5537598f"
+      ]
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/ReconstructedAtmospherePolicy.cs",
+      "base_sha256": null,
+      "sha256": "13b4ae4ae797880359d4ea53e1769c5611f8ff540b20f70d60ec96428b61b28e",
+      "bytes": 2465,
+      "previous_sha256": [
+        "8f867b53e3361c3fc6faed195a9943d3cd06f9a8ee5d452e434c999cc8671c3f"
+      ]
+    },
+    {
+      "path": "shaders/recovered_stage_air.gdshader",
+      "base_sha256": null,
+      "sha256": "ad0ed3a1922f75a90883520d1e0efbb61ce9ee8b5c06d2f9e1f83a02d5a6f205",
+      "bytes": 1211
+    },
+    {
+      "path": "shaders/recovered_stage_surface.gdshader",
+      "base_sha256": null,
+      "sha256": "779525e118307b4d6702007d0a7e89f55f6050145152a51dc7ec07d2fe12d6a1",
+      "bytes": 2686
+    },
+    {
+      "path": "shaders/recovered_stage_profile.gdshaderinc",
+      "base_sha256": null,
+      "sha256": "8c91fe1b0f910fe6479114cd22b5c822f95a357605c0e90a458993a792c289c3",
+      "bytes": 1101,
+      "previous_sha256": [
+        "fd44f10174cfc9134936f1c98f0c9b0eaf0f265be4ce01e266b3c8ea0988d977"
+      ]
+    }
+  ],
+  "build": {
+    "errors": 0,
+    "warnings": 13
+  },
+  "pure_policy_tests": "27/27",
+  "scope_arithmetic_checks": "70/70",
+  "native_visual_acceptance": "r1 native45/45, visually rejected for stage palette; r2 pending"
+}

@@ -1,0 +1,567 @@
+{
+  "schema": "ui-reconstruction-overlay/1",
+  "classification": "new source-backed reconstruction; not exact ca8ab902 Git recovery",
+  "source": "Unity a7f86b5 reference + original BattleView/BattleScreen/CardView + retained accepted contracts",
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/UI/BattleForecast.cs",
+      "sha256": "4b833b2d90080e03a2cbe1ac268eaf50db8aa45f54ce8dcae7ccf8288e20839c",
+      "bytes": 1516,
+      "baselineSha256": "4b833b2d90080e03a2cbe1ac268eaf50db8aa45f54ce8dcae7ccf8288e20839c"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/BattlefieldDropTarget.cs",
+      "sha256": "6af3cf9ee19442c7732143b9cee50cb075041efa99774cdae361c5101172332c",
+      "bytes": 896,
+      "baselineSha256": "fb0d9882fa96d70cb9a9893f8412a0b663493a2be2cdce7da38627c40f093c77"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/CardText.cs",
+      "sha256": "f2e1afcee1222823ddcf8152c890cfe51dbeb1a78b3bfda05b2bcc07e91b7147",
+      "bytes": 71729,
+      "baselineSha256": "f2e1afcee1222823ddcf8152c890cfe51dbeb1a78b3bfda05b2bcc07e91b7147"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/CardTile.cs",
+      "sha256": "e92364e1aa9d42cb3a08c31dcb245a5e24a64eb361b76d790cb6143f5f6d029e",
+      "bytes": 2276,
+      "baselineSha256": "7c45f9101c20269bd4b438989026df908160f8981189cc3908d2f070a4a77339"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/EnemyDropTarget.cs",
+      "sha256": "95907e4930b02b83f0ae3ee6925b2963b2f5cc753ce0793ee4554d298962dbcb",
+      "bytes": 2178,
+      "baselineSha256": "d24e74af4b81a9b4da2c28a59e16c7b5461a25aebfd9701c1196871155c8fd5d"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/FlowRules.cs",
+      "sha256": "1407cf5cf0182332b6c85c57274320ed3379f1dd3dd18475d5a62be38fce9c7b",
+      "bytes": 4592,
+      "baselineSha256": "1407cf5cf0182332b6c85c57274320ed3379f1dd3dd18475d5a62be38fce9c7b"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.RecoveredBattle.cs",
+      "sha256": "0c9ac359484c750c30d4425bba13df5bc4491d8fd1ad51acc128d5a37af02910",
+      "bytes": 28706,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.cs",
+      "sha256": "71cc05a15151b512e95cec886f96c896830ab0adf5fe89eb06172748cc436132",
+      "bytes": 132157,
+      "baselineSha256": "93420d31a637fb26fdb96e71ae04002725b1a5c454cd9b57874d9f36d010731a"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/KeywordHelp.cs",
+      "sha256": "b378716576eca96ee303bd9004558e6a0af8580773fd52aa2adb7ea0f07f6607",
+      "bytes": 18162,
+      "baselineSha256": "b378716576eca96ee303bd9004558e6a0af8580773fd52aa2adb7ea0f07f6607"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/PlaySelection.cs",
+      "sha256": "dd935316b8e806175d1cb163133f3165274f816a40a302b2f400450599dc9dc6",
+      "bytes": 5620,
+      "baselineSha256": "dd935316b8e806175d1cb163133f3165274f816a40a302b2f400450599dc9dc6"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/ReactionPreview.cs",
+      "sha256": "db2a3a38f7006404268dc03838e2416f5dbf5ed68f4a391ebd4ae2e59d9bf8a7",
+      "bytes": 3432,
+      "baselineSha256": "db2a3a38f7006404268dc03838e2416f5dbf5ed68f4a391ebd4ae2e59d9bf8a7"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/RunMap.cs",
+      "sha256": "faa82dde438b5a98672b1511bc25648b87bdca82e3b0586b0a28e5b82969de4c",
+      "bytes": 7843,
+      "baselineSha256": "efa3cf2e7074f3176c8c2fbd98e8ee77c823150cc9f06c232654f2e455fe1ef5"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceAimArrow.cs",
+      "sha256": "a7c3e6afcc74cce1843fccd56b3a3a0450f0bf9c791a9e5b0e4304be2d04d29d",
+      "bytes": 2142,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceArtwork.cs",
+      "sha256": "0eaa95c1211f8b7c830a0c0f4070f20963a315bf093669253fb222c7fd2b10e6",
+      "bytes": 9381,
+      "baselineSha256": "0eaa95c1211f8b7c830a0c0f4070f20963a315bf093669253fb222c7fd2b10e6"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceCardBody.cs",
+      "sha256": "54e0b7f13dd3c8dd32e46133a91a768741ac5f6252272dfe9f8aaabf0e6c6be5",
+      "bytes": 2967,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceCardFace.cs",
+      "sha256": "b6b362b093587b7bc4c3c6898fbb8a48b9c1c8d573a05edb175308c51bb47246",
+      "bytes": 28052,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceEnemyUiAnchor.cs",
+      "sha256": "90983528422eaf07bc1da830b6112ff52d561fed71dee36829f5b69badd86c86",
+      "bytes": 724,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceEnergyOrb.cs",
+      "sha256": "18f0112907160acff67ec7161be1aecb059a8bc014ef37b69974f9331b734a90",
+      "bytes": 1329,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceHealthBar.cs",
+      "sha256": "7f8631ed2ec027e4a7ff0c9fd5d61cbb7eda96665d7117c6304379950e2fefca",
+      "bytes": 1079,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceHudLabel.cs",
+      "sha256": "e387d1968bf0b919224be43ee7e2c07d2619d6d51a2f965935bd55603f419f95",
+      "bytes": 5377,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourcePalette.cs",
+      "sha256": "10a83d9c01a5797b9e4fad583e2d97788112448578594e842bac92ca52a8fd0f",
+      "bytes": 1643,
+      "baselineSha256": "10a83d9c01a5797b9e4fad583e2d97788112448578594e842bac92ca52a8fd0f"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceUiPolicies.cs",
+      "sha256": "7eb32f34fea6af7505c2effde0f7143359695f0a3f57dc7a56754fd16b945703",
+      "bytes": 1775,
+      "baselineSha256": "7eb32f34fea6af7505c2effde0f7143359695f0a3f57dc7a56754fd16b945703"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/UiSizing.cs",
+      "sha256": "0f6cc471978d00a876da9aea5950a77cd0eb2386498cdd8b05d8d55b6d034691",
+      "bytes": 745,
+      "baselineSha256": "0f6cc471978d00a876da9aea5950a77cd0eb2386498cdd8b05d8d55b6d034691"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.BattlefieldDropTarget_ScriptMethods.generated.cs",
+      "sha256": "c245a7fb6e0e32679e1af065d9a2542bbb1570514e2fb5c549ac4eba05462afa",
+      "bytes": 5285,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.CardTile_ScriptMethods.generated.cs",
+      "sha256": "d646b0b52e78f23bf39ebb975a192622dc2f8d325f043c817f58aeeaaa70f4cc",
+      "bytes": 6595,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.EnemyDropTarget_ScriptMethods.generated.cs",
+      "sha256": "e6fd489cec449087d022103fcd01fa4b74de6e494398d8223011d0ce3713a18f",
+      "bytes": 8148,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.GameUI_ScriptMethods.generated.cs",
+      "sha256": "dbf001b34782cc8c7120d5a56f892f61b56bc8fae71c257b24b953fd207f4726",
+      "bytes": 94720,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.RunMap_ScriptMethods.generated.cs",
+      "sha256": "29dde2ba636745986b8256360ddcf846b5809530267c0032328c9137ad07dfb2",
+      "bytes": 8156,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceAimArrow_ScriptMethods.generated.cs",
+      "sha256": "c6d509710b7437ea41d3c17b199cbd4689a1b96b4a9e0a3f3985a1e68af13198",
+      "bytes": 5086,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceCardBody_ScriptMethods.generated.cs",
+      "sha256": "c6b822eea805e5453a29b512a4166f814d024a3991b577babd1f5aef1627312b",
+      "bytes": 3978,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceEnergyOrb_ScriptMethods.generated.cs",
+      "sha256": "d6fa1ab9b7b6bcc69dbcec8f87e47d336b80fa40790e86170440a87cb6c33e41",
+      "bytes": 2335,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHealthBar_ScriptMethods.generated.cs",
+      "sha256": "7ce0c9b630a34120557426d23c2b93a8e9faa510d9c535ff9f543f71e1d29975",
+      "bytes": 2335,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHudLabel_ScriptMethods.generated.cs",
+      "sha256": "0097f863f9246a9e63cbaff38cbfe314cfdee01c26660b53fb065e906e8a9eeb",
+      "bytes": 11605,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.BattlefieldDropTarget_ScriptPath.generated.cs",
+      "sha256": "a6a5ad7d9ed9df1b26ff88b6c51dd9019ed3b28ae1f3899d1ad081f2464ace95",
+      "bytes": 159,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.CardTile_ScriptPath.generated.cs",
+      "sha256": "1d036d70f3b086f4c18aa2a7121f70139c08d2785dc2f3894013702f466ac8db",
+      "bytes": 133,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.EnemyDropTarget_ScriptPath.generated.cs",
+      "sha256": "0ea6e27ff9f7737c5eee2e68f43f79ad90985241d79956271c798f06b56fc31f",
+      "bytes": 147,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.GameUI_ScriptPath.generated.cs",
+      "sha256": "b67a0291e9fada64e45b36a333da0de59bf2fefb247d3fab5254ae2bb351f392",
+      "bytes": 129,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.RunMap_ScriptPath.generated.cs",
+      "sha256": "71f1ff1be27b8a6d63116e397bfbe7bc1147f703a29823cc9e081742ed24f19b",
+      "bytes": 129,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceAimArrow_ScriptPath.generated.cs",
+      "sha256": "b022ba6312b684c646df6b4ac59201cb4dd4d790344468206928e7125c47cf46",
+      "bytes": 145,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceCardBody_ScriptPath.generated.cs",
+      "sha256": "6ba80404d07e30af0c15461942172771942d8bbc2c4a809436ba4788e2b790d3",
+      "bytes": 145,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceEnergyOrb_ScriptPath.generated.cs",
+      "sha256": "62f020490a64c993b2b8e004d483dfcd4fcad5f51649a8a77bb164ee3255c7e5",
+      "bytes": 147,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHealthBar_ScriptPath.generated.cs",
+      "sha256": "8829d128d4c16ede70f18a6ed7bc6630800d313153c4c16f4d21a8699a03cb7d",
+      "bytes": 147,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHudLabel_ScriptPath.generated.cs",
+      "sha256": "c8ba4ee2bc56bbeb44a2d12538004a67a91162157ff3c5ee8920aa55ea4fada5",
+      "bytes": 145,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.BattlefieldDropTarget_ScriptProperties.generated.cs",
+      "sha256": "e886cf6dc2d1bbc9290d2d76528dd7a289c4dcc85455ce973ba30aa83f913230",
+      "bytes": 415,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.CardTile_ScriptProperties.generated.cs",
+      "sha256": "38e7590a7eadde82f65918c2f33d04715297c7d356c9599a0c5ff97e72307772",
+      "bytes": 6954,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.EnemyDropTarget_ScriptProperties.generated.cs",
+      "sha256": "a0f994472a4b5945dd6a1966014ceff582f39955ac27df7d624f9492c328bcc4",
+      "bytes": 4689,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.GameUI_ScriptProperties.generated.cs",
+      "sha256": "7a37adabe2a71fc6b96acdc73d201315e19eb4f497f478c983c13cc600a29ce0",
+      "bytes": 52794,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.RunMap_ScriptProperties.generated.cs",
+      "sha256": "1460bf9ae725f1e2cb79789730a9b6357182927f0392282a6e5288d1d7c04546",
+      "bytes": 3137,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceAimArrow_ScriptProperties.generated.cs",
+      "sha256": "23956c93dcc1f5da1a0a44f3363a8d15a94ae74c2c12e198b2f5a3cd384fd696",
+      "bytes": 6100,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceCardBody_ScriptProperties.generated.cs",
+      "sha256": "c2132af37a424b3b29fb93434218927c19198c67577206dcf5e67f91b85c16bb",
+      "bytes": 3921,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceEnergyOrb_ScriptProperties.generated.cs",
+      "sha256": "c90da6beff89f731606499113fa0e97739a147c75075a5493de56ec6276efbbb",
+      "bytes": 3899,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHealthBar_ScriptProperties.generated.cs",
+      "sha256": "451ad1820da2096407d91f645d85b2d92c9a1fa14bcaa404e3cdc2ef5caf9150",
+      "bytes": 5353,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHudLabel_ScriptProperties.generated.cs",
+      "sha256": "7c5449ca03942c077f996a453be8967a6e50834ea327f79f4a9e5acafe745c94",
+      "bytes": 8186,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.BattlefieldDropTarget_ScriptPropertyDefVal.generated.cs",
+      "sha256": "adb55cead25888c48e2da97ffb9f7da5c903af00c8c3370230db39c3f67d12bf",
+      "bytes": 79,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.CardTile_ScriptPropertyDefVal.generated.cs",
+      "sha256": "96cea7e23f766f13ef6addff3740358fd8780b842ebc978e5ff2dd0245889f68",
+      "bytes": 66,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.EnemyDropTarget_ScriptPropertyDefVal.generated.cs",
+      "sha256": "9e515e648ac9ac69fc7e000c6a629132357ee499306221fe86ebb3d17bfe62c8",
+      "bytes": 73,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.GameUI_ScriptPropertyDefVal.generated.cs",
+      "sha256": "27233b5d003d7d1c43b854420a2978f7c1c4e1ab31707c08e5ba1b0153d8ad8c",
+      "bytes": 64,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.RunMap_ScriptPropertyDefVal.generated.cs",
+      "sha256": "bc95321ef8065f419997bdfb95e799591458fe445fdd39f674b86f8a4dfa68e9",
+      "bytes": 64,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceAimArrow_ScriptPropertyDefVal.generated.cs",
+      "sha256": "ca6359a2f146b128553fcc1d74de903fa6930e238acba297eb7f5667935f7f55",
+      "bytes": 72,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceCardBody_ScriptPropertyDefVal.generated.cs",
+      "sha256": "63c54e5c280eb2bc5d989b8c47cccb1c0c6df36b9d49e54c3a0d9d023d634c38",
+      "bytes": 72,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceEnergyOrb_ScriptPropertyDefVal.generated.cs",
+      "sha256": "3e4e74276481af3812961bc3e1db957bab059497df8dd3a2520f473f3bd6abf2",
+      "bytes": 73,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHealthBar_ScriptPropertyDefVal.generated.cs",
+      "sha256": "2c22bf1595fdb44daa30d0b79479a0644abd4465b942f6666f44c37469031420",
+      "bytes": 73,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHudLabel_ScriptPropertyDefVal.generated.cs",
+      "sha256": "a9492acae0866ebdf384f398a66196809912cb7792f98fc6549239661bfb3ee8",
+      "bytes": 72,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.BattlefieldDropTarget_ScriptSerialization.generated.cs",
+      "sha256": "38c895ca684f5bc30c5317c52e7e5b67c524a66aa813b85698ce3c5065f26b9c",
+      "bytes": 690,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.CardTile_ScriptSerialization.generated.cs",
+      "sha256": "2721503d30c7441d175b58900c0a1834e2643c16a114f97180175b4d61d8b42e",
+      "bytes": 2408,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.EnemyDropTarget_ScriptSerialization.generated.cs",
+      "sha256": "8761d9ba0f4f6a76bf8f2de75b9ba71f58544f20a225c160ebf8a761b63768ca",
+      "bytes": 1672,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.GameUI_ScriptSerialization.generated.cs",
+      "sha256": "8b2066828de0a9895e9091af01d28ca71af6f503d60833f4e3f00c850dce079e",
+      "bytes": 15742,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.RunMap_ScriptSerialization.generated.cs",
+      "sha256": "1341f2e4f7660575af98318905af4ea42286e71505efd6227427cb7222a5eb29",
+      "bytes": 1133,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceAimArrow_ScriptSerialization.generated.cs",
+      "sha256": "0ebcdd8eb0bd9f0115ace842cc486d18f0a5861d92f698c57cd8504cefaa5c8e",
+      "bytes": 2099,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceCardBody_ScriptSerialization.generated.cs",
+      "sha256": "0e6d418e6c5d13bec91c4648e8b1fb9ca3b090cd1b2512b509b7149bfea0cd56",
+      "bytes": 1416,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceEnergyOrb_ScriptSerialization.generated.cs",
+      "sha256": "6e385046babfc9682de8c87f590275037b138dc5cf7df93d3ce9fc12dbd3be6e",
+      "bytes": 1387,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHealthBar_ScriptSerialization.generated.cs",
+      "sha256": "cb535b4d2c88da071675108181ce6e6933b8a4a84bf58191f8368ed008bedbb3",
+      "bytes": 1839,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHudLabel_ScriptSerialization.generated.cs",
+      "sha256": "9ede03ae102c8b976d6245d42b5d526c91a33f069ceb6e76c1b8526e14358a54",
+      "bytes": 3037,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.BattlefieldDropTarget_ScriptSignals.generated.cs",
+      "sha256": "323e1c961e95edc11464b3bfc6f6ff9cc21589231fd41602e1ad0ac9f73e37a9",
+      "bytes": 428,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.CardTile_ScriptSignals.generated.cs",
+      "sha256": "6ea2a8511880660de1caef4b5c90fad9a1057a2574dfe0bab504d0cea92ab620",
+      "bytes": 414,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.EnemyDropTarget_ScriptSignals.generated.cs",
+      "sha256": "c5912f79fd4f0481602c4cfa85b797eb606584aefd50fb98f8037e0750e881f3",
+      "bytes": 421,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.GameUI_ScriptSignals.generated.cs",
+      "sha256": "fe19082a7edea578644ae308cf2c42dbdc7d00a50505c0f446aa56857e728575",
+      "bytes": 413,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.RunMap_ScriptSignals.generated.cs",
+      "sha256": "a539c0fa128fa56e9fdbabae1da4d2544727ae64c630232e4c621f31e952679e",
+      "bytes": 413,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceAimArrow_ScriptSignals.generated.cs",
+      "sha256": "028d5f0a88f635c990b96ff0122685a7c075529363a5377d1574e1a5e58d8f48",
+      "bytes": 421,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceCardBody_ScriptSignals.generated.cs",
+      "sha256": "71e8a1e1d98559b5ef5cca8bfbae2d87ee2253ba95c754030dd1f166521f6a89",
+      "bytes": 421,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceEnergyOrb_ScriptSignals.generated.cs",
+      "sha256": "ad59685c4014467f5fed4da044ce0ae44c064115ba640006706320bdaf82b5ef",
+      "bytes": 422,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHealthBar_ScriptSignals.generated.cs",
+      "sha256": "7659f8fae2d1fe3a7946ec0695a53a1b95a9ff30ed79f0c968068b7804a8d1be",
+      "bytes": 422,
+      "baselineSha256": null
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.SourceHudLabel_ScriptSignals.generated.cs",
+      "sha256": "c7793b79372ba654198cceef15adf63d526c4698c9011f3a80aa7c1f90df7edc",
+      "bytes": 419,
+      "baselineSha256": null
+    },
+    {
+      "path": "scripts/ui/SourceAimArrow.cs",
+      "sha256": "4fa8c44e5d3dfcdc93ca7de5381bf81fa54bc6adfd08c2139b560e42799f44a2",
+      "bytes": 112,
+      "baselineSha256": null
+    },
+    {
+      "path": "scripts/ui/EnemyDropTarget.cs",
+      "sha256": "de2c9049494af5a8e67de5174d7d2104e19c52b8f1a868b3d5c65f9392e94365",
+      "bytes": 113,
+      "baselineSha256": null
+    },
+    {
+      "path": "scripts/ui/SourceEnergyOrb.cs",
+      "sha256": "6df36902af6038a8932d3cbfbe5d7b236c6ba05906f3066150544e3eeaa151d6",
+      "bytes": 113,
+      "baselineSha256": null
+    },
+    {
+      "path": "scripts/ui/SourceHealthBar.cs",
+      "sha256": "ada75ec2420b89a73b4a86920592de1e9c764d47a9e70bd7d5d14dc13666c5b4",
+      "bytes": 113,
+      "baselineSha256": null
+    },
+    {
+      "path": "scripts/ui/BattlefieldDropTarget.cs",
+      "sha256": "61351156ecbcc76afa9fc6d2522c78ae4568856896816731b99c99081cc33a71",
+      "bytes": 119,
+      "baselineSha256": null
+    },
+    {
+      "path": "scripts/ui/SourceCardBody.cs",
+      "sha256": "34d7dab80e6df88ec6f779a17ad9e4274ca3e016a81ba11ff4e6803cafa3ea4c",
+      "bytes": 112,
+      "baselineSha256": null
+    },
+    {
+      "path": "scripts/ui/SourceHudLabel.cs",
+      "sha256": "6140aa2f563648b3b1d84b82f659a99d6bce83fb7fc5de08eeea9b1d5f3df5c0",
+      "bytes": 112,
+      "baselineSha256": null
+    },
+    {
+      "path": "Properties/AssemblyInfo.cs",
+      "sha256": "c9d382e5452d2da01e15b0d2a06cbb5343cd80892dd946b687f4f2b18483f460",
+      "bytes": 1268,
+      "baselineSha256": "d9d9d8c79e65b9490672564169a0bcb0e7153f32268570895322ba8adfbeb274"
+    }
+  ],
+  "newScriptTypes": [
+    "SourceAimArrow",
+    "EnemyDropTarget",
+    "SourceEnergyOrb",
+    "SourceHealthBar",
+    "BattlefieldDropTarget",
+    "SourceCardBody",
+    "SourceHudLabel"
+  ],
+  "limits": [
+    "Compile proof only at packaging time; native QA required.",
+    "Stage ownership/Main wiring is separate and must use accepted delegated seams.",
+    "Advanced card arrival flights, token details and optical matching require further validation."
+  ]
+}

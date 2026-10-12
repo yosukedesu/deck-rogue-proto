@@ -1,0 +1,942 @@
+{
+  "loadedMvid": "e699882a-e812-4284-9fcc-7ecb1fb3beb8",
+  "passed": true,
+  "checks": 131,
+  "error": null,
+  "diagnostics": [],
+  "results": [
+    {
+      "kind": "assertion",
+      "name": "load-rapid3",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "three-cards-accepted-before-contact",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "no-synchronous-contact",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "source-anticipation-motion",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-size",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "save-source-anticipation",
+      "pass": true
+    },
+    {
+      "kind": "capture",
+      "file": "001_source-anticipation.png",
+      "sha256": "beef90f9394f33726fac584710a46e824d9e694247c65bb0fefa3d1aecfc3443",
+      "clock": 2.42124,
+      "InputLocked": false,
+      "ActiveEffectCount": 0,
+      "ActiveMotionCount": 1,
+      "ActivePhaseBanner": "",
+      "actors": [
+        {
+          "DefinitionId": "leader_green",
+          "pose": "attack",
+          "frame": 0,
+          "offset": "(-0.13893586, 0, 0.030321399)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 0,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 0,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "source130ms-contact",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "source-local-hold",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-size",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "save-source-contact-hold",
+      "pass": true
+    },
+    {
+      "kind": "capture",
+      "file": "002_source-contact-hold.png",
+      "sha256": "d56daed7af357a1e8de6ea262849ef98bf935a0eb3e27b83f0cf9c2603d3dc24",
+      "clock": 2.4982345,
+      "InputLocked": false,
+      "ActiveEffectCount": 1,
+      "ActiveMotionCount": 2,
+      "ActivePhaseBanner": "",
+      "actors": [
+        {
+          "DefinitionId": "leader_green",
+          "pose": "attack",
+          "frame": 1,
+          "offset": "(1.1225346, 0, -0.24498226)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 0,
+          "offset": "(0.058152083, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 0,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "65ms-hold-retains-owner",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "successor-after-local-pause",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "successor-before-prior-fx-tail",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-releases-input",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-motion-queue-empty",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "visuals-preserve-rules-rng",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "three-contacts-once",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "per-command-receipt-ownership",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-mixed",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "ordinary-local-pause-does-not-lock-input",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-releases-input",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-motion-queue-empty",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "visuals-preserve-rules-rng",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "guard-rule-applied",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-earth-mixed-death",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-releases-input",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-motion-queue-empty",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "visuals-preserve-rules-rng",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "aoe-actual-contacts",
+      "pass": true
+    },
+    {
+      "kind": "aoe-contact-times",
+      "times": [
+        4.1301165,
+        4.1301165,
+        4.1301165,
+        4.2801056,
+        4.2801056
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "aoe-two-source-volleys",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-terminal",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "terminal-immediate-input-fence",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "terminal-rejects-future-input",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "terminal-waits-death-motion",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-size",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "save-terminal-death",
+      "pass": true
+    },
+    {
+      "kind": "capture",
+      "file": "003_terminal-death.png",
+      "sha256": "e61d0577146ba5f432f240d78216fb5230850b5a446aa86248de9bf633949834",
+      "clock": 5.22905,
+      "InputLocked": true,
+      "ActiveEffectCount": 1,
+      "ActiveMotionCount": 2,
+      "ActivePhaseBanner": "",
+      "actors": [
+        {
+          "DefinitionId": "leader_green",
+          "pose": "attack",
+          "frame": 1,
+          "offset": "(0.9163735, 0, -0.22137135)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 0,
+          "offset": "(0.059292015, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-releases-input",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-motion-queue-empty",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "visuals-preserve-rules-rng",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-endturn-tail",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "endturn-during-live-tail",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "enemy-phase-strong-fence",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "enemy-phase-rejects-card",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-size",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "save-enemy-banner",
+      "pass": true
+    },
+    {
+      "kind": "capture",
+      "file": "004_enemy-banner.png",
+      "sha256": "b474a942fe77eb354fb822ab0d609b969798f5f1ddfa241ef30cdead8a202901",
+      "clock": 6.1125765,
+      "InputLocked": true,
+      "ActiveEffectCount": 1,
+      "ActiveMotionCount": 2,
+      "ActivePhaseBanner": "敵の番",
+      "actors": [
+        {
+          "DefinitionId": "leader_green",
+          "pose": "attack",
+          "frame": 2,
+          "offset": "(0.92105395, 0, -0.20101108)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 0,
+          "offset": "(0.121087424, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 2,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "incoming-callback-owned",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "incoming-callback-owned",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-releases-input",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-motion-queue-empty",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "visuals-preserve-rules-rng",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "source-execution-leases",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "incoming-provider-cleared-outside-callback",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-attack-hex-defend",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "incoming-callback-owned",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "trio-finite-strong-fence",
+      "pass": true
+    },
+    {
+      "kind": "enemy-sequence",
+      "frames": 206,
+      "seconds": 3.433281,
+      "rows": [
+        {
+          "type": "TurnEnded",
+          "at": 0.049999237,
+          "Revision": 16
+        },
+        {
+          "type": "EnemyActionExecuting",
+          "at": 0.6499901,
+          "Revision": 16
+        },
+        {
+          "type": "DamageDealt",
+          "at": 0.9666519,
+          "Revision": 16
+        },
+        {
+          "type": "EnemyActionResolved",
+          "at": 1.3666458,
+          "Revision": 16
+        },
+        {
+          "type": "EnemyActionExecuting",
+          "at": 1.3666458,
+          "Revision": 16
+        },
+        {
+          "type": "StatusInflicted",
+          "at": 1.6833076,
+          "Revision": 16
+        },
+        {
+          "type": "EnemyActionResolved",
+          "at": 1.9833031,
+          "Revision": 16
+        },
+        {
+          "type": "EnemyActionExecuting",
+          "at": 1.9833031,
+          "Revision": 16
+        },
+        {
+          "type": "BlockGained",
+          "at": 2.299965,
+          "Revision": 16
+        },
+        {
+          "type": "EnemyActionResolved",
+          "at": 2.4499626,
+          "Revision": 16
+        },
+        {
+          "type": "EnemyPhaseEnded",
+          "at": 2.4499626,
+          "Revision": 16
+        },
+        {
+          "type": "TurnStarted",
+          "at": 2.4499626,
+          "Revision": 16
+        },
+        {
+          "type": "CardsDrawn",
+          "at": 3.0499535,
+          "Revision": 16
+        },
+        {
+          "type": "EnemyIntentDeclared",
+          "at": 3.0499535,
+          "Revision": 16
+        },
+        {
+          "type": "EnemyIntentDeclared",
+          "at": 3.1832848,
+          "Revision": 16
+        },
+        {
+          "type": "EnemyIntentDeclared",
+          "at": 3.2999496,
+          "Revision": 16
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "trio-original-rule-hash",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-size",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "save-next-turn",
+      "pass": true
+    },
+    {
+      "kind": "capture",
+      "file": "005_next-turn.png",
+      "sha256": "c24fae6c8668831ffbf7ea9e8c020e9d906edc89256af944ec48a1e1c7be9c29",
+      "clock": 12.435125,
+      "InputLocked": false,
+      "ActiveEffectCount": 0,
+      "ActiveMotionCount": 0,
+      "ActivePhaseBanner": "",
+      "actors": [
+        {
+          "DefinitionId": "leader_green",
+          "pose": "idle",
+          "frame": 1,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 1,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 3,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 2,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "load-enemy-stall",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "incoming-callback-owned",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "incoming-callback-owned",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "incoming-callback-owned",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "stalled-three-contributions-observed",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "stall-does-not-burst-catchup-contacts",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-releases-input",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-motion-queue-empty",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "visuals-preserve-rules-rng",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-numeric-cancel",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "numeric-cancel-no-stale-feedback",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-cancel",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "cancel-drains-motion-fx-queue",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "canceled-callbacks-never-replay",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-reentry",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-reset-queued",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-cancels-old-owner",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "no-session-diagnostics",
+      "pass": true
+    }
+  ],
+  "provenance": "Fresh reconstructed motion/P0 tests; no claim of exact lost final-source identity"
+}

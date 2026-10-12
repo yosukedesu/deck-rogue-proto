@@ -1,0 +1,123 @@
+{
+  "loadedMvid": "e210c2ca-ea97-4432-a191-1c590e41e8c3",
+  "passed": true,
+  "checks": 15,
+  "error": null,
+  "diagnostics": [],
+  "results": [
+    {
+      "kind": "assertion",
+      "name": "load-banner-only",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "source-banner-visible-after-fade-in",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "source-banner-positive-bounds",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-size",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "save-enemy-banner-visible",
+      "pass": true
+    },
+    {
+      "kind": "capture",
+      "file": "001_enemy-banner-visible.png",
+      "sha256": "31b834a6bed2728523c505ae39f654e593db98cdf29b839d9233842e0439282c",
+      "clock": 2.5518456,
+      "InputLocked": true,
+      "ActiveEffectCount": 0,
+      "ActiveMotionCount": 0,
+      "ActivePhaseBanner": "敵の番",
+      "ActivePhaseBannerAlpha": 1.0,
+      "phaseBannerBounds": "(618.26086, 410), (543.7523, 80)",
+      "actors": [
+        {
+          "DefinitionId": "leader_green",
+          "pose": "idle",
+          "frame": 0,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 0,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_probe",
+          "pose": "idle",
+          "frame": 0,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "incoming-callback-owned",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "incoming-callback-owned",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-releases-input",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-motion-queue-empty",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "visuals-preserve-rules-rng",
+      "pass": true
+    }
+  ],
+  "provenance": "Fresh reconstructed motion/P0 tests; no claim of exact lost final-source identity"
+}

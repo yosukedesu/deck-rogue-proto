@@ -1,0 +1,221 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "frame": "001_act1-idle.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        442.49997,
+        255.99998,
+        35.0
+      ],
+      "content": 35
+    },
+    {
+      "frame": "001_act1-idle.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        474.33328,
+        255.99998,
+        30.0
+      ],
+      "content": 30
+    },
+    {
+      "frame": "002_act1-contact.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        442.49997,
+        255.99998,
+        35.0
+      ],
+      "content": 35
+    },
+    {
+      "frame": "002_act1-contact.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        474.33328,
+        255.99998,
+        30.0
+      ],
+      "content": 30
+    },
+    {
+      "frame": "003_act1-settled.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        442.49997,
+        255.99998,
+        35.0
+      ],
+      "content": 35
+    },
+    {
+      "frame": "003_act1-settled.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        474.33328,
+        255.99998,
+        30.0
+      ],
+      "content": 30
+    },
+    {
+      "frame": "004_act2-idle.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        442.49997,
+        255.99998,
+        35.0
+      ],
+      "content": 35
+    },
+    {
+      "frame": "004_act2-idle.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        474.33328,
+        255.99998,
+        30.0
+      ],
+      "content": 30
+    },
+    {
+      "frame": "005_act2-contact.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        442.49997,
+        255.99998,
+        35.0
+      ],
+      "content": 35
+    },
+    {
+      "frame": "005_act2-contact.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        474.33328,
+        255.99998,
+        30.0
+      ],
+      "content": 30
+    },
+    {
+      "frame": "006_act2-settled.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        442.49997,
+        255.99998,
+        35.0
+      ],
+      "content": 35
+    },
+    {
+      "frame": "006_act2-settled.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        474.33328,
+        255.99998,
+        30.0
+      ],
+      "content": 30
+    },
+    {
+      "frame": "007_act3-idle.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        442.49997,
+        255.99998,
+        35.0
+      ],
+      "content": 35
+    },
+    {
+      "frame": "007_act3-idle.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        474.33328,
+        255.99998,
+        30.0
+      ],
+      "content": 30
+    },
+    {
+      "frame": "008_act3-contact.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        442.49997,
+        255.99998,
+        35.0
+      ],
+      "content": 35
+    },
+    {
+      "frame": "008_act3-contact.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        474.33328,
+        255.99998,
+        30.0
+      ],
+      "content": 30
+    },
+    {
+      "frame": "009_act3-settled.png",
+      "control": "IncomingHeadline",
+      "pass": true,
+      "rect": [
+        42.666668,
+        442.49997,
+        255.99998,
+        35.0
+      ],
+      "content": 35
+    },
+    {
+      "frame": "009_act3-settled.png",
+      "control": "IncomingDetail",
+      "pass": true,
+      "rect": [
+        42.666668,
+        474.33328,
+        255.99998,
+        30.0
+      ],
+      "content": 30
+    }
+  ]
+}

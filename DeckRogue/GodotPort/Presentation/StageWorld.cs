@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 namespace DeckRogue.GodotPort.Presentation;
 
 [ScriptPath("res://scripts/presentation/StageWorld.cs")]
-public class StageWorld : Node3D
+public partial class StageWorld : Node3D
 {
 	private sealed class Geometry
 	{
@@ -331,6 +331,7 @@ public class StageWorld : Node3D
 		_sway.Clear();
 		_elapsed = 0.0;
 		ResetForestSourceLights();
+		ResetReconstructedAtmosphere();
 		Act = Math.Clamp(act, 1, 3);
 		string[] args = OS.GetCmdlineUserArgs();
 		_mobilePerformance = OS.HasFeature("android") || OS.HasFeature("ios") || args.Contains("--ui-phone");
@@ -385,6 +386,7 @@ public class StageWorld : Node3D
 		{
 			BuildLayout(Act);
 		}
+		BuildReconstructedAtmosphere();
 	}
 
 	private void UpdateCameraFraming()
@@ -442,6 +444,7 @@ public class StageWorld : Node3D
 			node.Position = position + Vector3.Right * (sway * Mathf.Sin((float)_elapsed * 1.7f + phase2));
 		}
 		BindForestSourceLights();
+		SetReconstructedAtmosphereTime((float)_elapsed);
 	}
 
 	private void MakeLighting(int act)

@@ -73,7 +73,12 @@ public class Main : Node
 		};
 		overlay.AddChild(_ui, forceReadableName: false, InternalMode.Disabled);
 		_ui.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect, Control.LayoutPresetMode.Minsize);
-		_ui.SetPresentationGate(() => _stage.IsPresenting);
+		_ui.SetPresentationGate(() => _stage.InputLocked);
+        _ui.SetPresentationOwnership(_stage.GetEventChange, _stage.IsOrdinaryPresentation);
+        _ui.SetIncomingContactProjection(_stage.GetPresentedIncomingAmount);
+        _ui.SetLeaderProjection(_stage.ProjectLeaderFeet);
+        _ui.SetCardRetirement(id => (double)_stage.GetCardRetirementSeconds(id));
+        _stage.SetEnemyLedgerBounds(_ui.GetEnemyLedgerBounds);
 		_stage.PresentationCompleted += _ui.PresentationCompleted;
 		_stage.TargetSelected += _ui.SelectEnemy;
 		_stage.EventPresented += _ui.PresentEvent;
@@ -94,9 +99,13 @@ public class Main : Node
 		};
 		AddChild(capture, forceReadableName: false, InternalMode.Disabled);
 		capture.Bind(_session, () => _stage.IsPresenting);
+		GD.Print("DECKROGUE_RECOVERY_MODULE mvid=" + typeof(Main).Assembly.ManifestModule.ModuleVersionId);
 		GD.Print("DECKROGUE_PORT_READY cards=" + _session.Catalog.Cards.Count + " leaders=" + _session.Catalog.Leaders.Count + " enemies=" + _session.Catalog.Enemies.Count);
 #if RECOVERY_QA
         DeckRogue.GodotPort.RecoveryQA.RecoveryActorColorQa.Start(this);
+        DeckRogue.GodotPort.RecoveryQA.RecoveryStageQa.Start(this);
+        DeckRogue.GodotPort.RecoveryQA.RecoveryMotionQa.Start(this);
+        DeckRogue.GodotPort.RecoveryQA.RecoveryHandQa.Start(this);
 #endif
 	}
 

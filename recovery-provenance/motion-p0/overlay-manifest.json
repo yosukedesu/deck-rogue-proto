@@ -1,0 +1,66 @@
+{
+  "status": "reconstructed candidate; pure tests pass; native validation pending",
+  "base": "accepted reconstructed color overlay on recovered74e982 baseline",
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleActor.ExecutionScale.cs",
+      "baseline_sha256": null,
+      "candidate_sha256": "c83b0f270980b8e90144c044e04fff7ff4c29f231a5312087e780717968f0c41"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleActor.cs",
+      "baseline_sha256": "c57e4cc0799fce93077d9d3cd9085a4849693fd4c9fb0322cf4b8f26eaa8331b",
+      "candidate_sha256": "8b7bdd87b78e547932ef2d82b72f1c37f73abd2e19d73582066b7413986f7690"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.CommandQueue.cs",
+      "baseline_sha256": null,
+      "candidate_sha256": "204c133ecd87db6b93812df0617def51dcea41ef3b61790ea2b0258342efb327"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.SourceMotion.cs",
+      "baseline_sha256": null,
+      "candidate_sha256": "c8515bab44971bbfaf40a100a00de979573c18d3599262b82956357df48a54d9"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.SourcePhase.cs",
+      "baseline_sha256": null,
+      "candidate_sha256": "87787d4f9d6d7efb8e067c763537ba989b1896846957b6d08cc7121ce0bcd997"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.cs",
+      "baseline_sha256": "9df6a69881cf9281af9654cfe551275b6dda3f5703183d14aaf09c6cddfb241c",
+      "candidate_sha256": "8397d2ce9179f381a78a727a97526287b3741f0dd3e124a86d548c02d6437f17"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/CombatActionQueue.cs",
+      "baseline_sha256": null,
+      "candidate_sha256": "35b6367faac00ed6d775dc5f64c83b347e50e68abf737bb85bedf19c099305d4"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/PresentationTimeline.cs",
+      "baseline_sha256": "699e9b3606d45e1fbdcede3000d80c2f5887461ffbfc28f55477b972f357ff79",
+      "candidate_sha256": "321d735c15dab773a37f1c3aa95d351cf0f0169e9d71b535e657dbb3e45d9eb9"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/SourceActorMotion.cs",
+      "baseline_sha256": null,
+      "candidate_sha256": "38f7ef75d4cbcd8c024caa5e85f5d49f1816e9c27ec40672b927937a681dede0"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/SourceEnemySequence.cs",
+      "baseline_sha256": null,
+      "candidate_sha256": "c97d0c65fa7cb53f27ac8358630ef32bcebaf1699f55624d55f1ccc46488d3fb"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/SourceImpactPause.cs",
+      "baseline_sha256": null,
+      "candidate_sha256": "ed7214858d892a652096df1dc2f425ad754c28a4120f724c1a4d94f15149196f"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/SourceShowcaseProfiles.cs",
+      "baseline_sha256": null,
+      "candidate_sha256": "9d744f820420a2398fcac6e8a2b6fe7edf1d5e1b92985ee80ef2157d8f95cfb2"
+    }
+  ]
+}

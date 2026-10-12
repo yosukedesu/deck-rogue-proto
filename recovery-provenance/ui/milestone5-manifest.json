@@ -1,0 +1,25 @@
+{
+  "schema": "ui-reconstruction-overlay/1",
+  "classification": "new source-backed reconstruction, not exact ca8ab902 Git recovery",
+  "requires": "overlay-milestone1 then milestone2/3/4 deltas",
+  "changes": [
+    "Hover/drag GUI sibling order follows visible raised card",
+    "Restore exact idle UID order on cancel/exit",
+    "Hide reset tiles immediately"
+  ],
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.RecoveredBattle.cs",
+      "sha256": "b5719c200dc0f8d80eeb40fc1016745b4e27ec776ab30c26c6776b0dfff54eca",
+      "bytes": 30771,
+      "baselineSha256": "ce223ec8edd63d75285db0cde06f083ee3cc96ddfbe23f744ae5be065ab975f7"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GeneratedBindings/DeckRogue.GodotPort.UI.GameUI_ScriptMethods.generated.cs",
+      "sha256": "0813238a9fa21b484fd88dcb0091376e8c6836b30520bd10f8f2fdbf2bced3a3",
+      "bytes": 98976,
+      "baselineSha256": "005a6d633f965b5b809eccb220fe244431808d89c7e00b085b0c8486ce113892"
+    }
+  ],
+  "nativeQa": "PENDING"
+}

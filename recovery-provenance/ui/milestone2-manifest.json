@@ -1,0 +1,31 @@
+{
+  "schema": "ui-reconstruction-overlay/1",
+  "classification": "new source-backed reconstruction, not exact ca8ab902 Git recovery",
+  "requires": "overlay-milestone1",
+  "changes": [
+    "Face texture setter order and source painted-midline labels",
+    "Field-target Back cancellation and drag cleanup",
+    "Status/gear/log/deck/relic access in Menu"
+  ],
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.cs",
+      "sha256": "627e6ceb8269527a2033f6f07defd4e8ee933e30a75b0bd02810837a1494dd3b",
+      "bytes": 133854,
+      "baselineSha256": "71cc05a15151b512e95cec886f96c896830ab0adf5fe89eb06172748cc436132"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceCardFace.cs",
+      "sha256": "6a5f7b16cc399b962cb9d5d9fc8baa9c68cc5dda692b88e4aa4b3aad216fb293",
+      "bytes": 28548,
+      "baselineSha256": "b6b362b093587b7bc4c3c6898fbb8a48b9c1c8d573a05edb175308c51bb47246"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceEnemyUiAnchor.cs",
+      "sha256": "8ed2a9399ec9b6b85beee3ea8add06729cbf44bbc2f7bb1ff790c2e34595ee24",
+      "bytes": 575,
+      "baselineSha256": "90983528422eaf07bc1da830b6112ff52d561fed71dee36829f5b69badd86c86"
+    }
+  ],
+  "nativeQa": "PENDING"
+}

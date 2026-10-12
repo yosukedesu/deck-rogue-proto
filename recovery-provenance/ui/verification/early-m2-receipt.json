@@ -1,0 +1,21 @@
+{
+  "scope": "Native 1170x540 production Main; actor corrected, stage r1, UI milestone2. Before P0 motion integration.",
+  "actions": [
+    "ui-m2-before",
+    "ui-m2-after-low-cancel",
+    "ui-m2-after-choice-cancel",
+    "ui-m2-after-entangle",
+    "ui-m2-endturn"
+  ],
+  "checks": {
+    "low_cancel_save_identical": true,
+    "choice_cancel_save_identical": true,
+    "one_energy_spent": true,
+    "one_card_removed": true,
+    "attack_damage_once": true,
+    "end_turn_advanced_once": true,
+    "fresh_hand": true,
+    "enemy_defend_resolved": true
+  },
+  "known_failure": "Header Menu pointer click intercepted; sent to UI owner for milestone3."
+}

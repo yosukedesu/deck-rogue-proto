@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "productionSha256": "abca287d888c967dc43dacc64b2de4a643fb0135bef87e5fb83b6799c00f726b",
+  "productionMvid": "57e155c7-7249-47d8-8d30-3741706a09ba",
+  "harnessClassesAbsent": true,
+  "nativeLoadedMvidVerifiedInLog": true,
+  "checks": {
+    "endturn_repeat_advanced_once": true,
+    "enemy_damage_correct": true,
+    "terminal_reward_reached": true,
+    "reward_gold": true,
+    "returned_to_map": true
+  },
+  "nativeTerminalCapture": "screenshots/20261012T180217768_003_manual.png",
+  "nativeTerminalCaptureBusy": true,
+  "nativeRewardCapture": "screenshots/20261012T180250988_005_manual.png",
+  "rewardSelectedOnceDeckBefore": 11,
+  "rewardSelectedOnceDeckAfter": 12,
+  "scope": "Actual CUA pointer/keyboard normal Main production assembly, phone1170x540; prior synthetic baseline save continued without test harness."
+}

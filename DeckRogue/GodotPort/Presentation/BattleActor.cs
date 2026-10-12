@@ -313,9 +313,18 @@ public partial class BattleActor : Node3D
 
 	public bool ShowLabels { get; set; } = false;
 
-	public Vector3 Contact => Home + _layoutBasis.Y * Height * 0.54f;
 
-	public Vector3 Impact => Home + _layoutBasis.Y * Height * 0.5f + _layoutBasis.Z * 0.28f;
+ public float SourceMotionHeight=>Sprite is null?_imageHeight-_feetPad:Sprite.Texture.GetHeight()*Sprite.PixelSize-_feetPad;
+ public Vector3 SourceMotionFeet=>Home+Motion.Offset;
+ public SourceActorMotion Motion {get;}=new();
+ int _sourceMotionFrame;
+ public void CancelSourceMotion(float clock){Motion.Cancel();CancelExecutionScale();PlayPose("idle",clock);}
+ public string PoseName=>_pose;public int PoseFrame=>_poseFrame;public float PoseFrameTime=>_poseFrameTime;
+ public bool HasActivePose=>_pose!="idle"&&PoseFrames(_pose) is {Count:>0};
+
+	public Vector3 Contact => SourceMotionFeet + _layoutBasis.Y * Height * 0.54f;
+
+	public Vector3 Impact => SourceMotionFeet + _layoutBasis.Y * Height * 0.5f + _layoutBasis.Z * 0.28f;
 
 	public float DissolveAmount => _dissolve;
 
@@ -702,64 +711,26 @@ public partial class BattleActor : Node3D
 		}
 	}
 
-	public void UpdateVisual(float clock, float attackProgress = -1f, float hitProgress = -1f, bool guarding = false)
-	{
-		if (Sprite == null)
-		{
-			return;
-		}
-		float delta = Math.Max(0f, clock - _lastClock);
-		_lastClock = clock;
-		base.Position = Home;
-		Sprite.Position = _layoutBasis.Y * (_imageHeight / 2f - _feetPad);
-		Sprite.Basis = _layoutBasis;
-		_surface.SetShaderParameter("_Flash", Math.Clamp((_flashUntil - clock) / 0.18f, 0f, 1f) * 0.1f);
-		if (Dead)
-		{
-			_deathFade = _dissolve;
-			Sprite.Modulate = new Color(1f, 1f, 1f, 1f - _deathFade);
-			Vitals.Visible = false;
-			IntentLabel.Visible = false;
-			_shadow.Visible = _deathFade < 1f;
-			RefreshSourceMaterial();
-			return;
-		}
-		Sprite.Modulate = Colors.White;
-		_shadow.Visible = true;
-		Vitals.Visible = ShowLabels;
-		IntentLabel.Visible = ShowLabels;
-		if (!_usesExplicitPoses)
-		{
-			if (attackProgress >= 0f && (_lastAttackProgress < 0f || attackProgress < _lastAttackProgress || guarding != _lastGuarding))
-			{
-				StartPose(guarding ? "block" : "attack", clock);
-			}
-			if (hitProgress >= 0f && (_lastHitProgress < 0f || hitProgress < _lastHitProgress))
-			{
-				StartPose("hurt", clock);
-			}
-		}
-		if (hitProgress >= 0f && (_lastHitProgress < 0f || hitProgress < _lastHitProgress))
-		{
-			Flash(clock);
-		}
-		_lastAttackProgress = attackProgress;
-		_lastHitProgress = hitProgress;
-		_lastGuarding = guarding;
-		AdvancePose(clock);
-		if (attackProgress >= 0f)
-		{
-			float pulse = MathF.Sin(Math.Clamp(attackProgress, 0f, 1f) * (float)Math.PI);
-			base.Position = Home + new Vector3((EnemyIndex >= 0) ? ((0f - pulse) * 0.2f) : (pulse * 0.2f), 0f, 0f);
-		}
-		if (hitProgress >= 0f)
-		{
-			float pulse2 = MathF.Sin(Math.Clamp(hitProgress, 0f, 1f) * (float)Math.PI);
-			Sprite.Position += _layoutBasis.X * (MathF.Sin(hitProgress * 23f) * 0.07f * pulse2);
-		}
-		RefreshSourceMaterial();
-	}
-
+ public void UpdateVisual(float clock,float attackProgress=-1,float hitProgress=-1,bool guarding=false,int presentationFrame=-1,float frameDelta=-1) {
+  if(Sprite is null)return;float delta=frameDelta>=0?frameDelta:Math.Max(0,clock-_lastClock);_lastClock=clock;
+  int frame=presentationFrame>=0?presentationFrame:++_sourceMotionFrame;
+  if(Motion.Sample(clock,delta,frame) is {} requestedPose)PlayPose(requestedPose,clock);
+  Position=Home+Motion.Offset;SampleExecutionScale(clock);Sprite.Position=_layoutBasis.Y*((_imageHeight/2-_feetPad)*ExecutionScale.Y);Sprite.Basis=_layoutBasis.ScaledLocal(new Vector3(ExecutionScale.X,ExecutionScale.Y,1));
+  _surface.SetShaderParameter("_Flash",Math.Clamp((_flashUntil-clock)/.18f,0,1)*.10f);
+  if(Dead){_deathFade=_dissolve;Sprite.Modulate=new Color(1,1,1,1-_deathFade);Vitals.Visible=false;IntentLabel.Visible=false;_shadow.Visible=_deathFade<1;RefreshSourceMaterial();return;}
+  Sprite.Modulate=Colors.White;_shadow.Visible=true;Vitals.Visible=ShowLabels;IntentLabel.Visible=ShowLabels;
+  // Compatibility for existing callers: progress edges start a clip, never seek it.
+  // After the stage opts into PlayPose, only explicit receipt-owned starts apply.
+  if(!_usesExplicitPoses){
+   if(attackProgress>=0&&(_lastAttackProgress<0||attackProgress<_lastAttackProgress||guarding!=_lastGuarding))StartPose(guarding?"block":"attack",clock);
+   if(hitProgress>=0&&(_lastHitProgress<0||hitProgress<_lastHitProgress))StartPose("hurt",clock);
+  }
+  if(hitProgress>=0&&(_lastHitProgress<0||hitProgress<_lastHitProgress))Flash(clock);
+  _lastAttackProgress=attackProgress;_lastHitProgress=hitProgress;_lastGuarding=guarding;if(Motion.IsPaused(clock))_poseClock=clock;else AdvancePose(clock);
+  if(attackProgress>=0) {float pulse=MathF.Sin(Math.Clamp(attackProgress,0,1)*MathF.PI);Position+=new Vector3(EnemyIndex>=0?-pulse*.20f:pulse*.20f,0,0);}
+  if(hitProgress>=0) {float pulse=MathF.Sin(Math.Clamp(hitProgress,0,1)*MathF.PI);Sprite.Position+=_layoutBasis.X*(MathF.Sin(hitProgress*23)*.07f*pulse);}
+  RefreshSourceMaterial();
+ }
 	public void ConfigureSourceAppearance(int act, Camera3D layoutCamera, int enemyGroup = 1)
 	{
 		_sourceDisplayAct = act;

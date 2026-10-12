@@ -1,0 +1,26 @@
+{
+  "schema": "ui-reconstruction-overlay/1",
+  "classification": "new source-backed reconstruction, not exact ca8ab902 Git recovery",
+  "requires": "overlay-milestone1 then milestone2 and milestone3 deltas",
+  "changes": [
+    "Transparent enemy/pocket/forecast hit controls in all states",
+    "GUI tree-order header access",
+    "Real painted hand and current HUD bounds for cue avoidance",
+    "Source multi-hit and quantity intent wording"
+  ],
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.cs",
+      "sha256": "44c51d9018d2141d3bdfb6668255587f90ff2d645b1fba911ee190bb5b350b0b",
+      "bytes": 134026,
+      "baselineSha256": "f983008d0b6238b0205904af518bbb94402e95059376104ea0fd4f7fadf45411"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.RecoveredBattle.cs",
+      "sha256": "ce223ec8edd63d75285db0cde06f083ee3cc96ddfbe23f744ae5be065ab975f7",
+      "bytes": 30431,
+      "baselineSha256": "1a8a96577b2ed7470b4e698f71758761734442f2c82d6d59d9eddf1cff0da3d1"
+    }
+  ],
+  "nativeQa": "PENDING"
+}

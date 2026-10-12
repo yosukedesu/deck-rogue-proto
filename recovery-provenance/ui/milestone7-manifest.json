@@ -1,0 +1,17 @@
+{
+  "schema": "ui-reconstruction-overlay/1",
+  "classification": "new source-backed reconstruction, not exact ca8ab902 Git recovery",
+  "requires": "overlay-milestone1 then milestone2/3/4/5/6 deltas",
+  "changes": [
+    "Measure complete energy and maximum text as one centered group; prevent two-digit clipping at130 percent"
+  ],
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceEnergyOrb.cs",
+      "sha256": "8c3b38169d56e46493353133d845597da55b73b1ae12f31a43a1048a02b43397",
+      "bytes": 2348,
+      "baselineSha256": "18f0112907160acff67ec7161be1aecb059a8bc014ef37b69974f9331b734a90"
+    }
+  ],
+  "nativeQa": "PENDING"
+}

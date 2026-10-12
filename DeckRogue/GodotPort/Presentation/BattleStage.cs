@@ -365,26 +365,26 @@ public partial class BattleStage : Node3D
 
 	public long PresentedRevision => _lastRevision;
 
-	public int PendingEventCount => _timeline.PendingCount + (((object)_timeline.Active != null) ? 1 : 0);
+	public int PendingEventCount => _timeline.PendingCount + (((object)_timeline.Active != null) ? 1 : 0) + OrdinaryPendingEvents;
 
 	public int ActiveEffectCount
 	{
 		get
 		{
 			AuthoredGeometryFx native = _native;
-			return ((native != null && native.IsActive) ? 1 : 0) + ((_fx != null && _fx.Visible) ? 1 : 0);
+			return ((native != null && native.IsActive) ? 1 : 0) + ((_fx != null && _fx.Visible) ? 1 : 0) + OrdinaryActiveEffects;
 		}
 	}
 
-	public int ActiveLightCount => (_fx?.ActiveLights ?? 0) + (_native?.ActiveLights ?? 0);
+	public int ActiveLightCount => (_fx?.ActiveLights ?? 0) + (_native?.ActiveLights ?? 0) + OrdinaryActiveLights;
 
 	public int RejectedReceiptCount { get; private set; }
 
-	public int CompletedEventCount => _timeline.CompletedBeats;
+	public int CompletedEventCount => _timeline.CompletedBeats + _ordinaryCompletedEvents;
 
-	public float PresentationTime => _timeline.Time;
+	public float PresentationTime => _clock;
 
-	public string ActiveEventType => _timeline.Active?.Event.Type ?? "";
+	public string ActiveEventType => _timeline.Active?.Event.Type ?? ActiveOrdinaryBeat?.Beat.Event.Type ?? "";
 
 	public string ActiveFamily => _timeline.Active?.Route?.Family ?? "";
 
@@ -708,97 +708,22 @@ public partial class BattleStage : Node3D
 	}
 
 	public void Present(SessionChange change)
-	{
-		EnsureBuilt();
-		if (!change.IsReset && change.Revision <= _lastRevision)
-		{
-			return;
-		}
-		_lastRevision = change.Revision;
-		if (_session != null)
-		{
-			PresentationBatch batch;
-			while (_session.TryDequeuePresentation(out batch))
-			{
-			}
-		}
-		if (change.IsReset)
-		{
-			_quality.Restart();
-			_resetting = true;
-			_timeline.Reset();
-			_fx.Clear();
-			_native.Clear();
-			_world.SetForestAttackLights(null);
-			_cues.Clear();
-			_ledger.Clear();
-			_receipts.Clear();
-			_resetting = false;
-			ClearActors();
-		}
-		_enemyBlockExpiryPending = false;
-		_blockBoundaryCommand = change.Command is RunCommand_Combat;
-		_latestRun = change.Current;
-		Routes.LeaderId = change.Current.LeaderId;
-		if (_act != change.Current.Act)
-		{
-			_act = change.Current.Act;
-			_world.Build(Math.Clamp(_act, 1, 3));
-			CacheWorldLights();
-			ApplyQualitySettings();
-		}
-		_audio.SyncRun((change.Current.Phase == "combat") ? change.Current : (change.Previous ?? change.Current));
-		GameState before = (change.IsReset ? change.Current.Combat : change.Previous?.Combat);
-		if ((object)before != null)
-		{
-			SyncActors(before, change.Current.LeaderId);
-		}
-		else if ((object)change.Current.Combat != null)
-		{
-			SyncActors(change.Current.Combat, change.Current.LeaderId);
-		}
-		if (change.Events.Count == 0)
-		{
-			IsPresenting = false;
-			_session?.SetPresentationBusy(busy: false);
-			SetRunState(change.Current);
-			this.PresentationCompleted?.Invoke();
-			return;
-		}
-		_receipts.Clear();
-		_ledgerBatch = null;
-		_bornUids.Clear();
-		_copiedEnter.Clear();
-		if ((object)before != null)
-		{
-			foreach (CardInstance p in before.Player.Permanents)
-			{
-				_bornUids.Add(p.Uid);
-			}
-		}
-		if ((object)before != null)
-		{
-			GameState after = change.Current.Combat;
-			if ((object)after != null)
-			{
-				_ledgerBatch = _ledger.Register(before, after);
-				if (_ledgerBatch != null)
-				{
-					for (int i = before.EventLog.Count; i < after.EventLog.Count; i++)
-					{
-						CombatPresentationLedger.Receipt receipt = _ledger.Find(i, after.EventLog[i]);
-						if (receipt != null)
-						{
-							_receipts[after.EventLog[i]] = receipt;
-						}
-					}
-				}
-			}
-		}
-		IsPresenting = true;
-		_session?.SetPresentationBusy(busy: true);
-		_timeline.Enqueue(change.Events, Routes);
-	}
+ {
+  EnsureBuilt();if(!change.IsReset&&change.Revision<=_lastRevision)return;
+  _lastRevision=change.Revision;if(_session is not null)while(_session.TryDequeuePresentation(out _)){}
+  bool wasPresenting=IsPresenting;
+  if(change.IsReset){CancelPresentation(false);_quality.Restart();ClearActors();wasPresenting=false;}
+  _latestRun=change.Current;Routes.LeaderId=change.Current.LeaderId;
+  if(_act!=change.Current.Act){_act=change.Current.Act;_world.Build(Math.Clamp(_act,1,3));CacheWorldLights();ApplyQualitySettings();}
+  _audio.SyncRun(change.Current.Phase==RunPhases.Combat?change.Current:change.Previous??change.Current);
+  var before=change.IsReset?change.Current.Combat:change.Previous?.Combat;
+  if(!wasPresenting){
+   if(before is not null)SyncActors(before,change.Current.LeaderId);else if(change.Current.Combat is {} combat)SyncActors(combat,change.Current.LeaderId);
+   _bornUids.Clear();_copiedEnter.Clear();if(before is not null)foreach(var c in before.Player.Permanents)_bornUids.Add(c.Uid);
+  }
+  if(change.Events.Count==0){if(!wasPresenting){InputLocked=false;IsPresenting=false;_session?.SetPresentationBusy(false);SetRunState(change.Current);PresentationCompleted?.Invoke();}return;}
+  RegisterCommand(change,before);
+ }
 
 	public void SetInterfaceRoute(string route)
 	{
@@ -868,7 +793,7 @@ public partial class BattleStage : Node3D
 	{
 		int index = e.EnemyIndex ?? (-1);
 		GameState before = _displayState;
-		GameState after = _latestRun?.Combat;
+		GameState after = GetEventChange(e)?.Current.Combat ?? _latestRun?.Combat;
 		bool stable = (object)before != null && (object)after != null && before.Enemies.Count == after.Enemies.Count && index >= 0 && index < before.Enemies.Count && before.Enemies[index].EnemyId == after.Enemies[index].EnemyId;
 		return new EnemyAttackContactPlan.SourceProof(index, stable ? before.Enemies[index].EnemyId : "", stable);
 	}
@@ -1102,7 +1027,7 @@ public partial class BattleStage : Node3D
 			_targetActor = ((hit.PresentationReceipt?.Target == "player" || hit.Source == "enemy") ? _hero : Enemy(hit.PresentationReceipt?.EnemyIndex ?? hit.EnemyIndex));
 			Vector3 from = _sourceActor?.Contact ?? (Path(-5f, 0.9f) + Vector3.Up);
 			Vector3 to = _targetActor?.Contact ?? (Path(4.459f, -0.5f) + Vector3.Up);
-			_sourceActor?.PlayPose("attack", _clock);
+			if(_ordinaryCallback?.Direct!=true)_sourceActor?.PlayPose("attack", _clock);
 			if (!_projectionActive)
 			{
 				StartEffect(beat.Route, beat.Scenario, from, to);
@@ -1135,12 +1060,13 @@ public partial class BattleStage : Node3D
 
 	private void ContactBeat(PresentationBeat beat)
 	{
+		int callbackGeneration = _actionQueue.Generation;
 		GameEvent e = beat.Event;
 		LastEventReceiptRejected = _rejectBeat;
 		_lastPresentedEvent = e;
 		_lastPresentedVitals = null;
 		EnemyAttackContactPlan? contacts = beat.Contacts;
-		bool last = contacts == null || !contacts.Individual || _timeline.ContactOrdinal >= beat.Contacts.Count - 1;
+		bool last = contacts == null || !contacts.Individual || BeatContactOrdinal >= beat.Contacts.Count - 1;
 		if (_rejectBeat)
 		{
 			if (last)
@@ -1167,7 +1093,7 @@ public partial class BattleStage : Node3D
 			{
 				if (_projectionActive)
 				{
-					if (!_ledger.CommitContribution(tracked, _timeline.ContactOrdinal, _sourceProof))
+					if (!_ledger.CommitContribution(tracked, BeatContactOrdinal, _sourceProof))
 					{
 						LastEventReceiptRejected = true;
 						RejectedReceiptCount++;
@@ -1183,7 +1109,8 @@ public partial class BattleStage : Node3D
 					_ledger.Commit(tracked);
 				}
 				SyncLedgerActor(tracked.Target);
-				this.NumericContactPresented?.Invoke(e);
+				PublishNumericContact(e, beat);
+				if(callbackGeneration != _actionQueue.Generation)return;
 			}
 			if (e is GameEvent_DamageDealt hit)
 			{
@@ -1195,22 +1122,22 @@ public partial class BattleStage : Node3D
 				{
 					_targetActor?.DamageFallback(hit.HpLoss, hit.Blocked.GetValueOrDefault());
 				}
-				int loss = (_projectionActive ? beat.Contacts[_timeline.ContactOrdinal].HpLossContribution : hit.HpLoss);
-				int block = (int)(_projectionActive ? (beat.Contacts[_timeline.ContactOrdinal].BlockContribution + beat.Contacts[_timeline.ContactOrdinal].IceContribution) : CombatOutcome.Read(hit).Absorbed);
+				int loss = (_projectionActive ? beat.Contacts[BeatContactOrdinal].HpLossContribution : hit.HpLoss);
+				int block = (int)(_projectionActive ? (beat.Contacts[BeatContactOrdinal].BlockContribution + beat.Contacts[BeatContactOrdinal].IceContribution) : CombatOutcome.Read(hit).Absorbed);
 				_contactHp = loss;
 				_contactBlock = block;
 				if (_projectionActive)
 				{
 					AttackRoute route = ((loss > 0) ? Routes.Resolve(hit) : new AttackRoute("system:outcome", "", "system", (block > 0) ? "guard" : "nullified", "SystemOutcomeFx", "neutral", FixedSmall: true, "proven contribution outcome"));
 					EffectScenario scenario = EffectScenario.For(route, loss, priorHp, hit.PresentationReceipt?.Before.MaxHp);
-					_effectStartedAt = _timeline.Time;
+					_effectStartedAt = BeatTime;
 					_effectOffset = scenario.Windup;
 					StartEffect(route, scenario, _sourceActor?.Contact ?? Vector3.Zero, _targetActor?.Contact ?? Vector3.Zero);
 				}
 				_audio.PlayDamageContact(hit.Source, loss, block, hit.Source == "player" && (hit.Amount >= 15 || hit.Exposed == true));
 				if (loss > 0)
 				{
-					_targetActor?.PlayPose("hurt", _clock);
+					ApplySourceImpact(beat, hit);
 					_targetActor?.Flash(_clock);
 				}
 				else if (block > 0)
@@ -1228,12 +1155,12 @@ public partial class BattleStage : Node3D
 				}
 				if (hit.Source != "enemy" || loss > 0 || block > 0 || hit.Amount <= 0)
 				{
-					ShowReceipt(text, (_targetActor?.Contact ?? Vector3.Up) + Vector3.Right * ((float)(_timeline.ContactOrdinal % 3 - 1) * 0.14f), (loss > 0) ? new Color("fff1e6") : new Color("b7c8df"));
+					ShowReceipt(text, (_targetActor?.Contact ?? Vector3.Up) + Vector3.Right * ((float)(BeatContactOrdinal % 3 - 1) * 0.14f), (loss > 0) ? new Color("fff1e6") : new Color("b7c8df"));
 				}
 			}
 			else
 			{
-				PresentTurnBoundary(e);
+				PresentTurnBoundary(e);PresentSourcePhaseCue(e);
 				CombatPresentationReceipt receipt = e.GetType().GetProperty("PresentationReceipt")?.GetValue(e) as CombatPresentationReceipt;
 				if (!_receipts.ContainsKey(e))
 				{
@@ -1294,12 +1221,12 @@ public partial class BattleStage : Node3D
 																		}
 																		else
 																		{
-																			ShowReceipt("あなたのターン", new Vector3(0f, 3f, 0f), new Color("e3e6e8"));
+																			// Source turn banner is owned by PresentSourcePhaseCue.
 																		}
 																	}
 																	else
 																	{
-																		ShowReceipt("敵のターン", new Vector3(0f, 3f, 0f), new Color("d4c6bb"));
+																		// Source turn banner is owned by PresentSourcePhaseCue.
 																	}
 																}
 																else
@@ -1631,7 +1558,7 @@ public partial class BattleStage : Node3D
 		{
 			return;
 		}
-		GameState final = _latestRun?.Combat;
+		GameState final = EventRun?.Combat;
 		if ((object)final == null)
 		{
 			return;
@@ -1719,7 +1646,7 @@ public partial class BattleStage : Node3D
 			{
 				Permanents = perms
 			}
-		}, _latestRun.LeaderId);
+		}, EventRun.LeaderId);
 		void AddEnemies(string id, int count)
 		{
 			for (int n = 0; n < count; n++)
@@ -1837,45 +1764,16 @@ public partial class BattleStage : Node3D
 	}
 
 	private void FinishBatch()
-	{
-		if (_resetting)
-		{
-			return;
-		}
-		_fx.Clear();
-		_native.Clear();
-		_world.SetForestAttackLights(null);
-		_receipt.Visible = false;
-		if (_ledgerBatch != null)
-		{
-			_ledger.Finish(_ledgerBatch);
-		}
-		RunState run = _latestRun;
-		if ((object)run != null)
-		{
-			bool flag;
-			switch (run.Phase)
-			{
-			case "reward":
-			case "relic-reward":
-			case "won":
-				flag = true;
-				break;
-			default:
-				flag = false;
-				break;
-			}
-			if (flag)
-			{
-				_audio.PlayKey("ui.win");
-				_cues.Clear();
-			}
-			SetRunState(run);
-		}
-		IsPresenting = false;
-		_session?.SetPresentationBusy(busy: false);
-		this.PresentationCompleted?.Invoke();
-	}
+ {
+  if(_resetting)return;
+  _fx.Clear();_native.Clear();_world.SetForestAttackLights(null);_receipt.Visible=false;
+  if(_fenceCommand is {} owner){
+   owner.Finished=true;if(owner.Ledger is not null)_ledger.Finish(owner.Ledger);
+   if(owner.FenceToken is {} token)_actionQueue.ContactComplete(token,-1,_clock,_presentationFrame);
+   _fenceCommand=null;
+  }
+  TryFinishPresentations();
+ }
 
 	public override void _Process(double delta)
 	{
@@ -1889,54 +1787,33 @@ public partial class BattleStage : Node3D
 	private void AdvanceClock(float delta)
 	{
 		_clock += delta;
-		_cues.Sample(_clock);
+		_cues.Sample(_clock);SamplePhaseLayer();
 	}
 
 	public void AdvancePresentation(float delta)
-	{
-		EnsureBuilt();
-		bool busy = _timeline.Busy;
-		_timeline.Advance(delta);
-		if (!busy)
-		{
-			AdvanceClock(Math.Max(0f, delta));
-		}
-		PresentationBeat beat = _timeline.Active;
-		if ((object)beat?.Route != null)
-		{
-			float time = _timeline.Time - _effectStartedAt + _effectOffset;
-			if (_native.IsActive)
-			{
-				_native.Sample(time);
-			}
-			else if (_fx.Visible)
-			{
-				_fx.Sample(time);
-			}
-		}
-		RefreshForestLighting();
-		float progress = (((object)beat == null) ? (-1f) : Math.Clamp(_timeline.Time / beat.Duration, 0f, 1f));
-		float hit = ((_contactHp <= 0) ? (-1f) : Math.Clamp((_timeline.Time - _timeline.LastContactTime) / 0.24f, 0f, 1f));
-		foreach (BattleActor actor in _actorRoot.GetChildren().OfType<BattleActor>().Concat(_retiredRoot.GetChildren().OfType<BattleActor>()))
-		{
-			AdvanceDeath(actor);
-			BindActorLights(actor);
-			actor.UpdateVisual(_clock, (actor == _sourceActor) ? progress : (-1f), (actor == _targetActor) ? hit : (-1f));
-		}
-		if (_receipt.Visible)
-		{
-			_receipt.Position = _receiptHome + Vector3.Up * (_timeline.Time * 0.28f);
-			Color c = _receipt.Modulate;
-			c.A = 1f - Math.Max(0f, progress - 0.55f) * 1.8f;
-			_receipt.Modulate = c;
-		}
-	}
+ {
+  EnsureBuilt();if(!float.IsFinite(delta)||delta<=0)return;
+  _presentationFrame++;_lastHostDelta=delta;delta=AdvanceFinishClock(delta);
+  bool timelineWasBusy=_timeline.Busy;
+  if(timelineWasBusy)_timeline.Advance(delta);else AdvanceClock(delta);
+  _actionQueue.Advance(_clock,_presentationFrame);
+  ProcessOrdinaryContacts();AdvanceOrdinaryEffects();
+  var beat=_timeline.Active;
+  if(beat?.Route is not null&&!_rejectBeat){float t=_timeline.Time-_effectStartedAt+_effectOffset;if(_native.IsActive)_native.Sample(t);else if(_fx.Visible)_fx.Sample(t);}
+  RefreshForestLighting();
+  foreach(var actor in AllPresentationActors().ToArray()){
+   AdvanceDeath(actor);BindActorLights(actor);actor.UpdateVisual(_clock,-1,-1,false,_presentationFrame,delta);
+  }
+  TryFinishPresentations();
+ }
 
 	public void CancelPresentation(bool applyLatest = true)
 	{
 		_enemyBlockExpiryPending = false;
 		_blockBoundaryCommand = false;
 		_resetting = true;
+		CancelCommandQueue();CancelPhaseLayer();InputLocked=false;_incomingEvent=null;_incomingAmount=null;
+		foreach(var actor in AllPresentationActors())actor.CancelSourceMotion(_clock);
 		_timeline.Reset();
 		_fx?.Clear();
 		_native?.Clear();
@@ -2019,7 +1896,7 @@ public partial class BattleStage : Node3D
 
 	public int? FindEnemyAt(Vector2 viewportPoint)
 	{
-		if (IsPresenting || _interfaceRoute != "combat" || _latestRun?.Phase != "combat")
+		if (InputLocked || _interfaceRoute != "combat" || _latestRun?.Phase != "combat")
 		{
 			return null;
 		}
@@ -2027,7 +1904,7 @@ public partial class BattleStage : Node3D
 		float distance = 7225f;
 		foreach (BattleActor actor in _enemies.Values)
 		{
-			if (!actor.Dead)
+			if (!actor.Dead && LogicalEnemyAlive(actor.EnemyIndex))
 			{
 				float d = _world.Camera.UnprojectPosition(actor.Contact).DistanceSquaredTo(viewportPoint);
 				if (d < distance)
@@ -2049,7 +1926,7 @@ public partial class BattleStage : Node3D
 	private void RefreshForestLighting(AuthoredGeometryFx? probeFx = null)
 	{
 		_actorLights.Clear();
-		(probeFx ?? _native).AppendSourceLights(_actorLights);
+		AppendAttackLights(_actorLights,probeFx);
 		_world.SetForestAttackLights(_actorLights);
 	}
 
@@ -2066,7 +1943,7 @@ public partial class BattleStage : Node3D
 	private void BindActorLights(BattleActor actor, AuthoredGeometryFx? probeFx = null)
 	{
 		_actorLights.Clear();
-		(probeFx ?? _native).AppendSourceLights(_actorLights);
+		AppendAttackLights(_actorLights,probeFx);
 		int slots = 8 - _actorLights.Count;
 		for (int pick = 0; pick < slots; pick++)
 		{
@@ -2127,7 +2004,7 @@ public partial class BattleStage : Node3D
 
 	public override void _UnhandledInput(InputEvent input)
 	{
-		if (IsPresenting || _interfaceRoute != "combat" || _latestRun?.Phase != "combat")
+		if (InputLocked || _interfaceRoute != "combat" || _latestRun?.Phase != "combat")
 		{
 			return;
 		}
@@ -2137,7 +2014,7 @@ public partial class BattleStage : Node3D
 			return;
 		}
 		IOrderedEnumerable<(BattleActor, Vector2)> choices = from battleActor in _enemies.Values
-			where !battleActor.Dead
+			where !battleActor.Dead && LogicalEnemyAlive(battleActor.EnemyIndex)
 			select (actor: battleActor, point: _world.Camera.UnprojectPosition(battleActor.Contact)) into x
 			orderby x.point.DistanceSquaredTo(pos.Value)
 			select x;
@@ -2412,7 +2289,7 @@ public partial class BattleStage : Node3D
 		{
 			return;
 		}
-		GameState current = _latestRun?.Combat;
+		GameState current = EventRun?.Combat;
 		if ((object)current != null)
 		{
 			CombatPresentationVitals before;
