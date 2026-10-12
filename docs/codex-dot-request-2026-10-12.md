@@ -254,3 +254,6 @@ red/thaw を main へ合流しました。包みを作ったので Drive で渡�
 - 赤 32 枚の接続は、包みの src/data/cards.red.json と events-sample.json を見てから。
 - DeckRogue_Red32_ColorFix_20261012.zip が届いたら、こちらで before ハッシュを確認して codex の枝（2a5bc32 の上）に当ててコミットします。
 ```
+
+**Drive（同日・dot「ZIP の Drive リンクを貼ってください」）**: `G:\マイドライブ\DeckRogue\DeckRogue-godot-sync-8401ec1.zip`（フォルダ id `11kgt9ani6JGx73dhZxHJmAb8P9CYMXQl`・ファイル id `1sqiJSP5bmK0GDKI6P1RHktRGoGmFIjdk`・1,251,446 bytes・DriveFS の operations 0＝同期済み）。
+リンク: https://drive.google.com/file/d/1sqiJSP5bmK0GDKI6P1RHktRGoGmFIjdk/view?usp=drivesdk
