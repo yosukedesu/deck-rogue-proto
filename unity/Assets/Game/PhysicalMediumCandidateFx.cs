@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 namespace DeckRogue.Game {
@@ -49,7 +50,7 @@ namespace DeckRogue.Game {
   internal static int ActiveCount{get{int n=0;foreach(var s in pool)if(s!=null&&s.Busy)n++;return n;}}
   internal static void Configure(bool enabled){Enabled=enabled;} // Existing admitted tails keep their owner.
   internal static void Cancel(){foreach(var s in pool)if(s!=null){s.Busy=false;s.Version++;s.Light?.Cancel();s.Light=null;if(s.Root!=null)s.Root.gameObject.SetActive(false);}}
-  static Color Linear(string hex){ColorUtility.TryParseHtmlString(hex,out var c);return c.linear;}
+  static Color Role(JToken token){if(token==null||!ColorUtility.TryParseHtmlString((string)token,out var c))throw new FormatException("invalid physical medium role");return c.linear;}
   static float Light(float age){if(age<0)return 0;float q=Mathf.Clamp01((age-.016f)/.12f);return 1-q*q*(3-2*q);}
   static bool Ready(){
    LastFailure=null;
@@ -57,10 +58,13 @@ namespace DeckRogue.Game {
    if(ElementBattleFx.ForceMissingForTest||QualitySettings.activeColorSpace!=ColorSpace.Linear){LastFailure="physical_medium_resource_or_linear_space_unavailable";return false;}
    if(material!=null)return true;
    var shader=Shader.Find("DeckRogue/PhysicalMediumCandidate");if(shader==null||!shader.isSupported){LastFailure="physical_medium_shader_unavailable";return false;}
+   var palette=Resources.Load<TextAsset>("Data/physical-contact-palette-r1");if(palette==null){LastFailure="physical_medium_palette_unavailable";return false;}
    Material candidate=null;
    try {
-    candidate=new Material(shader);candidate.SetColor("_Shadow",Linear("#535E69"));candidate.SetColor("_Primary",Linear("#C6C6BE"));candidate.SetColor("_Edge",Linear("#DEDCD1"));candidate.SetColor("_Core",Linear("#F2EEE4"));
-    var color=Linear("#C6C6BE");var spec=new WorldBattleFx.AttackSpec(new[]{0f,0f,0f,0f,0f,0f,0f,.016f,.136f},1,1,1,color,color,0,0,0){ContractLighting=true,StandardContractPower=true,TargetPeakMultiplier=.35f,FloorPeakMultiplier=.12f,MaxCombineGroup="physical-contact-r1",Envelope=Light};
+    // Share the accepted physical VFX roles with PhysicalSlashFx; UI paper/ink roles are separate.
+    var json=JObject.Parse(palette.text);var roles=json["roles_srgb"];
+    candidate=new Material(shader);candidate.SetColor("_Shadow",Role(roles?["shadow"]));candidate.SetColor("_Primary",Role(roles?["primary"]));candidate.SetColor("_Edge",Role(roles?["edge"]));candidate.SetColor("_Core",Role(roles?["core"]));
+    var color=Role(json["scene_light_srgb"]);var spec=new WorldBattleFx.AttackSpec(new[]{0f,0f,0f,0f,0f,0f,0f,.016f,.136f},1,1,1,color,color,0,0,0){ContractLighting=true,StandardContractPower=true,TargetPeakMultiplier=.35f,FloorPeakMultiplier=.12f,MaxCombineGroup="physical-contact-r1",Envelope=Light};
     material=candidate;lightSpec=spec;return true;
    }catch(Exception e){if(candidate!=null)UnityEngine.Object.Destroy(candidate);LastFailure="physical_medium_material_failed:"+e.GetType().Name;return false;}
   }
