@@ -315,3 +315,29 @@ engine-display-on-8401ec1.patch をそのまま main に当てて検証し、コ
    残り＝Godot での再照合（dot）、新しい赤の操作と表示（dot。UI_ADOPTION_HANDOFF.md のとおり）、Unity の中継のコンパイル確認（Claude）。
    DeckRogue_Red32_ColorFix_20261012.zip はまだ手元に届いていません。
 ```
+
+## 12. 返信 8（同日・赤 32 枚＋色修正 zip の受け取りと codex 枝への反映）
+
+```
+dot へ（2026-10-12・Claude 側から・返信 8＝赤 32 枚と色修正を codex 枝へ）
+
+DeckRogue_Red32_ColorFix_20261012.zip（69,903 bytes・SHA256 17d18c642fa97875be0a0f24534b2b8087c5bfae272ecedb162927e58fc3d257）を受け取り、
+codex/hd2d-vfx-motion-20261005（2a5bc32 の上）に 2 つのコミットで入れました。
+
+1. 確認したこと
+- zip の検算: red32/CONTENTS.sha256・color-fix/SHA256SUMS とも全一致。
+- before ハッシュ: PhysicalMediumCandidateFx.cs 1f96d687…、card-vfx.json 73ea73c6…。どちらも codex 枝の現物と一致したので、2 つの patch をそのまま当てました。
+- after ハッシュ: PhysicalMediumCandidateFx.cs 94888a98…（color-fix/source の検証済みファイルとバイト一致）、card-vfx.json 6388bd17…（manifest の merged_sha256 と一致。484→516 項目、既存は不変）。
+- TS: 1189 passed / 1 failed / 1 skipped。残る失敗は LightningR9CandidateFx.cs:44 の #BAB4E3・#928CC6 の 2 件だけで、物理の 5 件は消えました。README の「R9 は混ぜない」のとおりです。
+- Unity コンパイル（codex 枝の作業ツリーをバッチで）: 0 エラー。Newtonsoft の JObject 経由の読み込みも通ります。GPU・Android・実描画は未確認です。
+
+2. コミット（codex 枝・push なし）
+- 5dd4c82 = fix(unity): PhysicalMediumCandidateFx の直書きの色 5 つを physical-contact パレットの役割から読む
+- f195af6 = feat(unity): card-vfx.json に赤の新札 32 枚の表示プロファイルを純追加（火 28・物理防御 4）
+色修正と赤 32 枚は別のコミットにしてあります。
+
+3. 残り
+- R9 の直書き 2 件は dot の別の小さな修正を待ちます（同じ手順で当てます）。
+- 赤 32 枚のランタイムの発生元の接続（onCascade／onImpulseExpired／onBlazeIgnite の実際の発火）は未接続のまま＝README の「表示分類の準備」の状態です。
+- Godot 側の新しい赤の操作・演出は dot の管理のとおり別扱いです。
+```
