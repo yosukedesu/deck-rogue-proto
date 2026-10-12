@@ -110,14 +110,17 @@ steps=$(node -e '
   for(const f of fs.readdirSync(p)){const j=JSON.parse(fs.readFileSync(p+"/"+f,"utf8"));t+=(j.commands||[]).length}
   console.log(t)' "$OUT/goldens/runs")
 
+# 通常ファイルの合計（MANIFEST.md と SHA256SUMS はこの後に作るので +2）。dot の指摘（2026-10-12）: 記載 189 に対し実際 195 だった
+total=$(( $(find "$OUT" -type f ! -name MANIFEST.md ! -name SHA256SUMS | wc -l) + 2 ))
 {
   echo "# Godot 同期の包み"
   echo
-  echo "- commit: \`$FULL\`（$(git log -1 --format='%ad %s' --date=short "$FULL" | cut -c1-120)）"
+  echo "- commit: \`$FULL\`（$(git log -1 --format='%ad %s' --date=short "$FULL" | awk '{ print (length($0) > 80 ? substr($0, 1, 80) "…" : $0) }')）"   # awk は文字単位＝UTF-8 を途中で切らない（cut -c はバイトで切った。dot の指摘 2026-10-12）
   echo "- branch: $(git branch --contains "$FULL" --format='%(refname:short)' | tr '\n' ' ')"
   echo "- base: \`$BASE\`（from-25270c9.patch は base → commit。上のパスに限る）"
   echo "- 作成: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-  echo "- C# エンジン: $cs ファイル／データ JSON: $js／ゴールデン: goldens/runs $gd 本・合計 $steps 手＋goldens/events $ge 本（出来事の実例用・通常のゴールデンとは別）／ファイル総数: $n"
+  echo "- C# エンジン: $cs ファイル／データ JSON: $js／ゴールデン: goldens/runs $gd 本・合計 $steps 手＋goldens/events $ge 本（出来事の実例用・通常のゴールデンとは別）"
+  echo "- ファイル数: コミットから取り出した物 $n 件＋この包みで作った物（from-25270c9.patch・MANIFEST.md・SHA256SUMS・events-sample*・selftest.log）＝通常ファイル合計 $total 件（SHA256SUMS の項目数＝合計−1〔SHA256SUMS 自身〕）"
   echo "- 出来事の実例: $EVENTS_NOTE"
   echo "- 同梱の依存: package.json・package-lock.json・tsconfig×4・vite.config.ts（\`npm ci\` → \`npm run gen:csharp\`・\`npm run goldens:verify\`・\`npx tsc --noEmit -p tsconfig.sim.json\` が同じ依存関係で再現できる。\`npm run typecheck\`（tsc -b）は src/ui が無いので包みでは通らない）"
   echo "- 展開した包みだけでの自己検証（作業ツリーに依存していないことの確認）:"
