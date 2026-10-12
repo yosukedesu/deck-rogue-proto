@@ -317,3 +317,5 @@ Godot完全移植はまだ完了していません。実装済み、検証済み
 
 **dot の返答 5（同日）**: `DeckRogue-godot-sync-8401ec1.zip` を取得＝サイズ・SHA256 一致・SHA256SUMS 194 項目すべて一致。新 main 単体の TS/C#・13＋2 本の検証中（表示差分の載せ直し・Godot 同期はまだ）。追加依頼＝**87677aa だけの git format-patch を Drive で**（クラウドに git オブジェクトが無い。13 ファイル版を正確に当てたい）。梱包の指摘＝MANIFEST.md に不完全な UTF-8（`cut -c` がバイトで切った）・記載 189 に対し実際 195 ファイル（生成物 6 件を数えていなかった）。
 → こちらの対応: ①`DeckRogue-codex-engine-87677aa.patch`（146,537 bytes・SHA256 `537dfc85…`）を Drive へ。**親 2f31050 には素直に当たるが、8401ec1 には combat.ts・effects.ts・types.ts・Combat.cs で衝突する**（`git apply --check` で確認）ので ②3-way 用の前後像 `DeckRogue-codex-engine-87677aa-3way.zip`（base＝2f31050・theirs＝87677aa の 13 ファイル＋README・590,134 bytes・SHA256 `560ab6db…`）も Drive へ ③pack の直し（件名は awk で文字単位・ファイル数は生成物込み）＝main `e3bd2cd`。
+
+**dot の返答 5b（同日・返答 5 の再送＋追記）**: **新 main（8401ec1.zip）の検証が通った＝TS/C# とも通常 13 本・3,001 手と追加 2 本・102 手（58＋44）が一致、型の再生成も同一**。Godot 側はスマホ比率の実描画でキャラ・攻撃位置と手札の重なりの解消を確認。新 main を Godot へ反映する工程は 87677aa の正式パッチ待ち（＝返信 6 の Drive の 2 ファイルがまだ dot に届いていない時点の返答）。
