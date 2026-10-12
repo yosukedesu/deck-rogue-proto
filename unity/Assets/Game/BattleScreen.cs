@@ -555,7 +555,7 @@ namespace DeckRogue.Game
         static readonly string Circled = "①②③④⑤⑥⑦⑧";
 
         /// <summary>敵の入れ物の中身 (絵・狙いの印・帳面の一行)。入れ物 pan は BattleView が持ち越す</summary>
-        public static void FillEnemyPanel(GameRoot g, RectTransform pan, GameState st, int index, int shownHp, float neighborGap = float.MaxValue, bool dying = false, bool uniformForecast = false, bool uniformStack = false)
+        public static void FillEnemyPanel(GameRoot g, RectTransform pan, GameState st, int index, int shownHp, int displayHp, float neighborGap = float.MaxValue, bool dying = false, bool uniformForecast = false, bool uniformStack = false)
         {
             var e = st.Enemies[index];
             bool alive = e.Hp > 0;
@@ -624,7 +624,7 @@ namespace DeckRogue.Game
             img.preserveAspect = true;
             img.raycastTarget = false;
             img.color = Color.white;   // 倒れた瞬間も素の色 (白く光ってから崩れる)
-            Stage.BindUnit("enemy" + index, spr, img, artSprite);
+            Stage.BindUnit("enemy" + index, spr, img, artSprite,Presenter.KeepPresentationUnit(g,index));
             bool ledgerAtFeet = Hd2dLayout && (HD2DFlags.Ledger == HD2DLedger.Feet || R3);   // 帳面を足元ごとに浮かせる (HD-2D 見本 ledger=feet。2026-09-30 P20。三周目 r3 の既定 = PC とスマホ)
             if ((aimed || acting) && alive && !ph && !ledgerAtFeet && feetY > StripH + 16f)
             {   // 足元の輪 (PC。スマホは札の上端が足元なので出さない)。頭上の▼は 2026-09-16 に廃止 = 狙いは意図の札と帳面の縁 (真鍮)。
@@ -659,7 +659,8 @@ namespace DeckRogue.Game
             PaperFx.Nightify(strip);
             PaperFx.Nightify(pan.Find("intent-tag"));
             // 前の表示 (shownHp) から今の HP へ滑らせる (案C への書き換えで落ちていた＝バーが1手遅れて減っていた。2026-09-16 ユーザー報告)
-            int displayHp=CardVfxProfile.ShowcaseOn?Presenter.EnemyDisplayHp(st,index):e.Hp;
+            // displayHp is resolved once from the authoritative state by the caller.
+            // st may be a NumericDisplayState copy; resolving it again would add pending HP debt twice.
             if (shownHp != displayHp) TweenHpBar(pan, displayHp);
         }
 
@@ -1549,6 +1550,14 @@ namespace DeckRogue.Game
             if (info.Loss != null) SetLossBand(info);
         }
 
+        // Numeric receipt contact may change HP and its denominator together.
+        // The game state's MaxHp remains authoritative; this is the displayed bar only.
+        public static bool SetHpBarMaximum(RectTransform container,int maxHp) {
+            var info=container!=null?container.GetComponentInChildren<HpBarInfo>():null;
+            if(info==null)return false;
+            int value=Math.Max(1,maxHp);bool changed=info.Max!=value;info.Max=value;return changed;
+        }
+
         public static void TweenHpBar(RectTransform container, int target)
         {
             if (container == null) return;
@@ -2090,7 +2099,7 @@ namespace DeckRogue.Game
             img.sprite = leaderArt;
             img.preserveAspect = true;
             img.raycastTarget = false;
-            Stage.BindUnit("player", spr, img, leaderArt);
+            Stage.BindUnit("player", spr, img, leaderArt,Presenter.KeepPresentationUnit(g,-1));
 
             // 自キャラの名前札は出さない (2026-09-11 ユーザー「スマホ表示だとキャラと名前が被ってキャラがよく見えなくなる。
             // 自キャラ名表示は不要なのでは？」)。誰を操作しているかはセットアップとラン画面で分かるので、戦場では絵を優先する。

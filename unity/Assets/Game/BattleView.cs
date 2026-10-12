@@ -164,6 +164,7 @@ namespace DeckRogue.Game
         public void SyncField(GameRoot g, GameState st)
         {
             ++DisplayRevision;
+            var numericState=Presenter.NumericDisplayState(st);
             var run = g.Rs;
             if (_bgAct != run.Act)
             {
@@ -292,16 +293,18 @@ namespace DeckRogue.Game
                 _enemyHits[i].GetComponent<Button>().interactable = alive;
                 for (int c = pan.childCount - 1; c >= 0; c--) { var ch = pan.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
                 g.RegisterAnchor("enemy" + i, pan);
-                if(CardVfxProfile.ShowcaseOn)_shownEnemyHp[i]=Presenter.EnemyDisplayHp(st,i);
+                bool ownsDisplayHp = CardVfxProfile.ShowcaseOn || Presenter.OwnsNumeric(st);
+                int displayHp = ownsDisplayHp ? Presenter.EnemyDisplayHp(st, i) : st.Enemies[i].Hp;
+                if (ownsDisplayHp) _shownEnemyHp[i] = displayHp;
                 bool wasAlive = _shownEnemyHp[i] > 0 || Presenter.HasEnemyPresentation(st,i);
                 float gap = _enemyGaps[i];
                 // 倒れた瞬間 (2026-09-17): 絵と帳面を生前の姿で描いておき、EnemyDied/EnemyFled の出来事 (Presenter → KillEnemy) が着弾の後に崩す。
                 // 出来事が先に来ていた (順送りの敵フェーズで倒れた) なら _died に印があるので何も描かない。出来事が来なければ 0.6 秒後に崩す (保険)
                 if (alive) _died.Remove(i);
                 bool dyingNow = wasAlive && !alive && !_died.Contains(i);
-                BattleScreen.FillEnemyPanel(g, pan, st, i, _shownEnemyHp[i], gap, dyingNow, anyForecast, anyStack);
-                _shownEnemyHp[i] = CardVfxProfile.ShowcaseOn ? Presenter.EnemyDisplayHp(st,i) : st.Enemies[i].Hp;
-                _shownEnemyBlock[i] = st.Enemies[i].Block;
+                BattleScreen.FillEnemyPanel(g, pan, numericState, i, _shownEnemyHp[i], displayHp, gap, dyingNow, anyForecast, anyStack);
+                _shownEnemyHp[i] = displayHp;
+                _shownEnemyBlock[i] = numericState.Enemies[i].Block;
                 if (dyingNow) { int ci = i; bool fled = st.Enemies[i].Fled == true; Tween.After(0.6f, () => {if(g.Battle==this && g.Rs?.Combat!=null && ci<g.Rs.Combat.Enemies.Count && g.Rs.Combat.Enemies[ci].Hp<=0)KillEnemy(g, ci, fled);}); }
                 else if (prevCount > 0 && i >= prevCount && alive)
                 {   // 登場 (召喚・分裂・孵化の子。2026-09-17): 小さく現れて弾んで等身大に、足元に青緑の輪
@@ -319,7 +322,7 @@ namespace DeckRogue.Game
             if (_playerArea == null)
             {
                 _playerArea = UiKit.NewRect("player", FieldLayer);
-                _shownPlayerHp = st.Player.Hp;
+                _shownPlayerHp = numericState.Player.Hp;
             }
             {
                 // リーダーの足元 (欄の左下から +130,+130) を舞台の座席へ
@@ -330,10 +333,11 @@ namespace DeckRogue.Game
             for (int c = _playerArea.childCount - 1; c >= 0; c--) { var ch = _playerArea.GetChild(c); ch.SetParent(null, false); UnityEngine.Object.Destroy(ch.gameObject); }
             SyncPlayerSelf();
             g.RegisterAnchor("player", _playerArea);
-            BattleScreen.FillPlayerPanel(g, _playerArea, st, _shownPlayerHp, _playerSelf);
-            _shownPlayerHp = st.Player.Hp;
-            _shownPlayerBlock = st.Player.Block;
-            _shownPlayerIce = st.Player.IceBlock;
+            if(Presenter.OwnsNumeric(st))_shownPlayerHp=numericState.Player.Hp;
+            BattleScreen.FillPlayerPanel(g, _playerArea, numericState, _shownPlayerHp, _playerSelf);
+            _shownPlayerHp = numericState.Player.Hp;
+            _shownPlayerBlock = numericState.Player.Block;
+            _shownPlayerIce = numericState.Player.IceBlock;
             // 人形 (白の従者) は舞台に立つ (2026-09-19)
             SyncDolls(g, st);
             // からくりの匣 (2026-09-10 世界観「からくりだけ実物」): 舞台のリーダーの足元。仕込み札があれば蓋が開き、動かした (ReactionTriggered) 直後は閃く
@@ -698,7 +702,23 @@ namespace DeckRogue.Game
             if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("enemyHpDisplay",index+":"+_shownEnemyHp[index]);
         }
 
-        // Display-only debt: combat state and input remain authoritative. Later commands cancel old debt.
+        public void DisplayNumericVitals(int target,CombatPresentationLedger.Vitals values,bool immediate=false) {
+            if(values==null)return;
+            if(target<0) {
+                bool maxChanged=BattleScreen.SetHpBarMaximum(SelfArea,CombatPresentationLedger.Display(values.MaxHp));
+                SetPlayerBlock(CombatPresentationLedger.Display(values.Block));
+                SetPlayerIce(CombatPresentationLedger.Display(values.IceBlock));
+                int hp=CombatPresentationLedger.Display(values.Hp);
+                if(immediate || maxChanged || hp!=_shownPlayerHp)DisplayPlayerHp(hp,immediate);
+            } else if(target<_enemyPanels.Count) {
+                bool maxChanged=BattleScreen.SetHpBarMaximum(_enemyPanels[target],CombatPresentationLedger.Display(values.MaxHp));
+                SetEnemyBlock(target,CombatPresentationLedger.Display(values.Block));
+                int hp=CombatPresentationLedger.Display(values.Hp);
+                if(immediate || maxChanged || hp!=_shownEnemyHp[target])DisplayEnemyHp(target,hp,immediate);
+            }
+        }
+
+        // Display-only values: later commands retain valid pending contacts under one combat owner.
         public void DisplayPlayerHp(int hp, bool immediate)
         {
             _shownPlayerHp = Math.Max(0, hp);
@@ -1390,8 +1410,10 @@ namespace DeckRogue.Game
         readonly HashSet<int> _heldDeaths = new HashSet<int>();
         public void ReconcileComparisonCheckpoint(GameRoot g,GameState state) {
             _heldDeaths.Clear();
+            DisplayNumericVitals(-1,new CombatPresentationLedger.Vitals{Hp=state.Player.Hp,MaxHp=state.Player.MaxHp,Block=state.Player.Block,IceBlock=state.Player.IceBlock},true);
             for(int i=0;i<state.Enemies.Count;i++) {
-                DisplayEnemyHp(i,state.Enemies[i].Hp,true);
+                var e=state.Enemies[i];
+                DisplayNumericVitals(i,new CombatPresentationLedger.Vitals{Hp=e.Hp,MaxHp=e.MaxHp,Block=e.Block,EnemyId=e.EnemyId},true);
                 if(state.Enemies[i].Hp<=0)KillEnemy(g,i,state.Enemies[i].Fled==true);
             }
         }
@@ -1589,6 +1611,15 @@ namespace DeckRogue.Game
             for (int i = 0; i < list.Count; i++) FlyTo(g, list[i].Rt, "pile-discard", 0.05f * i, 0.3f, true);
         }
 
+        // Card-overlay retirement is independent of attack selection and contact timing.
+        // Aether burst is not a comparison attack; keep its card clear of the world strike.
+        static float PlayedCardRetireDuration(CardDef def)
+        {
+            var attack = CardVfxProfile.Comparison(def);
+            if (attack?.AuthoredAttack != null) return Mathf.Min(.10f, attack.Contact * .70f);
+            return CardVfxProfile.ShowcaseOn && def?.Id == "blue_aether_burst" ? .10f : 0f;
+        }
+
         void AnimateOut(GameRoot g, GameState st, HandCard hc, float delay)
         {
             string uid = hc.Card.Uid;
@@ -1606,6 +1637,20 @@ namespace DeckRogue.Game
             if (inPerm) { FlyTo(g, rt, "player", delay, 0.3f, true, 0.4f); return; }
             if (uid == LastPlayedUid)
             {
+                float retire = PlayedCardRetireDuration(hc.Card.Def);
+                if (retire > 0f) {
+                    // Fly directly to its pile rather than crossing the enemy silhouette.
+                    Audio.Key("CardPlayed");
+                    if(!inExhaust)FlyTo(g,rt,"pile-discard",0f,retire,true);
+                    else {
+                        var fade=rt.GetComponent<CanvasGroup>();
+                        if(fade==null)fade=rt.gameObject.AddComponent<CanvasGroup>();
+                        fade.blocksRaycasts=false;float alpha=fade.alpha;
+                        Tween.Scale(rt,Vector3.one*.25f,retire,Ease.InQuad);
+                        Tween.Run(retire,k=>{if(fade!=null)fade.alpha=alpha*(1-k);},Ease.Linear,()=>{if(rt!=null)UnityEngine.Object.Destroy(rt.gameObject);});
+                    }
+                    return;
+                }
                 // プレイ: 対象の敵 (無ければ中央上) へ飛んでから、消滅なら砕け、それ以外は捨て札へ
                 var fx = HandLayer;
                 Vector2 to = new Vector2(0f, 420f);

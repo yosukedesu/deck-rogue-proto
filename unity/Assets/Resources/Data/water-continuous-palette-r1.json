@@ -1,0 +1,44 @@
+{
+  "id": "water",
+  "label_ja": "\u6c34",
+  "roles_srgb": {
+    "shadow": "#132D46",
+    "primary": "#285D7C",
+    "edge": "#719BAE",
+    "core": "#D3E0E6"
+  },
+  "scene_light_srgb": "#89A5B4",
+  "material_intent_ja": "\u6df1\u9752\u30fb\u900f\u660e\u306a\u8584\u3044\u9762",
+  "use_ja": "\u767d\u7e01\u3092\u5168\u5468\u306b\u4ed8\u3051\u306a\u3044",
+  "linear_rgb": {
+    "shadow": [
+      0.00651209,
+      0.02624122,
+      0.06124605
+    ],
+    "primary": [
+      0.02121901,
+      0.10946171,
+      0.20155625
+    ],
+    "edge": [
+      0.16513219,
+      0.3277781,
+      0.42326767
+    ],
+    "core": [
+      0.65140564,
+      0.74540421,
+      0.79129794
+    ]
+  },
+  "relative_luminance": {
+    "shadow": 0.02457,
+    "primary": 0.09735,
+    "edge": 0.30009,
+    "core": 0.72873
+  },
+  "emission_gain": null,
+  "scene_light_intensity": null,
+  "runtime_exposure_approved": false
+}

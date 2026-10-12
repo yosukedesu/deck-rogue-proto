@@ -412,3 +412,287 @@ HP・属性光・粒子・カメラ・UIとカード入力は元の時計で進�
 `presentation-review` は21ケース×2モード。停止中の次入力・防御入力・reset・画面離脱・対象消失と、実コマ／移動の静止を追加確認する。
 
 Android候補は `BuildTools.BuildAndroidShowcase` で作る。ビルドローカルな `DECKROGUE_IMPACT_SHOWCASE` だけで候補APKの初期値をONにし、通常ビルドのbaseline既定と明示切替は保持する。恒久的なScripting Define Symbols設定は変更しない。
+
+### 承認済みV2攻撃演出（2026-10-09・3技、Unity視覚確認前）
+
+対象は comparison の `green_strike` / `blue_strike` / `green_finisher_stomp` のみ。未適用V1を置き換え、PCで受理済みの2f31050から直接導入する。
+既存の属性共通画像や通常baselineは維持し、`attack-{slash,water,stomp}-{body,particles,emission}-v2-8f` と踏みつけ専用 `attack-stomp-dust-v2-8f` を使う。
+全10画像は1024×512、4×2、256pxセル、straight alpha、中心pivot (128,128)。承認された二形状の原画とネイティブ変形・粒子から8時点を焼いたもので、8枚の新規描き起こしではない。
+
+- 斬撃は細く熱い切り込み→開いた弧、水撃は淡い青白の扇→水滴、踏みつけは足元の低い放射圧→遅れた薄い土煙。本体と粒子/土煙は後処理後の通常alpha合成。body scalar gainは1.05/.94/.94、粒子/土煙は1。RGBの色相は変えず、V1の追加opacityカーブを掛けない。
+- emissionは独立の正規化された余剰発光画像。sRGBをlinearへ復号し、alphaを1回だけ掛け、gain3.55/4.8/4.4で後処理/bloom前へ加算する。全面をぼかした白い板や、本体alphaから作ったhaloは足さない。
+- HP命中時刻 .13/.24/.34秒と、キャラの局所停止65/75/120msは既存どおり。frame2は実際の命中callbackで同期する。画像のframe2保持は66.667/75/120msで、キャラ停止をもう一度足さない。全8コマは等間隔でなくproduction manifestの境界を使用する。
+- 命中後の画像終端は333.333/390/490ms。疎な末尾へ急に切れないよう、frame6→7だけpremultiplied補間し、その後最後のセルをlinear fadeで0へ落とす。予備/命中/保持は補間しない。元の残留待ち .36/.48/.65秒は独立した寿命下限として維持し、追加の待ちや戦闘ロジック変更はしない。
+- 技の光は画像/粒子の停止と独立して更新する。秒数は通常速度時の値で、既存のscaled deltaを維持し、決着FinishSlow中は他の場面演出と同様に伸長する。既存の強いcontact18/bounce28とheavy1.65倍を維持し、斬撃は暖白、水撃は淡青、踏みつけは暖灰白。hold後の指数減衰tauは斬撃46/46ms、水撃43/72ms、踏みつけ52/85ms（target/floor）。斬撃だけ承認previewに含まれるrelease phase16.667msを引き継ぐ。光は終端で必ず消し、pool再利用で他の技へ減衰設定を持ち越さない。
+- 各技の全層はpool1枠を共有。reset・離脱・枠の再利用はversionで保護し、古いticketは新しいeffectを命中扱いにしない。missing texture/shaderやpost pass停止は既存fallbackへ戻す。全攻撃・回復・ガード等のresolved receipt経路を維持する。
+- 全層は固定camera-facing billboard。quad/敵身長比は2.0/2.173913/2.565217。踏みつけは捕捉した足元＋world-up身長比.034783に置き、遠近は画像に焼き込み済みなので床面へ再回転しない。V1の50px持ち上げは廃止。既存の手前方向.28unitオフセットを保持する。床とのdepth、敵の隠れ、サイズ感はUnity実画面で確認する。
+- 使用済みカードは3技だけ敵中央を経由せず捨て札へ短く退場し、命中前にoverlayを消す。ゲームの札移動/ルールは変更しない。
+- 初回検証では新しい10atlasを全platformで非圧縮（約20MiB RGBA、mipmapなし）に保つ。既存elementのAndroid ASTC6×6は維持する。新画像の圧縮/端末性能はUnity/実機の別検証事項。
+- カメラ、グローバルpost、他カード、敵turn完了gate、決着slow(.22)→消滅→残光→報酬、skip/reset、通常saveは変更しない。
+
+クラウドのsource/hash/golden/タイミングモデル確認とUnity import/compile/実ゲーム描画は別。`presentation-review` 42ケースに全resource・合成材質・命中frame・全8コマ・独立光減衰・カード退場・足元位置の検査を含める。実行前の検査コード追加は合格報告ではなく、Android実機も未検証。
+
+### 蔦斬撃 R1 の連続描画候補（2026-10-09・Stage13）
+
+ユーザー承認の深緑の短い開弧を、`green_double_lash` の正確な card presentation metadata がある実HP命中だけに使用する。旧蔦8コマ・不採用の鞭・追加キャラpose/socketは使わない。登録は45/242カード（うち1枚は既存リーダー条件付き）、敵は1/167のまま。これは候補経路の登録数であり、Unityで全件見た目が合格した数ではない。
+
+- 元契約は vine_slash_runtime_pack_r1 の contract SHA256 `117c2fce159ef2b5bda9233b1c161d091a04309d114cce895f8d19d0c8043e38`。静止RGBA素材2172×724を連続meshで動かす。1 receipt につき主面・追い線・芯・粒子の4batch、330頂点/402三角形。第二receiptはcamera-rightだけ反転し、UVは反転しない。120msは既存カードの2receipt間隔であり、rendererから第二hitを生成する時刻ではない。
+- 実contactでage0を同期する。native予兆66.667msは、利用時間が短ければ負時間だけC1補正。先行receipt未解決等で予兆が間に合わなければcontact-onlyを明記する。予測contactを越えて未着弾のとき本体を止めて待たず隠す。実Land後の主面105ms/追い線135ms/芯80ms/最終粒子182msで終了。診断用333msや旧蔦440msを追加の不可視待ちにしない。
+- actorの局所停止25/95msと既存contact160/280msはそのまま。body/粒子は局所停止中も進み、既存FinishSlowのscaled clockには従う。cancel/reset/再利用は世代を検査し、古いLandは無効。Stage12の入力queue/終了gateを維持する。
+- Hは同じRecordBoxで記録した基準canvasのworld高に、基準spriteのalpha>40の可視行割合を掛けた値。後からattack画像が変わっても伸縮しない。読取不可・空画像は理由つき既存fallback。開始時の実camera姿勢をcaptureし、共通depth biasは既存impact位置のまま、Blenderの0.54worldをコピーしない。
+- Texture RGBはsRGB samplerで一度linearへ、alphaはstraight。linear輝度をshadow/primary/edgeのrampへ変換、芯と粒子はcore色。palette JSONのHEXは一度だけlinearへ変換してVectorで渡す。HDR gainは主2.25/追い1.80/芯3.8/粒子2.2に既存のbounded intensity scalarを一度合成。premultiplied outputと `Blend One OneMinusSrcAlpha` の一回合成で、bodyの加算複製はない。
+- 新shaderはURP forwardの透明物として通常postの前に描く。旧ElementAfterPostには登録せず、その停止で新meshを消さない。BlenderのAgX/FOG_GLOWとUnityのpost、Principled芯/粒子と今回のunlit近似は別物で、画質一致は未確認。
+- Scene lightは色#8BA18Aと実contact同期波形を使い、同じ対象への新蔦だけmax合成。最初のpoint-light較正はtarget6.3/floor3.36を基準に既存の最終強度上限/全体capへ通す暫定値。Blender34/11Wからの換算値ではない。旧familyの加算則は変えない。
+- 専用poolは低画質4/通常8 receipt、最大16/32 drawの計画上限。飽和時はserialで最古の残りを置換し、回数を記録する。全receiptが別々のframeで見える保証ではない。既存quad poolの無描画true問題は次の独立修正対象。
+- PNGは元byteを保持し、exact-path importerでDefault/Bilinear/sRGB/非圧縮/no mip/no CPU read/max4096/NPOT無変換を固定する。GPUのmip0 RGBA8見積り6,290,112bytes（約6MiB）。meshやdraw上限は数値上の計画で、Android GC/CPU/GPU/overdrawは未計測。既存画像とGUIDは不変。
+
+クラウドの数式・source・stub検証と、Unityのimport/compile/GPU/見た目は区別する。nativeで色・線幅・depth・接触と実HP・連打・消滅/報酬・skip/reset・低画質pool・Android負荷を確認するまで、全体完成とは扱わない。
+
+### Pool の無描画成功・取消安全の修正候補（2026-10-09・Stage14）
+
+新しい技形の追加ではなく、既存の描画受付と寿命の修正。新素材登録は45/242カード・1/167敵のまま。PC/Unity/Androidでは未検証。
+
+- 旧UI atlasの12/24枠が満杯でも、新しい受付を黙って捨ててtrueにしない。単調serialで最古の枠を置換する。同一frameのworld poolも時刻の同値ではなくserialで順番を決める。飽和時には古い演出が実描画前に置換され得るので、全receiptが別々に見えた保証とはしない。
+- Slash/Spellは本体・芯の両Emitを必ず呼び、実際の受付結果をORする。無効なlayer/Canvas/camera、取消済みのscopeにはfalseを返す。受付counterとGPUで見えた画素は別。
+- UI poolは取消時に即座に無効化し、正確に所有する子だけをreset/rebuild時のDestroyから保護する。非poolの浮き文字等は従来どおり消す。古い完了/取消callbackはversionで新しい画像を隠せない。終了済み/取消済みscopeへ新しい描画を予約せず、新しい明示scopeは利用できる。
+- 共通Tweenの省略可能alive条件は、新しいpool利用箇所だけで世代切替を検出し、古い無操作仕事を次tickで解放する。既存呼出しは既定のまま。scopeを先に取消してからpoolを破棄し、取消が通常完了callbackを呼ぶことを避ける。同frameに大量受付した場合の一時的なcoroutine/closure数は硬い上限ではなく、CPU/GC実測が必要。
+- 最後のresolved UI ringだけを、atlasが無くても使える別の12/24枠へ変更する。元の0.22秒・OutQuad・scale0.3→1.3・alpha1−k²を保持する。旧atlas poolと別枠なので、最大は低画質12+12/通常24+24画像。一般のTween.Sparks/RingBurst/浮き文字まで全経路pool化したものではない。
+- World/vineは停止中のcameraや取消済みscopeで新しい受付/着弾を成功扱いにせず、既存fallbackを試す。fallback側も利用不能なら理由を記録し、無条件に表示成功を数えない。HP receipt/guard/nullify/costの分類とcommit、ゲーム結果/RNGは変更しない。
+
+クラウドのactual-source+明示stubは12/24枠、複数Emit、満杯連打、取消、deferred Destroy、再利用、最古順、guard/HP receipt保持を確認する。Unity実体のDestroy境界・Canvas/Shader/GPU・画面ROI・低画質切替・連打負荷・終了/報酬/skipは別途実機で検証する。
+
+画質を戦闘中にHigh→Lowへ変える場合、UIは次の利用可能な受付で上位の使用枠を止める。World/Vineは新しい取得範囲だけを絞り、既に動いているHigh側の余韻は通常終了まで残る。したがって切替直後の全体に12/4枠を即時強制したとは扱わず、全体上限はWorld24/Vine8のまま記録する。
+
+
+### Stage15 continuous physical contact R1 candidate (2026-10-09)
+
+- Two explicit opt-ins only: enemy_brute/club (blunt) and enemy_brood_raptor/claw (three scratch ribbons, one actual receipt). All other enemy IDs retain declared routes. Conditional unknown branches stay fallback. Registration is not Unity visual acceptance.
+- Existing immediate melee receipt owns contact0. Initial claw integration is contact-only; its native66.666667ms anticipation is not appended to gameplay. Positive-time body/core/particles retain contract timing: claw115/40/172ms; blunt49ms accent (first12ms held), continuous pressure165ms/debris222ms. No synthetic hits or HP split.
+- Ordinary pooled dynamic meshes, at most3 draws per active receipt; shared low4/high8 pool (at most24 active draws). Lazy blunt/claw sets yield at most48 resident meshes after both-family warmup. Prior high-quality tails may finish after downgrade. Buffers are reused; native CPU/GC and GPU cost are unmeasured.
+- Stable captured base-visible targetH and camera basis; common contact depth bias. Source+Z becomes camera-toward. Body keeps advancing during actor pause. Target identity gates attached light, not captured-position fallback.
+- Separate physical palette: shadow#535E69 / primary#C6C6BE / edge#DEDCD1 / core#F2EEE4. Scene light#C6C6BE separately. sRGB source decode once, linear palette once, HDR gain once and premultiplied coverage once. No additive duplicate. Point-light target6.3/floor3.36 pre-scalar provisional maxima reuse bounded max-combine policy; actual exposure is uncalibrated.
+- Shared2172×724 slash texture retains its existing GUID. New unchanged1774×887 blunt material uses only the first contact image; no second-image swap. Uncompressed RGBA8/mip0 newraw6,294,152bytes (~6.003MiB), no CPU-readable copy. Android compression/downsampling awaits visual QA, so this is a candid provisional memory cost.
+- Freeze requires reference numerical, source lifecycle and full regressions. Unity import/HLSL/GPU/sort/motion/HP/finish/cancel/device exposure and frame-time QA remain mandatory. Old rejected vine/whip/water designs are not restored.
+
+
+### Stage16 continuous fang and neutral beam R1 candidate (2026-10-09)
+
+- Explicit IDs only: enemy_elite_devourer/bite (physical fang, no absorption) and enemy_elite_sentry/beam (shape known, element unspecified). Beam retains declared neutral display fallback, not a new game damage attribute. Each has one real receipt.
+- Fang begins at actual melee contact0, omitting native90ms anticipation rather than delaying HP. Beam uses native80ms anticipation backwards from existing220ms contact; shader/body clocks keep moving independently of actor pause. Actual Land owns0, expired preview hides instead of freezing at negative epsilon; late contact uses contact-only/catch-up and no fabricated HP. Fang ends140ms, beam160ms.
+- Beam source and target are captured world points via existing board-center fallback, never guessed eye/weapon sockets. Stable target-visibleH sets width; source-target span is not multiplied by damage size. Body center follows actual span, transverse width follows projected-ray perpendicular; endpoint/particles rotate from native direction into real ray direction. This changes the native camera-up width by approximately3.72degrees in the fixed reference view. Fixed golden parity and general world adapter QA are separate.
+- Procedural beam field is the specified three-sin function, no image/noise dependency. Target UVu=1 stays fixed; longitudinal density is per projected world-H distance, never rescaled to shrinking head/tail. Invalid/missing/coincident/projected-zero source omits ray and retains legitimate local endpoint, with explicit audit reason.
+- The same sharedlow4/high8 receipt pool now has four lazy3-draw sets per slot, at most24 active/96 resident meshes after all-family warmup. Existing high tails may survive low downgrade. Dynamic beam bounds/UV updates, alpha sorting and CPU/GPU cost require Unity QA.
+- Fang reuses the physical palette and straight-alpha shader path. One unchanged1942×809 RGBA8 row is added (~5.993MiB mip0, no CPU copy), used by two rigid jaws, not switched images. Beam uses separate neutral-grey roles and no texture. Single premultiplied coverage and bounded contact light contribution remain; no additive duplicate or guard meaning is implied. Existing metadata/GUIDs remain unchanged.
+- No engine/result/RNG or actual damage-receipt count change. Native Unity/Android/contact/finish/cancel/preview and exposure validation remain pending.
+
+### Stage17: receipt-proven guard / nullify
+
+- Exact zero-HP shield-resource loss selects the small upright continuous shield. Exact unchanged HP/Block/IceBlock selects incoming-side dissipation. Blocked payload alone cannot prove resource consumption; missing/invalid metadata or resource increases retain an audited legacy fallback. Positive HP loss remains the existing hit path.
+- P0, guard180ms/nullify212ms, no inserted wait or actor pause. Each receipt starts once at its existing contact. Nullify creates no light, hurt flash, guard sound or block pose. Guard's target-only light is provisional bounded max-combined (target multiplier.10 × native maximum envelope.33); no floor light and no second old Guard light after successful new rendering.
+- Frozen source board center and stable receiver-visible H determine incoming direction. Shield stays upright and mirrors for source-right; nullify rotates its local source-to-target axis. Invalid/projected-zero direction explicitly uses camera-left incoming. No weapon socket is inferred. Reset/generation ownership and shared low4/high8 recycling mirror the existing receipt-pool contract; at most24 active draws and40 lazy resident meshes for this separate system pool.
+- No textures. Linear palette roles, per-part gain and alpha are applied once, premultiplied blend. CPU formula parity and lifecycle stubs are not Unity shader/render proof. Depth, half-size visibility, exposure and Android mesh/pool cost require native QA.
+- Legacy Canvas has meaning-correct explicit fallback only: existing guard atlas if available, neutral bounded ring for nullify (or last guard fallback). It is not the R1 continuous shape. The remaining Canvas quality gap is tracked. Nullify is intentionally silent until a distinct neutral sound is authored; attack swing cues stay. Suppressing misleading hit/block sounds changes cosmetic Unity random draws from Audio, not engine RNG or combat results.
+
+### Stage18: positive reflection / BurnTick receipt responses
+
+- Exact positive ThornsReflected HP loss selects a small physical thorn contact at player, with a short residue toward the captured reflecting enemy. Exact positive BurnTick selects small target-local fire tongues/embers at EnemyIndex. Valid metadata and matching HP delta are mandatory; missing/inconsistent metadata, resource increase, or Burn shield change retain an explicit old fallback. No originating card/element is inferred beyond the named Burn event. ScaldTick, HP cost and card reactions are not registered by this increment.
+- One aggregate receipt remains one response. Reflect140ms / Burn tongues200ms + embers238ms from actual contact0; P0, no new pause or explicit wait. Raw overkill and later DeathSaved stay distinct. Fixed restrained system strength uses authored part count/gain, not attack heavy escalation. Actual positive injury cues already owned by Presenter remain; old extra world hit lighting is suppressed after new system success.
+- The existing system pool is shared across guard/nullify/reflect/Burn: low4/high8 allocation,8globalcontacts,24maximum active draws and80 resident lazy meshes when all four families have warmed. No new textures. Direction failure omits only reflection residue; local legitimate contact stays. Burn stays upright in captured camera space. Captured base-visible H and target/generation-safe light ownership are retained.
+- Physical/fire palette roles decode once, per-part gain/coverage premultiply once. Scene light color is separately verified as each palette's primary (scene_light_color_r1 supplement), no surface-core tint inference or double multiplication. One target-only provisional light uses multiplier.10 × authored max envelope.12/.14; no floor and no nullify light. Native exposure/depth/mobile visibility remain unverified.
+- Frozen reflection/Burn pack's optional +50ms debug PNG/log are an older width trial; use final +75ms/continuous sequence/primary MP4 as art reference. Contract, geometry, shader and goldens are final. Legacy Canvas remains explicit fallback quality, not this continuous shape.
+
+
+### Stage19: local HP loss and hand-affliction responses (2026-10-09)
+- HpLost stays own-resource depletion; ScaldTick stays a neutral mixed hand-affliction. Exact positive receipt HP delta and unchanged Block/Ice/MaxHP required; no inferred attacker/element or attack-heavy scale. Unknown metadata retains explicit local neutral fallback.
+- P0, selfloss182ms / affliction200ms, no new light/hitstop/launch wait. Existing numerical receipt and DeathSaved remain separate. Zero/negative synthetic losses acknowledge without shape, pain cue or HP−0 label.
+- Texture-free: selfloss40 vertices/20triangles/1draw; affliction146/124/2draws. Per-thread phase goes UV1, coverage stays per-fragment at receipt age. Cull Off preserves opposite face winding. Six-family system pool low4/high8, max24 active draws/104 lazy resident meshes; actual Android costs unmeasured.
+- Positive Scald's existing audio/flash and source labels remain; new shape adds none. Native Unity color/readability/GPU/contact/reset validation pending.
+
+
+### Stage20: physical pierce / meteor candidate (2026-10-09)
+- Exact card metadata only: green_horn_thrust→pierce_contact, red_meteor→physical_meteor. Meteor remains physical, its9fragments are one receipt; no fire or extra damage metadata. Old literal slash fallback style corrected to blunt for the meteor.
+- Native anticipation130ms fits existing first contact. True Land owns contact0/HP; C1 negative compression only if start is late. Predicted expiry hides the unlanded preview rather than holding body atcontact; stale callbacks use captured-position contact fallback. New residues178/270ms join existing finish/reset ownership with no added actor pause.
+- Physical palette/linear texture decoding and premultiplied coverage once. Rock front/depth remain one rigid object beforecontact, then separate. Shared concentrated blunt uses identical old texture and mathematical shape, x/y1.32,z+.040.
+- Separate bounded pool low4/high8, max32active draws/56resident lazy meshes; existing intensity Size/Emission/Particles/Light applied once to this standard family, authored1.32meteor contact is intrinsic rather than a tier variant. Target/floor light .35/.12 provisional max-combined physical group, no prelight. Native Unity/Android exposure/render/memory not measured.
+
+### Stage21 cloud candidate: shared physical slash authored tiers
+
+The existing `slash` physical route (15 explicit profiles plus green_strike's showcase) now has three continuous authored shapes selected from the receipt-frozen DamageVfxIntensity tier. No registry expansion or damage-rule change. Small is one short arc/3 sparks, medium the reviewed main arc/trailing stroke/6 sparks, large a wider arc/secondary stroke/9 sparks. The secondary stroke belongs to one receipt. Native preparation45/66.666667/130ms is scheduled backward from the existing true contact; tails140/252/320ms are live presentation work, not an extra delay per target. Actor hitstop and HP timing remain unchanged. Existing `small` semantic presentation caps selection at small; size/count/emission/light are authored and do not receive the old tier scalars again.
+
+Each effect uses captured base-visible H and camera basis. It shares the byte-identical2172×724 slash texture and physical palette already imported, with no additional PNG memory. Body material uses source RGB decoded once; linear physical core accents use a premultiplied URP unlit approximation. This omits Blender Principled/specular, AgX and compositor behavior. Maximum4 draws/receipt, low4/high8 pool,44/88 lazily retained meshes across3 tiers. Warm pure geometry allocation is0 over20,000 samples/tier; native renderer/GPU allocations remain unmeasured.
+
+Lights begin only on actual Land. Provisional medium target/floor multipliers.35/.12 use small source ratios28/48 and8/20, large60/48 and24/20, with same-target maximum combination. No negative prelight slot ownership and no old slash light when the new renderer succeeds. Begin or Land failure falls back to the existing standard slash and its own light, then generic/Canvas receipt routes. No Blender-watt equivalence or device exposure approval is claimed.
+
+Review must cover all tier boundaries/overkill/ratio/semantic cap, shader premultiply and linear inputs, property-upload failure, pool recycling, cancel, numeric dependency deadline, target replacement, terminal longest-tail handling, and transparent overlap. Native Unity import/GPU/Android frame time, exposure, motion readability, audio and final contact alignment are still pending. Other families retain their current scalar policy and standard-art fallback until their own authored variants are reviewed.
+
+### Stage22 cloud candidate: continuous waterA shared route
+
+The existing5 water routes (blue_strike showcase, blue_tide_drop, blue_rapid_strike, blue_catalyst_echo, fusion_tide_stance) now use the retained waterA continuous stream. Registry/meaning stays unchanged; no rejected water ring/vortex is reintroduced. Exact card-metadata restrictions and the two semantic-small profiles remain. Fusion nonattack mode, reactive/necro sources, guard/nullify and zeroHP do not create an attack receipt.
+
+Native160ms preparation fits before blue_strike's unchanged240ms contact. Other normal130ms contacts use the frozen negative-time C1 shortening, with no HP wait added. Body150ms/core90ms/droplets354ms have independent visibility; diagnostic620ms is not an action wait. Captured base-visible H/camera and caster side determine the initial local stream/mirror. Missing side remains audited camera-right flow. Actor hitstop does not freeze the body.
+
+One continuous standard shape receives the old bounded Size/Emission/Particles/Light scalars once, unlike the already-authored three slash variants. UV flow is written once by geometry. Body texture and256×128 droplet lookup decode sRGB once, filter in linear space, premultiply alpha once; lookup alpha is ignored, body outsideUV is clipped. Core and scene colors are separate. Blender Principled/specular/AgX/glare remain an explicit unlit approximation. Scene lights begin only at actual Land, provisional target/floor.35/.12 with same-target maximum. No preview light slot and no old duplicate water light on success; failed Begin/Land falls back to standard water then generic/Canvas.
+
+Two new original textures total6,421,184 theoretical RGBA8 bytes without mips (~6.124MiB), not measured native memory. Exact import exceptions preserve original dimensions, bilinear sRGB/straight alpha/no CPU read/no mip/uncompressed baseline. Low4/high8 pool owns16/32 lazy meshes, maximum32draws,382vertices/458triangles per receipt. Pure geometry warm sampling allocates0bytes/20,000calls. GPU uploads, mobile exposure/overdraw/frame time and final material readability remain native QA tasks.
+
+The depth formula in the frozen contract prose was corrected by a separate supplement to match actual motion/golden/video: center bulge .014*sin(13u−6t)*(1−side²). No source art or frozenpack was changed. Native Unity import/full compile/HLSL/device appearance and all-attack completion remain unverified.
+
+### Stage23 cloud candidate: continuous fire projectile and local discharge
+
+Three existing fire routes (red_strike, red_spreading_fire, red_double_tap) share the continuous projectile. One new exact-card opt-in, red_burst_release, uses target-local discharge only. BurnDischarged consumes status and is not an additional hit; only its subsequent actual positive DamageDealt receipt starts this effect. Burn0, noncard/legacy provenance, full guard/nullify, later thorns and death-triggered damage keep their own meanings and receipts. Registered damaging cards are48/242 (one leader-conditional), enemies5/167; registration is not Unity visual acceptance.
+
+Projectile native130ms preparation fits the existing130ms contact; local P0 suppresses anticipation but still begins at that existing real contact. True Land owns HP and light. Projectile head continues23ms past contact; body/core/embers independently finish within276ms, local within284ms, core57ms and light115ms. These tails join existing scoped work rather than adding target-count waits or actor pauses. Reset and stale generation callbacks remain guarded.
+
+Actual captured source/target centers are projected into the captured camera basis, divided by composed visibleH×Size so the single root scale does not alter endpoints. The near-source flight cutoff is .05 of composedH×Size, an explicit difference from the asset's base-H prose. Missing/invalid/coincident source suppresses flight and preborn delivery embers only, retaining local impact with a reason. No eye/weapon socket is inferred. Authored front-face depth remains separate from centerline endpoint placement.
+
+One original1774×887 straight-alpha texture adds6,294,152 theoretical RGBA8 bytes (~6.003MiB, no mip or CPU read). Bilinear sRGB input decodes once; luminance maps once to linear fire roles, authored gain and captured intensity apply once, and coverage premultiplies once. Local/flight surfaces share material without switching peak/trail images. Blender AgX/glare/lighting are not reproduced by this unlit shader. Low4/high8 pool has52/104 lazy resident meshes across both modes and at most56 active draws. Geometry535/568 vertices and680 triangles/mode,16visual embers. Android memory/CPU/GPU/overdraw remain unmeasured.
+
+Scene light uses independent #DFAA78 and actual-Land-only provisional target/floor.35/.12, local source ratios62/55 and22/20, with max combination and captured Light scalar once. No negative prelight slot and no duplicate old fire light after success. Failed projectile Begin/Land falls back to standard fire then generic/Canvas; failed local discharge goes directly to local element/shared fallback and never invents a projectile. Exposure, transparent overlap, half-size visibility, audio and native contact/finish/cancel still require Unity/device QA.
+
+### Stage24 cloud candidate: continuous dark-drain shared family
+
+Eight existing onPlay dark_drain routes share two short inward surfaces, a local core,8intake motes and12decorative return motes. Source registrations are unchanged. black_corpse_collect retains its small semantic scale, and all existing exact-card metadata gates remain. General dark slashes and reactive/necro/self-exhaust paths do not inherit this art. Real HpHealed stays independent: the engine can heal despite full guard or zero actual damage, cap can emit0, and thorns/death triggers may occur between damage and recovery. Return motion neither infers the amount nor owns recovery timing.
+
+Native130ms anticipation fits unchanged130ms contact; only unavailable negative time is C1 compressed. Actual Land owns contact-relative age zero; pre-contact inward/intake motion is decorative, while core and return begin at contact. Two main paths keep advancing through actor pause and lose shader coverage by91ms, core62ms/intake79ms. Valid source return ends301ms; invalid/missing/coincident capture omits return and ends local work104ms. Capture uses true source/target centers and camera basis, divided by composed base-visibleH×Size so root scaling preserves world endpoints. The .05composedH×Size near-source cutoff is a declared adapter difference from base-H prose. No socket or heal target is guessed. Numeric readiness, captured target identity, generation-safe cancellation and terminal work ownership remain.
+
+Four fixed dynamic batches total419vertices/560triangles. Per-vertexCoverage is passed in UV1 and multiplied once in the fragment shader; UVflow already exists in geometry. Source texture sRGB decodes once, linear luminance maps once to dark palette, bounded receipt Size/Emission/Particles/Light apply once, and final alpha premultiplies once. Independent scene color#9383A8 is not surface-core tint. Provisional contact-only lights use target.35×38/55 andfloor.12×13/20 relative to fire's initial bounded baseline, same-target max; no prelight/return light slots or old duplicate light. Blender watts, AgX/glow and native exposure are not matched measurements.
+
+One unchanged1774×887 original adds6,294,152 theoretical RGBA8/mip0 bytes (~6.003MiB), with bilinear/sRGB/straightalpha/clamp/no mip/no CPU read/uncompressed import exception. Low4/high8 separate pool owns16/32lazy meshes and at most32active draws. Warm pure ConfigureSource+Sample allocates0bytes/20,000pairs; native allocation/Android memory/overdraw/frame time remain unmeasured. Begin/Land failure tries standard dark_drain once, then generic/world/Canvas with explicit reason. Native Unity rendering/contact/audio/finish/cancel/visibility quality and all-attack completion remain unverified.
+
+### Stage25 cloud candidate: continuous positive recovery
+
+Existing positive HpHealed, EnemyHealed and RegenTicked receipts now share continuous recovery motes, thin tails and a local aura. Amount<=0, HP costs, mixed affliction and attack light remain excluded. Recovery belongs to the actual recipient rather than source/healer. No card/attack registration, engine data, event count, RNG, HP time or actor stop changes. Damage tiers are not applied. Existing small recovery semantic (Amount1–4) keeps .72 size/.75 emission/.65 light once; authored16 motes and8 tails remain visual parts of one receipt.
+
+P0 starts at real recovery commit, including the existing enemy recovery delivery time. Camera basis and base-visible height are captured. The new origin is captured feet+camera-up×.4652173913H, independently of root semantic scale; this deliberately differs from the old LayoutRotation/transparent-board-height approximation. Old fallback position remains unchanged. Aura205ms/light240ms/last mote541ms define real work; old590ms is not retained as a wait. Reset, target identity, generation, longest-tail and numeric readiness use existing ownership.
+
+Three dynamic batches total193vertices/168triangles. A fixed1774×887 texture adds6,294,152 theoretical RGBA8 bytes without mip/CPU read; bilinear sRGB decoding, linear palette mapping, per-vertex coverage and final alpha premultiply each occur once. This unlit material omits Blender Principled, AgX and glare. Low4/high8 pool owns12/24 lazy meshes, max24 draws. Pure warm Sample/surface allocate0bytes over20,000 iterations; native GPU/Android allocation and overdraw remain unmeasured.
+
+The soft effect is fully transparent at age0. Actual Land still validates all three invisible mesh/property uploads before reporting success, so an initial upload failure can reach old authored-heal fallback at the same contact. This does not promise recovery from arbitrary later GPU failure. Begin/Land failure tries old authored heal then element/Canvas; successful new or old authored heal suppresses the duplicate Cast light. Independent scene color#ACC5B1 receives provisional actual-Land-only max-combined target.35×28/55 and floor.12×10/20; visible light is zero at0, rises, and reaches zero again at240ms; contribution ownership remains generation-guarded until final541ms retirement. Unity exposure, origin alignment, transparency sorting, small-target readability, audio/contact/finish and device performance remain unverified.
+
+
+### Stage26 light continuous rebuild R2 (cloud candidate)
+Seven already registered light attacks now use a camera-local continuous passage with four mesh batches, not a caster beam. Contact and actual HP receipts remain unchanged; native anticipation100ms fits the normal130ms contact. Negative late-start time alone is C1-compressed according to the R2 clock. Main85ms/core72ms/airy183ms/glints200ms; actor stop is independent. Guard/nullify keep separate responses.
+
+Straight sRGB source is decoded once, remapped in linear color, HDR gain once, and coverage premultiplied once. Scene light #DED5BA is a distinct input. Provisional bounded target .35×60/55 and floor .12×20/20, actual-Land-only max combination; Unity exposure remains uncalibrated. All four Land uploads are tested even when a batch is invisible. Missing/unsupported resources fall back once to the prior light sheet, then existing element/Canvas paths.
+
+The unsaved original Stage26 was lost during cloud reversion. This R2 is rebuilt from the identical recovered motion source and original PNG, plus a newly reconstructed contract; it is not a byte-identical restoration of the lost archive. Stable base-visible target H/captured camera basis are used. Original1774×887 RGBA8 costs6,294,152 nominal GPU bytes without mips; Android compression/residency and actual GPU appearance/performance are unverified. No change to engine/RNG or7existingroute membership.
+
+
+### Stage27 Ice crystal rebuild R2 (cloud candidate)
+The existing exact blue_ice_lance route now forms one unchanged left-panel crystal surface, holds its rigid shape to55ms, then continuously separates nine irregular radial regions. No peak/trail picture switch. P130 stays inside existing130ms actual contact. Shader reveal is per fragment from UV1.front; vertex alpha remains independent. Body ends305ms, core79ms, fourteen chips261ms. Zero HP loss/IceBlock0 use existing guard/nullify. No shield resources, hits, actor stops, source membership or engine rules change.
+
+Three mesh batches109vertices62triangles; base-visible targetH/captured camera basis, local target contact. Static sRGB PNG1774×887 is6,294,152 nominal RGBA8 bytes without mips. Linear luminance^1.35 clamps before palette ramp, one final premultiply; no refraction or thick-glass claim. Scene#A2C5D2 is separate. Provisional actual-Land-only max light .35×42/55 and .12×16/20 comes from new R2 reference, not restored R1 watts. Native Unity depth/transparency/exposure/Android memory and quality are unverified. Failure falls back once to the existing ice sheet, then element/Canvas. All3 Land uploads are validated even if a batch is initially invisible.
+
+### Stage28 actual-ground Earth/Stomp R2 cloud candidate (2026-10-09)
+
+- Existing `green_earth_roar`, `green_finisher_stomp`, and earth-typed `green_sig_trample` registrations use a certified actual-terrain capture for the new floor mode. This is conditional display coverage, not proof of new-mode success at every battlefield location. Unknown competing meshes, gaps, invalid normals/heights, unsupported births or ownership changes suppress floor, particles and new light together; the existing local impact remains once. No flat surrogate or old ground sheet is substituted as certified terrain.
+- Original `FullStageGround.Height` behavior is preserved separately. Known Batch02 resource identity plus geometry SHA, immutable generation-owned capture, full-domain seam checks and 4,096v/2,048tri cap guard the new mode. Size applies before capture; final world floor vertices never rescale. Future in-place stage geometry writers must invalidate the provider first. No per-frame terrain sampling is added.
+- Earth P140 fits its existing contact; ground420ms/chips347ms. Stomp P0 at current contact; irregular pressure180ms/dust267ms/pebbles232ms. R2 reconstructs new fields/trajectories after original R1 source loss. The exact current HP contacts and65/75/120ms heavy actor pauses stay unchanged. Multi-target actual receipts retain their own clocks; geometric waves are not new hits.
+- Earth2/Stomp3 draws maximum,8 slots (Low4), fixed8 earth chips /4 stomp stones+8 dust. One1774×887 grain PNG adds6,294,152 nominal uncompressed RGBA8 no-mip bytes; native residency/performance is unmeasured. Capture allocations and terrain checks are bounded but not zero allocation.
+- Linear role vectors and hardware sRGB texture decoding occur once. Grain RGB repeats with no alpha dilation. Ground/dust are premultiplied unlit; tetrahedral chips are roughness.86 URP-lit facets with separate edge emission. Earth scene#B3A08B and Stomp scene#C6C5BC are separate from surface core. Initial point-light calibration is bounded, actual-contact-only, max-composed and uncalibrated on device.
+- Both shaders live in Resources/Shaders. Cloud math/source/stub/golden checks are distinct from Unity shader compilation/stripping, actual forest depth, small-line visibility, transparent sorting, HDR exposure, Android frame time and GPU memory. Those remain required QA. Canvas stays an explicit legacy semantic fallback.
+
+
+### Stage29 continuous Lightning R2 and finite dust shader correction (cloud candidate)
+The existing exact blue_aether_burst+leader_izzet and enemy_thunder_globe/thunder_strike routes now use a local continuous discharge. The decorative leader is target-local and does not claim a weapon/eye socket or world-spanning ray. Source registrations, existing ranged transport/contact scheduling and actual HP receipts are unchanged. Ordinary enemy hits3 still produces one aggregate DamageDealt and one playback. Guard/nullify remain separate. Native P100 fits existing contact; body110ms/core60ms/twelve sparks200ms, actual-Land-only light75ms. No added actor hitstop or periodic reflashes; flash-safety certification remains unverified.
+
+Three dynamic batches total65 vertices38 triangles, Low4/high8 slots with12/24 lazy meshes and at most24 active draws. Captured base-visible H/camera basis, one bounded Size/Emission/Particles/Light composition, per-fragment reveal on a single fixed left-panel image, and independent core/body clocks preserve the R2 contract. All three Land uploads are validated even when invisible; failure tries the prior lightning sheet once before generic/Canvas fallback. Cancel/reset and oldest-slot retirement invalidate stale contacts. New-mode success suppresses duplicate legacy light.
+
+The original1774×887 sRGB/straight-alpha texture adds6,294,152 nominal RGBA8 no-mip bytes. Palette maps in linear RGB, HDR gain occurs once and output is premultiplied once. Scene#B6B0D0 is separate from surface core. Provisional target .35×42/55 and floor .12×14/20 use actual-contact-only max composition, not matched Blender watts. R2 rebuilt pivot/scale/shader coefficients after original pack loss; original PNG matches. Unity shader compile/stripping, exposure, transparency, continuous motion/readability, flash accessibility and Android residency/frame time are pending.
+
+A separate Stage28 dust safety correction replaces pow(sin(x),2) with an explicit sn*sn square. HLSL pow may produce NaN for a negative base, unlike the C++ pow used by prior arithmetic fixtures. The normative appearance and coefficients are unchanged; negative-sin finite-input fixtures and a narrow audit accompany this increment. Frozen Stage28 assets/archive remain historical and unchanged; use this correction before native QA. CPU/source checks do not establish GPU execution.
+
+
+### Stage30 small scatter profiles R2 (cloud candidate)
+Four new exact-card opt-ins cover red_spark, white_spark_scatter, blue_ice_hail and green_catalyst_spore with fire fragments, warm sparks, hard ice chips and drifting botanical spores. Existing element/style labels remain display classifications. Token addition, IceBlock gain, noncard provenance, old metadata-free payloads, guard/nullify and fusion-catalyst declarations do not create new hits. Each actual positive HP-loss DamageDealt owns one P0 response at its existing contact. White's two damage effects and real AoE target counts remain engine-owned.
+
+No texture/importer addition. Two analytic mesh batches,54vertices/28triangles (ice46/24),12particles maximum (ice10), eight global slots/Low admissionfour. Per-vertex phase and gain survive batching. Fixed-prefix thinning applies bounded Particles only when below1; standard/large do not exceed the authored count. Size/Emission/Light compose once, no extra Alpha field or particle brightness multiplier. Cached profiles may retain64lazy meshes across eight slots but only16draws active; native memory/performance remains unmeasured.
+
+P0 skips preview allocation; actual Land validates both mesh/property uploads, even when invisible. Core50ms, light70ms, profile tails205/190/219/260ms. Bodies keep moving during core/actor hold. Existing scope/cancel/reset/oldest-generation ownership remains. New-mode failure uses existing element/Canvas fallback once; no nonexistent legacy scatter atlas is claimed. Successful new rendering suppresses duplicate old hit light.
+
+Palette sRGB decodes once; analytic coverage and authored gain produce one premultiplied HDR output. Scene colors are separate. Provisional target .35×32/55 and floor .12×8/20 are multiplied once by the native envelope already containing profile maxima .32/.26/.24/.15, plus bounded receipt Light. No prelight. R2 reconstructs lost original coefficients; Unity/HLSL/GPU exposure, half-size readability, sorting and Android repeated/AoE cost remain unverified. Eligible card count52/242 is not all-attack or guaranteed-visibility acceptance; Canvas remains semantic fallback.
+
+
+### Stage31 wide water/fire R2 (cloud candidate)
+Four exact modern-card opt-ins cover blue_tsunami/blue_rolling_wave and red_flame_wave/red_blaze_sweep. The two families are broad target-local lateral passages, not caster-to-target transport. Each positive actual damage receipt retains its target, amount and contact. Existing AoE stagger and the conditional blaze second damage are engine-owned; neither decorative width nor particle count creates targets or hits. Missing/wrong/noncard metadata keeps the recorded old fallback.
+
+Native anticipation100ms fits the existing receipt window using the frozen negative-only C1 mapping. Postcontact bodies205/190ms and final tails300/262ms remain independent of core23ms hold/65ms end and actor pause. Real Land refreshes every mesh/property batch including invisible layers; unsupported resources or failed uploads retain one fallback. Scope/reset/recycling ownership remains versioned. No extra HP delay or actor pause is introduced.
+
+Existing water, fire and droplet-lookup textures are shared byte-for-byte with unchanged imports and GUIDs. Water is510vertices/706triangles/3batches; fire703/962/4; fixed16particle birth cap. Bounded standard scalar applies once. Camera basis and alpha-visible target height are captured, right mirror fixed1; no inferred caster socket. Linear texture sampling, native per-vertex alpha/gain and one premultiplied output preserve the reference. Waterdrop lookup/core mixture is an explicit R2 unlit approximation of earlier Principled shading.
+
+Eight global slots/Low admissionfour. Per-profile texture admission avoids disabling fire for missing water resources. Scene colors are independent and active only at actual Land; provisional bounded point-light ratios38/14 water and45/16 fire against55/20 reference are not physical area-watt equivalence. Source/stub/CPU numerical tests do not establish native Unity HDR/overdraw/exposure/sorting, camera-edge readability or Android performance. Continuous-card candidate count56/242 and enemy5/167 are routing coverage only; Canvas remains fallback.
+
+
+### Stage32 local material profiles R1 (cloud candidate)
+Five exact definitions share local dark, light, botanical, physical and short-water responses. Four support card-kind damage; two of those also support exact necro damage. Powder pod supports reaction-kind counter and set-destruction damage. The source-kind allowlist requires modern metadata, rejects malformed/unknown tokens and never extends to legacy marker-only events. Existing element/style labels, gameplay, events, RNG, actual receipt timing and old card-only memberships remain unchanged.
+
+Each positive actual DamageDealt owns one P0 effect; guard/nullify, costs, DoT, reflection, recovery and non-damage resource events retain their separate paths. Water has no ring/vortex/return, dark is outward release without drain/heal implication. Native post tails218/198/273/238/263ms; dark body212ms follows the frozen formula and corrects only the old208ms prose (overall218ms unchanged). Native motion does not stop with core14ms hold or actor pause.
+
+Three batches with per-vertex role and phase. Fixed12births, prefix thinning only, scalar once, no new hits. Five existing PNGs are shared; botanical has no texture dependency. Palette and independent scene colors decode once, one premultiplied output. Eight global slots/Low4, maximum24active draws and120lazy meshes (Low-only60). These are code budgets, not native memory or frame-time measurements. Scene lighting is bounded provisional Unity mapping, actual-contact only and max-combined. Failed new drawing retires once and leaves one existing fallback.
+
+All11 minimal-profile shapes are integrated as cloud candidates after this stage. Membership is61/242 damaging definitions:57 literal profiles (including one reaction-only definition), one leader-conditional and three direct Showcase candidates. Ordinary card-kind eligible count60, with two additional necro contexts. This is not all-source or native visual completion: semantic expansion, real enemy multi-hit contribution metadata, non-slash tier geometry and Unity/Android exposure/motion/performance remain open.
+
+
+## Stage33: explicit shared semantic routes (cloud candidate)
+
+98 finite, individually reviewed memberships reuse existing continuous components:40 modern card-kind definitions and58 ordinary enemy move keys. Existing element/style, target count, random damage, actor pause, transport delay and contact ownership remain unchanged. No new textures, renderer code or engine logic. Card memberships require exact modern source metadata and an explicit card-only allowlist; unrelated reaction/necro/permanent/gear contexts remain blocked.
+
+Shared point/horn/fang/claw/fire contacts describe the local impact, not bespoke full actor or weapon motion. `green_sweeping_horn` keeps its game targeting and uses horn-tip contact; no swept hitboxes or additional targets are created. `red_bomb` retains the existing fire presentation interpretation without declaring a new gameplay attribute. All multi-hit enemies still produce one aggregate receipt and one contact until the separate real-contribution metadata/projection stage.
+
+The rock-beetle forced-bite path can retain an old intent ID; both bite and horn_jab remain outside this expansion pending exact executed-move provenance. The normally reachable burrow-worm bite remains allowed only through the existing matching snapshot key. Conditional-alt and missing-snapshot fallbacks remain. Newborn or replaced actors must pass the existing lineage checks. Renderer/resource/pool failure continues into the existing single fallback. Native Unity/device visibility, audio/contact feel, CPU/GPU performance and all-path acceptance remain unverified.
+
+### Stage34: actual enemy presentation provenance and hit contributions
+
+Existing declaration/executing/damage events may carry versioned display-only move provenance. The declared primary/alternate IDs are captured from the chosen definition; the branch is captured at the existing effective-intent call before locking/pre-reaction mutation. Forced burrow bite captures its actual definition ID even when the old gameplay intentMoveId remains stale. Self-indexed event links survive full native saves; missing, malformed, trimmed or crossed-action histories stay unresolved. These references are not cryptographic proof of arbitrarily hand-edited state.
+
+Ordinary enemy DamageDealt additionally captures ordered amount/HP/block/ice/nullified/mitigated contributions from the existing loop. Engine HP still mutates once; hooks, counter, DeathSaved, event count/order and RNG remain unchanged. No intermediate engine HP snapshots are claimed. At most256 rows are retained; larger loops record actual executed count and an explicit omission reason, never a partial array or equal division. ConfusedAttack has no such loop and remains aggregate-only.
+
+This increment only supplies metadata. The subsequent numeric-ledger/contact consumer must validate all sums and links, own one outer receipt, commit each display contribution in order, and keep turn/finish gates pending until the final contact. Until that consumer lands, existing aggregate presentation and the Stage33 routing remain unchanged. Native Unity/Android verification is still pending.
+
+
+## Stage35: real enemy contact projection (2026-10-09 cloud candidate)
+
+Ordinary enemy DamageDealt now consumes the optional Stage34 calculation-derived contribution rows as presentation-only intermediate vitals. One real engine event keeps one numeric receipt and one outer action/VFX acknowledgement. For 2–12 validated rows, each real HP, Block and IceBlock contribution receives a visible contact; nullified/mitigated/zero rows remain real contact outcomes. Nominal spacing is120ms anchored to the first actual landing, with a maximum planned additional span1.32s. A long missed-frame interval shifts remaining visual time and never emits two children in one frame. Actual pending work, not that estimate, owns completion. Normal authored enemy attack definitions currently declare at most6 hits; dynamic mirrors are not universally capped.
+
+The first landing retains the existing sequence slot and existing snapshot-based transport delay (0 or220ms), while actual executed-move metadata selects the impact route. Conditional alternatives and forced bite no longer have to borrow a primary/stale snapshot move when a validated explicit key exists. Legacy missing metadata retains the old fallback. Source proof is an accepted-command/event-reference lease and captured source-record identity, with same-ID record changes conservatively unproved. Post-attack source death preserves its earlier valid contributions; hatch/prior retirement do not.
+
+Projected children are plain independent FX tickets, never invented GameEvents or extra numeric receipts. Raw negative projected HP is retained; actual later DeathSaved/heal/counter determines the gameplay outcome. No child infers a finishing blow or adds actor hitstop. One attack preparation occurs, followed by contact-only child effects. Missing original art anchors permit numeric-only contacts; replacing a captured source/target visual unit cancels and reconciles a started train. Before child0 a safe aggregate fallback remains possible. Completed source leases are released.
+
+More than12 actual hits use one explicitly labelled aggregate showing the true calculated count and HP total (including0, and missing-player-anchor fallback). Captured rows are not divided, truncated into invented hits or consumed twice. More than256 rows keeps Stage34's explicit capture-limit reason and real total count. ConfusedAttack has no such per-hit calculation record and remains one aggregate receipt.
+
+Later numeric values, reaction/status dispatch, next actor cues, preview/trace preparation, and display-sequence finish wait for earlier train contact debt. Existing scoped Tween/effect tails and actor/death work remain in PresentationIdle; GameRoot's existing enemy-turn/terminal completion gate waits that predicate before outcome/reward rebuild. No new engine state, RNG calls, damage rules or additional hit events are introduced. Native Unity/Android frame-time, art readability, source/target replacement and actual reward-screen timing still require execution QA.
+
+The old27 subtle S/M/L proposal remains rejected and unintegrated. Distinct-spell-like fire/ice tier redesign is separate: future anticipation changes must share the actual landing clock with HP/guard UI and actor cue, and completion must include visible lifetime.
+
+Stage35 global response cap: local impacts, real-row numbers, outcomes and audio stay per contact. The existing aggregate fullscreen hurt flash and any already-enabled legacy camera shake are submitted once at the first positive-HP contribution. All guard/nullify rows submit neither. Existing fixed-camera/world-mode gates remain untouched; no shake/zoom feature is enabled. This prevents overlapping full-screen red overlays; it is not native flash-safety certification.
+
+
+### Stage36: twenty-nine exact enemy definition routes
+
+Adds 25 regular definition keys and four execution-proof-only keys to existing continuous families: pierce, slash, fire projectile/local release, blunt and fang. Existing style/material values remain. The four set_breaker/smash, joker/cautious_jab, rock_beetle/horn_jab and rock_beetle/bite require validated declaration/execution metadata. Without proof they produce an explicit neutral legacy fallback with ExactSource=false; snapshot candidate IDs are not described as executed moves. Invalid annotated metadata still fails closed without a snapshot retry. Other legacy snapshot routes retain their compatibility behavior.
+
+The joker cautious_jab definition is currently dormant in the normal graph. It is counted as a registered definition, not proof of reachable combat population. First-contact transport timing, actual contributions, HP/guard, actor pauses and RNG are unchanged. New authored residue may differ from previous fallback art and remains owned by the existing completion scopes. No added hit, camera feature, texture or gameplay change. Unity/GPU/Android appearance remains unverified. The rejected subtle 27-tier candidate is not used.
+
+
+### Stage37: ten exact card-kind shared routes
+
+Reuses wide water/fire, fire/warm-white scatter and local light on ten explicitly reviewed definitions. Their source metadata must identify card kind and the definition ID; the supplied UID is carried for attribution. This existing route gate does not independently prove UID lineage or reject an absent UID. Both the source-kind allowlist and card-cast metadata gate are required; this suppresses duplicate legacy generic caster effects when a matching positive card receipt and family resources are available. No non-card context is automatically added. Permanent embers remain a separate policy task.
+
+Actual effect receipts own all targets, damage counts and timing. Empty-hand Tide Surge may still have positive damage from modifiers; zero Sparks skips only Spark Storm's second, scaled damage effect; its first 8-damage effect remains. Blaze Spark's conditional second damage and first-hit lethal suppression come from the engine, not particle counts. Token/light/energy/status changes do not create attack effects. Material/style, first contact, actor pause, gameplay and RNG are unchanged; authored residue remains scoped. No new texture, renderer, camera feature or rejected tier candidate. Cloud source tests do not imply Unity/Android visual acceptance.
+
+
+## Consolidated source coverage candidate 38 (2026-10-10)
+
+The static inventory now assigns all 419 damage-capable definitions (242 cards/fusions, 167 enemy moves, two leaders, six relics and two gears), covering 428 definition/source-kind contexts and the non-Izzet default of aether burst. This is routing eligibility, not exhaustive combat reachability, pixel visibility or final art acceptance. 151 contexts intentionally use explicit neutral contact; their semantic reasons remain auditable. Two move definitions, break_trap and call_bluff, have definition/renderer checks but no verified reachable graph node.
+
+Exact optional source metadata selects `_presentationSourceRoutes[definitionId][kind]`. UID is carried unchanged, including null; it is not independent lineage proof. Non-card routes require `noncard_fixed_small_contact_v1`: final size .88, particles .65, emission .72, scene light .65 and small presentation topology; factual damage intensity remains intact. This policy is contact-only and does not add actor anticipation, pause, hits or gameplay events. Authored slash already encodes its small topology, so scalar attenuation is not applied twice. Ordinary card overlays retain their existing contact clocks.
+
+The bounded contact renderer adds 24 compact profiles for conservative minimal shapes/materials and neutral positive-damage receipts. No new texture is imported. Each instance has one transparent draw, at most 160 vertices/240 triangles and four motes, with a 180 ms tail. The pool caps at 24 high/12 low and recycles with versioned handles. Linear palette input is converted once from sRGB and shader output is premultiplied once. These are implementation budgets, not measured GPU or mobile frame-time results.
+
+Unknown/missing provenance remains inexact. A positive damage receipt with unproved provenance, or a missing bounded renderer resource, gets one achromatic world contact when capture/resources are valid, or an achromatic UI contact where an active canvas exists. It does not inherit a previous card's weapon or element. No available world/UI surface is recorded as `no-render-surface`, not a successful draw. Guard, nullify, burn, affliction, self-cost, reflection and healing keep their distinct outcome routing. Legacy enemy transport styles and the four existing executed-move proof gates are unchanged.
+
+The existing actual-contribution enemy timeline remains: two to twelve captured real contributions, typically 120 ms apart; thirteen or more retain the true count and aggregate result. Confused attacks remain aggregate-only. Receipt completion, numeric projection, actor pause ownership, target generation, cancellation and enemy/finish barriers continue to own presentation. New tails may differ from legacy art, but no added per-target gameplay delay is introduced.
+
+Autopilot fire coverage now accepts an observed continuous-fire resolved contact instead of incorrectly requiring eight legacy atlas frames after that renderer has been replaced. Legacy playback still requires the full frame mask. This source correction has not been executed in native Unity.
+
+Remaining gates: independent cloud regressions and exact incremental application checks; all Unity import/GPU/transparent sorting/real target visibility, Android memory/frame-time and accessibility validation; PC application blocked by the existing transfer403 issue. Compact neutral/minimal shapes are conservative readable candidates, not proof of professional visual quality. The rejected subtle27-tier set remains unintegrated. New distinct-spell fire/ice/water tier designs remain separate unregistered candidates and cannot be counted as completed runtime variants. No rejected water vortex or old vine art is restored.

@@ -1098,7 +1098,7 @@ namespace DeckRogue.Game
         // ---------------------------------------------------------------- キャラ (UI の矩形に追従するビルボード)
 
         /// <summary>UI の矩形 (uGUI の sprite 枠) に追従するビルボードを、key の座席の深度の面に立てる。Image は非表示にして色 (生死・点滅) だけ読む</summary>
-        public static void BindUnit(string key, RectTransform rect, Image img, Sprite sprite)
+        public static void BindUnit(string key, RectTransform rect, Image img, Sprite sprite,bool preservePresentation=false)
         {
             Ensure();
             if (rect == null || sprite == null || sprite.texture == null) return;
@@ -1106,6 +1106,7 @@ namespace DeckRogue.Game
             float depth;
             if (!_depths.TryGetValue(key, out depth)) depth = _dist;
 
+            if(preservePresentation && TryRebindPresentationUnit(key,rect,img,sprite,depth))return;
             var go = new GameObject("unit-" + key);
             go.transform.SetParent(_units, false);
             var mf = go.AddComponent<MeshFilter>(); mf.sharedMesh = _quad;
@@ -1264,7 +1265,7 @@ namespace DeckRogue.Game
             public bool CharShadowOn;
             // 最後の LateUpdate の値 (TryGetUnitBox・DebugUnitBoxes が読む)
             public bool HasBox, InDiorama, SeatFound, Moving;
-            public Vector3 FeetWorld, SeatWorld; public float HeightWorld, SeatK, UsedDepth, UsedK;
+            public Vector3 FeetWorld, SeatWorld; public float HeightWorld, BaseCanvasHeightWorld, SeatK, UsedDepth, UsedK;
             public Vector2 RectMin, RectMax;                // 矩形の角 (px・左下が原点。丸める前)
             public float FeetPadPx, BreathePx;
             Vector4 _lastRect; int _movedFrame = -100;
@@ -1548,11 +1549,13 @@ namespace DeckRogue.Game
                 else if (_r2eHaloGemTex != null) Destroy(_r2eHaloGemTex);
                 if (Mat != null) Destroy(Mat);
             }
-            public void LateUpdate()
+            public void LateUpdate() { UpdatePresentation(true); }
+            public void RefreshBinding() { UpdatePresentation(false); }
+            void UpdatePresentation(bool advanceClock)
             {
                 if (Rect == null) { Destroy(gameObject); return; }
-                R2E_SyncIdle(HD2DFlags.DioramaHere);   // 二周目 レーン E: 箱庭の待機のコマ (look の char.r2idle が無ければ何もしない)
-                if (!ImpactPause.IsPaused(Time.time)) Advance();
+                if(advanceClock)R2E_SyncIdle(HD2DFlags.DioramaHere);   // 二周目 レーン E: 箱庭の待機のコマ (look の char.r2idle が無ければ何もしない)
+                if (advanceClock && !ImpactPause.IsPaused(Time.time)) Advance();
                 Rect.GetWorldCorners(_c);
                 float sx = Mathf.Round((_c[0].x + _c[3].x) * 0.5f), sy = Mathf.Round(_c[0].y);
                 float w = Mathf.Round(_c[3].x - _c[0].x), h = Mathf.Round(_c[1].y - _c[0].y);
@@ -1606,7 +1609,7 @@ namespace DeckRogue.Game
                 if (IsLit) rim = R2E_LitRim(hero, doll, rim);   // 二周目 レーン E: 光を受ける板のリムは look の char (敵 0・人形 0.1・主役 0.25)。無ければ今のまま
                 if (IsLit) { var rimArt = CharExtras().ArtFor(ArtName); if (rimArt != null && rimArt.Rim >= 0f) rim = rimArt.Rim; }   // 三周目 直しの輪4: 絵ごとのリムが勝つ
                 Mat.SetFloat("_Rim", rim);
-                if (FlashT > 0f) FlashT -= Time.deltaTime;
+                if (advanceClock && FlashT > 0f) FlashT -= Time.deltaTime;
                 Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * (dio ? 0.10f : 0.85f));
                 Mat.SetFloat("_Dissolve", DissolveK);
                 SyncShadowMode(dio);
@@ -2013,6 +2016,7 @@ namespace DeckRogue.Game
                 InDiorama = dio;
                 FeetWorld = pos + _up * (FeetPad * h * k) + _right*((FootAnchorX-.5f)*w*k);   // 絵の足元 (地面の点。呼吸と演出の動きを含む)
                 HeightWorld = Mathf.Max(0f, h * k * FrameScaleY - FeetPad * h * k);
+                BaseCanvasHeightWorld = Mathf.Max(0f,h*k); // same RecordBox sample, independent of later pose/canvas changes
                 RectMin = new Vector2(_c[0].x, _c[0].y); RectMax = new Vector2(_c[2].x, _c[2].y);
                 FeetPadPx = FeetPad * h; BreathePx = breathe;
                 var r = new Vector4(_c[0].x, _c[0].y, _c[2].x, _c[2].y);

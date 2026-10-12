@@ -187,6 +187,10 @@ namespace DeckRogue.Game
         static int CellI(float x) { return Mathf.Clamp(Mathf.FloorToInt((x - TX0) / Cell), 0, TNX - 1); }
         static int CellJ(float z) { return Mathf.Clamp(Mathf.FloorToInt((z - TZ0) / Cell), 0, TNZ - 1); }
         /// <summary>舞台の地面の高さ (世界の x・z)。箱庭 (幕1 × stage=diorama) の間は Diorama.GroundY (設計図の段の天面。座席の帯は 0)、それ以外は段丘の高さ場</summary>
+        internal static bool TryCaptureSurface(Vector3 feet,float height,float size,StrictGround.Family family,out GroundSurfaceProvider.Lease lease,out string reason) {
+            lease=null;reason="ground_stage_mode_unproved";return CombatWorld && _diorama && Diorama.TryCaptureSurface(feet,height,size,family,out lease,out reason);
+        }
+
         public static float GroundY(float x, float z)
         {
             if (_diorama) return Diorama.GroundY(x, z);

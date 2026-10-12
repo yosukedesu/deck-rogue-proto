@@ -6,6 +6,8 @@ namespace DeckRogue.Game {
   struct Tri { public Vector3 A,B,C; }
   readonly Dictionary<Vector2Int,List<Tri>> cells=new Dictionary<Vector2Int,List<Tri>>();
   static Vector2Int Cell(float x,float z)=>new Vector2Int(Mathf.FloorToInt(x/2),Mathf.FloorToInt(z/2));
+  internal readonly GroundSurfaceProvider CaptureProvider;
+  internal void InvalidateCapture()=>CaptureProvider?.Invalidate();
   public FullStageGround(GameObject root){
    foreach(var mf in root.GetComponentsInChildren<MeshFilter>()){
     var mats=mf.GetComponent<MeshRenderer>().sharedMaterials;var mesh=mf.sharedMesh;var vs=mesh.vertices;
@@ -19,6 +21,7 @@ namespace DeckRogue.Game {
      }
     }
    }
+   CaptureProvider=new GroundSurfaceProvider(root); // Display proof only; legacy Height above/below is unchanged.
   }
   public float Height(float x,float z){
    float best=float.NegativeInfinity;if(!cells.TryGetValue(Cell(x,z),out var list))return float.NaN;

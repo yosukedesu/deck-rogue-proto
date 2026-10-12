@@ -28,6 +28,30 @@ namespace DeckRogue.EditorTools
         {
             if (!assetPath.Replace('\\', '/').Contains("/Resources/Art/")) return;
             var imp = (TextureImporter)assetImporter;
+            // Static continuous-material source, not pixel art or an animation atlas.
+            // Keep this exact-path exception ahead of the generic sprite importer.
+            if(assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/vine-slash-surface-r1.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/enemy-blunt-contact-r1.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/enemy-fang-row-r1.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/physical-pierce-surface-r1.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/physical-meteor-intact-r1.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/water-flow-surface-r1.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/water-flow-droplet-lookup-r1.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/fire-continuous-surface-r1.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/dark-drain-surface-r1.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/heal-uplift-surface-r1.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/light-ray-surface-r2.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/ice-crystal-surface-r2.png" || assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/lightning-discharge-surface-r2.png") {
+                imp.textureType=TextureImporterType.Default;imp.sRGBTexture=true;
+                // R2 is sampled by Resources.Load<Texture2D>; do not retain a Cubemap import shape.
+                if(assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/lightning-discharge-surface-r2.png")
+                    imp.textureShape=TextureImporterShape.Texture2D;
+                imp.alphaSource=TextureImporterAlphaSource.FromInput;imp.alphaIsTransparency=false;
+                imp.filterMode=FilterMode.Bilinear;imp.wrapMode=TextureWrapMode.Clamp;
+                imp.npotScale=TextureImporterNPOTScale.None;imp.maxTextureSize=4096;
+                imp.textureCompression=TextureImporterCompression.Uncompressed;imp.mipmapEnabled=false;imp.isReadable=false;
+                imp.ClearPlatformTextureSettings("Standalone");imp.ClearPlatformTextureSettings("Android");imp.ClearPlatformTextureSettings("WebGL");
+                return;
+            }
+            // Floor grain uses RGB only and repeats; alpha must never dilate the source RGB.
+            if(assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/earth-ground-grain-r2.png") {
+                imp.textureType=TextureImporterType.Default;imp.sRGBTexture=true;
+                imp.alphaSource=TextureImporterAlphaSource.FromInput;imp.alphaIsTransparency=false;
+                imp.filterMode=FilterMode.Bilinear;imp.wrapMode=TextureWrapMode.Repeat;
+                imp.npotScale=TextureImporterNPOTScale.None;imp.maxTextureSize=4096;
+                imp.textureCompression=TextureImporterCompression.Uncompressed;imp.mipmapEnabled=false;imp.isReadable=false;
+                imp.ClearPlatformTextureSettings("Standalone");imp.ClearPlatformTextureSettings("Android");imp.ClearPlatformTextureSettings("WebGL");
+                return;
+            }
             var name = System.IO.Path.GetFileNameWithoutExtension(assetPath);
             // HD-2D 見本 (2026-09-30 P06): 箱庭の絵 (/Art/stage/) はミップつきのなめらかな読み (シェーダがドットの縁だけ1画素なじませる)・
             // 法線 (<名前>_n) は色でなくデータ (sRGB なし)・発光 (<名前>_e) は色 (sRGB)。今ある絵にはどれも当たらない (W1 は見た目を変えない)

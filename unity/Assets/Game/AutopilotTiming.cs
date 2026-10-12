@@ -167,6 +167,7 @@ namespace DeckRogue.Game {
    TempoRequire(TransitionIdle(g),"fixture began with active presentation");
    var initial=g.Rs;row["initialEngine"]=JToken.FromObject(initial.Combat);
    int from=initial.Combat.EventLog.Count,received=ResolvedCombatFx.Received,presented=ResolvedCombatFx.Presented,duplicates=ResolvedCombatFx.DuplicateSuppressed;
+   int noRecovery=ResolvedCombatFx.NoPositiveRecovery;
    int world=ResolvedCombatFx.WorldPresented,fallback=ResolvedCombatFx.FallbackPresented,startFrame=Time.frameCount,timeouts=g.PresentationTimeoutCount;
    var actions=new JArray();var samples=new JArray();row["actions"]=actions;row["frames"]=samples;
    CombatTimingProbe.Begin();g.PreferredTarget=0;
@@ -196,7 +197,7 @@ namespace DeckRogue.Game {
     TransitionRejectedInputs(g,errors,"immediate");
     actions.Add(new JObject{{"command",cardTerminal?"terminalCard":name=="reactionContinuation"?"ConfirmReaction":"EndTurn"},{"sameFrame",frame==Time.frameCount},{"returnMs",timer.Elapsed.TotalMilliseconds},{"gated",g.CombatPresentationPending}});
    }
-   var resolved=g.Rs.Combat.EventLog.Skip(from).Where(ResolvedCombatFx.IsResolved).ToList();var finalState=g.Rs.Combat;var finalRun=g.Rs;
+   var resolved=g.Rs.Combat.EventLog.Skip(from).Where(ExpectedResolvedReceipt).ToList();var finalState=g.Rs.Combat;var finalRun=g.Rs;
    bool terminal=g.Rs.Phase!=RunPhases.Combat,won=terminal&&g.Rs.Phase!=RunPhases.Lost;
    row["finalEngine"]=JToken.FromObject(finalState);row["finalPhase"]=g.Rs.Phase;row["expectedEvents"]=JArray.FromObject(resolved);row["expectedReceipts"]=resolved.Count;
    PresentationCheck(errors,name=="flee"?resolved.Count==0:resolved.Count>0,"fixture has an unexpected resolved receipt count");
@@ -291,7 +292,7 @@ namespace DeckRogue.Game {
    PresentationCheck(errors,ResolvedCombatFx.Received-received==resolved.Count,"resolved receipt capture count mismatch");
    PresentationCheck(errors,ResolvedCombatFx.Presented-presented+cancelledReceipts==resolved.Count,"presented + explicitly cancelled receipts do not equal resolved events");
    PresentationCheck(errors,ResolvedCombatFx.DuplicateSuppressed==duplicates,"duplicate receipt scheduling");
-   PresentationCheck(errors,ResolvedCombatFx.WorldPresented-world+ResolvedCombatFx.FallbackPresented-fallback==ResolvedCombatFx.Presented-presented,"receipt surface counts disagree");
+   PresentationCheck(errors,ResolvedCombatFx.WorldPresented-world+ResolvedCombatFx.FallbackPresented-fallback+ResolvedCombatFx.NoPositiveRecovery-noRecovery==ResolvedCombatFx.Presented-presented,"visible plus intentionally empty recovery receipt counts disagree");
    if(cancelled)PresentationCheck(errors,ResolvedCombatFx.Presented==presentedAtCancel,"cancelled receipt escaped after lifecycle reset");
    if(!leaving&&!terminal) {
     TransitionDisplay(g,finalState,errors,missing);
@@ -304,7 +305,7 @@ namespace DeckRogue.Game {
    if(!lifecycle)PresentationCheck(errors,ReferenceEquals(g.Rs,finalRun),"presentation completion mutated immutable engine state");
    if(leaving)PresentationCheck(errors,g.Rs==null&&g.Battle==null,"leaving combat was undone by a stale callback");
    row["watchdogTimeouts"]=g.PresentationTimeoutCount-timeouts;row["drainFrames"]=frames;row["gateFrames"]=gateFrames;row["sawUnlock"]=sawUnlock;row["slowFrames"]=slowFrames;row["holdSamples"]=holdFrames;row["rampSamples"]=rampFrames;row["minimumScale"]=minimumScale;
-   row["received"]=ResolvedCombatFx.Received-received;row["presented"]=ResolvedCombatFx.Presented-presented;row["cancelledByLifecycle"]=cancelledReceipts;row["finalTimeScale"]=Time.timeScale;
+   row["noPositiveRecovery"]=ResolvedCombatFx.NoPositiveRecovery-noRecovery;row["received"]=ResolvedCombatFx.Received-received;row["presented"]=ResolvedCombatFx.Presented-presented;row["cancelledByLifecycle"]=cancelledReceipts;row["finalTimeScale"]=Time.timeScale;
    row["terminalHpShownBeforeScreenChange"]=terminalHpSeen;row["finalGate"]=g.CombatPresentationPending;row["finalPendingTweens"]=Tween.PendingPresentationCount;row["finalPresentationIdle"]=Presenter.PresentationIdle;
    if(!lifecycle&&!terminal&&!ordinary) {
     // Deliberately distinct next-turn fixture cards prove that the hand changed only on unlock.

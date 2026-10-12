@@ -1,0 +1,44 @@
+{
+  "id": "fire",
+  "label_ja": "\u706b",
+  "roles_srgb": {
+    "shadow": "#612221",
+    "primary": "#D65A28",
+    "edge": "#F2A052",
+    "core": "#FFE8AE"
+  },
+  "scene_light_srgb": "#DFAA78",
+  "material_intent_ja": "\u71b1\u3044\u82af\u3068\u8d64\u3044\u5916\u708e",
+  "use_ja": "\u8d64\u6a59\u306e\u9762\u3001\u9ec4\u767d\u306f\u5c0f\u3055\u304f",
+  "linear_rgb": {
+    "shadow": [
+      0.11953843,
+      0.01599629,
+      0.01520851
+    ],
+    "primary": [
+      0.67244316,
+      0.10224173,
+      0.02121901
+    ],
+    "edge": [
+      0.88792312,
+      0.3515326,
+      0.08437621
+    ],
+    "core": [
+      1.0,
+      0.80695226,
+      0.42326767
+    ]
+  },
+  "relative_luminance": {
+    "shadow": 0.03795,
+    "primary": 0.21762,
+    "edge": 0.44628,
+    "core": 0.82029
+  },
+  "emission_gain": null,
+  "scene_light_intensity": null,
+  "runtime_exposure_approved": false
+}

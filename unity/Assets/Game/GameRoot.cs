@@ -291,7 +291,7 @@ namespace DeckRogue.Game
         System.Collections.IEnumerator CompleteCombatPresentation(int version,GameState snapshot,bool terminal) {
             var state=_presentationState;var board=_presentationBoard;bool outcomeShown=false;
             // Event count determines the deadline; long multi-enemy turns are never cut at six seconds.
-            float timeout=Mathf.Max(8f,Presenter.LastSequenceDuration*2f+5f),elapsed=0f;
+            float timeout=Mathf.Max(Presenter.PresentationWatchdogBudget,Presenter.LastSequenceDuration*2f+5f),elapsed=0f;
             try {
                 yield return null;
                 while(version==_presentationVersion && ReferenceEquals(Rs,state) && Battle==board && !Presenter.PresentationIdle) {
@@ -812,7 +812,11 @@ namespace DeckRogue.Game
                 if (Battle != null) { Battle.Destroy(); Battle = null; }
                 Tooltip.Hide();
                 CardPopup.Close();
-                if (FxLayer != null) for (int i = FxLayer.childCount - 1; i >= 0; i--) Destroy(FxLayer.GetChild(i).gameObject);
+                CodexBattleFx.Cancel();
+                if (FxLayer != null) for (int i = FxLayer.childCount - 1; i >= 0; i--) {
+                    var child=FxLayer.GetChild(i);child.gameObject.SetActive(false);
+                    if(!CodexBattleFx.Owns(child))Destroy(child.gameObject);
+                }
                 for (int i = ScreenRoot.childCount - 1; i >= 0; i--)
                 {
                     var c = ScreenRoot.GetChild(i);

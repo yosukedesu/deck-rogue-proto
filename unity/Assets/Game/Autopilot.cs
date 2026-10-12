@@ -96,7 +96,7 @@ namespace DeckRogue.Game
             get
             {
                 var shots = Arg("-shots");
-                if (string.IsNullOrEmpty(shots) && (Arg("-autopilot") == "presentation-review" || Arg("-autopilot") == "transition-review"))
+                if (string.IsNullOrEmpty(shots) && (Arg("-autopilot") == "presentation-review" || Arg("-autopilot") == "transition-review" || Arg("-autopilot") == "lightning-r9-review"))
                     shots = Path.Combine(Application.persistentDataPath, Arg("-autopilot"));
                 return !string.IsNullOrEmpty(Arg("-autopilot")) && !string.IsNullOrEmpty(shots)
                     ? Path.Combine(Path.GetFullPath(shots), "player-data") : Application.persistentDataPath;
@@ -114,7 +114,7 @@ namespace DeckRogue.Game
         static void DetBoot()
         {
             var st = Arg("-state") ?? "";
-            bool det = HasFlag("-det") || st.Split(';').Any(p => p.Trim().ToLowerInvariant() == "det=1");
+            bool det = Arg("-autopilot") == "lightning-r9-review" || HasFlag("-det") || st.Split(';').Any(p => p.Trim().ToLowerInvariant() == "det=1");
             if (!det) return;
             EnableDet();
         }
@@ -193,7 +193,7 @@ namespace DeckRogue.Game
             DontDestroyOnLoad(go);
             var a = go.AddComponent<Autopilot>();
             a._scenario = scenario;
-            a._dir = Arg("-shots") ?? Path.Combine(Application.persistentDataPath, scenario == "presentation-review" || scenario == "transition-review" ? scenario : "shots");
+            a._dir = Arg("-shots") ?? Path.Combine(Application.persistentDataPath, scenario == "presentation-review" || scenario == "transition-review" || scenario == "lightning-r9-review" ? scenario : "shots");
             a._seed = int.TryParse(Arg("-seed") ?? "", out var s) ? s : 4242;
         }
 
@@ -228,7 +228,7 @@ namespace DeckRogue.Game
         IEnumerator Shot(string name, int settle = 6)
         {
             // Review fixtures settle identically with or without optional screenshot output.
-            if (_scenario == "presentation-review" || _scenario == "transition-review")
+            if (_scenario == "presentation-review" || _scenario == "transition-review" || _scenario == "lightning-r9-review")
             {
                 for (int i = 0; i < settle + 3; i++) yield return null;
                 yield break; // Dedicated paired frame captures are owned by PresentationReview.
@@ -271,6 +271,10 @@ namespace DeckRogue.Game
                     case "run": yield return RunTour(g); break;
                     case "workshop": yield return WorkshopOnly(g); break;   // 工房だけ (⭐レシピの提示の確認。2026-09-12)
                     case "strike-review": yield return StrikeReview(g); break;
+                    case "lightning-r9-review":
+                        yield return LightningR9Review(g);
+                        if (_lightningR9ReviewFailed) { Application.Quit(1); yield break; }
+                        break;
                     case "tempo": yield return TempoCheck(g); break;
                     case "vfx-coverage": yield return VfxCoverage(g); break;
                     case "presentation-review":

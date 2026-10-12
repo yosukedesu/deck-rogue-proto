@@ -238,6 +238,10 @@ namespace DeckRogue.Game
 
         /// <summary>箱庭の地面の高さ (世界の x・z)。座席の帯は 0。設計図の段 (slab) のうち、その点を含むいちばん高い天面。
         /// どの段にも入らなければいちばん低い段の天面。設計図を読んでいなければ 0</summary>
+        internal static bool TryCaptureSurface(Vector3 feet,float height,float size,StrictGround.Family family,out GroundSurfaceProvider.Lease lease,out string reason) {
+            lease=null;reason="ground_actual_mesh_provider_unavailable";return _fullGround?.CaptureProvider!=null && _fullGround.CaptureProvider.TryCapture(feet,height,size,family,out lease,out reason);
+        }
+
         public static float GroundY(float x, float z)
         {
             if (_fullGround != null) { var h = _fullGround.Height(x,z); return float.IsNaN(h) ? 0f : h; }
@@ -1816,7 +1820,7 @@ namespace DeckRogue.Game
         /// <summary>箱庭を捨てる (old に戻る時)。作ったメッシュ・テクスチャ・材質も捨てる</summary>
         public static void Clear()
         {
-            _fullGround=null; _fullStage=false; _fullBatches=0;
+            _fullGround?.InvalidateCapture(); _fullGround=null; _fullStage=false; _fullBatches=0;
             if (Root != null) Kill(Root.gameObject);
             foreach (var o in _owned) if (o != null) Kill(o);
             _owned.Clear();

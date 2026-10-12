@@ -30,47 +30,63 @@ namespace DeckRogue.Game
 
         // A presentation owns all descendant Run/After work, including callbacks that start
         // dissolve, projectile landing or particle residue later. UI idle tweens are not included.
-        sealed class PresentationScope { public int Pending; public bool Cancelled; }
         sealed class PresentationLease : IDisposable {
-            readonly PresentationScope previous, current;
-            public PresentationLease(PresentationScope scope) { previous=_presentationScope;current=scope;_presentationScope=scope; }
-            public void Dispose() { _presentationScope=previous;if(current.Pending==0)_presentations.Remove(current); }
+            readonly PresentationWorkScope previous, current; bool disposed;
+            public PresentationLease(PresentationWorkScope scope) { previous=_presentationScope;current=scope;current.Retain();_presentationScope=scope; }
+            public void Dispose() { if(disposed)return;disposed=true;_presentationScope=previous;current.Release(); }
         }
-        static PresentationScope _presentationScope;
-        static readonly HashSet<PresentationScope> _presentations=new HashSet<PresentationScope>();
+        static PresentationWorkScope _presentationScope;
+        static readonly HashSet<PresentationWorkScope> _presentations=new HashSet<PresentationWorkScope>();
         public static int PendingPresentationCount { get { int n=0;foreach(var scope in _presentations)n+=scope.Pending;return n; } }
-        public static IDisposable BeginPresentation() {
-            var scope=_presentationScope ?? new PresentationScope();_presentations.Add(scope);return new PresentationLease(scope);
+        public static bool SchedulingAllowed=>_presentationScope==null || (!_presentationScope.Cancelled && !_presentationScope.Completed);
+        public static bool PresentationActive=>_presentationScope!=null && !_presentationScope.Cancelled && !_presentationScope.Completed;
+        static PresentationWorkScope NewPresentation(Action completed) {
+            PresentationWorkScope scope=null;
+            scope=new PresentationWorkScope(()=>{_presentations.Remove(scope);completed?.Invoke();});
+            return scope;
         }
-        static PresentationScope ReservePresentation() {
-            var scope=_presentationScope;if(scope!=null){scope.Pending++;_presentations.Add(scope);}return scope;
+        public static IDisposable BeginPresentation(Action completed=null) {
+            var scope=completed!=null || !PresentationActive?NewPresentation(completed):_presentationScope;
+            _presentations.Add(scope);return new PresentationLease(scope);
         }
-        static void ReleasePresentation(PresentationScope scope) {
-            if(scope!=null && --scope.Pending<=0)_presentations.Remove(scope);
+        static PresentationWorkScope ReservePresentation() {
+            var scope=_presentationScope;if(scope!=null && scope.Retain())_presentations.Add(scope);return scope;
         }
-        static void InPresentation(PresentationScope scope,Action action) {
-            if(scope!=null && scope.Cancelled)return;
+        static void ReleasePresentation(PresentationWorkScope scope) { scope?.Release(); }
+        // Tick-driven pooled lights may outlive their launching callback. Track
+        // their actual ownership instead of guessing a duration or pausing flow.
+        public static void TrackPresentation(Func<bool> alive,Action cancel=null) {
+            if(PresentationActive && alive!=null)RunPresentation(TrackPresentationCo(alive,cancel));
+        }
+        static IEnumerator TrackPresentationCo(Func<bool> alive,Action cancel) {
+            try {while(alive())yield return null;}
+            finally {if(alive())cancel?.Invoke();}
+        }
+        static void InPresentation(PresentationWorkScope scope,Action action) {
+            if(scope!=null && (scope.Cancelled || scope.Completed))return;
             var previous=_presentationScope;_presentationScope=scope;
             try { action?.Invoke(); } finally { _presentationScope=previous; }
         }
-        static void InPresentation(PresentationScope scope,Action<float> action,float value) {
-            if(scope!=null && scope.Cancelled)return;
+        static void InPresentation(PresentationWorkScope scope,Action<float> action,float value) {
+            if(scope!=null && (scope.Cancelled || scope.Completed))return;
             var previous=_presentationScope;_presentationScope=scope;
             try { action(value); } finally { _presentationScope=previous; }
         }
         public static Coroutine RunPresentation(IEnumerator routine) => I.StartCoroutine(PresentationCo(routine,ReservePresentation()));
-        static IEnumerator PresentationCo(IEnumerator routine,PresentationScope scope) {
+        static IEnumerator PresentationCo(IEnumerator routine,PresentationWorkScope scope) {
             try {
-                while(scope==null || !scope.Cancelled) {
+                while(scope==null || (!scope.Cancelled && !scope.Completed)) {
                     bool more;var previous=_presentationScope;_presentationScope=scope;
                     try { more=routine.MoveNext(); } finally { _presentationScope=previous; }
                     if(!more)yield break;yield return routine.Current;
                 }
-            } finally { (routine as IDisposable)?.Dispose();ReleasePresentation(scope); }
+            } finally { try{(routine as IDisposable)?.Dispose();}finally{ReleasePresentation(scope);} }
         }
         public static void CancelPresentations() {
-            foreach(var scope in _presentations)scope.Cancelled=true;
-            _presentations.Clear();CancelFinishSlow();
+            foreach(var scope in _presentations)scope.Cancel();
+            _presentations.Clear();
+            ScenarioPresentationDriver.CancelAll();
+            CodexBattleFx.Cancel();WorldBattleFx.Cancel();CancelFinishSlow();
         }
 
         // One owned terminal slow-motion envelope. Never stacks with the old finishing hitstop.
@@ -117,23 +133,24 @@ namespace DeckRogue.Game
 
         /// <summary>dur 秒かけて 0→1 を onUpdate に渡す。時計は Time.deltaTime の積算 (決着の slow 中は演出の進み方も遅くする。
         /// Autopilot の Time.captureFramerate によるコマ送り撮影でも 1フレーム=1/60秒で決定的に進む。2026-09-16)</summary>
-        public static Coroutine Run(float dur, Action<float> onUpdate, Ease ease = Ease.OutQuad, Action onDone = null, Action onCancel = null)
+        public static Coroutine Run(float dur, Action<float> onUpdate, Ease ease = Ease.OutQuad, Action onDone = null, Action onCancel = null, Func<bool> alive = null)
         {
-            return I.StartCoroutine(RunCo(dur, onUpdate, ease, onDone, onCancel, ReservePresentation()));
+            return I.StartCoroutine(RunCo(dur, onUpdate, ease, onDone, onCancel, ReservePresentation(), alive));
         }
 
-        static IEnumerator RunCo(float dur, Action<float> onUpdate, Ease ease, Action onDone, Action onCancel, PresentationScope scope)
+        static IEnumerator RunCo(float dur, Action<float> onUpdate, Ease ease, Action onDone, Action onCancel, PresentationWorkScope scope, Func<bool> alive)
         {
             bool completed=false;
             try {
                 float t=0f;
                 while(dur>0f && t<dur) {
-                    if(scope!=null && scope.Cancelled)yield break;
+                    if((alive!=null && !alive()) || (scope!=null && (scope.Cancelled || scope.Completed)))yield break;
                     float k=Apply(ease,t/dur);InPresentation(scope,onUpdate,k);
                     yield return null;t+=Time.deltaTime;
                 }
-                InPresentation(scope,()=>{onUpdate(1f);completed=true;onDone?.Invoke();});
-            } finally { if(!completed)onCancel?.Invoke();ReleasePresentation(scope); }
+                if(alive!=null && !alive())yield break;
+                InPresentation(scope,()=>{onUpdate(1f);if(scope!=null && scope.Cancelled)return;completed=true;onDone?.Invoke();});
+            } finally { try{if(!completed)onCancel?.Invoke();}finally{ReleasePresentation(scope);} }
         }
 
         public static Coroutine Move(RectTransform rt, Vector2 to, float dur, Ease ease = Ease.OutCubic, Action onDone = null)
@@ -253,11 +270,11 @@ namespace DeckRogue.Game
             I.StartCoroutine(AfterCo(delay, action, ReservePresentation()));
         }
 
-        static IEnumerator AfterCo(float delay, Action action, PresentationScope scope)
+        static IEnumerator AfterCo(float delay, Action action, PresentationWorkScope scope)
         {
             try {
                 float t=0f;
-                while(t<delay) {if(scope!=null && scope.Cancelled)yield break;yield return null;t+=Time.deltaTime;}
+                while(t<delay) {if(scope!=null && (scope.Cancelled || scope.Completed))yield break;yield return null;t+=Time.deltaTime;}
                 InPresentation(scope,action);
             } finally { ReleasePresentation(scope); }
         }
@@ -274,7 +291,9 @@ namespace DeckRogue.Game
         /// <summary>実時間の1フレームの長さ (ヒットストップ・ターン終了の脈・危険域の脈が使う)。決定的な撮影 (-det) では 1/60 秒に固定する
         /// (Time.captureFramerate は deltaTime を固定するが unscaledDeltaTime は実時間のまま = 撮るたびに脈の位相とヒットストップの長さが変わった。
         /// 2026-09-30 HD-2D 見本 P00)。det でなければ Time.unscaledDeltaTime そのまま</summary>
-        public static float UnscaledDt => Autopilot.Det ? 1f / 60f : Time.unscaledDeltaTime;
+        // Only the opt-in R9 visual diagnostic uses a higher fixed-step clock.
+        // All existing runs retain the original 60 Hz det / realtime behavior.
+        public static float UnscaledDt => Autopilot.LightningR9ReviewFixedStep ? 1f / 120f : Autopilot.Det ? 1f / 60f : Time.unscaledDeltaTime;
 
         static int _hitStops;
         static IEnumerator HitStopCo(float scale, float sec)

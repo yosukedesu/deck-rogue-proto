@@ -1,0 +1,23 @@
+{
+  "schema": "deckrogue.wide-profile-palette/2",
+  "profiles": {
+    "wide_water": {
+      "roles_srgb": {
+        "shadow": "#132D46",
+        "primary": "#285D7C",
+        "edge": "#719BAE",
+        "core": "#D3E0E6"
+      },
+      "scene_light_srgb": "#89A5B4"
+    },
+    "wide_fire": {
+      "roles_srgb": {
+        "shadow": "#612221",
+        "primary": "#D65A28",
+        "edge": "#F2A052",
+        "core": "#FFE8AE"
+      },
+      "scene_light_srgb": "#DFAA78"
+    }
+  }
+}

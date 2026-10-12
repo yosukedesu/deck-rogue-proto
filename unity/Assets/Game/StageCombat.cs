@@ -66,7 +66,7 @@ namespace DeckRogue.Game
             if(profile==null || !CombatWorld || !_bound.TryGetValue(key,out var u) || u==null)return;
             if(!TryGetUnitBox(key,out var a,out var ah) || !TryGetUnitBox(target,out var b,out var bh))return;
             int version=++u.MotionVersion;var start=u.CombatOffset;
-            // A new input owns the actor immediately. An older ticket cannot freeze its windup.
+            // The queued action acquired the actor after prior contacts and their local pause. An older ticket cannot freeze its windup.
             u.ImpactPause.Clear();
             var delta=b-a;delta.y=0;float distance=delta.magnitude;
             var dir=distance>.01f?delta/distance:LayoutRotation*Vector3.right;
@@ -97,6 +97,42 @@ namespace DeckRogue.Game
         public static ImpactCapture CaptureImpact(string target) {
             _bound.TryGetValue("player",out var actor);_bound.TryGetValue(target,out var victim);
             return new ImpactCapture {Actor=actor,Target=victim,MotionVersion=actor!=null?actor.MotionVersion:-1};
+        }
+        // The board/ledger proves identity before requesting reuse. Do not revive a
+        // dissolved/inactive actor or preserve a unit across an artwork replacement.
+        static bool TryRebindPresentationUnit(string key,RectTransform rect,UnityEngine.UI.Image img,Sprite sprite,float depth) {
+            if(!_bound.TryGetValue(key,out var retained) || retained==null || retained.ArtName!=sprite.name
+                || retained.BaseTex!=sprite.texture || retained.DissolveK>0f || !retained.gameObject.activeSelf)return false;
+            retained.Rect=rect;retained.Img=img;retained.Depth=depth;
+            retained.RefreshBinding();return true; // Transform refresh cannot advance pose/flash clocks.
+        }
+        static readonly System.Collections.Generic.Dictionary<(Texture2D,int,int,int,int),float> _visibleBaseFractions=new System.Collections.Generic.Dictionary<(Texture2D,int,int,int,int),float>();
+        internal static bool TryCapturedVisibleHeight(ImpactCapture capture,out float height,out string reason) {
+            height=0f;reason="captured_base_geometry_unavailable";
+            var u=capture?.Target as StageUnit;
+            if(u==null || u.BaseTex==null || !u.HasBox)return false;
+            float baseHeight=u.BaseCanvasHeightWorld;
+            if(baseHeight<=0f)return false;
+            var tex=u.BaseTex;int x0=Mathf.RoundToInt(u.BaseUvOffset.x*tex.width),y0=Mathf.RoundToInt(u.BaseUvOffset.y*tex.height);
+            int w=Mathf.RoundToInt(u.BaseUvScale.x*tex.width),h=Mathf.RoundToInt(u.BaseUvScale.y*tex.height);
+            if(w<=0 || h<=0 || x0<0 || y0<0 || x0+w>tex.width || y0+h>tex.height)return false;
+            var key=(tex,x0,y0,w,h);
+            if(!_visibleBaseFractions.TryGetValue(key,out var fraction)) {
+                try {
+                    var pixels=tex.GetPixels32();int lo=h,hi=-1;
+                    for(int y=0;y<h;y++)for(int x=0;x<w;x++)if(pixels[(y0+y)*tex.width+x0+x].a>40){lo=Math.Min(lo,y);hi=Math.Max(hi,y);}
+                    fraction=hi>=lo?(hi-lo+1f)/h:0f;_visibleBaseFractions[key]=fraction;
+                } catch(Exception){reason="captured_base_alpha_unreadable";return false;}
+            }
+            height=baseHeight*fraction;
+            if(height<=0f || float.IsNaN(height) || float.IsInfinity(height)){height=0f;reason="captured_base_alpha_empty";return false;}
+            reason=null;return true;
+        }
+        public static bool ImpactTargetCurrent(string key,ImpactCapture capture) => capture!=null && _bound.TryGetValue(key,out var target) && target!=null && target.Rect!=null && target==capture.Target;
+        public static void BindImpactActor(ImpactCapture capture) {
+            if(capture==null)return;
+            _bound.TryGetValue("player",out var actor);
+            capture.Actor=actor;capture.MotionVersion=actor!=null?actor.MotionVersion:-1;
         }
         public static float ImpactPauseRemaining(string key) => _bound.TryGetValue(key,out var u)&&u!=null ? u.ImpactPause.Remaining(Time.time) : 0f;
         public static int ActiveImpactPauseCount {get {int n=0;foreach(var u in _bound.Values)if(u!=null&&u.Rect!=null&&u.ImpactPause.IsPaused(Time.time))n++;return n;}}
