@@ -468,6 +468,7 @@ export interface CardDraft {
   readonly exhaustCost?: number
   readonly discardCost?: number
   readonly necroCost?: number
+  readonly impulseCost?: number // くべる (赤 2026-10-12 段2)
   readonly effects: readonly EffectDraft[]
 }
 
@@ -498,7 +499,7 @@ export function cardDraftToDefJson(d: CardDraft): Record<string, unknown> {
   }
   if (d.xCost === true) j.xCost = true
   if (d.exhaust === true) j.exhaust = true
-  for (const k of ['exhaustCost', 'discardCost', 'necroCost'] as const) {
+  for (const k of ['exhaustCost', 'discardCost', 'necroCost', 'impulseCost'] as const) {
     const v = d[k]
     if (typeof v === 'number' && v > 0) j[k] = v
   }

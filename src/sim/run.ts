@@ -236,6 +236,9 @@ function isWorthPlaying(state: GameState, card: CardInstance): boolean {
   }
   const exhaustCostN = card.def.exhaustCost ?? 0
   if (exhaustCostN > 0 && state.player.hand.length - 1 < exhaustCostN) return false
+  // くべる (赤 2026-10-12 段2): 手札に衝動の札 (自分以外) が足りなければ撃てない
+  const impulseCostN = card.def.impulseCost ?? 0
+  if (impulseCostN > 0 && card.def.kindleOptional !== true && state.player.hand.filter((c) => c.uid !== card.uid && state.player.impulseUids.includes(c.uid)).length < impulseCostN) return false
   // ブロック変換はブロック4以上、集結・隊列は置物1体以上でないと空撃ち
   if (card.def.effects.some((e) => e.effect === 'dealDamagePerBlock')) {
     // 自前で積むブロックも算入する。壁を売り払う札 (spendBlock) はより厚い壁を要求する
@@ -301,13 +304,25 @@ function buildPlayCommand(state: GameState, card: CardInstance): Command {
           .map((c) => c.uid)
       : undefined
   const exhaustCostN = card.def.exhaustCost ?? 0
+  const impulseCostN = card.def.impulseCost ?? 0
   const exhaustUids =
     exhaustCostN > 0
       ? state.player.hand
           .filter((c) => c.uid !== card.uid)
           .slice(-exhaustCostN)
           .map((c) => c.uid)
-      : undefined
+      : impulseCostN > 0
+        ? // くべる (赤 2026-10-12 段2): 衝動の札のうち、今のエナジーで撃てない札から先にくべる (撃てる札は残す)。
+          // くべてもよい札 (段2b) は「撃てない衝動の札」がある時だけくべる (無ければ素で撃つ = exhaustUids を省略)
+          (() => {
+            const pool = state.player.hand
+              .filter((c) => c.uid !== card.uid && state.player.impulseUids.includes(c.uid))
+              .sort((a, b) => Number(b.def.cost > state.player.energy) - Number(a.def.cost > state.player.energy) || b.def.cost - a.def.cost)
+            if (card.def.kindleOptional === true && !pool.some((c) => c.def.cost > state.player.energy - (card.def.cost))) return undefined
+            const picked = pool.slice(0, impulseCostN).map((c) => c.uid)
+            return picked.length >= impulseCostN ? picked : undefined
+          })()
+        : undefined
   // コスト再利用 (黒): 屍集めは最高コスト、死者再生は制約を満たす最高コストを選ぶ
   let retrieveUid: string | undefined
   if (card.def.effects.some((e) => e.effect === 'retrieveFromExhaust')) {

@@ -20,6 +20,10 @@ namespace DeckRogue.Game
 
         public int DiscardNeed;
         public int ExhaustNeed;
+        /// <summary>くべる (赤 2026-10-12 段2): ExhaustNeed の候補を衝動の札だけに絞る (impulseCost)</summary>
+        public bool ExhaustImpulseOnly;
+        /// <summary>くべてもよい札 (段2b): 選択の窓に「くべずに出す」を出す</summary>
+        public bool KindleOptional;
         public int DeckNeed;
         public int HandNeed;
         public bool NeedRetrieve;
@@ -140,6 +144,8 @@ namespace DeckRogue.Game
         public bool HearthChoice;
         /// <summary>満ち潮の書庫 (青 2026-09-25): ターン終了の前に残す手札を選ぶ窓。選んだ uid</summary>
         public List<string> RetainChoice;
+        /// <summary>燠の守りの窓 (赤 2026-10-12 段2b): ターン終了時に残す衝動の札。null=窓を出していない・""=自動 (コストが最も高い札)・uid=選んだ札</summary>
+        public string KeepChoice;
         /// <summary>占術 (青 2026-09-25): 捨てると選んだ札の uid (窓は combat.PendingScry が立っている間ずっと出る)</summary>
         public List<string> ScryDiscard = new List<string>();
         /// <summary>戦闘の残留UI (敵・リーダーの入れ物と手札のカードを持ち越す)。戦闘を離れたら破棄</summary>
@@ -299,6 +305,7 @@ namespace DeckRogue.Game
             GearMore = false;
             HearthChoice = false;
             RetainChoice = null;   // 満ち潮の書庫の窓 (2026-09-25)
+            KeepChoice = null;     // 燠の守りの窓 (2026-10-12 段2b)
             // 自動保存 (2026-09-15 本家形): 成功した手のたびに save/run.json を書く (別スレッド)。走破/敗北で終わったランは消す
             if (Rs != null && !ReferenceEquals(Rs, prevRs))
             {
@@ -564,6 +571,13 @@ namespace DeckRogue.Game
             p.ModeIndex = modeIndex;
             p.DiscardNeed = card.Def.DiscardCost.HasValue ? card.Def.DiscardCost.Value : 0;
             p.ExhaustNeed = card.Def.ExhaustCost.HasValue ? card.Def.ExhaustCost.Value : 0;
+            // くべる (赤 2026-10-12 段2): 消滅コストと同じ欄 (ExhaustUids) で、候補は衝動の札だけ
+            if ((card.Def.ImpulseCost ?? 0) > 0)
+            {
+                // くべてもよい札 (段2b): 手札に衝動の札が無ければ選ばせずに素で出す。あれば選択の窓 (「くべずに出す」の札つき)
+                bool any = BattleView.ImpulseInHand(st, card.Uid) >= card.Def.ImpulseCost.Value;
+                if (card.Def.KindleOptional != true || any) { p.ExhaustNeed += card.Def.ImpulseCost.Value; p.ExhaustImpulseOnly = true; p.KindleOptional = card.Def.KindleOptional == true; }
+            }
 
             for (int i = 0; i < card.Def.Effects.Count; i++)
             {

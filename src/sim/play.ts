@@ -51,7 +51,7 @@ function cname(cardId: string): string {
 import { deckChoosePool, retainHandMax } from '../engine/combat.ts'
 import { ANTHEM_EFFECTS, DOLL_GROWTH_EFFECTS, cardNeedsTarget, damageBreakdown, displayedInflict, dollEffectAmount, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, hearthSparkMax, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, playerCanSet, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, trapStatusText, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { applyRunCommand, campfireOptions, canTransformCard, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, manaOf, nextChoices, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, workshopFuseResult, campfireForgeAllowed } from '../engine/run.ts'
-import { battleSummary, burnoutEnemies, cardCostLabel, displayedIntentValue, incomingTotal, intentModifierNotes, permanentTargetNote, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, burnoutEnemies, cardCostLabel, displayedIntentValue, expiryBlockPreview, incomingTotal, intentModifierNotes, lightMatters, permanentTargetNote, relicRarityTag, setBranchNote, summaryLine, xHitsSuffix } from '../engine/summary.ts'
 import { enemyTraitTags, interruptBlockedNote } from '../engine/traits.ts'
 import { applyCommand, createInitialState } from '../engine/state.ts'
 import type { GearDef, CardDef, Command, DeclarativeEffect, EnemyIntent, EnemyIntentBranch, GameState } from '../engine/types.ts'
@@ -85,7 +85,7 @@ interface SaveFile {
 function fx(e: DeclarativeEffect, holderType?: string): string {
   const a = e.amount ?? 0
   // 置物のターン開始などの単体効果は「先頭の敵に」(2026-10-10 Opus 赤 C: 燎火の使いの毎T延焼の相手が札に無かった)
-  const all = e.target === 'all' ? '敵全体に' : e.target === 'mostHp' ? 'HPがいちばん多い敵に' : permanentTargetNote(e, holderType)
+  const all = e.target === 'all' ? '敵全体に' : e.target === 'mostHp' ? 'HPがいちばん多い敵に' : e.target === 'mostBurn' ? '延焼がいちばん多い敵に' : permanentTargetNote(e, holderType)
   // amountMax < amount は弱まる/止まる側の安全弁 (冒涜の祭壇=刻5でミル停止)。「強化」と書かない
   const th = e.exhaustThreshold !== undefined
     ? `〔忘却の刻${e.exhaustThreshold}: ${(e.amountMax ?? 0) < (e.amount ?? 0) ? (e.amountMax === 0 ? '以降は停止' : `${e.amountMax}に減少`) : `${e.amountMax}に増える`}〕`
@@ -115,7 +115,8 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     recycleExhaust: `消滅置き場を全て山札に還して混ぜ、還した枚数×${a}ダメ(刻・消滅数参照は0に戻る)`, dealDamagePerSelfHpLost: `失ったHP×${a}ダメ`, dealDamagePerHeal: `この戦闘で回復した回数×${a}ダメ(過剰回復も数える)`, dealDamagePerDamageTaken: `直前敵フェーズ被ダメ×${a}ダメ`,
     applyBurnPerDamageTaken: `直前敵フェーズ被ダメ×${a}延焼`, dealDamagePerRandomPlayed: `${all}この戦闘の運任せ札×${a}ダメ`,
     dealDamagePerCascade: `${all}この戦闘でチェインが当たった回数×${a}ダメ`, doubleBurn: '対象の延焼を2倍', gainBlockPerBurn: `対象の延焼×${a}ブロック(延焼は失わない)`, dealDamagePerBurn: `対象の延焼×${a}ダメ(延焼は失わない)`,
-    firstCardCascade: 'この置物がある間、毎ターン最初にプレイする札にチェインがつく', burnNoDecay: 'この置物がある間、延焼は敵フェーズで減らない', keepImpulseOne: 'この置物がある間、ターン終了時に失効する衝動の札のうちコストが最も高い1枚を手札に残す(次のターンまで)',
+    firstCardCascade: 'この置物がある間、毎ターン最初にプレイする札にチェインがつく', burnNoDecay: 'この置物がある間、延焼は敵フェーズで減らない(延焼を消費して刈る札とは噛み合わない)', keepImpulseOne: 'この置物がある間、ターン終了時に失効する衝動の札のうちコストが最も高い1枚を手札に残す(次のターンまで)',
+    cascadeSameCost: 'この置物がある間、チェインは「同じコストの札だけ」に当たる(安い札は飛ばす)', // 火は火を呼ぶ (赤 2026-10-12 段2b)
     dealDamagePerIceBlock: `氷壁×${a}ダメ(氷壁は消費しない・急所は乗らない)`, negateConvertIce: '打ち消し+実値ぶん氷壁',
     dischargeAetherDraw: `霊気×${a}ドロー(全消費)`, dealDamageCleave: `${a}ダメ(倒せば別の敵にも同値)`,
     dealDamagePerHandCard: `${all}手札の枚数×${a}ダメ(自身は数えない)`, gainIceBlockPerHandCard: `手札の枚数×${a}氷壁`, gainBlockPerHandCard: `手札の枚数×${a}ブロック`,
@@ -132,12 +133,12 @@ function fx(e: DeclarativeEffect, holderType?: string): string {
     onEnemyBuffed: '敵の筋力上げ時:', onEnemyDefended: '敵防御時:', onEnemyActed: '敵の行動後:', onTurnStart: '毎T開始:', onCombatStart: '開幕:',
     onAttackPlayed: '攻撃プレイごと:', onGrowthGained: '成長獲得ごと:', onMomentumGained: '勢い獲得ごと:', onSpellPlayed: '呪文プレイごと:', onSetDestroyed: '伏せ破壊時/期限切れ時:', onCardPlayed: 'カードプレイごと:', onBlockGained: 'ブロック獲得ごと:', onActionNegated: '打ち消し成功時:',
     onHealed: '回復ごと(満タンでも誘発):', onHpLost: 'HP損失ごと:', onCardExhausted: '消滅ごと:', onCostExhausted: '消滅コストごと:',
-    onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onSparkPlayed: '火種を撃つたび:', onCascade: 'チェインで札がプレイされるたび:', onImpulseExpired: '衝動の札が失効するたび:', onLightDischarged: '灯を放出するたび:', onAetherGained: '霊気獲得ごと:', onLightGained: '灯を得るたび:',
+    onPermanentEntered: '置物登場ごと:', onImpulsePlayed: '衝動プレイごと:', onRandomPlayed: '運任せプレイごと:', onSparkPlayed: '火種を撃つたび:', onCascade: 'チェインで札がプレイされるたび:', onImpulseExpired: '衝動の札が失効するたび:', onBlazeIgnite: '猛り火に点いた時:', onLightDischarged: '灯を放出するたび:', onAetherGained: '霊気獲得ごと:', onLightGained: '灯を得るたび:',
     onCardSet: '伏せるごと:', onReactionFired: 'リアクション発動ごと:', onScry: '占術するたび:', onScryDiscard: '占術で札を捨てるたび(1枚ごと):', onSetExpired: '伏せ札の期限切れごと:', onSelfExhausted: '亡骸(プレイ以外で消滅した時):',
     onTurnEnd: 'ターン終了時:', onShuffle: '切り直しごと:', onEnemyDied: '敵撃破ごと:', onDamageTaken: '攻撃でHP損失後:',
   }
   const cond = e.condition
-    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターン、先にカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.minEnergyMax !== undefined ? `ターン開始時の上限${e.condition.minEnergyMax}以上なら` : ''}${e.condition.actionKinds !== undefined ? `敵の行動が${e.condition.actionKinds.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}の時` : ''}${e.condition.actionKindsNot !== undefined ? `敵の行動が${e.condition.actionKindsNot.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}以外の時` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.minLight !== undefined ? `灯${e.condition.minLight}以上なら` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}${e.condition.perfectBlockThisPhase === true ? 'この敵フェーズを完全に凌いだら' : ''}${e.condition.targetAlive === true ? '倒せなければ' : ''}${e.condition.turn !== undefined ? `${e.condition.turn}ターン目` : ''}${e.condition.blockZero === true ? 'ブロック0なら' : ''}${e.condition.noAttackThisTurn === true ? '攻撃札なしなら' : ''}${e.condition.maxPlaysThisTurn !== undefined ? `プレイ${e.condition.maxPlaysThisTurn}枚以下なら` : ''}]`
+    ? `[${e.condition.hpAtOrBelowRatio !== undefined ? `HP${Math.round(e.condition.hpAtOrBelowRatio * 100)}%以下` : ''}${e.condition.healedThisTurn === true ? 'このターン、先にカードで回復していたら' : ''}${e.condition.minDamageTaken !== undefined ? `被ダメ${e.condition.minDamageTaken}以上` : ''}${e.condition.minEnergyMax !== undefined ? `ターン開始時の上限${e.condition.minEnergyMax}以上なら` : ''}${e.condition.actionKinds !== undefined ? `敵の行動が${e.condition.actionKinds.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}の時` : ''}${e.condition.actionKindsNot !== undefined ? `敵の行動が${e.condition.actionKindsNot.map((k) => ({ buff: '強化', rally: '応援', attack: '攻撃', defend: '防御', heal: '回復' })[k as string] ?? k).join('/')}以外の時` : ''}${e.condition.maxActionValue !== undefined ? `行動値${e.condition.maxActionValue}以下` : ''}${e.condition.minActionValue !== undefined ? `行動値${e.condition.minActionValue}以上` : ''}${e.condition.blaze === true ? '猛り火=延焼計8以上' : ''}${e.condition.kindled === true ? 'くべたら' : ''}${e.condition.minGrowth !== undefined ? `成長${e.condition.minGrowth}以上` : ''}${e.condition.minMomentum !== undefined ? `勢い${e.condition.minMomentum}以上` : ''}${e.condition.minLight !== undefined ? `灯${e.condition.minLight}以上なら` : ''}${e.condition.enemyIntent !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntent] ?? e.condition.enemyIntent}なら` : ''}${e.condition.enemyIntentNot !== undefined ? `対象の意図が${INTENT_KIND_JA[e.condition.enemyIntentNot] ?? e.condition.enemyIntentNot}以外なら` : ''}${e.condition.enemyExposed === true ? '対象が急所持ちなら' : ''}${e.condition.perfectBlockLastPhase === true ? '直前の敵フェーズを完全に凌いでいたら' : ''}${e.condition.targetDead === true ? 'とどめなら' : ''}${e.condition.lastActionNoHpLoss === true ? '完全に凌いだ時' : ''}${e.condition.perfectBlockThisPhase === true ? 'この敵フェーズを完全に凌いだら' : ''}${e.condition.targetAlive === true ? '倒せなければ' : ''}${e.condition.turn !== undefined ? `${e.condition.turn}ターン目` : ''}${e.condition.blockZero === true ? 'ブロック0なら' : ''}${e.condition.noAttackThisTurn === true ? '攻撃札なしなら' : ''}${e.condition.maxPlaysThisTurn !== undefined ? `プレイ${e.condition.maxPlaysThisTurn}枚以下なら` : ''}]`
     : ''
   const every = e.every !== undefined && e.once !== undefined ? `(${e.once === 'turn' ? '1ターンに' : '戦闘で'}${e.every}回目の時だけ)` : e.every !== undefined ? `(${e.everyScope === 'turn' ? '1ターンに' : ''}${e.every}回ごとに1回)` : e.once !== undefined ? '(初回だけ)' : ''
   return `${trig[e.trigger] ?? e.trigger}${cond}${every}${base[e.effect] ?? `${e.effect}${a || ''}`}${th}`
@@ -154,6 +155,7 @@ function cardLine(def: CardDef): string {
     def.freeIfMomentumAtLeast !== undefined ? `勢い${def.freeIfMomentumAtLeast}以上なら0E` : '',
     def.discardCost ? `捨てコスト${def.discardCost}` : '',
     def.exhaustCost ? `消滅コスト${def.exhaustCost}` : '',
+    def.impulseCost ? (def.kindleOptional === true ? `くべてもよい${def.impulseCost}(exhaustUidsで衝動の札を${def.impulseCost}枚くべる=消滅させると「くべた時」の効果が乗る。指定しなければ素の効果だけ)` : `くべる${def.impulseCost}(追加コスト: 手札の衝動の札を${def.impulseCost}枚消滅させる。衝動の札が無ければプレイ不可)`) : '',
     def.lightCost ? `灯コスト${def.lightCost}(エナジーと別に払う。足りなければプレイ不可)` : '',
     def.necroCost !== undefined ? `💀亡骸プレイ${def.necroCost}E(消滅置き場から一度だけ)` : '',
     def.retainer ? `人形。出した瞬間に1回動く。${def.lifePersist === true ? '期限なし' : `期限${def.life ?? 3}ターン(出したターンを含む)`}${def.effects.some((e) => e.amount !== undefined && DOLL_GROWTH_EFFECTS.has(e.effect)) ? '。1ターンごとにダメージとブロック+1' : ''}` : '',
@@ -262,10 +264,9 @@ function intentLine(s: GameState, i: number): string {
   return branchText(s, i, it)
 }
 
-function renderBattle(s: GameState, logFrom: number): string {
-  const p = s.player
+/** 直近の出来事の行。勝利が決まった手の分も出すために renderBattle から切り出した (2026-10-12 段2b Opus C「最後の手の出来事が見えない」) */
+function eventLines(s: GameState, logFrom: number): string[] {
   const L: string[] = []
-  // 直近のイベントログ
   const events = s.eventLog.slice(logFrom)
   if (events.length > 0) {
     L.push('--- 直近の出来事 ---')
@@ -275,8 +276,11 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'CardPlayed') L.push(` プレイ:${cname(e.cardId)}`)
       else if (e.type === 'CardSet') L.push(` 伏せた:${cname(e.cardId)}`)
       else if (e.type === 'Cascaded') L.push(e.hitId !== undefined ? ` 🔗チェイン:${cname(e.cardId)}→${cname(e.hitId)}をコストを払わずにプレイ${e.revealed.length > 0 ? `(${e.revealed.length}枚は山札の底へ)` : ''}` : ` 🔗チェイン:${cname(e.cardId)}→当たりなし${e.revealed.length > 0 ? `(${e.revealed.length}枚は山札の底へ)` : ''}`)
-      else if (e.type === 'ImpulseDrawn') L.push(` 衝動${e.count}枚(このターン限り。撃たなければターン終了時に消滅)`)
+      else if (e.type === 'ImpulseDrawn') L.push(` 衝動${e.count}枚(このターン限り。撃たなければターン終了時に消滅。コストが残りエナジーを上回る札は捨て札へ)`)
+      else if (e.type === 'ImpulseReturned') L.push(` 衝動の失効:${cname(e.cardId)}は払えなかったので捨て札へ`)
       else if (e.type === 'ImpulseKept') L.push(` 燠の守り:${cname(e.cardId)}を手札に残した(次のターンまで)`)
+      else if (e.type === 'ImpulseKindled') L.push(` 🔥くべた:${cname(e.cardId)}の追加コストとして${e.cardIds.map(cname).join('・')}を火にくべた(消滅)`)
+      else if (e.type === 'BlazeIgnited') L.push(' 🔥猛り火に点いた(延焼の合計が8以上)')
       else if (e.type === 'ReactionTriggered') L.push(` リアクション発動:${cname(e.cardId)}`)
       else if (e.type === 'CardExhausted') L.push(` 消滅:${cname(e.cardId)}`)
       else if (e.type === 'CardSealed') L.push(` 🔒敵${e.enemyIndex + 1}が「${cname(e.cardId)}」を封じた(倒せば手札に戻る)`)
@@ -341,13 +345,22 @@ function renderBattle(s: GameState, logFrom: number): string {
       else if (e.type === 'TrapLifeExtended') L.push(` ⏳伏せ札${e.count}枚の期限を${e.amount}ターン延ばした`)
       else if (e.type === 'ActionNegated') L.push(' 🚫敵の行動を打ち消した') // 2026-09-25 Opus 青B: 打ち消しの結果がログに出ない
       else if (e.type === 'CardsMovedToHand') L.push(` ↩️${e.from === 'discard' ? '捨て札' : e.from === 'draw' ? '山札' : '消滅置き場'}から手札へ: ${e.cardIds.map(cname).join('・')}`) // 引き潮の帰還・仕掛け師の工房・回収・サーチ
+      else if (e.type === 'BlazeExtinguished') L.push(' 🔥猛り火が消えた(延焼の合計が8未満)')
+      else if (e.type === 'CascadeRetargeted') L.push(` 🔗チェインの当たりが対象を倒したので、${cname(e.cardId)}の本体は→敵${e.toIndex}へ`)
     }
   }
+  return L
+}
+
+function renderBattle(s: GameState, logFrom: number): string {
+  const p = s.player
+  const L: string[] = [...eventLines(s, logFrom)]
   L.push(`--- 盤面 (ターン${s.turn} / phase=${s.phase}) ---`)
   const st = [
     `HP ${Math.max(0, p.hp)}/${p.maxHp}`, `ブロック${p.block}`, p.iceBlock ? `氷壁${p.iceBlock}` : '',
     `エナジー${p.energy}/${p.energyMax}`, p.cardsPlayedThisTurn ? `詠唱${p.cardsPlayedThisTurn}(このターン)` : '', (p.trapsFiredThisCombat ?? 0) ? `伏せ札の発動${p.trapsFiredThisCombat}回` : '', (p.scryDiscardedThisCombat ?? 0) ? `占術で捨てた${p.scryDiscardedThisCombat}枚` : '', p.growth ? `成長${p.growth}` : '', p.momentum ? `勢い${p.momentum}` : '',
-    p.aether ? `霊気${p.aether}` : '', (p.light ?? 0) || p.permanents.some((x) => x.innate === true && x.def.effects.some((e) => e.effect === 'addLight')) ? `灯${p.light ?? 0}` : '', (p.sparksPlayedThisCombat ?? 0) ? `火種(撃った)${p.sparksPlayedThisCombat}` : '', p.spellEchoes ? `反復${p.spellEchoes}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
+    p.aether ? `霊気${p.aether}` : '', lightMatters(s) ? `灯${p.light ?? 0}` : '', // 灯を使う色だけに出す (2026-10-12 段2b Opus A/B: 赤のランで回復のたび「灯1」)
+    (p.cascadesThisCombat ?? 0) ? `チェインの当たり${p.cascadesThisCombat}回(火の渦の参照)` : '', // 2026-10-12 段2b Opus C: 火の渦の「いま何回か」が盤面に無かった (p.sparksPlayedThisCombat ?? 0) ? `火種(撃った)${p.sparksPlayedThisCombat}` : '', p.spellEchoes ? `反復${p.spellEchoes}` : '', p.nextCardDiscount ? `次-${p.nextCardDiscount}` : '',
     s.playCap !== undefined ? `首輪: このターンあと${Math.max(0, (playCapOf(s) ?? 0) - (p.playsThisTurn ?? 0))}枚` : '', // 天鵞絨の首輪 (2026-09-18 Opus 白C: 7枚目で初めてエラーが出て事前に読めなかった)
     `消滅置き場${p.exhaustPile.length}枚`, p.weak ? `弱体${p.weak}` : '', p.vulnerable ? `脆弱${p.vulnerable}` : '', p.frail ? `虚弱${p.frail}(カードのブロック25%減)` : '', p.restrain ? `拘束${p.restrain}(1ターン3枚まで・このターンあと${Math.max(0, 3 - (p.playsThisTurn ?? 0))}枚)` : '', (p.mist ?? 0) ? `霞み${p.mist}(ドロー-2)` : '', (p.slow ?? 0) ? `重り${p.slow}(被ダメ+10%×プレイ枚数。今+${(p.playsThisTurn ?? 0) * 10}%)` : '',
     p.selfHpLost ? `自傷累計${p.selfHpLost}` : '', p.damageTakenLastEnemyPhase ? `直前被ダメ${p.damageTakenLastEnemyPhase}` : '',
@@ -371,6 +384,9 @@ function renderBattle(s: GameState, logFrom: number): string {
     // 延焼のティックで行動の前に倒れる敵は予測に入れない (2026-10-10 Opus 赤 B: 予測52 → 実際0 を毎回自分で引き算していた)
     const burnout = burnoutEnemies(s)
     if (burnout.length > 0) L.push(`   🔥延焼で行動の前に焼け落ちる（予測から除外）: ${burnout.map((i) => `敵${i} ${getEnemyDef(s.enemies[i].enemyId).name}`).join('・')}`)
+    // 灰の衣 (失効ごとブロック) は予測に乗らないので最大値を添える (2026-10-12 段2b Opus B: HP6で「9点来る」と出て実際は0)
+    const expiryBlock = expiryBlockPreview(s)
+    if (expiryBlock > 0) L.push(`   （ターン終了時の失効でブロック最大+${expiryBlock}＝今の衝動の札を全部失効させた場合）`)
   }
   s.enemies.forEach((e, i) => {
     if (e.hp <= 0) { L.push(`敵${i}: ${getEnemyDef(e.enemyId).name} ${e.fled ? `🏃逃走済み${e.stolenGold ? `(${e.stolenGold}G持ち逃げ)` : ''}` : '💀撃破済み'}`); return }
@@ -537,6 +553,7 @@ function renderBattle(s: GameState, logFrom: number): string {
                   ? '場に人形がいない'
                   : 'エナジー不足',
         c.def.exhaustCost ? '要exhaustUids' : '',
+        c.def.impulseCost ? (c.def.kindleOptional === true ? 'くべるなら exhaustUids(衝動の札。省略=くべずに撃つ)' : '要exhaustUids(くべる衝動の札)') : '',
         c.def.discardCost ? '要discardUids' : '',
         c.def.effects.some((e) => e.effect === 'retrieveFromExhaust' || e.effect === 'playFromExhaust')
           ? '要retrieveUid'
@@ -1181,7 +1198,17 @@ if (mode === 'new-run') {
     if (cmd.type === 'UseGear' || cmd.type === 'DiscardGear') {
       const named = (cmd as { gear?: string }).gear
       if (typeof named === 'string') {
-        const i = gearsOf(sf.run!).findIndex((g) => getGearDef(g.gearId).name === named)
+        // 名前は完全一致 → 無ければ部分一致 (1つに決まる時だけ。2026-10-12 段2b Opus A: "目当て" で拒否された)
+        const owned = gearsOf(sf.run!)
+        let i = owned.findIndex((g) => getGearDef(g.gearId).name === named)
+        if (i < 0) {
+          const partial = owned.map((g, k) => ({ k, name: getGearDef(g.gearId).name })).filter((x) => x.name.includes(named))
+          if (partial.length === 1) i = partial[0].k
+          else if (partial.length > 1) {
+            console.log(`エラー: "${named}" は複数のギアに当たる: ${partial.map((x) => x.name).join('・')}（名前を長く書くか "index" で指定）`)
+            process.exit(1)
+          }
+        }
         if (i < 0) {
           // 他の不正なコマンドと同じ「エラー: 1行・exit 1」で返す (Opus 火種B: ここだけ生のスタックトレースだった)
           console.log(`エラー: 持っていないギア: ${named}（持ち物: ${gearsOf(sf.run!).map((g) => getGearDef(g.gearId).name).join('・') || 'なし'}）`)
@@ -1199,6 +1226,7 @@ if (mode === 'new-run') {
         ? (cmd as RunCommand)
         : { type: 'Combat', command: cmd as Command }
     let choiceLine: string | null = null
+    const prevCombat = sf.run!.combat
     try {
       const prevRun = sf.run!
       sf.run = applyRunCommand(sf.run!, runCmd)
@@ -1217,6 +1245,9 @@ if (mode === 'new-run') {
     }
     sf.logIndex = currentLogLength(sf)
     save(file, sf)
+    // 勝敗が決まった手の出来事 (チェインの当たり・与ダメ・焼け落ち) は報酬画面に切り替わると見えなかった (2026-10-12 段2b Opus C) = ここで出す
+    const ended = (g: GameState | undefined) => g !== undefined && (g.phase === 'won' || g.phase === 'lost')
+    if (prevCombat && !ended(prevCombat) && ended(sf.run.combat ?? undefined)) console.log(eventLines(sf.run.combat!, logFrom).join('\n'))
     if (choiceLine) console.log(`📜 ${choiceLine}`)
     console.log(renderRun(sf.run, logFrom))
   } else {

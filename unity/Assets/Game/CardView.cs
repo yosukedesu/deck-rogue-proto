@@ -174,6 +174,14 @@ namespace DeckRogue.Game
             // 追加コスト (X・捨て・消滅コスト・コスト0 の条件) は本文の先頭に普通の表記、消滅・保持は本文の末尾 (2026-09-09 ユーザー「付箋でなく効果の最上部に」)
             var costNotes = CardText.CostNotes(def);
             var trail = CardText.TrailNotes(def, true);   // 札の面の短い形 (F10)
+            if (st != null)
+            {
+                // 衝動の札 (このターン限り) は面に常時出す (2026-10-12 段2b Opus C: 衝動で引いた野火を含む5枚が失効した事故)
+                if (BattleView.IsImpulse(st, c.Uid)) trail.Add("衝動＝撃たなければ消滅（払えない札は捨て札へ）");
+                // 火の渦の「いま何回か」(同日 Opus C。Web の [現在N回] と同じ)
+                for (int i = 0; i < def.Effects.Count; i++)
+                    if (def.Effects[i].Effect == "dealDamagePerCascade") { int n = st.Player.CascadesThisCombat ?? 0; trail.Add("チェイン" + n + "回×" + (def.Effects[i].Amount ?? 0) + "＝" + (n * (def.Effects[i].Amount ?? 0))); break; }
+            }
             if (costNotes.Count > 0)
             {
                 var cl = new List<string>();

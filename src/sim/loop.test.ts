@@ -39,7 +39,8 @@ const KNOWN_FINITE_BIG_TURNS = new Set(['deck_big_mana vs enemy_elite_devourer']
 const MAX_ACTIONS = 2000
 
 describe('無限ループ検知', () => {
-  it('全デッキ × 敵 × 複数シードで、1ターンの詠唱数と1戦闘のコマンド数が上限を超えない', { timeout: 120000 }, () => {
+  // 2026-10-12 段2b: 幕2開始用の検証デッキ3つ (run_red_s2_a/b/c) が増えて単独で 114s。全テスト並走の負荷で 120s を跨いだので余裕を持たせる (ゲームの変更ではない)
+  it('全デッキ × 敵 × 複数シードで、1ターンの詠唱数と1戦闘のコマンド数が上限を超えない', { timeout: 300000 }, () => {
     const offenders: string[] = []
     const lostWinCondition: string[] = []
     let worstPlays = 0

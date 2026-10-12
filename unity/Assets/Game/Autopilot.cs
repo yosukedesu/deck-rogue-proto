@@ -1104,7 +1104,7 @@ namespace DeckRogue.Game
                 for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) { target = i; break; }
                 foreach (var c in st.Player.Hand)
                 {
-                    if (c.Def.Type == "reaction" || (c.Def.Modes != null && c.Def.Modes.Count > 0) || c.Def.DiscardCost.HasValue || c.Def.ExhaustCost.HasValue) continue;
+                    if (c.Def.Type == "reaction" || (c.Def.Modes != null && c.Def.Modes.Count > 0) || c.Def.DiscardCost.HasValue || c.Def.ExhaustCost.HasValue || c.Def.ImpulseCost.HasValue) continue;   // くべる (赤 2026-10-12 段2) も飛ばす
                     int cost = c.Def.Cost;
                     try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
                     if (!Effects.IsPlayableFromHand(c, st) || cost > st.Player.Energy || (c.Def.LightCost ?? 0) > (st.Player.Light ?? 0)) continue;
@@ -1267,7 +1267,7 @@ namespace DeckRogue.Game
                     {
                         if (skip.Contains(c.Uid) || c.Def.Type == "reaction") continue;
                         if (c.Def.Modes != null && c.Def.Modes.Count > 0) continue;
-                        if (c.Def.DiscardCost.HasValue || c.Def.ExhaustCost.HasValue) continue;
+                        if (c.Def.DiscardCost.HasValue || c.Def.ExhaustCost.HasValue || c.Def.ImpulseCost.HasValue) continue;   // くべる (赤 2026-10-12 段2) も飛ばす
                         int cost = c.Def.Cost;
                         try { cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
                         if (!Effects.IsPlayableFromHand(c, st) || cost > st.Player.Energy || (c.Def.LightCost ?? 0) > (st.Player.Light ?? 0)) continue; // 灯コスト (白 2026-09-20)
@@ -1409,7 +1409,7 @@ namespace DeckRogue.Game
             g.ShowUpgraded = false; g.GridPickKey = null; g.GridPickIndex = -1; g.ShowLog = false; g.ViewPile = null;
             g.ViewDeck = false; g.ViewRelics = false; g.ViewMap = false; g.MenuOpen = false; g.SettingsOpen = false; g.Confirm = null;
             g.DoodleMode = false; g.Doodles.Clear();
-            g.GearPending = null; g.GearSwap = null; g.GearMore = false; g.HearthChoice = false; g.RetainChoice = null; g.ScryDiscard.Clear();
+            g.GearPending = null; g.GearSwap = null; g.GearMore = false; g.HearthChoice = false; g.RetainChoice = null; g.KeepChoice = null; g.ScryDiscard.Clear();
             g.Notice = null; g.Error = null; g.PhaseShownKind = -1;
             if (_diff0 > 0) g.Difficulty = _diff0;   // 前の行の difficulty= を持ち越さない (起動した時の値へ)
             Feedback.MemoOpen = false; Feedback.RatingOpen = false; Feedback.Silent = false;

@@ -42,7 +42,8 @@ namespace DeckRogue.Game
         public static bool ShouldShow(RunState run, GameState st)
         {
             if (st == null) return false;
-            if ((st.Player.Light ?? 0) > 0) return true;
+            // 灯を使う札が1枚も無いランでは出さない (2026-10-12 段2b Opus A/B: 赤でギアの回復のたび「灯1」)
+            if ((st.Player.Light ?? 0) > 0 && Effects.LightMatters(st)) return true;
             return LeaderHasWhite(run);
         }
 

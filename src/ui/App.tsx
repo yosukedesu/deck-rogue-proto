@@ -66,13 +66,13 @@ import {
   DEPARTURE_TITLE,
   departureMasterLine,
 } from '../engine/content.ts'
-import { trapStatusText, BLAZE_THRESHOLD, DOLL_GROWTH_EFFECTS, anthemTotal, cardNeedsTarget, damageBreakdown, dollEffectAmount, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, isDamageEffect, isDoll, isPlayableFromHand, playerCanSet, hearthSparkMax, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
+import { trapStatusText, BLAZE_THRESHOLD, DOLL_GROWTH_EFFECTS, anthemTotal, cardNeedsTarget, damageBreakdown, dollEffectAmount, dollGrowth, dollLifeLeft, effectiveCost, effectiveIntent, isDamageEffect, isDoll, isPlayableFromHand, playerCanSet, hasStaticEffect, hearthSparkMax, playerDamageAfterModifiers, rallyPreview, retainerRequirementMet, setBranchFlipRisks, setCardLiveDamage, usableSetCards, windowFromPending } from '../engine/effects.ts'
 import { playableReactions } from '../engine/reactions/hold-manual.ts'
 import { webVocab } from './vocab.ts'
 import { departureCostText, departureGainText, departureGearRoomNote, departurePriceLabel, departureUnavailableReason, shopDepartureUnavailableReason } from './log.ts'
 import { applyRunCommand, departureOfferBought, campfireOptions, canTransformCard, canUnexhaustCard, canUpgradeCard, createDebugCheckpointRun, createRun, currentNode, DEFAULT_DIFFICULTY, DIFFICULTY_TABLE, difficultyDescription, eventChoiceAvailable, eventChoiceNeedsCard, gearFull, gearsOf, isUpgraded, manaOf, nextChoices, relicChargesLeft, relicStateOf, shopRemovalPrice, shopUpgradePrice, upgradeCard, wingChoices, workshopFusePrice, workshopFuseResult, campfireForgeAllowed } from '../engine/run.ts'
 import { GEAR_CARRY_MAX, GEAR_MANA_COST, MANA_MAX, gearBlockedReason, gearCardChoices, gearLiveDamage, gearNoEffectReason, manaLabel } from '../engine/gears.ts'
-import { battleSummary, burnoutEnemies, cardCostLabel, displayedIntentValue, intentModifierNotes, interruptPreviews, permanentTargetNote, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
+import { battleSummary, burnoutEnemies, cardCostLabel, displayedIntentValue, expiryBlockPreview, intentModifierNotes, interruptPreviews, lightMatters, permanentTargetNote, relicRarityTag, setBranchNote, splitChildHp, summaryLine, turnsUntilHatch, incomingFrom, incomingTotal, xHitsSuffix } from '../engine/summary.ts'
 import { describeGraph, sleepingInterrupt } from '../engine/enemyGraph.ts'
 import { interruptBlockedNote } from '../engine/traits.ts'
 import { GRID_COLS } from '../engine/map.ts'
@@ -238,6 +238,7 @@ const TRIGGER_LABEL: Record<CardDef['effects'][number]['trigger'], string> = {
   onSparkPlayed: '火種を撃つたび: ',
   onCascade: 'チェインで札がプレイされるたび: ',
   onImpulseExpired: '衝動の札が失効するたび: ',
+  onBlazeIgnite: '猛り火に点いた時: ',
   onAttackIncoming: '被攻撃前: ',
   onAttacked: '被攻撃後: ',
   onCardPlayed: 'カードをプレイするたび: ',
@@ -348,7 +349,7 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     conditionLabel(e)
   const pierce = e.pierce ? '(貫通)' : ''
   // 置物のターン開始などの単体効果は「先頭の敵に」(2026-10-10 Opus 赤 C。式は engine/summary.ts permanentTargetNote に1本化)
-  const aoe = e.target === 'all' ? '敵全体に' : e.target === 'mostHp' ? 'HPがいちばん多い敵に' : permanentTargetNote(e, holderType)
+  const aoe = e.target === 'all' ? '敵全体に' : e.target === 'mostHp' ? 'HPがいちばん多い敵に' : e.target === 'mostBurn' ? '延焼がいちばん多い敵に' : permanentTargetNote(e, holderType)
   // トータル先頭表記: 補正込みの実ダメージを先に出し、内訳を括弧で添える
   const atkBreak = atkBonus > 0 ? `（${'基礎'}${e.amount}+補正${atkBonus}）` : ''
   switch (e.effect) {
@@ -496,9 +497,11 @@ function renderEffectItemCore(e: DeclarativeEffect, ctx?: EffectCtx, holderType?
     case 'firstCardCascade':
       return '【常在】毎ターン、最初にプレイする札にチェインがつく'
     case 'burnNoDecay':
-      return '【常在】延焼は敵のターンで減らない'
+      return '【常在】延焼は敵のターンで減らない（延焼を消費して刈る札とは噛み合わない）'
     case 'keepImpulseOne':
       return '【常在】ターン終了時、失効する衝動の札のうちコストが最も高い1枚を手札に残す（次のターンまで）'
+    case 'cascadeSameCost':
+      return '【常在】チェインは「同じコストの札だけ」に当たる（安い札は飛ばす）'
     case 'dealDamagePerRandomPlayed':
       return ctx
         ? `${trigger}${aoe}この戦闘で撃った運任せの札×${e.amount}ダメージ${pierce} [現在${ctx.randomPlayed}枚=${ctx.randomPlayed * (e.amount ?? 0) + atkBonus}]`
@@ -785,6 +788,7 @@ function effectLineStrings(def: CardDef, ctx?: EffectCtx): string[] {
   const lines: string[] = []
   if ((def.discardCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.discardCost}枚を捨てる`)
   if ((def.exhaustCost ?? 0) > 0) lines.push(`追加コスト: 手札${def.exhaustCost}枚を消滅させる`)
+  if ((def.impulseCost ?? 0) > 0) lines.push(def.kindleOptional === true ? `🔥 くべてもよい: 手札の衝動の札${def.impulseCost}枚を火にくべる（消滅）と「くべた時」の効果が乗る。くべずに撃つと素の効果だけ` : `追加コスト: 🔥 手札の衝動の札${def.impulseCost}枚を火にくべる（消滅。衝動の札が無ければプレイできない）`)
   if ((def.lightCost ?? 0) > 0) lines.push(`追加コスト: 🕯 灯を${def.lightCost}払う${ctx ? `（現在 灯${ctx.light ?? 0}）` : ''}`)
   if (def.modes && def.modes.length > 0) {
     // 共通部 (工房「効果の合体」で相手の効果が入る場所) はモードを問わず解決される = モードの前に出す (2026-09-05 Opusラン R)
@@ -1818,7 +1822,8 @@ function BattleScreen({
       setPendingDiscard({ cardUid, modeIndex })
       return
     }
-    if ((card.def.exhaustCost ?? 0) > 0) {
+    if ((card.def.exhaustCost ?? 0) > 0 || (card.def.impulseCost ?? 0) > 0) {
+      // くべる (赤 2026-10-12 段2) も同じ選択モード (候補は衝動の札だけ)
       setPendingExhaust({ cardUid, modeIndex, chosen: [] })
       return
     }
@@ -1865,6 +1870,7 @@ function BattleScreen({
   const [hearthSparks, setHearthSparks] = useState(0)
   // 満ち潮の書庫 (青 2026-09-25): ターン終了時に残す手札 / 占術 (青 2026-09-25): 捨てる札
   const [retainPick, setRetainPick] = useState<readonly string[]>([])
+  const [keepPick, setKeepPick] = useState('') // 燠の守りで残す衝動の札 (赤 2026-10-12 段2b。''=自動)
   const [scryDiscard, setScryDiscard] = useState<readonly string[]>([])
   const pileCtx: EffectCtx = { growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scryDiscardedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, cascades: player.cascadesThisCombat ?? 0, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }
 
@@ -2345,6 +2351,7 @@ function BattleScreen({
                   <div className={`forecast-inline${through >= player.hp ? ' forecast-danger' : through > 0 ? ' forecast-warn' : ''}`}>
                     ⚠️ このターンに受けるダメージ {incoming} − 防御 {defense} = <b>{through}</b>（HP {player.hp}）
                     {burnout.length > 0 && <span className="forecast-note">　🔥延焼で焼け落ちる: {burnout.map((i) => getEnemyDef(s.enemies[i].enemyId).name).join('・')}</span>}
+                    {expiryBlockPreview(s) > 0 && <span className="forecast-note">　（ターン終了時の失効でブロック最大+{expiryBlockPreview(s)}）</span>}
                   </div>
                 )
               })()}
@@ -2370,7 +2377,7 @@ function BattleScreen({
             {player.aether > 0 && (
               <span className="chip chip-aether">⚡ {kw('霊気')} {player.aether}</span>
             )}
-            {((player.light ?? 0) > 0 || player.permanents.some((pp) => pp.innate === true && pp.def.effects.some((e) => e.effect === 'addLight'))) && (
+            {lightMatters(s) && (
               <span className="chip chip-aether">🕯 {kw('灯')} {player.light}</span>
             )}
             {player.spellEchoes > 0 && (
@@ -2511,10 +2518,24 @@ function BattleScreen({
                   })}
                 </span>
               )}
+              {hasStaticEffect(s, 'keepImpulseOne') && player.hand.filter((c) => player.impulseUids.includes(c.uid)).length >= 2 && (
+                // 燠の守り (赤 2026-10-12 段2b Opus B「どれが残るか選べない」): ターン終了時に残す衝動の札を選ぶ (省略=コストが最も高い1枚)
+                <label className="chip chip-aether" title="燠の守り: ターン終了時に失効する衝動の札のうち1枚を手札に残す (次のターンまで)">
+                  🔥燠で残す
+                  <select value={player.impulseUids.includes(keepPick) ? keepPick : ''} onChange={(ev) => setKeepPick(ev.target.value)} style={{ marginLeft: 4 }}>
+                    <option value="">自動（コストが最も高い札）</option>
+                    {player.hand.filter((c) => player.impulseUids.includes(c.uid)).map((c) => (
+                      <option key={c.uid} value={c.uid}>{c.def.name}（{c.def.cost}E）</option>
+                    ))}
+                  </select>
+                </label>
+              )}
               <button className="btn btn-primary btn-endturn" data-hotkey="end-turn" disabled={s.pendingScry !== undefined} onClick={() => {
                 const keep = retainPick.filter((u) => player.hand.some((c) => c.uid === u)).slice(0, retainHandMax(s))
+                const keepImpulse = hasStaticEffect(s, 'keepImpulseOne') && player.impulseUids.includes(keepPick) && player.hand.some((c) => c.uid === keepPick) ? keepPick : ''
                 setRetainPick([])
-                dispatch({ type: 'EndTurn', ...(hearthSparkMax(s) > 0 && hearthSparks > 0 ? { hearthSparks: Math.min(hearthSparks, hearthSparkMax(s)) } : {}), ...(keep.length > 0 ? { retainUids: keep } : {}) })
+                setKeepPick('')
+                dispatch({ type: 'EndTurn', ...(hearthSparkMax(s) > 0 && hearthSparks > 0 ? { hearthSparks: Math.min(hearthSparks, hearthSparkMax(s)) } : {}), ...(keep.length > 0 ? { retainUids: keep } : {}), ...(keepImpulse ? { keepUid: keepImpulse } : {}) })
               }}>
                 ターン終了 ▶<span className="keycap">E</span>
               </button>
@@ -2527,17 +2548,28 @@ function BattleScreen({
 
       {/* 手札 */}
       <div className="panel area-hand">
-        {activeExhaust && (
-          <div className="discard-banner">
-            「{player.hand.find((c) => c.uid === activeExhaust.cardUid)?.def.name}」の追加コスト:
-            消滅させるカードを選んでください（
-            {(player.hand.find((c) => c.uid === activeExhaust.cardUid)?.def.exhaustCost ?? 0) - activeExhaust.chosen.length}
-            枚）{' '}
-            <button className="btn" data-hotkey="cancel" onClick={() => setPendingExhaust(null)}>
-              キャンセル
-            </button>
-          </div>
-        )}
+        {activeExhaust && (() => {
+          const src = player.hand.find((c) => c.uid === activeExhaust.cardUid)
+          const kindle = (src?.def.impulseCost ?? 0) > 0
+          const need = kindle ? (src?.def.impulseCost ?? 0) : (src?.def.exhaustCost ?? 0)
+          return (
+            <div className="discard-banner">
+              「{src?.def.name}」の追加コスト:
+              {kindle ? ' 火にくべる衝動の札を選んでください（' : ' 消滅させるカードを選んでください（'}
+              {need - activeExhaust.chosen.length}
+              枚）{' '}
+              {/* くべてもよい札 (赤 2026-10-12 段2b): 払わずに撃てる (素の効果だけ) */}
+              {kindle && src?.def.kindleOptional === true && (
+                <button className="btn" onClick={() => { setPendingExhaust(null); playOrTarget(activeExhaust.cardUid, activeExhaust.modeIndex, undefined, []) }}>
+                  くべずに撃つ
+                </button>
+              )}{' '}
+              <button className="btn" data-hotkey="cancel" onClick={() => setPendingExhaust(null)}>
+                キャンセル
+              </button>
+            </div>
+          )
+        })()}
         {activeRetrieve && (
           <div className="discard-banner">
             「{player.hand.find((c) => c.uid === activeRetrieve.cardUid)?.def.name}」:
@@ -2777,6 +2809,9 @@ function BattleScreen({
                 const modes = c.def.modes ?? []
                 const discardCost = c.def.discardCost ?? 0
                 const exhaustCostN = c.def.exhaustCost ?? 0
+                // くべる (赤 2026-10-12 段2): 手札の衝動の札 (自分以外) が足りなければプレイ不可
+                const impulseCostN = c.def.impulseCost ?? 0
+                const impulseInHand = player.hand.filter((h) => h.uid !== c.uid && player.impulseUids.includes(h.uid)).length
                 const effCost = effectiveCost(s, c)
                 // 消滅置き場を参照するカード: 選べるカードがなければプレイ不可
                 const needsPile = c.def.effects.some(
@@ -2802,6 +2837,7 @@ function BattleScreen({
                   (c.def.lightCost ?? 0) <= (player.light ?? 0) && // 灯コスト (白 2026-09-20 号令)
                   player.hand.length - 1 >= discardCost &&
                   player.hand.length - 1 >= exhaustCostN &&
+                  (c.def.kindleOptional === true || impulseInHand >= impulseCostN) && // くべてもよい札は衝動が無くても撃てる (2026-10-12 段2b)
                   pileOk
                 const settable = c.def.type === 'reaction' || (s.setAnyCards === true && canSetAsNormal(c.def))
                 const canSet = isSetMode && settable && canSetCard(s, c.uid)
@@ -2809,19 +2845,23 @@ function BattleScreen({
                 // 消滅コスト選択中: 手札は「消滅させる」対象として振る舞う (複数枚は順に選ぶ)
                 if (activeExhaust) {
                   const src = player.hand.find((h) => h.uid === activeExhaust.cardUid)
-                  const need = src?.def.exhaustCost ?? 0
+                  // くべる (赤 2026-10-12 段2): 候補は衝動の札だけ
+                  const kindle = (src?.def.impulseCost ?? 0) > 0
+                  const need = kindle ? (src?.def.impulseCost ?? 0) : (src?.def.exhaustCost ?? 0)
                   const isSource = c.uid === activeExhaust.cardUid
                   const isChosen = activeExhaust.chosen.includes(c.uid)
+                  const kindleOk = !kindle || player.impulseUids.includes(c.uid)
                   return (
                     <CardFrame
                       key={c.uid}
                       card={c}
                       ctx={{ growth: player.growth, momentum: player.momentum, energyMax: player.energyMaxAtTurnStart ?? player.energyMax, cardsPlayed: player.cardsPlayedThisTurn, aether: player.aether, light: player.light ?? 0, retainers: player.permanents.filter((p) => p.def.retainer === true && p.innate !== true).length, rallyZero: rallyPreview(s, 0), rallyCall: rallyPreview(s, (player.light ?? 0) - 2, ['white_perm_page']), sparks: player.sparksPlayedThisCombat ?? 0, scried: player.scryDiscardedThisCombat ?? 0, trapsFired: player.trapsFiredThisCombat ?? 0, exhausted: player.exhaustPile.length, selfHpLost: player.selfHpLost, permanents: player.permanents.length, damageTaken: player.damageTakenLastEnemyPhase, iceBlock: player.iceBlock, randomPlayed: player.randomPlayedThisCombat, cascades: player.cascadesThisCombat ?? 0, energy: player.energy, handCards: Math.max(0, player.hand.length - 1) }}
-                      dim={isSource || isChosen}
-                      hint={isSource ? 'プレイするカード' : isChosen ? '消滅予定' : undefined}
+                      dim={isSource || isChosen || !kindleOk}
+                      hint={isSource ? 'プレイするカード' : isChosen ? (kindle ? 'くべる予定（消滅）' : '消滅予定') : kindle && !kindleOk ? '衝動の札ではない' : undefined}
                       actions={
                         !isSource &&
-                        !isChosen && (
+                        !isChosen &&
+                        kindleOk && (
                           <button
                             className="btn"
                             onClick={() => {
@@ -2844,7 +2884,7 @@ function BattleScreen({
                               }
                             }}
                           >
-                            これを消滅
+                            {kindle ? 'これをくべる' : 'これを消滅'}
                           </button>
                         )
                       }
@@ -2905,7 +2945,7 @@ function BattleScreen({
                     dim={!canPlay && !canSet && !heldReaction}
                     hint={
                       player.impulseUids.includes(c.uid)
-                        ? '⏳ 衝動: このターン限り（未使用なら消滅）'
+                        ? '⏳ 衝動: このターン限り（未使用なら消滅。払えない札は捨て札へ）'
                         : heldReaction
                           ? '敵ターンに手札から発動'
                           : undefined
@@ -4101,7 +4141,7 @@ const EFFECT_JA: Record<string, string> = {
   dischargeMomentumDamage: '勢い×Nダメ(全消費)', dischargeMomentumGrowth: '勢い÷Nを成長に(全消費)', dischargeMomentumVolley: '勢い×Nダメを3回(全消費)', momentumCarryHalf: '勢いの半分を持ち越す(常在)', gainBlockPerMomentum: '勢い×Nブロック(失わない)', addGrowthPerMomentum: '勢い2につき成長+N(失わない)', gainMaxHp: '最大HP+N(戦闘後も残る)', upgradeAllInHand: '手札の全てをこの戦闘中鍛える',
   applyBurn: '延焼+N', applyBurnPerDamageTaken: '被ダメ×N延焼', dischargeBurn: '爆熱(延焼×Nダメ全消費)',
   dealDamagePerCascade: 'チェインの回数×Nダメ', doubleBurn: '延焼2倍', gainBlockPerBurn: '延焼×Nブロック(失わない)', dealDamagePerBurn: '延焼×Nダメ(失わない)',
-  firstCardCascade: '毎ターン最初の札にチェイン(常在)', burnNoDecay: '延焼が減らない(常在)', keepImpulseOne: '失効する衝動1枚を残す(常在)',
+  firstCardCascade: '毎ターン最初の札にチェイン(常在)', burnNoDecay: '延焼が減らない(常在)', keepImpulseOne: '失効する衝動1枚を残す(常在)', cascadeSameCost: 'チェインは同じコストの札だけに当たる(常在)',
   addAether: '霊気+N', dischargeAether: '霊気放出(×Nダメ全消費)', dischargeAetherDraw: '霊気×Nドロー(全消費)',
   addLight: '灯+N', addLightNextTurn: '次T開始時に灯+N', dischargeLight: '灯の放出(×Nダメ全消費)', dischargeLightRally: '灯を全て放出し灯Nにつき全人形が1回動く', doubleLight: '灯2倍', dealDamagePerLight: '灯2につきNダメ(非消費)', addCardToDraw: 'トークンN枚を山札へ', addCardToDiscard: 'トークンN枚を捨て札へ', transformDeckToToken: '山札のN枚を火種に変える(選ぶ)', lightToSparks: '灯Nにつき火種1を山札へ', dealDamagePerSpark: '撃った火種×Nダメ', gainBlockPerSpark: '撃った火種×Nブロック', triggerRandomRetainer: '人形1体が今1回動く', dischargeLightWeaken: '灯を放出し灯3につき全体威圧N', consumeLight: '灯をN失う(量なし=全て)', gainBlockPerLight: '灯2につきNブロック', drawCardsPerLight: '灯2につきNドロー', lightCarryHalf: '放出しても灯の半分が残る', scry: '占術N', retrieveZeroCostFromDiscard: '捨て札の0Eを全て手札へ', drawTypeFromDeck: '山札から指定タイプをN枚手札へ', aetherCarryHalf: '霊気を放出しても半分残る', retainedCostDown: '手札に残った札のコスト-N', dealDamagePerScry: '占術で捨てた枚数×Nダメ', dealDamagePerTrapFired: '伏せ札の発動回数×Nダメ', extendTrapLife: '伏せ札の期限+Nターン', trapsNeverExpire: '伏せ札は期限切れにならない', retainHandUpTo: 'ターン終了時に手札をN枚まで残す',
   addCasts: '詠唱数+N', addSpellEcho: '反復+N(次の呪文2回解決)', confuse: '混乱+N', exposeEnemy: '急所+N', weakenEnemy: '威圧N(敵の筋力-N)',
@@ -4773,8 +4813,8 @@ function CardCatalogOverlay({ onClose }: { onClose: () => void }) {
                 if (typeof cv === 'number') numFields.push({ key: `e${i}.cond.${ck}`, label: `条件〔${condJa(ck)}〕`, cur: cv })
               }
             })
-            const COST_LABELS: Record<string, string> = { exhaustCost: '消滅コスト', discardCost: '捨てコスト', necroCost: '亡骸コスト', lightCost: '灯コスト' }
-            for (const ck of ['exhaustCost', 'discardCost', 'necroCost', 'lightCost'] as const) {
+            const COST_LABELS: Record<string, string> = { exhaustCost: '消滅コスト', discardCost: '捨てコスト', necroCost: '亡骸コスト', lightCost: '灯コスト', impulseCost: 'くべる' }
+            for (const ck of ['exhaustCost', 'discardCost', 'necroCost', 'lightCost', 'impulseCost'] as const) {
               const cv = def[ck]
               if (typeof cv === 'number') numFields.push({ key: ck, label: COST_LABELS[ck], cur: cv })
             }
