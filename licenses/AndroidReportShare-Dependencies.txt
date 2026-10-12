@@ -1,0 +1,52 @@
+DeckRogue Android report sharing dependencies
+
+The authored DeckRogueReportShare 1.0.0 plugin uses Godot's Android API
+(compile-only Godot 4.6.3.stable.mono; existing Godot.txt notice applies).
+It does not embed a second Godot runtime or any third-party Java classes.
+
+Declared runtime dependency: androidx.core:core:1.13.1 (FileProvider).
+Copyright The Android Open Source Project. Apache License 2.0.
+Unmodified upstream library, dynamically linked by the Android build.
+Official release: https://developer.android.com/jetpack/androidx/releases/core#1.13.1
+Official metadata: https://dl.google.com/dl/android/maven2/androidx/core/core/1.13.1/core-1.13.1.pom
+Source: https://android.googlesource.com/platform/frameworks/support
+Complete Apache 2.0 license: Apache-2.0.txt in this directory.
+
+Standalone plugin releaseRuntimeClasspath resolves these AndroidX dependencies
+(all Apache License 2.0, The Android Open Source Project):
+- androidx.annotation:annotation:1.6.0 and annotation-jvm:1.6.0
+- androidx.annotation:annotation-experimental:1.4.0
+- androidx.collection:collection:1.0.0
+- androidx.concurrent:concurrent-futures:1.1.0
+- androidx.interpolator:interpolator:1.0.0
+- androidx.lifecycle:lifecycle-runtime:2.6.2 and lifecycle-common:2.6.2
+- androidx.arch.core:core-common:2.2.0 and core-runtime:2.2.0
+- androidx.profileinstaller:profileinstaller:1.3.0
+- androidx.startup:startup-runtime:1.1.1
+- androidx.tracing:tracing:1.0.0
+- androidx.versionedparcelable:versionedparcelable:1.1.1
+
+Additional standalone runtime dependencies (Apache License 2.0):
+- org.jetbrains.kotlin:kotlin-stdlib:1.8.22 and kotlin-stdlib-common:1.8.22
+  Copyright JetBrains s.r.o. and Kotlin contributors.
+  Source: https://github.com/JetBrains/kotlin
+- org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4,
+  kotlinx-coroutines-core:1.6.4, and kotlinx-coroutines-core-jvm:1.6.4
+  Copyright JetBrains s.r.o. and Kotlin contributors.
+  Source: https://github.com/Kotlin/kotlinx.coroutines
+- org.jetbrains:annotations:13.0
+  Copyright JetBrains s.r.o.
+  Source: https://github.com/JetBrains/java-annotations
+- com.google.guava:listenablefuture:1.0
+  Copyright Google LLC and Guava contributors.
+  Source: https://github.com/google/guava
+
+The final Godot Android application can resolve higher versions when its own
+AndroidX dependencies overlap. The final application dependency listing is the
+authoritative version inventory; this list identifies the plugin's standalone
+resolution, not an assertion about an unbuilt application.
+
+Build tools (Gradle 8.11.1, Android Gradle Plugin 8.6.1, Android SDK36 and
+Build-Tools36.1.0, NDK29.0.14206865) are not embedded in the plugin or game.
+Private Gradle caches, SDK installation receipts and signing credentials must
+not be distributed with the project.

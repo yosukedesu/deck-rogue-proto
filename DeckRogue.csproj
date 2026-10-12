@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>DeckRogue</AssemblyName>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputPath>.godot/mono/temp/bin/Debug/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <LangVersion>13.0</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Nullable>disable</Nullable>
+    <NoWarn>$(NoWarn);CS8632</NoWarn>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+    <Deterministic>true</Deterministic>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(UseApkReferences)' == 'true'">
+    <Reference Include="GodotSharp"><HintPath>references/GodotSharp.dll</HintPath></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>references/Newtonsoft.Json.dll</HintPath></Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(UseApkReferences)' != 'true'">
+    <PackageReference Include="GodotSharp" Version="[4.6.3]" />
+    <PackageReference Include="Newtonsoft.Json" Version="[13.0.3]" />
+  </ItemGroup>
+</Project>

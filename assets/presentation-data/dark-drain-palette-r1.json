@@ -1,0 +1,44 @@
+{
+  "id": "dark",
+  "label_ja": "\u95c7",
+  "roles_srgb": {
+    "shadow": "#241C35",
+    "primary": "#604A82",
+    "edge": "#9182AA",
+    "core": "#D5CBE6"
+  },
+  "scene_light_srgb": "#9383A8",
+  "material_intent_ja": "\u4f4e\u660e\u5ea6\u30fb\u7d2b\u306e\u629c\u3051",
+  "use_ja": "\u9ed2\u3044\u9762\u306b\u3082\u8f2a\u90ed\u3092\u6b8b\u3059",
+  "linear_rgb": {
+    "shadow": [
+      0.01764195,
+      0.01161225,
+      0.03560131
+    ],
+    "primary": [
+      0.11697067,
+      0.06847817,
+      0.22322796
+    ],
+    "edge": [
+      0.28314874,
+      0.22322796,
+      0.40197778
+    ],
+    "core": [
+      0.6653873,
+      0.59720179,
+      0.79129794
+    ]
+  },
+  "relative_luminance": {
+    "shadow": 0.01463,
+    "primary": 0.08996,
+    "edge": 0.24887,
+    "core": 0.62571
+  },
+  "emission_gain": null,
+  "scene_light_intensity": null,
+  "runtime_exposure_approved": false
+}

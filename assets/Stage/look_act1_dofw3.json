@@ -1,0 +1,15 @@
+{
+  "_doc": [
+    "P24 (W3b・2周目) の比較用の変種: ぼかしを W3 の形へ丸ごと戻す (smoothstep・帯の外 5 unit で上限 PC 24px・スマホ 12px・手前も同じ上限・点 32/24)。",
+    "撮影の STATE に look=look_act1_dofw3。既定 (look_act1.dof.json のレンズの形) と本家 (ot_921570_16) と同じ大きさで並べて、ぼけの強さを見比べる。持ち主は P24。"
+  ],
+  "tiltShift": { "rampNear": 2.5, "rampFar": 5.0, "maxPxPC": 24, "maxPxPhone": 12 },
+  "tiltShiftPass": {
+    "curve": "smooth",
+    "nearScale": 1.0,
+    "taps": 32,
+    "nearOwnTaps": 24,
+    "nearDilateTile": 16,
+    "phone": { "taps": 24, "nearOwnTaps": 16, "nearDilateTile": 16 }
+  }
+}

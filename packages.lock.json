@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net9.0": {
+      "GodotSharp": {
+        "type": "Direct",
+        "requested": "[4.6.3, 4.6.3]",
+        "resolved": "4.6.3",
+        "contentHash": "2gLsonAxGdDGm9/yYDy4A1U+db8JFGvlzt6ZuzX14cqrkCa7noikZDHcqtujcVAjXLOyxm+TuMdsmihYLZq1RA=="
+      },
+      "Newtonsoft.Json": {
+        "type": "Direct",
+        "requested": "[13.0.3, 13.0.3]",
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
+      }
+    }
+  }
+}

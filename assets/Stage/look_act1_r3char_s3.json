@@ -1,0 +1,28 @@
+{
+  "_doc": [
+    "三周目 直しの輪4 (2026-10-02) の写し s3 = 直す前の既定 (直しの輪3 の値 = commit e84a68c まで)。撮影の STATE に look=look_act1_r3char_s3。",
+    "art.leader_green = localLights 0.15・heroLift 1.8・receive 0.9・shadeLift [1.1,0.2]・saturation 1.2。直しの輪4 で足したキーは off (-1・false = 書いていないのと同じ)。"
+  ],
+  "char": {
+    "art": {
+      "leader_green": {
+        "heroLift": 1.8,
+        "receive": 0.9,
+        "shadeLift": [
+          1.1,
+          0.2
+        ],
+        "saturation": 1.2,
+        "localLights": 0.15,
+        "ambientScale": -1,
+        "blackLift": -1,
+        "tint": false,
+        "whiteCap": -1,
+        "gemHalo": -1,
+        "blackLiftColor": false,
+        "rim": -1,
+        "fog": -1
+      }
+    }
+  }
+}

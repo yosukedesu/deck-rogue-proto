@@ -1,0 +1,388 @@
+{
+  "_doc": "音の割り当て表 (2026-09-13 音の設計書 docs/audio-design.md)。bgm: 場面→Resources/Audio/bgm/<file> (拡張子なし)。sfx: イベント/UI の鍵→Resources/Audio/sfx/<name> (番号違い _2.._6 は揺らぎ)。素材が無い名前は Synth が合成する。差し替えはこの表を書き換えるだけ",
+  "bgm": {
+    "_doc": "本家形 (2026-09-14): act1-3=幕の曲 (マップ・報酬・焚き火・店・イベント・工房・通常戦闘を通して流れ続ける)。専用曲は elite (null なら幕の曲) と boss1-3 だけ。won/lost=null なら幕の曲/タイトル",
+    "title": "title",
+    "act1": "act1",
+    "act2": "act2",
+    "act3": "act3",
+    "elite": null,
+    "boss1": "boss1",
+    "boss2": "boss2",
+    "boss3": "boss3",
+    "won": null,
+    "lost": null
+  },
+  "sfx": {
+    "_doc": "鍵は GameEvent の型名 (例 CardSet)。Presenter が特別扱いする鍵 (DamageDealt.* / TurnStarted / TurnEnded / BlockGained / HpHealed / 状態異常) はコード側が読む。volume は 0〜1、jitter は音程の揺らぎ幅",
+    "CardPlayed": {
+      "sfx": "card_play",
+      "volume": 0.7
+    },
+    "CardsDrawn": {
+      "sfx": "card_draw",
+      "volume": 0.5
+    },
+    "DeckShuffled": {
+      "sfx": "card_draw",
+      "volume": 0.6
+    },
+    "CardSet": {
+      "sfx": "card_set",
+      "volume": 0.7
+    },
+    "ReactionTriggered": {
+      "sfx": "trap_fire",
+      "volume": 0.9,
+      "jitter": 0.02
+    },
+    "ReactionHeld": {
+      "sfx": "click",
+      "volume": 0.3
+    },
+    "SetCardExpired": {
+      "sfx": "trap_expire",
+      "volume": 0.7
+    },
+    "SetCardDestroyed": {
+      "sfx": "trap_break",
+      "volume": 0.8
+    },
+    "ActionNegated": {
+      "sfx": "negate",
+      "volume": 0.9,
+      "jitter": 0.02
+    },
+    "CardExhausted": {
+      "sfx": "exhaust",
+      "volume": 0.5
+    },
+    "CardsMilled": {
+      "sfx": "card_draw",
+      "volume": 0.5
+    },
+    "NecroFired": {
+      "sfx": "exhaust",
+      "volume": 0.7
+    },
+    "PermanentPlayed": {
+      "sfx": "permanent",
+      "volume": 0.8
+    },
+    "RetainersTriggered": {
+      "sfx": "rush",
+      "volume": 0.5,
+      "_note": "進軍の号令。2026-09-19 buff (Kenney の鈴) が不快 → 金属の機構 (USFX MECHANICS_Metal_Mechanism_07)"
+    },
+    "RetainerRushed": {
+      "sfx": "rush",
+      "volume": 0.45,
+      "_note": "駆けつけ (ひなたのパッシブ。2026-09-19 判と一緒に)。人形が動く金属の機構"
+    },
+    "EnemyIntentDeclared": {
+      "sfx": null
+    },
+    "EnemyDied": {
+      "sfx": "death",
+      "volume": 0.8,
+      "jitter": 0.03
+    },
+    "EnemyFled": {
+      "sfx": "lunge",
+      "volume": 0.6
+    },
+    "EnemySplit": {
+      "sfx": "death",
+      "volume": 0.6
+    },
+    "EnemyHatched": {
+      "sfx": "wake",
+      "volume": 0.7,
+      "_note": "孵化。2026-09-19 buff → 暗い脈動 (USFX MAGIC_SPELL_Dark_Pulse_Echo_Subtle)"
+    },
+    "EnemyHealed": {
+      "sfx": "heal",
+      "volume": 0.5
+    },
+    "EnemyStaggered": {
+      "sfx": "block",
+      "volume": 0.6
+    },
+    "EnemyWoken": {
+      "sfx": "wake",
+      "volume": 0.7,
+      "_note": "覚醒 (鉄卵)。2026-09-19 buff → 暗い脈動"
+    },
+    "EnemyInterrupted": {
+      "sfx": "hit_big",
+      "volume": 0.55
+    },
+    "GoldStolen": {
+      "sfx": "gold",
+      "volume": 0.8
+    },
+    "EnergyGained": {
+      "sfx": "energy",
+      "volume": 0.6
+    },
+    "EnergyMaxGained": {
+      "sfx": "energy",
+      "volume": 0.8,
+      "jitter": 0.0
+    },
+    "DiscountGained": {
+      "sfx": "energy",
+      "volume": 0.4
+    },
+    "IceBlockGained": {
+      "sfx": "block",
+      "volume": 0.6
+    },
+    "BurnTick": {
+      "sfx": "burn",
+      "volume": 0.5
+    },
+    "ThornsReflected": {
+      "sfx": "hit",
+      "volume": 0.5
+    },
+    "ScaldTick": {
+      "sfx": "burn",
+      "volume": 0.5
+    },
+    "AetherDischarged": {
+      "sfx": "hit_big",
+      "volume": 0.9
+    },
+    "GrowthDischarged": {
+      "sfx": "hit_big",
+      "volume": 0.9
+    },
+    "MomentumDischarged": {
+      "sfx": "hit_big",
+      "volume": 0.9
+    },
+    "DeathSaved": {
+      "sfx": "heal",
+      "volume": 1.0,
+      "jitter": 0.0
+    },
+    "MaxHpGained": {
+      "sfx": "heal",
+      "volume": 0.8
+    },
+    "RegenTicked": {
+      "sfx": "heal",
+      "volume": 0.3
+    },
+    "BlockShattered": {
+      "sfx": "trap_break",
+      "volume": 0.8
+    },
+    "BurrowBroken": {
+      "sfx": "trap_break",
+      "volume": 0.9
+    },
+    "ArtifactBlocked": {
+      "sfx": "negate",
+      "volume": 0.5
+    },
+    "PlayerArtifactBlocked": {
+      "sfx": "negate",
+      "volume": 0.5
+    },
+    "SpellEchoed": {
+      "sfx": "card_play",
+      "volume": 0.6
+    },
+    "TokenDestroyed": {
+      "sfx": "death",
+      "volume": 0.6
+    },
+    "RetainerExpired": {
+      "sfx": "death",
+      "volume": 0.35,
+      "_note": "人形の灯りが尽きた (2026-09-21)。壊しより静かに"
+    },
+    "RetainerCopied": {
+      "sfx": "rush",
+      "volume": 0.4,
+      "_note": "写し灯・鏡の灯籠・二重の点灯 (2026-09-21)。人形が動く金属の機構"
+    },
+    "RetainerLifeExtended": {
+      "sfx": "heal",
+      "volume": 0.45,
+      "_note": "継ぎ火・永遠の灯 (2026-09-21)"
+    },
+    "CombatEnded": {
+      "sfx": null
+    },
+    "_ui": "以下は画面の操作 (Audio.Ui(\"...\") で鳴らす)",
+    "ui.click": {
+      "sfx": "click",
+      "volume": 0.5,
+      "jitter": 0.08
+    },
+    "ui.hover": {
+      "sfx": "hover",
+      "volume": 0.5,
+      "jitter": 0.1
+    },
+    "ui.pick_card": {
+      "sfx": "card_play",
+      "volume": 0.7
+    },
+    "ui.pick_relic": {
+      "sfx": "relic",
+      "volume": 0.8
+    },
+    "ui.buy": {
+      "sfx": "gold",
+      "volume": 0.8
+    },
+    "ui.remove": {
+      "sfx": "exhaust",
+      "volume": 0.7
+    },
+    "ui.upgrade": {
+      "sfx": "forge",
+      "volume": 0.8,
+      "jitter": 0.0
+    },
+    "ui.rest": {
+      "sfx": "rest",
+      "volume": 0.8
+    },
+    "ui.fuse": {
+      "sfx": "forge",
+      "volume": 0.9,
+      "jitter": 0.0
+    },
+    "ui.node": {
+      "sfx": "map",
+      "volume": 0.8
+    },
+    "ui.event_choice": {
+      "sfx": "card_play",
+      "volume": 0.6
+    },
+    "ui.start_run": {
+      "sfx": "turn",
+      "volume": 0.7
+    },
+    "ui.win": {
+      "sfx": "win",
+      "volume": 0.8,
+      "jitter": 0.0,
+      "_note": "戦闘終了 (勝利)。撃破音の0.7秒後、報酬画面へ移る瞬間"
+    },
+    "ui.lose": {
+      "sfx": null,
+      "_note": "ジングルは鳴らさない (2026-09-14 ユーザー裁定)"
+    },
+    "_presenter": "Presenter が絵に合わせて鳴らす鍵 (2026-09-14): DamageDealt.* / BlockGained / TurnStarted / TurnEnded / HpHealed / StatusInflicted / GrowthAdded",
+    "DamageDealt.player.swing": {
+      "sfx": "slash",
+      "volume": 0.6
+    },
+    "DamageDealt.player": {
+      "sfx": "hit",
+      "volume": 0.9
+    },
+    "DamageDealt.player.big": {
+      "sfx": "hit_big",
+      "volume": 0.9
+    },
+    "DamageDealt.enemy.swing": {
+      "sfx": "lunge",
+      "volume": 0.5
+    },
+    "DamageDealt.enemy": {
+      "sfx": "hit_enemy",
+      "volume": 0.9
+    },
+    "DamageDealt.enemy.big": {
+      "sfx": "hit_big",
+      "volume": 0.9
+    },
+    "BlockGained": {
+      "sfx": "block",
+      "volume": 0.7
+    },
+    "TurnStarted": {
+      "sfx": "turn",
+      "volume": 0.6,
+      "jitter": 0.0
+    },
+    "TurnEnded": {
+      "sfx": "enemy_turn",
+      "volume": 0.6,
+      "jitter": 0.0
+    },
+    "HpHealed": {
+      "sfx": "heal",
+      "volume": 0.9,
+      "_note": "2026-09-19 ユーザー「回復音ならない」: 竪琴は BGM と同じ高さに沈んでいた (RMS -14dB×0.7) → 音源を -10.6dB に圧縮し 0.7→0.9"
+    },
+    "StatusInflicted": {
+      "sfx": "debuff",
+      "volume": 0.6,
+      "jitter": 0.03
+    },
+    "GrowthAdded": {
+      "sfx": "growth",
+      "volume": 0.6,
+      "jitter": 0.03
+    },
+    "ui.act_start": {
+      "sfx": "act_start",
+      "volume": 0.8,
+      "jitter": 0.0,
+      "_note": "幕の切り替わり (ランの開始・幕ボス撃破後の次の幕)"
+    },
+    "ui.combat_start": {
+      "sfx": "combat_start",
+      "volume": 0.7,
+      "jitter": 0.0,
+      "_note": "マップから戦闘へ"
+    },
+    "PlayerDied": {
+      "sfx": "hit_big",
+      "volume": 0.9,
+      "jitter": 0.0
+    },
+    "GearUsed": {
+      "sfx": "trap_fire",
+      "volume": 0.8,
+      "jitter": 0.02,
+      "_note": "ギアを組んだ (2026-09-17 裁定: からくりと同じ音)"
+    },
+    "DeathSaved": {
+      "sfx": "heal",
+      "volume": 0.9,
+      "_note": "蘇りの発条 (ギア)・蜥蜴の尾で致死を耐えた"
+    },
+    "DamageDealt.blocked": {
+      "sfx": "block",
+      "volume": 0.8,
+      "_note": "敵の攻撃を完全に防いだ (HP損失0) 時の盾の音"
+    },
+    "LightGained": {
+      "sfx": "light_gain",
+      "volume": 0.55,
+      "jitter": 0.03,
+      "_note": "灯を得た (2026-09-20 灯籠): 真鍮の粒が灯籠に着いた瞬間の小さな鈴 (素材が無いので Synth)"
+    },
+    "LightSpent": {
+      "sfx": "energy",
+      "volume": 0.5,
+      "_note": "号令 (灯コスト): 真鍮の粒が灯籠から人形へ飛ぶ (エナジーの X の玉と同じ音)"
+    },
+    "LightDischarged": {
+      "sfx": "light_burst",
+      "volume": 0.7,
+      "_note": "放出: 炎が硝子から抜けて光の筋になる吹き音 (Synth)。着弾は攻撃の当たり (既存)"
+    }
+  },
+  "_loudness": "BGM は -16 LUFS、SE はピーク -1dB に正規化済み (2026-09-14 ユーザー「BGMがでかい」)。素材を足す時も同じ物差しで (scripts はまだ無い。ffmpeg volume で)"
+}

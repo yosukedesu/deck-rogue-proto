@@ -1,0 +1,7 @@
+{
+  "_doc": [
+    "P22 (W3) の比較用の変種: トーンマップを ACES から Neutral に (計画 §2-6「ACES と Neutral を撮り比べる」)。キャラにも掛かる (後処理は画面全体)。露出はそのまま。",
+    "撮影の STATE に look=look_act1_neutral。持ち主は P22。"
+  ],
+  "post": { "tonemap": "neutral" }
+}

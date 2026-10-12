@@ -1,0 +1,7 @@
+{
+  "_doc": [
+    "P22 (W3) の比較用の変種: 半立体 (葉・茂み・羊歯・大岩・額縁 = 材質 relief) の受光 _Receive を 0.2 に (計画 P22 の手順2「材質の受光を3段 0.2／0.35／0.5 撮り比べる」。既定は 0.35)。",
+    "撮影の STATE に look=look_act1_recv20。札 (card) は材質が relief と同じ (設計図に card の材質が無い) ので同じ値になる。持ち主は P22。"
+  ],
+  "materials": { "relief": { "receive": 0.2 }, "card": { "receive": 0.1 } }
+}

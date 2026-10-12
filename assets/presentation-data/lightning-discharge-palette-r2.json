@@ -1,0 +1,9 @@
+{
+  "roles_srgb": {
+    "shadow": "#333557",
+    "primary": "#928CC6",
+    "edge": "#BAB4E3",
+    "core": "#EEEAFA"
+  },
+  "scene_light_srgb": "#B6B0D0"
+}

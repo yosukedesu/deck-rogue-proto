@@ -1,0 +1,10 @@
+{
+  "_doc": "Review only: restores pre-full-stage DOF. Activated with -forest-preview legacy.",
+  "tiltShift": {
+    "maxPxPC": 10,
+    "maxPxPhone": 10
+  },
+  "tiltShiftPass": {
+    "lensFar": 3
+  }
+}

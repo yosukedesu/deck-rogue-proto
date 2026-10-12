@@ -1,0 +1,41 @@
+{
+  "schema": "deckrogue.scatter-profile-palette/2",
+  "profiles": {
+    "scatter_fire": {
+      "roles_srgb": {
+        "shadow": "#612221",
+        "primary": "#D65A28",
+        "edge": "#F2A052",
+        "core": "#FFE8AE"
+      },
+      "scene_light_srgb": "#DFAA78"
+    },
+    "scatter_warm_spark": {
+      "roles_srgb": {
+        "shadow": "#777360",
+        "primary": "#D4CBA9",
+        "edge": "#E8E0C4",
+        "core": "#FFF5D8"
+      },
+      "scene_light_srgb": "#DED5BA"
+    },
+    "scatter_ice": {
+      "roles_srgb": {
+        "shadow": "#24485E",
+        "primary": "#64A4BE",
+        "edge": "#A7CAD5",
+        "core": "#E4F1F1"
+      },
+      "scene_light_srgb": "#A2C5D2"
+    },
+    "scatter_spore": {
+      "roles_srgb": {
+        "shadow": "#143A2B",
+        "primary": "#2D624B",
+        "edge": "#6F9173",
+        "core": "#D7E2C8"
+      },
+      "scene_light_srgb": "#8BA18A"
+    }
+  }
+}
