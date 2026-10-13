@@ -1,0 +1,306 @@
+WorkerThreadPool: 9 threads, 2 max low-priority.
+Godot Engine v4.6.3.stable.mono.official.7d41c59c4 - https://godotengine.org
+TextServer: Added interface "Dummy"
+TextServer: Added interface "ICU / HarfBuzz / Graphite (Built-in)"
+Unrecognized output string "misc2" in mapping:
+030000008a2e0000dd10000011010000,Hand Held Legend GC Ultimate,a:b0,b:b2,back:b17,dpdown:b5,dpleft:b6,dpright:b7,dpup:b4,guide:b18,leftshoulder:b10,leftstick:b8,lefttrigger:a3,leftx:a0,lefty:a1,misc1:b19,misc2:b24,paddle1:b13,paddle2:b12,rightshoulder:b11,rightstick:b9,righttrigger:a4,rightx:a2,righty:a5,start:b16,x:b1,y:b3,platform:Linux,
+Unrecognized output string "misc2" in mapping:
+030000000d0f0000ab01000011010000,Horipad Steam,a:b0,b:b1,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b6,leftstick:b13,lefttrigger:a5,leftx:a0,lefty:a1,misc2:b2,paddle1:b19,paddle2:b18,paddle3:b15,paddle4:b5,rightshoulder:b7,rightstick:b14,righttrigger:a4,rightx:a2,righty:a3,start:b11,x:b3,y:b4,platform:Linux,
+Unrecognized output string "misc2" in mapping:
+050000000d0f00009601000091000000,Horipad Steam,a:b0,b:b1,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b6,leftstick:b13,lefttrigger:a5,leftx:a0,lefty:a1,misc2:b2,paddle1:b19,paddle2:b18,paddle3:b15,paddle4:b5,rightshoulder:b7,rightstick:b14,righttrigger:a4,rightx:a2,righty:a3,start:b11,x:b3,y:b4,platform:Linux,
+Unrecognized output string "misc2" in mapping:
+030000007e0500006920000011010000,Nintendo Switch 2 Pro Controller,a:b0,b:b1,back:b14,dpdown:b8,dpleft:b10,dpright:b9,dpup:b11,guide:b16,leftshoulder:b12,leftstick:b15,lefttrigger:b13,leftx:a0,lefty:a1~,misc1:b17,misc2:b20,paddle1:b18,paddle2:b19,rightshoulder:b4,rightstick:b7,righttrigger:b5,rightx:a2,righty:a3~,start:b6,x:b2,y:b3,platform:Linux,
+SDL: Init OK!
+Xshape 1.1 detected.
+Xinerama 1.1 detected.
+Xrandr 1.6 detected.
+Xrender 0.11 detected.
+Xinput 2.2 detected.
+XInput: Refreshing devices.
+XInput: No touch devices found.
+Detecting GPUs, set DRI_PRIME in the environment to override GPU detection logic.
+Only one GPU found, using default.
+Accessibility: window 0 adapter created.
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+Failed loading custom cursor: crossed_circle
+DBus 1.16.2 detected.
+Using "default" pen tablet driver...
+Shader 'CanvasSdfShaderGLES3' SHA256: e1fc4015d45db07fce0346b99c312728ab006030520ec796da1461e1428345c5
+Shader 'SkeletonShaderGLES3' SHA256: e42116215ed2a92dea7085176e3b3f1089edcb71a3405ab67073ce8e77114587
+Shader 'ParticlesShaderGLES3' SHA256: ffb4401639aafac71f9f113685cb6db157587dac2f1a352495327188f37419b2
+Shader 'ParticlesCopyShaderGLES3' SHA256: 9899e9a2ef961a3d8b457619edf04eca325601701531cee383193a6c83ec1a13
+Shader 'CopyShaderGLES3' SHA256: e360dbabe48fbad4409fd02e3794a652b8c7d7778b2d408785702371b1c962c6
+Shader 'CubemapFilterShaderGLES3' SHA256: 017276394727d66a84d83b8b9d67287226d828c938b0adde3d2f699f78cf1582
+Shader 'GlowShaderGLES3' SHA256: 427cfd9bd0cc4045ecaa4bc4f23055a2a40660411d8e1663897a7c2cd3c80665
+Shader 'PostShaderGLES3' SHA256: a31034a68aa96e1495d69b387fe1f9198e7da7c39aaca2ae4881120445f14d7a
+Shader 'FeedShaderGLES3' SHA256: 9c5f15371d9ed62661ff3bb3ecc28f82cb15be9a4be89518b1f6fd8d372fbe4b
+Shader 'CanvasShaderGLES3' SHA256: 16f1396f2f5ac39d277138cd33a6d284e2d97309f2a547816c220d0ef0318826
+Shader 'CanvasOcclusionShaderGLES3' SHA256: 6baa8caaecef40c331cf27f156879d8ca7d8bf94ec84f8168903490f61264d2d
+Shader 'SceneShaderGLES3' SHA256: 6d63bbf4b53e4a6a75547f4788484cc8b6c054bccd3c1331ef7b8b504184effa
+Shader 'SkyShaderGLES3' SHA256: 9ed6b1ef29b56a1ac888c4de409d9caf637e7cb9b41ab33a7c5391c352788c40
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+TextServer: Primary interface set to: "ICU / HarfBuzz / Graphite (Built-in)".
+.NET: Initializing module...
+Found hostfxr: /workspace/scratch/948944000d55/source-recovery-20261012/toolchain/dotnet/host/fxr/9.0.20/libhostfxr.so
+.NET: hostfxr initialized
+.NET: GodotPlugins initialized
+CORE API HASH: 3177001854
+EDITOR API HASH: 3251481983
+SceneTreeFTI: traversal method DEFAULT
+Loaded system CA certificates
+Loading resource: res://.godot/exported/133200997/export-4a24720ee5e787dbe30abc634fa3679d-Main.scn
+Loading resource: res://scripts/app/Main.cs
+Loading resource: res://scripts/core/GameSession.cs
+Loading resource: res://scripts/presentation/BattleStage.cs
+Loading resource: res://scripts/presentation/StageWorld.cs
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage.glb
+Loading resource: res://.godot/imported/mossbound_full_stage.glb-f0c4e539ca3202b47ec2e03e07599e2b.scn
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage_moss_soft_v5.png
+Loading resource: res://.godot/imported/mossbound_full_stage_moss_soft_v5.png-ee9f3803e67411cda2496b7f88c511b9.ctex
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage_paving_soft_v5.png
+Loading resource: res://.godot/imported/mossbound_full_stage_paving_soft_v5.png-d00a7b83f4e467b51a6e157015921f31.ctex
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage_soil_soft_v5.png
+Loading resource: res://.godot/imported/mossbound_full_stage_soil_soft_v5.png-0af89483cc1ba1623dfd2154d722d098.ctex
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage_rock_soft_v5.png
+Loading resource: res://.godot/imported/mossbound_full_stage_rock_soft_v5.png-8b696c923cd21219379c42942f0ff37f.ctex
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage_bronze_128.png
+Loading resource: res://.godot/imported/mossbound_full_stage_bronze_128.png-9579ad39ac68789537c2d5316509d5c7.ctex
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage_tree_cutout_0.png
+Loading resource: res://.godot/imported/mossbound_full_stage_tree_cutout_0.png-758c2f27d5ccb00a5676be45767710f2.ctex
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage_tree_cutout_1.png
+Loading resource: res://.godot/imported/mossbound_full_stage_tree_cutout_1.png-113081b63d60d05023e6739f54018ea6.ctex
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage_tree_cutout_2.png
+Loading resource: res://.godot/imported/mossbound_full_stage_tree_cutout_2.png-3b300f872d3e37e0ae496c39ea673157.ctex
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage_tree_midground_v1.png
+Loading resource: res://.godot/imported/mossbound_full_stage_tree_midground_v1.png-5900bf06dce9d581cf83b49214c22700.ctex
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage_tree_cutout_3.png
+Loading resource: res://.godot/imported/mossbound_full_stage_tree_cutout_3.png-dd571de1721ff3588f6e189f58333f8d.ctex
+Loading resource: res://assets/stage/integrated_forest/mossbound_full_stage_fern_cutout_atlas.png
+Loading resource: res://.godot/imported/mossbound_full_stage_fern_cutout_atlas.png-daaa06cd274b98691b7a75ac77722ea8.ctex
+Loading resource: res://assets/stage/integrated_forest/distant_forest_haze.png
+Loading resource: res://.godot/imported/distant_forest_haze.png-f32e0265dd54a75922e448923e6300fe.ctex
+Loading resource: res://shaders/recovered_forest_surface.gdshader
+Loading resource: res://shaders/recovered_stage_air.gdshader
+[AtmosphereRecovery] reconstructed-atmosphere-20261012-r4, act 1, stage-only
+Loading resource: res://scripts/presentation/ContinuousAttackFx.cs
+Loading resource: res://scripts/presentation/AuthoredGeometryFx.cs
+Loading resource: res://scripts/presentation/BattleAudio.cs
+Loading resource: res://assets/Audio/bgm/title.ogg
+Loading resource: res://.godot/imported/title.ogg-8d246028e7f44dd8f396002f4aa6c608.oggvorbisstr
+Loading resource: res://scripts/presentation/BattleCuePool.cs
+Loading resource: res://assets/Fonts/NotoSansJP-Regular.otf
+Loading resource: res://.godot/imported/NotoSansJP-Regular.otf-b620691eff87980fc515d200b2d86f5f.fontdata
+Loading resource: res://scripts/ui/GameUI.cs
+Loading resource: res://assets/Fonts/KaiseiDecol-Bold.ttf
+Loading resource: res://.godot/imported/KaiseiDecol-Bold.ttf-d0a1dcc34142ea07393966284bc85274.fontdata
+Loading resource: res://assets/Art/leaders/leader_green.png
+Loading resource: res://.godot/imported/leader_green.png-46a706db9b35dd2dc24404bd59f1a82d.ctex
+Loading resource: res://assets/Art/leaders/leader_blue.png
+Loading resource: res://.godot/imported/leader_blue.png-fa662d3e59ada8e505c1fc8426c883b8.ctex
+Loading resource: res://assets/Art/leaders/leader_white.png
+Loading resource: res://.godot/imported/leader_white.png-6941202e11579458c4ac8d5cf9f6c21c.ctex
+Loading resource: res://scripts/debug/AgentCapture.cs
+DECKROGUE_RECOVERY_MODULE mvid=d4987add-4a46-4fcf-922e-cddcc3af03ef
+DECKROGUE_PORT_READY cards=466 leaders=15 enemies=89
+Loading resource: res://assets/Audio/bgm/act1.ogg
+Loading resource: res://.godot/imported/act1.ogg-cf14044012912021edb1e27f2ec5156d.oggvorbisstr
+Loading resource: res://scripts/presentation/BattleActor.cs
+Loading resource: res://shaders/authored_StageUnitLit.gdshader
+Loading resource: res://shaders/source_actor_display_functions.gdshaderinc
+Loading resource: res://assets/Art/leaders/leader_green_n.png
+Loading resource: res://.godot/imported/leader_green_n.png-259152ea42ec9d411b8908733aabf432.ctex
+Loading resource: res://assets/Art/leaders/leader_green_e.png
+Loading resource: res://.godot/imported/leader_green_e.png-5ec416907aa359f330e6ef2b9a50ea70.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_0.png
+Loading resource: res://.godot/imported/leader_green_idle_0.png-179e320ca26ed3605765a47bf533d5e7.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_1.png
+Loading resource: res://.godot/imported/leader_green_idle_1.png-56a8af01764db19e1c7e83fc355899ad.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_2.png
+Loading resource: res://.godot/imported/leader_green_idle_2.png-e7df4266cbbad6ddc43e5bf7ca0b7a50.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_3.png
+Loading resource: res://.godot/imported/leader_green_idle_3.png-e40ac99f14a373daa6adc3ff3fb6b894.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_4.png
+Loading resource: res://.godot/imported/leader_green_idle_4.png-344e11419ef49b57f6b82087a76eb173.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_5.png
+Loading resource: res://.godot/imported/leader_green_idle_5.png-77493e98be97c2e685c8af30c401caa2.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_6.png
+Loading resource: res://.godot/imported/leader_green_idle_6.png-4b86ef8b700e4b412fdf889c02d53a9c.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_7.png
+Loading resource: res://.godot/imported/leader_green_idle_7.png-19cb495ad4d4730a0669adfe1942f7a8.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_attack_0.png
+Loading resource: res://.godot/imported/leader_green_attack_0.png-edd4ea76c80256117d394035b16ef1ed.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_attack_1.png
+Loading resource: res://.godot/imported/leader_green_attack_1.png-2890e21cb51c37827ac42bbea3c02092.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_attack_2.png
+Loading resource: res://.godot/imported/leader_green_attack_2.png-fc5fd8e34737dc852875b55224fc9f02.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_attack_3.png
+Loading resource: res://.godot/imported/leader_green_attack_3.png-3bf82696ed20d29ab2dc94cb7efdfa91.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_block_0.png
+Loading resource: res://.godot/imported/leader_green_block_0.png-c850b8a9d818e1a5deed60fd80553244.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_block_1.png
+Loading resource: res://.godot/imported/leader_green_block_1.png-dbd73607645b9871518e606381e6b4f0.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_block_2.png
+Loading resource: res://.godot/imported/leader_green_block_2.png-3b5cdc17df6f8fadb09aba8d3913901c.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_block_3.png
+Loading resource: res://.godot/imported/leader_green_block_3.png-5826f6e87cec48fa352dfc3f52a5df6a.ctex
+Loading resource: res://shaders/actor_shadow.gdshader
+Loading resource: res://assets/Art/enemies/enemy_slug.png
+Loading resource: res://.godot/imported/enemy_slug.png-95f86b6a8691693fa7586ac744d75a41.ctex
+Loading resource: res://assets/Art/enemies/enemy_slug_n.png
+Loading resource: res://.godot/imported/enemy_slug_n.png-5cb97f35c6fec7bd78a0b4ce2d3e8cc1.ctex
+Loading resource: res://assets/Art/enemies/anim/enemy_slug_r2idle_0.png
+Loading resource: res://.godot/imported/enemy_slug_r2idle_0.png-6828582c75cbe590efcec372b4f1da03.ctex
+Loading resource: res://assets/Art/enemies/anim/enemy_slug_r2idle_1.png
+Loading resource: res://.godot/imported/enemy_slug_r2idle_1.png-43f7d08a02e787269948a354f78efb51.ctex
+Loading resource: res://assets/Art/enemies/anim/enemy_slug_r2idle_2.png
+Loading resource: res://.godot/imported/enemy_slug_r2idle_2.png-747beccaf36156bace4645326fc8d84d.ctex
+Loading resource: res://assets/Art/enemies/anim/enemy_slug_r2idle_3.png
+Loading resource: res://.godot/imported/enemy_slug_r2idle_3.png-498f75643dd4657e9819931a75e45414.ctex
+Loading resource: res://assets/Art/leaders/leader_green_icon.png
+Loading resource: res://.godot/imported/leader_green_icon.png-6d5db9306205afd50466c9c5cd8577f6.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_0_n.png
+Loading resource: res://.godot/imported/leader_green_idle_0_n.png-2bca98a0a380050c5831deb916e5f56f.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_0_e.png
+Loading resource: res://.godot/imported/leader_green_idle_0_e.png-e6ab8674142ba9734fc0df4be70acc38.ctex
+Loading resource: res://assets/Art/enemies/anim/enemy_slug_r2idle_0_n.png
+Loading resource: res://.godot/imported/enemy_slug_r2idle_0_n.png-e58da8e74eec92ceb79cc3417a13a334.ctex
+Loading resource: res://scripts/ui/SourceHudLabel.cs
+Loading resource: res://assets/Fonts/KleeOne-Regular.ttf
+Loading resource: res://.godot/imported/KleeOne-Regular.ttf-c5c796cc2d637957e8efeb85d59387b9.fontdata
+Loading resource: res://assets/Fonts/KleeOne-SemiBold.ttf
+Loading resource: res://.godot/imported/KleeOne-SemiBold.ttf-bf1b1c70e70505f228a81b8e6cc5bfe7.fontdata
+Loading resource: res://assets/Art/gears/mana.png
+Loading resource: res://.godot/imported/mana.png-c47ba61742b063dc1a2d1b66fae686e1.ctex
+Loading resource: res://scripts/ui/BattlefieldDropTarget.cs
+Loading resource: res://scripts/ui/SourceHealthBar.cs
+Loading resource: res://scripts/ui/EnemyDropTarget.cs
+Loading resource: res://assets/Art/icons/intent_attack.png
+Loading resource: res://.godot/imported/intent_attack.png-b993795f33a14b3e099356226f781ac6.ctex
+Loading resource: res://scripts/ui/SourceEnergyOrb.cs
+Loading resource: res://scripts/ui/SourceAimArrow.cs
+Loading resource: res://assets/Audio/sfx/enemy_turn.ogg
+Loading resource: res://.godot/imported/enemy_turn.ogg-bb97411b426f7fde16b9c2b3ed1516c7.oggvorbisstr
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_1_n.png
+Loading resource: res://.godot/imported/leader_green_idle_1_n.png-50f6200d25bc8ab001108223b01c9e5a.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_1_e.png
+Loading resource: res://.godot/imported/leader_green_idle_1_e.png-fc99b82447dbd2785db63718301ffcc9.ctex
+Loading resource: res://assets/Art/enemies/anim/enemy_slug_r2idle_1_n.png
+Loading resource: res://.godot/imported/enemy_slug_r2idle_1_n.png-014e8d190166aec8e83243ea2702186e.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_2_n.png
+Loading resource: res://.godot/imported/leader_green_idle_2_n.png-b24b1b0ab0626a1629cdf4c507965312.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_2_e.png
+Loading resource: res://.godot/imported/leader_green_idle_2_e.png-5af0d5fd91b053c9cfc45895a8acdd8f.ctex
+Loading resource: res://assets/Art/enemies/anim/enemy_slug_r2idle_2_n.png
+Loading resource: res://.godot/imported/enemy_slug_r2idle_2_n.png-0d07c7df756741914acc3d609a162697.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_3_n.png
+Loading resource: res://.godot/imported/leader_green_idle_3_n.png-b3633bbe93606efc333ae88799f5509c.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_3_e.png
+Loading resource: res://.godot/imported/leader_green_idle_3_e.png-a7456f356d5cc40f2ae89f936bc3e85e.ctex
+Loading resource: res://assets/Art/enemies/anim/enemy_slug_r2idle_3_n.png
+Loading resource: res://.godot/imported/enemy_slug_r2idle_3_n.png-27683e24dc2e82b9bf7a363c49a8577e.ctex
+Loading resource: res://shaders/authored_BoundedContactFx.gdshader
+Loading resource: res://assets/Audio/sfx/lunge.ogg
+Loading resource: res://.godot/imported/lunge.ogg-d0ef5fdbf8e7dccec516f8aa9455021a.oggvorbisstr
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_4_n.png
+Loading resource: res://.godot/imported/leader_green_idle_4_n.png-edab5d7f9cb633572d93ee58ae1f420d.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_4_e.png
+Loading resource: res://.godot/imported/leader_green_idle_4_e.png-dc2c065ae0dc901ee8e9a977f595927a.ctex
+Loading resource: res://assets/Audio/sfx/hit_enemy.ogg
+Loading resource: res://.godot/imported/hit_enemy.ogg-05ae5a308528065ec7b373015c63e53b.oggvorbisstr
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_5_n.png
+Loading resource: res://.godot/imported/leader_green_idle_5_n.png-20b211d25a64d3e8eaa55ce33cd173f3.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_5_e.png
+Loading resource: res://.godot/imported/leader_green_idle_5_e.png-42aa5339a156d5526ede157e5bb9257d.ctex
+Loading resource: res://assets/Audio/sfx/debuff.ogg
+Loading resource: res://.godot/imported/debuff.ogg-666e751cbe10064fe4d71c52295da800.oggvorbisstr
+Loading resource: res://assets/Art/icons/exposed.png
+Loading resource: res://.godot/imported/exposed.png-677a177c227f69457a375d5741da18d3.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_6_n.png
+Loading resource: res://.godot/imported/leader_green_idle_6_n.png-752e7ebe1253e9e369283c2d9b72a9c1.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_6_e.png
+Loading resource: res://.godot/imported/leader_green_idle_6_e.png-15bbaf64c3cbf470145a943cd3e195ea.ctex
+Loading resource: res://assets/Audio/sfx/turn.ogg
+Loading resource: res://.godot/imported/turn.ogg-9cedfc951f534e8aa9437f5a6a4d7732.oggvorbisstr
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_7_n.png
+Loading resource: res://.godot/imported/leader_green_idle_7_n.png-ac6b4c6d3a17b48c8e5a84d56f5eed67.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_7_e.png
+Loading resource: res://.godot/imported/leader_green_idle_7_e.png-b8d4aa5ed933fa02da56ef10d9d37936.ctex
+Loading resource: res://assets/Art/enemies/anim/enemy_slug_r2idle_3_n.png
+Loading resource: res://.godot/imported/enemy_slug_r2idle_3_n.png-27683e24dc2e82b9bf7a363c49a8577e.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_0_n.png
+Loading resource: res://.godot/imported/leader_green_idle_0_n.png-2bca98a0a380050c5831deb916e5f56f.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_0_e.png
+Loading resource: res://.godot/imported/leader_green_idle_0_e.png-e6ab8674142ba9734fc0df4be70acc38.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_1_n.png
+Loading resource: res://.godot/imported/leader_green_idle_1_n.png-50f6200d25bc8ab001108223b01c9e5a.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_1_e.png
+Loading resource: res://.godot/imported/leader_green_idle_1_e.png-fc99b82447dbd2785db63718301ffcc9.ctex
+Loading resource: res://assets/Audio/sfx/card_draw.ogg
+Loading resource: res://.godot/imported/card_draw.ogg-a0fbc262cf9a6dc66fe63855dcddb108.oggvorbisstr
+Loading resource: res://scripts/ui/CardTile.cs
+Loading resource: res://assets/Art/cards/green_ramp_sprout.png
+Loading resource: res://.godot/imported/green_ramp_sprout.png-e7beef019253fc3818027f37dfedbdb1.ctex
+Loading resource: res://assets/Art/ui/cost_orb.png
+Loading resource: res://.godot/imported/cost_orb.png-245467ae9bbfae048bbef03ac830afec.ctex
+Loading resource: res://assets/Art/ui/gem_common.png
+Loading resource: res://.godot/imported/gem_common.png-d9966401586967cdbfd18c955148faa9.ctex
+Loading resource: res://scripts/ui/SourceCardBody.cs
+Loading resource: res://assets/Art/ui/cardback.png
+Loading resource: res://.godot/imported/cardback.png-0d9d5102a1494b00c9e9a103eba77263.ctex
+Loading resource: res://assets/Art/cards/green_finisher_stomp.png
+Loading resource: res://.godot/imported/green_finisher_stomp.png-cee98b9f58de56e28ed37bd7266f66d4.ctex
+Loading resource: res://assets/Art/ui/gem_rare.png
+Loading resource: res://.godot/imported/gem_rare.png-58bc556de93d6593f359375e67fa83d2.ctex
+Loading resource: res://assets/Art/cards/green_reaction_root_weave.png
+Loading resource: res://.godot/imported/green_reaction_root_weave.png-1647476230d3aa409bdd5682c702388f.ctex
+Loading resource: res://assets/Art/ui/gem_uncommon.png
+Loading resource: res://.godot/imported/gem_uncommon.png-52cbd5b03173f82a1d248509bfd04c75.ctex
+Loading resource: res://assets/Art/cards/green_guard.png
+Loading resource: res://.godot/imported/green_guard.png-391bc6f3e1056e5ef16977c214d77ebe.ctex
+Loading resource: res://assets/Art/cards/green_strike.png
+Loading resource: res://.godot/imported/green_strike.png-dba06e8c172471bc31c223588bfeb674.ctex
+Loading resource: res://assets/Art/leaders/leader_green_n.png
+Loading resource: res://.godot/imported/leader_green_n.png-259152ea42ec9d411b8908733aabf432.ctex
+Loading resource: res://assets/Art/leaders/leader_green_e.png
+Loading resource: res://.godot/imported/leader_green_e.png-5ec416907aa359f330e6ef2b9a50ea70.ctex
+Loading resource: res://assets/Art/enemies/enemy_slug_n.png
+Loading resource: res://.godot/imported/enemy_slug_n.png-5cb97f35c6fec7bd78a0b4ce2d3e8cc1.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_2_n.png
+Loading resource: res://.godot/imported/leader_green_idle_2_n.png-b24b1b0ab0626a1629cdf4c507965312.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_2_e.png
+Loading resource: res://.godot/imported/leader_green_idle_2_e.png-5af0d5fd91b053c9cfc45895a8acdd8f.ctex
+Loading resource: res://assets/Art/enemies/anim/enemy_slug_r2idle_2_n.png
+Loading resource: res://.godot/imported/enemy_slug_r2idle_2_n.png-0d07c7df756741914acc3d609a162697.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_3_n.png
+Loading resource: res://.godot/imported/leader_green_idle_3_n.png-b3633bbe93606efc333ae88799f5509c.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_3_e.png
+Loading resource: res://.godot/imported/leader_green_idle_3_e.png-a7456f356d5cc40f2ae89f936bc3e85e.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_4_n.png
+Loading resource: res://.godot/imported/leader_green_idle_4_n.png-edab5d7f9cb633572d93ee58ae1f420d.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_4_e.png
+Loading resource: res://.godot/imported/leader_green_idle_4_e.png-dc2c065ae0dc901ee8e9a977f595927a.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_5_n.png
+Loading resource: res://.godot/imported/leader_green_idle_5_n.png-20b211d25a64d3e8eaa55ce33cd173f3.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_5_e.png
+Loading resource: res://.godot/imported/leader_green_idle_5_e.png-42aa5339a156d5526ede157e5bb9257d.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_6_n.png
+Loading resource: res://.godot/imported/leader_green_idle_6_n.png-752e7ebe1253e9e369283c2d9b72a9c1.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_6_e.png
+Loading resource: res://.godot/imported/leader_green_idle_6_e.png-15bbaf64c3cbf470145a943cd3e195ea.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_1_n.png
+Loading resource: res://.godot/imported/leader_green_idle_1_n.png-50f6200d25bc8ab001108223b01c9e5a.ctex
+Loading resource: res://assets/Art/leaders/anim/leader_green_idle_1_e.png
+Loading resource: res://.godot/imported/leader_green_idle_1_e.png-fc99b82447dbd2785db63718301ffcc9.ctex
+Loading resource: res://scripts/ui/CardTile.cs
+Loading resource: res://scripts/ui/SourceCardBody.cs
+Loading resource: res://assets/Audio/sfx/card_draw_2.ogg
+Loading resource: res://.godot/imported/card_draw_2.ogg-72c3e76954becd2bdbb7196158a373f1.oggvorbisstr
+RECOVERY_R5_DELAY_QA_PASS checks=46
+Unloading: Disposing tracked instances...
+Unloading: Finished disposing tracked instances.
+XR: Clearing primary interface
+XR: Removed interface "Native mobile"
+XR: Removed interface "OpenXR"
+Accessibility: window 0 adapter destroyed.

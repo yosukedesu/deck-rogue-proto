@@ -73,7 +73,7 @@ public static class SourceIntentTag
     }
     private static TextureRect Picture(Control parent,string name,Texture2D texture,Rect2 rect,bool nearest)
     {
-        var p=new TextureRect{Name=name,Texture=texture,Position=rect.Position,Size=rect.Size,ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,TextureFilter=nearest?CanvasItem.TextureFilterEnum.Nearest:CanvasItem.TextureFilterEnum.Linear,MouseFilter=Control.MouseFilterEnum.Ignore};parent.AddChild(p);return p;
+        var p=new TextureRect{Name=name,ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,Texture=texture,Position=rect.Position,Size=rect.Size,StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,TextureFilter=nearest?CanvasItem.TextureFilterEnum.Nearest:CanvasItem.TextureFilterEnum.Linear,MouseFilter=Control.MouseFilterEnum.Ignore};parent.AddChild(p);return p;
     }
     private static NinePatchRect Sheet(Control parent,string name,Rect2 rect,Color fill,Color edge,float line,float unit)
     {

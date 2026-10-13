@@ -34,7 +34,7 @@ public partial class GameUI
     public void SetCardRetirement(Func<string,double> provider){_uxRetirement=provider;}
     private Func<string,double> _uxRetirement;
     public IReadOnlyList<Rect2> GetEnemyLedgerBounds()=>_uxEnemies.Where(x=>GodotObject.IsInstanceValid(x.Ledger)&&x.Ledger.IsVisibleInTree()).Select(x=>x.Ledger.GetGlobalRect()).ToArray();
-    private void UxResetHand(){UxCancelHandDeals(false);_uxEpoch++;EndHandDrag();foreach(var t in _uxTiles.Values){t.Hide();t.QueueFree();}_uxTiles.Clear();_uxSeats.Clear();_uxHover=null;_uxPaid.Clear();_uxIncomingOwner=-1;}
+    private void UxResetHand(){UxCancelHandHovers(false);UxCancelHandDeals(false);_uxEpoch++;EndHandDrag();foreach(var t in _uxTiles.Values){t.Hide();t.QueueFree();}_uxTiles.Clear();_uxSeats.Clear();_uxHover=null;_uxPaid.Clear();_uxIncomingOwner=-1;}
     private Label UxText(Control parent,string text,int units,Color color,bool deco=false,bool bold=false)
     {
         var label=new Label{Text=text,MouseFilter=MouseFilterEnum.Ignore,VerticalAlignment=VerticalAlignment.Center};parent.AddChild(label);
@@ -95,10 +95,13 @@ public partial class GameUI
     private void BuildBattle(RunState run)
     {
         var state=run.Combat;if(state==null)return;float u=BattleUnit;_uxEnemies.Clear();_enemyReadouts.Clear();_enemyIntentReadouts.Clear();
-        _uxBattle=new Control{Name="SourceBattleCanvas",Size=Size,MouseFilter=MouseFilterEnum.Ignore};AddChild(_uxBattle);
-        var field=new BattlefieldDropTarget{Name="BattlefieldDrop",Size=Size,MouseFilter=MouseFilterEnum.Pass,CanPlay=CanDropHandCard,CardDropped=DropHandCard,ResolveCard=DecodeHandDrag};_uxBattle.AddChild(field);
+        _uxBattle=new Control{Name="SourceBattleCanvas",ZIndex=30,Size=Size,MouseFilter=MouseFilterEnum.Ignore};AddChild(_uxBattle);
+        var field=new BattlefieldDropTarget{Name="BattlefieldDrop",Size=Size,MouseFilter=MouseFilterEnum.Pass,CanPlay=CanDropHandCard,CardDropped=DropHandCard,ResolveCard=DecodeHandDrag};AddChild(field);
         if(_uxHand==null||!GodotObject.IsInstanceValid(_uxHand)){_uxHand=new Control{Name="PersistentHand",Size=Size,MouseFilter=MouseFilterEnum.Ignore};AddChild(_uxHand);}else MoveChild(_uxHand,GetChildCount()-1);
         _uxHand.Visible=true;
+        // Unity BattleView.Create: FieldLayer, then HandLayer, then UiLayer.
+        // HUD buttons must receive the pointer above incoming hand cards.
+        MoveChild(_uxBattle,GetChildCount()-1);
         float bottom=Size.Y-(PhoneLayout?293:285)*u;
         BuildUxHero(state,bottom);
         BuildUxEnemies(field,state,bottom);
@@ -236,7 +239,7 @@ public partial class GameUI
         var s=InputCombat??_view?.Combat;if(s==null||_uxHand==null)return;_uxHand.Size=Size;float u=BattleUnit;float cs=UxCardScale;int n=s.Player.Hand.Count;float cw=200*cs;float spacing,shift=0;
         if(PhoneLayout){float sw=Size.X/u;float tilt=Math.Max(0,(n-1)/2f*3)*Mathf.Pi/180;float over=Math.Max(0,145*Mathf.Sin(tilt)-100*(1-Mathf.Cos(tilt)))*cs;float left=24+150+24+over,right=sw-305;spacing=n>1?Math.Max(20,Math.Min(cw+12,(right-left-cw)/(n-1))):0;shift=(left+right)/2-sw/2;}
         else spacing=n==0?0:Math.Min(cw+12,1180f/n);
-        var live=s.Player.Hand.Select(c=>c.Uid).ToHashSet();var removed=_uxTiles.Keys.Where(x=>!live.Contains(x)).ToArray();bool removedPlayed=UxRemovedPlayedCard(removed);int newOrdinal=0;foreach(var uid in removed){var gone=_uxTiles[uid];UxCancelHandDeal(uid,false);_uxTiles.Remove(uid);_uxSeats.Remove(uid);gone.MouseFilter=MouseFilterEnum.Ignore;var tween=CreateTween();tween.TweenProperty(gone,"modulate:a",0f,_uxRetirement?.Invoke(gone.GetMeta("definition_id","").AsString())??.25);tween.TweenCallback(Callable.From(()=>{if(GodotObject.IsInstanceValid(gone))gone.QueueFree();}));}
+        var live=s.Player.Hand.Select(c=>c.Uid).ToHashSet();var removed=_uxTiles.Keys.Where(x=>!live.Contains(x)).ToArray();bool removedPlayed=UxRemovedPlayedCard(removed);int newOrdinal=0;foreach(var uid in removed){var gone=_uxTiles[uid];UxCancelHandHover(uid,false);UxCancelHandDeal(uid,false);_uxTiles.Remove(uid);_uxSeats.Remove(uid);gone.MouseFilter=MouseFilterEnum.Ignore;var tween=CreateTween();tween.TweenProperty(gone,"modulate:a",0f,_uxRetirement?.Invoke(gone.GetMeta("definition_id","").AsString())??.25);tween.TweenCallback(Callable.From(()=>{if(GodotObject.IsInstanceValid(gone))gone.QueueFree();}));}
         for(int i=0;i<n;i++)
         {
             var c=s.Player.Hand[i];string uid=c.Uid;bool added=!_uxTiles.TryGetValue(uid,out var tile);
@@ -251,7 +254,7 @@ public partial class GameUI
             float handY=PhoneLayout?-3:11;float cx=Size.X/2+((i-center)*spacing+shift)*u;float cy=Size.Y-(handY+145*cs)*u+dy*u;
             var pos=new Vector2(cx-100,cy-145);float rot=(i-center)*3;_uxSeats[uid]=(pos,rot,i);
             if(added)UxStartHandDeal(uid,tile,SourceHandDealMotion.Delay(newOrdinal++,removed.Length>0,removedPlayed));
-            else if(!UxKeepHandDeal(uid,tile)&&_uxDrag!=uid){tile.Scale=Vector2.One*(cs*u);tile.Position=pos;tile.RotationDegrees=rot;}
+            else if(!UxKeepHandDeal(uid,tile)&&!UxKeepHandHover(uid,tile)&&_uxDrag!=uid&&_uxHover!=uid){tile.Scale=Vector2.One*(cs*u);tile.Position=pos;tile.RotationDegrees=rot;}
             if(_uxDrag!=uid&&_uxHover!=uid){_uxHand.MoveChild(tile,_uxHand.GetChildCount()-1);tile.ZIndex=0;}
             // Incoming flight and its delayed cue never acquire or extend an input fence.
         }
@@ -265,8 +268,8 @@ public partial class GameUI
     private void HoverUxHand(string uid,bool enter)
     {
         if(!_uxTiles.TryGetValue(uid,out var tile)||!_uxSeats.TryGetValue(uid,out var seat))return;
-        if(enter){if(IsInputBlocked||_uxDrag!=null)return;UxCancelHandDeal(uid,false);if(_uxHover!=null&&_uxHover!=uid)HoverUxHand(_uxHover,false);_uxHover=uid;_uxHand.MoveChild(tile,_uxHand.GetChildCount()-1);tile.ZIndex=10;tile.RotationDegrees=0;tile.Scale=Vector2.One*(UxCardScale*BattleUnit*1.18f);tile.Position=seat.Pos-new Vector2(0,(70+(PhoneLayout?17:19))*BattleUnit);}
-        else{UxCancelHandDeal(uid,false);if(_uxHover==uid)_uxHover=null;tile.ZIndex=0;tile.Position=seat.Pos;tile.RotationDegrees=seat.Rotation;tile.Scale=Vector2.One*(UxCardScale*BattleUnit);RestoreUxHandOrder();}
+        if(enter){if(IsInputBlocked||_overlay!=null||_uxDrag!=null)return;if(_uxHover!=null&&_uxHover!=uid)HoverUxHand(_uxHover,false);_uxHover=uid;_uxHand.MoveChild(tile,_uxHand.GetChildCount()-1);tile.ZIndex=10;UxStartHandHover(uid,tile,seat.Pos-new Vector2(0,(70+(PhoneLayout?17:19))*BattleUnit),Vector2.One*(1.18f*BattleUnit),0);}
+        else{if(_uxDrag==uid)return;if(_uxHover==uid)_uxHover=null;tile.ZIndex=0;UxStartHandHover(uid,tile,seat.Pos,Vector2.One*(UxCardScale*BattleUnit),seat.Rotation);RestoreUxHandOrder();}
     }
     private void RestoreUxHandOrder()
     {
@@ -274,7 +277,7 @@ public partial class GameUI
     }
     private void StartHandDrag(string uid)
     {
-        UxCancelHandDeal(uid,false);_uxDrag=uid;_uxHover=null;if(_uxTiles.TryGetValue(uid,out var t)&&_uxSeats.TryGetValue(uid,out var seat)){_uxHand.MoveChild(t,_uxHand.GetChildCount()-1);t.Position=seat.Pos;t.RotationDegrees=0;t.Scale=Vector2.One*UxCardScale*BattleUnit;t.ZIndex=20;}
+        UxCancelHandHover(uid,false);UxCancelHandDeal(uid,false);_uxDrag=uid;_uxHover=null;if(_uxTiles.TryGetValue(uid,out var t)&&_uxSeats.TryGetValue(uid,out var seat)){_uxHand.MoveChild(t,_uxHand.GetChildCount()-1);t.Position=seat.Pos;t.RotationDegrees=0;t.Scale=Vector2.One*UxCardScale*BattleUnit;t.ZIndex=20;}
         UpdateHandAim();
     }
     private void EndHandDrag()
@@ -301,7 +304,7 @@ public partial class GameUI
     private void UxProcess(double delta)
     {
         if(_uxLastSize!=Size){_uxLastSize=Size;if(!_uxRelayoutQueued){_uxRelayoutQueued=true;EndHandDrag();CallDeferred(nameof(UxRelayout));}}
-        UxTickHandDeals(delta);PositionUxEnemies();UpdateHandAim();AlignUxRichLine(_uxForecast);AlignUxRichLine(_uxDetail);
+        UxTickHandDeals(delta);UxTickHandHovers(delta);PositionUxEnemies();UpdateHandAim();AlignUxRichLine(_uxForecast);AlignUxRichLine(_uxDetail);
     }
     private static void AlignUxRichLine(RichTextLabel label)
     {

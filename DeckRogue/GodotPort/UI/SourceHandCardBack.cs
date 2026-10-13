@@ -26,7 +26,7 @@ void fragment(){
     // Godot fragment COLOR already contains the default texture sample.
     COLOR.a*=clamp(0.5-d,0.0,1.0);
 }"}};
-            back.AddChild(new TextureRect{Name="Art",Texture=_art,Size=back.Size,ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,StretchMode=TextureRect.StretchModeEnum.Scale,TextureFilter=CanvasItem.TextureFilterEnum.Linear,Material=_rounded,MouseFilter=Control.MouseFilterEnum.Ignore});
+            back.AddChild(new TextureRect{Name="Art",ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,Texture=_art,Size=back.Size,StretchMode=TextureRect.StretchModeEnum.Scale,TextureFilter=CanvasItem.TextureFilterEnum.Linear,Material=_rounded,MouseFilter=Control.MouseFilterEnum.Ignore});
         }
         else
         {
@@ -39,7 +39,7 @@ void fragment(){
             foreach(var r in new[]{new Rect2(10,10,180,2),new Rect2(10,278,180,2),new Rect2(10,10,2,270),new Rect2(188,10,2,270)})
                 back.AddChild(new ColorRect{Position=r.Position,Size=r.Size,Color=brass,MouseFilter=Control.MouseFilterEnum.Ignore});
             const string starPath="res://assets/Art/icons/star.png";
-            if(ResourceLoader.Exists(starPath))back.AddChild(new TextureRect{Name="Star",Texture=GD.Load<Texture2D>(starPath),Position=new Vector2(58,103),Size=new Vector2(84,84),ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,Modulate=new Color(SourcePalette.Brass,.55f),MouseFilter=Control.MouseFilterEnum.Ignore});
+            if(ResourceLoader.Exists(starPath))back.AddChild(new TextureRect{Name="Star",ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,Texture=GD.Load<Texture2D>(starPath),Position=new Vector2(58,103),Size=new Vector2(84,84),StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,Modulate=new Color(SourcePalette.Brass,.55f),MouseFilter=Control.MouseFilterEnum.Ignore});
         }
         return back;
     }

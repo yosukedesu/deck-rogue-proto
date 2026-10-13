@@ -1,0 +1,118 @@
+{
+  "scope": "Independent read-only acceptance of named native hand gates only; no claim of complete Unity parity or normal device cadence",
+  "module": "f11c468c-2a94-441e-a1d3-0e7d7bdce48f",
+  "sources": {
+    "unity-parity-20261013/ui-manual/attempt6-source-hashes.json": "34fc9979b1b44ea0d4aa38793ecccb8cac50875c849e402865b47a7e385f602e",
+    "ui-parity-restoration-20261013/verification/hand-float-review/attempt6-pointer-events-through2280.jsonl": "837025d7daa109748e68c7f40954c61cc0d7a3167fb7127a368e571ab213beaa"
+  },
+  "checks": [
+    {
+      "name": "130 cancel and modal full-save equality",
+      "passed": true,
+      "detail": "manual005–009 byte-identical, including RNG; revision2"
+    },
+    {
+      "name": "modal007 clears hover",
+      "passed": true,
+      "detail": {
+        "timeScale": 1.0,
+        "overlay": true
+      }
+    },
+    {
+      "name": "modal008 clears hover",
+      "passed": true,
+      "detail": {
+        "timeScale": 1.0,
+        "overlay": false
+      }
+    },
+    {
+      "name": "return reflow chooses new canonical seat",
+      "passed": true,
+      "detail": {
+        "old": {
+          "X": 316.81177,
+          "Y": 592.3333
+        },
+        "new": {
+          "X": 387.04556,
+          "Y": 585.6666
+        },
+        "atCommand": "(387.04556, 585.6666)"
+      }
+    },
+    {
+      "name": "no stale return overwrite after normal time",
+      "passed": true,
+      "detail": {
+        "afterNormalSettle": "(387.04556, 585.6666)"
+      }
+    },
+    {
+      "name": "airborne dwell preserves pressed UID",
+      "passed": true,
+      "detail": {
+        "hoverFrame": 2126,
+        "pressFrame": 2265,
+        "realSeconds": 14.463572,
+        "qaTimeScale": 0.01,
+        "uid": "green_strike#dbgh0"
+      }
+    },
+    {
+      "name": "airborne dwell exact one intended command",
+      "passed": true,
+      "detail": {
+        "cardUid": "green_strike#dbgh0",
+        "targetIndex": 1,
+        "type": "PlayCard"
+      }
+    },
+    {
+      "name": "airborne command rules receipt",
+      "passed": true,
+      "detail": [
+        {
+          "cardId": "green_strike",
+          "type": "CardPlayed"
+        },
+        {
+          "presentationReceipt": {
+            "version": 1,
+            "target": "enemy",
+            "enemyIndex": 1,
+            "enemyId": "enemy_mudling",
+            "before": {
+              "hp": 9,
+              "maxHp": 9,
+              "block": 0
+            },
+            "after": {
+              "hp": 3,
+              "maxHp": 9,
+              "block": 0
+            }
+          },
+          "source": "player",
+          "amount": 6,
+          "hpLoss": 6,
+          "enemyIndex": 1,
+          "presentationSource": {
+            "kind": "card",
+            "definitionId": "green_strike",
+            "uid": "green_strike#dbgh0"
+          },
+          "type": "DamageDealt"
+        }
+      ]
+    },
+    {
+      "name": "100 incoming real desktop cancel",
+      "passed": true,
+      "detail": "runtime-identified real Sky.desktop process1091 Guard press; four other deals active; full bytes unchanged"
+    }
+  ],
+  "originalPointerLog": "unity-parity-20261013/ui-manual/attempt6-hand130/pointer-events.jsonl",
+  "reviewedThroughProcessFrame": 2280
+}

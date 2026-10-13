@@ -1,0 +1,32 @@
+{
+  "status": "accepted bounded native-engine delay gate; intermittent earlier teardown diagnostic retained",
+  "loadedMvid": "d4987add-4a46-4fcf-922e-cddcc3af03ef",
+  "checks": 46,
+  "passed": true,
+  "resultsSha256": "3f3a7eb6b39311da7957b1418a11eaa6b9dad2905b38716d483da06d9fb8f1f6",
+  "proofKind": "Native Godot engine with isolated real command queue and manually advanced presentation; four frozen native draws, not continuous-motion/live-device evidence",
+  "firingSteps": {
+    "boundary-variable": 7,
+    "stall250ms": 2
+  },
+  "shutdown": {
+    "clean": false,
+    "messages": [
+      "ObjectDB instances leaked at exit",
+      "6 resources still in use at exit"
+    ],
+    "predatesR5": "Same 6-resource warning in motion-r4/headless-composed.log; 2-resource warnings also occur in frozen baseline native captures.",
+    "exactResourceAttribution": "Not established: unchanged verbose rerun exited without the prior warning and did not list leaked resource types.",
+    "explicitHarnessDisposal": "No cleanup patch was applied; cannot attribute the disappearance to explicit disposal."
+  },
+  "sourceArchiveUnchanged": true,
+  "verboseRerun": {
+    "resultPath": "unity-parity-20261013/motion-r5/native-variable-delay-verbose/results.json",
+    "resultSha256": "4229fa0c700c7630c175236b1abcec4cef966137b447f293434e9c280e099077",
+    "logSha256": "8d8e7f8d42a32ecda6a87de0e82b3a2501202e58b2a91372beac2bfb4cc31729",
+    "checks": 46,
+    "passed": true,
+    "loadedMvid": "d4987add-4a46-4fcf-922e-cddcc3af03ef",
+    "ObjectDBOrResourceInUseWarning": false
+  }
+}

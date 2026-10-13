@@ -1,0 +1,511 @@
+{
+  "loadedMvid": "d4987add-4a46-4fcf-922e-cddcc3af03ef",
+  "passed": true,
+  "checks": 46,
+  "error": null,
+  "diagnostics": [],
+  "results": [
+    {
+      "kind": "assertion",
+      "name": "load-r5-boundary-variable",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-outer-callback-does-not-land-boundary-variable",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-size",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "save-r5-boundary-variable-outer",
+      "pass": true
+    },
+    {
+      "kind": "capture",
+      "file": "001_r5-boundary-variable-outer.png",
+      "sha256": "9dbb0f412a17f55c7fda265057f0a4b8fd8f3c21b9a10f452ef58fb1a8b97085",
+      "clock": 3.2333326,
+      "InputLocked": true,
+      "ActiveEffectCount": 1,
+      "ActiveMotionCount": 1,
+      "ActivePhaseBanner": "",
+      "ActivePhaseBannerAlpha": 0.0,
+      "phaseBannerBounds": "(662.6925, 350.66663), (560, 80)",
+      "actors": [
+        {
+          "DefinitionId": "leader_green",
+          "pose": "idle",
+          "frame": 3,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_slug",
+          "pose": "idle",
+          "frame": 3,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        }
+      ]
+    },
+    {
+      "kind": "r5-inner-delay-step",
+      "scenario": "boundary-variable",
+      "step": 1,
+      "delta": 0.04,
+      "outerAt": 3.2333326,
+      "clock": 3.2733326,
+      "sourceFired": false,
+      "numericContacts": 0,
+      "enemyLungeVersion": 2,
+      "heroLungeVersion": 1,
+      "heroPoseStarts": 1
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-literal-afterco-contact-boundary-variable-1",
+      "pass": true
+    },
+    {
+      "kind": "r5-inner-delay-step",
+      "scenario": "boundary-variable",
+      "step": 2,
+      "delta": 0.04,
+      "outerAt": 3.2333326,
+      "clock": 3.3133326,
+      "sourceFired": false,
+      "numericContacts": 0,
+      "enemyLungeVersion": 2,
+      "heroLungeVersion": 1,
+      "heroPoseStarts": 1
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-literal-afterco-contact-boundary-variable-2",
+      "pass": true
+    },
+    {
+      "kind": "r5-inner-delay-step",
+      "scenario": "boundary-variable",
+      "step": 3,
+      "delta": 0.04,
+      "outerAt": 3.2333326,
+      "clock": 3.3533325,
+      "sourceFired": false,
+      "numericContacts": 0,
+      "enemyLungeVersion": 2,
+      "heroLungeVersion": 1,
+      "heroPoseStarts": 1
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-literal-afterco-contact-boundary-variable-3",
+      "pass": true
+    },
+    {
+      "kind": "r5-inner-delay-step",
+      "scenario": "boundary-variable",
+      "step": 4,
+      "delta": 0.04,
+      "outerAt": 3.2333326,
+      "clock": 3.3933325,
+      "sourceFired": false,
+      "numericContacts": 0,
+      "enemyLungeVersion": 2,
+      "heroLungeVersion": 1,
+      "heroPoseStarts": 1
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-literal-afterco-contact-boundary-variable-4",
+      "pass": true
+    },
+    {
+      "kind": "r5-inner-delay-step",
+      "scenario": "boundary-variable",
+      "step": 5,
+      "delta": 0.04,
+      "outerAt": 3.2333326,
+      "clock": 3.4333324,
+      "sourceFired": false,
+      "numericContacts": 0,
+      "enemyLungeVersion": 2,
+      "heroLungeVersion": 1,
+      "heroPoseStarts": 1
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-literal-afterco-contact-boundary-variable-5",
+      "pass": true
+    },
+    {
+      "kind": "r5-inner-delay-step",
+      "scenario": "boundary-variable",
+      "step": 6,
+      "delta": 0.02,
+      "outerAt": 3.2333326,
+      "clock": 3.4533324,
+      "sourceFired": false,
+      "numericContacts": 0,
+      "enemyLungeVersion": 2,
+      "heroLungeVersion": 1,
+      "heroPoseStarts": 1
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-literal-afterco-contact-boundary-variable-6",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "incoming-callback-owned",
+      "pass": true
+    },
+    {
+      "kind": "r5-inner-delay-step",
+      "scenario": "boundary-variable",
+      "step": 7,
+      "delta": 0.016666668,
+      "outerAt": 3.2333326,
+      "clock": 3.469999,
+      "sourceFired": true,
+      "numericContacts": 1,
+      "enemyLungeVersion": 2,
+      "heroLungeVersion": 2,
+      "heroPoseStarts": 1
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-literal-afterco-contact-boundary-variable-7",
+      "pass": true
+    },
+    {
+      "kind": "r5-inner-delay-step",
+      "scenario": "boundary-variable",
+      "step": 8,
+      "delta": 0.016666668,
+      "outerAt": 3.2333326,
+      "clock": 3.4866657,
+      "sourceFired": true,
+      "numericContacts": 1,
+      "enemyLungeVersion": 2,
+      "heroLungeVersion": 2,
+      "heroPoseStarts": 1
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-literal-afterco-contact-boundary-variable-8",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-exact-firing-step-boundary-variable",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-size",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "save-r5-boundary-variable-contact",
+      "pass": true
+    },
+    {
+      "kind": "capture",
+      "file": "002_r5-boundary-variable-contact.png",
+      "sha256": "05c75ad0ca16d2ef4856f390ecc23bfb84228062bf71f11b24f544eb63bdb681",
+      "clock": 3.4866657,
+      "InputLocked": true,
+      "ActiveEffectCount": 1,
+      "ActiveMotionCount": 1,
+      "ActivePhaseBanner": "",
+      "ActivePhaseBannerAlpha": 0.0,
+      "phaseBannerBounds": "(662.6925, 350.66663), (560, 80)",
+      "actors": [
+        {
+          "DefinitionId": "leader_green",
+          "pose": "idle",
+          "frame": 4,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_slug",
+          "pose": "idle",
+          "frame": 0,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-releases-input",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-motion-queue-empty",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "visuals-preserve-rules-rng",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-contact-exactly-once-boundary-variable",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "load-r5-stall250ms",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "reset-gates-clear",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "actual-command-accepted",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "exact-original-rule-outcome",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-outer-callback-does-not-land-stall250ms",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-size",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "save-r5-stall250ms-outer",
+      "pass": true
+    },
+    {
+      "kind": "capture",
+      "file": "003_r5-stall250ms-outer.png",
+      "sha256": "2dce097d56290f1d16217195e6c2298da3ccd37f1b74c36c390763c025677f17",
+      "clock": 5.6202607,
+      "InputLocked": true,
+      "ActiveEffectCount": 1,
+      "ActiveMotionCount": 1,
+      "ActivePhaseBanner": "",
+      "ActivePhaseBannerAlpha": 0.0,
+      "phaseBannerBounds": "(662.6925, 350.66663), (560, 80)",
+      "actors": [
+        {
+          "DefinitionId": "leader_green",
+          "pose": "idle",
+          "frame": 6,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_slug",
+          "pose": "idle",
+          "frame": 2,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        }
+      ]
+    },
+    {
+      "kind": "r5-inner-delay-step",
+      "scenario": "stall250ms",
+      "step": 1,
+      "delta": 0.01,
+      "outerAt": 5.6202607,
+      "clock": 5.630261,
+      "sourceFired": false,
+      "numericContacts": 0,
+      "enemyLungeVersion": 1,
+      "heroLungeVersion": 0,
+      "heroPoseStarts": 0
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-literal-afterco-contact-stall250ms-1",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "incoming-callback-owned",
+      "pass": true
+    },
+    {
+      "kind": "r5-inner-delay-step",
+      "scenario": "stall250ms",
+      "step": 2,
+      "delta": 0.25,
+      "outerAt": 5.6202607,
+      "clock": 5.880261,
+      "sourceFired": true,
+      "numericContacts": 1,
+      "enemyLungeVersion": 1,
+      "heroLungeVersion": 1,
+      "heroPoseStarts": 0
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-literal-afterco-contact-stall250ms-2",
+      "pass": true
+    },
+    {
+      "kind": "r5-inner-delay-step",
+      "scenario": "stall250ms",
+      "step": 3,
+      "delta": 0.016666668,
+      "outerAt": 5.6202607,
+      "clock": 5.896928,
+      "sourceFired": true,
+      "numericContacts": 1,
+      "enemyLungeVersion": 1,
+      "heroLungeVersion": 1,
+      "heroPoseStarts": 0
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-literal-afterco-contact-stall250ms-3",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-exact-firing-step-stall250ms",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "native-size",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "save-r5-stall250ms-contact",
+      "pass": true
+    },
+    {
+      "kind": "capture",
+      "file": "004_r5-stall250ms-contact.png",
+      "sha256": "5a603db1cb2c1d89322ee973718be8a9da131970654c490fac449e00669aa65c",
+      "clock": 5.896928,
+      "InputLocked": true,
+      "ActiveEffectCount": 1,
+      "ActiveMotionCount": 1,
+      "ActivePhaseBanner": "",
+      "ActivePhaseBannerAlpha": 0.0,
+      "phaseBannerBounds": "(662.6925, 350.66663), (560, 80)",
+      "actors": [
+        {
+          "DefinitionId": "leader_green",
+          "pose": "idle",
+          "frame": 6,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        },
+        {
+          "DefinitionId": "enemy_slug",
+          "pose": "idle",
+          "frame": 2,
+          "offset": "(0, 0, 0)",
+          "DissolveAmount": 0.0,
+          "ExecutionScaleActive": false
+        }
+      ]
+    },
+    {
+      "kind": "assertion",
+      "name": "bounded-condition-reached",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-releases-input",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "drain-motion-queue-empty",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "visuals-preserve-rules-rng",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-contact-exactly-once-stall250ms",
+      "pass": true
+    },
+    {
+      "kind": "assertion",
+      "name": "r5-no-session-diagnostics",
+      "pass": true
+    },
+    {
+      "kind": "r5-proof-scope",
+      "nativeEngine": true,
+      "manualAdvancePresentation": true,
+      "continuousRenderedMotionProof": false,
+      "source": "Stage41 Tween.cs:273-279 literal AfterCo",
+      "scope": "Real command queue and actor callback ordering with isolated session and paused automatic clock; not live Android cadence or continuous render capture."
+    }
+  ],
+  "provenance": "Fresh reconstructed motion/P0 tests; no claim of exact lost final-source identity"
+}

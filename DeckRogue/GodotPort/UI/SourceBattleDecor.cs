@@ -11,7 +11,7 @@ public static class SourceBattleDecor
     private static readonly Dictionary<string,Texture2D> Cache=new();
     public static TextureRect Icon(Control parent,string name,Texture2D art,Rect2 rect,Color? tint=null)
     {
-        var p=new TextureRect{Name=name,Texture=art,Position=rect.Position,Size=rect.Size,ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,MouseFilter=Control.MouseFilterEnum.Ignore,TextureFilter=CanvasItem.TextureFilterEnum.Nearest,Modulate=tint??Colors.White};parent.AddChild(p);return p;
+        var p=new TextureRect{Name=name,ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,Texture=art,Position=rect.Position,Size=rect.Size,StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,MouseFilter=Control.MouseFilterEnum.Ignore,TextureFilter=CanvasItem.TextureFilterEnum.Nearest,Modulate=tint??Colors.White};parent.AddChild(p);return p;
     }
     public static SourceHudLabel Text(Control parent,string name,string text,Rect2 rect,int size,Color ink,bool deco=false,bool bold=false)
     {

@@ -1,0 +1,17 @@
+{
+  "module": "f11c468c-2a94-441e-a1d3-0e7d7bdce48f",
+  "hoverFrame": 2126,
+  "pressedFrame": 2265,
+  "commandFrame": 2279,
+  "uid": "green_strike#dbgh0",
+  "targetIndex": 1,
+  "activeDealsAtHover": 4,
+  "activeDealsAtPress": 1,
+  "activeHoversAtPress": 0,
+  "realDwellSeconds": 14.4636,
+  "timeScale": 0.01,
+  "commandCount": 1,
+  "revisionBefore": 4,
+  "revisionAfter": 5,
+  "scope": "Actual desktop pointer. Test-only slowed presentation for intercepting flight; continuous cadence accepted separately."
+}
