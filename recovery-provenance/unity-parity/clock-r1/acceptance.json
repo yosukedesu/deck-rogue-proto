@@ -1,0 +1,55 @@
+{
+  "candidate": "sprite-r1",
+  "boundedAcceptance": "Source-owner reviewed native A/B: first overhead hold corrected; authored sprite durations and local hold preserved. Not full Unity parity or Android performance acceptance.",
+  "nativeFrames": 110,
+  "processConsecutive": true,
+  "renderConsecutive": true,
+  "pngHashesVerified": true,
+  "nativeIdentity": {
+    "schema": "unity-parity-native-sequence/1",
+    "baseCommit": "bd66ae1655023fa3bc57f89ed217ce404fcdf54b",
+    "assemblyMvid": "6808137d-e8f6-4e0b-bc0f-19841ce18b0b",
+    "assemblySha256": "25a2ff490915c37704386447fd0a6b5d56880a86782974d227933181b241b613",
+    "reference": "a7f86b5 ux-target3-video",
+    "referenceTimeOffset": 4.6,
+    "renderCadence": "--fixed-fps 60 (not realtime)",
+    "everyNativeFrame": true,
+    "width": 1170,
+    "height": 540,
+    "card": "green_strike",
+    "fixtureSha256": "7d542deffbd8c13a0a9e31180e66b4ca803f6073955bd70f02ecdbfe6c30adc1",
+    "actions": [
+      {
+        "frame": 30,
+        "referenceFrame": 306,
+        "command": "PlayCard target1"
+      },
+      {
+        "frame": 123,
+        "referenceFrame": 399,
+        "command": "EndTurn"
+      }
+    ],
+    "input": "Original command dispatch; this motion test does not claim pointer input or uxdrag parity"
+  },
+  "behaviorRegression": {
+    "headlessChecks": 121,
+    "passed": true
+  },
+  "sourceOracleCases": 144,
+  "baselineSpriteTransitions": [
+    31,
+    35,
+    43,
+    46,
+    57
+  ],
+  "candidateSpriteTransitions": [
+    31,
+    33,
+    42,
+    45,
+    55
+  ],
+  "limitation": "Original baseline inherited effective low quality; this checkpoint isolates sprite clock, not matched-quality lighting. Fixed-fps native recording is not natural device cadence."
+}

@@ -1,0 +1,10 @@
+{
+  "baseline_commit": "bd66ae1655023fa3bc57f89ed217ce404fcdf54b",
+  "files": [
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleActor.cs",
+      "baseline_sha256": "8b7bdd87b78e547932ef2d82b72f1c37f73abd2e19d73582066b7413986f7690",
+      "candidate_sha256": "35953b7f004e7c56e17cc038b5a2cfd26d5073a44b5b02b7a86636a818c60150"
+    }
+  ]
+}

@@ -318,6 +318,7 @@ public partial class BattleActor : Node3D
  public Vector3 SourceMotionFeet=>Home+Motion.Offset;
  public SourceActorMotion Motion {get;}=new();
  int _sourceMotionFrame;
+ int _poseSampleFrame = int.MinValue;
  public void CancelSourceMotion(float clock){Motion.Cancel();CancelExecutionScale();PlayPose("idle",clock);}
  public string PoseName=>_pose;public int PoseFrame=>_poseFrame;public float PoseFrameTime=>_poseFrameTime;
  public bool HasActivePose=>_pose!="idle"&&PoseFrames(_pose) is {Count:>0};
@@ -626,7 +627,12 @@ public partial class BattleActor : Node3D
 		return value;
 	}
 
-	private void AdvancePose(float clock)
+	private void AdvancePose(float clock) => AdvancePose(clock, Math.Max(0f, clock - _poseClock));
+
+	// Unity StageUnit.LateUpdate advances the freshly started pose with this frame's
+	// scaled delta. Subtracting absolute float clocks loses precision and also
+	// suppresses that first tick after every PlayPose. Keep the authored 40 ms cap.
+	private void AdvancePose(float clock, float frameDelta)
 	{
 		if (!_poseInitialized)
 		{
@@ -643,7 +649,7 @@ public partial class BattleActor : Node3D
 			ApplyPoseFrame();
 			return;
 		}
-		float delta = Math.Clamp(clock - _poseClock, 0f, 0.04f);
+		float delta = Math.Clamp(frameDelta, 0f, 0.04f);
 		_poseClock = clock;
 		List<Texture2D> frames = PoseFrames(_pose);
 		if (frames == null || frames.Count == 0)
@@ -726,7 +732,9 @@ public partial class BattleActor : Node3D
    if(hitProgress>=0&&(_lastHitProgress<0||hitProgress<_lastHitProgress))StartPose("hurt",clock);
   }
   if(hitProgress>=0&&(_lastHitProgress<0||hitProgress<_lastHitProgress))Flash(clock);
-  _lastAttackProgress=attackProgress;_lastHitProgress=hitProgress;_lastGuarding=guarding;if(Motion.IsPaused(clock))_poseClock=clock;else AdvancePose(clock);
+  _lastAttackProgress=attackProgress;_lastHitProgress=hitProgress;_lastGuarding=guarding;
+  // One StageUnit LateUpdate per presentation frame, even if a review redraws it.
+  if(_poseSampleFrame!=frame){_poseSampleFrame=frame;if(Motion.IsPaused(clock))_poseClock=clock;else AdvancePose(clock,delta);}
   if(attackProgress>=0) {float pulse=MathF.Sin(Math.Clamp(attackProgress,0,1)*MathF.PI);Position+=new Vector3(EnemyIndex>=0?-pulse*.20f:pulse*.20f,0,0);}
   if(hitProgress>=0) {float pulse=MathF.Sin(Math.Clamp(hitProgress,0,1)*MathF.PI);Sprite.Position+=_layoutBasis.X*(MathF.Sin(hitProgress*23)*.07f*pulse);}
   RefreshSourceMaterial();
