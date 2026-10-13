@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "behaviorMatched": true,
+  "framesPerRun": 540,
+  "assertions": 41040,
+  "settledFromFrame": 460,
+  "settledTailFrames": 80,
+  "requiredTailFrames": 60,
+  "originalFullSaveOracle": "exact, no excluded fields",
+  "spriteMotionEventFenceTimeline": "exact baseline/candidate",
+  "pngCadence": "explicit stride; not continuous video",
+  "candidateScope": "doll fallback32 plus feedback text; source visual differences confined to those owners"
+}

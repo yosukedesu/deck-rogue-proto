@@ -1,0 +1,13 @@
+{
+  "baseCommit": "89a03acf05fe023b48c320c70ae76299b14fca8a",
+  "mvid": [
+    {
+      "file": "DeckRogue.dll",
+      "mvid": "fcecf1a8-49be-464d-bdd1-2eace1ace01e"
+    }
+  ],
+  "dllSha256": "b66dab70770c174a124691bfb38801c6433cf050c6485f2a07c834dc40019699",
+  "candidateNativeMvid": "c8b19171-e16c-4f18-9788-9960997bbe04",
+  "sourceChange": "OnlyProceduralActorTexture.Doll(id,64) toDoll(id,32)",
+  "scope": "Seven paired idle layouts, two reloads, original retainer EndTurn540/80 stage-settled frames;31 fully hand-clear frames. Authored art, engine/rules/RNG unchanged. Desktop token layout/wide-retainer crowding remain separate existing scope. Detailed evidence will be bundled incrementally against89a03ac."
+}

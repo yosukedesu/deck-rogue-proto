@@ -1,0 +1,153 @@
+{
+  "schema": "doll-fallback-scale/1",
+  "baseline_commit": "ccdce85d60a43dd6c7aedc7c8a455451233e7b90",
+  "status": "OFF_TREE_PENDING_NATIVE",
+  "runtime_applied": false,
+  "path": "DeckRogue/GodotPort/Presentation/BattleActor.cs",
+  "before_sha256": "7868d6848cd3773eab49c110ff83ae148a13259fc79584f88beb877f06f6b97a",
+  "after_sha256": "4b61f7462453853250bae3bbde621704d8093cffb60a592dace2e4fb37255bf8",
+  "baseline_line": 368,
+  "changes": 1,
+  "purpose": "Source-backed doll procedural fallback size 64 to 32 only",
+  "exact_a7_source_available": false,
+  "source_refs": [
+    {
+      "path": "unity-source-provenance-20261013/extracted/DeckRogue-Cumulative-Stage41-from-2f31050-20261010/payload/unity/Assets/Game/BattleScreen.cs",
+      "sha256": "c1b6e25b98a3238afedfd672f55329125465dc996aed0c5d97607b6562ee979e",
+      "relevant_lines": [
+        83,
+        84,
+        1838,
+        1848
+      ]
+    },
+    {
+      "path": "unity-source-provenance-20261013/extracted/DeckRogue-Cumulative-Stage41-from-2f31050-20261010/payload/unity/Assets/Game/BattleView.cs",
+      "sha256": "8f6824506a7d344623ee7dd215a1128157d9306abf757c6dca053e8a966276f1",
+      "relevant_lines": [
+        457,
+        464,
+        570,
+        576
+      ]
+    },
+    {
+      "path": "deckrogue_cloud_migration/worktree/unity/Assets/Game/Theme.cs",
+      "sha256": "d7b5d8ef4e886af1fc6fe917b810cc97c79cbe30488f6a046588107ad2ca4ac0",
+      "relevant_lines": [
+        452,
+        460,
+        477,
+        552
+      ]
+    },
+    {
+      "path": "runtime-recovery-20261012/project/DeckRogue/GodotPort/Presentation/BattleActor.cs",
+      "sha256": "7868d6848cd3773eab49c110ff83ae148a13259fc79584f88beb877f06f6b97a",
+      "relevant_lines": [
+        341,
+        369,
+        393,
+        413,
+        436,
+        452,
+        473,
+        487,
+        544,
+        547
+      ]
+    },
+    {
+      "path": "runtime-recovery-20261012/project/DeckRogue/GodotPort/Presentation/BattleStage.cs",
+      "sha256": "600191f20bcfad9f5af534001ffbb89fa41c8c0d321bb68dfdf4cd3e2786bf22",
+      "relevant_lines": [
+        918,
+        938,
+        976,
+        985
+      ]
+    },
+    {
+      "path": "runtime-recovery-20261012/project/DeckRogue/GodotPort/Presentation/SourceActorSizing.cs",
+      "sha256": "abb8995c425dbd95d3d737fe529df7641ba2923cd7822e424d5f56a4a112c1c2",
+      "relevant_lines": [
+        42,
+        54,
+        75,
+        88
+      ]
+    },
+    {
+      "path": "runtime-recovery-20261012/project/DeckRogue/GodotPort/Presentation/ProceduralActorTexture.cs",
+      "sha256": "726182c83db23800222b4eb67783d538c8715f2b5024915d87d877de00c368c8",
+      "relevant_lines": [
+        8,
+        24,
+        231,
+        465
+      ]
+    }
+  ],
+  "existing_native_evidence": {
+    "path": "unity-parity-20261013/halo-v4-combined/backing-four100/texture-handles-before-exit.json",
+    "sha256": "dfb21fca69b98b62693aa7cb49ae395000ff5eb5a83b2844cb9f37604870a107",
+    "wick": {
+      "Role": "actor-source:white_perm_wick",
+      "OwnerId": 66353891824,
+      "ResourceId": 9223372103309330930,
+      "NativeHandle": 108,
+      "Path": "",
+      "Width": 64,
+      "Height": 64
+    }
+  },
+  "authored_controls": [
+    {
+      "id": "white_perm_squire",
+      "resource_path": "res://assets/Art/dolls/white_perm_squire.png",
+      "import_path": "assets/Art/dolls/white_perm_squire.png.import",
+      "import_sha256": "7fb4f14db18976a27f4e3964e6df8fba100300cd9bfbecac22f1ebdf8d19e226",
+      "ctex_path": ".godot/imported/white_perm_squire.png-4b219c8f5f866a6b8d45b250a2199025.ctex",
+      "ctex_sha256": "f34430394c509d393c672bb56a913f69b882c288e20ccb5114a8e442176f2e99",
+      "width": 32,
+      "height": 32
+    },
+    {
+      "id": "white_perm_dragon",
+      "resource_path": "res://assets/Art/dolls/white_perm_dragon.png",
+      "import_path": "assets/Art/dolls/white_perm_dragon.png.import",
+      "import_sha256": "fef373f091892768ececf103fc0d15ce91616eac373637aafba316d17923d35d",
+      "ctex_path": ".godot/imported/white_perm_dragon.png-837537dceb304a3fb771da00c986eaa7.ctex",
+      "ctex_sha256": "23af299871ae7791028dd28607cd82ac9dc91e6aff47bc10390b56321ef797fb",
+      "width": 48,
+      "height": 48
+    },
+    {
+      "id": "white_perm_lion",
+      "resource_path": "res://assets/Art/dolls/white_perm_lion.png",
+      "import_path": "assets/Art/dolls/white_perm_lion.png.import",
+      "import_sha256": "64f45271301ee90293c839db4e26cdc67810d2c8e655c992db8163bf96bf929f",
+      "ctex_path": ".godot/imported/white_perm_lion.png-b7743936224f81b0c06333835059dc19.ctex",
+      "ctex_sha256": "b5a3c7f7d1f8d99949d32d9b8ebe3beb410343906d5ff7a7a0ce17fac0af3c9a",
+      "width": 48,
+      "height": 48
+    }
+  ],
+  "excluded": [
+    "Authored art bytes and resource lookup",
+    "Doll generation algorithm",
+    "Combat rules and saves",
+    "Seat policy",
+    "Halo/VFX and frozen packages"
+  ],
+  "verification": {
+    "pure_assertions": 581,
+    "scope_installer_tests": 15,
+    "candidate_compile_errors": 0,
+    "candidate_compile_warnings": 15,
+    "baseline_compile_errors": 0,
+    "baseline_compile_warnings": 15,
+    "warning_signatures_identical": true,
+    "native": "not run; runtime integrator owns native capture"
+  }
+}

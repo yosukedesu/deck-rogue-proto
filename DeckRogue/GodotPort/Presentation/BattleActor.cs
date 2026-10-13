@@ -365,7 +365,7 @@ public partial class BattleActor : Node3D
 		_idleDuration = ((id == "leader_blue") ? 0.125f : 0.25f);
 		if (tex == null)
 		{
-			tex = ((category == "dolls") ? ProceduralActorTexture.Doll(id, 64) : ProceduralActorTexture.Generate(id, category == "leaders", 64));
+			tex = ((category == "dolls") ? ProceduralActorTexture.Doll(id, 32) : ProceduralActorTexture.Generate(id, category == "leaders", 64));
 		}
 		_baseTexture = tex;
 		_footAnchorOffsetX = ((id == "leader_blue") ? (1f / 32f * (float)tex.GetWidth()) : 0f);

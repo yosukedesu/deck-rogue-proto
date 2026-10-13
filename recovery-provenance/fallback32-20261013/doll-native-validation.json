@@ -1,0 +1,394 @@
+[
+  {
+    "case": "rich-solo-1.0",
+    "pass": true,
+    "assertions": 602,
+    "wickTextureInstancesAfterTwoResets": 3,
+    "outsideExpandedQuad": [
+      {
+        "frame": 0,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 1,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 2,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 3,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 4,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 5,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 6,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 7,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 8,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 9,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 10,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 11,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      }
+    ]
+  },
+  {
+    "case": "rich-solo-1.3",
+    "pass": true,
+    "assertions": 602,
+    "wickTextureInstancesAfterTwoResets": 3,
+    "outsideExpandedQuad": [
+      {
+        "frame": 0,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 1,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 2,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 3,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 4,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 5,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 6,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 7,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 8,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 9,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 10,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 11,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      }
+    ]
+  },
+  {
+    "case": "rich-four-1.0",
+    "pass": true,
+    "assertions": 602,
+    "wickTextureInstancesAfterTwoResets": 3,
+    "outsideExpandedQuad": [
+      {
+        "frame": 0,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 1,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 2,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 3,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 4,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 5,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 6,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 7,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 8,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 9,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 10,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 11,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      }
+    ]
+  },
+  {
+    "case": "rich-four-1.3",
+    "pass": true,
+    "assertions": 602,
+    "wickTextureInstancesAfterTwoResets": 3,
+    "outsideExpandedQuad": [
+      {
+        "frame": 0,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 1,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 2,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 3,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 4,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 5,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 6,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 7,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 8,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 9,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 10,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 11,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      }
+    ]
+  },
+  {
+    "case": "controls-1.0",
+    "pass": true,
+    "assertions": 518,
+    "wickTextureInstancesAfterTwoResets": 3,
+    "outsideExpandedQuad": [
+      {
+        "frame": 0,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 1,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 2,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 3,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 4,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 5,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 6,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 7,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 8,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 9,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 10,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 11,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      }
+    ]
+  },
+  {
+    "case": "controls-1.3",
+    "pass": true,
+    "assertions": 518,
+    "wickTextureInstancesAfterTwoResets": 3,
+    "outsideExpandedQuad": [
+      {
+        "frame": 0,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 1,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 2,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 3,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 4,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 5,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 6,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 7,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 8,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 9,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 10,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 11,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      }
+    ]
+  },
+  {
+    "case": "controls-desktop",
+    "pass": true,
+    "assertions": 518,
+    "wickTextureInstancesAfterTwoResets": 3,
+    "outsideExpandedQuad": [
+      {
+        "frame": 0,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 1,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 2,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 3,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 4,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 5,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 6,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 7,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 8,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 9,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 10,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      },
+      {
+        "frame": 11,
+        "changedPixelsOutsideExpandedWickQuad": 0
+      }
+    ]
+  }
+]
