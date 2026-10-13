@@ -1,0 +1,12 @@
+{
+  "menuDeckInspectorUpgradeAndOutsideReturn": true,
+  "previewCancelBytesUnchanged": true,
+  "fleeButtonCancelAndEscapeUnchanged": true,
+  "fleeOneCommandMana50To40": true,
+  "mapPaperRedEraseClearActualPointer": true,
+  "mapLegendCandidateFailure": "Known 1px intrinsic label width; separate correction compiled after this attempt",
+  "campfireNoRestAndTrainReasonVisible": true,
+  "phoneSelectionWithoutCommandThenCancel": true,
+  "phoneConfirmOneUpgrade": true,
+  "inspectionScope": "100% phone1170x540 actual pointer on synthetic isolated fixtures. No whole-run source pixel parity."
+}

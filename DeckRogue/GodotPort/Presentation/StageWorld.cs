@@ -1948,14 +1948,14 @@ public partial class StageWorld : Node3D
 		_forestSourceLights.Clear();
 	}
 
-	public void SetForestAttackLights(IReadOnlyList<ActorMaterialBinding.PointLight>? lights)
+	public void SetForestAttackLights(IReadOnlyList<ActorMaterialBinding.PointLight>? lights, int maximumAttackLights = 2)
 	{
 		_forestAttackLights.Clear();
 		if (lights != null)
 		{
 			foreach (ActorMaterialBinding.PointLight light in lights)
 			{
-				if (light.IsAttack && _forestAttackLights.Count < 2 && light.Range > 0f && light.Position.IsFinite() && light.LinearRadiance.IsFinite())
+				if (light.IsAttack && _forestAttackLights.Count < Math.Clamp(maximumAttackLights, 2, 3) && light.Range > 0f && light.Position.IsFinite() && light.LinearRadiance.IsFinite())
 				{
 					_forestAttackLights.Add(light);
 				}

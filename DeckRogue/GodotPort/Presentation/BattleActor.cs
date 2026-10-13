@@ -315,11 +315,17 @@ public partial class BattleActor : Node3D
 
 
  public float SourceMotionHeight=>Sprite is null?_imageHeight-_feetPad:Sprite.Texture.GetHeight()*Sprite.PixelSize-_feetPad;
- public Vector3 SourceMotionFeet=>Home+Motion.Offset;
+ public Vector3 SourceMotionFeet=>Home+Motion.Offset+UiLunge.Offset;
  public SourceActorMotion Motion {get;}=new();
+ public SourceUiLunge UiLunge {get;}=new();
+ float _sourceUnitsPerCanvasPixel;
+ public void SetSourceCanvasMotionScale(float unitsPerCanvasPixel)=>_sourceUnitsPerCanvasPixel=unitsPerCanvasPixel;
+ public Vector3 SourceCanvasDisplacement(Vector2 canvasDelta)=>Basis*_layoutBasis*new Vector3(canvasDelta.X,canvasDelta.Y,0)*_sourceUnitsPerCanvasPixel;
+ public void BeginSourceLunge(Vector2 canvasDelta,float now,int frame,float duration=.28f,float delay=0)=>UiLunge.Begin(SourceCanvasDisplacement(canvasDelta),duration,now,frame,delay);
  int _sourceMotionFrame;
  int _poseSampleFrame = int.MinValue;
- public void CancelSourceMotion(float clock){Motion.Cancel();CancelExecutionScale();PlayPose("idle",clock);}
+ public void CancelSourceMotion(float clock){Motion.Cancel();UiLunge.Cancel();CancelExecutionScale();PlayPose("idle",clock);}
+ public int PoseStartCount {get;private set;}
  public string PoseName=>_pose;public int PoseFrame=>_poseFrame;public float PoseFrameTime=>_poseFrameTime;
  public bool HasActivePose=>_pose!="idle"&&PoseFrames(_pose) is {Count:>0};
 
@@ -558,6 +564,7 @@ public partial class BattleActor : Node3D
 		List<Texture2D> frames = PoseFrames(name);
 		if (frames != null && frames.Count != 0)
 		{
+			PoseStartCount++;
 			_pose = name;
 			_poseFrame = 0;
 			_poseFrameTime = 0f;
@@ -717,11 +724,16 @@ public partial class BattleActor : Node3D
 		}
 	}
 
+ public void SampleSourceMotion(float clock,float frameDelta,int presentationFrame) {
+  UiLunge.Sample(clock,frameDelta,presentationFrame);
+  if(Motion.Sample(clock,frameDelta,presentationFrame) is {} requestedPose)PlayPose(requestedPose,clock);
+ }
+
  public void UpdateVisual(float clock,float attackProgress=-1,float hitProgress=-1,bool guarding=false,int presentationFrame=-1,float frameDelta=-1) {
   if(Sprite is null)return;float delta=frameDelta>=0?frameDelta:Math.Max(0,clock-_lastClock);_lastClock=clock;
   int frame=presentationFrame>=0?presentationFrame:++_sourceMotionFrame;
-  if(Motion.Sample(clock,delta,frame) is {} requestedPose)PlayPose(requestedPose,clock);
-  Position=Home+Motion.Offset;SampleExecutionScale(clock);Sprite.Position=_layoutBasis.Y*((_imageHeight/2-_feetPad)*ExecutionScale.Y);Sprite.Basis=_layoutBasis.ScaledLocal(new Vector3(ExecutionScale.X,ExecutionScale.Y,1));
+  SampleSourceMotion(clock,delta,frame);
+  Position=Home+Motion.Offset+UiLunge.Offset;SampleExecutionScale(clock);Sprite.Position=_layoutBasis.Y*((_imageHeight/2-_feetPad)*ExecutionScale.Y);Sprite.Basis=_layoutBasis.ScaledLocal(new Vector3(ExecutionScale.X,ExecutionScale.Y,1));
   _surface.SetShaderParameter("_Flash",Math.Clamp((_flashUntil-clock)/.18f,0,1)*.10f);
   if(Dead){_deathFade=_dissolve;Sprite.Modulate=new Color(1,1,1,1-_deathFade);Vitals.Visible=false;IntentLabel.Visible=false;_shadow.Visible=_deathFade<1;RefreshSourceMaterial();return;}
   Sprite.Modulate=Colors.White;_shadow.Visible=true;Vitals.Visible=ShowLabels;IntentLabel.Visible=ShowLabels;

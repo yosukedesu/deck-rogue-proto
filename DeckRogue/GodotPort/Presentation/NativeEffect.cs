@@ -11,6 +11,8 @@ internal sealed class NativeEffect
 
 	public Action<Vector3>? ConfigureSource;
 
+	public Action<bool>? ConfigureMirror;
+
 	public Action<float>? ConfigureParticleGain;
 
 	public Func<float>? VisualAge;

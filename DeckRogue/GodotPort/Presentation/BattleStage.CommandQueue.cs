@@ -44,6 +44,7 @@ public partial class BattleStage
  sealed class OrdinaryBeat {
   public PresentationBeat Beat=null!;public ActionPlayback Action=null!;public int Index;
   public float ContactAt,PreviewAt,StartedAt,Time,EffectStartedAt,EffectOffset,LastContact,ContactRetimed;
+  public readonly SourceFrameDelay InnerDelay=new();
   public bool Started,Contacted,Rejected,Projection;public int Hp,Block,ContactOrdinal=-1;
   public BattleActor? Source,Target;public EnemyAttackContactPlan.SourceProof? SourceProof;
   public EffectPlayback? Effect;public int Volley;public bool Direct,Flashed;public BattleActor? CapturedTarget;
@@ -87,7 +88,9 @@ public partial class BattleStage
    var path="res://assets/Audio/audio.json";if(Godot.FileAccess.FileExists(path)){var audio=Newtonsoft.Json.Linq.JObject.Parse(Godot.FileAccess.GetFileAsString(path));foreach(var key in ((Newtonsoft.Json.Linq.JObject?)audio["sfx"])?.Properties()??Enumerable.Empty<Newtonsoft.Json.Linq.JProperty>())keys.Add(key.Name);}
    var plan=SourceEnemySequence.Plan(change.Events,keys);action.NotBeforeFinish=plan.End;
    var contacts=new List<int>();
-   for(int i=0;i<change.Events.Count;i++){var beat=_timeline.Describe(change.Events[i],Routes);action.Beats.Add(new(){Beat=beat,Action=action,Index=i,ContactAt=plan.Onsets[i],PreviewAt=plan.Onsets[i]});contacts.Add(i);}
+   for(int i=0;i<change.Events.Count;i++){var e=change.Events[i];var beat=_timeline.Describe(e,Routes);
+    float inner=e is GameEvent_DamageDealt {Source:"enemy"} hit&&SourceEnemyRanged(before,hit.EnemyIndex??-1)?.22f:0;
+    action.Beats.Add(new(){Beat=beat,Action=action,Index=i,ContactAt=plan.Onsets[i]+inner,PreviewAt=plan.Onsets[i]});contacts.Add(i);}
    _ordinaryActions.Add(action);action.Token=_actionQueue.Enqueue(_clock,contacts,token=>LaunchOrdinary(action));
   }else{
    // No callbacks run inside StateChanged. The gate is already visible to UI;
@@ -143,22 +146,28 @@ public partial class BattleStage
   if(!_receipts.TryGetValue(b.Beat.Event,out var r))return true;
   return r.Reason is not null||_ledger.Ready(r);
  }
- void ProcessOrdinaryContacts(){
+ void ProcessOrdinaryContacts(float delta){
   // Snapshot: contact listeners may synchronously accept another command.
   int generation=_actionQueue.Generation;
   foreach(var action in _ordinaryActions.ToArray()){
    if(!action.Launched||action.Finished)continue;
    foreach(var b in action.Beats){
     if(!b.Started&&_clock+.000001f>=b.PreviewAt&&ReceiptReadyForPreview(b)){
-     b.Started=true;b.StartedAt=b.PreviewAt;if(b.Beat.Route is not null)b.Effect=AcquireEffect();
+     b.Started=true;AnchorSourceEnemyInnerContact(b);b.StartedAt=b.PreviewAt;if(b.Beat.Route is not null)b.Effect=AcquireEffect();
      WithOrdinaryBeat(b,()=>{BeginBeat(b.Beat);if(action.EnemyPhase)b.StartedAt=b.ContactAt-(b.Beat.Scenario?.Windup??0);});
     }
+    // AfterCo accumulates the actual scaled delta after its first yield. Do not
+    // compare an absolute float timestamp or admit the contact using epsilon.
+    if(b.InnerDelay.Pending){if(!b.InnerDelay.Sample(delta,_presentationFrame))continue;b.ContactAt=_clock;}
     float due=b.ContactAt+(b.ContactOrdinal+1)*EnemyAttackContactPlan.ContactSpacing+b.ContactRetimed;
     if(b.Contacted||_clock+.000001f<due)continue;
     if(b.Beat.Route is not null&&_lastOrdinaryVisualFrame==_presentationFrame&&!(b.Direct&&action.Profile is not null&&Math.Abs(_lastVolleyAt-b.ContactAt)<.00001f))break;
     // Preserve intra-action event order; a later frame cannot jump a predecessor.
     if(action.Beats.Any(p=>p.Index<b.Index&&!p.Contacted))break;
-    if(!b.Started){b.Started=true;b.StartedAt=b.PreviewAt;if(b.Beat.Route is not null)b.Effect=AcquireEffect();WithOrdinaryBeat(b,()=>{BeginBeat(b.Beat);if(action.EnemyPhase)b.StartedAt=b.ContactAt-(b.Beat.Scenario?.Windup??0);});}
+    if(!b.Started){b.Started=true;AnchorSourceEnemyInnerContact(b);b.StartedAt=b.PreviewAt;if(b.Beat.Route is not null)b.Effect=AcquireEffect();WithOrdinaryBeat(b,()=>{BeginBeat(b.Beat);if(action.EnemyPhase)b.StartedAt=b.ContactAt-(b.Beat.Scenario?.Windup??0);});}
+    // A blocked preview may first become eligible at this boundary. A newly
+    // started ranged outer callback still owes its own source inner delay.
+    if(b.InnerDelay.Pending||_clock+.000001f<b.ContactAt)continue;
     // Preview can overlap an earlier contact, but arithmetic/identity is checked
     // again at the actual transaction boundary before any numeric mutation.
     var receipt=CombatPresentationLedger.Read(b.Beat.Event);
@@ -181,6 +190,12 @@ public partial class BattleStage
    }
    CompleteOrdinaryActionIfDone(action);
   }
+ }
+ void AnchorSourceEnemyInnerContact(OrdinaryBeat beat){
+  // Source AfterVisual(.22) starts in Show(DamageDealt), at the actual outer
+  // callback time, rather than the planned sequence slot before frame rounding.
+  if(beat.Action.EnemyPhase&&beat.Beat.Event is GameEvent_DamageDealt {Source:"enemy"} hit&&
+   SourceEnemyRanged(beat.Action.Owner.Change.Previous?.Combat,hit.EnemyIndex??-1)){beat.ContactAt=_clock+.22f;beat.InnerDelay.Begin(.22f,_presentationFrame);}
  }
  void PresentOrdinaryCard(ActionPlayback action,GameEvent_CardPlayed card){BeginSourceCard(action);}
  void CompleteOrdinaryActionIfDone(ActionPlayback action){
@@ -218,6 +233,7 @@ public partial class BattleStage
   if(probe is not null){probe.AppendSourceLights(lights);return;}
   _native.AppendSourceLights(lights);
   foreach(var b in _ordinaryActions.SelectMany(a=>a.Beats))if(b.Effect is {} effect&&lights.Count<8)effect.Native.AppendSourceLights(lights);
+  AppendSourceCastLight(lights);
   if(lights.Count>8)lights.RemoveRange(8,lights.Count-8);
  }
  void TryFinishPresentations(){
@@ -227,6 +243,7 @@ public partial class BattleStage
   IsPresenting=false;InputLocked=false;_session?.SetPresentationBusy(false);_receipts.Clear();_eventOwners.Clear();PresentationCompleted?.Invoke();
  }
  void CancelCommandQueue(){
+  ClearSourceCastLight();
   _actionQueue.Cancel();_finishSlowRemaining=0;foreach(var action in _ordinaryActions)foreach(var beat in action.Beats)RetireEffect(beat);
   _ordinaryActions.Clear();_commands.Clear();_eventOwners.Clear();_actorAction=null;_fenceCommand=null;_ordinaryCallback=null;
  }

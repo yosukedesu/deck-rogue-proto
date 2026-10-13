@@ -327,6 +327,7 @@ internal static class NativeGeometryBridge
 		string family = route.Family;
 		string t = tier.ToString().ToLowerInvariant();
 		double sampledAge = 0.0;
+		bool mirror = false;
 		NativeEffect result;
 		switch (route.Renderer)
 		{
@@ -337,9 +338,11 @@ internal static class NativeGeometryBridge
 			nativeEffect.Batches = Batches(b12.Batches, Wrap);
 			nativeEffect.Sample = delegate(double age)
 			{
-				PhysicalSlashGeometry.Sample(b12, age, mirrorX: false, PhysicalSlashGeometry.Lead(t));
+				PhysicalSlashGeometry.Sample(b12, age, mirrorX: mirror, PhysicalSlashGeometry.Lead(t));
 			};
-			nativeEffect.Light = () => (float)b12.LightEnvelope;
+			nativeEffect.ConfigureMirror = value => mirror = value;
+			// Source PhysicalSlashFx admits this lease at Land, after preview.
+			nativeEffect.Light = () => sampledAge >= 0 ? (float)b12.LightEnvelope : 0f;
 			nativeEffect.Shader = "PhysicalSlashFx";
 			nativeEffect.Palette = "physical-contact-palette-r1";
 			nativeEffect.Texture = "vine-slash-surface-r1";
@@ -353,8 +356,9 @@ internal static class NativeGeometryBridge
 			nativeEffect.Batches = Batches(b7.Batches, Wrap);
 			nativeEffect.Sample = delegate(double age)
 			{
-				WaterContinuousGeometry.Sample(b7, age, mirrorX: false, WaterContinuousGeometry.Lead());
+				WaterContinuousGeometry.Sample(b7, age, mirrorX: mirror, WaterContinuousGeometry.Lead());
 			};
+			nativeEffect.ConfigureSource = v => mirror = SourceAttackOrientation.IncomingFromRight(v);
 			nativeEffect.Light = () => (float)b7.LightEnvelope;
 			nativeEffect.Shader = "WaterContinuousFx";
 			nativeEffect.Palette = "water-continuous-palette-r1";
@@ -491,8 +495,9 @@ internal static class NativeGeometryBridge
 			};
 			nativeEffect.Sample = delegate(double age)
 			{
-				VineSlashGeometry.Sample(b2, age, mirrorX: false, 0.066666667);
+				VineSlashGeometry.Sample(b2, age, mirrorX: mirror, 0.066666667);
 			};
+			nativeEffect.ConfigureMirror = value => mirror = value;
 			nativeEffect.Light = () => (float)b2.LightEnvelope;
 			nativeEffect.Shader = "VineSlashFx";
 			nativeEffect.Palette = "vine-slash-palette-r1";

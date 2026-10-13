@@ -47,6 +47,10 @@ partial class GameUI
         /// </summary>
         public new static readonly global::Godot.StringName @SelectEnemy = "SelectEnemy";
         /// <summary>
+        /// Cached name for the '_Input' method.
+        /// </summary>
+        public new static readonly global::Godot.StringName @_Input = "_Input";
+        /// <summary>
         /// Cached name for the '_UnhandledKeyInput' method.
         /// </summary>
         public new static readonly global::Godot.StringName @_UnhandledKeyInput = "_UnhandledKeyInput";
@@ -389,6 +393,7 @@ partial class GameUI
         methods.Add(new(name: MethodName.@PresentationCompleted, returnVal: new(type: (global::Godot.Variant.Type)0, name: "", hint: (global::Godot.PropertyHint)0, hintString: "", usage: (global::Godot.PropertyUsageFlags)6, exported: false), flags: (global::Godot.MethodFlags)1, arguments: null, defaultArguments: null));
         methods.Add(new(name: MethodName.@_ExitTree, returnVal: new(type: (global::Godot.Variant.Type)0, name: "", hint: (global::Godot.PropertyHint)0, hintString: "", usage: (global::Godot.PropertyUsageFlags)6, exported: false), flags: (global::Godot.MethodFlags)1, arguments: null, defaultArguments: null));
         methods.Add(new(name: MethodName.@SelectEnemy, returnVal: new(type: (global::Godot.Variant.Type)0, name: "", hint: (global::Godot.PropertyHint)0, hintString: "", usage: (global::Godot.PropertyUsageFlags)6, exported: false), flags: (global::Godot.MethodFlags)1, arguments: new() { new(type: (global::Godot.Variant.Type)2, name: "index", hint: (global::Godot.PropertyHint)0, hintString: "", usage: (global::Godot.PropertyUsageFlags)6, exported: false),  }, defaultArguments: null));
+        methods.Add(new(name: MethodName.@_Input, returnVal: new(type: (global::Godot.Variant.Type)0, name: "", hint: (global::Godot.PropertyHint)0, hintString: "", usage: (global::Godot.PropertyUsageFlags)6, exported: false), flags: (global::Godot.MethodFlags)1, arguments: new() { new(type: (global::Godot.Variant.Type)24, name: "evt", hint: (global::Godot.PropertyHint)0, hintString: "", usage: (global::Godot.PropertyUsageFlags)6, exported: false, className: new global::Godot.StringName("InputEvent")),  }, defaultArguments: null));
         methods.Add(new(name: MethodName.@_UnhandledKeyInput, returnVal: new(type: (global::Godot.Variant.Type)0, name: "", hint: (global::Godot.PropertyHint)0, hintString: "", usage: (global::Godot.PropertyUsageFlags)6, exported: false), flags: (global::Godot.MethodFlags)1, arguments: new() { new(type: (global::Godot.Variant.Type)24, name: "evt", hint: (global::Godot.PropertyHint)0, hintString: "", usage: (global::Godot.PropertyUsageFlags)6, exported: false, className: new global::Godot.StringName("InputEvent")),  }, defaultArguments: null));
         methods.Add(new(name: MethodName.@Rebuild, returnVal: new(type: (global::Godot.Variant.Type)0, name: "", hint: (global::Godot.PropertyHint)0, hintString: "", usage: (global::Godot.PropertyUsageFlags)6, exported: false), flags: (global::Godot.MethodFlags)1, arguments: null, defaultArguments: null));
         methods.Add(new(name: MethodName.@BuildHeader, returnVal: new(type: (global::Godot.Variant.Type)0, name: "", hint: (global::Godot.PropertyHint)0, hintString: "", usage: (global::Godot.PropertyUsageFlags)6, exported: false), flags: (global::Godot.MethodFlags)1, arguments: null, defaultArguments: null));
@@ -519,6 +524,11 @@ partial class GameUI
         }
         if (method == MethodName.@SelectEnemy && args.Count == 1) {
             @SelectEnemy(global::Godot.NativeInterop.VariantUtils.ConvertTo<int>(args[0]));
+            ret = default;
+            return true;
+        }
+        if (method == MethodName.@_Input && args.Count == 1) {
+            @_Input(global::Godot.NativeInterop.VariantUtils.ConvertTo<global::Godot.InputEvent>(args[0]));
             ret = default;
             return true;
         }
@@ -1046,6 +1056,9 @@ partial class GameUI
            return true;
         }
         if (method == MethodName.@SelectEnemy) {
+           return true;
+        }
+        if (method == MethodName.@_Input) {
            return true;
         }
         if (method == MethodName.@_UnhandledKeyInput) {

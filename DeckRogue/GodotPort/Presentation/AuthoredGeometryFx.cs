@@ -130,6 +130,10 @@ public class AuthoredGeometryFx : Node3D
 
 	public int QualityLevel { get; set; }
 
+	// Portable low-quality adaptation: preserve one existing shader-only bounce;
+	// the real floor OmniLight stays disabled below in Sample at quality 2.
+	public bool AnalyticalFloorFallbackEnabled { get; set; } = true;
+
 	public int ActiveLights
 	{
 		get
@@ -166,7 +170,7 @@ public class AuthoredGeometryFx : Node3D
 		base.Visible = false;
 	}
 
-	public bool Begin(AttackRoute route, EffectScenario scenario, Vector3 source, Vector3 target, Vector3 feet, float visibleHeight, Basis cameraBasis)
+	public bool Begin(AttackRoute route, EffectScenario scenario, Vector3 source, Vector3 target, Vector3 feet, float visibleHeight, Basis cameraBasis, int contactIndex = 0)
 	{
 		Clear();
 		_route = route;
@@ -227,6 +231,7 @@ public class AuthoredGeometryFx : Node3D
 			_lightGain = (route.FixedSmall ? 0.65f : 1f);
 			_target = _feet + _basis.Y * (_height * 0.46521738f);
 		}
+		effect.ConfigureMirror?.Invoke(SourceAttackOrientation.AlternateHit(contactIndex));
 		effect.ConfigureParticleGain?.Invoke(_particles);
 		LoadRoles(effect);
 		effect.ConfigureSource?.Invoke(_basis.Inverse() * (source - target) / (_height * _size));
@@ -534,7 +539,7 @@ public class AuthoredGeometryFx : Node3D
 			{
 				lights.Add(new ActorMaterialBinding.PointLight(_targetLight.Position, 7f, rgb * (40.5f * weight * _effect.TargetPeak), IsAttack: true));
 			}
-			if (QualityLevel < 2 && weight * _effect.FloorPeak > 0f)
+			if ((QualityLevel < 2 || AnalyticalFloorFallbackEnabled) && weight * _effect.FloorPeak > 0f)
 			{
 				lights.Add(new ActorMaterialBinding.PointLight(_floorLight.Position, 13f, rgb * (63f * weight * _effect.FloorPeak), IsAttack: true));
 			}

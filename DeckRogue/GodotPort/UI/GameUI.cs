@@ -1045,84 +1045,54 @@ public partial class GameUI : Control
 	}
 
 	private void BeginGear(RunState run, int index, GearDef original)
-	{
-		GameState state = run.Combat;
-		if (state == null || IsInputBlocked)
-		{
-			return;
-		}
-		if (original.Special == "nameless")
-		{
-			Open("無銘の部品 · ギアの効果を選ぶ", delegate(VBoxContainer box)
-			{
-				VBoxContainer parent = ScrollColumn(box);
-				foreach (string id in run.SeenGearIds ?? Array.Empty<string>())
-				{
-					GearDef def = Content.GetGearDef(id);
-					if (!(def.Special == "nameless"))
-					{
-						Button(parent, def.Name + " · " + def.Text, delegate
-						{
-							SelectCard(def, id);
-						});
-						string text = Gears.GearNoEffectReason(state, def);
-						if (text != null)
-						{
-							Text(parent, text, 18, Gold);
-						}
-					}
-				}
-			});
-		}
-		else
-		{
-			SelectCard(original, null);
-		}
-		void SelectCard(GearDef def, string? asId)
-		{
-			if (def.NeedsCard != null)
-			{
-				Open("ギア · 札を選ぶ", delegate(VBoxContainer box)
-				{
-					CardGrid(box, Gears.GearCardChoices(state, def), delegate(CardInstance card)
-					{
-						SelectTarget(def, card.Uid, asId);
-					}, null);
-				});
-			}
-			else
-			{
-				SelectTarget(def, null, asId);
-			}
-		}
-		void SelectTarget(GearDef def, string? card, string? asId)
-		{
-			if (def.NeedsTarget == true && state.Enemies.Count((EnemyState e) => e.Hp > 0) > 1)
-			{
-				Open("ギア · 対象の敵を選ぶ", delegate(VBoxContainer box)
-				{
-					BuildTargetPicker(box, state, delegate(int target)
-					{
-						Submit(def, card, target, asId);
-					}, (int target) => Gears.GearNoEffectReason(state, def, target));
-				});
-			}
-			else
-			{
-				Submit(def, card, null, asId);
-			}
-		}
-		void Submit(GearDef def, string? card, int? target, string? asId)
-		{
-			Do(new RunCommand_UseGear
-			{
-				Index = index,
-				CardUid = card,
-				TargetIndex = target,
-				AsGearId = asId
-			});
-		}
-	}
+    {
+        GameState state = run.Combat;
+        if (state == null || IsInputBlocked || _session == null) return;
+        long revision = _session.Revision;
+        var decision = new SourceUiDecision(revision);
+        bool Current() => _session != null && _session.Revision == revision && !IsInputBlocked;
+        if (original.Special == "nameless") {
+            Open("無銘の部品 · ギアの効果を選ぶ", box => {
+                var parent = ScrollColumn(box);
+                foreach (string id in run.SeenGearIds ?? Array.Empty<string>()) {
+                    var def = Content.GetGearDef(id);
+                    if (def.Special == "nameless") continue;
+                    Button(parent, def.Name + " · " + def.Text, () => SelectCard(def, id));
+                    string advisory = Gears.GearNoEffectReason(state, def);
+                    if (advisory != null) Text(parent, advisory, 18, Gold);
+                }
+            });
+        } else SelectCard(original, null);
+        void SelectCard(GearDef def, string asId) {
+            if (!Current()) return;
+            var pool = Gears.GearCardChoices(state, def);
+            if (SourceCardModalPolicy.NeedsGearCardPicker(def, pool.Count)) {
+                Open("ギア · 札を選ぶ", box => CardGrid(box, pool, card => SelectTarget(def, card.Uid, asId), null));
+            } else SelectTarget(def, null, asId);
+        }
+        void SelectTarget(GearDef def, string card, string asId) {
+            if (!Current()) return;
+            if (def.NeedsTarget == true && state.Enemies.Count(e => e.Hp > 0) > 1) {
+                Open("ギア · 対象の敵を選ぶ", box => BuildTargetPicker(box, state,
+                    target => Submit(def, card, target, asId), target => Gears.GearNoEffectReason(state, def, target)));
+            } else Submit(def, card, null, asId);
+        }
+        void Submit(GearDef def, string card, int? target, string asId) {
+            if (!Current()) return;
+            if (SourceCardModalPolicy.RequiresFleeConfirmation(def)) {
+                Confirm("この戦闘から逃げる？", "報酬は得られない。HPはそのまま、この節は踏んだことになる。",
+                    () => Commit(card, target, asId), "逃げる");
+            } else Commit(card, target, asId);
+        }
+        void Commit(string card, int? target, string asId) {
+            var current = _session?.CurrentRun;
+            if (!Current() || current?.Gears == null || index < 0 || index >= current.Gears.Count ||
+                current.Gears[index].GearId != original.Id ||
+                Gears.GearBlockedReason(current.Combat, current.Mana.GetValueOrDefault(), current.Gears[index]) != null) return;
+            if (!decision.TryAccept(_session.Revision, IsInputBlocked)) return;
+            Do(new RunCommand_UseGear { Index = index, CardUid = card, TargetIndex = target, AsGearId = asId });
+        }
+    }
 
 	private int FontSize(int requested)
 	{
@@ -1196,6 +1166,7 @@ public partial class GameUI : Control
 	private void Changed(SessionChange change)
 	{
 		_activeChange = change;
+        if (change.IsReset || change.Current.Phase != RunPhases.Shop) _shopGearsScreen = false;
         if(change.IsReset)UxResetHand();
 		_costPresented = false;
 		if (change.IsReset)
@@ -1251,10 +1222,7 @@ public partial class GameUI : Control
 
 	public override void _UnhandledKeyInput(InputEvent evt)
 	{
-		if (!(evt is InputEventKey { Pressed: not false, Echo: false } key) || IsInputBlocked)
-		{
-			return;
-		}
+        if (!(evt is InputEventKey { Pressed: true, Echo: false } key) || IsInputBlocked) return;
 		Control control = GetViewport().GuiGetFocusOwner();
 		if ((control is LineEdit || control is TextEdit || control is SpinBox) ? true : false)
 		{
@@ -1442,38 +1410,34 @@ public partial class GameUI : Control
 	}
 
 	private void BuildHeader()
-	{
-        if(CurrentRoute=="combat"){BuildBattleHeader();return;}
-		PanelContainer panel = new PanelContainer();
-		panel.AddThemeStyleboxOverride("panel", Box(SourcePalette.Night, Border));
-		_shell.AddChild(panel, forceReadableName: false, InternalMode.Disabled);
-		HBoxContainer row = Row(panel);
-		row.CustomMinimumSize = new Vector2(0f, 56f);
-		Text(row, "DECK ROGUE", 23, Gold);
-		Control spacer = new Control
-		{
-			SizeFlagsHorizontal = SizeFlags.ExpandFill,
-			MouseFilter = MouseFilterEnum.Ignore
-		};
-		row.AddChild(spacer, forceReadableName: false, InternalMode.Disabled);
-		if (!_showTitle && _view != null)
-		{
-			RunState run = _view;
-			Text(row, $"幕 {run.Act}  ·  {FlowRules.PhaseName(run.Phase)}");
-			int hp = ((run.Phase == "combat" && run.Combat != null) ? run.Combat.Player.Hp : run.Hp);
-			_hpReadout = Text(row, $"HP {hp}/{run.MaxHp}", 21, (hp <= run.MaxHp / 3) ? Danger : Accent);
-			Text(row, $"{run.Gold} G", 21, Gold);
-			Button(row, $"デッキ {run.Deck.Count}", delegate
-			{
-				OpenDeck(run.Deck, "デッキ");
-			});
-			Button(row, $"遺物 {run.Relics.Count}", delegate
-			{
-				OpenRelics(run);
-			});
-		}
-		Button(row, "メニュー", OpenMenu);
-	}
+    {
+        if (CurrentRoute == "combat") { BuildBattleHeader(); return; }
+        var panel = new PanelContainer();
+        panel.AddThemeStyleboxOverride("panel", Box(SourcePalette.Night, Border));
+        _shell.AddChild(panel);
+        var row = Flow(panel);
+        row.CustomMinimumSize = new Vector2(0, 56);
+        if (!_showTitle && _view != null)
+        {
+            var run = _view;
+            if (!PhoneLayout) Picture(row, "leaders", run.LeaderId + "_icon", new Vector2(48, 48));
+            RunHeaderText(row, SourceRunScreenPolicy.Progress(run) + " · " + FlowRules.PhaseName(run.Phase), PhoneLayout ? 17 : 19, Gold);
+            _hpReadout = RunHeaderText(row, $"HP {run.Hp}/{run.MaxHp}", 20, run.Hp <= run.MaxHp / 3 ? Danger : Accent);
+            RunHeaderText(row, $"{run.Gold} G", 20, Gold);
+            RunHeaderText(row, $"魔素 {Gears.ManaLabel(run.Mana.GetValueOrDefault())}", 18, Accent).Name = "SourceRunMana";
+            if (!PhoneLayout && run.Phase != RunPhases.Map)
+                Button(row, "マップ", () => Open("坑道の地図", b => BuildMap(b, run, interactive: false)));
+            Button(row, $"デッキ {run.Deck.Count}", () => OpenDeck(run.Deck, "デッキ"));
+            if (!PhoneLayout)
+            {
+                Button(row, $"遺物 {run.Relics.Count}", () => OpenRelics(run));
+                Button(row, "メモ", OpenNote);
+                Button(row, "書き出す", OpenExport);
+            }
+        }
+        else RunHeaderText(row, "DECK ROGUE", 23, Gold);
+        Button(row, "メニュー", OpenMenu);
+    }
 
 	private void Heading(string title, string subtitle = "")
 	{
@@ -1490,7 +1454,7 @@ public partial class GameUI : Control
 
 	private void Open(string title, Action<VBoxContainer> body, bool close = true, bool replace = false)
 	{
-		if (!replace && _overlay != null)
+		if (!replace && _overlay != null && _overlayTitle != "メニュー")
 		{
 			_overlayStack.Push((_overlayTitle, _overlay, _overlayCanClose));
 		}
@@ -1540,9 +1504,26 @@ public partial class GameUI : Control
 		margin.AnchorRight = 0.95f;
 		margin.AnchorTop = 0.06f;
 		margin.AnchorBottom = 0.94f;
-		PanelContainer pan = new PanelContainer();
+		PanelContainer pan = new PanelContainer { MouseFilter = MouseFilterEnum.Stop };
 		pan.AddThemeStyleboxOverride("panel", Box(Panel, Gold));
 		margin.AddChild(pan, forceReadableName: false, InternalMode.Disabled);
+        bool pressedOutside = false;
+        Vector2 outsidePress = Vector2.Zero;
+        scrim.GuiInput += evt => {
+            if (!_overlayCanClose || _overlayNode != scrim || IsInputBlocked) return;
+            Vector2 point; bool pressed;
+            if (evt is InputEventMouseButton mouse && mouse.ButtonIndex == MouseButton.Left) { point = mouse.Position; pressed = mouse.Pressed; }
+            else if (evt is InputEventScreenTouch touch) { point = touch.Position; pressed = touch.Pressed; }
+            else return;
+            Vector2 local = pan.GetGlobalTransform().AffineInverse() * (scrim.GetGlobalTransform() * point);
+            bool outside = !new Rect2(Vector2.Zero, pan.Size).HasPoint(local);
+            if (pressed) { pressedOutside = outside; outsidePress = point; return; }
+            bool dismiss = pressedOutside && outside && point.DistanceTo(outsidePress) <= 14f;
+            pressedOutside = false;
+            if (!dismiss) return;
+            scrim.AcceptEvent();
+            CloseOverlay();
+        };
 		VBoxContainer col = new VBoxContainer();
 		col.AddThemeConstantOverride("separation", 12);
 		pan.AddChild(col, forceReadableName: false, InternalMode.Disabled);
@@ -1614,35 +1595,49 @@ public partial class GameUI : Control
 						BuildMap(b, _session.CurrentRun, interactive: false);
 					});
 				});
-				Button(parent, "タイトルへ", ShowTitle);
+                bool ended = _session.CurrentRun.Phase == RunPhases.Won || _session.CurrentRun.Phase == RunPhases.Lost;
+                Button(parent, ended ? "タイトルへ" : "セーブして終了", ShowTitle);
+                if (!ended) Button(parent, "ランを放棄", () => {
+                    Confirm("ランを放棄する？", "このランのセーブは消え、続きから再開できなくなります。\n（レポートの自動保存は残るので、タイトルから書き出せます）", () => {
+                        var result = _session.AbandonRun();
+                        if (!result.Success) { Result(result); return; }
+                        _view = null;
+                        _showTitle = true;
+                        _overlay = null;
+                        _overlayStack.Clear();
+                        _play = null;
+                        _notice = result.Warning ?? "ランを放棄した";
+                        _error = result.Warning != null;
+                        Rebuild();
+                    }, "放棄する");
+                }, true, Danger);
 			}
 			Text(box, "操作: 札をタップしてプレイ。敵を先に選ぶか、札を敵へドラッグ。1〜9: 手札 / G: 火種を全部撃つ / E: ターン終了 / Esc: 戻る。", 20, Muted);
 		});
 	}
 
-	private void Confirm(string title, string description, Action action)
-	{
-		Open(title, delegate(VBoxContainer box)
-		{
-			Text(box, description, 21);
-			Button(box, "確認して続ける", delegate
-			{
-				_overlay = null;
-				action();
-			}, enabled: true, Danger);
-		});
-	}
+	private void Confirm(string title, string description, Action action, string okLabel = "確認して続ける")
+    {
+        var decision = new SourceUiDecision(_session?.Revision ?? 0);
+        Open(title, box => {
+            Text(box, description, 21);
+            Button(box, okLabel, () => {
+                if (!decision.TryAccept(_session?.Revision ?? 0, IsInputBlocked)) return;
+                // Pop just the confirmation. A continuation may open another picker;
+                // cancellation/inspection must not leave an invisible extra layer.
+                if (_overlayStack.Count > 0) (_overlayTitle, _overlay, _overlayCanClose) = _overlayStack.Pop();
+                else _overlay = null;
+                action();
+                Rebuild();
+            }, true, Danger);
+            Button(box, "やめる", CloseOverlay);
+        });
+    }
 
 	private void OpenDeck(IReadOnlyList<CardInstance> deck, string title)
-	{
-		Open(title, delegate(VBoxContainer box)
-		{
-			CardGrid(box, deck, delegate(CardInstance c)
-			{
-				InspectCard(c);
-			}, null);
-		});
-	}
+    {
+        Open(title, box => CardGrid(box, deck, InspectCard, null));
+    }
 
 	private void OpenRelics(RunState run)
 	{
@@ -2004,6 +1999,10 @@ public partial class GameUI : Control
                 _play = null;
                 Rebuild();
             }
+			else if (!_showTitle && CurrentRoute == "shop" && _shopGearsScreen)
+            {
+                ShowShopShelf(false);
+            }
 			else
 			{
 				OpenMenu();
@@ -2060,17 +2059,14 @@ public partial class GameUI : Control
 		_sfxVolume = (float)config.GetValue("audio", "sfx", 0.7f);
 		_muted = (bool)config.GetValue("audio", "muted", false);
 		_graphicsQuality = (string)config.GetValue("graphics", "quality", "auto");
-		if (!OS.HasFeature("mobile"))
-		{
-			if ((bool)config.GetValue("window", "fullscreen", false))
-			{
-				DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
-			}
-			else if (config.HasSectionKey("window", "width"))
-			{
-				DisplayServer.WindowSetSize(new Vector2I((int)config.GetValue("window", "width", 1280), (int)config.GetValue("window", "height", 720)));
-			}
-		}
+        if (DesktopVideoAvailable)
+        {
+            var actual = DisplayServer.WindowGetSize();
+            _windowResolution = new Vector2I((int)config.GetValue("window", "width", actual.X), (int)config.GetValue("window", "height", actual.Y));
+            if (_windowResolution.X <= 0 || _windowResolution.Y <= 0) _windowResolution = new Vector2I(1280, 720);
+            if ((bool)config.GetValue("window", "fullscreen", false)) DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
+            else if (config.HasSectionKey("window", "width")) DisplayServer.WindowSetSize(_windowResolution);
+        }
 		ApplyAudio();
 	}
 
@@ -2107,13 +2103,13 @@ public partial class GameUI : Control
 		config.SetValue("audio", "sfx", _sfxVolume);
 		config.SetValue("audio", "muted", _muted);
 		config.SetValue("graphics", "quality", _graphicsQuality);
-		if (!OS.HasFeature("mobile"))
-		{
-			config.SetValue("window", "fullscreen", DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Fullscreen);
-			Vector2I size = DisplayServer.WindowGetSize();
-			config.SetValue("window", "width", size.X);
-			config.SetValue("window", "height", size.Y);
-		}
+        if (DesktopVideoAvailable)
+        {
+            config.SetValue("window", "fullscreen", IsFullscreenMode);
+            if (!IsFullscreenMode) _windowResolution = DisplayServer.WindowGetSize();
+            config.SetValue("window", "width", _windowResolution.X);
+            config.SetValue("window", "height", _windowResolution.Y);
+        }
 		config.Save("user://settings.cfg");
 	}
 
@@ -2182,33 +2178,11 @@ public partial class GameUI : Control
 						Rebuild();
 					});
 				}
+                if (_graphicsQuality == "auto" && _effectiveQuality != null)
+                    Text(box, "いま " + SourceRunScreenPolicy.QualityName(_effectiveQuality()), 18, Muted);
 			}
-			if (!OS.HasFeature("mobile"))
-			{
-				Button(box, "全画面 / ウィンドウを切り替える", delegate
-				{
-					DisplayServer.WindowSetMode((DisplayServer.WindowMode)((DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Fullscreen) ? 0 : 3));
-					SaveSettings();
-				});
-				HBoxContainer parent3 = Row(box);
-				Vector2I[] array3 = new Vector2I[3]
-				{
-					new Vector2I(1280, 720),
-					new Vector2I(1600, 900),
-					new Vector2I(1920, 1080)
-				};
-				for (int num4 = 0; num4 < array3.Length; num4++)
-				{
-					Vector2I vector2I = array3[num4];
-					Vector2I resolution = vector2I;
-					Button(parent3, $"{vector2I.X} × {vector2I.Y}", delegate
-					{
-						DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
-						DisplayServer.WindowSetSize(resolution);
-						SaveSettings();
-					});
-				}
-			}
+			BuildDesktopVideoSettings(box);
+			BuildPresentationDiagnosticsControls(box);
 			Text(box, "変更はこの端末に保存されます。音量0は完全に消音します。", 18, Muted);
 			void Volume(string name, float current, Action<float> setter)
 			{
@@ -2218,12 +2192,13 @@ public partial class GameUI : Control
 				{
 					MinValue = 0.0,
 					MaxValue = 1.0,
-					Step = 0.05,
+					Step = 0.0,
 					Value = current,
 					CustomMinimumSize = new Vector2(380f, 48f),
 					SizeFlagsHorizontal = SizeFlags.ExpandFill
 				};
 				line.AddChild(volume, forceReadableName: false, InternalMode.Disabled);
+                if (name != "音楽") volume.DragEnded += _ => Sound("ui.click");
 				Label number = Text(line, Math.Round(current * 100f) + "%", 20);
 				volume.ValueChanged += delegate(double value)
 				{
@@ -2314,7 +2289,7 @@ public partial class GameUI : Control
 		}
 		button.Pressed += delegate
 		{
-			if (!IsInputBlocked)
+			if (!IsInputBlocked && !button.Disabled && button.IsVisibleInTree())
 			{
 				Sound("ui.click");
 				action();
@@ -2457,130 +2432,23 @@ public partial class GameUI : Control
 		return SourcePalette.Edge(color);
 	}
 
-	private void CardGrid(Node parent, IReadOnlyList<CardInstance> cards, Action<CardInstance>? onPick, Func<CardInstance, bool>? enabled, Func<CardInstance, string>? badge = null)
-	{
-		VBoxContainer scroll = ScrollColumn(parent);
-		HFlowContainer flow = Flow(scroll);
-		foreach (CardInstance card in cards)
-		{
-			Card(flow, card, (onPick == null) ? null : ((Action)delegate
-			{
-				onPick(card);
-			}), enabled?.Invoke(card) ?? true, badge?.Invoke(card));
-		}
-	}
+	private void CardGrid(Node parent, IReadOnlyList<CardInstance> cards, Action<CardInstance>? onPick,
+        Func<CardInstance, bool>? enabled, Func<CardInstance, string>? badge = null,
+        bool confirmPick = false, string actionLabel = "選ぶ", Func<CardInstance, string>? lockReason = null)
+    {
+        SourceCardGrid(parent, cards, onPick, enabled, badge, confirmPick, actionLabel, lockReason);
+    }
 
 	private CardTile Card(Node parent, CardInstance card, Action? action, bool enabled = true, string? badge = null, bool drag = false, int? cost = null)
-	{
-		CardTile tile = new CardTile
-		{
-			CardUid = card.Uid,
-			AllowDrag = (drag && enabled && !IsInputBlocked),
-			Text = "",
-			CustomMinimumSize = new Vector2(PhoneLayout ? 230 : 204, 282f),
-			SizeFlagsHorizontal = SizeFlags.ShrinkCenter,
-			SizeFlagsVertical = SizeFlags.ShrinkBegin,
-			Disabled = (!enabled || IsInputBlocked),
-			TooltipText = Plain(card.Def.Name + "\n" + CardText.Body(card.Def) + "\n" + CardText.Notes(card.Def))
-		};
-		tile.AddThemeStyleboxOverride("normal", Box(SourcePalette.Paper, CardColor(card.Def.Color), 3));
-		tile.AddThemeStyleboxOverride("hover", Box(SourcePalette.Paper3, SourcePalette.Brass, 3));
-		tile.AddThemeStyleboxOverride("pressed", Box(SourcePalette.ManaLight, SourcePalette.Brass, 3));
-		tile.AddThemeStyleboxOverride("disabled", Box(SourcePalette.PaperDim, CardColor(card.Def.Color).Darkened(0.25f), 2));
-		parent.AddChild(tile, forceReadableName: false, InternalMode.Disabled);
-		MarginContainer margin = new MarginContainer
-		{
-			MouseFilter = MouseFilterEnum.Ignore
-		};
-		tile.AddChild(margin, forceReadableName: false, InternalMode.Disabled);
-		margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect, LayoutPresetMode.Minsize);
-		string[] array = new string[4] { "left", "right", "top", "bottom" };
-		foreach (string side in array)
-		{
-			margin.AddThemeConstantOverride("margin_" + side, 12);
-		}
-		VBoxContainer col = Column(margin);
-		col.MouseFilter = MouseFilterEnum.Ignore;
-		col.AddThemeConstantOverride("separation", 4);
-		HBoxContainer cardTitle = Row(col);
-		Picture(cardTitle, "ui", "cost_orb", new Vector2(26f, 26f));
-		Label nameText = Text(cardTitle, (cost?.ToString() ?? CardText.CostLabel(card.Def)) + "  " + card.Def.Name, 19, SourcePalette.Ink);
-		nameText.MaxLinesVisible = (PhoneLayout ? 1 : 2);
-		nameText.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
-		Texture2D art = SourceArtwork.Card(card.Def.Id, card.Def.Type);
-		if (art != null)
-		{
-			col.AddChild(new TextureRect
-			{
-				Texture = art,
-				TextureFilter = TextureFilterEnum.Nearest,
-				ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-				StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
-				CustomMinimumSize = new Vector2(174f, PhoneLayout ? 48 : 66),
-				MouseFilter = MouseFilterEnum.Ignore
-			}, forceReadableName: false, InternalMode.Disabled);
-		}
-		HBoxContainer kind = Row(col);
-		Picture(kind, "ui", "gem_" + (card.Def.Rarity ?? "common"), new Vector2(18f, 18f));
-		Text(kind, CardText.TypeJa(card.Def.Type) + "  " + CardText.RarityLabel(card.Def.Rarity), 13, SourcePalette.InkSoft);
-		RichTextLabel bodyText = new RichTextLabel
-		{
-			Text = Plain(CardText.Body(card.Def)),
-			BbcodeEnabled = false,
-			FitContent = false,
-			ScrollActive = false,
-			CustomMinimumSize = new Vector2(0f, 42f),
-			SizeFlagsVertical = SizeFlags.ExpandFill,
-			MouseFilter = MouseFilterEnum.Ignore
-		};
-		bodyText.AddThemeFontSizeOverride("normal_font_size", FontSize(16));
-		bodyText.AddThemeColorOverride("default_color", SourcePalette.Ink);
-		col.AddChild(bodyText, forceReadableName: false, InternalMode.Disabled);
-		Label noteText = Text(col, badge ?? CardText.Notes(card.Def), 13, SourcePalette.BrassInk);
-		noteText.MaxLinesVisible = 1;
-		noteText.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
-		tile.Inspect = delegate
-		{
-			if (!IsInputBlocked)
-			{
-				InspectCard(card);
-			}
-		};
-		if (action != null)
-		{
-			tile.Pressed += delegate
-			{
-				if (!IsInputBlocked && !tile.ConsumeInspection())
-				{
-					Sound("ui.click");
-					action();
-				}
-			};
-		}
-		return tile;
-	}
+    {
+        return SourceCard(parent, card, card, action, enabled, badge, PhoneLayout ? 1.05f : 1.02f,
+            SourceInspectState, drag, cost);
+    }
 
 	private void InspectCard(CardInstance card)
-	{
-		Open(card.Def.Name, delegate(VBoxContainer box)
-		{
-			VBoxContainer parent = ScrollColumn(box);
-			HBoxContainer parent2 = Row(parent);
-			Card(parent2, card, null);
-			VBoxContainer parent3 = Column(parent2);
-			Text(parent3, CardText.Body(card.Def), 24);
-			Text(parent3, CardText.Notes(card.Def), 21, Gold);
-			foreach (KeyValuePair<string, string> current in KeywordHelp.Terms.Where<KeyValuePair<string, string>>((KeyValuePair<string, string> k) => (CardText.Body(card.Def) + CardText.Notes(card.Def)).Contains(k.Key)))
-			{
-				Text(parent3, current.Key + ": " + current.Value, 18, Muted);
-			}
-			if (Upgrade.CanUpgradeCard(card))
-			{
-				Text(parent3, "鍛えた後", 23, Accent);
-				Text(parent3, CardText.Body(Upgrade.UpgradeCard(card).Def), 21);
-			}
-		});
-	}
+    {
+        SourceInspectCard(card);
+    }
 
 	public void SetEnemyProjection(Func<int, (Vector2 Head, Vector2 Feet)?> project)
 	{
@@ -3584,6 +3452,7 @@ public partial class GameUI : Control
 			Text(_body, _session?.InitializationError ?? "ゲームデータを読み込み中…", 22, Danger);
 			return;
 		}
+		if (_session.CanContinue) BuildSavedRunSummary();
 		HBoxContainer banner = Row(_body);
 		if (_session.CanContinue)
 		{
@@ -3762,68 +3631,88 @@ public partial class GameUI : Control
 
 	private void BuildMap(Node parent, RunState run, bool interactive)
 	{
-		Text(parent, $"幕 {run.Act}  ·  坑道の地図", 30, Gold);
-		Text(parent, "光る道から次の部屋を選ぶ。線は進める道。", 18, Muted);
-		ScrollContainer scroll = new ScrollContainer
-		{
-			SizeFlagsVertical = SizeFlags.ExpandFill,
-			SizeFlagsHorizontal = SizeFlags.ExpandFill,
-			HorizontalScrollMode = ScrollContainer.ScrollMode.Auto
-		};
-		parent.AddChild(scroll, forceReadableName: false, InternalMode.Disabled);
-		CenterContainer mapCenter = new CenterContainer
-		{
-			SizeFlagsHorizontal = SizeFlags.ExpandFill
-		};
-		scroll.AddChild(mapCenter, forceReadableName: false, InternalMode.Disabled);
-		RunMap map = new RunMap
-		{
-			CustomMinimumSize = new Vector2(1100f, Math.Max(560, run.Map.Count * 112 + 140))
-		};
-		mapCenter.AddChild(map, forceReadableName: false, InternalMode.Disabled);
-		map.Build(run, delegate(int col)
-		{
-			Do(new RunCommand_ChooseNode
-			{
-				Col = col
-			});
-		}, interactive && !IsInputBlocked, base.Theme, FontSize(16));
-		if (interactive)
-		{
-			scroll.SetDeferred(ScrollContainer.PropertyName.ScrollVertical, Math.Max(0, (run.Map.Count - run.Row - 4) * 108));
-		}
-		JObject annotations = (_session?.MapAnnotations as JObject) ?? new JObject();
-		string act = run.Act.ToString();
-		JObject acts = (annotations["acts"] as JObject) ?? new JObject();
-		annotations["acts"] = acts;
-		map.LoadAnnotations(acts[act] as JArray);
-		map.AnnotationsChanged += delegate(JArray strokes)
-		{
-			acts[act] = strokes;
-			annotations["version"] = 1;
-			if (_session != null)
-			{
-				Result(_session.SetMapAnnotations(annotations));
-			}
-		};
-		HBoxContainer tools = Row(parent);
-		Button(tools, "道を選ぶ", delegate
-		{
-			map.SetDrawing(drawing: false);
-		});
-		Button(tools, "地図に描く: 金", delegate
-		{
-			map.SetDrawing(drawing: true);
-		});
-		Button(tools, "朱", delegate
-		{
-			map.SetDrawing(drawing: true, "f3968a");
-		});
-		Button(tools, "青", delegate
-		{
-			map.SetDrawing(drawing: true, "8cccec");
-		});
-		Button(tools, "最後の線を消す", map.UndoAnnotation);
+        Text(parent, $"幕 {run.Act} · マップ — 現在地と道筋", 30, Gold);
+        Text(parent, interactive ? "光っている道へ進めます。ノードに触れると中身の説明。" : "現在地と道筋を確認できます。ここでは進路を選べません。", 18, Muted);
+        bool editable = interactive && !IsInputBlocked && _overlay == null;
+
+        var infoPanel = new PanelContainer { Name = "MapNodeInformation", Visible = false };
+        infoPanel.AddThemeStyleboxOverride("panel", Box(SourcePalette.Paper, SourcePalette.Brass));
+        parent.AddChild(infoPanel);
+        HBoxContainer infoRow = Row(infoPanel);
+        Label infoText = Text(infoRow, "", 18, SourcePalette.Ink);
+        infoText.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+        infoText.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+
+        var scroll = new ScrollContainer {
+            SizeFlagsVertical = SizeFlags.ExpandFill, SizeFlagsHorizontal = SizeFlags.ExpandFill,
+            HorizontalScrollMode = ScrollContainer.ScrollMode.Auto
+        };
+        parent.AddChild(scroll);
+        var mapCenter = new CenterContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+        scroll.AddChild(mapCenter);
+        var map = new RunMap { CustomMinimumSize = new Vector2(1100, Math.Max(560, run.Map.Count * 112 + 140)) };
+        mapCenter.AddChild(map);
+        map.Build(run, col => Do(new RunCommand_ChooseNode { Col = col }), editable, Theme, FontSize(16), PhoneLayout);
+        map.NodeInformationChanged += text => { infoText.Text = text; infoPanel.Visible = text.Length > 0; };
+        Button(infoRow, "閉じる", () => map.ClearNodeInformation());
+        // Both the actual map and the read-only overlay open near the current floor.
+        scroll.SetDeferred(ScrollContainer.PropertyName.ScrollVertical, Math.Max(0, (run.Map.Count - run.Row - 4) * 108));
+
+        var annotations = (_session?.MapAnnotations as JObject) ?? new JObject();
+        string act = run.Act.ToString();
+        var acts = (annotations["acts"] as JObject) ?? new JObject();
+        annotations["acts"] = acts;
+        map.LoadAnnotations(acts[act] as JArray);
+        if (editable)
+        {
+            map.AnnotationsChanged += strokes => {
+                acts[act] = strokes;
+                annotations["version"] = 1;
+                if (_session != null) Result(_session.SetMapAnnotations(annotations));
+            };
+        }
+
+        // Source legend categories and explanations; its placement follows the
+        // existing Godot flow shell until a whole-run Unity reference is captured.
+        HFlowContainer legend = Flow(parent);
+        foreach (string type in new[] { "battle", "elite", "event", "campfire", "shop", "workshop", "treasure", "boss" })
+        {
+            HBoxContainer item = Row(legend);
+            Picture(item, "map", "node_" + (type == "event" ? "unknown" : type), new Vector2(24, 24));
+            string caption = type == "elite" ? "強個体" : type == "boss" ? "幕ボス" : type == "event" ? "？" : type == "treasure" ? "宝箱" : FlowRules.NodeName(type);
+            var label = Text(item, caption, 15, Muted);
+            // Flow children need a non-wrapping intrinsic width; Text() defaults
+            // to WordSmart+ExpandFill, whose min width collapses to one pixel.
+            label.Name = "MapLegend_" + type;
+            label.AutowrapMode = TextServer.AutowrapMode.Off;
+            label.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
+            label.CustomMinimumSize = new Vector2(Mathf.Ceil(label.GetThemeFont("font").GetStringSize(caption, HorizontalAlignment.Left, -1, label.GetThemeFontSize("font_size")).X), 0);
+            label.MouseFilter = MouseFilterEnum.Pass;
+            label.TooltipText = RunMap.NodeDescription(new MapNode { Type = type });
+        }
+        Text(parent, $"幕 {run.Act} / 3 · 勝利 {run.BattlesWon} 戦", 16, Muted);
+        if (!editable) return; // Unity's overlay can inspect but cannot draw, erase, clear, or choose.
+
+        HFlowContainer tools = Flow(parent);
+        Button navigation = Button(tools, "道を選ぶ", () => map.SetDrawing(false));
+        Button paper = Button(tools, "紙ペン", () => map.TogglePen(RunMap.PaperPen));
+        Button red = Button(tools, "朱ペン", () => map.TogglePen(RunMap.RedPen));
+        Button eraser = Button(tools, "消しゴム", map.ToggleEraser);
+        Button clear = Button(tools, "全消し", map.ClearAnnotations);
+        // Undo is retained as a useful Godot addition alongside source erase/clear.
+        Button undo = Button(tools, "最後の線を消す", map.UndoAnnotation);
+        Label hint = Text(parent, "", 15, Muted);
+        void RefreshTools()
+        {
+            navigation.Text = map.IsDrawing ? "道を選ぶ" : "● 道を選ぶ";
+            paper.Text = map.IsDrawing && !map.IsErasing && map.PenColor == RunMap.PaperPen ? "● 紙ペン" : "紙ペン";
+            red.Text = map.IsDrawing && !map.IsErasing && map.PenColor == RunMap.RedPen ? "● 朱ペン" : "朱ペン";
+            eraser.Text = map.IsErasing ? "● 消しゴム" : "消しゴム";
+            clear.Disabled = undo.Disabled = map.AnnotationCount == 0;
+            hint.Text = map.IsErasing ? "消しゴム: 線に触れると消える（もう一度押すと解除）" : map.IsDrawing ? "ペン: ドラッグで地図に描ける（もう一度押すと解除）" : PhoneLayout ? "ペンを押すと指で地図に描ける" : "右ドラッグで地図に描ける（ペンを押すと左ドラッグでも）";
+        }
+        map.ToolChanged += RefreshTools;
+        RefreshTools();
 	}
 
 	private void BuildDeparture(RunState run)
@@ -3936,23 +3825,21 @@ public partial class GameUI : Control
 	}
 
 	private void ResolveChoice(RunState run, EventChoiceDef choice, string title, Action<int?> submit)
-	{
-		if (!Run.EventChoiceNeedsCard(choice))
-		{
-			submit(null);
-			return;
-		}
-		Open(title + " · 札を1枚選ぶ", delegate(VBoxContainer box)
-		{
-			CardGrid(box, run.Deck, delegate(CardInstance card)
-			{
-				Confirm(title, card.Def.Name + "を選びます。", delegate
-				{
-					submit(run.Deck.ToList().FindIndex((CardInstance c) => c.Uid == card.Uid));
-				});
-			}, (CardInstance card) => FlowRules.ChoiceCardAllowed(run, choice, card), (CardInstance card) => (choice.UpgradeCard == true && Upgrade.CanUpgradeCard(card)) ? ("強化後: " + CardText.Body(Upgrade.UpgradeCard(card).Def)) : "選ぶ");
-		});
-	}
+    {
+        if (!Run.EventChoiceNeedsCard(choice)) { submit(null); return; }
+        var decision = new SourceUiDecision(_session?.Revision ?? 0);
+        Open(title + " · 札を1枚選ぶ", box => {
+            Text(box, SourceDecisionInfo.CardPickHint(choice), 20, Muted);
+            CardGrid(box, run.Deck, card => {
+                int index = run.Deck.ToList().FindIndex(c => c.Uid == card.Uid);
+                if (index < 0 || !FlowRules.ChoiceCardAllowed(run, choice, card) ||
+                    !decision.TryAccept(_session?.Revision ?? 0, IsInputBlocked)) return;
+                submit(index);
+            }, card => FlowRules.ChoiceCardAllowed(run, choice, card), card => SourceDecisionInfo.CardLockReason(run, choice, card) ?? SourceDecisionInfo.CardVerb(choice),
+                confirmPick: true, actionLabel: SourceDecisionInfo.CardVerb(choice),
+                lockReason: card => SourceDecisionInfo.CardLockReason(run, choice, card));
+        });
+    }
 
 	private void BuildReward(RunState run)
 	{
@@ -4009,7 +3896,7 @@ public partial class GameUI : Control
 		{
 			return;
 		}
-		Button(actions, "ギアを取る", delegate
+		Button(actions, Run.GearFull(run) ? "ギアを取る（入れ替え）" : $"ギアを取る（{(run.Gears?.Count ?? 0) + 1}/{Gears.GEAR_CARRY_MAX}）", delegate
 		{
 			TakeGear(run, delegate(int? discard)
 			{
@@ -4025,27 +3912,35 @@ public partial class GameUI : Control
 		});
 	}
 
-	private void TakeGear(RunState run, Action<int?> submit)
-	{
-		if ((run.Gears?.Count ?? 0) < 10)
-		{
-			submit(null);
-			return;
-		}
-		Open("持ち物がいっぱい · 入れ替えるギアを選ぶ", delegate(VBoxContainer box)
-		{
-			VBoxContainer parent = ScrollColumn(box);
-			for (int i = 0; i < run.Gears.Count; i++)
-			{
-				int index = i;
-				GearInstance gearInstance = run.Gears[i];
-				Button(parent, Content.GetGearDef(gearInstance.GearId).Name + "を手放す", delegate
-				{
-					submit(index);
-				});
-			}
-		});
-	}
+	private void TakeGear(RunState run, Action<int?> submit, string? incomingId = null)
+    {
+        if (!Run.GearFull(run)) { submit(null); return; }
+        incomingId ??= run.GearOption;
+        var decision = new SourceUiDecision(_session?.Revision ?? 0);
+        Open("持ち物がいっぱい · 入れ替えるギアを選ぶ", box => {
+            Text(box, $"所持 {run.Gears.Count}/{Gears.GEAR_CARRY_MAX} 個 · 選んだギアを手放して入れ替えます。", 20, Gold);
+            var scroll = ScrollColumn(box);
+            if (!string.IsNullOrEmpty(incomingId)) {
+                var incoming = Content.GetGearDef(incomingId);
+                Tile(scroll, "受け取る: " + incoming.Name + $" · 残り{incoming.Charges ?? 1}回",
+                    CardText.RarityLabel(incoming.Rarity) + " · " + incoming.Text, "gears", incoming.Id);
+            }
+            Text(scroll, "手放すギアを選ぶ", 22, Gold);
+            var flow = Flow(scroll);
+            for (int i = 0; i < run.Gears.Count; i++) {
+                int index = i;
+                var owned = run.Gears[i];
+                var def = Content.GetGearDef(owned.GearId);
+                var tile = Tile(flow, def.Name + $" · 残り{owned.Charges}回",
+                    CardText.RarityLabel(def.Rarity) + " · " + def.Text, "gears", def.Id);
+                tile.GetParent<Control>().CustomMinimumSize = new Vector2(260, 210);
+                Button(tile, "これと入れ替える", () => {
+                    if (decision.TryAccept(_session?.Revision ?? 0, IsInputBlocked)) submit(index);
+                }, true, Gold);
+            }
+            Button(box, "やめる", CloseOverlay);
+        });
+    }
 
 	private void BuildRelicReward(RunState run)
 	{
@@ -4091,7 +3986,7 @@ public partial class GameUI : Control
 				_relicPicks.Add(item);
 			}
 			Rebuild();
-		}, (CardInstance card) => (remove || Run.CanTransformCard(card)) && (_relicPicks.Contains(run.Deck.ToList().FindIndex((CardInstance c) => c.Uid == card.Uid)) || _relicPicks.Count < limit), (CardInstance card) => _relicPicks.Contains(run.Deck.ToList().FindIndex((CardInstance c) => c.Uid == card.Uid)) ? "選択中" : "選ぶ");
+		}, (CardInstance card) => (remove || Run.CanTransformCard(card)) && (_relicPicks.Contains(run.Deck.ToList().FindIndex((CardInstance c) => c.Uid == card.Uid)) || _relicPicks.Count < limit), (CardInstance card) => _relicPicks.Contains(run.Deck.ToList().FindIndex((CardInstance c) => c.Uid == card.Uid)) ? "選択中" : "選ぶ", lockReason: card => !remove && !Run.CanTransformCard(card) ? SourceDecisionInfo.TransformLockReason : null);
 		Button(_body, $"決定 ({_relicPicks.Count}/{limit} 枚)", delegate
 		{
 			Do(new RunCommand_RelicChooseCards
@@ -4102,153 +3997,90 @@ public partial class GameUI : Control
 	}
 
 	private void BuildShop(RunState run)
-	{
-		Heading("商店", $"所持金 {run.Gold} G · 魔素 {Gears.ManaLabel(run.Mana.GetValueOrDefault())}");
-		if (run.Shop == null)
-		{
-			Button(_body, "店を出る", delegate
-			{
-				Do(new RunCommand_ShopLeave());
-			});
-			return;
-		}
-		ShopState shop = run.Shop;
-		VBoxContainer scroll = ScrollColumn(_body);
-		HFlowContainer cards = Flow(scroll);
-		for (int i = 0; i < shop.Cards.Count; i++)
-		{
-			int index = i;
-			ShopStateCards offer = shop.Cards[i];
-			VBoxContainer col = Column(cards);
-			col.SizeFlagsHorizontal = SizeFlags.Fill;
-			CardInstance card = new CardInstance
-			{
-				Uid = "shop-" + i,
-				Def = Content.GetCardDef(offer.Id)
-			};
-			Card(col, card, delegate
-			{
-				InspectCard(card);
-			});
-			Button(col, (offer.Sold == true) ? "売切" : $"{offer.Price} G で買う", delegate
-			{
-				Do(new RunCommand_ShopBuyCard
-				{
-					Index = index
-				});
-			}, offer.Sold != true && run.Gold >= offer.Price, Gold);
-		}
-		HFlowContainer wares = Flow(scroll);
-		if (shop.RelicId != null)
-		{
-			RelicDef relic = Content.GetRelicDef(shop.RelicId);
-			VBoxContainer col2 = Tile(wares, relic.Name, relic.Description, "relics", relic.Id);
-			col2.GetParent<Control>().CustomMinimumSize = new Vector2(290f, 200f);
-			Button(col2, $"{shop.RelicPrice} G で買う", delegate
-			{
-				Do(new RunCommand_ShopBuyRelic());
-			}, run.Gold >= shop.RelicPrice, Gold);
-		}
-		for (int i2 = 0; i2 < (shop.Gears?.Count ?? 0); i2++)
-		{
-			int index2 = i2;
-			ShopStateGears offer2 = shop.Gears[i2];
-			GearDef gear = Content.GetGearDef(offer2.Id);
-			VBoxContainer col3 = Tile(wares, gear.Name, gear.Text, "gears", gear.Id);
-			col3.GetParent<Control>().CustomMinimumSize = new Vector2(260f, 200f);
-			Button(col3, (offer2.Sold == true) ? "売切" : $"{offer2.Price} G で買う", delegate
-			{
-				TakeGear(run, delegate(int? discard)
-				{
-					Do(new RunCommand_ShopBuyGear
-					{
-						Index = index2,
-						DiscardIndex = discard
-					});
-				});
-			}, offer2.Sold != true && run.Gold >= offer2.Price, Gold);
-		}
-		HBoxContainer services = Row(scroll);
-		int removePrice = Run.ShopRemovalPrice(run);
-		int upgradePrice = Run.ShopUpgradePrice(run);
-		int manaPrice = shop.ManaPrice ?? 30;
-		Button(services, $"札を取り除く  {removePrice} G", delegate
-		{
-			ChooseDeckCard(run, "取り除く", (CardInstance c) => run.Deck.Count > 5, delegate(int index4)
-			{
-				Do(new RunCommand_ShopRemove
-				{
-					Index = index4
-				});
-			});
-		}, run.Gold >= removePrice && run.Deck.Count > 5);
-		Button(services, $"札を鍛える  {upgradePrice} G", delegate
-		{
-			ChooseDeckCard(run, "鍛える", Upgrade.CanUpgradeCard, delegate(int index4)
-			{
-				Do(new RunCommand_ShopUpgrade
-				{
-					Index = index4
-				});
-			}, upgrade: true);
-		}, run.Gold >= upgradePrice && run.Deck.Any(Upgrade.CanUpgradeCard));
-		Button(services, $"魔素を買う  {manaPrice} G", delegate
-		{
-			Do(new RunCommand_ShopBuyMana());
-		}, run.Gold >= manaPrice && run.Mana.GetValueOrDefault() < 50);
-		IReadOnlyList<ShopStateDepartures> departures = shop.Departures ?? Array.Empty<ShopStateDepartures>();
-		for (int i3 = 0; i3 < departures.Count; i3++)
-		{
-			int index3 = i3;
-			ShopStateDepartures slot = departures[i3];
-			DepartureOffer offer3 = run.Departure?.Leftovers.FirstOrDefault((DepartureOffer o) => o.Id == slot.Id);
-			if (offer3 == null || slot.Sold == true)
-			{
-				continue;
-			}
-			VBoxContainer col4 = DepartureTile(scroll, offer3);
-			Button(col4, $"{slot.Price} G で買う", delegate
-			{
-				ResolveChoice(run, offer3.Choice, offer3.Name, delegate(int? ci)
-				{
-					Do(new RunCommand_ShopBuyDeparture
-					{
-						Index = index3,
-						CardIndex = ci
-					});
-				});
-			}, run.Gold >= slot.Price && Run.EventChoiceAvailable(run, offer3.Choice));
-		}
-		GearInventory(scroll, run, usable: false);
-		Button(_body, "店を出る", delegate
-		{
-			Do(new RunCommand_ShopLeave());
-		}, enabled: true, Accent);
-	}
+    {
+        if (run.Shop == null)
+        {
+            Heading("ショップ", "在庫がありません");
+            Button(_body, "店を出る", () => Do(new RunCommand_ShopLeave()));
+            return;
+        }
+        var shop = run.Shop;
+        if (_shopGearsScreen) { BuildShopGearShelf(run, shop); return; }
+        Heading("ショップ", (PhoneLayout ? "札はタップで拡大。" : "札はクリックで拡大。") + $"買うのは値札のボタン。所持金 {run.Gold} G");
+        var decision = new SourceUiDecision(_session?.Revision ?? 0);
+        void Act(Action action) { if (decision.TryAccept(_session?.Revision ?? 0, IsInputBlocked)) action(); }
+        var scroll = ScrollColumn(_body);
+        var cards = Flow(scroll);
+        cards.Name = "SourceShopCardShelf";
+        for (int i = 0; i < shop.Cards.Count; i++)
+        {
+            int index = i;
+            var offer = shop.Cards[i];
+            var col = Column(cards);
+            col.SizeFlagsHorizontal = SizeFlags.Fill;
+            if (SourceRunScreenPolicy.RareSlot(i, shop.Cards.Count)) Text(col, "★ レア枠", 17, Gold);
+            var card = new CardInstance { Uid = "shop-" + i, Def = Content.GetCardDef(offer.Id) };
+            var face = Card(col, card, () => InspectCard(card));
+            if (offer.Sold == true) AddShopSoldCover(face);
+            Button(col, offer.Sold == true ? "売切" : $"{offer.Price} G で買う", () => Act(() => Do(new RunCommand_ShopBuyCard { Index = index })),
+                offer.Sold != true && run.Gold >= offer.Price, Gold);
+        }
+        var departures = shop.Departures ?? Array.Empty<ShopStateDepartures>();
+        var otherDepartures = Column(scroll);
+        for (int i = 0; i < departures.Count; i++)
+        {
+            int index = i;
+            var slot = departures[i];
+            var offer = run.Departure?.Leftovers.FirstOrDefault(o => o.Id == slot.Id);
+            if (offer == null || slot.Sold == true) continue;
+            VBoxContainer col;
+            if (offer.Kind == "card" && offer.Choice.AddCardIds?.Count > 0)
+            {
+                col = Column(cards);
+                Text(col, "行商が預かった支度", 16, Muted);
+                var card = new CardInstance { Uid = "shop-departure-" + index, Def = Content.GetCardDef(offer.Choice.AddCardIds[0]) };
+                Card(col, card, () => InspectCard(card));
+            }
+            else col = DepartureTile(otherDepartures, offer);
+            Button(col, $"{slot.Price} G で買う", () => Act(() => ResolveChoice(run, offer.Choice, offer.Name,
+                card => Do(new RunCommand_ShopBuyDeparture { Index = index, CardIndex = card }))),
+                run.Gold >= slot.Price && Run.EventChoiceAvailable(run, offer.Choice), Gold);
+        }
+        Text(scroll, "店主のサービス", 23, Gold);
+        var wares = Flow(scroll);
+        if (shop.RelicId != null)
+        {
+            var relic = Content.GetRelicDef(shop.RelicId);
+            var col = Tile(wares, relic.Name, relic.Description, "relics", relic.Id);
+            col.GetParent<Control>().CustomMinimumSize = new Vector2(290, 200);
+            Button(col, $"{shop.RelicPrice} G で買う", () => Act(() => Do(new RunCommand_ShopBuyRelic())), run.Gold >= shop.RelicPrice, Gold);
+        }
+        else Text(wares, "レリックは売切", 20, Muted);
+        var services = Flow(scroll);
+        int removePrice = Run.ShopRemovalPrice(run), upgradePrice = Run.ShopUpgradePrice(run);
+        Button(services, $"札を取り除く  {removePrice} G", () =>
+            ChooseDeckCard(run, "取り除く", _ => run.Deck.Count > 5, index => Do(new RunCommand_ShopRemove { Index = index })),
+            run.Gold >= removePrice && run.Deck.Count > 5);
+        Button(services, $"札を鍛える  {upgradePrice} G", () =>
+            ChooseDeckCard(run, "鍛える", Upgrade.CanUpgradeCard, index => Do(new RunCommand_ShopUpgrade { Index = index }), upgrade: true),
+            run.Gold >= upgradePrice && run.Deck.Any(Upgrade.CanUpgradeCard));
+        Button(services, $"ギアの棚  {shop.Gears?.Count ?? 0}枠 ／ 魔素 {shop.ManaPrice ?? Run.SHOP_MANA_PRICE} G", () => ShowShopShelf(true), true, Accent).Name = "SourceShopShelfOpen";
+        Text(scroll, SourceRunScreenPolicy.ServicePriceNote, 17, Muted);
+        Button(_body, "店を出る", () => Act(() => Do(new RunCommand_ShopLeave())), true, Accent);
+    }
 
 	private void ChooseDeckCard(RunState run, string title, Func<CardInstance, bool> allowed, Action<int> submit, bool upgrade = false)
-	{
-		Open(title + " · 札を1枚選ぶ", delegate(VBoxContainer box)
-		{
-			CardGrid(box, run.Deck, delegate(CardInstance card)
-			{
-				int index = run.Deck.ToList().FindIndex((CardInstance c) => c.Uid == card.Uid);
-				Open(title + " · " + card.Def.Name, delegate(VBoxContainer b)
-				{
-					HBoxContainer parent = Row(b);
-					Card(parent, card, null);
-					if (upgrade)
-					{
-						Card(parent, Upgrade.UpgradeCard(card), null, enabled: true, "鍛えた後");
-					}
-					Button(b, "この札を" + title, delegate
-					{
-						submit(index);
-					}, enabled: true, Gold);
-				});
-			}, allowed, (CardInstance card) => allowed(card) ? title : "選べません");
-		});
-	}
+    {
+        var decision = new SourceUiDecision(_session?.Revision ?? 0);
+        Open(title + " · 札を1枚選ぶ", box => {
+            CardGrid(box, run.Deck, card => {
+                int index = run.Deck.ToList().FindIndex(c => c.Uid == card.Uid);
+                if (index < 0 || !allowed(card) || !decision.TryAccept(_session?.Revision ?? 0, IsInputBlocked)) return;
+                submit(index);
+            }, allowed, card => allowed(card) ? title : (upgrade ? SourceCardModalPolicy.UpgradeState(card) : "選べません"),
+                confirmPick: true, actionLabel: title);
+        });
+    }
 
 	private void BuildCampfire(RunState run)
 	{
@@ -4260,13 +4092,13 @@ public partial class GameUI : Control
 		Heading("焚き火", "どれか1つを選ぶ。鍛えた後は回復なしで立ち去る。");
 		VBoxContainer scroll = ScrollColumn(_body);
 		HFlowContainer flow = Flow(scroll);
-		VBoxContainer rest = Tile(flow, (fresh && !noRest) ? "休む" : "立ち去る", (fresh && !noRest) ? $"HP {run.Hp} → {Math.Min(run.MaxHp, run.Hp + heal)} / {run.MaxHp}" : (noRest ? "所持する遺物のため、焚き火では回復できません。" : "すでに鍛えたので、回復はありません。"), "scenes", "campfire");
+		VBoxContainer rest = Tile(flow, "休む", SourceDecisionInfo.CampfireRest(run), "scenes", "campfire");
 		rest.GetParent<Control>().CustomMinimumSize = new Vector2(300f, 260f);
 		Button(rest, (fresh && !noRest) ? "休む" : "回復なしで立ち去る", delegate
 		{
 			Do(new RunCommand_CampfireRest());
 		}, enabled: true, Accent);
-		VBoxContainer forge = Tile(flow, "鍛える", $"デッキの札を強化する。残り {remain} 回。");
+		VBoxContainer forge = Tile(flow, "鍛える", SourceDecisionInfo.CampfireForge(run));
 		forge.GetParent<Control>().CustomMinimumSize = new Vector2(300f, 260f);
 		Button(forge, "鍛える札を選ぶ", delegate
 		{
@@ -4280,6 +4112,7 @@ public partial class GameUI : Control
 		}, remain > 0 && run.Deck.Any(Upgrade.CanUpgradeCard));
 		if (opt.Dig && fresh)
 		{
+			Text(scroll, "発掘の鶴嘴: レリックを1個掘る · " + SourceDecisionInfo.ExclusiveCampfire, 20, Muted);
 			Button(scroll, "発掘: 遺物を掘る", delegate
 			{
 				Do(new RunCommand_CampfireDig());
@@ -4287,6 +4120,7 @@ public partial class GameUI : Control
 		}
 		if (opt.TrainLeft > 0 && fresh)
 		{
+			Text(scroll, SourceDecisionInfo.CampfireTrain(run), 20, Muted);
 			Button(scroll, $"鍛錬: 成長 +1 (あと {opt.TrainLeft} 回)", delegate
 			{
 				Do(new RunCommand_CampfireTrain());
@@ -4296,6 +4130,8 @@ public partial class GameUI : Control
 		{
 			return;
 		}
+		Text(scroll, "安らぎの煙管: デッキの1枚を永久に除去 · " + SourceDecisionInfo.ExclusiveCampfire, 20, Muted);
+        if (run.Deck.Count <= 5) Text(scroll, "デッキが5枚以下のため取り除けない", 18, Danger);
 		Button(scroll, "取り除く: 安らぎの煙管", delegate
 		{
 			ChooseDeckCard(run, "取り除く", (CardInstance c) => run.Deck.Count > 5, delegate(int i)
@@ -4422,7 +4258,9 @@ public partial class GameUI : Control
 		{
 			int index = i;
 			EventChoiceDef choice = ev.Choices[i];
-			Button(scroll, choice.Label, delegate
+			VBoxContainer choiceBox = Column(scroll);
+            choiceBox.Name = "EventChoice_" + index;
+			Button choiceButton = Button(choiceBox, SourceDecisionInfo.EventLabel(run, choice), delegate
 			{
 				ResolveChoice(run, choice, choice.Label, delegate(int? card)
 				{
@@ -4432,7 +4270,13 @@ public partial class GameUI : Control
 						CardIndex = card
 					});
 				});
-			}, Run.EventChoiceAvailable(run, choice), Gold);
+			}, Run.EventChoiceAvailable(run, choice), SourceDecisionInfo.IsFreeChoice(choice) ? null : Gold);
+            choiceButton.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+            choiceButton.TextOverrunBehavior = TextServer.OverrunBehavior.NoTrimming;
+            choiceButton.Alignment = HorizontalAlignment.Left;
+            choiceButton.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+            string hint = SourceDecisionInfo.ChoiceHint(choice);
+            if (hint.Length > 0) Text(choiceBox, hint, 18, Gold);
 		}
 	}
 

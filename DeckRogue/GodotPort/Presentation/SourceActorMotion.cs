@@ -46,7 +46,7 @@ public sealed class SourceActorMotion
     }
     readonly SourceImpactPause _pause = new();
     Movement? _approach, _recoil;
-    float _attackAt;
+    float _attackDelay, _attackDelayElapsed;
     int _attackFrame, _attackVersion;
     bool _attackPending;
 
@@ -104,7 +104,7 @@ public sealed class SourceActorMotion
         };
         if (profile is not null)
         {
-            _attackAt = now + Math.Max(0, profile.Contact - .12f);
+            _attackDelay = Math.Max(0, profile.Contact - .12f); _attackDelayElapsed = 0;
             _attackFrame = frame; _attackVersion = MotionVersion; _attackPending = true;
         }
         // Source ShowcaseMotion calls update(0) synchronously before yielding.
@@ -162,9 +162,12 @@ public sealed class SourceActorMotion
         }
         // Tween.After is a wall-presentation-time delay, not the actor-local paused clock.
         string? pose = null;
-        if (_attackPending && _attackVersion == MotionVersion && frame > _attackFrame && now >= _attackAt)
+        if (_attackPending && _attackVersion == MotionVersion && frame > _attackFrame)
         {
-            _attackPending = false; pose = "attack";
+            // Tween.After accumulates scaled frame delta; absolute float-clock
+            // subtraction can add a frame at exact boundaries after long play.
+            _attackFrame = frame; _attackDelayElapsed += frameDelta;
+            if (_attackDelayElapsed >= _attackDelay) { _attackPending = false; pose = "attack"; }
         }
         // A repeated/same-frame sample must not discard overlap needed next frame.
         float consumedThrough = now;
@@ -180,9 +183,12 @@ public sealed class SourceActorMotion
     void Advance(Movement movement, float now, int frame, float frameDelta)
     {
         if (frame <= movement.StartedFrame || frame <= movement.LastFrame || now < movement.LastClock) return;
-        // Never charge the action for time before acquisition, or twice for the same frame.
-        float from = Math.Max(movement.LastClock, now - frameDelta);
-        float elapsed = movement.LocalPause ? _pause.UnpausedDuration(from, now) : Math.Max(0, now - from);
+        // Unity StageCombat.ShowcaseMotion samples pause at frame end, then adds
+        // the whole Time.deltaTime. Sprite LateUpdate uses the same pause predicate.
+        // Fractional overlap integration made the recovered actor move while its
+        // authored attack frame stayed held and changed motion after render stalls.
+        // Acquisition/same-frame guards above keep a new coroutine at update(0).
+        float elapsed = movement.LocalPause && _pause.IsPaused(now) ? 0f : frameDelta;
         movement.Elapsed = Math.Min(movement.Duration, movement.Elapsed + elapsed);
         movement.LastClock = now; movement.LastFrame = frame;
     }

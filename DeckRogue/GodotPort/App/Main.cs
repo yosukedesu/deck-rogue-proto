@@ -38,6 +38,7 @@ public class Main : Node
 	private BattleStage? _stage;
 
 	private GameUI? _ui;
+	private PresentationDiagnostics? _presentationDiagnostics;
 
 	public override void _Ready()
 	{
@@ -79,6 +80,7 @@ public class Main : Node
         _ui.SetLeaderProjection(_stage.ProjectLeaderFeet);
         _ui.SetCardRetirement(id => (double)_stage.GetCardRetirementSeconds(id));
         _stage.SetEnemyLedgerBounds(_ui.GetEnemyLedgerBounds);
+        _stage.SetSourceCombatTextHost(overlay, () => _ui.SourceCombatTextMetrics);
 		_stage.PresentationCompleted += _ui.PresentationCompleted;
 		_stage.TargetSelected += _ui.SelectEnemy;
 		_stage.EventPresented += _ui.PresentEvent;
@@ -93,6 +95,10 @@ public class Main : Node
 		_ui.Bind(_session);
 		_ui.QualityChanged += _stage.ApplyQuality;
 		_stage.ApplyQuality(_ui.GraphicsQuality);
+        _ui.SetEffectiveQuality(() => _stage.EffectiveQualityProfile);
+		_presentationDiagnostics = new PresentationDiagnostics(this, _stage, () => new { _ui.EnemyHeadReadbacks, _ui.EnemyHeadCacheHits });
+		_ui.SetPresentationDiagnostics(_presentationDiagnostics.SetEnabled, () => _presentationDiagnostics.Enabled, () => _presentationDiagnostics.LastFile);
+		_presentationDiagnostics.Status += _ui.SetPresentationDiagnosticStatus;
 		AgentCapture capture = new AgentCapture
 		{
 			Name = "AgentCapture"
@@ -107,11 +113,13 @@ public class Main : Node
         DeckRogue.GodotPort.RecoveryQA.RecoveryMotionQa.Start(this);
         DeckRogue.GodotPort.RecoveryQA.RecoveryHandQa.Start(this);
         DeckRogue.GodotPort.RecoveryQA.UnityParitySequenceQa.Start(this);
+        DeckRogue.GodotPort.RecoveryQA.UnityUiManualQa.Start(this);
 #endif
 	}
 
 	public override void _ExitTree()
 	{
+		_presentationDiagnostics?.Dispose();
 		if (_stage != null && _ui != null)
 		{
 			_stage.SetCueOccluders(null);

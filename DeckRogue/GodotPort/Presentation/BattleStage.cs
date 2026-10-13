@@ -376,7 +376,7 @@ public partial class BattleStage : Node3D
 		}
 	}
 
-	public int ActiveLightCount => (_fx?.ActiveLights ?? 0) + (_native?.ActiveLights ?? 0) + OrdinaryActiveLights;
+	public int ActiveLightCount => (_fx?.ActiveLights ?? 0) + (_native?.ActiveLights ?? 0) + OrdinaryActiveLights + SourceCastLightCount;
 
 	public int RejectedReceiptCount { get; private set; }
 
@@ -977,7 +977,9 @@ public partial class BattleStage : Node3D
 		{
 			float depth = 0f - (_world.Camera.GlobalTransform.AffineInverse() * actor.Home).Z;
 			string category = ((actor.EnemyIndex >= 0) ? "enemies" : ((actor == _hero) ? "leaders" : "dolls"));
-			actor.SetSourceImageHeight(SourceActorSizing.Compute(category, actor.BaseTextureWidth, actor.BaseTextureHeight, actor.TopMarginRows, actor.Phone96, kind, size, _world.Camera.Fov, _world.CameraLayout.ReferenceDistance, depth, _world.PhoneLayout, ui).WorldImageHeight);
+			var sizing=SourceActorSizing.Compute(category, actor.BaseTextureWidth, actor.BaseTextureHeight, actor.TopMarginRows, actor.Phone96, kind, size, _world.Camera.Fov, _world.CameraLayout.ReferenceDistance, depth, _world.PhoneLayout, ui);
+			actor.SetSourceImageHeight(sizing.WorldImageHeight);
+			actor.SetSourceCanvasMotionScale(sizing.WorldImageHeight/Math.Max(1,sizing.RoundedScreenHeight)*sizing.CanvasScale);
 			actor.SetSourceDisplayTransferEnabled(ActorSourceDisplayRequested);
 			actor.ConfigureSourceAppearance(_act, _world.Camera, _displayState?.Enemies.Count ?? 1);
 		}
@@ -1027,7 +1029,8 @@ public partial class BattleStage : Node3D
 			_targetActor = ((hit.PresentationReceipt?.Target == "player" || hit.Source == "enemy") ? _hero : Enemy(hit.PresentationReceipt?.EnemyIndex ?? hit.EnemyIndex));
 			Vector3 from = _sourceActor?.Contact ?? (Path(-5f, 0.9f) + Vector3.Up);
 			Vector3 to = _targetActor?.Contact ?? (Path(4.459f, -0.5f) + Vector3.Up);
-			if(_ordinaryCallback?.Direct!=true)_sourceActor?.PlayPose("attack", _clock);
+			if(hit.Source=="enemy")BeginSourceEnemyLunge(hit);
+			else if(_ordinaryCallback?.Direct!=true)_sourceActor?.PlayPose("attack", _clock);
 			if (!_projectionActive)
 			{
 				StartEffect(beat.Route, beat.Scenario, from, to);
@@ -1155,7 +1158,7 @@ public partial class BattleStage : Node3D
 				}
 				if (hit.Source != "enemy" || loss > 0 || block > 0 || hit.Amount <= 0)
 				{
-					ShowReceipt(text, (_targetActor?.Contact ?? Vector3.Up) + Vector3.Right * ((float)(BeatContactOrdinal % 3 - 1) * 0.14f), (loss > 0) ? new Color("fff1e6") : new Color("b7c8df"));
+					if (!TryShowSourceDamage(hit, loss, block)) ShowReceipt(text, (_targetActor?.Contact ?? Vector3.Up) + Vector3.Right * ((float)(BeatContactOrdinal % 3 - 1) * 0.14f), (loss > 0) ? new Color("fff1e6") : new Color("b7c8df"));
 				}
 			}
 			else
@@ -1495,7 +1498,7 @@ public partial class BattleStage : Node3D
 	{
 		to = _targetActor?.Impact ?? to;
 		_fx.Clear();
-		if (!_native.Begin(route, scenario, from, to, _targetActor?.Home ?? (to - Vector3.Up), _targetActor?.Height ?? 1.5f, _world.Camera.GlobalBasis))
+		if (!_native.Begin(route, scenario, from, to, _targetActor?.Home ?? (to - Vector3.Up), _targetActor?.Height ?? 1.5f, _world.Camera.GlobalBasis, _ordinaryCallback?.Direct == true ? _ordinaryCallback.Volley : 0))
 		{
 			_fx.Begin(route, scenario, from, to);
 		}
@@ -1787,7 +1790,7 @@ public partial class BattleStage : Node3D
 	private void AdvanceClock(float delta)
 	{
 		_clock += delta;
-		_cues.Sample(_clock);SamplePhaseLayer();
+		_cues.Sample(_clock);SamplePhaseLayer();SampleSourceCombatText();
 	}
 
 	public void AdvancePresentation(float delta)
@@ -1797,7 +1800,11 @@ public partial class BattleStage : Node3D
   bool timelineWasBusy=_timeline.Busy;
   if(timelineWasBusy)_timeline.Advance(delta);else AdvanceClock(delta);
   _actionQueue.Advance(_clock,_presentationFrame);
-  ProcessOrdinaryContacts();AdvanceOrdinaryEffects();
+  // Source approach coroutines already exist when the delayed hit callback runs.
+  // Sample them before this frame's contacts request local pauses. New actions and
+  // recoil begin at update(0); the post-contact visual pass cannot tick them twice.
+  foreach(var actor in AllPresentationActors().ToArray())actor.SampleSourceMotion(_clock,delta,_presentationFrame);
+  ProcessOrdinaryContacts(delta);AdvanceOrdinaryEffects();
   var beat=_timeline.Active;
   if(beat?.Route is not null&&!_rejectBeat){float t=_timeline.Time-_effectStartedAt+_effectOffset;if(_native.IsActive)_native.Sample(t);else if(_fx.Visible)_fx.Sample(t);}
   RefreshForestLighting();
@@ -1818,7 +1825,7 @@ public partial class BattleStage : Node3D
 		_fx?.Clear();
 		_native?.Clear();
 		_world?.SetForestAttackLights(null);
-		_cues?.Clear();
+		_cues?.Clear();CancelSourceCombatText();
 		ClearRetired();
 		_deaths.Clear();
 		_ledger.Clear();
@@ -1927,7 +1934,7 @@ public partial class BattleStage : Node3D
 	{
 		_actorLights.Clear();
 		AppendAttackLights(_actorLights,probeFx);
-		_world.SetForestAttackLights(_actorLights);
+		_world.SetForestAttackLights(_actorLights, SourceCastLightCount > 0 ? 3 : 2);
 	}
 
 	public void RefreshActorLighting(AuthoredGeometryFx? probeFx = null)

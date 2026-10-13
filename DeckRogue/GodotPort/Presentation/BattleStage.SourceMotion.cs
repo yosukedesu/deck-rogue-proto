@@ -6,6 +6,7 @@ using System.Linq;
 using DeckRogue.Engine.Generated;
 using DeckRogue.GodotPort.Core;
 using Godot;
+using Newtonsoft.Json.Linq;
 namespace DeckRogue.GodotPort.Presentation;
 public partial class BattleStage {
  public bool SourceShowcaseEnabled {get;set;}=true; // Archived Unity APK build defines enabled this optional source mode.
@@ -19,7 +20,7 @@ public partial class BattleStage {
  public Vector2? ProjectLeaderFeet()=>_hero is not null&&_world?.Camera is {} camera&&camera.IsInsideTree()?camera.UnprojectPosition(_hero.Home):null;
  public float GetCardRetirementSeconds(string cardId)=>SourceShowcaseEnabled&&SourceShowcaseProfiles.ForCard(cardId) is {} p?Math.Min(.10f,p.Contact*.70f):.25f;
  IEnumerable<BattleActor> AllPresentationActors()=>_actorRoot is null?Enumerable.Empty<BattleActor>():_actorRoot.GetChildren().OfType<BattleActor>().Concat(_retiredRoot?.GetChildren().OfType<BattleActor>()??Enumerable.Empty<BattleActor>());
- public int ActiveMotionCount=>AllPresentationActors().Count(a=>a.Motion.HasMotion||a.Motion.IsPaused(_clock)||a.ExecutionScaleActive);
+ public int ActiveMotionCount=>AllPresentationActors().Count(a=>a.Motion.HasMotion||a.UiLunge.Active||a.Motion.IsPaused(_clock)||a.ExecutionScaleActive);
  public int ActivePoseCount=>AllPresentationActors().Count(a=>!a.Dead&&a.HasActivePose);
  bool TrackedActorsIdle=>ActiveMotionCount==0&&ActivePoseCount==0&&!_deaths.Any(d=>_clock<d.Value.Started+d.Value.Delay+d.Value.Duration);
  void PublishNumericContact(GameEvent e,PresentationBeat beat){
@@ -54,10 +55,28 @@ public partial class BattleStage {
    var def=_session?.Catalog.Cards.FirstOrDefault(c=>c.Id==action.Card.CardId);
    bool ranged=def?.Type=="spell";
    if(action.Profile is not null){var pose=_hero.Motion.Approach(_hero.SourceMotionFeet,_hero.SourceMotionHeight,target.SourceMotionFeet,target.SourceMotionHeight,ranged,action.Volleys,action.Profile,_clock,_presentationFrame,_world.Camera.GlobalBasis.X,_hero.ArtId);_hero.PlayPose(pose,_clock);}
-   else if(!ranged||_hero.ArtId=="leader_blue")_hero.PlayPose("attack",_clock);
+   else if(!ranged){_hero.PlayPose("attack",_clock);_hero.BeginSourceLunge(new Vector2(64,-6),_clock,_presentationFrame,delay:.11f);}
+   else if(_hero.ArtId=="leader_blue")_hero.PlayPose("attack",_clock);
   }else if(action.Beats.Any(b=>b.Beat.Event is GameEvent_BlockGained {Target:"player"} or GameEvent_IceBlockGained))_hero.PlayPose("block",_clock);
+  BeginSourceCastLight(action);
   action.Capture=_hero.Motion.Capture();
   foreach(var b in action.Beats)if(b.Direct&&b.Beat.Event is GameEvent_DamageDealt h)b.CapturedTarget=Enemy(h.EnemyIndex);
+ }
+ Newtonsoft.Json.Linq.JObject? _sourceMotionProfiles;
+ bool SourceEnemyRanged(GameState? snapshot,int index){
+  if(snapshot is null||index<0||index>=snapshot.Enemies.Count)return false;
+  var enemy=snapshot.Enemies[index];
+  if(enemy.Intent?.ConditionalOn is not null&&enemy.Intent.Alt is not null)return false;
+  _sourceMotionProfiles??=Newtonsoft.Json.Linq.JObject.Parse(Godot.FileAccess.GetFileAsString("res://assets/presentation-data/card-vfx-profiles.json"));
+  var entry=_sourceMotionProfiles["_enemyMoves"]?[enemy.EnemyId+"/"+enemy.IntentMoveId];
+  var required=entry?["requiresExecutedMoveMetadata"];
+  if(required is not null&&(required.Type!=Newtonsoft.Json.Linq.JTokenType.Boolean||required.Value<bool>()))return false;
+  string? style=entry?["style"]?.Value<string>();return style is "beam" or "throw";
+ }
+ void BeginSourceEnemyLunge(GameEvent_DamageDealt hit){
+  if(_sourceActor is null)return;
+  bool ranged=SourceEnemyRanged(_ordinaryCallback?.Action.Owner.Change.Previous?.Combat??_fenceCommand?.Change.Previous?.Combat,hit.EnemyIndex??-1);
+  _sourceActor.BeginSourceLunge(ranged?new Vector2(18,0):new Vector2(-90,12),_clock,_presentationFrame,ranged?.20f:.28f);
  }
  void ApplySourceImpact(PresentationBeat beat,GameEvent_DamageDealt hit){
   if(_targetActor is not {} target)return;
@@ -71,6 +90,13 @@ public partial class BattleStage {
    if(a.Actor is {} actor&&a.Capture is {} capture)actor.Motion.RequestOwnedPause(capture,pause,_clock);
    target.PlayPose("hurt",_clock);_lastHandoffPause=a.Actor?.Motion.PauseRemaining(_clock)??0;
    _actionQueue.Hold(a.Token,_clock+_lastHandoffPause,_presentationFrame);
-  }else {target.Motion.Recoil(_world.Camera.GlobalBasis.X*(target==_hero?-1:1),target.SourceMotionHeight,hit.Amount>=15,_clock,_presentationFrame,false);target.PlayPose("hurt",_clock);}
+  }else if(hit.Source=="enemy") {
+   // Presenter.PresentEnemyContribution/Show: each actual injured contribution
+   // restarts the authored hurt pose and the shared-anchor 36-canvas-pixel lunge.
+   target.BeginSourceLunge(new Vector2(-36,0),_clock,_presentationFrame);target.PlayPose("hurt",_clock);
+  }
+  // Ordinary player damage only flashes the victim in source Presenter.Show.
+  // Stage.CombatRecoil is not called there; do not invent a second world kick or
+  // restart enemy hurt sheets outside the explicit ShowcaseImpact path.
  }
 }

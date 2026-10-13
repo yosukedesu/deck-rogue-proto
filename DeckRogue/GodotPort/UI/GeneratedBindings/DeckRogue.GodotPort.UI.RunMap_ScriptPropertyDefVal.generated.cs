@@ -1,4 +1,4 @@
-namespace DeckRogue.GodotPort.UI {
+﻿namespace DeckRogue.GodotPort.UI {
 
 partial class RunMap
 {
