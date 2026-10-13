@@ -1,0 +1,23 @@
+{
+  "pass": true,
+  "case": "feedback-phone130",
+  "checks": 9180,
+  "numericBlockFrame": 260,
+  "cueStartClock": 5.450016,
+  "lastVisibleCueFrame": 301,
+  "cueFrames": 42,
+  "origin": [
+    1795.003,
+    256.9485
+  ],
+  "originErrorLogical": 1.2000000026546331e-05,
+  "targetIndex": 2,
+  "amount": 4,
+  "newText": "+4",
+  "oldRawActionAndGenericBlockAbsent": true,
+  "primaryGoldDamageUnchanged": true,
+  "everyActorFieldAndContactFenceTimelineEqual": true,
+  "fullFinalSavePairEqual": true,
+  "referenceIdentityScope": "serialized cue event + callback, not pointer ReferenceEquals probe",
+  "pngCadence": 20
+}

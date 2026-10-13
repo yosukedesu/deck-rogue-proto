@@ -1,0 +1,62 @@
+{
+  "schema": "enemy-block-feedback/1",
+  "status": "OFF-TREE SOURCE PACKAGE; NATIVE UNRUN",
+  "base": "accepted ccdce85 read-only snapshot; exact hunks permit unrelated authored-hand batch edits",
+  "changed_files": [
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.cs",
+      "before_sha256": "600191f20bcfad9f5af534001ffbb89fa41c8c0d321bb68dfdf4cd3e2786bf22",
+      "after_sha256": "48fdcc3f8b24a113083208ce073d6984a1d4fb4ddd7d074f52e6287545ad464c"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.SourceCombatText.cs",
+      "before_sha256": "00771fd803cbac5874c4ff9a4f18f7327ed8723690659191a33d48dc32e282d3",
+      "after_sha256": "4a0e706030254cebb9eb54a6e7cb41186af41c05468c72788b3c123ad2bcd0df"
+    }
+  ],
+  "production_payload": {
+    "changes.json": "623c158bbf841992699d8ea872ab48ded602dfb0ac6c5c3cbef42cb10dc85e2b",
+    "files/BattleStage.SourceEnemyBlockText.cs": "ea7d1d0a75fd4f162b18b9226b99298420f8e8d9d3968b9e25ab2774e371763b",
+    "files/SourceEnemyBlockFloatModel.cs": "379b86d519eee73a38d3829f4c1e46ab959c0b760c8f453b26eee998149080bd"
+  },
+  "exact_dependencies": {
+    "DeckRogue/GodotPort/Presentation/SourceCombatFloatModel.cs": "8de38795442ed51e122c09ec51b803188295b55a74427b8a1594f76905218269",
+    "DeckRogue/GodotPort/Presentation/SourceFloatProxyModel.cs": "6ddb156bbd6126698583bbd3d2d0687d604f3dc9dc628acb2c829273d0416bd1"
+  },
+  "scope": "Stages1+2 text only. No IconBurst, source rest text, hero float, primary damage, engine, ledger, RNG, event or contact clock changes.",
+  "new_files": [
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.SourceEnemyBlockText.cs",
+      "before_sha256": null,
+      "after_sha256": "ea7d1d0a75fd4f162b18b9226b99298420f8e8d9d3968b9e25ab2774e371763b"
+    },
+    {
+      "path": "DeckRogue/GodotPort/Presentation/SourceEnemyBlockFloatModel.cs",
+      "before_sha256": null,
+      "after_sha256": "379b86d519eee73a38d3829f4c1e46ab959c0b760c8f453b26eee998149080bd"
+    }
+  ],
+  "source_contract": {
+    "Presenter.cs": "468–549 execution; 2239–2252 enemy BlockGained; 754–759 distinguishes EF",
+    "Tween.cs": "134–149 scaled clock; 314–343 float; 807–819 bottom-fixed squash; 1030–1036 transformed center",
+    "PaperFx.cs": "SkyLight #d6e6fa; FitPixel 678–693 unrounded proxy",
+    "origin": "project(Home + UiLunge.Offset) + (60*proxyUnit, -0.5*proxyHeight*ExecutionScale.Y -30*proxyUnit)",
+    "style": {
+      "sourceSize": 28,
+      "sourceRise": 36,
+      "lifetime": 0.7,
+      "popDuration": 0.18,
+      "pop": "0.6→1 OutBack",
+      "trajectory": "OutQuad",
+      "fade": "last 40%",
+      "color": "#d6e6fa",
+      "size": "240×60 canvas units"
+    },
+    "clock": "Existing shared BattleStage presentation clock; no new delay, action fence or WorkScope drain ownership",
+    "pending": [
+      "Source shield IconBurst",
+      "Source rest-specific 隙",
+      "Exact a7 and native raster equivalence"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+APPLIED: 4 files; guarded writes complete
+DeckRogue/GodotPort/Presentation/BattleStage.cs
+DeckRogue/GodotPort/Presentation/BattleStage.SourceCombatText.cs
+DeckRogue/GodotPort/Presentation/BattleStage.SourceEnemyBlockText.cs
+DeckRogue/GodotPort/Presentation/SourceEnemyBlockFloatModel.cs

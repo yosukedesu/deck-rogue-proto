@@ -69,6 +69,7 @@ public partial class BattleStage
     }
     private void SampleSourceCombatText()
     {
+        SampleSourceEnemyBlockText();
         for (int i=_sourceFloats.Count-1;i>=0;i--)
         {
             var cue=_sourceFloats[i];float age=_clock-cue.Start;
@@ -82,6 +83,7 @@ public partial class BattleStage
     }
     private void CancelSourceCombatText()
     {
+        CancelSourceEnemyBlockText();
         foreach (var cue in _sourceFloats) if (GodotObject.IsInstanceValid(cue.Label)) cue.Label.QueueFree();
         _sourceFloats.Clear();
     }

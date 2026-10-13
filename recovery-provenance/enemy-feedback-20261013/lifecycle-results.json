@@ -1,0 +1,2213 @@
+{
+  "schema": "feedback-lifecycle-native-qa/1",
+  "passed": true,
+  "status": "PASS",
+  "completion": "Same exact cue/Label and frozen origin survived actual Rebuild plus post-draw; actual Load canceled it for two distinct post-draw frames",
+  "phase": "await-reset-draws",
+  "frame": 90,
+  "draws": 91,
+  "resetDraws": 2,
+  "dispatches": 1,
+  "rebuilds": 1,
+  "loads": 2,
+  "wallSeconds": 18.1639313,
+  "error": null,
+  "diagnostics": [],
+  "checks": [
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Exclusive QA entrypoint; existing observers stay inactive",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Native display required; no headless visual pass",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Engine TimeScale is exactly 1; helper never changes it",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Exact byte-identical genuine alternate fixture",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Exact original alternate action schedule bytes",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Exactly one original EndTurn at frame 30",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Normal production playback is unpaused at speed1; helper does not change it",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Existing Main-bound sibling interface canvas host",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Stage binds before UI to the same isolated session",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Actual isolated GameSession.Load accepted without warning:  ",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Initial Load revision and full Run hash match original oracle",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Stage and UI agree on phone/desktop layout",
+      "passed": true
+    },
+    {
+      "frame": -1,
+      "draws": 0,
+      "phase": "initializing",
+      "message": "Fixture Load and warmup emit no synthetic cue or contacts",
+      "passed": true
+    },
+    {
+      "frame": 0,
+      "draws": 0,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 0,
+      "draws": 0,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 1,
+      "draws": 1,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 1,
+      "draws": 1,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 2,
+      "draws": 2,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 2,
+      "draws": 2,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 3,
+      "draws": 3,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 3,
+      "draws": 3,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 4,
+      "draws": 4,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 4,
+      "draws": 4,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 5,
+      "draws": 5,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 5,
+      "draws": 5,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 6,
+      "draws": 6,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 6,
+      "draws": 6,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 7,
+      "draws": 7,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 7,
+      "draws": 7,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 8,
+      "draws": 8,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 8,
+      "draws": 8,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 9,
+      "draws": 9,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 9,
+      "draws": 9,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 10,
+      "draws": 10,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 10,
+      "draws": 10,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 11,
+      "draws": 11,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 11,
+      "draws": 11,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 12,
+      "draws": 12,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 12,
+      "draws": 12,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 13,
+      "draws": 13,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 13,
+      "draws": 13,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 14,
+      "draws": 14,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 14,
+      "draws": 14,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 15,
+      "draws": 15,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 15,
+      "draws": 15,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 16,
+      "draws": 16,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 16,
+      "draws": 16,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 17,
+      "draws": 17,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 17,
+      "draws": 17,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 18,
+      "draws": 18,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 18,
+      "draws": 18,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 19,
+      "draws": 19,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 19,
+      "draws": 19,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 20,
+      "draws": 20,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 20,
+      "draws": 20,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 21,
+      "draws": 21,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 21,
+      "draws": 21,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 22,
+      "draws": 22,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 22,
+      "draws": 22,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 23,
+      "draws": 23,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 23,
+      "draws": 23,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 24,
+      "draws": 24,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 24,
+      "draws": 24,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 25,
+      "draws": 25,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 25,
+      "draws": 25,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 26,
+      "draws": 26,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 26,
+      "draws": 26,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 27,
+      "draws": 27,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 27,
+      "draws": 27,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 28,
+      "draws": 28,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 28,
+      "draws": 28,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 29,
+      "draws": 29,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 29,
+      "draws": 29,
+      "phase": "await-original-command",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 30,
+      "draws": 30,
+      "phase": "await-original-command",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 30,
+      "draws": 30,
+      "phase": "await-original-command",
+      "message": "Original action scheduled once",
+      "passed": true
+    },
+    {
+      "frame": 30,
+      "draws": 30,
+      "phase": "await-original-command",
+      "message": "Only one original gameplay command admitted",
+      "passed": true
+    },
+    {
+      "frame": 30,
+      "draws": 30,
+      "phase": "await-original-command",
+      "message": "Original EndTurn produces exactly one enemy BlockGained",
+      "passed": true
+    },
+    {
+      "frame": 30,
+      "draws": 30,
+      "phase": "await-original-command",
+      "message": "Actual original +3 receipt targets enemy0 at revision2",
+      "passed": true
+    },
+    {
+      "frame": 30,
+      "draws": 30,
+      "phase": "await-original-command",
+      "message": "Original block event is exact event-log object at index27",
+      "passed": true
+    },
+    {
+      "frame": 30,
+      "draws": 30,
+      "phase": "await-original-command",
+      "message": "Original EndTurn dispatch accepted without warning:  ",
+      "passed": true
+    },
+    {
+      "frame": 30,
+      "draws": 30,
+      "phase": "await-original-command",
+      "message": "Full committed terminal Run matches original engine before lifecycle interruption",
+      "passed": true
+    },
+    {
+      "frame": 30,
+      "draws": 30,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 31,
+      "draws": 31,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 31,
+      "draws": 31,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 32,
+      "draws": 32,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 32,
+      "draws": 32,
+      "phase": "await-live-cue",
+      "message": "Presented event belongs to original command objects",
+      "passed": true
+    },
+    {
+      "frame": 32,
+      "draws": 32,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 33,
+      "draws": 33,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 33,
+      "draws": 33,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 34,
+      "draws": 34,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 34,
+      "draws": 34,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 35,
+      "draws": 35,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 35,
+      "draws": 35,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 36,
+      "draws": 36,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 36,
+      "draws": 36,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 37,
+      "draws": 37,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 37,
+      "draws": 37,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 38,
+      "draws": 38,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 38,
+      "draws": 38,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 39,
+      "draws": 39,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 39,
+      "draws": 39,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 40,
+      "draws": 40,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 40,
+      "draws": 40,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 41,
+      "draws": 41,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 41,
+      "draws": 41,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 42,
+      "draws": 42,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 42,
+      "draws": 42,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 43,
+      "draws": 43,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 43,
+      "draws": 43,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 44,
+      "draws": 44,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 44,
+      "draws": 44,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 45,
+      "draws": 45,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 45,
+      "draws": 45,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 46,
+      "draws": 46,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 46,
+      "draws": 46,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 47,
+      "draws": 47,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 47,
+      "draws": 47,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 48,
+      "draws": 48,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 48,
+      "draws": 48,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 49,
+      "draws": 49,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 49,
+      "draws": 49,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 50,
+      "draws": 50,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 50,
+      "draws": 50,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 51,
+      "draws": 51,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 51,
+      "draws": 51,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 52,
+      "draws": 52,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 52,
+      "draws": 52,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 53,
+      "draws": 53,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 53,
+      "draws": 53,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 54,
+      "draws": 54,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 54,
+      "draws": 54,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 55,
+      "draws": 55,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 55,
+      "draws": 55,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 56,
+      "draws": 56,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 56,
+      "draws": 56,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 57,
+      "draws": 57,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 57,
+      "draws": 57,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 58,
+      "draws": 58,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 58,
+      "draws": 58,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 59,
+      "draws": 59,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 59,
+      "draws": 59,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 60,
+      "draws": 60,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 60,
+      "draws": 60,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 61,
+      "draws": 61,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 61,
+      "draws": 61,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 62,
+      "draws": 62,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 62,
+      "draws": 62,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 63,
+      "draws": 63,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 63,
+      "draws": 63,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 64,
+      "draws": 64,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 64,
+      "draws": 64,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 65,
+      "draws": 65,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 65,
+      "draws": 65,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 66,
+      "draws": 66,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 66,
+      "draws": 66,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 67,
+      "draws": 67,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 67,
+      "draws": 67,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 68,
+      "draws": 68,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 68,
+      "draws": 68,
+      "phase": "await-live-cue",
+      "message": "Presented event belongs to original command objects",
+      "passed": true
+    },
+    {
+      "frame": 68,
+      "draws": 68,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 69,
+      "draws": 69,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 69,
+      "draws": 69,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 70,
+      "draws": 70,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 70,
+      "draws": 70,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 71,
+      "draws": 71,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 71,
+      "draws": 71,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 72,
+      "draws": 72,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 72,
+      "draws": 72,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 73,
+      "draws": 73,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 73,
+      "draws": 73,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 74,
+      "draws": 74,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 74,
+      "draws": 74,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 75,
+      "draws": 75,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 75,
+      "draws": 75,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 76,
+      "draws": 76,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 76,
+      "draws": 76,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 77,
+      "draws": 77,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 77,
+      "draws": 77,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 78,
+      "draws": 78,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 78,
+      "draws": 78,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 79,
+      "draws": 79,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 79,
+      "draws": 79,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 80,
+      "draws": 80,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 80,
+      "draws": 80,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 81,
+      "draws": 81,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 81,
+      "draws": 81,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 82,
+      "draws": 82,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 82,
+      "draws": 82,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 83,
+      "draws": 83,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 83,
+      "draws": 83,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 84,
+      "draws": 84,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 84,
+      "draws": 84,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 85,
+      "draws": 85,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 85,
+      "draws": 85,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 86,
+      "draws": 86,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 86,
+      "draws": 86,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 87,
+      "phase": "await-live-cue",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 87,
+      "phase": "await-live-cue",
+      "message": "Numeric contact belongs to original command event objects",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 87,
+      "phase": "await-live-cue",
+      "message": "Numeric contacts are an exact prefix of original oracle receipts: block27, damage30, damage33",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 87,
+      "phase": "await-live-cue",
+      "message": "Exactly one original +3 numeric contact",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 87,
+      "phase": "await-live-cue",
+      "message": "Presented event belongs to original command objects",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 87,
+      "phase": "await-live-cue",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "Exactly one live enemy-block cue",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "Cue stores the exact original event object",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "Captured origin equals the contact-time actual sprite-center source formula",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "Captured target/revision/generation belong to actual contact",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: same live cue record",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: exact original Label remains live/visible",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: Label and original event references preserved",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: source origin/unit/size/start frozen",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: same source command revision and generation",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: cue naturally live before .7s expiry",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: pose uses frozen origin plus ordinary source rise",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: existing source clock controls pop/alpha",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: +3 style and noninteractive Z50",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: existing sibling canvas host remains attached",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: source SkyLight28 typography",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: actual Label rect, pivot and self modulation are preserved",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: source rect and KleeOne font",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "first-visible-post-draw: full original terminal Run unchanged",
+      "passed": true
+    },
+    {
+      "frame": 87,
+      "draws": 88,
+      "phase": "await-live-cue",
+      "message": "Actual native screenshot dimensions",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: same live cue record",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: exact original Label remains live/visible",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: Label and original event references preserved",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: source origin/unit/size/start frozen",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: same source command revision and generation",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: cue naturally live before .7s expiry",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: pose uses frozen origin plus ordinary source rise",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: existing source clock controls pop/alpha",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: +3 style and noninteractive Z50",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: existing sibling canvas host remains attached",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: source SkyLight28 typography",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: actual Label rect, pivot and self modulation are preserved",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: source rect and KleeOne font",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "before-rebuild: full original terminal Run unchanged",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "Actual GameUI.Rebuild replaced its ordinary shell",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "Rebuild added no events, contacts, generation changes or engine state mutations",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: same live cue record",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: exact original Label remains live/visible",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: Label and original event references preserved",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: source origin/unit/size/start frozen",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: same source command revision and generation",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: cue naturally live before .7s expiry",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: pose uses frozen origin plus ordinary source rise",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: existing source clock controls pop/alpha",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: +3 style and noninteractive Z50",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: existing sibling canvas host remains attached",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: source SkyLight28 typography",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: actual Label rect, pivot and self modulation are preserved",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: source rect and KleeOne font",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "request-rebuild",
+      "message": "immediately-after-rebuild: full original terminal Run unchanged",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 88,
+      "phase": "await-rebuild-draw",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: same live cue record",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: exact original Label remains live/visible",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: Label and original event references preserved",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: source origin/unit/size/start frozen",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: same source command revision and generation",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: cue naturally live before .7s expiry",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: pose uses frozen origin plus ordinary source rise",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: existing source clock controls pop/alpha",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: +3 style and noninteractive Z50",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: existing sibling canvas host remains attached",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: source SkyLight28 typography",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: actual Label rect, pivot and self modulation are preserved",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: source rect and KleeOne font",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "after-rebuild-post-draw: full original terminal Run unchanged",
+      "passed": true
+    },
+    {
+      "frame": 88,
+      "draws": 89,
+      "phase": "await-rebuild-draw",
+      "message": "Actual native screenshot dimensions",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: same live cue record",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: exact original Label remains live/visible",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: Label and original event references preserved",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: source origin/unit/size/start frozen",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: same source command revision and generation",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: cue naturally live before .7s expiry",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: pose uses frozen origin plus ordinary source rise",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: existing source clock controls pop/alpha",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: +3 style and noninteractive Z50",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: existing sibling canvas host remains attached",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: source SkyLight28 typography",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: actual Label rect, pivot and self modulation are preserved",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: source rect and KleeOne font",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "before-reset: full original terminal Run unchanged",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "Exactly one target numeric contact before reset",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "Exactly one target EventPresented before reset",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "Actual isolated GameSession.Load accepted without warning:  ",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "Actual Load/IsReset changed original action-queue generation",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "Actual Load reset restored exact initial full Run at revision3",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "Actual Load cleared old source enemy-block cue list synchronously",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "request-reset",
+      "message": "Actual Load reset created no contact or presented event",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 89,
+      "phase": "await-reset-draws",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 90,
+      "phase": "await-reset-draws",
+      "message": "Post-reset rendered frame has no enemy block cue records",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 90,
+      "phase": "await-reset-draws",
+      "message": "Old exact Label instance absent from scene tree after reset post-draw",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 90,
+      "phase": "await-reset-draws",
+      "message": "Old Label invalid or outside tree after actual reset draw",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 90,
+      "phase": "await-reset-draws",
+      "message": "No replacement/stale enemy block float by role metadata",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 90,
+      "phase": "await-reset-draws",
+      "message": "No new contact or event on post-reset rendered frame",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 90,
+      "phase": "await-reset-draws",
+      "message": "Post-reset full Run remains exact original fixture state",
+      "passed": true
+    },
+    {
+      "frame": 89,
+      "draws": 90,
+      "phase": "await-reset-draws",
+      "message": "Actual native screenshot dimensions",
+      "passed": true
+    },
+    {
+      "frame": 90,
+      "draws": 90,
+      "phase": "await-reset-draws",
+      "message": "Clock and playback remain unmodified",
+      "passed": true
+    },
+    {
+      "frame": 90,
+      "draws": 90,
+      "phase": "await-reset-draws",
+      "message": "A distinct actual rendered frame follows the prior post-draw checkpoint",
+      "passed": true
+    },
+    {
+      "frame": 90,
+      "draws": 91,
+      "phase": "await-reset-draws",
+      "message": "Post-reset rendered frame has no enemy block cue records",
+      "passed": true
+    },
+    {
+      "frame": 90,
+      "draws": 91,
+      "phase": "await-reset-draws",
+      "message": "Old exact Label instance absent from scene tree after reset post-draw",
+      "passed": true
+    },
+    {
+      "frame": 90,
+      "draws": 91,
+      "phase": "await-reset-draws",
+      "message": "Old Label invalid or outside tree after actual reset draw",
+      "passed": true
+    },
+    {
+      "frame": 90,
+      "draws": 91,
+      "phase": "await-reset-draws",
+      "message": "No replacement/stale enemy block float by role metadata",
+      "passed": true
+    },
+    {
+      "frame": 90,
+      "draws": 91,
+      "phase": "await-reset-draws",
+      "message": "No new contact or event on post-reset rendered frame",
+      "passed": true
+    },
+    {
+      "frame": 90,
+      "draws": 91,
+      "phase": "await-reset-draws",
+      "message": "Post-reset full Run remains exact original fixture state",
+      "passed": true
+    },
+    {
+      "frame": 90,
+      "draws": 91,
+      "phase": "await-reset-draws",
+      "message": "Actual native screenshot dimensions",
+      "passed": true
+    },
+    {
+      "frame": 90,
+      "draws": 91,
+      "phase": "await-reset-draws",
+      "message": "One label, one original command, one rebuild, one initial Load plus one actual reset",
+      "passed": true
+    },
+    {
+      "frame": 90,
+      "draws": 91,
+      "phase": "await-reset-draws",
+      "message": "No production diagnostics",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "01-before-rebuild.png",
+      "Frame": 87,
+      "Process": 153,
+      "sha256": "cd6a31d5270d08c1d8e565f9d611b6e4fbd51cc6dafcb78755d8a8a4cd368d8f"
+    },
+    {
+      "file": "02-after-rebuild.png",
+      "Frame": 88,
+      "Process": 154,
+      "sha256": "eae136d28d8ad6a79f35fd28fc73fd60975e2bee9d15d2fdce39c8d42ce84f25"
+    },
+    {
+      "file": "03-after-reset-1.png",
+      "Frame": 89,
+      "Process": 155,
+      "sha256": "6d73f7043307e75969ea1fa6a1615d086be5661ab37e9d3075eeafdeaefbfd55"
+    },
+    {
+      "file": "04-after-reset-2.png",
+      "Frame": 90,
+      "Process": 156,
+      "sha256": "8ddaa898a69d13dc90657d97bc9e8a0d9f1cad4c6286b3a1239836b2fd44a597"
+    }
+  ],
+  "uniqueLabelInstances": [
+    109739773403
+  ],
+  "finalRunSha256": "2a920469dee77c8f29465f237a920b538b4761b156be83425f0637805238149d",
+  "pixelReview": "Harness checks scene identity/pose/style; runtime owner must inspect the four real post-draw PNGs for visible pixels",
+  "scope": "Original alternate EndTurn, ordinary UI Rebuild, real isolated Load reset. No production edits, source-clock changes or synthetic BlockGained. Reset intentionally cancels later presentation contacts; the full committed Run before reset was checked separately."
+}

@@ -1056,7 +1056,7 @@ public partial class BattleStage : Node3D
 		else if (beat.Event is GameEvent_EnemyActionExecuting action)
 		{
 			_sourceActor = Enemy(action.EnemyIndex);
-			ShowReceipt(action.Kind, _sourceActor?.Contact ?? Vector3.Up, new Color("e5d9c7"));
+			// Source execution has no generic Kind float; its actor squash is separate.
 		}
 		else if (beat.Event is GameEvent_CardPlayed)
 		{
@@ -1329,7 +1329,8 @@ public partial class BattleStage : Node3D
 					}
 					if (target != null)
 					{
-						ShowReceipt($"守り +{b.Amount}", target.Contact, new Color("becbdc"));
+						if (b.Target == "player" || !TryShowSourceEnemyBlock(b, target, receipt))
+							ShowReceipt($"守り +{b.Amount}", target.Contact, new Color("becbdc"));
 					}
 				}
 			}

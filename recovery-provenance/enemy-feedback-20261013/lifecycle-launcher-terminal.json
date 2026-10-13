@@ -1,0 +1,7 @@
+{
+  "exitCode": 0,
+  "outerTimeout": false,
+  "resultsPresent": true,
+  "log": "/workspace/scratch/948944000d55/ui-parity-restoration-20261013/feedback-lifecycle-qa/native-output/phone100.log",
+  "nativeAcceptance": "Inspect results.json and all four captured PNGs; an exit code alone is not acceptance."
+}
