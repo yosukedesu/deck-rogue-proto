@@ -1,0 +1,33 @@
+{
+  "schema": "hand-exit-return/1",
+  "baseline_commit": "3df4d5a",
+  "runtime_applied": false,
+  "baseline": [
+    {
+      "name": "GameUI.HandHover.cs",
+      "sha256": "3106b7d2edcb92c2a8e9c45890b9a23b83243203ce1eb4c2bb2cfe97ce920fa0"
+    },
+    {
+      "name": "GameUI.RecoveredBattle.cs",
+      "sha256": "a7fe74852a8455e3e3af3a145975ecee876c472d66c00ba24ddc00d21fef1df7"
+    },
+    {
+      "name": "SourceHandHoverMotion.cs",
+      "sha256": "c900d2c0259bddad17a7f09e8c01e78dbb78342b1099d6b260a86ebf718442a1"
+    }
+  ],
+  "payload": [
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.HandExit.cs",
+      "sha256": "de835bb6fcf001c2470f2a3cb7b118463ffd29a375a31b7e546060e62f9fc4e8"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceHandExitMotion.cs",
+      "sha256": "8fdde92323504e3e92cc22e501c3110a8ad5b473739b878f5049c000250c99b8"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceHandReturnMotion.cs",
+      "sha256": "d1acebd86ee2a4ce519201448f5511615ed77323911c11835b480f8ba7952914"
+    }
+  ]
+}

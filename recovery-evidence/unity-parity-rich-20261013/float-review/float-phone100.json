@@ -1,0 +1,88 @@
+{
+  "run": "float-phone100",
+  "passed": true,
+  "assertions": 1888,
+  "frames": 140,
+  "maxOriginErrorLogicalPixels": 2.99999999811007e-05,
+  "contacts": [
+    {
+      "frame": 38,
+      "index": 0,
+      "definition": "enemy_seal_orb",
+      "origin": [
+        1141.1128,
+        307.1584
+      ],
+      "proxyHeight": 153.6,
+      "proxyUnit": 1.3333334,
+      "errorLogicalPixels": 1.1999999969702912e-05,
+      "executionScale": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "frame": 45,
+      "index": 1,
+      "definition": "enemy_mudling",
+      "origin": [
+        1352.5096,
+        259.7107
+      ],
+      "proxyHeight": 204.80002,
+      "proxyUnit": 1.3333334,
+      "errorLogicalPixels": 2.99999999811007e-05,
+      "executionScale": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "frame": 53,
+      "index": 2,
+      "definition": "enemy_elite_deathless",
+      "origin": [
+        1564.5533,
+        228.69044
+      ],
+      "proxyHeight": 251.62393,
+      "proxyUnit": 1.3333334,
+      "errorLogicalPixels": 1.4000000021496817e-05,
+      "executionScale": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "frame": 60,
+      "index": 3,
+      "definition": "enemy_brute",
+      "origin": [
+        1768.6212,
+        179.49062
+      ],
+      "proxyHeight": 307.2,
+      "proxyUnit": 1.3333334,
+      "errorLogicalPixels": 1.2000000026546331e-05,
+      "executionScale": [
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "fullOriginalSaveMatches": true,
+  "adapterOnlyField": "godotSession",
+  "headReadbacksStartEnd": [
+    4,
+    4
+  ],
+  "headHitsStartEnd": [
+    252,
+    816
+  ],
+  "telemetrySha256": "45090db4c4e00b5bfd3b9e2607f232c2c6786e7a294ceac106f69ac90c1a047e",
+  "limitations": [
+    "Natural size/contact matrix only; no arbitrary camera or execution squash variation",
+    "Native float picture reviewed separately; automation does not establish complete visual parity"
+  ]
+}

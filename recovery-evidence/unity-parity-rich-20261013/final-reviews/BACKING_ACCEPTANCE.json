@@ -1,0 +1,79 @@
+{
+  "verdict": "Bounded native numeral-legibility gate passed",
+  "module": "943e2464-58b3-4d40-a602-c577e158199f",
+  "variants": [
+    {
+      "variant": "four100",
+      "png": "unity-parity-20261013/halo-v4-combined/backing-four100/frame-0000.png",
+      "pngSha256": "b2aa4574545f74ad84534e21f58ca5378af4add75422b58ff38806adb078c60e",
+      "faceRect": "(42.666668, 411.49994), (255.99998, 30)",
+      "backingRect": "(134.33333, 417.16663), (72.66666, 21.666666)",
+      "failedGlyphUnderlayVisible": false,
+      "backingVisible": true,
+      "verdict": "readability/visibility first-frame pass"
+    },
+    {
+      "variant": "four130",
+      "png": "unity-parity-20261013/halo-v4-combined/backing-four130/frame-0000.png",
+      "pngSha256": "3d87033e82211651507e23e4f2f72bfaa91ea05d5256cb71eee7d5b974262dc6",
+      "faceRect": "(42.666668, 379.39996), (377.33334, 39)",
+      "backingRect": "(185.50002, 387.06662), (91.66666, 26.666666)",
+      "failedGlyphUnderlayVisible": false,
+      "backingVisible": true,
+      "verdict": "readability/visibility first-frame pass"
+    },
+    {
+      "variant": "normal100",
+      "png": "unity-parity-20261013/halo-v4-combined/backing-normal100/frame-0000.png",
+      "pngSha256": "2d05817b43f113b131e83add265ef703dd4f9df410a2f1419faae8a0cfe5c57c",
+      "faceRect": "(96, 411.49994), (202.66666, 30)",
+      "backingRect": "(161, 417.16663), (72.666664, 21.666666)",
+      "failedGlyphUnderlayVisible": false,
+      "backingVisible": true,
+      "verdict": "readability/visibility first-frame pass"
+    },
+    {
+      "variant": "noloss100",
+      "png": "unity-parity-20261013/halo-v4-combined/backing-noloss100/frame-0000.png",
+      "pngSha256": "a9865e2e8c1cd1111cdee8377eec2eeffe517604ea60690fecb11b5704b69d1b",
+      "faceRect": "(96, 411.49994), (202.66666, 30)",
+      "backingRect": null,
+      "failedGlyphUnderlayVisible": false,
+      "backingVisible": false,
+      "verdict": "readability/visibility first-frame pass"
+    },
+    {
+      "variant": "block100",
+      "png": "unity-parity-20261013/halo-v4-combined/backing-block100/frame-0000.png",
+      "pngSha256": "4da2bd6333122fce93f1f25a6db73bd9ed9472885fda239f02782683b738f80c",
+      "faceRect": "(96, 411.49994), (202.66666, 30)",
+      "backingRect": "(161, 417.16663), (72.666664, 21.666666)",
+      "failedGlyphUnderlayVisible": false,
+      "backingVisible": true,
+      "verdict": "readability/visibility first-frame pass"
+    }
+  ],
+  "sourceHealthBarUnchangedSha256": "2490a8d69adf6b4b3964895b0e3ec5d0ab6ac996c3eda7a0e9faeccd44425a5a",
+  "rich130PixelDiff": {
+    "barNative": [
+      25,
+      228,
+      253,
+      252
+    ],
+    "backingNative": [
+      111,
+      232,
+      167,
+      249
+    ],
+    "changed": 880,
+    "changedOutsideBacking": 0
+  },
+  "explicitAdaptation": "Ground opaque local numeral backing; Unity uses glyph-shaped SDF underlay, not this rectangle. Narrow loss hatch/tick may be occluded beneath backing; numeric forecast exposes the loss.",
+  "stillOpen": [
+    "Actual forecast/status inspect pointer gates on rich controls",
+    "Dynamic HP/block digit transitions and scale resizing beyond these initial-state variants",
+    "Exact Unity SDF/font parity (optional raster work deferred)"
+  ]
+}

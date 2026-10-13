@@ -1,0 +1,62 @@
+[
+  {
+    "name": "non-impulse-is-not-fuel",
+    "command": {
+      "command": {
+        "cardUid": "qa-kindle",
+        "targetIndex": 1,
+        "exhaustUids": [
+          "qa-normal"
+        ],
+        "type": "PlayCard"
+      },
+      "type": "Combat"
+    },
+    "Error": "火にくべる にくべられるのは衝動の札だけ",
+    "revisionDelta": 0,
+    "stateSha256": "07413883992f80a27879137cd553dd46542897db05c5ab9827d7c79b11fe3c91"
+  },
+  {
+    "name": "cannot-keep-normal-card",
+    "command": {
+      "command": {
+        "keepUid": "qa-normal",
+        "type": "EndTurn"
+      },
+      "type": "Combat"
+    },
+    "Error": "keepUid は手札の衝動の札だけ: qa-normal",
+    "revisionDelta": 0,
+    "stateSha256": "06578de97c6fe9311f3771e2864af44c388eb0c8c95b7a3ff2eea5b7d9437fcc"
+  },
+  {
+    "name": "retain-over-limit",
+    "command": {
+      "command": {
+        "retainUids": [
+          "qa-normal",
+          "qa-fuel-cheap"
+        ],
+        "type": "EndTurn"
+      },
+      "type": "Combat"
+    },
+    "Error": "手札を残せるのは1枚まで (retainUids=2)",
+    "revisionDelta": 0,
+    "stateSha256": "06578de97c6fe9311f3771e2864af44c388eb0c8c95b7a3ff2eea5b7d9437fcc"
+  },
+  {
+    "name": "relic-over-limit",
+    "command": {
+      "indices": [
+        0,
+        1,
+        2
+      ],
+      "type": "RelicChooseCards"
+    },
+    "Error": "選べるのは2枚まで",
+    "revisionDelta": 0,
+    "stateSha256": "2bfa82f4e849dd41de81680e398f030891ee32dd9568fc32995837541fd471b1"
+  }
+]

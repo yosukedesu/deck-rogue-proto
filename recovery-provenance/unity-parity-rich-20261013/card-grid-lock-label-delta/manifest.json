@@ -1,0 +1,11 @@
+{
+  "status": "off-tree; native follow-up pending",
+  "files": {
+    "changes.json": "5a1a3f31d97ee3479144542f6f33176ab3600989594e04520715d0c46a73268a",
+    "apply.py": "5c002ce7f5a6444989b331817670566cc3504ed7c070d70754a898a175fc1a3e",
+    "HANDOFF.md": "85eca93db98d0ea2f64b6070ed465f11ccbf99326441c75fd832cdf320a1998b",
+    "test_guards.py": "c8865fa35cb2f05e62fa36c5c6a32be1c17c4ff15f14c3773c3457669cc2c0ab",
+    "test.log": "0e9aa05930cffb179fbcf731b16965bf9051ac306de4e27233d4e79eb8a8ccaf",
+    "compile.log": "714532edee9b1e051f3753c5f6e8d1cfcfb32e16ea12eac8c39d627535cbbd49"
+  }
+}

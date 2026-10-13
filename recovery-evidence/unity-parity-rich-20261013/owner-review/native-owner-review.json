@@ -1,0 +1,37 @@
+{
+  "checks": 810,
+  "passed": true,
+  "module": "1e15a1b0-5eb6-4f42-8327-244b1fd91152",
+  "nativeFrames": {
+    "turn130": 390,
+    "ordinary100": 140
+  },
+  "visuallyReviewedOriginalPngs": [
+    "turn130/frame-0175.png",
+    "turn130/frame-0176.png",
+    "turn130/frame-0252.png"
+  ],
+  "exitStarts": [
+    252,
+    255,
+    257,
+    260
+  ],
+  "exitClears": [
+    270,
+    273,
+    275,
+    278
+  ],
+  "inputEvidence": "Automated original commands; no pointer acceptance inferred",
+  "remaining": [
+    "four130 HP collision/width fit",
+    "hero forecast hatch and number underlay",
+    "token inspect/overflow/gear pointer gates",
+    "modal/reset lifetime interruption gates"
+  ],
+  "sources": {
+    "unity-parity-20261013/ui-rich-batch/turn130/frames.jsonl": "7ca85e41770dff7dbd40d3cdfe5599d6410493be2e461946079d607838a38d82",
+    "unity-parity-20261013/ui-rich-batch/ordinary100/frames.jsonl": "d2a4f07f48e30bd9caf4c0e9bed7783f4857bf027d95a24f2d067c6e43d644bf"
+  }
+}

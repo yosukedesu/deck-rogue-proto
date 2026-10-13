@@ -1,0 +1,228 @@
+{
+  "passed": true,
+  "checks": 16,
+  "failed": [],
+  "fixture": "green_double_lash",
+  "capture": "unity-parity-20261013/ownership-native/green_double_lash",
+  "mapping": [
+    {
+      "event": 0,
+      "frame": 40,
+      "kind": "card",
+      "target": 1,
+      "expectedDirect": true,
+      "actualDirect": true,
+      "expectedVolley": 0,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.049799,
+          0.0,
+          0.7434302
+        ],
+        "contact": [
+          -4.0154657,
+          1.0197736,
+          0.6072426
+        ]
+      },
+      "renderer": "VineSlashFx"
+    },
+    {
+      "event": 1,
+      "frame": 47,
+      "kind": "card",
+      "target": 1,
+      "expectedDirect": true,
+      "actualDirect": true,
+      "expectedVolley": 1,
+      "actualVolley": 1,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.0154657,
+          0.0,
+          0.732455
+        ],
+        "contact": [
+          -4.0154657,
+          1.0197736,
+          0.6072426
+        ]
+      },
+      "renderer": "VineSlashFx"
+    }
+  ],
+  "firstActualGeometryPerRow": [
+    {
+      "frame": 36,
+      "volley": 0,
+      "index": 1,
+      "renderer": "VineSlashFx",
+      "incoming": [
+        -6.2023025,
+        -0.10691834,
+        1.7949172
+      ],
+      "vertexCount": 147,
+      "sha256": "4e8d35c865fcc9654a0380af5f803d311fb82f62d26f7baea5a78c46633094bf",
+      "surfaces": [
+        {
+          "name": "AuthoredBatch0",
+          "surface": 0,
+          "vertices": 147,
+          "samples": [
+            [
+              -0.8700439,
+              1.5988644,
+              -0.005636411
+            ],
+            [
+              -0.8700439,
+              1.5988644,
+              0.0023635337
+            ],
+            [
+              -0.8700439,
+              1.5988644,
+              -0.005636411
+            ],
+            [
+              -0.8737467,
+              1.5757937,
+              -0.004048834
+            ],
+            [
+              -0.8693191,
+              1.5759593,
+              0.00395111
+            ],
+            [
+              -0.8648915,
+              1.576125,
+              -0.004048834
+            ],
+            [
+              -0.87629414,
+              1.5526751,
+              -0.0024174403
+            ],
+            [
+              -0.86833185,
+              1.553064,
+              0.005582633
+            ],
+            [
+              -0.86036956,
+              1.5534533,
+              -0.00241733
+            ],
+            [
+              -0.87827986,
+              1.5295057,
+              -0.00075977435
+            ],
+            [
+              -0.8670823,
+              1.5301819,
+              0.0072402437
+            ],
+            [
+              -0.85588485,
+              1.5308574,
+              -0.00075970066
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 43,
+      "volley": 1,
+      "index": 2,
+      "renderer": "VineSlashFx",
+      "incoming": [
+        -5.8258395,
+        -0.08839711,
+        1.6440738
+      ],
+      "vertexCount": 147,
+      "sha256": "e02cf51919c4655c9d3b30f05403a501e4b55faefe49c871b55a6c3cb37d2215",
+      "surfaces": [
+        {
+          "name": "AuthoredBatch0",
+          "surface": 0,
+          "vertices": 147,
+          "samples": [
+            [
+              0.87019163,
+              1.6049176,
+              -0.0059347567
+            ],
+            [
+              0.87019163,
+              1.6049176,
+              0.0020652062
+            ],
+            [
+              0.87019163,
+              1.6049176,
+              -0.0059347567
+            ],
+            [
+              0.8739642,
+              1.5818584,
+              -0.004357656
+            ],
+            [
+              0.8695362,
+              1.5820105,
+              0.003642454
+            ],
+            [
+              0.8651082,
+              1.5821623,
+              -0.004357564
+            ],
+            [
+              0.8765818,
+              1.5587473,
+              -0.0027331845
+            ],
+            [
+              0.8686183,
+              1.5591123,
+              0.005266778
+            ],
+            [
+              0.8606549,
+              1.5594773,
+              -0.0027331845
+            ],
+            [
+              0.8786376,
+              1.5355843,
+              -0.0010792007
+            ],
+            [
+              0.86743796,
+              1.536226,
+              0.0069207805
+            ],
+            [
+              0.85623837,
+              1.5368679,
+              -0.0010791454
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "Actual original-engine receipt provenance and assigned card-only volleys, plus live native mesh data and separate controlled native mirror assertions; not image-quality or device performance acceptance."
+}

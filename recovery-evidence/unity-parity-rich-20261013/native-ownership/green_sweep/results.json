@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "frames": 152,
+  "damageContacts": 7,
+  "expectedContacts": 7,
+  "stableFrames": 60,
+  "consecutiveFrames": true,
+  "diagnostics": [],
+  "phase": "combat",
+  "turn": 1,
+  "remainingPresentation": false,
+  "scope": "Native rendered every-frame metadata and contact keyframe PNGs; actual meshes/callbacks. Not continuous video or live performance."
+}

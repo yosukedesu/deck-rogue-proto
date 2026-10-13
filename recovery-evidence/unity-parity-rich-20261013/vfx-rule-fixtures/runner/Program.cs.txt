@@ -1,0 +1,16 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Security.Cryptography;using DeckRogue.Engine;using DeckRogue.Engine.Generated;using DeckRogue.GodotPort.Core;using Newtonsoft.Json;
+var root=Path.GetFullPath(args[0]);Content.LoadFrom(n=>File.ReadAllText(Path.Combine(root,"source/data",n)));
+void Check(bool ok,string s){if(!ok)throw new Exception(s);}
+SessionController New()=>new SessionController(now:()=>DateTimeOffset.Parse("2026-10-13T05:00:00Z")){AutoSave=false};
+var seed=New();Check(seed.Load(File.ReadAllText(Path.Combine(root,"source/battle-base.json"))).Success,"base");var run=seed.CurrentRun;
+CardInstance Card(string id,string uid)=>new CardInstance{Uid=uid,Def=Content.GetCardDef(id)};
+var reports=new List<object>();
+foreach(var id in new[]{"green_double_lash","green_horn_storm","blue_strike","green_sweep","green_sig_vine_dance"}){
+ var c=Card(id,"qa-vfx-"+id);var perm=Card(id=="green_sig_vine_dance"?"green_perm_thorn_canopy":"white_perm_hound","qa-source-hound");
+ var combat=run.Combat with{Enemies=run.Combat.Enemies.Select(e=>e with{Hp=100,MaxHp=100,Block=0}).ToArray(),Player=run.Combat.Player with{Energy=10,EnergyMax=10,EnergyMaxAtTurnStart=10,Growth=0,Momentum=0,Hand=new[]{c},Permanents=(id=="green_sweep"||id=="green_sig_vine_dance")?new[]{perm}:Array.Empty<CardInstance>(),SetCards=Array.Empty<CardInstance>(),ImpulseUids=Array.Empty<string>()}};
+ var st=run with{Combat=combat};var s=New();var json=Report.SerializeRunSaveFile(new RunSaveFile{Run=st,Fingerprint=s.Catalog.Fingerprint});Check(s.Load(json).Success,id+" load");s.ClearPresentation();json=s.ExportSave();File.WriteAllText(Path.Combine(root,"fixtures",id+".json"),json);int start=s.CurrentRun.Combat.EventLog.Count;var rev=s.Revision;
+ var cmd=new RunCommand_Combat{Command=new Command_PlayCard{CardUid=c.Uid,TargetIndex=1}};var result=s.Dispatch(cmd);Check(result.Success,id+" dispatch "+result.Error);Check(s.Revision==rev+1,"revision");var events=s.CurrentRun.Combat.EventLog.Skip(start).ToArray();var hits=events.OfType<GameEvent_DamageDealt>().Where(e=>e.Source=="player").ToArray();var own=hits.Where(e=>e.PresentationSource?.Kind=="card"&&e.PresentationSource.DefinitionId==id).ToArray();Check(own.Length==(id=="green_double_lash"?2:id=="green_horn_storm"?6:id=="green_sweep"?6:id=="green_sig_vine_dance"?5:1),id+" hits "+own.Length);
+ if(id=="green_sweep"||id=="green_sig_vine_dance")Check(hits.Any(e=>e.PresentationSource?.Kind=="permanent"&&e.SourceUid==perm.Uid),"hound ownership");
+ File.WriteAllText(Path.Combine(root,"expected",id+".json"),s.ExportSave());reports.Add(new{id,command=cmd,revisionDelta=s.Revision-rev,events,cardHitCount=own.Length,allPlayerHitCount=hits.Length,fixtureSha256=Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(json))).ToLowerInvariant()});
+}
+File.WriteAllText(Path.Combine(root,"validated-events.json"),JsonConvert.SerializeObject(reports,Formatting.Indented));Console.WriteLine("PASS 5 production-loadable fixtures, five real commands, own-card hit counts and mixed permanent owner verified; native orientation untested.");

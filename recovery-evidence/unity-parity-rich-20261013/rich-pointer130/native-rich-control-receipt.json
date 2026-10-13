@@ -1,0 +1,214 @@
+{
+  "module": "1e15a1b0-5eb6-4f42-8327-244b1fd91152",
+  "textScale": 1.3,
+  "nativeSize": [
+    1170,
+    540
+  ],
+  "pointer": "Sky desktop input; actual GUIs; original engine outcome comparisons",
+  "checks": [
+    {
+      "name": "set and permanent detail/overflow browsing",
+      "before": 1,
+      "after": 6,
+      "entireExportEqual": true
+    },
+    {
+      "name": "turn-muted gear inspection",
+      "before": 8,
+      "after": 9,
+      "entireExportEqual": true
+    },
+    {
+      "name": "hidden gear target cancel→Back",
+      "before": 10,
+      "after": 13,
+      "entireExportEqual": true
+    },
+    {
+      "name": "hidden gear retry preview",
+      "before": 10,
+      "after": 14,
+      "entireExportEqual": true
+    },
+    {
+      "name": "clipped enemy ledger inspection",
+      "before": 15,
+      "after": 17,
+      "entireExportEqual": true
+    },
+    {
+      "name": "low card drag cancel",
+      "before": 17,
+      "after": 18,
+      "entireExportEqual": true
+    }
+  ],
+  "commands": [
+    {
+      "utc": "2026-10-13T04:52:41.2045150Z",
+      "processFrame": 5,
+      "kind": "state-change",
+      "revision": 1,
+      "stateSha": "0a8b09102e76f7f2c9fb313ab7833e137b9aec174018bfe346ef2330dcfa69cd",
+      "phase": "combat",
+      "heroHp": 48,
+      "energy": 3,
+      "mana": 50,
+      "activeDeals": 5,
+      "activeHovers": 0,
+      "detail": {
+        "Revision": 1,
+        "command": null,
+        "commandData": "null",
+        "IsReset": true
+      }
+    },
+    {
+      "utc": "2026-10-13T04:54:45.5866087Z",
+      "processFrame": 864,
+      "kind": "state-change",
+      "revision": 2,
+      "stateSha": "48a9ed15fd4e4af432b0d68a9bc917004503f1be3c361e5f5577781195f89840",
+      "phase": "combat",
+      "heroHp": 48,
+      "energy": 3,
+      "mana": 40,
+      "activeDeals": 0,
+      "activeHovers": 0,
+      "detail": {
+        "Revision": 2,
+        "command": "RunCommand_UseGear",
+        "commandData": "{\"index\":5,\"type\":\"UseGear\"}",
+        "IsReset": false
+      }
+    },
+    {
+      "utc": "2026-10-13T04:55:26.0725208Z",
+      "processFrame": 1215,
+      "kind": "state-change",
+      "revision": 3,
+      "stateSha": "a7c4424308a47c6ea1b3583cf4fd0c93462dec82fdf15e2108df1498956fd749",
+      "phase": "combat",
+      "heroHp": 48,
+      "energy": 3,
+      "mana": 50,
+      "activeDeals": 5,
+      "activeHovers": 0,
+      "detail": {
+        "Revision": 3,
+        "command": null,
+        "commandData": "null",
+        "IsReset": true
+      }
+    },
+    {
+      "utc": "2026-10-13T04:56:40.8131869Z",
+      "processFrame": 1780,
+      "kind": "state-change",
+      "revision": 4,
+      "stateSha": "8ca9327aff8baa5ae96b0411532bc4b7993d485ffb0bb9bdce662556c5f157a5",
+      "phase": "combat",
+      "heroHp": 48,
+      "energy": 3,
+      "mana": 40,
+      "activeDeals": 0,
+      "activeHovers": 0,
+      "detail": {
+        "Revision": 4,
+        "command": "RunCommand_UseGear",
+        "commandData": "{\"index\":5,\"targetIndex\":3,\"type\":\"UseGear\"}",
+        "IsReset": false
+      }
+    },
+    {
+      "utc": "2026-10-13T04:57:54.3255326Z",
+      "processFrame": 2408,
+      "kind": "state-change",
+      "revision": 5,
+      "stateSha": "349a189e94af0ba0657e3664de46f77262538f496d8b9f6b500116fb289b1896",
+      "phase": "combat",
+      "heroHp": 48,
+      "energy": 2,
+      "mana": 40,
+      "activeDeals": 0,
+      "activeHovers": 0,
+      "detail": {
+        "Revision": 5,
+        "command": "RunCommand_Combat",
+        "commandData": "{\"command\":{\"cardUid\":\"green_double_lash#0\",\"targetIndex\":0,\"type\":\"PlayCard\"},\"type\":\"Combat\"}",
+        "IsReset": false
+      }
+    }
+  ],
+  "readbackReceipt": {
+    "initial": {
+      "miss": 1,
+      "hits": 68
+    },
+    "afterSoloBrowse": {
+      "miss": 1,
+      "hits": 627
+    },
+    "afterTextureChangingReset": {
+      "miss": 8,
+      "hits": 1540
+    },
+    "afterRichAction": {
+      "miss": 8,
+      "hits": 6616
+    },
+    "diagnosticEnd": {
+      "miss": 8,
+      "hits": 12080
+    },
+    "qualification": "Scalar cache hits/misses observed; resource ownership checked by using Image disposal in source. No deviceFPS claim."
+  },
+  "limits": [
+    "130% native pointer window;100% token pointer follow-up pending",
+    "Narrow numeric readability repaired only in later candidate",
+    "Physical mobile touch untested"
+  ],
+  "files": {
+    "manual-004-save.json": "0a8b09102e76f7f2c9fb313ab7833e137b9aec174018bfe346ef2330dcfa69cd",
+    "manual-002-controls.json": "9b4ffe4f8f986169425f2d9c4f9255203407793e8173d4e59d80967606440ad8",
+    "manual-010-save.json": "a7c4424308a47c6ea1b3583cf4fd0c93462dec82fdf15e2108df1498956fd749",
+    "manual-007-save.json": "0a8b09102e76f7f2c9fb313ab7833e137b9aec174018bfe346ef2330dcfa69cd",
+    "manual-012-save.json": "a7c4424308a47c6ea1b3583cf4fd0c93462dec82fdf15e2108df1498956fd749",
+    "manual-011-save.json": "a7c4424308a47c6ea1b3583cf4fd0c93462dec82fdf15e2108df1498956fd749",
+    "manual-020-controls.json": "9dfd98596286c8799be5758e4217ebac5af14b1631b917cb9b0796d08f23d0c9",
+    "manual-008-save.json": "48a9ed15fd4e4af432b0d68a9bc917004503f1be3c361e5f5577781195f89840",
+    "manual-002-save.json": "0a8b09102e76f7f2c9fb313ab7833e137b9aec174018bfe346ef2330dcfa69cd",
+    "manual-014-save.json": "a7c4424308a47c6ea1b3583cf4fd0c93462dec82fdf15e2108df1498956fd749",
+    "manual-015-controls.json": "dc1985a2b73576f508ed9c59bdf5637915ca9ebfc5d457665716d3ed748c2552",
+    "manual-004-controls.json": "df7d64704d060ee7ded91dca32a00ceeff1036db156a8d2655a4cf8e4fa81c14",
+    "manual-005-save.json": "0a8b09102e76f7f2c9fb313ab7833e137b9aec174018bfe346ef2330dcfa69cd",
+    "manual-012-controls.json": "e5377c5bd20d9560fed477da16864e47ae962c1bb7e1820cfbf70a691a1eb7ed",
+    "manual-003-controls.json": "828dcb74000b1b670279fb5a7bae32a96b30330d2ac24aaf453bf7b8567835d4",
+    "manual-020-save.json": "349a189e94af0ba0657e3664de46f77262538f496d8b9f6b500116fb289b1896",
+    "manual-001-controls.json": "770813c147a33864516a631f5b7124a527fbdd51fb5d49bd4678f84d6eb1d577",
+    "manual-001-save.json": "0a8b09102e76f7f2c9fb313ab7833e137b9aec174018bfe346ef2330dcfa69cd",
+    "manual-018-save.json": "8ca9327aff8baa5ae96b0411532bc4b7993d485ffb0bb9bdce662556c5f157a5",
+    "manual-013-save.json": "a7c4424308a47c6ea1b3583cf4fd0c93462dec82fdf15e2108df1498956fd749",
+    "manual-008-controls.json": "d510561cce88559f72bb7a26cfd25f88e0868df1a0612b1f01ab2e70598913f4",
+    "manual-013-controls.json": "60a25cffaf56a66bc14c8a31bca14745842b4c42bd93ac13a8eff0c2d145a875",
+    "manual-009-controls.json": "d9a5092ecc1c73e503c63922d9e9906b2bf74c59766bb2c56129d76aa5e0e764",
+    "manual-018-controls.json": "35081edf90fe74a568d7289a40e309105a9f049bfae9dd99287b243142a0cd47",
+    "manual-007-controls.json": "6c41d02ee3a7cfc76011435861f1bae75e71881a7b63affc854f149941c3b302",
+    "manual-015-save.json": "8ca9327aff8baa5ae96b0411532bc4b7993d485ffb0bb9bdce662556c5f157a5",
+    "manual-009-save.json": "48a9ed15fd4e4af432b0d68a9bc917004503f1be3c361e5f5577781195f89840",
+    "manual-006-controls.json": "8d769458fba323b2bffa7ebddcf59a69156c0ee8377a6b3893079afb54525c48",
+    "manual-014-controls.json": "d48c1eaca3f8f8aeae6290c32b296d145c9922d31119e2ccab815d7d054ce08b",
+    "manual-011-controls.json": "0999dee0d4fea1b794b73309706861f98142a2f9ec15f1ad179d0720ceff9e48",
+    "manual-017-save.json": "8ca9327aff8baa5ae96b0411532bc4b7993d485ffb0bb9bdce662556c5f157a5",
+    "manual-019-save.json": "349a189e94af0ba0657e3664de46f77262538f496d8b9f6b500116fb289b1896",
+    "manual-006-save.json": "0a8b09102e76f7f2c9fb313ab7833e137b9aec174018bfe346ef2330dcfa69cd",
+    "manual-016-save.json": "8ca9327aff8baa5ae96b0411532bc4b7993d485ffb0bb9bdce662556c5f157a5",
+    "manual-016-controls.json": "5aa60f8ac2c16a7caafec4244632f6811ffa79068630061ffee4a089b971d849",
+    "manual-010-controls.json": "2de01434a6db57a24e55624cf24e6ab66e0e3b344f09f43c0cf0dad9d5ccc0d2",
+    "manual-017-controls.json": "f7f7c3ee223fd2e7bfe0a68036bd32095517484aa67ea7f7f992ed23067935fe",
+    "manual-019-controls.json": "5434869b5f0fead3adc69c4d5075cafc45d9ff73e31fb99534aa82e6db04afc8",
+    "manual-003-save.json": "0a8b09102e76f7f2c9fb313ab7833e137b9aec174018bfe346ef2330dcfa69cd",
+    "manual-005-controls.json": "a4f561e14dedbe3d3697c1ac7e774767e394a261392b425dfbe80bf44805f187"
+  }
+}

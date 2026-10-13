@@ -1,0 +1,1158 @@
+[
+  {
+    "id": "green_double_lash",
+    "command": {
+      "command": {
+        "cardUid": "qa-vfx-green_double_lash",
+        "targetIndex": 1,
+        "type": "PlayCard"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "events": [
+      {
+        "cardId": "green_double_lash",
+        "type": "CardPlayed"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 100,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 95,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 5,
+        "hpLoss": 5,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_double_lash",
+          "uid": "qa-vfx-green_double_lash"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 95,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 90,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 5,
+        "hpLoss": 5,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_double_lash",
+          "uid": "qa-vfx-green_double_lash"
+        },
+        "type": "DamageDealt"
+      }
+    ],
+    "cardHitCount": 2,
+    "allPlayerHitCount": 2,
+    "fixtureSha256": "92f1a964ac1761fb742fa752e636b56a73b39c63dd58beab367ff8a6f413632c"
+  },
+  {
+    "id": "green_horn_storm",
+    "command": {
+      "command": {
+        "cardUid": "qa-vfx-green_horn_storm",
+        "targetIndex": 1,
+        "type": "PlayCard"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "events": [
+      {
+        "cardId": "green_horn_storm",
+        "type": "CardPlayed"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 0,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 100,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 3,
+        "hpLoss": 3,
+        "enemyIndex": 0,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_horn_storm",
+          "uid": "qa-vfx-green_horn_storm"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 100,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 3,
+        "hpLoss": 3,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_horn_storm",
+          "uid": "qa-vfx-green_horn_storm"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 2,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 100,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 3,
+        "hpLoss": 3,
+        "enemyIndex": 2,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_horn_storm",
+          "uid": "qa-vfx-green_horn_storm"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 0,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 94,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 3,
+        "hpLoss": 3,
+        "enemyIndex": 0,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_horn_storm",
+          "uid": "qa-vfx-green_horn_storm"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 94,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 3,
+        "hpLoss": 3,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_horn_storm",
+          "uid": "qa-vfx-green_horn_storm"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 2,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 94,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 3,
+        "hpLoss": 3,
+        "enemyIndex": 2,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_horn_storm",
+          "uid": "qa-vfx-green_horn_storm"
+        },
+        "type": "DamageDealt"
+      }
+    ],
+    "cardHitCount": 6,
+    "allPlayerHitCount": 6,
+    "fixtureSha256": "f12d3ca94a4efbafbf4f1c02975ea7e68659b9c5a8829f410d08063d76fb3739"
+  },
+  {
+    "id": "blue_strike",
+    "command": {
+      "command": {
+        "cardUid": "qa-vfx-blue_strike",
+        "targetIndex": 1,
+        "type": "PlayCard"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "events": [
+      {
+        "cardId": "blue_strike",
+        "type": "CardPlayed"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 100,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 95,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 5,
+        "hpLoss": 5,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "blue_strike",
+          "uid": "qa-vfx-blue_strike"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "count": 1,
+        "cards": [
+          "守りの蔓"
+        ],
+        "type": "CardsDrawn"
+      }
+    ],
+    "cardHitCount": 1,
+    "allPlayerHitCount": 1,
+    "fixtureSha256": "b904f04549fb73b573912b4e44c70bba52cbffd113a9d8ef1eef8cf8ffb51acc"
+  },
+  {
+    "id": "green_sweep",
+    "command": {
+      "command": {
+        "cardUid": "qa-vfx-green_sweep",
+        "targetIndex": 1,
+        "type": "PlayCard"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "events": [
+      {
+        "cardId": "green_sweep",
+        "type": "CardPlayed"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 0,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 100,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 96,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 4,
+        "hpLoss": 4,
+        "enemyIndex": 0,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_sweep",
+          "uid": "qa-vfx-green_sweep"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 100,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 96,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 4,
+        "hpLoss": 4,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_sweep",
+          "uid": "qa-vfx-green_sweep"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 2,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 100,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 96,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 4,
+        "hpLoss": 4,
+        "enemyIndex": 2,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_sweep",
+          "uid": "qa-vfx-green_sweep"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 0,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 96,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 96,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 0,
+        "hpLoss": 0,
+        "enemyIndex": 0,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_sweep",
+          "uid": "qa-vfx-green_sweep"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 96,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 96,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 0,
+        "hpLoss": 0,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_sweep",
+          "uid": "qa-vfx-green_sweep"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 2,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 96,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 96,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 0,
+        "hpLoss": 0,
+        "enemyIndex": 2,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_sweep",
+          "uid": "qa-vfx-green_sweep"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 2,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 96,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 94,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 2,
+        "hpLoss": 2,
+        "enemyIndex": 2,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "white_perm_hound",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      }
+    ],
+    "cardHitCount": 6,
+    "allPlayerHitCount": 7,
+    "fixtureSha256": "f1dcac3f27e8d2039e736ecf6150a0360ea6d6613805eb73b157053711b3b0e4"
+  },
+  {
+    "id": "green_sig_vine_dance",
+    "command": {
+      "command": {
+        "cardUid": "qa-vfx-green_sig_vine_dance",
+        "targetIndex": 1,
+        "type": "PlayCard"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "events": [
+      {
+        "cardId": "green_sig_vine_dance",
+        "type": "CardPlayed"
+      },
+      {
+        "amount": 1,
+        "type": "GrowthAdded"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 0,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 100,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 3,
+        "hpLoss": 3,
+        "enemyIndex": 0,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 100,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 3,
+        "hpLoss": 3,
+        "enemyIndex": 1,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 2,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 100,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 3,
+        "hpLoss": 3,
+        "enemyIndex": 2,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 94,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 3,
+        "hpLoss": 3,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_sig_vine_dance",
+          "uid": "qa-vfx-green_sig_vine_dance"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "amount": 1,
+        "type": "GrowthAdded"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 0,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 93,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 4,
+        "hpLoss": 4,
+        "enemyIndex": 0,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 94,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 90,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 4,
+        "hpLoss": 4,
+        "enemyIndex": 1,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 2,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 97,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 93,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 4,
+        "hpLoss": 4,
+        "enemyIndex": 2,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 90,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 86,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 4,
+        "hpLoss": 4,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_sig_vine_dance",
+          "uid": "qa-vfx-green_sig_vine_dance"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "amount": 1,
+        "type": "GrowthAdded"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 0,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 93,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 88,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 5,
+        "hpLoss": 5,
+        "enemyIndex": 0,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 86,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 81,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 5,
+        "hpLoss": 5,
+        "enemyIndex": 1,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 2,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 93,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 88,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 5,
+        "hpLoss": 5,
+        "enemyIndex": 2,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 81,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 76,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 5,
+        "hpLoss": 5,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_sig_vine_dance",
+          "uid": "qa-vfx-green_sig_vine_dance"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "amount": 1,
+        "type": "GrowthAdded"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 0,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 88,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 82,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 6,
+        "hpLoss": 6,
+        "enemyIndex": 0,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 76,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 70,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 6,
+        "hpLoss": 6,
+        "enemyIndex": 1,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 2,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 88,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 82,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 6,
+        "hpLoss": 6,
+        "enemyIndex": 2,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 70,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 64,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 6,
+        "hpLoss": 6,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_sig_vine_dance",
+          "uid": "qa-vfx-green_sig_vine_dance"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "amount": 1,
+        "type": "GrowthAdded"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 0,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 82,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 75,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 7,
+        "hpLoss": 7,
+        "enemyIndex": 0,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 64,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 57,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 7,
+        "hpLoss": 7,
+        "enemyIndex": 1,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 2,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 82,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 75,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 7,
+        "hpLoss": 7,
+        "enemyIndex": 2,
+        "sourceUid": "qa-source-hound",
+        "presentationSource": {
+          "kind": "permanent",
+          "definitionId": "green_perm_thorn_canopy",
+          "uid": "qa-source-hound"
+        },
+        "type": "DamageDealt"
+      },
+      {
+        "presentationReceipt": {
+          "version": 1,
+          "target": "enemy",
+          "enemyIndex": 1,
+          "enemyId": "enemy_mudling",
+          "before": {
+            "hp": 57,
+            "maxHp": 100,
+            "block": 0
+          },
+          "after": {
+            "hp": 50,
+            "maxHp": 100,
+            "block": 0
+          }
+        },
+        "source": "player",
+        "amount": 7,
+        "hpLoss": 7,
+        "enemyIndex": 1,
+        "presentationSource": {
+          "kind": "card",
+          "definitionId": "green_sig_vine_dance",
+          "uid": "qa-vfx-green_sig_vine_dance"
+        },
+        "type": "DamageDealt"
+      }
+    ],
+    "cardHitCount": 5,
+    "allPlayerHitCount": 20,
+    "fixtureSha256": "7c1e6d22d0f8e783e86099c1fcd414870af43d8b2f1081648ebf38448c41e942"
+  }
+]

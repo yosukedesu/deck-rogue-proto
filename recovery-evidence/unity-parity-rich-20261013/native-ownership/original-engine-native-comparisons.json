@@ -1,0 +1,97 @@
+[
+  {
+    "case": "blue_strike",
+    "fullOriginalSaveEqual": true,
+    "native": {
+      "passed": true,
+      "frames": 126,
+      "damageContacts": 1,
+      "expectedContacts": 1,
+      "stableFrames": 60,
+      "consecutiveFrames": true,
+      "diagnostics": [],
+      "phase": "combat",
+      "turn": 1,
+      "remainingPresentation": false,
+      "scope": "Native rendered every-frame metadata and contact keyframe PNGs; actual meshes/callbacks. Not continuous video or live performance."
+    },
+    "actualSha256": "f791acf3b8c0e30b6b25ae73347ff84d4420100129c5c6dc0c99c2833dd1798c",
+    "expectedSha256": "f791acf3b8c0e30b6b25ae73347ff84d4420100129c5c6dc0c99c2833dd1798c"
+  },
+  {
+    "case": "green_double_lash",
+    "fullOriginalSaveEqual": true,
+    "native": {
+      "passed": true,
+      "frames": 126,
+      "damageContacts": 2,
+      "expectedContacts": 2,
+      "stableFrames": 60,
+      "consecutiveFrames": true,
+      "diagnostics": [],
+      "phase": "combat",
+      "turn": 1,
+      "remainingPresentation": false,
+      "scope": "Native rendered every-frame metadata and contact keyframe PNGs; actual meshes/callbacks. Not continuous video or live performance."
+    },
+    "actualSha256": "ddf6dc04e9c32154e749417f294726bcbb37309108cf48f0151639b48b69148a",
+    "expectedSha256": "ddf6dc04e9c32154e749417f294726bcbb37309108cf48f0151639b48b69148a"
+  },
+  {
+    "case": "green_horn_storm",
+    "fullOriginalSaveEqual": true,
+    "native": {
+      "passed": true,
+      "frames": 145,
+      "damageContacts": 6,
+      "expectedContacts": 6,
+      "stableFrames": 60,
+      "consecutiveFrames": true,
+      "diagnostics": [],
+      "phase": "combat",
+      "turn": 1,
+      "remainingPresentation": false,
+      "scope": "Native rendered every-frame metadata and contact keyframe PNGs; actual meshes/callbacks. Not continuous video or live performance."
+    },
+    "actualSha256": "648727f1979014a67593ca9c4d067ff32dae83a60bf1bbaf8536fe3f306b3373",
+    "expectedSha256": "648727f1979014a67593ca9c4d067ff32dae83a60bf1bbaf8536fe3f306b3373"
+  },
+  {
+    "case": "green_sig_vine_dance",
+    "fullOriginalSaveEqual": true,
+    "native": {
+      "passed": true,
+      "frames": 284,
+      "damageContacts": 20,
+      "expectedContacts": 20,
+      "stableFrames": 60,
+      "consecutiveFrames": true,
+      "diagnostics": [],
+      "phase": "combat",
+      "turn": 1,
+      "remainingPresentation": false,
+      "scope": "Native rendered every-frame metadata and contact keyframe PNGs; actual meshes/callbacks. Not continuous video or live performance."
+    },
+    "actualSha256": "0ffc16c1135f656967e0e43c230df04a1f4e201fed029d28919c2e8fab983c95",
+    "expectedSha256": "0ffc16c1135f656967e0e43c230df04a1f4e201fed029d28919c2e8fab983c95"
+  },
+  {
+    "case": "green_sweep",
+    "fullOriginalSaveEqual": true,
+    "native": {
+      "passed": true,
+      "frames": 152,
+      "damageContacts": 7,
+      "expectedContacts": 7,
+      "stableFrames": 60,
+      "consecutiveFrames": true,
+      "diagnostics": [],
+      "phase": "combat",
+      "turn": 1,
+      "remainingPresentation": false,
+      "scope": "Native rendered every-frame metadata and contact keyframe PNGs; actual meshes/callbacks. Not continuous video or live performance."
+    },
+    "actualSha256": "02c2a89777f85048340bed9a924e76fd1bdb9bcbcfe9af97e2406d3a3643da00",
+    "expectedSha256": "02c2a89777f85048340bed9a924e76fd1bdb9bcbcfe9af97e2406d3a3643da00"
+  }
+]

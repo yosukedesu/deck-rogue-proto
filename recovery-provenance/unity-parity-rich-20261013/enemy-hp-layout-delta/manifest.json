@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "status": "off-tree bounded delta ready for parent review/native recapture",
+  "payload": {
+    "changes.json": "912e3a49e04f7a3acca3ef29c81e593f63dabd1d226e9f1dd36571b4f7ce528e",
+    "files/SourceEnemyHpFit.cs": "0c2c5ef69965b49b688d19b585369b8a34bf7fd606965368470a2076bc242f38"
+  },
+  "frozen_ledger_manifest_sha256": "922345000f0a34c313d79677bcbb8704b4046f25ca3a45f87d401c0e6b309035",
+  "source_model_sha256": "6e64a84d2c80ee440e92730042a6de957ead3adce34fedd7382db1be7cde4d20",
+  "target_before_sha256": "a577842346f51af49dc3096122308d137b0c0a178afe253c39a28b7adc098267",
+  "target_after_sha256": "c782f146daa3e501926c899b4ebd3729105923ca8d868163ad5cabf9f0feee2b",
+  "installer_sha256": "d45f04587b77e6fad152d13ab5944554a137cadc03cc309ef7d5d178e6605406",
+  "handoff_sha256": "4a38ccb576c4c774efeaa949b0278dcd742b33a8e8b79d6ef1659924291054cb",
+  "validation": {
+    "pure_assertions": 64753,
+    "compile_errors": 0,
+    "compile_baseline_warnings": 15,
+    "installer_assertions": 10,
+    "native_headless_font_and_control_metrics": "passed; no GUI or game launch",
+    "native_game_post_delta_screenshots": "not run",
+    "global_text_scale_changed": false,
+    "shared_source_hud_label_changed": false,
+    "frozen_ledger_changed": false
+  },
+  "evidence_sha256": {
+    "evidence/capture-geometry.json": "5d116ceacdad0bdf57c57e070983d210d4501e2f3be6cc86af1bf624725a8371",
+    "evidence/four130-ledger-crop-3x.png": "ed3b25eeca7e31bed78ee11d03e7f64c32048be1bce667f15c2ef1fc92566f83",
+    "evidence/native-font-metrics-dotnet-warning.log": "ed89b535e5f37bde78b06dff71562aa488789e8ce7d5a24202488cd7e770a57c",
+    "evidence/native-font-metrics-home-failure.log": "25d587705c73b756d3080aefe80f29dc93681921e949a793fd1757a0ff396c5e",
+    "evidence/native-font-metrics.json": "1e67a991ede966e7f0fcff3bc2841307355d192409002aef58328487271fe495",
+    "evidence/native-font-metrics.log": "dd7cca506629e82c52c4c0acbf29b9a2af5b6cee03876fd69527a83310af6228",
+    "evidence/solo100-ledger-crop-3x.png": "b35c535696712b55a838b7927d315a7419fc4ce44198804efc2dc4d890a039c1",
+    "evidence/solo130-ledger-crop-3x.png": "eb34349369015a1ace2c63b022429565356e7f99406267893c7219d052c16e66",
+    "evidence/source-and-capture-hashes.json": "ede625ef62ccb663ee73db0f2f10d27f5d5c876d2a8d9788ed5125a4c7096632"
+  },
+  "verification_sha256": {
+    "verification/compile.log": "8879acf7db90b20171ebace970b9f23ddb06cf2f6b8fc6fdd31142c2e491337c",
+    "verification/installer-tests.log": "dea10a3d917c7e85ab958962b2fa9e355fbcf049f4d0d3a3c7e401274fc01a55",
+    "verification/pure-tests.log": "45103954f94a1c4a962588c80c131b5cebd56ed844fa04b8a169295fde7cec21"
+  }
+}

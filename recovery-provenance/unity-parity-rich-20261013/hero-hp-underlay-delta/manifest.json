@@ -1,0 +1,16 @@
+{
+  "status": "Off-tree candidate; compile and pure checks passed; native A/B not accepted",
+  "files": {
+    "test-result.json": "4c00a5743cf48c17e1a1d57289e81beaf0e6a412fafae38d70df1cf2e6ecfccd",
+    "apply.py": "5c002ce7f5a6444989b331817670566cc3504ed7c070d70754a898a175fc1a3e",
+    "HANDOFF.md": "0b11be84c7d5d56137757d58e220fd91ac1e96921ccc6b289771db297c528583",
+    "changes.json": "b03172e5313cbdcfc34d59a9097b2c58c2987253b1c152e0c27c401cfc21fa6f",
+    "composed/DeckRogue/GodotPort/UI/SourceHudLabel.cs": "cf0201ac92289ab8da8adb031980fe5b0fa8708f1b303a72827199aeb97b7a91",
+    "composed/DeckRogue/GodotPort/UI/GameUI.RecoveredBattle.cs": "48871e827d4306f88e1d033dbcf06091e3dcd2550262fccea298673d0957d5df"
+  },
+  "compile": {
+    "errors": 0,
+    "baselineWarnings": 15,
+    "evidence": "../hero-hp-rehearsal/compile.log"
+  }
+}

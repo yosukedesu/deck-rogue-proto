@@ -1,0 +1,3019 @@
+[
+  {
+    "name": "kindle-choice-skip",
+    "command": {
+      "command": {
+        "cardUid": "qa-kindle",
+        "targetIndex": 1,
+        "type": "PlayCard"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "bcef204f8ef1f1e7cf69995c8c939f6154893f0fe94cc488b1e72ed35e714f24",
+    "afterSha256": "7004a8e18313e2057043070184b975b3ae3308f97f0cabb4689561618d09781c",
+    "state": {
+      "Phase": "combat",
+      "Gold": 150,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": {
+        "Phase": "player-turn",
+        "Turn": 1,
+        "Rng": {
+          "seed": 886027256,
+          "counter": 19
+        },
+        "player": {
+          "Hp": 80,
+          "Block": 0,
+          "Energy": 2,
+          "Light": 0,
+          "ImpulseUids": [
+            "qa-fuel-cheap",
+            "qa-fuel-costly"
+          ],
+          "hand": [
+            {
+              "Uid": "qa-fuel-cheap",
+              "Id": "red_ash_breath",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "qa-fuel-costly",
+              "Id": "green_finisher_stomp",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "qa-normal",
+              "Id": "green_guard",
+              "KeptImpulse": null
+            }
+          ],
+          "exhaust": [],
+          "discard": [
+            "qa-kindle"
+          ],
+          "draw": [
+            {
+              "Uid": "green_reaction_vine#0",
+              "Id": "green_reaction_vine"
+            },
+            {
+              "Uid": "green_strike#0",
+              "Id": "green_strike"
+            },
+            {
+              "Uid": "green_growth_ring#0",
+              "Id": "green_growth_ring"
+            },
+            {
+              "Uid": "green_entangle#0",
+              "Id": "green_entangle"
+            },
+            {
+              "Uid": "green_fang#0",
+              "Id": "green_fang"
+            },
+            {
+              "Uid": "green_reaction_root_weave#0",
+              "Id": "green_reaction_root_weave"
+            },
+            {
+              "Uid": "green_finisher_stomp#0",
+              "Id": "green_finisher_stomp"
+            },
+            {
+              "Uid": "green_bark_armor#0",
+              "Id": "green_bark_armor"
+            },
+            {
+              "Uid": "green_reaction_thorns#0",
+              "Id": "green_reaction_thorns"
+            },
+            {
+              "Uid": "green_ramp_sprout#0",
+              "Id": "green_ramp_sprout"
+            }
+          ]
+        },
+        "enemies": [
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 5,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 5,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 4,
+            "Block": 0,
+            "Burn": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "kindle-choice-pay",
+    "command": {
+      "command": {
+        "cardUid": "qa-kindle",
+        "targetIndex": 1,
+        "exhaustUids": [
+          "qa-fuel-cheap"
+        ],
+        "type": "PlayCard"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "bcef204f8ef1f1e7cf69995c8c939f6154893f0fe94cc488b1e72ed35e714f24",
+    "afterSha256": "bdfca23c39207c11de28fd787bcee1fea611ac8a34934dbd7be648da6cfe5dbe",
+    "state": {
+      "Phase": "combat",
+      "Gold": 150,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": {
+        "Phase": "player-turn",
+        "Turn": 1,
+        "Rng": {
+          "seed": 886027256,
+          "counter": 19
+        },
+        "player": {
+          "Hp": 80,
+          "Block": 0,
+          "Energy": 2,
+          "Light": 0,
+          "ImpulseUids": [
+            "qa-fuel-costly"
+          ],
+          "hand": [
+            {
+              "Uid": "qa-fuel-costly",
+              "Id": "green_finisher_stomp",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "qa-normal",
+              "Id": "green_guard",
+              "KeptImpulse": null
+            }
+          ],
+          "exhaust": [
+            "qa-fuel-cheap"
+          ],
+          "discard": [
+            "qa-kindle"
+          ],
+          "draw": [
+            {
+              "Uid": "green_reaction_vine#0",
+              "Id": "green_reaction_vine"
+            },
+            {
+              "Uid": "green_strike#0",
+              "Id": "green_strike"
+            },
+            {
+              "Uid": "green_growth_ring#0",
+              "Id": "green_growth_ring"
+            },
+            {
+              "Uid": "green_entangle#0",
+              "Id": "green_entangle"
+            },
+            {
+              "Uid": "green_fang#0",
+              "Id": "green_fang"
+            },
+            {
+              "Uid": "green_reaction_root_weave#0",
+              "Id": "green_reaction_root_weave"
+            },
+            {
+              "Uid": "green_finisher_stomp#0",
+              "Id": "green_finisher_stomp"
+            },
+            {
+              "Uid": "green_bark_armor#0",
+              "Id": "green_bark_armor"
+            },
+            {
+              "Uid": "green_reaction_thorns#0",
+              "Id": "green_reaction_thorns"
+            },
+            {
+              "Uid": "green_ramp_sprout#0",
+              "Id": "green_ramp_sprout"
+            }
+          ]
+        },
+        "enemies": [
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 5,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 5,
+            "Block": 0,
+            "Burn": 3
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 4,
+            "Block": 0,
+            "Burn": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "kindle-exact-fuel-skip",
+    "command": {
+      "command": {
+        "cardUid": "qa-kindle",
+        "targetIndex": 1,
+        "type": "PlayCard"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "3e86566c61cd3457b3f8ea3640d6177f341957ea2f81867fc4d6e906e95216fe",
+    "afterSha256": "15fbe98c1f5c6817d37f8de7deb644901dbf3a207a4778e78bc8654ae17151ed",
+    "state": {
+      "Phase": "combat",
+      "Gold": 150,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": {
+        "Phase": "player-turn",
+        "Turn": 1,
+        "Rng": {
+          "seed": 886027256,
+          "counter": 19
+        },
+        "player": {
+          "Hp": 80,
+          "Block": 0,
+          "Energy": 2,
+          "Light": 0,
+          "ImpulseUids": [
+            "qa-fuel-cheap"
+          ],
+          "hand": [
+            {
+              "Uid": "qa-fuel-cheap",
+              "Id": "red_ash_breath",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "qa-normal",
+              "Id": "green_guard",
+              "KeptImpulse": null
+            }
+          ],
+          "exhaust": [],
+          "discard": [
+            "qa-kindle"
+          ],
+          "draw": [
+            {
+              "Uid": "green_reaction_vine#0",
+              "Id": "green_reaction_vine"
+            },
+            {
+              "Uid": "green_strike#0",
+              "Id": "green_strike"
+            },
+            {
+              "Uid": "green_growth_ring#0",
+              "Id": "green_growth_ring"
+            },
+            {
+              "Uid": "green_entangle#0",
+              "Id": "green_entangle"
+            },
+            {
+              "Uid": "green_fang#0",
+              "Id": "green_fang"
+            },
+            {
+              "Uid": "green_reaction_root_weave#0",
+              "Id": "green_reaction_root_weave"
+            },
+            {
+              "Uid": "green_finisher_stomp#0",
+              "Id": "green_finisher_stomp"
+            },
+            {
+              "Uid": "green_bark_armor#0",
+              "Id": "green_bark_armor"
+            },
+            {
+              "Uid": "green_reaction_thorns#0",
+              "Id": "green_reaction_thorns"
+            },
+            {
+              "Uid": "green_ramp_sprout#0",
+              "Id": "green_ramp_sprout"
+            }
+          ]
+        },
+        "enemies": [
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 5,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 5,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 4,
+            "Block": 0,
+            "Burn": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "kindle-exact-fuel-pay",
+    "command": {
+      "command": {
+        "cardUid": "qa-kindle",
+        "targetIndex": 1,
+        "exhaustUids": [
+          "qa-fuel-cheap"
+        ],
+        "type": "PlayCard"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "3e86566c61cd3457b3f8ea3640d6177f341957ea2f81867fc4d6e906e95216fe",
+    "afterSha256": "8e5d7aad13e8485fdc66e7c0d90171aa7091c810ffeeaed29e9a8f561d31e78e",
+    "state": {
+      "Phase": "combat",
+      "Gold": 150,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": {
+        "Phase": "player-turn",
+        "Turn": 1,
+        "Rng": {
+          "seed": 886027256,
+          "counter": 19
+        },
+        "player": {
+          "Hp": 80,
+          "Block": 0,
+          "Energy": 2,
+          "Light": 0,
+          "ImpulseUids": [],
+          "hand": [
+            {
+              "Uid": "qa-normal",
+              "Id": "green_guard",
+              "KeptImpulse": null
+            }
+          ],
+          "exhaust": [
+            "qa-fuel-cheap"
+          ],
+          "discard": [
+            "qa-kindle"
+          ],
+          "draw": [
+            {
+              "Uid": "green_reaction_vine#0",
+              "Id": "green_reaction_vine"
+            },
+            {
+              "Uid": "green_strike#0",
+              "Id": "green_strike"
+            },
+            {
+              "Uid": "green_growth_ring#0",
+              "Id": "green_growth_ring"
+            },
+            {
+              "Uid": "green_entangle#0",
+              "Id": "green_entangle"
+            },
+            {
+              "Uid": "green_fang#0",
+              "Id": "green_fang"
+            },
+            {
+              "Uid": "green_reaction_root_weave#0",
+              "Id": "green_reaction_root_weave"
+            },
+            {
+              "Uid": "green_finisher_stomp#0",
+              "Id": "green_finisher_stomp"
+            },
+            {
+              "Uid": "green_bark_armor#0",
+              "Id": "green_bark_armor"
+            },
+            {
+              "Uid": "green_reaction_thorns#0",
+              "Id": "green_reaction_thorns"
+            },
+            {
+              "Uid": "green_ramp_sprout#0",
+              "Id": "green_ramp_sprout"
+            }
+          ]
+        },
+        "enemies": [
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 5,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 5,
+            "Block": 0,
+            "Burn": 3
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 4,
+            "Block": 0,
+            "Burn": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "kindle-no-fuel-skip",
+    "command": {
+      "command": {
+        "cardUid": "qa-kindle",
+        "targetIndex": 1,
+        "type": "PlayCard"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "07413883992f80a27879137cd553dd46542897db05c5ab9827d7c79b11fe3c91",
+    "afterSha256": "482f7fbb7f77243e8f4f47b308654d4dbb1f89cbcc3cf09b7e7fccd4d7929341",
+    "state": {
+      "Phase": "combat",
+      "Gold": 150,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": {
+        "Phase": "player-turn",
+        "Turn": 1,
+        "Rng": {
+          "seed": 886027256,
+          "counter": 19
+        },
+        "player": {
+          "Hp": 80,
+          "Block": 0,
+          "Energy": 2,
+          "Light": 0,
+          "ImpulseUids": [],
+          "hand": [
+            {
+              "Uid": "qa-normal",
+              "Id": "green_guard",
+              "KeptImpulse": null
+            }
+          ],
+          "exhaust": [],
+          "discard": [
+            "qa-kindle"
+          ],
+          "draw": [
+            {
+              "Uid": "green_reaction_vine#0",
+              "Id": "green_reaction_vine"
+            },
+            {
+              "Uid": "green_strike#0",
+              "Id": "green_strike"
+            },
+            {
+              "Uid": "green_growth_ring#0",
+              "Id": "green_growth_ring"
+            },
+            {
+              "Uid": "green_entangle#0",
+              "Id": "green_entangle"
+            },
+            {
+              "Uid": "green_fang#0",
+              "Id": "green_fang"
+            },
+            {
+              "Uid": "green_reaction_root_weave#0",
+              "Id": "green_reaction_root_weave"
+            },
+            {
+              "Uid": "green_finisher_stomp#0",
+              "Id": "green_finisher_stomp"
+            },
+            {
+              "Uid": "green_bark_armor#0",
+              "Id": "green_bark_armor"
+            },
+            {
+              "Uid": "green_reaction_thorns#0",
+              "Id": "green_reaction_thorns"
+            },
+            {
+              "Uid": "green_ramp_sprout#0",
+              "Id": "green_ramp_sprout"
+            }
+          ]
+        },
+        "enemies": [
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 5,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 5,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 4,
+            "Block": 0,
+            "Burn": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "keep-manual-retain-hearth",
+    "command": {
+      "command": {
+        "hearthSparks": 2,
+        "retainUids": [
+          "qa-normal"
+        ],
+        "keepUid": "qa-fuel-cheap",
+        "type": "EndTurn"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "06578de97c6fe9311f3771e2864af44c388eb0c8c95b7a3ff2eea5b7d9437fcc",
+    "afterSha256": "26a7fe35aaace934f3d1646d808475449090082a0017640429400184dedbe0f1",
+    "state": {
+      "Phase": "combat",
+      "Gold": 150,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": {
+        "Phase": "player-turn",
+        "Turn": 2,
+        "Rng": {
+          "seed": 886027256,
+          "counter": 27
+        },
+        "player": {
+          "Hp": 76,
+          "Block": 0,
+          "Energy": 4,
+          "Light": 0,
+          "ImpulseUids": [],
+          "hand": [
+            {
+              "Uid": "qa-fuel-cheap",
+              "Id": "red_ash_breath",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "qa-normal",
+              "Id": "green_guard",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_reaction_vine#0",
+              "Id": "green_reaction_vine",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_strike#0",
+              "Id": "green_strike",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "tok_9_1_white_spark_token",
+              "Id": "white_spark_token",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_growth_ring#0",
+              "Id": "green_growth_ring",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_entangle#0",
+              "Id": "green_entangle",
+              "KeptImpulse": null
+            }
+          ],
+          "exhaust": [],
+          "discard": [
+            "qa-fuel-costly",
+            "status_wound#0_t1"
+          ],
+          "draw": [
+            {
+              "Uid": "green_fang#0",
+              "Id": "green_fang"
+            },
+            {
+              "Uid": "green_reaction_root_weave#0",
+              "Id": "green_reaction_root_weave"
+            },
+            {
+              "Uid": "green_finisher_stomp#0",
+              "Id": "green_finisher_stomp"
+            },
+            {
+              "Uid": "green_bark_armor#0",
+              "Id": "green_bark_armor"
+            },
+            {
+              "Uid": "green_reaction_thorns#0",
+              "Id": "green_reaction_thorns"
+            },
+            {
+              "Uid": "green_ramp_sprout#0",
+              "Id": "green_ramp_sprout"
+            },
+            {
+              "Uid": "tok_9_0_white_spark_token",
+              "Id": "white_spark_token"
+            }
+          ]
+        },
+        "enemies": [
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 9,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 9,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 8,
+            "Block": 4,
+            "Burn": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "keep-auto-retain-hearth",
+    "command": {
+      "command": {
+        "hearthSparks": 2,
+        "retainUids": [
+          "qa-normal"
+        ],
+        "type": "EndTurn"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "06578de97c6fe9311f3771e2864af44c388eb0c8c95b7a3ff2eea5b7d9437fcc",
+    "afterSha256": "85a5d90806fb45ce12f68d79ff421b4b7067c7990d1b379fe16b75950c9edea8",
+    "state": {
+      "Phase": "combat",
+      "Gold": 150,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": {
+        "Phase": "player-turn",
+        "Turn": 2,
+        "Rng": {
+          "seed": 886027256,
+          "counter": 27
+        },
+        "player": {
+          "Hp": 76,
+          "Block": 0,
+          "Energy": 4,
+          "Light": 0,
+          "ImpulseUids": [],
+          "hand": [
+            {
+              "Uid": "qa-fuel-costly",
+              "Id": "green_finisher_stomp",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "qa-normal",
+              "Id": "green_guard",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_reaction_vine#0",
+              "Id": "green_reaction_vine",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_strike#0",
+              "Id": "green_strike",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "tok_9_1_white_spark_token",
+              "Id": "white_spark_token",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_growth_ring#0",
+              "Id": "green_growth_ring",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_entangle#0",
+              "Id": "green_entangle",
+              "KeptImpulse": null
+            }
+          ],
+          "exhaust": [
+            "qa-fuel-cheap"
+          ],
+          "discard": [
+            "status_wound#0_t1"
+          ],
+          "draw": [
+            {
+              "Uid": "green_fang#0",
+              "Id": "green_fang"
+            },
+            {
+              "Uid": "green_reaction_root_weave#0",
+              "Id": "green_reaction_root_weave"
+            },
+            {
+              "Uid": "green_finisher_stomp#0",
+              "Id": "green_finisher_stomp"
+            },
+            {
+              "Uid": "green_bark_armor#0",
+              "Id": "green_bark_armor"
+            },
+            {
+              "Uid": "green_reaction_thorns#0",
+              "Id": "green_reaction_thorns"
+            },
+            {
+              "Uid": "green_ramp_sprout#0",
+              "Id": "green_ramp_sprout"
+            },
+            {
+              "Uid": "tok_9_0_white_spark_token",
+              "Id": "white_spark_token"
+            }
+          ]
+        },
+        "enemies": [
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 9,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 9,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 8,
+            "Block": 4,
+            "Burn": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "keep-auto-hearth-zero",
+    "command": {
+      "command": {
+        "hearthSparks": 0,
+        "type": "EndTurn"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "06578de97c6fe9311f3771e2864af44c388eb0c8c95b7a3ff2eea5b7d9437fcc",
+    "afterSha256": "742882f6e892d7b9553889cc046710b004321b7ef5e65ca6c62ad8ee46a96d23",
+    "state": {
+      "Phase": "combat",
+      "Gold": 150,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": {
+        "Phase": "player-turn",
+        "Turn": 2,
+        "Rng": {
+          "seed": 886027256,
+          "counter": 25
+        },
+        "player": {
+          "Hp": 76,
+          "Block": 0,
+          "Energy": 4,
+          "Light": 6,
+          "ImpulseUids": [],
+          "hand": [
+            {
+              "Uid": "qa-fuel-costly",
+              "Id": "green_finisher_stomp",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_reaction_vine#0",
+              "Id": "green_reaction_vine",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_strike#0",
+              "Id": "green_strike",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_growth_ring#0",
+              "Id": "green_growth_ring",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_entangle#0",
+              "Id": "green_entangle",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_fang#0",
+              "Id": "green_fang",
+              "KeptImpulse": null
+            }
+          ],
+          "exhaust": [
+            "qa-fuel-cheap"
+          ],
+          "discard": [
+            "status_wound#0_t1",
+            "qa-normal"
+          ],
+          "draw": [
+            {
+              "Uid": "green_reaction_root_weave#0",
+              "Id": "green_reaction_root_weave"
+            },
+            {
+              "Uid": "green_finisher_stomp#0",
+              "Id": "green_finisher_stomp"
+            },
+            {
+              "Uid": "green_bark_armor#0",
+              "Id": "green_bark_armor"
+            },
+            {
+              "Uid": "green_reaction_thorns#0",
+              "Id": "green_reaction_thorns"
+            },
+            {
+              "Uid": "green_ramp_sprout#0",
+              "Id": "green_ramp_sprout"
+            }
+          ]
+        },
+        "enemies": [
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 9,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 9,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 8,
+            "Block": 4,
+            "Burn": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "normal-retain-hearth",
+    "command": {
+      "command": {
+        "hearthSparks": 1,
+        "retainUids": [
+          "qa-normal"
+        ],
+        "type": "EndTurn"
+      },
+      "type": "Combat"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "346c5020ec5fe20698d4598ce452c0d406630af2210fa7b573bcd900504f01af",
+    "afterSha256": "c8c3e2758ac9eb98b6aee3e1728bcb553d4c85ad00a7a28e0ea3c9e3aa0e3b0d",
+    "state": {
+      "Phase": "combat",
+      "Gold": 150,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": {
+        "Phase": "player-turn",
+        "Turn": 2,
+        "Rng": {
+          "seed": 886027256,
+          "counter": 25
+        },
+        "player": {
+          "Hp": 76,
+          "Block": 0,
+          "Energy": 4,
+          "Light": 3,
+          "ImpulseUids": [],
+          "hand": [
+            {
+              "Uid": "qa-fuel-costly",
+              "Id": "green_finisher_stomp",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "qa-normal",
+              "Id": "green_guard",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_reaction_vine#0",
+              "Id": "green_reaction_vine",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_strike#0",
+              "Id": "green_strike",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_growth_ring#0",
+              "Id": "green_growth_ring",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_entangle#0",
+              "Id": "green_entangle",
+              "KeptImpulse": null
+            },
+            {
+              "Uid": "green_fang#0",
+              "Id": "green_fang",
+              "KeptImpulse": null
+            }
+          ],
+          "exhaust": [],
+          "discard": [
+            "status_wound#0_t1",
+            "qa-fuel-cheap"
+          ],
+          "draw": [
+            {
+              "Uid": "green_reaction_root_weave#0",
+              "Id": "green_reaction_root_weave"
+            },
+            {
+              "Uid": "green_finisher_stomp#0",
+              "Id": "green_finisher_stomp"
+            },
+            {
+              "Uid": "green_bark_armor#0",
+              "Id": "green_bark_armor"
+            },
+            {
+              "Uid": "green_reaction_thorns#0",
+              "Id": "green_reaction_thorns"
+            },
+            {
+              "Uid": "green_ramp_sprout#0",
+              "Id": "green_ramp_sprout"
+            },
+            {
+              "Uid": "tok_9_0_white_spark_token",
+              "Id": "white_spark_token"
+            }
+          ]
+        },
+        "enemies": [
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 9,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 9,
+            "Block": 0,
+            "Burn": 0
+          },
+          {
+            "EnemyId": "enemy_mudling",
+            "Hp": 8,
+            "Block": 4,
+            "Burn": 0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "reward-first-pick",
+    "command": {
+      "index": 0,
+      "type": "PickReward"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "583046979d95431ed4dbe5de70d7fc2c77e84c2f1a52895ce12ee3b9b057b4b6",
+    "afterSha256": "1fbdc5a7bc2c9f298213b714d772890207a7b36846fa085dbc342f48c55d6f0a",
+    "state": {
+      "Phase": "reward",
+      "Gold": 700,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        },
+        {
+          "Uid": "pick_a1_r-1_red_kindle_x1",
+          "Id": "red_kindle",
+          "Name": "火にくべる"
+        }
+      ],
+      "RewardOptions": [
+        "red_blaze_pursuit",
+        "red_fire_tongue",
+        "red_gamble"
+      ],
+      "RewardRoundsLeft": 0,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": null
+    }
+  },
+  {
+    "name": "reward-second-pick",
+    "command": {
+      "index": 0,
+      "type": "PickReward"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "1fbdc5a7bc2c9f298213b714d772890207a7b36846fa085dbc342f48c55d6f0a",
+    "afterSha256": "b8202efaa303e1a3cbda39690296081add3203e650037501858d7a80be7ddaac",
+    "state": {
+      "Phase": "reward",
+      "Gold": 700,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        },
+        {
+          "Uid": "pick_a1_r-1_red_kindle_x1",
+          "Id": "red_kindle",
+          "Name": "火にくべる"
+        },
+        {
+          "Uid": "pick_a1_r-1_red_blaze_pursuit",
+          "Id": "red_blaze_pursuit",
+          "Name": "紅蓮の追撃"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": 0,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": null
+    }
+  },
+  {
+    "name": "reward-skip",
+    "command": {
+      "type": "SkipReward"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "583046979d95431ed4dbe5de70d7fc2c77e84c2f1a52895ce12ee3b9b057b4b6",
+    "afterSha256": "4c0a481bcc4ce9190b38457ccae3e216602d39585b25436379f3a22c13de81c1",
+    "state": {
+      "Phase": "reward",
+      "Gold": 700,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 533
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": [
+        "red_blaze_pursuit",
+        "red_fire_tongue",
+        "red_gamble"
+      ],
+      "RewardRoundsLeft": 0,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": null
+    }
+  },
+  {
+    "name": "workshop-fuse",
+    "command": {
+      "indexA": 0,
+      "indexB": 1,
+      "type": "WorkshopFuse"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "97b8ba4b55f6f4babb90cf4209056ba8d20873e0fd0f8b0415e24816e17ea190",
+    "afterSha256": "ad5cd21496d98c704ccc263e9665c07f92b1a97894923277bd9580f299dbf38a",
+    "state": {
+      "Phase": "map",
+      "Gold": 600,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 524
+      },
+      "deck": [
+        {
+          "Uid": "qa-deck-2",
+          "Id": "red_perm_ember_keeper",
+          "Name": "燠の守り"
+        },
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        },
+        {
+          "Uid": "fused_a1_r-1_fused_red_ash_breath__red_kindle",
+          "Id": "fused_red_ash_breath__red_kindle",
+          "Name": "焔息火の嵐"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": null
+    }
+  },
+  {
+    "name": "workshop-skip",
+    "command": {
+      "type": "WorkshopSkip"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "97b8ba4b55f6f4babb90cf4209056ba8d20873e0fd0f8b0415e24816e17ea190",
+    "afterSha256": "174a7cf959e3356338fa7c10dd5b75d5cea0b706aa8d6bcb1f99faae95934095",
+    "state": {
+      "Phase": "map",
+      "Gold": 700,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 524
+      },
+      "deck": [
+        {
+          "Uid": "qa-deck-0",
+          "Id": "red_kindle",
+          "Name": "火にくべる"
+        },
+        {
+          "Uid": "qa-deck-1",
+          "Id": "red_ash_breath",
+          "Name": "灰の息"
+        },
+        {
+          "Uid": "qa-deck-2",
+          "Id": "red_perm_ember_keeper",
+          "Name": "燠の守り"
+        },
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": null
+    }
+  },
+  {
+    "name": "relic_empty_cage-pick",
+    "command": {
+      "index": 0,
+      "type": "PickRelic"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "479e0826351a005372dafda6b52c43cfc62342631ad32eb029e302ab3707baf7",
+    "afterSha256": "17aa8d051ecf62680a5b4942511caac3901aea338726e8e964ddaa668bf1af2c",
+    "state": {
+      "Phase": "relic-choose",
+      "Gold": 700,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 524
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": {
+        "relicId": "relic_empty_cage",
+        "mode": "remove",
+        "count": 2,
+        "resume": "map"
+      },
+      "gears": [],
+      "combat": null
+    }
+  },
+  {
+    "name": "relic_empty_cage-confirm",
+    "command": {
+      "indices": [
+        0,
+        1
+      ],
+      "type": "RelicChooseCards"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "2bfa82f4e849dd41de81680e398f030891ee32dd9568fc32995837541fd471b1",
+    "afterSha256": "1ff0396300c628024d44caea86a819cf87ee16222aeaaf0b108bfeaa497f2e27",
+    "state": {
+      "Phase": "map",
+      "Gold": 700,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 524
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": null
+    }
+  },
+  {
+    "name": "relic_empty_cage-zero-confirm",
+    "command": {
+      "indices": [],
+      "type": "RelicChooseCards"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "2bfa82f4e849dd41de81680e398f030891ee32dd9568fc32995837541fd471b1",
+    "afterSha256": "a29c7ce8f8971789518e0e0dce83c2dd3e06a637e2a70dcb6c92ae1498073965",
+    "state": {
+      "Phase": "map",
+      "Gold": 700,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 524
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": null
+    }
+  },
+  {
+    "name": "relic_astrolabe-pick",
+    "command": {
+      "index": 0,
+      "type": "PickRelic"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "09e4ed9b32e1089486606975c5a28efd2ad9efc3e6818ae9fd30beda3f09acd1",
+    "afterSha256": "f7948a14b66644c1422b961daef7db5c96ec03680574eb2b16898d16b471f3f1",
+    "state": {
+      "Phase": "relic-choose",
+      "Gold": 700,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 524
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": {
+        "relicId": "relic_astrolabe",
+        "mode": "transform",
+        "count": 3,
+        "resume": "map"
+      },
+      "gears": [],
+      "combat": null
+    }
+  },
+  {
+    "name": "relic_astrolabe-confirm",
+    "command": {
+      "indices": [
+        0,
+        1
+      ],
+      "type": "RelicChooseCards"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "1a85f28a441cfe85d4f7e6d7e6274dfca74c765fcdaed6ec7630e48e0ec9d743",
+    "afterSha256": "8980efd9de1a8e14ac63b4d9a8663fe40e289b82a9def39eb9f19c1d05d07156",
+    "state": {
+      "Phase": "map",
+      "Gold": 700,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 526
+      },
+      "deck": [
+        {
+          "Uid": "trans_a1_r-1_0_red_finishing_flame",
+          "Id": "red_finishing_flame",
+          "Name": "燼の一突き+"
+        },
+        {
+          "Uid": "trans_a1_r-1_1_red_afterheat_mail",
+          "Id": "red_afterheat_mail",
+          "Name": "余熱の鎧+"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": null
+    }
+  },
+  {
+    "name": "relic_astrolabe-zero-confirm",
+    "command": {
+      "indices": [],
+      "type": "RelicChooseCards"
+    },
+    "revisionDelta": 1,
+    "beforeSha256": "1a85f28a441cfe85d4f7e6d7e6274dfca74c765fcdaed6ec7630e48e0ec9d743",
+    "afterSha256": "a737be72e7b8109c6dec969b2b135509c1b88d018a27a808765b80e4137b5857",
+    "state": {
+      "Phase": "map",
+      "Gold": 700,
+      "Mana": 0,
+      "Rng": {
+        "seed": 4242,
+        "counter": 524
+      },
+      "deck": [
+        {
+          "Uid": "green_ramp_sprout#0",
+          "Id": "green_ramp_sprout",
+          "Name": "芽吹き"
+        },
+        {
+          "Uid": "green_ramp_deep_roots#0",
+          "Id": "green_ramp_deep_roots",
+          "Name": "深根"
+        },
+        {
+          "Uid": "green_ramp_sunlight#0",
+          "Id": "green_ramp_sunlight",
+          "Name": "陽光の恵み"
+        },
+        {
+          "Uid": "green_strike#0",
+          "Id": "green_strike",
+          "Name": "打撃"
+        },
+        {
+          "Uid": "green_double_lash#0",
+          "Id": "green_double_lash",
+          "Name": "二連の蔦打ち"
+        },
+        {
+          "Uid": "green_fang#0",
+          "Id": "green_fang",
+          "Name": "牙の一撃"
+        },
+        {
+          "Uid": "green_guard#0",
+          "Id": "green_guard",
+          "Name": "防御"
+        },
+        {
+          "Uid": "green_bark_armor#0",
+          "Id": "green_bark_armor",
+          "Name": "樹皮の鎧"
+        },
+        {
+          "Uid": "green_entangle#0",
+          "Id": "green_entangle",
+          "Name": "絡み蔦"
+        },
+        {
+          "Uid": "green_finisher_wrath#0",
+          "Id": "green_finisher_wrath",
+          "Name": "大樹の怒り"
+        },
+        {
+          "Uid": "green_finisher_stomp#0",
+          "Id": "green_finisher_stomp",
+          "Name": "巨獣の踏みつけ"
+        },
+        {
+          "Uid": "green_reaction_thorns#0",
+          "Id": "green_reaction_thorns",
+          "Name": "茨の返し"
+        },
+        {
+          "Uid": "green_reaction_vine#0",
+          "Id": "green_reaction_vine",
+          "Name": "守りの蔓"
+        },
+        {
+          "Uid": "green_reaction_root_weave#0",
+          "Id": "green_reaction_root_weave",
+          "Name": "根の紡ぎ"
+        },
+        {
+          "Uid": "green_growth_ring#0",
+          "Id": "green_growth_ring",
+          "Name": "年輪"
+        }
+      ],
+      "RewardOptions": null,
+      "RewardRoundsLeft": null,
+      "RelicOptions": null,
+      "PendingRelicChoice": null,
+      "gears": [],
+      "combat": null
+    }
+  }
+]

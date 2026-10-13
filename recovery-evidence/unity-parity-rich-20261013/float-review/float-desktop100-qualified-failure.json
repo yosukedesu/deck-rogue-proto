@@ -1,0 +1,10 @@
+{
+  "passed": false,
+  "reason": "desktop UI / phone stage configuration mismatch; not natural128 coverage",
+  "texture": "res://assets/Art/enemies/anim/enemy_brute_96_r2idle_2.png",
+  "height": 307.2,
+  "unit": 1.3333334,
+  "source": "StageWorld.cs337\u2013343: -uiscale >1.001 overrides PhoneLayout",
+  "needed": "Remove --ui-phone and set -uiscale1 (text role remains independent)",
+  "sourceTelemetrySha256": "76d94cff6c270b1b5dc7bd5c762a17393a7f1803e179011136102072c49bb5e6"
+}

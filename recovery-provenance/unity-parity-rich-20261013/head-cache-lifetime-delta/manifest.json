@@ -1,0 +1,19 @@
+{
+  "status": "native-regression-pending",
+  "capacity": 512,
+  "compile": "0errors/15baselinewarnings",
+  "test_result": "PASS 14004 exact-extracted cache method checks with disposable readback double",
+  "files": {
+    "CompileCheck.csproj": "1d206dec882a1510790472d6ddab4200565f0a25b2fa362bfb51cbf33cda9431",
+    "GameUI.RecoveredBattle.composed.cs": "71614b1399dd31396c64214873279ea65119357441e35f8055cfce371834f89d",
+    "GameUI.composed.cs": "25fb6abbe64c4757ed63558cb4a43535d943d2880ba45155bdc7ce6e961b2ef9",
+    "HANDOFF.md": "930ed60ea89b9c171ae2f897c6efd4dfeecdade8f90322f8eed2d13cd2f6bb37",
+    "apply.py": "5c002ce7f5a6444989b331817670566cc3504ed7c070d70754a898a175fc1a3e",
+    "changes.json": "2ca88b10373d8dd870f66b849e98bb653ec5a92d4740e37996abdc68b7aeefb9",
+    "compile.log": "5d02c11d2f051d39aa2d8998452c48757061226ad99441092bb87208cddda61e",
+    "tests/CacheTests.csproj": "2da8e06cab4fa3ba42ea34eea441f233754493f78ae4910cf67ee1d4d988f057",
+    "tests/Harness.cs": "739cb68760b335b6b10d0d663f4b7e58f83b9daf9dca89de70c3d6b1f9c9ec23",
+    "tests/Program.cs": "0fda3a5829216ac53323dfa9af35adc4afd8ae6baa84b51192fbf5f387a1a5aa",
+    "tests/test.log": "26fe9aa97894f5e1a5ae2ac65ebd622b0e70a0468aec470373a38c750ca40e97"
+  }
+}

@@ -979,6 +979,8 @@ public partial class BattleStage : Node3D
 			string category = ((actor.EnemyIndex >= 0) ? "enemies" : ((actor == _hero) ? "leaders" : "dolls"));
 			var sizing=SourceActorSizing.Compute(category, actor.BaseTextureWidth, actor.BaseTextureHeight, actor.TopMarginRows, actor.Phone96, kind, size, _world.Camera.Fov, _world.CameraLayout.ReferenceDistance, depth, _world.PhoneLayout, ui);
 			actor.SetSourceImageHeight(sizing.WorldImageHeight);
+            var proxyUnit=SourceFloatProxyModel.ProjectionUnit(sizing.CanvasScale,viewport.GetVisibleRect().Size.Y,size.Y);
+            actor.SetSourceUiProxyMetrics(SourceFloatProxyModel.UnroundedHeight(actor.BaseTextureHeight,sizing.PixelScale,proxyUnit),proxyUnit);
 			actor.SetSourceCanvasMotionScale(sizing.WorldImageHeight/Math.Max(1,sizing.RoundedScreenHeight)*sizing.CanvasScale);
 			actor.SetSourceDisplayTransferEnabled(ActorSourceDisplayRequested);
 			actor.ConfigureSourceAppearance(_act, _world.Camera, _displayState?.Enemies.Count ?? 1);
@@ -1025,7 +1027,8 @@ public partial class BattleStage : Node3D
 		}
 		if (beat.Event is GameEvent_DamageDealt hit && (object)beat.Route != null && (object)beat.Scenario != null)
 		{
-			_sourceActor = ((hit.Source == "enemy") ? Enemy(hit.EnemyIndex) : ((hit.SourceUid != null && _retainers.TryGetValue(hit.SourceUid, out BattleActor doll)) ? doll : _hero));
+			var permanentUid = hit.PresentationSource is {} owner ? (owner.Kind == "permanent" ? owner.Uid : null) : hit.SourceUid;
+			_sourceActor = ((hit.Source == "enemy") ? Enemy(hit.EnemyIndex) : ((permanentUid != null && _retainers.TryGetValue(permanentUid, out BattleActor doll)) ? doll : _hero));
 			_targetActor = ((hit.PresentationReceipt?.Target == "player" || hit.Source == "enemy") ? _hero : Enemy(hit.PresentationReceipt?.EnemyIndex ?? hit.EnemyIndex));
 			Vector3 from = _sourceActor?.Contact ?? (Path(-5f, 0.9f) + Vector3.Up);
 			Vector3 to = _targetActor?.Contact ?? (Path(4.459f, -0.5f) + Vector3.Up);

@@ -76,6 +76,7 @@ public class Main : Node
 		_ui.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect, Control.LayoutPresetMode.Minsize);
 		_ui.SetPresentationGate(() => _stage.InputLocked);
         _ui.SetPresentationOwnership(_stage.GetEventChange, _stage.IsOrdinaryPresentation);
+        _ui.SetSourceTokenPresentationRevision(() => _stage.ActiveCommandRevision);
         _ui.SetIncomingContactProjection(_stage.GetPresentedIncomingAmount);
         _ui.SetLeaderProjection(_stage.ProjectLeaderFeet);
         _ui.SetCardRetirement(id => (double)_stage.GetCardRetirementSeconds(id));

@@ -14,15 +14,16 @@ public sealed class SourceHandHoverClock
 {
     public double Elapsed {get;private set;}
     public bool Cancelled {get;private set;}
-    public bool Complete=>Elapsed>=SourceHandHoverMotion.Duration;
-    private ulong _lastFrame;
-    public SourceHandHoverClock(ulong startFrame){_lastFrame=startFrame;}
+    public bool Complete=>Elapsed>=_duration;
+    private readonly double _duration;private ulong _lastFrame;
+    public SourceHandHoverClock(ulong startFrame,double duration=SourceHandHoverMotion.Duration)
+    {_lastFrame=startFrame;_duration=double.IsFinite(duration)&&duration>0?duration:SourceHandHoverMotion.Duration;}
     public void Advance(double delta,ulong frame)
     {
         // Source RunCo invokes t=0 synchronously, then yields a frame before
         // advancing. A MouseEntered cannot teleport before same-frame press.
         if(Cancelled||frame==_lastFrame)return;_lastFrame=frame;
-        if(double.IsFinite(delta)&&delta>0)Elapsed=Math.Min(SourceHandHoverMotion.Duration,Elapsed+delta);
+        if(double.IsFinite(delta)&&delta>0)Elapsed=Math.Min(_duration,Elapsed+delta);
     }
     public void Cancel()=>Cancelled=true;
 }

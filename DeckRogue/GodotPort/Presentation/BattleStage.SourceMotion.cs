@@ -27,7 +27,7 @@ public partial class BattleStage {
   if(e is GameEvent_DamageDealt {Source:"enemy"} h&&!LastEventReceiptRejected){_incomingEvent=e;_incomingAmount=_projectionActive?beat.Contacts![BeatContactOrdinal].AmountContribution:h.Amount;}
   try{NumericContactPresented?.Invoke(e);}finally{_incomingEvent=null;_incomingAmount=null;}
  }
- static bool OwnsDirectHit(GameEvent_DamageDealt h,string cardId)=>h.Source=="player"&&h.SourceUid is null&&(h.PresentationSource is null||(h.PresentationSource.Kind=="card"&&h.PresentationSource.DefinitionId==cardId));
+ static bool OwnsDirectHit(GameEvent_DamageDealt h,string cardId)=>h.Source=="player"&&(h.PresentationSource is {} source?source.Kind=="card"&&source.DefinitionId==cardId:h.SourceUid is null);
  void PlanActorAction(ActionPlayback action){
   var card=action.Beats.Select(b=>b.Beat.Event).OfType<GameEvent_CardPlayed>().FirstOrDefault();
   if(card is null)return;

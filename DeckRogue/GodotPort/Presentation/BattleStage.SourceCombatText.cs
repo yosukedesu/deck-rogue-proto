@@ -33,11 +33,14 @@ public partial class BattleStage
             return false;
         var metrics = _sourceFloatMetrics?.Invoke() ?? (GetViewport().GetVisibleRect().Size.Y / (_world.PhoneLayout ? 675f : 1080f), 1f);
         float unit = Math.Max(.01f, metrics.Item1), textScale = Math.Clamp(metrics.Item2, 1, 1.3f);
-        var bounds = ActorScreenBody(actor);
-        // Source: sprite center + .1*image-height + 20 logical units upwards.
-        // Horizontal UnityEngine.Random +/-30 is deliberately centered here;
-        // presentation reconstruction neither consumes nor changes game RNG.
-        var center = bounds.GetCenter() - new Vector2(0, bounds.Size.Y*.1f + 20*unit);
+        // Source UI sprite proxy is bottom-pinned above its seat. Its world
+        // billboard alone receives feet padding, approach/recoil and breathing.
+        // Keep the unrounded base-art height, even while animation frames grow.
+        if(actor.SourceUiProxyHeight<=0)RefreshActorLayout();
+        if(actor.SourceUiProxyHeight<=0)return false;
+        var proxyFeet=_world.Camera.UnprojectPosition(actor.Home+actor.UiLunge.Offset);
+        // Horizontal UnityEngine.Random +/-30 remains deliberately centered.
+        var center=SourceFloatProxyModel.PlayerDamageOrigin(proxyFeet,actor.SourceUiProxyHeight,actor.ExecutionScale.Y,actor.SourceUiProxyUnit);
         var size = new Vector2(240, 60)*unit;
         int fontSize = Math.Max(1, (int)Math.Round(SourceCombatFloatModel.PlayerSize(hit.Amount, hit.Exposed==true)*unit*textScale));
         var label = new Label {

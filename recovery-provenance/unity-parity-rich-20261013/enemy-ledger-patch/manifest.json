@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "status": "source-reviewed bounded off-tree integration candidate; native acceptance pending",
+  "production_payload": {
+    "changes.json": "c277352c80c366c61cc85810fa49fdf573b4fe94fc36f96d882b3c6db72d5858",
+    "files/GameUI.SourceEnemyLedger.cs": "a577842346f51af49dc3096122308d137b0c0a178afe253c39a28b7adc098267",
+    "files/SourceEnemyLedgerGlyphs.cs": "e09447b180d5bd34d5af4dfbfaaee2e9dcc7cc40e397549404917476013843b7",
+    "files/SourceEnemyLedgerModel.cs": "6e64a84d2c80ee440e92730042a6de957ead3adce34fedd7382db1be7cde4d20"
+  },
+  "snapshot_dependency": {
+    "SourceEnemyHudSnapshot.cs": "76d9341758eae096eccbdf81a653c01cc3132e42e5d0d08a4c73a0f878728cc4",
+    "SourceHudProjection.cs": "eac0c172f637ba1fc3b77dd2c2bd11834b3b728de413d11bc9a0e54826a8a0e4"
+  },
+  "scope": {
+    "modified_targets": [
+      "DeckRogue/GodotPort/UI/GameUI.RecoveredBattle.cs",
+      "DeckRogue/GodotPort/UI/GameUI.cs",
+      "DeckRogue/GodotPort/UI/SourceHealthBar.cs"
+    ],
+    "hunks": 10,
+    "new_helpers": 3,
+    "total_production_writes_after_snapshot": 6,
+    "no_live_edits_or_gui": true,
+    "no_engine_data_asset_payload": true
+  },
+  "validation": {
+    "compile_errors": 0,
+    "compile_baseline_warnings": 15,
+    "pure_assertions": 104640,
+    "actual_enemy_definitions": 89,
+    "installer_assertions": 29,
+    "roundtrip_fixture_saves": 25,
+    "source_files_hash_verified": 9,
+    "exact_glyph_row_sets": 9,
+    "independent_source_review": "passed; native caveats retained",
+    "native": "not run"
+  },
+  "installer_sha256": "60af7662d874f7d7d7c8c5e56343b91e4da609d1ab272df40d7dc5e30bf227fd",
+  "provenance_sha256": "b9806e03c2fc4aa30bbf6b431485bd7b4295e6411a103cda364cded8a7382053",
+  "source_policy": "ENEMY_SNAPSHOT_HANDOFF.md approved capture boundary; no per-event semantic replay",
+  "atomicity": "All preflight before staging; per-file atomic replace with tested caught-error rollback; power-loss/process-kill all-file atomicity not claimed; checkpoint/quiescence required",
+  "fixture_sha256": {
+    "baseline-no-forecast-trio.json": "2106f9b7d321bb9093464d18c611e414f27171bd4e3a9c75273407e18150c089",
+    "blocked-interrupt.json": "5c841c2c9fb5f58c5f0a36cd1c16e0cace9d564bd09f7e0500d032e6f486e459",
+    "common-forecast-blank-peer.json": "265c75f4840aa0db626cc49c42fc615c5532611332b0382c74b272c65f7c1d79",
+    "damage-marker-no-shield.json": "a15f3d52e5619893f914964aacfa9b590899604a69bdfe5966d5f26e3f8208c0",
+    "damage-marker-with-shield.json": "9aeced8991da2d620e774cff47b1abe953c524835a032101d0d949db86bf1b36",
+    "death-held-seat.json": "85c99a93110f7a206db1cf71b1e6626c364d779ed9e54cfcd7b6e518203bc116",
+    "fired-interrupt.json": "729b4a528f098e67b057c97168e7f3b94c923d1cf40d427620a4a16f9db45fe8",
+    "four-enemy-rich-guard.json": "4b7b9331b2cac637263233ddb6c9a681801aa4235fafd0811b7c78ac0faf20ec",
+    "guard-only-forecast.json": "c7b28deecebaef8006e5175ba912606fcd1a98c7a2087597774fe7dc51d3b6ec",
+    "half-threshold-fill-alignment.json": "2da097c5dd25fc6167d470721747dea92ffc2f9898a9603bdcae96e64075d20e",
+    "hp-only-marker-fallback.json": "8609a0f3e83ab31435ccc8499bc8c6a18cd86fc9c6e8731d55c47631eefc5f68",
+    "inactive-set-branch.json": "5b47367ed252a00d9800841c3269af9c9b71aa3a68d62e141e947ee3cd68282c",
+    "long-japanese-sealed-solo.json": "3c2946af8387a70c25579bdb0f632ab60936491223a07d7bceda5e2c7a59c6af",
+    "richest-solo-central-marker.json": "89b601f28ab3a77837670a3d8fa12a64df32b20c0a7d961b01c60250ca626c1a",
+    "single-status-0.json": "eb692a4274ce1bacb388edaac202926741f6742deddd60b319821a5ab42d37e3",
+    "single-status-1.json": "b42e3679d160851b80aeef74650f2c5ddf365b125d3ebd17f77b691f0c1e106f",
+    "single-status-2.json": "4d2684d8beb00b5ad80a730de30a6860d73b94643e4c72e5521317f56c54a78c",
+    "single-status-3.json": "ca26842b4fa8dd0da95096ceb20eb73a220a9148dc1397976958846bff2f411e",
+    "single-status-4.json": "4a8ecd79ec92706855e7a443b3942cc6995c771147539727e7e99c785792e373",
+    "single-status-5.json": "4516abdcb6dc1e0c7094469eff4b78b135da5c2d96c6fb7be69472d10684fee7",
+    "single-status-6.json": "b68051ce968776f6fc2d43277849e3fc737c0cb0415672d57dff66f2f254db6d",
+    "single-status-7.json": "e91ccf354a48ef0fdff946d187a5b5ac0e965a9e6d711d89d22881ef2a9b2c41",
+    "single-status-8.json": "b7405ab5ddfd92ec622bd4bee42bdecafc3ebeab2d17580b65087d2df82efbff",
+    "single-status-9.json": "e026e0413f76e50472243671b42052b818675db27a6c18a0d51a77479dc954df",
+    "solo-first-three-traits.json": "bb0584725e11698b8434db912e244b3afb50c80d9b67df21a62ea2655c6eadb6"
+  },
+  "evidence_sha256": {
+    "HANDOFF.md": "56605572520b3aaa2c2e00dd2230e048d6512d98a26554ca5d95c757cf69951e",
+    "NATIVE_TEST_PLAN.md": "b2c6b014bf6eb5f167bfc730d3c616890b45bb983d399b740a716aedc22bf1d3",
+    "UNACCEPTED_STATUS.txt": "be18b465fd717cbfbe528a0f9c23128dac574b453759603effad52fc7c061009",
+    "verification/compile.log": "6db293a571f247e00e3e8064dfd8f7e4cfbe3b46a59ea58d3d9e306933d1988e",
+    "verification/pure-tests.log": "2d02ea7566407e198dd09f9d778bacea8b4f086833411c69e028764d7efcbbef",
+    "verification/installer-tests.json": "19aad0fb849333f85f7823b78e05af36bf6e491c6dd33a44c3145a54096a5e38",
+    "verification/provenance-tests.log": "1c74e7430a6d026117fcefbd95b49188e32e3ee662d69bb3526875b9a2754108",
+    "verification/native-fixture-values.json": "182b46c6e043e3cce88f85932d603aeb899290f032d272e7110d1166f93f5e8d",
+    "verification/compile-input-baseline.json": "4b5726d6aad2fb6fe40df03aa34f648fd6e6c2788e9d2bdebff28999036c3560",
+    "verification/independent-review.md": "41ae212f1864fca0d33119ec87e4f444d1d72b0d57d35bd65bff24821be2d29e"
+  }
+}

@@ -1,0 +1,942 @@
+{
+  "passed": true,
+  "checks": 73,
+  "failed": [],
+  "fixture": "green_sig_vine_dance",
+  "capture": "unity-parity-20261013/ownership-native/green_sig_vine_dance",
+  "mapping": [
+    {
+      "event": 0,
+      "frame": 45,
+      "kind": "permanent",
+      "target": 0,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.3837504,
+          -0.05483645,
+          1.0453006
+        ],
+        "contact": [
+          -4.546371,
+          0.98006916,
+          0.9182302
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 1,
+      "frame": 53,
+      "kind": "permanent",
+      "target": 1,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9694138,
+          -0.000339788,
+          1.0386093
+        ],
+        "contact": [
+          -4.972745,
+          1.0197438,
+          0.9133588
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 2,
+      "frame": 60,
+      "kind": "permanent",
+      "target": 2,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 3,
+      "frame": 67,
+      "kind": "card",
+      "target": 1,
+      "expectedDirect": true,
+      "actualDirect": true,
+      "expectedVolley": 0,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "VineSlashFx"
+    },
+    {
+      "event": 4,
+      "frame": 81,
+      "kind": "permanent",
+      "target": 0,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 5,
+      "frame": 89,
+      "kind": "permanent",
+      "target": 1,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 6,
+      "frame": 96,
+      "kind": "permanent",
+      "target": 2,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 7,
+      "frame": 103,
+      "kind": "card",
+      "target": 1,
+      "expectedDirect": true,
+      "actualDirect": true,
+      "expectedVolley": 1,
+      "actualVolley": 1,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "VineSlashFx"
+    },
+    {
+      "event": 8,
+      "frame": 118,
+      "kind": "permanent",
+      "target": 0,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 9,
+      "frame": 125,
+      "kind": "permanent",
+      "target": 1,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 10,
+      "frame": 132,
+      "kind": "permanent",
+      "target": 2,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 11,
+      "frame": 139,
+      "kind": "card",
+      "target": 1,
+      "expectedDirect": true,
+      "actualDirect": true,
+      "expectedVolley": 2,
+      "actualVolley": 2,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "VineSlashFx"
+    },
+    {
+      "event": 12,
+      "frame": 154,
+      "kind": "permanent",
+      "target": 0,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 13,
+      "frame": 161,
+      "kind": "permanent",
+      "target": 1,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 14,
+      "frame": 168,
+      "kind": "permanent",
+      "target": 2,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 15,
+      "frame": 175,
+      "kind": "card",
+      "target": 1,
+      "expectedDirect": true,
+      "actualDirect": true,
+      "expectedVolley": 3,
+      "actualVolley": 3,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "VineSlashFx"
+    },
+    {
+      "event": 16,
+      "frame": 189,
+      "kind": "permanent",
+      "target": 0,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 17,
+      "frame": 197,
+      "kind": "permanent",
+      "target": 1,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 18,
+      "frame": 204,
+      "kind": "permanent",
+      "target": 2,
+      "expectedDirect": false,
+      "actualDirect": false,
+      "expectedVolley": null,
+      "actualVolley": 0,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "BoundedContactFx"
+    },
+    {
+      "event": 19,
+      "frame": 211,
+      "kind": "card",
+      "target": 1,
+      "expectedDirect": true,
+      "actualDirect": true,
+      "expectedVolley": 4,
+      "actualVolley": 4,
+      "sourceActor": {
+        "id": 51992594809,
+        "DefinitionId": "leader_green",
+        "EnemyIndex": -1,
+        "position": [
+          -4.9730654,
+          0.0,
+          1.0385675
+        ],
+        "contact": [
+          -4.9730654,
+          1.0197736,
+          0.9133551
+        ]
+      },
+      "renderer": "VineSlashFx"
+    }
+  ],
+  "firstActualGeometryPerRow": [
+    {
+      "frame": 63,
+      "volley": 0,
+      "index": 5,
+      "renderer": "VineSlashFx",
+      "incoming": [
+        -7.1800566,
+        -0.12663995,
+        2.0815556
+      ],
+      "vertexCount": 147,
+      "sha256": "fcc4efc6a901e1e287dc4fbe9d194599d03b63543a497e483c6bf6c777bbe20a",
+      "surfaces": [
+        {
+          "name": "AuthoredBatch0",
+          "surface": 0,
+          "vertices": 147,
+          "samples": [
+            [
+              -0.87004393,
+              1.5988653,
+              -0.0056364266
+            ],
+            [
+              -0.87004393,
+              1.5988652,
+              0.002363583
+            ],
+            [
+              -0.87004393,
+              1.5988653,
+              -0.0056364266
+            ],
+            [
+              -0.8737469,
+              1.5757947,
+              -0.004048919
+            ],
+            [
+              -0.86931926,
+              1.57596,
+              0.0039511956
+            ],
+            [
+              -0.86489165,
+              1.5761257,
+              -0.004048898
+            ],
+            [
+              -0.87629426,
+              1.552676,
+              -0.0024173928
+            ],
+            [
+              -0.8683321,
+              1.5530648,
+              0.005582659
+            ],
+            [
+              -0.8603696,
+              1.553454,
+              -0.0024174764
+            ],
+            [
+              -0.8782799,
+              1.5295067,
+              -0.0007597149
+            ],
+            [
+              -0.8670822,
+              1.5301826,
+              0.007240337
+            ],
+            [
+              -0.85588473,
+              1.5308583,
+              -0.000759694
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 99,
+      "volley": 1,
+      "index": 10,
+      "renderer": "VineSlashFx",
+      "incoming": [
+        -7.1800566,
+        -0.12663995,
+        2.0815556
+      ],
+      "vertexCount": 147,
+      "sha256": "018050c01c7f3ad583d748703d47fed19aee04f4067bb235dbb7f306d55d3a8e",
+      "surfaces": [
+        {
+          "name": "AuthoredBatch0",
+          "surface": 0,
+          "vertices": 147,
+          "samples": [
+            [
+              0.87004393,
+              1.5988668,
+              -0.0056363847
+            ],
+            [
+              0.87004393,
+              1.5988667,
+              0.0023634576
+            ],
+            [
+              0.87004393,
+              1.5988668,
+              -0.0056363847
+            ],
+            [
+              0.8737469,
+              1.5757961,
+              -0.004048898
+            ],
+            [
+              0.86931926,
+              1.5759616,
+              0.003951049
+            ],
+            [
+              0.86489165,
+              1.5761272,
+              -0.004048877
+            ],
+            [
+              0.87629426,
+              1.5526775,
+              -0.0024175392
+            ],
+            [
+              0.8683321,
+              1.5530665,
+              0.0055825124
+            ],
+            [
+              0.8603696,
+              1.5534554,
+              -0.0024174764
+            ],
+            [
+              0.8782799,
+              1.5295082,
+              -0.0007598405
+            ],
+            [
+              0.8670825,
+              1.530184,
+              0.00724019
+            ],
+            [
+              0.8558851,
+              1.5308597,
+              -0.0007598405
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 135,
+      "volley": 2,
+      "index": 15,
+      "renderer": "VineSlashFx",
+      "incoming": [
+        -6.31845,
+        -0.111443155,
+        1.8317689
+      ],
+      "vertexCount": 147,
+      "sha256": "26aecf6c5ff978ee52ccb5221a94fdf9660078518c7c13a78bb59a48f7eecaa7",
+      "surfaces": [
+        {
+          "name": "AuthoredBatch0",
+          "surface": 0,
+          "vertices": 147,
+          "samples": [
+            [
+              -0.87004405,
+              1.5988678,
+              -0.0056364657
+            ],
+            [
+              -0.87004405,
+              1.5988678,
+              0.0023634785
+            ],
+            [
+              -0.87004405,
+              1.5988678,
+              -0.0056364657
+            ],
+            [
+              -0.8737468,
+              1.5757972,
+              -0.0040490185
+            ],
+            [
+              -0.8693191,
+              1.5759627,
+              0.003951073
+            ],
+            [
+              -0.8648917,
+              1.5761282,
+              -0.0040490367
+            ],
+            [
+              -0.87629426,
+              1.5526786,
+              -0.002417477
+            ],
+            [
+              -0.868332,
+              1.5530676,
+              0.005582467
+            ],
+            [
+              -0.86036974,
+              1.5534564,
+              -0.002417514
+            ],
+            [
+              -0.8782801,
+              1.5295092,
+              -0.00075995846
+            ],
+            [
+              -0.8670826,
+              1.5301849,
+              0.00724017
+            ],
+            [
+              -0.85588485,
+              1.5308607,
+              -0.0007599032
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 171,
+      "volley": 3,
+      "index": 20,
+      "renderer": "VineSlashFx",
+      "incoming": [
+        -6.31845,
+        -0.111443155,
+        1.8317689
+      ],
+      "vertexCount": 147,
+      "sha256": "dc9e686ac9d7135e02cd0c65cd26e12ef711ca4f0265ca644fa4d6ec70fed5b9",
+      "surfaces": [
+        {
+          "name": "AuthoredBatch0",
+          "surface": 0,
+          "vertices": 147,
+          "samples": [
+            [
+              0.87004405,
+              1.5988684,
+              -0.0056365393
+            ],
+            [
+              0.87004405,
+              1.5988684,
+              0.002363405
+            ],
+            [
+              0.87004405,
+              1.5988684,
+              -0.0056365393
+            ],
+            [
+              0.8737468,
+              1.5757976,
+              -0.004048963
+            ],
+            [
+              0.8693191,
+              1.5759631,
+              0.003950981
+            ],
+            [
+              0.8648917,
+              1.5761288,
+              -0.004048963
+            ],
+            [
+              0.87629426,
+              1.5526788,
+              -0.0024175693
+            ],
+            [
+              0.868332,
+              1.553068,
+              0.0055825226
+            ],
+            [
+              0.86036974,
+              1.5534568,
+              -0.002417606
+            ],
+            [
+              0.87828,
+              1.5295097,
+              -0.0007599032
+            ],
+            [
+              0.8670827,
+              1.5301855,
+              0.0072400966
+            ],
+            [
+              0.85588485,
+              1.5308611,
+              -0.000759848
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 207,
+      "volley": 4,
+      "index": 25,
+      "renderer": "VineSlashFx",
+      "incoming": [
+        -6.31845,
+        -0.111443155,
+        1.8317689
+      ],
+      "vertexCount": 147,
+      "sha256": "f4f81def2b3982b74cbd53bdcdd3f9bb7e4ad7faad920040135d78ad9d913eee",
+      "surfaces": [
+        {
+          "name": "AuthoredBatch0",
+          "surface": 0,
+          "vertices": 147,
+          "samples": [
+            [
+              -0.87004364,
+              1.5988519,
+              -0.0056358767
+            ],
+            [
+              -0.87004364,
+              1.5988522,
+              0.002364086
+            ],
+            [
+              -0.87004364,
+              1.5988519,
+              -0.0056358767
+            ],
+            [
+              -0.8737462,
+              1.5757813,
+              -0.004048282
+            ],
+            [
+              -0.86931866,
+              1.5759468,
+              0.003951662
+            ],
+            [
+              -0.8648911,
+              1.5761124,
+              -0.0040483004
+            ],
+            [
+              -0.87629354,
+              1.5526625,
+              -0.0024169064
+            ],
+            [
+              -0.86833125,
+              1.5530518,
+              0.0055832034
+            ],
+            [
+              -0.86036897,
+              1.5534406,
+              -0.002416796
+            ],
+            [
+              -0.8782791,
+              1.5294935,
+              -0.000759222
+            ],
+            [
+              -0.8670815,
+              1.5301691,
+              0.007240759
+            ],
+            [
+              -0.85588396,
+              1.530845,
+              -0.0007591484
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "Actual original-engine receipt provenance and assigned card-only volleys, plus live native mesh data and separate controlled native mirror assertions; not image-quality or device performance acceptance."
+}

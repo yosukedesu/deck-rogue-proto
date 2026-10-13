@@ -1156,6 +1156,7 @@ public partial class GameUI : Control
 
 	public override void _ExitTree()
 	{
+        UxClearEnemyHeadCache();
 		AndroidReportShare.ShareRequestFinished -= ShareRequestFinished;
 		if (_session != null)
 		{
@@ -3289,7 +3290,7 @@ public partial class GameUI : Control
 				Text(parent, "意図: " + CardText.IntentText(state, index), 23);
 			}
 			Text(parent, CardText.EnemyTraits(definition, state, index), 21);
-			Text(parent, EnemyStatus(enemy), 21, Muted);
+			Text(parent, SourceEnemyLedgerModel.InspectionStatus(state, index, definition), 21, Muted);
 			int num = FlowRules.GuardRedirect(state, index);
 			if (num != index && num >= 0 && num < state.Enemies.Count)
 			{

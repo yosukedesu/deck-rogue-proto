@@ -1,0 +1,8 @@
+{
+  "mvid": "4205780f-76f7-40f4-971f-10b1ca2b9d44",
+  "sha256": "5488d9fa166d8614c27ac56ac9f8cf6e890254e2710740a3df453d5f9babc3dc",
+  "build": "dotnet build DeckRogue.csproj (RECOVERY_QA absent)",
+  "qaTypesAbsent": true,
+  "nativeModules": "Native evidence records its own exact QA module MVID; production module is source-equivalent without QA classes.",
+  "halo": "Not integrated; separate isolated native prototype remains pending."
+}

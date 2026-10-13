@@ -284,6 +284,12 @@ public partial class BattleActor : Node3D
 	public int TopMarginRows { get; private set; }
 
 	public float BaseCanvasWorldHeight => _imageHeight;
+    // Projection-space UI proxy metrics before billboard rounding, feet padding,
+    // pose-frame enlargement, breathing or world recoil.
+    public float SourceUiProxyHeight {get;private set;}
+    public float SourceUiProxyUnit {get;private set;}
+    public void SetSourceUiProxyMetrics(float height,float unit)
+    {if(float.IsFinite(height)&&height>0&&float.IsFinite(unit)&&unit>0){SourceUiProxyHeight=height;SourceUiProxyUnit=unit;}}
 
 	public int EnemyIndex { get; set; } = -1;
 

@@ -1,0 +1,30 @@
+{
+  "schema": "unity-parity-native-sequence/1",
+  "baseCommit": "bd66ae1655023fa3bc57f89ed217ce404fcdf54b",
+  "assemblyMvid": "8744d239-35ab-4280-9da3-157593fbb4c5",
+  "assemblySha256": "797ed4597bf3aacc7f343e36f097a4b89b65dae67851c653c2de9d0d1688a8d1",
+  "reference": "a7f86b5 ux-target3-video",
+  "referenceTimeOffset": null,
+  "warmupFrames": 60,
+  "qualitySelected": "high",
+  "qualityActual": "high",
+  "renderer": "gl_compatibility",
+  "driver": "opengl3",
+  "adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "glow": true,
+  "msaa": "Msaa2X",
+  "renderCadence": "--fixed-fps 60 (not realtime)",
+  "everyNativeFrame": true,
+  "width": 1170,
+  "height": 540,
+  "card": "green_strike",
+  "fixtureSha256": "08aa719f413627e3f0c1a865c1af5f011eb5d162fb2f102c3adfeb364bd2481f",
+  "actions": [
+    {
+      "frame": 30,
+      "play": "float-size-aoe-desktop-128",
+      "target": 0
+    }
+  ],
+  "input": "Original command dispatch; this motion test does not claim pointer input or uxdrag parity"
+}

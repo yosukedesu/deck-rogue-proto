@@ -106,9 +106,10 @@ public partial class GameUI
             Action tap = inspectOnly || !PhoneLayout ? () => InspectCard(card) :
                 phoneConfirm ? () => { if (OwnerCurrent()) { selection.SelectedUid = card.Uid; Rebuild(); } } : () => Pick(card);
             var tile = SourceCard(cell, card, shown, tap, allowed || inspectOnly, note, scale, SourceInspectState, selected: marked, corner: corner);
-            if (!allowed && !inspectOnly) {
-                // The face is dimmed, but its inspection hook remains active.
-                Text(cell, locked ?? (string.IsNullOrEmpty(note) ? "選べません" : note), 15, Danger).CustomMinimumSize = new Vector2(0, 38);
+            if (!allowed && !inspectOnly && !string.IsNullOrEmpty(locked)) {
+                // Unity reason surfaces require an explicit lock reason. A selection
+                // cap only dims the face; its action caption is not an error message.
+                Text(cell, locked, 15, Danger).CustomMinimumSize = new Vector2(0, 38);
             }
             if (!inspectOnly && !PhoneLayout) Button(cell, string.IsNullOrEmpty(note) ? actionLabel : note, () => Pick(card), allowed, marked ? Gold : null);
         }

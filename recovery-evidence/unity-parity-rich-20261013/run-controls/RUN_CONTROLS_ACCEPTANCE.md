@@ -1,0 +1,11 @@
+# Native run controls: bounded acceptance, 2026-10-13
+
+Module f11c468c-2a94-441e-a1d3-0e7d7bdce48f. Production source corresponding to accepted 3df4d5a; manual fixture harness only. Cloud Compatibility llvmpipe; native1170×540 at130% text except fullscreen1364×1024. Actual Sky desktop pointer/key events, no Godot input injection. Audio Dummy.
+
+Accepted named outcomes: full-inventory shop cancel and one replacement, one mana purchase, repeat shelf navigation, sold/unaffordable/rare and leftover wares; inspector upgraded preview/dismiss with unchanged export. Title save summary and read-only settings browse. Focused TextEdit preserves alpha/newline/beta through F11 and AltEnter both directions, held F11 toggles once.
+
+Newer red controls: optional kindle skip/pay, exact fuel picker, unavailable fuel pay rejection with skip, manual impulse keep + ordinary retain +2 hearth, auto keeper +0 hearth, ordinary retain +1 hearth. Multi-step cancellation preserves the entire export. Native resulting saves match twelve separately executed original-engine expected outcomes including workshop fuse, both relic transformations, and both seeded reward rounds. Workshop/relic selection/inspection remain read-only before exactly one confirmation. Event target selection and cancel preserve export; double-click confirm emits exactly one EventChoice and equals a fresh source-engine execution.
+
+Evidence: run-controls-native-receipt.json records all original commands, module, fixture/save/control hashes and cancellation pairs. newer-rule-native-outcomes.json records full authoritative comparisons. Screenshots here were actually viewed during input; representative original PNGs are in run-controls-native/. The pointer log is frozen after process shutdown.
+
+Limits: this is named control/route acceptance, not complete Unity UI pixel parity. Minor max-count relic disable prints redundant red 選ぶ; fixed separately in an unaccepted later one-hunk candidate. Zero-card relic confirm and reward skip are real commands, not cancellation; those paths were engine-tested but not part of this native window. Current gold damage/hand motion have their earlier dedicated receipts. Natural performance, mobile touch, audio and Android device cadence remain unmeasured.

@@ -10,22 +10,24 @@ public partial class GameUI
     private sealed class UxHandHoverPose
     {
         public CardTile Tile;public long Epoch;public SourceHandHoverClock Clock;
-        public Vector2 From,To,FromScale,ToScale,CanvasSize;public float Unit;
+        public Vector2 From,To,FromScale,ToScale,CanvasSize;public float Unit;public bool DragReturn;
     }
     private readonly Dictionary<string,UxHandHoverPose> _uxHandHoverPoses=new();
     public int ActiveHandHoverCount=>_uxHandHoverPoses.Count;
+    public int ActiveHandReturnCount=>_uxHandHoverPoses.Values.Count(p=>p.DragReturn);
     private bool UxHandHoverIsCurrent(string uid,UxHandHoverPose p)
         =>p.Epoch==_uxEpoch&&!p.Clock.Cancelled&&_uxHandHoverPoses.TryGetValue(uid,out var active)&&ReferenceEquals(p,active)
         &&_uxTiles.TryGetValue(uid,out var tile)&&ReferenceEquals(tile,p.Tile)&&GodotObject.IsInstanceValid(tile)&&!tile.IsQueuedForDeletion();
-    private void UxStartHandHover(string uid,CardTile tile,Vector2 to,Vector2 scale,float degrees)
+    private void UxStartHandHover(string uid,CardTile tile,Vector2 to,Vector2 scale,float degrees,bool dragReturn=false)
     {
         UxCancelHandDeal(uid,false);
-        if(_uxHandHoverPoses.TryGetValue(uid,out var current)&&UxHandHoverIsCurrent(uid,current)&&current.To==to&&current.ToScale==scale)return;
+        if(_uxHandHoverPoses.TryGetValue(uid,out var current)&&UxHandHoverIsCurrent(uid,current)&&current.To==to&&current.ToScale==scale&&
+            (current.DragReturn==dragReturn||current.DragReturn&&!dragReturn&&_uxHover!=uid))return;
         UxCancelHandHover(uid,false);
         // Rotation is immediate in Unity's enter/exit callbacks. Position and
         // scale start unchanged at t=0; the next process frame advances them.
         tile.RotationDegrees=degrees;
-        _uxHandHoverPoses[uid]=new UxHandHoverPose{Tile=tile,Epoch=_uxEpoch,Clock=new SourceHandHoverClock(Godot.Engine.GetProcessFrames()),From=tile.Position,To=to,FromScale=tile.Scale,ToScale=scale,CanvasSize=Size,Unit=BattleUnit};
+        _uxHandHoverPoses[uid]=new UxHandHoverPose{Tile=tile,Epoch=_uxEpoch,Clock=new SourceHandHoverClock(Godot.Engine.GetProcessFrames(),dragReturn?SourceHandReturnMotion.Duration:SourceHandHoverMotion.Duration),DragReturn=dragReturn,From=tile.Position,To=to,FromScale=tile.Scale,ToScale=scale,CanvasSize=Size,Unit=BattleUnit};
     }
     private bool UxKeepHandHover(string uid,CardTile tile)
     {
@@ -67,8 +69,10 @@ public partial class GameUI
             if(!UxHandHoverIsCurrent(uid,p)){UxCancelHandHover(uid,false);continue;}
             if(_uxDrag==uid){UxCancelHandHover(uid,false);continue;}
             if(p.CanvasSize!=Size||Math.Abs(p.Unit-BattleUnit)>.0001f){UxCancelHandHover(uid,true);continue;}
-            p.Clock.Advance(delta,frame);float k=SourceHandHoverMotion.Fraction(p.Clock.Elapsed);
-            p.Tile.Position=p.From.Lerp(p.To,k);p.Tile.Scale=p.FromScale.Lerp(p.ToScale,k);
+            p.Clock.Advance(delta,frame);
+            float move=p.DragReturn?SourceHandReturnMotion.PositionFraction(p.Clock.Elapsed):SourceHandHoverMotion.Fraction(p.Clock.Elapsed);
+            float scale=p.DragReturn?SourceHandReturnMotion.ScaleFraction(p.Clock.Elapsed):SourceHandHoverMotion.Fraction(p.Clock.Elapsed);
+            p.Tile.Position=p.From.Lerp(p.To,move);p.Tile.Scale=p.FromScale.Lerp(p.ToScale,scale);
             if(p.Clock.Complete)_uxHandHoverPoses.Remove(uid);
         }
     }

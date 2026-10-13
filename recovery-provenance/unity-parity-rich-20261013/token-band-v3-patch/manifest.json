@@ -1,0 +1,49 @@
+{
+  "status": "OFF_TREE_SOURCE_INTEGRATION_CANDIDATE_NATIVE_PENDING",
+  "scope": "Four exact seams in RecoveredBattle and Main, three new helpers; stage/engine/actor code unchanged",
+  "verification": {
+    "full_compile": "0 errors, 15 baseline warnings",
+    "pure_tests": "156471 assertions, 5600 geometry cases, actual PlayCard and EndTurn owner fixtures",
+    "guard_tests": "33 passed; runtime and frozen v2 unchanged",
+    "installer_current_runtime": "dry run passes; no writes"
+  },
+  "resolved": [
+    "ordinary source-current permanent UI independent of actor-preserved _view",
+    "owned TurnStarted redraw with exact frame/event/epoch/lineage/revision/contact proof"
+  ],
+  "remaining": [
+    "native integrated callback timing and actual ordinary permanent entry/removal",
+    "native rich-state100/130 screenshots, pointers and moving-target non-overlap",
+    "native GearInventory callback wrapping and unsupported narrow-strip layout"
+  ],
+  "v2_manifest_sha256": "8570f74f81f612e825d8074293b10232cc376a4c599176cb01378eb3b58d5852",
+  "files": {
+    "CompileCheck.csproj": "2e1010b9f4ff9c36cd7f108a711dc741350cf5f8d10f2f6a8424bd82d2cdaa3a",
+    "GameUI.RecoveredBattle.compile.cs": "338ae6c717133a46a32c654e84dcf1c4b0f25878b39635dc513827a26f936798",
+    "HANDOFF.md": "ccc416f635c88f1b485d839d5ccad855df7acc476ba8264a5ebfbd6f99cb36be",
+    "Main.compile.cs": "09efd943c524051d795dde194b1157933583b0d2851c779527426ceb0714cf23",
+    "STATUS.txt": "0e7188f3d223016f5e5e5a260b8cb20871badf928c4eba531ef79d86c67fe2e1",
+    "apply.py": "b1f3ac0a805c577a9e09c6f4fcea743f268e02979c7ac5585b8d71e935387757",
+    "baseline-sha256.json": "44a5d2a2b85e27a7e19f0107476d4d68d98ec21e0c9a3bec27c2a5eb8e4528f9",
+    "changes.json": "6e57a38826d96c52d54691d5f6f121156e179958923555daa236bf8764fbc702",
+    "patch/DeckRogue/GodotPort/UI/GameUI.SourceTokens.cs": "b8735646718f7f4afea0c55ed8a2e98627f1a486a1fe139fdbf4f276cd86e8ec",
+    "patch/DeckRogue/GodotPort/UI/SourceTokenLayout.cs": "296c18a055859c3d13944252aa0a6d9922a372f1d52090e5a3111ca57b750956",
+    "patch/DeckRogue/GodotPort/UI/SourceTokenModel.cs": "5037c7c205e644496a41f59d4bbfa35cfecf4a8b018eaa6ee19ce3385be6dc68",
+    "source-provenance.json": "29d8a19ce347c4140eec52b9010d57acf73bac18e403754af465c4b437ac44a0",
+    "tests/Program.cs": "f7fa288152761c979a32cbc627924ccc628cbcbf39498fab08155f1727560ea6",
+    "tests/TokenTests.csproj": "517af5e71c13e8fe7067d7ce51ed31c513bb8bbeec9db7314f9f5647c378d936",
+    "tests/test_guards.py": "2e7054747db6ffea6de06e93c44a19af3cc905dbd8cf53cad4802f102a661539",
+    "token-v3-seams.diff": "4be758cf4f7316f0feebdc8122c226de91e98a8dfd6cb49afe1ea5469538bddb",
+    "verification/compile.log": "0bfb10d35578d8a5b5cd55ad20ec4aad1cdb00930c3c0470351538ec762dac75",
+    "verification/fixture-token-values.json": "2bfe6e8677e36857cd46586305714293f40fdda1bc7cf41b12c06f09440ccd03",
+    "verification/guard-tests.log": "6f7917b2d25dad746ac1db59e070bfe38e4e36fcb05dfb9fdd09d62b39181ad4",
+    "verification/ordinary-current-permanent-event.json": "fed029bea6da17fd8b8b0db1d5e2b566cdaa15a09806cec9acf846095143fd3b",
+    "verification/owned-turn-start-event.json": "e4e2e28ff221c34ffd17348057951e280e1c13e012b94f8cd43cd01a8cc9ff11",
+    "verification/phone-finite-infinite-lifetimes.json": "544ee5c9a962c2ae1b9311cf2173396a681067092e680c99a8ba973bab77a568",
+    "verification/phone-muted-charged-gear.json": "bfff3221302488c553873a7b65d35f380b7f06f3b29dff2bbec06b59d2dceb45",
+    "verification/phone-quiet-infinite-overflow.json": "adee77cb778b87bf489a599aea4e4e1cc8ea58ed1ab9f365f98b17e0731ca087",
+    "verification/phone-ready-preparing-overflow.json": "472f076a0cebf8b716a2db0398a0ca7d89bf4ef44358898244f11d2c9bc2a46a",
+    "verification/pure-tests.log": "181de8952e8f09bddf6580d8d25f0027f0e1f1579ec71c9dfbac8633386b5894",
+    "verification/rich-state-source-fixture.json": "1961fbeb0e2663942eeb410f5af092b7b0af9f68600919b465be688e2e2800f4"
+  }
+}

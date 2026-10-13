@@ -1,0 +1,331 @@
+[
+  {
+    "id": "leader_green",
+    "name": "このは",
+    "colors": [
+      "green"
+    ],
+    "maxHp": 80,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic",
+    "sprite": "🌳",
+    "description": "大樹の坑匠。大樹の里の工房を出たての職人で、自分より大きな魔導の大斧（刃にマナの結晶・真鍮の歯車の付け根）を振る。タフで、根を張ってから戦う。2ターン目からエナジー上限4。仕込み枠が2つある",
+    "passive": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "gainEnergyMax",
+        "amount": 1
+      }
+    ],
+    "setSlots": 2
+  },
+  {
+    "id": "leader_blue",
+    "name": "みぞれ",
+    "colors": [
+      "blue"
+    ],
+    "maxHp": 65,
+    "drawPerTurn": 6,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_blue",
+    "sprite": "🌊",
+    "description": "潮読みの導師。潮の里の工房の出。紙のように脆いが手札は6枚。呪文を撃つたび氷壁+1。仕込み枠が2つある",
+    "passive": [
+      {
+        "trigger": "onSpellPlayed",
+        "effect": "gainIceBlock",
+        "amount": 1
+      }
+    ],
+    "setSlots": 2
+  },
+  {
+    "id": "leader_red",
+    "name": "ひばな",
+    "colors": [
+      "red"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_red",
+    "sprite": "🌋",
+    "description": "燼の闘士。燼の里の工房の出。意外と頑丈な体で、殴るほど燃え上がる。攻撃カードをプレイするたび勢い+2",
+    "passive": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "addMomentum",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "leader_izzet",
+    "name": "らいこ",
+    "colors": [
+      "blue",
+      "red"
+    ],
+    "maxHp": 60,
+    "drawPerTurn": 4,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_izzet",
+    "sprite": "⚡",
+    "description": "霹靂の魔道士。青赤の複合（イゼット）。潮と燼、二つの里の工房を修めた。紙耐久で手札4枚。毎ターン次のカード-1、報酬ピックの候補が4枚（基本3+1）（基本3+1）",
+    "passive": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "discountNext",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_white",
+    "name": "ひなた",
+    "colors": [
+      "white"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_white",
+    "sprite": "☀️",
+    "description": "光耀の灯匠。光耀の里の工房の出。毎ターン開始時に灯+1（灯は回復するたびにも溜まり、号令と放出で吐く白の蓄積。人形は灯を使う側＝灯を払って出し、灯で号令をかける）",
+    "passive": [
+      {
+        "trigger": "onTurnStart",
+        "effect": "addLight",
+        "amount": 1
+      }
+    ],
+    "setSlots": 2
+  },
+  {
+    "id": "leader_black",
+    "name": "とばり",
+    "colors": [
+      "black"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_black",
+    "sprite": "🌑",
+    "description": "宵闇の死霊術師。宵闇の里の工房の出。滅びを糧に立つ。カードが消滅するたびHP1回復",
+    "passive": [
+      {
+        "trigger": "onCardExhausted",
+        "effect": "gainHp",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_azorius",
+    "name": "なぎ",
+    "colors": [
+      "white",
+      "blue"
+    ],
+    "maxHp": 70,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_azorius",
+    "sprite": "🕊️",
+    "description": "静粛の裁定官。白青の複合（アゾリウス）。光耀と潮、二つの里の工房を修めた。何が来ても先に構えている。被攻撃前に自動でブロック2",
+    "passive": [
+      {
+        "trigger": "onAttackIncoming",
+        "effect": "gainBlock",
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "leader_rakdos",
+    "name": "あかね",
+    "colors": [
+      "black",
+      "red"
+    ],
+    "maxHp": 80,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_rakdos",
+    "sprite": "🎭",
+    "description": "血宴の踊り手。黒赤の複合（ラクドス）。宵闇と燼、二つの里の工房を修めた。痛みは演目の一部。カード効果でHPを失うたび対象に1ダメージ",
+    "passive": [
+      {
+        "trigger": "onHpLost",
+        "effect": "dealDamage",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_gruul",
+    "name": "いぶき",
+    "colors": [
+      "red",
+      "green"
+    ],
+    "maxHp": 80,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_gruul",
+    "sprite": "🐗",
+    "description": "荒野の蛮勇。赤緑の複合（グルール）。燼と大樹、二つの里の工房を修めた。殴るほど熱く、太くなる。攻撃カードをプレイするたび勢い+1と成長+1",
+    "passive": [
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "addMomentum",
+        "amount": 1
+      },
+      {
+        "trigger": "onAttackPlayed",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_selesnya",
+    "name": "わかば",
+    "colors": [
+      "green",
+      "white"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_selesnya",
+    "sprite": "🌱",
+    "description": "森集いの司。緑白の複合（セレズニア）。大樹と光耀、二つの里の工房を修めた。仲間が増えるほど森が育つ。置物が場に出るたび成長+1",
+    "passive": [
+      {
+        "trigger": "onPermanentEntered",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_orzhov",
+    "name": "あかり",
+    "colors": [
+      "white",
+      "black"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_orzhov",
+    "sprite": "🕯️",
+    "description": "彼岸の聖灯守。白黒の複合（オルゾフ）。光耀と宵闇、二つの里の工房を修めた。命の灯は等価交換。HPが回復するたび対象に1ダメージ",
+    "passive": [
+      {
+        "trigger": "onHealed",
+        "effect": "dealDamage",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_golgari",
+    "name": "くろは",
+    "colors": [
+      "black",
+      "green"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_golgari",
+    "sprite": "🍂",
+    "description": "腐土の園丁。黒緑の複合（ゴルガリ）。宵闇と大樹、二つの里の工房を修めた。朽ちるものは糧になる。カードが消滅するたび成長+1",
+    "passive": [
+      {
+        "trigger": "onCardExhausted",
+        "effect": "addGrowth",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_boros",
+    "name": "あさひ",
+    "colors": [
+      "red",
+      "white"
+    ],
+    "maxHp": 75,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_boros",
+    "sprite": "🌅",
+    "description": "暁軍の旗頭。赤白の複合（ボロス）。燼と光耀、二つの里の工房を修めた。夜明けと共に人形が駆けつける。戦闘開始時、剣の人形1体を場に出す",
+    "passive": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "summonPermanent",
+        "summonId": "white_perm_squire",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_simic",
+    "name": "しずく",
+    "colors": [
+      "green",
+      "blue"
+    ],
+    "maxHp": 65,
+    "drawPerTurn": 5,
+    "energyMax": 4,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_simic",
+    "sprite": "💠",
+    "description": "変容の探究者。緑青の複合（シミック）。大樹と潮、二つの里の工房を修めた。作り変えた器は大きく、脆い。エナジー上限4で開始し、戦闘開始時に1ドロー",
+    "passive": [
+      {
+        "trigger": "onCombatStart",
+        "effect": "drawCards",
+        "amount": 1
+      }
+    ]
+  },
+  {
+    "id": "leader_dimir",
+    "name": "かすみ",
+    "colors": [
+      "blue",
+      "black"
+    ],
+    "maxHp": 65,
+    "drawPerTurn": 5,
+    "energyMax": 3,
+    "rewardChoices": 3,
+    "runDeckId": "run_basic_dimir",
+    "sprite": "🌫️",
+    "description": "霞幕の密偵。青黒の複合（ディミア）。潮と宵闇、二つの里の工房を修めた。手の内は二重に隠す。仕込み枠が3つある（動かせるのは敵の1行動につき1枚まで）",
+    "passive": [],
+    "setSlots": 3
+  }
+]

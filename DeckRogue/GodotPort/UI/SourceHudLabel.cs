@@ -15,6 +15,31 @@ public partial class SourceHudLabel : Label
     private ulong _measuredFont;
     private int _measuredSize;
     private Rect2 _glyphs;
+    private Label _separateUnderlay;
+    private ColorRect _separateBacking;
+    private float _separateBackingPad;
+    public void EnableSeparateUnderlay(float unit,float textScale)
+    {
+        if(GetParent() is not Control parent)return;
+        if(_separateUnderlay!=null&&GodotObject.IsInstanceValid(_separateUnderlay))return;
+        _separateUnderlay=new Label{Name="HpReadoutUnderlay",MouseFilter=MouseFilterEnum.Ignore,AutowrapMode=TextServer.AutowrapMode.Off,HorizontalAlignment=HorizontalAlignment,VerticalAlignment=VerticalAlignment};
+        _separateUnderlay.AddThemeFontOverride("font",GetThemeFont("font"));
+        _separateUnderlay.AddThemeFontSizeOverride("font_size",GetThemeFontSize("font_size"));
+        _separateUnderlay.AddThemeColorOverride("font_color",SourcePalette.Ground);
+        _separateUnderlay.AddThemeColorOverride("font_outline_color",SourcePalette.Ground);
+        _separateUnderlay.AddThemeColorOverride("font_shadow_color",Colors.Transparent);
+        _separateUnderlay.AddThemeConstantOverride("outline_size",Math.Max(1,(int)Math.Round(2*unit*textScale)));
+        _separateUnderlay.SetMeta("source_rendering_adaptation","NumHaloNight separate filled underlay; native A/B required");
+        parent.AddChild(_separateUnderlay);parent.MoveChild(_separateUnderlay,GetIndex());
+        // Native A/B: a soft bitmap face still competed with source hatch ink
+        // through a glyph-shaped underlay. An opaque, measured local backing
+        // is the bounded Godot accessibility adaptation; the face is unchanged.
+        _separateBackingPad=Math.Max(1,unit);
+        _separateBacking=new ColorRect{Name="HpReadoutBacking",Color=SourcePalette.Ground,MouseFilter=MouseFilterEnum.Ignore,Visible=false};
+        _separateBacking.SetMeta("source_rendering_adaptation","Opaque local NumHaloNight backing only over predicted loss; not Unity plate geometry");
+        parent.AddChild(_separateBacking);parent.MoveChild(_separateBacking,_separateUnderlay.GetIndex());
+        RefreshSourceAlignment();
+    }
     public override void _Ready() { RefreshSourceAlignment(); }
     public override void _Process(double delta) { RefreshSourceAlignment(); }
     public void RefreshSourceAlignment()
@@ -40,6 +65,21 @@ public partial class SourceHudLabel : Label
         var ink=new Rect2(Position+new Vector2(x,baseline)+_glyphs.Position,_glyphs.Size);
         int halo=GetThemeColor("font_shadow_color").A>0?GetThemeConstant("shadow_outline_size"):0;
         PaintedGlyphBoundsInParent=ink.Grow(halo);
+        // A separate filled layer cannot hollow the existing bright core as
+        // Godot's zero-offset label shadow did in the previous native probe.
+        if(_separateUnderlay!=null&&GodotObject.IsInstanceValid(_separateUnderlay))
+        {
+            _separateUnderlay.Text=Text;_separateUnderlay.Size=Size;
+            _separateUnderlay.Position=Position;_separateUnderlay.Scale=Scale;
+            _separateUnderlay.Visible=false; // rejected native glyph-underlay A/B: preserve the bright core_separateUnderlay.ZIndex=ZIndex;
+        }
+        if(_separateBacking!=null&&GodotObject.IsInstanceValid(_separateBacking))
+        {
+            var bounds=ink.Grow(_separateBackingPad);
+            _separateBacking.Position=bounds.Position;_separateBacking.Size=bounds.Size;
+            _separateBacking.ZIndex=ZIndex;
+            _separateBacking.Visible=Visible&&GetParent() is SourceHealthBar bar&&bar.Hp>0&&bar.PredictedLoss>0;
+        }
     }
     public static Rect2 MeasureGlyphs(Font font,int size,string text)
     {

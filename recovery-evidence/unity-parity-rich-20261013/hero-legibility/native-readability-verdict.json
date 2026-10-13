@@ -1,0 +1,12 @@
+{
+  "verdict": "Rejected glyph-shaped underlay; hero legibility not closed",
+  "enemyHpFirstFrame": "103,165,40 current-HP values now readable with intentional source denominator fallback; pending remaining numeric lifecycle gates",
+  "hatchOnly": "Source 8-unit Ink hatch and inner-track/tick geometry restored; hero text still low contrast",
+  "underlay": "Sibling order and full rectangles match, but native glyph core remains thin and visually competes with dark underlay/hatch",
+  "originalFrames": {
+    "unity-parity-20261013/ui-rich-r2/four130/frame-0000.png": "d57d7cb0e6eff9d804b02bb2257832f5b1d3528eeeaa318380ce175734caed5b",
+    "unity-parity-20261013/halo-v3-combined/underlay-four130/frame-0000.png": "fc42979ba10540aeafc1e404e2ed6d3212be956743cb56852870d1f3990b3798"
+  },
+  "nextCandidate": "hero-hp-backing-delta, manifest559784cd6152e5fb5899b10aec7ccb9a55f11dd191ff12d5ad238dbcfe21b221; failed glyph layer disabled; opaque local backing only during predicted loss; native pending",
+  "noClaim": "No full Unity shader/font parity claim, no whole enemy lifecycle pass from idle screenshot"
+}

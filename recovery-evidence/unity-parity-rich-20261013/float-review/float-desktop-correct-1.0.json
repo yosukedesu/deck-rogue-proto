@@ -1,0 +1,40 @@
+{
+  "run": "float-desktop-correct-1.0",
+  "passed": true,
+  "assertions": 622,
+  "frames": 140,
+  "maxOriginErrorLogicalPixels": 8.00000006506707e-06,
+  "contacts": [
+    {
+      "frame": 38,
+      "index": 0,
+      "definition": "enemy_brute",
+      "origin": [
+        1320.1964,
+        220.81104
+      ],
+      "proxyHeight": 471.02725,
+      "proxyUnit": 0.9199751,
+      "errorLogicalPixels": 8.00000006506707e-06,
+      "executionScale": [
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "fullOriginalSaveMatches": true,
+  "adapterOnlyField": "godotSession",
+  "headReadbacksStartEnd": [
+    1,
+    1
+  ],
+  "headHitsStartEnd": [
+    62,
+    203
+  ],
+  "telemetrySha256": "51b172dbf5ed31b00e8a72e9246207495336e54c48ea4e29c02b439b77f74be0",
+  "limitations": [
+    "Natural size/contact matrix only; no arbitrary camera or execution squash variation",
+    "Native float picture reviewed separately; automation does not establish complete visual parity"
+  ]
+}

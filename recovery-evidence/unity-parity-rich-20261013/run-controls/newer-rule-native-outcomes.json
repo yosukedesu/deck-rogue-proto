@@ -1,0 +1,74 @@
+[
+  {
+    "capture": 45,
+    "case": "kindle-choice-skip",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 b2b68f13099d95e8be6cc46837123faef9d26b9295f3d5740352fc50f9a7c565\n"
+  },
+  {
+    "capture": 52,
+    "case": "kindle-choice-pay",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 cac91a0a5a4545617e011a98e19951e3584aa244ec1ed8386b6bccb09a6991fa\n"
+  },
+  {
+    "capture": 56,
+    "case": "kindle-exact-fuel-pay",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 6b48ffb372e83f6074a566bab2aab6fdfe15c757664db084176880c6488a253e\n"
+  },
+  {
+    "capture": 60,
+    "case": "kindle-no-fuel-skip",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 1629349094ef1fbe450fee06965002799a00abd1a0a8d43de4a08468f3c3aae6\n"
+  },
+  {
+    "capture": 74,
+    "case": "keep-manual-retain-hearth",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 977d7ee360f3ee4e92399c5e18cd8cb21276406a87aa591bd6929a2502d7cafc\n"
+  },
+  {
+    "capture": 80,
+    "case": "keep-auto-hearth-zero",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 1c1347078996ce2cee8983ffb363c809d1c0879c26bc5f00f932998c2e9538e7\n"
+  },
+  {
+    "capture": 84,
+    "case": "normal-retain-hearth",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 6f2b1b63e5ff0a0f14eb318ffe7212ab27b0a686c82393c84cd58670d6047582\n"
+  },
+  {
+    "capture": 88,
+    "case": "workshop-fuse",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 4009e89b1115c8c478dc94d3886a72d2f3c5c1e95141f2460b51ce27e89e674c\n"
+  },
+  {
+    "capture": 98,
+    "case": "relic_empty_cage-confirm",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 75fecc88c9428413bb2f238d0ffa97f1f69907965c4be56bfe9ea78ef1d699fe\n"
+  },
+  {
+    "capture": 105,
+    "case": "relic_astrolabe-confirm",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 958576003898abfb08abaa5273c97a059522b69ee60848dac50aaa5938c72805\n"
+  },
+  {
+    "capture": 109,
+    "case": "reward-first-pick",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 ccbdfc1a9697785547fd1c2972131b5011f2c575f49c017464d1aa55693bc633\n"
+  },
+  {
+    "capture": 110,
+    "case": "reward-second-pick",
+    "passed": true,
+    "result": "PASS: authoritative run equals real engine outcome; canonical SHA256 7111d5cdb60d712b08acbedb8e4bffc7c6e75d1d09dbc858f208a5cb289d0a8e\n"
+  }
+]

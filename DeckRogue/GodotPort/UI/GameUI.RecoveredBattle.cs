@@ -34,7 +34,7 @@ public partial class GameUI
     public void SetCardRetirement(Func<string,double> provider){_uxRetirement=provider;}
     private Func<string,double> _uxRetirement;
     public IReadOnlyList<Rect2> GetEnemyLedgerBounds()=>_uxEnemies.Where(x=>GodotObject.IsInstanceValid(x.Ledger)&&x.Ledger.IsVisibleInTree()).Select(x=>x.Ledger.GetGlobalRect()).ToArray();
-    private void UxResetHand(){UxCancelHandHovers(false);UxCancelHandDeals(false);_uxEpoch++;EndHandDrag();foreach(var t in _uxTiles.Values){t.Hide();t.QueueFree();}_uxTiles.Clear();_uxSeats.Clear();_uxHover=null;_uxPaid.Clear();_uxIncomingOwner=-1;}
+    private void UxResetHand(){UxClearEnemyHeadCache();UxCancelHandExits();UxCancelHandHovers(false);UxCancelHandDeals(false);_uxEpoch++;EndHandDrag();UxCancelHandHovers(false);foreach(var t in _uxTiles.Values){t.Hide();t.QueueFree();}_uxTiles.Clear();_uxSeats.Clear();_uxHover=null;_uxPaid.Clear();_uxIncomingOwner=-1;}
     private Label UxText(Control parent,string text,int units,Color color,bool deco=false,bool bold=false)
     {
         var label=new Label{Text=text,MouseFilter=MouseFilterEnum.Ignore,VerticalAlignment=VerticalAlignment.Center};parent.AddChild(label);
@@ -132,7 +132,7 @@ public partial class GameUI
         if(_textScale>1){w=Math.Max(w,230*u*_textScale);h=Math.Max(h,(80+resourceRows*30)*u*_textScale);}
         var panel=UxPanel(_uxBattle,"PlayerFootLedger",new Rect2(24*u,bottom-h,w,h));
         var body=new Control{Name="HeroLedgerBody",MouseFilter=MouseFilterEnum.Ignore};panel.AddChild(body);
-        _uxHpBar=new SourceHealthBar{Name="HeroHpBar",Position=new Vector2(8,8)*u,Size=new Vector2(w-16*u,22*u*_textScale),MouseFilter=MouseFilterEnum.Ignore};body.AddChild(_uxHpBar);_hpReadout=CreateHpReadout(_uxHpBar,s.Player.Hp+" / "+s.Player.MaxHp,PhoneLayout?15:17);
+        _uxHpBar=new SourceHealthBar{Name="HeroHpBar",SourceHeroUnit=u,Position=new Vector2(8,8)*u,Size=new Vector2(w-16*u,22*u*_textScale),MouseFilter=MouseFilterEnum.Ignore};body.AddChild(_uxHpBar);_hpReadout=CreateHpReadout(_uxHpBar,s.Player.Hp+" / "+s.Player.MaxHp,PhoneLayout?15:17);((SourceHudLabel)_hpReadout).EnableSeparateUnderlay(u,_textScale);
         _uxForecast=UxRich(body,"IncomingHeadline",PhoneLayout?18:20,true);_uxForecast.SetMeta("source_text_rect",new Rect2(8*u,32*u*_textScale,w-16*u,22*u*_textScale));
         _uxDetail=UxRich(body,"IncomingDetail",PhoneLayout?15:13,false);_uxDetail.SetMeta("source_text_rect",new Rect2(8*u,54*u*_textScale,w-16*u,22*u*_textScale));
         for(int row=0;row<resourceRows;row++)
@@ -165,25 +165,41 @@ public partial class GameUI
     }
     private void BuildUxPockets(GameState s)
     {
+        CaptureSourceTokenBoard();
+        _sourceTokenBand = null; // the old board was retired by Rebuild
+        if (PhoneLayout && _sourceTokenData is {} tokens && (tokens.Sets.Count > 0 || tokens.Gears.Count > 0 || tokens.Permanents.Count > 0))
+        {
+            BuildSourceTokenBand();
+            return;
+        }
+        // Existing empty-pocket and desktop geometry intentionally preserved until separate native gates.
         float u=BattleUnit;float y=PhoneLayout?84*u:Size.Y-400*u;var count=UxPanel(_uxBattle,"SetCountNote",new Rect2(20*u,y-30*u,145*u,28*u));UxText(count,"からくり "+s.Player.SetCards.Count+" / "+s.Player.SetSlots,15,SourcePalette.Paper);
         for(int i=0;i<s.Player.SetSlots;i++){int slot=i;var b=UxButton(_uxBattle,"SetPocket_"+i,"",new Rect2((24+i*78)*u,y,68*u,74*u),()=>{if(slot<s.Player.SetCards.Count)InspectCard(s.Player.SetCards[slot]);});foreach(var stateStyle in new[]{"normal","hover","pressed","disabled","focus","hover_pressed"})b.AddThemeStyleboxOverride(stateStyle,new StyleBoxEmpty());SourceBattleDecor.Pocket(b,68,74,u);if(i<s.Player.SetCards.Count){var pic=new TextureRect{Texture=SourceArtwork.Card(s.Player.SetCards[i].Def.Id,s.Player.SetCards[i].Def.Type),ExpandMode=TextureRect.ExpandModeEnum.IgnoreSize,StretchMode=TextureRect.StretchModeEnum.KeepAspectCentered,MouseFilter=MouseFilterEnum.Ignore,TextureFilter=TextureFilterEnum.Nearest};b.AddChild(pic);pic.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);}}
     }
     private void BuildUxEnemies(Control field,GameState s,float bottom)
     {
+        CaptureSourceEnemyLedger(s);
         for(int i=0;i<s.Enemies.Count;i++)
         {
             int index=i;var e=s.Enemies[i];if(e.Hp<=0)continue;
             var hit=new EnemyDropTarget{Name="EnemyTarget_"+i,Text="",Disabled=IsInputBlocked,IsBlocked=()=>IsInputBlocked,ResolveCard=DecodeHandDrag,MouseFilter=MouseFilterEnum.Pass};foreach(var style in new[]{"normal","hover","pressed","disabled","focus","hover_pressed"})hit.AddThemeStyleboxOverride(style,new StyleBoxEmpty());field.AddChild(hit);hit.Pressed+=()=>{if(!hit.ConsumeInspection())SelectEnemy(index);};hit.Inspect=()=>InspectEnemy(index);hit.CardDropped=uid=>{var card=InputCombat?.Player.Hand.FirstOrDefault(x=>x.Uid==uid);if(card!=null){_preferredTarget=index;BeginPlay(card,index);}};
             var intent=UxPanel(hit,"EnemyIntentSurface_"+i,new Rect2(0,0,90*BattleUnit,40*BattleUnit));intent.SetMeta("enemy_index",i);intent.SetMeta("hud_role","intent");var title=new SourceHudLabel{Name="IntentNumber",MouseFilter=MouseFilterEnum.Ignore};intent.AddChild(title);_enemyIntentReadouts[i]=title;
-            var ledger=UxPanel(hit,"EnemyLedgerSurface_"+i,new Rect2(0,0,180*BattleUnit,53*BattleUnit));ledger.SetMeta("enemy_index",i);ledger.SetMeta("hud_role","ledger");var body=new Control{MouseFilter=MouseFilterEnum.Ignore};ledger.AddChild(body);var name=UxText(body,(s.Enemies.Count>1?"①②③④⑤⑥⑦⑧"[i%8].ToString():"")+Content.GetEnemyDef(e.EnemyId).Name,PhoneLayout?15:19,SourcePalette.Paper,true);name.Position=new Vector2(8,0)*BattleUnit;
+            var ledger=UxPanel(hit,"EnemyLedgerSurface_"+i,new Rect2(0,0,180*BattleUnit,53*BattleUnit));ledger.SetMeta("enemy_index",i);ledger.SetMeta("hud_role","ledger");var body=new Control{MouseFilter=MouseFilterEnum.Ignore};ledger.AddChild(body);// Name and compact statuses are built from the captured source ledger below.
             var bar=new SourceHealthBar{Name="EnemyHpBar_"+i,Position=new Vector2(8,PhoneLayout?29:25)*BattleUnit,Size=new Vector2(150,20)*BattleUnit,MouseFilter=MouseFilterEnum.Ignore};body.AddChild(bar);var hp=CreateHpReadout(bar,e.Hp+" / "+e.MaxHp,PhoneLayout?15:16);_enemyReadouts[i]=hp;
+            BuildSourceEnemyLedger(body,i,e.EnemyId,bar,hp);
             _uxEnemies.Add((i,hit,intent,ledger,bar,hp,title));
         }
         PositionUxEnemies();
     }
     // Immutable source artwork: scan alpha once per texture identity / phone geometry.
     // No GPU readback or native Image lifetime survives a miss. Unit scaling is applied later.
+    private const int UxEnemyHeadCacheCapacity=512;
     private readonly Dictionary<(ulong Texture,bool Phone),float> _uxHeadHeightCache=new();
+    private readonly Queue<(ulong Texture,bool Phone)> _uxHeadHeightOrder=new();
+    private long _uxHeadEvictions;
+    public int EnemyHeadCacheEntries=>_uxHeadHeightCache.Count;
+    public long EnemyHeadCacheEvictions=>_uxHeadEvictions;
+    private void UxClearEnemyHeadCache(){_uxHeadHeightCache.Clear();_uxHeadHeightOrder.Clear();}
     private long _uxHeadReadbacks,_uxHeadCacheHits;
     public long EnemyHeadReadbacks=>_uxHeadReadbacks;
     public long EnemyHeadCacheHits=>_uxHeadCacheHits;
@@ -195,6 +211,9 @@ public partial class GameUI
         int top=0;bool found=false;
         for(int y=0;y<img.GetHeight()&&!found;y++)for(int x=0;x<img.GetWidth();x++)
             if(img.GetPixel(x,y).A>=16f/255){top=y;found=true;break;}
+        while(_uxHeadHeightCache.Count>=UxEnemyHeadCacheCapacity&&_uxHeadHeightOrder.Count>0)
+        {if(_uxHeadHeightCache.Remove(_uxHeadHeightOrder.Dequeue()))_uxHeadEvictions++;}
+        _uxHeadHeightOrder.Enqueue(key);
         return _uxHeadHeightCache[key]=SourceEnemyUiAnchor.Height(img.GetWidth(),img.GetHeight(),top,PhoneLayout,img.GetWidth()==96,"normal");
     }
     private float UxEnemyGap()
@@ -213,21 +232,22 @@ public partial class GameUI
     {
         if(_uxBattle==null||!GodotObject.IsInstanceValid(_uxBattle)||_view?.Combat is not {} state)return;float u=BattleUnit;float bottom=Size.Y-(PhoneLayout?293:285)*u;
         float gap=UxEnemyGap();bool uniformStack=_uxEnemies.Any(h=>SourceIntentLayout.ForState(state,h.Index,PhoneLayout,gap,false,_textScale)?.Stack==true);
-        foreach(var h in _uxEnemies){if(!GodotObject.IsInstanceValid(h.Hit))continue;var point=_enemyProjection?.Invoke(h.Index);float x=point?.Feet.X??Size.X*(.60f+h.Index*.12f);float width=(_uxEnemies.Count==1?420:176)*u;float height=Math.Max(53*u,53*u*_textScale);float lx=Math.Clamp(x-width/2,24*u,Size.X-width-24*u);
+        foreach(var h in _uxEnemies){if(!GodotObject.IsInstanceValid(h.Hit))continue;var point=_enemyProjection?.Invoke(h.Index);float x=point?.Feet.X??Size.X*(.60f+h.Index*.12f);float width=SourceEnemyLedgerWidth(gap)*u;float height=SourceEnemyLedgerHeight(width/u)*u;float lx=Math.Clamp(x-width/2,24*u,Size.X-width-24*u);
             float head=point?.Head.Y??Size.Y*.25f;var enemy=_view.Combat.Enemies[h.Index];var tex=Art("enemies",enemy.EnemyId);if(tex!=null&&point!=null)head=point.Value.Feet.Y-UxEnemyHeadHeight(tex)*u;
             var intentSpec=SourceIntentLayout.ForState(state,h.Index,PhoneLayout,gap,uniformStack,_textScale);
             SourceIntentTag.Update(h.Intent,h.Title,intentSpec,u,PhoneLayout,_textScale);
-            float iw=h.Intent.GetMeta("source_intent_width",72*u).AsSingle(),ih=h.Intent.GetMeta("source_intent_height",40*u).AsSingle();float iy=Math.Max(60*u,head-ih-8*u);h.Hit.Position=new Vector2(lx,iy);h.Hit.Size=new Vector2(width,Math.Max(MinimumHit,bottom-iy));h.Intent.GlobalPosition=new Vector2(Math.Clamp(x-iw/2,8*u,Size.X-iw-8*u),iy);h.Intent.Size=new Vector2(iw,ih);h.Ledger.GlobalPosition=new Vector2(lx,bottom-height);h.Ledger.Size=new Vector2(width,height);h.Bar.Size=new Vector2(width-16*u,Math.Max(20*u,20*u*_textScale));
-            var edge=h.Index==_preferredTarget?SourcePalette.Brass:SourcePalette.NightEdge;SourceIntentTag.Highlight(h.Intent,h.Index==_preferredTarget);SourceBattleDecor.LedgerEdge(h.Ledger,h.Index==_preferredTarget,u);if(h.Bar.GetParent() is Control ledgerBody)SourceBattleDecor.Shield(ledgerBody,h.Bar,new Vector2(8,PhoneLayout?29:25)*u,width-16*u,enemy.Block,u,_textScale,PhoneLayout,true);}
+            float iw=h.Intent.GetMeta("source_intent_width",72*u).AsSingle(),ih=h.Intent.GetMeta("source_intent_height",40*u).AsSingle();float iy=Math.Max(60*u,head-ih-8*u);h.Hit.Position=new Vector2(lx,iy);h.Hit.Size=new Vector2(width,Math.Max(MinimumHit,bottom-iy));h.Intent.GlobalPosition=new Vector2(Math.Clamp(x-iw/2,8*u,Size.X-iw-8*u),iy);h.Intent.Size=new Vector2(iw,ih);h.Ledger.GlobalPosition=new Vector2(lx,PhoneLayout?bottom-height:bottom-Math.Max(height,140*u));h.Ledger.Size=new Vector2(width,height);h.Bar.Size=new Vector2(width-16*u,Math.Max(20*u,20*u*_textScale));
+            var edge=h.Index==_preferredTarget?SourcePalette.Brass:SourcePalette.NightEdge;SourceIntentTag.Highlight(h.Intent,h.Index==_preferredTarget);SourceBattleDecor.LedgerEdge(h.Ledger,h.Index==_preferredTarget,u);if(h.Bar.GetParent() is Control ledgerBody)SourceBattleDecor.Shield(ledgerBody,h.Bar,new Vector2(8,(PhoneLayout?29:36)*Math.Max(1,_textScale))*u,width-16*u,enemy.Block,u,_textScale,PhoneLayout,true);LayoutSourceEnemyLedger(h.Index,width/u,h.Bar,h.Hp,enemy.Hp,enemy.MaxHp);}
     }
     private void RefreshUxReadouts()
     {
         if(_view?.Combat is not {} s)return;var p=s.Player;
+        RefreshSourceTokens(); // consume only the captured board / explicit source set-redraw frame
         if(_uxHpBar!=null&&GodotObject.IsInstanceValid(_uxHpBar)){_uxHpBar.Hp=p.Hp;_uxHpBar.Maximum=p.MaxHp;_uxHpBar.Block=p.Block;_uxHpBar.IceBlock=p.IceBlock;_uxHpBar.PredictedLoss=s.HideIntents==true?0:Math.Max(0,_uxIncoming-p.Block-p.IceBlock);_uxHpBar.QueueRedraw();Set(_hpReadout,p.Hp+" / "+p.MaxHp);}
         if(_uxHpBar!=null&&GodotObject.IsInstanceValid(_uxHpBar)&&_uxHpBar.GetParent() is Control hpBody&&hpBody.GetParent() is Control heroPanel)SourceBattleDecor.Shield(hpBody,_uxHpBar,new Vector2(8,8)*BattleUnit,heroPanel.Size.X-16*BattleUnit,p.Block,BattleUnit,_textScale,PhoneLayout);
         if(_uxOrb!=null&&GodotObject.IsInstanceValid(_uxOrb)){_uxOrb.Energy=p.Energy;_uxOrb.Maximum=TurnEnergyCap(s);_uxOrb.QueueRedraw();}
         RefreshSourceForecast(s);
-        foreach(var h in _uxEnemies){if(h.Index>=s.Enemies.Count)continue;var e=s.Enemies[h.Index];h.Bar.Hp=e.Hp;h.Bar.Maximum=e.MaxHp;h.Bar.Block=e.Block;h.Bar.QueueRedraw();h.Hp.Text=e.Hp+" / "+e.MaxHp;h.Hp.RefreshSourceAlignment();if(h.Bar.GetParent() is Control ledgerBody)SourceBattleDecor.Shield(ledgerBody,h.Bar,new Vector2(8,PhoneLayout?29:25)*BattleUnit,h.Ledger.Size.X-16*BattleUnit,e.Block,BattleUnit,_textScale,PhoneLayout,true);}
+        foreach(var h in _uxEnemies){if(h.Index>=s.Enemies.Count)continue;var e=s.Enemies[h.Index];h.Bar.Hp=e.Hp;h.Bar.Maximum=e.MaxHp;h.Bar.Block=e.Block;h.Bar.QueueRedraw();h.Hp.Text=e.Hp+" / "+e.MaxHp;h.Hp.RefreshSourceAlignment();if(h.Bar.GetParent() is Control ledgerBody)SourceBattleDecor.Shield(ledgerBody,h.Bar,new Vector2(8,(PhoneLayout?29:36)*Math.Max(1,_textScale))*BattleUnit,h.Ledger.Size.X-16*BattleUnit,e.Block,BattleUnit,_textScale,PhoneLayout,true);RefreshSourceEnemyHp(h.Index,h.Bar,h.Hp,e.Hp,e.MaxHp);}
         AlignUxRichLine(_uxForecast);AlignUxRichLine(_uxDetail);
     }
     private void BuildUxTargetBanner(PlaySelection play)
@@ -239,11 +259,11 @@ public partial class GameUI
         var s=InputCombat??_view?.Combat;if(s==null||_uxHand==null)return;_uxHand.Size=Size;float u=BattleUnit;float cs=UxCardScale;int n=s.Player.Hand.Count;float cw=200*cs;float spacing,shift=0;
         if(PhoneLayout){float sw=Size.X/u;float tilt=Math.Max(0,(n-1)/2f*3)*Mathf.Pi/180;float over=Math.Max(0,145*Mathf.Sin(tilt)-100*(1-Mathf.Cos(tilt)))*cs;float left=24+150+24+over,right=sw-305;spacing=n>1?Math.Max(20,Math.Min(cw+12,(right-left-cw)/(n-1))):0;shift=(left+right)/2-sw/2;}
         else spacing=n==0?0:Math.Min(cw+12,1180f/n);
-        var live=s.Player.Hand.Select(c=>c.Uid).ToHashSet();var removed=_uxTiles.Keys.Where(x=>!live.Contains(x)).ToArray();bool removedPlayed=UxRemovedPlayedCard(removed);int newOrdinal=0;foreach(var uid in removed){var gone=_uxTiles[uid];UxCancelHandHover(uid,false);UxCancelHandDeal(uid,false);_uxTiles.Remove(uid);_uxSeats.Remove(uid);gone.MouseFilter=MouseFilterEnum.Ignore;var tween=CreateTween();tween.TweenProperty(gone,"modulate:a",0f,_uxRetirement?.Invoke(gone.GetMeta("definition_id","").AsString())??.25);tween.TweenCallback(Callable.From(()=>{if(GodotObject.IsInstanceValid(gone))gone.QueueFree();}));}
+        var live=s.Player.Hand.Select(c=>c.Uid).ToHashSet();var removed=_uxTiles.Keys.Where(x=>!live.Contains(x)).ToArray();bool removedPlayed=UxRemovedPlayedCard(removed);int newOrdinal=0;for(int ordinal=0;ordinal<removed.Length;ordinal++)UxRetireRemovedHand(removed[ordinal],s,ordinal);
         for(int i=0;i<n;i++)
         {
             var c=s.Player.Hand[i];string uid=c.Uid;bool added=!_uxTiles.TryGetValue(uid,out var tile);
-            if(added){tile=new CardTile{Name="Hand_"+uid,CardUid=uid,IsBattleHand=true,Text="",MouseFilter=MouseFilterEnum.Stop,Size=new Vector2(200,290),CustomMinimumSize=new Vector2(200,290),PivotOffset=new Vector2(100,145)};_uxHand.AddChild(tile);_uxTiles[uid]=tile;
+            if(added){UxCancelHandExit(uid);tile=new CardTile{Name="Hand_"+uid,CardUid=uid,IsBattleHand=true,Text="",MouseFilter=MouseFilterEnum.Stop,Size=new Vector2(200,290),CustomMinimumSize=new Vector2(200,290),PivotOffset=new Vector2(100,145)};_uxHand.AddChild(tile);_uxTiles[uid]=tile;
                 tile.MouseEntered+=()=>HoverUxHand(uid,true);tile.MouseExited+=()=>HoverUxHand(uid,false);tile.Pressed+=()=>{if(!IsInputBlocked&&_overlay==null&&!tile.ConsumeInspection()&&InputCombat?.Player.Hand.FirstOrDefault(x=>x.Uid==uid) is {} card)CardActions(card);};tile.Inspect=()=>{var card=InputCombat?.Player.Hand.FirstOrDefault(x=>x.Uid==uid);if(card!=null)InspectCard(card);};
                 tile.SecondaryAction=()=>{var st=InputCombat;if(st!=null&&!IsInputBlocked&&SetBase.CanSetCard(st,uid))Do(new Command_SetCard{CardUid=uid});else tile.Inspect?.Invoke();};
                 tile.DragPayload=()=>new Godot.Collections.Dictionary{{"uid",uid},{"epoch",_uxEpoch}};tile.DragStarted=()=>StartHandDrag(uid);tile.DragEnded=EndHandDrag;tile.DragPreview=()=>PhoneLayout?new Control{MouseFilter=MouseFilterEnum.Ignore,CustomMinimumSize=Vector2.One}:MakeUxDragPreview(uid);
@@ -258,6 +278,7 @@ public partial class GameUI
             if(_uxDrag!=uid&&_uxHover!=uid){_uxHand.MoveChild(tile,_uxHand.GetChildCount()-1);tile.ZIndex=0;}
             // Incoming flight and its delayed cue never acquire or extend an input fence.
         }
+        UxRestoreHandExitOrder();
         if(_uxHover!=null&&_uxTiles.ContainsKey(_uxHover))HoverUxHand(_uxHover,true);
     }
     private Control MakeUxDragPreview(string uid)
@@ -283,7 +304,7 @@ public partial class GameUI
     private void EndHandDrag()
     {
         string uid=_uxDrag;_uxDrag=null;if(_uxAim!=null&&GodotObject.IsInstanceValid(_uxAim)){_uxAim.Active=false;_uxAim.QueueRedraw();}
-        if(uid!=null)HoverUxHand(uid,false);
+        if(uid!=null)UxReturnHandDrag(uid);
     }
     private string DecodeHandDrag(Variant data)
     {
@@ -304,7 +325,7 @@ public partial class GameUI
     private void UxProcess(double delta)
     {
         if(_uxLastSize!=Size){_uxLastSize=Size;if(!_uxRelayoutQueued){_uxRelayoutQueued=true;EndHandDrag();CallDeferred(nameof(UxRelayout));}}
-        UxTickHandDeals(delta);UxTickHandHovers(delta);PositionUxEnemies();UpdateHandAim();AlignUxRichLine(_uxForecast);AlignUxRichLine(_uxDetail);
+        UxTickHandDeals(delta);UxTickHandHovers(delta);UxTickHandExits(delta);PositionUxEnemies();UpdateHandAim();AlignUxRichLine(_uxForecast);AlignUxRichLine(_uxDetail);
     }
     private static void AlignUxRichLine(RichTextLabel label)
     {
@@ -317,16 +338,18 @@ public partial class GameUI
     private void UxRelayout(){_uxRelayoutQueued=false;if(IsInsideTree()&&CurrentRoute=="combat")Rebuild();}
     private RunState UxOrdinaryProjection(RunState current)
     {
-        if(current.Combat is not {} now)return current;var display=_presentedState?.Invoke()??_view?.Combat;if(display==null)return current;
-        var p=now.Player with{Hp=display.Player.Hp,MaxHp=display.Player.MaxHp,Block=display.Player.Block,IceBlock=display.Player.IceBlock,Permanents=display.Player.Permanents};return current with{Combat=now with{Player=p,Enemies=display.Enemies.Select((e,i)=>i<now.Enemies.Count&&now.Enemies[i].EnemyId==e.EnemyId?now.Enemies[i] with{Hp=e.Hp,MaxHp=e.MaxHp,Block=e.Block}:e).ToList()}};
+        return SourceHudProjection.Ordinary(current, _presentedState?.Invoke() ?? _view?.Combat);
     }
     private void UxPresentEvent(GameEvent evt)
     {
-        var owner=_uxEventOwner?.Invoke(evt)??_activeChange;
+        var tokenEventOwner=_uxEventOwner?.Invoke(evt);
+        var tokenFrame=CapturedSourceTokenFrame;
+        var owner=tokenEventOwner??_activeChange;
         if(_uxOrdinary?.Invoke(evt)==true){if(_session?.CurrentRun is {} live)_view=UxOrdinaryProjection(live);RefreshUxReadouts();return;}
         if(owner!=null){_activeChange=owner;_costPresented=_uxPaid.Contains(owner.Revision);if(_uxIncomingOwner!=owner.Revision&&owner.Previous?.Combat is {} previous){_uxIncomingOwner=owner.Revision;_uxIncoming=Effects.IncomingTotal(previous);_uxSkipFirst=previous.NullifyNextAttack==true;_uxLanded=false;}}
         PresentEventLegacy(evt);if(_costPresented&&owner!=null)_uxPaid.Add(owner.Revision);
         if(_uxPhase!=null&&GodotObject.IsInstanceValid(_uxPhase)){if(evt is GameEvent_TurnEnded)_uxPhase.Text="敵の番";else if(evt is GameEvent_EnemyActionExecuting e)_uxPhase.Text="敵の番 "+(e.EnemyIndex+1)+"/"+(_view?.Combat?.Enemies.Count??0);else if(evt is GameEvent_TurnStarted)_uxPhase.Text="あなたの番";}
+        RefreshSourceTokenEvent(evt,tokenFrame,tokenEventOwner);
         RefreshUxReadouts();
     }
     private void UxNumericContact(GameEvent evt)

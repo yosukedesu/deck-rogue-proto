@@ -1,0 +1,10 @@
+{
+  "status": "Frozen off-tree candidate; native readability pending; one-file delta; failed glyph underlay disabled",
+  "files": {
+    "test-result.json": "f9645da347e2d42b7e09dd80d4e46c2ed90d03fb4d4cdcc292d3d4ec5e6b459c",
+    "apply.py": "5c002ce7f5a6444989b331817670566cc3504ed7c070d70754a898a175fc1a3e",
+    "HANDOFF.md": "c050578d4bc9db2fa560bbb01f0bafa31172cc389a9638fb8d3a4fcd2d4b16fb",
+    "changes.json": "2e1d2af2799e952e038724c04184b1381af4a00edb2c9c5b3539cd0c329adab0",
+    "composed/DeckRogue/GodotPort/UI/SourceHudLabel.cs": "30ebaa341cf9d22b173f7a13386c2981302a3334a34b26045e224a69cd36c404"
+  }
+}

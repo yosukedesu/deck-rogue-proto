@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "frames": 140,
+  "consecutiveFrames": true,
+  "diagnostics": [],
+  "phase": "combat",
+  "turn": 1,
+  "remainingPresentation": false,
+  "scope": "Consecutive native frames, normal process/render loop. Fixed-fps capture is not live performance or complete Unity parity."
+}

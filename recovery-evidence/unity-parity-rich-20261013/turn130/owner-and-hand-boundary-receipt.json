@@ -1,0 +1,189 @@
+{
+  "module": "1e15a1b0-5eb6-4f42-8327-244b1fd91152",
+  "frameCount": 390,
+  "eventTurnStarted": [
+    176
+  ],
+  "firstSetReady": 176,
+  "firstLifetime3": 252,
+  "firstFenceRelease": 252,
+  "exitStartFrames": [
+    252,
+    255,
+    257,
+    260
+  ],
+  "exitCompletionFrames": [
+    270,
+    273,
+    275,
+    278
+  ],
+  "final": {
+    "SourceTokenAdaptation": "source-r2",
+    "SourceTokenBoardRevision": 2,
+    "tokenTurn": 2,
+    "setRedrawTurn": null,
+    "sets": [
+      {
+        "Uid": "preparing-before-end",
+        "Live": true,
+        "Ready": true,
+        "Windows": 2,
+        "State": "\u9cf4\u308b"
+      }
+    ],
+    "gears": [
+      {
+        "Uid": "gear-0",
+        "Charges": 2,
+        "Blocked": null
+      },
+      {
+        "Uid": "gear-1",
+        "Charges": 2,
+        "Blocked": null
+      },
+      {
+        "Uid": "gear-2",
+        "Charges": 1,
+        "Blocked": null
+      },
+      {
+        "Uid": "gear-3",
+        "Charges": 1,
+        "Blocked": null
+      },
+      {
+        "Uid": "gear-4",
+        "Charges": 1,
+        "Blocked": null
+      },
+      {
+        "Uid": "gear-5",
+        "Charges": 1,
+        "Blocked": null
+      },
+      {
+        "Uid": "gear-6",
+        "Charges": 1,
+        "Blocked": null
+      },
+      {
+        "Uid": "gear-7",
+        "Charges": 1,
+        "Blocked": null
+      },
+      {
+        "Uid": "gear-8",
+        "Charges": 1,
+        "Blocked": null
+      },
+      {
+        "Uid": "gear-9",
+        "Charges": 1,
+        "Blocked": null
+      }
+    ],
+    "permanents": [
+      {
+        "Uid": "old-lifetime",
+        "Life": 3,
+        "Doll": true
+      }
+    ],
+    "ledger": {
+      "Epoch": 1,
+      "BoardRevision": 2,
+      "Turn": 2,
+      "enemies": [
+        {
+          "hp": 9,
+          "maxHp": 9,
+          "block": 0,
+          "enemyId": "enemy_mudling",
+          "intent": {
+            "kind": "defend",
+            "actual": 3
+          },
+          "strength": 0,
+          "burn": 0,
+          "confusion": 0,
+          "exposed": 0,
+          "node": "rand",
+          "lastMoves": [
+            "guard",
+            "bump"
+          ],
+          "intentMoveId": "guard",
+          "intentNode": "guard",
+          "moveUses": {
+            "bump": 1,
+            "guard": 1
+          },
+          "hpLostSinceRegen": 0,
+          "prevIntentKind": "attack"
+        },
+        {
+          "hp": 9,
+          "maxHp": 9,
+          "block": 0,
+          "enemyId": "enemy_mudling",
+          "intent": {
+            "kind": "attack",
+            "actual": 3,
+            "base": 3
+          },
+          "strength": 0,
+          "burn": 0,
+          "confusion": 0,
+          "exposed": 0,
+          "node": "rand",
+          "lastMoves": [
+            "bump",
+            "slop"
+          ],
+          "intentMoveId": "bump",
+          "intentNode": "bump",
+          "moveUses": {
+            "slop": 1,
+            "bump": 1
+          },
+          "hpLostSinceRegen": 0,
+          "prevIntentKind": "hex"
+        },
+        {
+          "hp": 8,
+          "maxHp": 8,
+          "block": 4,
+          "enemyId": "enemy_mudling",
+          "intent": {
+            "kind": "attack",
+            "actual": 5,
+            "base": 5
+          },
+          "strength": 0,
+          "burn": 0,
+          "confusion": 0,
+          "exposed": 0,
+          "node": "rand",
+          "lastMoves": [
+            "bump",
+            "guard"
+          ],
+          "intentMoveId": "bump",
+          "intentNode": "bump",
+          "moveUses": {
+            "guard": 1,
+            "bump": 1
+          },
+          "hpLostSinceRegen": 0,
+          "prevIntentKind": "defend"
+        }
+      ]
+    },
+    "ActiveCommandRevision": -1
+  },
+  "finalDeals": 0,
+  "finalExits": 0
+}

@@ -1,0 +1,62 @@
+// Test-only. Invoke inside a running Godot tree; never add to production builds.
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using Godot;
+using DeckRogue.GodotPort.Presentation;
+namespace DeckRogue.RecoveryValidation;
+public static class NativeOrientationQa {
+ sealed record Surface(string Name,Vector3[] Position,Vector2[] Uv,int[] Index);
+ sealed record Shot(List<Surface> Surfaces,float[] Light);
+ static float[] V(Vector3 p)=>new[]{p.X,p.Y,p.Z};
+ static Shot Read(AuthoredGeometryFx fx,Basis basis,Vector3 target,float height){
+  var surfaces=new List<Surface>();
+  foreach(var n in fx.GetChildren().OfType<MeshInstance3D>())if(n.Mesh is ArrayMesh mesh&&n.Visible){
+   for(int s=0;s<mesh.GetSurfaceCount();s++){
+    var a=mesh.SurfaceGetArrays(s);
+    var p=a[(int)Mesh.ArrayType.Vertex].AsVector3Array().Select(x=>basis.Inverse()*(x-target)/height).ToArray();
+    surfaces.Add(new Surface(n.Name+"/"+s,p,a[(int)Mesh.ArrayType.TexUV].AsVector2Array(),a[(int)Mesh.ArrayType.Index].AsInt32Array()));
+   }
+  }
+  return new Shot(surfaces,fx.GetChildren().OfType<OmniLight3D>().Select(x=>x.LightEnergy).ToArray());
+ }
+ static string Hash(Shot shot){
+  using var bytes=new System.IO.MemoryStream();using var writer=new System.IO.BinaryWriter(bytes);
+  foreach(var s in shot.Surfaces)foreach(var p in s.Position){writer.Write(p.X);writer.Write(p.Y);writer.Write(p.Z);}writer.Flush();
+  return Convert.ToHexString(SHA256.HashData(bytes.ToArray())).ToLowerInvariant();
+ }
+ public static object Run(Node host){
+  if(!host.IsInsideTree())throw new InvalidOperationException("Native orientation probe requires a running Godot tree.");
+  int checks=0;var cases=new List<object>();
+  void C(bool ok,string label){checks++;if(!ok)throw new InvalidOperationException(label);}
+  void Near(float a,float b,string label)=>C(Math.Abs(a-b)<.00003f,$"{label}: {a} != {b}");
+  var fx=new AuthoredGeometryFx {Name="TestOnlyNativeOrientation",RealLightsEnabled=true,QualityLevel=0};host.AddChild(fx);
+  try{
+   var basis=Basis.FromEuler(new Vector3(.13f,-.21f,.07f));var target=new Vector3(1.2f,.8f,-.5f);float height=2.3f;
+   var scenario=new EffectScenario(EffectTier.Medium,0,.016f,.4f,.03f,3,.8f,1.7f);
+   foreach(var spec in new[]{("PhysicalSlashFx","slash"),("VineSlashFx","vine_slash"),("WaterContinuousFx","water")}){
+    var route=new AttackRoute("native_orientation_fixture","fixture","card",spec.Item2,spec.Item1,"physical",false,"test-only");
+    Shot Capture(float age,int index,int side){
+     C(fx.Begin(route,scenario,target+basis.X*(4*side)+basis.Y*.2f,target,Vector3.Zero,height,basis,index),"Begin actual AuthoredGeometryFx");
+     fx.Sample(age);return Read(fx,basis,target,height);
+    }
+    foreach(float age in new[]{0f,.03f,.08f}){
+     var left=Capture(age,0,-1);var right=Capture(age,1,spec.Item1=="WaterContinuousFx"?1:-1);
+     C(left.Surfaces.Count>0,"nonempty native ArrayMesh at sampled contact");C(left.Surfaces.Count==right.Surfaces.Count,"same native surface count");
+     int vertices=0;
+     for(int b=0;b<left.Surfaces.Count;b++){
+      var a=left.Surfaces[b];var z=right.Surfaces[b];C(a.Name==z.Name,"same native mesh slot");C(a.Position.Length==z.Position.Length,"same native vertex count");
+      C(a.Uv.SequenceEqual(z.Uv),"UV stays identical");C(a.Index.SequenceEqual(z.Index),"triangle topology stays identical");
+      for(int i=0;i<a.Position.Length;i++){Near(a.Position[i].X,-z.Position[i].X,"native mirrored X");Near(a.Position[i].Y,z.Position[i].Y,"native Y invariant");Near(a.Position[i].Z,z.Position[i].Z,"native depth invariant");vertices++;}
+     }
+     C(left.Light.SequenceEqual(right.Light),"native real-light energies unaffected by orientation");
+     var reset=Capture(age,2,-1);C(Hash(left)==Hash(reset),"cached effect resets after odd/source-right Begin");
+     cases.Add(new{renderer=spec.Item1,age,evenIndex=0,oddIndex=1,sourceLeft=-1,sourceRight=spec.Item1=="WaterContinuousFx"?1:-1,vertices,sourceBasis=new[]{V(basis.X),V(basis.Y),V(basis.Z)},target=V(target),height,leftHash=Hash(left),rightHash=Hash(right),resetHash=Hash(reset),lights=left.Light,leftSamples=left.Surfaces.Select(s=>new{name=s.Name,count=s.Position.Length,vertices=s.Position.Take(12).Select(V).ToArray()}).ToArray(),rightSamples=right.Surfaces.Select(s=>new{name=s.Name,count=s.Position.Length,vertices=s.Position.Take(12).Select(V).ToArray()}).ToArray()});
+    }
+    fx.Clear();C(!fx.IsActive&&fx.VertexCount==0,"clear deactivates actual effect");C(fx.GetChildren().OfType<MeshInstance3D>().All(n=>!n.Visible&&n.Mesh.GetSurfaceCount()==0),"clear removes every ArrayMesh surface");C(fx.GetChildren().OfType<OmniLight3D>().All(n=>n.LightEnergy==0),"clear drops native lights");
+   }
+   return new{passed=true,checks,moduleMvid=typeof(AuthoredGeometryFx).Assembly.ManifestModule.ModuleVersionId,engineVersion=Godot.Engine.GetVersionInfo()["string"].AsString(),cases,scope="Actual native AuthoredGeometryFx Begin/Sample and ArrayMesh surfaces. Tests captured-basis geometry, cache reset and unchanged light power. Does not validate actual gameplay callback provenance, frames, GPU pixels, or S25 performance."};
+  }finally{fx.Clear();host.RemoveChild(fx);fx.Free();}
+ }
+}

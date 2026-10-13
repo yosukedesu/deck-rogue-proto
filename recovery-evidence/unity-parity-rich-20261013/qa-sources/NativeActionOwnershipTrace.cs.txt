@@ -1,0 +1,40 @@
+// Test-only reflection snapshot, called synchronously inside stage callbacks.
+using System;
+using System.Collections;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using Godot;
+using DeckRogue.Engine.Generated;
+using DeckRogue.GodotPort.Presentation;
+namespace DeckRogue.RecoveryValidation;
+public static class NativeActionOwnershipTrace {
+ const BindingFlags Fields=BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance;
+ static object Get(object o,string key)=>o?.GetType().GetField(key,Fields)?.GetValue(o)??o?.GetType().GetProperty(key,Fields)?.GetValue(o);
+ static float[] V(Vector3 v)=>new[]{v.X,v.Y,v.Z};
+ static object Actor(object value)=>value is BattleActor a?new{id=a.GetInstanceId(),a.DefinitionId,a.EnemyIndex,position=V(a.GlobalPosition),contact=V(a.Contact)}:null;
+ static object Geometry(object row){
+  if(Get(Get(row,"Effect"),"Native") is not AuthoredGeometryFx fx)return null;
+  var basis=Get(fx,"_basis") is Basis b?b:Basis.Identity;var target=Get(fx,"_target") is Vector3 t?t:Vector3.Zero;var source=Get(fx,"_source") is Vector3 so?so:Vector3.Zero;
+  float height=Convert.ToSingle(Get(fx,"_height")??1f),size=Convert.ToSingle(Get(fx,"_size")??1f);float scale=Math.Max(.0001f,height*size);
+  var surfaces=new List<object>();using var bytes=new System.IO.MemoryStream();using var writer=new System.IO.BinaryWriter(bytes);
+  foreach(var n in fx.GetChildren().OfType<MeshInstance3D>().Where(n=>n.Visible&&n.Mesh is ArrayMesh))for(int i=0;i<n.Mesh.GetSurfaceCount();i++){
+   using var arrays=((ArrayMesh)n.Mesh).SurfaceGetArrays(i);var positions=arrays[(int)Mesh.ArrayType.Vertex].AsVector3Array().Select(v=>basis.Inverse()*(v-target)/scale).ToArray();
+   foreach(var p in positions){writer.Write(p.X);writer.Write(p.Y);writer.Write(p.Z);}surfaces.Add(new{name=n.Name.ToString(),surface=i,vertices=positions.Length,samples=positions.Take(12).Select(V).ToArray()});
+  }
+  writer.Flush();return new{fx.IsActive,fx.Renderer,fx.VertexCount,source=V(source),target=V(target),height,size,incoming=V(basis.Inverse()*(source-target)/scale),normalizedVertexSha256=Convert.ToHexString(SHA256.HashData(bytes.ToArray())).ToLowerInvariant(),surfaces};
+ }
+ static object Row(object row){
+  var beat=Get(row,"Beat") as PresentationBeat;var h=beat?.Event as GameEvent_DamageDealt;
+  return new{eventType=beat?.Event.Type,eventData=beat?.Event,sourceActor=Actor(Get(row,"Source")),targetActor=Actor(Get(row,"Target")),nativeGeometry=Geometry(row),index=Get(row,"Index"),direct=Get(row,"Direct"),volley=Get(row,"Volley"),renderer=beat?.Route?.Renderer,definitionId=beat?.Route?.DefinitionId,source=h?.Source,sourceUid=h?.SourceUid,presentationSource=h?.PresentationSource,contactAt=Get(row,"ContactAt"),previewAt=Get(row,"PreviewAt"),startedAt=Get(row,"StartedAt"),time=Get(row,"Time"),effectStartedAt=Get(row,"EffectStartedAt"),effectOffset=Get(row,"EffectOffset")};
+ }
+ public static object Capture(BattleStage stage){
+  var callback=Get(stage,"_ordinaryCallback");var action=Get(callback,"Action");var card=Get(action,"Card") as GameEvent_CardPlayed;var rows=Get(action,"Beats") as IEnumerable;
+  return new{inOrdinaryCallback=callback!=null,clock=stage.PresentationTime,callbackSourceActor=Actor(Get(stage,"_sourceActor")),callbackTargetActor=Actor(Get(stage,"_targetActor")),presentationFrame=Get(stage,"_presentationFrame"),cardId=card?.CardId,volleys=Get(action,"Volleys"),current=callback==null?null:Row(callback),plannedRows=rows?.Cast<object>().Select(Row).ToArray(),scope="Synchronous native-stage callback metadata; Direct and Volley are actual planned fields, not recomputed expectations."};
+ }
+ public static object CaptureActive(BattleStage stage){
+  var actions=Get(stage,"_ordinaryActions") as IEnumerable;
+  return new{clock=stage.PresentationTime,actions=actions?.Cast<object>().Select(a=>new{cardId=(Get(a,"Card") as GameEvent_CardPlayed)?.CardId,rows=(Get(a,"Beats") as IEnumerable)?.Cast<object>().Where(b=>Get(b,"Effect")!=null).Select(Row).ToArray()}).ToArray(),scope="Post-draw actual live action geometry and ownership; no effect resampling or gameplay mutation."};
+ }
+}

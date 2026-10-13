@@ -1,0 +1,17 @@
+{
+  "status": "off-tree compiled and independently source-reviewed; native acceptance pending",
+  "createdUtc": "2026-10-13T04:20:00Z",
+  "files": {
+    "HANDOFF.md": "6e28e86718ab18124b43ff2abbb391ae26c7f8a28d346ec17e7f66e12bcb231f",
+    "apply.py": "8a773ba924b40bb1f6994260b4b597127097e8d16d0f7b7317fb91a0fb09c112",
+    "changes.json": "87f07eb576a61cb04a1cc5880dc15c7e57822a3f9477972d353c436c019d334e",
+    "payload-sha256.json": "1c099b8f30ef7c2845c66acef8b578e75451bf55e310a7d22fa28b0fed8797ec",
+    "files/SourceFloatProxyModel.cs": "6ddb156bbd6126698583bbd3d2d0687d604f3dc9dc628acb2c829273d0416bd1",
+    "tests/Tests.csproj": "f2775133e8b1c5d2de0e8c4d373b4dd3642c563ee7600854be9c53d8ffca111c",
+    "tests/Program.cs": "92f632fc4e10dfd97a35b6cda3420e079989e4273c5fb6b6bfdf2300a349bb2c",
+    "tests/test_guards.py": "c688f2f037ca60c7de2bd7a3ef18d47b346c286cd964aa8026fc1769b81f3991",
+    "tests/model-test.log": "54d66eb7d17cb9f833703e965e37130b11730820015d0b103ade4f1cd9f883f8",
+    "tests/guard-test.log": "8c11cb0567f3bf09d5f7a32141202ad9b16e655d3fa5417d97f3688b21985368",
+    "compile.log": "b71ae3e5ba6fdf08bf056ca7e168e908497e405ce3a2e1e9a87297a539a00216"
+  }
+}
