@@ -1,0 +1,459 @@
+{
+  "schema": "authored-hand-fixtures/1",
+  "status": "ENGINE/SAVE VALIDATED; NATIVE ACCEPTANCE NOT RUN",
+  "roundtrips": 6,
+  "assertions": 93,
+  "originalEngineRules": true,
+  "sourceContentUnmodified": true,
+  "fixtures": [
+    {
+      "name": "slash",
+      "card": "green_strike",
+      "leader": "leader_green",
+      "cardUid": "authored-slash-played-001",
+      "unchangedSiblingUid": "authored-slash-sibling-002",
+      "fixture": "slash.save.json",
+      "actions": "slash.actions.json",
+      "fixtureSha256": "4a67b24767e12f33ee3a9a77622eebc5292f021517f88456ceaa28e6498dcddc",
+      "expectedAfterSha256": "7aad9849c08e7fca04971bec975ad67b61ac9137c5303577f6aa220af7ab1292",
+      "fingerprint": "cards466/enemies89/1lh07ne",
+      "seed": 6161,
+      "phase": "combat",
+      "combatPhase": "player-turn",
+      "nodeKind": "battle",
+      "command": {
+        "type": "Combat",
+        "combatType": "PlayCard",
+        "uid": "authored-slash-played-001",
+        "target": 0,
+        "loadRevision": 1,
+        "admittedRevision": 2,
+        "oneCommand": true,
+        "clonedRootAndInner": true
+      },
+      "epoch": {
+        "expectedFreshUiEpoch": 1,
+        "verifiedByNative": false,
+        "condition": "Fresh process, no other QA loader, exactly one reset Load; reusing a UI requires actual load-reset epoch E0+1 instead.",
+        "mustMatch": "Drag payload (pointer gate), captured plan and current UI epoch throughout retirement"
+      },
+      "beforeBoundary": {
+        "eventLogCount": 5,
+        "energy": 3,
+        "hp": 80,
+        "iceBlock": 0,
+        "hand": [
+          "authored-slash-played-001",
+          "authored-slash-sibling-002",
+          "authored-slash-guard-003"
+        ],
+        "draw": [
+          "authored-slash-draw-004",
+          "authored-slash-draw-005"
+        ],
+        "discard": [],
+        "exhaust": [],
+        "runRng": {
+          "seed": 6161,
+          "counter": 524
+        },
+        "combatRng": {
+          "seed": 1759898363,
+          "counter": 16
+        }
+      },
+      "afterBoundary": {
+        "eventLogCount": 7,
+        "energy": 2,
+        "hp": 80,
+        "iceBlock": 0,
+        "hand": [
+          "authored-slash-sibling-002",
+          "authored-slash-guard-003"
+        ],
+        "draw": [
+          "authored-slash-draw-004",
+          "authored-slash-draw-005"
+        ],
+        "discard": [
+          "authored-slash-played-001"
+        ],
+        "exhaust": [],
+        "runRng": {
+          "seed": 6161,
+          "counter": 524
+        },
+        "combatRng": {
+          "seed": 1759898363,
+          "counter": 16
+        }
+      },
+      "expectedDestination": "discard",
+      "expectedExhaust": false,
+      "enemy": {
+        "index": 0,
+        "id": "enemy_mudling",
+        "hpBefore": 1000,
+        "hpAfter": 994,
+        "maxHp": 1000,
+        "block": 0,
+        "survives": true
+      },
+      "eventTypes": [
+        "CardPlayed",
+        "DamageDealt"
+      ],
+      "expectedReceipts": [
+        {
+          "Amount": 6,
+          "HpLoss": 6,
+          "EnemyIndex": 0,
+          "PresentationSource": {
+            "kind": "card",
+            "definitionId": "green_strike",
+            "uid": "authored-slash-played-001"
+          },
+          "PresentationReceipt": {
+            "version": 1,
+            "target": "enemy",
+            "enemyIndex": 0,
+            "enemyId": "enemy_mudling",
+            "before": {
+              "hp": 1000,
+              "maxHp": 1000,
+              "block": 0
+            },
+            "after": {
+              "hp": 994,
+              "maxHp": 1000,
+              "block": 0
+            }
+          }
+        }
+      ],
+      "additionalPlayerNumericReceipts": [],
+      "sourceProfile": {
+        "AuthoredAttack": "slash",
+        "Contact": 0.13,
+        "Windup": 0.045,
+        "Recovery": 0.14,
+        "Residue": 0.36,
+        "ImpactPause": 0.065,
+        "Heavy": false
+      },
+      "capturedRetirementSeconds": 0.09099999815225601,
+      "expectedFence": false,
+      "roundtrip": true,
+      "loadedOriginalCommandReproduced": true,
+      "productionSessionCloneVerified": true,
+      "nativeAcceptance": "NOT RUN; source profile and engine validation are not native owner/timing/pointer acceptance"
+    },
+    {
+      "name": "water",
+      "card": "blue_strike",
+      "leader": "leader_blue",
+      "cardUid": "authored-water-played-001",
+      "unchangedSiblingUid": "authored-water-sibling-002",
+      "fixture": "water.save.json",
+      "actions": "water.actions.json",
+      "fixtureSha256": "46165ac32acf930e4404913d5e676db3a5f3bf93502e647ffc931ccdcd8146f6",
+      "expectedAfterSha256": "95c32d0d968452da4a8ef697de1b5cd2068b116d7895caf68e2e2d76950cd790",
+      "fingerprint": "cards466/enemies89/1lh07ne",
+      "seed": 6161,
+      "phase": "combat",
+      "combatPhase": "player-turn",
+      "nodeKind": "battle",
+      "command": {
+        "type": "Combat",
+        "combatType": "PlayCard",
+        "uid": "authored-water-played-001",
+        "target": 0,
+        "loadRevision": 1,
+        "admittedRevision": 2,
+        "oneCommand": true,
+        "clonedRootAndInner": true
+      },
+      "epoch": {
+        "expectedFreshUiEpoch": 1,
+        "verifiedByNative": false,
+        "condition": "Fresh process, no other QA loader, exactly one reset Load; reusing a UI requires actual load-reset epoch E0+1 instead.",
+        "mustMatch": "Drag payload (pointer gate), captured plan and current UI epoch throughout retirement"
+      },
+      "beforeBoundary": {
+        "eventLogCount": 4,
+        "energy": 3,
+        "hp": 65,
+        "iceBlock": 0,
+        "hand": [
+          "authored-water-played-001",
+          "authored-water-sibling-002",
+          "authored-water-guard-003"
+        ],
+        "draw": [
+          "authored-water-draw-004",
+          "authored-water-draw-005"
+        ],
+        "discard": [],
+        "exhaust": [],
+        "runRng": {
+          "seed": 6161,
+          "counter": 497
+        },
+        "combatRng": {
+          "seed": 1845984320,
+          "counter": 16
+        }
+      },
+      "afterBoundary": {
+        "eventLogCount": 8,
+        "energy": 2,
+        "hp": 65,
+        "iceBlock": 1,
+        "hand": [
+          "authored-water-sibling-002",
+          "authored-water-guard-003",
+          "authored-water-draw-004"
+        ],
+        "draw": [
+          "authored-water-draw-005"
+        ],
+        "discard": [
+          "authored-water-played-001"
+        ],
+        "exhaust": [],
+        "runRng": {
+          "seed": 6161,
+          "counter": 497
+        },
+        "combatRng": {
+          "seed": 1845984320,
+          "counter": 16
+        }
+      },
+      "expectedDestination": "discard",
+      "expectedExhaust": false,
+      "enemy": {
+        "index": 0,
+        "id": "enemy_mudling",
+        "hpBefore": 1000,
+        "hpAfter": 995,
+        "maxHp": 1000,
+        "block": 0,
+        "survives": true
+      },
+      "eventTypes": [
+        "CardPlayed",
+        "DamageDealt",
+        "CardsDrawn",
+        "IceBlockGained"
+      ],
+      "expectedReceipts": [
+        {
+          "Amount": 5,
+          "HpLoss": 5,
+          "EnemyIndex": 0,
+          "PresentationSource": {
+            "kind": "card",
+            "definitionId": "blue_strike",
+            "uid": "authored-water-played-001"
+          },
+          "PresentationReceipt": {
+            "version": 1,
+            "target": "enemy",
+            "enemyIndex": 0,
+            "enemyId": "enemy_mudling",
+            "before": {
+              "hp": 1000,
+              "maxHp": 1000,
+              "block": 0
+            },
+            "after": {
+              "hp": 995,
+              "maxHp": 1000,
+              "block": 0
+            }
+          }
+        }
+      ],
+      "additionalPlayerNumericReceipts": [
+        {
+          "Type": "IceBlockGained",
+          "Amount": 1,
+          "PresentationReceipt": {
+            "version": 1,
+            "target": "player",
+            "before": {
+              "hp": 65,
+              "maxHp": 65,
+              "block": 0,
+              "iceBlock": 0
+            },
+            "after": {
+              "hp": 65,
+              "maxHp": 65,
+              "block": 0,
+              "iceBlock": 1
+            }
+          }
+        }
+      ],
+      "sourceProfile": {
+        "AuthoredAttack": "water",
+        "Contact": 0.24,
+        "Windup": 0.14,
+        "Recovery": 0.18,
+        "Residue": 0.48,
+        "ImpactPause": 0.075,
+        "Heavy": false
+      },
+      "capturedRetirementSeconds": 0.10000000149011612,
+      "expectedFence": false,
+      "roundtrip": true,
+      "loadedOriginalCommandReproduced": true,
+      "productionSessionCloneVerified": true,
+      "nativeAcceptance": "NOT RUN; source profile and engine validation are not native owner/timing/pointer acceptance"
+    },
+    {
+      "name": "stomp",
+      "card": "green_finisher_stomp",
+      "leader": "leader_green",
+      "cardUid": "authored-stomp-played-001",
+      "unchangedSiblingUid": "authored-stomp-sibling-002",
+      "fixture": "stomp.save.json",
+      "actions": "stomp.actions.json",
+      "fixtureSha256": "e924af1d2ecb327db04e51fafeaeb0da1809152ff21b9ae7734b2ed372b35ade",
+      "expectedAfterSha256": "c8092150c98b611b654575d77d15e7aecdcc87d837296656dcf3ef25ded94968",
+      "fingerprint": "cards466/enemies89/1lh07ne",
+      "seed": 6161,
+      "phase": "combat",
+      "combatPhase": "player-turn",
+      "nodeKind": "battle",
+      "command": {
+        "type": "Combat",
+        "combatType": "PlayCard",
+        "uid": "authored-stomp-played-001",
+        "target": 0,
+        "loadRevision": 1,
+        "admittedRevision": 2,
+        "oneCommand": true,
+        "clonedRootAndInner": true
+      },
+      "epoch": {
+        "expectedFreshUiEpoch": 1,
+        "verifiedByNative": false,
+        "condition": "Fresh process, no other QA loader, exactly one reset Load; reusing a UI requires actual load-reset epoch E0+1 instead.",
+        "mustMatch": "Drag payload (pointer gate), captured plan and current UI epoch throughout retirement"
+      },
+      "beforeBoundary": {
+        "eventLogCount": 5,
+        "energy": 5,
+        "hp": 80,
+        "iceBlock": 0,
+        "hand": [
+          "authored-stomp-played-001",
+          "authored-stomp-sibling-002",
+          "authored-stomp-guard-003"
+        ],
+        "draw": [
+          "authored-stomp-draw-004",
+          "authored-stomp-draw-005"
+        ],
+        "discard": [],
+        "exhaust": [],
+        "runRng": {
+          "seed": 6161,
+          "counter": 524
+        },
+        "combatRng": {
+          "seed": 1759898363,
+          "counter": 16
+        }
+      },
+      "afterBoundary": {
+        "eventLogCount": 7,
+        "energy": 0,
+        "hp": 80,
+        "iceBlock": 0,
+        "hand": [
+          "authored-stomp-sibling-002",
+          "authored-stomp-guard-003"
+        ],
+        "draw": [
+          "authored-stomp-draw-004",
+          "authored-stomp-draw-005"
+        ],
+        "discard": [
+          "authored-stomp-played-001"
+        ],
+        "exhaust": [],
+        "runRng": {
+          "seed": 6161,
+          "counter": 524
+        },
+        "combatRng": {
+          "seed": 1759898363,
+          "counter": 16
+        }
+      },
+      "expectedDestination": "discard",
+      "expectedExhaust": false,
+      "enemy": {
+        "index": 0,
+        "id": "enemy_mudling",
+        "hpBefore": 1000,
+        "hpAfter": 950,
+        "maxHp": 1000,
+        "block": 0,
+        "survives": true
+      },
+      "eventTypes": [
+        "CardPlayed",
+        "DamageDealt"
+      ],
+      "expectedReceipts": [
+        {
+          "Amount": 50,
+          "HpLoss": 50,
+          "EnemyIndex": 0,
+          "PresentationSource": {
+            "kind": "card",
+            "definitionId": "green_finisher_stomp",
+            "uid": "authored-stomp-played-001"
+          },
+          "PresentationReceipt": {
+            "version": 1,
+            "target": "enemy",
+            "enemyIndex": 0,
+            "enemyId": "enemy_mudling",
+            "before": {
+              "hp": 1000,
+              "maxHp": 1000,
+              "block": 0
+            },
+            "after": {
+              "hp": 950,
+              "maxHp": 1000,
+              "block": 0
+            }
+          }
+        }
+      ],
+      "additionalPlayerNumericReceipts": [],
+      "sourceProfile": {
+        "AuthoredAttack": "stomp",
+        "Contact": 0.34,
+        "Windup": 0.22,
+        "Recovery": 0.24,
+        "Residue": 0.65,
+        "ImpactPause": 0.12,
+        "Heavy": true
+      },
+      "capturedRetirementSeconds": 0.10000000149011612,
+      "expectedFence": false,
+      "roundtrip": true,
+      "loadedOriginalCommandReproduced": true,
+      "productionSessionCloneVerified": true,
+      "nativeAcceptance": "NOT RUN; source profile and engine validation are not native owner/timing/pointer acceptance"
+    }
+  ]
+}

@@ -1,0 +1,919 @@
+[
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop",
+    "type": "BattlefieldDropTarget",
+    "rect": "(0, 0), (1950, 900)",
+    "text": "",
+    "mouse": "Pass"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0",
+    "type": "EnemyDropTarget",
+    "rect": "(1105.9019, 158.35672), (560, 350.9766)",
+    "text": "",
+    "mouse": "Pass"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyIntentSurface_0",
+    "type": "PanelContainer",
+    "rect": "(1331.5685, 158.35672), (108.66669, 72.8)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyIntentSurface_0/IntentParts",
+    "type": "Control",
+    "rect": "(1331.5685, 158.35672), (108.66669, 72.8)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyIntentSurface_0/IntentParts/IntentPaper",
+    "type": "NinePatchRect",
+    "rect": "(1331.5685, 158.35672), (108.66667, 72.8)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyIntentSurface_0/IntentParts/IntentTail",
+    "type": "TextureRect",
+    "rect": "(1376.5685, 227.15672), (18.666668, 18.666672)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyIntentSurface_0/IntentParts/IntentNumber",
+    "type": "SourceHudLabel",
+    "rect": "(1398.7351, 156.75671), (25, 72.8)",
+    "text": "4",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyIntentSurface_0/IntentParts/IntentIcon",
+    "type": "TextureRect",
+    "rect": "(1348.0685, 173.42339), (42.666668, 42.66667)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyLedgerSurface_0",
+    "type": "PanelContainer",
+    "rect": "(1105.9019, 417.46664), (560, 91.86667)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyLedgerSurface_0/@Control@424",
+    "type": "Control",
+    "rect": "(1105.9019, 417.46664), (560, 91.86667)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyLedgerSurface_0/@Control@424/EnemyHpBar_0",
+    "type": "SourceHealthBar",
+    "rect": "(1116.5685, 467.7333), (538.6667, 34.66667)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyLedgerSurface_0/@Control@424/EnemyHpBar_0/HpReadout",
+    "type": "SourceHudLabel",
+    "rect": "(1116.5685, 464.06665), (538.6667, 39)",
+    "text": "1000 / 1000",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyLedgerSurface_0/@Control@424/EnemyName_0",
+    "type": "SourceHudLabel",
+    "rect": "(1116.5685, 421.09998), (538.6667, 43.333336)",
+    "text": "小泥",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyLedgerSurface_0/@Control@424/EnemyStatusMask_0",
+    "type": "Control",
+    "rect": "(1657.9019, 420.93332), (0, 43.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/BattlefieldDrop/EnemyTarget_0/EnemyLedgerSurface_0/@Control@424/EnemyForecast_0",
+    "type": "Control",
+    "rect": "(1116.5685, 505.86664), (538.6667, 45.066666)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand",
+    "type": "Control",
+    "rect": "(0, 0), (1950, 900)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001",
+    "type": "CardTile",
+    "rect": "(482.69888, 537.90967), (266.66672, 386.66666)",
+    "text": "",
+    "mouse": "Stop"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace",
+    "type": "Control",
+    "rect": "(482.69888, 537.90967), (266.66666, 386.66666)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/Paper",
+    "type": "NinePatchRect",
+    "rect": "(482.69888, 537.90967), (266.66666, 386.66666)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/Grain",
+    "type": "TextureRect",
+    "rect": "(482.69888, 537.90967), (266.66666, 386.66666)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/ArtEdge",
+    "type": "ColorRect",
+    "rect": "(501.74734, 595.65857), (234.66666, 133.33333)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/ArtNight",
+    "type": "ColorRect",
+    "rect": "(503.84927, 597.55115), (230.66666, 129.33333)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/Artwork",
+    "type": "TextureRect",
+    "rect": "(512.53894, 597.7633), (213.33331, 127.99999)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/CostOrb",
+    "type": "TextureRect",
+    "rect": "(474.29117, 530.3393), (69.33333, 69.33333)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/Cost",
+    "type": "SourceHudLabel",
+    "rect": "(474.29117, 530.3393), (69.33333, 66.666664)",
+    "text": "1",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/Name",
+    "type": "SourceHudLabel",
+    "rect": "(541.4596, 538.168), (191.99998, 51.999996)",
+    "text": "打撃",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/TypeRibbon",
+    "type": "TextureRect",
+    "rect": "(525.4768, 717.24994), (199.99998, 34.666664)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/RarityGem",
+    "type": "TextureRect",
+    "rect": "(578.14105, 715.8251), (31.999998, 31.999998)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/Type",
+    "type": "SourceHudLabel",
+    "rect": "(616.3709, 706.47815), (55.999996, 42.666664)",
+    "text": "物理",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/Body",
+    "type": "SourceCardBody",
+    "rect": "(513.34235, 765.9518), (229.33331, 138.66666)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-played-001/SourceCardFace/Body/Text",
+    "type": "RichTextLabel",
+    "rect": "(515.366, 804.5654), (229.33331, 138.66666)",
+    "text": "ダ⁠メ⁠ー⁠ジ⁠6⁠",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002",
+    "type": "CardTile",
+    "rect": "(775.30115, 517.33325), (266.6667, 386.6667)",
+    "text": "",
+    "mouse": "Stop"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace",
+    "type": "Control",
+    "rect": "(775.30115, 517.33325), (266.6667, 386.6667)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/Paper",
+    "type": "NinePatchRect",
+    "rect": "(775.30115, 517.33325), (266.6667, 386.6667)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/Grain",
+    "type": "TextureRect",
+    "rect": "(775.30115, 517.33325), (266.6667, 386.6667)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/ArtEdge",
+    "type": "ColorRect",
+    "rect": "(791.30115, 575.99994), (234.66667, 133.33334)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/ArtNight",
+    "type": "ColorRect",
+    "rect": "(793.30115, 577.99994), (230.66667, 129.33334)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/Artwork",
+    "type": "TextureRect",
+    "rect": "(801.96783, 578.66656), (213.33334, 128)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/CostOrb",
+    "type": "TextureRect",
+    "rect": "(767.30115, 509.33325), (69.333336, 69.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/Cost",
+    "type": "SourceHudLabel",
+    "rect": "(767.30115, 509.33325), (69.333336, 66.66667)",
+    "text": "1",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/Name",
+    "type": "SourceHudLabel",
+    "rect": "(833.96783, 520.66656), (192, 52)",
+    "text": "打撃",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/TypeRibbon",
+    "type": "TextureRect",
+    "rect": "(808.63446, 698.6666), (200, 34.666668)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/RarityGem",
+    "type": "TextureRect",
+    "rect": "(861.30115, 699.99994), (32, 32)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/Type",
+    "type": "SourceHudLabel",
+    "rect": "(899.96783, 692.6666), (56, 42.666668)",
+    "text": "物理",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/Body",
+    "type": "SourceCardBody",
+    "rect": "(793.96783, 746.6666), (229.33334, 138.66667)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-sibling-002/SourceCardFace/Body/Text",
+    "type": "RichTextLabel",
+    "rect": "(793.96783, 785.3333), (229.33334, 138.66667)",
+    "text": "ダ⁠メ⁠ー⁠ジ⁠6⁠",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003",
+    "type": "CardTile",
+    "rect": "(1068.2688, 523.9534), (266.6668, 386.66666)",
+    "text": "",
+    "mouse": "Stop"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace",
+    "type": "Control",
+    "rect": "(1068.2688, 523.9534), (266.66666, 386.66666)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/Paper",
+    "type": "NinePatchRect",
+    "rect": "(1068.2688, 523.9534), (266.66666, 386.66666)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/Grain",
+    "type": "TextureRect",
+    "rect": "(1068.2688, 523.9534), (266.66666, 386.66666)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/ArtEdge",
+    "type": "ColorRect",
+    "rect": "(1081.1765, 583.3771), (234.66666, 133.33333)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/ArtNight",
+    "type": "ColorRect",
+    "rect": "(1083.0691, 585.479), (230.66666, 129.33333)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/Artwork",
+    "type": "TextureRect",
+    "rect": "(1091.689, 586.5983), (213.33331, 127.99999)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/CostOrb",
+    "type": "TextureRect",
+    "rect": "(1060.6985, 515.5457), (69.33333, 69.33333)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/Cost",
+    "type": "SourceHudLabel",
+    "rect": "(1060.6985, 515.5457), (69.33333, 66.666664)",
+    "text": "1",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/Name",
+    "type": "SourceHudLabel",
+    "rect": "(1126.6807, 530.3526), (191.99998, 51.999996)",
+    "text": "防御",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/TypeRibbon",
+    "type": "TextureRect",
+    "rect": "(1092.0662, 706.7828), (199.99998, 34.666664)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/RarityGem",
+    "type": "TextureRect",
+    "rect": "(1144.591, 710.8706), (31.999998, 31.999998)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/Type",
+    "type": "SourceHudLabel",
+    "rect": "(1183.5884, 705.57104), (55.999996, 42.666664)",
+    "text": "物理",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/Body",
+    "type": "SourceCardBody",
+    "rect": "(1074.9075, 753.9494), (229.33331, 138.66666)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/PersistentHand/Hand_authored-slash-guard-003/SourceCardFace/Body/Text",
+    "type": "RichTextLabel",
+    "rect": "(1072.8838, 792.56305), (229.33331, 138.66666)",
+    "text": "ブ⁠ロ⁠ッ⁠ク⁠5⁠",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas",
+    "type": "Control",
+    "rect": "(0, 0), (1950, 900)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/PlayerFootLedger",
+    "type": "PanelContainer",
+    "rect": "(32, 370.66663), (398.6667, 138.66669)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/PlayerFootLedger/HeroLedgerBody",
+    "type": "Control",
+    "rect": "(32, 370.66663), (398.6667, 138.66669)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/PlayerFootLedger/HeroLedgerBody/HeroHpBar",
+    "type": "SourceHealthBar",
+    "rect": "(42.666668, 381.33328), (377.33334, 38.13333)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/PlayerFootLedger/HeroLedgerBody/HeroHpBar/HpReadoutBacking",
+    "type": "ColorRect",
+    "rect": "(185.50002, 387.06662), (91.66666, 26.666666)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/PlayerFootLedger/HeroLedgerBody/HeroHpBar/HpReadout",
+    "type": "SourceHudLabel",
+    "rect": "(42.666668, 379.39996), (377.33334, 39)",
+    "text": "80 / 80",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/PlayerFootLedger/HeroLedgerBody/IncomingHeadline",
+    "type": "RichTextLabel",
+    "rect": "(42.666668, 422.69995), (377.33334, 45)",
+    "text": "HP 80 → 76（−4）",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/PlayerFootLedger/HeroLedgerBody/IncomingDetail",
+    "type": "RichTextLabel",
+    "rect": "(42.666668, 463.83328), (377.33334, 38.999992)",
+    "text": "受ける 4",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/PlayerFootLedger/HeroLedgerBody/IncomingForecast",
+    "type": "Button",
+    "rect": "(32, 370.66663), (398.6667, 138.66667)",
+    "text": "",
+    "mouse": "Stop"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/EnergyOrb",
+    "type": "SourceEnergyOrb",
+    "rect": "(32, 574.6666), (170.66667, 170.66669)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/NextEnergyCap",
+    "type": "PanelContainer",
+    "rect": "(32, 754.6666), (214, 39)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/NextEnergyCap/@Label@425",
+    "type": "Label",
+    "rect": "(32, 754.6666), (214, 39)",
+    "text": "次のターン 上限 3",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile",
+    "type": "Button",
+    "rect": "(32.620247, 796.92676), (200, 69.33331)",
+    "text": "",
+    "mouse": "Stop"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails",
+    "type": "Control",
+    "rect": "(32.620247, 796.92676), (0, 0)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph",
+    "type": "Control",
+    "rect": "(48.47819, 805.2048), (0, 0)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_0",
+    "type": "Control",
+    "rect": "(49.78805, 806.56116), (31.999998, 45.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_0/@ColorRect@427",
+    "type": "ColorRect",
+    "rect": "(49.78805, 806.56116), (31.999998, 45.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_0/@ColorRect@428",
+    "type": "ColorRect",
+    "rect": "(52.407772, 809.274), (26.666664, 1.3333333)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_0/@ColorRect@429",
+    "type": "ColorRect",
+    "rect": "(51.732944, 847.93475), (26.666664, 1.3333321)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_0/@ColorRect@430",
+    "type": "ColorRect",
+    "rect": "(52.407772, 809.274), (1.3333333, 40.000004)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_0/@ColorRect@431",
+    "type": "ColorRect",
+    "rect": "(77.73724, 809.71606), (1.333334, 40.000004)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_1",
+    "type": "Control",
+    "rect": "(56.360622, 812.0101), (32, 45.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_1/@ColorRect@432",
+    "type": "ColorRect",
+    "rect": "(56.360622, 812.0101), (32, 45.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_1/@ColorRect@433",
+    "type": "ColorRect",
+    "rect": "(58.980343, 814.7229), (26.666666, 1.3333333)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_1/@ColorRect@434",
+    "type": "ColorRect",
+    "rect": "(58.305515, 853.38367), (26.666666, 1.3333321)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_1/@ColorRect@435",
+    "type": "ColorRect",
+    "rect": "(58.980343, 814.7229), (1.3333333, 40.000004)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_1/@ColorRect@436",
+    "type": "ColorRect",
+    "rect": "(84.309814, 815.165), (1.333334, 40.000004)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileGlyph/MiniCard_1/@ColorRect@437",
+    "type": "ColorRect",
+    "rect": "(68.68794, 831.5615), (6.666666, 6.666666)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileCount",
+    "type": "SourceHudLabel",
+    "rect": "(97.80983, 805.7325), (80.00001, 69.33331)",
+    "text": "2",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DrawPile/PileDetails/PileName",
+    "type": "SourceHudLabel",
+    "rect": "(124.70973, 811.7028), (99.666664, 69.33331)",
+    "text": "山札",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DiscardPile",
+    "type": "Button",
+    "rect": "(1717.4102, 800.41724), (200, 69.33331)",
+    "text": "",
+    "mouse": "Stop"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DiscardPile/PileDetails",
+    "type": "Control",
+    "rect": "(1717.4102, 800.41724), (0, 0)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DiscardPile/PileDetails/PileGlyph",
+    "type": "Control",
+    "rect": "(1733.5474, 808.1368), (0, 0)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DiscardPile/PileDetails/PileGlyph/MiniCard_0",
+    "type": "Control",
+    "rect": "(1738.2831, 812.05475), (32, 45.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DiscardPile/PileDetails/PileGlyph/MiniCard_0/@ColorRect@439",
+    "type": "ColorRect",
+    "rect": "(1738.2831, 812.05475), (32, 1.3333334)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DiscardPile/PileDetails/PileGlyph/MiniCard_0/@ColorRect@440",
+    "type": "ColorRect",
+    "rect": "(1743.6454, 855.7268), (32, 1.3333321)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DiscardPile/PileDetails/PileGlyph/MiniCard_0/@ColorRect@441",
+    "type": "ColorRect",
+    "rect": "(1738.2831, 812.05475), (1.3333334, 45.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DiscardPile/PileDetails/PileGlyph/MiniCard_0/@ColorRect@442",
+    "type": "ColorRect",
+    "rect": "(1768.7212, 808.31744), (1.333334, 45.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DiscardPile/PileDetails/PileCount",
+    "type": "SourceHudLabel",
+    "rect": "(1782.8673, 806.9425), (80.00001, 69.33331)",
+    "text": "0",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/DiscardPile/PileDetails/PileName",
+    "type": "SourceHudLabel",
+    "rect": "(1809.9592, 811.97046), (99.666664, 69.33331)",
+    "text": "捨て札",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/EndTurn",
+    "type": "Button",
+    "rect": "(1611.3333, 620), (306.66675, 85.33331)",
+    "text": "ターン終了",
+    "mouse": "Stop"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/SetCountNote",
+    "type": "PanelContainer",
+    "rect": "(26.666668, 72), (193.33334, 39)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/SetCountNote/@Label@444",
+    "type": "Label",
+    "rect": "(26.666668, 72), (193.33334, 39)",
+    "text": "からくり 0 / 2",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/SetPocket_0",
+    "type": "Button",
+    "rect": "(32, 112), (90.66667, 98.66667)",
+    "text": "",
+    "mouse": "Stop"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/SetPocket_0/DashedPocket",
+    "type": "TextureRect",
+    "rect": "(32, 112), (90.66667, 98.66667)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/SetPocket_1",
+    "type": "Button",
+    "rect": "(136, 112), (90.66667, 98.66667)",
+    "text": "",
+    "mouse": "Stop"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/SourceBattleCanvas/SetPocket_1/DashedPocket",
+    "type": "TextureRect",
+    "rect": "(136, 112), (90.66667, 98.66667)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/HandAim",
+    "type": "SourceAimArrow",
+    "rect": "(0, 0), (1950, 900)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411",
+    "type": "MarginContainer",
+    "rect": "(0, 0), (1950, 900)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412",
+    "type": "VBoxContainer",
+    "rect": "(32, 32), (1886, 836)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader",
+    "type": "Control",
+    "rect": "(32, 32), (1886, 74.66667)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/EncounterTag",
+    "type": "Panel",
+    "rect": "(32, 10.666668), (346.66666, 53.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/EncounterTag/EncounterTagText",
+    "type": "SourceHudLabel",
+    "rect": "(45.273262, 16.472649), (109, 53.333336)",
+    "text": "幕1・行1",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/EncounterTag/@Label@413",
+    "type": "SourceHudLabel",
+    "rect": "(162.32968, 11.698176), (203, 53.333336)",
+    "text": "酸吐きの蜥蜴",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/TurnTag",
+    "type": "Panel",
+    "rect": "(394.66666, 16), (164.66666, 42.666668)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/TurnTag/TurnTagText",
+    "type": "SourceHudLabel",
+    "rect": "(408, 15.333334), (138, 42.666664)",
+    "text": "    ターン 1",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/TurnTag/TurnIcon",
+    "type": "TextureRect",
+    "rect": "(408, 26.666668), (21.333334, 21.333332)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/ManaTag",
+    "type": "Panel",
+    "rect": "(1628, 14.666668), (188.66663, 45.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/ManaTag/ManaTagText",
+    "type": "SourceHudLabel",
+    "rect": "(1641.3334, 16.333336), (88, 45.333336)",
+    "text": "    魔素",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/ManaTag/@Label@414",
+    "type": "SourceHudLabel",
+    "rect": "(1737.3334, 12.833336), (18, 45.333336)",
+    "text": "0",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/ManaTag/@Label@415",
+    "type": "SourceHudLabel",
+    "rect": "(1763.3334, 15.833336), (40, 45.333336)",
+    "text": "/50",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/ManaTag/ManaIcon",
+    "type": "TextureRect",
+    "rect": "(1641.3334, 25.333336), (24.000002, 24)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/GoldTag",
+    "type": "Panel",
+    "rect": "(1464.3334, 14.666668), (147.66663, 45.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/GoldTag/GoldTagText",
+    "type": "SourceHudLabel",
+    "rect": "(1477.6667, 13.333336), (93, 45.333336)",
+    "text": "    150",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/GoldTag/@Label@416",
+    "type": "SourceHudLabel",
+    "rect": "(1578.6667, 15.833336), (20.000008, 45.333336)",
+    "text": "G",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/GoldTag/GoldIcon",
+    "type": "TextureRect",
+    "rect": "(1477.6667, 26.666668), (21.333334, 21.333336)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/BattleMenu",
+    "type": "Button",
+    "rect": "(1832.6666, 2.666666), (85.333374, 69.333336)",
+    "text": "≡",
+    "mouse": "Stop"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/TurnPlaque",
+    "type": "PanelContainer",
+    "rect": "(875, 17.333334), (200, 40)",
+    "text": "",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/BattleHeader/TurnPlaque/@Label@418",
+    "type": "Label",
+    "rect": "(875, 17.333334), (200, 39)",
+    "text": "あなたの番",
+    "mouse": "Ignore"
+  },
+  {
+    "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@411/@VBoxContainer@412/@VBoxContainer@419",
+    "type": "VBoxContainer",
+    "rect": "(32, 116), (1886, 752)",
+    "text": "",
+    "mouse": "Ignore"
+  }
+]

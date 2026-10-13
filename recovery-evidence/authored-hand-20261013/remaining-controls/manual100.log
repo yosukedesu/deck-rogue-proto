@@ -1,0 +1,90 @@
+Godot Engine v4.6.3.stable.mono.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+[AtmosphereRecovery] reconstructed-atmosphere-20261012-r4, act 1, stage-only
+DECKROGUE_RECOVERY_MODULE mvid=702f4e32-3da6-4084-9625-34a7ae52937b
+DECKROGUE_PORT_READY cards=466 leaders=15 enemies=89
+UNITY_UI_MANUAL_READY /workspace/scratch/948944000d55/unity-parity-20261013/remaining-controls-ccdce85/manual100
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T055427967_001_manual-001.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T055448151_002_manual-002.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T055458936_003_manual-003.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T055515752_004_manual-004.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T055551795_005_manual-005.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T055623480_006_manual-006.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T060023699_007_manual-007.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T060053604_008_manual-008.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T060136521_009_manual-009.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T060206422_010_manual-010.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T060259991_011_manual-011.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T060324184_012_manual-012.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T060413159_013_manual-013.png
+ERROR: System.InvalidOperationException: No run is active.
+   at DeckRogue.GodotPort.Core.SessionController.ExportSave() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/DeckRogue/GodotPort/Core/SessionController.cs:line 582
+   at DeckRogue.GodotPort.Core.GameSession.ExportSave() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/DeckRogue/GodotPort/Core/GameSession.cs:line 319
+   at DeckRogue.GodotPort.RecoveryQA.UnityUiManualQa.Log(String kind, Object detail) in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/recovery-validation/UnityUiManualQa.cs:line 36
+   at DeckRogue.GodotPort.RecoveryQA.UnityUiManualQa.<>c__DisplayClass19_1.<Attach>b__0() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/recovery-validation/UnityUiManualQa.cs:line 33
+   at Godot.Callable.<From>g__Trampoline|1_0(Object delegateObj, NativeVariantPtrArgs args, godot_variant& ret) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Callable.generics.cs:line 39
+   at Godot.DelegateUtils.InvokeWithVariantArgs(IntPtr delegateGCHandle, Void* trampoline, godot_variant** args, Int32 argc, godot_variant* outRet) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/DelegateUtils.cs:line 86
+   at: void Godot.NativeInterop.ExceptionUtils.LogException(System.Exception) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/NativeInterop/ExceptionUtils.cs:113)
+   C# backtrace (most recent call first):
+       [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+       [1] void Godot.NativeInterop.ExceptionUtils.LogException(System.Exception) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/NativeInterop/ExceptionUtils.cs:113)
+       [2] void Godot.DelegateUtils.InvokeWithVariantArgs(nint, System.Void*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/DelegateUtils.cs:86)
+ERROR: System.InvalidOperationException: No run is active.
+   at DeckRogue.GodotPort.Core.SessionController.ExportSave() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/DeckRogue/GodotPort/Core/SessionController.cs:line 582
+   at DeckRogue.GodotPort.Core.GameSession.ExportSave() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/DeckRogue/GodotPort/Core/GameSession.cs:line 319
+   at DeckRogue.GodotPort.RecoveryQA.UnityUiManualQa.Dump() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/recovery-validation/UnityUiManualQa.cs:line 35
+   at DeckRogue.GodotPort.RecoveryQA.UnityUiManualQa.Poll() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/recovery-validation/UnityUiManualQa.cs:line 31
+   at Godot.Callable.<From>g__Trampoline|1_0(Object delegateObj, NativeVariantPtrArgs args, godot_variant& ret) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Callable.generics.cs:line 39
+   at Godot.DelegateUtils.InvokeWithVariantArgs(IntPtr delegateGCHandle, Void* trampoline, godot_variant** args, Int32 argc, godot_variant* outRet) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/DelegateUtils.cs:line 86
+   at: void Godot.NativeInterop.ExceptionUtils.LogException(System.Exception) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/NativeInterop/ExceptionUtils.cs:113)
+   C# backtrace (most recent call first):
+       [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+       [1] void Godot.NativeInterop.ExceptionUtils.LogException(System.Exception) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/NativeInterop/ExceptionUtils.cs:113)
+       [2] void Godot.DelegateUtils.InvokeWithVariantArgs(nint, System.Void*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/DelegateUtils.cs:86)
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T060444193_014_manual-014.png
+ERROR: System.InvalidOperationException: No run is active.
+   at DeckRogue.GodotPort.Core.SessionController.ExportSave() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/DeckRogue/GodotPort/Core/SessionController.cs:line 582
+   at DeckRogue.GodotPort.Core.GameSession.ExportSave() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/DeckRogue/GodotPort/Core/GameSession.cs:line 319
+   at DeckRogue.GodotPort.RecoveryQA.UnityUiManualQa.Dump() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/recovery-validation/UnityUiManualQa.cs:line 35
+   at DeckRogue.GodotPort.RecoveryQA.UnityUiManualQa.Poll() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/recovery-validation/UnityUiManualQa.cs:line 31
+   at Godot.Callable.<From>g__Trampoline|1_0(Object delegateObj, NativeVariantPtrArgs args, godot_variant& ret) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Callable.generics.cs:line 39
+   at Godot.DelegateUtils.InvokeWithVariantArgs(IntPtr delegateGCHandle, Void* trampoline, godot_variant** args, Int32 argc, godot_variant* outRet) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/DelegateUtils.cs:line 86
+   at: void Godot.NativeInterop.ExceptionUtils.LogException(System.Exception) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/NativeInterop/ExceptionUtils.cs:113)
+   C# backtrace (most recent call first):
+       [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+       [1] void Godot.NativeInterop.ExceptionUtils.LogException(System.Exception) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/NativeInterop/ExceptionUtils.cs:113)
+       [2] void Godot.DelegateUtils.InvokeWithVariantArgs(nint, System.Void*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/DelegateUtils.cs:86)
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T060444471_015_manual-015.png
+ERROR: System.InvalidOperationException: No run is active.
+   at DeckRogue.GodotPort.Core.SessionController.ExportSave() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/DeckRogue/GodotPort/Core/SessionController.cs:line 582
+   at DeckRogue.GodotPort.Core.GameSession.ExportSave() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/DeckRogue/GodotPort/Core/GameSession.cs:line 319
+   at DeckRogue.GodotPort.RecoveryQA.UnityUiManualQa.Dump() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/recovery-validation/UnityUiManualQa.cs:line 35
+   at DeckRogue.GodotPort.RecoveryQA.UnityUiManualQa.Poll() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/recovery-validation/UnityUiManualQa.cs:line 31
+   at Godot.Callable.<From>g__Trampoline|1_0(Object delegateObj, NativeVariantPtrArgs args, godot_variant& ret) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Callable.generics.cs:line 39
+   at Godot.DelegateUtils.InvokeWithVariantArgs(IntPtr delegateGCHandle, Void* trampoline, godot_variant** args, Int32 argc, godot_variant* outRet) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/DelegateUtils.cs:line 86
+   at: void Godot.NativeInterop.ExceptionUtils.LogException(System.Exception) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/NativeInterop/ExceptionUtils.cs:113)
+   C# backtrace (most recent call first):
+       [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+       [1] void Godot.NativeInterop.ExceptionUtils.LogException(System.Exception) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/NativeInterop/ExceptionUtils.cs:113)
+       [2] void Godot.DelegateUtils.InvokeWithVariantArgs(nint, System.Void*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/DelegateUtils.cs:86)
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T060444761_016_manual-016.png
+ERROR: System.InvalidOperationException: No run is active.
+   at DeckRogue.GodotPort.Core.SessionController.ExportSave() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/DeckRogue/GodotPort/Core/SessionController.cs:line 582
+   at DeckRogue.GodotPort.Core.GameSession.ExportSave() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/DeckRogue/GodotPort/Core/GameSession.cs:line 319
+   at DeckRogue.GodotPort.RecoveryQA.UnityUiManualQa.Dump() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/recovery-validation/UnityUiManualQa.cs:line 35
+   at DeckRogue.GodotPort.RecoveryQA.UnityUiManualQa.Poll() in /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/recovery-validation/UnityUiManualQa.cs:line 31
+   at Godot.Callable.<From>g__Trampoline|1_0(Object delegateObj, NativeVariantPtrArgs args, godot_variant& ret) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/Callable.generics.cs:line 39
+   at Godot.DelegateUtils.InvokeWithVariantArgs(IntPtr delegateGCHandle, Void* trampoline, godot_variant** args, Int32 argc, godot_variant* outRet) in /root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/DelegateUtils.cs:line 86
+   at: void Godot.NativeInterop.ExceptionUtils.LogException(System.Exception) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/NativeInterop/ExceptionUtils.cs:113)
+   C# backtrace (most recent call first):
+       [0] void Godot.GD.PushError(string) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/GD.cs:366)
+       [1] void Godot.NativeInterop.ExceptionUtils.LogException(System.Exception) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/NativeInterop/ExceptionUtils.cs:113)
+       [2] void Godot.DelegateUtils.InvokeWithVariantArgs(nint, System.Void*, Godot.NativeInterop.godot_variant**, int, Godot.NativeInterop.godot_variant*) (/root/godot/modules/mono/glue/GodotSharp/GodotSharp/Core/DelegateUtils.cs:86)
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/accepted-ccdce85-preview/project/qa/captures/20261013T060445036_017_manual-017.png
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+   at: cleanup (core/object/object.cpp:2663)
+ERROR: 2 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:810)

@@ -1,0 +1,11 @@
+{
+  "schema": "hand-native-trace/1",
+  "reason": "frame-limit",
+  "processRows": 599,
+  "drawRows": 600,
+  "faults": [],
+  "observerClean": true,
+  "nativeAcceptance": "NOT_AUTOMATICALLY_EVALUATED",
+  "costIncludesSerializationAtFlush": false,
+  "captureCostSeconds": 1.680074175
+}

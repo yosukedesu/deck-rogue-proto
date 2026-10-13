@@ -1,0 +1,72 @@
+{
+  "schema": "hand-native-checks/1",
+  "observedChecksPass": true,
+  "issues": [],
+  "authored": [
+    {
+      "owner": 9,
+      "uid": "authored-slash-played-001",
+      "tile": 74524396651,
+      "duration": 0.09099999815225601,
+      "createFrame": 327,
+      "firstActualCallbackFrame": 327,
+      "completeFrame": 327,
+      "cancelFrame": null
+    }
+  ],
+  "hoverAndReturn": [
+    {
+      "owner": 2,
+      "uid": "authored-slash-played-001",
+      "tile": 74524396651,
+      "dragReturn": false,
+      "duration": 0.12,
+      "createFrame": 109,
+      "terminal": [
+        {
+          "kind": "hover-return-cancel",
+          "frame": 109,
+          "elapsed": 0.0
+        }
+      ]
+    },
+    {
+      "owner": 3,
+      "uid": "authored-slash-played-001",
+      "tile": 74524396651,
+      "dragReturn": true,
+      "duration": 0.15,
+      "createFrame": 115,
+      "terminal": [
+        {
+          "kind": "hover-return-complete",
+          "frame": 117,
+          "elapsed": 0.15
+        }
+      ]
+    },
+    {
+      "owner": 4,
+      "uid": "authored-slash-played-001",
+      "tile": 74524396651,
+      "dragReturn": false,
+      "duration": 0.12,
+      "createFrame": 187,
+      "terminal": [
+        {
+          "kind": "hover-return-complete",
+          "frame": 188,
+          "elapsed": 0.12
+        }
+      ]
+    }
+  ],
+  "processRows": 599,
+  "drawRows": 600,
+  "staleAttemptRows": [],
+  "staleRaceCoverage": "NOT_EXERCISED",
+  "nativeAcceptance": "NOT_AUTOMATICALLY_GRANTED",
+  "baselineFirstSetterCallback": "UNOBSERVABLE_WITHOUT_CHANGING_PROPERTY_TWEENER; first positive native elapsed is a separate readback gate",
+  "fullFinalRunMatchesOriginalEngineExpected": true,
+  "visibleReturnParity": "FAILED_EXISTING_DRAG_PREVIEW_GAP"
+}

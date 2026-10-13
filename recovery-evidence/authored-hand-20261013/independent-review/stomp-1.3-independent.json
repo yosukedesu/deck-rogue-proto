@@ -1,0 +1,35 @@
+{
+  "style": "stomp",
+  "textScale": "1.3",
+  "assertions": 5329,
+  "passed": true,
+  "admissionProcessFrame": 126,
+  "firstPositiveNativeElapsedByPhase": {
+    "process-before-node-update": {
+      "relativeFrame": 1,
+      "elapsed": 0.016666666666666666
+    },
+    "post-draw": {
+      "relativeFrame": 0,
+      "elapsed": 0.016666666666666666
+    }
+  },
+  "createProcessFrame": 126,
+  "completionProcessFrame": 132,
+  "treeRemovalProcessFrame": 132,
+  "duration": 0.10000000149011612,
+  "tailSeconds": 1.4666653000000003,
+  "sourceHashes": {
+    "unity-parity-20261013/authored-hand-native/baseline-stomp-1.3/hand-native-trace/trace.jsonl": "10e3edf66cad1fae467cb41c144d5916cc636a280cde92165ff7d23d292923c4",
+    "unity-parity-20261013/authored-hand-native/baseline-stomp-1.3/hand-native-trace/capture-status.json": "919f25ba891d70a1fca652980fb93932a5c894b5a05ae3824f4d701b06d9f4fc",
+    "unity-parity-20261013/authored-hand-native/baseline-stomp-1.3/hand-native-trace/final.save.json": "944e0a8f385337520000f1e6cc6033313a90a41bab4d6cb144bed5333d86e02f",
+    "unity-parity-20261013/authored-hand-native/candidate-stomp-1.3/hand-native-trace/trace.jsonl": "17476aa1f5fcdbe9774f57cb5319788f01898e95b2cdc93231a9b7dfc3a4a57a",
+    "unity-parity-20261013/authored-hand-native/candidate-stomp-1.3/hand-native-trace/capture-status.json": "7a5c5d254267cc73f23f9d43376dce9d0b311486f1fd56c40c44018ea267cf28",
+    "unity-parity-20261013/authored-hand-native/candidate-stomp-1.3/hand-native-trace/final.save.json": "944e0a8f385337520000f1e6cc6033313a90a41bab4d6cb144bed5333d86e02f"
+  },
+  "limits": [
+    "No baseline property-setter callback or allocator-destruction claim",
+    "No pointer, stale-race, exhaust or live-host cadence acceptance from scheduled fixed60 commands",
+    "Source trajectory is checked separately by the original analyzer and reviewed native pixels"
+  ]
+}

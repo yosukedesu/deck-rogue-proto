@@ -1,0 +1,80 @@
+{
+  "scope": "Three unchanged base definitions plus their existing one-time UpgradeCard result; does not fabricate CardDef.Exhaust or relabel fused cards.",
+  "cards": [
+    {
+      "Card": "green_strike",
+      "defaultExhaust": null,
+      "upgradeAllowed": true,
+      "upgrade": {
+        "rarity": "common",
+        "id": "green_strike",
+        "name": "打撃+",
+        "cost": 1,
+        "type": "physical",
+        "color": "green",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 9
+          }
+        ]
+      },
+      "upgradedExhaust": null,
+      "conclusion": "Base and original one-time upgrade do not exhaust. No exhaust fixture is claimed."
+    },
+    {
+      "Card": "blue_strike",
+      "defaultExhaust": null,
+      "upgradeAllowed": true,
+      "upgrade": {
+        "rarity": "common",
+        "id": "blue_strike",
+        "name": "水撃+",
+        "cost": 1,
+        "type": "spell",
+        "color": "blue",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 8
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "drawCards",
+            "amount": 2
+          }
+        ]
+      },
+      "upgradedExhaust": null,
+      "conclusion": "Base and original one-time upgrade do not exhaust. No exhaust fixture is claimed."
+    },
+    {
+      "Card": "green_finisher_stomp",
+      "defaultExhaust": null,
+      "upgradeAllowed": true,
+      "upgrade": {
+        "rarity": "rare",
+        "axis": [
+          "ramp"
+        ],
+        "id": "green_finisher_stomp",
+        "name": "巨獣の踏みつけ+",
+        "cost": 5,
+        "type": "physical",
+        "color": "green",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 75
+          }
+        ],
+        "retain": true
+      },
+      "upgradedExhaust": null,
+      "conclusion": "Base and original one-time upgrade do not exhaust. No exhaust fixture is claimed."
+    }
+  ]
+}

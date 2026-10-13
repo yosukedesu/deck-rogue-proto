@@ -1,0 +1,90 @@
+#if RECOVERY_QA && HAND_NATIVE_TRACE
+// TEST ONLY. Observer: no commands, synthetic input, clocks, gates or visual writes.
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using DeckRogue.GodotPort.Core;
+using DeckRogue.GodotPort.Presentation;
+using DeckRogue.GodotPort.UI;
+using Godot;
+using Newtonsoft.Json;
+namespace DeckRogue.GodotPort.RecoveryQA;
+public static class HandNativeTrace
+{
+    const BindingFlags Flags=BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic;
+    static Node root; static GameUI ui; static BattleStage stage; static GameSession session;
+    static string output; static bool active, png; static int processRows,drawRows,limit;
+    static long start,serial,costTicks; static ulong lastProcess,lastDrawProcess; static string pointerUid;
+    static readonly List<object> rows=new(); static readonly List<string> faults=new();
+    static readonly Dictionary<object,long> identities=new(ReferenceEqualityComparer.Instance);
+    static readonly Dictionary<ulong,BaseTween> baseline=new();
+    static readonly HashSet<ulong> tiles=new();
+    sealed class BaseTween {public string Uid;public CardTile Tile;public Tween Tween;public double Duration;public long Epoch,Revision;public bool First;}
+    public static bool Passive=>active&&OS.GetCmdlineUserArgs().Contains("--hand-native-passive");
+    static object F(object x,string key)=>x?.GetType().GetField(key,Flags)?.GetValue(x)??x?.GetType().GetProperty(key,Flags)?.GetValue(x);
+    static long Id(object x){if(x==null)return 0;if(!identities.TryGetValue(x,out long id))identities[x]=id=identities.Count+1;return id;}
+    static object V(Vector2 v)=>new[]{v.X,v.Y};
+    static string Hash(string text)=>Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(text))).ToLowerInvariant();
+    static IEnumerable<Node> Desc(Node n){foreach(Node c in n.GetChildren()){yield return c;foreach(var d in Desc(c))yield return d;}}
+    static IEnumerable<(string key,object value)> Entries(object x){if(x is IDictionary d)foreach(DictionaryEntry e in d)yield return(e.Key.ToString(),e.Value);}
+    static object Lookup(object x,string key)=>x is IDictionary d&&d.Contains(key)?d[key]:null;
+    static bool Valid(GodotObject x)=>x!=null&&GodotObject.IsInstanceValid(x);
+    static object Tile(CardTile t)=>!Valid(t)?new{alive=false}:(object)new{alive=true,instance=t.GetInstanceId(),t.CardUid,definitionId=t.GetMeta("definition_id","").AsString(),position=V(t.Position),scale=V(t.Scale),t.RotationDegrees,alpha=t.Modulate.A,pivot=V(t.PivotOffset),size=V(t.Size),parent=t.GetParent()?.GetInstanceId(),queued=t.IsQueuedForDeletion(),visible=t.IsVisibleInTree(),t.Disabled,t.AllowDrag,mouseFilter=t.MouseFilter.ToString()};
+    static object Ctl(Control c)=>!Valid(c)?null:new{instance=c.GetInstanceId(),size=V(c.Size),position=V(c.Position),pivot=V(c.PivotOffset),transform=new[]{V(c.GetGlobalTransformWithCanvas().X),V(c.GetGlobalTransformWithCanvas().Y),V(c.GetGlobalTransformWithCanvas().Origin)}};
+    static object Plan(object p)=>p==null?null:new{epoch=F(p,"Epoch"),revision=F(p,"Revision"),clonedUid=F(p,"CardUid"),definitionId=F(p,"DefinitionId"),duration=F(p,"Duration"),exhaust=F(p,"Exhaust"),target=F(p,"AdmittedTargetIndex"),valid=F(p,"Valid"),style=F(p,"Style")};
+    static object Owner(string uid,object owner,CardTile explicitTile=null)
+    {
+        object admission=F(owner,"Admission"),plan=F(admission,"Plan")??F(owner,"Plan");
+        var tile=explicitTile??F(admission,"Tile") as CardTile??F(owner,"Tile") as CardTile;
+        object clock=F(owner,"Clock");var tween=F(owner,"Tween") as Tween;
+        string ownerContainer=clock!=null&&F(owner,"DragReturn") is bool?"_uxHandHoverPoses":admission!=null?"_uxAuthoredHandExits":plan!=null?"_uxAdmittedHandExits":null;
+        object current=ownerContainer==null?null:Lookup(F(ui,ownerContainer),uid);object live=Lookup(F(ui,"_uxTiles"),uid);
+        return new{ownerId=Id(owner),admissionId=Id(admission),plan=Plan(plan),tile=Tile(tile),destination=F(admission,"To") is Vector2 to?V(to):F(owner,"To") is Vector2 ht?V(ht):null,from=F(owner,"From") is Vector2 f?V(f):null,fromScale=F(owner,"FromScale") is Vector2 fs?V(fs):null,toScale=F(owner,"ToScale") is Vector2 ts?V(ts):null,startAlpha=F(owner,"StartAlpha"),unit=F(admission,"Unit")??F(owner,"Unit"),canvas=F(admission,"CanvasSize") is Vector2 ac?V(ac):F(owner,"CanvasSize") is Vector2 hc?V(hc):null,epoch=F(owner,"Epoch"),dragReturn=F(owner,"DragReturn"),clock=clock==null?null:new{elapsed=F(clock,"Elapsed"),duration=F(clock,"_duration"),complete=F(clock,"Complete"),cancelled=F(clock,"Cancelled"),lastAdvancedFrame=F(clock,"_lastFrame")},tween=Tween(tween),guard=new{ownerContainer,ownerPhase=ownerContainer=="_uxHandHoverPoses"?"hover-or-return":ownerContainer=="_uxAdmittedHandExits"?"pending-admission":ownerContainer=="_uxAuthoredHandExits"?"active-authored":"not-tracked",uiEpoch=F(ui,"_uxEpoch"),currentOwnerId=Id(current),sameCurrentOwner=current!=null&&ReferenceEquals(owner,current),liveTileId=live is CardTile l&&Valid(l)?l.GetInstanceId():0,hasLiveSameUid=live!=null,sameLiveTile=ReferenceEquals(tile,live),route=ui.CurrentRoute,overlayOpen=F(ui,"_overlay")!=null}};
+    }
+    static object Tween(Tween t)=>!Valid(t)?null:new{instance=t.GetInstanceId(),valid=t.IsValid(),running=t.IsValid()&&t.IsRunning(),totalElapsed=t.IsValid()?(double?)t.GetTotalElapsedTime():null};
+    static void Safe(Action action){if(!active)return;long t=Stopwatch.GetTimestamp();try{action();}catch(Exception e){faults.Add(e.ToString());}finally{costTicks+=Stopwatch.GetTimestamp()-t;}}
+    static void Row(string kind,object detail)=>rows.Add(new{sequence=++serial,kind,processFrame=Godot.Engine.GetProcessFrames(),drawnFrame=Godot.Engine.GetFramesDrawn(),wallSeconds=(Stopwatch.GetTimestamp()-start)/(double)Stopwatch.Frequency,timeScale=Godot.Engine.TimeScale,detail});
+    public static void Start(Node node,BattleStage battle,GameUI gameUi,GameSession gameSession,string[] args)
+    {
+        if(!args.Contains("--hand-native-trace"))return;
+        if(active)throw new InvalidOperationException("One hand trace per process");
+        string Arg(string k,string fallback){int i=Array.IndexOf(args,k);return i>=0?args[i+1]:fallback;}
+        root=node;stage=battle;ui=gameUi;session=gameSession;
+        output=Path.Combine(Arg("--parity-out", ""),"hand-native-trace");
+        if(Directory.Exists(output))throw new IOException("Fresh hand-native-trace output required");
+        if(DisplayServer.GetName()=="headless")throw new InvalidOperationException("Native display required");
+        limit=int.Parse(Arg("--hand-trace-frames","1800"));if(limit<1||limit>18000)throw new ArgumentOutOfRangeException("--hand-trace-frames");
+        png=args.Contains("--hand-trace-png");Directory.CreateDirectory(output);start=Stopwatch.GetTimestamp();active=true;
+        root.GetTree().ProcessFrame+=Process;RenderingServer.FramePostDraw+=Draw;root.TreeExiting+=()=>Finish("tree-exiting");
+        session.StateChanged+=change=>Safe(()=>{string save=session.ExportSave();File.WriteAllText(Path.Combine(output,$"state-{change.Revision:0000}-{serial+1:000000}.save.json"),save);Row("state-change",new{change.Revision,change.IsReset,changeId=Id(change),commandId=Id(change.Command),innerCommandId=Id(F(change.Command,"Command")),command=JsonConvert.SerializeObject(change.Command),stateSha=Hash(save),events=JsonConvert.SerializeObject(change.Events)});});
+        stage.NumericContactPresented+=e=>Safe(()=>Row("numeric-contact",new{stage.PresentationTime,session.Revision,stage.RejectedReceiptCount,stage.LastEventReceiptRejected,eventData=JsonConvert.SerializeObject(e)}));
+        stage.EventPresented+=e=>Safe(()=>Row("presented-event",new{stage.PresentationTime,session.Revision,stage.RejectedReceiptCount,stage.LastEventReceiptRejected,eventData=JsonConvert.SerializeObject(e)}));
+        Row("trace-start",new{schema="hand-native-trace/1",args,limit,png,assemblyMvid=typeof(HandNativeTrace).Assembly.ManifestModule.ModuleVersionId,uiEpoch=F(ui,"_uxEpoch"),session.Revision,normalProcessAndDraw=true,syntheticInput=false,clockWarning="Native engine observations only. Callback, serialization and PNG readback cost can stretch live host deltas. Fixed-fps is controlled simulation, not live performance."});
+    }
+    public static void DispatchAttempt(object command)=>Safe(()=>Row("original-dispatch-attempt",new{commandId=Id(command),innerCommandId=Id(F(command,"Command")),command=JsonConvert.SerializeObject(command)}));
+    public static void Admission(GameUI observed,SessionChange change)=>Safe(()=>{if(!ReferenceEquals(observed,ui))return;string uid=F(F(change.Command,"Command"),"CardUid") as string;var hand=F(ui,"_uxHand") as Control;var battle=F(ui,"_uxBattle") as Control;var pile=battle?.GetNodeOrNull<Control>("DiscardPile");var tile=uid==null?null:Lookup(F(ui,"_uxTiles"),uid) as CardTile;bool registered=EntriesOrItems(F(stage,"_commands")).Any(o=>ReferenceEquals(F(o,"Change"),change));Row("admission-before-rebuild",new{changeId=Id(change),commandId=Id(change.Command),innerCommandId=Id(F(change.Command,"Command")),command=JsonConvert.SerializeObject(change.Command),change.Revision,change.IsReset,epoch=F(ui,"_uxEpoch"),clonedUid=uid,registeredChangeIdentity=registered,tile=Tile(tile),hand=Ctl(hand),discardPile=Ctl(pile),actualDestination=Valid(hand)&&Valid(pile)&&Valid(tile)?V(hand.GetGlobalTransformWithCanvas().AffineInverse()*(pile.GetGlobalTransformWithCanvas()*(pile.Size/2))-tile.PivotOffset):null,stage.SourceShowcaseEnabled});});
+    static IEnumerable<object> EntriesOrItems(object x){if(x is IEnumerable en)foreach(object item in en)yield return item;}
+    public static void Event(GameUI observed,string kind,string uid,object owner=null,CardTile tile=null,float? normalized=null)=>Safe(()=>{if(ReferenceEquals(observed,ui))Row(kind,new{uid,normalized,owner=Owner(uid??"",owner,tile)});});
+    public static void Baseline(GameUI observed,string uid,CardTile tile,Tween tween,double duration)=>Safe(()=>{if(!ReferenceEquals(observed,ui))return;var b=new BaseTween{Uid=uid,Tile=tile,Tween=tween,Duration=duration,Epoch=(long)F(ui,"_uxEpoch"),Revision=session.Revision};baseline[tile.GetInstanceId()]=b;Row("baseline-create",new{uid,epoch=b.Epoch,revision=b.Revision,duration,tile=Tile(tile),tween=Tween(tween)});});
+    public static void BaselineComplete(GameUI observed,string uid,CardTile tile,Tween tween)=>Safe(()=>{if(!ReferenceEquals(observed,ui))return;Row("baseline-complete-callback",new{uid,tile=Tile(tile),tween=Tween(tween)});baseline.Remove(tile.GetInstanceId());});
+    public static void Pointer(CardTile tile,InputEvent input)=>Safe(()=>{if(input is InputEventMouseButton m){if(m.Pressed&&m.ButtonIndex==MouseButton.Left)pointerUid=tile.CardUid;Row(m.Pressed?"pointer-down":"pointer-up",new{uid=tile.CardUid,pressedUid=pointerUid,tile=Tile(tile),button=m.ButtonIndex.ToString(),position=V(m.Position),global=V(m.GlobalPosition),epoch=F(ui,"_uxEpoch")});}});
+    public static void DragEnd(CardTile tile)=>Safe(()=>Row("drag-end-notification",new{pressedUid=pointerUid,uid=tile.CardUid,tile=Tile(tile),epoch=F(ui,"_uxEpoch"),leftDown=Input.IsMouseButtonPressed(MouseButton.Left),mouse=V(ui.GetGlobalMousePosition())}));
+    public static Variant Payload(CardTile tile,Variant payload){Safe(()=>{var d=payload.VariantType==Variant.Type.Dictionary?payload.AsGodotDictionary():null;Row("drag-payload",new{pressedUid=pointerUid,uid=tile.CardUid,tile=Tile(tile),payloadUid=d!=null&&d.ContainsKey("uid")?d["uid"].AsString():payload.ToString(),payloadEpoch=d!=null&&d.ContainsKey("epoch")?(long?)d["epoch"].AsInt64():null,epoch=F(ui,"_uxEpoch")});});return payload;}
+    static object Snapshot()=>new{uiEpoch=F(ui,"_uxEpoch"),session.Revision,stage.PresentationTime,stage.InputLocked,ui.IsInputBlocked,stage.IsPresenting,stage.ActiveMotionCount,stage.ActiveCommandRevision,stage.PendingCommandCount,stage.PendingActorActions,stage.PendingActorContacts,stage.ActorActionLaunchCount,stage.LastActorLaunchAt,stage.LastActorLaunchFrame,stage.LastActorContactAt,stage.LastActorContactFrame,stage.LastActorContactRevision,stage.DamageAudioCount,stage.DamageContactCount,stage.PresentedSemanticCueCount,stage.RejectedSemanticCueCount,stage.PresentedBlockBoundaryCount,stage.CompletedEventCount,stage.RejectedReceiptCount,stage.LastEventReceiptRejected,ui.ActiveHandDealCount,ui.ActiveHandHoverCount,ui.ActiveHandReturnCount,ui.ActiveHandExitCount,ui.HandExitStartCount,authoredStarts=F(ui,"AuthoredHandExitStartCount"),authoredCompletes=F(ui,"AuthoredHandExitCompleteCount"),pointer=new{pressedUid=pointerUid,leftDown=Input.IsMouseButtonPressed(MouseButton.Left),dragUid=F(ui,"_uxDrag"),hoverUid=F(ui,"_uxHover"),position=V(ui.GetGlobalMousePosition())},logicalSize=V(ui.Size),uiPhoneLayout=F(ui,"PhoneLayout"),stagePhoneLayout=Desc(stage).OfType<StageWorld>().FirstOrDefault()?.PhoneLayout,hostDelta=F(stage,"_lastHostDelta"),activeAuthored=Entries(F(ui,"_uxAuthoredHandExits")).Select(p=>new{uid=p.key,owner=Owner(p.key,p.value)}).ToArray(),pendingAuthored=Entries(F(ui,"_uxAdmittedHandExits")).Select(p=>new{uid=p.key,plan=Plan(F(p.value,"Plan")),tile=Tile(F(p.value,"Tile") as CardTile),destination=F(p.value,"To") is Vector2 v?V(v):null}).ToArray(),hoverReturn=Entries(F(ui,"_uxHandHoverPoses")).Select(p=>new{uid=p.key,owner=Owner(p.key,p.value)}).ToArray(),tiles=Desc(ui).OfType<CardTile>().Select(Tile).ToArray(),actors=Desc(stage).OfType<BattleActor>().Select(a=>new{a.DefinitionId,a.EnemyIndex,a.PoseName,a.PoseStartCount,a.PoseFrame,a.Motion.MotionVersion,a.Motion.ApproachElapsed,uiLungeActive=a.UiLunge.Active,uiLungeElapsed=a.UiLunge.Elapsed,uiLungeVersion=a.UiLunge.Version}).ToArray()};
+    static void ObserveBaseline(string observationPhase){foreach(var b in baseline.Values.ToArray()){if(!Valid(b.Tween)||!b.Tween.IsValid())continue;double elapsed=b.Tween.GetTotalElapsedTime();if(!b.First&&elapsed>0){b.First=true;Row("baseline-first-positive-native-elapsed",new{b.Uid,b.Epoch,b.Revision,b.Duration,elapsed,observationPhase,derivedFraction=Math.Clamp(elapsed/b.Duration,0,1),tile=Tile(b.Tile),phase="observer readback; not a property setter callback"});}Row("baseline-readback",new{b.Uid,b.Epoch,b.Revision,b.Duration,elapsed,observationPhase,derivedFraction=Math.Clamp(elapsed/b.Duration,0,1),tile=Tile(b.Tile),tween=Tween(b.Tween)});}}
+    static void Process()=>Safe(()=>{ulong p=Godot.Engine.GetProcessFrames();if(lastProcess!=0&&p!=lastProcess+1)faults.Add($"process gap {lastProcess}->{p}");lastProcess=p;processRows++;foreach(var tile in Desc(ui).OfType<CardTile>()){if(!tiles.Add(tile.GetInstanceId()))continue;ulong id=tile.GetInstanceId();string uid=tile.CardUid;tile.TreeExiting+=()=>Safe(()=>Row("tile-tree-exiting",new{uid,instance=id}));}ObserveBaseline("process-before-node-update");Row("process",Snapshot());});
+    static void Draw()=>Safe(()=>{ulong p=Godot.Engine.GetProcessFrames();if(lastDrawProcess!=0&&p!=lastDrawProcess+1)faults.Add($"draw process gap/repeat {lastDrawProcess}->{p}");lastDrawProcess=p;drawRows++;ObserveBaseline("post-draw");string imagePath=null;if(png){imagePath=$"draw-{drawRows:000000}-process-{p}.png";using var im=root.GetViewport().GetTexture().GetImage();if(im.SavePng(Path.Combine(output,imagePath))!=Error.Ok)faults.Add("PNG failed "+imagePath);}Row("draw",new{imagePath,snapshot=Snapshot()});if(drawRows>=limit)Finish("frame-limit");});
+    public static void Finish(string reason)
+    {
+        if(!active)return;Safe(()=>Row("trace-end",new{reason,processRows,drawRows,captureCostSeconds=costTicks/(double)Stopwatch.Frequency}));active=false;
+        root.GetTree().ProcessFrame-=Process;RenderingServer.FramePostDraw-=Draw;
+        try{using var writer=new StreamWriter(Path.Combine(output,"trace.jsonl"));foreach(var row in rows)writer.WriteLine(JsonConvert.SerializeObject(row));File.WriteAllText(Path.Combine(output,"final.save.json"),session.ExportSave());File.WriteAllText(Path.Combine(output,"capture-status.json"),JsonConvert.SerializeObject(new{schema="hand-native-trace/1",reason,processRows,drawRows,faults,observerClean=faults.Count==0,nativeAcceptance="NOT_AUTOMATICALLY_EVALUATED",costIncludesSerializationAtFlush=false,captureCostSeconds=costTicks/(double)Stopwatch.Frequency},Formatting.Indented));}catch(Exception e){GD.PushError("HAND_NATIVE_TRACE_WRITE_FAILED "+e);}
+    }
+}
+#endif

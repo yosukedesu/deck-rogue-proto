@@ -1,0 +1,147 @@
+{
+  "sourceCommit": "ccdce85d60a43dd6c7aedc7c8a455451233e7b90",
+  "assemblyMvid": "702f4e32-3da6-4084-9625-34a7ae52937b",
+  "gates": [
+    {
+      "actual": "manual-005",
+      "expected": "relic_empty_cage-zero-confirm",
+      "fullOriginalRunEqual": true
+    },
+    {
+      "actual": "manual-007",
+      "expected": "relic_astrolabe-zero-confirm",
+      "fullOriginalRunEqual": true
+    },
+    {
+      "actual": "manual-010",
+      "expected": "reward-skip",
+      "fullOriginalRunEqual": true
+    }
+  ],
+  "capSelectionInspectionDeselectionExportUnchanged": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "abandonPreviewCancelReopenExportUnchanged": [
+    10,
+    11,
+    12,
+    13
+  ],
+  "terminalAbandon": {
+    "status": "accepted named gate",
+    "correctedQaMvid": "9905b195-22b0-4417-8c62-4428fda3e167",
+    "actualPointerDoubleClick": true,
+    "actualConfirmPressedCount": 1,
+    "revisionBefore": 1,
+    "revisionAfter": 2,
+    "nullTerminal": true,
+    "titleVisible": true,
+    "staleRewardConfirmControlsAbsent": true,
+    "logErrors": 0,
+    "note": "AbandonRun is a session action, not a RunCommand; exact one accepted handler and revision increment are observed",
+    "stableNextSnapshot": true
+  },
+  "noRunScope": "isolated AutoSave=false QA session",
+  "nonResetChanges": [
+    {
+      "utc": "2026-10-13T05:55:39.3745023Z",
+      "processFrame": 837,
+      "kind": "state-change",
+      "revision": 2,
+      "stateSha": "a29c7ce8f8971789518e0e0dce83c2dd3e06a637e2a70dcb6c92ae1498073965",
+      "phase": "map",
+      "heroHp": null,
+      "energy": null,
+      "mana": 0,
+      "activeDeals": 0,
+      "activeHovers": 0,
+      "detail": {
+        "Revision": 2,
+        "command": "RunCommand_RelicChooseCards",
+        "commandData": "{\"indices\":[],\"type\":\"RelicChooseCards\"}",
+        "IsReset": false
+      }
+    },
+    {
+      "utc": "2026-10-13T06:00:14.1240570Z",
+      "processFrame": 2187,
+      "kind": "state-change",
+      "revision": 4,
+      "stateSha": "a737be72e7b8109c6dec969b2b135509c1b88d018a27a808765b80e4137b5857",
+      "phase": "map",
+      "heroHp": null,
+      "energy": null,
+      "mana": 0,
+      "activeDeals": 0,
+      "activeHovers": 0,
+      "detail": {
+        "Revision": 4,
+        "command": "RunCommand_RelicChooseCards",
+        "commandData": "{\"indices\":[],\"type\":\"RelicChooseCards\"}",
+        "IsReset": false
+      }
+    },
+    {
+      "utc": "2026-10-13T06:01:57.2867158Z",
+      "processFrame": 2720,
+      "kind": "state-change",
+      "revision": 7,
+      "stateSha": "4c0a481bcc4ce9190b38457ccae3e216602d39585b25436379f3a22c13de81c1",
+      "phase": "reward",
+      "heroHp": null,
+      "energy": null,
+      "mana": 0,
+      "activeDeals": 0,
+      "activeHovers": 0,
+      "detail": {
+        "Revision": 7,
+        "command": "RunCommand_SkipReward",
+        "commandData": "{\"type\":\"SkipReward\"}",
+        "IsReset": false
+      }
+    }
+  ],
+  "files": {
+    "manual100/manual-004-save.json": "2bfa82f4e849dd41de81680e398f030891ee32dd9568fc32995837541fd471b1",
+    "manual100/manual-002-controls.json": "5dbe1adc2989747401eafce35e0fb6139bedeeaa358e3870ea53c6ad56986e80",
+    "manual100/pointer-events.jsonl": "388af05448b956bf3d14c0cda06554575fe4c88906b0706d27eab25a7a171a13",
+    "manual100/manual-010-save.json": "4c0a481bcc4ce9190b38457ccae3e216602d39585b25436379f3a22c13de81c1",
+    "manual100/manual-007-save.json": "a737be72e7b8109c6dec969b2b135509c1b88d018a27a808765b80e4137b5857",
+    "manual100/manual-012-save.json": "4c0a481bcc4ce9190b38457ccae3e216602d39585b25436379f3a22c13de81c1",
+    "manual100/manual-011-save.json": "4c0a481bcc4ce9190b38457ccae3e216602d39585b25436379f3a22c13de81c1",
+    "manual100/manual-008-save.json": "1a85f28a441cfe85d4f7e6d7e6274dfca74c765fcdaed6ec7630e48e0ec9d743",
+    "manual100/manual-002-save.json": "2bfa82f4e849dd41de81680e398f030891ee32dd9568fc32995837541fd471b1",
+    "manual100/manual-004-controls.json": "851155c20fbb58ce6a292bf2d7512f3e122f82b4ca98368815af1c842fb2f891",
+    "manual100/manual-005-save.json": "a29c7ce8f8971789518e0e0dce83c2dd3e06a637e2a70dcb6c92ae1498073965",
+    "manual100/manual-012-controls.json": "9738bbb550d43bf9cdc5f6624a40164ec89e20449948d057ca2a3f794e7ec9a2",
+    "manual100/manual-003-controls.json": "14dbdd62e5dc321a094bbf07e5bd30758d7297cbf134836289192f13e01ac093",
+    "manual100/manual-001-controls.json": "ef98e5a91076317ebd783de3c2dd1ba45a5ff9c2d0cc205891fecadb5ad6fcb5",
+    "manual100/manual-001-save.json": "2bfa82f4e849dd41de81680e398f030891ee32dd9568fc32995837541fd471b1",
+    "manual100/manual-013-save.json": "4c0a481bcc4ce9190b38457ccae3e216602d39585b25436379f3a22c13de81c1",
+    "manual100/manual-008-controls.json": "c47e94fb57808cc0600fd6f366bf4166797e4badb8b10df9ebbb6c8a5d05c384",
+    "manual100/current-fixture.json": "583046979d95431ed4dbe5de70d7fc2c77e84c2f1a52895ce12ee3b9b057b4b6",
+    "manual100/manual-013-controls.json": "45119148fa50be27ae54efb576d22eb0264f692def428ba9bf9c68cd78454428",
+    "manual100/manual-009-controls.json": "c7bb322defb9d3388e6da642ebffe73a5f6d2beef5295e6261226fab14f10e6d",
+    "manual100/manual-007-controls.json": "a58d4b4e9b18fb26ea9dd0f12d798cb02e6cd935f50d08ee0e079a36def53337",
+    "manual100/manual-009-save.json": "583046979d95431ed4dbe5de70d7fc2c77e84c2f1a52895ce12ee3b9b057b4b6",
+    "manual100/manual-006-controls.json": "6c71db574ac027691326091975634caee9116b84b030794f2921af9c07132861",
+    "manual100/manual-011-controls.json": "2b62b4dceee0f2ca080f1d6bbfb048b661c0c549d89d46f6e79b78179b79e5f6",
+    "manual100/manual-006-save.json": "1a85f28a441cfe85d4f7e6d7e6274dfca74c765fcdaed6ec7630e48e0ec9d743",
+    "manual100/manual-010-controls.json": "71ee14be9b96875495447725c4c6aa880ad39c367b719d65d2ca02cc283a5c51",
+    "manual100/manual-003-save.json": "2bfa82f4e849dd41de81680e398f030891ee32dd9568fc32995837541fd471b1",
+    "manual100/manual-005-controls.json": "202bcc2e2338e8a97e0defee164933b54c4ac8207a569a1983c4033c2f239814",
+    "abandon-nullsafe/manual-002-controls.json": "dcfd302700c66bf1c9d5c233ea42010d21efffd8d750d7457a0cb810d4ac2955",
+    "abandon-nullsafe/pointer-events.jsonl": "7e8f8b807ac748c443930aff90141e58231afed08e84af776989c7d98a21c500",
+    "abandon-nullsafe/manual-002-save.json": "82fa09fc2e7aed5e143d95b3059d2dde20fb5780a5d43edf8ffa7adf575636f6",
+    "abandon-nullsafe/manual-003-controls.json": "dcfd302700c66bf1c9d5c233ea42010d21efffd8d750d7457a0cb810d4ac2955",
+    "abandon-nullsafe/manual-001-controls.json": "bcd91021272b16c5a052dd986662927b7ac9de62de8c89b635a3efa4f2598f9f",
+    "abandon-nullsafe/manual-001-save.json": "583046979d95431ed4dbe5de70d7fc2c77e84c2f1a52895ce12ee3b9b057b4b6",
+    "abandon-nullsafe/current-fixture.json": "583046979d95431ed4dbe5de70d7fc2c77e84c2f1a52895ce12ee3b9b057b4b6",
+    "abandon-nullsafe/manual-003-save.json": "82fa09fc2e7aed5e143d95b3059d2dde20fb5780a5d43edf8ffa7adf575636f6",
+    "manual100.log": "4ab1165356a1b891e671cd69cbff24273093f2217b4292113f5b242bc0384c95",
+    "abandon-nullsafe.log": "96750e9848badf51323c068e8519b8ab4d657a77ef9dd1922e9284b5b95b844f"
+  }
+}

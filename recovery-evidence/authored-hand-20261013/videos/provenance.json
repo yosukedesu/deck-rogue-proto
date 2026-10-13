@@ -1,0 +1,24 @@
+[
+  {
+    "file": "videos/candidate-slash100.mp4",
+    "sha256": "1eb712136afd678a28d6de08d2916c4360d3597343eb0104208dac2e092a6fca",
+    "sourceFrameDirectory": "candidate-slash-1.0",
+    "nativeConsecutiveFrames": 140,
+    "fps": 60,
+    "durationSeconds": 2.3333333333333335,
+    "interpolation": false,
+    "audio": false,
+    "scope": "controlled fixed-60 simulation, source-authored candidate component; not live FPS or full Unity parity"
+  },
+  {
+    "file": "videos/candidate-water100.mp4",
+    "sha256": "ea2241605f0bdc060c7b32504b8cf38fe3f3e6458c030a4f020bb80bd4824c6f",
+    "sourceFrameDirectory": "candidate-water-1.0",
+    "nativeConsecutiveFrames": 140,
+    "fps": 60,
+    "durationSeconds": 2.3333333333333335,
+    "interpolation": false,
+    "audio": false,
+    "scope": "controlled fixed-60 simulation, source-authored candidate component; not live FPS or full Unity parity"
+  }
+]

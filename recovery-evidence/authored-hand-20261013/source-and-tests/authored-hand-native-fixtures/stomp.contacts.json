@@ -1,0 +1,34 @@
+[
+  {
+    "cardId": "green_finisher_stomp",
+    "type": "CardPlayed"
+  },
+  {
+    "presentationReceipt": {
+      "version": 1,
+      "target": "enemy",
+      "enemyIndex": 0,
+      "enemyId": "enemy_mudling",
+      "before": {
+        "hp": 1000,
+        "maxHp": 1000,
+        "block": 0
+      },
+      "after": {
+        "hp": 950,
+        "maxHp": 1000,
+        "block": 0
+      }
+    },
+    "source": "player",
+    "amount": 50,
+    "hpLoss": 50,
+    "enemyIndex": 0,
+    "presentationSource": {
+      "kind": "card",
+      "definitionId": "green_finisher_stomp",
+      "uid": "authored-stomp-played-001"
+    },
+    "type": "DamageDealt"
+  }
+]

@@ -1,0 +1,168 @@
+{
+  "completedPairs": 6,
+  "assertions": 31970,
+  "results": [
+    {
+      "style": "slash",
+      "textScale": "1.0",
+      "assertions": 5327,
+      "passed": true,
+      "admissionProcessFrame": 126,
+      "firstPositiveNativeElapsedByPhase": {
+        "process-before-node-update": {
+          "relativeFrame": 1,
+          "elapsed": 0.016666666666666666
+        },
+        "post-draw": {
+          "relativeFrame": 0,
+          "elapsed": 0.016666666666666666
+        }
+      },
+      "createProcessFrame": 126,
+      "completionProcessFrame": 131,
+      "treeRemovalProcessFrame": 131,
+      "duration": 0.09099999815225601,
+      "tailSeconds": 1.6833317,
+      "limits": [
+        "No baseline property-setter callback or allocator-destruction claim",
+        "No pointer, stale-race, exhaust or live-host cadence acceptance from scheduled fixed60 commands",
+        "Source trajectory is checked separately by the original analyzer and reviewed native pixels"
+      ]
+    },
+    {
+      "style": "slash",
+      "textScale": "1.3",
+      "assertions": 5327,
+      "passed": true,
+      "admissionProcessFrame": 126,
+      "firstPositiveNativeElapsedByPhase": {
+        "process-before-node-update": {
+          "relativeFrame": 1,
+          "elapsed": 0.016666666666666666
+        },
+        "post-draw": {
+          "relativeFrame": 0,
+          "elapsed": 0.016666666666666666
+        }
+      },
+      "createProcessFrame": 126,
+      "completionProcessFrame": 131,
+      "treeRemovalProcessFrame": 131,
+      "duration": 0.09099999815225601,
+      "tailSeconds": 1.6833317,
+      "limits": [
+        "No baseline property-setter callback or allocator-destruction claim",
+        "No pointer, stale-race, exhaust or live-host cadence acceptance from scheduled fixed60 commands",
+        "Source trajectory is checked separately by the original analyzer and reviewed native pixels"
+      ]
+    },
+    {
+      "style": "water",
+      "textScale": "1.0",
+      "assertions": 5329,
+      "passed": true,
+      "admissionProcessFrame": 126,
+      "firstPositiveNativeElapsedByPhase": {
+        "process-before-node-update": {
+          "relativeFrame": 1,
+          "elapsed": 0.016666666666666666
+        },
+        "post-draw": {
+          "relativeFrame": 0,
+          "elapsed": 0.016666666666666666
+        }
+      },
+      "createProcessFrame": 126,
+      "completionProcessFrame": 132,
+      "treeRemovalProcessFrame": 132,
+      "duration": 0.10000000149011612,
+      "tailSeconds": 1.5666652,
+      "limits": [
+        "No baseline property-setter callback or allocator-destruction claim",
+        "No pointer, stale-race, exhaust or live-host cadence acceptance from scheduled fixed60 commands",
+        "Source trajectory is checked separately by the original analyzer and reviewed native pixels"
+      ]
+    },
+    {
+      "style": "water",
+      "textScale": "1.3",
+      "assertions": 5329,
+      "passed": true,
+      "admissionProcessFrame": 126,
+      "firstPositiveNativeElapsedByPhase": {
+        "process-before-node-update": {
+          "relativeFrame": 1,
+          "elapsed": 0.016666666666666666
+        },
+        "post-draw": {
+          "relativeFrame": 0,
+          "elapsed": 0.016666666666666666
+        }
+      },
+      "createProcessFrame": 126,
+      "completionProcessFrame": 132,
+      "treeRemovalProcessFrame": 132,
+      "duration": 0.10000000149011612,
+      "tailSeconds": 1.5666652,
+      "limits": [
+        "No baseline property-setter callback or allocator-destruction claim",
+        "No pointer, stale-race, exhaust or live-host cadence acceptance from scheduled fixed60 commands",
+        "Source trajectory is checked separately by the original analyzer and reviewed native pixels"
+      ]
+    },
+    {
+      "style": "stomp",
+      "textScale": "1.0",
+      "assertions": 5329,
+      "passed": true,
+      "admissionProcessFrame": 126,
+      "firstPositiveNativeElapsedByPhase": {
+        "process-before-node-update": {
+          "relativeFrame": 1,
+          "elapsed": 0.016666666666666666
+        },
+        "post-draw": {
+          "relativeFrame": 0,
+          "elapsed": 0.016666666666666666
+        }
+      },
+      "createProcessFrame": 126,
+      "completionProcessFrame": 132,
+      "treeRemovalProcessFrame": 132,
+      "duration": 0.10000000149011612,
+      "tailSeconds": 1.4666653000000003,
+      "limits": [
+        "No baseline property-setter callback or allocator-destruction claim",
+        "No pointer, stale-race, exhaust or live-host cadence acceptance from scheduled fixed60 commands",
+        "Source trajectory is checked separately by the original analyzer and reviewed native pixels"
+      ]
+    },
+    {
+      "style": "stomp",
+      "textScale": "1.3",
+      "assertions": 5329,
+      "passed": true,
+      "admissionProcessFrame": 126,
+      "firstPositiveNativeElapsedByPhase": {
+        "process-before-node-update": {
+          "relativeFrame": 1,
+          "elapsed": 0.016666666666666666
+        },
+        "post-draw": {
+          "relativeFrame": 0,
+          "elapsed": 0.016666666666666666
+        }
+      },
+      "createProcessFrame": 126,
+      "completionProcessFrame": 132,
+      "treeRemovalProcessFrame": 132,
+      "duration": 0.10000000149011612,
+      "tailSeconds": 1.4666653000000003,
+      "limits": [
+        "No baseline property-setter callback or allocator-destruction claim",
+        "No pointer, stale-race, exhaust or live-host cadence acceptance from scheduled fixed60 commands",
+        "Source trajectory is checked separately by the original analyzer and reviewed native pixels"
+      ]
+    }
+  ]
+}

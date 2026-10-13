@@ -1169,6 +1169,7 @@ public partial class GameUI : Control
 		_activeChange = change;
         if (change.IsReset || change.Current.Phase != RunPhases.Shop) _shopGearsScreen = false;
         if(change.IsReset)UxResetHand();
+        UxCaptureAdmittedHandExit(change);
 		_costPresented = false;
 		if (change.IsReset)
 		{

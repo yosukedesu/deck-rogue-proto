@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net9.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><Nullable>disable</Nullable><NoWarn>CS8632;CS0649</NoWarn></PropertyGroup><ItemGroup>
+<Compile Include="Program.cs;GodotStubs.cs;Harness.cs;../payload/**/*.cs;../composed/GameUI.HandExit.cs;../../hand-exit-return-patch/payload/DeckRogue/GodotPort/UI/SourceHandExitMotion.cs;../../../runtime-recovery-20261012/project/DeckRogue/GodotPort/Core/SessionChange.cs;../../../runtime-recovery-20261012/project/DeckRogue/GodotPort/Presentation/SourceShowcaseProfiles.cs"/>
+</ItemGroup></Project>

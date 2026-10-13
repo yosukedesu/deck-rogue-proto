@@ -1,0 +1,44 @@
+{
+  "baseCommit": "ccdce85d60a43dd6c7aedc7c8a455451233e7b90",
+  "totalNativePngFrames": 1680,
+  "pairs": [
+    {
+      "pair": "slash-1.0-native-regression",
+      "pass": true,
+      "postContactSeconds": 1.6833317,
+      "receiptSha256": "645d563e751f14298ef96393ff7eef4ade9bd08d88cd9ed24208767fbd0c35b2"
+    },
+    {
+      "pair": "slash-1.3-native-regression",
+      "pass": true,
+      "postContactSeconds": 1.6833317,
+      "receiptSha256": "1d068de86dcbc2881483c87b37bde8bdb6f78aa8a82000d03c74e07c4513e262"
+    },
+    {
+      "pair": "stomp-1.0-native-regression",
+      "pass": true,
+      "postContactSeconds": 1.4666653000000003,
+      "receiptSha256": "8d200bf1a6830c5f9df119e3c519b5c4935e6c8d9294a94e525bc38043c4a680"
+    },
+    {
+      "pair": "stomp-1.3-native-regression",
+      "pass": true,
+      "postContactSeconds": 1.4666653000000003,
+      "receiptSha256": "f4ddb50f93649f6d1e3845730d57d76eddd4eec61f3a2e0052178cf432135d11"
+    },
+    {
+      "pair": "water-1.0-native-regression",
+      "pass": true,
+      "postContactSeconds": 1.5666652,
+      "receiptSha256": "48000f6849f2e65ffce2a092f1a851e4fd1dc59ddc7e6502e4ecaa96d8454eb3"
+    },
+    {
+      "pair": "water-1.3-native-regression",
+      "pass": true,
+      "postContactSeconds": 1.5666652,
+      "receiptSha256": "5b2afc39ecd45541ff7691a82ae5677c3b40a4bb4e7f41a1e4d6794bb107f95f"
+    }
+  ],
+  "pointer": "pending separate normal-time runs",
+  "teardown": "Same historical ObjectDB/two-resource exit diagnostic in both modules; retained"
+}

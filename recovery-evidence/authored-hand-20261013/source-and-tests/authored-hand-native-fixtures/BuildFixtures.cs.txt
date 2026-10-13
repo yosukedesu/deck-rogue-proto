@@ -1,0 +1,108 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using Newtonsoft.Json;
+using DeckRogue.Engine;
+using DeckRogue.Engine.Generated;
+using DeckRogue.GodotPort.Core;
+using DeckRogue.GodotPort.Presentation;
+using DeckRogue.GodotPort.UI;
+
+string outp=Path.GetFullPath(args[0]);
+Content.LoadFrom(n=>File.ReadAllText(Path.Combine(outp,"data-snapshot",n)));
+int assertions=0,roundtrips=0;
+void Check(bool ok,string why){assertions++;if(!ok)throw new Exception(why);}
+string Json(object o)=>JsonConvert.SerializeObject(o);
+string Hash(string data)=>Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(data))).ToLowerInvariant();
+void Write(string name,object data)=>File.WriteAllText(Path.Combine(outp,name),JsonConvert.SerializeObject(data,Formatting.Indented)+"\n");
+string Save(string name,RunState run){
+ var sf=new RunSaveFile{Run=run,LogIndex=run.Combat!.EventLog.Count,Fingerprint=Report.DataFingerprint()};
+ var json=Report.SerializeRunSaveFile(sf);var back=Report.ReadRunSaveFile(json,out var warning);
+ Check(back!=null&&warning==null,"Report roundtrip: "+name+": "+warning);
+ Check(Json(back!.Run)==Json(run)&&back.LogIndex==sf.LogIndex&&back.Fingerprint==sf.Fingerprint,"Full state/boundary/fingerprint roundtrip: "+name);
+ Check(Report.IsSaneRun(back.Run),"Sane save: "+name);
+ File.WriteAllText(Path.Combine(outp,name+".save.json"),json);roundtrips++;return json;
+}
+var records=new List<object>();var exhaustAudit=new List<object>();
+foreach(var spec in new[]{
+ (Name:"slash",Card:"green_strike",Leader:"leader_green",Guard:"green_guard",Energy:3,Damage:6,Contact:.13f),
+ (Name:"water",Card:"blue_strike",Leader:"leader_blue",Guard:"blue_guard",Energy:3,Damage:5,Contact:.24f),
+ (Name:"stomp",Card:"green_finisher_stomp",Leader:"leader_green",Guard:"green_guard",Energy:5,Damage:50,Contact:.34f)}){
+ string uid="authored-"+spec.Name+"-played-001",sibling="authored-"+spec.Name+"-sibling-002";
+ var def=Content.GetCardDef(spec.Card);
+ var cards=new[]{new CardInstance{Uid=uid,Def=def},new CardInstance{Uid=sibling,Def=def},new CardInstance{Uid="authored-"+spec.Name+"-guard-003",Def=Content.GetCardDef(spec.Guard)}};
+ var draw=new[]{new CardInstance{Uid="authored-"+spec.Name+"-draw-004",Def=Content.GetCardDef(spec.Guard)},new CardInstance{Uid="authored-"+spec.Name+"-draw-005",Def=Content.GetCardDef(spec.Guard)}};
+ var basis=Run.CreateDebugCheckpointRun(6161,"set-confirm",spec.Leader,new ReplayOriginCheckpoint{Act=1,DeckId="starter",Difficulty=3,HpRatio=1,Gold=150});
+ if(basis.Phase==RunPhases.Departure)basis=Run.ApplyRunCommand(basis,new RunCommand_LeaveDeparture());
+ var raw=Run.DebugLaunchCombat(basis,"enemy_mudling");
+ var enemy=raw.Combat!.Enemies.Single() with{Hp=1000,MaxHp=1000,Block=0};
+ var before=raw with{Deck=cards.Concat(draw).ToArray(),Combat=raw.Combat with{Enemies=new[]{enemy},Player=raw.Combat.Player with{
+  Energy=spec.Energy,EnergyMax=spec.Energy,EnergyMaxAtTurnStart=spec.Energy,Hand=cards,DrawPile=draw,DiscardPile=Array.Empty<CardInstance>(),ExhaustPile=Array.Empty<CardInstance>()}}};
+ var profile=SourceShowcaseProfiles.ForCard(def.Id);
+ Check(profile!=null&&profile.AuthoredAttack==spec.Name,"Exact authored profile: "+spec.Name);
+ Check(profile!.Contact==spec.Contact,"Contact profile: "+spec.Name);
+ Check(def.Exhaust!=true,"Default in-scope definition must discard: "+spec.Name);
+ Check(cards.Concat(draw).Select(c=>c.Uid).Distinct().Count()==5,"Unique fixture UIDs");
+ Check(Json(def)==Json(Content.GetCardDef(spec.Card)),"Original card definition");
+ var upgraded=Upgrade.CanUpgradeCard(cards[0])?Upgrade.UpgradeCard(cards[0]):cards[0];
+ exhaustAudit.Add(new{spec.Card,defaultExhaust=def.Exhaust,upgradeAllowed=Upgrade.CanUpgradeCard(cards[0]),upgrade=upgraded.Def,upgradedExhaust=upgraded.Def.Exhaust,
+  conclusion=upgraded.Def.Exhaust==true?"Original upgrade provides exhaust; separate loaded-save fixture may be possible.":"Base and original one-time upgrade do not exhaust. No exhaust fixture is claimed."});
+ var save=Save(spec.Name,before);
+ // Reopen the on-disk full save, then dispatch through the unchanged production
+ // SessionController, which clones its incoming RunCommand before applying it.
+ var disk=File.ReadAllText(Path.Combine(outp,spec.Name+".save.json"));
+ var loaded=Report.ReadRunSaveFile(disk,out var readWarning)!;
+ Check(readWarning==null,"Loaded save warning");
+ var command=new RunCommand_Combat{Command=new Command_PlayCard{CardUid=uid,TargetIndex=0}};
+ var replay=Run.ApplyRunCommand(loaded.Run,command);
+ var controller=new SessionController(now:()=>DateTimeOffset.Parse("2026-10-13T00:00:00Z")){AutoSave=false};
+ var changes=new List<SessionChange>();var diagnostics=new List<string>();controller.StateChanged+=changes.Add;controller.Diagnostic+=diagnostics.Add;
+ var loadResult=controller.Load(disk);Check(loadResult.Success,"Production SessionController.Load: "+loadResult.Error);
+ Check(controller.Revision==1&&changes.Count==1&&changes[0].IsReset,"Load revision/reset boundary");
+ var inputJson=Json(command);var result=controller.Dispatch(command);Check(result.Success,"Original dispatch: "+result.Error);
+ Check(changes.Count==2&&controller.Revision==2&&!changes[1].IsReset,"Single admitted command at revision2");
+ var admission=changes[1];var owned=(RunCommand_Combat)admission.Command!;var play=(Command_PlayCard)owned.Command;
+ Check(!ReferenceEquals(command,owned)&&!ReferenceEquals(command.Command,owned.Command),"Cloned command ownership");
+ Check(Json(command)==inputJson&&Json(command)==Json(owned)&&play.CardUid==uid&&play.TargetIndex==0,"Cloned command exact fields");
+ Check(Json(admission.Current)==Json(replay)&&Json(admission.Previous!)==Json(loaded.Run),"Full original command reproduction from loaded save");
+ Check(diagnostics.Count==0,"Unexpected session diagnostics");
+ var after=admission.Current;var player=after.Combat!.Player;var events=admission.Events;
+ var hits=events.OfType<GameEvent_DamageDealt>().Where(h=>h.Source=="player").ToArray();
+ Check(hits.Length==1&&hits[0].EnemyIndex==0&&hits[0].Amount==spec.Damage&&hits[0].HpLoss==spec.Damage,"One exact direct numeric receipt");
+ Check(hits[0].PresentationSource?.Uid==uid&&hits[0].PresentationSource?.DefinitionId==spec.Card&&hits[0].PresentationSource?.Kind=="card","Receipt command UID");
+ Check(hits[0].PresentationReceipt!=null,"Original numeric presentation receipt");
+ Check(after.Combat.Enemies[0].Hp==1000-spec.Damage&&!events.OfType<GameEvent_EnemyDied>().Any(),"Target survives; no win/finish branch");
+ Check(events.OfType<GameEvent_CardPlayed>().Count()==1&&!events.OfType<GameEvent_CombatEnded>().Any(),"Single played command; no combat end");
+ Check(!player.Hand.Any(c=>c.Uid==uid)&&player.Hand.Count(c=>c.Uid==sibling)==1,"Exact played UID removed; sibling remains");
+ Check(player.DiscardPile.Count(c=>c.Uid==uid)==1&&!player.ExhaustPile.Any(c=>c.Uid==uid)&&!player.SetCards.Any(c=>c.Uid==uid)&&!player.Permanents.Any(c=>c.Uid==uid),"Exact discard destination");
+ Check(player.Energy==spec.Energy-def.Cost,"Original resource payment");
+ Check(Json(before.Rng)==Json(after.Rng)&&Json(before.Combat.Rng)==Json(after.Combat.Rng),"No RNG advance for deterministic direct play/draw");
+ Check(spec.Name!="water"||(player.Hand.Any(c=>c.Uid==draw[0].Uid)&&player.DrawPile.Count==1&&player.IceBlock==before.Combat.Player.IceBlock+1),"Water original draw and source leader passive");
+ var expectedSave=Save(spec.Name+"-expected-after",after);
+ var style=new SourceAuthoredHandStyle(admission.Revision,uid,def.Id,profile.AuthoredAttack!);
+ double duration=Math.Min(.10f,profile.Contact*.70f);
+ Check(style.Matches(2,uid,def.Id),"Exact stage style ID/revision/UID contract");
+ Write(spec.Name+".actions.json",new[]{new{frame=30,play=uid,target=0}});
+ Write(spec.Name+".command.json",owned);
+ Write(spec.Name+".contacts.json",events);
+ records.Add(new{
+  name=spec.Name,card=spec.Card,leader=spec.Leader,cardUid=uid,unchangedSiblingUid=sibling,fixture=spec.Name+".save.json",actions=spec.Name+".actions.json",fixtureSha256=Hash(save),expectedAfterSha256=Hash(expectedSave),
+  fingerprint=Report.DataFingerprint(),seed=before.Seed,phase=before.Phase,combatPhase=before.Combat.Phase,nodeKind=Run.CurrentNode(before)!.Type,
+  command=new{type=owned.Type,combatType=play.Type,uid=play.CardUid,target=play.TargetIndex,loadRevision=1,admittedRevision=admission.Revision,oneCommand=true,clonedRootAndInner=true},
+  epoch=new{expectedFreshUiEpoch=1,verifiedByNative=false,condition="Fresh process, no other QA loader, exactly one reset Load; reusing a UI requires actual load-reset epoch E0+1 instead.",mustMatch="Drag payload (pointer gate), captured plan and current UI epoch throughout retirement"},
+  beforeBoundary=new{eventLogCount=before.Combat.EventLog.Count,energy=before.Combat.Player.Energy,hp=before.Combat.Player.Hp,iceBlock=before.Combat.Player.IceBlock,hand=before.Combat.Player.Hand.Select(c=>c.Uid),draw=before.Combat.Player.DrawPile.Select(c=>c.Uid),discard=before.Combat.Player.DiscardPile.Select(c=>c.Uid),exhaust=before.Combat.Player.ExhaustPile.Select(c=>c.Uid),runRng=before.Rng,combatRng=before.Combat.Rng},
+  afterBoundary=new{eventLogCount=after.Combat.EventLog.Count,energy=player.Energy,hp=player.Hp,iceBlock=player.IceBlock,hand=player.Hand.Select(c=>c.Uid),draw=player.DrawPile.Select(c=>c.Uid),discard=player.DiscardPile.Select(c=>c.Uid),exhaust=player.ExhaustPile.Select(c=>c.Uid),runRng=after.Rng,combatRng=after.Combat.Rng},
+  expectedDestination="discard",expectedExhaust=false,enemy=new{index=0,id=enemy.EnemyId,hpBefore=1000,hpAfter=1000-spec.Damage,maxHp=1000,block=0,survives=true},
+  eventTypes=events.Select(e=>e.Type),expectedReceipts=hits.Select(h=>new{h.Amount,h.HpLoss,h.EnemyIndex,h.PresentationSource,h.PresentationReceipt}),
+  additionalPlayerNumericReceipts=events.OfType<GameEvent_IceBlockGained>().Select(e=>new{e.Type,e.Amount,e.PresentationReceipt}),
+  sourceProfile=new{profile.AuthoredAttack,profile.Contact,profile.Windup,profile.Recovery,profile.Residue,profile.ImpactPause,profile.Heavy},capturedRetirementSeconds=duration,
+  expectedFence=false,roundtrip=true,loadedOriginalCommandReproduced=true,productionSessionCloneVerified=true,
+  nativeAcceptance="NOT RUN; source profile and engine validation are not native owner/timing/pointer acceptance"
+ });
+ Console.WriteLine($"PASS {spec.Name}: {uid}; {spec.Leader}; revision1->2; cloned command; E{spec.Energy}->{player.Energy}; HP1000->{after.Combat.Enemies[0].Hp}; discard; duration={duration:R}; events={string.Join(',',events.Select(e=>e.Type))}");
+}
+Write("engine-validation.json",new{schema="authored-hand-fixtures/1",status="ENGINE/SAVE VALIDATED; NATIVE ACCEPTANCE NOT RUN",roundtrips,assertions,originalEngineRules=true,sourceContentUnmodified=true,fixtures=records});
+Write("exhaust-reachability.json",new{scope="Three unchanged base definitions plus their existing one-time UpgradeCard result; does not fabricate CardDef.Exhaust or relabel fused cards.",cards=exhaustAudit});
+Console.WriteLine($"PASS: {roundtrips} full Report RunSave roundtrips, 3 loaded original-engine commands, 3 production SessionController clone/revision validations, {assertions} assertions. No native acceptance claimed.");

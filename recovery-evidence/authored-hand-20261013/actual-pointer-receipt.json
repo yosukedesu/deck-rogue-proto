@@ -1,0 +1,60 @@
+[
+  {
+    "scale": "1.0",
+    "actualPointerCancelAndPlayUid": "authored-slash-played-001",
+    "oneOriginalCommand": true,
+    "cancelFullExportHashUnchanged": "35f7c75e96fe1fe047320e55d26ddea2a552ecb4ea4f5bf468ceded89342333d",
+    "finalOriginalRunEqual": true,
+    "layout": "desktop confirmed both flagsfalse",
+    "normalHostTime": true,
+    "fixedFps": false,
+    "sourceReturnDuration": 0.15,
+    "returnCreateFrame": 99,
+    "returnCompleteFrame": 101,
+    "observedWallSeconds": 0.4760821059999998,
+    "zeroDisplacement": true,
+    "visibleReturnParity": "FAILED_EXISTING_DRAG_PREVIEW_GAP",
+    "authoredOwnerComplete": [
+      {
+        "owner": 12,
+        "uid": "authored-slash-played-001",
+        "tile": 74507619434,
+        "duration": 0.09099999815225601,
+        "createFrame": 403,
+        "firstActualCallbackFrame": 403,
+        "completeFrame": 403,
+        "cancelFrame": null
+      }
+    ],
+    "scope": "Pointer/state/UID acceptance only; visible return is not accepted and no host/device smoothness claim"
+  },
+  {
+    "scale": "1.3",
+    "actualPointerCancelAndPlayUid": "authored-slash-played-001",
+    "oneOriginalCommand": true,
+    "cancelFullExportHashUnchanged": "35f7c75e96fe1fe047320e55d26ddea2a552ecb4ea4f5bf468ceded89342333d",
+    "finalOriginalRunEqual": true,
+    "layout": "desktop confirmed both flagsfalse",
+    "normalHostTime": true,
+    "fixedFps": false,
+    "sourceReturnDuration": 0.15,
+    "returnCreateFrame": 115,
+    "returnCompleteFrame": 117,
+    "observedWallSeconds": 0.40433161500000026,
+    "zeroDisplacement": true,
+    "visibleReturnParity": "FAILED_EXISTING_DRAG_PREVIEW_GAP",
+    "authoredOwnerComplete": [
+      {
+        "owner": 9,
+        "uid": "authored-slash-played-001",
+        "tile": 74524396651,
+        "duration": 0.09099999815225601,
+        "createFrame": 327,
+        "firstActualCallbackFrame": 327,
+        "completeFrame": 327,
+        "cancelFrame": null
+      }
+    ],
+    "scope": "Pointer/state/UID acceptance only; visible return is not accepted and no host/device smoothness claim"
+  }
+]

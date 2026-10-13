@@ -39,6 +39,7 @@ public partial class GameUI
     {
         var gone=_uxTiles[uid];UxCancelHandHover(uid,false);UxCancelHandDeal(uid,false);
         _uxTiles.Remove(uid);_uxSeats.Remove(uid);gone.MouseFilter=MouseFilterEnum.Ignore;
+        if(UxTryStartAuthoredHandExit(uid,gone))return;
         if(UxUseDiscardFlight(uid,state))
         {
             UxCancelHandExit(uid);gone.Disabled=true;gone.AllowDrag=false;gone.SetProcess(false);gone.ZIndex=0;

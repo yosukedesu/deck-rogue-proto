@@ -1,0 +1,58 @@
+[
+  {
+    "path": "DeckRogue/GodotPort/UI/GameUI.cs",
+    "name": "capture admission before rebuild",
+    "before": "        if(change.IsReset)UxResetHand();",
+    "after": "        if(change.IsReset)UxResetHand();\n        UxCaptureAdmittedHandExit(change);",
+    "before_sha256": "32d5040986ebd5885fe2db33007a8e5406ce78d566c10ac45d5dcb1601db9ca6",
+    "after_sha256": "39c13e6cbb483c06da56425cd4a44f71f7e5d97db6fd75ded39cef33a80def12"
+  },
+  {
+    "path": "DeckRogue/GodotPort/App/Main.cs",
+    "name": "bind owner-qualified source style",
+    "before": "        _ui.SetCardRetirement(id => (double)_stage.GetCardRetirementSeconds(id));",
+    "after": "        _ui.SetCardRetirement(id => (double)_stage.GetCardRetirementSeconds(id));\n        _ui.SetAdmittedAuthoredHandStyle(_stage.GetAdmittedAuthoredHandStyle);",
+    "before_sha256": "0b327fedd3a4d13c432f5ec2ed1603a282dc9522bae7126f8eb3c82044fc2d73",
+    "after_sha256": "8b61cf3f580b05b13542792bbbbdba84c184814b072218c410eb8394f3e9f114"
+  },
+  {
+    "path": "DeckRogue/GodotPort/UI/GameUI.HandExit.cs",
+    "name": "consume frozen authored plan at old retirement start",
+    "before": "        if(UxUseDiscardFlight(uid,state))",
+    "after": "        if(UxTryStartAuthoredHandExit(uid,gone))return;\n        if(UxUseDiscardFlight(uid,state))",
+    "before_sha256": "82617cfdd5627cfc827a1b0fbf724f2f39f144a151371ac144823b937806a661",
+    "after_sha256": "dc993622a43d2865334926e7d6e56787fef3b4a5a0a16e5a0faaa80cbe29814c"
+  },
+  {
+    "path": "DeckRogue/GodotPort/UI/GameUI.RecoveredBattle.cs",
+    "name": "reset revokes admitted and running authored owners",
+    "before": "UxCancelHandExits();UxCancelHandHovers(false);",
+    "after": "UxCancelAuthoredHandExits();UxCancelHandExits();UxCancelHandHovers(false);",
+    "before_sha256": "5a8e203a21adcbf1736db146d089bf0963f39e771b01e85a32ea5ead7ed9f576",
+    "after_sha256": "46b6a4005a0cac9c1bd40f517f2cd7552f468f95eafa339c71ced869a51940f6"
+  },
+  {
+    "path": "DeckRogue/GodotPort/UI/GameUI.RecoveredBattle.cs",
+    "name": "same UID new tile revokes authored owner",
+    "before": "if(added){UxCancelHandExit(uid);tile=new CardTile",
+    "after": "if(added){UxCancelAuthoredHandExit(uid);UxCancelHandExit(uid);tile=new CardTile",
+    "before_sha256": "4097eaaba6252ba2db1b27fa94b8a93b3ef377cd731dcff38d7acf081d065ccf",
+    "after_sha256": "ea460ed65d2151ee6650e57481575402bdc870b9b322640218ed849274a71aca"
+  },
+  {
+    "path": "DeckRogue/GodotPort/UI/GameUI.RecoveredBattle.cs",
+    "name": "retain authored source hand order",
+    "before": "        UxRestoreHandExitOrder();",
+    "after": "        UxRestoreHandExitOrder();UxRestoreAuthoredHandExitOrder();",
+    "before_sha256": "4448bf28aa57a5f03dd0f43758391046b8a0c4ebe97dd7914c834f751bdc8dd8",
+    "after_sha256": "28f300216e6d9de076b7913f9e027fbba5bb65011ae5a7b3793fdb7f09ce9cd0"
+  },
+  {
+    "path": "DeckRogue/GodotPort/UI/GameUI.RecoveredBattle.cs",
+    "name": "lifecycle checks never advance retirement clock",
+    "before": "UxTickHandExits(delta);PositionUxEnemies();",
+    "after": "UxTickHandExits(delta);UxCheckAuthoredHandExits();PositionUxEnemies();",
+    "before_sha256": "aa25f1a433e6d460c56b9bedb6bec35e6501cd34d3d34bfb3d9bf84f17f640ba",
+    "after_sha256": "08e90e3053443695c2ec6f0371df104c47378f5e8f6ed5df76149df2deb30648"
+  }
+]

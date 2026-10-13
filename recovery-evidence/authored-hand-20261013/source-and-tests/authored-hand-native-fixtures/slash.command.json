@@ -1,0 +1,8 @@
+{
+  "command": {
+    "cardUid": "authored-slash-played-001",
+    "targetIndex": 0,
+    "type": "PlayCard"
+  },
+  "type": "Combat"
+}

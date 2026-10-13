@@ -1,0 +1,2423 @@
+// Run.cs — ドラフト連戦モード (純ロジック。src/engine/run.ts の厳密移植)
+// マップラン: StS式DAGを1ノードずつ進む。戦闘勝利で提示から1枚ピック (スキップ可) → マップで次のノードを選ぶ。
+// 敵は行の帯で深度スケーリング (強化+HP倍率) され、だんだん強くなる。HPは持ち越し、焚き火で回復。
+// ラン専用RNGをシードから回すため、同じシード+同じコマンド列=同じラン (リプレイ可能)。
+//
+// **RNG の消費順・回数は TS と1手もずらさないこと**。
+// JS の Math.round は floor(x+0.5)、Math.trunc は 0方向切り捨て、Math.floor は床。
+
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using DeckRogue.Engine.Generated;
+
+namespace DeckRogue.Engine
+{
+    /// <summary>createRun の第6引数 opts (TS: { setAnyCards? })</summary>
+    public sealed record RunOptions
+    {
+        public bool? SetAnyCards { get; init; }
+        /// <summary>出立の支度 (2026-09-24)。false はテスト・チェックポイント用 (地図から始める)。省略=出立から</summary>
+        public bool? Departure { get; init; }
+    }
+
+    /// <summary>難易度倍率 (その幕の1組。TS difficultyScale の戻り値)</summary>
+    public sealed record DifficultyScaleEntry
+    {
+        public double Hp { get; init; }
+        public double Atk { get; init; }
+    }
+
+    /// <summary>難易度の表の1行 = 幕1/幕2/幕3 の倍率 (TS DifficultyScaleRow)</summary>
+    public sealed record DifficultyScaleRow
+    {
+        public IReadOnlyList<double> Hp { get; init; } = default!;
+        public IReadOnlyList<double> Atk { get; init; } = default!;
+    }
+
+    /// <summary>難易度の経済税 (TS DifficultyTax)</summary>
+    public sealed record DifficultyTax
+    {
+        public double BossHeal { get; init; }
+        public double Campfire { get; init; }
+        public int EliteBonus { get; init; }
+        public double ShopPrice { get; init; }
+        public int RewardChoices { get; init; }
+        public int StartGuilt { get; init; }
+    }
+
+    public static class Run
+    {
+        // ==== 小さな移植ヘルパ ====
+
+        /// <summary>JS の Math.round (= floor(x + 0.5))。C# の Math.Round は銀行丸めなので使わない</summary>
+        private static int JsRound(double v) => (int)Math.Floor(v + 0.5);
+        /// <summary>JS の Math.floor (double で計算してから床)</summary>
+        private static int JsFloor(double v) => (int)Math.Floor(v);
+        /// <summary>JS の Math.trunc (0方向)</summary>
+        private static int JsTrunc(double v) => (int)v;
+
+        private static List<T> Append<T>(IReadOnlyList<T> a, T b)
+        {
+            var outp = new List<T>(a) { b };
+            return outp;
+        }
+
+        private static List<T> Concat<T>(IReadOnlyList<T> a, IEnumerable<T> b)
+        {
+            var outp = new List<T>(a);
+            outp.AddRange(b);
+            return outp;
+        }
+
+        /// <summary>報酬プールから除外する基本札 (スターターに入っている素のカード)</summary>
+        public static readonly HashSet<string> REWARD_EXCLUDED = new HashSet<string>
+        {
+            "black_shiv_token",  // 骨のナイフ: 生成トークン (この戦闘限り)
+            "white_spark_token", // 火種 (白 2026-09-20 夜): 生成トークン
+            "white_perm_page",   // 見習い: 見習いの列が召喚する従者トークン
+            "green_strike",
+            "green_guard",
+            "green_basic_bash",  // 打ち据え (スターターのBash枠)
+            // スターターのリアクション2枚 (中立スターター化の追随)
+            "green_reaction_vine", // 2026-09-13 罠モデル: 初期デッキの教材を守りの蔓へ (TS run.ts と同形)
+            "blue_strike",
+            "blue_guard",
+            "blue_counterspell",
+            // --- スターター個性注入の追随 ---
+            "green_entangle",
+            "green_vine_wedge",
+            "blue_tide_drop",
+            "blue_current_lash", // 2026-09-25 青の解凍: 初期デッキの渦流の鞭・知恵の重み (氷の槍・思案・霜の帳は報酬プールへ)
+            "blue_weight_of_wisdom",
+            "red_spark",
+            "red_ignite",
+            "red_perm_flarecoat",
+            "red_perm_thorn_flame",
+            "red_mode_firecontrol", // 2026-10-10 Opus 赤3本: 火加減を初期デッキへ (火花×2→火花×1＋火加減)
+            "white_shield_strike",
+            "white_light_bolt", // 灯の矢 (白の派生=灯の教材=放出。2026-09-21 夜 ユーザー裁定「継ぎ火を消して灯の矢に」: 継ぎ火は報酬プールへ)
+            "white_mode_crossroad", // 灯の岐路 (2026-09-20 白の初期デッキを緑の形に。剣の人形・灯り継ぎ・報復の光は報酬プールへ)
+            "white_light_buckler", // 灯の小盾 (2026-09-24 Opus ひなた裁定: 初期デッキの白盾1枚を差し替え)
+            "black_dark_pact",
+            "black_drain",
+            "black_bursting_corpse",
+            "black_shadow_blade",
+            "white_reaction_ward",
+            "black_reaction_curse",
+            "black_reaction_grudge",
+            "red_strike",
+            "red_guard",
+            "white_strike",
+            "white_guard",
+            "black_strike",
+            "black_guard",
+        };
+
+        /// <summary>焚き火の回復比率 (2026-09-09 0.3→0.25。ユーザー裁定「焚き火側で調整」＝
+        /// 友人のフルランで被ダメ総量212に対し幕ボス全回復2回だけで+122(58%)、HPが緊張の資源になっていなかった)</summary>
+        private const double CAMPFIRE_HEAL_RATIO = 0.25;
+        /// <summary>勝利ごとの自動回復は廃止 (回復は焚き火のみ)</summary>
+        private const int VICTORY_HEAL = 0;
+        /// <summary>エリート補正は廃止 (エリート専用敵化)</summary>
+        private const int ELITE_STRENGTH = 0;
+
+        // ゴールド
+        private const int STARTING_GOLD = 50;
+        /// <summary>出立の店 (2026-09-24): 開始時に上乗せする所持金。ラン開始の所持金は STARTING_GOLD＋これ (チェックポイント開始・Departure=false のテストには無い)</summary>
+        public const int DEPARTURE_PURSE = 100;
+        private const int GOLD_PER_BATTLE_MIN = 12;
+        private const int GOLD_PER_BATTLE_MAX = 18;
+        private const int GOLD_ELITE_BONUS_MIN = 30;
+        private const int GOLD_ELITE_BONUS_MAX = 40;
+        /// <summary>盗人を逃がす前に倒した時の懸賞金</summary>
+        private const int THIEF_BOUNTY = 10;
+
+        /// <summary>?マスの累積確率の基礎値 (本家 monster10%/shop3%/treasure2%)。整数パーセントポイント</summary>
+        private const int UNKNOWN_PITY_BASE_MONSTER = 10;
+        private const int UNKNOWN_PITY_BASE_SHOP = 3;
+        private const int UNKNOWN_PITY_BASE_TREASURE = 2;
+        private static RunStateUnknownPity UnknownPityBase() => new RunStateUnknownPity
+        {
+            Monster = UNKNOWN_PITY_BASE_MONSTER,
+            Shop = UNKNOWN_PITY_BASE_SHOP,
+            Treasure = UNKNOWN_PITY_BASE_TREASURE,
+        };
+
+        /// <summary>イベント抽選で祠プールを引く確率 (本家 SHRINE_CHANCE = 0.25)</summary>
+        private const int SHRINE_CHANCE_PERCENT = 25;
+        private const int SHOP_CARD_COUNT = 5;
+        private const int SHOP_RELIC_PRICE = 150;
+
+        // ---- ギア (消耗品 2026-09-17。docs/parts-proposal-2026-09-17.md §4 供給。TS run.ts と同値) ----
+        /// <summary>通常戦のドロップ率 (整数パーセントポイント)。外れるたび +GEAR_DROP_PITY・当たると基礎値へ戻る</summary>
+        public const int GEAR_DROP_BASE = 60;
+        public const int GEAR_DROP_PITY = 10;
+        /// <summary>魔素: 通常戦の勝利で半個ぶん (2戦で1個)、エリート・幕ボスで1個ぶん (2026-09-17 裁定: 排出を半分)</summary>
+        public const int MANA_PER_WIN = 5;
+        public const int MANA_PER_ELITE_BOSS = 10;
+        /// <summary>ショップ: ギアの棚は3枠。値段はレア度で</summary>
+        public const int SHOP_GEAR_SLOTS = 3;
+        public static readonly IReadOnlyDictionary<string, int> SHOP_GEAR_PRICE = new Dictionary<string, int> { { "common", 40 }, { "uncommon", 60 }, { "rare", 90 } };
+        /// <summary>ショップ: 魔素1つの値段</summary>
+        public const int SHOP_MANA_PRICE = 30;
+        /// <summary>除去サービス: 回数無制限・使うたびラン通算で+25G</summary>
+        private const int SHOP_REMOVAL_BASE = 50;
+        private const int SHOP_REMOVAL_STEP = 25;
+        /// <summary>強化サービス: 回数無制限・使うたびラン通算で+50G</summary>
+        private const int SHOP_UPGRADE_BASE = 100;
+        private const int SHOP_UPGRADE_STEP = 50;
+
+        /// <summary>工房の合成1回の価格 (強化100Gと同額=圧縮+強化の対価)</summary>
+        public const int WORKSHOP_FUSE_PRICE = 100;
+
+        /// <summary>
+        /// 工房の合成の結果 (確定と同じ札。鍛冶の火種なら鍛えた姿)。UI のプレビューも同じ関数を読む
+        /// (2026-09-25 Opus 青C: プレビューが鍛冶の火種の鍛えを映さなかった。TS workshopFuseResult)
+        /// </summary>
+        public static CardDef WorkshopFuseResult(RunState run, CardInstance a, CardInstance b) => WorkshopFuseResult(run, a, b, Fusion.FuseCards(a, b));
+
+        public static CardDef WorkshopFuseResult(RunState run, CardInstance a, CardInstance b, CardDef fusedDef)
+        {
+            var fused = new CardInstance { Uid = "preview", Def = fusedDef };
+            return RelicFlag(run, "fusionUpgraded") && Upgrade.CanUpgradeCard(fused) ? Upgrade.UpgradeCard(fused).Def : fusedDef;
+        }
+
+        public static int WorkshopFusePrice(RunState run)
+        {
+            return Math.Max(0, WORKSHOP_FUSE_PRICE - RelicBonusSum(run, "fusionDiscount")); // 大工の道具
+        }
+
+        /// <summary>B型レリックの数値ボーナスの合計 (所持レリックから毎回導出 = RunState にフィールドを増やさない)</summary>
+        public static int RelicBonusSum(RunState run, string key)
+        {
+            int a = 0;
+            foreach (var id in run.Relics)
+            {
+                var b = Content.GetRelicDef(id).Bonus;
+                if (b == null) continue;
+                int? v = key switch
+                {
+                    "victoryHealFlat" => b.VictoryHealFlat,
+                    "shopUpgradeDiscount" => b.ShopUpgradeDiscount,
+                    "restMaxHp" => b.RestMaxHp,
+                    "eliteGoldBonus" => b.EliteGoldBonus,
+                    "fusionDiscount" => b.FusionDiscount,
+                    "removalStepDelta" => b.RemovalStepDelta,
+                    "eliteRelicPicks" => b.EliteRelicPicks, // 黒星の欠片 (2026-09-06)
+                    // レリック本家形 (2026-09-12)
+                    "goldPerRow" => b.GoldPerRow,
+                    "goldPerUnknown" => b.GoldPerUnknown,
+                    "unknownChestEvery" => b.UnknownChestEvery,
+                    "shopHeal" => b.ShopHeal,
+                    "campfireTrain" => b.CampfireTrain,
+                    "wingBoots" => b.WingBoots,
+                    "extraRewardRounds" => b.ExtraRewardRounds,
+                    "skipRewardMaxHp" => b.SkipRewardMaxHp,
+                    "relicsOnPickup" => b.RelicsOnPickup,
+                    "brandsOnPickup" => b.BrandsOnPickup,
+                    "removeOnPickup" => b.RemoveOnPickup,
+                    "transformOnPickup" => b.TransformOnPickup,
+                    "workshopFuses" => b.WorkshopFuses,
+                    "maxHpPerBrand" => b.MaxHpPerBrand,
+                    "brandWard" => b.BrandWard,
+                    _ => null,
+                };
+                a += v ?? 0;
+            }
+            return a;
+        }
+
+        /// <summary>B型の真偽キー (焚き火の発掘・除去・鍛えられない・合成の鍛え・休めない) を所持レリックから導出する</summary>
+        public static bool RelicFlag(RunState run, string key)
+        {
+            foreach (var id in run.Relics)
+            {
+                var b = Content.GetRelicDef(id).Bonus;
+                if (b == null) continue;
+                bool? v = key switch
+                {
+                    "campfireDig" => b.CampfireDig,
+                    "campfireRemove" => b.CampfireRemove,
+                    "noForge" => b.NoForge,
+                    "fusionUpgraded" => b.FusionUpgraded,
+                    "noRest" => b.NoRest,
+                    _ => null,
+                };
+                if (v == true) return true;
+            }
+            return false;
+        }
+
+        /// <summary>レリックのラン内状態の読み書き (relicState。旧セーブは null)</summary>
+        public static int RelicStateOf(RunState run, string key)
+        {
+            if (run.RelicState == null) return 0;
+            return run.RelicState.TryGetValue(key, out var v) ? v : 0;
+        }
+        private static RunState WithRelicState(RunState run, string key, int value)
+        {
+            var map = new Dictionary<string, int>();
+            if (run.RelicState != null) foreach (var kv in run.RelicState) map[kv.Key] = kv.Value;
+            map[key] = value;
+            return run with { RelicState = map };
+        }
+
+        /// <summary>脈打つ欠片 (2026-09-18 人間ラン#14「強すぎ」): 上限が働いた自ターンの回数をランで数え (relicState.remnantUsed)、使い切ったら砕けて所持から消える。勝利と煙玉の離脱の両方で読む</summary>
+        private static RunState SettleHpLossCap(RunState next, GameState combat)
+        {
+            if (combat.MaxHpLossCharges == null) return next;
+            int total = 0;
+            foreach (var id in next.Relics) total += Content.GetRelicDef(id).CombatRule?.MaxHpLossCharges ?? 0;
+            if (total <= 0) return next;
+            next = WithRelicState(next, "remnantUsed", Math.Max(0, Math.Min(total, total - combat.MaxHpLossCharges.Value)));
+            if (combat.MaxHpLossCharges.Value > 0) return next;
+            return next with { Relics = next.Relics.Where(id => (Content.GetRelicDef(id).CombatRule?.MaxHpLossCharges ?? 0) == 0).ToList() };
+        }
+        /// <summary>回数つきレリックの残り回数 (表示用。回数を持たないレリックは null)</summary>
+        public static int? RelicChargesLeft(RunState run, string relicId)
+        {
+            var total = Content.GetRelicDef(relicId).CombatRule?.MaxHpLossCharges;
+            if (total == null) return null;
+            return Math.Max(0, total.Value - RelicStateOf(run, "remnantUsed"));
+        }
+
+        /// <summary>大口の貯金箱 (2026-09-12): ショップで何か買う (札・レリック・除去・鍛える) と以後の行進のG加算が止まる</summary>
+        private static RunState BreakMawBank(RunState run)
+        {
+            if (RelicBonusSum(run, "goldPerRow") <= 0 || RelicStateOf(run, "mawBroken") == 1) return run;
+            return WithRelicState(run, "mawBroken", 1);
+        }
+
+        // ---- ギアの持ち物・魔素 (旧セーブに無いので ?? ガード) ----
+        public static IReadOnlyList<GearInstance> GearsOf(RunState run) => run.Gears ?? new List<GearInstance>();
+        public static int ManaOf(RunState run) => run.Mana ?? 0;
+        public static bool GearFull(RunState run) => GearsOf(run).Count >= Gears.GEAR_CARRY_MAX;
+
+        /// <summary>レア度の抽選 (本家形 C65／U25／R10)。エリート・幕ボスは U 以上を保証 (それでも最初の roll は消費する)</summary>
+        static (string Id, RngState Rng) RollGearId(RngState rng0, bool atLeastUncommon)
+        {
+            var (roll, rng1) = Rng.NextInt(rng0, 0, 99);
+            string wanted = roll < 10 ? "rare" : (roll < 35 || atLeastUncommon) ? "uncommon" : "common";
+            var pool = Content.PoolGears.Where(g => g.Rarity == wanted).ToList();   // 台帳から外した札 (Retired) は載らない (2026-09-18)
+            if (pool.Count == 0) pool = new List<GearDef>(Content.PoolGears);
+            var (i, rng2) = Rng.NextInt(rng1, 0, pool.Count - 1);
+            return (pool[i].Id, rng2);
+        }
+
+        /// <summary>持ち物に1個足す (満杯なら足さない)。拾った記録 (seenGearIds) は必ず残る</summary>
+        static RunState AddGear(RunState run, string gearId, string uidHint)
+        {
+            var seen = run.SeenGearIds ?? new List<string>();
+            var withSeen = run with { SeenGearIds = seen.Contains(gearId) ? seen : Append(seen, gearId) };
+            if (GearFull(withSeen)) return withSeen;
+            return withSeen with { Gears = Append(GearsOf(withSeen), Gears.MakeGear(gearId, "gear_" + uidHint)) };
+        }
+
+        /// <summary>ギアを1回ぶん使う: 魔素-1個ぶん・残り回数-1 (0 になったら持ち物から消える)</summary>
+        static RunState SpendGear(RunState run, int index)
+        {
+            var gears = GearsOf(run);
+            if (index < 0 || index >= gears.Count) throw new InvalidOperationException($"不正なギア指定: {index}");
+            var gear = gears[index];
+            int left = gear.Charges - 1;
+            return run with
+            {
+                Mana = ManaOf(run) - Gears.GEAR_MANA_COST,
+                Gears = left > 0 ? gears.Select((g, i) => i == index ? g with { Charges = left } : g).ToList() : gears.Where((_, i) => i != index).ToList(),
+            };
+        }
+
+        /// <summary>持ち物から1つ捨てる (満杯の入れ替え・枠の整理)</summary>
+        static RunState DiscardGearAt(RunState run, int index)
+        {
+            var gears = GearsOf(run);
+            if (index < 0 || index >= gears.Count) throw new InvalidOperationException($"不正なギア指定: {index}");
+            return run with { Gears = gears.Where((_, i) => i != index).ToList() };
+        }
+
+        public sealed record CampfireOptionsInfo(bool Dig, bool Remove, int TrainLeft, bool Forge);
+
+        /// <summary>焚き火で選べる行動 (2026-09-12 レリック限定の第3選択肢)。UI/engine が同じ式を読む</summary>
+        public static CampfireOptionsInfo CampfireOptions(RunState run)
+        {
+            int trainMax = RelicBonusSum(run, "campfireTrain");
+            return new CampfireOptionsInfo(
+                RelicFlag(run, "campfireDig"),
+                RelicFlag(run, "campfireRemove"),
+                Math.Max(0, trainMax - RelicStateOf(run, "train")),
+                !RelicFlag(run, "noForge"));
+        }
+
+        /// <summary>翼の靴 (2026-09-12 本家 Wing Boots): 残回数があれば、線の無い次の行のノードにも進める (NextChoices と排他の集合)</summary>
+        public static IReadOnlyList<int> WingChoices(RunState run)
+        {
+            var outp = new List<int>();
+            if (RelicStateOf(run, "wingBoots") <= 0) return outp;
+            if (run.Row < 0 || run.Row >= run.Map.Count - 1) return outp;
+            var normal = new HashSet<int>(NextChoices(run));
+            for (int c = 0; c < run.Map[run.Row + 1].Count; c++) if (!normal.Contains(c)) outp.Add(c);
+            return outp;
+        }
+
+        /// <summary>基本札 (打撃・防御=全色のスターターの共通札) か。古代の匣の変成対象</summary>
+        public static bool IsBasicCard(CardInstance card)
+        {
+            var id = card.Def.Id;
+            foreach (var color in new[] { "green", "blue", "red", "white", "black" })
+                if (id == color + "_strike" || id == color + "_guard") return true;
+            return false;
+        }
+
+        /// <summary>色ゲート (2026-09-12): RelicDef.colors がリーダーの色アイデンティティと1つでも重なる時だけ候補になる</summary>
+        public static bool RelicAllowedForColors(RelicDef def, IReadOnlyList<string> colors)
+        {
+            if (def.Colors == null) return true;
+            foreach (var c in def.Colors) if (colors.Contains(c)) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// デッキに札を加える唯一の口 (2026-09-12)。卵 (upgradeOnAdd) と烙印の受け皿 (厄除けの札・黒曜の護符) をここで一度だけ適用する
+        /// </summary>
+        public static RunState AddCardsToRunDeck(RunState run, IReadOnlyList<CardInstance> cards)
+        {
+            var eggs = new HashSet<string>();
+            foreach (var id in run.Relics)
+            {
+                var u = Content.GetRelicDef(id).Bonus?.UpgradeOnAdd;
+                if (u != null) foreach (var t in u) eggs.Add(t);
+            }
+            int perBrand = RelicBonusSum(run, "maxHpPerBrand");
+            var next = run;
+            var added = new List<CardInstance>();
+            foreach (var c in cards)
+            {
+                bool isBrand = c.Def.Id == Content.BRAND_DEF.Id || c.Def.Id == Content.GUILT_DEF.Id;
+                if (isBrand)
+                {
+                    // 厄除けの札 (本家 Omamori): 次のN回の烙印を無効にする
+                    if (RelicStateOf(next, "brandWard") > 0)
+                    {
+                        next = WithRelicState(next, "brandWard", RelicStateOf(next, "brandWard") - 1);
+                        continue;
+                    }
+                    // 黒曜の護符 (本家 Darkstone Periapt): 烙印を受け取るたび最大HP+N
+                    if (perBrand > 0) next = next with { MaxHp = next.MaxHp + perBrand, Hp = next.Hp + perBrand };
+                    added.Add(c);
+                    continue;
+                }
+                added.Add(eggs.Contains(c.Def.Type) && Upgrade.CanUpgradeCard(c) ? Upgrade.UpgradeCard(c) : c);
+            }
+            return added.Count == 0 ? next : next with { Deck = Concat(next.Deck, added) };
+        }
+
+        /// <summary>デッキの1枚を同レアリティの別札へ変成する (イベントの変成・星読みの盤・古代の匣が共用)。upgrade=true なら鍛えて入れる。卵は変成にも乗る</summary>
+        public static RunState TransformCardAt(RunState run, int index, bool upgrade)
+        {
+            var card = (index >= 0 && index < run.Deck.Count) ? run.Deck[index] : null;
+            if (card == null) throw new InvalidOperationException("対象カードを cardIndex で指定する");
+            if (!CanTransformCard(card)) throw new InvalidOperationException($"{card.Def.Name} は変成できない（状態異常・烙印は除去で消す）");
+            string rarity = card.Def.Rarity ?? "common";
+            var pool = RewardPool(run).Where(c => (c.Rarity ?? "common") == rarity && c.Id != card.Def.Id).ToList();
+            if (pool.Count == 0) return run;
+            var (idx, rng) = Rng.NextInt(run.Rng, 0, pool.Count - 1);
+            var eggs = new HashSet<string>();
+            foreach (var id in run.Relics)
+            {
+                var u = Content.GetRelicDef(id).Bonus?.UpgradeOnAdd;
+                if (u != null) foreach (var t in u) eggs.Add(t);
+            }
+            var replacement = new CardInstance { Uid = $"trans_a{run.Act}_r{run.Row}_{index}_{pool[idx].Id}", Def = pool[idx] };
+            if ((upgrade || eggs.Contains(replacement.Def.Type)) && Upgrade.CanUpgradeCard(replacement)) replacement = Upgrade.UpgradeCard(replacement);
+            return run with { Rng = rng, Deck = run.Deck.Select((c, i) => i == index ? replacement : c).ToList() };
+        }
+
+        /// <summary>取得時に札を選ぶレリックの保留があれば relic-choose フェーズへ入る (無ければそのまま)</summary>
+        private static RunState EnterPendingChoice(RunState run, string resume)
+        {
+            if (run.PendingRelicChoice == null) return run;
+            return run with { Phase = RunPhases.RelicChoose, PendingRelicChoice = run.PendingRelicChoice with { Resume = resume } };
+        }
+
+        /// <summary>
+        /// レリックを取得する唯一の口 (2026-09-12 本家形): B型ボーナス・取得時一回効果・ラン内状態の初期化・呪いの鍵の烙印をここで一度だけ適用する
+        /// </summary>
+        public static RunState GainRelic(RunState run, string relicId)
+        {
+            var before = run;
+            var def = Content.GetRelicDef(relicId);
+            RunState next = run with { Relics = Append(run.Relics, relicId) };
+            next = ApplyRelicBonus(next, relicId);
+            next = ApplyRandomUpgradesOnPickup(next, relicId);
+            var b = def.Bonus;
+            if ((b?.WingBoots ?? 0) > 0) next = WithRelicState(next, "wingBoots", RelicStateOf(next, "wingBoots") + (b?.WingBoots ?? 0));
+            if ((b?.BrandWard ?? 0) > 0) next = WithRelicState(next, "brandWard", RelicStateOf(next, "brandWard") + (b?.BrandWard ?? 0));
+            if (def.ExpiresAfterBattles != null) next = WithRelicState(next, "exp_" + relicId, def.ExpiresAfterBattles.Value);
+            if (b?.HealFullOnPickup == true) next = next with { Hp = next.MaxHp };
+            if (b?.TransformBasicsOnPickup == true)
+            {
+                // 古代の匣 (本家 Pandora's Box): 基本札 (打撃・防御) をすべて同レア度の別札へ
+                for (int i = 0; i < next.Deck.Count; i++) if (IsBasicCard(next.Deck[i])) next = TransformCardAt(next, i, false);
+            }
+            if ((b?.BrandsOnPickup ?? 0) > 0)
+            {
+                var list = new List<CardInstance>();
+                for (int i = 0; i < (b?.BrandsOnPickup ?? 0); i++)
+                    list.Add(new CardInstance { Uid = $"brand_relic_{relicId}_a{next.Act}_r{next.Row}_{i}", Def = Content.BRAND_DEF });
+                next = AddCardsToRunDeck(next, list);
+            }
+            if ((b?.RelicsOnPickup ?? 0) > 0)
+            {
+                // 呼び鈴 (本家 Calling Bell): 宝箱と同じ層からN個をそのまま受け取る
+                var (drawn, rng) = DrawRelicOptions(next, RelicSources.Chest, b?.RelicsOnPickup ?? 0);
+                next = next with { Rng = rng };
+                foreach (var id in drawn) next = GainRelic(next, id);
+            }
+            // 呪いの鍵 (取った瞬間は数えない = before の所持で判定)
+            next = WithRelicGainBrands(next, before);
+            if ((b?.RemoveOnPickup ?? 0) > 0 || (b?.TransformOnPickup ?? 0) > 0)
+            {
+                bool remove = (b?.RemoveOnPickup ?? 0) > 0;
+                next = next with
+                {
+                    PendingRelicChoice = new RunStatePendingRelicChoice
+                    {
+                        RelicId = relicId,
+                        Mode = remove ? "remove" : "transform",
+                        Count = remove ? (b?.RemoveOnPickup ?? 0) : (b?.TransformOnPickup ?? 0),
+                        Resume = RunPhases.Map,
+                    },
+                };
+            }
+            return next;
+        }
+
+        /// <summary>ショップの価格倍率 (会員証=0.5。複数所持は積)</summary>
+        public static double ShopPriceRatio(RunState run)
+        {
+            double a = 1;
+            foreach (var id in run.Relics) a *= Content.GetRelicDef(id).Bonus?.ShopPriceRatio ?? 1;
+            a *= DifficultyTaxOf(run.Difficulty).ShopPrice;   // 段8の経済税 (物価×1.2) は会員証と同じ器に乗る (2026-09-18)
+            return a;
+        }
+
+        /// <summary>勝利ゴールドの倍率 (金の靴=1.5)</summary>
+        private static double GoldMultiplier(RunState run)
+        {
+            double a = 1;
+            foreach (var id in run.Relics) a *= Content.GetRelicDef(id).Bonus?.GoldMultiplier ?? 1;
+            return a;
+        }
+
+        public static int ShopRemovalPrice(RunState run)
+        {
+            int step = Math.Max(0, SHOP_REMOVAL_STEP + RelicBonusSum(run, "removalStepDelta")); // 除去の鑿
+            return JsFloor((SHOP_REMOVAL_BASE + step * run.RemovalCount) * ShopPriceRatio(run));
+        }
+
+        public static int ShopUpgradePrice(RunState run)
+        {
+            int baseP = Math.Max(0, SHOP_UPGRADE_BASE - RelicBonusSum(run, "shopUpgradeDiscount")); // 砥石の欠片
+            return JsFloor((baseP + SHOP_UPGRADE_STEP * run.UpgradeCount) * ShopPriceRatio(run));
+        }
+
+        /// <summary>深度スケーリング: 敵の初期強化 (若い個体補正は撤廃。幕ボスのみ+1)</summary>
+        public static int DepthStrength(int row, int act = 1)
+        {
+            return row >= MapGen.BossRowFor(act) ? 1 : 0;
+        }
+
+        /// <summary>難易度10段階＝傾き型 (2026-09-18。TS run.ts DIFFICULTY_TABLE と文字どおり同じ数値)。段3＝基準 (全幕×1.0)。幕1の HP は段で動かない</summary>
+        public static readonly IReadOnlyList<DifficultyScaleRow> DIFFICULTY_TABLE = new[]
+        {
+            new DifficultyScaleRow { Hp = new[] { 0.9, 0.9, 0.9 }, Atk = new[] { 0.9, 0.9, 0.9 } },       // 1
+            new DifficultyScaleRow { Hp = new[] { 0.95, 0.95, 0.95 }, Atk = new[] { 0.95, 0.95, 0.95 } }, // 2
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.0, 1.0 }, Atk = new[] { 1.0, 1.0, 1.0 } },       // 3 = 既定
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.03, 1.06 }, Atk = new[] { 1.02, 1.06, 1.12 } },  // 4
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.06, 1.12 }, Atk = new[] { 1.04, 1.12, 1.24 } },  // 5
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.09, 1.18 }, Atk = new[] { 1.06, 1.18, 1.36 } },  // 6
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.12, 1.24 }, Atk = new[] { 1.08, 1.24, 1.48 } },  // 7
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.15, 1.3 }, Atk = new[] { 1.1, 1.3, 1.6 } },      // 8
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.18, 1.36 }, Atk = new[] { 1.12, 1.36, 1.72 } },  // 9
+            new DifficultyScaleRow { Hp = new[] { 1.0, 1.21, 1.42 }, Atk = new[] { 1.14, 1.42, 1.84 } },  // 10
+        };
+
+        /// <summary>難易度の経済税 (2026-09-18 本家アセンション形。段で1つずつ積む。TS DIFFICULTY_TAX と同値)</summary>
+        public static readonly IReadOnlyList<DifficultyTax> DIFFICULTY_TAX = new[]
+        {
+            new DifficultyTax { BossHeal = 1.0, Campfire = 0.25, EliteBonus = 0, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },  // 1
+            new DifficultyTax { BossHeal = 1.0, Campfire = 0.25, EliteBonus = 0, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },  // 2
+            new DifficultyTax { BossHeal = 1.0, Campfire = 0.25, EliteBonus = 0, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },  // 3
+            new DifficultyTax { BossHeal = 0.75, Campfire = 0.25, EliteBonus = 0, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 }, // 4
+            new DifficultyTax { BossHeal = 0.75, Campfire = 0.2, EliteBonus = 0, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },  // 5
+            new DifficultyTax { BossHeal = 0.75, Campfire = 0.2, EliteBonus = 1, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },  // 6
+            new DifficultyTax { BossHeal = 0.5, Campfire = 0.2, EliteBonus = 1, ShopPrice = 1.0, RewardChoices = 0, StartGuilt = 0 },   // 7
+            new DifficultyTax { BossHeal = 0.5, Campfire = 0.2, EliteBonus = 1, ShopPrice = 1.2, RewardChoices = 0, StartGuilt = 0 },   // 8
+            new DifficultyTax { BossHeal = 0.5, Campfire = 0.2, EliteBonus = 1, ShopPrice = 1.2, RewardChoices = -1, StartGuilt = 0 },  // 9
+            new DifficultyTax { BossHeal = 0.25, Campfire = 0.2, EliteBonus = 1, ShopPrice = 1.2, RewardChoices = -1, StartGuilt = 1 }, // 10
+        };
+
+        public const int DEFAULT_DIFFICULTY = 3;
+
+        /// <summary>難易度の段 (1〜10)。範囲外と旧セーブの欠落 (null) は既定3へ丸める</summary>
+        public static int DifficultyLevel(int? level)
+        {
+            int n = level.HasValue ? level.Value : DEFAULT_DIFFICULTY;
+            return Math.Min(DIFFICULTY_TABLE.Count, Math.Max(1, n));
+        }
+
+        /// <summary>難易度→その幕の倍率 (act 省略=幕1)</summary>
+        public static DifficultyScaleEntry DifficultyScale(int? level, int act = 1, int? row = null)
+        {
+            var t = DIFFICULTY_TABLE[DifficultyLevel(level) - 1];
+            int a = Math.Min(3, Math.Max(1, act)) - 1;
+            // 幕1後半 (2026-09-18 人間ラン#14): 行がボス行の半分以降 (ボス行も) なら幕1と幕2の中点。前半は据え置き
+            if (a == 0 && row != null && row.Value >= (int)Math.Floor(MapGen.BossRowFor(1) / 2.0))
+                return new DifficultyScaleEntry { Hp = MidScale(t.Hp[0], t.Hp[1]), Atk = MidScale(t.Atk[0], t.Atk[1]) };
+            return new DifficultyScaleEntry { Hp = t.Hp[a], Atk = t.Atk[a] };
+        }
+        /// <summary>2つの倍率の中点 (小数3桁。TS の midScale と同じ式)</summary>
+        static double MidScale(double x, double y) => Math.Floor((x + y) / 2.0 * 1000.0 + 0.5) / 1000.0;
+
+        /// <summary>難易度→経済税 (段3以下は無税)</summary>
+        public static DifficultyTax DifficultyTaxOf(int? level) => DIFFICULTY_TAX[DifficultyLevel(level) - 1];
+
+        /// <summary>その幕のエリートの員数 (基準4。段6以上は幕2/3で+1)</summary>
+        public static int EliteCountFor(int? level, int act) => MapGen.ELITE_COUNT + (act >= 2 ? DifficultyTaxOf(level).EliteBonus : 0);
+
+        /// <summary>難易度の一行説明 (TS difficultyDescription と同じ文)</summary>
+        public static string DifficultyDescription(int? level)
+        {
+            int n = DifficultyLevel(level);
+            if (n == DEFAULT_DIFFICULTY) return n + ": 標準（基準線。幕1〜3とも×1.0・幕ボス撃破で全回復）";
+            var row = DIFFICULTY_TABLE[n - 1];
+            var t = DIFFICULTY_TAX[n - 1];
+            var late = DifficultyScale(n, 1, MapGen.BossRowFor(1) - 1);   // 幕1後半 (行8以降) は幕1と幕2の中点
+            var parts = new List<string>
+            {
+                "打点 幕1×" + Num(row.Atk[0]) + "（後半×" + Num(late.Atk) + "）・幕2×" + Num(row.Atk[1]) + "・幕3×" + Num(row.Atk[2]),
+                "HP 幕1後半×" + Num(late.Hp) + "・幕2×" + Num(row.Hp[1]) + "・幕3×" + Num(row.Hp[2]),
+            };
+            if (t.BossHeal < 1) parts.Add("幕ボス撃破の回復" + (int)Math.Round(t.BossHeal * 100) + "%");
+            if (t.Campfire < 0.25) parts.Add("焚き火" + (int)Math.Round(t.Campfire * 100) + "%");
+            if (t.EliteBonus > 0) parts.Add("幕2/3のエリート+" + t.EliteBonus);
+            if (t.ShopPrice > 1) parts.Add("物価×" + Num(t.ShopPrice));
+            if (t.RewardChoices < 0) parts.Add("報酬の提示" + t.RewardChoices);
+            if (t.StartGuilt > 0) parts.Add("開始時に仮初の烙印" + t.StartGuilt);
+            return n + ": " + string.Join("／", parts) + (n < DEFAULT_DIFFICULTY ? "（易しめ）" : "");
+        }
+        /// <summary>JS の Number→string と同じ見た目 (1 / 1.12 / 0.9)</summary>
+        static string Num(double v) => v.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+
+        /// <summary>深度スケーリング: 敵HP倍率 (幕×幕内前後半の2段スケール)</summary>
+        public static double DepthHpScale(int row, int act = 1)
+        {
+            if (row >= MapGen.BossRowFor(act)) return 1.0; // 幕ボスは素のHP
+            // 幕内前後半の境界 = ボス行の半分
+            bool late = row >= (int)Math.Floor(MapGen.BossRowFor(act) / 2.0);
+            double[][] table =
+            {
+                new[] { 0.62, 0.72 }, // 1幕
+                new[] { 1.05, 1.15 }, // 2幕
+                new[] { 1.2, 1.3 },   // 3幕
+            };
+            var pair = table[act - 1];
+            return late ? pair[1] : pair[0];
+        }
+
+        /// <summary>現在いるノード (row=-1 の開始前は null)</summary>
+        public static MapNode? CurrentNode(RunState run)
+        {
+            return run.Row >= 0 ? run.Map[run.Row][run.Col] : null;
+        }
+
+        /// <summary>マップで次に進めるノードの列リスト (開始前は行0の全ノード)</summary>
+        public static IReadOnlyList<int> NextChoices(RunState run)
+        {
+            if (run.Row < 0)
+            {
+                var all = new List<int>();
+                for (int c = 0; c < run.Map[0].Count; c++) all.Add(c);
+                return all;
+            }
+            // 実マップの行数から判定する (旧セーブのソフトロック回避)
+            if (run.Row >= run.Map.Count - 1) return new List<int>();
+            var node = CurrentNode(run);
+            return node?.Next ?? (IReadOnlyList<int>)new List<int>();
+        }
+
+        /// <summary>現在ノードの戦闘を開始する (戦闘シードはラン RNG から決定的に生成)。elite でエリート補正</summary>
+        // ---- デバッグ用の入口 (2026-09-12 ユーザー「あなたの確認用にデバッグメニュー」→ 自動巡回 shots state)。
+        // 通常のコマンド経路 (ApplyRunCommand) を通さずに任意のフェーズへ跳ぶ。純関数のまま private の規則を呼ぶだけで、TS 側との等価性契約 (ゴールデン) の外
+        public static RunState DebugLaunchCombat(RunState run, string encounterId)
+        {
+            // 行 -1 (開始前) からでも撃てるように、地図の最初の戦闘ノードに立ってから始める (LaunchCombat はノードの種別で倍率を読む)
+            var r = run;
+            if (CurrentNode(r) == null)
+            {
+                bool placed = false;
+                for (int row = 0; row < r.Map.Count && !placed; row++)
+                    for (int col = 0; col < r.Map[row].Count && !placed; col++)
+                        if (r.Map[row][col].Type == MapNodeTypes.Battle) { r = r with { Row = row, Col = col }; placed = true; }
+            }
+            return LaunchCombat(r, false, encounterId);
+        }
+        public static RunState DebugOpenTreasure(RunState run) => OpenTreasure(run);
+        public static RunState DebugRollRewards(RunState run) => RollRewards(run);
+        public static RunState DebugOpenEvent(RunState run, string? eventId)
+        {
+            string id = eventId ?? (Content.AllEvents.Count > 0 ? Content.AllEvents[0].Id : throw new InvalidOperationException("イベントが無い"));
+            Content.GetEventDef(id); // 未定義なら throw
+            return run with { EventId = id, Phase = RunPhases.Event, Combat = null, RewardOptions = null };
+        }
+
+        private static RunState LaunchCombat(RunState run, bool elite, string? encounterOverride = null)
+        {
+            var node = CurrentNode(run);
+            // encounterOverride は ?マスが戦闘に解決した時の敵 (ノードは encounterId を持たない)
+            string? encounterId = encounterOverride ?? node?.EncounterId;
+            if (node == null || encounterId == null) throw new InvalidOperationException("戦闘ノードではない");
+            // 戦闘シード: TS の nextInt(rng, 0, 2**31-1) と同じ1消費 (Rng.NextInt は幅を long で計算するので溢れない)
+            var (combatSeed, rng) = Rng.NextInt(run.Rng, 0, int.MaxValue);
+            // 難易度倍率: 全敵一律で既存スケールの上に乗算
+            var diff = DifficultyScale(run.Difficulty, run.Act, run.Row);   // 段×幕の表 (2026-09-18 傾き型)。幕1後半は幕1と幕2の中点
+            double[] bossHpByAct = { 1.35, 2.3, 2.4 };
+            int[] bossStrByAct = { 1, 1, 2 };
+            double[] atkByAct = { 1, 1.15, 1.15 };
+
+            var relicPerms = new List<CardInstance>();
+            foreach (var id in run.Relics)
+            {
+                var r = Content.GetRelicDef(id);
+                if ((r.Effects?.Count ?? 0) <= 0) continue;
+                // 鎖の首輪: エリート・ボス戦にだけ注入
+                if (r.EliteBossOnly == true && !elite && node.Type != MapNodeTypes.Boss) continue;
+                relicPerms.Add(Content.BuildRelicPermanent(r));
+            }
+            int setDamageReduction = 0;
+            foreach (var id in run.Relics) setDamageReduction += Content.GetRelicDef(id).CombatRule?.SetDamageReduction ?? 0;
+            bool expireToHand = run.Relics.Any(id => Content.GetRelicDef(id).CombatRule?.ExpireToHand == true);
+            int energyMaxRefBonus = 0;
+            foreach (var id in run.Relics) energyMaxRefBonus += Content.GetRelicDef(id).CombatRule?.EnergyMaxRefBonus ?? 0;
+            int harvestKeep = 0;
+            foreach (var id in run.Relics) harvestKeep += Content.GetRelicDef(id).CombatRule?.HarvestKeep ?? 0;
+            // レリック本家形 (2026-09-12): 規則改変の C型キーを所持レリックから集計
+            var rules = new List<RelicDefCombatRule>();
+            foreach (var id in run.Relics) { var cr = Content.GetRelicDef(id).CombatRule; if (cr != null) rules.Add(cr); }
+            int RuleSum(Func<RelicDefCombatRule, int?> f) { int a = 0; foreach (var r in rules) a += f(r) ?? 0; return a; }
+            bool RuleAny(Func<RelicDefCombatRule, bool?> f) { foreach (var r in rules) if (f(r) == true) return true; return false; }
+            int blockKeep = RuleSum(r => r.BlockKeep), xBonus = RuleSum(r => r.XBonus), hpLossReduce = RuleSum(r => r.HpLossReduce);
+            int smallHitToOne = RuleSum(r => r.SmallHitToOne), maxHpLossPerTurn = RuleSum(r => r.MaxHpLossPerTurn), playCap = RuleSum(r => r.PlayCap), artifact = RuleSum(r => r.Artifact);
+            int train = RelicStateOf(run, "train");
+            // 脈打つ欠片 (2026-09-18): 残り回数があるうちだけ上限を注入する (回数を持たない上限レリックはそのまま)
+            int capTotal = RuleSum(r => r.MaxHpLossCharges), capLeft = capTotal - RelicStateOf(run, "remnantUsed");
+
+            var combat = Combat.StartCombatWithOptions(combatSeed, run.Mode, encounterId, new CombatOptions
+            {
+                Deck = run.Deck,
+                LeaderId = run.LeaderId,
+                PlayerHp = run.Hp,
+                PlayerMaxHp = run.MaxHp,
+                // ボスの幕スケール。エリート専用敵は素の値で完成 = 幕内深度スケールも掛けない
+                EnemyHpScale =
+                    (elite
+                        ? 1.0
+                        : DepthHpScale(run.Row, run.Act) *
+                          (node.Type == MapNodeTypes.Boss ? bossHpByAct[run.Act - 1] : 1.0)) * diff.Hp,
+                EnemyStrength =
+                    (node.Type == MapNodeTypes.Boss ? bossStrByAct[run.Act - 1] : 0) + (elite ? ELITE_STRENGTH : 0),
+                // 幕2/3の通常敵は打点+15%。ボス・エリートは対象外 (難易度倍率は全敵一律)
+                EnemyAtkScale = (elite || node.Type == MapNodeTypes.Boss ? 1.0 : atkByAct[run.Act - 1]) * diff.Atk,
+                RelicPermanents = relicPerms,
+                SetDamageReduction = setDamageReduction,
+                ExpireToHand = expireToHand,
+                EnergyMaxRefBonus = energyMaxRefBonus,
+                HarvestKeep = harvestKeep,
+                SetAnyCards = run.SetAnyCards == true ? (bool?)true : null,
+                RetainHand = RuleAny(r => r.RetainHand) ? (bool?)true : null,
+                EnergyCarry = RuleAny(r => r.EnergyCarry) ? (bool?)true : null,
+                BlockKeep = blockKeep > 0 ? blockKeep : (int?)null,
+                XBonus = xBonus > 0 ? xBonus : (int?)null,
+                HpLossReduce = hpLossReduce > 0 ? hpLossReduce : (int?)null,
+                SmallHitToOne = smallHitToOne > 0 ? smallHitToOne : (int?)null,
+                MaxHpLossPerTurn = maxHpLossPerTurn > 0 && (capTotal == 0 || capLeft > 0) ? maxHpLossPerTurn : (int?)null,
+                MaxHpLossCharges = capTotal > 0 && capLeft > 0 ? capLeft : (int?)null,
+                // 蜥蜴の尾はランで1度: 使い切ったら以後は注入しない
+                DeathSave = RuleAny(r => r.DeathSave) && RelicStateOf(run, "lizardUsed") == 0 ? (bool?)true : null,
+                PlayCap = playCap > 0 ? playCap : (int?)null,
+                HideIntents = RuleAny(r => r.HideIntents) ? (bool?)true : null,
+                BrandsPlayable = RuleAny(r => r.BrandsPlayable) ? (bool?)true : null,
+                Artifact = artifact > 0 ? artifact : (int?)null,
+                // 重石の鍛錬 (焚き火で積んだ回数ぶん戦闘開始時に成長)
+                StartGrowth = train > 0 ? train : (int?)null,
+                // 盗みの上限 (2026-09-24 E6 本家 Looter): 所持金−すでに盗まれた額まで
+                GoldAvailable = run.Gold,
+            });
+            return run with
+            {
+                Rng = rng,
+                Combat = combat,
+                Phase = RunPhases.Combat,
+                RewardOptions = null,
+                CurrentElite = elite,
+            };
+        }
+
+        /// <summary>選んだノードに入る: 戦闘ノードなら戦闘開始、焚き火なら回復、工房ならそのままフェーズへ</summary>
+        private static RunState EnterNode(RunState run)
+        {
+            var next = EnterNodeInner(run);
+            // 本家: 直前の部屋がショップなら ?→ショップ を抑止する
+            return next with { LastRoomWasShop = next.Phase == RunPhases.Shop };
+        }
+
+        private static RunState EnterNodeInner(RunState run)
+        {
+            var node = CurrentNode(run);
+            if (node == null) throw new InvalidOperationException("ノードにいない");
+            switch (node.Type)
+            {
+                case MapNodeTypes.Battle:
+                case MapNodeTypes.Boss:
+                    return LaunchCombat(run, false);
+                case MapNodeTypes.Elite:
+                    return LaunchCombat(run, true);
+                case MapNodeTypes.Campfire:
+                    // 本家式の排他三択: 休む(30%回復) / 鍛える (除去はショップ専売)
+                    return run with
+                    {
+                        Phase = RunPhases.Campfire,
+                        Combat = null,
+                        RewardOptions = null,
+                        CampfireUpgradesUsed = 0,
+                    };
+                case MapNodeTypes.Workshop:
+                    return run with { Phase = RunPhases.Workshop, Combat = null, RewardOptions = null, WorkshopFusesUsed = 0 };
+                case MapNodeTypes.Shop:
+                    return OpenShop(run);
+                case MapNodeTypes.Event:
+                    return ResolveUnknown(run);
+                case MapNodeTypes.Treasure:
+                    // 宝箱行: 本家の「9階は全ノード宝箱」。レリック3択のみ・カード報酬なし
+                    return OpenTreasure(run);
+            }
+            return run;
+        }
+
+        private static string RelicRarity(string id) => Content.GetRelicDef(id).Rarity ?? RelicRaritys.Common;
+
+        /// <summary>
+        /// レリック抽選 (本家式の層×供給源)。
+        /// - chest / elite / event: スロットごとに C/U/R を 50/33/17 でロールし、その層の残候補から1つ (空なら隣の層へ)
+        /// - boss: boss 層のみ (尽きたら rare→uncommon→common)
+        /// - shop: 先頭1枠は shop 層 (無ければ C/U/R ロール)
+        /// </summary>
+        public static (IReadOnlyList<string> Options, RngState Rng) DrawRelicOptions(RunState run, string source, int count = 3)
+        {
+            // actMax: 経済レリックは幕1〜2にしか出ない
+            var pool = run.RelicQueue
+                // actMin (2026-09-09): 黒星の欠片は幕2以降。幕1ボスで取ると以後の強個体すべてが2個取りになる
+                .Where(id =>
+                    !run.Relics.Contains(id)
+                    && run.Act <= (Content.GetRelicDef(id).ActMax ?? 99)
+                    && run.Act >= (Content.GetRelicDef(id).ActMin ?? 0)
+                    && RelicAllowedForColors(Content.GetRelicDef(id), run.Colors))
+                .ToList();
+            var rng = run.Rng;
+            var picked = new List<string>();
+            bool Take(string tier)
+            {
+                var cands = pool.Where(id => RelicRarity(id) == tier && !picked.Contains(id)).ToList();
+                if (cands.Count == 0) return false;
+                var (i, next) = Rng.NextInt(rng, 0, cands.Count - 1);
+                rng = next;
+                picked.Add(cands[i]);
+                return true;
+            }
+            for (int n = 0; n < count; n++)
+            {
+                if (source == RelicSources.Boss)
+                {
+                    if (Take(RelicRaritys.Boss) || Take(RelicRaritys.Rare) || Take(RelicRaritys.Uncommon) || Take(RelicRaritys.Common)) continue;
+                    break;
+                }
+                if (source == RelicSources.Shop && n == 0 && Take(RelicRaritys.Shop)) continue;
+                // ?イベントのレリックは event 層を優先 (2026-09-12 本家 StS2: 呪いと対の器・ハズレ枠は ? からしか出ない)
+                if (source == RelicSources.Event && Take(RelicRaritys.Event)) continue;
+                var (roll, r1) = Rng.NextInt(rng, 0, 99);
+                rng = r1;
+                string tier = roll < 50 ? RelicTiers.Common : roll < 83 ? RelicTiers.Uncommon : RelicTiers.Rare;
+                string[] order =
+                    tier == RelicTiers.Common ? new[] { RelicTiers.Common, RelicTiers.Uncommon, RelicTiers.Rare }
+                    : tier == RelicTiers.Uncommon ? new[] { RelicTiers.Uncommon, RelicTiers.Common, RelicTiers.Rare }
+                    : new[] { RelicTiers.Rare, RelicTiers.Uncommon, RelicTiers.Common };
+                bool any = false;
+                foreach (var t in order) if (Take(t)) { any = true; break; }
+                if (!any) break;
+            }
+            return (picked, rng);
+        }
+
+        /// <summary>宝箱: レリック3択 (スキップ可)。候補列が尽きていれば素通りで map へ戻る</summary>
+        private static RunState OpenTreasure(RunState run)
+        {
+            var (options, rng) = DrawRelicOptions(run, RelicSources.Chest);
+            var baseRun = run with { Rng = rng, Combat = null, RewardOptions = null };
+            if (options.Count == 0) return baseRun with { Phase = RunPhases.Map };
+            return baseRun with { Phase = RunPhases.RelicReward, RelicOptions = options };
+        }
+
+        /// <summary>?→ショップが起きる所持金の下限 (除去の初回価格と同じ)</summary>
+        public const int UNKNOWN_SHOP_MIN_GOLD = 50;
+
+        /// <summary>?マスの解決 (本家 getEventRoomOutcomeHelper の整数版)</summary>
+        private static RunState ResolveUnknown(RunState run)
+        {
+            var pity = run.UnknownPity ?? UnknownPityBase();
+            // 固定ショップが次の行に見えているので先読みも要る
+            var node = CurrentNode(run);
+            bool nextHasShop = false;
+            if (node != null)
+            {
+                foreach (var i in node.Next)
+                {
+                    if (run.Row + 1 < run.Map.Count && i < run.Map[run.Row + 1].Count && run.Map[run.Row + 1][i].Type == MapNodeTypes.Shop)
+                    {
+                        nextHasShop = true;
+                        break;
+                    }
+                }
+            }
+            // 所持金が最安帯に届かないなら ?→ショップ は起きない (累積確率は据え置き)
+            bool tooPoor = run.Gold < UNKNOWN_SHOP_MIN_GOLD;
+            int shopPct = (run.LastRoomWasShop || nextHasShop || tooPoor) ? 0 : pity.Shop;
+            // 蛇の頭骨 (2026-09-12 本家 Ssserpent Head): ?に入るたび+N G
+            run = run with { Gold = run.Gold + RelicBonusSum(run, "goldPerUnknown") };
+            // 小さな宝箱 (本家 Tiny Chest): ?のN回目は必ず宝箱 (累積確率は触らない)
+            int chestEvery = RelicBonusSum(run, "unknownChestEvery");
+            if (chestEvery > 0)
+            {
+                int nUnknown = RelicStateOf(run, "unknownsSinceChest") + 1;
+                if (nUnknown >= chestEvery) return OpenTreasure(WithRelicState(run, "unknownsSinceChest", 0) with { EventId = null });
+                run = WithRelicState(run, "unknownsSinceChest", nUnknown);
+            }
+            var (roll, rng) = Rng.NextInt(run.Rng, 0, 99);
+            RunStateUnknownPity Bump(string hit) => new RunStateUnknownPity
+            {
+                Monster = hit == "monster" ? UNKNOWN_PITY_BASE_MONSTER : pity.Monster + UNKNOWN_PITY_BASE_MONSTER,
+                Shop = hit == "shop" ? UNKNOWN_PITY_BASE_SHOP : pity.Shop + UNKNOWN_PITY_BASE_SHOP,
+                Treasure = hit == "treasure" ? UNKNOWN_PITY_BASE_TREASURE : pity.Treasure + UNKNOWN_PITY_BASE_TREASURE,
+            };
+            if (roll < pity.Monster)
+            {
+                // ?→戦闘: 敵はその行の帯から解決時に抽選する。直前2行の戦闘ノードとメンバーを共有する編成は避ける
+                var fullPool = MapGen.TierFor(run.Act, run.Row);
+                var recent = new HashSet<string>();
+                foreach (var r in new[] { run.Row - 1, run.Row - 2 })
+                {
+                    if (r < 0 || r >= run.Map.Count) continue;
+                    foreach (var n2 in run.Map[r])
+                    {
+                        if ((n2.Type == MapNodeTypes.Battle || n2.Type == MapNodeTypes.Elite) && !string.IsNullOrEmpty(n2.EncounterId))
+                            foreach (var m in Content.ResolveEncounter(n2.EncounterId!)) recent.Add(m.EnemyId);
+                    }
+                }
+                var filtered = fullPool.Where(encId => !Content.ResolveEncounter(encId).Any(m => recent.Contains(m.EnemyId))).ToList();
+                IReadOnlyList<string> pool = filtered.Count > 0 ? (IReadOnlyList<string>)filtered : fullPool;
+                var (i2, r2) = Rng.NextInt(rng, 0, pool.Count - 1);
+                return LaunchCombat(run with { Rng = r2, UnknownPity = Bump("monster"), EventId = null }, false, pool[i2]);
+            }
+            if (roll < pity.Monster + shopPct)
+            {
+                return OpenShop(run with { Rng = rng, UnknownPity = Bump("shop"), EventId = null });
+            }
+            if (roll < pity.Monster + shopPct + pity.Treasure)
+            {
+                // ?→宝箱: レリック3択のみ (宝箱行と同じ配管。カード報酬は付かない)
+                return OpenTreasure(run with { Rng = rng, UnknownPity = Bump("treasure"), EventId = null });
+            }
+            var (eventId, r3) = PickEvent(run, rng);
+            var def = Content.GetEventDef(eventId);
+            return run with
+            {
+                Rng = r3,
+                UnknownPity = Bump("event"),
+                EventId = eventId,
+                SeenEventIds = Append(run.SeenEventIds ?? new List<string>(), eventId),
+                SeenShrineIds = def.Kind == "shrine"
+                    ? Append(run.SeenShrineIds ?? new List<string>(), eventId)
+                    : (run.SeenShrineIds ?? new List<string>()),
+                Phase = RunPhases.Event,
+                Combat = null,
+                RewardOptions = null,
+            };
+        }
+
+        /// <summary>
+        /// イベントの抽選 (本家 generateEvent): 25%で祠+ワンタイムのプール、75%で幕プール。
+        /// 幕専用とワンタイムは引いたら二度と出ない / 祠は幕をまたぐと復活する。
+        /// </summary>
+        public static (string Id, RngState Rng) PickEvent(RunState run, RngState rng0) // public はテスト用 (詰み防止の抽選 2026-09-14)
+        {
+            var seen = run.SeenEventIds ?? new List<string>();
+            var seenShrine = run.SeenShrineIds ?? new List<string>();
+            bool InAct(EventDef e) => e.Act == null || e.Act == run.Act;
+            // 選べる選択肢が無いイベント (例: 全て鍛え済みのデッキに研ぎの祠) は引かない (2026-09-14 無料の「立ち去る」撤去の詰み防止。
+            // 本家 Joust が所持金50未満では出ないのと同じ。無料の「断る」を残した取引型は常に選べる)
+            var shrinePool = Content.AllEvents
+                .Where(e => InAct(e) && EventPlayable(run, e) && ((e.Kind == "shrine" && !seenShrine.Contains(e.Id)) || (e.Kind == "oneTime" && !seen.Contains(e.Id))))
+                .ToList();
+            var actPool = Content.AllEvents
+                .Where(e => (e.Kind ?? "act") == "act" && InAct(e) && !seen.Contains(e.Id) && EventPlayable(run, e))
+                .ToList();
+            var (roll, rng) = Rng.NextInt(rng0, 0, 99);
+            bool useShrine = roll < SHRINE_CHANCE_PERCENT;
+            var primary = useShrine ? shrinePool : actPool;
+            var fallback = useShrine ? actPool : shrinePool;
+            var pool = primary.Count > 0 ? primary : fallback;
+            // 両方尽きた場合のみ既出から引き直す (実質到達しない)。選べるものが1つも無ければ全体から
+            var replay = Content.AllEvents.Where(e => InAct(e) && EventPlayable(run, e)).ToList();
+            var final = pool.Count > 0 ? pool : replay.Count > 0 ? replay : Content.AllEvents.Where(InAct).ToList();
+            var (i, r2) = Rng.NextInt(rng, 0, final.Count - 1);
+            return (final[i].Id, r2);
+        }
+
+        /// <summary>ショップの在庫をシードから決定して開店する (export はテスト用: 会員証の適用範囲)</summary>
+        public static RunState OpenShop(RunState run)
+        {
+            var leader = Content.GetLeaderDef(run.LeaderId);
+            bool canRamp = run.Colors.Contains(CardColors.Green);
+            int costCap = leader.EnergyMax + (canRamp ? 2 : 0);
+            // 保持 (retain) つきの大型は +1 まで
+            int CapFor(CardDef c) => c.Retain == true ? leader.EnergyMax + (canRamp ? 1 : 0) : costCap;
+            var pool = Content.AllCards
+                .Where(c => run.Colors.Contains(c.Color) && !REWARD_EXCLUDED.Contains(c.Id) && c.Cost <= CapFor(c))
+                .ToList();
+            var rng = run.Rng;
+            var cards = new List<ShopStateCards>();
+            var remaining = new List<CardDef>(pool);
+            while (cards.Count < SHOP_CARD_COUNT && remaining.Count > 0)
+            {
+                var (idx, r1) = Rng.NextInt(rng, 0, remaining.Count - 1);
+                rng = r1;
+                var def = remaining[idx];
+                remaining.RemoveAt(idx);
+                // 価格 = 40 + コスト×10 + ロール0〜10。Xコスト札は典型のX=3として値付けする
+                int pricedCost = def.XCost == true ? 3 : def.Cost;
+                var (roll, r2) = Rng.NextInt(rng, 0, 10);
+                rng = r2;
+                cards.Add(new ShopStateCards { Id = def.Id, Price = JsFloor((40 + pricedCost * 10 + roll) * ShopPriceRatio(run)) });
+            }
+            // レア枠: 品揃えの6枠目はレア確定・高額 (120+コスト×10 ≈ 150G)
+            var rarePool = remaining.Where(c => c.Rarity == "rare").ToList();
+            if (rarePool.Count > 0)
+            {
+                var (ri, r3) = Rng.NextInt(rng, 0, rarePool.Count - 1);
+                rng = r3;
+                var def = rarePool[ri];
+                int pricedCost = def.XCost == true ? 3 : def.Cost;
+                cards.Add(new ShopStateCards { Id = def.Id, Price = JsFloor((120 + pricedCost * 10) * ShopPriceRatio(run)) }); // 会員証はレア枠にも効く
+            }
+            // ショップのレリック: shop 層を優先し、無ければ C/U/R
+            var (shopRelics, rngS) = DrawRelicOptions(run with { Rng = rng }, RelicSources.Shop, 1);
+            rng = rngS;
+            string? relicId = shopRelics.Count > 0 ? shopRelics[0] : null;
+            // ギアの棚 (2026-09-17): 3枠。レア度で値付け (会員証の値引きも乗る)。重複 id は棚に足さないが RNG は消費済み
+            var gearShelf = new List<ShopStateGears>();
+            var gearSeen = new HashSet<string>();
+            for (int i = 0; i < SHOP_GEAR_SLOTS; i++)
+            {
+                var (gid, rg) = RollGearId(rng, false);
+                rng = rg;
+                if (gearSeen.Contains(gid)) continue;
+                gearSeen.Add(gid);
+                gearShelf.Add(new ShopStateGears { Id = gid, Price = JsFloor(SHOP_GEAR_PRICE[Content.GetGearDef(gid).Rarity] * ShopPriceRatio(run)) });
+            }
+            // 行商が預かった出立の支度 (2026-09-24): 幕1の店にだけ並ぶ (幕2以降は行商がよそで売った)。会員証の値引きも乗る
+            var leftovers = run.Act == 1 ? (run.Departure?.Leftovers ?? new List<DepartureOffer>()).Where(o => o.ShopPrice != null).ToList() : new List<DepartureOffer>();
+            var shop = new ShopState
+            {
+                Cards = cards,
+                RelicId = relicId,
+                RelicPrice = JsFloor(SHOP_RELIC_PRICE * ShopPriceRatio(run)), // 会員証
+                Gears = gearShelf,
+                ManaPrice = JsFloor(SHOP_MANA_PRICE * ShopPriceRatio(run)),
+                Departures = leftovers.Count > 0 ? leftovers.Select(o => new ShopStateDepartures { Id = o.Id, Price = JsFloor((o.ShopPrice ?? 0) * ShopPriceRatio(run)) }).ToList() : null,
+            };
+            // 行商の食券 (2026-09-12 本家 Meal Ticket): ショップに入るたびHP+N
+            int heal = RelicBonusSum(run, "shopHeal");
+            return run with { Rng = rng, Shop = shop, Phase = RunPhases.Shop, Combat = null, RewardOptions = null, Hp = Math.Min(run.MaxHp, run.Hp + heal) };
+        }
+
+        /// <summary>ランの報酬プール (色アイデンティティ・基本札除外・リーダーのコスト上限)</summary>
+        public static IReadOnlyList<CardDef> RewardPool(RunState run)
+        {
+            var leader = Content.GetLeaderDef(run.LeaderId);
+            bool canRamp = run.Colors.Contains(CardColors.Green);
+            int costCap = leader.EnergyMax + (canRamp ? 2 : 0);
+            int CapFor(CardDef c) => c.Retain == true ? leader.EnergyMax + (canRamp ? 1 : 0) : costCap;
+            return Content.AllCards
+                .Where(c => run.Colors.Contains(c.Color) && !REWARD_EXCLUDED.Contains(c.Id) && c.Cost <= CapFor(c))
+                .ToList();
+        }
+
+        /// <summary>この選択肢は cardIndex (デッキの対象カード) を要求するか</summary>
+        public static bool EventChoiceNeedsCard(EventChoiceDef choice)
+        {
+            return choice.RemoveCard == true
+                || choice.UnexhaustCard == true
+                || choice.UpgradeCard == true
+                || choice.TransformCard == true
+                || choice.DuplicateCard == true;
+        }
+
+        /// <summary>
+        /// 選択肢が今のランで解決できるか (所持金・対象カードの有無)。
+        /// 無料の「立ち去る」を持たないイベント (2026-09-14 本家形) が「選べる選択肢が無い」で詰まないよう、
+        /// 抽選 (PickEvent) と UI の無効表示が同じ判定を読む
+        /// </summary>
+        public static bool EventChoiceAvailable(RunState run, EventChoiceDef choice)
+        {
+            if (choice.RelicId != null && run.Relics.Contains(choice.RelicId)) return false;   // 名指しのレリックは二度と取れない (2026-09-23)
+            if (choice.RequireGold != null && run.Gold < choice.RequireGold.Value) return false;
+            if (EventChoiceNeedsCard(choice)) return DefaultEventCardIndex(run, choice) != null;
+            return true;
+        }
+
+        /// <summary>そのイベントに解決できる選択肢が1つでもあるか (抽選の詰み防止。本家 Joust の「所持金で出現を絞る」の一般形)</summary>
+        public static bool EventPlayable(RunState run, EventDef def)
+        {
+            return def.Choices.Any(c => EventChoiceAvailable(run, c));
+        }
+
+        /// <summary>
+        /// 対象カードが要る選択肢の既定の対象 (ボット・テスト・ゴールデン生成用)。無ければ null。
+        /// 除去・変成は状態異常札 (負傷・烙印) を優先し、鍛えるは鍛えられる先頭の札。
+        /// 除去はデッキが5枚以下だと engine が拒むので、その時は null
+        /// </summary>
+        public static int? DefaultEventCardIndex(RunState run, EventChoiceDef choice)
+        {
+            if (choice.UpgradeCard == true)
+            {
+                for (int i = 0; i < run.Deck.Count; i++) if (Upgrade.CanUpgradeCard(run.Deck[i])) return i;
+                return null;
+            }
+            if (choice.TransformCard == true)
+            {
+                // 変成は状態異常・烙印を選べない (2026-09-24 T14)。変成できる先頭の札。TS と同形
+                for (int i = 0; i < run.Deck.Count; i++) if (CanTransformCard(run.Deck[i])) return i;
+                return null;
+            }
+            if (choice.RemoveCard == true)
+            {
+                if (run.Deck.Count == 0 || run.Deck.Count <= 5) return null;
+                for (int i = 0; i < run.Deck.Count; i++) if (run.Deck[i].Def.Id.StartsWith("status_", StringComparison.Ordinal)) return i;
+                return 0;
+            }
+            if (choice.DuplicateCard == true) return run.Deck.Count > 0 ? 0 : (int?)null;
+            if (choice.UnexhaustCard == true)
+            {
+                for (int i = 0; i < run.Deck.Count; i++) if (CanUnexhaustCard(run.Deck[i])) return i;
+                return null;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 変成できる札 (2026-09-24 Opus ひなた T14 裁定「状態異常・烙印は変成できない」= 本家2の変成と同じく、変成は呪いを消す手段にならない)。
+        /// ?イベントの変成・星読みの盤・画面の候補が同じ判定を読む。TS canTransformCard と同形
+        /// </summary>
+        public static bool CanTransformCard(CardInstance c) => !c.Def.Id.StartsWith("status_", StringComparison.Ordinal);
+
+        static readonly HashSet<string> UNEXHAUST_BANNED = new HashSet<string> { "drawCards", "impulseDraw", "addCardToHand", "drawCardsPerLight", "drawCardsPerCardPlayed", "dischargeAetherDraw", "retrieveFromExhaust", "playFromExhaust", "gainEnergy", "discountNext", "doubleGrowth", "doubleMomentum", "doubleLight", "gainEnergyMax" };
+        /// <summary>忘れられた墓 (2026-09-23) で消滅を外せる札。TS canUnexhaustCard と同形</summary>
+        public static bool CanUnexhaustCard(CardInstance c)
+        {
+            var d = c.Def;
+            if (d.Exhaust != true || d.Cost < 1 || d.XCost == true || d.NecroCost != null) return false;
+            foreach (var e in d.Effects) if (UNEXHAUST_BANNED.Contains(e.Effect)) return false;
+            if (d.Modes != null) foreach (var m in d.Modes) foreach (var e in m.Effects) if (UNEXHAUST_BANNED.Contains(e.Effect)) return false;
+            return true;
+        }
+
+        /// <summary>選択肢 (または賭けの結果) が代償を持たないか (HP・最大HP・負傷・烙印・金の支払いが無い)</summary>
+        private static bool EventOutcomeIsFree(int? gold, int? hp, double? hpRatio, int? wounds, int? brands, int? timedCurses)
+        {
+            return (gold ?? 0) >= 0 && (hp ?? 0) >= 0 && (hpRatio ?? 0) >= 0 && (wounds ?? 0) == 0 && (brands ?? 0) == 0 && (timedCurses ?? 0) == 0;
+        }
+
+        private static bool EventChoiceIsFree(EventChoiceDef c)
+        {
+            if (!EventOutcomeIsFree(c.Gold, c.Hp, c.HpRatio, c.Wounds, c.Brands, c.TimedCurses)) return false;
+            if (c.Gamble == null) return true;
+            return EventOutcomeIsFree(c.Gamble.Win.Gold, c.Gamble.Win.Hp, null, c.Gamble.Win.Wounds, null, null)
+                && EventOutcomeIsFree(c.Gamble.Lose.Gold, c.Gamble.Lose.Hp, null, c.Gamble.Lose.Wounds, null, null);
+        }
+
+        /// <summary>選択肢 (賭けの外れを含む) の最悪のHP損失</summary>
+        private static int EventWorstHpLoss(RunState run, EventChoiceDef c)
+        {
+            int LossOf(int? hp, double? hpRatio) => Math.Max(0, Math.Max(-(hp ?? 0), -(int)Math.Truncate(run.MaxHp * (hpRatio ?? 0))));
+            int baseLoss = LossOf(c.Hp, c.HpRatio);
+            if (c.Gamble == null) return baseLoss;
+            return baseLoss + Math.Max(LossOf(c.Gamble.Win.Hp, null), LossOf(c.Gamble.Lose.Hp, null));
+        }
+
+        /// <summary>
+        /// ボット・テスト・ゴールデン生成が使う既定の選択 (2026-09-14 「立ち去る」の撤去に伴い一本化。
+        /// 旧規約「最後の選択肢は常に安全な立ち去る」の後継)。後ろの選択肢から順に
+        /// ①解決でき代償の無いもの → ②解決でき致死でないもの → ③解決できるもの → 最後の選択肢。
+        /// 対象カードが要る選択肢は DefaultEventCardIndex で埋める。TS の defaultEventChoice と同形
+        /// </summary>
+        public static RunCommand_EventChoice DefaultEventChoice(RunState run)
+        {
+            var def = Content.GetEventDef(run.EventId ?? "");
+            RunCommand_EventChoice WithCard(int index)
+            {
+                var c = def.Choices[index];
+                int? ci = EventChoiceNeedsCard(c) ? DefaultEventCardIndex(run, c) : null;
+                return ci == null ? new RunCommand_EventChoice { Index = index } : new RunCommand_EventChoice { Index = index, CardIndex = ci };
+            }
+            for (int i = def.Choices.Count - 1; i >= 0; i--)
+                if (EventChoiceAvailable(run, def.Choices[i]) && EventChoiceIsFree(def.Choices[i])) return WithCard(i);
+            for (int i = def.Choices.Count - 1; i >= 0; i--)
+                if (EventChoiceAvailable(run, def.Choices[i]) && EventWorstHpLoss(run, def.Choices[i]) < run.Hp) return WithCard(i);
+            for (int i = def.Choices.Count - 1; i >= 0; i--)
+                if (EventChoiceAvailable(run, def.Choices[i])) return WithCard(i);
+            return WithCard(def.Choices.Count - 1);
+        }
+
+        private static RunState ApplyEventChoice(RunState run, int choiceIndex, int? cardIndex)
+        {
+            // ?は入った瞬間に中身が決まる。MapNode でなく RunState が持つ
+            string? eventId = run.EventId;
+            if (eventId == null) throw new InvalidOperationException("イベントノードではない");
+            var def = Content.GetEventDef(eventId);
+            EventChoiceDef? choice = (choiceIndex >= 0 && choiceIndex < def.Choices.Count) ? def.Choices[choiceIndex] : null;
+            if (choice == null) throw new InvalidOperationException($"不正な選択肢: {choiceIndex}");
+            return ApplyChoiceDef(run, choice, cardIndex, RunPhases.Map);
+        }
+
+        /// <summary>
+        /// 宣言的な選択肢 (EventChoiceDef) を RunState に反映する。?イベントと出立の支度 (坑口・店の棚) が共用 (2026-09-24)。
+        /// resume=解決後のフェーズ (?・坑口は map、店で買った支度は shop のまま)。TS applyChoiceDef と同形
+        /// </summary>
+        public static RunState ApplyChoiceDef(RunState run, EventChoiceDef choice, int? cardIndex, string resume)
+        {
+            if (choice.RequireGold != null && run.Gold < choice.RequireGold.Value)
+            {
+                throw new InvalidOperationException($"ゴールドが足りない (必要{choice.RequireGold.Value}G)");
+            }
+            RunState next = run;
+            var rng = run.Rng;
+            // TS の applyOutcome (choice / gamble の win・lose の両方から呼ばれる)。
+            // JS の `if (o.gold)` は 0 と undefined を falsy として弾くので、!= 0 で判定する
+            void ApplyOutcome(int? gold, int? hp, double? hpRatio, int? wounds, int? brands, int? timedCurses)
+            {
+                if (gold.HasValue && gold.Value != 0) next = next with { Gold = Math.Max(0, next.Gold + gold.Value) };
+                if (hp.HasValue && hp.Value != 0) next = next with { Hp = Math.Min(next.MaxHp, next.Hp + hp.Value) };
+                // 最大HP比の増減 (リーダー間で最大HPが違うので比率で持つ)。切り捨て
+                if (hpRatio.HasValue && hpRatio.Value != 0)
+                {
+                    next = next with { Hp = Math.Min(next.MaxHp, next.Hp + JsTrunc(next.MaxHp * hpRatio.Value)) };
+                }
+                if (wounds.HasValue && wounds.Value != 0)
+                {
+                    var list = new List<CardInstance>();
+                    for (int i = 0; i < wounds.Value; i++)
+                        list.Add(new CardInstance { Uid = $"wound_a{run.Act}_r{run.Row}_{i}", Def = Content.WOUND_DEF });
+                    next = next with { Deck = Concat(next.Deck, list) };
+                }
+                if (brands.HasValue && brands.Value != 0)
+                {
+                    // 呪いの烙印: 恒久のデッキ汚染と引き換えの大報酬
+                    var list = new List<CardInstance>();
+                    for (int i = 0; i < brands.Value; i++)
+                        list.Add(new CardInstance { Uid = $"brand_a{run.Act}_r{run.Row}_{i}", Def = Content.BRAND_DEF });
+                    next = AddCardsToRunDeck(next, list); // 厄除けの札・黒曜の護符 (2026-09-12) はここで受ける
+                }
+                if (timedCurses.HasValue && timedCurses.Value != 0)
+                {
+                    // 仮初の烙印: 烙印と同じ滞留HP-1だが5戦で自然消滅する中間対価
+                    var list = new List<CardInstance>();
+                    for (int i = 0; i < timedCurses.Value; i++)
+                        list.Add(new CardInstance { Uid = $"guilt_a{run.Act}_r{run.Row}_{i}", Def = Content.GUILT_DEF, ExpiresAfterBattles = 5 });
+                    next = AddCardsToRunDeck(next, list);
+                }
+            }
+            ApplyOutcome(choice.Gold, choice.Hp, choice.HpRatio, choice.Wounds, choice.Brands, choice.TimedCurses);
+            if (choice.MaxHp.HasValue && choice.MaxHp.Value != 0)
+            {
+                next = next with { MaxHp = next.MaxHp + choice.MaxHp.Value, Hp = next.Hp + choice.MaxHp.Value };
+            }
+            if (choice.AddRandomCards.HasValue && choice.AddRandomCards.Value != 0)
+            {
+                var pool = RewardPool(run);
+                for (int i = 0; i < choice.AddRandomCards.Value && pool.Count > 0; i++)
+                {
+                    var (idx, r1) = Rng.NextInt(rng, 0, pool.Count - 1);
+                    rng = r1;
+                    next = AddCardsToRunDeck(next, new List<CardInstance> { new CardInstance { Uid = $"event_a{run.Act}_r{run.Row}_{i}_{pool[idx].Id}", Def = pool[idx] } }); // 卵 (2026-09-12) はここで乗る
+                }
+            }
+            if (choice.Relic == true)
+            {
+                // イベントのレリックは event 層を優先し、無ければ C/U/R (boss/shop 層は出ない)
+                var (drawn, rE) = DrawRelicOptions(next with { Rng = rng }, RelicSources.Event, 1);
+                rng = rE;
+                if (drawn.Count > 0) next = GainRelic(next, drawn[0]);
+            }
+            if (choice.RelicId != null)
+            {
+                // 名指しのレリック (2026-09-23)。持っていれば何もしない。TS と同形
+                if (!next.Relics.Contains(choice.RelicId)) next = GainRelic(next, choice.RelicId);
+            }
+            if (choice.UnexhaustCard == true)
+            {
+                var card = (cardIndex.HasValue && cardIndex.Value >= 0 && cardIndex.Value < next.Deck.Count) ? next.Deck[cardIndex.Value] : null;
+                if (card == null) throw new InvalidOperationException("対象カードを cardIndex で指定する");
+                if (!CanUnexhaustCard(card)) throw new InvalidOperationException($"{card.Def.Name} の消滅は外せない");
+                var effs = new List<DeclarativeEffect>(card.Def.Effects) { new DeclarativeEffect { Trigger = "onPlay", Effect = "gainEnergy", Amount = 1 } };
+                var soulDef = card.Def with { Exhaust = null, Name = card.Def.Name + "・魂", Effects = effs };
+                int ci = cardIndex.Value;
+                next = next with { Deck = next.Deck.Select((c, i) => i == ci ? c with { Def = soulDef } : c).ToList() };
+            }
+            if (choice.RemoveCard == true)
+            {
+                var card = (cardIndex.HasValue && cardIndex.Value >= 0 && cardIndex.Value < next.Deck.Count) ? next.Deck[cardIndex.Value] : null;
+                if (card == null) throw new InvalidOperationException("対象カードを cardIndex で指定する");
+                if (next.Deck.Count <= 5) throw new InvalidOperationException("これ以上デッキを減らせない");
+                next = next with { Deck = next.Deck.Where((_, i) => i != cardIndex!.Value).ToList() };
+            }
+            if (choice.UpgradeCard == true)
+            {
+                var card = (cardIndex.HasValue && cardIndex.Value >= 0 && cardIndex.Value < next.Deck.Count) ? next.Deck[cardIndex.Value] : null;
+                if (card == null) throw new InvalidOperationException("対象カードを cardIndex で指定する");
+                if (Upgrade.IsUpgraded(card)) throw new InvalidOperationException("すでに鍛えられている");
+                if (Upgrade.UpgradeTier(card.Def) == Upgrade.UpgradeTiers.None) throw new InvalidOperationException($"{card.Def.Name} は鍛えられない");
+                next = next with { Deck = next.Deck.Select((c, i) => i == cardIndex!.Value ? Upgrade.UpgradeCard(c) : c).ToList() };
+            }
+            if (choice.TransformCard == true)
+            {
+                // 変成 (本家 Transmogrifier): 1枚を除去し、同じレアリティの別カードへ置き換える
+                var card = (cardIndex.HasValue && cardIndex.Value >= 0 && cardIndex.Value < next.Deck.Count) ? next.Deck[cardIndex.Value] : null;
+                if (card == null) throw new InvalidOperationException("対象カードを cardIndex で指定する");
+                next = TransformCardAt(next with { Rng = rng }, cardIndex!.Value, false);
+                rng = next.Rng;
+            }
+            if (choice.DuplicateCard == true)
+            {
+                // 複製 (本家 Duplicator): 同じ def が1枚増える。uid は一意にする
+                var card = (cardIndex.HasValue && cardIndex.Value >= 0 && cardIndex.Value < next.Deck.Count) ? next.Deck[cardIndex.Value] : null;
+                if (card == null) throw new InvalidOperationException("対象カードを cardIndex で指定する");
+                var copy = new CardInstance { Uid = $"dup_a{run.Act}_r{run.Row}_{card.Uid}", Def = card.Def };
+                next = next with { Deck = Append(next.Deck, copy) };
+            }
+            if (choice.UpgradeRandomCards.HasValue && choice.UpgradeRandomCards.Value != 0)
+            {
+                // ランダム強化 (本家 Shining Light): 強化可能な札からN枚。足りなければそこで打ち切る
+                for (int i = 0; i < choice.UpgradeRandomCards.Value; i++)
+                {
+                    var idxs = new List<int>();
+                    for (int j = 0; j < next.Deck.Count; j++)
+                    {
+                        var c = next.Deck[j];
+                        if (!Upgrade.IsUpgraded(c) && Upgrade.UpgradeTier(c.Def) != Upgrade.UpgradeTiers.None) idxs.Add(j);
+                    }
+                    if (idxs.Count == 0) break;
+                    var (pick, r1) = Rng.NextInt(rng, 0, idxs.Count - 1);
+                    rng = r1;
+                    int target = idxs[pick];
+                    next = next with { Deck = next.Deck.Select((c, j) => j == target ? Upgrade.UpgradeCard(c) : c).ToList() };
+                }
+            }
+            if (choice.RemoveAllWounds == true)
+            {
+                // 負傷の一掃 (本家 The Divine Fountain)。0枚でも何も起きないだけで throw しない
+                next = next with { Deck = next.Deck.Where(c => c.Def.Id != Content.WOUND_DEF.Id).ToList() };
+            }
+            if (choice.Gamble != null)
+            {
+                // ロールはラン RNG = 決定的 (リプレイ再現)
+                var (roll, r1) = Rng.NextInt(rng, 0, 999);
+                rng = r1;
+                var o = roll < choice.Gamble.Chance * 1000 ? choice.Gamble.Win : choice.Gamble.Lose;
+                ApplyOutcome(o.Gold, o.Hp, null, o.Wounds, null, null);
+            }
+            // 出立の支度 (2026-09-24): 名指しのギア・魔素・名指しの札。TS と同じ順・同じ uid
+            if (choice.Gears != null) foreach (var id in choice.Gears) next = AddGear(next, id, $"a{run.Act}_r{run.Row}_{id}");
+            if (choice.Mana.HasValue && choice.Mana.Value != 0) next = next with { Mana = Math.Max(0, Math.Min(Gears.MANA_MAX, ManaOf(next) + choice.Mana.Value)) };
+            if (choice.AddCardIds != null)
+            {
+                var list = choice.AddCardIds.Select((id, i) => new CardInstance { Uid = $"given_a{run.Act}_r{run.Row}_{i}_{id}", Def = Content.GetCardDef(id) }).ToList();
+                next = AddCardsToRunDeck(next, list);
+            }
+            if (next.Hp <= 0) return next with { Rng = rng, Hp = 0, Phase = RunPhases.Lost };
+            return EnterPendingChoice(next with { Rng = rng, Phase = resume }, resume);
+        }
+
+        /// <summary>
+        /// 出立の店 (2026-09-24): 台帳の全行 (札3・遺物3・サービス4) を台帳の順に並べ、中身 (遺物・ギア・札) を
+        /// ランRNGで名指しに解決して phase departure で返す。所持金に上乗せの所持金 (DEPARTURE_PURSE) を足す。
+        /// 札と遺物は中身の名前で並ぶ。中身が引けなかった行は並べない。RNG の消費順は TS rollDepartureOffers と同じ
+        /// </summary>
+        public static RunState RollDepartureOffers(RunState run)
+        {
+            var rng = run.Rng;
+            var offers = new List<DepartureOffer>();
+            var usedRelics = new List<string>();
+            var usedCards = new List<string>();
+            foreach (var t in Content.AllDepartures)
+            {
+                EventChoiceDef choice = t.Choice with { };
+                string name = t.Name;
+                if (t.RelicRarity != null)
+                {
+                    var pool = run.RelicQueue.Where(id =>
+                        RelicRarity(id) == t.RelicRarity
+                        && !usedRelics.Contains(id)
+                        && !run.Relics.Contains(id)
+                        && run.Act <= (Content.GetRelicDef(id).ActMax ?? 99)
+                        && run.Act >= (Content.GetRelicDef(id).ActMin ?? 0)
+                        && RelicAllowedForColors(Content.GetRelicDef(id), run.Colors)).ToList();
+                    if (pool.Count == 0) continue;
+                    var (j, r2) = Rng.NextInt(rng, 0, pool.Count - 1);
+                    rng = r2;
+                    choice = choice with { RelicId = pool[j] };
+                    usedRelics.Add(pool[j]);
+                    name = Content.GetRelicDef(pool[j]).Name;
+                }
+                if ((t.GearCount ?? 0) > 0)
+                {
+                    var ids = new List<string>();
+                    for (int guard = 0; ids.Count < (t.GearCount ?? 0) && guard < 20; guard++)
+                    {
+                        var (id, r2) = RollGearId(rng, false);
+                        rng = r2;
+                        if (!ids.Contains(id)) ids.Add(id);
+                    }
+                    choice = choice with { Gears = ids };
+                }
+                if (t.CardPick != null && t.CardPick.Count > 0)
+                {
+                    var pick = t.CardPick;
+                    var pool = RewardPool(run).Where(c => c.Rarity == pick.Rarity && !usedCards.Contains(c.Id)).ToList();
+                    var ids = new List<string>();
+                    for (int guard = 0; ids.Count < pick.Count && ids.Count < pool.Count && guard < 20; guard++)
+                    {
+                        var (j, r2) = Rng.NextInt(rng, 0, pool.Count - 1);
+                        rng = r2;
+                        if (!ids.Contains(pool[j].Id)) ids.Add(pool[j].Id);
+                    }
+                    if (ids.Count == 0) continue;
+                    usedCards.AddRange(ids);
+                    choice = choice with { AddCardIds = ids };
+                    name = string.Join("・", ids.Select(id => Content.GetCardDef(id).Name));
+                }
+                offers.Add(new DepartureOffer { Id = t.Id, Kind = t.Kind, Name = name, Text = t.Text, Choice = choice, Price = t.Price, ShopPrice = t.ShopPrice });
+            }
+            return run with
+            {
+                Rng = rng,
+                Gold = run.Gold + DEPARTURE_PURSE,
+                Departure = new RunStateDeparture { Offers = offers, Bought = new List<string>(), Leftovers = new List<DepartureOffer>() },
+                Phase = RunPhases.Departure,
+            };
+        }
+
+        /// <summary>坑口で既に買った支度か</summary>
+        public static bool DepartureOfferBought(RunState run, DepartureOffer offer) => (run.Departure?.Bought ?? new List<string>()).Contains(offer.Id);
+
+        /// <summary>出立の店の支度が今買えるか (まだ買っていない・金が足りる・除去はデッキ6枚以上・鍛えは鍛えられる札がある。?イベントと同じ判定)</summary>
+        public static bool DepartureOfferAvailable(RunState run, DepartureOffer offer) =>
+            !DepartureOfferBought(run, offer) && run.Gold >= offer.Price && EventChoiceAvailable(run, offer.Choice);
+
+        /// <summary>
+        /// ボット・テスト・ゴールデン生成の既定の一手: まだ何も買っていなければサービス (安全な方) を1つ買い、その後は店を出る。
+        /// 対象は ?イベントと同じ既定。phase が departure の間、繰り返し呼ぶ。TS defaultDepartureCommand と同形
+        /// </summary>
+        public static RunCommand DefaultDepartureCommand(RunState run)
+        {
+            var offers = run.Departure?.Offers ?? new List<DepartureOffer>();
+            if ((run.Departure?.Bought ?? new List<string>()).Count == 0)
+            {
+                for (int i = 0; i < offers.Count; i++)
+                {
+                    var offer = offers[i];
+                    if (offer.Kind != "service" || !DepartureOfferAvailable(run, offer)) continue;
+                    int? cardIndex = EventChoiceNeedsCard(offer.Choice) ? DefaultEventCardIndex(run, offer.Choice) : null;
+                    return cardIndex == null ? new RunCommand_BuyDeparture { Index = i } : new RunCommand_BuyDeparture { Index = i, CardIndex = cardIndex };
+                }
+            }
+            return new RunCommand_LeaveDeparture();
+        }
+
+        /// <summary>
+        /// 仕込み札参照レリック (このランの報酬プールにリアクションが1枚も無い色では候補列から除く)。
+        /// 2026-10-10 赤の解凍: 9/9〜9/13 に増えた仕込み札参照レリック (二重の符・読みの眼鏡・回収の紐) も同じ理由で除く。TS と同形
+        /// </summary>
+        private static readonly HashSet<string> SET_RELICS = new HashSet<string> { "relic_talisman_pouch", "relic_quiet_bell", "relic_double_talisman", "relic_reading_glasses", "relic_retrieve_cord" };
+
+        public static RunState CreateRun(
+            int seed,
+            string mode,
+            string leaderId = "leader_green",
+            string? deckId = null,
+            int difficulty = DEFAULT_DIFFICULTY,
+            RunOptions? opts = null)
+        {
+            var leader = Content.GetLeaderDef(leaderId);
+            // 種の選択制: リーダーが許可する初期デッキのみ受け付ける
+            IReadOnlyList<string> deckChoices = leader.RunDeckChoices ?? new List<string> { leader.RunDeckId };
+            string chosenDeck = deckId ?? leader.RunDeckId;
+            if (!deckChoices.Contains(chosenDeck))
+            {
+                throw new InvalidOperationException($"このリーダーでは選べない初期デッキ: {chosenDeck}");
+            }
+            var rng0 = Rng.Create(seed);
+            // マップもレリック候補列もシードから確定 (リプレイ再現性)
+            // 範囲外は表の端へ丸めて保存 (以降の読み取りも DifficultyLevel が守る)。エリートの員数は段で (幕1は動かない)
+            int level = DifficultyLevel(difficulty);
+            var tax = DifficultyTaxOf(level);
+            var (map, rngAfterMap) = MapGen.GenerateMap(rng0, 1, true, EliteCountFor(level, 1));
+            bool canSet = Content.AllCards.Any(c => leader.Colors.Contains(c.Color) && c.Type == CardTypes.Reaction);
+            // 色ゲート (2026-09-12): リーダーの色に合わない固有レリックは候補列にも入れない
+            var relicIds = Content.AllRelics.Where(r => RelicAllowedForColors(r, leader.Colors)).Select(r => r.Id).Where(id => canSet || !SET_RELICS.Contains(id)).ToList();
+            var (relicQueue, rngAfterRelics) = Rng.Shuffle(rngAfterMap, relicIds);
+            var baseRun = new RunState
+            {
+                Seed = seed,
+                Mode = mode,
+                LeaderId = leaderId,
+                SetAnyCards = opts?.SetAnyCards == true ? (bool?)true : null,
+                Colors = leader.Colors,
+                Difficulty = level,
+                Rng = rngAfterRelics,
+                // 段10 の経済税: 開始デッキに仮初の烙印 (5戦で消える)
+                Deck = Concat(Content.BuildDeck(chosenDeck), Enumerable.Range(0, tax.StartGuilt).Select(i => new CardInstance { Uid = "guilt_start_" + i, Def = Content.GUILT_DEF, ExpiresAfterBattles = 5 })),
+                Hp = leader.MaxHp,
+                MaxHp = leader.MaxHp,
+                Act = 1,
+                Map = map,
+                Row = -1,
+                Col = 0,
+                BattlesWon = 0,
+                Gold = STARTING_GOLD,
+                RemovalCount = 0,
+                UpgradeCount = 0,
+                Shop = null,
+                Phase = RunPhases.Map,
+                Combat = null,
+                RewardOptions = null,
+                Picks = new List<string>(),
+                Relics = new List<string>(),
+                RelicQueue = relicQueue,
+                RelicOptions = null,
+                CurrentElite = false,
+                VictoryHealBonus = 0,
+                RewardChoicesBonus = 0,
+                CampfireRatio = tax.Campfire,   // 既定 25%。段5以上は 20% (経済税)
+                GoldPerVictoryBonus = 0,
+                CampfireForgeBonus = 0,
+                CampfireUpgradesUsed = 0,
+                UnknownPity = UnknownPityBase(),
+                LastRoomWasShop = false,
+                EventId = null,
+                SeenEventIds = new List<string>(),
+                SeenShrineIds = new List<string>(),
+                Gears = new List<GearInstance>(),
+                Mana = 0,
+                GearPity = GEAR_DROP_BASE,
+                SeenGearIds = new List<string>(),
+                GearOption = null,
+            };
+            // 出立の支度 (2026-09-24): 坑口で1つ選んでから地図へ。Departure=false はテスト・チェックポイント用 (地図から始める)
+            return opts?.Departure == false ? baseRun : RollDepartureOffers(baseRun);
+        }
+
+        /// <summary>origin からラン初期状態を再現する</summary>
+        public static RunState ReplayInitialRun(ReplayOrigin origin)
+        {
+            if (origin.Kind == "checkpoint" && origin.Checkpoint != null)
+            {
+                return CreateDebugCheckpointRun(origin.Seed, ReactionModes.SetConfirm, origin.LeaderId, origin.Checkpoint);
+            }
+            return CreateRun(origin.Seed, ReactionModes.SetConfirm, origin.LeaderId, origin.DeckId,
+                origin.Difficulty ?? DEFAULT_DIFFICULTY,
+                new RunOptions
+                {
+                    SetAnyCards = origin.SetAnyCards == true ? (bool?)true : null,
+                });
+        }
+
+        /// <summary>
+        /// ジャーナル全体を再実行し、各コマンド後の状態列を返す (States[0]=初期状態、States[i]=iコマンド後)。
+        /// データ定義が変わって再現が分岐した場合はそこで打ち切り、Error に理由を入れる
+        /// </summary>
+        public static (List<RunState> States, string? Error) ReplayStates(RunJournal journal)
+        {
+            var states = new List<RunState> { ReplayInitialRun(journal.Origin) };
+            for (int i = 0; i < journal.Commands.Count; i++)
+            {
+                try
+                {
+                    states.Add(ApplyRunCommand(states[states.Count - 1], journal.Commands[i]));
+                }
+                catch (Exception e)
+                {
+                    return (states, $"コマンド{i + 1}/{journal.Commands.Count}で再現が分岐 (データ変更の可能性): {e.Message}");
+                }
+            }
+            return (states, null);
+        }
+
+        /// <summary>
+        /// チェックポイント開始 (幕2/幕3から代表デッキで開始)。
+        /// 通常の CreateRun を土台に、幕・マップ・デッキ・レリック・HP・金だけ差し替える純関数
+        /// </summary>
+        /// <summary>
+        /// チェックポイント開始。gearIds/mana は Autopilot の撮影用 (origin に欄が無いので再生は null で呼ぶ = 幕なりに抽選)。
+        /// gearIds に空の列を渡せば「持たない」
+        /// </summary>
+        public static RunState CreateDebugCheckpointRun(int seed, string mode, string leaderId, ReplayOriginCheckpoint opts, IReadOnlyList<string>? gearIds = null, int? mana = null)
+        {
+            var baseRun = CreateRun(seed, mode, leaderId, null, opts.Difficulty ?? DEFAULT_DIFFICULTY, new RunOptions { Departure = false }); // チェックポイントに出立は無い
+            int act = Math.Min(MapGen.ACT_COUNT, Math.Max(1, opts.Act));
+            var (map, rng) = MapGen.GenerateMap(baseRun.Rng, act, true, EliteCountFor(baseRun.Difficulty, act));
+            RunState run = baseRun with
+            {
+                Act = act,
+                Map = map,
+                Rng = rng,
+                Row = -1,
+                Col = 0,
+                Deck = Content.BuildDeck(opts.DeckId), // デッキ選択制の検証は通さない (デバッグ = 理想形も可)
+                BattlesWon = act == 3 ? 19 : act == 2 ? 10 : 0,
+                Gold = opts.Gold ?? 150,
+            };
+            foreach (var id in opts.RelicIds ?? new List<string>())
+            {
+                Content.GetRelicDef(id); // 未定義なら throw
+                run = GainRelic(run with { RelicQueue = run.RelicQueue.Where(q => q != id).ToList() }, id);
+                // チェックポイントは選択を挟まない (空の鳥籠・星読みの盤の保留は捨てる)
+                if (run.PendingRelicChoice != null) run = run with { PendingRelicChoice = null };
+            }
+            // ギア (2026-09-17): 幕2/3のチェックポイントは「10戦勝ってきた」状態なので持ち物と魔素もその幕なりに積む (RNG は run.Rng を進める)
+            if (gearIds != null)
+            {
+                foreach (var gid in gearIds) run = AddGear(run, gid, "cp_" + gid);
+            }
+            else if (act >= 2)
+            {
+                int want = act >= 3 ? 4 : 3;
+                var r = run.Rng;
+                for (int i = 0; i < want; i++)
+                {
+                    var (gid, r2) = RollGearId(r, false);
+                    r = r2;
+                    run = AddGear(run with { Rng = r }, gid, "cp" + i + "_" + gid);
+                    r = run.Rng;
+                }
+            }
+            // チェックポイントの既定は幕なりの残高 (幕3=満タン・幕2=3個ぶん)
+            run = run with { Mana = Math.Min(Gears.MANA_MAX, mana ?? (act >= 3 ? Gears.MANA_MAX : act >= 2 ? Gears.GEAR_MANA_COST * 3 : 0)) };
+            double ratio = Math.Min(1, Math.Max(0.05, opts.HpRatio ?? 1));
+            return run with { Hp = Math.Max(1, JsRound(run.MaxHp * ratio)) };
+        }
+
+        /// <summary>効果名 → アーキタイプの軸 (確定済みルール表「軸の重み付け」)</summary>
+        private static readonly Dictionary<string, string> EFFECT_AXIS = new Dictionary<string, string>
+        {
+            { "addGrowth", "growth" }, { "doubleGrowth", "growth" }, { "dischargeGrowth", "growth" }, { "dischargeGrowthBlock", "growth" },
+            { "gainEnergyMax", "ramp" }, { "dealDamagePerEnergyMax", "ramp" }, { "gainBlockPerEnergyMax", "ramp" },
+            { "addMomentum", "trample" }, { "dealDamagePerMomentum", "trample" }, { "doubleMomentum", "trample" },
+            { "dischargeMomentumBurn", "burn" }, { "dischargeMomentumBlock", "trample" }, { "gainBlockPerMomentum", "trample" }, { "addGrowthPerMomentum", "trample" },
+            { "applyBurn", "burn" }, { "dischargeBurn", "burn" },
+            { "cascadeSameCost", "cascade" }, // 火は火を呼ぶ (赤 2026-10-12 段2)
+            { "addAether", "aether" }, { "dischargeAether", "aether" }, { "dischargeAetherDraw", "aether" },
+            { "addLight", "light" }, { "addLightNextTurn", "light" }, { "dischargeLight", "light" }, { "dischargeLightRally", "light" }, { "doubleLight", "light" }, { "dealDamagePerLight", "light" }, // 灯
+            { "dischargeLightWeaken", "light" }, { "consumeLight", "light" }, { "gainBlockPerLight", "light" }, { "drawCardsPerLight", "light" }, { "lightCarryHalf", "light" }, // 放出の軸 (2026-09-20 夜)
+            { "addCardToDraw", "spark" }, { "addCardToDiscard", "spark" }, { "transformDeckToToken", "spark" }, { "lightToSparks", "spark" }, { "dealDamagePerSpark", "spark" }, { "gainBlockPerSpark", "spark" }, { "triggerRandomRetainer", "spark" }, // 火種 (白 2026-09-20。2026-09-23/24 断ち切り・降霊・火守りの盾)
+            { "gainIceBlock", "ice" }, { "dealDamagePerIceBlock", "ice" }, { "gainIceBlockPerCardPlayed", "ice" },
+            { "negate", "permission" }, { "negateConvertIce", "permission" },
+            { "summonPermanent", "retinue" }, { "dealDamagePerPermanent", "retinue" }, { "gainBlockPerPermanent", "retinue" },
+            { "exhaustFromDeck", "graveyard" }, { "exhaustFromDeckChoose", "graveyard" }, { "dealDamagePerExhaust", "graveyard" }, { "retrieveFromExhaust", "graveyard" },
+            { "playFromExhaust", "graveyard" }, { "gainBlockPerExhaust", "graveyard" }, { "dealDamageDrainPerExhaust", "graveyard" },
+            { "loseHp", "selfharm" }, { "dealDamagePerSelfHpLost", "selfharm" },
+            { "dealDamagePerCardPlayed", "storm" }, { "drawCardsPerCardPlayed", "storm" }, { "addCasts", "storm" },
+            { "impulseDraw", "impulse" },
+            { "weakenEnemy", "oppress" }, { "dealDamagePerNegStrength", "oppress" },
+            { "gainHp", "heal" }, { "dealDamageDrain", "heal" },
+            { "dealDamagePerDamageTaken", "wrath" }, { "applyBurnPerDamageTaken", "wrath" },
+            { "dealDamagePerBlock", "fortress" },
+            { "shatterBlock", "shatter" }, { "shatterBlockConvert", "shatter" },
+            { "dealDamageRandom", "chaos" }, { "dealDamagePerRandomPlayed", "chaos" },
+            { "dealDamageExecute", "execute" }, { "exposeEnemy", "execute" },
+            { "confuse", "confuse" },
+            { "dealDamagePerHandCard", "grimoire" }, { "gainIceBlockPerHandCard", "grimoire" }, // 抱え込み (青)
+            { "scry", "grimoire" }, { "dealDamagePerScry", "grimoire" }, { "retainHandUpTo", "grimoire" }, // 潮読み (青 2026-09-25)
+            { "dealDamagePerTrapFired", "permission" }, { "extendTrapLife", "permission" }, { "trapsNeverExpire", "permission" }, // 罠使い (青 2026-09-25)
+            { "retrieveZeroCostFromDiscard", "storm" }, { "drawTypeFromDeck", "permission" }, { "aetherCarryHalf", "aether" }, { "retainedCostDown", "grimoire" }, // 青を89枚に (2026-09-25)
+            { "addSpellEcho", "echo" }, // 反復 (青の呪文コピー)
+            // 赤の3本柱 (2026-10-10 docs/red-cascade-design-2026-10-10.md): チェインの刈り取り・常在、バーンの倍加と消費しない刈り取り、刹那の失効の換金
+            { "dealDamagePerCascade", "cascade" }, { "firstCardCascade", "cascade" },
+            { "doubleBurn", "burn" }, { "gainBlockPerBurn", "burn" }, { "dealDamagePerBurn", "burn" }, { "burnNoDecay", "burn" },
+            { "keepImpulseOne", "impulse" },
+        };
+
+        /// <summary>誘発トリガー → 軸。置物の「接着剤」札はここでほぼ自動的に分類される</summary>
+        private static readonly Dictionary<string, string> TRIGGER_AXIS = new Dictionary<string, string>
+        {
+            { "onPermanentEntered", "retinue" },
+            { "onCardExhausted", "graveyard" },
+            { "onCostExhausted", "graveyard" },
+            { "onHealed", "heal" },
+            { "onHpLost", "selfharm" },
+            { "onAetherGained", "aether" },
+            { "onLightGained", "light" }, // 灯の弩 (白 2026-09-20)
+            { "onLightDischarged", "light" }, { "onSparkPlayed", "spark" }, // 2026-09-20 夜
+            { "onImpulsePlayed", "impulse" },
+            { "onImpulseExpired", "impulse" }, // 燃え残り・灰の衣 (赤 2026-10-10)
+            { "onBlazeIgnite", "burn" }, // 火の目覚め・爆ぜ火 (赤 2026-10-12 段2)
+            { "onCascade", "cascade" }, // 連なる火花・火継ぎの炉 (赤 2026-10-10)
+            { "onRandomPlayed", "chaos" },
+            { "onSpellPlayed", "storm" },
+            { "onBlockGained", "fortress" },
+            { "onActionNegated", "permission" },
+            { "onSelfExhausted", "graveyard" }, // 亡骸効果 (黒)
+        };
+
+        /// <summary>この札が属する軸 (効果名・トリガー・フィールドからの自動導出 + JSONの明示宣言)。TS の Set と同じ挿入順を保つ</summary>
+        public static IReadOnlyList<string> AxesOf(CardDef def)
+        {
+            var all = new List<DeclarativeEffect>(def.Effects);
+            if (def.Modes != null) foreach (var m in def.Modes) all.AddRange(m.Effects);
+            var order = new List<string>();
+            var seen = new HashSet<string>();
+            void Add(string s) { if (seen.Add(s)) order.Add(s); }
+            if (def.Axis != null) foreach (var a in def.Axis) Add(a);
+            foreach (var e in all)
+            {
+                if (EFFECT_AXIS.TryGetValue(e.Effect, out var byEffect) && !string.IsNullOrEmpty(byEffect)) Add(byEffect);
+                if (TRIGGER_AXIS.TryGetValue(e.Trigger, out var byTrigger) && !string.IsNullOrEmpty(byTrigger)) Add(byTrigger);
+                if (e.ExhaustThreshold != null) Add("graveyard"); // 忘却の刻の参照札
+                if (e.Pierce == true) Add("trample");             // 貫通はトランプルの核
+            }
+            if (def.ExhaustCost != null) Add("graveyard"); // 消滅コストは墓地の燃料
+            if (def.ImpulseCost != null) Add("impulse"); // くべる (赤 2026-10-12 段2): 衝動の札を払う
+            if (def.Retainer == true) Add("retinue");
+            if ((def.Cascade ?? 0) > 0) Add("cascade"); // チェイン (赤 2026-10-10)
+            return order;
+        }
+
+        /// <summary>報酬を抽選 (リーダーの色アイデンティティのカードのみ・基本札除外・重複なし)</summary>
+        private static RunState RollRewards(RunState run)
+        {
+            var leader = Content.GetLeaderDef(run.LeaderId);
+            // 報酬プールはリーダーのエナジー上限を考慮する (緑はランプで伸ばせるので +2 まで許容)
+            bool canRamp = run.Colors.Contains(CardColors.Green);
+            int costCap = leader.EnergyMax + (canRamp ? 2 : 0);
+            int CapFor(CardDef c) => c.Retain == true ? leader.EnergyMax + (canRamp ? 1 : 0) : costCap;
+            var pool = Content.AllCards
+                .Where(c => run.Colors.Contains(c.Color) && !REWARD_EXCLUDED.Contains(c.Id) && c.Cost <= CapFor(c))
+                .ToList();
+            // レアリティ抽選: スロットごとにコモン60%/アンコモン37%/レア3%の本家比率
+            var remaining = new List<CardDef>(pool);
+            var picked = new List<string>();
+            var rng = run.Rng;
+            int want = Math.Max(1, leader.RewardChoices + run.RewardChoicesBonus + DifficultyTaxOf(run.Difficulty).RewardChoices); // 王冠の欠片 (提示-1)・段9の経済税でも最低1枚
+            string RarityOf(CardDef c) => c.Rarity ?? "common";
+            while (picked.Count < want && remaining.Count > 0)
+            {
+                var (roll, r1) = Rng.NextInt(rng, 0, 99);
+                rng = r1;
+                // エリート報酬はレア1枚確定 (先頭スロット)。逃がしたエリートはレア確定を失う
+                bool eliteEscaped = run.Combat != null && run.Combat.Enemies.Any(e => e.Fled == true);
+                string[] wanted =
+                    run.CurrentElite && picked.Count == 0 && !eliteEscaped
+                        ? new[] { "rare", "uncommon", "common" }
+                        : roll < 3
+                            ? new[] { "rare", "uncommon", "common" }
+                            : roll < 40
+                                ? new[] { "uncommon", "common" }
+                                : new[] { "common" };
+                // 希望レアリティの札が尽きていたら下の帯へフォールバック。それも無ければプール全体
+                List<CardDef> candidates = new List<CardDef>();
+                foreach (var r in wanted)
+                {
+                    candidates = remaining.Where(c => RarityOf(c) == r).ToList();
+                    if (candidates.Count > 0) break;
+                }
+                if (candidates.Count == 0) candidates = remaining;
+                var (idx, r2) = Rng.NextInt(rng, 0, candidates.Count - 1);
+                rng = r2;
+                var chosen = candidates[idx];
+                remaining.RemoveAt(remaining.FindIndex(x => ReferenceEquals(x, chosen))); // TS の indexOf は参照比較
+                // 合成の触媒 (2026-09-12 ユーザー裁定): 1回の提示に触媒は1枚まで (2枚目は引き直し)
+                if (chosen.FusionCatalyst != null && picked.Any(id => Content.GetCardDef(id).FusionCatalyst != null)) continue;
+                picked.Add(chosen.Id);
+            }
+            // ギアの抽選 (2026-09-17): 札3枚とは別枠で1つ。通常戦は 60%+pity・エリート/幕ボスは確定 (札の抽選の後)
+            bool isBossNode = CurrentNode(run)?.Type == MapNodeTypes.Boss;
+            bool guaranteed = run.CurrentElite || isBossNode;
+            string? gearOption = null;
+            int pity = run.GearPity ?? GEAR_DROP_BASE;
+            if (guaranteed)
+            {
+                var (gid, r) = RollGearId(rng, true);
+                rng = r;
+                gearOption = gid;
+            }
+            else
+            {
+                var (roll, r1) = Rng.NextInt(rng, 0, 99);
+                rng = r1;
+                if (roll < pity)
+                {
+                    var (gid, r2) = RollGearId(rng, false);
+                    rng = r2;
+                    gearOption = gid;
+                    pity = GEAR_DROP_BASE;
+                }
+                else
+                {
+                    pity = pity + GEAR_DROP_PITY;
+                }
+            }
+            return run with { Rng = rng, RewardOptions = picked, GearOption = gearOption, GearPity = pity, Phase = RunPhases.Reward };
+        }
+
+        /// <summary>戦闘勝利後の処理: HP持ち越し → (エリートならレリック報酬 →) カード報酬 or ラン勝利</summary>
+        private static RunState AfterVictory(RunState run, GameState combat)
+        {
+            bool isBoss = CurrentNode(run)?.Type == MapNodeTypes.Boss;
+            // 3幕目のボス撃破 = ラン走破
+            if (isBoss && run.Act >= MapGen.ACT_COUNT)
+            {
+                // 走破画面のHPは戦闘終了時の値
+                return run with { Combat = combat, Hp = combat.Player.Hp, MaxHp = Math.Max(run.MaxHp, combat.Player.MaxHp), BattlesWon = run.BattlesWon + 1, Phase = RunPhases.Won };
+            }
+            // 自動回復は狩人の恵み (victoryHealBonus) のみ。幕ボス撃破は全回復
+            int rescueHeal = combat.Player.Hp <= run.MaxHp * 0.3 ? run.VictoryHealBonus : 0;
+            // 獲物 (gainMaxHp=Feed 2026-09-07): 戦闘中に増えた最大HPはランへ残す
+            int maxHp = Math.Max(run.MaxHp, combat.Player.MaxHp);
+            // 幕ボス撃破の回復: 既定は全回復。段4以上は経済税で 75%→50%→25% (最大HP比。本家 A5 式。2026-09-18)
+            int hp = isBoss
+                ? Math.Min(maxHp, combat.Player.Hp + JsFloor(maxHp * DifficultyTaxOf(run.Difficulty).BossHeal))
+                : Math.Min(maxHp, combat.Player.Hp + VICTORY_HEAL + rescueHeal + RelicBonusSum(run, "victoryHealFlat")); // 薬草袋
+            // ゴールド獲得 (通常12〜18G・エリート+30〜40G・幕ボス+40〜50G)
+            var rng = run.Rng;
+            var (baseGold, r1) = Rng.NextInt(rng, GOLD_PER_BATTLE_MIN, GOLD_PER_BATTLE_MAX);
+            rng = r1;
+            int gained = baseGold;
+            if (run.CurrentElite)
+            {
+                var (bonus, r2) = Rng.NextInt(rng, GOLD_ELITE_BONUS_MIN, GOLD_ELITE_BONUS_MAX);
+                rng = r2;
+                gained += bonus;
+            }
+            if (isBoss)
+            {
+                var (bonus, r3) = Rng.NextInt(rng, 40, 50);
+                rng = r3;
+                gained += bonus;
+            }
+            // 商人の秤 (B型レリック): 戦闘勝利のゴールド加算
+            gained += run.GoldPerVictoryBonus;
+            // 戦利品袋: エリート勝利+N / 金の靴: 倍率 (盗みの精算より前)
+            if (run.CurrentElite) gained += RelicBonusSum(run, "eliteGoldBonus");
+            gained = JsFloor(gained * GoldMultiplier(run));
+            // 盗みの精算: 逃走した盗人が抱えた額を失い、逃げる前に倒した盗人は全額戻る + 懸賞金
+            int fledLoss = 0;
+            foreach (var e in combat.Enemies) if (e.Fled == true) fledLoss += e.StolenGold ?? 0;
+            int bounty = combat.Enemies.Count(e => e.Fled != true && (e.StolenGold ?? 0) > 0) * THIEF_BOUNTY;
+            gained += bounty - fledLoss;
+            // 時限呪い: 勝利ごとに残り戦数-1・0でデッキから自然消滅
+            var deckAfterCurses = run.Deck
+                .Select(c => c.ExpiresAfterBattles != null ? c with { ExpiresAfterBattles = c.ExpiresAfterBattles.Value - 1 } : c)
+                .Where(c => c.ExpiresAfterBattles == null || c.ExpiresAfterBattles.Value > 0)
+                .ToList();
+            var next = run with
+            {
+                Rng = rng,
+                Combat = combat,
+                Hp = hp,
+                Deck = deckAfterCurses,
+                MaxHp = maxHp,
+                BattlesWon = run.BattlesWon + 1,
+                // 盗みの喪失で負になりうるので0でクランプ
+                Gold = Math.Max(0, run.Gold + gained),
+                // 祈りの車輪 (2026-09-12 本家 Prayer Wheel): 通常戦だけカード報酬をもう1組
+                RewardRoundsLeft = !run.CurrentElite && !isBoss ? RelicBonusSum(run, "extraRewardRounds") : 0,
+                // 魔素 (2026-09-17): 通常戦+半個ぶん・エリート/幕ボス+1個ぶん。上限 MANA_MAX
+                Mana = Math.Min(Gears.MANA_MAX, (run.Mana ?? 0) + (run.CurrentElite || isBoss ? MANA_PER_ELITE_BOSS : MANA_PER_WIN)),
+            };
+            // 蜥蜴の尾 (2026-09-12): この戦闘で砕けたらランで使用済み
+            if (combat.DeathSaveUsed == true) next = WithRelicState(next, "lizardUsed", 1);
+            next = SettleHpLossCap(next, combat);
+            // 時限レリック (旅の蝋燭 2026-09-12): 勝つたび残り-1・0で所持から消える
+            foreach (var id in new List<string>(next.Relics))
+            {
+                if (Content.GetRelicDef(id).ExpiresAfterBattles == null) continue;
+                int left = RelicStateOf(next, "exp_" + id) - 1;
+                next = left > 0
+                    ? WithRelicState(next, "exp_" + id, left)
+                    : WithRelicState(next, "exp_" + id, 0) with { Relics = next.Relics.Where(r => r != id).ToList() };
+            }
+            // 幕ボス・エリート戦の勝利: レリック3択 (幕ボスは本家のボスレリック相当)
+            if (run.CurrentElite || isBoss)
+            {
+                var (options, rng2) = DrawRelicOptions(next, isBoss ? RelicSources.Boss : RelicSources.Elite);
+                if (options.Count > 0)
+                {
+                    // 黒星の欠片 (2026-09-06): 強個体の3択から 1+N 個取れる
+                    int picks = run.CurrentElite && !isBoss ? 1 + RelicBonusSum(next, "eliteRelicPicks") : 1;
+                    return next with { Rng = rng2, Phase = RunPhases.RelicReward, RelicOptions = options, RelicPicksLeft = picks > 1 ? picks : (int?)null };
+                }
+            }
+            return RollRewards(next);
+        }
+
+        /// <summary>
+        /// 報酬ノードは「札の選択」と「ギアの取得」の両方が片付いてから閉じる (2026-09-17 是正)。
+        /// 札を先に選ぶと phase が reward でなくなり、残っていた gearOption を TakeGear できずに黙って消えていた
+        /// </summary>
+        static RunState FinishReward(RunState run)
+        {
+            if (run.GearOption != null) return run;      // ギアが残っている
+            if (run.RewardOptions != null) return run;   // 札の選択が残っている
+            return AdvanceActIfBossCleared(run);
+        }
+
+        /// <summary>幕ボスのカード報酬を受け取った後、次の幕へ進む (新しいマップを生成して行0の選択から)</summary>
+        private static RunState AdvanceActIfBossCleared(RunState run)
+        {
+            if (CurrentNode(run)?.Type != MapNodeTypes.Boss || run.Act >= MapGen.ACT_COUNT)
+            {
+                return run with { Phase = RunPhases.Map };
+            }
+            int nextAct = run.Act + 1;
+            var (map, rng) = MapGen.GenerateMap(run.Rng, nextAct, true, EliteCountFor(run.Difficulty, nextAct));
+            return run with
+            {
+                Rng = rng,
+                Act = nextAct,
+                Map = map,
+                Row = -1,
+                Col = 0,
+                Combat = null,
+                Phase = RunPhases.Map,
+                UnknownPity = UnknownPityBase(), // ピティは幕をまたがない
+                SeenShrineIds = new List<string>(), // 祠は幕をまたぐと復活する
+                EventId = null,
+                LastRoomWasShop = false,
+            };
+        }
+
+        /// <summary>
+        /// 呪いの鍵: レリックを取るたび、取得前に持っていた鍵の数だけ烙印を受け取る。
+        /// before = 取得前の RunState (鍵自身を取った瞬間は数えない)
+        /// </summary>
+        private static RunState WithRelicGainBrands(RunState next, RunState before)
+        {
+            int brands = 0;
+            foreach (var id in before.Relics) brands += Content.GetRelicDef(id).Bonus?.BrandOnRelic ?? 0;
+            if (brands <= 0) return next;
+            var add = new List<CardInstance>();
+            for (int i = 0; i < brands; i++)
+                add.Add(new CardInstance { Uid = $"brand_key_a{next.Act}_r{next.Row}_{next.Relics.Count}_{i}", Def = Content.BRAND_DEF });
+            return AddCardsToRunDeck(next, add);
+        }
+
+        /// <summary>B型レリックの取得時効果を適用する</summary>
+        private static RunState ApplyRelicBonus(RunState run, string relicId)
+        {
+            var def = Content.GetRelicDef(relicId);
+            var b = def.Bonus;
+            if (b == null) return run;
+            return run with
+            {
+                MaxHp = run.MaxHp + (b.MaxHp ?? 0),
+                Hp = Math.Min(run.MaxHp + (b.MaxHp ?? 0), run.Hp + (b.MaxHp ?? 0)),
+                VictoryHealBonus = run.VictoryHealBonus + (b.VictoryHeal ?? 0),
+                RewardChoicesBonus = run.RewardChoicesBonus + (b.RewardChoices ?? 0),
+                CampfireRatio = b.CampfireRatio ?? run.CampfireRatio,
+                GoldPerVictoryBonus = run.GoldPerVictoryBonus + (b.GoldPerVictory ?? 0),
+                CampfireForgeBonus = run.CampfireForgeBonus + (b.CampfireForge ?? 0),
+                Gold = run.Gold + (b.GoldOnPickup ?? 0), // 小さな家 (2026-09-06)
+            };
+        }
+
+        /// <summary>小さな家 (2026-09-06): 取った時にデッキの鍛えられる札からランダムにN枚鍛える (ラン RNG を消費)</summary>
+        private static RunState ApplyRandomUpgradesOnPickup(RunState run, string relicId)
+        {
+            int n = Content.GetRelicDef(relicId).Bonus?.UpgradeRandomOnPickup ?? 0;
+            var next = run;
+            for (int k = 0; k < n; k++)
+            {
+                var cands = new List<int>();
+                for (int i = 0; i < next.Deck.Count; i++) if (Upgrade.CanUpgradeCard(next.Deck[i])) cands.Add(i);
+                if (cands.Count == 0) break;
+                var (j, rng) = Rng.NextInt(next.Rng, 0, cands.Count - 1);
+                int idx = cands[j];
+                var deck = new List<CardInstance>(next.Deck.Count);
+                for (int i = 0; i < next.Deck.Count; i++) deck.Add(i == idx ? Upgrade.UpgradeCard(next.Deck[i]) : next.Deck[i]);
+                next = next with { Rng = rng, Deck = deck };
+            }
+            return next;
+        }
+
+        /// <summary>
+        /// この焚き火で鍛えられる枚数 (1 + 砥石の追加回数)。砥石の追加回数は1幕に1回だけ有効。
+        /// UI/CLI/engine が同じ式を読む (表示の嘘を作らない)
+        /// </summary>
+        public static int CampfireForgeAllowed(RunState run)
+        {
+            int bonus = run.CampfireForgeBonus;
+            bool usable = bonus > 0 && run.ForgeBonusUsedAct != run.Act;
+            return 1 + (usable ? bonus : 0);
+        }
+
+        public static RunState ApplyRunCommand(RunState run, RunCommand command)
+        {
+            switch (command)
+            {
+                case RunCommand_StartRun c:
+                    return CreateRun(c.Seed, run.Mode, run.LeaderId);
+
+                case RunCommand_Combat c:
+                {
+                    if (run.Phase != RunPhases.Combat || run.Combat == null)
+                        throw new InvalidOperationException("戦闘中ではない（直前の戦闘は決着済み＝残りの手札は打てない。次はランのコマンド）");
+                    if (c.Command.Type == Command_StartCombat.TypeTag)
+                        throw new InvalidOperationException("ラン中の戦闘開始はランが管理する");
+                    var combat = State.ApplyCommand(run.Combat, c.Command);
+                    if (combat.Phase == CombatPhases.Lost) return run with { Combat = combat, Hp = 0, Phase = RunPhases.Lost };
+                    if (combat.Phase == CombatPhases.Won) return AfterVictory(run, combat);
+                    return run with { Combat = combat };
+                }
+
+                case RunCommand_PickReward c:
+                {
+                    if (run.Phase != RunPhases.Reward || run.RewardOptions == null) throw new InvalidOperationException("報酬フェーズではない");
+                    string? cardId = (c.Index >= 0 && c.Index < run.RewardOptions.Count) ? run.RewardOptions[c.Index] : null;
+                    if (cardId == null) throw new InvalidOperationException($"不正な報酬指定: {c.Index}");
+                    // uid は行番号で一意化 (1行につき1ノードしか訪れないため衝突しない)。2枚目以降の組は組番号を足す (祈りの車輪)
+                    int round = run.RewardRoundsLeft ?? 0;
+                    var card = new CardInstance { Uid = $"pick_a{run.Act}_r{run.Row}_{cardId}{(round > 0 ? "_x" + round : "")}", Def = Content.GetCardDef(cardId) };
+                    var picked = AddCardsToRunDeck(run with { Picks = Append(run.Picks, cardId), RewardOptions = null }, new List<CardInstance> { card }); // 卵 (2026-09-12)
+                    // 祈りの車輪 (2026-09-12): 通常戦の報酬をもう1組
+                    if (round > 0) return RollRewards(picked with { RewardRoundsLeft = round - 1 });
+                    return FinishReward(picked);
+                }
+
+                case RunCommand_SkipReward:
+                {
+                    if (run.Phase != RunPhases.Reward) throw new InvalidOperationException("報酬フェーズではない");
+                    // 鳴り鉢 (2026-09-12 本家 Singing Bowl): 見送るたび最大HP+N
+                    int bowl = RelicBonusSum(run, "skipRewardMaxHp");
+                    // 札が既に片付いていれば、残るのはギアだけ = この「見送る」はギアを見送る意味になる (2026-09-17)
+                    bool leaving = run.RewardOptions == null && run.GearOption != null;
+                    var skipped = run with { RewardOptions = null, MaxHp = run.MaxHp + bowl, Hp = run.Hp + bowl };
+                    if (leaving) skipped = skipped with { GearOption = null };
+                    int round = run.RewardRoundsLeft ?? 0;
+                    if (round > 0) return RollRewards(skipped with { RewardRoundsLeft = round - 1 });
+                    return FinishReward(skipped);
+                }
+
+                // ---- ギア (2026-09-17) ----
+                case RunCommand_UseGear c:
+                {
+                    var gears = GearsOf(run);
+                    if (c.Index < 0 || c.Index >= gears.Count) throw new InvalidOperationException($"不正なギア指定: {c.Index}");
+                    var gear = gears[c.Index];
+                    var def = Content.GetGearDef(gear.GearId);
+                    string? blocked = Gears.GearBlockedReason(run.Phase == RunPhases.Combat ? run.Combat : null, ManaOf(run), gear);
+                    if (blocked != null) throw new InvalidOperationException($"{def.Name} は組めない: {blocked}");
+                    var combat = run.Combat!;
+                    // 煙玉 (2026-09-17 ユーザー裁定): 幕ボス以外から逃げる。報酬なし・HPはそのまま・節は踏んだ扱い
+                    if (def.Special == "flee")
+                    {
+                        if (CurrentNode(run)?.Type == MapNodeTypes.Boss) throw new InvalidOperationException("幕ボスからは逃げられない");
+                        var spent = SettleHpLossCap(SpendGear(run, c.Index), combat);
+                        return spent with { Combat = null, Hp = combat.Player.Hp, Phase = RunPhases.Map, RewardOptions = null, GearOption = null };
+                    }
+                    var next = Gears.ResolveGear(combat, def, new Gears.UseGearOptions
+                    {
+                        TargetIndex = c.TargetIndex,
+                        CardUid = c.CardUid,
+                        AsGearId = c.AsGearId,
+                        SeenGearIds = run.SeenGearIds ?? new List<string>(),
+                    });
+                    var after = SpendGear(run, c.Index) with { Combat = next with { GearUsedThisTurn = true } };
+                    // ギアで敵が全滅しうる (火薬・火薬樽)。決着はいつもの経路へ
+                    if (after.Combat!.Phase == CombatPhases.Won) return AfterVictory(after, after.Combat!);
+                    if (after.Combat!.Phase == CombatPhases.Lost) return after with { Hp = 0, Phase = RunPhases.Lost };
+                    return after;
+                }
+                case RunCommand_TakeGear c:
+                {
+                    var id = run.GearOption;
+                    if (run.Phase != RunPhases.Reward || id == null) throw new InvalidOperationException("取れるギアがない");
+                    RunState baseRun = run;
+                    if (GearFull(baseRun))
+                    {
+                        if (c.DiscardIndex == null) throw new InvalidOperationException("持ち物が満杯 = 入れ替えるギアを選ぶ");
+                        baseRun = DiscardGearAt(baseRun, c.DiscardIndex.Value);
+                    }
+                    return FinishReward(AddGear(baseRun, id, "a" + run.Act + "_r" + run.Row + "_" + id) with { GearOption = null });
+                }
+                case RunCommand_SkipGear:
+                {
+                    if (run.Phase != RunPhases.Reward) throw new InvalidOperationException("報酬フェーズではない");
+                    return FinishReward(run with { GearOption = null });
+                }
+                case RunCommand_DiscardGear c:
+                    return DiscardGearAt(run, c.Index);
+                case RunCommand_ShopBuyGear c:
+                {
+                    if (run.Phase != RunPhases.Shop || run.Shop == null) throw new InvalidOperationException("ショップではない");
+                    var shelf = run.Shop.Gears ?? new List<ShopStateGears>();
+                    var slot = c.Index >= 0 && c.Index < shelf.Count ? shelf[c.Index] : null;
+                    if (slot == null || slot.Sold == true) throw new InvalidOperationException($"不正なギア指定: {c.Index}");
+                    if (run.Gold < slot.Price) throw new InvalidOperationException("ゴールドが足りない");
+                    RunState baseRun = run;
+                    if (GearFull(baseRun))
+                    {
+                        if (c.DiscardIndex == null) throw new InvalidOperationException("持ち物が満杯 = 入れ替えるギアを選ぶ");
+                        baseRun = DiscardGearAt(baseRun, c.DiscardIndex.Value);
+                    }
+                    var bought = AddGear(baseRun, slot.Id, "shop_a" + run.Act + "_r" + run.Row + "_" + slot.Id);
+                    return BreakMawBank(bought with
+                    {
+                        Gold = bought.Gold - slot.Price,
+                        Shop = run.Shop with { Gears = shelf.Select((g, i) => i == c.Index ? g with { Sold = true } : g).ToList() },
+                    });
+                }
+                case RunCommand_BuyDeparture c:
+                {
+                    if (run.Phase != RunPhases.Departure || run.Departure == null) throw new InvalidOperationException("出立の店ではない");
+                    var offers = run.Departure.Offers;
+                    var offer = c.Index >= 0 && c.Index < offers.Count ? offers[c.Index] : null;
+                    if (offer == null) throw new InvalidOperationException($"不正な支度の指定: {c.Index}");
+                    if (DepartureOfferBought(run, offer)) throw new InvalidOperationException("その支度は買った");
+                    if (run.Gold < offer.Price) throw new InvalidOperationException($"ゴールドが足りない ({offer.Price}G)");
+                    // 坑口の店で買う。買った後も店に留まる (LeaveDeparture で地図へ)
+                    var baseRun = run with { Gold = run.Gold - offer.Price, Departure = run.Departure with { Bought = Append(run.Departure.Bought, offer.Id) } };
+                    return ApplyChoiceDef(baseRun, offer.Choice, c.CardIndex, RunPhases.Departure);
+                }
+                case RunCommand_LeaveDeparture:
+                {
+                    if (run.Phase != RunPhases.Departure || run.Departure == null) throw new InvalidOperationException("出立の店ではない");
+                    // 買わなかったサービス・持ち物は行商が担いで降り、幕1の店に並ぶ
+                    var bought = run.Departure.Bought;
+                    var leftovers = run.Departure.Offers.Where(o => !bought.Contains(o.Id) && o.ShopPrice != null).ToList();
+                    return run with { Departure = run.Departure with { Leftovers = leftovers }, Phase = RunPhases.Map };
+                }
+                case RunCommand_ShopBuyDeparture c:
+                {
+                    if (run.Phase != RunPhases.Shop || run.Shop == null) throw new InvalidOperationException("ショップではない");
+                    var shelf = run.Shop.Departures ?? new List<ShopStateDepartures>();
+                    var slot = c.Index >= 0 && c.Index < shelf.Count ? shelf[c.Index] : null;
+                    if (slot == null || slot.Sold == true) throw new InvalidOperationException($"不正な支度の指定: {c.Index}");
+                    var offer = run.Departure?.Leftovers.FirstOrDefault(o => o.Id == slot.Id);
+                    if (offer == null) throw new InvalidOperationException("その支度は行商が持っていない");
+                    if (run.Gold < slot.Price) throw new InvalidOperationException($"ゴールドが足りない ({slot.Price}G)");
+                    var baseRun = BreakMawBank(run with
+                    {
+                        Gold = run.Gold - slot.Price,
+                        Shop = run.Shop with { Departures = shelf.Select((x, i) => i == c.Index ? x with { Sold = true } : x).ToList() },
+                        Departure = run.Departure! with { Leftovers = run.Departure!.Leftovers.Where(o => o.Id != slot.Id).ToList() },
+                    });
+                    return ApplyChoiceDef(baseRun, offer.Choice, c.CardIndex, RunPhases.Shop);
+                }
+                case RunCommand_ShopBuyMana:
+                {
+                    if (run.Phase != RunPhases.Shop || run.Shop == null) throw new InvalidOperationException("ショップではない");
+                    int price = run.Shop.ManaPrice ?? SHOP_MANA_PRICE;
+                    if (run.Gold < price) throw new InvalidOperationException("ゴールドが足りない");
+                    if (ManaOf(run) >= Gears.MANA_MAX) throw new InvalidOperationException("魔素は上限");
+                    // 買えるのは「1個ぶん」(GEAR_MANA_COST)。上限を越えた分は切り捨てる
+                    return BreakMawBank(run with { Gold = run.Gold - price, Mana = Math.Min(Gears.MANA_MAX, ManaOf(run) + Gears.GEAR_MANA_COST) });
+                }
+
+                case RunCommand_ChooseNode c:
+                {
+                    if (run.Phase != RunPhases.Map) throw new InvalidOperationException("マップフェーズではない");
+                    var candidates = NextChoices(run);
+                    var next = run;
+                    if (!candidates.Contains(c.Col))
+                    {
+                        // 翼の靴 (2026-09-12 本家 Wing Boots): 線の無い先へ残回数を1つ使って進む
+                        if (!WingChoices(run).Contains(c.Col)) throw new InvalidOperationException($"進めないノード: {c.Col}");
+                        next = WithRelicState(next, "wingBoots", RelicStateOf(next, "wingBoots") - 1);
+                    }
+                    // 大口の貯金箱 (2026-09-12 本家 Maw Bank): 1行進むたび+N G (ショップで買い物をすると止まる)
+                    if (RelicStateOf(next, "mawBroken") == 0) next = next with { Gold = next.Gold + RelicBonusSum(next, "goldPerRow") };
+                    return EnterNode(next with { Row = next.Row + 1, Col = c.Col });
+                }
+
+                case RunCommand_PickRelic c:
+                {
+                    if (run.Phase != RunPhases.RelicReward || run.RelicOptions == null)
+                        throw new InvalidOperationException("レリック報酬フェーズではない");
+                    string? relicId = (c.Index >= 0 && c.Index < run.RelicOptions.Count) ? run.RelicOptions[c.Index] : null;
+                    if (relicId == null) throw new InvalidOperationException($"不正なレリック指定: {c.Index}");
+                    // 取得は GainRelic の一本道 (2026-09-12: B型・取得時一回効果・呪いの鍵・ラン内状態)
+                    RunState next = GainRelic(run with { RelicOptions = null }, relicId);
+                    // ?マスの宝箱はレリックのみでカード報酬は付かない
+                    // combat===null が「戦闘勝利を経ていない=宝箱」の判別 (AfterVictory は必ず combat を渡す)
+                    // 黒星の欠片 (2026-09-06): 強個体の3択から残りをもう1つ選べる (RelicPicksLeft は AfterVictory が立てる)
+                    int picksLeft = (run.RelicPicksLeft ?? 1) - 1;
+                    var remaining = new List<string>();
+                    foreach (var id in run.RelicOptions) if (id != relicId) remaining.Add(id);
+                    RunState after =
+                        run.Combat != null && run.CurrentElite && picksLeft > 0 && remaining.Count > 0
+                            ? next with { Phase = RunPhases.RelicReward, RelicOptions = remaining, RelicPicksLeft = picksLeft }
+                            : run.Combat == null
+                                ? next with { RelicOptions = null, Phase = RunPhases.Map }
+                                : RollRewards(next with { RelicPicksLeft = null });
+                    // 空の鳥籠・星読みの盤: 札を選んでから続きへ
+                    return EnterPendingChoice(after, after.Phase);
+                }
+
+                case RunCommand_RelicChooseCards c:
+                {
+                    if (run.Phase != RunPhases.RelicChoose || run.PendingRelicChoice == null) throw new InvalidOperationException("レリックの対象選択フェーズではない");
+                    var p = run.PendingRelicChoice;
+                    var idx = new List<int>();
+                    foreach (var i in c.Indices) if (!idx.Contains(i)) idx.Add(i);
+                    if (idx.Count > p.Count) throw new InvalidOperationException($"選べるのは{p.Count}枚まで");
+                    foreach (var i in idx) if (i < 0 || i >= run.Deck.Count) throw new InvalidOperationException("不正な対象指定");
+                    RunState next = run;
+                    if (p.Mode == "remove")
+                    {
+                        if (run.Deck.Count - idx.Count < 5) throw new InvalidOperationException("これ以上デッキを減らせない");
+                        next = next with { Deck = next.Deck.Where((_, i) => !idx.Contains(i)).ToList() };
+                    }
+                    else
+                    {
+                        // 星読みの盤: 状態異常・烙印は選べない (2026-09-24 T14)。全部を先に確かめてから変成する (途中で投げて半端に変わらない)。TS と同形
+                        foreach (var i in idx)
+                            if (!CanTransformCard(run.Deck[i])) throw new InvalidOperationException($"{run.Deck[i].Def.Name} は変成できない（状態異常・烙印は除去で消す）");
+                        foreach (var i in idx) next = TransformCardAt(next, i, true);
+                    }
+                    return next with { PendingRelicChoice = null, Phase = p.Resume };
+                }
+
+                case RunCommand_SkipRelic:
+                {
+                    if (run.Phase != RunPhases.RelicReward) throw new InvalidOperationException("レリック報酬フェーズではない");
+                    if (run.Combat == null) return run with { RelicOptions = null, Phase = RunPhases.Map };
+                    return RollRewards(run with { RelicOptions = null, RelicPicksLeft = null });
+                }
+
+                case RunCommand_CampfireRest:
+                {
+                    // 休む = 最大HPの30% (campfireRatio) を回復して次へ。鍛えるとは排他
+                    if (run.Phase != RunPhases.Campfire) throw new InvalidOperationException("焚き火フェーズではない");
+                    // 休めないレリック (古根の杯=本家 Coffee Dripper): 休むは回復なしの立ち去り
+                    bool noRest = run.Relics.Any(id => Content.GetRelicDef(id).Bonus?.NoRest == true);
+                    bool rested = run.CampfireUpgradesUsed == 0 && !noRest;
+                    // 薬研: 実際に休んだ時だけ最大HP+N (現在HPも+N)
+                    int grow = rested ? RelicBonusSum(run, "restMaxHp") : 0;
+                    int maxHp = run.MaxHp + grow;
+                    int hp = rested ? Math.Min(maxHp, run.Hp + grow + JsFloor(run.MaxHp * run.CampfireRatio)) : run.Hp;
+                    return run with { Hp = hp, MaxHp = maxHp, Phase = RunPhases.Map };
+                }
+
+                case RunCommand_CampfireUpgrade c:
+                {
+                    if (run.Phase != RunPhases.Campfire) throw new InvalidOperationException("焚き火フェーズではない");
+                    var card = (c.Index >= 0 && c.Index < run.Deck.Count) ? run.Deck[c.Index] : null;
+                    if (card == null) throw new InvalidOperationException($"不正な強化指定: {c.Index}");
+                    if (Upgrade.IsUpgraded(card)) throw new InvalidOperationException("すでに鍛えられている");
+                    // 融合の鎚 (2026-09-12 本家 Fusion Hammer): 焚き火では鍛えられない
+                    if (RelicFlag(run, "noForge")) throw new InvalidOperationException("融合の鎚を持っている間、焚き火では鍛えられない");
+                    // 強化不可札 (上限ランプ) を受理して「+」だけ付ける事故の再発防止
+                    if (Upgrade.UpgradeTier(card.Def) == Upgrade.UpgradeTiers.None)
+                    {
+                        throw new InvalidOperationException($"{card.Def.Name} は鍛えられない (エナジー上限を上げる札は強化対象外)");
+                    }
+                    // 鍛冶の砥石: 追加回数のぶん焚き火に留まり、もう1枚鍛えられる (1幕に1回だけ)
+                    int used = run.CampfireUpgradesUsed + 1;
+                    int allowed = CampfireForgeAllowed(run);
+                    return run with
+                    {
+                        Deck = run.Deck.Select((x, i) => i == c.Index ? Upgrade.UpgradeCard(x) : x).ToList(),
+                        CampfireUpgradesUsed = used,
+                        ForgeBonusUsedAct = used > 1 ? run.Act : run.ForgeBonusUsedAct,
+                        Phase = used < allowed ? RunPhases.Campfire : RunPhases.Map,
+                    };
+                }
+
+                case RunCommand_WorkshopFuse c:
+                {
+                    if (run.Phase != RunPhases.Workshop) throw new InvalidOperationException("工房フェーズではない");
+                    var a = (c.IndexA >= 0 && c.IndexA < run.Deck.Count) ? run.Deck[c.IndexA] : null;
+                    var b = (c.IndexB >= 0 && c.IndexB < run.Deck.Count) ? run.Deck[c.IndexB] : null;
+                    if (a == null || b == null) throw new InvalidOperationException("不正な合成指定");
+                    var reason = Fusion.FuseBlockReason(a, b);
+                    if (reason != null) throw new InvalidOperationException($"合成できない: {reason}");
+                    int price = WorkshopFusePrice(run);
+                    if (run.Gold < price) throw new InvalidOperationException($"ゴールドが足りない (合成{price}G・所持{run.Gold}G)");
+                    var fusedDef = Fusion.FuseCards(a, b);
+                    int usedBefore = run.WorkshopFusesUsed ?? 0;
+                    var fused = new CardInstance { Uid = $"fused_a{run.Act}_r{run.Row}_{(usedBefore > 0 ? usedBefore + "_" : "")}{fusedDef.Id}", Def = fusedDef };
+                    // 鍛冶の火種 (2026-09-12): 合成した札は鍛えた状態になる (素材の鍛えの引き継ぎとは別口。二重鍛えはしない)
+                    fused = fused with { Def = WorkshopFuseResult(run, a, b, fusedDef) };
+                    // 素材2枚はデッキから消え、合成札1枚が入る = 圧縮と強化が同時に起きる
+                    var deck = run.Deck.Where((_, i) => i != c.IndexA && i != c.IndexB).ToList();
+                    // 職人の手袋 (2026-09-12): 1回の訪問で 1+N 回合成できる
+                    int used = usedBefore + 1;
+                    int allowed = 1 + RelicBonusSum(run, "workshopFuses");
+                    return run with { Deck = Append(deck, fused), Gold = run.Gold - price, WorkshopFusesUsed = used, Phase = used < allowed ? RunPhases.Workshop : RunPhases.Map };
+                }
+
+                case RunCommand_WorkshopSkip:
+                {
+                    if (run.Phase != RunPhases.Workshop) throw new InvalidOperationException("工房フェーズではない");
+                    return run with { Phase = RunPhases.Map };
+                }
+
+                case RunCommand_CampfireRemove c:
+                {
+                    if (run.Phase != RunPhases.Campfire) throw new InvalidOperationException("焚き火フェーズではない");
+                    // 除去はショップ専売。唯一の例外 = 安らぎの煙管 (2026-09-12 本家 Peace Pipe。休む/鍛えると排他)
+                    if (!RelicFlag(run, "campfireRemove")) throw new InvalidOperationException("焚き火では除去できない (除去はショップのみ。焚き火は 休む/鍛える の二択)");
+                    if (run.CampfireUpgradesUsed > 0) throw new InvalidOperationException("この焚き火ではもう鍛えた (取り除くのは休む/鍛えると排他)");
+                    var card = (c.Index >= 0 && c.Index < run.Deck.Count) ? run.Deck[c.Index] : null;
+                    if (card == null) throw new InvalidOperationException($"不正な除去指定: {c.Index}");
+                    if (run.Deck.Count <= 5) throw new InvalidOperationException("これ以上デッキを減らせない");
+                    return run with { Deck = run.Deck.Where((_, i) => i != c.Index).ToList(), Phase = RunPhases.Map };
+                }
+
+                case RunCommand_CampfireDig:
+                {
+                    if (run.Phase != RunPhases.Campfire) throw new InvalidOperationException("焚き火フェーズではない");
+                    // 発掘の鶴嘴 (2026-09-12 本家 Shovel): レリックを1個掘る (宝箱と同じ層。休む/鍛えると排他)
+                    if (!RelicFlag(run, "campfireDig")) throw new InvalidOperationException("発掘の鶴嘴が無い");
+                    if (run.CampfireUpgradesUsed > 0) throw new InvalidOperationException("この焚き火ではもう鍛えた (発掘は休む/鍛えると排他)");
+                    var (drawn, rng) = DrawRelicOptions(run, RelicSources.Chest, 1);
+                    RunState next = run with { Rng = rng, Phase = RunPhases.Map };
+                    if (drawn.Count > 0) next = GainRelic(next, drawn[0]);
+                    return EnterPendingChoice(next, RunPhases.Map);
+                }
+
+                case RunCommand_CampfireTrain:
+                {
+                    if (run.Phase != RunPhases.Campfire) throw new InvalidOperationException("焚き火フェーズではない");
+                    // 重石 (2026-09-12 本家 Girya): 鍛錬=以後の戦闘開始時の成長+1 (N回まで。休む/鍛えると排他)
+                    var opt = CampfireOptions(run);
+                    if (opt.TrainLeft <= 0) throw new InvalidOperationException("鍛錬できない (重石が無いか、もう鍛錬し尽くした)");
+                    if (run.CampfireUpgradesUsed > 0) throw new InvalidOperationException("この焚き火ではもう鍛えた (鍛錬は休む/鍛えると排他)");
+                    return WithRelicState(run, "train", RelicStateOf(run, "train") + 1) with { Phase = RunPhases.Map };
+                }
+
+                case RunCommand_ShopBuyCard c:
+                {
+                    if (run.Phase != RunPhases.Shop || run.Shop == null) throw new InvalidOperationException("ショップではない");
+                    var item = (c.Index >= 0 && c.Index < run.Shop.Cards.Count) ? run.Shop.Cards[c.Index] : null;
+                    if (item == null) throw new InvalidOperationException($"不正な商品指定: {c.Index}");
+                    if (item.Sold == true) throw new InvalidOperationException("その商品は売り切れ");
+                    if (run.Gold < item.Price) throw new InvalidOperationException($"ゴールドが足りない ({item.Price}G)");
+                    var card = new CardInstance { Uid = $"buy_a{run.Act}_r{run.Row}_{item.Id}", Def = Content.GetCardDef(item.Id) };
+                    return AddCardsToRunDeck(
+                        BreakMawBank(run with
+                        {
+                            Gold = run.Gold - item.Price,
+                            Picks = Append(run.Picks, item.Id),
+                            // index を詰めない = 売切マーク
+                            Shop = run.Shop with
+                            {
+                                Cards = run.Shop.Cards.Select((x, i) => i == c.Index ? x with { Sold = true } : x).ToList(),
+                            },
+                        }),
+                        new List<CardInstance> { card }); // 卵 (2026-09-12) はここで乗る
+                }
+
+                case RunCommand_ShopBuyRelic:
+                {
+                    if (run.Phase != RunPhases.Shop || run.Shop == null) throw new InvalidOperationException("ショップではない");
+                    if (run.Shop.RelicId == null) throw new InvalidOperationException("レリックの在庫がない");
+                    if (run.Gold < run.Shop.RelicPrice) throw new InvalidOperationException($"ゴールドが足りない ({run.Shop.RelicPrice}G)");
+                    string relicId = run.Shop.RelicId;
+                    RunState next = GainRelic(
+                        BreakMawBank(run with
+                        {
+                            Gold = run.Gold - run.Shop.RelicPrice,
+                            Shop = run.Shop with { RelicId = null },
+                        }),
+                        relicId);
+                    // 会員証をその店で買ったら、まだ売れていない在庫もその場で値下げする
+                    var ratio = Content.GetRelicDef(relicId).Bonus?.ShopPriceRatio;
+                    if (ratio != null && ratio.Value != 1 && next.Shop != null)
+                    {
+                        next = next with
+                        {
+                            Shop = next.Shop with
+                            {
+                                Cards = next.Shop.Cards.Select(x => x.Sold == true ? x : x with { Price = JsFloor(x.Price * ratio.Value) }).ToList(),
+                            },
+                        };
+                    }
+                    return EnterPendingChoice(next, RunPhases.Shop);
+                }
+
+                case RunCommand_ShopRemove c:
+                {
+                    if (run.Phase != RunPhases.Shop || run.Shop == null) throw new InvalidOperationException("ショップではない");
+                    int price = ShopRemovalPrice(run);
+                    if (run.Gold < price) throw new InvalidOperationException($"ゴールドが足りない ({price}G)");
+                    var card = (c.Index >= 0 && c.Index < run.Deck.Count) ? run.Deck[c.Index] : null;
+                    if (card == null) throw new InvalidOperationException($"不正な除去指定: {c.Index}");
+                    if (run.Deck.Count <= 5) throw new InvalidOperationException("これ以上デッキを減らせない");
+                    return BreakMawBank(run with
+                    {
+                        Gold = run.Gold - price,
+                        Deck = run.Deck.Where((_, i) => i != c.Index).ToList(),
+                        RemovalCount = run.RemovalCount + 1,
+                    });
+                }
+
+                case RunCommand_ShopUpgrade c:
+                {
+                    if (run.Phase != RunPhases.Shop || run.Shop == null) throw new InvalidOperationException("ショップではない");
+                    int price = ShopUpgradePrice(run);
+                    if (run.Gold < price) throw new InvalidOperationException($"ゴールドが足りない ({price}G)");
+                    var card = (c.Index >= 0 && c.Index < run.Deck.Count) ? run.Deck[c.Index] : null;
+                    if (card == null) throw new InvalidOperationException($"不正な強化指定: {c.Index}");
+                    if (Upgrade.IsUpgraded(card)) throw new InvalidOperationException("すでに鍛えられている");
+                    if (Upgrade.UpgradeTier(card.Def) == Upgrade.UpgradeTiers.None)
+                    {
+                        throw new InvalidOperationException($"{card.Def.Name} は鍛えられない (エナジー上限を上げる札は強化対象外)");
+                    }
+                    return BreakMawBank(run with
+                    {
+                        Gold = run.Gold - price,
+                        Deck = run.Deck.Select((x, i) => i == c.Index ? Upgrade.UpgradeCard(x) : x).ToList(),
+                        UpgradeCount = run.UpgradeCount + 1,
+                    });
+                }
+
+                case RunCommand_ShopLeave:
+                {
+                    if (run.Phase != RunPhases.Shop) throw new InvalidOperationException("ショップではない");
+                    return run with { Shop = null, Phase = RunPhases.Map };
+                }
+
+                case RunCommand_EventChoice c:
+                {
+                    if (run.Phase != RunPhases.Event) throw new InvalidOperationException("イベントではない");
+                    return ApplyEventChoice(run, c.Index, c.CardIndex);
+                }
+
+                default:
+                    // 未知のコマンドは throw。旧実装は switch を素通りして undefined を返し、セーブを破壊した
+                    throw new InvalidOperationException($"未知のランコマンド: {command.Type}");
+            }
+        }
+    }
+}

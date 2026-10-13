@@ -1,0 +1,13 @@
+{
+  "baseCommit": "ccdce85d60a43dd6c7aedc7c8a455451233e7b90",
+  "productionMvid": "9bc32039-318c-4ab7-a7b4-326a8861b098",
+  "productionDllSha256": "f0e5cd32373b0c86ddfa9a8b4aa8ae8f28ceb18aacb70d28b6b8a7c3f38000db",
+  "productionQaTypesAbsent": true,
+  "buildErrors": 0,
+  "buildWarnings": 15,
+  "nativeCandidateMvid": "176a35d4-6214-4099-af3c-3e8aa99bded7",
+  "nativeCandidateDllSha256": "23d7a3375bb25adbaca6ae4f465ed2f1827369a4acca01f59fe1ff11230ef0b2",
+  "qaStrippedSourceExact": true,
+  "nativeModuleIsInstrumented": true,
+  "originalEngineFilesUnchanged": 25
+}

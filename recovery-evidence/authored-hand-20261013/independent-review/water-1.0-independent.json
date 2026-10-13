@@ -1,0 +1,35 @@
+{
+  "style": "water",
+  "textScale": "1.0",
+  "assertions": 5329,
+  "passed": true,
+  "admissionProcessFrame": 126,
+  "firstPositiveNativeElapsedByPhase": {
+    "process-before-node-update": {
+      "relativeFrame": 1,
+      "elapsed": 0.016666666666666666
+    },
+    "post-draw": {
+      "relativeFrame": 0,
+      "elapsed": 0.016666666666666666
+    }
+  },
+  "createProcessFrame": 126,
+  "completionProcessFrame": 132,
+  "treeRemovalProcessFrame": 132,
+  "duration": 0.10000000149011612,
+  "tailSeconds": 1.5666652,
+  "sourceHashes": {
+    "unity-parity-20261013/authored-hand-native/baseline-water-1.0/hand-native-trace/trace.jsonl": "540db404bff576eb6a74ffbd6ef2e73beeec2ba3066d1b8191529b5c6d125f76",
+    "unity-parity-20261013/authored-hand-native/baseline-water-1.0/hand-native-trace/capture-status.json": "3b4e8cd9444a119b3548ff4b4381dcecee105e3f6863df4c4af5e1971566c9f6",
+    "unity-parity-20261013/authored-hand-native/baseline-water-1.0/hand-native-trace/final.save.json": "7cb70d19c35410988ba74cdce3372f740fa483c6c076e9c1319bf271695421dc",
+    "unity-parity-20261013/authored-hand-native/candidate-water-1.0/hand-native-trace/trace.jsonl": "b3e8ada99351b14613e6d1328388c7cab14581ae7c8c98c29f8d545bc474d820",
+    "unity-parity-20261013/authored-hand-native/candidate-water-1.0/hand-native-trace/capture-status.json": "0fc1d183632d56c50a8c32869679beaa1d67f2d7338001e0331e700a2152b531",
+    "unity-parity-20261013/authored-hand-native/candidate-water-1.0/hand-native-trace/final.save.json": "7cb70d19c35410988ba74cdce3372f740fa483c6c076e9c1319bf271695421dc"
+  },
+  "limits": [
+    "No baseline property-setter callback or allocator-destruction claim",
+    "No pointer, stale-race, exhaust or live-host cadence acceptance from scheduled fixed60 commands",
+    "Source trajectory is checked separately by the original analyzer and reviewed native pixels"
+  ]
+}

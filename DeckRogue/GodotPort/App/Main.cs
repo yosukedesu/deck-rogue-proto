@@ -80,6 +80,7 @@ public class Main : Node
         _ui.SetIncomingContactProjection(_stage.GetPresentedIncomingAmount);
         _ui.SetLeaderProjection(_stage.ProjectLeaderFeet);
         _ui.SetCardRetirement(id => (double)_stage.GetCardRetirementSeconds(id));
+        _ui.SetAdmittedAuthoredHandStyle(_stage.GetAdmittedAuthoredHandStyle);
         _stage.SetEnemyLedgerBounds(_ui.GetEnemyLedgerBounds);
         _stage.SetSourceCombatTextHost(overlay, () => _ui.SourceCombatTextMetrics);
 		_stage.PresentationCompleted += _ui.PresentationCompleted;

@@ -1,0 +1,94 @@
+{
+  "style": "stomp",
+  "scale": "1.0",
+  "unchangedActorContactStateFields": [
+    "actors",
+    "contacts",
+    "camera",
+    "energy",
+    "heroHp",
+    "enemyHp",
+    "Revision",
+    "InputLocked",
+    "IsPresenting",
+    "clock",
+    "ActiveMotionCount",
+    "ActiveEffectCount",
+    "SourceCastLightStrength",
+    "SourceCombatFloatCount",
+    "SourceCombatFloatsCreated",
+    "LastSourceCombatFloatText"
+  ],
+  "differences": [],
+  "runs": [
+    {
+      "run": "baseline-stomp-1.0",
+      "pngHashes": true,
+      "consecutive140": true,
+      "lastNumericClock": 2.466665,
+      "finalClock": 3.9333303,
+      "settled": true,
+      "postContactSeconds": 1.4666653000000003,
+      "scope": "fixed60 native process/draw, not live performance"
+    },
+    {
+      "run": "candidate-stomp-1.0",
+      "pngHashes": true,
+      "consecutive140": true,
+      "lastNumericClock": 2.466665,
+      "finalClock": 3.9333303,
+      "settled": true,
+      "postContactSeconds": 1.4666653000000003,
+      "scope": "fixed60 native process/draw, not live performance"
+    }
+  ],
+  "traceAnalysis": {
+    "baseline": {
+      "schema": "hand-native-checks/1",
+      "observedChecksPass": true,
+      "issues": [],
+      "authored": [],
+      "hoverAndReturn": [],
+      "processRows": 230,
+      "drawRows": 231,
+      "staleAttemptRows": [],
+      "staleRaceCoverage": "NOT_EXERCISED",
+      "nativeAcceptance": "NOT_AUTOMATICALLY_GRANTED",
+      "baselineFirstSetterCallback": "UNOBSERVABLE_WITHOUT_CHANGING_PROPERTY_TWEENER; first positive native elapsed is a separate readback gate"
+    },
+    "candidate": {
+      "schema": "hand-native-checks/1",
+      "observedChecksPass": true,
+      "issues": [],
+      "authored": [
+        {
+          "owner": 8,
+          "uid": "authored-stomp-played-001",
+          "tile": 74121743449,
+          "duration": 0.10000000149011612,
+          "createFrame": 126,
+          "firstActualCallbackFrame": 126,
+          "completeFrame": 132,
+          "cancelFrame": null
+        }
+      ],
+      "hoverAndReturn": [],
+      "processRows": 230,
+      "drawRows": 231,
+      "staleAttemptRows": [],
+      "staleRaceCoverage": "NOT_EXERCISED",
+      "nativeAcceptance": "NOT_AUTOMATICALLY_GRANTED",
+      "baselineFirstSetterCallback": "UNOBSERVABLE_WITHOUT_CHANGING_PROPERTY_TWEENER; first positive native elapsed is a separate readback gate"
+    },
+    "pairIssues": [],
+    "observedPairChecksPass": true,
+    "fullNativeAcceptance": "PENDING_RUNTIME_REVIEW",
+    "firstNativeStep": "Compare baseline-first-positive-native-elapsed with candidate native elapsed at the same observation phase. Never label it the baseline setter callback.",
+    "absoluteAdmissionFrames": {
+      "baseline": 126,
+      "candidate": 126
+    },
+    "fullFinalRunMatchesOriginalEngineExpected": true
+  },
+  "visualAndPointerAcceptance": "separate owner review and actual-pointer window"
+}

@@ -1,0 +1,8 @@
+{
+  "command": {
+    "cardUid": "authored-water-played-001",
+    "targetIndex": 0,
+    "type": "PlayCard"
+  },
+  "type": "Combat"
+}

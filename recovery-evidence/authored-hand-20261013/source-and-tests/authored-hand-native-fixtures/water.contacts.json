@@ -1,0 +1,61 @@
+[
+  {
+    "cardId": "blue_strike",
+    "type": "CardPlayed"
+  },
+  {
+    "presentationReceipt": {
+      "version": 1,
+      "target": "enemy",
+      "enemyIndex": 0,
+      "enemyId": "enemy_mudling",
+      "before": {
+        "hp": 1000,
+        "maxHp": 1000,
+        "block": 0
+      },
+      "after": {
+        "hp": 995,
+        "maxHp": 1000,
+        "block": 0
+      }
+    },
+    "source": "player",
+    "amount": 5,
+    "hpLoss": 5,
+    "enemyIndex": 0,
+    "presentationSource": {
+      "kind": "card",
+      "definitionId": "blue_strike",
+      "uid": "authored-water-played-001"
+    },
+    "type": "DamageDealt"
+  },
+  {
+    "count": 1,
+    "cards": [
+      "氷盾"
+    ],
+    "type": "CardsDrawn"
+  },
+  {
+    "presentationReceipt": {
+      "version": 1,
+      "target": "player",
+      "before": {
+        "hp": 65,
+        "maxHp": 65,
+        "block": 0,
+        "iceBlock": 0
+      },
+      "after": {
+        "hp": 65,
+        "maxHp": 65,
+        "block": 0,
+        "iceBlock": 1
+      }
+    },
+    "amount": 1,
+    "type": "IceBlockGained"
+  }
+]

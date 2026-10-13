@@ -1,0 +1,38 @@
+{
+  "schema": "authored-hand-retirement/1",
+  "baseline_commit": "3df4d5a",
+  "requires": "hand-exit-return-patch",
+  "runtime_applied": false,
+  "baselines": [
+    {
+      "name": "GameUI.HandExit.cs",
+      "sha256": "de835bb6fcf001c2470f2a3cb7b118463ffd29a375a31b7e546060e62f9fc4e8"
+    },
+    {
+      "name": "GameUI.RecoveredBattle.cs",
+      "sha256": "efd17f6678d2c46051adda06e69413ce0e77ecf0584feb16710a276cbcb44499"
+    },
+    {
+      "name": "GameUI.cs",
+      "sha256": "e4d30dc8ad470850d3930e5fe11fcbf2fa834b8091123252ebeaf5cc80a442fc"
+    },
+    {
+      "name": "Main.cs",
+      "sha256": "c72ea945f617c82c17daa72f53a96e74e0f200d327edfd829c2110d7420fc4ca"
+    }
+  ],
+  "payload": [
+    {
+      "path": "DeckRogue/GodotPort/Presentation/BattleStage.AuthoredHandRetirement.cs",
+      "sha256": "25c8c50449ac25b9154a15fe7c8000fe1d4532e51b6817cd7787799f82009614"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.AuthoredHandRetirement.cs",
+      "sha256": "6f82e222cae04258c5537536e4e83f9bb5dd990a668e52ddcc9bc7ab17ded480"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/SourceAuthoredHandRetirement.cs",
+      "sha256": "8e08ac18f60fc1383801609339db679050e0e017d302eac75e43e28a51712a06"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "hand-native-qa-overlay/1",
+  "testOnly": true,
+  "authoredCandidate": true,
+  "requiredDefines": [
+    "RECOVERY_QA",
+    "HAND_NATIVE_TRACE"
+  ],
+  "changes": [
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.cs",
+      "beforeSha256": "715caae0d0030b767b37c8ed287c75afc5fd23b7b5ffdbe3e87afb6c8d884bd1",
+      "afterSha256": "0e6bbcca259025d25f273e6c2c93ed9104c63ce9ffee4bc16ee0009d0d22938b",
+      "productionStrippedSha256": "715caae0d0030b767b37c8ed287c75afc5fd23b7b5ffdbe3e87afb6c8d884bd1"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.HandExit.cs",
+      "beforeSha256": "f07807110392688ae5c426a8c3fde61463b28a84220810c4c1676f8fb61c3076",
+      "afterSha256": "e153171e61c2f40f70701924b26fdd11fe6676846e626eae79284fb83b12e639",
+      "productionStrippedSha256": "f07807110392688ae5c426a8c3fde61463b28a84220810c4c1676f8fb61c3076"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.AuthoredHandRetirement.cs",
+      "beforeSha256": "6f82e222cae04258c5537536e4e83f9bb5dd990a668e52ddcc9bc7ab17ded480",
+      "afterSha256": "e02e9b97c72d63106218dafc7ac540eae9fd3a3f52628733608120ec42303839",
+      "productionStrippedSha256": "6f82e222cae04258c5537536e4e83f9bb5dd990a668e52ddcc9bc7ab17ded480"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/GameUI.HandHover.cs",
+      "beforeSha256": "eea46c0b1f3e90937165b96e91d8e310b9604cbda72633612219f6e66f5f554f",
+      "afterSha256": "ad466d41024a3a060a5cb366dbc74cabc394311ac4620ef6c5c6a5a6c3d15966",
+      "productionStrippedSha256": "eea46c0b1f3e90937165b96e91d8e310b9604cbda72633612219f6e66f5f554f"
+    },
+    {
+      "path": "DeckRogue/GodotPort/UI/CardTile.cs",
+      "beforeSha256": "e92364e1aa9d42cb3a08c31dcb245a5e24a64eb361b76d790cb6143f5f6d029e",
+      "afterSha256": "f7447434308ab8ca9da8e91ef9c9c790808889a9c10932ee05219324595a8c1f",
+      "productionStrippedSha256": "e92364e1aa9d42cb3a08c31dcb245a5e24a64eb361b76d790cb6143f5f6d029e"
+    },
+    {
+      "path": "recovery-validation/UnityParitySequenceQa.cs",
+      "beforeSha256": "d8b1bd7e377e480c6d6fa1dec9a2aa44cd46c9847ac9bff475a10239c5d99519",
+      "afterSha256": "56dcd736710cbfdfa650496d1a0a04c97b7b5625a10baaa0e5dcdca42919c14f",
+      "productionStrippedSha256": "d8b1bd7e377e480c6d6fa1dec9a2aa44cd46c9847ac9bff475a10239c5d99519"
+    },
+    {
+      "path": "recovery-validation/UnityUiManualQa.cs",
+      "beforeSha256": "26e858bafdf0941cddf62fe94e5fe86f6fc310dc9a0611ac96c65250e08139de",
+      "afterSha256": "32983bb61778417158074f58f16438991fb19b82863411cd2881d934dfcca7ce",
+      "productionStrippedSha256": "26e858bafdf0941cddf62fe94e5fe86f6fc310dc9a0611ac96c65250e08139de"
+    },
+    {
+      "path": "recovery-validation/HandNativeTrace.cs",
+      "newFile": true,
+      "afterSha256": "2f8a845b4a6e454466f4b3312ae96dbaef504dc053af94c53f0562cf3da61741"
+    }
+  ]
+}

@@ -1,0 +1,248 @@
+{
+  "schema": "authored-hand-native-capture-gates/1",
+  "status": "NOT RUN; requirements only",
+  "scope": [
+    "green_strike",
+    "blue_strike",
+    "green_finisher_stomp"
+  ],
+  "nativePrerequisites": [
+    "baseline=current accepted ordinary/return batch",
+    "candidate=baseline+guarded authored follow-on",
+    "SourceShowcaseEnabled=true",
+    "proper source leader per fixture",
+    "source/data/assembly/fixture/actions hashes recorded",
+    "read-only observer installed by runtime owner, not this fixture lane"
+  ],
+  "matrix": [
+    {
+      "style": "slash",
+      "card": "green_strike",
+      "leader": "leader_green",
+      "textScale": 1,
+      "layout": "reference-phone",
+      "baselineAndCandidate": true,
+      "fixture": "slash.save.json",
+      "actions": "slash.actions.json",
+      "dispatchFrame": 30,
+      "expectedLoadRevision": 1,
+      "expectedCommandRevision": 2,
+      "expectedFreshUiEpoch": 1,
+      "epochRequiresNativeReadback": true,
+      "target": 0,
+      "uid": "authored-slash-played-001",
+      "nativeAcceptance": "NOT RUN"
+    },
+    {
+      "style": "slash",
+      "card": "green_strike",
+      "leader": "leader_green",
+      "textScale": 1.3,
+      "layout": "reference-phone",
+      "baselineAndCandidate": true,
+      "fixture": "slash.save.json",
+      "actions": "slash.actions.json",
+      "dispatchFrame": 30,
+      "expectedLoadRevision": 1,
+      "expectedCommandRevision": 2,
+      "expectedFreshUiEpoch": 1,
+      "epochRequiresNativeReadback": true,
+      "target": 0,
+      "uid": "authored-slash-played-001",
+      "nativeAcceptance": "NOT RUN"
+    },
+    {
+      "style": "water",
+      "card": "blue_strike",
+      "leader": "leader_blue",
+      "textScale": 1,
+      "layout": "reference-phone",
+      "baselineAndCandidate": true,
+      "fixture": "water.save.json",
+      "actions": "water.actions.json",
+      "dispatchFrame": 30,
+      "expectedLoadRevision": 1,
+      "expectedCommandRevision": 2,
+      "expectedFreshUiEpoch": 1,
+      "epochRequiresNativeReadback": true,
+      "target": 0,
+      "uid": "authored-water-played-001",
+      "nativeAcceptance": "NOT RUN"
+    },
+    {
+      "style": "water",
+      "card": "blue_strike",
+      "leader": "leader_blue",
+      "textScale": 1.3,
+      "layout": "reference-phone",
+      "baselineAndCandidate": true,
+      "fixture": "water.save.json",
+      "actions": "water.actions.json",
+      "dispatchFrame": 30,
+      "expectedLoadRevision": 1,
+      "expectedCommandRevision": 2,
+      "expectedFreshUiEpoch": 1,
+      "epochRequiresNativeReadback": true,
+      "target": 0,
+      "uid": "authored-water-played-001",
+      "nativeAcceptance": "NOT RUN"
+    },
+    {
+      "style": "stomp",
+      "card": "green_finisher_stomp",
+      "leader": "leader_green",
+      "textScale": 1,
+      "layout": "reference-phone",
+      "baselineAndCandidate": true,
+      "fixture": "stomp.save.json",
+      "actions": "stomp.actions.json",
+      "dispatchFrame": 30,
+      "expectedLoadRevision": 1,
+      "expectedCommandRevision": 2,
+      "expectedFreshUiEpoch": 1,
+      "epochRequiresNativeReadback": true,
+      "target": 0,
+      "uid": "authored-stomp-played-001",
+      "nativeAcceptance": "NOT RUN"
+    },
+    {
+      "style": "stomp",
+      "card": "green_finisher_stomp",
+      "leader": "leader_green",
+      "textScale": 1.3,
+      "layout": "reference-phone",
+      "baselineAndCandidate": true,
+      "fixture": "stomp.save.json",
+      "actions": "stomp.actions.json",
+      "dispatchFrame": 30,
+      "expectedLoadRevision": 1,
+      "expectedCommandRevision": 2,
+      "expectedFreshUiEpoch": 1,
+      "epochRequiresNativeReadback": true,
+      "target": 0,
+      "uid": "authored-stomp-played-001",
+      "nativeAcceptance": "NOT RUN"
+    }
+  ],
+  "requiredBoundaryObservations": {
+    "beforeDispatch": [
+      "recordFrame29 PNG",
+      "expected full save loaded at revision1",
+      "hand settled",
+      "epoch",
+      "tile UID/definition ID/instance",
+      "target alive",
+      "actual discard anchor geometry",
+      "SourceShowcaseEnabled",
+      "leader art"
+    ],
+    "admission": [
+      "recordFrame30",
+      "cloned outer/inner command identities",
+      "exact accepted SessionChange reference in Stage owner registry",
+      "revision2",
+      "previous hand matching UID+definition",
+      "current hand/set/permanent/exhaust/discard memberships",
+      "epoch",
+      "tile object",
+      "captured duration",
+      "captured unit/canvas",
+      "frozen discard center"
+    ],
+    "retirement": [
+      "removal frame",
+      "Tween creation frame",
+      "Tween first native sample frame",
+      "Tween elapsed+duration+normalized progress each sample",
+      "tile instance ID/UID/position/scale/rotation/alpha",
+      "completion callback frame",
+      "QueueFree frame",
+      "actual deletion frame",
+      "start/complete/cancel counters"
+    ],
+    "contact": [
+      "actor launch frame/time",
+      "numeric contact frame/time/revision",
+      "numeric original event identity/source UID/receipt",
+      "accepted/rejected receipt counts",
+      "original cue/command count",
+      "input lock transitions"
+    ],
+    "settled": [
+      "full RunState equals expected-after",
+      "run+combat RNG",
+      "queue empty",
+      "exact played tile gone",
+      "sibling still present",
+      "zero active and pending authored retirements",
+      "at least0.9 presentation seconds after final numeric contact"
+    ]
+  },
+  "pairwiseMustMatchExactly": [
+    "admission/removal/Tween creation frames",
+    "native first retirement sample frame",
+    "captured original duration",
+    "completion callback/QueueFree/deletion frames",
+    "actor launch/contact frame and revision",
+    "event receipts and cues",
+    "full RunState/RNG",
+    "command count",
+    "input fence transitions"
+  ],
+  "candidateDiscardSample": {
+    "progress": "t=clamp(actual native normalized Tween sample,0,1)",
+    "position": "lerp(captured actual From, frozen hand-space discard-center-minus-pivot, t<.5 ? 2*t*t : 1-(-2*t+2)^2/2)",
+    "scale": "lerp(captured actual FromScale, Vector2.One*(.30*capturedUnit), t*t)",
+    "alpha": "t<.7 ? 1 : clamp(1-(t-.7)/.3,0,1)",
+    "rotation": "captured original, unchanged",
+    "requiredScreenshots": [
+      "last sample below0.7",
+      "first sample at/above0.7",
+      "completion/deletion boundary",
+      "preceding and first actual numeric contact"
+    ]
+  },
+  "pointerGate": {
+    "schedule": "idle.actions.json",
+    "generatedByPackage": false,
+    "required": [
+      "pointer down exact played UID",
+      "drag payload same UID+current epoch",
+      "drop target0",
+      "one cloned command",
+      "descriptor UID/tile instance same as pointer owner"
+    ],
+    "status": "PENDING"
+  },
+  "observerGapsInCurrentSequenceQa": [
+    "tile alpha",
+    "tile instance ID",
+    "UI epoch",
+    "frozen admission plan and destination",
+    "Tween creation/first/completion/elapsed trace",
+    "exact cloned command identity",
+    "authored retirement counters",
+    "rejected receipt counters",
+    "original command count",
+    "full final RunState/RNG"
+  ],
+  "excludedCoverage": [
+    "exhaust branch (unestablished same-ID original-engine route)",
+    "cost-exhaust sibling removal",
+    "queued multi-command ownership",
+    "play during deal",
+    "reset/resize/route/modal cancellation",
+    "reshuffle same-UID replacement",
+    "missing-anchor fallback",
+    "generic/set/permanent and showcase-disabled unchanged controls"
+  ],
+  "prohibitedShortcuts": [
+    "derive first sample from alpha",
+    "invent an exhaust definition or after-state mutation",
+    "relocate contact",
+    "insert duration padding or Tween interval",
+    "extend input lock",
+    "count event+numeric notification as two receipts",
+    "treat capture results.passed as this acceptance verdict"
+  ]
+}

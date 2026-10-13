@@ -1,0 +1,12 @@
+All operations below target a temporary off-tree copy of the live 3df4d5a source. No live writes.
+ui-parity-restoration-20261013/hand-exit-return-patch/apply.py ['--apply']
+Applied 3 files. Build, token/ledger, and unrelated source preserved.
+
+ui-parity-restoration-20261013/authored-hand-retirement-patch/apply.py []
+Guarded only 7 files. Build, token/ledger, and unrelated source preserved.
+
+ui-parity-restoration-20261013/authored-hand-retirement-patch/apply.py ['--apply']
+Applied 7 files. Build, token/ledger, and unrelated source preserved.
+
+ui-parity-restoration-20261013/authored-hand-retirement-patch/apply.py []
+Guarded only 0 files. Build, token/ledger, and unrelated source preserved.

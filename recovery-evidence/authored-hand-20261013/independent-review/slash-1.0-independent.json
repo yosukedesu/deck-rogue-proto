@@ -1,0 +1,35 @@
+{
+  "style": "slash",
+  "textScale": "1.0",
+  "assertions": 5327,
+  "passed": true,
+  "admissionProcessFrame": 126,
+  "firstPositiveNativeElapsedByPhase": {
+    "process-before-node-update": {
+      "relativeFrame": 1,
+      "elapsed": 0.016666666666666666
+    },
+    "post-draw": {
+      "relativeFrame": 0,
+      "elapsed": 0.016666666666666666
+    }
+  },
+  "createProcessFrame": 126,
+  "completionProcessFrame": 131,
+  "treeRemovalProcessFrame": 131,
+  "duration": 0.09099999815225601,
+  "tailSeconds": 1.6833317,
+  "sourceHashes": {
+    "unity-parity-20261013/authored-hand-native/baseline-slash-1.0/hand-native-trace/trace.jsonl": "928b03d65951f0a5de7e5a41976754f5402ed6934400e6c0690da43651852b70",
+    "unity-parity-20261013/authored-hand-native/baseline-slash-1.0/hand-native-trace/capture-status.json": "94a9bd3bd5e789a3912ddc3768c56e01bd69c6ea3c6a89de8fcde207d0c9119f",
+    "unity-parity-20261013/authored-hand-native/baseline-slash-1.0/hand-native-trace/final.save.json": "6729dc0f76ba9a68bd1e4248d2c563e6852edbd6f6a2736c0e71a96613a4488d",
+    "unity-parity-20261013/authored-hand-native/candidate-slash-1.0/hand-native-trace/trace.jsonl": "c84477be8f169b3bdc2b63ca085b667aa739e27e478357e87820e5f5d7da091d",
+    "unity-parity-20261013/authored-hand-native/candidate-slash-1.0/hand-native-trace/capture-status.json": "e4533aba259e4bd02122ab5432b073658e6bfa1b8e5bb73a5adc673d5ad77b2f",
+    "unity-parity-20261013/authored-hand-native/candidate-slash-1.0/hand-native-trace/final.save.json": "6729dc0f76ba9a68bd1e4248d2c563e6852edbd6f6a2736c0e71a96613a4488d"
+  },
+  "limits": [
+    "No baseline property-setter callback or allocator-destruction claim",
+    "No pointer, stale-race, exhaust or live-host cadence acceptance from scheduled fixed60 commands",
+    "Source trajectory is checked separately by the original analyzer and reviewed native pixels"
+  ]
+}

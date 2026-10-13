@@ -1,0 +1,927 @@
+{
+  "controls": [
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@ColorRect@732",
+      "type": "ColorRect",
+      "rect": "(0, 0), (1950, 900)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733",
+      "type": "MarginContainer",
+      "rect": "(0, 0), (1950, 900)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734",
+      "type": "VBoxContainer",
+      "rect": "(32, 32), (1886, 836)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@PanelContainer@735",
+      "type": "PanelContainer",
+      "rect": "(32, 32), (1886, 82)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@PanelContainer@735/@HFlowContainer@736",
+      "type": "HFlowContainer",
+      "rect": "(45, 41), (1860, 64)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@PanelContainer@735/@HFlowContainer@736/@Label@737",
+      "type": "Label",
+      "rect": "(45, 56), (142, 34)",
+      "text": "DECK ROGUE",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@PanelContainer@735/@HFlowContainer@736/@Button@738",
+      "type": "Button",
+      "rect": "(199, 41), (106, 64)",
+      "text": "メニュー",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@Label@739",
+      "type": "Label",
+      "rect": "(32, 124), (1886, 30)",
+      "text": "ランを放棄した",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740",
+      "type": "VBoxContainer",
+      "rect": "(32, 164), (1886, 704)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@Label@741",
+      "type": "Label",
+      "rect": "(32, 164), (1886, 44)",
+      "text": "坑へ降りる、その前に。",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@Label@742",
+      "type": "Label",
+      "rect": "(32, 220), (1886, 30)",
+      "text": "からくり式デッキ構築ローグライク · リーダーを選ぶ",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@743",
+      "type": "HBoxContainer",
+      "rect": "(32, 262), (1886, 64)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@743/@Button@744",
+      "type": "Button",
+      "rect": "(32, 262), (106, 64)",
+      "text": "読み込む",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@743/@Button@745",
+      "type": "Button",
+      "rect": "(150, 262), (66, 64)",
+      "text": "設定",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@743/@Button@746",
+      "type": "Button",
+      "rect": "(228, 262), (246, 64)",
+      "text": "保存したランのレポート",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747",
+      "type": "HBoxContainer",
+      "rect": "(32, 338), (1886, 530)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750",
+      "type": "ScrollContainer",
+      "rect": "(32, 338), (1504, 530)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751",
+      "type": "VBoxContainer",
+      "rect": "(32, 338), (1496, 939)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752",
+      "type": "HFlowContainer",
+      "rect": "(32, 338), (1496, 939)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@753",
+      "type": "PanelContainer",
+      "rect": "(32, 338), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@753/@VBoxContainer@754",
+      "type": "VBoxContainer",
+      "rect": "(45, 347), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@753/@VBoxContainer@754/@TextureRect@755",
+      "type": "TextureRect",
+      "rect": "(45, 347), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@753/@VBoxContainer@754/@Label@756",
+      "type": "Label",
+      "rect": "(45, 455), (154, 32)",
+      "text": "このは",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@753/@VBoxContainer@754/@Label@757",
+      "type": "Label",
+      "rect": "(45, 497), (154, 63)",
+      "text": "HP 80  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@753/@VBoxContainer@754/@Button@758",
+      "type": "Button",
+      "rect": "(45, 570), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@759",
+      "type": "PanelContainer",
+      "rect": "(224, 338), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@759/@VBoxContainer@760",
+      "type": "VBoxContainer",
+      "rect": "(237, 347), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@759/@VBoxContainer@760/@TextureRect@761",
+      "type": "TextureRect",
+      "rect": "(237, 347), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@759/@VBoxContainer@760/@Label@762",
+      "type": "Label",
+      "rect": "(237, 455), (154, 32)",
+      "text": "みぞれ",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@759/@VBoxContainer@760/@Label@763",
+      "type": "Label",
+      "rect": "(237, 497), (154, 63)",
+      "text": "HP 65  E 3\nドロー 6  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@759/@VBoxContainer@760/@Button@764",
+      "type": "Button",
+      "rect": "(237, 570), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@765",
+      "type": "PanelContainer",
+      "rect": "(416, 338), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@765/@VBoxContainer@766",
+      "type": "VBoxContainer",
+      "rect": "(429, 347), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@765/@VBoxContainer@766/@TextureRect@767",
+      "type": "TextureRect",
+      "rect": "(429, 347), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@765/@VBoxContainer@766/@Label@768",
+      "type": "Label",
+      "rect": "(429, 455), (154, 32)",
+      "text": "ひばな",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@765/@VBoxContainer@766/@Label@769",
+      "type": "Label",
+      "rect": "(429, 497), (154, 63)",
+      "text": "HP 75  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@765/@VBoxContainer@766/@Button@770",
+      "type": "Button",
+      "rect": "(429, 570), (154, 64)",
+      "text": "選択中",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@771",
+      "type": "PanelContainer",
+      "rect": "(608, 338), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@771/@VBoxContainer@772",
+      "type": "VBoxContainer",
+      "rect": "(621, 347), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@771/@VBoxContainer@772/@TextureRect@773",
+      "type": "TextureRect",
+      "rect": "(621, 347), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@771/@VBoxContainer@772/@Label@774",
+      "type": "Label",
+      "rect": "(621, 455), (154, 32)",
+      "text": "らいこ",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@771/@VBoxContainer@772/@Label@775",
+      "type": "Label",
+      "rect": "(621, 497), (154, 63)",
+      "text": "HP 60  E 3\nドロー 4  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@771/@VBoxContainer@772/@Button@776",
+      "type": "Button",
+      "rect": "(621, 570), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@777",
+      "type": "PanelContainer",
+      "rect": "(800, 338), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@777/@VBoxContainer@778",
+      "type": "VBoxContainer",
+      "rect": "(813, 347), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@777/@VBoxContainer@778/@TextureRect@779",
+      "type": "TextureRect",
+      "rect": "(813, 347), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@777/@VBoxContainer@778/@Label@780",
+      "type": "Label",
+      "rect": "(813, 455), (154, 32)",
+      "text": "ひなた",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@777/@VBoxContainer@778/@Label@781",
+      "type": "Label",
+      "rect": "(813, 497), (154, 63)",
+      "text": "HP 75  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@777/@VBoxContainer@778/@Button@782",
+      "type": "Button",
+      "rect": "(813, 570), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@783",
+      "type": "PanelContainer",
+      "rect": "(992, 338), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@783/@VBoxContainer@784",
+      "type": "VBoxContainer",
+      "rect": "(1005, 347), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@783/@VBoxContainer@784/@TextureRect@785",
+      "type": "TextureRect",
+      "rect": "(1005, 347), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@783/@VBoxContainer@784/@Label@786",
+      "type": "Label",
+      "rect": "(1005, 455), (154, 32)",
+      "text": "とばり",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@783/@VBoxContainer@784/@Label@787",
+      "type": "Label",
+      "rect": "(1005, 497), (154, 63)",
+      "text": "HP 75  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@783/@VBoxContainer@784/@Button@788",
+      "type": "Button",
+      "rect": "(1005, 570), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@789",
+      "type": "PanelContainer",
+      "rect": "(1184, 338), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@789/@VBoxContainer@790",
+      "type": "VBoxContainer",
+      "rect": "(1197, 347), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@789/@VBoxContainer@790/@TextureRect@791",
+      "type": "TextureRect",
+      "rect": "(1197, 347), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@789/@VBoxContainer@790/@Label@792",
+      "type": "Label",
+      "rect": "(1197, 455), (154, 32)",
+      "text": "なぎ",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@789/@VBoxContainer@790/@Label@793",
+      "type": "Label",
+      "rect": "(1197, 497), (154, 63)",
+      "text": "HP 70  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@789/@VBoxContainer@790/@Button@794",
+      "type": "Button",
+      "rect": "(1197, 570), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@795",
+      "type": "PanelContainer",
+      "rect": "(32, 655), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@795/@VBoxContainer@796",
+      "type": "VBoxContainer",
+      "rect": "(45, 664), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@795/@VBoxContainer@796/@TextureRect@797",
+      "type": "TextureRect",
+      "rect": "(45, 664), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@795/@VBoxContainer@796/@Label@798",
+      "type": "Label",
+      "rect": "(45, 772), (154, 32)",
+      "text": "あかね",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@795/@VBoxContainer@796/@Label@799",
+      "type": "Label",
+      "rect": "(45, 814), (154, 63)",
+      "text": "HP 80  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@795/@VBoxContainer@796/@Button@800",
+      "type": "Button",
+      "rect": "(45, 887), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@801",
+      "type": "PanelContainer",
+      "rect": "(224, 655), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@801/@VBoxContainer@802",
+      "type": "VBoxContainer",
+      "rect": "(237, 664), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@801/@VBoxContainer@802/@TextureRect@803",
+      "type": "TextureRect",
+      "rect": "(237, 664), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@801/@VBoxContainer@802/@Label@804",
+      "type": "Label",
+      "rect": "(237, 772), (154, 32)",
+      "text": "いぶき",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@801/@VBoxContainer@802/@Label@805",
+      "type": "Label",
+      "rect": "(237, 814), (154, 63)",
+      "text": "HP 80  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@801/@VBoxContainer@802/@Button@806",
+      "type": "Button",
+      "rect": "(237, 887), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@807",
+      "type": "PanelContainer",
+      "rect": "(416, 655), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@807/@VBoxContainer@808",
+      "type": "VBoxContainer",
+      "rect": "(429, 664), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@807/@VBoxContainer@808/@TextureRect@809",
+      "type": "TextureRect",
+      "rect": "(429, 664), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@807/@VBoxContainer@808/@Label@810",
+      "type": "Label",
+      "rect": "(429, 772), (154, 32)",
+      "text": "わかば",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@807/@VBoxContainer@808/@Label@811",
+      "type": "Label",
+      "rect": "(429, 814), (154, 63)",
+      "text": "HP 75  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@807/@VBoxContainer@808/@Button@812",
+      "type": "Button",
+      "rect": "(429, 887), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@813",
+      "type": "PanelContainer",
+      "rect": "(608, 655), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@813/@VBoxContainer@814",
+      "type": "VBoxContainer",
+      "rect": "(621, 664), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@813/@VBoxContainer@814/@TextureRect@815",
+      "type": "TextureRect",
+      "rect": "(621, 664), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@813/@VBoxContainer@814/@Label@816",
+      "type": "Label",
+      "rect": "(621, 772), (154, 32)",
+      "text": "あかり",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@813/@VBoxContainer@814/@Label@817",
+      "type": "Label",
+      "rect": "(621, 814), (154, 63)",
+      "text": "HP 75  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@813/@VBoxContainer@814/@Button@818",
+      "type": "Button",
+      "rect": "(621, 887), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@819",
+      "type": "PanelContainer",
+      "rect": "(800, 655), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@819/@VBoxContainer@820",
+      "type": "VBoxContainer",
+      "rect": "(813, 664), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@819/@VBoxContainer@820/@TextureRect@821",
+      "type": "TextureRect",
+      "rect": "(813, 664), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@819/@VBoxContainer@820/@Label@822",
+      "type": "Label",
+      "rect": "(813, 772), (154, 32)",
+      "text": "くろは",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@819/@VBoxContainer@820/@Label@823",
+      "type": "Label",
+      "rect": "(813, 814), (154, 63)",
+      "text": "HP 75  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@819/@VBoxContainer@820/@Button@824",
+      "type": "Button",
+      "rect": "(813, 887), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@825",
+      "type": "PanelContainer",
+      "rect": "(992, 655), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@825/@VBoxContainer@826",
+      "type": "VBoxContainer",
+      "rect": "(1005, 664), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@825/@VBoxContainer@826/@TextureRect@827",
+      "type": "TextureRect",
+      "rect": "(1005, 664), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@825/@VBoxContainer@826/@Label@828",
+      "type": "Label",
+      "rect": "(1005, 772), (154, 32)",
+      "text": "あさひ",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@825/@VBoxContainer@826/@Label@829",
+      "type": "Label",
+      "rect": "(1005, 814), (154, 63)",
+      "text": "HP 75  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@825/@VBoxContainer@826/@Button@830",
+      "type": "Button",
+      "rect": "(1005, 887), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@831",
+      "type": "PanelContainer",
+      "rect": "(1184, 655), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@831/@VBoxContainer@832",
+      "type": "VBoxContainer",
+      "rect": "(1197, 664), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@831/@VBoxContainer@832/@TextureRect@833",
+      "type": "TextureRect",
+      "rect": "(1197, 664), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@831/@VBoxContainer@832/@Label@834",
+      "type": "Label",
+      "rect": "(1197, 772), (154, 32)",
+      "text": "しずく",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@831/@VBoxContainer@832/@Label@835",
+      "type": "Label",
+      "rect": "(1197, 814), (154, 63)",
+      "text": "HP 65  E 4\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@831/@VBoxContainer@832/@Button@836",
+      "type": "Button",
+      "rect": "(1197, 887), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@837",
+      "type": "PanelContainer",
+      "rect": "(32, 972), (180, 305)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@837/@VBoxContainer@838",
+      "type": "VBoxContainer",
+      "rect": "(45, 981), (154, 287)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@837/@VBoxContainer@838/@TextureRect@839",
+      "type": "TextureRect",
+      "rect": "(45, 981), (154, 98)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@837/@VBoxContainer@838/@Label@840",
+      "type": "Label",
+      "rect": "(45, 1089), (154, 32)",
+      "text": "かすみ",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@837/@VBoxContainer@838/@Label@841",
+      "type": "Label",
+      "rect": "(45, 1131), (154, 63)",
+      "text": "HP 65  E 3\nドロー 5  報酬 3",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@ScrollContainer@750/@VBoxContainer@751/@HFlowContainer@752/@PanelContainer@837/@VBoxContainer@838/@Button@842",
+      "type": "Button",
+      "rect": "(45, 1204), (154, 64)",
+      "text": "選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843",
+      "type": "VBoxContainer",
+      "rect": "(1548, 338), (370, 530)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@ScrollContainer@846",
+      "type": "ScrollContainer",
+      "rect": "(1548, 338), (370, 163)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@ScrollContainer@846/@VBoxContainer@847",
+      "type": "VBoxContainer",
+      "rect": "(1548, 338), (362, 576)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@ScrollContainer@846/@VBoxContainer@847/@Label@848",
+      "type": "Label",
+      "rect": "(1548, 338), (362, 43)",
+      "text": "ひばな",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@ScrollContainer@846/@VBoxContainer@847/@Label@849",
+      "type": "Label",
+      "rect": "(1548, 391), (362, 96)",
+      "text": "燼の闘士。燼の里の工房の出。意外と頑丈な体で、殴るほど燃え上がる。攻撃カードをプレイするたび勢い+2",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@ScrollContainer@846/@VBoxContainer@847/@Label@850",
+      "type": "Label",
+      "rect": "(1548, 497), (362, 32)",
+      "text": "初期デッキ",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@ScrollContainer@846/@VBoxContainer@847/@Button@851",
+      "type": "Button",
+      "rect": "(1548, 539), (362, 64)",
+      "text": "● ラン基本デッキ(赤)",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@ScrollContainer@846/@VBoxContainer@847/@Label@852",
+      "type": "Label",
+      "rect": "(1548, 613), (362, 195)",
+      "text": "赤ドラフト連戦の出発点。手数で押す構成: 火弾×3・火花×1(0マナ)・火加減(8ダメかブロック6)・灰の盾×2・憤怒置物2(火纏い・棘火の帳)・着火の10枚(2026-10-10 Opus 赤3本: 幕1の通常戦 2.3〜2.5T で火花×2→火花×1＋火加減)",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@ScrollContainer@846/@VBoxContainer@847/@Label@853",
+      "type": "Label",
+      "rect": "(1548, 818), (362, 96)",
+      "text": "火弾×3、火花×1、灰の盾×2、火纏い×1、棘火の帳×1、着火×1、火加減×1",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854",
+      "type": "VBoxContainer",
+      "rect": "(1548, 509), (370, 359)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854/@HBoxContainer@855",
+      "type": "HBoxContainer",
+      "rect": "(1548, 509), (370, 64)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854/@HBoxContainer@855/@Label@856",
+      "type": "Label",
+      "rect": "(1548, 526), (110, 30)",
+      "text": "シード",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854/@HBoxContainer@855/@LineEdit@857",
+      "type": "LineEdit",
+      "rect": "(1670, 509), (130, 64)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854/@HBoxContainer@855/@Button@858",
+      "type": "Button",
+      "rect": "(1812, 509), (106, 64)",
+      "text": "ランダム",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854/@HBoxContainer@859",
+      "type": "HBoxContainer",
+      "rect": "(1548, 583), (370, 64)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854/@HBoxContainer@859/@Button@860",
+      "type": "Button",
+      "rect": "(1548, 583), (64, 64)",
+      "text": "−",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854/@HBoxContainer@859/@Label@861",
+      "type": "Label",
+      "rect": "(1624, 600), (218, 30)",
+      "text": "難易度 3 / 10",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854/@HBoxContainer@859/@Button@862",
+      "type": "Button",
+      "rect": "(1854, 583), (64, 64)",
+      "text": "+",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854/@Label@863",
+      "type": "Label",
+      "rect": "(1548, 657), (370, 63)",
+      "text": "3: 標準（基準線。幕1〜3とも×1.0・幕ボス撃破で全回復）",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854/@Button@864",
+      "type": "Button",
+      "rect": "(1548, 730), (370, 64)",
+      "text": "ランを開始",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@733/@VBoxContainer@734/@VBoxContainer@740/@HBoxContainer@747/@VBoxContainer@843/@VBoxContainer@854/@Button@865",
+      "type": "Button",
+      "rect": "(1548, 804), (370, 64)",
+      "text": "戦闘方式の設定",
+      "mouse": "Stop"
+    }
+  ],
+  "stateSha": "82fa09fc2e7aed5e143d95b3059d2dde20fb5780a5d43edf8ffa7adf575636f6",
+  "Revision": 2,
+  "EnemyHeadReadbacks": 0,
+  "EnemyHeadCacheHits": 0,
+  "ActiveHandDealCount": 0,
+  "HandDealStartCueCount": 0,
+  "ActiveHandHoverCount": 0,
+  "hoverUid": null,
+  "dragUid": null,
+  "overlayOpen": false,
+  "seats": {},
+  "hand": [],
+  "timeScale": 1.0
+}

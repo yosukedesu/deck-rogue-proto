@@ -1,0 +1,118 @@
+{
+  "schema": "hand-native-checks/1",
+  "observedChecksPass": true,
+  "issues": [],
+  "authored": [
+    {
+      "owner": 12,
+      "uid": "authored-slash-played-001",
+      "tile": 74507619434,
+      "duration": 0.09099999815225601,
+      "createFrame": 403,
+      "firstActualCallbackFrame": 403,
+      "completeFrame": 403,
+      "cancelFrame": null
+    }
+  ],
+  "hoverAndReturn": [
+    {
+      "owner": 2,
+      "uid": "authored-slash-played-001",
+      "tile": 74507619434,
+      "dragReturn": false,
+      "duration": 0.12,
+      "createFrame": 93,
+      "terminal": [
+        {
+          "kind": "hover-return-cancel",
+          "frame": 93,
+          "elapsed": 0.0
+        }
+      ]
+    },
+    {
+      "owner": 3,
+      "uid": "authored-slash-played-001",
+      "tile": 74507619434,
+      "dragReturn": false,
+      "duration": 0.12,
+      "createFrame": 93,
+      "terminal": [
+        {
+          "kind": "hover-return-cancel",
+          "frame": 93,
+          "elapsed": 0.0
+        }
+      ]
+    },
+    {
+      "owner": 4,
+      "uid": "authored-slash-played-001",
+      "tile": 74507619434,
+      "dragReturn": true,
+      "duration": 0.15,
+      "createFrame": 99,
+      "terminal": [
+        {
+          "kind": "hover-return-complete",
+          "frame": 101,
+          "elapsed": 0.15
+        }
+      ]
+    },
+    {
+      "owner": 5,
+      "uid": "authored-slash-sibling-002",
+      "tile": 77191974064,
+      "dragReturn": false,
+      "duration": 0.12,
+      "createFrame": 285,
+      "terminal": [
+        {
+          "kind": "hover-return-cancel",
+          "frame": 286,
+          "elapsed": 0.0
+        }
+      ]
+    },
+    {
+      "owner": 6,
+      "uid": "authored-slash-sibling-002",
+      "tile": 77191974064,
+      "dragReturn": false,
+      "duration": 0.12,
+      "createFrame": 286,
+      "terminal": [
+        {
+          "kind": "hover-return-complete",
+          "frame": 287,
+          "elapsed": 0.12
+        }
+      ]
+    },
+    {
+      "owner": 7,
+      "uid": "authored-slash-played-001",
+      "tile": 74507619434,
+      "dragReturn": false,
+      "duration": 0.12,
+      "createFrame": 286,
+      "terminal": [
+        {
+          "kind": "hover-return-complete",
+          "frame": 287,
+          "elapsed": 0.12
+        }
+      ]
+    }
+  ],
+  "processRows": 587,
+  "drawRows": 588,
+  "staleAttemptRows": [],
+  "staleRaceCoverage": "NOT_EXERCISED",
+  "nativeAcceptance": "NOT_AUTOMATICALLY_GRANTED",
+  "baselineFirstSetterCallback": "UNOBSERVABLE_WITHOUT_CHANGING_PROPERTY_TWEENER; first positive native elapsed is a separate readback gate",
+  "fullFinalRunMatchesOriginalEngineExpected": true,
+  "visibleReturnParity": "FAILED_EXISTING_DRAG_PREVIEW_GAP",
+  "bugProvenance": "Existing drag visual path predates authored retirement overlay. New authored path does not change StartHandDrag or preview."
+}

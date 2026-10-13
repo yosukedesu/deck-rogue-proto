@@ -1,0 +1,34 @@
+[
+  {
+    "cardId": "green_strike",
+    "type": "CardPlayed"
+  },
+  {
+    "presentationReceipt": {
+      "version": 1,
+      "target": "enemy",
+      "enemyIndex": 0,
+      "enemyId": "enemy_mudling",
+      "before": {
+        "hp": 1000,
+        "maxHp": 1000,
+        "block": 0
+      },
+      "after": {
+        "hp": 994,
+        "maxHp": 1000,
+        "block": 0
+      }
+    },
+    "source": "player",
+    "amount": 6,
+    "hpLoss": 6,
+    "enemyIndex": 0,
+    "presentationSource": {
+      "kind": "card",
+      "definitionId": "green_strike",
+      "uid": "authored-slash-played-001"
+    },
+    "type": "DamageDealt"
+  }
+]

@@ -1,0 +1,1 @@
+PASS 88 guard, idempotence, no-partial-write, six-order cache/token composition, and scope assertions.

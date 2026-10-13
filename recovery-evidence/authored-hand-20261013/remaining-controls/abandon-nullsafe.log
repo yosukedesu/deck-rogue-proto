@@ -1,0 +1,12 @@
+Godot Engine v4.6.3.stable.mono.official.7d41c59c4 - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+[AtmosphereRecovery] reconstructed-atmosphere-20261012-r4, act 1, stage-only
+DECKROGUE_RECOVERY_MODULE mvid=9905b195-22b0-4417-8c62-4428fda3e167
+DECKROGUE_PORT_READY cards=466 leaders=15 enemies=89
+UNITY_UI_MANUAL_READY /workspace/scratch/948944000d55/unity-parity-20261013/remaining-controls-ccdce85/abandon-nullsafe
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/authored-hand-native/baseline-project/qa/captures/20261013T060715702_001_manual-001.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/authored-hand-native/baseline-project/qa/captures/20261013T060829377_002_manual-002.png
+DECKROGUE_CAPTURE_OK /workspace/scratch/948944000d55/unity-parity-20261013/authored-hand-native/baseline-project/qa/captures/20261013T060854287_003_manual-003.png

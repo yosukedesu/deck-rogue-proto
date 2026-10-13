@@ -1,0 +1,48 @@
+{
+  "baseline": {
+    "schema": "hand-native-checks/1",
+    "observedChecksPass": true,
+    "issues": [],
+    "authored": [],
+    "hoverAndReturn": [],
+    "processRows": 230,
+    "drawRows": 231,
+    "staleAttemptRows": [],
+    "staleRaceCoverage": "NOT_EXERCISED",
+    "nativeAcceptance": "NOT_AUTOMATICALLY_GRANTED",
+    "baselineFirstSetterCallback": "UNOBSERVABLE_WITHOUT_CHANGING_PROPERTY_TWEENER; first positive native elapsed is a separate readback gate"
+  },
+  "candidate": {
+    "schema": "hand-native-checks/1",
+    "observedChecksPass": true,
+    "issues": [],
+    "authored": [
+      {
+        "owner": 8,
+        "uid": "authored-slash-played-001",
+        "tile": 74121743449,
+        "duration": 0.09099999815225601,
+        "createFrame": 126,
+        "firstActualCallbackFrame": 126,
+        "completeFrame": 131,
+        "cancelFrame": null
+      }
+    ],
+    "hoverAndReturn": [],
+    "processRows": 230,
+    "drawRows": 231,
+    "staleAttemptRows": [],
+    "staleRaceCoverage": "NOT_EXERCISED",
+    "nativeAcceptance": "NOT_AUTOMATICALLY_GRANTED",
+    "baselineFirstSetterCallback": "UNOBSERVABLE_WITHOUT_CHANGING_PROPERTY_TWEENER; first positive native elapsed is a separate readback gate"
+  },
+  "pairIssues": [],
+  "observedPairChecksPass": true,
+  "fullNativeAcceptance": "PENDING_RUNTIME_REVIEW",
+  "firstNativeStep": "Compare baseline-first-positive-native-elapsed with candidate native elapsed at the same observation phase. Never label it the baseline setter callback.",
+  "absoluteAdmissionFrames": {
+    "baseline": 126,
+    "candidate": 126
+  },
+  "fullFinalRunMatchesOriginalEngineExpected": true
+}

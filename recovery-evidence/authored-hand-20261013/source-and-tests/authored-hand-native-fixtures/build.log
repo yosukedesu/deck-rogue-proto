@@ -1,0 +1,4 @@
+PASS slash: authored-slash-played-001; leader_green; revision1->2; cloned command; E3->2; HP1000->994; discard; duration=0.09099999815225601; events=CardPlayed,DamageDealt
+PASS water: authored-water-played-001; leader_blue; revision1->2; cloned command; E3->2; HP1000->995; discard; duration=0.10000000149011612; events=CardPlayed,DamageDealt,CardsDrawn,IceBlockGained
+PASS stomp: authored-stomp-played-001; leader_green; revision1->2; cloned command; E5->0; HP1000->950; discard; duration=0.10000000149011612; events=CardPlayed,DamageDealt
+PASS: 6 full Report RunSave roundtrips, 3 loaded original-engine commands, 3 production SessionController clone/revision validations, 93 assertions. No native acceptance claimed.

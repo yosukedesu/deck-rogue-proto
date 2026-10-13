@@ -34,7 +34,7 @@ public partial class GameUI
     public void SetCardRetirement(Func<string,double> provider){_uxRetirement=provider;}
     private Func<string,double> _uxRetirement;
     public IReadOnlyList<Rect2> GetEnemyLedgerBounds()=>_uxEnemies.Where(x=>GodotObject.IsInstanceValid(x.Ledger)&&x.Ledger.IsVisibleInTree()).Select(x=>x.Ledger.GetGlobalRect()).ToArray();
-    private void UxResetHand(){UxClearEnemyHeadCache();UxCancelHandExits();UxCancelHandHovers(false);UxCancelHandDeals(false);_uxEpoch++;EndHandDrag();UxCancelHandHovers(false);foreach(var t in _uxTiles.Values){t.Hide();t.QueueFree();}_uxTiles.Clear();_uxSeats.Clear();_uxHover=null;_uxPaid.Clear();_uxIncomingOwner=-1;}
+    private void UxResetHand(){UxClearEnemyHeadCache();UxCancelAuthoredHandExits();UxCancelHandExits();UxCancelHandHovers(false);UxCancelHandDeals(false);_uxEpoch++;EndHandDrag();UxCancelHandHovers(false);foreach(var t in _uxTiles.Values){t.Hide();t.QueueFree();}_uxTiles.Clear();_uxSeats.Clear();_uxHover=null;_uxPaid.Clear();_uxIncomingOwner=-1;}
     private Label UxText(Control parent,string text,int units,Color color,bool deco=false,bool bold=false)
     {
         var label=new Label{Text=text,MouseFilter=MouseFilterEnum.Ignore,VerticalAlignment=VerticalAlignment.Center};parent.AddChild(label);
@@ -263,7 +263,7 @@ public partial class GameUI
         for(int i=0;i<n;i++)
         {
             var c=s.Player.Hand[i];string uid=c.Uid;bool added=!_uxTiles.TryGetValue(uid,out var tile);
-            if(added){UxCancelHandExit(uid);tile=new CardTile{Name="Hand_"+uid,CardUid=uid,IsBattleHand=true,Text="",MouseFilter=MouseFilterEnum.Stop,Size=new Vector2(200,290),CustomMinimumSize=new Vector2(200,290),PivotOffset=new Vector2(100,145)};_uxHand.AddChild(tile);_uxTiles[uid]=tile;
+            if(added){UxCancelAuthoredHandExit(uid);UxCancelHandExit(uid);tile=new CardTile{Name="Hand_"+uid,CardUid=uid,IsBattleHand=true,Text="",MouseFilter=MouseFilterEnum.Stop,Size=new Vector2(200,290),CustomMinimumSize=new Vector2(200,290),PivotOffset=new Vector2(100,145)};_uxHand.AddChild(tile);_uxTiles[uid]=tile;
                 tile.MouseEntered+=()=>HoverUxHand(uid,true);tile.MouseExited+=()=>HoverUxHand(uid,false);tile.Pressed+=()=>{if(!IsInputBlocked&&_overlay==null&&!tile.ConsumeInspection()&&InputCombat?.Player.Hand.FirstOrDefault(x=>x.Uid==uid) is {} card)CardActions(card);};tile.Inspect=()=>{var card=InputCombat?.Player.Hand.FirstOrDefault(x=>x.Uid==uid);if(card!=null)InspectCard(card);};
                 tile.SecondaryAction=()=>{var st=InputCombat;if(st!=null&&!IsInputBlocked&&SetBase.CanSetCard(st,uid))Do(new Command_SetCard{CardUid=uid});else tile.Inspect?.Invoke();};
                 tile.DragPayload=()=>new Godot.Collections.Dictionary{{"uid",uid},{"epoch",_uxEpoch}};tile.DragStarted=()=>StartHandDrag(uid);tile.DragEnded=EndHandDrag;tile.DragPreview=()=>PhoneLayout?new Control{MouseFilter=MouseFilterEnum.Ignore,CustomMinimumSize=Vector2.One}:MakeUxDragPreview(uid);
@@ -278,7 +278,7 @@ public partial class GameUI
             if(_uxDrag!=uid&&_uxHover!=uid){_uxHand.MoveChild(tile,_uxHand.GetChildCount()-1);tile.ZIndex=0;}
             // Incoming flight and its delayed cue never acquire or extend an input fence.
         }
-        UxRestoreHandExitOrder();
+        UxRestoreHandExitOrder();UxRestoreAuthoredHandExitOrder();
         if(_uxHover!=null&&_uxTiles.ContainsKey(_uxHover))HoverUxHand(_uxHover,true);
     }
     private Control MakeUxDragPreview(string uid)
@@ -325,7 +325,7 @@ public partial class GameUI
     private void UxProcess(double delta)
     {
         if(_uxLastSize!=Size){_uxLastSize=Size;if(!_uxRelayoutQueued){_uxRelayoutQueued=true;EndHandDrag();CallDeferred(nameof(UxRelayout));}}
-        UxTickHandDeals(delta);UxTickHandHovers(delta);UxTickHandExits(delta);PositionUxEnemies();UpdateHandAim();AlignUxRichLine(_uxForecast);AlignUxRichLine(_uxDetail);
+        UxTickHandDeals(delta);UxTickHandHovers(delta);UxTickHandExits(delta);UxCheckAuthoredHandExits();PositionUxEnemies();UpdateHandAim();AlignUxRichLine(_uxForecast);AlignUxRichLine(_uxDetail);
     }
     private static void AlignUxRichLine(RichTextLabel label)
     {

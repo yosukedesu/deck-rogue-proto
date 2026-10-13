@@ -1,0 +1,620 @@
+{
+  "controls": [
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@ColorRect@2456",
+      "type": "ColorRect",
+      "rect": "(0, 0), (1950, 900)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457",
+      "type": "MarginContainer",
+      "rect": "(0, 0), (1950, 900)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458",
+      "type": "VBoxContainer",
+      "rect": "(32, 32), (1886, 836)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@PanelContainer@2459",
+      "type": "PanelContainer",
+      "rect": "(32, 32), (1886, 82)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@PanelContainer@2459/@HFlowContainer@2460",
+      "type": "HFlowContainer",
+      "rect": "(45, 41), (1860, 64)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@PanelContainer@2459/@HFlowContainer@2460/@Label@2461",
+      "type": "Label",
+      "rect": "(45, 58), (193, 30)",
+      "text": "幕1・行0/16 · 戦利品",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@PanelContainer@2459/@HFlowContainer@2460/@Label@2462",
+      "type": "Label",
+      "rect": "(250, 58), (84, 30)",
+      "text": "HP 75/75",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@PanelContainer@2459/@HFlowContainer@2460/@Label@2463",
+      "type": "Label",
+      "rect": "(346, 58), (52, 30)",
+      "text": "700 G",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@PanelContainer@2459/@HFlowContainer@2460/SourceRunMana",
+      "type": "Label",
+      "rect": "(410, 58), (197, 30)",
+      "text": "魔素 0/50（あと0個）",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@PanelContainer@2459/@HFlowContainer@2460/@Button@2465",
+      "type": "Button",
+      "rect": "(619, 41), (113, 64)",
+      "text": "デッキ 15",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@PanelContainer@2459/@HFlowContainer@2460/@Button@2466",
+      "type": "Button",
+      "rect": "(744, 41), (106, 64)",
+      "text": "メニュー",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467",
+      "type": "VBoxContainer",
+      "rect": "(32, 124), (1886, 744)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@Label@2468",
+      "type": "Label",
+      "rect": "(32, 124), (1886, 44)",
+      "text": "戦利品",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@Label@2469",
+      "type": "Label",
+      "rect": "(32, 180), (1886, 30)",
+      "text": "札を選ぶか、見送って進む。ギアは別に選べます。",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472",
+      "type": "ScrollContainer",
+      "rect": "(32, 222), (1886, 570)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473",
+      "type": "VBoxContainer",
+      "rect": "(32, 222), (1878, 576)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474",
+      "type": "HFlowContainer",
+      "rect": "(32, 222), (1878, 394)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475",
+      "type": "VBoxContainer",
+      "rect": "(32, 222), (225, 394)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell",
+      "type": "Control",
+      "rect": "(31, 222), (225.99998, 320.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard",
+      "type": "CardTile",
+      "rect": "(39, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace",
+      "type": "Control",
+      "rect": "(39, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/Paper",
+      "type": "NinePatchRect",
+      "rect": "(39, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/Grain",
+      "type": "TextureRect",
+      "rect": "(39, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/ArtEdge",
+      "type": "ColorRect",
+      "rect": "(51.6, 276.2), (184.79999, 104.99999)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/ArtNight",
+      "type": "ColorRect",
+      "rect": "(53.175, 277.775), (181.65, 101.85)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/TypeWash",
+      "type": "ColorRect",
+      "rect": "(53.175, 277.775), (181.65, 101.85)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/TypeCrest",
+      "type": "TextureRect",
+      "rect": "(110.399994, 295.1), (67.2, 67.2)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/CostOrb",
+      "type": "TextureRect",
+      "rect": "(32.7, 223.7), (54.6, 54.6)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/Cost",
+      "type": "SourceHudLabel",
+      "rect": "(32.7, 223.7), (54.6, 52.499996)",
+      "text": "2",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/Name",
+      "type": "SourceHudLabel",
+      "rect": "(85.2, 238.4), (151.2, 33.6)",
+      "text": "紅蓮の追撃",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/TypeRibbon",
+      "type": "TextureRect",
+      "rect": "(65.25, 372.8), (157.5, 27.3)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/RarityGem",
+      "type": "TextureRect",
+      "rect": "(111.975, 373.84998), (25.199999, 25.199999)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/Type",
+      "type": "SourceHudLabel",
+      "rect": "(142.42499, 372.8), (33.6, 25.199999)",
+      "text": "物理",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/Body",
+      "type": "SourceCardBody",
+      "rect": "(53.699997, 410.59998), (180.59999, 109.2)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/SourceCardCell/SourceGridCard/SourceCardFace/Body/Text",
+      "type": "RichTextLabel",
+      "rect": "(53.699997, 415.84998), (180.59999, 109.2)",
+      "text": "ダ⁠メ⁠ー⁠ジ⁠1⁠2⁠\n猛り火(延焼合計8⁠以上)なら、ダ⁠メ⁠ー⁠ジ⁠1⁠2⁠",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2475/@Button@2478",
+      "type": "Button",
+      "rect": "(32, 552), (225, 64)",
+      "text": "この札を取る",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479",
+      "type": "VBoxContainer",
+      "rect": "(269, 222), (225, 394)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell",
+      "type": "Control",
+      "rect": "(268, 222), (225.99998, 320.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard",
+      "type": "CardTile",
+      "rect": "(276, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace",
+      "type": "Control",
+      "rect": "(276, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/Paper",
+      "type": "NinePatchRect",
+      "rect": "(276, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/Grain",
+      "type": "TextureRect",
+      "rect": "(276, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/ArtEdge",
+      "type": "ColorRect",
+      "rect": "(288.6, 276.2), (184.79999, 104.99999)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/ArtNight",
+      "type": "ColorRect",
+      "rect": "(290.175, 277.775), (181.65, 101.85)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/TypeWash",
+      "type": "ColorRect",
+      "rect": "(290.175, 277.775), (181.65, 101.85)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/TypeCrest",
+      "type": "TextureRect",
+      "rect": "(347.4, 295.1), (67.2, 67.2)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/CostOrb",
+      "type": "TextureRect",
+      "rect": "(269.7, 223.7), (54.6, 54.6)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/Cost",
+      "type": "SourceHudLabel",
+      "rect": "(269.7, 223.7), (54.6, 52.499996)",
+      "text": "1",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/Name",
+      "type": "SourceHudLabel",
+      "rect": "(322.2, 236.825), (151.2, 33.6)",
+      "text": "火の舌",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/TypeRibbon",
+      "type": "TextureRect",
+      "rect": "(302.25, 372.8), (157.5, 27.3)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/RarityGem",
+      "type": "TextureRect",
+      "rect": "(348.975, 373.84998), (25.199999, 25.199999)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/Type",
+      "type": "SourceHudLabel",
+      "rect": "(379.425, 372.275), (33.6, 25.199999)",
+      "text": "呪文",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/Body",
+      "type": "SourceCardBody",
+      "rect": "(290.7, 410.59998), (180.59999, 109.2)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/SourceCardCell/SourceGridCard/SourceCardFace/Body/Text",
+      "type": "RichTextLabel",
+      "rect": "(290.7, 425.3), (180.59999, 109.2)",
+      "text": "対象の延焼×1⁠ダ⁠メ⁠ー⁠ジ⁠ ⁠延⁠焼⁠は⁠失⁠わ⁠な⁠い⁠ ⁠\n延焼+⁠2⁠",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2479/@Button@2482",
+      "type": "Button",
+      "rect": "(269, 552), (225, 64)",
+      "text": "この札を取る",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483",
+      "type": "VBoxContainer",
+      "rect": "(506, 222), (225, 394)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell",
+      "type": "Control",
+      "rect": "(505, 222), (225.99998, 320.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard",
+      "type": "CardTile",
+      "rect": "(513, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace",
+      "type": "Control",
+      "rect": "(513, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/Paper",
+      "type": "NinePatchRect",
+      "rect": "(513, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/Grain",
+      "type": "TextureRect",
+      "rect": "(513, 230), (209.99998, 304.5)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/ArtEdge",
+      "type": "ColorRect",
+      "rect": "(525.6, 276.2), (184.79999, 104.99999)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/ArtNight",
+      "type": "ColorRect",
+      "rect": "(527.175, 277.775), (181.65, 101.85)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/TypeWash",
+      "type": "ColorRect",
+      "rect": "(527.175, 277.775), (181.65, 101.85)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/TypeCrest",
+      "type": "TextureRect",
+      "rect": "(584.4, 295.1), (67.2, 67.2)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/CostOrb",
+      "type": "TextureRect",
+      "rect": "(506.7, 223.7), (54.6, 54.6)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/Cost",
+      "type": "SourceHudLabel",
+      "rect": "(506.7, 223.7), (54.6, 52.499996)",
+      "text": "1",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/Name",
+      "type": "SourceHudLabel",
+      "rect": "(559.2, 237.875), (151.2, 33.6)",
+      "text": "火運の賭け",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/TypeRibbon",
+      "type": "TextureRect",
+      "rect": "(539.25, 372.8), (157.5, 27.3)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/RarityGem",
+      "type": "TextureRect",
+      "rect": "(585.975, 373.84998), (25.199999, 25.199999)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/Type",
+      "type": "SourceHudLabel",
+      "rect": "(616.425, 372.275), (33.6, 25.199999)",
+      "text": "呪文",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/Body",
+      "type": "SourceCardBody",
+      "rect": "(527.7, 410.59998), (180.59999, 109.2)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/SourceCardCell/SourceGridCard/SourceCardFace/Body/Text",
+      "type": "RichTextLabel",
+      "rect": "(527.7, 429.49997), (180.59999, 109.2)",
+      "text": "ラ⁠ン⁠ダ⁠ム⁠ダ⁠メ⁠ー⁠ジ⁠2⁠〜1⁠6⁠",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@HFlowContainer@2474/@VBoxContainer@2483/@Button@2486",
+      "type": "Button",
+      "rect": "(506, 552), (225, 64)",
+      "text": "この札を取る",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@PanelContainer@2487",
+      "type": "PanelContainer",
+      "rect": "(32, 626), (1878, 172)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@PanelContainer@2487/@VBoxContainer@2488",
+      "type": "VBoxContainer",
+      "rect": "(45, 635), (1852, 154)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@PanelContainer@2487/@VBoxContainer@2488/@TextureRect@2489",
+      "type": "TextureRect",
+      "rect": "(45, 635), (1852, 70)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@PanelContainer@2487/@VBoxContainer@2488/@Label@2490",
+      "type": "Label",
+      "rect": "(45, 715), (1852, 34)",
+      "text": "目当ての品",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@ScrollContainer@2472/@VBoxContainer@2473/@PanelContainer@2487/@VBoxContainer@2488/@Label@2491",
+      "type": "Label",
+      "rect": "(45, 759), (1852, 30)",
+      "text": "山札から1枚を選んで手札へ",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@HBoxContainer@2492",
+      "type": "HBoxContainer",
+      "rect": "(32, 804), (1886, 64)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@HBoxContainer@2492/@Button@2493",
+      "type": "Button",
+      "rect": "(32, 804), (126, 64)",
+      "text": "札を見送る",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@HBoxContainer@2492/@Button@2494",
+      "type": "Button",
+      "rect": "(170, 804), (208, 64)",
+      "text": "ギアを取る（1/10）",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@2457/@VBoxContainer@2458/@VBoxContainer@2467/@HBoxContainer@2492/@Button@2495",
+      "type": "Button",
+      "rect": "(390, 804), (146, 64)",
+      "text": "ギアを見送る",
+      "mouse": "Stop"
+    }
+  ],
+  "stateSha": "4c0a481bcc4ce9190b38457ccae3e216602d39585b25436379f3a22c13de81c1",
+  "Revision": 7,
+  "EnemyHeadReadbacks": 0,
+  "EnemyHeadCacheHits": 0,
+  "ActiveHandDealCount": 0,
+  "HandDealStartCueCount": 0,
+  "ActiveHandHoverCount": 0,
+  "hoverUid": null,
+  "dragUid": null,
+  "overlayOpen": false,
+  "seats": {},
+  "hand": [
+    {
+      "CardUid": "reward-0",
+      "instance": 779905664736,
+      "position": "(8, 8)",
+      "scale": "(1.05, 1.05)",
+      "back": false
+    },
+    {
+      "CardUid": "reward-1",
+      "instance": 780828415251,
+      "position": "(8, 8)",
+      "scale": "(1.05, 1.05)",
+      "back": false
+    },
+    {
+      "CardUid": "reward-2",
+      "instance": 781851825518,
+      "position": "(8, 8)",
+      "scale": "(1.05, 1.05)",
+      "back": false
+    }
+  ],
+  "timeScale": 1.0
+}

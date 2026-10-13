@@ -1,0 +1,1767 @@
+{
+  "controls": [
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@ColorRect@1170",
+      "type": "ColorRect",
+      "rect": "(0, 0), (1950, 900)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171",
+      "type": "MarginContainer",
+      "rect": "(0, 0), (1950, 900)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172",
+      "type": "VBoxContainer",
+      "rect": "(32, 32), (1886, 836)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@PanelContainer@1173",
+      "type": "PanelContainer",
+      "rect": "(32, 32), (1886, 82)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@PanelContainer@1173/@HFlowContainer@1174",
+      "type": "HFlowContainer",
+      "rect": "(45, 41), (1860, 64)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@PanelContainer@1173/@HFlowContainer@1174/@Label@1175",
+      "type": "Label",
+      "rect": "(45, 58), (233, 30)",
+      "text": "幕1・行0/16 · 坑道の地図",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@PanelContainer@1173/@HFlowContainer@1174/@Label@1176",
+      "type": "Label",
+      "rect": "(290, 58), (84, 30)",
+      "text": "HP 75/75",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@PanelContainer@1173/@HFlowContainer@1174/@Label@1177",
+      "type": "Label",
+      "rect": "(386, 58), (52, 30)",
+      "text": "700 G",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@PanelContainer@1173/@HFlowContainer@1174/SourceRunMana",
+      "type": "Label",
+      "rect": "(450, 58), (197, 30)",
+      "text": "魔素 0/50（あと0個）",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@PanelContainer@1173/@HFlowContainer@1174/@Button@1179",
+      "type": "Button",
+      "rect": "(659, 41), (113, 64)",
+      "text": "デッキ 15",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@PanelContainer@1173/@HFlowContainer@1174/@Button@1180",
+      "type": "Button",
+      "rect": "(784, 41), (106, 64)",
+      "text": "メニュー",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181",
+      "type": "VBoxContainer",
+      "rect": "(32, 124), (1886, 744)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@Label@1182",
+      "type": "Label",
+      "rect": "(32, 124), (1886, 44)",
+      "text": "幕 1 · マップ — 現在地と道筋",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@Label@1183",
+      "type": "Label",
+      "rect": "(32, 180), (1886, 30)",
+      "text": "光っている道へ進めます。ノードに触れると中身の説明。",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188",
+      "type": "ScrollContainer",
+      "rect": "(32, 222), (1886, 444)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189",
+      "type": "CenterContainer",
+      "rect": "(32, -1182), (1878, 1932)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190",
+      "type": "RunMap",
+      "rect": "(421, -1182), (1100, 1932)",
+      "text": "",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_0",
+      "type": "Button",
+      "rect": "(489, 544), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_0/@TextureRect@1191",
+      "type": "TextureRect",
+      "rect": "(509, 564), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_0/@Label@1192",
+      "type": "Label",
+      "rect": "(459, 619), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_1",
+      "type": "Button",
+      "rect": "(635, 544), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_1/@TextureRect@1193",
+      "type": "TextureRect",
+      "rect": "(655, 564), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_1/@Label@1194",
+      "type": "Label",
+      "rect": "(605, 619), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_2",
+      "type": "Button",
+      "rect": "(927, 544), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_2/@TextureRect@1195",
+      "type": "TextureRect",
+      "rect": "(947, 564), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_2/@Label@1196",
+      "type": "Label",
+      "rect": "(897, 619), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_3",
+      "type": "Button",
+      "rect": "(1219, 544), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_3/@TextureRect@1197",
+      "type": "TextureRect",
+      "rect": "(1239, 564), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_3/@Label@1198",
+      "type": "Label",
+      "rect": "(1189, 619), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_4",
+      "type": "Button",
+      "rect": "(1365, 544), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_4/@TextureRect@1199",
+      "type": "TextureRect",
+      "rect": "(1385, 564), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_0_4/@Label@1200",
+      "type": "Label",
+      "rect": "(1335, 619), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_1_0",
+      "type": "Button",
+      "rect": "(489, 432), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_1_0/@TextureRect@1201",
+      "type": "TextureRect",
+      "rect": "(509, 452), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_1_0/@Label@1202",
+      "type": "Label",
+      "rect": "(459, 507), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_1_1",
+      "type": "Button",
+      "rect": "(781, 432), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_1_1/@TextureRect@1203",
+      "type": "TextureRect",
+      "rect": "(801, 452), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_1_1/@Label@1204",
+      "type": "Label",
+      "rect": "(751, 507), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_1_2",
+      "type": "Button",
+      "rect": "(1365, 432), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_1_2/@TextureRect@1205",
+      "type": "TextureRect",
+      "rect": "(1385, 452), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_1_2/@Label@1206",
+      "type": "Label",
+      "rect": "(1335, 507), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_0",
+      "type": "Button",
+      "rect": "(489, 320), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_0/@TextureRect@1207",
+      "type": "TextureRect",
+      "rect": "(509, 340), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_0/@Label@1208",
+      "type": "Label",
+      "rect": "(459, 395), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_1",
+      "type": "Button",
+      "rect": "(635, 320), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_1/@TextureRect@1209",
+      "type": "TextureRect",
+      "rect": "(655, 340), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_1/@Label@1210",
+      "type": "Label",
+      "rect": "(605, 395), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_2",
+      "type": "Button",
+      "rect": "(1219, 320), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_2/@TextureRect@1211",
+      "type": "TextureRect",
+      "rect": "(1239, 340), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_2/@Label@1212",
+      "type": "Label",
+      "rect": "(1189, 395), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_3",
+      "type": "Button",
+      "rect": "(1365, 320), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_3/@TextureRect@1213",
+      "type": "TextureRect",
+      "rect": "(1385, 340), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_2_3/@Label@1214",
+      "type": "Label",
+      "rect": "(1335, 395), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_3_0",
+      "type": "Button",
+      "rect": "(635, 208), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_3_0/@TextureRect@1215",
+      "type": "TextureRect",
+      "rect": "(655, 228), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_3_0/@Label@1216",
+      "type": "Label",
+      "rect": "(605, 283), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_3_1",
+      "type": "Button",
+      "rect": "(1219, 208), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_3_1/@TextureRect@1217",
+      "type": "TextureRect",
+      "rect": "(1239, 228), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_3_1/@Label@1218",
+      "type": "Label",
+      "rect": "(1189, 283), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_3_2",
+      "type": "Button",
+      "rect": "(1365, 208), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_3_2/@TextureRect@1219",
+      "type": "TextureRect",
+      "rect": "(1385, 228), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_3_2/@Label@1220",
+      "type": "Label",
+      "rect": "(1335, 283), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_0",
+      "type": "Button",
+      "rect": "(489, 96), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_0/@TextureRect@1221",
+      "type": "TextureRect",
+      "rect": "(509, 116), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_0/@Label@1222",
+      "type": "Label",
+      "rect": "(459, 171), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_1",
+      "type": "Button",
+      "rect": "(635, 96), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_1/@TextureRect@1223",
+      "type": "TextureRect",
+      "rect": "(655, 116), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_1/@Label@1224",
+      "type": "Label",
+      "rect": "(605, 171), (134, 30)",
+      "text": "強個体",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_2",
+      "type": "Button",
+      "rect": "(781, 96), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_2/@TextureRect@1225",
+      "type": "TextureRect",
+      "rect": "(801, 116), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_2/@Label@1226",
+      "type": "Label",
+      "rect": "(751, 171), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_3",
+      "type": "Button",
+      "rect": "(1073, 96), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_3/@TextureRect@1227",
+      "type": "TextureRect",
+      "rect": "(1093, 116), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_3/@Label@1228",
+      "type": "Label",
+      "rect": "(1043, 171), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_4",
+      "type": "Button",
+      "rect": "(1365, 96), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_4/@TextureRect@1229",
+      "type": "TextureRect",
+      "rect": "(1385, 116), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_4_4/@Label@1230",
+      "type": "Label",
+      "rect": "(1335, 171), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_5_0",
+      "type": "Button",
+      "rect": "(489, -16), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_5_0/@TextureRect@1231",
+      "type": "TextureRect",
+      "rect": "(509, 4), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_5_0/@Label@1232",
+      "type": "Label",
+      "rect": "(459, 59), (134, 30)",
+      "text": "焚き火",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_5_1",
+      "type": "Button",
+      "rect": "(927, -16), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_5_1/@TextureRect@1233",
+      "type": "TextureRect",
+      "rect": "(947, 4), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_5_1/@Label@1234",
+      "type": "Label",
+      "rect": "(897, 59), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_5_2",
+      "type": "Button",
+      "rect": "(1219, -16), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_5_2/@TextureRect@1235",
+      "type": "TextureRect",
+      "rect": "(1239, 4), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_5_2/@Label@1236",
+      "type": "Label",
+      "rect": "(1189, 59), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_0",
+      "type": "Button",
+      "rect": "(489, -128), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_0/@TextureRect@1237",
+      "type": "TextureRect",
+      "rect": "(509, -108), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_0/@Label@1238",
+      "type": "Label",
+      "rect": "(459, -53), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_1",
+      "type": "Button",
+      "rect": "(635, -128), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_1/@TextureRect@1239",
+      "type": "TextureRect",
+      "rect": "(655, -108), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_1/@Label@1240",
+      "type": "Label",
+      "rect": "(605, -53), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_2",
+      "type": "Button",
+      "rect": "(781, -128), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_2/@TextureRect@1241",
+      "type": "TextureRect",
+      "rect": "(801, -108), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_2/@Label@1242",
+      "type": "Label",
+      "rect": "(751, -53), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_3",
+      "type": "Button",
+      "rect": "(1073, -128), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_3/@TextureRect@1243",
+      "type": "TextureRect",
+      "rect": "(1093, -108), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_6_3/@Label@1244",
+      "type": "Label",
+      "rect": "(1043, -53), (134, 30)",
+      "text": "焚き火",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_0",
+      "type": "Button",
+      "rect": "(635, -240), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_0/@TextureRect@1245",
+      "type": "TextureRect",
+      "rect": "(655, -220), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_0/@Label@1246",
+      "type": "Label",
+      "rect": "(605, -165), (134, 30)",
+      "text": "焚き火",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_1",
+      "type": "Button",
+      "rect": "(781, -240), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_1/@TextureRect@1247",
+      "type": "TextureRect",
+      "rect": "(801, -220), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_1/@Label@1248",
+      "type": "Label",
+      "rect": "(751, -165), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_2",
+      "type": "Button",
+      "rect": "(927, -240), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_2/@TextureRect@1249",
+      "type": "TextureRect",
+      "rect": "(947, -220), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_2/@Label@1250",
+      "type": "Label",
+      "rect": "(897, -165), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_3",
+      "type": "Button",
+      "rect": "(1073, -240), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_3/@TextureRect@1251",
+      "type": "TextureRect",
+      "rect": "(1093, -220), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_3/@Label@1252",
+      "type": "Label",
+      "rect": "(1043, -165), (134, 30)",
+      "text": "強個体",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_4",
+      "type": "Button",
+      "rect": "(1219, -240), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_4/@TextureRect@1253",
+      "type": "TextureRect",
+      "rect": "(1239, -220), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_7_4/@Label@1254",
+      "type": "Label",
+      "rect": "(1189, -165), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_0",
+      "type": "Button",
+      "rect": "(489, -352), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_0/@TextureRect@1255",
+      "type": "TextureRect",
+      "rect": "(509, -332), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_0/@Label@1256",
+      "type": "Label",
+      "rect": "(459, -277), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_1",
+      "type": "Button",
+      "rect": "(781, -352), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_1/@TextureRect@1257",
+      "type": "TextureRect",
+      "rect": "(801, -332), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_1/@Label@1258",
+      "type": "Label",
+      "rect": "(751, -277), (134, 30)",
+      "text": "強個体",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_2",
+      "type": "Button",
+      "rect": "(927, -352), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_2/@TextureRect@1259",
+      "type": "TextureRect",
+      "rect": "(947, -332), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_2/@Label@1260",
+      "type": "Label",
+      "rect": "(897, -277), (134, 30)",
+      "text": "商店",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_3",
+      "type": "Button",
+      "rect": "(1073, -352), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_3/@TextureRect@1261",
+      "type": "TextureRect",
+      "rect": "(1093, -332), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_8_3/@Label@1262",
+      "type": "Label",
+      "rect": "(1043, -277), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_0",
+      "type": "Button",
+      "rect": "(489, -464), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_0/@TextureRect@1263",
+      "type": "TextureRect",
+      "rect": "(509, -444), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_0/@Label@1264",
+      "type": "Label",
+      "rect": "(459, -389), (134, 30)",
+      "text": "焚き火",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_1",
+      "type": "Button",
+      "rect": "(927, -464), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_1/@TextureRect@1265",
+      "type": "TextureRect",
+      "rect": "(947, -444), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_1/@Label@1266",
+      "type": "Label",
+      "rect": "(897, -389), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_2",
+      "type": "Button",
+      "rect": "(1073, -464), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_2/@TextureRect@1267",
+      "type": "TextureRect",
+      "rect": "(1093, -444), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_2/@Label@1268",
+      "type": "Label",
+      "rect": "(1043, -389), (134, 30)",
+      "text": "焚き火",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_3",
+      "type": "Button",
+      "rect": "(1219, -464), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_3/@TextureRect@1269",
+      "type": "TextureRect",
+      "rect": "(1239, -444), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_9_3/@Label@1270",
+      "type": "Label",
+      "rect": "(1189, -389), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_0",
+      "type": "Button",
+      "rect": "(489, -576), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_0/@TextureRect@1271",
+      "type": "TextureRect",
+      "rect": "(509, -556), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_0/@Label@1272",
+      "type": "Label",
+      "rect": "(459, -501), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_1",
+      "type": "Button",
+      "rect": "(781, -576), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_1/@TextureRect@1273",
+      "type": "TextureRect",
+      "rect": "(801, -556), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_1/@Label@1274",
+      "type": "Label",
+      "rect": "(751, -501), (134, 30)",
+      "text": "商店",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_2",
+      "type": "Button",
+      "rect": "(927, -576), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_2/@TextureRect@1275",
+      "type": "TextureRect",
+      "rect": "(947, -556), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_2/@Label@1276",
+      "type": "Label",
+      "rect": "(897, -501), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_3",
+      "type": "Button",
+      "rect": "(1073, -576), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_3/@TextureRect@1277",
+      "type": "TextureRect",
+      "rect": "(1093, -556), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_10_3/@Label@1278",
+      "type": "Label",
+      "rect": "(1043, -501), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_0",
+      "type": "Button",
+      "rect": "(489, -688), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_0/@TextureRect@1279",
+      "type": "TextureRect",
+      "rect": "(509, -668), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_0/@Label@1280",
+      "type": "Label",
+      "rect": "(459, -613), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_1",
+      "type": "Button",
+      "rect": "(635, -688), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_1/@TextureRect@1281",
+      "type": "TextureRect",
+      "rect": "(655, -668), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_1/@Label@1282",
+      "type": "Label",
+      "rect": "(605, -613), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_2",
+      "type": "Button",
+      "rect": "(781, -688), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_2/@TextureRect@1283",
+      "type": "TextureRect",
+      "rect": "(801, -668), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_2/@Label@1284",
+      "type": "Label",
+      "rect": "(751, -613), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_3",
+      "type": "Button",
+      "rect": "(1073, -688), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_3/@TextureRect@1285",
+      "type": "TextureRect",
+      "rect": "(1093, -668), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_3/@Label@1286",
+      "type": "Label",
+      "rect": "(1043, -613), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_4",
+      "type": "Button",
+      "rect": "(1219, -688), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_4/@TextureRect@1287",
+      "type": "TextureRect",
+      "rect": "(1239, -668), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_11_4/@Label@1288",
+      "type": "Label",
+      "rect": "(1189, -613), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_0",
+      "type": "Button",
+      "rect": "(489, -800), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_0/@TextureRect@1289",
+      "type": "TextureRect",
+      "rect": "(509, -780), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_0/@Label@1290",
+      "type": "Label",
+      "rect": "(459, -725), (134, 30)",
+      "text": "工房",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_0/@Label@1291",
+      "type": "Label",
+      "rect": "(555, -816), (30, 34)",
+      "text": "★",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_1",
+      "type": "Button",
+      "rect": "(635, -800), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_1/@TextureRect@1292",
+      "type": "TextureRect",
+      "rect": "(655, -780), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_1/@Label@1293",
+      "type": "Label",
+      "rect": "(605, -725), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_2",
+      "type": "Button",
+      "rect": "(781, -800), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_2/@TextureRect@1294",
+      "type": "TextureRect",
+      "rect": "(801, -780), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_2/@Label@1295",
+      "type": "Label",
+      "rect": "(751, -725), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_3",
+      "type": "Button",
+      "rect": "(927, -800), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_3/@TextureRect@1296",
+      "type": "TextureRect",
+      "rect": "(947, -780), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_3/@Label@1297",
+      "type": "Label",
+      "rect": "(897, -725), (134, 30)",
+      "text": "強個体",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_4",
+      "type": "Button",
+      "rect": "(1073, -800), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_4/@TextureRect@1298",
+      "type": "TextureRect",
+      "rect": "(1093, -780), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_4/@Label@1299",
+      "type": "Label",
+      "rect": "(1043, -725), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_5",
+      "type": "Button",
+      "rect": "(1365, -800), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_5/@TextureRect@1300",
+      "type": "TextureRect",
+      "rect": "(1385, -780), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_12_5/@Label@1301",
+      "type": "Label",
+      "rect": "(1335, -725), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_0",
+      "type": "Button",
+      "rect": "(489, -912), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_0/@TextureRect@1302",
+      "type": "TextureRect",
+      "rect": "(509, -892), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_0/@Label@1303",
+      "type": "Label",
+      "rect": "(459, -837), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_1",
+      "type": "Button",
+      "rect": "(635, -912), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_1/@TextureRect@1304",
+      "type": "TextureRect",
+      "rect": "(655, -892), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_1/@Label@1305",
+      "type": "Label",
+      "rect": "(605, -837), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_2",
+      "type": "Button",
+      "rect": "(927, -912), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_2/@TextureRect@1306",
+      "type": "TextureRect",
+      "rect": "(947, -892), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_2/@Label@1307",
+      "type": "Label",
+      "rect": "(897, -837), (134, 30)",
+      "text": "戦闘",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_3",
+      "type": "Button",
+      "rect": "(1073, -912), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_3/@TextureRect@1308",
+      "type": "TextureRect",
+      "rect": "(1093, -892), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_3/@Label@1309",
+      "type": "Label",
+      "rect": "(1043, -837), (134, 30)",
+      "text": "商店",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_4",
+      "type": "Button",
+      "rect": "(1365, -912), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_4/@TextureRect@1310",
+      "type": "TextureRect",
+      "rect": "(1385, -892), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_13_4/@Label@1311",
+      "type": "Label",
+      "rect": "(1335, -837), (134, 30)",
+      "text": "？",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_0",
+      "type": "Button",
+      "rect": "(489, -1024), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_0/@TextureRect@1312",
+      "type": "TextureRect",
+      "rect": "(509, -1004), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_0/@Label@1313",
+      "type": "Label",
+      "rect": "(459, -949), (134, 30)",
+      "text": "焚き火",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_1",
+      "type": "Button",
+      "rect": "(1073, -1024), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_1/@TextureRect@1314",
+      "type": "TextureRect",
+      "rect": "(1093, -1004), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_1/@Label@1315",
+      "type": "Label",
+      "rect": "(1043, -949), (134, 30)",
+      "text": "焚き火",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_2",
+      "type": "Button",
+      "rect": "(1219, -1024), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_2/@TextureRect@1316",
+      "type": "TextureRect",
+      "rect": "(1239, -1004), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_2/@Label@1317",
+      "type": "Label",
+      "rect": "(1189, -949), (134, 30)",
+      "text": "焚き火",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_3",
+      "type": "Button",
+      "rect": "(1365, -1024), (74, 74)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_3/@TextureRect@1318",
+      "type": "TextureRect",
+      "rect": "(1385, -1004), (34, 34)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_14_3/@Label@1319",
+      "type": "Label",
+      "rect": "(1335, -949), (134, 30)",
+      "text": "焚き火",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_15_0",
+      "type": "Button",
+      "rect": "(912, -1151), (104, 104)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_15_0/@TextureRect@1320",
+      "type": "TextureRect",
+      "rect": "(936, -1127), (56, 56)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapNode_15_0/@Label@1321",
+      "type": "Label",
+      "rect": "(882, -1046), (164, 30)",
+      "text": "幕の主",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/@TextureRect@1322",
+      "type": "TextureRect",
+      "rect": "(951, 673), (40, 40)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/@Label@1323",
+      "type": "Label",
+      "rect": "(911, 715), (120, 30)",
+      "text": "スタート",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@ScrollContainer@1188/@CenterContainer@1189/@Control@1190/MapAnnotations",
+      "type": "Control",
+      "rect": "(421, -1182), (1100, 1932)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325",
+      "type": "HFlowContainer",
+      "rect": "(32, 678), (1886, 30)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1326",
+      "type": "HBoxContainer",
+      "rect": "(32, 678), (76, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1326/@TextureRect@1327",
+      "type": "TextureRect",
+      "rect": "(32, 678), (24, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1326/MapLegend_battle",
+      "type": "Label",
+      "rect": "(68, 678), (40, 30)",
+      "text": "戦闘",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1329",
+      "type": "HBoxContainer",
+      "rect": "(120, 678), (96, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1329/@TextureRect@1330",
+      "type": "TextureRect",
+      "rect": "(120, 678), (24, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1329/MapLegend_elite",
+      "type": "Label",
+      "rect": "(156, 678), (60, 30)",
+      "text": "強個体",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1332",
+      "type": "HBoxContainer",
+      "rect": "(228, 678), (56, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1332/@TextureRect@1333",
+      "type": "TextureRect",
+      "rect": "(228, 678), (24, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1332/MapLegend_event",
+      "type": "Label",
+      "rect": "(264, 678), (20, 30)",
+      "text": "？",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1335",
+      "type": "HBoxContainer",
+      "rect": "(296, 678), (96, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1335/@TextureRect@1336",
+      "type": "TextureRect",
+      "rect": "(296, 678), (24, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1335/MapLegend_campfire",
+      "type": "Label",
+      "rect": "(332, 678), (60, 30)",
+      "text": "焚き火",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1338",
+      "type": "HBoxContainer",
+      "rect": "(404, 678), (76, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1338/@TextureRect@1339",
+      "type": "TextureRect",
+      "rect": "(404, 678), (24, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1338/MapLegend_shop",
+      "type": "Label",
+      "rect": "(440, 678), (40, 30)",
+      "text": "商店",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1341",
+      "type": "HBoxContainer",
+      "rect": "(492, 678), (76, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1341/@TextureRect@1342",
+      "type": "TextureRect",
+      "rect": "(492, 678), (24, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1341/MapLegend_workshop",
+      "type": "Label",
+      "rect": "(528, 678), (40, 30)",
+      "text": "工房",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1344",
+      "type": "HBoxContainer",
+      "rect": "(580, 678), (76, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1344/@TextureRect@1345",
+      "type": "TextureRect",
+      "rect": "(580, 678), (24, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1344/MapLegend_treasure",
+      "type": "Label",
+      "rect": "(616, 678), (40, 30)",
+      "text": "宝箱",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1347",
+      "type": "HBoxContainer",
+      "rect": "(668, 678), (96, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1347/@TextureRect@1348",
+      "type": "TextureRect",
+      "rect": "(668, 678), (24, 30)",
+      "text": "",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1325/@HBoxContainer@1347/MapLegend_boss",
+      "type": "Label",
+      "rect": "(704, 678), (60, 30)",
+      "text": "幕ボス",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@Label@1350",
+      "type": "Label",
+      "rect": "(32, 720), (1886, 30)",
+      "text": "幕 1 / 3 · 勝利 0 戦",
+      "mouse": "Ignore"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1351",
+      "type": "HFlowContainer",
+      "rect": "(32, 762), (1886, 64)",
+      "text": "",
+      "mouse": "Pass"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1351/@Button@1352",
+      "type": "Button",
+      "rect": "(32, 762), (131, 64)",
+      "text": "● 道を選ぶ",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1351/@Button@1353",
+      "type": "Button",
+      "rect": "(175, 762), (86, 64)",
+      "text": "紙ペン",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1351/@Button@1354",
+      "type": "Button",
+      "rect": "(273, 762), (86, 64)",
+      "text": "朱ペン",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1351/@Button@1355",
+      "type": "Button",
+      "rect": "(371, 762), (106, 64)",
+      "text": "消しゴム",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1351/@Button@1356",
+      "type": "Button",
+      "rect": "(489, 762), (86, 64)",
+      "text": "全消し",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@HFlowContainer@1351/@Button@1357",
+      "type": "Button",
+      "rect": "(587, 762), (166, 64)",
+      "text": "最後の線を消す",
+      "mouse": "Stop"
+    },
+    {
+      "path": "/root/DeckRogue/Interface/GameUI/@MarginContainer@1171/@VBoxContainer@1172/@VBoxContainer@1181/@Label@1358",
+      "type": "Label",
+      "rect": "(32, 838), (1886, 30)",
+      "text": "ペンを押すと指で地図に描ける",
+      "mouse": "Ignore"
+    }
+  ],
+  "stateSha": "a29c7ce8f8971789518e0e0dce83c2dd3e06a637e2a70dcb6c92ae1498073965",
+  "Revision": 2,
+  "EnemyHeadReadbacks": 0,
+  "EnemyHeadCacheHits": 0,
+  "ActiveHandDealCount": 0,
+  "HandDealStartCueCount": 0,
+  "ActiveHandHoverCount": 0,
+  "hoverUid": null,
+  "dragUid": null,
+  "overlayOpen": false,
+  "seats": {},
+  "hand": [],
+  "timeScale": 1.0
+}

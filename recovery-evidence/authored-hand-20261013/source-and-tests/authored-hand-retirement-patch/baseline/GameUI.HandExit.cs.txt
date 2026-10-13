@@ -1,0 +1,99 @@
+// Ordinary outgoing discard visuals only. Accepted played-card retirement,
+// contacts, commands, target selection and input fences keep their existing owner.
+using Godot;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using DeckRogue.Engine.Generated;
+namespace DeckRogue.GodotPort.UI;
+public partial class GameUI
+{
+    private sealed class UxHandExit
+    {
+        public CardTile Tile;public long Epoch;public SourceHandExitClock Clock;
+        public Vector2 From,To,FromScale,CanvasSize;public float Unit;
+    }
+    private readonly Dictionary<string,UxHandExit> _uxHandExits=new();
+    public int ActiveHandExitCount=>_uxHandExits.Count;
+    public long HandExitStartCount {get;private set;}
+    private bool UxHandExitIsCurrent(string uid,UxHandExit p)
+        =>p.Epoch==_uxEpoch&&!p.Clock.Cancelled&&_uxHandExits.TryGetValue(uid,out var active)&&ReferenceEquals(active,p)
+        &&!_uxTiles.ContainsKey(uid)&&GodotObject.IsInstanceValid(p.Tile)&&!p.Tile.IsQueuedForDeletion()&&p.Tile.GetParent()==_uxHand;
+    private bool UxUseDiscardFlight(string uid,GameState state)
+    {
+        bool played=UxRemovedPlayedCard(new[]{uid});
+        return SourceHandExitMotion.IsOrdinaryDiscard(played,state.Player.SetCards.Any(c=>c.Uid==uid),
+            state.Player.Permanents.Any(c=>c.Uid==uid),state.Player.ExhaustPile.Any(c=>c.Uid==uid));
+    }
+    private Vector2 UxDiscardCenter()
+    {
+        var pile=_uxBattle?.GetNodeOrNull<Control>("DiscardPile");
+        if(pile!=null&&GodotObject.IsInstanceValid(pile)&&!pile.IsQueuedForDeletion())
+            return _uxHand.GetGlobalTransformWithCanvas().AffineInverse()*(pile.GetGlobalTransformWithCanvas()*(pile.Size/2));
+        // Unity FlyTo missing-anchor fallback (900,-100), converted from the
+        // centered, up-positive hand layer to this full-screen Godot layer.
+        float cs=UxCardScale,u=BattleUnit,handY=PhoneLayout?-3:11;
+        return new Vector2(Size.X/2+900*u,Size.Y-(handY+(290*cs+40)/2-100)*u);
+    }
+    private void UxRetireRemovedHand(string uid,GameState state,int ordinal)
+    {
+        var gone=_uxTiles[uid];UxCancelHandHover(uid,false);UxCancelHandDeal(uid,false);
+        _uxTiles.Remove(uid);_uxSeats.Remove(uid);gone.MouseFilter=MouseFilterEnum.Ignore;
+        if(UxUseDiscardFlight(uid,state))
+        {
+            UxCancelHandExit(uid);gone.Disabled=true;gone.AllowDrag=false;gone.SetProcess(false);gone.ZIndex=0;
+            var p=new UxHandExit{Tile=gone,Epoch=_uxEpoch,Clock=new SourceHandExitClock(SourceHandExitMotion.Delay(ordinal),Godot.Engine.GetProcessFrames()),
+                From=gone.Position,To=UxDiscardCenter()-gone.PivotOffset,FromScale=gone.Scale,CanvasSize=Size,Unit=BattleUnit};
+            _uxHandExits[uid]=p;UxStartHandExit(uid,p);return;
+        }
+        // Exact existing contact-owned retirement retained for played UIDs and
+        // special destinations. Their full source styles are outside this patch.
+        var tween=CreateTween();tween.TweenProperty(gone,"modulate:a",0f,_uxRetirement?.Invoke(gone.GetMeta("definition_id","").AsString())??.25);
+        tween.TweenCallback(Callable.From(()=>{if(GodotObject.IsInstanceValid(gone))gone.QueueFree();}));
+    }
+    private void UxStartHandExit(string uid,UxHandExit p)
+    {
+        if(!UxHandExitIsCurrent(uid,p)||!p.Clock.TakeStart())return;
+        p.From=p.Tile.Position;p.FromScale=p.Tile.Scale;var color=p.Tile.Modulate;color.A=1;p.Tile.Modulate=color;
+        _uxHand.MoveChild(p.Tile,_uxHand.GetChildCount()-1);HandExitStartCount++;
+    }
+    private void UxRestoreHandExitOrder()
+    {
+        // Sync puts live cards at their fan indexes in Unity. The Godot fan uses
+        // MoveChild(last), so restore the already-retired visuals above that fan.
+        foreach(var pair in _uxHandExits)if(UxHandExitIsCurrent(pair.Key,pair.Value))_uxHand.MoveChild(pair.Value.Tile,_uxHand.GetChildCount()-1);
+    }
+    private void UxCancelHandExit(string uid)
+    {
+        if(!_uxHandExits.Remove(uid,out var p))return;p.Clock.Cancel();
+        if(GodotObject.IsInstanceValid(p.Tile)&&!p.Tile.IsQueuedForDeletion()&&
+            (!_uxTiles.TryGetValue(uid,out var live)||!ReferenceEquals(live,p.Tile))){p.Tile.Hide();p.Tile.QueueFree();}
+    }
+    private void UxCancelHandExits(){foreach(var uid in _uxHandExits.Keys.ToArray())UxCancelHandExit(uid);}
+    private void UxTickHandExits(double delta)
+    {
+        if(_uxHandExits.Count==0)return;
+        if(CurrentRoute!="combat"||_overlay!=null||_uxHand==null||!GodotObject.IsInstanceValid(_uxHand)||!_uxHand.IsVisibleInTree())
+        {UxCancelHandExits();return;}
+        ulong frame=Godot.Engine.GetProcessFrames();
+        foreach(var pair in _uxHandExits.ToArray())
+        {
+            string uid=pair.Key;var p=pair.Value;
+            if(!UxHandExitIsCurrent(uid,p)||p.CanvasSize!=Size||Math.Abs(p.Unit-BattleUnit)>.0001f){UxCancelHandExit(uid);continue;}
+            p.Clock.Advance(delta,frame);UxStartHandExit(uid,p);if(!p.Clock.Started)continue;
+            var pose=SourceHandExitMotion.Sample(p.Clock.Elapsed);p.Tile.Position=p.From.Lerp(p.To,pose.PositionFraction);
+            p.Tile.Scale=p.FromScale.Lerp(Vector2.One*(SourceHandExitMotion.EndScale*p.Unit),pose.ScaleFraction);
+            var color=p.Tile.Modulate;color.A=pose.Alpha;p.Tile.Modulate=color;
+            if(pose.Complete)UxCancelHandExit(uid);
+        }
+    }
+    private void UxReturnHandDrag(string uid)
+    {
+        if(!_uxTiles.TryGetValue(uid,out var tile)||!_uxSeats.TryGetValue(uid,out var seat))return;
+        if(_uxHover==uid)_uxHover=null;tile.ZIndex=0;
+        if(CurrentRoute!="combat"||_overlay!=null||_play!=null||IsInputBlocked)
+        {UxCancelHandHover(uid,false);UxCancelHandDeal(uid,false);tile.Position=seat.Pos;tile.Scale=Vector2.One*(UxCardScale*BattleUnit);tile.RotationDegrees=seat.Rotation;}
+        else UxStartHandHover(uid,tile,seat.Pos,Vector2.One*(UxCardScale*BattleUnit),seat.Rotation,true);
+        RestoreUxHandOrder();
+    }
+}

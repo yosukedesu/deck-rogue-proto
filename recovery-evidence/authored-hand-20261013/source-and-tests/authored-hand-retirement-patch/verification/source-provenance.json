@@ -1,0 +1,30 @@
+{
+  "stage41_battle_view": {
+    "path": "unity-source-provenance-20261013/extracted/DeckRogue-Cumulative-Stage41-from-2f31050-20261010/payload/unity/Assets/Game/BattleView.cs",
+    "sha256": "8f6824506a7d344623ee7dd215a1128157d9306abf757c6dca053e8a966276f1"
+  },
+  "stage41_battle_screen": {
+    "path": "unity-source-provenance-20261013/extracted/DeckRogue-Cumulative-Stage41-from-2f31050-20261010/payload/unity/Assets/Game/BattleScreen.cs",
+    "sha256": "c1b6e25b98a3238afedfd672f55329125465dc996aed0c5d97607b6562ee979e"
+  },
+  "stage41_presenter": {
+    "path": "unity-source-provenance-20261013/extracted/DeckRogue-Cumulative-Stage41-from-2f31050-20261010/payload/unity/Assets/Game/Presenter.cs",
+    "sha256": "9c23634dccd16948c641785c7338d8f0ce7cd4649d9a0ef0147b3a2c0d0950c4"
+  },
+  "stage41_numeric": {
+    "path": "unity-source-provenance-20261013/extracted/DeckRogue-Cumulative-Stage41-from-2f31050-20261010/payload/unity/Assets/Game/PresenterNumeric.cs",
+    "sha256": "d7c31c407d140d9d139611d986c4680f4b896fd95f07fb84d5b20eb949a63f2a"
+  },
+  "shared_tween": {
+    "path": "deckrogue_cloud_migration/worktree/unity/Assets/Game/Tween.cs",
+    "sha256": "813f35b26ebaa307b630c1137d511087c137e49dad42383ebe4929cacd7e09c4"
+  },
+  "newer_ice_candidate": {
+    "path": "unity-source-provenance-20261013/extracted/DeckRogue_Ice_BattleView_Source_20261011/Assets/Game/BattleView.cs",
+    "sha256": "1c749392b651d2325e4b94e10c57a2ab9f8d28c00efd87a0045ca08425b91965"
+  },
+  "stage41_card_profile": {
+    "path": "unity-source-provenance-20261013/extracted/DeckRogue-Cumulative-Stage41-from-2f31050-20261010/payload/unity/Assets/Game/CardVfxProfile.cs",
+    "sha256": "5a8131359a038ff5b69e254d840887acd6d0a3328053d8135d7bfd8fa3473038"
+  }
+}

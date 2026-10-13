@@ -1,0 +1,33 @@
+// Managed behavioral harness only. These stubs do not constitute native Godot QA.
+using System;using System.Collections.Generic;
+namespace Godot {
+public readonly record struct Vector2(float X,float Y){public static Vector2 One=>new(1,1);public static Vector2 Zero=>new(0,0);public Vector2 Lerp(Vector2 to,float k)=>this+(to-this)*k;public static Vector2 operator+(Vector2 a,Vector2 b)=>new(a.X+b.X,a.Y+b.Y);public static Vector2 operator-(Vector2 a,Vector2 b)=>new(a.X-b.X,a.Y-b.Y);public static Vector2 operator*(Vector2 a,float b)=>new(a.X*b,a.Y*b);public static Vector2 operator/(Vector2 a,float b)=>new(a.X/b,a.Y/b);}
+public struct Color{public float A;}
+public readonly record struct Transform2D(Vector2 Offset){public Transform2D AffineInverse()=>new(Vector2.Zero-Offset);public static Vector2 operator*(Transform2D t,Vector2 v)=>t.Offset+v;}
+public class GodotObject{public static bool IsInstanceValid(GodotObject x)=>x!=null;}
+public class Node:GodotObject{public string Name="";public Node Parent;public List<Node> Children=new();public bool Queued;public void AddChild(Node n){Children.Add(n);n.Parent=this;}public Node GetParent()=>Parent;public int GetChildCount()=>Children.Count;public void MoveChild(Node n,int index){Children.Remove(n);Children.Insert(Math.Min(index,Children.Count),n);}public bool IsQueuedForDeletion()=>Queued;public void QueueFree()=>Queued=true;public T GetNodeOrNull<T>(string name)where T:Node{foreach(var c in Children)if(c.Name==name)return c as T;return null;}}
+public class Control:Node{public enum MouseFilterEnum{Stop,Pass,Ignore}public Vector2 Position,Scale=Vector2.One,Size,PivotOffset;public float RotationDegrees;public int ZIndex;public bool Visible=true;public Color Modulate=new(){A=1};public MouseFilterEnum MouseFilter;public bool IsVisibleInTree()=>Visible;public void Hide()=>Visible=false;public Transform2D GetGlobalTransformWithCanvas()=>new(Position+(Parent is Control p?p.GetGlobalTransformWithCanvas().Offset:Vector2.Zero));}
+public readonly record struct Variant(string Value){public string AsString()=>Value;}
+public static class Engine{public static ulong Frame;public static ulong GetProcessFrames()=>Frame;}
+public readonly record struct Callable(Action Fn,Action<float> FloatFn=null){public static Callable From(Action fn)=>new(fn);public static Callable From<T>(Action<T> fn)=>new(null,v=>fn((T)(object)v));}
+public class Tween:GodotObject{
+ public double Duration,Elapsed;public bool Killed,Finished;public int CompletedFrame=-1,FirstSampleFrame=-1;public Action<float> Update;public Action Done;
+ public Tween TweenProperty(Control tile,string name,float value,double seconds){Duration=seconds;float alpha=tile.Modulate.A;Update=k=>{var c=tile.Modulate;c.A=alpha+(value-alpha)*k;tile.Modulate=c;};return this;}
+ public Tween TweenMethod(Callable callback,float from,float to,double seconds){Duration=seconds;Update=k=>callback.FloatFn(from+(to-from)*k);return this;}
+ public void TweenCallback(Callable c)=>Done=c.Fn;public bool IsValid()=>!Killed&&!Finished;public void Kill()=>Killed=true;
+ public void Step(double delta,int frame){if(Killed||Finished)return;if(FirstSampleFrame<0)FirstSampleFrame=frame;Elapsed+=delta;Update?.Invoke((float)Math.Clamp(Elapsed/Duration,0,1));if(!Killed&&Elapsed>=Duration){Finished=true;CompletedFrame=frame;Done?.Invoke();}}
+ public void StaleUpdate(float k)=>Update?.Invoke(k);public void StaleComplete()=>Done?.Invoke();
+ }
+}
+namespace DeckRogue.Engine.Generated {
+public sealed class CardDef{public string Id;public CardDef(string id){Id=id;}}
+public sealed class CardInstance{public string Uid;public CardDef Def;public CardInstance(string uid,string id="green_strike"){Uid=uid;Def=new(id);}}
+public sealed class PlayerState{public List<CardInstance> Hand=new(),SetCards=new(),Permanents=new(),ExhaustPile=new();}
+public sealed class GameState{public PlayerState Player=new();}
+public sealed class RunState{public GameState Combat=new();public string Phase="combat";}
+public abstract record RunCommand;public sealed record RunCommand_Combat:RunCommand{public Command Command;}
+public abstract record Command;public sealed record Command_PlayCard:Command{public string CardUid;public int? TargetIndex;}
+public sealed record Command_SetCard:Command{public string CardUid;}
+public abstract class GameEvent{}
+}
+namespace DeckRogue.GodotPort.UI{public class CardTile:Godot.Control{public bool Disabled,AllowDrag=true,Processing=true;public string Definition="attack";public Godot.Variant GetMeta(string k,string fallback)=>new(Definition);public void SetProcess(bool enabled)=>Processing=enabled;}}
