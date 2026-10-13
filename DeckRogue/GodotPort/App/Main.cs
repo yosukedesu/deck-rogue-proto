@@ -106,6 +106,7 @@ public class Main : Node
         DeckRogue.GodotPort.RecoveryQA.RecoveryStageQa.Start(this);
         DeckRogue.GodotPort.RecoveryQA.RecoveryMotionQa.Start(this);
         DeckRogue.GodotPort.RecoveryQA.RecoveryHandQa.Start(this);
+        DeckRogue.GodotPort.RecoveryQA.UnityParitySequenceQa.Start(this);
 #endif
 	}
 

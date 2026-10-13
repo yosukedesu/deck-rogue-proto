@@ -1,0 +1,20 @@
+{
+  "frames": 390,
+  "consecutiveProcess": true,
+  "consecutiveDraw": true,
+  "hostDeltas": [
+    0.016666668
+  ],
+  "pngHashesValid": true,
+  "final": {
+    "passed": true,
+    "frames": 390,
+    "consecutiveFrames": true,
+    "diagnostics": [],
+    "phase": "combat",
+    "turn": 2,
+    "remainingPresentation": false,
+    "scope": "Consecutive native frames, normal process/render loop. Fixed-fps capture is not live performance or complete Unity parity."
+  },
+  "videoSha256": "362f75d1d7a20da7f2ccf8a58149c8f6bd51ca54e068574d95fa44b72cb48d13"
+}
