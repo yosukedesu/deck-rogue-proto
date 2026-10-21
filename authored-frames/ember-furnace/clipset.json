@@ -1,0 +1,304 @@
+{
+  "enemyId": "enemy_ember_furnace",
+  "sourceCanvas": [
+    208,
+    144
+  ],
+  "frameCanvas": [
+    224,
+    160
+  ],
+  "sourceOffset": [
+    8,
+    8
+  ],
+  "anchor": [
+    112,
+    152
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "sourcePngSha256": "fa2eb10ec7c4c82d77604f0e1b044fd7985f1296b40d553021c40c9f6339cecb",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "7ec6adf2398345be573fd62587091baef99e7ca29bdbe82f367239e7b95f6feb"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "7ec6adf2398345be573fd62587091baef99e7ca29bdbe82f367239e7b95f6feb"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "629aaa459c0eebc02e22172e45e78f4e51a1ea625d89013f180ecb35c2b454d3"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "2ba9f413cc602ae463728e985ff2db887896072d5ba00a1d595a27fffb09d964"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "6d25f064c8c49d16356ab88f5a1f28d732b5cc8a33953d06095eba2286b6726a"
+      }
+    ],
+    "stokeprepare": [
+      {
+        "file": "stokeprepare.png",
+        "duration": 0.26,
+        "sha256": "db3603035fc3e6af9266b9f928149715c7ae5b98b66d77f989cec143317e7460"
+      }
+    ],
+    "stokehold": [
+      {
+        "file": "stokehold.png",
+        "duration": 0.3,
+        "sha256": "cc3657fe515f2c86c8cb7ee4a0a236b8d6733dcefd83fee51dcd9677977b578b"
+      }
+    ],
+    "devourprepare": [
+      {
+        "file": "devourprepare.png",
+        "duration": 0.26,
+        "sha256": "51f62f7814f42e54399b79ea96de2a1b9b8c90a026a2db845884ac26a27105e0"
+      }
+    ],
+    "devourcontact": [
+      {
+        "file": "devourcontact.png",
+        "duration": 0.12,
+        "sha256": "1d9749f7565d49b9f84f0de12a4a75c47bbc96407528f5325956367635988e2c"
+      }
+    ],
+    "devourrebound": [
+      {
+        "file": "devourrebound.png",
+        "duration": 0.16,
+        "sha256": "16651ae07c7b9b275b5abedb59cf666a6b814ace238fab2dc2a158e8785a82da"
+      }
+    ],
+    "searprepare": [
+      {
+        "file": "searprepare.png",
+        "duration": 0.26,
+        "sha256": "537382a7a982e581f99d85a2b84bdf1f8326a4e84b470aac975e7fd4efcb5150"
+      }
+    ],
+    "searcontact": [
+      {
+        "file": "searcontact.png",
+        "duration": 0.12,
+        "sha256": "717a2c281d39c0811dde94216c0992030ac86f7b1c99f09e85a61210c945bc36"
+      }
+    ],
+    "tackleprepare": [
+      {
+        "file": "tackleprepare.png",
+        "duration": 0.26,
+        "sha256": "59ddc4a46568250e30f4efa365edbe99ae40e064b541f5b16e99952d59efb463"
+      }
+    ],
+    "tacklecontacta": [
+      {
+        "file": "tacklecontacta.png",
+        "duration": 0.12,
+        "sha256": "ce0f76f04e455a0e6eec4a165488e30007e87d74a77430e617879fbb33903d25"
+      }
+    ],
+    "tacklerebound": [
+      {
+        "file": "tacklerebound.png",
+        "duration": 0.16,
+        "sha256": "2aa0f10608f98dcf4ea66198634e3777b643fdccc8c0dc84cbf7157fe9776fdb"
+      }
+    ],
+    "tacklecontactb": [
+      {
+        "file": "tacklecontactb.png",
+        "duration": 0.12,
+        "sha256": "bc9897790f5c3551c9db82beb6e3f3d22eacead01888e470b91b31aea3e0b9d1"
+      }
+    ],
+    "inflameprepare": [
+      {
+        "file": "inflameprepare.png",
+        "duration": 0.26,
+        "sha256": "c45366f146cb81e25950cf628533d41502ad0aa6efd599339304f79136b0cfec"
+      }
+    ],
+    "inflamehold": [
+      {
+        "file": "inflamehold.png",
+        "duration": 0.3,
+        "sha256": "42f8df3504cc150fb3add802ed4cab66b1b6a34371552405caeb17d595ff93bb"
+      }
+    ],
+    "infernoprepare": [
+      {
+        "file": "infernoprepare.png",
+        "duration": 0.26,
+        "sha256": "400d73a1b00a61332ebb0c4e8f1b79feddd47a87e8c15bcbae934af5fe37577e"
+      }
+    ],
+    "infernocontact": [
+      {
+        "file": "infernocontact.png",
+        "duration": 0.12,
+        "sha256": "547db37be6597a55b750ea969c0354bd977c7f4ed0a9d16542f4162193ebc00e"
+      }
+    ],
+    "infernorebound": [
+      {
+        "file": "infernorebound.png",
+        "duration": 0.16,
+        "sha256": "6901c4e78478c0a7055fde911d580a382712140cc3e07689f562108e2fd3a6af"
+      }
+    ],
+    "block": [
+      {
+        "file": "stokehold.png",
+        "duration": 0.2,
+        "sha256": "cc3657fe515f2c86c8cb7ee4a0a236b8d6733dcefd83fee51dcd9677977b578b"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M66_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "4f3e050675aa736c96df27847f23623809f0479b33657a066b8d6aa6d15b430d",
+  "groundMaxY": 143,
+  "groundMaxYSemantics": "Planted near front paw sole143/boundary144",
+  "placementContract": {
+    "method": "Single common native scale per atlas based on calibration height. Source palette nearest mapping and binary alpha. Whole-frame planted support translation only; no part transforms or per-pose scaling.",
+    "nativeSupport": [
+      106,
+      144
+    ],
+    "landmark": "Near front paw ground support; no jaw/bbox registration",
+    "paddingReason": "Uniform transparent room for full limb/weapon extension. Exact original RGBA embedded unchanged.",
+    "originalSupport": [
+      98,
+      136
+    ],
+    "sourceSupportEvidence": "Artist native near front paw minus exact source embedding8,8"
+  },
+  "authoredMoves": [
+    "stoke",
+    "devour_ember",
+    "sear",
+    "tackle",
+    "inflame",
+    "inferno"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 19,
+  "fireOrigins": {
+    "coordinateSpace": "Padded native frame, top-left origin, pixels. Visually measured center of actual front grille/intake aperture.",
+    "canvas": [
+      224,
+      160
+    ],
+    "frames": {
+      "rest": [
+        58,
+        108
+      ],
+      "idle": [
+        55,
+        113
+      ],
+      "hurt": [
+        57,
+        120
+      ],
+      "recovery": [
+        55,
+        113
+      ],
+      "stokeprepare": [
+        53,
+        115
+      ],
+      "stokehold": [
+        50,
+        114
+      ],
+      "devourprepare": [
+        57,
+        102
+      ],
+      "devourcontact": [
+        50,
+        101
+      ],
+      "devourrebound": [
+        56,
+        104
+      ],
+      "searprepare": [
+        60,
+        111
+      ],
+      "searcontact": [
+        51,
+        94
+      ],
+      "tackleprepare": [
+        44,
+        117
+      ],
+      "tacklecontacta": [
+        52,
+        104
+      ],
+      "tacklerebound": [
+        51,
+        115
+      ],
+      "tacklecontactb": [
+        58,
+        105
+      ],
+      "inflameprepare": [
+        55,
+        114
+      ],
+      "inflamehold": [
+        61,
+        111
+      ],
+      "infernoprepare": [
+        55,
+        116
+      ],
+      "infernocontact": [
+        40,
+        99
+      ],
+      "infernorebound": [
+        51,
+        111
+      ]
+    },
+    "aliases": {
+      "block": "stokehold"
+    },
+    "runtimeContract": "Use actual displayed frame. No fake external painted fire; contact VFX only on real resolved sear/inferno events, no tackle fire or devour extra damage."
+  },
+  "approvedFireOriginsSha256": "6d39aba7bb4197f739ea251ea582cfe7af87dc44e88e20cfe0576a612a1b9f0e"
+}

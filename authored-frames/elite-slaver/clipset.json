@@ -1,0 +1,250 @@
+{
+  "schema": 1,
+  "status": "M54_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_elite_slaver",
+  "sourceCanvas": [
+    192,
+    112
+  ],
+  "frameCanvas": [
+    208,
+    112
+  ],
+  "sourceOffset": [
+    16,
+    0
+  ],
+  "anchor": [
+    112,
+    112
+  ],
+  "spriteOffset": [
+    -8,
+    0
+  ],
+  "groundMaxY": 103,
+  "groundMaxYSemantics": "original opaque-bottom diagnostic, not physical foot pivot",
+  "supportFootLandmarks": {
+    "reviewedPhysicalFeature": "rear-supporting-foot",
+    "source": [
+      170,
+      102
+    ],
+    "sourceUnpadded": [
+      154,
+      102
+    ],
+    "horizontalToleranceTexels": 0,
+    "verticalToleranceTexels": 0,
+    "frames": {
+      "chaincontact.png": [
+        170,
+        102
+      ],
+      "chainprepare.png": [
+        170,
+        102
+      ],
+      "guardhold.png": [
+        170,
+        102
+      ],
+      "guardprepare.png": [
+        170,
+        102
+      ],
+      "hurt.png": [
+        170,
+        102
+      ],
+      "idle.png": [
+        170,
+        102
+      ],
+      "lashcontact.png": [
+        170,
+        102
+      ],
+      "lashprepare.png": [
+        170,
+        102
+      ],
+      "netapplied.png": [
+        170,
+        102
+      ],
+      "netprepare.png": [
+        170,
+        102
+      ],
+      "recovery.png": [
+        170,
+        102
+      ],
+      "rest_canvas.png": [
+        170,
+        102
+      ],
+      "weightcontact.png": [
+        170,
+        102
+      ],
+      "weightprepare.png": [
+        170,
+        102
+      ]
+    },
+    "featureEvidence": "Exact approved art manifest groundReference and frameProofs; original front foot may differ in height. Opaque bottom is never the pivot."
+  },
+  "supportFootProofSha256": "f03bc3bcff19b3ed4b9b7ba23f605c957ea8348e6b108605fb34463f116cecc6",
+  "registrationKind": "transparent-left-padding-exact-source-rest",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest_canvas.png",
+  "sourcePngSha256": "d436587bdb1e596670d1b54b162340b66549e0fb2fbbb17c44c4575a0f9d4105",
+  "sourceArtManifestSha256": "f03bc3bcff19b3ed4b9b7ba23f605c957ea8348e6b108605fb34463f116cecc6",
+  "authoredMoves": [
+    "chain",
+    "net",
+    "weight",
+    "lash",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "5d609b796a57a8d6a532f129e443cc75f9954f23e95d36a18249cc3530c450e0"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.55,
+        "sha256": "5d609b796a57a8d6a532f129e443cc75f9954f23e95d36a18249cc3530c450e0"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "7704e0a2de69f77a90ad96b90096252103bd6adcf1ef0834b8db5d931ba13510"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "e03177307e14d6879a1099bae3d4bcfdff41c935f25c47f2c1b77c69ee09edeb"
+      }
+    ],
+    "chainprepare": [
+      {
+        "file": "chainprepare.png",
+        "duration": 0.18,
+        "sha256": "d7ad894648d3cedfb739236b7bec49719cba2bbe156e75c52dd595a52d207a71"
+      }
+    ],
+    "chaincontact": [
+      {
+        "file": "chaincontact.png",
+        "duration": 0.05,
+        "sha256": "014995c95c161a288cd92f86a26f3d0d87758b2840e84047ecc8682c304f6394"
+      }
+    ],
+    "weightprepare": [
+      {
+        "file": "weightprepare.png",
+        "duration": 0.18,
+        "sha256": "10ba9ceb7da5e8782c4b3ecff7cb0b5f44b9201dbcf7f43bddb310f17fe65764"
+      }
+    ],
+    "weightcontact": [
+      {
+        "file": "weightcontact.png",
+        "duration": 0.05,
+        "sha256": "fec4ec12f915ab315ad09fa641aa546797af0b53b46075a76de3212133d063e7"
+      }
+    ],
+    "lashprepare": [
+      {
+        "file": "lashprepare.png",
+        "duration": 0.18,
+        "sha256": "53ee6c71d904bf297f3c6e5c1ab284f63c123cd567a3c0342073f749456371e5"
+      }
+    ],
+    "lashcontact": [
+      {
+        "file": "lashcontact.png",
+        "duration": 0.05,
+        "sha256": "4b05b0d638089ab19734048da48ddfd4c3bf2ba02bb007577d40f6851d2960a4"
+      }
+    ],
+    "netprepare": [
+      {
+        "file": "netprepare.png",
+        "duration": 0.18,
+        "sha256": "4d8e33d20ac470c618355059f7b9c0c1a2360f482c8d44cae2f20f76a93c0b39"
+      }
+    ],
+    "netapplied": [
+      {
+        "file": "netapplied.png",
+        "duration": 0.1,
+        "sha256": "4fca3c3cb776e3d0ebdc4ed202be2db28691026294d01e0a6dc2ba07b0b0d19e"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "210ca29a9b44cb24272708cb86225443dc53c121fb0f8cd7c2998ccf4a6fbbcc"
+      },
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "5d609b796a57a8d6a532f129e443cc75f9954f23e95d36a18249cc3530c450e0"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "825b5679a3be4e017fc71f1f0c16adb33292e49ddef462af8521168f6e4994cb"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "8058c8795ee933fb8c8205b91e1eb8bf371846ee0dcd5801cdc6e49bf99faeb1"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "210ca29a9b44cb24272708cb86225443dc53c121fb0f8cd7c2998ccf4a6fbbcc"
+      },
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "5d609b796a57a8d6a532f129e443cc75f9954f23e95d36a18249cc3530c450e0"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "5d609b796a57a8d6a532f129e443cc75f9954f23e95d36a18249cc3530c450e0"
+      }
+    ]
+  },
+  "physicalNewKeyCount": 13,
+  "recoveryAuthorship": "approved recovery+exact registered rest, never contact reuse",
+  "drawingOnlyDurationNormalization": {
+    "contactAndOwnEffectHoldSeconds": 0.05,
+    "netAppliedHoldSeconds": 0.1,
+    "rulesAndStageClocksChanged": false
+  }
+}

@@ -1,0 +1,503 @@
+{
+  "schema": 1,
+  "status": "M60_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "enemyId": "enemy_crab_crusher",
+  "sourceCanvas": [
+    224,
+    120
+  ],
+  "frameCanvas": [
+    256,
+    120
+  ],
+  "sourceOffset": [
+    32,
+    0
+  ],
+  "anchor": [
+    144,
+    120
+  ],
+  "spriteOffset": [
+    -16,
+    0
+  ],
+  "groundMaxY": 111,
+  "groundMaxYSemantics": "Compatibility envelope only. Wall attachment238,66.5 is the registration; no foot or ground exists.",
+  "placementContract": {
+    "kind": "wall-attachment",
+    "frames": {
+      "adapthold.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "adaptprepare.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "guardedcontact.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "guardedprepare.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "guardhold.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "guardprepare.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "hurt.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "idle.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "recovery.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "rest.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "stingcontacta.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "stingcontactb.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "stingprepare.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "stingrebound.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "swellcontact.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "swellprepare.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "thrashcontact.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      },
+      "thrashprepare.png": {
+        "kind": "wall-attachment",
+        "originalWallReference": [
+          206,
+          66.5
+        ],
+        "registeredWallReference": [
+          238,
+          66.5
+        ],
+        "bottomIsNotGround": true,
+        "spriteLocalPixelPoint": [
+          94.0,
+          -6.5
+        ]
+      }
+    },
+    "registration": {
+      "method": "One common scale369/191 from calibration full silhouette width versus original191. All eighteen generated poses extracted from their own opaque components, retaining small native wall chips. Nearest-point sampling, alpha>=128, nearest original31 opaque colors. Whole-frame translation registers actual stone-wall reference to original206,66.5 plus padding. No per-pose scaling, part manipulation, pixel painting, rigid pose transforms or synthetic frames.",
+      "commonRawPixelsPerNativePixel": 1.931937172774869,
+      "wallAttached": true,
+      "noFootOrGroundRegistration": true,
+      "originalWallReference": [
+        206,
+        66.5
+      ],
+      "nativeWallReference": [
+        238,
+        66.5
+      ],
+      "wallLandmark": "Right-side stationary stone-wall plane and its vertical midpoint; entire frame shifts only. Limb is continuously attached to wall.",
+      "renderAnchorExplanation": "Rendering anchor is original canvas bottom-center translated32px with transparent padding. This is a canvas transform only and is not used to infer an anatomical foot.",
+      "paddingReason": "Swell contact extends about25 native pixels left of the original224 canvas at the same common body scale. Add32 transparent pixels left to every frame; no body shrink and no clipping. SpriteOffset-16,0 retains original rendering placement. Engine anchor remains original canvas bottom-center plus transparent padding; physical pose registration is the wall, never a foot.",
+      "allFramesSameScale": true
+    },
+    "sprite3DPointFormula": {
+      "x": "pixelX-frameWidth/2+spriteOffsetX",
+      "y": "frameHeight/2-pixelY+spriteOffsetY"
+    },
+    "preserveOriginalStaticSize": [
+      224,
+      120
+    ]
+  },
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "d8cb9dd29facdbe3eb92deb5e5c8767cb1afd7ccf948db340fc3cf038f4122b2",
+  "approvedArtManifestSha256": "c85c64d243868f92d5d578075d0978227149fa06cddefeee473044b92f5bf5a7",
+  "authoredMoves": [
+    "thrash",
+    "swell_strike",
+    "bug_sting",
+    "adapt",
+    "guarded_strike",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 17,
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "977ad32ce70ba5144494464eba79092517bf9df46e600ae08412b958297bbaa9"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "977ad32ce70ba5144494464eba79092517bf9df46e600ae08412b958297bbaa9"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "740c5b56c5ef84af6a3d398074360a14bae3bbaa4e6b5068fa47805519204496"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "063c7280890245b03d4e2dc43ffab8b715e515246326449905d92d23b3825637"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "840f97969f3339d4acedcc91600736384f8b1c7aaa4daf9fd98b8df9c972dc2d"
+      }
+    ],
+    "thrashprepare": [
+      {
+        "file": "thrashprepare.png",
+        "duration": 0.22,
+        "sha256": "1d06e7801720657ea31f9160328b2177c453fc3a5f26e68babb5d49a5f98be41"
+      }
+    ],
+    "thrashcontact": [
+      {
+        "file": "thrashcontact.png",
+        "duration": 0.12,
+        "sha256": "f4de35e863ba86eb152a68e759ba83bb5721b26cfbe92ef0f0f8838b70e6c80b"
+      }
+    ],
+    "swellprepare": [
+      {
+        "file": "swellprepare.png",
+        "duration": 0.28,
+        "sha256": "b279fc2776ee77a276d96540beeddebbcca83a9cb7d13213fe4098c7fc51f07f"
+      }
+    ],
+    "swellcontact": [
+      {
+        "file": "swellcontact.png",
+        "duration": 0.14,
+        "sha256": "5132fdcf0ca5541a529ac30e0d23524e009deafd7318c70f84c5cf837f8270cb"
+      }
+    ],
+    "stingprepare": [
+      {
+        "file": "stingprepare.png",
+        "duration": 0.18,
+        "sha256": "5b8dce8edcb196a13ed223487c10ae0242c083806ea19400e1c3b93246688b60"
+      }
+    ],
+    "stingcontacta": [
+      {
+        "file": "stingcontacta.png",
+        "duration": 0.09,
+        "sha256": "49bdc43603295a58c47c547a1662d6682a623a3e0bbca623d525e56eeacb736c"
+      }
+    ],
+    "stingrebound": [
+      {
+        "file": "stingrebound.png",
+        "duration": 0.12,
+        "sha256": "893e89e826c3195ce19073e7091e06f13835b7455c767e1111e96c4eef7cc108"
+      }
+    ],
+    "stingcontactb": [
+      {
+        "file": "stingcontactb.png",
+        "duration": 0.09,
+        "sha256": "ab743f6b3576a1d51c2185c14a1730843bb75b8aa383446a1ecfd96e07c5687a"
+      }
+    ],
+    "adaptprepare": [
+      {
+        "file": "adaptprepare.png",
+        "duration": 0.22,
+        "sha256": "a2e25823829b851eec72852354c39c096950b8901ff491f1ed7a6d8cdbc1574f"
+      }
+    ],
+    "adapthold": [
+      {
+        "file": "adapthold.png",
+        "duration": 0.32,
+        "sha256": "8f282c6319f56fe4b36a819ffdb7ad4613021f69f5d01deec00dbd05333f3992"
+      }
+    ],
+    "guardedprepare": [
+      {
+        "file": "guardedprepare.png",
+        "duration": 0.24,
+        "sha256": "b713d5d14ab985a1c74b2712b99ee87a82c559e06262bb7bc5bcfda8520d04cf"
+      }
+    ],
+    "guardedcontact": [
+      {
+        "file": "guardedcontact.png",
+        "duration": 0.14,
+        "sha256": "72c5fbe5676107309860972ab5e0bcb440239feb76a8aa387f74ca3544e2a1ee"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.2,
+        "sha256": "1f32e26f04145b854d9e19cdb7244e505bfb4e6b0aa2cc7decb70d9780392d93"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.32,
+        "sha256": "18653aca8c752d51936388af4198bb17ea1a4825773a6acbffb4076980fdf6c3"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.2,
+        "sha256": "18653aca8c752d51936388af4198bb17ea1a4825773a6acbffb4076980fdf6c3"
+      }
+    ]
+  },
+  "drawingOnlyNormalization": "Original art durations retained; existing bounded selector windows own real-contact timing. No gameplay or release clock changes.",
+  "releaseContract": "All attacks are non-ranged contact only; no release or projectile."
+}

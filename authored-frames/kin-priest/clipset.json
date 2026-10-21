@@ -1,0 +1,211 @@
+{
+  "enemyId": "enemy_kin_priest",
+  "sourceCanvas": [
+    176,
+    144
+  ],
+  "frameCanvas": [
+    176,
+    144
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    88,
+    144
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "sourcePngSha256": "d6a210e79402644ec34763cc384b251f04cdc2abf1be4b6390dfb442b87f8568",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "abc34946ec5d78643f9924167192c043dae004876862690c924efc12bcaf7174"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "abc34946ec5d78643f9924167192c043dae004876862690c924efc12bcaf7174"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "e6e0973e4f200dc81ea0375c474ac93bb6397e28fdf82e74894b93bc10615632"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "052f8a335fa9015c63dcc80ed33feea99c38031e6b66cddf4b3480ae35ded784"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "253fdd13d1f7c311d7c53f280bdc50c3f54becc14a73ce39d67de4a9b7361041"
+      }
+    ],
+    "frailprepare": [
+      {
+        "file": "frailprepare.png",
+        "duration": 0.2,
+        "sha256": "c2eb2ea559adff28f2a61a0163c1b481953657258c83b9ee7d979006febc962d"
+      }
+    ],
+    "frailrelease": [
+      {
+        "file": "frailrelease.png",
+        "duration": 0.13,
+        "sha256": "abc880750becb67e8199bae617bcbba1fd22938f085583d56ec83eef48a9a4b1"
+      }
+    ],
+    "weakprepare": [
+      {
+        "file": "weakprepare.png",
+        "duration": 0.2,
+        "sha256": "5b2a252f63e7f24c33b1cf9d592791252e02047c0dbcae10eea226e941a607cd"
+      }
+    ],
+    "weakrelease": [
+      {
+        "file": "weakrelease.png",
+        "duration": 0.13,
+        "sha256": "1735dcba83120ab7985ed07e170814aaa21c24750ca335be71ce49b0115dae80"
+      }
+    ],
+    "beamprepare": [
+      {
+        "file": "beamprepare.png",
+        "duration": 0.22,
+        "sha256": "3cb828df8973ee7347c05bb32a72bc52f271e45eafefdc67166fca32552d5f3b"
+      }
+    ],
+    "beamrelease": [
+      {
+        "file": "beamrelease.png",
+        "duration": 0.1,
+        "sha256": "c484c254126c0a828924783cf654a8dec203850543660951fb1853df4fddf5b2"
+      }
+    ],
+    "beamrebound": [
+      {
+        "file": "beamrebound.png",
+        "duration": 0.1,
+        "sha256": "fd9c985ed40a9fafb8bc747258ea62587908ac8a769e545fc53219ff2f05f003"
+      }
+    ],
+    "ritualprepare": [
+      {
+        "file": "ritualprepare.png",
+        "duration": 0.24,
+        "sha256": "5d42fe1f952e294b82998b17a3fa6e53260ee66f95f07bb49920fc5ade6a7cf4"
+      }
+    ],
+    "ritualapplied": [
+      {
+        "file": "ritualapplied.png",
+        "duration": 0.32,
+        "sha256": "2f85523637797256502ebc5213b8ff04f3c0f3b90ca197e8b14f143c98bbda77"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.2,
+        "sha256": "8875e72a51e624b18c9fe99d3559cb9d1314cca0eb167cd94defcb8955ee10d6"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.3,
+        "sha256": "f59fea5f5abfbf52f71f500858af4211bd063adb23bcf24a8fb36e0a1338b9e7"
+      }
+    ],
+    "judgmentprepare": [
+      {
+        "file": "judgmentprepare.png",
+        "duration": 0.26,
+        "sha256": "d8665ae616d66cb4375ee414d2522677b82f329250ddd96acec66546a54aa839"
+      }
+    ],
+    "judgmentrelease": [
+      {
+        "file": "judgmentrelease.png",
+        "duration": 0.14,
+        "sha256": "d246ea74ca37ca4f93d0cc7d592509612ad917a636b7133e79cfaa9cda60a9b1"
+      }
+    ],
+    "bloodprepare": [
+      {
+        "file": "bloodprepare.png",
+        "duration": 0.26,
+        "sha256": "722d2ecb8e272904f78b4c30af4f5039ab22ad25af2a429d474dd1ec6e4efa51"
+      }
+    ],
+    "bloodrelease": [
+      {
+        "file": "bloodrelease.png",
+        "duration": 0.1,
+        "sha256": "e915646e1cc5cf0303b4c73c728c0412d8296c53d2986e1d1f09ff8ef64599c6"
+      }
+    ],
+    "bloodrebound": [
+      {
+        "file": "bloodrebound.png",
+        "duration": 0.1,
+        "sha256": "2e9372ebf38492dce7a70c7b2e9c4dfd0d4330758f3b60c946d38dd6631eb140"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.2,
+        "sha256": "f59fea5f5abfbf52f71f500858af4211bd063adb23bcf24a8fb36e0a1338b9e7"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M62_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "861ea581db037f147573cd8e1750a3df1645c991475f827d58ba98c01a0f53b7",
+  "groundMaxY": 135,
+  "groundMaxYSemantics": "Opaque robe hem135/boundary136; not anatomical feet.",
+  "placementContract": {
+    "method": "One calibration height266/source112 common nearest sampling scale; source exact palette and binary alpha. Whole-frame hem-support translation only. No per-pose fitting, painting, part transforms or procedural poses.",
+    "commonRawPixelsPerNativePixel": 2.375,
+    "originalSupport": [
+      92,
+      136
+    ],
+    "nativeSupport": [
+      92,
+      136
+    ],
+    "landmark": "Bottom robe-hem support span, not hand/hat. No visible anatomical feet inferred.",
+    "allFramesSameScale": true
+  },
+  "authoredMoves": [
+    "orb_frail",
+    "orb_weak",
+    "beam",
+    "ritual",
+    "guard",
+    "judgment_orb",
+    "blood_beam"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 19
+}

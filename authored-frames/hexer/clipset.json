@@ -1,0 +1,243 @@
+{
+  "schema": 1,
+  "status": "M23_FOUR_MOVE_IDLE_HURT_COMPLETION_CANDIDATE",
+  "enemyId": "enemy_hexer",
+  "displayName": "泥投げの妖術師",
+  "moveId": "mud",
+  "moveKind": "ranged_projectile",
+  "sourceCanvas": [
+    112,
+    96
+  ],
+  "frameCanvas": [
+    112,
+    96
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    56,
+    96
+  ],
+  "groundMaxY": 87,
+  "sourcePngSha256": "7a9583416539a7107f9e8d256dc66188505ea2898eb865894ec74e259b4df680",
+  "nativeRegistration": {
+    "rest": {
+      "bakedDelta": [
+        0,
+        0
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        21,
+        16,
+        90,
+        88
+      ],
+      "bboxAfter": [
+        21,
+        16,
+        90,
+        88
+      ],
+      "opaqueClipped": 0
+    },
+    "prepare": {
+      "bakedDelta": [
+        0,
+        -1
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        36,
+        15,
+        90,
+        89
+      ],
+      "bboxAfter": [
+        36,
+        14,
+        90,
+        88
+      ],
+      "opaqueClipped": 0
+    },
+    "release": {
+      "bakedDelta": [
+        0,
+        -1
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        13,
+        16,
+        91,
+        89
+      ],
+      "bboxAfter": [
+        13,
+        15,
+        91,
+        88
+      ],
+      "opaqueClipped": 0
+    },
+    "recovery": {
+      "bakedDelta": [
+        0,
+        0
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        32,
+        15,
+        91,
+        88
+      ],
+      "bboxAfter": [
+        32,
+        15,
+        91,
+        88
+      ],
+      "opaqueClipped": 0
+    }
+  },
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "7a9583416539a7107f9e8d256dc66188505ea2898eb865894ec74e259b4df680"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "prepare.png",
+        "duration": 0.18,
+        "sha256": "637bd5b6cac13a7b910b257456fb5c81bcd100ca1725c179881493caca2d2142"
+      }
+    ],
+    "release": [
+      {
+        "file": "release.png",
+        "duration": 0.11,
+        "sha256": "2266d6907c5d7e2ff4782f9fedbc40cddd52914eb003758609c045ae69a604fa"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.2,
+        "sha256": "1d847771db59ff4538cf7c8f5e910522c967def1d6bbb47c1756c7cacfc1c6ce"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.45,
+        "sha256": "7a9583416539a7107f9e8d256dc66188505ea2898eb865894ec74e259b4df680"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.45,
+        "sha256": "b2a150136e307733c57abe83e9b512591e31ec7a5fbec75e0c6928fa0fbd49da"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "597a8a48d99e9e2c97e758d478ac3232056d62d40cdb46e2e6679e4e46fb97a9"
+      }
+    ],
+    "curseprepare": [
+      {
+        "file": "curse_prepare.png",
+        "duration": 0.12,
+        "sha256": "527d6e334ea0e6f7745d668b652b3154e3a56824b45250ca3484d97356aa8e0d"
+      }
+    ],
+    "cursegesture": [
+      {
+        "file": "curse_gesture.png",
+        "duration": 0.1,
+        "sha256": "23e17a8f9fa194cb87fb7213afc6722cb3aa81ea6291a0688ecb3ab8e3641ba1"
+      }
+    ],
+    "slapprepare": [
+      {
+        "file": "slap_prepare.png",
+        "duration": 0.12,
+        "sha256": "4219385041bd2398e33d6bb5c08b57ea55a54f6c969afc329226e57e0e17a21e"
+      }
+    ],
+    "slapcontact": [
+      {
+        "file": "slap_contact.png",
+        "duration": 0.04,
+        "sha256": "599dc6aab53810a24b2beedf768ec954f3f37b94792e74e927250621cef4c48c"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guard_prepare.png",
+        "duration": 0.12,
+        "sha256": "ff1a754eeac786ccd4888ff92b93fc623577257403b3bd83e84ad325a2f50009"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.12,
+        "sha256": "290d5d8ff79decc34ed634d7a6f2235bdd132e933f57d9ae6a407034e51b221f"
+      }
+    ],
+    "block": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.08,
+        "sha256": "290d5d8ff79decc34ed634d7a6f2235bdd132e933f57d9ae6a407034e51b221f"
+      }
+    ]
+  },
+  "eventContract": "mud: original release/contact, secondary weak3 never becomes hex marker. curse: exact unique wound1/2 StatusInflicted in canonical closed Execution to Resolved interval once; before/after wound count and CardStatusRoom verified; Artifact does not block wound; room0 finite unmarked recovery. slap: single actual contact. guard: own actual BlockGained only.",
+  "durationNote": "Display-hold suggestions only; do not create, advance or extend gameplay timing.",
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "authoredMoves": [
+    "mud",
+    "curse",
+    "slap",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "runtimeAcceptance": "pending",
+  "runtimeAliases": {
+    "pixelsUnchanged": true,
+    "idle": "rest plus idle",
+    "hurt": "HP-loss-only hurt",
+    "reactiveBlock": "guard_hold independent block-notification",
+    "canvas": "112x96 anchor56,96 offset0,0 ground87 unchanged"
+  }
+}

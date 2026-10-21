@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "status": "M17_THREE_MOVE_IDLE_HURT_COMPLETION_CANDIDATE",
+  "sourceCanvas": [
+    96,
+    96
+  ],
+  "frameCanvas": [
+    96,
+    96
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    48,
+    96
+  ],
+  "groundMaxY": 87,
+  "sourcePngSha256": "330a4a97ab527026a7d129f4d60f9260438e4d13a738061c3dca37894b2fd47e",
+  "authoredMoves": [
+    "poke",
+    "lunge",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "registrationNote": "prepare+2y already baked into suppliedPNG; no extra runtime offset",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "330a4a97ab527026a7d129f4d60f9260438e4d13a738061c3dca37894b2fd47e"
+      }
+    ],
+    "windup": [
+      {
+        "file": "prepare.png",
+        "duration": 0.12,
+        "sha256": "2b7ed55f9c3c7a050a70b210219e512f58eda268e052fa0600cfedc245e190c7"
+      }
+    ],
+    "impact": [
+      {
+        "file": "thrust.png",
+        "duration": 0.04,
+        "sha256": "ab52fdf31ae4a8b88895a48a840f63d73cc97eec60088d6f784ea0fe126f7adf"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "32ed428640a01b0dd75e3dc8ea16a5a7a06e2f0b6eb5fe58b575a140dedc1117"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.48,
+        "sha256": "330a4a97ab527026a7d129f4d60f9260438e4d13a738061c3dca37894b2fd47e"
+      },
+      {
+        "file": "idle_breathe.png",
+        "duration": 0.48,
+        "sha256": "d1899dec07ed65129268e3fa4a974fade184c7f30ed6e1e2326182eb24b32a04"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "02b4630cbcd069850a0731cb054ad384d284e317f4237e679b97fbeb9007f85e"
+      }
+    ],
+    "lungeprepare": [
+      {
+        "file": "lunge_prepare.png",
+        "duration": 0.12,
+        "sha256": "5eb4adcb9a9c38a3b464f8c9ec0a3a6abf56626a7d9faa3fae798a4f28b26dba"
+      }
+    ],
+    "lungecontact": [
+      {
+        "file": "lunge_extend.png",
+        "duration": 0.04,
+        "sha256": "8011c3a239c0d32e542933f01c64202b6a5aeeceb9e32cd74521b753a89e9ad4"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guard_prepare.png",
+        "duration": 0.08,
+        "sha256": "d44567b4c1874c6c66ece63013fe1c501acb2a2036b7c04e19bfb8ad4d394311"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.16,
+        "sha256": "f6d534373ffa1264f60a502c33eb9df91aab649fbb8346c2552412f152fbaa64"
+      }
+    ],
+    "block": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.14,
+        "sha256": "f6d534373ffa1264f60a502c33eb9df91aab649fbb8346c2552412f152fbaa64"
+      }
+    ]
+  },
+  "runtimeHoldNote": "0.04 second contact-authored hold; real hit remains authoritative.",
+  "runtimeAliases": {
+    "pixelsUnchanged": true,
+    "sourceReadySha256": "3c93742e71c8eb34d52689e8f017da4ba45cf235219a65f745ac35ba87430e3a",
+    "poke": "existing windup/impact/recovery retained exactly",
+    "lunge": "separate lunge_prepare/lunge_extend selected only by owned real Contact",
+    "guard": "guard_prepare before own real BlockGained; guard_hold afterwards, recovery on finite support end",
+    "idle": "rest plus idle_breathe; initial placement resumes owned idle",
+    "hurt": "HP loss only; existing real reaction token epoch",
+    "reactiveBlock": "guard_hold drawing with distinct block-notification; no hurt on full defense"
+  }
+}

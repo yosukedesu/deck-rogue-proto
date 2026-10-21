@@ -1,0 +1,132 @@
+{
+  "enemyId": "enemy_forgotten_soul",
+  "sourceCanvas": [
+    128,
+    88
+  ],
+  "frameCanvas": [
+    128,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    64,
+    88
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "sourcePngSha256": "07f495e9664efd41c7e358cc38b8983f60223097bbaaffa06ae0af4c1b184c0e",
+  "schema": 1,
+  "status": "M40_RUNTIME_CANDIDATE_NOT_EXECUTED",
+  "groundMaxY": 79,
+  "sourceArtManifestSha256": "b2ea612455838ec1cdc41c23a25229c51e1254533f3192d0f6a5e0f4602551b5",
+  "authoredMoves": [
+    "miasma",
+    "dread",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "07f495e9664efd41c7e358cc38b8983f60223097bbaaffa06ae0af4c1b184c0e"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.5,
+        "sha256": "07f495e9664efd41c7e358cc38b8983f60223097bbaaffa06ae0af4c1b184c0e"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.5,
+        "sha256": "74b8620c913242bdefaa8cf2a0d273da3713e05672927e253c924e428e4dfb98"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "dd99a20cf2b748102d6d439449b0c24cdbc788114f313be229ff325778497442"
+      }
+    ],
+    "miasmaprepare": [
+      {
+        "file": "miasmaprepare.png",
+        "duration": 0.22,
+        "sha256": "0b7173b75484c5c6711b243ba134147bbbe0f4274ebb33500456c791068cd612"
+      }
+    ],
+    "miasmacontact": [
+      {
+        "file": "miasmacontact.png",
+        "duration": 0.055,
+        "sha256": "25ac0db8c41c02bda84b7808f5aa523a12bbe1d2dfb2511512a51b33fe17484a"
+      }
+    ],
+    "dreadprepare": [
+      {
+        "file": "dreadprepare.png",
+        "duration": 0.2,
+        "sha256": "3b506eae97c0b9a716b119a2a629dc8707df40ff76f87c76b9365af30d6e49e8"
+      }
+    ],
+    "dreadcontact": [
+      {
+        "file": "dreadcontact.png",
+        "duration": 0.05,
+        "sha256": "595fe66d9a449f5e94ba328fbaf10cf16d0dbe0ab2bf69358fe456531d1c2714"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.2,
+        "sha256": "6b32fa93cea2442cb4b5e561819a4dcccb7ef6e17869d8bea4d416ffefdfcb51"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.12,
+        "sha256": "df83eff477666a081f020f46b197bee85c581f526dd84350cefc099a68ffee60"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.12,
+        "sha256": "e311bafbad2aad21b75391ea14c45dc289ec762bb0f33842db40d724dd9d1da7"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.18,
+        "sha256": "e311bafbad2aad21b75391ea14c45dc289ec762bb0f33842db40d724dd9d1da7"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "6b32fa93cea2442cb4b5e561819a4dcccb7ef6e17869d8bea4d416ffefdfcb51"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.06,
+        "sha256": "07f495e9664efd41c7e358cc38b8983f60223097bbaaffa06ae0af4c1b184c0e"
+      }
+    ]
+  },
+  "hoverContract": "Original bottom-center anchor64,88; each exact native robe bound is whitelisted; never floor align."
+}

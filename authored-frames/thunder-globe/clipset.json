@@ -1,0 +1,423 @@
+{
+  "schema": 1,
+  "status": "M59_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "enemyId": "enemy_thunder_globe",
+  "sourceCanvas": [
+    168,
+    112
+  ],
+  "frameCanvas": [
+    168,
+    112
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    84,
+    112
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 103,
+  "groundMaxYSemantics": "Compatibility envelope metadata only; floating head is registered by temple center101,49; no ground feet",
+  "placementContract": {
+    "kind": "floating-head",
+    "frames": {
+      "burstprepare.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "burstrelease.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "guardhold.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "guardprepare.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "hurt.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "idle.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "recovery.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "rest.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "slapcontact.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "slapprepare.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "thunderprepare.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "thunderrebound.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      },
+      "thunderrelease.png": {
+        "kind": "floating-head-landmark",
+        "templeFittingCenter": [
+          101,
+          49
+        ],
+        "opaque": true,
+        "bottomIsNotGround": true
+      }
+    },
+    "registration": {
+      "method": "Shared3.0 raw/native scale from original~52px main globe width and generated~156px globe width. Nearest sampling, alpha>=128, nearest original30 opaque colors. Whole-frame translations register original temple-ring center, no per-pose body fit, part transforms, painting or generated effects. Native source canvas preserved without padding.",
+      "commonRawPixelsPerNativePixel": 3.0,
+      "sourceLandmark": {
+        "name": "purple circular temple fitting center",
+        "nativePoint": [
+          101,
+          49
+        ],
+        "sourcePixelRGBA": [
+          203,
+          158,
+          230,
+          255
+        ]
+      },
+      "frameLandmarks": {
+        "idle": {
+          "rawTempleFittingCenter": [
+            247,
+            182
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        },
+        "hurt": {
+          "rawTempleFittingCenter": [
+            638,
+            181
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        },
+        "recovery": {
+          "rawTempleFittingCenter": [
+            1038,
+            182
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        },
+        "slapprepare": {
+          "rawTempleFittingCenter": [
+            1390,
+            183
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        },
+        "slapcontact": {
+          "rawTempleFittingCenter": [
+            289,
+            500
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        },
+        "thunderprepare": {
+          "rawTempleFittingCenter": [
+            630,
+            504
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        },
+        "thunderrelease": {
+          "rawTempleFittingCenter": [
+            1050,
+            504
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        },
+        "thunderrebound": {
+          "rawTempleFittingCenter": [
+            1391,
+            504
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        },
+        "burstprepare": {
+          "rawTempleFittingCenter": [
+            215,
+            823
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        },
+        "burstrelease": {
+          "rawTempleFittingCenter": [
+            649,
+            824
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        },
+        "guardprepare": {
+          "rawTempleFittingCenter": [
+            1009,
+            824
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        },
+        "guardhold": {
+          "rawTempleFittingCenter": [
+            1371,
+            824
+          ],
+          "nativeTempleFittingCenter": [
+            101,
+            49
+          ],
+          "pointOpaque": true
+        }
+      },
+      "floatingHead": true,
+      "noOpaqueBottomGroundAlignment": true,
+      "noGroundFeetOrShadowAdded": true,
+      "allFramesSameScale": true
+    }
+  },
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "e7fdbddc945dd1a5bedd32efc0f504e032086a79486c3def97a16244d040bdbd",
+  "approvedArtManifestSha256": "003cc4e8649dbb7fda2a42f1b97735dd383a8587a1704cb2696ade7ac344b1fe",
+  "authoredMoves": [
+    "shock_slap",
+    "thunder_strike",
+    "galvanic_burst",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 12,
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "e7fdbddc945dd1a5bedd32efc0f504e032086a79486c3def97a16244d040bdbd"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "e7fdbddc945dd1a5bedd32efc0f504e032086a79486c3def97a16244d040bdbd"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "bda848ab68408cf0dcf29f5c6d0010e2b24a9a15e3779054c7ce601af9d9feef"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "67301c3fa9882b8ebf6546c2b38b5b1db94d87fbbbacaf46ffa7d4e30c432e58"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "fd6aea0d02ec6f727c6f013288b1c88b7be118a041b52373febfd81b000745b5"
+      }
+    ],
+    "slapprepare": [
+      {
+        "file": "slapprepare.png",
+        "duration": 0.2,
+        "sha256": "31afeeba686a61341883ece5b41ba4d0ab7e468187ff8cd2d1ba6c88ef93067c"
+      }
+    ],
+    "slapcontact": [
+      {
+        "file": "slapcontact.png",
+        "duration": 0.1,
+        "sha256": "0f60c55698f4df4e874b2db44f47e4798557658ee0e589b1363e1dbbb3904d00"
+      }
+    ],
+    "thunderprepare": [
+      {
+        "file": "thunderprepare.png",
+        "duration": 0.24,
+        "sha256": "fe7b64099de2540a101cd443603043dc34e1e693a8acd3aebc6dca560ac58251"
+      }
+    ],
+    "thunderrelease": [
+      {
+        "file": "thunderrelease.png",
+        "duration": 0.12,
+        "sha256": "972f068b583f5a2a9cdf3705d811582d75dafdaf16ed3b78aa7091ddaa8ea659"
+      }
+    ],
+    "thunderrebound": [
+      {
+        "file": "thunderrebound.png",
+        "duration": 0.1,
+        "sha256": "da1d0cecfb9ec8e24d41aa1d8d2cd2dfceb4008d5d100fd10b242035105dd528"
+      }
+    ],
+    "burstprepare": [
+      {
+        "file": "burstprepare.png",
+        "duration": 0.26,
+        "sha256": "fe3876fc6d657b974e0a363388f3ee6a28b3b51db0971d4e9a9a485223e2d566"
+      }
+    ],
+    "burstrelease": [
+      {
+        "file": "burstrelease.png",
+        "duration": 0.16,
+        "sha256": "b010e4d629830e9b560a78154ece5d60fceca1f33fbb5d84dc2fba7648527675"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.2,
+        "sha256": "2b1311fcbb798ab2f6bd1aaface40b5c10707c3b048d1505d8ed02bbb1677445"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.32,
+        "sha256": "53803c6356d7ab8aa84f995038cd14e1039131067884cd87e7bd11b06e3e5fb0"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.2,
+        "sha256": "53803c6356d7ab8aa84f995038cd14e1039131067884cd87e7bd11b06e3e5fb0"
+      }
+    ]
+  },
+  "drawingOnlyNormalization": "Original art durations retained. Actual-contact holds use existing bounded selector windows; healer applied hold is bounded to .12 seconds; no gameplay event/timing changes."
+}

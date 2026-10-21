@@ -1,0 +1,1054 @@
+{
+  "schema": 1,
+  "status": "M58_FINAL_ART_PINNED_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_sludge_berserker",
+  "sourceCanvas": [
+    160,
+    112
+  ],
+  "frameCanvas": [
+    200,
+    112
+  ],
+  "sourceOffset": [
+    24,
+    0
+  ],
+  "anchor": [
+    104,
+    112
+  ],
+  "spriteOffset": [
+    -4,
+    0
+  ],
+  "groundMaxY": 103,
+  "groundMaxYSemantics": "New physical sole opaque103 / boundary104. Original rest left102/right103 preserved. ContactB fist105 is not ground.",
+  "placementContract": {
+    "kind": "two-physical-feet",
+    "worldRegistration": "Original source Home/Basis/PixelSize and road anchoring retained; transparent padding maps source coordinates without translating ground boundary as an extra pixel.",
+    "approvedArtManifestSha256": "54c8f5d9ff7c96540fb7036b8cd2c31a70dab69ef4b6ce74e68e55d5d341dcc4",
+    "frames": {
+      "contacta.png": {
+        "registeredSolePoints": [
+          [
+            108,
+            103
+          ],
+          [
+            162,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            84,
+            103
+          ],
+          [
+            138,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            108,
+            104
+          ],
+          [
+            162,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            90,
+            127
+          ],
+          [
+            147,
+            181
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          9,
+          16,
+          185,
+          104
+        ]
+      },
+      "contactb.png": {
+        "registeredSolePoints": [
+          [
+            110,
+            103
+          ],
+          [
+            162,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            86,
+            103
+          ],
+          [
+            138,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            110,
+            104
+          ],
+          [
+            162,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            92,
+            128
+          ],
+          [
+            146,
+            179
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": 105,
+        "bbox": [
+          22,
+          19,
+          182,
+          106
+        ]
+      },
+      "guardhold.png": {
+        "registeredSolePoints": [
+          [
+            107,
+            103
+          ],
+          [
+            164,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            83,
+            103
+          ],
+          [
+            140,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            107,
+            104
+          ],
+          [
+            164,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            89,
+            126
+          ],
+          [
+            148,
+            182
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          84,
+          20,
+          182,
+          104
+        ]
+      },
+      "guardprepare.png": {
+        "registeredSolePoints": [
+          [
+            109,
+            103
+          ],
+          [
+            162,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            85,
+            103
+          ],
+          [
+            138,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            109,
+            104
+          ],
+          [
+            162,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            91,
+            128
+          ],
+          [
+            146,
+            180
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          70,
+          17,
+          180,
+          104
+        ]
+      },
+      "hugcontact.png": {
+        "registeredSolePoints": [
+          [
+            110,
+            103
+          ],
+          [
+            162,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            86,
+            103
+          ],
+          [
+            138,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            110,
+            104
+          ],
+          [
+            162,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            92,
+            128
+          ],
+          [
+            146,
+            180
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          76,
+          15,
+          180,
+          104
+        ]
+      },
+      "hugprepare.png": {
+        "registeredSolePoints": [
+          [
+            108,
+            103
+          ],
+          [
+            162,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            84,
+            103
+          ],
+          [
+            138,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            108,
+            104
+          ],
+          [
+            162,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            90,
+            128
+          ],
+          [
+            147,
+            181
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          58,
+          15,
+          182,
+          104
+        ]
+      },
+      "hurt.png": {
+        "registeredSolePoints": [
+          [
+            110,
+            103
+          ],
+          [
+            162,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            86,
+            103
+          ],
+          [
+            138,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            110,
+            104
+          ],
+          [
+            162,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            91,
+            129
+          ],
+          [
+            146,
+            180
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          79,
+          13,
+          193,
+          104
+        ]
+      },
+      "idle.png": {
+        "registeredSolePoints": [
+          [
+            110,
+            103
+          ],
+          [
+            162,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            86,
+            103
+          ],
+          [
+            138,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            110,
+            104
+          ],
+          [
+            162,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            92,
+            128
+          ],
+          [
+            145,
+            179
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          42,
+          16,
+          186,
+          104
+        ]
+      },
+      "pummelprepare.png": {
+        "registeredSolePoints": [
+          [
+            110,
+            103
+          ],
+          [
+            162,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            86,
+            103
+          ],
+          [
+            138,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            110,
+            104
+          ],
+          [
+            162,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            92,
+            128
+          ],
+          [
+            146,
+            180
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          65,
+          13,
+          188,
+          104
+        ]
+      },
+      "rebound.png": {
+        "registeredSolePoints": [
+          [
+            108,
+            103
+          ],
+          [
+            163,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            84,
+            103
+          ],
+          [
+            139,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            108,
+            104
+          ],
+          [
+            163,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            90,
+            127
+          ],
+          [
+            147,
+            181
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          59,
+          11,
+          188,
+          104
+        ]
+      },
+      "recovery.png": {
+        "registeredSolePoints": [
+          [
+            110,
+            103
+          ],
+          [
+            161,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            86,
+            103
+          ],
+          [
+            137,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            110,
+            104
+          ],
+          [
+            161,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            93,
+            129
+          ],
+          [
+            145,
+            179
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          33,
+          15,
+          185,
+          104
+        ]
+      },
+      "rest.png": {
+        "registeredSolePoints": [
+          [
+            113,
+            102
+          ],
+          [
+            163,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            89,
+            102
+          ],
+          [
+            139,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            113,
+            103
+          ],
+          [
+            163,
+            104
+          ]
+        ],
+        "exactOriginalRest": true,
+        "bbox": [
+          32,
+          16,
+          175,
+          104
+        ]
+      },
+      "smothercontact.png": {
+        "registeredSolePoints": [
+          [
+            110,
+            103
+          ],
+          [
+            162,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            86,
+            103
+          ],
+          [
+            138,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            110,
+            104
+          ],
+          [
+            162,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            92,
+            128
+          ],
+          [
+            146,
+            179
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          52,
+          15,
+          180,
+          104
+        ]
+      },
+      "smotherprepare.png": {
+        "registeredSolePoints": [
+          [
+            108,
+            103
+          ],
+          [
+            162,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            84,
+            103
+          ],
+          [
+            138,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            108,
+            104
+          ],
+          [
+            162,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            90,
+            127
+          ],
+          [
+            147,
+            181
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          58,
+          15,
+          185,
+          104
+        ]
+      },
+      "vomitapplied.png": {
+        "registeredSolePoints": [
+          [
+            110,
+            103
+          ],
+          [
+            160,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            86,
+            103
+          ],
+          [
+            136,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            110,
+            104
+          ],
+          [
+            160,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            93,
+            129
+          ],
+          [
+            144,
+            179
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          55,
+          20,
+          185,
+          104
+        ]
+      },
+      "vomitprepare.png": {
+        "registeredSolePoints": [
+          [
+            110,
+            103
+          ],
+          [
+            161,
+            103
+          ]
+        ],
+        "sourceSolePoints": [
+          [
+            86,
+            103
+          ],
+          [
+            137,
+            103
+          ]
+        ],
+        "registeredBoundaryPoints": [
+          [
+            110,
+            104
+          ],
+          [
+            161,
+            104
+          ]
+        ],
+        "nativeSpansXHalfOpen": [
+          [
+            92,
+            129
+          ],
+          [
+            145,
+            179
+          ]
+        ],
+        "footBandYHalfOpen": [
+          100,
+          104
+        ],
+        "soleOpaqueY": 103,
+        "soleBoundaryY": 104,
+        "bboxBottomIsNotSupport": true,
+        "nonFootFistOpaqueY": null,
+        "bbox": [
+          56,
+          9,
+          190,
+          104
+        ]
+      }
+    }
+  },
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "123ed0f646a420bdb96747b935c22264f173ea6f0cb50d23f1e6f7e0adca8e33",
+  "approvedArtManifestSha256": "54c8f5d9ff7c96540fb7036b8cd2c31a70dab69ef4b6ce74e68e55d5d341dcc4",
+  "authoredMoves": [
+    "vomit",
+    "pummel",
+    "hug",
+    "smother",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 15,
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "c923d2c33763fdce56b2a768279bb38751445e25fdb86599c4e421df73d9d888"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "c923d2c33763fdce56b2a768279bb38751445e25fdb86599c4e421df73d9d888"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "02d44fd022b6f7218e4e9c58191d7399057498ebd3ba725ca92f95b1f2c089ec"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "54fc9968997baf5522ab0c54fc5b145c37a928d30f1dc147f0d91137ad408591"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "b3a0a0f6c7ddef6b9f8116f0867ccc8e84f06c45c093706450cba3e616e93046"
+      }
+    ],
+    "pummelprepare": [
+      {
+        "file": "pummelprepare.png",
+        "duration": 0.2,
+        "sha256": "c66c1e962359abad49df64e55a044699e3abc2e4620577af0592fb2281e7f8d9"
+      }
+    ],
+    "contacta": [
+      {
+        "file": "contacta.png",
+        "duration": 0.1,
+        "sha256": "6f74523c3593f879b5207ec3f7dc40819a8712cf259695d68d5a12c95af74f60"
+      }
+    ],
+    "rebound": [
+      {
+        "file": "rebound.png",
+        "duration": 0.1,
+        "sha256": "6b0aae74fd0f82b3f3e1f21247e7d65c0702bb8e79d43236405a4c9fd0564d87"
+      }
+    ],
+    "contactb": [
+      {
+        "file": "contactb.png",
+        "duration": 0.1,
+        "sha256": "83e541a61d00f46cb3cead9acd45d0c2424fc91aeeea60797c2b4e57b2cd1c3d"
+      }
+    ],
+    "hugprepare": [
+      {
+        "file": "hugprepare.png",
+        "duration": 0.24,
+        "sha256": "5220e15b672f27c4cb8f0b2d0ab864a53fd94c43139721695318bdac0a66167f"
+      }
+    ],
+    "hugcontact": [
+      {
+        "file": "hugcontact.png",
+        "duration": 0.24,
+        "sha256": "3406dab6d3fc9e1a4347a7d446a9cc495e5db1ea8dc084e63b22f62218a8fb10"
+      }
+    ],
+    "smotherprepare": [
+      {
+        "file": "smotherprepare.png",
+        "duration": 0.26,
+        "sha256": "41873dca86b66b3f6ea03c12b2b1c9d0099d13e23af48fb8029a512c69953ea8"
+      }
+    ],
+    "smothercontact": [
+      {
+        "file": "smothercontact.png",
+        "duration": 0.26,
+        "sha256": "48dd02024920292f747a6717895fd78f64fcf90fee8ade1910bad74b68756be2"
+      }
+    ],
+    "vomitprepare": [
+      {
+        "file": "vomitprepare.png",
+        "duration": 0.24,
+        "sha256": "524b55f7793f6a9474360438fdad0d7add4bd5892f19dc7f887454bfa4b523c3"
+      }
+    ],
+    "vomitapplied": [
+      {
+        "file": "vomitapplied.png",
+        "duration": 0.28,
+        "sha256": "f1f7ce9e03b5f350032e3b5fc3dbc1c4ed7246f21ee108912ba26d351d0504b6"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.2,
+        "sha256": "d4e569abb7b36ddb2dbff2d874ad835c6125798af133ff1ba241384fbfa830a2"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.32,
+        "sha256": "2fb35bf13b5efeef36f94443ebd2ba8dd683a9823272729594fd66624a3f1166"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.2,
+        "sha256": "2fb35bf13b5efeef36f94443ebd2ba8dd683a9823272729594fd66624a3f1166"
+      }
+    ]
+  },
+  "drawingOnlyNormalization": "No duration or pixel changes. Exact final art finite durations; only idle loops. Shared source event windows and Engine timings unchanged."
+}

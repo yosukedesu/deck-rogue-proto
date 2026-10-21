@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_elite_owl",
+  "sourceCanvas": [
+    160,
+    112
+  ],
+  "frameCanvas": [
+    192,
+    128
+  ],
+  "sourceOffset": [
+    16,
+    16
+  ],
+  "originalAnchor": [
+    80,
+    112
+  ],
+  "anchor": [
+    96,
+    128
+  ],
+  "spriteOffset": [
+    0,
+    8
+  ],
+  "groundMaxY": 119,
+  "sourcePngSha256": "daeba4eba889010d4d43125542bf6b7ac544c60cba677da92149604d2da9dd03",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "cc4a18040bf0da19dddad2dc7b21e7b34d5ce7e60ebee7f28898a5bd486aeb64"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.5,
+        "sha256": "cc4a18040bf0da19dddad2dc7b21e7b34d5ce7e60ebee7f28898a5bd486aeb64"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.5,
+        "sha256": "63e78a39d556a584e571c08c6d97cba7b1159c3a173aee012444eaf06333795f"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "693ed328a4e9aabf12080b088a0ffce52e3db0e2220b87b21ff71b6d2a82ad00"
+      }
+    ],
+    "wingprepare": [
+      {
+        "file": "wingprepare.png",
+        "duration": 0.2,
+        "sha256": "a71670de14ac5456b1827fb9ce297c549b943a6e03cc352d326557f8e271ba9c"
+      }
+    ],
+    "wingcontact": [
+      {
+        "file": "wingcontact.png",
+        "duration": 0.055,
+        "sha256": "e7777a53c480e26f9a71ebc182de15bc979d4ddd05e3a0ba731771dbad75a2e4"
+      }
+    ],
+    "diveprepare": [
+      {
+        "file": "diveprepare.png",
+        "duration": 0.15,
+        "sha256": "2ad1b85042e58a14ffa59047cb640e1105a6ab6c1776acbaa5b649ea3cc20beb"
+      }
+    ],
+    "divecontact": [
+      {
+        "file": "divecontact.png",
+        "duration": 0.055,
+        "sha256": "6b74cad7992b031be501143b1f03222153c699e31b655d5c6daab0ba605e20a1"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "e83189374a4267512087605d39a01c9125fba5e99a062cb68ef75d25f90b5ca1"
+      }
+    ],
+    "braceprepare": [
+      {
+        "file": "braceprepare.png",
+        "duration": 0.12,
+        "sha256": "3a7fc144789b717ca6573b60a92d21e131d5222196cda65fca5c8191e62d8d61"
+      }
+    ],
+    "bracehold": [
+      {
+        "file": "bracehold.png",
+        "duration": 0.12,
+        "sha256": "8687e529821d63e7247ae331f1397a54c8b41712f3c897443c70923353a51caa"
+      }
+    ],
+    "block": [
+      {
+        "file": "bracehold.png",
+        "duration": 0.18,
+        "sha256": "8687e529821d63e7247ae331f1397a54c8b41712f3c897443c70923353a51caa"
+      }
+    ]
+  },
+  "status": "M29_COMPLETE_THREE_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "wing",
+    "brace",
+    "talon_dive"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "wing8-11 and talon_dive18-24 distinct single actual contacts; brace8-12 first own actual BlockGained only. Existing talon_dive mist1 event must remain once; presentation never re-applies it. Strict support tuple, stale reaction epoch rejection, finite recovery. Preserve wing->brace->talon_dive->wing graph. No gameplay/data/timing mutation.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "rest_canvas exact original RGBA padded left16/right16/top16",
+    "reactiveBlock": "bracehold drawing reused under independent block-notification; fullblock cannot trigger hurt",
+    "staticLayout": "original160x112 opaque footprint and layout anchor80,112 preserved; expanded192x128 authored envelope only for motion, anchor96,128 spriteOffset0,+8 ground119"
+  }
+}

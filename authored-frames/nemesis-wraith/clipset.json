@@ -1,0 +1,104 @@
+{
+  "enemyId": "enemy_nemesis_wraith",
+  "sourceCanvas": [
+    160,
+    120
+  ],
+  "frameCanvas": [
+    160,
+    120
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    80,
+    120
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "sourcePngSha256": "bd21fe19ca579206ad5f5e689cbaaa2f6b729660f2ac99c17f63acdba1c52418",
+  "groundMaxY": 110,
+  "schema": 1,
+  "status": "M39_RUNTIME_CANDIDATE",
+  "sourceArtManifestSha256": "ba362fd4d90ce258b579e5c3a072829631387853f70a17e741f2cd0827906310",
+  "authoredMoves": [
+    "curse_touch",
+    "scythe"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "sha256": "bd21fe19ca579206ad5f5e689cbaaa2f6b729660f2ac99c17f63acdba1c52418",
+        "duration": 0.45
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "sha256": "bd21fe19ca579206ad5f5e689cbaaa2f6b729660f2ac99c17f63acdba1c52418",
+        "duration": 0.45
+      },
+      {
+        "file": "idle.png",
+        "sha256": "c82f8eb95f56d3d5656f461cd7bf73ec45465e0f1cf1d212024f384a35234ace",
+        "duration": 0.45
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "sha256": "cda0043c96e4cb1d31796e4709e45fedc8404f3ce0b2794fcebd0fb5e6ea7b32",
+        "duration": 0.14
+      }
+    ],
+    "block": [
+      {
+        "file": "hurt.png",
+        "sha256": "cda0043c96e4cb1d31796e4709e45fedc8404f3ce0b2794fcebd0fb5e6ea7b32",
+        "duration": 0.18
+      }
+    ],
+    "curseprepare": [
+      {
+        "file": "curseprepare.png",
+        "sha256": "e9ba304c5ba367f205aec7e741ba4f9b9b3ce0942bcfd723529e32d8784f42f3",
+        "duration": 0.22
+      }
+    ],
+    "cursecontact": [
+      {
+        "file": "cursecontact.png",
+        "sha256": "a9a633b1308bb29084c41389705fdff52558fa541ce55babf494ea683f58963e",
+        "duration": 0.05
+      }
+    ],
+    "scytheprepare": [
+      {
+        "file": "scytheprepare.png",
+        "sha256": "27d519701a84c7d374a3a06094bbb8ae290ae725295352de1774542eb53a0739",
+        "duration": 0.22
+      }
+    ],
+    "scythecontact": [
+      {
+        "file": "scythecontact.png",
+        "sha256": "f70f1246c37425e9bbaad20003aae82db9fc54fca55d3a8f0e2954e776a98dc4",
+        "duration": 0.05
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "sha256": "3937180aac95ff9c1118c91b0b85e14a97a527ea732ac60e2fd860ad56fa1502",
+        "duration": 0.18
+      }
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "status": "M41_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_elite_husk_2",
+  "sourceCanvas": [
+    176,
+    112
+  ],
+  "frameCanvas": [
+    176,
+    112
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    88,
+    112
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 103,
+  "restOriginalFile": "rest.png",
+  "sourcePngSha256": "bf13acc4608e7d9c29c3111ee72ee6cd1dbaa7b7d6f222484231aa1725d01604",
+  "sourceArtManifestSha256": "4d9bf3a702c8765ff9a6954f80099bdbe236a16460807e1419f8bd27c468e65c",
+  "authoredMoves": [
+    "slash"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "bf13acc4608e7d9c29c3111ee72ee6cd1dbaa7b7d6f222484231aa1725d01604"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.6,
+        "sha256": "bf13acc4608e7d9c29c3111ee72ee6cd1dbaa7b7d6f222484231aa1725d01604"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.6,
+        "sha256": "3b3e31e4b09a6f2e2c9d2793f6727ffd5c960898118883a79731b84e40ebf5d4"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "eb36bb923a8882a77230a0f4d41c5bda0eba206b034f2a434840e43bde3b9952"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "attackprepare.png",
+        "duration": 0.18,
+        "sha256": "4a6ad9ee08d14a45a3a6277914d11c96bfa3242835436b1b60692d39121e6907"
+      }
+    ],
+    "contact": [
+      {
+        "file": "attackcontact.png",
+        "duration": 0.05,
+        "sha256": "0bf18fef483d25b7030ad2321bc36efaa49b77bb792cd7800695f593f4383407"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "17dde732343ef5d19ac62b8d3a979eb7b77c7364d2f2d0f09eaeb709098d5612"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "bf13acc4608e7d9c29c3111ee72ee6cd1dbaa7b7d6f222484231aa1725d01604"
+      }
+    ]
+  }
+}

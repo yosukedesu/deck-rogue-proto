@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "status": "M43_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_lost_soul",
+  "sourceCanvas": [
+    144,
+    88
+  ],
+  "frameCanvas": [
+    144,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    72,
+    88
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 79,
+  "registrationKind": "original-hover-anchor",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "188d0b3e628278790beb08e6f015aa57274e18497082faf4e3a85faecb0dbef8",
+  "sourceArtManifestSha256": "cadb4f8e48456ba4e66982d4d8fb2bdfe0be3191618b7b948ef359d54fa45920",
+  "authoredMoves": [
+    "debilitating_smog",
+    "eye_lasers",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "188d0b3e628278790beb08e6f015aa57274e18497082faf4e3a85faecb0dbef8"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.6,
+        "sha256": "188d0b3e628278790beb08e6f015aa57274e18497082faf4e3a85faecb0dbef8"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.6,
+        "sha256": "3ef91f9c603dde60d9b3381d26b46877127de70c24016920e5b38f78ed08a169"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "2729fdfb65e9ab3a9c452fbc5566db8427acbbdd333adbf8a9f55af32752cbac"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "53b5e1dc524527e46434b6792462a99e6d4cc1855a7134525bd3cc3f22e374ca"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "188d0b3e628278790beb08e6f015aa57274e18497082faf4e3a85faecb0dbef8"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "6aba6b44349813e710888ea552802b50feeabd2229b003a028c9a8f5d1e76efb"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "13a755a49efcc7d8ac07b7064e5630ac3052a9f737d5f9d0319882165e96821c"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "53b5e1dc524527e46434b6792462a99e6d4cc1855a7134525bd3cc3f22e374ca"
+      }
+    ],
+    "smogprepare": [
+      {
+        "file": "smogprepare.png",
+        "duration": 0.18,
+        "sha256": "13b90526fa72d1c5a450ba148bd548f24d36128c1d2dd4ba6ebd9cae2d61be64"
+      }
+    ],
+    "smogcontact": [
+      {
+        "file": "smogrelease.png",
+        "duration": 0.05,
+        "sha256": "c19089db382f0bf9fc3bf6148c023b260dacfb613edbf725e691ac0eb9f34224"
+      }
+    ],
+    "beamprepare": [
+      {
+        "file": "beamprepare.png",
+        "duration": 0.18,
+        "sha256": "94dc5c6c4a60584ada54cc0f13a042538360990e58412128d3b98b04e65b7f05"
+      }
+    ],
+    "release": [
+      {
+        "file": "beamrelease.png",
+        "duration": 0.07,
+        "sha256": "cb06196d7fb39c58b484295d135dbaf01e327210db04d55632baf83fbff8722d"
+      }
+    ]
+  }
+}

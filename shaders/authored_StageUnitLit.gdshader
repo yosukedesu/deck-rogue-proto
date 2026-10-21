@@ -9,6 +9,9 @@ render_mode unshaded, cull_disabled, depth_draw_opaque, fog_disabled;
 // Reconstructed accepted provisional actor-only display finish, 2026-10-12.
 #include "res://shaders/source_actor_display_functions.gdshaderinc"
 uniform bool _SourceDisplayTransfer = false;
+// Actor-local display palette: 0 legacy, 1 brick-red ogre, 2 restrained hero.
+// Does not change source texture texels, alpha, UV, mesh, or nearest sampling.
+uniform int _PaletteHarmonyProfile = 0;
 uniform sampler2D _SourceDisplayLut : filter_linear, repeat_disable;
 uniform bool _SourceDisplayOtherProfile = false;
 uniform float _SourceDisplayExposureEv = 0.3;
@@ -96,6 +99,39 @@ vec3 source_texel_shift(vec2 texel, vec3 position_world) {
     float sy = (dx.x * want.y - want.x * dx.y) / determinant;
     if (abs(sx) > 8.0 || abs(sy) > 8.0) return vec3(0.0);
     return px * sx + py * sy;
+}
+vec3 harmony_display(vec3 color) {
+    if (_PaletteHarmonyProfile == 0) return color;
+    vec3 c = clamp(color, vec3(0.0), vec3(1.0));
+    float y = dot(c, vec3(0.2126, 0.7152, 0.0722));
+    float red_mask = smoothstep(0.07, 0.30, c.r - max(c.g, c.b));
+    if (_PaletteHarmonyProfile == 1) {
+        // Saturated scarlet skin moves toward brick; ivory horns/stone stay distinct.
+        c = mix(c, vec3(c.r * 0.95 + 0.015, c.g * 0.95 + 0.085, c.b * 0.92 + 0.055), red_mask * 0.90);
+        c = mix(vec3(dot(c, vec3(0.2126, 0.7152, 0.0722))), c, 0.86);
+        // Keep material value while softening scarlet; lift midtones, not black outline.
+        float middle = smoothstep(0.035, 0.16, y) * (1.0 - smoothstep(0.68, 0.95, y));
+        c += vec3(0.055, 0.060, 0.064) * middle;
+    } else {
+        // Keep the leader's purple/skin identity while reducing isolated saturation.
+        c = mix(vec3(y), c, 0.94);
+    }
+    float shadow = (1.0 - smoothstep(0.06, 0.36, y)) * 0.25;
+    vec3 ink = vec3(y * 0.78, y * 0.99, y * 1.20);
+    c = mix(c, ink, shadow);
+    float highlight = smoothstep(0.66, 0.95, y) * 0.15;
+    c = mix(c, vec3(y * 1.035, y * 1.005, y * 0.94), highlight);
+    return clamp(c, vec3(0.0), vec3(1.0));
+}
+vec3 harmony_actor_albedo(vec3 authored_prepost, vec2 source_uv, sampler2D lut,
+    float exposure_ev, vec2 vignette_center, float vignette_intensity,
+    float vignette_smoothness, vec3 vignette_color, float vignette_roundness) {
+    vec2 d=abs(source_uv-vignette_center)*(vignette_intensity*3.0);
+    d.x*=vignette_roundness;
+    float radial=pow(clamp(1.0-dot(d,d),0.0,1.0),vignette_smoothness*5.0);
+    vec3 source=authored_prepost*mix(vignette_color,vec3(1.0),radial)*exp2(exposure_ev);
+    vec3 display=harmony_display(eval_srgb(eval_grade_lut(lut,eval_aces_rgb(source))));
+    return vec3(eval_compensate_channel(display.r),eval_compensate_channel(display.g),eval_compensate_channel(display.b));
 }
 void vertex() {
     actor_world_position = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
@@ -192,14 +228,18 @@ void fragment() {
     if (_SourceDisplayTransfer) {
         vec2 source_screen_uv = vec2(SCREEN_UV.x, 1.0 - SCREEN_UV.y);
         if (_SourceDisplayOtherProfile) {
-            ALBEDO = eval_actor_albedo(col, source_screen_uv, _SourceDisplayLut,
+            ALBEDO = harmony_actor_albedo(col, source_screen_uv, _SourceDisplayLut,
                 _SourceDisplayExposureEv, vec2(0.5, 0.52), 0.15, 0.45, _SourceDisplayVignetteColor, 1.0);
         } else {
-            ALBEDO = eval_actor_albedo(col, source_screen_uv, _SourceDisplayLut,
+            ALBEDO = harmony_actor_albedo(col, source_screen_uv, _SourceDisplayLut,
                 0.3, vec2(0.5, 0.52), 0.15, 0.45, vec3(0.0, 0.025, 0.04), 1.0);
         }
     } else {
         ALBEDO = authored_output_rgb(col);
+        if (_PaletteHarmonyProfile > 0) {
+            vec3 display = harmony_display(eval_srgb(col));
+            ALBEDO = OUTPUT_IS_SRGB ? display : authored_decode_rgb(display);
+        }
     }
     // No ALPHA write: source uses opaque depth-writing cutout, not transparent blending.
 }

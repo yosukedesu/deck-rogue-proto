@@ -1,0 +1,131 @@
+{
+  "enemyId": "enemy_elite_deathless",
+  "sourceCanvas": [
+    176,
+    112
+  ],
+  "frameCanvas": [
+    176,
+    112
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    88,
+    112
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 103,
+  "sourcePngSha256": "14c36682456f8a3f364bd3c75f66154d7b5e7b0939e3cdf8b0e1a3ce8e910171",
+  "schema": 1,
+  "status": "M38_STATIC_CANDIDATE_RUNTIME_PENDING",
+  "sourceArtManifestSha256": "468f37ca8aa9417df578838b71136f9a0da7cbdaf1d68f48430b6ded6cbe77c4",
+  "authoredMoves": [
+    "cleave",
+    "stance",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "sha256": "14c36682456f8a3f364bd3c75f66154d7b5e7b0939e3cdf8b0e1a3ce8e910171",
+        "duration": 0.45
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "sha256": "14c36682456f8a3f364bd3c75f66154d7b5e7b0939e3cdf8b0e1a3ce8e910171",
+        "duration": 0.45
+      },
+      {
+        "file": "idle.png",
+        "sha256": "e686350ea81376671f8cc9c9fcad6083614ccfaf15de6c9109f228f5bb3baf29",
+        "duration": 0.45
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "sha256": "4155a626427cb342bf703463c1f218229ce4eddb4a5d3ce1f18b5fda9d789ac9",
+        "duration": 0.14
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "sha256": "70d78b735e5b368958027451891a13ede10a380cd6f6789d8518fb46e3c10600",
+        "duration": 0.18
+      }
+    ],
+    "cleaveprepare": [
+      {
+        "file": "cleaveprepare.png",
+        "sha256": "a5f990965e597b15dbd73fc5b7456a735124b09d31d85d3935adea559387aa2c",
+        "duration": 0.22
+      }
+    ],
+    "cleavecontact": [
+      {
+        "file": "cleavecontact.png",
+        "sha256": "48f4d5248a5e3efd8082002423f0dd2b78f43c49e2c748e31680fc09f484a9e0",
+        "duration": 0.05
+      }
+    ],
+    "stanceprepare": [
+      {
+        "file": "stanceprepare.png",
+        "sha256": "52064e13f7b10ec7ef02abcd2b8abfaea8e6caf20f68358ed51dd28a0ecd0c68",
+        "duration": 0.22
+      }
+    ],
+    "stancecontact": [
+      {
+        "file": "stancecontact.png",
+        "sha256": "c0db646358dafee295c4cc511cf787486d6667da203d86a15588103d31c0e879",
+        "duration": 0.05
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "sha256": "52dc9cc914e20f26e792d291f4966a10582161b66a0039305f31405643621a5e",
+        "duration": 0.18
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "sha256": "bad5f7039d15b88ce693ed60e002ae5145e17740883f613561105fd84debe5cc",
+        "duration": 0.24
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "sha256": "70d78b735e5b368958027451891a13ede10a380cd6f6789d8518fb46e3c10600",
+        "duration": 0.36
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "guardprepare.png",
+        "sha256": "bad5f7039d15b88ce693ed60e002ae5145e17740883f613561105fd84debe5cc",
+        "duration": 0.12
+      },
+      {
+        "file": "rest.png",
+        "sha256": "14c36682456f8a3f364bd3c75f66154d7b5e7b0939e3cdf8b0e1a3ce8e910171",
+        "duration": 0.06
+      }
+    ]
+  }
+}

@@ -1,0 +1,2813 @@
+{
+  "format_version": 1,
+  "profiles": [
+    {
+      "id": "enemy_apprentice_colossus",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_apprentice_colossus/enemy_apprentice_colossus",
+        "width": 64,
+        "height": 64,
+        "top": 9,
+        "bottom": 1,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.4,
+      "channels": [
+        {
+          "x": 0.25,
+          "y": 0.5,
+          "phase": 0
+        },
+        {
+          "x": 0.15,
+          "y": 0.4,
+          "phase": 2.8
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "9bfad0024d2d57a029518e55259b97f158c90e7b6ecbd75305a2471e2297355e",
+      "anatomy_sha256": "b521123f039d775fb65b256bdea2bed3d29e0a8268e4e41c2cf545f5bdd96ed6"
+    },
+    {
+      "id": "enemy_axe_automaton",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_axe_automaton/enemy_axe_automaton",
+        "width": 64,
+        "height": 64,
+        "top": 3,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.4,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.65,
+          "phase": 0
+        },
+        {
+          "x": 0.12,
+          "y": 0.2,
+          "phase": 2.2
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "e120c0cbe7465728278d17e2447e9e490569d92e6b52cba7fa5a7aaba4edb312",
+      "anatomy_sha256": "5dd9fb829e8cd70cec53587d5d7a711b6d5cc18ec9d8a15e12426ddb306de198"
+    },
+    {
+      "id": "enemy_axe_automaton_reboot",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_axe_automaton_reboot/enemy_axe_automaton_reboot",
+        "width": 64,
+        "height": 64,
+        "top": 7,
+        "bottom": 1,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 1.9,
+      "channels": [
+        {
+          "x": 0.2,
+          "y": 0.25,
+          "phase": 0
+        },
+        {
+          "x": 0.15,
+          "y": 0.25,
+          "phase": 2.3
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "b390ddcf418dc06d95a25826140682d8568480f88f544b514cf088bb4743a18c",
+      "anatomy_sha256": "81da4ef576c0bd96527d9bbe89f345405361eae833929f6d199669ffcb3c4013"
+    },
+    {
+      "id": "enemy_axe_ogre",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_axe_ogre/enemy_axe_ogre",
+        "width": 64,
+        "height": 64,
+        "top": 6,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.3,
+      "channels": [
+        {
+          "x": 0.4,
+          "y": 0.65,
+          "phase": 0
+        },
+        {
+          "x": 0.1,
+          "y": 0.3,
+          "phase": 1.8
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "a9fa8f93b1d66ede37c61b9e5493c45eadee9476e26dd9d57a5c3474e8676b27",
+      "anatomy_sha256": "b6ea5ccb96f531b68330837ae48355395ecd57bd8ca03857b46812b7dae1af45"
+    },
+    {
+      "id": "enemy_big_slime",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_big_slime/enemy_big_slime",
+        "width": 64,
+        "height": 64,
+        "top": 8,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.5,
+      "channels": [
+        {
+          "x": 0.3,
+          "y": 0.65,
+          "phase": 0
+        },
+        {
+          "x": 0.35,
+          "y": 0.65,
+          "phase": 2
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "88b9eaeaa40cac2505cee2f90e2081866b4584d49088f8ca3ea821bf34c0e25a",
+      "anatomy_sha256": "cece54ec7250566a9db120faef810e15c44b49b035104abc5c9d03acbbea15d5"
+    },
+    {
+      "id": "enemy_biting_scroll",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_biting_scroll/enemy_biting_scroll",
+        "width": 64,
+        "height": 64,
+        "top": 7,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.5,
+      "channels": [
+        {
+          "x": 0.25,
+          "y": -0.45,
+          "phase": 0
+        },
+        {
+          "x": 0.25,
+          "y": 0.45,
+          "phase": 2.6
+        },
+        {
+          "x": 0.45,
+          "y": 0.6,
+          "phase": 1.1
+        }
+      ],
+      "master_sha256": "6dfac1d0634871462efcb39f8be5bff68f4f9e0f699c34345d68f15f41539bb9",
+      "anatomy_sha256": "74ca5760948a54581183d5ab47607ab9d78895b6a33c9a671686197ef58059c0"
+    },
+    {
+      "id": "enemy_bomber",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_bomber/enemy_bomber",
+        "width": 64,
+        "height": 64,
+        "top": 12,
+        "bottom": 8,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 1.9,
+      "channels": [
+        {
+          "x": 0.6,
+          "y": 1,
+          "phase": 0
+        },
+        {
+          "x": 0.5,
+          "y": 0.7,
+          "phase": 1.9
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "dd9ee232915a559de13a04043ca163646530b3b6d473a258526e395f6a8af6be",
+      "anatomy_sha256": "9cfdb511d0c54c01915ba0152fe296419a1c851e917bee68bb913135113e9a20"
+    },
+    {
+      "id": "enemy_bond_wolf",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_bond_wolf/enemy_bond_wolf",
+        "width": 64,
+        "height": 64,
+        "top": 2,
+        "bottom": 6,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3,
+      "channels": [
+        {
+          "x": 0.65,
+          "y": 0.7,
+          "phase": 0
+        },
+        {
+          "x": -0.55,
+          "y": 0.65,
+          "phase": 3.1
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "fe5ef96277898a29fdf82adde95bc6dec1861f3f80b88768725aa9b5d34fa7e3",
+      "anatomy_sha256": "727e5b67522ed6fb4f3738891cc7dfd3a98b1db3449a521c1c3dec47f2329034"
+    },
+    {
+      "id": "enemy_bowl_bug",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_bowl_bug/enemy_bowl_bug",
+        "width": 64,
+        "height": 64,
+        "top": 22,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.9,
+      "channels": [
+        {
+          "x": 0.2,
+          "y": 0.35,
+          "phase": 0
+        },
+        {
+          "x": 0.2,
+          "y": 0.25,
+          "phase": 2
+        },
+        {
+          "x": 0.4,
+          "y": 0.35,
+          "phase": 3
+        }
+      ],
+      "master_sha256": "dfd9801a55c2ac01297650048d9a38d31077bd586c07dc386fdd8bc07f14b846",
+      "anatomy_sha256": "d15fa84610d2d6530ede12c7f78073e614902fb3ceedcc8892e4c9671da10c0f"
+    },
+    {
+      "id": "enemy_brood_raptor",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_brood_raptor/enemy_brood_raptor",
+        "width": 64,
+        "height": 64,
+        "top": 10,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.7,
+      "channels": [
+        {
+          "x": 0.35,
+          "y": 0.6,
+          "phase": 0
+        },
+        {
+          "x": 0.5,
+          "y": 0.55,
+          "phase": 1.8
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "39e5c736c823f58b6d40dc81bdbcc5de66eb2805d2025020fe0b606da80a9e2b",
+      "anatomy_sha256": "c8f01ec19cf0a6bd92a57603d59f7a7ff0e67d50c54a961e9c19250b61a45d3e"
+    },
+    {
+      "id": "enemy_brood_toad",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_brood_toad/enemy_brood_toad",
+        "width": 64,
+        "height": 64,
+        "top": 8,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.3,
+      "channels": [
+        {
+          "x": 0.25,
+          "y": 0.6,
+          "phase": 0
+        },
+        {
+          "x": 0.25,
+          "y": 0.4,
+          "phase": 2.2
+        },
+        {
+          "x": 0.2,
+          "y": 0.35,
+          "phase": 4.2
+        }
+      ],
+      "master_sha256": "4b215738a871c980a247f8566c93c82f646bc44202754a1b7842abc97ebd3442",
+      "anatomy_sha256": "790791720e4ab61bf1f5a9fdde3fde89211bdd8f5866281b299633ebfdb678d2"
+    },
+    {
+      "id": "enemy_broodling",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_broodling/enemy_broodling",
+        "width": 64,
+        "height": 64,
+        "top": 12,
+        "bottom": 7,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.2,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.55,
+          "phase": 0
+        },
+        {
+          "x": -0.35,
+          "y": 0.6,
+          "phase": 2
+        },
+        {
+          "x": 0.55,
+          "y": 0.35,
+          "phase": 3.5
+        }
+      ],
+      "master_sha256": "741ae06ef0182e0ed6aaab661970aa97dca40abe5b066ad5080cf3fbf9e3e205",
+      "anatomy_sha256": "3b392fcd1db7509e869203a1bd177b4d8d522c703195b3c6779a2a379f2fa377"
+    },
+    {
+      "id": "enemy_brute",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_brute/enemy_brute",
+        "width": 128,
+        "height": 128,
+        "top": 26,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_brute/enemy_brute_phone",
+        "width": 96,
+        "height": 96,
+        "top": 18,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "period_seconds": 3.2,
+      "channels": [
+        {
+          "x": 0.45,
+          "y": 0.45,
+          "phase": 0
+        },
+        {
+          "x": 0.08,
+          "y": 0.25,
+          "phase": -1.2
+        },
+        {
+          "x": 0.12,
+          "y": 0.16,
+          "phase": -2.1
+        }
+      ],
+      "master_sha256": "bb42385ca4187aa82b22eb43f2a32bff310ef5dae68d77c0da007378b134a3f9",
+      "anatomy_sha256": "da3327d91a7b5f246c5c2376b37e904f6c2d62036e38da7dbafcb64a48066982"
+    },
+    {
+      "id": "enemy_burrow_worm",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_burrow_worm/enemy_burrow_worm",
+        "width": 64,
+        "height": 64,
+        "top": 16,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.4,
+      "channels": [
+        {
+          "x": 0.2,
+          "y": 0.3,
+          "phase": 0
+        },
+        {
+          "x": -0.15,
+          "y": 0.25,
+          "phase": 2.1
+        },
+        {
+          "x": 0.15,
+          "y": 0.3,
+          "phase": 1.2
+        }
+      ],
+      "master_sha256": "73de865adc623a71290759612dffbbe6a925debf329ab4a6ccdd8ced8801e519",
+      "anatomy_sha256": "bd89f514af189a029ae3d8f6a7df2294defe42b7428fb785dcc4accad96615ac"
+    },
+    {
+      "id": "enemy_chimera_1",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_chimera_1/enemy_chimera_1",
+        "width": 128,
+        "height": 128,
+        "top": 23,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_chimera_1/enemy_chimera_1_phone",
+        "width": 96,
+        "height": 96,
+        "top": 10,
+        "bottom": 7,
+        "render_scale": 2
+      },
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.35,
+          "y": 0.5,
+          "phase": 0
+        },
+        {
+          "x": 0.6,
+          "y": 0.55,
+          "phase": 2.1
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "e42e0f107907d6ee2989c44d71a48dcadab68759e8ef8087eecdd47d7f6d6dda",
+      "anatomy_sha256": "cf3b73fb8cc5d58b61fb0b11324a73683c9b843cdb887b2db95ef44bb0fe887b"
+    },
+    {
+      "id": "enemy_chimera_2",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_chimera_2/enemy_chimera_2",
+        "width": 128,
+        "height": 128,
+        "top": 17,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_chimera_2/enemy_chimera_2_phone",
+        "width": 96,
+        "height": 96,
+        "top": 13,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.4,
+          "y": 0.55,
+          "phase": 0
+        },
+        {
+          "x": 0.45,
+          "y": 0.6,
+          "phase": 2
+        },
+        {
+          "x": 0.4,
+          "y": 0.65,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "027b3e0ec357d5b4edc1dcb871de664a16085ec4786427822b17ac1344ce3de3",
+      "anatomy_sha256": "09ce1e6b7513e788d9e6e47bae5c1aafc6be1a0586bc1797dec9e98269693c81"
+    },
+    {
+      "id": "enemy_chimera_3",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_chimera_3/enemy_chimera_3",
+        "width": 128,
+        "height": 128,
+        "top": 15,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_chimera_3/enemy_chimera_3_phone",
+        "width": 96,
+        "height": 96,
+        "top": 11,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.6,
+          "y": 0.6,
+          "phase": 0
+        },
+        {
+          "x": 0.15,
+          "y": 0.2,
+          "phase": 2.2
+        },
+        {
+          "x": 0.5,
+          "y": 0.6,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "852717f2d095e8ba2f89a4026a9bf6fe82c76c86f9f5ecf03feff4d6f1ca1c7a",
+      "anatomy_sha256": "7ae7451da9d594f1085595bdd8ce7ce1f1b5f698c6aa65f39284e327b654006b"
+    },
+    {
+      "id": "enemy_chomper",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_chomper/enemy_chomper",
+        "width": 64,
+        "height": 64,
+        "top": 5,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.7,
+      "channels": [
+        {
+          "x": 0.3,
+          "y": -0.45,
+          "phase": 0
+        },
+        {
+          "x": 0.25,
+          "y": 0.4,
+          "phase": 1.7
+        },
+        {
+          "x": 0.2,
+          "y": 0.5,
+          "phase": 3.1
+        }
+      ],
+      "master_sha256": "e8656cb5ec9da268e8839de6ce4c91f5a14bd08a65da9662a6701727543221d3",
+      "anatomy_sha256": "3079eea7e4198201adce192b3f280a50bb734bc38efbcb708d0f01eec5d59b71"
+    },
+    {
+      "id": "enemy_cinder_imp",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_cinder_imp/enemy_cinder_imp",
+        "width": 64,
+        "height": 64,
+        "top": 6,
+        "bottom": 5,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 1.8,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.85,
+          "phase": 2.4
+        },
+        {
+          "x": 0.7,
+          "y": 1,
+          "phase": 0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "2f876fdb14400eca622ca75a4f1b3f97d44b4e73f61ca23bf325641d483d21e9",
+      "anatomy_sha256": "162d075548d8bce595fd1ca0856224bccbb950afc74703e046c078f47e3aecf1"
+    },
+    {
+      "id": "enemy_cog_construct",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_cog_construct/enemy_cog_construct",
+        "width": 64,
+        "height": 64,
+        "top": 3,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.4,
+      "channels": [
+        {
+          "x": 0.3,
+          "y": 0.2,
+          "phase": 0
+        },
+        {
+          "x": 0.5,
+          "y": 0.8,
+          "phase": 2.3
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "023970fe4b96698e3311791bfcdfd7ad8fa09f34cf1eed5b7a9738ae451cac51",
+      "anatomy_sha256": "7a36c852f3d7baab8d3fd8efd654ff95487e28fb746706b1d05c82d531b2c890"
+    },
+    {
+      "id": "enemy_crab_cannon",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_crab_cannon/enemy_crab_cannon",
+        "width": 96,
+        "height": 96,
+        "top": 34,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.25,
+          "y": 0.55,
+          "phase": 0
+        },
+        {
+          "x": 0.2,
+          "y": 0.45,
+          "phase": 2.3
+        },
+        {
+          "x": 0.4,
+          "y": 0.55,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "75ee987ed1d5f46763894817837b435a0c82f0b7fabda7a5437d8b28a0156383",
+      "anatomy_sha256": "f8fb3dbf27ce47c4cbde01e4ad88a4f75d4cc57e3c31241b14711f77cfd77245"
+    },
+    {
+      "id": "enemy_crab_crusher",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_crab_crusher/enemy_crab_crusher",
+        "width": 96,
+        "height": 96,
+        "top": 26,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.2,
+          "y": -0.45,
+          "phase": 0
+        },
+        {
+          "x": 0.15,
+          "y": 0.3,
+          "phase": 0
+        },
+        {
+          "x": 0.25,
+          "y": 0.35,
+          "phase": 2.4
+        }
+      ],
+      "master_sha256": "8eaeaf9f0b2479bb006f2bb9561cefbaa7539762208040e39f2deee38bb29a6b",
+      "anatomy_sha256": "4d399855daed723f0d3ace4d6656c05be447e5dceda4c6478353a0466634bba0"
+    },
+    {
+      "id": "enemy_crossbow_archer",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_crossbow_archer/enemy_crossbow_archer",
+        "width": 64,
+        "height": 64,
+        "top": 11,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.7,
+      "channels": [
+        {
+          "x": 0.45,
+          "y": -0.65,
+          "phase": 0
+        },
+        {
+          "x": -0.35,
+          "y": 0.6,
+          "phase": 2.1
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "02bc69d52f593e88d9f74eb797bc30c4e1897ced55096acebf2e646fa3dbd871",
+      "anatomy_sha256": "dda8f89f6dda49a73d436f9b1481a5d346b4cce22210c8578e50fcb67fe1b1bc"
+    },
+    {
+      "id": "enemy_cultist",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_cultist/enemy_cultist",
+        "width": 64,
+        "height": 64,
+        "top": 12,
+        "bottom": 6,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3,
+      "channels": [
+        {
+          "x": 0.35,
+          "y": 0.55,
+          "phase": 0
+        },
+        {
+          "x": 0.5,
+          "y": 0.8,
+          "phase": 2.4
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "f04ec8bc0d67a598f07c061163fff4dc25c80c5e47db58ce24fe413c2543e8e0",
+      "anatomy_sha256": "efdfa9338213e495f6fa6c323edd7854a6fbe523e02a474898bcb525af78e12d"
+    },
+    {
+      "id": "enemy_devoted_sculptor",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_devoted_sculptor/enemy_devoted_sculptor",
+        "width": 64,
+        "height": 64,
+        "top": 5,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3,
+      "channels": [
+        {
+          "x": 0.15,
+          "y": 0.25,
+          "phase": 0
+        },
+        {
+          "x": 0.2,
+          "y": 0.3,
+          "phase": 2.3
+        },
+        {
+          "x": 0.35,
+          "y": 0.45,
+          "phase": 3.6
+        }
+      ],
+      "master_sha256": "cea92a21447a947e013c4af91f04faf9cb0a8030d6fa6f7a08bc70def1c77df0",
+      "anatomy_sha256": "4a1e2a0467b3c64538b1989603ad2c59b71d426d31419f4fa6d269dfca582e52"
+    },
+    {
+      "id": "enemy_drummer",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_drummer/enemy_drummer",
+        "width": 64,
+        "height": 64,
+        "top": 8,
+        "bottom": 5,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.8,
+          "phase": 0
+        },
+        {
+          "x": 0.5,
+          "y": 0.8,
+          "phase": 3.14
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "f0b73e5c9310869d1f85e94a3c0bfaf59fb1e2c45a95ab397e3620ec52cce33f",
+      "anatomy_sha256": "c91d9e3df9385c81cff51323f9ec19c914a1cc4ac1f7419e1e43ad7f05303f98"
+    },
+    {
+      "id": "enemy_elite_deathless",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_deathless/enemy_elite_deathless",
+        "width": 80,
+        "height": 80,
+        "top": 2,
+        "bottom": 1,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.65,
+          "y": 0.6,
+          "phase": 0
+        },
+        {
+          "x": 0.35,
+          "y": 0.4,
+          "phase": 2
+        },
+        {
+          "x": 0.4,
+          "y": 0.6,
+          "phase": 3.9
+        }
+      ],
+      "master_sha256": "76c7481364e4ad1683092d821ea596f258d262dfff2b26b2b10b7dbbf23c525b",
+      "anatomy_sha256": "1f5d4a1bc5482c6bbff1e40a8a49ff6dd3f4ba992887b1ab88a97e4ac000ca18"
+    },
+    {
+      "id": "enemy_elite_devourer",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_devourer/enemy_elite_devourer",
+        "width": 80,
+        "height": 80,
+        "top": 8,
+        "bottom": 8,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.4,
+          "y": 0.6,
+          "phase": 0
+        },
+        {
+          "x": 0.55,
+          "y": 0.55,
+          "phase": 2
+        },
+        {
+          "x": 0.25,
+          "y": 0.4,
+          "phase": 3.9
+        }
+      ],
+      "master_sha256": "6a6bea0c78b4ea5f31bf41892564fa3ed6aa0be9170432a7d5812d28618d1492",
+      "anatomy_sha256": "515bf51cf06ddd988eeaf0b368453cd616088dcf2e18384afecdc621a2eec37b"
+    },
+    {
+      "id": "enemy_elite_doom_chanter",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_doom_chanter/enemy_elite_doom_chanter",
+        "width": 80,
+        "height": 80,
+        "top": 4,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.3,
+          "y": 0.3,
+          "phase": 0
+        },
+        {
+          "x": 0.6,
+          "y": 0.6,
+          "phase": 1.8
+        },
+        {
+          "x": 0.65,
+          "y": 0.6,
+          "phase": 3.5
+        }
+      ],
+      "master_sha256": "1ffa41609380becd490470948271efa048f705a872172c1c5c283b2a7169e8c3",
+      "anatomy_sha256": "93cdd96ab4fc804b4f2ca916b0823dc94076b6720817e9529577a235e74dbdf7"
+    },
+    {
+      "id": "enemy_elite_giant_face",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_giant_face/enemy_elite_giant_face",
+        "width": 80,
+        "height": 80,
+        "top": 0,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.2,
+          "y": 0.55,
+          "phase": 0
+        },
+        {
+          "x": 0.35,
+          "y": 0.4,
+          "phase": 2.1
+        },
+        {
+          "x": 0.25,
+          "y": 0.45,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "a2d591fc82aba38fbb0324dfe75bdd906f82a638da9cf25c82a7a69880028310",
+      "anatomy_sha256": "afc5cc8d6a09b20bed41b1fdd0681f4fafd2113c01ec48b45902f199e827599a"
+    },
+    {
+      "id": "enemy_elite_gold_raven",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_gold_raven/enemy_elite_gold_raven",
+        "width": 80,
+        "height": 80,
+        "top": 9,
+        "bottom": 6,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.4,
+          "y": 0.8,
+          "phase": 0
+        },
+        {
+          "x": 0.3,
+          "y": -0.65,
+          "phase": 2.1
+        },
+        {
+          "x": 0.65,
+          "y": 0.55,
+          "phase": 3.9
+        }
+      ],
+      "master_sha256": "1eb29b586b468edb15d59c21da4e89699d47d9ca2f23904bfb8f862f1c68ecf4",
+      "anatomy_sha256": "ec4734deb04185dd570e78da52d3e3474f2a00fa904d87cb7e5806c222d3d344"
+    },
+    {
+      "id": "enemy_elite_husk_1",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_husk_1/enemy_elite_husk_1",
+        "width": 80,
+        "height": 80,
+        "top": 3,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.55,
+          "y": 0.65,
+          "phase": 0
+        },
+        {
+          "x": 0.25,
+          "y": 0.4,
+          "phase": 2.1
+        },
+        {
+          "x": 0.25,
+          "y": 0.35,
+          "phase": 4.2
+        }
+      ],
+      "master_sha256": "c7f5693ca2e6e83077feead7b90ae0975b1262d2f2923aa99d6f6fb457283b9b",
+      "anatomy_sha256": "862fd76d9ba76ad39ea3dbe003ea3f42c607a3dfb51521c90cd430e8f2495d32"
+    },
+    {
+      "id": "enemy_elite_husk_2",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_husk_2/enemy_elite_husk_2",
+        "width": 80,
+        "height": 80,
+        "top": 7,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.25,
+          "y": 0.35,
+          "phase": 0
+        },
+        {
+          "x": 0.65,
+          "y": 0.7,
+          "phase": 2.2
+        },
+        {
+          "x": 0.35,
+          "y": 0.45,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "938934f3d7cde92056245a0b2ad13a10f399a495eb02e090ae49dbec718a6825",
+      "anatomy_sha256": "5952c3e0adf647ed48991ab2bd50e16109def8d8b65349f6facf507943848e07"
+    },
+    {
+      "id": "enemy_elite_husk_3",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_husk_3/enemy_elite_husk_3",
+        "width": 80,
+        "height": 80,
+        "top": 3,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.4,
+          "y": 0.55,
+          "phase": 0
+        },
+        {
+          "x": 0.55,
+          "y": 0.4,
+          "phase": 2.1
+        },
+        {
+          "x": 0.15,
+          "y": 0.3,
+          "phase": 4.1
+        }
+      ],
+      "master_sha256": "b0047eb408f015a15f4e431a61b01b9cda22ac96ebb61567d1574d1b9a1ebfad",
+      "anatomy_sha256": "fdd6fdcf3d1c3ae142d8ff164f5629a7607de4dd7540d6a9da241eb4c3d443ad"
+    },
+    {
+      "id": "enemy_elite_iron_egg",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_iron_egg/enemy_elite_iron_egg",
+        "width": 80,
+        "height": 80,
+        "top": 2,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.6,
+          "y": 0.75,
+          "phase": 0
+        },
+        {
+          "x": 0.2,
+          "y": 0.3,
+          "phase": 1.4
+        },
+        {
+          "x": 0.25,
+          "y": 0.25,
+          "phase": 2.8
+        }
+      ],
+      "master_sha256": "24921c6725c62fbebc22d0c17322f859c5a4aacd265dbe51a9d1242a22114f0b",
+      "anatomy_sha256": "c5d57d5972f13f3ccab6d69eb089ae74bc88aa94a1bdf6e00e32e6980f990b79"
+    },
+    {
+      "id": "enemy_elite_mirror_djinn",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_mirror_djinn/enemy_elite_mirror_djinn",
+        "width": 80,
+        "height": 80,
+        "top": 11,
+        "bottom": 1,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.3,
+          "y": 0.55,
+          "phase": 0
+        },
+        {
+          "x": 0.3,
+          "y": -0.55,
+          "phase": 2
+        },
+        {
+          "x": 0.6,
+          "y": 0.7,
+          "phase": 3.4
+        }
+      ],
+      "master_sha256": "65e0e27949174d3867f77c955906c99ac61f889e62135addb3aecf1564eada41",
+      "anatomy_sha256": "d12cd15bc34f6fa285d2b15fd6f44f1dc448d8777bad9c62f14988d936896fe3"
+    },
+    {
+      "id": "enemy_elite_owl",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_owl/enemy_elite_owl",
+        "width": 80,
+        "height": 80,
+        "top": 9,
+        "bottom": 1,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.4,
+          "y": 0.8,
+          "phase": 0
+        },
+        {
+          "x": 0.35,
+          "y": -0.7,
+          "phase": 2
+        },
+        {
+          "x": 0.65,
+          "y": 0.55,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "b3bcb0a4758b3e9aae8c59ea6680ca1e93db49eb43aba3980e6874c7ea23cd92",
+      "anatomy_sha256": "ffd7e312a0f7e790191df8829ee38e02ffd7b2b393f850c00d9529ad266c35a7"
+    },
+    {
+      "id": "enemy_elite_sentry",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_sentry/enemy_elite_sentry",
+        "width": 80,
+        "height": 80,
+        "top": 5,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.35,
+          "y": 0.45,
+          "phase": 0
+        },
+        {
+          "x": 0.3,
+          "y": -0.4,
+          "phase": 2.4
+        },
+        {
+          "x": 0.35,
+          "y": 0.65,
+          "phase": 1.2
+        }
+      ],
+      "master_sha256": "3c1c57900fba1d1be0d179a8e367a8ed5eb4a6df6ae5b863badfee86d7998a81",
+      "anatomy_sha256": "bf60bf25b0dd12ce0b0205ce5e55d5d94c48d514de903bdea3b1ffda8abc8f84"
+    },
+    {
+      "id": "enemy_elite_sergeant",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_sergeant/enemy_elite_sergeant",
+        "width": 80,
+        "height": 80,
+        "top": 3,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.65,
+          "y": 0.6,
+          "phase": 0
+        },
+        {
+          "x": 0.5,
+          "y": 0.9,
+          "phase": 1.8
+        },
+        {
+          "x": 0.4,
+          "y": 0.75,
+          "phase": 3.5
+        }
+      ],
+      "master_sha256": "fb85cd31794c34ce6ad8fbdb773b6eaaed3a73ff6da13da9188c33efb5f13538",
+      "anatomy_sha256": "a4b8f97128b4cfd3dec61625ebffb458ec1c7cfcb826635e6aaa3833f97b681e"
+    },
+    {
+      "id": "enemy_elite_slaver",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_slaver/enemy_elite_slaver",
+        "width": 80,
+        "height": 80,
+        "top": 9,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.65,
+          "y": 0.2,
+          "phase": 0
+        },
+        {
+          "x": 0.65,
+          "y": 0.65,
+          "phase": 1.9
+        },
+        {
+          "x": 0.5,
+          "y": 0.7,
+          "phase": 3.8
+        }
+      ],
+      "master_sha256": "bdd12682d5fd0e057b01682cdd1f6a671ec45fd2219c0e149e34d08acfc2221c",
+      "anatomy_sha256": "314fd601756e0e33185d09bd2b06857edf11dad68f8d469b91a7518978721aec"
+    },
+    {
+      "id": "enemy_elite_stab_book",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_elite_stab_book/enemy_elite_stab_book",
+        "width": 80,
+        "height": 80,
+        "top": 2,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.4,
+          "y": 0.8,
+          "phase": 0
+        },
+        {
+          "x": 0.3,
+          "y": -0.65,
+          "phase": 2.3
+        },
+        {
+          "x": 0.55,
+          "y": 0.85,
+          "phase": 4.1
+        }
+      ],
+      "master_sha256": "0388397df2fecec561f55daa8e6cef162f19ca48964612f01472e1dfe5e0d388",
+      "anatomy_sha256": "1d805212640a547d1384725aee58830171e2ab0d5ea661d94269b681554c3040"
+    },
+    {
+      "id": "enemy_ember_furnace",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_ember_furnace/enemy_ember_furnace",
+        "width": 128,
+        "height": 128,
+        "top": 22,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_ember_furnace/enemy_ember_furnace_phone",
+        "width": 96,
+        "height": 96,
+        "top": 8,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "period_seconds": 3.4,
+      "channels": [
+        {
+          "x": 0.25,
+          "y": 0.35,
+          "phase": 0
+        },
+        {
+          "x": 0.3,
+          "y": 0.3,
+          "phase": 2.5
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "e226cf98344ca668518dbabbc2e94dddc2a2b91a905fb56d89abab9a8a7fae64",
+      "anatomy_sha256": "f2e5e714b3fb03132665a7e86355e067b57442b54ecd589cdc75a09c64137374"
+    },
+    {
+      "id": "enemy_forgotten_soul",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_forgotten_soul/enemy_forgotten_soul",
+        "width": 64,
+        "height": 64,
+        "top": 17,
+        "bottom": 5,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.5,
+      "channels": [
+        {
+          "x": 0.45,
+          "y": 0.6,
+          "phase": 0
+        },
+        {
+          "x": -0.45,
+          "y": 0.6,
+          "phase": 2.5
+        },
+        {
+          "x": 0.3,
+          "y": 0.4,
+          "phase": 1.4
+        }
+      ],
+      "master_sha256": "04ed9211e5a97244d0d93da5abc780191a0c7bd1eae0e18ecd23feef4255674a",
+      "anatomy_sha256": "f8231e2346793869e04bed27ae8b0e1be4a01f0f870492070635b23153f9968d"
+    },
+    {
+      "id": "enemy_frog_knight",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_frog_knight/enemy_frog_knight",
+        "width": 64,
+        "height": 64,
+        "top": 2,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.7,
+      "channels": [
+        {
+          "x": 0.55,
+          "y": 0.65,
+          "phase": 0
+        },
+        {
+          "x": 0.15,
+          "y": 0.35,
+          "phase": 1.9
+        },
+        {
+          "x": 0.4,
+          "y": 0.55,
+          "phase": 3.4
+        }
+      ],
+      "master_sha256": "92e175d9d6cb5e5f89a59a12d19a6962610bc89522e6f6b0bdf58c7ff5e6fc0d",
+      "anatomy_sha256": "b47104ce96743aa658653c960eb456de80dba6867460001faa21a27560ebb00c"
+    },
+    {
+      "id": "enemy_gaping_maw",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_gaping_maw/enemy_gaping_maw",
+        "width": 64,
+        "height": 64,
+        "top": 4,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.1,
+          "y": 0.4,
+          "phase": 0
+        },
+        {
+          "x": 0.45,
+          "y": 0.7,
+          "phase": 2.4
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "58bc92508deb60acc33ef2b5510f869068d211a280a804ceadc3c941584443fa",
+      "anatomy_sha256": "a921d25f6b449bfa67159df57ee851bd5af0db960f2822596cf57551846e4908"
+    },
+    {
+      "id": "enemy_haze_stag",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_haze_stag/enemy_haze_stag",
+        "width": 128,
+        "height": 128,
+        "top": 22,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_haze_stag/enemy_haze_stag_phone",
+        "width": 96,
+        "height": 96,
+        "top": 4,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.6,
+          "y": 0.7,
+          "phase": 0
+        },
+        {
+          "x": 0.55,
+          "y": 0.7,
+          "phase": 2.1
+        },
+        {
+          "x": 0.45,
+          "y": 0.55,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "dd5de36fd2369e7268528094f3efc8bf8c9121f4701349c57d41d7b65ee5cc06",
+      "anatomy_sha256": "44ff35da3313dd8ae09b3cc244188254525fefbbd09edc342607f71ba88131dc"
+    },
+    {
+      "id": "enemy_hexer",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_hexer/enemy_hexer",
+        "width": 64,
+        "height": 64,
+        "top": 10,
+        "bottom": 6,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.1,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.7,
+          "phase": 0
+        },
+        {
+          "x": 0.6,
+          "y": 0.9,
+          "phase": 1.7
+        },
+        {
+          "x": 0.5,
+          "y": 0.8,
+          "phase": 3
+        }
+      ],
+      "master_sha256": "aa93cb98444e1e0561a3762de25a04dac4b3aebaf755ec9f0837fd415322397d",
+      "anatomy_sha256": "e8a55e554d4e9ae4586fd4161bcd12e2e3dcdf7d3ddf79153460471049057fa8"
+    },
+    {
+      "id": "enemy_joker",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_joker/enemy_joker",
+        "width": 64,
+        "height": 64,
+        "top": 8,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.5,
+      "channels": [
+        {
+          "x": 0.4,
+          "y": 0.7,
+          "phase": 0
+        },
+        {
+          "x": 0.6,
+          "y": 0.8,
+          "phase": 2.4
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "8031facaf8c8937f52f58c6ced32ee763f4cf1009de896c6d911dfed51e676eb",
+      "anatomy_sha256": "cf8ab37ca36f4acb1c1890244b521930bb9701e52c8564c61522385c4db7968a"
+    },
+    {
+      "id": "enemy_kin_follower",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_kin_follower/enemy_kin_follower",
+        "width": 96,
+        "height": 96,
+        "top": 9,
+        "bottom": 6,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.65,
+          "y": 0.7,
+          "phase": 0
+        },
+        {
+          "x": 0.5,
+          "y": 0.55,
+          "phase": 2.1
+        },
+        {
+          "x": 0.55,
+          "y": 0.6,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "a9aee04b760f00d56e4a98df3787a3f6fdf0d65a928fbda6207493c9e68740dc",
+      "anatomy_sha256": "4f052db5fa53174f9d5ff62e6061f29c1830c03d8579d9b90cd16ce9f3f09c01"
+    },
+    {
+      "id": "enemy_kin_priest",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_kin_priest/enemy_kin_priest",
+        "width": 96,
+        "height": 96,
+        "top": 8,
+        "bottom": 5,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.35,
+          "y": 0.35,
+          "phase": 0
+        },
+        {
+          "x": 0.65,
+          "y": 0.7,
+          "phase": 2.1
+        },
+        {
+          "x": 0.5,
+          "y": 0.6,
+          "phase": 3.9
+        }
+      ],
+      "master_sha256": "4988861040b5ef8b4bd8a42802ca8beaecb77b3108fe4a75aa915e2fd1ce07c6",
+      "anatomy_sha256": "99718c7c041032cfb051afd42117a0e01b86a14528f4fb6bba24a37df65f3d89"
+    },
+    {
+      "id": "enemy_lost_soul",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_lost_soul/enemy_lost_soul",
+        "width": 64,
+        "height": 64,
+        "top": 7,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.2,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.65,
+          "phase": 0
+        },
+        {
+          "x": 0.65,
+          "y": 0.55,
+          "phase": 2.2
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "b31d682beda493b0191e8d658da1461b2a4a8e90f7f671dfa71f9806b3edbcd7",
+      "anatomy_sha256": "9131d3cd158d4a778c70f17ae089191cf77add821a430846f84775bf2d4165f5"
+    },
+    {
+      "id": "enemy_mimic_imp",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_mimic_imp/enemy_mimic_imp",
+        "width": 64,
+        "height": 64,
+        "top": 5,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.1,
+      "channels": [
+        {
+          "x": 0.45,
+          "y": 0.7,
+          "phase": 0
+        },
+        {
+          "x": 0.55,
+          "y": 0.75,
+          "phase": 2.7
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "fcf8112798b66e5f9563f0003483834d35b8381679be42e6b5b2f7217d438d63",
+      "anatomy_sha256": "b108e33abf6f38f5131b2a936a9637dc06cfac21e71424617e274de53bd04a42"
+    },
+    {
+      "id": "enemy_mimic_jester",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_mimic_jester/enemy_mimic_jester",
+        "width": 64,
+        "height": 64,
+        "top": 8,
+        "bottom": 5,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.7,
+      "channels": [
+        {
+          "x": 0.15,
+          "y": 0.3,
+          "phase": 0
+        },
+        {
+          "x": 0.3,
+          "y": 0.5,
+          "phase": 2.2
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "6984d667da2141abcea24725bf4e41c4be1c7fda62cba9f392a58d49a1e9b6c3",
+      "anatomy_sha256": "bd81b8bc692e746d32789f775d7aa1482eb3e03682600bfb04249279f21e5501"
+    },
+    {
+      "id": "enemy_moss",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_moss/enemy_moss",
+        "width": 64,
+        "height": 64,
+        "top": 4,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.5,
+      "channels": [
+        {
+          "x": 0.4,
+          "y": 0.6,
+          "phase": 0
+        },
+        {
+          "x": 0.35,
+          "y": 0.55,
+          "phase": 2.2
+        },
+        {
+          "x": 0.3,
+          "y": 0.4,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "bca2f87b9192eba0506693c2e7faef2890d797e5179b4a081a9fb7049313398f",
+      "anatomy_sha256": "78585185d1945e69ec8b7069f229a6caf6ad537df6f80cb4148a4a9deba4b1bd"
+    },
+    {
+      "id": "enemy_moss_healer",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_moss_healer/enemy_moss_healer",
+        "width": 64,
+        "height": 64,
+        "top": 3,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.2,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.8,
+          "phase": 0
+        },
+        {
+          "x": 0.35,
+          "y": 0.7,
+          "phase": 2.2
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "70ef9e34a1e984eb8589c5883bc91c4ac32f761e7fa0260d7382b73e5adcb95a",
+      "anatomy_sha256": "4e62299726c25507e6afb888dbf6b6e718f74b69dce4d592e9c6c418326dd9e7"
+    },
+    {
+      "id": "enemy_moss_slime",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_moss_slime/enemy_moss_slime",
+        "width": 64,
+        "height": 64,
+        "top": 6,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.6,
+      "channels": [
+        {
+          "x": 0.1,
+          "y": 0.55,
+          "phase": 0
+        },
+        {
+          "x": 0.8,
+          "y": 0.7,
+          "phase": -1.04719755
+        },
+        {
+          "x": 0.35,
+          "y": 0.45,
+          "phase": -2.0943951
+        }
+      ],
+      "master_sha256": "11cfa7d0e051277704ff34822c89767d59aa2a5f182c0c1bd6055db6d647912a",
+      "anatomy_sha256": "9d445253452b3c982358ff58e6cc6b607961db045a3a8430c2e9c41291cf4946"
+    },
+    {
+      "id": "enemy_moss_spawner",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_moss_spawner/enemy_moss_spawner",
+        "width": 64,
+        "height": 64,
+        "top": 8,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.7,
+      "channels": [
+        {
+          "x": 0.6,
+          "y": 0.7,
+          "phase": 0
+        },
+        {
+          "x": 0.45,
+          "y": 0.6,
+          "phase": 2
+        },
+        {
+          "x": 0.4,
+          "y": 0.5,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "80a9b3cd6cb05fb4373fa17807a568ed5f6081e6f36f6b7c606f924553a566d3",
+      "anatomy_sha256": "95af2a8a8ab346d55263cb7e4aac4dcc144b3b5043389a048fadfaf1bf2d3369"
+    },
+    {
+      "id": "enemy_mourn_beast",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_mourn_beast/enemy_mourn_beast",
+        "width": 64,
+        "height": 64,
+        "top": 5,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.6,
+      "channels": [
+        {
+          "x": 0.45,
+          "y": 0.55,
+          "phase": 0
+        },
+        {
+          "x": -0.3,
+          "y": 0.5,
+          "phase": 2.2
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "7bdcde53b65d6f918a8173f500cb252a90d341a098c3ebfded2dd434b369e47e",
+      "anatomy_sha256": "b786903ffd60748bf2b82059a53b94a0c701e8b99f885c5cd61b11b8f27c243b"
+    },
+    {
+      "id": "enemy_mud_lump",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_mud_lump/enemy_mud_lump",
+        "width": 64,
+        "height": 64,
+        "top": 5,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.6,
+      "channels": [
+        {
+          "x": 0.25,
+          "y": 0.55,
+          "phase": 0
+        },
+        {
+          "x": 0.3,
+          "y": 0.4,
+          "phase": 2.2
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "ada89e8821423a53bb6416cbf45de51534b1225a03973ad4102a125501bc85db",
+      "anatomy_sha256": "2634c6596ebcfe45e623695fdc81216755fde8afb2e4911365a65903baf70810"
+    },
+    {
+      "id": "enemy_mudling",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_mudling/enemy_mudling",
+        "width": 64,
+        "height": 64,
+        "top": 10,
+        "bottom": 8,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.5,
+      "channels": [
+        {
+          "x": 0.45,
+          "y": 0.8,
+          "phase": 0
+        },
+        {
+          "x": 0.5,
+          "y": 0.8,
+          "phase": 2.5
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "ebf512803c0599c14e439118a1a175f27116abfdfbc5636aff3b0d0ad337e2e9",
+      "anatomy_sha256": "8132bd8692f8b87e59a0e4b44a7b163f8c6a2caac24073204d18c2e19c019baa"
+    },
+    {
+      "id": "enemy_nemesis_wraith",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_nemesis_wraith/enemy_nemesis_wraith",
+        "width": 64,
+        "height": 64,
+        "top": 5,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.6,
+      "channels": [
+        {
+          "x": 0.55,
+          "y": 0.7,
+          "phase": 0
+        },
+        {
+          "x": -0.55,
+          "y": 0.7,
+          "phase": 3
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "b221d9e039895a1ee177a16e6d1f7119c9f78bbdc1ec053d874bdadac9bb51af",
+      "anatomy_sha256": "a7f8ee0a40a49b0e12c5719722fb4d0d4bc9976253f73f08c768191aa9695be0"
+    },
+    {
+      "id": "enemy_raptor_chick",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_raptor_chick/enemy_raptor_chick",
+        "width": 64,
+        "height": 64,
+        "top": 11,
+        "bottom": 5,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.7,
+      "channels": [
+        {
+          "x": 0.6,
+          "y": 0.75,
+          "phase": 0
+        },
+        {
+          "x": 0.1,
+          "y": 0.3,
+          "phase": 1.7
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "abb9db49418b9163a2f387d113e39a8983bbf8ce477b98b817758b4a92e012f2",
+      "anatomy_sha256": "7bd971c5ae1918436a4fcaab43f8b02abd7dde98370a1a19b254e12ff5f270a6"
+    },
+    {
+      "id": "enemy_raptor_egg",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_raptor_egg/enemy_raptor_egg",
+        "width": 64,
+        "height": 64,
+        "top": 12,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.1,
+      "channels": [
+        {
+          "x": 0.15,
+          "y": 0.25,
+          "phase": 0
+        },
+        {
+          "x": 0.2,
+          "y": 0.1,
+          "phase": 1.5
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "21a6b448dfd8073af5831ae28c283090a47c17bd969a6fb46b56d797b6cef47e",
+      "anatomy_sha256": "7a60ce3967c07da0bd9107b91a6f2e699fb5f4660c4879727c51c5c88d09e38e"
+    },
+    {
+      "id": "enemy_rock_beetle",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_rock_beetle/enemy_rock_beetle",
+        "width": 64,
+        "height": 64,
+        "top": 14,
+        "bottom": 6,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.7,
+      "channels": [
+        {
+          "x": 0.25,
+          "y": 0.35,
+          "phase": 0
+        },
+        {
+          "x": 0.25,
+          "y": 0.35,
+          "phase": 2.4
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "731f9de0730b636f36327b08aa124874448018442e17b8daad5fef7ea0b7ac8d",
+      "anatomy_sha256": "159c9205dc8bf784752fe515e90e4973b8b7d2ff86b3d036d7fc31025938714d"
+    },
+    {
+      "id": "enemy_scald_gnat",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_scald_gnat/enemy_scald_gnat",
+        "width": 64,
+        "height": 64,
+        "top": 8,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 1.8,
+      "channels": [
+        {
+          "x": 0.45,
+          "y": -0.7,
+          "phase": 0
+        },
+        {
+          "x": 0.45,
+          "y": 0.6,
+          "phase": 2.4
+        },
+        {
+          "x": 0.2,
+          "y": 0.35,
+          "phase": 1.3
+        }
+      ],
+      "master_sha256": "0ab33a06a3ae7e0ba75687eb310526f25a7505e4a19b4e8411a63f6f5f6c90ce",
+      "anatomy_sha256": "62b3c3024dc6941fe14b035fa8ecd47aa58a640b0208de655111b5a1c2f1c1b5"
+    },
+    {
+      "id": "enemy_seal_orb",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_seal_orb/enemy_seal_orb",
+        "width": 48,
+        "height": 48,
+        "top": 2,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.4,
+      "channels": [
+        {
+          "x": 0.2,
+          "y": 0.35,
+          "phase": 0
+        },
+        {
+          "x": 0.2,
+          "y": -0.3,
+          "phase": 2.2
+        },
+        {
+          "x": 0.6,
+          "y": 0.65,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "38165a711ef1713e1879ef05b13f8d15ea495232fc1b427a3eda2ba69fe9a832",
+      "anatomy_sha256": "9a0859e74b0afdac62da8a3247b837fec508096ed4872d186bedae203185aaad"
+    },
+    {
+      "id": "enemy_set_breaker",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_set_breaker/enemy_set_breaker",
+        "width": 64,
+        "height": 64,
+        "top": 5,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.8,
+          "phase": 0
+        },
+        {
+          "x": 0.1,
+          "y": 0.35,
+          "phase": 1.6
+        },
+        {
+          "x": 0.3,
+          "y": 0.4,
+          "phase": 2.9
+        }
+      ],
+      "master_sha256": "fd7b7df148ad29db33d8dbd324deee8ea41ac77bdac6e5cc973e506f2e5a4ea2",
+      "anatomy_sha256": "32eb0fbaf32992da842df318a3239e38cb30f05afe1f491c1283880d9a84b9f8"
+    },
+    {
+      "id": "enemy_set_wary",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_set_wary/enemy_set_wary",
+        "width": 64,
+        "height": 64,
+        "top": 17,
+        "bottom": 7,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.6,
+      "channels": [
+        {
+          "x": 0.6,
+          "y": 0.9,
+          "phase": 0
+        },
+        {
+          "x": 0.4,
+          "y": 1.1,
+          "phase": 2
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "857e14ade687f7e98ede5de8a2be37ac4035fcc295b72bea2f1990f7302f3774",
+      "anatomy_sha256": "17e8410a3ff9cfbbf02d152a77cc8eddf19818ecde1b41c3601e47906708f892"
+    },
+    {
+      "id": "enemy_shell_guard",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_shell_guard/enemy_shell_guard",
+        "width": 64,
+        "height": 64,
+        "top": 5,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.1,
+      "channels": [
+        {
+          "x": 0.55,
+          "y": 0.6,
+          "phase": 0
+        },
+        {
+          "x": 0.45,
+          "y": 0.5,
+          "phase": 1.9
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "8cb19dfb7300e70441c723f6fd384b48541958d3a8ccf5c5ab37b18cd04eae0a",
+      "anatomy_sha256": "dffde8290d6744bf407904901207d531fb95a060f83d182de7f7607dce4de32d"
+    },
+    {
+      "id": "enemy_shield_squire",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_shield_squire/enemy_shield_squire",
+        "width": 64,
+        "height": 64,
+        "top": 15,
+        "bottom": 11,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.7,
+      "channels": [
+        {
+          "x": 0.55,
+          "y": 0.7,
+          "phase": 0
+        },
+        {
+          "x": 0.4,
+          "y": 0.6,
+          "phase": 1.2
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "a28692f8e7664ea5a9f0b40349135f148ec58498acea3906de397395ac3e8cde",
+      "anatomy_sha256": "5676c50a7e07027817365e17efcb01db86ade3db8f278e944725fdf763d5df13"
+    },
+    {
+      "id": "enemy_sludge_berserker",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_sludge_berserker/enemy_sludge_berserker",
+        "width": 64,
+        "height": 64,
+        "top": 7,
+        "bottom": 0,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.1,
+      "channels": [
+        {
+          "x": 0.25,
+          "y": 0.45,
+          "phase": 0
+        },
+        {
+          "x": 0.5,
+          "y": 0.6,
+          "phase": 2.1
+        },
+        {
+          "x": 0.3,
+          "y": 0.4,
+          "phase": 3.8
+        }
+      ],
+      "master_sha256": "fcd16fedfc4e99263587e1d8fcf69aa2d25c4128b9d416a53a2206eb24dafc99",
+      "anatomy_sha256": "a0936906cd6021779591df55dfcbc3dd849193ab5e64ffd7a2d0942ee0849baa"
+    },
+    {
+      "id": "enemy_sludge_spider",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_sludge_spider/enemy_sludge_spider",
+        "width": 64,
+        "height": 64,
+        "top": 9,
+        "bottom": 5,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.6,
+      "channels": [
+        {
+          "x": 0.35,
+          "y": 0.45,
+          "phase": 0
+        },
+        {
+          "x": 0.3,
+          "y": 0.4,
+          "phase": 2.8
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "f030ee724f58755c7dbc0d16a3e833118ad05e05f1cbee6afec9517bdcaef2e1",
+      "anatomy_sha256": "1abc65380b5311fb3c3758fa9d7d23bed1e6527a4cff23b272aee85c1bd3d3ac"
+    },
+    {
+      "id": "enemy_slug",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_slug/enemy_slug",
+        "width": 64,
+        "height": 64,
+        "top": 22,
+        "bottom": 7,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.9,
+      "channels": [
+        {
+          "x": 0.35,
+          "y": 0.7,
+          "phase": 0
+        },
+        {
+          "x": 0.35,
+          "y": 0.6,
+          "phase": 2.6
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "7e31d8e4344cc0f6c66a42ab81cbab8725de9d5209fceddfa960365cbef3953e",
+      "anatomy_sha256": "145a20b954a62ee145523f9c03c9f3fcc58681de9bb87c6b9707a19e7ce9d176"
+    },
+    {
+      "id": "enemy_snap_fruit",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_snap_fruit/enemy_snap_fruit",
+        "width": 64,
+        "height": 64,
+        "top": 6,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.3,
+      "channels": [
+        {
+          "x": 0.15,
+          "y": 0.4,
+          "phase": 0
+        },
+        {
+          "x": 0.45,
+          "y": 0.7,
+          "phase": 2.5
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "240062d240635e48ad926bbc76afa3a59d56e57c1e54ace6969a7a027afe8869",
+      "anatomy_sha256": "e4d88545efcc9c2ebff82ceae1966a3600e2417e9c7e0d0dcb28709795bd2894"
+    },
+    {
+      "id": "enemy_spore_cap",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_spore_cap/enemy_spore_cap",
+        "width": 64,
+        "height": 64,
+        "top": 8,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.1,
+      "channels": [
+        {
+          "x": 0.35,
+          "y": 0.65,
+          "phase": 0
+        },
+        {
+          "x": 0.5,
+          "y": 0.75,
+          "phase": 2.5
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "afc30a63de1f5fef065cb95e03fc0b242a92e7207a7afc88373ef68388220236",
+      "anatomy_sha256": "3a3c5cdf3f57e3525eaa43a33631beb1edcc8cb84970daff4c6e126fb4ff8e9a"
+    },
+    {
+      "id": "enemy_strangler_serpent",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_strangler_serpent/enemy_strangler_serpent",
+        "width": 64,
+        "height": 64,
+        "top": 7,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3,
+      "channels": [
+        {
+          "x": 0.3,
+          "y": 0.6,
+          "phase": 0
+        },
+        {
+          "x": 0.45,
+          "y": 0.65,
+          "phase": 2.3
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "73edfc2f6592f66aa8324aa419f8a7d7d3573855160ea5f1c41d54873241f6a4",
+      "anatomy_sha256": "20e819de28dbcdea747b1817d2aec78dc1802136c148f639b5a1e11b425175b0"
+    },
+    {
+      "id": "enemy_thief",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_thief/enemy_thief",
+        "width": 64,
+        "height": 64,
+        "top": 9,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.3,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.8,
+          "phase": 0
+        },
+        {
+          "x": 0.45,
+          "y": 0.25,
+          "phase": 2
+        },
+        {
+          "x": 0.6,
+          "y": 0.8,
+          "phase": 3.5
+        }
+      ],
+      "master_sha256": "048949e3fb36bd62ea29a953e87faa17120b86d51bc1bd7c955ad8fe4c46fff8",
+      "anatomy_sha256": "3c361b6e120774d4a7e90b0334f97cf32edb40ef57c4902db61faf2193a19132"
+    },
+    {
+      "id": "enemy_thorn_squirrel",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_thorn_squirrel/enemy_thorn_squirrel",
+        "width": 64,
+        "height": 64,
+        "top": 12,
+        "bottom": 4,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.2,
+      "channels": [
+        {
+          "x": 0.35,
+          "y": 0.55,
+          "phase": 0
+        },
+        {
+          "x": 0.15,
+          "y": 0.3,
+          "phase": 1.7
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "45d7402c67246561cd5834944b4010948fc7661eaa59eae3eedd32ccc256e14d",
+      "anatomy_sha256": "eaff363596675122521540437228310739417431e9fc459fb0c4301ba501965c"
+    },
+    {
+      "id": "enemy_thunder_globe",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_thunder_globe/enemy_thunder_globe",
+        "width": 64,
+        "height": 64,
+        "top": 7,
+        "bottom": 1,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.6,
+      "channels": [
+        {
+          "x": 0.15,
+          "y": 0.3,
+          "phase": 0
+        },
+        {
+          "x": 0.15,
+          "y": 0.25,
+          "phase": 2.4
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "cc324e9b3eb55543d39888645bee168c72fc6f1df775ca37a1aaa3b3815bbd59",
+      "anatomy_sha256": "62b5562b9c1653069622687a47cf7dff67c8c9e7c4b2ab500cef5e170ec62428"
+    },
+    {
+      "id": "enemy_turtle",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_turtle/enemy_turtle",
+        "width": 128,
+        "height": 128,
+        "top": 26,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_turtle/enemy_turtle_phone",
+        "width": 96,
+        "height": 96,
+        "top": 13,
+        "bottom": 7,
+        "render_scale": 2
+      },
+      "period_seconds": 3.6,
+      "channels": [
+        {
+          "x": 0.65,
+          "y": 0.25,
+          "phase": 0
+        },
+        {
+          "x": 0.12,
+          "y": 0.3,
+          "phase": -1.0
+        },
+        {
+          "x": 0.35,
+          "y": 0.65,
+          "phase": -2.0
+        }
+      ],
+      "master_sha256": "f9bb0ca07879e72e7b697fb72e3a9aa66112c2cb954c41ac826fbc559c3158b3",
+      "anatomy_sha256": "9920e9a871bc066e1366f72e33569be21bc37475643a2859ff2131f7135298c4"
+    },
+    {
+      "id": "enemy_vine_walker",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_vine_walker/enemy_vine_walker",
+        "width": 64,
+        "height": 64,
+        "top": 7,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.4,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.8,
+          "phase": 0
+        },
+        {
+          "x": 0.35,
+          "y": 0.6,
+          "phase": 2.3
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "3950e9a7acc91809108e366bb06376b2576441c768feb2c445799c08ba9f560d",
+      "anatomy_sha256": "3c1eeca898434c15833a93739ce54401e5d48307015b2a828194bfb411fe0d31"
+    },
+    {
+      "id": "enemy_warden",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_warden/enemy_warden",
+        "width": 128,
+        "height": 128,
+        "top": 22,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "phone": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_warden/enemy_warden_phone",
+        "width": 96,
+        "height": 96,
+        "top": 7,
+        "bottom": 2,
+        "render_scale": 2
+      },
+      "period_seconds": 2.9,
+      "channels": [
+        {
+          "x": 0.6,
+          "y": 0.8,
+          "phase": 0
+        },
+        {
+          "x": 0.45,
+          "y": 0.2,
+          "phase": -1.2
+        },
+        {
+          "x": 0.5,
+          "y": 0.25,
+          "phase": -2.3
+        }
+      ],
+      "master_sha256": "f9f79f926d838cbdd4fa325b42f5c784940628dc36771669ec0b0ea3b68a73a9",
+      "anatomy_sha256": "51f1b8607647274f06133a851cbd8c585fccca9f47b342b9f62617e6efabbc8c"
+    },
+    {
+      "id": "enemy_whetstone_colossus",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_whetstone_colossus/enemy_whetstone_colossus",
+        "width": 64,
+        "height": 64,
+        "top": 5,
+        "bottom": 1,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 3.3,
+      "channels": [
+        {
+          "x": 0.4,
+          "y": 0.7,
+          "phase": 0
+        },
+        {
+          "x": 0.35,
+          "y": 0.55,
+          "phase": 2.1
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "554d56df3ce4548c9c11a4a769e999186eecdbb7f3f7b89b0028704af74e3364",
+      "anatomy_sha256": "a6edd69bda3a0a6bf161eee084125e0b9daa712f9e57beb3e1f873d51bb11fc2"
+    },
+    {
+      "id": "enemy_wide_power",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_wide_power/enemy_wide_power",
+        "width": 64,
+        "height": 64,
+        "top": 13,
+        "bottom": 5,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.9,
+          "phase": 0
+        },
+        {
+          "x": 0.9,
+          "y": 0.5,
+          "phase": -1.04719755
+        },
+        {
+          "x": 0.15,
+          "y": 0.4,
+          "phase": -2.0943951
+        }
+      ],
+      "master_sha256": "f7432912e1c80046d59183b1a936fbc0ed044c4adff9e1bb07238688cff6884a",
+      "anatomy_sha256": "bd44a05aff629773311c9558c71e1e27dd73dc4f24559e60f31f9603aa9d3e7a"
+    },
+    {
+      "id": "enemy_winch_warden",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_winch_warden/enemy_winch_warden",
+        "width": 96,
+        "height": 96,
+        "top": 3,
+        "bottom": 3,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.8,
+      "channels": [
+        {
+          "x": 0.5,
+          "y": 0.5,
+          "phase": 0
+        },
+        {
+          "x": 0.45,
+          "y": 0.55,
+          "phase": 2.2
+        },
+        {
+          "x": 0.45,
+          "y": 0.55,
+          "phase": 4
+        }
+      ],
+      "master_sha256": "965c06736b724271f25f6528e855c96c471ea277b7f3c23354114c6877f49f3e",
+      "anatomy_sha256": "d1a91c00ba00b3df544e2d5da92ebc265b22163740a5c914f78154cfe086742d"
+    },
+    {
+      "id": "enemy_wolf",
+      "desktop": {
+        "stem": "res://assets/Art/enemies/rpg_spirits/enemy_wolf/enemy_wolf",
+        "width": 64,
+        "height": 64,
+        "top": 4,
+        "bottom": 7,
+        "render_scale": 2
+      },
+      "phone": null,
+      "period_seconds": 2.5,
+      "channels": [
+        {
+          "x": 0.35,
+          "y": 0.45,
+          "phase": 0
+        },
+        {
+          "x": 0.5,
+          "y": 0.65,
+          "phase": 1.9
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "phase": 0.0
+        }
+      ],
+      "master_sha256": "8a3fcd77794aa40d58454c3af87b9b8e61b83c530c87a240da5120a660a5e7fe",
+      "anatomy_sha256": "d5754056b452ee67071bbab96dee840e563783deccc68a5125157936405d9720"
+    }
+  ]
+}

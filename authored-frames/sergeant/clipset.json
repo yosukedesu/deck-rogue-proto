@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_elite_sergeant",
+  "sourceCanvas": [
+    176,
+    112
+  ],
+  "frameCanvas": [
+    200,
+    112
+  ],
+  "sourceOffset": [
+    24,
+    0
+  ],
+  "anchor": [
+    112,
+    112
+  ],
+  "spriteOffset": [
+    -12,
+    0
+  ],
+  "groundMaxY": 103,
+  "originalAnchor": [
+    88,
+    112
+  ],
+  "sourcePngSha256": "7d95058689a67ec731ae6d3816f2fc59d914b797ee6bf1adebc07cf08eb29be9",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "db7f5fdb6110da25c21f4f49b15d6d7056cd91442c48bb06084c7d33ef8a0a72"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.5,
+        "sha256": "db7f5fdb6110da25c21f4f49b15d6d7056cd91442c48bb06084c7d33ef8a0a72"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.5,
+        "sha256": "70af540bb272a780a25fe92dd8c2d8205e8dc2b972025978f03eabebc1081d1e"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "7fdb148ea8f7fc8d2f36be2d959da5fdc7c5e81ff7588648c3fb7c59d492248a"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.18,
+        "sha256": "eaf65ed6f817f52d1549944fdadda25f00e8d63cd952d270b37f79495225193e"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.2,
+        "sha256": "3fa79f953dfab002f54e559c6b2de4f42ae08870b55862e2f6099f80e672e4fe"
+      }
+    ],
+    "whipprepare": [
+      {
+        "file": "whipprepare.png",
+        "duration": 0.2,
+        "sha256": "89ab4d18011957e6b77c0c1ba4b3f206bba4eeed72999a648655ae3fb78deabe"
+      }
+    ],
+    "whipcontact": [
+      {
+        "file": "whipcontact.png",
+        "duration": 0.055,
+        "sha256": "aba354c9859542ccc4bea4361a350ab0282856b579669525d7cd2c0647c90fbb"
+      }
+    ],
+    "doublecontact1": [
+      {
+        "file": "doublecontact1.png",
+        "duration": 0.055,
+        "sha256": "849f788775f36cb3ab9c98595a80193ae7d0ae00684c5ca050ef00503b12111a"
+      }
+    ],
+    "rebound": [
+      {
+        "file": "rebound.png",
+        "duration": 0.2,
+        "sha256": "e5f636d28daa4ce1a1cea5a73da6aef4ca20acea7dc9d89c5d838478c9ef313c"
+      }
+    ],
+    "doublecontact2": [
+      {
+        "file": "doublecontact2.png",
+        "duration": 0.055,
+        "sha256": "0b20b36af69d22cee77d2ce3049cbcb539cd0193bfe5cfbabec39ea5faebc7af"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.2,
+        "sha256": "761fbcd49fd4fa97c33dc304fccca6cb35f9362f20bf39483fc6738a5bfdc4ef"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.2,
+        "sha256": "eaf65ed6f817f52d1549944fdadda25f00e8d63cd952d270b37f79495225193e"
+      }
+    ]
+  },
+  "status": "M32_ALL_DEFINED_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "whip",
+    "double_whip",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "Strict count1/count2 Contact with real ordinal1 second drawing. Support only actual own BlockGained with exact instance/version/execution/owner tuple; Strength cannot start or extend support. Canonical gameplay untouched.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "exact original RGBA at sourceOffset, transparent padding",
+    "recovery": [
+      "recovery"
+    ],
+    "reactiveBlock": "guardhold drawing under independent block-notification; fullblock cannot trigger hurt"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "enemyId": "enemy_moss",
+  "sourceCanvas": [
+    152,
+    112
+  ],
+  "frameCanvas": [
+    160,
+    112
+  ],
+  "sourceOffset": [
+    8,
+    0
+  ],
+  "anchor": [
+    84,
+    112
+  ],
+  "spriteOffset": [
+    -4,
+    0
+  ],
+  "groundMaxY": 103,
+  "sourcePngSha256": "599172b09ad17bdc3358339cb1e0de98bf286a712d33600186b513d99f8dc1b7",
+  "schema": 1,
+  "status": "M37_STATIC_CANDIDATE_RUNTIME_PENDING",
+  "runtimeAcceptance": "pending",
+  "sourceArtManifestSha256": "e3a99adc84fea1682518638f1b49e823a93762c656e87a1941b7e65a2f08d09b",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "sha256": "6ecde1dc455e7efb49e34a5f03f747563d850624b0fe212f1b959d5ebff56d98",
+        "duration": 0.45
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "sha256": "6ecde1dc455e7efb49e34a5f03f747563d850624b0fe212f1b959d5ebff56d98",
+        "duration": 0.45
+      },
+      {
+        "file": "idle.png",
+        "sha256": "cac19d98ce36ffd01079503e9e4a290aab551099170af3f5751541c1f2dfc576",
+        "duration": 0.45
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "sha256": "8333849f78e063d9a80cfc9622d2378dc32cb26ee76281874b1f85f43a45af34",
+        "duration": 0.14
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "sha256": "f258133a05d6ff9198aa54bd85cc73779fd4a72d6ce6815b2a0f71ca50797e0c",
+        "duration": 0.36
+      }
+    ],
+    "slamprepare": [
+      {
+        "file": "slamprepare.png",
+        "sha256": "1dfcd5df39ae52f8cd7b8ca74402caa476db6535c017ba00787bcbce52ee9299",
+        "duration": 0.22
+      }
+    ],
+    "slamcontact": [
+      {
+        "file": "slamcontact.png",
+        "sha256": "720610f0c790592ff9922532a4034cf79bf5872e4494d48235c31354f91e93be",
+        "duration": 0.05
+      }
+    ],
+    "biteprepare": [
+      {
+        "file": "biteprepare.png",
+        "sha256": "b7a73437cb4f77524b03af2a679ae9d9ec16e10fbcbfa935a8ca5be66ceb900d",
+        "duration": 0.22
+      }
+    ],
+    "bitecontact": [
+      {
+        "file": "bitecontact.png",
+        "sha256": "35d7ffe9e1f6f5e8ca1ec1416a54ed47a271facc7ab6237de27ec59e1bc19c24",
+        "duration": 0.05
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "sha256": "116e95253cbdc4e15c03e4edbddfc8cc07c38202f84f9fdce6c311b0d4a196e6",
+        "duration": 0.18
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "sha256": "1570c4d30b2c08a8c6f3ccabf46a3875bf2ee39de65cb04e7bdd77633ce9453d",
+        "duration": 0.24
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "sha256": "f258133a05d6ff9198aa54bd85cc73779fd4a72d6ce6815b2a0f71ca50797e0c",
+        "duration": 0.36
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "guardprepare.png",
+        "sha256": "1570c4d30b2c08a8c6f3ccabf46a3875bf2ee39de65cb04e7bdd77633ce9453d",
+        "duration": 0.12
+      },
+      {
+        "file": "rest_canvas.png",
+        "sha256": "6ecde1dc455e7efb49e34a5f03f747563d850624b0fe212f1b959d5ebff56d98",
+        "duration": 0.06
+      }
+    ]
+  },
+  "authoredMoves": [
+    "slam",
+    "bite",
+    "moss_shell"
+  ],
+  "unmappedMoves": [],
+  "missingArt": []
+}

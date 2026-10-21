@@ -1,0 +1,112 @@
+{
+  "enemyId": "enemy_chimera_2",
+  "sourceCanvas": [
+    224,
+    144
+  ],
+  "frameCanvas": [
+    244,
+    147
+  ],
+  "sourceOffset": [
+    20,
+    1
+  ],
+  "anchor": [
+    132,
+    145
+  ],
+  "spriteOffset": [
+    -10,
+    -0.5
+  ],
+  "sourcePngSha256": "8989f54df0f8b4330465b033ecb06381fc9ddb30e89028cbae0325c51ead2b53",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "6594eef4d10210dc02c1a6939aa2d18a83b6f2fb2a8b2bc1238a12c465e04756"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "6594eef4d10210dc02c1a6939aa2d18a83b6f2fb2a8b2bc1238a12c465e04756"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "6436b485273db7e2df2689a353bb408c4b56b25de1984a6b82f10980dc14a417"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "096c1c29f17a45289e5b5296a09fd1cea8e271d5545840615cf24c4131f9d425"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "fd0b1272a60eb362c8d45ad278a581f73fe7666adb9801e7f2c70886c8fee0ab"
+      }
+    ],
+    "clawprepare": [
+      {
+        "file": "clawprepare.png",
+        "duration": 0.24,
+        "sha256": "6f2fbce5f91fde0532f58a7bb76defd626d2ac10a2761e4485e09b528e1098dd"
+      }
+    ],
+    "clawcontacta": [
+      {
+        "file": "clawcontacta.png",
+        "duration": 0.12,
+        "sha256": "c10c4b9cdbf3e15e3146ddb5f4376090d00eb58ac255beafb6f88c3fd5468b80"
+      }
+    ],
+    "clawrebound": [
+      {
+        "file": "clawrebound.png",
+        "duration": 0.14,
+        "sha256": "211a514c369359b5dff32fecb7fbb654de3b95fe322bc6bc713282380f1dee0b"
+      }
+    ],
+    "clawcontactb": [
+      {
+        "file": "clawcontactb.png",
+        "duration": 0.12,
+        "sha256": "30f5307bcd80cfa0a9cd4a31ab0a97e09807ef35213d8eb47f3575c2ccc0e08d"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M64_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "f0ddbd356004888a97f14d0b6c94d8aebad30c13ab168cfd53854b9f330a594c",
+  "groundMaxY": 129,
+  "groundMaxYSemantics": "Original anatomical right hind paw support, not silhouette maximum, no per-pose fitting",
+  "placementContract": {
+    "method": "One calibration width scale, nearest sampling, source palette, binary alpha. Whole-frame anatomical right hind paw sole registration only; no part transforms or procedural poses.",
+    "sourcePhysicalSupport": [
+      158.0,
+      129
+    ],
+    "nativePhysicalSupport": [
+      178.0,
+      130
+    ],
+    "noPerPoseFitting": true
+  },
+  "authoredMoves": [
+    "swelling_claws"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 7
+}

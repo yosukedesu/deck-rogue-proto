@@ -1,0 +1,351 @@
+{
+  "schema": 1,
+  "status": "M58_FINAL_ART_PINNED_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_raptor_egg",
+  "sourceCanvas": [
+    72,
+    64
+  ],
+  "frameCanvas": [
+    72,
+    64
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    36,
+    64
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 57,
+  "groundMaxYSemantics": "Nest opaque support row; boundary58",
+  "placementContract": {
+    "kind": "nest-support",
+    "worldRegistration": "Original source Home/Basis/PixelSize and road anchoring retained; transparent padding maps source coordinates without translating ground boundary as an extra pixel.",
+    "approvedArtManifestSha256": "67a131c6abb9268af9b8eff6eb724fdc05aa47755ce01a0b9f4dbaa7d49d9264",
+    "frames": {
+      "hatchprepare.png": {
+        "nestOpaqueY": 57,
+        "nestBoundaryY": 58,
+        "nestTarget": [
+          35.5,
+          57
+        ],
+        "nestOpaqueRowX": [
+          22,
+          23,
+          24,
+          28,
+          29,
+          31,
+          32,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          46,
+          47,
+          52
+        ],
+        "bbox": [
+          11,
+          15,
+          61,
+          58
+        ]
+      },
+      "hurt.png": {
+        "nestOpaqueY": 57,
+        "nestBoundaryY": 58,
+        "nestTarget": [
+          35.5,
+          57
+        ],
+        "nestOpaqueRowX": [
+          23,
+          24,
+          25,
+          26,
+          30,
+          31,
+          32,
+          33,
+          34,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          48,
+          49,
+          50
+        ],
+        "bbox": [
+          12,
+          14,
+          60,
+          58
+        ]
+      },
+      "idle.png": {
+        "nestOpaqueY": 57,
+        "nestBoundaryY": 58,
+        "nestTarget": [
+          35.5,
+          57
+        ],
+        "nestOpaqueRowX": [
+          23,
+          24,
+          25,
+          28,
+          29,
+          32,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          46,
+          47
+        ],
+        "bbox": [
+          11,
+          14,
+          61,
+          58
+        ]
+      },
+      "quiverhold.png": {
+        "nestOpaqueY": 57,
+        "nestBoundaryY": 58,
+        "nestTarget": [
+          35.5,
+          57
+        ],
+        "nestOpaqueRowX": [
+          23,
+          24,
+          25,
+          28,
+          29,
+          32,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          46,
+          47,
+          48,
+          53
+        ],
+        "bbox": [
+          10,
+          12,
+          62,
+          58
+        ]
+      },
+      "quiverprepare.png": {
+        "nestOpaqueY": 57,
+        "nestBoundaryY": 58,
+        "nestTarget": [
+          35.5,
+          57
+        ],
+        "nestOpaqueRowX": [
+          23,
+          24,
+          25,
+          29,
+          30,
+          33,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          47,
+          48
+        ],
+        "bbox": [
+          11,
+          14,
+          61,
+          58
+        ]
+      },
+      "recovery.png": {
+        "nestOpaqueY": 57,
+        "nestBoundaryY": 58,
+        "nestTarget": [
+          35.5,
+          57
+        ],
+        "nestOpaqueRowX": [
+          23,
+          24,
+          25,
+          28,
+          29,
+          32,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          46,
+          47,
+          52
+        ],
+        "bbox": [
+          11,
+          15,
+          61,
+          58
+        ]
+      },
+      "rest.png": {
+        "nestOpaqueY": 57,
+        "nestBoundaryY": 58,
+        "nestTarget": [
+          35.5,
+          57
+        ],
+        "nestOpaqueRowX": [
+          23,
+          24,
+          25,
+          28,
+          31,
+          32,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          45,
+          46
+        ],
+        "bbox": [
+          11,
+          14,
+          60,
+          58
+        ]
+      }
+    }
+  },
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "66d25c569f50f6805ab8d25d9315cd3ed718668d23161b6b3b9e7752c003e58c",
+  "approvedArtManifestSha256": "67a131c6abb9268af9b8eff6eb724fdc05aa47755ce01a0b9f4dbaa7d49d9264",
+  "authoredMoves": [
+    "quiver",
+    "hatch"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 6,
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "66d25c569f50f6805ab8d25d9315cd3ed718668d23161b6b3b9e7752c003e58c"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.6,
+        "sha256": "66d25c569f50f6805ab8d25d9315cd3ed718668d23161b6b3b9e7752c003e58c"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.6,
+        "sha256": "ed717bffda6ee7e066a25bb3fe1ca151b3b3972e871c8419b3b9ecf7f1acdd0a"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "5414ae9ea1cb14ce594e5b700e4338df82d60296561979494e86d91eae154318"
+      }
+    ],
+    "quiverprepare": [
+      {
+        "file": "quiverprepare.png",
+        "duration": 0.2,
+        "sha256": "698a1359c1fa5e425a3815844cc7293b82b8d88dddf5a3a741c6de1ab0db3504"
+      }
+    ],
+    "quiverhold": [
+      {
+        "file": "quiverhold.png",
+        "duration": 0.18,
+        "sha256": "4083856ef418d847a65814170f33bb94064303dfa57b7675f303101ceac9beb3"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.14,
+        "sha256": "f23e217ca7a00ccf3bc906d78a6f8dbaeaf6ace68ac114206c333e21d89ded26"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "66d25c569f50f6805ab8d25d9315cd3ed718668d23161b6b3b9e7752c003e58c"
+      }
+    ],
+    "hatchprepare": [
+      {
+        "file": "hatchprepare.png",
+        "duration": 0.26,
+        "sha256": "79ad232860af0c73c0cc823f0af24b6c6790cacd627bce52ca6aad7e1e265474"
+      }
+    ],
+    "quiverreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.14,
+        "sha256": "f23e217ca7a00ccf3bc906d78a6f8dbaeaf6ace68ac114206c333e21d89ded26"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "66d25c569f50f6805ab8d25d9315cd3ed718668d23161b6b3b9e7752c003e58c"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "66d25c569f50f6805ab8d25d9315cd3ed718668d23161b6b3b9e7752c003e58c"
+      }
+    ]
+  },
+  "drawingOnlyNormalization": "No duration or pixel changes. Exact final art finite durations; only idle loops. Shared source event windows and Engine timings unchanged."
+}

@@ -1,0 +1,351 @@
+{
+  "schema": 1,
+  "status": "M57_FINAL_ART_PINNED_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_elite_mirror_djinn",
+  "sourceCanvas": [
+    176,
+    112
+  ],
+  "frameCanvas": [
+    176,
+    112
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    88,
+    112
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 103,
+  "groundMaxYSemantics": "source smoke diagnostic only; never a foot or fixed frame bottom",
+  "placementContract": {
+    "kind": "floating-belt",
+    "noPhysicalFeet": true,
+    "smokeLowestIsNotGround": true,
+    "worldRegistration": "Source Home/Basis/PixelSize and original road anchor unchanged; source-relative feature stays fixed after explicit transparent padding",
+    "approvedArtManifestSha256": "75c34d9b467f92ce132ec136c835b1b23c75b30e7a33a55d23e3712412833848",
+    "frames": {
+      "contacta.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          30,
+          18,
+          139,
+          103
+        ]
+      },
+      "contactb.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          27,
+          21,
+          139,
+          98
+        ]
+      },
+      "gazeapplied.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          44,
+          16,
+          141,
+          102
+        ]
+      },
+      "gazeprepare.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          49,
+          20,
+          130,
+          103
+        ]
+      },
+      "guardhold.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          65,
+          18,
+          122,
+          101
+        ]
+      },
+      "guardprepare.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          61,
+          18,
+          124,
+          100
+        ]
+      },
+      "hurt.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          52,
+          20,
+          143,
+          100
+        ]
+      },
+      "idle.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          43,
+          16,
+          134,
+          102
+        ]
+      },
+      "mirrorprepare.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          50,
+          16,
+          134,
+          104
+        ]
+      },
+      "rebound.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          59,
+          18,
+          137,
+          101
+        ]
+      },
+      "recovery.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          43,
+          19,
+          139,
+          102
+        ]
+      },
+      "rest.png": {
+        "source": [
+          93,
+          68
+        ],
+        "registered": [
+          93,
+          68
+        ],
+        "feature": "silver-belt-center; no feet; smoke articulates",
+        "bbox": [
+          44,
+          16,
+          131,
+          104
+        ]
+      }
+    }
+  },
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "64a698cc41f1933c29d0f7e7f73c0d2545c59f019b61a459292d94071bdbf39b",
+  "approvedArtManifestSha256": "75c34d9b467f92ce132ec136c835b1b23c75b30e7a33a55d23e3712412833848",
+  "authoredMoves": [
+    "mirror",
+    "gaze",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 11,
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "64a698cc41f1933c29d0f7e7f73c0d2545c59f019b61a459292d94071bdbf39b"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "64a698cc41f1933c29d0f7e7f73c0d2545c59f019b61a459292d94071bdbf39b"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "6ea4edc36689b3ceacfcaf9715b520134ba84182c0397ec8a0056ee1f7eece05"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "1937181fda251f28c168ebf1865571eeef92db74b92c8604c64053d70bd98c44"
+      }
+    ],
+    "mirrorprepare": [
+      {
+        "file": "mirrorprepare.png",
+        "duration": 0.2,
+        "sha256": "0809e2283ab02a4d31a22b3a7d333685f73341caa34b49ad3a33a1f9bd6bb67d"
+      }
+    ],
+    "contacta": [
+      {
+        "file": "contacta.png",
+        "duration": 0.05,
+        "sha256": "ec2086f94e09b995fe9e1b9291fa828abf5d5f06cdd02cc394f61609499f2eab"
+      }
+    ],
+    "rebound": [
+      {
+        "file": "rebound.png",
+        "duration": 0.1,
+        "sha256": "f3ccc590b92564ff3890c8d8d726aa2efe8244ec5ed10857997375f86f5247d1"
+      }
+    ],
+    "contactb": [
+      {
+        "file": "contactb.png",
+        "duration": 0.05,
+        "sha256": "22212dfdbb8b50eec45502ba8796ffd49dc59a3c6296bb957edbb816b5e2453f"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "fedce946998fb09ef04f0f0ec01ef87e3d688b5bc19c4f4cb0f4a51dbfaf8921"
+      }
+    ],
+    "gazeprepare": [
+      {
+        "file": "gazeprepare.png",
+        "duration": 0.22,
+        "sha256": "6fe093237d55d614b9ea4656f08ff551275906ed856dc4890d54d32e9fb090d9"
+      }
+    ],
+    "gazeapplied": [
+      {
+        "file": "gazeapplied.png",
+        "duration": 0.1,
+        "sha256": "b93b4eb9417312f96aa1633e5b71c93ec950078871d1613a6fb0c214d4041310"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.2,
+        "sha256": "1724ad938bd6c01218bbc0c3623b5b4f27aae824aec79fdc4d75f8d675e41f4a"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "5433f5bf220331ae1dd83f78b7606e78944b88a093fe5566d69b3c091cbc7b70"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.2,
+        "sha256": "5433f5bf220331ae1dd83f78b7606e78944b88a093fe5566d69b3c091cbc7b70"
+      }
+    ]
+  },
+  "drawingOnlyNormalization": "Actual contact/guard holds .05; gaze/mill applied hold .10; devour recovery/return .14+.10. Only idle loops. Engine and Stage timing unchanged; source artwork untouched."
+}

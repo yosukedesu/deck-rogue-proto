@@ -1,0 +1,118 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_apprentice_colossus",
+  "sourceCanvas": [
+    128,
+    112
+  ],
+  "frameCanvas": [
+    160,
+    112
+  ],
+  "sourceOffset": [
+    32,
+    0
+  ],
+  "originalAnchor": [
+    64,
+    112
+  ],
+  "anchor": [
+    96,
+    112
+  ],
+  "spriteOffset": [
+    -16,
+    0
+  ],
+  "groundMaxY": 103,
+  "sourcePngSha256": "8a3dd3f996f4e30adf77a0dd999723a9f3c389d4ef080b5772291d212882597e",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "84aa1eb8e11a9c6f820da8f94962f79b1b5f228dfe014affa93c1b44ed543618"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.5,
+        "sha256": "84aa1eb8e11a9c6f820da8f94962f79b1b5f228dfe014affa93c1b44ed543618"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.5,
+        "sha256": "3fcb02847544d54dba3cd7f627fca1827307921ae5b82ce9d3cc696fb17a3a87"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "cea7dc929b396c8e636a6a65a7bb3d4c1a08a2459b13e4a5d9865f336cd0fe69"
+      }
+    ],
+    "attackprepare": [
+      {
+        "file": "attackprepare.png",
+        "duration": 0.2,
+        "sha256": "fe4b58f0b75bb1d6e810282f69f9be70f317e301582641e6928676800b8921c5"
+      }
+    ],
+    "attackcontact": [
+      {
+        "file": "attackcontact.png",
+        "duration": 0.055,
+        "sha256": "a2f9695b490e73c596e827abfb4340218db1185299503e8c473fd3852a5d6c9b"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "59a9eb3d08599b914d785d16bd77e4a083f7fd19223188d2c0739353765a9f29"
+      }
+    ],
+    "braceprepare": [
+      {
+        "file": "braceprepare.png",
+        "duration": 0.12,
+        "sha256": "1768732e44bcb73cd4bc06c0d1385417194cf779abf3cc38f6b5201bfd806c12"
+      }
+    ],
+    "bracehold": [
+      {
+        "file": "bracehold.png",
+        "duration": 0.12,
+        "sha256": "a9fefae717cf5f9dc97ef94a0eae8c63d65e9b45ce9a6046427b7235cf6a5faf"
+      }
+    ],
+    "block": [
+      {
+        "file": "bracehold.png",
+        "duration": 0.18,
+        "sha256": "a9fefae717cf5f9dc97ef94a0eae8c63d65e9b45ce9a6046427b7235cf6a5faf"
+      }
+    ]
+  },
+  "status": "M25_COMPLETE_TWO_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "swing",
+    "brace"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "swing14-16 single actual accepted contact only; brace6-9 own actual BlockGained first once; strict support tuple, stale reaction epoch rejection, finite recovery. No gameplay/data/timing mutation.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntime": "rest_canvas.png is exact original RGBA translated +32 within transparent canvas",
+    "reactiveBlock": "bracehold drawing reused under independent block-notification; fullblock cannot trigger hurt",
+    "staticLayout": "original128x112 opaque footprint preserved; authored160x112 envelope is contact-only; foot96,112 spriteOffset-16,0"
+  }
+}

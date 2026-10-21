@@ -1,0 +1,155 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_bond_wolf",
+  "sourceCanvas": [
+    144,
+    88
+  ],
+  "frameCanvas": [
+    144,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    72,
+    88
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 79,
+  "originalAnchor": [
+    72,
+    88
+  ],
+  "sourcePngSha256": "9515dd3e5ca9ee7ec29a02ce2e69643d85b4973e6f9e235be612fd2e45d2f8d9",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "9515dd3e5ca9ee7ec29a02ce2e69643d85b4973e6f9e235be612fd2e45d2f8d9"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.5,
+        "sha256": "9515dd3e5ca9ee7ec29a02ce2e69643d85b4973e6f9e235be612fd2e45d2f8d9"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.5,
+        "sha256": "d657d4f1aafadd5e529ab672e3b7fc0b250cda06f828b18fb669c32b9acb1e46"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "5eb3a1814a6333e7d05bd8d9316c92f1e0f22c9200a1cafb1f463dd6e4168d81"
+      }
+    ],
+    "block": [
+      {
+        "file": "prowlhold.png",
+        "duration": 0.18,
+        "sha256": "77cee570f3deb8189fecc8e376330e793f1436d478bc4ba82213bbd4bdc5ae97"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "idle.png",
+        "duration": 0.1,
+        "sha256": "d657d4f1aafadd5e529ab672e3b7fc0b250cda06f828b18fb669c32b9acb1e46"
+      },
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.08,
+        "sha256": "9515dd3e5ca9ee7ec29a02ce2e69643d85b4973e6f9e235be612fd2e45d2f8d9"
+      }
+    ],
+    "biteprepare": [
+      {
+        "file": "biteprepare.png",
+        "duration": 0.2,
+        "sha256": "8bf1b45a14393a961df560b72d87baff27a5a8cac31c7113774528c874c5fbb6"
+      }
+    ],
+    "bitecontact": [
+      {
+        "file": "bitecontact.png",
+        "duration": 0.055,
+        "sha256": "6bef6774a4b7b33405827c17df70eaa21fb105e1214ede2806d422d3598756d7"
+      }
+    ],
+    "bitereopen": [
+      {
+        "file": "bitereopen.png",
+        "duration": 0.11,
+        "sha256": "002857ad7cb6fea3c146e9e7610febf7af98a221d2537a5228e5cfaba289f468"
+      }
+    ],
+    "bitecontact2": [
+      {
+        "file": "bitecontact2.png",
+        "duration": 0.055,
+        "sha256": "4d2d6a31ae7009612e808142fd290cb1beb448fad676e753c6a633532b2b2560"
+      }
+    ],
+    "lungeprepare": [
+      {
+        "file": "lungeprepare.png",
+        "duration": 0.2,
+        "sha256": "fc7c233e1ef5b5a841443baf9da04310c2f8fe16748c688ae7d4491db4e58755"
+      }
+    ],
+    "lungecontact": [
+      {
+        "file": "lungecontact.png",
+        "duration": 0.055,
+        "sha256": "bc88ea271280688555e969dcad016e908b756bdcbd08a1d50dcf3fa479714c2a"
+      }
+    ],
+    "prowlprepare": [
+      {
+        "file": "prowlprepare.png",
+        "duration": 0.2,
+        "sha256": "9553624fe6f57ebbb2a77e35054934bf9a2f6673cb3d35908000c48909d1d677"
+      }
+    ],
+    "prowlhold": [
+      {
+        "file": "prowlhold.png",
+        "duration": 0.2,
+        "sha256": "77cee570f3deb8189fecc8e376330e793f1436d478bc4ba82213bbd4bdc5ae97"
+      }
+    ]
+  },
+  "status": "M32_ALL_DEFINED_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "twin_bite",
+    "lunge",
+    "prowl"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "Strict count1/count2 Contact with real ordinal1 second drawing. Support only actual own BlockGained with exact instance/version/execution/owner tuple; Strength cannot start or extend support. Canonical gameplay untouched.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "exact original RGBA at sourceOffset, transparent padding",
+    "recovery": [
+      "idle",
+      "rest_canvas"
+    ],
+    "reactiveBlock": "prowlhold drawing under independent block-notification; fullblock cannot trigger hurt"
+  }
+}

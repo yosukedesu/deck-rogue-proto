@@ -1,0 +1,851 @@
+{
+  "schema": 1,
+  "status": "VINE_WALKER_ALL_MOVES_8_ADDED_KEYS_SOURCE_READY_RUNTIME_PENDING",
+  "enemyId": "enemy_vine_walker",
+  "displayName": "蔦纏いの歩き木",
+  "moveId": "swipe",
+  "moveKind": "attack",
+  "hitCount": 2,
+  "sourceCanvas": [
+    120,
+    112
+  ],
+  "frameCanvas": [
+    144,
+    112
+  ],
+  "sourceOffset": [
+    24,
+    0
+  ],
+  "spriteOffset": [
+    -12,
+    0
+  ],
+  "anchor": [
+    84,
+    112
+  ],
+  "runtimeAnchor": [
+    84,
+    112
+  ],
+  "canvasCenterBottom": [
+    72,
+    112
+  ],
+  "groundMaxY": 103,
+  "sourcePngSha256": "d767ae128f5c17b3f3db7de97f1dcee9ae5c09a57126c536c3e8d708806741df",
+  "baseLayoutUnchanged": true,
+  "frames": {
+    "rest": {
+      "file": "rest.png",
+      "sha256": "84a3cb1e777c0720f51381cd02cac8f6af98e1863fa9ddad4d0317c584f2d045",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        36,
+        16,
+        132,
+        104
+      ],
+      "groundMaxY": 103,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 28,
+      "paletteSubsetOfSource": true,
+      "clearOuterMargin": true,
+      "registrationDelta": [
+        0,
+        0
+      ],
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ],
+      "opaqueClipped": 0,
+      "opaquePixels": 3790
+    },
+    "prepare": {
+      "file": "prepare.png",
+      "sha256": "548322d807e88eb5fb2a6acca7ac36eeeb40a8f9d88c1337e432b08e4d00ab62",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        61,
+        12,
+        137,
+        104
+      ],
+      "groundMaxY": 103,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 27,
+      "paletteSubsetOfSource": true,
+      "clearOuterMargin": true,
+      "registrationDelta": [
+        0,
+        -1
+      ],
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ],
+      "opaqueClipped": 0,
+      "opaquePixels": 3861
+    },
+    "contact": {
+      "file": "contact.png",
+      "sha256": "60400861ff93cbf30830dfe10e6621aefdc26c61d8928826db53da1ac58788da",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        7,
+        13,
+        139,
+        104
+      ],
+      "groundMaxY": 103,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 28,
+      "paletteSubsetOfSource": true,
+      "clearOuterMargin": true,
+      "registrationDelta": [
+        0,
+        1
+      ],
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ],
+      "opaqueClipped": 0,
+      "opaquePixels": 4600
+    },
+    "recovery": {
+      "file": "recovery.png",
+      "sha256": "81d8b612306985918a3b29182b0a408dddb1d85e62738ece6b3bfe5241942b57",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        52,
+        15,
+        140,
+        104
+      ],
+      "groundMaxY": 103,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 28,
+      "paletteSubsetOfSource": true,
+      "clearOuterMargin": true,
+      "registrationDelta": [
+        0,
+        0
+      ],
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ],
+      "opaqueClipped": 0,
+      "opaquePixels": 4131
+    },
+    "idle_sway": {
+      "file": "idle_sway.png",
+      "sha256": "279f3619698164d608b6d17c741079ce1980d4b6b7c90823c912f98f9e962c96",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        37,
+        19,
+        132,
+        104
+      ],
+      "groundMaxY": 103,
+      "rearRootRightX": 131,
+      "opaqueClipped": 0,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 28,
+      "paletteSubsetOfSource": true,
+      "sourceComponentId": 1,
+      "sourceComponentBounds": [
+        97,
+        37,
+        477,
+        376
+      ],
+      "rawToNativeUniformScale": 0.25,
+      "nnSamplingPhase": [
+        2,
+        2
+      ],
+      "integerTranslationFromRawSample": [
+        13,
+        10
+      ],
+      "opaquePixels": 4201,
+      "changedPixelsVsRest": 4406,
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ]
+    },
+    "hurt": {
+      "file": "hurt.png",
+      "sha256": "1761f7adc33b2b73e4c08efcc0eb7be44c6aa206b30cdc3b50170e4d7feaec13",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        61,
+        20,
+        132,
+        104
+      ],
+      "groundMaxY": 103,
+      "rearRootRightX": 131,
+      "opaqueClipped": 0,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 28,
+      "paletteSubsetOfSource": true,
+      "sourceComponentId": 2,
+      "sourceComponentBounds": [
+        665,
+        40,
+        949,
+        375
+      ],
+      "rawToNativeUniformScale": 0.25,
+      "nnSamplingPhase": [
+        2,
+        2
+      ],
+      "integerTranslationFromRawSample": [
+        -105,
+        10
+      ],
+      "opaquePixels": 3741,
+      "changedPixelsVsRest": 4582,
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ]
+    },
+    "grasping_prepare": {
+      "file": "grasping_prepare.png",
+      "sha256": "b21ab0f97562c782879df208c0a81e001d34adbb77d5f54a30733463690f3704",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        50,
+        22,
+        132,
+        104
+      ],
+      "groundMaxY": 103,
+      "rearRootRightX": 131,
+      "opaqueClipped": 0,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 28,
+      "paletteSubsetOfSource": true,
+      "sourceComponentId": 3,
+      "sourceComponentBounds": [
+        143,
+        429,
+        473,
+        757
+      ],
+      "rawToNativeUniformScale": 0.25,
+      "nnSamplingPhase": [
+        2,
+        2
+      ],
+      "integerTranslationFromRawSample": [
+        14,
+        -85
+      ],
+      "opaquePixels": 4092,
+      "changedPixelsVsRest": 4653,
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ]
+    },
+    "grasping_contact": {
+      "file": "grasping_contact.png",
+      "sha256": "f07af10d348a3707880c71a9792049c8ba1049cc4b6a082e516e5efda91377c4",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        7,
+        22,
+        132,
+        104
+      ],
+      "groundMaxY": 103,
+      "rearRootRightX": 131,
+      "opaqueClipped": 0,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 28,
+      "paletteSubsetOfSource": true,
+      "sourceComponentId": 4,
+      "sourceComponentBounds": [
+        480,
+        429,
+        981,
+        757
+      ],
+      "rawToNativeUniformScale": 0.25,
+      "nnSamplingPhase": [
+        2,
+        2
+      ],
+      "integerTranslationFromRawSample": [
+        -113,
+        -85
+      ],
+      "opaquePixels": 4473,
+      "changedPixelsVsRest": 5019,
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ]
+    },
+    "chomp_prepare": {
+      "file": "chomp_prepare.png",
+      "sha256": "9a8b498a46f5d904eb90159c29f7352d757750e7dc609e7c8b1cf3b1d6c18969",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        38,
+        16,
+        132,
+        104
+      ],
+      "groundMaxY": 103,
+      "rearRootRightX": 131,
+      "opaqueClipped": 0,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 28,
+      "paletteSubsetOfSource": true,
+      "sourceComponentId": 6,
+      "sourceComponentBounds": [
+        101,
+        800,
+        477,
+        1154
+      ],
+      "rawToNativeUniformScale": 0.25,
+      "nnSamplingPhase": [
+        2,
+        2
+      ],
+      "integerTranslationFromRawSample": [
+        13,
+        -184
+      ],
+      "opaquePixels": 4563,
+      "changedPixelsVsRest": 4710,
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ]
+    },
+    "chomp_contact": {
+      "file": "chomp_contact.png",
+      "sha256": "a00088cef07326adb49859dd4a7733a721ea6a7d8865260b6cefd3700077ae1d",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        38,
+        17,
+        132,
+        104
+      ],
+      "groundMaxY": 103,
+      "rearRootRightX": 131,
+      "opaqueClipped": 0,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 28,
+      "paletteSubsetOfSource": true,
+      "sourceComponentId": 7,
+      "sourceComponentBounds": [
+        579,
+        805,
+        956,
+        1153
+      ],
+      "rawToNativeUniformScale": 0.25,
+      "nnSamplingPhase": [
+        2,
+        2
+      ],
+      "integerTranslationFromRawSample": [
+        -107,
+        -184
+      ],
+      "opaquePixels": 4502,
+      "changedPixelsVsRest": 5074,
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ]
+    },
+    "guard_prepare": {
+      "file": "guard_prepare.png",
+      "sha256": "ac9272ba16ac02baaa9b0039a2eb21568d7bb0562a7832696c8bfd5eb5cf9d7a",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        55,
+        19,
+        132,
+        104
+      ],
+      "groundMaxY": 103,
+      "rearRootRightX": 131,
+      "opaqueClipped": 0,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 28,
+      "paletteSubsetOfSource": true,
+      "sourceComponentId": 9,
+      "sourceComponentBounds": [
+        175,
+        1191,
+        485,
+        1532
+      ],
+      "rawToNativeUniformScale": 0.25,
+      "nnSamplingPhase": [
+        2,
+        2
+      ],
+      "integerTranslationFromRawSample": [
+        11,
+        -279
+      ],
+      "opaquePixels": 3939,
+      "changedPixelsVsRest": 4570,
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ]
+    },
+    "guard_hold": {
+      "file": "guard_hold.png",
+      "sha256": "606acd7220091efc6413c09323540b6860297695b5578e30448b17ac779963ef",
+      "canvas": [
+        144,
+        112
+      ],
+      "bbox": [
+        56,
+        18,
+        132,
+        104
+      ],
+      "groundMaxY": 103,
+      "rearRootRightX": 131,
+      "opaqueClipped": 0,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColors": 28,
+      "paletteSubsetOfSource": true,
+      "sourceComponentId": 8,
+      "sourceComponentBounds": [
+        653,
+        1189,
+        955,
+        1532
+      ],
+      "rawToNativeUniformScale": 0.25,
+      "nnSamplingPhase": [
+        2,
+        2
+      ],
+      "integerTranslationFromRawSample": [
+        -107,
+        -279
+      ],
+      "opaquePixels": 3905,
+      "changedPixelsVsRest": 4625,
+      "sourceOffset": [
+        24,
+        0
+      ],
+      "spriteOffset": [
+        -12,
+        0
+      ],
+      "runtimeAnchor": [
+        84,
+        112
+      ],
+      "canvasCenterBottom": [
+        72,
+        112
+      ]
+    }
+  },
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "84a3cb1e777c0720f51381cd02cac8f6af98e1863fa9ddad4d0317c584f2d045"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "prepare.png",
+        "duration": 0.17,
+        "sha256": "548322d807e88eb5fb2a6acca7ac36eeeb40a8f9d88c1337e432b08e4d00ab62"
+      }
+    ],
+    "contact": [
+      {
+        "file": "contact.png",
+        "duration": 0.1,
+        "sha256": "60400861ff93cbf30830dfe10e6621aefdc26c61d8928826db53da1ac58788da"
+      }
+    ],
+    "reopen": [
+      {
+        "file": "prepare.png",
+        "duration": 0.09,
+        "sha256": "548322d807e88eb5fb2a6acca7ac36eeeb40a8f9d88c1337e432b08e4d00ab62"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.22,
+        "sha256": "81d8b612306985918a3b29182b0a408dddb1d85e62738ece6b3bfe5241942b57"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.6,
+        "sha256": "84a3cb1e777c0720f51381cd02cac8f6af98e1863fa9ddad4d0317c584f2d045"
+      },
+      {
+        "file": "idle_sway.png",
+        "duration": 0.6,
+        "sha256": "279f3619698164d608b6d17c741079ce1980d4b6b7c90823c912f98f9e962c96"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "1761f7adc33b2b73e4c08efcc0eb7be44c6aa206b30cdc3b50170e4d7feaec13"
+      },
+      {
+        "file": "recovery.png",
+        "duration": 0.15,
+        "sha256": "81d8b612306985918a3b29182b0a408dddb1d85e62738ece6b3bfe5241942b57"
+      }
+    ],
+    "block": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.12,
+        "sha256": "606acd7220091efc6413c09323540b6860297695b5578e30448b17ac779963ef"
+      },
+      {
+        "file": "recovery.png",
+        "duration": 0.15,
+        "sha256": "81d8b612306985918a3b29182b0a408dddb1d85e62738ece6b3bfe5241942b57"
+      }
+    ],
+    "graspingprepare": [
+      {
+        "file": "grasping_prepare.png",
+        "duration": 0.22,
+        "sha256": "b21ab0f97562c782879df208c0a81e001d34adbb77d5f54a30733463690f3704"
+      }
+    ],
+    "graspingcontact": [
+      {
+        "file": "grasping_contact.png",
+        "duration": 0.16,
+        "sha256": "f07af10d348a3707880c71a9792049c8ba1049cc4b6a082e516e5efda91377c4"
+      }
+    ],
+    "chompprepare": [
+      {
+        "file": "chomp_prepare.png",
+        "duration": 0.24,
+        "sha256": "9a8b498a46f5d904eb90159c29f7352d757750e7dc609e7c8b1cf3b1d6c18969"
+      }
+    ],
+    "chompcontact": [
+      {
+        "file": "chomp_contact.png",
+        "duration": 0.14,
+        "sha256": "a00088cef07326adb49859dd4a7733a721ea6a7d8865260b6cefd3700077ae1d"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guard_prepare.png",
+        "duration": 0.18,
+        "sha256": "ac9272ba16ac02baaa9b0039a2eb21568d7bb0562a7832696c8bfd5eb5cf9d7a"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.28,
+        "sha256": "606acd7220091efc6413c09323540b6860297695b5578e30448b17ac779963ef"
+      }
+    ]
+  },
+  "twoHitDesign": "Reuse prepare as a short recoil/rewind after the first real Contact, then present the same contact key for the second real Contact; no fourth generated key required at this keyframe stage.",
+  "eventContract": "The actual swipe attack emits two real Contact markers. Contact 1 and Contact 2 each select contact.png exactly at the corresponding marker. A short prepare.png rewind may be shown only between those markers. Rendering must never create, remove, duplicate or delay gameplay hits. No idle warmup may synthesize a Contact.",
+  "durationNote": "Durations are preview/key-hold suggestions only. Runtime owns event synchronization and existing gameplay timing.",
+  "pending": [
+    "runtime_acceptance",
+    "runtime_idle_readability",
+    "runtime_move_event_count",
+    "runtime_old_four_key_unchanged"
+  ],
+  "notAll89Complete": true,
+  "moveCoverage": {
+    "swipe": {
+      "hitCount": 2,
+      "clips": [
+        "prepare",
+        "contact",
+        "reopen",
+        "contact",
+        "recovery"
+      ],
+      "inheritedUnchanged": true
+    },
+    "grasping_vines": {
+      "hitCount": 1,
+      "clips": [
+        "graspingprepare",
+        "graspingcontact",
+        "recovery"
+      ],
+      "damageRange": [
+        6,
+        8
+      ]
+    },
+    "chomp": {
+      "hitCount": 1,
+      "clips": [
+        "chompprepare",
+        "chompcontact",
+        "recovery"
+      ],
+      "damageRange": [
+        13,
+        15
+      ]
+    },
+    "guard": {
+      "hitCount": 0,
+      "clips": [
+        "guardprepare",
+        "guardhold",
+        "recovery"
+      ],
+      "guardRange": [
+        7,
+        10
+      ],
+      "strength": 1
+    }
+  },
+  "newKeyMethod": "Official built-in imagegen one-sheet authored limb/vine/jaw poses; component extraction, common 1/4 nearest-neighbor lattice, exact original 28-color palette, binary alpha and integer foot registration. Not hand-painted; no whole-sprite rotation or deformation.",
+  "completionEventContract": "Swipes retain exactly two existing real Contact markers. Grasping vines and chomp each show contact key only at their one real Contact. Guard does not emit attack Contact. Idle/hurt/block must never synthesize hits. Suggested holds do not own gameplay timing."
+}

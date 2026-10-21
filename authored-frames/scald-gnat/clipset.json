@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "status": "M50_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_scald_gnat",
+  "sourceCanvas": [
+    120,
+    64
+  ],
+  "frameCanvas": [
+    120,
+    64
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    60,
+    64
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 57,
+  "registrationKind": "original-airborne-reference-no-grounded-feet",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "798866456b72a4b5e34c45e7d8b2836f7f1aa5c1c0fe12b3b06bbbb7bd254e64",
+  "sourceArtManifestSha256": "915e92216744a2dd56416173ba57e92825755481da5946c264812e4cab1e341d",
+  "authoredMoves": [
+    "scald_spit",
+    "bite",
+    "suck",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "798866456b72a4b5e34c45e7d8b2836f7f1aa5c1c0fe12b3b06bbbb7bd254e64"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "798866456b72a4b5e34c45e7d8b2836f7f1aa5c1c0fe12b3b06bbbb7bd254e64"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "0bc5056bdf8d11e79a5d293c23de4f0ad852ec548702a35727bc273ffac4ed51"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "12f5865a5ce97117320f3744f0e79a673d2f4dee62ec345ef0e1d7e6194ea079"
+      }
+    ],
+    "biteprepare": [
+      {
+        "file": "biteprepare.png",
+        "duration": 0.18,
+        "sha256": "5e3c9e5381ccca1a9b5081b19f3a5767606eaedb3fd05032e6bc96581548e4a8"
+      }
+    ],
+    "bitecontact": [
+      {
+        "file": "bitecontact.png",
+        "duration": 0.05,
+        "sha256": "6b59e735854c90f17c483d331b860ae8b0d80a803cee50aaadf1ea654cd4a3d7"
+      }
+    ],
+    "suckprepare": [
+      {
+        "file": "suckprepare.png",
+        "duration": 0.18,
+        "sha256": "e6d13c58e7c044d55880f1617f50684063fa7b2988ac8e6b822f95b626549b42"
+      }
+    ],
+    "suckcontact": [
+      {
+        "file": "suckcontact.png",
+        "duration": 0.05,
+        "sha256": "dc60143e06aefb06ae0afcc6c36d5c3a608745023944c6bbc22053e2599062bd"
+      }
+    ],
+    "scaldprepare": [
+      {
+        "file": "scaldprepare.png",
+        "duration": 0.18,
+        "sha256": "36f062d4cddd0168bca5bcb91aa16d17ae6720e637ba7dbee0416c1eae77b859"
+      }
+    ],
+    "scaldapply": [
+      {
+        "file": "scaldapply.png",
+        "duration": 0.12,
+        "sha256": "6e7f13694f85cdce3cde9abce7d04955eac47754d429c6d62ba380520aa9c9a9"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "e97aa3e3508913e0a77da0652e89fe65c6c1e17fb0dbb41f32ddf1ec3d0d1359"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "798866456b72a4b5e34c45e7d8b2836f7f1aa5c1c0fe12b3b06bbbb7bd254e64"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "9b3be101f99a7624f20a56f9b88e247db93af7dcbe09a1f67b66e47a030ed5e9"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "e9a7f9c06cf4488a3842fdd1ef5ec8183e32dc79290b0e0a06c6be630f8725bb"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "e97aa3e3508913e0a77da0652e89fe65c6c1e17fb0dbb41f32ddf1ec3d0d1359"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "798866456b72a4b5e34c45e7d8b2836f7f1aa5c1c0fe12b3b06bbbb7bd254e64"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "798866456b72a4b5e34c45e7d8b2836f7f1aa5c1c0fe12b3b06bbbb7bd254e64"
+      }
+    ]
+  },
+  "physicalNewKeyCount": 11,
+  "recoveryAuthorship": "owner-reviewed-finite-sequence-no-contact-reuse",
+  "drawingOnlyDurationNormalization": {
+    "contactPulseAndGuardHoldSeconds": 0.05,
+    "finiteReturns": "Approved recovery/return sequences remain drawing-only; existing Stage End/deadline governs exit."
+  }
+}

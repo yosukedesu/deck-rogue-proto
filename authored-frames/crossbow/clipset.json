@@ -1,0 +1,212 @@
+{
+  "schema": 1,
+  "status": "CROSSBOW_ALL_DEFINED_MOVES_IDLE_HURT_EVENT_BOUND",
+  "enemyId": "enemy_crossbow_archer",
+  "displayName": "\u5f29\u5f13\u306e\u5c04\u624b",
+  "sourceCanvas": [
+    128,
+    88
+  ],
+  "frameCanvas": [
+    128,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    64,
+    88
+  ],
+  "groundMaxY": 79,
+  "sourcePngSha256": "d940a95c0258df6f326507f90226b357b1f8bfb5d60102c13b3815b04eaa2f5d",
+  "artistFootReference": [
+    63.5,
+    79
+  ],
+  "artistFootReferenceNote": "Original bounding-box bottom midpoint; not an anatomical rig pivot and never used to move the runtime actor.",
+  "nativeRegistration": {
+    "rest": {
+      "delta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        31,
+        16,
+        97,
+        80
+      ],
+      "bboxAfter": [
+        31,
+        16,
+        97,
+        80
+      ],
+      "rearFootReference": [
+        96,
+        79
+      ],
+      "opaqueClipped": 0
+    },
+    "aim": {
+      "delta": [
+        -1,
+        0
+      ],
+      "bboxBefore": [
+        30,
+        16,
+        98,
+        80
+      ],
+      "bboxAfter": [
+        29,
+        16,
+        97,
+        80
+      ],
+      "rearFootReference": [
+        96,
+        79
+      ],
+      "opaqueClipped": 0
+    },
+    "release": {
+      "delta": [
+        2,
+        0
+      ],
+      "bboxBefore": [
+        33,
+        16,
+        95,
+        80
+      ],
+      "bboxAfter": [
+        35,
+        16,
+        97,
+        80
+      ],
+      "rearFootReference": [
+        96,
+        79
+      ],
+      "opaqueClipped": 0
+    },
+    "recovery": {
+      "delta": [
+        3,
+        0
+      ],
+      "bboxBefore": [
+        34,
+        16,
+        94,
+        80
+      ],
+      "bboxAfter": [
+        37,
+        16,
+        97,
+        80
+      ],
+      "rearFootReference": [
+        96,
+        79
+      ],
+      "opaqueClipped": 0
+    }
+  },
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "d940a95c0258df6f326507f90226b357b1f8bfb5d60102c13b3815b04eaa2f5d"
+      }
+    ],
+    "windup": [
+      {
+        "file": "aim.png",
+        "duration": 0.14,
+        "sha256": "cffad85ec1818693f5ac00bbed0906df99b27f40ef0da4cccaedb689686ac3e1"
+      }
+    ],
+    "release": [
+      {
+        "file": "release.png",
+        "duration": 0.1,
+        "sha256": "084468f1aa4422f1c3602e5827f925e51ffbdcaa1947e76b3943ac5012f162d2"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.2,
+        "sha256": "311b8b7a07b80163c0ccfddb76b452a972223e46d3c2bba5c343ac781aa8beee"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.6,
+        "sha256": "d940a95c0258df6f326507f90226b357b1f8bfb5d60102c13b3815b04eaa2f5d"
+      },
+      {
+        "file": "idle1.png",
+        "duration": 0.6,
+        "sha256": "451b5348d35405946e049aa079d3ff686a521640fc1aaadc0b94472f5a1d476e"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt1.png",
+        "duration": 0.12,
+        "sha256": "c338587d2693a4d9fee68530c870e6b7e5f11011a67199ad1dc8a281a3a57a11"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guard_prepare1.png",
+        "duration": 0.14,
+        "sha256": "4e2e8e9f9f0f8f4d6273d46702a6703272502442df999d87bb61d03cc56b5db6"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guard_hold1.png",
+        "duration": 0.2,
+        "sha256": "3c66d7d58bd03b2a609b0ab408be037d63e9ce4117efd47565fa3faea53b10e4"
+      }
+    ],
+    "block": [
+      {
+        "file": "guard_hold1.png",
+        "duration": 0.14,
+        "sha256": "3c66d7d58bd03b2a609b0ab408be037d63e9ce4117efd47565fa3faea53b10e4"
+      }
+    ]
+  },
+  "releaseEventContract": "Use first actual ranged PreviewEnemyAttack release notification; never retrigger release on target Contact. No projectile is painted into release or recovery.",
+  "durationNote": "Durations are provisional display holds, not gameplay event timing. Runtime QA owns final timing.",
+  "recoveryNote": "Lowered crossbow, rear stock supported against torso by one hand; other connected hand begins string draw. This is reload-start recovery, not a complete recocking and new-bolt insertion sequence.",
+  "pending": [
+    "complete_reload_inbetweens",
+    "distinct_aimed_shot_preparation_polish"
+  ],
+  "runtimeCompletion": {
+    "sourceReadySha256": "548efb1ab5d0f8f4a70352f445065d466c9824fe3c100904de08dcec3c649d72",
+    "oldFourClipsUnchanged": true,
+    "guardHold": "only current accepted BlockGained support pulse",
+    "guardRecovery": "current support Resolved or finite deadline fallback",
+    "block": "actual blocked incoming hit, separate from guard support",
+    "pixelsUnchanged": true
+  }
+}

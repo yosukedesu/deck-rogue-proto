@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "status": "M49_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_haze_stag",
+  "sourceCanvas": [
+    192,
+    144
+  ],
+  "frameCanvas": [
+    208,
+    144
+  ],
+  "sourceOffset": [
+    8,
+    0
+  ],
+  "anchor": [
+    104,
+    144
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 135,
+  "registrationKind": "grounded-original-source-reference",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest_canvas.png",
+  "sourcePngSha256": "828908dac7f5f1a574b6d1cd6f58e1b5e9a1433ef5a781013f9520d41b4f47c5",
+  "sourceArtManifestSha256": "0cbdac8c4ec7c77b7486d006793fb5687b3ce9d3688ab9765f398a8e8583ab6b",
+  "authoredMoves": [
+    "antler_jab",
+    "hoof_flurry",
+    "antler_charge",
+    "fade_in_mist"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "97a66f0468d8c88c2791ebf8dc9a3296dca5a9b5c0dbb805221d1a75c1d6279d"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.55,
+        "sha256": "97a66f0468d8c88c2791ebf8dc9a3296dca5a9b5c0dbb805221d1a75c1d6279d"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "01aeeb96e842164cac54c4c668d86ff5eeac08af12e8de8a4ac6531f1199eb5f"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "c39c1cf0dc741ee005d43d4fd929bfef231137382edfa773a1b2c50f2684e118"
+      }
+    ],
+    "jabprepare": [
+      {
+        "file": "jabprepare.png",
+        "duration": 0.18,
+        "sha256": "1ead1aabf6325ae5b8651867d0fdf3b3b1ebe5d77cf4438835ce1ac66a7a2537"
+      }
+    ],
+    "jabcontact": [
+      {
+        "file": "jabcontact.png",
+        "duration": 0.05,
+        "sha256": "13949219c30a61ec3782c39ea3bc9efe1efd6994a8630539fbdcd2cab6ec95b2"
+      }
+    ],
+    "flurryprepare": [
+      {
+        "file": "flurryprepare.png",
+        "duration": 0.18,
+        "sha256": "932bc138e041d21763902a613555308211473dad546b320c87b283fe73eb740a"
+      }
+    ],
+    "flurrycontact1": [
+      {
+        "file": "flurrycontact1.png",
+        "duration": 0.05,
+        "sha256": "a870378f1ad71a2c966704e7650d70144ca04a59f3ee7c24eeadea27cd080f1c"
+      }
+    ],
+    "flurryrebound": [
+      {
+        "file": "flurryrebound.png",
+        "duration": 0.14,
+        "sha256": "aa58c71d24c7a03559a2148b3df30f38330f467a40a7f948f6a715dc651695b8"
+      }
+    ],
+    "flurrycontact2": [
+      {
+        "file": "flurrycontact2.png",
+        "duration": 0.05,
+        "sha256": "7143cb051adb154d6f38be171923d128dfb30897bfd2e0c264795c75f60ee68c"
+      }
+    ],
+    "chargeprepare": [
+      {
+        "file": "chargeprepare.png",
+        "duration": 0.24,
+        "sha256": "fb23a247e18c8abde2a98903dbb517a86fa63f05a8d403e0893e56d87224f644"
+      }
+    ],
+    "chargecontact": [
+      {
+        "file": "chargecontact.png",
+        "duration": 0.05,
+        "sha256": "4e353959ef234957eec369b3a3cb6a27f3b717ff76e269850a8fc8560b96b2cc"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.14,
+        "sha256": "a32821f79d2a27cf029a6673c1a9a8f82135b9ebc265a80794946af5f639c468"
+      },
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "97a66f0468d8c88c2791ebf8dc9a3296dca5a9b5c0dbb805221d1a75c1d6279d"
+      }
+    ],
+    "fadeprepare": [
+      {
+        "file": "fadeprepare.png",
+        "duration": 0.18,
+        "sha256": "bb9c885d67dafb93b80da8f93781e000c354648f0976b3946087b90e6c4a952e"
+      }
+    ],
+    "fadehold": [
+      {
+        "file": "fadehold.png",
+        "duration": 0.05,
+        "sha256": "a53594ba2ca188c33ea7fd5a49b706787ded5f099ecfd0f05468adc32b467461"
+      }
+    ],
+    "fadereturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.14,
+        "sha256": "a32821f79d2a27cf029a6673c1a9a8f82135b9ebc265a80794946af5f639c468"
+      },
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "97a66f0468d8c88c2791ebf8dc9a3296dca5a9b5c0dbb805221d1a75c1d6279d"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "97a66f0468d8c88c2791ebf8dc9a3296dca5a9b5c0dbb805221d1a75c1d6279d"
+      }
+    ]
+  },
+  "physicalNewKeyCount": 13,
+  "recoveryAuthorship": "owner-reviewed-finite-sequence-no-contact-reuse",
+  "drawingOnlyDurationNormalization": {
+    "contactPulseAndGuardHoldSeconds": 0.05,
+    "finiteReturns": "Approved recovery/return sequences remain drawing-only; existing Stage End/deadline governs exit."
+  }
+}

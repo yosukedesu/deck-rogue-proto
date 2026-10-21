@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_big_slime",
+  "sourceCanvas": [
+    152,
+    112
+  ],
+  "frameCanvas": [
+    152,
+    112
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "originalAnchor": [
+    76,
+    112
+  ],
+  "anchor": [
+    76,
+    112
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 103,
+  "sourcePngSha256": "ab43bbdeae58ffaf700cd72b9ba7df54e8bc2021fedbd93086bcca5f619e43d1",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "ab43bbdeae58ffaf700cd72b9ba7df54e8bc2021fedbd93086bcca5f619e43d1"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.5,
+        "sha256": "ab43bbdeae58ffaf700cd72b9ba7df54e8bc2021fedbd93086bcca5f619e43d1"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.5,
+        "sha256": "0d86bb3271897e8623887022643cc6046784d3412385a47e47eab1f1c9621a7c"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "fe7ec78e652428dec5f02be1577be68968f0c72ab7600edfa88074ab4ab1d9e7"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.18,
+        "sha256": "7e40f2f79b02131340df14bb9eddc39e6826c19ea040c78d5b2330db68e974e7"
+      }
+    ],
+    "slamprepare": [
+      {
+        "file": "slamprepare.png",
+        "duration": 0.2,
+        "sha256": "66583f5a96933337695fbadc0df10ef492802955093eaae58a99eb8e1da4dc5a"
+      }
+    ],
+    "slamcontact": [
+      {
+        "file": "slamcontact.png",
+        "duration": 0.055,
+        "sha256": "82f236093602ec45141adf132aa0302e70eaab14343509ff42c28474e416e17c"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "ecf21653a53be3f0821074616977cff633f3327e84378caa20c79497318721db"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.12,
+        "sha256": "baf4a616109de76b743b5d6eed35022c4562e5badda8bfe7dc3d638a42339214"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.12,
+        "sha256": "7e40f2f79b02131340df14bb9eddc39e6826c19ea040c78d5b2330db68e974e7"
+      }
+    ]
+  },
+  "status": "M31_ALL_DEFINED_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "slam",
+    "ooze_guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "Strict Contact and actual own BlockGained with exact instance/version/execution/owner tuple. Defense pulse only on defend move, never attached attack Block. Canonical gameplay untouched.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "rest_canvas exact original PNG/RGBA; no padding",
+    "reactiveBlock": "guardhold drawing under independent block-notification; fullblock cannot trigger hurt"
+  }
+}

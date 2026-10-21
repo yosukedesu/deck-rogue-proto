@@ -1,0 +1,343 @@
+{
+  "schema": 1,
+  "status": "M57_FINAL_ART_PINNED_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_elite_devourer",
+  "sourceCanvas": [
+    208,
+    112
+  ],
+  "frameCanvas": [
+    208,
+    128
+  ],
+  "sourceOffset": [
+    0,
+    16
+  ],
+  "anchor": [
+    104,
+    128
+  ],
+  "spriteOffset": [
+    0,
+    8
+  ],
+  "groundMaxY": 119,
+  "groundMaxYSemantics": "registered original sole diagnostic; source-relative anatomical span separately checked",
+  "placementContract": {
+    "kind": "central-short-leg-sole",
+    "noPhysicalFeet": false,
+    "smokeLowestIsNotGround": false,
+    "worldRegistration": "Source Home/Basis/PixelSize and original road anchor unchanged; source-relative feature stays fixed after explicit transparent padding",
+    "approvedArtManifestSha256": "d5ad9a17b5178b6600aab94c566a772fffa666837c08ffa96a73260aa2e61519",
+    "frames": {
+      "bitecontact.png": {
+        "sourceSoleSpan": [
+          99,
+          100,
+          103
+        ],
+        "registeredSoleSpan": [
+          99,
+          100,
+          119
+        ],
+        "sourceCenter": [
+          99.5,
+          103
+        ],
+        "registeredCenter": [
+          99.5,
+          119
+        ],
+        "bbox": [
+          9,
+          36,
+          187,
+          120
+        ]
+      },
+      "biteprepare.png": {
+        "sourceSoleSpan": [
+          99,
+          100,
+          103
+        ],
+        "registeredSoleSpan": [
+          99,
+          100,
+          119
+        ],
+        "sourceCenter": [
+          99.5,
+          103
+        ],
+        "registeredCenter": [
+          99.5,
+          119
+        ],
+        "bbox": [
+          38,
+          6,
+          185,
+          120
+        ]
+      },
+      "devourapplied.png": {
+        "sourceSoleSpan": [
+          99,
+          100,
+          103
+        ],
+        "registeredSoleSpan": [
+          99,
+          100,
+          119
+        ],
+        "sourceCenter": [
+          99.5,
+          103
+        ],
+        "registeredCenter": [
+          99.5,
+          119
+        ],
+        "bbox": [
+          38,
+          34,
+          176,
+          120
+        ]
+      },
+      "devourprepare.png": {
+        "sourceSoleSpan": [
+          99,
+          100,
+          103
+        ],
+        "registeredSoleSpan": [
+          99,
+          100,
+          119
+        ],
+        "sourceCenter": [
+          99.5,
+          103
+        ],
+        "registeredCenter": [
+          99.5,
+          119
+        ],
+        "bbox": [
+          20,
+          9,
+          184,
+          120
+        ]
+      },
+      "hurt.png": {
+        "sourceSoleSpan": [
+          99,
+          100,
+          103
+        ],
+        "registeredSoleSpan": [
+          99,
+          100,
+          119
+        ],
+        "sourceCenter": [
+          99.5,
+          103
+        ],
+        "registeredCenter": [
+          99.5,
+          119
+        ],
+        "bbox": [
+          55,
+          28,
+          189,
+          120
+        ]
+      },
+      "idle.png": {
+        "sourceSoleSpan": [
+          99,
+          100,
+          103
+        ],
+        "registeredSoleSpan": [
+          99,
+          100,
+          119
+        ],
+        "sourceCenter": [
+          99.5,
+          103
+        ],
+        "registeredCenter": [
+          99.5,
+          119
+        ],
+        "bbox": [
+          25,
+          27,
+          186,
+          120
+        ]
+      },
+      "recovery.png": {
+        "sourceSoleSpan": [
+          99,
+          100,
+          103
+        ],
+        "registeredSoleSpan": [
+          99,
+          100,
+          119
+        ],
+        "sourceCenter": [
+          99.5,
+          103
+        ],
+        "registeredCenter": [
+          99.5,
+          119
+        ],
+        "bbox": [
+          26,
+          32,
+          186,
+          120
+        ]
+      },
+      "rest.png": {
+        "sourceSoleSpan": [
+          99,
+          100,
+          103
+        ],
+        "registeredSoleSpan": [
+          99,
+          100,
+          119
+        ],
+        "sourceCenter": [
+          99.5,
+          103
+        ],
+        "registeredCenter": [
+          99.5,
+          119
+        ],
+        "bbox": [
+          27,
+          32,
+          181,
+          120
+        ]
+      }
+    }
+  },
+  "restOriginalFile": "source-rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "333e5b9daa417e8442939e173ff88f6bc89e3940da24d9d7fe2f55e34296ea34",
+  "approvedArtManifestSha256": "d5ad9a17b5178b6600aab94c566a772fffa666837c08ffa96a73260aa2e61519",
+  "authoredMoves": [
+    "bite",
+    "devour"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 7,
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "9b24e309e31755b17bfbbcc5a643b3d1aa3045755f764f414e0aead7662dd80f"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.6,
+        "sha256": "9b24e309e31755b17bfbbcc5a643b3d1aa3045755f764f414e0aead7662dd80f"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.6,
+        "sha256": "51ce13b80a91461700f48f256621eff8a9a086fc3fbf5c9a2fa3c2ef15e38b88"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "cc4fc6b8e206cdd410b9a06c2eab136ddc66b44b9104584f5b2dc5077f0338c4"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.14,
+        "sha256": "504521a419514b7b696a711818025ac205d3fc3a8856a8eac5eb946d5a3a01bb"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.1,
+        "sha256": "9b24e309e31755b17bfbbcc5a643b3d1aa3045755f764f414e0aead7662dd80f"
+      }
+    ],
+    "biteprepare": [
+      {
+        "file": "biteprepare.png",
+        "duration": 0.22,
+        "sha256": "8bb66e199fc19477f5cff85ff7138c53cc17dc3c9397a8cfe8f6a634d0c404cd"
+      }
+    ],
+    "bitecontact": [
+      {
+        "file": "bitecontact.png",
+        "duration": 0.05,
+        "sha256": "6fc5b1e943e45b94e1a983aae787cd3c4427cac56d6529fd4942a2ea173f8a29"
+      }
+    ],
+    "devourprepare": [
+      {
+        "file": "devourprepare.png",
+        "duration": 0.24,
+        "sha256": "eb15017297f13bef3974bc88f698616086146fa400312013062ad40607a21f17"
+      }
+    ],
+    "devourapplied": [
+      {
+        "file": "devourapplied.png",
+        "duration": 0.1,
+        "sha256": "e1f9d4e16ffc951cd5bb541a4e8e7e47d5a4e5831439142282fb2f5eba2a660d"
+      }
+    ],
+    "devourreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.14,
+        "sha256": "504521a419514b7b696a711818025ac205d3fc3a8856a8eac5eb946d5a3a01bb"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.1,
+        "sha256": "9b24e309e31755b17bfbbcc5a643b3d1aa3045755f764f414e0aead7662dd80f"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "9b24e309e31755b17bfbbcc5a643b3d1aa3045755f764f414e0aead7662dd80f"
+      }
+    ]
+  },
+  "drawingOnlyNormalization": "Actual contact/guard holds .05; gaze/mill applied hold .10; devour recovery/return .14+.10. Only idle loops. Engine and Stage timing unchanged; source artwork untouched."
+}

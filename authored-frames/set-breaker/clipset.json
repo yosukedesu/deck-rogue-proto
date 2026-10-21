@@ -1,0 +1,168 @@
+{
+  "enemyId": "enemy_set_breaker",
+  "sourceCanvas": [
+    112,
+    88
+  ],
+  "frameCanvas": [
+    128,
+    104
+  ],
+  "sourceOffset": [
+    16,
+    16
+  ],
+  "anchor": [
+    72,
+    104
+  ],
+  "spriteOffset": [
+    -8,
+    8
+  ],
+  "sourcePngSha256": "7cd0c3102a1104c5cf06537170b9757b1570e15c05b566a5ba2f15975263c67c",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "e6e0477ce0f43dafc052895bc9e4dd512dfc5462bc1b80e651bbfc99a9edca63"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "e6e0477ce0f43dafc052895bc9e4dd512dfc5462bc1b80e651bbfc99a9edca63"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "13407fd6e0a1e959001693756e98fdedfd99f71e4ca8cb2eadbca76478112641"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "206d4c940913f8d77078727dbe06f9346ba5eed2c526ea69740c161f9683f185"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "d408f06d1fe2bf6f9188fee7f71c08d5122d50d7d7beb79a1355bdbe3f38df9a"
+      }
+    ],
+    "smashprepare": [
+      {
+        "file": "smashprepare.png",
+        "duration": 0.25,
+        "sha256": "0971e4425fa0b80f65d09b2176d65d77495888463f65615379b9a472769e34f7"
+      }
+    ],
+    "smashcontact": [
+      {
+        "file": "smashcontact.png",
+        "duration": 0.14,
+        "sha256": "fe1f262b8e90553adf0a5e78f154e05e3c99223b48ae1e0be5f3bc8f0a6127c8"
+      }
+    ],
+    "tossprepare": [
+      {
+        "file": "tossprepare.png",
+        "duration": 0.2,
+        "sha256": "45cacc81c9b2422dd59d1c3372b417744c8e0059e3bcc1838048940690d88cdb"
+      }
+    ],
+    "tosscontact": [
+      {
+        "file": "tosscontact.png",
+        "duration": 0.14,
+        "sha256": "d2101b3387c46274a176a7ada5296e78b5490efffc916f7b7a7a2fbede97597c"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.2,
+        "sha256": "8224e5eb2af8565d7fde245eb10ca56808c29c99563346ebcd81bcd7bece009a"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.32,
+        "sha256": "bdd9cd4a802134ee333d965553e904ad62d752c1741cbc33942a42b853cd7dab"
+      }
+    ],
+    "trapprepare": [
+      {
+        "file": "trapprepare.png",
+        "duration": 0.22,
+        "sha256": "56d5938a9803b1b259c863473d1d58bff552ba16abe7111061f801972b36c526"
+      }
+    ],
+    "trapcontact": [
+      {
+        "file": "trapcontact.png",
+        "duration": 0.14,
+        "sha256": "8ec10656da7d6be0f1bc2dfe0a2b606fa195506e22fee14fc389dd9331246ce1"
+      }
+    ],
+    "tokenprepare": [
+      {
+        "file": "tokenprepare.png",
+        "duration": 0.22,
+        "sha256": "1661f82f080129437769b78fb6c698b3ec868927758d0f4d4c10b9793cefa4fa"
+      }
+    ],
+    "tokenapplied": [
+      {
+        "file": "tokenapplied.png",
+        "duration": 0.24,
+        "sha256": "02522289ca0394b52d404d67c5112d89100b8b8474af773553d88b35c58f38d2"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.2,
+        "sha256": "bdd9cd4a802134ee333d965553e904ad62d752c1741cbc33942a42b853cd7dab"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M62_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "7276200776d63972c37872a4de45135cd58e0d35798d12f114f09fed508e29e9",
+  "groundMaxY": 95,
+  "groundMaxYSemantics": "Opaque main boot sole95/boundary96",
+  "placementContract": {
+    "method": "R1 calibration width273/source76 common nearest sampling scale; targeted R2 throw correction uses its faithful calibration769/76; source exact palette and binary alpha. Whole-frame root-support translation only. No per-pose fitting, painting, part transforms or procedural poses.",
+    "r1CommonScale": 3.5921052631578947,
+    "targetedTossR2CommonScale": 10.118421052631579,
+    "originalSupport": [
+      81.5,
+      80
+    ],
+    "nativeSupport": [
+      97.5,
+      96
+    ],
+    "landmark": "Main screen-right planted boot sole; not weapon or general bbox.",
+    "paddingReason": "16 transparent left pixels for low extended hook,16 top for overhead windup; no per-pose shrinking."
+  },
+  "authoredMoves": [
+    "smash",
+    "toss_junk",
+    "ready_tools",
+    "break_trap",
+    "break_token"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 13
+}

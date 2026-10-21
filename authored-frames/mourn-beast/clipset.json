@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_mourn_beast",
+  "sourceCanvas": [
+    128,
+    88
+  ],
+  "frameCanvas": [
+    128,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    64,
+    88
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 79,
+  "originalAnchor": [
+    64,
+    88
+  ],
+  "sourcePngSha256": "0bd5941545101fdb0cc3de9e1f22baf131193c930de1f72f4536a6dbc1e0ab90",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "0bd5941545101fdb0cc3de9e1f22baf131193c930de1f72f4536a6dbc1e0ab90"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.5,
+        "sha256": "0bd5941545101fdb0cc3de9e1f22baf131193c930de1f72f4536a6dbc1e0ab90"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.5,
+        "sha256": "2310c0e05a3ce8b9dc5f82afa4185b3d797d0ac5048eff0909ac3e12caff3e46"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "573970d085a1e4746a5fb1b0d6183f354a1b0041674c43327eeb500da8a8f9ac"
+      }
+    ],
+    "block": [
+      {
+        "file": "lickhold.png",
+        "duration": 0.18,
+        "sha256": "21c026a051606b5e655ddf41024fb0d1ea068cfcc5f131d4a4ff99dbd0bfe5f8"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.2,
+        "sha256": "30ec97c35b1bb466a914d7e3cbfc263f667eceec85e7acff93b2a8d3afecfb5c"
+      }
+    ],
+    "biteprepare": [
+      {
+        "file": "biteprepare.png",
+        "duration": 0.2,
+        "sha256": "e5a01149a76729a7a6aef74f4873c2fb93e98e1533e10f6d9dc006ac06b0d171"
+      }
+    ],
+    "bitecontact": [
+      {
+        "file": "bitecontact.png",
+        "duration": 0.055,
+        "sha256": "71323e35358228c55a48d64794539da5a8e150cb67f79640b8ab815692925ef4"
+      }
+    ],
+    "bitereopen": [
+      {
+        "file": "bitereopen.png",
+        "duration": 0.11,
+        "sha256": "00a5195f33e4ce2547f31b9b33c0c4b36c79fd584ca2df73fb8feab9f97a7826"
+      }
+    ],
+    "bitecontact2": [
+      {
+        "file": "bitecontact2.png",
+        "duration": 0.055,
+        "sha256": "075075b5a2c32e4bbe2c9f33bcd7f539a11985b0ef1ef80f55f1b803e3ad9725"
+      }
+    ],
+    "leapprepare": [
+      {
+        "file": "leapprepare.png",
+        "duration": 0.2,
+        "sha256": "fd69c26f501a3343f46ad4d563dfff4bb3bdb4ebdbfefdba3712a026be62bf7d"
+      }
+    ],
+    "leapcontact": [
+      {
+        "file": "leapcontact.png",
+        "duration": 0.055,
+        "sha256": "95a5124ebcd055634b47cba7d831a24ed1a5e3d151878f766ab23a5574615736"
+      }
+    ],
+    "lickprepare": [
+      {
+        "file": "lickprepare.png",
+        "duration": 0.2,
+        "sha256": "4eab9c75ad2dde156249212ce8d896864a2e4125a28413776a738a4ae524ebca"
+      }
+    ],
+    "lickhold": [
+      {
+        "file": "lickhold.png",
+        "duration": 0.2,
+        "sha256": "21c026a051606b5e655ddf41024fb0d1ea068cfcc5f131d4a4ff99dbd0bfe5f8"
+      }
+    ]
+  },
+  "status": "M33_ALL_DEFINED_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "bite",
+    "leap",
+    "lick"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "Strict count1/count2 Contact with real ordinal1 second drawing. Support only actual own BlockGained with exact instance/version/execution/owner tuple; Strength cannot start or extend support. Canonical gameplay untouched.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "exact original RGBA at sourceOffset, transparent padding",
+    "recovery": [
+      "recovery"
+    ],
+    "reactiveBlock": "lickhold drawing under independent block-notification; fullblock cannot trigger hurt"
+  }
+}

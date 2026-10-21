@@ -1,0 +1,205 @@
+{
+  "schema": 1,
+  "status": "M56_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_elite_iron_egg",
+  "sourceCanvas": [
+    152,
+    112
+  ],
+  "frameCanvas": [
+    160,
+    112
+  ],
+  "sourceOffset": [
+    8,
+    0
+  ],
+  "anchor": [
+    84,
+    112
+  ],
+  "spriteOffset": [
+    -4,
+    0
+  ],
+  "groundMaxY": 103,
+  "groundMaxYSemantics": "opaque bottom diagnostic, never support pivot",
+  "supportFootLandmarks": {
+    "reviewedPhysicalFeature": "front-right original toe",
+    "source": [
+      86,
+      103
+    ],
+    "sourceUnpadded": [
+      78,
+      103
+    ],
+    "horizontalToleranceTexels": 0,
+    "verticalToleranceTexels": 0,
+    "frames": {
+      "awakenhold.png": [
+        86,
+        103
+      ],
+      "awakenprepare.png": [
+        86,
+        103
+      ],
+      "hurt.png": [
+        86,
+        103
+      ],
+      "idle.png": [
+        86,
+        103
+      ],
+      "recovery.png": [
+        86,
+        103
+      ],
+      "rest.png": [
+        86,
+        103
+      ],
+      "sleephold.png": [
+        86,
+        103
+      ],
+      "sleepprepare.png": [
+        86,
+        103
+      ],
+      "tailcontact.png": [
+        86,
+        103
+      ],
+      "tailprepare.png": [
+        86,
+        103
+      ]
+    },
+    "featureEvidence": "Owner and independent approved anatomical support; whole bbox is not pivot"
+  },
+  "supportFootProofSha256": "abb77ca375788ba1d675b17749b8ee72a38d3f90347da486445776a581571c79",
+  "restOriginalFile": "source-rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "5a96fe0c356b06605d3707f619f796643f48b7aefd1e8edd0d5fb350ecb24ca1",
+  "sourceArtManifestSha256": "abb77ca375788ba1d675b17749b8ee72a38d3f90347da486445776a581571c79",
+  "authoredMoves": [
+    "sleep",
+    "awaken",
+    "tail"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 9,
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "c094eedb47486c5c5eae39752ea55578ab64b25adaafc0f4dbaab418b43469f9"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.6,
+        "sha256": "c094eedb47486c5c5eae39752ea55578ab64b25adaafc0f4dbaab418b43469f9"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.6,
+        "sha256": "4f320c9ff8e772ce5d13a8056d0e48bee35f6c81aa21f38059b6ab9214f8f29b"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "2efe9fb0ea1c94b3d3281ae2f3c4a9470d39e1a5ff779b0f27cb319a456e220f"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "5d0f632a3627b4318269b9b33c2ee2733965fdbe1ee89d9ab82abfd3dcfe7c2b"
+      }
+    ],
+    "tailprepare": [
+      {
+        "file": "tailprepare.png",
+        "duration": 0.18,
+        "sha256": "fb6e0e056b25287fd82fc326c7e19e8e8fdbee3675f38ff98e92e7b8f8d522db"
+      }
+    ],
+    "tailcontact": [
+      {
+        "file": "tailcontact.png",
+        "duration": 0.05,
+        "sha256": "8608ed49cd70f0b90866d2a16c4f6a948c8aaeea057aef1e1943e27aa15b6e91"
+      }
+    ],
+    "sleepprepare": [
+      {
+        "file": "sleepprepare.png",
+        "duration": 0.18,
+        "sha256": "af1e4a25e59591f4d9b4da72cabffdfa7d3cef6cd231f5bb9ed00de2184613f8"
+      }
+    ],
+    "sleephold": [
+      {
+        "file": "sleephold.png",
+        "duration": 0.05,
+        "sha256": "0c050d3bd7f1c8bceb30b3c292cb7c1142beb7877e198bcd280ef6236bb5946d"
+      }
+    ],
+    "sleepreturn": [
+      {
+        "file": "sleepprepare.png",
+        "duration": 0.14,
+        "sha256": "af1e4a25e59591f4d9b4da72cabffdfa7d3cef6cd231f5bb9ed00de2184613f8"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "c094eedb47486c5c5eae39752ea55578ab64b25adaafc0f4dbaab418b43469f9"
+      }
+    ],
+    "awakenprepare": [
+      {
+        "file": "awakenprepare.png",
+        "duration": 0.18,
+        "sha256": "7b777e17da634f3717428a796315a1d0c0d3fbb2af058514bbf8a182eaeeeae2"
+      }
+    ],
+    "awakenhold": [
+      {
+        "file": "awakenhold.png",
+        "duration": 0.05,
+        "sha256": "0f4545edec763133fdb9211f4fe6ee1b1fee99053c25e7f1149b031046f73303"
+      }
+    ],
+    "awakenreturn": [
+      {
+        "file": "awakenprepare.png",
+        "duration": 0.14,
+        "sha256": "7b777e17da634f3717428a796315a1d0c0d3fbb2af058514bbf8a182eaeeeae2"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "c094eedb47486c5c5eae39752ea55578ab64b25adaafc0f4dbaab418b43469f9"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "c094eedb47486c5c5eae39752ea55578ab64b25adaafc0f4dbaab418b43469f9"
+      }
+    ]
+  },
+  "drawingOnlyNormalization": "Melee contact and own Block/Strength holds .05; release holds unchanged; Engine and Stage timing unchanged"
+}

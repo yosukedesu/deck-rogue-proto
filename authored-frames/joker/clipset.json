@@ -1,0 +1,221 @@
+{
+  "schema": 1,
+  "status": "M53_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_joker",
+  "sourceCanvas": [
+    96,
+    88
+  ],
+  "frameCanvas": [
+    96,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    48,
+    88
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 79,
+  "groundMaxYSemantics": "original opaque-bottom only; not support-foot ground",
+  "supportFootLandmarks": {
+    "reviewedPhysicalFeature": "rear-supporting-foot",
+    "source": [
+      78.5,
+      79
+    ],
+    "frames": {
+      "idle.png": [
+        78.5,
+        79
+      ],
+      "hurt.png": [
+        78.5,
+        79
+      ],
+      "recovery.png": [
+        78.5,
+        79
+      ],
+      "wildprepare.png": [
+        78.5,
+        79
+      ],
+      "wildcontact.png": [
+        79.0,
+        79
+      ],
+      "jabprepare.png": [
+        78.5,
+        79
+      ],
+      "jabcontact.png": [
+        78.5,
+        79
+      ],
+      "bluffprepare.png": [
+        78.0,
+        79
+      ],
+      "bluffcontact.png": [
+        78.0,
+        79
+      ],
+      "guardprepare.png": [
+        79.0,
+        79
+      ],
+      "guardhold.png": [
+        78.5,
+        79
+      ],
+      "rest.png": [
+        78.5,
+        79
+      ]
+    },
+    "horizontalToleranceTexels": 0.5,
+    "verticalToleranceTexels": 0
+  },
+  "supportFootProofSha256": "5a4a0464343011f2e30b5516b17bb5a083ee46f040be205cdc6aa8181fdcc0a5",
+  "registrationKind": "unchanged-original-static-canvas-and-anchor; separately reviewed physical rear-support foot",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "8c54cc23fdd5d379517b431fe2f4a17135d046a02c8f36b63c66f1b309934f33",
+  "sourceArtManifestSha256": "8a9e9e8a370273ca7d3fcebb49b87811bbf7e3e15ac0fe2480c7010c28db9820",
+  "authoredMoves": [
+    "wild_swing",
+    "cautious_jab",
+    "call_bluff",
+    "dodge_prance"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "8c54cc23fdd5d379517b431fe2f4a17135d046a02c8f36b63c66f1b309934f33"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "8c54cc23fdd5d379517b431fe2f4a17135d046a02c8f36b63c66f1b309934f33"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "de886f20927abf8a4f7bca4e6eaf5fabf84ec5b9e652edb20e74b635d149a368"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "e4969d1793de51b7fba2155bfdeb83bd99ed9e9bd4dba15c923380cef1420dbe"
+      }
+    ],
+    "wildprepare": [
+      {
+        "file": "wildprepare.png",
+        "duration": 0.18,
+        "sha256": "c8d25ac45f39c5b6146a104e500aa7b5e2d23bf1a66271793ac00f7ccf424163"
+      }
+    ],
+    "wildcontact": [
+      {
+        "file": "wildcontact.png",
+        "duration": 0.05,
+        "sha256": "582ecab6e532e4a1bb908bd1fdac5b5c712b60d4f56cd998f0a16050c4476d88"
+      }
+    ],
+    "jabprepare": [
+      {
+        "file": "jabprepare.png",
+        "duration": 0.18,
+        "sha256": "d69a0fded8812dac36233fbf0fd643680a17d74c238ea3eb8192a475f1f7c290"
+      }
+    ],
+    "jabcontact": [
+      {
+        "file": "jabcontact.png",
+        "duration": 0.05,
+        "sha256": "36cb47c49306506cbb8ddb210e4bf1f8a8c5718994341f86ffd80f1cbacac753"
+      }
+    ],
+    "bluffprepare": [
+      {
+        "file": "bluffprepare.png",
+        "duration": 0.18,
+        "sha256": "7cc4ccef2cbf2f1d3c1f634a7bae64a3cc7444f7be62d90a2e61f032600602ef"
+      }
+    ],
+    "bluffcontact": [
+      {
+        "file": "bluffcontact.png",
+        "duration": 0.05,
+        "sha256": "ef8b21e5e66bf0a9b2a90be242fbd3a8a22a2a5cfdd3552d362c5fce4634095d"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "0af08e4443f33d60b91510f4b64548919fbae4c7baec18f83b07cccc0c5fd7a4"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "8c54cc23fdd5d379517b431fe2f4a17135d046a02c8f36b63c66f1b309934f33"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "8f4fbd8307812d9d09c600c6ed7fbd5a7180cccd26040a89f962b6841cc7e2b3"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "dac9346181277ab37456ccc617e34e18a5d1b51e3c8cc0cc062a8347a8dc6f5c"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "0af08e4443f33d60b91510f4b64548919fbae4c7baec18f83b07cccc0c5fd7a4"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "8c54cc23fdd5d379517b431fe2f4a17135d046a02c8f36b63c66f1b309934f33"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "8c54cc23fdd5d379517b431fe2f4a17135d046a02c8f36b63c66f1b309934f33"
+      }
+    ]
+  },
+  "physicalNewKeyCount": 11,
+  "recoveryAuthorship": "owner-reviewed-finite-sequence-no-contact-reuse",
+  "drawingOnlyDurationNormalization": {
+    "contactPulseAndGuardHoldSeconds": 0.05,
+    "finiteReturns": "Approved recovery/return sequences remain drawing-only; existing Stage End/deadline governs exit."
+  }
+}

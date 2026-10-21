@@ -1,0 +1,303 @@
+{
+  "schema": 1,
+  "status": "M19_THREE_MOVE_IDLE_HURT_COMPLETION_CANDIDATE",
+  "enemyId": "enemy_turtle",
+  "displayName": "眠たがりの大亀",
+  "moveId": "awake_bite",
+  "sourceCanvas": [
+    152,
+    112
+  ],
+  "frameCanvas": [
+    184,
+    112
+  ],
+  "sourceOffset": [
+    32,
+    0
+  ],
+  "spriteOffset": [
+    -16,
+    0
+  ],
+  "anchor": [
+    108,
+    112
+  ],
+  "groundMaxY": 103,
+  "sourcePngSha256": "4d629f745f705269de382a72f55784f1f7412a073aac5404e11b3d4738a86f1e",
+  "artistFootReference": [
+    107.5,
+    103
+  ],
+  "artistFootReferenceNote": "Original bbox bottom midpoint plus transparent padding; not a rig or runtime pivot.",
+  "nativeRegistration": {
+    "rest": {
+      "delta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        34,
+        16,
+        181,
+        104
+      ],
+      "bboxAfter": [
+        34,
+        16,
+        181,
+        104
+      ],
+      "opaqueClipped": 0,
+      "rearFootReference": [
+        180,
+        103
+      ]
+    },
+    "prepare": {
+      "delta": [
+        -1,
+        0
+      ],
+      "bboxBefore": [
+        16,
+        16,
+        182,
+        104
+      ],
+      "bboxAfter": [
+        15,
+        16,
+        181,
+        104
+      ],
+      "opaqueClipped": 0,
+      "rearFootReference": [
+        180,
+        103
+      ]
+    },
+    "contact": {
+      "delta": [
+        -2,
+        0
+      ],
+      "bboxBefore": [
+        13,
+        17,
+        183,
+        104
+      ],
+      "bboxAfter": [
+        11,
+        17,
+        181,
+        104
+      ],
+      "opaqueClipped": 0,
+      "rearFootReference": [
+        180,
+        103
+      ]
+    },
+    "recovery": {
+      "delta": [
+        -1,
+        0
+      ],
+      "bboxBefore": [
+        36,
+        17,
+        182,
+        104
+      ],
+      "bboxAfter": [
+        35,
+        17,
+        181,
+        104
+      ],
+      "opaqueClipped": 0,
+      "rearFootReference": [
+        180,
+        103
+      ]
+    }
+  },
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "e03f97f517649d44b6ce730604c9a4b980292c93af021326164660f1d1b4e3b7"
+      }
+    ],
+    "windup": [
+      {
+        "file": "prepare.png",
+        "duration": 0.14,
+        "sha256": "fad0cb6b2a4973bafa840a6c53a0aea33a3989df55fbd3df4039635037976183"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.22,
+        "sha256": "8d3e7db5099c7c1cea66fff6ca5ea1f348e3f1263c26386fd7638d1c5324cea3"
+      }
+    ],
+    "impact": [
+      {
+        "file": "contact.png",
+        "duration": 0.04,
+        "sha256": "4ac9b13aecad0042a71094ea2ab8548619a6af0ddc0854985288d4ca175b9098"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.6,
+        "sha256": "e03f97f517649d44b6ce730604c9a4b980292c93af021326164660f1d1b4e3b7"
+      },
+      {
+        "file": "idle_breath.png",
+        "duration": 0.6,
+        "sha256": "ec380b837bc6f077d8032701a2ab6fc34eb51f97d19baa284608f9d5d9ce8d68"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "859883e304a8acf85043d9a94fadc35f484bbdaf652798860c8dbef3bdca701b"
+      }
+    ],
+    "shellprepare": [
+      {
+        "file": "shell_prepare.png",
+        "duration": 0.12,
+        "sha256": "7862d4ef077e1b1495ee0cad5df30106e4574441a3f9e216919a897ef3b59b68"
+      }
+    ],
+    "shellhold": [
+      {
+        "file": "shell_hold.png",
+        "duration": 0.2,
+        "sha256": "9d7100b0f37e9eb01bac87e4cfb385a514f95e06936812419d3cabc173a68836"
+      }
+    ],
+    "crushprepare": [
+      {
+        "file": "crush_prepare.png",
+        "duration": 0.18,
+        "sha256": "93770b62a5df3f7cd44e7914dff4e1d5b2b49e59108e374f0b2ef6f20afe36a3"
+      }
+    ],
+    "crushimpact": [
+      {
+        "file": "crush_impact.png",
+        "duration": 0.08,
+        "sha256": "d8abd91f3c78af5a090df656b698c9c1eeebae4169703faf3abfcf9e508d5a10"
+      }
+    ],
+    "block": [
+      {
+        "file": "shell_hold.png",
+        "duration": 0.14,
+        "sha256": "9d7100b0f37e9eb01bac87e4cfb385a514f95e06936812419d3cabc173a68836"
+      }
+    ],
+    "shellrecovery": [
+      {
+        "file": "shell_prepare.png",
+        "duration": 0.06,
+        "sha256": "7862d4ef077e1b1495ee0cad5df30106e4574441a3f9e216919a897ef3b59b68"
+      },
+      {
+        "file": "recovery.png",
+        "duration": 0.1,
+        "sha256": "8d3e7db5099c7c1cea66fff6ca5ea1f348e3f1263c26386fd7638d1c5324cea3"
+      }
+    ]
+  },
+  "actualContactCount": 2,
+  "eventContract": "Only owned actual Contact selects impact: awake_bite exactly2 with original reopen, crush exactly1. Only owned actual shell BlockGained selects shellhold. Declare/Resolved alone cannot select impact/hold. Finite support shellprepare/shared recovery and initial idle/hurt register reaction ownership. No gameplay clock or queue changes.",
+  "durationNote": "Durations are provisional sprite display holds, not gameplay event clocks. Runtime QA owns exact actual-contact synchronization.",
+  "recoveryNote": "The generated recoil retracts slightly beyond rest rather than halfway. Parent visual review accepted the deeper pullback as natural bite follow-through. Settle forward to unchanged rest.",
+  "notProduced": [
+    "extra_inbetweens"
+  ],
+  "runtimeAcceptance": "pending",
+  "schemaRevision": 2,
+  "frameCanvasCenter": [
+    92,
+    112
+  ],
+  "runtimeRegistrationAnchor": [
+    108,
+    112
+  ],
+  "registrationExplanation": "The original 152px-wide source center76 plus left padding32 gives registration anchor108. The new184px-wide canvas center92 is descriptive only, not the runtime registration anchor. Use runtimeRegistrationAnchor[108,112] with spriteOffset[-16,0].",
+  "originalManifestSha256": "dde8562445ea821c2dc30b9d90d45bf22683bf6bcac6663a2927d37fc9c9baa0",
+  "authoredMoves": [
+    "shell",
+    "crush",
+    "awake_bite"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "runtimeHoldNote": "0.04 second actual-contact hold permits reopening within unchanged two-hit spacing; no gameplay clock changes.",
+  "completionKeys": [
+    "idle_breath",
+    "hurt",
+    "shell_prepare",
+    "shell_hold",
+    "crush_prepare",
+    "crush_impact"
+  ],
+  "moveContracts": {
+    "awake_bite": {
+      "damageRange": [
+        9,
+        12
+      ],
+      "contactCount": 2,
+      "sequence": "existing prepare -> existing contact on first actual Contact -> prepare to reopen -> existing contact on second actual Contact -> existing recovery -> rest"
+    },
+    "shell": {
+      "blockRange": [
+        12,
+        16
+      ],
+      "contactCount": 0,
+      "sequence": "shell_prepare before own BlockGained -> shell_hold after real BlockGained -> shell_prepare on finite support exit -> existing recovery -> rest"
+    },
+    "crush": {
+      "damageRange": [
+        24,
+        32
+      ],
+      "contactCount": 1,
+      "sequence": "crush_prepare -> crush_impact exactly at the sole actual Contact -> existing recovery -> rest"
+    }
+  },
+  "sourceArtNotes": {
+    "idle": "A slight chest/neck-base inhale; shell body mass retained.",
+    "hurt": "Closed beak pulls inward, front shoulders and bent forelegs recoil. HP-loss event only.",
+    "shell": "Two drawn neck-withdrawal and braced low-shell poses. The prepare key can reverse on exit before shared recovery.",
+    "crush": "Forelegs leave ground while chest and shell-front rise; impact plants front feet forward-left and lowers chest. Rear toes remain180,103. No whole-body leap.",
+    "recovery": "Existing accepted recovery reused unchanged. Runtime visual acceptance should verify shell_prepare reverse exit and crush impact settle."
+  },
+  "runtimeAliases": {
+    "pixelsUnchanged": true,
+    "sourceReadySha256": "97c74acacfcf41adca0ed4bf64f32926c15458707541aa8836ba3a5a0c01b6d0",
+    "bite": "Existing 4 keys/durations unchanged; exactly2 owned actual contacts and real nonfinal reopen.",
+    "shell": "shell_prepare before real own BlockGained, shell_hold afterwards, finite shell_prepare/shared recovery; declaration and Resolved alone do not pulse.",
+    "crush": "crush_prepare before sole owned actual Contact, crush_impact afterwards, original shared recovery.",
+    "idle": "rest plus idle_breath; initial placement registers reaction owner",
+    "hurt": "HP loss only; actor reaction instance/epoch token",
+    "reactiveBlock": "shell_hold drawing and separate block-notification; full block never hurts",
+    "canvas": "Original152x112 layout preserved;184x112 frame/anchor108,112/offset-16,0/floor103 fixed."
+  }
+}

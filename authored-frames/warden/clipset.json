@@ -1,0 +1,186 @@
+{
+  "enemyId": "enemy_warden",
+  "sourceCanvas": [
+    192,
+    152
+  ],
+  "frameCanvas": [
+    224,
+    200
+  ],
+  "sourceOffset": [
+    32,
+    32
+  ],
+  "anchor": [
+    128,
+    184
+  ],
+  "spriteOffset": [
+    -16,
+    8
+  ],
+  "sourcePngSha256": "f902558c5c8918f99d2232c040ff968a9e0d1cb5e02261fc235bd0f4cf398842",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "368a30e020e90fa8cc5b2ae8e1b4d4d16bf980adca579fd841fa1d63a9fba01d"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "368a30e020e90fa8cc5b2ae8e1b4d4d16bf980adca579fd841fa1d63a9fba01d"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "2d285e05631c5c3e0038f3c69291fe1dabfce11bc1472e26f29b9f37405d2bd3"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "9e1ed1dc8b9aa1d0598642f1f52787a2e68c4edb31ccc8979df08beaab297a48"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "428e8be301fd19a906f29962adba911da2c724620ba7a410bdbcda7c4ce8cc41"
+      }
+    ],
+    "strikeprepare": [
+      {
+        "file": "strikeprepare.png",
+        "duration": 0.24,
+        "sha256": "20327bae4215462aa3514387c07b74b6ee3ec80aab96f73b4903dab4eb8bc927"
+      }
+    ],
+    "strikecontact": [
+      {
+        "file": "strikecontact.png",
+        "duration": 0.14,
+        "sha256": "f9e974af1f53546d586fd4a0f290361a4784688097d5a7867380e2150f862491"
+      }
+    ],
+    "gateprepare": [
+      {
+        "file": "gateprepare.png",
+        "duration": 0.2,
+        "sha256": "5627a7164a13c67a634885f011c24b0297a8e4bef63d7ba477b3eb7783e81d0a"
+      }
+    ],
+    "gatecontact": [
+      {
+        "file": "gatecontact.png",
+        "duration": 0.13,
+        "sha256": "b178b5412fe3bf8df26e3db996d54ab538e75e8f1dc32d9b2e87acefb8a3feb2"
+      }
+    ],
+    "hushprepare": [
+      {
+        "file": "hushprepare.png",
+        "duration": 0.2,
+        "sha256": "6a5df74744a7ba0dac13027e7bcfec468db01baaba28dd38fbcc33e93a24ed65"
+      }
+    ],
+    "hushcontact": [
+      {
+        "file": "hushcontact.png",
+        "duration": 0.13,
+        "sha256": "52026ffcc9e49d72c74d8639e78017d586ae1f133011b2904bc25982f4645f8f"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.2,
+        "sha256": "05a00bd38cb0c2097b31b16ffcbf2e6e97e9e5632fe85cdfb0da12ac12b1faa0"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.32,
+        "sha256": "f5320a1870a307bf7a1008c2f1a19a5ca56d735b77f57dfe8e77c88e2865a1e8"
+      }
+    ],
+    "frenzyprepare": [
+      {
+        "file": "frenzyprepare.png",
+        "duration": 0.22,
+        "sha256": "56cc9c77e66bda7bcd4582e2f81e8665740e57b296c41cb7d2313000ec99bc2c"
+      }
+    ],
+    "frenzycontacta": [
+      {
+        "file": "frenzycontacta.png",
+        "duration": 0.1,
+        "sha256": "50b8c6ada41369ba959d8db04a82b3bca794ba724dca2ad8895833d1e3ed7687"
+      }
+    ],
+    "frenzyrebound": [
+      {
+        "file": "frenzyrebound.png",
+        "duration": 0.12,
+        "sha256": "bd0febb5c8cbe52687e74cd3775d6f4df3295ee7e3c068171e7efd66b97e9b47"
+      }
+    ],
+    "frenzycontactb": [
+      {
+        "file": "frenzycontactb.png",
+        "duration": 0.1,
+        "sha256": "3e5129347cba723eeb5820fc5f4ed7674143a04c95879341ed7bf7f19476db66"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.2,
+        "sha256": "f5320a1870a307bf7a1008c2f1a19a5ca56d735b77f57dfe8e77c88e2865a1e8"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M63_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "614cb4264b6695d1b88804465b9ecf6873f58a44dbedad3c96a7c06e264b4ad2",
+  "groundMaxY": 175,
+  "groundMaxYSemantics": "Main right armored boot sole175/boundary176; hammer may extend below boot",
+  "placementContract": {
+    "method": "One calibration width267/source132 common nearest sampling scale; source exact palette and binary alpha. Whole-frame root-support translation only. No per-pose fitting, painting, part transforms or procedural poses.",
+    "commonRawPixelsPerNativePixel": 2.022727272727273,
+    "originalSupport": [
+      148.5,
+      144
+    ],
+    "nativeSupport": [
+      180.5,
+      176
+    ],
+    "landmark": "Main screen-right armored boot sole, not hammer head/tabard.",
+    "paddingReason": "32 left and32 top transparent pixels retain extended strikes/overhead windups;16 bottom added for frenzy hammer lower than boot. Original rest exact embedded. No per-pose shrink.",
+    "allFramesSameBodyScale": true,
+    "rawScalePerGeneration": {
+      "r1": 2.022727272727273,
+      "guardOnlyR2": 5.916666666666667
+    }
+  },
+  "authoredMoves": [
+    "bell_strike",
+    "gate_guard",
+    "bell_hushed",
+    "guard",
+    "bell_frenzy"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 15
+}

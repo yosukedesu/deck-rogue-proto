@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_elite_gold_raven",
+  "sourceCanvas": [
+    176,
+    112
+  ],
+  "frameCanvas": [
+    192,
+    128
+  ],
+  "sourceOffset": [
+    16,
+    16
+  ],
+  "originalAnchor": [
+    88,
+    112
+  ],
+  "anchor": [
+    104,
+    128
+  ],
+  "spriteOffset": [
+    -8,
+    8
+  ],
+  "groundMaxY": 119,
+  "sourcePngSha256": "61b7f174373c52a751b5349d47d6ba831d28151ac97bcb0739345a190a780414",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "7a90029a2380b4b92960a0ccb03673e1cfa9fa865995f06b64a50b913d52b308"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.5,
+        "sha256": "7a90029a2380b4b92960a0ccb03673e1cfa9fa865995f06b64a50b913d52b308"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.5,
+        "sha256": "d33cc16d2a1e7d3ab3557c1ae655194a1467449d68161fb02163ed0866743bb0"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "023f579e76ab572ebb6f70c4c8a37b17013f742f04b285624e6e0915dff11218"
+      }
+    ],
+    "diveprepare": [
+      {
+        "file": "diveprepare.png",
+        "duration": 0.2,
+        "sha256": "9cea860e013a4713ef8fe5ab6c3466139af0ddb63109185dd1f7899cbddea720"
+      }
+    ],
+    "divecontact": [
+      {
+        "file": "divecontact.png",
+        "duration": 0.055,
+        "sha256": "594f76e57e44361a36873af03b6e6fd6c7514753c066c619c603de8901578511"
+      }
+    ],
+    "peckprepare": [
+      {
+        "file": "peckprepare.png",
+        "duration": 0.15,
+        "sha256": "1c0d24066aa0cc70eca94eb99ece91942f40bbd718ca25eba30c7b7c1ad44e05"
+      }
+    ],
+    "peckcontact": [
+      {
+        "file": "peckcontact.png",
+        "duration": 0.055,
+        "sha256": "32ca3c297fb5900f345f437366a1d918c6232784b193a49ce2f4b5c4342c8188"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "ec3942db4001a25d26bf363d7ee9f48760302c21fbf5ee2ac459a5a797d3924e"
+      }
+    ],
+    "soarprepare": [
+      {
+        "file": "soarprepare.png",
+        "duration": 0.12,
+        "sha256": "945fcc324afbf9bf82c3e9ce89751ee30a3dfbe6cbbfe30ed994f7cc0544fb6b"
+      }
+    ],
+    "soarhold": [
+      {
+        "file": "soarhold.png",
+        "duration": 0.12,
+        "sha256": "6ec37c39d15185fa2a34cb3951dc73cc8f193957b707bc9606ec3cfff8116cd0"
+      }
+    ],
+    "block": [
+      {
+        "file": "soarhold.png",
+        "duration": 0.18,
+        "sha256": "6ec37c39d15185fa2a34cb3951dc73cc8f193957b707bc9606ec3cfff8116cd0"
+      }
+    ]
+  },
+  "status": "M28_COMPLETE_THREE_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "soar",
+    "dive",
+    "peck"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "dive14-18 growPerUse4 and peck6-9 distinct single actual contacts; soar8 plus alsoBuff1 first own actual BlockGained only, StrengthGained cannot retrigger. Strict support tuple, stale reaction epoch rejection, finite recovery. Preserve soar->dive->peck->soar graph. No gameplay/data/timing mutation.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "rest_canvas exact original RGBA padded left16/top16",
+    "reactiveBlock": "soarhold drawing reused under independent block-notification; fullblock cannot trigger hurt",
+    "staticLayout": "original176x112 opaque footprint and layout anchor88,112 preserved; expanded192x128 authored envelope only for motion, anchor104,128 spriteOffset-8,+8 ground119"
+  }
+}

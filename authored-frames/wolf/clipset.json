@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "status": "M18_FOUR_MOVE_IDLE_HURT_COMPLETION_CANDIDATE",
+  "sourceCanvas": [
+    128,
+    80
+  ],
+  "frameCanvas": [
+    128,
+    80
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    64,
+    80
+  ],
+  "groundMaxY": 73,
+  "sourcePngSha256": "697ce544e63971f7e8a61b98b5695ddb2b78300c487f28387f59ba6ff8c402ee",
+  "artistFootReference": [
+    63.5,
+    73
+  ],
+  "artistFootReferenceNote": "bbox center, not rig pivot; no additional translation",
+  "pending": [
+    "distinct_later_contact_art"
+  ],
+  "sameContactArtworkReusedForEveryAcceptedOrdinal": true,
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "697ce544e63971f7e8a61b98b5695ddb2b78300c487f28387f59ba6ff8c402ee"
+      }
+    ],
+    "windup": [
+      {
+        "file": "bite_prepare.png",
+        "duration": 0.13,
+        "sha256": "78934ffa4733419744a9f2c0ea9498c5a3163ea4d0a2921c83abf49aaa992044"
+      }
+    ],
+    "impact": [
+      {
+        "file": "bite_contact.png",
+        "duration": 0.04,
+        "sha256": "f6d245077b983ae58e11524605f244ded5ac7a2877501de7257a5642dfdac79e"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "bite_recovery.png",
+        "duration": 0.14,
+        "sha256": "5471af995ff9d9ed1744d2b8ff4aa315d283928fc7701b4088551e1bc5434838"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.48,
+        "sha256": "697ce544e63971f7e8a61b98b5695ddb2b78300c487f28387f59ba6ff8c402ee"
+      },
+      {
+        "file": "idle_breathe.png",
+        "duration": 0.48,
+        "sha256": "eeedd2e59d7ac34428bd4f43634517987abc3ea6db69829bdd1596f6067e3ac4"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt_recoil.png",
+        "duration": 0.16,
+        "sha256": "56e78b9dc3eaa928f527f1400ee54992077c5ce4e642e03727b411b6d9fe1e2e"
+      }
+    ],
+    "howlprepare": [
+      {
+        "file": "howl_prepare.png",
+        "duration": 0.1,
+        "sha256": "5e5b5fee3807f0afffd96ef2c1d72631c77599dbf9224ab8aa9427ad4e394650"
+      }
+    ],
+    "howlcall": [
+      {
+        "file": "howl_call.png",
+        "duration": 0.12,
+        "sha256": "b34944326ec74da2de26c65442349019e84f441790b1f6e4c3e5d99edbc003c6"
+      }
+    ],
+    "howlrecovery": [
+      {
+        "file": "howl_prepare.png",
+        "duration": 0.08,
+        "sha256": "5e5b5fee3807f0afffd96ef2c1d72631c77599dbf9224ab8aa9427ad4e394650"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.08,
+        "sha256": "697ce544e63971f7e8a61b98b5695ddb2b78300c487f28387f59ba6ff8c402ee"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guard_prepare.png",
+        "duration": 0.08,
+        "sha256": "a72320ecf67ca0fb14036056976bde08e33632bb3696141c06cc11250ffedeed"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.16,
+        "sha256": "39dfec96685cf5b408b3d2cff0d3d0523affd22966f45b3c10465e684c3df2e3"
+      }
+    ],
+    "guardrecovery": [
+      {
+        "file": "guard_prepare.png",
+        "duration": 0.08,
+        "sha256": "a72320ecf67ca0fb14036056976bde08e33632bb3696141c06cc11250ffedeed"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.08,
+        "sha256": "697ce544e63971f7e8a61b98b5695ddb2b78300c487f28387f59ba6ff8c402ee"
+      }
+    ],
+    "block": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.14,
+        "sha256": "39dfec96685cf5b408b3d2cff0d3d0523affd22966f45b3c10465e684c3df2e3"
+      }
+    ]
+  },
+  "baselineWolfManifestSha256": "81f2752314ae229c06d960c8808ca70e02f6a00b99fb2d3fd03ad369c8c0400d",
+  "recoveryNote": "Dedicated final-contact recovery only, never idle loop or fictitious extra hit.",
+  "authoredMoves": [
+    "flurry",
+    "rend",
+    "howl",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "runtimeAliases": {
+    "pixelsUnchanged": true,
+    "sourceReadySha256": "a3b2ec1c0880da80a1049969dfd7a48210e86007e3a0b99438d479a4d8931a59",
+    "bite": "Existing 4 keys and durations unchanged; exactly 3/4 owned contacts with real nonfinal reopen. Same contact drawing reused.",
+    "howl": "howl_prepare before real own StrengthGained; howl_call afterwards; own finite recovery. Declaration and Resolved do not create a pulse.",
+    "guard": "guard_prepare before real own BlockGained; guard_hold afterwards; own finite recovery.",
+    "idle": "rest plus idle_breathe; initial placement registers reaction owner",
+    "hurt": "HP loss only; real actor reaction instance/epoch token",
+    "reactiveBlock": "guard_hold drawing and separate block-notification; full block never hurts",
+    "canvas": "128x80 anchor64,80 floor73; howl upper bbox expansion retained without rescale"
+  }
+}

@@ -1,0 +1,520 @@
+{
+  "schema": 1,
+  "status": "M59_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "enemyId": "enemy_moss_healer",
+  "sourceCanvas": [
+    88,
+    88
+  ],
+  "frameCanvas": [
+    108,
+    88
+  ],
+  "sourceOffset": [
+    12,
+    0
+  ],
+  "anchor": [
+    56,
+    88
+  ],
+  "spriteOffset": [
+    -2,
+    0
+  ],
+  "groundMaxY": 79,
+  "groundMaxYSemantics": "Physical foremost root opaque79/boundary80; staff/bbox not support",
+  "placementContract": {
+    "kind": "root-foot",
+    "frames": {
+      "guardhold.png": {
+        "kind": "foremost-root-foot",
+        "rootSoleOpaqueY": 79,
+        "rootSoleBoundaryY": 80,
+        "rootSoleTarget": [
+          57.5,
+          79
+        ],
+        "opaqueSoleXWithinRoi": [
+          58
+        ],
+        "rootFootRoi": [
+          53,
+          76,
+          63,
+          80
+        ],
+        "rearFootFree": true,
+        "staffAndBboxNotSupport": true
+      },
+      "guardprepare.png": {
+        "kind": "foremost-root-foot",
+        "rootSoleOpaqueY": 79,
+        "rootSoleBoundaryY": 80,
+        "rootSoleTarget": [
+          57.5,
+          79
+        ],
+        "opaqueSoleXWithinRoi": [
+          56,
+          57,
+          58,
+          59
+        ],
+        "rootFootRoi": [
+          53,
+          76,
+          63,
+          80
+        ],
+        "rearFootFree": true,
+        "staffAndBboxNotSupport": true
+      },
+      "hurt.png": {
+        "kind": "foremost-root-foot",
+        "rootSoleOpaqueY": 79,
+        "rootSoleBoundaryY": 80,
+        "rootSoleTarget": [
+          57.5,
+          79
+        ],
+        "opaqueSoleXWithinRoi": [
+          56,
+          57,
+          58,
+          59,
+          60
+        ],
+        "rootFootRoi": [
+          53,
+          76,
+          63,
+          80
+        ],
+        "rearFootFree": true,
+        "staffAndBboxNotSupport": true
+      },
+      "idle.png": {
+        "kind": "foremost-root-foot",
+        "rootSoleOpaqueY": 79,
+        "rootSoleBoundaryY": 80,
+        "rootSoleTarget": [
+          57.5,
+          79
+        ],
+        "opaqueSoleXWithinRoi": [
+          57,
+          58,
+          59,
+          60,
+          61,
+          62
+        ],
+        "rootFootRoi": [
+          53,
+          76,
+          63,
+          80
+        ],
+        "rearFootFree": true,
+        "staffAndBboxNotSupport": true
+      },
+      "mendapplied.png": {
+        "kind": "foremost-root-foot",
+        "rootSoleOpaqueY": 79,
+        "rootSoleBoundaryY": 80,
+        "rootSoleTarget": [
+          57.5,
+          79
+        ],
+        "opaqueSoleXWithinRoi": [
+          55,
+          56,
+          57,
+          58,
+          59,
+          60
+        ],
+        "rootFootRoi": [
+          53,
+          76,
+          63,
+          80
+        ],
+        "rearFootFree": true,
+        "staffAndBboxNotSupport": true
+      },
+      "mendprepare.png": {
+        "kind": "foremost-root-foot",
+        "rootSoleOpaqueY": 79,
+        "rootSoleBoundaryY": 80,
+        "rootSoleTarget": [
+          57.5,
+          79
+        ],
+        "opaqueSoleXWithinRoi": [
+          55,
+          56,
+          57,
+          58,
+          59,
+          60
+        ],
+        "rootFootRoi": [
+          53,
+          76,
+          63,
+          80
+        ],
+        "rearFootFree": true,
+        "staffAndBboxNotSupport": true
+      },
+      "pokecontact.png": {
+        "kind": "foremost-root-foot",
+        "rootSoleOpaqueY": 79,
+        "rootSoleBoundaryY": 80,
+        "rootSoleTarget": [
+          57.5,
+          79
+        ],
+        "opaqueSoleXWithinRoi": [
+          56,
+          57,
+          58,
+          59,
+          60,
+          61
+        ],
+        "rootFootRoi": [
+          53,
+          76,
+          63,
+          80
+        ],
+        "rearFootFree": true,
+        "staffAndBboxNotSupport": true
+      },
+      "pokeprepare.png": {
+        "kind": "foremost-root-foot",
+        "rootSoleOpaqueY": 79,
+        "rootSoleBoundaryY": 80,
+        "rootSoleTarget": [
+          57.5,
+          79
+        ],
+        "opaqueSoleXWithinRoi": [
+          58,
+          59,
+          60,
+          61,
+          62
+        ],
+        "rootFootRoi": [
+          53,
+          76,
+          63,
+          80
+        ],
+        "rearFootFree": true,
+        "staffAndBboxNotSupport": true
+      },
+      "recovery.png": {
+        "kind": "foremost-root-foot",
+        "rootSoleOpaqueY": 79,
+        "rootSoleBoundaryY": 80,
+        "rootSoleTarget": [
+          57.5,
+          79
+        ],
+        "opaqueSoleXWithinRoi": [
+          55,
+          56,
+          57,
+          58,
+          59
+        ],
+        "rootFootRoi": [
+          53,
+          76,
+          63,
+          80
+        ],
+        "rearFootFree": true,
+        "staffAndBboxNotSupport": true
+      },
+      "rest.png": {
+        "kind": "foremost-root-foot",
+        "rootSoleOpaqueY": 79,
+        "rootSoleBoundaryY": 80,
+        "rootSoleTarget": [
+          57.5,
+          79
+        ],
+        "opaqueSoleXWithinRoi": [
+          53,
+          54,
+          55,
+          58,
+          59,
+          60,
+          61
+        ],
+        "rootFootRoi": [
+          53,
+          76,
+          63,
+          80
+        ],
+        "rearFootFree": true,
+        "staffAndBboxNotSupport": true
+      }
+    },
+    "registration": {
+      "method": "One common scale295/64 from calibration total body height versus original64. All ten fully connected raw components isolated without redrawing. Nearest-point sampling, alpha>=128, nearest original25 opaque colors. Whole-frame translation registers manually identified foremost planted root-foot sole center to native source45.5+12 and sole opaque y79. Rear feet articulate freely. No per-pose scaling, part manipulation, pixel painting, rigid pose transforms or synthetic frames.",
+      "commonRawPixelsPerNativePixel": 4.609375,
+      "sourcePhysicalForemostRootFootSoleCenterX": 45.5,
+      "registeredPhysicalForemostRootFootSoleCenterX": 57.5,
+      "sourcePhysicalRootSoleOpaqueY": 79,
+      "registeredPhysicalRootSoleOpaqueY": 79,
+      "physicalRootSoleBoundaryY": 80,
+      "groundBoundaryIsNotAnAdditionalPixelTranslation": true,
+      "sourcePhysicalRootFootRoi": [
+        41,
+        76,
+        51,
+        80
+      ],
+      "doNotUseStaffTipOrOpaqueBboxBottomForSupport": true,
+      "rearFootPoseCanArticulate": true,
+      "frameSupport": {
+        "calibration": {
+          "registrationLandmark": "Actual foremost planted root-foot sole only, manually identified by anatomical foot ROI. Rear foot free to brace naturally. Staff tip and silhouette lowest point never define alignment.",
+          "rawPhysicalFrontFootRoiX": [
+            175,
+            235
+          ],
+          "rawPhysicalFrontFootSoleCenterX": 210.0,
+          "rawPhysicalFrontFootSoleOpaqueY": 343,
+          "nativePhysicalFrontFootSoleTarget": [
+            57.5,
+            79
+          ]
+        },
+        "idle": {
+          "registrationLandmark": "Actual foremost planted root-foot sole only, manually identified by anatomical foot ROI. Rear foot free to brace naturally. Staff tip and silhouette lowest point never define alignment.",
+          "rawPhysicalFrontFootRoiX": [
+            522,
+            587
+          ],
+          "rawPhysicalFrontFootSoleCenterX": 554.5,
+          "rawPhysicalFrontFootSoleOpaqueY": 340,
+          "nativePhysicalFrontFootSoleTarget": [
+            57.5,
+            79
+          ]
+        },
+        "hurt": {
+          "registrationLandmark": "Actual foremost planted root-foot sole only, manually identified by anatomical foot ROI. Rear foot free to brace naturally. Staff tip and silhouette lowest point never define alignment.",
+          "rawPhysicalFrontFootRoiX": [
+            856,
+            926
+          ],
+          "rawPhysicalFrontFootSoleCenterX": 902.5,
+          "rawPhysicalFrontFootSoleOpaqueY": 340,
+          "nativePhysicalFrontFootSoleTarget": [
+            57.5,
+            79
+          ]
+        },
+        "recovery": {
+          "registrationLandmark": "Actual foremost planted root-foot sole only, manually identified by anatomical foot ROI. Rear foot free to brace naturally. Staff tip and silhouette lowest point never define alignment.",
+          "rawPhysicalFrontFootRoiX": [
+            1220,
+            1293
+          ],
+          "rawPhysicalFrontFootSoleCenterX": 1269.0,
+          "rawPhysicalFrontFootSoleOpaqueY": 340,
+          "nativePhysicalFrontFootSoleTarget": [
+            57.5,
+            79
+          ]
+        },
+        "pokeprepare": {
+          "registrationLandmark": "Actual foremost planted root-foot sole only, manually identified by anatomical foot ROI. Rear foot free to brace naturally. Staff tip and silhouette lowest point never define alignment.",
+          "rawPhysicalFrontFootRoiX": [
+            130,
+            205
+          ],
+          "rawPhysicalFrontFootSoleCenterX": 167.5,
+          "rawPhysicalFrontFootSoleOpaqueY": 697,
+          "nativePhysicalFrontFootSoleTarget": [
+            57.5,
+            79
+          ]
+        },
+        "pokecontact": {
+          "registrationLandmark": "Actual foremost planted root-foot sole only, manually identified by anatomical foot ROI. Rear foot free to brace naturally. Staff tip and silhouette lowest point never define alignment.",
+          "rawPhysicalFrontFootRoiX": [
+            492,
+            570
+          ],
+          "rawPhysicalFrontFootSoleCenterX": 530.5,
+          "rawPhysicalFrontFootSoleOpaqueY": 700,
+          "nativePhysicalFrontFootSoleTarget": [
+            57.5,
+            79
+          ]
+        },
+        "mendprepare": {
+          "registrationLandmark": "Actual foremost planted root-foot sole only, manually identified by anatomical foot ROI. Rear foot free to brace naturally. Staff tip and silhouette lowest point never define alignment.",
+          "rawPhysicalFrontFootRoiX": [
+            860,
+            938
+          ],
+          "rawPhysicalFrontFootSoleCenterX": 916.0,
+          "rawPhysicalFrontFootSoleOpaqueY": 705,
+          "nativePhysicalFrontFootSoleTarget": [
+            57.5,
+            79
+          ]
+        },
+        "mendapplied": {
+          "registrationLandmark": "Actual foremost planted root-foot sole only, manually identified by anatomical foot ROI. Rear foot free to brace naturally. Staff tip and silhouette lowest point never define alignment.",
+          "rawPhysicalFrontFootRoiX": [
+            1218,
+            1296
+          ],
+          "rawPhysicalFrontFootSoleCenterX": 1267.5,
+          "rawPhysicalFrontFootSoleOpaqueY": 705,
+          "nativePhysicalFrontFootSoleTarget": [
+            57.5,
+            79
+          ]
+        },
+        "guardprepare": {
+          "registrationLandmark": "Actual foremost planted root-foot sole only, manually identified by anatomical foot ROI. Rear foot free to brace naturally. Staff tip and silhouette lowest point never define alignment.",
+          "rawPhysicalFrontFootRoiX": [
+            132,
+            209
+          ],
+          "rawPhysicalFrontFootSoleCenterX": 177.0,
+          "rawPhysicalFrontFootSoleOpaqueY": 1048,
+          "nativePhysicalFrontFootSoleTarget": [
+            57.5,
+            79
+          ]
+        },
+        "guardhold": {
+          "registrationLandmark": "Actual foremost planted root-foot sole only, manually identified by anatomical foot ROI. Rear foot free to brace naturally. Staff tip and silhouette lowest point never define alignment.",
+          "rawPhysicalFrontFootRoiX": [
+            482,
+            551
+          ],
+          "rawPhysicalFrontFootSoleCenterX": 530.0,
+          "rawPhysicalFrontFootSoleOpaqueY": 1048,
+          "nativePhysicalFrontFootSoleTarget": [
+            57.5,
+            79
+          ]
+        }
+      }
+    }
+  },
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "019f847aa4f978f35b9428c02d123aa8ccc19854c48f96ddd5b71a2f87013a64",
+  "approvedArtManifestSha256": "aa5f66de7a6ae765b5a8172a4fabc800ca54200a6966b8bcb838c2e16370d1ac",
+  "authoredMoves": [
+    "mend",
+    "staff_poke",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 9,
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "ba2afa2c40643d1409b09d63ada2ef4cf330ed90a0feab0096d2dc5e8e85d71c"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "ba2afa2c40643d1409b09d63ada2ef4cf330ed90a0feab0096d2dc5e8e85d71c"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "5edc5c55833dacb7873f23a94a98e4b38cb007233ba8453591e0bab3ab0c7118"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "d3ed819f16f0d9f4a0bac7226621c5b64c1edc177582608c7f8653c63623726a"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "7462607baad54f3eb37cf86991da4b58988f09f9606bba68e43d705719fea950"
+      }
+    ],
+    "pokeprepare": [
+      {
+        "file": "pokeprepare.png",
+        "duration": 0.22,
+        "sha256": "cf9aed58c2f210a3a5161cdcc2afb6ac054d66519ad33aaa95dcbd21648e1fc7"
+      }
+    ],
+    "pokecontact": [
+      {
+        "file": "pokecontact.png",
+        "duration": 0.14,
+        "sha256": "d227dbd4ff17b950d498eab5b26b2c3d95f855f3a4b768456a9e9d3c07d1b80a"
+      }
+    ],
+    "mendprepare": [
+      {
+        "file": "mendprepare.png",
+        "duration": 0.26,
+        "sha256": "7f4b66a3b50e78f69c76f87bd26d39a27408d581069f555f4840e79633b6028a"
+      }
+    ],
+    "mendapplied": [
+      {
+        "file": "mendapplied.png",
+        "duration": 0.28,
+        "sha256": "accb861032873570e8cb6800eb7d928ab90dab0a7a104513bead634464dc4442"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.22,
+        "sha256": "422b088b1bcb35a3bbec1d0c36882c611c3eba0c359b390a1cdcae6ceef533c2"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.28,
+        "sha256": "5ecac646be057ed01f385e423ebadff105911e60087ba86c5d1d0642e28e0fe5"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.18,
+        "sha256": "5ecac646be057ed01f385e423ebadff105911e60087ba86c5d1d0642e28e0fe5"
+      }
+    ]
+  },
+  "drawingOnlyNormalization": "Original art durations retained. Actual-contact holds use existing bounded selector windows; healer applied hold is bounded to .12 seconds; no gameplay event/timing changes."
+}

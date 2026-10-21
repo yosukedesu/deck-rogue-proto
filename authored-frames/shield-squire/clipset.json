@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_shield_squire",
+  "sourceCanvas": [
+    104,
+    88
+  ],
+  "frameCanvas": [
+    104,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "originalAnchor": [
+    52,
+    88
+  ],
+  "anchor": [
+    52,
+    88
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 79,
+  "sourcePngSha256": "b48a5081f5d38813fecd2251b67fca54c313c944024a74e94a59ad864d0d9bf4",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "b48a5081f5d38813fecd2251b67fca54c313c944024a74e94a59ad864d0d9bf4"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.5,
+        "sha256": "b48a5081f5d38813fecd2251b67fca54c313c944024a74e94a59ad864d0d9bf4"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.5,
+        "sha256": "56de5125b4d25b2fd2b5e3f7df00f8763f8d5e87fec098adc4f94c90b7af754c"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "22c108c7bfd12ec46c081b8878273ea38d1e075def77dbef42f05a34084f7c4f"
+      }
+    ],
+    "block": [
+      {
+        "file": "bracehold.png",
+        "duration": 0.18,
+        "sha256": "54a44bf96ceddbb7a86b2a3aae49ebc3362788f997309cbb85601054addbb7d7"
+      }
+    ],
+    "bashprepare": [
+      {
+        "file": "bashprepare.png",
+        "duration": 0.2,
+        "sha256": "59e321571786e662a588a77fb221a6c6afccd978b917a1e67ab8a71c5c2392ee"
+      }
+    ],
+    "bashcontact": [
+      {
+        "file": "bashcontact.png",
+        "duration": 0.055,
+        "sha256": "12a93ad5c83347b2e60b3cbeda4b14ea257255e571c717515dd642315ccc2eb5"
+      }
+    ],
+    "rushprepare": [
+      {
+        "file": "rushprepare.png",
+        "duration": 0.2,
+        "sha256": "a390ad435859ec0dc791781ca223ac554acd784f990c1bf884d6ef1eae92f435"
+      }
+    ],
+    "rushcontact": [
+      {
+        "file": "rushcontact.png",
+        "duration": 0.055,
+        "sha256": "db1f7adb0278647b88e2db59572e4387eea1f9954f24a704ff382ea2eb55b522"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "d260a3abf09fd789b594a1c1bdfa8968b91f2007338e657ef7bcdf63bc8506ad"
+      }
+    ],
+    "braceprepare": [
+      {
+        "file": "braceprepare.png",
+        "duration": 0.12,
+        "sha256": "050d78801c1bb51152a711232ec7b4de2fc16634d1034cc254cffb866a3532ae"
+      }
+    ],
+    "bracehold": [
+      {
+        "file": "bracehold.png",
+        "duration": 0.12,
+        "sha256": "54a44bf96ceddbb7a86b2a3aae49ebc3362788f997309cbb85601054addbb7d7"
+      }
+    ]
+  },
+  "status": "M31_ALL_DEFINED_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "shield_bash",
+    "brace",
+    "avenging_rush"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "Strict Contact and actual own BlockGained with exact instance/version/execution/owner tuple. Defense pulse only on defend move, never attached attack Block. Canonical gameplay untouched.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "rest_canvas exact original PNG/RGBA; no padding",
+    "reactiveBlock": "bracehold drawing under independent block-notification; fullblock cannot trigger hurt"
+  }
+}

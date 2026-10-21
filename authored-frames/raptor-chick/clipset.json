@@ -1,0 +1,94 @@
+{
+  "enemyId": "enemy_raptor_chick",
+  "sourceCanvas": [
+    88,
+    64
+  ],
+  "frameCanvas": [
+    104,
+    72
+  ],
+  "sourceOffset": [
+    16,
+    8
+  ],
+  "anchor": [
+    60,
+    72
+  ],
+  "spriteOffset": [
+    -8,
+    4
+  ],
+  "groundMaxY": 65,
+  "sourcePngSha256": "6b18fca389659e464660379fe3dedde2dbd90da54f2fa95a17c6dcc3aad61525",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "fc16b45b395e6c7cac6181bd6aae2df2daa30a6d175c571cc2a991933bed5447"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.38,
+        "sha256": "fc16b45b395e6c7cac6181bd6aae2df2daa30a6d175c571cc2a991933bed5447"
+      },
+      {
+        "file": "idle1.png",
+        "duration": 0.38,
+        "sha256": "a8885f4e1bbf7438717ee6870895c0a64914bd7d4e75816288674e1931fe6152"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.14,
+        "sha256": "02cb970713ffc68ee13f56538933cfa8a84ffb8ad568c28a347885cdaf2ab26f"
+      }
+    ],
+    "peckprepare": [
+      {
+        "file": "peckprepare.png",
+        "duration": 0.22,
+        "sha256": "d257f222bb8f9ca2c20e79145e3dc68a23838d77ef94ec65bd1ac3e2cb15cd64"
+      }
+    ],
+    "peckcontact": [
+      {
+        "file": "peckcontact.png",
+        "duration": 0.05,
+        "sha256": "544cbfae631ab71a0c82811d20662b833af495a3fabc796397e0257907e6a390"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "a0b6796f719cd0b08b181e9f2767a5aa0938e47890834ed54d227bcc2a99e2b5"
+      }
+    ],
+    "block": [
+      {
+        "file": "peckprepare.png",
+        "duration": 0.12,
+        "sha256": "d257f222bb8f9ca2c20e79145e3dc68a23838d77ef94ec65bd1ac3e2cb15cd64"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M36_R2_STATIC_CANDIDATE_RUNTIME_PENDING",
+  "runtimeAcceptance": "pending",
+  "sourceArtManifestSha256": "0d3f8b142c8c7524a9e943654a62609823b539b589b9d064f96677bc425d16df",
+  "originalAnchor": [
+    44,
+    64
+  ],
+  "authoredMoves": [
+    "peck"
+  ],
+  "unmappedMoves": [],
+  "missingArt": []
+}

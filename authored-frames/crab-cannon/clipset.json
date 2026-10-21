@@ -1,0 +1,155 @@
+{
+  "enemyId": "enemy_crab_cannon",
+  "sourceCanvas": [
+    256,
+    104
+  ],
+  "frameCanvas": [
+    288,
+    120
+  ],
+  "sourceOffset": [
+    32,
+    0
+  ],
+  "anchor": [
+    160,
+    104
+  ],
+  "spriteOffset": [
+    -16,
+    -8
+  ],
+  "sourcePngSha256": "0664171004225725051eefbe6e303517612e01d01c5a7beffb68aa5de519d3a2",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "eccdffafea5a24de0dc52ca885985eeb90f49976312a22e8131cfd6cea661afb"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest.png",
+        "duration": 0.55,
+        "sha256": "eccdffafea5a24de0dc52ca885985eeb90f49976312a22e8131cfd6cea661afb"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.55,
+        "sha256": "0ba184e45f1cc37799633c6feb41123c369110177356f1d65db787213891dc6b"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "28381b05dd67f345a26c7533bf7a4819ac3c285033b8debbfc58b23abbe8e2e5"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "4617ed7bbac9b7c4088654950adefcfce2e2fdfa3052339e3732f08ff5740f2c"
+      }
+    ],
+    "reticleprepare": [
+      {
+        "file": "reticleprepare.png",
+        "duration": 0.18,
+        "sha256": "141591961db6debc464f77f9684f043024cd2a749b3ba400f0f5b1e9b14e2d7e"
+      }
+    ],
+    "reticlecontact": [
+      {
+        "file": "reticlecontact.png",
+        "duration": 0.1,
+        "sha256": "a5dc92fd420153af798e8d28d62e0703de8329a101db22cd812a2ef42bf6b623"
+      }
+    ],
+    "precisionprepare": [
+      {
+        "file": "precisionprepare.png",
+        "duration": 0.2,
+        "sha256": "819550b0f52942b47800ace3594a1ba46094eeb332314029859b41b077d50ff4"
+      }
+    ],
+    "precisionrelease": [
+      {
+        "file": "precisionrelease.png",
+        "duration": 0.12,
+        "sha256": "daff1f85524f125c957750e9fd68bf85a09941ad8e47973a19b4055d47306f50"
+      }
+    ],
+    "laserprepare": [
+      {
+        "file": "laserprepare.png",
+        "duration": 0.28,
+        "sha256": "c545b8d9da0737d22eb3bf7fda95581e383e09acd3f9499a46321be2365c59b7"
+      }
+    ],
+    "laserrelease": [
+      {
+        "file": "laserrelease.png",
+        "duration": 0.16,
+        "sha256": "0aa928e90cb18c2e50b90bdecaf76fc2fad4655131f7ebe37f8579e2385268c6"
+      }
+    ],
+    "chargeprepare": [
+      {
+        "file": "chargeprepare.png",
+        "duration": 0.22,
+        "sha256": "e5632972bd0804a37bc4f18fb77ce90628619caa5c4de7fcd289480b0ca4871c"
+      }
+    ],
+    "chargeapplied": [
+      {
+        "file": "chargeapplied.png",
+        "duration": 0.28,
+        "sha256": "15ef1f15824e76544670c59f90b214a8fd59539a1dc284168702c9f4d1a7da83"
+      }
+    ],
+    "recharge": [
+      {
+        "file": "recharge.png",
+        "duration": 0.5,
+        "sha256": "c831ace43644b8e2afe29492cad2217fb6f04de0851372dcde0fa685a61c8d90"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M61_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "c70bb3891a4da744431e2a280679598b8bd9b28311e20cc6eafc58bdf984caf4",
+  "groundMaxY": 95,
+  "groundMaxYSemantics": "Compatibility source envelope only. Wall registration258,63.5. Not feet.",
+  "placementContract": {
+    "method": "Common raw-r1 scale464/199 for all 11 new valid r1 poses. Separate recharge r2 scale989/199 anchored to its same-generation calibration. No per-pose fit, no part transforms or painting. Whole-frame stationary wall registration. Original25-color palette and alpha threshold128. Raw r1 recharge rejected for bottom clipping.",
+    "rawR1Scale": 2.3316582914572863,
+    "rawR2Scale": 4.969849246231155,
+    "wallAttached": true,
+    "noFootOrGroundRegistration": true,
+    "originalWallReference": [
+      226,
+      63.5
+    ],
+    "nativeWallReference": [
+      258,
+      63.5
+    ],
+    "paddingReason": "32 transparent pixels left contain authored charge/laser extension; 16 bottom contain relaxed recharge aperture. Original source pixels embedded at32,0 without resizing."
+  },
+  "authoredMoves": [
+    "reticle",
+    "precision_beam",
+    "charge",
+    "laser",
+    "recharge"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 12
+}

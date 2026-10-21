@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "status": "M42_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_elite_husk_3",
+  "sourceCanvas": [
+    176,
+    112
+  ],
+  "frameCanvas": [
+    184,
+    112
+  ],
+  "sourceOffset": [
+    8,
+    0
+  ],
+  "anchor": [
+    96,
+    112
+  ],
+  "spriteOffset": [
+    -4,
+    0
+  ],
+  "groundMaxY": 103,
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest_canvas.png",
+  "sourcePngSha256": "b2fc3483e70d13ab536ee7ba5a664133fb5322bd67d4740e67ad97ec75d3b939",
+  "sourceArtManifestSha256": "69679d3f9b47889b0cd7f0828abb47e570dcd2a42979c639533812747bf04056",
+  "authoredMoves": [
+    "slash",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "306430fde8e62b6a40163497c82b1f631b560014fb09fdda45835e88da1d87e7"
+      }
+    ],
+    "idle": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.6,
+        "sha256": "306430fde8e62b6a40163497c82b1f631b560014fb09fdda45835e88da1d87e7"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.6,
+        "sha256": "80d470bf0c39a311586fec6cd82d6e8f1cfd38be63c9c8198b41ca78ae73988d"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "2de03c07330a7af013b68f26dadab18b8d1c41b8d9f2a4743b1c36228ca62272"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "slashprepare.png",
+        "duration": 0.18,
+        "sha256": "eb6d9ec4fabe3dccae5d576559af82c715134bb1e8e0de9a5433f4f0581f4c33"
+      }
+    ],
+    "contact": [
+      {
+        "file": "slashcontact.png",
+        "duration": 0.05,
+        "sha256": "81721515684c366a64c838ff1e14c499bb213508fbdf98a4722499434767255a"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "eec00d2274f990e33929391f01b3554b57c854c5318ec03e6b21e58927fdc5bc"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "306430fde8e62b6a40163497c82b1f631b560014fb09fdda45835e88da1d87e7"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "3a57196ae45c53e0f041ecd6652344545d06501f0b8494383ce5a67a82c529ab"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "26772e4d51fad75d504bb2b4b133276dd995117f67dc899e1def6b8939975785"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "eec00d2274f990e33929391f01b3554b57c854c5318ec03e6b21e58927fdc5bc"
+      }
+    ]
+  }
+}
