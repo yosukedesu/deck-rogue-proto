@@ -37,14 +37,44 @@
     ],
     "idle": [
       {
-        "file": "enemy_cultist_rest.png",
-        "duration": 0.5,
-        "sha256": "638183b8d53c15e23daa0348bb4f8449e0dedb5fac2dfb4e8ba0face509720d4"
+        "file": "idle_00.png",
+        "duration": 0.125,
+        "sha256": "dc9c2ce3e9241e917916c8a84d684b3c91100a6425f4512e5da172afaefe18a9"
       },
       {
-        "file": "enemy_cultist_idle_01.png",
-        "duration": 0.5,
-        "sha256": "66a30fd70784a6f9c56161ab6f237279436dfb49b4687473c5e25d5a9e493581"
+        "file": "idle_01.png",
+        "duration": 0.125,
+        "sha256": "34e27fde811ba1893bd9064f690b97878fb0df086c9e89e3b8363e91cefd8e98"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.125,
+        "sha256": "ccd4c5c2c86e3fd41d6f148a872413478466feeb10dc55a7b5ebdd786ba2d6de"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.125,
+        "sha256": "0a43a928fd4010b4180dfba005fcda471378e58a1ec4f93a24402925696f7a95"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.125,
+        "sha256": "ad2248bda8b361efe2c93d7960da701efed57d07d7268adfdc424784fa12e5ab"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.125,
+        "sha256": "cd9c554f55d65754b42eaf46f4626ec4f2f9063e114ce7b9f40f318e0fd6627d"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.125,
+        "sha256": "b24982f56eaa48b67da2d16ac68fa2c13da286442cca0ee9ab38e2ebf746c23d"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.125,
+        "sha256": "317deb9afd0fb4c2a3818a72dcd104d1e3aa9b290a7a7052111bcd43737846c2"
       }
     ],
     "hurt": [

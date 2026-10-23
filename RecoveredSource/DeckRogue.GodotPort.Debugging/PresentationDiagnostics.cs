@@ -266,3 +266,153 @@ public sealed class PresentationDiagnostics : IDisposable
 		}
 	}
 }
+
+// Diagnostic-only observer: no timers, queues, poses, resources or game state are mutated.
+// Activated by the exported motion_diagnostics feature, never by normal game settings.
+internal sealed class MotionTraceWriter
+{
+    internal const int MaxRecords = 2048, MaxBytes = 1024 * 1024, MaxLineBytes = 2048;
+    private const int StopReserve = 512;
+    private readonly Action<string> sink;
+    internal int Records { get; private set; }
+    internal int Bytes { get; private set; }
+    internal bool Stopped { get; private set; }
+    internal MotionTraceWriter(Action<string> sink) { this.sink = sink; }
+    internal bool Write(object value)
+    {
+        if (Stopped) return false;
+        try {
+            string line = "DR_MOTION " + JsonConvert.SerializeObject(new { schema=1, seq=Records, data=value });
+            int size = System.Text.Encoding.UTF8.GetByteCount(line) + 1;
+            if (Records >= MaxRecords-1 || size > MaxLineBytes || Bytes+size+StopReserve > MaxBytes) {
+                Stop("limit"); return false;
+            }
+            sink(line); Records++; Bytes+=size; return true;
+        } catch { Stopped=true; return false; } // A broken diagnostic sink cannot affect presentation.
+    }
+    internal void Stop(string reason)
+    {
+        if (Stopped) return;
+        Stopped=true;
+        try {
+            string line = "DR_MOTION " + JsonConvert.SerializeObject(new { schema=1, seq=Records, data=new { kind="stop", reason, records=Records, bytes=Bytes } });
+            int size = System.Text.Encoding.UTF8.GetByteCount(line)+1;
+            if (Records<MaxRecords && size<=MaxLineBytes && Bytes+size<=MaxBytes) { sink(line); Records++; Bytes+=size; }
+        } catch { }
+    }
+}
+
+internal sealed class MotionRegressionTrace : IDisposable
+{
+    internal const double MaxSeconds = 300;
+    private readonly BattleStage stage;
+    private readonly MotionTraceWriter writer;
+    private readonly bool renderHook;
+    private readonly Func<long> timestamp;
+    private readonly long started;
+    private long last, lastStall;
+    private int frame, contactSerial;
+    private bool disposed;
+    private readonly Dictionary<ulong, ActorState> states = new();
+    private StageState? previousStage;
+    private readonly record struct ActorState(string Pose, int LegacyFrame, int Starts, int Motion,
+        int Recoil, bool Recoiling, bool Paused, bool Authored, string Clip, int ArtFrame,
+        string Reason, int Owner, int Execution, int AcceptedContacts, int LastOrdinal,
+        string Move, string Phase);
+    private readonly record struct StageState(long Revision, bool Presenting, bool Locked,
+        int Pending, int Effects, int Residual, bool Fault);
+    internal MotionRegressionTrace(BattleStage stage, Action<string>? sink=null, bool renderHook=true, Func<long>? timestamp=null)
+    {
+        this.stage=stage; this.renderHook=renderHook; this.timestamp=timestamp ?? Stopwatch.GetTimestamp; started=this.timestamp(); writer=new MotionTraceWriter(sink ?? (line=>GD.Print(line)));
+        last=started;
+        stage.NumericContactPresented+=Contact;
+        stage.EventPresented+=Event;
+        stage.PresentationCompleted+=Complete;
+        if (renderHook) RenderingServer.FramePostDraw+=Sample;
+        Emit(new { kind="start", moduleMvid=typeof(MotionRegressionTrace).Assembly.ManifestModule.ModuleVersionId,
+            maxRecords=MotionTraceWriter.MaxRecords, maxBytes=MotionTraceWriter.MaxBytes,
+            maxLineBytes=MotionTraceWriter.MaxLineBytes, maxSeconds=MaxSeconds,
+            scope="Visual diagnostics only; no screenshots, save data or game-state mutation." });
+    }
+    private void Emit(object value) { if (!writer.Write(value)) Dispose(); }
+    private void Contact(DeckRogue.Engine.Generated.GameEvent e)
+    {
+        if (disposed || e is not DeckRogue.Engine.Generated.GameEvent_DamageDealt hit) return;
+        try {
+            var c=stage.CaptureMotionDiagnosticContact();
+            Emit(new { kind="contact", frame, clock=stage.PresentationTime, serial=++contactSerial,
+                revision=stage.ActiveCommandRevision, beat=c.Beat, ordinal=c.Ordinal,
+                source=hit.Source, definition=hit.PresentationSource?.DefinitionId, enemy=hit.EnemyIndex,
+                hpLoss=hit.HpLoss, amount=hit.Amount });
+        } catch { Dispose(); }
+    }
+    private void Event(DeckRogue.Engine.Generated.GameEvent e)
+    {
+        if (disposed || e is not DeckRogue.Engine.Generated.GameEvent_CardPlayed card) return;
+        try { Emit(new { kind="card", frame, clock=stage.PresentationTime, revision=stage.ActiveCommandRevision, card=card.CardId }); }
+        catch { Dispose(); }
+    }
+    private void Complete()
+    {
+        if (disposed) return;
+        try { Emit(new { kind="complete", frame, clock=stage.PresentationTime, contacts=contactSerial,
+            effects=stage.ActiveEffectCount, residual=stage.ResidualEffectCount, pending=stage.PendingActorContacts }); }
+        catch { Dispose(); }
+    }
+    internal void Sample()
+    {
+        if (disposed) return;
+        try {
+            long now=timestamp();
+            double elapsed=(now-started)/(double)Stopwatch.Frequency;
+            if (elapsed>=MaxSeconds) { writer.Stop("time-limit"); Dispose(); return; }
+            double interval=(now-last)*1000.0/Stopwatch.Frequency; last=now; frame++;
+            var currentStage=new StageState(stage.ActiveCommandRevision, stage.IsPresenting, stage.InputLocked,
+                stage.PendingActorContacts, stage.ActiveEffectCount, stage.ResidualEffectCount, stage.PresentationFaulted);
+            if (previousStage!=currentStage) { previousStage=currentStage; Emit(new { kind="stage", frame, clock=stage.PresentationTime, intervalMs=interval, state=currentStage }); }
+            if (disposed) return;
+            if (interval>=100 && (now-lastStall)/(double)Stopwatch.Frequency>=1) {
+                lastStall=now; Emit(new { kind="slow-frame", frame, clock=stage.PresentationTime, intervalMs=interval });
+            }
+            var seen=new HashSet<ulong>();
+            foreach (string name in new[]{"Combatants", "RetiredCombatants"}) {
+                var container=stage.GetNodeOrNull<Node3D>(name);
+                if (container==null) continue;
+                foreach (Node node in container.GetChildren()) {
+                    if (node is not BattleActor actor) continue;
+                    if (seen.Count>=64) { writer.Stop("actor-limit"); Dispose(); return; }
+                    ulong id=actor.GetInstanceId(); seen.Add(id);
+                    var art=actor.AuthoredFrameSample; var motion=actor.Style04MotionSample;
+                    var current=new ActorState(actor.PoseName, actor.PoseFrame, actor.PoseStartCount,
+                        actor.Motion.MotionVersion, actor.Motion.RecoilVersion, actor.Motion.RecoilActive,
+                        actor.Motion.IsPaused(stage.PresentationTime), actor.AuthoredFramesEnabled,
+                        art.Clip, art.FrameIndex, art.Reason, art.OwnerVersion, art.ExecutionIndex,
+                        art.AcceptedContacts, art.LastOrdinal, motion.MoveId, motion.Phase);
+                    bool first=!states.TryGetValue(id,out var prior);
+                    if (first || prior!=current) {
+                        states[id]=current;
+                        Emit(new { kind="actor", frame, clock=stage.PresentationTime, intervalMs=interval,
+                            actor=actor.DefinitionId, instance=id, first, state=current,
+                            manifest=actor.AuthoredManifestSha256,
+                            source=first?actor.RosterLayoutTexture?.ResourcePath:null,
+                            textureWidth=actor.Sprite.Texture?.GetWidth(), textureHeight=actor.Sprite.Texture?.GetHeight(),
+                            pauseRemaining=actor.Motion.PauseRemaining(stage.PresentationTime),
+                            x=actor.Position.X, y=actor.Position.Y, z=actor.Position.Z });
+                        if (disposed) return;
+                    }
+                }
+            }
+            foreach (ulong id in states.Keys.Where(x=>!seen.Contains(x)).ToArray()) states.Remove(id);
+        } catch { writer.Stop("observer-error"); Dispose(); }
+    }
+    public void Dispose()
+    {
+        if (disposed) return;
+        disposed=true;
+        if (renderHook) RenderingServer.FramePostDraw-=Sample;
+        stage.NumericContactPresented-=Contact;
+        stage.EventPresented-=Event;
+        stage.PresentationCompleted-=Complete;
+        writer.Stop("closed"); states.Clear();
+    }
+}

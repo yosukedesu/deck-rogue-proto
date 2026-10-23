@@ -2,7 +2,7 @@
   "schema": 1,
   "status": "SNAPFRUIT_SNAP_GUARD_IDLE_HURT_ART_REVIEW_CANDIDATE",
   "enemyId": "enemy_snap_fruit",
-  "displayName": "\u565b\u307f\u3064\u304d\u679c\u5b9f",
+  "displayName": "噛みつき果実",
   "moveId": "snap",
   "moveIds": [
     "snap",
@@ -281,14 +281,44 @@
     ],
     "idle": [
       {
-        "file": "rest.png",
-        "duration": 1.4,
+        "file": "idle_00.png",
+        "duration": 0.2875,
         "sha256": "11f343e0f2844b91aa06c33bda9902bd53a486a06fa45a8f6e1329e6a9b7d0ee"
       },
       {
-        "file": "idle.png",
-        "duration": 0.9,
-        "sha256": "1c298ab2175d69f8efe1684e07edec3ca56e0c84dd88f3120ab5cf81e2be5b0c"
+        "file": "idle_01.png",
+        "duration": 0.2875,
+        "sha256": "74f7462582ab0435a2ae6f547137226d9f06a36d28b64dfb9f4286e2271d00d6"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.2875,
+        "sha256": "9894931b81f8f5568aa3272d6a1ac8ddd4b2919267d6c96297df259b9ae676a7"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.2875,
+        "sha256": "47e656a506c24a5cc9a15d1f1f0d2c3df743c06e69b6f52fd22075c6aff7149b"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.2875,
+        "sha256": "ab40c33841c9c9d266dc2d5557b92e9498afce54adbf58dbfb94ad48da50523e"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.2875,
+        "sha256": "4de9a3611d5b8c0463ac85479c02e56e90fc36b3dd5342769e0c70f00295994e"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.2875,
+        "sha256": "aa3490cf50bec56518ba9f49fb72fa419aa277080f0083c3f18c22b6cd2b1fb6"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.2875,
+        "sha256": "bafbca5f3cd704d94d0a7f0173869cad6f5167d77d68060c0ca8d2392b135bd9"
       }
     ],
     "prepare": [
@@ -364,7 +394,7 @@
   },
   "eventContract": {
     "snap": "One closed bite key at the authoritative single snap contact event, preserving attack 3 and alsoBuff 2. Prepare before, recovery after. Do not add damage or buff events.",
-    "guard": "Defend 3\u20134 only. Guard prepare and low round guardhold follow the real guard state; exit via existing recovery/rest. No attack contact event or extra hit.",
+    "guard": "Defend 3–4 only. Guard prepare and low round guardhold follow the real guard state; exit via existing recovery/rest. No attack contact event or extra hit.",
     "hurt": "One short reaction on applicable incoming damage, then return to rest.",
     "idle": "Quiet slow rest/idle alternation; no gameplay effects."
   },

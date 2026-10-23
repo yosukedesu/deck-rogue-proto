@@ -1932,6 +1932,9 @@ public class BattleStage : Node3D
 		}
 	}
 
+	// Read-only values sampled synchronously by the opt-in diagnostic observer.
+	internal (int Beat, int Ordinal) CaptureMotionDiagnosticContact() => (_ordinaryCallback?.Index ?? -1, BeatContactOrdinal);
+
 	public FreezeDiagnosticState CaptureFreezeDiagnosticState(FreezeDiagnosticState state)
 	{
 		return state with { PendingCommands = PendingCommandCount, Locked = InputLocked,

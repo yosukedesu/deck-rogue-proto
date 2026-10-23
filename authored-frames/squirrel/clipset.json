@@ -2,7 +2,7 @@
   "schema": 1,
   "status": "SQUIRREL_GNAW_IDLE_HURT_ART_REVIEW_CANDIDATE",
   "enemyId": "enemy_thorn_squirrel",
-  "displayName": "\u91dd\u6bdb\u306e\u6817\u9f20",
+  "displayName": "針毛の栗鼠",
   "moveId": "gnaw",
   "moveKind": "single_contact_bite",
   "sourceCanvas": [
@@ -177,14 +177,44 @@
     ],
     "idle": [
       {
-        "file": "rest.png",
-        "duration": 1.2,
+        "file": "idle_00.png",
+        "duration": 0.2625,
         "sha256": "2cf0c15ac565b21d0f3c236799a7755dc04678543d71d6e6ab6e231e5c39c464"
       },
       {
-        "file": "idle.png",
-        "duration": 0.9,
-        "sha256": "18e2c3ec41254c0d84f538aaebb39dd6ae5a84cfe46619beab9424ed17d15023"
+        "file": "idle_01.png",
+        "duration": 0.2625,
+        "sha256": "1256a2ee25c6948c022798a4c928f10657332637f024e42ec4544434179dbb44"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.2625,
+        "sha256": "21ff91fd4421a1426053707956d6f7b9daf67d5bda29b647f621d03833f7057f"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.2625,
+        "sha256": "500fc1374a12a0bcbbf6c6f737a57508f368d2dbff09f9b67e9b1763111edbaa"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.2625,
+        "sha256": "1394ccd24516d49de81cd28d68ca9b5b8eb32d847c76156c8cc6c8842ba12056"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.2625,
+        "sha256": "7e2caadff6f99932b21fba83f48e106e11f435f3281f3f17f8b6d27ec1484752"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.2625,
+        "sha256": "6a3aeb62a0339fec6ff5cecd5af1cc790530149bbf1d00e9b5bfc9ef2716b5b8"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.2625,
+        "sha256": "eb3c6972b2877a48c3b287cda48203be1c3dd79e2b35241071851c603831cd8c"
       }
     ],
     "prepare": [

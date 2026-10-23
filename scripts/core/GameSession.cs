@@ -1,3 +1,4 @@
+using ManagedStartupLog = GodotPlugins.Game.ManagedStartupLog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -186,10 +187,13 @@ public class GameSession : Node
 		}
 		try
 		{
+			ManagedStartupLog.Mark("Session.Initialize.begin");
 			GodotSessionFiles files = new GodotSessionFiles();
 			if (!Content.IsLoaded)
 			{
+				ManagedStartupLog.Mark("Session.content_begin");
 				Content.LoadFrom((string name) => files.Read(DataDirectory.TrimEnd('/') + "/" + name));
+				ManagedStartupLog.Mark("Session.content_complete");
 			}
 			_controller = new SessionController(new SessionSaveStore(files, SaveDirectory))
 			{
@@ -200,10 +204,12 @@ public class GameSession : Node
 			_controller.RunCleared += ForwardCleared;
 			_controller.Diagnostic += ForwardDiagnostic;
 			InitializationError = null;
+			ManagedStartupLog.Mark("Session.Initialize.complete");
 			return SessionResult.Ok();
 		}
 		catch (Exception ex)
 		{
+			ManagedStartupLog.Failure("Session.Initialize.exception", ex);
 			RecordFreezeEvent("GameSession.Initialize", false, ex);
 			InitializationError = ex.Message;
 			GD.PushError("DeckRogue content/session initialization failed: " + ex.Message);

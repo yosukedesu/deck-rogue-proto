@@ -1,3 +1,4 @@
+using ManagedStartupLog = GodotPlugins.Game.ManagedStartupLog;
 using System.Collections.Generic;
 using System.ComponentModel;
 using DeckRogue.GodotPort.Core;
@@ -40,9 +41,18 @@ public class Main : Node
 	private GameUI? _ui;
 
 	private PresentationDiagnostics? _presentationDiagnostics;
+	private MotionRegressionTrace? _motionRegressionTrace;
 	private FreezeDiagnosticLog? _freezeDiagnostics;
 
 	public override void _Ready()
+	{
+		ManagedStartupLog.ConfigureFromGodot();
+		ManagedStartupLog.Mark("Main.Ready.enter");
+		try { ReadyCore(); ManagedStartupLog.Mark("Main.Ready.return"); }
+		catch (System.Exception error) { ManagedStartupLog.Failure("Main.Ready.exception", error); throw; }
+	}
+
+	private void ReadyCore()
 	{
 #if DEBUG
         if (System.Array.IndexOf(OS.GetCmdlineUserArgs(), "--motion-debug") >= 0) { EnemyMotionDebugMenu.Open(this, true); return; }
@@ -53,12 +63,15 @@ public class Main : Node
 			_freezeDiagnostics.Record("Main.Ready", new FreezeDiagnosticState(Target: -1));
 		}
 		catch { }
+		ManagedStartupLog.Mark("Main.session_create");
 		_session = new GameSession
 		{
 			Name = "Session",
 			FreezeDiagnostics = _freezeDiagnostics
 		};
+		ManagedStartupLog.Mark("Main.session_add_begin");
 		AddChild(_session, forceReadableName: false, InternalMode.Disabled);
+		ManagedStartupLog.Mark(_session.IsInitialized ? "Main.session_initialized" : "Main.session_failed");
 		if (!_session.IsInitialized)
 		{
 			Label failure = new Label
@@ -68,23 +81,30 @@ public class Main : Node
 			AddChild(failure, forceReadableName: false, InternalMode.Disabled);
 			return;
 		}
+		ManagedStartupLog.Mark("Main.stage_create");
 		_stage = new BattleStage
 		{
 			Name = "BattleStage"
 		};
+		ManagedStartupLog.Mark("Main.stage_add_begin");
 		AddChild(_stage, forceReadableName: false, InternalMode.Disabled);
+		ManagedStartupLog.Mark("Main.stage_add_return");
 		_stage.Bind(_session);
+		ManagedStartupLog.Mark("Main.stage_bound");
 		CanvasLayer overlay = new CanvasLayer
 		{
 			Name = "Interface",
 			Layer = 10
 		};
 		AddChild(overlay, forceReadableName: false, InternalMode.Disabled);
+		ManagedStartupLog.Mark("Main.ui_create");
 		_ui = new GameUI
 		{
 			Name = "GameUI"
 		};
+		ManagedStartupLog.Mark("Main.ui_add_begin");
 		overlay.AddChild(_ui, forceReadableName: false, InternalMode.Disabled);
+		ManagedStartupLog.Mark("Main.ui_add_return");
 		_ui.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect, Control.LayoutPresetMode.Minsize);
 		_ui.SetFreezeDiagnostics(_freezeDiagnostics);
 		_session.FreezeStateProvider = () => _stage.CaptureFreezeDiagnosticState(_ui.CaptureFreezeDiagnosticState());
@@ -110,33 +130,49 @@ public class Main : Node
 		_stage.SetCueOccluders(_ui.GetPaintedCombatBounds);
 		_ui.SetPresentationProjection(_stage.GetPresentedVitals, () => _stage.DisplayedState);
 		_ui.ScreenChanged += _stage.SetInterfaceRoute;
+		ManagedStartupLog.Mark("Main.ui_bind_begin");
 		_ui.Bind(_session);
+		ManagedStartupLog.Mark("Main.ui_bound");
 		_stage.FaultSnapshotSynchronizer = (run, revision) => _ui.SynchronizeFaultSnapshot(run, revision, _stage.PresentationFaultBlocked);
 		_ui.QualityChanged += _stage.ApplyQuality;
+		ManagedStartupLog.Mark("Main.quality_begin");
 		_stage.ApplyQuality(_ui.GraphicsQuality);
+		ManagedStartupLog.Mark("Main.quality_complete");
 		_ui.SetEffectiveQuality(() => _stage.EffectiveQualityProfile);
 		_presentationDiagnostics = new PresentationDiagnostics(this, _stage, () => new { _ui.EnemyHeadReadbacks, _ui.EnemyHeadCacheHits });
 		_ui.SetPresentationDiagnostics(_presentationDiagnostics.SetEnabled, () => _presentationDiagnostics.Enabled, () => _presentationDiagnostics.LastFile);
 		_presentationDiagnostics.Status += _ui.SetPresentationDiagnosticStatus;
+		try { if (OS.HasFeature("motion_diagnostics")) _motionRegressionTrace = new MotionRegressionTrace(_stage); }
+		catch (System.Exception error) { ManagedStartupLog.Failure("MotionTrace.install_failed", error); }
+		ManagedStartupLog.Mark("Main.diagnostics_ready");
 		AgentCapture capture = new AgentCapture
 		{
 			Name = "AgentCapture"
 		};
 		AddChild(capture, forceReadableName: false, InternalMode.Disabled);
 		capture.Bind(_session, () => _stage.IsPresenting);
+		ManagedStartupLog.Mark("Main.capture_ready");
 
 #if DEBUG
         EnemyMotionDebugMenu.InstallEntry(this);
 #endif
 		GD.Print("DECKROGUE_RECOVERY_MODULE mvid=" + typeof(Main).Assembly.ManifestModule.ModuleVersionId);
 		GD.Print("DECKROGUE_PORT_READY cards=" + _session.Catalog.Cards.Count + " leaders=" + _session.Catalog.Leaders.Count + " enemies=" + _session.Catalog.Enemies.Count);
+		ManagedStartupLog.Mark("Main.port_ready");
+		try {
+			GetTree().Connect(SceneTree.SignalName.ProcessFrame, Callable.From(() => ManagedStartupLog.Mark("Main.first_process_frame")), (uint)GodotObject.ConnectFlags.OneShot);
+			RenderingServer.Singleton.Connect(RenderingServer.SignalName.FramePostDraw, Callable.From(() => ManagedStartupLog.Mark("Main.first_frame_post_draw")), (uint)GodotObject.ConnectFlags.OneShot);
+		} catch (System.Exception error) { ManagedStartupLog.Failure("Main.frame_probe_unavailable", error); }
+
 	}
 
 	public override void _ExitTree()
 	{
+		ManagedStartupLog.Mark("Main.ExitTree");
 		_session?.RecordFreezeEvent("Main.ExitTree");
 		_freezeDiagnostics?.Dispose();
 		_presentationDiagnostics?.Dispose();
+		_motionRegressionTrace?.Dispose();
 		if (_stage != null && _ui != null)
 		{
 			_stage.FaultSnapshotSynchronizer = null;

@@ -262,14 +262,44 @@
     ],
     "idle": [
       {
-        "file": "rest.png",
-        "duration": 0.6,
+        "file": "idle_00.png",
+        "duration": 0.15,
         "sha256": "9b24e309e31755b17bfbbcc5a643b3d1aa3045755f764f414e0aead7662dd80f"
       },
       {
-        "file": "idle.png",
-        "duration": 0.6,
-        "sha256": "51ce13b80a91461700f48f256621eff8a9a086fc3fbf5c9a2fa3c2ef15e38b88"
+        "file": "idle_01.png",
+        "duration": 0.15,
+        "sha256": "04ea2e5fbdbebddcfac3df9c07fe9cb5b733eb63f1541fdd0b8cbcbc0fc50f13"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.15,
+        "sha256": "89d45a82141dbca51ec0966c5dd0b3764ee6979a9633428caf3b0bbbb2cd25c8"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.15,
+        "sha256": "dccb7272eb4256f6db730e7c30d43596461ce03a8e2c2b26794a92d18f7987cf"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.15,
+        "sha256": "077d3a8f2538892169411cae74b3aed445b3f2781289fab0a1dfeacfea4ebb28"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.15,
+        "sha256": "d7d915adcda9710b4ca02d570edc88326963c9d185ca5323b5c7a9350af0df7e"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.15,
+        "sha256": "bec763720b2360ae32c45ebe880ae91715d88b3f1ae51b03300aac8c12f1d791"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.15,
+        "sha256": "89433730a09878c1f81ab6834b86a7e8985b33723b99ab3d5f013caa8445a9a4"
       }
     ],
     "hurt": [
