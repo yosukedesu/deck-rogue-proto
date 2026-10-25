@@ -537,7 +537,7 @@ public class SourceHudLabel : Label
 		FontVariation local = new FontVariation
 		{
 			BaseFont = font,
-			VariationEmbolden = 0.15f,
+			VariationEmbolden = 0f,
 			SpacingGlyph = (int)Math.Round((float)size * tracking * 0.01f),
 			ResourceName = font.ResourcePath.GetFile() + " NumHaloNight"
 		};

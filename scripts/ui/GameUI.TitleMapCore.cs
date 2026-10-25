@@ -308,7 +308,7 @@ public partial class GameUI
 
 	private void BuildMap(Node parent, RunState run, bool interactive)
 	{
-		Text(parent, $"幕 {run.Act} · マップ — 現在地と道筋", 30, Gold);
+		SectionHeading(parent, $"幕 {run.Act} · マップ — 現在地と道筋", 30, Gold);
 		Text(parent, interactive ? "▶ の道を選ぶと進みます。↑ 上へスクロールで先の道。その他の地点は説明を表示。" : "現在地と道筋を確認できます。ここでは進路を選べません。", 18, Muted);
 		bool editable = interactive && !IsInputBlocked && _overlay == null;
 		PanelContainer infoPanel = new PanelContainer

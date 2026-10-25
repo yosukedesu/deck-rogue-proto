@@ -79,7 +79,7 @@ public partial class GameUI
         foreach (var term in KeywordHelp.Terms)
         {
             var row = Column(list);
-            Text(row, term.Key, 21, Gold);
+            SectionHeading(row, term.Key, 21, Gold);
             Text(row, term.Value, 18);
             entries.Add((row, term.Key + "\n" + Plain(term.Value)));
         }

@@ -102,6 +102,7 @@ public partial class GameUI
     private Theme ModernModalTheme()
     {
         var theme = new Theme { DefaultFont = SourceRunUiDecor.Body, DefaultFontSize = FontSize(20) };
+        SourceRunUiDecor.ApplyFonts(theme);
         foreach (string type in new[] { "LineEdit", "TextEdit" }) {
             theme.SetFont("font", type, SourceRunUiDecor.Body);
             theme.SetStylebox("normal", type, ModalBox(new Color("0c1524")));
@@ -365,6 +366,13 @@ public partial class GameUI
             var details = Button(line, "詳細", () => Open("お知らせ", box => Text(ScrollColumn(box), detail, 20)));
             details.Name = "SourceNoticeDetails";
         }
+    }
+
+    private Label SectionHeading(Node parent, string text, int size = 23, Color? color = null)
+    {
+        var label = Text(parent, text, size, color);
+        label.AddThemeFontOverride("font", SourceRunUiDecor.Display);
+        return label;
     }
 
 	private Label Text(Node parent, string text, int size = 19, Color? color = null)

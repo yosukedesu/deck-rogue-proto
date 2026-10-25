@@ -78,9 +78,9 @@ public static class SourceCardFace
         while (costSize > 30 && (DecoFont?.GetStringSize(costText, HorizontalAlignment.Left, -1, costSize).X ?? 0) > 116) costSize--;
         AddFaceLabel(root, "Cost", costText, new Rect2(35, 27, 116, 114), costSize, costColor, DecoFont);
         int nameSize = Scaled(43, textScale);
-        while (nameSize > 12 && (BodyFont?.GetStringSize(def.Name, HorizontalAlignment.Left, -1, nameSize).X ?? 0) > 392) nameSize--;
+        while (nameSize > 12 && (DecoFont?.GetStringSize(def.Name, HorizontalAlignment.Left, -1, nameSize).X ?? 0) > 392) nameSize--;
         AddFaceLabel(root, "Name", def.Name, new Rect2(177, 35, 420, 85), nameSize,
-            new Color(faction == "white" ? "283035" : "fff5df"), BodyFont);
+            new Color(faction == "white" ? "283035" : "fff5df"), DecoFont);
         AddFaceLabel(root, "Type", type == "reaction" ? "仕込み" : CardText.TypeJa(type), new Rect2(95, type == "spell" ? 527 : 515, 440, 54),
             type == "spell" ? 40 : 46, new Color("f6f1d9"), DecoFont);
         AddFaceLabel(root, "Rarity", rarity.ToUpperInvariant(), new Rect2(170, 840, 290, 23), 12,

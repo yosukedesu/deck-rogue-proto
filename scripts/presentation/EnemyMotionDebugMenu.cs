@@ -5,6 +5,7 @@ using System.Linq;
 using System.IO;
 using Godot;
 using Newtonsoft.Json.Linq;
+using DeckRogue.GodotPort.UI;
 namespace DeckRogue.GodotPort.Presentation;
 // Debug-only, presentation-only sandbox. Never constructs GameSession or writes saves.
 internal sealed class EnemyMotionDebugMenu
@@ -20,14 +21,14 @@ internal sealed class EnemyMotionDebugMenu
  Style04EnemySupportMotion.Token support; Basis baseSpriteBasis=Basis.Identity;
  Dictionary<string,string> labels=new(), moveLabels=new();
  const double Step=1.0/60.0;
- public static void InstallEntry(Node owner) { var l=new CanvasLayer{Layer=90}; owner.AddChild(l); var b=new Button{Text="モーション確認［DEBUG］",Position=new Vector2(1250,10),CustomMinimumSize=new Vector2(330,52)};l.AddChild(b);b.Pressed+=()=>Open(owner,false); }
+ public static void InstallEntry(Node owner) { var l=new CanvasLayer{Layer=90}; owner.AddChild(l); var b=new Button{Text="モーション確認［DEBUG］",Position=new Vector2(1250,10),CustomMinimumSize=new Vector2(330,52)};b.AddThemeFontOverride("font",SourceRunUiDecor.Action);l.AddChild(b);b.Pressed+=()=>Open(owner,false); }
  public static void Open(Node owner,bool direct) { if(owner.HasMeta("motion_debug_open"))return; owner.SetMeta("motion_debug_open",true);new EnemyMotionDebugMenu(owner,direct); }
  EnemyMotionDebugMenu(Node o,bool d) {
   owner=o;direct=d;tree=o.GetTree();previousPause=tree.Paused;tree.Paused=true;try { owner.AddChild(layer);owner.TreeExiting+=OwnerExiting;
-  var panel=new PanelContainer{Theme=new Theme{DefaultFontSize=22,DefaultFont=GD.Load<Font>("res://assets/Fonts/NotoSansJP-Regular.otf")}};layer.AddChild(panel);panel.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);panel.AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("101826")});
+  var panel=new PanelContainer{Theme=new Theme{DefaultFontSize=22,DefaultFont=GD.Load<Font>("res://assets/Fonts/NotoSansJP-Regular.otf")}};SourceRunUiDecor.ApplyFonts(panel.Theme);layer.AddChild(panel);panel.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);panel.AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("101826")});
   var margin=new MarginContainer();panel.AddChild(margin);foreach(var s in new[]{"left","right","top","bottom"})margin.AddThemeConstantOverride("margin_"+s,24);
   var rows=new VBoxContainer();rows.AddThemeConstantOverride("separation",14);margin.AddChild(rows);
-  title.Text="敵モーション確認  /  DEBUG SANDBOX";title.AddThemeFontSizeOverride("font_size",30);rows.AddChild(title);
+  title.Text="敵モーション確認  /  DEBUG SANDBOX";title.AddThemeFontSizeOverride("font_size",30);title.AddThemeFontOverride("font",SourceRunUiDecor.Display);rows.AddChild(title);
   var top=new HBoxContainer();rows.AddChild(top);top.AddChild(new Label{Text="敵キャラ"});top.AddChild(enemy);enemy.SizeFlagsHorizontal=Control.SizeFlags.ExpandFill;enemy.CustomMinimumSize=new Vector2(520,58);top.AddChild(Button("前の敵",()=>SelectEnemy((enemy.Selected+enemies.Count-1)%enemies.Count)));top.AddChild(Button("次の敵",()=>SelectEnemy((enemy.Selected+1)%enemies.Count)));top.AddChild(Button(direct?"終了":"ゲームへ戻る",Close));
   var mr=new HBoxContainer();rows.AddChild(mr);mr.AddChild(new Label{Text="モーション"});mr.AddChild(motion);motion.SizeFlagsHorizontal=Control.SizeFlags.ExpandFill;motion.CustomMinimumSize=new Vector2(700,58);
   var view=new PanelContainer();view.SizeFlagsVertical=Control.SizeFlags.ExpandFill;view.AddThemeStyleboxOverride("panel",new StyleBoxFlat{BgColor=new Color("1b2939"),BorderColor=new Color("40566b"),BorderWidthBottom=2,BorderWidthTop=2,BorderWidthLeft=2,BorderWidthRight=2});rows.AddChild(view);view.AddChild(stage);stage.CustomMinimumSize=new Vector2(100,380);

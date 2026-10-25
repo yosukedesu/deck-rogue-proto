@@ -1258,12 +1258,12 @@ public partial class GameUI : Control
             reading.SizeFlagsHorizontal = SizeFlags.ExpandFill;
             var detail = ScrollColumn(reading);
             detail.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-            Text(detail, upgraded ? "鍛えた後の効果" : "カードの効果", 26, SourcePalette.Ink);
+            SectionHeading(detail, upgraded ? "鍛えた後の効果" : "カードの効果", 26, SourcePalette.Ink);
             var effect = Text(detail, SourceCardFace.BodyText(shown, state), 24, SourcePalette.Ink);
             effect.AddThemeConstantOverride("line_spacing", 8);
             var terms = KeywordHelp.FindIn(SourceCardFace.BodyText(shown, state)).ToArray();
             if (terms.Length > 0) {
-                Text(detail, "用語の説明", 21, SourcePalette.BrassInk);
+                SectionHeading(detail, "用語の説明", 21, SourcePalette.BrassInk);
                 foreach (string term in terms) {
                     Text(detail, term, 20, SourcePalette.Ink);
                     Text(detail, KeywordHelp.Terms[term], 19, SourcePalette.InkSoft).AddThemeConstantOverride("line_spacing", 5);
@@ -3413,7 +3413,7 @@ public partial class GameUI : Control
 			VBoxContainer box = ScrollColumn(outer);
 			if (_settingsPage == 0)
 			{
-				Text(box, "音量", 23, Gold);
+				SectionHeading(box, "音量", 23, Gold);
 				Text(box, "調整はすぐに反映されます。0%で完全に消音します。", 18, Muted);
 				Volume("全体音量", _masterVolume, value => _masterVolume = value);
 				Volume("音楽", _bgmVolume, value => _bgmVolume = value);
@@ -3422,7 +3422,7 @@ public partial class GameUI : Control
 			}
 			else if (_settingsPage == 1)
 			{
-				Text(box, "文字の大きさ", 23, Gold);
+				SectionHeading(box, "文字の大きさ", 23, Gold);
 				HFlowContainer choices = Flow(box);
 				foreach (float size in new[] { 1f, 1.15f, 1.3f })
 					Button(choices, (Math.Abs(_textScale - size) < 0.01f ? "● " : "○ ") + $"{Math.Round(size * 100f)}%", () =>
@@ -3432,7 +3432,7 @@ public partial class GameUI : Control
 				Text(box, $"現在 {Math.Round(_textScale * 100f)}% · 変更後の文字サイズをこの画面で確認できます。", 18, Muted);
 				Text(box, "見本：カードを選び、効果を確認してプレイ。", 22);
 				Text(box, "カメラは揺れません。画面が狭い場合も、説明や選択肢はスクロールして読めます。", 18, Muted);
-				Text(box, "光る装飾", 21, Gold);
+				SectionHeading(box, "光る装飾", 21, Gold);
 				SettingsToggle(box, "報酬・リザルトの光る演出を抑える", _reduceRewardGlints, value => { _reduceRewardGlints = value; SaveSettings(); }, "ON：光る縁取りを省く / OFF：通常の演出");
 				Text(box, "報酬を開いたときと勝敗画面の光の縁取りだけを省きます。選択中の枠、敵の攻撃、命中の表示は変わりません。", 18, Muted);
 			}
@@ -3440,7 +3440,7 @@ public partial class GameUI : Control
 			{
 				if (QualityChanged != null)
 				{
-					Text(box, "描画品質", 23, Gold);
+					SectionHeading(box, "描画品質", 23, Gold);
 					HFlowContainer quality = Flow(box);
 					foreach (var entry in new[] { ("auto", "自動"), ("high", "高"), ("standard", "標準"), ("low", "低") })
 						Button(quality, (_graphicsQuality == entry.Item1 ? "● " : "○ ") + entry.Item2, () =>
@@ -3455,13 +3455,13 @@ public partial class GameUI : Control
 			}
 			else
 			{
-				Text(box, "設定の復元", 23, Gold);
+				SectionHeading(box, "設定の復元", 23, Gold);
 				Text(box, "音量・ミュート・文字サイズ・描画品質だけを初期値に戻します。ランの進行、カード、セーブ、画面モードは変更しません。", 18, Muted);
 				Button(box, "音量・文字・品質を初期値に戻す", () => Confirm("設定を初期値に戻す？", "音量80%・音楽30%・効果音70%・ミュートOFF・文字100%・描画品質は自動に戻ります。ゲームのセーブは変更しません。", ResetPlayerSettings, "設定だけ初期値に戻す"));
 				AddFreezeDiagnosticsMenuButton(box);
 				if (_setPresentationDiagnostics != null)
 				{
-					Text(box, "動作の診断", 23, Gold);
+					SectionHeading(box, "動作の診断", 23, Gold);
 					Text(box, "不具合を調べるための詳細機能です。通常のプレイでは操作不要です。", 18, Muted);
 					BuildPresentationDiagnosticsControls(box);
 				}
@@ -3548,6 +3548,7 @@ public partial class GameUI : Control
 		{
 			theme.DefaultFont = GD.Load<Font>("res://assets/Fonts/NotoSansJP-Regular.otf");
 		}
+		SourceRunUiDecor.ApplyFonts(theme);
 		theme.SetColor("font_color", "Label", Ink);
 		theme.SetColor("font_color", "Button", Ink);
 		theme.SetColor("font_disabled_color", "Button", new Color("6d7a83"));
@@ -3686,7 +3687,7 @@ public partial class GameUI : Control
 		{
 			Picture(col, group, id, new Vector2(80f, 70f));
 		}
-		Text(col, name, 23, Gold);
+		SectionHeading(col, name, 23, Gold);
 		Text(col, description, 18);
 		return col;
 	}
@@ -8077,7 +8078,7 @@ public partial class GameUI : Control
 			VBoxContainer parent = ScrollColumn(b);
 			foreach (SourceSetToken current in data.Sets)
 			{
-				Text(parent, current.Card.Def.Name, 23, Gold);
+				SectionHeading(parent, current.Card.Def.Name, 23, Gold);
 				Text(parent, current.Details, 21);
 			}
 			if (data.Sets.Count == 0)
@@ -8094,7 +8095,7 @@ public partial class GameUI : Control
 			VBoxContainer parent = ScrollColumn(b);
 			foreach (SourcePermanentToken current in data.Permanents)
 			{
-				Text(parent, current.Card.Def.Name, 23, Gold);
+				SectionHeading(parent, current.Card.Def.Name, 23, Gold);
 				Text(parent, current.Details, 21);
 			}
 		});

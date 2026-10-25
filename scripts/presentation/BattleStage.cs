@@ -7089,7 +7089,7 @@ public class BattleStage : Node3D
 				VerticalAlignment = VerticalAlignment.Center,
 				MouseFilter = Control.MouseFilterEnum.Ignore
 			};
-			_phaseText.AddThemeFontOverride("font", GD.Load<Font>("res://assets/Fonts/NotoSansJP-Regular.otf"));
+			_phaseText.AddThemeFontOverride("font", GD.Load<Font>("res://assets/Fonts/NotoSansJP-Bold.otf"));
 			_phaseText.AddThemeFontSizeOverride("font_size", 34);
 			_phaseBand.AddChild(_phaseText, forceReadableName: false, InternalMode.Disabled);
 			_phaseAccent = new ColorRect

@@ -177,6 +177,7 @@ public partial class GameUI
         cover.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         var emergencyTheme = new Theme { DefaultFontSize = 14 };
         if (Theme != null && GodotObject.IsInstanceValid(Theme) && Theme.DefaultFont != null && GodotObject.IsInstanceValid(Theme.DefaultFont)) emergencyTheme.DefaultFont = Theme.DefaultFont;
+        SourceRunUiDecor.ApplyFonts(emergencyTheme);
         cover.Theme = emergencyTheme;
         var margin = new MarginContainer { Name = "FaultDiagnosticSafeArea", MouseFilter = MouseFilterEnum.Stop };
         cover.AddChild(margin);
@@ -192,6 +193,7 @@ public partial class GameUI
         box.AddThemeConstantOverride("separation", 4);
         var title = new Label { Text = "表示を再開できませんでした", AutowrapMode = TextServer.AutowrapMode.WordSmart };
         title.AddThemeFontSizeOverride("font_size", 18);
+        title.AddThemeFontOverride("font", SourceRunUiDecor.Display);
         box.AddChild(title);
         var instruction = new Label { Text = FaultSaveInstruction, AutowrapMode = TextServer.AutowrapMode.WordSmart };
         _faultRestartInstruction = instruction;

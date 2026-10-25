@@ -78,6 +78,7 @@ public class Main : Node
 			{
 				Text = "ゲームデータの読み込みに失敗しました。\n" + _session.InitializationError
 			};
+			failure.AddThemeFontOverride("font", DeckRogue.GodotPort.UI.SourceRunUiDecor.Body);
 			AddChild(failure, forceReadableName: false, InternalMode.Disabled);
 			return;
 		}

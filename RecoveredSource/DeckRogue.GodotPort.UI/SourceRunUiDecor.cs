@@ -7,11 +7,25 @@ namespace DeckRogue.GodotPort.UI;
 
 public static class SourceRunUiDecor
 {
-    private static Font? _body, _action, _display;
+    private static Font? _body, _display;
     private static readonly Dictionary<(Color, bool), Texture2D> Papers = new();
     public static Font Body => _body ??= GD.Load<Font>("res://assets/Fonts/NotoSansJP-Regular.otf");
-    public static Font Action => _action ??= new FontVariation { BaseFont = GD.Load<Font>("res://assets/Fonts/NotoSansJP-Regular.otf"), VariationEmbolden = .65f };
+    public static Font Action => Display;
     public static Font Display => _display ??= GD.Load<Font>("res://assets/Fonts/NotoSansJP-Bold.otf");
+
+    // Font A roles: explicit bundled Gothic faces, with genuine Bold for actions and headings.
+    public static void ApplyFonts(Theme theme)
+    {
+        theme.DefaultFont = Body;
+        foreach (string type in new[] { "Button", "OptionButton", "CheckButton", "CheckBox", "MenuButton", "PopupMenu", "TabContainer", "TabBar" })
+            theme.SetFont("font", type, Display);
+        foreach (string type in new[] { "Label", "LineEdit", "TextEdit", "CodeEdit", "TooltipLabel" })
+            theme.SetFont("font", type, Body);
+        foreach (string role in new[] { "normal_font", "italics_font", "mono_font" })
+            theme.SetFont(role, "RichTextLabel", Body);
+        foreach (string role in new[] { "bold_font", "bold_italics_font" })
+            theme.SetFont(role, "RichTextLabel", Display);
+    }
 
     public static StyleBoxTexture Paper(Color fill, float unit, float padding = 18f, bool compact = false)
     {
@@ -60,6 +74,7 @@ public static class SourceRunUiDecor
     public static Theme PaperInputs(float unit, int fontSize)
     {
         var theme = new Theme();
+        ApplyFonts(theme);
         foreach (string type in new[] { "LineEdit", "TextEdit" })
         {
             theme.SetFont("font", type, Body);
