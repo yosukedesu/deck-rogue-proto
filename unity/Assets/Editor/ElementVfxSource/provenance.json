@@ -1,0 +1,9 @@
+{
+  "fire": {
+    "libraryId": "libfile_08735b0c23bc819198119679448ffcd3",
+    "version": 0,
+    "source": "fire_v2.png",
+    "sha256": "f282759ce5cf17e2a938ddaf8a7f2f7e75ffcce6ef9232ca1ed2131722e8d197",
+    "normalization": "whole-image Lanczos 1024x512; no per-cell crops; straight alpha"
+  }
+}

@@ -134,6 +134,38 @@ namespace DeckRogue.Game
         public const float DefaultPathYaw = -22f;
 
         static float _pathYaw = DefaultPathYaw;
+        static FullStageGround _fullGround;
+        // Approved default forest; explicit original/legacy and geometry flags retain comparisons.
+        public static string ForestPreview => Autopilot.Arg("-forest-preview") ?? "night";
+        public static string ForestGeometry => Autopilot.Arg("-forest-geometry") ?? (Autopilot.Arg("-forest-preview")==null?"integrated":"");
+        public static bool LegacyForestPreview => ForestPreview == "legacy";
+        public static bool NightForestPreview => ForestPreview == "night";
+        public static bool CohesionForestPreview => NightForestPreview && ForestGeometry == "cohesion";
+        public static bool TreeForestPreview => NightForestPreview && ForestGeometry == "trees";
+        public static bool BanksForestPreview => NightForestPreview && ForestGeometry == "banks";
+        public static bool IntegratedForest => NightForestPreview && ForestGeometry == "integrated";
+        static void PreviewVertexAO(MeshRenderer mr, Newtonsoft.Json.Linq.JObject aoData) {
+            if(aoData==null)return;
+            var mf=mr.GetComponent<MeshFilter>();if(mf==null||mr.name=="DistantAtmosphere")return;
+            var values=aoData[mf.sharedMesh.name] as Newtonsoft.Json.Linq.JArray;
+            if(values==null||values.Count!=mf.sharedMesh.vertexCount)throw new System.Exception("AO study vertex count mismatch: "+mf.sharedMesh.name);
+            var positions=mf.sharedMesh.vertices;var colors=new Color32[positions.Length];float minimum=1;int nonwhite=0;
+            for(int i=0;i<colors.Length;i++) {
+                var p=positions[i];float edge=Mathf.Min(Mathf.Min(p.x+9,-3-p.x),Mathf.Min(p.z+1,7-p.z));
+                float weight=Mathf.SmoothStep(0,1,Mathf.Clamp01(edge/.75f));
+                float visibility=Mathf.Lerp(1,values[i].Value<float>()/255f,weight);
+                byte v=(byte)Mathf.RoundToInt(visibility*255);colors[i]=new Color32(v,v,v,255);minimum=Mathf.Min(minimum,visibility);if(v<255)nonwhite++;
+            }
+            if(nonwhite>0) {
+                var mesh=UnityEngine.Object.Instantiate(mf.sharedMesh);mesh.name=mf.sharedMesh.name;_owned.Add(mesh);
+                mesh.colors32=colors;mf.sharedMesh=mesh;
+            }
+            Debug.Log("[AOStudy] runtime "+mr.name+" vertices="+colors.Length+" nonwhite="+nonwhite+" min="+minimum+" strength="+PreviewFloat("staticVertexAO",0));
+        }
+        static float PreviewFloat(string key, float fallback) => _look?.Raw?["forestPreview"]?[key]?.Value<float>() ?? fallback;
+        static bool _fullStage;
+        static int _fullBatches;
+        static bool AirPart(DioramaPart p) => p.Kind == "fog" || p.Kind == "mist" || p.Kind == "shaft";
         static readonly List<UnityEngine.Object> _owned = new List<UnityEngine.Object>();
         static readonly List<SlabShape> _slabs = new List<SlabShape>();
         static readonly List<FrameSlot> _frames = new List<FrameSlot>();
@@ -206,8 +238,13 @@ namespace DeckRogue.Game
 
         /// <summary>箱庭の地面の高さ (世界の x・z)。座席の帯は 0。設計図の段 (slab) のうち、その点を含むいちばん高い天面。
         /// どの段にも入らなければいちばん低い段の天面。設計図を読んでいなければ 0</summary>
+        internal static bool TryCaptureSurface(Vector3 feet,float height,float size,StrictGround.Family family,out GroundSurfaceProvider.Lease lease,out string reason) {
+            lease=null;reason="ground_actual_mesh_provider_unavailable";return _fullGround?.CaptureProvider!=null && _fullGround.CaptureProvider.TryCapture(feet,height,size,family,out lease,out reason);
+        }
+
         public static float GroundY(float x, float z)
         {
+            if (_fullGround != null) { var h = _fullGround.Height(x,z); return float.IsNaN(h) ? 0f : h; }
             if (_slabs.Count == 0) return 0f;
             ToPath(x, z, out var t, out var s);
             return HeightAtPath(t, s);
@@ -229,6 +266,28 @@ namespace DeckRogue.Game
 
         // ================================================================ 組む
 
+        static void PreviewGroundLight(string name, Vector3 position, Color color, float intensity, float range)
+        {
+            if(intensity<=0)return;
+            var go=new GameObject(name);go.transform.SetParent(Root,false);go.transform.position=position;
+            var l=go.AddComponent<Light>();l.type=LightType.Point;l.color=color;l.intensity=intensity;l.range=range;l.shadows=LightShadows.None;
+            go.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalLightData>().renderingLayers=HD2DLayers.RenderingEnvironment;
+        }
+        static void PreviewSeatRock(MeshRenderer mr)
+        {
+            if(CohesionForestPreview || BanksForestPreview || IntegratedForest)return; // This study already bakes bank_rock_12's correction.
+            float drop=PreviewFloat("rockDrop",0);if(drop<=0)return;
+            var mf=mr.GetComponent<MeshFilter>();if(mf==null||mf.sharedMesh==null)return;
+            var vertices=mf.sharedMesh.vertices;var matches=new List<int>();
+            // v5 GLB component34 / source order bank_rock_12: guard exact bounds AND94 seam vertices.
+            for(int i=0;i<vertices.Length;i++) {var v=vertices[i];if(v.x>=3.2073f&&v.x<=4.2186f&&v.y>=1.0907f&&v.y<=1.8336f&&v.z>=10.2070f&&v.z<=11.0846f)matches.Add(i);}
+            if(matches.Count!=94)return; // Source revisions must never be partly shifted.
+            var mesh=UnityEngine.Object.Instantiate(mf.sharedMesh);_owned.Add(mesh);
+            foreach(int i in matches)vertices[i].y-=drop;
+            mesh.vertices=vertices;mesh.RecalculateBounds();mf.sharedMesh=mesh;
+            Debug.Log("[ForestPreview] seated bank_rock_12 candidate: vertices94 drop="+drop);
+        }
+
         /// <summary>幕 act の箱庭を parent の下に組む (look = 幕の設計図。いまは使わない = 受光などは StageLook が Materials を書き換える)</summary>
         public static void Build(int act, Transform parent, StageLookData look)
         {
@@ -244,6 +303,15 @@ namespace DeckRogue.Game
             var layout = opt.Layout ?? LoadLayout(act);
             if (layout == null) { Debug.LogWarning("[Diorama] 設計図が無い: Resources/" + LayoutResource(act)); return; }
             PrepareGround(layout);
+            if((CohesionForestPreview || TreeForestPreview || BanksForestPreview || IntegratedForest) && PreviewFloat("staticVertexAO",0)>0)
+                throw new System.InvalidOperationException("Geometry study requires AO=0; old vertex AO cannot be reused across changed batches");
+            var fullPrefab = act == 1 && !LegacyForestPreview ? Resources.Load<GameObject>((IntegratedForest?"FullStageIntegrated":BanksForestPreview?"FullStageBanks":CohesionForestPreview?"FullStageCohesion":TreeForestPreview?"FullStageTrees":"FullStage")+"/ForestStage") : null;
+            if(act==1 && (CohesionForestPreview || TreeForestPreview || BanksForestPreview || IntegratedForest) && fullPrefab==null)throw new System.Exception("Geometry study prefab missing");
+            if(act==1 && CohesionForestPreview)Debug.Log("[ForestPreview] geometry=cohesion; baked rock correction; runtime rock patch disabled; AO=0");
+            if(act==1 && TreeForestPreview)Debug.Log("[ForestPreview] geometry=trees; v5 ground; guarded spatial rock correction retained; AO=0");
+            if(act==1 && BanksForestPreview)Debug.Log("[ForestPreview] geometry=banks; integrated trees and natural banks; source regrounded rock; runtime rock patch OFF; AO=0; performance unverified");
+            if(act==1 && IntegratedForest)Debug.Log("[Forest] integrated default; natural banks +23 inset stones; rock patch OFF; AO0");
+            _fullStage = fullPrefab != null;
 
             var rootGo = new GameObject("diorama-act" + layout.Act);
             rootGo.layer = HD2DLayers.StageSet;
@@ -269,9 +337,112 @@ namespace DeckRogue.Game
 
             foreach (var p in layout.Parts)
             {
+                if (_fullStage && !AirPart(p)) continue;
+                if (NightForestPreview && p.Kind=="mist" && PreviewFloat("hideMist",0)>0) continue;
                 if (drop != null && drop.Contains(p.Kind)) continue;
                 try { BuildPart(ctx, p); }
                 catch (Exception e) { missing.Add("p" + p.Index + ":" + p.Kind + " 例外 " + e.Message); Debug.LogWarning("[Diorama] 部品 " + p.Index + " (" + p.Kind + ") で例外: " + e); }
+            }
+            if (_fullStage)
+            {
+                var full = UnityEngine.Object.Instantiate(fullPrefab, Root, false);
+                var clones = new Dictionary<Material,Material>();
+                Newtonsoft.Json.Linq.JObject aoData=null;
+                if(NightForestPreview && PreviewFloat("staticVertexAO",0)>0) {
+                    var data=Resources.Load<TextAsset>("FullStage/ao_study");
+                    if(data==null)throw new System.Exception("AO study data missing");
+                    aoData=Newtonsoft.Json.Linq.JObject.Parse(data.text);
+                }
+                Vector3? lanternGround = null;
+                foreach(var mr in full.GetComponentsInChildren<MeshRenderer>()) {
+                    mr.gameObject.layer = HD2DLayers.StageSet;
+                    mr.renderingLayerMask |= HD2DLayers.RenderingEnvironment;
+                    if(NightForestPreview) {
+                        if(mr.name.Contains("__Farfield") && PreviewFloat("hideFarfield",0)>0)mr.enabled=false;
+                        if(mr.name=="DistantAtmosphere" && PreviewFloat("hideBackdrop",0)>0)mr.enabled=false;
+                        PreviewVertexAO(mr,aoData);
+                        PreviewSeatRock(mr);
+                    }
+                    var mats = mr.sharedMaterials;
+                    for(int i=0;i<mats.Length;i++) {
+                        var original=mats[i];
+                        if(!clones.TryGetValue(original,out var clone)) { clone=new Material(original); clones.Add(original,clone); _owned.Add(clone);
+                            if(NightForestPreview && clone.HasProperty("_NaturalSurface")) {
+                                if(TreeForestPreview && original.name=="TreeCutout_Midground_Study") {
+                                    string folder=Autopilot.Arg("-tree-texture-study");
+                                    if(!string.IsNullOrEmpty(folder)) {
+                                        var meta=Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(System.IO.Path.Combine(folder,"manifest.json")));
+                                        int width=meta["width"].Value<int>(),height=meta["height"].Value<int>();
+                                        var texture=new Texture2D(width,height,TextureFormat.RGBA32,true,false){name="Decoded texture study",filterMode=FilterMode.Bilinear,wrapMode=TextureWrapMode.Clamp};
+                                        for(int mip=0;mip<meta["mips"].Value<int>();mip++) {
+                                            var level=new Texture2D(2,2,TextureFormat.RGBA32,false,false);level.LoadImage(System.IO.File.ReadAllBytes(System.IO.Path.Combine(folder,mip+".png")));
+                                            if(level.width!=Mathf.Max(1,width>>mip)||level.height!=Mathf.Max(1,height>>mip))throw new System.Exception("Texture study mip size mismatch");
+                                            texture.SetPixels32(level.GetPixels32(),mip);UnityEngine.Object.Destroy(level);
+                                        }
+                                        texture.Apply(false,true);_owned.Add(texture);clone.SetTexture("_BaseMap",texture);
+                                        Debug.Log("[TextureStudy] decoded mip preview "+meta["id"]+" "+width+"x"+height+"; Windows RGBA preview, not compressed GPU execution");
+                                    }
+                                }
+                                bool foliage=clone.GetFloat("_TwoSidedNormals")>.5f;
+                                clone.SetFloat("_StaticNeutral",PreviewFloat("staticNeutral",.55f));clone.SetFloat("_GradeWeight",PreviewFloat("gradeWeight",.22f));clone.SetFloat("_VignetteWeight",PreviewFloat("vignetteWeight",.75f));
+                                clone.SetVector("_AmbientFill",(foliage?new Vector4(.12f,.15f,.17f,0):new Vector4(.055f,.07f,.085f,0))*PreviewFloat("ambientScale",1));
+                                clone.SetFloat("_LowerFade",original.name.Contains("cliff_strata")?1:0);
+                                if(original.name.Contains("atmosphere")) {
+                                    clone.SetColor("_BaseColor",new Color(.20f,.28f,.36f,1)*PreviewFloat("backdropScale",1));
+                                    clone.SetFloat("_Fog",PreviewFloat("backdropFog",.35f));
+                                }
+                                var surfaceTexture=clone.GetTexture("_BaseMap");
+                                if(surfaceTexture!=null && surfaceTexture.name.EndsWith("_soft_v5")) {
+                                    clone.SetFloat("_VColorAO",Mathf.Clamp01(PreviewFloat("staticVertexAO",0)));
+                                    clone.SetFloat("_StaticStudy",PreviewFloat("staticDirectionStudy",0));
+                                    clone.SetFloat("_StaticHueStudy",PreviewFloat("staticHueStudy",0));
+                                    clone.SetVector("_StaticStudyBounds",new Vector4(-9,-3,-1,7));
+                                    float uvScale=PreviewFloat("surfaceUvScale",1);
+                                    clone.SetTextureScale("_BaseMap",Vector2.one*uvScale);
+                                    clone.SetFloat("_TextureContrast",PreviewFloat("surfaceContrast",1));
+                                    clone.SetFloat("_TexelLighting",PreviewFloat("surfaceTexelLighting",1));
+                                    surfaceTexture.filterMode=PreviewFloat("surfaceTrilinear",0)>0?FilterMode.Trilinear:FilterMode.Bilinear;
+                                    surfaceTexture.anisoLevel=Mathf.Clamp(Mathf.RoundToInt(PreviewFloat("surfaceAniso",1)),1,16);
+                                }
+                                string n=original.name.ToLowerInvariant();
+                                bool moss=n.Contains("moss");bool paving=n.Contains("weathered");
+                                float scale=PreviewFloat(moss?"mossStaticScale":paving?"pavingStaticScale":"surfaceStaticScale",1);
+                                clone.SetVector("_StaticAlbedoTint",paving?new Vector4(.85f,.94f,1,1)*scale:new Vector4(1,1,1,1)*scale);
+                                clone.SetFloat("_StaticSaturation",PreviewFloat(moss?"mossStaticSaturation":paving?"pavingStaticSaturation":"surfaceStaticSaturation",1));
+                            }
+                             Materials["full-"+original.name]=clone; }
+                        mats[i]=clone;
+                    }
+                    mr.sharedMaterials=mats;
+                    _fullBatches++;
+                    if(mr.sharedMaterial.name.Contains("lantern_glass")) {
+                        var lamp=new GameObject("full-stage-lantern");lamp.transform.SetParent(Root,false);lamp.transform.position=mr.bounds.center;
+                        var light=lamp.AddComponent<Light>();light.type=LightType.Point;light.color=new Color(1,.55f,.25f);light.intensity=NightForestPreview?PreviewFloat("lanternIntensity",4.5f):2.8f;light.range=NightForestPreview?PreviewFloat("lanternRange",4.8f):3.2f;light.shadows=LightShadows.None;
+                        if(NightForestPreview)lanternGround=mr.bounds.center+Vector3.back*PreviewFloat("warmForward",1.5f);
+                    }
+                }
+                _fullGround=new FullStageGround(full);
+                if(lanternGround.HasValue) {
+                    var p=lanternGround.Value;float h=_fullGround.Height(p.x,p.z);p.y=PreviewFloat("warmWorldY",(float.IsNaN(h)?0:h)+PreviewFloat("warmHeight",.9f));
+                    PreviewGroundLight("lantern-ground-bounce",p,new Color(1,.48f,.18f),PreviewFloat("warmGround",0),PreviewFloat("warmRange",4.5f));
+                    Debug.Log("[ForestPreview] lantern ground="+h+" bounce="+p);
+                }
+                if(NightForestPreview)PreviewGroundLight("battle-moon-fill",new Vector3(0,3,0),new Color(.45f,.58f,.85f),PreviewFloat("battleFill",0),13f);
+            }
+            if (!_fullStage && layout.Act == 1 && layout.Parts.Exists(p => p.Name == "codex-lantern-plinth"))
+            {
+                var masonry=Resources.Load<GameObject>("CloudKit/ForestMasonry");
+                if(masonry!=null) {
+                    var instance=UnityEngine.Object.Instantiate(masonry, Root, false);
+                    instance.transform.localRotation=Quaternion.Euler(0,_pathYaw,0);
+                    instance.transform.localPosition=Vector3.up*.48f;
+                }
+                var lamp = new GameObject("codex-gate-lantern");
+                lamp.transform.SetParent(Root, false);
+                lamp.transform.localPosition = OnPath(-4.8f, 7.7f, 1.65f);
+                var light = lamp.AddComponent<Light>();
+                light.type = LightType.Point; light.color = new Color(1f, 0.55f, 0.25f);
+                light.intensity = 2.8f; light.range = 3.2f; light.shadows = LightShadows.None;
             }
             if (opt.Merge) FlushGroups(ctx);
 
@@ -399,6 +570,15 @@ namespace DeckRogue.Game
         static void MakeTexturesAndMaterials(BuildContext ctx)
         {
             var L = ctx.Layout;
+            if (_fullStage) {
+                // Full-stage meshes carry their own textures. Do not allocate the legacy
+                // terrain arrays and 2048px normal/albedo atlases merely for two light shafts.
+                foreach(var kv in L.Surfaces) if(kv.Value.Shader=="shaft") {
+                    var material=MakeMaterial(ctx,kv.Key,kv.Value);
+                    if(material!=null){Materials[kv.Key]=material;Own(material);}
+                }
+                return;
+            }
             // 配列に積む材質 = 配列の surface が使う side・top (登場順)
             var names = new List<string>();
             foreach (var sd in L.Surfaces.Values)
@@ -1640,6 +1820,7 @@ namespace DeckRogue.Game
         /// <summary>箱庭を捨てる (old に戻る時)。作ったメッシュ・テクスチャ・材質も捨てる</summary>
         public static void Clear()
         {
+            _fullGround?.InvalidateCapture(); _fullGround=null; _fullStage=false; _fullBatches=0;
             if (Root != null) Kill(Root.gameObject);
             foreach (var o in _owned) if (o != null) Kill(o);
             _owned.Clear();
@@ -1709,6 +1890,8 @@ namespace DeckRogue.Game
             {
                 foreach (var p in Layout.Parts)
                 {
+                    if (_fullStage && !AirPart(p)) continue;
+                if (NightForestPreview && p.Kind=="mist" && PreviewFloat("hideMist",0)>0) continue;
                     st.Parts++;
                     st.ByKind.TryGetValue(p.Kind, out var c); st.ByKind[p.Kind] = c + 1;
                     if (PhoneHidden(p)) { st.PhoneHidden++; continue; }
@@ -1732,6 +1915,18 @@ namespace DeckRogue.Game
                         maxY = Mathf.Max(maxY, Mathf.Abs(HeightAtPath(t, s)));
             }
             else maxY = float.NaN;
+            if (_fullStage) {
+                // Imported render batches replace authored procedural parts; budgets reflect this representation.
+                st.Parts += _fullBatches; st.ByKind["full-stage-batch"]=_fullBatches;
+                st.GateSource=IntegratedForest?"full-stage-integrated":BanksForestPreview?"full-stage-natural-banks-candidate":CohesionForestPreview?"full-stage-cohesion-study":TreeForestPreview?"full-stage-tree-study":"full-stage-v5";st.GPartsMin=15;st.GPartsMax=40;st.GRenderers=40;st.GMaterials=18;st.GTriangles=(BanksForestPreview||IntegratedForest)?30000:20000; // Candidate structural cap only; Android performance remains unverified.
+                maxY=0;
+                for(float t=-8;t<=14;t+=.5f)for(float side=-2;side<=2.8f;side+=.4f) {
+                    var pos=OnPath(t,side,0);float h=_fullGround.Height(pos.x,pos.z);
+                    // Paving is intentionally 25mm above terrain; >60mm would invade the actor band.
+                    if(float.IsNaN(h)||h>.06f||h<-.01f) {st.SeatIntrusions++;st.IntrusionNames.Add("floor@"+t+","+side+"="+h);}
+                    maxY=Mathf.Max(maxY,float.IsNaN(h)?1:Mathf.Max(0,Mathf.Abs(h)-.03f));
+                }
+            }
             st.SeatMaxAbsY = maxY;
             var mats = new HashSet<Material>();
             if (Root != null)

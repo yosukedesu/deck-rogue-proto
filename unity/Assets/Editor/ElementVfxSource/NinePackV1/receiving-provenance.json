@@ -1,0 +1,124 @@
+{
+  "libraryId": "libfile_30813022afec819193ecf6eeaed01970",
+  "version": 0,
+  "normalization": "whole-sheet Lanczos; original RGBA retained; no cell crops",
+  "assets": [
+    {
+      "element": "fire",
+      "sourceSha256": "f282759ce5cf17e2a938ddaf8a7f2f7e75ffcce6ef9232ca1ed2131722e8d197",
+      "runtimeSha256": "18d1e2f4aaaf75336b8d5e8313e113e374e425e13244601312bce4fac8f47831",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "runtimeSize": [
+        1024,
+        512
+      ]
+    },
+    {
+      "element": "water",
+      "sourceSha256": "16f672490f7c4e4cfcd924f69b7e6ef2502fb1cd0a13c791cff0350f8c7b5514",
+      "runtimeSha256": "363f4a6f10c65b53970452671c41832bda1cf2f3a5f3d0a7d88411ae47458566",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "runtimeSize": [
+        1024,
+        512
+      ]
+    },
+    {
+      "element": "ice",
+      "sourceSha256": "2d0c0642b8312574672790d014c3b60267ed9578fb9d6800ccf17f55ac64e4ad",
+      "runtimeSha256": "21b00470de2e29def30a825b6ab4c3f64a844c6bf8cb134512dd6693b91f8576",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "runtimeSize": [
+        1024,
+        512
+      ]
+    },
+    {
+      "element": "lightning",
+      "sourceSha256": "75af403e7fd77410935324e96266a033cc05f6915efbda3c5c000147d8f46524",
+      "runtimeSha256": "3c310d1b4a0266ccd46ba2f3a766a268e694d9d150c779c09bd369ddf5ccdbdc",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "runtimeSize": [
+        1024,
+        512
+      ]
+    },
+    {
+      "element": "dark",
+      "sourceSha256": "cd34ab4a31f6b0d1c51500931ca52fa2762ea66bf30b2185ab5089db2b4b9631",
+      "runtimeSha256": "c7b4d4e4dede110fb7e0dded342ed00dfa7fe26368d01aabed4c12fbd30b35ca",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "runtimeSize": [
+        1024,
+        512
+      ]
+    },
+    {
+      "element": "light",
+      "sourceSha256": "c0645a27e2aa99ec3e22e38e90a25fe22f7610594e0efb23d64fd648019ee877",
+      "runtimeSha256": "b5ad54d86dd8cd22fd6e3018155dc2f19f77f7fabbaa21d0fb689ada6fe22e25",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "runtimeSize": [
+        1024,
+        512
+      ]
+    },
+    {
+      "element": "heal",
+      "sourceSha256": "6173ae57585fea9bbb004e6dc526ec5187a8b0003bf6bebf4fc2d886b14a4b48",
+      "runtimeSha256": "66246d00a242fe6201796a491ac386ebced37e0f64bf3ddf0bac4a15250e51bb",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "runtimeSize": [
+        1024,
+        512
+      ]
+    },
+    {
+      "element": "vine",
+      "sourceSha256": "d0d93287a6842334e9ceb99d5fafec6e16e4d9850c64ca0f2edf6102ba873809",
+      "runtimeSha256": "214a5ae7bdd15ae2904a992b4e0d5047122af025d14228696f0a83b2a987fbeb",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "runtimeSize": [
+        1024,
+        512
+      ]
+    },
+    {
+      "element": "earth",
+      "sourceSha256": "adb88d88a52b60b0da36030200b983f6c33e878c6ff426849980e9ee92c74b7b",
+      "runtimeSha256": "e43f671272326acc04aab54f7410f8bdc3d25405a1a72c13d2f8a7bba38fdca8",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "runtimeSize": [
+        1024,
+        512
+      ]
+    }
+  ]
+}

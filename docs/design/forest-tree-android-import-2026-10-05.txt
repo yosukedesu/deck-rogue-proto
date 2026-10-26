@@ -1,0 +1,26 @@
+Android new tree texture integration (supersedes NPOT103KiB recommendation)
+
+Original1024x1536 PNG bytes preserved. Android override max512, ASTC6x6, quality100.
+IMPORTANT: Unity6000.6 real Android importer and AssetBundle emitted NPOT341x512
+as RGBA32 (930252 bytes), despite explicit ASTC; ignorePlatformSupport did not fix.
+Resolved with Android-only NPOT ToNearest. FullStageImporter calls shared
+TreeAndroidTextureSettings using context.selectedBuildTarget (platform dependency).
+Standalone retains NPOT None and original1024x1536, existing filter/mips/sRGB/alpha.
+
+Verified isolated Unity6000.6 Android-target import of exact PNG, actual serialized
+Android AssetBundle parsed with UnityPy:256x512,TextureFormat50(ASTC6x6),10mips,
+completeImageSize=streamSize=79696 bytes (77.8KiB). Windows Editor runtime memory
+80624 bytes is editor-reported, not Android GPU measurement. Byte calculation also
+matches. No APK needed or produced. Bundle test used identical setting values.
+
+Fallback: max512 applied before compression; RGBA32 at256x512 with10mips is699052
+bytes (682.7KiB). A non-ASTC device should decode these bounded dimensions, not the
+source1536 height. Non-ASTC actual device execution remains UNVERIFIED. A real
+RGBA32 Android import also confirmed512 cap in initial NPOT case (341x512).
+Native compressed payload, RGBA fallback estimate and editor memory are different
+quantities. CPU103KiB NPOT study was valid as a visual proxy, not a real import result.
+
+Original main tree texture is shared between tree-only and banks variants, so
+natural-banks geometry comparison uses identical desktop texture settings.
+Official docs: https://docs.unity3d.com/6000.0/Documentation/ScriptReference/AssetImporters.AssetImportContext-selectedBuildTarget.html
+https://docs.unity3d.com/6000.0/Documentation/Manual/texture-choose-format-by-platform.html

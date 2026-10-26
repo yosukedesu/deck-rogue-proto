@@ -1,0 +1,12 @@
+{
+  "id": "neutral_energy_display_fallback_r1",
+  "element_is_declared": false,
+  "roles_srgb": {
+    "shadow": "#3D4855",
+    "primary": "#78858F",
+    "edge": "#B0BCC2",
+    "core": "#DCE5E7"
+  },
+  "scene_light_srgb": "#B0BCC2",
+  "runtime_exposure_approved": false
+}

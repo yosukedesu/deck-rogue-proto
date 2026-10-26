@@ -339,6 +339,7 @@ namespace DeckRogue.Game
             bool changed = g.PhaseShownKind != kind;
             StylePhaseTag(pt, kind, acting, count, null);
             g.PhaseShownKind = kind;
+            if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("phaseDisplay",kind==1?"enemy":"player");
             if (changed) Tween.Punch(pt, 0.1f, 0.2f);
         }
 
@@ -555,7 +556,7 @@ namespace DeckRogue.Game
         static readonly string Circled = "①②③④⑤⑥⑦⑧";
 
         /// <summary>敵の入れ物の中身 (絵・狙いの印・帳面の一行)。入れ物 pan は BattleView が持ち越す</summary>
-        public static void FillEnemyPanel(GameRoot g, RectTransform pan, GameState st, int index, int shownHp, float neighborGap = float.MaxValue, bool dying = false, bool uniformForecast = false, bool uniformStack = false)
+        public static void FillEnemyPanel(GameRoot g, RectTransform pan, GameState st, int index, int shownHp, int displayHp, float neighborGap = float.MaxValue, bool dying = false, bool uniformForecast = false, bool uniformStack = false)
         {
             var e = st.Enemies[index];
             bool alive = e.Hp > 0;
@@ -624,7 +625,7 @@ namespace DeckRogue.Game
             img.preserveAspect = true;
             img.raycastTarget = false;
             img.color = Color.white;   // 倒れた瞬間も素の色 (白く光ってから崩れる)
-            Stage.BindUnit("enemy" + index, spr, img, artSprite);
+            Stage.BindUnit("enemy" + index, spr, img, artSprite,Presenter.KeepPresentationUnit(g,index));
             bool ledgerAtFeet = Hd2dLayout && (HD2DFlags.Ledger == HD2DLedger.Feet || R3);   // 帳面を足元ごとに浮かせる (HD-2D 見本 ledger=feet。2026-09-30 P20。三周目 r3 の既定 = PC とスマホ)
             if ((aimed || acting) && alive && !ph && !ledgerAtFeet && feetY > StripH + 16f)
             {   // 足元の輪 (PC。スマホは札の上端が足元なので出さない)。頭上の▼は 2026-09-16 に廃止 = 狙いは意図の札と帳面の縁 (真鍮)。
@@ -652,12 +653,16 @@ namespace DeckRogue.Game
             UiKit.Anchor(strip, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-w / 2f, sb), new Vector2(w / 2f, sb + h));
             if (EntranceHidesStrips) { var scg = strip.gameObject.AddComponent<CanvasGroup>(); scg.alpha = 0f; scg.blocksRaycasts = false; }   // 見本: 登場の演出の間は隠れて生まれる (直しの輪2・R09)
             LedgerStrip(g, strip, st, index, def, nm, shownHp, w, h, aimed, candidate, acting, forecast, dying);
+            var layout = pan.GetComponent<IntentLayout>() ?? pan.gameObject.AddComponent<IntentLayout>();
+            layout.HeadTop = headTop; layout.Gap = neighborGap; layout.Stack = uniformStack;
             if (alive) IntentTag(g, pan, st, index, def, headTop, aimed, candidate, acting, neighborGap, uniformStack);
             // 夜の札 (ui=night): 帳面と意図の札を夜の組へ (旗が無ければ何もしない)
             PaperFx.Nightify(strip);
             PaperFx.Nightify(pan.Find("intent-tag"));
             // 前の表示 (shownHp) から今の HP へ滑らせる (案C への書き換えで落ちていた＝バーが1手遅れて減っていた。2026-09-16 ユーザー報告)
-            if (shownHp != e.Hp) TweenHpBar(pan, e.Hp);
+            // displayHp is resolved once from the authoritative state by the caller.
+            // st may be a NumericDisplayState copy; resolving it again would add pending HP debt twice.
+            if (shownHp != displayHp) TweenHpBar(pan, displayHp);
         }
 
         /// <summary>帳面の一行の中身: 番号＋名前 (左) とブロック・状態の札 (右)／HP バー／意図 (絵・実値・ライダー)／(PC) 特性・分岐の一文</summary>
@@ -1221,6 +1226,30 @@ namespace DeckRogue.Game
             }
         }
 
+        public class IntentLayout : MonoBehaviour { public float HeadTop, Gap; public bool Stack; }
+        public static void RefreshIntent(GameRoot g, GameState st, int index)
+        {
+            if (st == null || index < 0 || index >= st.Enemies.Count) return;
+            var pan = g.Anchor("enemy" + index);
+            var layout = pan != null ? pan.GetComponent<IntentLayout>() : null;
+            if (layout == null) return;
+            var old = pan.Find("intent-tag");
+            if (old != null) { old.SetParent(null, false); UnityEngine.Object.Destroy(old.gameObject); }
+            if (st.Enemies[index].Hp <= 0) return;
+            var def = Content.GetEnemyDef(st.Enemies[index].EnemyId);
+            IntentTag(g, pan, st, index, def, layout.HeadTop, g.PreferredTarget == index, false, false, layout.Gap, layout.Stack);
+            PaperFx.Nightify(pan.Find("intent-tag"));
+            if (CombatTimingProbe.Enabled) CombatTimingProbe.Event("intentDisplay", index + ":" + CardText.IntentText(st,index));
+        }
+
+        public static void SetIncomingState(RectTransform area, GameState st)
+        {
+            var info = area != null ? area.GetComponentInChildren<IncomingInfo>() : null;
+            if (info == null || st == null) return;
+            info.Incoming = Effects.IncomingTotal(st); info.Hidden = st.HideIntents == true;
+            info.SkipFirst = st.NullifyNextAttack == true; info.Landed = false;
+        }
+
         static void IntentTag(GameRoot g, RectTransform pan, GameState st, int index, EnemyDef def, float headTop, bool aimed, bool candidate, bool acting, float neighborGap, bool uniformStack = false)
         {
             var e = st.Enemies[index];
@@ -1508,22 +1537,42 @@ namespace DeckRogue.Game
         /// <summary>HP バーの値 (演出で滑らせるために持つ)。Mark = 行動が変わる線の位置 (無ければ -1)・HpOnly = 線を避けて今の HP だけを出している (2026-09-29 p04)。
         /// Loss/LossTo = 自分の HP バーの「削られる分」の帯と、敵の番の後に残る HP の見込み (2026-09-29 p08。敵の HP バーには無い＝Loss が null)。
         /// 帯は LossTo から今の塗りの端 (Now＝滑っている途中の HP) まで＝攻撃が届いて塗りが縮んでも、見込みの左端は動かない</summary>
-        public class HpBarInfo : MonoBehaviour { public int Max; public int Value; public float Now; public RectTransform Fill; public TMP_Text Label; public float Mark = -1f; public bool HpOnly; public RectTransform Loss; public int LossTo; }
+        public class HpBarInfo : MonoBehaviour { public int Max; public int Value; public int Revision; public float Now; public RectTransform Fill; public TMP_Text Label; public float Mark = -1f; public bool HpOnly; public RectTransform Loss; public int LossTo; }
 
         /// <summary>入れ物の中の HP バーを target まで滑らせる (無ければ何もしない)</summary>
+        public static void SetHpBarImmediate(RectTransform container, int target)
+        {
+            var info = container != null ? container.GetComponentInChildren<HpBarInfo>() : null;
+            if (info == null || info.Fill == null) return;
+            ++info.Revision;
+            info.Value = target; info.Now = target;
+            info.Fill.anchorMax = new Vector2(info.Max > 0 ? Mathf.Clamp01((float)target / info.Max) : 0f, 1f);
+            if (info.Label != null) info.Label.text = Mathf.Max(0, target) + (info.HpOnly ? "" : " / " + info.Max);
+            if (info.Loss != null) SetLossBand(info);
+        }
+
+        // Numeric receipt contact may change HP and its denominator together.
+        // The game state's MaxHp remains authoritative; this is the displayed bar only.
+        public static bool SetHpBarMaximum(RectTransform container,int maxHp) {
+            var info=container!=null?container.GetComponentInChildren<HpBarInfo>():null;
+            if(info==null)return false;
+            int value=Math.Max(1,maxHp);bool changed=info.Max!=value;info.Max=value;return changed;
+        }
+
         public static void TweenHpBar(RectTransform container, int target)
         {
             if (container == null) return;
             var info = container.GetComponentInChildren<HpBarInfo>();
             if (info == null || info.Fill == null) return;
             int from = info.Value;
+            int revision = ++info.Revision;
             info.Value = target;
             float r0 = info.Max > 0 ? Mathf.Clamp01((float)from / info.Max) : 0f;
             float r1 = info.Max > 0 ? Mathf.Clamp01((float)target / info.Max) : 0f;
             var fill = info.Fill; var label = info.Label; int max = info.Max; var hi = info;
             Tween.Run(0.35f, k =>
             {
-                if (fill == null) return;
+                if (fill == null || hi == null || hi.Revision != revision) return;
                 fill.anchorMax = new Vector2(Mathf.Lerp(r0, r1, k), 1f);
                 if (label != null) label.text = Mathf.Max(0, Mathf.RoundToInt(Mathf.Lerp(from, target, k))) + (hi != null && hi.HpOnly ? "" : " / " + max);
                 if (hi != null) { hi.Now = Mathf.Lerp(from, target, k); if (hi.Loss != null) SetLossBand(hi); }   // 削られる分の帯の右端も塗りの端についていく (p08)
@@ -2051,7 +2100,7 @@ namespace DeckRogue.Game
             img.sprite = leaderArt;
             img.preserveAspect = true;
             img.raycastTarget = false;
-            Stage.BindUnit("player", spr, img, leaderArt);
+            Stage.BindUnit("player", spr, img, leaderArt,Presenter.KeepPresentationUnit(g,-1));
 
             // 自キャラの名前札は出さない (2026-09-11 ユーザー「スマホ表示だとキャラと名前が被ってキャラがよく見えなくなる。
             // 自キャラ名表示は不要なのでは？」)。誰を操作しているかはセットアップとラン画面で分かるので、戦場では絵を優先する。
@@ -4005,6 +4054,7 @@ namespace DeckRogue.Game
         /// </summary>
         public static void StartEndTurn(GameRoot g)
         {
+            if(g.CombatPresentationPending)return;
             var st = g.Rs != null ? g.Rs.Combat : null;
             if (st == null) return;
             if (g.RetainChoice == null && Combat.RetainHandMax(st) > 0) { g.RetainChoice = new List<string>(); g.Rebuild(); return; }

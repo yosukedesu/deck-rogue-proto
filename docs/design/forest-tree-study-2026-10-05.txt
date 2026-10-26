@@ -1,0 +1,59 @@
+Midground tree-only study, 2026-10-05 (not adopted)
+
+Source Library libfile_32b84264843c8191a66f60c192dcead9 v0,
+DeckRogue_Midground_Tree_Study.zip, 27678773 bytes. Materialized successfully,
+ZIP CRC passed, README/validation read and actual supplied Blender preview
+and tree PNG visually inspected. This is independent v5-derived geometry,
+NOT cohesion ground. Source reports Tree04/05 replacement, Tree06/13 matched
+left UV/geometry trim, other237 source mesh objects unchanged. Local GLB
+comparison confirms all non-TreeCutout material triangles match v5 positions
+to five decimals (including ground, ruins, rocks, water, ferns and lantern).
+
+Use -forest-preview night -forest-geometry trees and -forest-look <absolute
+docs/design/forest-tree-study-look.json>. Omit geometry flag for v5 reference.
+The cohesion and prior AO/light studies remain available separately. Default
+scene is unchanged. Both comparison variants: hue1, direction0, AO0,
+warmWorldY1.322433, existing night/fog/sampler/DOF, 1920x886, phone tier,
+seed4242, UI1.6, deterministic fixed camera. No geometry mixing or new AO.
+
+Separate Resources/FullStageTrees prefab uses original textures plus the
+explicit TreeCutout_Midground_Study -> tree_midground_v1 mapping. New PNG:
+RGBA1024x1536, alpha0..254, 29.99% above cutoff.4. Imported sRGB, bilinear,
+mipmapped, uncompressed, NPOT size preserved, clamp addressing. Shader uses
+existing alpha clip/depth/shadow passes, Cull0, TwoSidedNormals1. Semantic
+material names survive first asset creation (the previous importer fix).
+No missing texture, opaque background rectangle, or lost lantern detected.
+
+Rock placement: source bank_rock_12 remains uncorrected. GLB bounds locate
+the same94 vertices in the rock material at the exact prior bounds. A nearby
+ground mesh has only1 vertex in that box and is excluded by the94-count guard.
+Runtime logs confirm one -.36m correction in reference and tree variants.
+No hardcoded vertex indices are reused. Old AO is rejected for this variant.
+
+Validation: Windows build succeeded, 0 errors/16 warnings, 39s. 35 captures
+per variant (idle, four targets, fire sequence), 70 total; zero layout errors,
+all scene gates pass. Camera matches exactly. Static lights, fog/ambient/DOF,
+attack event colors/intensities/hold/durations/positions all match. Recovery
+fire-33 has hitLit0/pending0/dimK1/exposureBoost0. No attack/input timing code
+changed. Four normal-save hashes match isolation baseline. Native Windows
+player on the user's PC, not a browser. No APK/Drive/deploy/push/main changes.
+
+Visual findings: the huge pale central trunk no longer dominates and the
+two sizes of tree make an intermediate depth layer clearer. Fine root and
+branch shading is substantially softened at the unchanged DOF. The left
+conifer remains a strong dark silhouette and looks placed on the flat bank
+like a pedestal; this is also present in the supplied composition preview,
+not a missing-material/opaque-card import error. Roots do not convincingly
+bridge bank-to-battle-plane at game scale. No obvious branch obstruction of
+faces or intent text in the inspected single-target and four-target scenes.
+Do not claim the composition is finished or equivalent to the reference game.
+
+Runtime triangles17004 unchanged; renderers20 vs19, materials17 vs16.
+New uncompressed RGBA texture with full mip chain has about8MiB theoretical
+texel storage; this is not a measured GPU allocation. Android, GPU/frame-time,
+all enemy formations, PC aspect and full input-tempo battery remain untested.
+
+Deliverables:
+Full idle/fire/recovery/4-target comparison libfile_eea94f1984bc8191a84258e305e90cc8 v0.
+Midground idle/fire/recovery crops libfile_1f9d28f69cb081919d7ab49428d3a582 v0.
+Local capture dirs task/tree-study-{base,trees}/.

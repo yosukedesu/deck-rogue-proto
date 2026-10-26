@@ -1,0 +1,423 @@
+{
+  "base": "natural_banks_packed.blend",
+  "road_source": "cohesion/assets/mossbound_full_stage.blend",
+  "changes": [
+    {
+      "source_object": "Ground_inset_stone_00",
+      "destination_object": "Ground_inset_stone_00",
+      "road_order": 0,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Moss pixel limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.96059601,
+      "corner_reground_delta_min_max_metres": [
+        -0.0007171627879142828,
+        0.00797271711751818
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_01",
+      "destination_object": "Ground_inset_stone_01",
+      "road_order": 1,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.9801,
+      "corner_reground_delta_min_max_metres": [
+        -0.003036500990390781,
+        0.010238647758960717
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_02",
+      "destination_object": "Ground_inset_stone_02",
+      "road_order": 2,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.96059601,
+      "corner_reground_delta_min_max_metres": [
+        0.001945495501160622,
+        0.009468078911304467
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_03",
+      "destination_object": "Ground_inset_stone_03",
+      "road_order": 3,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Moss pixel limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 1.0
+    },
+    {
+      "source_object": "Ground_inset_stone_04",
+      "destination_object": "Ground_inset_stone_04",
+      "road_order": 4,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.9320653479069899,
+      "corner_reground_delta_min_max_metres": [
+        -0.0001373292058706281,
+        0.0018539431691169672
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_06",
+      "destination_object": "Ground_inset_stone_06",
+      "road_order": 5,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Moss pixel limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.8179069375972307,
+      "corner_reground_delta_min_max_metres": [
+        -0.001937866315245628,
+        7.629692554467216e-06
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_07",
+      "destination_object": "Ground_inset_stone_07",
+      "road_order": 6,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.8687458127689781,
+      "corner_reground_delta_min_max_metres": [
+        -7.629498839378107e-06,
+        7.629692554467216e-06
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_08",
+      "destination_object": "Ground_inset_stone_08",
+      "road_order": 7,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.8179069375972307,
+      "corner_reground_delta_min_max_metres": [
+        -7.629498839378107e-06,
+        7.629692554467216e-06
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_09",
+      "destination_object": "Ground_inset_stone_09",
+      "road_order": 8,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Moss pixel limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.8687458127689781,
+      "corner_reground_delta_min_max_metres": [
+        -7.629498839378107e-06,
+        7.629692554467216e-06
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_10",
+      "destination_object": "Ground_inset_stone_10",
+      "road_order": 9,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.8953382542587163,
+      "corner_reground_delta_min_max_metres": [
+        -1.5258893370628107e-05,
+        7.629692554467216e-06
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_11",
+      "destination_object": "Ground_inset_stone_11",
+      "road_order": 10,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.8775210229989678,
+      "corner_reground_delta_min_max_metres": [
+        -7.629498839378107e-06,
+        7.629692554467216e-06
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_12",
+      "destination_object": "Ground_inset_stone_12",
+      "road_order": 11,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Moss pixel limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.8775210229989678,
+      "corner_reground_delta_min_max_metres": [
+        -7.629498839378107e-06,
+        2.98023217215615e-10
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_13",
+      "destination_object": "Ground_inset_stone_13",
+      "road_order": 12,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.9043820750088043,
+      "corner_reground_delta_min_max_metres": [
+        -7.629498839378107e-06,
+        2.98023217215615e-10
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_14",
+      "destination_object": "Ground_inset_stone_14",
+      "road_order": 13,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.9043820750088043,
+      "corner_reground_delta_min_max_metres": [
+        -1.0430812810713341e-10,
+        2.98023217215615e-10
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_15",
+      "destination_object": "Ground_inset_stone_15",
+      "road_order": 14,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Moss pixel limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.9414801494009999,
+      "corner_reground_delta_min_max_metres": [
+        -7.629498839378107e-06,
+        2.98023217215615e-10
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_17",
+      "destination_object": "Ground_inset_stone_17",
+      "road_order": 15,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.92274469442792,
+      "corner_reground_delta_min_max_metres": [
+        -1.0430812810713341e-10,
+        2.98023217215615e-10
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_20",
+      "destination_object": "Ground_inset_stone_20",
+      "road_order": 16,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.92274469442792,
+      "corner_reground_delta_min_max_metres": [
+        -1.5258893370628107e-05,
+        7.629692554467216e-06
+      ]
+    },
+    {
+      "source_object": "Ground_inset_stone_22",
+      "destination_object": "Ground_inset_stone_22",
+      "road_order": 17,
+      "role": "stair_approach",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 1.0
+    },
+    {
+      "source_object": "Ground_inset_stone_23",
+      "destination_object": "Ground_inset_stone_23",
+      "road_order": 18,
+      "role": "edge_fragment",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 1.0
+    },
+    {
+      "source_object": "Ground_inset_stone_25",
+      "destination_object": "Ground_inset_stone_25",
+      "road_order": 19,
+      "role": "edge_fragment",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 1.0
+    },
+    {
+      "source_object": "Ground_inset_stone_28",
+      "destination_object": "Ground_inset_stone_28",
+      "road_order": 20,
+      "role": "edge_fragment",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 1.0
+    },
+    {
+      "source_object": "Ground_inset_stone_39",
+      "destination_object": "Ground_inset_stone_39",
+      "road_order": 21,
+      "role": "edge_fragment",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Moss pixel limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 1.0
+    },
+    {
+      "source_object": "Ground_inset_stone_44",
+      "destination_object": "Ground_inset_stone_44",
+      "road_order": 22,
+      "role": "edge_fragment",
+      "source_triangles": 20,
+      "integrated_triangles": 20,
+      "source_vertices": 12,
+      "integrated_vertices": 12,
+      "material_preserved": [
+        "Weathered grey limestone"
+      ],
+      "grounding_adjustment_metres": 0,
+      "footprint_scale_to_resolve_overlap": 0.96059601,
+      "corner_reground_delta_min_max_metres": [
+        -1.0430812810713341e-10,
+        7.629692554467216e-06
+      ]
+    }
+  ],
+  "scope": "Exactly 23 Ground_inset_stone meshes changed from natural_banks_packed.blend. No object translations, Boolean cuts or fixed-prop relocations adopted. The 18-stone stair approach and 5 edge fragments preserve the cohesion layout; 17 footprints are reduced by 1%-step scales only where slab coplanar overlaps were detected, with their new corners regrounded to the unchanged floor.",
+  "approval_status": "Final visual approval pending. APK distribution remains on hold.",
+  "identity_note": "Actual transferred objects are the 23 Ground_inset_stone_* names, with preserved source names. Reported Unity aliases Paving_slab_00..22 are unverified and must not be used for direct replacement: Blender already contains separate unchanged Paving_slab_00..04 objects. Resolve using actual source names and batch_source_map.json.",
+  "accepted_static_intersections": "Partial overlap/occlusion with natural rocks, stair underside and bridge abutment is retained. These are not blanket collision failures. Same-plane paver-paver overlaps are eliminated; no visible slab covers a stair top in the checked Blender preview."
+}

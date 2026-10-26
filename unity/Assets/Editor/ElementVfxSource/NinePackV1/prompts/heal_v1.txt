@@ -1,0 +1,18 @@
+Use case: stylized-concept.
+Asset type: original high-end HD-2D fantasy combat VFX, production Unity flipbook sprite atlas.
+Canvas: 2:1 landscape, ideally exactly 1024x512 PNG. Exactly FOUR equal columns and TWO equal rows, EIGHT equally sized SQUARE cells. Sequence is top row left to right frames 0,1,2,3, then bottom row left to right frames 4,5,6,7. No labels, lines, cell borders, text, characters, UI, scenery, ground plane or props.
+TRUE TRANSPARENT RGBA background and fully empty gutters. In EVERY cell leave the outer 16% on all four sides completely empty and transparent, alpha zero. ALL content including faint glow and particles stays inside the middle 68% of its cell. No overlapping neighboring cells, no cropped tips, no painted checkerboard, no black or gray background.
+Stable same center anchor (50%,50%) in EVERY frame, no viewpoint, scale registration or global positional drift. Up stays up, zero rotation. Rich finished element color is in the texture, to be displayed with WHITE tint and normal straight-alpha blending. Crisp defining silhouette, elegant textured detail and sparse local luminous particles; very limited soft bloom. Bright white cores are tiny/local; never broad opaque white disks or clouds.
+Make eight DISTINCT temporal frames with a brief early peak, convincing changing shapes and rapid clearing tail, not eight copies of one icon. Except where otherwise stated, frames 1–2 peak, frames 3–5 fragment/develop and frames 6–7 are nearly empty.
+
+RECOVERY / HEALING only, intended around a friendly character's TORSO, not enemy impact. Gentle LEAF-GREEN and MINT luminous round motes with tiny soft WHITE cores rising UPWARD, and one softly glowing shallow horizontal elliptical ring that passes upward through the torso. Calm buoyant healing identity, never explosive. Green belongs to the green family, not blue/cyan/teal; no gold. No attack star, crystals, fire, lightning, heart, plus sign, runes, emblem or character. Soft delicate ring is a shallow ellipse, not an upright magic wheel. Tiny local bloom, lots of empty transparent space.
+Character torso is fixed at the exact CENTER of every cell. At peak the ring is centered slightly below cell center and particles extend into the UPPER HALF. Keep all elements in the middle 65% of each cell. Never drift to another cell.
+Frame0: two tiny green motes appear just below torso center and one faint short arc.
+Frame1: a soft shallow elliptical green ring forms around center, four round white-green motes rising above it.
+Frame2: full gentle glowing ring, six upward round motes at different heights; clean small white cores, no attack burst.
+Frame3: ring lifts a little above center and thins, motes float into upper half.
+Frame4: ring breaks softly into two fading arcs, five smaller motes continue upward.
+Frame5: ring gone, four fading green motes above torso center.
+Frame6: two faint tiny motes in upper middle.
+Frame7: one very faint small upper-center mote, almost empty.
+Duration .50 seconds, smooth gentle lift and clear ending.

@@ -1,0 +1,298 @@
+{
+  "project": "DeckRogue",
+  "pack": "Nine Element VFX AI-generated source atlases",
+  "version": "1.0-nine-elements",
+  "created_utc": "2026-10-05",
+  "generation_mode": "Built-in image_gen only; no CLI or API key. Original generated PNG pixels preserved.",
+  "frames": 8,
+  "columns": 4,
+  "rows": 2,
+  "frame_order": "Top row left-to-right 0-3, then bottom row left-to-right 4-7. Display frame 0 before incrementing.",
+  "sheet_aspect_ratio": 2.0,
+  "source_dimensions": [
+    1774,
+    887
+  ],
+  "normalized_target_dimensions": [
+    1024,
+    512
+  ],
+  "normalized_target_cell_dimensions": [
+    256,
+    256
+  ],
+  "normalization": "Receiver may uniformly resize the WHOLE sheet to 1024x512. Do not independently crop content, clip tips, auto-trim frames, or regenerate alpha. Source dimensions are not divisible by four; normalized UV cells are equal fractions of the whole sheet.",
+  "pixel_format": "RGBA PNG, true transparent background; keep original alpha",
+  "blend": "Straight alpha, SrcAlpha / OneMinusSrcAlpha. All element colors are in texture; use white tint. Dark requires normal alpha to retain its shadow body.",
+  "pivot": [
+    0.5,
+    0.5
+  ],
+  "rotation_degrees": 0,
+  "orientation": "Up is up in every frame. World/UI placement is receiver-owned.",
+  "texture_import": {
+    "sRGB": true,
+    "alpha_is_transparency": true,
+    "mipmaps": false,
+    "wrap": "Clamp",
+    "filter": "Bilinear"
+  },
+  "timing": "One-shot. Short early attack peak; lightning peaks at frames 1 and 3. No waiting barrier for card chaining.",
+  "visual_qa": "All final source images viewed in full. All have actual transparent RGBA and distinct shape/temporal silhouettes; no content is clipped by a frame boundary. Glows may contain alpha=1 residual noise. Measured visible gutters use alpha >=16/255 and are normalized to 256px cells. 16px is the target; light has a narrow ray/glow tip with 10.38px visible clearance in frame 2, preserved without cropping.",
+  "assets": [
+    {
+      "element": "fire",
+      "file": "png/element-fire-8f.png",
+      "duration_seconds": 0.36,
+      "duration_status": "engine-confirmed",
+      "purpose": "Three upward flame tongues erupt, split, and fade to embers.",
+      "source_dimensions": [
+        1774,
+        887
+      ],
+      "source": "sources/fire_v2.png",
+      "generated_with": "built-in image_gen",
+      "generation_prompts": [
+        "prompts/fire_v1.txt",
+        "prompts/fire_v2.txt"
+      ],
+      "sha256": "f282759ce5cf17e2a938ddaf8a7f2f7e75ffcce6ef9232ca1ed2131722e8d197",
+      "minimum_visible_gutter_256px_at_alpha16": 29.41,
+      "alpha_mass_vs_peak": [
+        0.127,
+        0.725,
+        1.0,
+        0.738,
+        0.584,
+        0.316,
+        0.078,
+        0.009
+      ]
+    },
+    {
+      "element": "water",
+      "file": "png/element-water-8f.png",
+      "duration_seconds": 0.36,
+      "duration_status": "engine-confirmed",
+      "purpose": "A hooked blue water jet collapses into rounded droplets.",
+      "source_dimensions": [
+        1774,
+        887
+      ],
+      "source": "sources/water_v2.png",
+      "generated_with": "built-in image_gen",
+      "generation_prompts": [
+        "prompts/water_v1.txt",
+        "prompts/water_v2.txt"
+      ],
+      "sha256": "16f672490f7c4e4cfcd924f69b7e6ef2502fb1cd0a13c791cff0350f8c7b5514",
+      "minimum_visible_gutter_256px_at_alpha16": 39.3,
+      "alpha_mass_vs_peak": [
+        0.154,
+        0.562,
+        1.0,
+        0.604,
+        0.396,
+        0.157,
+        0.032,
+        0.006
+      ]
+    },
+    {
+      "element": "ice",
+      "file": "png/element-ice-8f.png",
+      "duration_seconds": 0.32,
+      "duration_status": "engine-confirmed",
+      "purpose": "Sharp faceted ice crystals grow and shatter into angular shards.",
+      "source_dimensions": [
+        1774,
+        887
+      ],
+      "source": "sources/ice_v1.png",
+      "generated_with": "built-in image_gen",
+      "generation_prompts": [
+        "prompts/ice_v1.txt"
+      ],
+      "sha256": "2d0c0642b8312574672790d014c3b60267ed9578fb9d6800ccf17f55ac64e4ad",
+      "minimum_visible_gutter_256px_at_alpha16": 23.64,
+      "alpha_mass_vs_peak": [
+        0.132,
+        0.706,
+        1.0,
+        0.614,
+        0.395,
+        0.115,
+        0.026,
+        0.007
+      ]
+    },
+    {
+      "element": "lightning",
+      "file": "png/element-lightning-8f.png",
+      "duration_seconds": 0.24,
+      "duration_status": "engine-confirmed",
+      "purpose": "A branching white-blue bolt flashes in frames 1 and 3 with a dimmer frame 2.",
+      "source_dimensions": [
+        1774,
+        887
+      ],
+      "source": "sources/thunder_v1.png",
+      "generated_with": "built-in image_gen",
+      "generation_prompts": [
+        "prompts/thunder_v1.txt"
+      ],
+      "sha256": "75af403e7fd77410935324e96266a033cc05f6915efbda3c5c000147d8f46524",
+      "minimum_visible_gutter_256px_at_alpha16": 22.49,
+      "alpha_mass_vs_peak": [
+        0.104,
+        1.0,
+        0.46,
+        0.935,
+        0.34,
+        0.114,
+        0.022,
+        0.009
+      ]
+    },
+    {
+      "element": "dark",
+      "file": "png/element-dark-8f.png",
+      "duration_seconds": 0.4,
+      "duration_status": "engine-confirmed",
+      "purpose": "Dark indigo shadow body and purple lit edges converge inward into a small knot.",
+      "source_dimensions": [
+        1774,
+        887
+      ],
+      "source": "sources/dark_v1.png",
+      "generated_with": "built-in image_gen",
+      "generation_prompts": [
+        "prompts/dark_v1.txt"
+      ],
+      "sha256": "cd34ab4a31f6b0d1c51500931ca52fa2762ea66bf30b2185ab5089db2b4b9631",
+      "minimum_visible_gutter_256px_at_alpha16": 26.0,
+      "alpha_mass_vs_peak": [
+        0.407,
+        0.697,
+        1.0,
+        0.363,
+        0.166,
+        0.06,
+        0.014,
+        0.005
+      ]
+    },
+    {
+      "element": "light",
+      "file": "png/element-light-8f.png",
+      "duration_seconds": 0.3,
+      "duration_status": "engine-confirmed",
+      "purpose": "A narrow white shaft and straight rays break into fading light points.",
+      "source_dimensions": [
+        1774,
+        887
+      ],
+      "source": "sources/light_v1.png",
+      "generated_with": "built-in image_gen",
+      "generation_prompts": [
+        "prompts/light_v1.txt"
+      ],
+      "sha256": "c0645a27e2aa99ec3e22e38e90a25fe22f7610594e0efb23d64fd648019ee877",
+      "minimum_visible_gutter_256px_at_alpha16": 10.38,
+      "alpha_mass_vs_peak": [
+        0.059,
+        0.479,
+        1.0,
+        0.185,
+        0.158,
+        0.045,
+        0.028,
+        0.009
+      ]
+    },
+    {
+      "element": "heal",
+      "file": "png/element-heal-8f.png",
+      "duration_seconds": 0.5,
+      "duration_status": "engine-confirmed",
+      "purpose": "A soft green torso-centered ellipse and round motes lift into the upper half.",
+      "source_dimensions": [
+        1774,
+        887
+      ],
+      "source": "sources/heal_v1.png",
+      "generated_with": "built-in image_gen",
+      "generation_prompts": [
+        "prompts/heal_v1.txt"
+      ],
+      "sha256": "6173ae57585fea9bbb004e6dc526ec5187a8b0003bf6bebf4fc2d886b14a4b48",
+      "minimum_visible_gutter_256px_at_alpha16": 29.98,
+      "alpha_mass_vs_peak": [
+        0.143,
+        0.632,
+        1.0,
+        0.608,
+        0.371,
+        0.161,
+        0.041,
+        0.014
+      ]
+    },
+    {
+      "element": "vine",
+      "file": "png/element-vine-8f.png",
+      "duration_seconds": 0.36,
+      "duration_status": "art recommendation; receiver to align with existing route",
+      "purpose": "A green plant whip quickly extends, flexes and recoils into detached leaves.",
+      "source_dimensions": [
+        1774,
+        887
+      ],
+      "source": "sources/vine_v1.png",
+      "generated_with": "built-in image_gen",
+      "generation_prompts": [
+        "prompts/vine_v1.txt"
+      ],
+      "sha256": "d0d93287a6842334e9ceb99d5fafec6e16e4d9850c64ca0f2edf6102ba873809",
+      "minimum_visible_gutter_256px_at_alpha16": 31.71,
+      "alpha_mass_vs_peak": [
+        0.156,
+        0.401,
+        1.0,
+        0.434,
+        0.27,
+        0.123,
+        0.027,
+        0.006
+      ]
+    },
+    {
+      "element": "earth",
+      "file": "png/element-earth-8f.png",
+      "duration_seconds": 0.36,
+      "duration_status": "art recommendation; receiver to align with existing route",
+      "purpose": "Irregular brown soil and stone chunks erupt briefly upward and fade to small gravel.",
+      "source_dimensions": [
+        1774,
+        887
+      ],
+      "source": "sources/earth_v1.png",
+      "generated_with": "built-in image_gen",
+      "generation_prompts": [
+        "prompts/earth_v1.txt"
+      ],
+      "sha256": "adb88d88a52b60b0da36030200b983f6c33e878c6ff426849980e9ee92c74b7b",
+      "minimum_visible_gutter_256px_at_alpha16": 21.96,
+      "alpha_mass_vs_peak": [
+        0.056,
+        0.455,
+        1.0,
+        0.329,
+        0.089,
+        0.025,
+        0.009,
+        0.003
+      ]
+    }
+  ]
+}

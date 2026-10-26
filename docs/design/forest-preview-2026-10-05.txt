@@ -1,0 +1,26 @@
+Forest preview handoff (2026-10-05)
+
+Distribution: aa553ab Android build succeeded (0 errors, 21 warnings).
+APK size: 100717288 bytes. SHA256 C26DB1196D78E9EAFCA15F72EE154DAEF213635BF49DFB8C150E655C4C0CCFD3.
+New APK is WITHHELD locally. No Drive upload was performed; no new Drive file ID exists.
+Do not distribute until the user accepts the map art direction. Existing APKs retained.
+
+Review switches: -forest-preview legacy restores the pre-full-stage forest plus 10px/3.0 far DOF.
+-forest-preview night uses v3 geometry with a separate night-lighting experiment.
+Omit the flag for the unchanged v3 default. Act2/3, attacks, palettes, particle implementation and character assets are unchanged.
+Windows build of these switches succeeded (0 errors, 16 warnings).
+Two static scenes per switch captured on native Windows player, 1920x886, phone tier, UISCALE=1.6, seed4242, isolated saves.
+Camera position (0,2.59801269,-23.005352), Euler(7.00000143,0,0), FOV22 match old/v3/night captures exactly. All four layout dumps have zero errors.
+The first night preview is NOT accepted: distant forest is too dark after reducing the white fog band. Readable characters/UI alone do not establish visual quality. Restore selective distant moonlit fog and quiet the noisy textures with the next source assets. Warm lantern light pool also needs inspection.
+
+Library old forest: libfile_1970b498267881919fb69b7d5955e4c6, version0.
+Library color/grayscale/480px comparison: libfile_1b5fa0659840819193575eba5cdfa11b, version0.
+Library aa553ab attack clip (8s; withheld map): libfile_fc247277a1148191b9562bccbdd60939, version0.
+
+Prepared AFTER the preview build, not yet compiled: -forest-preview night -forest-look ABSOLUTE_JSON_PATH appends a local StageLook JSON override after the phone layer. Optional forestPreview keys staticNeutral, gradeWeight, vignetteWeight, ambientScale, backdropScale, lanternIntensity, lanternRange adjust the runtime material clones and lantern. This is explicit review-only, no settings/save persistence. Compile with the next asset integration, then reuse the binary for JSON lighting iterations.
+
+aa553ab regression before distribution hold: tempo9/9;26actions/25accepted;all commands same-frame;visuals drained<=50frames. Synchronous command mean24.76ms/max87.26ms, NOT device FPS/latency.
+Mizore idle8/attack4/block4 unique frames; water/guard/ice/fire HP39/39/37/25;particle peak16;runtime exceptions0.
+Three leaders,4 enemies,act2/3 captured and viewed. Current large-enemy/PC recheck was interrupted by art-direction change; previous v2 checks are historical only.
+No connected Android device; installation/FPS/heat are untested. Headless/build warnings remain. Normal Windows save/report hashes unchanged from the isolation baseline (4/4); this does not override earlier disclosed save incident history.
+main remains25270c9c511a2ceb4dff4806cf9deb7c50c78709; no remote push.

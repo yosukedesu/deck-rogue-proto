@@ -1,0 +1,26 @@
+V5 local fixes and night review, 2026-10-05
+
+CONFIRMED CAUSES
+1. Screen(1218,242) hits GLB StageBatch_00 component34. Seam-welded connected components69 exactly match source-map names69 in export order; component34 corresponds to bank_rock_12. Component faces1728..1847(120),94 seam vertices. Unity bounds min(3.207416,1.090831,10.207147),max(4.218485,1.833440,11.084440);center(3.712950,1.462136,10.645793). Blender center=(3.712950,10.645793,1.462136). Center-bottom y1.095613, underlying exported moss surface y0.790005:gap0.305608m. Supplied source contact audit says embedded0.12m after shift-0.20533, which contradicts the actual exported GLB. Cloud source should verify bank_rock_12 against final evaluated/exported support geometry.
+   Review-only local repair shifts the uniquely bounded94 vertices down0.36m, giving approx0.054m embed at center. Applies only when the bounds and exact94 count match; no other model revision is partly moved. Runtime logs confirm execution. No normals/UV changes and no added renderer. Original v5 source assets retained.
+2. Horizontal y163 boundary: GLB ray at(740,158) misses source geometry; ray at(740,170) hits StageBatch_12 face1097, source-order Farfield_Ground_Back. hideMist does not alter boundary; hideFarfield removes it; hideBackdrop darkens upper region but leaves lower bright terrain. Background material Fog0.35 vs terrain full fog was the cause. backdropFog1 removes seam while keeping geometry. Sample RGB mean difference across boundary drops approx(75,56,59) to(5,4,5). Six actual-player diagnostic captures stored in workspace.
+3. Full-stage mesh rendering masks were1, omitting Environment bit4. Runtime now ORs bit4, preserving existing default-layer lantern lights while enabling environment shadow/light settings. Initial replacement with4 was caught and corrected; final isOR, not replacement.
+4. Lantern ground auxiliary light at fixed y0.55 was inside pedestal(max y2.72). It now moves1.5m toward the camera, queries actual support and sits0.9m above it. Runtime reports floor0.422433 and light(-6.81,1.32,2.54). Visible localized warm pool reaches stone steps/ground.
+
+ART REVIEW SETTINGS
+Final JSON forest-v5-review-fixed.json, passed with -forest-preview night -forest-look ABSOLUTE_PATH. No gameplay default or user save preference selected; omit preview flags to retain normal v5 integration. Legacy preview still available.
+Static-only moss scale0.62/saturation0.55; paving scale0.48/saturation0.3 with cool-gray tint. These alter natural ambient/static direct response ONLY. Marked attack lights still use original albedo/high-energy color path. Character shader, poses, input, attack timing and palettes untouched.
+Cold far fog start22/end48 (existing camera-distance scaling), bright distant lobe, lower backlight illumination1.4 to avoid directly washing trunks. Height fog begins deeper. Soft distance DOF retained max10/lensFar3. Dark foreground retained; environment-only broad battle fill2 and small warm ground point5, no shadows on these2 extra points.
+Performance note: +2 unshadowed environment point lights and one temporary mesh clone at scene build, released by existing Clear ownership. No per-frame allocations introduced. Android GPU/FPS and multi-impact light-limit behavior not rebenchmarked for this art draft.
+
+VERIFICATION
+Latest Windows build succeeded(errors0,warnings16),22seconds. Earlier shader build succeeded236seconds. Native Windows player,1920x886,phone,UISCALE1.6,seed4242,isolated save, same camera. Final baseline/quad plus15fire PNGs; all layout errors0,scene gates pass,triangles17004/renderers19/materials16. Fire impact retains strong red/orange ground reception and Mizore attack pose. Color/grayscale/480px comparison viewed. Full tempo/animation/platform regression not rerun pending art approval. No browser.
+
+ARTIFACTS
+Raw corrected candidate libfile_8aa77708af70819190ace153fb90c5d9 version1 file_00000000d55481f59978464c39860308.
+Legacy/before/after comparison libfile_af6f54f960e88191a59e9f5706e2364b version2 file_00000000de4081f5bf14454a3bf75e4a.
+Fire libfile_24a287033180819199baef05ebf7cde4 version1 file_00000000c44c81f5a72c3ff741c18f84.
+Cause-switch image libfile_44cd6c32eafc8191bf2ec8f92ee65960.
+GLB ray/component evidence libfile_6f07826cca308191b5bf5e11b1bbad56.
+
+No new APK; no Drive upload; aa553ab WITHHELD APK remains local. Main/remotes untouched. Visual direction still awaits user judgment; no claim of final Octopath-level quality. Earlier5-face UV fallback/6-triangle import difference remains documented and uninvestigated.

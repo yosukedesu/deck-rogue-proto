@@ -1,0 +1,1236 @@
+{
+  "main": {
+    "timing-enemy": {
+      "frameMedianMs": 16.68,
+      "frameP95Ms": 16.7,
+      "mainThreadMedianMs": 16.66,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "endTurn",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_TurnEnded",
+          "afterInputMs": 17.91
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 24.09
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_EnemyActionExecuting",
+          "afterInputMs": 600.12
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 933.34
+        },
+        {
+          "kind": "animation",
+          "detail": "player:hurt",
+          "afterInputMs": 936.99
+        },
+        {
+          "kind": "float",
+          "detail": "-7",
+          "afterInputMs": 937.35
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_TurnStarted",
+          "afterInputMs": 1333.45
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_EnemyIntentDeclared",
+          "afterInputMs": 1933.44
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 2053.81
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.3",
+          "afterInputMs": 2064.85
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0.04:0.3",
+          "afterInputMs": 2064.88
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0.08:0.3",
+          "afterInputMs": 2064.9
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0.12:0.3",
+          "afterInputMs": 2064.92
+        }
+      ]
+    },
+    "timing-idle": {
+      "frameMedianMs": 16.68,
+      "frameP95Ms": 16.7,
+      "mainThreadMedianMs": 16.66,
+      "events": []
+    },
+    "timing-multi": {
+      "frameMedianMs": 16.66,
+      "frameP95Ms": 16.68,
+      "mainThreadMedianMs": 16.66,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "green_double_lash",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 4.21
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 20.83
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 20.86
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 20.9
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 133.36
+        },
+        {
+          "kind": "float",
+          "detail": "5",
+          "afterInputMs": 135.45
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 250.19
+        },
+        {
+          "kind": "float",
+          "detail": "5",
+          "afterInputMs": 251.31
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 266.57
+        }
+      ]
+    },
+    "timing-rapid": {
+      "frameMedianMs": 16.66,
+      "frameP95Ms": 16.66,
+      "mainThreadMedianMs": 16.66,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 2.5
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 13.83
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 13.87
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 13.9
+        },
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 50.05
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 66.25
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 66.29
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 66.52
+        },
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 100.17
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 114.62
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 114.66
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 114.69
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 133.47
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 135.06
+        },
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 150.06
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 169.66
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 169.8
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 169.84
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 183.48
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 184.53
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 236.32
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 237.3
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 266.7
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 283.62
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 284.62
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 316.74
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 366.86
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 416.8
+        }
+      ]
+    },
+    "timing-single": {
+      "frameMedianMs": 16.66,
+      "frameP95Ms": 16.68,
+      "mainThreadMedianMs": 16.67,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 40.0
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 83.86
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 86.75
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 90.94
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 150.5
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 166.72
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 250.21
+        }
+      ]
+    },
+    "timing-spell": {
+      "frameMedianMs": 16.68,
+      "frameP95Ms": 16.7,
+      "mainThreadMedianMs": 16.67,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "blue_strike",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 36.41
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 39.89
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 149.99
+        },
+        {
+          "kind": "float",
+          "detail": "5",
+          "afterInputMs": 151.29
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_IceBlockGained",
+          "afterInputMs": 266.75
+        },
+        {
+          "kind": "float",
+          "detail": "\u6c37\u58c1 +1",
+          "afterInputMs": 268.01
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 283.33
+        }
+      ]
+    }
+  },
+  "shipped": {
+    "timing-enemy": {
+      "frameMedianMs": 16.68,
+      "frameP95Ms": 16.7,
+      "mainThreadMedianMs": 16.67,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "endTurn",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 21.26
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.3",
+          "afterInputMs": 32.22
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0.04:0.3",
+          "afterInputMs": 32.26
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0.08:0.3",
+          "afterInputMs": 32.28
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0.12:0.3",
+          "afterInputMs": 32.3
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_TurnEnded",
+          "afterInputMs": 63.46
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 68.46
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_EnemyActionExecuting",
+          "afterInputMs": 133.3
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 250.03
+        },
+        {
+          "kind": "animation",
+          "detail": "enemy0:attack",
+          "afterInputMs": 250.74
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_TurnStarted",
+          "afterInputMs": 250.94
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_EnemyIntentDeclared",
+          "afterInputMs": 366.67
+        },
+        {
+          "kind": "animation",
+          "detail": "player:hurt",
+          "afterInputMs": 385.4
+        },
+        {
+          "kind": "animation",
+          "detail": "player:hurt",
+          "afterInputMs": 385.41
+        },
+        {
+          "kind": "float",
+          "detail": "-7",
+          "afterInputMs": 385.87
+        }
+      ]
+    },
+    "timing-idle": {
+      "frameMedianMs": 16.68,
+      "frameP95Ms": 16.7,
+      "mainThreadMedianMs": 16.67,
+      "events": []
+    },
+    "timing-multi": {
+      "frameMedianMs": 16.66,
+      "frameP95Ms": 16.68,
+      "mainThreadMedianMs": 16.66,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "green_double_lash",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 2.54
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.16",
+          "afterInputMs": 17.75
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 19.52
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 19.54
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 19.59
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 116.6
+        },
+        {
+          "kind": "animation",
+          "detail": "enemy0:hurt",
+          "afterInputMs": 118.47
+        },
+        {
+          "kind": "float",
+          "detail": "5",
+          "afterInputMs": 119.16
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 133.39
+        },
+        {
+          "kind": "animation",
+          "detail": "enemy0:hurt",
+          "afterInputMs": 133.57
+        },
+        {
+          "kind": "float",
+          "detail": "5",
+          "afterInputMs": 133.81
+        }
+      ]
+    },
+    "timing-rapid": {
+      "frameMedianMs": 16.66,
+      "frameP95Ms": 16.66,
+      "mainThreadMedianMs": 16.66,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 2.65
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.16",
+          "afterInputMs": 12.91
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 14.68
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 14.69
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 14.74
+        },
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 50.02
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.16",
+          "afterInputMs": 63.59
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 65.47
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 65.49
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 65.53
+        },
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 100.19
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.16",
+          "afterInputMs": 112.98
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 114.79
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 114.81
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 114.85
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 133.43
+        },
+        {
+          "kind": "animation",
+          "detail": "enemy0:hurt",
+          "afterInputMs": 133.83
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 134.09
+        },
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 150.24
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.16",
+          "afterInputMs": 164.76
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 166.56
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 166.57
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 166.63
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 183.64
+        },
+        {
+          "kind": "animation",
+          "detail": "enemy0:hurt",
+          "afterInputMs": 184.26
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 184.55
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 235.67
+        },
+        {
+          "kind": "animation",
+          "detail": "enemy0:hurt",
+          "afterInputMs": 236.26
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 236.6
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 283.48
+        },
+        {
+          "kind": "animation",
+          "detail": "enemy0:hurt",
+          "afterInputMs": 283.89
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 284.18
+        }
+      ]
+    },
+    "timing-single": {
+      "frameMedianMs": 16.66,
+      "frameP95Ms": 16.7,
+      "mainThreadMedianMs": 16.67,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 33.62
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.16",
+          "afterInputMs": 49.39
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 96.47
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 99.52
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 106.56
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 167.04
+        },
+        {
+          "kind": "animation",
+          "detail": "enemy0:hurt",
+          "afterInputMs": 179.85
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 180.84
+        }
+      ]
+    },
+    "timing-spell": {
+      "frameMedianMs": 16.66,
+      "frameP95Ms": 16.7,
+      "mainThreadMedianMs": 16.67,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "blue_strike",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 3.15
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.16",
+          "afterInputMs": 13.23
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 41.4
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 41.45
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 42.82
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 102.12
+        },
+        {
+          "kind": "animation",
+          "detail": "enemy0:hurt",
+          "afterInputMs": 102.95
+        },
+        {
+          "kind": "float",
+          "detail": "5",
+          "afterInputMs": 103.22
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_IceBlockGained",
+          "afterInputMs": 116.88
+        },
+        {
+          "kind": "float",
+          "detail": "\u6c37\u58c1 +1",
+          "afterInputMs": 117.84
+        }
+      ]
+    }
+  },
+  "fixed": {
+    "timing-enemy": {
+      "frameMedianMs": 16.66,
+      "frameP95Ms": 16.68,
+      "mainThreadMedianMs": 16.66,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "endTurn",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 20.44
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.3",
+          "afterInputMs": 32.85
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0.04:0.3",
+          "afterInputMs": 32.89
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0.08:0.3",
+          "afterInputMs": 32.91
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0.12:0.3",
+          "afterInputMs": 32.93
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_TurnEnded",
+          "afterInputMs": 65.85
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 72.18
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_EnemyActionExecuting",
+          "afterInputMs": 616.69
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 949.96
+        },
+        {
+          "kind": "animation",
+          "detail": "player:hurt",
+          "afterInputMs": 952.25
+        },
+        {
+          "kind": "float",
+          "detail": "-7",
+          "afterInputMs": 952.64
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_TurnStarted",
+          "afterInputMs": 1333.35
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_EnemyIntentDeclared",
+          "afterInputMs": 1933.31
+        }
+      ]
+    },
+    "timing-idle": {
+      "frameMedianMs": 16.68,
+      "frameP95Ms": 16.68,
+      "mainThreadMedianMs": 16.66,
+      "events": []
+    },
+    "timing-multi": {
+      "frameMedianMs": 16.68,
+      "frameP95Ms": 16.7,
+      "mainThreadMedianMs": 16.66,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "green_double_lash",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 2.51
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 20.74
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 20.79
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 20.85
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 133.34
+        },
+        {
+          "kind": "float",
+          "detail": "5",
+          "afterInputMs": 136.13
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 250.11
+        },
+        {
+          "kind": "float",
+          "detail": "5",
+          "afterInputMs": 250.56
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 266.9
+        }
+      ]
+    },
+    "timing-rapid": {
+      "frameMedianMs": 16.66,
+      "frameP95Ms": 16.7,
+      "mainThreadMedianMs": 16.66,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 2.51
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 15.16
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 15.21
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 15.26
+        },
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 50.11
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 65.2
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 65.26
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 65.34
+        },
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 100.18
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 117.16
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 117.27
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 117.35
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 120.33
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 121.51
+        },
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 150.16
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 165.14
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 165.22
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 165.29
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 168.22
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 169.0
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 233.41
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 234.21
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 250.0
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 283.4
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 284.12
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 300.0
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 366.79
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 416.73
+        }
+      ]
+    },
+    "timing-single": {
+      "frameMedianMs": 16.66,
+      "frameP95Ms": 16.7,
+      "mainThreadMedianMs": 16.66,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "green_strike",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 33.46
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 81.84
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 84.89
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 91.09
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 150.12
+        },
+        {
+          "kind": "float",
+          "detail": "6",
+          "afterInputMs": 162.68
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 266.83
+        }
+      ]
+    },
+    "timing-spell": {
+      "frameMedianMs": 16.66,
+      "frameP95Ms": 16.68,
+      "mainThreadMedianMs": 16.66,
+      "events": [
+        {
+          "kind": "input",
+          "detail": "blue_strike",
+          "afterInputMs": 0.0
+        },
+        {
+          "kind": "animation",
+          "detail": "player:idle",
+          "afterInputMs": 4.01
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_CardPlayed",
+          "afterInputMs": 39.17
+        },
+        {
+          "kind": "animation",
+          "detail": "player:attack",
+          "afterInputMs": 39.26
+        },
+        {
+          "kind": "inputReturned",
+          "detail": "",
+          "afterInputMs": 40.42
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_DamageDealt",
+          "afterInputMs": 116.77
+        },
+        {
+          "kind": "float",
+          "detail": "5",
+          "afterInputMs": 118.21
+        },
+        {
+          "kind": "show",
+          "detail": "GameEvent_IceBlockGained",
+          "afterInputMs": 233.53
+        },
+        {
+          "kind": "float",
+          "detail": "\u6c37\u58c1 +1",
+          "afterInputMs": 234.93
+        },
+        {
+          "kind": "cardFlight",
+          "detail": "pile-discard:0:0.25",
+          "afterInputMs": 249.95
+        }
+      ]
+    }
+  }
+}

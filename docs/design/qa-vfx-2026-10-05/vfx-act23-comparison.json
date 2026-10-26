@@ -1,0 +1,12 @@
+{
+  "act2-1.png": {
+    "meanAbsoluteRGB8": 8.151492350137949e-05,
+    "changedPixelsPercent": 0.0004114936042136945,
+    "over8RGBPixelsPercent": 0.00029392400300978175
+  },
+  "act3-1.png": {
+    "meanAbsoluteRGB8": 7.250125407574618e-06,
+    "changedPixelsPercent": 0.00029392400300978175,
+    "over8RGBPixelsPercent": 5.878480060195636e-05
+  }
+}

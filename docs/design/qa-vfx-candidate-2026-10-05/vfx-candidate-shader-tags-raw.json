@@ -1,0 +1,104 @@
+[
+  {
+    "shader": "DeckRogue/WorldBattleFx",
+    "platforms": [
+      9,
+      18
+    ],
+    "passes": [
+      {
+        "name": "",
+        "tags": [],
+        "stateTags": [
+          [
+            "LIGHTMODE",
+            "UniversalForward"
+          ],
+          [
+            "QUEUE",
+            "Transparent+10"
+          ],
+          [
+            "RenderPipeline",
+            "UniversalPipeline"
+          ],
+          [
+            "RenderType",
+            "Transparent"
+          ]
+        ],
+        "nameIndices": [
+          [
+            "UnityPerDraw",
+            1
+          ],
+          [
+            "UnityPerMaterial",
+            0
+          ],
+          [
+            "_AtlasRect",
+            3
+          ],
+          [
+            "_Tint",
+            2
+          ],
+          [
+            "unity_ObjectToWorld",
+            4
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "shader": "DeckRogue/ElementBattleFx",
+    "platforms": [
+      9,
+      18
+    ],
+    "passes": [
+      {
+        "name": "",
+        "tags": [],
+        "stateTags": [
+          [
+            "LIGHTMODE",
+            "ElementAfterPost"
+          ],
+          [
+            "QUEUE",
+            "Transparent+10"
+          ],
+          [
+            "RenderPipeline",
+            "UniversalPipeline"
+          ],
+          [
+            "RenderType",
+            "Transparent"
+          ]
+        ],
+        "nameIndices": [
+          [
+            "UnityPerDraw",
+            1
+          ],
+          [
+            "UnityPerMaterial",
+            0
+          ],
+          [
+            "_AtlasRect",
+            2
+          ],
+          [
+            "unity_ObjectToWorld",
+            3
+          ]
+        ]
+      }
+    ]
+  }
+]

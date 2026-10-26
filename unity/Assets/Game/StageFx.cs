@@ -38,14 +38,14 @@ namespace DeckRogue.Game
         /// <summary>HitLight の中身。hold = 灯してから dur のこの割合までは弱めない (その後 (残り÷(1−hold))² で消える)。kind・key は記録 (dumplayout・ログ) 用。
         /// range = 届く距離 (0 以下 = 設計図の hitLight.range。段2 の寄りの光だけが渡す)・mark = 技の光の印 (StageHitReceive.Mark。寄りの光だけ true)。
         /// 返り値 = 灯した光の番号 (MotionLight の灯し直しに使う。灯さなかったら 0)</summary>
-        static long LightAt(Vector3 world, Color color, float intensity, float dur, float hold, bool shadow, string kind, string key, float range = -1f, bool mark = false)
+        static long LightAt(Vector3 world, Color color, float intensity, float dur, float hold, bool shadow, string kind, string key, float range = -1f, bool mark = false, Slot assigned = null)
         {
             if (!Live) return 0;
             if (!(intensity > 0f) || !(dur > 0f) || float.IsInfinity(intensity) || float.IsInfinity(dur)) return 0;
             if (float.IsNaN(world.x) || float.IsNaN(world.y) || float.IsNaN(world.z)) return 0;
             var h = StageLook.Current != null ? StageLook.Current.Hit : Defaults;
             Prepare(h);
-            var s = Pick();
+            var s = assigned ?? Pick();
             if (s == null) return 0;
             bool evicted = s.Lit;
             if (evicted) _evicted++;
@@ -59,6 +59,7 @@ namespace DeckRogue.Game
             s.T = 0f;
             s.Dur = dur;
             s.Hold = Mathf.Clamp(hold, 0f, 0.9f);
+            s.AuthoredHold=0f;s.DecayTau=0f;s.ReleasePhase=0f;s.AuthoredStarted=0f;s.ContractOwner=null;
             s.Seq = ++_seq;
             s.Kind = kind;
             s.Key = key;
@@ -74,7 +75,23 @@ namespace DeckRogue.Game
             if (HD2DFlags.Det || HD2DFlags.DumpLayout)
                 Debug.Log("[StageFx] 技の光 " + kind + (key != null ? " " + key : "") + " 強さ " + F(intensity) + " " + F(dur) + "秒" + (s.Borrowed ? " 影" : "")
                     + " 灯っている " + lit + "/" + Math.Min(_want, _slots.Count) + (evicted ? " (いちばん古い光を使い回した)" : "") + " frame " + Time.frameCount);
+            OwnPresentationLight(s);
             return s.Seq;
+        }
+        static void OwnPresentationLight(Slot slot) {
+            int version=++slot.PresentationVersion;long sequence=slot.Seq;
+            slot.PresentationOwned=Tween.PresentationActive;
+            if(slot.PresentationOwned)Tween.TrackPresentation(()=>slot.Lit && slot.Seq==sequence && slot.PresentationVersion==version,
+                ()=>RetirePresentationLight(slot,sequence,version));
+        }
+        static void RetirePresentationLight(Slot slot,long sequence,int version) {
+            if(slot==null || slot.Seq!=sequence || slot.PresentationVersion!=version || !slot.PresentationOwned)return;
+            slot.Lit=false;slot.PresentationOwned=false;
+            if(slot.Light!=null){slot.Light.enabled=false;slot.Light.intensity=0f;}
+            Release(slot);Unmark(slot);
+        }
+        public static void CancelPresentationLights() {
+            foreach(var slot in _slots)if(slot.PresentationOwned)RetirePresentationLight(slot,slot.Seq,slot.PresentationVersion);
         }
 
         // ================================================================ 演出からの口 (P13・W2。Presenter が2Dの当たりと同じ所で呼ぶ)
@@ -87,12 +104,14 @@ namespace DeckRogue.Game
         /// style = 当たりの形 (Presenter.CardHitStyle: slash・fang・horn・vine・stomp・spell・light・spark)。色は形ごと (物理＝暖かい白・spell＝脈の青緑・light＝暖色・spark＝橙)。
         /// big = 大きい当たり (2Dと同じ: 15以上か急所) → 強さ×bigMul (既定 1.6)・影 (PC だけ)。蔦は鞭の先が届く vineDelay (既定 0.13 秒) 後に灯す
         /// </summary>
-        public static void PlayerHit(string key, string style, bool big)
+        public static void PlayerHit(string key, string style, bool big, Color? effectColor=null,DamageVfxIntensity.Visual visual=null)
         {
             if (!Live) return;
+            if(Stage.CombatWorld) { WorldStrike(key,big,CombatPalette.ForFx(style,effectColor??Tune.ColorFor(style)),visual?.Light); return; }
             var t = Tune;
             Color c = t.ColorFor(style);
-            float k = big ? t.BigMul : 1f;
+            float k = visual?.Light??(big ? t.BigMul : 1f);
+            if(visual!=null){big=visual.Light>1f;SyncReceiptShadow(key,big);}
             float delay = style == "vine" ? t.VineDelay : 0f;
             At(key, new Vector2(0.5f, t.Height), c, t.Intensity * k, t.Dur, t.Hold, big && ShadowOk, "hit:" + (style ?? "slash") + (big ? "+" : ""), delay);
         }
@@ -101,12 +120,13 @@ namespace DeckRogue.Game
         /// 敵→自分の当たり (Presenter の HitFx と同じ所。とげの反射も)。key = 自分の板 ("player")。tint = 2Dの飛び道具・光線の色 (null = 朱)。
         /// big = 2Dの大きい当たり (HP を12以上失った) → 強さ×bigMul・影 (PC だけ)
         /// </summary>
-        public static void FoeHit(string key, Color? tint, bool big)
+        public static void FoeHit(string key, Color? tint, bool big,DamageVfxIntensity.Visual visual=null)
         {
             if (!Live) return;
             var t = Tune;
             Color c = tint.HasValue ? tint.Value : t.Foe;
-            float k = (big ? t.BigMul : 1f) * t.FoeMul;
+            float k = (visual?.Light??(big ? t.BigMul : 1f)) * t.FoeMul;
+            if(visual!=null){big=visual.Light>1f;SyncReceiptShadow(key,big);}
             At(key, new Vector2(0.5f, t.Height), c, t.Intensity * k, t.Dur, t.Hold, big && ShadowOk, "foe" + (big ? "+" : ""), 0f);
         }
 
@@ -125,23 +145,242 @@ namespace DeckRogue.Game
         /// <summary>
         /// 呪文の構え (Presenter の CastFx と同じ所)。key = 自分の板。体の前 (敵の側) で、色は形 (spell＝脈の青緑・light＝暖色)。castDur (既定 0.3 秒)・影なし
         /// </summary>
-        public static void Cast(string key, string style)
+        public static void Cast(string key, string style, Color? effectColor=null)
         {
             if (!Live) return;
             var t = Tune;
-            At(key, new Vector2(0.78f, 0.5f), t.ColorFor(style), t.Intensity * t.CastMul, t.CastDur, t.Hold, false, "cast:" + (style ?? "spell"), 0f);
+            At(key, new Vector2(0.78f, 0.5f), effectColor??t.ColorFor(style), t.Intensity * t.CastMul, t.CastDur, t.Hold, false, "cast:" + (style ?? "spell"), 0f);
         }
 
         /// <summary>
         /// とどめ (戦闘を決めた一撃。Presenter の HitStop と同じ所)。key = 倒れる敵の板。白・finishDur (既定 0.3 秒)・強さ×finishMul (既定 2)・影 (PC だけ)。
         /// 同じ一撃の PlayerHit の代わりに呼ぶ (2つ灯さない)。ヒットストップの間は時間がゆっくりなので長く残る
         /// </summary>
-        public static void Finish(string key)
+        public static void Finish(string key, Color? effectColor=null,DamageVfxIntensity.Visual visual=null)
         {
             if (!Live) return;
             var t = Tune;
-            At(key, new Vector2(0.5f, t.Height), t.FinishColor, t.Intensity * t.FinishMul, t.FinishDur, t.Hold, ShadowOk, "finish", 0f);
+            if(Stage.CombatWorld && effectColor.HasValue){WorldStrike(key,true,effectColor.Value,visual?.Light);return;}
+            At(key, new Vector2(0.5f, t.Height), t.FinishColor, t.Intensity * (visual?.Light??t.FinishMul), t.FinishDur, t.Hold, visual==null&&ShadowOk, "finish", 0f);
         }
+
+        static readonly Dictionary<string,long> _worldContacts = new Dictionary<string,long>();
+        static long _worldBounce;
+        // Contact + shared broad bounce. Repeated hits refresh the same light, never extinguish it.
+        // Four enemies + player + one bounce fit the bounded six-light pool.
+        // Preserve the approved world light; weak mode exists only for isolated autopilot comparison.
+        public static void ElementHit(string key,string element,Color color,bool heavy=false,DamageVfxIntensity.Visual visual=null) {
+            if(!Live)return;
+            if(ElementBattleFx.LightReviewMode!="weak"){WorldStrike(key,heavy,color,visual?.Light);return;}
+            if(visual!=null)SyncReceiptShadow(key,false);
+            var point=Where(key,new Vector2(.5f,.48f));if(!point.HasValue)return;
+            float contact=element=="dark"?1.6f:element=="earth"?1.2f:element=="vine"?2f:4f;
+            float bouncePower=element=="earth"?4f:element=="vine"?6f:element=="dark"?9f:12f;
+            float power=visual?.Light??(heavy?1.2f:1f);var p=point.Value;
+            _worldContacts.TryGetValue(key,out var reuse);
+            _worldContacts[key]=MotionLight(p,Color.Lerp(color,Color.white,.15f),contact*power,5f,.24f,.18f,false,"element-contact",key,reuse);
+            var bounce=p+Vector3.up*1.2f;var source=UnitPoint("player",new Vector2(.5f,.5f));
+            if(source.HasValue)bounce=Vector3.Lerp(p,source.Value,.3f)+Vector3.up*1.2f;
+            _worldBounce=MotionLight(bounce,color,bouncePower*power,11f,.30f,.18f,false,"element-bounce",key,_worldBounce);
+        }
+
+        // A reused large contact must relinquish its shadow for a later bounded small
+        // receipt. Only the new policy calls this; legacy null callers keep their behavior.
+        static void SyncReceiptShadow(string key,bool requested) {
+            if(!Stage.CombatWorld || (requested && ShadowOk) || !_worldContacts.TryGetValue(key,out var sequence))return;
+            foreach(var slot in _slots)if(slot.Lit && slot.Seq==sequence){Release(slot);break;}
+        }
+        static void WorldStrike(string key,bool heavy,Color effectColor,float? finalPower=null) {
+            if(finalPower.HasValue){heavy=finalPower.Value>1f;SyncReceiptShadow(key,heavy);} // Do not retain raw/exposed heavy range on a small clamped receipt.
+            var point=Where(key,new Vector2(.5f,.48f));if(!point.HasValue)return;
+            float power=finalPower.HasValue?Mathf.Clamp(finalPower.Value,.50f,1.20f):heavy?1.65f:1f;var p=point.Value;
+            _worldContacts.TryGetValue(key,out var reuse);
+            _worldContacts[key]=MotionLight(p,Color.Lerp(effectColor,Color.white,.65f),18f*power,heavy?8.5f:7f,.32f,.3125f,heavy,"world-contact",key,reuse);
+            var bounce=p+Vector3.up*1.2f;
+            var source=UnitPoint("player",new Vector2(.5f,.5f));
+            if(source.HasValue)bounce=Vector3.Lerp(p,source.Value,.3f)+Vector3.up*1.2f;
+            _worldBounce=MotionLight(bounce,effectColor,28f*power,heavy?15f:13f,.34f,.2941176f,false,"world-bounce",key,_worldBounce);
+        }
+
+        // Three approved attack profiles use captured origins and their own color/decay.
+        // The strong world-contact/bounce peaks, ranges, bounded pool and shadow rules remain.
+        // No image frame, particle stop or local actor pause owns this clock.
+        // Existing scaled delta is intentional: terminal FinishSlow stretches lights with the scene.
+        public static void AuthoredAttackHit(string key,Vector3 feet,float height,string attack,bool heavy,string presentation=null,DamageVfxIntensity.Visual visual=null) {
+            if(!Live)return;
+            // Manifest colors are linear; Light.color accepts sRGB and URP converts back to linear.
+            var spec=WorldBattleFx.AttackProfile(attack);if(spec==null || spec.ContractLighting)return;
+            float power=visual?.Light??((heavy?1.65f:1f)*WorldBattleFx.AuthoredLightScale(presentation));
+            if(visual!=null){heavy=visual.Light>1f;SyncReceiptShadow(key,heavy);}
+            var p=feet+(Stage.LayoutRotation*Vector3.up)*(height*.48f);
+            var toward=Stage.Camera!=null?Stage.Camera.transform.position-p:-(Stage.LayoutRotation*Vector3.forward);
+            if(toward.sqrMagnitude>1e-6f)p+=toward.normalized*Tune.TowardCamera;
+            _worldContacts.TryGetValue(key,out var reuse);
+            _worldContacts[key]=MotionLight(p,spec.TargetColor.gamma,18f*power,heavy?8.5f:7f,spec.End,0f,heavy,"attack-v2-contact",key,reuse);
+            SetAuthoredDecay(_worldContacts[key],spec.LightHold,spec.TargetTau,spec.LightReleasePhase);
+            var bounce=p+Vector3.up*1.2f;
+            var source=UnitPoint("player",new Vector2(.5f,.5f));
+            if(source.HasValue)bounce=Vector3.Lerp(p,source.Value,.3f)+Vector3.up*1.2f;
+            _worldBounce=MotionLight(bounce,spec.FloorColor.gamma,28f*power,heavy?15f:13f,spec.End,0f,false,"attack-v2-floor",key,_worldBounce);
+            SetAuthoredDecay(_worldBounce,spec.LightHold,spec.FloorTau,spec.LightReleasePhase);
+        }
+        // New elemental families: one bounded contribution per valid renderer generation.
+        // Images and actor pauses never drive these clocks; actual Land owns age zero.
+        public sealed class ContractLightPlayback {
+            internal string Key; internal object Identity; internal int Epoch; internal long Serial;
+            internal Vector3 Impact,Feet; internal float Height,Start,Power; internal bool Active=true,Landed;
+            internal WorldBattleFx.AttackSpec Spec; internal Func<bool> Valid; internal Func<float> AgeProvider;
+            internal float Age=>AgeProvider!=null?AgeProvider():Landed?Time.time-Start:Mathf.Min(-.000001f,Time.time-Start);
+            public bool Land() {
+                if(!Active || (Valid!=null && !Valid()))return false;
+                if(!Landed){Landed=true;Start=Time.time;RefreshContractLights(true);}return true;
+            }
+            public void Cancel(){if(!Active)return;Active=false;RefreshContractLights(false);}
+        }
+        sealed class ContractLightGroup {
+            public string Key,MaxCombineGroup; public object Identity; public int Epoch; public long Serial;
+            public Slot Target,Floor; public bool Selected;
+            public readonly List<ContractLightPlayback> Contributions=new List<ContractLightPlayback>();
+        }
+        static readonly List<ContractLightPlayback> ContractContributions=new List<ContractLightPlayback>();
+        static readonly List<ContractLightGroup> ContractGroups=new List<ContractLightGroup>();
+        static long _contractSerial;static int _contractRecordEvictions,_contractGroupSuppressions;
+        static float _contractTargetSum,_contractFloorSum;
+        // Opt-in target-only candidates may decline light rather than replacing
+        // any older light/group. Read-only admission; existing callers are unchanged.
+        internal static bool CanAdmitContractTargetWithoutEviction(string key,object identity,int epoch,string maxCombineGroup) {
+            if(!Live || identity==null || ContractContributions.Count>=24)return false;
+            int lights=Math.Min(_want,_slots.Count),budget=Math.Max(1,lights/2);
+            if(ContractGroups.Count>budget)return false;
+            // Begin/Land refresh every group. Decline if any existing endpoint would
+            // have to be reacquired, which could otherwise evict a legacy light.
+            foreach(var group in ContractGroups) {
+                if(!group.Selected)return false;
+                bool target=false,floor=false;
+                foreach(var c in group.Contributions){target|=c.Spec.TargetPeakMultiplier>0f;floor|=c.Spec.FloorPeakMultiplier>0f;}
+                if(target && (group.Target==null || !group.Target.Lit || group.Target.Light==null || !ReferenceEquals(group.Target.ContractOwner,group)))return false;
+                if(floor && (group.Floor==null || !group.Floor.Lit || group.Floor.Light==null || !ReferenceEquals(group.Floor.ContractOwner,group)))return false;
+            }
+            foreach(var group in ContractGroups)
+                if(group.Key==key && group.Epoch==epoch && group.MaxCombineGroup==maxCombineGroup && ReferenceEquals(group.Identity,identity))
+                    return group.Target!=null && group.Target.Lit && group.Target.Light!=null && ReferenceEquals(group.Target.ContractOwner,group);
+            if(ContractGroups.Count>=budget)return false;
+            for(int i=0;i<lights;i++)if(_slots[i].Light!=null && !_slots[i].Lit)return true;
+            return false;
+        }
+        internal static ContractLightPlayback BeginContractAttackLight(string key,object identity,int epoch,Vector3 impact,Vector3 feet,float height,WorldBattleFx.AttackSpec spec,float age,bool heavy,Func<bool> valid,float presentationLightScale=1f,float? finalPower=null,Func<float> ageProvider=null) {
+            if(!Live || !spec.ContractLighting)return null;
+            EnsureDriver();
+            ContractContributions.RemoveAll(c=>!c.Active);
+            if(ContractContributions.Count>=24){ContractContributions[0].Active=false;ContractContributions.RemoveAt(0);_contractRecordEvictions++;}
+            var item=new ContractLightPlayback {Key=key,Identity=identity??new object(),Epoch=epoch,Impact=impact,Feet=feet,Height=height,Spec=spec,Start=Time.time-age,Power=finalPower.HasValue?Mathf.Clamp(finalPower.Value,.50f,1.20f):(heavy && !spec.StandardContractPower?1.65f:1f)*Mathf.Clamp(presentationLightScale,0f,1f),Valid=valid,AgeProvider=ageProvider,Serial=++_contractSerial};
+            ContractContributions.Add(item);RefreshContractLights(true);return item;
+        }
+        internal static float ContractEnvelope(WorldBattleFx.AttackSpec spec,float age,bool floor) {
+            if((floor?spec.FloorPeakMultiplier:spec.TargetPeakMultiplier)<=0f)return 0f; // Disabled endpoint neither dims others nor consumes its cap.
+            if(age<spec.Boundaries[0] || age>=spec.End)return 0f;
+            if(spec.Envelope!=null)return Mathf.Clamp01(spec.Envelope(age));
+            if(age<0f) {
+                float q=Mathf.Clamp01((age-spec.Boundaries[0])/-spec.Boundaries[0]);
+                return (floor?spec.FloorPreGain:spec.TargetPreGain)*Mathf.Pow(q,floor?spec.FloorPreExponent:spec.TargetPreExponent);
+            }
+            return AuthoredLightEnvelope(age,spec.LightHold,floor?spec.FloorTau:spec.TargetTau,spec.End);
+        }
+        internal static float ContractCapScale(float rawSum)=>rawSum>1.12f?1.12f/rawSum:1f;
+        static void RetireContractSlot(Slot slot,ContractLightGroup owner) {
+            if(slot==null || !ReferenceEquals(slot.ContractOwner,owner))return;
+            slot.ContractOwner=null;slot.Lit=false;
+            if(slot.Light!=null){slot.Light.enabled=false;slot.Light.intensity=0f;}
+            Release(slot);Unmark(slot);
+        }
+        static void ClearContractLights() {
+            foreach(var c in ContractContributions)c.Active=false;
+            foreach(var g in ContractGroups){RetireContractSlot(g.Target,g);RetireContractSlot(g.Floor,g);}
+            ContractContributions.Clear();ContractGroups.Clear();_contractTargetSum=_contractFloorSum=0f;
+        }
+        static Slot PickContractSlot(bool allowEviction) {
+            Slot best=null;long oldest=long.MaxValue;
+            for(int i=0;i<Math.Min(_want,_slots.Count);i++) {
+                var slot=_slots[i];if(slot.Light==null)continue;
+                if(!slot.Lit)return slot;
+                // Never steal another selected new-profile endpoint. Legacy ownership can
+                // be replaced only at Begin/Land/selection, not in an endless LateUpdate fight.
+                if(allowEviction && slot.ContractOwner==null && slot.Seq<oldest){oldest=slot.Seq;best=slot;}
+            }
+            return best;
+        }
+        static Slot UpdateContractEndpoint(ContractLightGroup group,Slot slot,bool floor,float capScale,bool allowEviction) {
+            bool enabled=false;foreach(var c in group.Contributions)if((floor?c.Spec.FloorPeakMultiplier:c.Spec.TargetPeakMultiplier)>0f){enabled=true;break;}
+            if(!enabled){RetireContractSlot(slot,group);return null;}
+            float weight=0f;Vector3 rgb=Vector3.zero;ContractLightPlayback latest=null;
+            foreach(var c in group.Contributions) {
+                float raw=ContractEnvelope(c.Spec,c.Age,floor),w=raw*c.Power*(floor?c.Spec.FloorPeakMultiplier:c.Spec.TargetPeakMultiplier);
+                var color=floor?c.Spec.FloorColor:c.Spec.TargetColor;
+                if(group.MaxCombineGroup!=null){if(w>weight){rgb=new Vector3(color.r,color.g,color.b)*w;weight=w;}}
+                else {rgb+=new Vector3(color.r,color.g,color.b)*w;weight+=w;}
+                if(latest==null || c.Serial>latest.Serial)latest=c;
+            }
+            if(latest==null)return slot;
+            Vector3 targetPoint=latest.Spec.TargetLightHeightFraction>=0f
+                ?latest.Impact+(Stage.LayoutRotation*Vector3.up)*(latest.Height*(latest.Spec.TargetLightHeightFraction-.5f)):latest.Impact;
+            Vector3 position=floor?latest.Feet+Vector3.up*(latest.Height*.20f):targetPoint;
+            float peak=(floor?28f:18f)*weight*capScale;
+            Color linear=weight>0f?new Color(rgb.x/weight,rgb.y/weight,rgb.z/weight):Color.black;
+            if(slot==null || !slot.Lit || !ReferenceEquals(slot.ContractOwner,group) || slot.Light==null) {
+                slot=PickContractSlot(allowEviction);if(slot==null){_missed++;return null;}
+                // LightAt's temporary full peak is overwritten synchronously below, before rendering.
+                LightAt(position,linear.gamma,Mathf.Max(.00001f,peak),latest.Spec.End,0f,false,floor?"contract-attack-floor":"contract-attack-target",latest.Key,floor?13f:7f,true,slot);
+                slot.ContractOwner=group;
+            }
+            var h=StageLook.Current!=null?StageLook.Current.Hit:Defaults;
+            slot.Light.transform.position=position;slot.Light.color=linear.gamma;
+            slot.Peak=peak*h.RefDist*h.RefDist;slot.Light.intensity=slot.Peak;slot.Light.enabled=peak>0f;
+            slot.T=latest.Age;slot.Dur=latest.Spec.End;
+            return slot;
+        }
+        static void RefreshContractLights(bool allowEviction) {
+            if(!Live){ClearContractLights();return;}
+            for(int i=ContractContributions.Count-1;i>=0;i--) {
+                var c=ContractContributions[i];
+                if(!c.Active || (c.Valid!=null && !c.Valid()) || (c.Landed && c.Age>=c.Spec.End)) {c.Active=false;ContractContributions.RemoveAt(i);}
+            }
+            foreach(var g in ContractGroups){g.Contributions.Clear();g.Serial=0;}
+            _contractTargetSum=_contractFloorSum=0f;
+            foreach(var c in ContractContributions) {
+                ContractLightGroup group=null;
+                foreach(var g in ContractGroups)if(g.Key==c.Key && g.Epoch==c.Epoch && g.MaxCombineGroup==c.Spec.MaxCombineGroup && ReferenceEquals(g.Identity,c.Identity)){group=g;break;}
+                if(group==null){group=new ContractLightGroup {Key=c.Key,Identity=c.Identity,Epoch=c.Epoch,MaxCombineGroup=c.Spec.MaxCombineGroup};ContractGroups.Add(group);}
+                group.Contributions.Add(c);group.Serial=Math.Max(group.Serial,c.Serial);
+
+            }
+            foreach(var group in ContractGroups) {
+                float target=0f,floor=0f;
+                foreach(var c in group.Contributions){float t=ContractEnvelope(c.Spec,c.Age,false),f=ContractEnvelope(c.Spec,c.Age,true);
+                    if(group.MaxCombineGroup!=null){target=Mathf.Max(target,t);floor=Mathf.Max(floor,f);}else {target+=t;floor+=f;}}
+                _contractTargetSum+=target;_contractFloorSum+=floor;
+            }
+            for(int i=ContractGroups.Count-1;i>=0;i--)if(ContractGroups[i].Contributions.Count==0) {
+                var g=ContractGroups[i];RetireContractSlot(g.Target,g);RetireContractSlot(g.Floor,g);ContractGroups.RemoveAt(i);
+            }
+            ContractGroups.Sort((a,b)=>b.Serial.CompareTo(a.Serial));
+            int lights=Math.Min(_want,_slots.Count),budget=Math.Max(1,lights/2);
+            for(int i=budget;i<ContractGroups.Count;i++) {
+                var g=ContractGroups[i];if(g.Selected)_contractGroupSuppressions++;
+                RetireContractSlot(g.Target,g);RetireContractSlot(g.Floor,g);g.Target=g.Floor=null;g.Selected=false;
+            }
+            for(int i=0;i<Math.Min(budget,ContractGroups.Count);i++) {
+                var g=ContractGroups[i];bool admit=allowEviction || !g.Selected;g.Selected=true;
+                g.Target=UpdateContractEndpoint(g,g.Target,false,ContractCapScale(_contractTargetSum),admit);
+                if(lights>1)g.Floor=UpdateContractEndpoint(g,g.Floor,true,ContractCapScale(_contractFloorSum),admit);
+            }
+        }
+
+        static void SetAuthoredDecay(long sequence,float hold,float tau,float releasePhase) {
+            if(sequence<=0)return;
+            foreach(var slot in _slots)if(slot.Lit && slot.Seq==sequence){slot.AuthoredHold=hold;slot.DecayTau=tau;slot.ReleasePhase=releasePhase;slot.AuthoredStarted=Time.time;break;}
+        }
+        internal static float AuthoredLightEnvelope(float elapsed,float hold,float tau,float end,float releasePhase=0f)=>
+            elapsed<0f || elapsed>=end?0f:elapsed<hold?1f:Mathf.Exp(-(elapsed-hold+releasePhase)/Mathf.Max(.0001f,tau));
 
         // ================================================================ 段2 の口 (2026-10-03 レーン M。呼ぶのは StageMotion だけ = 門 StageMotion.On が真の時だけ)
 
@@ -173,6 +412,7 @@ namespace DeckRogue.Game
                     s.T = 0f;
                     s.Dur = dur;
                     s.Hold = Mathf.Clamp(hold, 0f, 0.9f);
+                    s.AuthoredHold=0f;s.DecayTau=0f;s.ReleasePhase=0f;s.AuthoredStarted=0f;s.ContractOwner=null;
                     s.Kind = kind;
                     s.Key = key;
                     l.intensity = s.Peak;
@@ -181,6 +421,7 @@ namespace DeckRogue.Game
                     Remember(s, world, intensity, false);
                     if (HD2DFlags.Det || HD2DFlags.DumpLayout)
                         Debug.Log("[StageFx] 寄りの光を灯し直した " + kind + (key != null ? " " + key : "") + " 強さ " + F(intensity) + " 距離 " + F(l.range) + " " + F(dur) + "秒 frame " + Time.frameCount);
+                    OwnPresentationLight(s);
                     return s.Seq;
                 }
             }
@@ -203,6 +444,7 @@ namespace DeckRogue.Game
         /// </summary>
         internal static void MotionStop()
         {
+            ClearContractLights();
             foreach (var s in _slots)
             {
                 if (!s.Marked) continue;
@@ -221,13 +463,19 @@ namespace DeckRogue.Game
         {
             if (delay > 0f)
             {
+                // Preserve descendant ownership for a delayed presentation light;
+                // unrelated diagnostic lights retain their existing driver queue.
+                if(Tween.PresentationActive){Tween.After(delay,()=>At(key,v,color,intensity,dur,hold,shadow,kind,0f));return;}
                 _pending.Add(new Pending { Left = delay, Key = key, V = v, Color = color, Intensity = intensity, Dur = dur, Hold = hold, Shadow = shadow, Kind = kind });
                 EnsureDriver();
                 return;
             }
             Vector3? p = Where(key, v);
             if (!p.HasValue) { _missed++; return; }
-            LightAt(p.Value, color, intensity, dur, hold, shadow, kind, key);
+            if(Stage.CombatWorld) {
+                _worldContacts.TryGetValue(key,out var reuse);
+                _worldContacts[key]=MotionLight(p.Value,color,intensity,-1f,dur,hold,shadow,kind,key,reuse);
+            } else LightAt(p.Value, color, intensity, dur, hold, shadow, kind, key);
         }
 
         /// <summary>
@@ -290,8 +538,9 @@ namespace DeckRogue.Game
         sealed class Slot
         {
             public Light Light;
-            public float Peak, T, Dur, Hold;
-            public bool Lit, Borrowed;
+            public float Peak, T, Dur, Hold, AuthoredHold, DecayTau, ReleasePhase, AuthoredStarted;
+            public bool Lit, Borrowed, PresentationOwned; public int PresentationVersion;
+            public object ContractOwner;
             public bool Marked;       // 段2: 技の光の印 (StageHitReceive.Mark) を付けている (寄りの光に使った)
             public long Seq;          // 灯した順 (いちばん古い光を使い回すため)
             public string Kind, Key;  // 記録用 (dumplayout の extra.hitLight・ログ)
@@ -459,6 +708,9 @@ namespace DeckRogue.Game
             o["evicted"] = _evicted;
             o["missed"] = _missed;
             o["pending"] = _pending.Count;
+            o["contractContributions"]=ContractContributions.Count;o["contractGroups"]=ContractGroups.Count;
+            o["contractRecordEvictions"]=_contractRecordEvictions;o["contractGroupSuppressions"]=_contractGroupSuppressions;
+            o["contractTargetRawSum"]=_contractTargetSum;o["contractFloorRawSum"]=_contractFloorSum;
             var slots = new List<object>();
             foreach (var s in _slots)
             {
@@ -466,7 +718,7 @@ namespace DeckRogue.Game
                 slots.Add(new Dictionary<string, object>
                 {
                     { "lit", s.Lit }, { "kind", s.Kind }, { "key", s.Key }, { "pos", s.Light.transform.position }, { "color", s.Light.color },
-                    { "intensity", s.Light.intensity }, { "peak", s.Peak }, { "t", s.T }, { "dur", s.Dur }, { "shadow", s.Borrowed },
+                    { "intensity", s.Light.intensity }, { "peak", s.Peak }, { "t", s.T }, { "dur", s.Dur }, { "shadow", s.Borrowed }, { "authoredHold", s.AuthoredHold }, { "decayTau", s.DecayTau }, { "releasePhase", s.ReleasePhase },
                 });
             }
             o["slots"] = slots;
@@ -527,6 +779,7 @@ namespace DeckRogue.Game
         /// <summary>全部消して、借りていた影を返す (StageLook の Apply の頭と Restore が呼ぶ)。遅れて灯す待ちも捨て、記録を 0 へ戻す</summary>
         internal static void StopAll()
         {
+            ClearContractLights();
             if (_calls > 0 || _missed > 0)
                 Debug.Log("[StageFx] 技の光の記録: 灯した " + _calls + " 回・同時の最大 " + _maxLit + "・使い回し " + _evicted + " 回・灯せなかった " + _missed + " 回");
             foreach (var s in _slots)
@@ -607,8 +860,9 @@ namespace DeckRogue.Game
             foreach (var s in _slots)
             {
                 if (!s.Lit) continue;
+                if(s.ContractOwner!=null)continue;
                 if (s.Light == null) { s.Lit = false; Release(s); Unmark(s); continue; }
-                s.T += dt;
+                s.T = s.DecayTau>0f?Mathf.Max(0f,Time.time-s.AuthoredStarted):s.T+dt;
                 float u = s.Dur > 0f ? s.T / s.Dur : 1f;
                 if (u >= 1f || !StageLook.Active)
                 {
@@ -621,8 +875,9 @@ namespace DeckRogue.Game
                 }
                 // hold までは灯した明るさのまま、その後 (残り÷(1−hold))² で消える (hold 0 = P09 の (1 − 経過÷dur)²)
                 float e = u <= s.Hold ? 1f : (1f - u) / Mathf.Max(1e-4f, 1f - s.Hold);
-                s.Light.intensity = s.Peak * e * e;
+                s.Light.intensity = s.Peak * (s.DecayTau>0f?AuthoredLightEnvelope(s.T,s.AuthoredHold,s.DecayTau,s.Dur,s.ReleasePhase):e*e);
             }
+            RefreshContractLights(false);
         }
 
         sealed class HitLightDriver : MonoBehaviour
@@ -632,6 +887,7 @@ namespace DeckRogue.Game
             void OnDestroy()
             {
                 if (_root != null && _root != gameObject) return;   // 別のプールの持ち主 (念のため)
+                ClearContractLights();
                 foreach (var s in _slots) { s.Lit = false; Release(s); }
                 _slots.Clear();
                 _pending.Clear();

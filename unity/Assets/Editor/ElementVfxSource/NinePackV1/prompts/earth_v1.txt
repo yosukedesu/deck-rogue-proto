@@ -1,0 +1,17 @@
+Use case: stylized-concept.
+Asset type: original high-end HD-2D fantasy combat VFX, production Unity flipbook sprite atlas.
+Canvas: 2:1 landscape, ideally exactly 1024x512 PNG. Exactly FOUR equal columns and TWO equal rows, EIGHT equally sized SQUARE cells. Sequence is top row left to right frames 0,1,2,3, then bottom row left to right frames 4,5,6,7. No labels, lines, cell borders, text, characters, UI, scenery, ground plane or props.
+TRUE TRANSPARENT RGBA background and fully empty gutters. In EVERY cell leave the outer 16% on all four sides completely empty and transparent, alpha zero. ALL content including faint glow and particles stays inside the middle 68% of its cell. No overlapping neighboring cells, no cropped tips, no painted checkerboard, no black or gray background.
+Stable same center anchor (50%,50%) in EVERY frame, no viewpoint, scale registration or global positional drift. Up stays up, zero rotation. Rich finished element color is in the texture, to be displayed with WHITE tint and normal straight-alpha blending. Crisp defining silhouette, elegant textured detail and sparse local luminous particles; very limited soft bloom. Bright white cores are tiny/local; never broad opaque white disks or clouds.
+Make eight DISTINCT temporal frames with a brief early peak, convincing changing shapes and rapid clearing tail, not eight copies of one icon. Except where otherwise stated, frames 1–2 peak, frames 3–5 fragment/develop and frames 6–7 are nearly empty.
+
+EARTH / SOIL attack only. A short compact eruption of IRREGULAR BROWN EARTH AND STONE CHUNKS bursts UPWARD from a low central point just below the cell center. Several squat angular ochre/dark-brown rock pieces, smaller crumbs and a small amount of pale tan dust. Granular earthy surfaces, a few warm pale highlights on sharp stone edges; no broad luminous spell aura. Not long crystal spears: chunky broken irregular stones with varied roughly cuboid/tetrahedral shapes. No blue, teal, green foliage, lava, fire, runes, ring, or smoke screen. Do not draw a ground plane or terrain tile. Keep all stones/dust inside middle 65% of each cell, with genuine transparent spaces between the separated chunks.
+Frame0: two tiny brown pebbles and a faint low tan dust puff at x50%, y58%.
+Frame1: sudden compact eruption of five varied stones and small crumbs upward, sharp readable silhouette, limited dust hugging the origin.
+Frame2: peak upward/outward spray of 6–8 irregular earth/stone chunks, brown ochre bodies and a few pale highlighted edges; a small wispy tan dust accent at bottom, never a filled cloud.
+Frame3: stones move apart, their edges chip into crumbs, central dust already dispersing, plenty of empty space.
+Frame4: three small tumbling brown chunks and scattered tiny sand flecks.
+Frame5: only four small gravel crumbs and very faint dust flecks, no cloud.
+Frame6: two tiny dim brown particles.
+Frame7: one almost invisible little tan speck, nearly empty.
+Duration .36 seconds, immediate short ground burst then clear. No giant boulder, tall wall, long falling arc or persistent smoke.

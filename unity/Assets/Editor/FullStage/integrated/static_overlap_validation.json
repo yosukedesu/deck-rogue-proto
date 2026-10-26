@@ -1,0 +1,72 @@
+{
+  "tested_road_objects": 23,
+  "tested_fixed_rigid_objects": 123,
+  "intersections": [
+    {
+      "road_object": "Ground_inset_stone_00",
+      "fixed_object": "Rock_fragment_01",
+      "intersecting_triangle_pairs": 6
+    },
+    {
+      "road_object": "Ground_inset_stone_00",
+      "fixed_object": "Stream_edge_rock_12",
+      "intersecting_triangle_pairs": 18
+    },
+    {
+      "road_object": "Ground_inset_stone_01",
+      "fixed_object": "Rock_fragment_02",
+      "intersecting_triangle_pairs": 10
+    },
+    {
+      "road_object": "Ground_inset_stone_01",
+      "fixed_object": "Stream_edge_rock_12",
+      "intersecting_triangle_pairs": 7
+    },
+    {
+      "road_object": "Ground_inset_stone_01",
+      "fixed_object": "Bridge_Abutment_0",
+      "intersecting_triangle_pairs": 7
+    },
+    {
+      "road_object": "Ground_inset_stone_02",
+      "fixed_object": "Stream_edge_rock_12",
+      "intersecting_triangle_pairs": 7
+    },
+    {
+      "road_object": "Ground_inset_stone_03",
+      "fixed_object": "Bridge_Abutment_0",
+      "intersecting_triangle_pairs": 5
+    },
+    {
+      "road_object": "Ground_inset_stone_23",
+      "fixed_object": "Rock_fragment_00",
+      "intersecting_triangle_pairs": 10
+    },
+    {
+      "road_object": "Ground_inset_stone_25",
+      "fixed_object": "Stair_module_00",
+      "intersecting_triangle_pairs": 7
+    },
+    {
+      "road_object": "Ground_inset_stone_25",
+      "fixed_object": "Rock_fragment_00",
+      "intersecting_triangle_pairs": 6
+    },
+    {
+      "road_object": "Ground_inset_stone_25",
+      "fixed_object": "Rock_fragment_01",
+      "intersecting_triangle_pairs": 6
+    },
+    {
+      "road_object": "Ground_inset_stone_28",
+      "fixed_object": "Stair_module_00",
+      "intersecting_triangle_pairs": 8
+    },
+    {
+      "road_object": "Ground_inset_stone_28",
+      "fixed_object": "Stream_edge_rock_15",
+      "intersecting_triangle_pairs": 13
+    }
+  ],
+  "interpretation": "These 13 partial rigid-object surface intersections are retained intentionally, including natural rocks and stair/abutment undersides. They are not reported as failures. No whole-scene zero-intersection target was used; no Boolean cuts or road relocations were adopted."
+}

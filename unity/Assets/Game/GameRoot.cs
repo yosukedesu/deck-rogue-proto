@@ -272,9 +272,69 @@ namespace DeckRogue.Game
         // ---- コマンド ----
 
         int _lastAct = -1;
+        RunState _presentationState;
+        BattleView _presentationBoard;
+        int _presentationVersion;
+        Action _releasePresentation;
+        public bool CombatPresentationPending => _presentationState!=null;
+        public int PresentationTimeoutCount {get;private set;}
+        public void CancelCombatPresentation() {
+            ++_presentationVersion;_presentationState=null;_presentationBoard=null;
+            var release=_releasePresentation;_releasePresentation=null;release?.Invoke();
+        }
+        void BeginCombatPresentation(GameState snapshot,bool terminal) {
+            CancelCombatPresentation();
+            _presentationState=Rs;_presentationBoard=Battle;
+            _releasePresentation=Presenter.BlockInput(this);
+            int version=_presentationVersion;
+            try {
+                Presenter.Play(this,snapshot,true);
+                StartCoroutine(CompleteCombatPresentation(version,snapshot,terminal));
+            } catch {
+                Presenter.Reset();Presenter.MarkSeen(snapshot);Rebuild();throw;
+            }
+        }
+        System.Collections.IEnumerator CompleteCombatPresentation(int version,GameState snapshot,bool terminal) {
+            var state=_presentationState;var board=_presentationBoard;bool outcomeShown=false;
+            // Event count determines the deadline; long multi-enemy turns are never cut at six seconds.
+            float timeout=Mathf.Max(Presenter.PresentationWatchdogBudget,Presenter.LastSequenceDuration*2f+5f),elapsed=0f;
+            try {
+                yield return null;
+                while(version==_presentationVersion && ReferenceEquals(Rs,state) && Battle==board && !Presenter.PresentationIdle) {
+                    if(elapsed>=timeout) {
+                        PresentationTimeoutCount++;
+                        Debug.LogWarning("[Presentation] completion watchdog; cancelling stale visuals and reconciling state after "+elapsed+"s");
+                        Presenter.Reset();Presenter.MarkSeen(snapshot);break;
+                    }
+                    yield return null;elapsed+=Tween.UnscaledDt;
+                }
+                if(version==_presentationVersion && ReferenceEquals(Rs,state) && Battle==board && terminal && !Stage.CombatWorld) {
+                    bool outcomeDone=false;outcomeShown=true;
+                    using(Tween.BeginPresentation())Presenter.ShowOutcome(this,state,snapshot,()=>{outcomeDone=true;Tween.CancelPresentations();});
+                    elapsed=0f;timeout=8f;
+                    while(version==_presentationVersion && ReferenceEquals(Rs,state) && Battle==board && !outcomeDone) {
+                        if(elapsed>=timeout) {
+                            PresentationTimeoutCount++;Debug.LogWarning("[Presentation] outcome watchdog; reconciling state");
+                            Presenter.Reset();Presenter.MarkSeen(snapshot);break;
+                        }
+                        yield return null;elapsed+=Tween.UnscaledDt;
+                    }
+                }
+                if(outcomeShown)yield return null; // Consume the dismissing click before reward controls are built.
+                if(!ReferenceEquals(Rs,state) || Battle!=board)yield break;
+                // Reset above changes the version only on the explicit watchdog recovery path.
+                if(version!=_presentationVersion && elapsed<timeout)yield break;
+                CancelCombatPresentation();Rebuild();
+                if(terminal){Presenter.Reset();if(!outcomeShown)Audio.Ui(state.Phase==RunPhases.Lost?"lose":"win");}
+            } finally {
+                if(version==_presentationVersion)CancelCombatPresentation();
+            }
+        }
+
 
         public void Do(RunCommand cmd)
         {
+            if(CombatPresentationPending)return;
             Error = null;
             Notice = null;
             bool wasCombat = Rs != null && Rs.Phase == RunPhases.Combat;
@@ -312,6 +372,8 @@ namespace DeckRogue.Game
                 if (Rs.Phase == RunPhases.Won || Rs.Phase == RunPhases.Lost) SaveGame.Delete();
                 else SaveGame.Write(this, Rs);
             }
+            if(wasCombat && prevRs?.Combat!=null && Rs?.Combat!=null && !ReferenceEquals(prevRs,Rs))
+                Presenter.PrepareEnemyPresentation(this,prevRs.Combat,Rs.Combat,Rs.Phase!=RunPhases.Combat || Presenter.HasEnemyPhase(Rs.Combat));
             bool combatEnded = wasCombat && Rs != null && Rs.Phase != RunPhases.Combat;
             // 確認の窓 (発動/温存) から進んだ手: 順送りで古い盤面を見せる前に窓と暗がりだけ先に畳む (2026-09-17)
             bool fromWindow = wasCombat && prevRs != null && prevRs.Combat != null && prevRs.Combat.Phase == CombatPhases.AwaitingReaction && Rs != null && !ReferenceEquals(Rs, prevRs);
@@ -321,24 +383,12 @@ namespace DeckRogue.Game
             if (Rs != null && prevAct != Rs.Act) Audio.Ui("act_start");
             // 戦闘の始まり: マップから戦闘へ (同上)
             if (!wasCombat && Rs != null && Rs.Phase == RunPhases.Combat) Audio.Ui("combat_start");
-            // リーサル (2026-09-14 ユーザー「打撃 SE が鳴る前にピックに移ってしまい爽快感がなくなる」):
-            // 決着した戦闘の最後の出来事 (打撃・撃破) を古い戦闘画面の上で見せ切ってから、報酬/敗北の画面へ組み直す
-            if (combatEnded && Rs.Combat != null && ScreenRoot != null && ScreenRoot.childCount > 0 && Presenter.HasNewEvents(Rs.Combat))
-            {
-                var finalSnapshot = Rs.Combat;
-                var endedRs = Rs;
-                if (fromWindow && Battle != null) Battle.CloseReactionWindow();
-                Presenter.PlaySequenced(this, finalSnapshot, delegate
-                {
-                    // 決着の余韻 (2026-09-17 ⑧): 勝利の帯と戦いの記録／敗北の暗転 (音もそこで鳴る)。終わってから報酬/敗北の画面へ組み直す
-                    Presenter.ShowOutcome(this, endedRs, finalSnapshot, delegate
-                    {
-                        if (!ReferenceEquals(Rs, endedRs)) return;   // その間に別のコマンドが進んでいたら何もしない
-                        Pending = null; ViewPile = null; ViewDeck = false; ViewRelics = false; ViewMap = false; SubMode = null;
-                        Rebuild();
-                        Presenter.Reset();
-                    });
-                });
+            // Preserve the old hand, HP and intents while the engine's already-resolved enemy
+            // turn / final blow is presented. Ordinary player cards retain independent fast timelines.
+            if(wasCombat && Rs?.Combat!=null && Battle!=null && !ReferenceEquals(prevRs,Rs)
+                && (combatEnded || Presenter.HasEnemyPhase(Rs.Combat))) {
+                if(fromWindow)Battle.CloseReactionWindow();
+                BeginCombatPresentation(Rs.Combat,combatEnded);
                 return;
             }
             if (combatEnded) Audio.Ui(Rs.Phase == RunPhases.Lost ? "lose" : "win");
@@ -349,14 +399,6 @@ namespace DeckRogue.Game
             if (Rs == null || Rs.Phase != RunPhases.Event) EventChoiceIndex = -1;
             if (Rs == null || Rs.Phase != RunPhases.Departure) DepartureChoiceIndex = -1;
             if (Rs == null || Rs.Phase != RunPhases.Combat) PreferredTarget = -1;
-            // 演出キュー: 敵フェーズを含むコマンドは古い盤面の上で順に見せてから組み直す。それ以外は即組み直して差分を浮き文字に
-            if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat && ScreenRoot != null && ScreenRoot.childCount > 0 && Presenter.HasEnemyPhase(Rs.Combat))
-            {
-                var snapshot = Rs.Combat;
-                if (fromWindow && Battle != null) Battle.CloseReactionWindow();
-                Presenter.PlaySequenced(this, snapshot, delegate { if (Rs != null && ReferenceEquals(Rs.Combat, snapshot)) Rebuild(); });
-                return;
-            }
             Rebuild();
             if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat) Presenter.Play(this, Rs.Combat); else Presenter.Reset();
         }
@@ -370,7 +412,7 @@ namespace DeckRogue.Game
         public void PlayAllSparks()
         {
             var st = Rs != null ? Rs.Combat : null;
-            if (st == null || st.Phase != CombatPhases.PlayerTurn || Pending != null) return;
+            if (CombatPresentationPending || st == null || st.Phase != CombatPhases.PlayerTurn || Pending != null) return;
             for (int guard = 0; guard < 12; guard++)
             {
                 st = Rs != null ? Rs.Combat : null;
@@ -564,6 +606,7 @@ namespace DeckRogue.Game
 
         public void BeginPlay(CardInstance card, int? modeIndex)
         {
+            if(CombatPresentationPending)return;
             var st = Rs != null ? Rs.Combat : null;
             if (st == null) return;
             var p = new PendingPlay();
@@ -622,6 +665,7 @@ namespace DeckRogue.Game
 
         public void SubmitIfReady()
         {
+            if(CombatPresentationPending)return;
             if (Pending == null) return;
             if (Pending.NextNeed() != null) { Rebuild(); return; }
 
@@ -652,6 +696,7 @@ namespace DeckRogue.Game
 
         public void OnEnemyClicked(int index)
         {
+            if(CombatPresentationPending)return;
             var cst = Rs != null ? Rs.Combat : null;
             if (Pending != null && Pending.NextNeed() == "target")
             {
@@ -744,6 +789,8 @@ namespace DeckRogue.Game
 
         // ---- 落ちても失わない (2026-09-14): バックグラウンドへ回る/終了する時に自動保存 ----
 
+        void OnDisable() { if(I==this)Presenter.Reset(); }
+
         void OnApplicationPause(bool pause)
         {
             if (pause && Rs != null) { SaveGame.Flush(this, Rs); Feedback.Autosave(Rs); }
@@ -758,6 +805,10 @@ namespace DeckRogue.Game
 
         public void Rebuild()
         {
+            if(CombatPresentationPending) {
+                if(ReferenceEquals(Rs,_presentationState) && Battle==_presentationBoard)return;
+                Presenter.Reset(); // Navigation/replacement cancels the old owner's callbacks and clock.
+            }
             if (_root == null) return;
             _anchors.Clear();
             for (int i = _root.childCount - 1; i >= 0; i--)
@@ -775,7 +826,11 @@ namespace DeckRogue.Game
                 if (Battle != null) { Battle.Destroy(); Battle = null; }
                 Tooltip.Hide();
                 CardPopup.Close();
-                if (FxLayer != null) for (int i = FxLayer.childCount - 1; i >= 0; i--) Destroy(FxLayer.GetChild(i).gameObject);
+                CodexBattleFx.Cancel();
+                if (FxLayer != null) for (int i = FxLayer.childCount - 1; i >= 0; i--) {
+                    var child=FxLayer.GetChild(i);child.gameObject.SetActive(false);
+                    if(!CodexBattleFx.Owns(child))Destroy(child.gameObject);
+                }
                 for (int i = ScreenRoot.childCount - 1; i >= 0; i--)
                 {
                     var c = ScreenRoot.GetChild(i);

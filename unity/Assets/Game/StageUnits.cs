@@ -64,6 +64,7 @@ namespace DeckRogue.Game
         static readonly Vector2 DefaultHaloUv = new Vector2(0.64f, 0.93f);
         static readonly Dictionary<string, Vector2> HaloUvByArt = new Dictionary<string, Vector2>
         {
+            { "leader_blue", new Vector2(.75f,.57f) },
             { "leader_green", new Vector2(0.64f, 0.93f) },
             { "leader_green_48", new Vector2(0.64f, 0.93f) },
         };
@@ -77,6 +78,7 @@ namespace DeckRogue.Game
         // 値は P05 の art-lint (このは 62 = (0.686, 0.721)・48 = (0.689, 0.717)) と、ひなたの一枚絵の橙の火の画素の重心 (レーン E が測った (0.766, 0.574))
         static readonly Dictionary<string, Vector2> R2E_HaloUvByArtDiorama = new Dictionary<string, Vector2>
         {
+            { "leader_blue", new Vector2(.75f,.57f) },
             { "leader_green", new Vector2(0.686f, 0.721f) },
             { "leader_green_48", new Vector2(0.689f, 0.717f) },
             { "leader_white", new Vector2(0.766f, 0.574f) },
@@ -131,6 +133,8 @@ namespace DeckRogue.Game
                 e["lit"] = u.IsLit;
                 e["art"] = u.ArtName;
                 e["anim"] = u.Anim + "#" + u.Frame;
+                e["combatOffset"] = new float[] {u.CombatOffset.x,u.CombatOffset.y,u.CombatOffset.z};
+                e["recoilOffset"] = new float[] {u.CombatRecoilOffset.x,u.CombatRecoilOffset.y,u.CombatRecoilOffset.z};
                 // 矩形 (LateUpdate が読んだ角) と、板の四隅をレイアウト用のカメラで写した箱
                 var rect = new Vector4(u.RectMin.x, u.RectMin.y, u.RectMax.x, u.RectMax.y);
                 var t = u.transform;
@@ -1094,7 +1098,7 @@ namespace DeckRogue.Game
         // ---------------------------------------------------------------- キャラ (UI の矩形に追従するビルボード)
 
         /// <summary>UI の矩形 (uGUI の sprite 枠) に追従するビルボードを、key の座席の深度の面に立てる。Image は非表示にして色 (生死・点滅) だけ読む</summary>
-        public static void BindUnit(string key, RectTransform rect, Image img, Sprite sprite)
+        public static void BindUnit(string key, RectTransform rect, Image img, Sprite sprite,bool preservePresentation=false)
         {
             Ensure();
             if (rect == null || sprite == null || sprite.texture == null) return;
@@ -1102,6 +1106,7 @@ namespace DeckRogue.Game
             float depth;
             if (!_depths.TryGetValue(key, out depth)) depth = _dist;
 
+            if(preservePresentation && TryRebindPresentationUnit(key,rect,img,sprite,depth))return;
             var go = new GameObject("unit-" + key);
             go.transform.SetParent(_units, false);
             var mf = go.AddComponent<MeshFilter>(); mf.sharedMesh = _quad;
@@ -1120,6 +1125,7 @@ namespace DeckRogue.Game
             u.Rect = rect; u.Img = img; u.Mat = mat; u.Rend = mr; u.Depth = depth; u.Shadow = sh.transform;
             u.FeetPad = FeetPad(sprite);   // 絵の下端の透明行 (足元の余白) の割合。板をそのぶん下げて足を地面に着ける (2026-09-08「キャラが地面から浮いてる」)
             u.BaseTex = sprite.texture;
+            if(sprite.name=="leader_blue")u.FootAnchorX=sprite.pivot.x/sprite.rect.width;
             u.BaseUvScale = new Vector2(tr.width / tw, tr.height / th); u.BaseUvOffset = new Vector2(tr.x / tw, tr.y / th);
             u.BreathePhase = (key.GetHashCode() & 0xff) * 0.05f;   // 位相をずらして全員が同期しない
             // コマ: Art/<種別>/anim/<id>_<動き>_<n>.png (64×64。PixelLab の animate-with-text)。無ければ一枚絵のまま
@@ -1140,6 +1146,11 @@ namespace DeckRogue.Game
             u.FrameDur["attack"] = new[] { 0.05f, 0.08f, 0.04f, 0.18f };
             u.FrameDur["hurt"] = new[] { 0.06f, 0.16f, 0.10f };
             u.FrameDur["block"] = new[] { 0.06f, 0.08f, 0.10f, 0.20f };   // 9コマの 2,4,6,8 = 斧を前に回して構える
+            if(sprite.name=="leader_blue") {
+                u.FrameDur["idle"]=new[]{.125f,.125f,.125f,.125f,.125f,.125f,.125f,.125f};
+                u.FrameDur["attack"]=new[]{.05f,.07f,.08f,.12f};
+                u.FrameDur["block"]=new[]{.06f,.08f,.10f,.16f};
+            }
             // 盤面の作り直し (Rebuild) で板が作り直されても、再生中のコマ送りは引き継ぐ (攻撃コマが Rebuild で消えていた)
             u.Key = key;
             // 光を受ける板の法線・発光と _KeyFlip の引き先 (2026-09-30 P11)。絵の名前 = Resources の名前 (leader_green・enemy_wolf・人形の id)
@@ -1229,6 +1240,9 @@ namespace DeckRogue.Game
         {
             public RectTransform Rect; public Image Img; public Material Mat; public MeshRenderer Rend; public float FlashT; public float DissolveK; public float Depth; public Transform Shadow;
             public Transform Halo; public Vector2 HaloUv; public float FeetPad;
+            public float FootAnchorX=.5f;
+            public Vector3 CombatOffset, CombatRecoilOffset; public int MotionVersion, RecoilVersion;
+            public CombatImpactPause ImpactPause;
             public float HeroLight = HeroAmbient;   // リーダーの板の主役の照明 (絵ごと。HeroAmbientFor)。敵と人形では使わない
             // コマ送り (2026-09-09 このはの戦闘アニメ): 待機はループ、攻撃/被弾/防御は1回流して待機へ戻る。ドットは拡大・回転せず絵を差し替えるだけ
             public Texture2D BaseTex;
@@ -1251,12 +1265,13 @@ namespace DeckRogue.Game
             public bool CharShadowOn;
             // 最後の LateUpdate の値 (TryGetUnitBox・DebugUnitBoxes が読む)
             public bool HasBox, InDiorama, SeatFound, Moving;
-            public Vector3 FeetWorld, SeatWorld; public float HeightWorld, SeatK, UsedDepth, UsedK;
+            public Vector3 FeetWorld, SeatWorld; public float HeightWorld, BaseCanvasHeightWorld, SeatK, UsedDepth, UsedK;
             public Vector2 RectMin, RectMax;                // 矩形の角 (px・左下が原点。丸める前)
             public float FeetPadPx, BreathePx;
             Vector4 _lastRect; int _movedFrame = -100;
             public void Play(string anim)
             {
+                if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("animation",Key+":"+anim);
                 if (!Anims.ContainsKey(anim) || Anims[anim].Count == 0) return;
                 Anim = anim; Frame = 0; FrameT = 0f;
                 if (Key != null) _animStates[Key] = new AnimState { Anim = Anim, Frame = Frame, FrameT = FrameT, At = Time.time };
@@ -1265,6 +1280,7 @@ namespace DeckRogue.Game
             public float FrameScaleX = 1f, FrameScaleY = 1f;   // 枠が元絵より大きいコマ (攻撃の 96px) の拡大率
             public void Apply()
             {
+                if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("spriteFrame",Key+":"+Anim+":"+Frame);
                 List<Texture2D> frames;
                 Texture2D tex = Anims.TryGetValue(Anim, out frames) && frames.Count > 0 ? frames[Mathf.Clamp(Frame, 0, frames.Count - 1)] : BaseTex;
                 if (tex == null || Mat == null) return;
@@ -1533,11 +1549,13 @@ namespace DeckRogue.Game
                 else if (_r2eHaloGemTex != null) Destroy(_r2eHaloGemTex);
                 if (Mat != null) Destroy(Mat);
             }
-            public void LateUpdate()
+            public void LateUpdate() { UpdatePresentation(true); }
+            public void RefreshBinding() { UpdatePresentation(false); }
+            void UpdatePresentation(bool advanceClock)
             {
                 if (Rect == null) { Destroy(gameObject); return; }
-                R2E_SyncIdle(HD2DFlags.DioramaHere);   // 二周目 レーン E: 箱庭の待機のコマ (look の char.r2idle が無ければ何もしない)
-                Advance();
+                if(advanceClock)R2E_SyncIdle(HD2DFlags.DioramaHere);   // 二周目 レーン E: 箱庭の待機のコマ (look の char.r2idle が無ければ何もしない)
+                if (advanceClock && !ImpactPause.IsPaused(Time.time)) Advance();
                 Rect.GetWorldCorners(_c);
                 float sx = Mathf.Round((_c[0].x + _c[3].x) * 0.5f), sy = Mathf.Round(_c[0].y);
                 float w = Mathf.Round(_c[3].x - _c[0].x), h = Mathf.Round(_c[1].y - _c[0].y);
@@ -1558,12 +1576,15 @@ namespace DeckRogue.Game
                     UsedDepth = Depth;
                 }
                 UsedK = k;
+                if (dio) pos += CombatOffset + CombatRecoilOffset;
                 var ground = pos;
+                pos += _right*((.5f-FootAnchorX)*w*k);
                 pos -= _up * (FeetPad * h * k);   // 絵の余白ぶん下げる = 足が地面の点に着く (影は地面の点のまま)
                 float breathe = 0f;
                 if (Anim == "idle" && Breathe)
                 {
                     breathe = Mathf.Sin(Time.time * (2.4f + BreathePhase * 0.08f) + R3E_BreathePhase()) * (Key == "player" ? 2f : 3f);   // 三周目 レーン E (R11): 位相は座席の番号で散らす (無ければ BreathePhase = 二周目)
+                    if (ImpactPause.IsPaused(Time.time)) breathe = BreathePx;
                     pos += _up * (breathe * k);   // 呼吸: ±2〜3px の上下 (拡大・回転はしない)。周期も個体ごとに少しずらす (⑩ 2026-09-17)
                 }
                 var rot = dio ? LayoutRot() : CameraRotation;   // 見本の板はレイアウト用のカメラの回転 (漂い・揺れで回さない)
@@ -1588,8 +1609,8 @@ namespace DeckRogue.Game
                 if (IsLit) rim = R2E_LitRim(hero, doll, rim);   // 二周目 レーン E: 光を受ける板のリムは look の char (敵 0・人形 0.1・主役 0.25)。無ければ今のまま
                 if (IsLit) { var rimArt = CharExtras().ArtFor(ArtName); if (rimArt != null && rimArt.Rim >= 0f) rim = rimArt.Rim; }   // 三周目 直しの輪4: 絵ごとのリムが勝つ
                 Mat.SetFloat("_Rim", rim);
-                if (FlashT > 0f) FlashT -= Time.deltaTime;
-                Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * 0.85f);
+                if (advanceClock && FlashT > 0f) FlashT -= Time.deltaTime;
+                Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * (dio ? 0.10f : 0.85f));
                 Mat.SetFloat("_Dissolve", DissolveK);
                 SyncShadowMode(dio);
                 if (Shadow != null)
@@ -1993,8 +2014,9 @@ namespace DeckRogue.Game
             void RecordBox(bool dio, Vector3 pos, float k, float w, float h, float breathe)
             {
                 InDiorama = dio;
-                FeetWorld = pos + _up * (FeetPad * h * k);   // 絵の足元 (地面の点。呼吸と演出の動きを含む)
+                FeetWorld = pos + _up * (FeetPad * h * k) + _right*((FootAnchorX-.5f)*w*k);   // 絵の足元 (地面の点。呼吸と演出の動きを含む)
                 HeightWorld = Mathf.Max(0f, h * k * FrameScaleY - FeetPad * h * k);
+                BaseCanvasHeightWorld = Mathf.Max(0f,h*k); // same RecordBox sample, independent of later pose/canvas changes
                 RectMin = new Vector2(_c[0].x, _c[0].y); RectMax = new Vector2(_c[2].x, _c[2].y);
                 FeetPadPx = FeetPad * h; BreathePx = breathe;
                 var r = new Vector4(_c[0].x, _c[0].y, _c[2].x, _c[2].y);

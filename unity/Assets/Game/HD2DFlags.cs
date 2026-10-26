@@ -122,6 +122,13 @@ namespace DeckRogue.Game
         public static float ArtScale { get; set; } = -1f;
         /// <summary>heroscale= (主人公と人形だけの倍率。ArtScale に掛ける。負 = 既定＝PC 0.5・スマホ 1)</summary>
         public static float HeroScale { get; set; } = -1f;
+        /// <summary>combatpresentation=baseline|showcase. Opt-in comparison; never serialized into a run/save.</summary>
+#if DECKROGUE_IMPACT_SHOWCASE
+        public const bool CombatPresentationDefault = true;
+#else
+        public const bool CombatPresentationDefault = false;
+#endif
+        public static bool CombatPresentationShowcase { get; set; } = CombatPresentationDefault;
         /// <summary>dof=0|1|urp</summary>
         public static HD2DTiltShift TiltShift { get; set; } = HD2DTiltShift.Off;
         /// <summary>drift=1 (待機の漂い。撮影では切る)</summary>
@@ -402,6 +409,7 @@ namespace DeckRogue.Game
             _deskShade = null;   // 書かない時は割り付けから (r3 → hand・r2 → full)
             ArtScale = -1f;
             HeroScale = -1f;
+            CombatPresentationShowcase = CombatPresentationDefault;
             TiltShift = HD2DTiltShift.Off;
             Drift = false;
             Aa = HD2DAa.None;
@@ -477,6 +485,7 @@ namespace DeckRogue.Game
             add("deskshade", DeskShade == HD2DDeskShade.Full ? "full" : "hand");
             add("artscale", ArtScale);
             add("heroscale", HeroScale);
+            add("combatpresentation", CombatPresentationShowcase ? "showcase" : "baseline");
             add("dof", TiltShift == HD2DTiltShift.On ? "1" : TiltShift == HD2DTiltShift.Urp ? "urp" : "0");
             add("drift", Drift);
             add("aa", Aa == HD2DAa.Msaa ? "msaa" : "none");
@@ -520,7 +529,7 @@ namespace DeckRogue.Game
             ApplyLaunchArgs();
             var st = Autopilot.Arg("-state");
             if (!string.IsNullOrEmpty(st)) ApplyState(ParseSpec(st, ';'));
-            if (StageMode != HD2DStage.Old || Tier != _defaultTier || DumpLayout || UiOnly || UnitsOnly || Perf > 0f || !string.IsNullOrEmpty(Autopilot.Arg("-hd2d")))
+            if (CombatPresentationShowcase || StageMode != HD2DStage.Old || Tier != _defaultTier || DumpLayout || UiOnly || UnitsOnly || Perf > 0f || !string.IsNullOrEmpty(Autopilot.Arg("-hd2d")))
                 Debug.Log("[HD2DFlags] " + Describe());
         }
 
@@ -571,6 +580,9 @@ namespace DeckRogue.Game
                 case "receive": if (TryAuto(v, out f)) Receive = f; else Warn(key, v); return true;
                 case "herolift": if (TryAuto(v, out f)) HeroLift = f; else Warn(key, v); return true;
                 case "artscale": if (TryAuto(v, out f)) ArtScale = f; else Warn(key, v); return true;
+                case "combatpresentation":
+                    if (v == "showcase" || v == "baseline") CombatPresentationShowcase = v == "showcase"; else Warn(key, v);
+                    return true;
                 case "heroscale": if (TryAuto(v, out f)) HeroScale = f; else Warn(key, v); return true;
                 case "keycolor":
                     if (Is(v, "neutral")) KeyColor = HD2DKeyColor.Neutral;

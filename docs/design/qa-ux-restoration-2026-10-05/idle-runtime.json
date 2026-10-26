@@ -1,0 +1,1766 @@
+{
+  "imports": [
+    {
+      "frame": 0,
+      "width": 128,
+      "height": 84,
+      "pivot": [
+        60.0,
+        8.0
+      ],
+      "rect": [
+        0.0,
+        0.0,
+        128.0,
+        84.0
+      ]
+    },
+    {
+      "frame": 1,
+      "width": 128,
+      "height": 84,
+      "pivot": [
+        60.0,
+        8.0
+      ],
+      "rect": [
+        0.0,
+        0.0,
+        128.0,
+        84.0
+      ]
+    },
+    {
+      "frame": 2,
+      "width": 128,
+      "height": 84,
+      "pivot": [
+        60.0,
+        8.0
+      ],
+      "rect": [
+        0.0,
+        0.0,
+        128.0,
+        84.0
+      ]
+    },
+    {
+      "frame": 3,
+      "width": 128,
+      "height": 84,
+      "pivot": [
+        60.0,
+        8.0
+      ],
+      "rect": [
+        0.0,
+        0.0,
+        128.0,
+        84.0
+      ]
+    },
+    {
+      "frame": 4,
+      "width": 128,
+      "height": 84,
+      "pivot": [
+        60.0,
+        8.0
+      ],
+      "rect": [
+        0.0,
+        0.0,
+        128.0,
+        84.0
+      ]
+    },
+    {
+      "frame": 5,
+      "width": 128,
+      "height": 84,
+      "pivot": [
+        60.0,
+        8.0
+      ],
+      "rect": [
+        0.0,
+        0.0,
+        128.0,
+        84.0
+      ]
+    },
+    {
+      "frame": 6,
+      "width": 128,
+      "height": 84,
+      "pivot": [
+        60.0,
+        8.0
+      ],
+      "rect": [
+        0.0,
+        0.0,
+        128.0,
+        84.0
+      ]
+    },
+    {
+      "frame": 7,
+      "width": 128,
+      "height": 84,
+      "pivot": [
+        60.0,
+        8.0
+      ],
+      "rect": [
+        0.0,
+        0.0,
+        128.0,
+        84.0
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "frame": 0,
+      "anim": "idle#6",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#1",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#6",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 7,
+      "anim": "idle#7",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#1",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#7",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 14,
+      "anim": "idle#0",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#2",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#0",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 22,
+      "anim": "idle#1",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#2",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#1",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 29,
+      "anim": "idle#2",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#3",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#2",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 37,
+      "anim": "idle#3",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#3",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#3",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 44,
+      "anim": "idle#4",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#0",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#4",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 52,
+      "anim": "idle#5",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#0",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#5",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 59,
+      "anim": "idle#6",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#1",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#6",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 67,
+      "anim": "idle#7",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#1",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#7",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 74,
+      "anim": "idle#0",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#2",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#0",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 82,
+      "anim": "idle#1",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#2",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#1",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 89,
+      "anim": "idle#2",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#3",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#2",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 97,
+      "anim": "idle#3",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#3",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#3",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 104,
+      "anim": "idle#4",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#0",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#4",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 112,
+      "anim": "idle#5",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#0",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#5",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 119,
+      "anim": "idle#6",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#1",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#6",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 127,
+      "anim": "idle#7",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#1",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#7",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 134,
+      "anim": "idle#0",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#2",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#0",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    },
+    {
+      "frame": 142,
+      "anim": "idle#1",
+      "feet": [
+        -4.96932173,
+        -0.00136317313,
+        -1.03873479
+      ],
+      "height": 2.357678,
+      "boxes": [
+        {
+          "key": "enemy0",
+          "anim": "idle#2",
+          "art": "enemy_probe",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            1261.4,
+            206.7,
+            201.6,
+            201.6
+          ],
+          "boardRawPx": [
+            1261.0,
+            221.8,
+            202.0,
+            202.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.156,
+          "feetPadPx": 15.78125,
+          "breathePx": 0.0,
+          "heightWorld": 1.98863208
+        },
+        {
+          "key": "player",
+          "anim": "idle#1",
+          "art": "leader_blue",
+          "frameScale": [
+            1.0,
+            1.0
+          ],
+          "rectPx": [
+            246.0,
+            168.2,
+            403.2,
+            264.6
+          ],
+          "boardRawPx": [
+            259.1,
+            190.1,
+            403.0,
+            265.0
+          ],
+          "combatOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "recoilOffset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "pxPerDot": 3.148,
+          "feetPadPx": 22.083334,
+          "breathePx": 0.0,
+          "heightWorld": 2.357678
+        }
+      ]
+    }
+  ]
+}

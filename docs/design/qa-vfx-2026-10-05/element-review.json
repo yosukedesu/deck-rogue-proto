@@ -1,0 +1,104 @@
+[
+  {
+    "element": "fire",
+    "card": "red_strike",
+    "leader": "leader_red",
+    "frameMask": 255,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  },
+  {
+    "element": "water",
+    "card": "blue_strike",
+    "leader": "leader_blue",
+    "frameMask": 255,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  },
+  {
+    "element": "ice",
+    "card": "blue_ice_lance",
+    "leader": "leader_blue",
+    "frameMask": 255,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  },
+  {
+    "element": "lightning",
+    "card": "blue_aether_burst",
+    "leader": "leader_izzet",
+    "frameMask": 255,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  },
+  {
+    "element": "dark",
+    "card": "black_grave_bolt",
+    "leader": "leader_black",
+    "frameMask": 255,
+    "events": [
+      "HpHealed",
+      "DamageDealt",
+      "DamageDealt"
+    ],
+    "presented": 3,
+    "passed": true
+  },
+  {
+    "element": "light",
+    "card": "white_strike",
+    "leader": "leader_white",
+    "frameMask": 255,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  },
+  {
+    "element": "heal",
+    "card": "white_mass_heal",
+    "leader": "leader_white",
+    "frameMask": 255,
+    "events": [
+      "HpHealed"
+    ],
+    "presented": 1,
+    "passed": true
+  },
+  {
+    "element": "vine",
+    "card": "green_double_lash",
+    "leader": "leader_green",
+    "frameMask": 255,
+    "events": [
+      "DamageDealt",
+      "DamageDealt"
+    ],
+    "presented": 2,
+    "passed": true
+  },
+  {
+    "element": "earth",
+    "card": "green_earth_roar",
+    "leader": "leader_green",
+    "frameMask": 255,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  }
+]

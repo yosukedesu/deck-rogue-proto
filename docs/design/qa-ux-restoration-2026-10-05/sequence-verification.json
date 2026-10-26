@@ -1,0 +1,357 @@
+{
+  "enemy": {
+    "passed": true,
+    "captureFramerate": 60,
+    "events": [
+      {
+        "kind": "input",
+        "detail": "endTurn",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 226
+      },
+      {
+        "kind": "intentDisplay",
+        "detail": "0:攻撃 7",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 226
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "begin:0:0",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 226
+      },
+      {
+        "kind": "playerHpDisplay",
+        "detail": "80",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 226
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_TurnEnded:0:0",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 226
+      },
+      {
+        "kind": "phaseDisplay",
+        "detail": "enemy",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 226
+      },
+      {
+        "kind": "inputReturned",
+        "detail": "",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 226
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_EnemyActionExecuting:0:0",
+        "gameTimeAfterInputMs": 600.0,
+        "frame": 262
+      },
+      {
+        "kind": "phaseDisplay",
+        "detail": "enemy",
+        "gameTimeAfterInputMs": 600.0,
+        "frame": 262
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_DamageDealt:0:0",
+        "gameTimeAfterInputMs": 933.33,
+        "frame": 282
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "land:0:0",
+        "gameTimeAfterInputMs": 933.33,
+        "frame": 282
+      },
+      {
+        "kind": "playerHpDisplay",
+        "detail": "73",
+        "gameTimeAfterInputMs": 933.33,
+        "frame": 282
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_TurnStarted:0:0",
+        "gameTimeAfterInputMs": 1333.33,
+        "frame": 306
+      },
+      {
+        "kind": "phaseDisplay",
+        "detail": "player",
+        "gameTimeAfterInputMs": 1333.33,
+        "frame": 306
+      },
+      {
+        "kind": "intentDisplay",
+        "detail": "0:防御 7 +筋力1",
+        "gameTimeAfterInputMs": 1933.33,
+        "frame": 342
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_EnemyIntentDeclared:0:0",
+        "gameTimeAfterInputMs": 1933.33,
+        "frame": 342
+      },
+      {
+        "kind": "intentDisplay",
+        "detail": "0:防御 7 +筋力1",
+        "gameTimeAfterInputMs": 2066.67,
+        "frame": 350
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "finish:0:0",
+        "gameTimeAfterInputMs": 2066.67,
+        "frame": 350
+      },
+      {
+        "kind": "displayVerified",
+        "detail": "enemy",
+        "gameTimeAfterInputMs": 2500.0,
+        "frame": 376
+      }
+    ]
+  },
+  "enemy-shield": {
+    "passed": true,
+    "captureFramerate": 60,
+    "events": [
+      {
+        "kind": "input",
+        "detail": "endTurn",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 571
+      },
+      {
+        "kind": "intentDisplay",
+        "detail": "0:攻撃 7",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 571
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "begin:10:0",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 571
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_TurnEnded:10:0",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 571
+      },
+      {
+        "kind": "phaseDisplay",
+        "detail": "enemy",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 571
+      },
+      {
+        "kind": "inputReturned",
+        "detail": "",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 571
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_EnemyActionExecuting:10:0",
+        "gameTimeAfterInputMs": 600.0,
+        "frame": 607
+      },
+      {
+        "kind": "phaseDisplay",
+        "detail": "enemy",
+        "gameTimeAfterInputMs": 600.0,
+        "frame": 607
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_DamageDealt:10:0",
+        "gameTimeAfterInputMs": 933.33,
+        "frame": 627
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "land:3:0",
+        "gameTimeAfterInputMs": 933.33,
+        "frame": 627
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_TurnStarted:0:0",
+        "gameTimeAfterInputMs": 1333.33,
+        "frame": 651
+      },
+      {
+        "kind": "phaseDisplay",
+        "detail": "player",
+        "gameTimeAfterInputMs": 1333.33,
+        "frame": 651
+      },
+      {
+        "kind": "intentDisplay",
+        "detail": "0:防御 7 +筋力1",
+        "gameTimeAfterInputMs": 1933.33,
+        "frame": 687
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_EnemyIntentDeclared:0:0",
+        "gameTimeAfterInputMs": 1933.33,
+        "frame": 687
+      },
+      {
+        "kind": "intentDisplay",
+        "detail": "0:防御 7 +筋力1",
+        "gameTimeAfterInputMs": 2066.67,
+        "frame": 695
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "finish:0:0",
+        "gameTimeAfterInputMs": 2066.67,
+        "frame": 695
+      },
+      {
+        "kind": "displayVerified",
+        "detail": "enemy-shield",
+        "gameTimeAfterInputMs": 2500.0,
+        "frame": 721
+      }
+    ]
+  },
+  "enemy-fast": {
+    "passed": true,
+    "captureFramerate": 60,
+    "events": [
+      {
+        "kind": "input",
+        "detail": "endTurn",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 914
+      },
+      {
+        "kind": "intentDisplay",
+        "detail": "0:攻撃 7",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 914
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "begin:0:0",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 914
+      },
+      {
+        "kind": "playerHpDisplay",
+        "detail": "80",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 914
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_TurnEnded:0:0",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 914
+      },
+      {
+        "kind": "phaseDisplay",
+        "detail": "enemy",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 914
+      },
+      {
+        "kind": "inputReturned",
+        "detail": "",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 914
+      },
+      {
+        "kind": "input",
+        "detail": "earlyCard:green_guard",
+        "gameTimeAfterInputMs": 250.0,
+        "frame": 929
+      },
+      {
+        "kind": "inputReturned",
+        "detail": "earlyCard",
+        "gameTimeAfterInputMs": 250.0,
+        "frame": 929
+      },
+      {
+        "kind": "displayVerified",
+        "detail": "enemy-fast",
+        "gameTimeAfterInputMs": 2500.0,
+        "frame": 1064
+      }
+    ]
+  },
+  "enemy-rebuild": {
+    "passed": true,
+    "captureFramerate": 60,
+    "events": [
+      {
+        "kind": "input",
+        "detail": "endTurn",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 1259
+      },
+      {
+        "kind": "intentDisplay",
+        "detail": "0:攻撃 7",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 1259
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "begin:0:0",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 1259
+      },
+      {
+        "kind": "playerHpDisplay",
+        "detail": "80",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 1259
+      },
+      {
+        "kind": "defenseDisplay",
+        "detail": "GameEvent_TurnEnded:0:0",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 1259
+      },
+      {
+        "kind": "phaseDisplay",
+        "detail": "enemy",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 1259
+      },
+      {
+        "kind": "inputReturned",
+        "detail": "",
+        "gameTimeAfterInputMs": 0.0,
+        "frame": 1259
+      },
+      {
+        "kind": "rebuild",
+        "detail": "sameState",
+        "gameTimeAfterInputMs": 250.0,
+        "frame": 1274
+      },
+      {
+        "kind": "displayVerified",
+        "detail": "enemy-rebuild",
+        "gameTimeAfterInputMs": 2500.0,
+        "frame": 1409
+      }
+    ]
+  },
+  "note": "Fixed-step capture: game-time ordering evidence, not wall-clock latency or Android performance. Four cases include final HP/block/ice assertions in player."
+}

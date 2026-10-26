@@ -94,7 +94,8 @@ mkdir -p "$WIN_DIR"
 # Packages/manifest.json と packages-lock.json は作業コピー側 (GUI の Package Manager) が書き換えることがあるので --delete の対象から外し、
 # manifest はリポジトリ側が新しい時だけ上書きする (2026-09-12: 同期が GUI で入れた Unity AI のパッケージを消し、コンパイル DAG が古い参照を抱えて CS2001 の嵐になった)。
 # GUI で足したパッケージをリポジトリへ戻すのは scripts/unity-win.sh pull Packages/manifest.json
-rsync -a --delete \
+# Preserve generated Unity GUID metadata in the disposable copy; still copy tracked .meta files.
+rsync -a --delete --filter 'P *.meta' \
   --exclude 'Library/' --exclude 'Temp/' --exclude 'Logs/' --exclude 'UserSettings/' --exclude 'obj/' --exclude 'bin/' \
   --exclude 'EngineTests/' --exclude '*.csproj' --exclude '*.sln' --exclude 'unity-batch.log' --exclude 'goldens/' --exclude 'Build/' --exclude 'Shots/' --exclude 'PShots/' --exclude 'player.log' \
   --exclude 'Packages/manifest.json' --exclude 'Packages/packages-lock.json' \

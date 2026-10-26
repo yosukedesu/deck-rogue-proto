@@ -1,0 +1,58 @@
+{
+  "silver_library_id": "libfile_afd83f305aa48191830f6125a2aff238",
+  "kit_library_id": "libfile_1215dfb2dcd08191a2e6568d5fb16f1a",
+  "grid": [
+    4,
+    2
+  ],
+  "cell": [
+    256,
+    256
+  ],
+  "silver_source_cell": [
+    384,
+    512
+  ],
+  "silver_core_pivots": [
+    [
+      187,
+      284
+    ],
+    [
+      194,
+      291
+    ],
+    [
+      176,
+      291
+    ],
+    [
+      171,
+      289
+    ],
+    [
+      211,
+      252
+    ],
+    [
+      206,
+      270
+    ],
+    [
+      218,
+      270
+    ],
+    [
+      224,
+      250
+    ]
+  ],
+  "silver_scale": 0.44,
+  "silver_alpha_power": 1.4,
+  "neutral_atlases": [
+    "arcane_impact",
+    "guard_break"
+  ],
+  "neutral_conversion": "Pillow grayscale RGB, original alpha",
+  "authorship": "Cloud original Blender/SVG and AI silver imagery; no game asset reuse"
+}

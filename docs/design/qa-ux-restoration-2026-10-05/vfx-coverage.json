@@ -1,0 +1,194 @@
+[
+  {
+    "case": "single",
+    "card": "green_strike",
+    "passed": true,
+    "events": [
+      "DamageDealt"
+    ],
+    "expected": 1,
+    "presented": 1,
+    "received": 1,
+    "drainFrames": 35,
+    "pendingVisuals": 0,
+    "pendingImpacts": 0,
+    "activeFx": 0,
+    "drainBudgetFrames": 360,
+    "error": null
+  },
+  {
+    "case": "fire",
+    "card": "red_strike",
+    "passed": true,
+    "events": [
+      "DamageDealt"
+    ],
+    "expected": 1,
+    "presented": 1,
+    "received": 1,
+    "drainFrames": 30,
+    "pendingVisuals": 0,
+    "pendingImpacts": 0,
+    "activeFx": 0,
+    "drainBudgetFrames": 360,
+    "error": null
+  },
+  {
+    "case": "multi",
+    "card": "red_double_tap",
+    "passed": true,
+    "events": [
+      "DamageDealt",
+      "DamageDealt"
+    ],
+    "expected": 2,
+    "presented": 2,
+    "received": 2,
+    "drainFrames": 37,
+    "pendingVisuals": 0,
+    "pendingImpacts": 0,
+    "activeFx": 0,
+    "drainBudgetFrames": 360,
+    "error": null
+  },
+  {
+    "case": "aoe",
+    "card": "green_earth_roar",
+    "passed": true,
+    "events": [
+      "DamageDealt",
+      "DamageDealt",
+      "DamageDealt",
+      "DamageDealt"
+    ],
+    "expected": 4,
+    "presented": 4,
+    "received": 4,
+    "drainFrames": 36,
+    "pendingVisuals": 0,
+    "pendingImpacts": 0,
+    "activeFx": 0,
+    "drainBudgetFrames": 360,
+    "error": null
+  },
+  {
+    "case": "iceScale",
+    "card": "blue_ice_lance",
+    "passed": true,
+    "events": [
+      "DamageDealt"
+    ],
+    "expected": 1,
+    "presented": 1,
+    "received": 1,
+    "drainFrames": 28,
+    "pendingVisuals": 0,
+    "pendingImpacts": 0,
+    "activeFx": 0,
+    "drainBudgetFrames": 360,
+    "error": null
+  },
+  {
+    "case": "drain",
+    "card": "black_drain",
+    "passed": true,
+    "events": [
+      "DamageDealt",
+      "HpHealed"
+    ],
+    "expected": 2,
+    "presented": 2,
+    "received": 2,
+    "drainFrames": 45,
+    "pendingVisuals": 0,
+    "pendingImpacts": 0,
+    "activeFx": 0,
+    "drainBudgetFrames": 360,
+    "error": null
+  },
+  {
+    "case": "aether",
+    "card": "blue_aether_burst",
+    "passed": true,
+    "events": [
+      "DamageDealt"
+    ],
+    "expected": 1,
+    "presented": 1,
+    "received": 1,
+    "drainFrames": 37,
+    "pendingVisuals": 0,
+    "pendingImpacts": 0,
+    "activeFx": 0,
+    "drainBudgetFrames": 360,
+    "error": null
+  },
+  {
+    "case": "conditional",
+    "card": "green_earth_roar",
+    "passed": true,
+    "events": [
+      "DamageDealt"
+    ],
+    "expected": 1,
+    "presented": 1,
+    "received": 1,
+    "drainFrames": 30,
+    "pendingVisuals": 0,
+    "pendingImpacts": 0,
+    "activeFx": 0,
+    "drainBudgetFrames": 360,
+    "error": null
+  },
+  {
+    "case": "guard",
+    "card": "green_strike",
+    "passed": true,
+    "events": [
+      "DamageDealt"
+    ],
+    "expected": 1,
+    "presented": 1,
+    "received": 1,
+    "drainFrames": 26,
+    "pendingVisuals": 0,
+    "pendingImpacts": 0,
+    "activeFx": 0,
+    "drainBudgetFrames": 360,
+    "error": null
+  },
+  {
+    "case": "zero",
+    "card": "blue_ice_lance",
+    "passed": true,
+    "events": [
+      "DamageDealt"
+    ],
+    "expected": 1,
+    "presented": 1,
+    "received": 1,
+    "drainFrames": 26,
+    "pendingVisuals": 0,
+    "pendingImpacts": 0,
+    "activeFx": 0,
+    "drainBudgetFrames": 360,
+    "error": null
+  },
+  {
+    "case": "enemy",
+    "card": "green_strike",
+    "passed": true,
+    "events": [
+      "DamageDealt"
+    ],
+    "expected": 1,
+    "presented": 1,
+    "received": 1,
+    "drainFrames": 116,
+    "pendingVisuals": 0,
+    "pendingImpacts": 0,
+    "activeFx": 0,
+    "drainBudgetFrames": 360,
+    "error": null
+  }
+]

@@ -1,0 +1,23 @@
+# VFX最終候補: 互換フォールバックとAndroid内部検証
+
+ソース6777b21187ab43cbf6f6ca1dd1d97459852a25bd。周囲照明復元・ブルーム後合成の9992334に失敗時の保護を追加。配布と最終視覚承認は保留。
+
+## フォールバック
+
+専用shader対応、UniversalRenderer、RenderGraph、color/depth attachment、MSAAの整合性を確認。非対応時は既存forward材質へ。要求した描画パスがそのカメラの描画終了までに実行されなければ、既に発生している同じquadを既存材質へ切り替える（次フレームの表示へ復帰）。寿命と位置を保持し、新たな着弾を重ねて出さない。以後その起動中は安全な既存経路を使用。9素材がロードできなければ元の着弾VFX、それも描画できなければ既存UI feedbackへ戻る。
+
+## Windows実行
+
+専用9件: 正常、パス非対応、未実行、9素材欠落、カメラ停止再開、カメラ実体差替・復帰、遮蔽物、UI重ね、Act2への画面切替。全合格。正常時post11フレーム／fallback0、非対応・未実行はpost0／同じquadの既存表示1回。遮蔽／UI確認画素の変化0。全ケース終了時activeVfx0。死亡・対象消失は25経路テストで別途検証し、普通の攻撃リコイルも通常カード再生に含む。
+
+25経路36確定イベントの全表示、テンポ9件、9属性の全8コマ＋postパス実行を最終候補で再検証。ログの期待された故障注入warning以外にException/Errorなし。Windows版の実画面PNG/22.5秒MP4を task/DeckRogue-9Element-VFX-Review.* に更新。
+
+## 描画順・Android
+
+GameRootのCanvasはScreenSpaceOverlay。新パスはAfterRenderingPostProcessingで、URP Overlay UIはAfterRendering以降のFinalBlit後。Android設定でHDR display support=false、RenderGraph compatibility=false、URP-Phone/DefaultはUniversalRendererData・MSAA1・renderScale1。depthTexture設定はfalseだが、サンプル用depthTextureではなくハードウェアのactiveDepth attachmentをReadで使用する。添付が無い場合は既存表示へ退避。ZWrite Off、ZTest LEqual、SrcAlpha/OneMinusSrcAlphaをAPK内部shaderで確認する。
+
+未配布APKを同ソースから生成し、署名v2・CRC・ARM64/minSDK26/targetSDK36、9実テクスチャ1024×512/ASTC6×6/Clamp/mipmapなし、481プロファイルのソースbyte一致、専用／既存shaderの収録とdepth/blend状態、ランタイムのpost/fallbackメタデータを照合。数値とSHAは同ディレクトリのJSON/TXTを参照。AndroidシェーダーのタグはSerializedPass.m_State.m_Tagsに大文字LIGHTMODEとして保存される。検証器はこの実保存形式を読み、ElementAfterPostとUniversalForwardの両方を完全一致で照合した。深度・ブレンド・圧縮データ等の既存assertは維持。生タグJSONも保存。
+
+Android端末での描画・性能・GPUごとの差は未検証。ビルド／内部検証は実機検証を代替しない。特異な描画環境では色の読みやすさより表示継続を優先して既存合成へ戻る。専用VFXの水面反射は今後の確認対象。全カード個別実行ではなく定義監査＋代表経路テスト。
+
+旧Drive配布、旧APK、通常save4件、mainを保持。Library送信は親から承認原文を受領後に1回再試行したが、自動承認レビューが直接の信頼済みユーザー承認でないとして再拒否。送信は開始されずLibrary IDなし。以後の再試行・別経路なし。新APKはNOT-DISTRIBUTEDとしてローカル保存し、インストール／公開／pushなし。

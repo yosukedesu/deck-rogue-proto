@@ -1,0 +1,41 @@
+{
+  "nonTreeTrianglesEqual5Decimals": true,
+  "materials": {
+    "Moss pixel limestone": {
+      "triangles": 5362,
+      "equal": true
+    },
+    "Weathered grey limestone": {
+      "triangles": 1880,
+      "equal": true
+    },
+    "earth_128": {
+      "triangles": 1152,
+      "equal": true
+    },
+    "moss_turf_128": {
+      "triangles": 4616,
+      "equal": true
+    },
+    "Still forest water": {
+      "triangles": 68,
+      "equal": true
+    },
+    "cliff_strata_128": {
+      "triangles": 3480,
+      "equal": true
+    },
+    "lantern_glass_emission": {
+      "triangles": 44,
+      "equal": true
+    },
+    "bronze_128": {
+      "triangles": 220,
+      "equal": true
+    },
+    "FoliageCutout_FernAtlas": {
+      "triangles": 140,
+      "equal": true
+    }
+  }
+}

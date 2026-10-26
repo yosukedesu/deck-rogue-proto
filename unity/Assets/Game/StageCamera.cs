@@ -585,7 +585,7 @@ namespace DeckRogue.Game
         /// <summary>画面揺れは舞台 (カメラ) が揺れる。紙の UI は揺れない</summary>
         public static void Shake(float px, float dur)
         {
-            if (_driver == null) return;
+            if (_driver == null || Stage.CombatWorld) return;
             _driver.ShakeAmp = Mathf.Max(_driver.ShakeAmp, px);
             _driver.ShakeT = Mathf.Max(_driver.ShakeT, dur);
             _driver.ShakeDur = Mathf.Max(0.05f, dur);
@@ -598,7 +598,7 @@ namespace DeckRogue.Game
         /// </summary>
         public static void ZoomPunch(float units, float dur = 0.32f)
         {
-            if (_driver == null) return;
+            if (_driver == null || Stage.CombatWorld || StageMotion.LightsEveryHit) return;
             _driver.PushAmp = Mathf.Max(_driver.PushAmp, units);
             _driver.PushT = Mathf.Max(0.05f, dur); _driver.PushDur = _driver.PushT;
         }
@@ -606,7 +606,7 @@ namespace DeckRogue.Game
         /// <summary>ゆっくり寄って戻る (2026-09-17 ⑨⑧): ボスの登場・幕ボス撃破の余韻。inDur で units まで寄り、hold の後 outDur で戻る。units は画角 36° の時の量 (× r は StageDriver)</summary>
         public static void Dolly(float units, float inDur, float hold, float outDur)
         {
-            if (_driver == null) return;
+            if (_driver == null || Stage.CombatWorld) return;
             _driver.DollyAmp = units; _driver.DollyIn = inDur; _driver.DollyHold = hold; _driver.DollyOut = outDur; _driver.DollyT = 0f; _driver.DollyOn = true;
         }
 

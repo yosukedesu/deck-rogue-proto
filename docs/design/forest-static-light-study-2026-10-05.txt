@@ -1,0 +1,42 @@
+Forest static-light study, 2026-10-05
+
+Branch baseline: e2ae0ca. Preserve night palette, geometry, camera, DOF,
+character rendering and attack timing. Experimental controls default to zero.
+Use -forest-preview night -forest-look <absolute JSON path>.
+Profiles forest-static-study-{direction,hue,combined}.json isolate factors.
+Study applies only to soft_v5 opaque surfaces within world X [-9,-3],
+Z [-1,7], feathered by 0.75m. This is a local experiment, not final lighting.
+
+Confirmed data: all 15 baked StageBatch meshes have normals and tangents;
+none have vertex colors (17792 Unity vertices after import/seam splitting).
+Importer disables vertex AO and both normal-map paths. The shader's top/side
+material transition is outside _UV_MESH and is not active for this stage.
+NaturalSurface formerly overwrote the earlier vertex RGB multiplication.
+It now applies supplied RGB visibility ONLY to static indirect illumination.
+Marked attack contribution and direct lights are excluded from that AO.
+Current assets still have AO disabled; this change does NOT create AO data.
+
+AO handoff format: vertex RGB = linear grayscale visibility [0,1], where 1
+is unoccluded; alpha = 1. Preserve UVs and normals; color export must survive
+FBX corner/vertex splitting. White outside the test region. Exclude alpha
+tree/fern cards as occluders. Importer currently sets _VColorAO=0: enable only
+for the actual supplied colors, and audit color channel/range before A/B.
+Existing atlas-normal mode has a camera-facing frame for relief sprites;
+do not enable it blindly for arbitrary 3D mesh tangent-space normal maps.
+
+Direction factor: replace the constant ambient minimum by a normal-Y
+hemisphere factor (side .48, top 1.18). Hue factor is independent: restore
+staticDirect hue from the prior .5 neutralization, and slightly tint ambient
+side blue-violet / top sky-blue. No extra lights, maps or screen passes.
+Attack math, surface albedo on attacks, hit strength/range/timing unchanged.
+
+Observed: direction alone is subtle and does not establish the ambient floor
+as the dominant cheapness cause. Hue restores a visible warm/cool distinction
+near the lantern. Neither proves improved contact; await actual AO data.
+No default look, sampler or DOF settings adopted from these experiments.
+
+Validation: Windows build succeeded, 0 errors / 16 warnings, 247s.
+4 variants x 16 layout captures (idle + fire sequence), zero layout errors;
+1920x886, phone tier, seed4242, camera fixed. Inspected idle and fire-2 crops.
+Four normal-save hashes match the isolation baseline. No Android, GPU timing,
+full tempo or cross-API shader checks in this phase. No APK/Drive/push.

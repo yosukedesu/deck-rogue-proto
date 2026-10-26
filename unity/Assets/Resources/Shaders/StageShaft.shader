@@ -27,6 +27,7 @@ Shader "DeckRogue/StageShaft"
         _LobeFloor ("Lobe Floor", Range(0,1)) = 1
         _SkipTopVig ("Skip Top Vignette by Vertex Alpha", Range(0,1)) = 0
         _ShaftGain ("Shaft Gain (vertex alpha 0 faces)", Range(0,4)) = 1
+        _ShaftTexture ("Canopy Breakup (strength, frequency, drift, floor)", Vector) = (0,18,0.015,0.25)
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0
     }
     SubShader
@@ -58,6 +59,7 @@ Shader "DeckRogue/StageShaft"
                 half _SkipTopVig;   // 二周目 段2 (R2B): 1 = 頂点色の a が 0 の面 (月光の筋) は上の減光を受けない (0 = 今まで。StageLook が look の materials.glow.shaftSkipTopVig から書く)
                 half _ShaftGain;    // 三周目 段1 (R3B): 頂点色の a が 0 の面 (月光の筋) の明るさの倍率 (1 = 今まで。StageLook が look の materials.glow.shaftGain から書く)
                 float4 _Scroll;
+                float4 _ShaftTexture;
             CBUFFER_END
             float4 _HD2DFogLobePos;   // 全体値 (StageLook。xyz = 霧の光の芯・w = 絞り。0 = 使わない)
             float4 _HD2DFogLobeAniso; // 全体値 (直しの輪1。x = 縦・y = 横の絞り。どちらかが 0 なら cos の w 乗 = 今まで。StageModule と同じ式)
@@ -93,6 +95,7 @@ Shader "DeckRogue/StageShaft"
                 float eyeDepth : TEXCOORD2;
                 float3 positionWS : TEXCOORD3;
                 float3 normalWS : TEXCOORD4;
+                float2 shaftUV : TEXCOORD6;
                 half4 color : TEXCOORD5;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
                 UNITY_VERTEX_OUTPUT_STEREO
@@ -109,9 +112,23 @@ Shader "DeckRogue/StageShaft"
                 o.eyeDepth = -p.positionVS.z;
                 o.normalWS = TransformObjectToWorldNormal(i.normalOS);
                 o.color = i.color;
+                o.shaftUV = float2((i.uv.x - 0.5) * 2.0, i.uv.y);
                 o.uv = TRANSFORM_TEX(i.uv, _BaseMap) + _Scroll.xy * _Time.y;
                 o.fogFactor = ComputeFogFactor(p.positionCS.z);
                 return o;
+            }
+            // Smooth, non-periodic canopy apertures. Three cheap value-noise evaluations;
+            // no texture fetch, extra light, shadow map, full-screen pass or temporal history.
+            float ShaftNoise(float2 p)
+            {
+                float2 cell = floor(p), f = frac(p);
+                f = f * f * (3.0 - 2.0 * f);
+                float4 q = float4(dot(cell, float2(127.1, 311.7)),
+                    dot(cell + float2(1,0), float2(127.1,311.7)),
+                    dot(cell + float2(0,1), float2(127.1,311.7)),
+                    dot(cell + 1.0, float2(127.1,311.7)));
+                float4 h = frac(sin(q) * 43758.5453);
+                return lerp(lerp(h.x, h.y, f.x), lerp(h.z, h.w, f.x), f.y);
             }
             half4 Frag(Varyings i) : SV_Target
             {
@@ -121,6 +138,20 @@ Shader "DeckRogue/StageShaft"
                 c.rgb *= i.color.rgb;   // 部品ごとの明るさ (設計図の gain。既定 1)
                 half k = c.a * _Intensity;
                 k *= lerp(_ShaftGain, 1.0h, i.color.a);   // 三周目 段1 (R3B): 月光の筋 (a 0) だけ _ShaftGain 倍・霧の面 (a 1) は 1 倍 (既定 1 = 今まで)
+                // Only moon shafts (vertex alpha 0), never fog/halos (alpha 1).
+                // Apertures stay attached to the beam; slow longitudinal drift gives air volume
+                // without moving the camera or flickering the silhouettes of the characters.
+                if (_ShaftTexture.x > 0.0 && i.color.a < 1.0h)
+                {
+                    float2 uv = i.shaftUV;
+                    float drift = _Time.y * _ShaftTexture.z;
+                    float lanes = ShaftNoise(float2(uv.x * _ShaftTexture.y, uv.y * 0.65 + 4.7));
+                    float broad = ShaftNoise(float2(uv.x * 5.3 + 11.2, uv.y * 2.0 - drift));
+                    float veil = ShaftNoise(float2(uv.x * 3.1 - 7.4, uv.y * 5.0 - drift * 0.6));
+                    float density = smoothstep(0.16, 0.83, lanes * 0.65 + broad * 0.35);
+                    density = lerp(_ShaftTexture.w, 1.0, density) * lerp(0.8, 1.0, veil);
+                    k *= half(lerp(1.0, density, saturate(_ShaftTexture.x) * (1.0 - i.color.a)));
+                }
                 // 深度のなじみ (後ろの物に刺さる縁を消す)
                 if (_SoftDepth > 0.0h)
                 {

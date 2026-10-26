@@ -1,0 +1,52 @@
+[
+  {
+    "lightReviewMode": "baseline",
+    "element": "fire",
+    "card": "red_strike",
+    "leader": "leader_red",
+    "frameMask": 255,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  },
+  {
+    "lightReviewMode": "baseline",
+    "element": "ice",
+    "card": "blue_ice_lance",
+    "leader": "leader_blue",
+    "frameMask": 255,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  },
+  {
+    "lightReviewMode": "baseline",
+    "element": "dark",
+    "card": "black_grave_bolt",
+    "leader": "leader_black",
+    "frameMask": 255,
+    "events": [
+      "HpHealed",
+      "DamageDealt",
+      "DamageDealt"
+    ],
+    "presented": 3,
+    "passed": true
+  },
+  {
+    "lightReviewMode": "baseline",
+    "element": "physical",
+    "card": "green_strike",
+    "leader": "leader_green",
+    "frameMask": 0,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  }
+]

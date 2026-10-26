@@ -1,0 +1,56 @@
+[
+  {
+    "postCompositeFrames": 11,
+    "lightReviewMode": "separated",
+    "element": "fire",
+    "card": "red_strike",
+    "leader": "leader_red",
+    "frameMask": 255,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  },
+  {
+    "postCompositeFrames": 10,
+    "lightReviewMode": "separated",
+    "element": "ice",
+    "card": "blue_ice_lance",
+    "leader": "leader_blue",
+    "frameMask": 255,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  },
+  {
+    "postCompositeFrames": 15,
+    "lightReviewMode": "separated",
+    "element": "dark",
+    "card": "black_grave_bolt",
+    "leader": "leader_black",
+    "frameMask": 255,
+    "events": [
+      "HpHealed",
+      "DamageDealt",
+      "DamageDealt"
+    ],
+    "presented": 3,
+    "passed": true
+  },
+  {
+    "postCompositeFrames": 0,
+    "lightReviewMode": "separated",
+    "element": "physical",
+    "card": "green_strike",
+    "leader": "leader_green",
+    "frameMask": 0,
+    "events": [
+      "DamageDealt"
+    ],
+    "presented": 1,
+    "passed": true
+  }
+]

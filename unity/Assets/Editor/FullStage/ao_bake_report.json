@@ -1,0 +1,1925 @@
+{
+  "method": "48 cosine-weighted hemisphere rays per vertex, distance-weighted occlusion radius 0.8m, 0.008m normal offset; AO=clamp(1-0.75*occlusion,.30,1). RGB linear grayscale AO, alpha 1. Transparent foliage/water excluded as occluders and set to white. AO calculated with the current e2ae0ca bank_rock_12 runtime -0.36m correction; mesh coordinates restored before export for identical geometry and existing runtime correction. Ambient-only renderer A/B intended; not a lightmap or dynamic character shadow.",
+  "objects": [
+    {
+      "object": "Gate_pier_-1_00",
+      "vertices": 24,
+      "min": 0.3,
+      "mean": 0.6250456999118493,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_pier_-1_01",
+      "vertices": 24,
+      "min": 0.71030126860569,
+      "mean": 0.9091658500116561,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_pier_-1_02",
+      "vertices": 24,
+      "min": 0.7627343309941352,
+      "mean": 0.9253105548107973,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_pier_-1_03",
+      "vertices": 24,
+      "min": 0.33973118812718894,
+      "mean": 0.6446480125923699,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_foot_-1",
+      "vertices": 24,
+      "min": 0.3669858394860057,
+      "mean": 0.7340981087984252,
+      "max": 0.9835377493873239,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_impost_-1",
+      "vertices": 24,
+      "min": 0.9527926120208576,
+      "mean": 0.9882341257495378,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_pier_1_00",
+      "vertices": 24,
+      "min": 0.3,
+      "mean": 0.6381595124325637,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_pier_1_01",
+      "vertices": 24,
+      "min": 0.7478716460027499,
+      "mean": 0.9148380702645227,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_pier_1_02",
+      "vertices": 24,
+      "min": 0.762956495556864,
+      "mean": 0.9229531751325339,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_pier_1_03",
+      "vertices": 24,
+      "min": 0.34208778392348904,
+      "mean": 0.6397278646106012,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_foot_1",
+      "vertices": 24,
+      "min": 0.8042394430958666,
+      "mean": 0.9519573777530846,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_impost_1",
+      "vertices": 24,
+      "min": 0.952793103584554,
+      "mean": 0.9881244446053946,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_arch_stone_00",
+      "vertices": 24,
+      "min": 0.3,
+      "mean": 0.5370204770428851,
+      "max": 0.6055537817592267,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_arch_stone_01",
+      "vertices": 24,
+      "min": 0.5790874598824303,
+      "mean": 0.5995831594906728,
+      "max": 0.6191829250310548,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_arch_stone_02",
+      "vertices": 24,
+      "min": 0.5838818513584556,
+      "mean": 0.5978383978479845,
+      "max": 0.6148289548655157,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_arch_stone_03",
+      "vertices": 24,
+      "min": 0.5786696889263112,
+      "mean": 0.5984318029225809,
+      "max": 0.6169055553036742,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_arch_stone_04",
+      "vertices": 24,
+      "min": 0.5770506051994744,
+      "mean": 0.5992186305387198,
+      "max": 0.6227728465819382,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_arch_stone_05",
+      "vertices": 24,
+      "min": 0.5846110596248764,
+      "mean": 0.5996746361773452,
+      "max": 0.6094770164345391,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_arch_stone_06",
+      "vertices": 24,
+      "min": 0.5770506596600171,
+      "mean": 0.5984988160807916,
+      "max": 0.622772861206613,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_arch_stone_07",
+      "vertices": 24,
+      "min": 0.5786695790229714,
+      "mean": 0.5978241862148934,
+      "max": 0.6169054909478291,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_arch_stone_08",
+      "vertices": 24,
+      "min": 0.5821741805921192,
+      "mean": 0.5977552836963392,
+      "max": 0.6148283619477297,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_arch_stone_09",
+      "vertices": 24,
+      "min": 0.581642955497955,
+      "mean": 0.6004353878906841,
+      "max": 0.6191831485484727,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_arch_stone_10",
+      "vertices": 24,
+      "min": 0.3,
+      "mean": 0.5376766445324089,
+      "max": 0.6055543165057315,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_fallen_00",
+      "vertices": 24,
+      "min": 0.3953083186447657,
+      "mean": 0.7471378000451713,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_fallen_01",
+      "vertices": 24,
+      "min": 0.3745895405918418,
+      "mean": 0.7701773581357875,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Gate_fallen_02",
+      "vertices": 24,
+      "min": 0.3,
+      "mean": 0.7573613266668265,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stair_module_00",
+      "vertices": 24,
+      "min": 0.3,
+      "mean": 0.49670655552108656,
+      "max": 0.9564422187395394,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stair_module_01",
+      "vertices": 24,
+      "min": 0.31140685156424297,
+      "mean": 0.6713031576203244,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stair_module_02",
+      "vertices": 24,
+      "min": 0.3,
+      "mean": 0.8193807467868283,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Pillar_course_014",
+      "vertices": 24,
+      "min": 0.3181870440603234,
+      "mean": 0.7432454873841342,
+      "max": 0.9960468921344727,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Pillar_course_040",
+      "vertices": 24,
+      "min": 0.471917559611029,
+      "mean": 0.798119268469236,
+      "max": 0.9916686008218676,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Pillar_course_082",
+      "vertices": 24,
+      "min": 0.3301688189512788,
+      "mean": 0.8015561642271981,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Pillar_course_144",
+      "vertices": 24,
+      "min": 0.7349513557564933,
+      "mean": 0.9315884549002172,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Pillar_course_206",
+      "vertices": 24,
+      "min": 0.3685317784484141,
+      "mean": 0.8298439151476865,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Pillar_broken_cap",
+      "vertices": 24,
+      "min": 0.7579308390377264,
+      "mean": 0.9843788590665099,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Paving_slab_00",
+      "vertices": 24,
+      "min": 0.48178124088735785,
+      "mean": 0.8074974312700457,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Paving_slab_01",
+      "vertices": 24,
+      "min": 0.4792779300623806,
+      "mean": 0.789419140357495,
+      "max": 0.9895154320402071,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Paving_slab_02",
+      "vertices": 24,
+      "min": 0.4447043327963911,
+      "mean": 0.7867127785430057,
+      "max": 0.9898617321159691,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Paving_slab_03",
+      "vertices": 24,
+      "min": 0.44192709409981035,
+      "mean": 0.7851071655674483,
+      "max": 0.9896037516882643,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Paving_slab_04",
+      "vertices": 24,
+      "min": 0.4790158556716051,
+      "mean": 0.8074264751318575,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Rock_fragment_00",
+      "vertices": 12,
+      "min": 0.3756829814519733,
+      "mean": 0.761925239188713,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Rock_fragment_01",
+      "vertices": 12,
+      "min": 0.35025289837358287,
+      "mean": 0.6450820927517876,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Rock_fragment_02",
+      "vertices": 12,
+      "min": 0.36552324365766253,
+      "mean": 0.6371098729287041,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "GROUND__flat_battle_zone",
+      "vertices": 777,
+      "min": 0.3,
+      "mean": 0.8959106266451441,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "stream_ribbon",
+      "vertices": 70,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "bridge_flag_0",
+      "vertices": 24,
+      "min": 0.3,
+      "mean": 0.6631640498673733,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bridge_flag_1",
+      "vertices": 24,
+      "min": 0.30263129067316186,
+      "mean": 0.5250369389844233,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bridge_flag_2",
+      "vertices": 24,
+      "min": 0.31970069040107774,
+      "mean": 0.568420847631387,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bridge_flag_3",
+      "vertices": 24,
+      "min": 0.31531272620122763,
+      "mean": 0.631847055892346,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "broken_parapet_L_0",
+      "vertices": 24,
+      "min": 0.31953159525437513,
+      "mean": 0.8503385563737235,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "broken_parapet_L_1",
+      "vertices": 24,
+      "min": 0.33585119913368544,
+      "mean": 0.801155768512217,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "broken_parapet_L_2",
+      "vertices": 24,
+      "min": 0.39118886690948784,
+      "mean": 0.8150052978882675,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "broken_parapet_L_3",
+      "vertices": 24,
+      "min": 0.48777255611668124,
+      "mean": 0.8589876832380625,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "broken_parapet_R_0",
+      "vertices": 24,
+      "min": 0.39788188424245163,
+      "mean": 0.8041150719954638,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "broken_parapet_R_1",
+      "vertices": 24,
+      "min": 0.3731011791232959,
+      "mean": 0.789046381030488,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "broken_parapet_R_2",
+      "vertices": 24,
+      "min": 0.4148907011913252,
+      "mean": 0.8310652006547722,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_00",
+      "vertices": 62,
+      "min": 0.30148595173523063,
+      "mean": 0.7452113386640092,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_01",
+      "vertices": 62,
+      "min": 0.40109578817782676,
+      "mean": 0.8493551013915045,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_02",
+      "vertices": 62,
+      "min": 0.503702253830852,
+      "mean": 0.8714931532869683,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_03",
+      "vertices": 62,
+      "min": 0.4135082613574923,
+      "mean": 0.8489118148570982,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_04",
+      "vertices": 62,
+      "min": 0.3983508932797122,
+      "mean": 0.8585525498514757,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_05",
+      "vertices": 62,
+      "min": 0.39831703199160984,
+      "mean": 0.8432431713325411,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_06",
+      "vertices": 62,
+      "min": 0.3,
+      "mean": 0.7252853659214451,
+      "max": 0.9973203002009541,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_07",
+      "vertices": 62,
+      "min": 0.37052703752988236,
+      "mean": 0.8433796122537842,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_08",
+      "vertices": 62,
+      "min": 0.40724064228379575,
+      "mean": 0.8813543644573069,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_09",
+      "vertices": 62,
+      "min": 0.3,
+      "mean": 0.7260249239949659,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_10",
+      "vertices": 62,
+      "min": 0.3210156039240246,
+      "mean": 0.8348981279643575,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_11",
+      "vertices": 62,
+      "min": 0.5784913388779387,
+      "mean": 0.9231499090913736,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_12",
+      "vertices": 62,
+      "min": 0.5114427291337051,
+      "mean": 0.8986055213043131,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_13",
+      "vertices": 62,
+      "min": 0.302876615731293,
+      "mean": 0.7907848846916457,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_14",
+      "vertices": 62,
+      "min": 0.34639222625628463,
+      "mean": 0.7965037148416683,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_15",
+      "vertices": 62,
+      "min": 0.3999460434060893,
+      "mean": 0.8563218194069651,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_16",
+      "vertices": 62,
+      "min": 0.33135952217571685,
+      "mean": 0.8415394238635702,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_17",
+      "vertices": 62,
+      "min": 0.35422253895376343,
+      "mean": 0.8763710440869934,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_18",
+      "vertices": 62,
+      "min": 0.3856220741781726,
+      "mean": 0.8429470520673168,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_19",
+      "vertices": 62,
+      "min": 0.4270230578222254,
+      "mean": 0.8680911994948298,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_20",
+      "vertices": 62,
+      "min": 0.4215026103738637,
+      "mean": 0.8543165669033178,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_21",
+      "vertices": 62,
+      "min": 0.31607736203295644,
+      "mean": 0.8282275496343162,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_22",
+      "vertices": 62,
+      "min": 0.33594576413133836,
+      "mean": 0.822659512884759,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_23",
+      "vertices": 62,
+      "min": 0.36110752006061375,
+      "mean": 0.7567182893033004,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_24",
+      "vertices": 62,
+      "min": 0.3,
+      "mean": 0.8138818812149815,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_25",
+      "vertices": 62,
+      "min": 0.3533258558672969,
+      "mean": 0.8345636808541801,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_26",
+      "vertices": 62,
+      "min": 0.30246247962350026,
+      "mean": 0.8295277082362454,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_27",
+      "vertices": 62,
+      "min": 0.4210251372860512,
+      "mean": 0.8652337629961743,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_28",
+      "vertices": 62,
+      "min": 0.31451804238167824,
+      "mean": 0.7737269625155506,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_29",
+      "vertices": 62,
+      "min": 0.30481702457836946,
+      "mean": 0.6992015733285224,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_30",
+      "vertices": 62,
+      "min": 0.3631351801122946,
+      "mean": 0.8459857747971147,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_31",
+      "vertices": 62,
+      "min": 0.49602212152967695,
+      "mean": 0.8820159819918063,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_32",
+      "vertices": 62,
+      "min": 0.32402958085003775,
+      "mean": 0.8449905457114365,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_33",
+      "vertices": 62,
+      "min": 0.4503463797082077,
+      "mean": 0.8277286129805068,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_34",
+      "vertices": 62,
+      "min": 0.4649524993947125,
+      "mean": 0.8868173865493513,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_35",
+      "vertices": 62,
+      "min": 0.4191376391390804,
+      "mean": 0.8605171099265018,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_36",
+      "vertices": 62,
+      "min": 0.31804233029833995,
+      "mean": 0.7985068925716463,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_37",
+      "vertices": 62,
+      "min": 0.35824453871464357,
+      "mean": 0.8495679104244411,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_38",
+      "vertices": 62,
+      "min": 0.3518780096565024,
+      "mean": 0.8585434009966717,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_39",
+      "vertices": 62,
+      "min": 0.4289833149014157,
+      "mean": 0.8841102424993873,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_40",
+      "vertices": 62,
+      "min": 0.3653828198002884,
+      "mean": 0.833112941889281,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_41",
+      "vertices": 62,
+      "min": 0.43328715761890635,
+      "mean": 0.8669940984555362,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_42",
+      "vertices": 62,
+      "min": 0.3645163658657111,
+      "mean": 0.8180147368510505,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "bank_rock_43",
+      "vertices": 62,
+      "min": 0.40688123579309377,
+      "mean": 0.8629652495539041,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "lantern_pedestal",
+      "vertices": 24,
+      "min": 0.3,
+      "mean": 0.7391700546301764,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "lantern_light",
+      "vertices": 24,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "lantern_bar",
+      "vertices": 24,
+      "min": 0.30391402067289164,
+      "mean": 0.4650108404294618,
+      "max": 0.7506412353250198,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "lantern_bar.001",
+      "vertices": 24,
+      "min": 0.30400309885772003,
+      "mean": 0.46479990851094044,
+      "max": 0.7512146837543696,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "lantern_bar.002",
+      "vertices": 24,
+      "min": 0.30400168329288135,
+      "mean": 0.4647988004257968,
+      "max": 0.7512138964957558,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "lantern_bar.003",
+      "vertices": 24,
+      "min": 0.30391519011936907,
+      "mean": 0.4650112296928152,
+      "max": 0.7506410991190933,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "lantern_roof",
+      "vertices": 24,
+      "min": 0.9683066091383807,
+      "mean": 0.9953056139844799,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "ForestTree_Card_00",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_01",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_02",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_03",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_04",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_05",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_06",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_07",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_08",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_09",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_10",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_11",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_12",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "ForestTree_Card_13",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "Bank_Ruins",
+      "vertices": 289,
+      "min": 0.31882874941584305,
+      "mean": 0.9001348074022288,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Bank_Middle",
+      "vertices": 222,
+      "min": 0.5221997095795814,
+      "mean": 0.9458242204964878,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Bank_Right",
+      "vertices": 235,
+      "min": 0.5196875470282976,
+      "mean": 0.9382977297235792,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Bank_Far",
+      "vertices": 254,
+      "min": 0.5140987819104339,
+      "mean": 0.9624046511972973,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_00",
+      "vertices": 62,
+      "min": 0.3,
+      "mean": 0.8532464773909659,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_03",
+      "vertices": 62,
+      "min": 0.34421448302600766,
+      "mean": 0.765036863453236,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_06",
+      "vertices": 62,
+      "min": 0.3041043816651836,
+      "mean": 0.7577819149621299,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_09",
+      "vertices": 62,
+      "min": 0.3557358997204574,
+      "mean": 0.8563801039078587,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_12",
+      "vertices": 62,
+      "min": 0.3,
+      "mean": 0.688636968622039,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_15",
+      "vertices": 62,
+      "min": 0.3,
+      "mean": 0.5337160641419183,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_18",
+      "vertices": 62,
+      "min": 0.38696409689327993,
+      "mean": 0.852057536727044,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_21",
+      "vertices": 62,
+      "min": 0.3668232310010353,
+      "mean": 0.8350850066678519,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_24",
+      "vertices": 62,
+      "min": 0.37041843768020044,
+      "mean": 0.8377928214863899,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_27",
+      "vertices": 62,
+      "min": 0.4139589731621527,
+      "mean": 0.8437829130898535,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_30",
+      "vertices": 62,
+      "min": 0.351788704369028,
+      "mean": 0.8425639872052524,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_33",
+      "vertices": 62,
+      "min": 0.40225391533749644,
+      "mean": 0.8540081923316803,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_36",
+      "vertices": 62,
+      "min": 0.37164064485909876,
+      "mean": 0.8533323423041895,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_39",
+      "vertices": 62,
+      "min": 0.32012765100444085,
+      "mean": 0.810397084642672,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_42",
+      "vertices": 62,
+      "min": 0.3985226199893077,
+      "mean": 0.8574679255690142,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Stream_edge_rock_45",
+      "vertices": 62,
+      "min": 0.3653138485860836,
+      "mean": 0.8618935824772287,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_00",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_01",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_02",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_03",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_04",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_06",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_07",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_08",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_09",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_10",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_11",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_12",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_13",
+      "vertices": 36,
+      "min": 0.9657766337040812,
+      "mean": 0.9949613995170997,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_14",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_15",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_17",
+      "vertices": 36,
+      "min": 0.949847879819572,
+      "mean": 0.998024798182693,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_20",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_22",
+      "vertices": 36,
+      "min": 0.9978267077822238,
+      "mean": 0.9999396307717284,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_23",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_25",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_28",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_39",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Ground_inset_stone_44",
+      "vertices": 36,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Farfield_Ground_Back",
+      "vertices": 648,
+      "min": 0.3,
+      "mean": 0.9870903838898943,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Farfield_Ground_Side_0",
+      "vertices": 132,
+      "min": 0.3,
+      "mean": 0.9793048589318556,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Farfield_Ground_Side_1",
+      "vertices": 132,
+      "min": 0.3,
+      "mean": 0.9443635182014674,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Bridge_Abutment_0",
+      "vertices": 8,
+      "min": 0.6446402513902285,
+      "mean": 0.8651159037308389,
+      "max": 0.9884824543260038,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "Bridge_Abutment_1",
+      "vertices": 8,
+      "min": 0.3218760863128409,
+      "mean": 0.6493901184508104,
+      "max": 0.9364589898032136,
+      "alpha_cutout_excluded": false
+    },
+    {
+      "object": "FernCard_00",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_01",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_02",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_03",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_04",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_05",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_06",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_07",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_08",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_09",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_10",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_11",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_12",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_13",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_14",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_15",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_16",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_17",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_18",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_19",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_20",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_21",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_22",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_23",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_24",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_25",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_26",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_27",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_28",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_29",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_30",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_31",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_32",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_33",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_34",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_35",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_36",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_37",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_38",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_39",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_40",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_41",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_42",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_43",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_44",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_45",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_46",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_47",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_48",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_49",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_50",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_51",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_52",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_53",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_54",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_55",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_56",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_57",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_58",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_59",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_60",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_61",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_62",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_63",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_64",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_65",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_66",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_67",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_68",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "FernCard_69",
+      "vertices": 4,
+      "min": 1.0,
+      "mean": 1.0,
+      "max": 1.0,
+      "alpha_cutout_excluded": true
+    },
+    {
+      "object": "GROUND__foreground_apron",
+      "vertices": 481,
+      "min": 0.3,
+      "mean": 0.9683200643583988,
+      "max": 1.0,
+      "alpha_cutout_excluded": false
+    }
+  ]
+}

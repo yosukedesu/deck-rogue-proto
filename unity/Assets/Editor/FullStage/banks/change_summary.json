@@ -1,0 +1,316 @@
+{
+  "terrain": [
+    "Bank_Middle",
+    "Bank_Right",
+    "Bank_Far"
+  ],
+  "regrounded": {
+    "tree": [
+      "ForestTree_Card_02",
+      "ForestTree_Card_03",
+      "ForestTree_Card_04",
+      "ForestTree_Card_05",
+      "ForestTree_Card_06",
+      "ForestTree_Card_13"
+    ],
+    "fern": [
+      "FernCard_00",
+      "FernCard_05",
+      "FernCard_10",
+      "FernCard_15",
+      "FernCard_16",
+      "FernCard_20",
+      "FernCard_25",
+      "FernCard_26",
+      "FernCard_27",
+      "FernCard_28",
+      "FernCard_39",
+      "FernCard_53",
+      "FernCard_56",
+      "FernCard_58",
+      "FernCard_59",
+      "FernCard_69"
+    ],
+    "rock actual shell contact": [
+      "bank_rock_05",
+      "bank_rock_06",
+      "bank_rock_11",
+      "bank_rock_12",
+      "bank_rock_14",
+      "bank_rock_15",
+      "bank_rock_16",
+      "bank_rock_17",
+      "bank_rock_18",
+      "bank_rock_21",
+      "bank_rock_22",
+      "bank_rock_23",
+      "bank_rock_30",
+      "bank_rock_33",
+      "bank_rock_36",
+      "bank_rock_37",
+      "bank_rock_43"
+    ]
+  },
+  "all_changed": [
+    "Bank_Far",
+    "Bank_Middle",
+    "Bank_Right",
+    "bank_rock_05",
+    "bank_rock_06",
+    "bank_rock_11",
+    "bank_rock_12",
+    "bank_rock_14",
+    "bank_rock_15",
+    "bank_rock_16",
+    "bank_rock_17",
+    "bank_rock_18",
+    "bank_rock_21",
+    "bank_rock_22",
+    "bank_rock_23",
+    "bank_rock_30",
+    "bank_rock_33",
+    "bank_rock_36",
+    "bank_rock_37",
+    "bank_rock_43",
+    "FernCard_00",
+    "FernCard_05",
+    "FernCard_10",
+    "FernCard_15",
+    "FernCard_16",
+    "FernCard_20",
+    "FernCard_25",
+    "FernCard_26",
+    "FernCard_27",
+    "FernCard_28",
+    "FernCard_39",
+    "FernCard_53",
+    "FernCard_56",
+    "FernCard_58",
+    "FernCard_59",
+    "FernCard_69",
+    "ForestTree_Card_02",
+    "ForestTree_Card_03",
+    "ForestTree_Card_04",
+    "ForestTree_Card_05",
+    "ForestTree_Card_06",
+    "ForestTree_Card_13"
+  ],
+  "triangles": [
+    {
+      "object": "Bank_Far",
+      "before": 466,
+      "after": 760
+    },
+    {
+      "object": "Bank_Middle",
+      "before": 402,
+      "after": 760
+    },
+    {
+      "object": "Bank_Right",
+      "before": 430,
+      "after": 760
+    },
+    {
+      "object": "bank_rock_05",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_06",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_11",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_12",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_14",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_15",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_16",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_17",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_18",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_21",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_22",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_23",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_30",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_33",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_36",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_37",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "bank_rock_43",
+      "before": 120,
+      "after": 120
+    },
+    {
+      "object": "FernCard_00",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_05",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_10",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_15",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_16",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_20",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_25",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_26",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_27",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_28",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_39",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_53",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_56",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_58",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_59",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "FernCard_69",
+      "before": 2,
+      "after": 2
+    },
+    {
+      "object": "ForestTree_Card_02",
+      "before": 2,
+      "after": 2016
+    },
+    {
+      "object": "ForestTree_Card_03",
+      "before": 2,
+      "after": 1644
+    },
+    {
+      "object": "ForestTree_Card_04",
+      "before": 2,
+      "after": 1644
+    },
+    {
+      "object": "ForestTree_Card_05",
+      "before": 2,
+      "after": 1956
+    },
+    {
+      "object": "ForestTree_Card_06",
+      "before": 2,
+      "after": 1644
+    },
+    {
+      "object": "ForestTree_Card_13",
+      "before": 2,
+      "after": 1644
+    }
+  ],
+  "bank_rock_12_shift_metres": -0.8259658765792847,
+  "source_triangles": 16990,
+  "candidate_triangles": 28508,
+  "render_batches": 16,
+  "materials": 14,
+  "runtime_action": "Disable old bank_rock_12 -0.36 m vertex-index position patch. Audit unknown index-dependent geometry fixes; do not blindly disable lighting, fog or render-layer settings."
+}

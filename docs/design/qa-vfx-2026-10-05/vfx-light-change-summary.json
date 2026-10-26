@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "a0dec4b",
+  "scope": "Dedicated element hit lighting, not just texture color; physical WorldStrike unchanged",
+  "shader": "WorldBattleFx shader unchanged: unlit texture * Tint * vertex color, then fog; no direct light reception",
+  "dedicatedTexture": {"tint": "white", "gain": 1, "extraFade": false, "exposureChanged": false},
+  "contactBefore": {"intensity": 18, "range": 7, "durationSeconds": 0.32, "holdFraction": 0.3125, "holdSeconds": 0.10, "whiteMix": 0.65},
+  "contactAfter": {"intensityDefault": 4, "dark": 1.6, "vine": 2, "earth": 1.2, "range": 5, "durationSeconds": 0.24, "holdFraction": 0.18, "holdSeconds": 0.0432, "whiteMix": 0.15},
+  "bounceBefore": {"intensity": 28, "range": 13, "durationSeconds": 0.34, "holdFraction": 0.2941176, "holdSeconds": 0.10},
+  "bounceAfter": {"intensityDefault": 12, "dark": 9, "vine": 6, "earth": 4, "range": 11, "durationSeconds": 0.30, "holdFraction": 0.18, "holdSeconds": 0.054},
+  "heavyBefore": {"intensityMultiplier": 1.65, "contactRange": 8.5, "bounceRange": 15, "contactShadowsWhenAllowed": true},
+  "heavyAfter": {"intensityMultiplier": 1.2, "contactRange": 5, "bounceRange": 11, "contactShadows": false},
+  "other": "Dedicated element enemy hit suppresses old white Stage.Flash. Healing keeps StageFx.Cast. Physical and arcane retain old flash/light. Overall exposure, light receive materials, forest lighting and crystal guard unchanged.",
+  "additionalTuning": "On hold pending parent video review"
+}

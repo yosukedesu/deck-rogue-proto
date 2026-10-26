@@ -1,0 +1,249 @@
+{
+  "note": "Display-encoded RGB luminance proxy, not radiometric lux. Same seed, card, frame, fixed-step Windows gameplay. Baseline uses approved world light + original unlit material with the same new sheets. Weak reproduces rejected settings. Separated restores approved light + dedicated unlit straight-alpha material after stage bloom.",
+  "regions": {
+    "floor": [
+      820,
+      375,
+      1200,
+      424
+    ],
+    "characterAndVfx": [
+      1290,
+      235,
+      1455,
+      405
+    ],
+    "playerHeadOutsideMainImpact": [
+      412,
+      274,
+      464,
+      311
+    ]
+  },
+  "cases": [
+    {
+      "element": "fire",
+      "frame": 21,
+      "regions": {
+        "floor": {
+          "preImpactMeanLuma8": 30.874989344790542,
+          "baseline": {
+            "meanLuma8": 84.4266295810956,
+            "increaseFromPreImpact": 53.551640236305055
+          },
+          "weak": {
+            "meanLuma8": 47.678184468313646,
+            "increaseFromPreImpact": 16.803195123523103
+          },
+          "separated": {
+            "meanLuma8": 85.1882065198711,
+            "increaseFromPreImpact": 54.31321717508056
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 0.7940565699964196
+        },
+        "characterAndVfx": {
+          "preImpactMeanLuma8": 51.94639915864527,
+          "baseline": {
+            "meanLuma8": 124.73138134046344,
+            "increaseFromPreImpact": 72.78498218181818
+          },
+          "weak": {
+            "meanLuma8": 78.03614363636363,
+            "increaseFromPreImpact": 26.089744477718362
+          },
+          "separated": {
+            "meanLuma8": 135.11374187522281,
+            "increaseFromPreImpact": 83.16734271657754
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 31.28817587641117
+        },
+        "playerHeadOutsideMainImpact": {
+          "preImpactMeanLuma8": 131.37199480249478,
+          "baseline": {
+            "meanLuma8": 134.97990530145532,
+            "increaseFromPreImpact": 3.6079104989605355
+          },
+          "weak": {
+            "meanLuma8": 132.55074553014555,
+            "increaseFromPreImpact": 1.1787507276507654
+          },
+          "separated": {
+            "meanLuma8": 134.43161268191267,
+            "increaseFromPreImpact": 3.0596178794178854
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 0.4935897435897436
+        }
+      },
+      "wholeFrameMeanAbsoluteRGB8": 1.3000107772134437,
+      "wholeFramePixelsOver8Percent": 6.15835449586155
+    },
+    {
+      "element": "ice",
+      "frame": 21,
+      "regions": {
+        "floor": {
+          "preImpactMeanLuma8": 30.79396345864662,
+          "baseline": {
+            "meanLuma8": 109.18243294307196,
+            "increaseFromPreImpact": 78.38846948442534
+          },
+          "weak": {
+            "meanLuma8": 55.02498432867884,
+            "increaseFromPreImpact": 24.23102087003222
+          },
+          "separated": {
+            "meanLuma8": 109.80218401718581,
+            "increaseFromPreImpact": 79.0082205585392
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 0.8216254923021841
+        },
+        "characterAndVfx": {
+          "preImpactMeanLuma8": 52.278240948306596,
+          "baseline": {
+            "meanLuma8": 147.93090795721923,
+            "increaseFromPreImpact": 95.65266700891263
+          },
+          "weak": {
+            "meanLuma8": 100.60885564349375,
+            "increaseFromPreImpact": 48.33061469518716
+          },
+          "separated": {
+            "meanLuma8": 153.03425716934046,
+            "increaseFromPreImpact": 100.75601622103386
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 27.069102792632204
+        },
+        "playerHeadOutsideMainImpact": {
+          "preImpactMeanLuma8": 145.65558607068607,
+          "baseline": {
+            "meanLuma8": 127.36066839916839,
+            "increaseFromPreImpact": -18.29491767151768
+          },
+          "weak": {
+            "meanLuma8": 121.64939854469856,
+            "increaseFromPreImpact": -24.006187525987514
+          },
+          "separated": {
+            "meanLuma8": 127.05700249480249,
+            "increaseFromPreImpact": -18.59858357588358
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 0.43121968121968124
+        }
+      },
+      "wholeFrameMeanAbsoluteRGB8": 1.102294762666165,
+      "wholeFramePixelsOver8Percent": 4.1030615124153496
+    },
+    {
+      "element": "dark",
+      "frame": 25,
+      "regions": {
+        "floor": {
+          "preImpactMeanLuma8": 30.79396345864662,
+          "baseline": {
+            "meanLuma8": 58.52363269602577,
+            "increaseFromPreImpact": 27.729669237379152
+          },
+          "weak": {
+            "meanLuma8": 33.97826156820623,
+            "increaseFromPreImpact": 3.1842981095596095
+          },
+          "separated": {
+            "meanLuma8": 59.01512566058002,
+            "increaseFromPreImpact": 28.2211622019334
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 0.6076083064804869
+        },
+        "characterAndVfx": {
+          "preImpactMeanLuma8": 52.276110217468805,
+          "baseline": {
+            "meanLuma8": 115.22040156862744,
+            "increaseFromPreImpact": 62.94429135115863
+          },
+          "weak": {
+            "meanLuma8": 45.96165386809268,
+            "increaseFromPreImpact": -6.3144563493761225
+          },
+          "separated": {
+            "meanLuma8": 105.59322333689839,
+            "increaseFromPreImpact": 53.317113119429585
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 30.097706476530007
+        },
+        "playerHeadOutsideMainImpact": {
+          "preImpactMeanLuma8": 66.15009833679834,
+          "baseline": {
+            "meanLuma8": 94.63189085239084,
+            "increaseFromPreImpact": 28.481792515592502
+          },
+          "weak": {
+            "meanLuma8": 94.24374604989605,
+            "increaseFromPreImpact": 28.09364771309771
+          },
+          "separated": {
+            "meanLuma8": 98.00702130977132,
+            "increaseFromPreImpact": 31.85692297297298
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 4.865038115038115
+        }
+      },
+      "wholeFrameMeanAbsoluteRGB8": 1.008974871457236,
+      "wholeFramePixelsOver8Percent": 3.8722723852520695
+    },
+    {
+      "element": "physical",
+      "frame": 21,
+      "regions": {
+        "floor": {
+          "preImpactMeanLuma8": 30.79396345864662,
+          "baseline": {
+            "meanLuma8": 133.21069975295381,
+            "increaseFromPreImpact": 102.4167362943072
+          },
+          "weak": {
+            "meanLuma8": 133.21069975295381,
+            "increaseFromPreImpact": 102.4167362943072
+          },
+          "separated": {
+            "meanLuma8": 133.21069975295381,
+            "increaseFromPreImpact": 102.4167362943072
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 0.0
+        },
+        "characterAndVfx": {
+          "preImpactMeanLuma8": 52.27562998217469,
+          "baseline": {
+            "meanLuma8": 196.4311389946524,
+            "increaseFromPreImpact": 144.1555090124777
+          },
+          "weak": {
+            "meanLuma8": 196.4311389946524,
+            "increaseFromPreImpact": 144.1555090124777
+          },
+          "separated": {
+            "meanLuma8": 196.4311389946524,
+            "increaseFromPreImpact": 144.1555090124777
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 0.0
+        },
+        "playerHeadOutsideMainImpact": {
+          "preImpactMeanLuma8": 68.50548076923076,
+          "baseline": {
+            "meanLuma8": 42.551654261954255,
+            "increaseFromPreImpact": -25.953826507276503
+          },
+          "weak": {
+            "meanLuma8": 42.551654261954255,
+            "increaseFromPreImpact": -25.953826507276503
+          },
+          "separated": {
+            "meanLuma8": 42.551654261954255,
+            "increaseFromPreImpact": -25.953826507276503
+          },
+          "separatedVsBaselineMeanAbsoluteRGB8": 0.0
+        }
+      },
+      "wholeFrameMeanAbsoluteRGB8": 4.702784048156509e-06,
+      "wholeFramePixelsOver8Percent": 0.0
+    }
+  ]
+}

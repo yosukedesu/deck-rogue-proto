@@ -1,0 +1,18 @@
+Use case: stylized-concept.
+Asset type: original high-end HD-2D fantasy combat VFX, production Unity flipbook sprite atlas.
+Canvas: 2:1 landscape, ideally exactly 1024x512 PNG. Exactly FOUR equal columns and TWO equal rows, EIGHT equally sized SQUARE cells. Sequence is top row left to right frames 0,1,2,3, then bottom row left to right frames 4,5,6,7. No labels, lines, cell borders, text, characters, UI, scenery, ground plane or props.
+TRUE TRANSPARENT RGBA background and fully empty gutters. In EVERY cell leave the outer 16% on all four sides completely empty and transparent, alpha zero. ALL content including faint glow and particles stays inside the middle 68% of its cell. No overlapping neighboring cells, no cropped tips, no painted checkerboard, no black or gray background.
+Stable same center anchor (50%,50%) in EVERY frame, no viewpoint, scale registration or global positional drift. Up stays up, zero rotation. Rich finished element color is in the texture, to be displayed with WHITE tint and normal straight-alpha blending. Crisp defining silhouette, elegant textured detail and sparse local luminous particles; very limited soft bloom. Bright white cores are tiny/local; never broad opaque white disks or clouds.
+Make eight DISTINCT temporal frames with a brief early peak, convincing changing shapes and rapid clearing tail, not eight copies of one icon. Except where otherwise stated, frames 1–2 peak, frames 3–5 fragment/develop and frames 6–7 are nearly empty.
+
+THUNDER/LIGHTNING attack only. A narrow jagged cold-WHITE bolt with ELECTRIC BLUE and delicate violet fringes forks into asymmetrical angular side branches. One dominant lightning trunk passes through the cell center from upper left to lower right, the finest branches taper into isolated sparks. Strong clean lightning silhouette, not a flame ribbon, orb, circular halo or fog. No teal, gold, orange or runes. All branch tips have large fully transparent safety padding. Main bolt fits inside middle 64% of cell.
+This effect has TWO brief flashes in frames 1 and 3:
+Frame0: tiny dim electric seed and one very short filament at center.
+Frame1: FIRST main bright white-blue branching lightning strike, long thin trunk and three angular branches.
+Frame2: a much dimmer sparse broken afterimage of that first branch pattern, about 20% frame1 brightness.
+Frame3: SECOND instantaneous flash with a distinctly DIFFERENT jagged fork pattern through the SAME center, equal brightness to frame1.
+Frame4: broken short white-blue electrical stubs, only 20% peak.
+Frame5: a few tiny disconnected blue angular sparks, 8% peak.
+Frame6: two tiny faint pin sparks.
+Frame7: one barely visible blue pin, almost empty.
+Total .24 seconds. Thin high-energy lines; no broad glow cloud and no long-lived aura.

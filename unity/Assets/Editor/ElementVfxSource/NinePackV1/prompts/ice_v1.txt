@@ -1,0 +1,17 @@
+Use case: stylized-concept.
+Asset type: original high-end HD-2D fantasy combat VFX, production Unity flipbook sprite atlas.
+Canvas: 2:1 landscape, ideally exactly 1024x512 PNG. Exactly FOUR equal columns and TWO equal rows, EIGHT equally sized SQUARE cells. Sequence is top row left to right frames 0,1,2,3, then bottom row left to right frames 4,5,6,7. No labels, lines, cell borders, text, characters, UI, scenery, ground plane or props.
+TRUE TRANSPARENT RGBA background and fully empty gutters. In EVERY cell leave the outer 16% on all four sides completely empty and transparent, alpha zero. ALL content including faint glow and particles stays inside the middle 68% of its cell. No overlapping neighboring cells, no cropped tips, no painted checkerboard, no black or gray background.
+Stable same center anchor (50%,50%) in EVERY frame, no viewpoint, scale registration or global positional drift. Up stays up, zero rotation. Rich finished element color is in the texture, to be displayed with WHITE tint and normal straight-alpha blending. Crisp defining silhouette, elegant textured detail and sparse local luminous particles; very limited soft bloom. Bright white cores are tiny/local; never broad opaque white disks or clouds.
+Make eight DISTINCT temporal frames with a brief early peak, convincing changing shapes and rapid clearing tail, not eight copies of one icon. Except where otherwise stated, frames 1–2 peak, frames 3–5 fragment/develop and frames 6–7 are nearly empty.
+
+ICE attack only. An asymmetric group of THREE TO FIVE sharp pointed crystal spears grows upward and outward from cell center, hard faceted triangular forms and distinct sharp edges. Icy cobalt and pale blue translucent faces, tiny brilliant cold-WHITE edge highlights. Angular crystals must be unmistakably different from a water splash or soft fire. No water curls, round ring, fluffy snow cloud, teal, gold or runes. Main peak occupies at most 62% cell height and 60% width, fully padded.
+Frame0: one small ice seed at center with two short pointed facets.
+Frame1: fast growth of three sharp crystalline spears, main tall point angled slightly left, two smaller points right.
+Frame2: peak grown faceted crystal cluster, five asymmetrical hard points and fine internal cracks.
+Frame3: crystals SHATTER, major triangular pieces move apart with an open center.
+Frame4: smaller angular shards fly radially but remain safely within cell's middle 68%.
+Frame5: four faint small facets and tiny frost points.
+Frame6: three tiny pale-blue triangular specks.
+Frame7: one or two barely visible cool specks.
+Duration .32 seconds. No solid crystal remains in the tail.

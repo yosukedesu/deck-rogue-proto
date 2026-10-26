@@ -1,0 +1,15 @@
+Use case: stylized-concept.
+Asset type: production Unity 2D combat VFX flipbook sprite atlas for DeckRogue.
+Create FIRE only. Output exactly 1024 x 512 pixels, 2:1 landscape, with exactly 4 columns and 2 rows of equally sized SQUARE 256 x 256 animation cells, eight frames total. This is a technical texture atlas, not a presentation. No cell lines, labels, margins outside the grid, text, UI, characters, scenery or props.
+TRUE TRANSPARENT background, straight RGBA alpha. Every cell has at least 16 pixels of completely transparent padding on all four edges. No opaque black background and no painted checkerboard. Keep every glow and every ember wholly inside its own cell. All frames aligned around the exact same cell center (128,128); same scale and orientation, up stays up; no camera or pivot drift. Do not overlap neighboring cells.
+Art: original high-end HD-2D fantasy game attack VFX, beautifully textured crisp flame tongues with delicate small sparks. Bright compact WHITE-HOT core and pale yellow inner flame, rich hot-orange middle and red-orange outer edge. No teal, green, blue, purple, generic magic ring, runes, smoke cloud, huge round aura or starburst. White core is local, about 5–10% of the cell, never a broad white smear. Soft local glow is restrained and fades to genuine transparency. Flames emerge at cell center and leap upward in three irregular tapering forks; recognizable asymmetrical fire shape. Small scattered orange embers.
+Eight sequential frames read LEFT TO RIGHT across the TOP row, then LEFT TO RIGHT across the BOTTOM row:
+0: tiny white-orange ignition seed at exact cell center with one short flame tongue.
+1: rapid near-peak eruption into three beautiful upward curling flame tongues and a few sharp hot sparks.
+2: main peak, taller forked flame silhouette, narrow white-hot base, strong orange body, about 190 pixels tall and 140 pixels wide at most, all safely padded.
+3: hot tongues split and bend upward; white core already smaller.
+4: detached flame lobes lift and scatter into embers, total brightness decreasing.
+5: mostly separate little red-orange flames and sparks drifting upward, much less coverage.
+6: only five or six small dim embers with a few short tails.
+7: only two or three tiny dim embers near the upper center, almost empty.
+Timing intention: fast .36-second attack, early peak in frames 1–2 and a short rapidly clearing tail. Render eight DISTINCT temporal poses, not eight near-identical icons. Every frame has the same center anchor; never move the whole effect to fill a cell. Full canvas exactly 1024x512, accurate invisible 4x2 square grid, real transparent PNG.

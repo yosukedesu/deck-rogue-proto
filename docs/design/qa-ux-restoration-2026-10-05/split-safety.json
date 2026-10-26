@@ -1,0 +1,110 @@
+[
+  {
+    "splitLuminous": true,
+    "luminousEmissions": 1,
+    "case": "normal",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 9,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.410644472,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "splitLuminous": true,
+    "luminousEmissions": 0,
+    "case": "unavailable",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 0,
+    "legacySwitches": 1,
+    "sampleMaxRgbDelta": 0.404081941,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "splitLuminous": true,
+    "luminousEmissions": 1,
+    "case": "skippedPass",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 0,
+    "legacySwitches": 1,
+    "sampleMaxRgbDelta": 0.404081941,
+    "fallbackReason": "post pass did not execute; retained quads use legacy forward material",
+    "activeVfxAtEnd": 0
+  },
+  {
+    "splitLuminous": true,
+    "luminousEmissions": 0,
+    "case": "missingSheets",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 0,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.418327451,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "splitLuminous": true,
+    "luminousEmissions": 1,
+    "case": "cameraPause",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 7,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.410644472,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "splitLuminous": true,
+    "luminousEmissions": 1,
+    "case": "cameraSwap",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 9,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.410644472,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "splitLuminous": true,
+    "luminousEmissions": 1,
+    "case": "occluded",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 9,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.0,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "splitLuminous": true,
+    "luminousEmissions": 1,
+    "case": "uiOverlay",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 9,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.0,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  },
+  {
+    "splitLuminous": true,
+    "luminousEmissions": 1,
+    "case": "boardSwitch",
+    "passed": true,
+    "presented": 1,
+    "postFrames": 5,
+    "legacySwitches": 0,
+    "sampleMaxRgbDelta": 0.402321219,
+    "fallbackReason": null,
+    "activeVfxAtEnd": 0
+  }
+]
