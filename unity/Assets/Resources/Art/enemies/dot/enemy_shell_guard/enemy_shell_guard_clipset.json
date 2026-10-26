@@ -1,0 +1,162 @@
+{
+  "enemyId": "enemy_shell_guard",
+  "sourceCanvas": [
+    128,
+    104
+  ],
+  "frameCanvas": [
+    128,
+    104
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    64,
+    104
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 95,
+  "sourcePngSha256": "cb40d9f1a73c2fb04deca93f59d326b3f27018842aa784e1902cd3ac8641dbbc",
+  "schema": 1,
+  "status": "M37_STATIC_CANDIDATE_RUNTIME_PENDING",
+  "runtimeAcceptance": "pending",
+  "sourceArtManifestSha256": "1c7b32ec7c94b803ead2973a914806bd256964bbaa0107a6352a693fbb3f2509",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "sha256": "cb40d9f1a73c2fb04deca93f59d326b3f27018842aa784e1902cd3ac8641dbbc",
+        "duration": 0.45
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1125,
+        "sha256": "cb40d9f1a73c2fb04deca93f59d326b3f27018842aa784e1902cd3ac8641dbbc"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1125,
+        "sha256": "a0fd289cc9b477d293a81b0c88748d839d184ec14f47924696bd2137b2f98f94"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1125,
+        "sha256": "ee9e449454c6d11929630f4461fcc5b9d875ff0032742998519823e9c107712e"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1125,
+        "sha256": "d66e0f0300f383b5e7228f0dd197f9e8cba7e46ee15cc390e0b24ec01d7c47af"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1125,
+        "sha256": "39a3ed9e5bfb421a4fd0dec1f8ccc4e7c433e05563c44b628af18291c37d4698"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1125,
+        "sha256": "4fb13c0cd0b56e1536837dd794773581c9431cdc77c90c5c40af51eab684629b"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1125,
+        "sha256": "48bcdbcb6c701eec50736b5fc54e69ba674f7bb86a25b5013f7ae44e66a1910c"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1125,
+        "sha256": "8cfcbe94f3e9489386aabe1a0e212febb45b5285118435c4e0c711d5db30aab5"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "sha256": "b74c1725d3d92accd024628f272ef78d5e2a0e935f88a6fa574480947dd00406",
+        "duration": 0.14
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "sha256": "648b9a8e97d0b0915cb91237540a0acda1fb38ee18c9870e40b67462a0f8e532",
+        "duration": 0.18
+      }
+    ],
+    "bashprepare": [
+      {
+        "file": "bashprepare.png",
+        "sha256": "beccc16a7cb492799205849e7c02388d4907b7107f9bca029271dbda1b4c77bd",
+        "duration": 0.22
+      }
+    ],
+    "rageprepare": [
+      {
+        "file": "rageprepare.png",
+        "sha256": "741ade09437e1c13d66dc7e4cdfc8893b7c304d1164407b3c9b78e0d15bb5e31",
+        "duration": 0.22
+      }
+    ],
+    "bashcontact": [
+      {
+        "file": "bashcontact.png",
+        "sha256": "987664d824101e7ddb9aba2f88e2a3ac01ee9d8c3f76ba552d94042d18fbfa06",
+        "duration": 0.05
+      }
+    ],
+    "ragecontact": [
+      {
+        "file": "ragecontact.png",
+        "sha256": "45f47c4d00f16de4916a1823f004632fae3c5c9a0cbb5e7fae3a95af70974989",
+        "duration": 0.05
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "sha256": "03fd57b58bd0dc2be6f9940d304222e446601b1f1abdf569568dea9f427bdf64",
+        "duration": 0.18
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "sha256": "e1c1b10e85b59f654dbdc3bc5bb30e087fabdf45c36949ef0a306941075af2e1",
+        "duration": 0.24
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "sha256": "648b9a8e97d0b0915cb91237540a0acda1fb38ee18c9870e40b67462a0f8e532",
+        "duration": 0.36
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "guardprepare.png",
+        "sha256": "e1c1b10e85b59f654dbdc3bc5bb30e087fabdf45c36949ef0a306941075af2e1",
+        "duration": 0.12
+      },
+      {
+        "file": "rest.png",
+        "sha256": "cb40d9f1a73c2fb04deca93f59d326b3f27018842aa784e1902cd3ac8641dbbc",
+        "duration": 0.06
+      }
+    ]
+  },
+  "authoredMoves": [
+    "shell_bash",
+    "cracked_rage",
+    "harden"
+  ],
+  "unmappedMoves": [],
+  "missingArt": []
+}

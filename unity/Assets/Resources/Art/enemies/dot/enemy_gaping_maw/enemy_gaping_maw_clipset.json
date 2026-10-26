@@ -1,0 +1,273 @@
+{
+  "schema": 1,
+  "status": "M53_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_gaping_maw",
+  "sourceCanvas": [
+    112,
+    88
+  ],
+  "frameCanvas": [
+    112,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    56,
+    88
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 79,
+  "groundMaxYSemantics": "original opaque-bottom only; not support-foot ground",
+  "supportFootLandmarks": {
+    "reviewedPhysicalFeature": "rear-supporting-foot",
+    "source": [
+      89,
+      74
+    ],
+    "frames": {
+      "clawcontact1.png": [
+        89.0,
+        74
+      ],
+      "clawcontact2.png": [
+        89.0,
+        74
+      ],
+      "clawprepare.png": [
+        88.0,
+        74
+      ],
+      "clawrebound.png": [
+        88.5,
+        74
+      ],
+      "guardhold.png": [
+        88.5,
+        74
+      ],
+      "guardprepare.png": [
+        88.0,
+        74
+      ],
+      "hurt.png": [
+        89.0,
+        74
+      ],
+      "idle.png": [
+        89.0,
+        74
+      ],
+      "recovery.png": [
+        89.5,
+        74
+      ],
+      "rendcontact.png": [
+        89.0,
+        74
+      ],
+      "rendprepare.png": [
+        88.0,
+        74
+      ],
+      "rest.png": [
+        89.0,
+        74
+      ],
+      "roarapplied.png": [
+        89.0,
+        74
+      ],
+      "roarprepare.png": [
+        89.0,
+        74
+      ]
+    },
+    "horizontalToleranceTexels": 1,
+    "verticalToleranceTexels": 0
+  },
+  "supportFootProofSha256": "48372928be3dd379c140a44885f67092d4724583a2656f123d206fc411a542a1",
+  "registrationKind": "unchanged-original-static-canvas-and-anchor; separately reviewed physical rear-support foot",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "14ac9fe54fa8f98fa705dd38b2798fc6af9a87ba15902b377df6323005d5ecda",
+  "sourceArtManifestSha256": "cc08e5b0ac9ec9410179fe1f85448b95cf9191a0ec43a628d5320d232fb36d76",
+  "authoredMoves": [
+    "claw",
+    "rend",
+    "roar",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "14ac9fe54fa8f98fa705dd38b2798fc6af9a87ba15902b377df6323005d5ecda"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "14ac9fe54fa8f98fa705dd38b2798fc6af9a87ba15902b377df6323005d5ecda"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "b874508f42fd542a3305b782a404a49f2007bc0c1cf451856748f520e6fe029e"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "c9b077017db28b272949c1cc8d1802a46f5e9deae1ebe2331718ccfd9542be07"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "bbd8c7bf0bd83e6a058b5eee10b6e25d665e9511304d2b42041fa13c5df6ca98"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "6acf783efc11759ff84eec81b0e7d72a11f8ccbacb455d5f794835373ce39500"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "dfd9e480f0d1844bebb97f23df5a7f0b094ae2cf5ab190000939719ad5a36e5a"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "d8043b2072b58185af0cb9edbf1b4dc09b5f11cfa46f35fe5e1fe24542900ebe"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "d5db9691cc8276db401032cecead4adf84c94830e1ac02b8779380a3bf48aff4"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "5a8c78b499ffa321a601d7ef40a49ae66a42f145c99cf5b59d559ab3935d7c6a"
+      }
+    ],
+    "clawprepare": [
+      {
+        "file": "clawprepare.png",
+        "duration": 0.18,
+        "sha256": "f81fc29adf69cfd816c845356d273a406650677f77af74e9dd6c579907f82532"
+      }
+    ],
+    "clawcontact1": [
+      {
+        "file": "clawcontact1.png",
+        "duration": 0.05,
+        "sha256": "96f3c536968fa647b03edbf550616759d5c5f463c9f2812cb33aae5a1d27944f"
+      }
+    ],
+    "clawrebound": [
+      {
+        "file": "clawrebound.png",
+        "duration": 0.12,
+        "sha256": "de44211d3fb308e301f6d78d7ffe14914a4ceb9d5c06e2bb7fe80394115132c4"
+      }
+    ],
+    "clawcontact2": [
+      {
+        "file": "clawcontact2.png",
+        "duration": 0.05,
+        "sha256": "3f46c3df4ef06c7c48f09f5e9ffdd5d7b5a4c6557a3ca5a8bb3ac7bef1721e2e"
+      }
+    ],
+    "rendprepare": [
+      {
+        "file": "rendprepare.png",
+        "duration": 0.2,
+        "sha256": "a60bc6676eeaf247c98b95f64267331cd10b8fb48728d3f6a429325083c60933"
+      }
+    ],
+    "rendcontact": [
+      {
+        "file": "rendcontact.png",
+        "duration": 0.05,
+        "sha256": "11b99f67a1438c47e3bccf83e2237619d5073803a5e1beb395ecf0f26117d0bd"
+      }
+    ],
+    "roarprepare": [
+      {
+        "file": "roarprepare.png",
+        "duration": 0.2,
+        "sha256": "79b2ad4f55c7bb1ffd7615f28792bb81f4eca46565990c6cb9a9075308f207e8"
+      }
+    ],
+    "roarapplied": [
+      {
+        "file": "roarapplied.png",
+        "duration": 0.12,
+        "sha256": "ca335903579c091b47a8aa966b9e689edc4f0f923d7da41e5329c0b2ddc29bdd"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "65ebf56b6c2b8fcfab5f4961ff464dc520f4b44bdc5c02b111a99dfa8eee3a18"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "14ac9fe54fa8f98fa705dd38b2798fc6af9a87ba15902b377df6323005d5ecda"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "0ef53025b07d4d74370469e70d37acac579e21ceda5ad24011f682c6f020543c"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "659ca42692e1429bdc25bcd55d9a053543bb54d9c69177920b136381b60b1da3"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "65ebf56b6c2b8fcfab5f4961ff464dc520f4b44bdc5c02b111a99dfa8eee3a18"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "14ac9fe54fa8f98fa705dd38b2798fc6af9a87ba15902b377df6323005d5ecda"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "14ac9fe54fa8f98fa705dd38b2798fc6af9a87ba15902b377df6323005d5ecda"
+      }
+    ]
+  },
+  "physicalNewKeyCount": 13,
+  "recoveryAuthorship": "owner-reviewed-finite-sequence-no-contact-reuse",
+  "drawingOnlyDurationNormalization": {
+    "contactPulseAndGuardHoldSeconds": 0.05,
+    "finiteReturns": "Approved recovery/return sequences remain drawing-only; existing Stage End/deadline governs exit."
+  }
+}

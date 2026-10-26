@@ -1,0 +1,201 @@
+{
+  "enemyId": "enemy_chimera_3",
+  "sourceCanvas": [
+    224,
+    152
+  ],
+  "frameCanvas": [
+    288,
+    184
+  ],
+  "sourceOffset": [
+    48,
+    24
+  ],
+  "anchor": [
+    160,
+    176
+  ],
+  "spriteOffset": [
+    -16,
+    8
+  ],
+  "sourcePngSha256": "3fce14bfe294b40a63dde85d2efa4e88109031715f1746b72ab4f416b0e1802e",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "ad05ccf8c391ddcbb27e2d57c1f205c3fc6563cdc68ad81fc0d79166453d52e6"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "ad05ccf8c391ddcbb27e2d57c1f205c3fc6563cdc68ad81fc0d79166453d52e6"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "8e61e91591031d87e4dd6c6f1011ca9881b024ac1361e8fedb5bf82c86b37e09"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "6e1d72ade3520d38883770fc318f33f78afdef797244e302d8cedc6a8257e5c0"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "6c410fd71cd301e487526c7defd00c4263aaeea002575c0bcb02bca5fdf35fdc"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "30afe0255730c5318e7523a9959979871f7f63630030d63ff3b285dbcacf09d0"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "03c747b72839a9819bc5b3bfb10455ad10dfc34641b53dbddbe2dd68036e5a0c"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "59cd623878a25dbc935b2882f2c4934dff12796250c240ae445b91273d1658a4"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "2a2028c99aed41b5263d6a581e328fca3885e0091c27fa28d25174948849b1ef"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "f35ebc75700e43847f6de4cdc78f6a8782cdc2b927b08c890a2e6ff8f357becd"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "e9b2e31648c14dce9a36a2f4dc49a34c6130ebd67fa31b662982223443c5b183"
+      }
+    ],
+    "clawprepare": [
+      {
+        "file": "clawprepare.png",
+        "duration": 0.2,
+        "sha256": "bff040f735d86ce8619ab6b640d89821a3223e14945a6555340eb093845a544e"
+      }
+    ],
+    "clawcontacta": [
+      {
+        "file": "clawcontacta.png",
+        "duration": 0.11,
+        "sha256": "979cd3cd7916c72d98acef536a293bb4c0b862f812b17327aeb1728fd1e9dcf5"
+      }
+    ],
+    "clawrebound": [
+      {
+        "file": "clawrebound.png",
+        "duration": 0.14,
+        "sha256": "0e96105cb543f7e188a2c694ef2103ce8a55bce624db9e37e95010ab6d0a95d3"
+      }
+    ],
+    "clawcontactb": [
+      {
+        "file": "clawcontactb.png",
+        "duration": 0.11,
+        "sha256": "31a94379f7b66367b032c7c8d5bcca320c78b5aada9b88b623137d8336606729"
+      }
+    ],
+    "pounceprepare": [
+      {
+        "file": "pounceprepare.png",
+        "duration": 0.26,
+        "sha256": "34b55d85e2989be0c9fae8c0efd5d79dd5799b96e20b22770213d06747412441"
+      }
+    ],
+    "pouncecontact": [
+      {
+        "file": "pouncecontact.png",
+        "duration": 0.16,
+        "sha256": "dfc20d1ca5e7ebc87bd9b1acad134f1b5d598bcf4d69390157c2af7ea096e3a5"
+      }
+    ],
+    "growlprepare": [
+      {
+        "file": "growlprepare.png",
+        "duration": 0.25,
+        "sha256": "81024909681dc83e61af3dd9e016b3fbdd33ffa3b161f72bf26d229e66975859"
+      }
+    ],
+    "growlapplied": [
+      {
+        "file": "growlapplied.png",
+        "duration": 0.3,
+        "sha256": "3a6ae8d8c155dabad5997f82b18ebb9c5d179354645c8c76c26e411dd7527106"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M67_EXACT_AUTHORIZED_HORN_APEX_PINNED_RUNTIME_UNEXECUTED",
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "0b0a76defd5a495d2f72a911d54577b2b785181a043a469888c89e438656b888",
+  "groundMaxY": 163,
+  "groundMaxYSemantics": "Screen-right hind paw sole163/boundary164; front paws may extend lower and pounce travel stays Stage-owned",
+  "placementContract": {
+    "method": "One calibration width330/source179 common nearest sampling scale; exact source palette and binary alpha. Whole-frame hind-paw translation only. No per-pose fitting, painting, part transforms or procedural poses. Sole user-authorized exception: Relocate the original eight dark horn-apex cap pixels from row26 to row27 at x106..113; clear only the vacated row26 to existing transparent RGBA. Not a crop, rescale or whole-actor translation.",
+    "paddingReason": "48px left,16px right,24px top,8px bottom accommodates full pounce reach without crop or per-frame scaling.",
+    "nativeHindPawSupport": [
+      201,
+      164
+    ],
+    "originalHindPawSupport": [
+      153,
+      140
+    ],
+    "pounceWorldTrajectorySeparate": true,
+    "nativeSupport": [
+      201,
+      164
+    ],
+    "originalSupport": [
+      153,
+      140
+    ],
+    "sourceSupportEvidence": "Artist explicit hind-paw source+native points",
+    "originalExtractionMethod": "One calibration width330/source179 common nearest sampling scale; exact source palette and binary alpha. Whole-frame hind-paw translation only. No per-pose fitting, painting, part transforms or procedural poses."
+  },
+  "authoredMoves": [
+    "lacerate",
+    "pounce",
+    "burning_growl"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 11,
+  "authorizedApexCorrection": {
+    "operation": "Relocate the original eight dark horn-apex cap pixels from row26 to row27 at x106..113; clear only the vacated row26 to existing transparent RGBA. Not a crop, rescale or whole-actor translation.",
+    "originalImageSha256": "6c69d823ea5c2502f2591f9956262a4169b387119b957bcf5af6a544d9cca104",
+    "correctedImageSha256": "3a6ae8d8c155dabad5997f82b18ebb9c5d179354645c8c76c26e411dd7527106",
+    "correctionReceiptSha256": "f0a4523af3a0f49e39087f79e0e2abe0f350a058c003096be8302ae1b8a4c7a1",
+    "changedPixelCount": 16,
+    "roiInclusive": [
+      106,
+      26,
+      113,
+      27
+    ],
+    "originalArtifactManifestSha256": "2bb942a262a6c578cb0b31d83c275140662edcf56f827467cfb2aa00b73d5723",
+    "originalRuntimeManifestSha256": "60dc3e673526177ab9878401c58efbc076b6de46fa8e8fb953111e0548b9d65a",
+    "allOtherPoseBytesUnchanged": true,
+    "canvasAnchorSupportScaleTimingGameplayUnchanged": true,
+    "authorizationMessageId": "Sentinel_a1d802718db0819199f65d2d04959f07"
+  }
+}

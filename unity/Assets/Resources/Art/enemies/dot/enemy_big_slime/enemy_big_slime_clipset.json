@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_big_slime",
+  "sourceCanvas": [
+    152,
+    112
+  ],
+  "frameCanvas": [
+    152,
+    112
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "originalAnchor": [
+    76,
+    112
+  ],
+  "anchor": [
+    76,
+    112
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 103,
+  "sourcePngSha256": "ab43bbdeae58ffaf700cd72b9ba7df54e8bc2021fedbd93086bcca5f619e43d1",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "ab43bbdeae58ffaf700cd72b9ba7df54e8bc2021fedbd93086bcca5f619e43d1"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.125,
+        "sha256": "ab43bbdeae58ffaf700cd72b9ba7df54e8bc2021fedbd93086bcca5f619e43d1"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.125,
+        "sha256": "7c9e646bda314fda8aa4474a27c9b4f3bc7ea0738ffea61121dd83081ef64b36"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.125,
+        "sha256": "32be57d856048b5bbfd2b3ba6647735ce46c9dff4e950f4f6dff2d6156ab6f11"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.125,
+        "sha256": "ed7a0fa22928da037b570cbf86d01e590b59f0d40b4bb7241a77aa7c29437cfd"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.125,
+        "sha256": "dfc44823f8de5cddfdd23dde8151c34999e1ff37285267a6b8b7afe8e5a1a8cd"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.125,
+        "sha256": "6b7af75e7a3b2bced08cc3f015e813c4ef1c4cc1c55be8196f4ae02461e4e51a"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.125,
+        "sha256": "7fe7f4d287626c68376404e16d66f31c21d6c6f1ce7d624a5a0cc0bb4202ca12"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.125,
+        "sha256": "7f12fab5d9b6265b0c14b32d30d77bf8d0063c3cbf98b13b0b14802ae7dd79cb"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "fe7ec78e652428dec5f02be1577be68968f0c72ab7600edfa88074ab4ab1d9e7"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.18,
+        "sha256": "7e40f2f79b02131340df14bb9eddc39e6826c19ea040c78d5b2330db68e974e7"
+      }
+    ],
+    "slamprepare": [
+      {
+        "file": "slamprepare.png",
+        "duration": 0.2,
+        "sha256": "66583f5a96933337695fbadc0df10ef492802955093eaae58a99eb8e1da4dc5a"
+      }
+    ],
+    "slamcontact": [
+      {
+        "file": "slamcontact.png",
+        "duration": 0.055,
+        "sha256": "82f236093602ec45141adf132aa0302e70eaab14343509ff42c28474e416e17c"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "ecf21653a53be3f0821074616977cff633f3327e84378caa20c79497318721db"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.12,
+        "sha256": "baf4a616109de76b743b5d6eed35022c4562e5badda8bfe7dc3d638a42339214"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.12,
+        "sha256": "7e40f2f79b02131340df14bb9eddc39e6826c19ea040c78d5b2330db68e974e7"
+      }
+    ]
+  },
+  "status": "M31_ALL_DEFINED_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "slam",
+    "ooze_guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "Strict Contact and actual own BlockGained with exact instance/version/execution/owner tuple. Defense pulse only on defend move, never attached attack Block. Canonical gameplay untouched.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "rest_canvas exact original PNG/RGBA; no padding",
+    "reactiveBlock": "guardhold drawing under independent block-notification; fullblock cannot trigger hurt"
+  }
+}

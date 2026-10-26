@@ -1,0 +1,257 @@
+{
+  "schema": 1,
+  "status": "M22_FOUR_MOVE_IDLE_HURT_COMPLETION_CANDIDATE",
+  "enemyId": "enemy_spore_cap",
+  "displayName": "胞子吹きの茸",
+  "moveId": "frail_spores",
+  "moveKind": "projectile",
+  "sourceCanvas": [
+    64,
+    64
+  ],
+  "frameCanvas": [
+    64,
+    64
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    32,
+    64
+  ],
+  "groundMaxY": 59,
+  "sourcePngSha256": "38980396b29d489233bc65f4a1a5cff3df483c1247b8b3ea8b2ee9ba4e7de6a3",
+  "nativeRegistration": {
+    "rest": {
+      "delta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        3,
+        12,
+        60,
+        60
+      ],
+      "bboxAfter": [
+        3,
+        12,
+        60,
+        60
+      ],
+      "opaqueClipped": 0
+    },
+    "prepare": {
+      "delta": [
+        0,
+        -1
+      ],
+      "bboxBefore": [
+        3,
+        21,
+        58,
+        61
+      ],
+      "bboxAfter": [
+        3,
+        20,
+        58,
+        60
+      ],
+      "opaqueClipped": 0
+    },
+    "release": {
+      "delta": [
+        0,
+        -1
+      ],
+      "bboxBefore": [
+        10,
+        12,
+        60,
+        61
+      ],
+      "bboxAfter": [
+        10,
+        11,
+        60,
+        60
+      ],
+      "opaqueClipped": 0
+    },
+    "recovery": {
+      "delta": [
+        0,
+        -2
+      ],
+      "bboxBefore": [
+        9,
+        21,
+        56,
+        62
+      ],
+      "bboxAfter": [
+        9,
+        19,
+        56,
+        60
+      ],
+      "opaqueClipped": 0
+    }
+  },
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "38980396b29d489233bc65f4a1a5cff3df483c1247b8b3ea8b2ee9ba4e7de6a3"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "prepare.png",
+        "duration": 0.16,
+        "sha256": "2b1e47f92d24c0573a3fa1c1d023595c3d0264f98f9ef63d7c493530d45c7035"
+      }
+    ],
+    "release": [
+      {
+        "file": "release.png",
+        "duration": 0.1,
+        "sha256": "bf8e7ce998b9a2a7ab9097374b9fdd9c191482ba97d9d9cd2b6bd6a5b6ae0283"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "10e788f1a840585f1fb99e532a71e55ec8f39b6b6c26d86e2d9f40bb74798f36"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1125,
+        "sha256": "38980396b29d489233bc65f4a1a5cff3df483c1247b8b3ea8b2ee9ba4e7de6a3"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1125,
+        "sha256": "c491bcbf2f8c2c2f722c9e74179d12dda573e9fe752e3ecdde7c9d9849d5f659"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1125,
+        "sha256": "39a51728cd9ab9a34c2422e56a86ab988694a44cae86a648a939487865c537f3"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1125,
+        "sha256": "02c566d52c61e2b9d4512587a836a039423975b7403e39e4114cc3415ed9e579"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1125,
+        "sha256": "7d06177bf4040d42c7cc8f1bae3efa47f97916b2e2ba272f860ebd03e4a43748"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1125,
+        "sha256": "76889b1489349a2a13f26e52a049e7eb628b1103f5a83ed74997952ad8afeed4"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1125,
+        "sha256": "42dbae8d89fefafda9ac6fcd5db847678f1e89c8043e1578fce1c5d37800ad96"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1125,
+        "sha256": "521282c6c892585e1396557e84e31b75cc1bf579986f2fd338470f5f2b433739"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt_recoil.png",
+        "duration": 0.18,
+        "sha256": "dc83339d26075c97d5143997faf193596262c3002a7687d9aa0fb8f77548dc18"
+      }
+    ],
+    "vulnprepare": [
+      {
+        "file": "vuln_prepare.png",
+        "duration": 0.12,
+        "sha256": "490954d43d4e067ef0ea96099c934d80deca18f063912adbacaa2a069080224d"
+      }
+    ],
+    "vulnemission": [
+      {
+        "file": "vuln_emission.png",
+        "duration": 0.1,
+        "sha256": "8a99f43d054b662f8b956fcd894897f1b78c7f13fb8bb3332fc2002d4cec3066"
+      }
+    ],
+    "smashprepare": [
+      {
+        "file": "smash_prepare.png",
+        "duration": 0.12,
+        "sha256": "6f814d93029a235b0bbc3eb683d691b5bb5f7919133b5cf3ead2271cca2b4973"
+      }
+    ],
+    "smashcontact": [
+      {
+        "file": "smash_contact.png",
+        "duration": 0.04,
+        "sha256": "796e862be918d1693411409bf2cb628e89c143da08ed72fa8072154a01d57f86"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guard_prepare.png",
+        "duration": 0.12,
+        "sha256": "00d20e65516992c25fca62b69795f2d2ed07ff0dca51b84e0cbaaa9fa81f1635"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.12,
+        "sha256": "abdcccc963ae0c2fba881af124c0aa75e32b183ba89af4d41f44e86c2532d485"
+      }
+    ],
+    "block": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.08,
+        "sha256": "abdcccc963ae0c2fba881af124c0aa75e32b183ba89af4d41f44e86c2532d485"
+      }
+    ]
+  },
+  "eventContract": "frail_spores: original release/contact, secondary frail1 never becomes hex marker. vuln_spores: exact unique vulnerable2 StatusInflicted in the canonical closed Execution→Resolved interval once, strict event reference/index/current actor/support generation. PlayerArtifactBlocked is finite attempt/recovery and no applied marker. smash: actual single accepted contact. guard: actual own BlockGained only. Original gameplay timing/layout preserved.",
+  "durationNote": "Suggested visual holds only. These values do not define, advance or extend gameplay timing.",
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "authoredMoves": [
+    "frail_spores",
+    "vuln_spores",
+    "smash",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "runtimeAcceptance": "pending",
+  "runtimeAliases": {
+    "pixelsUnchanged": true,
+    "idle": "rest plus idle_breathe",
+    "hurt": "HP-loss-only hurt_recoil",
+    "reactiveBlock": "guard_hold with independent block-notification",
+    "canvas": "64x64 anchor32,64 offset0,0 ground59 unchanged"
+  }
+}

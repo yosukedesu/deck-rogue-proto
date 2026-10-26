@@ -593,6 +593,9 @@ namespace DeckRogue.Game
             float artDots = Mathf.Max(nodeDots, artSprite.rect.width * 4f);
             // 64ドット未満の小さな絵 (2026-09-27 技封じの絡繰 48×48) は節の箱へ引き伸ばさず 1ドット=4px のまま (ボス戦の取り巻きがボスと同じ大きさにならない)
             if (artSprite.rect.height < 64f) artDots = artSprite.rect.height * 4f;
+            // dot のコマの組 (2026-10-26 ユーザー裁定): 枠が 64〜200 ドットと細かいので 1ドット＝3px (このはと同じ粒)。節の目安 (256/320/384) は見ない
+            string dotId;
+            if (DotSet.TryId(artSprite.texture, out dotId)) { artDots = artSprite.rect.width * DotSet.PxPerDot; phone96 = false; }
             float artTarget = artDots * ArtScale;   // スマホは 0.6 (2026-09-15)
             // スマホは中身の背丈 184 単位で頭打ち (2026-09-29 p24): 足元から頭 (上の透明な余白を除く) まで。今のオーガ (78 ドット×2.4＝187) と同じ背丈で、
             // 128 の幕ボスも大きくしない (上部バーまでの余白は約 12px しか無く、頭上の意図の札が頭に重なる)。スマホは整数倍の規約を外している (PixelScaleF＝目安÷幅) ので縮めてよい。

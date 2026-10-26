@@ -1,0 +1,162 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_brood_raptor",
+  "sourceCanvas": [
+    176,
+    112
+  ],
+  "frameCanvas": [
+    192,
+    128
+  ],
+  "sourceOffset": [
+    16,
+    16
+  ],
+  "anchor": [
+    104,
+    128
+  ],
+  "spriteOffset": [
+    -8,
+    8
+  ],
+  "groundMaxY": 119,
+  "sourcePngSha256": "5786f643d89c4eaedcd2ce0e1a6950c735ee55420f31a7a7800a830db95a96b7",
+  "originalAnchor": [
+    88,
+    112
+  ],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "d2fd4876decec19a7ef713af538c46f8f457b12cf63d417fd9152b8bae0b90df"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.125,
+        "sha256": "d2fd4876decec19a7ef713af538c46f8f457b12cf63d417fd9152b8bae0b90df"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.125,
+        "sha256": "89c126c77b2d3062c1d7ebca8e3ec355591d9789b1fe232204f16ca232c80739"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.125,
+        "sha256": "68d8a3434cb2a139b074c2d2fd8cbf0c833a6f67a5e5e7e0bf372f2bb97cf8bb"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.125,
+        "sha256": "b9e28d38439f4bca536140f2dc698677767331a597aaabecd8d72b53d7799993"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.125,
+        "sha256": "0bf933d6f0fc85d271ce7d444f6b033d6f57dbddf4e50462632a7e5364e91b01"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.125,
+        "sha256": "d69f1694e0619342796e634004508673de1680efdbf7f7bb19fd511e48cf8a1d"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.125,
+        "sha256": "dfb8df23cc37fa59c4c47d3571e508ecbdc5de49e564b14708b65cfc26fb710b"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.125,
+        "sha256": "4b6d2814592a9803ff14aa243a9b547372f740c5c88507284236b4ca871ea2c0"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "0545b9746dc635faf5eb4825a68b59ae7b3151fd17cc2cf84227718f55d5efa7"
+      }
+    ],
+    "block": [
+      {
+        "file": "shelterhold.png",
+        "duration": 0.18,
+        "sha256": "7dda9a81f9c3d2f0111428b23e55481eddf133161133bbabd7415bf5f7c82178"
+      }
+    ],
+    "clawprepare": [
+      {
+        "file": "clawprepare.png",
+        "duration": 0.2,
+        "sha256": "698fc05757782ff7afab1c6a2e40531a28888e3db09e7b85e46e4d875e5617fb"
+      }
+    ],
+    "clawcontact": [
+      {
+        "file": "clawcontact.png",
+        "duration": 0.055,
+        "sha256": "93601b3cbb271403cc6f0623013ccddfa45524e32788b427842d507a2ced5643"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "fa7242dabcef5378862be85e8e19a867c8a3eb20cdb555fcc8bf14f6338554c2"
+      }
+    ],
+    "shelterprepare": [
+      {
+        "file": "shelterprepare.png",
+        "duration": 0.2,
+        "sha256": "5603a92a60076dcd920524144433b9ae62e246a491f42dae68562f078339f9b7"
+      }
+    ],
+    "shelterhold": [
+      {
+        "file": "shelterhold.png",
+        "duration": 0.2,
+        "sha256": "7dda9a81f9c3d2f0111428b23e55481eddf133161133bbabd7415bf5f7c82178"
+      }
+    ]
+  },
+  "status": "M34_STATIC_CANDIDATE_RUNTIME_PENDING",
+  "authoredMoves": [
+    "claw",
+    "shelter"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "compile",
+    "headless_acceptance",
+    "native_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "Exact canonical move/count. Only accepted real ordinal unlocks contact; tackle has separate contact1/rebound/contact2. Support only actual own BlockGained with exact instance/version/execution/owner tuple. Guardian and imbalanced remain canonical engine behavior.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "exact original RGBA padding",
+    "reactiveBlock": "shelterhold",
+    "recovery": [
+      "recovery"
+    ]
+  },
+  "footRegistration": {
+    "originalLowestFootXs": [
+      118,
+      132
+    ],
+    "originalRearFootMaxX": 132,
+    "paddedRearFootMaxX": 148,
+    "groundMaxY": 119,
+    "note": "Shared1/3.35 export scale, registration by the drawn rear-foot right edge and lowest hindfoot. No image-specific scaling. Anatomy bends and the claw reaches left. World-space travel belongs to runtime."
+  }
+}

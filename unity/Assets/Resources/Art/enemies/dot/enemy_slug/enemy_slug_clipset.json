@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "status": "M49_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_slug",
+  "sourceCanvas": [
+    160,
+    80
+  ],
+  "frameCanvas": [
+    186,
+    80
+  ],
+  "sourceOffset": [
+    26,
+    0
+  ],
+  "anchor": [
+    106,
+    80
+  ],
+  "spriteOffset": [
+    -13,
+    0
+  ],
+  "groundMaxY": 73,
+  "registrationKind": "grounded-original-source-reference",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest_canvas.png",
+  "sourcePngSha256": "e1bfcb9620f6cd954d824e7344f0b2cd6b28f56c3520348a8ca9d94a837a48bb",
+  "sourceArtManifestSha256": "5af7abfe9d3db0c8a893d4e543c5b8aefaeb6ca0c83862eef88a602f82886899",
+  "authoredMoves": [
+    "lick",
+    "guard",
+    "acid_spit",
+    "tackle"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "463e07d84c97146079283e533c58bbe3bddf3296e39f5f29fb75b1ca54a9cb03"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "463e07d84c97146079283e533c58bbe3bddf3296e39f5f29fb75b1ca54a9cb03"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "d07dd6390bed7f6f9fa522a2f0f72547a7a98db7a6a050231e57bdd61cae9eb1"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "a914909b300ba88c8a9927e1993d56316c75a543f201638ecd07d7ae60d27f00"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "4fa38cf9b57c5c0775d0c83c28de45535d45b813e7fd8487d6d35779aa8502be"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "24b7862954ef85d73612cf43a1d930515002fa615d8089cf65ee7d8da102ee0a"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "29f4c0de73eba2649542b34ea36ec01111337b55e6976a4a9d2cf40a0781f303"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "83e93886158f36fff10b837648979d38185311b351a89a43ba96c20608685cf4"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "72285822514d3830c9041030c63f870d82d228052ce639c0c0f3a98b96b3f751"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "f5b2f5219ccd16be568b665d49c8026e76a9ca06dd3a14cf81147406ab7f6232"
+      }
+    ],
+    "lickprepare": [
+      {
+        "file": "lickprepare.png",
+        "duration": 0.18,
+        "sha256": "3174a3ed4d8d647a55d1a60eef7f3a5ba4c63281eb8c5617c2da172db2eeb2d3"
+      }
+    ],
+    "lickcontact": [
+      {
+        "file": "lickcontact.png",
+        "duration": 0.05,
+        "sha256": "2b69240c23fae78d5b83ca69829a166026416b2dbf40bcb799dafd02113c4912"
+      }
+    ],
+    "spitprepare": [
+      {
+        "file": "spitprepare.png",
+        "duration": 0.18,
+        "sha256": "177b2b6f946686c836791ea6bad43de04465d92734400172e379afa37445aecd"
+      }
+    ],
+    "spitrelease": [
+      {
+        "file": "spitrelease.png",
+        "duration": 0.09,
+        "sha256": "a78e8c61df68e59003d386bbca4efae326567b3e38fcd5fc86c05b73dd0baeba"
+      }
+    ],
+    "tackleprepare": [
+      {
+        "file": "tackleprepare.png",
+        "duration": 0.18,
+        "sha256": "760b327ea84bcb7aa7593b5ef5187af357c6de5ce7bc44e5a4be612f83e99dcc"
+      }
+    ],
+    "tacklecontact": [
+      {
+        "file": "tacklecontact.png",
+        "duration": 0.05,
+        "sha256": "80633d7ece339e08ef624b7721bc8dd691407f760d78a2aa1b49c788f2e7c495"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "8ae2dc831d5cabc13bfa74efa0e15dd69d85c13113b307ebfcf3a3e89a33ffa2"
+      },
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "463e07d84c97146079283e533c58bbe3bddf3296e39f5f29fb75b1ca54a9cb03"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "7c30e6a22aabd00c850a4dce4dfec0de65066363e429df7cc3d25ac79c08609c"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "2e96794a95b3764e942a04487547fb7796eddeb65e59c59cfb613f6a78f5dda1"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "8ae2dc831d5cabc13bfa74efa0e15dd69d85c13113b307ebfcf3a3e89a33ffa2"
+      },
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "463e07d84c97146079283e533c58bbe3bddf3296e39f5f29fb75b1ca54a9cb03"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "463e07d84c97146079283e533c58bbe3bddf3296e39f5f29fb75b1ca54a9cb03"
+      }
+    ]
+  },
+  "physicalNewKeyCount": 11,
+  "recoveryAuthorship": "owner-reviewed-finite-sequence-no-contact-reuse",
+  "drawingOnlyDurationNormalization": {
+    "contactPulseAndGuardHoldSeconds": 0.05,
+    "finiteReturns": "Approved recovery/return sequences remain drawing-only; existing Stage End/deadline governs exit."
+  }
+}

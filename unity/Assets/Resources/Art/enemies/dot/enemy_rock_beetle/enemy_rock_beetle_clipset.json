@@ -1,0 +1,161 @@
+{
+  "enemyId": "enemy_rock_beetle",
+  "sourceCanvas": [
+    112,
+    72
+  ],
+  "frameCanvas": [
+    112,
+    72
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    56,
+    72
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 65,
+  "sourcePngSha256": "d99444d2ce76d8828663fe156cacd989000373faaa6ef2a58fabf4f1a476b386",
+  "schema": 1,
+  "status": "M38_STATIC_CANDIDATE_RUNTIME_PENDING",
+  "sourceArtManifestSha256": "ee6d24afbf3bb1497d6955228dd93723517cc51114611a9507072b7617ef55c4",
+  "authoredMoves": [
+    "horn_jab",
+    "bite",
+    "harden"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "sha256": "d99444d2ce76d8828663fe156cacd989000373faaa6ef2a58fabf4f1a476b386",
+        "duration": 0.45
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1125,
+        "sha256": "ddbd84591f10a896365aaa09f86508f4ac666ca7a0f9ef951303d3d1ad21e6bc"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1125,
+        "sha256": "b28fea2db9b6b8ecac4590c62fff849732b55bf6c3e34cf84188a301c0609a65"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1125,
+        "sha256": "52f50deb2b986d734a21918317394e56649fca9a37347018316bc2ff11f10d78"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1125,
+        "sha256": "fb4994ca453fd239565322f27688f662d3134135f3757404dd92ba893f76d06f"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1125,
+        "sha256": "89619c42a0b705abe63c8d6bfd1f17db8ba3b15571f2359a49a54a54bff07035"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1125,
+        "sha256": "0c10f68cdca64769c7ed5c1c3f85d08fa7dc8bf2f311fd52f85dc8bed12a876e"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1125,
+        "sha256": "07253288cc0c2b3bf8d694e2de3153b4b3b9ac45398ade12c466c00c5e309f00"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1125,
+        "sha256": "1e05f6b024f4a1551944fd59f0967b81c40c3ca9958744c744bd5108fd7fd69b"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "sha256": "b760efabb14f8ce28a0b266a66e736a3574e689259d5b01eb2dc6f43933966b9",
+        "duration": 0.14
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "sha256": "3a6f3037e398ce9d056df2a6329a9d7074d6e3e3337c5965cdb03d49863b9be1",
+        "duration": 0.18
+      }
+    ],
+    "hornprepare": [
+      {
+        "file": "hornprepare.png",
+        "sha256": "f8535ec3cc55dbd9b0fc3408d90d328a74db200e82e83dc540689938d8ff621f",
+        "duration": 0.22
+      }
+    ],
+    "horncontact": [
+      {
+        "file": "horncontact.png",
+        "sha256": "c2f2dd948ccb6bb07eaae7275d27629a3cfbaf29bdb32b05f8ed4dc233fe9d32",
+        "duration": 0.05
+      }
+    ],
+    "biteprepare": [
+      {
+        "file": "biteprepare.png",
+        "sha256": "b4560f71a580dae0e192c5a2f7795777035b642536df596010dfc55ec24e6718",
+        "duration": 0.22
+      }
+    ],
+    "bitecontact": [
+      {
+        "file": "bitecontact.png",
+        "sha256": "c4a8f0725081f0de9dbf31af38f287dbcef7d1ffadd5bb6bb27981debd3fd0c9",
+        "duration": 0.05
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "sha256": "6fbedf698fba0b84c16a5b38626cd9a2259946b4c54481d7b68397f394a3b4c9",
+        "duration": 0.18
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "sha256": "552e5cb58d045156598f38a68ed22027dfd017aca395e01c3e757857b9de35aa",
+        "duration": 0.24
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "sha256": "3a6f3037e398ce9d056df2a6329a9d7074d6e3e3337c5965cdb03d49863b9be1",
+        "duration": 0.36
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "guardprepare.png",
+        "sha256": "552e5cb58d045156598f38a68ed22027dfd017aca395e01c3e757857b9de35aa",
+        "duration": 0.12
+      },
+      {
+        "file": "rest.png",
+        "sha256": "d99444d2ce76d8828663fe156cacd989000373faaa6ef2a58fabf4f1a476b386",
+        "duration": 0.06
+      }
+    ]
+  }
+}

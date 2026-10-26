@@ -1,0 +1,166 @@
+{
+  "schema": 1,
+  "status": "M46_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_iron_clam",
+  "sourceCanvas": [
+    112,
+    80
+  ],
+  "frameCanvas": [
+    112,
+    80
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    56,
+    80
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 73,
+  "registrationKind": "original-ground-anchor",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "fab9f40bfab25c48c7b788f006f0f0a1aad9a9436cc1570ee11f25f3650e91f2",
+  "sourceArtManifestSha256": "52670d1b5c75bf4fbea26b30077566caa07ba12bc32b27159a790d3f03618b51",
+  "authoredMoves": [
+    "jet",
+    "pressurize",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "fab9f40bfab25c48c7b788f006f0f0a1aad9a9436cc1570ee11f25f3650e91f2"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.15,
+        "sha256": "fab9f40bfab25c48c7b788f006f0f0a1aad9a9436cc1570ee11f25f3650e91f2"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.15,
+        "sha256": "5d3ba5d13fbc8d54f330f51eeb2b1580b5a3e8d6626140d8bfd0dd4db9142d1e"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.15,
+        "sha256": "2311d5394e0d1d05d7ee65a75551046870137b3e285c02b4bf71ba3f52b54a07"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.15,
+        "sha256": "5e2990a48629660e14cac631482ba178cf92801480e7b33692d1935e9317c1ba"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.15,
+        "sha256": "e991d25d7c1c86d1cb589246aa636dfe9af7abbd53916b4adb81cc67110e1661"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.15,
+        "sha256": "c85e27b66cef3c8f3aee300593ae2f1355329d581f67a009eab80e2b85e671e6"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.15,
+        "sha256": "3a7f5222cc78c34b8c783e37ebafed2fbace832cf0ef0f2e5f2ad33d63ef176c"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.15,
+        "sha256": "e20175140a0f9ebcc8b25172559b00d5a05a93bd0e7ba3452f0806e4daa1c1b1"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "7c6d92584d6f64f8c559c84adb76a07f76b7affd7ae1ec9f9676f5b7f0fc41ba"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "jetrecovery.png",
+        "duration": 0.16,
+        "sha256": "351ad50b2fe2e54746d05d467b013c5a503c2c76a50780440b141411b081f6bc"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "fab9f40bfab25c48c7b788f006f0f0a1aad9a9436cc1570ee11f25f3650e91f2"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "ce1e4cc12c2933b8b3febc03772d952516a9eaf841aba589c6cf8563475acde2"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "2f3a994f773275d57233e9c376c6b72927dfd1c8612cc0e4fe641116e776b8e6"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "jetrecovery.png",
+        "duration": 0.16,
+        "sha256": "351ad50b2fe2e54746d05d467b013c5a503c2c76a50780440b141411b081f6bc"
+      }
+    ],
+    "pressurereturn": [
+      {
+        "file": "jetrecovery.png",
+        "duration": 0.16,
+        "sha256": "351ad50b2fe2e54746d05d467b013c5a503c2c76a50780440b141411b081f6bc"
+      }
+    ],
+    "jetprepare": [
+      {
+        "file": "jetprepare.png",
+        "duration": 0.18,
+        "sha256": "6834743a05c0df36a3360a199067a712c1d2c1453dd9e77a14a9fe0398cccf45"
+      }
+    ],
+    "jetrelease": [
+      {
+        "file": "jetrelease.png",
+        "duration": 0.1,
+        "sha256": "ed8fbfc969e3b959a3c6d0c685dbf3be40527769c022259b6b943660e84cf8e6"
+      }
+    ],
+    "pressureprepare": [
+      {
+        "file": "pressurizeprepare.png",
+        "duration": 0.18,
+        "sha256": "031519f8442dfe4d59d1cccfd939bf962fe9018f40dfb1f0f46fca274a9bc9a8"
+      }
+    ],
+    "pressurepulse": [
+      {
+        "file": "pressurizehold.png",
+        "duration": 0.05,
+        "sha256": "b7387989d54e1a56e9fefd9d904b0abdf0a1f3dd47065cb5552e72b5120e74eb"
+      }
+    ]
+  }
+}

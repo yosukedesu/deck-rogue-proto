@@ -1,0 +1,286 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_mimic_imp",
+  "sourceCanvas": [
+    88,
+    72
+  ],
+  "frameCanvas": [
+    88,
+    72
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    44,
+    72
+  ],
+  "sourcePngSha256": "51423b102e1170492c840cc895a90781bffe35e7024053b2963b221985895049",
+  "groundMaxY": 65,
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "52ca7e9e3f2128da688f7dc117af479361b7f3d7593eb9896f1bec17cfd3a23b",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "51423b102e1170492c840cc895a90781bffe35e7024053b2963b221985895049"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "51423b102e1170492c840cc895a90781bffe35e7024053b2963b221985895049"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "31b3aa278c83807d9d767f0737755fe7a59374be3fe0360902ce78eda26d2d6a"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "4b642e38c4938ea685b60d5e3f2bdf0dc7c3b04683908a66e1951eb657de41a5"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "f669dfed31d96ac6da1de7bf4bc397a18e5c8b4c8a04588f9dbac7d096a842ed"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "1c349deeb34c40801afc6fa9eb9f04757abdef9daa735e2026b0c59b0dd2d02c"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "04f5c0de0ae929ecd9b745c17879b8515d7f090c481e32f9ff5d8fbe1f86facb"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "ba6b1a339ae260d8fba3655c69e56df0ad4755338c5bd90f6a50ab1fe4976b03"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "55ed38f6864be23e740d439e71f34292301d34ffdccd4947ed1687b7a6220c87"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "8c5808f316f8f7a5a00a25d6313aa76ab5508d5f870f4b37ca017ea6b2f9ffb0"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "prepare.png",
+        "duration": 0.16,
+        "sha256": "84166101b264dc8cb5859ae5df1bfadc4dbf971fc3ad54e0cc653665d1448a11"
+      }
+    ],
+    "contacta": [
+      {
+        "file": "contacta.png",
+        "duration": 0.04,
+        "sha256": "81974b3bab46584f2f03dcc1fbab5cbd19444e3761ac51dd028971c3089b3e8a"
+      }
+    ],
+    "rebound": [
+      {
+        "file": "rebound.png",
+        "duration": 0.09,
+        "sha256": "8626fb8746a662448e3bfa734176e94fce7124090817dfbd6a917e56f6c41d92"
+      }
+    ],
+    "contactb": [
+      {
+        "file": "contactb.png",
+        "duration": 0.04,
+        "sha256": "cedb08c41bc4218f3b02074bff13c942383c6b1b6b597dee6151eeca475e59f9"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.14,
+        "sha256": "46774e73f0a48e1b45ec189c88a39f9ac4ca4cc791a03a5fb053ad5ac76adb2e"
+      }
+    ]
+  },
+  "physicalSupportFrames": {
+    "rest.png": {
+      "rearSoleRow": 65,
+      "rearContactPixelsX": [
+        61,
+        63
+      ],
+      "rearSoleCenterX": 62.0,
+      "sourceCenter": [
+        62,
+        65
+      ],
+      "sourceTolerance": [
+        1,
+        0
+      ],
+      "roiXExclusive": [
+        55,
+        72
+      ]
+    },
+    "idle.png": {
+      "rearSoleRow": 65,
+      "rearContactPixelsX": [
+        60,
+        62
+      ],
+      "rearSoleCenterX": 61.0,
+      "sourceCenter": [
+        62,
+        65
+      ],
+      "sourceTolerance": [
+        1,
+        0
+      ],
+      "roiXExclusive": [
+        55,
+        72
+      ]
+    },
+    "hurt.png": {
+      "rearSoleRow": 65,
+      "rearContactPixelsX": [
+        60,
+        62
+      ],
+      "rearSoleCenterX": 61.0,
+      "sourceCenter": [
+        62,
+        65
+      ],
+      "sourceTolerance": [
+        1,
+        0
+      ],
+      "roiXExclusive": [
+        55,
+        72
+      ]
+    },
+    "prepare.png": {
+      "rearSoleRow": 65,
+      "rearContactPixelsX": [
+        60,
+        62
+      ],
+      "rearSoleCenterX": 61.0,
+      "sourceCenter": [
+        62,
+        65
+      ],
+      "sourceTolerance": [
+        1,
+        0
+      ],
+      "roiXExclusive": [
+        55,
+        72
+      ]
+    },
+    "contacta.png": {
+      "rearSoleRow": 65,
+      "rearContactPixelsX": [
+        60,
+        62
+      ],
+      "rearSoleCenterX": 61.0,
+      "sourceCenter": [
+        62,
+        65
+      ],
+      "sourceTolerance": [
+        1,
+        0
+      ],
+      "roiXExclusive": [
+        55,
+        72
+      ]
+    },
+    "rebound.png": {
+      "rearSoleRow": 65,
+      "rearContactPixelsX": [
+        60,
+        62
+      ],
+      "rearSoleCenterX": 61.0,
+      "sourceCenter": [
+        62,
+        65
+      ],
+      "sourceTolerance": [
+        1,
+        0
+      ],
+      "roiXExclusive": [
+        55,
+        72
+      ]
+    },
+    "contactb.png": {
+      "rearSoleRow": 65,
+      "rearContactPixelsX": [
+        60,
+        62,
+        63,
+        64
+      ],
+      "rearSoleCenterX": 62.0,
+      "sourceCenter": [
+        62,
+        65
+      ],
+      "sourceTolerance": [
+        1,
+        0
+      ],
+      "roiXExclusive": [
+        55,
+        72
+      ]
+    },
+    "recovery.png": {
+      "rearSoleRow": 65,
+      "rearContactPixelsX": [
+        61,
+        63
+      ],
+      "rearSoleCenterX": 62.0,
+      "sourceCenter": [
+        62,
+        65
+      ],
+      "sourceTolerance": [
+        1,
+        0
+      ],
+      "roiXExclusive": [
+        55,
+        72
+      ]
+    }
+  }
+}

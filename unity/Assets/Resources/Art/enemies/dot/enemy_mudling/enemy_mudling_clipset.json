@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "status": "M43_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_mudling",
+  "sourceCanvas": [
+    64,
+    64
+  ],
+  "frameCanvas": [
+    70,
+    64
+  ],
+  "sourceOffset": [
+    4,
+    0
+  ],
+  "anchor": [
+    36,
+    64
+  ],
+  "spriteOffset": [
+    -1,
+    0
+  ],
+  "groundMaxY": 59,
+  "registrationKind": "original-ground-anchor",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest_canvas.png",
+  "sourcePngSha256": "19211d02c50e855cf91c40e6c23a0ffc72ca4a48472385c2f36c54cce7be0b24",
+  "sourceArtManifestSha256": "aaedd2c42a3925e8ef4cc39b2c04090d71fe5789ac12ecefbe8b31c6e588c437",
+  "authoredMoves": [
+    "bump",
+    "slop",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "c28f218828b6bf1555118c89f6afae023eb4ee749f927bdb39ded12794693a1d"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.15,
+        "sha256": "1934ecf70edd3a01036d6cd5baa5601d1f01b0e59dd3ee778134f0e7f76a454d"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.15,
+        "sha256": "747f06788e5b01924533ec8e2d21830ad079d8ac77f89ca80c98f6b823d36da4"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.15,
+        "sha256": "a08008b3af77c1b44ab1d22da6a0132a369bd7f92b89f01a90373bd6f277648c"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.15,
+        "sha256": "4054615879035697b620da11405d86d5c3331754485e4713490d42da8dd18357"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.15,
+        "sha256": "4a32bdf520715b32f2296f2bfe45b3acca964a10962670f5447fea46ed20cd36"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.15,
+        "sha256": "072f9d137a48a74f17ec6d49bc3e5783b0dfdcacc5bd5cdd4b870858666624aa"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.15,
+        "sha256": "4edd940a5bd99e7921aa5a1132b3a7c7ef4e4bf2ad34ca22472fd61414107a0a"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.15,
+        "sha256": "3b7acd0afc0f8bd22784da6db55cbb02b80b531e3e5004e841419f1720018950"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "da4fd3ae9adb6403c06ca0784ffc62efa145337329a8326f9225202d9b3b8d64"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "16cb23d0fda5871054d131c5bf36c6e9efb1c1aa26b3f2c678116acb1e534d4c"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "c28f218828b6bf1555118c89f6afae023eb4ee749f927bdb39ded12794693a1d"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "268f109c3e988685eba881f53ac35efa3ecbd34618f8a85fdad3715e2df943d2"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "2dd5afa6d972e76fec4bbd12824aa92089b7aa2ab464a6286ead0f632ae3266f"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "16cb23d0fda5871054d131c5bf36c6e9efb1c1aa26b3f2c678116acb1e534d4c"
+      }
+    ],
+    "bumpprepare": [
+      {
+        "file": "bumpprepare.png",
+        "duration": 0.18,
+        "sha256": "0c363201956bcb35e7e1e18ccdf60dee3b086fb59bfffb6fd6f68e09ebf1f2ac"
+      }
+    ],
+    "bumpcontact": [
+      {
+        "file": "bumpcontact.png",
+        "duration": 0.05,
+        "sha256": "33aba464e9a2487c5a12ca2f7bc2e742de6004aa79d4a4384f2b7fd8a8703701"
+      }
+    ],
+    "slopprepare": [
+      {
+        "file": "slopprepare.png",
+        "duration": 0.18,
+        "sha256": "491af27cabed83c5310dc713eee621b5cbd68842ca08c0b58263cdaa40cdd9ff"
+      }
+    ],
+    "slopapply": [
+      {
+        "file": "slopapplication.png",
+        "duration": 0.07,
+        "sha256": "daa57f21a496f9fb044cfb3d0af11eba233c41e6bf9dd3377e735b17657e4275"
+      }
+    ]
+  }
+}

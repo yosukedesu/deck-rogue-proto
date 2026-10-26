@@ -1,0 +1,212 @@
+{
+  "schema": 1,
+  "status": "M24_SIX_MOVE_COMPLETION_CANDIDATE",
+  "sourceCanvas": [
+    112,
+    112
+  ],
+  "frameCanvas": [
+    144,
+    128
+  ],
+  "sourceOffset": [
+    32,
+    16
+  ],
+  "spriteOffset": [
+    -16,
+    8
+  ],
+  "anchor": [
+    88,
+    128
+  ],
+  "groundMaxY": 119,
+  "artistManifestSha256": "480db1806e9ace27205ae7d2e9900c692118a25d55ca87be5e1de31d385fc5dd",
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "83e1ed3514b4178eac0f87eac803d7f36c90f46c107402fcf566a3069a837a9c"
+      }
+    ],
+    "windup": [
+      {
+        "file": "brace.png",
+        "duration": 0.08,
+        "sha256": "893dac97a8597956bde1dc7c3f9e9f2fb6f37415f4e6f1c5b45c967af9a4c4d4"
+      },
+      {
+        "file": "lift.png",
+        "duration": 0.06,
+        "sha256": "09d372aacc7080889a3d38b99e341d1f49fd6e96779f2e55a98e63a3770c627e"
+      },
+      {
+        "file": "raise_forward.png",
+        "duration": 0.06,
+        "sha256": "ccff0662aa8c102d9a6f08b7d77d97cf4fdb86f40c03a59feb9e61fb4495e98f"
+      }
+    ],
+    "impact": [
+      {
+        "file": "slam.png",
+        "duration": 0.08,
+        "sha256": "28f64f16b0a078fc2e17cd386f92640c92d6ad8bb9e529ca446bd963e4a4baed"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recoil.png",
+        "duration": 0.12,
+        "sha256": "ebc06df460f11d6bbb7a7a05413c3fdc5390630b79347e19cd1a9f92f27cf01c"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "77fa918ff90a01d830bf1d7260e3573da26dc2ae9e8aaa50ce9d358410ae6a22"
+      }
+    ],
+    "block": [
+      {
+        "file": "guard.png",
+        "duration": 0.18,
+        "sha256": "51456bfd102416d6776c92e8939d05c61c53b21ac6f0e7757689d8e30af2aa40"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.175,
+        "sha256": "83e1ed3514b4178eac0f87eac803d7f36c90f46c107402fcf566a3069a837a9c"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.175,
+        "sha256": "b2f9cf10892f6311b96ba427daf37d763fd9d2e65c2ae371d60e46932f4fabae"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.175,
+        "sha256": "03b47aead515f2de74b86718dc5d68ea32c6566891cc87b52b8a30a1483831d3"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.175,
+        "sha256": "2d1c30f6dd271cdbb9b1d5392391aa7dc1fe3625b2d6f4e9affb076c0c2533ae"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.175,
+        "sha256": "9e72e9d605dbb43157a5e30bcd21c8922f4033a28c4744bc81915562440a9266"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.175,
+        "sha256": "60863e35c9eb24ff31f272532ba177601ce275bde346201a32a6f3351c5e194b"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.175,
+        "sha256": "c6c3c01c410819f4ed71537974ed4b22bc84d29864332fb6e1ec0ab7a945c880"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.175,
+        "sha256": "6db6675b46d3bd5a1f217c9ad7cf1a1559cdb0f63bf628302b972dc7e6424acd"
+      }
+    ],
+    "rebound": [
+      {
+        "file": "rebound.png",
+        "duration": 0.1,
+        "sha256": "c6e5d6a64ae8c4822aa49dc605efc00fb65623b150cae458155d5aa58e73af44"
+      }
+    ],
+    "wildwindup": [
+      {
+        "file": "wild_windup.png",
+        "duration": 0.2,
+        "sha256": "cbbc0d92ad28795d4b9970ed9fc8c8b6d8ed750878349448644e83202edad91a"
+      }
+    ],
+    "wildimpact": [
+      {
+        "file": "wild_impact.png",
+        "duration": 0.08,
+        "sha256": "9a41129b20f0bb23357825ae242d9254a910b38f2b6491f1106486d27c6a05fe"
+      }
+    ],
+    "warcryprepare": [
+      {
+        "file": "warcry_prepare.png",
+        "duration": 0.12,
+        "sha256": "2d58715bd4e0b183027684657ab809fccf55835f3e9b4641c68860f5e3fba13b"
+      }
+    ],
+    "warcryroar": [
+      {
+        "file": "warcry_roar.png",
+        "duration": 0.12,
+        "sha256": "462f0824a093d084d3faedcd9848716ce5f26a7a822997f7ca9b70196a70e786"
+      }
+    ],
+    "warroarprepare": [
+      {
+        "file": "war_roar_prepare.png",
+        "duration": 0.12,
+        "sha256": "c252e9f0944cf834413f7acfaf55ab374375b3455a817f8f0f50fd9321cecac5"
+      }
+    ],
+    "warroarroar": [
+      {
+        "file": "war_roar_roar.png",
+        "duration": 0.12,
+        "sha256": "b7e6b4e11f727d124f80a68ca34d976e4a001a91834fd49f81c8f5ac285af660"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guard_prepare.png",
+        "duration": 0.12,
+        "sha256": "ee3816cfaf077a1ac9bf9ef11740bd0c03b35385299d61006b469bd5a8eadcec"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guard.png",
+        "duration": 0.12,
+        "sha256": "51456bfd102416d6776c92e8939d05c61c53b21ac6f0e7757689d8e30af2aa40"
+      }
+    ]
+  },
+  "baselinePackSha256": "0459c002fc0e1656d771b71e7baadb78429c6eead865b440c45046597090bd79",
+  "windupTimingNote": "Same0.20second authored selection duration redistributed0.08/0.06/0.06; existing gameplay/contact schedules unchanged. Last frame holds until real contact.",
+  "baselineBruteManifestSha256": "6552ef1603e139069b3b4322354f6eba47f213227742b97181b438d33e94da6b",
+  "reboundPolicy": "Only owner-matched rage_flurry with actual accepted count2, ordinal0: impact hold2/30s minus0.0001s boundary tolerance then same-fist rebound until next real contact; final contact unchanged.",
+  "authoredMoves": [
+    "club",
+    "club_wild",
+    "rage_flurry",
+    "warcry",
+    "war_roar",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "runtimeAcceptance": "pending",
+  "eventContract": "club1, club_wild1, rage_flurry2 actual contacts only; unchanged rage ordinal0 low rebound between real hits. warcry/war_roar: own actual StrengthGained once. guard: own actual BlockGained once; alsoBuff cannot pulse or extend. Strict support tuple and reaction epoch reject stale owners.",
+  "runtimeAliases": {
+    "pixelsUnchanged": true,
+    "guardhold": "existing guard.png",
+    "recovery": "existing recoil.png",
+    "hurt": "HP-loss-only existing hurt",
+    "reactiveBlock": "existing guard.png independent block-notification",
+    "canvas": "144x128 anchor88,128 offset-16,8 ground119 unchanged"
+  }
+}

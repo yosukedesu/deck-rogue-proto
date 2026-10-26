@@ -1,0 +1,410 @@
+{
+  "schema": 1,
+  "status": "SNAPFRUIT_SNAP_GUARD_IDLE_HURT_ART_REVIEW_CANDIDATE",
+  "enemyId": "enemy_snap_fruit",
+  "displayName": "噛みつき果実",
+  "moveId": "snap",
+  "moveIds": [
+    "snap",
+    "guard"
+  ],
+  "moveKind": "single_contact_bite_and_defend",
+  "sourceCanvas": [
+    80,
+    64
+  ],
+  "frameCanvas": [
+    80,
+    64
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    40,
+    64
+  ],
+  "groundMaxY": 59,
+  "sourcePngSha256": "11f343e0f2844b91aa06c33bda9902bd53a486a06fa45a8f6e1329e6a9b7d0ee",
+  "nativeRegistration": {
+    "rest": {
+      "bakedScale": 1,
+      "bakedScaledCanvas": [
+        80,
+        64
+      ],
+      "bakedDelta": [
+        0,
+        0
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        17,
+        12,
+        62,
+        60
+      ],
+      "bboxAfter": [
+        17,
+        12,
+        62,
+        60
+      ],
+      "opaqueClipped": 0
+    },
+    "idle": {
+      "bakedScale": 1.175,
+      "bakedScaledCanvas": [
+        94,
+        75
+      ],
+      "bakedDelta": [
+        -10,
+        -2
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        23,
+        12,
+        62,
+        53
+      ],
+      "bboxAfter": [
+        17,
+        12,
+        63,
+        60
+      ],
+      "opaqueClipped": 0,
+      "sha256": "1c298ab2175d69f8efe1684e07edec3ca56e0c84dd88f3120ab5cf81e2be5b0c",
+      "purpose": "Technical whole-sprite size/ground registration only; the anatomical pose is imagegen-authored"
+    },
+    "prepare": {
+      "bakedScale": 1.125,
+      "bakedScaledCanvas": [
+        90,
+        72
+      ],
+      "bakedDelta": [
+        -6,
+        -2
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        22,
+        14,
+        69,
+        55
+      ],
+      "bboxAfter": [
+        19,
+        14,
+        72,
+        60
+      ],
+      "opaqueClipped": 0,
+      "sha256": "2291d73b9417bb72b2e8cd7f67ac10eeb60b199c1dea5582425b3224f9d37b94",
+      "purpose": "Technical whole-sprite size/ground registration only; the anatomical pose is imagegen-authored"
+    },
+    "contact": {
+      "bakedScale": 1.125,
+      "bakedScaledCanvas": [
+        90,
+        72
+      ],
+      "bakedDelta": [
+        -8,
+        0
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        19,
+        17,
+        68,
+        53
+      ],
+      "bboxAfter": [
+        13,
+        19,
+        69,
+        60
+      ],
+      "opaqueClipped": 0,
+      "sha256": "b5d79547b9c0e9e756014154d14e7b0e7a12a5c5a7d4ed6963a5ca30dcf2960e",
+      "purpose": "Technical whole-sprite size/ground registration only; the anatomical pose is imagegen-authored"
+    },
+    "recovery": {
+      "bakedScale": 1.125,
+      "bakedScaledCanvas": [
+        90,
+        72
+      ],
+      "bakedDelta": [
+        -7,
+        -2
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        23,
+        13,
+        60,
+        55
+      ],
+      "bboxAfter": [
+        19,
+        13,
+        61,
+        60
+      ],
+      "opaqueClipped": 0,
+      "sha256": "2b283b63089a25934bb52fb3b7e671ac8fc8181bfdef4463a2ef2e832c5f6630",
+      "purpose": "Technical whole-sprite size/ground registration only; the anatomical pose is imagegen-authored"
+    },
+    "hurt": {
+      "bakedScale": 1.2,
+      "bakedScaledCanvas": [
+        96,
+        77
+      ],
+      "bakedDelta": [
+        -9,
+        -3
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        24,
+        13,
+        58,
+        52
+      ],
+      "bboxAfter": [
+        20,
+        13,
+        61,
+        60
+      ],
+      "opaqueClipped": 0,
+      "sha256": "5b1ec97d7158cfd5d291a08848106a289889e007c753149c25a8e2b161ff01eb",
+      "purpose": "Technical whole-sprite size/ground registration only; the anatomical pose is imagegen-authored"
+    },
+    "guardprepare": {
+      "bakedScale": 1.05,
+      "bakedScaledCanvas": [
+        84,
+        67
+      ],
+      "bakedDelta": [
+        -2,
+        1
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        20,
+        15,
+        64,
+        56
+      ],
+      "bboxAfter": [
+        19,
+        17,
+        65,
+        60
+      ],
+      "opaqueClipped": 0,
+      "sha256": "dfa28ff33ba3f671587ffd6aa0a28ded68226befad5cb54d05ea6da81e6ecf67",
+      "purpose": "Technical whole-sprite size/ground registration only; the anatomical pose is imagegen-authored"
+    },
+    "guardhold": {
+      "bakedScale": 1.175,
+      "bakedScaledCanvas": [
+        94,
+        75
+      ],
+      "bakedDelta": [
+        -8,
+        -4
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        23,
+        22,
+        59,
+        55
+      ],
+      "bboxAfter": [
+        19,
+        22,
+        61,
+        60
+      ],
+      "opaqueClipped": 0,
+      "sha256": "aecc45fda0b82f249ca3548bf580d6754d1ee5d59a7ee98cff739d679811450a",
+      "purpose": "Technical whole-sprite size/ground registration only; the anatomical pose is imagegen-authored"
+    }
+  },
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 1.4,
+        "sha256": "11f343e0f2844b91aa06c33bda9902bd53a486a06fa45a8f6e1329e6a9b7d0ee"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.2875,
+        "sha256": "11f343e0f2844b91aa06c33bda9902bd53a486a06fa45a8f6e1329e6a9b7d0ee"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.2875,
+        "sha256": "74f7462582ab0435a2ae6f547137226d9f06a36d28b64dfb9f4286e2271d00d6"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.2875,
+        "sha256": "9894931b81f8f5568aa3272d6a1ac8ddd4b2919267d6c96297df259b9ae676a7"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.2875,
+        "sha256": "47e656a506c24a5cc9a15d1f1f0d2c3df743c06e69b6f52fd22075c6aff7149b"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.2875,
+        "sha256": "ab40c33841c9c9d266dc2d5557b92e9498afce54adbf58dbfb94ad48da50523e"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.2875,
+        "sha256": "4de9a3611d5b8c0463ac85479c02e56e90fc36b3dd5342769e0c70f00295994e"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.2875,
+        "sha256": "aa3490cf50bec56518ba9f49fb72fa419aa277080f0083c3f18c22b6cd2b1fb6"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.2875,
+        "sha256": "bafbca5f3cd704d94d0a7f0173869cad6f5167d77d68060c0ca8d2392b135bd9"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "prepare.png",
+        "duration": 0.18,
+        "sha256": "2291d73b9417bb72b2e8cd7f67ac10eeb60b199c1dea5582425b3224f9d37b94"
+      }
+    ],
+    "contact": [
+      {
+        "file": "contact.png",
+        "duration": 0.11,
+        "sha256": "b5d79547b9c0e9e756014154d14e7b0e7a12a5c5a7d4ed6963a5ca30dcf2960e"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.22,
+        "sha256": "2b283b63089a25934bb52fb3b7e671ac8fc8181bfdef4463a2ef2e832c5f6630"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "5b1ec97d7158cfd5d291a08848106a289889e007c753149c25a8e2b161ff01eb"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "dfa28ff33ba3f671587ffd6aa0a28ded68226befad5cb54d05ea6da81e6ecf67"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.45,
+        "sha256": "aecc45fda0b82f249ca3548bf580d6754d1ee5d59a7ee98cff739d679811450a"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.1,
+        "sha256": "dfa28ff33ba3f671587ffd6aa0a28ded68226befad5cb54d05ea6da81e6ecf67"
+      },
+      {
+        "file": "guardhold.png",
+        "duration": 0.18,
+        "sha256": "aecc45fda0b82f249ca3548bf580d6754d1ee5d59a7ee98cff739d679811450a"
+      }
+    ]
+  },
+  "idleLoop": [
+    "rest",
+    "idle"
+  ],
+  "moveClips": {
+    "snap": [
+      "prepare",
+      "contact",
+      "recovery"
+    ],
+    "guard": [
+      "guardprepare",
+      "guardhold",
+      "recovery"
+    ]
+  },
+  "eventContract": {
+    "snap": "One closed bite key at the authoritative single snap contact event, preserving attack 3 and alsoBuff 2. Prepare before, recovery after. Do not add damage or buff events.",
+    "guard": "Defend 3–4 only. Guard prepare and low round guardhold follow the real guard state; exit via existing recovery/rest. No attack contact event or extra hit.",
+    "hurt": "One short reaction on applicable incoming damage, then return to rest.",
+    "idle": "Quiet slow rest/idle alternation; no gameplay effects."
+  },
+  "durationNote": "Display hold suggestions only. Keep authoritative gameplay timing. Idle rest 1400ms / variation 900ms is deliberately quiet.",
+  "pending": [
+    "runtime_integration_and_acceptance",
+    "event_sync_in_actual_battle",
+    "target_speed_smoothing_review"
+  ],
+  "artSourceManifestSha256": "9936c01903b885f1490366c78f449b512c84aac116402faec422fd8e8b56044b",
+  "runtimeComposition": "The supplied rest/idle loop is expanded to one two-frame idle clip; source PNGs and suggested durations unchanged.",
+  "runtimeGuardComposition": "Existing defend support: prepare before accepted block pulse, hold at real pulse, recovery during support return. Reactive full-block uses the hold frame for at most 180 ms. No gameplay durations changed."
+}

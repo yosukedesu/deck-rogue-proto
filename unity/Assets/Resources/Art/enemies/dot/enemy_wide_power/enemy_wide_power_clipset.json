@@ -1,0 +1,148 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_wide_power",
+  "sourceCanvas": [
+    144,
+    88
+  ],
+  "frameCanvas": [
+    144,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "originalAnchor": [
+    72,
+    88
+  ],
+  "anchor": [
+    72,
+    88
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 81,
+  "sourcePngSha256": "16d7839d17724518d11c6c0981b928868c4646a59e107cb058335ebd198741fc",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "16d7839d17724518d11c6c0981b928868c4646a59e107cb058335ebd198741fc"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.125,
+        "sha256": "16d7839d17724518d11c6c0981b928868c4646a59e107cb058335ebd198741fc"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.125,
+        "sha256": "dc9e2576ce0b86a4803ce54b332a8c75f67ead8860e27a3e7e9257250c0c4797"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.125,
+        "sha256": "4e84d2db17c68c41d65d3a0d8d1ba0b2b6093e3f93c01d28c6116f75ff58b123"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.125,
+        "sha256": "6adef69a4a1b32de501bc7bd4174f07c1557c93402bb9d9e5eba3bde6b5fbf1a"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.125,
+        "sha256": "ae78042cea095934e88a6b55bbadd7fb9f05808999e39786bd02a9ca0a63fa5e"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.125,
+        "sha256": "fc6bbb2e53287cefa80915411ff3845a19526c7ac08e4a1151f95712c44485d5"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.125,
+        "sha256": "4c0e79d268ceb9b0830400582ea8f10dfe1d028586c40d92fd588957545ed564"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.125,
+        "sha256": "a94378c643a66e987d9ff32784cc3a1dd590745163b2a65f1574de97b30e8292"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "6667b599216d349c746c0df64f51319c436dcc08fb72c5f59b4f9497b77d25ed"
+      }
+    ],
+    "surgeprepare": [
+      {
+        "file": "surgeprepare.png",
+        "duration": 0.2,
+        "sha256": "003e6dc3d66bf3a712e587f62ad323fbfa9d8284419ca05ee5a114a3b0af23c3"
+      }
+    ],
+    "surgecontact": [
+      {
+        "file": "surgecontact.png",
+        "duration": 0.055,
+        "sha256": "d95f928a9b8c90f3e190d85d43566343adf4e993388a4b06d9d1cc06658904aa"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "47b59ab6d977ddec674eaf41c610010d96755783d6316a4caddcbe001e70a1ff"
+      }
+    ],
+    "coilprepare": [
+      {
+        "file": "coilprepare.png",
+        "duration": 0.12,
+        "sha256": "87b88af3a4ee8025131e4b836a3dbe2413aa8c951d98e3f546da4fd623764715"
+      }
+    ],
+    "coilhold": [
+      {
+        "file": "coilhold.png",
+        "duration": 0.12,
+        "sha256": "56949153d12ab30611d390859f33801411c079208b618cc3471d723a0e820716"
+      }
+    ],
+    "block": [
+      {
+        "file": "coilhold.png",
+        "duration": 0.18,
+        "sha256": "56949153d12ab30611d390859f33801411c079208b618cc3471d723a0e820716"
+      }
+    ]
+  },
+  "status": "M30_COMPLETE_TWO_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "surge",
+    "coil"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "surge8-15 single actual contact; coil5-9 first own actual BlockGained only. Strict support tuple, stale reaction epoch rejection, finite recovery. Preserve surge first, then existing weighted random3:1 after either move. No gameplay/data/timing mutation.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "rest_canvas exact original PNG/RGBA; no padding",
+    "reactiveBlock": "coilhold drawing reused under independent block-notification; fullblock cannot trigger hurt",
+    "staticLayout": "original144x88 opaque footprint and layout/runtime anchor72,88 preserved; spriteOffset0,0 ground81"
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "status": "M45_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_sludge_spider",
+  "sourceCanvas": [
+    128,
+    80
+  ],
+  "frameCanvas": [
+    128,
+    80
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    64,
+    80
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 72,
+  "registrationKind": "original-ground-anchor",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "b871902ce0fb6a23edc68dd117c3b7105b479a9e3401aadff4c3f35eb7dae062",
+  "sourceArtManifestSha256": "339fba59a36bee6dee82c672d44c1829511e90af355d99222d3f141e89669743",
+  "authoredMoves": [
+    "oil_spray",
+    "slam",
+    "rage",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "b871902ce0fb6a23edc68dd117c3b7105b479a9e3401aadff4c3f35eb7dae062"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.15,
+        "sha256": "b871902ce0fb6a23edc68dd117c3b7105b479a9e3401aadff4c3f35eb7dae062"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.15,
+        "sha256": "7ff99a481628652d69dbcf9c13bc33d8de6688befc25f151e17973563fffe882"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.15,
+        "sha256": "74e351b82594516e442c11b49272cf1ccbdf6bd0fecba997c3ee177cc94001d2"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.15,
+        "sha256": "d541b3982613b719e6a2e941b23e9ba78c4f3dac444ef9326c7a79d865918ee1"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.15,
+        "sha256": "be6b77e43dccf2623126f2abeb9a8ea30b3ac86434f1e22355f71a5f82a6090c"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.15,
+        "sha256": "61e509c07ea65362de96d169b92577cf295dc712ab7b853732ec21665b1a1c86"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.15,
+        "sha256": "d1a149359fe0d562c3ba2749d405deb5b77c116940981b98d7afa1fd09e66149"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.15,
+        "sha256": "fe3ec0e03e5f79f6a7e689b07df7ac7e526eb9ee32bb2daeba325b4bbcafbcc3"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "2bb0912ffd145166ae40d2c64bcf30222f162b7473ee06ad65e6fe806f33bf7b"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "bd43af59b852ba555c1fe67b5e3e8a2b5afe507e852f926cc379fc250c678ef3"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "b871902ce0fb6a23edc68dd117c3b7105b479a9e3401aadff4c3f35eb7dae062"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "62cda5df793fdf52e6dd5d01d1ce747be714f91640f916bd031959844c366110"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "8eac886e3be847583b61fa9ff55ad19bafefb7c96d98f40e6232661f1dd89d9a"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "bd43af59b852ba555c1fe67b5e3e8a2b5afe507e852f926cc379fc250c678ef3"
+      }
+    ],
+    "oilprepare": [
+      {
+        "file": "oil_sprayprepare.png",
+        "duration": 0.18,
+        "sha256": "21e51f94c5e8a8ab6a2bc3c81b406338a70bd1038ad0d70d297a5475a47374d7"
+      }
+    ],
+    "oilrelease": [
+      {
+        "file": "oil_sprayrelease.png",
+        "duration": 0.1,
+        "sha256": "6b0db363c1816910bd4669bac4c3eba6970a7e28e83f7001b67593e24af70731"
+      }
+    ],
+    "slamprepare": [
+      {
+        "file": "slamprepare.png",
+        "duration": 0.18,
+        "sha256": "c92dba99d67acd04c26b48d603844604435c45a08c358903bcfcfa2cff6c58e2"
+      }
+    ],
+    "slamcontact": [
+      {
+        "file": "slamcontact.png",
+        "duration": 0.05,
+        "sha256": "af8364b49e4ce7cba768ff5797f2b1432cd058db7cb0bbc58b0891cfd3b8bf55"
+      }
+    ],
+    "rageprepare": [
+      {
+        "file": "rageprepare.png",
+        "duration": 0.18,
+        "sha256": "d983e1e42efa021a310dbd94f29557165a2b5bfd36a47be8b6f3b930f8b3d1ff"
+      }
+    ],
+    "ragecontact": [
+      {
+        "file": "ragecontact.png",
+        "duration": 0.05,
+        "sha256": "a6736abe6c3c156753026d39f09eb5d176a484023e7bac9776f0c1cc0ace24cb"
+      }
+    ]
+  }
+}

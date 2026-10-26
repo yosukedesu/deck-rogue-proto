@@ -442,6 +442,65 @@ namespace DeckRogue.Game
 
 namespace DeckRogue.Game
 {
+    /// <summary>
+    /// dot (Codex) の敵のコマの組 (2026-10-26 ユーザー裁定「1ドット＝3px で取り込む」。元は Godot 枝 authored-frames・取り込みは scripts/import-enemy-dotset.py):
+    /// Resources/Art/enemies/dot/&lt;id&gt;/ に 一枚絵 &lt;id&gt;.png・待機 &lt;id&gt;_idle_&lt;n&gt;・被弾 _hurt_0・防御 _block_0・攻撃 _attack_&lt;n&gt;・台帳 &lt;id&gt;_clipset.json。
+    /// 枠は 64〜200 ドット (今の 64/80/96/128 より細かい) なので、座席では 1ドット＝3px (PxPerDot。このはと同じ粒) で置く。
+    /// Creature.Get が一枚絵を返し、Stage.BindUnit はこの組の板だと分かれば同じフォルダからコマを引く (StageUnits の AnimFolder)
+    /// </summary>
+    public static class DotSet
+    {
+        /// <summary>座席での1ドットの画面 px (PC。スマホは ArtScale 0.6 を掛けて 1.8)</summary>
+        public const float PxPerDot = 3f;
+        static readonly Dictionary<Texture2D, string> _ids = new Dictionary<Texture2D, string>();
+        static readonly Dictionary<string, float[]> _idleDur = new Dictionary<string, float[]>();
+
+        public static string Folder(string id) { return "enemies/dot/" + id; }
+
+        /// <summary>組の一枚絵 (無ければ null)。返した絵は TryId で組の id が引ける</summary>
+        public static Sprite Rest(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return null;
+            var s = Theme.Art(Folder(id), id);
+            if (s != null && s.texture != null) _ids[s.texture] = id;
+            return s;
+        }
+
+        /// <summary>この絵 (板の元) が組の一枚絵か。id を返す</summary>
+        public static bool TryId(Texture2D tex, out string id)
+        {
+            id = null;
+            return tex != null && _ids.TryGetValue(tex, out id);
+        }
+
+        /// <summary>待機のコマごとの秒 (台帳 clips.idle[].duration。読めなければ 0.1375 均等＝dot の既定)</summary>
+        public static float[] IdleDurations(string id, int frames)
+        {
+            float[] d;
+            if (_idleDur.TryGetValue(id, out d) && d.Length == frames) return d;
+            d = new float[frames];
+            for (int i = 0; i < frames; i++) d[i] = 0.1375f;
+            try
+            {
+                var ta = Resources.Load<TextAsset>("Art/" + Folder(id) + "/" + id + "_clipset");
+                if (ta != null)
+                {
+                    var j = Newtonsoft.Json.Linq.JObject.Parse(ta.text);
+                    var idle = j["clips"] != null ? j["clips"]["idle"] as Newtonsoft.Json.Linq.JArray : null;
+                    if (idle != null)
+                        for (int i = 0; i < frames && i < idle.Count; i++)
+                        {
+                            var v = idle[i]["duration"];
+                            if (v != null) d[i] = Mathf.Max(0.02f, (float)v);
+                        }
+                }
+            }
+            catch (Exception) { }
+            _idleDur[id] = d;
+            return d;
+        }
+    }
+
     /// <summary>敵・リーダーのプレースホルダー (2026-09-07 M2): id のハッシュから左右対称のドット絵の生き物を生成する。
     /// Resources/Art/enemies/<id>.png (PixelLab) があればそれを使う</summary>
     public static class Creature
@@ -455,7 +514,8 @@ namespace DeckRogue.Game
             var key = category + "/" + id + "@" + size;
             Sprite s;
             if (_cache.TryGetValue(key, out s)) return s;
-            s = Theme.Art(category, id);
+            s = category == "enemies" ? DotSet.Rest(id) : null;   // dot のコマの組 (2026-10-26) があればその一枚絵が板の元
+            if (s == null) s = Theme.Art(category, id);
             if (s == null) s = category == "dolls" ? Doll(id, size) : Generate(id, friendly, size);
             _cache[key] = s;
             return s;

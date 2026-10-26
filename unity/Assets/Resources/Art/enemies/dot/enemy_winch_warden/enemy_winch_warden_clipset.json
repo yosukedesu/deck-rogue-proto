@@ -1,0 +1,278 @@
+{
+  "enemyId": "enemy_winch_warden",
+  "sourceCanvas": [
+    176,
+    144
+  ],
+  "frameCanvas": [
+    208,
+    160
+  ],
+  "sourceOffset": [
+    16,
+    8
+  ],
+  "anchor": [
+    104,
+    152
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "sourcePngSha256": "fe6fe46360f771b507f5cb93e6de23d83b18f8f31ae75ba2fab042cbfdaabca0",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "f63ad0230cf03bb1708959c04fbba4f36209a45ad3cb2d34493566d1232967b9"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "f63ad0230cf03bb1708959c04fbba4f36209a45ad3cb2d34493566d1232967b9"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "43e22e06aaa59dbc25117db5255795cd9ef053c3400592aa9346f690b5a5df8c"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "e8835ba44d7ac2f5493c29dfc3945de5ab3194b1e18bf494d0af779881ec038a"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "f75a7b839b28397dde9b932d770a890dd0a26691bf5f22a598bd20b7e27c0d73"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "7a49fb338561bd244c282a70e5afc3169deac12af4498ab5207eb7519e4eb873"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "3f0768a264fd1f4afbd3d7aea30129dc29f45988d7756f311bf159324a6298ab"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "8ab5b337d8e66e9aa227d46908608149f5c4acc4bfe2d1be1c11ed96fa586e6a"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "10f261b59402e12f731ceba2735fe4d444361f68f35c9bb07f923c94cfada486"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "18829eeb0718282124f1b5f3c04b721db0af0241d4787d23685d20770a1fe818"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "37679503a6dbb549ed6c281e83e301db24c26826fe39bd399ee30410097f95b1"
+      }
+    ],
+    "summonprepare": [
+      {
+        "file": "summonprepare.png",
+        "duration": 0.26,
+        "sha256": "35d74f60b194f484cc0e44432f86674d28a0d52eba1e3cbc0c1fa8b645837514"
+      }
+    ],
+    "summonapplied": [
+      {
+        "file": "summonapplied.png",
+        "duration": 0.22,
+        "sha256": "7432ad9f99017d3ac451a76877cc5a525cc312ea3bfa964614555d03522a878f"
+      }
+    ],
+    "flailprepare": [
+      {
+        "file": "flailprepare.png",
+        "duration": 0.26,
+        "sha256": "a697bff840c3a4b072f83f506376089d6d57c682e0f0270683b2a0bea099fe46"
+      }
+    ],
+    "flailcontacta": [
+      {
+        "file": "flailcontacta.png",
+        "duration": 0.12,
+        "sha256": "bf1bc2af752f7e413d01d64acb89c7a25dd385c14435239b8aa1c00956cc524c"
+      }
+    ],
+    "flailrebound": [
+      {
+        "file": "flailrebound.png",
+        "duration": 0.16,
+        "sha256": "6090bdfdc5fa3cc8bcb8b61c42cb24332a13ba854b3068e050cfb34cd9ea2ddd"
+      }
+    ],
+    "flailcontactb": [
+      {
+        "file": "flailcontactb.png",
+        "duration": 0.12,
+        "sha256": "3cd154a7043829fb7b58153fff84e221e008de34f53996312d0d96319416fabc"
+      }
+    ],
+    "windprepare": [
+      {
+        "file": "windprepare.png",
+        "duration": 0.26,
+        "sha256": "561005c3f03a4c1a7b8a2adc18092fa9a3e06a780c7d512313294be78bf2f1a0"
+      }
+    ],
+    "windhold": [
+      {
+        "file": "windhold.png",
+        "duration": 0.3,
+        "sha256": "cbd17652a5c66621cf6dd058044a28ca05b071b39177d89733f6fbbe3ae02b54"
+      }
+    ],
+    "beamprepare": [
+      {
+        "file": "beamprepare.png",
+        "duration": 0.26,
+        "sha256": "54ca418c6f165a82a1433a84f457025e8a1675d9ca776010a8e11821ab3a7e52"
+      }
+    ],
+    "beamrelease": [
+      {
+        "file": "beamrelease.png",
+        "duration": 0.12,
+        "sha256": "a12b765db09e6c1b2260522447ca955667e0cb23e26cb7e55b8e7cd347b6241a"
+      }
+    ],
+    "rewind": [
+      {
+        "file": "rewind.png",
+        "duration": 0.42,
+        "sha256": "a03ca2b4f7629ddeaa382434fc578854205b30fab9ab7946bf547c7f76b3ec69"
+      }
+    ],
+    "block": [
+      {
+        "file": "windhold.png",
+        "duration": 0.2,
+        "sha256": "cbd17652a5c66621cf6dd058044a28ca05b071b39177d89733f6fbbe3ae02b54"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M65_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "77687de968fce3b5fb933abefc1d1a52871c8129cea86528bfbf6b13f0108106",
+  "groundMaxY": 143,
+  "groundMaxYSemantics": "Screen-right boot sole143/boundary144",
+  "placementContract": {
+    "method": "Single common native scale per atlas based on calibration height. Source palette nearest mapping and binary alpha. Whole-frame planted support translation only; no part transforms or per-pose scaling.",
+    "nativeSupport": [
+      141,
+      144
+    ],
+    "landmark": "Screen-right planted boot sole",
+    "paddingReason": "Uniform transparent room for full limb/weapon extension. Exact original RGBA embedded unchanged.",
+    "originalSupport": [
+      125,
+      136
+    ],
+    "sourceSupportEvidence": "Artist native boot sole minus exact unchanged source embedding16,8"
+  },
+  "authoredMoves": [
+    "release_orbs",
+    "flail",
+    "wind_up",
+    "hyper_beam",
+    "rewind"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 14,
+  "grilleOrigins": {
+    "coordinateSpace": "Padded native frame, top-left origin, pixels. Center of actual chest grille aperture.",
+    "canvas": [
+      208,
+      160
+    ],
+    "frames": {
+      "rest": [
+        103,
+        90
+      ],
+      "idle": [
+        100,
+        92
+      ],
+      "hurt": [
+        98,
+        90
+      ],
+      "recovery": [
+        95,
+        96
+      ],
+      "summonprepare": [
+        95,
+        90
+      ],
+      "summonapplied": [
+        94,
+        92
+      ],
+      "flailprepare": [
+        89,
+        97
+      ],
+      "flailcontacta": [
+        98,
+        108
+      ],
+      "flailrebound": [
+        104,
+        90
+      ],
+      "flailcontactb": [
+        99,
+        94
+      ],
+      "windprepare": [
+        89,
+        106
+      ],
+      "windhold": [
+        86,
+        107
+      ],
+      "beamprepare": [
+        92,
+        83
+      ],
+      "beamrelease": [
+        95,
+        84
+      ],
+      "rewind": [
+        99,
+        98
+      ]
+    },
+    "aliases": {
+      "block": "windhold"
+    },
+    "runtimeContract": "Use actual displayed frame mapping and sprite registration. Beam only during resolved hyper_beam contact, not summon, windup, rewind or flail."
+  },
+  "approvedGrilleOriginsSha256": "1271650cb3405ffef220d7085f8b193c038038fd8908e131814169cae6e5b089"
+}

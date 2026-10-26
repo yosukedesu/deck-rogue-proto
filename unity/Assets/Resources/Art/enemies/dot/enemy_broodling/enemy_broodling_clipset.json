@@ -1,0 +1,188 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_broodling",
+  "sourceCanvas": [
+    72,
+    64
+  ],
+  "frameCanvas": [
+    72,
+    64
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    36,
+    64
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 57,
+  "sourcePngSha256": "42ca562be9bc54204a3a291e0641b9b8468f6b4130755787520338a340b2bdc1",
+  "originalAnchor": [
+    36,
+    64
+  ],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "42ca562be9bc54204a3a291e0641b9b8468f6b4130755787520338a340b2bdc1"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.125,
+        "sha256": "580924fd30d1391a8844bcb948ae3fa6bf5e9ba217b3fea48d7c7ef7c88e6f5d"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.125,
+        "sha256": "cf08b87705d2224d6ae6c221240c39ebe845924bb56911da9c3a42fd230ea4aa"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.125,
+        "sha256": "5ddc81567cd1f1d5876c7437dcf8ef2f5536c7513e3125a3b369170f6afdf15f"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.125,
+        "sha256": "1f8dff66c609701361104df42a7aadaa20e216d2923348104264d55cc0999969"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.125,
+        "sha256": "9efd5c083b2f6f515d98d71195a2ecdefce6bb02bd413748bba34a580e851325"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.125,
+        "sha256": "f3c8427d4337a4d187d7c6ff9f79fbad9f4c356d89eb4ccff76fb3ea952a84c3"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.125,
+        "sha256": "9f797c3ede6adee923ac692d0315e4c1628a7692d8747bc21a0461ac51809a9e"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.125,
+        "sha256": "ccfee68d048436c2f60d5742b55e401edec9955cfcb877b389658a9f5cd1e177"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "32b66eba6a6db667292267de8f9a1b1c60916fc5612b7234599fdf1c41cdd414"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.18,
+        "sha256": "42ca562be9bc54204a3a291e0641b9b8468f6b4130755787520338a340b2bdc1"
+      }
+    ],
+    "gnawprepare": [
+      {
+        "file": "gnawprepare.png",
+        "duration": 0.2,
+        "sha256": "a3b691ad23ddb41cc26d2c49e8a4cf979dd14c56cd8e6d937ee95180aa9d1f7b"
+      }
+    ],
+    "gnawcontact": [
+      {
+        "file": "gnawcontact.png",
+        "duration": 0.055,
+        "sha256": "c1410deb0fb7f05f71fd196ea1f37b3917da3129720c335088f4e1ad4b64ebf8"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "5aa79e455f813c2f9e37e84e305e55dfe90a6f74e00ab041296106829224cbe1"
+      }
+    ]
+  },
+  "status": "M35_STATIC_CANDIDATE_RUNTIME_PENDING",
+  "authoredMoves": [
+    "gnaw"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "compile",
+    "headless_acceptance",
+    "native_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "Exactly one accepted real tongue or gnaw contact. Toad squat only actual own BlockGained with instance/version/execution/owner tuple; recovery via squatprepare. Larva has no support move. Weak1 and death split remain canonical engine only.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "rest",
+    "reactiveBlock": "unchanged original rest; no invented defense key",
+    "supportRecovery": null
+  },
+  "footRegistration": {
+    "anatomy": "Legless segmented larva; ground contact belongs to lower curled body underside, not fabricated feet.",
+    "groundMaxY": 57,
+    "backRightX": 56,
+    "sourceLowestBodyXs": [
+      34,
+      38,
+      39,
+      40
+    ],
+    "poseLowestBodyXs": {
+      "rest": [
+        34,
+        38,
+        39,
+        40
+      ],
+      "idle": [
+        34,
+        38,
+        39,
+        40
+      ],
+      "hurt": [
+        37,
+        38,
+        41,
+        42,
+        43
+      ],
+      "gnawprepare": [
+        33,
+        38,
+        39,
+        40
+      ],
+      "gnawcontact": [
+        35,
+        36,
+        39,
+        40,
+        41
+      ],
+      "recovery": [
+        33,
+        37,
+        38,
+        39,
+        40
+      ]
+    },
+    "note": "Actual contacting pixels vary with articulated shape. Runtime world travel is separate from these source-relative keys."
+  }
+}

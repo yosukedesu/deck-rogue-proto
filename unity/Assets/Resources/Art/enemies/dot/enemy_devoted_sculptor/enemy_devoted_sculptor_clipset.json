@@ -1,0 +1,165 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_devoted_sculptor",
+  "sourceCanvas": [
+    136,
+    88
+  ],
+  "frameCanvas": [
+    136,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    68,
+    88
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 79,
+  "originalAnchor": [
+    68,
+    88
+  ],
+  "sourcePngSha256": "f78f7e1b6ba1d4dd57192c760d38e9982fee2cd5163fce5cbbcbef83e31d5826",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "f78f7e1b6ba1d4dd57192c760d38e9982fee2cd5163fce5cbbcbef83e31d5826"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.125,
+        "sha256": "f78f7e1b6ba1d4dd57192c760d38e9982fee2cd5163fce5cbbcbef83e31d5826"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.125,
+        "sha256": "ace4dc6b23581e054635eb068533d0f60af14eaa5fad4f92ef0b104918a4fb3f"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.125,
+        "sha256": "8fb9a71cef4b2b69edae607d7dcd6989a0351687db15dc1a668a85d046520a7b"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.125,
+        "sha256": "dcdcb78b349f13e682f2868b5e9ccaaceaa2bdcfb45d7a2f9db7b2af89b6f93f"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.125,
+        "sha256": "c533b15fac26bf209784fb029c47652e1dc91253a83c87d60221b9a20111fa81"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.125,
+        "sha256": "fa55dc21051b5e1792a4251cf6a771909a0d81e99929dae5498142c2275a6184"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.125,
+        "sha256": "dcb2e56f204cbd7153707d26731b545a7a5ac9ce7f7411d271f8351bbb43de95"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.125,
+        "sha256": "0d63b2498b44c1a17af73c0a0d2c0a5558093b876a5427d4bcbff53e130f4b00"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "ba961ddac9bc1fdcd0fe06e8719ca4cdb81fffef4e63f9528a208d999d1ddf62"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.18,
+        "sha256": "698b8d6e337b9d2f915374bf5bf0b888a74a2c86179996eb49c80cca4e7e9238"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.2,
+        "sha256": "834bb92269fc8f15067ac899671783bd1015ac421f857e364540c5cf3b0d5665"
+      }
+    ],
+    "carveprepare": [
+      {
+        "file": "carveprepare.png",
+        "duration": 0.2,
+        "sha256": "4d4725ededd33cfc75c471cfb5ce7cde41365da1b93f69e2dd73e419c1152eff"
+      }
+    ],
+    "carvecontact": [
+      {
+        "file": "carvecontact.png",
+        "duration": 0.055,
+        "sha256": "88480a58fb569e3700f06d1b86ae9ca75a6d8feb1fbdf0e57d7c0fbc65c0e4c9"
+      }
+    ],
+    "savageprepare": [
+      {
+        "file": "savageprepare.png",
+        "duration": 0.2,
+        "sha256": "2aea03e956574804a3ae79050865d2fe58f5cdcd71ad6360ec80345493781c19"
+      }
+    ],
+    "savagecontact": [
+      {
+        "file": "savagecontact.png",
+        "duration": 0.055,
+        "sha256": "0afa9e409f645e9f26e4fb82879eb21268421720428e90144cf14968a837b6aa"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.2,
+        "sha256": "0cbb049a56c3e96df6c5df279b8e785cec42387039c6dc48004e7cef4b8c14e3"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.2,
+        "sha256": "698b8d6e337b9d2f915374bf5bf0b888a74a2c86179996eb49c80cca4e7e9238"
+      }
+    ]
+  },
+  "status": "M33_ALL_DEFINED_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "carve_rite",
+    "savage",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "Strict count1/count2 Contact with real ordinal1 second drawing. Support only actual own BlockGained with exact instance/version/execution/owner tuple; Strength cannot start or extend support. Canonical gameplay untouched.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "exact original RGBA at sourceOffset, transparent padding",
+    "recovery": [
+      "recovery"
+    ],
+    "reactiveBlock": "guardhold drawing under independent block-notification; fullblock cannot trigger hurt"
+  }
+}

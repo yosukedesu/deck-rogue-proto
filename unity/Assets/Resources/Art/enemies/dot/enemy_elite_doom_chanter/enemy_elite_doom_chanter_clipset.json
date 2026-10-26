@@ -1,0 +1,211 @@
+{
+  "schema": 1,
+  "status": "M47_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_elite_doom_chanter",
+  "sourceCanvas": [
+    144,
+    112
+  ],
+  "frameCanvas": [
+    144,
+    112
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    72,
+    112
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 103,
+  "registrationKind": "original-floating-source-reference",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "d1e86e2f39b4b1df4016c50a6e5bd97cf1f402b423e9b0c863351e6fd881695e",
+  "sourceArtManifestSha256": "33e645415402ee2ee713deaadca69b31e718eb058f497ece3e4a36722c94185f",
+  "authoredMoves": [
+    "dual_chant",
+    "crescendo",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "d1e86e2f39b4b1df4016c50a6e5bd97cf1f402b423e9b0c863351e6fd881695e"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "d1e86e2f39b4b1df4016c50a6e5bd97cf1f402b423e9b0c863351e6fd881695e"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "0809c82b91932e35fd58ef0e52e0c0c96646000c14c82f464b9e4120033398a3"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "fa45f03d34f1f32365ae8fa5a2f846eb53e450e484fcb11c352c22e7ea6bc07a"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "79497e20ffc7f48342ed88e9680bda4a9c9f5550fd140da7e7c4171ce0f0e14f"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "a537e92ba710a4fbcdede5e557fa6e55cc284b4cf722cb35b55a5b3b79789fb6"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "bd832497bf9a72d57728de7dd4ae823b9c1575e6a66f565f359de9919e66b0d9"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "1e7a7641526f349aa5110c0d99ab74895177f3c4b5a9241a1a5dd942c2c9f331"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "9fba4dbd95e5e0b9228e9d24916b73f84daaa9ef24ff3eb59f11e8732e14112b"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "108bc06eaeaf1909c31d3198dac72739286d5c86353d4c7e11d3470ac17ba899"
+      }
+    ],
+    "chantprepare": [
+      {
+        "file": "chantprepare.png",
+        "duration": 0.18,
+        "sha256": "3720a4e2214a949e9da55c9bc1fa63b2cc8534e7c836f4cded06accad4fc2826"
+      }
+    ],
+    "chantcontact1": [
+      {
+        "file": "chantcontact1.png",
+        "duration": 0.05,
+        "sha256": "0eb6aa4b57b6e215c6c7346bbbc86bc9f9f50ce1a84112f4262b901569e04c8b"
+      }
+    ],
+    "chantrebound": [
+      {
+        "file": "chantrebound.png",
+        "duration": 0.18,
+        "sha256": "8917e1bff5229328da2529e8cf10f5859d3a3de37a6af7235db65a58bb1406ac"
+      }
+    ],
+    "chantcontact2": [
+      {
+        "file": "chantcontact2.png",
+        "duration": 0.05,
+        "sha256": "bd42624b2c7f9f2d9b6751185502fbab8832f85770a0b9da3fca5e31244b9f8a"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "chantrebound.png",
+        "duration": 0.08,
+        "sha256": "8917e1bff5229328da2529e8cf10f5859d3a3de37a6af7235db65a58bb1406ac"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.1,
+        "sha256": "af690a403d0571c5fd6f6c5e71e9ee67a7718967ed4c3330cd6d93374d266930"
+      }
+    ],
+    "crescendoprepare": [
+      {
+        "file": "crescendoprepare.png",
+        "duration": 0.18,
+        "sha256": "7ac74c4a7aae211bef1869d055f864cbd24e4efbce0da6a92053cb02c64ed075"
+      }
+    ],
+    "crescendopulse": [
+      {
+        "file": "crescendopulse.png",
+        "duration": 0.05,
+        "sha256": "e21527df5364dc66ce03b90ff7c53ce5f56b1f5450cd0f440457a8f462a01940"
+      }
+    ],
+    "crescendoreturn": [
+      {
+        "file": "chantrebound.png",
+        "duration": 0.08,
+        "sha256": "8917e1bff5229328da2529e8cf10f5859d3a3de37a6af7235db65a58bb1406ac"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.1,
+        "sha256": "af690a403d0571c5fd6f6c5e71e9ee67a7718967ed4c3330cd6d93374d266930"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "d1e86e2f39b4b1df4016c50a6e5bd97cf1f402b423e9b0c863351e6fd881695e"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "21efaa8e46ca3ea5299b8f42b765a9ea175b5d7114d23745958098b66da655ed"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "fdaa065b52c0b0c27d3f393faff6cdfaa0b8b51721b7de9f5bcd94cbd98228bc"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "chantrebound.png",
+        "duration": 0.08,
+        "sha256": "8917e1bff5229328da2529e8cf10f5859d3a3de37a6af7235db65a58bb1406ac"
+      },
+      {
+        "file": "idle.png",
+        "duration": 0.1,
+        "sha256": "af690a403d0571c5fd6f6c5e71e9ee67a7718967ed4c3330cd6d93374d266930"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "d1e86e2f39b4b1df4016c50a6e5bd97cf1f402b423e9b0c863351e6fd881695e"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "d1e86e2f39b4b1df4016c50a6e5bd97cf1f402b423e9b0c863351e6fd881695e"
+      }
+    ]
+  },
+  "physicalNewKeyCount": 10,
+  "recoveryAuthorship": "finite-existing-chantrebound-to-idle-alias-no-new-recovery-drawing",
+  "drawingOnlyDurationNormalization": {
+    "contactPulseAndGuardHoldSeconds": 0.05,
+    "finiteReturns": "Approved recovery/return sequences remain drawing-only; existing Stage End/deadline governs exit."
+  }
+}

@@ -1,0 +1,237 @@
+{
+  "schema": 1,
+  "status": "M21_THREE_MOVE_IDLE_HURT_COMPLETION_CANDIDATE",
+  "enemyId": "enemy_drummer",
+  "displayName": "鼓吹きコボルト",
+  "sourceCanvas": [
+    96,
+    96
+  ],
+  "frameCanvas": [
+    96,
+    96
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    48,
+    96
+  ],
+  "groundMaxY": 87,
+  "filterMode": "Nearest",
+  "sourcePngSha256": "52227ec83d80499a6425afee743e3ba9d955c528d3ec2afe7281f2a8638afa6a",
+  "authoredMoves": [
+    "war_drum",
+    "thump",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "52227ec83d80499a6425afee743e3ba9d955c528d3ec2afe7281f2a8638afa6a"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.09,
+        "sha256": "52227ec83d80499a6425afee743e3ba9d955c528d3ec2afe7281f2a8638afa6a"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.09,
+        "sha256": "3b846c80bfcf99794a49da498ba771fdc88e9e35ffe0316af547916902e49abe"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.09,
+        "sha256": "f807e748adbf43370fff73551cdc361e162256c75b518ff1231ddacf2d47a6d9"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.09,
+        "sha256": "b0c629a3ab9fecfa3175794198f1821b3de54795013a3da9dea04fba25414986"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.09,
+        "sha256": "7e8d19bae548046f0f5bd5acdda1e75a534b1283c1729c8a7da33fdadf23b21e"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.09,
+        "sha256": "560f7d7b40b67c3e87d8bcb550e8017dd122b3e9ab0792534d4c8872f9edb238"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.09,
+        "sha256": "3e57cd8c97f24b6e71bf1a880a6f03fff69fa96165806bf1cb488de1f40be4c3"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.09,
+        "sha256": "176901c203c4dabd5b3b49923c7c64330637e11b547eb3a1991d50545096506a"
+      }
+    ],
+    "idle_breath": [
+      {
+        "file": "idle_breath.png",
+        "duration": 0.36,
+        "sha256": "132527fd622c32f75901273b9d3cba7fea68ebafa96c678acea40790f0ff404e"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.08,
+        "sha256": "a79703fec5d0cc177739e8b40a048bf80dd7bcec16b1d5d353abc6702b9cc3b6"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "prepare.png",
+        "duration": 0.14,
+        "sha256": "996c1d58420c268b76cd8cf4136ab0d25141b8199b13e0eef9abbbff587b1ae6"
+      }
+    ],
+    "beat": [
+      {
+        "file": "beat.png",
+        "duration": 0.04,
+        "sha256": "3fab64db4aa02de2017b5edbf78e181e2c9cc793b7a430bf6f06145f46c5ec00"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.2,
+        "sha256": "a3eca89420547dd3af65fbd968f3184801d223597594a7ac608ef6ab62b66199"
+      }
+    ],
+    "thump_prepare": [
+      {
+        "file": "thump_prepare.png",
+        "duration": 0.12,
+        "sha256": "ec41f52b3bfb4819cf43b172ac063a1e27458146999678e9255b4de42f5486cb"
+      }
+    ],
+    "thump_impact": [
+      {
+        "file": "thump_impact.png",
+        "duration": 0.06,
+        "sha256": "7ce38d790994838cf57018e1579c632bab61d132c9e84c01d09d4fa7c6079fc1"
+      }
+    ],
+    "guard_prepare": [
+      {
+        "file": "guard_prepare.png",
+        "duration": 0.12,
+        "sha256": "f017fb19a0127993c5f48aae9b25d5d53deb5d07710e11aea488b2d772db3bd1"
+      }
+    ],
+    "guard_hold": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.12,
+        "sha256": "f87174363507b61bf4658ab38fd511bcf74cf19689e3920997252477dfcba7c6"
+      }
+    ],
+    "thumpprepare": [
+      {
+        "file": "thump_prepare.png",
+        "duration": 0.12,
+        "sha256": "ec41f52b3bfb4819cf43b172ac063a1e27458146999678e9255b4de42f5486cb"
+      }
+    ],
+    "thumpimpact": [
+      {
+        "file": "thump_impact.png",
+        "duration": 0.04,
+        "sha256": "7ce38d790994838cf57018e1579c632bab61d132c9e84c01d09d4fa7c6079fc1"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guard_prepare.png",
+        "duration": 0.12,
+        "sha256": "f017fb19a0127993c5f48aae9b25d5d53deb5d07710e11aea488b2d772db3bd1"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.12,
+        "sha256": "f87174363507b61bf4658ab38fd511bcf74cf19689e3920997252477dfcba7c6"
+      }
+    ],
+    "block": [
+      {
+        "file": "guard_hold.png",
+        "duration": 0.08,
+        "sha256": "f87174363507b61bf4658ab38fd511bcf74cf19689e3920997252477dfcba7c6"
+      }
+    ]
+  },
+  "moveMapping": {
+    "thump": {
+      "prepare": "thump_prepare",
+      "impact": "thump_impact",
+      "recovery": "recovery",
+      "authority": "actual validated real Contact for thump only"
+    },
+    "guard": {
+      "prepare": "guard_prepare",
+      "hold": "guard_hold",
+      "recovery": "recovery",
+      "authority": "actual validated BlockGained for guard only"
+    },
+    "war_drum": {
+      "prepare": "prepare",
+      "impact": "beat",
+      "recovery": "recovery",
+      "authority": "first validated StrengthGained AppliedOnce for war_drum only; exactly one visual beat per action"
+    }
+  },
+  "durationNote": "Illustrative art display holds only. Runtime clips must fit current event windows; do not create, extend or advance game timers, damage, queue waits or action rules.",
+  "oldFramesByteIdentical": {
+    "rest": "52227ec83d80499a6425afee743e3ba9d955c528d3ec2afe7281f2a8638afa6a",
+    "prepare": "996c1d58420c268b76cd8cf4136ab0d25141b8199b13e0eef9abbbff587b1ae6",
+    "beat": "3fab64db4aa02de2017b5edbf78e181e2c9cc793b7a430bf6f06145f46c5ec00",
+    "recovery": "a3eca89420547dd3af65fbd968f3184801d223597594a7ac608ef6ab62b66199"
+  },
+  "newFrames": {
+    "idle_breath": "132527fd622c32f75901273b9d3cba7fea68ebafa96c678acea40790f0ff404e",
+    "hurt": "a79703fec5d0cc177739e8b40a048bf80dd7bcec16b1d5d353abc6702b9cc3b6",
+    "thump_prepare": "ec41f52b3bfb4819cf43b172ac063a1e27458146999678e9255b4de42f5486cb",
+    "thump_impact": "7ce38d790994838cf57018e1579c632bab61d132c9e84c01d09d4fa7c6079fc1",
+    "guard_prepare": "f017fb19a0127993c5f48aae9b25d5d53deb5d07710e11aea488b2d772db3bd1",
+    "guard_hold": "f87174363507b61bf4658ab38fd511bcf74cf19689e3920997252477dfcba7c6"
+  },
+  "pending": [
+    "runtime_acceptance",
+    "existing_event_window_sync_and_interruptions"
+  ],
+  "missingArt": [],
+  "runtimeAcceptance": "pending",
+  "eventContract": "war_drum: exactly one beat at the first real StrengthGained presentation reserved from a validated canonical closed execution span; AppliedAt differs from diagnostic ResolvedAt; remaining recipients and Resolved never retrigger. thump: sole actual accepted Contact. guard: real own BlockGained only; alsoBuff1 remains numeric and does not pulse. Exact support tuple, generation, event reference/index and owned reaction epochs; no gameplay clock or queue wait changes.",
+  "runtimeAliases": {
+    "pixelsUnchanged": true,
+    "sourceReadySha256": "892b32190918ad371263e6f562b049753d759d60e3b991a0559ad50d7bf3201c",
+    "appliedFallback": "Ambiguous/zero/foreign/cancelled/dead/stale span has no guessed beat and a finite return. Structural summon/split/hatch before rally deliberately refuses proof.",
+    "thump": "thumpprepare/thumpimpact aliases; impact hold.04s fits existing contact window, shared original recovery",
+    "guard": "guardprepare/guardhold aliases; alsoBuffStrength cannot activate or repeat hold",
+    "idle": "rest plus idle_breath; initial placement reaction owner",
+    "hurt": "HP loss only; actor instance/epoch token",
+    "reactiveBlock": "guard_hold drawing via separate block-notification",
+    "canvas": "Original96x96/anchor48,96/offset0,0/floor87 fixed."
+  }
+}

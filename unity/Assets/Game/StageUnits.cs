@@ -1129,13 +1129,17 @@ namespace DeckRogue.Game
             u.BaseUvScale = new Vector2(tr.width / tw, tr.height / th); u.BaseUvOffset = new Vector2(tr.x / tw, tr.y / th);
             u.BreathePhase = (key.GetHashCode() & 0xff) * 0.05f;   // 位相をずらして全員が同期しない
             // コマ: Art/<種別>/anim/<id>_<動き>_<n>.png (64×64。PixelLab の animate-with-text)。無ければ一枚絵のまま
+            // dot のコマの組 (2026-10-26・DotSet): 板の元が Art/enemies/dot/<id>/<id>.png なら、コマも同じフォルダ (<id>_idle_<n> ほか)
             string cat = key == "player" ? "leaders" : "enemies";
+            string dotId;
+            bool dot = DotSet.TryId(sprite.texture, out dotId);
+            string animFolder = dot ? DotSet.Folder(dotId) : cat + "/anim";
             foreach (var anim in new[] { "idle", "attack", "hurt", "block" })
             {
                 var list = new List<Texture2D>();
                 for (int i = 0; i < 16; i++)
                 {
-                    var f = Theme.Art(cat + "/anim", sprite.name + "_" + anim + "_" + i);
+                    var f = Theme.Art(animFolder, sprite.name + "_" + anim + "_" + i);
                     if (f == null) break;
                     list.Add(f.texture);
                 }
@@ -1151,12 +1155,21 @@ namespace DeckRogue.Game
                 u.FrameDur["attack"]=new[]{.05f,.07f,.08f,.12f};
                 u.FrameDur["block"]=new[]{.06f,.08f,.10f,.16f};
             }
+            if (dot)
+            {
+                // 待機は台帳の秒 (dot の 0.1375×8)。攻撃は 予備動作→当たり→戻り の 3 枚で当たりを 0.13 秒後に (このはと同じ拍)。被弾・防御は 1 枚
+                List<Texture2D> idle;
+                if (u.Anims.TryGetValue("idle", out idle)) u.FrameDur["idle"] = DotSet.IdleDurations(dotId, idle.Count);
+                u.FrameDur["attack"] = new[] { 0.13f, 0.10f, 0.18f };
+                u.FrameDur["hurt"] = new[] { 0.22f };
+                u.FrameDur["block"] = new[] { 0.30f };
+            }
             // 盤面の作り直し (Rebuild) で板が作り直されても、再生中のコマ送りは引き継ぐ (攻撃コマが Rebuild で消えていた)
             u.Key = key;
             // 光を受ける板の法線・発光と _KeyFlip の引き先 (2026-09-30 P11)。絵の名前 = Resources の名前 (leader_green・enemy_wolf・人形の id)
             u.ArtName = sprite.name;
-            u.BaseFolder = key == "player" ? "leaders" : key.StartsWith("doll:", StringComparison.Ordinal) ? "dolls" : "enemies";
-            u.AnimFolder = cat + "/anim";
+            u.BaseFolder = dot ? animFolder : key == "player" ? "leaders" : key.StartsWith("doll:", StringComparison.Ordinal) ? "dolls" : "enemies";
+            u.AnimFolder = animFolder;
             u.KeyFlipArt = IsKeyFlipArt(sprite.name);
             u.InitShadowState();
             AnimState st0;

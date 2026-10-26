@@ -71,6 +71,9 @@ attack / defend / buff / rally / heal / hex / destroy-set / destroy-token / stea
 
 ## 敵（enemies/）
 
+**2026-10-26**: 敵の絵は dot（Codex）のコマの組（`Art/enemies/dot/<id>/`・1ドット＝3px・`scripts/import-enemy-dotset.py`）が先に使われる。以下の 64/80/96/128 の一枚絵と `anim/` のコマは組が無い敵の予備（規約の記録として残す）。
+
+
 | id | 名前 | 区分 | 寸法 |
 |---|---|---|---|
 | enemy_wide_power | うねる獣 | 通常 | 64×64 |

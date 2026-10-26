@@ -1,0 +1,142 @@
+{
+  "enemyId": "enemy_chimera_2",
+  "sourceCanvas": [
+    224,
+    144
+  ],
+  "frameCanvas": [
+    244,
+    147
+  ],
+  "sourceOffset": [
+    20,
+    1
+  ],
+  "anchor": [
+    132,
+    145
+  ],
+  "spriteOffset": [
+    -10,
+    -0.5
+  ],
+  "sourcePngSha256": "8989f54df0f8b4330465b033ecb06381fc9ddb30e89028cbae0325c51ead2b53",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "6594eef4d10210dc02c1a6939aa2d18a83b6f2fb2a8b2bc1238a12c465e04756"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "6594eef4d10210dc02c1a6939aa2d18a83b6f2fb2a8b2bc1238a12c465e04756"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "41728ba2ffa8b42debcff4564c80836ade4312c138092671509a8bbe47784afb"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "a1d483910f564fd85926295a43b9bb47e939d6f2ae38464e6b9e403f3e726e89"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "cef6a392c5800cc987f98154bcfc3b4b5fba9d186e56aab3c0c538388bd092fa"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "ff868735d66d426b126edcc2de0efaa8fd4e36070e407d8cd04a3c65b725f8a8"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "c51f26e9f0ef97efdaed2c419ae31931542d517e1ddddea84ba3f184f40c9b5f"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "3705106b42ce322dd48472a47cf9c48718a00f30e624f2bfab8fe0ba982cb064"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "4481eb7f3703070de876b27b7a7dc1c31b97f1c2966bee3c0c2c7f2cb7d22c60"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "096c1c29f17a45289e5b5296a09fd1cea8e271d5545840615cf24c4131f9d425"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "fd0b1272a60eb362c8d45ad278a581f73fe7666adb9801e7f2c70886c8fee0ab"
+      }
+    ],
+    "clawprepare": [
+      {
+        "file": "clawprepare.png",
+        "duration": 0.24,
+        "sha256": "6f2fbce5f91fde0532f58a7bb76defd626d2ac10a2761e4485e09b528e1098dd"
+      }
+    ],
+    "clawcontacta": [
+      {
+        "file": "clawcontacta.png",
+        "duration": 0.12,
+        "sha256": "c10c4b9cdbf3e15e3146ddb5f4376090d00eb58ac255beafb6f88c3fd5468b80"
+      }
+    ],
+    "clawrebound": [
+      {
+        "file": "clawrebound.png",
+        "duration": 0.14,
+        "sha256": "211a514c369359b5dff32fecb7fbb654de3b95fe322bc6bc713282380f1dee0b"
+      }
+    ],
+    "clawcontactb": [
+      {
+        "file": "clawcontactb.png",
+        "duration": 0.12,
+        "sha256": "30f5307bcd80cfa0a9cd4a31ab0a97e09807ef35213d8eb47f3575c2ccc0e08d"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M64_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "f0ddbd356004888a97f14d0b6c94d8aebad30c13ab168cfd53854b9f330a594c",
+  "groundMaxY": 129,
+  "groundMaxYSemantics": "Original anatomical right hind paw support, not silhouette maximum, no per-pose fitting",
+  "placementContract": {
+    "method": "One calibration width scale, nearest sampling, source palette, binary alpha. Whole-frame anatomical right hind paw sole registration only; no part transforms or procedural poses.",
+    "sourcePhysicalSupport": [
+      158.0,
+      129
+    ],
+    "nativePhysicalSupport": [
+      178.0,
+      130
+    ],
+    "noPerPoseFitting": true
+  },
+  "authoredMoves": [
+    "swelling_claws"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 7
+}

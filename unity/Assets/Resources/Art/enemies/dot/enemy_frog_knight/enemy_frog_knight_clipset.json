@@ -1,0 +1,292 @@
+{
+  "schema": 1,
+  "status": "M54_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_frog_knight",
+  "sourceCanvas": [
+    160,
+    88
+  ],
+  "frameCanvas": [
+    160,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    80,
+    88
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 79,
+  "groundMaxYSemantics": "original opaque-bottom diagnostic, not physical foot pivot",
+  "supportFootLandmarks": {
+    "reviewedPhysicalFeature": "rear-supporting-foot",
+    "source": [
+      133,
+      79
+    ],
+    "sourceUnpadded": [
+      133,
+      79
+    ],
+    "horizontalToleranceTexels": 0.5,
+    "verticalToleranceTexels": 0,
+    "frames": {
+      "chargecontact.png": [
+        133.0,
+        79
+      ],
+      "chargeprepare.png": [
+        133.0,
+        79
+      ],
+      "guardhold.png": [
+        132.5,
+        79
+      ],
+      "guardprepare.png": [
+        133.0,
+        79
+      ],
+      "hurt.png": [
+        133.5,
+        79
+      ],
+      "idle.png": [
+        133.5,
+        79
+      ],
+      "queenhold.png": [
+        133.0,
+        79
+      ],
+      "queenprepare.png": [
+        133.5,
+        79
+      ],
+      "recovery.png": [
+        133.0,
+        79
+      ],
+      "rest.png": [
+        133,
+        79
+      ],
+      "strikecontact.png": [
+        133.5,
+        79
+      ],
+      "strikeprepare.png": [
+        133.5,
+        79
+      ],
+      "tonguecontact.png": [
+        132.5,
+        79
+      ],
+      "tongueprepare.png": [
+        133.0,
+        79
+      ]
+    },
+    "featureEvidence": "Exact approved art manifest groundReference and frameProofs; original front foot may differ in height. Opaque bottom is never the pivot."
+  },
+  "supportFootProofSha256": "f765337c7fadfe88d88acc01151bd41acbb5386a6dfc1b710a211d75338ceb27",
+  "registrationKind": "source-canvas-exact-anchor",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "0daf426a24e5ef425a42ec9b77dc3158a3311a21018a249d11f72dd9c4b962b2",
+  "sourceArtManifestSha256": "f765337c7fadfe88d88acc01151bd41acbb5386a6dfc1b710a211d75338ceb27",
+  "authoredMoves": [
+    "tongue_lash",
+    "strike_down",
+    "for_the_queen",
+    "guard",
+    "beetle_charge"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "0daf426a24e5ef425a42ec9b77dc3158a3311a21018a249d11f72dd9c4b962b2"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "0daf426a24e5ef425a42ec9b77dc3158a3311a21018a249d11f72dd9c4b962b2"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "a414aeead3db292af0e1a56cb573d6ac60a5f446b2557d4c091cec681d95a21b"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "fff525b462121801deb066b85751852764f5e5e299efc0781729d293a0bef41c"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "0ed7b9118c7e559cd2cd9d4ea5ecf7f0d9de8ca6c50de35404f1bc8b3c296abf"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "0dae5031859b549d5c327a4c663dee59fdfdd65b63104e725559fc9b3dac3125"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "2108e27fee4c3a7afbf97ac09b9a82fdbc11a00cfc05b6fa297306d5f90f1397"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "67d35ff5eaf3481bb59ce42af32c0432069885114abde1576690ac43069806cd"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "5794b581026a05b91f32e980c9963af95018acef142360c73cd70bda0bda0b85"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "dc7259903d212fe10874a3b47dbf49196a26c8a90bdee10d8546ca3e49c4bc71"
+      }
+    ],
+    "tongueprepare": [
+      {
+        "file": "tongueprepare.png",
+        "duration": 0.18,
+        "sha256": "d649fd27d2c030b266ed500018e71268ddeb2baf2ee8ab18d70586d0e20d2ddc"
+      }
+    ],
+    "tonguecontact": [
+      {
+        "file": "tonguecontact.png",
+        "duration": 0.05,
+        "sha256": "7cd2eb711a6de58d9690e233f6d83702e30171d26c7e069d72f528ff2cee87a6"
+      }
+    ],
+    "strikeprepare": [
+      {
+        "file": "strikeprepare.png",
+        "duration": 0.18,
+        "sha256": "8a1c484e696639ad21468ac7557dc012870b21a2d38e32af2b8584d78d29ab07"
+      }
+    ],
+    "strikecontact": [
+      {
+        "file": "strikecontact.png",
+        "duration": 0.05,
+        "sha256": "035a6b48b87e3e5eb623b93b8a5004080720bb093a7214faa0e0db96aca6a7cc"
+      }
+    ],
+    "chargeprepare": [
+      {
+        "file": "chargeprepare.png",
+        "duration": 0.18,
+        "sha256": "08385ced88646e017099d9eb860df8c10218c9e9f656c0e3b77bf7a2343afe67"
+      }
+    ],
+    "chargecontact": [
+      {
+        "file": "chargecontact.png",
+        "duration": 0.05,
+        "sha256": "43975036d0d5d93e6263795c9e5ebade88c8a6e25136ba5fe5b8e13bbb387d33"
+      }
+    ],
+    "queenprepare": [
+      {
+        "file": "queenprepare.png",
+        "duration": 0.2,
+        "sha256": "eb83580077087790d20900c5839a74ce3165caad4fb895779d706c492290dbfa"
+      }
+    ],
+    "queenhold": [
+      {
+        "file": "queenhold.png",
+        "duration": 0.05,
+        "sha256": "201ac389f0a81c6e94d971415417eca79776378e5e2e2ac4d40b2d537081d8f7"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "0584b80395c15b8ad7e3e03e2a0208338beeac24ce024a0084d5455d0bdd0b28"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.08,
+        "sha256": "0daf426a24e5ef425a42ec9b77dc3158a3311a21018a249d11f72dd9c4b962b2"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "388432aa76ae0038a1b497bfb27d0529ac40f1ebb43cb08122828b4708b01371"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "7a7158278416f66af2a928c1c292e2c44d1b2e58d204eda3f229dcef83136dca"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "0584b80395c15b8ad7e3e03e2a0208338beeac24ce024a0084d5455d0bdd0b28"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.08,
+        "sha256": "0daf426a24e5ef425a42ec9b77dc3158a3311a21018a249d11f72dd9c4b962b2"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "0daf426a24e5ef425a42ec9b77dc3158a3311a21018a249d11f72dd9c4b962b2"
+      }
+    ],
+    "queenreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "0584b80395c15b8ad7e3e03e2a0208338beeac24ce024a0084d5455d0bdd0b28"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.08,
+        "sha256": "0daf426a24e5ef425a42ec9b77dc3158a3311a21018a249d11f72dd9c4b962b2"
+      }
+    ]
+  },
+  "physicalNewKeyCount": 13,
+  "recoveryAuthorship": "approved recovery+exact registered rest, never contact reuse",
+  "drawingOnlyDurationNormalization": {
+    "contactAndOwnEffectHoldSeconds": 0.05,
+    "netAppliedHoldSeconds": 0.1,
+    "rulesAndStageClocksChanged": false
+  }
+}

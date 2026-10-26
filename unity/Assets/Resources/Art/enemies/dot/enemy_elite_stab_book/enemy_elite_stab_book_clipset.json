@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "status": "M44_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_elite_stab_book",
+  "sourceCanvas": [
+    192,
+    112
+  ],
+  "frameCanvas": [
+    192,
+    112
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    96,
+    112
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 103,
+  "registrationKind": "original-hover-anchor",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "5c44f7632f3a09e7b6a8d0b9930d0ee5a5759202fc28d2241e6c3c47fc4f2769",
+  "sourceArtManifestSha256": "5aeb923f53c37380c788971aa89e79453b16047e0665515aaec3ecf509d6d091",
+  "authoredMoves": [
+    "stab2",
+    "stab3",
+    "stab4",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "5c44f7632f3a09e7b6a8d0b9930d0ee5a5759202fc28d2241e6c3c47fc4f2769"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.15,
+        "sha256": "5c44f7632f3a09e7b6a8d0b9930d0ee5a5759202fc28d2241e6c3c47fc4f2769"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.15,
+        "sha256": "e6bef063a300708f80a144d5847d1bd80189d012e39179f291a9be1116035b0e"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.15,
+        "sha256": "0e705ca2da7081fa06c48a586d822bc48e958335220d3c12fad136918d524bcd"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.15,
+        "sha256": "2e57c76b8e8354691b0ef2df41d77d10285b31ced3ab41f7b58f207ba09c7a13"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.15,
+        "sha256": "d8017e9066490b68e8f3abe430ed1ee13b683b2062a1c273c212f3a551b8519e"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.15,
+        "sha256": "a69cc87dacf10c3bfa90d22a3d2aef9f5b3605e296ec3cd4d0d3d0e4d581b380"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.15,
+        "sha256": "a8eeca1dbbd7f2529f5aee3c3f66622e487c04654499923a829522630e84b7c5"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.15,
+        "sha256": "3e35afd993a4251d6f920d64274869ce9ad30df91048cb46619cb22da386dce4"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "0ea2f17978a2c4d671c266bece91bc65027bdc1c44c07341172a183266d6b7ed"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "ff00b83488fb0336775fc1b7bf5f0e83791842961229313b32104bd91c89da39"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "5c44f7632f3a09e7b6a8d0b9930d0ee5a5759202fc28d2241e6c3c47fc4f2769"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "0eb10b9a3907b77dd1bd1f8ec1a20bb4223ef2686f3322f90a4a3e48e8bf80f2"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "5f18256757d2129140266a6f6cd710a302eab0823777c597e1010fc3b5e82d4c"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "ff00b83488fb0336775fc1b7bf5f0e83791842961229313b32104bd91c89da39"
+      }
+    ],
+    "stabprepare": [
+      {
+        "file": "prepare.png",
+        "duration": 0.18,
+        "sha256": "ea535ae5f8cf01ed4123303570c015b7fab46559cc5e8fe5a3f73e056ef949b5"
+      }
+    ],
+    "stabcontact1": [
+      {
+        "file": "contactA.png",
+        "duration": 0.05,
+        "sha256": "6666b1d8680ac13455e082cdb3b577f6ac71fe027ee24588be1d8d16a5408da9"
+      }
+    ],
+    "stabcontact2": [
+      {
+        "file": "contactB.png",
+        "duration": 0.05,
+        "sha256": "dca1f7d76105561031b0cefbdea60a8b719f93a29e365480f7d53cc7a23b8b01"
+      }
+    ],
+    "stabrebound": [
+      {
+        "file": "rebound.png",
+        "duration": 0.11,
+        "sha256": "b4e86704c13680487990c5dfdc1cf2f9fc95d6f8b3d3cd0b1cbc3a99a2582f10"
+      }
+    ]
+  }
+}

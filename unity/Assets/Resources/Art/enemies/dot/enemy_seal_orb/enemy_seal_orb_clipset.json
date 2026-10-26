@@ -1,0 +1,167 @@
+{
+  "enemyId": "enemy_seal_orb",
+  "sourceCanvas": [
+    72,
+    64
+  ],
+  "frameCanvas": [
+    80,
+    64
+  ],
+  "sourceOffset": [
+    8,
+    0
+  ],
+  "anchor": [
+    44,
+    64
+  ],
+  "spriteOffset": [
+    -4,
+    0
+  ],
+  "sourcePngSha256": "a59d211d7dc86f090e212530a44d27ebe777d343c2254dc9cde68f69d069639a",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "eea9bd71326e385a21f253bf274c9cdcafaef7968507d18707e454d5c0ab074c"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "eea9bd71326e385a21f253bf274c9cdcafaef7968507d18707e454d5c0ab074c"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "1b7ddc781d55d9904799dfad6e2bd46610539be749f897f5b7c909f402931c54"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "be756d8d83d86723e47e4775e7b50f7e67e64944a8cd054b3338ea3b5eda99bf"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "0a25b5948f00235d4b71b0f4568ca9f718cce1c02d30e51a6ea452787116c81b"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "2a33617401a3686a653ddff4a1b6004139feecdcca7e1c0aea7bc4c6617b6c53"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "d890113ec37195caaec930587753a5ab15e3af6c370afec33743caae79bb79e5"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "2b634cf66a800708775dc2d2f31567f3becd75e862989b9e1c3a2e149c6295d1"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "e652ce9ae07abb915e7165233457f62dc2328b7d7bd9c69bf2100efe10a41545"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "8ead5260efc93abf16dbf92c95514fd58e99b3840f2679e2eefd8484242104d7"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "87634367bdcefc3f13b372866c3a64dfd097087a92f549e98985cc870e6ba446"
+      }
+    ],
+    "sealprepare": [
+      {
+        "file": "sealprepare.png",
+        "duration": 0.22,
+        "sha256": "160cd7890601059964d8ed09f166fa60c32bd9ae5f0b6ff332cbaa55bd8b7e4f"
+      }
+    ],
+    "sealapplied": [
+      {
+        "file": "sealapplied.png",
+        "duration": 0.25,
+        "sha256": "2a1a2e32b02173cb0e2ad03ee420ed97b36d23790f639e6d3b851027fc9db457"
+      }
+    ],
+    "beamprepare": [
+      {
+        "file": "beamprepare.png",
+        "duration": 0.2,
+        "sha256": "95a80642cdb532ca7caa0a4a636b436eadefac99aaeebbdd9b317fd1856e68a9"
+      }
+    ],
+    "beamrelease": [
+      {
+        "file": "beamrelease.png",
+        "duration": 0.14,
+        "sha256": "131e4981ef3b93916e786d6a35dee56a01d5c705b7c10e9837199be41c5537d3"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.2,
+        "sha256": "40e8ac747756e53cdd6467d477c503cb99c914f4650efd7f549427bc709709d0"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.32,
+        "sha256": "a110851f1cd0c9c73196e8535565249f023cda184009b6d446df2ee5fb98f627"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.2,
+        "sha256": "a110851f1cd0c9c73196e8535565249f023cda184009b6d446df2ee5fb98f627"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M63_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "f479be9760d9fefc28514f211f17fa09bacbdcf938b44d301cfcb086f343eaab",
+  "groundMaxY": 55,
+  "groundMaxYSemantics": "Floating original shell registration, no foot or floor fitting",
+  "placementContract": {
+    "method": "One calibration width373/source64 common nearest sampling scale; source exact palette and binary alpha. Whole-frame floating-shell translation only. No per-pose fitting, painting, part transforms or procedural poses.",
+    "floating": true,
+    "originalShellCenter": [
+      25.5,
+      34
+    ],
+    "nativeShellCenter": [
+      33.5,
+      34
+    ],
+    "noFootRegistration": true,
+    "paddingReason": "8px left padding supports wider beam recoil ribbons without shrinking/cropping; centered spriteOffset preserves source placement."
+  },
+  "authoredMoves": [
+    "seal",
+    "beam",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 9
+}

@@ -1,0 +1,161 @@
+{
+  "enemyId": "enemy_elite_deathless",
+  "sourceCanvas": [
+    176,
+    112
+  ],
+  "frameCanvas": [
+    176,
+    112
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    88,
+    112
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 103,
+  "sourcePngSha256": "14c36682456f8a3f364bd3c75f66154d7b5e7b0939e3cdf8b0e1a3ce8e910171",
+  "schema": 1,
+  "status": "M38_STATIC_CANDIDATE_RUNTIME_PENDING",
+  "sourceArtManifestSha256": "468f37ca8aa9417df578838b71136f9a0da7cbdaf1d68f48430b6ded6cbe77c4",
+  "authoredMoves": [
+    "cleave",
+    "stance",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "sha256": "14c36682456f8a3f364bd3c75f66154d7b5e7b0939e3cdf8b0e1a3ce8e910171",
+        "duration": 0.45
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1125,
+        "sha256": "14c36682456f8a3f364bd3c75f66154d7b5e7b0939e3cdf8b0e1a3ce8e910171"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1125,
+        "sha256": "e2b1ba23b7201708b2837ad2afae46ef01469cf2f7a5c0c60f88a8549a1c2a72"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1125,
+        "sha256": "4540d4b863890e2292d116e16c1adfd9c2508f92303e948c36731de96197453b"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1125,
+        "sha256": "cf2108c1d9a7993506cd1fc463a642ca2b96885e8989b98f3cacdf25b364e257"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1125,
+        "sha256": "b8af6301b6906c90c3b36113ce5edcfea4851f042986553126fdf52d6971a1d5"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1125,
+        "sha256": "47b043b7cf34332ea568574f0fe5ffd5a7e04ec380923a6eb4aab21c38059149"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1125,
+        "sha256": "2bb3fefec09b2ef339630f0ccc6e9f43dc88df47e52c036bcfebf576d3dc30c9"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1125,
+        "sha256": "aaaca5369009350b707562d3dcf5e01635156e4b4961b18021b170eb383b43fb"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "sha256": "4155a626427cb342bf703463c1f218229ce4eddb4a5d3ce1f18b5fda9d789ac9",
+        "duration": 0.14
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "sha256": "70d78b735e5b368958027451891a13ede10a380cd6f6789d8518fb46e3c10600",
+        "duration": 0.18
+      }
+    ],
+    "cleaveprepare": [
+      {
+        "file": "cleaveprepare.png",
+        "sha256": "a5f990965e597b15dbd73fc5b7456a735124b09d31d85d3935adea559387aa2c",
+        "duration": 0.22
+      }
+    ],
+    "cleavecontact": [
+      {
+        "file": "cleavecontact.png",
+        "sha256": "48f4d5248a5e3efd8082002423f0dd2b78f43c49e2c748e31680fc09f484a9e0",
+        "duration": 0.05
+      }
+    ],
+    "stanceprepare": [
+      {
+        "file": "stanceprepare.png",
+        "sha256": "52064e13f7b10ec7ef02abcd2b8abfaea8e6caf20f68358ed51dd28a0ecd0c68",
+        "duration": 0.22
+      }
+    ],
+    "stancecontact": [
+      {
+        "file": "stancecontact.png",
+        "sha256": "c0db646358dafee295c4cc511cf787486d6667da203d86a15588103d31c0e879",
+        "duration": 0.05
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "sha256": "52dc9cc914e20f26e792d291f4966a10582161b66a0039305f31405643621a5e",
+        "duration": 0.18
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "sha256": "bad5f7039d15b88ce693ed60e002ae5145e17740883f613561105fd84debe5cc",
+        "duration": 0.24
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "sha256": "70d78b735e5b368958027451891a13ede10a380cd6f6789d8518fb46e3c10600",
+        "duration": 0.36
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "guardprepare.png",
+        "sha256": "bad5f7039d15b88ce693ed60e002ae5145e17740883f613561105fd84debe5cc",
+        "duration": 0.12
+      },
+      {
+        "file": "rest.png",
+        "sha256": "14c36682456f8a3f364bd3c75f66154d7b5e7b0939e3cdf8b0e1a3ce8e910171",
+        "duration": 0.06
+      }
+    ]
+  }
+}

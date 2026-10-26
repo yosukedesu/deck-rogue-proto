@@ -1,0 +1,168 @@
+{
+  "enemyId": "enemy_moss_spawner",
+  "sourceCanvas": [
+    144,
+    112
+  ],
+  "frameCanvas": [
+    176,
+    128
+  ],
+  "sourceOffset": [
+    32,
+    16
+  ],
+  "anchor": [
+    104,
+    128
+  ],
+  "spriteOffset": [
+    -16,
+    8
+  ],
+  "sourcePngSha256": "91433444b0b8440a97b9cbbfc31004047cc8c511ebb3b5f9c77260d2c11dca83",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "e7826c017719274dbd6ce35b4ca4f83964bfd3a1ec560067a1760b06ec9684b5"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "e7826c017719274dbd6ce35b4ca4f83964bfd3a1ec560067a1760b06ec9684b5"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "36cbf47b23af3ebcee4ba8c86216b9ed219740afc2f4ef3d7de89d156a3f570b"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "7e802536185ebadbb773199f71a59ba3b11873b5b738ed9d2fb7a50de4fa8d0e"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "f21ffab027d9ee3f29fbee730631ff222b6b97c44462eb1a2972e99af9a3cf4e"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "3c54a16a8edc0f404a3a426ea07513c588c67b6754564e81f1d2bea8333ba947"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "30dbb22b8ad470f7084fab6d2386f3e7c6417e3b1e77b5d00ba66e2296e860d0"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "def8fa9daa727ab1b6a55e70c13e84e639059d90c7fdaeed5d623f37dfdf4d30"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "c5c091633a38151fbe3e4cbae630df5ad3e66003d2b985476c37ee2a5582c5bb"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "c348a422017231f43dc67e6b885fdb5db6a093fe5d6c1c44936658a2aedba537"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "676135d69e701d1ce42c06f442b5f5330e7fd03d071996d250a0b1b7df9f1d0b"
+      }
+    ],
+    "spawnprepare": [
+      {
+        "file": "spawnprepare.png",
+        "duration": 0.24,
+        "sha256": "fd4ad26f33f9522c2c47b219b08c60cf30e2ec69fa399a3d32870e6a1777dba9"
+      }
+    ],
+    "spawnapplied": [
+      {
+        "file": "spawnapplied.png",
+        "duration": 0.28,
+        "sha256": "d2827d62ec6f0a0c3a98582d27050441035dcbd81cef2aadd2585981e7a37d24"
+      }
+    ],
+    "lashprepare": [
+      {
+        "file": "lashprepare.png",
+        "duration": 0.22,
+        "sha256": "de1f474ebdec8d0694f805450011a5c2c7c4408ba0154309bfd72c711115bfc5"
+      }
+    ],
+    "lashcontact": [
+      {
+        "file": "lashcontact.png",
+        "duration": 0.13,
+        "sha256": "6d9b96f493f6989f83fab9c7dd9c7ecad5066fc0cc296f883d3f3cd1cc6ae2dd"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.22,
+        "sha256": "ef84fce8d0e969bd5547943c5a37ea97df9eec3f3e4b28d7baf712fa33bb1ebe"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.32,
+        "sha256": "2a491269162a933a9a307827202ca225c40cb8898a09c03aa28b8796f2f6662e"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.2,
+        "sha256": "2a491269162a933a9a307827202ca225c40cb8898a09c03aa28b8796f2f6662e"
+      }
+    ]
+  },
+  "schema": 1,
+  "status": "M61_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "e0839610a2cacc8e09bdfb10b8a8dfa22485f0e0998adbaa069b6a75e84e375d",
+  "groundMaxY": 119,
+  "groundMaxYSemantics": "Anatomical root sole opaque119/boundary120",
+  "placementContract": {
+    "method": "One calibration width385/source116 common nearest sampling scale; source exact palette and binary alpha. Whole-frame root-support translation only. No per-pose fitting, painting, part transforms or procedural poses.",
+    "commonRawPixelsPerNativePixel": 3.3189655172413794,
+    "originalSupport": [
+      104.5,
+      104
+    ],
+    "nativeSupport": [
+      136.5,
+      120
+    ],
+    "landmark": "Main screen-right planted root sole, not forward bough, belly pod, or generic bounding box.",
+    "paddingReason": "32 transparent left pixels for extended lash;16 top for raised spawn/hurt without shrinking body. Original rest exact embedded.",
+    "allFramesSameScale": true
+  },
+  "authoredMoves": [
+    "spawn",
+    "lash",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 9
+}
