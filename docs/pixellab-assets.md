@@ -308,7 +308,11 @@ attack / defend / buff / rally / heal / hex / destroy-set / destroy-token / stea
 | 草株・花・小石 | 未接続（次の段） | 12×10 / 8×10 / 12×8 | 地面に散らすデカール（十字板・寝かせた板） |
 PixelLab のタイル生成（Pro の tileset）で「top-down tile, seamless, 32×32」を指定。プロンプトの土台は「Octopath Traveler style HD-2D pixel art tile, seamless, detailed shading」。
 
-## カード（絵は後回し）
+## カード（2026-10-26: 絵は dot の 567 枚に置き換え済み）
+
+**2026-10-26 ユーザー裁定**: 札の絵は PixelLab の発注ではなく、dot（Codex）が Godot 枝 `origin/codex/unity-parity-20261013` の `assets/Art/cards_modern` に納めた **567 枚（80×48・手元・一人称の構図・全色＋レシピ 32 を網羅）** を `Art/cards/` にそのまま置いた。以下の白のカードの節（PixelLab で作った 88＋10＋5 枚）は置き換え前の記録。残っている `.pixellab.json` は旧絵の発注文で、今の絵の出所ではない。札の面は W09（`CardView.cs`・`scripts/gen-cardface.py`）。
+
+### 旧: カード（絵は後回し）
 
 カードは 412 種。1枚ずつのイラストは最後（ゲートを越えてから）。それまでは枠＋タイプアイコン＋名前で成立させる。
 タイプ別の枠色: 物理=茶／呪文=紫／リアクション=青緑／置物=金。色（緑青赤白黒）は枠の縁取り。

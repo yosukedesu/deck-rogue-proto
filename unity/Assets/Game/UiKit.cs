@@ -166,6 +166,32 @@ namespace DeckRogue.Game
         /// <summary>名前・見出しの装飾明朝 (Kaisei Decol・OFL)。無ければ太字</summary>
         public static TMP_FontAsset FontDeco { get { EnsureFonts(); return _fontDeco ?? FontBold; } }
         static TMP_FontAsset _fontDeco;
+        /// <summary>札の面の字 (Noto Sans JP。2026-10-26 W09＝Godot の Font A と同じ)。無ければ本文の書体</summary>
+        public static TMP_FontAsset FontSans { get { EnsureSans(); return _fontSans ?? FontRegular; } }
+        public static TMP_FontAsset FontSansBold { get { EnsureSans(); return _fontSansBold ?? FontBold; } }
+        static TMP_FontAsset _fontSans, _fontSansBold;
+        static bool _sansTried;
+
+        static void EnsureSans()
+        {
+            if (_sansTried) return;
+            _sansTried = true;
+            EnsureFonts();
+            _fontSans = MakeFont("NotoSansJP-Regular");
+            _fontSansBold = MakeFont("NotoSansJP-Bold");
+            FixBaseLinear(_fontSans);
+            FixBaseLinear(_fontSansBold);
+            // 本文の <b> は本物の太字 (Bold の字形) で描く (無ければ TMP の擬似太字)
+            try
+            {
+                if (_fontSans != null && _fontSansBold != null)
+                {
+                    var table = _fontSans.fontWeightTable;   // 読み取り専用の配列。要素 (struct) をその場で書き換える
+                    if (table != null && table.Length > 7) table[7].regularTypeface = _fontSansBold;
+                }
+            }
+            catch (Exception) { }
+        }
 
         /// <summary>
         /// HP バーの数字の素材 (2026-09-29 p04): 太字の SDF に紙 (明) の下敷き (underlay) を敷き、薔薇色の塗りの上でも字のすぐ外が紙になる (墨と 12:1)。
@@ -736,6 +762,17 @@ namespace DeckRogue.Game
             if (Fs(size) <= SmallTextMax) { var sm = SmallMat(t.font); if (sm != null) t.fontSharedMaterial = sm; }
             if (LinearFix && IsLightText(t.color)) FitTextToColor(t);   // 明るい字は Linear で太るので明るい字の版 (P21)
             t.characterSpacing = 2f;
+            return t;
+        }
+
+        /// <summary>札の面の字 (Noto Sans JP・W09)。Txt と同じ扱いで書体だけ差し替える (小さい字の素材・明るい字の版も同じ規則)</summary>
+        public static TMP_Text Sans(Transform parent, string text, int size, Color color, TextAnchor anchor = TextAnchor.MiddleCenter, bool bold = false)
+        {
+            var t = Txt(parent, text, size, color, anchor, bold);
+            var f = bold ? FontSansBold : FontSans;
+            if (f != null && t.font != f) { t.font = f; t.fontSharedMaterial = f.material; }
+            if (Fs(size) <= SmallTextMax) { var sm = SmallMat(t.font); if (sm != null) t.fontSharedMaterial = sm; }
+            if (LinearFix && IsLightText(t.color)) FitTextToColor(t);
             return t;
         }
 

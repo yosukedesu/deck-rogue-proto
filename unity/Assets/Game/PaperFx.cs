@@ -91,6 +91,30 @@ namespace DeckRogue.Game
         public static readonly Color Olive = H("#b3b67a");
         // 旧名の別名 (段階的に消す)
         public static readonly Color Honey = Brass;
+
+        // ---- 札の面 W09 (2026-10-26 ユーザー裁定「札のフレームも Godot に合わせる」。dot の Godot 版 SourceCardFace・SourcePalette.Battle の値をそのまま) ----
+        /// <summary>札の板 (夜の青)。形の層 (Art/ui/cardface_*) の地の色と同じ＝絵が無い時の代わり</summary>
+        public static readonly Color CardShell = H("#223442");
+        /// <summary>札の本文の板 (板より少し明るい)</summary>
+        public static readonly Color CardBody = H("#2c3d4b");
+        /// <summary>札の本文の段落の間の線</summary>
+        public static readonly Color CardDivider = H("#5c7280");
+        /// <summary>札の板の上の字 (コスト・タイプ・本文・名前。Godot 版の名前は #fff5df だが差が見えないので一つに)</summary>
+        public static readonly Color CardInk = H("#f6f1d9");
+        /// <summary>白の帯の上の名前だけ墨</summary>
+        public static readonly Color CardNameOnWhite = H("#283035");
+        /// <summary>割引で下がったコスト／重圧で上がったコスト (夜の板の上で読める明るい版)</summary>
+        public static readonly Color CardCostDown = H("#9de1ba");
+        public static readonly Color CardCostUp = H("#ffb6aa");
+        /// <summary>出せない札の板・帯・絵に掛ける灰 (乗算)</summary>
+        public static readonly Color CardDim = new Color(0.72f, 0.74f, 0.80f, 1f);
+        /// <summary>札の色の帯 (名前・挿絵の台・下の帯)。「リーダーの色は UI に出さない」(color-theme) の例外＝札の面だけ。合成札は定義の色・状態異常や中立は青灰</summary>
+        public static readonly Color FactionGreen = H("#326447");
+        public static readonly Color FactionRed = H("#994c3d");
+        public static readonly Color FactionBlue = H("#376b91");
+        public static readonly Color FactionWhite = H("#e8e2ce");
+        public static readonly Color FactionBlack = H("#252429");
+        public static readonly Color FactionNeutral = H("#354d55");
         public static readonly Color GoldInk = BrassInk;
 
         // ---- 夜の札 (HD-2D 見本 ui=night。2026-09-30 P20・ユーザー裁定③「舞台の上に常に出る札は夜色の地に紙色の文字」) ----

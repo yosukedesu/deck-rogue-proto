@@ -2,7 +2,9 @@
 
 移植の一次資料。方針変更時はまずこのファイルを更新する。
 
-> **2026-10-12 方針変更**: 移植先は **Godot（.NET）へ一本化**（ユーザー裁定。Codex〔dot〕の完全移植 `deckrogue-godot-port` が本線）。本書の C# エンジン（`unity/Packages/com.deckrogue.engine`）とゴールデン照合の方式は、そのまま Godot の入口として生きる（TS が正 → C# へ翻訳し verify → Godot へ複製 → Godot でも照合）。Unity 固有の手順は中継の間は有効。経緯 → `docs/rules-ledger.md`「移植先（Unity → Godot）」・共有 `docs/codex-dot-share-2026-10-12.md`。
+> **2026-10-26 方針変更（再）**: 移植先は **Unity に戻す**（ユーザー裁定。評価 `docs/engine-choice-2026-10-26.md`・経緯 ledger「移植先（Unity → Godot → Unity）」）。本書の手順はそのまま本線。dot の Godot 枝は素材の倉庫。以下の 10-12 の注記は記録として残す。
+>
+> **2026-10-12 方針変更（撤回済み）**: 移植先は **Godot（.NET）へ一本化**（ユーザー裁定。Codex〔dot〕の完全移植 `deckrogue-godot-port` が本線）。本書の C# エンジン（`unity/Packages/com.deckrogue.engine`）とゴールデン照合の方式は、そのまま Godot の入口として生きる（TS が正 → C# へ翻訳し verify → Godot へ複製 → Godot でも照合）。Unity 固有の手順は中継の間は有効。経緯 → `docs/rules-ledger.md`「移植先（Unity → Godot）」・共有 `docs/codex-dot-share-2026-10-12.md`。
 
 ## 0. 前提と資産評価
 

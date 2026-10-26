@@ -1,9 +1,13 @@
-// CardView.cs — カードの面 (200×290)。「絵本」の肌の上に案B「本家型の帯」(2026-09-09 デザインカンバス第2版・ユーザー裁定):
-// 左上のコスト玉 (割引は苔色・X)、全幅の夜色の窓に挿絵 (Art/cards/<id>.png 80×48 を2倍。無ければタイプの紋章)、
-// 窓の下端に掛かるタイプの帯 (色＋文字＋レア度の宝石)、本文は墨で数字は 130%、紙の外側の線の色がレア度 (C 墨・U 空・R 蜂蜜)。
-// 旧・第5版の「左下の剣・右下の盾のにじみの札」は廃止 (数字は本文の1か所)。RoleLabels は効果からの役割抽出として残す。
+// CardView.cs — カードの面 (200×290)。「W09」(2026-10-26 ユーザー裁定「札のフレームも Godot に合わせる」):
+// dot の Godot 版 SourceCardFace と同じ設計 (630×880) を 200×290 へ写す。夜の青の板・レア度の線と角飾り (C 灰青・U 青緑・R 真鍮)・左上の角ばったコスト枠・
+// リーダーの色の帯 (名前の帯・挿絵の台・下の帯)・挿絵 (Art/cards/<id>.png 80×48 を台いっぱい・5:3 のまま。無ければタイプの紋章)・
+// タイプの形 (物理=六角の帯・呪文=弧・仕込み札=斜めの帯・置物=箱)・本文は夜の板に淡い紙色の字 (数字は太字・段落の間に線)・レア度の粒。字は Noto Sans JP (Godot の Font A と同じ)。
+// 形の層は scripts/gen-cardface.py が描いた PNG (Art/ui/cardface_frame_<c|u|r>・cardface_type_<タイプ>・cardface_band)。色の帯は PaperFx の色の Image＋光沢の 9スライス。
+// 旧 (2026-09-09〜10-25): 絵本の紙＋案B「本家型の帯」(紙・コスト玉・タイプの帯・宝石)。要の数字の札 (三周目 r3) と RoleLabels は据え置き。
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,11 +20,13 @@ namespace DeckRogue.Game
     {
         public const float W = 200f;
         public const float H = 290f;
+        /// <summary>設計座標 (Godot 版と同じ 630×880)。Place がこの寸法から札の寸法へ写す (縦は 3.8% 伸びる＝形の層には見えない。挿絵だけ 5:3 を保つ)</summary>
+        const float DW = 630f, DH = 880f;
 
         /// <summary>予測行 (対象が決まっている時の実値) の対象。-1 で出さない</summary>
         public static int PreviewEnemy = -1;
 
-        /// <summary>名前をコスト玉の右から左寄せで描く (スマホの手札が7枚以上＝重なって札の左側しか見えない時だけ。BattleView.SyncHand が立てて戻す。2026-09-29 p09)</summary>
+        /// <summary>名前をコスト枠の右から左寄せで描く (スマホの手札が7枚以上＝重なって札の左側しか見えない時だけ。BattleView.SyncHand が立てて戻す。2026-09-29 p09)</summary>
         public static bool CompactName;
 
         /// <summary>本文の右の余白に足す量 (スマホの手札で隣の札に覆われる幅。BattleView.SyncHand が立てて戻す。2026-09-30 F01)</summary>
@@ -49,50 +55,94 @@ namespace DeckRogue.Game
             Fill(root, c, st, playable, interactable);
         }
 
+        // ---- 設計座標の置き場 ----
+
+        /// <summary>設計座標 (x, y, w, h。左上が原点) の矩形を札の左上基準で置く。grow は四方に足す設計 px (色の帯を板の穴より 1 大きく敷く)</summary>
+        static RectTransform Place(Transform parent, string name, float x, float y, float w, float h, float grow = 0f)
+        {
+            var rt = UiKit.NewRect(name, parent);
+            rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f);
+            rt.pivot = new Vector2(0f, 1f);
+            float sx = W / DW, sy = H / DH;
+            rt.anchoredPosition = new Vector2((x - grow) * sx, -(y - grow) * sy);
+            rt.sizeDelta = new Vector2((w + grow * 2f) * sx, (h + grow * 2f) * sy);
+            return rt;
+        }
+
+        static Image Layer(Transform parent, string name, Sprite sprite, float x, float y, float w, float h, Color tint)
+        {
+            var rt = Place(parent, name, x, y, w, h);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = sprite;
+            img.color = tint;
+            img.raycastTarget = false;
+            img.preserveAspect = false;
+            return img;
+        }
+
+        /// <summary>色の帯の色: 札の色 (合成札は定義の色)。状態異常・中立は青灰</summary>
+        static Color FactionColor(string color)
+        {
+            switch (color)
+            {
+                case "green": return PaperFx.FactionGreen;
+                case "red": return PaperFx.FactionRed;
+                case "blue": return PaperFx.FactionBlue;
+                case "white": return PaperFx.FactionWhite;
+                case "black": return PaperFx.FactionBlack;
+            }
+            return PaperFx.FactionNeutral;
+        }
+
+        // 色の帯 (設計座標): 名前の帯・挿絵の台・下の帯 (Godot 版 SelectedFrame の "Faction C bands")
+        static readonly float[][] Bands = { new[] { 169f, 29f, 438f, 118f }, new[] { 24f, 150f, 582f, 349f }, new[] { 25f, 806f, 581f, 34f } };
+
         static void Fill(RectTransform root, CardInstance c, GameState st, bool playable, bool interactable)
         {
             var def = c.Def;
-            var typeCol = PaperFx.TypeColor(def.Type);
-            // 出せない札の墨は透明度で薄めず実色の中墨 (灰の紙 (224,212,184) の上で 5.7:1。規約「二次の文字色は実色」。2026-09-29 p05)
-            var ink = playable ? PaperFx.Ink : PaperFx.InkSoft;
-            string rarity = def.Rarity ?? (def.Id != null && def.Id.StartsWith("fusion_") ? "rare" : "common");   // レシピ産 (手書きの一品) は蜂蜜の外線 (2026-09-12)
+            string rarity = def.Rarity ?? (def.Id != null && def.Id.StartsWith("fusion_") ? "rare" : "common");   // レシピ産 (手書きの一品) は真鍮の線 (2026-09-12)
+            string rank = rarity == "rare" ? "r" : rarity == "uncommon" ? "u" : "c";
+            string type = def.Type == "physical" || def.Type == "spell" || def.Type == "reaction" || def.Type == "permanent" ? def.Type : "other";
+            var faction = FactionColor(def.Color);
+            // 出せない札は板・帯・絵をまとめて灰に沈める (主な合図は手札の16px沈み。p05)
+            var tint = playable ? Color.white : PaperFx.CardDim;
 
-            // 紙 (外側の線の色がレア度: C 墨・U 空・R 蜂蜜)
-            var paper = PaperFx.Sheet(root, PaperFx.CardOf(rarity), "paper", playable ? Color.white : PaperFx.DimTint);   // 出せない札は少しだけ沈んだ紙 (主な合図は手札の16px沈みと灰の玉。p05)
-            UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
-            paper.raycastTarget = interactable;
-            var grain = PaperFx.GrainOver(root, 0.7f);
-            grain.raycastTarget = false;
+            // ① 色の帯 (板の穴の下。1 設計px 大きく敷いて継ぎ目を見せない) と光沢
+            var sheen = Theme.Art("ui", "cardface_band");
+            for (int i = 0; i < Bands.Length; i++)
+            {
+                var b = Bands[i];
+                var band = Place(root, "band", b[0], b[1], b[2], b[3], 1f);
+                var bImg = band.gameObject.AddComponent<Image>();
+                bImg.color = faction * tint; bImg.raycastTarget = false;
+                if (sheen != null)
+                {
+                    var s = Layer(root, "sheen", sheen, b[0], b[1], b[2], b[3], tint);
+                    s.type = Image.Type.Sliced;
+                    s.pixelsPerUnitMultiplier = DW / W;   // 光沢の線は設計の画素で描いてあるので札の縮尺に合わせる
+                }
+            }
 
-            // 挿絵の窓 (全幅 176×100。夜色に墨の縁。80×48 を2倍で中央に)
-            var win = UiKit.NewRect("art", root);
-            UiKit.Anchor(win, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(12f, -144f), new Vector2(-12f, -44f));
-            var winEdge = win.gameObject.AddComponent<Image>();
-            winEdge.color = PaperFx.Ink;
-            winEdge.raycastTarget = false;
-            var winIn = UiKit.Pan(win, PaperFx.Window, "night");
-            UiKit.Stretch(winIn.rectTransform, 1.5f, 1.5f, 1.5f, 1.5f);
-            winIn.raycastTarget = false;
+            // ② 板 (レア度の線・角飾り・コスト枠・本文の板・粒)。札の当たり判定はこの板
+            var frameSprite = Theme.Art("ui", "cardface_frame_" + rank);
+            Image frame;
+            if (frameSprite != null) frame = Layer(root, "frame", frameSprite, 0f, 0f, DW, DH, tint);
+            else { frame = UiKit.Pan(root, PaperFx.CardShell * tint, "frame"); UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f); }
+            frame.raycastTarget = interactable;
+
+            // ③ 挿絵 (台いっぱい 560×336。80×48 は 5:3 なので縦に少し余り、台の色が上下に見える)
             var art = Theme.Art("cards", def.Id) ?? ThemeFx.FusedArt(def.Id);   // 工房産は素材2枚の絵を溶かし合わせる (2026-09-11)
+            var artRt = Place(root, "art", 35f, 158f, 560f, 336f);
             if (art != null)
             {
-                // 80×48 を2倍の寸法 (160×96 単位) で置く。それ以外の寸法でも縦横比を保って収める。
-                // 画面の px では整数倍にならない (手札は PC 0.92 倍＝1.84倍・スマホは 1.31〜1.6 倍の画面＝2.6〜3.2倍・拡大の窓 1.6 倍・扇の ±3〜6°)
-                // → UIPixelSharp でドットの太さをそろえる (2026-09-29 p25。PC 1080 の報酬・店の等倍の札は 2倍ちょうど＝最近傍のまま)
-                var ai = UiKit.NewRect("pic", win);
-                ai.anchorMin = ai.anchorMax = new Vector2(0.5f, 0.5f);
-                ai.sizeDelta = new Vector2(Mathf.Min(160f, art.rect.width * 2f), Mathf.Min(96f, art.rect.height * 2f));
-                var aimg = ai.gameObject.AddComponent<Image>();
+                var aimg = artRt.gameObject.AddComponent<Image>();
                 aimg.sprite = art; aimg.preserveAspect = true; aimg.raycastTarget = false;
                 aimg.color = playable ? Color.white : new Color(0.8f, 0.8f, 0.8f, 1f);
-                UiKit.PixelArt(aimg);
+                UiKit.PixelArt(aimg);   // 画面の px では整数倍にならない (手札 PC 0.92 倍・スマホ 1.31〜1.6 倍) → UIPixelSharp でドットの太さをそろえる (p25)
             }
             else
             {
-                var wash = UiKit.Pan(win, new Color(typeCol.r, typeCol.g, typeCol.b, 0.3f), "wash");
-                UiKit.Stretch(wash.rectTransform, 1.5f, 1.5f, 1.5f, 1.5f);
-                wash.raycastTarget = false;
-                var crestRt = UiKit.NewRect("crest", win);
+                var crestRt = UiKit.NewRect("crest", artRt);
                 crestRt.anchorMin = crestRt.anchorMax = new Vector2(0.5f, 0.5f);
                 crestRt.sizeDelta = Theme.HasIconArt("crest_" + def.Type) ? new Vector2(64f, 64f) : new Vector2(48f, 48f);   // 絵は 32 ドット×2
                 crestRt.anchoredPosition = Vector2.zero;
@@ -101,78 +151,50 @@ namespace DeckRogue.Game
                 crest.preserveAspect = true;
                 crest.raycastTarget = false;
                 crest.color = playable ? Color.white : new Color(1f, 1f, 1f, 0.7f);
-                UiKit.PixelArt(crest);   // 32 ドット×2 か 16 ドット×3 (手札では非整数倍。p25)
+                UiKit.PixelArt(crest);
             }
 
-            // コスト玉 (左上に少しはみ出す)。表示は実際に払う量: 割引で下がれば緑、重圧で上がれば朱の数字 (本家の読み方。2026-09-09)
+            // ④ タイプの形 (y 488〜816 の切り出し)
+            var typeSprite = Theme.Art("ui", "cardface_type_" + type);
+            if (typeSprite != null) Layer(root, "typeshape", typeSprite, 0f, 488f, DW, 328f, tint);
+
+            // ⑤ コスト (左上の枠の中)。表示は実際に払う量: 割引で下がれば緑、重圧で上がれば朱の数字 (本家の読み方。2026-09-09)
             int cost = def.Cost;
             try { if (st != null) cost = Effects.EffectiveCost(st, c); } catch (Exception) { }
             bool discounted = def.XCost != true && cost < def.Cost;
             bool raised = def.XCost != true && cost > def.Cost;
             string costLabel = def.XCost == true ? "X" : cost.ToString();
-            var orb = UiKit.NewRect("cost", root);
-            UiKit.Anchor(orb, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(-6f, -46f), new Vector2(46f, 6f));
-            var orbImg = orb.gameObject.AddComponent<Image>();
-            var orbArt = Theme.Art("ui", "cost_orb");   // PixelLab の玉 (26 ドット×2=52。2026-09-11)。無ければ水彩の玉
-            orbImg.sprite = orbArt != null ? orbArt : PaperFx.Orb(PaperFx.Brass);
-            orbImg.preserveAspect = true; orbImg.raycastTarget = false;
-            if (!playable)
-            {   // 出せない札の玉は灰の版 (2026-09-30 F26: 乗算 0.82 では暗い金のままで「灰の玉」になっていなかった)
-                var muted = orbArt != null ? ThemeFx.CostOrbMuted() : null;
-                if (muted != null) orbImg.sprite = muted;
-                else if (orbArt != null) orbImg.color = new Color(0.82f, 0.82f, 0.82f, 1f);
-                else orbImg.sprite = PaperFx.Orb(Color.Lerp(PaperFx.Brass, PaperFx.PaperDim, 0.75f));
-            }
-            UiKit.PixelArt(orbImg);   // PixelLab の玉 (26 ドット) だけ。水彩の玉 (なめらかな生成) は既定のまま (p25)
-            // コストの数字は出せない札でも墨のまま (灰の玉の上で中墨は 3.1:1 しかない。p05)
-            var costT = UiKit.Deco(orb, costLabel, 22, discounted ? PaperFx.GoodInk : raised ? PaperFx.BadDown : PaperFx.Ink, TextAnchor.MiddleCenter);
-            UiKit.Anchor(costT.rectTransform, Vector2.zero, Vector2.one, new Vector2(0f, 1f), new Vector2(0f, -1f));
+            var costRt = Place(root, "cost", 35f, 27f, 116f, 114f);
+            var costT = UiKit.Sans(costRt, costLabel, 26, discounted ? PaperFx.CardCostDown : raised ? PaperFx.CardCostUp : PaperFx.CardInk, TextAnchor.MiddleCenter, true);
+            UiKit.Stretch(costT.rectTransform, 0f, 0f, 0f, 0f);
+            costT.textWrappingMode = TextWrappingModes.NoWrap;
             costT.characterSpacing = 0f;
 
-            // 名前 (装飾明朝)
-            int nameSize = def.Name.Length > 5 ? 17 : (def.Name.Length > 4 ? 18 : 20);
-            // 手札が重なる時 (CompactName) はコスト玉のすぐ右から左寄せ: 見えている札の左側に頭の字が来る (中央寄せの「打撃」は10枚で丸ごと隠れた。p09)
-            var nameT = UiKit.Deco(root, def.Name, nameSize, ink, CompactName ? TextAnchor.MiddleLeft : TextAnchor.MiddleCenter);
-            if (CompactName) UiKit.Anchor(nameT.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(48f, -40f), new Vector2(-10f, -8f));
-            else UiKit.Anchor(nameT.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(44f, -40f), new Vector2(-12f, -8f));
+            // ⑥ 名前 (色の帯の上。白の帯だけ墨)。長い名前は 13 まで縮める
+            var nameRt = Place(root, "name", 177f, 35f, 420f, 85f);
+            var nameT = UiKit.Sans(nameRt, def.Name, 18, def.Color == "white" ? PaperFx.CardNameOnWhite : PaperFx.CardInk,
+                CompactName ? TextAnchor.MiddleLeft : TextAnchor.MiddleCenter, true);
+            // 手札が重なる時 (CompactName) は帯の左端から: 見えている札の左側に頭の字が来る (p09)
+            UiKit.Stretch(nameT.rectTransform, CompactName ? 3f : 2f, 2f, 0f, 0f);
             nameT.textWrappingMode = TextWrappingModes.NoWrap;
             nameT.overflowMode = TextOverflowModes.Overflow;
+            nameT.enableAutoSizing = true; nameT.fontSizeMin = 13f; nameT.fontSizeMax = 18f;
 
-            // タイプの帯 (窓の下端に掛ける。色と文字で 物理／呪文／リアクション／置物、宝石がレア度)
-            var ribbon = UiKit.NewRect("type", root);
-            UiKit.Anchor(ribbon, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-75f, -162f), new Vector2(75f, -136f));
-            var rImg = ribbon.gameObject.AddComponent<Image>();
-            rImg.sprite = PaperFx.Ribbon(playable ? typeCol : Color.Lerp(typeCol, Color.gray, 0.3f));
-            rImg.raycastTarget = false;
-            var row = UiKit.NewRect("row", ribbon);
-            UiKit.Stretch(row, 0f, 0f, 0f, 0f);
-            var hg = UiKit.Horz(row, 5, 0);
-            hg.childAlignment = TextAnchor.MiddleCenter; hg.childForceExpandWidth = false; hg.childForceExpandHeight = false;
-            var gem = UiKit.NewRect("gem", row);
-            var gImg = gem.gameObject.AddComponent<Image>();
-            gImg.sprite = ThemeFx.Gem(rarity); gImg.preserveAspect = true; gImg.raycastTarget = false;
-            UiKit.PixelArt(gImg);   // 12 ドット×2 の宝石も手札では 1.84 倍 (p25)
-            float gemSz = Theme.Art("ui", "gem_" + rarity) != null ? 24f : 16f;   // PixelLab の宝石は 12 ドット×2 (2026-09-11)
-            UiKit.Le(gem, gemSz, gemSz, gemSz, gemSz);
-            // 16 の太字 (SDF の合成太字)。14 は手札の 0.92 倍で 12.9px になり、細い線が墨まで届かず帯の上で 2.6〜3.4:1 だった (2026-09-29 p19)。
-            // 帯 150×26 には「仕込み札」でも約 99px で収まる
-            var typeT = UiKit.Txt(row, CardText.TypeJa(def.Type), 16, PaperFx.Ink, TextAnchor.MiddleCenter, true);
-            typeT.fontStyle = FontStyles.Bold;
+            // ⑦ タイプの文字 (形の中。物理／呪文／仕込み札／置物)
+            var typeRt = Place(root, "type", 95f, type == "spell" ? 527f : 515f, 440f, 54f);
+            var typeT = UiKit.Sans(typeRt, CardText.TypeJa(def.Type), type == "spell" ? 15 : 16, PaperFx.CardInk, TextAnchor.MiddleCenter, true);
+            UiKit.Stretch(typeT.rectTransform, 0f, 0f, 0f, 0f);
+            typeT.textWrappingMode = TextWrappingModes.NoWrap;
             typeT.characterSpacing = 1f;
-            UiKit.Le(typeT, -1f, 22f, -1f, 22f);
 
-            // 本文 (墨。数字は 130%)。戦闘中は成長・勢い・弱体、狙った敵の急所・装甲を掛けた実値を色つきで (本家のカードの数字の読み方)。
-            // 強調 (Emphasize) は効果の行だけに掛ける＝130% になるのは効果の値だけで、条件の句・支払い・注記の数字は中墨の本文の大きさ (2026-09-29 p06)
-            string soft = ColorUtility.ToHtmlStringRGB(PaperFx.InkSoft);
+            // ⑧ 本文 (夜の板に淡い紙色。数字は太字・条件の句は薄い紙色)。戦闘中は成長・勢い・弱体、狙った敵の急所・装甲を掛けた実値を色つきで (本家のカードの数字の読み方)
             Func<int, int> mod = st != null ? MakeDamageModifier(st, c) : null;
             CardText.DamageModifier = mod;
             CardText.MarkClauses = true;
-            string bodyText;
-            try { bodyText = CardText.Emphasize(CardText.Body(def), soft); }
+            string raw;
+            try { raw = CardText.Body(def); }
             finally { CardText.DamageModifier = null; CardText.MarkClauses = false; }
-            if (def.Modes != null && def.Modes.Count > 0) bodyText = UiKit.ColorTag(PaperFx.InkSoft, "どちらか一つ") + "\n" + bodyText;   // 本文と同じ大きさの中墨 (旧 80% は 12px を割った)
-            // 追加コスト (X・捨て・消滅コスト・コスト0 の条件) は本文の先頭に普通の表記、消滅・保持は本文の末尾 (2026-09-09 ユーザー「付箋でなく効果の最上部に」)
-            var costNotes = CardText.CostNotes(def);
+            var costNotes = CardText.CostNotes(def);   // 追加コスト (X・捨て・消滅コスト・コスト0 の条件) は本文の先頭、消滅・保持は末尾 (2026-09-09)
             var trail = CardText.TrailNotes(def, true);   // 札の面の短い形 (F10)
             if (st != null)
             {
@@ -182,51 +204,48 @@ namespace DeckRogue.Game
                 for (int i = 0; i < def.Effects.Count; i++)
                     if (def.Effects[i].Effect == "dealDamagePerCascade") { int n = st.Player.CascadesThisCombat ?? 0; trail.Add("チェイン" + n + "回×" + (def.Effects[i].Amount ?? 0) + "＝" + (n * (def.Effects[i].Amount ?? 0))); break; }
             }
-            if (costNotes.Count > 0)
+            bool hasModes = def.Modes != null && def.Modes.Count > 0;
+            raw = LightenValueColors(raw);   // CardText が実値に付けた紙の上の墨の色を、夜の板で読める明るい版へ
+            // 「ブロック5」「ダメージ6」だけの札は Godot 版と同じく数字を 170% で大きく (単一の量)
+            var metric = costNotes.Count == 0 && trail.Count == 0 && !hasModes ? SingleMetric.Match(raw) : Match.Empty;
+            string bodyText;
+            if (metric.Success)
+                bodyText = metric.Groups[1].Value + "  <size=170%><b>" + metric.Groups[2].Value + "</b></size>";
+            else
             {
-                var cl = new List<string>();
-                for (int i = 0; i < costNotes.Count; i++) cl.Add(CardText.Emphasize(CardText.ClauseOpen + costNotes[i] + CardText.ClauseClose, soft));   // 中墨・100% (語の途中の改行だけ止める)
-                bodyText = string.Join("\n", cl.ToArray()) + "\n" + bodyText;
+                var sb = new StringBuilder();
+                for (int i = 0; i < costNotes.Count; i++) sb.Append(CardText.ClauseOpen).Append(costNotes[i]).Append(CardText.ClauseClose).Append('\n');
+                if (hasModes) sb.Append(CardText.ClauseOpen).Append("どちらか一つ").Append(CardText.ClauseClose).Append('\n');
+                sb.Append(raw);
+                if (trail.Count > 0) sb.Append('\n').Append(TrailMarkup(trail));
+                bodyText = FaceMarkup(sb.ToString());
             }
-            if (trail.Count > 0) bodyText = bodyText + "\n" + TrailMarkup(trail, soft);
-            // 枠 172×104 の上下の中央に置く。短い本文は 18 (数字は 130% で約23)、18 で段落より行が増える札は今までの 16、12 でも入らない長文は上から並べる
-            // (中央のまま溢れるとタイプの帯へはみ出すため)。最小 12 は長文だけの例外 (13 への引き上げは長文を縮めてから)
-            var body = UiKit.Txt(root, bodyText, 18, ink, TextAnchor.MiddleCenter, true);
+            int plainLen = Plain(raw).Replace("\n", "").Length;
+            float sizeMax = metric.Success || plainLen < 38 ? 18f : 14f;   // Godot 版の 39／29 (設計) の比
+            var bodyRt = Place(root, "body", 50f, 577f, 530f, 212f);
             float inset = BodyRightInset;
-            UiKit.Anchor(body.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(14f, 14f), new Vector2(-(14f + inset), -172f));
-            body.enableAutoSizing = true; body.fontSizeMin = 12f; body.fontSizeMax = 18f;
+            var body = UiKit.Sans(bodyRt, bodyText, 18, PaperFx.CardInk, metric.Success ? TextAnchor.MiddleCenter : TextAnchor.MiddleLeft, false);
+            UiKit.Stretch(body.rectTransform, 0f, inset, 0f, 0f);
+            body.enableAutoSizing = true; body.fontSizeMin = 12f; body.fontSizeMax = sizeMax;
             body.lineSpacing = 2f;
-            // 選択式は段落 (◆) の間を少し空ける＝折り返した続きの行が自分の ◆ に寄って見える (F28。自動の折り返しには足されない)
-            if (def.Modes != null && def.Modes.Count > 0) body.paragraphSpacing = 30f;
+            body.paragraphSpacing = 32f;   // 段落の間 (設計 18px ≒ 6px)。線はこの隙間の真ん中
             LastBodyTruncated = false;
             try
             {
-                int paras = 1;
-                for (int i = 0; i < bodyText.Length; i++) if (bodyText[i] == '\n') paras++;
-                Action layout = () =>
-                {
-                    body.fontSizeMax = 18f;
-                    body.ForceMeshUpdate(true);
-                    if (body.textInfo != null && body.textInfo.lineCount > paras) { body.fontSizeMax = 16f; body.ForceMeshUpdate(true); }
-                };
-                layout();
+                body.ForceMeshUpdate(true);
                 // 覆われる札の余白で字が 14 を割るなら余白をやめる (字を小さくして読ませるより、覆われる方がまし。F01)
-                if (inset > 0f && body.fontSize < 14f)
-                {
-                    body.rectTransform.offsetMax = new Vector2(-14f, -172f);
-                    layout();
-                }
+                if (inset > 0f && body.fontSize < 14f) { UiKit.Stretch(body.rectTransform, 0f, 0f, 0f, 0f); body.ForceMeshUpdate(true); }
                 if (body.textBounds.size.y > body.rectTransform.rect.height + 0.5f)
-                {   // 12 でも入らない長文: 上から並べて、枠の外 (タイプの帯・札の下) には出さず末尾を「…」に (全文は長押しの拡大。F10)
-                    body.alignment = TextAlignmentOptions.Top;
+                {   // 12 でも入らない長文: 上から並べて、枠の外には出さず末尾を「…」に (全文は長押しの拡大。F10)
+                    body.alignment = TextAlignmentOptions.TopLeft;
                     body.overflowMode = TextOverflowModes.Ellipsis;
                     body.ForceMeshUpdate(true);
                     LastBodyTruncated = true;
                 }
+                if (!metric.Success) AddDividers(body);
             }
-            catch (Exception) { body.fontSizeMax = 16f; body.alignment = TextAlignmentOptions.Top; }
-            // PC の手札 (0.92 倍) で 16 以下に縮んだ本文は、小さい字の素材 (SDF をわずかに膨らませる) で中墨・真鍮の墨の句を指定の濃さへ
-            // (2026-09-30 F08: 本文は 18 で作るので UiKit.Txt の判定から漏れ、条件の句「手札が物理だけなら」が画面で約14px・3.9:1 に沈んでいた)
+            catch (Exception) { body.fontSizeMax = 14f; body.alignment = TextAlignmentOptions.TopLeft; }
+            // PC の手札 (0.92 倍) で 16 以下に縮んだ本文は、小さい字の素材 (SDF をわずかに膨らませる) で指定の濃さへ (F08)
             if (InHand && !UiKit.Phone && body.fontSize * BattleScreen.CardScale <= UiKit.SmallTextMax + 0.01f)
             {
                 var sm = UiKit.SmallMat(body.font);
@@ -236,8 +255,94 @@ namespace DeckRogue.Game
             if (InHand && BattleScreen.R3) BuildKeyNum(root, def, mod);
         }
 
+        // ---- 本文の組み方 (W09) ----
+
+        static readonly Regex SingleMetric = new Regex("^(ブロック|ダメージ)((?:<color=#[0-9A-Fa-f]{6}>)?[0-9]+(?:</color>)?)$", RegexOptions.Compiled);
+        static readonly Regex NumberToken = new Regex(@"\G[+＋−-]?[0-9]+(?:[×xX][0-9X]+)*", RegexOptions.Compiled);
+
+        /// <summary>本文のタグと条件の印を外した素の文</summary>
+        static string Plain(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return "";
+            var sb = new StringBuilder();
+            for (int i = 0; i < s.Length; i++)
+            {
+                char ch = s[i];
+                if (ch == CardText.ClauseOpen || ch == CardText.ClauseClose) continue;
+                if (ch == '<') { int j = s.IndexOf('>', i); if (j < 0) break; i = j; continue; }
+                sb.Append(ch);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>CardText が実値に付けた色 (紙の上の良い墨・下がった墨) を、夜の板で読める明るい版 (苔の明・薔薇の明) へ</summary>
+        static string LightenValueColors(string body)
+        {
+            if (string.IsNullOrEmpty(body)) return body;
+            string good = ColorUtility.ToHtmlStringRGB(PaperFx.GoodInk), bad = ColorUtility.ToHtmlStringRGB(PaperFx.BadDown);
+            return body.Replace("<color=#" + good + ">", "<color=#" + ColorUtility.ToHtmlStringRGB(PaperFx.MossLight) + ">")
+                       .Replace("<color=#" + bad + ">", "<color=#" + ColorUtility.ToHtmlStringRGB(PaperFx.RoseLight) + ">");
+        }
+
+        /// <summary>W09 の本文: 条件の句 (ClauseOpen〜Close) は薄い紙色、数字は太字、行頭の「被攻撃後: 」のような頭も太字 (X: は除く)</summary>
+        static string FaceMarkup(string body)
+        {
+            string dim = ColorUtility.ToHtmlStringRGB(PaperFx.PaperDim);
+            var sb = new StringBuilder();
+            bool lineStart = true, inClause = false;
+            int i = 0;
+            while (i < body.Length)
+            {
+                char ch = body[i];
+                if (ch == CardText.ClauseOpen) { sb.Append("<color=#").Append(dim).Append('>'); inClause = true; i++; continue; }
+                if (ch == CardText.ClauseClose) { sb.Append("</color>"); inClause = false; i++; continue; }
+                if (ch == '<')
+                {
+                    int j = body.IndexOf('>', i);
+                    if (j < 0) { sb.Append(body.Substring(i)); break; }
+                    sb.Append(body, i, j - i + 1); i = j + 1; continue;
+                }
+                if (ch == '\n') { sb.Append('\n'); lineStart = true; i++; continue; }
+                if (lineStart && !inClause)
+                {
+                    lineStart = false;
+                    int nl = body.IndexOf('\n', i); if (nl < 0) nl = body.Length;
+                    int colon = body.IndexOf(": ", i, nl - i, StringComparison.Ordinal);
+                    if (colon > i && body[i] != 'X' && body.IndexOf('<', i, colon - i) < 0 && body.IndexOf(CardText.ClauseOpen, i, colon - i) < 0)
+                    {
+                        sb.Append("<b>").Append(body, i, colon - i + 1).Append("</b> ");
+                        i = colon + 2; continue;
+                    }
+                }
+                var m = NumberToken.Match(body, i);
+                if (m.Success) { sb.Append("<b>").Append(m.Value).Append("</b>"); i += m.Length; continue; }
+                sb.Append(ch); i++;
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>段落の間に線 (設計の 2px・板より少し明るい)。TMP の行の情報から、'\n' で終わる行とその次の行の間に置く</summary>
+        static void AddDividers(TMP_Text body)
+        {
+            var ti = body.textInfo;
+            if (ti == null || ti.lineCount < 2) return;
+            for (int i = 1; i < ti.lineCount; i++)
+            {
+                var prev = ti.lineInfo[i - 1];
+                int last = prev.lastCharacterIndex;
+                if (last < 0 || last >= ti.characterCount || ti.characterInfo[last].character != '\n') continue;
+                float y = (prev.descender + ti.lineInfo[i].ascender) / 2f;
+                var rule = UiKit.NewRect("rule", body.transform);
+                rule.anchorMin = new Vector2(0f, 0.5f); rule.anchorMax = new Vector2(1f, 0.5f);
+                rule.pivot = new Vector2(0.5f, 0.5f);
+                rule.offsetMin = new Vector2(0f, y - 0.5f); rule.offsetMax = new Vector2(0f, y + 0.5f);
+                var img = rule.gameObject.AddComponent<Image>();
+                img.color = PaperFx.CardDivider; img.raycastTarget = false;
+            }
+        }
+
         // ---- 要の数字の札 (三周目 r3 UI 2026-10-02・仕様 docs/design/hd2d-slice/r3-ui-spec.md §4) ----
-        // 手札を沈めると本文が画面の外に出るので、本文の最初の量の効果を1つ、コスト玉のすぐ下 (挿絵の窓の左上・札の単位で x 12〜・y 50〜74) に小さな札で出す。
+        // 手札を沈めると本文が画面の外に出るので、本文の最初の量の効果を1つ、コスト枠のすぐ下 (挿絵の台の左上・札の単位で x 12〜・y 50〜74) に小さな札で出す。
         // 手札は右の札ほど手前に描く (SyncHand の SetSiblingIndex(i)) ので、扇が重なっても札の左上は隠れない。値は本文と同じ実値
         // (MakeDamageModifier＝成長・勢い・弱体・狙った敵の急所と装甲込み。狙った敵が変わると RefreshHandCard が札ごと描き直す)。
         // 形は「剣の絵＋6」「剣の絵＋4×2」「盾の絵＋5」「心の絵＋6」「2ドロー」「+1E」。選択式・量の無い札・状態異常の札は出さない (触れて読む)。
@@ -332,16 +437,16 @@ namespace DeckRogue.Game
             return dmgs.Count > 1 && same ? dmgs[0] + "×" + dmgs.Count : sum.ToString();
         }
 
-        /// <summary>本文の末尾の注記 (2026-09-29 p06): 「消滅」「保持」「骨のナイフ」の一語は真鍮の墨 (color-theme の「注意書き」)、
-        /// 人形・触媒・反復の長い注記は中墨 (真鍮の量を増やさない)。大きさは本文と同じ (これ以上小さくすると 13px を割る)。「・」でつなぐ</summary>
-        static string TrailMarkup(List<string> notes, string softHex)
+        /// <summary>本文の末尾の注記 (2026-09-29 p06): 「消滅」「保持」「骨のナイフ」の一語は目立つ色 (W09 では真鍮の明るい版)、
+        /// 人形・触媒・反復の長い注記は条件の句と同じ薄い紙色。大きさは本文と同じ。「・」でつなぐ</summary>
+        static string TrailMarkup(List<string> notes)
         {
             var parts = new List<string>();
             for (int i = 0; i < notes.Count; i++)
             {
                 string n = notes[i];
-                if (n == "消滅" || n == "保持" || n == "骨のナイフ") parts.Add(UiKit.ColorTag(PaperFx.BrassInk, "<nobr>" + n + "</nobr>"));
-                else parts.Add(CardText.Emphasize(CardText.ClauseOpen + n + CardText.ClauseClose, softHex));
+                if (n == "消滅" || n == "保持" || n == "骨のナイフ") parts.Add(UiKit.ColorTag(PaperFx.BrassLight, "<nobr>" + n + "</nobr>"));
+                else parts.Add(CardText.ClauseOpen + n + CardText.ClauseClose);
             }
             return string.Join("・", parts.ToArray());
         }

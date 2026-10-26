@@ -61,7 +61,9 @@ namespace DeckRogue.EditorTools
             bool emission = name.EndsWith("_e", System.StringComparison.Ordinal);
             // 札の裏 (2026-10-04): ドットでなく「紙」側のなめらかな絵 (Gemini の工芸風)。424×632 を 200×290 前後へ縮めるので Bilinear＋ミップ (Point だと真鍮の細線がちらつく)
             bool generatedFx = name == "codex-vfx-atlas" || (name.StartsWith("cloud-") && name.EndsWith("-8f"));
-            bool smooth = stage || name == "cardback" || generatedFx;
+            // 札の面 W09 の形の層 (2026-10-26・cardface_*): 630×880 の設計を 200×290〜320×464 へ縮めるので同じく Bilinear＋ミップ
+            bool cardFace = name.StartsWith("cardface_", System.StringComparison.Ordinal);
+            bool smooth = stage || name == "cardback" || generatedFx || cardFace;
             imp.textureType = TextureImporterType.Sprite;
             imp.spriteImportMode = SpriteImportMode.Single;
             imp.filterMode = smooth ? FilterMode.Bilinear : FilterMode.Point;
@@ -85,7 +87,8 @@ namespace DeckRogue.EditorTools
             ts.spriteMeshType = SpriteMeshType.FullRect; // 透明部分を切り詰めない (整数倍配置と影絵の基準を rect に揃える)
             imp.SetTextureSettings(ts);
             int border = name == "panel" || name.StartsWith("btn_") ? 6 : name.StartsWith("card_") ? 12
-                : name == "paper_panel" ? 14 : name == "paper_tag" ? 10 : name == "paper_button" ? 12 : name == "paper_card" ? 16 : 0;
+                : name == "paper_panel" ? 14 : name == "paper_tag" ? 10 : name == "paper_button" ? 12 : name == "paper_card" ? 16
+                : name == "cardface_band" ? 16 : 0;   // 札の色の帯の光沢 (9スライス・設計の画素。CardView が pixelsPerUnitMultiplier で縮める)
             if (border > 0) imp.spriteBorder = new Vector4(border, border, border, border);
             if (generatedFx)
             {
