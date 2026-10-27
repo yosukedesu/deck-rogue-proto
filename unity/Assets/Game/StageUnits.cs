@@ -65,6 +65,7 @@ namespace DeckRogue.Game
         static readonly Dictionary<string, Vector2> HaloUvByArt = new Dictionary<string, Vector2>
         {
             { "leader_blue", new Vector2(.75f,.57f) },
+            { "leader_red", new Vector2(0.48f, 0.42f) },   // ひばな (2026-10-28 Astra の v4 待機 1 コマ): 魔導書の留め金 (金の画素 (60,48)〜(62,49)) 
             { "leader_green", new Vector2(0.64f, 0.93f) },
             { "leader_green_48", new Vector2(0.64f, 0.93f) },
         };
@@ -79,6 +80,7 @@ namespace DeckRogue.Game
         static readonly Dictionary<string, Vector2> R2E_HaloUvByArtDiorama = new Dictionary<string, Vector2>
         {
             { "leader_blue", new Vector2(.75f,.57f) },
+            { "leader_red", new Vector2(0.48f, 0.42f) },
             { "leader_green", new Vector2(0.686f, 0.721f) },
             { "leader_green_48", new Vector2(0.689f, 0.717f) },
             { "leader_white", new Vector2(0.766f, 0.574f) },
@@ -1125,7 +1127,7 @@ namespace DeckRogue.Game
             u.Rect = rect; u.Img = img; u.Mat = mat; u.Rend = mr; u.Depth = depth; u.Shadow = sh.transform;
             u.FeetPad = FeetPad(sprite);   // 絵の下端の透明行 (足元の余白) の割合。板をそのぶん下げて足を地面に着ける (2026-09-08「キャラが地面から浮いてる」)
             u.BaseTex = sprite.texture;
-            if(sprite.name=="leader_blue")u.FootAnchorX=sprite.pivot.x/sprite.rect.width;
+            if(sprite.name=="leader_blue"||sprite.name=="leader_red")u.FootAnchorX=sprite.pivot.x/sprite.rect.width;   // みぞれ・ひばなは 128×84 の枠に足元 x60 の軸で描かれている (pivot が正)
             u.BaseUvScale = new Vector2(tr.width / tw, tr.height / th); u.BaseUvOffset = new Vector2(tr.x / tw, tr.y / th);
             u.BreathePhase = (key.GetHashCode() & 0xff) * 0.05f;   // 位相をずらして全員が同期しない
             // コマ: Art/<種別>/anim/<id>_<動き>_<n>.png (64×64。PixelLab の animate-with-text)。無ければ一枚絵のまま
