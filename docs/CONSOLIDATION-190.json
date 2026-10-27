@@ -1,0 +1,29 @@
+{
+  "revision": 190,
+  "state": "selected-inheritance-awaiting-fresh-merge",
+  "base": "selected185",
+  "inherits187": {
+    "clean_processes": 5,
+    "clean_checks": 3951,
+    "separately_completed_banner_fixture_checks": 402,
+    "host_failure": "Chief setup pre-dispatch global flag defect; Banner finalized evidence separately scoped, not all-exit0 host"
+  },
+  "runtime_delta": "PermanentContactVfxProfiles exact four-definition allowlist only",
+  "unchanged185": [
+    "BattleStage",
+    "Hd2dAttackPrototype",
+    "NativeGeometryBridge",
+    "AuthoredGeometryFx",
+    "PhysicalVfxProfiles",
+    "ElementalVfxProfiles",
+    "EnemyContactVfxProfiles",
+    "ReactionContactVfxProfiles"
+  ],
+  "fresh_required": "actual Banner current-only owner/AoE plus loaded185 Wedge interval/profile presence; no conflicting source hunk",
+  "excluded": [
+    "186 rejected caster lead",
+    "188 enemy candidate",
+    "189 caster correction"
+  ],
+  "media": "latest182 unchanged; no new video"
+}

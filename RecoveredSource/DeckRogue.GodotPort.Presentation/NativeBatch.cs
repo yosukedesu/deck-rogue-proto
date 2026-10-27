@@ -5,6 +5,9 @@ namespace DeckRogue.GodotPort.Presentation;
 
 internal sealed class NativeBatch
 {
+	// Optional per-layer authored RGBA material; empty preserves the existing effect material.
+	public string Texture = "";
+
 	public int Count;
 
 	public int Kind;

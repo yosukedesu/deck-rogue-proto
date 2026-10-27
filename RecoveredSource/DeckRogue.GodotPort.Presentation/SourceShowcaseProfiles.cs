@@ -14,13 +14,22 @@ public static class SourceShowcaseProfiles
 
 	public static SourceShowcaseProfile? ForCard(string? id)
 	{
+        if (Hd2dAttackPrototype.Enabled && PhysicalVfxProfiles.ForCard(id) is PhysicalVfxProfile physical)
+            return physical.Motion;
+        if (Hd2dAttackPrototype.Enabled && ElementalVfxProfiles.ForCard(id) is ElementalVfxProfile elemental)
+            return elemental.Motion;
 		return id switch
 		{
-			"green_strike" => Slash, 
+			"green_strike" => Hd2dAttackPrototype.Enabled ? PhysicalVfxProfiles.DirectionalCut.Motion : Slash,
+			"red_strike" when Hd2dAttackPrototype.Enabled => new SourceShowcaseProfile(.40f,.14f,.12f,.23f,.55f,.06f,.055f,.025f,.075f,false,"fire"),
+			"green_sweep" when Hd2dAttackPrototype.Enabled => PhysicalVfxProfiles.Sweep.Motion,
+			"green_triple_horn" when Hd2dAttackPrototype.Enabled => PhysicalVfxProfiles.TripleHorn.Motion,
+			"green_weak_point" when Hd2dAttackPrototype.Enabled => PhysicalVfxProfiles.AxialThrust.Motion,
+			"green_basic_bash" when Hd2dAttackPrototype.Enabled => PhysicalVfxProfiles.BluntImpact.Motion,
 			"green_double_lash" => Vine, 
 			"blue_strike" => Water, 
 			"green_earth_roar" => Earth, 
-			"green_finisher_stomp" => Stomp, 
+			"green_finisher_stomp" => Hd2dAttackPrototype.Enabled ? PhysicalVfxProfiles.GroundPressure.Motion : Stomp,
 			_ => null, 
 		};
 	}

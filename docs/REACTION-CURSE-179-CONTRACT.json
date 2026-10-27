@@ -1,0 +1,16 @@
+{
+  "revision": 179,
+  "base": "selected176; no178/175/177 changes",
+  "scope": "Exact black_reaction_curse, set-confirm explicit Fire=true UID, armed postattack pending window only",
+  "baseline": "Untouched176 corrected3actualEndTurns baseline313keys+107movie; visible ordinary green counter pose preserved",
+  "material": "Selected target-local porous Dark localOnly, no source packet/return beam/worldfloor crest or new actor motion",
+  "ownership": [
+    "Actual owning ConfirmReaction UID equals PresentationSource reaction UID",
+    "Previous.SetCards exact UID/definition, live TrapAge and actual UsableSetCards post attack window",
+    "Pending attacker index equals receiver; current SetCards no longer contains instance",
+    "Actual ReactionTriggered precedes this exact event; valid receipt",
+    "Ambient SourceUid not conflated; no universal final Discard invariant"
+  ],
+  "safety": "New admitted reaction local material capped negative before actual contact; all positive ages require actual committed/exact receipt QA. Existing shared-launch/Feast logic unchanged. No generic hero pose suppression.",
+  "native": "pending standard before bounded decline/missingowner/blocked/heal/continuation/cancel gates"
+}

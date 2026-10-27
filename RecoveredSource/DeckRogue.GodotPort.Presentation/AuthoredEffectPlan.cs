@@ -8,7 +8,7 @@ public static class AuthoredEffectPlan
 	{
 		string f = route.Family;
 		string t = tier.ToString().ToLowerInvariant();
-		return route.Renderer switch
+		var original = route.Renderer switch
 		{
 			"PhysicalSlashFx" => (lead: (float)PhysicalSlashGeometry.Lead(t), end: (float)PhysicalSlashGeometry.End(t)), 
 			"VineSlashFx" => (lead: 1f / 15f, end: 0.182f), 
@@ -29,6 +29,7 @@ public static class AuthoredEffectPlan
 			"HealContinuousFx" => (lead: (float)HealContinuousGeometry.Lead(), end: (float)HealContinuousGeometry.End()), 
 			_ => (lead: 0.1f, end: 0.24f), 
 		};
+        return Hd2dAttackPrototype.SupportsRoute(route) ? (Hd2dAttackPrototype.Lead(route.Key), Hd2dAttackPrototype.Tail(route.Key)) : original;
 	}
 
 	internal static ScatterProfileGeometry.Profile Scatter(string f)

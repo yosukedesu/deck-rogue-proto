@@ -1,0 +1,25 @@
+{
+  "revision": 174,
+  "base": "selected172 + selected166 five exact neutral aliases",
+  "inheritance": {
+    "172": {
+      "runs": 13,
+      "checks": 9386,
+      "committedPositiveAgeRows": 285,
+      "notices": 2
+    },
+    "166": {
+      "runs": 19,
+      "checks": 4892,
+      "notices": 8
+    }
+  },
+  "excluded": [
+    "171 Cut candidates",
+    "173 continuation candidate",
+    "RootingVine caster",
+    "new media"
+  ],
+  "freshControls": "Pending exact Feast nested Censer and Trunk real snapshot plus one free/cost owner control; no broad unrelated repeat",
+  "limitations": "Versioned scope and failed QA preparation receipts retained. Nested primary continuation still unsupported here;173 is separate candidate."
+}

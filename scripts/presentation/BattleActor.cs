@@ -527,6 +527,138 @@ public class BattleActor : Node3D
 
 	public Vector3 Impact => SourceMotionFeet + _layoutBasis.Y * Height * 0.5f + _layoutBasis.Z * 0.28f;
 
+    // These anchors belong to intact source poses, not a shared generic body center.
+    // Missing red/black character art keeps its existing procedural sprite; its casting
+    // focus is deliberately outside the forward silhouette, never on its face.
+    private Vector3 PrototypePosePoint(Texture2D frame, Vector2 uv, bool planning = false)
+    {
+        if (Sprite == null || frame == null) return Contact;
+        Vector3 local = new((uv.X * frame.GetWidth() - frame.GetWidth() * .5f + Sprite.Offset.X) * Sprite.PixelSize,
+            (frame.GetHeight() * .5f - uv.Y * frame.GetHeight() + Sprite.Offset.Y) * Sprite.PixelSize, 0);
+        Transform3D transform=Sprite.GlobalTransform;
+        if(planning)transform.Origin+=GlobalTransform.Basis*(SourceMotionFeet-Position);
+        return transform * local;
+    }
+
+    public Vector3 PrototypePlanningAxeContactPoint => PrototypeAxeContactPoint+GlobalTransform.Basis*(SourceMotionFeet-Position);
+
+    public Vector3 PrototypeFireSourcePoint
+    {
+        get
+        {
+            if (_attack.Count >= 4)
+            {
+                Vector2? focus = ArtId switch
+                {
+                    "leader_green" => new Vector2(69.5f / 92f, 54f / 78f), // turquoise axe jewel
+                    "leader_blue" => new Vector2(100f / 128f, 38f / 84f), // staff crystal
+                    "leader_white" => new Vector2(86f / 112f, 65f / 84f), // forward hammer head
+                    _ => null
+                };
+                if (focus.HasValue) return PrototypePosePoint(_attack[3], focus.Value);
+            }
+            return PrototypePosePoint(Sprite?.Texture ?? _baseTexture, new Vector2(.98f, .50f));
+        }
+    }
+
+    // Both drawing anchors use the CURRENT sprite transform: locomotion must not
+    // turn the short weapon sweep into an approach-length ribbon.
+    private sealed class PrototypeAlphaRows
+    {
+        internal int Width,Height;
+        internal int[] Left=System.Array.Empty<int>(),Right=System.Array.Empty<int>(),BodyLeft=System.Array.Empty<int>(),BodyRight=System.Array.Empty<int>();
+    }
+    private readonly System.Collections.Generic.Dictionary<ulong,PrototypeAlphaRows> _prototypeAlphaRows=new();
+    public bool TryPrototypeFacingSurface(float worldY,out Vector3 point)
+        => TryPrototypeOpaqueSurface(Sprite?.Texture,worldY,true,out point);
+    public bool TryPrototypeFacingBodySurface(float worldY,out Vector3 point)
+        => TryPrototypeOpaqueSurface(Sprite?.Texture,worldY,true,out point,bodyMass:true);
+    public bool TryPrototypeBodyFront(float worldY,out Vector3 point)
+        => TryPrototypeOpaqueSurface(_attack.Count>=3?_attack[2]:Sprite?.Texture,worldY,false,out point,bodyMass:true);
+    private bool TryPrototypeOpaqueSurface(Texture2D? texture,float worldY,bool nearSide,out Vector3 point,bool bodyMass=false)
+    {
+        point=Contact;
+        if(texture==null || Sprite==null || Sprite.PixelSize<=0)return false;
+        ulong id=texture.GetInstanceId();
+        if(!_prototypeAlphaRows.TryGetValue(id,out var rows))
+        {
+            using var image=texture.GetImage();
+            if(image==null)return false;
+            if(image.IsCompressed())image.Decompress();
+            rows=new PrototypeAlphaRows{Width=image.GetWidth(),Height=image.GetHeight()};
+            rows.Left=Enumerable.Repeat(-1,rows.Height).ToArray();rows.Right=Enumerable.Repeat(-1,rows.Height).ToArray();
+            rows.BodyLeft=Enumerable.Repeat(-1,rows.Height).ToArray();rows.BodyRight=Enumerable.Repeat(-1,rows.Height).ToArray();
+            // Match rendered alpha cutoff; require a three-pixel horizontal run
+            // so an isolated hair/spark is not treated as the reachable body.
+            for(int y=0;y<rows.Height;y++)
+            {
+                int run=0,longest=2;
+                for(int x=0;x<rows.Width;x++)
+                {
+                    run=image.GetPixel(x,y).A>=.4f?run+1:0;
+                    if(run>=3){if(rows.Left[y]<0)rows.Left[y]=x-run+1;rows.Right[y]=x;}
+                    if(run>longest){longest=run;rows.BodyLeft[y]=x-run+1;rows.BodyRight[y]=x;}
+                }
+            }
+            _prototypeAlphaRows[id]=rows;
+        }
+        // Planning may occur immediately after layout but before the first rendered
+        // frame. Rebase the local sprite pose to the authoritative current root;
+        // never advance clocks or mutate actor transforms just to query geometry.
+        Transform3D planningTransform=Sprite.GlobalTransform;
+        planningTransform.Origin+=GlobalTransform.Basis*(SourceMotionFeet-Position);
+        Vector3 local=planningTransform.AffineInverse()*new Vector3(planningTransform.Origin.X,worldY,planningTransform.Origin.Z);
+        int row=Math.Clamp((int)MathF.Round(rows.Height*.5f+Sprite.Offset.Y-local.Y/Sprite.PixelSize),0,rows.Height-1);
+        int radius=Math.Max(2,(int)MathF.Round(rows.Height*.055f));
+        bool rawNear=nearSide!=Sprite.FlipH;
+        var xs=new System.Collections.Generic.List<int>();
+        int[] left=bodyMass?rows.BodyLeft:rows.Left,right=bodyMass?rows.BodyRight:rows.Right;
+        for(int y=Math.Max(0,row-radius);y<=Math.Min(rows.Height-1,row+radius);y++)
+            if(left[y]>=0)xs.Add(rawNear?left[y]:right[y]);
+        if(xs.Count<3)return false;
+        xs.Sort();
+        // Robust row-band quartile rejects a lone protruding whisker/spine.
+        int xPixel=xs[(int)((xs.Count-1)*(rawNear?.25f:.75f))];
+        if(Sprite.FlipH)xPixel=rows.Width-1-xPixel;
+        point=PrototypePosePoint(texture,new Vector2(xPixel/(float)rows.Width,row/(float)rows.Height),planning:true);
+        return true;
+    }
+
+    public bool PrototypeStrikeUsesWeaponTrace => Hd2dAttackPrototype.UsesWeaponContact(_hd2dPose) && !_hd2dRemoteStrike && _hd2dPoseOwner.IsCurrent && !Dead;
+    public Vector3 PrototypeStrikeSourcePoint => _hd2dRemoteStrike ? Contact : PrototypeAxeContactPoint;
+    public Vector3 PrototypeStrikeWindupPoint
+    {
+        get
+        {
+            if (_hd2dRemoteStrike || _attack.Count < 3) return Contact;
+            Vector2? point = ArtId switch
+            {
+                "leader_green" => new Vector2(24f/92f,36f/78f),
+                "leader_blue" => new Vector2(97f/128f,15f/84f),
+                "leader_white" => new Vector2(15f/112f,48f/84f),
+                _ => null
+            };
+            return point.HasValue ? PrototypePosePoint(_attack[1],point.Value) : PrototypeAxeContactPoint;
+        }
+    }
+
+    public Vector3 PrototypeAxeContactPoint
+    {
+        get
+        {
+            if (_attack.Count < 3) return Contact;
+            Vector2? point = ArtId switch
+            {
+                "leader_green" => new Vector2(67f / 92f, 61f / 78f),
+                "leader_blue" => new Vector2(109f / 128f, 34f / 84f),
+                "leader_white" => new Vector2(86f / 112f, 66f / 84f),
+                _ => null
+            };
+            return point.HasValue ? PrototypePosePoint(_attack[2], point.Value) : Contact;
+        }
+    }
+
+
 	public float DissolveAmount => _dissolve;
 
 	public bool SourceDisplayTransferActive { get; private set; }
@@ -1006,6 +1138,7 @@ public class BattleActor : Node3D
 	{
 		if (Dead || _attack.Count == 0 || !float.IsFinite(clock) || !Motion.Owns(token)) return false;
 		if (!Motion.SynchronizeAttackContact(token)) return false;
+        if(_hd2dRemoteStrike && Hd2dAttackPrototype.UsesWeaponContact(_hd2dPose) && _pose=="attack")return true;
 		_usesExplicitPoses = true;
 		if (_attackPoseMotionVersion != Motion.MotionVersion) PoseStartCount++;
 		_attackPoseMotionVersion = Motion.MotionVersion;
@@ -1051,6 +1184,10 @@ public class BattleActor : Node3D
 		{
 			return _idleDuration;
 		}
+        if (_pose == "attack" && _hd2dPose.Length>0 && _hd2dPoseOwner.IsCurrent)
+            // Front physical strikes expose the forward drawing before contact, then
+            // hold through the same finish time. Remote travel has its own earlier release.
+            return _poseFrame switch { 0=>_hd2dRemoteStrike?.06f:.10f, 1=>_hd2dRemoteStrike?.04f:Hd2dAttackPrototype.UsesFire(_hd2dPose)?.14f:Hd2dAttackPrototype.UsesWeaponContact(_hd2dPose)?.075f:.12f, 2=>_hd2dRemoteStrike?.075f:Hd2dAttackPrototype.UsesWeaponContact(_hd2dPose)?.100f:.055f, _=>.18f };
 		float[] durs = _pose switch
 		{
 			"attack" => (DefinitionId == "leader_blue") ? BlueAttackDur : AttackDur, 
@@ -1089,6 +1226,27 @@ public class BattleActor : Node3D
 
 	private void AdvancePose(float clock, float frameDelta)
 	{
+        // Multi-volley presentation samples intact authored attack frames from
+        // the SAME unpaused action clock. It neither emits hits nor advances time.
+        // Single-hit selected67/70/72 poses never enter this branch.
+        if(_hd2dVolleyCount>1 && _hd2dVolleyInterval>.001f && _hd2dPoseOwner.IsCurrent
+            && !Dead && (Hd2dAttackPrototype.UsesWeaponContact(_hd2dPose) || Hd2dAttackPrototype.UsesGroundPressure(_hd2dPose)) && _attack.Count>=4)
+        {
+            float elapsed=Motion.UnpausedDuration(_hd2dPoseStart,clock);
+            float first=Hd2dAttackPrototype.Contact(_hd2dPose);
+            float last=first+(_hd2dVolleyCount-1)*_hd2dVolleyInterval;
+            if(elapsed>=first+.04f && elapsed<last+.10f)
+            {
+                // Preserve the first accepted single-hit forward swing. Later
+                // volleys expose forward frame2 at least50ms before contact.
+                float phaseClock=elapsed-first+.075f;
+                int volley=Math.Clamp((int)(phaseClock/_hd2dVolleyInterval),0,_hd2dVolleyCount-1);
+                float phase=phaseClock-volley*_hd2dVolleyInterval;
+                _pose="attack";_poseFrame=phase<.025f?1:phase<.115f?2:3;
+                _poseFrameTime=phase;_poseClock=clock;_poseInitialized=true;
+                ApplyPoseFrame();return;
+            }
+        }
 		if (!_poseInitialized)
 		{
 			float cycle = _idleDuration * (float)_idle.Count;
@@ -1140,6 +1298,14 @@ public class BattleActor : Node3D
         if (AuthoredFramesEnabled) { ApplyAuthoredFrame(_lastClock); return; }
 		List<Texture2D> frames = PoseFrames(_pose);
 		Texture2D texture = ((frames != null && frames.Count > 0) ? frames[Math.Clamp(_poseFrame, 0, frames.Count - 1)] : _baseTexture);
+        if(_pose=="attack" && _hd2dPoseOwner.IsCurrent)
+        {
+            // The original attack2 contains a baked gold axe arc: never use it for casting/commanding.
+            if(Hd2dAttackPrototype.UsesFire(_hd2dPose) && _attack.Count>=4)
+                texture=_attack[3];
+            else if(Hd2dAttackPrototype.UsesGroundPressure(_hd2dPose) && _block.Count>0)
+                texture=_block[Math.Min(_poseFrame<1?0:_poseFrame<3?1:_poseFrameTime<.075f?2:3,_block.Count-1)];
+        }
 		Sprite.Offset = new Vector2(_footAnchorOffsetX, (float)(texture.GetHeight() - _baseTexture.GetHeight()) * 0.5f);
 		Sprite.Texture = texture;
 		BindSurface(texture);
@@ -1192,6 +1358,70 @@ public class BattleActor : Node3D
 		}
 	}
 
+    private string _hd2dPose = "";
+    private bool _hd2dRemoteStrike;
+    private int _hd2dVolleyCount = 1;
+    private float _hd2dVolleyInterval;
+    private float _hd2dPoseStart;
+    private SourceActorMotion.OwnershipToken _hd2dPoseOwner;
+
+    public void BeginHd2dPose(string card, float now, bool remoteStrike = false, int volleys = 1, float volleyInterval = 0f)
+    {
+        _hd2dPose = Hd2dAttackPrototype.Supports("card:" + card) ? card : "";
+        _hd2dPoseStart = now;
+        _hd2dRemoteStrike=remoteStrike;
+        _hd2dVolleyCount=Math.Max(1,volleys);
+        _hd2dVolleyInterval=float.IsFinite(volleyInterval)?Math.Max(0,volleyInterval):0;
+        _hd2dPoseOwner = Motion.Capture();
+    }
+
+    private bool _hd2dHeavyReaction;
+    private float _hd2dHeavyReactionStart;
+    private SourceActorMotion.OwnershipToken _hd2dHeavyReactionOwner;
+
+    public void BeginHd2dHeavyReaction(float now)
+    {
+        _hd2dHeavyReaction=true;
+        _hd2dHeavyReactionStart=now;
+        _hd2dHeavyReactionOwner=Motion.Capture();
+    }
+
+    private void ApplyHd2dHeavyReaction(float now)
+    {
+        if(!_hd2dHeavyReaction)return;
+        float t=Math.Max(0,now-_hd2dHeavyReactionStart);
+        if(Dead || !_hd2dHeavyReactionOwner.IsCurrent || t>=.38f){_hd2dHeavyReaction=false;return;}
+        static float Smooth(float x){x=Math.Clamp(x,0,1);return x*x*(3-2*x);}
+        float compression=Smooth(t/.025f)*(1-Smooth((t-.115f)/.185f));
+        float rebound=t>.23f?MathF.Sin(Math.Clamp((t-.23f)/.15f,0,1)*MathF.PI)*.012f:0;
+        float sy=1-.11f*compression+rebound,sx=1+.035f*compression;
+        // Apply after authored hurt frames, around the existing grounded sprite foot pivot.
+        Sprite.Basis=Sprite.Basis.ScaledLocal(new Vector3(sx,sy,1));
+        Sprite.Position+=_layoutBasis.Y*((_imageHeight*.5f-_feetPad)*ExecutionScale.Y*(sy-1));
+    }
+
+    private void ApplyHd2dPose(float now)
+    {
+        if (_hd2dPose.Length == 0) return;
+        if (!_hd2dPoseOwner.IsCurrent || Dead) { _hd2dPose = ""; return; }
+        float t = Motion.UnpausedDuration(_hd2dPoseStart, now);
+        bool stomp = Hd2dAttackPrototype.UsesGroundPressure(_hd2dPose), fire = Hd2dAttackPrototype.UsesCastEmitter(_hd2dPose);
+        float contact = Hd2dAttackPrototype.Contact(_hd2dPose);
+        float releaseAt=contact+(_hd2dVolleyCount-1)*_hd2dVolleyInterval;
+        float duration = releaseAt + (stomp ? .28f : .23f);
+        if (t >= duration) { _hd2dPose = ""; return; }
+        float anticipation = MathF.Sin(Math.Clamp(t / contact, 0f, 1f) * MathF.PI);
+        if(stomp && _hd2dVolleyCount>1 && t>contact && t<releaseAt && _hd2dVolleyInterval>.001f)
+            anticipation=MathF.Sin(Math.Clamp(((t-contact)%_hd2dVolleyInterval)/_hd2dVolleyInterval,0,1)*MathF.PI)*.65f;
+        float release = t < releaseAt ? 0f : MathF.Sin(Math.Clamp((t-releaseAt)/(duration-releaseAt),0f,1f)*MathF.PI);
+        float angle = (stomp ? -.025f : fire ? -.045f : -.065f) * anticipation + (stomp ? .035f : .075f) * release;
+        float sy = 1f - (stomp ? .08f : .025f) * anticipation - (stomp ? .05f : 0f) * release;
+        float sx = 1f + (stomp ? .035f : .012f) * anticipation;
+        Basis pivot = _layoutBasis * new Basis(Vector3.Back, angle);
+        Sprite.Position = pivot.Y * ((_imageHeight/2f-_feetPad) * ExecutionScale.Y * sy);
+        Sprite.Basis = pivot.ScaledLocal(new Vector3(ExecutionScale.X*sx,ExecutionScale.Y*sy,1f));
+    }
+
 	public void SampleSourceMotion(float clock, float frameDelta, int presentationFrame)
 	{
 		UiLunge.Sample(clock, frameDelta, presentationFrame);
@@ -1217,6 +1447,7 @@ public class BattleActor : Node3D
 		SampleExecutionScale(clock);
 		Sprite.Position = _layoutBasis.Y * ((_imageHeight / 2f - _feetPad) * ExecutionScale.Y);
 		Sprite.Basis = _layoutBasis.ScaledLocal(new Vector3(ExecutionScale.X, ExecutionScale.Y, 1f));
+        ApplyHd2dPose(clock);
 		if (_style04Motion != null && !Dead)
 		{
 			var attack = _style04Motion.Sample(clock);
@@ -1230,6 +1461,7 @@ public class BattleActor : Node3D
 		_surface.SetShaderParameter("_Flash", Math.Clamp((_flashUntil - clock) / 0.18f, 0f, 1f) * 0.1f);
 		if (Dead)
 		{
+            _hd2dHeavyReaction=false;
 			_deathFade = _dissolve;
 			Sprite.Modulate = new Color(1f, 1f, 1f, 1f - _deathFade);
 			Vitals.Visible = false;
@@ -1281,6 +1513,7 @@ public class BattleActor : Node3D
 		RefreshSourceMaterial();
 		SampleEnemyAttack(clock);
         ApplyAuthoredFrame(clock);
+        ApplyHd2dHeavyReaction(clock);
 	}
 
 	public void ConfigureSourceAppearance(int act, Camera3D layoutCamera, int enemyGroup = 1)
@@ -3139,6 +3372,8 @@ public class BattleActor : Node3D
  }
  private void DisposeAuthoredFrames()
  {
+  // Row profiles belong to the actor's current texture set, not later Init/reuse.
+  _prototypeAlphaRows.Clear();
   _bruteAuthoredFrames?.Cancel();_wolfAuthoredFrames?.Cancel(); _crossbowAuthoredFrames?.Cancel(); _contactAuthoredFrames?.Cancel(); _drummerAuthoredFrames?.Cancel(); _hexAuthoredFrames?.Cancel();_bruteAuthoredFrames=null;_wolfAuthoredFrames=null;_crossbowAuthoredFrames=null;_contactAuthoredFrames=null;_drummerAuthoredFrames=null;_hexAuthoredFrames=null;_sporeFrame=BruteAuthoredFrames.Snapshot.Disabled;
   if(_authoredClipSet==null)return;
   if(Sprite!=null&&GodotObject.IsInstanceValid(Sprite)&&_baseTexture!=null){Sprite.Texture=_baseTexture;Sprite.Offset=new Vector2(_footAnchorOffsetX,0);if(_surface!=null&&GodotObject.IsInstanceValid(_surface))_surface.SetShaderParameter("_BaseMap",_baseTexture);_boundTexture=_baseTexture;}

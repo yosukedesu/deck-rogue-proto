@@ -1,0 +1,20 @@
+{
+  "revision": 178,
+  "base": "selected176 + selected171 five exact Cut aliases",
+  "inherited": {
+    "176": "masterv65/fresh4955 + versioned174/173; source continuation scope limited",
+    "171": {
+      "runs": 16,
+      "checks": 4361,
+      "shutdownNotices": 2
+    }
+  },
+  "fresh": "Pending two positive alias/rider and one exact same-key necro negative control; no unrelated full matrix",
+  "excluded": [
+    "175 physical riders",
+    "177 four physical candidates",
+    "reaction candidate",
+    "new media"
+  ],
+  "scope": "Card-source exact IDs; no generic allblack shadow effect or sourcekind admission"
+}

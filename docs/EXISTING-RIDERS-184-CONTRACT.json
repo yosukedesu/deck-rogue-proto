@@ -1,0 +1,20 @@
+{
+  "revision": 184,
+  "state": "candidate-awaiting183-and184-native-gates",
+  "base": "immutable183 (itself candidate on selected182)",
+  "ids": [
+    "black_corpse_collect",
+    "black_reviving_fang",
+    "blue_wave_read_strike",
+    "fusion_reading_wedge"
+  ],
+  "material": "existing Dark/Water/Axial/Fang; no new geometry",
+  "command_scope": {
+    "black_corpse_collect": "ordinary PlayCard with actual RetrieveUid; damage/heal/landing precedes retrieval/free flag",
+    "blue_wave_read_strike": "ordinary PlayCard then actual ResolveScry, no duplicate attack",
+    "fusion_reading_wedge": "actual BlockShattered/conversion then8 and effective-defend extra8 elseGrowth; NOT enginepierce",
+    "black_reviving_fang": "declared actual PlayCard plus sameUID PlayNecro; real deckmill each; second consumes UID without re-exhaust"
+  },
+  "audit": "full-vfx-inventory-20261026/next-four-existing-rider-contracts-after182.json",
+  "qa_policy": "inherit family invariants; new actual command/state/event witnesses and representative native cadence only; no all-combinations claim"
+}

@@ -3,11 +3,21 @@ using DeckRogue.Game;
 
 namespace DeckRogue.GodotPort.Presentation;
 
+// Classification reads resolved event receipts; it never computes combat rules.
+
 public sealed record EffectScenario(EffectTier Tier, float Windup, float Contact, float Sustain, float Release, int Branches, float Radius, float LightEnergy)
 {
 	public float Duration => Windup + Contact + Sustain + Release;
 
 	public DamageVfxIntensity.Visual? SourceVisual { get; init; }
+
+    public bool PrototypeRemoteStrike { get; init; }
+    public bool SuppressSourceGesture { get; init; }
+    public bool PrototypeFixedSource { get; init; }
+    // Read-only captured presentation path from actual event recipients. These
+    // points/times never create contacts or change combat target selection.
+    public Godot.Vector3[]? PrototypeResolvedPath { get; init; }
+    public float[]? PrototypeResolvedOffsets { get; init; }
 
 	public static EffectScenario For(AttackRoute route, int amount, int? provenPriorHp = null, int? maxHp = null)
 	{

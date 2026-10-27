@@ -1,0 +1,37 @@
+{
+  "revision": 169,
+  "state": "candidate-unselected",
+  "base": "exact163 Ice material on selected161; excludes164/165/166",
+  "observed_gap": "163 firstblocked positive owner first age -.028333 vs standard -.293333, despite gather-owner flag true; ledger Ready serializes preview",
+  "eligibility": [
+    "exact first positive direct owner in volley",
+    "only IceScatter/LightScatter/WaterWide",
+    "ledger.Current, no Reason; ValidReceipt structural validation and exact target Before vitals",
+    "actual Command_PlayCard UID+Previous.Hand and owning SessionChange match",
+    "valid target-local Before vitals",
+    "no earlier Current receipt for same target",
+    "clock before actual planned contact"
+  ],
+  "invariants": [
+    "No ledger Ready/Commit/engine/event/count/order mutation",
+    "BeginBeat retains original target boundary validation",
+    "new early preview flag caps material age negative until Contacted",
+    "zero/allblocked remain system outcomes/no eligible owner",
+    "normal cancellation/reuse retires effect; no persistent action decoration"
+  ],
+  "required_gates": [
+    "Ice firstblocked visible source gather/delivery + actual earlyage",
+    "allblocked/zero no launch",
+    "narrow LightScatter/WaterWide firstblocked regressions",
+    "real same-target pending predecessor negative",
+    "cancellation/reuse and exact ordered numeric state oracle"
+  ],
+  "superseded_unrun": "167 pre-native self-review caught unreachable Receipt.Exact gate (assigned only at Commit).167 not copied/launched;168 uses structural ValidReceipt plus current Before vitals, no ledger mutation.",
+  "revision168_observation": "9 successful runs7018, visual source cause restored; cascade-b951 revealed non-direct Ice material age+.033/.067 before numeric contact.168 held, not accepted checkpoint.",
+  "revision169": "Negative material-age cap applies to ALL supported explicit IceScatter/LightScatter/WaterWide beats until Contacted, not only independent preview flag. Numeric timing/ownership grouping untouched.",
+  "limitations": [
+    "Cascade outer Ice lies under nested Storm action and Direct=false; shared gathering not admitted there.",
+    "17 actual pending same-target rows do not isolate that predicate because Direct already denies preview.",
+    "No claim other material families are covered by this cap."
+  ]
+}

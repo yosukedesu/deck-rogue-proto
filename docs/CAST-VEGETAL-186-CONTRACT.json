@@ -1,0 +1,22 @@
+{
+  "revision": 186,
+  "state": "candidate-awaiting-native",
+  "base": "immutable185 pending rider gates",
+  "definition": "fusion_rooting_vine",
+  "mode_scope": "mode1 actual card damage;mode0 remains legacy no-offence",
+  "delivery": "explicit ActualCastToSelectedReceiver;profile spell reach.06, existing cast emitter; no weapon approach/trace/frame/origin callbacks",
+  "material": "same existing positive-age vegetal Strike contact with weaponFrame0/sourceGesturefalse; new short caster-local fibre lead only",
+  "rules": "no engine damage/status/mode/resource changes",
+  "baseline": "untouched183378PASS, critic actual home gesture/thin green contact",
+  "regressions": [
+    "actualmode0 no offence",
+    "old physicalVegetal source/material unchanged",
+    "old Elemental cast source unchanged"
+  ],
+  "limits": [
+    "not generic spell routing",
+    "not Root/Bind status",
+    "no new bitmap",
+    "185 batch gates remain independent"
+  ]
+}

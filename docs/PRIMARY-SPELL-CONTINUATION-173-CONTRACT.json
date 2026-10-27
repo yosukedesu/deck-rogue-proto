@@ -1,0 +1,40 @@
+{
+  "revision": 173,
+  "base": 170,
+  "scope": "Presentation-only pre-onPlay primary SPELL continuation for existing IceScatter/LightScatter/WaterWide families, exactly one witnessed nested cascade",
+  "eligibility": [
+    "Actual owning RunCommand_Combat Command_PlayCard UID in Previous.Hand, spell type, selected family",
+    "Exactly two actual CardPlayed events; first matches primary definition, matching actual Cascaded parent/HitId before nested CardPlayed",
+    "First actual primary-UID card DamageDealt after nested CardPlayed, including blocked and zero; no earlier primary damage",
+    "Actual earlier nested card damage witness with different nonempty UID and nested definition",
+    "Resolved supported card route matches primary definition and family"
+  ],
+  "mechanism": [
+    "Insert one action range boundary at first exact-primary UID damage; original event objects, indices and sequence unchanged",
+    "Retain original primary CardPlayed reference as metadata; never synthesize or insert/replay its event",
+    "Only continuation Direct hits additionally require exact primary UID",
+    "Initialize continuation source once at Launch using existing BeginSourceCard, no ContactBeat/CardPlayed replay",
+    "Retain every original suffix relative event gap as a lower bound, shifted to authored source contact lead and at least authored direct cadence; later gaps cannot collapse after an authored extension",
+    "Inherited169 uncontacted material cap and actual ledger ordering remain unchanged"
+  ],
+  "exclusions": [
+    "No generic mid-combo or physical weapon resume",
+    "No multiple nested CardPlayed chain",
+    "No nested action UID ownership repair beyond proved primary return",
+    "No Feast/172 extension or166/171 aliases in this independent170 branch"
+  ],
+  "requiredNative": [
+    "Real zero Storm pre-onPlay cascade then Ice primary return",
+    "Real SAME-ID nested Ice with different UID via cascade_core plus fire_calls_fire",
+    "Blocked and zero primary first receipt remains correct boundary, first positive source ownership later",
+    "Actual committed/exact/noReason for all positive-age material rows",
+    "No duplicate CardPlayed/numeric/card UI/resource effects; source initialization once per continuation",
+    "Cancellation/reset/reuse, ordinary nonnested controls"
+  ],
+  "preflight": {
+    "errors": 0,
+    "warnings": 1923
+  },
+  "acceptance": "candidate only; native not launched",
+  "staticReview": "Bounded approval; minimum-original-gap refinement incorporated before final preflight-c0"
+}

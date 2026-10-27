@@ -1,0 +1,290 @@
+{
+  "revision": 164,
+  "state": "candidate-unselected",
+  "base": "selected161; no162/163 IceScatter",
+  "selected_trial_ids": [
+    "white_holy_maul",
+    "white_light_knockout",
+    "green_harvest_strike",
+    "fusion_tide_stance"
+  ],
+  "excluded_fifth": "fusion_rooting_vine requires separate spell-source cast gate; not mapped here",
+  "original_read_only_audit": {
+    "scope": "proposed five only; source read-only, no native",
+    "ids": [
+      "white_holy_maul",
+      "white_light_knockout",
+      "green_harvest_strike",
+      "fusion_tide_stance",
+      "fusion_rooting_vine"
+    ],
+    "actual_rows": [
+      {
+        "id": "green_harvest_strike",
+        "name": "大牙",
+        "route": {
+          "key": "card:green_harvest_strike",
+          "definitionId": "green_harvest_strike",
+          "sourceKind": "card",
+          "family": "enemy_fang",
+          "renderer": "EnemyContactFx",
+          "element": "physical",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        },
+        "classification": "existing-vocabulary review candidate; NOT automatic alias",
+        "context_status": "not globally selected161",
+        "definition": {
+          "id": "green_harvest_strike",
+          "name": "大牙",
+          "cost": 1,
+          "type": "physical",
+          "rarity": "uncommon",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 7,
+              "growthMultiplier": 3
+            }
+          ]
+        },
+        "profile": {
+          "element": "physical",
+          "style": "fang",
+          "authoredAttack": "enemy_fang",
+          "authoredSourceKinds": [
+            "card"
+          ],
+          "authoredRequiresSourceMetadata": true,
+          "authoredEvidence": "Stage33 explicit shared impact; src/data/cards.green.json#/51; same style/element; actual receipts only. Native Unity QA pending."
+        },
+        "source_context": null
+      },
+      {
+        "id": "white_holy_maul",
+        "name": "灯火の大槌",
+        "route": {
+          "key": "card:white_holy_maul",
+          "definitionId": "white_holy_maul",
+          "sourceKind": "card",
+          "family": "enemy_blunt",
+          "renderer": "EnemyContactFx",
+          "element": "physical",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        },
+        "classification": "existing-vocabulary review candidate; NOT automatic alias",
+        "context_status": "not globally selected161",
+        "definition": {
+          "id": "white_holy_maul",
+          "name": "灯火の大槌",
+          "cost": 2,
+          "type": "physical",
+          "rarity": "uncommon",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 18
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "gainHp",
+              "amount": 5
+            }
+          ]
+        },
+        "profile": {
+          "element": "earth",
+          "style": "stomp"
+        },
+        "source_context": {
+          "card": {
+            "authoredAttack": "enemy_blunt",
+            "element": "physical",
+            "authoredSemanticReason": "Definition explicitly names a physical bash, wooden strike or hammer/crushing contact; this display-only contact does not claim earth magic."
+          }
+        }
+      },
+      {
+        "id": "white_light_knockout",
+        "name": "灯の大砕き",
+        "route": {
+          "key": "card:white_light_knockout",
+          "definitionId": "white_light_knockout",
+          "sourceKind": "card",
+          "family": "enemy_blunt",
+          "renderer": "EnemyContactFx",
+          "element": "physical",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        },
+        "classification": "existing-vocabulary review candidate; NOT automatic alias",
+        "context_status": "not globally selected161",
+        "definition": {
+          "id": "white_light_knockout",
+          "name": "灯の大砕き",
+          "type": "physical",
+          "cost": 3,
+          "rarity": "uncommon",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 30
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "addLight",
+              "amount": 5
+            }
+          ]
+        },
+        "profile": {
+          "element": "earth",
+          "style": "stomp"
+        },
+        "source_context": {
+          "card": {
+            "authoredAttack": "enemy_blunt",
+            "element": "physical",
+            "authoredSemanticReason": "Definition explicitly names a physical bash, wooden strike or hammer/crushing contact; this display-only contact does not claim earth magic."
+          }
+        }
+      },
+      {
+        "id": "fusion_rooting_vine",
+        "name": "根を張る蔦",
+        "route": {
+          "key": "card:fusion_rooting_vine",
+          "definitionId": "fusion_rooting_vine",
+          "sourceKind": "card",
+          "family": "vine_slash",
+          "renderer": "VineSlashFx",
+          "element": "vine",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        },
+        "classification": "existing-vocabulary review candidate; NOT automatic alias",
+        "context_status": "not globally selected161",
+        "definition": {
+          "id": "fusion_rooting_vine",
+          "name": "根を張る蔦",
+          "cost": 2,
+          "type": "spell",
+          "color": "green",
+          "effects": [],
+          "modes": [
+            {
+              "name": "根を張る",
+              "effects": [
+                {
+                  "trigger": "onPlay",
+                  "effect": "gainEnergyMax",
+                  "amount": 1
+                },
+                {
+                  "trigger": "onPlay",
+                  "effect": "gainBlock",
+                  "amount": 5
+                }
+              ]
+            },
+            {
+              "name": "蔦を振る",
+              "effects": [
+                {
+                  "trigger": "onPlay",
+                  "effect": "dealDamage",
+                  "amount": 10
+                }
+              ]
+            }
+          ]
+        },
+        "profile": {
+          "element": "vine",
+          "style": "spell",
+          "authoredAttack": "vine_slash",
+          "authoredSourceKinds": [
+            "card"
+          ],
+          "authoredRequiresSourceMetadata": true,
+          "authoredEvidence": "Stage33 explicit shared impact; src/data/fusions.json#/18/result; same style/element; actual receipts only. Native Unity QA pending."
+        },
+        "source_context": null
+      },
+      {
+        "id": "fusion_tide_stance",
+        "name": "潮の構え",
+        "route": {
+          "key": "card:fusion_tide_stance",
+          "definitionId": "fusion_tide_stance",
+          "sourceKind": "card",
+          "family": "water",
+          "renderer": "WaterContinuousFx",
+          "element": "water",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        },
+        "classification": "existing-vocabulary review candidate; NOT automatic alias",
+        "context_status": "not globally selected161",
+        "definition": {
+          "id": "fusion_tide_stance",
+          "name": "潮の構え",
+          "cost": 1,
+          "type": "spell",
+          "color": "blue",
+          "effects": [],
+          "modes": [
+            {
+              "name": "打つ",
+              "effects": [
+                {
+                  "trigger": "onPlay",
+                  "effect": "dealDamage",
+                  "amount": 9
+                },
+                {
+                  "trigger": "onPlay",
+                  "effect": "drawCards",
+                  "amount": 1
+                }
+              ]
+            },
+            {
+              "name": "凍る",
+              "effects": [
+                {
+                  "trigger": "onPlay",
+                  "effect": "gainIceBlock",
+                  "amount": 12
+                }
+              ]
+            }
+          ]
+        },
+        "profile": {
+          "element": "water",
+          "style": "spell",
+          "authoredAttack": "water",
+          "authoredRequiresCardMetadata": true
+        },
+        "source_context": null
+      }
+    ],
+    "sha256": {
+      "attack-hd2d-prototype-20261025/source/data/cards.white.json": "22b67ae13ee9a94c974ab25eb4be504e1e93c83ef0902f40a235e0179df0c717",
+      "attack-hd2d-prototype-20261025/source/data/cards.green.json": "3093790a6abbc3c0469f817b9372d03e108dfe4ec177f9e4ef27c5461459cb78",
+      "attack-hd2d-prototype-20261025/source/data/fusions.json": "6567b3e50615a50b1300f0f111bbabc3626daa5edb365bbf9fefed70dc1fd7bc",
+      "attack-hd2d-prototype-20261025/source/assets/attack-routes.json": "d876cbe1c9eb6eead41e8adf0690e7b61ea7a33f547971ed629879ae82523846",
+      "attack-hd2d-prototype-20261025/source/assets/presentation-data/card-vfx-profiles.json": "762fa8c66e277b208f80a815d365bca7b49965cbdcf8a3870d07484936528f1c",
+      "attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Effects.cs": "49aabacbdeba548ea5c3ceb14c1e18bd16a7b591ea6eeb3da6b81a21c51907bb",
+      "attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Combat.cs": "506e88c23b151d5cb571f43a556761f65000c3c3f15090b4901492b3512a1e5c",
+      "attack-hd2d-prototype-20261025/revision161-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": "c2c9cfa1a3e209b419f1d591046b8663164093240940b6b8b93bac7380703b74",
+      "attack-hd2d-prototype-20261025/revision161-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": "babf3208ced120066bb1ea52d1ec90667a182be5973711457750d3de0942971b"
+    }
+  },
+  "limits": "Actual fusion Result/mode commands; Tide mode1 legacy IceBlock only. Harvest is NOT pierce; Block absorbs. Maul heal and Knockout Light stay independent."
+}

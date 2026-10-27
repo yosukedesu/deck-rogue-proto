@@ -11,6 +11,16 @@ internal sealed class NativeEffect
 
 	public Action<Vector3>? ConfigureSource;
 
+    public Action<bool>? ConfigureRemoteStrike;
+    public Action<bool>? ConfigureSourceGesture;
+    // Presentation-only deterministic variation captured once at effect Begin.
+    public Action<float>? ConfigureVisualSeed;
+    public Action<Vector3[],float[]>? ConfigureResolvedPath;
+    public Action<int>? ConfigureWeaponFrame;
+    public Action<Vector3>? ConfigureWeaponOrigin;
+    public Action<float>? ConfigureWeaponTraceLength;
+    public Action<float>? ConfigureStompTop;
+
 	public Action<bool>? ConfigureMirror;
 
 	public Action<float>? ConfigureParticleGain;
@@ -22,6 +32,10 @@ internal sealed class NativeEffect
 	public float FloorPeak = 0.12f;
 
 	public Func<float> Light = () => 0f;
+
+    public Func<float>? FloorLight;
+
+    public Func<float> StageFocus = () => 0f;
 
 	public Func<float> Front = () => 0f;
 

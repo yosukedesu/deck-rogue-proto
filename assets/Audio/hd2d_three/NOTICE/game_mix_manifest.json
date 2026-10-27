@@ -1,0 +1,124 @@
+[
+  {
+    "clip": "hd2d_swing",
+    "seconds": 0.22,
+    "rate": 48000,
+    "format": "mono PCM16",
+    "layers": [
+      [
+        "axe_whoosh_bamboo02.wav",
+        "volume=1,adelay=8"
+      ]
+    ],
+    "mix_down_gain": 1,
+    "peak": 0.244384765625,
+    "fullscale_samples": 0,
+    "sha256": "22e1916490dca820249ae6ab923e38e90f4238c4b003135a35ecdf6c24080d54",
+    "auditory_review": "NOT LISTENED"
+  },
+  {
+    "clip": "hd2d_strike",
+    "seconds": 0.35,
+    "rate": 48000,
+    "format": "mono PCM16",
+    "layers": [
+      [
+        "axe_wood_contact.wav",
+        "volume=.85"
+      ],
+      [
+        "axe_chop_contact.wav",
+        "volume=.30,adelay=9"
+      ]
+    ],
+    "mix_down_gain": 1,
+    "peak": 0.38226318359375,
+    "fullscale_samples": 0,
+    "sha256": "8b3c12475f03ca3c462751b4dd42465ef9b51935bfddc8d2652effa10a810531",
+    "auditory_review": "NOT LISTENED"
+  },
+  {
+    "clip": "hd2d_ignite",
+    "seconds": 0.28,
+    "rate": 48000,
+    "format": "mono PCM16",
+    "layers": [
+      [
+        "fire_ignition.wav",
+        "atrim=0:.28,volume=.85,afade=t=out:st=.22:d=.06"
+      ]
+    ],
+    "mix_down_gain": 1,
+    "peak": 0.1968994140625,
+    "fullscale_samples": 0,
+    "sha256": "5214f5ff3ec1aae60904a0709f938fa96df8ae33f2acc5eef141b3bef94fceb9",
+    "auditory_review": "NOT LISTENED"
+  },
+  {
+    "clip": "hd2d_fire",
+    "seconds": 0.55,
+    "rate": 48000,
+    "format": "mono PCM16",
+    "layers": [
+      [
+        "fire_ignition.wav",
+        "atrim=.20:.55,asetpts=PTS-STARTPTS,volume=1.1,afade=t=in:st=0:d=.003,afade=t=out:st=.25:d=.10"
+      ],
+      [
+        "fire_crackle.wav",
+        "volume=.58,adelay=65,afade=t=out:st=.38:d=.17"
+      ],
+      [
+        "ground_soft_thud.wav",
+        "lowpass=f=260,volume=.18,afade=t=out:st=.12:d=.10"
+      ]
+    ],
+    "mix_down_gain": 1,
+    "peak": 0.191436767578125,
+    "fullscale_samples": 0,
+    "sha256": "3ede67077c20b81f8b8803eaea62a5b5a9e2e68ef5eb602b92077cb1516e726c",
+    "auditory_review": "NOT LISTENED"
+  },
+  {
+    "clip": "hd2d_weight",
+    "seconds": 0.5,
+    "rate": 48000,
+    "format": "mono PCM16",
+    "layers": [
+      [
+        "axe_whoosh_bamboo27.wav",
+        "asetrate=32000,aresample=48000,lowpass=f=950,volume=.50,adelay=130"
+      ]
+    ],
+    "mix_down_gain": 1,
+    "peak": 0.1175537109375,
+    "fullscale_samples": 0,
+    "sha256": "918ddc0bfde6a29f3d5c78eeb702913eb59b3203845e33944a688b0ae52a61c0",
+    "auditory_review": "NOT LISTENED"
+  },
+  {
+    "clip": "hd2d_stomp",
+    "seconds": 0.75,
+    "rate": 48000,
+    "format": "mono PCM16",
+    "layers": [
+      [
+        "ground_soft_thud.wav",
+        "volume=.95"
+      ],
+      [
+        "stone_debris_a.wav",
+        "volume=.52,adelay=45"
+      ],
+      [
+        "stone_debris_b.wav",
+        "volume=.32,adelay=190"
+      ]
+    ],
+    "mix_down_gain": 1,
+    "peak": 0.428436279296875,
+    "fullscale_samples": 0,
+    "sha256": "379fab00013ee9d248a6d3369d6d0597d1e50af3c9c4dc528533804293c4a1c8",
+    "auditory_review": "NOT LISTENED"
+  }
+]

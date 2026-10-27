@@ -364,6 +364,16 @@
     <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/NativeBatch.cs" />
     <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/NativeEffect.cs" />
     <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/NativeGeometryBridge.cs" />
+    <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs" />
+    <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs" />
+    <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs" />
+    <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/SupportVfxProfiles.cs" />
+    <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/EnemyContactVfxProfiles.cs" />
+    <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/PermanentContactVfxProfiles.cs" />
+    <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/StatusContactVfxProfiles.cs" />
+    <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/NecroContactVfxProfiles.cs" />
+    <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/ReactionContactVfxProfiles.cs" />
+    <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/LightningContactVfxProfiles.cs" />
     <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/PresentationBeat.cs" />
     <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/PresentationTimeline.cs" />
     <Compile Include="RecoveredSource/DeckRogue.GodotPort.Presentation/ProceduralActorTexture.cs" />

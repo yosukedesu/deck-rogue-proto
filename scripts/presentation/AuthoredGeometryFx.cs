@@ -109,6 +109,8 @@ public class AuthoredGeometryFx : Node3D
 	private Color _lightColor;
 
 	private Vector3 _target;
+    private bool _prototypeContactAnchorLocked;
+    internal Vector3 PrototypeContactPoint => _target;
 
 	private Vector3 _feet;
 
@@ -183,7 +185,7 @@ public class AuthoredGeometryFx : Node3D
 		Clear();
 		_route = route;
 		_scenario = scenario;
-		string key = route.Renderer + "/" + route.Family + "/" + scenario.Tier;
+		string key = ((Hd2dAttackPrototype.SupportsRoute(route) || EnemyContactVfxProfiles.SelectedRoute(route) || PermanentContactVfxProfiles.SelectedRoute(route) || StatusContactVfxProfiles.SelectedRoute(route) || NecroContactVfxProfiles.SelectedRoute(route) || ReactionContactVfxProfiles.SelectedRoute(route) || LightningContactVfxProfiles.SelectedRoute(route)) ? AttackRouteCatalog.Identity(route) + "/" : "") + route.Renderer + "/" + route.Family + "/" + scenario.Tier;
 		if (!_cache.TryGetValue(key, out var effect))
 		{
 			effect = NativeGeometryBridge.Create(route, scenario.Tier);
@@ -196,6 +198,7 @@ public class AuthoredGeometryFx : Node3D
 		_effect = effect;
 		_source = source;
 		_target = target;
+        _prototypeContactAnchorLocked=false;
 		_feet = feet;
 		_basis = cameraBasis;
 		_height = Math.Max(0.25f, visibleHeight);
@@ -279,8 +282,28 @@ public class AuthoredGeometryFx : Node3D
 			_lightGain = (route.FixedSmall ? 0.65f : 1f);
 			_target = _feet + _basis.Y * (_height * 0.46521738f);
 		}
+        if(route.Renderer=="Hd2dSupportFx")
+        {
+            _size=1f;_emission=1f;_particles=1f;_lightGain=1f;
+            _target=_feet+_basis.Y*(_height*.48f);
+        }
 		effect.ConfigureMirror?.Invoke(SourceAttackOrientation.AlternateHit(contactIndex));
 		effect.ConfigureParticleGain?.Invoke(_particles);
+        effect.ConfigureRemoteStrike?.Invoke(scenario.PrototypeRemoteStrike);
+        effect.ConfigureSourceGesture?.Invoke(!scenario.SuppressSourceGesture);
+        effect.ConfigureVisualSeed?.Invoke(feet.X*1.71f+feet.Z*2.13f+contactIndex*1.39f);
+        if(effect.ConfigureResolvedPath!=null)
+        {
+            var points=scenario.PrototypeResolvedPath;var times=scenario.PrototypeResolvedOffsets;
+            if(points!=null && times!=null && points.Length==times.Length && points.Length>0)
+            {
+                var localPoints=new Vector3[points.Length];var localTimes=new float[times.Length];
+                for(int i=0;i<points.Length;i++) { localPoints[i]=_basis.Inverse()*(points[i]-target)/(_height*_size);localTimes[i]=times[i]; }
+                effect.ConfigureResolvedPath(localPoints,localTimes);
+            }
+            else effect.ConfigureResolvedPath(System.Array.Empty<Vector3>(),System.Array.Empty<float>());
+        }
+        if(scenario.PrototypeFixedSource)effect.ConfigureWeaponFrame?.Invoke(2);
 		LoadRoles(effect);
 		effect.ConfigureSource?.Invoke(_basis.Inverse() * (source - target) / (_height * _size));
 		while (_draws.Count < effect.Batches.Length)
@@ -426,7 +449,8 @@ public class AuthoredGeometryFx : Node3D
 		material.SetShaderParameter("_Gain", gain);
 		material.SetShaderParameter("_Emission", emission);
 		material.SetShaderParameter("_Coverage", 1f);
-		string texture = e.Texture;
+		string texture = b.Texture.Length > 0 ? b.Texture : e.Texture;
+        if (e.Shader == "Hd2dPrototype") { material.SetShaderParameter("_TextureEnabled", texture.Length > 0); material.SetShaderParameter("_AuthoredRgba", b.Texture.Length > 0); material.SetShaderParameter("_TextureMotion", b.Texture=="lightning-discharge-surface-r2" ? 32f : b.Texture.StartsWith("hd2d-wood-contact-") ? 31f : b.Texture.StartsWith("hd2d-waterwide-phase-") ? 30f : b.Texture=="earth-ground-grain-r2" ? 28f : b.Texture.StartsWith("hd2d-dark-contraction-") ? 25f : b.Texture=="ice-crystal-surface-r2" ? (b.Kind==11?21f:b.Kind==12?22f:0f) : b.Texture.StartsWith("hd2d-water-impact-") ? (b.Texture.EndsWith("03")?20f:18f) : b.Texture=="water-flow-surface-r1" ? 19f : b.Texture.StartsWith("hd2d-stomp-aura-") ? 17f : b.Texture=="hd2d-stomp-pressure-v1" ? 14f : b.Texture.StartsWith("hd2d-fire-volume-") ? (b.Kind==15?23f:(b.Texture.EndsWith("03") || b.Texture.EndsWith("04")) ? 13f : 12f) : b.Texture.StartsWith("hd2d-fire-projectile-") ? 1f : b.Texture == "hd2d-stomp-shin-v4" ? 9f : b.Texture == "hd2d-fire-impact-v1" ? 2f : b.Texture == "hd2d-earth-rock-v1" ? 10f : b.Texture == "hd2d-earth-impact-v1" ? 3f : b.Texture == "hd2d-earth-dust-v1" ? 4f : b.Texture == "hd2d-physical-slash-v1" ? (b.Kind==17?26f:b.Kind==18?27f:b.Kind==9?16f:15f) : b.Texture == "hd2d-earth-foot-v1" ? 6f : (b.Texture == "hd2d-fire-impact-phase-03" || b.Texture == "hd2d-fire-impact-phase-04") ? 8f : b.Texture.StartsWith("hd2d-fire-impact-phase-") ? 7f : 0f); }
 		if (e.Shader == "PlayerContactFx")
 		{
 			if (b.Kind == 1)
@@ -464,7 +488,7 @@ public class AuthoredGeometryFx : Node3D
 		{
 			num2 = ((index == 0) ? 1f : 0f);
 		}
-		shaderMaterial.SetShaderParameter(param, num2);
+		shaderMaterial.SetShaderParameter(param, b.Texture.Length > 0 ? 1f : num2);
 		material.SetShaderParameter("_UseBeam", (e.RouteFamily == "enemy_beam" && index == 0) ? 1f : 0f);
 		material.SetShaderParameter("_BluntAccent", (e.RouteFamily == "enemy_blunt") ? 1f : 0f);
 		draw.Material = material;
@@ -479,6 +503,9 @@ public class AuthoredGeometryFx : Node3D
 		float gain = b.Gain(i) * _emission;
 		switch (e.Shader)
 		{
+        case "Hd2dPrototype":
+            role = _roles[r];
+            break;
 		case "PhysicalSlashFx":
 			role = ((b.Kind == 0) ? Colors.White : _roles[3]);
 			break;
@@ -563,6 +590,80 @@ public class AuthoredGeometryFx : Node3D
 		return _target + _basis * p * scale;
 	}
 
+    public void UpdateSupportReceiver(Vector3 feet,float height)
+    {
+        if(_route.Renderer!="Hd2dSupportFx" || _effect==null)return;
+        _feet=feet;_height=Math.Max(.25f,height);_target=feet+_basis.Y*(_height*.48f);
+    }
+
+    public float PrototypeStageFocus => IsActive && _effect?.Shader=="Hd2dPrototype" ? Math.Clamp(_effect.StageFocus(),0,1) : 0;
+
+    public float PrototypeSpectacleCrest
+    {
+        get
+        {
+            if(!IsActive || _effect?.Shader!="Hd2dPrototype" || _route.Renderer=="Hd2dSupportFx")return 0;
+            float age=_effect.VisualAge?.Invoke()??-1;
+            if(age<0)return 0;
+            float release=Math.Clamp((age-.055f)/.135f,0f,1f);
+            return 1-release*release*(3-2*release);
+        }
+    }
+
+    public float PrototypeWarmCrest
+    {
+        get
+        {
+            if(!IsActive || _effect?.Shader!="Hd2dPrototype" || !Hd2dAttackPrototype.UsesFireSource(_route))return 0;
+            float age=_effect.VisualAge?.Invoke()??-1;
+            return Math.Clamp((age-.015f)/.020f,0,1)*Math.Clamp((.140f-age)/.030f,0,1);
+        }
+    }
+
+    public Vector3 PrototypeFocusPosition => _feet;
+    public void ConfigurePrototypeViewport(Camera3D camera)
+    {
+        if(_effect?.Shader!="Hd2dPrototype" || _route.Key!="card:green_finisher_stomp")return;
+        Vector2 size=camera.GetViewport().GetVisibleRect().Size;
+        float depth=Math.Max(.01f,(camera.GlobalPosition-_feet).Dot(camera.GlobalBasis.Z));
+        Vector2 projected=camera.UnprojectPosition(_feet);
+        Vector3 top=camera.ProjectPosition(new Vector2(projected.X,-size.Y*.12f),depth);
+        _effect.ConfigureStompTop?.Invoke((_basis.Inverse()*(top-_feet)).Y/(_height*_size));
+    }
+
+
+    public void UpdatePrototypeSource(Vector3 point, int poseFrame, Vector3? weaponOrigin = null, float? weaponTraceLength = null, float? effectElapsed = null, Vector3? targetNearSurface = null)
+    {
+        if(_effect?.Shader!="Hd2dPrototype") return;
+        if(_scenario.PrototypeFixedSource)
+        {
+            // The transfer belongs to the frozen prior contact, not the retreating hero.
+            _effect.ConfigureWeaponFrame?.Invoke(2);
+            return;
+        }
+        if(Hd2dAttackPrototype.UsesCastSource(_route))
+        {
+            // Track the held focus while gathering, then freeze launch origin for continuous flight.
+            if((_effect.VisualAge?.Invoke()??0)>=-(ElementalVfxProfiles.ForRoute(_route.Key)?.LaunchLead??.17f))return;
+        }
+        else if(!Hd2dAttackPrototype.UsesWeaponSource(_route))return;
+        if(Hd2dAttackPrototype.UsesWeaponSource(_route) && !_scenario.PrototypeRemoteStrike && !_prototypeContactAnchorLocked
+            && effectElapsed.HasValue && effectElapsed.Value>=_scenario.Windup)
+        {
+            // First contact belongs to the reachable near-side surface, not the
+            // center of a large enemy. Freeze it: the burst must not chase retreat.
+            float nearSide=(_basis.Inverse()*(point-_target)).X;
+            float bound=targetNearSurface.HasValue?Math.Min(0,(_basis.Inverse()*(targetNearSurface.Value-_target)).X-.04f*_height):-.45f*_height;
+            _target+=_basis.X*Math.Clamp(nearSide,bound,0f);
+            _prototypeContactAnchorLocked=true;
+        }
+        _effect.ConfigureWeaponFrame?.Invoke(poseFrame);
+        if(weaponTraceLength.HasValue) _effect.ConfigureWeaponTraceLength?.Invoke(weaponTraceLength.Value/(_height*_size));
+        if(weaponOrigin.HasValue) _effect.ConfigureWeaponOrigin?.Invoke(_basis.Inverse()*(weaponOrigin.Value-_target)/(_height*_size));
+        _source=point;
+        _effect.ConfigureSource?.Invoke(_basis.Inverse()*(point-_target)/(_height*_size));
+    }
+
 	public void Sample(float elapsed)
 	{
 		if (_effect == null)
@@ -578,11 +679,24 @@ public class AuthoredGeometryFx : Node3D
 			light = 0f;
 		}
 		_targetLight.Position = _target;
+        if (_effect.Shader == "Hd2dPrototype" && Hd2dAttackPrototype.UsesCastSource(_route) && age < 0)
+        {
+            float flight = Hd2dAttackPrototype.CastTravel(_route.Key,(float)age);
+            _targetLight.Position = _source.Lerp(_target, flight);
+        }
+        if(_effect.Shader=="Hd2dPrototype" && Hd2dAttackPrototype.UsesFireSource(_route) && age>=.115)
+        {
+            float rise=Math.Clamp(((float)age-.115f)/.16f,0f,1f);
+            _targetLight.Position=_target+Vector3.Up*(_height*.24f*rise);
+        }
 		_targetLight.LightColor = _lightColor;
 		_targetLight.LightEnergy = light * 1.6f * (_effect.TargetPeak / 0.35f);
-		_floorLight.Position = _feet + Vector3.Up * (_height * 0.2f);
+		_floorLight.Position = _feet + Vector3.Up * (_height * (_effect.Shader=="Hd2dPrototype" ? .45f : .2f));
+		if (_effect.Shader == "Hd2dPrototype" && Hd2dAttackPrototype.UsesCastSource(_route) && age < 0)
+            _floorLight.Position = new Vector3(_targetLight.Position.X, _feet.Y+_height*.45f, _targetLight.Position.Z);
 		_floorLight.LightColor = _lightColor;
-		_floorLight.LightEnergy = ((QualityLevel < 2) ? (light * 0.48f * (_effect.FloorPeak / 0.12f)) : 0f);
+		float floorLight=RealLightsEnabled?Math.Max(0f,_effect.FloorLight?.Invoke()??_effect.Light())*_lightGain:0f;
+		_floorLight.LightEnergy = ((QualityLevel < 2) ? (floorLight * 0.48f * (_effect.FloorPeak / 0.12f)) : 0f);
 		_targetLight.ShadowEnabled = QualityLevel == 0;
 		_floorLight.ShadowEnabled = QualityLevel == 0;
 		for (int j = 0; j < _effect.Batches.Length; j++)
@@ -637,26 +751,38 @@ public class AuthoredGeometryFx : Node3D
 		}
 	}
 
-	public void AppendSourceLights(List<ActorMaterialBinding.PointLight> lights)
+	public void AppendSourceLights(List<ActorMaterialBinding.PointLight> lights, bool forestReceiver = false)
 	{
 		if (IsActive && RealLightsEnabled && _effect != null)
 		{
 			float weight = Math.Max(0f, _effect.Light()) * _lightGain;
+            float floorWeight=Math.Max(0f,_effect.FloorLight?.Invoke()??_effect.Light())*_lightGain;
 			Color linear = _lightColor.SrgbToLinear();
 			Vector3 rgb = new Vector3(linear.R, linear.G, linear.B);
 			if (weight * _effect.TargetPeak > 0f)
 			{
 				lights.Add(new ActorMaterialBinding.PointLight(_targetLight.Position, 7f, rgb * (40.5f * weight * _effect.TargetPeak), IsAttack: true));
 			}
-			if ((QualityLevel < 2 || AnalyticalFloorFallbackEnabled) && weight * _effect.FloorPeak > 0f)
+			if ((QualityLevel < 2 || AnalyticalFloorFallbackEnabled) && floorWeight * _effect.FloorPeak > 0f)
 			{
-				lights.Add(new ActorMaterialBinding.PointLight(_floorLight.Position, 13f, rgb * (63f * weight * _effect.FloorPeak), IsAttack: true));
+				// Brief shared hot irradiance joins the effect, target and terrain.
+                // The prior constant .14 actor factor erased this crest entirely.
+                float actorReceive=1f;
+                if(_effect.Shader=="Hd2dPrototype" && !forestReceiver)
+                {
+                    float visualAge=_effect.VisualAge?.Invoke()??-1f;
+                    float release=Math.Clamp((visualAge-.055f)/.135f,0f,1f);
+                    float crest=visualAge<0?0f:1-release*release*(3-2*release);
+                    actorReceive=.14f+.76f*crest;
+                }
+                lights.Add(new ActorMaterialBinding.PointLight(_floorLight.Position, 13f, rgb * (63f * floorWeight * _effect.FloorPeak * actorReceive), IsAttack: true));
 			}
 		}
 	}
 
 	public void Clear()
 	{
+        _prototypeContactAnchorLocked=false;
 		foreach (Draw draw in _draws)
 		{
 			draw.Mesh.ClearSurfaces();

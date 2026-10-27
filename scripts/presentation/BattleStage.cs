@@ -43,6 +43,17 @@ public class BattleStage : Node3D
 
 		public bool Launched;
 
+        public bool PrototypeOnsetPlayed;
+        // Existing primary CardPlayed metadata only: never inserted/replayed as a beat.
+        public GameEvent_CardPlayed? PrimaryContinuationCard;
+        public string? PrimaryContinuationUid;
+        public bool PrimaryContinuationSourceStarted;
+        public bool PrototypeRemoteStrike;
+        public Vector3? PrototypeNearSurface;
+        public Vector3? PrototypeTransferOrigin;
+        public string PrototypeApproachReason="";
+        public Vector3 PrototypeApproachTravel;
+
 		public bool Finished;
 
 		public float LaunchedAt;
@@ -56,6 +67,7 @@ public class BattleStage : Node3D
 		public SourceShowcaseProfile? Profile;
 
 		public int Volleys = 1;
+        public int VisualVolleys = 1;
 
 		public BattleActor? Actor;
 
@@ -107,6 +119,8 @@ public class BattleStage : Node3D
 
 		public float PreviewAt;
 
+        public bool IndependentScatterPreview;
+
 		public float StartedAt;
 
 		public float Time;
@@ -144,6 +158,7 @@ public class BattleStage : Node3D
 		public EffectPlayback? Effect;
 
 		public int Volley;
+        public int TargetOrdinal;
 
 		public bool Direct;
 
@@ -1046,6 +1061,12 @@ public class BattleStage : Node3D
 				starts.Add(i3);
 			}
 		}
+        var continuation=FindPrimarySpellContinuation(change);
+        if(continuation.Index>=0 && !starts.Contains(continuation.Index))
+        {
+            starts.Add(continuation.Index);
+            starts.Sort();
+        }
 		owner.RemainingActions = starts.Count;
 		for (int part = 0; part < starts.Count; part++)
 		{
@@ -1055,12 +1076,22 @@ public class BattleStage : Node3D
 			{
 				Owner = owner
 			};
+            if(from==continuation.Index)
+            {
+                action2.PrimaryContinuationCard=continuation.Card;
+                action2.PrimaryContinuationUid=continuation.Uid;
+            }
 			float delay = (change.Events.Skip(from).Take(to - from).Any((GameEvent gameEvent2) => gameEvent2 is GameEvent_DamageDealt gameEvent_DamageDealt && gameEvent_DamageDealt.Source == "player") ? 0.13f : 0f);
 			List<int> contacts2 = new List<int>();
+            GameEvent_CardPlayed? supportOwnerEvent=change.Events.Skip(from).Take(to-from).OfType<GameEvent_CardPlayed>().FirstOrDefault();
+            string? supportOwnerCard=supportOwnerEvent?.CardId;
+            var supportContext=SupportVfxProfiles.PrimaryOwner(change,supportOwnerEvent);
+            bool supportClaimed=false;
 			for (int i4 = from; i4 < to; i4++)
 			{
 				GameEvent e3 = change.Events[i4];
 				PresentationBeat beat2 = _timeline.Describe(e3, Routes);
+                beat2=SupportVfxProfiles.Describe(beat2,supportOwnerCard,ref supportClaimed,supportContext);
 				bool flag = e3 is GameEvent_CardPlayed;
 				float contact = (flag ? 0f : delay);
 				action2.Beats.Add(new OrdinaryBeat
@@ -1099,6 +1130,41 @@ public class BattleStage : Node3D
 		}
 		_session?.SetPresentationBusy(InputLocked);
 	}
+
+    private (int Index,GameEvent_CardPlayed? Card,string? Uid) FindPrimarySpellContinuation(SessionChange change)
+    {
+        // Bounded pre-onPlay, one-cascade SPELL return. No generic mid-combo or
+        // weapon resume and no ownership inference from a repeated definition.
+        if(!Hd2dAttackPrototype.Enabled || !SourceShowcaseEnabled
+            || change.Command is not RunCommand_Combat {Command:Command_PlayCard play}
+            || string.IsNullOrEmpty(play.CardUid))return (-1,null,null);
+        var primary=change.Previous?.Combat?.Player.Hand.FirstOrDefault(c=>c.Uid==play.CardUid);
+        if(primary?.Def.Type!="spell")return (-1,null,null);
+        var family=ElementalVfxProfiles.ForCard(primary.Def.Id)?.Family;
+        if(family is not (ElementalVfxFamily.IceScatter or ElementalVfxFamily.LightScatter or ElementalVfxFamily.WaterWide))return (-1,null,null);
+        var played=change.Events.Select((e,i)=>(Event:e,Index:i)).Where(x=>x.Event is GameEvent_CardPlayed).ToArray();
+        if(played.Length!=2 || played[0].Event is not GameEvent_CardPlayed card || card.CardId!=primary.Def.Id
+            || played[1].Event is not GameEvent_CardPlayed nested)return (-1,null,null);
+        if(!change.Events.Skip(played[0].Index+1).Take(played[1].Index-played[0].Index-1)
+            .OfType<GameEvent_Cascaded>().Any(c=>c.CardId==primary.Def.Id && c.HitId==nested.CardId))return (-1,null,null);
+        int first=-1;
+        for(int i=0;i<change.Events.Count;i++)
+            if(change.Events[i] is GameEvent_DamageDealt {Source:"player",PresentationSource:{Kind:"card"} origin}
+                && origin.Uid==play.CardUid && origin.DefinitionId==primary.Def.Id){first=i;break;}
+        // Including blocked/zero first receipts is intentional; no positive-only
+        // boundary can skip or steal an earlier primary outcome.
+        if(first<=played[1].Index)return (-1,null,null);
+        bool nestedWitness=change.Events.Skip(played[1].Index+1).Take(first-played[1].Index-1)
+            .OfType<GameEvent_DamageDealt>().Any(h=>h.Source=="player" && h.PresentationSource is {Kind:"card"} n
+                && !string.IsNullOrEmpty(n.Uid) && n.Uid!=play.CardUid && n.DefinitionId==nested.CardId);
+        if(!nestedWitness)return (-1,null,null);
+        // Resolve source semantics for eligibility, not the outcome renderer.
+        // The original zero/blocked beat remains SystemOutcomeFx unchanged.
+        var route=Routes.Resolve((GameEvent_DamageDealt)change.Events[first]);
+        if(!Hd2dAttackPrototype.SupportsRoute(route) || route?.SourceKind!="card" || route.DefinitionId!=primary.Def.Id
+            || ElementalVfxProfiles.ForRoute(route.Key)?.Family!=family)return (-1,null,null);
+        return (first,card,play.CardUid);
+    }
 
 	private static bool HasOrdinaryPresentation(GameEvent e, PresentationBeat b)
 	{
@@ -1169,6 +1235,11 @@ public class BattleStage : Node3D
 			beat.PlannedContactAt = beat.ContactAt;
 			beat.PreviewAt += _clock;
 		}
+        if(action.PrimaryContinuationCard!=null && !action.PrimaryContinuationSourceStarted)
+        {
+            action.PrimaryContinuationSourceStarted=true;
+            BeginSourceCard(action);
+        }
 	}
 
 	private EffectPlayback AcquireEffect()
@@ -1219,10 +1290,55 @@ public class BattleStage : Node3D
 		}
 		if (r.Reason == null)
 		{
-			return _ledger.Ready(r);
+            if(_ledger.Ready(r))return true;
+            if(CanPreviewIndependentScatterOwner(b,r))
+            {
+                b.IndependentScatterPreview=true;
+                return true;
+            }
+            return false;
 		}
 		return true;
 	}
+
+    private static bool UsesOrderedSharedLaunchMaterial(AttackRoute? route)
+    {
+        if(!Hd2dAttackPrototype.SupportsRoute(route))return false;
+        var profile=ElementalVfxProfiles.ForRoute(route?.Key);
+        if(profile?.Family is (ElementalVfxFamily.IceScatter or ElementalVfxFamily.LightScatter or ElementalVfxFamily.WaterWide))return true;
+        // Explicit Feast only, not a generic Dark-source or nested-drain opt-in.
+        return route!=null && profile?.CardId=="black_feast" && profile.Family==ElementalVfxFamily.Dark
+            && route.Key=="card:black_feast" && route.DefinitionId=="black_feast"
+            && route.SourceKind=="card" && route.Family=="dark_drain"
+            && route.Renderer=="DarkDrainFx" && route.Element=="dark" && !route.FixedSmall;
+    }
+
+    // Preview-only reservation. Numeric contact still uses the unchanged ordered
+    // ledger commit and display-boundary validation below. No synthetic receipt.
+    // Receipt.Exact is a post-commit result, not a pre-preview eligibility field;
+    // ValidReceipt below proves structure and current target Before vitals.
+    private bool CanPreviewIndependentScatterOwner(OrdinaryBeat b,CombatPresentationLedger.Receipt receipt)
+    {
+        if(!Hd2dAttackPrototype.Enabled || !b.Direct || b.Action.EnemyPhase || b.Contacted
+            || _clock>=b.ContactAt || !_ledger.Current(receipt)
+            || receipt.Reason!=null || receipt.Target<0 || !Hd2dAttackPrototype.SupportsRoute(b.Beat.Route))return false;
+        var profile=ElementalVfxProfiles.ForRoute(b.Beat.Route?.Key);
+        if(!UsesOrderedSharedLaunchMaterial(b.Beat.Route))return false;
+        if(b.Beat.Event is not GameEvent_DamageDealt {Source:"player",HpLoss:>0} hit
+            || hit.PresentationSource is not {Kind:"card"} source || string.IsNullOrEmpty(source.Uid)
+            || b.Action.Card?.CardId!=source.DefinitionId || profile?.CardId!=source.DefinitionId
+            || !_eventOwners.TryGetValue(hit,out var owner) || !ReferenceEquals(owner,b.Action.Owner)
+            || owner.Change.Command is not RunCommand_Combat {Command:Command_PlayCard play}
+            || play.CardUid!=source.Uid
+            || owner.Change.Previous?.Combat?.Player.Hand.Any(c=>c.Uid==play.CardUid && c.Def.Id==source.DefinitionId)!=true
+            || !ValidReceipt(hit,receipt.Values,_displayState))return false;
+        var first=b.Action.Beats.FirstOrDefault(x=>x.Direct && x.Volley==b.Volley && Hd2dAttackPrototype.SupportsRoute(x.Beat.Route));
+        if(!ReferenceEquals(first,b))return false;
+        // Even unchanged vitals cannot authorize jumping over an earlier same-
+        // target numeric/nested receipt. Current is generation/instance checked.
+        if(_receipts.Values.Any(p=>p.Index<receipt.Index && p.Target==receipt.Target && _ledger.Current(p)))return false;
+        return true;
+    }
 
 	private void ProcessOrdinaryContacts(float delta)
 	{
@@ -1426,6 +1542,22 @@ public class BattleStage : Node3D
 					continue;
 				}
 				float elapsed = Math.Max(0f, _clock - b.StartedAt);
+                float effectTime=elapsed-b.EffectStartedAt+b.EffectOffset;
+                // Any admitted shared-launch material can wait for older receipts,
+                // including legacy nested/non-direct action grouping. Receiving
+                // impact/aftermath never precedes its actual numeric contact.
+                if(!b.Contacted && UsesOrderedSharedLaunchMaterial(b.Beat.Route))
+                    effectTime=Math.Min(effectTime,(b.Beat.Scenario?.Windup??0f)-.0001f);
+                // Only this proved installed neutral family: no receiving core
+                // before its own numeric contact, even during interleaved triggers.
+                if(!b.Contacted && PermanentContactVfxProfiles.OriginalRoute(b.Beat.Route)
+                    && b.Beat.Event is GameEvent_DamageDealt permanentHit && IsOwnedInstalledNeutralPermanentContact(permanentHit))
+                    effectTime=Math.Min(effectTime,(b.Beat.Scenario?.Windup??0f)-.0001f);
+                // New local reaction material is never an anticipatory wound.
+                // Existing counter pose, numeric order and legacy routes are untouched.
+                if(!b.Contacted && ReactionContactVfxProfiles.OriginalRoute(b.Beat.Route)
+                    && b.Beat.Event is GameEvent_DamageDealt reactionHit && IsOwnedConfirmedReactionContact(reactionHit))
+                    effectTime=Math.Min(effectTime,(b.Beat.Scenario?.Windup??0f)-.0001f);
 				if (b.Rejected)
 				{
 					RetireEffect(b);
@@ -1433,11 +1565,17 @@ public class BattleStage : Node3D
 				}
 				if (slot.Native.IsActive)
 				{
-					slot.Native.Sample(elapsed - b.EffectStartedAt + b.EffectOffset);
+                    if(b.Beat.Route?.Renderer=="Hd2dSupportFx" && _hero!=null)
+                        slot.Native.UpdateSupportReceiver(_hero.SourceMotionFeet,_hero.Height);
+                    if(Hd2dAttackPrototype.UsesWeaponSource(b.Beat.Route) && b.Action.Actor!=null)
+                        slot.Native.UpdatePrototypeSource(b.Action.Actor.PrototypeStrikeSourcePoint, b.Action.Actor.PoseFrame, b.Action.Actor.PrototypeStrikeWindupPoint, b.Action.Actor.Height*.30f, elapsed - b.EffectStartedAt + b.EffectOffset, b.Action.PrototypeNearSurface);
+                    else if(Hd2dAttackPrototype.UsesCastSource(b.Beat.Route) && b.Action.Actor!=null)
+                        slot.Native.UpdatePrototypeSource(b.Action.Actor.PrototypeFireSourcePoint,b.Action.Actor.PoseFrame);
+					slot.Native.Sample(effectTime);
 				}
 				else if (slot.Fallback.Visible)
 				{
-					slot.Fallback.Sample(elapsed - b.EffectStartedAt + b.EffectOffset);
+					slot.Fallback.Sample(effectTime);
 				}
 				if (b.Contacted && elapsed >= b.Beat.Duration)
 				{
@@ -1655,20 +1793,20 @@ public class BattleStage : Node3D
 		try { _session?.RecordFreezeEvent(PresentationFaultBlocked ? "BattleStage.FaultBlocked" : "BattleStage.FaultStaticReady", !PresentationFaultBlocked); } catch { }
 	}
 
-	private void AppendAttackLights(List<ActorMaterialBinding.PointLight> lights, AuthoredGeometryFx? probe)
+	private void AppendAttackLights(List<ActorMaterialBinding.PointLight> lights, AuthoredGeometryFx? probe, bool forestReceiver = false)
 	{
 		if (probe != null)
 		{
-			probe.AppendSourceLights(lights);
+			probe.AppendSourceLights(lights, forestReceiver);
 			return;
 		}
-		_native.AppendSourceLights(lights);
+		_native.AppendSourceLights(lights, forestReceiver);
 		foreach (OrdinaryBeat item in _ordinaryActions.SelectMany((ActionPlayback a) => a.Beats))
 		{
 			EffectPlayback effect = item.Effect;
 			if (effect != null && lights.Count < 8)
 			{
-				effect.Native.AppendSourceLights(lights);
+				effect.Native.AppendSourceLights(lights, forestReceiver);
 			}
 		}
 		AppendSourceCastLight(lights);
@@ -2505,14 +2643,15 @@ public class BattleStage : Node3D
 			else
 			{
 				OrdinaryBeat? ordinaryCallback = _ordinaryCallback;
-				if (ordinaryCallback == null || !ordinaryCallback.Direct)
+				if ((ordinaryCallback == null || !ordinaryCallback.Direct)
+                    && !(_sourceActor==_hero && (IsOwnedInstalledNeutralPermanentContact(hit) || IsOwnedCenserNecroContact(hit))))
 				{
 					_sourceActor?.PlayPose("attack", _clock);
 				}
 			}
 			if (!_projectionActive)
 			{
-				StartEffect(beat.Route, beat.Scenario, from, to);
+				StartEffect(ReactionContactRoute(LightningContactRoute(NecroContactRoute(PermanentContactRoute(EnemyContactRoute(beat.Route,hit),hit),hit),hit),hit), beat.Scenario, from, to);
 				if (hit.HpLoss > 0)
 				{
 					_audio.PlayKey("DamageDealt." + ((hit.Source == "enemy") ? "enemy" : "player") + ".swing");
@@ -2540,7 +2679,7 @@ public class BattleStage : Node3D
 			}
 			if (_targetActor != null)
 			{
-				StartEffect(beat.Route, beat.Scenario, _sourceActor?.Contact ?? _targetActor.Contact, _targetActor.Impact);
+				StartEffect(StatusContactVfxProfiles.Select(beat.Route,beat.Event,_eventOwners.ContainsKey(beat.Event)), beat.Scenario, _sourceActor?.Contact ?? _targetActor.Contact, _targetActor.Impact);
 			}
 		}
 		else if (beat.Event is GameEvent_EnemyActionExecuting action)
@@ -2632,6 +2771,7 @@ public class BattleStage : Node3D
 				_contactBlock = block;
 				OrdinaryBeat direct = _ordinaryCallback;
 				if (direct != null && direct.Direct && direct.Volley == 0 && BeatContactOrdinal <= 0
+                    && !(Hd2dAttackPrototype.Enabled && direct.TargetOrdinal>0 && PhysicalVfxProfiles.ForCard(direct.Action?.Card?.CardId)?.TargetPattern==PhysicalVfxTargetPattern.ConditionalTransfer)
 					&& direct.Action?.Profile != null && direct.Action.Capture is { } attackOwner)
 				{
 					if (!TryContactVisual(() => direct.Action.Actor?.SynchronizeAttackContactPose(attackOwner, _clock), "AttackPose", callbackGeneration)) return;
@@ -2642,13 +2782,13 @@ public class BattleStage : Node3D
 					EffectScenario scenario = EffectScenario.For(route, loss, priorHp, hit.PresentationReceipt?.Before.MaxHp);
 					_effectStartedAt = BeatTime;
 					_effectOffset = scenario.Windup;
-					StartEffect(route, scenario, _sourceActor?.Contact ?? Vector3.Zero, _targetActor?.Contact ?? Vector3.Zero);
+					StartEffect(ReactionContactRoute(LightningContactRoute(NecroContactRoute(PermanentContactRoute(EnemyContactRoute(route,hit),hit),hit),hit),hit), scenario, _sourceActor?.Contact ?? Vector3.Zero, _targetActor?.Contact ?? Vector3.Zero);
 				}
-				if (!TryContactVisual(() => _audio.PlayDamageContact(hit.Source, loss, block, hit.Source == "player" && (hit.Amount >= 15 || hit.Exposed == true)), "ContactAudio", callbackGeneration)) return;
+				if (!TryContactVisual(() => _audio.PlayDamageContact(hit.Source, loss, block, hit.Source == "player" && (hit.Amount >= 15 || hit.Exposed == true), hit.PresentationSource?.Kind == "card" ? hit.PresentationSource.DefinitionId : null), "ContactAudio", callbackGeneration)) return;
 				if (loss > 0)
 				{
 					ApplySourceImpact(beat, hit);
-					if (!TryContactVisual(() => _targetActor?.Flash(_clock), "ContactFlash", callbackGeneration)) return;
+					if (!TryContactVisual(() => _targetActor?.Flash(_clock, hit.PresentationSource?.Kind == "card" && Hd2dAttackPrototype.Supports("card:" + hit.PresentationSource.DefinitionId) ? .045f : .18f), "ContactFlash", callbackGeneration)) return;
 				}
 				else if (block > 0)
 				{
@@ -3240,10 +3380,166 @@ public class BattleStage : Node3D
         return ToLocal(sprite.GlobalTransform * local);
     }
 
+    private bool IsOwnedCenserNecroContact(GameEvent_DamageDealt hit)
+    {
+        if(!_eventOwners.TryGetValue(hit,out var owner))return false;
+        var before=owner.Change.Previous?.Combat;var after=owner.Change.Current.Combat;
+        string? uid=hit.PresentationSource?.Uid;
+        if(before==null || after==null || string.IsNullOrEmpty(uid))return false;
+        var card=before.Player.DrawPile.FirstOrDefault(c=>c.Uid==uid && c.Def.Id=="black_corpse_kiss");
+        bool moved=card!=null && card.Def.Effects.Any(e=>e.Trigger=="onSelfExhausted" && e.Effect=="dealDamageDrain" && e.Amount==3)
+            && !before.Player.ExhaustPile.Any(c=>c.Uid==uid) && !after.Player.DrawPile.Any(c=>c.Uid==uid)
+            && after.Player.ExhaustPile.Any(c=>c.Uid==uid && c.Def.Id=="black_corpse_kiss");
+        bool censer=!string.IsNullOrEmpty(hit.SourceUid)
+            && (before.Player.Permanents.Any(c=>c.Uid==hit.SourceUid && c.Def.Id=="black_thirst_censer")
+                || after.Player.Permanents.Any(c=>c.Uid==hit.SourceUid && c.Def.Id=="black_thirst_censer"));
+        bool milled=false,necro=false,found=false;
+        foreach(var e in owner.Change.Events)
+        {
+            if(ReferenceEquals(e,hit)){found=true;break;}
+            if(e is GameEvent_CardsMilled { Count: >0 } mill && mill.CardIds?.Contains("black_corpse_kiss")==true)milled=true;
+            if(milled && e is GameEvent_NecroFired { CardId:"black_corpse_kiss" })necro=true;
+        }
+        return NecroContactVfxProfiles.OwnsCenserDeckExhaustion(hit,moved,censer,found&&milled&&necro);
+    }
+    private AttackRoute NecroContactRoute(AttackRoute route,GameEvent_DamageDealt hit)
+        =>NecroContactVfxProfiles.Select(route,hit,IsOwnedCenserNecroContact(hit));
+
+    private AttackRoute LightningContactRoute(AttackRoute route,GameEvent_DamageDealt hit)
+    {
+        bool owned=false;
+        if(_eventOwners.TryGetValue(hit,out var owner)
+            && owner.Change.Current.LeaderId=="leader_izzet"
+            && owner.Change.Command is RunCommand_Combat { Command: Command_PlayCard play }
+            && hit.PresentationSource is {Kind:"card",DefinitionId:"blue_aether_burst"} source
+            && !string.IsNullOrEmpty(source.Uid) && source.Uid==play.CardUid)
+        {
+            // Immutable owning command context, not mutable catalog leader state
+            // or proximity to a resource event. AetherDischarged alone has no UID.
+            owned=owner.Change.Previous?.Combat?.Player.Hand.Any(c=>c.Uid==play.CardUid && c.Def.Id=="blue_aether_burst")==true;
+        }
+        return LightningContactVfxProfiles.Select(route,hit,owned);
+    }
+
+    private bool IsOwnedConfirmedReactionContact(GameEvent_DamageDealt hit)
+    {
+        if(hit.PresentationSource is not {Kind:"reaction",DefinitionId:"black_reaction_curse"} source
+            || string.IsNullOrEmpty(source.Uid) || !_eventOwners.TryGetValue(hit,out var owner)
+            || owner.Change.Command is not RunCommand_Combat {Command:Command_ConfirmReaction {Fire:true} confirm}
+            || confirm.CardUid!=source.Uid)return false;
+        var before=owner.Change.Previous?.Combat;var after=owner.Change.Current.Combat;
+        if(before==null || after==null || before.ReactionMode!="set-confirm" || before.Phase!="awaiting-reaction"
+            || before.PendingWindow is not {Stage:"post"} pending || pending.EnemyIndex!=hit.EnemyIndex)return false;
+        var card=before.Player.SetCards.FirstOrDefault(c=>c.Uid==source.Uid && c.Def.Id==source.DefinitionId);
+        var window=DeckRogue.Engine.Effects.WindowFromPending(before);
+        if(card==null || card.Def.Type!="reaction" || window?.Kind!="attack"
+            || !DeckRogue.Engine.Effects.IsTrapLive(before,card)
+            || !DeckRogue.Engine.Effects.UsableSetCards(before,window).Any(c=>c.Uid==source.Uid)
+            || after.Player.SetCards.Any(c=>c.Uid==source.Uid))return false;
+        bool triggered=false,found=false;
+        foreach(var e in owner.Change.Events)
+        {
+            if(ReferenceEquals(e,hit)){found=true;break;}
+            if(e is GameEvent_ReactionTriggered {CardId:"black_reaction_curse"})triggered=true;
+        }
+        // SourceUid is ambient context, NOT the selected reaction instance UID.
+        // No final-discard assumption: normal continuation can reshuffle/draw it.
+        return ReactionContactVfxProfiles.OwnsConfirmedInstance(hit,found&&triggered);
+    }
+    private AttackRoute ReactionContactRoute(AttackRoute route,GameEvent_DamageDealt hit)
+        =>ReactionContactVfxProfiles.Select(route,hit,IsOwnedConfirmedReactionContact(hit));
+
+    private bool IsOwnedInstalledNeutralPermanentContact(GameEvent_DamageDealt hit)
+    {
+        if(!_eventOwners.TryGetValue(hit,out var owner))return false;
+        string? uid=hit.PresentationSource?.Uid;string? definition=hit.PresentationSource?.DefinitionId;
+        if(string.IsNullOrEmpty(uid) || !PermanentContactVfxProfiles.SelectedDefinition(definition))return false;
+        bool Installed(CardInstance p)=>p.Uid==uid && p.Def.Id==definition && p.Def.Type=="permanent"
+            && p.Def.Retainer!=true && p.Def.Echo!=true && p.Def.Life==null;
+        bool installed=owner.Change.Previous?.Combat?.Player.Permanents.Any(Installed)==true
+            || owner.Change.Current.Combat?.Player.Permanents.Any(Installed)==true;
+        return PermanentContactVfxProfiles.OriginalRoute(Routes.Resolve(hit))
+            && PermanentContactVfxProfiles.OwnsInstalledNeutral(hit,installed);
+    }
+    // Historical Candle-only diagnostic remains narrow, not a silent rename.
+    private bool IsOwnedCandleContact(GameEvent_DamageDealt hit)
+        =>hit.PresentationSource?.DefinitionId=="black_blood_candle" && IsOwnedInstalledNeutralPermanentContact(hit);
+    private AttackRoute PermanentContactRoute(AttackRoute route,GameEvent_DamageDealt hit)
+        =>PermanentContactVfxProfiles.Select(route,hit,IsOwnedInstalledNeutralPermanentContact(hit));
+
+    private AttackRoute EnemyContactRoute(AttackRoute route,GameEvent_DamageDealt hit)
+    {
+        if(_sourceActor==null || _targetActor!=_hero || !_eventOwners.TryGetValue(hit,out var owner))return route;
+        return EnemyContactVfxProfiles.Select(route,hit,_sourceActor.DefinitionId,
+            ProvenEnemyAttackMove(hit.PresentationEnemyAction,_sourceActor),owner.Change.Current.Combat?.EventLog);
+    }
+
 	private void StartEffect(AttackRoute route, EffectScenario scenario, Vector3 from, Vector3 to)
 	{
+        if(route.SourceKind=="card" && Hd2dAttackPrototype.HasAuthoredAudio(route.DefinitionId) && _ordinaryCallback?.Action is ActionPlayback onsetAction && !onsetAction.PrototypeOnsetPlayed)
+        {
+            onsetAction.PrototypeOnsetPlayed=true;
+            _audio.PlayKey("Hd2dOnset."+Hd2dAttackPrototype.AudioCard(route.DefinitionId));
+        }
+        if(Hd2dAttackPrototype.UsesCastSource(route) && _hero!=null)
+            from=_hero.PrototypeFireSourcePoint;
 		from = FurnaceFireSource(route, WinchGrilleSource(route, SealOrbLensSource(route, PriestFocusSource(route, CannonMuzzleSource(route, SentryMuzzleSource(route, LostSoulEyeSource(route, from)))))));
 		to = _targetActor?.Impact ?? to;
+        if(Hd2dAttackPrototype.UsesWeaponSource(route) && _targetActor!=null && _hero!=null)
+        {
+            float bladeY=_hero.PrototypeAxeContactPoint.Y;
+            to.Y=Math.Clamp(bladeY,_targetActor.SourceMotionFeet.Y+.08f*_targetActor.Height,
+                _targetActor.SourceMotionFeet.Y+.42f*_targetActor.Height);
+        }
+        if(Hd2dAttackPrototype.SupportsRoute(route) && PhysicalVfxProfiles.ForRoute(route.Key) is PhysicalVfxProfile physical)
+        {
+            var current=_ordinaryCallback;
+            bool transfer=physical.TargetPattern==PhysicalVfxTargetPattern.ConditionalTransfer;
+            bool secondary=(physical.TargetPattern==PhysicalVfxTargetPattern.ResolvedSweep || transfer) && (current?.TargetOrdinal??0)>0;
+            if(transfer && current?.Action is ActionPlayback transferAction)
+            {
+                // Freeze first receiving point before death/recoil removes its actor.
+                // Only an already-authoritative later event may consume this origin.
+                if(!secondary) transferAction.PrototypeTransferOrigin=to;
+                else
+                {
+                    var first=transferAction.Beats.FirstOrDefault(x=>x.Direct && x.TargetOrdinal==0);
+                    if(first?.Effect?.Native is AuthoredGeometryFx previous)
+                        transferAction.PrototypeTransferOrigin=previous.PrototypeContactPoint;
+                    if(transferAction.PrototypeTransferOrigin is Vector3 origin) from=origin;
+                }
+            }
+            // Non-damaging outcomes already use PresentationTimeline's system:outcome
+            // route. Keep its guard/nullified semantics instead of a second outcome path.
+            scenario=scenario with { PrototypeRemoteStrike=(current?.Action?.PrototypeRemoteStrike??false)||secondary,
+                SuppressSourceGesture=secondary,PrototypeFixedSource=transfer&&secondary };
+        }
+        if(Hd2dAttackPrototype.SupportsRoute(route) && ElementalVfxProfiles.ForRoute(route.Key)?.TargetSpacing>0)
+        {
+            var current=_ordinaryCallback;
+            // A blocked/dead first receiver must not steal the only gather.
+            // Select the first actual positive card route in this volley.
+            var first=current?.Action.Beats.FirstOrDefault(b=>b.Direct && b.Volley==current.Volley && Hd2dAttackPrototype.SupportsRoute(b.Beat.Route));
+            scenario=scenario with { SuppressSourceGesture=first!=null && !ReferenceEquals(first,current) };
+            if(ElementalVfxProfiles.ForRoute(route.Key)?.Family==ElementalVfxFamily.WaterWide
+                && current!=null && ReferenceEquals(first,current))
+            {
+                var points=new List<Vector3>();var offsets=new List<float>();
+                // Include actual blocked attempts in the shared travel path, but
+                // their existing system-outcome route still owns guard feedback.
+                // Missing/dead recipients never acquire fabricated contacts.
+                foreach(var b in current.Action.Beats.Where(b=>b.Direct && b.Volley==current.Volley).OrderBy(b=>b.ContactAt))
+                {
+                    if(b.Beat.Event is not GameEvent_DamageDealt h || h.Source!="player"
+                        || h.PresentationSource?.Kind!="card" || h.PresentationSource.DefinitionId!=route.DefinitionId
+                        || h.PresentationReceipt?.Target!="enemy")continue;
+                    var receiver=Enemy(h.PresentationReceipt.EnemyIndex);if(receiver==null)continue;
+                    points.Add(receiver.SourceMotionFeet);
+                    offsets.Add((float)(b.ContactAt-current.ContactAt));
+                }
+                scenario=scenario with { PrototypeResolvedPath=points.ToArray(),PrototypeResolvedOffsets=offsets.ToArray() };
+            }
+        }
 		_fx.Clear();
 		AuthoredGeometryFx native = _native;
 		Vector3 target = to;
@@ -3255,6 +3551,7 @@ public class BattleStage : Node3D
 		{
 			_fx.Begin(route, scenario, from, to);
 		}
+        else native.ConfigurePrototypeViewport(_world.Camera);
 	}
 
 	private void SyncLedgerActor(int target)
@@ -3623,6 +3920,20 @@ public class BattleStage : Node3D
 		}
 		_faultBoundary = "BattleStage.OrdinaryContact";
 		ProcessOrdinaryContacts(delta);
+        // Exact front-strike weapon traces consume the rendered pose, not the prior
+        // frame's Sprite transform. Update only those source actors here, once;
+        // the normal visual loop below skips them (no duplicate pose clock advance).
+        var weaponSourceActors = new HashSet<BattleActor>();
+        if(Hd2dAttackPrototype.Enabled)
+        {
+            foreach(ActionPlayback action in _ordinaryActions)
+                foreach(OrdinaryBeat beat in action.Beats)
+                    if(!beat.Rejected && Hd2dAttackPrototype.UsesWeaponSource(beat.Beat.Route) && beat.Effect?.Native.IsActive==true
+                        && beat.Action.Actor is BattleActor sourceActor && sourceActor.PrototypeStrikeUsesWeaponTrace)
+                        weaponSourceActors.Add(sourceActor);
+            foreach(BattleActor sourceActor in weaponSourceActors)
+                sourceActor.UpdateVisual(_clock,-1f,-1f,guarding:false,_presentationFrame,delta);
+        }
 		_faultBoundary = "BattleStage.EffectSample";
 		AdvanceOrdinaryEffects();
 		if ((object)_timeline.Active?.Route != null && !_rejectBeat)
@@ -3653,7 +3964,8 @@ public class BattleStage : Node3D
 		foreach (BattleActor actor in array)
 		{
 			BindActorLights(actor);
-			actor.UpdateVisual(_clock, -1f, -1f, guarding: false, _presentationFrame, delta);
+            if(!weaponSourceActors.Contains(actor))
+			    actor.UpdateVisual(_clock, -1f, -1f, guarding: false, _presentationFrame, delta);
 		}
 		_faultBoundary = "BattleStage.FinishPresentation";
 		TryFinishPresentations();
@@ -3859,14 +4171,20 @@ public class BattleStage : Node3D
 	private void CacheWorldLights()
 	{
 		_worldLights.Clear();
-		_worldLights.AddRange(_world.FindChildren("*", "OmniLight3D", recursive: true, owned: false).OfType<OmniLight3D>());
+		// Geometry-only stage crest has its own native layer mask. Do not feed it
+        // back into unshaded actor material lighting as an ordinary point light.
+        _worldLights.AddRange(_world.FindChildren("*", "OmniLight3D", recursive: true, owned: false).OfType<OmniLight3D>().Where(light=>!light.HasMeta("stage_attack_crest_only")));
 	}
 
 	private void RefreshForestLighting(AuthoredGeometryFx? probeFx = null)
 	{
 		_actorLights.Clear();
-		AppendAttackLights(_actorLights, probeFx);
+		AppendAttackLights(_actorLights, probeFx, true);
 		_world.SetForestAttackLights(_actorLights, (SourceCastLightCount > 0) ? 3 : 2);
+        AuthoredGeometryFx? focus=probeFx??_native;
+        if(probeFx==null) foreach(var beat in _ordinaryActions.SelectMany(a=>a.Beats))
+            if(beat.Effect?.Native is AuthoredGeometryFx fx && fx.PrototypeStageFocus>(focus?.PrototypeStageFocus??0))focus=fx;
+        _world.SetAttackStaging(focus?.PrototypeStageFocus??0,focus?.PrototypeFocusPosition,focus?.PrototypeWarmCrest??0,focus?.PrototypeSpectacleCrest??0);
 	}
 
 	public void RefreshActorLighting(AuthoredGeometryFx? probeFx = null)
@@ -6807,13 +7125,14 @@ public class BattleStage : Node3D
 
 	private void PlanActorAction(ActionPlayback action)
 	{
-		GameEvent_CardPlayed card = action.Beats.Select((OrdinaryBeat ordinaryBeat) => ordinaryBeat.Beat.Event).OfType<GameEvent_CardPlayed>().FirstOrDefault();
+		GameEvent_CardPlayed card = action.PrimaryContinuationCard ?? action.Beats.Select((OrdinaryBeat ordinaryBeat) => ordinaryBeat.Beat.Event).OfType<GameEvent_CardPlayed>().FirstOrDefault();
 		if ((object)card == null)
 		{
 			return;
 		}
 		action.Card = card;
-		List<OrdinaryBeat> hits = action.Beats.Where((OrdinaryBeat ordinaryBeat) => ordinaryBeat.Beat.Event is GameEvent_DamageDealt h && OwnsDirectHit(h, card.CardId)).ToList();
+		List<OrdinaryBeat> hits = action.Beats.Where((OrdinaryBeat ordinaryBeat) => ordinaryBeat.Beat.Event is GameEvent_DamageDealt h && OwnsDirectHit(h, card.CardId)
+            && (action.PrimaryContinuationUid==null || h.PresentationSource is {Kind:"card"} source && source.Uid==action.PrimaryContinuationUid)).ToList();
 		if (hits.Count == 0)
 		{
 			return;
@@ -6829,16 +7148,40 @@ public class BattleStage : Node3D
 				volley++;
 				seen.Clear();
 			}
+            item.TargetOrdinal=seen.Count;
 			seen.Add(target);
 			item.Volley = volley;
 			item.Direct = true;
 		}
 		action.Volleys = volley + 1;
+        action.VisualVolleys=action.Volleys;
+        var physicalProfile=PhysicalVfxProfiles.ForCard(card.CardId);
+        var elementalProfile=ElementalVfxProfiles.ForCard(card.CardId);
+        if(Hd2dAttackPrototype.Enabled && physicalProfile?.TargetPattern==PhysicalVfxTargetPattern.ResolvedSweep)
+            action.VisualVolleys=Math.Max(1,hits.Where(row=>row.Beat.Event is GameEvent_DamageDealt h && (h.Amount>0 || h.HpLoss>0 || CombatOutcome.Read(h).Absorbed>0)).Select(row=>row.Volley+1).DefaultIfEmpty(1).Max());
 		SourceShowcaseProfile profile = action.Profile;
 		if ((object)profile == null)
 		{
 			return;
 		}
+        if(action.PrimaryContinuationCard!=null)
+        {
+            float originalFirst=action.Beats[0].ContactAt;
+            float previous=0f;
+            float previousOriginal=originalFirst;
+            foreach(var beat in action.Beats)
+            {
+                float shifted=profile.Contact+Math.Max(0f,beat.ContactAt-originalFirst);
+                float authored=beat.Direct ? profile.Contact+beat.Volley*profile.Interval
+                    +beat.TargetOrdinal*(physicalProfile?.TargetSpacing??elementalProfile?.TargetSpacing??0f) : 0f;
+                float original=beat.ContactAt;
+                beat.ContactAt=Math.Max(previous+Math.Max(0f,original-previousOriginal),Math.Max(shifted,authored));
+                beat.PreviewAt=Math.Max(0f,beat.ContactAt-(beat.Beat.Scenario?.Windup??0f));
+                previous=beat.ContactAt;
+                previousOriginal=original;
+            }
+            return;
+        }
 		float last = 0f;
 		foreach (OrdinaryBeat b in action.Beats)
 		{
@@ -6849,12 +7192,75 @@ public class BattleStage : Node3D
 			}
 			if (b.Direct)
 			{
-				last = profile.Contact + (float)b.Volley * profile.Interval;
+				last = profile.Contact + (float)b.Volley * profile.Interval + (Hd2dAttackPrototype.Enabled ? b.TargetOrdinal*(physicalProfile?.TargetSpacing??elementalProfile?.TargetSpacing??0f):0f);
 			}
 			b.ContactAt = last;
 			b.PreviewAt = Math.Max(0f, b.ContactAt - (b.Beat.Scenario?.Windup ?? 0f));
 		}
 	}
+
+    private SourceShowcaseProfile PrototypeApproachProfile(BattleActor target, SourceShowcaseProfile profile)
+    {
+        if (_hero == null || _world.Camera == null || ProjectEnemyFootprint(-1) is not Rect2 heroBounds) return profile;
+        var camera=_world.Camera;
+        float targetX=camera.UnprojectPosition(target.Home).X;
+        float available=float.PositiveInfinity;
+        foreach(var peer in _enemies.Values)
+        {
+            if(peer==target || !peer.Visible || peer.DissolveAmount>=1f) continue;
+            Rect2? bounds=peer.AuthoredFramesEnabled?ProjectAuthoredBounds(peer,true):ProjectEnemyFootprint(peer.EnemyIndex);
+            if(bounds is not Rect2 other || other.GetCenter().X<=heroBounds.GetCenter().X || other.GetCenter().X>=targetX) continue;
+            available=Math.Min(available,Math.Max(0,other.Position.X-heroBounds.End.X-heroBounds.Size.Y*.08f-8f));
+        }
+        if(!float.IsFinite(available)) return profile;
+        Vector3 direction=target.Home-_hero.Home;direction.Y=0;direction=direction.Normalized();
+        float requested=Math.Abs(camera.UnprojectPosition(_hero.Home+direction*(_hero.SourceMotionHeight*profile.Reach)).X-camera.UnprojectPosition(_hero.Home).X);
+        return requested>.001f ? profile with { Reach=profile.Reach*Math.Clamp(available/requested,0,1) } : profile;
+    }
+
+    private readonly record struct PrototypeApproachPlan(SourceShowcaseProfile Profile,float Clearance,bool Remote,Vector3? Surface,string Reason,float DesiredTravel,float SafeTravel,float ReachableTravel);
+    private PrototypeApproachPlan PrototypeStrikeApproach(BattleActor target,SourceShowcaseProfile profile)
+    {
+        if(_hero==null)return new(profile,0,false,null,"no_actor",0,0,0);
+        float legacy=_hero.Height*.30f+target.Height*.18f;
+        var fallback=PrototypeApproachProfile(target,profile);
+        if(_world.Camera==null || !target.TryPrototypeFacingSurface(_hero.PrototypePlanningAxeContactPoint.Y,out var surface))
+            return new(fallback,legacy,fallback.Reach<profile.Reach-.001f,null,"fallback_no_surface",0,0,0);
+        var camera=_world.Camera;
+        Vector3 delta=target.SourceMotionFeet-_hero.SourceMotionFeet;delta.Y=0;
+        float distance=delta.Length();if(distance<.01f)return new(fallback,legacy,false,null,"coincident_roots",0,0,0);
+        Vector3 direction=delta/distance;
+        float pixelsPerUnit=camera.UnprojectPosition(_hero.Home+direction).X-camera.UnprojectPosition(_hero.Home).X;
+        if(pixelsPerUnit<.001f)return new(fallback,legacy,fallback.Reach<profile.Reach-.001f,null,"invalid_projection",0,0,0);
+        float TravelToScreenX(Vector3 anchor,float desiredX)
+        {
+            if(camera.UnprojectPosition(anchor).X>=desiredX)return 0;
+            if(camera.UnprojectPosition(anchor+direction*distance).X<=desiredX)return distance;
+            float lo=0,hi=distance;
+            // Perspective projection is nonlinear over a full dash. Solve the
+            // actual projected weapon/body point, not a one-unit derivative.
+            for(int i=0;i<18;i++){float mid=(lo+hi)*.5f;if(camera.UnprojectPosition(anchor+direction*mid).X<desiredX)lo=mid;else hi=mid;}
+            return(lo+hi)*.5f;
+        }
+        float surfaceX=camera.UnprojectPosition(surface).X;
+        float contactTravel=TravelToScreenX(_hero.PrototypePlanningAxeContactPoint,surfaceX);
+        float safeTravel=contactTravel;
+        float bodyY=_hero.SourceMotionFeet.Y+_hero.Height*.65f;
+        if(target.TryPrototypeFacingBodySurface(bodyY,out var upperSurface) && _hero.TryPrototypeBodyFront(bodyY,out var bodyFront))
+        {
+            float safeX=camera.UnprojectPosition(upperSurface).X-3f;
+            safeTravel=Math.Min(safeTravel,TravelToScreenX(bodyFront,safeX));
+        }
+        // Reach only the selected near surface, never beyond its root or scene lane.
+        // A non-target obstacle or body-clearance conflict keeps the explicit travel cue.
+        float requiredReach=Math.Max(profile.Reach,contactTravel/_hero.SourceMotionHeight+.001f);
+        var requested=profile with{Reach=requiredReach};
+        var clamped=PrototypeApproachProfile(target,requested);
+        float reachable=Math.Min(safeTravel,clamped.Reach*_hero.SourceMotionHeight);
+        bool remote=reachable+.035f<contactTravel;
+        string reason=remote?(clamped.Reach*_hero.SourceMotionHeight+.035f<safeTravel?"intervening_actor":"body_clearance"):"physical_surface";
+        return new(clamped,Math.Max(0,distance-safeTravel),remote,surface,reason,contactTravel,safeTravel,reachable);
+    }
 
 	private void BeginSourceCard(ActionPlayback action)
 	{
@@ -6863,6 +7269,7 @@ public class BattleStage : Node3D
 			return;
 		}
 		_hero.Motion.BeginAction(_clock, _presentationFrame);
+        bool remotePrototypeStrike=false;
 		action.Actor = _hero;
 		if (action.Beats.FirstOrDefault((OrdinaryBeat ordinaryBeat) => ordinaryBeat.Direct)?.Beat.Event is GameEvent_DamageDealt hit)
 		{
@@ -6872,7 +7279,17 @@ public class BattleStage : Node3D
 				bool ranged = (_session?.Catalog.Cards.FirstOrDefault((CardDef c) => c.Id == action.Card.CardId))?.Type == "spell";
 				if ((object)action.Profile != null)
 				{
-					string pose = _hero.Motion.Approach(_hero.SourceMotionFeet, _hero.SourceMotionHeight, target.SourceMotionFeet, target.SourceMotionHeight, ranged, action.Volleys, action.Profile, _clock, _presentationFrame, _world.Camera.GlobalBasis.X, _hero.ArtId, attackPoseLead: _hero.AttackPoseContactLead);
+					SourceShowcaseProfile approach = Hd2dAttackPrototype.Supports("card:" + action.Card.CardId) ? PrototypeApproachProfile(target, action.Profile) : action.Profile;
+                    float? strikeClearance=null;
+                    if(Hd2dAttackPrototype.UsesWeaponContact(action.Card.CardId))
+                    {
+                        var plan=PrototypeStrikeApproach(target,action.Profile);
+                        approach=plan.Profile;strikeClearance=plan.Clearance;remotePrototypeStrike=plan.Remote;action.PrototypeNearSurface=plan.Surface;action.PrototypeApproachReason=plan.Reason;action.PrototypeApproachTravel=new(plan.DesiredTravel,plan.SafeTravel,plan.ReachableTravel);
+                    }
+                    action.PrototypeRemoteStrike=remotePrototypeStrike;
+                    string pose = _hero.Motion.Approach(_hero.SourceMotionFeet, _hero.SourceMotionHeight, target.SourceMotionFeet, target.SourceMotionHeight, ranged, action.VisualVolleys, approach, _clock, _presentationFrame, _world.Camera.GlobalBasis.X, _hero.ArtId, attackPoseLead: Hd2dAttackPrototype.Supports("card:"+action.Card.CardId) ? Hd2dAttackPrototype.PoseLead(action.Card.CardId) : _hero.AttackPoseContactLead,
+                        targetClearanceOverride: strikeClearance,
+                        approachAnticipationOverride: Hd2dAttackPrototype.UsesWeaponContact(action.Card.CardId) ? -.035f : null);
 					// Waiting for an offensive pose should not rewind an already-idle loop.
 					if (pose != "idle" || _hero.PoseName != "idle") _hero.PlayPose(pose, _clock);
 				}
@@ -6881,7 +7298,7 @@ public class BattleStage : Node3D
 					_hero.PlayPose("attack", _clock);
 					_hero.BeginSourceLunge(new Vector2(64f, -6f), _clock, _presentationFrame, 0.28f, 0.11f);
 				}
-				else if (_hero.ArtId == "leader_blue")
+				else if (_hero.ArtId == "leader_blue" || (Hd2dAttackPrototype.UsesCastEmitter(action.Card.CardId)))
 				{
 					_hero.PlayPose("attack", _clock);
 				}
@@ -6913,6 +7330,9 @@ public class BattleStage : Node3D
 		IL_025c:
 		BeginSourceCastLight(action);
 		action.Capture = _hero.Motion.Capture();
+        // A registered card can have a defence-only mode. Source attack pose
+        // ownership follows actual direct damage events, not registry membership.
+        _hero.BeginHd2dPose(action.Beats.Any(b=>b.Direct)?action.Card.CardId:"", _clock,remotePrototypeStrike,action.VisualVolleys,action.Profile?.Interval??0f);
 		foreach (OrdinaryBeat b in action.Beats)
 		{
 			if (b.Direct && b.Beat.Event is GameEvent_DamageDealt h)
@@ -7028,10 +7448,12 @@ public class BattleStage : Node3D
 			if ((object)p != null && b.CapturedTarget == target)
 			{
 				float pause = p.ImpactPauseFor(beat.WinningHit, a.Volleys > 1, b.Volley, a.Volleys);
-				target.Motion.Recoil(_world.Camera.GlobalBasis.X, target.SourceMotionHeight, p.Heavy, _clock, _presentationFrame);
+                if(Hd2dAttackPrototype.Enabled && PhysicalVfxProfiles.ForCard(a.Card?.CardId)?.TargetPattern==PhysicalVfxTargetPattern.ResolvedSweep && b.TargetOrdinal>0)pause=0f;
+                bool heavyStomp=Hd2dAttackPrototype.Supports("card:"+a.Card?.CardId) && a.Card?.CardId=="green_finisher_stomp";
+				target.Motion.Recoil(heavyStomp?Vector3.Zero:_world.Camera.GlobalBasis.X, target.SourceMotionHeight, p.Heavy, _clock, _presentationFrame);
 				target.Motion.RequestOwnedPause(target.Motion.Capture(), pause, _clock);
 				BattleActor actor = a.Actor;
-				if (actor != null)
+				if (actor != null && !(Hd2dAttackPrototype.Enabled && b.TargetOrdinal>0 && PhysicalVfxProfiles.ForCard(a.Card?.CardId)?.TargetPattern==PhysicalVfxTargetPattern.ConditionalTransfer))
 				{
 					SourceActorMotion.OwnershipToken? capture = a.Capture;
 					if (capture.HasValue)
@@ -7041,6 +7463,7 @@ public class BattleStage : Node3D
 					}
 				}
 				target.PlayPose("hurt", _clock);
+                if(heavyStomp)target.BeginHd2dHeavyReaction(_clock);
 				_lastHandoffPause = a.Actor?.Motion.PauseRemaining(_clock) ?? 0f;
 				_actionQueue.Hold(a.Token, _clock + _lastHandoffPause, _presentationFrame);
 				return;

@@ -106,9 +106,48 @@ public static class SourceAudioSynth
 
 	public static AudioStreamWav Sfx(string name)
 	{
+        // Exactly three authored attacks: licensed material recordings replace, never stack with,
+        // the old generic transient. Synthesis remains an explicit missing-resource fallback.
+        if(name is "hd2d_swing" or "hd2d_strike" or "hd2d_ignite" or "hd2d_fire" or "hd2d_weight" or "hd2d_stomp")
+        {
+            string path="res://assets/Audio/hd2d_three/"+name+".wav";
+            if(ResourceLoader.Exists(path))
+            {
+                AudioStreamWav recorded=GD.Load<AudioStreamWav>(path);
+                if(recorded!=null)return recorded;
+            }
+            GD.PushWarning("Missing licensed three-attack recording: "+path+"; using legacy synthesized safety fallback.");
+        }
 		Random rng = new Random(name.GetHashCode());
 		switch (name)
-		{
+        {
+        case "hd2d_strike":
+        {
+            var b = Buf(.27f); Noise(b,0,.045f,.001f,.04f,.5f,.8f,rng);
+            Tone(b,0,780,280,.065f,"sine",.001f,.05f,.18f);
+            Noise(b,.012f,.18f,.001f,.16f,.15f,.15f,rng); return Finish(name,b,.85f);
+        }
+        case "hd2d_fire":
+        {
+            var b = Buf(.43f); Tone(b,0,125,48,.15f,"sine",.002f,.13f,.25f);
+            Noise(b,0,.33f,.003f,.27f,.48f,.18f,rng);
+            for(int i=0;i<6;i++) Noise(b,.045f+i*.04f,.018f,.001f,.017f,.1f,.7f,rng);
+            return Finish(name,b,.85f);
+        }
+        case "hd2d_stomp":
+        {
+            var b = Buf(.55f); Tone(b,0,95,31,.25f,"sine",.002f,.22f,.5f);
+            Noise(b,0,.065f,.001f,.055f,.55f,.35f,rng);
+            for(int i=0;i<5;i++) Noise(b,.035f+i*.045f,.07f,.002f,.06f,.15f/(1+i*.4f),.17f,rng);
+            return Finish(name,b,.9f);
+        }
+        case "hd2d_swing":
+        { var b=Buf(.12f);Noise(b,0,.11f,.045f,.05f,.24f,.35f,rng);return Finish(name,b,.75f); }
+        case "hd2d_ignite":
+        { var b=Buf(.13f);Noise(b,0,.12f,.025f,.06f,.25f,.16f,rng);Tone(b,0,220,430,.12f,"sine",.04f,.05f,.08f);return Finish(name,b,.7f); }
+        case "hd2d_weight":
+        { var b=Buf(.25f);Noise(b,0,.24f,.04f,.17f,.18f,.08f,rng);return Finish(name,b,.7f); }
+
 		case "card_draw":
 		{
 			float[] b5 = Buf(0.16f);

@@ -1,0 +1,4292 @@
+{
+  "schema": 1,
+  "counts": {
+    "base": 466,
+    "fusion": 32,
+    "total_definitions": 498
+  },
+  "note": "Routing is not visual acceptance.39 stale candidate labels corrected from exact-ID native receipts+selected checkpoints; earlier34 selected rows remain inherited, not freshly re-audited. Enemy/permanent/status are separate source gates. Support cases may overlap attack IDs; no full498 completion.",
+  "cards": [
+    {
+      "id": "black_strike",
+      "name": "影の一撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected171-inherited-bounded",
+      "reason": "Actual five exact-ID Cut standards and scoped real threshold/selfloss/perfect-block/heal/samekey-necro contracts selected:16runs4361PASS. No invented shadow coating.178 fresh merge pending."
+    },
+    {
+      "id": "black_guard",
+      "name": "骨の盾",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_drain",
+      "name": "生命吸収",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Direct card outgoing Dark only; capped/zero/blocked recovery independent. No inferred stolen-HP return or generic nested pairing.",
+      "prior_state": "candidate107",
+      "design_history": "Outgoing dark delivery and target-local porous contraction only; original registered three-phase material replacing rejected105 sparse reuse. Native selection pending. Independent system:heal unchanged; no stolen-HP or return-flow causality asserted.",
+      "acceptance_revisions": [
+        107
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "black_big_drain",
+      "name": "貪り喰らう",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Direct card single Dark; Block100 retains independent heal.",
+      "prior_state": "candidate110",
+      "design_history": "Exact direct-card Dark route/material alias; native/event validation pending. Target-local contraction only, independent authoritative healing. blood_thirst exhausted recovery stays nonattack; wraith feast threshold read from actual engine outcome, never inferred optical hits.",
+      "acceptance_revisions": [
+        110
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "black_blood_rite",
+      "name": "血の儀式",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_mill",
+      "name": "忘却の霧",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_grave_bolt",
+      "name": "亡霊の槍",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_grave_burst",
+      "name": "死者の行進",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_corpse_explosion",
+      "name": "死体爆発",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_perm_altar",
+      "name": "冒涜の祭壇",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_perm_tithe",
+      "name": "生き血の税",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_hand_ripper",
+      "name": "冒涜の取引",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_dark_pact",
+      "name": "闇の契約",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_soul_kindling",
+      "name": "魂の薪",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_reaction_curse",
+      "name": "呪詛返し",
+      "type": "reaction",
+      "bucket": "damaging_reaction",
+      "state": "context-only-selected179",
+      "reason": "Exact set-confirm explicit armed postattack ConfirmReaction UID context only; not a global direct-card profile or automatic/manual reaction mode.7runs2200PASS, actualcounterpose preserved;181 merge pending."
+    },
+    {
+      "id": "black_reaction_grudge",
+      "name": "怨嗟",
+      "type": "reaction",
+      "bucket": "damaging_reaction",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_scythe",
+      "name": "死神の鎌",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected175-inherited-bounded",
+      "reason": "Actual exact-ID standards and real rider/source/chain/instance bounds17runs6851PASS; includes sameUID6→10/CardGrew4→8.181 fresh merge pending; not all source contexts."
+    },
+    {
+      "id": "black_despair",
+      "name": "絶望の重み",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_shadow_blade",
+      "name": "影の刃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected171-inherited-bounded",
+      "reason": "Actual five exact-ID Cut standards and scoped real threshold/selfloss/perfect-block/heal/samekey-necro contracts selected:16runs4361PASS. No invented shadow coating.178 fresh merge pending."
+    },
+    {
+      "id": "black_blood_price",
+      "name": "血の代償",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Selfloss6 BEFORE outgoing24; actual HP6 still engine emits outgoing thenCombatEnded. No drain/heal invented.",
+      "prior_state": "candidate138",
+      "design_history": "Explicit abstract neutral-pressure design based on neutral source-context; not weapon/anatomy/plant inference. Exact selfloss ordering, permanent-count zero outcome, pierce and intent branches remain engine-owned. green_leaf_strike differs from deferred green_leaf_blade. Native per-ID and boundary gates pending.",
+      "acceptance_revisions": [
+        138
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "black_death_wind",
+      "name": "死の風",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_feast",
+      "name": "貪欲の宴",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected172-inherited-bounded",
+      "reason": "Exact Feast material + firstblocked shared source cause selected;13runs9386PASS,285 sampled positive ages committed/exact/noReason, actual Candle/Censer bounds. No generic Dark or nested-primary continuation claim."
+    },
+    {
+      "id": "black_grave_digger",
+      "name": "墓暴き",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_deep_mill",
+      "name": "深き忘却",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_offering",
+      "name": "供物の火",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_underworld_path",
+      "name": "冥府への道",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_wraith_feast",
+      "name": "死霊の饗宴",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Direct card Dark; real exhaust pile 4/5 threshold produces14/26; heals retain actual caps/passives.",
+      "prior_state": "candidate110",
+      "design_history": "Exact direct-card Dark route/material alias; native/event validation pending. Target-local contraction only, independent authoritative healing. blood_thirst exhausted recovery stays nonattack; wraith feast threshold read from actual engine outcome, never inferred optical hits.",
+      "acceptance_revisions": [
+        110
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "black_raise_dead",
+      "name": "死者再生",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_last_rites",
+      "name": "引導",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_corpse_collect",
+      "name": "屍集め",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "candidate184",
+      "reason": "Explicit existing-family reuse proposal; actual retrieval/Scry/intent-conversion/mill and declared player activation contexts need scoped native witnesses. No extra damage/pierce/material inferred from rider/name."
+    },
+    {
+      "id": "black_harvest_sin",
+      "name": "背徳の収穫",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_perm_blade",
+      "name": "血染めの刃",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_perm_pain_core",
+      "name": "苦痛の芯",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_perm_chorus",
+      "name": "亡者の合唱",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_perm_ledger",
+      "name": "闇市の帳簿",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_reaction_last_stand",
+      "name": "死中の活",
+      "type": "reaction",
+      "bucket": "damaging_reaction",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_reaction_awakening",
+      "name": "血の目覚め",
+      "type": "reaction",
+      "bucket": "damaging_reaction",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_withering_curse",
+      "name": "衰滅の呪い",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_perm_seedbed",
+      "name": "屍の苗床",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_gravestone",
+      "name": "墓石の盾",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_bursting_corpse",
+      "name": "爆ぜる骸",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_whispering_ghost",
+      "name": "囁く亡霊",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_grudge_bone",
+      "name": "怨みの骨",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_groaning_skull",
+      "name": "呻く頭蓋",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_corpse_tinder",
+      "name": "骸の火種",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_necro_knight",
+      "name": "亡骸の騎士",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "candidate183",
+      "reason": "Explicit neutral physical pressure proposal for actual PlayCard plus same-UID PlayNecro player activations. Actual zone/payment/consumption and source pose baseline/native pending; no passive-necro suppression or Dark return line."
+    },
+    {
+      "id": "black_blood_thirst",
+      "name": "血の渇き",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Direct card outgoing Dark only; self-exhaust/necro recovery remains nonattack, tested negative.",
+      "prior_state": "candidate110",
+      "design_history": "Exact direct-card Dark route/material alias; native/event validation pending. Target-local contraction only, independent authoritative healing. blood_thirst exhausted recovery stays nonattack; wraith feast threshold read from actual engine outcome, never inferred optical hits.",
+      "acceptance_revisions": [
+        110
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "black_oblivion_blade",
+      "name": "忘却の刃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected171-inherited-bounded",
+      "reason": "Actual five exact-ID Cut standards and scoped real threshold/selfloss/perfect-block/heal/samekey-necro contracts selected:16runs4361PASS. No invented shadow coating.178 fresh merge pending."
+    },
+    {
+      "id": "black_oblivion_veil",
+      "name": "忘却の帳",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_corpse_kiss",
+      "name": "骸の口づけ",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "SourceKind card only. Identical textual key with SourceKind necro remains legacy; real censer negative tested, not new necro art acceptance.",
+      "prior_state": "candidate112_card_only",
+      "design_history": "Direct card Dark5 trial behind source-kind-aware support/timing/cache/source binding. Same-Key necro3 explicitly remains legacy; actual provenance collision tests pending. Not a necro migration.",
+      "acceptance_revisions": [
+        112
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "black_rotten_claw",
+      "name": "朽ちた爪",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "black_underworld_hand",
+      "name": "冥府の手",
+      "type": "reaction",
+      "bucket": "damaging_reaction",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_shadow_cleaver",
+      "name": "影の大鉈",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected177-inherited-bounded",
+      "reason": "177 exact four-ID standard and focused actual conversion/exhaust/max-energy contracts selected:11runs2746PASS; one shutdown notice retained.182 fresh consolidation pending."
+    },
+    {
+      "id": "black_perm_bone_mill",
+      "name": "骨風車",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_remorse_bone",
+      "name": "悔恨の骨",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_reviving_shield",
+      "name": "蘇る盾",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_grave_pressure",
+      "name": "墓山の重圧",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_perm_bone_throne",
+      "name": "骨の玉座",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_oblivion_axe",
+      "name": "忘却の斧",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected171-inherited-bounded",
+      "reason": "Actual five exact-ID Cut standards and scoped real threshold/selfloss/perfect-block/heal/samekey-necro contracts selected:16runs4361PASS. No invented shadow coating.178 fresh merge pending."
+    },
+    {
+      "id": "black_thousand_graves",
+      "name": "千の墓標",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_yomi_gate",
+      "name": "黄泉の門",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_reviving_fang",
+      "name": "甦る牙",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "candidate184",
+      "reason": "Explicit existing-family reuse proposal; actual retrieval/Scry/intent-conversion/mill and declared player activation contexts need scoped native witnesses. No extra damage/pierce/material inferred from rider/name."
+    },
+    {
+      "id": "black_corpse_flame",
+      "name": "骸の焔",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_blood_spray",
+      "name": "血飛沫の刃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected175-inherited-bounded",
+      "reason": "Actual exact-ID standards and real rider/source/chain/instance bounds17runs6851PASS; includes sameUID6→10/CardGrew4→8.181 fresh merge pending; not all source contexts."
+    },
+    {
+      "id": "black_shiv_token",
+      "name": "骨のナイフ",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "black_shiv_dance",
+      "name": "骨刃の舞",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_cloak_dagger",
+      "name": "外套と短刀",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_quick_shiv",
+      "name": "咄嗟の骨刃",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_shiv_strike",
+      "name": "骨刃流し",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "black_bone_gleaning",
+      "name": "骨拾い",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_blade_forging",
+      "name": "骨刃打ち",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_infinite_blades",
+      "name": "果てなき骨刃",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_accuracy",
+      "name": "急所読み",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_blade_procession",
+      "name": "刃の葬列",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_whetstone_altar",
+      "name": "刃研ぎの祭壇",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_blood_candle",
+      "name": "血の燭台",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_crimson_feast",
+      "name": "真紅の饗宴",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "black_thirst_censer",
+      "name": "渇きの香炉",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_seething_blood",
+      "name": "滾る血汐",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "black_corpse_candle",
+      "name": "亡者の蝋燭",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_bone_stoke",
+      "name": "骨焚き",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_burning_bone",
+      "name": "燃ゆる骨片",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected177-inherited-bounded",
+      "reason": "177 exact four-ID standard and focused actual conversion/exhaust/max-energy contracts selected:11runs2746PASS; one shutdown notice retained.182 fresh consolidation pending."
+    },
+    {
+      "id": "black_tallow_shield",
+      "name": "脂燭の盾",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "black_yomigaeri",
+      "name": "黄泉還り",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_strike",
+      "name": "水撃",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "blue_guard",
+      "name": "氷盾",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "selected88-bounded",
+      "reason": "Guard inward facets accepted standard and alternate leader/Act2/Act3/phone; exact support numeric/negative/lifecycle controls."
+    },
+    {
+      "id": "blue_current_lash",
+      "name": "渦流の鞭",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "blue_ice_wall",
+      "name": "氷壁",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Exact primary support owner, actual positive Ice gain; passive gains independent.",
+      "prior_state": "candidate108",
+      "design_history": "Exact nonattack owning-action support mapping; native selection pending. One accepted receiver flourish, all numeric/passive/draw/resource/token events independent; capped zero recovery consumes eligible slot without flourish.",
+      "acceptance_revisions": [
+        108
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "blue_ponder",
+      "name": "思案",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_churn",
+      "name": "記憶の渦",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_mana_convert",
+      "name": "魔力変換",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_storm_lash",
+      "name": "奔流の連撃",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected161-inherited-bounded",
+      "reason": "Selected159 exact-ID native/art scopes (27 successful runs31997 checks), inherited into fresh161 consolidation. Three rejected QA setup/activation fixtures separately retained; not global route-family acceptance."
+    },
+    {
+      "id": "blue_tsunami",
+      "name": "大津波",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected161-inherited-bounded",
+      "reason": "Selected159 exact-ID native/art scopes (27 successful runs31997 checks), inherited into fresh161 consolidation. Three rejected QA setup/activation fixtures separately retained; not global route-family acceptance."
+    },
+    {
+      "id": "blue_counterspell",
+      "name": "対抗呪文",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_mana_leak",
+      "name": "マナ漏出",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_frost_veil",
+      "name": "霜の帳",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_cold_reading",
+      "name": "冷徹な観察",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_sage_spring",
+      "name": "賢者の泉",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_frost_armor",
+      "name": "霜の鎧",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_archive",
+      "name": "水鏡の書庫",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_aether_burst",
+      "name": "霊気放出",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected160-context-only",
+      "reason": "Only actual owning leader_izzet, exact PlayCard UID and resolved lightning tuple selected160 and merged161. Other leaders remain legacy neutral; global key-only Supports=false. Procedural source remains idle; no actor polish claim."
+    },
+    {
+      "id": "blue_storm_barrier",
+      "name": "渦の障壁",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_chain_thought",
+      "name": "連鎖する思考",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_flash",
+      "name": "ひらめき",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_spark",
+      "name": "魔力の火花",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_focus",
+      "name": "集中",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_confuse",
+      "name": "幻惑の囁き",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_ripple_blade",
+      "name": "さざなみの刃",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_storm_echo",
+      "name": "嵐の残響",
+      "type": "reaction",
+      "bucket": "damaging_reaction",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "blue_whisper_trap",
+      "name": "囁きの罠",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_echo_seal",
+      "name": "反響の符",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_static",
+      "name": "静電の帳",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "blue_aether_torrent",
+      "name": "霊気の奔流",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_spell_steal",
+      "name": "魔力盗み",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_ice_lance",
+      "name": "氷の槍",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "blue_perm_mist_double",
+      "name": "霧の分身",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_frost_chain",
+      "name": "氷結の連鎖",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Exact primary Ice owner; draw and passive gain remain independent.",
+      "prior_state": "candidate108",
+      "design_history": "Exact nonattack owning-action support mapping; native selection pending. One accepted receiver flourish, all numeric/passive/draw/resource/token events independent; capped zero recovery consumes eligible slot without flourish.",
+      "acceptance_revisions": [
+        108
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "blue_maelstrom",
+      "name": "大漩渦",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_reaction_mind_eye",
+      "name": "心眼",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_reaction_surge",
+      "name": "白波の壁",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_frost_shackle",
+      "name": "凍てつく枷",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_mirror",
+      "name": "還流の水鏡",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "blue_tide_drop",
+      "name": "潮の一滴",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "blue_aftermath",
+      "name": "余波",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_rapid_strike",
+      "name": "早瀬の一撃",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "blue_thick_ice",
+      "name": "厚氷の盾",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Exact primary Ice owner; no ordinary Block inference.",
+      "prior_state": "candidate108",
+      "design_history": "Exact nonattack owning-action support mapping; native selection pending. One accepted receiver flourish, all numeric/passive/draw/resource/token events independent; capped zero recovery consumes eligible slot without flourish.",
+      "acceptance_revisions": [
+        108
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "blue_undertow",
+      "name": "逆巻き",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_aether_lance",
+      "name": "霊気の槍",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_perm_vortex_ring",
+      "name": "渦電の輪",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_aether_flood",
+      "name": "満ちる霊気",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_weight_of_wisdom",
+      "name": "知恵の重み",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_tome_shield",
+      "name": "書庫の盾",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_knowledge_torrent",
+      "name": "知識の奔流",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_perm_deep_cloak",
+      "name": "懐深き外套",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_omniscient_blow",
+      "name": "全知の一撃",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_echo",
+      "name": "反復",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_echo_stance",
+      "name": "谺の構え",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_double_chant",
+      "name": "二重詠唱",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_echo_circle",
+      "name": "こだまの法陣",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_stack_bastion",
+      "name": "万巻の砦",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_frost_thorn",
+      "name": "霜の棘",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "blue_aether_breath",
+      "name": "霊気の呼吸",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_cold_sweep",
+      "name": "冷手の一払い",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_page_wind",
+      "name": "頁繰りの風",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_rolling_wave",
+      "name": "巻き波",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Shared Water path selected146, merged148. Current CardsPlayed count (own increment later), zero/allblocked/sparse/death/path reset; not single Water per target.",
+      "prior_state": "candidate148_merge",
+      "design_history": "146 original three landscape RGBA phases, actual registered groundanchor(.88,.73), fullaspect1.5. One captured actual receiver path owns low rolling body/curl/collapse; local ruptures only on authoritative positive contacts. Standard selected;146 bounded and148 fresh merge gates required. Supersedes stale inherited candidate144/no-new-bitmap row.",
+      "acceptance_revisions": [
+        146
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "blue_ice_hail",
+      "name": "氷礫の驟雨",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected169-inherited-bounded",
+      "reason": "Selected163 material;169 correction closes firstblocked gather and all threefamily precontact material cap. Fresh2779 and260 committed-positive-age proof plus versioned163/168 evidence. Non-direct cascade sharedgather unsupported, pending-target predicate not isolated; no full context acceptance."
+    },
+    {
+      "id": "blue_glacial_maul",
+      "name": "凍てつく大槌",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_wisdom_vortex",
+      "name": "知恵の渦",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_grand_archive",
+      "name": "大書庫の砦",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_tidal_lectern",
+      "name": "潮汐の書見台",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_echo_chorus",
+      "name": "こだまの大合唱",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_permafrost",
+      "name": "永久凍土",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_kindle_chant",
+      "name": "焚べ火の詠唱",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_thought_bonfire",
+      "name": "思考の大焚火",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_whisper_kindle",
+      "name": "囁きの焚べ火",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_catalyst_echo",
+      "name": "谺の雫",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected156-inherited-bounded",
+      "reason": "Selected154 Wood or155 explicit Water/Light alias scope; consolidated156 fresh1247 controls plus versioned1542922/1553674 checks and actual native art. No blanket family coverage."
+    },
+    {
+      "id": "blue_catalyst_retain",
+      "name": "栞の氷",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_trap_fetch",
+      "name": "仕掛けの手配",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_tide_wait",
+      "name": "潮待ち",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_trap_echo",
+      "name": "仕掛けの反響",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_perm_trap_clock",
+      "name": "からくり時計",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_unravel_foam",
+      "name": "ほどけ泡",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_deep_trap",
+      "name": "深き仕掛け",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_foresight_shield",
+      "name": "先見の盾",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_wave_read_strike",
+      "name": "波見の一撃",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "candidate184",
+      "reason": "Explicit existing-family reuse proposal; actual retrieval/Scry/intent-conversion/mill and declared player activation contexts need scoped native witnesses. No extra damage/pierce/material inferred from rider/name."
+    },
+    {
+      "id": "blue_read_through",
+      "name": "読み切り",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "blue_tide_surge",
+      "name": "潮見の大波",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected161-inherited-bounded",
+      "reason": "Selected159 exact-ID native/art scopes (27 successful runs31997 checks), inherited into fresh161 consolidation. Three rejected QA setup/activation fixtures separately retained; not global route-family acceptance."
+    },
+    {
+      "id": "blue_perm_tide_tower",
+      "name": "潮見の塔",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_eddy_mirror",
+      "name": "渦見の鏡",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_flood_archive",
+      "name": "満ち潮の書庫",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_storm_eye",
+      "name": "嵐の目",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_ebb_return",
+      "name": "引き潮の帰還",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_trap_workshop",
+      "name": "仕掛け師の工房",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_aether_vessel",
+      "name": "霊気の器",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_tide_master",
+      "name": "潮読みの極み",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_perm_tide_pool",
+      "name": "潮溜まり",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_reaction_watch_bell",
+      "name": "見張りの鈴",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_shallow_read",
+      "name": "浅瀬読み",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "blue_eddy_foothold",
+      "name": "渦の足場",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_ramp_sprout",
+      "name": "芽吹き",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_ramp_deep_roots",
+      "name": "深根",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_ramp_sunlight",
+      "name": "陽光の恵み",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_strike",
+      "name": "打撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_double_lash",
+      "name": "二連の蔦打ち",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Actual two-hit Vegetal; first death skips later damage, blocked/system, middle and cleanup bounded.",
+      "prior_state": "candidate114",
+      "design_history": "113 leaf release improved but white core/thin ray hierarchy rejected. Isolated local core cooling after first punch, wider green-midvalue independently curving fibres; peak scene envelope/two-hit cadence/leaf scale unchanged. Native quality pending.",
+      "acceptance_revisions": [
+        114
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_fang",
+      "name": "牙の一撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Selected141 opposed pressure only, merged143. Real pierce/turnArmor zero, standard/spider/size/middle; rejected91–96/139 not retroactively selected.",
+      "prior_state": "candidate143_merge",
+      "design_history": "Consolidates141 standard-selected opposed-pressure geometry with accepted138 scope. Visible separated negative-space approach establishes one squeeze before receiver crest, no teeth/jaw/loop.141 bounded and143 fresh merge gates pending.96/139 actual fixtures both probes; spider is additional applicability. No140/142 WaterWide trial mixed.",
+      "acceptance_revisions": [
+        141
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_guard",
+      "name": "防御",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Exact ordinaryBlock primary owner; Frail/lifecycle/watcher and unrelated passive negatives.",
+      "prior_state": "candidate136_support",
+      "design_history": "135 ordinary Guard standard selected; bounded ownership/variant and136 merge gates pending. Exact primary command UID and positive source-null accepted Block receipt, no offence or Ice imitation.",
+      "acceptance_revisions": [
+        135
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_bark_armor",
+      "name": "樹皮の鎧",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_entangle",
+      "name": "絡み蔦",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Attack ModeIndex1 selected134 Bind; defence ModeIndex0 selected135 Guard; merged136. Real alternating mode and passive ownership negative controls. Same ID contributes one attack and one support scope.",
+      "prior_state": "candidate136_merge",
+      "design_history": "Consolidates selected134 Mode1 inward fibrous Bind attack and135 standard-selected Mode0 ordinary Guard. Exact primary command/mode context owns Guard; no cross-mode/passive attack leakage.135 bounded and136 fresh merge gates pending.",
+      "acceptance_revisions": [
+        134,
+        135
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_finisher_wrath",
+      "name": "大樹の怒り",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Actual damage36 thenGrowth1, including blocked; abstract pressure, not tree/root.",
+      "prior_state": "candidate128",
+      "design_history": "Explicit actual Vegetal5-pair chain or deliberately abstract neutral pressure conditional/heavy reuse. Full Growth/damage order and death-suppressed contacts remain engine-owned. No tree/body/root summon; native selection pending. Entangle bind shape remains separately deferred.",
+      "acceptance_revisions": [
+        128
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_finisher_stomp",
+      "name": "巨獣の踏みつけ",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_reaction_thorns",
+      "name": "茨の返し",
+      "type": "reaction",
+      "bucket": "damaging_reaction",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "green_reaction_vine",
+      "name": "守りの蔓",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_reaction_root_weave",
+      "name": "根の紡ぎ",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_growth_ring",
+      "name": "年輪",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_sig_canopy",
+      "name": "天蓋の実り",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_sig_rite_of_bloom",
+      "name": "開花の儀",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_sig_vine_dance",
+      "name": "蔦の乱舞",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Five actual Growth1→damage pairs. Initial growth0 yields3/4/5/6/7; first lethal omits later damage but remaining Growth persists.",
+      "prior_state": "candidate128",
+      "design_history": "Explicit actual Vegetal5-pair chain or deliberately abstract neutral pressure conditional/heavy reuse. Full Growth/damage order and death-suppressed contacts remain engine-owned. No tree/body/root summon; native selection pending. Entangle bind shape remains separately deferred.",
+      "acceptance_revisions": [
+        128
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_sig_trample",
+      "name": "踏み荒らし",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_sig_stampede",
+      "name": "巨象の突進",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_trample_charge",
+      "name": "突進の助走",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_ritual_surge",
+      "name": "樹液",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_perm_growth_tree",
+      "name": "年輪の大樹",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_perm_herd_chief",
+      "name": "大角の群長",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_flash_insight",
+      "name": "緑の閃き",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_serpent_gulp",
+      "name": "大蛇の丸呑み",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "green_reaction_resonance",
+      "name": "共鳴する茨",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_wild_sprout",
+      "name": "野生の萌芽",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_sweep",
+      "name": "薙ぎ払い",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_bloom_lash",
+      "name": "開花の蔦",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "green_weak_point",
+      "name": "急所突き",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_snare_root",
+      "name": "絡め捕る根",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_perm_wild_call",
+      "name": "荒野の呼び声",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_triple_horn",
+      "name": "三連の角",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_horn_flare",
+      "name": "昂ぶる角笛",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_sapling_strike",
+      "name": "若幹の一撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected156-inherited-bounded",
+      "reason": "Selected154 Wood or155 explicit Water/Light alias scope; consolidated156 fresh1247 controls plus versioned1542922/1553674 checks and actual native art. No blanket family coverage."
+    },
+    {
+      "id": "green_trunk_stance",
+      "name": "大幹の構え",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected166-inherited-bounded",
+      "reason": "Actual exact-ID standards and bounded real engine contracts selected:19 runs4892PASS, including real snapshot turn change, aura, ownership and cleanup; inherited into174 pending fresh merge controls."
+    },
+    {
+      "id": "green_perm_tree_pulse",
+      "name": "大樹の脈",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_horn_stance",
+      "name": "荒角の構え",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_x_vine_flurry",
+      "name": "蔦の連撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "candidate183",
+      "reason": "Existing physical Vegetal Cut proposal; actual live-energy paidX0/2/3 and emitted-hit cadence only. Ordinary PlayCard scope, no arbitrary xAmount or fabricated cascadeX."
+    },
+    {
+      "id": "green_x_bark_armor",
+      "name": "樹皮の重鎧",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_x_sylvan_tempest",
+      "name": "森羅の大嵐",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "green_mode_crossroads",
+      "name": "道行きの選択",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "green_mode_great_fork",
+      "name": "大樹の岐路",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_basic_bash",
+      "name": "打ち据え",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_perm_hunters_gaze",
+      "name": "狩人の眼光",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_perm_pain_root",
+      "name": "根張り",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_vine_wedge",
+      "name": "蔦の楔",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "green_devour_vine",
+      "name": "根喰らいの蔓",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected177-inherited-bounded",
+      "reason": "177 exact four-ID standard and focused actual conversion/exhaust/max-energy contracts selected:11runs2746PASS; one shutdown notice retained.182 fresh consolidation pending."
+    },
+    {
+      "id": "green_reaction_preempt",
+      "name": "先制の蔦槍",
+      "type": "reaction",
+      "bucket": "damaging_reaction",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "green_reaction_powder_pod",
+      "name": "弾け実の罠",
+      "type": "reaction",
+      "bucket": "damaging_reaction",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "green_harvest_strike",
+      "name": "大牙",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected164-inherited-bounded",
+      "reason": "Exact four-ID standards and Tide mode1 visual non-leakage selected;13runs3764PASS. Actual Growth/nonpierce, independentheal/Light/draw, sameactor mode0/1/0/1. Inherited scope; fresh170 merge evidence separate. No RootingVine/new support acceptance."
+    },
+    {
+      "id": "green_grand_harvest",
+      "name": "大収穫の儀",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "green_leaf_strike",
+      "name": "見切り撃ち",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Real enc_probe_pair attack vs defend predicates; pierce thenGrowth/draw. Distinct from deferred green_leaf_blade; no invented leaf coating.",
+      "prior_state": "candidate138",
+      "design_history": "Explicit abstract neutral-pressure design based on neutral source-context; not weapon/anatomy/plant inference. Exact selfloss ordering, permanent-count zero outcome, pierce and intent branches remain engine-owned. green_leaf_strike differs from deferred green_leaf_blade. Native per-ID and boundary gates pending.",
+      "acceptance_revisions": [
+        138
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_dappled_light",
+      "name": "木漏れ日",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_twin_fang_vine",
+      "name": "双牙の蔦",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "green_leaf_blade",
+      "name": "落ち葉の刃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "green_vine_spring",
+      "name": "蔓の跳ね",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_perm_thorn_vine",
+      "name": "棘の蔓",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_perm_wind_runner",
+      "name": "風渡り",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_perm_sprout_keeper",
+      "name": "芽守り",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_perm_thorn_leaves",
+      "name": "棘葉の茂み",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "green_sweeping_horn",
+      "name": "薙ぎ角",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_earth_roar",
+      "name": "大地の唸り",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Actual EnergyMaxAtTurnStart3/5 one/two all-target passes; sparse/death/blocked order. Selected126, merged127/129; no general Earth registry promotion.",
+      "prior_state": "candidate126",
+      "design_history": "Corrects rejected125 hovering repeated stones: captured receiver-ground/volley variation, faster full ballistic return before fade; fixed useful fissure atlas region and actual wider soil-lips on world ground after measured1.74% alpha occupancy. Native shape/conditional applicability pending; no stomp aura-foot/crown.",
+      "acceptance_revisions": [
+        126
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_perm_trapper_grove",
+      "name": "罠師の茂み",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_regrowth_root",
+      "name": "若返りの根",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_forest_guidance",
+      "name": "森の導き",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_spreading_vine",
+      "name": "増える蔦",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "One actual damage then CardCopied realUID in discard, including blocked. Single Vegetal impulse.",
+      "prior_state": "candidate122",
+      "design_history": "Explicit neutral-pressure design choice (no literal anatomy/name-derived element), or verified Vegetal alias for spreading_vine. Actual engine target, pierce, resource, status, cost and discard-copy events remain authoritative. Native selection pending.",
+      "acceptance_revisions": [
+        122
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_growing_fang",
+      "name": "育つ牙",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected175-inherited-bounded",
+      "reason": "Actual exact-ID standards and real rider/source/chain/instance bounds17runs6851PASS; includes sameUID6→10/CardGrew4→8.181 fresh merge pending; not all source contexts."
+    },
+    {
+      "id": "green_honing",
+      "name": "研ぎ澄まし",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_verdant_hour",
+      "name": "深緑の刻",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Growth first; real prior commands reach threshold; actual6 vs8+9 preserve current growth.",
+      "prior_state": "candidate128",
+      "design_history": "Explicit actual Vegetal5-pair chain or deliberately abstract neutral pressure conditional/heavy reuse. Full Growth/damage order and death-suppressed contacts remain engine-owned. No tree/body/root summon; native selection pending. Entangle bind shape remains separately deferred.",
+      "acceptance_revisions": [
+        128
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_reaction_vine_formation",
+      "name": "蔦の陣",
+      "type": "reaction",
+      "bucket": "damaging_reaction",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "green_reaction_tree_warden",
+      "name": "大樹の守り手",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_prey_strike",
+      "name": "獲物",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected166-inherited-bounded",
+      "reason": "Actual exact-ID standards and bounded real engine contracts selected:19 runs4892PASS, including real snapshot turn change, aura, ownership and cleanup; inherited into174 pending fresh merge controls."
+    },
+    {
+      "id": "green_sprint",
+      "name": "疾駆",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Piercing2 beforeMomentum3; actual Block100 retained.",
+      "prior_state": "candidate122",
+      "design_history": "Explicit neutral-pressure design choice (no literal anatomy/name-derived element), or verified Vegetal alias for spreading_vine. Actual engine target, pierce, resource, status, cost and discard-copy events remain authoritative. Native selection pending.",
+      "acceptance_revisions": [
+        122
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_gale_horn",
+      "name": "疾風の号砲",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_horn_thrust",
+      "name": "角の一突き",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_horn_storm",
+      "name": "嵐の角",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_wind_wall",
+      "name": "風の壁",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_rooting_rush",
+      "name": "根付く勢い",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "green_charging_horn",
+      "name": "猛進の角",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_tailwind",
+      "name": "追い風",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Actual paid/free threshold with prior real Sprints; damage6/12, no synthetic counter.",
+      "prior_state": "candidate122",
+      "design_history": "Explicit neutral-pressure design choice (no literal anatomy/name-derived element), or verified Vegetal alias for spreading_vine. Actual engine target, pierce, resource, status, cost and discard-copy events remain authoritative. Native selection pending.",
+      "acceptance_revisions": [
+        122
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_horn_volley",
+      "name": "連なる角",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_perm_bark_bud",
+      "name": "樹皮の芽",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_perm_gale_vine",
+      "name": "疾風の蔓",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_wind_dash",
+      "name": "風駆け",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_wind_cutter",
+      "name": "風切りの一撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_twig_strike",
+      "name": "小枝の一打",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "green_perm_thorn_canopy",
+      "name": "棘葉の大樹",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "green_perm_gale_king",
+      "name": "疾風の王",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_perm_root_spring",
+      "name": "根源の泉",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_catalyst_light",
+      "name": "軽石の盾",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Exact ordinaryBlock5/Frail3; explicit abstract brace, not literal stone; no fusion discount invented.",
+      "prior_state": "candidate137_support",
+      "design_history": "Explicit abstract ordinary-brace design reuse after135 representative: positive direct source-null Block in exact primary command, not name-derived stone/cotton/fire/light. No attack route. Actual Frail, Light2 and other events remain engine-owned; native gates pending.",
+      "acceptance_revisions": [
+        137
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "green_catalyst_echo",
+      "name": "谺の種",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "green_catalyst_root",
+      "name": "根付きの盾",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "green_catalyst_spore",
+      "name": "胞子の風",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_strike",
+      "name": "火弾",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "red_spark",
+      "name": "火花",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_ember_slash",
+      "name": "熾火の一閃",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_guard",
+      "name": "灰の盾",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_ignite",
+      "name": "着火",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_spreading_fire",
+      "name": "延焼弾",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Fire8→Burn6→conditional draw; actual prior burn/blaze branch and blocked preserve Burn. Burn status-tick art is separate scope.",
+      "prior_state": "candidate124",
+      "design_history": "Explicit actual Fire routes; family-aware material/audio/caster-pose/light migration. Burn6 and post-application blaze draw remain engine events; double_tap uses only actual two5-damage events, omitted on lethal. Native alias and unchanged red_strike equivalence pending.",
+      "acceptance_revisions": [
+        124
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "red_inferno",
+      "name": "業火",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_perm_brazier",
+      "name": "火鉢",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_ember",
+      "name": "残り火",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_ritual",
+      "name": "猛火の儀式",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_impulse",
+      "name": "火中の取り出し",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_big_impulse",
+      "name": "燃え上がる着想",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_gamble",
+      "name": "火運の賭け",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_chaos_bolt",
+      "name": "大博打",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_reckless",
+      "name": "捨て身の一撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Outgoing14 then selfloss3; lethal enemy/selfloss ordering, independent block/ice unchanged.",
+      "prior_state": "candidate138",
+      "design_history": "Explicit abstract neutral-pressure design based on neutral source-context; not weapon/anatomy/plant inference. Exact selfloss ordering, permanent-count zero outcome, pierce and intent branches remain engine-owned. green_leaf_strike differs from deferred green_leaf_blade. Native per-ID and boundary gates pending.",
+      "acceptance_revisions": [
+        138
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "red_flame_wave",
+      "name": "炎の波",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_fire_rain",
+      "name": "火の粉の雨",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_billiard",
+      "name": "玉突き",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "red_burst_release",
+      "name": "爆熱の解放",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_perm_furnace",
+      "name": "業火の炉",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_sea_of_fire",
+      "name": "火の海",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_ember",
+      "name": "くすぶる残り火",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_rage_mask",
+      "name": "憤怒の仮面",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_instant_flame",
+      "name": "刹那の焔",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_scorching_insight",
+      "name": "灼熱の閃き",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_burn_it_all",
+      "name": "全てを燃やせ",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_final_blow",
+      "name": "とどめの一撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Cut alias; actual HP threshold51/200 vs50/200, damage10/28, blocked/lethal and lifecycle.",
+      "prior_state": "candidate115",
+      "design_history": "Explicit new Cut design proposal grounded in actual broad axe/blade card illustration, not automatic neutral/type/name mapping. Legacy source-context route was minimal neutral. Actual execute10/28 threshold/cost/targets remain engine-owned; native quality and boundary tests pending. Other ambiguous neutral IDs remain deferred.",
+      "acceptance_revisions": [
+        115
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "red_heat_screen",
+      "name": "熱幕",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_fang_breaker",
+      "name": "砕牙",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Weak1 before damage13; blocked preserves Weak/red passive; abstract pressure not Fang anatomy.",
+      "prior_state": "candidate122",
+      "design_history": "Explicit neutral-pressure design choice (no literal anatomy/name-derived element), or verified Vegetal alias for spreading_vine. Actual engine target, pierce, resource, status, cost and discard-copy events remain authoritative. Native selection pending.",
+      "acceptance_revisions": [
+        122
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "red_wrath_flame",
+      "name": "怒り火",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_wrath_roar",
+      "name": "憤怒の咆哮",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_hearth_shield",
+      "name": "火床の盾",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_blaze_strike",
+      "name": "猛り火の一撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_blaze_blade",
+      "name": "焔纏いの刃",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_blaze_guard",
+      "name": "燃え盛る守り",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_blaze_devour",
+      "name": "火喰らい",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_blaze_pillar",
+      "name": "火柱",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_blaze_sweep",
+      "name": "紅蓮の薙ぎ",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_blaze_path",
+      "name": "火は道を開く",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_blaze_cloak",
+      "name": "灰の外套",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_blaze_roar",
+      "name": "業炎の咆哮",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_blaze_awaken",
+      "name": "紅蓮の目覚め",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_wildfire",
+      "name": "燎原の火",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_leaping_flame",
+      "name": "飛び火",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_iron_will",
+      "name": "鉄火の意志",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_bomb",
+      "name": "火薬玉",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_finishing_flame",
+      "name": "燼の一突き",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "red_frenzy",
+      "name": "狂騒",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_flurry",
+      "name": "灼熱の連打",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Three renewed neutral pressure impulses; actual first/second death reduces contacts, blocked and cleanup; no inferred fists.",
+      "prior_state": "candidate118",
+      "design_history": "Explicit abstract-neutral local pressure design using selected compact impulse vocabulary. Artwork does not prove exact weapon trajectory; no false blade/fist/fire/burn claim. Each actual7-damage event owns one renewed load/contact, no fixed fabricated three hits after death. Native quality/contract tests pending.",
+      "acceptance_revisions": [
+        118
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "red_blaze_spark",
+      "name": "爆ぜる火花",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_blaze_ritual",
+      "name": "火継ぎの儀",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_blaze_pursuit",
+      "name": "紅蓮の追撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected166-inherited-bounded",
+      "reason": "Actual exact-ID standards and bounded real engine contracts selected:19 runs4892PASS, including real snapshot turn change, aura, ownership and cleanup; inherited into174 pending fresh merge controls."
+    },
+    {
+      "id": "red_blaze_wall",
+      "name": "火壁",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_blaze_heart",
+      "name": "燠火の心臓",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "red_smoke",
+      "name": "煙幕",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_double_tap",
+      "name": "二連の火弾",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Two actual5 hits; first lethal emits one; blocked keeps two system outcomes, lifecycle bounded.",
+      "prior_state": "candidate124",
+      "design_history": "Explicit actual Fire routes; family-aware material/audio/caster-pose/light migration. Burn6 and post-application blaze draw remain engine events; double_tap uses only actual two5-damage events, omitted on lethal. Native alias and unchanged red_strike equivalence pending.",
+      "acceptance_revisions": [
+        124
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "red_perm_forge",
+      "name": "鍛冶の炉",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "red_meteor",
+      "name": "隕火",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_cataclysm",
+      "name": "業火の顎",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_last_day",
+      "name": "紅蓮の終焉",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_perm_ledger",
+      "name": "焔の目録",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_runfire",
+      "name": "走り火",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "red_spite",
+      "name": "業腹",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_pyre",
+      "name": "火だるま",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_fire_shift",
+      "name": "火移し",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_ember_stance",
+      "name": "余勢の構え",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_mode_crossroad",
+      "name": "焚の岐路",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_mode_firecontrol",
+      "name": "火加減",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_mode_deadline",
+      "name": "刻限の炎",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_charcoal_guard",
+      "name": "炭火の備え",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_afterheat_mail",
+      "name": "余熱の鎧",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_flarecoat",
+      "name": "火纏い",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_thorn_flame",
+      "name": "棘火の帳",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "red_fluke_spark",
+      "name": "まぐれ火",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_cascade_strike",
+      "name": "火送りの一撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_cascade_vent",
+      "name": "火口開き",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_cascade_ford",
+      "name": "火渡り",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_cascade_bolt",
+      "name": "連火弾",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_cascade_shield",
+      "name": "連火の盾",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_cascade_sparks",
+      "name": "連なる火花",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "red_perm_cascade_hearth",
+      "name": "火継ぎの炉",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_cascade_envoy",
+      "name": "燎火の使い",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "red_cascade_great",
+      "name": "大火送り",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_cascade_litany",
+      "name": "火の連祷",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_cascade_vortex",
+      "name": "火の渦",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_perm_cascade_core",
+      "name": "連火の炉心",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_brushfire",
+      "name": "野火",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_twin_fire",
+      "name": "双つ火",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_burn_double",
+      "name": "火勢倍し",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_ash_cover",
+      "name": "灰かぶり",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_fire_tongue",
+      "name": "火の舌",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_perm_smolder",
+      "name": "燻り",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_embers_left",
+      "name": "燃え残り",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_ash_robe",
+      "name": "灰の衣",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_ember_keeper",
+      "name": "燠の守り",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_catalyst_aoe",
+      "name": "散り火",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_catalyst_light",
+      "name": "火口の綿",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Exact ordinaryBlock5/Frail3; abstract brace not cotton/fire material.",
+      "prior_state": "candidate137_support",
+      "design_history": "Explicit abstract ordinary-brace design reuse after135 representative: positive direct source-null Block in exact primary command, not name-derived stone/cotton/fire/light. No attack route. Actual Frail, Light2 and other events remain engine-owned; native gates pending.",
+      "acceptance_revisions": [
+        137
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "red_rake",
+      "name": "火掻き",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_burn_off",
+      "name": "焼き払い",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_popping_fire",
+      "name": "爆ぜ火",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_perm_fire_awakening",
+      "name": "火の目覚め",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_kindle",
+      "name": "火にくべる",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "red_ash_breath",
+      "name": "灰の息",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_perm_fire_calls_fire",
+      "name": "火は火を呼ぶ",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_ash_veil",
+      "name": "灰の帳",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "red_ember_screen",
+      "name": "熾の衝立",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_strike",
+      "name": "灯の閃撃",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "white_shield_strike",
+      "name": "灯の護光",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "white_guard",
+      "name": "白盾",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "EXACT white_guard played in rev135-white-guard-phone, not green_guard with white leader. One native run435 checks. PositiveBlock5 at75/75HP, owned support. No separate white_guard Frail/lifecycle run found in135: inherited family checks are green_guard/entangle, not per-ID reruns.",
+      "prior_state": "candidate136_support",
+      "design_history": "135 ordinary Guard standard selected; bounded ownership/variant and136 merge gates pending. Exact primary command UID and positive source-null accepted Block receipt, no offence or Ice imitation.",
+      "acceptance_revisions": [
+        135
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "white_mass_heal",
+      "name": "大いなる癒し",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Exact owning-action recovery; capped15/1/0, actual nested censer1/0 separate. Zero owns no flourish. No general direct-effect heal provenance theorem.",
+      "prior_state": "candidate108",
+      "design_history": "Exact nonattack owning-action support mapping; native selection pending. One accepted receiver flourish, all numeric/passive/draw/resource/token events independent; capped zero recovery consumes eligible slot without flourish.",
+      "acceptance_revisions": [
+        108
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "white_light_bolt",
+      "name": "灯の矢",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "white_mode_crossroad",
+      "name": "灯の岐路",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Mode0 Light damage10→Weak2 accepted106. Mode1 Block14 nonleakage tested only: existing system Block, NOT selected new Guard art and NOT a support-owner entry.",
+      "prior_state": "candidate106-mode-branch",
+      "design_history": "Actual mode0 Damage10 thenWeak2 uses Light; mode1 Block14 retains independent defence with no attack source pose/ray. Both real command mode/event contracts pending.",
+      "acceptance_revisions": [
+        106
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "white_perm_squire",
+      "name": "剣の人形",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "white_perm_shieldmaiden",
+      "name": "盾の人形",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_choir",
+      "name": "癒しの人形",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_banneret",
+      "name": "旗の人形",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_rally",
+      "name": "灯の集い",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Noninnate permanent count0/1/2 yields0/6/12; zero remains system, passiveBlock independent, not one-hit-per-permanent.",
+      "prior_state": "candidate138",
+      "design_history": "Explicit abstract neutral-pressure design based on neutral source-context; not weapon/anatomy/plant inference. Exact selfloss ordering, permanent-count zero outcome, pierce and intent branches remain engine-owned. green_leaf_strike differs from deferred green_leaf_blade. Native per-ID and boundary gates pending.",
+      "acceptance_revisions": [
+        138
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "white_grand_charge",
+      "name": "灯火の大行列",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_reaction_ward",
+      "name": "護りの灯印",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_muster",
+      "name": "一斉点灯",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_shield_call",
+      "name": "盾人形の点灯",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_band",
+      "name": "鐘の人形",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_banner",
+      "name": "白銀の旗",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "white_perm_hound",
+      "name": "犬の人形",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "white_reaction_bright_wall",
+      "name": "白光の壁",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_warcry",
+      "name": "灯り増し",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_anthem",
+      "name": "輝き増し",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_chalice",
+      "name": "光の器",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_apostle",
+      "name": "恵光の灯籠",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_blade_prayer",
+      "name": "灯りの刃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected171-inherited-bounded",
+      "reason": "Actual five exact-ID Cut standards and scoped real threshold/selfloss/perfect-block/heal/samekey-necro contracts selected:16runs4361PASS. No invented shadow coating.178 fresh merge pending."
+    },
+    {
+      "id": "white_perm_monk",
+      "name": "手当ての人形",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_calling",
+      "name": "点灯",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_hymn_wall",
+      "name": "灯りの壁",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_hound_whistle",
+      "name": "犬人形の点灯",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_holy_maul",
+      "name": "灯火の大槌",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected164-inherited-bounded",
+      "reason": "Exact four-ID standards and Tide mode1 visual non-leakage selected;13runs3764PASS. Actual Growth/nonpierce, independentheal/Light/draw, sameactor mode0/1/0/1. Inherited scope; fresh170 merge evidence separate. No RootingVine/new support acceptance."
+    },
+    {
+      "id": "white_perm_bandleader",
+      "name": "大鐘の人形",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_maiden_prayer",
+      "name": "盾人形と灯り",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_praise_chorus",
+      "name": "灯の輪",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "white_oath_shield",
+      "name": "誓いの盾",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_cathedral",
+      "name": "大灯台",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_page",
+      "name": "小さな人形",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "white_page_rank",
+      "name": "小人形の列",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_holy_procession",
+      "name": "灯りの行列",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_miracle_division",
+      "name": "人形の分列",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_march_order",
+      "name": "点灯の合図",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_prayer_verse",
+      "name": "火種の祈り",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "selected89-bounded",
+      "reason": "Warm inward and shoulder-rise healing accepted standard and bounded variants; capped0 retains all events, no positive flourish; repeated support verified."
+    },
+    {
+      "id": "white_page_signal",
+      "name": "小人形の点灯",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_light_hoard",
+      "name": "灯り溜め",
+      "type": "physical",
+      "bucket": "non_damage_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Exact ordinaryBlock8/Frail6; Light2 remains separate status, not Light beam.",
+      "prior_state": "candidate137_support",
+      "design_history": "Explicit abstract ordinary-brace design reuse after135 representative: positive direct source-null Block in exact primary command, not name-derived stone/cotton/fire/light. No attack route. Actual Frail, Light2 and other events remain engine-owned; native gates pending.",
+      "acceptance_revisions": [
+        137
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "white_perm_wick",
+      "name": "灯芯の人形",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_lantern",
+      "name": "灯篭の人形",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "white_perm_bonfire",
+      "name": "篝火の人形",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "white_perm_dragon",
+      "name": "竜の人形",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "white_perm_lion",
+      "name": "獅子の人形",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "white_copy_light",
+      "name": "写し灯",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_relight",
+      "name": "継ぎ火",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_eternal_light",
+      "name": "永遠の灯",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_light_torrent",
+      "name": "光の奔流",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected161-inherited-bounded",
+      "reason": "Selected159 exact-ID native/art scopes (27 successful runs31997 checks), inherited into fresh161 consolidation. Three rejected QA setup/activation fixtures separately retained; not global route-family acceptance."
+    },
+    {
+      "id": "white_light_volley",
+      "name": "灯の連矢",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected156-inherited-bounded",
+      "reason": "Selected154 Wood or155 explicit Water/Light alias scope; consolidated156 fresh1247 controls plus versioned1542922/1553674 checks and actual native art. No blanket family coverage."
+    },
+    {
+      "id": "white_light_spray",
+      "name": "灯のしぶき",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected148-inherited-bounded",
+      "reason": "Actual Light cost/gather, first-positive receiver ownership, blocked/sparse/insufficientLight/repeat; no shipped onLightDischarged passive fixture claimed.",
+      "prior_state": "candidate120",
+      "design_history": "119 gained mass but matching hard gold fan stamps rejected. Soft curved optical streaks replace diamond taper bodies; actual receiver-relative variation/evolving angles/release and soft motes retain source unity and collective peak. No added worldgain/count; native quality pending.",
+      "acceptance_revisions": [
+        120
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "white_light_glint",
+      "name": "灯の閃き",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected104",
+      "reason": "Default-enabled exact-ID family selected through104; see scoped native/event receipts and release ledger, not blanket same-family acceptance."
+    },
+    {
+      "id": "white_light_lance",
+      "name": "灯の長槍",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected161-inherited-bounded",
+      "reason": "Selected159 exact-ID native/art scopes (27 successful runs31997 checks), inherited into fresh161 consolidation. Three rejected QA setup/activation fixtures separately retained; not global route-family acceptance."
+    },
+    {
+      "id": "white_light_fuel",
+      "name": "灯の燃料",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_light_kindling",
+      "name": "灯の薪",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_light_core",
+      "name": "灯の炉心",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_light_pour",
+      "name": "灯り注ぎ",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_light_dart",
+      "name": "灯の火矢",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "selected156-inherited-bounded",
+      "reason": "Selected154 Wood or155 explicit Water/Light alias scope; consolidated156 fresh1247 controls plus versioned1542922/1553674 checks and actual native art. No blanket family coverage."
+    },
+    {
+      "id": "white_light_buckler",
+      "name": "灯の小盾",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_light_cinders",
+      "name": "灯の火粉",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "white_light_page",
+      "name": "灯の頁",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_light_glow",
+      "name": "灯の輝き",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_light_ember_cache",
+      "name": "灯の埋め火",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_shining_strike",
+      "name": "輝きの一撃",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Neutral outgoing8 followed by independentLight2; no invented Light coating.",
+      "prior_state": "candidate122",
+      "design_history": "Explicit neutral-pressure design choice (no literal anatomy/name-derived element), or verified Vegetal alias for spreading_vine. Actual engine target, pierce, resource, status, cost and discard-copy events remain authoritative. Native selection pending.",
+      "acceptance_revisions": [
+        122
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "white_light_knockout",
+      "name": "灯の大砕き",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected164-inherited-bounded",
+      "reason": "Exact four-ID standards and Tide mode1 visual non-leakage selected;13runs3764PASS. Actual Growth/nonpierce, independentheal/Light/draw, sameactor mode0/1/0/1. Inherited scope; fresh170 merge evidence separate. No RootingVine/new support acceptance."
+    },
+    {
+      "id": "white_light_convergence",
+      "name": "灯の集約",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_light_radiance",
+      "name": "灯の余光",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "white_reaction_light_wall",
+      "name": "灯守りの壁",
+      "type": "reaction",
+      "bucket": "non_damage_reaction",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_light_double",
+      "name": "灯の倍化",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_light_burst",
+      "name": "眩光の大放出",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "white_spark_token",
+      "name": "火種",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_spark_scatter",
+      "name": "火種撒き",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "white_spark_shield",
+      "name": "火守りの盾",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_spark_burst",
+      "name": "火花散らし",
+      "type": "spell",
+      "bucket": "damaging_spell",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "white_spark_kindling",
+      "name": "大焚き付け",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_spark_furnace",
+      "name": "灯火の炉",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_spark_kindle",
+      "name": "火起こし",
+      "type": "spell",
+      "bucket": "non_damage_spell",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_spark_hearth",
+      "name": "灯の火床",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_severance",
+      "name": "断ち切り",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "selected148-inherited-bounded",
+      "reason": "Cut damage13 then one token each draw/discard/hand; axis spark is not coating requirement.",
+      "prior_state": "candidate109",
+      "design_history": "Actual physical/slash route+authored metadata reuse Cut/Mineral. Native and engine-contract validation pending. Token locations and fusion conditional cost/block remain separate authoritative events. Prior severance spark-material hold was assistant inference, not supported by source art/metadata.",
+      "acceptance_revisions": [
+        109
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "white_spark_storm",
+      "name": "火種の嵐",
+      "type": "physical",
+      "bucket": "damaging_physical",
+      "state": "deferred",
+      "reason": "Representative-first rollout; existing route retained, not yet visually reviewed under new framework."
+    },
+    {
+      "id": "white_perm_embers",
+      "name": "火の粉",
+      "type": "permanent",
+      "bucket": "damaging_permanent",
+      "state": "deferred",
+      "reason": "Persistent/reaction trigger contract needs actual event provenance; not a direct on-play attack shortcut."
+    },
+    {
+      "id": "white_perm_spark_relay",
+      "name": "灯の継ぎ手",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_embers_last",
+      "name": "残り火",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "white_perm_great_furnace",
+      "name": "灯の大炉",
+      "type": "permanent",
+      "bucket": "non_damage_permanent",
+      "state": "deferred",
+      "reason": "Nonattack presentation lifecycle required; do not create inflicted-hit effect from card type."
+    },
+    {
+      "id": "fusion_vine_wheel",
+      "name": "蔦車輪",
+      "type": "physical",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_bloom_dance",
+      "name": "開花乱舞",
+      "type": "physical",
+      "bucket": "fusion_result",
+      "state": "selected175-inherited-bounded",
+      "reason": "Actual exact-ID standards and real rider/source/chain/instance bounds17runs6851PASS; includes sameUID6→10/CardGrew4→8.181 fresh merge pending; not all source contexts."
+    },
+    {
+      "id": "fusion_thorn_bastion",
+      "name": "茨の砦",
+      "type": "reaction",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_wild_stampede",
+      "name": "暴走する荒角",
+      "type": "physical",
+      "bucket": "fusion_result",
+      "state": "selected175-inherited-bounded",
+      "reason": "Actual exact-ID standards and real rider/source/chain/instance bounds17runs6851PASS; includes sameUID6→10/CardGrew4→8.181 fresh merge pending; not all source contexts."
+    },
+    {
+      "id": "fusion_sapling_maul",
+      "name": "若木の巨槌",
+      "type": "physical",
+      "bucket": "fusion_result",
+      "state": "selected177-inherited-bounded",
+      "reason": "177 exact four-ID standard and focused actual conversion/exhaust/max-energy contracts selected:11runs2746PASS; one shutdown notice retained.182 fresh consolidation pending."
+    },
+    {
+      "id": "fusion_raging_chief",
+      "name": "荒ぶる群長",
+      "type": "permanent",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_red_flame_fang",
+      "name": "炎蛇の牙",
+      "type": "spell",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_red_ember_dance",
+      "name": "火の粉舞い",
+      "type": "physical",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_red_wrath_mail",
+      "name": "怒火の鎧",
+      "type": "permanent",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_practice_swing",
+      "name": "素振り",
+      "type": "physical",
+      "bucket": "fusion_result",
+      "state": "selected148-inherited-bounded",
+      "reason": "Actual fusion recipe play Block5→damage7; real hand/aura paid/free cost. Fusion crafting UI NOT tested.",
+      "prior_state": "candidate109",
+      "design_history": "Actual physical/slash route+authored metadata reuse Cut/Mineral. Native and engine-contract validation pending. Token locations and fusion conditional cost/block remain separate authoritative events. Prior severance spark-material hold was assistant inference, not supported by source art/metadata.",
+      "acceptance_revisions": [
+        109
+      ],
+      "evidence_report": "docs/VFX-COVERAGE-EVIDENCE-148.json"
+    },
+    {
+      "id": "fusion_harvest_fork",
+      "name": "収穫の岐路",
+      "type": "spell",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_sprint_strike",
+      "name": "疾走の打撃",
+      "type": "physical",
+      "bucket": "fusion_result",
+      "state": "selected166-inherited-bounded",
+      "reason": "Actual exact-ID standards and bounded real engine contracts selected:19 runs4892PASS, including real snapshot turn change, aura, ownership and cleanup; inherited into174 pending fresh merge controls."
+    },
+    {
+      "id": "fusion_bramble_fence",
+      "name": "茨の生垣",
+      "type": "permanent",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_lash_thicket",
+      "name": "蔦打ちの茂み",
+      "type": "permanent",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_windward_vine",
+      "name": "風受けの蔓",
+      "type": "permanent",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_dappled_hedge",
+      "name": "木漏れ日の生垣",
+      "type": "permanent",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_gale_echo",
+      "name": "疾風の残響",
+      "type": "permanent",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_ringed_bark",
+      "name": "年輪の樹皮",
+      "type": "permanent",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_rooting_vine",
+      "name": "根を張る蔦",
+      "type": "spell",
+      "bucket": "fusion_result",
+      "state": "candidate186-mode1-caster",
+      "reason": "Explicit SPELL cast anchor plus reused Vegetal contact; mode1 actual damage only, mode0 max-energy/Block remains legacy nonattack. Native source/material gates pending, no weapon reach or Bind status."
+    },
+    {
+      "id": "fusion_reading_wedge",
+      "name": "見切りの楔",
+      "type": "physical",
+      "bucket": "fusion_result",
+      "state": "candidate184",
+      "reason": "Explicit existing-family reuse proposal; actual retrieval/Scry/intent-conversion/mill and declared player activation contexts need scoped native witnesses. No extra damage/pierce/material inferred from rider/name."
+    },
+    {
+      "id": "fusion_clinging_bark",
+      "name": "絡みつく重鎧",
+      "type": "spell",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_red_ash_mantle",
+      "name": "灰纏い",
+      "type": "permanent",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_red_ember_shift",
+      "name": "余勢の火移し",
+      "type": "spell",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_red_spark_fork",
+      "name": "火花の岐路",
+      "type": "spell",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_holy_stance",
+      "name": "灯火の構え",
+      "type": "physical",
+      "bucket": "fusion_result",
+      "state": "selected166-inherited-bounded",
+      "reason": "Actual exact-ID standards and bounded real engine contracts selected:19 runs4892PASS, including real snapshot turn change, aura, ownership and cleanup; inherited into174 pending fresh merge controls."
+    },
+    {
+      "id": "fusion_page_ambush",
+      "name": "小人形の伏兵",
+      "type": "permanent",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_tide_stance",
+      "name": "潮の構え",
+      "type": "spell",
+      "bucket": "fusion_result",
+      "state": "selected164-inherited-bounded",
+      "reason": "Exact four-ID standards and Tide mode1 visual non-leakage selected;13runs3764PASS. Actual Growth/nonpierce, independentheal/Light/draw, sameactor mode0/1/0/1. Inherited scope; fresh170 merge evidence separate. No RootingVine/new support acceptance."
+    },
+    {
+      "id": "fusion_reader_stance",
+      "name": "読書家の構え",
+      "type": "spell",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_whirl_watch",
+      "name": "渦潮の見張り",
+      "type": "permanent",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_deep_thought",
+      "name": "沈思の一撃",
+      "type": "spell",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_deep_undertow",
+      "name": "深き逆潮",
+      "type": "reaction",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    },
+    {
+      "id": "fusion_iceberg_break",
+      "name": "氷山崩し",
+      "type": "spell",
+      "bucket": "fusion_result",
+      "state": "deferred",
+      "reason": "Fusion-specific modes/sequence and actual runtime event provenance require separate contract; base-card count does not cover this result."
+    }
+  ],
+  "enemy_routes": [
+    {
+      "identity": "enemy_actual_execution:enemy_probe/poke",
+      "state": "selected148-inherited-bounded",
+      "reason": "Selected147 exact probe poke localcontact/retract plus148 freshmerge; existing lunge owns anticipation. Actualdefense/death/cancel/fourturns checked; lunge remainslegacy, no premiumwholeenemyfamily orresourceplateau claim."
+    }
+  ],
+  "permanent_routes": [
+    {
+      "identity": "permanent:black_blood_candle",
+      "state": "selected152-inherited-bounded",
+      "reason": "151 installedcandleUID contact/hero-fallback correction,11runs5649 scopedchecks;152freshmerge. Multipleactualheal triggers incl0 retained, no withincombatremoval fixture claim, resourcecounts notplateau."
+    },
+    {
+      "identity": "permanent:black_perm_pain_core",
+      "state": "selected180-inherited-bounded",
+      "reason": "Exact installed neutral non-retainer UID/source/route tuple only;180 scoped12runs6250PASS including explicit no-trigger negative, actual threshold/AoE/mixed parent; no generic permanent policy.182 fresh consolidation pending."
+    },
+    {
+      "identity": "permanent:black_perm_bone_mill",
+      "state": "selected180-inherited-bounded",
+      "reason": "Exact installed neutral non-retainer UID/source/route tuple only;180 scoped12runs6250PASS including explicit no-trigger negative, actual threshold/AoE/mixed parent; no generic permanent policy.182 fresh consolidation pending."
+    },
+    {
+      "identity": "permanent:black_perm_chorus",
+      "state": "selected180-inherited-bounded",
+      "reason": "Exact installed neutral non-retainer UID/source/route tuple only;180 scoped12runs6250PASS including explicit no-trigger negative, actual threshold/AoE/mixed parent; no generic permanent policy.182 fresh consolidation pending."
+    },
+    {
+      "identity": "permanent:black_crimson_feast",
+      "state": "selected180-inherited-bounded",
+      "reason": "Exact installed neutral non-retainer UID/source/route tuple only;180 scoped12runs6250PASS including explicit no-trigger negative, actual threshold/AoE/mixed parent; no generic permanent policy.182 fresh consolidation pending."
+    }
+  ],
+  "status_routes": [
+    {
+      "identity": "system:burn",
+      "state": "selected152-inherited-bounded",
+      "reason": "150 actualBurnTick localthermalstatus,13runs6242 including realresist/NoDecay/zero/death/multi/cancel;152freshmerge. No card/projectile inference, retainedwarning/resourceslimits."
+    }
+  ],
+  "necro_routes": [
+    {
+      "identity": "necro:black_corpse_kiss",
+      "state": "selected153-bounded",
+      "reason": "Exact censer-mediated previousDraw→currentExhaust UID case only; actual necro UID differs ambient censer SourceUid. 15 native runs/10228 checks, bounded art and direct same-key controls passed. Three shutdown-only notices retained; no general necro claim."
+    }
+  ],
+  "contextual_card_routes": [
+    {
+      "identity": "card:blue_aether_burst@leader_izzet",
+      "state": "selected160-merged161-bounded",
+      "reason": "11 native runs2904 checks plus fresh161 control; exact Izzet/card-owner/resolved tuple only. Three shutdown notices retained, no broad source/leader acceptance."
+    }
+  ],
+  "reaction_routes": [
+    {
+      "identity": "reaction:black_reaction_curse@set-confirm-explicit-postattack",
+      "state": "selected179-inherited-bounded",
+      "reason": "Actual previous armed usable SetCard UID/explicit ConfirmFire/pendingattacker/validreceipt; local Dark with legitimatecounterpose.7runs2200PASS,36sampledpositivecommitted/exact,111matchedactorrows. Actual beetle12→6 fullyabsorbed response, decline/death/lifecycle. Focus-outside-tree notices retained, no allreaction claim."
+    }
+  ]
+}

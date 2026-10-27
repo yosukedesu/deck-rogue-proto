@@ -1,0 +1,26 @@
+{
+  "revision": 187,
+  "state": "candidate-not-selected",
+  "base": "selected183 independent of184/185/186",
+  "definitions": [
+    "white_perm_banner",
+    "fusion_raging_chief",
+    "fusion_red_wrath_mail",
+    "fusion_ringed_bark"
+  ],
+  "change": "Only existing PermanentContactVfxProfiles.SelectedDefinition allowlist extends; shared owner/route/cap/geometry/source policy unchanged",
+  "real_witnesses": {
+    "white_perm_banner": "actual own/current installation onPermanentEntered AoE",
+    "fusion_raging_chief": "actual next TurnStart damage3; attack Momentum rider independent",
+    "fusion_red_wrath_mail": "actual enemy attack then permanent damage3 then Burn4; installBlock5 not attack",
+    "fusion_ringed_bark": "actual Growth gain then nested permanent base2, clean Growth1 modifies to3; no fixed invented total"
+  },
+  "inherited_invariants": "actual installed Previous/Current UID+Def; Typepermanent/nonRetainer/noEcho/noLife; PresentationUID==SourceUid; exact original neutral tuple; valid enemy receipt; no borrowed passive swing; positive ages committed/exact",
+  "qa_policy": "one shared family contract and per-ID real trigger witnesses; new actor-phase/AoE/nestedGrowth boundaries, representative visuals only",
+  "limits": [
+    "not retainers/leaders/relics",
+    "does not suppress legitimate enclosing player or enemy motion",
+    "no global actor-idle assertion",
+    "no new material or bitmap"
+  ]
+}

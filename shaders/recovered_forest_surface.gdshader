@@ -38,6 +38,16 @@ uniform vec2 fog_range=vec2(22.0,48.0);
 uniform vec3 lobe_position=vec3(0.0,2.2,-80.0);
 uniform vec3 lamp_emission=vec3(0.0);
 // Source intensity/color, independent of native Godot Omni attenuation.
+// Authored attack staging is opt-in and zero outside the exact three cues.
+// This only changes surface lighting; screen/UI exposure is untouched.
+uniform float attack_staging=0.0;
+// Optional fire-only crest; caller supplies a short envelope independent of tail.
+uniform float attack_warm_crest=0.0;
+// Contact-only spectacle envelope, zero for unscoped effects and after release.
+uniform float attack_spectacle_crest=0.0;
+uniform float attack_spectacle_tone=1.0;
+uniform float attack_spectacle_chroma=1.0;
+uniform vec3 attack_focus=vec3(0.0);
 uniform int forest_light_count=0;
 uniform vec4 forest_light_position_range[8];
 uniform vec4 forest_light_color_kind[8];
@@ -47,6 +57,7 @@ varying vec3 forest_surface;
 varying vec3 forest_original;
 varying float forest_visibility;
 varying float forest_hue;
+varying float forest_staging;
 float luminance(vec3 c) { return dot(c,vec3(0.2126,0.7152,0.0722)); }
 vec3 forest_decode(vec3 c) {
     return mix(pow(max((c+vec3(0.055))/1.055,vec3(0.0)),vec3(2.4)),c/12.92,lessThanEqual(c,vec3(0.04045)));
@@ -70,6 +81,9 @@ void fragment() {
     tex*=tint;
     if(tex.a<alpha_cutoff)discard;
     vec3 n=normalize(forest_normal); if(!FRONT_FACING)n=-n;
+    // Retain local values around the contact; restrain competing distant surfaces.
+    float focus_distance=distance(forest_position.xz,attack_focus.xz);
+    forest_staging=1.0-0.15*attack_staging*smoothstep(1.2,5.5,focus_distance);
     forest_original=tex.rgb;
     forest_surface=mix(vec3(luminance(tex.rgb)),tex.rgb,static_saturation)*static_tint;
     float c=cos(path_angle),s=sin(path_angle);
@@ -98,15 +112,66 @@ void fragment() {
         float range=max(forest_light_position_range[i].w,0.0001);
         float ratio=distance2/(range*range);
         float smooth_factor=max(0.0,1.0-ratio*ratio);
-        float attenuation=smooth_factor*smooth_factor/distance2;
+        // Finite emitter footprint avoids a singular white texel at ground contact.
+        // Legacy/unscoped attacks keep their original attenuation exactly.
+        float emitter_floor=0.36*attack_staging*step(0.5,forest_light_color_kind[i].w);
+        float attenuation=smooth_factor*smooth_factor/max(distance2,emitter_floor);
         float point_ndl=max(0.0,dot(n,delta*inversesqrt(distance2)));
         vec3 contribution=forest_light_color_kind[i].rgb*(attenuation*point_ndl);
-        if(forest_light_color_kind[i].w>0.5)attack_points+=contribution;
-        else ordinary_points+=contribution;
+        if(forest_light_color_kind[i].w>0.5) {
+            // Scoped finite-area bounce: a low point emitter's r^-3 floor falloff
+            // hid its entire readable pool behind the HP bar in the fixed camera.
+            // Retain its core, broaden only upward-facing textured ground shoulders.
+            // Position/color/decay still come from the live attack source, not a decal.
+            float ground_plane=smoothstep(0.35,0.85,n.y)*(1.0-smoothstep(0.55,1.25,abs(forest_position.y-attack_focus.y)));
+            // A short contact-only scene crest, independent of the long faint tail.
+            // Real HD-2D peaks illuminate broad textured paving and nearby masonry,
+            // not just a foot-sized disc. Never change exposure or the UI layer.
+            float crest=attack_spectacle_crest;
+            float footprint=1.0+dot(delta.xz,delta.xz)/mix(6.76,36.0,crest);
+            float area_irradiance=mix(0.8,1.6,crest)*smooth_factor*smooth_factor/(footprint*footprint);
+            vec3 area_contribution=forest_light_color_kind[i].rgb*area_irradiance;
+            // Admit elevated and vertical surfaces only during this brief crest.
+            // Source-facing normals retain modeled relief; no flat screen mask.
+            vec3 broad_direction=normalize(delta+vec3(0.0,1.0,0.0));
+            float broad_facing=clamp(max(n.y,0.0)+0.65*max(dot(n,broad_direction),0.0),0.0,1.0);
+            float broad_height=1.0-smoothstep(2.4,6.0,abs(forest_position.y-attack_focus.y));
+            float scene_receiver=mix(ground_plane,broad_facing*broad_height,crest);
+            contribution=mix(contribution,max(contribution,area_contribution),attack_staging*scene_receiver);
+            attack_points+=contribution;
+        } else ordinary_points+=contribution;
     }
     vec3 neutral_points=mix(ordinary_points,vec3(luminance(ordinary_points)),static_neutral*(1.0-forest_hue));
-    vec3 col=forest_surface*(amb+receive*(key+neutral_points))*shade;
-    col+=forest_original*receive*attack_points;
+    vec3 col=forest_surface*(amb+receive*(key+neutral_points))*shade*forest_staging;
+    // Shared source position/radiance drives floor and actors. Lift upward-facing
+    // textured receivers, never add an untextured disc or blanket screen glow.
+    float ground_receiver=smoothstep(0.25,0.85,n.y);
+    // A bounded warm crest on textured upward receivers only. Footprint and
+    // existing source-light tail are unchanged; no actor or screen exposure change.
+    vec3 crest_gain=mix(vec3(1.0),vec3(1.35,2.0,0.85),attack_warm_crest*ground_receiver);
+    vec3 reflected_attack=forest_original*receive*attack_points*crest_gain*(1.0+0.65*attack_staging*ground_receiver);
+    // Linear-light reflected highlight shaping, not a global exposure/albedo wash.
+    // Retain the broad energetic footprint. Hot highlights approach warm white
+    // instead of independently clipping R/G into fluorescent yellow-green.
+    float attack_luma=luminance(reflected_attack);
+    float shoulder_excess=max(attack_luma-0.65,0.0);
+    float shoulder_luma=min(attack_luma,0.65)+shoulder_excess/(1.0+shoulder_excess/1.8);
+    vec3 shoulder=reflected_attack*(shoulder_luma/max(attack_luma,0.00001));
+    float hot_white=0.88*smoothstep(0.25,1.2,attack_luma);
+    vec3 shaped_attack=mix(shoulder,vec3(1.06,1.0,0.88)*shoulder_luma,hot_white);
+    // Crest-only reflected yellow/green midtones: retain luminance and texture,
+    // but turn the acid grass shoulder toward the source's warm gold/cream.
+    // Static albedo, dark greens, red-gold soil and white-hot core are untouched.
+    float reflected_max=max(max(shaped_attack.r,shaped_attack.g),shaped_attack.b);
+    float reflected_min=min(min(shaped_attack.r,shaped_attack.g),shaped_attack.b);
+    float reflected_chroma=(reflected_max-reflected_min)/max(reflected_max,0.00001);
+    float green_ratio=shaped_attack.g/max(shaped_attack.r,0.00001);
+    float yellow_green=smoothstep(0.76,0.96,green_ratio)*(1.0-smoothstep(1.16,1.6,green_ratio));
+    float chroma_mask=yellow_green*smoothstep(0.32,0.72,reflected_chroma)*smoothstep(0.04,0.28,luminance(shaped_attack));
+    vec3 warm_mid=vec3(1.18,0.98,0.65);
+    warm_mid*=luminance(shaped_attack)/luminance(warm_mid);
+    shaped_attack=mix(shaped_attack,warm_mid,0.78*chroma_mask*attack_spectacle_chroma);
+    col+=mix(reflected_attack,shaped_attack,attack_spectacle_crest*attack_spectacle_tone);
     vec3 unfogged=col;
     vec3 view_pos=(VIEW_MATRIX*vec4(forest_position,1.0)).xyz; float depth=-view_pos.z;
     vec3 view_dir=normalize(forest_position-CAMERA_POSITION_WORLD),lobe_dir=normalize(lobe_position-CAMERA_POSITION_WORLD);
@@ -116,12 +181,12 @@ void fragment() {
     float dh=atan(view_dir.x,-view_dir.z)-atan(lobe_dir.x,-lobe_dir.z);
     float lobe=exp(-0.5*(lobe_shape.x*dv*dv+lobe_shape.y*dh*dh));
     float fog_edge=mix(lobe_shape.z,1.0,lobe);
-    vec3 fc=fog_color.rgb*fog_edge+lobe_color*lobe;
+    vec3 fc=(fog_color.rgb*fog_edge+lobe_color*lobe)*forest_staging;
     float hf=height_density*clamp((height_range.y-forest_position.y)/max(height_range.y-height_range.x,0.001),0.0,1.0)*clamp((depth/distance_scale-height_range.z)/max(height_range.w-height_range.z,0.001),0.0,1.0);
     float df=clamp((depth/distance_scale-fog_range.x)/(fog_range.y-fog_range.x),0.0,1.0);
     float ff=far_fog.z*clamp((depth/distance_scale-far_fog.x)/max(far_fog.y-far_fog.x,0.001),0.0,1.0);
     forest_visibility=(1.0-hf)*(1.0-df)*(1.0-ff);
-    col=mix(col,height_color*fog_edge,hf); col=mix(col,fc,df); col=mix(col,fc,ff);
+    col=mix(col,height_color*fog_edge*forest_staging,hf); col=mix(col,fc,df); col=mix(col,fc,ff);
     col=mix(unfogged,col,fog_weight);forest_visibility=mix(1.0,forest_visibility,fog_weight);
     vec4 clip=PROJECTION_MATRIX*vec4(view_pos,1.0); vec2 screen=clip.xy/max(clip.w,0.001);
     float side=smoothstep(0.3,0.5,abs(screen.x)*0.5);
@@ -131,7 +196,7 @@ void fragment() {
     float vignette=mix(1.0,(1.0-vignette_side*side)*(1.0-vignette_top*top),vignette_weight);
     forest_visibility*=vignette*shade;
     ALBEDO=vec3(1.0); ROUGHNESS=0.92; SPECULAR=0.0;
-    EMISSION=forest_output(night_grade(col*vignette)+lamp_emission*forest_visibility);
+    EMISSION=forest_output(night_grade(col*vignette)+lamp_emission*forest_visibility*forest_staging);
     // FOREST_MATERIAL_FACTORS_LINEAR: custom light() receives linear LIGHT_COLOR
     // on both renderers. Godot decodes ALBEDO/EMISSION at its Compatibility
     // boundary, but does not decode these user varyings. Keep their source-linear
@@ -145,7 +210,7 @@ void light() {
     if(LIGHT_IS_DIRECTIONAL) {
         float ndl=max(0.0,dot(NORMAL,LIGHT));
         vec3 direct=mix(LIGHT_COLOR,vec3(luminance(LIGHT_COLOR)),static_neutral*(1.0-forest_hue));
-        vec3 contribution=forest_surface*receive*direct*ATTENUATION*ndl*forest_visibility/3.14159265;
+        vec3 contribution=forest_surface*receive*direct*ATTENUATION*ndl*forest_visibility*forest_staging/3.14159265;
         DIFFUSE_LIGHT+=!OUTPUT_IS_SRGB?night_grade(contribution):contribution;
     }
 }

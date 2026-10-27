@@ -156,7 +156,7 @@ public class BattleAudio : Node
 		}
 	}
 
-	public void PlayDamageContact(string source, int hpLoss, int absorbed, bool playerBig = false)
+	public void PlayDamageContact(string source, int hpLoss, int absorbed, bool playerBig = false, string? definitionId = null)
 	{
 		if (!Muted && (hpLoss > 0 || absorbed > 0))
 		{
@@ -164,7 +164,10 @@ public class BattleAudio : Node
 		}
 		if (hpLoss > 0)
 		{
-			PlayKey("DamageDealt." + ((source == "enemy") ? "enemy" : "player") + (((source == "enemy") ? (hpLoss >= 12) : playerBig) ? ".big" : ""));
+			if (source == "player" && Hd2dAttackPrototype.HasAuthoredAudio(definitionId))
+                PlayKey("Hd2dContact." + Hd2dAttackPrototype.AudioCard(definitionId));
+            else
+                PlayKey("DamageDealt." + ((source == "enemy") ? "enemy" : "player") + (((source == "enemy") ? (hpLoss >= 12) : playerBig) ? ".big" : ""));
 		}
 		else if (absorbed > 0)
 		{

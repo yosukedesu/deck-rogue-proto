@@ -182,7 +182,7 @@ public sealed class SourceActorMotion
 		// non-attack action lets the previous movement finish returning home.
 	}
 
-	public string Approach(Vector3 actorFeet, float actorHeight, Vector3 targetFeet, float targetHeight, bool ranged, int hits, SourceShowcaseProfile? profile, float now, int frame, Vector3? layoutRight = null, string? artId = null, float reachLimit = 0.4f, float attackPoseLead = 0.12f)
+	public string Approach(Vector3 actorFeet, float actorHeight, Vector3 targetFeet, float targetHeight, bool ranged, int hits, SourceShowcaseProfile? profile, float now, int frame, Vector3? layoutRight = null, string? artId = null, float reachLimit = 0.4f, float attackPoseLead = 0.12f, float? targetClearanceOverride = null, float? approachAnticipationOverride = null)
 	{
 		RequireClock(now);
 		RequireVector(actorFeet, "actorFeet");
@@ -191,6 +191,7 @@ public sealed class SourceActorMotion
 		RequireNonnegative(targetHeight, "targetHeight");
 		RequireNonnegative(reachLimit, "reachLimit");
 		RequireNonnegative(attackPoseLead, "attackPoseLead");
+        if(approachAnticipationOverride.HasValue && !float.IsFinite(approachAnticipationOverride.Value))throw new ArgumentOutOfRangeException("approachAnticipationOverride");
 		Vector3 right = layoutRight ?? Vector3.Right;
 		RequireVector(right, "layoutRight");
 		ValidateProfile(profile);
@@ -210,7 +211,8 @@ public sealed class SourceActorMotion
 		{
 			direction = (((object)profile == null) ? Vector3.Right : right);
 		}
-		float clearance = Math.Max(0f, distance - actorHeight * 0.4f - targetHeight * 0.25f);
+		if(targetClearanceOverride.HasValue) RequireNonnegative(targetClearanceOverride.Value, "targetClearanceOverride");
+        float clearance = Math.Max(0f, distance - (targetClearanceOverride ?? (actorHeight * 0.4f + targetHeight * 0.25f)));
 		float reach;
 		if ((object)profile != null)
 		{
@@ -231,7 +233,7 @@ public sealed class SourceActorMotion
 			Release = release,
 			Recovery = recovery,
 			Duration = release + recovery,
-			Anticipation = (((object)profile == null) ? (-0.035f) : (-0.16f)),
+			Anticipation = approachAnticipationOverride ?? (((object)profile == null) ? (-0.035f) : (-0.16f)),
 			LocalPause = ((object)profile != null),
 			LastClock = now,
 			StartedFrame = frame,

@@ -1,0 +1,130 @@
+{
+  "scope": "Explicit4 definitions added to existing Candle installed-neutral adapter, not every permanent",
+  "ids": [
+    "black_perm_pain_core",
+    "black_perm_bone_mill",
+    "black_perm_chorus",
+    "black_crimson_feast"
+  ],
+  "definitions": [
+    {
+      "id": "black_perm_pain_core",
+      "name": "苦痛の芯",
+      "cost": 1,
+      "type": "permanent",
+      "rarity": "uncommon",
+      "effects": [
+        {
+          "trigger": "onHpLost",
+          "effect": "dealDamage",
+          "amount": 3
+        }
+      ]
+    },
+    {
+      "id": "black_perm_bone_mill",
+      "name": "骨風車",
+      "cost": 1,
+      "type": "permanent",
+      "rarity": "common",
+      "effects": [
+        {
+          "trigger": "onCardExhausted",
+          "effect": "dealDamage",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "black_perm_chorus",
+      "name": "亡者の合唱",
+      "cost": 1,
+      "type": "permanent",
+      "rarity": "rare",
+      "effects": [
+        {
+          "trigger": "onCardExhausted",
+          "effect": "dealDamage",
+          "amount": 1,
+          "amountMax": 3,
+          "exhaustThreshold": 5
+        }
+      ]
+    },
+    {
+      "id": "black_crimson_feast",
+      "name": "真紅の饗宴",
+      "cost": 2,
+      "type": "permanent",
+      "rarity": "rare",
+      "effects": [
+        {
+          "trigger": "onHealed",
+          "effect": "dealDamage",
+          "amount": 1,
+          "target": "all"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "key": "card:black_perm_pain_core",
+      "definitionId": "black_perm_pain_core",
+      "sourceKind": "permanent",
+      "family": "minimal_neutral_contact",
+      "renderer": "BoundedContactFx",
+      "element": "neutral",
+      "fixedSmall": true,
+      "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending",
+      "presentationPolicy": "noncard_fixed_small_contact_v1"
+    },
+    {
+      "key": "card:black_perm_chorus",
+      "definitionId": "black_perm_chorus",
+      "sourceKind": "permanent",
+      "family": "minimal_neutral_contact",
+      "renderer": "BoundedContactFx",
+      "element": "neutral",
+      "fixedSmall": true,
+      "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending",
+      "presentationPolicy": "noncard_fixed_small_contact_v1"
+    },
+    {
+      "key": "card:black_perm_bone_mill",
+      "definitionId": "black_perm_bone_mill",
+      "sourceKind": "permanent",
+      "family": "minimal_neutral_contact",
+      "renderer": "BoundedContactFx",
+      "element": "neutral",
+      "fixedSmall": true,
+      "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending",
+      "presentationPolicy": "noncard_fixed_small_contact_v1"
+    },
+    {
+      "key": "card:black_crimson_feast",
+      "definitionId": "black_crimson_feast",
+      "sourceKind": "permanent",
+      "family": "minimal_neutral_contact",
+      "renderer": "BoundedContactFx",
+      "element": "neutral",
+      "fixedSmall": true,
+      "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending",
+      "presentationPolicy": "noncard_fixed_small_contact_v1"
+    }
+  ],
+  "sha256": {
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/data/cards.black.json": "b6c1dc47de08cc8566ec4bb268bfd573a2c6c0860ccd4c10d8595fed7ebe3624",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/assets/attack-routes.json": "d876cbe1c9eb6eead41e8adf0690e7b61ea7a33f547971ed629879ae82523846",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Effects.cs": "49aabacbdeba548ea5c3ceb14c1e18bd16a7b591ea6eeb3da6b81a21c51907bb",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Combat.cs": "506e88c23b151d5cb571f43a556761f65000c3c3f15090b4901492b3512a1e5c",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision176-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PermanentContactVfxProfiles.cs": "bde554f1dee769a785fab33266e3f493a47287e383b3e1b225e92603c1e61725",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision176-source/scripts/presentation/BattleStage.cs": "1522080cb75b5d06f5458163ba98bde92d971683c4d535060bea7483fa662f21"
+  },
+  "revision": 180,
+  "base": "selected178; no175/177/179",
+  "native": "Candidate exact-ID standards pending; source-only preflight0/static bounded approval",
+  "material": "UNCHANGED CreatePermanentPulse, native bridge/cache/shader; no summoned actor or shared source launch",
+  "safety": "Complete original/selected route tuple, exact source definition+UID in previous/current installed nonRetainer/noLife/noEcho, source UID equality, valid actual receipt. Exact family localage cap before contacted; actual committed/exact native proof required. Candle-only historical helpers retained.",
+  "baseline": "Untouched178 actual BoneMill install→Prayer exhaust, keys369PASS + encoded cycle;13 logged ordinary hero attack-pose rows during passive contact; critic/native candidate selection still pending."
+}
