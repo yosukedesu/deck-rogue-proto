@@ -403,7 +403,7 @@ dot へ（2026-10-12・Claude 側から・返信 10＝UI 比較用の Unity 撮�
 
 ## 15. 返信 11（2026-10-26・本線を Unity に戻す連絡）
 
-ユーザーが dot へ貼る文。
+**未送信。§17（2026-10-28）に §16 と一緒にまとめ直したので、貼るのは §17。** 以下は記録。
 
 ```text
 Deck-Rogue の本線について連絡です。
@@ -418,7 +418,7 @@ Deck-Rogue の本線について連絡です。
 ## 16. 返信 12（2026-10-28・Godot 枝の続き〔HD-2D の攻撃演出 checkpoint 192〕を Unity へ移した連絡と、dot の今後の作業場）
 
 §15 を送る前に dot が Godot 枝で続けた分（10/21〜10/27）を手元で棚卸しし、Unity に無かったものを移した（`docs/dot-godot-port-2026-10-27.md`）。
-**裁定（2026-10-28 ask_user）＝案 B（dot は Godot で続け、節目ごとにこちらが Unity へ移す）。貼るのは案 B。** 案 A（dot も Unity main で続ける）は推奨したが選ばれなかった。
+**裁定（2026-10-28 ask_user）＝案 B（dot は Godot で続け、節目ごとにこちらが Unity へ移す）。§15 も未送信だったので、§17 に 1 通へまとめた＝貼るのは §17。** 案 A（dot も Unity main で続ける）は推奨したが選ばれなかった。
 
 ### 案 A（推奨: 以後の演出の作業は Unity main の上で）
 
@@ -443,4 +443,37 @@ Deck-Rogue の本線の連絡の続きです（§15 の 1〜5 はそのまま有
    - Hd2dAttackPrototype.cs・PhysicalVfxProfiles.cs・ElementalVfxProfiles.cs・SupportVfxProfiles.cs・*ContactVfxProfiles.cs・authored_Hd2dPrototype.gdshader・assets/Art/fx/hd2d-*・assets/presentation-data/hd2d-*・assets/Audio の変更は、1 つの checkpoint のコミットにまとめる（今回の 8834bd18 のように）。
    - BattleStage/BattleActor の統合（踏み込み・画素の錨・光）の変更点は、コミットの本文に「何を」「どの数値で」を書く（こちらは Unity の板で近似するため）。
    - 新しい絵は raw の原本（1254² など）をそのまま（Godot の import 設定は不要）。
+```
+
+## 17. 返信 13（2026-10-28・§15 と §16 をまとめた 1 通。**これを貼る**）
+
+§15（10/26）も §16（10/28）も dot にはまだ届いていない（ユーザー「dot に対してはあなたの伝達をまだ教えていない」）。別々に貼ると §15 の「Godot は止めて」と §16 案 B の「Godot で続けてよい」が矛盾して読めるので、裁定後の形で 1 通にまとめた。§15・§16 は記録として残す。
+
+```text
+Deck-Rogue の本線と、dot の作業場についての連絡です（10/26〜28 の裁定をまとめて 1 通で）。
+
+1. 本線は Unity に戻します。10/12 の「Godot へ一本化」は撤回です。
+   理由（docs/engine-choice-2026-10-26.md）: ①いいと感じた見た目の正体は PNG と JSON の素材で、Godot に縛られない ②UX は Unity の積み上げ（S25 で詰めた UI と、撮って確かめる道具）が大きく先行している ③Godot の枝は 10/12 の作業場消失の後に APK から逆コンパイルで復元したもので、製品の土台にするのは危ない。
+
+2. dot の素材は全部受け入れて Unity に入れました。
+   - 札の絵 567 枚（赤に初めて絵がつきました）、札の面 W09（10/25 のコードの面を Unity で描き直し）
+   - 敵 89 体の一枚絵と 8 コマ待機・被弾・防御・攻撃（1ドット＝3px で舞台に）、技ごとのコマ（285 技を全部。clipset の clips を技 id の語幹で引く規約＋別名 18）
+   - dot の Unity の VFX 枝 codex/hd2d-vfx-motion-20261005（a7f86b5）は main へ合流済み（0ff3b2f）
+
+3. codex/unity-parity-20261013 の 10/21〜10/27 の続き（HD-2D の攻撃演出 checkpoint 192・Font A・音 6 本）も Unity に移しました（docs/dot-godot-port-2026-10-27.md）。
+   - Hd2dAttackPrototype.cs と表（PhysicalVfxProfiles・ElementalVfxProfiles）は、Godot 風のベクトル（unity/Assets/Game/Hd2d/Hd2dMath.cs）の上に「ほぼそのまま」置いた（違いは using・名前空間・Enabled の旗の 3 点。diff が取れる）
+   - シェーダは URP に写した（Resources/Shaders/Hd2dPrototype.shader）。描き手だけ Unity の流れで書いた（Hd2dAttackFx.cs）
+   - 斬り・殴り・突き・踏み・火・水・光・闇・蔦の 9 札が dot の幾何どおり出ることを撮って確認した
+   - 字は Godot と同じ Font A（全画面 Noto Sans JP・見出しとボタンは Bold）にした
+   - まだ: 守り・回復・延焼・置物・死者・返し・敵の突き・雷の門（SupportVfxProfiles ほかの出来事の受領）
+
+4. dot の作業場: Godot の枝でこのまま続けてもらって構いません。節目（checkpoint）ごとにこちらが Unity へ移します。そのために 3 つお願いします。
+   - Hd2dAttackPrototype.cs・*VfxProfiles.cs・authored_Hd2dPrototype.gdshader・assets/Art/fx/hd2d-*・assets/presentation-data/hd2d-*・assets/Audio の変更は、1 つの checkpoint のコミットにまとめる（8834bd18 のように）
+   - BattleStage／BattleActor 側の統合の変更（踏み込み・画素の錨・光・コマの時刻）は、コミットの本文に「何を・どの数値で」を書く（こちらは Unity の板で近似するため）
+   - 新しい絵は raw の原本（1254² など）をそのまま（Godot の import 設定は不要）
+   Godot の UX や APK の作り込みは製品には使わないので、演出と素材に絞ってください。
+
+5. 動いている姿の確認は、こちらが Unity で撮って返します（10/12 の ux-ref と同じ）。
+
+6. 次にお願いしたいもの: ひばなの外見の核（赤のリーダー。青と同じ運用＝dot の絵を正とする）。
 ```
