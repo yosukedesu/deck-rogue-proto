@@ -623,17 +623,44 @@ internal static class Hd2dAttackPrototype
                         .011f,gather*.44f,3);
                     core.Sprite(source,.09f,.065f,0,gather*.13f,2,.9f);return;
                 }
-                float u=Ease((age+.18f)/.18f);
-                Vector3 head=source.Lerp(new Vector3(0,.015f,.035f),u)+Vector3.Up*(MathF.Sin(u*MathF.PI)*.09f);
-                float packetSpread=.075f+.025f*MathF.Sin(u*MathF.PI);
-                Lens(head-axis*.065f+normal*.012f,axis,normal,.32f,.135f,.74f);
-                Curve(sheets,head-axis*.25f-normal*packetSpread,head-axis*.045f+normal*packetSpread*.35f,head+axis*.045f,
-                    .026f,.82f,2);
-                Curve(sheets,head-axis*.18f+normal*packetSpread*.8f,head+normal*.02f,head+axis*.035f-normal*.025f,
-                    .018f,.60f,1);
-                Curve(edge,head-axis*.15f-normal*.025f,head-axis*.025f+normal*.045f,head+axis*.035f,
-                    .009f,.76f,3);
-                core.Sprite(head-axis*.055f,.13f,.065f,MathF.Atan2(axis.Y,axis.X),.16f,2,.95f);
+                if(age>=-.12f)
+                {
+                    float u=Ease((age+.18f)/.18f);
+                    Vector3 head=source.Lerp(new Vector3(0,.015f,.035f),u)+Vector3.Up*(MathF.Sin(u*MathF.PI)*.09f);
+                    float packetSpread=.075f+.025f*MathF.Sin(u*MathF.PI);
+                    Lens(head-axis*.065f+normal*.012f,axis,normal,.32f,.135f,.74f);
+                    Curve(sheets,head-axis*.25f-normal*packetSpread,head-axis*.045f+normal*packetSpread*.35f,head+axis*.045f,
+                        .026f,.82f,2);
+                    Curve(sheets,head-axis*.18f+normal*packetSpread*.8f,head+normal*.02f,head+axis*.035f-normal*.025f,
+                        .018f,.60f,1);
+                    Curve(edge,head-axis*.15f-normal*.025f,head-axis*.025f+normal*.045f,head+axis*.035f,
+                        .009f,.76f,3);
+                    core.Sprite(head-axis*.055f,.13f,.065f,MathF.Atan2(axis.Y,axis.X),.16f,2,.95f);
+                    return;
+                }
+                float departureU=Ease((age+.18f)/.18f);
+                Vector3 departureHead=source.Lerp(new Vector3(0,.015f,.035f),departureU)+Vector3.Up*(MathF.Sin(departureU*MathF.PI)*.09f);
+                float departureSpread=.075f+.025f*MathF.Sin(departureU*MathF.PI);
+                // Continue the SAME gathered body at -.18s. Over 60ms its centre,
+                // widths and contour become the existing travelling packet; after
+                // -.12s the selected travel and all positive-age output are exact.
+                float depart=Ease((age+.18f)/.06f),held=1-depart;
+                Vector3 releaseHead=departureHead+axis*(.15f*held)+normal*(.003f*held);
+                Lens(releaseHead-axis*.065f+normal*.012f,axis,normal,
+                    .19f+(.32f-.19f)*depart,.085f+(.135f-.085f)*depart,.62f+(.74f-.62f)*depart);
+                Curve(sheets,(source-axis*.115f-normal*.10f).Lerp(departureHead-axis*.25f-normal*departureSpread,depart),
+                    (source+axis*.10f-normal*.02f).Lerp(departureHead-axis*.045f+normal*departureSpread*.35f,depart),
+                    (source-axis*.025f+normal*.13f).Lerp(departureHead+axis*.045f,depart),
+                    .019f+(.026f-.019f)*depart,.64f+(.82f-.64f)*depart,2);
+                if(depart>0)
+                    Curve(sheets,departureHead-axis*.18f+normal*departureSpread*.8f,departureHead+normal*.02f,departureHead+axis*.035f-normal*.025f,
+                        .018f,.60f*depart,1);
+                Curve(edge,(source-axis*.12f+normal*.075f).Lerp(departureHead-axis*.15f-normal*.025f,depart),
+                    (source+axis*.045f+normal*.015f).Lerp(departureHead-axis*.025f+normal*.045f,depart),
+                    (source+axis*.025f-normal*.085f).Lerp(departureHead+axis*.035f,depart),
+                    .011f+(.009f-.011f)*depart,.44f+(.76f-.44f)*depart,3);
+                core.Sprite(source.Lerp(departureHead-axis*.055f,depart),.09f+(.13f-.09f)*depart,.065f,
+                    MathF.Atan2(axis.Y,axis.X)*depart,.13f+(.16f-.13f)*depart,2,.9f+(.95f-.9f)*depart);
                 return;
             }
             float peak=1-Ease((age-.035f)/.115f),open=Ease(age/.095f);

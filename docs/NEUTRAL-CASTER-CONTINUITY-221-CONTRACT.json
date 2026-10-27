@@ -1,0 +1,56 @@
+{
+  "revision": 221,
+  "base": 220,
+  "status": "unselected bounded negative-age continuity trial; native A/B and art pending",
+  "scope": "Existing NeutralPressure caster family, same 11 exact card-context profiles; no new route/family",
+  "observedReason": "199 thin slash was improved by selected201 filled packet; gather remains understated. Code has abrupt gathered Lens centre/size switch at -.18. Visible snap is a hypothesis, not an asserted measured baseline defect.",
+  "unchanged": "All positive age sampling, Light/StageFocus/Floor/TargetPeak, source binding/freeze, event/numeric timing, Stage/Actor, all profiles/shader/raw assets/audio. No new asset or Godot import change.",
+  "windowSeconds": {
+    "unchangedGather": [
+      -0.29,
+      -0.18
+    ],
+    "continuousDeparture": [
+      -0.18,
+      -0.12
+    ],
+    "exactOldTravel": [
+      -0.12,
+      0
+    ],
+    "exactOldContactRelease": [
+      0,
+      0.43
+    ]
+  },
+  "formula": {
+    "depart": "Ease((age+.18)/.06); Ease is existing bounded smoothstep",
+    "held": "1-depart",
+    "u": "unchanged Ease((age+.18)/.18)",
+    "head": "unchanged source.Lerp((0,.015,.035),u)+Up*sin(pi*u)*.09",
+    "lensCenter": "head+axis*.15*held+normal*.003*held-axis*.065+normal*.012",
+    "lensLength": ".19+(.32-.19)*depart",
+    "lensHalfWidth": ".085+(.135-.085)*depart",
+    "lensOpacity": ".62+(.74-.62)*depart",
+    "outline": "Lerp gathered curve control points to existing travel control points with depart; widths/opacities similarly blend existing endpoints; second travel shoulder opacity .60*depart",
+    "core": "source\u2192head-axis*.055, radius .09\u2192.13, opacity .13\u2192.16, gain .9\u2192.95; same .065 Y radius",
+    "gainPolicy": "Interpolate existing endpoint values only, no increased maxima, no light/floor gain changes",
+    "exactOldTravelBranch": "age>=-.12 executes copied original expressions, avoiding floating-point re-expression differences"
+  },
+  "localUnits": "Existing effect-local coordinate units prior to native scenario size/projection; not Unity pixels/metres. Axis/normal derived from exact sampled source vector.",
+  "stageActorIntegrationChanges": "NONE. No approach, pixel anchor, pose/frame or receipt time changes.",
+  "minimalAB": {
+    "A": "immutable220 preserved; use existing independently copied candidate220 only through sole QA launcher",
+    "B": "immutable221 after preflight",
+    "cases": [
+      "green_catalyst_echo real cost1/damage4/Small",
+      "black_grave_burst real five Prayer preparations then30/Large"
+    ],
+    "capture": "Same fixture/seed/state/commands/camera/viewport/delta frame schedule. Actual ages around -.22, -.18 adjacent frames, -.12 departure, precontact, +.03 crest and +.15 release/clear. Record actual age/index; no clock forcing to align images.",
+    "isolated": "source-vector fixed samples -.18 +/- .001 and .0001 plus -.12 +/-epsilon; finite all active/indexed UV/positions and geometric continuity. At >=0 compare all active geometry/UV/alpha/gain and light/floor outputs A/B exact.",
+    "rules": "Full authoritative state/events/receipts/contact counts and times unchanged; actual source actor/pose/feet/freeze preserved.",
+    "whyNot11AliasRerun": "No profile/route/source-owner code changes; sole common precontact sampler change. Two existing size extremes plus exact unchanged positive sampler and gates cover bounded modification, not new per-ID admission."
+  },
+  "visualGate": "Same asymmetric compressed source body becomes moving packet; no detached source flash/new projectile, backward snap, beam, sonic/seed/weapon interpretation; old crest/clear retained. Subtle gathering may improve continuity without stronger luminosity.",
+  "rollback": "Reject trial and retain selected220 if no visible improvement or any source/positive-phase regression."
+}

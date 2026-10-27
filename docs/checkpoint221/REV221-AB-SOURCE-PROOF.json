@@ -1,0 +1,378 @@
+{
+  "fixtures": [
+    {
+      "revision": 220,
+      "card": "green_catalyst_echo",
+      "tier": "Small",
+      "actualAmount": 4,
+      "positiveCommittedSamples": 25,
+      "finiteSamples": 138,
+      "directory": "rev221-continuity-a220"
+    },
+    {
+      "revision": 220,
+      "card": "black_grave_burst",
+      "tier": "Large",
+      "actualAmount": 30,
+      "positiveCommittedSamples": 26,
+      "finiteSamples": 138,
+      "directory": "rev221-continuity-a220"
+    },
+    {
+      "revision": 221,
+      "card": "green_catalyst_echo",
+      "tier": "Small",
+      "actualAmount": 4,
+      "positiveCommittedSamples": 25,
+      "finiteSamples": 138,
+      "directory": "rev221-continuity-b221"
+    },
+    {
+      "revision": 221,
+      "card": "black_grave_burst",
+      "tier": "Large",
+      "actualAmount": 30,
+      "positiveCommittedSamples": 26,
+      "finiteSamples": 138,
+      "directory": "rev221-continuity-b221"
+    }
+  ],
+  "pngs": [
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0011.png",
+      "sha256": "3f615f9de01b4f56ab9f0ec54113255848575dfa779c878df823949c2b7489f5",
+      "revision": 220,
+      "frame": 11,
+      "age": -0.2333335
+    },
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0012.png",
+      "sha256": "01c99f2ec7da9cc8da7951ab1043c3bc74556c3141f4e0a241ad4d346e9034c3",
+      "revision": 220,
+      "frame": 12,
+      "age": -0.21666685
+    },
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0013.png",
+      "sha256": "e615c6b3a63ff64bf9d9a855a4d68e4572c8f4bb3c0003d4e4bad5d38a4fdd84",
+      "revision": 220,
+      "frame": 13,
+      "age": -0.2000002
+    },
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0014.png",
+      "sha256": "94d0710498d80cc286c5be57f8fbf6bd3de7e0e5a08faa4592caecee18ade679",
+      "revision": 220,
+      "frame": 14,
+      "age": -0.18333355
+    },
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0015.png",
+      "sha256": "b08297c897b3d0d98aac3ee824c137094b4b9ce10235c5b4072776f9aba64be6",
+      "revision": 220,
+      "frame": 15,
+      "age": -0.1666669
+    },
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0016.png",
+      "sha256": "33e302550f17389022805cd2fc38aa207957d5373e321035782aa8e27765ad7d",
+      "revision": 220,
+      "frame": 16,
+      "age": -0.15000024
+    },
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0017.png",
+      "sha256": "ed9d81f811a11b1165ef447c222eac320de7899913388a00cb0207a6f301c9da",
+      "revision": 220,
+      "frame": 17,
+      "age": -0.1333336
+    },
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0018.png",
+      "sha256": "6b0881596a306fa17b535d1788a48556444918a013027404dbb4a17d4b3d1418",
+      "revision": 220,
+      "frame": 18,
+      "age": -0.11666694
+    },
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0026.png",
+      "sha256": "294fd68e1ebe4c62fdcb5a6a9a4b6b1661fc6ee44a9dfa3fa2857ed0be21ede6",
+      "revision": 220,
+      "frame": 26,
+      "age": 0.016666263
+    },
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0030.png",
+      "sha256": "1cc35003b6f591465d7b2d1b56f88b8fe772daf34359e9f214e7857909ff6b0d",
+      "revision": 220,
+      "frame": 30,
+      "age": 0.08333287
+    },
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0040.png",
+      "sha256": "d7308e5cae9afa0355150d0dd97708306a17bc27f06149b54dfbe4f3b58a6e1e",
+      "revision": 220,
+      "frame": 40,
+      "age": 0.24999937
+    },
+    {
+      "path": "rev221-continuity-a220/green_catalyst_echo/0080.png",
+      "sha256": "51dd088dfffcf0e271c23ee2301f13436fa348e4cf84ddfa8e4f81cbbd784f6d",
+      "revision": 220,
+      "scope": "fixed clear key"
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0011.png",
+      "sha256": "b1ff98bdb9143f6866cd368304fd45c71f6d8c4da8f7216a8f7dee86576483a2",
+      "revision": 220,
+      "frame": 11,
+      "age": -0.23333338
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0012.png",
+      "sha256": "31d45f0a8dd7c790503aa331c3702a58f168fdb3810ed1ae56bf3bd8543bf0b2",
+      "revision": 220,
+      "frame": 12,
+      "age": -0.21666673
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0013.png",
+      "sha256": "0bf198399d3cdca140c4efd6251add4bb7692b90af68bb221459027825d559ca",
+      "revision": 220,
+      "frame": 13,
+      "age": -0.20000008
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0014.png",
+      "sha256": "a8735665bf7a2bdfe896f541115a5201e7ebcf09665a0b3c295a22bb60c4412d",
+      "revision": 220,
+      "frame": 14,
+      "age": -0.18333343
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0015.png",
+      "sha256": "823fa67f61700f07ce1a208c7d8759e0102507c187dd9e3a6c10de58fdfc2449",
+      "revision": 220,
+      "frame": 15,
+      "age": -0.16666678
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0016.png",
+      "sha256": "994d1a4385b217367f0ec2db3a8a744c6c0793fd38fe7eff75a04223d4341ed0",
+      "revision": 220,
+      "frame": 16,
+      "age": -0.15000013
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0017.png",
+      "sha256": "fc6220954be2b850a2e3393bd4b65d09afa04894de475be8eccb0065835176f5",
+      "revision": 220,
+      "frame": 17,
+      "age": -0.13333347
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0018.png",
+      "sha256": "1ee45038470a2b48b0654ed211e98fa2407e186c9095ef6b8bb273a70a68aab7",
+      "revision": 220,
+      "frame": 18,
+      "age": -0.11666682
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0025.png",
+      "sha256": "1b9606c721cd37aeb7bf5b1e827830d16b8f57e844c5c574afa43b2e4eea9e69",
+      "revision": 220,
+      "frame": 25,
+      "age": 2.0861626e-07
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0030.png",
+      "sha256": "90ffce5c6427bb78500e159b002e7f5c3dc795dc565288ffed1467d399d1998d",
+      "revision": 220,
+      "frame": 30,
+      "age": 0.083334655
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0040.png",
+      "sha256": "2367cb69d229cb62507e837852880faeb635d758ec36af6f0070fd84bd0de044",
+      "revision": 220,
+      "frame": 40,
+      "age": 0.25000355
+    },
+    {
+      "path": "rev221-continuity-a220/black_grave_burst/0080.png",
+      "sha256": "003109c34d1175fcb267bd8079ee26d76c43fd05fc9792fe26890da3f9f44d5f",
+      "revision": 220,
+      "scope": "fixed clear key"
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0011.png",
+      "sha256": "0426fcec6242e52dd3b2c8d6998c4901fc7ac2c657e188cfee4b8fcda31556b9",
+      "revision": 221,
+      "frame": 11,
+      "age": -0.2333335
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0012.png",
+      "sha256": "df232a5a6913228ac5b301dcc0432a61252261803412bc13df0dc8ef276159a1",
+      "revision": 221,
+      "frame": 12,
+      "age": -0.21666685
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0013.png",
+      "sha256": "ca24f4d73cf7523cb922041dae1c7089a4e5c5f087f4385129a7b7204a08942d",
+      "revision": 221,
+      "frame": 13,
+      "age": -0.2000002
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0014.png",
+      "sha256": "4282493fa4d840001ea70427d3f93ee24706a3ad1005c7c25ac560ccb23ba379",
+      "revision": 221,
+      "frame": 14,
+      "age": -0.18333355
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0015.png",
+      "sha256": "342db1adbcba0a35777ae034fb72652032cacb55d7b7810012e729aaebb35e94",
+      "revision": 221,
+      "frame": 15,
+      "age": -0.1666669
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0016.png",
+      "sha256": "4c0158692c5131dbbf4061915e5f360c77d46d00ed939e177c0db804d4bc66e5",
+      "revision": 221,
+      "frame": 16,
+      "age": -0.15000024
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0017.png",
+      "sha256": "bae6594bda696871482eb428b42d820896cf6bda6f85d536b509953791fd9a29",
+      "revision": 221,
+      "frame": 17,
+      "age": -0.1333336
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0018.png",
+      "sha256": "ef2669f01e6262c7fcf50c6c83b4f1704b82fe1855ae129867ecc13cf041a872",
+      "revision": 221,
+      "frame": 18,
+      "age": -0.11666694
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0026.png",
+      "sha256": "c8d5050a4e636b1b7ae0beece33492baaf55815b75620c4166154699799d6cd8",
+      "revision": 221,
+      "frame": 26,
+      "age": 0.016666263
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0030.png",
+      "sha256": "e28aa6bfb54502ef5cd965b84511c9551c560ab6f02e5dea536e47a4225d7bf7",
+      "revision": 221,
+      "frame": 30,
+      "age": 0.08333287
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0040.png",
+      "sha256": "6bceea0a5c86f1878f874c04b5631722f829b7a6128c498020c2e917cbfb6d2d",
+      "revision": 221,
+      "frame": 40,
+      "age": 0.24999937
+    },
+    {
+      "path": "rev221-continuity-b221/green_catalyst_echo/0080.png",
+      "sha256": "cdd8cecd651593789c830400c629c7e58780b2bcb993cd3c55e1300682bc70e2",
+      "revision": 221,
+      "scope": "fixed clear key"
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0011.png",
+      "sha256": "10ab71f38e2ae0ba104bb09197cdf24ada12366827388c235aee351b1603a35f",
+      "revision": 221,
+      "frame": 11,
+      "age": -0.23333362
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0012.png",
+      "sha256": "d543a78aacde226b96bebc9a744325060d57028c4a48cf27ec8a15406cea8bad",
+      "revision": 221,
+      "frame": 12,
+      "age": -0.21666697
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0013.png",
+      "sha256": "b65ce689c45d5e19ae0493efc30be6fdca1e93c01cb8205c504d4b3d79b9b7da",
+      "revision": 221,
+      "frame": 13,
+      "age": -0.20000032
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0014.png",
+      "sha256": "d372da815da285433f3ca696f886fe051a4cd1488c2946f353f676d7d48ef3cf",
+      "revision": 221,
+      "frame": 14,
+      "age": -0.18333367
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0015.png",
+      "sha256": "42351835c954891c9bcc03e6e55249e9090420e02f318999732a0f0e043fefb7",
+      "revision": 221,
+      "frame": 15,
+      "age": -0.16666701
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0016.png",
+      "sha256": "cb22ba3b3e6a9023e19dfe8d5a8971339af65621b2a948de317e7b28b0f92cc1",
+      "revision": 221,
+      "frame": 16,
+      "age": -0.15000036
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0017.png",
+      "sha256": "7c4c41b7cba629354cd5ea3149835ef5bd42008ac957a3ebe79bb1540cbdef61",
+      "revision": 221,
+      "frame": 17,
+      "age": -0.13333371
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0018.png",
+      "sha256": "52366685bca51c40d3bde94517007b56541b1040fd5f367c26d5c7ed66b14da5",
+      "revision": 221,
+      "frame": 18,
+      "age": -0.11666706
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0025.png",
+      "sha256": "8688655874bc51bb046f7b99d29e3a67a71c722a8f38e2273e193a312854e3cd",
+      "revision": 221,
+      "frame": 25,
+      "age": 2.0861626e-07
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0030.png",
+      "sha256": "38ea9eaaf430beda2a6e7c596846d8fb4a51070e00f5b7c4a2abf756d51297da",
+      "revision": 221,
+      "frame": 30,
+      "age": 0.083334655
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0040.png",
+      "sha256": "3070c38877b047e9424201d17d53200465afa8bdfe26da780c5dd12aeac8e8b6",
+      "revision": 221,
+      "frame": 40,
+      "age": 0.25000355
+    },
+    {
+      "path": "rev221-continuity-b221/black_grave_burst/0080.png",
+      "sha256": "96a0fbc637ee073f9f2fa837afe0bc65cd29a99805deea7129036ba91bea1fc1",
+      "revision": 221,
+      "scope": "fixed clear key"
+    }
+  ],
+  "comparison": "REV221-AB-SAMPLER-COMPARISON.json",
+  "alignment": "REV221-NATURAL-AGE-ALIGNMENT.json",
+  "scope": "Two actual direct spells only; Small Echo4 and five actual Prayer commands before Large Grave30. Fresh isolated complete-output equality at/after -.12 is distinct from naturally sampled native frame/clock variation. No native effect sampling, new family, nested coverage or Unity motion claim.",
+  "preparationHistory": "Initial product CS0136 compile preparation failed; corrected final a106507 product preflight-b clean. Not a native QA failure. Owner static proof remains implementation-owned."
+}
