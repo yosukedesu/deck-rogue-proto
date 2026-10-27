@@ -1,0 +1,79 @@
+{
+ "glare": {
+  "frames": [
+   {
+    "file": "enemy_elite_giant_face_m_glare_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_giant_face_m_glare_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_giant_face_m_glare_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_elite_giant_face_m_glare_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "glareprepare",
+   "glarepulse",
+   "glarereturn"
+  ]
+ },
+ "crush": {
+  "frames": [
+   {
+    "file": "enemy_elite_giant_face_m_crush_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_giant_face_m_crush_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_giant_face_m_crush_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "crushprepare",
+   "crushcontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_elite_giant_face_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_giant_face_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_giant_face_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_elite_giant_face_m_guard_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

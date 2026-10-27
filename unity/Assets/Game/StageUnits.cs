@@ -1163,6 +1163,25 @@ namespace DeckRogue.Game
                 u.FrameDur["attack"] = new[] { 0.13f, 0.10f, 0.18f };
                 u.FrameDur["hurt"] = new[] { 0.22f };
                 u.FrameDur["block"] = new[] { 0.30f };
+                // 技ごとのコマ (2026-10-28・dot の台帳の clips → scripts/import-enemy-moves.py → <id>_m_<技>_<n>.png と <id>_moves.json):
+                // Anims["m:<技>"] と FrameDur、当たりのコマの番号 MoveContact。予備動作の最後のコマは本当の当たり (ReleaseEnemyMove) まで止める
+                var movesText = Resources.Load<TextAsset>("Art/" + animFolder + "/" + dotId + "_moves");
+                if (movesText != null)
+                {
+                    try
+                    {
+                        var moves = Newtonsoft.Json.Linq.JObject.Parse(movesText.text);
+                        foreach (var kv in moves)
+                        {
+                            var frames = kv.Value["frames"] as Newtonsoft.Json.Linq.JArray; if (frames == null || frames.Count == 0) continue;
+                            var list = new List<Texture2D>(); var durs = new List<float>();
+                            foreach (var fr in frames) { var f = Theme.Art(animFolder, (string)fr["file"]); if (f == null) { list = null; break; } list.Add(f.texture); durs.Add((float?)fr["dur"] ?? 0.1f); }
+                            if (list == null) continue;
+                            u.Anims["m:" + kv.Key] = list; u.FrameDur["m:" + kv.Key] = durs.ToArray(); u.MoveContact["m:" + kv.Key] = (int?)kv.Value["contact"] ?? -1;
+                        }
+                    }
+                    catch (Exception e) { Debug.LogWarning("[Stage] moves.json " + dotId + ": " + e.Message); }
+                }
             }
             // 盤面の作り直し (Rebuild) で板が作り直されても、再生中のコマ送りは引き継ぐ (攻撃コマが Rebuild で消えていた)
             u.Key = key;
@@ -1227,6 +1246,30 @@ namespace DeckRogue.Game
             if (ok) u.Play(anim);
         }
 
+        /// <summary>
+        /// 敵の技のコマ (2026-10-28・dot の台帳の技ごとのコマ): Anims に "m:&lt;技&gt;" があればそれを、無ければ攻撃は attack・防御は block。
+        /// 当たりのある技は予備動作の最後のコマで止まり、ReleaseEnemyMove (本当の当たりの演出) で当たりのコマへ進む
+        /// </summary>
+        public static void PlayEnemyMove(string key, string moveId, string kind)
+        {
+            StageUnit u;
+            if (!_bound.TryGetValue(key, out u) || u == null) return;
+            string anim = moveId != null && u.Anims.ContainsKey("m:" + moveId) ? "m:" + moveId : kind == "attack" || kind == "destroy-set" || kind == "destroy-token" || kind == "steal-gold" ? "attack" : kind == "defend" ? "block" : null;
+            if (anim == null || !u.Anims.ContainsKey(anim)) return;
+            int contact; u.MoveReleased = !(u.MoveContact.TryGetValue(anim, out contact) && contact > 0); u.MoveHoldStart = Time.time;
+            u.Play(anim);
+        }
+        /// <summary>本当の当たり (敵の攻撃が自分に届いた瞬間): 止めていた技のコマを進める</summary>
+        public static void ReleaseEnemyMove(string key)
+        {
+            StageUnit u;
+            if (string.IsNullOrEmpty(key) || !_bound.TryGetValue(key, out u) || u == null) return;
+            if (!u.MoveReleased) { u.MoveReleased = true; return; }
+            // 多段 (7×3 など): 当たりのコマを過ぎていたら、当たりのコマへ戻して打ち直す
+            int contact;
+            if (u.MoveContact.TryGetValue(u.Anim, out contact) && contact >= 0 && u.Frame > contact) { u.Frame = contact; u.FrameT = 0f; u.Apply(); }
+        }
+
         /// <summary>デバッグ: いま表示中のコマ</summary>
         public static string DebugAnim(string key)
         {
@@ -1262,6 +1305,8 @@ namespace DeckRogue.Game
             public Dictionary<string, List<Texture2D>> Anims = new Dictionary<string, List<Texture2D>>();
             public Dictionary<string, float[]> FrameDur = new Dictionary<string, float[]>();   // コマごとの秒 (緩急)。無ければ fps で均等
             public string Anim = "idle"; public int Frame; public float FrameT; public float Fps = 8f; public bool Breathe = true; public float BreathePhase; public string Key;
+            // 技ごとのコマ (2026-10-28): 当たりのコマの番号。予備動作の最後のコマで止まり、ReleaseEnemyMove (本当の当たり) か 1.2 秒で進む
+            public Dictionary<string, int> MoveContact = new Dictionary<string, int>(); public bool MoveReleased = true; public float MoveHoldStart;
             static readonly Vector3[] _c = new Vector3[4];
 
             // ---- 2026-09-30 P11 (HD-2D 見本) ----
@@ -1517,6 +1562,12 @@ namespace DeckRogue.Game
                 float dur = 1f / fps;
                 float[] durs;
                 if (FrameDur.TryGetValue(Anim, out durs) && Frame < durs.Length) dur = durs[Frame];
+                int contact;
+                if (!MoveReleased && MoveContact.TryGetValue(Anim, out contact) && contact > 0 && Frame == contact - 1)
+                {
+                    if (Time.time - MoveHoldStart < 1.2f) { FrameT = Mathf.Min(FrameT + Mathf.Min(Time.deltaTime, 0.04f), dur); return; }   // 当たりを待つ (時間切れなら進む)
+                    MoveReleased = true;
+                }
                 FrameT += Mathf.Min(Time.deltaTime, 0.04f);   // 長いフレーム (Rebuild の直後・端末のもたつき) が1回でコマを何枚も飛ばさないよう上限 (2026-09-16: 攻撃4コマが1フレームで消えていた)
                 if (FrameT < dur) return;
                 FrameT -= dur;

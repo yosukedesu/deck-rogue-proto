@@ -1,0 +1,101 @@
+{
+ "spark_toss": {
+  "frames": [
+   {
+    "file": "enemy_cinder_imp_m_spark_toss_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_cinder_imp_m_spark_toss_1",
+    "dur": 0.09
+   },
+   {
+    "file": "enemy_cinder_imp_m_spark_toss_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_cinder_imp_m_spark_toss_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "sparkprepare",
+   "sparkrelease",
+   "recovery"
+  ]
+ },
+ "fan_flames": {
+  "frames": [
+   {
+    "file": "enemy_cinder_imp_m_fan_flames_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_cinder_imp_m_fan_flames_1",
+    "dur": 0.09
+   }
+  ],
+  "contact": 1,
+  "kind": "hex",
+  "clips": [
+   "fanprepare",
+   "fanapply"
+  ]
+ },
+ "bite": {
+  "frames": [
+   {
+    "file": "enemy_cinder_imp_m_bite_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_cinder_imp_m_bite_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_cinder_imp_m_bite_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_cinder_imp_m_bite_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "biteprepare",
+   "bitecontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_cinder_imp_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_cinder_imp_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_cinder_imp_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_cinder_imp_m_guard_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

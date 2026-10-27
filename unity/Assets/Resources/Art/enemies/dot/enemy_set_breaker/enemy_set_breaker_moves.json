@@ -1,0 +1,107 @@
+{
+ "smash": {
+  "frames": [
+   {
+    "file": "enemy_set_breaker_m_smash_0",
+    "dur": 0.25
+   },
+   {
+    "file": "enemy_set_breaker_m_smash_1",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_set_breaker_m_smash_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "smashprepare",
+   "smashcontact",
+   "recovery"
+  ]
+ },
+ "toss_junk": {
+  "frames": [
+   {
+    "file": "enemy_set_breaker_m_toss_junk_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_set_breaker_m_toss_junk_1",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_set_breaker_m_toss_junk_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "tossprepare",
+   "tosscontact",
+   "recovery"
+  ]
+ },
+ "ready_tools": {
+  "frames": [
+   {
+    "file": "enemy_set_breaker_m_ready_tools_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_set_breaker_m_ready_tools_1",
+    "dur": 0.32
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ },
+ "break_trap": {
+  "frames": [
+   {
+    "file": "enemy_set_breaker_m_break_trap_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_set_breaker_m_break_trap_1",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_set_breaker_m_break_trap_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "trapprepare",
+   "trapcontact",
+   "recovery"
+  ]
+ },
+ "break_token": {
+  "frames": [
+   {
+    "file": "enemy_set_breaker_m_break_token_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_set_breaker_m_break_token_1",
+    "dur": 0.24
+   }
+  ],
+  "contact": 1,
+  "kind": "destroy-token",
+  "clips": [
+   "tokenprepare",
+   "tokenapplied"
+  ]
+ }
+}

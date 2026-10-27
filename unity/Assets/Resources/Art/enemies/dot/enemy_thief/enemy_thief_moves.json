@@ -1,0 +1,93 @@
+{
+ "sneak": {
+  "frames": [
+   {
+    "file": "enemy_thief_m_sneak_0",
+    "dur": 0.45
+   },
+   {
+    "file": "enemy_thief_m_sneak_1",
+    "dur": 0.15
+   }
+  ],
+  "contact": -1,
+  "kind": "defend",
+  "clips": [
+   "sneak",
+   "turn"
+  ]
+ },
+ "snatch": {
+  "frames": [
+   {
+    "file": "enemy_thief_m_snatch_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_thief_m_snatch_1",
+    "dur": 0.25
+   },
+   {
+    "file": "enemy_thief_m_snatch_2",
+    "dur": 0.15
+   }
+  ],
+  "contact": 0,
+  "kind": "steal-gold",
+  "clips": [
+   "reach",
+   "stow",
+   "recovery"
+  ]
+ },
+ "mug": {
+  "frames": [
+   {
+    "file": "enemy_thief_m_mug_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_thief_m_mug_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_thief_m_mug_2",
+    "dur": 0.15
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "windup",
+   "contact",
+   "recovery"
+  ]
+ },
+ "run_off": {
+  "frames": [
+   {
+    "file": "enemy_thief_m_run_off_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_thief_m_run_off_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_thief_m_run_off_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_thief_m_run_off_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": -1,
+  "kind": "flee",
+  "clips": [
+   "run",
+   "runpass",
+   "flee"
+  ]
+ }
+}

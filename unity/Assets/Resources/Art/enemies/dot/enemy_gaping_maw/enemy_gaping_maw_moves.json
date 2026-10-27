@@ -1,0 +1,111 @@
+{
+ "claw": {
+  "frames": [
+   {
+    "file": "enemy_gaping_maw_m_claw_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_gaping_maw_m_claw_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_gaping_maw_m_claw_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_gaping_maw_m_claw_3",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_gaping_maw_m_claw_4",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_gaping_maw_m_claw_5",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "clawprepare",
+   "clawcontact1",
+   "clawrebound",
+   "clawcontact2",
+   "recovery"
+  ]
+ },
+ "rend": {
+  "frames": [
+   {
+    "file": "enemy_gaping_maw_m_rend_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_gaping_maw_m_rend_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_gaping_maw_m_rend_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_gaping_maw_m_rend_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "rendprepare",
+   "rendcontact",
+   "recovery"
+  ]
+ },
+ "roar": {
+  "frames": [
+   {
+    "file": "enemy_gaping_maw_m_roar_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_gaping_maw_m_roar_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "hex",
+  "clips": [
+   "roarprepare",
+   "roarapplied"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_gaping_maw_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_gaping_maw_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_gaping_maw_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_gaping_maw_m_guard_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

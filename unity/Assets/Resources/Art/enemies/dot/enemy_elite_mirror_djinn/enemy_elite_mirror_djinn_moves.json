@@ -1,0 +1,56 @@
+{
+ "mirror": {
+  "frames": [
+   {
+    "file": "enemy_elite_mirror_djinn_m_mirror_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_elite_mirror_djinn_m_mirror_1",
+    "dur": 0.18
+   }
+  ],
+  "contact": -1,
+  "kind": "attack",
+  "clips": [
+   "mirrorprepare",
+   "recovery"
+  ]
+ },
+ "gaze": {
+  "frames": [
+   {
+    "file": "enemy_elite_mirror_djinn_m_gaze_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_elite_mirror_djinn_m_gaze_1",
+    "dur": 0.1
+   }
+  ],
+  "contact": 1,
+  "kind": "hex",
+  "clips": [
+   "gazeprepare",
+   "gazeapplied"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_elite_mirror_djinn_m_guard_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_elite_mirror_djinn_m_guard_1",
+    "dur": 0.05
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

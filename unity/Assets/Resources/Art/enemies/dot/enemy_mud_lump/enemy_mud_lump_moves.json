@@ -1,0 +1,94 @@
+{
+ "slop": {
+  "frames": [
+   {
+    "file": "enemy_mud_lump_m_slop_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_mud_lump_m_slop_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_mud_lump_m_slop_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "slopprepare",
+   "sloprelease",
+   "recovery"
+  ]
+ },
+ "mud_guard": {
+  "frames": [
+   {
+    "file": "enemy_mud_lump_m_mud_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_mud_lump_m_mud_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_mud_lump_m_mud_guard_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ },
+ "slam": {
+  "frames": [
+   {
+    "file": "enemy_mud_lump_m_slam_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_mud_lump_m_slam_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_mud_lump_m_slam_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "slamprepare",
+   "slamcontact",
+   "recovery"
+  ]
+ },
+ "mud_toss": {
+  "frames": [
+   {
+    "file": "enemy_mud_lump_m_mud_toss_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_mud_lump_m_mud_toss_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_mud_lump_m_mud_toss_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "tossprepare",
+   "tossrelease",
+   "recovery"
+  ]
+ }
+}

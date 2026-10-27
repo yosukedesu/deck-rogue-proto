@@ -61,7 +61,10 @@ namespace DeckRogue.Game
         }
 
         // Opt-in choreography uses the same contact time as Presenter; never changes the global clock.
-        public static void ShowcaseApproach(string key,string target,bool ranged,int hits,CardVfxProfile.Showcase profile)
+        // HD-2D の攻撃演出 (2026-10-27・dot の Godot 版の移植): reachWorld＝斧の先が相手の縁に届く距離 (Hd2dAttackFx.Approach が計る)、
+        // poseLead＝当たりの何秒前に攻撃のコマを始めるか (dot は .22・火は .28。旧は .12)、attackFrameDur＝攻撃のコマの長さ (dot の BattleActor.ApplyHd2dPose)。
+        static readonly System.Collections.Generic.Dictionary<StageUnit,float[]> _attackDurOriginal=new System.Collections.Generic.Dictionary<StageUnit,float[]>();
+        public static void ShowcaseApproach(string key,string target,bool ranged,int hits,CardVfxProfile.Showcase profile,float? reachWorld=null,float poseLead=.12f,float[] attackFrameDur=null)
         {
             if(profile==null || !CombatWorld || !_bound.TryGetValue(key,out var u) || u==null)return;
             if(!TryGetUnitBox(key,out var a,out var ah) || !TryGetUnitBox(target,out var b,out var bh))return;
@@ -70,12 +73,17 @@ namespace DeckRogue.Game
             u.ImpactPause.Clear();
             var delta=b-a;delta.y=0;float distance=delta.magnitude;
             var dir=distance>.01f?delta/distance:LayoutRotation*Vector3.right;
-            float reach=ranged?ah*.035f:Mathf.Min(ah*profile.Reach,Mathf.Max(0,distance-ah*.40f-bh*.25f));
+            float reach=reachWorld.HasValue?Mathf.Clamp(reachWorld.Value,0f,Mathf.Max(0f,distance-ah*.05f)):ranged?ah*.035f:Mathf.Min(ah*profile.Reach,Mathf.Max(0,distance-ah*.40f-bh*.25f));
             float release=profile.Contact+Mathf.Max(0,hits-1)*profile.Interval+.045f;
             float duration=release+profile.Recovery;
+            if(attackFrameDur!=null){
+                float[] original;if(!_attackDurOriginal.TryGetValue(u,out original)){u.FrameDur.TryGetValue("attack",out original);_attackDurOriginal[u]=original;}
+                u.FrameDur["attack"]=attackFrameDur;
+                Tween.After(duration+.05f,()=>{if(u==null || !_attackDurOriginal.TryGetValue(u,out var back))return;if(back!=null)u.FrameDur["attack"]=back;else u.FrameDur.Remove("attack");});
+            }
             // Keep the authored attack frames (including Mizore's fix), shift their start to release.
             u.Play("block");
-            Tween.After(Mathf.Max(0,profile.Contact-.12f),()=>{if(u!=null && u.MotionVersion==version)u.Play("attack");});
+            Tween.After(Mathf.Max(0,profile.Contact-poseLead),()=>{if(u!=null && u.MotionVersion==version)u.Play("attack");});
             Tween.RunPresentation(ShowcaseMotion(u,duration,()=>u.MotionVersion==version,k=>{
                 float t=k*duration,amount;
                 if(t<profile.Windup)amount=-.16f*Mathf.SmoothStep(0,1,t/profile.Windup);

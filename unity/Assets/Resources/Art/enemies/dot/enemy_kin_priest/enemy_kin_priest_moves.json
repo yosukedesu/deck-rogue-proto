@@ -1,0 +1,153 @@
+{
+ "orb_frail": {
+  "frames": [
+   {
+    "file": "enemy_kin_priest_m_orb_frail_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_kin_priest_m_orb_frail_1",
+    "dur": 0.13
+   },
+   {
+    "file": "enemy_kin_priest_m_orb_frail_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "frailprepare",
+   "frailrelease",
+   "recovery"
+  ]
+ },
+ "orb_weak": {
+  "frames": [
+   {
+    "file": "enemy_kin_priest_m_orb_weak_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_kin_priest_m_orb_weak_1",
+    "dur": 0.13
+   },
+   {
+    "file": "enemy_kin_priest_m_orb_weak_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "weakprepare",
+   "weakrelease",
+   "recovery"
+  ]
+ },
+ "beam": {
+  "frames": [
+   {
+    "file": "enemy_kin_priest_m_beam_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_kin_priest_m_beam_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_kin_priest_m_beam_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "beamprepare",
+   "beamrelease",
+   "recovery"
+  ]
+ },
+ "ritual": {
+  "frames": [
+   {
+    "file": "enemy_kin_priest_m_ritual_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_kin_priest_m_ritual_1",
+    "dur": 0.32
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "ritualprepare",
+   "ritualapplied"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_kin_priest_m_guard_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_kin_priest_m_guard_1",
+    "dur": 0.3
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ },
+ "judgment_orb": {
+  "frames": [
+   {
+    "file": "enemy_kin_priest_m_judgment_orb_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_kin_priest_m_judgment_orb_1",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_kin_priest_m_judgment_orb_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "judgmentprepare",
+   "judgmentrelease",
+   "recovery"
+  ]
+ },
+ "blood_beam": {
+  "frames": [
+   {
+    "file": "enemy_kin_priest_m_blood_beam_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_kin_priest_m_blood_beam_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_kin_priest_m_blood_beam_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "beamprepare",
+   "beamrelease",
+   "recovery"
+  ]
+ }
+}

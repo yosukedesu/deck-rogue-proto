@@ -1,0 +1,61 @@
+{
+ "boot_up": {
+  "frames": [
+   {
+    "file": "enemy_axe_automaton_reboot_m_boot_up_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_axe_automaton_reboot_m_boot_up_1",
+    "dur": 0.36
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "bootprepare",
+   "boothold"
+  ]
+ },
+ "one_two": {
+  "frames": [
+   {
+    "file": "enemy_axe_automaton_reboot_m_one_two_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_axe_automaton_reboot_m_one_two_1",
+    "dur": 0.18
+   }
+  ],
+  "contact": -1,
+  "kind": "attack",
+  "clips": [
+   "twoprepare",
+   "recovery"
+  ]
+ },
+ "hammer_upper": {
+  "frames": [
+   {
+    "file": "enemy_axe_automaton_reboot_m_hammer_upper_0",
+    "dur": 0.25
+   },
+   {
+    "file": "enemy_axe_automaton_reboot_m_hammer_upper_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_axe_automaton_reboot_m_hammer_upper_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "upperprepare",
+   "uppercontact",
+   "recovery"
+  ]
+ }
+}

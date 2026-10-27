@@ -1,0 +1,71 @@
+{
+ "brace": {
+  "frames": [
+   {
+    "file": "enemy_whetstone_colossus_m_brace_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_whetstone_colossus_m_brace_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_whetstone_colossus_m_brace_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ },
+ "hone": {
+  "frames": [
+   {
+    "file": "enemy_whetstone_colossus_m_hone_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_whetstone_colossus_m_hone_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_whetstone_colossus_m_hone_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "honeprepare",
+   "honepulse",
+   "honereturn"
+  ]
+ },
+ "guillotine": {
+  "frames": [
+   {
+    "file": "enemy_whetstone_colossus_m_guillotine_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_whetstone_colossus_m_guillotine_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_whetstone_colossus_m_guillotine_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "guillotineprepare",
+   "guillotinecontact",
+   "recovery"
+  ]
+ }
+}

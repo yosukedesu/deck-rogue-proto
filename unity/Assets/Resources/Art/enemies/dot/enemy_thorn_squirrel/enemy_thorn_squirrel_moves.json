@@ -1,0 +1,25 @@
+{
+ "gnaw": {
+  "frames": [
+   {
+    "file": "enemy_thorn_squirrel_m_gnaw_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_thorn_squirrel_m_gnaw_1",
+    "dur": 0.11
+   },
+   {
+    "file": "enemy_thorn_squirrel_m_gnaw_2",
+    "dur": 0.22
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "prepare",
+   "contact",
+   "recovery"
+  ]
+ }
+}

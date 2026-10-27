@@ -1,0 +1,94 @@
+{
+ "constrict": {
+  "frames": [
+   {
+    "file": "enemy_strangler_serpent_m_constrict_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_strangler_serpent_m_constrict_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_strangler_serpent_m_constrict_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "constrictprepare",
+   "constrictcontact",
+   "recovery"
+  ]
+ },
+ "lash": {
+  "frames": [
+   {
+    "file": "enemy_strangler_serpent_m_lash_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_strangler_serpent_m_lash_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_strangler_serpent_m_lash_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "lashprepare",
+   "lashcontact",
+   "recovery"
+  ]
+ },
+ "thwack": {
+  "frames": [
+   {
+    "file": "enemy_strangler_serpent_m_thwack_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_strangler_serpent_m_thwack_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_strangler_serpent_m_thwack_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "thwackprepare",
+   "thwackcontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_strangler_serpent_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_strangler_serpent_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_strangler_serpent_m_guard_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

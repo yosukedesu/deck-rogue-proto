@@ -1,0 +1,66 @@
+{
+ "debilitating_smog": {
+  "frames": [
+   {
+    "file": "enemy_lost_soul_m_debilitating_smog_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_lost_soul_m_debilitating_smog_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_lost_soul_m_debilitating_smog_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "smogprepare",
+   "smogcontact",
+   "recovery"
+  ]
+ },
+ "eye_lasers": {
+  "frames": [
+   {
+    "file": "enemy_lost_soul_m_eye_lasers_0",
+    "dur": 0.07
+   },
+   {
+    "file": "enemy_lost_soul_m_eye_lasers_1",
+    "dur": 0.16
+   }
+  ],
+  "contact": 0,
+  "kind": "attack",
+  "clips": [
+   "release",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_lost_soul_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_lost_soul_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_lost_soul_m_guard_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

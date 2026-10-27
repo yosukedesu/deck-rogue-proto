@@ -1,0 +1,66 @@
+{
+ "soar": {
+  "frames": [
+   {
+    "file": "enemy_elite_gold_raven_m_soar_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_elite_gold_raven_m_soar_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "soarprepare",
+   "soarhold"
+  ]
+ },
+ "dive": {
+  "frames": [
+   {
+    "file": "enemy_elite_gold_raven_m_dive_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_elite_gold_raven_m_dive_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_elite_gold_raven_m_dive_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "diveprepare",
+   "divecontact",
+   "recovery"
+  ]
+ },
+ "peck": {
+  "frames": [
+   {
+    "file": "enemy_elite_gold_raven_m_peck_0",
+    "dur": 0.15
+   },
+   {
+    "file": "enemy_elite_gold_raven_m_peck_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_elite_gold_raven_m_peck_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "peckprepare",
+   "peckcontact",
+   "recovery"
+  ]
+ }
+}

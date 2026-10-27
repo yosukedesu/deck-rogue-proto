@@ -1,0 +1,20 @@
+{
+ "mimic": {
+  "frames": [
+   {
+    "file": "enemy_mimic_imp_m_mimic_0",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_mimic_imp_m_mimic_1",
+    "dur": 0.14
+   }
+  ],
+  "contact": -1,
+  "kind": "attack",
+  "clips": [
+   "prepare",
+   "recovery"
+  ]
+ }
+}

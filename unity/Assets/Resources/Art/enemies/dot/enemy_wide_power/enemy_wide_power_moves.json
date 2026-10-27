@@ -1,0 +1,43 @@
+{
+ "surge": {
+  "frames": [
+   {
+    "file": "enemy_wide_power_m_surge_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_wide_power_m_surge_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_wide_power_m_surge_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "surgeprepare",
+   "surgecontact",
+   "recovery"
+  ]
+ },
+ "coil": {
+  "frames": [
+   {
+    "file": "enemy_wide_power_m_coil_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_wide_power_m_coil_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "coilprepare",
+   "coilhold"
+  ]
+ }
+}

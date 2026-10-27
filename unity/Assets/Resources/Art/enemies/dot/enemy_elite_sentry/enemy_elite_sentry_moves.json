@@ -1,0 +1,66 @@
+{
+ "bolt": {
+  "frames": [
+   {
+    "file": "enemy_elite_sentry_m_bolt_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_sentry_m_bolt_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_elite_sentry_m_bolt_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "boltprepare",
+   "boltrelease",
+   "recovery"
+  ]
+ },
+ "beam": {
+  "frames": [
+   {
+    "file": "enemy_elite_sentry_m_beam_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_elite_sentry_m_beam_1",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_sentry_m_beam_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "beamprepare",
+   "beamrelease",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_elite_sentry_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_sentry_m_guard_1",
+    "dur": 0.05
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

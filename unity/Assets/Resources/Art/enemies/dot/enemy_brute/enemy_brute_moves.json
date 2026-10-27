@@ -1,0 +1,151 @@
+{
+ "warcry": {
+  "frames": [
+   {
+    "file": "enemy_brute_m_warcry_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_brute_m_warcry_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "warcryprepare",
+   "warcryroar"
+  ]
+ },
+ "club": {
+  "frames": [
+   {
+    "file": "enemy_brute_m_club_0",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_brute_m_club_1",
+    "dur": 0.06
+   },
+   {
+    "file": "enemy_brute_m_club_2",
+    "dur": 0.06
+   },
+   {
+    "file": "enemy_brute_m_club_3",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_brute_m_club_4",
+    "dur": 0.12
+   }
+  ],
+  "contact": 3,
+  "kind": "attack",
+  "clips": [
+   "windup",
+   "impact",
+   "recovery"
+  ]
+ },
+ "club_wild": {
+  "frames": [
+   {
+    "file": "enemy_brute_m_club_wild_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_brute_m_club_wild_1",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_brute_m_club_wild_2",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "wildwindup",
+   "wildimpact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_brute_m_guard_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_brute_m_guard_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ },
+ "rage_flurry": {
+  "frames": [
+   {
+    "file": "enemy_brute_m_rage_flurry_0",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_brute_m_rage_flurry_1",
+    "dur": 0.06
+   },
+   {
+    "file": "enemy_brute_m_rage_flurry_2",
+    "dur": 0.06
+   },
+   {
+    "file": "enemy_brute_m_rage_flurry_3",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_brute_m_rage_flurry_4",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_brute_m_rage_flurry_5",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_brute_m_rage_flurry_6",
+    "dur": 0.12
+   }
+  ],
+  "contact": 3,
+  "kind": "attack",
+  "clips": [
+   "windup",
+   "impact",
+   "rebound",
+   "impact",
+   "recovery"
+  ]
+ },
+ "war_roar": {
+  "frames": [
+   {
+    "file": "enemy_brute_m_war_roar_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_brute_m_war_roar_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "warroarprepare",
+   "warroarroar"
+  ]
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "slash": {
+  "frames": [
+   {
+    "file": "enemy_elite_husk_2_m_slash_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_husk_2_m_slash_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_husk_2_m_slash_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "prepare",
+   "contact",
+   "recovery"
+  ]
+ }
+}

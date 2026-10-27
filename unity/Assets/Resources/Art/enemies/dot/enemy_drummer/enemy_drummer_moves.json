@@ -1,0 +1,66 @@
+{
+ "war_drum": {
+  "frames": [
+   {
+    "file": "enemy_drummer_m_war_drum_0",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_drummer_m_war_drum_1",
+    "dur": 0.04
+   },
+   {
+    "file": "enemy_drummer_m_war_drum_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "rally",
+  "clips": [
+   "prepare",
+   "beat",
+   "recovery"
+  ]
+ },
+ "thump": {
+  "frames": [
+   {
+    "file": "enemy_drummer_m_thump_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_drummer_m_thump_1",
+    "dur": 0.06
+   },
+   {
+    "file": "enemy_drummer_m_thump_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "thump_prepare",
+   "thump_impact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_drummer_m_guard_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_drummer_m_guard_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guard_prepare",
+   "guard_hold"
+  ]
+ }
+}

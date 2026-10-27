@@ -1,0 +1,66 @@
+{
+ "bump": {
+  "frames": [
+   {
+    "file": "enemy_mudling_m_bump_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_mudling_m_bump_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_mudling_m_bump_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "bumpprepare",
+   "bumpcontact",
+   "recovery"
+  ]
+ },
+ "slop": {
+  "frames": [
+   {
+    "file": "enemy_mudling_m_slop_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_mudling_m_slop_1",
+    "dur": 0.07
+   }
+  ],
+  "contact": 1,
+  "kind": "hex",
+  "clips": [
+   "slopprepare",
+   "slopapply"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_mudling_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_mudling_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_mudling_m_guard_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

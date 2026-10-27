@@ -1,0 +1,66 @@
+{
+ "wing": {
+  "frames": [
+   {
+    "file": "enemy_elite_owl_m_wing_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_elite_owl_m_wing_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_elite_owl_m_wing_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "wingprepare",
+   "wingcontact",
+   "recovery"
+  ]
+ },
+ "brace": {
+  "frames": [
+   {
+    "file": "enemy_elite_owl_m_brace_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_elite_owl_m_brace_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "braceprepare",
+   "bracehold"
+  ]
+ },
+ "talon_dive": {
+  "frames": [
+   {
+    "file": "enemy_elite_owl_m_talon_dive_0",
+    "dur": 0.15
+   },
+   {
+    "file": "enemy_elite_owl_m_talon_dive_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_elite_owl_m_talon_dive_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "diveprepare",
+   "divecontact",
+   "recovery"
+  ]
+ }
+}

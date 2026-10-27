@@ -1,0 +1,20 @@
+{
+ "mirror_dance": {
+  "frames": [
+   {
+    "file": "enemy_mimic_jester_m_mirror_dance_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_mimic_jester_m_mirror_dance_1",
+    "dur": 0.16
+   }
+  ],
+  "contact": -1,
+  "kind": "attack",
+  "clips": [
+   "prepare",
+   "recovery"
+  ]
+ }
+}

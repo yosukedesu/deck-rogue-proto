@@ -1,0 +1,61 @@
+{
+ "spawn": {
+  "frames": [
+   {
+    "file": "enemy_moss_spawner_m_spawn_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_moss_spawner_m_spawn_1",
+    "dur": 0.28
+   }
+  ],
+  "contact": 1,
+  "kind": "summon",
+  "clips": [
+   "spawnprepare",
+   "spawnapplied"
+  ]
+ },
+ "lash": {
+  "frames": [
+   {
+    "file": "enemy_moss_spawner_m_lash_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_moss_spawner_m_lash_1",
+    "dur": 0.13
+   },
+   {
+    "file": "enemy_moss_spawner_m_lash_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "lashprepare",
+   "lashcontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_moss_spawner_m_guard_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_moss_spawner_m_guard_1",
+    "dur": 0.32
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

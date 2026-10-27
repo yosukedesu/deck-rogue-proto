@@ -1,0 +1,42 @@
+{
+ "quiver": {
+  "frames": [
+   {
+    "file": "enemy_raptor_egg_m_quiver_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_raptor_egg_m_quiver_1",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_raptor_egg_m_quiver_2",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_raptor_egg_m_quiver_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "quiverprepare",
+   "quiverhold",
+   "quiverreturn"
+  ]
+ },
+ "hatch": {
+  "frames": [
+   {
+    "file": "enemy_raptor_egg_m_hatch_0",
+    "dur": 0.26
+   }
+  ],
+  "contact": -1,
+  "kind": "hatch",
+  "clips": [
+   "hatchprepare"
+  ]
+ }
+}

@@ -1,0 +1,101 @@
+{
+ "dual_chant": {
+  "frames": [
+   {
+    "file": "enemy_elite_doom_chanter_m_dual_chant_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_dual_chant_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_dual_chant_2",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_dual_chant_3",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_dual_chant_4",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_dual_chant_5",
+    "dur": 0.1
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "chantprepare",
+   "chantcontact1",
+   "chantrebound",
+   "chantcontact2",
+   "recovery"
+  ]
+ },
+ "crescendo": {
+  "frames": [
+   {
+    "file": "enemy_elite_doom_chanter_m_crescendo_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_crescendo_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_crescendo_2",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_crescendo_3",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_crescendo_4",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "crescendoprepare",
+   "crescendopulse",
+   "crescendoreturn"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_elite_doom_chanter_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_guard_2",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_guard_3",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_elite_doom_chanter_m_guard_4",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

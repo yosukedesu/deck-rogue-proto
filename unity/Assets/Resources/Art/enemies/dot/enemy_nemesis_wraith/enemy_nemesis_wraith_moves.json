@@ -1,0 +1,48 @@
+{
+ "curse_touch": {
+  "frames": [
+   {
+    "file": "enemy_nemesis_wraith_m_curse_touch_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_nemesis_wraith_m_curse_touch_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_nemesis_wraith_m_curse_touch_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "curseprepare",
+   "cursecontact",
+   "recovery"
+  ]
+ },
+ "scythe": {
+  "frames": [
+   {
+    "file": "enemy_nemesis_wraith_m_scythe_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_nemesis_wraith_m_scythe_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_nemesis_wraith_m_scythe_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "scytheprepare",
+   "scythecontact",
+   "recovery"
+  ]
+ }
+}

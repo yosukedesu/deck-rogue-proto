@@ -1,0 +1,79 @@
+{
+ "vuln_spores": {
+  "frames": [
+   {
+    "file": "enemy_spore_cap_m_vuln_spores_0",
+    "dur": 0.12
+   }
+  ],
+  "contact": -1,
+  "kind": "hex",
+  "clips": [
+   "vulnprepare"
+  ]
+ },
+ "frail_spores": {
+  "frames": [
+   {
+    "file": "enemy_spore_cap_m_frail_spores_0",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_spore_cap_m_frail_spores_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_spore_cap_m_frail_spores_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "prepare",
+   "release",
+   "recovery"
+  ]
+ },
+ "smash": {
+  "frames": [
+   {
+    "file": "enemy_spore_cap_m_smash_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_spore_cap_m_smash_1",
+    "dur": 0.04
+   },
+   {
+    "file": "enemy_spore_cap_m_smash_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "smashprepare",
+   "smashcontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_spore_cap_m_guard_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_spore_cap_m_guard_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

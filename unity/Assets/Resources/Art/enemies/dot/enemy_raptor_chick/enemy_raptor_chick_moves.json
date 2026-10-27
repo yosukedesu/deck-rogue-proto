@@ -1,0 +1,25 @@
+{
+ "peck": {
+  "frames": [
+   {
+    "file": "enemy_raptor_chick_m_peck_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_raptor_chick_m_peck_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_raptor_chick_m_peck_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "peckprepare",
+   "peckcontact",
+   "recovery"
+  ]
+ }
+}

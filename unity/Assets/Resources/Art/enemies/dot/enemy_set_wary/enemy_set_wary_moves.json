@@ -1,0 +1,43 @@
+{
+ "slash": {
+  "frames": [
+   {
+    "file": "enemy_set_wary_m_slash_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_set_wary_m_slash_1",
+    "dur": 0.11
+   },
+   {
+    "file": "enemy_set_wary_m_slash_2",
+    "dur": 0.22
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "prepare",
+   "contact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_set_wary_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_set_wary_m_guard_1",
+    "dur": 0.45
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

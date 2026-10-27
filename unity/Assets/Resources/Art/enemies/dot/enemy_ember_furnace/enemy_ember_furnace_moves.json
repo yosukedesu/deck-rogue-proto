@@ -1,0 +1,140 @@
+{
+ "stoke": {
+  "frames": [
+   {
+    "file": "enemy_ember_furnace_m_stoke_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_ember_furnace_m_stoke_1",
+    "dur": 0.3
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "stokeprepare",
+   "stokehold"
+  ]
+ },
+ "devour_ember": {
+  "frames": [
+   {
+    "file": "enemy_ember_furnace_m_devour_ember_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_ember_furnace_m_devour_ember_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_ember_furnace_m_devour_ember_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "devourprepare",
+   "devourcontact",
+   "recovery"
+  ]
+ },
+ "sear": {
+  "frames": [
+   {
+    "file": "enemy_ember_furnace_m_sear_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_ember_furnace_m_sear_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_ember_furnace_m_sear_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "searprepare",
+   "searcontact",
+   "recovery"
+  ]
+ },
+ "tackle": {
+  "frames": [
+   {
+    "file": "enemy_ember_furnace_m_tackle_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_ember_furnace_m_tackle_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_ember_furnace_m_tackle_2",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_ember_furnace_m_tackle_3",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_ember_furnace_m_tackle_4",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "tackleprepare",
+   "tacklecontacta",
+   "tacklerebound",
+   "tacklecontactb",
+   "recovery"
+  ]
+ },
+ "inflame": {
+  "frames": [
+   {
+    "file": "enemy_ember_furnace_m_inflame_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_ember_furnace_m_inflame_1",
+    "dur": 0.3
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "inflameprepare",
+   "inflamehold"
+  ]
+ },
+ "inferno": {
+  "frames": [
+   {
+    "file": "enemy_ember_furnace_m_inferno_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_ember_furnace_m_inferno_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_ember_furnace_m_inferno_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "infernoprepare",
+   "infernocontact",
+   "recovery"
+  ]
+ }
+}

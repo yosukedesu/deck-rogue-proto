@@ -1,0 +1,84 @@
+{
+ "clamp": {
+  "frames": [
+   {
+    "file": "enemy_chomper_m_clamp_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_chomper_m_clamp_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_chomper_m_clamp_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_chomper_m_clamp_3",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_chomper_m_clamp_4",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_chomper_m_clamp_5",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "clampprepare",
+   "clampcontact1",
+   "clamprebound",
+   "clampcontact2",
+   "recovery"
+  ]
+ },
+ "screech": {
+  "frames": [
+   {
+    "file": "enemy_chomper_m_screech_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_chomper_m_screech_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "hex",
+  "clips": [
+   "screechprepare",
+   "screechapply"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_chomper_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_chomper_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_chomper_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_chomper_m_guard_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

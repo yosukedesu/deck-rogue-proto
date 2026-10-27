@@ -1,0 +1,112 @@
+{
+ "release_orbs": {
+  "frames": [
+   {
+    "file": "enemy_winch_warden_m_release_orbs_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_winch_warden_m_release_orbs_1",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_winch_warden_m_release_orbs_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "summon",
+  "clips": [
+   "summonprepare",
+   "summonapplied",
+   "recovery"
+  ]
+ },
+ "flail": {
+  "frames": [
+   {
+    "file": "enemy_winch_warden_m_flail_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_winch_warden_m_flail_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_winch_warden_m_flail_2",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_winch_warden_m_flail_3",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_winch_warden_m_flail_4",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "flailprepare",
+   "flailcontacta",
+   "flailrebound",
+   "flailcontactb",
+   "recovery"
+  ]
+ },
+ "wind_up": {
+  "frames": [
+   {
+    "file": "enemy_winch_warden_m_wind_up_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_winch_warden_m_wind_up_1",
+    "dur": 0.3
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "windprepare",
+   "windhold"
+  ]
+ },
+ "hyper_beam": {
+  "frames": [
+   {
+    "file": "enemy_winch_warden_m_hyper_beam_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_winch_warden_m_hyper_beam_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_winch_warden_m_hyper_beam_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "beamprepare",
+   "beamrelease",
+   "recovery"
+  ]
+ },
+ "rewind": {
+  "frames": [
+   {
+    "file": "enemy_winch_warden_m_rewind_0",
+    "dur": 0.42
+   }
+  ],
+  "contact": -1,
+  "kind": "rest",
+  "clips": [
+   "rewind"
+  ]
+ }
+}

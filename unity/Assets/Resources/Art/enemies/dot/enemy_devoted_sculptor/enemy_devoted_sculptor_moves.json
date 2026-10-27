@@ -1,0 +1,66 @@
+{
+ "carve_rite": {
+  "frames": [
+   {
+    "file": "enemy_devoted_sculptor_m_carve_rite_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_devoted_sculptor_m_carve_rite_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_devoted_sculptor_m_carve_rite_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "carveprepare",
+   "carvecontact",
+   "recovery"
+  ]
+ },
+ "savage": {
+  "frames": [
+   {
+    "file": "enemy_devoted_sculptor_m_savage_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_devoted_sculptor_m_savage_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_devoted_sculptor_m_savage_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "savageprepare",
+   "savagecontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_devoted_sculptor_m_guard_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_devoted_sculptor_m_guard_1",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

@@ -1,0 +1,66 @@
+{
+ "whip": {
+  "frames": [
+   {
+    "file": "enemy_elite_sergeant_m_whip_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_elite_sergeant_m_whip_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_elite_sergeant_m_whip_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "whipprepare",
+   "whipcontact",
+   "recovery"
+  ]
+ },
+ "double_whip": {
+  "frames": [
+   {
+    "file": "enemy_elite_sergeant_m_double_whip_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_elite_sergeant_m_double_whip_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_elite_sergeant_m_double_whip_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "whipprepare",
+   "whipcontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_elite_sergeant_m_guard_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_elite_sergeant_m_guard_1",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

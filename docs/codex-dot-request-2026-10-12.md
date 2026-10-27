@@ -414,3 +414,33 @@ Deck-Rogue の本線について連絡です。
 4. dot の Unity の VFX 枝 codex/hd2d-vfx-motion-20261005（a7f86b5）は main へ合流しました（0ff3b2f。衝突 5 本は 10/12 の dot の解消済みのものを採用。vitest・TS 13 本・C# 15/15・Unity コンパイル 0 エラー）。Unity の演出の続きはこの main の上で。
 5. 次にお願いしたいもの: ひばなの外見の核（赤のリーダー。青と同じ運用＝dot の絵を正とする）。
 ```
+
+## 16. 返信 12（2026-10-28・Godot 枝の続き〔HD-2D の攻撃演出 checkpoint 192〕を Unity へ移した連絡と、dot の今後の作業場）
+
+§15 を送る前に dot が Godot 枝で続けた分（10/21〜10/27）を手元で棚卸しし、Unity に無かったものを移した（`docs/dot-godot-port-2026-10-27.md`）。
+**どちらを貼るかはユーザーの裁定（ask_user）で決める。** 案 A＝dot も Unity main で続ける（推奨）／案 B＝dot は Godot で続け、節目ごとにこちらが Unity へ移す。
+
+### 案 A（推奨: 以後の演出の作業は Unity main の上で）
+
+```text
+Deck-Rogue の本線の連絡の続きです（§15 の 1〜5 はそのまま有効）。
+
+6. codex/unity-parity-20261013 の続き（10/21〜10/27・checkpoint 192 まで）は手元で Unity に移しました（docs/dot-godot-port-2026-10-27.md）。
+   - HD-2D の攻撃演出: Hd2dAttackPrototype.cs と表（PhysicalVfxProfiles・ElementalVfxProfiles）は Godot 風のベクトル（unity/Assets/Game/Hd2d/Hd2dMath.cs）の上に **ほぼそのまま** 置いた（diff が取れる）。シェーダは URP に写した（Resources/Shaders/Hd2dPrototype.shader）。描き手だけ Unity の流れで書いた（Hd2dAttackFx.cs）。絵 37・色の表 15・音 6 本も入れた。
+   - 敵の技ごとのコマ: clipset の clips を技 id の語幹で引く規約（285 技を全部）で取り込み、行動の実行で技のコマ・当たりで当たりのコマ、に配線した。
+   - まだ: 守り・回復・延焼・置物・死者・返し・敵の突き・雷の門（SupportVfxProfiles ほかの出来事の受領）と、Font A（全画面 Noto Sans JP）の裁定。
+7. お願い: **演出の続きは Unity main（unity/Assets/Game/Hd2d/）の上で作ってください。** Godot で作ったものは毎回こちらで移すことになり（今回は 1 日）、差分も追いにくくなります。Godot の枝はそのまま残して構いません（素材の倉庫）。
+   Unity で続ける時の決まり: Hd2dAttackPrototype.cs は Hd2dMath の上で Godot 版と同じ書き方のまま（using Godot → using DeckRogue.Game.Hd2dMath、名前空間、Enabled の旗だけ違う）。幾何と時間の数値を変える時はこの 1 本を直す。Unity 固有の所（板の画素→世界の点、踏み込み、光、音）は Hd2dAttackFx.cs と StageHd2dAnchors.cs。
+   撮って確かめる道具: STATE="phase=combat;enemy=enemy_probe;hand=green_strike;play=0;playshots=10;playevery=1" scripts/unity-win.sh shots state 4242（hd2dfx=0 で旧い演出、hd2dfx=flat で層の四角だけ）。
+8. 素材（PNG・JSON・WAV）の納品は今までどおりで大丈夫です。
+```
+
+### 案 B（dot は Godot で続ける。節目ごとに移す）
+
+```text
+6.（案 A と同じ）
+7. Godot での続きは構いません。ただし節目（checkpoint）ごとにこちらで Unity へ移すので、次の 3 つをお願いします:
+   - Hd2dAttackPrototype.cs・PhysicalVfxProfiles.cs・ElementalVfxProfiles.cs・SupportVfxProfiles.cs・*ContactVfxProfiles.cs・authored_Hd2dPrototype.gdshader・assets/Art/fx/hd2d-*・assets/presentation-data/hd2d-*・assets/Audio の変更は、1 つの checkpoint のコミットにまとめる（今回の 8834bd18 のように）。
+   - BattleStage/BattleActor の統合（踏み込み・画素の錨・光）の変更点は、コミットの本文に「何を」「どの数値で」を書く（こちらは Unity の板で近似するため）。
+   - 新しい絵は raw の原本（1254² など）をそのまま（Godot の import 設定は不要）。
+```

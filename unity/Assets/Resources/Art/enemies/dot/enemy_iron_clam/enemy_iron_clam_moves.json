@@ -1,0 +1,71 @@
+{
+ "jet": {
+  "frames": [
+   {
+    "file": "enemy_iron_clam_m_jet_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_iron_clam_m_jet_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_iron_clam_m_jet_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "jetprepare",
+   "jetrelease",
+   "recovery"
+  ]
+ },
+ "pressurize": {
+  "frames": [
+   {
+    "file": "enemy_iron_clam_m_pressurize_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_iron_clam_m_pressurize_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_iron_clam_m_pressurize_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "pressureprepare",
+   "pressurepulse",
+   "pressurereturn"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_iron_clam_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_iron_clam_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_iron_clam_m_guard_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

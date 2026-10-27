@@ -1,0 +1,35 @@
+{
+ "swelling_claws": {
+  "frames": [
+   {
+    "file": "enemy_chimera_2_m_swelling_claws_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_chimera_2_m_swelling_claws_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_chimera_2_m_swelling_claws_2",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_chimera_2_m_swelling_claws_3",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_chimera_2_m_swelling_claws_4",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "clawprepare",
+   "clawcontacta",
+   "clawrebound",
+   "clawcontactb",
+   "recovery"
+  ]
+ }
+}

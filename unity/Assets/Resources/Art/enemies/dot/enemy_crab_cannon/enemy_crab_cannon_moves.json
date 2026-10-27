@@ -1,0 +1,102 @@
+{
+ "reticle": {
+  "frames": [
+   {
+    "file": "enemy_crab_cannon_m_reticle_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_crab_cannon_m_reticle_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_crab_cannon_m_reticle_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "reticleprepare",
+   "reticlecontact",
+   "recovery"
+  ]
+ },
+ "precision_beam": {
+  "frames": [
+   {
+    "file": "enemy_crab_cannon_m_precision_beam_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_crab_cannon_m_precision_beam_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_crab_cannon_m_precision_beam_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "precisionprepare",
+   "precisionrelease",
+   "recovery"
+  ]
+ },
+ "charge": {
+  "frames": [
+   {
+    "file": "enemy_crab_cannon_m_charge_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_crab_cannon_m_charge_1",
+    "dur": 0.28
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "chargeprepare",
+   "chargeapplied"
+  ]
+ },
+ "laser": {
+  "frames": [
+   {
+    "file": "enemy_crab_cannon_m_laser_0",
+    "dur": 0.28
+   },
+   {
+    "file": "enemy_crab_cannon_m_laser_1",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_crab_cannon_m_laser_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "laserprepare",
+   "laserrelease",
+   "recovery"
+  ]
+ },
+ "recharge": {
+  "frames": [
+   {
+    "file": "enemy_crab_cannon_m_recharge_0",
+    "dur": 0.5
+   }
+  ],
+  "contact": -1,
+  "kind": "rest",
+  "clips": [
+   "recharge"
+  ]
+ }
+}

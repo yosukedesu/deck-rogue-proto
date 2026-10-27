@@ -368,6 +368,7 @@ namespace DeckRogue.Game
                     }
                     // Suppress the generic cast only when this exact card has a positive-HP
                     // authored receipt and the complete main/projectile resource set is available.
+                    if(Hd2dAttackFx.Supports(played.CardId))cctx.AuthoredCastReady=true;   // HD-2D の攻撃演出 (2026-10-27): 旧い詠唱の光・飛ぶ玉は出さない (dot の Godot 版と同じ)
                     if(CardVfxProfile.ShowcaseOn)
                         for(int j=i+1;j<to;j++) {
                             if(log[j] is GameEvent_CardPlayed || log[j] is GameEvent_ReactionTriggered || log[j] is GameEvent_TurnEnded)break;
@@ -410,12 +411,12 @@ namespace DeckRogue.Game
                     BindWaterPbfCandidate(g,ctx,log,from,to,Time.time+impactDelay);
                     BindLightningR9Candidate(g,ctx,log,from,to,Time.time+impactDelay,visualPlan.From);
                     LastImpactDelay=Mathf.Max(LastImpactDelay,impactDelay+EnemyContactSpan(ctx)+(IndividualEnemyContact(ctx)?EnemyInnerDelay(g,ev,ctx):0f));
-                    if(ev is GameEvent_DamageDealt hit && hit.Source=="player" && ctx.Hit!=null && ctx.Hit.Style=="slash") {
+                    if(ev is GameEvent_DamageDealt hit && hit.Source=="player" && ctx.Hit!=null && ctx.Hit.Style=="slash" && !Hd2dAttackFx.Eligible(ctx.Feedback)) {   // HD-2D の斬りは自前の斧の軌跡を持つ (2026-10-27): 旧い細い筋は出さない
                         int impactEpoch=_impactEpoch; string target="enemy"+(hit.EnemyIndex ?? 0);
                         var trace=ctx.Hit.Showcase!=null?WorldBattleFx.CaptureProjectile("player",target):null;
                         Tween.After(Mathf.Max(0,impactDelay-.075f),()=>{if(impactEpoch==_impactEpoch && g.Battle==board && !PriorEnemyProjection(ctx)) {if(trace!=null)WorldBattleFx.TraceAt(trace,HitColor(ctx.Hit.Style,ctx.Hit.Def));else WorldBattleFx.Trace(target,HitColor(ctx.Hit.Style,ctx.Hit.Def));}});
                     }
-                    if(ctx.Feedback?.AttackFamily!=null && ctx.Feedback.AttackFamily!="fire_localburst" && ctx.Feedback.Outcome=="hit" && !(ev is GameEvent_DamageDealt rangedSource && rangedSource.Source!="player")) {
+                    if(ctx.Feedback!=null && ((ctx.Feedback.AttackFamily!=null && ctx.Feedback.AttackFamily!="fire_localburst") || Hd2dAttackFx.Eligible(ctx.Feedback)) && ctx.Feedback.Outcome=="hit" && !(ev is GameEvent_DamageDealt rangedSource && rangedSource.Source!="player")) {
                         int impactEpoch=_impactEpoch;float contactAt=Time.time+impactDelay;
                         float lead=WorldBattleFx.AuthoredAttackLead(ctx.Feedback);
                         Tween.After(Mathf.Max(0f,impactDelay-lead),()=>{
@@ -478,6 +479,7 @@ namespace DeckRogue.Game
                     if (tag != null) Tween.Punch(tag, 0.16f);
                     Vector2 center = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
                     string moveId = MoveIdFor(ctx, ex.EnemyIndex);
+                    Stage.PlayEnemyMove("enemy" + ex.EnemyIndex, moveId, ex.Kind);   // 技ごとのコマ (2026-10-28・dot の台帳)。無ければ attack/block
                     var playerRt = g.Anchor("player");
                     var pSpr = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     Vector2 playerPos = pSpr != null ? Tween.CenterIn(pSpr, fx) : (playerRt != null ? Tween.CenterIn(playerRt, fx) : center + new Vector2(-600f, 0f));
@@ -2094,14 +2096,17 @@ namespace DeckRogue.Game
                             if (!Stage.CombatWorld) Tween.PlayerHitFx(fx, hit, style, streak, big, hp != null ? hp.Index : 0, hp != null ? hp.Total : 1, fromP);
                             if (!Stage.CombatWorld && StageMotion.LightsEveryHit && GfxQuality.Level != GfxLevel.Low) Tween.HitGlow(fx, hit, streak, big, GfxQuality.Level == GfxLevel.High);   // 2026-10-03 ユーザー「攻撃エフェクト自体も発光して」(箱庭の動きが点いている幕だけ)
                             if(!Stage.CombatWorld || ctx?.Feedback==null || ctx.Feedback.Element=="physical" || ctx.Feedback.Element=="arcane")Stage.Flash("enemy" + ei);
+                            Stage.PlayAnim("enemy" + ei, "hurt");   // 被弾のコマ (dot の組だけ持つ。2026-10-28)
                         }
                         // 急所: 筋と衝撃線が真鍮色 (big 扱い = 交差する2本目と針10) になり、真鍮の輪が広がる (旧: 星の絵 = 2026-09-17 ユーザー「星型がダサい」で撤去)
                         if (crit && !guardedE) Tween.RingBurst(fx, hit, PaperFx.BrassLight, 200f, 0.35f);
                         if (blocked > 0 && !shell && d.HpLoss > 0) Tween.IconBurst(fx, hit + new Vector2(-10f, 10f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, 0.7f), 90f);
                         if (d.HpLoss>0 && (capped || burrowCut > 0)) Tween.RingBurst(fx, hit, new Color(PaperFx.InkSoft.r, PaperFx.InkSoft.g, PaperFx.InkSoft.b, 0.8f), 150f, 0.3f);
-                        if (hp == null || !hp.Volley || hp.VolleyFirst) Audio.Key("DamageDealt.player.swing");
+                        // HD-2D の攻撃演出 (2026-10-27・dot の BattleAudio.PlayDamageContact と同じ): 予備動作の音は Hd2dAttackFx.Begin が、当たりは Hd2dContact.<札> が鳴らす
+                        bool hd2dAudio = ctx?.Feedback != null && Hd2dAttackFx.Eligible(ctx.Feedback) && Hd2dAttackFx.HasAuthoredAudio(ctx.Feedback.SourceKey);
+                        if (!hd2dAudio && (hp == null || !hp.Volley || hp.VolleyFirst)) Audio.Key("DamageDealt.player.swing");
                         if (d.HpLoss<=0 && CombatOutcome.Read(d).Kind=="guard") Audio.Key("DamageDealt.blocked");
-                        else if (d.HpLoss>0 && !volleyTail) Audio.Key(big ? "DamageDealt.player.big" : "DamageDealt.player");
+                        else if (d.HpLoss>0 && !volleyTail) Audio.Key(hd2dAudio ? "Hd2dContact." + Hd2dAttackFx.AudioCard(ctx.Feedback.SourceKey) : big ? "DamageDealt.player.big" : "DamageDealt.player");
                         if (!volleyTail && !guardedE && (big || style == "stomp")) Stage.Shake(Mathf.Min(14f, Mathf.Max(6f, d.Amount * 0.4f)) * (crit ? 1.2f : 1f) * (style == "stomp" ? 1.3f : 1f), 0.25f);   // 踏みつけは小さくても揺れる
                         // ⑫ カメラ (2026-09-17): 大技は舞台がぐっと寄る。とどめ (戦闘を決めた一撃) はヒットストップ＝時間が一瞬凍って、大きく寄る
                         bool finishing = ctx != null && ctx.FinishingBlow;
@@ -2196,6 +2201,7 @@ namespace DeckRogue.Game
                         }
                         AfterVisual(hitDelay, () => RunContact(g,ctx,() =>
                         {
+                            Stage.ReleaseEnemyMove("enemy" + (dd.EnemyIndex ?? 0));   // 技のコマを当たりへ進める (2026-10-28。多段は当たりのコマを打ち直す)
                             if(Stage.CombatWorld || dd.HpLoss<=0)ResolvedCombatFx.Show(g,fx,enemyFeedback??ResolvedCombatFx.Capture(g,dd));
                             // 完全に防いだ (2026-09-17 ユーザー「完全に防いだ時に敵からダメージ食らってるように見える」): 被弾の筋 (朱) の代わりに盾で受ける演出 (GuardFx)
                             bool guarded = dd.HpLoss <= 0;
@@ -2377,7 +2383,8 @@ namespace DeckRogue.Game
                     if(atk && ctx?.Showcase!=null) {
                         var profile=ctx.Showcase;string target="enemy"+Mathf.Max(0,ctx.EnemyIndex);
                         var color=ElementBattleFx.ColorFor(CardVfxProfile.Element(def,g.LeaderId),HitColor(CardHitStyle(def),def));
-                        Stage.ShowcaseApproach("player",target,spell,ctx.HitCount,profile);
+                        if(Hd2dAttackFx.Supports(def?.Id))Hd2dAttackFx.Approach("player",target,def.Id,spell,ctx.HitCount,profile);   // HD-2D (2026-10-27): 斧の先が相手の縁に届く所まで寄り、dot の構えの時刻で振る
+                        else Stage.ShowcaseApproach("player",target,spell,ctx.HitCount,profile);
                         if(ctx.AuthoredCastReady!=true)WorldBattleFx.ShowcaseCharge("player",color,profile);
                         if(spell && ctx.AuthoredCastReady!=true) {
                             int epoch=_impactEpoch,generation=_presentationGeneration;var board=g.Battle;

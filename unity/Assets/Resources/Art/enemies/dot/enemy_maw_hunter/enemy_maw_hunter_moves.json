@@ -1,0 +1,111 @@
+{
+ "web": {
+  "frames": [
+   {
+    "file": "enemy_maw_hunter_m_web_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_maw_hunter_m_web_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "hex",
+  "clips": [
+   "webprepare",
+   "webapply"
+  ]
+ },
+ "bite": {
+  "frames": [
+   {
+    "file": "enemy_maw_hunter_m_bite_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_maw_hunter_m_bite_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_maw_hunter_m_bite_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_maw_hunter_m_bite_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "biteprepare",
+   "bitecontact",
+   "recovery"
+  ]
+ },
+ "claws": {
+  "frames": [
+   {
+    "file": "enemy_maw_hunter_m_claws_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_maw_hunter_m_claws_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_maw_hunter_m_claws_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_maw_hunter_m_claws_3",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_maw_hunter_m_claws_4",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_maw_hunter_m_claws_5",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "clawsprepare",
+   "clawscontact1",
+   "clawsrebound",
+   "clawscontact2",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_maw_hunter_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_maw_hunter_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_maw_hunter_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_maw_hunter_m_guard_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

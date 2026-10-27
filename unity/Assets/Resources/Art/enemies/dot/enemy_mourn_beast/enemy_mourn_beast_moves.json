@@ -1,0 +1,66 @@
+{
+ "bite": {
+  "frames": [
+   {
+    "file": "enemy_mourn_beast_m_bite_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_mourn_beast_m_bite_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_mourn_beast_m_bite_2",
+    "dur": 0.11
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "biteprepare",
+   "bitecontact",
+   "bitereopen"
+  ]
+ },
+ "leap": {
+  "frames": [
+   {
+    "file": "enemy_mourn_beast_m_leap_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_mourn_beast_m_leap_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_mourn_beast_m_leap_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "leapprepare",
+   "leapcontact",
+   "recovery"
+  ]
+ },
+ "lick": {
+  "frames": [
+   {
+    "file": "enemy_mourn_beast_m_lick_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_mourn_beast_m_lick_1",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "lickprepare",
+   "lickhold"
+  ]
+ }
+}

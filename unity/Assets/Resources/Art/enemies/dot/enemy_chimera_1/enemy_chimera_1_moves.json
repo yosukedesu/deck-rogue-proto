@@ -1,0 +1,48 @@
+{
+ "bite": {
+  "frames": [
+   {
+    "file": "enemy_chimera_1_m_bite_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_chimera_1_m_bite_1",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_chimera_1_m_bite_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "biteprepare",
+   "bitecontact",
+   "recovery"
+  ]
+ },
+ "skull_bash": {
+  "frames": [
+   {
+    "file": "enemy_chimera_1_m_skull_bash_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_chimera_1_m_skull_bash_1",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_chimera_1_m_skull_bash_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "bashprepare",
+   "bashcontact",
+   "recovery"
+  ]
+ }
+}

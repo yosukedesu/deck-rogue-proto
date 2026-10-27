@@ -1,0 +1,66 @@
+{
+ "poke": {
+  "frames": [
+   {
+    "file": "enemy_probe_m_poke_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_probe_m_poke_1",
+    "dur": 0.04
+   },
+   {
+    "file": "enemy_probe_m_poke_2",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "windup",
+   "impact",
+   "recovery"
+  ]
+ },
+ "lunge": {
+  "frames": [
+   {
+    "file": "enemy_probe_m_lunge_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_probe_m_lunge_1",
+    "dur": 0.04
+   },
+   {
+    "file": "enemy_probe_m_lunge_2",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "lungeprepare",
+   "lungecontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_probe_m_guard_0",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_probe_m_guard_1",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

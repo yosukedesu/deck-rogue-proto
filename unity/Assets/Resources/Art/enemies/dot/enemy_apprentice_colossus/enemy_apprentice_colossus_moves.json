@@ -1,0 +1,43 @@
+{
+ "brace": {
+  "frames": [
+   {
+    "file": "enemy_apprentice_colossus_m_brace_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_apprentice_colossus_m_brace_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "braceprepare",
+   "bracehold"
+  ]
+ },
+ "swing": {
+  "frames": [
+   {
+    "file": "enemy_apprentice_colossus_m_swing_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_apprentice_colossus_m_swing_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_apprentice_colossus_m_swing_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "attackprepare",
+   "attackcontact",
+   "recovery"
+  ]
+ }
+}

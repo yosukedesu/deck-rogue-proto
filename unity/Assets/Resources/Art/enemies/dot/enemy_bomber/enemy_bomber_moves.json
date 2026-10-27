@@ -1,0 +1,83 @@
+{
+ "shield_barrel": {
+  "frames": [
+   {
+    "file": "enemy_bomber_m_shield_barrel_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_bomber_m_shield_barrel_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_bomber_m_shield_barrel_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_bomber_m_shield_barrel_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ },
+ "toss_ember": {
+  "frames": [
+   {
+    "file": "enemy_bomber_m_toss_ember_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_bomber_m_toss_ember_1",
+    "dur": 0.09
+   },
+   {
+    "file": "enemy_bomber_m_toss_ember_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_bomber_m_toss_ember_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "emberprepare",
+   "emberrelease",
+   "recovery"
+  ]
+ },
+ "big_boom": {
+  "frames": [
+   {
+    "file": "enemy_bomber_m_big_boom_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_bomber_m_big_boom_1",
+    "dur": 0.09
+   },
+   {
+    "file": "enemy_bomber_m_big_boom_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_bomber_m_big_boom_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "boomprepare",
+   "boomrelease",
+   "recovery"
+  ]
+ }
+}

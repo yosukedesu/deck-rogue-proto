@@ -1,0 +1,122 @@
+{
+ "bell_strike": {
+  "frames": [
+   {
+    "file": "enemy_warden_m_bell_strike_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_warden_m_bell_strike_1",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_warden_m_bell_strike_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "strikeprepare",
+   "strikecontact",
+   "recovery"
+  ]
+ },
+ "gate_guard": {
+  "frames": [
+   {
+    "file": "enemy_warden_m_gate_guard_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_warden_m_gate_guard_1",
+    "dur": 0.32
+   },
+   {
+    "file": "enemy_warden_m_gate_guard_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "recovery"
+  ]
+ },
+ "bell_hushed": {
+  "frames": [
+   {
+    "file": "enemy_warden_m_bell_hushed_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_warden_m_bell_hushed_1",
+    "dur": 0.13
+   },
+   {
+    "file": "enemy_warden_m_bell_hushed_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "hushprepare",
+   "hushcontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_warden_m_guard_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_warden_m_guard_1",
+    "dur": 0.32
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ },
+ "bell_frenzy": {
+  "frames": [
+   {
+    "file": "enemy_warden_m_bell_frenzy_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_warden_m_bell_frenzy_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_warden_m_bell_frenzy_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_warden_m_bell_frenzy_3",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_warden_m_bell_frenzy_4",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "frenzyprepare",
+   "frenzycontacta",
+   "frenzyrebound",
+   "frenzycontactb",
+   "recovery"
+  ]
+ }
+}

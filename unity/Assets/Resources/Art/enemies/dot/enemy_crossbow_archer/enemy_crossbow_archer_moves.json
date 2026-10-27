@@ -1,0 +1,66 @@
+{
+ "bolt": {
+  "frames": [
+   {
+    "file": "enemy_crossbow_archer_m_bolt_0",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_crossbow_archer_m_bolt_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_crossbow_archer_m_bolt_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "windup",
+   "release",
+   "recovery"
+  ]
+ },
+ "aimed_shot": {
+  "frames": [
+   {
+    "file": "enemy_crossbow_archer_m_aimed_shot_0",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_crossbow_archer_m_aimed_shot_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_crossbow_archer_m_aimed_shot_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "windup",
+   "release",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_crossbow_archer_m_guard_0",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_crossbow_archer_m_guard_1",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

@@ -1,0 +1,94 @@
+{
+ "oil_spray": {
+  "frames": [
+   {
+    "file": "enemy_sludge_spider_m_oil_spray_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_sludge_spider_m_oil_spray_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_sludge_spider_m_oil_spray_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "oilprepare",
+   "oilrelease",
+   "recovery"
+  ]
+ },
+ "slam": {
+  "frames": [
+   {
+    "file": "enemy_sludge_spider_m_slam_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_sludge_spider_m_slam_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_sludge_spider_m_slam_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "slamprepare",
+   "slamcontact",
+   "recovery"
+  ]
+ },
+ "rage": {
+  "frames": [
+   {
+    "file": "enemy_sludge_spider_m_rage_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_sludge_spider_m_rage_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_sludge_spider_m_rage_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "rageprepare",
+   "ragecontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_sludge_spider_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_sludge_spider_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_sludge_spider_m_guard_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

@@ -1,0 +1,128 @@
+{
+ "chain": {
+  "frames": [
+   {
+    "file": "enemy_elite_slaver_m_chain_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_slaver_m_chain_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_slaver_m_chain_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_elite_slaver_m_chain_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "chainprepare",
+   "chaincontact",
+   "recovery"
+  ]
+ },
+ "net": {
+  "frames": [
+   {
+    "file": "enemy_elite_slaver_m_net_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_slaver_m_net_1",
+    "dur": 0.1
+   }
+  ],
+  "contact": 1,
+  "kind": "hex",
+  "clips": [
+   "netprepare",
+   "netapplied"
+  ]
+ },
+ "lash": {
+  "frames": [
+   {
+    "file": "enemy_elite_slaver_m_lash_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_slaver_m_lash_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_slaver_m_lash_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_elite_slaver_m_lash_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "lashprepare",
+   "lashcontact",
+   "recovery"
+  ]
+ },
+ "weight": {
+  "frames": [
+   {
+    "file": "enemy_elite_slaver_m_weight_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_slaver_m_weight_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_slaver_m_weight_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_elite_slaver_m_weight_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "weightprepare",
+   "weightcontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_elite_slaver_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_slaver_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_slaver_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_elite_slaver_m_guard_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

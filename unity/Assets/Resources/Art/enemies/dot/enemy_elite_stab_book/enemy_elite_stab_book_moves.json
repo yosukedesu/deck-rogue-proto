@@ -1,0 +1,124 @@
+{
+ "stab2": {
+  "frames": [
+   {
+    "file": "enemy_elite_stab_book_m_stab2_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab2_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab2_2",
+    "dur": 0.11
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab2_3",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab2_4",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "stabprepare",
+   "stabcontact1",
+   "stabrebound",
+   "stabcontact2",
+   "recovery"
+  ]
+ },
+ "stab3": {
+  "frames": [
+   {
+    "file": "enemy_elite_stab_book_m_stab3_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab3_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab3_2",
+    "dur": 0.11
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab3_3",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab3_4",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "stabprepare",
+   "stabcontact1",
+   "stabrebound",
+   "stabcontact2",
+   "recovery"
+  ]
+ },
+ "stab4": {
+  "frames": [
+   {
+    "file": "enemy_elite_stab_book_m_stab4_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab4_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab4_2",
+    "dur": 0.11
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab4_3",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_stab_book_m_stab4_4",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "stabprepare",
+   "stabcontact1",
+   "stabrebound",
+   "stabcontact2",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_elite_stab_book_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_stab_book_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_stab_book_m_guard_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

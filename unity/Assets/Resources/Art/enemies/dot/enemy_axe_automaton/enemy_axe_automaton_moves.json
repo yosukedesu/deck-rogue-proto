@@ -1,0 +1,105 @@
+{
+ "one_two": {
+  "frames": [
+   {
+    "file": "enemy_axe_automaton_m_one_two_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_axe_automaton_m_one_two_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_axe_automaton_m_one_two_2",
+    "dur": 0.12
+   }
+  ],
+  "contact": -1,
+  "kind": "attack",
+  "clips": [
+   "twoprepare",
+   "recovery"
+  ]
+ },
+ "sharpen": {
+  "frames": [
+   {
+    "file": "enemy_axe_automaton_m_sharpen_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_axe_automaton_m_sharpen_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_axe_automaton_m_sharpen_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_axe_automaton_m_sharpen_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "sharpenprepare",
+   "sharpenpulse",
+   "sharpenreturn"
+  ]
+ },
+ "hammer_upper": {
+  "frames": [
+   {
+    "file": "enemy_axe_automaton_m_hammer_upper_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_axe_automaton_m_hammer_upper_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_axe_automaton_m_hammer_upper_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_axe_automaton_m_hammer_upper_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "upperprepare",
+   "uppercontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_axe_automaton_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_axe_automaton_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_axe_automaton_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_axe_automaton_m_guard_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

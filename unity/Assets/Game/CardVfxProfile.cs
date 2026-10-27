@@ -31,6 +31,7 @@ namespace DeckRogue.Game {
   public static Showcase Comparison(CardDef def) => Comparison(def?.Id);
   public static Showcase Comparison(string id) {
    if(!ShowcaseOn)return null;
+   var hd2d=Hd2dAttackFx.Showcase(id);if(hd2d!=null)return hd2d;   // HD-2D の攻撃演出 (2026-10-27): dot の表 (PhysicalVfxProfiles/ElementalVfxProfiles) の時刻が踏み込みと当たりを決める
    switch(id) {
     case "green_strike":return Slash;
     case "green_double_lash":return Vine;

@@ -1,0 +1,61 @@
+{
+ "windup": {
+  "frames": [
+   {
+    "file": "enemy_axe_ogre_m_windup_0",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_axe_ogre_m_windup_1",
+    "dur": 0.24
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "windupprepare",
+   "winduphold"
+  ]
+ },
+ "great_swing": {
+  "frames": [
+   {
+    "file": "enemy_axe_ogre_m_great_swing_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_axe_ogre_m_great_swing_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_axe_ogre_m_great_swing_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "swingprepare",
+   "swingcontact",
+   "recovery"
+  ]
+ },
+ "gasp": {
+  "frames": [
+   {
+    "file": "enemy_axe_ogre_m_gasp_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_axe_ogre_m_gasp_1",
+    "dur": 0.24
+   }
+  ],
+  "contact": 1,
+  "kind": "rest",
+  "clips": [
+   "gaspprepare",
+   "gasphold"
+  ]
+ }
+}

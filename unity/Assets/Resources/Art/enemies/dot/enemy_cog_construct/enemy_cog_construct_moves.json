@@ -1,0 +1,120 @@
+{
+ "repeater": {
+  "frames": [
+   {
+    "file": "enemy_cog_construct_m_repeater_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_cog_construct_m_repeater_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_cog_construct_m_repeater_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_cog_construct_m_repeater_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "repeaterprepare",
+   "repeatercontact",
+   "recovery"
+  ]
+ },
+ "expel": {
+  "frames": [
+   {
+    "file": "enemy_cog_construct_m_expel_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_cog_construct_m_expel_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_cog_construct_m_expel_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_cog_construct_m_expel_3",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_cog_construct_m_expel_4",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_cog_construct_m_expel_5",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "expelprepare",
+   "expelcontact1",
+   "expelrebound",
+   "expelcontact2",
+   "recovery"
+  ]
+ },
+ "charge_up": {
+  "frames": [
+   {
+    "file": "enemy_cog_construct_m_charge_up_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_cog_construct_m_charge_up_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_cog_construct_m_charge_up_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_cog_construct_m_charge_up_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "chargeprepare",
+   "chargepulse",
+   "chargereturn"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_cog_construct_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_cog_construct_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_cog_construct_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_cog_construct_m_guard_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

@@ -1,0 +1,110 @@
+{
+ "wild_swing": {
+  "frames": [
+   {
+    "file": "enemy_joker_m_wild_swing_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_joker_m_wild_swing_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_joker_m_wild_swing_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_joker_m_wild_swing_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "wildprepare",
+   "wildcontact",
+   "recovery"
+  ]
+ },
+ "dodge_prance": {
+  "frames": [
+   {
+    "file": "enemy_joker_m_dodge_prance_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_joker_m_dodge_prance_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_joker_m_dodge_prance_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_joker_m_dodge_prance_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ },
+ "cautious_jab": {
+  "frames": [
+   {
+    "file": "enemy_joker_m_cautious_jab_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_joker_m_cautious_jab_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_joker_m_cautious_jab_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_joker_m_cautious_jab_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "jabprepare",
+   "jabcontact",
+   "recovery"
+  ]
+ },
+ "call_bluff": {
+  "frames": [
+   {
+    "file": "enemy_joker_m_call_bluff_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_joker_m_call_bluff_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_joker_m_call_bluff_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_joker_m_call_bluff_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "bluffprepare",
+   "bluffcontact",
+   "recovery"
+  ]
+ }
+}

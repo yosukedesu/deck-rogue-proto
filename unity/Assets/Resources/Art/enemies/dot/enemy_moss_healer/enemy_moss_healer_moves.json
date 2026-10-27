@@ -1,0 +1,61 @@
+{
+ "mend": {
+  "frames": [
+   {
+    "file": "enemy_moss_healer_m_mend_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_moss_healer_m_mend_1",
+    "dur": 0.28
+   }
+  ],
+  "contact": 1,
+  "kind": "heal",
+  "clips": [
+   "mendprepare",
+   "mendapplied"
+  ]
+ },
+ "staff_poke": {
+  "frames": [
+   {
+    "file": "enemy_moss_healer_m_staff_poke_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_moss_healer_m_staff_poke_1",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_moss_healer_m_staff_poke_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "pokeprepare",
+   "pokecontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_moss_healer_m_guard_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_moss_healer_m_guard_1",
+    "dur": 0.28
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

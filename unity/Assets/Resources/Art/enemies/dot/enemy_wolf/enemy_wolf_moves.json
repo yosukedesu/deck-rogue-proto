@@ -1,0 +1,102 @@
+{
+ "flurry": {
+  "frames": [
+   {
+    "file": "enemy_wolf_m_flurry_0",
+    "dur": 0.13
+   },
+   {
+    "file": "enemy_wolf_m_flurry_1",
+    "dur": 0.04
+   },
+   {
+    "file": "enemy_wolf_m_flurry_2",
+    "dur": 0.14
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "windup",
+   "impact",
+   "recovery"
+  ]
+ },
+ "howl": {
+  "frames": [
+   {
+    "file": "enemy_wolf_m_howl_0",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_wolf_m_howl_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_wolf_m_howl_2",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_wolf_m_howl_3",
+    "dur": 0.08
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "howlprepare",
+   "howlcall",
+   "howlrecovery"
+  ]
+ },
+ "rend": {
+  "frames": [
+   {
+    "file": "enemy_wolf_m_rend_0",
+    "dur": 0.13
+   },
+   {
+    "file": "enemy_wolf_m_rend_1",
+    "dur": 0.04
+   },
+   {
+    "file": "enemy_wolf_m_rend_2",
+    "dur": 0.14
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "windup",
+   "impact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_wolf_m_guard_0",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_wolf_m_guard_1",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_wolf_m_guard_2",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_wolf_m_guard_3",
+    "dur": 0.08
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardrecovery"
+  ]
+ }
+}

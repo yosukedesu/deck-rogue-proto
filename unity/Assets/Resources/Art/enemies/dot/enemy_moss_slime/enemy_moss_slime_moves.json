@@ -1,0 +1,43 @@
+{
+ "bump": {
+  "frames": [
+   {
+    "file": "enemy_moss_slime_m_bump_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_moss_slime_m_bump_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_moss_slime_m_bump_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "bumpprepare",
+   "bumpcontact",
+   "recovery"
+  ]
+ },
+ "ooze": {
+  "frames": [
+   {
+    "file": "enemy_moss_slime_m_ooze_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_moss_slime_m_ooze_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "oozeprepare",
+   "oozehold"
+  ]
+ }
+}

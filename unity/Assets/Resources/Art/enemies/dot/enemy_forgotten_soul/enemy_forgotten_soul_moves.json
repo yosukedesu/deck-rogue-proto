@@ -1,0 +1,75 @@
+{
+ "miasma": {
+  "frames": [
+   {
+    "file": "enemy_forgotten_soul_m_miasma_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_forgotten_soul_m_miasma_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_forgotten_soul_m_miasma_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "miasmaprepare",
+   "miasmacontact",
+   "recovery"
+  ]
+ },
+ "dread": {
+  "frames": [
+   {
+    "file": "enemy_forgotten_soul_m_dread_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_forgotten_soul_m_dread_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_forgotten_soul_m_dread_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "dreadprepare",
+   "dreadcontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_forgotten_soul_m_guard_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_forgotten_soul_m_guard_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_forgotten_soul_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_forgotten_soul_m_guard_3",
+    "dur": 0.06
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

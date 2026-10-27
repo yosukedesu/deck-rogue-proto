@@ -1,0 +1,89 @@
+{
+ "shock_slap": {
+  "frames": [
+   {
+    "file": "enemy_thunder_globe_m_shock_slap_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_thunder_globe_m_shock_slap_1",
+    "dur": 0.1
+   },
+   {
+    "file": "enemy_thunder_globe_m_shock_slap_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "slapprepare",
+   "slapcontact",
+   "recovery"
+  ]
+ },
+ "thunder_strike": {
+  "frames": [
+   {
+    "file": "enemy_thunder_globe_m_thunder_strike_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_thunder_globe_m_thunder_strike_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_thunder_globe_m_thunder_strike_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "thunderprepare",
+   "thunderrelease",
+   "recovery"
+  ]
+ },
+ "galvanic_burst": {
+  "frames": [
+   {
+    "file": "enemy_thunder_globe_m_galvanic_burst_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_thunder_globe_m_galvanic_burst_1",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_thunder_globe_m_galvanic_burst_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "burstprepare",
+   "burstrelease",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_thunder_globe_m_guard_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_thunder_globe_m_guard_1",
+    "dur": 0.32
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

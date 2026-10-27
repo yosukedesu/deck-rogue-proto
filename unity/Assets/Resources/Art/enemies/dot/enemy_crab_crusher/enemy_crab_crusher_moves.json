@@ -1,0 +1,140 @@
+{
+ "thrash": {
+  "frames": [
+   {
+    "file": "enemy_crab_crusher_m_thrash_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_crab_crusher_m_thrash_1",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_crab_crusher_m_thrash_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "thrashprepare",
+   "thrashcontact",
+   "recovery"
+  ]
+ },
+ "swell_strike": {
+  "frames": [
+   {
+    "file": "enemy_crab_crusher_m_swell_strike_0",
+    "dur": 0.28
+   },
+   {
+    "file": "enemy_crab_crusher_m_swell_strike_1",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_crab_crusher_m_swell_strike_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "swellprepare",
+   "swellcontact",
+   "recovery"
+  ]
+ },
+ "bug_sting": {
+  "frames": [
+   {
+    "file": "enemy_crab_crusher_m_bug_sting_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_crab_crusher_m_bug_sting_1",
+    "dur": 0.09
+   },
+   {
+    "file": "enemy_crab_crusher_m_bug_sting_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_crab_crusher_m_bug_sting_3",
+    "dur": 0.09
+   },
+   {
+    "file": "enemy_crab_crusher_m_bug_sting_4",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "stingprepare",
+   "stingcontacta",
+   "stingrebound",
+   "stingcontactb",
+   "recovery"
+  ]
+ },
+ "adapt": {
+  "frames": [
+   {
+    "file": "enemy_crab_crusher_m_adapt_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_crab_crusher_m_adapt_1",
+    "dur": 0.32
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "adaptprepare",
+   "adapthold"
+  ]
+ },
+ "guarded_strike": {
+  "frames": [
+   {
+    "file": "enemy_crab_crusher_m_guarded_strike_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_crab_crusher_m_guarded_strike_1",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_crab_crusher_m_guarded_strike_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "guardedprepare",
+   "guardedcontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_crab_crusher_m_guard_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_crab_crusher_m_guard_1",
+    "dur": 0.14
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardedcontact"
+  ]
+ }
+}

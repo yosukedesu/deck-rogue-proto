@@ -1,0 +1,137 @@
+{
+ "tongue_lash": {
+  "frames": [
+   {
+    "file": "enemy_frog_knight_m_tongue_lash_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_frog_knight_m_tongue_lash_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_frog_knight_m_tongue_lash_2",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_frog_knight_m_tongue_lash_3",
+    "dur": 0.08
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "tongueprepare",
+   "tonguecontact",
+   "recovery"
+  ]
+ },
+ "strike_down": {
+  "frames": [
+   {
+    "file": "enemy_frog_knight_m_strike_down_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_frog_knight_m_strike_down_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_frog_knight_m_strike_down_2",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_frog_knight_m_strike_down_3",
+    "dur": 0.08
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "strikeprepare",
+   "strikecontact",
+   "recovery"
+  ]
+ },
+ "for_the_queen": {
+  "frames": [
+   {
+    "file": "enemy_frog_knight_m_for_the_queen_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_frog_knight_m_for_the_queen_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_frog_knight_m_for_the_queen_2",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_frog_knight_m_for_the_queen_3",
+    "dur": 0.08
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "queenprepare",
+   "queenhold",
+   "queenreturn"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_frog_knight_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_frog_knight_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_frog_knight_m_guard_2",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_frog_knight_m_guard_3",
+    "dur": 0.08
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ },
+ "beetle_charge": {
+  "frames": [
+   {
+    "file": "enemy_frog_knight_m_beetle_charge_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_frog_knight_m_beetle_charge_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_frog_knight_m_beetle_charge_2",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_frog_knight_m_beetle_charge_3",
+    "dur": 0.08
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "chargeprepare",
+   "chargecontact",
+   "recovery"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "chomp": {
+  "frames": [
+   {
+    "file": "enemy_biting_scroll_m_chomp_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_biting_scroll_m_chomp_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_biting_scroll_m_chomp_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_biting_scroll_m_chomp_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "chompprepare",
+   "chompcontact",
+   "recovery"
+  ]
+ },
+ "chew": {
+  "frames": [
+   {
+    "file": "enemy_biting_scroll_m_chew_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_biting_scroll_m_chew_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_biting_scroll_m_chew_2",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_biting_scroll_m_chew_3",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_biting_scroll_m_chew_4",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_biting_scroll_m_chew_5",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "chewprepare",
+   "chewcontact1",
+   "chewrebound",
+   "chewcontact2",
+   "recovery"
+  ]
+ },
+ "more_teeth": {
+  "frames": [
+   {
+    "file": "enemy_biting_scroll_m_more_teeth_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_biting_scroll_m_more_teeth_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_biting_scroll_m_more_teeth_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_biting_scroll_m_more_teeth_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "teethprepare",
+   "teethpulse",
+   "teethreturn"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_biting_scroll_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_biting_scroll_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_biting_scroll_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_biting_scroll_m_guard_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

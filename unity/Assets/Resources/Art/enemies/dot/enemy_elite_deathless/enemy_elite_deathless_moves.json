@@ -1,0 +1,75 @@
+{
+ "cleave": {
+  "frames": [
+   {
+    "file": "enemy_elite_deathless_m_cleave_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_elite_deathless_m_cleave_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_deathless_m_cleave_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "cleaveprepare",
+   "cleavecontact",
+   "recovery"
+  ]
+ },
+ "stance": {
+  "frames": [
+   {
+    "file": "enemy_elite_deathless_m_stance_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_elite_deathless_m_stance_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_deathless_m_stance_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "stanceprepare",
+   "stancecontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_elite_deathless_m_guard_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_elite_deathless_m_guard_1",
+    "dur": 0.36
+   },
+   {
+    "file": "enemy_elite_deathless_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_elite_deathless_m_guard_3",
+    "dur": 0.06
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

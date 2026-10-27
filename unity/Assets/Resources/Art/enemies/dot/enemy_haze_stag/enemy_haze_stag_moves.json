@@ -1,0 +1,120 @@
+{
+ "antler_jab": {
+  "frames": [
+   {
+    "file": "enemy_haze_stag_m_antler_jab_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_haze_stag_m_antler_jab_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_haze_stag_m_antler_jab_2",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_haze_stag_m_antler_jab_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "jabprepare",
+   "jabcontact",
+   "recovery"
+  ]
+ },
+ "hoof_flurry": {
+  "frames": [
+   {
+    "file": "enemy_haze_stag_m_hoof_flurry_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_haze_stag_m_hoof_flurry_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_haze_stag_m_hoof_flurry_2",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_haze_stag_m_hoof_flurry_3",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_haze_stag_m_hoof_flurry_4",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_haze_stag_m_hoof_flurry_5",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "flurryprepare",
+   "flurrycontact1",
+   "flurryrebound",
+   "flurrycontact2",
+   "recovery"
+  ]
+ },
+ "antler_charge": {
+  "frames": [
+   {
+    "file": "enemy_haze_stag_m_antler_charge_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_haze_stag_m_antler_charge_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_haze_stag_m_antler_charge_2",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_haze_stag_m_antler_charge_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "chargeprepare",
+   "chargecontact",
+   "recovery"
+  ]
+ },
+ "fade_in_mist": {
+  "frames": [
+   {
+    "file": "enemy_haze_stag_m_fade_in_mist_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_haze_stag_m_fade_in_mist_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_haze_stag_m_fade_in_mist_2",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_haze_stag_m_fade_in_mist_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "fadeprepare",
+   "fadehold",
+   "fadereturn"
+  ]
+ }
+}

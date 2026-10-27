@@ -1,0 +1,43 @@
+{
+ "slam": {
+  "frames": [
+   {
+    "file": "enemy_big_slime_m_slam_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_big_slime_m_slam_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_big_slime_m_slam_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "slamprepare",
+   "slamcontact",
+   "recovery"
+  ]
+ },
+ "ooze_guard": {
+  "frames": [
+   {
+    "file": "enemy_big_slime_m_ooze_guard_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_big_slime_m_ooze_guard_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

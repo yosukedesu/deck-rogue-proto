@@ -1,0 +1,102 @@
+{
+ "vomit": {
+  "frames": [
+   {
+    "file": "enemy_sludge_berserker_m_vomit_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_sludge_berserker_m_vomit_1",
+    "dur": 0.28
+   }
+  ],
+  "contact": 1,
+  "kind": "hex",
+  "clips": [
+   "vomitprepare",
+   "vomitapplied"
+  ]
+ },
+ "pummel": {
+  "frames": [
+   {
+    "file": "enemy_sludge_berserker_m_pummel_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_sludge_berserker_m_pummel_1",
+    "dur": 0.18
+   }
+  ],
+  "contact": -1,
+  "kind": "attack",
+  "clips": [
+   "pummelprepare",
+   "recovery"
+  ]
+ },
+ "hug": {
+  "frames": [
+   {
+    "file": "enemy_sludge_berserker_m_hug_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_sludge_berserker_m_hug_1",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_sludge_berserker_m_hug_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "hugprepare",
+   "hugcontact",
+   "recovery"
+  ]
+ },
+ "smother": {
+  "frames": [
+   {
+    "file": "enemy_sludge_berserker_m_smother_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_sludge_berserker_m_smother_1",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_sludge_berserker_m_smother_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "smotherprepare",
+   "smothercontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_sludge_berserker_m_guard_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_sludge_berserker_m_guard_1",
+    "dur": 0.32
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

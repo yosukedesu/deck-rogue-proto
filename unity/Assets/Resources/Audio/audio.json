@@ -382,6 +382,34 @@
       "sfx": "light_burst",
       "volume": 0.7,
       "_note": "放出: 炎が硝子から抜けて光の筋になる吹き音 (Synth)。着弾は攻撃の当たり (既存)"
+    },
+    "_hd2d": "HD-2D の攻撃演出 (dot の Godot 版 checkpoint 192 の移植・2026-10-27)。鍵は Hd2dOnset.<札>/Hd2dContact.<札>。札は Hd2dAttackPrototype.AudioCard が引く (斬り・殴り・突きは green_strike、火は red_strike、踏みは green_finisher_stomp)。素材は CC0 (CREDITS-hd2d-three.md)",
+    "Hd2dContact.green_strike": {
+      "sfx": "hd2d_strike",
+      "volume": 0.68,
+      "jitter": 0.015
+    },
+    "Hd2dOnset.green_strike": {
+      "sfx": "hd2d_swing",
+      "volume": 0.45
+    },
+    "Hd2dContact.red_strike": {
+      "sfx": "hd2d_fire",
+      "volume": 0.68,
+      "jitter": 0.015
+    },
+    "Hd2dOnset.red_strike": {
+      "sfx": "hd2d_ignite",
+      "volume": 0.45
+    },
+    "Hd2dContact.green_finisher_stomp": {
+      "sfx": "hd2d_stomp",
+      "volume": 0.68,
+      "jitter": 0.015
+    },
+    "Hd2dOnset.green_finisher_stomp": {
+      "sfx": "hd2d_weight",
+      "volume": 0.45
     }
   },
   "_loudness": "BGM は -16 LUFS、SE はピーク -1dB に正規化済み (2026-09-14 ユーザー「BGMがでかい」)。素材を足す時も同じ物差しで (scripts はまだ無い。ffmpeg volume で)"

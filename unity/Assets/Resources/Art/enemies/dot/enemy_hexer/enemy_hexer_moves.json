@@ -1,0 +1,84 @@
+{
+ "mud": {
+  "frames": [
+   {
+    "file": "enemy_hexer_m_mud_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_hexer_m_mud_1",
+    "dur": 0.11
+   },
+   {
+    "file": "enemy_hexer_m_mud_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "prepare",
+   "release",
+   "recovery"
+  ]
+ },
+ "curse": {
+  "frames": [
+   {
+    "file": "enemy_hexer_m_curse_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_hexer_m_curse_1",
+    "dur": 0.1
+   }
+  ],
+  "contact": 1,
+  "kind": "hex",
+  "clips": [
+   "curseprepare",
+   "cursegesture"
+  ]
+ },
+ "slap": {
+  "frames": [
+   {
+    "file": "enemy_hexer_m_slap_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_hexer_m_slap_1",
+    "dur": 0.04
+   },
+   {
+    "file": "enemy_hexer_m_slap_2",
+    "dur": 0.2
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "slapprepare",
+   "slapcontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_hexer_m_guard_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_hexer_m_guard_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold"
+  ]
+ }
+}

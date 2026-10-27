@@ -1,0 +1,75 @@
+{
+ "shell_bash": {
+  "frames": [
+   {
+    "file": "enemy_shell_guard_m_shell_bash_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_shell_guard_m_shell_bash_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_shell_guard_m_shell_bash_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "bashprepare",
+   "bashcontact",
+   "recovery"
+  ]
+ },
+ "harden": {
+  "frames": [
+   {
+    "file": "enemy_shell_guard_m_harden_0",
+    "dur": 0.24
+   },
+   {
+    "file": "enemy_shell_guard_m_harden_1",
+    "dur": 0.36
+   },
+   {
+    "file": "enemy_shell_guard_m_harden_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_shell_guard_m_harden_3",
+    "dur": 0.06
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ },
+ "cracked_rage": {
+  "frames": [
+   {
+    "file": "enemy_shell_guard_m_cracked_rage_0",
+    "dur": 0.22
+   },
+   {
+    "file": "enemy_shell_guard_m_cracked_rage_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_shell_guard_m_cracked_rage_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "rageprepare",
+   "ragecontact",
+   "recovery"
+  ]
+ }
+}

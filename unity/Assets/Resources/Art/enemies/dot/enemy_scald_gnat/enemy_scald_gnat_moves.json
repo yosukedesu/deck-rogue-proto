@@ -1,0 +1,101 @@
+{
+ "scald_spit": {
+  "frames": [
+   {
+    "file": "enemy_scald_gnat_m_scald_spit_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_scald_gnat_m_scald_spit_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "hex",
+  "clips": [
+   "scaldprepare",
+   "scaldapply"
+  ]
+ },
+ "bite": {
+  "frames": [
+   {
+    "file": "enemy_scald_gnat_m_bite_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_scald_gnat_m_bite_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_scald_gnat_m_bite_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_scald_gnat_m_bite_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "biteprepare",
+   "bitecontact",
+   "recovery"
+  ]
+ },
+ "suck": {
+  "frames": [
+   {
+    "file": "enemy_scald_gnat_m_suck_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_scald_gnat_m_suck_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_scald_gnat_m_suck_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_scald_gnat_m_suck_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "suckprepare",
+   "suckcontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_scald_gnat_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_scald_gnat_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_scald_gnat_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_scald_gnat_m_guard_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

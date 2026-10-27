@@ -1,0 +1,110 @@
+{
+ "lick": {
+  "frames": [
+   {
+    "file": "enemy_slug_m_lick_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_slug_m_lick_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_slug_m_lick_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_slug_m_lick_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "lickprepare",
+   "lickcontact",
+   "recovery"
+  ]
+ },
+ "acid_spit": {
+  "frames": [
+   {
+    "file": "enemy_slug_m_acid_spit_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_slug_m_acid_spit_1",
+    "dur": 0.09
+   },
+   {
+    "file": "enemy_slug_m_acid_spit_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_slug_m_acid_spit_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "spitprepare",
+   "spitrelease",
+   "recovery"
+  ]
+ },
+ "tackle": {
+  "frames": [
+   {
+    "file": "enemy_slug_m_tackle_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_slug_m_tackle_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_slug_m_tackle_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_slug_m_tackle_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "tackleprepare",
+   "tacklecontact",
+   "recovery"
+  ]
+ },
+ "guard": {
+  "frames": [
+   {
+    "file": "enemy_slug_m_guard_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_slug_m_guard_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_slug_m_guard_2",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_slug_m_guard_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "guardprepare",
+   "guardhold",
+   "guardreturn"
+  ]
+ }
+}

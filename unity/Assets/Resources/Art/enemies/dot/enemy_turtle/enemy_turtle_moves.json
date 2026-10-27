@@ -1,0 +1,75 @@
+{
+ "shell": {
+  "frames": [
+   {
+    "file": "enemy_turtle_m_shell_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_turtle_m_shell_1",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_turtle_m_shell_2",
+    "dur": 0.06
+   },
+   {
+    "file": "enemy_turtle_m_shell_3",
+    "dur": 0.1
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "shellprepare",
+   "shellhold",
+   "shellrecovery"
+  ]
+ },
+ "crush": {
+  "frames": [
+   {
+    "file": "enemy_turtle_m_crush_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_turtle_m_crush_1",
+    "dur": 0.08
+   },
+   {
+    "file": "enemy_turtle_m_crush_2",
+    "dur": 0.22
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "crushprepare",
+   "crushimpact",
+   "recovery"
+  ]
+ },
+ "awake_bite": {
+  "frames": [
+   {
+    "file": "enemy_turtle_m_awake_bite_0",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_turtle_m_awake_bite_1",
+    "dur": 0.04
+   },
+   {
+    "file": "enemy_turtle_m_awake_bite_2",
+    "dur": 0.22
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "windup",
+   "impact",
+   "recovery"
+  ]
+ }
+}

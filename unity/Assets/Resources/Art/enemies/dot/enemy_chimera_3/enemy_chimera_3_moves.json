@@ -1,0 +1,76 @@
+{
+ "lacerate": {
+  "frames": [
+   {
+    "file": "enemy_chimera_3_m_lacerate_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_chimera_3_m_lacerate_1",
+    "dur": 0.11
+   },
+   {
+    "file": "enemy_chimera_3_m_lacerate_2",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_chimera_3_m_lacerate_3",
+    "dur": 0.11
+   },
+   {
+    "file": "enemy_chimera_3_m_lacerate_4",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "clawprepare",
+   "clawcontacta",
+   "clawrebound",
+   "clawcontactb",
+   "recovery"
+  ]
+ },
+ "pounce": {
+  "frames": [
+   {
+    "file": "enemy_chimera_3_m_pounce_0",
+    "dur": 0.26
+   },
+   {
+    "file": "enemy_chimera_3_m_pounce_1",
+    "dur": 0.16
+   },
+   {
+    "file": "enemy_chimera_3_m_pounce_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "pounceprepare",
+   "pouncecontact",
+   "recovery"
+  ]
+ },
+ "burning_growl": {
+  "frames": [
+   {
+    "file": "enemy_chimera_3_m_burning_growl_0",
+    "dur": 0.25
+   },
+   {
+    "file": "enemy_chimera_3_m_burning_growl_1",
+    "dur": 0.3
+   }
+  ],
+  "contact": 1,
+  "kind": "hex",
+  "clips": [
+   "growlprepare",
+   "growlapplied"
+  ]
+ }
+}

@@ -1,0 +1,66 @@
+{
+ "shield_bash": {
+  "frames": [
+   {
+    "file": "enemy_shield_squire_m_shield_bash_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_shield_squire_m_shield_bash_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_shield_squire_m_shield_bash_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "bashprepare",
+   "bashcontact",
+   "recovery"
+  ]
+ },
+ "brace": {
+  "frames": [
+   {
+    "file": "enemy_shield_squire_m_brace_0",
+    "dur": 0.12
+   },
+   {
+    "file": "enemy_shield_squire_m_brace_1",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "braceprepare",
+   "bracehold"
+  ]
+ },
+ "avenging_rush": {
+  "frames": [
+   {
+    "file": "enemy_shield_squire_m_avenging_rush_0",
+    "dur": 0.2
+   },
+   {
+    "file": "enemy_shield_squire_m_avenging_rush_1",
+    "dur": 0.055
+   },
+   {
+    "file": "enemy_shield_squire_m_avenging_rush_2",
+    "dur": 0.18
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "rushprepare",
+   "rushcontact",
+   "recovery"
+  ]
+ }
+}

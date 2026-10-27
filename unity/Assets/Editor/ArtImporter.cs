@@ -43,6 +43,14 @@ namespace DeckRogue.EditorTools
                 return;
             }
             // Floor grain uses RGB only and repeats; alpha must never dilate the source RGB.
+            // HD-2D の攻撃演出の絵 (dot の Godot 版 checkpoint 192・2026-10-27): 1254² などの大きな RGBA を Godot と同じ 512 に縮め、ミップつきのなめらかな読み (hd2d-*)。
+            // 色の絵 (sRGB)・Clamp・読み戻し不要。Hd2dPrototype.shader が _BaseMap として受ける
+            if(System.IO.Path.GetFileNameWithoutExtension(assetPath).StartsWith("hd2d-",System.StringComparison.Ordinal) && assetPath.Replace('\\','/').Contains("/Resources/Art/fx/")) {
+                imp.textureType=TextureImporterType.Default;imp.sRGBTexture=true;imp.alphaIsTransparency=true;
+                imp.maxTextureSize=512;imp.npotScale=TextureImporterNPOTScale.None;imp.filterMode=FilterMode.Bilinear;imp.wrapMode=TextureWrapMode.Clamp;
+                imp.textureCompression=TextureImporterCompression.Uncompressed;imp.mipmapEnabled=true;imp.isReadable=false;
+                return;
+            }
             if(assetPath.Replace('\\','/')=="Assets/Resources/Art/fx/earth-ground-grain-r2.png") {
                 imp.textureType=TextureImporterType.Default;imp.sRGBTexture=true;
                 imp.alphaSource=TextureImporterAlphaSource.FromInput;imp.alphaIsTransparency=false;

@@ -62,6 +62,7 @@ namespace DeckRogue.Game {
    string style=ticket.Style;bool ranged=style=="beam" || style=="throw";
    int hp=row.HpLossContribution,blocked=row.BlockContribution+row.IceContribution;
    bool attached=!ticket.HasWorld || Stage.ImpactTargetCurrent("player",ticket.Impact);
+   Stage.ReleaseEnemyMove(ticket.SourceUnit);   // 技のコマの当たりへ進める (2026-10-28)
    if(ticket.Outcome=="guard") {Audio.Key("DamageDealt.blocked");if(attached)Stage.PlayAnim("player","block");}
    else if(hp>0) {
     Audio.Key(hp>=12?"DamageDealt.enemy.big":"DamageDealt.enemy");

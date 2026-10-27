@@ -1,0 +1,79 @@
+{
+ "sleep": {
+  "frames": [
+   {
+    "file": "enemy_elite_iron_egg_m_sleep_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_iron_egg_m_sleep_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_iron_egg_m_sleep_2",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_elite_iron_egg_m_sleep_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "defend",
+  "clips": [
+   "sleepprepare",
+   "sleephold",
+   "sleepreturn"
+  ]
+ },
+ "awaken": {
+  "frames": [
+   {
+    "file": "enemy_elite_iron_egg_m_awaken_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_iron_egg_m_awaken_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_iron_egg_m_awaken_2",
+    "dur": 0.14
+   },
+   {
+    "file": "enemy_elite_iron_egg_m_awaken_3",
+    "dur": 0.12
+   }
+  ],
+  "contact": 1,
+  "kind": "buff",
+  "clips": [
+   "awakenprepare",
+   "awakenhold",
+   "awakenreturn"
+  ]
+ },
+ "tail": {
+  "frames": [
+   {
+    "file": "enemy_elite_iron_egg_m_tail_0",
+    "dur": 0.18
+   },
+   {
+    "file": "enemy_elite_iron_egg_m_tail_1",
+    "dur": 0.05
+   },
+   {
+    "file": "enemy_elite_iron_egg_m_tail_2",
+    "dur": 0.16
+   }
+  ],
+  "contact": 1,
+  "kind": "attack",
+  "clips": [
+   "tailprepare",
+   "tailcontact",
+   "recovery"
+  ]
+ }
+}
