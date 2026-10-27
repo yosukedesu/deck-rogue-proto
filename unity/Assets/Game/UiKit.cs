@@ -149,6 +149,8 @@ namespace DeckRogue.Game
         static TMP_FontAsset _fontRegular;
         static TMP_FontAsset _fontBold;
         static bool _fontTried;
+        /// <summary>本文の字が Noto Sans JP (Font A) か。Klee One 向けに測った膨らみ (SmallMat・NumHalo の FaceDilate) は Noto では半分にする (線が元から太い)</summary>
+        public static bool NotoBody { get; private set; }
 
         public static Color Hex(string s)
         {
@@ -177,10 +179,8 @@ namespace DeckRogue.Game
             if (_sansTried) return;
             _sansTried = true;
             EnsureFonts();
-            _fontSans = MakeFont("NotoSansJP-Regular");
-            _fontSansBold = MakeFont("NotoSansJP-Bold");
-            FixBaseLinear(_fontSans);
-            FixBaseLinear(_fontSansBold);
+            if (NotoBody) { _fontSans = _fontRegular; _fontSansBold = _fontBold; }   // Font A: 本文と同じ資産 (アトラスを二重に持たない)
+            else { _fontSans = MakeFont("NotoSansJP-Regular"); _fontSansBold = MakeFont("NotoSansJP-Bold"); FixBaseLinear(_fontSans); FixBaseLinear(_fontSansBold); }
             // 本文の <b> は本物の太字 (Bold の字形) で描く (無ければ TMP の擬似太字)
             try
             {
@@ -210,14 +210,14 @@ namespace DeckRogue.Game
                 m.EnableKeyword("UNDERLAY_ON");
                 m.SetFloat(ShaderUtilities.ID_OutlineWidth, 0f);
                 m.SetColor(ShaderUtilities.ID_OutlineColor, PaperFx.Ink);   // 幅 0 の縁取りの境目がにじんでも墨のまま
-                m.SetFloat(ShaderUtilities.ID_FaceDilate, 0.15f);   // 13〜17px の Klee One は線が細く芯が灰色に抜けるので字を少し太らせる
+                m.SetFloat(ShaderUtilities.ID_FaceDilate, NotoBody ? 0.08f : 0.15f);   // 13〜17px の Klee One は線が細く芯が灰色に抜けるので字を少し太らせる
                 m.SetColor(ShaderUtilities.ID_UnderlayColor, PaperFx.Paper3);
                 m.SetFloat(ShaderUtilities.ID_UnderlayDilate, 1.2f);   // 紙の縁 約2px (設計の見本 text-shadow 0 0 2px の紙)
                 m.SetFloat(ShaderUtilities.ID_UnderlaySoftness, 0.15f);
                 m.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 0f);
                 m.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, 0f);
                 // Linear (2026-09-30 P21): 墨の字は細り (紙(明)の上の墨 0.138)、紙の下敷きの縁は薔薇の上で太る (−0.074)。HP の数字 17 単位に合わせる
-                if (LinearFix) FitHalo(m, bold, NumHaloUnits, 0.15f, 1.2f, 0.15f, 0.138f, -0.074f);
+                if (LinearFix) FitHalo(m, bold, NumHaloUnits, NotoBody ? 0.08f : 0.15f, 1.2f, 0.15f, 0.138f, -0.074f);
                 _numHalo = m;
                 return m;
             }
@@ -243,13 +243,13 @@ namespace DeckRogue.Game
             m.EnableKeyword("UNDERLAY_ON");
             m.SetFloat(ShaderUtilities.ID_OutlineWidth, 0f);
             m.SetColor(ShaderUtilities.ID_OutlineColor, PaperFx.Ground);   // 幅 0 の縁取りの境目がにじんでも夜のまま
-            m.SetFloat(ShaderUtilities.ID_FaceDilate, 0.15f);
+            m.SetFloat(ShaderUtilities.ID_FaceDilate, NotoBody ? 0.08f : 0.15f);
             m.SetColor(ShaderUtilities.ID_UnderlayColor, PaperFx.Ground);
             m.SetFloat(ShaderUtilities.ID_UnderlayDilate, 1.2f);
             m.SetFloat(ShaderUtilities.ID_UnderlaySoftness, 0.15f);
             m.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 0f);
             m.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, 0f);
-            if (LinearFix) FitHalo(m, f, NightHaloUnits, 0.15f, 1.2f, 0.15f, -0.168f, 0.138f);
+            if (LinearFix) FitHalo(m, f, NightHaloUnits, NotoBody ? 0.08f : 0.15f, 1.2f, 0.15f, -0.168f, 0.138f);
             else ShaderUtilities.UpdateShaderRatios(m);
             _numHaloNight[f] = m;
             return m;
@@ -273,7 +273,7 @@ namespace DeckRogue.Game
         {
             if (f == null) return null;
             EnsureFonts();
-            float k = Phone ? 0.66f : 1f;
+            float k = (Phone ? 0.66f : 1f) * (NotoBody ? 0.5f : 1f);   // Noto は線が太いので膨らみは半分 (Font A・2026-10-28)
             if (f == _fontRegular) return MakeSmallMat(f, ref _smallRegular, 0.12f * k);
             if (f == _fontBold) return MakeSmallMat(f, ref _smallBold, 0.08f * k);
             if (f == _fontDeco) return MakeSmallMat(f, ref _smallDeco, 0.06f * k);
@@ -311,10 +311,12 @@ namespace DeckRogue.Game
         {
             if (_fontTried) return;
             _fontTried = true;
-            // 本文と数字は手書き風の Klee One (OFL)。無ければ Noto Sans JP
-            _fontRegular = MakeFont("KleeOne-Regular") ?? MakeFont("NotoSansJP-Regular");
-            _fontBold = MakeFont("KleeOne-SemiBold") ?? MakeFont("NotoSansJP-Bold");
-            _fontDeco = MakeFont("KaiseiDecol-Bold");
+            // Font A (2026-10-28 ユーザー裁定「Godot と同じく全画面 Noto Sans JP に」): 本文と数字＝Noto Sans JP Regular・太字と見出し・ボタン・札の名前＝Noto Sans JP Bold
+            // (dot の Godot 版 10/25 の SourceRunUiDecor: Body=Regular・Display/Action=Bold)。旧 (2026-09-07〜10-27) は Klee One (本文)・Kaisei Decol (見出し) の絵本の字。無ければ旧い字へ
+            _fontRegular = MakeFont("NotoSansJP-Regular") ?? MakeFont("KleeOne-Regular");
+            _fontBold = MakeFont("NotoSansJP-Bold") ?? MakeFont("KleeOne-SemiBold");
+            _fontDeco = _fontBold ?? MakeFont("KaiseiDecol-Bold");
+            NotoBody = _fontRegular != null && _fontRegular.name == "NotoSansJP-Regular";
             if (_fontRegular == null) Debug.LogWarning("[UiKit] 日本語フォントを作れなかった。TMP の既定フォントで描く (日本語は豆腐)");
             // Linear (2026-09-30 P21): 既定の素材 (font.material) そのものを墨の字に合わせる。PlainWeight・書体の差し替え・縁取りの実体の素材はここから写されるので、
             // 外のコードが t.font.material に戻しても補正は残る。明るい字は LightMat (Txt・Deco・PlainWeight が色を見て選ぶ)

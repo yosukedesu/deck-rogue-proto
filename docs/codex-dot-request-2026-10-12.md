@@ -418,7 +418,7 @@ Deck-Rogue の本線について連絡です。
 ## 16. 返信 12（2026-10-28・Godot 枝の続き〔HD-2D の攻撃演出 checkpoint 192〕を Unity へ移した連絡と、dot の今後の作業場）
 
 §15 を送る前に dot が Godot 枝で続けた分（10/21〜10/27）を手元で棚卸しし、Unity に無かったものを移した（`docs/dot-godot-port-2026-10-27.md`）。
-**どちらを貼るかはユーザーの裁定（ask_user）で決める。** 案 A＝dot も Unity main で続ける（推奨）／案 B＝dot は Godot で続け、節目ごとにこちらが Unity へ移す。
+**裁定（2026-10-28 ask_user）＝案 B（dot は Godot で続け、節目ごとにこちらが Unity へ移す）。貼るのは案 B。** 案 A（dot も Unity main で続ける）は推奨したが選ばれなかった。
 
 ### 案 A（推奨: 以後の演出の作業は Unity main の上で）
 
