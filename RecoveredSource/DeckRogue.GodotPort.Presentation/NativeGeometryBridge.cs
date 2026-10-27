@@ -324,8 +324,14 @@ internal static class NativeGeometryBridge
 
 	public static NativeEffect? Create(AttackRoute route, EffectTier tier)
 	{
-        if(EnemyContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateEnemyPoke();
-        if(PermanentContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreatePermanentPulse();
+        if(EnemyContactVfxProfiles.SelectedRoute(route))return route.Family=="minimal_neutral_contact"
+            ?Hd2dAttackPrototype.CreateEnemyNeutralContact():route.Family=="enemy_blunt"
+            ?Hd2dAttackPrototype.CreateEnemyBlunt():Hd2dAttackPrototype.CreateEnemyPoke();
+        if(PermanentContactVfxProfiles.SelectedRoute(route))return route.Family=="fire_localburst"
+            ?Hd2dAttackPrototype.CreateInstalledFireContact():route.Family=="dark_drain"
+            ?Hd2dAttackPrototype.CreateInstalledDarkContact(route):route.Family=="plant_point_contact"
+            ?Hd2dAttackPrototype.CreateInstalledPlantContact():route.Family=="lightning_discharge"
+            ?Hd2dAttackPrototype.CreateInstalledLightningContact():Hd2dAttackPrototype.CreatePermanentPulse();
         if(StatusContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateBurnStatus();
         if(NecroContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateNecroDark(route);
         if(ReactionContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateReactionDark(route);

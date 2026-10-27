@@ -1,0 +1,30 @@
+{
+  "revision": 195,
+  "state": "selected inheritance; fresh merge gate pending",
+  "base": 193,
+  "added": {
+    "revision": 191,
+    "clean_hosts": 3,
+    "clean_checks": 1559,
+    "separate_completed_negative_checks": 572,
+    "partial_host": "actual LastStand41/80 no offer then whiff/expiry; final QA retention assumption failed; not clean host",
+    "positive_age_committed_rows": 27
+  },
+  "runtime_changes": [
+    "ReactionContactVfxProfiles exact three definition additions",
+    "BattleStage exact same-definition confirmed reaction ownership helper only"
+  ],
+  "retained": "193 exact enemy pairs,192 Rooting caster, installed owners, Wedge.26 and all prior selected scopes",
+  "excluded": [
+    "194 Skull candidate",
+    "generic reaction admission"
+  ],
+  "fresh_required": "one actual new confirmed reaction with loaded193 enemy/Rooting and existing owner assertions; no unrelated repeated matrix",
+  "limits": [
+    "real previous-state usability, not postheal HP",
+    "Grudge effective attack Actual, not HpLoss",
+    "counter pose unchanged",
+    "no new publication authority"
+  ],
+  "published_git": "192 only at8834bd18e9d09278cc0b49c1dc9515f4ad06670f"
+}

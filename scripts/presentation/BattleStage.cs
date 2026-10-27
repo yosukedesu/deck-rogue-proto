@@ -1548,10 +1548,15 @@ public class BattleStage : Node3D
                 // impact/aftermath never precedes its actual numeric contact.
                 if(!b.Contacted && UsesOrderedSharedLaunchMaterial(b.Beat.Route))
                     effectTime=Math.Min(effectTime,(b.Beat.Scenario?.Windup??0f)-.0001f);
-                // Only this proved installed neutral family: no receiving core
+                // Only these exact proved installed material tuples: no receiving core
                 // before its own numeric contact, even during interleaved triggers.
                 if(!b.Contacted && PermanentContactVfxProfiles.OriginalRoute(b.Beat.Route)
-                    && b.Beat.Event is GameEvent_DamageDealt permanentHit && IsOwnedInstalledNeutralPermanentContact(permanentHit))
+                    && b.Beat.Event is GameEvent_DamageDealt permanentHit && IsOwnedInstalledPermanentContact(permanentHit))
+                    effectTime=Math.Min(effectTime,(b.Beat.Scenario?.Windup??0f)-.0001f);
+                // Exact proved Blunt and selected neutral receiving contacts are contact-only. Legacy
+                // enemy scenarios can have zero Windup and a preview Sample(0);
+                // suppress that preview core without changing enemy/numeric timing.
+                if(!b.Contacted && (IsOwnedEnemyBluntContact(b) || IsOwnedEnemyNeutralContact(b)))
                     effectTime=Math.Min(effectTime,(b.Beat.Scenario?.Windup??0f)-.0001f);
                 // New local reaction material is never an anticipatory wound.
                 // Existing counter pose, numeric order and legacy routes are untouched.
@@ -2644,7 +2649,7 @@ public class BattleStage : Node3D
 			{
 				OrdinaryBeat? ordinaryCallback = _ordinaryCallback;
 				if ((ordinaryCallback == null || !ordinaryCallback.Direct)
-                    && !(_sourceActor==_hero && (IsOwnedInstalledNeutralPermanentContact(hit) || IsOwnedCenserNecroContact(hit))))
+                    && !(_sourceActor==_hero && (IsOwnedInstalledPermanentContact(hit) || IsOwnedCenserNecroContact(hit))))
 				{
 					_sourceActor?.PlayPose("attack", _clock);
 				}
@@ -3384,12 +3389,14 @@ public class BattleStage : Node3D
     {
         if(!_eventOwners.TryGetValue(hit,out var owner))return false;
         var before=owner.Change.Previous?.Combat;var after=owner.Change.Current.Combat;
-        string? uid=hit.PresentationSource?.Uid;
-        if(before==null || after==null || string.IsNullOrEmpty(uid))return false;
-        var card=before.Player.DrawPile.FirstOrDefault(c=>c.Uid==uid && c.Def.Id=="black_corpse_kiss");
-        bool moved=card!=null && card.Def.Effects.Any(e=>e.Trigger=="onSelfExhausted" && e.Effect=="dealDamageDrain" && e.Amount==3)
+        var source=hit.PresentationSource;string? uid=source?.Uid;string? definition=source?.DefinitionId;
+        int expectedDrain=NecroContactVfxProfiles.ExpectedDrainAmount(definition);
+        if(before==null || after==null || source?.Kind!="necro" || string.IsNullOrEmpty(definition)
+            || expectedDrain<=0 || string.IsNullOrEmpty(uid))return false;
+        var card=before.Player.DrawPile.FirstOrDefault(c=>c.Uid==uid && c.Def.Id==definition);
+        bool moved=card!=null && card.Def.Effects.Any(e=>e.Trigger=="onSelfExhausted" && e.Effect=="dealDamageDrain" && e.Amount==expectedDrain)
             && !before.Player.ExhaustPile.Any(c=>c.Uid==uid) && !after.Player.DrawPile.Any(c=>c.Uid==uid)
-            && after.Player.ExhaustPile.Any(c=>c.Uid==uid && c.Def.Id=="black_corpse_kiss");
+            && after.Player.ExhaustPile.Any(c=>c.Uid==uid && c.Def.Id==definition);
         bool censer=!string.IsNullOrEmpty(hit.SourceUid)
             && (before.Player.Permanents.Any(c=>c.Uid==hit.SourceUid && c.Def.Id=="black_thirst_censer")
                 || after.Player.Permanents.Any(c=>c.Uid==hit.SourceUid && c.Def.Id=="black_thirst_censer"));
@@ -3397,8 +3404,8 @@ public class BattleStage : Node3D
         foreach(var e in owner.Change.Events)
         {
             if(ReferenceEquals(e,hit)){found=true;break;}
-            if(e is GameEvent_CardsMilled { Count: >0 } mill && mill.CardIds?.Contains("black_corpse_kiss")==true)milled=true;
-            if(milled && e is GameEvent_NecroFired { CardId:"black_corpse_kiss" })necro=true;
+            if(e is GameEvent_CardsMilled { Count: >0 } mill && mill.CardIds?.Contains(definition)==true)milled=true;
+            if(milled && e is GameEvent_NecroFired fired && fired.CardId==definition)necro=true;
         }
         return NecroContactVfxProfiles.OwnsCenserDeckExhaustion(hit,moved,censer,found&&milled&&necro);
     }
@@ -3423,7 +3430,8 @@ public class BattleStage : Node3D
 
     private bool IsOwnedConfirmedReactionContact(GameEvent_DamageDealt hit)
     {
-        if(hit.PresentationSource is not {Kind:"reaction",DefinitionId:"black_reaction_curse"} source
+        if(hit.PresentationSource is not {Kind:"reaction"} source
+            || !ReactionContactVfxProfiles.SelectedDefinition(source.DefinitionId)
             || string.IsNullOrEmpty(source.Uid) || !_eventOwners.TryGetValue(hit,out var owner)
             || owner.Change.Command is not RunCommand_Combat {Command:Command_ConfirmReaction {Fire:true} confirm}
             || confirm.CardUid!=source.Uid)return false;
@@ -3440,7 +3448,7 @@ public class BattleStage : Node3D
         foreach(var e in owner.Change.Events)
         {
             if(ReferenceEquals(e,hit)){found=true;break;}
-            if(e is GameEvent_ReactionTriggered {CardId:"black_reaction_curse"})triggered=true;
+            if(e is GameEvent_ReactionTriggered trigger && trigger.CardId==source.DefinitionId)triggered=true;
         }
         // SourceUid is ambient context, NOT the selected reaction instance UID.
         // No final-discard assumption: normal continuation can reshuffle/draw it.
@@ -3449,7 +3457,7 @@ public class BattleStage : Node3D
     private AttackRoute ReactionContactRoute(AttackRoute route,GameEvent_DamageDealt hit)
         =>ReactionContactVfxProfiles.Select(route,hit,IsOwnedConfirmedReactionContact(hit));
 
-    private bool IsOwnedInstalledNeutralPermanentContact(GameEvent_DamageDealt hit)
+    private bool IsOwnedInstalledPermanentContact(GameEvent_DamageDealt hit)
     {
         if(!_eventOwners.TryGetValue(hit,out var owner))return false;
         string? uid=hit.PresentationSource?.Uid;string? definition=hit.PresentationSource?.DefinitionId;
@@ -3459,13 +3467,37 @@ public class BattleStage : Node3D
         bool installed=owner.Change.Previous?.Combat?.Player.Permanents.Any(Installed)==true
             || owner.Change.Current.Combat?.Player.Permanents.Any(Installed)==true;
         return PermanentContactVfxProfiles.OriginalRoute(Routes.Resolve(hit))
-            && PermanentContactVfxProfiles.OwnsInstalledNeutral(hit,installed);
+            && PermanentContactVfxProfiles.OwnsInstalled(hit,installed);
     }
+    // Historical neutral-only diagnostic remains unchanged in scope.
+    private bool IsOwnedInstalledNeutralPermanentContact(GameEvent_DamageDealt hit)
+        =>PermanentContactVfxProfiles.NeutralDefinition(hit.PresentationSource?.DefinitionId)
+            && IsOwnedInstalledPermanentContact(hit);
     // Historical Candle-only diagnostic remains narrow, not a silent rename.
     private bool IsOwnedCandleContact(GameEvent_DamageDealt hit)
         =>hit.PresentationSource?.DefinitionId=="black_blood_candle" && IsOwnedInstalledNeutralPermanentContact(hit);
     private AttackRoute PermanentContactRoute(AttackRoute route,GameEvent_DamageDealt hit)
-        =>PermanentContactVfxProfiles.Select(route,hit,IsOwnedInstalledNeutralPermanentContact(hit));
+        =>PermanentContactVfxProfiles.Select(route,hit,IsOwnedInstalledPermanentContact(hit));
+
+    private bool IsOwnedEnemyBluntContact(OrdinaryBeat b)
+    {
+        if(b.Beat.Route is not {Family:"enemy_blunt"} route
+            || b.Beat.Event is not GameEvent_DamageDealt hit
+            || b.Source==null || b.Target!=_hero || !_eventOwners.TryGetValue(hit,out var owner))return false;
+        var selected=EnemyContactVfxProfiles.Select(route,hit,b.Source.DefinitionId,
+            ProvenEnemyAttackMove(hit.PresentationEnemyAction,b.Source),owner.Change.Current.Combat?.EventLog);
+        return selected.Family=="enemy_blunt" && EnemyContactVfxProfiles.SelectedRoute(selected);
+    }
+
+    private bool IsOwnedEnemyNeutralContact(OrdinaryBeat b)
+    {
+        if(b.Beat.Route is not {Family:"minimal_neutral_contact"} route
+            || b.Beat.Event is not GameEvent_DamageDealt hit
+            || b.Source==null || b.Target!=_hero || !_eventOwners.TryGetValue(hit,out var owner))return false;
+        var selected=EnemyContactVfxProfiles.Select(route,hit,b.Source.DefinitionId,
+            ProvenEnemyAttackMove(hit.PresentationEnemyAction,b.Source),owner.Change.Current.Combat?.EventLog);
+        return selected.Family=="minimal_neutral_contact" && EnemyContactVfxProfiles.SelectedRoute(selected);
+    }
 
     private AttackRoute EnemyContactRoute(AttackRoute route,GameEvent_DamageDealt hit)
     {

@@ -1,0 +1,78 @@
+{
+  "revision": 214,
+  "base": 213,
+  "status": "Exact candidate; all8 actual source witnesses and representativebody compatibility pending",
+  "runtime_change": "Only enemy_blunt exact actor/move SelectedPair allowlist adds8; all material/negativeagecap/actual execution/singlecontribution/effectiveAmount/receipt/source motion unchanged",
+  "rows": [
+    {
+      "key": "enemy:enemy_moss_slime/bump",
+      "fixture": "enc_moss_spawner_slime",
+      "memberIndex": 1,
+      "turnOrdinal": 1,
+      "caveat": "Explicit member start=bump overrides StartBySlot[1]=ooze. Member0 spawner starts check\u2192spawn while allies fewer than3; preserve real summon and any subsequent actual actions, do not delete spawned actor."
+    },
+    {
+      "key": "enemy:enemy_shield_squire/shield_bash",
+      "fixture": "enc_squire_archer",
+      "memberIndex": 0,
+      "turnOrdinal": 1,
+      "caveat": "Retain living archer. Alone interrupt otherwise changes to avenging_rush; guardian/startingBlock6 preserved. Attack then own Block5."
+    },
+    {
+      "key": "enemy:enemy_mourn_beast/leap",
+      "fixture": "enc_mourn_beasts",
+      "memberIndex": 1,
+      "turnOrdinal": 1,
+      "caveat": "Member1 explicit leap; member0 real two-hit bite executes first. Keep both alive to avoid mournStrength4. Full aggregate and projected companion receipts remain distinct."
+    },
+    {
+      "key": "enemy:enemy_bowl_bug/roll",
+      "fixture": "enc_bowlbug_drummer",
+      "memberIndex": 0,
+      "turnOrdinal": 1,
+      "caveat": "Initial roll is deterministic; no initial full-block/nullification for positive witness. Imbalanced sets StaggeredNext when hpLoss0 with dealtTotal>0, so blocked control must retain actual stagger/rest next intent."
+    },
+    {
+      "key": "enemy:enemy_elite_giant_face/crush",
+      "fixture": "enemy_elite_giant_face",
+      "memberIndex": 0,
+      "turnOrdinal": 2,
+      "caveat": "Actual ACT3 ELITE_POOLS[2] single encounter; glare buff2\u20133 then crush. Preserve real strength and growPerUse4/turnArmor50/artifact2; no manually set damage. Initial no offensive/status setup."
+    },
+    {
+      "key": "enemy:enemy_drummer/thump",
+      "fixture": "enc_bowlbug_drummer",
+      "memberIndex": 1,
+      "turnOrdinal": 2,
+      "caveat": "Explicit start=guard gives guard Block4\u20135 plus Strength1, then thump. Default war_drum start gives third-turn thump, NOT this recipe. BowlBug second move random but none inflicts Vulnerable; keep actual roll/tackle/curl outcome and aggregate projection proof."
+    },
+    {
+      "key": "enemy:enemy_chimera_1/skull_bash",
+      "fixture": "enemy_chimera_1",
+      "memberIndex": 0,
+      "turnOrdinal": 2,
+      "caveat": "Actual ACT3 ACT_BOSS_POOLS[2] single encounter: bite17\u201319 then skull_bash11\u201313, then Vulnerable1. Prior bite has no Vulnerable rider, so second-turn hit need not violate EffectiveActual==Amount. No player damage/reflection: keep phase1 alive, no splitInto phase2."
+    },
+    {
+      "key": "enemy:enemy_turtle/crush",
+      "fixture": "enemy_turtle",
+      "memberIndex": 0,
+      "turnOrdinal": 3,
+      "caveat": "Actual ACT2 ACT_BOSS_POOLS[1] single encounter: shell\u2192shell_2\u2192crush. Preserve two actual Block events and initialBlock10/armor30. Do not damage below half, which interrupts to two-hit awake_bite. No prior Vulnerable rider."
+    }
+  ],
+  "new_boundaries": [
+    "MossSlime explicit start overrides slot default plus real preceding summon; source/receiver remains exact preexisting member1, do not confuse newly summoned same-definition instance.",
+    "Mourn companion multihit requires full aggregate oracle plus per-contact projected ordinal accounting, not aggregate count==one for entire EndTurn.",
+    "Squire alone/guardian and Mourn death-strength controls preserve actual living companion; excluded automatic replacement paths are not silently accepted.",
+    "BowlBug imbalanced full-block triggers real StaggeredNext; keep attack receipt and later rest separate.",
+    "GiantFace buff/grow and Drummer guard+buff values must come from real events, not base damage range assertion.",
+    "Chimera Vulnerable is AFTER candidate hit, phase2 split only on real death; repeated later candidate hit under Vulnerable may fail EffectiveActual equality and must remain fail-closed.",
+    "Turtle third-turn simple only while not below half; half-awake multihit excluded."
+  ],
+  "shared": "Inherit selected198/200 Blunt geometry/outcome and211 exactsource/finite/lifecycle proofs; perID real command sequence and ordered riders/projection actualwitness, not8guardmatrices",
+  "limits": "MossSlime requested existingmember1 distinguished from actual summonedinstances; preserve all actors. No enemyAI/HP/Strength/Gold/intent manipulation to force gate. Existing modifier equality failsclosed.",
+  "excluded": "Random,below-half,alone replacement,chimera replacement and multihit moves notadded; route exists isnotacceptance",
+  "audit_sha256": "6b33a94b032fc58697778de5679c92b8c978eb3974819b08828063875852c287",
+  "publication": "No Git or mediachange"
+}

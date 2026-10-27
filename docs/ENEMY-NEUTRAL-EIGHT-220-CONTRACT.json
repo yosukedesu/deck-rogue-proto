@@ -1,0 +1,391 @@
+{
+  "revision": 220,
+  "base": 219,
+  "status": "conditional direct extension once219boundsselected; eight newenemy native witnesses still pending",
+  "keys": [
+    "enemy:enemy_elite_sergeant/whip",
+    "enemy:enemy_elite_slaver/chain",
+    "enemy:enemy_brood_toad/tongue",
+    "enemy:enemy_elite_owl/wing",
+    "enemy:enemy_axe_ogre/great_swing",
+    "enemy:enemy_warden/bell_strike",
+    "enemy:enemy_warden/gate_guard",
+    "enemy:enemy_strangler_serpent/lash"
+  ],
+  "sourceContract": "Exactactor/move/index/executionlog/singlecontribution/EffectiveActual==Amount/validreceipt and precommit cap unchanged. Preserve all statuses, shippedAI/HP/Block, no actor replacements/forcedstart. Existing family geometry/lifecycle inherited only after each newkey realwitness.",
+  "fixtures": [
+    {
+      "key": "enemy:enemy_elite_sergeant/whip",
+      "encounterInput": "enemy_elite_sergeant",
+      "memberIndex": 0,
+      "targetEndTurn": 1,
+      "actualSequence": [
+        {
+          "node": "whip",
+          "move": "whip"
+        }
+      ],
+      "definitionMove": {
+        "id": "whip",
+        "kind": "attack",
+        "min": 8,
+        "max": 10
+      },
+      "route": {
+        "key": "enemy:enemy_elite_sergeant/whip",
+        "definitionId": "whip",
+        "sourceKind": "enemy_actual_execution",
+        "family": "minimal_neutral_contact",
+        "renderer": "BoundedContactFx",
+        "element": "neutral",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "caveat": "ELITE_POOLS[0]; no real Block gains before firstattack so angerOnBlock not fabricated",
+      "preservedTraits": {
+        "maxHp": 82,
+        "hpRange": [
+          76,
+          88
+        ],
+        "start": "whip",
+        "angerOnBlock": 1
+      }
+    },
+    {
+      "key": "enemy:enemy_elite_slaver/chain",
+      "encounterInput": "enemy_elite_slaver",
+      "memberIndex": 0,
+      "targetEndTurn": 1,
+      "actualSequence": [
+        {
+          "node": "chain",
+          "move": "chain"
+        }
+      ],
+      "definitionMove": {
+        "id": "chain",
+        "kind": "attack",
+        "min": 11,
+        "max": 14,
+        "inflict": {
+          "status": "weak",
+          "amount": 2
+        }
+      },
+      "route": {
+        "key": "enemy:enemy_elite_slaver/chain",
+        "definitionId": "chain",
+        "sourceKind": "enemy_actual_execution",
+        "family": "minimal_neutral_contact",
+        "renderer": "BoundedContactFx",
+        "element": "neutral",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "caveat": "ELITE_POOLS[1]; Weak afterhit retained; later net/Vulnerable and lash excluded",
+      "preservedTraits": {
+        "maxHp": 120,
+        "hpRange": [
+          112,
+          128
+        ],
+        "start": "chain"
+      }
+    },
+    {
+      "key": "enemy:enemy_brood_toad/tongue",
+      "encounterInput": "enemy_brood_toad",
+      "memberIndex": 0,
+      "targetEndTurn": 1,
+      "actualSequence": [
+        {
+          "node": "tongue",
+          "move": "tongue"
+        }
+      ],
+      "definitionMove": {
+        "id": "tongue",
+        "kind": "attack",
+        "min": 11,
+        "max": 15,
+        "inflict": {
+          "status": "weak",
+          "amount": 1
+        }
+      },
+      "route": {
+        "key": "enemy:enemy_brood_toad/tongue",
+        "definitionId": "tongue",
+        "sourceKind": "enemy_actual_execution",
+        "family": "minimal_neutral_contact",
+        "renderer": "BoundedContactFx",
+        "element": "neutral",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "caveat": "ACT_POOLS[1]; no prior damage/death, splitInto broodlings not triggered",
+      "preservedTraits": {
+        "maxHp": 90,
+        "hpRange": [
+          84,
+          96
+        ],
+        "start": "tongue",
+        "splitInto": {
+          "enemyId": "enemy_broodling",
+          "count": 3,
+          "stunned": true
+        }
+      }
+    },
+    {
+      "key": "enemy:enemy_elite_owl/wing",
+      "encounterInput": "enemy_elite_owl",
+      "memberIndex": 0,
+      "targetEndTurn": 1,
+      "actualSequence": [
+        {
+          "node": "wing",
+          "move": "wing"
+        }
+      ],
+      "definitionMove": {
+        "id": "wing",
+        "kind": "attack",
+        "min": 8,
+        "max": 11
+      },
+      "route": {
+        "key": "enemy:enemy_elite_owl/wing",
+        "definitionId": "wing",
+        "sourceKind": "enemy_actual_execution",
+        "family": "minimal_neutral_contact",
+        "renderer": "BoundedContactFx",
+        "element": "neutral",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "caveat": "ELITE_POOLS[1]; existing airborne source action retained, later talon_dive excluded",
+      "preservedTraits": {
+        "maxHp": 110,
+        "hpRange": [
+          102,
+          118
+        ],
+        "start": "wing"
+      }
+    },
+    {
+      "key": "enemy:enemy_axe_ogre/great_swing",
+      "encounterInput": "enemy_axe_ogre",
+      "memberIndex": 0,
+      "targetEndTurn": 2,
+      "actualSequence": [
+        {
+          "node": "windup",
+          "move": "windup"
+        },
+        {
+          "node": "great_swing",
+          "move": "great_swing"
+        }
+      ],
+      "definitionMove": {
+        "id": "great_swing",
+        "kind": "attack",
+        "min": 24,
+        "max": 28,
+        "inflict": {
+          "status": "weak",
+          "amount": 1
+        }
+      },
+      "route": {
+        "key": "enemy:enemy_axe_ogre/great_swing",
+        "definitionId": "great_swing",
+        "sourceKind": "enemy_actual_execution",
+        "family": "minimal_neutral_contact",
+        "renderer": "BoundedContactFx",
+        "element": "neutral",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "caveat": "ACT_POOLS[1]/WEAK_POOLS[1]; real windup Defend then attack/Weak, no intent shortcut",
+      "preservedTraits": {
+        "maxHp": 110,
+        "hpRange": [
+          102,
+          118
+        ],
+        "start": "windup",
+        "artifact": 1
+      }
+    },
+    {
+      "key": "enemy:enemy_warden/bell_strike",
+      "encounterInput": "enemy_warden",
+      "memberIndex": 0,
+      "targetEndTurn": 2,
+      "actualSequence": [
+        {
+          "node": "bell_hushed",
+          "move": "bell_hushed"
+        },
+        {
+          "node": "bell_strike",
+          "move": "bell_strike"
+        }
+      ],
+      "definitionMove": {
+        "id": "bell_strike",
+        "kind": "attack",
+        "min": 13,
+        "max": 17
+      },
+      "route": {
+        "key": "enemy:enemy_warden/bell_strike",
+        "definitionId": "bell_strike",
+        "sourceKind": "enemy_actual_execution",
+        "family": "minimal_neutral_contact",
+        "renderer": "BoundedContactFx",
+        "element": "neutral",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "caveat": "ACT_BOSS_POOLS[2]; real bell_hushed first, healthy enemy/no playercards/damage keeps enrage and halfHP interrupt untouched",
+      "preservedTraits": {
+        "maxHp": 155,
+        "hpRange": [
+          144,
+          166
+        ],
+        "start": "bell_hushed",
+        "interrupts": [
+          {
+            "on": "hpBelowHalf",
+            "goto": "half_bell_frenzy"
+          }
+        ],
+        "enrage": 2,
+        "enrageEveryCards": 8,
+        "startingBlock": 15,
+        "enrageEveryDamage": 80,
+        "armor": 35,
+        "turnArmor": 90
+      }
+    },
+    {
+      "key": "enemy:enemy_warden/gate_guard",
+      "encounterInput": "enemy_warden",
+      "memberIndex": 0,
+      "targetEndTurn": 3,
+      "actualSequence": [
+        {
+          "node": "bell_hushed",
+          "move": "bell_hushed"
+        },
+        {
+          "node": "bell_strike",
+          "move": "bell_strike"
+        },
+        {
+          "node": "gate_guard",
+          "move": "gate_guard"
+        }
+      ],
+      "definitionMove": {
+        "id": "gate_guard",
+        "kind": "attack",
+        "min": 6,
+        "max": 8,
+        "alsoDefend": 12
+      },
+      "route": {
+        "key": "enemy:enemy_warden/gate_guard",
+        "definitionId": "gate_guard",
+        "sourceKind": "enemy_actual_execution",
+        "family": "minimal_neutral_contact",
+        "renderer": "BoundedContactFx",
+        "element": "neutral",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "caveat": "Same real Warden sequence bell_hushed→bell_strike→gate_guard; actual Block12 rider follows attack, not support-only",
+      "preservedTraits": {
+        "maxHp": 155,
+        "hpRange": [
+          144,
+          166
+        ],
+        "start": "bell_hushed",
+        "interrupts": [
+          {
+            "on": "hpBelowHalf",
+            "goto": "half_bell_frenzy"
+          }
+        ],
+        "enrage": 2,
+        "enrageEveryCards": 8,
+        "startingBlock": 15,
+        "enrageEveryDamage": 80,
+        "armor": 35,
+        "turnArmor": 90
+      }
+    },
+    {
+      "key": "enemy:enemy_strangler_serpent/lash",
+      "encounterInput": "enemy_strangler_serpent",
+      "memberIndex": 0,
+      "targetEndTurn": 3,
+      "actualSequence": [
+        {
+          "node": "constrict",
+          "move": "constrict"
+        },
+        {
+          "node": "guard",
+          "move": "guard"
+        },
+        {
+          "node": "lash",
+          "move": "lash"
+        }
+      ],
+      "definitionMove": {
+        "id": "lash",
+        "kind": "attack",
+        "min": 10,
+        "max": 12
+      },
+      "route": {
+        "key": "enemy:enemy_strangler_serpent/lash",
+        "definitionId": "lash",
+        "sourceKind": "enemy_actual_execution",
+        "family": "minimal_neutral_contact",
+        "renderer": "BoundedContactFx",
+        "element": "neutral",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "caveat": "ACT_POOLS[0]; real constrict→guard→lash, Restrain preserved; do not skip guard or clear statuses",
+      "preservedTraits": {
+        "maxHp": 80,
+        "hpRange": [
+          74,
+          86
+        ],
+        "start": "constrict"
+      }
+    }
+  ],
+  "exclusions": "No later Slaver lash afterVulnerable, boss halfHP multihit, Toad death split, or generic neutral registration.Exact219 Static retained; no old218 overwrite.",
+  "material": "Selected connected target-local neutral contact only; preserve existing source animation/timing and actual riders, no literal tongue/whip/beam/element added.",
+  "sourceHashes": {
+    "data/enemies.json": "48c3780ccd36a0ba7b011419eb54279128837715ddbfb58903df743798e08ad1",
+    "assets/attack-routes.json": "d876cbe1c9eb6eead41e8adf0690e7b61ea7a33f547971ed629879ae82523846",
+    "RecoveredSource/DeckRogue.Engine/MapGen.cs": "edf32ba5671c021458cb198e901f7c71f5b045d86ac4abde0677591163ce2b31",
+    "scripts/presentation/BattleStage.cs": "ca63c0148c88c685cd44850db6761a8bbfb22dd4ac577021258381b1788c53e9"
+  },
+  "sourceComposition": "All219 immutable source retained except exact8EnemyContactVfxProfiles pair additions; no Static geometry/owner edits."
+}

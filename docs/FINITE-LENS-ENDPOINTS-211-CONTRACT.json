@@ -1,0 +1,15 @@
+{
+  "revision": 211,
+  "base_candidate": 210,
+  "selected_base_preserved": 208,
+  "scope": "Exact connected enemy-neutral correction plus finite endpoint fix in both new enemy lens and inherited selected neutral-caster lens",
+  "finding": "Single-precision Sin(PI) can be negative; fractionalPow(.65) givesNaN. Static210 review caught before native;210 remainsunrun. Existing201-style caster lens uses same endpoint expression, so its exact four u/v expressions are clamped too.",
+  "change": "MathF.Pow(MathF.Max(0f,MathF.Sin(u_or_v*MathF.PI)),.65f), no timing/gain/source/material-envelope change",
+  "required_proof": [
+    "All emitted active vertex coordinates finite in isolated samples at negative/positive/reuse/tail ages",
+    "CorrectedWidePower actual keys/cycle and committed receipt proof",
+    "One actualEcho compatibility/finite active geometry check for inherited caster endpoint"
+  ],
+  "unchanged": "All209 owner/cap/actor/numeric semantics and selected208 mappings retained",
+  "status": "Product/static/native/art pending; no selected checkpoint overwrite until gates"
+}

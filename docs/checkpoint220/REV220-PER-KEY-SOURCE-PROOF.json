@@ -1,0 +1,175 @@
+{
+  "cases": 7,
+  "exactSourceKeys": 8,
+  "proof": [
+    {
+      "case": "case_sergeant_whip",
+      "requestedActualTurn": 1,
+      "oracleStep": "rev220-neutral-sequences-standard/case_sergeant_whip-oracle-step-0.json",
+      "key": "enemy:enemy_elite_sergeant/whip",
+      "memberIndex": 0,
+      "actualAmount": 8,
+      "hpLoss": 8,
+      "executionEventIndex": 6,
+      "positiveCommittedSamples": 6,
+      "oracle": "rev220-neutral-sequences-standard/case_sergeant_whip-whole-sequence-selector-proof.json",
+      "native": "rev220-neutral-sequences-standard/enemy-eligibility-runtime.json",
+      "orderedRules": "rev220-neutral-sequences-standard/case_sergeant_whip-complete-rule-transition.json"
+    },
+    {
+      "case": "case_slaver_chain",
+      "requestedActualTurn": 1,
+      "oracleStep": "rev220-neutral-sequences-standard/case_slaver_chain-oracle-step-0.json",
+      "key": "enemy:enemy_elite_slaver/chain",
+      "memberIndex": 0,
+      "actualAmount": 15,
+      "hpLoss": 15,
+      "executionEventIndex": 6,
+      "positiveCommittedSamples": 6,
+      "oracle": "rev220-neutral-sequences-standard/case_slaver_chain-whole-sequence-selector-proof.json",
+      "native": "rev220-neutral-sequences-standard/enemy-eligibility-runtime.json",
+      "orderedRules": "rev220-neutral-sequences-standard/case_slaver_chain-complete-rule-transition.json"
+    },
+    {
+      "case": "case_toad_tongue",
+      "requestedActualTurn": 1,
+      "oracleStep": "rev220-neutral-sequences-standard/case_toad_tongue-oracle-step-0.json",
+      "key": "enemy:enemy_brood_toad/tongue",
+      "memberIndex": 0,
+      "actualAmount": 15,
+      "hpLoss": 15,
+      "executionEventIndex": 6,
+      "positiveCommittedSamples": 5,
+      "oracle": "rev220-neutral-sequences-standard/case_toad_tongue-whole-sequence-selector-proof.json",
+      "native": "rev220-neutral-sequences-standard/enemy-eligibility-runtime.json",
+      "orderedRules": "rev220-neutral-sequences-standard/case_toad_tongue-complete-rule-transition.json"
+    },
+    {
+      "case": "case_owl_wing",
+      "requestedActualTurn": 1,
+      "oracleStep": "rev220-neutral-sequences-standard/case_owl_wing-oracle-step-0.json",
+      "key": "enemy:enemy_elite_owl/wing",
+      "memberIndex": 0,
+      "actualAmount": 12,
+      "hpLoss": 12,
+      "executionEventIndex": 6,
+      "positiveCommittedSamples": 6,
+      "oracle": "rev220-neutral-sequences-standard/case_owl_wing-whole-sequence-selector-proof.json",
+      "native": "rev220-neutral-sequences-standard/enemy-eligibility-runtime.json",
+      "orderedRules": "rev220-neutral-sequences-standard/case_owl_wing-complete-rule-transition.json"
+    },
+    {
+      "case": "case_ogre_swing",
+      "requestedActualTurn": 2,
+      "oracleStep": "rev220-neutral-sequences-standard/case_ogre_swing-oracle-step-1.json",
+      "key": "enemy:enemy_axe_ogre/great_swing",
+      "memberIndex": 0,
+      "actualAmount": 31,
+      "hpLoss": 31,
+      "executionEventIndex": 14,
+      "positiveCommittedSamples": 6,
+      "oracle": "rev220-neutral-sequences-standard/case_ogre_swing-whole-sequence-selector-proof.json",
+      "native": "rev220-neutral-sequences-standard/enemy-eligibility-runtime.json",
+      "orderedRules": "rev220-neutral-sequences-standard/case_ogre_swing-complete-rule-transition.json"
+    },
+    {
+      "case": "case_warden_sequence",
+      "requestedActualTurn": 2,
+      "oracleStep": "rev220-neutral-sequences-standard/case_warden_sequence-oracle-step-1.json",
+      "key": "enemy:enemy_warden/bell_strike",
+      "memberIndex": 0,
+      "actualAmount": 18,
+      "hpLoss": 18,
+      "executionEventIndex": 14,
+      "positiveCommittedSamples": 11,
+      "oracle": "rev220-neutral-sequences-standard/case_warden_sequence-whole-sequence-selector-proof.json",
+      "native": "rev220-neutral-sequences-standard/enemy-eligibility-runtime.json",
+      "orderedRules": "rev220-neutral-sequences-standard/case_warden_sequence-complete-rule-transition.json"
+    },
+    {
+      "case": "case_warden_sequence",
+      "requestedActualTurn": 3,
+      "oracleStep": "rev220-neutral-sequences-standard/case_warden_sequence-oracle-step-2.json",
+      "key": "enemy:enemy_warden/gate_guard",
+      "memberIndex": 0,
+      "actualAmount": 7,
+      "hpLoss": 7,
+      "executionEventIndex": 22,
+      "positiveCommittedSamples": 6,
+      "oracle": "rev220-neutral-sequences-standard/case_warden_sequence-whole-sequence-selector-proof.json",
+      "native": "rev220-neutral-sequences-standard/enemy-eligibility-runtime.json",
+      "orderedRules": "rev220-neutral-sequences-standard/case_warden_sequence-complete-rule-transition.json"
+    },
+    {
+      "case": "case_serpent_lash",
+      "requestedActualTurn": 3,
+      "oracleStep": "rev220-neutral-sequences-standard/case_serpent_lash-oracle-step-2.json",
+      "key": "enemy:enemy_strangler_serpent/lash",
+      "memberIndex": 0,
+      "actualAmount": 10,
+      "hpLoss": 10,
+      "executionEventIndex": 23,
+      "positiveCommittedSamples": 6,
+      "oracle": "rev220-neutral-sequences-standard/case_serpent_lash-whole-sequence-selector-proof.json",
+      "native": "rev220-neutral-sequences-standard/enemy-eligibility-runtime.json",
+      "orderedRules": "rev220-neutral-sequences-standard/case_serpent_lash-complete-rule-transition.json"
+    }
+  ],
+  "priorTurnFullOracleProof": [
+    {
+      "case": "case_ogre_swing",
+      "priorTurnIndex": 0,
+      "comparison": "rev220-neutral-sequences-standard/case_ogre_swing-prior-turn-0-comparison.json",
+      "projection": "rev220-neutral-sequences-standard/case_ogre_swing-prior-turn-0-projection-callbacks.json"
+    },
+    {
+      "case": "case_warden_sequence",
+      "priorTurnIndex": 0,
+      "comparison": "rev220-neutral-sequences-standard/case_warden_sequence-prior-turn-0-comparison.json",
+      "projection": "rev220-neutral-sequences-standard/case_warden_sequence-prior-turn-0-projection-callbacks.json"
+    },
+    {
+      "case": "case_warden_sequence",
+      "priorTurnIndex": 1,
+      "comparison": "rev220-neutral-sequences-standard/case_warden_sequence-prior-turn-1-comparison.json",
+      "projection": "rev220-neutral-sequences-standard/case_warden_sequence-prior-turn-1-projection-callbacks.json"
+    },
+    {
+      "case": "case_serpent_lash",
+      "priorTurnIndex": 0,
+      "comparison": "rev220-neutral-sequences-standard/case_serpent_lash-prior-turn-0-comparison.json",
+      "projection": "rev220-neutral-sequences-standard/case_serpent_lash-prior-turn-0-projection-callbacks.json"
+    },
+    {
+      "case": "case_serpent_lash",
+      "priorTurnIndex": 1,
+      "comparison": "rev220-neutral-sequences-standard/case_serpent_lash-prior-turn-1-comparison.json",
+      "projection": "rev220-neutral-sequences-standard/case_serpent_lash-prior-turn-1-projection-callbacks.json"
+    }
+  ],
+  "representativePngs": [
+    {
+      "path": "rev220-neutral-sequences-standard/case_ogre_swing/0032.png",
+      "sha256": "b78b2459a6cb6437ae84406bdacedd883c2764ecfc78c7ef548b40d1cf99b8eb",
+      "frame": 32,
+      "age": 0.046661377
+    },
+    {
+      "path": "rev220-neutral-sequences-standard/case_owl_wing/0032.png",
+      "sha256": "9474d2910c9acb0d2648f17bef8cb5de980465a22272388106ad6404228d3e44",
+      "frame": 32,
+      "age": 0.046661377
+    },
+    {
+      "path": "rev220-neutral-sequences-standard/case_toad_tongue/0031.png",
+      "sha256": "1d70fd87bb772c24a5dace7ab2239be3d86337a832fa8cbc284af5710bde341b",
+      "frame": 31,
+      "age": 0.046671867
+    }
+  ],
+  "loadedStaticQualification": "Pure loaded tuple classification only; exact installedUID and native Static proof inherited219, no fabricated hit/new native context coverage",
+  "finiteSamples": 229,
+  "allFiniteInvalidListsEmpty": true,
+  "riders": "Actual ordered full engine event/state/numeric projections retained; no hardcoded min/max, no invented elemental material",
+  "sourceBoundaries": "Seven shipped single-enemy sequences; Warden turn2 bell_strike and turn3 gate_guard each have exact pure per-turn oracle and actual prior/final native owner evidence; Ogre windup and Serpent constrict/guard plus all Weak/Restrained/Block riders retained in full state/event/projection equality"
+}

@@ -1,0 +1,59 @@
+{
+  "revision": 191,
+  "state": "candidate-awaiting-native",
+  "base": "selected190 / master v71",
+  "definitions": [
+    "black_reaction_curse",
+    "black_underworld_hand",
+    "black_reaction_grudge",
+    "black_reaction_last_stand"
+  ],
+  "new_definitions": [
+    "black_underworld_hand",
+    "black_reaction_grudge",
+    "black_reaction_last_stand"
+  ],
+  "tuple": {
+    "sourceKind": "reaction",
+    "family": "dark_drain",
+    "originalRenderer": "DarkDrainFx",
+    "selectedRenderer": "Hd2dReactionContactFx",
+    "element": "dark",
+    "fixedSmall": true
+  },
+  "ownership": [
+    "actual ConfirmReaction Fire=true and exact selected UID",
+    "owning Previous armed usable SetCard of same definition",
+    "actual postattack pending target equals receiving enemy",
+    "Current no longer contains same set UID",
+    "preceding actual ReactionTriggered CardId equals exact source definition",
+    "hit source definition equals route definition; route key equals card:+definition",
+    "valid event-reference enemy receipt; positive HpLoss for offensive material"
+  ],
+  "conditions": "Use actual previous-state UsableSetCards. Grudge uses effective ReactionWindow.Actual>=8, not HpLoss. LastStand uses post-hit previous HP<=half; never retest after drain healing. Conditions remain engine-owned.",
+  "unchanged": [
+    "selected local Dark geometry/scale/phase",
+    "legitimate existing counter source pose",
+    "independent drain healing",
+    "actual event/resource/zone rules",
+    "uncontacted material age cap",
+    "no ambient SourceUid equality or final-discard invariant"
+  ],
+  "native_required": [
+    "one actual armed confirmed event per new ID with UID/definition tuple proof",
+    "actual effective attack threshold and post-hit HP threshold positive/negative cases",
+    "cross-definition route/trigger negative checks, no implicit matching by any selected ID",
+    "positive material age requires committed exact receipt",
+    "representative existing counter motion/local clear; shared lifecycle inherited179 unless new boundary discovered"
+  ],
+  "excluded": [
+    "ordinary PlayCard",
+    "automatic reactions",
+    "SetAny ordinary cards",
+    "pre-window effects",
+    "generic Dark or generic reaction admission",
+    "188 enemy candidate",
+    "189 Rooting candidate"
+  ],
+  "media": "no changes"
+}

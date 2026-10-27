@@ -1,0 +1,32 @@
+{
+  "revision": 219,
+  "base": 218,
+  "status": "unselected installed Static representative trial",
+  "definition": "blue_perm_static",
+  "originalTuple": [
+    "permanent",
+    "card:blue_perm_static",
+    "lightning_discharge",
+    "LightningDischargeFx",
+    "lightning",
+    "fixedSmall"
+  ],
+  "actualBaseline": "734/2clean on untouched218; readable three cool receiving discharges already present, no source connection. Material gap uniform thin branches/abrupt disappearance, not absent electricity. Hero repeated home posture attribution pending trace, not inferredfrompixels.",
+  "recipe": "Initial3, real Static1install→AetherBreath1: Aether2 then one permanent base1 per living receiver thenDraw1. Preserve actual modifiers/ordered receipts, not2triggers.",
+  "design": "Reuse selected lightning positive receiving surface→segmented cooling and five local forks, no source channel or callback. Dedicated independent method; original Izzet card factory remains byte-identical. FixedSmall semantics unchanged, targetlight bounded .035/floor0.",
+  "ownership": "Exact definition/fulltuple, Previous/Current actual installed non-retainerUID/sourceUID equality/receipt proof retained. Existing proved-owner negativecap and passive-fallback-only suppression; no global idle or other lightning-source admission.",
+  "gates": [
+    "full rules/UID/material equality against baseline",
+    "actual perreceiver positiveCommittedExact and pendingempty",
+    "finite active/indexed positionsUV/alpha/gain and negative-positive-negative-tail reuse",
+    "actual source pose trace, no borrowed restart while legitimate parent preserved",
+    "orderedreceiver/blocked/lethal/deathscope bounded and oldIzzet source retained"
+  ],
+  "excluded": [
+    "other permanentLightning",
+    "cardIzzet policychanges",
+    "generic beam replacement",
+    "newpublicpush/media"
+  ],
+  "sourceAttribution": "Existing actual trace: idle0→legitimate block0 at1 (Breath actual IceBlockGained1), then three passive-preview attack restarts at2/6/10; legitimate delivered block0 at16. Source inference from unchanged BeginSourceCard IceBlock support and nonDirect fallback, not a captured callstack. Candidate must preserve legitimate block gesture, no globalidle assertion. Baseline lacks per-sample Committed/Exact, so strict receipt-age invariant is a new candidate gate, not claimed inherited."
+}

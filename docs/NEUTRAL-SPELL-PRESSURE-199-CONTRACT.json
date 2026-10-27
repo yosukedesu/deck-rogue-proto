@@ -1,0 +1,29 @@
+{
+  "revision": 199,
+  "state": "independent196 neutral caster trial pending native/art",
+  "exact_definition": "green_catalyst_echo",
+  "actual_type": "spell",
+  "original_tuple": "card/minimal_neutral_contact/BoundedContactFx/neutral/FixedSmallfalse/noSmallpolicy",
+  "rule": "actualcost1, singleDamage4; catalyst crafting metadata is not extra hit",
+  "source_design": "intentional home caster gather and compact curved pressure delivery, then one receiving compression/release; no botanical/seed/sound-ring/weapon inference",
+  "registry": "explicit appended ElementalVfxFamily.NeutralPressure; Elemental table describes spell infrastructure, material remains neutral",
+  "factory": "dedicated early Create dispatch; no weapon/frame/origin/trace/remote callbacks; actual ConfigureSource emitter and SourceGesture only",
+  "audio": "ordinary existing audio retained; no new AuthoredAttack handstyle or Water/Fire onsetaudio",
+  "baseline": "actual197 legacy263PASS, homeidle/no clear outgoing body, receiver graywash; this upgrades source cue, not motion equivalence",
+  "gates": [
+    "actual positive-age receipt committed/exact",
+    "home source and null weapon callbacks",
+    "source gathering then launch frozen registration",
+    "single contact/release and no false plant/light ray",
+    "actual Small/normal intensity unchanged",
+    "blocked/lethal/retarget/reuse scoped negatives",
+    "old cast/Pierce unchanged"
+  ],
+  "excluded": [
+    "unselected197/198 Brute changes",
+    "five future neutral aliases",
+    "all neutral spell pool",
+    "generic route fallback"
+  ],
+  "publication": "not authorized to push"
+}

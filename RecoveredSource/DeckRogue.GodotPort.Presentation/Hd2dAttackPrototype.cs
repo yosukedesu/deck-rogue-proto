@@ -129,6 +129,7 @@ internal static class Hd2dAttackPrototype
     {
         if(!SupportsRoute(route)) return null;
         if(PhysicalVfxProfiles.ForRoute(route.Key)?.Material==PhysicalVfxMaterial.Wood)return CreateWoodBlunt(route);
+        if(ElementalVfxProfiles.ForRoute(route.Key)?.Family==ElementalVfxFamily.NeutralPressure)return CreateNeutralCastPressure(route);
         if(ElementalVfxProfiles.ForRoute(route.Key)?.Family==ElementalVfxFamily.WaterWide)return CreateRollingWater(route);
         if(PhysicalVfxProfiles.ForRoute(route.Key)?.Family==PhysicalVfxFamily.ConvergingPressure)return CreateOpposedPressure(route);
         if(PhysicalVfxProfiles.ForRoute(route.Key)?.Family==PhysicalVfxFamily.OpticalBind)return CreateOpticalBind(route);
@@ -440,6 +441,97 @@ internal static class Hd2dAttackPrototype
         return effect;
     }
 
+    // Material reuse only: no Burn event/stack or caster source is manufactured.
+    // Exact installed botanical source: local material only. No weapon/caster
+    // callbacks, approach, projectile, bind loop or precontact body is created.
+    internal static NativeEffect CreateInstalledPlantContact()
+    {
+        var fibres=new Layer(0,20);var edge=new Layer(0,20);
+        var leaves=new Layer(0,19);var core=new Layer(0,14);float age=0;
+        var effect=new NativeEffect {Shader="Hd2dPrototype",Palette="hd2d-vegetal-cut",
+            Batches=new[]{fibres.Batch,edge.Batch,leaves.Batch,core.Batch},VisualAge=()=>age,
+            TargetPeak=.035f,FloorPeak=0,StageFocus=()=>0f,
+            Light=()=>age<0?0:MathF.Exp(-age/.065f),FloorLight=()=>0f};
+        effect.Sample=t=>{
+            age=(float)t;fibres.Reset();edge.Reset();leaves.Reset();core.Reset();
+            if(age<0 || age>.32f)return;
+            float close=Ease(age/.075f),release=Ease((age-.055f)/.15f);
+            float alpha=1-Ease((age-.065f)/.16f);
+            Vector3 center=new(.025f,.075f,.035f);
+            for(int i=0;i<3;i++)
+            {
+                // Enemy receiver's near-side exterior, not a green stripe
+                // across the hurt-lit neck. The inward tips stay at contact.
+                Vector3 reach=i==0?new(-.76f,.24f,0):i==1?new(-.62f,-.28f,0):new(.16f,.49f,0);
+                Vector3 start=center+reach*(1-.14f*close);
+                Vector3 end=center+new Vector3(i==0?-.045f:i==1?-.065f:.015f,i==0?.025f:i==1?-.025f:.045f,0);
+                Vector3 bend=(start+end)*.5f+new Vector3(i==2?-.10f:-.045f,i==0?.17f:i==1?-.15f:.055f,0);
+                start=start.Lerp(end,release*.33f);
+                Vector3 At(float u)=>(1-u)*(1-u)*start+2*(1-u)*u*bend+u*u*end;
+                for(int j=0;j<10;j++)
+                {
+                    float u=j/10f,v=(j+1)/10f;
+                    Vector3 a=At(u),b=At(v),d=(b-a).Normalized(),n=new(-d.Y,d.X,0);
+                    float width=(i==0?.058f:i==1?.049f:.038f)*(1-.65f*release);
+                    float wa=width*MathF.Max(0,MathF.Sin(u*MathF.PI));
+                    float wb=width*MathF.Max(0,MathF.Sin(v*MathF.PI));
+                    int first=fibres.N;
+                    fibres.Quad(a-n*wa,b-n*wb,b+n*wb,a+n*wa,alpha*(.94f-i*.08f),1,1.05f);
+                    // One continuous fibre UV, not ten independently faded tiles.
+                    fibres.UV[first]=new(u,0);fibres.UV[first+1]=new(v,0);fibres.UV[first+2]=new(v,1);
+                    fibres.UV[first+3]=new(u,0);fibres.UV[first+4]=new(v,1);fibres.UV[first+5]=new(u,1);
+                    if(j>3 && j<9)edge.Stroke(a,b,.0035f*(1-release),alpha*.40f,2);
+                }
+            }
+            core.Sprite(center,.085f,.060f,.2f,MathF.Exp(-age/.035f)*.42f,3);
+            for(int i=0;i<2;i++)
+            {
+                float dt=age-(.065f+i*.025f);if(dt<0)continue;
+                float side=i==0?1:-1;
+                Vector3 pos=center+new Vector3((i==0?-.64f:-.47f)-dt*.16f,
+                    (i==0?.20f:-.19f)-dt*.16f-dt*dt*1.7f,.014f);
+                float fade=Ease(dt/.025f)*(1-Ease((dt-.095f)/.14f));
+                float turn=.28f+.72f*MathF.Abs(MathF.Cos(dt*14+i));
+                leaves.Leaf(pos,.065f,.027f*turn,side*(.6f+dt*7),fade*.72f);
+            }
+        };
+        return effect;
+    }
+
+    // Passive installed Static reuses only selected lightning's receiving
+    // surface and cooling forks. The Izzet card factory remains independent:
+    // no source channel, caster/weapon callback, negative body or floor field.
+    internal static NativeEffect CreateInstalledLightningContact()
+    {
+        var contact=new Layer(0,3,"lightning-discharge-surface-r2");
+        var broken=new Layer(0,3,"lightning-discharge-surface-r2");
+        var forks=new Layer(0,21);var channel=new Layer(0,1);float age=0;
+        var effect=new NativeEffect {Shader="Hd2dPrototype",Palette="hd2d-lightning",
+            Batches=new[]{contact.Batch,broken.Batch,forks.Batch,channel.Batch},VisualAge=()=>age,
+            TargetPeak=.035f,FloorPeak=0,StageFocus=()=>0f,
+            Light=()=>age<0?0:1-Ease(age/.085f),FloorLight=()=>0f};
+        effect.Sample=t=>{
+            age=(float)t;contact.Reset();broken.Reset();forks.Reset();channel.Reset();
+            if(age<0 || age>.20f)return;
+            float release=Ease((age-.025f)/.065f),clear=1-Ease((age-.075f)/.105f);
+            contact.MaterialRegion(new(.015f,.035f,.025f),.52f,.48f,.11f,(1-release)*.92f,new(0,0),new(.5f,1),1.05f);
+            broken.MaterialRegion(new(.015f,.035f,.027f),.52f+.045f*release,.48f+.03f*release,.11f,release*clear*.8f,new(.5f,0),new(.5f,1),1.0f);
+            for(int i=0;i<5;i++) {
+                float a=-1.1f+i*1.19f,r=.17f+.045f*(i%3),fade=clear*(.55f+.08f*(i%3));
+                Vector3 dir=new(MathF.Cos(a),MathF.Sin(a),0),side=new(-dir.Y,dir.X,0);
+                Vector3 p=dir*(r+.07f*release)+new Vector3(.02f,.025f,.035f);
+                Vector3 q=p+dir*(.12f+.035f*(i%2))+side*.055f;
+                Vector3 z=q+dir*.075f-side*.065f;
+                forks.Stroke(p,q,.013f,fade*.48f,1);forks.Stroke(q,z,.009f,fade*.36f,2);
+                channel.Stroke(p,q,.0035f,fade*.75f,3);channel.Stroke(q,z,.0022f,fade*.5f,2);
+            }
+        };
+        return effect;
+    }
+
+    internal static NativeEffect CreateInstalledFireContact()=>CreateBurnStatus();
+    internal static NativeEffect CreateInstalledDarkContact(AttackRoute route)=>CreateDark(route,true);
+
     internal static NativeEffect CreateBurnStatus()
     {
         var body=new Layer(0,0,"hd2d-fire-volume-02");var cooling=new Layer(0,15,"hd2d-fire-volume-04");
@@ -467,6 +559,202 @@ internal static class Hd2dAttackPrototype
                 float opacity=Ease(dt/.018f)*(1-Ease((age-.09f)/.11f));
                 embers.Taper(pos-velocity.Normalized()*(i==0?.045f:.027f),pos,i==0?.013f:.009f,opacity*.75f,2);
             }
+        };
+        return effect;
+    }
+
+    private static NativeEffect CreateNeutralCastPressure(AttackRoute route)
+    {
+        var packet=new Layer(0,21);var sheets=new Layer(0,21);var edge=new Layer(0,21);
+        var core=new Layer(0,14);var flecks=new Layer(0,22);
+        var pressure=new Layer(0,3,"hd2d-stomp-pressure-v1");
+        Vector3 source=new(-1,0,0);float age=0;bool gesture=true;
+        var effect=new NativeEffect {
+            Shader="Hd2dPrototype",Palette="hd2d-strike",
+            Batches=new[]{packet.Batch,core.Batch,pressure.Batch,sheets.Batch,edge.Batch,flecks.Batch},
+            ConfigureSource=v=>source=v,ConfigureSourceGesture=v=>gesture=v,VisualAge=()=>age,
+            TargetPeak=.075f,FloorPeak=.09f,
+            StageFocus=()=>Ease((age+.25f)/.12f)*(1-Ease((age-.08f)/.25f)),
+            Light=()=>age<0?.12f*Ease((age+.26f)/.10f):MathF.Exp(-age/.085f),
+            FloorLight=()=>age<0?0:MathF.Exp(-age/.15f)*.28f
+        };
+        void Curve(Layer layer,Vector3 a,Vector3 c,Vector3 b,float width,float opacity,int role)
+        {
+            Vector3 At(float u)=>(1-u)*(1-u)*a+2*(1-u)*u*c+u*u*b;
+            for(int k=0;k<10;k++)
+            {
+                float u=k/10f,v=(k+1)/10f;Vector3 p=At(u),q=At(v),d=(q-p).Normalized(),n=new(-d.Y,d.X,0);
+                float w=width*MathF.Sin(u*MathF.PI),z=width*MathF.Sin(v*MathF.PI);
+                int first=layer.N;layer.Quad(p-n*w,q-n*z,q+n*z,p+n*w,opacity,role,1f);
+                layer.UV[first]=new(u,0);layer.UV[first+1]=new(v,0);layer.UV[first+2]=new(v,1);
+                layer.UV[first+3]=new(u,0);layer.UV[first+4]=new(v,1);layer.UV[first+5]=new(u,1);
+            }
+        }
+        void Lens(Vector3 center,Vector3 axis,Vector3 normal,float length,float width,float opacity)
+        {
+            // A soft, filled pressure packet supports the curved edge. Unequal
+            // shoulders and double-ended taper avoid a flying slash or solid orb.
+            for(int k=0;k<12;k++)
+            {
+                float u=k/12f,v=(k+1)/12f;
+                Vector3 a=center+axis*((u-.5f)*length),b=center+axis*((v-.5f)*length);
+                float wa=width*MathF.Pow(MathF.Max(0f,MathF.Sin(u*MathF.PI)),.65f),wb=width*MathF.Pow(MathF.Max(0f,MathF.Sin(v*MathF.PI)),.65f);
+                int first=packet.N;
+                packet.Quad(a-normal*wa*.72f,b-normal*wb*.72f,b+normal*wb,a+normal*wa,opacity,2,.95f);
+                packet.UV[first]=new(u,0);packet.UV[first+1]=new(v,0);packet.UV[first+2]=new(v,1);
+                packet.UV[first+3]=new(u,0);packet.UV[first+4]=new(v,1);packet.UV[first+5]=new(u,1);
+            }
+        }
+        effect.Sample=t=>{
+            age=(float)t;packet.Reset();sheets.Reset();edge.Reset();core.Reset();flecks.Reset();pressure.Reset();
+            if(age<-.29f||age>.43f)return;
+            Vector3 axis=new(-source.X,-source.Y,0);if(axis.LengthSquared()<.001f)axis=Vector3.Right;else axis=axis.Normalized();
+            Vector3 normal=new(-axis.Y,axis.X,0);
+            if(age<0)
+            {
+                if(!gesture)return;
+                if(age<-.18f)
+                {
+                    float gather=Ease((age+.28f)/.10f),span=.18f-.065f*gather;
+                    Lens(source+axis*.085f+normal*.015f,axis,normal,.19f,.085f,gather*.62f);
+                    Curve(sheets,source-axis*span-normal*.10f,source+axis*.10f-normal*.02f,source-axis*.025f+normal*.13f,
+                        .019f,gather*.64f,2);
+                    Curve(edge,source-axis*.12f+normal*.075f,source+axis*.045f+normal*.015f,source+axis*.025f-normal*.085f,
+                        .011f,gather*.44f,3);
+                    core.Sprite(source,.09f,.065f,0,gather*.13f,2,.9f);return;
+                }
+                float u=Ease((age+.18f)/.18f);
+                Vector3 head=source.Lerp(new Vector3(0,.015f,.035f),u)+Vector3.Up*(MathF.Sin(u*MathF.PI)*.09f);
+                float packetSpread=.075f+.025f*MathF.Sin(u*MathF.PI);
+                Lens(head-axis*.065f+normal*.012f,axis,normal,.32f,.135f,.74f);
+                Curve(sheets,head-axis*.25f-normal*packetSpread,head-axis*.045f+normal*packetSpread*.35f,head+axis*.045f,
+                    .026f,.82f,2);
+                Curve(sheets,head-axis*.18f+normal*packetSpread*.8f,head+normal*.02f,head+axis*.035f-normal*.025f,
+                    .018f,.60f,1);
+                Curve(edge,head-axis*.15f-normal*.025f,head-axis*.025f+normal*.045f,head+axis*.035f,
+                    .009f,.76f,3);
+                core.Sprite(head-axis*.055f,.13f,.065f,MathF.Atan2(axis.Y,axis.X),.16f,2,.95f);
+                return;
+            }
+            float peak=1-Ease((age-.035f)/.115f),open=Ease(age/.095f);
+            Vector3 center=new(0,.025f,.035f);float angle=MathF.Atan2(axis.Y,axis.X);
+            pressure.Anchored(center,new(.50f,.78f),.28f+.12f*open,.23f+.12f*open,angle-.45f,peak*.75f,1.05f);
+            Curve(sheets,center-axis*.13f-normal*(.12f+.15f*open),center+axis*(.16f+.08f*open),center-axis*.09f+normal*(.15f+.13f*open),
+                .043f*(1-.4f*open),peak*.80f,2);
+            Curve(edge,center-axis*.075f-normal*.10f,center+axis*.12f,center-axis*.035f+normal*.12f,
+                .019f,MathF.Exp(-age/.052f)*.75f,3);
+            core.Sprite(center,.21f,.16f,angle,MathF.Exp(-age/.05f)*.28f,2,1f);
+            for(int i=0;i<4;i++)
+            {
+                float dt=age-.045f-i*.013f;if(dt<0)continue;
+                Vector3 velocity=axis*(.25f+.13f*(i%2))+normal*(i%2==0?.65f:-.43f);
+                Vector3 pos=center+normal*((i-1.5f)*.055f)+velocity*dt+Vector3.Down*(dt*dt*.7f);
+                flecks.Sprite(pos,.014f+(i==0?.008f:0),.009f,i*.61f,(1-Ease(dt/.20f))*.48f,2,.9f);
+            }
+        };
+        return effect;
+    }
+
+    internal static NativeEffect CreateEnemyNeutralContact()
+    {
+        // Exact receiving-side neutral pressure; the real enemy action supplies
+        // anticipation. No breath, sonic ring, projectile or negative-age body.
+        var body=new Layer(0,21);
+        var core=new Layer(0,14);var remnants=new Layer(0,2);
+        Vector3 source=Vector3.Right;float age=0;
+        var effect=new NativeEffect {
+            Shader="Hd2dPrototype",Palette="hd2d-ordinary-guard",
+            Batches=new[]{body.Batch,core.Batch,remnants.Batch},
+            ConfigureSource=v=>source=v,VisualAge=()=>age,TargetPeak=.065f,FloorPeak=0f,
+            StageFocus=()=>0f,Light=()=>age<0?0:MathF.Exp(-age/.065f),FloorLight=()=>0f
+        };
+        effect.Sample=t=>{
+            age=(float)t;body.Reset();core.Reset();remnants.Reset();
+            if(age<0||age>.28f)return;
+            Vector3 outward=new(source.X,source.Y,0);
+            if(outward.LengthSquared()<.001f)outward=Vector3.Right;else outward=outward.Normalized();
+            Vector3 normal=new(-outward.Y,outward.X,0);
+            Vector3 center=outward*.15f+new Vector3(0,.045f,.035f);
+            // The seed/core stays at the committed receiver point. Register the
+            // soft shoulder outside the attacker-facing silhouette, not over hurt-white.
+            Vector3 shoulder=center+outward*.40f;
+            float close=Ease(age/.065f),release=Ease((age-.045f)/.14f);
+            float opacity=1-Ease((age-.035f)/.16f);
+            // One connected soft pressure body bridges the locked seed to its
+            // exterior shoulder. The old separated flecks are release only.
+            float length=.61f-.12f*close,width=.14f*(1-.60f*release);
+            for(int k=0;k<12;k++)
+            {
+                float u=k/12f,v=(k+1)/12f;
+                Vector3 p=center+outward*(u*length),q=center+outward*(v*length);
+                float wp=width*MathF.Pow(MathF.Max(0f,MathF.Sin(u*MathF.PI)),.65f);
+                float wq=width*MathF.Pow(MathF.Max(0f,MathF.Sin(v*MathF.PI)),.65f);
+                int first=body.N;
+                body.Quad(p-normal*wp*.66f,q-normal*wq*.66f,q+normal*wq,p+normal*wp,opacity*.78f,1);
+                body.UV[first]=new(u,0);body.UV[first+1]=new(v,0);body.UV[first+2]=new(v,1);
+                body.UV[first+3]=new(u,0);body.UV[first+4]=new(v,1);body.UV[first+5]=new(u,1);
+            }
+            if(age>.065f)
+            {
+                float dt=age-.065f;
+                for(int i=0;i<3;i++)
+                {
+                    float angle=i==0?.63f:i==1?-.82f:.08f;
+                    Vector3 direction=outward*MathF.Cos(angle)+normal*MathF.Sin(angle);
+                    Vector3 pos=shoulder+direction*(.12f+i*.020f+dt*.24f)+Vector3.Down*(dt*dt*1.3f);
+                    remnants.Taper(pos+direction*.035f,pos,.008f,(1-Ease((dt-.025f)/.13f))*.48f,2);
+                }
+            }
+            core.Sprite(center,.12f,.085f,0,MathF.Exp(-age/.04f)*.30f,3);
+        };
+        return effect;
+    }
+
+    internal static NativeEffect CreateEnemyBlunt()
+    {
+        // Receiving-side pressure only. The real enemy animation supplies all
+        // anticipation; no weapon trace, remote projectile or negative-age hit.
+        var pressure=new Layer(0,3,"hd2d-stomp-pressure-v1");
+        var body=new Layer(0,7);var edge=new Layer(0,1);
+        var chips=new Layer(0,2);var air=new Layer(0,4);var warmth=new Layer(0,14);
+        Vector3 source=new(1,0,0);float age=0;
+        var effect=new NativeEffect {
+            Shader="Hd2dPrototype",Palette="hd2d-strike",
+            Batches=new[]{air.Batch,warmth.Batch,pressure.Batch,body.Batch,edge.Batch,chips.Batch},
+            ConfigureSource=v=>source=v,VisualAge=()=>age,TargetPeak=.10f,FloorPeak=0f,
+            StageFocus=()=>0f,Light=()=>age<0?0:MathF.Exp(-age/.075f),FloorLight=()=>0f
+        };
+        effect.Sample=t=>{
+            age=(float)t;pressure.Reset();body.Reset();edge.Reset();chips.Reset();air.Reset();warmth.Reset();
+            if(age<0||age>.31f)return;
+            Vector3 outward=new(source.X,source.Y,0);
+            if(outward.LengthSquared()<.001f)outward=Vector3.Right;else outward=outward.Normalized();
+            Vector3 normal=new(-outward.Y,outward.X,0);
+            Vector3 center=outward*.17f+new Vector3(0,.025f,.035f);
+            Vector3 At(float x,float y)=>center+outward*x+normal*y;
+            float peak=1-Ease((age-.035f)/.115f),open=Ease(age/.055f);
+            float angle=MathF.Atan2(outward.Y,outward.X);
+            pressure.Anchored(center,new(.50f,.78f),.31f+.10f*open,.24f+.08f*open,
+                angle-.52f,peak*.88f,1.05f);
+            warmth.Sprite(At(.06f,.07f),.25f,.18f,angle+.35f,
+                MathF.Exp(-age/.045f)*.30f,2,1f);
+            body.Taper(At(-.08f,-.07f),At(.25f,.18f),.075f,peak*.85f,3,1.05f);
+            body.Taper(At(-.04f,.025f),At(.08f,.27f),.048f,peak*.58f,2,1f);
+            edge.Taper(At(-.06f,-.015f),At(.17f,.09f),.030f,
+                MathF.Exp(-age/.045f)*.8f,3,1.1f);
+            for(int i=0;i<5;i++)
+            {
+                float birth=.028f+i*.009f,dt=age-birth;if(dt<0)continue;
+                float a=i==0?.31f:i==1?1.03f:i==2?-.76f:i==3?1.64f:-.22f;
+                Vector3 direction=outward*MathF.Cos(a)+normal*MathF.Sin(a);
+                Vector3 pos=At(.07f,.025f)+direction*(.06f+dt*(i<2?1.35f:.83f))
+                    +Vector3.Down*(dt*dt*1.15f);
+                float fade=1-Ease(dt/(i<2?.19f:.14f));
+                chips.Taper(pos-direction*(i<2?.115f:.040f)*(1-Ease(dt/.22f)),pos,
+                    i<2?.017f:.007f,fade*(i<2?.72f:.38f),i<2?3:2,1f);
+            }
+            float haze=Ease((age-.075f)/.045f)*(1-Ease((age-.12f)/.15f));
+            air.Dust(At(.13f+age*.15f,-.06f-age*.12f),.12f+age*.14f,.065f+age*.10f,haze*.10f);
         };
         return effect;
     }

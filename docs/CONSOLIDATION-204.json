@@ -1,0 +1,28 @@
+{
+  "revision": 204,
+  "base": 200,
+  "selected_addition": 201,
+  "scope": "Exact direct green_catalyst_echo neutral SPELL caster; preserve all selected200 source contexts and enemy blunt/pierce gates.",
+  "runtime_changes": [
+    "ElementalVfxProfiles.cs exact201",
+    "Hd2dAttackPrototype.cs exact201 dedicated neutral method and dispatch added to200; removing additions recovers200 byte-for-byte"
+  ],
+  "inherited_201": {
+    "clean_hosts": 6,
+    "checks": 1770,
+    "exit_codes": 0,
+    "art": "standard and four bounded gates closed",
+    "notice": "Retarget lethal shutdown ObjectDB/resource notice retained",
+    "nonnegative_material_samples_committed_exact": 64
+  },
+  "limitations": [
+    "Direct PlayCard context only; no neutral nested continuation certification",
+    "Gather remains understated",
+    "No future Git publication authorized"
+  ],
+  "excluded": [
+    202,
+    203
+  ],
+  "fresh_merge_gate": "Pending actual Echo plus loaded200 source/profile retention assertions; terminal QA receipt supersedes this pending status."
+}

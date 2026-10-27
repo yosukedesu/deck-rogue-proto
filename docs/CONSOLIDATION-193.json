@@ -1,0 +1,47 @@
+{
+  "revision": 193,
+  "state": "selected-inheritance-awaiting-fresh-merge",
+  "base": "selected192; published8834bd18e9d09278cc0b49c1dc9515f4ad06670f",
+  "runtime_delta": "EnemyContactVfxProfiles exact188 only",
+  "new_pairs": [
+    "enemy_probe/lunge",
+    "enemy_rock_beetle/horn_jab",
+    "enemy_bond_wolf/lunge",
+    "enemy_elite_gold_raven/peck",
+    "enemy_haze_stag/antler_jab",
+    "enemy_haze_stag/antler_charge"
+  ],
+  "existing_pair_retained": "enemy_probe/poke",
+  "shared_scope": "single actual execution, matching actor/move/event/one captured contribution and valid player receipt; strict EffectiveActual==Amount retained",
+  "limits": [
+    "modest local incoming contact refinement; existing enemy motion/timing remains source",
+    "not premium enemy animation or byte-identical native actor transforms",
+    "legacy companion/prior multihit projection tested as prerequisite only, not admitted",
+    "no blanket enemy family/modifier admission"
+  ],
+  "inherits188": {
+    "clean_hosts": 4,
+    "clean_checks": 3773,
+    "completed_first_two_prefix_checks": 1419,
+    "partial_host_status": "Probe/Beetle completed within failed standard-b host; not relabelled clean",
+    "focused_bounds": {
+      "partial_Block_and_lifecycle": 601,
+      "real_two_Blue_Guard_Ice10_full_absorption": 498
+    },
+    "art": "Beetle/Stag sheets and corrected-observer Stag cycle selected as modest local-contact compatibility",
+    "qa_corrections": "legacy projected multihit expectation, movie resource observer and partial absorption classifier corrections retained separately; no product changes"
+  },
+  "retains192": [
+    "Rooting caster anchor and curved fibres",
+    "all selected installed/reaction/card scopes",
+    "Wedge cadence.26",
+    "primary continuation and receipt caps"
+  ],
+  "fresh_required": "one actual new enemy pair plus loaded Rooting caster/selected installed/reaction predicates; no unrelated repeated matrix",
+  "excluded": [
+    "191 three-reaction candidate",
+    "legacy multihit admission"
+  ],
+  "media": "existing182 unchanged; later representative progress requires final exact-source capture",
+  "publication": "No future push authorization inferred from192 publication"
+}

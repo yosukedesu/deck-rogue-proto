@@ -1,0 +1,29 @@
+{
+  "revision": 203,
+  "state": "conditional on201family gates and actual per-ID source/rider witnesses",
+  "base": 201,
+  "new_exact_ids": [
+    "black_grave_burst",
+    "black_withering_curse",
+    "blue_weight_of_wisdom",
+    "blue_knowledge_torrent",
+    "blue_omniscient_blow"
+  ],
+  "runtime_delta": "ElementalVfxProfiles explicit exact5 mapping only; casterfactory/geometry/timing unchanged201",
+  "source": "allactualSPELL/full authored neutral sourcecontexts, no material inferred fromlegacydark/water orcardname",
+  "boundaries": {
+    "GraveBurst": "actualexhaustpile4\u219218,5\u219230 beforeprimaryownlaterexhaust; real0costPrayer prerequisites",
+    "WitheringCurse": "Weak2 then8damage, not2hits",
+    "Wisdom": "2timesremaininghand afterprimaryremoval; actualsolehand0 negative",
+    "Knowledge": "3timesremaininghand THENdraw1, notafterdraw amount",
+    "Omniscient": "5timesremaininghand actualcost3"
+  },
+  "efficient_gate": "sharedcaster/commit/nooffence/reuse invariants once; eachID actualengine/native proof, actualGrave30Large representative; no5repeatedmatrix",
+  "retains": "all196 selected scopes only; independentbranch excludes198/200/202 until explicitmerge",
+  "limits": [
+    "directPlayCard representative context; nestedNeutralPressure untested",
+    "no AoE/X/modes/dynamicchains",
+    "no ordinaryIzzetBurst orSkullcardsource admission"
+  ],
+  "publication": "notauthorizednewpush"
+}

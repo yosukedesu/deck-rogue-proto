@@ -2,7 +2,7 @@ namespace DeckRogue.GodotPort.Presentation;
 
 // Spell materials and motion stay distinct from physical contact families.
 // This registry shares only event-relative phase and ownership infrastructure.
-internal enum ElementalVfxFamily { Fire, Water, Ice, Light, Dark, LightScatter, EarthFracture, WaterWide, IceScatter }
+internal enum ElementalVfxFamily { Fire, Water, Ice, Light, Dark, LightScatter, EarthFracture, WaterWide, IceScatter, NeutralPressure }
 internal sealed record ElementalVfxProfile(string CardId, ElementalVfxFamily Family,
     AttackVfxPhases Phases, SourceShowcaseProfile Motion, float LaunchLead, float TargetSpacing=0f);
 internal static class ElementalVfxProfiles
@@ -74,8 +74,24 @@ internal static class ElementalVfxProfiles
     // events, never extra outgoing hits or a stolen-heal return connection.
     private static readonly ElementalVfxProfile CorpseCollect = Dark with { CardId="black_corpse_collect" };
     private static readonly ElementalVfxProfile WaveReadStrike = Water with { CardId="blue_wave_read_strike" };
+    // Explicit ordinary neutral SPELL. Registry name does not imply elemental
+    // coating; no plant/seed/projectile anatomy is inferred from its card name.
+    private static readonly ElementalVfxProfile NeutralEcho = new("green_catalyst_echo",ElementalVfxFamily.NeutralPressure,
+        new(.40f,.28f,.28f,.42f),new(.40f,.14f,.22f,.22f,.42f,.06f,.055f,.025f,.075f),.18f);
+    // Exact authored neutral single SPELL contexts, never legacy dark/water recoloring.
+    private static readonly ElementalVfxProfile NeutralGraveBurst = NeutralEcho with { CardId="black_grave_burst" };
+    private static readonly ElementalVfxProfile NeutralWitheringCurse = NeutralEcho with { CardId="black_withering_curse" };
+    private static readonly ElementalVfxProfile NeutralWisdom = NeutralEcho with { CardId="blue_weight_of_wisdom" };
+    private static readonly ElementalVfxProfile NeutralKnowledge = NeutralEcho with { CardId="blue_knowledge_torrent" };
+    private static readonly ElementalVfxProfile NeutralOmniscient = NeutralEcho with { CardId="blue_omniscient_blow" };
+    // Exact direct card neutral sources; automatic Skull necro remains separately owned Dark.
+    private static readonly ElementalVfxProfile NeutralWhisperGhost = NeutralEcho with { CardId="black_whispering_ghost" };
+    private static readonly ElementalVfxProfile NeutralDirectSkull = NeutralEcho with { CardId="black_groaning_skull" };
+    private static readonly ElementalVfxProfile NeutralPageWind = NeutralEcho with { CardId="blue_page_wind" };
+    private static readonly ElementalVfxProfile NeutralRootingRush = NeutralEcho with { CardId="green_rooting_rush" };
+    private static readonly ElementalVfxProfile NeutralAftermath = NeutralEcho with { CardId="blue_aftermath" };
     internal static ElementalVfxProfile? ForCard(string? id)=>id switch
-    { "black_corpse_collect"=>CorpseCollect,"blue_wave_read_strike"=>WaveReadStrike,"black_feast"=>Feast,"fusion_tide_stance"=>TideStance,"blue_ice_hail"=>IceHail,"white_light_lance"=>LightLance,"white_light_torrent"=>LightTorrent,"blue_storm_lash"=>StormLash,"blue_tsunami"=>Tsunami,"blue_tide_surge"=>TideSurge,"blue_catalyst_echo"=>CatalystEcho,"white_light_dart"=>LightDart,"white_light_volley"=>LightVolley,"blue_rolling_wave"=>RollingWave,"green_earth_roar"=>EarthRoar,"red_strike"=>Fire,"red_spreading_fire"=>SpreadingFire,"red_double_tap"=>DoubleTap,"blue_strike"=>Water,"blue_ice_lance"=>Ice,"blue_tide_drop"=>TideDrop,"blue_rapid_strike"=>RapidStrike,
+    { "black_whispering_ghost"=>NeutralWhisperGhost,"black_groaning_skull"=>NeutralDirectSkull,"blue_page_wind"=>NeutralPageWind,"green_rooting_rush"=>NeutralRootingRush,"blue_aftermath"=>NeutralAftermath,"black_grave_burst"=>NeutralGraveBurst,"black_withering_curse"=>NeutralWitheringCurse,"blue_weight_of_wisdom"=>NeutralWisdom,"blue_knowledge_torrent"=>NeutralKnowledge,"blue_omniscient_blow"=>NeutralOmniscient,"green_catalyst_echo"=>NeutralEcho,"black_corpse_collect"=>CorpseCollect,"blue_wave_read_strike"=>WaveReadStrike,"black_feast"=>Feast,"fusion_tide_stance"=>TideStance,"blue_ice_hail"=>IceHail,"white_light_lance"=>LightLance,"white_light_torrent"=>LightTorrent,"blue_storm_lash"=>StormLash,"blue_tsunami"=>Tsunami,"blue_tide_surge"=>TideSurge,"blue_catalyst_echo"=>CatalystEcho,"white_light_dart"=>LightDart,"white_light_volley"=>LightVolley,"blue_rolling_wave"=>RollingWave,"green_earth_roar"=>EarthRoar,"red_strike"=>Fire,"red_spreading_fire"=>SpreadingFire,"red_double_tap"=>DoubleTap,"blue_strike"=>Water,"blue_ice_lance"=>Ice,"blue_tide_drop"=>TideDrop,"blue_rapid_strike"=>RapidStrike,
       "blue_current_lash"=>CurrentLash,"blue_frost_thorn"=>FrostThorn,"white_strike"=>Light,"white_shield_strike"=>ShieldStrike,
       "white_light_glint"=>LightGlint,"white_light_bolt"=>LightBolt,"white_mode_crossroad"=>ModeCrossroad,"black_drain"=>Dark,"black_big_drain"=>BigDrain,"black_blood_thirst"=>BloodThirst,"black_wraith_feast"=>WraithFeast,"black_corpse_kiss"=>CorpseKiss,"white_light_spray"=>LightSpray,_=>null };
     internal static ElementalVfxProfile? ForRoute(string? key)=>

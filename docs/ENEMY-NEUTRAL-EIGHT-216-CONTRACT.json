@@ -1,0 +1,137 @@
+{
+  "revision": 216,
+  "base": 214,
+  "status": "conditional untested exact pair allowlist; not selected until native and representative art gates",
+  "scope": "Eight neutral enemy single-hit contexts, unchanged selected local contact/material/cap/source policy. Not name-derived breath/acid/tongue/ring/projectile or new source animation.",
+  "keys": [
+    "enemy:enemy_apprentice_colossus/swing",
+    "enemy:enemy_slug/lick",
+    "enemy:enemy_slug/acid_spit",
+    "enemy:enemy_cog_construct/repeater",
+    "enemy:enemy_iron_clam/jet",
+    "enemy:enemy_frog_knight/tongue_lash",
+    "enemy:enemy_frog_knight/strike_down",
+    "enemy:enemy_warden/bell_hushed"
+  ],
+  "fixtures": [
+    {
+      "key": "enemy:enemy_apprentice_colossus/swing",
+      "encounterInput": "enemy_apprentice_colossus",
+      "memberIndex": 0,
+      "targetEndTurn": 1,
+      "realPriorSequence": [
+        {
+          "node": "swing",
+          "move": "swing"
+        }
+      ],
+      "caveat": "Initial startingBlock8 does not alter outgoing amount; no companion or interrupt."
+    },
+    {
+      "key": "enemy:enemy_slug/lick",
+      "encounterInput": "enemy_slug",
+      "memberIndex": 0,
+      "targetEndTurn": 1,
+      "realPriorSequence": [
+        {
+          "node": "lick",
+          "move": "lick"
+        }
+      ],
+      "caveat": "Damage3–4 then playerWeak2. BurnResist2 remains irrelevant without Burn; preserve actual status."
+    },
+    {
+      "key": "enemy:enemy_slug/acid_spit",
+      "encounterInput": "enemy_slug",
+      "memberIndex": 0,
+      "targetEndTurn": 3,
+      "realPriorSequence": [
+        {
+          "node": "lick",
+          "move": "lick"
+        },
+        {
+          "node": "guard",
+          "move": "guard"
+        },
+        {
+          "node": "acid_spit",
+          "move": "acid_spit"
+        }
+      ],
+      "caveat": "Real lick→guard→acid_spit5–7 then Frail1. Prior Weak affects player outgoing, not enemy incoming; no player attack or fake status cleanup."
+    },
+    {
+      "key": "enemy:enemy_cog_construct/repeater",
+      "encounterInput": "enemy_cog_construct",
+      "memberIndex": 0,
+      "targetEndTurn": 1,
+      "realPriorSequence": [
+        {
+          "node": "repeater",
+          "move": "repeater"
+        }
+      ],
+      "caveat": "Damage5–6 then Strength2, initialBlock13/artifact1. Select first repeater only for minimal witness; actual repeated second repeater can show realStrength but is samekey, no newcoverage."
+    },
+    {
+      "key": "enemy:enemy_iron_clam/jet",
+      "encounterInput": "enemy_iron_clam",
+      "memberIndex": 0,
+      "targetEndTurn": 1,
+      "realPriorSequence": [
+        {
+          "node": "jet",
+          "move": "jet"
+        }
+      ],
+      "caveat": "Initial jet8–10; armor5 applies received player damage, no offensive setup. No invented literal water delivery."
+    },
+    {
+      "key": "enemy:enemy_frog_knight/tongue_lash",
+      "encounterInput": "enemy_frog_knight",
+      "memberIndex": 0,
+      "targetEndTurn": 1,
+      "realPriorSequence": [
+        {
+          "node": "tongue_lash",
+          "move": "tongue_lash"
+        }
+      ],
+      "caveat": "Initial12–14 then Frail2. Armor24 preserved; no pre-damage. No halfHP interrupt definition; later conditional beetle_charge after guard excluded."
+    },
+    {
+      "key": "enemy:enemy_frog_knight/strike_down",
+      "encounterInput": "enemy_frog_knight",
+      "memberIndex": 0,
+      "targetEndTurn": 2,
+      "realPriorSequence": [
+        {
+          "node": "tongue_lash",
+          "move": "tongue_lash"
+        },
+        {
+          "node": "strike_down",
+          "move": "strike_down"
+        }
+      ],
+      "caveat": "Real tongue_lash→strike_down18–22; prior Frail affects player Block gains not incoming enemy amount. No Vulnerable predecessor, no playerdefence needed for healthy baseline."
+    },
+    {
+      "key": "enemy:enemy_warden/bell_hushed",
+      "encounterInput": "enemy_warden",
+      "memberIndex": 0,
+      "targetEndTurn": 1,
+      "realPriorSequence": [
+        {
+          "node": "bell_hushed",
+          "move": "bell_hushed"
+        }
+      ],
+      "caveat": "Start bell_hushed13–17. No playercard/damage setup: enrageEveryCards8/enrageEveryDamage80 must remain actual, no forced counters. Keep HP abovehalf to avoid bell_frenzy2hit interrupt; startingBlock15/armor35/turnArmor90 remain actual."
+    }
+  ],
+  "invariants": "Full original tuple, actual actor/move/index/execution-log identity, one contribution, EffectiveActual==Amount, positive actual receipt, negative precommit material cap unchanged. Actual statuses/buffs/HP/AI retained; no forced phase or state resets.",
+  "verification": "Actual eight key/index witnesses across six actor sequences; reuse prior family absorption/lifecycle tests. Few representative active crests plus recovery. No blanket all-neutral admission.",
+  "exclusions": "Reserved215 installed plant representative is not included. No public push or media mutation."
+}
