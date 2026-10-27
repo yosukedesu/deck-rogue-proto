@@ -1,0 +1,57 @@
+{
+  "revision": 222,
+  "base": 221,
+  "status": "unselected Earth-only grounded-fracture trial; no native yet",
+  "card": "green_earth_roar",
+  "rules": "Existing cost2; initial3 actual6 each living target; threshold EnergyMaxAtTurnStart>=5 admits second actual wave. Never infer threshold from same-turn current max gain. No engine/profile/owner/receipt/contact/camera/action changes.",
+  "changes": {
+    "newPrimary": "Single raw asymmetric soil bank in six joined feet-anchored camera-facing strips (Space2), no horizontal translation. Fixed bottom y=.009 and z=.025, raw edge/cross-section stays grounded. Existing ground fissure/lips remain Space1.",
+    "negativePressure": "reveal=.08*Ease((age+.13)/.13) for age<0: at most8% seam; no bank/rocks/dust before0. Existing source focus unchanged.",
+    "fracture": "for age>=0 reveal=.08+.92*Ease(age/.07). Fissure gain1\u2192.72, not increased light.",
+    "bankRise": "rise=Ease(age/.07); sink=1-Ease((age-.17)/.27). Peak nominalheight .253local (.018+.235) plus small damped/seed shape, not a standing wall.",
+    "bankTop": "Height(q)=.018+rise*sink*(.235+.018*sin(q*7+seed)+.009*sin(age*34+q*6)*exp(-age/.11)); bottom fixed .009.",
+    "bankWidth": "halfWidth=.48+.035*sin(seed*1.7); x=(q-.5)*2*halfWidth-.045, invariant over time",
+    "bankAlpha": "Ease(age/.018)*(1-Ease((age-.40)/.17)); gain.82; invisible by .57",
+    "rockHierarchy": "Keep7 unequal ballistic pieces/seed/birth/gravity12.5 and complete descent. Vertical velocity4.25+variation*1.05\u21922.55+variation*.70; two secondary medium pieces size.10+other*.035, otherfive .05+other*.045; opacity*.82/gain.88. These are debris, not additional damage.",
+    "dust": "Birth .09+.015*seedFactor (old .035+...). Lowfeet y=.035+.018*Ease(d/.10), radii .36+d*.62 and .07+d*.06, opacity amount*.48/gain.74. Easein.06, release(.22,.26) bounds; clear before existing .68tail.",
+    "unchanged": "Effect .68tail, all Light/FloorLight/StageFocus/TargetPeak/FloorPeak, source/visual seed callbacks, all other factories/profile/shader/audio/Stage/Actor. No Unity gameplay or GodotUX/APK edits."
+  },
+  "raw": {
+    "path": "assets/Art/fx/hd2d-earth-soil-bank-v1.png",
+    "originalGeneratedPath": "generated_images/exec-119f434e-5b1c-47bf-b2e2-23ed540f1b66.png",
+    "sha256": "1b3f25fd8545398708e85617aa15820c2e616923b652240037ae89ca0155cdfb",
+    "bytes": 670668,
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "tool": "built-in image_gen",
+    "processing": "None: byte-identical copy of original, alpha retained, no crop/recolor/resample",
+    "alphaThreshold8Bounds": [
+      16,
+      498,
+      1238,
+      818
+    ],
+    "uvWindowPixels": {
+      "left": 8,
+      "top": 490,
+      "right": 1246,
+      "bottom": 826
+    },
+    "uvFormula": "u=(8+1238*q)/1254; upperV=490/1254; bottomV=826/1254. Only transparent margins omitted in geometry; raw preserved.",
+    "promptSummary": "One low connected asymmetric dark brown sheared soil bank, broad stratified face and thin broken pale rim, shallow side view, grounded baseline, muted umber/charcoal/slate, no detached debris/glow/ring/lava/scene/text, transparent background."
+  },
+  "comparison": "A immutable221; old126 method and9 material hashes match221 and its original raw scenes are reference only. Current A/B standard3targets and existing actual source/receipt states preferred at sole native QA boundary; no new clone until capacity approval.",
+  "visualAcceptance": [
+    "Ground pressure/rupture is primary, debris supplementary; no pasted cliff/card/opaque rectangle",
+    "Actual bank appears only at committed receiving hit, not negative-age fake hit",
+    "Feet edge remains grounded while upper vertices rise then sink; no whole-bitmap horizontal slide",
+    "Earth remains non-glowing dirt/stone; light intensity unchanged, no magma/magic circle",
+    "Three targets and optional second real wave remain readable; blocked/unhit slots not decorated",
+    "Clear within .68s existing tail; no floating debris fade"
+  ],
+  "minimumPlan": "First standard actual3receiver single wave plus short key/cycle comparison. Only after art closes, scoped true second-wave/repeat and blocked/size compatibility as necessary. No broad alias admission.",
+  "handoff": "One checkpoint groups prototype + unchanged profile/shader with raw/presentation contract/audio unchanged. Stage/BattleActor numerical integration changes: NONE; all new numbers are effect-local mesh geometry and visual-time functions."
+}

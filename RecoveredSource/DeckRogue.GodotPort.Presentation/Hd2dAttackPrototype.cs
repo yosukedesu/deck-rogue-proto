@@ -1086,29 +1086,32 @@ internal static class Hd2dAttackPrototype
     private static NativeEffect CreateEarthFracture(AttackRoute route)
     {
         var fissure=new Layer(1,3,"earth-ground-grain-r2");
-        var lips=new Layer(1,1);var rocks=new Layer(2,2,"hd2d-earth-rock-v1");
+        var lips=new Layer(1,1);var bank=new Layer(1,3,"hd2d-earth-soil-bank-v1");var rocks=new Layer(2,2,"hd2d-earth-rock-v1");
         var dust=new Layer(2,4,"hd2d-earth-dust-v1");var focus=new Layer(0,14);
         Vector3 source=new(-1,0,0);float age=0,seed=0;bool sourceGesture=true;
         var effect=new NativeEffect {
-            Shader="Hd2dPrototype",Palette="hd2d-earth-fracture",Batches=new[]{fissure.Batch,lips.Batch,rocks.Batch,dust.Batch,focus.Batch},
+            Shader="Hd2dPrototype",Palette="hd2d-earth-fracture",Batches=new[]{fissure.Batch,lips.Batch,bank.Batch,rocks.Batch,dust.Batch,focus.Batch},
             TargetPeak=.08f,FloorPeak=.24f,ConfigureSource=v=>source=v,ConfigureSourceGesture=v=>sourceGesture=v,ConfigureVisualSeed=v=>seed=v,VisualAge=()=>age,
             StageFocus=()=>Ease((age+.22f)/.12f)*(1-Ease((age-.14f)/.42f)),
             Light=()=>age<0?0:MathF.Exp(-age/.14f),FloorLight=()=>age<0?0:MathF.Exp(-age/.25f)
         };
         effect.Sample=t=>{
-            age=(float)t;fissure.Reset();lips.Reset();rocks.Reset();dust.Reset();focus.Reset();
+            age=(float)t;fissure.Reset();lips.Reset();bank.Reset();rocks.Reset();dust.Reset();focus.Reset();
             if(age<-.28f||age>.68f)return;
             if(sourceGesture && age<0)
             {
                 float gather=Ease((age+.28f)/.09f)*(1-Ease((age+.06f)/.065f));
                 focus.Sprite(source,.10f,.075f,0,gather*.48f,2,.8f);
             }
-            float reveal=Ease((age+.13f)/.18f),settle=1-Ease((age-.29f)/.37f);
+            // Before the committed hit only a faint pressure seam; the actual
+            // fracture opens at nonnegative age, never a second pre-hit crest.
+            float reveal=age<0?.08f*Ease((age+.13f)/.13f):.08f+.92f*Ease(age/.07f);
+            float settle=1-Ease((age-.29f)/.37f);
             float rx=.80f+.18f*reveal,rz=1.25f+.15f*reveal;
             float phase=seed,angle=.22f*MathF.Sin(phase);
             Vector3 Ground(float x,float z)=>new(x*MathF.Cos(angle)-z*MathF.Sin(angle),.007f,x*MathF.Sin(angle)+z*MathF.Cos(angle)+.40f);
             int first=fissure.N;
-            fissure.Quad(Ground(-rx,-rz),Ground(rx,-rz),Ground(rx,rz),Ground(-rx,rz),reveal*settle,3,1.0f);
+            fissure.Quad(Ground(-rx,-rz),Ground(rx,-rz),Ground(rx,rz),Ground(-rx,rz),reveal*settle,3,.72f);
             // Fixed useful rectangle of the left atlas panel: source alpha occupied
             // only1.74% of the full half, losing its cross-section under ground
             // foreshortening. Ground depth/opacity remain unchanged.
@@ -1132,7 +1135,56 @@ internal static class Hd2dAttackPrototype
                 }
             }
             if(age<0)return;
-            // Unequal independent stone pieces, not a replicated crown bitmap.
+            // Unequal fracture sections hinge from the actual ground, rather
+            // than scaling one camera-facing bank. Empty gaps remain between
+            // the principal near section, lower neighbour and small rear chip.
+            for(int piece=0;piece<3;piece++)
+            {
+                float birth=piece==0?0:piece==1?.045f:.025f,dt=age-birth;if(dt<0)continue;
+                float rise=Ease(dt/.065f);
+                float fallAt=piece==0?.14f:piece==1?.19f:.10f;
+                float fallEnd=piece==0?.38f:piece==1?.43f:.31f;
+                float sink=1-Ease((age-fallAt)/(fallEnd-fallAt));
+                float shape=rise*sink;
+                float opacity=Ease(dt/.018f)*(1-Ease((age-.40f)/.17f));
+                Vector2 origin=piece==0?new(-.28f,-.16f):piece==1?new(.25f,.02f):new(.03f,.31f);
+                float turn=(piece==0?.16f:piece==1?-.31f:.49f)+.10f*MathF.Sin(seed+piece*1.9f);
+                Vector2 along=new(MathF.Cos(turn),MathF.Sin(turn)),away=new(-along.Y,along.X);
+                float length=(piece==0?.48f:piece==1?.30f:.19f)*(1+.05f*MathF.Sin(seed*1.4f+piece));
+                float height=piece==0?.22f:piece==1?.155f:.095f;
+                float depth=piece==0?.105f:piece==1?.075f:.05f;
+                float rawStart=piece==0?.01f:piece==1?.47f:.79f;
+                float rawEnd=piece==0?.43f:piece==1?.75f:.99f;
+                Vector3 Base(float q)
+                {
+                    Vector2 xz=origin+along*((q-.5f)*length);
+                    return Ground(xz.X,xz.Y)+Vector3.Up*.002f;
+                }
+                Vector3 Top(float q)
+                {
+                    Vector2 xz=origin+along*((q-.5f)*length)+away*(depth*shape);
+                    float uneven=.77f+.23f*MathF.Sin(q*2.7f+piece*.8f);
+                    // Bottom is the stationary hinge; the upper edge tips away
+                    // then returns downward, with no whole-sprite translation.
+                    return Ground(xz.X,xz.Y)+Vector3.Up*(.006f+height*shape*uneven);
+                }
+                for(int k=0;k<6;k++)
+                {
+                    float u=k/6f,v=(k+1)/6f;
+                    float edgeU=Ease(u/.20f)*Ease((1-u)/.20f),edgeV=Ease(v/.20f)*Ease((1-v)/.20f);
+                    int n=bank.N;
+                    bank.Quad(Base(u),Base(v),Top(v),Top(u),opacity,3,.82f);
+                    float tu=(8+(rawStart+(rawEnd-rawStart)*u)*1238)/1254;
+                    float tv=(8+(rawStart+(rawEnd-rawStart)*v)*1238)/1254;
+                    float rawTop=490f/1254f,rawBottom=826f/1254f;
+                    bank.UV[n]=new(tu,rawBottom);bank.UV[n+1]=new(tv,rawBottom);bank.UV[n+2]=new(tv,rawTop);
+                    bank.UV[n+3]=new(tu,rawBottom);bank.UV[n+4]=new(tv,rawTop);bank.UV[n+5]=new(tu,rawTop);
+                    bank.A[n]*=edgeU;bank.A[n+1]*=edgeV;bank.A[n+2]*=edgeV;
+                    bank.A[n+3]*=edgeU;bank.A[n+4]*=edgeV;bank.A[n+5]*=edgeU;
+                }
+            }
+            // Unequal supplementary stones keep ballistic descent, now below
+            // the grounded pressure bank's visual hierarchy, never a garland.
             for(int i=0;i<7;i++)
             {
                 float variation=.5f+.5f*MathF.Sin(seed*1.31f+i*2.17f);
@@ -1140,24 +1192,24 @@ internal static class Hd2dAttackPrototype
                 float birth=.016f*other,dt=age-birth;if(dt<0)continue;
                 float side=i%2==0?-1:1;
                 float x=side*(.08f+(i%4)*.12f+other*.13f+dt*(.28f+variation*.55f));
-                float vy=4.25f+variation*1.05f,gravity=12.5f,flight=vy/gravity;
+                float vy=2.55f+variation*.70f,gravity=12.5f,flight=vy/gravity;
                 float y=MathF.Max(.012f,vy*dt-gravity*dt*dt);
-                float size=.11f+other*.105f;
+                float size=(i==0||i==3?.10f:.050f)+other*(i==0||i==3?.035f:.045f);
                 // Complete the visible ballistic descent before a short ground
                 // settle fade; never evaporate a hovering row near the apex.
                 float fade=Ease(dt/.010f)*(1-Ease((dt-flight)/.08f));
                 rocks.MaterialSprite(new(x,y+.025f,.015f+other*.065f),size,size*(.66f+variation*.33f),
-                    seed*.71f+i*1.71f+side*dt*(3.0f+other*4),fade,1.02f,1);
+                    seed*.71f+i*1.71f+side*dt*(3.0f+other*4),fade*.82f,.88f,1);
             }
-            float d=age-(.035f+.015f*(.5f+.5f*MathF.Sin(seed)));
+            float d=age-(.09f+.015f*(.5f+.5f*MathF.Sin(seed)));
             if(d>0)
             {
-                float amount=Ease(d/.08f)*(1-Ease((d-.23f)/.32f));
+                float amount=Ease(d/.06f)*(1-Ease((d-.22f)/.26f));
                 for(int i=0;i<2;i++)
                 {
                     float side=i==0?-1:1;
-                    dust.MaterialSprite(new(side*(.22f+d*.38f),.12f+d*.12f,.035f),
-                        .42f+d*.65f,.18f+d*.18f,side*.12f,amount*.60f,.86f,i+1);
+                    dust.MaterialSprite(new(side*(.22f+d*.38f),.035f+.018f*Ease(d/.10f),.035f),
+                        .36f+d*.62f,.07f+d*.06f,side*.12f,amount*.48f,.74f,i+1);
                 }
             }
         };

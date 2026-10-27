@@ -1,0 +1,93 @@
+{
+  "revision": 223,
+  "baseTrial": 222,
+  "selectedSafetyBase": 221,
+  "status": "unselected correction of222 repeated soil-board shape; 222 material hold retained",
+  "scope": "Only CreateEarthFracture bank geometry. All receipts, actual hit count, timing, actor/camera, profiles, shader, Light/Floor/StageFocus, fissure, supplementary stones/dust unchanged.",
+  "raw": "Byte-identical hd2d-earth-soil-bank-v1.png 1254-square RGBA670668bytes, no newgeneration/crop/recolor. Full original UV crop from222 retained; subdivided UV below.",
+  "geometry": {
+    "space": "Space1: _feet+world(X,Y,Z)*height*size+Up*.009 existing path. Foot hinge stationary. Not Space2 camera-facing full sprite.",
+    "sections": [
+      {
+        "role": "principal near piece",
+        "originXZ": [
+          -0.28,
+          -0.16
+        ],
+        "length": 0.48,
+        "height": 0.22,
+        "upperEdgeDepth": 0.105,
+        "turn": 0.16,
+        "birth": 0,
+        "riseDuration": 0.065,
+        "sinkWindow": [
+          0.14,
+          0.38
+        ],
+        "rawQ": [
+          0.01,
+          0.43
+        ]
+      },
+      {
+        "role": "lower neighbour",
+        "originXZ": [
+          0.25,
+          0.02
+        ],
+        "length": 0.3,
+        "height": 0.155,
+        "upperEdgeDepth": 0.075,
+        "turn": -0.31,
+        "birth": 0.045,
+        "riseDuration": 0.065,
+        "sinkWindow": [
+          0.19,
+          0.43
+        ],
+        "rawQ": [
+          0.47,
+          0.75
+        ]
+      },
+      {
+        "role": "small rear chip",
+        "originXZ": [
+          0.03,
+          0.31
+        ],
+        "length": 0.19,
+        "height": 0.095,
+        "upperEdgeDepth": 0.05,
+        "turn": 0.49,
+        "birth": 0.025,
+        "riseDuration": 0.065,
+        "sinkWindow": [
+          0.1,
+          0.31
+        ],
+        "rawQ": [
+          0.79,
+          0.99
+        ]
+      }
+    ],
+    "seedVariation": "turn += .10*sin(seed+piece*1.9); length *=1+.05*sin(seed*1.4+piece), deterministic no frame-randomness",
+    "groundTransform": "Existing Ground rotatesXZ by angle=.22*sin(seed) and adds z=.40, Y=.007. Base(q)=Ground(origin+along*((q-.5)*length))+Up*.002, time-invariant.",
+    "upperEdge": "shape=Ease((age-birth)/.065)*(1-Ease((age-sinkStart)/(sinkEnd-sinkStart))); Top(q)=Ground(origin+along*((q-.5)*length)+away*depth*shape)+Up*(.006+height*shape*(.77+.23*sin(q*2.7+piece*.8))). The upper edge tilts in world depth as it rises, then returns to ground; no whole-bitmap motion.",
+    "uv": "u=(8+lerp(rawQstart,rawQend,q)*1238)/1254; Vtop=490/1254,Vbottom=826/1254. Original raw retained.",
+    "alpha": "persection Ease((age-birth)/.018)*(1-Ease((age-.40)/.17)); each edge tapered using Ease(q/.20)*Ease((1-q)/.20), gain.82 unchanged; clear by .57 inside old .68tail",
+    "capacity": "3sections*6quads*6vertices=108 of512",
+    "phaseMeaning": "One authoritative contact/light pulse. Delayed sections are post-hit material breakup/deformation, not new impacts/hits or staged damage."
+  },
+  "visualGate": [
+    "No repeated continuous soil-board top edge across3receivers",
+    "One primary low fracture and irregular smaller sections with visible ground gaps, not uniform clod garland",
+    "Fixed grounded hinges; upperedge depth/angle varies and returns downward; no foot clipping/floating slab",
+    "No extraimpact pulse from secondary sections; original single-hit per actual target unchanged",
+    "Shared light peak unchanged; no gain-based masking of weak form",
+    "Existing raw/state/222held evidence preserved"
+  ],
+  "nativeReuseProposal": "Only sole QA may reuse independent mutablecandidate222 after fingerprint/inventory/201SHA/QAhook+import normalization, changedonlyHd2d+newdoc, exact remaining file checks, newlogical223logdir/assemblySHA/Rebuild. No secondclone; immutable222/evidence untouched. Parent QA authorization required.",
+  "handoff": "No Stage/BattleActor integration code/numeric changes. New numbers solely effect-local Space1 bank coordinates and post-contact deformation schedule. Newassetbytes0; checkpoint raw original remains bundled."
+}
