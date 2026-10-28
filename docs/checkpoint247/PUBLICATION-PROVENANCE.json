@@ -1,0 +1,21 @@
+{
+  "revision": 247,
+  "parent": "ede7d38413d91762ff7fc319c8b50d76e6c47f7b",
+  "changedProductSHA256": {
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs": "a1e61b157cd25e2951672cf997bc271622305849bc50a5a9dbb6285560718bd9",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/NativeGeometryBridge.cs": "e294414da7b1d45c80e54352457ff655350e3a424f47823f1c4d9006d5327c38",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/SupportVfxProfiles.cs": "93b71e3347df6132b331f041ce04868612e18a5880d45e39c6ffedf2656c15ad",
+    "docs/ICE-WALL-THICK-FACE-246-CONTRACT.json": "0b0300ba4ef595a2acd255bbc7cada66e1fbf9d7d2869f4990c2c94dd96c2041",
+    "docs/ICE-WALL-MATERIAL-DENSITY-247-CONTRACT.json": "b0698f77f0194a921922218e96bd5edd464804ae3b22a09349c871d51cfa98fc",
+    "assets/Art/fx/hd2d-ice-wall-density-v1.png": "23811409e8e00ea0310533d8912228a773c9ae5bf366aa02bfe958c0106eef0a"
+  },
+  "newReconstructedLogicalSourceFiles": 232,
+  "all232LayeredLogicalHashesVerified": true,
+  "old243OriginalManifestAndQANotRecovered": true,
+  "current247QA": "1923/4successful;standard andguard2resources,lifecycle4resources,movie no shutdownnotice; unresolvedaudio issue",
+  "outsideNewFactoryExact245": true,
+  "rawOriginal": "1254x1254RGBA2813683bytes,unmodified; observednative lossless/no mip not recommendation",
+  "stageActorSharedShaderChanges": false,
+  "scope": "Exact blue_ice_wall owner-action first eligible gain; IceBlockGained has no SourceUid, not direct nested-effect origin guarantee",
+  "unity": "Preserve user renderer/Linear/HDR/index/math/clock fixes; port intent, not replace"
+}

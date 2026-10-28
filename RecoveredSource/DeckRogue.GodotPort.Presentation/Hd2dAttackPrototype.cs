@@ -1132,6 +1132,62 @@ internal static class Hd2dAttackPrototype
         };
         return effect;
     }
+    // Exact blue_ice_wall owner-action gain only. Other IceGuard shapes stay unchanged.
+    internal static NativeEffect CreateIceWall()
+    {
+        var side=new Layer(0,13);var face=new Layer(0,13,"hd2d-ice-wall-density-v1");var frost=new Layer(0,13);
+        var edge=new Layer(0,1);var halo=new Layer(0,6);var motes=new Layer(0,2);float age=0;
+        var effect=new NativeEffect {
+            Shader="Hd2dPrototype",Palette="hd2d-ice",
+            Batches=new[]{halo.Batch,side.Batch,face.Batch,frost.Batch,edge.Batch,motes.Batch},VisualAge=()=>age,
+            TargetPeak=.055f,FloorPeak=.08f,
+            Light=()=>.45f*Ease(age/.08f)*(1-Ease((age-.16f)/.18f)),
+            FloorLight=()=>.18f*Ease(age/.10f)*(1-Ease((age-.18f)/.18f)),StageFocus=()=>0f };
+        effect.Sample=t=>{
+            age=(float)t;side.Reset();face.Reset();frost.Reset();edge.Reset();halo.Reset();motes.Reset();
+            if(age<0 || age>.52f)return;
+            float build=Ease(age/.11f),visible=Ease(age/.035f),fade=1-Ease((age-.28f)/.23f);
+            float opacity=visible*fade;const float bottom=-.48f;
+            Vector3 Lift(float x,float y,float z=.035f)=>new(x,bottom+(y-bottom)*build,z);
+            // The root stays at the receiver's feet; one broad plane faces the enemy.
+            Vector3[] rim={Lift(.12f,bottom),Lift(.66f,bottom),Lift(.73f,.20f),
+                Lift(.57f,.48f),Lift(.27f,.43f),Lift(.12f,-.17f)};
+            Vector3 center=Lift(.425f,-.015f);
+            Vector2 UV(Vector3 v)=>new(.06f+(v.X-.12f)/.61f*.88f,
+                .94f-(v.Y-bottom)/MathF.Max(.0001f,build)/.96f*.88f);
+            float Density(Vector3 v)=>.46f; // Authored alpha supplies clear upper / cloudy lower hierarchy.
+            for(int k=0;k<rim.Length;k++)
+            {
+                var a=rim[k];var b=rim[(k+1)%rim.Length];
+                face.V(center,UV(center),opacity*Density(center),1f,1);
+                face.V(a,UV(a),opacity*Density(a),1f,1);face.V(b,UV(b),opacity*Density(b),1f,1);
+            }
+            // Real projected thickness is a short dark side, not an extra glowing pane.
+            Vector3 back=new(.065f,.025f*build,-.018f);
+            foreach(int k in new[]{1,2,3}){
+                Vector3 a=rim[k],b=rim[(k+1)%rim.Length];int first=side.N;
+                side.Quad(a+back,b+back,b,a,opacity*.43f,0,1f);
+                for(int n=first;n<side.N;n++)side.UV[n]=new(.08f+.84f*side.UV[n].X,.08f+.84f*side.UV[n].Y);
+            }
+            // No rectangular frost overlay: the original RGBA carries irregular basal clouding.
+            for(int k=0;k<rim.Length;k++){
+                bool lit=k==2||k==3;float width=lit?.008f:.004f;
+                edge.Stroke(rim[k],rim[(k+1)%rim.Length],width,opacity*(lit?.42f:.20f),lit?2:1,1f);
+            }
+            // Two short facets, not a complete white frame or a lattice of cracks.
+            edge.Stroke(Lift(.47f,.12f,.045f),Lift(.55f,.34f,.045f),.004f,opacity*.28f,2,1f);
+            edge.Stroke(Lift(.26f,-.24f,.045f),Lift(.35f,-.08f,.045f),.003f,opacity*.20f,2,1f);
+            halo.Sprite(new(.34f,-.35f,-.015f),.30f,.13f,0,build*fade*.12f,2,.85f);
+            float release=Ease((age-.28f)/.08f);
+            for(int i=0;i<4;i++){
+                float dt=MathF.Max(0,age-.28f);Vector3 v=Lift(.20f+i*.12f,-.35f+(i%2)*.21f,.05f);
+                v+=new Vector3((i%2==0?-1:1)*dt*.10f,dt*.20f,0);
+                motes.Petal(v,.009f,.006f,i*.43f,release*fade*.36f,2);
+            }
+        };
+        return effect;
+    }
+
     private static NativeEffect CreateOpposedPressure(AttackRoute route)
     {
         var lead=new Layer(0,7);var edge=new Layer(0,1);var chips=new Layer(0,2);

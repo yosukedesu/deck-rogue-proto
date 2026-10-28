@@ -1,0 +1,55 @@
+{
+  "revision": 247,
+  "scope": "exact blue_ice_wall route unchanged from246",
+  "baseline": "246 held: external protecting composition passes; transparent glass material fails",
+  "raw": {
+    "path": "assets/Art/fx/hd2d-ice-wall-density-v1.png",
+    "sha256": "23811409e8e00ea0310533d8912228a773c9ae5bf366aa02bfe958c0106eef0a",
+    "bytes": 2813683,
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "unmodified": true,
+    "alphaPercentiles": [
+      0,
+      18,
+      157,
+      251,
+      251,
+      253
+    ]
+  },
+  "changes": [
+    "face RGBA density with constant vertex alpha .46 times existing visible/fade; authored alpha provides nonuniform density, not global emission",
+    "UV x .06..94; v .94 at base to .06 at top, normalized by build max(.0001) so image grows with wall",
+    "remove rectangular procedural frost band, keep empty batch for stable ordering",
+    "side facets edges1,2,3 with projected offset +.065 X,+.025*build Y,-.018 Z",
+    "rim opacity .42 lit/.20 other instead of .72/.27; no change width"
+  ],
+  "maximumWrittenVerticesByBatch": [
+    6,
+    18,
+    18,
+    0,
+    48,
+    24
+  ],
+  "allocatedVerticesEach": 512,
+  "timingUnchanged": {
+    "build": 0.11,
+    "visible": 0.035,
+    "fadeStart": 0.28,
+    "fadeDuration": 0.23,
+    "end": 0.52
+  },
+  "invariants": [
+    "actual gain15 then passive1 and first owner-action slot",
+    "no SourceUid guarantee added",
+    "other IceGuard/Describe/bridge/actor/Stage/shader/renderer/palette/rules identical246",
+    "light/floor/camera unchanged",
+    "no raw resizing or import settings delivered"
+  ],
+  "native": "pending",
+  "art": "pending"
+}

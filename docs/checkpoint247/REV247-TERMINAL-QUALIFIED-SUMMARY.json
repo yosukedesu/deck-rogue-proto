@@ -1,0 +1,62 @@
+{
+  "selectedRevision": 247,
+  "checks": 1923,
+  "successfulRuns": 4,
+  "runs": [
+    {
+      "name": "new247-icewall-standard",
+      "checks": 504,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": true,
+      "resources": [
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg::OggPacketSequence_bnk31 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg (AudioStreamOggVorbis)"
+      ],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new247-icewall-direct-movie",
+      "checks": 577,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new247-icewall-bound-guard-negative",
+      "checks": 315,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": true,
+      "resources": [
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg::OggPacketSequence_bnk31 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg (AudioStreamOggVorbis)"
+      ],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new247-icewall-bound-lifecycle",
+      "checks": 527,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": true,
+      "resources": [
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg::OggPacketSequence_bnk31 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg (AudioStreamOggVorbis)",
+        "Resource still in use: res://assets/Audio/sfx/card_draw.ogg::OggPacketSequence_e6iu2 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/sfx/card_draw.ogg (AudioStreamOggVorbis)"
+      ],
+      "VSyncWarning": true
+    }
+  ],
+  "qualification": [
+    "3runs with unresolved shutdown resources;1 without; none warning-free because VSync",
+    "actor SetDead(true)+cancel component lifecycle is not engine lethal test",
+    "fixedgain15: no legitimate zero-gain case established, no fake suppression",
+    "standard observed15+passive1, one eligible owner-action body; no SourceUid attribution beyond accepted owner action",
+    "static9frame plus consecutive decoded movie art PASS; direct normal-speed subjective viewing not done",
+    "Unity runtime not validated; panel straight corner remains refinement limitation"
+  ]
+}
