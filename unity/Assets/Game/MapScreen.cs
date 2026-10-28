@@ -22,6 +22,15 @@ namespace DeckRogue.Game
         static float NodeSize { get { return UiKit.Phone ? 74f : 60f; } }   // 画面の切り欠きの寄せの目安 (2026-09-14)
         const int Cols = 7;
 
+        /// <summary>
+        /// 道の中央線の色 (2026-10-28 ユーザー「通った道と選択肢の道の中央線を見やすく。輪郭線と似た色だと分かりにくい」→ 候補 4 つ → 裁定 案1):
+        /// 通った道の足跡＝真鍮・選択肢の破線＝青緑 (縁の淡い紙色・土のくすんだ紫から最も離れる)。
+        /// 撮影の鍵 mapline=<n> で比べた候補を戻せる: 2 通った 青緑/選択肢 真鍮の明・3 朱/真鍮の明・4 真鍮の明/朱・9 旧 (真鍮の明/紙の白)
+        /// </summary>
+        public static int LinePalette = 0;
+        static Color TakenLine { get { switch (LinePalette) { case 2: return PaperFx.Mana; case 3: return PaperFx.Ember; case 4: case 9: return PaperFx.BrassLight; default: return PaperFx.Brass; } } }
+        static Color AvailLine { get { switch (LinePalette) { case 2: case 3: return PaperFx.BrassLight; case 4: return PaperFx.Ember; case 9: return PaperFx.Paper3; default: return PaperFx.Mana; } } }
+
         /// <summary>他の画面の上に重ねる読み取り専用の地図 (2026-09-12 ユーザー「マップは常に見れるようにして」)。進路は選べない・閉じるだけ</summary>
         public static void Overlay(GameRoot g, RectTransform root) { Build(g, root, true); }
 
@@ -150,11 +159,12 @@ namespace DeckRogue.Game
                         trailRim.Add(pts, 31f, new Color(PaperFx.PaperDim.r, PaperFx.PaperDim.g, PaperFx.PaperDim.b, taken || avail ? 0.72f : passed ? 0.26f : 0.46f));   // 縁 (帯 26 の外に 2.5px)
                         var band = taken || avail ? trailTaken : passed ? trailPassed : trailFuture;
                         band.Add(pts, 26f, band.Tex != null ? Color.white : new Color(0.27f, 0.22f, 0.25f, 1f));
-                        if (taken) trailTop.Add(pts, 5f, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.9f), 2f, 16f);   // 足跡 (1 17 の点)
+                        if (taken) { var tc = TakenLine; trailTop.Add(pts, 6f, new Color(tc.r, tc.g, tc.b, 0.95f), 2f, 15f); }   // 足跡 (点)
                         if (avail)
                         {
-                            trailTop.Add(pts, 14f, new Color(PaperFx.Paper3.r, PaperFx.Paper3.g, PaperFx.Paper3.b, 0.18f));   // 破線のにじみ (カンバスの glow)
-                            trailTop.Add(pts, 6f, new Color(PaperFx.Paper3.r, PaperFx.Paper3.g, PaperFx.Paper3.b, 0.95f), 12f, 12f);
+                            var ac = AvailLine;
+                            trailTop.Add(pts, 14f, new Color(ac.r, ac.g, ac.b, 0.22f));   // 破線のにじみ (カンバスの glow)
+                            trailTop.Add(pts, 6f, new Color(ac.r, ac.g, ac.b, 0.97f), 12f, 12f);
                         }
                     }
                 }

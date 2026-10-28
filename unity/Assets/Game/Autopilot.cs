@@ -610,6 +610,7 @@ namespace DeckRogue.Game
             // 起動の時 (BeforeSceneLoad) にも -state から当ててあるので、1行1起動なら何も変わらない (Changed も投げない)
             _stateSpec = spec;
             HD2DFlags.ApplyState(kv);
+            { int ml; MapScreen.LinePalette = int.TryParse(Get("mapline", ""), out ml) ? ml : 0; }   // 地図の道の中央線の色の候補 (2026-10-28)
             string phase = (Get("phase", "map") ?? "map").ToLowerInvariant();
             g.SetSeed(_seed);
             g.LeaderId = Get("leader") ?? "leader_green";   // 前回の選択 (PlayerPrefs) に左右されないよう既定は緑
