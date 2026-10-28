@@ -1,0 +1,99 @@
+{
+ "id": "map_act1",
+ "purpose": "幕1「坑口の森」のマップの下絵（StS2 形の地図。節と道はゲームが上に描く）",
+ "deliver": [
+  "map_act1.png (960x1042 dots, RGBA, 1 dot = 2 screen px)",
+  "map_act1_fore.png (optional, 960x1042 RGBA transparent, canopy at the edges only)",
+  "raw/ (imagegen original, unmodified)",
+  "README (how it was made)"
+ ],
+ "canvas": {
+  "w": 960,
+  "h": 1042,
+  "orientation": "portrait, scrolls vertically; bottom = start, top = boss",
+  "coords": "x from left, y from TOP, in dots"
+ },
+ "grid_the_game_draws": {
+  "columns_x": [
+   235,
+   317,
+   398,
+   480,
+   562,
+   643,
+   725
+  ],
+  "rows": "16 = 15 rows of nodes + the boss row on top",
+  "row_pitch": 56,
+  "first_row_y_from_bottom": 129,
+  "boss_at": [
+   480,
+   73
+  ],
+  "start_marker_y_from_bottom": 73,
+  "node_disc_diameter": 35,
+  "note": "all in dots. Nodes land by the run's seed, so draw a terrain that works wherever a node sits inside the corridor"
+ },
+ "zones": {
+  "corridor": {
+   "x": [
+    205,
+    755
+   ],
+   "y": [
+    100,
+    960
+   ],
+   "draw": "forest floor from above: moss, leaf litter, small clearings, fragments of old paving, fallen logs, a stream may cross it (no bridge needed), low contrast, no bright or white objects"
+  },
+  "margins": {
+   "x": [
+    [
+     0,
+     205
+    ],
+    [
+     755,
+     960
+    ]
+   ],
+   "draw": "dense conifers, cliffs, roots, fog bands; farther (higher) = bluer and paler"
+  },
+  "bottom": {
+   "y": [
+    960,
+    1042
+   ],
+   "draw": "the trailhead at the edge of the village: a signpost and one lantern post (warm light), path leading up into the forest"
+  },
+  "top": {
+   "y": [
+    0,
+    100
+   ],
+   "draw": "the mine mouth (坑口): stone gate + winch headframe (巻き上げ機の櫓) seen from above; the boss node sits at x=480 y=73"
+  },
+  "phone_safe": {
+   "x": [
+    180,
+    780
+   ],
+   "note": "phones see only this band; keep landmarks inside it"
+  }
+ },
+ "style": {
+  "hand": "same artist as the battle stage: HD-2D night forest, lineless pixel art, watercolor picture-book softness but every pixel a square cell at 960x1000",
+  "light": "moonlight from upper-left; fog bands getting brighter toward the top; night blue, darks are navy not black",
+  "palette": "map to docs/pixellab/hd2d-act1/palette-act1.json (48 colors) like the stage art (scripts/stage-palette.py map)",
+  "camera": "near top-down (60-70 deg) map view, trees read as small canopies with short trunks"
+ },
+ "do_not_draw": [
+  "path lines or footprints",
+  "node icons or markers",
+  "text or labels",
+  "the hero or any creature",
+  "UI frames, vignette, borders",
+  "checkerboard"
+ ],
+ "later": "act2 (先代の坑道) and act3 (埋もれた古代都市) with the same spec once act1 is approved"
+}
