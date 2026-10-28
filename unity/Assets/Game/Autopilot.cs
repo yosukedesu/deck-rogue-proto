@@ -611,6 +611,11 @@ namespace DeckRogue.Game
             _stateSpec = spec;
             HD2DFlags.ApplyState(kv);
             { int ml; MapScreen.LinePalette = int.TryParse(Get("mapline", ""), out ml) ? ml : 0; }   // 地図の道の中央線の色の候補 (2026-10-28)
+            // 地図のスクロールの計測 (2026-10-28 ユーザー「スクロールがカクつく」): mapscroll=1 で往復・mapdbg=nolife,noforest,nostage,canvas で切り分け。vSync を切って1フレームの実コストを測る
+            MapScreen.AutoScroll = Get("mapscroll", "0") != "0";
+            MapScreen.AutoScrollWheel = Get("mapscroll", "0") == "wheel";
+            MapScreen.DebugFlags = Get("mapdbg", "") ?? "";
+            if (MapScreen.AutoScroll) { QualitySettings.vSyncCount = 0; Application.targetFrameRate = -1; }
             string phase = (Get("phase", "map") ?? "map").ToLowerInvariant();
             g.SetSeed(_seed);
             g.LeaderId = Get("leader") ?? "leader_green";   // 前回の選択 (PlayerPrefs) に左右されないよう既定は緑

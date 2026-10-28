@@ -128,7 +128,7 @@ namespace DeckRogue.Game
             switch (state)
             {
                 case 1: c = new Color32(18, 24, 52, 255); a = 0.62f; break;
-                case 2: c = new Color32(12, 16, 36, 255); a = 0.72f; break;
+                case 2: c = PaperFx.Ground; a = 0.72f; break;   // 通らなかった道は地の色 (夜) で沈める
                 default: c = new Color32(20, 28, 58, 255); a = 0.52f; break;
             }
             var px = src.GetPixels32();

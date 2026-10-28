@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using DeckRogue.Engine;
 using DeckRogue.Engine.Generated;
 
@@ -28,6 +29,13 @@ namespace DeckRogue.Game
         /// 撮影の鍵 mapline=<n> で比べた候補を戻せる: 2 通った 青緑/選択肢 真鍮の明・3 朱/真鍮の明・4 真鍮の明/朱・9 旧 (真鍮の明/紙の白)
         /// </summary>
         public static int LinePalette = 0;
+        /// <summary>撮影の計測 (2026-10-28 ユーザー「スクロールがカクつく」): mapscroll=1 で地図を 4 秒で1往復させ続ける (perf=<秒> と組むと PerfProbe が毎フレームの時間を記録する)</summary>
+        public static bool AutoScroll = false;
+        /// <summary>mapscroll=wheel: 往復の代わりにホイールの刻みを 3 回送り、content の位置を毎フレーム [MapWheel] に記録する (滑らかに寄るかの確認)</summary>
+        public static bool AutoScrollWheel = false;
+        /// <summary>計測の切り分け (mapdbg=nolife,noforest,nostage,canvas を「,」で並べる)。普段は空</summary>
+        public static string DebugFlags = "";
+        static bool Dbg(string k) { return !string.IsNullOrEmpty(DebugFlags) && ("," + DebugFlags + ",").Contains("," + k + ","); }
         static Color TakenLine { get { switch (LinePalette) { case 2: return PaperFx.Mana; case 3: return PaperFx.Ember; case 4: case 9: return PaperFx.BrassLight; default: return PaperFx.Brass; } } }
         static Color AvailLine { get { switch (LinePalette) { case 2: case 3: return PaperFx.BrassLight; case 4: return PaperFx.Ember; case 9: return PaperFx.Paper3; default: return PaperFx.Mana; } } }
 
@@ -44,7 +52,7 @@ namespace DeckRogue.Game
         static void Build(GameRoot g, RectTransform root, bool overlay)
         {
             var run = g.Rs;
-            if (!overlay) BattleScreen.BuildBackground(root, run.Act);
+            if (!overlay && !Dbg("nostage")) BattleScreen.BuildBackground(root, run.Act);
             if (overlay)
             {
                 var dim = UiKit.Pan(root, new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, 0.82f), "dim");   // 下の画面 (手札・吹き出し) を塞ぐ
@@ -74,14 +82,19 @@ namespace DeckRogue.Game
             content.pivot = new Vector2(0.5f, 0f);
             content.sizeDelta = new Vector2(0f, contentH);
             content.anchoredPosition = Vector2.zero;
-            var scroll = view.gameObject.AddComponent<ScrollRect>();
+            var scroll = view.gameObject.AddComponent<MapScrollRect>();   // ホイールは滑らかに・位置は画素に丸める (2026-10-28)
             scroll.content = content;
             scroll.viewport = view;
             scroll.horizontal = false;
             scroll.vertical = true;
             scroll.movementType = ScrollRect.MovementType.Clamped;
-            scroll.scrollSensitivity = 40f;
-            var life = content.gameObject.AddComponent<MapLife>();
+            if (Dbg("canvas"))
+            {
+                // 計測: content を入れ子の Canvas にする (スクロールで動くのは Canvas 1つ = 上の Canvas の束ね直しを起こさない)。当たり判定は Canvas ごとに要る
+                content.gameObject.AddComponent<Canvas>();
+                content.gameObject.AddComponent<GraphicRaycaster>();
+            }
+            var life = Dbg("nolife") ? null : content.gameObject.AddComponent<MapLife>();
 
             // 地面 (夜の草のタイル。8×8 枚の 512 ドットの塊を 1ドット=2px で繰り返す)
             {
@@ -172,7 +185,7 @@ namespace DeckRogue.Game
 
             // 森 (両脇の木・格子の空いた所の茂みや切り株・出発の道標と灯)
             var rnd = new System.Random(977 * run.Act + rows * 31 + (run.Map.Count > 0 ? run.Map[0].Count : 0));
-            Forest(content, run, viewW, contentH, rnd, edges);
+            if (!Dbg("noforest")) Forest(content, run, viewW, contentH, rnd, edges);
             Vector2 startPos = new Vector2(_ox + MapW / 2f, PadY - 10f);   // 出発 (駒の足元。行0 の空き地と重ならない)
             {
                 var lamp = UiKit.Pan(content, new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.34f), "start-lamp");
@@ -218,7 +231,7 @@ namespace DeckRogue.Game
                 f.sprite = MapForest.Radial(); f.raycastTarget = false;
                 float fx = _ox - 120f + (float)rnd.NextDouble() * (MapW + 240f), fy = 60f + (float)rnd.NextDouble() * (contentH - 120f);
                 Place(f.rectTransform, new Vector2(fx, fy), new Vector2(14f, 14f), new Vector2(0.5f, 0.5f));
-                life.Flies.Add(f.rectTransform);
+                if (life != null) life.Flies.Add(f.rectTransform);
             }
 
             // 窓に貼る空気 (地図と一緒には動かない): 夜の青・月明かり・月光の筋・上の霧・周辺減光・手前の暗い木・上下の暗がり
@@ -232,6 +245,7 @@ namespace DeckRogue.Game
             scroll.verticalNormalizedPosition = norm;
             var fixer = view.gameObject.AddComponent<ScrollFix>();
             fixer.Scroll = scroll; fixer.Norm = norm;
+            if (AutoScroll) { var asc = view.gameObject.AddComponent<MapAutoScroll>(); asc.Scroll = scroll; asc.Wheel = AutoScrollWheel; }
 
             if (overlay)
             {
@@ -278,6 +292,70 @@ namespace DeckRogue.Game
                 if (Scroll == null) { Destroy(this); return; }
                 Scroll.verticalNormalizedPosition = Norm;
                 if (++_n >= 2) Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// 地図の ScrollRect (2026-10-28 ユーザー「スクロールがカクつく」。計測ではスクロール中も 1 フレーム 4.2ms = 処理落ちではなく、ホイールの 1 刻みで 40px を即座に飛ぶ動きが原因)。
+        /// ホイールは目標へ時定数 0.08 秒で滑らかに寄せる (1 刻み = WheelStep。刻みを重ねれば目標が先へ進む)。指・マウスのドラッグと慣性は ScrollRect のまま (ドラッグを始めたらホイールの目標は捨てる)。
+        /// 位置は毎フレーム画面の画素に丸める (ドット絵の地面・木・印が小数の位置で太さを変えない)
+        /// </summary>
+        public class MapScrollRect : ScrollRect
+        {
+            public float WheelStep = 150f;
+            float _target = float.NaN;   // ホイールの目標 (content.anchoredPosition.y)。NaN = ホイールで動いていない
+            float _pos;                  // 寄せている途中の位置 (丸める前。丸めた値から寄せると残り 2px で止まる)
+            Canvas _root;
+
+            public override void OnScroll(PointerEventData data)
+            {
+                if (!IsActive() || content == null || viewport == null) return;
+                float d = data.scrollDelta.y;
+                if (Mathf.Abs(data.scrollDelta.x) > Mathf.Abs(d)) d = data.scrollDelta.x;   // ScrollRect と同じ (縦だけの時は横の刻みも縦に)
+                if (float.IsNaN(_target)) _pos = content.anchoredPosition.y;
+                float cur = float.IsNaN(_target) ? _pos : _target;
+                float max = Mathf.Max(0f, content.rect.height - viewport.rect.height);   // content は下端を窓の下端に合わせて置く (pivot 0,0 側) = y は -max〜0
+                _target = Mathf.Clamp(cur - d * WheelStep, -max, 0f);
+                StopMovement();   // 慣性と混ぜない
+            }
+
+            public override void OnBeginDrag(PointerEventData eventData) { _target = float.NaN; base.OnBeginDrag(eventData); }
+
+            protected override void LateUpdate()
+            {
+                base.LateUpdate();   // ドラッグ・慣性
+                if (content == null) return;
+                var p = content.anchoredPosition;
+                if (!float.IsNaN(_target))
+                {
+                    _pos = Mathf.Lerp(_pos, _target, 1f - Mathf.Exp(-Time.unscaledDeltaTime / 0.08f));
+                    if (Mathf.Abs(_pos - _target) < 0.5f) { _pos = _target; _target = float.NaN; }
+                    p.y = _pos;
+                }
+                if (_root == null) { var cv = GetComponentInParent<Canvas>(); _root = cv != null ? cv.rootCanvas : null; }
+                float s = _root != null && _root.scaleFactor > 0f ? _root.scaleFactor : 1f;   // キャンバスの1単位 = 画面の s px
+                p.y = Mathf.Round(p.y * s) / s;
+                if (p != content.anchoredPosition) SetContentAnchoredPosition(p);
+            }
+        }
+
+        /// <summary>計測用 (mapscroll=1): 地図を上下に往復させ続ける (4 秒で1往復。実時間)。Wheel (mapscroll=wheel) はホイールの刻みを 10・40・70 フレーム目に送り、位置を毎フレーム記録する</summary>
+        class MapAutoScroll : MonoBehaviour
+        {
+            public ScrollRect Scroll; public bool Wheel; float _t0 = -1f; int _f;
+            void LateUpdate()
+            {
+                if (Scroll == null) return;
+                if (Wheel)
+                {
+                    _f++;
+                    if (_f == 10 || _f == 40 || _f == 70) Scroll.OnScroll(new PointerEventData(EventSystem.current) { scrollDelta = new Vector2(0f, -1f) });
+                    if (_f >= 8 && _f <= 110 && Scroll.content != null) Debug.Log("[MapWheel] f=" + _f + " y=" + Scroll.content.anchoredPosition.y.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture));
+                    return;
+                }
+                if (_t0 < 0f) _t0 = Time.unscaledTime;
+                float t = Time.unscaledTime - _t0;
+                Scroll.verticalNormalizedPosition = 0.5f + 0.5f * Mathf.Sin(t * Mathf.PI * 0.5f);
             }
         }
 
