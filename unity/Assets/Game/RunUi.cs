@@ -37,13 +37,16 @@ namespace DeckRogue.Game
                 try { var lname = Content.GetLeaderDef(run.LeaderId); if (lname != null) ltip = "<b>" + lname.Name + "</b>"; } catch (Exception) { }
                 Tooltip.Attach(li.gameObject, delegate { return ltip; });
             }
-            var t1 = BattleScreen.Tag(bar, 40f, -0.6f);
-            // 出立の店 (2026-09-24) はまだ地図に入る前 (行 -1) なので「出立」
-            var tl = UiKit.Txt(t1, "幕" + run.Act + "・" + (run.Phase == RunPhases.Departure ? "出立" : "行" + (run.Row + 1) + "/" + run.Map.Count), 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
-            tl.characterSpacing = 2f;
-            UiKit.Le(tl, -1f, 30f, -1f, 30f);
-            var te = UiKit.Deco(t1, title, 19, PaperFx.Ink, TextAnchor.MiddleLeft);
-            UiKit.Le(te, -1f, 30f, -1f, 30f);
+            if (title != null)   // null = 画面が見出しを自分で描く (PC の地図 = MapScreen.Header。磨き 案B 2026-10-28)
+            {
+                var t1 = BattleScreen.Tag(bar, 40f, -0.6f);
+                // 出立の店 (2026-09-24) はまだ地図に入る前 (行 -1) なので「出立」
+                var tl = UiKit.Txt(t1, "幕" + run.Act + "・" + (run.Phase == RunPhases.Departure ? "出立" : "行" + (run.Row + 1) + "/" + run.Map.Count), 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+                tl.characterSpacing = 2f;
+                UiKit.Le(tl, -1f, 30f, -1f, 30f);
+                var te = UiKit.Deco(t1, title, 19, PaperFx.Ink, TextAnchor.MiddleLeft);
+                UiKit.Le(te, -1f, 30f, -1f, 30f);
+            }
 
             // 真ん中の空き (スマホの見出しはここに畳む。2026-09-16 案A: 見出し2行の高さを一覧に返す)
             var spacer = UiKit.NewRect("center", bar);

@@ -82,7 +82,7 @@ namespace DeckRogue.Game
                     var src = tiles[pick].GetPixels32();
                     for (int y = 0; y < S; y++)
                         for (int x = 0; x < S; x++)
-                            px[(ty * S + y) * N * S + tx * S + x] = Grade(src[y * S + x], 0.66f, 0.55f, 16f, NightMul);
+                            px[(ty * S + y) * N * S + tx * S + x] = Grade(src[y * S + x], 0.60f, 0.46f, 22f, NightMul);
                 }
             t.SetPixels32(px); t.Apply(false, true);
             _tex[key] = t;
@@ -127,9 +127,9 @@ namespace DeckRogue.Game
             Color32 c; float a;
             switch (state)
             {
-                case 1: c = new Color32(18, 24, 52, 255); a = 0.62f; break;
-                case 2: c = PaperFx.Ground; a = 0.72f; break;   // 通らなかった道は地の色 (夜) で沈める
-                default: c = new Color32(20, 28, 58, 255); a = 0.52f; break;
+                case 1: c = new Color32(16, 22, 48, 255); a = 0.70f; break;    // まだ先 (磨き 案B: 今の道だけ明るく)
+                case 2: c = PaperFx.Ground; a = 0.80f; break;                     // 通らなかった道は地の色 (夜) で沈める
+                default: c = new Color32(20, 28, 58, 255); a = 0.48f; break;
             }
             var px = src.GetPixels32();
             for (int i = 0; i < px.Length; i++)
@@ -220,6 +220,98 @@ namespace DeckRogue.Game
                 float dx = (u - 0.5f) / 0.78f, dy = (v - 0.46f) / 0.80f, r = Mathf.Sqrt(dx * dx + dy * dy) * 2f;
                 float k = Mathf.Clamp01((r - 0.62f) / 0.5f);
                 return k * k * (3f - 2f * k);
+            });
+        }
+
+        /// <summary>
+        /// 節の印の円盤 (磨き 案B・印 1「石の円盤」2026-10-28): 青灰の石の放射 (カンバスの radial-gradient(circle at 50% 32%, #3a4160, #1d2135 68%, #12152a)) と上の明るみ。
+        /// 160 画素の中に直径 152 で焼く (2 画素 = 1px・縁は半画素だけぼかす)。boss は紫がかった石。色は Image.color で沈める
+        /// </summary>
+        public static Sprite Token(bool boss)
+        {
+            string key = boss ? "token-boss" : "token";
+            Sprite s;
+            if (_spr.TryGetValue(key, out s)) return s;
+            const int N = 160;
+            float R = (N - 8) / 2f;
+            // 石の 3 段: 夜 #1a1c33 と鋼青 #6f95b8・地 #0f1120 の間 (カンバスの #3a4160 / #1d2135 / #12152a)。ボスは夜と薔薇の間 (#3f3148 / #201a2e / #140f1f)
+            Color c1 = boss ? Color.Lerp(PaperFx.Night, PaperFx.Rose, 0.22f) : Color.Lerp(PaperFx.Night, PaperFx.Sky, 0.30f);
+            Color c2 = boss ? Color.Lerp(PaperFx.Night, PaperFx.Rose, 0.06f) : PaperFx.Night;
+            Color c3 = boss ? Color.Lerp(PaperFx.Ground, PaperFx.Rose, 0.04f) : PaperFx.Ground;
+            var t = NewTex(N, N, false, false);
+            var px = new Color32[N * N];
+            float far = Mathf.Sqrt(R * R + (2f * R * 0.68f) * (2f * R * 0.68f));   // 放射の中心 (上から 32%) から最も遠い角 (下) まで
+            for (int y = 0; y < N; y++)
+                for (int x = 0; x < N; x++)
+                {
+                    float dx = x + 0.5f - N / 2f, dy = N / 2f - (y + 0.5f);   // dy は上が正
+                    float r = Mathf.Sqrt(dx * dx + dy * dy);
+                    float a = Mathf.Clamp01(R - r + 0.5f);
+                    if (a <= 0f) { px[y * N + x] = new Color32(0, 0, 0, 0); continue; }
+                    float gy = dy - (R - 2f * R * 0.32f);
+                    float tt = Mathf.Clamp01(Mathf.Sqrt(dx * dx + gy * gy) / far);
+                    Color c = tt < 0.68f ? Color.Lerp(c1, c2, tt / 0.68f) : Color.Lerp(c2, c3, (tt - 0.68f) / 0.32f);
+                    // 上の明るみ: 横 56/72・縦 22/72 の楕円 (上端から 5/72)。上 .10 → 下 0 の白
+                    float ex = dx / (R * 0.78f), ey = (dy - R * 0.55f) / (R * 0.31f);
+                    if (ex * ex + ey * ey <= 1f) c = Color.Lerp(c, Color.white, 0.10f * Mathf.Clamp01(0.5f + ey * 0.5f));
+                    px[y * N + x] = new Color32(B(c.r), B(c.g), B(c.b), B(a));
+                }
+            t.SetPixels32(px); t.Apply(false, true);
+            s = Sprite.Create(t, new Rect(0, 0, N, N), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+            _spr[key] = s;
+            return s;
+        }
+        /// <summary>Token を直径 d で描く時の絵の大きさ (余白ぶん大きい)</summary>
+        public static float TokenSize(float d) { return d * 160f / 152f; }
+
+        /// <summary>円の輪 (印の縁)。輪の中心線の直径 d・太さ w。描く大きさは RingSize(d, w)。2 画素 = 1px</summary>
+        public static Sprite RingCircle(float d, float w)
+        {
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            string key = "ringc-" + d.ToString("0.#", inv) + "-" + w.ToString("0.#", inv);
+            float S = RingSize(d, w);
+            int N = Mathf.CeilToInt(S * 2f);
+            return Proc(key, N, N, delegate (float u, float v)
+            {
+                float r = Mathf.Sqrt((u - 0.5f) * (u - 0.5f) + (v - 0.5f) * (v - 0.5f)) * S;
+                return Mathf.Clamp01(w * 0.5f - Mathf.Abs(r - d * 0.5f) + 0.5f);
+            });
+        }
+        public static float RingSize(float d, float w) { return d + w + 4f; }
+
+        /// <summary>落書きの道具の絵 (pen・eraser・trash)。白の形 (色は Image.color で)。24px で置く</summary>
+        public static Sprite ToolIcon(string kind)
+        {
+            return Proc("tool-" + kind, 48, 48, delegate (float u, float v)
+            {
+                float a = 0f;
+                switch (kind)
+                {
+                    case "pen":
+                    {   // 左下から右上へ斜めの棒 (左下の先は細く)
+                        float tx = u - 0.22f, ty = v - 0.22f, L = 0.54f * 1.41421f;
+                        float t = (tx + ty) / 1.41421f / L, pd = Mathf.Abs(tx - ty) / 1.41421f;
+                        float w = 0.07f * (t < 0.25f ? Mathf.Clamp01(t / 0.25f) : 1f);
+                        if (t >= 0f && t <= 1f) a = Mathf.Clamp01((w - pd) * 48f + 0.5f);
+                        break;
+                    }
+                    case "eraser":
+                    {   // 斜めの箱と下の線
+                        float cx = u - 0.52f, cyy = v - 0.56f, rx = (cx + cyy) / 1.41421f, ry = (cyy - cx) / 1.41421f;
+                        a = Mathf.Clamp01(Mathf.Min(0.24f - Mathf.Abs(rx), 0.12f - Mathf.Abs(ry)) * 48f + 0.5f);
+                        if (v > 0.12f && v < 0.19f && u > 0.36f && u < 0.9f) a = 1f;
+                        break;
+                    }
+                    case "trash":
+                    {   // 箱・蓋・取っ手。箱に 2 本の筋
+                        if (u > 0.3f && u < 0.7f && v > 0.1f && v < 0.64f) a = 1f;
+                        if (u > 0.22f && u < 0.78f && v > 0.68f && v < 0.76f) a = 1f;
+                        if (u > 0.42f && u < 0.58f && v > 0.76f && v < 0.86f) a = 1f;
+                        if (v > 0.18f && v < 0.56f && (Mathf.Abs(u - 0.43f) < 0.022f || Mathf.Abs(u - 0.57f) < 0.022f)) a = 0f;
+                        break;
+                    }
+                }
+                return a;
             });
         }
 

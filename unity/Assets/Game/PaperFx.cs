@@ -218,6 +218,15 @@ namespace DeckRogue.Game
         public const float NightTintFill = 0.72f;
         /// <summary>夜のボタン: 紙 (濃) の縁2px・夜 (主) の地・下に厚み。紙の Button の役 (上部バーのマップ・メモ・≡)</summary>
         public static Sprite NightButton { get { return Nine("night_button", 40, 10, 12, d => d < 2f ? Paper2 : NightHi, true); } }
+        /// <summary>地図の道具の丸い帯 (磨き 案B 2026-10-28): 夜の窓 α.72 に真鍮の細い縁 α.45。高さ 44 で角 22 (α は Linear で同じ濃さになる値に写す)</summary>
+        public static Sprite MapPill { get { return Nine("map_pill", 56, 22, 24, MapCardBands, false); } }
+        /// <summary>地図の凡例の板 (同): 同じ色で角 8</summary>
+        public static Sprite MapCard { get { return Nine("map_card", 32, 8, 10, MapCardBands, false); } }
+        static Color MapCardBands(float d)
+        {
+            if (d < 1.5f) return new Color(Brass.r, Brass.g, Brass.b, UiKit.GammaAlpha(Brass, 0.45f, 0.12f));
+            return new Color(Window.r, Window.g, Window.b, UiKit.GammaAlpha(Window, 0.72f, 0.12f));
+        }
         /// <summary>紙のボタン: 墨2・紙、下に厚み (墨 50%) 4px。角丸 10</summary>
         public static Sprite Button { get { return Nine("paper_button", 40, 10, 12, TagBands, true); } }
         /// <summary>カードの面: パネルと同じ二重線。角丸 14</summary>
