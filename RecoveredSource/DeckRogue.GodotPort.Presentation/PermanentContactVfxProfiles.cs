@@ -28,6 +28,7 @@ internal static class PermanentContactVfxProfiles
         return route.Family==family && route.Element==element
             && route.Renderer==(selected?"Hd2dPermanentContactFx":renderer);
     }
+    internal static bool ThornFlameRoute(AttackRoute route)=>SelectedRoute(route) && route.DefinitionId=="red_perm_thorn_flame";
     internal static bool OriginalRoute(AttackRoute? route)=>RouteTuple(route,false);
     internal static bool SelectedRoute(AttackRoute route)=>RouteTuple(route,true);
     internal static bool OwnsInstalled(GameEvent_DamageDealt hit,bool installedOwner)

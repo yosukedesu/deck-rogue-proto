@@ -327,6 +327,7 @@ internal static class NativeGeometryBridge
         if(EnemyContactVfxProfiles.SelectedRoute(route))return route.Family=="minimal_neutral_contact"
             ?Hd2dAttackPrototype.CreateEnemyNeutralContact():route.Family=="enemy_blunt"
             ?Hd2dAttackPrototype.CreateEnemyBlunt():Hd2dAttackPrototype.CreateEnemyPoke();
+        if(PermanentContactVfxProfiles.ThornFlameRoute(route))return Hd2dAttackPrototype.CreateThornFlameContact();
         if(PermanentContactVfxProfiles.SelectedRoute(route))return route.Family=="fire_localburst"
             ?Hd2dAttackPrototype.CreateInstalledFireContact():route.Family=="dark_drain"
             ?Hd2dAttackPrototype.CreateInstalledDarkContact(route):route.Family=="plant_point_contact"

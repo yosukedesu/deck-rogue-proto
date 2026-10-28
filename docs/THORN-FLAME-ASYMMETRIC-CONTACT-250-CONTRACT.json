@@ -1,0 +1,47 @@
+{
+  "revision": 250,
+  "base": "selected249, fresh249 Thorn841PASS actual8keys",
+  "scope": "exact selected permanent/card:red_perm_thorn_flame/fire_localburst/fire/Hd2dPermanentContactFx/FixedSmall only",
+  "newRaw": 0,
+  "cause": "fresh0043 age.033: central radial white core and uniform surrounding flames read generic flowerburst",
+  "shape": "short contact heat; three unequal cropped tapered fire fangs with gaps; single small attached cooling remnant, not Burn rider second pulse",
+  "root": [
+    0.26,
+    0.01,
+    0.025
+  ],
+  "projection": "same native0043 target/height/size/camera/recoil as Curse249 projection audit: root approx945,330 vs hand905,350; world target basis, never hardcoded screen",
+  "timing": "negative and age>.212 empty; pulse1-Ease((age-.025)/.13); consumed Ease((age-.035)/.115); cooling Ease(age/.035)*(1-Ease((age-.075)/.125))",
+  "batches": {
+    "order": [
+      "warmth",
+      "body",
+      "cooling",
+      "embers"
+    ],
+    "kind": [
+      14,
+      0,
+      15,
+      2
+    ],
+    "capacityEach": 512,
+    "maxWritten": [
+      6,
+      432,
+      144,
+      18
+    ]
+  },
+  "unchanged": [
+    "old CreateBurnStatus/installed wrapper wholebytes",
+    "245 CreateBurnTickContact wholebytes",
+    "other2 installedFire routes",
+    "actual installed UID/owner/damage3 and applyBurn2 rules",
+    "hero no new cast",
+    "shader/raw/palette/StageActor/camera",
+    "existing Light exp(-age/.085), TargetPeak.035, FloorPeak.015, FloorLight0,StageFocus0"
+  ],
+  "native": "pending",
+  "art": "pending"
+}

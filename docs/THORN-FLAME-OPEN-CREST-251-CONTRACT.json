@@ -1,0 +1,18 @@
+{
+  "revision": 251,
+  "base": "250 held",
+  "only": "CreateThornFlameContact crest geometry/UV/mask; cooling same old branch",
+  "cause": "actual0043 closed yellow rim/red belly leaves and V-butterfly",
+  "crest": "contact-side narrow root, outward span opens with Ease(q/.58); max widths and lengths unchanged; outer reach torn by1-.22*sin(3piu)^2*Ease(q/.55)",
+  "UV": "existing crop interior remap(.06+.88u,.18+.62v); lower/outside density broken by1-.75*Ease((u-.58)/.42)*Ease((1-v)/.35)",
+  "fixed": [
+    "root(.26,.01,.025)",
+    "all opacity/global/light/time/owner/rules",
+    "250 cooling remnant geometry/UV/mask",
+    "all other factories/profile/bridge",
+    "raw unmodified and no newraw"
+  ],
+  "topology": "unchanged4batch6/432/144/18max",
+  "native": "pending",
+  "art": "pending"
+}

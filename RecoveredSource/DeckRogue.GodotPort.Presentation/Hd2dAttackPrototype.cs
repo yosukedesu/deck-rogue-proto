@@ -659,6 +659,64 @@ internal static class Hd2dAttackPrototype
         return effect;
     }
 
+    // Exact installed ThornFlame damage contact; the Burn rider is not a second impact.
+    internal static NativeEffect CreateThornFlameContact()
+    {
+        var body=new Layer(0,0,"hd2d-fire-volume-thorn-density-v1");
+        var cooling=new Layer(0,15,"hd2d-fire-volume-04");
+        var embers=new Layer(0,2);var warmth=new Layer(0,14);float age=0;
+        var effect=new NativeEffect { Shader="Hd2dPrototype",Palette="hd2d-fire",
+            Batches=new[]{warmth.Batch,body.Batch,cooling.Batch,embers.Batch},VisualAge=()=>age,
+            TargetPeak=.035f,FloorPeak=.015f,StageFocus=()=>0f,
+            Light=()=>age<0?0:MathF.Exp(-age/.085f),FloorLight=()=>0f };
+        void Fang(Layer layer,Vector3 root,Vector2 direction,float length,float width,
+            float bend,float opacity,float consumed,Vector2 uv0,Vector2 uvSize)
+        {
+            Vector2 normal=new(-direction.Y,direction.X);
+            bool crest=ReferenceEquals(layer,body);
+            Vector3 Point(float u,float v){
+                float q=1-v;
+                float reach=q*length*(1-.24f*consumed);
+                float across=(u*2-1)*width*(.16f+.84f*MathF.Sin(q*MathF.PI))+bend*q*q;
+                // The dedicated raw owns the open contour, rather than a jagged mesh edge.
+                if(crest){reach=(q-.09f)*length*(1-.24f*consumed);across=(u-.567f)*2*width+bend*(q*q-.0081f);}
+                Vector2 xy=direction*reach+normal*across;
+                return root+new Vector3(xy.X,xy.Y,.002f*q);
+            }
+            void V(float u,float v){
+                float edge=Ease(u/.12f)*Ease((1-u)/.12f)*Ease(v/.10f)*Ease((1-v)/.10f);
+                float lower=1-consumed*Ease((v-.35f)/.65f);
+                // Canvas margins preserve original partial-alpha flame edges.
+                layer.V(Point(u,v),uv0+new Vector2(u,v)*uvSize,opacity*edge*lower,1f,3);
+            }
+            for(int y=0;y<4;y++)for(int x=0;x<6;x++){
+                float u=x/6f,v=y/4f,q=(x+1)/6f,z=(y+1)/4f;
+                V(u,v);V(q,v);V(q,z);V(u,v);V(q,z);V(u,z);
+            }
+        }
+        effect.Sample=t=>{
+            age=(float)t;warmth.Reset();body.Reset();cooling.Reset();embers.Reset();
+            if(age<0 || age>.212f)return;
+            // Same target basis as actual torso registration; no actor/weapon anchor borrowing.
+            Vector3 root=new(.26f,.01f,.025f);
+            float consume=Ease((age-.035f)/.115f),pulse=1-Ease((age-.025f)/.13f);
+            // One raw includes both the unequal main and short subordinate flow; no duplicate hot root.
+            Fang(body,root,new(-.985f,-.174f),.58f,.23f,-.035f,pulse*.90f,consume,new(.28f,.05f),new(.60f,.89f));
+            float remnant=Ease(age/.035f)*(1-Ease((age-.075f)/.125f));
+            Fang(cooling,root+new Vector3(-.025f,.025f+.08f*consume,.008f),new(-.50f,.866f),.25f,.085f,.035f,remnant*.60f,consume,new(.55f,0),new(.45f,.73f));
+            // A short contact heat point, not the raw's radial white explosion core.
+            warmth.Sprite(root,.075f,.065f,0,MathF.Exp(-age/.055f)*.22f,2);
+            for(int i=0;i<3;i++){
+                float dt=age-i*.011f;if(dt<0)continue;
+                Vector3 axis=i==0?new(-.94f,.342f,0):i==1?new(.25f,.968f,0):new(-.66f,-.751f,0);
+                Vector3 pos=root+axis*(.13f+dt*.55f)+Vector3.Up*(dt*.15f);
+                float opacity=Ease(dt/.018f)*(1-Ease((age-.09f)/.11f));
+                embers.Taper(pos-axis*.025f,pos,.007f,opacity*.55f,2);
+            }
+        };
+        return effect;
+    }
+
     internal static NativeEffect CreateInstalledFireContact()=>CreateBurnStatus();
     internal static NativeEffect CreateInstalledDarkContact(AttackRoute route)=>CreateDark(route,true);
 

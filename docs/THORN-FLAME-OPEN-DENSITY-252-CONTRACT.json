@@ -1,0 +1,42 @@
+{
+  "revision": 252,
+  "base": "251 held",
+  "scope": "exact Thorn factory only",
+  "cause": "251 closed leaf removed but mesh boundary clipped opaque raw into triangular paper feathers",
+  "raw": {
+    "path": "assets/Art/fx/hd2d-fire-volume-thorn-density-v1.png",
+    "original": "/workspace/scratch/948944000d55/generated_images/exec-2b22ae6c-9918-4aba-8649-4b096d7d0d78.png",
+    "sha256": "7168578f6f1a9bae9863cfa7eec4d5f0103e4f06b383e35a1c30d415111ae8cb",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "bytes": 744643,
+    "unprocessed": true,
+    "requestedDimensions": [
+      1024,
+      1024
+    ],
+    "alpha16bbox": [
+      409,
+      110,
+      1045,
+      1124
+    ],
+    "borderMaxAlpha": 1
+  },
+  "material": "single dedicated raw already includes unequal main and short subordinate; no duplicate hot roots",
+  "mapping": "cropUV(.28,.05)+uv*(.60,.89); actual raw root approximately(.62,.86) maps localu.567/v.91; smooth 6x4 carrier; no geometrically jagged contour",
+  "envelope": "single .58 length/.23 halfwidth replaces three cropped lobes within comparable aggregate crest space; opacity.90 unchanged main; dynamic shortening1-.24consume; original alpha governs edges",
+  "timingLightRoot": "unchanged251 root(.26,.01,.025), .212 empty, old pulse/consume/cooling and light",
+  "topology": "4batches kind14/0/15/2, maxwritten6/144/144/18 capacity512each",
+  "unchanged": [
+    "cooling old raw04 geometry/UV/mask",
+    "otherfactory bytes/profile/bridge",
+    "renderer/shader/palette/rules/owner/hero/camera",
+    "raw02 and04 originals"
+  ],
+  "loader": "existing hd2d-fire-volume- prefix TextureMotion12; authored RGBA, original gain1",
+  "native": "pending",
+  "art": "pending"
+}

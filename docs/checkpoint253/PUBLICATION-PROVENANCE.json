@@ -1,0 +1,22 @@
+{
+  "revision": 253,
+  "parent": "f1035e362565bc2f0d6ac5a2d9f66c0003793d80",
+  "changedProductSHA256": {
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs": "daf330c9662a4d6e183626dab47e840edf5d578282c06880815e12e750f7a14c",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/NativeGeometryBridge.cs": "c611ea72ecc2d1e3bb0e128f8fd5c176c97e1248a94b6de2e3cf2772a161a9ce",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/PermanentContactVfxProfiles.cs": "eee3a4a4b375aef1d1e966ca7f3581cae13241cfbaf9993d29ef4f639de030fc",
+    "docs/THORN-FLAME-ASYMMETRIC-CONTACT-250-CONTRACT.json": "7dfd2ee6cfbb80ab8a93f032d5ea94c3e170ed8ce04c5c6e4f7d98d72360e6bd",
+    "docs/THORN-FLAME-OPEN-CREST-251-CONTRACT.json": "ad0cf11e27f00a20ae4b6e8c9a91125851a99a23c5ad84e97acf547a9bbbc414",
+    "docs/THORN-FLAME-OPEN-DENSITY-252-CONTRACT.json": "195385fca0886411c633d866936b0e7d58c01abde40a4dc64057664ade8f3438",
+    "docs/THORN-FLAME-LATERAL-AXIS-253-CONTRACT.json": "2b0f1a5dc7151c864a774b3729a5809194742581748477e16a55fc36cb71e97e",
+    "assets/Art/fx/hd2d-fire-volume-thorn-density-v1.png": "7168578f6f1a9bae9863cfa7eec4d5f0103e4f06b383e35a1c30d415111ae8cb"
+  },
+  "all239NewLogicalSourceHashesVerified": true,
+  "outsideNewFactoryExact249": true,
+  "stageActorSharedShaderChanges": false,
+  "newRawOriginal": "1254squareRGBA744643bytes,unmodified",
+  "currentQA": "4720/6successful all no shutdownresource notice reproduced; priorAudio unresolved, all knownVSync",
+  "scope": "Exact installed red_perm_thorn_flame; damage3/BurnApplied2 independent; later systemBurn and otherinstalledFire unchanged",
+  "directionCorrection": "Authoritative(-.94,+.342)\u2192(-.985,-.174),mathematicalXY+30degrees; historicalclockwise word incorrect",
+  "qualification": "New recovered-workspace QA, not recovered old inaccessible QA; no Unity/device/equal-speed subjective claim"
+}

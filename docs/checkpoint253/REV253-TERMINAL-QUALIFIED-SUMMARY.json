@@ -1,0 +1,71 @@
+{
+  "selectedRevision": 253,
+  "checks": 4720,
+  "successfulRuns": 6,
+  "runs": [
+    {
+      "name": "new253-thorn-flame-standard",
+      "checks": 859,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new253-thorn-flame-direct-movie",
+      "checks": 574,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new253-thorn-bound-shell",
+      "checks": 882,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new253-thorn-bound-moss-repeat-small",
+      "checks": 1262,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new253-thorn-bound-old-runfire",
+      "checks": 253,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new253-thorn-bound-lifecycle",
+      "checks": 890,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    }
+  ],
+  "qualification": [
+    "Godot recovered QA, Unity untested",
+    "static, consecutive temporal decode, Moss small-window first contact art PASS; direct normal-speed subjective viewing not performed",
+    "probe+Moss2bodytypes only; 960x540 native is not actual phone/all-enemy certification",
+    "shell real burrowblock12->9, HpLoss0/noThornbody but BurnApplied2 maintained",
+    "Moss actual two followup EndTurns: BurnTick2 on defend then BurnTick1 and sameinstalledUID response3 on attack",
+    "old runfire real impulse UID3damage separate from Sprint2 pierce; shared4batch and !Thorn verified",
+    "lifecycle installed actual fixture reload; aftercontact threshold waits both enemy attack and ownedThorn; actorcomponentdead not Engine lethal",
+    "all6resource-exit-notice-free in this series does not resolve prior Audio warnings; all6 VSync warning"
+  ]
+}
