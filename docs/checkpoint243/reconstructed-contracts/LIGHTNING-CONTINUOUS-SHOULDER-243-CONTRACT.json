@@ -1,0 +1,25 @@
+{
+  "revision": 243,
+  "baseHeld": 242,
+  "status": "preflight terminal; native/art pending",
+  "cause": "Kind21 has longitudinal fade; Stroke reset UV0..1 per tinysegment, creating capsule/lightpoint chain",
+  "changes": {
+    "shoulderUV": "global station/subsegment t0..min(t1,front), across0..1; same positions/alpha/gain/width",
+    "coolingUV": "only selectedstations4/9 blend globalUV to station-local0..1 with Ease((age-.020)/.040); global ranges within kind21 fullfade plateau so edge attenuation does not rebrighten",
+    "sharedShader": "byte unchanged, geometry supplies correct longitudinal coordinate",
+    "capacity": "same468shoulder/342channel/108forks"
+  },
+  "unchanged": [
+    "core widths/cooling",
+    "branch hierarchy and all positions",
+    "light/camera/gain/raw/palette/sharedshader",
+    "owner/actualhit/energy/discount/receipt/StageActor",
+    "all factories outsideLightningDischarge"
+  ],
+  "gates": [
+    "continuous optical trunk shoulder, not repeated luminous capsules",
+    "three width nodes remain hierarchy not new pulse",
+    "selected2cooling stretches fade ends only",
+    "4actualsameage keys; source/target identity preserved"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "revision": 242,
+  "baseHeld": 241,
+  "status": "preflight terminal; native/art pending",
+  "scope": "same exact IzzetLightning route; core/shoulder optical hierarchy only",
+  "held241": "dominant nodes were opaque white polygonal pipe; cooling became gray-white bars",
+  "changes": {
+    "whiteCoreHalfwidth": ".003+.16*nodeWidth => .00388 to .0058, instead of .0055 to .0175",
+    "coreAlpha": "oldlive*.85*(1-Ease((age-.015)/.070)); no opaque white core after .085",
+    "shoulder": "same Kind21 Gaussian sampler two nested optical strokes: nodeSum*3.8/alpha*.48 primary blue and nodeSum*1.8/alpha*.36 pale-blue edge",
+    "afterglow": "same existing stretches and monotonically decreasing live; opaque core clears earlier leaving blue translucent shoulder, not gray bars",
+    "capacity": "shoulder doubles234\u2192468 (<512), channel342/forks108 unchanged; no extra independent branch/owner"
+  },
+  "unchanged": [
+    "241 geometry centerline/bends/nodes/source/contact anchors",
+    "timing/lead/tail/actualhit/energy/discount/owner/receipt",
+    "contactraw/branchhierarchy/all other factories",
+    "raw0/sharedshader/palette/gain/light/floor/camera/StageActor"
+  ],
+  "gates": [
+    "white core thin with broader background-visible blue shoulder",
+    "no white polygon pipe or gray remnant bars",
+    "same real14damage and exact baselineoracle",
+    "fourkeysactual+.0033/.07/.1367/clear compare",
+    "finiteperlayer <512"
+  ]
+}

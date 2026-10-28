@@ -1,0 +1,32 @@
+{
+  "revision": 241,
+  "baseSelected": 240,
+  "status": "product preflight completed; native/art pending",
+  "scope": "existing exact Izzet-owned blue_aether_burst Lightning adapter only; no new route",
+  "baseline": "current240 rev240-lightning-baseline-reused222-v4 269PASS; actual initialenergy3\u21923\u21921, Aether0\u21922\u21920,14damage; first cost discounted by existing nextCardDiscount1, not energy refund",
+  "changes": {
+    "mainBends": "same13 stations, dominant offsets .245 at.19 and-.285 at.51; minor microkinks .007+.006sin\u00b2 rather than .025+.018sin\u00b2",
+    "coreHalfwidth": ".0055+.012*max(Node(.205,.10),Node(.535,.12),.72Node(.80,.10)); Node=1-Ease(abs(x-center)/radius)",
+    "shoulder": "width(wa+wb)*2.4 alpha*.58; narrower/dimmer shoulder than old factor2.8/.68, not world gain",
+    "branches": "same2 source-relative forks; halfwidth.004 taper, shoulderalpha.36/corealpha.46; subordinate to trunk",
+    "cooling": "existing segments4 and9 live=max(original,.32*(1-Ease(age/.145))) for age>=0; monotonically decreasing and disconnected; no newpulse"
+  },
+  "unchanged": [
+    "real source and contact anchors/path endpoints",
+    "lead-.10/end+.20/front/conduct clocks",
+    "exactroute/actualIzzetUID/owner/receipt",
+    "contact raw and target material .52x.48",
+    "all light/floor/camera/StageActor",
+    "sharedshader/palette/raw assets",
+    "all code outsideCreateLightningDischarge",
+    "MassHeal240 and nonIzzetneutral/Static"
+  ],
+  "capacity": "same topology and batch vertex count as240; widths/offsets/opacity only",
+  "gates": [
+    "main trunk hot nodes not uniform ECG wire",
+    "branches subordinate, not tree/star/fireworks",
+    "one contact with short broken cooling; no second flash",
+    "actualfullrules/energy/discount/oracle identicalcurrent240",
+    "no other routes affected"
+  ]
+}

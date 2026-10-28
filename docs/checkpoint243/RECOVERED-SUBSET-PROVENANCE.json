@@ -1,0 +1,21 @@
+{
+  "revision": 243,
+  "scope": "limited reconstructed major-source checkpoint, not recovered full227 source manifest or native QA",
+  "expectedRemoteParent": "2e50ea6d47e68530bdad278b50378b22984bbebe",
+  "remote240BaseSHA256": "f5a8ffb9e2f5b7ae73b5110de5f232db62da9ea3ab51036e458ef3d8fef95ace",
+  "source243SHA256": "32c3ae0b2821abe53dc0d6f7959ba651c82d5d3d712e38220ae6d28ee29b4869",
+  "outsideCreateLightningDischargeExactRemote240": true,
+  "kitAllMembersSHAAndCRC": true,
+  "kitLibrary": "libfile_f33a4677cd0081918a62fcd8a8bdd4bf",
+  "kitVersion": 0,
+  "kitSHA256": "94c3b8735ef6d4acec9949d8b617f51b89a01c64ff69dfc2408fa997bab8cc07",
+  "newRaw": 0,
+  "newImportSettings": 0,
+  "buildRerun": false,
+  "nativeRerun": false,
+  "originalFullManifestRecovered": false,
+  "originalQALogsRecovered": false,
+  "originalContractHashesAvailable": false,
+  "remoteWritesPerformed": false,
+  "publicationQualification": "One exact recovered C# delta on remote240; explanatory docs reconstructed; not substitute full227 manifest"
+}
