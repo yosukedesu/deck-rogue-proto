@@ -1,0 +1,24 @@
+{
+  "_note": "地図の頂と麓の顔 (2026-10-28 品質スプリント §8-6 の磨き A「目的地と出発点に顔」)。頂＝坑口の門 (幕1 の目的地。幕ボスは節に入るまで決まらないので門そのものを顔にする)・麓＝坑匠の荷車 (森の入口の出発点。道標 act1_waystone と組む)。地図は 1ドット=2px。使い方: node scripts/pixellab.mjs gen docs/pixellab/map-face-2026-10-28.json → 見て選ぶ → unity/Assets/Resources/Art/map/ へ",
+  "defaults": {
+    "engine": "pixflux",
+    "view": "low top-down",
+    "direction": "south",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 8,
+    "negative": "human, person, character, creature, monster, animal, face, eyes, text, letters, watermark, border, frame, ui, blurry, bright saturated colors, daylight, blue sky, sun, clouds, background scenery, floor tiles, grid"
+  },
+  "items": [
+    {"id": "map_mine_gate_a", "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/mapface/map_mine_gate_a.png", "size": [192, 128], "seed": 23,
+     "description": "HD-2D Octopath Traveler style pixel art, the entrance of an old abandoned mine cut into a dark mossy rock hillside, heavy weathered timber frame with a crossbeam, a pitch-black square opening, one small brass lantern with a warm amber glow hanging from the beam, rusty narrow rail tracks running out of the opening toward the viewer, ferns and roots and loose stones around the base, night, cool blue-grey moonlit palette with the lantern as the only warm accent, seen from slightly above, the whole mine entrance fills the frame, nothing else in the frame, transparent background"},
+    {"id": "map_mine_gate_b", "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/mapface/map_mine_gate_b.png", "size": [192, 128], "seed": 41,
+     "description": "HD-2D Octopath Traveler style pixel art, the entrance of an old abandoned mine cut into a dark mossy rock hillside, heavy weathered timber frame with a crossbeam, a pitch-black square opening, one small brass lantern with a warm amber glow hanging from the beam, rusty narrow rail tracks running out of the opening toward the viewer, ferns and roots and loose stones around the base, night, cool blue-grey moonlit palette with the lantern as the only warm accent, seen from slightly above, the whole mine entrance fills the frame, nothing else in the frame, transparent background"},
+    {"id": "map_cart_a", "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/mapface/map_cart_a.png", "size": [80, 56], "seed": 23,
+     "description": "HD-2D Octopath Traveler style pixel art, a small wooden two-wheeled handcart parked on forest ground, loaded with a clockwork mechanic's tools, brass gears, coiled rope and a wooden crate, a small brass lantern with a warm amber glow hanging from a hook on the cart, night, cool blue-grey moonlit palette with the lantern as the only warm accent, seen from slightly above, the cart fills the frame, nothing else in the frame, transparent background"},
+    {"id": "map_cart_b", "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/mapface/map_cart_b.png", "size": [80, 56], "seed": 41,
+     "description": "HD-2D Octopath Traveler style pixel art, a small wooden two-wheeled handcart parked on forest ground, loaded with a clockwork mechanic's tools, brass gears, coiled rope and a wooden crate, a small brass lantern with a warm amber glow hanging from a hook on the cart, night, cool blue-grey moonlit palette with the lantern as the only warm accent, seen from slightly above, the cart fills the frame, nothing else in the frame, transparent background"}
+  ]
+}

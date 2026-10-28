@@ -1,0 +1,27 @@
+{
+  "id": "map_cart_a",
+  "engine": "pixflux",
+  "request": {
+    "description": "HD-2D Octopath Traveler style pixel art, a small wooden two-wheeled handcart parked on forest ground, loaded with a clockwork mechanic's tools, brass gears, coiled rope and a wooden crate, a small brass lantern with a warm amber glow hanging from a hook on the cart, night, cool blue-grey moonlit palette with the lantern as the only warm accent, seen from slightly above, the cart fills the frame, nothing else in the frame, transparent background",
+    "negative_description": "human, person, character, creature, monster, animal, face, eyes, text, letters, watermark, border, frame, ui, blurry, bright saturated colors, daylight, blue sky, sun, clouds, background scenery, floor tiles, grid",
+    "image_size": {
+      "width": 80,
+      "height": 56
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down",
+    "direction": "south",
+    "seed": 23
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-10-28T14:53:41.946Z",
+  "post": "A を採用。左の木の幹を落とすため x 18〜79 を切り出し (62×56)",
+  "judge": "2026-10-29 ユーザー裁定 門 A・荷車 A"
+}

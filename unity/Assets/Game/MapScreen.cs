@@ -17,8 +17,9 @@ namespace DeckRogue.Game
     public static class MapScreen
     {
         const float MapW = 1020f;      // 節の格子の幅 (列の間隔 150。カンバスの案1)
-        const float RowH = 120f;       // 1行の高さ
-        const float PadY = 220f;       // 上下の余白 (下は出発の道標と駒・下のボタンの帯、上はボスの名札)
+        const float RowH = 150f;       // 1行の高さ (磨き 案C 2026-10-29: 120 → 150 = 見える行 8 → 7・節の間に余白)
+        const float PadTop = 255f;     // 上の余白 (丘の闇に坑口の門 384×256。門の下端の 12px 下が幕ボスの中心 = 門の前のレールの上)
+        const float PadBottom = 200f;  // 下の余白 (出発点 = 坑匠の荷車と道標と灯。行 0 の 150px 下 = 行 0 が 7 列に広がっても道が寝ない。下の帯 100 の上)
         static float _ox = 0f;         // 節の格子の左端 (content の中の x)。地図は画面の幅いっぱいなので、格子を中央へ寄せる
         static float NodeSize { get { return UiKit.Phone ? 74f : 60f; } }   // 画面の切り欠きの寄せの目安 (2026-09-14)
         const int Cols = 7;
@@ -76,7 +77,7 @@ namespace DeckRogue.Game
             view.gameObject.AddComponent<RectMask2D>();
             var content = UiKit.NewRect("content", view);
             int rows = run.Map.Count;
-            float contentH = Mathf.Max(viewH, PadY * 2f + (rows + 1) * RowH);   // +1 = 出発の行
+            float contentH = Mathf.Max(viewH, PadBottom + (rows + 1) * RowH + PadTop);   // +1 = 出発の行
             content.anchorMin = new Vector2(0f, 0f);
             content.anchorMax = new Vector2(1f, 0f);
             content.pivot = new Vector2(0.5f, 0f);
@@ -121,6 +122,18 @@ namespace DeckRogue.Game
                 Place(shade.rectTransform, new Vector2(side == 0 ? _ox - 120f : _ox + MapW + 120f, contentH / 2f), new Vector2(560f, contentH + 200f), new Vector2(0.5f, 0.5f));
             }
 
+            // 頂の丘の闇 (磨き 案C 2026-10-29: 上の余白に丘。坑口の門は森と小物の後に貼る = 道の端が門の足元に隠れる)
+            {
+                var hc = Color.Lerp(PaperFx.Ground, Color.black, 0.55f); hc.a = 0.86f;
+                var hill = UiKit.Pan(content, hc, "hill");
+                hill.sprite = MapForest.Hill(); hill.raycastTarget = false;
+                hill.rectTransform.anchorMin = new Vector2(0f, 1f); hill.rectTransform.anchorMax = new Vector2(1f, 1f); hill.rectTransform.pivot = new Vector2(0.5f, 1f);
+                hill.rectTransform.sizeDelta = new Vector2(0f, 400f); hill.rectTransform.anchoredPosition = Vector2.zero;
+                var gd = UiKit.Pan(content, new Color(0f, 0f, 0f, 0.55f), "gate-dark");
+                gd.sprite = MapForest.Radial(); gd.raycastTarget = false;
+                Place(gd.rectTransform, new Vector2(_ox + MapW / 2f, contentH - 180f), new Vector2(720f, 360f), new Vector2(0.5f, 0.5f));
+            }
+
             var choices = DeckRogue.Engine.Run.NextChoices(run);
             var choiceSet = new HashSet<int>();
             for (int i = 0; i < choices.Count; i++) choiceSet.Add(choices[i]);
@@ -156,6 +169,7 @@ namespace DeckRogue.Game
 
             // 踏み跡 (カンバスの案1 と同じ: 暗い縁 38 の上に、土に夜の色を焼いた帯 26 を まだ先 → 通らなかった → 通った → 進める の順に重ね、
             // 通った道は真鍮の足跡、進める道は光る破線。帯の端は丸い = 節でなめらかにつながる。2026-10-28 ユーザー「道が醜すぎる」)
+            Vector2 startPos = new Vector2(_ox + MapW / 2f, PadBottom + 75f);   // 出発 (荷車の足元。行 0 の 150px 下)
             var trailBase = Trail(content, "trail-base", null);
             var trailRim = Trail(content, "trail-rim", null);   // 道の輪郭 (月明かりの縁。2026-10-28 ユーザー「道の輪郭をもっと見やすく」)。全部の縁を先に描き、帯は後 = 節で縁が帯の上を横切らない
             var trailFuture = Trail(content, "trail-future", MapForest.DirtState(run.Act, 1), 64f);
@@ -181,33 +195,56 @@ namespace DeckRogue.Game
                         bool passed = !taken && !avail && r <= run.Row;
                         Vector2 a = NodePos(n, r), b = NodePos(run.Map[r + 1][j], r + 1);
                         edges.Add(new[] { a, b });
-                        var pts = Curve(a, b, r + (n.Col ?? 0));
-                        trailBase.Add(pts, 30f, new Color(0.024f, 0.031f, 0.063f, MapForest.LinearAlpha(0.42f)));   // 外の影 (磨き 案B 2026-10-28: カンバスの rgba(6,8,16,.42)・30px。旧 42px .62 は黒い X に見えた)
-                        float rimA = taken || avail ? 0.22f : passed ? 0.06f : 0.10f;   // 縁 (帯 22 の外に 1.5px)。カンバスの .26/.07/.12 を実機と並べて合わせた値
-                        trailRim.Add(pts, 25f, new Color(PaperFx.PaperDim.r, PaperFx.PaperDim.g, PaperFx.PaperDim.b, rimA));
-                        var band = taken || avail ? trailTaken : passed ? trailPassed : trailFuture;
-                        band.Add(pts, 22f, band.Tex != null ? Color.white : new Color(0.27f, 0.22f, 0.25f, 1f));
-                        if (taken) { var tc = TakenLine; trailTop.Add(pts, 5f, new Color(tc.r, tc.g, tc.b, 0.95f), 2f, 15f); }   // 足跡 (点)
-                        if (avail)
-                        {
-                            var ac = AvailLine;
-                            trailTop.Add(pts, 13f, new Color(ac.r, ac.g, ac.b, 0.22f));   // 破線のにじみ (カンバスの glow)
-                            trailTop.Add(pts, 5f, new Color(ac.r, ac.g, ac.b, 0.97f), 10f, 10f);
-                        }
+                        var pts = Curve(a, b, r * 5 + (n.Col ?? 0) * 3 + (run.Map[r + 1][j].Col ?? 0) * 7);
+                        Road(trailBase, trailRim, trailTop, taken || avail ? trailTaken : passed ? trailPassed : trailFuture, pts, taken, avail, passed);
                     }
                 }
+            }
+            // 出発点から行 0 への道 (磨き 案C 2026-10-29: 麓の荷車から森へ入る。まだ節を選んでいない時は進める道)
+            for (int i = 0; i < run.Map[0].Count; i++)
+            {
+                Vector2 b = NodePos(run.Map[0][i], 0);
+                bool taken = path.Contains(Key(0, i)), avail = run.Row < 0 && choiceSet.Contains(i);
+                var pts = Curve(startPos, b, 3 + i * 7);
+                edges.Add(new[] { startPos, b });
+                Road(trailBase, trailRim, trailTop, taken || avail ? trailTaken : trailFuture, pts, taken, avail, false);   // 通らなかった出発の道は「まだ先」の薄さ (5〜6 本が扇に広がるので沈める)
             }
 
             // 森 (両脇の木・格子の空いた所の茂みや切り株・出発の道標と灯)
             var rnd = new System.Random(977 * run.Act + rows * 31 + (run.Map.Count > 0 ? run.Map[0].Count : 0));
             if (!Dbg("noforest")) Forest(content, run, viewW, contentH, rnd, edges);
-            Vector2 startPos = new Vector2(_ox + MapW / 2f, PadY - 10f);   // 出発 (駒の足元。行0 の空き地と重ならない)
+            // 坑口の門 (磨き 案C 2026-10-29: PixelLab 192×128 を 2 倍・縁は丘に溶かしてある。灯の溜まりと足元の霧。森と小物の上・節の下)
+            {
+                var gsp = Theme.Art("map", "map_mine_gate");
+                if (gsp != null)
+                {
+                    Vector2 gc = new Vector2(_ox + MapW / 2f, contentH - 190f);
+                    var gate = Pic(content, "gate", gsp, 0.78f);
+                    Place(gate.rectTransform, gc, new Vector2(gsp.rect.width * 2f, gsp.rect.height * 2f), new Vector2(0.5f, 0.5f));
+                    var gl = UiKit.Pan(content, new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.18f), "gate-glow");
+                    gl.sprite = MapForest.Radial(); gl.raycastTarget = false;
+                    Place(gl.rectTransform, gc + new Vector2(0f, -10f), new Vector2(320f, 220f), new Vector2(0.5f, 0.5f));
+                    var mist = UiKit.Pan(content, new Color(PaperFx.PaperDim.r, PaperFx.PaperDim.g, PaperFx.PaperDim.b, 0.22f), "gate-mist");
+                    mist.sprite = MapForest.Radial(); mist.raycastTarget = false;
+                    UiKit.LinearShade(mist, 0.12f);
+                    Place(mist.rectTransform, gc + new Vector2(0f, -120f), new Vector2(800f, 170f), new Vector2(0.5f, 0.5f));
+                }
+            }
+            // 出発点 (磨き 案C 2026-10-29: 坑匠の荷車 PixelLab 62×56 を 2 倍・道標・灯の溜まり・「森の入口」の札)
             {
                 var lamp = UiKit.Pan(content, new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.34f), "start-lamp");
                 lamp.sprite = MapForest.Radial(); lamp.raycastTarget = false;
-                Place(lamp.rectTransform, startPos + new Vector2(0f, 20f), new Vector2(170f, 170f), new Vector2(0.5f, 0.5f));
+                Place(lamp.rectTransform, startPos + new Vector2(10f, -20f), new Vector2(180f, 180f), new Vector2(0.5f, 0.5f));
+                var cart = Theme.Art("map", "map_cart");
+                if (cart != null) { var ci = Pic(content, "start-cart", cart, 0.82f); Place(ci.rectTransform, startPos + new Vector2(-52f, -12f), new Vector2(cart.rect.width * 2f, cart.rect.height * 2f), new Vector2(0.5f, 0.5f)); }
                 var stone = MapForest.Graded(MapForest.Folder(1) + "/relief/act1_waystone", 0.7f, 10f);
-                if (stone != null) { var st = Pic(content, "start-stone", stone, 0.62f); Place(st.rectTransform, startPos + new Vector2(0f, -40f), new Vector2(stone.rect.width, stone.rect.height), new Vector2(0.5f, 0f)); }
+                if (stone != null) { var st = Pic(content, "start-stone", stone, 0.62f); Place(st.rectTransform, startPos + new Vector2(70f, -17f), new Vector2(stone.rect.width * 1.5f, stone.rect.height * 1.5f), new Vector2(0.5f, 0f)); }
+                var sl = UiKit.Txt(content, "森の入口", 18, PaperFx.Paper, TextAnchor.MiddleLeft, true);
+                sl.characterSpacing = 3f; sl.outlineWidth = 0.22f; sl.outlineColor = new Color(0f, 0f, 0f, 0.85f); sl.raycastTarget = false;
+                Place(sl.rectTransform, startPos + new Vector2(118f, -2f), new Vector2(260f, 26f), new Vector2(0f, 0.5f));
+                var ss = UiKit.Txt(content, "出発点 ・ 坑匠の荷車", 13, PaperFx.PaperDim, TextAnchor.MiddleLeft);
+                ss.outlineWidth = 0.2f; ss.outlineColor = new Color(0f, 0f, 0f, 0.85f); ss.raycastTarget = false;
+                Place(ss.rectTransform, startPos + new Vector2(118f, -24f), new Vector2(260f, 20f), new Vector2(0f, 0.5f));
             }
 
             // ノード (名札は駒より上の層 labels に置く = 駒の頭に隠れない)
@@ -372,22 +409,39 @@ namespace DeckRogue.Game
 
         static long Key(int r, int c) { return ((long)r << 16) | (uint)c; }
 
-        static Vector2 GridPos(int col, int row)
+        static Vector2 GridPos(int col, int row, bool jitter = true)
         {
             float colW = (MapW - 120f) / (Cols - 1);
-            // 格子に揺らぎ (手で置いたように。行と列から決まる = 毎回同じ。カンバスの案1 と同じ式)
-            float jx = (((row * 7 + col * 13) % 5) - 2) * 9f, jy = (((row * 11 + col * 5) % 5) - 2) * 7f;
-            return new Vector2(_ox + 60f + col * colW + jx, PadY + RowH * (row + 1) + RowH * 0.5f + jy);
+            // 格子に揺らぎ (手で置いたように。行と列から決まる = 毎回同じ。磨き 案C 2026-10-29: x ±28・y ±20 = 格子に見せない。旧 ±18/±14)
+            float jx = jitter ? (((row * 7 + col * 13) % 5) - 2) * 14f : 0f, jy = jitter ? (((row * 11 + col * 5) % 5) - 2) * 10f : 0f;
+            return new Vector2(_ox + 60f + col * colW + jx, PadBottom + RowH * (row + 1) + RowH * 0.5f + jy);
         }
 
-        static Vector2 NodePos(MapNode n, int row) { return GridPos(n.Col ?? 0, row); }
+        static Vector2 NodePos(MapNode n, int row) { return GridPos(n.Col ?? 0, row, n.Type != MapNodeTypes.Boss); }   // 幕ボスは門の正面 (揺らさない)
+
+        /// <summary>道 1 本 (磨き 案C 2026-10-29: 外の影 22〔まだ先は 18・薄く〕・月明かりの縁 17・帯 14・足跡 4・破線 4)</summary>
+        static void Road(MapTrail trailBase, MapTrail trailRim, MapTrail trailTop, MapTrail band, List<Vector2> pts, bool taken, bool avail, bool passed)
+        {
+            if (taken || avail || passed) trailBase.Add(pts, 22f, new Color(0.024f, 0.031f, 0.063f, MapForest.LinearAlpha(0.42f)));   // 外の影 (カンバスの rgba(6,8,16,.42))
+            else trailBase.Add(pts, 18f, new Color(0.024f, 0.031f, 0.063f, MapForest.LinearAlpha(0.20f)));   // まだ先の道は影を半分に (網に見えない)
+            float rimA = taken || avail ? 0.22f : passed ? 0.06f : 0.10f;   // 縁 (帯の外に 1.5px)。カンバスの .26/.07/.12 を実機と並べて合わせた値
+            trailRim.Add(pts, 17f, new Color(PaperFx.PaperDim.r, PaperFx.PaperDim.g, PaperFx.PaperDim.b, rimA));
+            band.Add(pts, 14f, band.Tex != null ? Color.white : new Color(0.27f, 0.22f, 0.25f, 1f));
+            if (taken) { var tc = TakenLine; trailTop.Add(pts, 4f, new Color(tc.r, tc.g, tc.b, 0.95f), 2f, 13f); }   // 足跡 (点)
+            if (avail)
+            {
+                var ac = AvailLine;
+                trailTop.Add(pts, 10f, new Color(ac.r, ac.g, ac.b, 0.22f));   // 破線のにじみ (カンバスの glow)
+                trailTop.Add(pts, 4f, new Color(ac.r, ac.g, ac.b, 0.97f), 9f, 9f);
+            }
+        }
 
         /// <summary>節と節の間のゆるい曲線 (二次ベジェを 14 分割。曲がりは行と列で決まる)</summary>
         static List<Vector2> Curve(Vector2 a, Vector2 b, int seed)
         {
             Vector2 m = (a + b) * 0.5f, d = b - a;
             float L = Mathf.Max(0.001f, d.magnitude);
-            float k = ((seed % 3) - 1) * 22f;
+            float k = ((seed % 5) - 2) * 15f;   // 道ごとに ±30 まで散らす (磨き 案C 2026-10-29。旧 ±22 の 3 段)
             Vector2 c = m + new Vector2(-d.y / L, d.x / L) * k;
             var pts = new List<Vector2>(15);
             for (int i = 0; i <= 14; i++)
@@ -594,7 +648,7 @@ namespace DeckRogue.Game
             Vector2 at = NodePos(n, row);
             var cell = UiKit.NewRect("node-" + row + "-" + index, parent);
             Place(cell, at, new Vector2(boss ? 200f : 124f, boss ? 170f : 124f), new Vector2(0.5f, 0.5f));
-            float asz = boss ? 96f : 64f;
+            float asz = boss ? 84f : 52f;   // 印 (磨き 案C 2026-10-29: 64 → 52・ボス 96 → 84)
 
             Image Soft(string name, Sprite sp, Color c, Vector2 pos, Vector2 size)
             {
@@ -609,7 +663,7 @@ namespace DeckRogue.Game
             // 印の円盤 (磨き 案B・印 1「石の円盤」2026-10-28): 青灰の石の円盤 72 (ボス 108) を節の中心の 6px 上に。
             // 進める節だけ真鍮の縁と淡い光、現在地は真鍮の二重の縁に灯の溜まり (坑匠のランタン)、通った節は沈める、幕ボスは薔薇の縁。旧「土の空き地の楕円と大きな光」は廃止
             const float cy = 6f;
-            float dsz = boss ? 108f : 72f;
+            float dsz = boss ? 96f : 62f;   // 円盤 (磨き 案C 2026-10-29: 72 → 62・ボス 108 → 96)
             Image Ring(string name, float d, float w, Color c)
             {
                 float rs = MapForest.RingSize(d, w);
@@ -617,8 +671,8 @@ namespace DeckRogue.Game
                 if (c.a < 1f) UiKit.LinearShade(im, 0.12f);   // 下は暗い地面
                 return im;
             }
-            if (cur) Soft("ember", MapForest.Radial(), new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.40f), new Vector2(0f, cy), new Vector2(260f, 260f));
-            if (avail) Soft("halo", MapForest.Radial(), new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.22f), new Vector2(0f, cy), new Vector2(160f, 160f));
+            if (cur) Soft("ember", MapForest.Radial(), new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.40f), new Vector2(0f, cy), new Vector2(240f, 240f));
+            if (avail) Soft("halo", MapForest.Radial(), new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.22f), new Vector2(0f, cy), new Vector2(140f, 140f));
             if (boss) Soft("boss-glow", MapForest.Radial(), new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, 0.26f), new Vector2(0f, cy + 6f), new Vector2(260f, 240f));
             Soft("shadow", MapForest.Radial(), new Color(0f, 0f, 0f, 0.6f), new Vector2(0f, cy - 7f), new Vector2(dsz + 36f, dsz + 36f));   // カンバスの 0 7px 14px の影
             if (avail) Soft("rim-glow", MapForest.Radial(), new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.5f), new Vector2(0f, cy), new Vector2(dsz + 44f, dsz + 44f));
@@ -655,10 +709,10 @@ namespace DeckRogue.Game
                 int left = Math.Max(0, row - g.Rs.Row);
                 var bt = UiKit.Txt(labels, bname, 24, PaperFx.RoseLight, TextAnchor.MiddleLeft, true);
                 bt.outlineWidth = 0.22f; bt.outlineColor = new Color(0f, 0f, 0f, 0.85f); bt.raycastTarget = false;
-                Place(bt.rectTransform, at + new Vector2(74f, 34f), new Vector2(360f, 32f), new Vector2(0f, 0.5f));
+                Place(bt.rectTransform, at + new Vector2(70f, 34f), new Vector2(360f, 32f), new Vector2(0f, 0.5f));
                 var bs = UiKit.Txt(labels, "幕ボス ・ あと " + left + " 行", 14, PaperFx.PaperDim, TextAnchor.MiddleLeft);
                 bs.outlineWidth = 0.2f; bs.outlineColor = new Color(0f, 0f, 0f, 0.85f); bs.raycastTarget = false;
-                Place(bs.rectTransform, at + new Vector2(74f, 8f), new Vector2(360f, 22f), new Vector2(0f, 0.5f));
+                Place(bs.rectTransform, at + new Vector2(70f, 8f), new Vector2(360f, 22f), new Vector2(0f, 0.5f));
             }
             // 名札 (進める節)
             if (avail && !boss)
@@ -667,20 +721,20 @@ namespace DeckRogue.Game
                 tag.anchorMin = tag.anchorMax = Vector2.zero;
                 tag.pivot = new Vector2(0.5f, 1f);
                 tag.sizeDelta = new Vector2(80f, 30f);
-                tag.anchoredPosition = at + new Vector2(0f, -40f);
+                tag.anchoredPosition = at + new Vector2(0f, -36f);
                 var hg = tag.GetComponent<HorizontalLayoutGroup>(); if (hg != null) hg.childAlignment = TextAnchor.MiddleCenter;
                 var t = UiKit.Txt(tag, NodeName(n.Type), 16, PaperFx.Ink, TextAnchor.MiddleCenter, true);
                 UiKit.Le(t, -1f, 26f, -1f, 26f);
             }
 
-            string tip = NodeTip(n);
+            string tip = NodeTip(n, row, g.Rs);
             // ⭐ 工房: いま手元でレシピが成立する対があれば印の右上に星 (2026-09-12「レシピは誰も踏まなかった」への提示)
             if (n.Type == MapNodeTypes.Workshop && recipeCount > 0 && !passed)
             {
                 var star = UiKit.Icon(cell, "star", 32f);
                 star.raycastTarget = false;
                 star.rectTransform.anchorMin = star.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-                star.rectTransform.anchoredPosition = new Vector2(34f, 62f);
+                star.rectTransform.anchoredPosition = new Vector2(28f, 52f);   // 円盤 62 の右上 (磨き 案C)
                 int price = 0;
                 try { price = DeckRogue.Engine.Run.WorkshopFusePrice(g.Rs); } catch (Exception) { }
                 tip += "\n★ 今の手札でレシピ（手書きの一品）が " + recipeCount + " 組 作れる" + (g.Rs.Gold < price ? "（所持金が " + price + "G に足りない）" : "（" + price + "G）");
@@ -712,20 +766,24 @@ namespace DeckRogue.Game
         /// <summary>見出し (磨き 案B 2026-10-28・PC): 顔の右に「幕 N」の真鍮の札・幕の名前 34・行／勝利／次の焚き火までの小さな行。上部バーの札の代わり</summary>
         static void Header(RectTransform root, RunState run)
         {
-            var chip = UiKit.Pan(root, PaperFx.BrassLight, "act-chip");
+            // 紙の帯 (磨き 案C 2026-10-29: 平らな UI の板をやめ、紙の札に墨の字。幕の札は真鍮)
+            var band = UiKit.Pan(root, Color.white, "act-band");
+            band.sprite = PaperFx.Tag2; band.type = Image.Type.Sliced; band.pixelsPerUnitMultiplier = 1f; band.raycastTarget = false;
+            UiKit.Anchor(band.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(112f, -96f), new Vector2(452f, -16f));
+            var chip = UiKit.Pan(band.rectTransform, PaperFx.BrassLight, "act-chip");
             chip.raycastTarget = false;
-            UiKit.Anchor(chip.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(114f, -48f), new Vector2(168f, -24f));
+            UiKit.Anchor(chip.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(16f, -42f), new Vector2(68f, -18f));
             var ct = UiKit.Txt(chip.rectTransform, "幕 " + run.Act, 14, PaperFx.BrassInk, TextAnchor.MiddleCenter, true);
             ct.characterSpacing = 2f; ct.raycastTarget = false;
             UiKit.Stretch(ct.rectTransform, 0f, 0f, 0f, 0f);
-            var name = UiKit.Txt(root, ActName(run.Act), 34, PaperFx.Paper, TextAnchor.MiddleLeft, true);
-            name.characterSpacing = 6f; name.outlineWidth = 0.2f; name.outlineColor = new Color(0f, 0f, 0f, 0.8f); name.raycastTarget = false;
-            UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(0.5f, 1f), new Vector2(180f, -64f), new Vector2(0f, -8f));
+            var name = UiKit.Txt(band.rectTransform, ActName(run.Act), 32, PaperFx.Ink, TextAnchor.MiddleLeft, true);
+            name.characterSpacing = 6f; name.raycastTarget = false;
+            UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(80f, -54f), new Vector2(-10f, -6f));
             int toFire = BattlesToCampfire(run);
             string sub = "行 " + (run.Row + 1) + " / " + run.Map.Count + "  ・  勝利 " + run.BattlesWon + " 戦" + (toFire >= 0 ? "  ・  次の焚き火まで " + toFire + " 戦" : "");
-            var st = UiKit.Txt(root, sub, 15, PaperFx.PaperDim, TextAnchor.MiddleLeft);
-            st.characterSpacing = 1f; st.outlineWidth = 0.18f; st.outlineColor = new Color(0f, 0f, 0f, 0.8f); st.raycastTarget = false;
-            UiKit.Anchor(st.rectTransform, new Vector2(0f, 1f), new Vector2(0.5f, 1f), new Vector2(116f, -92f), new Vector2(0f, -66f));
+            var st = UiKit.Txt(band.rectTransform, sub, 14, PaperFx.InkSoft, TextAnchor.MiddleLeft);
+            st.characterSpacing = 1f; st.raycastTarget = false;
+            UiKit.Anchor(st.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(18f, -78f), new Vector2(-10f, -54f));
         }
 
         /// <summary>今の節から焚き火に着くまでに踏む戦闘 (通常・強個体) の最少数。届く焚き火が無ければ -1</summary>
@@ -759,11 +817,14 @@ namespace DeckRogue.Game
         {
             float w = 318f, h = 166f;
             var panel = UiKit.Pan(root, Color.white, "legend");
-            panel.sprite = PaperFx.MapCard; panel.type = Image.Type.Sliced; panel.pixelsPerUnitMultiplier = 1f; panel.raycastTarget = false;
+            panel.sprite = PaperFx.Tag2; panel.type = Image.Type.Sliced; panel.pixelsPerUnitMultiplier = 1f; panel.raycastTarget = false;   // 紙の札 (磨き 案C 2026-10-29。旧は夜色の板)
             UiKit.Anchor(panel.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-28f - w, 88f), new Vector2(-28f, 88f + h));
-            var hd = UiKit.Txt(panel.rectTransform, "凡例", 13, PaperFx.BrassLight, TextAnchor.MiddleLeft, true);
+            var hd = UiKit.Txt(panel.rectTransform, "凡例", 13, PaperFx.BrassInk, TextAnchor.MiddleLeft, true);
             hd.characterSpacing = 8f; hd.raycastTarget = false;
             UiKit.Anchor(hd.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(14f, -32f), new Vector2(-14f, -10f));
+            var rule = UiKit.Pan(panel.rectTransform, PaperFx.Brass, "rule");
+            rule.raycastTarget = false;
+            UiKit.Anchor(rule.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(14f, -35f), new Vector2(-14f, -33.5f));
             var types = new[] { MapNodeTypes.Battle, MapNodeTypes.Elite, MapNodeTypes.Event, MapNodeTypes.Campfire, MapNodeTypes.Shop, MapNodeTypes.Workshop, MapNodeTypes.Treasure, MapNodeTypes.Boss };
             for (int i = 0; i < types.Length; i++)
             {
@@ -775,7 +836,7 @@ namespace DeckRogue.Game
                 if (art != null) { ic.sprite = art; ic.color = Color.white; }
                 ic.rectTransform.anchorMin = ic.rectTransform.anchorMax = new Vector2(0f, 0.5f); ic.rectTransform.pivot = new Vector2(0f, 0.5f);
                 ic.rectTransform.sizeDelta = new Vector2(24f, 24f); ic.rectTransform.anchoredPosition = Vector2.zero;
-                var t = UiKit.Txt(row, NodeName(types[i]), 14, PaperFx.Paper, TextAnchor.MiddleLeft);
+                var t = UiKit.Txt(row, NodeName(types[i]), 14, PaperFx.Ink, TextAnchor.MiddleLeft, true);
                 t.raycastTarget = false;
                 UiKit.Anchor(t.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(32f, 0f), new Vector2(0f, 0f));
             }
@@ -862,7 +923,8 @@ namespace DeckRogue.Game
             }
         }
 
-        static string NodeTip(MapNode n)
+        /// <summary>節のホバーの札 (磨き 案C 2026-10-29: 本家の形 = 行・種類と中身・いまの HP と G・勝てば/入ると何が起きるか)</summary>
+        static string NodeTip(MapNode n, int row, RunState run)
         {
             string enc = "";
             if (n.EncounterId != null)
@@ -870,16 +932,18 @@ namespace DeckRogue.Game
                 try { enc = "\n" + Content.EncounterName(n.EncounterId); }
                 catch (Exception) { enc = "\n" + n.EncounterId; }
             }
+            string head = "<size=13>行 " + (row + 1) + " / " + run.Map.Count + "</size>\n";
+            string now = "\nいま　HP " + run.Hp + " / " + run.MaxHp + " ・ " + run.Gold + " G";
             switch (n.Type)
             {
-                case MapNodeTypes.Battle: return "<b>戦闘</b>" + enc + "\n勝てばカード報酬とゴールド";
-                case MapNodeTypes.Elite: return "<b>強個体</b>" + enc + "\n勝てばレリック3択・レア確定の報酬・ゴールド";
-                case MapNodeTypes.Boss: return "<b>幕ボス</b>" + enc + "\n倒すと全回復・レリック3択・次の幕へ";
-                case MapNodeTypes.Campfire: return "<b>焚き火</b>\n休む (最大HPの割合で回復) か、カードを1枚鍛える";
-                case MapNodeTypes.Workshop: return "<b>工房</b>\n同じ色のカード2枚を1枚に溶かす (" + DeckRogue.Engine.Run.WORKSHOP_FUSE_PRICE + "G)";
-                case MapNodeTypes.Shop: return "<b>ショップ</b>\nカード・レリック・カード除去・鍛える";
-                case MapNodeTypes.Event: return "<b>？</b>\n入るまで中身は分からない (イベント・戦闘・店・宝箱)";
-                case MapNodeTypes.Treasure: return "<b>宝箱</b>\nレリック3択";
+                case MapNodeTypes.Battle: return head + "<b>戦闘</b>" + enc + now + "\n勝てば　札 3 枚から 1 枚 ・ 12〜18 G ・ 魔素 +5";
+                case MapNodeTypes.Elite: return head + "<b>強個体</b>" + enc + now + "\n勝てば　レリック 3 択 ・ レア確定の札 ・ 42〜58 G ・ 魔素 +10";
+                case MapNodeTypes.Boss: return head + "<b>幕ボス</b>" + enc + now + "\n倒すと　回復 ・ レリック 3 択 ・ 次の幕へ";
+                case MapNodeTypes.Campfire: return head + "<b>焚き火</b>" + now + "\n休む（最大 HP の割合で回復）か、札を 1 枚鍛える";
+                case MapNodeTypes.Workshop: return head + "<b>工房</b>" + now + "\n同じ色の札 2 枚を 1 枚に溶かす（" + DeckRogue.Engine.Run.WORKSHOP_FUSE_PRICE + " G）";
+                case MapNodeTypes.Shop: return head + "<b>ショップ</b>" + now + "\n札 ・ レリック ・ 札の除去 ・ 鍛える";
+                case MapNodeTypes.Event: return head + "<b>？</b>" + now + "\n入るまで中身は分からない（イベント ・ 戦闘 ・ 店 ・ 宝箱）";
+                case MapNodeTypes.Treasure: return head + "<b>宝箱</b>" + now + "\nレリック 3 択";
                 default: return n.Type;
             }
         }

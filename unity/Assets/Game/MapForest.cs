@@ -223,6 +223,17 @@ namespace DeckRogue.Game
             });
         }
 
+        /// <summary>頂の丘の闇 (磨き 案C 2026-10-29): 上 1・下は波打つ縁で 0。真ん中 (門の前) が低く張り出す (カンバスの 2 枚の丘を 1 枚に)。色は Image.color で</summary>
+        public static Sprite Hill()
+        {
+            return Proc("hill", 256, 128, delegate (float u, float v)
+            {
+                float edge = 0.34f - 0.14f * Mathf.Cos((u - 0.5f) * Mathf.PI * 2f) + 0.035f * Mathf.Sin(u * Mathf.PI * 6f + 1f) + 0.02f * Mathf.Sin(u * Mathf.PI * 14f + 0.4f);
+                float k = Mathf.Clamp01((v - edge) / 0.10f + 0.5f);
+                return k * k * (3f - 2f * k);
+            });
+        }
+
         /// <summary>
         /// 節の印の円盤 (磨き 案B・印 1「石の円盤」2026-10-28): 青灰の石の放射 (カンバスの radial-gradient(circle at 50% 32%, #3a4160, #1d2135 68%, #12152a)) と上の明るみ。
         /// 160 画素の中に直径 152 で焼く (2 画素 = 1px・縁は半画素だけぼかす)。boss は紫がかった石。色は Image.color で沈める
