@@ -1702,6 +1702,47 @@ internal static class Hd2dAttackPrototype
         return effect;
     }
     // Exact confirmed Curse reaction: one receiver-rooted contraction, no return/heal projectile.
+    // Exact confirmed LastStand only: two unequal pressures share a torso root.
+    // No dead actor, outgoing projectile or invented drain-to-heal return.
+    internal static NativeEffect CreateLastStandContact()
+    {
+        var first=new Layer(0,16,"hd2d-dark-contraction-01");
+        var middle=new Layer(0,16,"hd2d-dark-contraction-02");
+        var last=new Layer(0,16,"hd2d-dark-contraction-03");
+        var motes=new Layer(0,2);float age=0;
+        var effect=new NativeEffect {Shader="Hd2dPrototype",Palette="hd2d-dark",
+            Batches=new[]{first.Batch,middle.Batch,last.Batch,motes.Batch},VisualAge=()=>age,
+            TargetPeak=.028f,FloorPeak=0f,StageFocus=()=>0f,
+            Light=()=>age<0?0f:1-Ease((age-.025f)/.12f),FloorLight=()=>0f};
+        effect.Sample=t=>{
+            age=(float)t;first.Reset();middle.Reset();last.Reset();motes.Reset();
+            if(age<0||age>.44f)return;
+            Vector3 root=new(.26f,.01f,.025f);
+            Layer[] bodies={first,middle,last};
+            for(int part=0;part<2;part++){
+                float dt=age*1.25f-part*.012f;if(dt<0)continue;
+                float close=Ease(dt/.20f),onset=Ease(dt/.018f);
+                float rx=(part==0?.65f:.30f)*(1-.22f*close);
+                float ry=(part==0?.46f:.25f)*(1-.28f*close);
+                float angle=part==0?-.12f+.11f*close:-.65f+.13f*close;
+                float[] phases={1-Ease((dt-.055f)/.035f),
+                    Ease((dt-.055f)/.035f)*(1-Ease((dt-.145f)/.050f)),
+                    Ease((dt-.145f)/.050f)*(1-Ease((dt-.25f)/.10f))};
+                for(int phase=0;phase<3;phase++)
+                    if(phases[phase]>.001f)bodies[phase].Anchored(root,new(.60f,.58f),rx,ry,angle,phases[phase]*onset,1,part);
+            }
+            for(int i=0;i<7;i++){
+                float dt=age*1.25f-i*.006f;if(dt<0)continue;
+                float a=.2f+i*.89f;Vector3 axis=new(MathF.Cos(a),MathF.Sin(a),0);
+                float pull=Ease(dt/.18f),radius=(.32f+(i%3)*.07f)*(1-pull);
+                Vector3 point=root+axis*radius;
+                float alpha=MathF.Sin(pull*MathF.PI)*(1-Ease((dt-.13f)/.10f));
+                motes.Taper(point+axis*.065f*(1-pull),point,.007f,alpha*.65f,2,.85f);
+            }
+        };
+        return effect;
+    }
+
     internal static NativeEffect CreateCurseReturnContact()
     {
         var first=new Layer(0,16,"hd2d-dark-contraction-01");

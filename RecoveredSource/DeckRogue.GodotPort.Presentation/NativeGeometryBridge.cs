@@ -337,6 +337,7 @@ internal static class NativeGeometryBridge
         if(StatusContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateBurnTickContact();
         if(NecroContactVfxProfiles.CorpseKissRoute(route))return Hd2dAttackPrototype.CreateCorpseKissContact();
         if(NecroContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateNecroDark(route);
+        if(ReactionContactVfxProfiles.LastStandRoute(route))return Hd2dAttackPrototype.CreateLastStandContact();
         if(ReactionContactVfxProfiles.CurseRoute(route))return Hd2dAttackPrototype.CreateCurseReturnContact();
         if(ReactionContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateReactionDark(route);
         if(LightningContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateLightningDischarge();

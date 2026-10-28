@@ -1,0 +1,18 @@
+{
+  "revision": 261,
+  "parent": "d1e4298e0ee9d218b2357629afb2cf12aa13bc72",
+  "sourceCount": 249,
+  "changedProductSHA256": {
+    "docs/REACTION-LAST-STAND-ROOTED-PRESSURE-261-CONTRACT.json": "ef8adb45e204012511a90eac2cccc7afca695fa25c80eec8bbd63be92005f0ea",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/NativeGeometryBridge.cs": "24f2600317bccf6b0da134ec43cfe92a1ab3d8532c4d79114e66c1618b54cb09",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/ReactionContactVfxProfiles.cs": "3e36075f28eaff64d8e3c5999eb57b1ddd2ede4268337e3c6f848fb1f636eea8",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs": "40fe5617e4151ef0f7f96e5eb85d2fbc16f2dc47410ce3469b940f8f5f24443f"
+  },
+  "publicationSubsetHashesVerified": true,
+  "remote260InsertOnly": true,
+  "rawStageActorShaderChanges": false,
+  "library": "libfile_2b05b5c613688191a3c201d8bdb004ae",
+  "version": 0,
+  "archiveSHA256": "6907e3a1d6df7708f118f8f8f7261c78e98d8108d3e3888ba83f052f23e6b152",
+  "qualification": "3762/7successful; original movieA QA failure separate; all7 shutdown-resource nonreproduction not old Audio resolution; fullblock unproven, Moss UI overlap and temporary face cover remain; Unity untested. Handoff historical publication-pending line describes creation time, not current Git status."
+}

@@ -8,6 +8,7 @@ internal static class ReactionContactVfxProfiles
 {
     internal static bool SelectedDefinition(string? definition)=>definition is
         "black_reaction_curse" or "black_underworld_hand" or "black_reaction_grudge" or "black_reaction_last_stand";
+    internal static bool LastStandRoute(AttackRoute route)=>SelectedRoute(route) && route.DefinitionId=="black_reaction_last_stand";
     internal static bool CurseRoute(AttackRoute route)=>SelectedRoute(route) && route.DefinitionId=="black_reaction_curse";
     internal static bool OriginalRoute(AttackRoute? route)=>route!=null
         && route.SourceKind=="reaction" && SelectedDefinition(route.DefinitionId)

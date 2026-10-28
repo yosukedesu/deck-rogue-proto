@@ -1,0 +1,68 @@
+{
+  "revision": 261,
+  "checks": 3762,
+  "successfulRuns": 7,
+  "runs": [
+    {
+      "run": "new261-laststand-standard",
+      "checks": 572,
+      "exit": 0,
+      "shutdownResourceNotices": []
+    },
+    {
+      "run": "new261-laststand-direct-movie-b",
+      "checks": 648,
+      "exit": 0,
+      "shutdownResourceNotices": []
+    },
+    {
+      "run": "new261-laststand-bound-abovehalf",
+      "checks": 577,
+      "exit": 0,
+      "shutdownResourceNotices": []
+    },
+    {
+      "run": "new261-laststand-bound-decline",
+      "checks": 288,
+      "exit": 0,
+      "shutdownResourceNotices": []
+    },
+    {
+      "run": "new261-laststand-bound-old-underworld",
+      "checks": 526,
+      "exit": 0,
+      "shutdownResourceNotices": []
+    },
+    {
+      "run": "new261-laststand-bound-moss-small",
+      "checks": 564,
+      "exit": 0,
+      "shutdownResourceNotices": []
+    },
+    {
+      "run": "new261-laststand-bound-lifecycle",
+      "checks": 587,
+      "exit": 0,
+      "shutdownResourceNotices": []
+    }
+  ],
+  "failedSeparate": [
+    {
+      "run": "new261-laststand-direct-movie",
+      "checksIncludingFailed": 638,
+      "exit": 1,
+      "cause": "QA firstpositive observer not populated in continuous branch; B fixes observer only, video bytes unchanged"
+    }
+  ],
+  "qualification": [
+    "Godot recovered QA, Unity unverified",
+    "Astra static/temporal-frame/Moss gates PASS; direct equal-speed subjective playback not performed",
+    "Probe and Moss two bodies; 960x540 window not real phone",
+    "Peak covers part of face temporarily; not always-clear-face certification",
+    "Moss afterclear rising20 overlaps attack5 intent; existing UI placement issue not newVFX",
+    "Full block not demonstrated; RockBeetle12 insufficient20, worm30 recipe not validated",
+    "Abovehalf previousage2/Hp47 then poke6->41 conditionfalse/whiff/expiry/turn4; no final set-retention assertion",
+    "Lifecycle real pending-fixture reload, before/natural/aftercontact/componentdead; not engine lethal proof",
+    "All7 successful runs have no shutdown resource notice, prior Audio issue remains unresolved"
+  ]
+}
