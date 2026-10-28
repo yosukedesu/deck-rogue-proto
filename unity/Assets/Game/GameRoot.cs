@@ -244,6 +244,7 @@ namespace DeckRogue.Game
             fxCg.interactable = false;
             PopupLayer = UiKit.NewRect("popup", canvasGo.transform);
             UiKit.Stretch(PopupLayer, 0f, 0f, 0f, 0f);
+            ScreenFx.EnsureCurtain(canvasGo.transform);   // 幕 (画面の切り替え。品質スプリント #2 2026-10-29 §9): 最前面の夜色の板
 
             try
             {
@@ -324,8 +325,9 @@ namespace DeckRogue.Game
                 if(!ReferenceEquals(Rs,state) || Battle!=board)yield break;
                 // Reset above changes the version only on the explicit watchdog recovery path.
                 if(version!=_presentationVersion && elapsed<timeout)yield break;
-                CancelCombatPresentation();Rebuild();
-                if(terminal){Presenter.Reset();if(!outcomeShown)Audio.Ui(state.Phase==RunPhases.Lost?"lose":"win");}
+                CancelCombatPresentation();
+                if(terminal){Presenter.Reset();if(!outcomeShown)Audio.Ui(state.Phase==RunPhases.Lost?"lose":"win");ScreenFx.Switch(this,Rebuild);}   // 決着→報酬/結果は幕 (条1)
+                else Rebuild();
             } finally {
                 if(version==_presentationVersion)CancelCombatPresentation();
             }
@@ -399,8 +401,15 @@ namespace DeckRogue.Game
             if (Rs == null || Rs.Phase != RunPhases.Event) EventChoiceIndex = -1;
             if (Rs == null || Rs.Phase != RunPhases.Departure) DepartureChoiceIndex = -1;
             if (Rs == null || Rs.Phase != RunPhases.Combat) PreferredTarget = -1;
-            Rebuild();
-            if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat) Presenter.Play(this, Rs.Combat); else Presenter.Reset();
+            // 幕 (条1。2026-10-29 §9): フェーズ (か幕) が変わる手は夜色の幕を閉じてから組み直し、入りの動きを付けて開く。同じフェーズの組み直しは今まで通り瞬時
+            bool phaseChanged = Rs != null && (prevRs == null || prevRs.Phase != Rs.Phase || prevRs.Act != Rs.Act);
+            ScreenFx.MapScrollFromPrev = phaseChanged && Rs.Phase == RunPhases.Map && prevRs != null && prevRs.Phase != RunPhases.Map && Rs.Row >= 1;
+            Action after = delegate
+            {
+                Rebuild();
+                if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat) Presenter.Play(this, Rs.Combat); else Presenter.Reset();
+            };
+            if (phaseChanged) ScreenFx.Switch(this, after); else after();
         }
 
         public void DoCombat(Command cmd)
@@ -460,7 +469,8 @@ namespace DeckRogue.Game
                 Error = ex.Message;
                 Rs = null;
             }
-            Rebuild();
+            ScreenFx.ResetShown();
+            if (Rs != null) ScreenFx.Switch(this, Rebuild); else Rebuild();
         }
 
         public void BackToSetup()
@@ -474,7 +484,8 @@ namespace DeckRogue.Game
             Confirm = null;
             MenuOpen = false;
             Seed = UnityEngine.Random.Range(1, 99999);
-            Rebuild();
+            ScreenFx.ResetShown();
+            ScreenFx.Switch(this, Rebuild);
         }
 
         // ---- セーブ/続きから (2026-09-15 本家形: 進行中のランは1本・自動保存) ----
@@ -590,7 +601,8 @@ namespace DeckRogue.Game
             // 戦闘の途中なら、読み戻したログは演出済みに (再開の一発目に古い浮き文字を出さない)
             if (Rs.Combat != null && Rs.Phase == RunPhases.Combat) Presenter.MarkSeen(Rs.Combat); else Presenter.Reset();
             Notice = warning != null ? "続きから再開した（" + warning + "）" : "続きから再開した";
-            Rebuild();
+            ScreenFx.ResetShown();
+            ScreenFx.Switch(this, Rebuild);
         }
 
         public void RegisterSeedField(TMP_InputField f) { _seedField = f; }

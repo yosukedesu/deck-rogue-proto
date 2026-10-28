@@ -305,9 +305,18 @@ namespace DeckRogue.Game
             float target = curY - viewH * 0.38f;
             float maxScroll = Math.Max(0f, contentH - viewH);
             float norm = maxScroll > 0f ? Mathf.Clamp01(target / maxScroll) : 0f;
-            scroll.verticalNormalizedPosition = norm;
+            // 地図に戻って来た時 (条5。2026-10-29 §9): 前の行の位置から今の行へ 0.5 秒で視線を運ぶ (幕が開いてから)。駒は置かない (10/28 裁定)
+            float? fromNorm = null;
+            if (ScreenFx.MapScrollFromPrev && !overlay && run.Row >= 1 && !ScreenFx.Instant)
+            {
+                float prevY = GridPos(3, run.Row - 1, false).y;
+                float tPrev = prevY - viewH * 0.38f;
+                fromNorm = maxScroll > 0f ? Mathf.Clamp01(tPrev / maxScroll) : 0f;
+            }
+            ScreenFx.MapScrollFromPrev = false;
+            scroll.verticalNormalizedPosition = fromNorm ?? norm;
             var fixer = view.gameObject.AddComponent<ScrollFix>();
-            fixer.Scroll = scroll; fixer.Norm = norm;
+            fixer.Scroll = scroll; fixer.Norm = norm; fixer.From = fromNorm;
             if (AutoScroll) { var asc = view.gameObject.AddComponent<MapAutoScroll>(); asc.Scroll = scroll; asc.Wheel = AutoScrollWheel; }
 
             if (overlay)
@@ -334,12 +343,22 @@ namespace DeckRogue.Game
         /// <summary>ScrollRect は初期化後にレイアウトが走ると位置が戻るので、1フレーム後に指定位置へ戻す</summary>
         class ScrollFix : MonoBehaviour
         {
-            public ScrollRect Scroll; public float Norm; int _n;
+            public ScrollRect Scroll; public float Norm; public float? From; int _n; float _t;
             void LateUpdate()
             {
                 if (Scroll == null) { Destroy(this); return; }
-                Scroll.verticalNormalizedPosition = Norm;
-                if (++_n >= 2) Destroy(this);
+                if (From == null)
+                {
+                    Scroll.verticalNormalizedPosition = Norm;
+                    if (++_n >= 2) Destroy(this);
+                    return;
+                }
+                // 前の行から今の行へ (条5): 幕が開く間は前の行で待ち、0.5 秒 (OutCubic) で今の行へ
+                if (_n < 2) { Scroll.verticalNormalizedPosition = From.Value; _n++; return; }
+                _t += Tween.UnscaledDt;
+                float u = Mathf.Clamp01((_t - ScreenFx.OpenDur) / ScreenFx.MapScrollDur);
+                Scroll.verticalNormalizedPosition = Mathf.Lerp(From.Value, Norm, Tween.Apply(Ease.OutCubic, u));
+                if (u >= 1f) Destroy(this);
             }
         }
 
@@ -754,10 +773,12 @@ namespace DeckRogue.Game
                 btn.targetGraphic = icon != null ? (Graphic)icon : hit;
                 var cols = btn.colors; cols.highlightedColor = new Color(1.15f, 1.15f, 1.15f); cols.pressedColor = new Color(0.85f, 0.85f, 0.85f); btn.colors = cols;
                 int idx = index;
+                g.RegisterAnchor("node-choice-" + idx, hit.rectTransform);   // 一周の動画 (Autopilot loop) が人と同じ経路で押す
                 btn.onClick.AddListener(delegate
                 {
                     Audio.Ui("node");
-                    g.Do(new RunCommand_ChooseNode { Col = idx });
+                    // 条3 (2026-10-29 §9): 節が 1.15 に膨らんで灯が広がってから幕 (GameRoot.Do の幕) へ
+                    ScreenFx.NodeChosen(g, cell, () => g.Do(new RunCommand_ChooseNode { Col = idx }));
                 });
             }
         }

@@ -851,6 +851,7 @@ namespace DeckRogue.Game
             cb.fadeDuration = 0.05f;
             btn.colors = cb;
             btn.interactable = interactable;
+            rt.gameObject.AddComponent<ScreenFx.ButtonMotion>();   // 条3 反応 (2026-10-29 §9): ホバーで 1.03・押すと 0.96。決定のボタンは ScreenFx.Primary で脈
             btn.onClick.AddListener(delegate { Audio.Ui("click"); });
             if (onClick != null) btn.onClick.AddListener(delegate { onClick(); });
             var t = Txt(rt, label, size, ColInk, TextAnchor.MiddleCenter, true);

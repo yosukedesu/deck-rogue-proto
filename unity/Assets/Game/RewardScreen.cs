@@ -62,8 +62,7 @@ namespace DeckRogue.Game
                     if (sle != null) UnityEngine.Object.Destroy(sle);
                     UiKit.Anchor(sb.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-gearW / 2f + 10f, -44f), new Vector2(gearW / 2f - 10f, -8f));
                 }
-                gcell.localScale = Vector3.one * 0.85f;
-                Tween.Scale(gcell, Vector3.one, 0.35f + n * 0.08f);
+                ScreenFx.Primary(tb);
             }
             if (n == 0 && !hasGear)
             {
@@ -86,13 +85,13 @@ namespace DeckRogue.Game
                 cv.anchoredPosition = new Vector2(0f, 35f);
                 HoverRaise(cv, delegate { Audio.Ui("click"); CardPopup.Open(g, ci, null); });   // タップ＝拡大 (説明)。取るのは下の「取る」だけ (2026-09-22)
                 CardPopup.Attach(g, cv, ci, null, true);
-                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_card"); g.Do(new RunCommand_PickReward { Index = idx }); }, 18, true, PaperFx.BrassLight);
+                // 取る＝札が上部バーのデッキの札へ縮みながら飛んでから手を進める (条4。2026-10-29 §9)。入りの動きは ScreenFx の入り (条2) が全画面に付ける
+                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_card"); ScreenFx.FlyTo(g, cv, "deck", () => g.Do(new RunCommand_PickReward { Index = idx })); }, 18, true, PaperFx.BrassLight);
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
                 UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-90f, 0f), new Vector2(90f, 48f));
-                // 登場アニメ
-                cell.localScale = Vector3.one * 0.85f;
-                Tween.Scale(cell, Vector3.one, 0.35f + i * 0.08f);
+                ScreenFx.Primary(b);
+                g.RegisterAnchor("reward-take-" + i, b.GetComponent<RectTransform>());
             }
 
             if (opts != null) RunUi.BottomButton(root, "見送る", delegate { g.Do(new RunCommand_SkipReward()); }, 18, 260f, 52f);
@@ -122,12 +121,12 @@ namespace DeckRogue.Game
                 var cell = RelicPanel(root, rd, opts[i], w, h);
                 cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
                 cell.anchoredPosition = new Vector2(x0 + i * (w + gap), UiKit.Phone ? -30f : 20f);   // スマホは見出しと重ならないよう下げる
-                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_relic"); g.Do(new RunCommand_PickRelic { Index = idx }); }, 18, true, PaperFx.BrassLight);
+                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_relic"); ScreenFx.FlyTo(g, cell, "relics", () => g.Do(new RunCommand_PickRelic { Index = idx })); }, 18, true, PaperFx.BrassLight);
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
                 UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-100f, 16f), new Vector2(100f, 62f));
-                cell.localScale = Vector3.one * 0.85f;
-                Tween.Scale(cell, Vector3.one, 0.35f + i * 0.08f);
+                ScreenFx.Primary(b);
+                g.RegisterAnchor("relic-take-" + i, b.GetComponent<RectTransform>());
             }
             RunUi.BottomButton(root, "見送る", delegate { g.Do(new RunCommand_SkipRelic()); }, 18, 260f, 52f);
         }

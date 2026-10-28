@@ -389,6 +389,8 @@ namespace DeckRogue.Game
                 for (int i = 0; i < settle + 3; i++) yield return null;
                 yield break; // Dedicated paired frame captures are owned by PresentationReview.
             }
+            // 幕 (ScreenFx 条1。2026-10-29) が動いていたら開き切るまで待つ (黒い幕を撮らない。撮影は既定で Instant なので普段は素通り)
+            while (ScreenFx.Busy) yield return null;
             // レイアウトと描画が落ち着くまで数フレーム待つ (Rebuild 直後の1フレームは LayoutGroup が未計算)。コマ送りの途中を撮る時は settle=1
             ApplyCaptureMode();   // uionly / unitsonly (立っていなければ何もしない。2026-09-30 HD-2D 見本 P01)
             for (int i = 0; i < settle; i++) yield return null;
@@ -418,8 +420,11 @@ namespace DeckRogue.Game
             {
                 var statesFile = Arg("-statesfile");
                 if (!string.IsNullOrEmpty(statesFile)) _scenario = "states";   // -autopilot state -statesfile <file> でも 1回の起動で順に撮る
+                // 幕・入り・飛び (ScreenFx。2026-10-29 §9) は撮影では飛ばす (状態へ跳んで止まった画面を撮る)。一周の動画 (loop) と -motion だけ動かす
+                ScreenFx.Instant = _scenario != "loop" && Arg("-motion") == null;
                 switch (_scenario)
                 {
+                    case "loop": yield return Loop(g); break;   // 一周の動画 (品質スプリント #2 の門。2026-10-29 §9-5)
                     case "states": yield return StatesFile(g, statesFile); break;   // 1回の起動で順に撮る (まとめて撮る専用。合否の門には使わない。2026-09-30 P01)
                     case "battle":
                         yield return Battle(g);
@@ -1379,6 +1384,124 @@ namespace DeckRogue.Game
         }
 
         /// <summary>ラン画面の走査 (M3): タイトル→マップ→戦闘は自動で勝つ→報酬/焚き火/店/工房/?/レリックを踏んだ順に撮る。最後に敗北画面</summary>
+        // ---- 一周の動画 (品質スプリント #2 2026-10-29 §9-5): タイトル→出立→地図→戦闘→報酬→地図→店/焚き火/?→… を幕と入りを動かしたまま 30fps (every=2) でコマ撮り ----
+        // scripts/loop-video.sh が 1280×720 で起動し ffmpeg で mp4 にする。-every N (既定 2)・-maxframes N (既定 3000 枚)
+        int _loopFrame, _loopCaptured; bool _loopDone;
+
+        IEnumerator LoopCapture(int every, int max)
+        {
+            while (!_loopDone && _loopCaptured < max)
+            {
+                if (_loopFrame % every == 0)
+                {
+                    _loopCaptured++;
+                    ScreenCapture.CaptureScreenshot(Path.Combine(_dir, "loop-" + _loopCaptured.ToString("0000") + ".png"), 1);
+                }
+                _loopFrame++;
+                yield return null;
+            }
+        }
+
+        IEnumerator LoopWait(float sec) { int n = Mathf.CeilToInt(sec * 60f); for (int i = 0; i < n; i++) yield return null; }
+
+        /// <summary>幕・順送り・決着の帯が終わるまで待つ (最初の 0.35 秒は無条件に待つ＝節の膨らみの後に幕が始まる)</summary>
+        IEnumerator LoopIdle(GameRoot g, float max)
+        {
+            yield return LoopWait(0.35f);
+            float t = 0f;
+            while (t < max && (ScreenFx.Busy || g.CombatPresentationPending || !Presenter.PresentationIdle)) { yield return null; t += 1f / 60f; }
+        }
+
+        /// <summary>人がマウスで押すのと同じ経路 (PointerClick) で押す。無ければ false</summary>
+        static bool ClickUi(RectTransform rt)
+        {
+            if (rt == null) return false;
+            var es = UnityEngine.EventSystems.EventSystem.current;
+            var pd = new UnityEngine.EventSystems.PointerEventData(es) { button = UnityEngine.EventSystems.PointerEventData.InputButton.Left };
+            UnityEngine.EventSystems.ExecuteEvents.Execute(rt.gameObject, pd, UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);
+            return true;
+        }
+
+        IEnumerator Loop(GameRoot g)
+        {
+            int every; if (!int.TryParse(Arg("-every") ?? "", out every) || every < 1) every = 2;
+            int max; if (!int.TryParse(Arg("-maxframes") ?? "", out max) || max < 1) max = 3600;
+            Time.captureFramerate = 60;
+            _loopFrame = 0; _loopCaptured = 0; _loopDone = false;
+            StartCoroutine(LoopCapture(every, max));
+            g.SetSeed(_seed);
+            yield return LoopWait(1.2f);                       // タイトル
+            g.StartRun();
+            yield return LoopIdle(g, 4f); yield return LoopWait(1.0f);
+            for (int k = 0; k < 6 && g.Rs != null && g.Rs.Phase == RunPhases.Departure && g.Error == null; k++)
+            {   // 出立の店: 既定の手 (サービスを1つ買う → 店を出る)
+                g.Do(DeckRogue.Engine.Run.DefaultDepartureCommand(g.Rs));
+                yield return LoopIdle(g, 4f); yield return LoopWait(0.9f);
+            }
+            var seen = new HashSet<string>();
+            var wish = new List<string> { MapNodeTypes.Battle, MapNodeTypes.Shop, MapNodeTypes.Campfire, MapNodeTypes.Event, MapNodeTypes.Workshop, MapNodeTypes.Treasure, MapNodeTypes.Elite };
+            int nodes = 0, steps = 0;
+            while (steps++ < 60 && nodes < 6 && g.Rs != null && g.Rs.Phase != RunPhases.Won && g.Rs.Phase != RunPhases.Lost && _loopCaptured < max)
+            {
+                var rs = g.Rs;
+                if (rs.Phase == RunPhases.Map)
+                {
+                    var choices = DeckRogue.Engine.Run.NextChoices(rs);
+                    if (choices.Count == 0) break;
+                    int pick = choices[0], bestRank = 999, nextRow = rs.Row + 1;
+                    for (int i = 0; i < choices.Count; i++)
+                    {
+                        if (nextRow < 0 || nextRow >= rs.Map.Count || choices[i] >= rs.Map[nextRow].Count) continue;
+                        string type = rs.Map[nextRow][choices[i]].Type;
+                        int rank = wish.IndexOf(type); if (rank < 0) rank = 50;
+                        if (seen.Contains(type)) rank += 100;
+                        if (rank < bestRank) { bestRank = rank; pick = choices[i]; }
+                    }
+                    if (nextRow >= 0 && nextRow < rs.Map.Count && pick < rs.Map[nextRow].Count) seen.Add(rs.Map[nextRow][pick].Type);
+                    yield return LoopWait(1.3f);                   // 地図を見る
+                    if (!ClickUi(g.Anchor("node-choice-" + pick))) g.Do(new RunCommand_ChooseNode { Col = pick });
+                    nodes++;
+                    yield return LoopIdle(g, 8f);
+                    continue;
+                }
+                if (rs.Phase == RunPhases.Combat)
+                {
+                    yield return LoopWait(0.8f); yield return AutoBattle(g);
+                    Feedback.RatingOpen = false;   // 決着直後の評価の窓は動画に出さない (報酬の画面は幕の後に組まれるので、ここで閉じておけば出ない)
+                    yield return LoopIdle(g, 10f); continue;
+                }
+                yield return LoopWait(1.4f);                       // 画面を見る
+                switch (rs.Phase)
+                {
+                    case RunPhases.Reward:
+                        if (rs.GearOption != null) g.Do(DeckRogue.Engine.Run.GearFull(rs) ? (RunCommand)new RunCommand_SkipGear() : new RunCommand_TakeGear());
+                        else if (rs.RewardOptions != null && rs.RewardOptions.Count > 0) { if (!ClickUi(g.Anchor("reward-take-0"))) g.Do(new RunCommand_PickReward { Index = 0 }); }
+                        else g.Do(new RunCommand_SkipReward());
+                        break;
+                    case RunPhases.RelicReward: if (!ClickUi(g.Anchor("relic-take-0"))) g.Do(new RunCommand_PickRelic { Index = 0 }); break;
+                    case RunPhases.RelicChoose: g.Do(new RunCommand_RelicChooseCards { Indices = new List<int>() }); break;
+                    case RunPhases.Departure: g.Do(DeckRogue.Engine.Run.DefaultDepartureCommand(rs)); break;
+                    case RunPhases.Campfire: g.Do(new RunCommand_CampfireRest()); break;
+                    case RunPhases.Shop: g.Do(new RunCommand_ShopLeave()); break;
+                    case RunPhases.Workshop: g.Do(new RunCommand_WorkshopSkip()); break;
+                    case RunPhases.Event:
+                    {
+                        RunCommand_EventChoice ec = null;
+                        try { ec = DeckRogue.Engine.Run.DefaultEventChoice(rs); } catch (Exception) { }
+                        g.Do(ec ?? new RunCommand_EventChoice { Index = 0 });
+                        break;
+                    }
+                    default: steps = 999; break;
+                }
+                yield return LoopIdle(g, 8f);
+            }
+            yield return LoopWait(1.0f);
+            _loopDone = true;
+            yield return null;
+            Time.captureFramerate = DetFramerate;
+            Debug.Log("[Autopilot] loop: frames=" + _loopFrame + " png=" + _loopCaptured + " nodes=" + nodes);
+        }
+
         IEnumerator RunTour(GameRoot g)
         {
             g.SetSeed(_seed);

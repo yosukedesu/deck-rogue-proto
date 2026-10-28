@@ -6,7 +6,7 @@ Slay the Spire型デッキ構築ローグライクの**ルール検証用プロ�
 当初の目的「リアクション方式3案の比較・決定」は**達成済み（2026-08-23: set-confirm 採用）**。
 現在のフェーズ：**set-confirm を前提にルール・バランスの調整サイクルを回す。**
 リリースまでの全体計画は **`docs/roadmap.md` が一次資料**（2026-08-24策定。最優先=面白さ検証スプリント）。
-**2026-10-28 から品質スプリントが最優先（ユーザー「大手並みを目指す。今はインディーの足元にも及ばない」→ `docs/design/quality-sprint-2026-10-28.md`）: 幕1 の一周を完成品の質にする。入口はマップ・物差しは StS2・1 画面ずつ並べて採点（4 未満は次へ進まない）。その間ルール調整・新色・人間ランは凍結。**
+**2026-10-28 から品質スプリントが最優先（ユーザー「大手並みを目指す。今はインディーの足元にも及ばない」→ `docs/design/quality-sprint-2026-10-28.md`）: 幕1 の一周を完成品の質にする。入口はマップ・物差しは StS2・1 画面ずつ並べて採点（4 未満は次へ進まない）。その間ルール調整・新色・人間ランは凍結。#1 マップ＝案1「夜の森の絵地図」＋磨き 案B・案C で 10-29 に 4（通過）。#2「画面の切り替えと動き」＝`ScreenFx.cs` の「動きの文法 5 条」（幕・入り・反応・数字と札・呼吸。§9）を 10-29 に実装、門は一周の動画（`scripts/loop-video.sh`＝自動操縦 `loop` を 30fps でコマ撮り→mp4。撮影 shots は既定で `ScreenFx.Instant`＝動きを飛ばす）。**
 製品版ではない。演出・最適化はやらない（UIの見た目方針は「やらないこと」参照）。
 
 - 想定プレイ環境：ブラウザ（TypeScript + React、Vite）
@@ -414,6 +414,8 @@ STATE="phase=workshop;pick=0" scripts/unity-win.sh shots state 4242   # 任意�
                      #   コマ送りの撮影は決定的（2026-09-16）: play=/fx= の間は Time.captureFramerate=60 で1フレーム=1/60秒に固定し、演出の時計（Tween.Run/After・舞台のコマ送り）は Time.deltaTime の積算なので
                      #   「何枚目＝何秒」が実時間のもたつき（CaptureScreenshot の停止）に左右されない。timeScale は使っていないので実プレイの見え方は不変
                      #   例: STATE="phase=combat;enemy=enemy_probe;viewmap=1" … shots state 4242 2 ／ STATE="phase=shop;act=2;deck=deck_big_mana;relics=relic_oldroot_cup;hp=40" … shots state 7
+scripts/loop-video.sh [出力先] [seed]   # 一周の動画 (2026-10-29 品質スプリント #2 の門): 自動操縦 loop (タイトル→出立→地図→戦闘→報酬→…6 節) を幕・入り・飛びを動かしたまま 1280×720・30fps でコマ撮り → ffmpeg で loop.mp4。
+                     #   shots は既定で ScreenFx.Instant (動きを飛ばして止まった画面を撮る)。PLAYER_ARGS="-motion" で他の撮影でも動かす・"-every 3" でコマの間隔
 ```
 
 ### Unity 公式プラグイン・Unity CLI・Pipeline（2026-09-15 ユーザー「公式の Unity と AI の連携を構築して」→ ask_user 3件＝全部 A）

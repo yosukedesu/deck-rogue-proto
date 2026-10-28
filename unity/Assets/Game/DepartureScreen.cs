@@ -231,6 +231,7 @@ namespace DeckRogue.Game
             Action leave = delegate { Audio.Ui("click"); g.DepartureChoiceIndex = -1; g.Do(new RunCommand_LeaveDeparture()); };
             if (slot == null) { RunUi.BottomButton(root, "店を出て坑へ", leave, 20, 320f, 56f, 0f, 36f, PaperFx.BrassLight); return; }
             var b = UiKit.Btn(slot, "店を出て坑へ", leave, 20, true, PaperFx.BrassLight);
+            ScreenFx.Primary(b);
             var le = b.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);
             UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-140f, -30f), new Vector2(140f, 30f));

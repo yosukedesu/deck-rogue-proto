@@ -168,7 +168,7 @@ namespace DeckRogue.Game
                 else RewardScreen.HoverRaise(cv, delegate { Audio.Ui("click"); CardPopup.Open(g, ci, null); });   // タップ＝拡大 (説明)。買うのは値札のボタン (2026-09-22 報酬と同じ作法)
                 CardPopup.Attach(g, cv, ci, null, true);
                 bool rareSlot = i == nShop - 1 && nShop >= 6;
-                PriceTag(cell, item.Price, sold ? "売切" : null, canBuy, sold ? null : (Action)delegate { if (canBuy) { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyCard { Index = idx }); } }, tagW, rareSlot && rows == 2);
+                PriceTag(cell, item.Price, sold ? "売切" : null, canBuy, sold ? null : (Action)delegate { if (canBuy) { Audio.Ui("buy"); ScreenFx.FlyTo(g, cv, "deck", () => g.Do(new RunCommand_ShopBuyCard { Index = idx })); } }, tagW, rareSlot && rows == 2);
                 if (rareSlot && rows == 1)
                 {   // 夜の上の注記は夜色の札に (2026-09-30 F11: 旧は真鍮の墨を夜空に直に置いて 2.1:1)。2段の時は段の間が狭いので値札の頭に「★」
                     var rare = PaperFx.NightNote(cell, "★ レア枠", 13, 140f, true, "rare");

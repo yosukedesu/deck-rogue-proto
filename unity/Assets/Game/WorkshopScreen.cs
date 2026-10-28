@@ -144,6 +144,7 @@ namespace DeckRogue.Game
             int ia = g.WorkshopA, ib = g.WorkshopB;
             bool can = a != null && b != null && blocked == null && run.Gold >= price;
             var fuse = UiKit.Btn(srt, "合成する  " + price + "G" + (run.Gold < price ? " (不足)" : ""), delegate { Audio.Ui("fuse"); g.Do(new RunCommand_WorkshopFuse { IndexA = ia, IndexB = ib }); }, 20, can, PaperFx.BrassLight);   // 決定のボタン＝真鍮の紙 (旧 生の #f0d58a。2026-09-29 p26)
+            if (can) ScreenFx.Primary(fuse);
             var fle = fuse.GetComponent<LayoutElement>();
             if (fle != null) UnityEngine.Object.Destroy(fle);
             UiKit.Anchor(fuse.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(20f, ph ? 70f : 80f), new Vector2(-20f, ph ? 122f : 136f));

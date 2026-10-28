@@ -60,17 +60,23 @@ namespace DeckRogue.Game
             UiKit.Le(ht, -1f, 30f, -1f, 30f);
             var hm = UiKit.Txt(hp, "/ " + run.MaxHp, 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(hm, -1f, 30f, -1f, 30f);
+            g.RegisterAnchor("hp", hp);
+            ScreenFx.Shown(g, "hp", run.Hp, hp, ht, "", false);   // 条4 数字 (2026-10-29 §9): 変わっていたら跳ねて差分
             var gold = BattleScreen.Tag(bar, 36f, -0.4f);
             UiKit.Icon(gold, "gold", 16f);
             var gt = UiKit.Deco(gold, run.Gold.ToString(), 18, PaperFx.BrassInk, TextAnchor.MiddleLeft);   // G の数字は真鍮の墨 (color-theme の表。2026-09-29)
             UiKit.Le(gt, -1f, 30f, -1f, 30f);
             var gl = UiKit.Txt(gold, "G", 13, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             UiKit.Le(gl, -1f, 30f, -1f, 30f);
+            g.RegisterAnchor("gold", gold);
+            ScreenFx.Shown(g, "gold", run.Gold, gold, gt, " G", true);
             GearUi.ManaTag(g, bar, run, UiKit.Phone);   // 魔素 (ギアの動力。2026-09-17)
+            ScreenFx.Shown(g, "mana", DeckRogue.Engine.Run.ManaOf(run), g.Anchor("mana"), null, "", false);
             if (UiKit.Phone)
             {   // スマホ: デッキ以外は「≡」に畳む (2026-09-14)
                 var deckBtnP = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.ViewMap = false; g.Rebuild(); }, 13);
                 BattleScreen.SetSize(deckBtnP, 110f, 40f);
+                g.RegisterAnchor("deck", deckBtnP.GetComponent<RectTransform>());
                 MenuButton(g, bar);
             }
             else
@@ -82,10 +88,13 @@ namespace DeckRogue.Game
                 }
                 var deckBtn = UiKit.Btn(bar, "デッキ " + run.Deck.Count, delegate { g.ViewDeck = !g.ViewDeck; g.ViewMap = false; g.Rebuild(); }, 13);
                 BattleScreen.SetSize(deckBtn, 110f, 36f);
+                g.RegisterAnchor("deck", deckBtn.GetComponent<RectTransform>());
                 FeedbackUi.TopBarButtons(g, bar);   // メモ・レポート (2026-09-14)
                 MenuButton(g, bar);   // PC も「≡」を持つ: セーブして終了・ランを放棄 (2026-09-15)
             }
+            ScreenFx.Shown(g, "deck", run.Deck.Count, g.Anchor("deck"), null, " 枚", false);   // 札を取った／買った: デッキの札が跳ねて「+1 枚」
 
+            RectTransform lastRelic = null;
             int relicMax = UiKit.Phone ? 6 : 10;
             for (int i = 0; i < run.Relics.Count && i < relicMax; i++)
             {
@@ -93,6 +102,7 @@ namespace DeckRogue.Game
                 try { rd = Content.GetRelicDef(run.Relics[i]); } catch (Exception) { }
                 var cell = UiKit.NewRect("relic", bar);
                 UiKit.Le(cell, 34f, 34f, 34f, 34f);
+                lastRelic = cell;
                 var disc = cell.gameObject.AddComponent<Image>();
                 disc.sprite = PaperFx.Disc(); disc.preserveAspect = true;
                 RelicArt(cell, run.Relics[i], 20f);
@@ -100,6 +110,7 @@ namespace DeckRogue.Game
                 var tip = rd != null ? "<b>" + rd.Name + "</b>" + (left != null ? "  残り" + left + "回" : "") + "\n" + rd.Description : run.Relics[i];
                 Tooltip.Attach(cell.gameObject, delegate { return tip; });
             }
+            g.RegisterAnchor("relics", lastRelic != null ? lastRelic : g.Anchor("deck"));   // 取ったレリックの飛び先 (条4)
         }
 
         /// <summary>スマホの「≡」(2026-09-14): 上部バーの右端。押すと Menu が画面の右上に開く</summary>
@@ -227,6 +238,7 @@ namespace DeckRogue.Game
             var le = b.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);
             UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(x - w / 2f, bottom), new Vector2(x + w / 2f, bottom + h));
+            if (bg.HasValue && bg.Value == PaperFx.BrassLight) ScreenFx.Primary(b);   // 真鍮の下のボタン＝その画面の決定 (条5 の脈)
             return b;
         }
 

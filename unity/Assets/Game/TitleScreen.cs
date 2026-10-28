@@ -152,6 +152,7 @@ namespace DeckRogue.Game
 
             var resume = UiKit.Btn(inner, "▶ 続きから", delegate { Audio.Ui("start_run"); g.ResumeSave(); }, 22, true, PaperFx.BrassLight);
             BattleScreen.SetSize(resume, UiKit.Phone ? 220f : 240f, 60f);
+            ScreenFx.Primary(resume);
             var abandon = UiKit.Btn(inner, "放棄", delegate { g.AskAbandonSave(); }, 15, true, PaperFx.DangerBtn);
             BattleScreen.SetSize(abandon, 92f, 44f);
             Tooltip.Attach(abandon.gameObject, delegate { return "このセーブを消す（確認あり）"; });
@@ -269,6 +270,7 @@ namespace DeckRogue.Game
             var start = UiKit.Btn(col, hasSave ? "新しいランを開始" : "ランを開始", delegate { Audio.Ui("start_run"); g.AskStartRun(); }, 24, true, hasSave ? (Color?)null : PaperFx.BrassLight);
             var le = start.GetComponent<LayoutElement>();
             if (le != null) { le.minHeight = 64f; le.preferredHeight = 64f; }
+            if (!hasSave) ScreenFx.Primary(start);   // 決定のボタンの脈 (条5)
         }
     }
 }
