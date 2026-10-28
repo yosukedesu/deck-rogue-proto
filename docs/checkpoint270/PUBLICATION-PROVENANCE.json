@@ -1,0 +1,22 @@
+{
+  "revision": 270,
+  "parent": "ae84dbec68e206d94aee31575e0ccae92b4688dd",
+  "all257SourceHashesVerified": true,
+  "changedProductSHA256": {
+    "scripts/presentation/BattleStage.cs": "11adbe1a2a88ddd136fd15f37d1996a2bffa7011c2d972311c336e8c6b7cdfee",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs": "b15ef92bb6ef68fe924087bba5754f04044773cf6de3930e87c186117576728f",
+    "docs/EARTH-SIDE-GROUND-OPENING-262-CONTRACT.json": "a697787e77b1abe6d34d65e3252071005288e9a9c48b9f9f3ee73d51dd1532c5",
+    "docs/EARTH-OPENING-PROJECTION-RATIO-263-CONTRACT.json": "20df8c88dd8fb72ebb8206a436c11d8be10531e677c35c93ea21d0e4792c6a5a",
+    "docs/EARTH-INTEGRATED-SOIL-EDGE-264-CONTRACT.json": "768354b6beff7b85817d725b43904b997efb15486ff21967f0fc334868390ce2",
+    "docs/EARTH-BROKEN-OPENING-SKELETON-266-CONTRACT.json": "187530f43b3732f4b469355e2d0bbfe337012e01f1d5d02e3602c42bba517d9a",
+    "docs/EARTH-MAIN-SECTION-AREA-HIERARCHY-267-CONTRACT.json": "452ee43990880c526293a7d31f7cd526467d1063bfe3b827a1760db11690f963",
+    "docs/EARTH-MAIN-BELLY-SECTION-HEIGHT-268-CONTRACT.json": "dd63abf095fbb29f2dff12cc4627fd412cd9aacadd5ac997987f9cd373081675",
+    "docs/EARTH-GROUNDED-WEDGE-VOLUME-269-CONTRACT.json": "cfb337085ec6201d3ef98e0ced0b8f35993a109aa426319b33afa00c4417e3d6",
+    "docs/EARTH-ACTUAL-COMMIT-CLOCK-270-CONTRACT.json": "bd4e433d1d8f2a6b5534eafa3f8a56629a38d3ea19bf88a0dfbe086e0da7abf6"
+  },
+  "saveTerminalPending": false,
+  "library": "libfile_f85a69c422988191a7e0386f3ea48f89",
+  "version": 0,
+  "archiveSHA256": "c6121b392524d11da8eb6228f8306ffb7d57397cd7b9f5097973e8414baa9ac3",
+  "qualification": "4653/5 successful, no shutdown resources here but old Audio unresolved. Geometry269 historical movie distinct from270 reflection movie; original269 and261 precommit failures retained. Direct=false cascade excluded, Unity untested. Historical pending contracts superseded by final handoff. 265 uncertain execution not reconstructed as successful."
+}

@@ -1482,29 +1482,115 @@ internal static class Hd2dAttackPrototype
             // only1.74% of the full half, losing its cross-section under ground
             // foreshortening. Ground depth/opacity remain unchanged.
             for(int i=first;i<fissure.N;i++)fissure.UV[i]=new(.035f+fissure.UV[i].X*.42f,.39f+(1-fissure.UV[i].Y)*.40f);
-            float crest=age<0?reveal*.12f:MathF.Exp(-age/.14f);
-            for(int k=0;k<3;k++)
+            // One asymmetric ground opening extends into the caster-side gap.
+            // The hinge/root stays under the receiver; this is not a new hit or
+            // a camera-facing soil plate. Only the existing lip batch changes.
+            if(age>=0)
             {
-                float a=angle+(k==0?-2.75f:k==1?-.25f:1.47f);
-                Vector3 root=Ground(0,.02f),bend=Ground(MathF.Cos(a)*.32f,MathF.Sin(a)*.50f);
-                Vector3 end=Ground(MathF.Cos(a)*(.62f+.10f*k),MathF.Sin(a)*(.90f+.08f*k));
-                Vector3 advancing=root.Lerp(bend,reveal);
-                Vector3 bank=new(-MathF.Sin(a),0,MathF.Cos(a));
-                float soil=reveal*settle*.88f;
-                lips.Stroke(root,advancing,.070f,soil,0,.9f,true);
-                lips.Stroke(root+bank*.050f,advancing+bank*.050f,.016f,crest*.75f,2,1.0f,true);
-                if(reveal>.5f)
+                float advance=Ease(age/.09f);
+                float aperture=Ease(age/.07f)*settle;
+                float lift=Ease(age/.065f)*(1-Ease((age-.16f)/.28f));
+                void Opening(Vector2 root,Vector2 outer,float bend,float width,float height,int segments,float strength,bool textured)
                 {
-                    Vector3 tip=bend.Lerp(end,(reveal-.5f)*2);
-                    lips.Stroke(bend,tip,.047f,soil*.85f,0,.9f,true);
-                    lips.Stroke(bend+bank*.035f,tip+bank*.035f,.011f,crest*.65f,1,.9f,true);
+                    if(advance<=.00001f)return;
+                    Vector2 axis=(outer-root).Normalized(),normal=new(-axis.Y,axis.X);
+                    // Rev266: explicit reconstruction after the unconfirmed 265 operation.
+                    // Unequal structural bends and apertures, not a smooth spindle.
+                    Vector2 Center(float u)
+                    {
+                        float fracture=u<.25f?.045f*u/.25f:
+                            u<.50f?.045f-.110f*(u-.25f)/.25f:
+                            u<.75f?-.065f+.095f*(u-.50f)/.25f:.030f*(1-u)/.25f;
+                        return root.Lerp(outer,u)+normal*(textured?fracture:bend*MathF.Sin(u*MathF.PI));
+                    }
+                    float Width(float u)
+                    {
+                        float profile=u<.25f?.43f*u/.25f:
+                            u<.40f?.43f-.30f*(u-.25f)/.15f:
+                            u<.65f?.13f+.87f*(u-.40f)/.25f:(1-u)/.35f;
+                        return textured?MathF.Max(.012f,width*profile*(.82f+.18f*MathF.Sin(u*17+seed))):
+                            .012f+width*MathF.Sin(u*MathF.PI)*(.82f+.18f*MathF.Sin(u*17+seed));
+                    }
+                    Vector3 Point(float u,float side,float y)
+                    {
+                        Vector2 xz=Center(u)+normal*(side*Width(u)*aperture);
+                        return Ground(xz.X,xz.Y)+Vector3.Up*y;
+                    }
+                    void Quad(Vector3 pa,Vector3 pb,Vector3 pc,Vector3 pd,float u,float v,int role,float alpha)
+                    {
+                        int n=lips.N;lips.Quad(pa,pb,pc,pd,alpha,role,.9f);
+                        // Continuous whole-opening UV: no repeated bright capsule ends.
+                        lips.UV[n]=new(u,0);lips.UV[n+1]=new(v,0);lips.UV[n+2]=new(v,1);
+                        lips.UV[n+3]=new(u,0);lips.UV[n+4]=new(v,1);lips.UV[n+5]=new(u,1);
+                    }
+                    for(int k=0;k<segments;k++)
+                    {
+                        // Reveal fixed main-ground stations instead of scaling every station along the path.
+                        float u=textured?k/(float)segments:k/(float)segments*advance;
+                        if(textured && u>=advance)continue;
+                        float v=textured?MathF.Min((k+1)/(float)segments,advance):(k+1)/(float)segments*advance;
+                        float opacity=aperture*.88f*strength;
+                        // Broad dark negative space, not an emissive radial line.
+                        Quad(Point(u,-1,.001f),Point(v,-1,.001f),Point(v,1,.001f),Point(u,1,.001f),u/advance,v/advance,0,opacity);
+                        float hu=height*lift*MathF.Sin(u*MathF.PI),hv=height*lift*MathF.Sin(v*MathF.PI);
+                        // The principal dark opening and original soil material share
+                        // their hinge: replace the separate principal bank, do not add a plate.
+                        // Keep the dense main soil span continuous; only the short root-side gap remains.
+                        if(textured && k!=2)
+                        {
+                            float soilShape=Ease(age/.065f)*(1-Ease((age-.14f)/.24f));
+                            float soilOpacity=Ease(age/.018f)*(1-Ease((age-.40f)/.17f));
+                            // Only the dense middle gains a readable cross-section; roots and tips stay low.
+                            float Height(float q)=>.006f+soilShape*(height*(.77f+.23f*MathF.Sin(q*2.7f))+
+                                .045f*Ease((q-.30f)/.20f)*(1-Ease((q-.75f)/.20f)));
+                            float Section(float q)=>Ease((q-.375f)/.125f)*(1-Ease((q-.875f)/.125f));
+                            Vector3 Upper(float q)=>Point(q,1+.10f*soilShape,
+                                k>=3?.002f+(Height(q)-.002f)*Section(q):Height(q));
+                            Vector3 Rear(float q)
+                            {
+                                // Fixed rear hinge: no aperture/soilShape term in its world-ground coordinates.
+                                Vector2 xz=Center(q)+normal*((1+.65f*Section(q))*Width(q));
+                                return Ground(xz.X,xz.Y)+Vector3.Up*.002f;
+                            }
+                            int n=bank.N;
+                            bank.Quad(Point(u,1,.002f),Point(v,1,.002f),Upper(v),Upper(u),soilOpacity,3,.82f);
+                            float tu=(8+(.01f+.42f*u)*1238)/1254,tv=(8+(.01f+.42f*v)*1238)/1254;
+                            float rawTop=490f/1254f,rawBottom=826f/1254f;
+                            if(k>=3)
+                            {
+                                // Interior earth density, not the premade bank silhouette's transparent top.
+                                tu=(250+250*u)/1254;tv=(250+250*v)/1254;
+                                rawTop=600f/1254f;rawBottom=700f/1254f;
+                            }
+                            bank.UV[n]=new(tu,rawBottom);bank.UV[n+1]=new(tv,rawBottom);bank.UV[n+2]=new(tv,rawTop);
+                            bank.UV[n+3]=new(tu,rawBottom);bank.UV[n+4]=new(tv,rawTop);bank.UV[n+5]=new(tu,rawTop);
+                            float eu=Ease(u/.12f)*Ease((advance-u)/.16f),ev=Ease(v/.12f)*Ease((advance-v)/.16f);
+                            bank.A[n]*=eu;bank.A[n+1]*=ev;bank.A[n+2]*=ev;
+                            bank.A[n+3]*=eu;bank.A[n+4]*=ev;bank.A[n+5]*=eu;
+                            if(k>=3)
+                            {
+                                int top=bank.N;
+                                bank.Quad(Upper(u),Upper(v),Rear(v),Rear(u),soilOpacity,3,.82f);
+                                bank.UV[top]=new(tu,600f/1254f);bank.UV[top+1]=new(tv,600f/1254f);
+                                bank.UV[top+2]=new(tv,660f/1254f);bank.UV[top+3]=new(tu,600f/1254f);
+                                bank.UV[top+4]=new(tv,660f/1254f);bank.UV[top+5]=new(tu,660f/1254f);
+                                bank.A[top]*=eu;bank.A[top+1]*=ev;bank.A[top+2]*=ev;
+                                bank.A[top+3]*=eu;bank.A[top+4]*=ev;bank.A[top+5]*=eu;
+                            }
+                        }
+                        else if(!textured) Quad(Point(u,1,.002f),Point(v,1,.002f),Point(v,1,hv+.002f),Point(u,1,hu+.002f),u/advance,v/advance,1,opacity);
+                        Quad(Point(u,-1,.002f),Point(v,-1,.002f),Point(v,-1.10f,.002f),Point(u,-1.10f,.002f),u/advance,v/advance,0,opacity*.65f);
+                    }
                 }
+                Opening(new(-.04f,-.12f),new(-.61f,-.80f),.065f,.24f,.065f,8,1f,true);
+                Opening(new(.10f,.03f),new(.42f,.28f),-.035f,.045f,.016f,4,.70f,false);
             }
             if(age<0)return;
             // Unequal fracture sections hinge from the actual ground, rather
             // than scaling one camera-facing bank. Empty gaps remain between
             // the principal near section, lower neighbour and small rear chip.
-            for(int piece=0;piece<3;piece++)
+            // Main piece0 is now the textured opening edge above; retain the two short companions.
+            for(int piece=1;piece<3;piece++)
             {
                 float birth=piece==0?0:piece==1?.045f:.025f,dt=age-birth;if(dt<0)continue;
                 float rise=Ease(dt/.065f);
@@ -1561,6 +1647,9 @@ internal static class Hd2dAttackPrototype
                 float vy=2.55f+variation*.70f,gravity=12.5f,flight=vy/gravity;
                 float y=MathF.Max(.012f,vy*dt-gravity*dt*dt);
                 float size=(i==0||i==3?.10f:.050f)+other*(i==0||i==3?.035f:.045f);
+                // Only the two formerly dominant flying stones lose projected area.
+                // Their opacity, light, trajectory and lifetime remain unchanged.
+                if(i==0||i==3)size*=.72f;
                 // Complete the visible ballistic descent before a short ground
                 // settle fade; never evaporate a hovering row near the apex.
                 float fade=Ease(dt/.010f)*(1-Ease((dt-flight)/.08f));

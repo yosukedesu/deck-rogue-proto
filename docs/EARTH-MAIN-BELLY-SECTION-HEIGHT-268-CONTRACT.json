@@ -1,0 +1,33 @@
+{
+  "revision": 268,
+  "baseHeld": 267,
+  "selected": 261,
+  "scope": "Only main textured bank interior Height(q)",
+  "formula": ".006+soilShape*(.065*(.77+.23*sin(2.7*q))+.045*Ease((q-.30)/.20)*(1-Ease((q-.75)/.20)))",
+  "additionalLocalHeightMax": 0.045,
+  "totalLocalHeightUpperBound": 0.116,
+  "extraSupport": [
+    0.3,
+    0.95
+  ],
+  "extraFullPlateau": [
+    0.5,
+    0.75
+  ],
+  "rootAndTipExtra": 0,
+  "comparison": "267 retains main soil continuity and two large rock size*.72; both fixed here",
+  "fixed": [
+    "main center/width/footroot/end",
+    "secondary bank heights",
+    "rocks/alpha/gain/raw/seed",
+    "world lights",
+    "actual times/receipts/rules",
+    "StageActor/shaders"
+  ],
+  "maxWritten": {
+    "lips": 168,
+    "bank": 114
+  },
+  "native": "PENDING",
+  "art": "PENDING"
+}

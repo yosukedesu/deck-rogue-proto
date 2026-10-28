@@ -1,0 +1,40 @@
+{
+  "revision": 267,
+  "baseHeld": 266,
+  "selected": 261,
+  "scope": "Restore the high-density main soil span and reduce only two supplementary rock sizes",
+  "geometry": {
+    "mainSoilOmittedSegments": [
+      2
+    ],
+    "restoredSegment": 5,
+    "mainSoilSegments": 7,
+    "mainHeightUnchanged": 0.065,
+    "largestRockIndices": [
+      0,
+      3
+    ],
+    "largestRockLinearSizeMultiplier": 0.72,
+    "largestRockProjectedAreaMultiplier": 0.5184
+  },
+  "writtenUpperBounds": {
+    "lips": 168,
+    "bank": 114
+  },
+  "raw": 0,
+  "light": "unchanged",
+  "alphaGain": "all unchanged",
+  "fixed": [
+    "7 rock count",
+    "ballistic velocity/gravity/birth/descent/fade",
+    "opening root/end/center/width",
+    "other2soil sections",
+    "actual hit rules and order",
+    "StageActor",
+    "shader/palette"
+  ],
+  "rationale": "266 severed density-rich segment5; raw reviewer measured k3..6 alpha means188/196/194/180. Restore main continuity before raising height. Actual266 frame18 main soil projection was11.8..13.5px, not guessed from localheight.",
+  "qualification": "Local hierarchy comparison, not overall gain increase. Original265 execution remains unknown.",
+  "native": "PENDING",
+  "art": "PENDING"
+}

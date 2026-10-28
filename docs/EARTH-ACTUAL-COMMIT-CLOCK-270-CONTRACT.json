@@ -1,0 +1,35 @@
+{
+  "revision": 270,
+  "baseHeld": 269,
+  "selected": 261,
+  "scope": "BattleStage exact owned Earth receiving visual clock only",
+  "rootCause": "ThornsReflected occupies ordinary visual frame; later Earth planned clock passes contact while ledger receipt uncommitted. Reproduced on selected261 and269, not caused by new269 geometry.",
+  "routeTuple": {
+    "Key": "card:green_earth_roar",
+    "DefinitionId": "green_earth_roar",
+    "SourceKind": "card",
+    "Family": "earth_fissure",
+    "Renderer": "EarthStompFx",
+    "Element": "earth",
+    "FixedSmall": false
+  },
+  "ownership": "Existing direct non-enemy/nonrejected beat; actual player positiveHpLoss event, card presentationUID, same action eventOwner, real PlayCard UID and Previous.Hand definition. No new owner.",
+  "beforeCommit": "effectTime=min(originalEffectTime, scenario.Windup-.0001), so visualAge<=-.0001; allowed existing anticipation only",
+  "afterCommit": "Require b.Contacted + same ledger generation + Committed + Exact; effectTime=windup+max(0,clock-b.LastContact), visualAge starts0 at real commit",
+  "retirement": "For this exact owned route after commit only, retirementTime uses windup+realContactAge so queued delay does not shorten the visual tail; action numeric schedule unchanged",
+  "unchanged": [
+    "ProcessOrdinaryContacts/ledger/receipts",
+    "plannedContactAt and real numeric callback order",
+    "UsesOrderedSharedLaunchMaterial",
+    "CanPreviewIndependentScatterOwner",
+    "all geometry/raw/shader/Actor/worldlights",
+    "other routes original effectTime/retirement"
+  ],
+  "methodsForQA": [
+    "IsExactEarthReceivingRoute(AttackRoute?) static private",
+    "IsOwnedEarthReceivingContact(OrdinaryBeat) private"
+  ],
+  "numericChanges": "visual epsilon -0.0001 seconds only; actual-commit origin uses existing LastContact, no magic fixed delay",
+  "native": "PENDING",
+  "art": "269 geometry unchanged; new clock temporal pending"
+}

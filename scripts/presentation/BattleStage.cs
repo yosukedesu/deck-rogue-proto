@@ -1313,6 +1313,27 @@ public class BattleStage : Node3D
             && route.Renderer=="DarkDrainFx" && route.Element=="dark" && !route.FixedSmall;
     }
 
+    // Earth receiving geometry may anticipate, but never crosses zero before its own commit.
+    // Keep this separate from shared-launch preview admission: no new reservation/owner path.
+    private static bool IsExactEarthReceivingRoute(AttackRoute? route)
+        =>Hd2dAttackPrototype.SupportsRoute(route)
+            && route is {Key:"card:green_earth_roar",DefinitionId:"green_earth_roar",SourceKind:"card",
+                Family:"earth_fissure",Renderer:"EarthStompFx",Element:"earth",FixedSmall:false};
+
+    private bool IsOwnedEarthReceivingContact(OrdinaryBeat b)
+    {
+        if(!b.Direct || b.Action.EnemyPhase || b.Rejected || !IsExactEarthReceivingRoute(b.Beat.Route)
+            || b.Beat.Event is not GameEvent_DamageDealt {Source:"player",HpLoss:>0} hit
+            || hit.PresentationSource is not {Kind:"card",DefinitionId:"green_earth_roar"} source
+            || string.IsNullOrEmpty(source.Uid) || b.Action.Card?.CardId!=source.DefinitionId
+            || !_eventOwners.TryGetValue(hit,out var owner) || !ReferenceEquals(owner,b.Action.Owner)
+            || owner.Change.Command is not RunCommand_Combat {Command:Command_PlayCard play}
+            || play.CardUid!=source.Uid
+            || owner.Change.Previous?.Combat?.Player.Hand.Any(c=>c.Uid==play.CardUid && c.Def.Id==source.DefinitionId)!=true)
+            return false;
+        return true;
+    }
+
     // Preview-only reservation. Numeric contact still uses the unchanged ordered
     // ledger commit and display-boundary validation below. No synthetic receipt.
     // Receipt.Exact is a post-commit result, not a pre-preview eligibility field;
@@ -1567,6 +1588,22 @@ public class BattleStage : Node3D
 				}
 				float elapsed = Math.Max(0f, _clock - b.StartedAt);
                 float effectTime=elapsed-b.EffectStartedAt+b.EffectOffset;
+                float retirementTime=elapsed;
+                if(IsOwnedEarthReceivingContact(b))
+                {
+                    float windup=b.Beat.Scenario?.Windup??0f;
+                    bool committed=b.Contacted && _receipts.TryGetValue(b.Beat.Event,out var earthReceipt)
+                        && earthReceipt.Generation==_ledger.Generation && earthReceipt.Committed && earthReceipt.Exact;
+                    if(!committed)
+                        effectTime=Math.Min(effectTime,windup-.0001f);
+                    else
+                    {
+                        // Begin the receiving phase at the real quantized commit, not an overdue plan.
+                        float contactAge=Math.Max(0f,_clock-b.LastContact);
+                        effectTime=windup+contactAge;
+                        retirementTime=windup+contactAge;
+                    }
+                }
                 // Any admitted shared-launch material can wait for older receipts,
                 // including legacy nested/non-direct action grouping. Receiving
                 // impact/aftermath never precedes its actual numeric contact.
@@ -1606,7 +1643,7 @@ public class BattleStage : Node3D
 				{
 					slot.Fallback.Sample(effectTime);
 				}
-				if (b.Contacted && elapsed >= b.Beat.Duration)
+				if (b.Contacted && retirementTime >= b.Beat.Duration)
 				{
 					RetireEffect(b);
 				}
