@@ -1,0 +1,82 @@
+{
+  "revision": 245,
+  "qualification": "new recovered source chain, not restoration of original243QA; Unity unverified",
+  "logicalSourceFiles": 229,
+  "immutableReconstructedFullFiles": 8751,
+  "immutableMismatches": [],
+  "sourceMismatchesExcludingQACompileAndImportUID": [],
+  "required62ImportMismatches": [],
+  "runs": [
+    {
+      "name": "new245-burn-standard",
+      "assertions": 422,
+      "pass": true,
+      "exit": 0,
+      "shutdownNotice": false,
+      "knownDriverVsyncWarning": true,
+      "bytes": 17082341
+    },
+    {
+      "name": "new245-burn-direct-movie-drain",
+      "assertions": 508,
+      "pass": true,
+      "exit": 0,
+      "shutdownNotice": true,
+      "knownDriverVsyncWarning": true,
+      "bytes": 2698846
+    },
+    {
+      "name": "new245-burn-bound-repeat",
+      "assertions": 519,
+      "pass": true,
+      "exit": 0,
+      "shutdownNotice": false,
+      "knownDriverVsyncWarning": true,
+      "bytes": 459045
+    },
+    {
+      "name": "new245-burn-bound-zero",
+      "assertions": 307,
+      "pass": true,
+      "exit": 0,
+      "shutdownNotice": false,
+      "knownDriverVsyncWarning": true,
+      "bytes": 320096
+    },
+    {
+      "name": "new245-burn-bound-lethal",
+      "assertions": 409,
+      "pass": true,
+      "exit": 0,
+      "shutdownNotice": false,
+      "knownDriverVsyncWarning": true,
+      "bytes": 359269
+    }
+  ],
+  "totalSuccessfulAssertions": 2165,
+  "successfulRuns": 5,
+  "noShutdownNoticeRuns": 4,
+  "art": "Astra static PASS and temporal-frame PASS; direct equal-speed viewing not performed",
+  "video": "70consecutive frames/30fps simulation/2.333333s/584672B; then1naturalframe to EndTurn drain; not realtimeperformance",
+  "effectScope": "Burn19\u201326, Burn clear27+; separateenemy:poke34\u201341",
+  "videoLibrary": "libfile_433fdb4c46f48191aab0e8f5eac09272 v0",
+  "retainedFailure": "new245-burn-direct-movie initial70frame drained assertion failure; separate from successful count",
+  "unresolved": "BGMact1.ogg AudioStreamOggVorbis/OggPacketSequence/Playback shutdown notice in successful movie and failedmovie; initialstartup2resources also; no audio product changes and no leak-absence claim",
+  "lethalOwnership": {
+    "0": {
+      "positiveSamples": 7,
+      "receiptIndices": [
+        11
+      ]
+    },
+    "1": {
+      "positiveSamples": 6,
+      "receiptIndices": [
+        13
+      ]
+    }
+  },
+  "lethalHp": "actual receipt/enemyactor raw1\u2192-1,label0; otherraw200\u2192198,label198; both actual owned positive effects independently and final allnativeinactive/light0",
+  "bounds": "repeat actualIgnite\u21922actualEndTurns tick4 then3, Burn4\u21923\u21922; zero actualEndTurn has no dedicated sampler; 2target lethal actualred_leaping_flame on initialHP6/200 thenEndTurn",
+  "sourceScope": "CreateBurnTickContact isolated; originalCreateBurnStatus andInstalledFire wrapper byteexact243; bridge exactStatus dispatch1line; no newraw/sharedshader/renderer/gameplay/actor changes"
+}

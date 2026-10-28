@@ -693,6 +693,75 @@ internal static class Hd2dAttackPrototype
         return effect;
     }
 
+    // Only the already validated system:burn dispatch uses this sampler.
+    // Installed Fire retains CreateBurnStatus byte-for-byte.
+    internal static NativeEffect CreateBurnTickContact()
+    {
+        var body=new Layer(0,0,"hd2d-fire-volume-02");
+        var cooling=new Layer(0,15,"hd2d-fire-volume-04");
+        var embers=new Layer(0,2);var warmth=new Layer(0,14);float age=0;
+        var effect=new NativeEffect { Shader="Hd2dPrototype",Palette="hd2d-fire",
+            Batches=new[]{warmth.Batch,body.Batch,cooling.Batch,embers.Batch},VisualAge=()=>age,
+            TargetPeak=.035f,FloorPeak=.015f,StageFocus=()=>0f,
+            Light=()=>age<0?0:MathF.Exp(-age/.085f),FloorLight=()=>0f };
+        // A cropped flame surface bends upward; neither a scaled explosion card
+        // nor a new impact. UV taper only covers the cut boundaries of the raw.
+        void Tongue(Layer layer,Vector2 uv0,Vector2 uvSize,Vector3 center,
+            float width,float height,float bend,float opacity,float consumed)
+        {
+            Vector3 Point(float u,float v)
+            {
+                float up=1-v;
+                return center+new Vector3((u*2-1)*width*(.20f+.80f*Ease(v/.82f))+bend*up*up,
+                    (up*2-1)*height+consumed*.09f*up,0);
+            }
+            void Vertex(float u,float v)
+            {
+                float boundary=Ease(u/.14f)*Ease((1-u)/.14f)*Ease(v/.14f)*Ease((1-v)/.14f);
+                // The lower edge is consumed before the upper remainder clears.
+                float lower=1-consumed*Ease((v-.45f)/.55f);
+                layer.V(Point(u,v),uv0+new Vector2(u,v)*uvSize,opacity*boundary*lower,1f,3);
+            }
+            for(int y=0;y<4;y++)for(int x=0;x<8;x++)
+            {
+                float u=x/8f,v=y/4f,q=(x+1)/8f,w=(y+1)/4f;
+                Vertex(u,v);Vertex(q,v);Vertex(q,w);Vertex(u,v);Vertex(q,w);Vertex(u,w);
+            }
+        }
+        effect.Sample=t=>{
+            age=(float)t;body.Reset();cooling.Reset();embers.Reset();warmth.Reset();
+            if(age<0 || age>.212f)return;
+            float rise=Ease(age/.13f),consume=Ease((age-.035f)/.12f);
+            float main=1-Ease((age-.035f)/.12f);
+            Vector3 center=new(.035f,-.055f,.035f);
+            // Unequal main and subordinate lobes leave a visible gap, not a ring.
+            Tongue(body,new(.53f,.035f),new(.46f,.60f),
+                center+new Vector3(.075f+.025f*rise,.09f+.15f*rise,0),
+                .255f*(1-.22f*consume),.335f*(1-.12f*consume),.12f+.09f*rise,main*.88f,consume);
+            float side=1-Ease((age-.020f)/.085f);
+            Tongue(body,new(.04f,.29f),new(.43f,.44f),
+                center+new Vector3(-.285f,.01f+.11f*rise,.004f),
+                .115f*(1-.35f*consume),.215f,-.035f-.04f*rise,side*.60f,consume);
+            float remnant=Ease(age/.035f)*(1-Ease((age-.075f)/.125f));
+            Tongue(cooling,new(.55f,0),new(.45f,.73f),
+                center+new Vector3(.10f+.055f*rise,.12f+.20f*rise,.008f),
+                .22f*(1-.35f*consume),.285f*(1-.22f*consume),.06f*rise,remnant*.70f,consume);
+            warmth.Sprite(center,.18f,.16f,0,MathF.Exp(-age/.055f)*.22f,2);
+            // Existing five sparks remain subordinate; no fresh births after .044s.
+            for(int i=0;i<5;i++)
+            {
+                float dt=age-i*.011f;if(dt<0)continue;
+                float sideSign=i%2==0?-1:1;
+                Vector3 start=center+new Vector3(sideSign*(.13f+.045f*(i%3)),.06f+i*.025f,.015f);
+                Vector3 velocity=new(sideSign*(.20f+.045f*i),.80f+.10f*(i%3),0);
+                Vector3 pos=start+velocity*dt+Vector3.Down*(dt*dt*.8f);
+                float opacity=Ease(dt/.018f)*(1-Ease((age-.09f)/.11f));
+                embers.Taper(pos-velocity.Normalized()*(i==0?.045f:.027f),pos,i==0?.013f:.009f,opacity*.75f,2);
+            }
+        };
+        return effect;
+    }
+
     private static NativeEffect CreateNeutralCastPressure(AttackRoute route)
     {
         var packet=new Layer(0,21);var sheets=new Layer(0,21);var edge=new Layer(0,21);

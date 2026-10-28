@@ -1,0 +1,20 @@
+{
+  "revision": 245,
+  "parent": "b53f1547c667f0173f3cfd89fb691bcaf26e7d3a",
+  "changedProductSHA256": {
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs": "69c3f88eb3c5def0ad20f78c970222103f6359f23196969d5c995c62b9b01608",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/NativeGeometryBridge.cs": "6d488122fa0aed8536dbefef73c7fd02c14d058cb129692582ab9926666a00e0",
+    "docs/BURN-TICK-THERMAL-244-CONTRACT.json": "e8aab3245231fe1a0df3c6e9e470ea4068d9debdffcd894b5b59d045ca401101",
+    "docs/BURN-TICK-ASYMMETRIC-TIP-245-CONTRACT.json": "7f51aa75ed47e47dead5d1c62fe623280f61befd27b49552c82e4fa28e84d7b0"
+  },
+  "logicalReconstructedChainFiles": 229,
+  "all229LogicalHashesVerified": true,
+  "originalHistorical227ManifestAndQANotRecovered": true,
+  "permanentHistoricalLossNotEstablished": true,
+  "current245QA": "Fresh native logs retained:2165/5successful,4 without shutdown notice; movie unresolvedBGMact1.ogg warning; initialfailedmovie separate",
+  "rawChanges": 0,
+  "stageActorSharedShaderChanges": false,
+  "oldBurnStatusInstalledFireUnchanged": true,
+  "sourceBase": "Recovered243 exact majorC#; new245 source/QA not relabelled old evidence",
+  "qualification": "Godot authoring for Unity; do not overwrite user Unity renderer/Linear/HDR/index/math/clock adaptations; no Unity validation"
+}

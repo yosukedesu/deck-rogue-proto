@@ -332,7 +332,7 @@ internal static class NativeGeometryBridge
             ?Hd2dAttackPrototype.CreateInstalledDarkContact(route):route.Family=="plant_point_contact"
             ?Hd2dAttackPrototype.CreateInstalledPlantContact():route.Family=="lightning_discharge"
             ?Hd2dAttackPrototype.CreateInstalledLightningContact():Hd2dAttackPrototype.CreatePermanentPulse();
-        if(StatusContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateBurnStatus();
+        if(StatusContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateBurnTickContact();
         if(NecroContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateNecroDark(route);
         if(ReactionContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateReactionDark(route);
         if(LightningContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateLightningDischarge();
