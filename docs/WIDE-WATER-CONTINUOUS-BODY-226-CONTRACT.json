@@ -1,0 +1,47 @@
+{
+  "revision": 226,
+  "baseTrial": 225,
+  "status": "preflight0errors/1923baselinewarnings10.70s; nativepending",
+  "newRawBytes": 0,
+  "renderedMaterials": [
+    "old phase01 swell",
+    "raw A crest-v2 continuous main body",
+    "old phase03 collapse"
+  ],
+  "unusedRawRetained": "hd2d-waterwide-phase-peel-v2.png B2 intentionally no layer/batch; raw/history retained",
+  "diagnosis": "225 swapped high A coverage into holes and shifted B geometry within one native frame; no more B2 principal body",
+  "windows": {
+    "bodyFold": "Ease((age-firstAt-.015)/.30)",
+    "materialCollapse": "Ease((age-lastAt-.10)/.18)",
+    "oldGeometricCollapse": "Ease((age-lastAt-.025)/.21) unchanged",
+    "overturn": "Ease((age-firstAt+.025)/.13) unchanged"
+  },
+  "geometry": {
+    "sameCanvas": "1536x1024 full UV, basal(.88,.73), 3x12 grid unchanged",
+    "A_only": "front=Ease((u-.48)/.38); lipFold=bodyFold*upper; y*=1-lipFold*(.58+.10*(1-front)); x+=lipFold*(.035+.075*front)",
+    "upper": "Clamp((.73-v)/.34) unchanged; fold zero at/below basal v=.73",
+    "purpose": "continuous broad A water mass folds asymmetrically forward/down; no early alpha reduction before lastactual+.10",
+    "capacity": "3phase layers216 vertices each <512"
+  },
+  "weights": [
+    "visible*(1-materialCollapse)*(1-overturn)",
+    "visible*(1-materialCollapse)*overturn",
+    "visible*materialCollapse"
+  ],
+  "unchanged": [
+    "all head/path/receiver times and order",
+    "Light/FloorLight/StageFocus/TargetPeak/FloorPeak",
+    "all local actual-hit rupture/wake/drops",
+    "other factories inclEarth223",
+    "Stage/Actor/profiles/shader/audio/raw originals"
+  ],
+  "unityIntegration": "No Stage/Actor numerical changes. Material-only A upper-body fold and delayed .10\u2192.28s after lastactual handoff. Old geometry collapse window remains .025\u2192.235s after lastactual.",
+  "gates": [
+    "19\u219220\u219221 no mass disappearance/reappearance",
+    "A lip genuinely falls rather than rigid C ring or flattened sticker",
+    "leading body present through lastactual",
+    "A\u219203 spatial coverage/opacity continuous",
+    "no double crest or basal lift",
+    "tail clear inside original .72 effect lifetime"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "revision": 225,
+  "baseTrial": 224,
+  "status": "product preflight 0 errors / 1923 baseline warnings 11.06s; native pending",
+  "reason": "224 A crest good but B2 holes held as moving lace sheet; shorten rear survival without losing leading contact",
+  "newRawBytes": 0,
+  "raws": "same unmodified A/B2 and old01/03 as224",
+  "materialWindows": {
+    "peel": "Ease((journey-.55)/.30)*Ease((age-firstAt)/.10), changed from .32/.58",
+    "originalCollapse": "Ease((age-lastAt-.025)/.21) unchanged",
+    "rearCollapse": "max(originalCollapse,.85*Ease((journey-.62)/.38)*(1-Ease((u-.66)/.18)))",
+    "leadingLip": "u>=.84 uses originalCollapse exactly; no premature leading disappearance"
+  },
+  "weightsPerUV": [
+    "visible*(1-rearCollapse)*(1-overturn)",
+    "visible*(1-rearCollapse)*overturn*(1-peel)",
+    "visible*(1-rearCollapse)*overturn*peel",
+    "visible*rearCollapse"
+  ],
+  "geometry": {
+    "B2rearFold": "Ease((journey-.50)/.50)*(1-Ease((u-.72)/.16))",
+    "B2upperY": "*=1-.65*rearFold*upper",
+    "B2upperX": "+=.08*rearFold*upper*(.6+.4*sin(u*9))",
+    "uAtLeast088": "B2 added fold zero",
+    "basal": ".88,.73 analytical point unchanged; no exact vertex at anchor, rendered registration native gate",
+    "Afold": "224 same .24 peel upper lowering",
+    "capacity": "4 phase layers216 each, 512capacity"
+  },
+  "unchanged": [
+    "head/path/actual hit timing and order",
+    "all local-hit rupture/wake/drops",
+    "Light/FloorLight/StageFocus/TargetPeak/FloorPeak",
+    "all other factories/raws/shader/Stage/Actor/profiles/audio"
+  ],
+  "unityIntegration": "No Stage/Actor numerical changes; material per-UV phase windows and B2 upper rear deformation only. Actual contact events unchanged.",
+  "gates": [
+    "leading head visibly reaches last actual receiver",
+    "rear holes deform/collapse instead of sliding lace",
+    "no opacity cliff or double crest",
+    "no basal lift/detachment",
+    "no extra impact pulse",
+    "no seam at spatial rear/leading weight boundary"
+  ]
+}

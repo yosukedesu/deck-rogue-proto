@@ -1638,7 +1638,7 @@ internal static class Hd2dAttackPrototype
     private static NativeEffect CreateRollingWater(AttackRoute route)
     {
         var flow=new Layer(0,3,"water-flow-surface-r1");
-        var phases=new[]{new Layer(0,3,"hd2d-waterwide-phase-01"),new Layer(0,3,"hd2d-waterwide-phase-02"),new Layer(0,3,"hd2d-waterwide-phase-03")};
+        var phases=new[]{new Layer(0,3,"hd2d-waterwide-phase-01"),new Layer(0,3,"hd2d-waterwide-phase-crest-v2"),new Layer(0,3,"hd2d-waterwide-phase-03")};
         var local=new Layer(0,3,"hd2d-water-impact-01");var drops=new Layer(0,2);var wake=new Layer(1,3,"water-flow-surface-r1");
         Vector3 source=new(-1,0,0);float age=0;bool gesture=true;
         Vector3[] path=System.Array.Empty<Vector3>();float[] times=System.Array.Empty<float>();
@@ -1687,6 +1687,9 @@ internal static class Hd2dAttackPrototype
                 float angle=MathF.Atan2(dir.Y,dir.X);
                 float arrived=Ease((age-firstAt+.12f)/.14f),release=Ease((age-lastAt-.045f)/.24f);
                 float visible=Ease((age-startAt)/.07f)*(1-Ease((age-lastAt-.25f)/.20f));
+                // Once the low collapse material owns the body, its opacity can
+                // only decay; never refill a vanished film with a new foam crest.
+                visible*=1-Ease((age-lastAt-.115f)/.26f);
                 // One full landscape canvas, with its real basal contact fixed at
                 // (.88,.73). The upper lip rolls independently over a low trailing
                 // body; no bbox fitting, per-target fan, or airborne jet pivot.
@@ -1694,6 +1697,10 @@ internal static class Hd2dAttackPrototype
                 float collapse=Ease((age-lastAt-.025f)/.21f);
                 float swelling=Ease((age-startAt)/.16f);
                 float overturn=Ease((age-firstAt+.025f)/.13f);
+                // One continuous A body carries every actual receiver. Fold its lip
+                // forward/down before handing its low silhouette to old collapse art.
+                float bodyFold=Ease((age-firstAt-.015f)/.30f);
+                float materialCollapse=Ease((age-lastAt-.025f)/.09f);
                 float width=1.25f+.45f*swelling;
                 float height=width/1.5f;
                 void Body(Layer layer,float opacity,float phase)
@@ -1707,6 +1714,13 @@ internal static class Hd2dAttackPrototype
                         float x=(u-.88f)*2*width+lip*roll;
                         float y=(.73f-v)*2*height;
                         y*=1-.30f*collapse*upper;
+                        if(phase==1f)
+                        {
+                            float front=Ease((u-.48f)/.38f);
+                            float lipFold=bodyFold*upper;
+                            y*=1-lipFold*(.58f+.10f*(1-front));
+                            x+=lipFold*(.035f+.075f*front);
+                        }
                         y+=upper*.035f*MathF.Sin(u*11-age*16);
                         x+=upper*.025f*MathF.Sin(v*13-age*13);
                         return head+new Vector3(x,y,.035f+phase*.002f);
@@ -1718,9 +1732,11 @@ internal static class Hd2dAttackPrototype
                         Vertex(u,v);Vertex(U,v);Vertex(U,V);Vertex(u,v);Vertex(U,V);Vertex(u,V);
                     }
                 }
-                Body(phases[0],visible*(1-overturn),0);
-                Body(phases[1],visible*overturn*(1-collapse),1);
-                Body(phases[2],visible*collapse,2);
+                // B2 is deliberately unused: no high-coverage body -> perforated mask swap.
+                // Weights sum to visible. Local numeric-contact ruptures are untouched.
+                Body(phases[0],visible*(1-materialCollapse)*(1-overturn),0);
+                Body(phases[1],visible*(1-materialCollapse)*overturn,1);
+                Body(phases[2],visible*materialCollapse,2);
             }
             if(age<0)return;
             // Each actual positive event adds only a small local rupture. The

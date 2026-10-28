@@ -1,0 +1,28 @@
+{
+  "runs": [
+    {
+      "revision": 224,
+      "run": "rev224-waterwide-standard-reused222-b",
+      "technicalChecks": 1258,
+      "art": "HOLD, not selected",
+      "allLocalRawIncluded": true
+    },
+    {
+      "revision": 225,
+      "run": "rev225-waterwide-standard-reused222",
+      "technicalChecks": 1244,
+      "art": "HOLD, not selected",
+      "allLocalRawIncluded": true
+    },
+    {
+      "revision": 226,
+      "run": "rev226-waterwide-standard-reused222",
+      "technicalChecks": 1243,
+      "art": "HOLD, not selected",
+      "allLocalRawIncluded": true
+    }
+  ],
+  "failed224": "Unsupportedqa-initial-energy flag rejected beforebuild/native; corrected-b real1258 PASS butartHOLD.",
+  "allOriginalLocalEvidencePreserved": true,
+  "archivePolicy": "All held224-226 nativePNG included; no deletions. Earlier223 inherited archive qualifications unchanged."
+}
