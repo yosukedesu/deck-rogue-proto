@@ -1,0 +1,78 @@
+{
+  "pass": true,
+  "revision": 234,
+  "physicalCandidate": "candidate222",
+  "checks": 1486,
+  "sourceFiles": 217,
+  "allSourceAndProtectedPostproof": true,
+  "protectedCount": 3487,
+  "video": "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/qa/rev234-torrent-direct-movie-reused222/native-contiguous-30fps.mp4",
+  "sha256": "acefb563adab805299564b83de02b0fefb5832adfd4dae1bff6e85b8a9ac9c1e",
+  "bytes": 1229823,
+  "frameCount": 100,
+  "fps": 30,
+  "duration": "3.333333",
+  "silent": true,
+  "consecutiveDrawn": [
+    24,
+    123
+  ],
+  "consecutiveActionClock": [
+    1.5458326,
+    4.8458295
+  ],
+  "allClockStepsOneThirtieth": true,
+  "wallSeconds": 35.4437126,
+  "maxPipeWriteSeconds": 0.005826899999998858,
+  "qualification": "Controlled fixed30fps native simulation, not wallclock real-time. Every actual FramePostDraw captured without sparse interpolation. H264 lossy encoded; raw RGBA hashes retained perframe, not claimed identical to decoded pixels.",
+  "positiveCommittedSamples": 17,
+  "firstPositiveFrames": [
+    {
+      "receipt": 17,
+      "frameIndexZeroBased": 13,
+      "nativeDrawn": 37,
+      "clock": 1.9791656,
+      "age": 0.033332884
+    },
+    {
+      "receipt": 18,
+      "frameIndexZeroBased": 19,
+      "nativeDrawn": 43,
+      "clock": 2.1791654,
+      "age": 0.013332784
+    },
+    {
+      "receipt": 19,
+      "frameIndexZeroBased": 26,
+      "nativeDrawn": 50,
+      "clock": 2.4124985,
+      "age": 0.026665866
+    }
+  ],
+  "plannedContacts": [
+    1.9458326,
+    2.1658325,
+    2.3858328
+  ],
+  "sameStandardFixtureAndLedger": [
+    {
+      "path": "white_light_torrent-fixture.json",
+      "sha256": "1177c3fe37d465d183e46c0ee2324c9e85225171e667531a1b8964c89f103eea"
+    },
+    {
+      "path": "white_light_torrent-after-prior-fixture.json",
+      "sha256": "40e37412e601b1d77da4b24fdb44aaba797b4748873a6658b204f04849dbb56b"
+    },
+    {
+      "path": "white_light_torrent-expected-damage-events.json",
+      "sha256": "37ae27c2229c38a1bf7fee815b0680a4a2d127ba8d27dc90c8bf18e64a57c042"
+    },
+    {
+      "path": "white_light_torrent-observed-damage-events.json",
+      "sha256": "37ae27c2229c38a1bf7fee815b0680a4a2d127ba8d27dc90c8bf18e64a57c042"
+    }
+  ],
+  "fullDecode": "PASS",
+  "artTemporal": "PENDING",
+  "freeBytes": 497987584
+}

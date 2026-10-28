@@ -382,6 +382,15 @@ public class AuthoredGeometryFx : Node3D
 		return new Vector4(c.R, c.G, c.B, c.A);
 	}
 
+    // A local material opt-in, never a shared Kind33 or Light-family replacement.
+    internal static bool UsesTorrentOpticalMaterial(AttackRoute? route,NativeEffect? effect,NativeBatch? batch)
+        =>route is not null && effect is not null && batch is not null &&
+          route.Key=="card:white_light_torrent" && route.DefinitionId=="white_light_torrent" &&
+          route.SourceKind=="card" && route.Family=="light" && route.Renderer=="LightRayFx" &&
+          route.Element=="light" && !route.FixedSmall &&
+          effect.Shader=="Hd2dPrototype" && effect.Palette=="hd2d-light" &&
+          batch.Kind==33 && batch.Space==0 && batch.Texture=="hd2d-light-torrent-density-v1";
+
 	private void ConfigureMaterial(Draw draw, NativeBatch b, int index)
 	{
 		if (draw.Positions.Length != b.Count)
@@ -395,6 +404,7 @@ public class AuthoredGeometryFx : Node3D
 		}
 		NativeEffect e = _effect;
 		string shader = ((e.Shader == "EarthStompSurfaceR2" && b.Kind == 0) ? "EarthStompRockR2" : e.Shader);
+        if(UsesTorrentOpticalMaterial(_route,e,b))shader="Hd2dOpticalFlow";
 		ShaderMaterial material = new ShaderMaterial
 		{
 			RenderPriority = Math.Clamp(index, -128, 127),

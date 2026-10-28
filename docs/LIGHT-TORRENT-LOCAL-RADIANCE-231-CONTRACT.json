@@ -1,0 +1,45 @@
+{
+  "revision": 231,
+  "baseTrial": 230,
+  "status": "productpreflight0errors/1923baselinewarnings10.80s; actualshadercompile/native/negativecasespending",
+  "materialOptIn": "exact full Torrent route tuple +effect Hd2dPrototype/palettehd2d-light +batchKind33/Space0/texturehd2d-light-torrent-density-v1; helperfalse leaves originalshaderselection",
+  "rawUnmodified": true,
+  "rawBytesAdded": 0,
+  "geometryExact230": true,
+  "changes": {
+    "bodyKind": "3\u219233",
+    "bodyRole": "1 primary\u21923 neutral/core, gain1.05 unchanged",
+    "shader": "new authored_Hd2dOpticalFlow.gdshader only selected body",
+    "blend": "unshaded blend_add depth_draw_never cull_disabled fog_disabled",
+    "linearRGB": "same OUTPUT_IS_SRGB decode/output convention as existingHd2d shader",
+    "veil": ".16+.24*smoothstep(.10,.60,raw linear luminance)",
+    "filament": ".80*smoothstep(.60,.92,raw linear luminance)",
+    "radiance": "raw linearRGB*(veil+filament)*max(vertexTintRGB); range coefficient .16\u21921.20",
+    "alpha": "raw.a*vertexalpha*canvasedge smoothstep0\u2192.08; no interior doublefeather",
+    "worldLight": "no lamp/floor/StageFocus/gain/camera changes"
+  },
+  "diagnosis230": {
+    "primaryLinearMax": 0.5840784178911641,
+    "primaryTimesGain": 0.6132823387857224,
+    "rawCentralMedianLinearL": 0.6964283002341477,
+    "afterRoleMedianLinearL": 0.4271071767641633,
+    "peakAlphaApprox": 0.5709,
+    "oldBlend": "mix replaces scene contribution with dimmedcloth rather than localradiance",
+    "qualification": "Numbers assume Medium scenario emission1 from code; 230actualtrace did not record _emission. 231must record actual field, do not retroactively certify230."
+  },
+  "unchanged": [
+    "all Torrent positions/UV/alpha/time/source/3actualhits/interval.22",
+    "all otherfactories/sharedLight/old shader exact",
+    "raw original/Stage/Actor/profiles/audio"
+  ],
+  "unityIntegration": "New exact-local material requires additive composition, linearRGB rule and veil/filament thresholds above. Body vertex role is neutral white max, not primarylavender dimmer. No Stage/Actor/timing/worldlight numerical changes. All shader+prototype+renderer+raw/docs in onecheckpoint.",
+  "gates": [
+    "selector negatives eachwrongtuple/null/otherLight/wrongkind/space/texture/palette/shader",
+    "oldshared shaderbyte/output unchanged",
+    "normalUIframe caster\u2192targetdirection readable",
+    "brightthinplatinumcore +transparentbroadflow/visibleenemybackground",
+    "floorwash notmainshape",
+    "3actualcrest/trough andlastconvergence readable",
+    "no whiteopaqueplate or haircloth; rawregeneration remains option ifmaterialnot enough"
+  ]
+}

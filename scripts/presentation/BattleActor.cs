@@ -1277,6 +1277,14 @@ public class BattleActor : Node3D
 		bool changed = false;
 		while (_poseFrameTime >= PoseFrameDuration())
 		{
+            // Keep the real release drawing, never restart frames0/1/2 or emit a hit.
+            // Leave its duration consumed so recovery resumes at the first frame
+            // after the owner-derived endpoint (or cancellation), without a new .18s tail.
+            if(TorrentReleaseHoldActive(clock))
+            {
+                _poseFrameTime=PoseFrameDuration();
+                break;
+            }
 			_poseFrameTime -= PoseFrameDuration();
 			_poseFrame++;
 			changed = true;
@@ -1358,6 +1366,19 @@ public class BattleActor : Node3D
 		}
 	}
 
+    // Exact Torrent visual release lifetime, refreshed by its existing action owner.
+    private float _torrentReleaseHoldUntil = float.NegativeInfinity;
+    internal void ClearTorrentReleaseHold() => _torrentReleaseHoldUntil = float.NegativeInfinity;
+    internal void SetTorrentReleaseHold(float until, SourceActorMotion.OwnershipToken owner)
+    {
+        if(owner.BelongsTo(Motion) && _hd2dPoseOwner.IsCurrent && !Dead
+            && _hd2dPose=="white_light_torrent" && float.IsFinite(until))
+            _torrentReleaseHoldUntil=Math.Max(_torrentReleaseHoldUntil,until);
+    }
+    internal bool TorrentReleaseHoldActive(float clock)
+        =>!Dead && _hd2dPoseOwner.IsCurrent && _hd2dPose=="white_light_torrent"
+          && _pose=="attack" && _poseFrame==3 && clock<_torrentReleaseHoldUntil;
+
     private string _hd2dPose = "";
     private bool _hd2dRemoteStrike;
     private int _hd2dVolleyCount = 1;
@@ -1367,6 +1388,7 @@ public class BattleActor : Node3D
 
     public void BeginHd2dPose(string card, float now, bool remoteStrike = false, int volleys = 1, float volleyInterval = 0f)
     {
+        ClearTorrentReleaseHold();
         _hd2dPose = Hd2dAttackPrototype.Supports("card:" + card) ? card : "";
         _hd2dPoseStart = now;
         _hd2dRemoteStrike=remoteStrike;

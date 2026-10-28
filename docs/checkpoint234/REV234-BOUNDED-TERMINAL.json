@@ -1,0 +1,649 @@
+{
+  "pass": true,
+  "revision": 234,
+  "sourceFiles": 217,
+  "totalChecks": 4288,
+  "cleanHosts": 3,
+  "runs": [
+    {
+      "path": "rev234-torrent-direct-movie-reused222",
+      "checks": 1486,
+      "exit": 0,
+      "positiveSamples": 17,
+      "bytes": 3654676,
+      "files": [
+        {
+          "path": "rev234-torrent-direct-movie-reused222/assembly-sha256.txt",
+          "bytes": 107,
+          "sha256": "7c47c63477159593995d0cc2646631f46e5ceeaf450b1e23085761884b7ef762"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/build.log",
+          "bytes": 1311815,
+          "sha256": "5fd0c58dd13527217d0cfa3f389c7c6079b247ac2ca6758f429dfe934a5d004a"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/chain-audit.json",
+          "bytes": 51993,
+          "sha256": "a3b5578f1a1346ea36d2757ca9b9b9618a6a1e4879268949503d99c7e6e1fda5"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/dynamic-source-distance-234.json",
+          "bytes": 4361,
+          "sha256": "5005451945cc220bcff07adaa9a5281359aad37ffdab6a8907a2debcc132c88a"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/encoder.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/exit-code.txt",
+          "bytes": 2,
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/finite-vertices-234.jsonl",
+          "bytes": 36030,
+          "sha256": "10f7aad7576db52320b4dc0348529ccf346aab42fd2e6aa45d4bdb66b48c2de1"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/freeze-diagnostic.log",
+          "bytes": 1546,
+          "sha256": "367cf15918aebf07b77a64fd8d2475546b99dc8661018fb01c97c4b51e9c7171"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/import.log",
+          "bytes": 1357,
+          "sha256": "0eb313fbd718adcabfdf78917d507ddc48f54eddab803aa07c81cc6406d2325a"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/independent-optical-flow-review-234.json",
+          "bytes": 13703,
+          "sha256": "77f11ca7f922ba1118b6192ecc17651ce9680417c7dbcec48acbec7a3cfa49c5"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/independent-optical-flow-review-234.md",
+          "bytes": 1199,
+          "sha256": "02e72587c249b2880407625625feef1422f513658db758b546e45e676729073f"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/live-metrics.json",
+          "bytes": 194,
+          "sha256": "ccb38d310f63974c54c558679a9a930ea049a977c28414934b1379686dc633c3"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/native-contiguous-30fps.mp4",
+          "bytes": 1229823,
+          "sha256": "acefb563adab805299564b83de02b0fefb5832adfd4dae1bff6e85b8a9ac9c1e"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/native-frame-clock-234.json",
+          "bytes": 137956,
+          "sha256": "2b8a36ea1c372efa8740e8519301bb30bbda16b13827ea98556c87440ea81d07"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/prior-attack-fixture-receipts.json",
+          "bytes": 593,
+          "sha256": "ba6f4df8d93160c9743358498f34664498d58a3f6d99db5ad5987c0b2a212d2b"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/qa-flag-preflight.json",
+          "bytes": 2879,
+          "sha256": "acae386fc78d613f2530f5b372ad7e795049c91ff195a448fcc1cb88242f9676"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/resource-receipts.json",
+          "bytes": 28038,
+          "sha256": "83ab2e52c831b82c156c53e00b4a834efb224b9cb86f2e920c20dbf447c3361b"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/results.json",
+          "bytes": 126308,
+          "sha256": "50c4d4ed68a6ef544af580a38fb58dd2ca599038e18fc1dcf5a592593cdd60bc"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/run.log",
+          "bytes": 2943,
+          "sha256": "ac0ab7e8d7657923f6ac0306ccfe354c536d3def37b7368579bab94a5f4e24c5"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/runtime-assembly.json",
+          "bytes": 134,
+          "sha256": "cc0afaf0ac0546de8e83c74af3297573502751cd939c91269aedb6a9a3d09a82"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/runtime-location.json",
+          "bytes": 443,
+          "sha256": "b089b3cf22c0c302f5c6114647f9a72de4203220be1197e96e382c4da197721e"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/source-fingerprint.json",
+          "bytes": 80892,
+          "sha256": "7d98bc69a0a806b43248e4ae1544e86a27456c040c0423da974aaa1cb8ff745b"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/source-kind-runtime-proof.json",
+          "bytes": 114800,
+          "sha256": "8b819917aadcc54a7e47f9d2d534001fc16ebaa82e09593f13de6c3047c57974"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/tested-harness.cs",
+          "bytes": 93164,
+          "sha256": "b7ae8f1154ee20cd3904898af7583f7d7bf4549d41e3023eb171b23ab4384b20"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/toolchain.txt",
+          "bytes": 45,
+          "sha256": "ef2497f7ae821f2a5e34956b6ca50d8320358370796941150337f546d6860f28"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/torrent-actual-material-234.json",
+          "bytes": 149928,
+          "sha256": "a786a867375c0767140e1a1f39d430dc0acf7c6e6c4273331eff1ebb73bb2b34"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/torrent-owner-commit-234.json",
+          "bytes": 137240,
+          "sha256": "86114ccdb0610d357e9d6c98a49f551ee8785d286699bec978857bb0772c9b2a"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/torrent-planned-three-hit-234.json",
+          "bytes": 1889,
+          "sha256": "0ff348267b2f446589e2d1787065e29e4179b6f5d3a707e23657d106a5edb5c0"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/torrent-prior-full-0.json",
+          "bytes": 696,
+          "sha256": "3fdf255769ce97ff3d9b950551a8ca4f17862bb3cf9fe2dfc6f2a613bc232287"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/torrent-prior-full-1.json",
+          "bytes": 2242,
+          "sha256": "8466f892c752e67251006e7d24075c665604b401aa0eb4d42c05d090956ae203"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/torrent-prior-full-2.json",
+          "bytes": 2246,
+          "sha256": "45ef1af9350ddd10f8f586a6a887be7701ebbffc3da71b657551776512c612d0"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/torrent-whole-sequence-preflight-234.json",
+          "bytes": 47287,
+          "sha256": "aa403b5e805b5c96c74b17b1c81ff6b2eb1868c744fbaca64f9daf9f6be8df0e"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/white_light_torrent-after-prior-fixture.json",
+          "bytes": 17993,
+          "sha256": "40e37412e601b1d77da4b24fdb44aaba797b4748873a6658b204f04849dbb56b"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/white_light_torrent-complete-rule-transition.json",
+          "bytes": 22006,
+          "sha256": "e5723f516c43225cb77020310afd6215dfc99d03342290182bc0549642f12bb3"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/white_light_torrent-dispatch.json",
+          "bytes": 113,
+          "sha256": "8d640bc85a7bfcf4d096881c2a334d29e8d751c9c37c6cc15495544b4cb93aa6"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/white_light_torrent-expected-damage-events.json",
+          "bytes": 1643,
+          "sha256": "37ae27c2229c38a1bf7fee815b0680a4a2d127ba8d27dc90c8bf18e64a57c042"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/white_light_torrent-fixture-stage-state.json",
+          "bytes": 246,
+          "sha256": "b8c85d43b9cde6c85a8a0d24a12d1884d43dc603389cd2d2518eb75f15388ebf"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/white_light_torrent-fixture.json",
+          "bytes": 17202,
+          "sha256": "1177c3fe37d465d183e46c0ee2324c9e85225171e667531a1b8964c89f103eea"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/white_light_torrent-observed-damage-events.json",
+          "bytes": 1643,
+          "sha256": "37ae27c2229c38a1bf7fee815b0680a4a2d127ba8d27dc90c8bf18e64a57c042"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/white_light_torrent-pre-dispatch-actors.json",
+          "bytes": 1918,
+          "sha256": "1e7c5d45730f81284c6db19561db83a9985a8a840e81bc2d193c3585f9b5030a"
+        },
+        {
+          "path": "rev234-torrent-direct-movie-reused222/white_light_torrent-support-observers.json",
+          "bytes": 10059,
+          "sha256": "9dd3aa099d88246053ec8a3eb7aa65cc9941531a1684c6d8df74f60b3c9edd2d"
+        }
+      ]
+    },
+    {
+      "path": "rev234-torrent-hold-lifecycle",
+      "checks": 1426,
+      "exit": 0,
+      "positiveSamples": 17,
+      "bytes": 2713249,
+      "files": [
+        {
+          "path": "rev234-torrent-hold-lifecycle/assembly-sha256.txt",
+          "bytes": 107,
+          "sha256": "428256e5dd800ddb8eee40765d93338dc8df06a82df3157137196aecd991bf8b"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/build.log",
+          "bytes": 1311815,
+          "sha256": "0c77d75a3dd3fe5d9c05696fb5a8ce2f7644f0b2587981e05d3ba6c087b76704"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/chain-audit.json",
+          "bytes": 498555,
+          "sha256": "b5c574ad8411746e68b098ebae92e142a8f39a7c07238aeca83862db76b46c14"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/exit-code.txt",
+          "bytes": 2,
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/finite-vertices-234.jsonl",
+          "bytes": 36027,
+          "sha256": "d40abe2d23af177cf9519ec08d419812ea736e63b111cc6e53187580f1b351c0"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/freeze-diagnostic.log",
+          "bytes": 1546,
+          "sha256": "88ed67dc837c63ad7e4112f1c5145c3e5545242ec369fe8f44b1691e7638a02f"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/hold-lifecycle-234.json",
+          "bytes": 3007,
+          "sha256": "c612472b2acc4d8b9b9c794bc2633a843ce79a76d268db1335759d5cf3486fc5"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/import.log",
+          "bytes": 1022,
+          "sha256": "03730c800475d6cb4d37fb33a85f8bad0ad9aa32e441af467c5e7bde1b02e351"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/prior-attack-fixture-receipts.json",
+          "bytes": 593,
+          "sha256": "ba6f4df8d93160c9743358498f34664498d58a3f6d99db5ad5987c0b2a212d2b"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/qa-flag-preflight.json",
+          "bytes": 2941,
+          "sha256": "ffe4af614f4b01a7c9351ba7fa00b9588939db3974489a33f4a3629b6d54c2af"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/resource-receipts.json",
+          "bytes": 28146,
+          "sha256": "e5ff8358b34743fdf698842854e637f0a7a7af655cfcb3cba63f3b2e52888949"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/results.json",
+          "bytes": 120909,
+          "sha256": "7c0c320c11b6627916c43953fdf94de236376ef29d597343c59fdf437bfbe5de"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/run.log",
+          "bytes": 2935,
+          "sha256": "46f4cc2eb0fa0bff8254aebb08fb50ead645e52dc41680cb6368f3d1e65abe51"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/runtime-assembly.json",
+          "bytes": 134,
+          "sha256": "00c6b0bb4cb3461f681e3224fa2783030781a97f1d0cdafbf7de08a3785086e6"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/runtime-location.json",
+          "bytes": 354,
+          "sha256": "54c92e6b1b6ba3dd9d9a333e1b428ed42e5e341a9d8f7d5e7ecd495709fea7a0"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/source-fingerprint.json",
+          "bytes": 80892,
+          "sha256": "7f6102ee00aafc2c685f6fc9a311764def0b590e456f0ce13a65106d90de115f"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/source-kind-runtime-proof.json",
+          "bytes": 114800,
+          "sha256": "09eb155b474264f6364d3f010c9f197329b11867eba082890513b057f6fd3c68"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/tested-harness.cs",
+          "bytes": 95038,
+          "sha256": "c7f99e0d6c04f0451ad9f628f99914c62f5e10cfd0c7eab250afa1c7993beb33"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/toolchain.txt",
+          "bytes": 45,
+          "sha256": "ef2497f7ae821f2a5e34956b6ca50d8320358370796941150337f546d6860f28"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/torrent-actual-material-234.json",
+          "bytes": 149925,
+          "sha256": "c625fd470ef45162d24a6b08bac8d3151ae63172575cf2c4465751a10ad5d212"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/torrent-owner-commit-234.json",
+          "bytes": 137237,
+          "sha256": "292155a8f19eb73a0ac54e769a1a7d2e05b2057e66707fce9ce091704f405c54"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/torrent-planned-three-hit-234.json",
+          "bytes": 1889,
+          "sha256": "19f1ed14f0816b0da65181c4f5be1cbc3055bec6a07df54f920d7dbf5620ec3c"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/torrent-prior-full-0.json",
+          "bytes": 696,
+          "sha256": "3fdf255769ce97ff3d9b950551a8ca4f17862bb3cf9fe2dfc6f2a613bc232287"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/torrent-prior-full-1.json",
+          "bytes": 2242,
+          "sha256": "8466f892c752e67251006e7d24075c665604b401aa0eb4d42c05d090956ae203"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/torrent-prior-full-2.json",
+          "bytes": 2246,
+          "sha256": "45ef1af9350ddd10f8f586a6a887be7701ebbffc3da71b657551776512c612d0"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/torrent-whole-sequence-preflight-234.json",
+          "bytes": 47287,
+          "sha256": "aa403b5e805b5c96c74b17b1c81ff6b2eb1868c744fbaca64f9daf9f6be8df0e"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/white_light_torrent-after-prior-fixture.json",
+          "bytes": 17993,
+          "sha256": "40e37412e601b1d77da4b24fdb44aaba797b4748873a6658b204f04849dbb56b"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/white_light_torrent-complete-rule-transition.json",
+          "bytes": 22006,
+          "sha256": "e5723f516c43225cb77020310afd6215dfc99d03342290182bc0549642f12bb3"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/white_light_torrent-dispatch.json",
+          "bytes": 147,
+          "sha256": "1f5fedca336778d046a66cc2a4a695acdf46ed7707c3b2ab06bcc5a8601a12a7"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/white_light_torrent-expected-damage-events.json",
+          "bytes": 1643,
+          "sha256": "37ae27c2229c38a1bf7fee815b0680a4a2d127ba8d27dc90c8bf18e64a57c042"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/white_light_torrent-fixture-stage-state.json",
+          "bytes": 246,
+          "sha256": "b8c85d43b9cde6c85a8a0d24a12d1884d43dc603389cd2d2518eb75f15388ebf"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/white_light_torrent-fixture.json",
+          "bytes": 17202,
+          "sha256": "1177c3fe37d465d183e46c0ee2324c9e85225171e667531a1b8964c89f103eea"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/white_light_torrent-frames.json",
+          "bytes": 2,
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/white_light_torrent-observed-damage-events.json",
+          "bytes": 1643,
+          "sha256": "37ae27c2229c38a1bf7fee815b0680a4a2d127ba8d27dc90c8bf18e64a57c042"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/white_light_torrent-pre-dispatch-actors.json",
+          "bytes": 1918,
+          "sha256": "1e7c5d45730f81284c6db19561db83a9985a8a840e81bc2d193c3585f9b5030a"
+        },
+        {
+          "path": "rev234-torrent-hold-lifecycle/white_light_torrent-support-observers.json",
+          "bytes": 10059,
+          "sha256": "5ef0748474fa3ee24e8945006a40f9aa1d90fc2a8b071f15e27e653a7527acf1"
+        }
+      ]
+    },
+    {
+      "path": "rev234-torrent-white-small-phone",
+      "checks": 1376,
+      "exit": 0,
+      "positiveSamples": 17,
+      "bytes": 5847057,
+      "files": [
+        {
+          "path": "rev234-torrent-white-small-phone/assembly-sha256.txt",
+          "bytes": 107,
+          "sha256": "7c47c63477159593995d0cc2646631f46e5ceeaf450b1e23085761884b7ef762"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/build.log",
+          "bytes": 1311815,
+          "sha256": "fed465fd5c19e40a313cffcdf63018381d82b06fd210df526849bae1ef027360"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/chain-audit.json",
+          "bytes": 431590,
+          "sha256": "a80fe892a3900f276a9079f1f0fb907301cefa49d5aa3e7908c6ce13e181261a"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/exit-code.txt",
+          "bytes": 2,
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/finite-vertices-234.jsonl",
+          "bytes": 36027,
+          "sha256": "6fbe63023f032c22b2d9fb8b783f5ac483c24edb42b40cc07cc543b0ee874bf4"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/freeze-diagnostic.log",
+          "bytes": 1546,
+          "sha256": "104e80a3c5e007150332f2e611a5a5400c3ba2f9d643dba953ba423e66b5440b"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/import.log",
+          "bytes": 1022,
+          "sha256": "03730c800475d6cb4d37fb33a85f8bad0ad9aa32e441af467c5e7bde1b02e351"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/prior-attack-fixture-receipts.json",
+          "bytes": 593,
+          "sha256": "ba6f4df8d93160c9743358498f34664498d58a3f6d99db5ad5987c0b2a212d2b"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/qa-flag-preflight.json",
+          "bytes": 2886,
+          "sha256": "a9e5c97d246f176fce8510cffc6d9f368b1591c1674c85255bfa75294fff6be4"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/resource-receipts.json",
+          "bytes": 28146,
+          "sha256": "e5ff8358b34743fdf698842854e637f0a7a7af655cfcb3cba63f3b2e52888949"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/results.json",
+          "bytes": 116423,
+          "sha256": "3a97a51174b9929eb7971371c4e4533e91de27217585ffcf3147f94edeba71ea"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/run.log",
+          "bytes": 3086,
+          "sha256": "49ea849386eb797de1410443f59950a81f70bf8f0c262304f7fdc76c3e888bdc"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/runtime-assembly.json",
+          "bytes": 134,
+          "sha256": "cc0afaf0ac0546de8e83c74af3297573502751cd939c91269aedb6a9a3d09a82"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/runtime-location.json",
+          "bytes": 374,
+          "sha256": "c9eb4d2940360cf16efe47aa97275738167e5a97afd271f743b01845ddbd955c"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/source-fingerprint.json",
+          "bytes": 80892,
+          "sha256": "7d98bc69a0a806b43248e4ae1544e86a27456c040c0423da974aaa1cb8ff745b"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/source-kind-runtime-proof.json",
+          "bytes": 115496,
+          "sha256": "56b7f4664ea5caca37d1753a94a63ac0f8bd2c12be4318273964ed3b37aaf737"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/tested-harness.cs",
+          "bytes": 93164,
+          "sha256": "b7ae8f1154ee20cd3904898af7583f7d7bf4549d41e3023eb171b23ab4384b20"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/toolchain.txt",
+          "bytes": 45,
+          "sha256": "ef2497f7ae821f2a5e34956b6ca50d8320358370796941150337f546d6860f28"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/torrent-actual-material-234.json",
+          "bytes": 149925,
+          "sha256": "ceef1e5f22d0a87410c4fa127b3b081dfa5174ff19e913f6e3a568e2486d8df4"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/torrent-owner-commit-234.json",
+          "bytes": 137594,
+          "sha256": "a08d1ddb9f7f991874a142649b227803fd4a429436f6ab4bcbcfb330e0d8eaa3"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/torrent-planned-three-hit-234.json",
+          "bytes": 1916,
+          "sha256": "8678806d3e1b42b643372fad71fc4fc36cfa4c5e7659d5401fbca631d5032b5e"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/torrent-prior-full-0.json",
+          "bytes": 696,
+          "sha256": "e7bfa2bcf4cb43b3362c007a11f2174257b0dc06e0bbbbc0e7313c65db3a57a2"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/torrent-prior-full-1.json",
+          "bytes": 2242,
+          "sha256": "8e36f794a7ccd4fd25a3759c207e17923eb867d863b263b7a10886f3b465490a"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/torrent-prior-full-2.json",
+          "bytes": 2246,
+          "sha256": "722de909c1560f8ca8218a553ff0db28acfa6d3b5806fb9df9fb1eee972bfeb7"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/torrent-whole-sequence-preflight-234.json",
+          "bytes": 47218,
+          "sha256": "1ebc40ddc7cd884faa88d8e89200a0ecc002e0e4e07e56b2132bc7fd166bdbc3"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/viewport-size.json",
+          "bytes": 48,
+          "sha256": "232c64aa65516bf038e660961e9a8989c9777523f7b481529880fba831f1a82e"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent/0014.png",
+          "bytes": 558315,
+          "sha256": "3dbb88215b3a9cbc4b050b7b9bc9f27dd1b004e14171260bd55b268c170e1a7e"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent/0020.png",
+          "bytes": 551131,
+          "sha256": "d30756ad99e8943671fb98aa2c4f4dc432674cd3f6d30cf7ae93bf8ea8b7a615"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent/0023.png",
+          "bytes": 539599,
+          "sha256": "54d7f96075dd46214a3c113a7dbe2398498628c6d2a7dfa9cbd4bc9784ee69a5"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent/0027.png",
+          "bytes": 553069,
+          "sha256": "86cbc73c9d2e61ffa447f80f075096616824162f56e4d796ed9330e8c5d1b7c6"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent/0038.png",
+          "bytes": 531783,
+          "sha256": "8ec94d95e62bacfa9bf2429ad96012fcd9b6dfd9b09e6c235b8d6c7b54f701a5"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent-after-prior-fixture.json",
+          "bytes": 17632,
+          "sha256": "6e971159b3ddc27ec20eb57e29302d2351f2847d7a115cc08eb99c3262e46172"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent-complete-rule-transition.json",
+          "bytes": 21095,
+          "sha256": "4ca2d144faabe8b64b8aeced5c3f660c5264c76eab8e995c2c2f252e374e4ddb"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent-dispatch.json",
+          "bytes": 147,
+          "sha256": "1f5fedca336778d046a66cc2a4a695acdf46ed7707c3b2ab06bcc5a8601a12a7"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent-expected-damage-events.json",
+          "bytes": 1670,
+          "sha256": "478cdcb14677876601fbcdd20335f7e3b74d490213da0ce0adaa0a4b02817dd7"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent-fixture-stage-state.json",
+          "bytes": 246,
+          "sha256": "b8c85d43b9cde6c85a8a0d24a12d1884d43dc603389cd2d2518eb75f15388ebf"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent-fixture.json",
+          "bytes": 16841,
+          "sha256": "96e3696c6c83b808c0d5e19320cc7c82e275f7282d00e2e408fd881d3a6219cb"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent-frames.json",
+          "bytes": 12192,
+          "sha256": "a2b32d82bf4ae8e8759ad45ed716e8f0d914cc3a45313b4a1dd41263a59cc010"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent-observed-damage-events.json",
+          "bytes": 1670,
+          "sha256": "478cdcb14677876601fbcdd20335f7e3b74d490213da0ce0adaa0a4b02817dd7"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent-pre-dispatch-actors.json",
+          "bytes": 1241,
+          "sha256": "b74e6610a1da11d574e9f372aa2181066a54bbf86d6515ece5d9c7122fbc9f54"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent-sheet.jpg",
+          "bytes": 465001,
+          "sha256": "3bdc5980f7f45bf83f4ccc94a7bcfd75100cdacff32427d569ce99a7f81726fe"
+        },
+        {
+          "path": "rev234-torrent-white-small-phone/white_light_torrent-support-observers.json",
+          "bytes": 10192,
+          "sha256": "306299ae21f8e1f9f513803b8a16b3cb088fdfda384a9ae9330761e92429856e"
+        }
+      ]
+    }
+  ],
+  "geometryShaderRawIdentical233": true,
+  "visual": "Parent adopted234; critic/Astra dynamic source PASS with microdifference explicitly tolerated; material and3beat clear inherited/reconfirmed; phone5key compatibility only, not separate phone movie cadence.",
+  "phoneDistanceMeasured": [
+    {
+      "run": "rev233-torrent-standard-reused222",
+      "worldSourceTargetDistance": 6.306775713544271
+    },
+    {
+      "run": "rev234-torrent-white-small-phone",
+      "worldSourceTargetDistance": 8.166276999823355
+    }
+  ],
+  "lifecycleQualification": "Four actual cancellation/death phases plus isolated stale-token/current-token/otherBolt-pose probes. Isolated Bolt pose is not engine card play.",
+  "movieQualification": "100 consecutive renderedframes at controlled30fps simulation; wallclock35.4437s, not wallclock realtime/performance certification. Silent H264 lossy; rawframe hashes retained, no AVI or source PNG sequence.",
+  "microdifference": "Firstpositive13 currentPoseFrame2 source delta5.6127internalpx; third26-28 frame3 held delta2.32583internalpx. Not zero registration.",
+  "inheritance": "Exactold sharedLight/Bolt factory+shader outsidefulltuple; prior blocked/noeffect/versioned159 semantics retained, not fresh family matrix.",
+  "heldHistory": "228-233 unselected source/raw/proofs all retained;233 initial whole-pass corrected to dynamic-source HOLD;231/232 movie helpers unrun.",
+  "freeBytes": 544272384
+}

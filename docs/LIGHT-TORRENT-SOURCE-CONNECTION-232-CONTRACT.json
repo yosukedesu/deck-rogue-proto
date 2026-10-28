@@ -1,0 +1,47 @@
+{
+  "revision": 232,
+  "baseTrial": 231,
+  "status": "preflight0errors/1923baselinewarnings11.34s; nativepending",
+  "scope": "exactTorrent factory adds one thin sourceconnection peractualbeat only",
+  "newRawBytes": 0,
+  "shader231Exact": true,
+  "geometry231Preserved": "all original body/core/glint/edge/remnant vertices unchanged; added connection core+edge vertices only",
+  "window": {
+    "start": -0.11,
+    "end": 0.1,
+    "interval": 0.22,
+    "gap": 0.01,
+    "sourceOnset": "Ease((age+.11)/.035)",
+    "release": "Ease((age-.055)/.045); source endpoint lerps toward end",
+    "positive": "0\u2192.055 holds source connection; .055\u2192.10 retreats source-side and fades"
+  },
+  "endpoints": {
+    "negative": "existing CastTravel head-direction*existing span*.15, merging inside same rawflow; no independenthead clock",
+    "positive": "actual receiver anchor(0,.035,.025)",
+    "start": "existing ConfigureSource local actualcast emitter, never screenfixed",
+    "lateStart": "source.Lerp(end,release)"
+  },
+  "material": {
+    "core": "existingcorebatch Stroke halfwidth.010, alpha.72*envelope, role3 gain1.35",
+    "halo": "existingedgebatch Stroke halfwidth.028, alpha.18*envelope, role2 gain1.15",
+    "maxAddedVertices": 12,
+    "pixelGoal": "roughly2\u20134px core at ordinarynative; actualprojection governs, not absolute guarantee"
+  },
+  "ownership": "no common sequence owner; omitted/lethal events produce no invented connections. Active window .21<.22 so separatebeat connector windows cannot overlap under unchanged scheduler. This is not permanent inter-hit connection.",
+  "unchanged": [
+    "all actual3hit/receipt/.22/anchor timing",
+    "raw/opticalflowmaterialshader231/selector",
+    "bodypositionsUV/coloralpha and allpriorgeometry",
+    "StageActor/worldLightFloor/camera/audio/profiles",
+    "allsharedLight/nonTorrent"
+  ],
+  "unityIntegration": "No Stage/Actor change. Additive flow material231 unchanged. New actualcast-anchor thin connection has localwidth/alpha/window above; per-hit only, no sharedowner.",
+  "gates": [
+    "normalUI caster\u2192target read without explanation",
+    "connectionhead remains inside existingrawflow rear, no separatebeamhead",
+    "no thickrod/line proliferation or overlap",
+    "old broadflow/transparency hierarchy retained",
+    "threeactual crest and targettrough/lastsource-sideclear atnormal30fps",
+    "actualshaderpath/emission/selector unchanged"
+  ]
+}

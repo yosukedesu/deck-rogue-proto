@@ -1,0 +1,51 @@
+{
+  "revision": 230,
+  "baseTrial": 229,
+  "status": "preflight0errors/1923baselinewarnings11.05s; nativepending",
+  "scope": "exactTorrent-onlyfactory/fulltupleguard unchanged",
+  "newRaw": {
+    "path": "assets/Art/fx/hd2d-light-torrent-density-v1.png",
+    "rawOriginal": "generated_images/exec-5d10b74e-aba4-497b-9942-01f1a841208f.png",
+    "bytes": 1552252,
+    "sha256": "38c80640f6064c222b6af340aa543c7856f9ebd6fc1193fe9c72e7819c96308d",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "unmodified": true,
+    "UV": "fullcanvas tip(.965,.515) analytical; no exactgridtipvertex, native registration gate",
+    "alpha": "centralROI72.74% alpha>=224,22.10%mid; use .58max planeopacity, do not doublefeather"
+  },
+  "loader": "fx PNG byexactkey, authoredRGBA; name does not match any special TextureMotion branch =>0; existingKind3 texture softedge .10 only",
+  "composition": {
+    "sourceSideMainBody": "targettipfixed; length .78\u21921.25 then .99; halfheight .35\u2192.70 then .49",
+    "opticalAreaGoal": "roughlyonecharacter in source-side gap in actualprojection; not a hard worldsize certification",
+    "curve": "arc*(bend+.035*sin(along*7-age18)*(1-fold)), bend .08\u2192.21",
+    "fold": "sameUVmesh height*=1-fold*(.22+.42back), localalong+=arc*.12fold; across-=arc*.18fold",
+    "noBlanketSlide": "contacttiplocked, rear/crosssection bends/lowers while rawdensityremainscontinuous"
+  },
+  "windows": {
+    "open": "0\u2192.035",
+    "fold": ".035\u2192.14",
+    "bodyFade": ".065\u2192.16",
+    "remnants": ".07/.084 birth\u2192.180/.194clear",
+    "profileInterval": ".22unchanged"
+  },
+  "gains": "body1.05 edge1.15 core1.35 unchanged max; bodyopacitypeak.58, travel.54, gather.40",
+  "capacity": "Current216vertices; simultaneous gather+travel432<512, contact216; otherlayers<=12",
+  "unchanged": [
+    "fulltupleguard",
+    "entire outsideTorrentfactory inclsharedLight/otherfactories",
+    "StageActor/profileevent/receipt/sourcecallbacks/time/light/floor/focus/audio/shader",
+    "3actualhit and .22 interval; nofakeimpact"
+  ],
+  "unityIntegration": "No Stage/Actor numerical changes; Torrent-only new raw material and continuous 12x3 curvedmesh, timingwindows above. Raworiginal supplied; Godot importsettings not delivery requirement.",
+  "gates": [
+    "widthvisible in fullscene outsidewhitehurt, not merelysliver",
+    "no fixedhair/clothribbon/solidblade/board",
+    "sourceaxis\u2192contact causalflow/targettip locked",
+    "one dominant ivorycore plus translucentdensity",
+    "threeactualcrest then darktrough/noheldbeam",
+    "raw finite/indexed/alpha/UV/textureload and oldLight untouched"
+  ]
+}

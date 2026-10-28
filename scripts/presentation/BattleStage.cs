@@ -1529,6 +1529,30 @@ public class BattleStage : Node3D
 		}
 	}
 
+    internal static bool IsTorrentReleaseHoldRoute(AttackRoute? route)
+        => Hd2dAttackPrototype.Enabled && route is not null &&
+           route.Key=="card:white_light_torrent" && route.DefinitionId=="white_light_torrent" &&
+           route.SourceKind=="card" && route.Family=="light" && route.Renderer=="LightRayFx" &&
+           route.Element=="light" && !route.FixedSmall;
+
+    private void RefreshTorrentReleaseHolds()
+    {
+        foreach(BattleActor actor in AllPresentationActors()) actor.ClearTorrentReleaseHold();
+        foreach(ActionPlayback action in _ordinaryActions)
+        {
+            if(!action.Launched || action.Finished || action.Actor is not BattleActor actor
+                || action.Capture is not SourceActorMotion.OwnershipToken owner || !owner.IsCurrent) continue;
+            float until=float.NegativeInfinity;
+            foreach(OrdinaryBeat beat in action.Beats)
+                if(beat.Direct && !beat.Rejected && beat.Beat.Event is GameEvent_DamageDealt
+                    && IsTorrentReleaseHoldRoute(beat.Beat.Route))
+                    // Actual quantized contact can be later than its scheduled time.
+                    // Future/retimed contacts and omitted/rejected beats remain the queue's authority.
+                    until=Math.Max(until,Math.Max(beat.ContactAt,beat.Contacted?beat.LastContact:beat.ContactAt)+.10f);
+            actor.SetTorrentReleaseHold(until,owner);
+        }
+    }
+
 	private void AdvanceOrdinaryEffects()
 	{
 		ActionPlayback[] array = _ordinaryActions.ToArray();
@@ -3952,6 +3976,7 @@ public class BattleStage : Node3D
 		}
 		_faultBoundary = "BattleStage.OrdinaryContact";
 		ProcessOrdinaryContacts(delta);
+        RefreshTorrentReleaseHolds();
         // Exact front-strike weapon traces consume the rendered pose, not the prior
         // frame's Sprite transform. Update only those source actors here, once;
         // the normal visual loop below skips them (no duplicate pose clock advance).

@@ -136,6 +136,9 @@ internal static class Hd2dAttackPrototype
         if(ElementalVfxProfiles.ForRoute(route.Key)?.Family==ElementalVfxFamily.EarthFracture)return CreateEarthFracture(route);
         if(ElementalVfxProfiles.ForRoute(route.Key)?.Family==ElementalVfxFamily.LightScatter)return CreateLightScatter(route);
         if(ElementalVfxProfiles.ForRoute(route.Key)?.Family==ElementalVfxFamily.Dark)return CreateDark(route);
+        if(route.Key=="card:white_light_torrent" && route.DefinitionId=="white_light_torrent" &&
+            route.SourceKind=="card" && route.Family=="light" && route.Renderer=="LightRayFx" &&
+            route.Element=="light" && !route.FixedSmall)return CreateLightTorrent(route);
         if(ElementalVfxProfiles.ForRoute(route.Key)?.Family==ElementalVfxFamily.Light)return CreateLight(route);
         if(ElementalVfxProfiles.ForRoute(route.Key)?.Family==ElementalVfxFamily.Water)return CreateWater(route);
         if(ElementalVfxProfiles.ForRoute(route.Key)?.Family==ElementalVfxFamily.IceScatter)return CreateIceScatter(route);
@@ -1407,6 +1410,124 @@ internal static class Hd2dAttackPrototype
         };
         return effect;
     }
+    // Exact Torrent-only optical mass. Shared Light/LightBolt factories stay byte-identical.
+    private static NativeEffect CreateLightTorrent(AttackRoute route)
+    {
+        var body=new Layer(0,33,"hd2d-light-torrent-density-v1");
+        var edge=new Layer(0,0);var core=new Layer(0,1);
+        var glint=new Layer(0,3,"light-ray-surface-r2");var remnants=new Layer(0,2);
+        Vector3 source=new(-1,0,0);float age=0;
+        var effect=new NativeEffect {
+            Shader="Hd2dPrototype",Palette="hd2d-light",
+            Batches=new[]{body.Batch,edge.Batch,glint.Batch,core.Batch,remnants.Batch},
+            TargetPeak=.105f,FloorPeak=.22f,ConfigureSource=v=>source=v,VisualAge=()=>age,
+            StageFocus=()=>Ease((age+.30f)/.13f)*(1-Ease((age-.08f)/.30f)),
+            Light=()=>age<0?.14f*Ease((age+.30f)/.13f):1-Ease((age-.045f)/.13f),
+            FloorLight=()=>age<0?.04f*Ease((age+.30f)/.13f):MathF.Exp(-age/.15f)
+        };
+        // Raw density owns internal alpha. Do not multiply another lateral
+        // feather into its broad plateau. Only the full-canvas soft edge remains.
+        void Current(Vector3 tip,Vector3 direction,float length,float halfHeight,float bend,float fold,float opacity)
+        {
+            Vector3 normal=new(-direction.Y,direction.X,0);
+            Vector3 Point(float u,float v)
+            {
+                float along=Clamp(u/.965f),back=1-along;
+                float arc=MathF.Sin(along*MathF.PI);
+                float height=(.515f-v)*2*halfHeight;
+                height*=1-fold*(.22f+.42f*back);
+                float lift=arc*(bend+.035f*MathF.Sin(along*7-age*18)*(1-fold));
+                return tip+direction*((u-.965f)*length+arc*.12f*fold)
+                    +normal*(height+lift-arc*.18f*fold)+new Vector3(0,0,.012f);
+            }
+            for(int row=0;row<3;row++)for(int col=0;col<12;col++)
+            {
+                float u=col/12f,U=(col+1)/12f,v=row/3f,V=(row+1)/3f;
+                void Vertex(float x,float y)=>body.V(Point(x,y),new(x,y),opacity,1.05f,3);
+                Vertex(u,v);Vertex(U,v);Vertex(U,V);Vertex(u,v);Vertex(U,V);Vertex(u,V);
+            }
+        }
+        void Connection(Vector3 end)
+        {
+            // One actual-beat connection only. The .21s window is shorter than
+            // Torrent's unchanged .22s interval; no sequence owner or duplicate beam.
+            if(age<-.11f||age>=.10f)return;
+            float onset=Ease((age+.11f)/.035f),release=Ease((age-.055f)/.045f);
+            float alpha=onset*(1-release);
+            Vector3 start=source.Lerp(end,release);
+            if(start.DistanceSquaredTo(end)<.000001f)return;
+            Vector3 direction=(end-start).Normalized(),normal=new(-direction.Y,direction.X,0);
+            Vector3 Center(float u)=>start.Lerp(end,u)+normal*(.03f*MathF.Sin(u*MathF.PI)*(1-release));
+            float Entry(float u)=>Ease(u<.70f?u/.70f:(1-u)/.30f);
+            // Shared raw density/optical material, not a second white wire shader.
+            for(int k=0;k<6;k++)
+            {
+                float u=k/6f,v=(k+1)/6f;
+                void Vertex(float t,float side)
+                {
+                    float entry=Entry(t),width=.010f+.002f*t+.034f*entry;
+                    float opacity=.12f-.02f*t+.164f*entry;
+                    body.V(Center(t)+normal*(side*width),new(.08f+.885f*t,side<0?.43f:.60f),alpha*opacity,1.05f,3);
+                }
+                Vertex(u,-1);Vertex(v,-1);Vertex(v,1);Vertex(u,-1);Vertex(v,1);Vertex(u,1);
+            }
+            for(int k=0;k<3;k++)
+            {
+                float u=k/3f,v=(k+1)/3f;
+                void Vertex(float t,float side)
+                {
+                    float entry=Entry(t),width=.005f-.002f*t+.005f*entry;
+                    float opacity=.30f-.18f*t+.346f*entry;
+                    core.V(Center(t)+normal*(side*width),new(t,side<0?0:1),alpha*opacity,1.35f,3);
+                }
+                Vertex(u,-1);Vertex(v,-1);Vertex(v,1);Vertex(u,-1);Vertex(v,1);Vertex(u,1);
+            }
+        }
+        effect.Sample=t=>{
+            age=(float)t;body.Reset();edge.Reset();core.Reset();glint.Reset();remnants.Reset();
+            if(age<-.31f||age>.42f)return;
+            Vector3 direction=(-source).Normalized();if(direction.LengthSquared()<.1f)direction=Vector3.Right;
+            Vector3 normal=new(-direction.Y,direction.X,0);
+            if(age<0)
+            {
+                float charge=Ease((age+.30f)/.11f)*(1-Ease((age+.15f)/.045f));
+                Current(source+direction*.08f,direction,.30f,.13f,.025f,0,charge*.40f);
+                float flight=CastTravel(route.Key,age);
+                if(flight>0)
+                {
+                    Vector3 head=source.Lerp(Vector3.Zero,flight);
+                    float span=Math.Min(source.DistanceTo(head),.40f+.38f*flight);
+                    float alpha=Ease(flight/.10f);
+                    Current(head,direction,span,.16f+.19f*flight,.07f*(1-flight),0,alpha*.54f);
+                    core.Taper(head-direction*span*.85f,head,.012f,alpha,3,1.35f);
+                    Connection(head-direction*span*.15f);
+                }
+                return;
+            }
+            float peak=1-Ease((age-.025f)/.065f);
+            core.Taper(-direction*.42f,direction*.13f,.019f,peak,3,1.35f);
+            float glintAlpha=1-Ease((age-.015f)/.040f),size=.29f;
+            Vector3 anchor=new(0,.035f,.025f),center=anchor-new Vector3((2*.595f-1)*size,(1-2*.57f)*size,0);
+            glint.MaterialRegion(center,size,size,0,glintAlpha,new(0,0),new(.5f,1),1.05f);
+            Connection(anchor);
+            float opening=Ease(age/.035f),release=Ease((age-.035f)/.105f);
+            float opacity=1-Ease((age-.065f)/.095f);
+            Current(anchor,direction,.78f+.47f*opening-.26f*release,
+                (.35f+.35f*opening)*(1-.30f*release),.08f+.13f*opening,release,opacity*.58f);
+            // The thin core remains subordinate in area but dominant in luminance.
+            edge.Taper(anchor-direction*(.50f+.30f*opening),anchor,.020f*(1-.70f*release),opacity*.52f,2,1.15f);
+            for(int i=0;i<2;i++)
+            {
+                float dt=age-.07f-i*.014f;if(dt<0)continue;
+                float fade=Ease(dt/.02f)*(1-Ease((dt-.055f)/.055f));
+                Vector3 axis=(direction+normal*(i==0?.43f:-.22f)).Normalized();
+                Vector3 tip=anchor-axis*(i==0?.74f:.49f)+normal*(i==0?.20f:-.09f)+axis*dt*.75f;
+                remnants.Taper(tip-axis*(.11f*(1-Ease(dt/.11f))+.01f),tip,.008f,fade*.58f,2,1.05f);
+            }
+        };
+        return effect;
+    }
+
     private static NativeEffect CreateLight(AttackRoute route)
     {
         var rays=new Layer(0,0);var core=new Layer(0,1);var shoulder=new Layer(0,6);
