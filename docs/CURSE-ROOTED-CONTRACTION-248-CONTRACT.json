@@ -1,0 +1,20 @@
+{
+  "revision": 248,
+  "base": "selected247 freshbaseline404PASS",
+  "scope": "existing selected exact black_reaction_curse reaction/dark_drain/elementdark/fixedSmall only",
+  "reason": "fresh actual .0167/.05/.1167: two detached smoke stamps, upper dominant plume floats off chest",
+  "shape": "one common root(.015,-.10,.025), main left volume and short .68alpha subordinate; outer fold into root, no source/return",
+  "timing": "old local Dark phase intervals retained at dt=age*1.25-part*.012; negative empty, .30 end",
+  "geometry": "8columns x4rows x2parts =384written per phasebatch, allocated512; motes24 max",
+  "unchanged": [
+    "CreateDark wholebytes",
+    "old reaction/necro/installed wrappers",
+    "actual ConfirmReaction UID, drain6/independent heal",
+    "hero legitimate counter pose",
+    "Light old local .028peak/floor0",
+    "shader/raw/palette/camera/Engine"
+  ],
+  "newRaw": 0,
+  "native": "pending",
+  "art": "pending"
+}

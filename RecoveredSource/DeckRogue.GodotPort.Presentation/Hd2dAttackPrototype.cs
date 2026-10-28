@@ -1590,6 +1590,60 @@ internal static class Hd2dAttackPrototype
         };
         return effect;
     }
+    // Exact confirmed Curse reaction: one receiver-rooted contraction, no return/heal projectile.
+    internal static NativeEffect CreateCurseReturnContact()
+    {
+        var first=new Layer(0,16,"hd2d-dark-contraction-01");
+        var middle=new Layer(0,16,"hd2d-dark-contraction-02");
+        var last=new Layer(0,16,"hd2d-dark-contraction-03");
+        var motes=new Layer(0,2);float age=0;
+        var effect=new NativeEffect { Shader="Hd2dPrototype",Palette="hd2d-dark",
+            Batches=new[]{first.Batch,middle.Batch,last.Batch,motes.Batch},VisualAge=()=>age,
+            TargetPeak=.028f,FloorPeak=0f,StageFocus=()=>0f,
+            Light=()=>age<0?0f:1-Ease((age-.025f)/.12f),FloorLight=()=>0f };
+        effect.Sample=t=>{
+            age=(float)t;first.Reset();middle.Reset();last.Reset();motes.Reset();
+            if(age<0 || age>.30f)return;
+            Vector3 root=new(.26f,.01f,.025f);
+            Layer[] bodies={first,middle,last};
+            for(int part=0;part<2;part++){
+                float dt=age*1.25f-part*.012f;if(dt<0)continue;
+                float close=Ease(dt/.20f),onset=Ease(dt/.018f);
+                float[] phases={1-Ease((dt-.055f)/.035f),
+                    Ease((dt-.055f)/.035f)*(1-Ease((dt-.145f)/.050f)),
+                    Ease((dt-.145f)/.050f)*(1-Ease((dt-.25f)/.10f))};
+                float rx=(part==0?.66f:.35f)*(1-.36f*close),ry=(part==0?.43f:.27f)*(1-.48f*close);
+                float angle=part==0?.12f+.22f*close:-.52f-.30f*close;
+                Vector3 Point(float u,float v){
+                    float x=(u-.60f)*2*rx,y=(.58f-v)*2*ry;
+                    float reach=Clamp(MathF.Sqrt(x*x+y*y)/.80f);
+                    // The outer mass folds toward the common root; neither root drifts away.
+                    y-=close*reach*reach*(part==0?.16f:.05f);
+                    return root+new Vector3(x*MathF.Cos(angle)-y*MathF.Sin(angle),
+                        x*MathF.Sin(angle)+y*MathF.Cos(angle),0);
+                }
+                for(int phase=0;phase<3;phase++){
+                    float alpha=phases[phase]*onset*(part==0?1f:.68f);if(alpha<=.001f)continue;
+                    var layer=bodies[phase];
+                    for(int row=0;row<4;row++)for(int col=0;col<8;col++){
+                        float u=col/8f,v=row/4f,un=(col+1)/8f,vn=(row+1)/4f;
+                        void V(float x,float y)=>layer.V(Point(x,y),new(x+part*2,y),alpha,1f,3);
+                        V(u,v);V(un,v);V(un,vn);V(u,v);V(un,vn);V(u,vn);
+                    }
+                }
+            }
+            // Short inward remnants, subordinate to the single contraction; no outgoing second hit.
+            for(int i=0;i<4;i++){
+                float pull=Ease((age-i*.008f)/.18f);float a=1.8f+i*.72f;
+                Vector3 axis=new(MathF.Cos(a),MathF.Sin(a),0);
+                Vector3 point=root+axis*(.22f*(1-pull));
+                float opacity=MathF.Sin(pull*MathF.PI)*(1-Ease((age-.13f)/.10f));
+                motes.Taper(point+axis*.04f*(1-pull),point,.006f,opacity*.45f,2,.85f);
+            }
+        };
+        return effect;
+    }
+
     internal static NativeEffect CreateNecroDark(AttackRoute route)=>CreateDark(route,true);
     internal static NativeEffect CreateReactionDark(AttackRoute route)=>CreateDark(route,true);
 

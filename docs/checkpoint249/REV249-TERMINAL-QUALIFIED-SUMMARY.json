@@ -1,0 +1,87 @@
+{
+  "selectedRevision": 249,
+  "checks": 2974,
+  "successfulRuns": 7,
+  "runs": [
+    {
+      "name": "new249-reaction-curse-standard",
+      "checks": 460,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new249-reaction-curse-direct-movie",
+      "checks": 536,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new249-curse-bound-decline",
+      "checks": 256,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": true,
+      "resources": [
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg::OggPacketSequence_bnk31 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg (AudioStreamOggVorbis)"
+      ],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new249-curse-bound-shell",
+      "checks": 396,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new249-curse-bound-shared",
+      "checks": 510,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new249-curse-bound-moss-small",
+      "checks": 397,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": false,
+      "resources": [],
+      "VSyncWarning": true
+    },
+    {
+      "name": "new249-curse-bound-lifecycle",
+      "checks": 419,
+      "exit": 0,
+      "assertionsPass": true,
+      "shutdownNotice": true,
+      "resources": [
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg::OggPacketSequence_bnk31 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg (AudioStreamOggVorbis)",
+        "Resource still in use: res://assets/Audio/sfx/card_draw.ogg::OggPacketSequence_e6iu2 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/sfx/card_draw.ogg (AudioStreamOggVorbis)"
+      ],
+      "VSyncWarning": true
+    }
+  ],
+  "qualification": [
+    "Godot recovered QA, not original lost-session QA; Unity untested",
+    "static and consecutive decoded temporal art PASS; direct normal-speed subjective viewing not performed",
+    "actual probe and Moss only; 960x540 native window is not Android/phone certification",
+    "component lifecycle: real pending fixture reload, before/after contact cancel/natural/actor.SetDead(true), not engine lethal combat",
+    "blocked shell6 absorbed HpLoss0 but separate heal3 legitimate; shared UnderworldHand8 uses old7batches",
+    "ownerless selector unit negative distinct from actual owner gameplay",
+    "shutdown Audio issue unresolved; nonreproduction is not resolution; all VSync warning"
+  ]
+}

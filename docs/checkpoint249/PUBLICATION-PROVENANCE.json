@@ -1,0 +1,19 @@
+{
+  "revision": 249,
+  "parent": "2894aa41c9512188ad1f9894f84b1bab18aaa10d",
+  "changedProductSHA256": {
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs": "08a4f2fae782b24650c76f354381989ddef6918ed3a8ca9d0845fb4ea3fe6310",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/NativeGeometryBridge.cs": "4f1308ee66c9f09af4eaec2af7c5f532a01b4cde9adbdf3ff0714344ceef1083",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/ReactionContactVfxProfiles.cs": "55fbec98413cc105fd5edf59a36ec8d5b1de5548582599d50b717e8c578868ed",
+    "docs/CURSE-ROOTED-CONTRACTION-248-CONTRACT.json": "2335c64db1267a1cb46ed75600bc2e7ea1d17d297ebff43e99beb1e696b1e3cb",
+    "docs/CURSE-TORSO-REGISTRATION-249-CONTRACT.json": "0dde3d94d78879cf4067b6cd8ccdcac4856ce78a4d817051d55a01a9bc9d6820"
+  },
+  "all234NewLogicalSourceHashesVerified": true,
+  "old243OriginalManifestAndQANotRecovered": true,
+  "currentQA": "2974/7successful; decline2 and lifecycle4 Ogg resources unresolved; other5 nonreproduction",
+  "outsideNewFactoryExact247": true,
+  "rawStageActorSharedShaderChanges": false,
+  "ownership": "ambientSourceUid null distinct from actualPresentationSource.Uid qa-card and ConfirmReaction.CardUid; existingarmed/receipt proof unchanged",
+  "scope": "exact confirmed black_reaction_curse only; sharedDark/otherreaction/installed/necro unchanged",
+  "unity": "Preserve renderer/Linear/HDR/index/math/ownerclock adaptations; port intent only"
+}
