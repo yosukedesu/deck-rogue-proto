@@ -13,7 +13,14 @@ namespace DeckRogue.Game
     {
         const float MapW = 1100f;      // 地図の描画幅
         const float RowH = 112f;       // 1行の高さ
-        const float PadY = 90f;        // 上下の余白
+        static float PadY = 90f;       // 上下の余白 (描いた地図 Art/map/act<N>_map があればその高さに合わせて Build が決める。2026-10-28 品質スプリント 案 B)
+        static float _ox = 0f;         // 節の格子の左端 (content の中の x)。地図は画面の幅いっぱいなので、格子 (幅 MapW) を中央へ寄せる
+        static RectTransform _marker;  // 現在地の駒 (選んだ節へ歩いてから命令を出す)
+        static bool _walking;
+        const float MarkerSize = 84f;  // 駒の箱の予備 (絵が無い時)
+        const float MarkerDot = 1.5f;  // 駒は 1ドット＝1.5px (戦闘の 3px の半分)
+        static float _markerFeet;      // 駒の枠の下の透明行 (px)。歩く先も同じだけ下げる
+        static readonly Vector2 MarkerOffset = new Vector2(0f, -10f);
         static float NodeSize { get { return UiKit.Phone ? 74f : 60f; } }   // スマホは指で押せる大きさ (2026-09-14)
         static float BossSize { get { return UiKit.Phone ? 104f : 92f; } }
         const int Cols = 7;
@@ -33,24 +40,49 @@ namespace DeckRogue.Game
             int recipeCount = 0;   // ⭐ いま手元で作れるレシピ対の数 (工房ノードに添える。2026-09-12)
             try { recipeCount = Fusion.RecipePairsInDeck(run.Deck).Count; } catch (Exception) { }
 
-            // 地図本体 (縦スクロール)
+            // 地図本体 (縦スクロール)。2026-10-28 品質スプリント 案 B「描いた地図」: 画面の幅いっぱいの窓に、描いた地図 (Art/map/act<N>_map・1ドット=2px) を
+            // content の下敷きとして敷き、節の格子 (幅 MapW) はその中央に置く。地図が無ければ今までどおり舞台の暗がりの上に格子だけ
+            _walking = false; _marker = null;
             var view = UiKit.NewRect("mapview", root);
-            // 画面の切り欠き (パンチホール＝左端の縦の中央) に左の列のノードが掛かる狭い端末では、地図を右へ寄せる (2026-09-29 p10。S25 と PC は 0)
+            // 画面の切り欠き (パンチホール＝左端の縦の中央) に左の列のノードが掛かる狭い端末では、格子を右へ寄せる (2026-09-29 p10。S25 と PC は 0)
             var mcs = BattleScreen.CanvasSize(root);
             float mapShift = Mathf.Max(0f, UiKit.CutoutLeft(RunUi.TopH, mcs.y) - (mcs.x / 2f - MapW / 2f + 60f - NodeSize / 2f));
             mapShift = Mathf.Min(mapShift, Mathf.Max(0f, mcs.x / 2f - MapW / 2f));   // 右の端からはみ出さない
-            UiKit.Anchor(view, new Vector2(0.5f, 0f), new Vector2(0.5f, 1f), new Vector2(-MapW / 2f + mapShift, overlay ? 90f : 0f), new Vector2(MapW / 2f + mapShift, -RunUi.TopH - (overlay ? 56f : 0f)));   // 重ねる時は見出しと「閉じる」の分だけ狭める
+            _ox = Mathf.Max(0f, (mcs.x - MapW) / 2f) + mapShift;
+            UiKit.Anchor(view, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, overlay ? 90f : 0f), new Vector2(0f, -RunUi.TopH - (overlay ? 56f : 0f)));   // 重ねる時は見出しと「閉じる」の分だけ狭める
+            var mapArt = Theme.Art("map", "act" + run.Act + "_map");
             var viewImg = view.gameObject.AddComponent<Image>();
-            viewImg.color = new Color(0f, 0f, 0f, overlay ? 0.5f : 0.18f);
+            viewImg.color = mapArt != null ? new Color(0f, 0f, 0f, overlay ? 0.35f : 0f) : new Color(0f, 0f, 0f, overlay ? 0.5f : 0.18f);
             var mask = view.gameObject.AddComponent<RectMask2D>();
             var content = UiKit.NewRect("content", view);
             int rows = run.Map.Count;
-            float contentH = PadY * 2f + (rows + 1) * RowH;   // +1 = スタート地点の行
+            float needH = 90f * 2f + (rows + 1) * RowH;   // +1 = スタート地点の行
+            float artW = mapArt != null ? mapArt.texture.width * 2f : 0f, artH = mapArt != null ? mapArt.texture.height * 2f : 0f;
+            float contentH = mapArt != null ? Mathf.Max(artH, needH) : needH;
+            PadY = (contentH - (rows + 1) * RowH) / 2f;
             content.anchorMin = new Vector2(0f, 0f);
             content.anchorMax = new Vector2(1f, 0f);
             content.pivot = new Vector2(0.5f, 0f);
             content.sizeDelta = new Vector2(0f, contentH);
             content.anchoredPosition = Vector2.zero;
+            if (mapArt != null)
+            {
+                // 描いた地図 (下敷き)。幅は 1ドット=2px のまま中央に置き、狭い画面では左右が窓で切れる (格子 1100 は常に入る)
+                var bg = new GameObject("map-art", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+                bg.transform.SetParent(content, false);
+                bg.sprite = mapArt; bg.raycastTarget = false; bg.color = Color.white;
+                bg.rectTransform.anchorMin = bg.rectTransform.anchorMax = new Vector2(0.5f, 0f);
+                bg.rectTransform.pivot = new Vector2(0.5f, 0f);
+                bg.rectTransform.sizeDelta = new Vector2(artW, artH);
+                bg.rectTransform.anchoredPosition = Vector2.zero;
+                // 窓の上下の縁は夜色に溶かす (上部バーの下に地図が突き当たらない)
+                var fadeTop = UiKit.Pan(view, PaperFx.Ground, "fade-top"); fadeTop.raycastTarget = false; fadeTop.sprite = FadeSprite();
+                UiKit.Anchor(fadeTop.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -140f), new Vector2(0f, 0f));
+                var fadeBot = UiKit.Pan(view, PaperFx.Ground, "fade-bottom"); fadeBot.raycastTarget = false; fadeBot.sprite = FadeSprite();
+                UiKit.Anchor(fadeBot.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, 110f));
+                fadeBot.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 180f);
+                fadeTop.transform.SetAsLastSibling(); fadeBot.transform.SetAsLastSibling();
+            }
             var scroll = view.gameObject.AddComponent<ScrollRect>();
             scroll.content = content;
             scroll.viewport = view;
@@ -96,16 +128,8 @@ namespace DeckRogue.Game
             var lines = UiKit.NewRect("lines", content);
             UiKit.Stretch(lines, 0f, 0f, 0f, 0f);
             // スタート地点 → 行0
-            Vector2 startPos = new Vector2(MapW / 2f, PadY + RowH * 0.5f);
-            if (rows > 0)
-            {
-                for (int i = 0; i < run.Map[0].Count; i++)
-                {
-                    bool avail = run.Row < 0 && choiceSet.Contains(i);
-                    bool taken = run.Row >= 0 && path.Contains(Key(0, i));
-                    Line(lines, startPos, NodePos(run.Map[0][i], 0), avail, taken, run.Row >= 0 && !taken);
-                }
-            }
+            Vector2 startPos = new Vector2(_ox + MapW / 2f, PadY + RowH * 0.5f);
+            // 行0 へ入る踏み跡は引かない (本家: 最初の行はどこからでも入れる。進める節は輪と光で分かる。2026-10-28 案 B)
             for (int r = 0; r < rows; r++)
             {
                 var row = run.Map[r];
@@ -126,15 +150,7 @@ namespace DeckRogue.Game
                 }
             }
 
-            // スタート地点
-            var startMark = UiKit.Icon(content, "flag", 40f);
-            startMark.rectTransform.anchorMin = startMark.rectTransform.anchorMax = new Vector2(0f, 0f);
-            startMark.rectTransform.anchoredPosition = startPos;
-            startMark.raycastTarget = false;
-            var startLbl = UiKit.Txt(content, "スタート", 13, UiKit.ColDim, TextAnchor.MiddleCenter);
-            startLbl.rectTransform.anchorMin = startLbl.rectTransform.anchorMax = new Vector2(0f, 0f);
-            startLbl.rectTransform.sizeDelta = new Vector2(120f, 20f);
-            startLbl.rectTransform.anchoredPosition = startPos + new Vector2(0f, -34f);
+            // 出発点の旗と「スタート」の字は廃止 (駒が出発点に立つ。2026-10-28 案 B)
 
             // 落書きの層 (線の下・ノードの上に見せるため、ノードの後に作って最前面へ。左クリックは素通し = ICanvasRaycastFilter)
             var doodleRt = UiKit.NewRect("doodle", content);
@@ -161,18 +177,26 @@ namespace DeckRogue.Game
 
             doodleRt.SetAsLastSibling();   // 落書きはノードの上に (右ドラッグ/ペンモードの時だけ入力を受ける)
 
-            // 現在地マーカー (リーダーの小さな絵)
+            // 現在地の駒 (リーダーの絵が節の台の上に立つ。選ぶと踏み跡を歩く。2026-10-28 案 B)
             {
                 var mk = new GameObject("marker", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
                 mk.transform.SetParent(content, false);
                 mk.raycastTarget = false;
-                mk.sprite = Creature.Get("leaders", run.LeaderId, true);
+                var spr = Creature.Get("leaders", run.LeaderId, true);
+                mk.sprite = spr;
                 mk.preserveAspect = true;
                 mk.rectTransform.anchorMin = mk.rectTransform.anchorMax = new Vector2(0f, 0f);
-                mk.rectTransform.sizeDelta = new Vector2(56f, 56f);
+                mk.rectTransform.pivot = new Vector2(0.5f, 0f);
+                // 1ドット＝1.5px で絵の枠ごと置く (このは 88×64 → 132×96・ひばな 128×84 → 192×126 = どちらも背丈 64 ドットが 96px)。足元は枠の下の透明行を引いて台の中心の 10px 下
+                float mw = spr != null ? spr.rect.width * MarkerDot : MarkerSize, mh = spr != null ? spr.rect.height * MarkerDot : MarkerSize;
+                float feet = spr != null ? Stage.FeetPad(spr) * mh : 0f;
+                mk.rectTransform.sizeDelta = new Vector2(mw, mh);
                 Vector2 at = run.Row >= 0 ? NodePos(run.Map[run.Row][run.Col], run.Row) : startPos;
-                mk.rectTransform.anchoredPosition = at + new Vector2(-66f, 30f);
-                Tween.Punch(mk.rectTransform, 0.12f, 0.6f);
+                mk.rectTransform.anchoredPosition = at + MarkerOffset - new Vector2(0f, feet);
+                _markerFeet = feet;
+                mk.transform.SetSiblingIndex(doodleRt.GetSiblingIndex());   // 落書きのすぐ下 = 節の上
+                _marker = mk.rectTransform;
+                Tween.Punch(mk.rectTransform, 0.12f, 0.6f, true);
             }
 
             // 現在行が下から1/3に来るようにスクロール
@@ -200,14 +224,17 @@ namespace DeckRogue.Game
             // 左下: 案内 / ランを放棄
             var hint = UiKit.Txt(root, choices.Count > 0 ? (UiKit.Phone ? "光っている道へ進めます" : "光っている道へ進めます。ノードにカーソルを重ねると中身の説明") : "進めるノードがありません", 15, UiKit.ColDim, TextAnchor.MiddleLeft);
             UiKit.Anchor(hint.rectTransform, new Vector2(0f, 0f), new Vector2(0.35f, 0f), new Vector2(24f, 70f), new Vector2(0f, 100f));
-            var legend = UiKit.NewRect("legend", root);
-            float legendL = UiKit.SafeLeft(24f, mcs.y - 420f, mcs.y - 110f);   // 凡例の行は縦の中央に掛かるので画面の切り欠き (パンチホール) の右から (2026-09-29 p10)
-            UiKit.Anchor(legend, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(legendL, 110f), new Vector2(legendL + 306f, 420f));
-            var lg = UiKit.Vert(legend, 6, 0);
-            lg.childForceExpandHeight = false;
-            LegendRow(legend, MapNodeTypes.Battle); LegendRow(legend, MapNodeTypes.Elite); LegendRow(legend, MapNodeTypes.Event);
-            LegendRow(legend, MapNodeTypes.Campfire); LegendRow(legend, MapNodeTypes.Shop); LegendRow(legend, MapNodeTypes.Workshop);
-            LegendRow(legend, MapNodeTypes.Treasure); LegendRow(legend, MapNodeTypes.Boss);
+            if (!UiKit.Phone)   // スマホは地図が画面の幅いっぱいで凡例が左の列に重なるので出さない (節は印 2 倍で読める。2026-10-28 案 B)
+            {
+                var legend = UiKit.NewRect("legend", root);
+                float legendL = UiKit.SafeLeft(24f, mcs.y - 420f, mcs.y - 110f);   // 凡例の行は縦の中央に掛かるので画面の切り欠き (パンチホール) の右から (2026-09-29 p10)
+                UiKit.Anchor(legend, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(legendL, 110f), new Vector2(legendL + 306f, 420f));
+                var lg = UiKit.Vert(legend, 6, 0);
+                lg.childForceExpandHeight = false;
+                LegendRow(legend, MapNodeTypes.Battle); LegendRow(legend, MapNodeTypes.Elite); LegendRow(legend, MapNodeTypes.Event);
+                LegendRow(legend, MapNodeTypes.Campfire); LegendRow(legend, MapNodeTypes.Shop); LegendRow(legend, MapNodeTypes.Workshop);
+                LegendRow(legend, MapNodeTypes.Treasure); LegendRow(legend, MapNodeTypes.Boss);
+            }
 
             // セーブ (2026-09-15 本家形): 自動保存なので「セーブする」は無い。「セーブして終了」と「ランを放棄」(確認つき)
             var quit = UiKit.Btn(root, "セーブして終了", delegate { g.SaveAndQuit(); }, 14);
@@ -245,30 +272,69 @@ namespace DeckRogue.Game
         static Vector2 NodePos(MapNode n, int row)
         {
             float colW = (MapW - 120f) / (Cols - 1);
-            float x = 60f + (n.Col ?? 0) * colW;
+            float x = _ox + 60f + (n.Col ?? 0) * colW;
             float y = PadY + RowH * (row + 1) + RowH * 0.5f;
             return new Vector2(x, y);
         }
 
+        static Sprite _dot, _fade;
+        /// <summary>丸い点 (踏み跡・節の台)。16×16・縁は 1px でなだらか</summary>
+        static Sprite DotSprite()
+        {
+            if (_dot != null) return _dot;
+            const int S = 32;
+            var tex = new Texture2D(S, S, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
+            var px = new Color32[S * S];
+            for (int y = 0; y < S; y++) for (int x = 0; x < S; x++)
+            {
+                float dx = x + 0.5f - S / 2f, dy = y + 0.5f - S / 2f;
+                float r = Mathf.Sqrt(dx * dx + dy * dy) / (S / 2f);
+                float a = Mathf.Clamp01((1f - r) * (S / 2f) / 1.5f);   // 縁 1.5px で落ちる
+                px[y * S + x] = new Color32(255, 255, 255, (byte)(a * 255f));
+            }
+            tex.SetPixels32(px); tex.Apply(false, true);
+            _dot = Sprite.Create(tex, new Rect(0, 0, S, S), new Vector2(0.5f, 0.5f), 100f);
+            return _dot;
+        }
+        /// <summary>縦の帯: 上が不透明・下が透明 (窓の上下の縁を夜色に溶かす)</summary>
+        static Sprite FadeSprite()
+        {
+            if (_fade != null) return _fade;
+            const int H = 64;
+            var tex = new Texture2D(4, H, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
+            var px = new Color32[4 * H];
+            for (int y = 0; y < H; y++) { float k = (float)y / (H - 1); float a = k * k; for (int x = 0; x < 4; x++) px[y * 4 + x] = new Color32(255, 255, 255, (byte)(a * 255f)); }
+            tex.SetPixels32(px); tex.Apply(false, true);
+            _fade = Sprite.Create(tex, new Rect(0, 0, 4, H), new Vector2(0.5f, 0.5f), 100f);
+            return _fade;
+        }
+
+        /// <summary>節と節を結ぶ踏み跡 (点の列。2026-10-28 案 B)。進める道は紙の白、通った道は真鍮、通らなかった道は薄く</summary>
         static void Line(RectTransform parent, Vector2 a, Vector2 b, bool avail, bool taken, bool passed)
         {
-            var img = UiKit.Pan(parent, Color.white, "edge");
-            img.raycastTarget = false;
-            var rt = img.rectTransform;
-            rt.anchorMin = rt.anchorMax = new Vector2(0f, 0f);
-            rt.pivot = new Vector2(0f, 0.5f);
             Vector2 d = b - a;
             float len = d.magnitude;
-            // ノードの縁から縁へ
             Vector2 dir = d / Math.Max(0.001f, len);
-            float trim = NodeSize * 0.55f;
-            rt.anchoredPosition = a + dir * trim;
-            rt.sizeDelta = new Vector2(Math.Max(0f, len - trim * 2f), avail ? 6f : taken ? 5f : 3f);
-            rt.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg);
-            img.color = avail ? new Color(0.55f, 0.95f, 0.55f, 0.95f)
-                : taken ? new Color(0.95f, 0.8f, 0.35f, 0.9f)
-                : passed ? new Color(1f, 1f, 1f, 0.12f)
-                : new Color(1f, 1f, 1f, 0.32f);
+            float trim = NodeSize * 0.62f;   // ノードの台の縁から縁へ
+            float usable = len - trim * 2f;
+            if (usable <= 0f) return;
+            int n = Mathf.Max(1, Mathf.RoundToInt(usable / 15f));
+            float size = avail ? 9f : taken ? 8f : 6f;
+            Color c = avail ? PaperFx.Paper3 : taken ? PaperFx.BrassLight : PaperFx.Paper;
+            c.a = avail ? 0.95f : taken ? 0.9f : passed ? 0.16f : 0.4f;
+            Vector2 side = new Vector2(-dir.y, dir.x);
+            float ang = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
+            for (int i = 0; i <= n; i++)
+            {
+                var img = UiKit.Pan(parent, c, "step");
+                img.raycastTarget = false; img.sprite = DotSprite();
+                var rt = img.rectTransform;
+                rt.anchorMin = rt.anchorMax = new Vector2(0f, 0f);
+                rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.sizeDelta = new Vector2(size, size * 0.78f);
+                rt.anchoredPosition = a + dir * (trim + usable * i / n) + side * ((i & 1) == 0 ? 2.5f : -2.5f);   // 左右に交互 = 足跡
+                rt.localRotation = Quaternion.Euler(0f, 0f, ang);
+            }
         }
 
         static void Node(GameRoot g, RectTransform parent, MapNode n, int row, int index, bool cur, bool avail, bool taken, bool passed, bool interactive = true, int recipeCount = 0)
@@ -280,41 +346,49 @@ namespace DeckRogue.Game
             cell.sizeDelta = new Vector2(size, size);
             cell.anchoredPosition = NodePos(n, row);
 
+            // 節の目印 (2026-10-28 案 B): 32 ドットの印を整数倍 (64px・ボス 96px) で地図の上に直に置き、足元に丸い影。進める節は真鍮の輪と光
+            float asz = boss ? 96f : 64f;
             if (avail)
             {
-                var glow = UiKit.Pan(cell, new Color(0.55f, 0.95f, 0.55f, 0.35f), "glow");
+                var glow = UiKit.Pan(cell, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.35f), "glow");
                 glow.raycastTarget = false;
                 glow.sprite = ThemeFx.Shadow();
-                UiKit.Anchor(glow.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-size, -size), new Vector2(size, size));
+                UiKit.Anchor(glow.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-asz, -asz), new Vector2(asz, asz));
             }
-
-            var frame = UiKit.Frame(cell, Theme.Button, NodeTint(n.Type, avail, cur, taken, passed), "frame", 1f);
-            UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
+            var frame = UiKit.Pan(cell, new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, passed && !cur ? 0.3f : 0.55f), "shade");
+            frame.sprite = ThemeFx.Shadow();
+            frame.raycastTarget = avail && interactive;
+            UiKit.Anchor(frame.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-asz * 0.72f, -asz * 0.72f), new Vector2(asz * 0.72f, asz * 0.72f));
+            if (avail)
+            {
+                float rs = asz + 14f;
+                var ring = UiKit.Pan(cell, PaperFx.BrassLight, "ring"); ring.sprite = DotSprite(); ring.raycastTarget = false;
+                UiKit.Anchor(ring.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-rs / 2f, -rs / 2f), new Vector2(rs / 2f, rs / 2f));
+                var hole = UiKit.Pan(cell, new Color(PaperFx.Window.r, PaperFx.Window.g, PaperFx.Window.b, 0.9f), "hole"); hole.sprite = DotSprite(); hole.raycastTarget = false;
+                UiKit.Anchor(hole.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-rs / 2f + 3f, -rs / 2f + 3f), new Vector2(rs / 2f - 3f, rs / 2f - 3f));
+            }
             var icon = UiKit.Icon(cell, NodeIcon(n.Type), boss ? 56f : 34f);
             var nodeArt = Theme.Art("map", "node_" + n.Type);
             if (nodeArt != null)
             {
                 icon.sprite = nodeArt; icon.color = Color.white;
-                float asz = boss ? 64f : 32f;   // 32 ドットの駒を整数倍で (2026-09-11)
                 icon.rectTransform.sizeDelta = new Vector2(asz, asz); UiKit.Le(icon, asz, asz, asz, asz);
             }
             icon.raycastTarget = false;
             icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
             icon.rectTransform.anchoredPosition = Vector2.zero;
-            if (!avail && !cur) icon.color = new Color(1f, 1f, 1f, passed ? 0.45f : 0.8f);
+            if (!avail && !cur) icon.color = new Color(1f, 1f, 1f, passed ? 0.45f : 0.85f);
 
-            var lbl = UiKit.Txt(cell, NodeName(n.Type), 12, avail ? UiKit.ColText : UiKit.ColDim, TextAnchor.MiddleCenter);
-            lbl.raycastTarget = false;
-            UiKit.Anchor(lbl.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-60f, -22f), new Vector2(60f, -2f));
-            if (passed && !cur) lbl.color = new Color(UiKit.ColDim.r, UiKit.ColDim.g, UiKit.ColDim.b, 0.5f);
-
-            if (cur)
+            // 名札は進める節とボスだけ (印が 2 倍になったので読める。凡例は残す)
+            if (avail || boss)
             {
-                var ring = UiKit.Frame(cell, Theme.Panel, new Color(1f, 0.85f, 0.35f, 0.9f), "ring", 3f);
-                ring.raycastTarget = false;
-                UiKit.Anchor(ring.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(-6f, -6f), new Vector2(6f, 6f));
-                ring.transform.SetAsFirstSibling();
+                var lbl = UiKit.Txt(cell, NodeName(n.Type), 13, avail ? UiKit.ColText : UiKit.ColDim, TextAnchor.MiddleCenter, true);
+                lbl.raycastTarget = false;
+                lbl.outlineWidth = 0.25f; lbl.outlineColor = new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, 0.85f);
+                UiKit.Anchor(lbl.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-70f, -asz / 2f - 6f), new Vector2(70f, -asz / 2f + 14f));
             }
+
+            // 現在地は駒 (リーダーの絵) が台の上に立つので、輪は描かない (2026-10-28 案 B)
 
             string tip = NodeTip(n);
             // ⭐ 工房: いま手元でレシピが成立する対があれば駒の右上に星 (2026-09-12「レシピは誰も踏まなかった」への提示)
@@ -336,10 +410,24 @@ namespace DeckRogue.Game
                 btn.targetGraphic = frame;
                 var cols = btn.colors; cols.highlightedColor = new Color(1.15f, 1.15f, 1.15f); cols.pressedColor = new Color(0.85f, 0.85f, 0.85f); btn.colors = cols;
                 int idx = index;
+                Vector2 dest = NodePos(n, row);
                 btn.onClick.AddListener(delegate
                 {
+                    if (_walking) return;
                     Audio.Ui("node");
-                    g.Do(new RunCommand_ChooseNode { Col = idx });
+                    var mk = _marker;
+                    if (mk == null) { g.Do(new RunCommand_ChooseNode { Col = idx }); return; }
+                    // 駒が踏み跡を歩いてから進む (2026-10-28 案 B。0.55 秒・小さく弾む)
+                    _walking = true;
+                    Vector2 from = mk.anchoredPosition, to = dest + MarkerOffset - new Vector2(0f, _markerFeet);
+                    bool done = false;
+                    Action finish = delegate { if (done) return; done = true; _walking = false; g.Do(new RunCommand_ChooseNode { Col = idx }); };
+                    Tween.Run(0.55f, delegate (float k)
+                    {
+                        if (mk == null) return;
+                        float s = k * k * (3f - 2f * k);
+                        mk.anchoredPosition = Vector2.Lerp(from, to, s) + new Vector2(0f, Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f)) * 5f);
+                    }, Ease.Linear, delegate { finish(); }, delegate { _walking = false; });
                 });
                 Tween.Punch(cell, 0.1f, 0.8f);
             }

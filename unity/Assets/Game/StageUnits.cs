@@ -1217,8 +1217,8 @@ namespace DeckRogue.Game
 
         static readonly Dictionary<Texture2D, float> _feetPad = new Dictionary<Texture2D, float>();
         static readonly Dictionary<Texture2D, float> _edgeLinCache = new Dictionary<Texture2D, float>();   // 絵の輪郭の暗さ (P23。StageUnit.EdgeLin)
-        /// <summary>絵の矩形の中で、いちばん下の不透明ドットより下にある透明行の割合 (0〜1)。PixelLab の絵は下に数ドットの余白がある</summary>
-        static float FeetPad(Sprite sprite)
+        /// <summary>絵の矩形の中で、いちばん下の不透明ドットより下にある透明行の割合 (0〜1)。PixelLab の絵は下に数ドットの余白がある (地図の駒 MapScreen も使う)</summary>
+        internal static float FeetPad(Sprite sprite)
         {
             var t = sprite.texture;
             float pad;
