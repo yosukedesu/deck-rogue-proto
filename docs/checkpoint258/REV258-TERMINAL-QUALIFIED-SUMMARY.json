@@ -1,0 +1,74 @@
+{
+  "revision": 258,
+  "checks": 5939,
+  "successfulRuns": 7,
+  "runs": [
+    {
+      "folder": "new258-corpse-kiss-standard",
+      "checks": 949,
+      "exit": 0,
+      "resourceNotices": [],
+      "VSyncWarning": true
+    },
+    {
+      "folder": "new258-corpse-kiss-direct-movie",
+      "checks": 1041,
+      "exit": 0,
+      "resourceNotices": [
+        "ERROR: 2 resources still in use at exit.",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg::OggPacketSequence_bnk31 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg (AudioStreamOggVorbis)"
+      ],
+      "VSyncWarning": true
+    },
+    {
+      "folder": "new258-kiss-bound-shell",
+      "checks": 627,
+      "exit": 0,
+      "resourceNotices": [
+        "ERROR: 4 resources still in use at exit.",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg::OggPacketSequence_bnk31 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg (AudioStreamOggVorbis)",
+        "Resource still in use: res://assets/Audio/sfx/card_draw.ogg::OggPacketSequence_e6iu2 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/sfx/card_draw.ogg (AudioStreamOggVorbis)"
+      ],
+      "VSyncWarning": true
+    },
+    {
+      "folder": "new258-kiss-bound-old-skull",
+      "checks": 754,
+      "exit": 0,
+      "resourceNotices": [],
+      "VSyncWarning": true
+    },
+    {
+      "folder": "new258-kiss-bound-direct-hand",
+      "checks": 422,
+      "exit": 0,
+      "resourceNotices": [],
+      "VSyncWarning": true
+    },
+    {
+      "folder": "new258-kiss-bound-moss-small",
+      "checks": 1006,
+      "exit": 0,
+      "resourceNotices": [],
+      "VSyncWarning": true
+    },
+    {
+      "folder": "new258-kiss-bound-lifecycle-b",
+      "checks": 1140,
+      "exit": 0,
+      "resourceNotices": [],
+      "VSyncWarning": true
+    }
+  ],
+  "separateFailedRun": {
+    "folder": "new258-kiss-bound-lifecycle",
+    "checksBeforeAndIncludingFailure": 1056,
+    "exit": 1,
+    "cause": "QA compared pooled capacity4 against active batch3; corrected scope and independently checked unused draw invisible and surface0"
+  },
+  "art": "Astra static conditional then temporal-frame PASS; Moss small-window PASS",
+  "qualification": "Godot recovered QA; Unity untested. Direct normal-speed subjective viewing not performed. Probe+Moss two body types only; 960x540 window not real phone. Residual peak multiple pale branches disclosed. Component SetDead+cancel fixture test is not Engine lethal battle. Old Audio shutdown problem unresolved."
+}

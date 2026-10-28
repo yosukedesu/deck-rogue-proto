@@ -1,0 +1,26 @@
+{
+  "revision": 258,
+  "parent": "428fbaeb1bb1ae9686834c1667613f86e3ee1c2a",
+  "changedProductSHA256": {
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs": "46067ac5f6687331a3528d053a7b53abcc6dd34b9e088fd7056ca8308e358313",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/NativeGeometryBridge.cs": "b6bc9b13685c4b994215487e5aedc1cb9c59801922393f727d17cc3ccd140b60",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/NecroContactVfxProfiles.cs": "3d49f286c5172771d9c2b12736b4f7076ddfe15d3f22c51ac5f7d74d102f6573",
+    "scripts/presentation/AuthoredGeometryFx.cs": "3d618bf55945ab61292f00700d69f9d61065b30d1f5e54e3598ad0b4c03d366a",
+    "shaders/authored_Hd2dKissDensity.gdshader": "acc81611f6ede2a48b29de5bd88e632674c47db92652bc71f8a33c6a8453e81a",
+    "assets/Art/fx/hd2d-necro-kiss-density-v1.png": "a98b61f48f1f6621bdc32e97608003a34017d29e89d21b442a80d681902b507b",
+    "docs/NECRO-KISS-SOFT-CONTACT-254-CONTRACT.json": "ae7f4a22a71993e5b5974a2c8708fa942f6892cf7348c7b4828255aaa4a9fb6a",
+    "docs/NECRO-KISS-LUMINANCE-HIERARCHY-255-CONTRACT.json": "b3556efb7d042640b5898e59ce56527e48c32c1ac2a618c02e75710657ce8397",
+    "docs/NECRO-KISS-OPEN-DENSITY-256-CONTRACT.json": "d6abffdee9def50cf14ec53e10fc03abb9da4dd4ec9772b7f6a9bbcf0cd286f1",
+    "docs/NECRO-KISS-HIGHLIGHT-DENSITY-257-CONTRACT.json": "f8dc288628817085dea52d1fc3dab4c70a7fcc0576ab439609f85135ce2735d3",
+    "docs/NECRO-KISS-ASYMMETRIC-CONSUMPTION-258-CONTRACT.json": "2a1d226de32002af41fe2db24fbbbdbd66ca84fcd0781a719d963db49515c2e4"
+  },
+  "all246NewLogicalSourceHashesVerified": true,
+  "outsideNewFactoryExact253": true,
+  "oldSharedShaderStageActorUnchanged": true,
+  "newRawOriginal": "1254squareRGBA1370215bytes,rawB unchanged; rawA held not runtime",
+  "currentQA": "5939/7successful; movie2 andshell4 Oggresources unresolved,other5nonreproduction; initial lifecycle failure separate",
+  "ownership": "ambientCenserUID intentionally differs from exhaustedKiss PresentationSource.Uid; actual orderedmill/necro/damage andenemy receipt proof retained",
+  "luminanceQualification": ".46 asymptote sampledlineartexture before vertex scaling, NOT displaypixel/bloomlimit; preserve Unity linear texture sampling",
+  "scope": "exact necroKiss bodymaterial only; directKiss/Skull/sharedDark unchanged",
+  "recovery": "fresh recovered-workspace evidence, not recovery of inaccessible originalQA"
+}

@@ -1702,6 +1702,58 @@ internal static class Hd2dAttackPrototype
         return effect;
     }
 
+    // Actual Censer-exhausted CorpseKiss UID only: a soft local touch, no summoned actor or heal return.
+    internal static NativeEffect CreateCorpseKissContact()
+    {
+        var contact=new Layer(0,4);var body=new Layer(0,16,"hd2d-necro-kiss-density-v1");
+        var motes=new Layer(0,2);float age=0;
+        var effect=new NativeEffect {Shader="Hd2dPrototype",Palette="hd2d-dark",
+            Batches=new[]{contact.Batch,body.Batch,motes.Batch},VisualAge=()=>age,
+            TargetPeak=.028f,FloorPeak=0f,StageFocus=()=>0f,
+            Light=()=>age<0?0f:1-Ease((age-.025f)/.12f),FloorLight=()=>0f};
+        effect.Sample=t=>{
+            age=(float)t;contact.Reset();body.Reset();motes.Reset();
+            if(age<0 || age>.30f)return;
+            Vector3 root=new(.26f,.01f,.025f);float dt=age*1.25f;
+            float consume=Ease(dt/.20f),onset=Ease(dt/.018f);
+            float tail=1-Ease((dt-.18f)/.12f);
+            contact.Sprite(root,.095f*(1-.35f*consume),.115f*(1-.35f*consume),-.12f,onset*tail*.52f,0,.85f);
+            float envelope=1-Ease((dt-.25f)/.10f);
+            Vector3 Point(float u,float v){
+                // Measured dark-tip centroid(.895,.830) registers to the unchanged chest root.
+                // This carrier stays within254's authored outer extent; original alpha owns its gaps.
+                float x=(u-.895f)*.697f,y=(.830f-v)*.503f;
+                float distance=Clamp(MathF.Sqrt(x*x+y*y)/.65f);
+                y+=.075f*MathF.Sin((u-.895f)*MathF.PI)*distance*(1-consume);
+                return root+new Vector3(x,y,0);
+            }
+            // One broad upper stream survives; subordinate lower streams are consumed first.
+            // Erasure advances from the free outer end instead of folding all branches into a fan.
+            float subordinate=1-Ease((dt-.005f)/.070f);
+            float front=.85f*Ease((dt-.015f)/.22f);
+            float Coverage(float u,float v){
+                float main=1-Ease((v-(.26f+.81f*u))/.10f);
+                float hierarchy=main+(1-main)*subordinate;
+                float curvedFront=front+.035f*MathF.Sin(v*8f)*Ease(dt/.06f);
+                float remaining=Ease((u-curvedFront+.10f)/.18f);
+                return hierarchy*remaining;
+            }
+            for(int row=0;row<6;row++)for(int col=0;col<12;col++){
+                float u=col/12f,v=row/6f,q=(col+1)/12f,z=(row+1)/6f;
+                void V(float x,float y)=>body.V(Point(x,y),new(x,y),envelope*onset*.58f*Coverage(x,y),1f,3);
+                V(u,v);V(q,v);V(q,z);V(u,v);V(q,z);V(u,z);
+            }
+            // Only a few quiet inward remnants; not claws, a ring, or an outgoing pulse.
+            for(int i=0;i<3;i++){
+                float pull=Ease((dt-i*.007f)/.18f),a=2.05f+i*.46f;
+                Vector3 axis=new(MathF.Cos(a),MathF.Sin(a),0);Vector3 pos=root+axis*(.23f*(1-pull));
+                float alpha=MathF.Sin(pull*MathF.PI)*(1-Ease((dt-.13f)/.10f));
+                motes.Taper(pos+axis*.022f*(1-pull),pos,.0045f,alpha*.35f,2,.85f);
+            }
+        };
+        return effect;
+    }
+
     internal static NativeEffect CreateNecroDark(AttackRoute route)=>CreateDark(route,true);
     internal static NativeEffect CreateReactionDark(AttackRoute route)=>CreateDark(route,true);
 

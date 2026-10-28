@@ -391,6 +391,15 @@ public class AuthoredGeometryFx : Node3D
           effect.Shader=="Hd2dPrototype" && effect.Palette=="hd2d-light" &&
           batch.Kind==33 && batch.Space==0 && batch.Texture=="hd2d-light-torrent-density-v1";
 
+    // Exact necro material opt-in; normal hand-play Kiss and shared Dark stay on the original shader.
+    internal static bool UsesCorpseKissDensityMaterial(AttackRoute? route,NativeEffect? effect,NativeBatch? batch)
+        =>route is not null && effect is not null && batch is not null &&
+          route.Key=="card:black_corpse_kiss" && route.DefinitionId=="black_corpse_kiss" &&
+          route.SourceKind=="necro" && route.Family=="dark_drain" &&
+          route.Renderer=="Hd2dNecroContactFx" && route.Element=="dark" && route.FixedSmall &&
+          effect.Shader=="Hd2dPrototype" && effect.Palette=="hd2d-dark" &&
+          batch.Kind==16 && batch.Space==0 && batch.Texture=="hd2d-necro-kiss-density-v1";
+
 	private void ConfigureMaterial(Draw draw, NativeBatch b, int index)
 	{
 		if (draw.Positions.Length != b.Count)
@@ -405,6 +414,7 @@ public class AuthoredGeometryFx : Node3D
 		NativeEffect e = _effect;
 		string shader = ((e.Shader == "EarthStompSurfaceR2" && b.Kind == 0) ? "EarthStompRockR2" : e.Shader);
         if(UsesTorrentOpticalMaterial(_route,e,b))shader="Hd2dOpticalFlow";
+        if(UsesCorpseKissDensityMaterial(_route,e,b))shader="Hd2dKissDensity";
 		ShaderMaterial material = new ShaderMaterial
 		{
 			RenderPriority = Math.Clamp(index, -128, 127),

@@ -16,6 +16,7 @@ internal static class NecroContactVfxProfiles
         && ExpectedDrainAmount(route.DefinitionId)>0 && route.Key=="card:"+route.DefinitionId
         && route.Family=="dark_drain" && route.Renderer=="Hd2dNecroContactFx"
         && route.Element=="dark" && route.FixedSmall;
+    internal static bool CorpseKissRoute(AttackRoute route)=>SelectedRoute(route) && route.DefinitionId=="black_corpse_kiss";
     internal static bool OwnsCenserDeckExhaustion(GameEvent_DamageDealt hit,bool instanceMoved,bool ambientCenser,bool orderedEvents)
     {
         var source=hit.PresentationSource;var receipt=CombatPresentationLedger.Read(hit);
