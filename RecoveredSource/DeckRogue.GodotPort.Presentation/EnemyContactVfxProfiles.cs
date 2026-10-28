@@ -72,6 +72,7 @@ internal static class EnemyContactVfxProfiles
         return route.DefinitionId==move && SelectedPair(actor,move,route.Family);
     }
     internal static bool SelectedRoute(AttackRoute route)=>RouteTuple(route,"Hd2dEnemyContactFx");
+    internal static bool ProbePokeRoute(AttackRoute route)=>SelectedRoute(route) && route.Key=="enemy:enemy_probe/poke" && route.DefinitionId=="poke" && route.Family=="pierce_contact";
 
     internal static AttackRoute Select(AttackRoute route,GameEvent_DamageDealt hit,
         string? actorId,string? provenMove,IReadOnlyList<GameEvent>? actualLog)

@@ -324,6 +324,7 @@ internal static class NativeGeometryBridge
 
 	public static NativeEffect? Create(AttackRoute route, EffectTier tier)
 	{
+        if(EnemyContactVfxProfiles.ProbePokeRoute(route))return Hd2dAttackPrototype.CreateProbePokeContact();
         if(EnemyContactVfxProfiles.SelectedRoute(route))return route.Family=="minimal_neutral_contact"
             ?Hd2dAttackPrototype.CreateEnemyNeutralContact():route.Family=="enemy_blunt"
             ?Hd2dAttackPrototype.CreateEnemyBlunt():Hd2dAttackPrototype.CreateEnemyPoke();

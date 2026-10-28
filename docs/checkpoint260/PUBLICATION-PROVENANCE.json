@@ -1,0 +1,19 @@
+{
+  "revision": 260,
+  "parent": "8a3d31afe0ec503247076435ea162e27cca2fd2d",
+  "sourceCount": 248,
+  "publicationSubsetHashesVerified": true,
+  "fullLogicalProof": "historical all248 proof preserved in selected260 pack; current3C# remote258 insert-only independently verified",
+  "changedProductSHA256": {
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs": "76ea51c3176c1154df6d980fb655ef02cb6dd86627b6ab85d6a7bf067b26aab2",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/EnemyContactVfxProfiles.cs": "53d1d3b204cff313fa84a8eaddebfba0066cf81eebc2f64d16bcc541e803940f",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/NativeGeometryBridge.cs": "561cffd4008f4d1eb85ec7d35cc41d23b7dd487b274f50910dbc2c5034cd2a41",
+    "docs/ENEMY-PROBE-POKE-PRESSURE-259-CONTRACT.json": "cf3050666b0d34bf2fa424461fdf3db0b6c5ac0eebb78256716bd7f46b505099",
+    "docs/ENEMY-PROBE-EXTERIOR-PRESSURE-260-CONTRACT.json": "f9455bb3517ca8ec8f1b7ca25182e0ed179993efc61f83a84e586fd75075831c"
+  },
+  "library": "libfile_4e01ef6af1d48191aa2b2b534d98ac43",
+  "libraryVersion": 0,
+  "archiveSHA256": "ed39e1bac3d3f33029974ddfb26ad5aeddc670771738bb46feaa4867e6320072",
+  "scope": "exact enemy_probe/poke only; old factory and six other pierce pairs unchanged",
+  "qualification": "2985 assertions/6 successful; movie and guard Ogg2 shutdown notices unresolved; green/blue scoped, blue hurt whitening retained; Unity untested; fresh recovered-workspace QA, original historical QA not restored"
+}

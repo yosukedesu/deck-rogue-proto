@@ -1043,6 +1043,59 @@ internal static class Hd2dAttackPrototype
         return effect;
     }
 
+    internal static NativeEffect CreateProbePokeContact()
+    {
+        var shoulder=new Layer(0,21);var core=new Layer(0,21);var residue=new Layer(0,2);var glow=new Layer(0,14);
+        Vector3 source=new(1,0,0);float age=0;
+        var effect=new NativeEffect {
+            Shader="Hd2dPrototype",Palette="hd2d-strike",Batches=new[]{glow.Batch,shoulder.Batch,core.Batch,residue.Batch},
+            ConfigureSource=v=>source=v,VisualAge=()=>age,TargetPeak=.09f,FloorPeak=.09f,
+            StageFocus=()=>0f,Light=()=>age<0?0:MathF.Exp(-age/.085f),FloorLight=()=>age<0?0:MathF.Exp(-age/.14f)
+        };
+        effect.Sample=t=>{
+            age=(float)t;shoulder.Reset();core.Reset();residue.Reset();glow.Reset();
+            if(age<-.07f||age>.28f)return;
+            Vector3 direction=new(-source.X,-source.Y,0);if(direction.LengthSquared()<.001f)direction=Vector3.Left;else direction=direction.Normalized();
+            Vector3 normal=new(-direction.Y,direction.X,0),center=new(0,.025f,.035f);
+            void Pressure(Vector3 outer,Vector3 inner,float width,float opacity,float bend){
+                Vector3 Point(float u,float side){
+                    float arc=MathF.Sin(MathF.PI*u);
+                    float breadth=.010f+width*arc*(.90f-.40f*u);
+                    return outer.Lerp(inner,u)+normal*(bend*arc+side*breadth);
+                }
+                for(int i=0;i<8;i++){
+                    float u=i/8f,v=(i+1)/8f;
+                    void V(float q,float side)=>shoulder.V(Point(q,side),new(q,(side+1)*.5f),opacity,1.05f,1);
+                    V(u,-1);V(v,-1);V(v,1);V(u,-1);V(v,1);V(u,1);
+                }
+            }
+            if(age<0){
+                // Receiver-side pressure only: no invented spear/projectile crossing the stage gap.
+                float advance=Ease((age+.065f)/.065f);
+                Vector3 tip=center-direction*(.30f*(1-advance)+.025f);
+                Pressure(tip-direction*.18f,tip,.028f,advance*.48f,.008f);
+                return;
+            }
+            float release=Ease(age/.16f),alpha=1-Ease((age-.025f)/.13f);
+            Vector3 tipPoint=center-direction*(.025f+.10f*release);
+            Vector3 tail=center-direction*(.68f-.16f*release);
+            Pressure(tail,tipPoint,.11f*(1-.60f*release),alpha,.022f*(1-release));
+            // Brief hard contact, not a bright continuous shaft over the whole shoulder.
+            float contactAlpha=alpha*(1-Ease(age/.075f));
+            core.Taper(center-direction*.13f,center-direction*.012f,.017f,contactAlpha,3,1.15f);
+            core.Taper(center-direction*.075f+normal*.040f,center-direction*.016f+normal*.006f,.006f,contactAlpha*.65f,2,1.15f);
+            glow.Sprite(center,.20f,.13f,MathF.Atan2(direction.Y,direction.X),MathF.Exp(-age/.055f)*.24f,2,1f);
+            for(int i=0;i<2;i++){
+                float dt=age-.025f-i*.012f;if(dt<0)continue;
+                Vector3 spread=-direction*(i==0?.30f:.21f)+normal*(i==0?.35f:-.23f);
+                Vector3 pos=center-direction*(i==0?.18f:.30f)+normal*(i==0?.055f:-.035f)+spread*dt+Vector3.Down*(dt*dt*1.8f);
+                residue.Taper(pos-spread.Normalized()*(i==0?.035f:.022f),pos,i==0?.005f:.0035f,
+                    (1-Ease((dt-.055f)/.10f))*(i==0?.45f:.30f),2,.85f);
+            }
+        };
+        return effect;
+    }
+
     internal static NativeEffect CreateEnemyPoke()
     {
         var shoulder=new Layer(0,21);var core=new Layer(0,21);var residue=new Layer(0,2);var glow=new Layer(0,14);

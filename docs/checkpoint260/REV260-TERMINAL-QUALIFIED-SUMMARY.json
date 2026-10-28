@@ -1,0 +1,59 @@
+{
+  "revision": 260,
+  "checks": 2985,
+  "successfulRuns": 6,
+  "runs": [
+    {
+      "folder": "new260-enemy-poke-standard",
+      "checks": 462,
+      "exit": 0,
+      "resourceNotices": [],
+      "VSyncWarning": true
+    },
+    {
+      "folder": "new260-enemy-poke-direct-movie",
+      "checks": 420,
+      "exit": 0,
+      "resourceNotices": [
+        "ERROR: 2 resources still in use at exit.",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg::OggPacketSequence_bnk31 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg (AudioStreamOggVorbis)"
+      ],
+      "VSyncWarning": true
+    },
+    {
+      "folder": "new260-poke-bound-guard",
+      "checks": 524,
+      "exit": 0,
+      "resourceNotices": [
+        "ERROR: 2 resources still in use at exit.",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg::OggPacketSequence_bnk31 (OggPacketSequence)",
+        "Resource still in use: res://assets/Audio/bgm/act1.ogg (AudioStreamOggVorbis)"
+      ],
+      "VSyncWarning": true
+    },
+    {
+      "folder": "new260-poke-bound-old-lunge",
+      "checks": 500,
+      "exit": 0,
+      "resourceNotices": [],
+      "VSyncWarning": true
+    },
+    {
+      "folder": "new260-poke-bound-blue-small",
+      "checks": 534,
+      "exit": 0,
+      "resourceNotices": [],
+      "VSyncWarning": true
+    },
+    {
+      "folder": "new260-poke-bound-lifecycle",
+      "checks": 545,
+      "exit": 0,
+      "resourceNotices": [],
+      "VSyncWarning": true
+    }
+  ],
+  "art": "Astra static, temporal-frame and blue small-window placement PASS",
+  "qualification": "Godot recovered QA / Unity untested. Direct normal-speed subjective viewing not performed. Negative-age pressure and two afterglow fragments subtle, not rich visible flow. Existing hero hurt is unchanged; blue white clothing peaks whiten face/torso and finer contact separation is weaker than green. Green+blue recipient only; 960x540 window not actual phone. Component SetDead+cancel is not Engine lethal battle. Audio shutdown unresolved."
+}

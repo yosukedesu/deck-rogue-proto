@@ -1,0 +1,43 @@
+{
+  "revision": 260,
+  "base": "held259",
+  "scope": "exactProbePoke shoulder projection only",
+  "reason": "259 removed white shaft but pressure belly lies inside hero hurt/axe silhouette; move transparent width outward without lengthening bright contact",
+  "changes": {
+    "positiveOuterDistance": ".48-.16release -> .68-.16release (old shared258 .76-.18release remains untouched)",
+    "widthDistribution": ".010+width*sin(PI*u)*(.45+.55u) -> .010+width*sin(PI*u)*(.90-.40u); shifts max toward outer end; same width parameter .11",
+    "note": "width function shared by the local negative pressure too; negative endpoints/window unchanged"
+  },
+  "actual259Projection": {
+    "frame": 30,
+    "visualAge": 0.013333082,
+    "heroHeight": 1.7837344,
+    "targetWorld": [
+      -4.9730654,
+      0.912877,
+      1.2397707
+    ],
+    "targetScreenInternal1600": [
+      364.9928,
+      467.76132
+    ],
+    "heroAxeScreenInternal1600": [
+      416.06314,
+      502.43866
+    ],
+    "qualification": "actual QA registration values, not hardcoded runtime screen constants; sprite silhouette assessed from native0030"
+  },
+  "fixed": [
+    "center/source direction",
+    "core length.118 and contact alpha",
+    "glow and both light curves",
+    "all body opacity/gain",
+    "negative outer/inner endpoints",
+    "residue/agewindow/owner/actualhit/pose/rules",
+    "all other6pairs/oldfactory",
+    "renderer/shader/raw0"
+  ],
+  "topology": "unchanged4batchkind14/21/21/2 max6/48/12/12 capacity512",
+  "native": "pending",
+  "art": "pending"
+}
