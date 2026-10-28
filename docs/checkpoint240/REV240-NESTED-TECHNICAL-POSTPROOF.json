@@ -1,0 +1,50 @@
+{
+  "pass": true,
+  "sourceFiles": 224,
+  "rows": [
+    {
+      "missingHp": 16,
+      "directHeal": 15,
+      "nestedHeal": 1,
+      "nestedSourceUids": [
+        "qa-prep-1"
+      ],
+      "checks": 335,
+      "maxOwnedActive": 1,
+      "clean": true,
+      "wholeEventAndNumericOracleExact": true,
+      "legalEnergySequence": [
+        3,
+        4,
+        3,
+        0
+      ],
+      "outputBytes": 1807228
+    },
+    {
+      "missingHp": 0,
+      "directHeal": 0,
+      "nestedHeal": 0,
+      "nestedSourceUids": [
+        "qa-prep-1"
+      ],
+      "checks": 237,
+      "maxOwnedActive": 0,
+      "clean": true,
+      "wholeEventAndNumericOracleExact": true,
+      "legalEnergySequence": [
+        3,
+        4,
+        3,
+        0
+      ],
+      "outputBytes": 1711487
+    }
+  ],
+  "checks": 572,
+  "cleanRuns": 2,
+  "sourceUnchanged": true,
+  "protectedCount": 5158,
+  "requiredImportsUnchanged": 4743,
+  "freeBytes": 316518400
+}

@@ -366,6 +366,104 @@ internal static class Hd2dAttackPrototype
         };
         return effect;
     }
+    // Exact positive Mass Heal support only: a receiver-local restorative volume,
+    // not a shield, attack beam, extra heal event, or shared Prayer replacement.
+    internal static NativeEffect CreateMassHeal()
+    {
+        var belly=new Layer(0,0);var membrane=new Layer(0,3,"hd2d-mass-heal-density-v1");var folds=new Layer(0,0);
+        var focus=new Layer(0,14);var motes=new Layer(0,14);
+        float age=0;
+        var effect=new NativeEffect {
+            Shader="Hd2dPrototype",Palette="hd2d-mass-heal",
+            Batches=new[]{belly.Batch,membrane.Batch,folds.Batch,focus.Batch,motes.Batch},VisualAge=()=>age,
+            TargetPeak=.045f,FloorPeak=.045f,StageFocus=()=>0f,
+            Light=()=>.35f*Ease(age/.16f)*(1-Ease((age-.26f)/.28f)),
+            FloorLight=()=>.12f*Ease(age/.16f)*(1-Ease((age-.28f)/.25f))
+        };
+        effect.Sample=t=>{
+            age=(float)t;belly.Reset();membrane.Reset();folds.Reset();focus.Reset();motes.Reset();
+            if(age<0 || age>.66f)return;
+            // One continuous recovery, not a second numeric pulse at convergence.
+            float open=Ease(age/.10f);
+            for(int sideIndex=0;sideIndex<2;sideIndex++)
+            {
+                float side=sideIndex==0?-1:1,lag=sideIndex==0?0:.075f;
+                float local=age-lag;if(local<0)continue;
+                float lift=Ease((local-.28f)/.28f);
+                float envelope=Ease(local/.075f)*(1-Ease((local-.37f)/(sideIndex==0?.23f:.215f)));
+                // A broad left-to-chest fold plus a shorter right-hip response.
+                // The occupied curve interval moves: lower roots are released
+                // during gathering, rather than two stationary white uprights.
+                // Preserve a long outside-to-chest surface through the gathering peak.
+                // Only after .23s does the root catch up; width shrinks with that
+                // catch-up, avoiding the short-fat cloud produced by236.
+                float closing=Ease((local-.23f)/.17f);
+                float from=.66f*closing,to=.40f+.60f*Ease(local/.16f);
+                Vector3 p0=sideIndex==0?new(-1.05f,-.34f,.025f):new(.47f,-.26f,.025f);
+                Vector3 p1=sideIndex==0?new(-.93f,-.04f,.05f):new(.55f,.04f,.045f);
+                Vector3 p2=sideIndex==0?new(-.22f,.15f,.05f):new(.25f,.23f,.04f);
+                Vector3 p3=sideIndex==0?new(.08f,.12f,.03f):new(.04f,.13f,.03f);
+                Vector3 Center(float u)
+                {
+                    float s=from+(to-from)*u,v=1-s;
+                    Vector3 c=p0*(v*v*v)+p1*(3*v*v*s)+p2*(3*v*s*s)+p3*(s*s*s);
+                    c+=new Vector3(side*lift*(.025f+.07f*u),lift*(.26f+.22f*u),0);
+                    return c;
+                }
+                for(int j=0;j<12;j++)
+                {
+                    float u=j/12f,v=(j+1)/12f;
+                    void Vertex(float s,float across)
+                    {
+                        float arc=Math.Max(0,MathF.Sin(s*MathF.PI));
+                        float width=(.012f+(sideIndex==0?.17f:.105f)*arc)*(.66f+.34f*open)*(1-.74f*closing)*(1-.45f*lift);
+                        Vector3 c=Center(s);
+                        Vector3 tangent=Center(Math.Min(1,s+.015f))-Center(Math.Max(0,s-.015f));
+                        Vector3 n=new(-tangent.Y,tangent.X,0);
+                        n=n.LengthSquared()>.000001f?n.Normalized():Vector3.Up;
+                        float depth=MathF.Sin(across*MathF.PI)*arc*.08f*(1-lift);
+                        Vector3 at=c+n*((across-.5f)*2*width)+new Vector3(0,0,depth);
+                        // Broad translucent belly; no full-length white perimeter.
+                        // Raw RGBA supplies the translucent belly and interrupted ivory folds.
+                        // One longitudinal endpoint taper prevents clipped raw x edges;
+                        // no second cross-width feather erases the broad interior.
+                        float ends=Ease(s/.10f)*Ease((1-s)/.10f);
+                        float flow=.06f*Ease(local/.28f);
+                        // The low-frequency receiving surface must survive raw transparent gaps.
+                        // Texture is subordinate density detail on the SAME moving curve.
+                        float baseDensity=.20f+.08f*MathF.Sin(across*MathF.PI);
+                        belly.V(at,new(s,across),envelope*baseDensity*ends,1f,2);
+                        membrane.V(at+new Vector3(0,0,.001f),new(.08f+.84f*s-flow,across),envelope*.28f*ends,1f,2);
+                    }
+                    for(int k=0;k<3;k++)
+                    {
+                        float a=k/3f,b=(k+1)/3f;
+                        Vertex(u,a);Vertex(v,a);Vertex(v,b);Vertex(u,a);Vertex(v,b);Vertex(u,b);
+                    }
+                }
+                // Two unequal short highlights, separated by real open space;
+                // their parent broad surface, not bright rails, carries the mass.
+                for(int j=0;j<2;j++)
+                {
+                    float u=j==0?.32f:.72f,v=j==0?.50f:.81f;
+                    folds.Stroke(Center(u),Center(v),(.010f-.003f*j)*(1-.65f*lift),envelope*(j==0?.08f:.05f),2,1.05f);
+                }
+            }
+            // The warm receiving point stays small; the external membrane owns
+            // the silhouette. No large white disc over the face/HP text.
+            float convergence=Ease((age-.08f)/.16f)*(1-Ease((age-.29f)/.20f));
+            focus.Sprite(new(0,.10f,.075f),.15f,.22f,0,convergence*.36f,3,1.05f);
+            for(int i=0;i<4;i++)
+            {
+                float start=.30f+i*.025f,dt=age-start;if(dt<0)continue;
+                float q=Ease(dt/.23f),alpha=Ease(dt/.035f)*(1-Ease((dt-.12f)/.12f));
+                float side=i%2==0?-1:1;
+                Vector3 p=new(side*(.10f+.06f*(i%3)+q*.11f),.20f+q*(.55f-.06f*i),.06f);
+                motes.Sprite(p,.035f*(1-.40f*q),.065f*(1-.40f*q),side*.30f,alpha*.65f,2);
+            }
+        };
+        return effect;
+    }
     internal static NativeEffect CreatePrayerHeal()
     {
         var breath=new Layer(0,14);var streams=new Layer(0,0);var pearls=new Layer(0,14);var cores=new Layer(0,14);

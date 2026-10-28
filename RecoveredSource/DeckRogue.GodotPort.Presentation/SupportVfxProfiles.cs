@@ -9,6 +9,10 @@ namespace DeckRogue.GodotPort.Presentation;
 // Exact owning-card allowlists; these are receiver-local support events, never hits.
 internal static class SupportVfxProfiles
 {
+    internal static bool MassHealRoute(AttackRoute? route)=>Hd2dAttackPrototype.Enabled && route is not null
+        && route.Key=="support:white_mass_heal/heal" && route.DefinitionId=="white_mass_heal"
+        && route.SourceKind=="support" && route.Family=="prayer_heal"
+        && route.Renderer=="Hd2dSupportFx" && route.Element=="light" && route.FixedSmall;
     private static bool IceOwner(string? id)=>id is "blue_guard" or "blue_thick_ice" or "blue_ice_wall" or "blue_frost_chain";
     private static bool RecoveryOwner(string? id)=>id is "white_prayer_verse" or "white_mass_heal";
     internal sealed record OwnerContext(string CardId,string CardUid,int? ModeIndex,long Revision);

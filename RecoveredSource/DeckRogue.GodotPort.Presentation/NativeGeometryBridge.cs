@@ -338,6 +338,7 @@ internal static class NativeGeometryBridge
         if(LightningContactVfxProfiles.SelectedRoute(route))return Hd2dAttackPrototype.CreateLightningDischarge();
         if(route.Renderer=="Hd2dSupportFx" && route.Family=="ordinary_guard_gain")return Hd2dAttackPrototype.CreateOrdinaryGuard();
         if(route.Renderer=="Hd2dSupportFx" && route.Family=="ice_guard_gain")return Hd2dAttackPrototype.CreateIceGuard();
+        if(SupportVfxProfiles.MassHealRoute(route))return Hd2dAttackPrototype.CreateMassHeal();
         if(route.Renderer=="Hd2dSupportFx" && route.Family=="prayer_heal")return Hd2dAttackPrototype.CreatePrayerHeal();
         if (Hd2dAttackPrototype.SupportsRoute(route)) return Hd2dAttackPrototype.Create(route);
 		string family = route.Family;

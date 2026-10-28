@@ -1,0 +1,28 @@
+{
+  "revision": 240,
+  "baseSource": 238,
+  "comparisonExperiment": 239,
+  "status": "preflight0errors/1923baselinewarnings11.76s; native/art pending",
+  "diagnosis": "239 actual10 mip levels softened aliasing but did not restore belly; reject mip absence as primary cause. Texture transparent gaps were also removing the main surface.",
+  "changes": {
+    "belly": "new untextured Kind0 layer on identical237 curve; alpha=envelope*ends*(.20+.08*sin(pi*across)), role2/gain1; existing shader crossfeather retained",
+    "rawDetail": "same238UV/raw,alpha .72\u2192.28, z offset+.001 solely depth ordering",
+    "shortHighlights": ".18/.11\u2192.08/.05",
+    "capacity": "belly432,raw432,folds24,focus6,motes24; per-layer <512",
+    "mip": "dedicated raw mipchain remains enabled as239 diagnostic; improves sampling only, not claimed quality fix; Unity trilinear+mips recommendation, no other texture setting change"
+  },
+  "unchanged": [
+    "237 curves,width,phase windows,.075 rightlag,.66end",
+    "raw original bytes and UV transport",
+    "shared shader/renderer/palette",
+    "worldlight/gain/camera/StageActor",
+    "actual heal/owner/zero slot/nested/Prayer"
+  ],
+  "gates": [
+    "broad translucent belly with subordinate irregular folds",
+    "no wire-only skeleton, no uniform cloud/cloth slab",
+    "same surface flows toward chest; not independent stacked shapes",
+    "finite counts and exact rules/events",
+    "face/UI not erased"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "pass": true,
+  "sourceFiles": 224,
+  "checks": 363,
+  "cleanRuns": 1,
+  "frames": 70,
+  "fps": 30,
+  "simulatedSeconds": 2.3333333333333335,
+  "wallSeconds": 22.2443943,
+  "videoBytes": 495034,
+  "videoSHA256": "c1c07b6de7c0d4d789de5d74201ee76d47068c59379608eb157637e4d7dea1c6",
+  "allConsecutiveDraws": true,
+  "naturalActionClock": true,
+  "sameStandardFixtureRulesEvents": true,
+  "finalClear": true,
+  "finiteSamples": 20,
+  "protectedCount": 5158,
+  "requiredImportsUnchanged": 4743,
+  "freeBytes": 331735040,
+  "art": "PENDING",
+  "notWallClockPerformance": true
+}

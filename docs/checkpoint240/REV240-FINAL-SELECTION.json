@@ -1,0 +1,44 @@
+{
+  "revision": 240,
+  "sourceManifest": "revision240-source-manifest.json",
+  "sourceFiles": 224,
+  "selected": true,
+  "scope": "Godot VFX prototype for Unity transfer, not Unity verified or full product completion",
+  "supersedes": [
+    "art:PENDING fields in earlier240 standard/movie technical postproof"
+  ],
+  "technical": {
+    "checks": 1627,
+    "cleanRuns": 6,
+    "qualification": "Repeated assertions in focused six scenarios, not complete matrix",
+    "standard": 261,
+    "movie": 363,
+    "boundaries0and1": 431,
+    "nestedLegalCenser": 572
+  },
+  "art": {
+    "staticShapeAndMaterial": "PASS",
+    "temporalConsecutiveDecodedFrames": "PASS with no blocking artifact",
+    "directEqualSpeedSubjectiveViewing": false,
+    "reviewer": "Astra / review_mass_heal_craft",
+    "limitation": "Upward unravelling subtle; primary chestward convergence; Unity unverified"
+  },
+  "retainedHolds": [
+    235,
+    236,
+    237,
+    238,
+    239
+  ],
+  "source239Exists": false,
+  "runtimeImport": "only density-v1 mipmaps/generate=true, preserved diagnostic239 evidence; raw and shared shader unchanged",
+  "movie": {
+    "silent": true,
+    "fpsSimulation": 30,
+    "frames": 70,
+    "wallSeconds": 22.2443943,
+    "notRealtimePerformanceBenchmark": true
+  },
+  "bounds": "Actual heal0/1, cancel before/after, repeat, visual death+cancel; legal energy3→4→3→0 Censer direct15/nested1 and direct0/nested0; no duplicate exact body",
+  "ownershipQualification": "Owner-action evidence; no generalized nested direct-effect causal guarantee; exact positive direct receipt route and UID provenance verified"
+}

@@ -1,0 +1,36 @@
+{
+  "pass": true,
+  "logicalRevision": 240,
+  "physicalCandidate": "candidate222",
+  "sourceFiles": 224,
+  "checks": 261,
+  "cleanRuns": 1,
+  "allFrozenSourceHashesMatch": true,
+  "nativeUidOnlyNormalizations": [
+    "assets/Art/fx/hd2d-waterwide-phase-01.png.import",
+    "assets/Art/fx/hd2d-waterwide-phase-02.png.import",
+    "assets/Art/fx/hd2d-waterwide-phase-03.png.import",
+    "assets/Art/fx/hd2d-wood-contact-01.png.import",
+    "assets/Art/fx/hd2d-wood-contact-02.png.import"
+  ],
+  "nonchangedInventorySHA": true,
+  "protectedHashStatInodeNlinkCount": 5158,
+  "finiteSamples": 20,
+  "nativeKeys": 11,
+  "eventOrderAndNumericOracleExact": true,
+  "outputBytes": 20116097,
+  "freeBytes": 334135296,
+  "art": "PENDING",
+  "limitations": "HP60/75 + Heal15 only, not capped boundary generalization; controlled natural ticks, not equal-speed direct subjective viewing or Unity verification",
+  "requiredNonctexImportHashesUnchanged": 4743,
+  "same239RuleFixtureAndLedgerFiles": [
+    "white_mass_heal-fixture.json",
+    "white_mass_heal-complete-rule-transition.json",
+    "white_mass_heal-expected-damage-events.json",
+    "white_mass_heal-observed-damage-events.json"
+  ],
+  "same239FullObservedEventAndNumericOrder": true,
+  "maxRelativeAgeDelta": 0,
+  "maxActualActiveAlphaVertices": 846,
+  "maxActualActiveInAnyBatch": 396
+}

@@ -1,0 +1,30 @@
+{
+  "pass": true,
+  "sourceFiles": 224,
+  "rows": [
+    {
+      "missingHp": 0,
+      "actualHeal": 0,
+      "checks": 159,
+      "maxOwnedActive": 0,
+      "clean": true,
+      "lifecycleCycles": 0,
+      "outputBytes": 1639782
+    },
+    {
+      "missingHp": 1,
+      "actualHeal": 1,
+      "checks": 272,
+      "maxOwnedActive": 1,
+      "clean": true,
+      "lifecycleCycles": 4,
+      "outputBytes": 8414758
+    }
+  ],
+  "checks": 431,
+  "cleanRuns": 2,
+  "sourceUnchanged": true,
+  "protectedCount": 5158,
+  "requiredImportsUnchanged": 4743,
+  "freeBytes": 320339968
+}
