@@ -82,7 +82,7 @@ namespace DeckRogue.Game
                     var src = tiles[pick].GetPixels32();
                     for (int y = 0; y < S; y++)
                         for (int x = 0; x < S; x++)
-                            px[(ty * S + y) * N * S + tx * S + x] = Grade(src[y * S + x], 0.58f, 0.62f, 16f, NightMul);
+                            px[(ty * S + y) * N * S + tx * S + x] = Grade(src[y * S + x], 0.66f, 0.55f, 16f, NightMul);
                 }
             t.SetPixels32(px); t.Apply(false, true);
             _tex[key] = t;
@@ -111,6 +111,40 @@ namespace DeckRogue.Game
             _tex[key] = t;
             return t;
         }
+
+        /// <summary>
+        /// 踏み跡の土に夜の色を重ねて焼いた物 (2026-10-28 ユーザー「道が醜すぎる。デザイン案と全然違う」)。カンバスの案1 は土の模様 (top_path_a を 2 倍) の上に
+        /// rgba(20,28,58,.52) などの帯を sRGB で重ねている。Unity (Linear の色空間) で α の帯を重ねると暗く濁るので、ブラウザと同じ sRGB の式で画素に焼き、不透明で描く。
+        /// state: 0 進める・通った (.52) / 1 まだ先 (.62) / 2 通らなかった (.72)
+        /// </summary>
+        public static Texture2D DirtState(int act, int state)
+        {
+            string key = "dirt" + act + "s" + state;
+            Texture2D t;
+            if (_tex.TryGetValue(key, out t)) return t;
+            var src = Readable(Folder(act) + "/tiles/top_path_a") ?? Readable(Folder(1) + "/tiles/top_path_a");
+            if (src == null || src.width != 64 || src.height != 64) { _tex[key] = null; return null; }
+            Color32 c; float a;
+            switch (state)
+            {
+                case 1: c = new Color32(18, 24, 52, 255); a = 0.62f; break;
+                case 2: c = new Color32(12, 16, 36, 255); a = 0.72f; break;
+                default: c = new Color32(20, 28, 58, 255); a = 0.52f; break;
+            }
+            var px = src.GetPixels32();
+            for (int i = 0; i < px.Length; i++)
+            {
+                var p = px[i];
+                px[i] = new Color32((byte)Mathf.RoundToInt(p.r * (1f - a) + c.r * a), (byte)Mathf.RoundToInt(p.g * (1f - a) + c.g * a), (byte)Mathf.RoundToInt(p.b * (1f - a) + c.b * a), 255);
+            }
+            t = NewTex(64, 64, true, true);
+            t.SetPixels32(px); t.Apply(false, true);
+            _tex[key] = t;
+            return t;
+        }
+
+        /// <summary>sRGB の α (ブラウザの重ね) を Linear の重ねで同じ暗さにする α (黒に近い色の重ねだけに使う。.55 → .83)</summary>
+        public static float LinearAlpha(float srgbAlpha) { return 1f - Mathf.Pow(1f - srgbAlpha, 2.2f); }
 
         /// <summary>木・岩・茂みの絵を夜の色に焼いた Point の複製 (path は Resources の中の道)。明るさは Image.color で掛ける</summary>
         public static Sprite Graded(string path, float sat, float hue)
@@ -225,6 +259,9 @@ namespace DeckRogue.Game
         public float TexPx = 128f;
         public override Texture mainTexture { get { return Tex != null ? Tex : s_WhiteTexture; } }
 
+        /// <summary>帯の両端を丸める (SVG の stroke-linecap: round。節で帯がなめらかにつながる)</summary>
+        public bool RoundCaps = true;
+
         struct Stroke { public List<Vector2> P; public float W; public Color32 C; public float Dash, Gap; }
         readonly List<Stroke> _strokes = new List<Stroke>();
 
@@ -233,6 +270,21 @@ namespace DeckRogue.Game
             if (pts == null || pts.Count < 2) return;
             _strokes.Add(new Stroke { P = pts, W = width, C = color, Dash = dash, Gap = gap });
             SetVerticesDirty();
+        }
+
+        void Cap(VertexHelper vh, Vector2 c, Vector2 dir, float w, Color32 col)
+        {
+            // dir の向きへ半円の扇 (10 分割)
+            int center = vh.currentVertCount;
+            Vert(vh, c, col);
+            float r = w * 0.5f, a0 = Mathf.Atan2(dir.y, dir.x) - Mathf.PI * 0.5f;
+            const int N = 10;
+            for (int i = 0; i <= N; i++)
+            {
+                float a = a0 + Mathf.PI * i / N;
+                Vert(vh, c + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * r, col);
+            }
+            for (int i = 0; i < N; i++) vh.AddTriangle(center, center + 1 + i, center + 2 + i);
         }
 
         protected override void OnPopulateMesh(VertexHelper vh)
@@ -267,6 +319,11 @@ namespace DeckRogue.Game
                 int k = start + i * 2;
                 vh.AddTriangle(k, k + 1, k + 3);
                 vh.AddTriangle(k, k + 3, k + 2);
+            }
+            if (RoundCaps && w > 6f)
+            {
+                Cap(vh, p[0], (p[0] - p[1]).normalized, w, c);
+                Cap(vh, p[n - 1], (p[n - 1] - p[n - 2]).normalized, w, c);
             }
         }
 

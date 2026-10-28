@@ -1,7 +1,7 @@
 // MapScreen.cs — マップ画面 (M3・2026-09-07): 本家式の縦スクロール地図。
 // 2026-10-28 品質スプリント 案1「夜の森の絵地図」(カンバス https://claude.ai/artifact/C8WiiTPfMSPD4jPFE2pi92 の Main・ユーザー裁定):
 // 戦闘の森 (幕1 の箱庭) の地面・道・木・岩の絵で、見下ろしの絵地図を組む。地面は夜の草のタイル (1ドット=2px)、道は土の踏み跡、
-// 節は空き地に立つ 32 ドットの印 (2倍)、両脇は針葉樹、上は霧に沈む。現在地にはリーダーが立ち、選ぶと踏み跡を歩いてから進む。
+// 節は空き地に立つ 32 ドットの印 (2倍)、両脇は針葉樹、上は霧に沈む。現在地は真鍮の輪 (地図にキャラは置かない。2026-10-28 ユーザー「マップにキャラいらない」)。
 // 材料 (夜の色に焼いた複製・踏み跡の帯・蛍の動き) は MapForest.cs。
 using System;
 using System.Collections.Generic;
@@ -19,10 +19,6 @@ namespace DeckRogue.Game
         const float RowH = 120f;       // 1行の高さ
         const float PadY = 220f;       // 上下の余白 (下は出発の道標と駒・下のボタンの帯、上はボスの名札)
         static float _ox = 0f;         // 節の格子の左端 (content の中の x)。地図は画面の幅いっぱいなので、格子を中央へ寄せる
-        static RectTransform _marker;  // 現在地の駒 (選んだ節へ歩いてから命令を出す)
-        static bool _walking;
-        static Vector2 _markerOff;     // 節の中心から駒の pivot まで (足元を節の 8px 下に)
-        const float MarkerDot = 2f;    // 駒は 1ドット＝2px (地面と同じ粒)
         static float NodeSize { get { return UiKit.Phone ? 74f : 60f; } }   // 画面の切り欠きの寄せの目安 (2026-09-14)
         const int Cols = 7;
 
@@ -49,7 +45,6 @@ namespace DeckRogue.Game
             int recipeCount = 0;   // ⭐ いま手元で作れるレシピ対の数 (工房ノードに添える。2026-09-12)
             try { recipeCount = Fusion.RecipePairsInDeck(run.Deck).Count; } catch (Exception) { }
 
-            _walking = false; _marker = null;
             var view = UiKit.NewRect("mapview", root);
             // 画面の切り欠き (パンチホール＝左端の縦の中央) に左の列のノードが掛かる狭い端末では、格子を右へ寄せる (2026-09-29 p10。S25 と PC は 0)
             var mcs = BattleScreen.CanvasSize(root);
@@ -123,10 +118,14 @@ namespace DeckRogue.Game
                 }
             }
 
-            // 踏み跡 (土の帯の下に暗い縁・上に夜の帯。通った道は真鍮の足跡、進める道は光る破線)。帯は 3 枚の Graphic (縁／土／上の重ね)
+            // 踏み跡 (カンバスの案1 と同じ: 暗い縁 38 の上に、土に夜の色を焼いた帯 26 を まだ先 → 通らなかった → 通った → 進める の順に重ね、
+            // 通った道は真鍮の足跡、進める道は光る破線。帯の端は丸い = 節でなめらかにつながる。2026-10-28 ユーザー「道が醜すぎる」)
             var trailBase = Trail(content, "trail-base", null);
-            var trailDirt = Trail(content, "trail-dirt", MapForest.Dirt(run.Act));
+            var trailFuture = Trail(content, "trail-future", MapForest.DirtState(run.Act, 1), 64f);
+            var trailPassed = Trail(content, "trail-passed", MapForest.DirtState(run.Act, 2), 64f);
+            var trailTaken = Trail(content, "trail-taken", MapForest.DirtState(run.Act, 0), 64f);
             var trailTop = Trail(content, "trail-top", null);
+            trailTop.RoundCaps = false;
             var edges = new List<Vector2[]>();
             for (int r = 0; r < rows - 1; r++)
             {
@@ -145,15 +144,13 @@ namespace DeckRogue.Game
                         Vector2 a = NodePos(n, r), b = NodePos(run.Map[r + 1][j], r + 1);
                         edges.Add(new[] { a, b });
                         var pts = Curve(a, b, r + (n.Col ?? 0));
-                        trailBase.Add(pts, 38f, new Color(0.02f, 0.03f, 0.06f, 0.55f));
-                        if (trailDirt.Tex != null) trailDirt.Add(pts, 26f, Color.white);
-                        else trailDirt.Add(pts, 26f, new Color(0.36f, 0.30f, 0.26f, 1f));
-                        Color night = taken || avail ? new Color(0.04f, 0.05f, 0.08f, 0.22f) : passed ? new Color(0.03f, 0.035f, 0.06f, 0.62f) : new Color(0.035f, 0.04f, 0.07f, 0.42f);
-                        trailTop.Add(pts, 26f, night);
-                        if (taken) trailTop.Add(pts, 5f, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.9f), 2f, 16f);
+                        trailBase.Add(pts, 38f, new Color(0.024f, 0.031f, 0.063f, MapForest.LinearAlpha(0.55f)));   // rgba(6,8,16,.55)
+                        var band = taken || avail ? trailTaken : passed ? trailPassed : trailFuture;
+                        band.Add(pts, 26f, band.Tex != null ? Color.white : new Color(0.27f, 0.22f, 0.25f, 1f));
+                        if (taken) trailTop.Add(pts, 5f, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.9f), 2f, 16f);   // 足跡 (1 17 の点)
                         if (avail)
                         {
-                            trailTop.Add(pts, 16f, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.22f));
+                            trailTop.Add(pts, 14f, new Color(PaperFx.Paper3.r, PaperFx.Paper3.g, PaperFx.Paper3.b, 0.18f));   // 破線のにじみ (カンバスの glow)
                             trailTop.Add(pts, 6f, new Color(PaperFx.Paper3.r, PaperFx.Paper3.g, PaperFx.Paper3.b, 0.95f), 12f, 12f);
                         }
                     }
@@ -198,29 +195,7 @@ namespace DeckRogue.Game
             var doodle = doodleRt.gameObject.AddComponent<DoodleLayer>();
             doodle.Root = g; doodle.Strokes = g.DoodlesFor(run.Act); doodle.Editable = !overlay; doodle.raycastTarget = !overlay;
 
-            // 現在地の駒 (リーダーの絵を 1ドット＝2px で節の上に立てる。選ぶと踏み跡を歩く)
-            {
-                Vector2 at = run.Row >= 0 ? NodePos(run.Map[run.Row][run.Col], run.Row) : startPos;
-                var spr = Creature.Get("leaders", run.LeaderId, true);
-                var sh = UiKit.Pan(content, Color.white, "marker-shadow"); sh.sprite = ThemeFx.Shadow(); sh.raycastTarget = false;
-                Place(sh.rectTransform, at + new Vector2(0f, -8f), new Vector2(92f, 22f), new Vector2(0.5f, 0.5f));
-                var mk = new GameObject("marker", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
-                mk.transform.SetParent(content, false);
-                mk.raycastTarget = false;
-                mk.sprite = spr;
-                float mw = spr != null ? spr.rect.width * MarkerDot : 128f, mh = spr != null ? spr.rect.height * MarkerDot : 128f;
-                float feet = spr != null ? Stage.FeetPad(spr) * mh : 0f;
-                float cx = MapForest.VisibleCenterX(spr);
-                mk.rectTransform.anchorMin = mk.rectTransform.anchorMax = new Vector2(0f, 0f);
-                mk.rectTransform.pivot = new Vector2(cx, 0f);
-                mk.rectTransform.sizeDelta = new Vector2(mw, mh);
-                _markerOff = new Vector2(0f, -8f - feet);
-                mk.rectTransform.anchoredPosition = at + _markerOff;
-                _marker = mk.rectTransform;
-                var follow = sh.gameObject.AddComponent<FollowMarker>(); follow.Marker = mk.rectTransform; follow.Offset = new Vector2(0f, feet);
-                Tween.Punch(mk.rectTransform, 0.12f, 0.6f, true);
-            }
-            labels.SetAsLastSibling();     // 名札は駒の上
+            labels.SetAsLastSibling();     // 名札は道と節の上
             doodleRt.SetAsLastSibling();   // 落書きはいちばん上 (右ドラッグ/ペンモードの時だけ入力を受ける)
 
             // 蛍 (森の上をゆっくり漂って明滅)
@@ -293,17 +268,6 @@ namespace DeckRogue.Game
             }
         }
 
-        /// <summary>駒の影を駒の足元に付いて行かせる (歩く間も)</summary>
-        class FollowMarker : MonoBehaviour
-        {
-            public RectTransform Marker; public Vector2 Offset;
-            void LateUpdate()
-            {
-                if (Marker == null) return;
-                ((RectTransform)transform).anchoredPosition = Marker.anchoredPosition + Offset;
-            }
-        }
-
         static long Key(int r, int c) { return ((long)r << 16) | (uint)c; }
 
         static Vector2 GridPos(int col, int row)
@@ -332,7 +296,7 @@ namespace DeckRogue.Game
             return pts;
         }
 
-        static MapTrail Trail(RectTransform content, string name, Texture tex)
+        static MapTrail Trail(RectTransform content, string name, Texture tex, float texPx = 128f)
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer));
             go.transform.SetParent(content, false);
@@ -340,7 +304,7 @@ namespace DeckRogue.Game
             rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.pivot = Vector2.zero;
             rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
             var t = go.AddComponent<MapTrail>();
-            t.Tex = tex; t.TexPx = 128f; t.raycastTarget = false;
+            t.Tex = tex; t.TexPx = texPx * 2f; t.raycastTarget = false;
             return t;
         }
 
@@ -420,7 +384,7 @@ namespace DeckRogue.Game
                     if (!clear) continue;
                     var sp = MapForest.Graded(relief + small[rnd.Next(small.Length)], 0.7f, 10f);
                     if (sp == null) continue;
-                    var img = Pic(content, "prop", sp, 0.72f + (float)rnd.NextDouble() * 0.12f);
+                    var img = Pic(content, "prop", sp, 0.5f + (float)rnd.NextDouble() * 0.1f);
                     Place(img.rectTransform, p, new Vector2(sp.rect.width, sp.rect.height), new Vector2(0.5f, 0f));
                 }
             }
@@ -436,9 +400,9 @@ namespace DeckRogue.Game
                 return img;
             }
             // 夜の青 (上ほど青く・下は暗く)
-            var gTop = Layer("grade-top", MapForest.VFade(), new Color(0.16f, 0.20f, 0.38f, 0.18f));
+            var gTop = Layer("grade-top", MapForest.VFade(), new Color(0.16f, 0.20f, 0.38f, 0.08f));
             UiKit.Anchor(gTop.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
-            var gBot = Layer("grade-bottom", MapForest.VFade(), new Color(0.04f, 0.05f, 0.12f, 0.16f));
+            var gBot = Layer("grade-bottom", MapForest.VFade(), new Color(0.04f, 0.05f, 0.12f, 0f));
             UiKit.Anchor(gBot.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.4f), Vector2.zero, Vector2.zero);
             gBot.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 180f);
             // 月明かり (左上の手前から)
@@ -456,7 +420,7 @@ namespace DeckRogue.Game
                 sh.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 24f);
             }
             // 上の霧 (遠い行ほど霞む)
-            var fog = Layer("fog", MapForest.VFade(), new Color(0.52f, 0.59f, 0.75f, 0.42f));
+            var fog = Layer("fog", MapForest.VFade(), new Color(0.52f, 0.59f, 0.75f, 0.30f));
             fog.rectTransform.anchorMin = new Vector2(0f, 1f); fog.rectTransform.anchorMax = new Vector2(1f, 1f);
             fog.rectTransform.pivot = new Vector2(0.5f, 1f);
             fog.rectTransform.sizeDelta = new Vector2(0f, Mathf.Min(560f, viewH * (UiKit.Phone ? 0.36f : 0.55f)));
@@ -509,12 +473,18 @@ namespace DeckRogue.Game
             Soft("clearing", MapForest.Radial(), new Color(0.41f, 0.35f, 0.31f, passed && !taken && !cur ? 0.32f : 0.62f), Vector2.zero, boss ? new Vector2(190f, 64f) : new Vector2(124f, 48f));
             Image ring = null;
             if (avail) ring = Soft("ring", MapForest.Ring(), new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.85f), new Vector2(0f, 0f), new Vector2(114f, 44f));
-            if (taken && !cur) Soft("ring-taken", MapForest.Ring(), new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.5f), Vector2.zero, new Vector2(118f, 44f));
-            if (!cur) Soft("shadow", ThemeFx.Shadow(), Color.white, new Vector2(0f, -1f), new Vector2(boss ? 80f : 54f, boss ? 20f : 15f));
+            if (cur)
+            {
+                // 現在地: 真鍮の輪を二重にして光らせる (キャラは置かない)
+                Soft("cur-glow", MapForest.Radial(), new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.32f), new Vector2(0f, 24f), new Vector2(190f, 170f));
+                Soft("ring-cur", MapForest.Ring(), PaperFx.Brass, Vector2.zero, new Vector2(126f, 48f));
+                Soft("ring-cur2", MapForest.Ring(), new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.7f), Vector2.zero, new Vector2(110f, 40f));
+            }
+            else if (taken) Soft("ring-taken", MapForest.Ring(), new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.5f), Vector2.zero, new Vector2(118f, 44f));
+            Soft("shadow", ThemeFx.Shadow(), Color.white, new Vector2(0f, -1f), new Vector2(boss ? 80f : 54f, boss ? 20f : 15f));
 
             // 印 (32 ドットを 2 倍。足元が空き地の中心の 4px 下。進める節は少し浮く)
             Image icon = null;
-            if (!cur)
             {
                 var nodeArt = Theme.Art("map", "node_" + n.Type);
                 icon = UiKit.Icon(cell, NodeIcon(n.Type), boss ? 56f : 34f);
@@ -524,20 +494,33 @@ namespace DeckRogue.Game
                 icon.rectTransform.pivot = new Vector2(0.5f, 0f);
                 icon.rectTransform.sizeDelta = new Vector2(asz, asz); UiKit.Le(icon, asz, asz, asz, asz);
                 icon.rectTransform.anchoredPosition = new Vector2(0f, avail ? 8f : -4f);
-                icon.color = avail || boss ? Color.white : taken ? new Color(0.64f, 0.62f, 0.66f, 1f) : passed ? new Color(0.42f, 0.42f, 0.48f, 0.8f) : new Color(0.86f, 0.86f, 0.9f, 1f);
+                icon.color = avail || boss || cur ? Color.white : taken ? new Color(0.64f, 0.62f, 0.66f, 1f) : passed ? new Color(0.42f, 0.42f, 0.48f, 0.8f) : new Color(0.86f, 0.86f, 0.9f, 1f);
                 if (avail && life != null) { life.Bobs.Add(icon.rectTransform); if (ring != null) life.Pulses.Add(ring); }
             }
 
-            // 名札 (進める節とボス)
-            if (avail || boss)
+            // ボスの名札 (カンバスの案1: 印の右に名前と「幕ボス ・ あと N 行」)
+            if (boss)
+            {
+                string bname = "幕ボス";
+                if (n.EncounterId != null) { try { bname = Content.EncounterName(n.EncounterId); } catch (Exception) { } }
+                int left = Math.Max(0, row - g.Rs.Row);
+                var bt = UiKit.Txt(labels, bname, 24, PaperFx.RoseLight, TextAnchor.MiddleLeft, true);
+                bt.outlineWidth = 0.22f; bt.outlineColor = new Color(0f, 0f, 0f, 0.85f); bt.raycastTarget = false;
+                Place(bt.rectTransform, at + new Vector2(62f, 66f), new Vector2(360f, 32f), new Vector2(0f, 0.5f));
+                var bs = UiKit.Txt(labels, "幕ボス ・ あと " + left + " 行", 14, PaperFx.PaperDim, TextAnchor.MiddleLeft);
+                bs.outlineWidth = 0.2f; bs.outlineColor = new Color(0f, 0f, 0f, 0.85f); bs.raycastTarget = false;
+                Place(bs.rectTransform, at + new Vector2(62f, 40f), new Vector2(360f, 22f), new Vector2(0f, 0.5f));
+            }
+            // 名札 (進める節)
+            if (avail && !boss)
             {
                 var tag = BattleScreen.Tag(labels, 30f, 0f);
                 tag.anchorMin = tag.anchorMax = Vector2.zero;
                 tag.pivot = new Vector2(0.5f, 1f);
                 tag.sizeDelta = new Vector2(80f, 30f);
-                tag.anchoredPosition = at + new Vector2(0f, boss ? -36f : -30f);
+                tag.anchoredPosition = at + new Vector2(0f, -30f);
                 var hg = tag.GetComponent<HorizontalLayoutGroup>(); if (hg != null) hg.childAlignment = TextAnchor.MiddleCenter;
-                var t = UiKit.Txt(tag, NodeName(n.Type), 16, boss ? PaperFx.BadInk : PaperFx.Ink, TextAnchor.MiddleCenter, true);
+                var t = UiKit.Txt(tag, NodeName(n.Type), 16, PaperFx.Ink, TextAnchor.MiddleCenter, true);
                 UiKit.Le(t, -1f, 26f, -1f, 26f);
             }
 
@@ -568,24 +551,10 @@ namespace DeckRogue.Game
                 btn.targetGraphic = icon != null ? (Graphic)icon : hit;
                 var cols = btn.colors; cols.highlightedColor = new Color(1.15f, 1.15f, 1.15f); cols.pressedColor = new Color(0.85f, 0.85f, 0.85f); btn.colors = cols;
                 int idx = index;
-                Vector2 dest = at;
                 btn.onClick.AddListener(delegate
                 {
-                    if (_walking) return;
                     Audio.Ui("node");
-                    var mk = _marker;
-                    if (mk == null) { g.Do(new RunCommand_ChooseNode { Col = idx }); return; }
-                    // 駒が踏み跡を歩いてから進む (0.55 秒・小さく弾む)
-                    _walking = true;
-                    Vector2 from = mk.anchoredPosition, to = dest + _markerOff;
-                    bool done = false;
-                    Action finish = delegate { if (done) return; done = true; _walking = false; g.Do(new RunCommand_ChooseNode { Col = idx }); };
-                    Tween.Run(0.55f, delegate (float k)
-                    {
-                        if (mk == null) return;
-                        float s = k * k * (3f - 2f * k);
-                        mk.anchoredPosition = Vector2.Lerp(from, to, s) + new Vector2(0f, Mathf.Round(Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f)) * 3f) * 2f);
-                    }, Ease.Linear, delegate { finish(); }, delegate { _walking = false; });
+                    g.Do(new RunCommand_ChooseNode { Col = idx });
                 });
             }
         }
