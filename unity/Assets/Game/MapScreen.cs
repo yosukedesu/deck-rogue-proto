@@ -121,11 +121,13 @@ namespace DeckRogue.Game
             // 踏み跡 (カンバスの案1 と同じ: 暗い縁 38 の上に、土に夜の色を焼いた帯 26 を まだ先 → 通らなかった → 通った → 進める の順に重ね、
             // 通った道は真鍮の足跡、進める道は光る破線。帯の端は丸い = 節でなめらかにつながる。2026-10-28 ユーザー「道が醜すぎる」)
             var trailBase = Trail(content, "trail-base", null);
+            var trailRim = Trail(content, "trail-rim", null);   // 道の輪郭 (月明かりの縁。2026-10-28 ユーザー「道の輪郭をもっと見やすく」)。全部の縁を先に描き、帯は後 = 節で縁が帯の上を横切らない
             var trailFuture = Trail(content, "trail-future", MapForest.DirtState(run.Act, 1), 64f);
             var trailPassed = Trail(content, "trail-passed", MapForest.DirtState(run.Act, 2), 64f);
             var trailTaken = Trail(content, "trail-taken", MapForest.DirtState(run.Act, 0), 64f);
             var trailTop = Trail(content, "trail-top", null);
             trailTop.RoundCaps = false;
+            trailRim.RoundCaps = false;   // 縁の端は節の中心 (帯の丸い端と印の下に隠れる)。丸めると節に白い輪が出る
             var edges = new List<Vector2[]>();
             for (int r = 0; r < rows - 1; r++)
             {
@@ -144,7 +146,8 @@ namespace DeckRogue.Game
                         Vector2 a = NodePos(n, r), b = NodePos(run.Map[r + 1][j], r + 1);
                         edges.Add(new[] { a, b });
                         var pts = Curve(a, b, r + (n.Col ?? 0));
-                        trailBase.Add(pts, 38f, new Color(0.024f, 0.031f, 0.063f, MapForest.LinearAlpha(0.55f)));   // rgba(6,8,16,.55)
+                        trailBase.Add(pts, 42f, new Color(0.024f, 0.031f, 0.063f, MapForest.LinearAlpha(0.62f)));   // 外の影 (カンバスの rgba(6,8,16,.55) より少し濃く広く)
+                        trailRim.Add(pts, 31f, new Color(PaperFx.PaperDim.r, PaperFx.PaperDim.g, PaperFx.PaperDim.b, taken || avail ? 0.72f : passed ? 0.26f : 0.46f));   // 縁 (帯 26 の外に 2.5px)
                         var band = taken || avail ? trailTaken : passed ? trailPassed : trailFuture;
                         band.Add(pts, 26f, band.Tex != null ? Color.white : new Color(0.27f, 0.22f, 0.25f, 1f));
                         if (taken) trailTop.Add(pts, 5f, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.9f), 2f, 16f);   // 足跡 (1 17 の点)
@@ -494,7 +497,7 @@ namespace DeckRogue.Game
                 icon.rectTransform.pivot = new Vector2(0.5f, 0f);
                 icon.rectTransform.sizeDelta = new Vector2(asz, asz); UiKit.Le(icon, asz, asz, asz, asz);
                 icon.rectTransform.anchoredPosition = new Vector2(0f, avail ? 8f : -4f);
-                icon.color = avail || boss || cur ? Color.white : taken ? new Color(0.64f, 0.62f, 0.66f, 1f) : passed ? new Color(0.42f, 0.42f, 0.48f, 0.8f) : new Color(0.86f, 0.86f, 0.9f, 1f);
+                icon.color = avail || boss || cur ? Color.white : taken ? new Color(0.64f, 0.62f, 0.66f, 1f) : passed ? new Color(0.36f, 0.36f, 0.41f, 1f) : new Color(0.86f, 0.86f, 0.9f, 1f);
                 if (avail && life != null) { life.Bobs.Add(icon.rectTransform); if (ring != null) life.Pulses.Add(ring); }
             }
 
