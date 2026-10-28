@@ -698,6 +698,26 @@ namespace DeckRogue.Game
                 }
                 catch (Exception ex) { Debug.LogError("[Autopilot] state: gears/mana " + ex.Message); }
             }
+            // 地図の途中 (2026-10-28 品質スプリント): maprow=<N> で行 N の節に立った地図を撮る (各行は進める節の真ん中を選ぶ。部屋の中身は飛ばす)
+            if (Get("maprow") != null && phase == "map")
+            {
+                int mr;
+                if (int.TryParse(Get("maprow"), out mr))
+                {
+                    try
+                    {
+                        var rs1 = g.Rs;
+                        for (int k = 0; k <= mr && k < rs1.Map.Count - 1; k++)
+                        {
+                            var ch = DeckRogue.Engine.Run.NextChoices(rs1);
+                            if (ch.Count == 0) break;
+                            rs1 = rs1 with { Row = k, Col = ch[ch.Count / 2] };
+                        }
+                        g.Rs = rs1;
+                    }
+                    catch (Exception ex) { Debug.LogError("[Autopilot] state: maprow " + ex.Message); }
+                }
+            }
 
             var rs = g.Rs;
             try

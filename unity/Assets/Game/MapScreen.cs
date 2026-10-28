@@ -1,4 +1,8 @@
-// MapScreen.cs — マップ画面 (M3・2026-09-07): 本家式の縦スクロール地図。ノードは格子列に置き、線で接続。進める道だけ光る
+// MapScreen.cs — マップ画面 (M3・2026-09-07): 本家式の縦スクロール地図。
+// 2026-10-28 品質スプリント 案1「夜の森の絵地図」(カンバス https://claude.ai/artifact/C8WiiTPfMSPD4jPFE2pi92 の Main・ユーザー裁定):
+// 戦闘の森 (幕1 の箱庭) の地面・道・木・岩の絵で、見下ろしの絵地図を組む。地面は夜の草のタイル (1ドット=2px)、道は土の踏み跡、
+// 節は空き地に立つ 32 ドットの印 (2倍)、両脇は針葉樹、上は霧に沈む。現在地にはリーダーが立ち、選ぶと踏み跡を歩いてから進む。
+// 材料 (夜の色に焼いた複製・踏み跡の帯・蛍の動き) は MapForest.cs。
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -11,18 +15,15 @@ namespace DeckRogue.Game
 {
     public static class MapScreen
     {
-        const float MapW = 1100f;      // 地図の描画幅
-        const float RowH = 112f;       // 1行の高さ
-        static float PadY = 90f;       // 上下の余白 (描いた地図 Art/map/act<N>_map があればその高さに合わせて Build が決める。2026-10-28 品質スプリント 案 B)
-        static float _ox = 0f;         // 節の格子の左端 (content の中の x)。地図は画面の幅いっぱいなので、格子 (幅 MapW) を中央へ寄せる
+        const float MapW = 1020f;      // 節の格子の幅 (列の間隔 150。カンバスの案1)
+        const float RowH = 120f;       // 1行の高さ
+        const float PadY = 220f;       // 上下の余白 (下は出発の道標と駒・下のボタンの帯、上はボスの名札)
+        static float _ox = 0f;         // 節の格子の左端 (content の中の x)。地図は画面の幅いっぱいなので、格子を中央へ寄せる
         static RectTransform _marker;  // 現在地の駒 (選んだ節へ歩いてから命令を出す)
         static bool _walking;
-        const float MarkerSize = 84f;  // 駒の箱の予備 (絵が無い時)
-        const float MarkerDot = 1.5f;  // 駒は 1ドット＝1.5px (戦闘の 3px の半分)
-        static float _markerFeet;      // 駒の枠の下の透明行 (px)。歩く先も同じだけ下げる
-        static readonly Vector2 MarkerOffset = new Vector2(0f, -10f);
-        static float NodeSize { get { return UiKit.Phone ? 74f : 60f; } }   // スマホは指で押せる大きさ (2026-09-14)
-        static float BossSize { get { return UiKit.Phone ? 104f : 92f; } }
+        static Vector2 _markerOff;     // 節の中心から駒の pivot まで (足元を節の 8px 下に)
+        const float MarkerDot = 2f;    // 駒は 1ドット＝2px (地面と同じ粒)
+        static float NodeSize { get { return UiKit.Phone ? 74f : 60f; } }   // 画面の切り欠きの寄せの目安 (2026-09-14)
         const int Cols = 7;
 
         /// <summary>他の画面の上に重ねる読み取り専用の地図 (2026-09-12 ユーザー「マップは常に見れるようにして」)。進路は選べない・閉じるだけ</summary>
@@ -30,18 +31,24 @@ namespace DeckRogue.Game
 
         public static void Build(GameRoot g, RectTransform root) { Build(g, root, false); }
 
+        public static string ActName(int act)
+        {
+            switch (act) { case 1: return "坑口の森"; case 2: return "先代の坑道"; case 3: return "埋もれた古代都市"; default: return "マップ"; }
+        }
+
         static void Build(GameRoot g, RectTransform root, bool overlay)
         {
             var run = g.Rs;
             if (!overlay) BattleScreen.BuildBackground(root, run.Act);
-            var dim = UiKit.Pan(root, new Color(0f, 0f, 0f, overlay ? 0.82f : 0.42f), "dim");   // 重ねる時は下の画面 (手札・吹き出し) が地図の線と混ざらない濃さ
-            dim.raycastTarget = overlay;   // 重ねる時は下の画面のボタンを塞ぐ
-            UiKit.Stretch(dim.rectTransform, 0f, 0f, 0f, 0f);
+            if (overlay)
+            {
+                var dim = UiKit.Pan(root, new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, 0.82f), "dim");   // 下の画面 (手札・吹き出し) を塞ぐ
+                dim.raycastTarget = true;
+                UiKit.Stretch(dim.rectTransform, 0f, 0f, 0f, 0f);
+            }
             int recipeCount = 0;   // ⭐ いま手元で作れるレシピ対の数 (工房ノードに添える。2026-09-12)
             try { recipeCount = Fusion.RecipePairsInDeck(run.Deck).Count; } catch (Exception) { }
 
-            // 地図本体 (縦スクロール)。2026-10-28 品質スプリント 案 B「描いた地図」: 画面の幅いっぱいの窓に、描いた地図 (Art/map/act<N>_map・1ドット=2px) を
-            // content の下敷きとして敷き、節の格子 (幅 MapW) はその中央に置く。地図が無ければ今までどおり舞台の暗がりの上に格子だけ
             _walking = false; _marker = null;
             var view = UiKit.NewRect("mapview", root);
             // 画面の切り欠き (パンチホール＝左端の縦の中央) に左の列のノードが掛かる狭い端末では、格子を右へ寄せる (2026-09-29 p10。S25 と PC は 0)
@@ -49,40 +56,20 @@ namespace DeckRogue.Game
             float mapShift = Mathf.Max(0f, UiKit.CutoutLeft(RunUi.TopH, mcs.y) - (mcs.x / 2f - MapW / 2f + 60f - NodeSize / 2f));
             mapShift = Mathf.Min(mapShift, Mathf.Max(0f, mcs.x / 2f - MapW / 2f));   // 右の端からはみ出さない
             _ox = Mathf.Max(0f, (mcs.x - MapW) / 2f) + mapShift;
-            UiKit.Anchor(view, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, overlay ? 90f : 0f), new Vector2(0f, -RunUi.TopH - (overlay ? 56f : 0f)));   // 重ねる時は見出しと「閉じる」の分だけ狭める
-            var mapArt = Theme.Art("map", "act" + run.Act + "_map");
+            float viewTop = overlay ? RunUi.TopH + 56f : 0f, viewBottom = overlay ? 90f : 0f;   // 重ねる時は見出しと「閉じる」の分だけ狭める。地図の画面は全面 (上部バーは地図の上に重ねる)
+            UiKit.Anchor(view, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, viewBottom), new Vector2(0f, -viewTop));
+            float viewW = mcs.x, viewH = mcs.y - viewTop - viewBottom;
             var viewImg = view.gameObject.AddComponent<Image>();
-            viewImg.color = mapArt != null ? new Color(0f, 0f, 0f, overlay ? 0.35f : 0f) : new Color(0f, 0f, 0f, overlay ? 0.5f : 0.18f);
-            var mask = view.gameObject.AddComponent<RectMask2D>();
+            viewImg.color = PaperFx.Ground;
+            view.gameObject.AddComponent<RectMask2D>();
             var content = UiKit.NewRect("content", view);
             int rows = run.Map.Count;
-            float needH = 90f * 2f + (rows + 1) * RowH;   // +1 = スタート地点の行
-            float artW = mapArt != null ? mapArt.texture.width * 2f : 0f, artH = mapArt != null ? mapArt.texture.height * 2f : 0f;
-            float contentH = mapArt != null ? Mathf.Max(artH, needH) : needH;
-            PadY = (contentH - (rows + 1) * RowH) / 2f;
+            float contentH = Mathf.Max(viewH, PadY * 2f + (rows + 1) * RowH);   // +1 = 出発の行
             content.anchorMin = new Vector2(0f, 0f);
             content.anchorMax = new Vector2(1f, 0f);
             content.pivot = new Vector2(0.5f, 0f);
             content.sizeDelta = new Vector2(0f, contentH);
             content.anchoredPosition = Vector2.zero;
-            if (mapArt != null)
-            {
-                // 描いた地図 (下敷き)。幅は 1ドット=2px のまま中央に置き、狭い画面では左右が窓で切れる (格子 1100 は常に入る)
-                var bg = new GameObject("map-art", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
-                bg.transform.SetParent(content, false);
-                bg.sprite = mapArt; bg.raycastTarget = false; bg.color = Color.white;
-                bg.rectTransform.anchorMin = bg.rectTransform.anchorMax = new Vector2(0.5f, 0f);
-                bg.rectTransform.pivot = new Vector2(0.5f, 0f);
-                bg.rectTransform.sizeDelta = new Vector2(artW, artH);
-                bg.rectTransform.anchoredPosition = Vector2.zero;
-                // 窓の上下の縁は夜色に溶かす (上部バーの下に地図が突き当たらない)
-                var fadeTop = UiKit.Pan(view, PaperFx.Ground, "fade-top"); fadeTop.raycastTarget = false; fadeTop.sprite = FadeSprite();
-                UiKit.Anchor(fadeTop.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -140f), new Vector2(0f, 0f));
-                var fadeBot = UiKit.Pan(view, PaperFx.Ground, "fade-bottom"); fadeBot.raycastTarget = false; fadeBot.sprite = FadeSprite();
-                UiKit.Anchor(fadeBot.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, 110f));
-                fadeBot.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 180f);
-                fadeTop.transform.SetAsLastSibling(); fadeBot.transform.SetAsLastSibling();
-            }
             var scroll = view.gameObject.AddComponent<ScrollRect>();
             scroll.content = content;
             scroll.viewport = view;
@@ -90,6 +77,18 @@ namespace DeckRogue.Game
             scroll.vertical = true;
             scroll.movementType = ScrollRect.MovementType.Clamped;
             scroll.scrollSensitivity = 40f;
+            var life = content.gameObject.AddComponent<MapLife>();
+
+            // 地面 (夜の草のタイル。8×8 枚の 512 ドットの塊を 1ドット=2px で繰り返す)
+            {
+                var gr = new GameObject("ground", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage)).GetComponent<RawImage>();
+                gr.transform.SetParent(content, false);
+                gr.raycastTarget = false;
+                UiKit.Stretch(gr.rectTransform, 0f, 0f, 0f, 0f);
+                var gt = MapForest.Ground(run.Act);
+                if (gt != null) { gr.texture = gt; gr.uvRect = new Rect(0f, 0f, viewW / (gt.width * 2f), contentH / (gt.height * 2f)); gr.color = Color.white; }
+                else gr.color = PaperFx.Window;
+            }
 
             var choices = DeckRogue.Engine.Run.NextChoices(run);
             var choiceSet = new HashSet<int>();
@@ -124,19 +123,17 @@ namespace DeckRogue.Game
                 }
             }
 
-            // 線 (ノードより下に描く)
-            var lines = UiKit.NewRect("lines", content);
-            UiKit.Stretch(lines, 0f, 0f, 0f, 0f);
-            // スタート地点 → 行0
-            Vector2 startPos = new Vector2(_ox + MapW / 2f, PadY + RowH * 0.5f);
-            // 行0 へ入る踏み跡は引かない (本家: 最初の行はどこからでも入れる。進める節は輪と光で分かる。2026-10-28 案 B)
-            for (int r = 0; r < rows; r++)
+            // 踏み跡 (土の帯の下に暗い縁・上に夜の帯。通った道は真鍮の足跡、進める道は光る破線)。帯は 3 枚の Graphic (縁／土／上の重ね)
+            var trailBase = Trail(content, "trail-base", null);
+            var trailDirt = Trail(content, "trail-dirt", MapForest.Dirt(run.Act));
+            var trailTop = Trail(content, "trail-top", null);
+            var edges = new List<Vector2[]>();
+            for (int r = 0; r < rows - 1; r++)
             {
                 var row = run.Map[r];
                 for (int i = 0; i < row.Count; i++)
                 {
                     var n = row[i];
-                    if (r + 1 >= rows) continue;
                     for (int k = 0; k < n.Next.Count; k++)
                     {
                         int j = n.Next[k];
@@ -144,23 +141,41 @@ namespace DeckRogue.Game
                         bool fromCur = r == run.Row && i == run.Col;
                         bool avail = fromCur && choiceSet.Contains(j);
                         bool taken = path.Contains(Key(r, i)) && path.Contains(Key(r + 1, j));
-                        bool passed = r < run.Row;
-                        Line(lines, NodePos(n, r), NodePos(run.Map[r + 1][j], r + 1), avail, taken, passed && !taken);
+                        bool passed = !taken && !avail && r <= run.Row;
+                        Vector2 a = NodePos(n, r), b = NodePos(run.Map[r + 1][j], r + 1);
+                        edges.Add(new[] { a, b });
+                        var pts = Curve(a, b, r + (n.Col ?? 0));
+                        trailBase.Add(pts, 38f, new Color(0.02f, 0.03f, 0.06f, 0.55f));
+                        if (trailDirt.Tex != null) trailDirt.Add(pts, 26f, Color.white);
+                        else trailDirt.Add(pts, 26f, new Color(0.36f, 0.30f, 0.26f, 1f));
+                        Color night = taken || avail ? new Color(0.04f, 0.05f, 0.08f, 0.22f) : passed ? new Color(0.03f, 0.035f, 0.06f, 0.62f) : new Color(0.035f, 0.04f, 0.07f, 0.42f);
+                        trailTop.Add(pts, 26f, night);
+                        if (taken) trailTop.Add(pts, 5f, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.9f), 2f, 16f);
+                        if (avail)
+                        {
+                            trailTop.Add(pts, 16f, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.22f));
+                            trailTop.Add(pts, 6f, new Color(PaperFx.Paper3.r, PaperFx.Paper3.g, PaperFx.Paper3.b, 0.95f), 12f, 12f);
+                        }
                     }
                 }
             }
 
-            // 出発点の旗と「スタート」の字は廃止 (駒が出発点に立つ。2026-10-28 案 B)
+            // 森 (両脇の木・格子の空いた所の茂みや切り株・出発の道標と灯)
+            var rnd = new System.Random(977 * run.Act + rows * 31 + (run.Map.Count > 0 ? run.Map[0].Count : 0));
+            Forest(content, run, viewW, contentH, rnd, edges);
+            Vector2 startPos = new Vector2(_ox + MapW / 2f, PadY - 10f);   // 出発 (駒の足元。行0 の空き地と重ならない)
+            {
+                var lamp = UiKit.Pan(content, new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.34f), "start-lamp");
+                lamp.sprite = MapForest.Radial(); lamp.raycastTarget = false;
+                Place(lamp.rectTransform, startPos + new Vector2(0f, 20f), new Vector2(170f, 170f), new Vector2(0.5f, 0.5f));
+                var stone = MapForest.Graded(MapForest.Folder(1) + "/relief/act1_waystone", 0.7f, 10f);
+                if (stone != null) { var st = Pic(content, "start-stone", stone, 0.62f); Place(st.rectTransform, startPos + new Vector2(0f, -40f), new Vector2(stone.rect.width, stone.rect.height), new Vector2(0.5f, 0f)); }
+            }
 
-            // 落書きの層 (線の下・ノードの上に見せるため、ノードの後に作って最前面へ。左クリックは素通し = ICanvasRaycastFilter)
-            var doodleRt = UiKit.NewRect("doodle", content);
-            doodleRt.anchorMin = new Vector2(0f, 0f); doodleRt.anchorMax = new Vector2(1f, 1f); doodleRt.pivot = new Vector2(0f, 0f);
-            doodleRt.offsetMin = Vector2.zero; doodleRt.offsetMax = Vector2.zero;
-            doodleRt.gameObject.AddComponent<CanvasRenderer>();   // Graphic の前提 (エディタは自動で足さない)
-            var doodle = doodleRt.gameObject.AddComponent<DoodleLayer>();
-            doodle.Root = g; doodle.Strokes = g.DoodlesFor(run.Act); doodle.Editable = !overlay; doodle.raycastTarget = !overlay;
-
-            // ノード
+            // ノード (名札は駒より上の層 labels に置く = 駒の頭に隠れない)
+            var labels = UiKit.NewRect("labels", content);
+            labels.anchorMin = Vector2.zero; labels.anchorMax = Vector2.one; labels.pivot = Vector2.zero;
+            labels.offsetMin = Vector2.zero; labels.offsetMax = Vector2.zero;
             for (int r = 0; r < rows; r++)
             {
                 var row = run.Map[r];
@@ -171,36 +186,57 @@ namespace DeckRogue.Game
                     bool avail = r == nextRow && choiceSet.Contains(i);
                     bool taken = path.Contains(Key(r, i));
                     bool passed = r <= run.Row;
-                    Node(g, content, n, r, i, cur, avail, taken, passed, !overlay, recipeCount);
+                    Node(g, content, labels, n, r, i, cur, avail, taken, passed, !overlay, recipeCount, life);
                 }
             }
 
-            doodleRt.SetAsLastSibling();   // 落書きはノードの上に (右ドラッグ/ペンモードの時だけ入力を受ける)
+            // 落書きの層 (ノードの上。左クリックは素通し = ICanvasRaycastFilter)
+            var doodleRt = UiKit.NewRect("doodle", content);
+            doodleRt.anchorMin = new Vector2(0f, 0f); doodleRt.anchorMax = new Vector2(1f, 1f); doodleRt.pivot = new Vector2(0f, 0f);
+            doodleRt.offsetMin = Vector2.zero; doodleRt.offsetMax = Vector2.zero;
+            doodleRt.gameObject.AddComponent<CanvasRenderer>();   // Graphic の前提 (エディタは自動で足さない)
+            var doodle = doodleRt.gameObject.AddComponent<DoodleLayer>();
+            doodle.Root = g; doodle.Strokes = g.DoodlesFor(run.Act); doodle.Editable = !overlay; doodle.raycastTarget = !overlay;
 
-            // 現在地の駒 (リーダーの絵が節の台の上に立つ。選ぶと踏み跡を歩く。2026-10-28 案 B)
+            // 現在地の駒 (リーダーの絵を 1ドット＝2px で節の上に立てる。選ぶと踏み跡を歩く)
             {
+                Vector2 at = run.Row >= 0 ? NodePos(run.Map[run.Row][run.Col], run.Row) : startPos;
+                var spr = Creature.Get("leaders", run.LeaderId, true);
+                var sh = UiKit.Pan(content, Color.white, "marker-shadow"); sh.sprite = ThemeFx.Shadow(); sh.raycastTarget = false;
+                Place(sh.rectTransform, at + new Vector2(0f, -8f), new Vector2(92f, 22f), new Vector2(0.5f, 0.5f));
                 var mk = new GameObject("marker", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
                 mk.transform.SetParent(content, false);
                 mk.raycastTarget = false;
-                var spr = Creature.Get("leaders", run.LeaderId, true);
                 mk.sprite = spr;
-                mk.preserveAspect = true;
-                mk.rectTransform.anchorMin = mk.rectTransform.anchorMax = new Vector2(0f, 0f);
-                mk.rectTransform.pivot = new Vector2(0.5f, 0f);
-                // 1ドット＝1.5px で絵の枠ごと置く (このは 88×64 → 132×96・ひばな 128×84 → 192×126 = どちらも背丈 64 ドットが 96px)。足元は枠の下の透明行を引いて台の中心の 10px 下
-                float mw = spr != null ? spr.rect.width * MarkerDot : MarkerSize, mh = spr != null ? spr.rect.height * MarkerDot : MarkerSize;
+                float mw = spr != null ? spr.rect.width * MarkerDot : 128f, mh = spr != null ? spr.rect.height * MarkerDot : 128f;
                 float feet = spr != null ? Stage.FeetPad(spr) * mh : 0f;
+                float cx = MapForest.VisibleCenterX(spr);
+                mk.rectTransform.anchorMin = mk.rectTransform.anchorMax = new Vector2(0f, 0f);
+                mk.rectTransform.pivot = new Vector2(cx, 0f);
                 mk.rectTransform.sizeDelta = new Vector2(mw, mh);
-                Vector2 at = run.Row >= 0 ? NodePos(run.Map[run.Row][run.Col], run.Row) : startPos;
-                mk.rectTransform.anchoredPosition = at + MarkerOffset - new Vector2(0f, feet);
-                _markerFeet = feet;
-                mk.transform.SetSiblingIndex(doodleRt.GetSiblingIndex());   // 落書きのすぐ下 = 節の上
+                _markerOff = new Vector2(0f, -8f - feet);
+                mk.rectTransform.anchoredPosition = at + _markerOff;
                 _marker = mk.rectTransform;
+                var follow = sh.gameObject.AddComponent<FollowMarker>(); follow.Marker = mk.rectTransform; follow.Offset = new Vector2(0f, feet);
                 Tween.Punch(mk.rectTransform, 0.12f, 0.6f, true);
             }
+            labels.SetAsLastSibling();     // 名札は駒の上
+            doodleRt.SetAsLastSibling();   // 落書きはいちばん上 (右ドラッグ/ペンモードの時だけ入力を受ける)
 
-            // 現在行が下から1/3に来るようにスクロール
-            float viewH = 1080f - RunUi.TopH - (overlay ? 146f : 0f);
+            // 蛍 (森の上をゆっくり漂って明滅)
+            for (int i = 0; i < 14; i++)
+            {
+                var f = UiKit.Pan(content, new Color(0.95f, 0.91f, 0.66f, 0.8f), "firefly");
+                f.sprite = MapForest.Radial(); f.raycastTarget = false;
+                float fx = _ox - 120f + (float)rnd.NextDouble() * (MapW + 240f), fy = 60f + (float)rnd.NextDouble() * (contentH - 120f);
+                Place(f.rectTransform, new Vector2(fx, fy), new Vector2(14f, 14f), new Vector2(0.5f, 0.5f));
+                life.Flies.Add(f.rectTransform);
+            }
+
+            // 窓に貼る空気 (地図と一緒には動かない): 夜の青・月明かり・月光の筋・上の霧・周辺減光・手前の暗い木・上下の暗がり
+            Atmosphere(view, viewW, viewH, overlay);
+
+            // 現在行が下から 38% に来るようにスクロール
             float curY = run.Row >= 0 ? NodePos(run.Map[run.Row][run.Col], run.Row).y : startPos.y;
             float target = curY - viewH * 0.38f;
             float maxScroll = Math.Max(0f, contentH - viewH);
@@ -212,29 +248,19 @@ namespace DeckRogue.Game
             if (overlay)
             {
                 // 見出しと閉じるだけ (進路は選べない)。上部バーは下の画面のものが透けて見える
-                var head = UiKit.Deco(root, "マップ — 現在地と道筋", 26, UiKit.ColText, TextAnchor.MiddleCenter);
+                var head = UiKit.Deco(root, "マップ — " + ActName(run.Act), 26, UiKit.ColText, TextAnchor.MiddleCenter);
                 head.outlineWidth = 0.2f; head.outlineColor = new Color(0f, 0f, 0f, 0.7f);
                 UiKit.Anchor(head.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -RunUi.TopH - 44f), new Vector2(0f, -RunUi.TopH - 4f));
                 RunUi.BottomButton(root, "閉じる", delegate { g.ViewMap = false; g.Rebuild(); }, 18, 220f, 50f, 0f, 28f);
                 return;
             }
-            RunUi.TopBar(g, root, "マップ");
+            RunUi.TopBar(g, root, ActName(run.Act));
             RunUi.Message(g, root);
 
-            // 左下: 案内 / ランを放棄
-            var hint = UiKit.Txt(root, choices.Count > 0 ? (UiKit.Phone ? "光っている道へ進めます" : "光っている道へ進めます。ノードにカーソルを重ねると中身の説明") : "進めるノードがありません", 15, UiKit.ColDim, TextAnchor.MiddleLeft);
-            UiKit.Anchor(hint.rectTransform, new Vector2(0f, 0f), new Vector2(0.35f, 0f), new Vector2(24f, 70f), new Vector2(0f, 100f));
-            if (!UiKit.Phone)   // スマホは地図が画面の幅いっぱいで凡例が左の列に重なるので出さない (節は印 2 倍で読める。2026-10-28 案 B)
-            {
-                var legend = UiKit.NewRect("legend", root);
-                float legendL = UiKit.SafeLeft(24f, mcs.y - 420f, mcs.y - 110f);   // 凡例の行は縦の中央に掛かるので画面の切り欠き (パンチホール) の右から (2026-09-29 p10)
-                UiKit.Anchor(legend, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(legendL, 110f), new Vector2(legendL + 306f, 420f));
-                var lg = UiKit.Vert(legend, 6, 0);
-                lg.childForceExpandHeight = false;
-                LegendRow(legend, MapNodeTypes.Battle); LegendRow(legend, MapNodeTypes.Elite); LegendRow(legend, MapNodeTypes.Event);
-                LegendRow(legend, MapNodeTypes.Campfire); LegendRow(legend, MapNodeTypes.Shop); LegendRow(legend, MapNodeTypes.Workshop);
-                LegendRow(legend, MapNodeTypes.Treasure); LegendRow(legend, MapNodeTypes.Boss);
-            }
+            // 左下: 案内
+            var hint = UiKit.Txt(root, choices.Count > 0 ? (UiKit.Phone ? "光る道へ進めます" : "光る道へ進めます ・ 節に触れると中身") : "進めるノードがありません", 15, UiKit.ColDim, TextAnchor.MiddleLeft);
+            UiKit.Anchor(hint.rectTransform, new Vector2(0f, 0f), new Vector2(0.35f, 0f), new Vector2(26f, 70f), new Vector2(0f, 100f));
+            if (!UiKit.Phone) Legend(root);   // スマホは凡例が左右の森に重なるので出さない (節は印 2 倍で読める)
 
             // セーブ (2026-09-15 本家形): 自動保存なので「セーブする」は無い。「セーブして終了」と「ランを放棄」(確認つき)
             var quit = UiKit.Btn(root, "セーブして終了", delegate { g.SaveAndQuit(); }, 14);
@@ -250,9 +276,9 @@ namespace DeckRogue.Game
             // 右下: 落書きの道具 (2026-09-12 StS2 の移植。右ドラッグで描く／ペンを押すと指でも描ける)
             DoodleToolbar(g, root);
 
-            // 右下: 幕の進み
-            var prog = UiKit.Txt(root, "幕 " + run.Act + " / 3   勝利 " + run.BattlesWon + " 戦", 15, UiKit.ColDim, TextAnchor.MiddleRight);
-            UiKit.Anchor(prog.rectTransform, new Vector2(0.7f, 0f), new Vector2(1f, 0f), new Vector2(0f, 20f), new Vector2(-24f, 50f));
+            // 下の真ん中: 幕の進み
+            var prog = UiKit.Txt(root, "幕 " + run.Act + " / 3   勝利 " + run.BattlesWon + " 戦", 15, UiKit.ColDim, TextAnchor.MiddleCenter);
+            UiKit.Anchor(prog.rectTransform, new Vector2(0.4f, 0f), new Vector2(0.6f, 0f), new Vector2(0f, 26f), new Vector2(0f, 52f));
         }
 
         /// <summary>ScrollRect は初期化後にレイアウトが走ると位置が戻るので、1フレーム後に指定位置へ戻す</summary>
@@ -267,170 +293,318 @@ namespace DeckRogue.Game
             }
         }
 
+        /// <summary>駒の影を駒の足元に付いて行かせる (歩く間も)</summary>
+        class FollowMarker : MonoBehaviour
+        {
+            public RectTransform Marker; public Vector2 Offset;
+            void LateUpdate()
+            {
+                if (Marker == null) return;
+                ((RectTransform)transform).anchoredPosition = Marker.anchoredPosition + Offset;
+            }
+        }
+
         static long Key(int r, int c) { return ((long)r << 16) | (uint)c; }
 
-        static Vector2 NodePos(MapNode n, int row)
+        static Vector2 GridPos(int col, int row)
         {
             float colW = (MapW - 120f) / (Cols - 1);
-            float x = _ox + 60f + (n.Col ?? 0) * colW;
-            float y = PadY + RowH * (row + 1) + RowH * 0.5f;
-            return new Vector2(x, y);
+            // 格子に揺らぎ (手で置いたように。行と列から決まる = 毎回同じ。カンバスの案1 と同じ式)
+            float jx = (((row * 7 + col * 13) % 5) - 2) * 9f, jy = (((row * 11 + col * 5) % 5) - 2) * 7f;
+            return new Vector2(_ox + 60f + col * colW + jx, PadY + RowH * (row + 1) + RowH * 0.5f + jy);
         }
 
-        static Sprite _dot, _fade;
-        /// <summary>丸い点 (踏み跡・節の台)。16×16・縁は 1px でなだらか</summary>
-        static Sprite DotSprite()
+        static Vector2 NodePos(MapNode n, int row) { return GridPos(n.Col ?? 0, row); }
+
+        /// <summary>節と節の間のゆるい曲線 (二次ベジェを 14 分割。曲がりは行と列で決まる)</summary>
+        static List<Vector2> Curve(Vector2 a, Vector2 b, int seed)
         {
-            if (_dot != null) return _dot;
-            const int S = 32;
-            var tex = new Texture2D(S, S, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
-            var px = new Color32[S * S];
-            for (int y = 0; y < S; y++) for (int x = 0; x < S; x++)
+            Vector2 m = (a + b) * 0.5f, d = b - a;
+            float L = Mathf.Max(0.001f, d.magnitude);
+            float k = ((seed % 3) - 1) * 22f;
+            Vector2 c = m + new Vector2(-d.y / L, d.x / L) * k;
+            var pts = new List<Vector2>(15);
+            for (int i = 0; i <= 14; i++)
             {
-                float dx = x + 0.5f - S / 2f, dy = y + 0.5f - S / 2f;
-                float r = Mathf.Sqrt(dx * dx + dy * dy) / (S / 2f);
-                float a = Mathf.Clamp01((1f - r) * (S / 2f) / 1.5f);   // 縁 1.5px で落ちる
-                px[y * S + x] = new Color32(255, 255, 255, (byte)(a * 255f));
+                float t = i / 14f, u = 1f - t;
+                pts.Add(u * u * a + 2f * u * t * c + t * t * b);
             }
-            tex.SetPixels32(px); tex.Apply(false, true);
-            _dot = Sprite.Create(tex, new Rect(0, 0, S, S), new Vector2(0.5f, 0.5f), 100f);
-            return _dot;
-        }
-        /// <summary>縦の帯: 上が不透明・下が透明 (窓の上下の縁を夜色に溶かす)</summary>
-        static Sprite FadeSprite()
-        {
-            if (_fade != null) return _fade;
-            const int H = 64;
-            var tex = new Texture2D(4, H, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
-            var px = new Color32[4 * H];
-            for (int y = 0; y < H; y++) { float k = (float)y / (H - 1); float a = k * k; for (int x = 0; x < 4; x++) px[y * 4 + x] = new Color32(255, 255, 255, (byte)(a * 255f)); }
-            tex.SetPixels32(px); tex.Apply(false, true);
-            _fade = Sprite.Create(tex, new Rect(0, 0, 4, H), new Vector2(0.5f, 0.5f), 100f);
-            return _fade;
+            return pts;
         }
 
-        /// <summary>節と節を結ぶ踏み跡 (点の列。2026-10-28 案 B)。進める道は紙の白、通った道は真鍮、通らなかった道は薄く</summary>
-        static void Line(RectTransform parent, Vector2 a, Vector2 b, bool avail, bool taken, bool passed)
+        static MapTrail Trail(RectTransform content, string name, Texture tex)
         {
-            Vector2 d = b - a;
-            float len = d.magnitude;
-            Vector2 dir = d / Math.Max(0.001f, len);
-            float trim = NodeSize * 0.62f;   // ノードの台の縁から縁へ
-            float usable = len - trim * 2f;
-            if (usable <= 0f) return;
-            int n = Mathf.Max(1, Mathf.RoundToInt(usable / 15f));
-            float size = avail ? 9f : taken ? 8f : 6f;
-            Color c = avail ? PaperFx.Paper3 : taken ? PaperFx.BrassLight : PaperFx.Paper;
-            c.a = avail ? 0.95f : taken ? 0.9f : passed ? 0.16f : 0.4f;
-            Vector2 side = new Vector2(-dir.y, dir.x);
-            float ang = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
-            for (int i = 0; i <= n; i++)
+            var go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer));
+            go.transform.SetParent(content, false);
+            var rt = (RectTransform)go.transform;
+            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.pivot = Vector2.zero;
+            rt.offsetMin = Vector2.zero; rt.offsetMax = Vector2.zero;
+            var t = go.AddComponent<MapTrail>();
+            t.Tex = tex; t.TexPx = 128f; t.raycastTarget = false;
+            return t;
+        }
+
+        static Image Pic(Transform parent, string name, Sprite sp, float bright)
+        {
+            var img = new GameObject(name, typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+            img.transform.SetParent(parent, false);
+            img.sprite = sp; img.raycastTarget = false;
+            img.color = new Color(bright, bright, Mathf.Min(1f, bright * 1.05f), 1f);
+            return img;
+        }
+
+        static void Place(RectTransform rt, Vector2 pos, Vector2 size, Vector2 pivot)
+        {
+            rt.anchorMin = rt.anchorMax = Vector2.zero;
+            rt.pivot = pivot;
+            rt.sizeDelta = size;
+            rt.anchoredPosition = pos;
+        }
+
+        static float SegDist(Vector2 p, Vector2 a, Vector2 b)
+        {
+            Vector2 ab = b - a;
+            float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / Mathf.Max(0.001f, ab.sqrMagnitude));
+            return (a + ab * t - p).magnitude;
+        }
+
+        /// <summary>両脇の木 (1ドット=1px・下ほど手前) と、格子の空いた所の小物 (道から 46px 以上離す)</summary>
+        static void Forest(RectTransform content, RunState run, float viewW, float contentH, System.Random rnd, List<Vector2[]> edges)
+        {
+            string relief = MapForest.Folder(1) + "/relief/";
+            if (run.Act <= 1)
             {
-                var img = UiKit.Pan(parent, c, "step");
-                img.raycastTarget = false; img.sprite = DotSprite();
-                var rt = img.rectTransform;
-                rt.anchorMin = rt.anchorMax = new Vector2(0f, 0f);
-                rt.pivot = new Vector2(0.5f, 0.5f);
-                rt.sizeDelta = new Vector2(size, size * 0.78f);
-                rt.anchoredPosition = a + dir * (trim + usable * i / n) + side * ((i & 1) == 0 ? 2.5f : -2.5f);   // 左右に交互 = 足跡
-                rt.localRotation = Quaternion.Euler(0f, 0f, ang);
+                string[] kinds = { "conifer_dense_1", "act1_tree_pine", "conifer_w32_1", "act1_tree_oak", "act1_tree_pine", "conifer_dense_2", "act1_tree_giant", "conifer_w32_2", "act1_tree_pine", "act1_tree_oak2" };
+                float xL = _ox + 60f - 90f, xR = _ox + MapW - 60f + 90f;
+                var trees = new List<KeyValuePair<float, Action>>();
+                int i = 0;
+                for (float y = contentH + 40f; y > -60f; y -= 64f, i++)
+                {
+                    for (int side = 0; side < 2; side++)
+                    {
+                        var sp = MapForest.Graded(relief + kinds[(i + side * 3) % kinds.Length], 0.62f, 12f);
+                        if (sp == null) continue;
+                        float w = sp.rect.width, h = sp.rect.height;
+                        int col = (i * 3 + side + rnd.Next(2)) % 4;
+                        float x = side == 0 ? xL - w * 0.5f - col * 105f - rnd.Next(30) : xR + w * 0.5f + col * 105f + rnd.Next(30);
+                        if (side == 0 && x + w * 0.5f < -20f) continue;
+                        if (side == 1 && x - w * 0.5f > viewW + 20f) continue;
+                        float br = 0.62f + (float)rnd.NextDouble() * 0.24f;
+                        float yy = y + rnd.Next(24) - 12f;
+                        var spc = sp;
+                        trees.Add(new KeyValuePair<float, Action>(yy, delegate
+                        {
+                            var img = Pic(content, "tree", spc, br);
+                            Place(img.rectTransform, new Vector2(x, yy), new Vector2(w, h), new Vector2(0.5f, 0f));
+                        }));
+                    }
+                }
+                trees.Sort(delegate (KeyValuePair<float, Action> a, KeyValuePair<float, Action> b) { return b.Key.CompareTo(a.Key); });   // 上 (奥) から置く = 下の木が手前
+                foreach (var t in trees) t.Value();
+            }
+
+            // 格子の空いた所に小物 (幕1 は茂み・切り株・羊歯。幕2/3 は今は置かない)
+            if (run.Act > 1) return;
+            string[] small = { "bush_clump_m_1", "act1_stump", "act1_fern", "bush_clump_s_1", "act1_fern2", "bush_clump_m_2" };
+            Vector2 bossAt = run.Map.Count > 0 && run.Map[run.Map.Count - 1].Count > 0 ? NodePos(run.Map[run.Map.Count - 1][0], run.Map.Count - 1) : new Vector2(-9999f, -9999f);
+            for (int r = 0; r < run.Map.Count - 2; r++)
+            {
+                var used = new HashSet<int>();
+                foreach (var n in run.Map[r]) used.Add(n.Col ?? 0);
+                for (int c = 0; c < Cols; c++)
+                {
+                    if (used.Contains(c) || rnd.NextDouble() > 0.45) continue;
+                    Vector2 p = GridPos(c, r) + new Vector2(rnd.Next(30) - 15f, -14f);
+                    bool clear = (p - bossAt).magnitude > 200f;
+                    foreach (var e in edges) if (SegDist(p + new Vector2(0f, 18f), e[0], e[1]) < 46f) { clear = false; break; }
+                    if (!clear) continue;
+                    var sp = MapForest.Graded(relief + small[rnd.Next(small.Length)], 0.7f, 10f);
+                    if (sp == null) continue;
+                    var img = Pic(content, "prop", sp, 0.72f + (float)rnd.NextDouble() * 0.12f);
+                    Place(img.rectTransform, p, new Vector2(sp.rect.width, sp.rect.height), new Vector2(0.5f, 0f));
+                }
             }
         }
 
-        static void Node(GameRoot g, RectTransform parent, MapNode n, int row, int index, bool cur, bool avail, bool taken, bool passed, bool interactive = true, int recipeCount = 0)
+        /// <summary>窓に貼る空気 (地図と一緒に動かない)。色はカンバスの案1 の値 (multiply/screen は α の重ねで近似)</summary>
+        static void Atmosphere(RectTransform view, float viewW, float viewH, bool overlay)
+        {
+            Image Layer(string name, Sprite sp, Color c)
+            {
+                var img = UiKit.Pan(view, c, name);
+                img.sprite = sp; img.raycastTarget = false;
+                return img;
+            }
+            // 夜の青 (上ほど青く・下は暗く)
+            var gTop = Layer("grade-top", MapForest.VFade(), new Color(0.16f, 0.20f, 0.38f, 0.18f));
+            UiKit.Anchor(gTop.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
+            var gBot = Layer("grade-bottom", MapForest.VFade(), new Color(0.04f, 0.05f, 0.12f, 0.16f));
+            UiKit.Anchor(gBot.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.4f), Vector2.zero, Vector2.zero);
+            gBot.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 180f);
+            // 月明かり (左上の手前から)
+            var moon = Layer("moon", MapForest.Radial(), new Color(0.69f, 0.78f, 0.93f, 0.22f));
+            moon.rectTransform.anchorMin = moon.rectTransform.anchorMax = new Vector2(0.16f, 1f);
+            moon.rectTransform.sizeDelta = new Vector2(2600f, 1700f);
+            moon.rectTransform.anchoredPosition = new Vector2(0f, -60f);
+            // 月光の筋 2 本
+            for (int i = 0; i < 2; i++)
+            {
+                var sh = Layer("moon-shaft", MapForest.HBand(), new Color(0.77f, 0.84f, 0.96f, i == 0 ? 0.07f : 0.05f));
+                sh.rectTransform.anchorMin = sh.rectTransform.anchorMax = new Vector2(0f, 1f);
+                sh.rectTransform.sizeDelta = new Vector2(150f, 1600f);
+                sh.rectTransform.anchoredPosition = new Vector2(viewW * (0.22f + 0.15f * i), -viewH * 0.45f);
+                sh.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 24f);
+            }
+            // 上の霧 (遠い行ほど霞む)
+            var fog = Layer("fog", MapForest.VFade(), new Color(0.52f, 0.59f, 0.75f, 0.42f));
+            fog.rectTransform.anchorMin = new Vector2(0f, 1f); fog.rectTransform.anchorMax = new Vector2(1f, 1f);
+            fog.rectTransform.pivot = new Vector2(0.5f, 1f);
+            fog.rectTransform.sizeDelta = new Vector2(0f, Mathf.Min(560f, viewH * (UiKit.Phone ? 0.36f : 0.55f)));
+            if (UiKit.Phone) fog.color = new Color(fog.color.r, fog.color.g, fog.color.b, 0.3f);   // スマホは見える行が 3〜4 なので薄く短く
+            fog.rectTransform.anchoredPosition = Vector2.zero;
+            // 周辺減光
+            var vig = Layer("vignette", MapForest.Vignette(), new Color(0.02f, 0.027f, 0.063f, 0.6f));
+            UiKit.Stretch(vig.rectTransform, 0f, 0f, 0f, 0f);
+            // 手前の暗い木 (画面の下の角。額縁)
+            if (!overlay)
+            {
+                string relief = MapForest.Folder(1) + "/relief/";
+                var l = MapForest.Graded(relief + "conifer_dense_1", 0.5f, 14f);
+                if (l != null) { var img = Pic(view, "frame-left", l, 0.28f); img.rectTransform.anchorMin = img.rectTransform.anchorMax = Vector2.zero; img.rectTransform.pivot = new Vector2(0.5f, 0f); img.rectTransform.sizeDelta = new Vector2(l.rect.width * 2f, l.rect.height * 2f); img.rectTransform.anchoredPosition = new Vector2(40f, -150f); }
+                var rr = MapForest.Graded(relief + "conifer_w32_1", 0.5f, 14f);
+                if (rr != null) { var img = Pic(view, "frame-right", rr, 0.26f); img.rectTransform.anchorMin = img.rectTransform.anchorMax = new Vector2(1f, 0f); img.rectTransform.pivot = new Vector2(0.5f, 0f); img.rectTransform.sizeDelta = new Vector2(rr.rect.width * 2f, rr.rect.height * 2f); img.rectTransform.anchoredPosition = new Vector2(-50f, -190f); }
+                // 上部バーと下のボタンの下の暗がり (字が森に溶けない)
+                var top = Layer("band-top", MapForest.VFade(), new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, 0.88f));
+                top.rectTransform.anchorMin = new Vector2(0f, 1f); top.rectTransform.anchorMax = new Vector2(1f, 1f); top.rectTransform.pivot = new Vector2(0.5f, 1f);
+                top.rectTransform.sizeDelta = new Vector2(0f, RunUi.TopH + 60f); top.rectTransform.anchoredPosition = Vector2.zero;
+                var bot = Layer("band-bottom", MapForest.VFade(), new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, 0.88f));
+                bot.rectTransform.anchorMin = new Vector2(0f, 0f); bot.rectTransform.anchorMax = new Vector2(1f, 0f); bot.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+                bot.rectTransform.sizeDelta = new Vector2(0f, 150f); bot.rectTransform.anchoredPosition = new Vector2(0f, 75f);
+                bot.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 180f);
+            }
+        }
+
+        static void Node(GameRoot g, RectTransform parent, RectTransform labels, MapNode n, int row, int index, bool cur, bool avail, bool taken, bool passed, bool interactive, int recipeCount, MapLife life)
         {
             bool boss = n.Type == MapNodeTypes.Boss;
-            float size = boss ? BossSize : NodeSize;
+            Vector2 at = NodePos(n, row);
             var cell = UiKit.NewRect("node-" + row + "-" + index, parent);
-            cell.anchorMin = cell.anchorMax = new Vector2(0f, 0f);
-            cell.sizeDelta = new Vector2(size, size);
-            cell.anchoredPosition = NodePos(n, row);
-
-            // 節の目印 (2026-10-28 案 B): 32 ドットの印を整数倍 (64px・ボス 96px) で地図の上に直に置き、足元に丸い影。進める節は真鍮の輪と光
+            Place(cell, at, new Vector2(boss ? 200f : 124f, boss ? 170f : 124f), new Vector2(0.5f, 0.5f));
             float asz = boss ? 96f : 64f;
-            if (avail)
-            {
-                var glow = UiKit.Pan(cell, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.35f), "glow");
-                glow.raycastTarget = false;
-                glow.sprite = ThemeFx.Shadow();
-                UiKit.Anchor(glow.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-asz, -asz), new Vector2(asz, asz));
-            }
-            var frame = UiKit.Pan(cell, new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, passed && !cur ? 0.3f : 0.55f), "shade");
-            frame.sprite = ThemeFx.Shadow();
-            frame.raycastTarget = avail && interactive;
-            UiKit.Anchor(frame.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-asz * 0.72f, -asz * 0.72f), new Vector2(asz * 0.72f, asz * 0.72f));
-            if (avail)
-            {
-                float rs = asz + 14f;
-                var ring = UiKit.Pan(cell, PaperFx.BrassLight, "ring"); ring.sprite = DotSprite(); ring.raycastTarget = false;
-                UiKit.Anchor(ring.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-rs / 2f, -rs / 2f), new Vector2(rs / 2f, rs / 2f));
-                var hole = UiKit.Pan(cell, new Color(PaperFx.Window.r, PaperFx.Window.g, PaperFx.Window.b, 0.9f), "hole"); hole.sprite = DotSprite(); hole.raycastTarget = false;
-                UiKit.Anchor(hole.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-rs / 2f + 3f, -rs / 2f + 3f), new Vector2(rs / 2f - 3f, rs / 2f - 3f));
-            }
-            var icon = UiKit.Icon(cell, NodeIcon(n.Type), boss ? 56f : 34f);
-            var nodeArt = Theme.Art("map", "node_" + n.Type);
-            if (nodeArt != null)
-            {
-                icon.sprite = nodeArt; icon.color = Color.white;
-                icon.rectTransform.sizeDelta = new Vector2(asz, asz); UiKit.Le(icon, asz, asz, asz, asz);
-            }
-            icon.raycastTarget = false;
-            icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-            icon.rectTransform.anchoredPosition = Vector2.zero;
-            if (!avail && !cur) icon.color = new Color(1f, 1f, 1f, passed ? 0.45f : 0.85f);
 
-            // 名札は進める節とボスだけ (印が 2 倍になったので読める。凡例は残す)
+            Image Soft(string name, Sprite sp, Color c, Vector2 pos, Vector2 size)
+            {
+                var img = UiKit.Pan(cell, c, name);
+                img.sprite = sp; img.raycastTarget = false;
+                img.rectTransform.anchorMin = img.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                img.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+                img.rectTransform.sizeDelta = size; img.rectTransform.anchoredPosition = pos;
+                return img;
+            }
+
+            // 光 (進める節は真鍮・ボスは薔薇)
+            if (avail) Soft("halo", MapForest.Radial(), new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.30f), new Vector2(0f, 30f), new Vector2(230f, 230f));
+            if (boss) Soft("boss-glow", MapForest.Radial(), new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, 0.30f), new Vector2(0f, 40f), new Vector2(260f, 240f));
+            // 空き地 (土の明るみ) と影
+            Soft("clearing", MapForest.Radial(), new Color(0.41f, 0.35f, 0.31f, passed && !taken && !cur ? 0.32f : 0.62f), Vector2.zero, boss ? new Vector2(190f, 64f) : new Vector2(124f, 48f));
+            Image ring = null;
+            if (avail) ring = Soft("ring", MapForest.Ring(), new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.85f), new Vector2(0f, 0f), new Vector2(114f, 44f));
+            if (taken && !cur) Soft("ring-taken", MapForest.Ring(), new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.5f), Vector2.zero, new Vector2(118f, 44f));
+            if (!cur) Soft("shadow", ThemeFx.Shadow(), Color.white, new Vector2(0f, -1f), new Vector2(boss ? 80f : 54f, boss ? 20f : 15f));
+
+            // 印 (32 ドットを 2 倍。足元が空き地の中心の 4px 下。進める節は少し浮く)
+            Image icon = null;
+            if (!cur)
+            {
+                var nodeArt = Theme.Art("map", "node_" + n.Type);
+                icon = UiKit.Icon(cell, NodeIcon(n.Type), boss ? 56f : 34f);
+                if (nodeArt != null) { icon.sprite = nodeArt; icon.color = Color.white; }
+                icon.raycastTarget = false;
+                icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                icon.rectTransform.pivot = new Vector2(0.5f, 0f);
+                icon.rectTransform.sizeDelta = new Vector2(asz, asz); UiKit.Le(icon, asz, asz, asz, asz);
+                icon.rectTransform.anchoredPosition = new Vector2(0f, avail ? 8f : -4f);
+                icon.color = avail || boss ? Color.white : taken ? new Color(0.64f, 0.62f, 0.66f, 1f) : passed ? new Color(0.42f, 0.42f, 0.48f, 0.8f) : new Color(0.86f, 0.86f, 0.9f, 1f);
+                if (avail && life != null) { life.Bobs.Add(icon.rectTransform); if (ring != null) life.Pulses.Add(ring); }
+            }
+
+            // 名札 (進める節とボス)
             if (avail || boss)
             {
-                var lbl = UiKit.Txt(cell, NodeName(n.Type), 13, avail ? UiKit.ColText : UiKit.ColDim, TextAnchor.MiddleCenter, true);
-                lbl.raycastTarget = false;
-                lbl.outlineWidth = 0.25f; lbl.outlineColor = new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, 0.85f);
-                UiKit.Anchor(lbl.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-70f, -asz / 2f - 6f), new Vector2(70f, -asz / 2f + 14f));
+                var tag = BattleScreen.Tag(labels, 30f, 0f);
+                tag.anchorMin = tag.anchorMax = Vector2.zero;
+                tag.pivot = new Vector2(0.5f, 1f);
+                tag.sizeDelta = new Vector2(80f, 30f);
+                tag.anchoredPosition = at + new Vector2(0f, boss ? -36f : -30f);
+                var hg = tag.GetComponent<HorizontalLayoutGroup>(); if (hg != null) hg.childAlignment = TextAnchor.MiddleCenter;
+                var t = UiKit.Txt(tag, NodeName(n.Type), 16, boss ? PaperFx.BadInk : PaperFx.Ink, TextAnchor.MiddleCenter, true);
+                UiKit.Le(t, -1f, 26f, -1f, 26f);
             }
 
-            // 現在地は駒 (リーダーの絵) が台の上に立つので、輪は描かない (2026-10-28 案 B)
-
             string tip = NodeTip(n);
-            // ⭐ 工房: いま手元でレシピが成立する対があれば駒の右上に星 (2026-09-12「レシピは誰も踏まなかった」への提示)
+            // ⭐ 工房: いま手元でレシピが成立する対があれば印の右上に星 (2026-09-12「レシピは誰も踏まなかった」への提示)
             if (n.Type == MapNodeTypes.Workshop && recipeCount > 0 && !passed)
             {
                 var star = UiKit.Icon(cell, "star", 32f);
                 star.raycastTarget = false;
-                star.rectTransform.anchorMin = star.rectTransform.anchorMax = new Vector2(1f, 1f);
-                star.rectTransform.anchoredPosition = new Vector2(6f, 6f);
+                star.rectTransform.anchorMin = star.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                star.rectTransform.anchoredPosition = new Vector2(34f, 62f);
                 int price = 0;
                 try { price = DeckRogue.Engine.Run.WorkshopFusePrice(g.Rs); } catch (Exception) { }
                 tip += "\n★ 今の手札でレシピ（手書きの一品）が " + recipeCount + " 組 作れる" + (g.Rs.Gold < price ? "（所持金が " + price + "G に足りない）" : "（" + price + "G）");
             }
-            Tooltip.Attach(cell.gameObject, delegate { return tip; });
+
+            // 当たり (透明。印と空き地を覆う・指の的は 110 以上)
+            var hit = UiKit.Pan(cell, new Color(0f, 0f, 0f, 0f), "hit");
+            hit.raycastTarget = true;
+            hit.rectTransform.anchorMin = hit.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            hit.rectTransform.sizeDelta = boss ? new Vector2(170f, 150f) : new Vector2(112f, 112f);
+            hit.rectTransform.anchoredPosition = new Vector2(0f, boss ? 30f : 22f);
+            Tooltip.Attach(hit.gameObject, delegate { return tip; });
 
             if (avail && interactive)
             {
-                var btn = frame.gameObject.AddComponent<Button>();
-                btn.targetGraphic = frame;
+                var btn = hit.gameObject.AddComponent<Button>();
+                btn.targetGraphic = icon != null ? (Graphic)icon : hit;
                 var cols = btn.colors; cols.highlightedColor = new Color(1.15f, 1.15f, 1.15f); cols.pressedColor = new Color(0.85f, 0.85f, 0.85f); btn.colors = cols;
                 int idx = index;
-                Vector2 dest = NodePos(n, row);
+                Vector2 dest = at;
                 btn.onClick.AddListener(delegate
                 {
                     if (_walking) return;
                     Audio.Ui("node");
                     var mk = _marker;
                     if (mk == null) { g.Do(new RunCommand_ChooseNode { Col = idx }); return; }
-                    // 駒が踏み跡を歩いてから進む (2026-10-28 案 B。0.55 秒・小さく弾む)
+                    // 駒が踏み跡を歩いてから進む (0.55 秒・小さく弾む)
                     _walking = true;
-                    Vector2 from = mk.anchoredPosition, to = dest + MarkerOffset - new Vector2(0f, _markerFeet);
+                    Vector2 from = mk.anchoredPosition, to = dest + _markerOff;
                     bool done = false;
                     Action finish = delegate { if (done) return; done = true; _walking = false; g.Do(new RunCommand_ChooseNode { Col = idx }); };
                     Tween.Run(0.55f, delegate (float k)
                     {
                         if (mk == null) return;
                         float s = k * k * (3f - 2f * k);
-                        mk.anchoredPosition = Vector2.Lerp(from, to, s) + new Vector2(0f, Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f)) * 5f);
+                        mk.anchoredPosition = Vector2.Lerp(from, to, s) + new Vector2(0f, Mathf.Round(Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f)) * 3f) * 2f);
                     }, Ease.Linear, delegate { finish(); }, delegate { _walking = false; });
                 });
-                Tween.Punch(cell, 0.1f, 0.8f);
             }
+        }
+
+        /// <summary>凡例 (右の夜色の札・真鍮の細い縁。印は 32 ドットの等倍)</summary>
+        static void Legend(RectTransform root)
+        {
+            var panel = UiKit.Pan(root, new Color(PaperFx.Window.r, PaperFx.Window.g, PaperFx.Window.b, 0.84f), "legend");
+            panel.raycastTarget = false;
+            var ol = panel.gameObject.AddComponent<Outline>(); ol.effectColor = new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.6f); ol.effectDistance = new Vector2(1f, -1f);
+            UiKit.Anchor(panel.rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-210f, -190f), new Vector2(-28f, 200f));
+            var vg = UiKit.Vert(panel.rectTransform, 4, 0);
+            vg.padding = new RectOffset(16, 12, 12, 10);
+            vg.childForceExpandHeight = false;
+            var h = UiKit.Txt(panel.rectTransform, "凡例", 15, PaperFx.BrassLight, TextAnchor.MiddleLeft, true);
+            h.characterSpacing = 6f;
+            UiKit.Le(h, -1f, 24f, -1f, 24f);
+            foreach (var type in new[] { MapNodeTypes.Battle, MapNodeTypes.Elite, MapNodeTypes.Event, MapNodeTypes.Campfire, MapNodeTypes.Shop, MapNodeTypes.Workshop, MapNodeTypes.Treasure, MapNodeTypes.Boss })
+                LegendRow(panel.rectTransform, type);
         }
 
         /// <summary>落書きの道具: 紙色ペン・朱ペン・消しゴム・全消し。押したペンが光る (=ペンモード。同じものを押すと解除)</summary>
@@ -445,7 +619,7 @@ namespace DeckRogue.Game
             {
                 int idx = i;
                 bool active = g.DoodleMode && g.DoodlePen == idx;
-                Color? bg = active ? (Color?)(idx == 1 ? UiKit.Hex("#e9b8ae") : idx == 2 ? UiKit.Hex("#d8d2c4") : UiKit.Hex("#dfe8dc")) : null;
+                Color? bg = active ? (Color?)(idx == 1 ? PaperFx.RoseLight : idx == 2 ? PaperFx.Paper2 : PaperFx.MossLight) : null;
                 var b = UiKit.Btn(bar, labels[i], delegate
                 {
                     Audio.Ui("click");
@@ -458,26 +632,6 @@ namespace DeckRogue.Game
             }
             var hint = UiKit.Txt(root, g.DoodleMode ? (g.DoodlePen == 2 ? "消しゴム: 線に触れると消える（もう一度押すと解除）" : "ペン: ドラッグで地図に描ける（もう一度押すと解除）") : (UiKit.Phone ? "ペンを押すと指で地図に描ける" : "右ドラッグで地図に描ける（ペンを押すと指でも）"), 13, UiKit.ColDim, TextAnchor.MiddleRight);
             UiKit.Anchor(hint.rectTransform, new Vector2(0.55f, 0f), new Vector2(1f, 0f), new Vector2(0f, UiKit.Phone ? 114f : 104f), new Vector2(-24f, UiKit.Phone ? 136f : 126f));
-        }
-
-        static Color NodeTint(string type, bool avail, bool cur, bool taken, bool passed)
-        {
-            Color baseCol;
-            switch (type)
-            {
-                case MapNodeTypes.Elite: baseCol = UiKit.Hex("#e0b0b0"); break;
-                case MapNodeTypes.Boss: baseCol = UiKit.Hex("#f0c8a0"); break;
-                case MapNodeTypes.Campfire: baseCol = UiKit.Hex("#f0c8a0"); break;
-                case MapNodeTypes.Shop: baseCol = UiKit.Hex("#e8dca0"); break;
-                case MapNodeTypes.Workshop: baseCol = UiKit.Hex("#d0c8e8"); break;
-                case MapNodeTypes.Treasure: baseCol = UiKit.Hex("#f0e0a0"); break;
-                case MapNodeTypes.Event: baseCol = UiKit.Hex("#b0e0e0"); break;
-                default: baseCol = Color.white; break;
-            }
-            if (avail || cur) return baseCol;
-            if (taken) return baseCol * new Color(0.8f, 0.8f, 0.8f, 1f);
-            if (passed) return baseCol * new Color(0.45f, 0.45f, 0.45f, 1f);
-            return baseCol * new Color(0.7f, 0.7f, 0.7f, 1f);
         }
 
         public static string NodeIcon(string type)
@@ -537,15 +691,17 @@ namespace DeckRogue.Game
         static void LegendRow(Transform parent, string type)
         {
             var row = UiKit.NewRect("legend-" + type, parent);
-            UiKit.Le(row, -1f, 26f, -1f, 26f);
-            var hg = UiKit.Horz(row, 8, 0);
+            UiKit.Le(row, -1f, 36f, -1f, 36f);
+            var hg = UiKit.Horz(row, 10, 0);
             hg.childAlignment = TextAnchor.MiddleLeft;
             hg.childForceExpandWidth = false;
             hg.childForceExpandHeight = false;
             var ic = UiKit.Icon(row, NodeIcon(type), 22f);
-            UiKit.Le(ic, 22f, 22f, 22f, 22f);
-            var t = UiKit.Txt(row, NodeName(type), 14, UiKit.ColDim, TextAnchor.MiddleLeft);
-            UiKit.Le(t, 100f, 24f, -1f, 24f);
+            var art = Theme.Art("map", "node_" + type);
+            if (art != null) { ic.sprite = art; ic.color = Color.white; }
+            UiKit.Le(ic, 32f, 32f, 32f, 32f);
+            var t = UiKit.Txt(row, NodeName(type), 16, PaperFx.Paper, TextAnchor.MiddleLeft);
+            UiKit.Le(t, 110f, 26f, -1f, 26f);
         }
     }
 }
