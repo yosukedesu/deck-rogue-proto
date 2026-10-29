@@ -19,8 +19,7 @@ namespace DeckRogue.Game
         public static void Reward(GameRoot g, RectTransform root)
         {
             var run = g.Rs;
-            Backdrop(g, root, "報酬", 0.45f);   // 勝った場所 (戦闘の舞台) を暗くしたまま (§10-3)
-            SceneHero(g, root, -8.2f, 0.4f);   // このはは左端に (席 (-5.0) だと札の後ろに隠れる)
+            Backdrop(g, root, "報酬", 0.4f);   // 勝った場所 (戦闘の舞台) を暗くしたまま (§10-3)。主人公の絵は置かない (§10-6 ユーザー「こういう場面でキャラのイラストは不要」)
             var opts = run.RewardOptions;
             int n = opts != null ? opts.Count : 0;
             // ギア (2026-09-17): 札3枚とは別枠で1つ。札とギアは独立 (どちらを先に片付けてもよい = FinishReward)
@@ -112,8 +111,7 @@ namespace DeckRogue.Game
             bool chest = false;
             try { var node = DeckRogue.Engine.Run.CurrentNode(run); chest = node != null && node.Type == MapNodeTypes.Treasure; } catch (Exception) { }
             bool opened = ReferenceEquals(_chestOpenedFor, run);
-            Backdrop(g, root, chest ? "宝箱" : "レリック", 0.45f);
-            SceneHero(g, root, -8.2f, 0.4f);   // 左端 (札の後ろに隠れない)
+            Backdrop(g, root, chest ? "宝箱" : "レリック", 0.4f);   // 主人公の絵は置かない (§10-6)
             if (chest)
             {
                 var chestArt = Theme.Art("props", opened ? "act1_chest_open" : "act1_chest_closed");

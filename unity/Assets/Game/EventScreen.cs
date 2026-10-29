@@ -71,18 +71,18 @@ namespace DeckRogue.Game
             }
             var prt = panel.rectTransform;
             if (sceneArt != null && !ph)
-            {   // 左の紙の額 748×424 (絵は 240×132 を 3 倍 = 720×396。少し傾ける)
-                float fx = 110f, fy = RunUi.TopH + 150f;
-                var frame = PaperFx.Sheet(prt, PaperFx.Tag2, "art-frame", Color.white);
-                frame.raycastTarget = false;
-                UiKit.Anchor(frame.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(fx, -fy - 424f), new Vector2(fx + 748f, -fy));
-                frame.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 1.2f);
+            {   // 2 巡目 (§10-6 ユーザー「絵が小さい・額に入っている」): 額をやめ、絵を 4 倍 (960×528) で左半分に溢れさせる。縁は RectMask2D の柔らかさで夜に溶かす
+                float fx = 40f, fy = RunUi.TopH + 40f;
+                var box = UiKit.NewRect("art", prt);
+                UiKit.Anchor(box, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(fx, -fy - 528f), new Vector2(fx + 960f, -fy));
+                var mask = box.gameObject.AddComponent<RectMask2D>();
+                mask.softness = new Vector2Int(90, 90);
                 var sc = new GameObject("scene", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
-                sc.transform.SetParent(frame.transform, false);
+                sc.transform.SetParent(box, false);
                 sc.sprite = sceneArt; sc.preserveAspect = true; sc.raycastTarget = false;
                 UiKit.PixelArt(sc);
-                UiKit.Anchor(sc.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(14f, 14f), new Vector2(-14f, -14f));
-                textX = fx + 748f + 100f;
+                UiKit.Stretch(sc.rectTransform, 0f, 0f, 0f, 0f);
+                textX = fx + 960f + 60f;
             }
             else if (sceneArt != null)
             {
@@ -111,15 +111,18 @@ namespace DeckRogue.Game
                 UiKit.Anchor(list, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(colX, 24f), new Vector2(-28f, -72f - flavorH - 10f));
             }
             else
-            {   // PC (§10-3): 右の列に名前・本文・選択肢 (夜の上なので紙色＋縁取り)
+            {   // PC (§10-3・2 巡目 §10-6「字が弱い」): 右の列に名前 (44・真鍮の罫)・本文 (20・行間広め)・選択肢 (夜色の帯)。夜の上なので紙色＋縁取り
                 float colX = sceneArt != null ? textX : 110f;
-                float top = RunUi.TopH + 150f;
-                name.color = PaperFx.Paper; name.outlineWidth = 0.22f; name.outlineColor = new Color(0f, 0f, 0f, 0.9f);
-                flavor.color = PaperFx.Paper; flavor.outlineWidth = 0.25f; flavor.outlineColor = new Color(0f, 0f, 0f, 0.9f);
-                flavor.lineSpacing = 14f;
-                UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(colX, -top - 60f), new Vector2(-60f, -top));
-                UiKit.Anchor(flavor.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(colX, -top - 240f), new Vector2(-80f, -top - 70f));
-                UiKit.Anchor(list, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(colX, 40f), new Vector2(-80f, -top - 250f));
+                float top = RunUi.TopH + 90f;
+                name.fontSize = 44; name.color = PaperFx.Paper; name.outlineWidth = 0.2f; name.outlineColor = new Color(0f, 0f, 0f, 0.9f); name.characterSpacing = 3f;
+                flavor.fontSize = 20; flavor.color = PaperFx.Paper; flavor.outlineWidth = 0.25f; flavor.outlineColor = new Color(0f, 0f, 0f, 0.9f);
+                flavor.lineSpacing = 22f;
+                UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(colX, -top - 64f), new Vector2(-60f, -top));
+                var rule = UiKit.Pan(prt, PaperFx.Brass, "name-rule");
+                rule.raycastTarget = false;
+                UiKit.Anchor(rule.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(colX + 2f, -top - 76f), new Vector2(colX + 220f, -top - 74f));
+                UiKit.Anchor(flavor.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(colX, -top - 290f), new Vector2(-80f, -top - 96f));
+                UiKit.Anchor(list, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(colX, 50f), new Vector2(-80f, -top - 300f));
             }
             var vg = UiKit.Vert(list, ph ? 8 : 12, 0);
             vg.childForceExpandHeight = false;
@@ -134,14 +137,44 @@ namespace DeckRogue.Game
                 bool available = DeckRogue.Engine.Run.EventChoiceAvailable(run, ch);
                 string why = available ? "" : (ch.RequireGold.HasValue && run.Gold < ch.RequireGold.Value ? "  (G不足)" : "  (対象がない)");
                 string hint = ChoiceHint(ch);
-                var b = UiKit.Btn(list, (leave ? "" : "▶ ") + ch.Label + (needsCard ? "  (デッキから1枚選ぶ)" : "") + why + (hint.Length > 0 ? "\n<size=14>" + UiKit.ColorTag(PaperFx.BrassInk, hint) + "</size>" : ""),
-                    delegate
+                Action act = delegate
+                {
+                    if (needsCard) { g.EventChoiceIndex = idx; g.Rebuild(); }
+                    else { Audio.Ui("event_choice"); g.Do(new RunCommand_EventChoice { Index = idx }); }
+                };
+                if (!ph)
+                {   // PC (2 巡目 §10-6「選択肢が普通のボタン」): 夜色の帯＝名前 (真鍮) と何が起きるか (淡い紙色) の 2 行。押せる帯は真鍮の細い縁、立ち去るは縁なし
+                    float bh = hint.Length > 0 ? 92f : 68f;
+                    var band = PaperFx.Sheet(list, PaperFx.Tag, "opt", available ? PaperFx.Night : PaperFx.NightTrack);
+                    band.raycastTarget = true;
+                    UiKit.Le(band.rectTransform, -1f, bh, -1f, bh);
+                    if (available && !leave)
+                    {   // 真鍮の細い縁 (子の板は面を覆うので Outline＝面の写しを 2px ずらして後ろに)
+                        var edge = band.gameObject.AddComponent<Outline>();
+                        edge.effectDistance = new Vector2(2f, 2f); edge.useGraphicAlpha = false;
+                        edge.effectColor = new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.8f);
+                    }
+                    var btn = band.gameObject.AddComponent<Button>();
+                    btn.targetGraphic = band; btn.interactable = available;
+                    var cb = btn.colors; cb.highlightedColor = new Color(1.35f, 1.35f, 1.35f); cb.pressedColor = new Color(0.85f, 0.85f, 0.85f); cb.disabledColor = Color.white; btn.colors = cb;
+                    btn.onClick.AddListener(delegate { Audio.Ui("click"); act(); });
+                    band.gameObject.AddComponent<ScreenFx.ButtonMotion>();
+                    var lb = UiKit.Deco(band.transform, (leave ? "" : "▶ ") + ch.Label + (needsCard ? "  (デッキから 1 枚選ぶ)" : "") + why, 22, available ? PaperFx.BrassLight : PaperFx.NightInkSoft, TextAnchor.MiddleLeft);
+                    lb.raycastTarget = false;
+                    UiKit.Anchor(lb.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(22f, -46f), new Vector2(-16f, -8f));
+                    if (hint.Length > 0)
                     {
-                        if (needsCard) { g.EventChoiceIndex = idx; g.Rebuild(); }
-                        else { Audio.Ui("event_choice"); g.Do(new RunCommand_EventChoice { Index = idx }); }
-                    }, 18, available, leave ? null : (Color?)PaperFx.Paper3);
-                float bh = hint.Length > 0 ? (ph ? 62f : 84f) : (ph ? 50f : 64f);   // PC は絵札風に高く (§10-3)
-                UiKit.Le(b, -1f, bh, -1f, bh);
+                        var ht = UiKit.Txt(band.transform, hint, 15, PaperFx.NightInkSoft, TextAnchor.MiddleLeft);
+                        ht.raycastTarget = false;
+                        ht.textWrappingMode = TextWrappingModes.NoWrap; ht.overflowMode = TextOverflowModes.Ellipsis;
+                        UiKit.Anchor(ht.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(24f, 12f), new Vector2(-16f, 42f));
+                    }
+                    continue;
+                }
+                var b = UiKit.Btn(list, (leave ? "" : "▶ ") + ch.Label + (needsCard ? "  (デッキから1枚選ぶ)" : "") + why + (hint.Length > 0 ? "\n<size=14>" + UiKit.ColorTag(PaperFx.BrassInk, hint) + "</size>" : ""),
+                    act, 18, available, leave ? null : (Color?)PaperFx.Paper3);
+                float bhP = hint.Length > 0 ? 62f : 50f;
+                UiKit.Le(b, -1f, bhP, -1f, bhP);
                 var tx = b.GetComponentInChildren<TMP_Text>();
                 if (tx != null) { tx.alignment = TextAlignmentOptions.Left; tx.margin = new Vector4(18f, 0f, 12f, 0f); }
             }
@@ -151,6 +184,7 @@ namespace DeckRogue.Game
         static string SceneFor(EventDef def)
         {
             if (def == null) return "event";
+            if (def.Id != null && Theme.Art("scenes", "ev_" + def.Id) != null) return "ev_" + def.Id;   // 出来事ごとの挿絵 (2 巡目 §10-6)
             string n = def.Name ?? "";
             if (n.Contains("祠") || n.Contains("石") || n.Contains("碑") || n.Contains("星")) return "event_shrine";
             bool trade = n.Contains("商") || n.Contains("取引") || n.Contains("市") || n.Contains("屋");

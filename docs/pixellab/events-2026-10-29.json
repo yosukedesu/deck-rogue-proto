@@ -1,0 +1,469 @@
+{
+ "_note": "出来事ごとの挿絵 37 枚 (2026-10-29 #3 場面化 2 巡目: ユーザー「絵の中身が凡庸」→ 出来事ごとに描く) と店の敷物の布。240×132・見本の縦横。使い方: node scripts/pixellab.mjs gen docs/pixellab/events-2026-10-29.json → Art/scenes/ev_<id>.png",
+ "defaults": {
+  "engine": "pixflux",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "guidance": 8,
+  "negative": "human, person, character, face, eyes, text, letters, watermark, border, frame, ui, blurry, daylight, blue sky, sun"
+ },
+ "items": [
+  {
+   "id": "ev_event_mossy_chest",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_mossy_chest.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 23,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, an old mossy treasure chest with the lid slightly open and a faint golden light leaking out, in a mine chamber with timber supports"
+  },
+  {
+   "id": "ev_event_ghost_peddler",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_ghost_peddler.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 24,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a half-transparent ghostly merchant stall glowing pale teal in a dark mine tunnel, odd wares floating, a lantern"
+  },
+  {
+   "id": "ev_event_ancient_hollow",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_ancient_hollow.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 25,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a huge ancient tree whose roots pierce down into a mine, a warm amber hollow in the trunk glowing with sap, ferns"
+  },
+  {
+   "id": "ev_event_dice_imp",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_dice_imp.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 26,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a small stone table with glowing dice and a pile of coins in a dark cave nook, candle light, a tiny imp silhouette hidden in shadow"
+  },
+  {
+   "id": "ev_event_wandering_painter",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_wandering_painter.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 27,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, an easel with an unfinished painting and scattered brushes and paint jars on a mossy rock at the mine mouth, a lantern, forest behind"
+  },
+  {
+   "id": "ev_event_whispering_stele",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_whispering_stele.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 28,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, an ancient stone stele with glowing carved runes in a dark cave, mist, faint purple light"
+  },
+  {
+   "id": "ev_event_healing_spring",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_healing_spring.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 29,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a clear spring of water welling from a crack in the rock, glowing softly teal, ferns and moss, mine timbers"
+  },
+  {
+   "id": "ev_event_lost_peddler",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_lost_peddler.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 30,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a lost peddler cart with an open sack of old goods and a hanging lantern in a mine tunnel fork, no people"
+  },
+  {
+   "id": "ev_event_thorn_altar",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_thorn_altar.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 31,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, an altar overgrown with thorny vines pulsing with red light in an ancient ruin"
+  },
+  {
+   "id": "ev_event_broken_stairs",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_broken_stairs.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 32,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a collapsed stone stairway with a big hole, a dropped bag visible on the floor below, lantern light"
+  },
+  {
+   "id": "ev_event_silent_gardener",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_silent_gardener.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 33,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a quiet garden at a mine mouth with trimmed hedges, pruning shears on a stump, a watering can, moonlight"
+  },
+  {
+   "id": "ev_event_fairy_market",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_fairy_market.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 34,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a ring of tiny floating lights like a fairy market in a dark cave, small glowing stalls, mushrooms"
+  },
+  {
+   "id": "ev_shrine_purifier",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_shrine_purifier.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 35,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a small shrine with white ash spread before it, a stone basin, pale light, moss"
+  },
+  {
+   "id": "ev_shrine_whetstone",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_shrine_whetstone.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 36,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a small shrine with a whetstone sunk in a bowl of water, sharpening tools, cool light"
+  },
+  {
+   "id": "ev_shrine_gold",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_shrine_gold.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 37,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a small shrine painted in gold leaf with an empty offering plate, warm golden glow from inside"
+  },
+  {
+   "id": "ev_shrine_transmute",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_shrine_transmute.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 38,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a stone disc shrine with a spiral of unreadable carved letters glowing teal, mist"
+  },
+  {
+   "id": "ev_shrine_duplicate",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_shrine_duplicate.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 39,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a mirror-still pool of water in a cave reflecting a floating card-shaped light"
+  },
+  {
+   "id": "ev_shrine_wheel",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_shrine_wheel.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 40,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a huge wheel of fortune carved into a cave wall with glowing runes, mysterious light"
+  },
+  {
+   "id": "ev_event_big_fish",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_big_fish.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 41,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a great pale fish circling slowly in dark mine water pooled at the bottom of a shaft, faint glow in its belly"
+  },
+  {
+   "id": "ev_event_wing_statue",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_wing_statue.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 42,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a winged stone statue blocking a stairway, a blood-stained hollow in its pedestal, moonlight"
+  },
+  {
+   "id": "ev_event_mushrooms",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_mushrooms.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 43,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a floor covered in colorful glowing mushrooms releasing drifting spores in a dark cave"
+  },
+  {
+   "id": "ev_event_old_beggar",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_old_beggar.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 44,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a tattered cloak and a begging bowl with coins beside a cave wall, candle, no people"
+  },
+  {
+   "id": "ev_event_cursed_tome",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_cursed_tome.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 45,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a book chained to a lectern in a dark chamber, its open pages glowing purple, candles"
+  },
+  {
+   "id": "ev_event_forgotten_altar",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_forgotten_altar.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 46,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a forgotten stone altar with dried blood stains and guttering candles in a ruin"
+  },
+  {
+   "id": "ev_event_mausoleum",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_mausoleum.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 47,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a ruined mausoleum with a stone coffin lid half slid open, light from grave goods inside"
+  },
+  {
+   "id": "ev_event_falling",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_falling.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 48,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a tilting floor stone over a dark drop, thick vines and a bag visible on the level below"
+  },
+  {
+   "id": "ev_event_mind_bloom",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_mind_bloom.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 49,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a single luminous flower blooming in a dark ruin, soft light, petals glowing"
+  },
+  {
+   "id": "ev_event_moai",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_moai.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 50,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a giant stone head statue reaching the ceiling of a cavern, warm wind and sap light from its open mouth"
+  },
+  {
+   "id": "ev_event_divine_fountain",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_divine_fountain.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 51,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a crystal clear fountain in a cave with holy pale light rising from the water"
+  },
+  {
+   "id": "ev_event_ominous_forge",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_ominous_forge.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 52,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a cold forge with a still-glowing anvil, a tool box in the corner, dark smithy"
+  },
+  {
+   "id": "ev_event_joust",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_joust.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 53,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, two ghostly knight silhouettes on horses charging each other in an endless jousting arena, pale blue"
+  },
+  {
+   "id": "ev_event_tower_tailor",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_tower_tailor.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 54,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a tailor shop nook piled with bolts of cloth, scissors and thread, lantern light, no people"
+  },
+  {
+   "id": "ev_event_obsidian_idol",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_obsidian_idol.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 55,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a black obsidian idol smiling on an altar, gold leaf peeling, something pulsing beneath"
+  },
+  {
+   "id": "ev_event_blood_altar",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_blood_altar.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 56,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a dark altar stained with dried blood, offerings, a single red glow"
+  },
+  {
+   "id": "ev_event_guilty_bargain",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_guilty_bargain.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 57,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a shadowy alcove at the mine mouth with a crate of suspicious goods and a beckoning lantern, no people"
+  },
+  {
+   "id": "ev_event_three_cups",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_three_cups.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 58,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, three ornate cups on an altar each glowing with a different color, poison smoke"
+  },
+  {
+   "id": "ev_event_forgotten_grave",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/ev_event_forgotten_grave.png",
+   "size": [
+    240,
+    132
+   ],
+   "seed": 59,
+   "view": "side",
+   "no_background": false,
+   "description": "HD-2D Octopath Traveler style pixel art scene, wide shot, night, cool blue-grey moonlit palette with one warm or glowing accent, detailed, atmospheric, no people, no text, a lonely grave beside a mine shaft with a dying lantern and a faintly warm gravestone, forest at night"
+  },
+  {
+   "id": "cloth",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/evart/cloth.png",
+   "size": [
+    64,
+    64
+   ],
+   "seed": 23,
+   "view": "side",
+   "no_background": false,
+   "description": "seamless tileable pixel art texture of woven plum-colored cloth fabric, visible weave threads, subtle dark red and dusty purple, flat lighting, repeating pattern, no border"
+  }
+ ]
+}

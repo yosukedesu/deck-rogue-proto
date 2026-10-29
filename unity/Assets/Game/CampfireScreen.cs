@@ -16,7 +16,7 @@ namespace DeckRogue.Game
             var run = g.Rs;
             // 場面 (品質スプリント #3 2026-10-29 §10): 夜の森の箱庭の上に焚き火・丸太・座るこのは。暗幕は薄く (棚を開いている間は今までの濃さ)
             BattleScreen.BuildBackground(root, run.Act);
-            var dim = UiKit.Pan(root, new Color(0f, 0f, 0f, g.SubMode != null ? 0.5f : 0.16f), "dim");
+            var dim = UiKit.Pan(root, new Color(0f, 0f, 0f, g.SubMode != null ? 0.5f : 0.1f), "dim");
             dim.raycastTarget = false;
             UiKit.Stretch(dim.rectTransform, 0f, 0f, 0f, 0f);
             if (g.SubMode == null) Scene(g, root, run);
@@ -72,11 +72,11 @@ namespace DeckRogue.Game
 
             int extra = (opt.Dig && fresh ? 1 : 0) + (opt.TrainLeft > 0 && fresh ? 1 : 0) + (opt.Remove && fresh ? 1 : 0);
             // 本家の形 (§10-3): 上に「どうする？」と絵札。絵札は場面の上 (焚き火は画面の下半分)
-            RunUi.Heading(root, "どうする？", extra > 0 ? "焚き火で一息 ・ どれか 1 つ ・ 鍛えた後は回復なしで立ち去る" : "焚き火で一息 ・ どちらか 1 つ ・ 鍛えた後は回復なしで立ち去る");
+            RunUi.Heading(root, "焚き火", extra > 0 ? "一息つく ・ どれか 1 つ ・ 鍛えた後は回復なしで立ち去る" : "一息つく ・ どちらか 1 つ ・ 鍛えた後は回復なしで立ち去る");
             int count = 2 + extra;
-            float w = UiKit.Phone && count > 3 ? 210f : 260f;
-            float gap = count <= 2 ? 80f : UiKit.Phone ? 16f : 24f;
-            float optY = UiKit.Phone ? 40f : 190f;   // 絵札の中心 (PC: 上から 350・見出しのすぐ下。スマホ: 見出しの下)
+            float w = UiKit.Phone && count > 3 ? 210f : 230f;   // 2 巡目: 絵札は小さめ (場面が主役)
+            float gap = count <= 2 ? 60f : UiKit.Phone ? 16f : 24f;
+            float optY = UiKit.Phone ? 40f : 200f;   // 絵札の中心 (PC: 上から 340・見出しのすぐ下。スマホ: 見出しの下)
             float x0 = -((count - 1) * (w + gap)) / 2f;
             int slot = 0;
             Vector2 Pos() { return new Vector2(x0 + (slot++) * (w + gap), optY); }
@@ -105,26 +105,79 @@ namespace DeckRogue.Game
         /// 小物は UI の矩形に追従する板 (Stage.BindUnit)。火には点光源 (揺らぐ)。1 ドット＝3px＝舞台と同じ粒 (スマホは ArtScale で縮む)</summary>
         static void Scene(GameRoot g, RectTransform root, RunState run)
         {
+            // 2 巡目 (§10-6 ユーザー「本家のパクリ。キャラは出さず、落ち着いた焚き火のおしゃれな雰囲気に。アニメーションとか」):
+            // 主人公は出さない。火そのものを主役に: 大きく (1 ドット＝6px)・炎のコマ・火の粉が立ちのぼる・明かりが脈打つ。丸太と石は火を囲む
             float cw = BattleScreen.CanvasSize(root).x;
-            float dot = 4.5f * BattleScreen.ArtScale;   // 座席の板は矩形より小さく映る (1 回目: 48 ドットの火が約 100px) ので、小物は 1.5 倍で頼む
+            float dot = 6f * BattleScreen.ArtScale;
             var log = Theme.Art("props", "act1_log");
             var fire = Theme.Art("props", "act1_bonfire");
-            Sprite hero = null;
-            try { hero = Theme.Art("leaders", run.LeaderId + "_sit"); if (hero == null) hero = Creature.Get("leaders", run.LeaderId, true); } catch (Exception) { }
-            // 座席は道の座標 (リーダーの席 (-5.0, 0.9) の右に火、その両側に丸太。s が小さいほど手前)
+            var rock = Theme.Art("props", "act1_rock_small") ?? Theme.Art("props", "act1_stone");
             if (log != null)
             {
-                Prop(root, "scene-log-l", log, Stage.SceneSeat("scene-log-l", -6.0f, 0.9f), cw, 80f * dot);
-                Prop(root, "scene-log-r", log, Stage.SceneSeat("scene-log-r", 0.8f, 0.3f), cw, 80f * dot);
+                Prop(root, "scene-log-l", log, Stage.SceneSeat("scene-log-l", -6.2f, 1.1f), cw, 80f * dot * 0.5f);
+                Prop(root, "scene-log-r", log, Stage.SceneSeat("scene-log-r", 1.0f, 0.5f), cw, 80f * dot * 0.5f);
+            }
+            if (rock != null)
+            {
+                Prop(root, "scene-rock-a", rock, Stage.SceneSeat("scene-rock-a", -4.6f, 0.2f), cw, rock.rect.width * dot * 0.7f);
+                Prop(root, "scene-rock-b", rock, Stage.SceneSeat("scene-rock-b", -0.6f, 1.0f), cw, rock.rect.width * dot * 0.6f);
             }
             if (fire != null)
             {
-                Prop(root, "scene-fire", fire, Stage.SceneSeat("scene-fire", -2.2f, 0.5f), cw, 48f * dot);
-                Stage.AttachLight("scene-fire", PaperFx.Ember, 6f, 9f, 0.45f, 0.14f);
-                Stage.AttachGlow("scene-fire", new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.35f), 4.2f, 0.35f);
+                var feet = Stage.SceneSeat("scene-fire", -2.6f, 0.6f);
+                Prop(root, "scene-fire", fire, feet, cw, 48f * dot);
+                Stage.AttachLight("scene-fire", PaperFx.Ember, 7f, 11f, 0.4f, 0.16f);
+                Stage.AttachGlow("scene-fire", new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.4f), 6f, 0.3f);
+                // 火の粉 (UI の小さな光が火の上から立ちのぼる)
+                var sp = UiKit.NewRect("sparks", root);
+                sp.anchorMin = sp.anchorMax = new Vector2(0.5f, 0f);
+                sp.anchoredPosition = new Vector2(feet.x - cw / 2f, feet.y + 20f * BattleScreen.ArtScale);
+                sp.sizeDelta = Vector2.zero;
+                var sk = sp.gameObject.AddComponent<SceneSparks>();
+                sk.Spread = 26f * BattleScreen.ArtScale; sk.Rise = 180f * BattleScreen.ArtScale;
             }
-            // このは: 火と左の丸太のあいだに立って火に当たる (座りの絵は未作成。座りが出来たら左の丸太の上へ)
-            if (hero != null) Prop(root, "scene-hero", hero, Stage.SceneSeat("scene-hero", -4.4f, 0.4f), cw, hero.rect.width * 4f * BattleScreen.ArtScale * BattleScreen.HeroScale);
+        }
+
+        /// <summary>火の粉 (2 巡目): 0.09 秒ごとに小さな琥珀の点を火の上に出し、揺れながら 1.2〜2.0 秒で立ちのぼって消える。最大 28 個。決定的な撮影では Tween.UnscaledDt で進む</summary>
+        public class SceneSparks : MonoBehaviour
+        {
+            public float Spread = 26f, Rise = 180f;
+            readonly List<Image> _live = new List<Image>();
+            readonly List<float> _t0 = new List<float>(), _dur = new List<float>(), _x0 = new List<float>(), _ph = new List<float>();
+            float _t, _next;
+            System.Random _rng = new System.Random(7);
+            void Update()
+            {
+                _t += Tween.UnscaledDt;
+                if (_t >= _next && _live.Count < 28)
+                {
+                    _next = _t + 0.09f;
+                    var go = new GameObject("spark", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                    go.transform.SetParent(transform, false);
+                    var img = go.GetComponent<Image>();
+                    img.sprite = MapForest.Radial(); img.raycastTarget = false;
+                    bool bright = _rng.NextDouble() < 0.35;
+                    img.color = bright ? PaperFx.BrassLight : PaperFx.Ember;
+                    var rt = img.rectTransform;
+                    float sz = 3f + (float)_rng.NextDouble() * 4f;
+                    rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+                    rt.sizeDelta = new Vector2(sz, sz);
+                    float x0 = ((float)_rng.NextDouble() * 2f - 1f) * Spread;
+                    rt.anchoredPosition = new Vector2(x0, 0f);
+                    _live.Add(img); _t0.Add(_t); _dur.Add(1.2f + (float)_rng.NextDouble() * 0.8f); _x0.Add(x0); _ph.Add((float)_rng.NextDouble() * 6.28f);
+                }
+                for (int i = _live.Count - 1; i >= 0; i--)
+                {
+                    var img = _live[i];
+                    if (img == null) { _live.RemoveAt(i); _t0.RemoveAt(i); _dur.RemoveAt(i); _x0.RemoveAt(i); _ph.RemoveAt(i); continue; }
+                    float u = (_t - _t0[i]) / _dur[i];
+                    if (u >= 1f) { Destroy(img.gameObject); _live.RemoveAt(i); _t0.RemoveAt(i); _dur.RemoveAt(i); _x0.RemoveAt(i); _ph.RemoveAt(i); continue; }
+                    float y = Rise * (1f - (1f - u) * (1f - u));
+                    float x = _x0[i] + Mathf.Sin(u * 5f + _ph[i]) * 10f * (0.3f + u);
+                    img.rectTransform.anchoredPosition = new Vector2(x, y);
+                    var c = img.color; c.a = u < 0.15f ? u / 0.15f : 1f - Mathf.Clamp01((u - 0.5f) / 0.5f); img.color = c;
+                }
+            }
         }
 
         /// <summary>小物の板: 足元を座席の画面の点 (キャンバスの単位・左下原点) に置いた矩形 (絵の整数倍) を舞台に結ぶ。Image は BindUnit が隠す</summary>
@@ -138,26 +191,26 @@ namespace DeckRogue.Game
         }
 
         /// <summary>絵札 (§10-3・本家の Rest／Smith の形): 紙の札 260×330。上に夜色の箱と挿絵 (PixelLab 48×48 を 100 に)、名前・一行・小さな行、押せるなら下に真鍮の小札「押して選ぶ」</summary>
-        static RectTransform Option(RectTransform root, string icon, string title, string line1, string line2, Vector2 pos, Action onClick, bool enabled, float w = 260f)
+        static RectTransform Option(RectTransform root, string icon, string title, string line1, string line2, Vector2 pos, Action onClick, bool enabled, float w = 230f)
         {
-            float h = 330f;
-            bool narrow = w < 240f;
+            float h = 316f;
+            bool narrow = w < 220f;
             var cell = UiKit.NewRect("opt-" + title, root);
             cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
             cell.sizeDelta = new Vector2(w, h);
             cell.anchoredPosition = pos;
             var frame = UiKit.Frame(cell, Theme.Panel, enabled ? Color.white : new Color(0.6f, 0.6f, 0.6f, 1f), "frame", 3f);
             UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
-            float ib = narrow ? 104f : 128f;
+            float ib = narrow ? 96f : 108f;
             var box = PaperFx.Sheet(cell, PaperFx.Tag, "ib", enabled ? PaperFx.Night : new Color(PaperFx.Night.r, PaperFx.Night.g, PaperFx.Night.b, 0.7f));
             box.raycastTarget = false;
             UiKit.Anchor(box.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-ib / 2f, -18f - ib), new Vector2(ib / 2f, -18f));
-            var ic = UiKit.Icon(box.transform, icon, narrow ? 80f : 100f);
+            var ic = UiKit.Icon(box.transform, icon, narrow ? 76f : 84f);
             ic.raycastTarget = false;
             ic.rectTransform.anchorMin = ic.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
             ic.rectTransform.anchoredPosition = Vector2.zero;
             float ty = -18f - ib - 6f;
-            var t = UiKit.Deco(cell, title, narrow ? 22 : 26, UiKit.ColInk, TextAnchor.MiddleCenter);
+            var t = UiKit.Deco(cell, title, narrow ? 22 : 24, UiKit.ColInk, TextAnchor.MiddleCenter);
             t.raycastTarget = false;
             UiKit.Anchor(t.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, ty - 40f), new Vector2(0f, ty));
             var l1 = UiKit.Txt(cell, line1, narrow ? 13 : 15, UiKit.ColInk, TextAnchor.MiddleCenter, true);
@@ -177,7 +230,7 @@ namespace DeckRogue.Game
                 frame.gameObject.AddComponent<ScreenFx.ButtonMotion>();   // ホバーで 1.03・押すと 0.96 (#2 条3)
                 var tag = PaperFx.Sheet(cell, PaperFx.Tag, "hint", PaperFx.BrassLight);
                 tag.raycastTarget = false;
-                UiKit.Anchor(tag.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-50f, 14f), new Vector2(50f, 38f));
+                UiKit.Anchor(tag.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-50f, 10f), new Vector2(50f, 34f));
                 var hintB = UiKit.Txt(tag.transform, "押して選ぶ", 12, PaperFx.BrassInk, TextAnchor.MiddleCenter, true);
                 hintB.raycastTarget = false;
                 UiKit.Stretch(hintB.rectTransform, 0f, 0f, 0f, 0f);

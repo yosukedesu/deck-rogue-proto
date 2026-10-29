@@ -93,13 +93,7 @@ namespace DeckRogue.Game
             if (leftOthers.Count > 0) DepartureBand(g, root, run, shop, scene, leftOthers);   // 段は見出しの下。PC の棚は下の敷物なので重ならない
 
             // 敷物 (PC): 札を並べる布。屋台の前の地面に広げた風 (§10-3 の盤)
-            if (!UiKit.Phone)
-            {
-                var cloth = PaperFx.Sheet(root, PaperFx.Tag, "cloth", Color.Lerp(PaperFx.Plum, PaperFx.Night, 0.55f));
-                cloth.raycastTarget = false;
-                UiKit.Anchor(cloth.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(60f, -shelfTop - 436f), new Vector2(-500f, -shelfTop + 14f));
-                cloth.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 0.5f);
-            }
+            if (!UiKit.Phone) Cloth(root, shelfTop);
             // 棚 (カード)
             // 棚は左端〜右パネルの手前 (画面幅から出す。スマホの 1800 幅では中央固定だと6枚目がパネルに隠れた。2026-09-09)
             var shelf = UiKit.NewRect("shelf", root);
@@ -238,6 +232,54 @@ namespace DeckRogue.Game
 
             // 進む＝真鍮の決定のボタン (本家の赤いリボンの役。PC は看板の下の右端)
             RunUi.BottomButton(root, "店を出て坑へ", delegate { g.ShopMode = null; g.Do(new RunCommand_ShopLeave()); }, 18, 260f, 52f, ph ? -300f : csS.x / 2f - 170f, ph ? 24f : 40f, PaperFx.BrassLight);
+        }
+
+        /// <summary>
+        /// 敷物 (2 巡目 §10-6 ユーザー「平らで布に見えない」): 織りの布のテクスチャ (PixelLab 64×64・`Art/ui/cloth`) をタイルで敷き (1 目＝3px)、縁を暗く (周辺減光)、
+        /// 斜めの淡い帯でひだ、下に落ちる影。布が無ければ今までの紙の帯
+        /// </summary>
+        static void Cloth(RectTransform root, float shelfTop)
+        {
+            float l = 60f, r = 500f, t = shelfTop - 14f, b = shelfTop + 436f;
+            var clothArt = Theme.Art("ui", "cloth");
+            RectTransform rt;
+            if (clothArt != null)
+            {
+                var sh = UiKit.Pan(root, new Color(0f, 0f, 0f, 0.45f), "cloth-shadow");   // 落ちる影 (布の下・右に 10)
+                sh.sprite = MapForest.Radial(); sh.raycastTarget = false;
+                UiKit.Anchor(sh.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(l - 30f, -b - 40f), new Vector2(-r + 30f, -t + 10f));
+                var go = new GameObject("cloth", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
+                go.transform.SetParent(root, false);
+                rt = go.GetComponent<RectTransform>();
+                var ri = go.GetComponent<RawImage>();
+                clothArt.texture.wrapMode = TextureWrapMode.Repeat;
+                ri.texture = clothArt.texture; ri.raycastTarget = false;
+                UiKit.Anchor(rt, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(l, -b), new Vector2(-r, -t));
+                float w = BattleScreen.CanvasSize(root).x - l - r, h = b - t;
+                ri.uvRect = new Rect(0f, 0f, w / (clothArt.rect.width * 3f), h / (clothArt.rect.height * 3f));
+                ri.color = new Color(0.62f, 0.56f, 0.68f, 1f);   // 夜の下で沈める (2 巡目の実機は明るすぎた)
+                // ひだ (斜めの淡い光と影の帯 ×3) と縁の減光
+                for (int i = 0; i < 3; i++)
+                {
+                    bool light = i == 1;
+                    var fold = UiKit.Pan(rt, light ? new Color(1f, 1f, 1f, 0.07f) : new Color(0f, 0f, 0f, 0.16f), "fold");
+                    fold.sprite = MapForest.VFade(); fold.raycastTarget = false;
+                    fold.rectTransform.anchorMin = new Vector2(0.18f + 0.3f * i, 0f); fold.rectTransform.anchorMax = new Vector2(0.3f + 0.3f * i, 1f);
+                    fold.rectTransform.offsetMin = new Vector2(0f, -40f); fold.rectTransform.offsetMax = new Vector2(0f, 40f);
+                    fold.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 78f + 6f * i);
+                }
+                var vig = UiKit.Pan(rt, new Color(0f, 0f, 0f, 0.55f), "vignette");
+                vig.sprite = MapForest.Vignette(); vig.raycastTarget = false;
+                UiKit.Stretch(vig.rectTransform, 0f, 0f, 0f, 0f);
+            }
+            else
+            {
+                var cloth = PaperFx.Sheet(root, PaperFx.Tag, "cloth", Color.Lerp(PaperFx.Plum, PaperFx.Night, 0.55f));
+                cloth.raycastTarget = false;
+                UiKit.Anchor(cloth.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(l, -b), new Vector2(-r, -t));
+                rt = cloth.rectTransform;
+            }
+            rt.localRotation = Quaternion.Euler(0f, 0f, 0.5f);
         }
 
         /// <summary>場面 (§10-3「店主は出さない」): 道の左奥に屋台と提灯の柱、手前に木箱・袋・樽、右に荷車。提灯に光と暈。小物は幕2の既存の絵 (act2_*) と地図の荷車</summary>
