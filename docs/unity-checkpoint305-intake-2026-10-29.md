@@ -1,6 +1,23 @@
 # Unity checkpoint 305 intake — 2026-10-29
 
-## Result
+## Latest continuation result
+
+The previously missing product inputs are now resolved. The corrected273 kit is `libfile_c512f2da03a08191a626cb747e02fdd0`, and corrected277 kit is `libfile_3f072d2bc388819198231979c7e220c6`; the earlier misspelled273 reference returned404 and was superseded only after receiving the corrected ID.
+
+- Ordered270→273→274→275→276→277→278→279→280→281→284→285→288→289→297→300→305 reconstruction: **302 exact matches, zero mismatches, three original contract documents unavailable**. All132 bundled checksum entries pass. The isolated matching source lives at `/tmp/deckrogue-selected305-verified`. The full path/hash/history audit is `evidence/checkpoint305-reconstruction.json` in the task workspace.
+- Recovery243 kit's eight members verify against its manifest. Its final Lightning method is identical to the selected305 method. The reconstructed241–243 contracts remain explicitly separate from original contracts and are not substituted to manufacture305 completeness.
+- Static Unity port completed only for `CreateLightningDischarge`: exact243/305 method body, retaining Hd2dMath, HDR gain/UV1, URP shader, complete-triangle handling, Stage APIs and actor timing. This factory is **not yet connected to the live route** in this Unity base. No live technique is claimed completed.
+- Unity6000.6.0f1 resumed initial import and compilation: exit0. The earlier licensing interpretation is disproven as a blocker; the same log messages also occur in this successful run.
+- Unity geometry test after the method port: exit0,45 samples from3 source positions at15 ages,138240 finite-vertex checks; index bounds, layer capacity and tail disappearance pass. This does not test owner admission or image parity.
+- Unity baseline goldens: initial attempt lacked fixture files (exit2); after copying the existing13 JSONs,8 match and5 checkpoint-origin cases are rejected as unsupported by the old Editor harness (exit1). The separate dotnet harness supports those origins and previously passed13/13. No golden expectation was changed.
+- A Windows capture-player build was started; consult `evidence/unity-capture-player-build.log` for terminal status. No312 integration is performed ahead of305.
+- Confirmed312 kit `libfile_8bdb50a66ae4819192aa60a1162ecb6a` and movie `libfile_b3135ef9f1808191879f56f18ee58752` downloaded with supplied SHA values matching. Held for the post305 step. The exclusion of provisional311 remains intact.
+
+The 53,850,524-byte reconstructed input ZIP is saved locally at `C:\Users\yosuke\Documents\Codex\2026-10-29\task\unity-selected305-reconstructed-inputs.zip`. Its official prepared Library upload **failed before creation** with hosted-app tools/list HTTP401. No new Library ID exists for that ZIP, and no alternate upload was attempted. The previous intake evidence Library ID remains historical v1 and does not contain these continuation results.
+
+Remaining engineering work: port the actual command-owner/receipt routing and private material paths for the selected effects, then run native scenario/lifecycle tests and capture comparisons. Original contract documentation gaps do not imply missing product code and should not block that engineering work.
+
+## Initial intake result (superseded above)
 Blocked on exact pre-288 inputs. Unity batch verification is incomplete. No effect implementation was ported and no Unity parity or Android performance PASS is claimed. Existing main and other worktrees were preserved; no merge or push.
 
 Repository: `/home/yosuke/projects/deck-rogue-proto` (WSL Ubuntu).

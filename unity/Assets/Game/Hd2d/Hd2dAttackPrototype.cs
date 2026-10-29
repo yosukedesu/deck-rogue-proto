@@ -295,7 +295,7 @@ internal static class Hd2dAttackPrototype
         var broken=new Layer(0,3,"lightning-discharge-surface-r2");
         Vector3 source=new(-1,0,0);float age=0;
         float[] stations={0,.055f,.13f,.19f,.225f,.34f,.43f,.51f,.565f,.65f,.77f,.86f,.94f,1};
-        float[] offsets={0,.065f,-.025f,.155f,.115f,-.085f,.015f,-.185f,-.105f,.055f,.115f,-.045f,.035f,0};
+        float[] offsets={0,.018f,-.018f,.245f,.19f,-.065f,.015f,-.285f,-.20f,.035f,.16f,-.018f,.018f,0};
         var effect=new NativeEffect {
             Shader="Hd2dPrototype",Palette="hd2d-lightning",
             Batches=new[]{focus.Batch,shoulder.Batch,contact.Batch,broken.Batch,forks.Batch,channel.Batch},
@@ -312,27 +312,56 @@ internal static class Hd2dAttackPrototype
             Vector3 normal=new(-delta.Y,delta.X,0);normal=normal.Length()>.001f?normal.Normalized():Vector3.Up;
             Vector3 axis=delta.Length()>.001f?delta.Normalized():Vector3.Right;
             Vector3 Point(int i)=>source.Lerp(end,stations[i])+normal*offsets[i]+new Vector3(0,0,.012f);
-            void DrawChannel(Vector3 a,Vector3 b,float wa,float wb,float alpha)
+            void DrawChannel(Vector3 a,Vector3 b,float wa,float wb,float alpha,float uv0,float uv1)
             {
                 Vector3 d=(b-a).Normalized(),n=new(-d.Y,d.X,0);
-                shoulder.Stroke(a,b,(wa+wb)*2.8f,alpha*.68f,1);
-                channel.Quad(a-n*wa,b-n*wb,b+n*wb,a+n*wa,alpha,3,1.08f);
+                // Node volume belongs to transparent optical shoulders, not white polygons.
+                void ContinuousShoulder(float width,float opacity,int role)
+                {
+                    Vector3 aa=a-n*width,bb=b-n*width,cc=b+n*width,dd=a+n*width;
+                    shoulder.V(aa,new(uv0,0),opacity,1,role);shoulder.V(bb,new(uv1,0),opacity,1,role);
+                    shoulder.V(cc,new(uv1,1),opacity,1,role);shoulder.V(aa,new(uv0,0),opacity,1,role);
+                    shoulder.V(cc,new(uv1,1),opacity,1,role);shoulder.V(dd,new(uv0,1),opacity,1,role);
+                }
+                ContinuousShoulder((wa+wb)*3.8f,alpha*.48f,1);
+                ContinuousShoulder((wa+wb)*1.8f,alpha*.36f,2);
+                float ca=.003f+.16f*wa,cb=.003f+.16f*wb;
+                float hot=1-Ease((age-.015f)/.070f);
+                channel.Quad(a-n*ca,b-n*cb,b+n*cb,a+n*ca,alpha*.85f*hot,3,1.08f);
             }
             for(int i=0;i<stations.Length-1;i++) {
                 float u=stations[i],v=stations[i+1];if(front<=u)break;
                 Vector3 a=Point(i),b=Point(i+1),d=(b-a).Normalized(),n=new(-d.Y,d.X,0);
                 Vector3 Sub(int j) {
                     float q=j==0?0:j==1?.29f:j==2?.73f:1;
-                    float kink=j==0||j==3?0:((i+j)%2==0?1:-1)*(.025f+.018f*MathF.Sin(i*1.93f+j)*MathF.Sin(i*1.93f+j));
+                    float kink=j==0||j==3?0:((i+j)%2==0?1:-1)*(.007f+.006f*MathF.Sin(i*1.93f+j)*MathF.Sin(i*1.93f+j));
                     return a.Lerp(b,q)+n*kink;
                 }
                 float live=Ease((age+.085f)/.022f)*(1-Ease((age-(.007f+.004f*(i%4)))/.048f));
+                // Two already-lit stretches survive as broken, monotonically dimming
+                // afterglow. No new branch/flash/event and no full reconnection.
+                if(age>=0 && (i==4 || i==9))live=Math.Max(live,.32f*(1-Ease(age/.145f)));
                 for(int j=0;j<3;j++) {
                     float q0=j==0?0:j==1?.29f:.73f,q1=j==0?.29f:j==1?.73f:1;
                     float t0=u+(v-u)*q0,t1=u+(v-u)*q1;if(front<=t0)break;
                     Vector3 pa=Sub(j),pb=Sub(j+1);if(front<t1)pb=pa.Lerp(pb,(front-t0)/(t1-t0));
-                    float w0=.005f+.0035f*MathF.Pow(MathF.Sin(t0*27f+.4f),2),w1=.005f+.0035f*MathF.Pow(MathF.Sin(t1*27f+.4f),2);
-                    DrawChannel(pa,pb,w0,w1,live);
+                    float Node(float x,float center,float radius)=>1-Ease(MathF.Abs(x-center)/radius);
+                    float Width(float x)=>.0055f+.012f*Math.Max(Node(x,.205f,.10f),Math.Max(Node(x,.535f,.12f),.72f*Node(x,.80f,.10f)));
+                    float w0=Width(t0),w1=Width(t1);
+                    // Kind21 has a longitudinal edge fade: do NOT restart UV0..1 on
+                    // every tiny subsegment. Only the whole trunk has two ends.
+                    float uv0=t0,uv1=Math.Min(t1,front);
+                    if(i==4 || i==9)
+                    {
+                        // The selected cooling stretches acquire their own two ends
+                        // only as the connected trunk dies. Their global UVs lie in
+                        // the shader plateau, so this can only attenuate the edges.
+                        float separate=Ease((age-.020f)/.040f);
+                        uv0+=(q0-uv0)*separate;
+                        float localEnd=(Math.Min(t1,front)-u)/(v-u);
+                        uv1+=(localEnd-uv1)*separate;
+                    }
+                    DrawChannel(pa,pb,w0,w1,live,uv0,uv1);
                 }
                 if((i==3||i==8) && front>=v) {
                     float side=i==3?1:-1;
@@ -341,10 +370,10 @@ internal static class Hd2dAttackPrototype
                     Vector3 BranchPoint(int j)=>b.Lerp(tip,j/4f)+bn*(j==0||j==4?0:(j%2==0?-.032f:.024f));
                     for(int j=0;j<4;j++) {
                         Vector3 pa=BranchPoint(j),pb=BranchPoint(j+1);
-                        float w0=.0065f*(1-j/4.5f),w1=.0065f*(1-(j+1)/4.5f);
-                        forks.Stroke(pa,pb,(w0+w1)*2.2f,live*.64f,2);
+                        float w0=.004f*(1-j/4.5f),w1=.004f*(1-(j+1)/4.5f);
+                        forks.Stroke(pa,pb,(w0+w1)*2.2f,live*.36f,2);
                         Vector3 bd=(pb-pa).Normalized(),nn=new(-bd.Y,bd.X,0);
-                        channel.Quad(pa-nn*w0,pb-nn*w1,pb+nn*w1,pa+nn*w0,live*.82f,3);
+                        channel.Quad(pa-nn*w0,pb-nn*w1,pb+nn*w1,pa+nn*w0,live*.46f,3);
                     }
                 }
             }
