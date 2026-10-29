@@ -620,6 +620,7 @@ namespace DeckRogue.Game
             FireContinuousFx.ImpReviewMode=int.TryParse(Get("impprobe"),out int impProbe)?impProbe:0;
             Hd2dAttackFx.ReviewDisableLightBoltWorld=Get("boltworld")=="0";
             BoundedContactFx.OwnedReview=Get("ownedaudit")=="1";BoundedContactFx.OwnedReviewMode=int.TryParse(Get("ownedprobe"),out int ownedProbe)?ownedProbe:0;Tween.ReviewSuppressScreenFlash=Get("screenflash")=="0";Tween.ReviewScreenFlashes.Clear();
+            Hd2dAttackFx.CanopyEncodedCandidate=Get("canopyencoded")=="1";
             Hd2dAttackFx.CanopyReview=Get("canopyaudit")=="1";Hd2dAttackFx.CanopyReviewMode=int.TryParse(Get("canopyprobe"),out int canopyProbe)?canopyProbe:0;
             HealContinuousFx.MonkReceiveScale=float.TryParse(Get("monkreceive"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float monkReceive)?Mathf.Clamp01(monkReceive):.08f;
             BoundedContactFx.ColdReviewMode=int.TryParse(Get("coldprobe"),out int coldProbe)?Mathf.Clamp(coldProbe,0,9):0;

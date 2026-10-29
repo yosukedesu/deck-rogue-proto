@@ -37,7 +37,7 @@ namespace DeckRogue.Game
         public static int ActiveCount { get { int n = 0; foreach (var s in Pool) if (s != null && s.Busy) n++; return n; } }
         internal static bool ReviewDisableLightBoltWorld;
         internal static bool CanopyReview;
-        internal static int CanopyReviewMode;
+        internal static int CanopyReviewMode;internal static bool CanopyEncodedCandidate;
         internal static JArray CaptureCanopyProjection(){
             var rows=new JArray();if(!CanopyReview||Stage.Camera==null)return rows;
             var cam=Stage.Camera;
@@ -46,14 +46,14 @@ namespace DeckRogue.Game
                     var d=slot.Draws[j];if(d.Kind!=40)continue;var b=slot.Effect.Batches[j];var vertices=new JArray();
                     for(int i=0;i<d.V.Length;i++)if(d.C[i].a>0){var w=slot.Root.TransformPoint(d.V[i]);var screen=cam.WorldToScreenPoint(w);var view=cam.worldToCameraMatrix.MultiplyPoint(w);vertices.Add(new JObject{["i"]=i,["role"]=b.Role(i),["screenBottomOrigin"]=new JArray(screen.x,screen.y,screen.z),["viewZ"]=view.z,["world"]=new JArray(w.x,w.y,w.z),["uv"]=new JArray(d.UV[i].x,d.UV[i].y),["alpha"]=d.C[i].a,["gain"]=d.Gain[i].x});}
                     var props=new MaterialPropertyBlock();d.Renderer.GetPropertyBlock(props);var tex=props.GetTexture("_BaseMap");
-                    rows.Add(new JObject{["target"]=slot.Ticket.Target,["age"]=Time.time-slot.Started,["kind"]=d.Kind,["batch"]=j,["enabled"]=d.Renderer.enabled,["shader"]=d.Renderer.sharedMaterial.shader.name,["material"]=d.Renderer.sharedMaterial.GetEntityId().ToString(),["boundTexture"]=tex?.name,["width"]=tex?.width??0,["height"]=tex?.height??0,["shaderAge"]=props.GetFloat("_Age"),["probe"]=CanopyReviewMode,["receiverAnchorViewZ"]=cam.worldToCameraMatrix.MultiplyPoint(slot.Ticket.Position).z,["vertices"]=vertices});
+                    rows.Add(new JObject{["target"]=slot.Ticket.Target,["age"]=Time.time-slot.Started,["kind"]=d.Kind,["batch"]=j,["enabled"]=d.Renderer.enabled,["shader"]=d.Renderer.sharedMaterial.shader.name,["material"]=d.Renderer.sharedMaterial.GetEntityId().ToString(),["boundTexture"]=tex?.name,["width"]=tex?.width??0,["height"]=tex?.height??0,["sourceEncodedCandidate"]=props.GetFloat("_SourceEncoded"),["shaderAge"]=props.GetFloat("_Age"),["probe"]=CanopyReviewMode,["receiverAnchorViewZ"]=cam.worldToCameraMatrix.MultiplyPoint(slot.Ticket.Position).z,["vertices"]=vertices});
                 }
             }return rows;
         }
         // QA-only isolated main-surface GPU draw: no scene depth, no other effects, no post.
         // Linear ARGB32 preview clamps HDR; this is not the final tone-mapped presentation.
         internal static void CaptureCanopyNumeric(string path){
-            foreach(var s in Pool)if(s!=null&&s.Busy&&s.Effect?.ConfigureCanopyCommittedContact!=null)foreach(var d in s.Draws)if(d.Kind==40&&d.Renderer.enabled){var props=new MaterialPropertyBlock();d.Renderer.GetPropertyBlock(props);CanopyGpuProbe.Run(path,props.GetTexture("_BaseMap"),d.Renderer.sharedMaterial.shader);return;}
+            foreach(var s in Pool)if(s!=null&&s.Busy&&s.Effect?.ConfigureCanopyCommittedContact!=null)foreach(var d in s.Draws)if(d.Kind==40&&d.Renderer.enabled){var props=new MaterialPropertyBlock();d.Renderer.GetPropertyBlock(props);CanopyGpuProbe.Run(path,props.GetTexture("_BaseMap"),d.Renderer.sharedMaterial.shader,CanopyEncodedCandidate);return;}
             throw new InvalidOperationException("No actual active Canopy main material for numeric probe");
         }
         internal static void CaptureCanopySolo(string path){
@@ -328,6 +328,7 @@ namespace DeckRogue.Game
                 Props.SetVector("_RoleCore",new Vector4(linearCore.r,linearCore.g,linearCore.b,linearCore.a));
                 Props.SetFloat("_ReviewSolid",CanopyReview && (CanopyReviewMode==1||CanopyReviewMode==3||CanopyReviewMode==5)?1f:0f);
                 if(e.ConfigureCanopyCommittedContact!=null&&d.Kind==40)d.Renderer.sharedMaterial.SetFloat("_ReviewZTest",CanopyReview&&(CanopyReviewMode==2||CanopyReviewMode==3)?8f:4f);
+                Props.SetFloat("_SourceEncoded",d.Kind==40&&CanopyEncodedCandidate?1:0);
                 Props.SetFloat("_Age", visualAge); Props.SetFloat("_Kind", d.Kind); Props.SetFloat("_TextureMotion", d.Motion);
                 bool flat = HD2DFlags.Hd2dFxFlat;   // 診断: hd2dfx=flat で絵を貼らず平らな四角で描く (層の位置と大きさを見る)
                 Props.SetFloat("_TextureEnabled", d.Texture != null && !flat ? d.TextureEnabled : 0f); Props.SetFloat("_AuthoredRgba", flat ? 0f : d.AuthoredRgba); Props.SetFloat("_UseTexture", flat ? 0f : d.UseTexture);

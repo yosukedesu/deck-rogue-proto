@@ -7,7 +7,7 @@ namespace DeckRogue.Game {
 // Explicit QA-only constant-UV draw. No live material, light, clock or game state is modified.
 internal static class CanopyGpuProbe {
  static JArray RGBA(Color c)=>new JArray(c.r,c.g,c.b,c.a);
- internal static void Run(string directory,Texture bound,Shader production){
+ internal static void Run(string directory,Texture bound,Shader production,bool encodedCandidate=false){
   if(bound==null||production==null||Stage.Camera==null)throw new InvalidOperationException("Missing actual Canopy binding");
   if(!SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBFloat))throw new NotSupportedException("RGBA32F render target unavailable");
   Directory.CreateDirectory(directory);
@@ -20,7 +20,7 @@ internal static class CanopyGpuProbe {
   try{
    var xy=new[]{new Vector3(0,0,10),new Vector3(1,0,10),new Vector3(1,1,10),new Vector3(0,1,10)};
    mesh.vertices=Array.ConvertAll(xy,p=>cam.ViewportToWorldPoint(p));mesh.triangles=new[]{0,1,2,0,2,3};mesh.RecalculateBounds();
-   foreach(var m in new[]{material,probe}){m.SetTexture("_BaseMap",bound);m.SetFloat("_Age",.0333333f);m.SetFloat("_ReviewSolid",0);m.SetFloat("_ReviewZTest",8);}
+   foreach(var m in new[]{material,probe}){m.SetFloat("_SourceEncoded",encodedCandidate?1:0);m.SetTexture("_BaseMap",bound);m.SetFloat("_Age",.0333333f);m.SetFloat("_ReviewSolid",0);m.SetFloat("_ReviewZTest",8);}
    Func<string,Material,Color,JObject> draw=(name,mat,background)=>{
     var cb=new CommandBuffer{name="QA Canopy constant UV "+name};
     try{cb.SetRenderTarget(rt);cb.SetViewport(new Rect(0,0,64,64));cb.ClearRenderTarget(false,true,background);cb.SetViewProjectionMatrices(cam.worldToCameraMatrix,GL.GetGPUProjectionMatrix(cam.projectionMatrix,true));cb.DrawMesh(mesh,Matrix4x4.identity,mat,0,0);Graphics.ExecuteCommandBuffer(cb);}finally{cb.Release();}
@@ -40,7 +40,7 @@ internal static class CanopyGpuProbe {
    }
    var calibration=new JArray();probe.SetFloat("_Mode",4);
    foreach(float c in new[]{0f,.18f,.5f,1f}){probe.SetFloat("_Constant",c);calibration.Add(draw("calibration-"+calibration.Count,probe,Color.clear));}
-   var report=new JObject{["backend"]=SystemInfo.graphicsDeviceType.ToString(),["device"]=SystemInfo.graphicsDeviceName,["deviceVersion"]=SystemInfo.graphicsDeviceVersion,["activeColorSpace"]=QualitySettings.activeColorSpace.ToString(),["rtGraphicsFormat"]=rt.graphicsFormat.ToString(),["rtSRGB"]=rt.sRGB,["readbackFormat"]=read.graphicsFormat.ToString(),["texture"]=bound.name,["textureFormat"]=bound.graphicsFormat.ToString(),["filter"]=bound.filterMode.ToString(),["wrap"]=bound.wrapMode.ToString(),["mipmapCount"]=(bound as Texture2D)?.mipmapCount,["productionShader"]=production.name,["diagnosticShader"]=diagnostic.name,["unityOutputConversion"]="No output_rgb shader branch; linear float RT, no post. GPU source sRGB sampling active via bound format.",["intermediates"]="0 sampled organic RGBA; 1 gainRGB/finalAlpha; 2 Unity outputRGB/finalAlpha (same expression); 3 edge/consume/remaining/finalAlpha. Blend Off.",["finalBlend"]="Original material: Blend One OneMinusSrcAlpha for RGB and alpha, original fragment output premultiplied RGB.",["calibration"]=calibration,["samples"]=rows};
+   var report=new JObject{["sourceEncodedCandidate"]=encodedCandidate,["backend"]=SystemInfo.graphicsDeviceType.ToString(),["device"]=SystemInfo.graphicsDeviceName,["deviceVersion"]=SystemInfo.graphicsDeviceVersion,["activeColorSpace"]=QualitySettings.activeColorSpace.ToString(),["rtGraphicsFormat"]=rt.graphicsFormat.ToString(),["rtSRGB"]=rt.sRGB,["readbackFormat"]=read.graphicsFormat.ToString(),["texture"]=bound.name,["textureFormat"]=bound.graphicsFormat.ToString(),["filter"]=bound.filterMode.ToString(),["wrap"]=bound.wrapMode.ToString(),["mipmapCount"]=(bound as Texture2D)?.mipmapCount,["productionShader"]=production.name,["diagnosticShader"]=diagnostic.name,["unityOutputConversion"]="No output_rgb shader branch; linear float RT, no post. GPU source sRGB sampling active via bound format.",["intermediates"]="0 sampled organic RGBA; 1 gainRGB/finalAlpha; 2 Unity outputRGB/finalAlpha (same expression); 3 edge/consume/remaining/finalAlpha. Blend Off.",["finalBlend"]="Original material: Blend One OneMinusSrcAlpha for RGB and alpha, original fragment output premultiplied RGB.",["calibration"]=calibration,["samples"]=rows};
    File.WriteAllText(Path.Combine(directory,"measurements.json"),report.ToString());
   }finally{RenderTexture.active=previous;rt.Release();UnityEngine.Object.Destroy(rt);UnityEngine.Object.Destroy(read);UnityEngine.Object.Destroy(mesh);UnityEngine.Object.Destroy(material);UnityEngine.Object.Destroy(probe);}
  }
