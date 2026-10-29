@@ -46,7 +46,7 @@ namespace DeckRogue.Game
 
             // 紋 (題の後ろで薄く回る)
             float logoW = ph ? 760f : 1000f, logoH = logoW * 440f / 1600f;
-            float logoTop = ph ? 44f : 118f;
+            float logoTop = ph ? 36f : 96f;
             float logoCy = -(logoTop + logoH * 0.52f);   // 上端基準の y (題の字の中心)
             var gear = Theme.Art("ui", "gear_emblem");
             if (gear != null)
@@ -55,7 +55,7 @@ namespace DeckRogue.Game
                 var gi = new GameObject("emblem", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
                 gi.transform.SetParent(root, false);
                 gi.sprite = gear; gi.raycastTarget = false; gi.preserveAspect = true;
-                gi.color = new Color(1f, 1f, 1f, 0.09f);   // Linear では α がカンバス (.16) より濃く見える (2026-10-29 1 回目の撮影)
+                gi.color = new Color(1f, 1f, 1f, 0.02f);   // Linear では α がそのまま線形に足され sRGB で持ち上がる＝.09 で線の頂点 85・.035 で 56 (地 21)。ロゴ案 1 は枠つきなので字に掛からない薄さに (2026-10-29 撮影 3 回)
                 UiKit.Anchor(gi.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-gs / 2f, logoCy - gs / 2f), new Vector2(gs / 2f, logoCy + gs / 2f));
                 gi.gameObject.AddComponent<Spin>().DegPerSec = 6f;   // 1 分で 1 回転
             }
