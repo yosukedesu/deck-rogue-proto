@@ -50,9 +50,9 @@ namespace DeckRogue.Game
             { "onCardSet", "カードを仕込むたび" },
             { "onReactionFired", "からくりを動かすたび" },
             { "onScry", "占術するたび" }, // 潮読みの極み (青 2026-09-25)
-            { "onScryDiscard", "占術で札を捨てるたび(1枚ごと)" }, // 渦見の鏡 (青 2026-09-25 Opus B の処方)
+            { "onScryDiscard", "占術で札を1枚捨てるたび" }, // 渦見の鏡 (青 2026-09-25 Opus B の処方)
             { "onSetExpired", "からくりが期限切れになるたび" }, // ほどけ泡 (青 2026-09-25)
-            { "onSelfExhausted", "亡骸" },
+            { "onSelfExhausted", "亡骸（出す以外で消滅した時）" },
             { "onGrowthGained", "成長を得るたび" },
             { "onMomentumGained", "勢いを得るたび" },
             { "onLightGained", "灯を得るたび" },
@@ -64,153 +64,155 @@ namespace DeckRogue.Game
             { "onTurnEnd", "ターン終了時" },
             { "onShuffle", "山札を切り直すたび" },
             { "onEnemyDied", "敵を倒すたび" },
-            { "onDamageTaken", "攻撃でHPを失った後" },
+            { "onDamageTaken", "敵の攻撃でHPを失った後" },
         };
 
+        // 効果の文 (2026-10-30 ユーザー「略記と括弧の注記で何を言っているか分からない。長くていいから、プレイヤーが読んで分かる普通の文に」):
+        // 「何が起きるか」だけを書く。設計の但し書き (非消費・全消費・ミル・引導 …) や内部名は書かない。半角の (…) は Emphasize が小さな札にするので、文の中の括弧は全角
         static readonly Dictionary<string, string> EffectJa = new Dictionary<string, string>
         {
             { "dealDamage", "ダメージN" },
             { "dealDamageRandom", "ランダムダメージN" },
-            { "dealDamageDrain", "ドレインN(半分回復)" },
-            { "dealDamageCleave", "キル連鎖N" },
-            { "dealDamageExecute", "処刑N(HP25%以下で上限)" },
-            { "dealDamagePerBlock", "ブロック×Nダメージ" },
-            { "dealDamagePerIceBlock", "氷壁×Nダメージ" },
-            { "dealDamagePerCardPlayed", "詠唱数×Nダメージ" },
-            { "dealDamagePerCardPlayedTotal", "累計プレイ数×Nダメージ" },
-            { "dealDamagePerEnergyMax", "上限×Nダメージ" },
-            { "dealDamagePerMomentum", "勢い×Nダメージ(非消費)" },
-            { "dealDamagePerExhaust", "消滅数×Nダメージ" },
-            { "dealDamagePerHandCard", "手札数×Nダメージ" },
-            { "dealDamagePerHeal", "回復回数×Nダメージ" },
-            { "dealDamagePerDamageTaken", "受けたダメージ×Nダメージ" },
-            { "dealDamagePerSelfHpLost", "失ったHP×Nダメージ" },
-            { "dealDamagePerPermanent", "置物数×Nダメージ" },
-            { "dealDamagePerRandomPlayed", "運任せ数×Nダメージ" },
-            { "dealDamagePerNegStrength", "下げた筋力×Nダメージ" },
-            { "dealDamagePerAttackPlayed", "このターンの攻撃数×Nダメージ" },
-            { "dealDamagePerWeak", "対象の威圧×N追加ダメージ" },
+            { "dealDamageDrain", "ダメージN。与えたダメージの半分、HPを回復する" },
+            { "dealDamageCleave", "ダメージN。それで倒したら、別の敵にもダメージN" },
+            { "dealDamageExecute", "ダメージN。対象のHPが最大の25%以下ならダメージM" },
+            { "dealDamagePerBlock", "今のブロック×Nのダメージ" },
+            { "dealDamagePerIceBlock", "今の氷壁×Nのダメージ" },
+            { "dealDamagePerCardPlayed", "このターンに出した札の数×Nのダメージ" },
+            { "dealDamagePerCardPlayedTotal", "この戦闘で出した札の数×Nのダメージ" },
+            { "dealDamagePerEnergyMax", "エナジー上限×Nのダメージ" },
+            { "dealDamagePerMomentum", "勢い×Nのダメージ。勢いは失わない" },
+            { "dealDamagePerExhaust", "消滅置き場の札の数×Nのダメージ" },
+            { "dealDamagePerHandCard", "手札の枚数×Nのダメージ" },
+            { "dealDamagePerHeal", "この戦闘で回復した回数×Nのダメージ" },
+            { "dealDamagePerDamageTaken", "直前の敵の番で受けたダメージ×Nのダメージ" },
+            { "dealDamagePerSelfHpLost", "この戦闘で札の効果で失ったHP×Nのダメージ" },
+            { "dealDamagePerPermanent", "場の置物の数×Nのダメージ" },
+            { "dealDamagePerRandomPlayed", "この戦闘で出した運任せの札の数×Nのダメージ" },
+            { "dealDamagePerNegStrength", "対象の筋力がマイナスなら、その数×Nのダメージ" },
+            { "dealDamagePerAttackPlayed", "このターンに出した攻撃札の数×Nのダメージ" },
+            { "dealDamagePerWeak", "さらに、対象の威圧の数×Nのダメージ" },
             { "gainBlock", "ブロックN" },
-            { "gainBlockPerEnergyMax", "上限×Nブロック" },
-            { "gainBlockPerPermanent", "置物数×Nブロック" },
-            { "gainIceBlock", "氷壁N(持ち越し)" },
-            { "gainIceBlockPerCardPlayed", "詠唱数×N氷壁" },
-            { "gainIceBlockPerHandCard", "手札数×N氷壁" },
-            { "gainBlockPerHandCard", "手札数×Nブロック" },
-            { "staggerEnemy", "対象の体勢を崩す（次の行動が隙になる）" },
-            { "stripRider", "対象のいまの行動の付随物（状態異常・同時強化・同時防御）を消す" },   // ギア 蝋の栓 (2026-09-18)
-            { "singleHit", "対象のいまの攻撃の連撃を1回にする" },   // ギア 錆びた鎖
-            { "nullifyNextEnemyAttack", "このターン最初に受ける攻撃1回のHP損失を0にする" },   // ギア 身代わりの符
-            { "drawCardsNextTurn", "次のターンの開始時にN枚多くドロー" },
-            { "gainEnergyNextTurn", "次のターンの開始時に一時マナ+N" },
-            { "addLightNextTurn", "次のターンの開始時に灯+N" }, // 灯の埋め火・灯の集約 (2026-09-23)
-            { "gainBlockNextTurn", "次のターンの開始時にブロック+N" },
-            { "gainHp", "HP回復N" },
-            { "loseHp", "自傷HP-N" },
-            { "counter", "返しN" },
-            { "negate", "打ち消し" },
-            { "negateConvertIce", "打ち消し+実値ぶん氷壁" },
-            { "drawCards", "Nドロー" },
-            { "drawCardsPerCardPlayed", "詠唱数×Nドロー" },
-            { "impulseDraw", "衝動ドローN(このターン限り)" },
-            { "gainEnergy", "一時マナ+N" },
+            { "gainBlockPerEnergyMax", "エナジー上限×Nのブロック" },
+            { "gainBlockPerPermanent", "場の置物の数×Nのブロック" },
+            { "gainIceBlock", "氷壁N（次のターンにも残るブロック）" },
+            { "gainIceBlockPerCardPlayed", "このターンに出した札の数×Nの氷壁" },
+            { "gainIceBlockPerHandCard", "手札の枚数×Nの氷壁" },
+            { "gainBlockPerHandCard", "手札の枚数×Nのブロック" },
+            { "staggerEnemy", "対象の次の行動を隙にする" },
+            { "stripRider", "対象がいま宣言している行動の付随物（状態異常の付与・同時の筋力上げ・同時のブロック）を消す。攻撃そのものは通る" },   // ギア 蝋の栓 (2026-09-18)
+            { "singleHit", "対象がいま宣言している攻撃の連撃を1回だけにする" },   // ギア 錆びた鎖
+            { "nullifyNextEnemyAttack", "このターン、最初に受ける敵の攻撃1回でHPを失わない" },   // ギア 身代わりの符
+            { "drawCardsNextTurn", "次のターンの始めに、引く札がN枚増える" },
+            { "gainEnergyNextTurn", "次のターンの始めに、そのターンだけエナジー+N" },
+            { "addLightNextTurn", "次のターンの始めに灯+N" }, // 灯の埋め火・灯の集約 (2026-09-23)
+            { "gainBlockNextTurn", "次のターンの始めにブロックN" },
+            { "gainHp", "HPをN回復する" },
+            { "loseHp", "自分のHP-N" },
+            { "counter", "攻撃してきた敵にダメージN" },
+            { "negate", "その行動を打ち消す" },
+            { "negateConvertIce", "その行動を打ち消し、その行動の値と同じだけ氷壁を得る" },
+            { "drawCards", "カードをN枚引く" },
+            { "drawCardsPerCardPlayed", "このターンに出した札の数×N枚、カードを引く" },
+            { "impulseDraw", "山札の上からN枚を手札に加える。このターンの終わりまでに出さなければ消滅する" },
+            { "gainEnergy", "このターンだけエナジー+N" },
             { "gainEnergyMax", "エナジー上限+N" },
-            { "discountNext", "次のカード-N" },
+            { "discountNext", "次に出す札のコスト-N" },
             { "addGrowth", "成長+N" },
-            { "doubleGrowth", "成長2倍" },
-            { "dischargeGrowth", "成長放出(×Nダメージ・全消費)" },
-            { "dischargeGrowthBlock", "成長×Nブロック(全消費)" },
+            { "doubleGrowth", "成長を2倍にする" },
+            { "dischargeGrowth", "成長×Nのダメージを与え、成長を全て失う" },
+            { "dischargeGrowthBlock", "成長×Nのブロックを得て、成長を全て失う" },
             { "addMomentum", "勢い+N" },
-            { "doubleMomentum", "勢い2倍" },
-            { "dischargeMomentumBlock", "勢い×Nブロック(全消費)" },
-            { "dischargeMomentumBurn", "勢い×N延焼(全消費)" },
-            { "dischargeMomentumDamage", "勢い×Nダメージ(全消費)" },
-            { "dischargeMomentumGrowth", "勢い÷Nを成長に(全消費)" },
-            { "dischargeMomentumVolley", "勢い×Nダメージを3回(全消費)" },
-            { "momentumCarryHalf", "勢いの半分を持ち越す(常在)" },
+            { "doubleMomentum", "勢いを2倍にする" },
+            { "dischargeMomentumBlock", "勢い×Nのブロックを得て、勢いを全て失う" },
+            { "dischargeMomentumBurn", "勢い×Nの延焼を与え、勢いを全て失う" },
+            { "dischargeMomentumDamage", "勢い×Nのダメージを与え、勢いを全て失う" },
+            { "dischargeMomentumGrowth", "勢いを全て失い、その÷N（切り上げ）だけ成長を得る" },
+            { "dischargeMomentumVolley", "勢い×Nのダメージを3回与え、勢いを全て失う" },
+            { "momentumCarryHalf", "この置物がある間、ターンの終わりに勢いの半分が残る" },
             { "applyBurn", "延焼+N" },
-            { "applyBurnPerDamageTaken", "受けたダメージ×N延焼" },
-            { "dischargeBurn", "爆熱(延焼×Nダメージ・全消費)" },
+            { "applyBurnPerDamageTaken", "直前の敵の番で受けたダメージ×Nの延焼" },
+            { "dischargeBurn", "対象の延焼×Nのダメージを与え、対象の延焼を全て消す" },
             // 赤の3本柱 (2026-10-10 docs/red-cascade-design-2026-10-10.md)
-            { "dealDamagePerCascade", "この戦闘でチェインが当たった回数×Nダメージ" },
+            { "dealDamagePerCascade", "この戦闘でチェインが当たった回数×Nのダメージ" },
             { "doubleBurn", "対象の延焼を2倍にする" },
-            { "gainBlockPerBurn", "対象の延焼×Nブロック(延焼は失わない)" },
-            { "dealDamagePerBurn", "対象の延焼×Nダメージ(延焼は失わない)" },
-            { "firstCardCascade", "この置物がある間、毎ターン最初にプレイする札にチェインがつく" },
-            { "burnNoDecay", "この置物がある間、延焼は敵のターンで減らない (延焼を消費して刈る札とは噛み合わない)" },
-            { "keepImpulseOne", "この置物がある間、ターン終了時に失効する衝動の札のうちコストが最も高い1枚を手札に残す(次のターンまで)" },
-            { "cascadeSameCost", "この置物がある間、チェインは「同じコストの札だけ」に当たる(安い札は飛ばす)" }, // 火は火を呼ぶ (赤 2026-10-12 段2b)
+            { "gainBlockPerBurn", "対象の延焼×Nのブロック。延焼は減らない" },
+            { "dealDamagePerBurn", "対象の延焼×Nのダメージ。延焼は減らない" },
+            { "firstCardCascade", "この置物がある間、毎ターン最初に出す札にチェインがつく" },
+            { "burnNoDecay", "この置物がある間、敵の延焼は敵の番で減らない" },
+            { "keepImpulseOne", "この置物がある間、ターンの終わりに失効する衝動の札のうち、コストがいちばん高い1枚を次のターンまで手札に残す" },
+            { "cascadeSameCost", "この置物がある間、チェインは「この札と同じコストの札」にだけ当たる。安い札は飛ばす" }, // 火は火を呼ぶ (赤 2026-10-12 段2b)
             { "addAether", "霊気+N" },
-            { "dischargeAether", "霊気放出(×Nダメージ・全消費)" },
-            { "dischargeAetherDraw", "霊気×Nドロー(全消費)" },
+            { "dischargeAether", "霊気×Nのダメージを与え、霊気を全て失う" },
+            { "dischargeAetherDraw", "霊気×N枚のカードを引き、霊気を全て失う" },
             { "addLight", "灯+N" },
-            { "dischargeLight", "灯を全て放出し、灯1につきNダメージ(灯の数だけヒット。全体は灯×N)" },
-            { "dischargeLightRally", "灯を全て放出し、灯Nにつき全ての人形が1回動く" },
-            { "dealDamagePerLight", "灯2につきNダメージ(切り捨て。灯は失わない)" }, // 灯篭の人形 (2026-09-20 灯と人形の結び)
+            { "dischargeLight", "灯を全て放出し、灯1につきダメージNを1回ずつ与える（敵全体なら、それぞれに灯×N）" },
+            { "dischargeLightRally", "灯を全て放出し、灯Nにつき場の人形全てが1回動く" },
+            { "dealDamagePerLight", "灯2につきダメージN（切り捨て）。灯は減らない" }, // 灯篭の人形 (2026-09-20 灯と人形の結び)
             // 火種・放出の軸 (2026-09-20 夜。本家 Soul の白版)
-            { "addCardToDraw", "火種N枚を山札のランダムな位置に混ぜる(この戦闘限り)" },
-            { "addCardToDiscard", "火種N枚を捨て札に加える(この戦闘限り)" }, // 断ち切り (2026-09-23)
-            { "transformDeckToToken", "山札の札N枚を選んで火種に変える" }, // 降霊 (2026-09-23)
-            { "lightToSparks", "灯Nにつき火種1枚を山札へ(払った灯だけ失う)" },
-            { "dealDamagePerSpark", "この戦闘で撃った火種×Nダメージ" },
-            { "gainBlockPerSpark", "この戦闘で撃った火種×Nブロック" },
+            { "addCardToDraw", "火種をN枚、山札のどこかに混ぜる（この戦闘限り）" },
+            { "addCardToDiscard", "火種をN枚、捨て札に加える（この戦闘限り）" }, // 断ち切り (2026-09-23)
+            { "transformDeckToToken", "山札からN枚を選び、火種に変える" }, // 降霊 (2026-09-23)
+            { "lightToSparks", "灯Nにつき火種1枚を山札に混ぜる。払った灯だけ減る" },
+            { "dealDamagePerSpark", "この戦闘で撃った火種の数×Nのダメージ" },
+            { "gainBlockPerSpark", "この戦闘で撃った火種の数×Nのブロック" },
             // 青の3本柱 (2026-09-25): 潮読み (占術・手札を残す)・罠使い (からくりの回数・期限)
-            { "scry", "占術N(山札の上N枚を見て、要らない札を捨て札へ)" },
-            { "dealDamagePerScry", "この戦闘で占術で捨てた枚数×Nダメージ" },
-            { "dealDamagePerTrapFired", "この戦闘でからくりが動いた回数×Nダメージ" },
-            { "extendTrapLife", "仕込んでいるからくりすべての期限をNターン延ばす" },
+            { "scry", "占術N（山札の上N枚を見て、要らない札を捨て札に送る）" },
+            { "dealDamagePerScry", "この戦闘で占術で捨てた枚数×Nのダメージ" },
+            { "dealDamagePerTrapFired", "この戦闘でからくりが鳴った回数×Nのダメージ" },
+            { "extendTrapLife", "仕込んでいるからくり全ての期限をNターン延ばす" },
             { "trapsNeverExpire", "この置物がある間、からくりは期限切れにならない" },
-            { "retainHandUpTo", "この置物がある間、ターン終了時に手札をN枚まで選んで残せる" },
-            { "retrieveZeroCostFromDiscard", "捨て札のコスト0の札を全て手札に戻す" },
-            { "drawTypeFromDeck", "山札の仕込み札N枚を(上から見て最初のものを)手札に加える" },
+            { "retainHandUpTo", "この置物がある間、ターンの終わりに手札をN枚まで選んで残せる" },
+            { "retrieveZeroCostFromDiscard", "捨て札にあるコスト0の札を全て手札に戻す" },
+            { "drawTypeFromDeck", "山札を上から見て、最初に見つかった仕込み札N枚を手札に加える" },
             { "aetherCarryHalf", "この置物がある間、霊気を放出しても半分が残る" },
-            { "retainedCostDown", "この置物がある間、敵ターンの後も手札に残った札はコスト-N(手札を離れると戻る)" }, // 火守りの盾 (2026-09-24 Opus ひなた P4「作る札に刈り取りを内蔵」)
-            { "triggerRandomRetainer", "場の人形1体(ランダム)の効果を今1回解決(灯は産まない)" },
-            { "dischargeLightWeaken", "灯を全て放出し、灯3につき敵全体に威圧N(灯3未満なら不発)" },
+            { "retainedCostDown", "この置物がある間、敵の番を越えて手札に残った札はコスト-N。手札を離れると戻る" }, // 火守りの盾 (2026-09-24 Opus ひなた P4「作る札に刈り取りを内蔵」)
+            { "triggerRandomRetainer", "場の人形からランダムに1体が、いま1回動く。灯は増えない" },
+            { "dischargeLightWeaken", "灯を全て放出し、灯3につき敵全体に威圧N。灯が3未満なら何も起きない" },
             { "consumeLight", "灯をN失う" }, // amount 付き (2026-09-23 灯の炉心)。省略の札は無い
-            { "gainBlockPerLight", "灯2につきNブロック(灯は失わない)" },
-            { "drawCardsPerLight", "灯2につきNドロー(上限あり。灯は失わない)" },
-            { "lightCarryHalf", "【常在】灯を放出しても半分(切り捨て)が残る" },
+            { "gainBlockPerLight", "灯2につきブロックN。灯は減らない" },
+            { "drawCardsPerLight", "灯2につきカードをN枚引く（上限あり）。灯は減らない" },
+            { "lightCarryHalf", "この置物がある間、灯を全て放出しても半分（切り捨て）が残る" },
             { "doubleLight", "灯を2倍にする" },
-            { "addCasts", "詠唱数+N" },
-            { "addSpellEcho", "反復+N(次の呪文2回解決)" },
-            { "confuse", "混乱+N" },
-            { "exposeEnemy", "急所+N" },
-            { "weakenEnemy", "威圧N" },
+            { "addCasts", "このターンに出した札の数に+N" },
+            { "addSpellEcho", "反復+N（次に出す呪文の効果を2回解決する）" },
+            { "confuse", "対象に混乱N" },
+            { "exposeEnemy", "対象に急所N" },
+            { "weakenEnemy", "対象に威圧N" },
             { "strengthenEnemy", "敵の筋力+N" },
-            { "shatterBlock", "粉砕(敵ブロック全壊)" },
-            { "shatterBlockConvert", "粉砕+破壊値ダメージ" },
-            { "exhaustFromDeck", "山札の上N枚を消滅(ミル)" },
-            { "exhaustFromDeckChoose", "選んでN枚消滅(引導)" },
-            { "recycleExhaust", "輪廻(消滅を山札へ・×Nダメージ)" },
-            { "retrieveFromExhaust", "消滅置き場から回収" },
-            { "playFromExhaust", "消滅置き場から直接プレイ" },
+            { "shatterBlock", "対象のブロックを全て壊す" },
+            { "shatterBlockConvert", "対象のブロックを全て壊し、壊した分と同じダメージを与える" },
+            { "exhaustFromDeck", "山札の上からN枚を消滅させる" },
+            { "exhaustFromDeckChoose", "山札からN枚を選んで消滅させる" },
+            { "recycleExhaust", "消滅置き場の札を全て山札に戻して混ぜ、戻した枚数×Nのダメージ" },
+            { "retrieveFromExhaust", "消滅置き場から1枚を選んで手札に戻す。その札はこの戦闘中コスト0" },
+            { "playFromExhaust", "消滅置き場の札（仕込み札以外）を1枚選び、コストを払わずに出す。その札は消滅置き場に残る" },
             { "summonPermanent", "召喚N体" },
             { "addCardToHand", "トークンN枚を手札へ" },
             // 画面の語は「人形」(2026-09-24 Opus ひなた T3: 分列・捧げ・駆けつけに「従者」が残っていた)。内部名 (Retainer) は不変
-            { "duplicateRetainers", "場の人形を1体ずつ複製" },
-            { "sacrificeRetainer", "人形1体を選んで破壊" },
-            { "copyRetainer", "人形1体を選び同じ人形をN体出す（残りの期限も写す）" },
-            { "copyLastRetainer", "最後に点灯した人形と同じ人形をN体出す（残りの期限も写す）" },
-            { "twinNextRetainer", "次に出す人形N体が2体になる（持ち越す）" },
-            { "extendRetainerLife", "人形1体を選び期限をNターン延ばす" },
-            { "extendAllRetainersLife", "場の人形すべての期限をNターン延ばす" },
-            { "dismissUnlessLight", "灯がN未満ならこの置物は消える（捨て札へ）" },
-            { "persistRetainer", "人形1体を選び期限を無くす（消えなくなる）" },
-            { "triggerRetainersNow", "号令: 場の人形の効果を今すぐ1回ずつ解決 (登場ごとは除く)" },
-            { "activateEnteredRetainer", "場に出た人形が即1回動く" },
-            { "blessRetainers", "【常在】人形のダメージ・ブロック・回復+N" },
-            { "empowerShivs", "【常在】ナイフ与ダメージ+N" },
-            { "gainSetSlot", "仕込み枠+N(この戦闘中)" },
-            { "retrieveFromDiscard", "捨て札からN枚を手札へ(選ぶ)" },
-            { "searchDeck", "山札からN枚を手札へ(選ぶ)" },
-            { "addCopyToDiscard", "コピーN枚を捨て札へ" },
-            { "growSelf", "プレイするたび与ダメージ+N(この戦闘中)" },
-            { "upgradeInHand", "手札のN枚をこの戦闘中鍛える" },
-            { "upgradeAllInHand", "手札の全てをこの戦闘中鍛える" },
-            { "gainMaxHp", "最大HP+N(戦闘後も残る)" },
-            { "gainBlockPerMomentum", "勢い×Nブロック(失わない)" },
-            { "addGrowthPerMomentum", "勢い2につき成長+N(失わない)" },
+            { "duplicateRetainers", "場の人形それぞれに、同じ人形をもう1体出す" },
+            { "sacrificeRetainer", "場の人形を1体選んで壊す" },
+            { "copyRetainer", "場の人形を1体選び、同じ人形をN体出す。残りの期限も同じ" },
+            { "copyLastRetainer", "最後に出した人形と同じ人形をN体出す。残りの期限も同じ" },
+            { "twinNextRetainer", "次に出す人形N体が、2体ずつ出る（次のターン以降でも）" },
+            { "extendRetainerLife", "場の人形を1体選び、期限をNターン延ばす" },
+            { "extendAllRetainersLife", "場の人形全ての期限をNターン延ばす" },
+            { "dismissUnlessLight", "灯がN未満なら、この置物は捨て札に戻る" },
+            { "persistRetainer", "場の人形を1体選び、期限を無くす" },
+            { "triggerRetainersNow", "号令: 場の人形全てが、いま1回ずつ動く（登場した時の効果は除く）" },
+            { "activateEnteredRetainer", "場に出た人形が、すぐ1回動く" },
+            { "blessRetainers", "この置物がある間、人形のダメージ・ブロック・回復+N" },
+            { "empowerShivs", "この置物がある間、ナイフのダメージ+N" },
+            { "gainSetSlot", "この戦闘中、仕込み枠+N" },
+            { "retrieveFromDiscard", "捨て札からN枚を選んで手札に戻す" },
+            { "searchDeck", "山札からN枚を選んで手札に加える" },
+            { "addCopyToDiscard", "この札のコピーをN枚、捨て札に加える" },
+            { "growSelf", "この札を出すたび、この札のダメージ+N（この戦闘中）" },
+            { "upgradeInHand", "手札のN枚を、この戦闘中だけ鍛える" },
+            { "upgradeAllInHand", "手札の札を全て、この戦闘中だけ鍛える" },
+            { "gainMaxHp", "最大HP+N（戦闘が終わっても残る）" },
+            { "gainBlockPerMomentum", "勢い×Nのブロック。勢いは失わない" },
+            { "addGrowthPerMomentum", "勢い2につき成長+N。勢いは失わない" },
         };
 
         static readonly Dictionary<string, string> IntentKindJa = new Dictionary<string, string>
@@ -293,27 +295,27 @@ namespace DeckRogue.Game
             if (c == null) return "";
             var parts = new List<string>();
             if (c.HpAtOrBelowRatio.HasValue) parts.Add("自分のHPが" + Mathf_Round(c.HpAtOrBelowRatio.Value * 100.0) + "%以下");
-            if (c.MinDamageTaken.HasValue) parts.Add(c.MinDamageTaken.Value + "以上のダメージを受けた");
-            if (c.MaxActionValue.HasValue) parts.Add("敵の行動値が" + c.MaxActionValue.Value + "以下");
-            if (c.MinActionValue.HasValue) parts.Add("敵の行動値が" + c.MinActionValue.Value + "以上");
-            if (c.Blaze == true) parts.Add("猛り火(延焼合計8以上)");
+            if (c.MinDamageTaken.HasValue) parts.Add("その攻撃で" + c.MinDamageTaken.Value + "以上のHPを失った");
+            if (c.MaxActionValue.HasValue) parts.Add("その行動の値が" + c.MaxActionValue.Value + "以下");
+            if (c.MinActionValue.HasValue) parts.Add("その行動の値が" + c.MinActionValue.Value + "以上");
+            if (c.Blaze == true) parts.Add("猛り火（敵全体の延焼の合計が8以上）");
             if (c.MinGrowth.HasValue) parts.Add("成長" + c.MinGrowth.Value + "以上");
             if (c.MinMomentum.HasValue) parts.Add("勢い" + c.MinMomentum.Value + "以上");
             if (c.MinLight.HasValue) parts.Add("灯" + c.MinLight.Value + "以上");
-            if (c.EnemyIntent != null) parts.Add("対象の意図が" + KindJa(c.EnemyIntent));
-            if (c.EnemyIntentNot != null) parts.Add("対象の意図が" + KindJa(c.EnemyIntentNot) + "以外");
-            if (c.EnemyExposed == true) parts.Add("対象が急所持ち");
+            if (c.EnemyIntent != null) parts.Add("対象の次の行動が" + KindJa(c.EnemyIntent));
+            if (c.EnemyIntentNot != null) parts.Add("対象の次の行動が" + KindJa(c.EnemyIntentNot) + "以外");
+            if (c.EnemyExposed == true) parts.Add("対象に急所があれば");
             if (c.PerfectBlockLastPhase == true) parts.Add("直前の敵フェーズを完全に凌いだ");
-            if (c.TargetDead == true) parts.Add("とどめ");
-            if (c.TargetAlive == true) parts.Add("倒せなければ");
+            if (c.TargetDead == true) parts.Add("対象を倒したら");
+            if (c.TargetAlive == true) parts.Add("対象を倒せなければ");
             if (c.PerfectBlockThisPhase == true) parts.Add("この敵フェーズを完全に凌いだら");
             if (c.LastActionNoHpLoss == true) parts.Add("完全に凌いだ時");
             if (c.HealedThisTurn == true) parts.Add("このターン、先にカードで回復していたら");
             // レリック本家形 (2026-09-12)
-            if (c.Turn.HasValue) parts.Add(c.Turn.Value + "ターン目");
+            if (c.Turn.HasValue) parts.Add(c.Turn.Value + "ターン目なら");
             if (c.BlockZero == true) parts.Add("ブロックが0なら");
             if (c.NoAttackThisTurn == true) parts.Add("このターン攻撃札を1枚もプレイしていなければ");
-            if (c.MaxPlaysThisTurn.HasValue) parts.Add("このターンのプレイが" + c.MaxPlaysThisTurn.Value + "枚以下なら");
+            if (c.MaxPlaysThisTurn.HasValue) parts.Add("このターンに出した札が" + c.MaxPlaysThisTurn.Value + "枚以下なら");
             // 2026-09-09 抜けていた2種 (若幹の一撃・大地の唸りが「ダメージ6 ×2回」に化け、共鳴する茨の打ち消しが無条件に見えていた)
             if (c.MinEnergyMax.HasValue) parts.Add("エナジー上限" + c.MinEnergyMax.Value + "以上");
             if (c.ActionKinds != null && c.ActionKinds.Count > 0)
@@ -371,14 +373,14 @@ namespace DeckRogue.Game
             if (e.Pierce == true) sb.Append("(貫通)");
             if (e.XHits == true) sb.Append("×X回");
             if (e.VolleyHits.HasValue) sb.Append("×" + e.VolleyHits.Value + "回");
-            if (e.GrowthMultiplier.HasValue) sb.Append("〔成長が×" + Num(e.GrowthMultiplier.Value) + "で乗る〕");
-            if (e.MomentumMultiplier.HasValue) sb.Append("〔勢いが×" + Num(e.MomentumMultiplier.Value) + "で乗る〕");
-            if (e.SpendBlock == true) sb.Append("(解決後にブロックを全て失う)");
+            if (e.GrowthMultiplier.HasValue) sb.Append("（成長が" + Num(e.GrowthMultiplier.Value) + "倍で乗る）");
+            if (e.MomentumMultiplier.HasValue) sb.Append("（勢いが" + Num(e.MomentumMultiplier.Value) + "倍で乗る）");
+            if (e.SpendBlock == true) sb.Append("。その後、ブロックを全て失う");
             if (e.ExhaustThreshold.HasValue)
             {
                 int mx = e.AmountMax.HasValue ? e.AmountMax.Value : 0;
                 int am = e.Amount.HasValue ? e.Amount.Value : 0;
-                sb.Append("〔忘却の刻" + e.ExhaustThreshold.Value + ": " + (mx < am ? (mx == 0 ? "以降は停止" : mx + "に減少") : mx + "に増える") + "〕");
+                sb.Append("（消滅置き場が" + e.ExhaustThreshold.Value + "枚以上なら" + (mx < am ? (mx == 0 ? "、これは起きない" : mx + "に減る") : mx + "に増える") + "）");
             }
             return sb.ToString();
         }
@@ -396,11 +398,12 @@ namespace DeckRogue.Game
             int amt = e.Amount.HasValue ? e.Amount.Value : 0;
             if (e.Effect == "dealDamageRandom")
             {
-                return "ランダムダメージ" + amt + "〜" + (e.AmountMax.HasValue ? e.AmountMax.Value : amt);
+                return "ダメージ" + amt + "〜" + (e.AmountMax.HasValue ? e.AmountMax.Value : amt) + "（ランダム）";
             }
-            if (e.Effect == "summonPermanent") return "召喚" + amt + "体: " + CardName(e.SummonId);
-            if (e.Effect == "addCardToHand") return CardName(e.SummonId) + "を" + amt + "枚手札へ";
-            if (e.Effect == "searchDeck" && e.CardType == "reaction") return "山札から仕込み札" + amt + "枚を手札へ(選ぶ)";   // 仕掛けの手配 (青 2026-09-25)
+            if (e.Effect == "summonPermanent") return CardName(e.SummonId) + "を" + amt + "体出す";
+            if (e.Effect == "addCardToHand") return CardName(e.SummonId) + "を" + amt + "枚、手札に加える";
+            if (e.Effect == "searchDeck" && e.CardType == "reaction") return "山札から仕込み札を" + amt + "枚選んで手札に加える";   // 仕掛けの手配 (青 2026-09-25)
+            if (e.Effect == "dealDamageExecute") return "ダメージ" + amt + "。対象のHPが最大の25%以下ならダメージ" + (e.AmountMax.HasValue ? e.AmountMax.Value : amt);
             string tpl;
             if (e.Effect == "dealDamage" && DamageModifier != null && (e.Trigger == null || e.Trigger == "onPlay"))
             {
@@ -596,10 +599,10 @@ namespace DeckRogue.Game
         public static string Body(CardDef def, bool withTriggers = true, ICollection<string> hideTriggers = null)
         {
             // 状態異常の札は効果を持たないので本文が空だった (2026-09-23 人間ラン#17: 烙印の疼きの理由が札に無い)。Web の effectLineStrings と同じ文
-            if (def.Id == "status_wound") return "使えない（ターン終了時に捨てられる）";
-            if (def.Id == "status_scald") return "使えない。自ターン終了時に手札にあるとHP-2（この戦闘限り。捨て/消滅コストの支払いには使える）";
-            if (def.Id == "status_brand") return "使えない。自ターン終了時に手札にあるとHP-1（デッキに残る呪い。ショップの除去で取り除ける。青い蝋燭があればコスト0・HP-1・消滅で出せる）";
-            if (def.Id == "status_guilt") return "使えない。自ターン終了時に手札にあるとHP-1（仮初の呪い。5戦すると自然に消える）";
+            if (def.Id == "status_wound") return "使えない。ターンの終わりに捨てられる";
+            if (def.Id == "status_scald") return "使えない。自分のターンの終わりに手札にあるとHP-2（この戦闘限り。捨てる・消滅させる追加コストには使える）";
+            if (def.Id == "status_brand") return "使えない。自分のターンの終わりに手札にあるとHP-1（デッキに残る呪い。店の「取り除く」で外せる。青い蝋燭があればコスト0・HP-1で出せて、消滅する）";
+            if (def.Id == "status_guilt") return "使えない。自分のターンの終わりに手札にあるとHP-1（仮初の呪い。5回戦うと自然に消える）";
             var lines = LinesOf(def.Effects, def.Type, withTriggers, hideTriggers);
             if (def.Modes != null)
             {
@@ -687,14 +690,14 @@ namespace DeckRogue.Game
         public static List<string> CostNotes(CardDef def)
         {
             var n = new List<string>();
-            if (def.XCost == true) n.Add((def.XBonus ?? 0) > 0 ? "X: エナジーを全て払う (払った量+" + def.XBonus.Value + "として解決)" : "X: エナジーを全て払う");
-            if ((def.DiscardCost.HasValue ? def.DiscardCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.DiscardCost.Value + "枚を捨てる");
-            if ((def.ExhaustCost.HasValue ? def.ExhaustCost.Value : 0) > 0) n.Add("追加コスト: 手札" + def.ExhaustCost.Value + "枚を消滅");
+            if (def.XCost == true) n.Add((def.XBonus ?? 0) > 0 ? "X: 残りのエナジーを好きなだけ払う。Xは払った量+" + def.XBonus.Value : "X: 残りのエナジーを好きなだけ払う");
+            if ((def.DiscardCost.HasValue ? def.DiscardCost.Value : 0) > 0) n.Add("追加コスト: 手札を" + def.DiscardCost.Value + "枚捨てる");
+            if ((def.ExhaustCost.HasValue ? def.ExhaustCost.Value : 0) > 0) n.Add("追加コスト: 手札を" + def.ExhaustCost.Value + "枚消滅させる");
             if ((def.ImpulseCost.HasValue ? def.ImpulseCost.Value : 0) > 0) n.Add(def.KindleOptional == true
-                ? "くべてもよい: 手札の衝動の札" + def.ImpulseCost.Value + "枚を火にくべる (消滅) と「くべた時」の効果が乗る。くべずに出すと素の効果だけ"
-                : "追加コスト: 手札の衝動の札" + def.ImpulseCost.Value + "枚を火にくべる (消滅。衝動の札が無ければ出せない)");   // くべる (赤 2026-10-12 段2・段2b)
+                ? "くべてもよい: 手札の衝動の札を" + def.ImpulseCost.Value + "枚消滅させて出すと、「くべた時」の効果も起きる。くべずに出せば、ふつうの効果だけ"
+                : "追加コスト: 手札の衝動の札を" + def.ImpulseCost.Value + "枚消滅させる。衝動の札が無ければ出せない");   // くべる (赤 2026-10-12 段2・段2b)
             if ((def.LightCost.HasValue ? def.LightCost.Value : 0) > 0) n.Add("追加コスト: 灯を" + def.LightCost.Value + "払う");
-            if (def.NecroCost.HasValue) n.Add("亡骸プレイ（コスト" + def.NecroCost.Value + "）");
+            if (def.NecroCost.HasValue) n.Add("亡骸プレイ: 消滅置き場からコスト" + def.NecroCost.Value + "で一度だけ出せる");
             if (def.FreeIfHandAllPhysical == true) n.Add("手札が物理だけならコスト0");
             if (def.FreeIfHandAll != null) n.Add("手札が" + TypeJa(def.FreeIfHandAll) + "だけならコスト0");
             if (def.FreeIfMomentumAtLeast.HasValue) n.Add("勢い" + def.FreeIfMomentumAtLeast.Value + "以上ならコスト0");
@@ -711,29 +714,29 @@ namespace DeckRogue.Game
             var n = new List<string>();
             if (def.Exhaust == true) n.Add("消滅");
             if (def.Retain == true) n.Add("保持");
-            if (def.Echo == true) n.Add("反復内蔵 (効果を2回解決)");
+            if (def.Echo == true) n.Add("反復: 効果を2回解決する");
             // チェイン (赤 2026-10-10。MTG の続唱): 面では短く、全文は用語の説明 (KeywordHelp「チェイン」) に任せる
-            if ((def.Cascade ?? 0) > 0) n.Add(face ? "チェイン" + ((def.Cascade ?? 0) > 1 ? "×" + def.Cascade : "") : "チェイン" + ((def.Cascade ?? 0) > 1 ? "×" + def.Cascade : "") + " (山札の上からこの札よりコストの低い札が出るまでめくり、その札をコストを払わずにプレイ。対象は同じ敵・残りは山札の底へ・本体より先に解決)");
+            if ((def.Cascade ?? 0) > 0) n.Add("チェイン" + ((def.Cascade ?? 0) > 1 ? "×" + def.Cascade : "") + (face ? "" : "（山札の上から、この札よりコストの低い札が出るまでめくり、その札をコストを払わずに出す。対象は同じ敵。めくった残りは山札の底へ。この札の効果より先に解決する）"));
             // 反復の2回目は同じ敵を狙う (2026-09-24 Opus ひなた E11 裁定B＝本家2と同じく据え置き)。反復内蔵の札と反復を配る札に同じ一文 (CLI の ECHO_MISS_NOTE)
             if (def.Echo == true || HasEffect(def, "addSpellEcho")) n.Add(face ? "2回目も同じ敵を狙う" : EchoMissNote);
             // 合成の触媒 (2026-09-12): 工房の素材にすると結果に乗る恩恵
-            if (def.FusionCatalyst == "cheaper") n.Add("触媒: 素材にすると結果のコスト−1");
-            else if (def.FusionCatalyst == "echo") n.Add("触媒: 素材にすると結果の効果を2回解決");
-            else if (def.FusionCatalyst == "retain") n.Add("触媒: 素材にすると結果が保持");
-            else if (def.FusionCatalyst == "aoe") n.Add("触媒: 素材にすると結果のダメージが全体に");
-            if (def.ExhaustUnlessExposedEnemy == true) n.Add("急所持ちがいなければ消滅");
+            if (def.FusionCatalyst == "cheaper") n.Add("触媒: 工房の素材にすると、できた札のコスト-1");
+            else if (def.FusionCatalyst == "echo") n.Add("触媒: 工房の素材にすると、できた札の効果を2回解決する");
+            else if (def.FusionCatalyst == "retain") n.Add("触媒: 工房の素材にすると、できた札に保持がつく");
+            else if (def.FusionCatalyst == "aoe") n.Add("触媒: 工房の素材にすると、できた札のダメージが敵全体に当たる");
+            if (def.ExhaustUnlessExposedEnemy == true) n.Add("急所のある敵がいなければ消滅");
             if (def.Retainer == true)
             {   // 白の語彙 (2026-09-18 従者→人形)。寿命は「期限」(2026-09-22 友人ラン: 寿命を「灯り」と呼ぶと資源の「灯」と同じ字で「灯が減ると人形が消える」と読まれた。からくりと同じ語彙)。
                 // 注記は1行 (同日「人形を置いたらどうなるのか分からない」): 出した瞬間に1回動く (点灯) を用語解説の外に出す。火勢の一文はダメージ・ブロックを持つ人形だけ
                 bool grows = DollUi.HasGrowth(def);
-                n.Add("人形: 出した瞬間に1回動く。" + (def.LifePersist == true ? "期限なし" : "期限" + (def.Life ?? 3) + "ターン" + (face ? "" : "（出したターンを含む）")) + (grows ? "。1ターンごとにダメージとブロック+1" : ""));
+                n.Add("人形: 出した瞬間に1回動く。" + (def.LifePersist == true ? "期限なし" : "期限" + (def.Life ?? 3) + "ターン" + (face ? "" : "（出したターンを含む）")) + (grows ? "。1ターン経つごとにダメージとブロック+1" : ""));
             }
             if (def.ShivToken == true) n.Add("骨のナイフ");
             return n;
         }
 
         /// <summary>反復の2回目の注記 (2026-09-24 E11 裁定B): 2回目も同じ敵を狙う = 1回目で倒れたら空振り。Web/CLI と同じ文</summary>
-        public const string EchoMissNote = "単体の効果は1回目で対象が倒れたら2回目は空振り（別の敵や分裂・残機の次の姿には向かない）";
+        public const string EchoMissNote = "2回目も同じ敵を狙う。1回目で倒れていたら2回目は何も起きない";
 
         /// <summary>札 (選択式のモードも) がその効果を持つか</summary>
         static bool HasEffect(CardDef def, string effect)

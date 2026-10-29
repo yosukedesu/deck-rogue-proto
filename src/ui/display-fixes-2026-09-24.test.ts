@@ -50,7 +50,7 @@ describe('用語解説 (T2・E11)', () => {
   })
 
   it('反復: 1回目で対象が倒れたら2回目は空振り (本家2と同じ・仕様は据え置き)', () => {
-    expect(KEYWORD_HELP['反復']).toContain('2回目は空振り')
+    expect(KEYWORD_HELP['反復']).toContain('2回目は何も起きない')
   })
 })
 

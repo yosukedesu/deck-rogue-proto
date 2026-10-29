@@ -32,7 +32,7 @@ describe('初期デッキとみぞれ', () => {
   it('みぞれは仕込み枠2・説明文は今の効果 (呪文を撃つたび氷壁+1)', () => {
     const miz = allLeaders.find((l) => l.id === 'leader_blue')!
     expect(miz.setSlots).toBe(2)
-    expect(miz.description).toContain('呪文を撃つたび氷壁+1')
+    expect(miz.description).toContain('呪文を出すたび氷壁+1')
     expect(miz.description).not.toContain('毎ターン開始時に氷壁+2')
     const s = applyCommand(createInitialState(42, 'set-confirm'), { type: 'StartCombat', seed: 42, enemyId: 'enemy_brute', deckId: 'run_basic_blue', leaderId: 'leader_blue' })
     expect(s.player.setSlots).toBe(2)

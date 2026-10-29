@@ -20,7 +20,7 @@
     "rarity": "common",
     "family": "general",
     "charges": 2,
-    "text": "一時マナ+2",
+    "text": "このターンだけエナジー+2",
     "effects": [
       {
         "trigger": "onPlay",
@@ -34,7 +34,7 @@
     "name": "油差し",
     "rarity": "common",
     "family": "general",
-    "text": "3ドロー",
+    "text": "カードを3枚引く",
     "effects": [
       {
         "trigger": "onPlay",
@@ -48,7 +48,7 @@
     "name": "火薬",
     "rarity": "common",
     "family": "general",
-    "text": "敵全体に10ダメージ",
+    "text": "敵全体にダメージ10",
     "effects": [
       {
         "trigger": "onPlay",
@@ -63,7 +63,7 @@
     "name": "修理油",
     "rarity": "common",
     "family": "general",
-    "text": "最大HPの20%回復",
+    "text": "HPを最大の20%回復する",
     "effects": [
       {
         "trigger": "onPlay",
@@ -122,7 +122,7 @@
     "rarity": "uncommon",
     "family": "interfere",
     "needsTarget": true,
-    "text": "対象の召喚・分裂・孵化をこの戦闘で1回止める（再起動〔残機〕は止められない）",
+    "text": "対象の召喚・分裂・孵化を、この戦闘で1回だけ止める（残機の立ち上がりは止められない）",
     "effects": [
       {
         "trigger": "onPlay",
@@ -136,7 +136,7 @@
     "rarity": "rare",
     "family": "interfere",
     "needsTarget": true,
-    "text": "対象の割り込み（HP半分の豹変・目覚め）をこの戦闘中起こさない",
+    "text": "対象の豹変（HP半分での変化や目覚め）を、この戦闘中は起こさせない",
     "effects": [
       {
         "trigger": "onPlay",
@@ -191,7 +191,7 @@
     "rarity": "common",
     "family": "field",
     "needsCard": "discard",
-    "text": "捨て札から1枚を手札へ",
+    "text": "捨て札から1枚を選んで手札に戻す",
     "effects": [
       {
         "trigger": "onPlay",
@@ -206,7 +206,7 @@
     "rarity": "uncommon",
     "family": "field",
     "needsCard": "draw",
-    "text": "山札から1枚を選んで手札へ",
+    "text": "山札から1枚を選んで手札に加える",
     "effects": [
       {
         "trigger": "onPlay",
@@ -234,7 +234,7 @@
     "name": "次の備え",
     "rarity": "common",
     "family": "field",
-    "text": "次のターンのドロー+3",
+    "text": "次のターンに引く札が+3",
     "effects": [
       {
         "trigger": "onPlay",
@@ -249,7 +249,7 @@
     "rarity": "common",
     "family": "morph",
     "needsCard": "hand",
-    "text": "手札1枚をこの戦闘中鍛える",
+    "text": "手札の1枚を選び、この戦闘中だけ鍛える",
     "effects": [
       {
         "trigger": "onPlay",
@@ -264,7 +264,7 @@
     "rarity": "uncommon",
     "family": "morph",
     "needsCard": "hand",
-    "text": "手札1枚のコピーを手札に加える（この戦闘限り）",
+    "text": "手札の1枚を選び、そのコピーを手札に加える（この戦闘限り）",
     "effects": [
       {
         "trigger": "onPlay",
@@ -279,7 +279,7 @@
     "rarity": "rare",
     "family": "morph",
     "needsCard": "hand",
-    "text": "手札1枚を同じレア度の別の札に変える（この戦闘限り）",
+    "text": "手札の1枚を選び、同じレア度の別の札に変える（この戦闘限り）",
     "effects": [
       {
         "trigger": "onPlay",
@@ -309,7 +309,7 @@
     "rarity": "uncommon",
     "family": "enemy-status",
     "needsTarget": true,
-    "text": "対象の筋力を0に戻す（マイナスの筋力は戻さない）",
+    "text": "対象の筋力を0に戻す（マイナスなら戻さない）",
     "effects": [
       {
         "trigger": "onPlay",
@@ -323,7 +323,7 @@
     "rarity": "common",
     "family": "enemy-status",
     "needsTarget": true,
-    "text": "対象のブロックと殻を砕く",
+    "text": "対象のブロックと殻を全て壊す",
     "effects": [
       {
         "trigger": "onPlay",
@@ -337,7 +337,7 @@
     "rarity": "common",
     "family": "enemy-status",
     "needsTarget": true,
-    "text": "対象の次のターンの行動を隙にする（予定の行動は消えず1ターン遅れて来る。いま宣言されている行動は止まらない）",
+    "text": "対象の次の行動を隙にする。予定の行動は消えず、1ターン遅れて来る（いま宣言している行動は止まらない）",
     "effects": [
       {
         "trigger": "onPlay",
@@ -350,7 +350,7 @@
     "name": "過負荷の歯車",
     "rarity": "uncommon",
     "family": "edged",
-    "text": "一時マナ+3・次のターンのドロー−2",
+    "text": "このターンだけエナジー+3。次のターンに引く札が2枚減る",
     "effects": [
       {
         "trigger": "onPlay",
@@ -369,7 +369,7 @@
     "name": "火薬樽",
     "rarity": "uncommon",
     "family": "edged",
-    "text": "敵全体に16ダメージ・自分もHP−4",
+    "text": "敵全体にダメージ16。自分のHP-4",
     "effects": [
       {
         "trigger": "onPlay",
@@ -389,7 +389,7 @@
     "name": "血の発条",
     "rarity": "uncommon",
     "family": "edged",
-    "text": "ブロック20・HP−4",
+    "text": "ブロック20。自分のHP-4",
     "effects": [
       {
         "trigger": "onPlay",
@@ -422,7 +422,7 @@
     "name": "貯め置き",
     "rarity": "uncommon",
     "family": "keep",
-    "text": "余ったエナジーを次のターンへ持ち越す",
+    "text": "使わなかったエナジーを次のターンに持ち越す",
     "effects": [
       {
         "trigger": "onPlay",
@@ -435,7 +435,7 @@
     "name": "蘇りの発条",
     "rarity": "rare",
     "family": "big",
-    "text": "この戦闘中、致死ダメージを一度耐えてHP1で立つ",
+    "text": "この戦闘中、倒れるはずのダメージを一度だけ耐え、HP1で立つ",
     "effects": [
       {
         "trigger": "onPlay",
@@ -448,7 +448,7 @@
     "name": "時の歯車",
     "rarity": "rare",
     "family": "big",
-    "text": "敵全員のいま宣言している行動を打ち消す（楔の全体版）",
+    "text": "敵全員がいま宣言している行動を打ち消す",
     "effects": [
       {
         "trigger": "onPlay",
@@ -463,7 +463,7 @@
     "rarity": "rare",
     "family": "big",
     "special": "nameless",
-    "text": "このランで拾ったことのあるギアのどれかになる",
+    "text": "使うと、このランで拾ったことのあるギアのどれかに変わる",
     "effects": []
   },
   {
@@ -481,7 +481,7 @@
     "rarity": "common",
     "family": "enemy-status",
     "needsTarget": true,
-    "text": "対象のいま宣言している行動の付随物（状態異常の付与・同時強化・同時防御・からくり壊し）を消す。攻撃そのものは通る",
+    "text": "対象がいま宣言している行動のおまけ（状態異常の付与・同時の筋力上げ・同時のブロック・からくり壊し）を消す。攻撃そのものは通る",
     "effects": [
       {
         "trigger": "onPlay",
@@ -495,7 +495,7 @@
     "rarity": "uncommon",
     "family": "enemy-status",
     "needsTarget": true,
-    "text": "対象のいま宣言している攻撃の連撃を1回にする（手数の鏡も1回）",
+    "text": "対象がいま宣言している攻撃の連撃を1回だけにする（手数を写す攻撃も1回）",
     "effects": [
       {
         "trigger": "onPlay",
@@ -508,7 +508,7 @@
     "name": "身代わりの符",
     "rarity": "uncommon",
     "family": "general",
-    "text": "このターン、最初に受ける敵の攻撃1回のHP損失を0にする（完全に防いだ扱い）",
+    "text": "このターン、最初に受ける敵の攻撃1回でHPを失わない（完全に防いだことになる）",
     "effects": [
       {
         "trigger": "onPlay",
@@ -536,7 +536,7 @@
     "rarity": "rare",
     "family": "general",
     "charges": 1,
-    "text": "火種を2枚手札に加える",
+    "text": "火種を2枚、手札に加える",
     "effects": [
       {
         "trigger": "onPlay",
