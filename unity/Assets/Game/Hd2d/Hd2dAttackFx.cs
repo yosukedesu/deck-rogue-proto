@@ -23,8 +23,8 @@ namespace DeckRogue.Game
         sealed class Slot
         {
             public Transform Root; public Draw[] Draws; public NativeEffect Effect; public string EffectKey, Card; public ResolvedCombatFx.Ticket Ticket;
-            public NativeEffect OwnedLightBoltEffect,OwnedCanopyEffect;
-            public bool Busy, Landed, Locked, Remote; public int Version; public long Serial;
+            public NativeEffect OwnedLightBoltEffect,OwnedCanopyEffect, OwnedTripleHornEffect;
+            public bool Busy, Landed, Locked, Remote, OwnedTripleHorn; public int Version; public long Serial;
             public float Started, Expected, Height, Size, LightPower, Tail;
             public Vector3 Target, Feet, Right, Up, Toward, GroundRight, GroundToward; public Vector3? NearSurface;
             public Color[] Roles; public Color LightColor; public StageFx.ContractLightPlayback Light; public WorldBattleFx.AttackSpec LightSpec;
@@ -35,6 +35,7 @@ namespace DeckRogue.Game
         static readonly Dictionary<string, Color[]> _palettes = new Dictionary<string, Color[]>();
         public static string LastFailure { get; private set; } public static int Submitted { get; private set; } public static int Recycled { get; private set; } public static int StaleContacts { get; private set; }
         public static int ActiveCount { get { int n = 0; foreach (var s in Pool) if (s != null && s.Busy) n++; return n; } }
+        internal static bool ReviewLegacyTripleHornClock;
         internal static bool ReviewDisableLightBoltWorld;internal static float LightBoltActorReceiveCandidate=1;internal static float LightBoltFloorReceiveCandidate=1;
         internal static bool CanopyReview;
         internal static int CanopyReviewMode;internal static bool CanopyEncodedCandidate;
@@ -75,7 +76,7 @@ namespace DeckRogue.Game
                     foreach(var c in d.C){if(c.a>0)visible++;maxAlpha=Mathf.Max(maxAlpha,c.a);}
                     layers.Add(new JObject { ["kind"]=d.Kind,["enabled"]=d.Renderer.enabled,["verticesWithAlpha"]=visible,["maxAlpha"]=maxAlpha,["shader"]=d.Renderer.sharedMaterial?.shader?.name,["textureWidth"]=d.Texture?.width??0,["textureHeight"]=d.Texture?.height??0 });
                 }
-                slots.Add(new JObject{["effectIdentity"]=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(s.Effect),["ownedCanopy"]=s.Effect?.ConfigureCanopyCommittedContact!=null,["sourceUid"]=s.Ticket?.SourceUid,["canopyCommitted"]=s.Ticket?.CanopyBinding?.Committed==true,["lightPower"]=s.LightPower,["hitIndex"]=s.Ticket?.Index,["expectedTime"]=s.Expected,["actualContactTime"]=s.Landed?s.Started:(float?)null,["serial"]=s.Serial,["landed"]=s.Landed,["age"]=s.Landed?Time.time-s.Started:Time.time-s.Expected,["committed"]=s.Ticket?.LightBoltBinding?.Committed==true,["layers"]=layers});
+                slots.Add(new JObject{["ownedTripleHorn"]=s.OwnedTripleHorn,["hornCommitted"]=s.Ticket?.TripleHornBinding?.Current==true,["sampledLight"]=s.Effect.Light(),["nativeAge"]=s.Effect.VisualAge?.Invoke(),["effectIdentity"]=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(s.Effect),["ownedCanopy"]=s.Effect?.ConfigureCanopyCommittedContact!=null,["sourceUid"]=s.Ticket?.SourceUid,["canopyCommitted"]=s.Ticket?.CanopyBinding?.Committed==true,["lightPower"]=s.LightPower,["hitIndex"]=s.Ticket?.Index,["expectedTime"]=s.Expected,["actualContactTime"]=s.Landed?s.Started:(float?)null,["serial"]=s.Serial,["landed"]=s.Landed,["age"]=s.Landed?Time.time-s.Started:Time.time-s.Expected,["committed"]=s.Ticket?.LightBoltBinding?.Committed==true,["layers"]=layers});
             }
             return slots;
         }
@@ -214,7 +215,7 @@ namespace DeckRogue.Game
         {
             _epoch++; foreach (var s in Pool) if (s != null) { Retire(s, s.Version); s.Version++; }
         }
-        static Slot Acquire(string key, NativeEffect effect, Func<NativeEffect> ownedFactory = null, bool canopy = false)
+        static Slot Acquire(string key, NativeEffect effect, Func<NativeEffect> ownedFactory = null, bool canopy = false, bool horn = false)
         {
             int limit = GfxQuality.Level == GfxLevel.Low ? 4 : 8; Slot s = null;
             for (int i = 0; i < limit; i++) { if (Pool[i] == null) Pool[i] = new Slot(); if (!Pool[i].Busy || Pool[i].Root == null) { s = Pool[i]; break; } }
@@ -222,7 +223,7 @@ namespace DeckRogue.Game
             Retire(s, s.Version); s.Version++; s.Serial = ++_serial;
             // Each active receipt owns mutable geometry, committed state and its light clock.
             // Reuse only after this slot retires; another pending hit must not overwrite them.
-            if (ownedFactory != null) effect = canopy ? (s.OwnedCanopyEffect ?? (s.OwnedCanopyEffect = ownedFactory())) : (s.OwnedLightBoltEffect ?? (s.OwnedLightBoltEffect = ownedFactory()));
+            if (ownedFactory != null) effect = horn ? (s.OwnedTripleHornEffect ?? (s.OwnedTripleHornEffect = ownedFactory())) : canopy ? (s.OwnedCanopyEffect ?? (s.OwnedCanopyEffect = ownedFactory())) : (s.OwnedLightBoltEffect ?? (s.OwnedLightBoltEffect = ownedFactory()));
             if (s.Root == null) { s.Root = new GameObject("hd2d-prototype-r192").transform; }
             s.Root.position = Vector3.zero; s.Root.rotation = Quaternion.identity; s.Root.localScale = Vector3.one;
             if (s.EffectKey != key || s.Draws == null || s.Draws.Length != effect.Batches.Length) { DestroyDraws(s); s.Draws = new Draw[effect.Batches.Length]; s.EffectKey = key; }
@@ -306,6 +307,7 @@ namespace DeckRogue.Game
         }
         static void Upload(Slot s, float age)
         {
+            if(s.OwnedTripleHorn&&age>=0&&s.Ticket?.TripleHornBinding?.Current!=true){Hide(s);return;}
             var e = s.Effect; float visualAge = e.VisualAge?.Invoke() ?? age;
             for (int j = 0; j < e.Batches.Length; j++)
             {
@@ -365,8 +367,8 @@ namespace DeckRogue.Game
             float height = t.ContactVisibleHeight > 0f ? t.ContactVisibleHeight : t.Height;
             if (!(height > 0f) || !float.IsFinite(t.Feet.x)) { t.RenderFallbackReason = "hd2d_invalid_captured_geometry"; return null; }
             string card = t.SourceKey; var route = RouteOf(t);
-            bool ownedLightBolt = t.LightBoltBinding?.Eligible(t) == true; bool ownedCanopy=t.CanopyBinding?.Eligible(t)==true;
-            string cacheKey = route.Key + (ownedLightBolt ? "|LightBoltContact305" : ownedCanopy ? "|CanopyContact300" : "");
+            bool ownedLightBolt = t.LightBoltBinding?.Eligible(t) == true; bool ownedCanopy=t.CanopyBinding?.Eligible(t)==true; bool ownedTripleHorn=!ReviewLegacyTripleHornClock&&t.TripleHornBinding?.Eligible(t)==true;
+            string cacheKey = route.Key + (ownedLightBolt ? "|LightBoltContact305" : ownedCanopy ? "|CanopyContact300" : ownedTripleHorn ? "|TripleHornOwnedClock" : "");
             if (ownedLightBolt && _lightBoltMaterial == null) {
                 var shader = Resources.Load<Shader>("Shaders/Hd2dLightBoltOpticalSurface");
                 if (shader == null) { t.RenderFallbackReason = "light_bolt_private_shader_missing"; return null; }
@@ -383,9 +385,9 @@ namespace DeckRogue.Game
             Slot s = null;
             try
             {
-                s = Acquire(cacheKey, effect, ownedCanopy ? () => Hd2dAttackPrototype.CreateCanopyContact() : ownedLightBolt ? () => Hd2dAttackPrototype.CreateOwnedLightBoltContact(route) : (Func<NativeEffect>)null, ownedCanopy);
+                s = Acquire(cacheKey, effect, ownedTripleHorn ? () => Hd2dAttackPrototype.Create(route) : ownedCanopy ? () => Hd2dAttackPrototype.CreateCanopyContact() : ownedLightBolt ? () => Hd2dAttackPrototype.CreateOwnedLightBoltContact(route) : (Func<NativeEffect>)null, ownedCanopy, ownedTripleHorn);
                 effect = s.Effect;
-                s.Ticket = t; s.Card = card; s.Busy = true;
+                s.Ticket = t; s.Card = card; s.Busy = true; s.OwnedTripleHorn=ownedTripleHorn;
                 var visual = t.Visual; bool physical = PhysicalVfxProfiles.ForCard(card) != null;
                 s.Height = Mathf.Max(.25f, height); s.Size = physical ? 1f : (visual?.Size ?? 1f); s.LightPower = visual?.Light ?? 1f;
                 s.Tail = ownedCanopy ? .32f : Hd2dAttackPrototype.Tail(route.Key);

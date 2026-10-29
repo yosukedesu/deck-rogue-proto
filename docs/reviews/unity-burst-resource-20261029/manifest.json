@@ -1,0 +1,87 @@
+[
+  {
+    "path": "actual-events.json",
+    "size": 2022,
+    "sha256": "bd2e90ad2ed18b8ec59f62460f1bb29b2d1f0e5e632b335488d2d1ede23bea0e"
+  },
+  {
+    "path": "audit.py",
+    "size": 3199,
+    "sha256": "9bf185af01bcfe55fbc68a7488651a109d072aca1c06abfefac1c403f95ecf65"
+  },
+  {
+    "path": "baseline-10.png",
+    "size": 989808,
+    "sha256": "7adf9243d51c0f9887759195735321c2ba6b9db61cd816322a997e3c8e8d8ff0"
+  },
+  {
+    "path": "baseline-16.png",
+    "size": 984670,
+    "sha256": "7e4e11a26d8900502fd4e0916964f121128da11377a35eb9ad30afa585cb96ca"
+  },
+  {
+    "path": "baseline-24.png",
+    "size": 986142,
+    "sha256": "43168eb9c304805fc387228a2f58c1f093c76b8cff3f612fd944e8e7eebf6f27"
+  },
+  {
+    "path": "baseline-7.png",
+    "size": 972496,
+    "sha256": "d2dd2193acfaa4bc0d89e568487448e8446742c95a85d822eaebc7542ed36c68"
+  },
+  {
+    "path": "baseline-clock.json",
+    "size": 401509,
+    "sha256": "b35f647be9679f2b1caec9daf76bf055ba469d46f67d8b483b30eaa9b3105fd8"
+  },
+  {
+    "path": "baseline-full.mp4",
+    "size": 408052,
+    "sha256": "26d6a3b9dc3af8e793ae40a56d0d380316a73a5fa6fbcbecefb9fcef41b3e884"
+  },
+  {
+    "path": "candidate-10.png",
+    "size": 997048,
+    "sha256": "8d8ec27fa6830a1bcbb4a2407ea55c15beba95c7f6a5420ec8fa77b3991a0b40"
+  },
+  {
+    "path": "candidate-16.png",
+    "size": 984944,
+    "sha256": "ce722edcc70ced2daccec125e32ba6b2cca0f736e85ac69bf1b10110a1fec3c9"
+  },
+  {
+    "path": "candidate-24.png",
+    "size": 986189,
+    "sha256": "45d895f0f2913d174b129d2aa0f81bb12f73e41960e32431803f47a779630524"
+  },
+  {
+    "path": "candidate-7.png",
+    "size": 999003,
+    "sha256": "4b4a50fc7e6e6777d5b5377bf350421b769a2bece9ea3c03ac4cb39a196dc8cb"
+  },
+  {
+    "path": "candidate-clock.json",
+    "size": 414809,
+    "sha256": "78ac208079e3c6eb633e7d386c00bffc8cfa5b7c043558987d4e79d1b25f89c4"
+  },
+  {
+    "path": "candidate-full.mp4",
+    "size": 331129,
+    "sha256": "661b2298ea386a408105a967f362cbdae52d37523bbe076b9f6ccb77bc67a80e"
+  },
+  {
+    "path": "conditions.txt",
+    "size": 1549,
+    "sha256": "33f71274b982c4b6fbad1f4dcaca0b436375383f29790ca275222346ba5425e4"
+  },
+  {
+    "path": "README.md",
+    "size": 2731,
+    "sha256": "a593dfa73ecded01fe010b03cb65f0d1aa3c4822b9471940845f334d169a2b7f"
+  },
+  {
+    "path": "validation-summary.json",
+    "size": 2435,
+    "sha256": "daea7259e365008133720bcfec92bf53cde900260a9ec8c0139b08038cb7b5f4"
+  }
+]

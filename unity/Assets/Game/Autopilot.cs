@@ -617,6 +617,8 @@ namespace DeckRogue.Game
             _stateSpec = spec;
             HD2DFlags.ApplyState(kv);
             ColdSweepFocusPass.Enabled=Get("coldfocus")!="0";
+            Presenter.ReviewBurstResourceCue=Get("burstresourcecue")=="1";
+            Hd2dAttackFx.ReviewLegacyTripleHornClock=Get("hornclock")=="legacy";
             TripleHornReceiveState.Probe=Get("horn327probe")=="1";TripleHornReceiveState.Factor=float.TryParse(Get("hornreceive"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out var hornFactor)?Mathf.Clamp(hornFactor,.01f,1):1;
             LocalMaterialProfileFx.ReviewDisableBurst=Get("burst326")=="0";
             FireContinuousFx.ImpReviewMode=int.TryParse(Get("impprobe"),out int impProbe)?impProbe:0;

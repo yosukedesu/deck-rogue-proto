@@ -1,0 +1,1055 @@
+{
+  "legacy": [
+    {
+      "frame": 8,
+      "time": 2.36666656,
+      "effects": [
+        {
+          "hitIndex": 0,
+          "effectIdentity": 1908977792,
+          "age": 0.0,
+          "nativeAge": -0.180000067,
+          "sampledLight": 0.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 1,
+          "effectIdentity": 1908977792,
+          "age": -0.180000067,
+          "nativeAge": -0.180000067,
+          "sampledLight": 0.0,
+          "hornCommitted": false
+        }
+      ],
+      "sourceLights": [
+        {
+          "kind": "contract-attack-target",
+          "key": "enemy0",
+          "enabled": false,
+          "intensity": 0.0,
+          "color": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "position": [
+            4.31915665,
+            1.00492775,
+            1.29469872
+          ],
+          "peak": 0.0,
+          "age": 0.0,
+          "duration": 0.38
+        },
+        {
+          "kind": "contract-attack-floor",
+          "key": "enemy0",
+          "enabled": false,
+          "intensity": 0.0,
+          "color": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "position": [
+            4.31915665,
+            0.407812864,
+            1.20740843
+          ],
+          "peak": 0.0,
+          "age": 0.0,
+          "duration": 0.38
+        }
+      ],
+      "receiverState": {
+        "probe": false,
+        "factor": 1.0,
+        "count": 0,
+        "lights": [
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "actors": [
+          {
+            "key": "player",
+            "material": "18911:256",
+            "receiver": 0.0
+          },
+          {
+            "key": "enemy0",
+            "material": "18795:256",
+            "receiver": 0.0
+          }
+        ]
+      },
+      "actorHurt": [
+        {
+          "flash": 0.0,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "player",
+          "material": "18911:256",
+          "count": 0.0
+        },
+        {
+          "flash": 0.08148148,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "enemy0",
+          "material": "18795:256",
+          "count": 0.0
+        }
+      ]
+    },
+    {
+      "frame": 14,
+      "time": 2.5666666,
+      "effects": [
+        {
+          "hitIndex": 0,
+          "effectIdentity": 1908977792,
+          "age": 0.200000048,
+          "nativeAge": -0.160000086,
+          "sampledLight": 0.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 1,
+          "effectIdentity": 1908977792,
+          "age": 0.0,
+          "nativeAge": -0.160000086,
+          "sampledLight": 0.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 2,
+          "effectIdentity": 1908977792,
+          "age": -0.160000086,
+          "nativeAge": -0.160000086,
+          "sampledLight": 0.0,
+          "hornCommitted": false
+        }
+      ],
+      "sourceLights": [
+        {
+          "kind": "contract-attack-target",
+          "key": "enemy0",
+          "enabled": false,
+          "intensity": 0.0,
+          "color": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "position": [
+            4.31915665,
+            1.00492775,
+            1.29469872
+          ],
+          "peak": 0.0,
+          "age": 0.0,
+          "duration": 0.38
+        },
+        {
+          "kind": "contract-attack-floor",
+          "key": "enemy0",
+          "enabled": false,
+          "intensity": 0.0,
+          "color": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "position": [
+            4.31915665,
+            0.407812864,
+            1.20740843
+          ],
+          "peak": 0.0,
+          "age": 0.0,
+          "duration": 0.38
+        }
+      ],
+      "receiverState": {
+        "probe": false,
+        "factor": 1.0,
+        "count": 0,
+        "lights": [
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "actors": [
+          {
+            "key": "player",
+            "material": "18911:256",
+            "receiver": 0.0
+          },
+          {
+            "key": "enemy0",
+            "material": "18795:256",
+            "receiver": 0.0
+          }
+        ]
+      },
+      "actorHurt": [
+        {
+          "flash": 0.0,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "player",
+          "material": "18911:256",
+          "count": 0.0
+        },
+        {
+          "flash": 0.08148148,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "enemy0",
+          "material": "18795:256",
+          "count": 0.0
+        }
+      ]
+    },
+    {
+      "frame": 19,
+      "time": 2.73333335,
+      "effects": [
+        {
+          "hitIndex": 0,
+          "effectIdentity": 1908977792,
+          "age": 0.3666668,
+          "nativeAge": 0.0,
+          "sampledLight": 1.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 1,
+          "effectIdentity": 1908977792,
+          "age": 0.166666746,
+          "nativeAge": 0.0,
+          "sampledLight": 1.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 2,
+          "effectIdentity": 1908977792,
+          "age": 0.0,
+          "nativeAge": 0.0,
+          "sampledLight": 1.0,
+          "hornCommitted": true
+        }
+      ],
+      "sourceLights": [
+        {
+          "kind": "contract-attack-target",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 4.455,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            1.00492775,
+            1.29469872
+          ],
+          "peak": 4.455,
+          "age": 0.0,
+          "duration": 0.38
+        },
+        {
+          "kind": "contract-attack-floor",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 18.27,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            0.407812864,
+            1.20740843
+          ],
+          "peak": 18.27,
+          "age": 0.0,
+          "duration": 0.38
+        }
+      ],
+      "receiverState": {
+        "probe": false,
+        "factor": 1.0,
+        "count": 0,
+        "lights": [
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "actors": [
+          {
+            "key": "player",
+            "material": "18911:256",
+            "receiver": 0.0
+          },
+          {
+            "key": "enemy0",
+            "material": "18795:256",
+            "receiver": 0.0
+          }
+        ]
+      },
+      "actorHurt": [
+        {
+          "flash": 0.0,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "player",
+          "material": "18911:256",
+          "count": 0.0
+        },
+        {
+          "flash": 0.08148148,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "enemy0",
+          "material": "18795:256",
+          "count": 0.0
+        }
+      ]
+    }
+  ],
+  "fixed": [
+    {
+      "frame": 8,
+      "time": 6.4666667,
+      "effects": [
+        {
+          "hitIndex": 0,
+          "effectIdentity": 1266927264,
+          "age": 0.0,
+          "nativeAge": 0.0,
+          "sampledLight": 1.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 1,
+          "effectIdentity": -114338208,
+          "age": -0.179999828,
+          "nativeAge": -0.179999828,
+          "sampledLight": 0.0,
+          "hornCommitted": false
+        }
+      ],
+      "sourceLights": [
+        {
+          "kind": "contract-attack-target",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 4.455,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            1.00492775,
+            1.29469872
+          ],
+          "peak": 4.455,
+          "age": 0.0,
+          "duration": 0.38
+        },
+        {
+          "kind": "contract-attack-floor",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 18.27,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            0.407812864,
+            1.20740843
+          ],
+          "peak": 18.27,
+          "age": 0.0,
+          "duration": 0.38
+        }
+      ],
+      "receiverState": {
+        "probe": false,
+        "factor": 1.0,
+        "count": 0,
+        "lights": [
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "actors": [
+          {
+            "key": "player",
+            "material": "19153:1280",
+            "receiver": 0.0
+          },
+          {
+            "key": "enemy0",
+            "material": "19058:1280",
+            "receiver": 0.0
+          }
+        ]
+      },
+      "actorHurt": [
+        {
+          "flash": 0.0,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "player",
+          "material": "19153:1280",
+          "count": 0.0
+        },
+        {
+          "flash": 0.08148148,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "enemy0",
+          "material": "19058:1280",
+          "count": 0.0
+        }
+      ]
+    },
+    {
+      "frame": 14,
+      "time": 6.66666651,
+      "effects": [
+        {
+          "hitIndex": 0,
+          "effectIdentity": 1266927264,
+          "age": 0.199999809,
+          "nativeAge": 0.199999809,
+          "sampledLight": 0.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 1,
+          "effectIdentity": -114338208,
+          "age": 0.0,
+          "nativeAge": 0.0,
+          "sampledLight": 1.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 2,
+          "effectIdentity": 843063360,
+          "age": -0.159999847,
+          "nativeAge": -0.159999847,
+          "sampledLight": 0.0,
+          "hornCommitted": false
+        }
+      ],
+      "sourceLights": [
+        {
+          "kind": "contract-attack-target",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 4.455,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            1.00492775,
+            1.29469872
+          ],
+          "peak": 4.455,
+          "age": 0.0,
+          "duration": 0.38
+        },
+        {
+          "kind": "contract-attack-floor",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 18.27,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            0.407812864,
+            1.20740843
+          ],
+          "peak": 18.27,
+          "age": 0.0,
+          "duration": 0.38
+        }
+      ],
+      "receiverState": {
+        "probe": false,
+        "factor": 1.0,
+        "count": 0,
+        "lights": [
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "actors": [
+          {
+            "key": "player",
+            "material": "19153:1280",
+            "receiver": 0.0
+          },
+          {
+            "key": "enemy0",
+            "material": "19058:1280",
+            "receiver": 0.0
+          }
+        ]
+      },
+      "actorHurt": [
+        {
+          "flash": 0.0,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "player",
+          "material": "19153:1280",
+          "count": 0.0
+        },
+        {
+          "flash": 0.08148148,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "enemy0",
+          "material": "19058:1280",
+          "count": 0.0
+        }
+      ]
+    },
+    {
+      "frame": 19,
+      "time": 6.83333349,
+      "effects": [
+        {
+          "hitIndex": 0,
+          "effectIdentity": 1266927264,
+          "age": 0.3666668,
+          "nativeAge": 0.3666668,
+          "sampledLight": 0.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 1,
+          "effectIdentity": -114338208,
+          "age": 0.166666985,
+          "nativeAge": 0.166666985,
+          "sampledLight": 0.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 2,
+          "effectIdentity": 843063360,
+          "age": 0.0,
+          "nativeAge": 0.0,
+          "sampledLight": 1.0,
+          "hornCommitted": true
+        }
+      ],
+      "sourceLights": [
+        {
+          "kind": "contract-attack-target",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 4.455,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            1.00492775,
+            1.29469872
+          ],
+          "peak": 4.455,
+          "age": 0.0,
+          "duration": 0.38
+        },
+        {
+          "kind": "contract-attack-floor",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 18.27,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            0.407812864,
+            1.20740843
+          ],
+          "peak": 18.27,
+          "age": 0.0,
+          "duration": 0.38
+        }
+      ],
+      "receiverState": {
+        "probe": false,
+        "factor": 1.0,
+        "count": 0,
+        "lights": [
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "actors": [
+          {
+            "key": "player",
+            "material": "19153:1280",
+            "receiver": 0.0
+          },
+          {
+            "key": "enemy0",
+            "material": "19058:1280",
+            "receiver": 0.0
+          }
+        ]
+      },
+      "actorHurt": [
+        {
+          "flash": 0.0,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "player",
+          "material": "19153:1280",
+          "count": 0.0
+        },
+        {
+          "flash": 0.08148148,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "enemy0",
+          "material": "19058:1280",
+          "count": 0.0
+        }
+      ]
+    }
+  ],
+  "fixed-receive": [
+    {
+      "frame": 8,
+      "time": 10.5666666,
+      "effects": [
+        {
+          "hitIndex": 0,
+          "effectIdentity": 1266927264,
+          "age": 0.0,
+          "nativeAge": 0.0,
+          "sampledLight": 1.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 1,
+          "effectIdentity": -114338208,
+          "age": -0.179999352,
+          "nativeAge": -0.179999352,
+          "sampledLight": 0.0,
+          "hornCommitted": false
+        }
+      ],
+      "sourceLights": [
+        {
+          "kind": "contract-attack-target",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 4.455,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            1.00492775,
+            1.29469872
+          ],
+          "peak": 4.455,
+          "age": 0.0,
+          "duration": 0.38
+        },
+        {
+          "kind": "contract-attack-floor",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 18.27,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            0.407812864,
+            1.20740843
+          ],
+          "peak": 18.27,
+          "age": 0.0,
+          "duration": 0.38
+        }
+      ],
+      "receiverState": {
+        "probe": true,
+        "factor": 0.12,
+        "count": 2,
+        "lights": [
+          [
+            4.31915665,
+            1.00492775,
+            1.29469872,
+            0.12
+          ],
+          [
+            4.31915665,
+            0.407812864,
+            1.20740843,
+            0.12
+          ]
+        ],
+        "actors": [
+          {
+            "key": "player",
+            "material": "19161:1280",
+            "receiver": 1.0
+          },
+          {
+            "key": "enemy0",
+            "material": "19066:1792",
+            "receiver": 1.0
+          }
+        ]
+      },
+      "actorHurt": [
+        {
+          "flash": 0.0,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "player",
+          "material": "19161:1280",
+          "count": 0.0
+        },
+        {
+          "flash": 0.08148148,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "enemy0",
+          "material": "19066:1792",
+          "count": 0.0
+        }
+      ]
+    },
+    {
+      "frame": 14,
+      "time": 10.7666664,
+      "effects": [
+        {
+          "hitIndex": 0,
+          "effectIdentity": 1266927264,
+          "age": 0.199999809,
+          "nativeAge": 0.199999809,
+          "sampledLight": 0.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 1,
+          "effectIdentity": -114338208,
+          "age": 0.0,
+          "nativeAge": 0.0,
+          "sampledLight": 1.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 2,
+          "effectIdentity": 843063360,
+          "age": -0.159999847,
+          "nativeAge": -0.159999847,
+          "sampledLight": 0.0,
+          "hornCommitted": false
+        }
+      ],
+      "sourceLights": [
+        {
+          "kind": "contract-attack-target",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 4.455,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            1.00492775,
+            1.29469872
+          ],
+          "peak": 4.455,
+          "age": 0.0,
+          "duration": 0.38
+        },
+        {
+          "kind": "contract-attack-floor",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 18.27,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            0.407812864,
+            1.20740843
+          ],
+          "peak": 18.27,
+          "age": 0.0,
+          "duration": 0.38
+        }
+      ],
+      "receiverState": {
+        "probe": true,
+        "factor": 0.12,
+        "count": 2,
+        "lights": [
+          [
+            4.31915665,
+            1.00492775,
+            1.29469872,
+            0.12
+          ],
+          [
+            4.31915665,
+            0.407812864,
+            1.20740843,
+            0.12
+          ]
+        ],
+        "actors": [
+          {
+            "key": "player",
+            "material": "19161:1280",
+            "receiver": 1.0
+          },
+          {
+            "key": "enemy0",
+            "material": "19066:1792",
+            "receiver": 1.0
+          }
+        ]
+      },
+      "actorHurt": [
+        {
+          "flash": 0.0,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "player",
+          "material": "19161:1280",
+          "count": 0.0
+        },
+        {
+          "flash": 0.08148148,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "enemy0",
+          "material": "19066:1792",
+          "count": 0.0
+        }
+      ]
+    },
+    {
+      "frame": 19,
+      "time": 10.9333334,
+      "effects": [
+        {
+          "hitIndex": 0,
+          "effectIdentity": 1266927264,
+          "age": 0.3666668,
+          "nativeAge": 0.3666668,
+          "sampledLight": 0.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 1,
+          "effectIdentity": -114338208,
+          "age": 0.166666985,
+          "nativeAge": 0.166666985,
+          "sampledLight": 0.0,
+          "hornCommitted": true
+        },
+        {
+          "hitIndex": 2,
+          "effectIdentity": 843063360,
+          "age": 0.0,
+          "nativeAge": 0.0,
+          "sampledLight": 1.0,
+          "hornCommitted": true
+        }
+      ],
+      "sourceLights": [
+        {
+          "kind": "contract-attack-target",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 4.455,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            1.00492775,
+            1.29469872
+          ],
+          "peak": 4.455,
+          "age": 0.0,
+          "duration": 0.38
+        },
+        {
+          "kind": "contract-attack-floor",
+          "key": "enemy0",
+          "enabled": true,
+          "intensity": 18.27,
+          "color": [
+            1.0,
+            0.8784314,
+            0.6313726
+          ],
+          "position": [
+            4.31915665,
+            0.407812864,
+            1.20740843
+          ],
+          "peak": 18.27,
+          "age": 0.0,
+          "duration": 0.38
+        }
+      ],
+      "receiverState": {
+        "probe": true,
+        "factor": 0.12,
+        "count": 2,
+        "lights": [
+          [
+            4.31915665,
+            1.00492775,
+            1.29469872,
+            0.12
+          ],
+          [
+            4.31915665,
+            0.407812864,
+            1.20740843,
+            0.12
+          ]
+        ],
+        "actors": [
+          {
+            "key": "player",
+            "material": "19161:1280",
+            "receiver": 1.0
+          },
+          {
+            "key": "enemy0",
+            "material": "19066:1792",
+            "receiver": 1.0
+          }
+        ]
+      },
+      "actorHurt": [
+        {
+          "flash": 0.0,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "player",
+          "material": "19161:1280",
+          "count": 0.0
+        },
+        {
+          "flash": 0.08148148,
+          "attackCount": 0.0,
+          "attackLights": [],
+          "key": "enemy0",
+          "material": "19066:1792",
+          "count": 0.0
+        }
+      ]
+    }
+  ]
+}

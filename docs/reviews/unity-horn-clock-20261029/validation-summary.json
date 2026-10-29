@@ -1,0 +1,467 @@
+{
+  "cancel15": {
+    "frames": 70,
+    "contacts": {
+      "0": {
+        "frame": 8,
+        "time": 35.1666679,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      },
+      "1": {
+        "frame": 14,
+        "time": 35.3666649,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      }
+    },
+    "positiveTargetLightFrames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      14
+    ],
+    "ownedEffectIdentities": [
+      -114338208,
+      843063360,
+      1266927264
+    ],
+    "maxNativeAgeError": 0,
+    "damage": [
+      5,
+      5,
+      5
+    ],
+    "finalEffectClear": true
+  },
+  "cancel20": {
+    "frames": 70,
+    "contacts": {
+      "0": {
+        "frame": 8,
+        "time": 39.2666664,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      },
+      "1": {
+        "frame": 14,
+        "time": 39.4666672,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      },
+      "2": {
+        "frame": 19,
+        "time": 39.6333351,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      }
+    },
+    "positiveTargetLightFrames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "ownedEffectIdentities": [
+      -114338208,
+      843063360,
+      1266927264
+    ],
+    "maxNativeAgeError": 0,
+    "damage": [
+      5,
+      5,
+      5
+    ],
+    "finalEffectClear": true
+  },
+  "cancel7": {
+    "frames": 70,
+    "contacts": {},
+    "positiveTargetLightFrames": [],
+    "ownedEffectIdentities": [
+      1266927264
+    ],
+    "maxNativeAgeError": 0,
+    "damage": [
+      5,
+      5,
+      5
+    ],
+    "finalEffectClear": true
+  },
+  "cancel9": {
+    "frames": 70,
+    "contacts": {
+      "0": {
+        "frame": 8,
+        "time": 31.0666676,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      }
+    },
+    "positiveTargetLightFrames": [
+      8
+    ],
+    "ownedEffectIdentities": [
+      -114338208,
+      1266927264
+    ],
+    "maxNativeAgeError": 0,
+    "damage": [
+      5,
+      5,
+      5
+    ],
+    "finalEffectClear": true
+  },
+  "fixed": {
+    "frames": 70,
+    "contacts": {
+      "0": {
+        "frame": 8,
+        "time": 6.4666667,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      },
+      "1": {
+        "frame": 14,
+        "time": 6.66666651,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      },
+      "2": {
+        "frame": 19,
+        "time": 6.83333349,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      }
+    },
+    "positiveTargetLightFrames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "ownedEffectIdentities": [
+      -114338208,
+      843063360,
+      1266927264
+    ],
+    "maxNativeAgeError": 0,
+    "damage": [
+      5,
+      5,
+      5
+    ],
+    "finalEffectClear": true,
+    "maxDifferenceFromLegacy": {
+      "hurt": 0,
+      "offset": 0,
+      "kick": 0,
+      "effectAge": 4.999999999588667e-07
+    }
+  },
+  "fixed-receive": {
+    "frames": 70,
+    "contacts": {
+      "0": {
+        "frame": 8,
+        "time": 10.5666666,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      },
+      "1": {
+        "frame": 14,
+        "time": 10.7666664,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      },
+      "2": {
+        "frame": 19,
+        "time": 10.9333334,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      }
+    },
+    "positiveTargetLightFrames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "ownedEffectIdentities": [
+      -114338208,
+      843063360,
+      1266927264
+    ],
+    "maxNativeAgeError": 0,
+    "damage": [
+      5,
+      5,
+      5
+    ],
+    "finalEffectClear": true,
+    "maxDifferenceFromLegacy": {
+      "hurt": 0,
+      "offset": 0,
+      "kick": 0,
+      "effectAge": 9.539999999974569e-07
+    }
+  },
+  "legacy": {
+    "frames": 70,
+    "contacts": {
+      "0": {
+        "frame": 8,
+        "time": 2.36666656,
+        "nativeAge": -0.180000067,
+        "sampledLight": 0.0
+      },
+      "1": {
+        "frame": 14,
+        "time": 2.5666666,
+        "nativeAge": -0.160000086,
+        "sampledLight": 0.0
+      },
+      "2": {
+        "frame": 19,
+        "time": 2.73333335,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      }
+    },
+    "positiveTargetLightFrames": [
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "ownedEffectIdentities": [],
+    "maxNativeAgeError": 0,
+    "damage": [
+      5,
+      5,
+      5
+    ],
+    "finalEffectClear": true
+  },
+  "reuse": {
+    "frames": 70,
+    "contacts": {
+      "0": {
+        "frame": 8,
+        "time": 43.3666649,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      },
+      "1": {
+        "frame": 14,
+        "time": 43.5666656,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      },
+      "2": {
+        "frame": 19,
+        "time": 43.7333336,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      }
+    },
+    "positiveTargetLightFrames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "ownedEffectIdentities": [
+      -114338208,
+      843063360,
+      1266927264
+    ],
+    "maxNativeAgeError": 0,
+    "damage": [
+      5,
+      5,
+      5
+    ],
+    "finalEffectClear": true,
+    "maxDifferenceFromLegacy": {
+      "hurt": 0,
+      "offset": 0,
+      "kick": 0,
+      "effectAge": 3.3269999999974154e-06
+    }
+  },
+  "trio-target1": {
+    "frames": 70,
+    "contacts": {
+      "0": {
+        "frame": 8,
+        "time": 18.7666664,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      },
+      "1": {
+        "frame": 14,
+        "time": 18.9666672,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      },
+      "2": {
+        "frame": 19,
+        "time": 19.1333332,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      }
+    },
+    "positiveTargetLightFrames": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "ownedEffectIdentities": [
+      -114338208,
+      843063360,
+      1266927264
+    ],
+    "maxNativeAgeError": 0,
+    "damage": [
+      5,
+      5,
+      5
+    ],
+    "finalEffectClear": true
+  },
+  "unowned-energy4": {
+    "frames": 70,
+    "contacts": {
+      "0": {
+        "frame": 8,
+        "time": 22.8666668,
+        "nativeAge": -0.1800003,
+        "sampledLight": 0.0
+      },
+      "1": {
+        "frame": 14,
+        "time": 23.0666676,
+        "nativeAge": -0.159999847,
+        "sampledLight": 0.0
+      },
+      "2": {
+        "frame": 19,
+        "time": 23.2333336,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      }
+    },
+    "positiveTargetLightFrames": [
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "ownedEffectIdentities": [],
+    "maxNativeAgeError": 0,
+    "damage": [
+      5,
+      5,
+      5
+    ],
+    "finalEffectClear": true
+  },
+  "volley": {
+    "frames": 70,
+    "contacts": {
+      "0": {
+        "frame": 8,
+        "time": 14.666667,
+        "nativeAge": -0.179999352,
+        "sampledLight": 0.0
+      },
+      "1": {
+        "frame": 14,
+        "time": 14.8666668,
+        "nativeAge": -0.159999847,
+        "sampledLight": 0.0
+      },
+      "2": {
+        "frame": 19,
+        "time": 15.0333338,
+        "nativeAge": 0.0,
+        "sampledLight": 1.0
+      }
+    },
+    "positiveTargetLightFrames": [
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "ownedEffectIdentities": [],
+    "maxNativeAgeError": 0,
+    "damage": [
+      2,
+      2,
+      2
+    ],
+    "finalEffectClear": true
+  }
+}

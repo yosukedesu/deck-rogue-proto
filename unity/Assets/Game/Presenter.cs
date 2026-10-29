@@ -14,6 +14,7 @@ namespace DeckRogue.Game
 {
     public static partial class Presenter
     {
+        internal static bool ReviewBurstResourceCue;
         /// <summary>直前に見たイベント数 (戦闘が変わったら 0 に戻る)</summary>
         static int _seen;
         static object _seenCombat;
@@ -387,6 +388,11 @@ namespace DeckRogue.Game
                 ctx.Display = display;
                 ctx.EventIndex=i;ctx.ContactEvent=ev;ctx.CapturedState=combat;EnemySources.TryGetValue(i,out ctx.EnemySource);EnemySourceVisuals.TryGetValue(i,out ctx.EnemySourceVisual);ctx.EnemySourceHadVisual=EnemySourceHadVisual.Contains(i);ctx.Action=action;ctx.NumericEpoch=epoch;ctx.CapturedBoard=board;
                 ctx.NumericReceipt=Numeric.Find(i,ev);
+                if(ev is GameEvent_LightDischarged discharge) {
+                    var owned=new List<LightBurstBinding>();
+                    foreach(var entry in capturedTickets)if(entry.Value?.LightBurstBinding?.AdmitsDischarge(discharge)==true)owned.Add(entry.Value.LightBurstBinding);
+                    if(owned.Count==3)ctx.BurstDischargeBindings=owned.ToArray();
+                }
                 capturedTickets.TryGetValue(i,out ctx.Feedback);
                 if(ctx.Feedback!=null)Stage.BindImpactActor(ctx.Feedback.Impact);
                 if(ctx.Feedback?.Outcome=="hit" && intensityAt.TryGetValue(i,out var intensity))ctx.Feedback.Intensity=intensity;
@@ -1604,7 +1610,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public int HitCount = 1; public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public HitPlan Hit; public StageMotion.Shot Motion; public bool MotionDim; public ResolvedCombatFx.Ticket Feedback; public Action LandPlayerHp; public CombatDisplaySequence Display; public CardVfxProfile.Showcase Showcase; public bool AuthoredCastReady; public int EventIndex,NumericEpoch; public GameEvent ContactEvent; public BattleView CapturedBoard; public CombatActionQueue.ActionToken Action; public CombatPresentationLedger.Receipt NumericReceipt; public bool ContactQueued,ContactEntered,ContactDone,DispatchDeferred,EnemyAggregatePopupShown,EnemyGlobalHitCueShown;public EnemySourceLease EnemySource;public Stage.ImpactCapture EnemySourceVisual;public bool EnemySourceHadVisual;public GameState CapturedState; }   // Motion＝この当たりで寄る (段2 レーン M・門が偽なら null)・MotionDim＝この札で舞台を暗くする   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
+        sealed class ReactionCtx { public int HitCount = 1; public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public LightBurstBinding[] BurstDischargeBindings; public HitPlan Hit; public StageMotion.Shot Motion; public bool MotionDim; public ResolvedCombatFx.Ticket Feedback; public Action LandPlayerHp; public CombatDisplaySequence Display; public CardVfxProfile.Showcase Showcase; public bool AuthoredCastReady; public int EventIndex,NumericEpoch; public GameEvent ContactEvent; public BattleView CapturedBoard; public CombatActionQueue.ActionToken Action; public CombatPresentationLedger.Receipt NumericReceipt; public bool ContactQueued,ContactEntered,ContactDone,DispatchDeferred,EnemyAggregatePopupShown,EnemyGlobalHitCueShown;public EnemySourceLease EnemySource;public Stage.ImpactCapture EnemySourceVisual;public bool EnemySourceHadVisual;public GameState CapturedState; }   // Motion＝この当たりで寄る (段2 レーン M・門が偽なら null)・MotionDim＝この札で舞台を暗くする   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
 
         /// <summary>
         /// 自分の札の当たりの計画 (2026-09-22 ユーザー「攻撃エフェクトがどの攻撃でも同じ」): 札 (CardPlayed / ReactionTriggered) の後に続く自分由来の DamageDealt
@@ -2627,7 +2633,14 @@ namespace DeckRogue.Game
                     }
                     if (targets.Count == 0) { var ps = g.Battle != null ? g.Battle.PlayerSprite() : null; targets.Add(ps != null ? Tween.CenterIn(ps, fx) + new Vector2(0f, 40f) : from + new Vector2(0f, 200f)); }
                     Audio.Key("LightDischarged");
-                    foreach (var t in targets)
+                    bool resourceOnly=ReviewBurstResourceCue && Stage.CombatWorld && ctx?.BurstDischargeBindings?.Length==3 && targets.Count==3;
+                    if(resourceOnly)foreach(var binding in ctx.BurstDischargeBindings)if(!binding.AdmitsDischarge(ld))resourceOnly=false;
+                    if(resourceOnly) {
+                        // The vessel announces spending; the authored impacts announce the three receivers.
+                        Tween.RingBurst(fx,from,ThemeFx.LampCore,32f,.22f);
+                        Debug.Log("[BurstResourceCue] exact Spent1 targets3 resource-local");
+                    }
+                    else foreach (var t in targets)
                     {
                         var tt = t;
                         Tween.BeamFx(fx, from, tt, Color.white, 0.34f, 1.3f, ThemeFx.LightStreak());

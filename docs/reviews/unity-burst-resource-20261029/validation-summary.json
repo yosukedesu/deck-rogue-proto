@@ -1,0 +1,149 @@
+{
+  "cases": {
+    "baseline": {
+      "frames": 70,
+      "contactFrames": {
+        "enemy0": 7,
+        "enemy1": 8,
+        "enemy2": 9
+      },
+      "spent": [
+        1
+      ],
+      "damage": [
+        4,
+        4,
+        4
+      ],
+      "weak": [
+        1,
+        1,
+        1
+      ],
+      "finalClear": true
+    },
+    "cancel": {
+      "frames": 70,
+      "contactFrames": {
+        "enemy0": 7,
+        "enemy1": 8
+      },
+      "spent": [
+        1
+      ],
+      "damage": [
+        4,
+        4,
+        4
+      ],
+      "weak": [
+        1,
+        1,
+        1
+      ],
+      "finalClear": true
+    },
+    "candidate": {
+      "frames": 70,
+      "contactFrames": {
+        "enemy0": 7,
+        "enemy1": 8,
+        "enemy2": 9
+      },
+      "spent": [
+        1
+      ],
+      "damage": [
+        4,
+        4,
+        4
+      ],
+      "weak": [
+        1,
+        1,
+        1
+      ],
+      "finalClear": true,
+      "maxDifferencesFromBaseline": {
+        "effectAge": 2.449999999820651e-07,
+        "sourceLightIntensity": 1.3000000000040757e-05,
+        "actorFlash": 0,
+        "geometryLocalAndUVAlpha": 7.76199999996674e-06
+      }
+    },
+    "reuse": {
+      "frames": 70,
+      "contactFrames": {
+        "enemy0": 7,
+        "enemy1": 8,
+        "enemy2": 9
+      },
+      "spent": [
+        1
+      ],
+      "damage": [
+        4,
+        4,
+        4
+      ],
+      "weak": [
+        1,
+        1,
+        1
+      ],
+      "finalClear": true,
+      "maxDifferencesFromBaseline": {
+        "effectAge": 1.6689000000014165e-06,
+        "sourceLightIntensity": 6.506600000000251e-05,
+        "actorFlash": 0,
+        "geometryLocalAndUVAlpha": 3.876199999996999e-05
+      }
+    },
+    "single-target": {
+      "frames": 70,
+      "contactFrames": {
+        "enemy0": 7
+      },
+      "spent": [
+        1
+      ],
+      "damage": [
+        4
+      ],
+      "weak": [
+        1
+      ],
+      "finalClear": true
+    },
+    "three-light": {
+      "frames": 70,
+      "contactFrames": {
+        "enemy0": 7,
+        "enemy1": 8,
+        "enemy2": 9
+      },
+      "spent": [
+        3
+      ],
+      "damage": [
+        12,
+        12,
+        12
+      ],
+      "weak": [
+        1,
+        1,
+        1
+      ],
+      "finalClear": true
+    }
+  },
+  "resourceCueAdmissions": {
+    "baseline": 0,
+    "candidate": 1,
+    "single-target": 0,
+    "three-light": 0,
+    "cancel": 1,
+    "reuse": 1
+  }
+}

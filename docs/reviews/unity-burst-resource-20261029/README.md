@@ -1,0 +1,13 @@
+# Burst326 resource/local-impact separation candidate
+
+Default OFF. burstresourcecue=1 enables only exact registered LightBurstBinding admission: white_light_burst, prior Light1/current0, three live receivers, actual Spent1 then three damage4 then three Weak1, matching prior-hand UID and same batch/event reference. At resource presentation all three admitted bindings must still match generation, white leader and current target. This is resource admission before damage commit, not a fabricated damage receipt. Missing UI, payment-only, other targets/Light values and unrelated discharge paths retain the existing presentation.
+
+Candidate replaces the three long BeamFx rays and twelve traveling UI particles with a32px/.22sec ring at the Light vessel. BeamFx itself creates the160px target glow that covered faces. The existing LightDischarged sound, HoldFor(.6), Drain(Spent), and 'discharge1' stamp remain, as do all three authored local impacts, damage/Weak cues, actor motions and world lights. No raw, gain, private shader, geometry, timing, status or resource computation changed. No shared BeamFx implementation changed.
+
+Build unity-burst-resource-build.log Succeeded/errors0/warnings43,81seconds. D3D11 1280x720 fixed30fps simulation,6cases/420frames, no logged exceptions and normal shutdown. Baseline/candidate, excluded singleton, legalHoard toLight3, cancel9, reuse. Candidate admission only candidate/cancel/reuse; not baseline/singleton/Light3. Actual Spent1,damage4x3,Weak1x3 match and contacts remain7/8/9. Cancel9 presents only7/8 and clears all active local slots; the model event list still contains all3 results and is not rewritten. Reuse returns to7/8/9. All final active local slots clear (retired cache entries intentionally remain).
+
+Candidate vs baseline differences: actual event arrays equal, actorFlash0, max age2.45e-7,source-light intensity.000013,local geometry/UV/alpha7.762e-6. Reuse maxima age1.6689e-6,light.000065066,geometry.000038762. These are measured float differences, not a claim of bitwise equality. Source light and material formulas were untouched.
+
+Craft remains HOLD/pending independent review. Original frame10 shows removal of long UI rays and face glows, revealing short golden contact planes while the vessel/stamp remains legible. Residual white legs and local material hierarchy are not certified. Later Weak status cues remain. This isolated UI comparison does not resolve Imp/Light/Canopy or whole-screen parity.
+
+Eight PNGs are unaltered originals; two MP4s encode all70 frames at30fps without trimming/scaling/retiming. Compact clocks preserve numeric values; frame index is unchanged. Full six-case audit and exact conditions included. No Android/device validation.

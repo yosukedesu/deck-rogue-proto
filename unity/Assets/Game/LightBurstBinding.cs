@@ -5,6 +5,8 @@ namespace DeckRogue.Game {
  internal sealed class LightBurstBinding {
   CombatPresentationLedger.Receipt receipt;GameEvent_DamageDealt hit;ResolvedCombatFx.Ticket ticket;Func<int> generation;Func<bool> white;
   public bool Committed=>generation()==receipt.Generation&&white()&&receipt.Committed&&receipt.Exact&&receipt.Reason==null&&ReferenceEquals(receipt.Event,hit)&&Stage.ImpactTargetCurrent(ticket.Target,ticket.Impact);
+  // Admission for the resource cue, deliberately before damage commit.
+  public bool AdmitsDischarge(GameEvent_LightDischarged ev)=>generation()==receipt.Generation&&white()&&receipt.Reason==null&&receipt.Batch!=null&&receipt.Batch.After.EventLog.Skip(receipt.Batch.From).Take(receipt.Batch.To-receipt.Batch.From).Any(x=>ReferenceEquals(x,ev))&&ev.Spent==1&&Stage.ImpactTargetCurrent(ticket.Target,ticket.Impact);
   public bool Eligible(ResolvedCombatFx.Ticket t)=>t.ExactSource&&t.SourceKind=="card"&&t.SourceKey=="white_light_burst"&&t.SourceUid==hit.PresentationSource.Uid&&t.SourceUnit=="player"&&t.Target=="enemy"+hit.EnemyIndex&&t.Element=="light"&&t.AttackFamily=="local_light"&&!t.FixedSmallContact;
   static LightBurstBinding Reject(CombatPresentationLedger.Receipt r,string reason){if(r?.Event is GameEvent_DamageDealt d&&d.PresentationSource?.DefinitionId=="white_light_burst")UnityEngine.Debug.Log("[LightBurst326] rejected "+reason);return null;}
   public static LightBurstBinding Capture(ResolvedCombatFx.Ticket ticket,CombatPresentationLedger.Batch batch,CombatPresentationLedger.Receipt receipt,Func<int> generation,Func<bool> white){
