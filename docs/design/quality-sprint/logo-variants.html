@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&family=Bebas+Neue&family=Oswald:wght@600;700&family=IM+Fell+English+SC&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Almendra:wght@700&family=Marcellus&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0f1120;font-family:'Noto Sans JP',sans-serif}
+#sheet{position:relative;width:1700px;padding:20px 0 30px;background:#0f1120}
+.row{position:relative;width:1660px;margin:0 20px 26px;}
+.cap{color:#ead08a;font-size:20px;font-weight:700;margin:0 0 6px 4px;letter-spacing:.04em}
+.cap small{color:#c4beb2;font-weight:400;font-size:14px;margin-left:12px}
+.logo{position:relative;width:1660px;height:440px;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,#1d2140 0%,#0f1120 70%);border:1px solid rgba(201,154,58,.2);border-radius:8px}
+/* 真鍮の字 (墨の縁 → 勾配) */
+.br{position:absolute;left:0;width:100%;text-align:center;line-height:1;white-space:nowrap}
+.br span{position:relative;display:inline-block;color:transparent}
+.br span::before{content:attr(data-t);position:absolute;left:0;top:0;-webkit-text-stroke:14px #130d06;color:#130d06;text-shadow:0 8px 0 #130d06,0 0 30px rgba(0,0,0,.9)}
+.br span::after{content:attr(data-t);position:absolute;left:0;top:0;background:linear-gradient(180deg,#fff2c2 0%,#ead08a 28%,#d4aa4e 52%,#a87a2a 74%,#7a5218 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.br.thin span::before{-webkit-text-stroke:8px #130d06;text-shadow:0 5px 0 #130d06,0 0 24px rgba(0,0,0,.9)}
+/* 紙の字 */
+.pa{position:absolute;left:0;width:100%;text-align:center;line-height:1;white-space:nowrap;color:#f4ecd6;text-shadow:0 0 2px #130d06,0 0 2px #130d06,0 0 3px #130d06,0 5px 0 #130d06,0 0 22px rgba(0,0,0,.85)}
+.rule{position:absolute;height:2px;background:linear-gradient(90deg,transparent,#c99a3a 18%,#ead08a 50%,#c99a3a 82%,transparent)}
+.rule i{position:absolute;left:50%;top:-7px;width:16px;height:16px;margin-left:-8px;background:#ead08a;transform:rotate(45deg);box-shadow:0 0 10px rgba(234,208,138,.9)}
+.cz{font-family:'Cinzel',serif}.czd{font-family:'Cinzel Decorative',serif}.bb{font-family:'Bebas Neue',sans-serif}.os{font-family:'Oswald',sans-serif}.fell{font-family:'IM Fell English SC',serif}.corm{font-family:'Cormorant Garamond',serif;font-style:italic}.alm{font-family:'Almendra',serif}.mar{font-family:'Marcellus',serif}
+/* C 鉄板 */
+.plate{position:absolute;left:230px;top:40px;width:1200px;height:360px;border-radius:14px;background:linear-gradient(180deg,#3a3c48,#22232e 60%,#1a1b24);box-shadow:0 20px 40px rgba(0,0,0,.7),inset 0 2px 0 rgba(255,255,255,.12),inset 0 -3px 0 rgba(0,0,0,.6),inset 0 0 0 3px #15161e,inset 0 0 0 5px #4a4c58}
+.rivet{position:absolute;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe9a8,#c99a3a 50%,#6a4a18);box-shadow:0 2px 3px rgba(0,0,0,.8)}
+.emb{position:absolute;left:0;width:100%;text-align:center;line-height:1;white-space:nowrap;background:linear-gradient(180deg,#fff2c2,#e2c070 45%,#a87a2a 80%,#7a5218);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 rgba(0,0,0,.9)) drop-shadow(0 -1px 0 rgba(255,255,255,.18))}
+.stamp{position:absolute;left:0;width:100%;text-align:center;line-height:1;white-space:nowrap;color:#9a9ca8;text-shadow:0 1px 0 rgba(255,255,255,.15),0 -1px 0 rgba(0,0,0,.9)}
+/* D 脈の光 */
+.glow{position:absolute;left:0;width:100%;text-align:center;line-height:1;white-space:nowrap;color:#eafaf7;text-shadow:0 0 2px #0b3a36,0 0 2px #0b3a36,0 0 14px rgba(58,167,155,.9),0 0 40px rgba(58,167,155,.6),0 4px 0 #0b3a36}
+.vein{position:absolute;left:200px;right:200px;height:3px;background:linear-gradient(90deg,transparent,#3aa79b 15%,#b5ddd6 50%,#3aa79b 85%,transparent);box-shadow:0 0 16px rgba(58,167,155,.9),0 0 40px rgba(58,167,155,.5)}
+/* E 古い本 */
+.orn{position:absolute;left:0;width:100%;text-align:center;color:#c99a3a;font-size:26px;letter-spacing:.3em;white-space:nowrap}
+/* F 帯 */
+.ribbon{position:absolute;left:50%;height:64px;line-height:64px;padding:0 60px;transform:translateX(-50%);background:linear-gradient(180deg,#ead08a,#c99a3a);color:#3a2708;font-family:'Cinzel',serif;font-weight:700;font-size:32px;letter-spacing:.42em;text-indent:.42em;white-space:nowrap;clip-path:polygon(0 0,100% 0,calc(100% - 22px) 50%,100% 100%,0 100%,22px 50%);box-shadow:0 6px 14px rgba(0,0,0,.6)}
+</style></head>
+<body>
+<div id="sheet">
+  <div class="row"><div class="cap">A　刻印<small>今の形。Cinzel の真鍮の字・罫と◆・下の段は紙の字（OF THE を小さく）</small></div>
+    <div class="logo">
+      <div class="br cz" style="top:34px;font-size:206px;font-weight:900;letter-spacing:.05em;text-indent:.05em"><span data-t="GEARWITCH">GEARWITCH</span></div>
+      <div class="rule" style="left:330px;right:330px;top:290px"><i></i></div>
+      <div class="pa cz" style="top:318px;font-size:70px;font-weight:700;letter-spacing:.22em;text-indent:.22em"><small style="font-size:44px;letter-spacing:.3em;color:#e6dcc6;vertical-align:8px">OF THE</small> NIGHTSHAFT</div>
+    </div></div>
+
+  <div class="row"><div class="cap">B　紋章<small>歯車の紋を真ん中に、GEARWITCH を弧に添わせる（Cinzel Decorative の飾り文字）。NIGHTSHAFT は下に細く</small></div>
+    <div class="logo">
+      <svg style="position:absolute;left:0;top:0" width="1660" height="440" viewBox="0 0 1660 440">
+        <defs>
+          <linearGradient id="bg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2c2"/><stop offset=".3" stop-color="#ead08a"/><stop offset=".55" stop-color="#d4aa4e"/><stop offset=".8" stop-color="#a87a2a"/><stop offset="1" stop-color="#7a5218"/></linearGradient>
+          <path id="arc" d="M 300 330 A 700 700 0 0 1 1360 330"/>
+        </defs>
+        <g transform="translate(830 286) scale(3.4)" fill="none" stroke="#ead08a" stroke-width="0.6" opacity=".55">
+          <g transform="translate(-22 -22)">
+            <rect x="19.5" y="1" width="5" height="42" rx="0.8"/><rect x="19.5" y="1" width="5" height="42" rx="0.8" transform="rotate(30 22 22)"/><rect x="19.5" y="1" width="5" height="42" rx="0.8" transform="rotate(60 22 22)"/><rect x="19.5" y="1" width="5" height="42" rx="0.8" transform="rotate(90 22 22)"/><rect x="19.5" y="1" width="5" height="42" rx="0.8" transform="rotate(120 22 22)"/><rect x="19.5" y="1" width="5" height="42" rx="0.8" transform="rotate(150 22 22)"/>
+            <circle cx="22" cy="22" r="15.5"/><circle cx="22" cy="22" r="9"/><circle cx="22" cy="22" r="3"/>
+          </g>
+        </g>
+        <text font-family="Cinzel Decorative" font-weight="900" font-size="104" letter-spacing="12" fill="#130d06" stroke="#130d06" stroke-width="14" stroke-linejoin="round"><textPath href="#arc" startOffset="50%" text-anchor="middle">GEARWITCH</textPath></text>
+        <text font-family="Cinzel Decorative" font-weight="900" font-size="104" letter-spacing="12" fill="url(#bg1)"><textPath href="#arc" startOffset="50%" text-anchor="middle">GEARWITCH</textPath></text>
+        <text x="830" y="412" text-anchor="middle" font-family="Cinzel" font-weight="700" font-size="50" letter-spacing="16" fill="#f4ecd6" stroke="#130d06" stroke-width="6" paint-order="stroke">OF THE NIGHTSHAFT</text>
+      </svg>
+    </div></div>
+
+  <div class="row"><div class="cap">C　鉄板<small>黒鉄の銘板に真鍮の浮き文字と鋲（意匠「黒鉄と真鍮」そのまま）。字は Oswald の太い黒体</small></div>
+    <div class="logo">
+      <div class="plate">
+        <div class="rivet" style="left:18px;top:18px"></div><div class="rivet" style="right:18px;top:18px"></div><div class="rivet" style="left:18px;bottom:18px"></div><div class="rivet" style="right:18px;bottom:18px"></div>
+        <div class="emb os" style="top:46px;font-size:168px;font-weight:700;letter-spacing:.08em;text-indent:.08em">GEARWITCH</div>
+        <div style="position:absolute;left:120px;right:120px;top:236px;height:2px;background:linear-gradient(90deg,transparent,#c99a3a 20%,#ead08a 50%,#c99a3a 80%,transparent)"></div>
+        <div class="stamp os" style="top:258px;font-size:54px;font-weight:600;letter-spacing:.4em;text-indent:.4em">OF THE NIGHTSHAFT</div>
+      </div>
+    </div></div>
+
+  <div class="row"><div class="cap">D　脈の光<small>NIGHTSHAFT を主役に（坑の名）。細長い字に青緑のマナの光、下に脈の線。GEARWITCH は上に真鍮で小さく</small></div>
+    <div class="logo">
+      <div class="br thin cz" style="top:58px;font-size:64px;font-weight:700;letter-spacing:.5em;text-indent:.5em"><span data-t="GEARWITCH OF THE">GEARWITCH OF THE</span></div>
+      <div class="glow bb" style="top:128px;font-size:270px;letter-spacing:.1em;text-indent:.1em">NIGHTSHAFT</div>
+      <div class="vein" style="top:396px"></div>
+    </div></div>
+
+  <div class="row"><div class="cap">E　古い本<small>坑匠の手帳の扉のような活字（IM Fell English）。of the は筆記のイタリック、飾り罫は ✦ の列</small></div>
+    <div class="logo">
+      <div class="orn" style="top:30px">✦ ─────── ✦ ─────── ✦</div>
+      <div class="br thin fell" style="top:78px;font-size:180px;letter-spacing:.06em;text-indent:.06em"><span data-t="Gearwitch">Gearwitch</span></div>
+      <div class="pa corm" style="top:268px;font-size:58px;font-weight:600;letter-spacing:.1em;color:#e6dcc6">of the</div>
+      <div class="pa fell" style="top:326px;font-size:78px;letter-spacing:.3em;text-indent:.3em">Nightshaft</div>
+      <div class="orn" style="top:404px">✦ ─────── ✦ ─────── ✦</div>
+    </div></div>
+
+  <div class="row"><div class="cap">F　帯と大文字<small>上に真鍮の帯「GEARWITCH OF THE」、下に NIGHTSHAFT を Marcellus の大きな字で（ローマの碑文の趣）</small></div>
+    <div class="logo">
+      <div class="ribbon" style="top:48px">GEARWITCH OF THE</div>
+      <div class="br mar" style="top:134px;font-size:208px;letter-spacing:.06em;text-indent:.06em"><span data-t="NIGHTSHAFT">NIGHTSHAFT</span></div>
+      <div class="rule" style="left:400px;right:400px;top:398px"><i></i></div>
+    </div></div>
+</div>
+</body></html>

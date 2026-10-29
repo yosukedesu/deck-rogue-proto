@@ -485,6 +485,7 @@ namespace DeckRogue.Game
             MenuOpen = false;
             Seed = UnityEngine.Random.Range(1, 99999);
             ScreenFx.ResetShown();
+            TitleScreen.Mode = "title";   // ランの外へ戻る時は題の画面から (2026-10-29 #4 二段のタイトル)
             ScreenFx.Switch(this, Rebuild);
         }
 

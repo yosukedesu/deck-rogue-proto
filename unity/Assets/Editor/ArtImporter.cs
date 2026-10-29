@@ -71,7 +71,9 @@ namespace DeckRogue.EditorTools
             bool generatedFx = name == "codex-vfx-atlas" || (name.StartsWith("cloud-") && name.EndsWith("-8f"));
             // 札の面 W09 の形の層 (2026-10-26・cardface_*): 630×880 の設計を 200×290〜320×464 へ縮めるので同じく Bilinear＋ミップ
             bool cardFace = name.StartsWith("cardface_", System.StringComparison.Ordinal);
-            bool smooth = stage || name == "cardback" || generatedFx || cardFace;
+            // 題のロゴ・歯車の紋 (2026-10-29 #4): 1600×440／1120 の線画を 0.5〜0.6 倍で出すなめらかな絵。立ち絵 (Art/portraits/) も ChatGPT のなめらかな絵
+            bool titleArt = name == "logo_title" || name == "gear_emblem" || pathN.Contains("/Resources/Art/portraits/");
+            bool smooth = stage || name == "cardback" || generatedFx || cardFace || titleArt;
             imp.textureType = TextureImporterType.Sprite;
             imp.spriteImportMode = SpriteImportMode.Single;
             imp.filterMode = smooth ? FilterMode.Bilinear : FilterMode.Point;

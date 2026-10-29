@@ -625,6 +625,14 @@ namespace DeckRogue.Game
             g.SetSeed(_seed);
             g.LeaderId = Get("leader") ?? "leader_green";   // 前回の選択 (PlayerPrefs) に左右されないよう既定は緑
             if (Get("difficulty") != null) { int d; if (int.TryParse(Get("difficulty"), out d)) g.Difficulty = d; }
+            if (phase == "title" || phase == "setup")
+            {   // ランの外の 2 画面 (2026-10-29 #4): 題と品書き／出立の支度。ランは作らない
+                TitleScreen.Mode = phase;
+                g.Rs = null;
+                g.Rebuild();
+                yield return Shot(Get("name") ?? ("state-" + phase), 10);
+                yield break;
+            }
             bool checkpoint = Get("act") != null || Get("deck") != null || Get("relics") != null || Get("hp") != null || Get("gold") != null;
             string startErr = null;   // catch の中では yield できないので外で撮る
             try

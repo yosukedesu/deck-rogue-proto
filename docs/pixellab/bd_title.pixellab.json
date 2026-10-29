@@ -1,0 +1,24 @@
+{
+  "id": "bd_title_b",
+  "engine": "pixflux",
+  "request": {
+    "description": "HD-2D Octopath Traveler style pixel art scene, the entrance of an old mana mine at night in a dark pine forest, a sturdy timber-framed mine portal cut into a mossy rock face, two brass lanterns on the posts, faint teal mana light glowing from deep inside the tunnel and seeping as mist over the ground, a mine cart rail running out of the portal, wooden crates and a water barrel beside it, fireflies and drifting mana motes, tall dark pines and layered mist behind, moonlight from above, cool blue-grey palette with warm brass lantern accents and a cold teal glow, no people, wide cinematic composition with the portal in the lower center and empty dark sky and treetops in the upper half",
+    "negative_description": "human, person, character, face, eyes, text, letters, watermark, border, frame, ui, blurry, daylight, blue sky, sun",
+    "image_size": {
+      "width": 400,
+      "height": 224
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "seed": 41
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-10-29T10:15:38.430Z"
+}
