@@ -1,0 +1,239 @@
+{
+  "cases": {
+    "cancel-before": {
+      "frames": 70,
+      "privateObserved": false,
+      "active": {},
+      "finalReset": true
+    },
+    "cancel-before-reuse": {
+      "frames": 70,
+      "privateObserved": true,
+      "active": {
+        "enemy0": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "enemy1": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "enemy2": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "finalReset": true
+    },
+    "cancel-one": {
+      "frames": 70,
+      "privateObserved": true,
+      "active": {},
+      "finalReset": true
+    },
+    "cancel-one-reuse": {
+      "frames": 70,
+      "privateObserved": true,
+      "active": {
+        "enemy0": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "enemy1": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "enemy2": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "finalReset": true
+    },
+    "cancel-three": {
+      "frames": 70,
+      "privateObserved": true,
+      "active": {
+        "enemy0": [
+          7,
+          8,
+          9
+        ],
+        "enemy1": [
+          8,
+          9
+        ],
+        "enemy2": [
+          9
+        ]
+      },
+      "finalReset": true
+    },
+    "cancel-three-reuse": {
+      "frames": 70,
+      "privateObserved": true,
+      "active": {
+        "enemy0": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "enemy1": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "enemy2": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "finalReset": true
+    },
+    "cancel-two": {
+      "frames": 70,
+      "privateObserved": true,
+      "active": {
+        "enemy0": [
+          7
+        ]
+      },
+      "finalReset": true
+    },
+    "cancel-two-reuse": {
+      "frames": 70,
+      "privateObserved": true,
+      "active": {
+        "enemy0": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "enemy1": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "enemy2": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "finalReset": true
+    },
+    "owned": {
+      "frames": 70,
+      "privateObserved": true,
+      "active": {
+        "enemy0": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "enemy1": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "enemy2": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "finalReset": true,
+      "baselineEventsEqual": true,
+      "versusOff": {
+        "worldIntensity": 1.3000000000040757e-05,
+        "worldAge": 2.449999999820651e-07,
+        "hurt": 0
+      }
+    },
+    "owned-off": {
+      "frames": 70,
+      "privateObserved": true,
+      "active": {},
+      "finalReset": true
+    },
+    "radiance": {
+      "frames": 70,
+      "privateObserved": false,
+      "active": {},
+      "finalReset": true,
+      "baselineEventsEqual": true
+    },
+    "single-target": {
+      "frames": 70,
+      "privateObserved": false,
+      "active": {},
+      "finalReset": true
+    },
+    "three-light": {
+      "frames": 70,
+      "privateObserved": false,
+      "active": {},
+      "finalReset": true
+    },
+    "zero-burst": {
+      "frames": 70,
+      "privateObserved": false,
+      "active": {},
+      "finalReset": true,
+      "baselineEventsEqual": true
+    }
+  },
+  "frames": 980
+}

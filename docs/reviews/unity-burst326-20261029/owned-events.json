@@ -1,0 +1,109 @@
+[
+  {
+    "cardId": "white_light_burst",
+    "type": "CardPlayed"
+  },
+  {
+    "spent": 1,
+    "type": "LightDischarged"
+  },
+  {
+    "presentationReceipt": {
+      "version": 1,
+      "target": "enemy",
+      "enemyIndex": 0,
+      "enemyId": "enemy_probe",
+      "before": {
+        "hp": 17,
+        "maxHp": 17,
+        "block": 0
+      },
+      "after": {
+        "hp": 13,
+        "maxHp": 17,
+        "block": 0
+      }
+    },
+    "source": "player",
+    "amount": 4,
+    "hpLoss": 4,
+    "enemyIndex": 0,
+    "presentationSource": {
+      "kind": "card",
+      "definitionId": "white_light_burst",
+      "uid": "white_light_burst#dbgh0"
+    },
+    "type": "DamageDealt"
+  },
+  {
+    "presentationReceipt": {
+      "version": 1,
+      "target": "enemy",
+      "enemyIndex": 1,
+      "enemyId": "enemy_probe",
+      "before": {
+        "hp": 18,
+        "maxHp": 18,
+        "block": 0
+      },
+      "after": {
+        "hp": 14,
+        "maxHp": 18,
+        "block": 0
+      }
+    },
+    "source": "player",
+    "amount": 4,
+    "hpLoss": 4,
+    "enemyIndex": 1,
+    "presentationSource": {
+      "kind": "card",
+      "definitionId": "white_light_burst",
+      "uid": "white_light_burst#dbgh0"
+    },
+    "type": "DamageDealt"
+  },
+  {
+    "presentationReceipt": {
+      "version": 1,
+      "target": "enemy",
+      "enemyIndex": 2,
+      "enemyId": "enemy_probe",
+      "before": {
+        "hp": 18,
+        "maxHp": 18,
+        "block": 0
+      },
+      "after": {
+        "hp": 14,
+        "maxHp": 18,
+        "block": 0
+      }
+    },
+    "source": "player",
+    "amount": 4,
+    "hpLoss": 4,
+    "enemyIndex": 2,
+    "presentationSource": {
+      "kind": "card",
+      "definitionId": "white_light_burst",
+      "uid": "white_light_burst#dbgh0"
+    },
+    "type": "DamageDealt"
+  },
+  {
+    "enemyIndex": 0,
+    "amount": 1,
+    "type": "EnemyWeakened"
+  },
+  {
+    "enemyIndex": 1,
+    "amount": 1,
+    "type": "EnemyWeakened"
+  },
+  {
+    "enemyIndex": 2,
+    "amount": 1,
+    "type": "EnemyWeakened"
+  }
+]

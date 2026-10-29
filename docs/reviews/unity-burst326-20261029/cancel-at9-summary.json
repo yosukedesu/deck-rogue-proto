@@ -1,0 +1,50 @@
+{
+  "cases": {
+    "cancel-at9": {
+      "frames": 70,
+      "privateObserved": true,
+      "active": {
+        "enemy0": [
+          7,
+          8
+        ],
+        "enemy1": [
+          8
+        ]
+      },
+      "finalReset": true
+    },
+    "cancel-at9-reuse": {
+      "frames": 70,
+      "privateObserved": true,
+      "active": {
+        "enemy0": [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "enemy1": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13
+        ],
+        "enemy2": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "finalReset": true
+    }
+  },
+  "frames": 140
+}

@@ -1,0 +1,2 @@
+cancel-at9|phase=combat;hd2d=slice;tier=pc;leader=leader_white;enemy=enc_probe_trio;hand=white_light_burst;penergy=3;penergymax=3;target=0;explicitcommand=1;playcontinuous=1;play=0;playshots=70;continuousclock=30;hd2dfx=1;lightaudit=1;cancelpresentationat=9
+cancel-at9-reuse|phase=combat;hd2d=slice;tier=pc;leader=leader_white;enemy=enc_probe_trio;hand=white_light_burst;penergy=3;penergymax=3;target=0;explicitcommand=1;playcontinuous=1;play=0;playshots=70;continuousclock=30;hd2dfx=1;lightaudit=1

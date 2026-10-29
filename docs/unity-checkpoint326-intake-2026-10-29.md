@@ -1,3 +1,5 @@
+Current implementation/validation: [Unity326 port](unity-checkpoint326-port-2026-10-29.md). The intake status below records the earlier receipt, before implementation.
+
 # Queued after323: selected326 Light Burst
 
 Officially materialized into this execution environment. ZIP/movie sizes and SHA256, ZIP CRC, all13 SHA256SUMS entries and10 present logical-manifest entries (of332) verified. Reference frame10 viewed; handoff read. Not yet ported. Kit libfile_5fc12c85e0288191b977bffc82c233f2 v0,1845886B/14members,SHA2567f261e2710963cc6e71b83dfbf333ca1860d556f1144da5f35cebef8bc8af7e0. Reference libfile_65c99b5e8f8481918c8e0b2bb6513817 v0,620604B,SHA256917b6fd81be740cd59a48662d7fbc0f7a01bd9573ace4499df498556e2e9f74c.
