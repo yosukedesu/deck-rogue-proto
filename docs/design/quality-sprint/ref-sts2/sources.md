@@ -38,3 +38,5 @@ Steam の公式スクショ 6 枚（`store.steampowered.com/api/appdetails?appid
 | `sts2-neow-official.jpg` | Neow（出立の相手。大きな絵と台詞・3 択） | Steam 公式スクショ |
 
 読めた本家の文法: **どの画面も「場面」の上に UI が乗る**（店＝天幕と行商人・焚き火＝主人公が火のそばに座る・報酬＝戦闘の場面を暗くしたまま旗と札・宝箱＝箱そのものが主役・出来事＝絵が画面の半分）。選択肢は紙の板でなく絵札（焚き火の Rest／Smith）。進む＝赤いリボンの Proceed／Skip。
+
+- `sts2-character-select-steam.jpg` — Steam 公式スクショ（store app 2868840・ss_8c1bbb6d…）。リーダー選び（The Necrobinder）。2026-10-29 #4 の参照

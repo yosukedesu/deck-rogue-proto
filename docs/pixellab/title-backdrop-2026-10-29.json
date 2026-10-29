@@ -1,0 +1,55 @@
+{
+ "_note": "タイトルの背景の一枚絵「坑口の夜」(2026-10-29 品質スプリント #4)。焚き火・店と同じ 400×224・5 倍。a/b＝門が中央、c/d＝門が右で左にロゴの余白",
+ "defaults": {
+  "engine": "pixflux",
+  "view": "side",
+  "outline": "selective outline",
+  "shading": "detailed shading",
+  "detail": "highly detailed",
+  "guidance": 8,
+  "no_background": false,
+  "negative": "human, person, character, face, eyes, text, letters, watermark, border, frame, ui, blurry, daylight, blue sky, sun"
+ },
+ "items": [
+  {
+   "id": "bd_title_a",
+   "seed": 23,
+   "description": "HD-2D Octopath Traveler style pixel art scene, the entrance of an old mana mine at night in a dark pine forest, a sturdy timber-framed mine portal cut into a mossy rock face, two brass lanterns on the posts, faint teal mana light glowing from deep inside the tunnel and seeping as mist over the ground, a mine cart rail running out of the portal, wooden crates and a water barrel beside it, fireflies and drifting mana motes, tall dark pines and layered mist behind, moonlight from above, cool blue-grey palette with warm brass lantern accents and a cold teal glow, no people, wide cinematic composition with the portal in the lower center and empty dark sky and treetops in the upper half",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/title/pix/bd_title_a.png",
+   "size": [
+    400,
+    224
+   ]
+  },
+  {
+   "id": "bd_title_b",
+   "seed": 41,
+   "description": "HD-2D Octopath Traveler style pixel art scene, the entrance of an old mana mine at night in a dark pine forest, a sturdy timber-framed mine portal cut into a mossy rock face, two brass lanterns on the posts, faint teal mana light glowing from deep inside the tunnel and seeping as mist over the ground, a mine cart rail running out of the portal, wooden crates and a water barrel beside it, fireflies and drifting mana motes, tall dark pines and layered mist behind, moonlight from above, cool blue-grey palette with warm brass lantern accents and a cold teal glow, no people, wide cinematic composition with the portal in the lower center and empty dark sky and treetops in the upper half",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/title/pix/bd_title_b.png",
+   "size": [
+    400,
+    224
+   ]
+  },
+  {
+   "id": "bd_title_c",
+   "seed": 23,
+   "description": "HD-2D Octopath Traveler style pixel art scene, the entrance of an old mana mine at night in a dark pine forest, a sturdy timber-framed mine portal cut into a mossy rock face, two brass lanterns on the posts, faint teal mana light glowing from deep inside the tunnel and seeping as mist over the ground, a mine cart rail running out of the portal, wooden crates and a water barrel beside it, fireflies and drifting mana motes, tall dark pines and layered mist behind, moonlight from above, cool blue-grey palette with warm brass lantern accents and a cold teal glow, no people, wide cinematic composition with the portal on the right third of the frame and the left half left as empty dark forest and mist",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/title/pix/bd_title_c.png",
+   "size": [
+    400,
+    224
+   ]
+  },
+  {
+   "id": "bd_title_d",
+   "seed": 41,
+   "description": "HD-2D Octopath Traveler style pixel art scene, the entrance of an old mana mine at night in a dark pine forest, a sturdy timber-framed mine portal cut into a mossy rock face, two brass lanterns on the posts, faint teal mana light glowing from deep inside the tunnel and seeping as mist over the ground, a mine cart rail running out of the portal, wooden crates and a water barrel beside it, fireflies and drifting mana motes, tall dark pines and layered mist behind, moonlight from above, cool blue-grey palette with warm brass lantern accents and a cold teal glow, no people, wide cinematic composition with the portal on the right third of the frame and the left half left as empty dark forest and mist",
+   "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/title/pix/bd_title_d.png",
+   "size": [
+    400,
+    224
+   ]
+  }
+ ]
+}
