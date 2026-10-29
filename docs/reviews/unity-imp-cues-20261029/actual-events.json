@@ -1,0 +1,127 @@
+[
+  {
+    "turn": 1,
+    "unplayed": [
+      "守りの蔓",
+      "打撃",
+      "防御",
+      "打ち据え",
+      "蔦の楔"
+    ],
+    "type": "TurnEnded"
+  },
+  {
+    "presentationEnemyAction": {
+      "version": 1,
+      "executionEventIndex": 6,
+      "enemyId": "enemy_cinder_imp",
+      "declaredEventIndex": 3,
+      "moveId": "spark_toss",
+      "branch": "primary",
+      "origin": "graph"
+    },
+    "enemyIndex": 0,
+    "kind": "attack",
+    "type": "EnemyActionExecuting"
+  },
+  {
+    "presentationEnemyAction": {
+      "version": 1,
+      "executionEventIndex": 6,
+      "enemyId": "enemy_cinder_imp",
+      "declaredEventIndex": 3,
+      "moveId": "spark_toss",
+      "branch": "primary",
+      "origin": "graph"
+    },
+    "presentationEnemyAttack": {
+      "version": 1,
+      "resolution": "aggregate-final-mutation",
+      "enemyId": "enemy_cinder_imp",
+      "effectiveActual": 7,
+      "loopBound": 1,
+      "executedHits": 1,
+      "contributions": [
+        {
+          "amountContribution": 7,
+          "hpLossContribution": 7,
+          "blockContribution": 0,
+          "iceContribution": 0,
+          "nullifiedContribution": 0,
+          "mitigatedContribution": 0
+        }
+      ]
+    },
+    "presentationReceipt": {
+      "version": 1,
+      "target": "player",
+      "before": {
+        "hp": 80,
+        "maxHp": 80,
+        "block": 0,
+        "iceBlock": 0
+      },
+      "after": {
+        "hp": 73,
+        "maxHp": 80,
+        "block": 0,
+        "iceBlock": 0
+      }
+    },
+    "source": "enemy",
+    "amount": 7,
+    "hpLoss": 7,
+    "enemyIndex": 0,
+    "type": "DamageDealt"
+  },
+  {
+    "status": "scald",
+    "amount": 1,
+    "type": "StatusInflicted"
+  },
+  {
+    "enemyIndex": 0,
+    "kind": "attack",
+    "hpLoss": 7,
+    "actual": 7,
+    "type": "EnemyActionResolved"
+  },
+  {
+    "turn": 1,
+    "type": "EnemyPhaseEnded"
+  },
+  {
+    "turn": 2,
+    "hand": [
+      "火傷"
+    ],
+    "type": "TurnStarted"
+  },
+  {
+    "count": 5,
+    "cards": [
+      "防御",
+      "絡み蔦",
+      "打撃",
+      "防御",
+      "打撃"
+    ],
+    "type": "CardsDrawn"
+  },
+  {
+    "presentationMove": {
+      "version": 1,
+      "eventIndex": 13,
+      "enemyId": "enemy_cinder_imp",
+      "origin": "graph",
+      "primaryMoveId": "guard",
+      "primaryNodeId": "guard"
+    },
+    "enemyIndex": 0,
+    "intent": {
+      "kind": "defend",
+      "actual": 8
+    },
+    "type": "EnemyIntentDeclared"
+  }
+]

@@ -1,0 +1,7 @@
+# Burst receiver/root-relative projection (read-only)
+
+Final executable, existing Spent1/three-target condition with resource cue candidate enabled,32frames. Main41 samples use index7=vertex alpha,9/10=screen x/y in BOTTOM-origin pixels; top-origin conversion is720-y. Positive vertex bbox only, not fragment coverage. Current receiver texture canvas/alpha>=.4 corners and actual set-root world position projected to screen are logged. No material/size/root correction made.
+
+First enemy0 frame7 age0: main50.66995x25.031629px. Current sprite enemy_probe_hurt_0,96x96; projected canvas192x192,alpha140x124.000031px. Main center minus actual root(-21.053525,-6.3536855)px, top-origin. Height-normalized main width.4086285,height.2018679,dx-.1697864,dy-.0512394,distance.1773497. All3 targets and early frames7/8/9/10/11/12/15 included. Logged rootScale=1 is the child Set.Root LOCAL scale, not effective world scale; the parent Slot.Root scale is assigned height*size in source (recorded1.94482362*.88), so do not treat1 as the total geometry scale.
+
+Parent independent raw-bbox extraction agrees (~50.67x25.03 first). Godot main79.19x42.43 /78.74x40.43 /78.36x39.52 was observed at ages.0167/.0300/.0100, unlike Unity age0. Receiver normalization and age matching on Godot are still needed; no automatic size multiplier follows. Burst resource semantics has independent limitedPASS, while material craft remainsHOLD. No gain/raw regeneration. Original PNGs and compact numerical clock included.

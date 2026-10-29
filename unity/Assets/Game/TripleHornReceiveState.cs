@@ -4,7 +4,8 @@ using Newtonsoft.Json.Linq;
 using UnityEngine;
 namespace DeckRogue.Game {
  internal static class TripleHornReceiveState {
-  internal static bool Probe;internal static float Factor=1;
+  // Selected only inside the exact TripleHorn ownership admission; QA may override.
+  internal static bool Probe=true;internal static float Factor=.12f;
   static readonly HashSet<Material> Receivers=new HashSet<Material>();static Vector4[] lights=new Vector4[2];static int count;
   internal static void Clear(){foreach(var m in Receivers)if(m!=null)m.SetFloat("_TripleHornReceiver",0);Receivers.Clear();count=0;Shader.SetGlobalFloat("_TripleHornLightCount",0);}
   internal static void Apply(List<Vector4> positions,object hero,object target){

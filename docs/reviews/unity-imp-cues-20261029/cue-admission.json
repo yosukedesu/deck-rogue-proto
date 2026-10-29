@@ -1,0 +1,48 @@
+{
+  "baseline": {
+    "overlay": [],
+    "scald": []
+  },
+  "overlay": {
+    "overlay": [
+      "[ImpCue] overlay exact7 alpha=0.035 time=7.666667"
+    ],
+    "scald": []
+  },
+  "scald": {
+    "overlay": [],
+    "scald": [
+      "[ImpCue] scald exact1 panel x=-776.0001 y=-105 time=12.23333"
+    ]
+  },
+  "combined": {
+    "overlay": [
+      "[ImpCue] overlay exact7 alpha=0.035 time=16.46667"
+    ],
+    "scald": [
+      "[ImpCue] scald exact1 panel x=-776.0001 y=-105 time=16.63333"
+    ]
+  },
+  "other-enemy": {
+    "overlay": [],
+    "scald": []
+  },
+  "cancel": {
+    "overlay": [
+      "[ImpCue] overlay exact7 alpha=0.035 time=25.26667"
+    ],
+    "scald": []
+  },
+  "reuse": {
+    "overlay": [
+      "[ImpCue] overlay exact7 alpha=0.035 time=29.66667"
+    ],
+    "scald": [
+      "[ImpCue] scald exact1 panel x=-776.0001 y=-105 time=29.83333"
+    ]
+  },
+  "horn-selected": {
+    "overlay": [],
+    "scald": []
+  }
+}

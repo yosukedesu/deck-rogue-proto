@@ -15,6 +15,7 @@ namespace DeckRogue.Game
     public static partial class Presenter
     {
         internal static bool ReviewBurstResourceCue;
+        internal static bool ReviewImpOverlay, ReviewImpScald;
         /// <summary>直前に見たイベント数 (戦闘が変わったら 0 に戻る)</summary>
         static int _seen;
         static object _seenCombat;
@@ -392,6 +393,11 @@ namespace DeckRogue.Game
                     var owned=new List<LightBurstBinding>();
                     foreach(var entry in capturedTickets)if(entry.Value?.LightBurstBinding?.AdmitsDischarge(discharge)==true)owned.Add(entry.Value.LightBurstBinding);
                     if(owned.Count==3)ctx.BurstDischargeBindings=owned.ToArray();
+                }
+                if(ev is GameEvent_StatusInflicted status) {
+                    ImpSparkBinding owner=null;int count=0;
+                    foreach(var entry in capturedTickets)if(entry.Value?.ImpSparkBinding?.AdmitsScald(status)==true){owner=entry.Value.ImpSparkBinding;count++;}
+                    if(count==1)ctx.ImpScaldBinding=owner;
                 }
                 capturedTickets.TryGetValue(i,out ctx.Feedback);
                 if(ctx.Feedback!=null)Stage.BindImpactActor(ctx.Feedback.Impact);
@@ -1610,7 +1616,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>リアクションの演出に要る文脈: 札があった仕込み枠の的と、行動している敵。イベント自体は CardId しか持たないので、見えている盤面とログの前後から引く</summary>
-        sealed class ReactionCtx { public int HitCount = 1; public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public LightBurstBinding[] BurstDischargeBindings; public HitPlan Hit; public StageMotion.Shot Motion; public bool MotionDim; public ResolvedCombatFx.Ticket Feedback; public Action LandPlayerHp; public CombatDisplaySequence Display; public CardVfxProfile.Showcase Showcase; public bool AuthoredCastReady; public int EventIndex,NumericEpoch; public GameEvent ContactEvent; public BattleView CapturedBoard; public CombatActionQueue.ActionToken Action; public CombatPresentationLedger.Receipt NumericReceipt; public bool ContactQueued,ContactEntered,ContactDone,DispatchDeferred,EnemyAggregatePopupShown,EnemyGlobalHitCueShown;public EnemySourceLease EnemySource;public Stage.ImpactCapture EnemySourceVisual;public bool EnemySourceHadVisual;public GameState CapturedState; }   // Motion＝この当たりで寄る (段2 レーン M・門が偽なら null)・MotionDim＝この札で舞台を暗くする   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
+        sealed class ReactionCtx { public int HitCount = 1; public RectTransform Slot; public int EnemyIndex = -1; public GameState Prev; public bool FinishingBlow; public bool AllEnemies; public bool ToDolls; public bool LightPayOnly; public DollBatch Batch; public bool BatchLast; public LightBurstBinding[] BurstDischargeBindings; public ImpSparkBinding ImpScaldBinding; public HitPlan Hit; public StageMotion.Shot Motion; public bool MotionDim; public ResolvedCombatFx.Ticket Feedback; public Action LandPlayerHp; public CombatDisplaySequence Display; public CardVfxProfile.Showcase Showcase; public bool AuthoredCastReady; public int EventIndex,NumericEpoch; public GameEvent ContactEvent; public BattleView CapturedBoard; public CombatActionQueue.ActionToken Action; public CombatPresentationLedger.Receipt NumericReceipt; public bool ContactQueued,ContactEntered,ContactDone,DispatchDeferred,EnemyAggregatePopupShown,EnemyGlobalHitCueShown;public EnemySourceLease EnemySource;public Stage.ImpactCapture EnemySourceVisual;public bool EnemySourceHadVisual;public GameState CapturedState; }   // Motion＝この当たりで寄る (段2 レーン M・門が偽なら null)・MotionDim＝この札で舞台を暗くする   // LightPayOnly＝灯を払っただけ (火床・炉心。2026-09-24 T15)   // Hit＝自分の札の当たりの形と多段の位置 (2026-09-22)   // AllEnemies/ToDolls＝灯の放出の飛び先 (2026-09-20 灯籠)。Batch＝人形の粒を束ねる (2026-09-21)
 
         /// <summary>
         /// 自分の札の当たりの計画 (2026-09-22 ユーザー「攻撃エフェクトがどの攻撃でも同じ」): 札 (CardPlayed / ReactionTriggered) の後に続く自分由来の DamageDealt
@@ -2228,6 +2234,10 @@ namespace DeckRogue.Game
                                 float hurtA = Mathf.Min(0.35f, 0.1f + dd.HpLoss * 0.015f);
                                 // 段2 レーン M (直し 2026-10-03・反証「白の閃きに被弾の赤い点滅が重なり紙の UI まで桃色」): 敵の大技の合図から帯の終わりまでは α を上限まで (0 = 出さない)。門が偽なら今のまま
                                 if (StageMotion.EnemyBigFlashing) hurtA = Mathf.Min(hurtA, StageMotion.EnemyBigHurtFlashAlpha);
+                                if(ReviewImpOverlay && ctx?.Feedback?.ImpSparkBinding?.Committed==true && ctx.Feedback.ImpSparkBinding.ExactSevenScald && ctx.Feedback.ImpSparkBinding.Eligible(ctx.Feedback)) {
+                                    hurtA=Mathf.Min(hurtA,.035f);
+                                    Debug.Log("[ImpCue] overlay exact7 alpha="+hurtA+" time="+Time.time);
+                                }
                                 if (hurtA > 0.001f) Tween.ScreenFlash(fx, new Color(0.9f, 0.1f, 0.1f, hurtA));
                             }
                             var pos = Tween.CenterIn(rtC, fx) + new Vector2(UnityEngine.Random.Range(-40f, 40f), 10f);
@@ -2441,6 +2451,15 @@ namespace DeckRogue.Game
                     if (rt == null) return;
                     Audio.Key(ev is GameEvent_GrowthAdded || ev is GameEvent_MomentumAdded ? "GrowthAdded" : "StatusInflicted");
                     var ps2 = g.Battle != null ? g.Battle.PlayerSprite() : null;
+                    var scaldHp=(g.Battle?.SelfArea ?? rt).GetComponentInChildren<BattleScreen.HpBarInfo>()?.transform as RectTransform;
+                    if(scaldHp!=null && ReviewImpScald && Stage.CombatWorld && ctx?.ImpScaldBinding?.Committed==true && ctx.ImpScaldBinding.AdmitsScald(si)) {
+                        var top=fx.InverseTransformPoint(scaldHp.TransformPoint(new Vector3(scaldHp.rect.center.x,scaldHp.rect.yMax,0f)));
+                        var cue=new Vector2(top.x,top.y+24f);
+                        Tween.IconBurst(fx,cue+new Vector2(-76f,0f),"exposed",new Color(.72f,.5f,.85f,.9f),32f);
+                        Tween.Float(fx,cue,StatusJa(si.Status)+" +"+si.Amount,PaperFx.Plum,24,12f,1.2f);
+                        Debug.Log("[ImpCue] scald exact1 panel x="+cue.x+" y="+cue.y+" time="+Time.time);
+                        break;
+                    }
                     if (ps2 != null) Tween.IconBurst(fx, Tween.CenterIn(ps2, fx) + new Vector2(0f, 30f), "exposed", new Color(0.72f, 0.5f, 0.85f, 0.9f), 110f);
                     Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(0f, 70f), StatusJa(si.Status) + " +" + si.Amount, PaperFx.Plum, 32, 46f, 1.2f);
                     break;

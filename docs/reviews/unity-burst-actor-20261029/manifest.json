@@ -1,0 +1,42 @@
+[
+  {
+    "path": "clock.json",
+    "size": 305519,
+    "sha256": "8f8a1c37df14ae05b3ce486418b4bcceb0956e595b2c8a9f4c5f4164177d4802"
+  },
+  {
+    "path": "normalize.py",
+    "size": 1462,
+    "sha256": "851e73a1b546fbdd8bea3e7c3616915c007230b10f75bab4036d657d4e1bae73"
+  },
+  {
+    "path": "normalized-projection.json",
+    "size": 29933,
+    "sha256": "138050a58aa9b647d487c6e32bf1dc4cc64fdc506a6c94391ba6a57b7024d5c0"
+  },
+  {
+    "path": "original-10.png",
+    "size": 996505,
+    "sha256": "83fc1ae95729dcf22be933186678f16aa46ebd048cba4c4582f5f1df2fdd2d9c"
+  },
+  {
+    "path": "original-7.png",
+    "size": 998867,
+    "sha256": "b7618dc01de8246dd2d0416b7be474ed555f5918a868320190952d85c82a5194"
+  },
+  {
+    "path": "original-8.png",
+    "size": 1005569,
+    "sha256": "f3f43a161f84c842e168a438821162a23a8b2e42a844decac4a07c95d5c94595"
+  },
+  {
+    "path": "original-9.png",
+    "size": 1006543,
+    "sha256": "7a3d7c8c1adff3775bb2dc512d02a6a92b8635b4f7abc7f2d84c738269657fe7"
+  },
+  {
+    "path": "README.md",
+    "size": 1495,
+    "sha256": "6e1b3060e85cad168067a4f2cdf3a3c0bd6a4c7bbeb8cefd7419fbb135792460"
+  }
+]

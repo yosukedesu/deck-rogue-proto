@@ -1,0 +1,47 @@
+[
+  {
+    "path": "canopy-baseline-10.png",
+    "size": 995693,
+    "sha256": "41b9bee928445d3becf7e37d88345ce2e4901a41c62e7592a2b84405ba0cfed7"
+  },
+  {
+    "path": "canopy-baseline-7.png",
+    "size": 1001455,
+    "sha256": "bd7654e7e7411ebf25f8b7136d340da3905c05c18f33fc83378caf45af2cde2b"
+  },
+  {
+    "path": "canopy-baseline-clock.json",
+    "size": 903750,
+    "sha256": "728d6ecb4ae3b06781cd44a2e2ce5279b44fe597b1812c6befe0557cff5a14a2"
+  },
+  {
+    "path": "canopy-candidate-10.png",
+    "size": 997656,
+    "sha256": "5cd07c40f60968157d6cbffa7f9445ea878ac372fe3c95a3dbe52a5b5a2102f5"
+  },
+  {
+    "path": "canopy-candidate-7.png",
+    "size": 1001768,
+    "sha256": "ecd7c58604cafa17f2d61ebe66cc09428e665fcd33bb3f51ee889cade3e32171"
+  },
+  {
+    "path": "canopy-candidate-clock.json",
+    "size": 903773,
+    "sha256": "cdc14dbd2f875d002cfaec8d7e1da49ecd1cc14838a6ffbbf983e86fdfe733fd"
+  },
+  {
+    "path": "normalize.py",
+    "size": 1519,
+    "sha256": "519ac783335328a05999c2fcd7502fe34e0258d3cd01bc3179282514ee6c34ef"
+  },
+  {
+    "path": "normalized-projection.json",
+    "size": 66319,
+    "sha256": "58a4edc96a14a69a5b4c028476c436b42de97cbe96001d77171fd07964b803d3"
+  },
+  {
+    "path": "README.md",
+    "size": 2168,
+    "sha256": "c5abc821ef043b856108ea58743a16753c550c4226a0c4e2f359537009bc178c"
+  }
+]

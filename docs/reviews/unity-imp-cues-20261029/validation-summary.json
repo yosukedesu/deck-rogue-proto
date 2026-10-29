@@ -1,0 +1,150 @@
+{
+  "baseline": {
+    "frames": 80,
+    "firstCommittedContact": 36,
+    "damage": [
+      7
+    ],
+    "scald": [
+      1
+    ],
+    "flashColors": [
+      [
+        0.9,
+        0.1,
+        0.1,
+        0.205
+      ]
+    ]
+  },
+  "cancel": {
+    "frames": 80,
+    "firstCommittedContact": 36,
+    "damage": [
+      7
+    ],
+    "scald": [
+      1
+    ],
+    "flashColors": [
+      [
+        0.9,
+        0.1,
+        0.1,
+        0.035
+      ]
+    ]
+  },
+  "combined": {
+    "frames": 80,
+    "firstCommittedContact": 36,
+    "damage": [
+      7
+    ],
+    "scald": [
+      1
+    ],
+    "flashColors": [
+      [
+        0.9,
+        0.1,
+        0.1,
+        0.035
+      ]
+    ],
+    "maxDifferencesFromBaseline": {
+      "lightIntensity": 0.00022411000000044368,
+      "actorFlash": 0,
+      "fireAge": 1.192000000010962e-06,
+      "batchAlpha": 1.7502435924576787e-05
+    }
+  },
+  "other-enemy": {
+    "frames": 80,
+    "firstCommittedContact": null,
+    "damage": [
+      6
+    ],
+    "scald": [],
+    "flashColors": [
+      [
+        0.9,
+        0.1,
+        0.1,
+        0.19
+      ]
+    ]
+  },
+  "overlay": {
+    "frames": 80,
+    "firstCommittedContact": 36,
+    "damage": [
+      7
+    ],
+    "scald": [
+      1
+    ],
+    "flashColors": [
+      [
+        0.9,
+        0.1,
+        0.1,
+        0.035
+      ]
+    ],
+    "maxDifferencesFromBaseline": {
+      "lightIntensity": 6.25899999999735e-05,
+      "actorFlash": 0,
+      "fireAge": 4.7640000000459537e-07,
+      "batchAlpha": 4.294410240190949e-06
+    }
+  },
+  "reuse": {
+    "frames": 80,
+    "firstCommittedContact": 36,
+    "damage": [
+      7
+    ],
+    "scald": [
+      1
+    ],
+    "flashColors": [
+      [
+        0.9,
+        0.1,
+        0.1,
+        0.035
+      ]
+    ],
+    "maxDifferencesFromBaseline": {
+      "lightIntensity": 0.00022425999999953206,
+      "actorFlash": 0,
+      "fireAge": 2.3840000000080463e-06,
+      "batchAlpha": 5.250845761461953e-05
+    }
+  },
+  "scald": {
+    "frames": 80,
+    "firstCommittedContact": 36,
+    "damage": [
+      7
+    ],
+    "scald": [
+      1
+    ],
+    "flashColors": [
+      [
+        0.9,
+        0.1,
+        0.1,
+        0.205
+      ]
+    ],
+    "maxDifferencesFromBaseline": {
+      "lightIntensity": 6.25899999999735e-05,
+      "actorFlash": 0,
+      "fireAge": 4.799999999971494e-07,
+      "batchAlpha": 1.7502627579268903e-05
+    }
+  }
+}

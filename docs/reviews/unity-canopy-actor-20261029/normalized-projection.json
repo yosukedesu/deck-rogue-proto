@@ -1,0 +1,3174 @@
+{
+  "canopy-baseline": [
+    {
+      "frame": 7,
+      "target": "enemy0",
+      "age": 0.0,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 2,
+        "texture": "enemy_probe_idle_2",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        717.53656,
+        291.387878,
+        791.6478,
+        328.003571
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        74.11123999999995,
+        36.61569300000002
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.885220000000004,
+        -26.063075500000025
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5881842997324339,
+        "height": 0.2906006665982489,
+        "dx": -0.26893025129493825,
+        "dy": -0.20684975466394948,
+        "distance": 0.33927909022822894
+      }
+    },
+    {
+      "frame": 8,
+      "target": "enemy0",
+      "age": 0.03333664,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 2,
+        "texture": "enemy_probe_idle_2",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        717.53656,
+        291.387878,
+        791.6478,
+        328.003571
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        74.11123999999995,
+        36.61569300000002
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.885220000000004,
+        -26.063075500000025
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5881842997324339,
+        "height": 0.2906006665982489,
+        "dx": -0.26893025129493825,
+        "dy": -0.20684975466394948,
+        "distance": 0.33927909022822894
+      }
+    },
+    {
+      "frame": 9,
+      "target": "enemy0",
+      "age": 0.0666694641,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 2,
+        "texture": "enemy_probe_idle_2",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        717.817261,
+        291.6181,
+        791.6478,
+        327.995544
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        73.83053899999993,
+        36.37744399999997
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.74486950000005,
+        -25.951977999999997
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5859565145662539,
+        "height": 0.2887098019840961,
+        "dx": -0.26781635871184867,
+        "dy": -0.20596802869040565,
+        "distance": 0.33785859591889233
+      }
+    },
+    {
+      "frame": 9,
+      "target": "enemy1",
+      "age": 0.0,
+      "sprite": {
+        "key": "enemy1",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 2,
+        "texture": "enemy_probe_idle_2",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.110404,
+        "heightWorld": 2.85120368,
+        "contactBottomOrigin": [
+          967.0521,
+          398.358,
+          29.7230778
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            868.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            294.000031,
+            30.0030785
+          ],
+          [
+            868.0,
+            294.000031,
+            30.0030785
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            882.000061,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            310.000031,
+            30.0030785
+          ],
+          [
+            882.000061,
+            310.000031,
+            30.0030785
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        896.5402,
+        277.2685,
+        970.6051,
+        313.861237
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        868.0,
+        234.0,
+        1060.0,
+        425.999969
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        882.000061,
+        283.999969,
+        1046.0,
+        409.999969
+      ],
+      "mainSize": [
+        74.06489999999997,
+        36.592737
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.47944999999993,
+        -26.077131500000007
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5878166666666664,
+        "height": 0.2904185476190476,
+        "dx": -0.26570992063492005,
+        "dy": -0.20696136111111116,
+        "distance": 0.33680078223896587
+      }
+    },
+    {
+      "frame": 10,
+      "target": "enemy0",
+      "age": 0.100002289,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        721.058655,
+        294.276276,
+        791.6478,
+        327.9028
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        70.58914499999992,
+        33.62652400000002
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -32.124172499999986,
+        -24.669262000000003
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5602311716891556,
+        "height": 0.2668771089429337,
+        "dx": -0.2549536872732991,
+        "dy": -0.19578774548079284,
+        "distance": 0.3214564106293463
+      }
+    },
+    {
+      "frame": 10,
+      "target": "enemy1",
+      "age": 0.0333328247,
+      "sprite": {
+        "key": "enemy1",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.110404,
+        "heightWorld": 2.85120368,
+        "contactBottomOrigin": [
+          967.0521,
+          398.358,
+          29.7230778
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            868.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            294.000031,
+            30.0030785
+          ],
+          [
+            868.0,
+            294.000031,
+            30.0030785
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            882.000061,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            310.000031,
+            30.0030785
+          ],
+          [
+            882.000061,
+            310.000031,
+            30.0030785
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        896.5402,
+        277.2685,
+        970.6051,
+        313.861237
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        868.0,
+        234.0,
+        1060.0,
+        425.999969
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        882.000061,
+        283.999969,
+        1046.0,
+        409.999969
+      ],
+      "mainSize": [
+        74.06489999999997,
+        36.592737
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.47944999999993,
+        -26.077131500000007
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5878166666666664,
+        "height": 0.2904185476190476,
+        "dx": -0.26570992063492005,
+        "dy": -0.20696136111111116,
+        "distance": 0.33680078223896587
+      }
+    },
+    {
+      "frame": 10,
+      "target": "enemy2",
+      "age": 0.0,
+      "sprite": {
+        "key": "enemy2",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.17029023,
+        "heightWorld": 2.90609932,
+        "contactBottomOrigin": [
+          1146.63879,
+          402.388123,
+          30.300745
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            1046.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            298.0,
+            30.5807438
+          ],
+          [
+            1046.0,
+            298.0,
+            30.5807438
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            1060.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            314.0,
+            30.5807438
+          ],
+          [
+            1060.0,
+            314.0,
+            30.5807438
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        1076.526,
+        273.237579,
+        1150.57764,
+        309.823822
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        1046.0,
+        229.99996900000002,
+        1238.0,
+        422.0
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        1060.0,
+        279.999969,
+        1224.0,
+        406.0
+      ],
+      "mainSize": [
+        74.0516399999999,
+        36.586243000000024
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.08696999999984,
+        -26.081176500000026
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5877112839757945,
+        "height": 0.29036693649702383,
+        "dx": -0.2625949353933083,
+        "dy": -0.20699341335876362,
+        "distance": 0.33436861884472313
+      }
+    },
+    {
+      "frame": 11,
+      "target": "enemy0",
+      "age": 0.133335114,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        726.232239,
+        298.518951,
+        791.6478,
+        327.75473
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        65.41556099999991,
+        29.23577899999998
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -29.537380499999927,
+        -22.621959500000003
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5191709913150729,
+        "height": 0.23202993497676191,
+        "dx": -0.23442359708625732,
+        "dy": -0.17953931693873953,
+        "distance": 0.29527747831097634
+      }
+    },
+    {
+      "frame": 11,
+      "target": "enemy1",
+      "age": 0.06666565,
+      "sprite": {
+        "key": "enemy1",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.110404,
+        "heightWorld": 2.85120368,
+        "contactBottomOrigin": [
+          967.0521,
+          398.358,
+          29.7230778
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            868.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            294.000031,
+            30.0030785
+          ],
+          [
+            868.0,
+            294.000031,
+            30.0030785
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            882.000061,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            310.000031,
+            30.0030785
+          ],
+          [
+            882.000061,
+            310.000031,
+            30.0030785
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        896.820557,
+        277.498383,
+        970.6051,
+        313.8532
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        868.0,
+        234.0,
+        1060.0,
+        425.999969
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        882.000061,
+        283.999969,
+        1046.0,
+        409.999969
+      ],
+      "mainSize": [
+        73.78454299999999,
+        36.354817000000025
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.339271499999995,
+        -25.966208499999993
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.585591611111111,
+        "height": 0.28853029365079386,
+        "dx": -0.26459739285714284,
+        "dy": -0.20608101984126978,
+        "distance": 0.3353821209391088
+      }
+    },
+    {
+      "frame": 11,
+      "target": "enemy2",
+      "age": 0.0333328247,
+      "sprite": {
+        "key": "enemy2",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.17029023,
+        "heightWorld": 2.90609932,
+        "contactBottomOrigin": [
+          1146.63879,
+          402.388123,
+          30.300745
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            1046.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            298.0,
+            30.5807438
+          ],
+          [
+            1046.0,
+            298.0,
+            30.5807438
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            1060.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            314.0,
+            30.5807438
+          ],
+          [
+            1060.0,
+            314.0,
+            30.5807438
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        1076.526,
+        273.237579,
+        1150.57764,
+        309.823822
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        1046.0,
+        229.99996900000002,
+        1238.0,
+        422.0
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        1060.0,
+        279.999969,
+        1224.0,
+        406.0
+      ],
+      "mainSize": [
+        74.0516399999999,
+        36.586243000000024
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.08696999999984,
+        -26.081176500000026
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5877112839757945,
+        "height": 0.29036693649702383,
+        "dx": -0.2625949353933083,
+        "dy": -0.20699341335876362,
+        "distance": 0.33436861884472313
+      }
+    },
+    {
+      "frame": 12,
+      "target": "enemy0",
+      "age": 0.166667938,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        731.1909,
+        302.58548,
+        791.6478,
+        327.612854
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        60.456899999999905,
+        25.02737400000001
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -27.05804999999998,
+        -20.659632999999985
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.47981654861656275,
+        "height": 0.19862990351169052,
+        "dx": -0.21474637573700267,
+        "dy": -0.16396530092917191,
+        "distance": 0.2701862798162998
+      }
+    },
+    {
+      "frame": 12,
+      "target": "enemy1",
+      "age": 0.0999984741,
+      "sprite": {
+        "key": "enemy1",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.110404,
+        "heightWorld": 2.85120368,
+        "contactBottomOrigin": [
+          967.0521,
+          398.358,
+          29.7230778
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            868.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            294.000031,
+            30.0030785
+          ],
+          [
+            868.0,
+            294.000031,
+            30.0030785
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            882.000061,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            310.000031,
+            30.0030785
+          ],
+          [
+            882.000061,
+            310.000031,
+            30.0030785
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        900.0596,
+        280.154572,
+        970.6051,
+        313.760529
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        868.0,
+        234.0,
+        1060.0,
+        425.999969
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        882.000061,
+        283.999969,
+        1046.0,
+        409.999969
+      ],
+      "mainSize": [
+        70.54549999999995,
+        33.605957000000046
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -31.719749999999976,
+        -24.68444949999997
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5598849206349202,
+        "height": 0.2667139444444448,
+        "dx": -0.25174404761904745,
+        "dy": -0.19590832936507913,
+        "distance": 0.3189908133884698
+      }
+    },
+    {
+      "frame": 12,
+      "target": "enemy2",
+      "age": 0.06666565,
+      "sprite": {
+        "key": "enemy2",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.17029023,
+        "heightWorld": 2.90609932,
+        "contactBottomOrigin": [
+          1146.63879,
+          402.388123,
+          30.300745
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            1046.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            298.0,
+            30.5807438
+          ],
+          [
+            1046.0,
+            298.0,
+            30.5807438
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            1060.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            314.0,
+            30.5807438
+          ],
+          [
+            1060.0,
+            314.0,
+            30.5807438
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        1076.8064,
+        273.467438,
+        1150.57764,
+        309.8158
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        1046.0,
+        229.99996900000002,
+        1238.0,
+        422.0
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        1060.0,
+        279.999969,
+        1224.0,
+        406.0
+      ],
+      "mainSize": [
+        73.77124000000003,
+        36.34836200000001
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -32.946770000000015,
+        -25.970258
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5854858876979169,
+        "height": 0.2884789925170734,
+        "dx": -0.26148223725437036,
+        "dy": -0.20611310801979094,
+        "distance": 0.33294980657319634
+      }
+    },
+    {
+      "frame": 15,
+      "target": "enemy0",
+      "age": 0.266670227,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 4,
+        "texture": "enemy_probe_idle_4",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        733.7879,
+        304.715179,
+        791.6478,
+        327.538544
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        57.859899999999925,
+        22.823365000000024
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -25.75954999999999,
+        -19.63193849999999
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.4592054425764382,
+        "height": 0.18113777289467514,
+        "dx": -0.2044408227169404,
+        "dy": -0.155808997380326,
+        "distance": 0.2570457034417068
+      }
+    },
+    {
+      "frame": 15,
+      "target": "enemy1",
+      "age": 0.200000763,
+      "sprite": {
+        "key": "enemy1",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 4,
+        "texture": "enemy_probe_idle_4",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.110404,
+        "heightWorld": 2.85120368,
+        "contactBottomOrigin": [
+          967.0521,
+          398.358,
+          29.7230778
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            868.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            294.000031,
+            30.0030785
+          ],
+          [
+            868.0,
+            294.000031,
+            30.0030785
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            882.000061,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            310.000031,
+            30.0030785
+          ],
+          [
+            882.000061,
+            310.000031,
+            30.0030785
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        912.781433,
+        290.5874,
+        970.6051,
+        313.396454
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        868.0,
+        234.0,
+        1060.0,
+        425.999969
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        882.000061,
+        283.999969,
+        1046.0,
+        409.999969
+      ],
+      "mainSize": [
+        57.823667,
+        22.809054000000003
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -25.35883350000006,
+        -19.650072999999963
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.45891799206349204,
+        "height": 0.18102423809523813,
+        "dx": -0.2012605833333338,
+        "dy": -0.15595296031746003,
+        "distance": 0.2546117598137468
+      }
+    },
+    {
+      "frame": 15,
+      "target": "enemy2",
+      "age": 0.166667938,
+      "sprite": {
+        "key": "enemy2",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 4,
+        "texture": "enemy_probe_idle_4",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.17029023,
+        "heightWorld": 2.90609932,
+        "contactBottomOrigin": [
+          1146.63879,
+          402.388123,
+          30.300745
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            1046.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            298.0,
+            30.5807438
+          ],
+          [
+            1046.0,
+            298.0,
+            30.5807438
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            1060.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            314.0,
+            30.5807438
+          ],
+          [
+            1060.0,
+            314.0,
+            30.5807438
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        1090.16956,
+        284.426178,
+        1150.57764,
+        309.4334
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        1046.0,
+        229.99996900000002,
+        1238.0,
+        422.0
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        1060.0,
+        279.999969,
+        1224.0,
+        406.0
+      ],
+      "mainSize": [
+        60.40807999999993,
+        25.007222000000013
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -26.265190000000075,
+        -20.682087999999965
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.47942908839443016,
+        "height": 0.1984699670431035,
+        "dx": -0.2084538376026279,
+        "dy": -0.16414351517103967,
+        "distance": 0.2653226262194163
+      }
+    }
+  ],
+  "canopy-candidate": [
+    {
+      "frame": 7,
+      "target": "enemy0",
+      "age": 0.0,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 2,
+        "texture": "enemy_probe_idle_2",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        717.53656,
+        291.387878,
+        791.6478,
+        328.003571
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        74.11123999999995,
+        36.61569300000002
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.885220000000004,
+        -26.063075500000025
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5881842997324339,
+        "height": 0.2906006665982489,
+        "dx": -0.26893025129493825,
+        "dy": -0.20684975466394948,
+        "distance": 0.33927909022822894
+      }
+    },
+    {
+      "frame": 8,
+      "target": "enemy0",
+      "age": 0.0333328247,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 2,
+        "texture": "enemy_probe_idle_2",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        717.53656,
+        291.387878,
+        791.6478,
+        328.003571
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        74.11123999999995,
+        36.61569300000002
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.885220000000004,
+        -26.063075500000025
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5881842997324339,
+        "height": 0.2906006665982489,
+        "dx": -0.26893025129493825,
+        "dy": -0.20684975466394948,
+        "distance": 0.33927909022822894
+      }
+    },
+    {
+      "frame": 9,
+      "target": "enemy0",
+      "age": 0.06666565,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 2,
+        "texture": "enemy_probe_idle_2",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        717.8171,
+        291.61792,
+        791.6478,
+        327.995544
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        73.83069999999998,
+        36.37762399999997
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.74495000000002,
+        -25.952067999999997
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5859577923437177,
+        "height": 0.2887112305551732,
+        "dx": -0.26781699760058014,
+        "dy": -0.2059687429759442,
+        "distance": 0.3378595378065857
+      }
+    },
+    {
+      "frame": 9,
+      "target": "enemy1",
+      "age": 0.0,
+      "sprite": {
+        "key": "enemy1",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 2,
+        "texture": "enemy_probe_idle_2",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.110404,
+        "heightWorld": 2.85120368,
+        "contactBottomOrigin": [
+          967.0521,
+          398.358,
+          29.7230778
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            868.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            294.000031,
+            30.0030785
+          ],
+          [
+            868.0,
+            294.000031,
+            30.0030785
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            882.000061,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            310.000031,
+            30.0030785
+          ],
+          [
+            882.000061,
+            310.000031,
+            30.0030785
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        896.5402,
+        277.2685,
+        970.6051,
+        313.861237
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        868.0,
+        234.0,
+        1060.0,
+        425.999969
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        882.000061,
+        283.999969,
+        1046.0,
+        409.999969
+      ],
+      "mainSize": [
+        74.06489999999997,
+        36.592737
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.47944999999993,
+        -26.077131500000007
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5878166666666664,
+        "height": 0.2904185476190476,
+        "dx": -0.26570992063492005,
+        "dy": -0.20696136111111116,
+        "distance": 0.33680078223896587
+      }
+    },
+    {
+      "frame": 10,
+      "target": "enemy0",
+      "age": 0.0999984741,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        721.0581,
+        294.275848,
+        791.6478,
+        327.9028
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        70.5897,
+        33.62695200000002
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -32.124450000000024,
+        -24.669475999999975
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5602355764499772,
+        "height": 0.2668805057674948,
+        "dx": -0.2549558896537099,
+        "dy": -0.19578944389307315,
+        "distance": 0.32145919182545324
+      }
+    },
+    {
+      "frame": 10,
+      "target": "enemy1",
+      "age": 0.0333328247,
+      "sprite": {
+        "key": "enemy1",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.110404,
+        "heightWorld": 2.85120368,
+        "contactBottomOrigin": [
+          967.0521,
+          398.358,
+          29.7230778
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            868.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            294.000031,
+            30.0030785
+          ],
+          [
+            868.0,
+            294.000031,
+            30.0030785
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            882.000061,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            310.000031,
+            30.0030785
+          ],
+          [
+            882.000061,
+            310.000031,
+            30.0030785
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        896.5402,
+        277.2685,
+        970.6051,
+        313.861237
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        868.0,
+        234.0,
+        1060.0,
+        425.999969
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        882.000061,
+        283.999969,
+        1046.0,
+        409.999969
+      ],
+      "mainSize": [
+        74.06489999999997,
+        36.592737
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.47944999999993,
+        -26.077131500000007
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5878166666666664,
+        "height": 0.2904185476190476,
+        "dx": -0.26570992063492005,
+        "dy": -0.20696136111111116,
+        "distance": 0.33680078223896587
+      }
+    },
+    {
+      "frame": 10,
+      "target": "enemy2",
+      "age": 0.0,
+      "sprite": {
+        "key": "enemy2",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.17029023,
+        "heightWorld": 2.90609932,
+        "contactBottomOrigin": [
+          1146.63879,
+          402.388123,
+          30.300745
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            1046.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            298.0,
+            30.5807438
+          ],
+          [
+            1046.0,
+            298.0,
+            30.5807438
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            1060.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            314.0,
+            30.5807438
+          ],
+          [
+            1060.0,
+            314.0,
+            30.5807438
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        1076.526,
+        273.237579,
+        1150.57764,
+        309.823822
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        1046.0,
+        229.99996900000002,
+        1238.0,
+        422.0
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        1060.0,
+        279.999969,
+        1224.0,
+        406.0
+      ],
+      "mainSize": [
+        74.0516399999999,
+        36.586243000000024
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.08696999999984,
+        -26.081176500000026
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5877112839757945,
+        "height": 0.29036693649702383,
+        "dx": -0.2625949353933083,
+        "dy": -0.20699341335876362,
+        "distance": 0.33436861884472313
+      }
+    },
+    {
+      "frame": 11,
+      "target": "enemy0",
+      "age": 0.1333313,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        726.2316,
+        298.518433,
+        791.6478,
+        327.75473
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        65.4162,
+        29.23629699999998
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -29.537700000000086,
+        -22.622218499999974
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5191760627423974,
+        "height": 0.23203404608686154,
+        "dx": -0.23442613279992044,
+        "dy": -0.17954137249378913,
+        "distance": 0.2952807412895048
+      }
+    },
+    {
+      "frame": 11,
+      "target": "enemy1",
+      "age": 0.06666565,
+      "sprite": {
+        "key": "enemy1",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.110404,
+        "heightWorld": 2.85120368,
+        "contactBottomOrigin": [
+          967.0521,
+          398.358,
+          29.7230778
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            868.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            294.000031,
+            30.0030785
+          ],
+          [
+            868.0,
+            294.000031,
+            30.0030785
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            882.000061,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            310.000031,
+            30.0030785
+          ],
+          [
+            882.000061,
+            310.000031,
+            30.0030785
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        896.820557,
+        277.498383,
+        970.6051,
+        313.8532
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        868.0,
+        234.0,
+        1060.0,
+        425.999969
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        882.000061,
+        283.999969,
+        1046.0,
+        409.999969
+      ],
+      "mainSize": [
+        73.78454299999999,
+        36.354817000000025
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.339271499999995,
+        -25.966208499999993
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.585591611111111,
+        "height": 0.28853029365079386,
+        "dx": -0.26459739285714284,
+        "dy": -0.20608101984126978,
+        "distance": 0.3353821209391088
+      }
+    },
+    {
+      "frame": 11,
+      "target": "enemy2",
+      "age": 0.0333328247,
+      "sprite": {
+        "key": "enemy2",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.17029023,
+        "heightWorld": 2.90609932,
+        "contactBottomOrigin": [
+          1146.63879,
+          402.388123,
+          30.300745
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            1046.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            298.0,
+            30.5807438
+          ],
+          [
+            1046.0,
+            298.0,
+            30.5807438
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            1060.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            314.0,
+            30.5807438
+          ],
+          [
+            1060.0,
+            314.0,
+            30.5807438
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        1076.526,
+        273.237579,
+        1150.57764,
+        309.823822
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        1046.0,
+        229.99996900000002,
+        1238.0,
+        422.0
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        1060.0,
+        279.999969,
+        1224.0,
+        406.0
+      ],
+      "mainSize": [
+        74.0516399999999,
+        36.586243000000024
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -33.08696999999984,
+        -26.081176500000026
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5877112839757945,
+        "height": 0.29036693649702383,
+        "dx": -0.2625949353933083,
+        "dy": -0.20699341335876362,
+        "distance": 0.33436861884472313
+      }
+    },
+    {
+      "frame": 12,
+      "target": "enemy0",
+      "age": 0.166664124,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        731.1905,
+        302.5851,
+        791.6478,
+        327.612854
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        60.45729999999992,
+        25.027754000000016
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -27.058250000000044,
+        -20.659823000000017
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.47981972321895644,
+        "height": 0.19863291938396443,
+        "dx": -0.21474796303819996,
+        "dy": -0.1639668088653091,
+        "distance": 0.27018845652345863
+      }
+    },
+    {
+      "frame": 12,
+      "target": "enemy1",
+      "age": 0.0999984741,
+      "sprite": {
+        "key": "enemy1",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.110404,
+        "heightWorld": 2.85120368,
+        "contactBottomOrigin": [
+          967.0521,
+          398.358,
+          29.7230778
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            868.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            294.000031,
+            30.0030785
+          ],
+          [
+            868.0,
+            294.000031,
+            30.0030785
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            882.000061,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            310.000031,
+            30.0030785
+          ],
+          [
+            882.000061,
+            310.000031,
+            30.0030785
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        900.0596,
+        280.154572,
+        970.6051,
+        313.760529
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        868.0,
+        234.0,
+        1060.0,
+        425.999969
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        882.000061,
+        283.999969,
+        1046.0,
+        409.999969
+      ],
+      "mainSize": [
+        70.54549999999995,
+        33.605957000000046
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -31.719749999999976,
+        -24.68444949999997
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5598849206349202,
+        "height": 0.2667139444444448,
+        "dx": -0.25174404761904745,
+        "dy": -0.19590832936507913,
+        "distance": 0.3189908133884698
+      }
+    },
+    {
+      "frame": 12,
+      "target": "enemy2",
+      "age": 0.06666565,
+      "sprite": {
+        "key": "enemy2",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 3,
+        "texture": "enemy_probe_idle_3",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.17029023,
+        "heightWorld": 2.90609932,
+        "contactBottomOrigin": [
+          1146.63879,
+          402.388123,
+          30.300745
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            1046.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            298.0,
+            30.5807438
+          ],
+          [
+            1046.0,
+            298.0,
+            30.5807438
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            1060.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            314.0,
+            30.5807438
+          ],
+          [
+            1060.0,
+            314.0,
+            30.5807438
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        1076.8064,
+        273.467438,
+        1150.57764,
+        309.8158
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        1046.0,
+        229.99996900000002,
+        1238.0,
+        422.0
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        1060.0,
+        279.999969,
+        1224.0,
+        406.0
+      ],
+      "mainSize": [
+        73.77124000000003,
+        36.34836200000001
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -32.946770000000015,
+        -25.970258
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.5854858876979169,
+        "height": 0.2884789925170734,
+        "dx": -0.26148223725437036,
+        "dy": -0.20611310801979094,
+        "distance": 0.33294980657319634
+      }
+    },
+    {
+      "frame": 15,
+      "target": "enemy0",
+      "age": 0.2666664,
+      "sprite": {
+        "key": "enemy0",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 4,
+        "texture": "enemy_probe_idle_4",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 2.91723537,
+        "heightWorld": 2.67413235,
+        "contactBottomOrigin": [
+          788.4774,
+          384.2412,
+          27.859766
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            691.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            472.0,
+            28.1397648
+          ],
+          [
+            883.0,
+            279.999969,
+            28.1397629
+          ],
+          [
+            691.0,
+            279.999969,
+            28.1397629
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            705.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            422.0,
+            28.1397648
+          ],
+          [
+            869.0,
+            295.999969,
+            28.1397648
+          ],
+          [
+            705.0,
+            295.999969,
+            28.1397648
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        733.7879,
+        304.715179,
+        791.6478,
+        327.538544
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        691.0,
+        248.0,
+        883.0,
+        440.000031
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        705.0,
+        298.0,
+        869.0,
+        424.000031
+      ],
+      "mainSize": [
+        57.859899999999925,
+        22.823365000000024
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -25.75954999999999,
+        -19.63193849999999
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.4592054425764382,
+        "height": 0.18113777289467514,
+        "dx": -0.2044408227169404,
+        "dy": -0.155808997380326,
+        "distance": 0.2570457034417068
+      }
+    },
+    {
+      "frame": 15,
+      "target": "enemy1",
+      "age": 0.200000763,
+      "sprite": {
+        "key": "enemy1",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 4,
+        "texture": "enemy_probe_idle_4",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.110404,
+        "heightWorld": 2.85120368,
+        "contactBottomOrigin": [
+          967.0521,
+          398.358,
+          29.7230778
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            868.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            486.0,
+            30.0030785
+          ],
+          [
+            1060.0,
+            294.000031,
+            30.0030785
+          ],
+          [
+            868.0,
+            294.000031,
+            30.0030785
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            882.000061,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            436.000031,
+            30.0030785
+          ],
+          [
+            1046.0,
+            310.000031,
+            30.0030785
+          ],
+          [
+            882.000061,
+            310.000031,
+            30.0030785
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        912.781433,
+        290.5874,
+        970.6051,
+        313.396454
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        868.0,
+        234.0,
+        1060.0,
+        425.999969
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        882.000061,
+        283.999969,
+        1046.0,
+        409.999969
+      ],
+      "mainSize": [
+        57.823667,
+        22.809054000000003
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -25.35883350000006,
+        -19.650072999999963
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.45891799206349204,
+        "height": 0.18102423809523813,
+        "dx": -0.2012605833333338,
+        "dy": -0.15595296031746003,
+        "distance": 0.2546117598137468
+      }
+    },
+    {
+      "frame": 15,
+      "target": "enemy2",
+      "age": 0.166667938,
+      "sprite": {
+        "key": "enemy2",
+        "art": "enemy_probe",
+        "anim": "idle",
+        "frame": 4,
+        "texture": "enemy_probe_idle_4",
+        "width": 96,
+        "height": 96,
+        "canvasHeightWorld": 3.17029023,
+        "heightWorld": 2.90609932,
+        "contactBottomOrigin": [
+          1146.63879,
+          402.388123,
+          30.300745
+        ],
+        "canvasCornersBottomOrigin": [
+          [
+            1046.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            490.000031,
+            30.5807419
+          ],
+          [
+            1238.0,
+            298.0,
+            30.5807438
+          ],
+          [
+            1046.0,
+            298.0,
+            30.5807438
+          ]
+        ],
+        "alphaCornersBottomOrigin": [
+          [
+            1060.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            440.000031,
+            30.5807438
+          ],
+          [
+            1224.0,
+            314.0,
+            30.5807438
+          ],
+          [
+            1060.0,
+            314.0,
+            30.5807438
+          ]
+        ],
+        "alphaThreshold": 0.4
+      },
+      "mainBoxTopOrigin": [
+        1090.16956,
+        284.426178,
+        1150.57764,
+        309.4334
+      ],
+      "spriteCanvasBoxTopOrigin": [
+        1046.0,
+        229.99996900000002,
+        1238.0,
+        422.0
+      ],
+      "spriteAlphaBoxTopOrigin": [
+        1060.0,
+        279.999969,
+        1224.0,
+        406.0
+      ],
+      "mainSize": [
+        60.40807999999993,
+        25.007222000000013
+      ],
+      "mainBoxCenterMinusContactPixels": [
+        -26.265190000000075,
+        -20.682087999999965
+      ],
+      "normalizedByAlphaHeight": {
+        "width": 0.47942908839443016,
+        "height": 0.1984699670431035,
+        "dx": -0.2084538376026279,
+        "dy": -0.16414351517103967,
+        "distance": 0.2653226262194163
+      }
+    }
+  ]
+}

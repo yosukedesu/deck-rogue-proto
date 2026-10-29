@@ -5,6 +5,12 @@ namespace DeckRogue.Game {
   CombatPresentationLedger.Receipt receipt;GameEvent_DamageDealt hit;Func<int> generation;int index;
   public bool Committed=>generation()==receipt.Generation && receipt.Committed && receipt.Exact && receipt.Reason==null && ReferenceEquals(hit,receipt.Event);
   public bool Eligible(ResolvedCombatFx.Ticket t)=>HD2DFlags.Hd2dFx && t.ExactSource && t.SourceKey=="enemy:enemy_cinder_imp/spark_toss" && t.SourceUnit=="enemy"+index && t.Target=="player" && t.AttackFamily=="fire" && t.Element=="fire" && !t.FixedSmallContact && t.HasBeamOrigin && t.Impact!=null && Stage.ImpactTargetCurrent(t.Target,t.Impact);
+  public bool ExactSevenScald=>receipt.Index+1<receipt.Batch.To&&receipt.Batch.After.EventLog[receipt.Index+1] is GameEvent_StatusInflicted ev&&AdmitsScald(ev);
+  public bool ExactSeven=>hit.Amount==7&&hit.HpLoss==7;
+  public bool AdmitsScald(GameEvent_StatusInflicted ev) {
+   var b=receipt.Batch;int i=receipt.Index;
+   return ExactSeven&&generation()==receipt.Generation&&receipt.Reason==null&&ev.Status=="scald"&&ev.Amount==1&&b!=null&&i+2<b.To&&ReferenceEquals(b.After.EventLog[i+1],ev)&&b.After.EventLog[i+2] is GameEvent_EnemyActionResolved a&&a.EnemyIndex==index&&a.Kind=="attack"&&a.Actual==7&&a.HpLoss==7;
+  }
   public static ImpSparkBinding Capture(CombatPresentationLedger.Batch batch,CombatPresentationLedger.Receipt receipt,Func<int> generation) {
    if(batch?.Before==null || batch.After==null || receipt==null || receipt.Committed || receipt.Reason!=null || receipt.Generation!=generation() || !ReferenceEquals(receipt.Batch,batch))return null;
    if(!(batch.OwnerCommand is RunCommand_Combat cmd) || !(cmd.Command is Command_EndTurn))return null;

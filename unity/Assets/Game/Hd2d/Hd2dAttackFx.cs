@@ -47,9 +47,19 @@ namespace DeckRogue.Game
                     var d=slot.Draws[j];if(d.Kind!=40)continue;var b=slot.Effect.Batches[j];var vertices=new JArray();
                     for(int i=0;i<d.V.Length;i++)if(d.C[i].a>0){var w=slot.Root.TransformPoint(d.V[i]);var screen=cam.WorldToScreenPoint(w);var view=cam.worldToCameraMatrix.MultiplyPoint(w);vertices.Add(new JObject{["i"]=i,["role"]=b.Role(i),["screenBottomOrigin"]=new JArray(screen.x,screen.y,screen.z),["viewZ"]=view.z,["world"]=new JArray(w.x,w.y,w.z),["uv"]=new JArray(d.UV[i].x,d.UV[i].y),["alpha"]=d.C[i].a,["gain"]=d.Gain[i].x});}
                     var props=new MaterialPropertyBlock();d.Renderer.GetPropertyBlock(props);var tex=props.GetTexture("_BaseMap");
-                    rows.Add(new JObject{["target"]=slot.Ticket.Target,["age"]=Time.time-slot.Started,["kind"]=d.Kind,["batch"]=j,["enabled"]=d.Renderer.enabled,["shader"]=d.Renderer.sharedMaterial.shader.name,["material"]=d.Renderer.sharedMaterial.GetEntityId().ToString(),["boundTexture"]=tex?.name,["width"]=tex?.width??0,["height"]=tex?.height??0,["sourceEncodedCandidate"]=props.GetFloat("_SourceEncoded"),["shaderAge"]=props.GetFloat("_Age"),["probe"]=CanopyReviewMode,["receiverAnchorViewZ"]=cam.worldToCameraMatrix.MultiplyPoint(slot.Ticket.Position).z,["vertices"]=vertices});
+                    rows.Add(new JObject{["target"]=slot.Ticket.Target,["age"]=Time.time-slot.Started,["kind"]=d.Kind,["batch"]=j,["enabled"]=d.Renderer.enabled,["shader"]=d.Renderer.sharedMaterial.shader.name,["material"]=d.Renderer.sharedMaterial.GetEntityId().ToString(),["boundTexture"]=tex?.name,["width"]=tex?.width??0,["height"]=tex?.height??0,["sourceEncodedCandidate"]=props.GetFloat("_SourceEncoded"),["shaderAge"]=props.GetFloat("_Age"),["probe"]=CanopyReviewMode,["receiverAnchorViewZ"]=cam.worldToCameraMatrix.MultiplyPoint(slot.Ticket.Position).z,["receiverProjection"]=CaptureReceiverProjection(slot.Ticket.Target,slot.Ticket.Position,cam),["vertices"]=vertices});
                 }
             }return rows;
+        }
+        // Read-only QA: texture canvas and alpha>=.4 envelope, not fragment coverage.
+        internal static JObject CaptureReceiverProjection(string key,Vector3 contact,Camera cam) {
+            if(!Stage.TryGetUnitAnchor(key,out var a))return null;
+            var tex=a.CurrentTex??a.BaseTex;var r=new JObject{["key"]=key,["art"]=a.ArtName,["anim"]=a.Anim,["frame"]=a.Frame,["texture"]=tex?.name,["width"]=tex?.width??0,["height"]=tex?.height??0,["canvasHeightWorld"]=a.CanvasHeightWorld,["heightWorld"]=a.HeightWorld};
+            Func<Vector3,JArray> screen=w=>{var q=cam.WorldToScreenPoint(w);return new JArray(q.x,q.y,q.z);};
+            Func<float,float,float,float,JArray> corners=(l,t,rr,b)=>new JArray(screen(a.TexturePoint(tex,new Vector2(l,t))),screen(a.TexturePoint(tex,new Vector2(rr,t))),screen(a.TexturePoint(tex,new Vector2(rr,b))),screen(a.TexturePoint(tex,new Vector2(l,b))));
+            r["contactBottomOrigin"]=screen(contact);r["canvasCornersBottomOrigin"]=corners(0,0,1,1);
+            try{var px=tex.GetPixels32();int l=tex.width,rr=-1,t=tex.height,b=-1;for(int y=0;y<tex.height;y++)for(int x=0;x<tex.width;x++)if(px[(tex.height-1-y)*tex.width+x].a>=102){l=Math.Min(l,x);rr=Math.Max(rr,x);t=Math.Min(t,y);b=Math.Max(b,y);}if(rr>=l)r["alphaCornersBottomOrigin"]=corners(l/(float)tex.width,t/(float)tex.height,(rr+1f)/tex.width,(b+1f)/tex.height);r["alphaThreshold"]=.4f;}catch(Exception ex){r["alphaReadError"]=ex.GetType().Name;}
+            return r;
         }
         // QA-only isolated main-surface GPU draw: no scene depth, no other effects, no post.
         // Linear ARGB32 preview clamps HDR; this is not the final tone-mapped presentation.
