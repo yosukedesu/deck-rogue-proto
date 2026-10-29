@@ -14,7 +14,7 @@ namespace DeckRogue.Game
         public static void Build(GameRoot g, RectTransform root)
         {
             var run = g.Rs;
-            RewardScreen.Backdrop(g, root, "？");
+            RewardScreen.Backdrop(g, root, "？", 0.45f);   // 場面化 (§10-3): 板をやめ、左に大きな絵・右に本文と選択肢 (PC)
             EventDef def = null;
             try { if (run.EventId != null) def = Content.GetEventDef(run.EventId); } catch (Exception) { }
 
@@ -40,8 +40,8 @@ namespace DeckRogue.Game
             float panelH = 350f + rowsH + 40f;
             var panel = UiKit.Frame(root, Theme.Panel, Color.white, "event", 3f);
             var cs = BattleScreen.CanvasSize(root);
-            // 情景の絵 (Art/scenes/event.png 240×135 を 2倍) があれば挿絵つきの頁に: 左に絵、右に名前と本文 (2026-09-11)
-            var sceneArt = Theme.Art("scenes", "event");
+            // 情景の絵 (Art/scenes/event*.png 240×132) があれば挿絵つきの頁に: 左に絵、右に名前と本文 (2026-09-11)。絵は出来事の種類で選ぶ (祠・取引・恵み・坑道。§10-4)
+            var sceneArt = Theme.Art("scenes", SceneFor(def)) ?? Theme.Art("scenes", "event");
             float pad = ph ? 28f : 40f;
             float textX = pad;
             // スマホ (2026-09-15 ユーザー「イベントのダイアログで上部ステータスが見えない」): パネルを上部バーの下に全幅で置く。
@@ -63,9 +63,28 @@ namespace DeckRogue.Game
                 float top = RunUi.TopH + 10f + Mathf.Max(0f, (avail - h) / 2f);   // 余った高さの中央に
                 UiKit.Anchor(panel.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(24f, -top - h), new Vector2(-24f, -top));
             }
-            else UiKit.Anchor(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-520f, -panelH / 2f), new Vector2(520f, panelH / 2f + 20f));
+            else
+            {   // PC (§10-3): 紙の板はやめて画面いっぱいの入れ物に (見えない)。絵は左の紙の額、字は夜の上に縁取り
+                panel.color = new Color(1f, 1f, 1f, 0f);
+                panel.raycastTarget = false;
+                UiKit.Anchor(panel.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(0f, 0f), new Vector2(0f, 0f));
+            }
             var prt = panel.rectTransform;
-            if (sceneArt != null)
+            if (sceneArt != null && !ph)
+            {   // 左の紙の額 748×424 (絵は 240×132 を 3 倍 = 720×396。少し傾ける)
+                float fx = 110f, fy = RunUi.TopH + 150f;
+                var frame = PaperFx.Sheet(prt, PaperFx.Tag2, "art-frame", Color.white);
+                frame.raycastTarget = false;
+                UiKit.Anchor(frame.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(fx, -fy - 424f), new Vector2(fx + 748f, -fy));
+                frame.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 1.2f);
+                var sc = new GameObject("scene", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+                sc.transform.SetParent(frame.transform, false);
+                sc.sprite = sceneArt; sc.preserveAspect = true; sc.raycastTarget = false;
+                UiKit.PixelArt(sc);
+                UiKit.Anchor(sc.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(14f, 14f), new Vector2(-14f, -14f));
+                textX = fx + 748f + 100f;
+            }
+            else if (sceneArt != null)
             {
                 var sc = new GameObject("scene", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
                 sc.transform.SetParent(prt, false);
@@ -92,10 +111,15 @@ namespace DeckRogue.Game
                 UiKit.Anchor(list, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(colX, 24f), new Vector2(-28f, -72f - flavorH - 10f));
             }
             else
-            {
-                UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(sceneArt != null ? textX : 110f, -100f), new Vector2(-30f, -24f));
-                UiKit.Anchor(flavor.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(textX, -330f), new Vector2(-40f, -120f));
-                UiKit.Anchor(list, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(40f, 30f), new Vector2(-40f, -350f));
+            {   // PC (§10-3): 右の列に名前・本文・選択肢 (夜の上なので紙色＋縁取り)
+                float colX = sceneArt != null ? textX : 110f;
+                float top = RunUi.TopH + 150f;
+                name.color = PaperFx.Paper; name.outlineWidth = 0.22f; name.outlineColor = new Color(0f, 0f, 0f, 0.9f);
+                flavor.color = PaperFx.Paper; flavor.outlineWidth = 0.25f; flavor.outlineColor = new Color(0f, 0f, 0f, 0.9f);
+                flavor.lineSpacing = 14f;
+                UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(colX, -top - 60f), new Vector2(-60f, -top));
+                UiKit.Anchor(flavor.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(colX, -top - 240f), new Vector2(-80f, -top - 70f));
+                UiKit.Anchor(list, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(colX, 40f), new Vector2(-80f, -top - 250f));
             }
             var vg = UiKit.Vert(list, ph ? 8 : 12, 0);
             vg.childForceExpandHeight = false;
@@ -116,11 +140,24 @@ namespace DeckRogue.Game
                         if (needsCard) { g.EventChoiceIndex = idx; g.Rebuild(); }
                         else { Audio.Ui("event_choice"); g.Do(new RunCommand_EventChoice { Index = idx }); }
                     }, 18, available, leave ? null : (Color?)PaperFx.Paper3);
-                float bh = hint.Length > 0 ? (ph ? 62f : 70f) : (ph ? 50f : 52f);
+                float bh = hint.Length > 0 ? (ph ? 62f : 84f) : (ph ? 50f : 64f);   // PC は絵札風に高く (§10-3)
                 UiKit.Le(b, -1f, bh, -1f, bh);
                 var tx = b.GetComponentInChildren<TMP_Text>();
                 if (tx != null) { tx.alignment = TextAlignmentOptions.Left; tx.margin = new Vector4(18f, 0f, 12f, 0f); }
             }
+        }
+
+        /// <summary>出来事の挿絵の名前 (§10-4): 名前と中身から 祠 (event_shrine)・取引 (event_trade)・恵み (event_blessing) を選ぶ。どれでもなければ坑道の道標 (event)</summary>
+        static string SceneFor(EventDef def)
+        {
+            if (def == null) return "event";
+            string n = def.Name ?? "";
+            if (n.Contains("祠") || n.Contains("石") || n.Contains("碑") || n.Contains("星")) return "event_shrine";
+            bool trade = n.Contains("商") || n.Contains("取引") || n.Contains("市") || n.Contains("屋");
+            if (!trade && def.Choices != null) foreach (var c in def.Choices) if (c.RequireGold.HasValue && c.RequireGold.Value > 0) { trade = true; break; }
+            if (trade) return "event_trade";
+            if (n.Contains("泉") || n.Contains("恵") || n.Contains("光") || n.Contains("花") || n.Contains("水") || n.Contains("癒")) return "event_blessing";
+            return "event";
         }
 
         /// <summary>

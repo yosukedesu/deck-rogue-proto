@@ -1,0 +1,25 @@
+{
+  "id": "act1_chest_closed",
+  "engine": "pixflux",
+  "request": {
+    "description": "HD-2D Octopath Traveler style pixel art, an old wooden treasure chest with brass bands and a brass lock, closed lid, moss on the corners, sitting on dark forest ground at night, cool blue-grey moonlit palette with brass highlights, seen from slightly above, the chest fills the frame, transparent background",
+    "negative_description": "human, person, character, creature, monster, animal, face, eyes, text, letters, watermark, border, frame, ui, blurry, bright saturated colors, daylight, blue sky, sun, clouds, background scenery, floor tiles, grid",
+    "image_size": {
+      "width": 64,
+      "height": 48
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down",
+    "direction": "south",
+    "seed": 23
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-10-29T01:39:05.704Z"
+}

@@ -14,7 +14,14 @@ namespace DeckRogue.Game
         public static void Build(GameRoot g, RectTransform root)
         {
             var run = g.Rs;
-            RewardScreen.Backdrop(g, root, "焚き火");
+            // 場面 (品質スプリント #3 2026-10-29 §10): 夜の森の箱庭の上に焚き火・丸太・座るこのは。暗幕は薄く (棚を開いている間は今までの濃さ)
+            BattleScreen.BuildBackground(root, run.Act);
+            var dim = UiKit.Pan(root, new Color(0f, 0f, 0f, g.SubMode != null ? 0.5f : 0.16f), "dim");
+            dim.raycastTarget = false;
+            UiKit.Stretch(dim.rectTransform, 0f, 0f, 0f, 0f);
+            if (g.SubMode == null) Scene(g, root, run);
+            RunUi.TopBar(g, root, "焚き火");
+            RunUi.Message(g, root);
 
             int allowed = DeckRogue.Engine.Run.CampfireForgeAllowed(run);
             int remain = Math.Max(0, allowed - run.CampfireUpgradesUsed);
@@ -64,24 +71,24 @@ namespace DeckRogue.Game
             }
 
             int extra = (opt.Dig && fresh ? 1 : 0) + (opt.TrainLeft > 0 && fresh ? 1 : 0) + (opt.Remove && fresh ? 1 : 0);
-            RunUi.Heading(root, "焚き火", extra > 0 ? "どれか1つ。鍛えた後は回復なしで立ち去る" : "どちらか1つ。鍛えた後は回復なしで立ち去る");
-            float optY = RunUi.SceneWindow(root, "campfire") ? -40f : UiKit.Phone ? -30f : 0f;   // 情景の窓 (左上) と札が触れないよう少し下げる。スマホは見出しと重ならないよう下げる
-            // 選択肢が3つ以上なら幅を詰めて横に並べる (レリックの第3選択肢 2026-09-12)
+            // 本家の形 (§10-3): 上に「どうする？」と絵札。絵札は場面の上 (焚き火は画面の下半分)
+            RunUi.Heading(root, "どうする？", extra > 0 ? "焚き火で一息 ・ どれか 1 つ ・ 鍛えた後は回復なしで立ち去る" : "焚き火で一息 ・ どちらか 1 つ ・ 鍛えた後は回復なしで立ち去る");
             int count = 2 + extra;
-            float w = count <= 2 ? 440f : count == 3 ? 400f : 320f;
-            float gap = count <= 2 ? 80f : 24f;
+            float w = UiKit.Phone && count > 3 ? 210f : 260f;
+            float gap = count <= 2 ? 80f : UiKit.Phone ? 16f : 24f;
+            float optY = UiKit.Phone ? 40f : 190f;   // 絵札の中心 (PC: 上から 350・見出しのすぐ下。スマホ: 見出しの下)
             float x0 = -((count - 1) * (w + gap)) / 2f;
             int slot = 0;
             Vector2 Pos() { return new Vector2(x0 + (slot++) * (w + gap), optY); }
 
             // 休む
             // 休めない理由はレリックの名前で (2026-09-14 人間ラン#11: 古根の杯を持ったまま HP15 で「休む」を選んで回復ゼロ → ボスで敗北)
-            var rest = Option(root, "burn", "休む", restHeals ? "HP +" + heal + " (最大HPの " + (int)Math.Round(run.CampfireRatio * 100) + "%)" : noRest ? noRestName + ": 焚き火で休めない" : "すでに鍛えたので回復なし",
-                restHeals ? "今のHP " + run.Hp + " → " + Math.Min(run.MaxHp, run.Hp + heal) : "回復なしで立ち去る (HP " + run.Hp + "/" + run.MaxHp + " のまま)",
+            var rest = Option(root, "bedroll", "休む", restHeals ? "HP を " + heal + " 回復\n（最大 HP の " + (int)Math.Round(run.CampfireRatio * 100) + "%）" : noRest ? noRestName + ": 焚き火で休めない" : "すでに鍛えたので回復なし",
+                restHeals ? "今の HP " + run.Hp + " → " + Math.Min(run.MaxHp, run.Hp + heal) : "回復なしで立ち去る (HP " + run.Hp + "/" + run.MaxHp + " のまま)",
                 Pos(), delegate { Audio.Ui("rest"); g.Do(new RunCommand_CampfireRest()); }, true, w);
             // 鍛える
-            Option(root, "hammer", "鍛える", !opt.Forge ? "融合の鎚: 焚き火では鍛えられない" : remain > 0 ? "デッキの1枚を強化 (残り " + remain + " 回)" : "この焚き火ではもう鍛えられない",
-                remain > 0 ? "鍛えると数値が伸びる・コストが下がる" : "", Pos(),
+            Option(root, "anvil", "鍛える", !opt.Forge ? "融合の鎚: 焚き火では鍛えられない" : remain > 0 ? "デッキの 1 枚を鍛える\n（数値が伸びる・コストが下がる）" : "この焚き火ではもう鍛えられない",
+                remain > 0 ? "残り " + remain + " 回 ・ 鍛えた後を見てから決められる" : "", Pos(),
                 delegate { g.SubMode = "forge"; g.Rebuild(); }, remain > 0, w);
             if (opt.Dig && fresh)
                 Option(root, "chest", "発掘", "発掘の鶴嘴: レリックを1個掘る", "休む・鍛えるとは排他", Pos(),
@@ -94,38 +101,86 @@ namespace DeckRogue.Game
                     delegate { g.SubMode = "remove"; g.Rebuild(); }, run.Deck.Count > 5, w);
         }
 
-        static RectTransform Option(RectTransform root, string icon, string title, string line1, string line2, Vector2 pos, Action onClick, bool enabled, float w = 440f)
+        /// <summary>場面 (§10-3「場面は舞台で組む」): 道の真ん中に焚き火 (PixelLab 48×48・炎のコマは props/anim)・両側に丸太・左の丸太にこのは (座りの絵があればそれ、無ければ立ち絵)。
+        /// 小物は UI の矩形に追従する板 (Stage.BindUnit)。火には点光源 (揺らぐ)。1 ドット＝3px＝舞台と同じ粒 (スマホは ArtScale で縮む)</summary>
+        static void Scene(GameRoot g, RectTransform root, RunState run)
         {
-            float h = 360f;
+            float cw = BattleScreen.CanvasSize(root).x;
+            float dot = 4.5f * BattleScreen.ArtScale;   // 座席の板は矩形より小さく映る (1 回目: 48 ドットの火が約 100px) ので、小物は 1.5 倍で頼む
+            var log = Theme.Art("props", "act1_log");
+            var fire = Theme.Art("props", "act1_bonfire");
+            Sprite hero = null;
+            try { hero = Theme.Art("leaders", run.LeaderId + "_sit"); if (hero == null) hero = Creature.Get("leaders", run.LeaderId, true); } catch (Exception) { }
+            // 座席は道の座標 (リーダーの席 (-5.0, 0.9) の右に火、その両側に丸太。s が小さいほど手前)
+            if (log != null)
+            {
+                Prop(root, "scene-log-l", log, Stage.SceneSeat("scene-log-l", -6.0f, 0.9f), cw, 80f * dot);
+                Prop(root, "scene-log-r", log, Stage.SceneSeat("scene-log-r", 0.8f, 0.3f), cw, 80f * dot);
+            }
+            if (fire != null)
+            {
+                Prop(root, "scene-fire", fire, Stage.SceneSeat("scene-fire", -2.2f, 0.5f), cw, 48f * dot);
+                Stage.AttachLight("scene-fire", PaperFx.Ember, 6f, 9f, 0.45f, 0.14f);
+                Stage.AttachGlow("scene-fire", new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.35f), 4.2f, 0.35f);
+            }
+            // このは: 火と左の丸太のあいだに立って火に当たる (座りの絵は未作成。座りが出来たら左の丸太の上へ)
+            if (hero != null) Prop(root, "scene-hero", hero, Stage.SceneSeat("scene-hero", -4.4f, 0.4f), cw, hero.rect.width * 4f * BattleScreen.ArtScale * BattleScreen.HeroScale);
+        }
+
+        /// <summary>小物の板: 足元を座席の画面の点 (キャンバスの単位・左下原点) に置いた矩形 (絵の整数倍) を舞台に結ぶ。Image は BindUnit が隠す</summary>
+        static void Prop(RectTransform root, string key, Sprite s, Vector2 feet, float canvasW, float width)
+        {
+            var rt = UiKit.NewRect(key, root);
+            PaperFx.FitPixel(rt, s, feet.x - canvasW / 2f, feet.y, width);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = s; img.preserveAspect = true; img.raycastTarget = false;
+            Stage.BindUnit(key, rt, img, s);
+        }
+
+        /// <summary>絵札 (§10-3・本家の Rest／Smith の形): 紙の札 260×330。上に夜色の箱と挿絵 (PixelLab 48×48 を 100 に)、名前・一行・小さな行、押せるなら下に真鍮の小札「押して選ぶ」</summary>
+        static RectTransform Option(RectTransform root, string icon, string title, string line1, string line2, Vector2 pos, Action onClick, bool enabled, float w = 260f)
+        {
+            float h = 330f;
+            bool narrow = w < 240f;
             var cell = UiKit.NewRect("opt-" + title, root);
             cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
             cell.sizeDelta = new Vector2(w, h);
             cell.anchoredPosition = pos;
             var frame = UiKit.Frame(cell, Theme.Panel, enabled ? Color.white : new Color(0.6f, 0.6f, 0.6f, 1f), "frame", 3f);
             UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
-            var ic = UiKit.Icon(cell, icon, 96f);
+            float ib = narrow ? 104f : 128f;
+            var box = PaperFx.Sheet(cell, PaperFx.Tag, "ib", enabled ? PaperFx.Night : new Color(PaperFx.Night.r, PaperFx.Night.g, PaperFx.Night.b, 0.7f));
+            box.raycastTarget = false;
+            UiKit.Anchor(box.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-ib / 2f, -18f - ib), new Vector2(ib / 2f, -18f));
+            var ic = UiKit.Icon(box.transform, icon, narrow ? 80f : 100f);
             ic.raycastTarget = false;
-            ic.rectTransform.anchorMin = ic.rectTransform.anchorMax = new Vector2(0.5f, 1f);
-            ic.rectTransform.anchoredPosition = new Vector2(0f, -80f);
-            var t = UiKit.Deco(cell, title, 30, UiKit.ColInk, TextAnchor.MiddleCenter);
+            ic.rectTransform.anchorMin = ic.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            ic.rectTransform.anchoredPosition = Vector2.zero;
+            float ty = -18f - ib - 6f;
+            var t = UiKit.Deco(cell, title, narrow ? 22 : 26, UiKit.ColInk, TextAnchor.MiddleCenter);
             t.raycastTarget = false;
-            UiKit.Anchor(t.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -190f), new Vector2(0f, -140f));
-            var l1 = UiKit.Txt(cell, line1, 17, UiKit.ColInk, TextAnchor.MiddleCenter, true);
+            UiKit.Anchor(t.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, ty - 40f), new Vector2(0f, ty));
+            var l1 = UiKit.Txt(cell, line1, narrow ? 13 : 15, UiKit.ColInk, TextAnchor.MiddleCenter, true);
             l1.raycastTarget = false;
             l1.textWrappingMode = TextWrappingModes.Normal;
-            UiKit.Anchor(l1.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(16f, -240f), new Vector2(-16f, -192f));
-            var l2 = UiKit.Txt(cell, line2, 14, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
+            UiKit.Anchor(l1.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(12f, ty - 100f), new Vector2(-12f, ty - 42f));
+            var l2 = UiKit.Txt(cell, line2, 13, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
             l2.raycastTarget = false;
-            UiKit.Anchor(l2.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(16f, -280f), new Vector2(-16f, -242f));
+            l2.textWrappingMode = TextWrappingModes.Normal;
+            UiKit.Anchor(l2.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(12f, ty - 140f), new Vector2(-12f, ty - 102f));
             if (enabled)
             {
                 var btn = frame.gameObject.AddComponent<Button>();
                 btn.targetGraphic = frame;
-                var cols = btn.colors; cols.highlightedColor = new Color(1.1f, 1.1f, 1.1f); cols.pressedColor = new Color(0.85f, 0.85f, 0.85f); btn.colors = cols;
+                var cols = btn.colors; cols.highlightedColor = new Color(1.06f, 1.06f, 1.06f); cols.pressedColor = new Color(0.9f, 0.9f, 0.9f); btn.colors = cols;
                 btn.onClick.AddListener(delegate { Audio.Ui("click"); onClick(); });
-                var hintB = UiKit.Txt(cell, (UiKit.Phone ? "タップで選ぶ" : "クリックで選ぶ"), 13, UiKit.ColGoldInk, TextAnchor.MiddleCenter);
+                frame.gameObject.AddComponent<ScreenFx.ButtonMotion>();   // ホバーで 1.03・押すと 0.96 (#2 条3)
+                var tag = PaperFx.Sheet(cell, PaperFx.Tag, "hint", PaperFx.BrassLight);
+                tag.raycastTarget = false;
+                UiKit.Anchor(tag.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-50f, 14f), new Vector2(50f, 38f));
+                var hintB = UiKit.Txt(tag.transform, "押して選ぶ", 12, PaperFx.BrassInk, TextAnchor.MiddleCenter, true);
                 hintB.raycastTarget = false;
-                UiKit.Anchor(hintB.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 18f), new Vector2(0f, 44f));
+                UiKit.Stretch(hintB.rectTransform, 0f, 0f, 0f, 0f);
             }
             return cell;
         }

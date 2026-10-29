@@ -1,0 +1,25 @@
+{
+  "id": "icon_anvil",
+  "engine": "pixflux",
+  "request": {
+    "description": "pixel art item icon, a small iron anvil with a blacksmith hammer resting on it and a few orange sparks, dark iron with brass highlights, soft shading, clean readable silhouette, centered, transparent background",
+    "negative_description": "human, person, character, creature, monster, animal, face, eyes, text, letters, watermark, border, frame, ui, blurry, bright saturated colors, daylight, blue sky, sun, clouds, background scenery, floor tiles, grid",
+    "image_size": {
+      "width": 48,
+      "height": 48
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "direction": "south",
+    "seed": 23
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-10-29T01:40:18.399Z"
+}

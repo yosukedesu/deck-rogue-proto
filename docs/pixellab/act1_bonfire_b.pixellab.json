@@ -1,0 +1,25 @@
+{
+  "id": "act1_bonfire_b",
+  "engine": "pixflux",
+  "request": {
+    "description": "HD-2D Octopath Traveler style pixel art, a small campfire on dark forest ground at night, three crossed logs with glowing orange embers and lively flames in the center, a few stones ringing the fire, warm amber light on the ground, cool blue-grey moonlit palette with the fire as the only warm accent, seen from slightly above, the whole campfire fills the frame, transparent background",
+    "negative_description": "human, person, character, creature, monster, animal, face, eyes, text, letters, watermark, border, frame, ui, blurry, bright saturated colors, daylight, blue sky, sun, clouds, background scenery, floor tiles, grid",
+    "image_size": {
+      "width": 48,
+      "height": 48
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "low top-down",
+    "direction": "south",
+    "seed": 41
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-10-29T01:38:40.083Z"
+}

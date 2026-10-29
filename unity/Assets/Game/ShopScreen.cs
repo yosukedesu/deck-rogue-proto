@@ -15,7 +15,14 @@ namespace DeckRogue.Game
         {
             var run = g.Rs;
             var shop = run.Shop;
-            RewardScreen.Backdrop(g, root, "ショップ");
+            // 場面 (品質スプリント #3 2026-10-29 §10-3): 夜の森の箱庭の上に屋台・提灯・木箱と袋・荷車 (店主は出さない)。暗幕は薄く (棚を開いている間は今までの濃さ)
+            BattleScreen.BuildBackground(root, run.Act);
+            var dimS = UiKit.Pan(root, new Color(0f, 0f, 0f, g.ShopMode != null ? 0.5f : 0.18f), "dim");
+            dimS.raycastTarget = false;
+            UiKit.Stretch(dimS.rectTransform, 0f, 0f, 0f, 0f);
+            if (g.ShopMode == null && shop != null) Scene(root);
+            RunUi.TopBar(g, root, "ショップ");
+            RunUi.Message(g, root);
 
             if (shop == null)
             {
@@ -68,9 +75,11 @@ namespace DeckRogue.Game
                 return;
             }
 
-            RunUi.Heading(root, "ショップ", (UiKit.Phone ? "札はタップで拡大。買うのは値札のボタン。所持金 " : "札はクリックで拡大。買うのは値札のボタン。所持金 ") + run.Gold + "G", RunUi.TopH + 24f, UiKit.Phone ? 440f : 0f);
-            bool scene = RunUi.SceneWindow(root, "shop");
-            float shelfTop = scene ? RunUi.SceneBottom : RunUi.TopH + 110f;   // 情景の窓があれば棚をその下へ
+            RunUi.Heading(root, "坑口の行商", "札 ・ 遺物 ・ 道具 ・ 鍛えると取り除き ─ 買わなくてもよい（" + (UiKit.Phone ? "札はタップで拡大" : "札はクリックで拡大") + "・所持金 " + run.Gold + " G）", RunUi.TopH + 24f, UiKit.Phone ? 440f : 0f);
+            bool scene = false;   // 左上の小窓はやめた (場面が舞台にある。§10-3)
+            var csS = BattleScreen.CanvasSize(root);
+            // PC は札を画面の下の敷物の上に (屋台の前)。スマホは今までどおり上部バーの下 (高さが無い)
+            float shelfTop = UiKit.Phone ? RunUi.TopH + 110f : csS.y - 64f - 410f;
             // 行商が預かった支度 (出立の店の売れ残り 2026-09-24。幕1の店だけ): 見出しと棚のあいだの段。PC は情景の窓の右、スマホは上部バーのすぐ下
             // 坑口で買わなかった札は普通の札と同じ棚に並べ、遺物・薬草・道具箱だけを段に置く (2026-09-24 夜)
             var leftCards = new List<int>(); var leftOthers = new List<int>();
@@ -81,12 +90,16 @@ namespace DeckRogue.Game
                     if (lo != null && shop.Departures[d].Sold != true && lo.Kind == "card" && lo.Choice.AddCardIds != null && lo.Choice.AddCardIds.Count > 0) leftCards.Add(d);
                     else if (lo != null && shop.Departures[d].Sold != true) leftOthers.Add(d);
                 }
-            if (leftOthers.Count > 0)
-            {
-                float used = DepartureBand(g, root, run, shop, scene, leftOthers);
-                if (!UiKit.Phone && !scene) shelfTop += used;   // 情景の窓が無い PC は棚を段の下へ
-            }
+            if (leftOthers.Count > 0) DepartureBand(g, root, run, shop, scene, leftOthers);   // 段は見出しの下。PC の棚は下の敷物なので重ならない
 
+            // 敷物 (PC): 札を並べる布。屋台の前の地面に広げた風 (§10-3 の盤)
+            if (!UiKit.Phone)
+            {
+                var cloth = PaperFx.Sheet(root, PaperFx.Tag, "cloth", Color.Lerp(PaperFx.Plum, PaperFx.Night, 0.55f));
+                cloth.raycastTarget = false;
+                UiKit.Anchor(cloth.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(60f, -shelfTop - 436f), new Vector2(-500f, -shelfTop + 14f));
+                cloth.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 0.5f);
+            }
             // 棚 (カード)
             // 棚は左端〜右パネルの手前 (画面幅から出す。スマホの 1800 幅では中央固定だと6枚目がパネルに隠れた。2026-09-09)
             var shelf = UiKit.NewRect("shelf", root);
@@ -177,14 +190,24 @@ namespace DeckRogue.Game
                 }
             }
 
-            // レリック + サービス (右列)
-            var side = UiKit.Frame(root, Theme.Panel, Color.white, "services", 3f);
-            // スマホは上下いっぱいに使い、余白を詰める (高さ 675 では 250 のレリック札と 2 つのサービスが入らなかった。2026-09-14)
+            // レリック + サービス (右列) = 屋台の木の看板 (§10-3): 紙の板を木の色に染め、上から 2 本の縄で吊るす。中の札とボタンは紙のまま
             bool ph = UiKit.Phone;
+            var wood = Color.Lerp(PaperFx.BrassInk, PaperFx.Night, 0.42f);
+            if (!ph)
+                for (int ri = 0; ri < 2; ri++)
+                {
+                    var rope = UiKit.Pan(root, PaperFx.Brass, "rope");
+                    rope.raycastTarget = false;
+                    float rx = ri == 0 ? -380f : -80f;
+                    UiKit.Anchor(rope.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(rx - 2f, -(RunUi.TopH + 100f)), new Vector2(rx + 1f, -RunUi.TopH));
+                }
+            var side = UiKit.Frame(root, Theme.Panel, wood, "services", 3f);
+            // スマホは上下いっぱいに使い、余白を詰める (高さ 675 では 250 のレリック札と 2 つのサービスが入らなかった。2026-09-14)
             UiKit.Anchor(side.rectTransform, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-420f, ph ? 100f : 120f), new Vector2(-40f, -(RunUi.TopH + (ph ? 12f : 100f))));
             var sv = UiKit.Vert(side.transform, ph ? 8 : 14, ph ? 12 : 20);
             sv.childForceExpandHeight = false;
-            UiKit.Head(side.transform, "店主のサービス", 20);
+            var svHead = UiKit.Head(side.transform, "店のサービス", 20);
+            svHead.color = PaperFx.BrassLight;
             if (shop.RelicId != null)
             {
                 RelicDef rd = null;
@@ -200,7 +223,7 @@ namespace DeckRogue.Game
             }
             else
             {
-                var none = UiKit.Txt(side.transform, "レリックは売切", 15, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
+                var none = UiKit.Txt(side.transform, "レリックは売切", 15, PaperFx.PaperDim, TextAnchor.MiddleCenter);
                 UiKit.Le(none, -1f, 40f, -1f, 40f);
             }
             ServiceBtn(side.transform, "カード除去  " + rmPrice + "G", run.Gold >= rmPrice && run.Deck.Count > 5, delegate { g.ShopMode = "remove"; g.Rebuild(); });
@@ -209,11 +232,39 @@ namespace DeckRogue.Game
             ServiceBtn(side.transform, "ギアの棚  " + shelfN + "枠 ／ 魔素 " + (shop.ManaPrice ?? DeckRogue.Engine.Run.SHOP_MANA_PRICE) + "G", true, delegate { g.ShopMode = "gears"; g.Rebuild(); });
             if (!ph)
             {
-                var note = UiKit.Txt(side.transform, "除去・鍛えるは使うたび値上がり (ラン通算)", 12, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
+                var note = UiKit.Txt(side.transform, "除去・鍛えるは使うたび値上がり (ラン通算)", 12, PaperFx.PaperDim, TextAnchor.MiddleCenter);
                 UiKit.Le(note, -1f, 24f, -1f, 24f);
             }
 
-            RunUi.BottomButton(root, "店を出る", delegate { g.ShopMode = null; g.Do(new RunCommand_ShopLeave()); }, 18, 260f, 52f, ph ? -300f : -100f, ph ? 24f : 40f);
+            // 進む＝真鍮の決定のボタン (本家の赤いリボンの役。PC は看板の下の右端)
+            RunUi.BottomButton(root, "店を出て坑へ", delegate { g.ShopMode = null; g.Do(new RunCommand_ShopLeave()); }, 18, 260f, 52f, ph ? -300f : csS.x / 2f - 170f, ph ? 24f : 40f, PaperFx.BrassLight);
+        }
+
+        /// <summary>場面 (§10-3「店主は出さない」): 道の左奥に屋台と提灯の柱、手前に木箱・袋・樽、右に荷車。提灯に光と暈。小物は幕2の既存の絵 (act2_*) と地図の荷車</summary>
+        static void Scene(RectTransform root)
+        {
+            float cw = BattleScreen.CanvasSize(root).x;
+            float dot = 4.5f * BattleScreen.ArtScale;   // 焚き火と同じ (座席の板は矩形より小さく映る)
+            void Put(string key, string art, float t, float s, float dots)
+            {
+                var sp = Theme.Art("props", art) ?? Theme.Art("map", art);
+                if (sp == null) return;
+                var rt = UiKit.NewRect(key, root);
+                var feet = Stage.SceneSeat(key, t, s);
+                PaperFx.FitPixel(rt, sp, feet.x - cw / 2f, feet.y, dots * dot);
+                var img = rt.gameObject.AddComponent<Image>();
+                img.sprite = sp; img.preserveAspect = true; img.raycastTarget = false;
+                Stage.BindUnit(key, rt, img, sp);
+            }
+            // 奥 (s が大きい) に置く = 画面の上に上がり、下の敷物 (UI) に隠れない
+            Put("scene-lantern", "act2_lantern_post", -8.8f, 2.0f, 40f);
+            Put("scene-stall", "act2_stall_a", -6.8f, 2.8f, 96f);
+            Put("scene-crates", "act2_crate_stack", -4.4f, 2.6f, 48f);
+            Put("scene-sacks", "act2_sacks", -3.6f, 2.0f, 48f);
+            Put("scene-barrel", "act2_barrel", -2.4f, 2.4f, 32f);
+            Put("scene-cart", "map_cart", 6.4f, 2.4f, 62f);
+            Stage.AttachLight("scene-lantern", PaperFx.BrassLight, 3.2f, 7f, 0.85f, 0.06f);
+            Stage.AttachGlow("scene-lantern", new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.28f), 3.2f, 0.85f);
         }
 
         /// <summary>

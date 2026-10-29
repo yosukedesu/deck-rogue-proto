@@ -1,0 +1,25 @@
+{
+  "id": "icon_bedroll",
+  "engine": "pixflux",
+  "request": {
+    "description": "pixel art item icon, a rolled-up travel bedroll of thick brown cloth tied with a leather strap, with a small folded blanket, warm cream and brown palette, soft shading, clean readable silhouette, centered, transparent background",
+    "negative_description": "human, person, character, creature, monster, animal, face, eyes, text, letters, watermark, border, frame, ui, blurry, bright saturated colors, daylight, blue sky, sun, clouds, background scenery, floor tiles, grid",
+    "image_size": {
+      "width": 48,
+      "height": 48
+    },
+    "text_guidance_scale": 8,
+    "no_background": true,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "direction": "south",
+    "seed": 23
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-10-29T01:39:49.448Z"
+}

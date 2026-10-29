@@ -1132,7 +1132,8 @@ namespace DeckRogue.Game
             u.BreathePhase = (key.GetHashCode() & 0xff) * 0.05f;   // 位相をずらして全員が同期しない
             // コマ: Art/<種別>/anim/<id>_<動き>_<n>.png (64×64。PixelLab の animate-with-text)。無ければ一枚絵のまま
             // dot のコマの組 (2026-10-26・DotSet): 板の元が Art/enemies/dot/<id>/<id>.png なら、コマも同じフォルダ (<id>_idle_<n> ほか)
-            string cat = key == "player" ? "leaders" : "enemies";
+            // 場面の小物 (StageScene・2026-10-29): "scene-hero" は主人公 (leaders)、他の "scene-" は小物 (props/anim の <名前>_idle_<n> = 炎のコマなど)
+            string cat = key == "player" || key.StartsWith("scene-hero") ? "leaders" : key.StartsWith("scene-") ? "props" : "enemies";
             string dotId;
             bool dot = DotSet.TryId(sprite.texture, out dotId);
             string animFolder = dot ? DotSet.Folder(dotId) : cat + "/anim";
@@ -1148,6 +1149,7 @@ namespace DeckRogue.Game
                 if (list.Count > 0) u.Anims[anim] = list;
             }
             u.Breathe = !u.Anims.ContainsKey("idle");   // 待機のコマ (PixelLab の呼吸) があるならコードの上下はしない (2026-09-16)
+            if (key.StartsWith("scene-") && !key.StartsWith("scene-hero")) u.Breathe = false;   // 場面の小物 (丸太・焚き火) は上下しない
             // このは v2 (2026-09-16): PixelLab の17コマから 頭上→溜め(刃が光る)→着弾→食い込み の4コマ。着弾は 0.13 秒後 (Presenter の踏み込み 0.11 に合わせる)
             u.FrameDur["attack"] = new[] { 0.05f, 0.08f, 0.04f, 0.18f };
             u.FrameDur["hurt"] = new[] { 0.06f, 0.16f, 0.10f };

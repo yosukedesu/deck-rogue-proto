@@ -1,0 +1,25 @@
+{
+  "id": "scene_blessing",
+  "engine": "pixflux",
+  "request": {
+    "description": "HD-2D Octopath Traveler style pixel art scene, a hidden forest spring at night, clear water glowing softly with pale teal mana light, smooth stones and ferns around it, fireflies, a great old tree arching above, cool blue-grey palette with teal glow, wide shot",
+    "negative_description": "human, person, character, creature, monster, animal, face, eyes, text, letters, watermark, border, frame, ui, blurry, bright saturated colors, daylight, blue sky, sun, clouds, background scenery, floor tiles, grid",
+    "image_size": {
+      "width": 240,
+      "height": 132
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "direction": "south",
+    "seed": 23
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-10-29T01:40:54.658Z"
+}

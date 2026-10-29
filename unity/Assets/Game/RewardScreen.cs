@@ -13,10 +13,14 @@ namespace DeckRogue.Game
 {
     public static class RewardScreen
     {
+        /// <summary>宝箱を開けた (そのランの状態の間だけ。手が進んで Rs が変わればまた閉じた箱から)</summary>
+        static RunState _chestOpenedFor;
+
         public static void Reward(GameRoot g, RectTransform root)
         {
             var run = g.Rs;
-            Backdrop(g, root, "報酬");
+            Backdrop(g, root, "報酬", 0.45f);   // 勝った場所 (戦闘の舞台) を暗くしたまま (§10-3)
+            SceneHero(g, root, -8.2f, 0.4f);   // このはは左端に (席 (-5.0) だと札の後ろに隠れる)
             var opts = run.RewardOptions;
             int n = opts != null ? opts.Count : 0;
             // ギア (2026-09-17): 札3枚とは別枠で1つ。札とギアは独立 (どちらを先に片付けてもよい = FinishReward)
@@ -24,8 +28,8 @@ namespace DeckRogue.Game
             GearDef gdef = gearId != null ? GearUi.DefOf(gearId) : null;
             bool hasGear = gearId != null;
             string manaNote = "魔素 " + GearUi.ManaText(DeckRogue.Engine.Run.ManaOf(run));
-            if (opts == null && hasGear) RunUi.Heading(root, "ギア報酬", "札とは別枠。取っても見送ってもよい。" + manaNote);
-            else RunUi.Heading(root, "カード報酬", "1枚選んでデッキに加える。見送ってもよい (デッキを薄く保つのも戦略)" + (hasGear ? "。右のギアは別枠で両方取れる。" + manaNote : ""));
+            if (opts == null && hasGear) Banner(root, "戦利品", "ギアは札とは別枠。取っても見送ってもよい ・ " + manaNote);
+            else Banner(root, "戦利品", "札は 3 枚から 1 枚。見送ってもよい（デッキを薄く保つのも戦略）" + (hasGear ? " ・ 右のギアは別枠で両方取れる ・ " + manaNote : ""));
 
             float scale = UiKit.Phone ? 1.05f : 1.25f;   // スマホは高さ 675 に見出し・札・見送るを収める (2026-09-14)
             float cardW = CardView.W * scale, cardH = CardView.H * scale;
@@ -104,9 +108,33 @@ namespace DeckRogue.Game
         public static void Relic(GameRoot g, RectTransform root)
         {
             var run = g.Rs;
-            Backdrop(g, root, "レリック");
+            // 宝箱の節 (§10-3): 箱の前に立ち、「開ける」で蓋が開いてから遺物の札。強個体・幕ボスの遺物は箱なし
+            bool chest = false;
+            try { var node = DeckRogue.Engine.Run.CurrentNode(run); chest = node != null && node.Type == MapNodeTypes.Treasure; } catch (Exception) { }
+            bool opened = ReferenceEquals(_chestOpenedFor, run);
+            Backdrop(g, root, chest ? "宝箱" : "レリック", 0.45f);
+            SceneHero(g, root, -8.2f, 0.4f);   // 左端 (札の後ろに隠れない)
+            if (chest)
+            {
+                var chestArt = Theme.Art("props", opened ? "act1_chest_open" : "act1_chest_closed");
+                if (chestArt != null)
+                {
+                    SceneProp(root, "scene-chest", chestArt, -2.4f, 0.5f, 64f * 3f * BattleScreen.ArtScale);
+                    if (opened)
+                    {
+                        Stage.AttachLight("scene-chest", PaperFx.BrassLight, 3f, 6f, 0.5f, 0.05f);
+                        Stage.AttachGlow("scene-chest", new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.3f), 3f, 0.5f);
+                    }
+                }
+                if (!opened)
+                {
+                    Banner(root, "宝箱", "道の脇に古い箱。開けると中の遺物を 1 つ持ち帰れる");
+                    var open = RunUi.BottomButton(root, "開ける", delegate { Audio.Ui("click"); _chestOpenedFor = g.Rs; g.Rebuild(); }, 20, 260f, 56f, 0f, UiKit.Phone ? 24f : 120f, PaperFx.BrassLight);
+                    return;
+                }
+            }
             int left = run.RelicPicksLeft.HasValue ? run.RelicPicksLeft.Value : 1;
-            RunUi.Heading(root, "レリック", left > 1 ? "あと " + left + " 個選べる" : "1個選んで持ち帰る。見送ってもよい");
+            Banner(root, chest ? "宝箱" : "レリック", left > 1 ? "あと " + left + " 個選べる" : "1 個選んで持ち帰る。見送ってもよい");
 
             var opts = run.RelicOptions;
             int n = opts != null ? opts.Count : 0;
@@ -185,14 +213,60 @@ namespace DeckRogue.Game
             return cell;
         }
 
-        public static void Backdrop(GameRoot g, RectTransform root, string title)
+        public static void Backdrop(GameRoot g, RectTransform root, string title, float dimAlpha = 0.5f, bool hero = false)
         {
             BattleScreen.BuildBackground(root, g.Rs.Act);
-            var dim = UiKit.Pan(root, new Color(0f, 0f, 0f, 0.5f), "dim");
+            var dim = UiKit.Pan(root, new Color(0f, 0f, 0f, dimAlpha), "dim");
             dim.raycastTarget = false;
             UiKit.Stretch(dim.rectTransform, 0f, 0f, 0f, 0f);
+            if (hero) SceneHero(g, root);
             RunUi.TopBar(g, root, title);
             RunUi.Message(g, root);
+        }
+
+        /// <summary>場面 (§10-3): 主人公が戦闘と同じ席に立つ (報酬＝勝った場所。宝箱＝箱の前)。座席→ProjectFeet→BindUnit の経路 (StageScene)</summary>
+        public static void SceneHero(GameRoot g, RectTransform root, float t = -5.0f, float s = 0.9f)
+        {
+            Sprite hero = null;
+            try { hero = Creature.Get("leaders", g.Rs.LeaderId, true); } catch (Exception) { }
+            if (hero == null) return;
+            SceneProp(root, "scene-hero", hero, t, s, hero.rect.width * 4f * BattleScreen.ArtScale * BattleScreen.HeroScale);
+        }
+
+        /// <summary>場面の小物 (1 ドット＝dots×3px) を道の座標 (t, s) の座席に立てる</summary>
+        public static RectTransform SceneProp(RectTransform root, string key, Sprite s, float t, float side, float width)
+        {
+            float cw = BattleScreen.CanvasSize(root).x;
+            var rt = UiKit.NewRect(key, root);
+            var feet = Stage.SceneSeat(key, t, side);
+            PaperFx.FitPixel(rt, s, feet.x - cw / 2f, feet.y, width);
+            var img = rt.gameObject.AddComponent<Image>();
+            img.sprite = s; img.preserveAspect = true; img.raycastTarget = false;
+            Stage.BindUnit(key, rt, img, s);
+            return rt;
+        }
+
+        /// <summary>旗 (§10-3・本家の「Choose a Card」の紙の旗): 紙 (濃) の帯 560×82 を少し傾け、真鍮の罫と大きな字。sub は帯の下の一行 (夜の上なので縁取り)</summary>
+        public static void Banner(RectTransform root, string text, string sub)
+        {
+            float top = RunUi.TopH + 26f;
+            var band = PaperFx.Sheet(root, PaperFx.Tag2, "banner", Color.white);
+            band.raycastTarget = false;
+            UiKit.Anchor(band.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-280f, -top - 82f), new Vector2(280f, -top));
+            band.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 1f);
+            var rule = UiKit.Pan(band.rectTransform, PaperFx.Brass, "rule");
+            rule.raycastTarget = false;
+            UiKit.Anchor(rule.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(28f, 9f), new Vector2(-28f, 11f));
+            var t = UiKit.Deco(band.transform, text, 34, PaperFx.Ink, TextAnchor.MiddleCenter);
+            t.characterSpacing = 6f; t.raycastTarget = false;
+            UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 8f);
+            if (!string.IsNullOrEmpty(sub))
+            {
+                var st = UiKit.Txt(root, sub, 15, PaperFx.PaperDim, TextAnchor.MiddleCenter);
+                st.raycastTarget = false;
+                st.outlineWidth = 0.25f; st.outlineColor = new Color(0f, 0f, 0f, 0.85f);
+                UiKit.Anchor(st.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(40f, -top - 82f - 34f), new Vector2(-40f, -top - 82f - 6f));
+            }
         }
 
         /// <summary>ホバーで浮き上がり、クリックで onClick</summary>

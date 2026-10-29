@@ -1,0 +1,114 @@
+{
+  "_note": "#3 場面化 (2026-10-29 品質スプリント §10-3 裁定「場面は舞台で組む」) の小物。舞台と同じ 1ドット=3px で置く。使い方: node scripts/pixellab.mjs gen docs/pixellab/scenes-2026-10-29.json → 見て選ぶ → unity/Assets/Resources/Art/props/ (小物) と Art/scenes/ (挿絵) へ。炎のコマと このはの座りは animate で別に",
+  "defaults": {
+    "engine": "pixflux",
+    "view": "low top-down",
+    "direction": "south",
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "no_background": true,
+    "guidance": 8,
+    "negative": "human, person, character, creature, monster, animal, face, eyes, text, letters, watermark, border, frame, ui, blurry, bright saturated colors, daylight, blue sky, sun, clouds, background scenery, floor tiles, grid"
+  },
+  "items": [
+    {
+      "id": "icon_bedroll",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/scenepix/icon_bedroll.png",
+      "size": [
+        48,
+        48
+      ],
+      "seed": 23,
+      "view": "side",
+      "description": "pixel art item icon, a rolled-up travel bedroll of thick brown cloth tied with a leather strap, with a small folded blanket, warm cream and brown palette, soft shading, clean readable silhouette, centered, transparent background"
+    },
+    {
+      "id": "icon_anvil",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/scenepix/icon_anvil.png",
+      "size": [
+        48,
+        48
+      ],
+      "seed": 23,
+      "view": "side",
+      "description": "pixel art item icon, a small iron anvil with a blacksmith hammer resting on it and a few orange sparks, dark iron with brass highlights, soft shading, clean readable silhouette, centered, transparent background"
+    },
+    {
+      "id": "scene_shrine",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/scenepix/scene_shrine.png",
+      "size": [
+        240,
+        132
+      ],
+      "seed": 23,
+      "view": "side",
+      "no_background": false,
+      "description": "HD-2D Octopath Traveler style pixel art scene, a small mossy stone shrine deep in a night forest, an old carved stone with a faint glowing rune, offerings of wildflowers and a tiny brass lantern, tall dark trees behind, moonlight through the mist, cool blue-grey palette with one warm lantern accent, wide shot"
+    },
+    {
+      "id": "scene_trade",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/scenepix/scene_trade.png",
+      "size": [
+        240,
+        132
+      ],
+      "seed": 23,
+      "view": "side",
+      "no_background": false,
+      "description": "HD-2D Octopath Traveler style pixel art scene, an abandoned wayside trading post at night in a forest: a wooden counter under a torn awning, crates and sacks, a hanging brass lantern, a signpost with a blank board, coins on the counter, no people, cool blue-grey moonlit palette with warm lantern light, wide shot"
+    },
+    {
+      "id": "scene_blessing",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/scenepix/scene_blessing.png",
+      "size": [
+        240,
+        132
+      ],
+      "seed": 23,
+      "view": "side",
+      "no_background": false,
+      "description": "HD-2D Octopath Traveler style pixel art scene, a hidden forest spring at night, clear water glowing softly with pale teal mana light, smooth stones and ferns around it, fireflies, a great old tree arching above, cool blue-grey palette with teal glow, wide shot"
+    },
+    {
+      "id": "act1_bonfire_a",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/scenepix/act1_bonfire_a.png",
+      "size": [
+        48,
+        48
+      ],
+      "seed": 23,
+      "description": "HD-2D Octopath Traveler style pixel art, a small campfire: three crossed logs with glowing orange embers and lively flames in the center, a ring of small stones, single isolated object, nothing else in the frame, no ground, no scenery, no trees, no sky, plain transparent background"
+    },
+    {
+      "id": "act1_bonfire_b",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/scenepix/act1_bonfire_b.png",
+      "size": [
+        48,
+        48
+      ],
+      "seed": 41,
+      "description": "HD-2D Octopath Traveler style pixel art, a small campfire: three crossed logs with glowing orange embers and lively flames in the center, a ring of small stones, single isolated object, nothing else in the frame, no ground, no scenery, no trees, no sky, plain transparent background"
+    },
+    {
+      "id": "act1_chest_closed",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/scenepix/act1_chest_closed.png",
+      "size": [
+        64,
+        48
+      ],
+      "seed": 23,
+      "description": "HD-2D Octopath Traveler style pixel art, an old wooden treasure chest with brass bands and a brass lock, closed lid, a little moss on the corners, single isolated object, nothing else in the frame, no ground, no scenery, no trees, no sky, plain transparent background"
+    },
+    {
+      "id": "act1_chest_open",
+      "out": "/tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/scenepix/act1_chest_open.png",
+      "size": [
+        64,
+        48
+      ],
+      "seed": 23,
+      "description": "HD-2D Octopath Traveler style pixel art, an old wooden treasure chest with brass bands, lid wide open, warm golden light glowing out of the inside, a little moss on the corners, single isolated object, nothing else in the frame, no ground, no scenery, no trees, no sky, plain transparent background"
+    }
+  ]
+}

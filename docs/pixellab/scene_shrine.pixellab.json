@@ -1,0 +1,25 @@
+{
+  "id": "scene_shrine",
+  "engine": "pixflux",
+  "request": {
+    "description": "HD-2D Octopath Traveler style pixel art scene, a small mossy stone shrine deep in a night forest, an old carved stone with a faint glowing rune, offerings of wildflowers and a tiny brass lantern, tall dark trees behind, moonlight through the mist, cool blue-grey palette with one warm lantern accent, wide shot",
+    "negative_description": "human, person, character, creature, monster, animal, face, eyes, text, letters, watermark, border, frame, ui, blurry, bright saturated colors, daylight, blue sky, sun, clouds, background scenery, floor tiles, grid",
+    "image_size": {
+      "width": 240,
+      "height": 132
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "direction": "south",
+    "seed": 23
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-10-29T01:40:32.119Z"
+}
