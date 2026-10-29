@@ -824,6 +824,7 @@ namespace DeckRogue.Game
                         int v; var st3 = g.Rs.Combat;
                         if (int.TryParse(Get("pblock"), out v)) g.Rs = g.Rs with { Combat = st3 with { Player = st3.Player with { Block = Math.Max(0, v) } } };
                     }
+                    if(int.TryParse(Get("penergymax"),out int fixtureMax)) {var st=g.Rs.Combat;g.Rs=g.Rs with {Combat=st with {Player=st.Player with {EnergyMax=fixtureMax,EnergyMaxAtTurnStart=fixtureMax}}};}
                     if (Get("plight") != null)
                     {   // 自分の灯 (放出・灯コスト・しきい値の確認。2026-09-20)
                         int v; var st5 = g.Rs.Combat;
@@ -878,6 +879,7 @@ namespace DeckRogue.Game
                         for (int i = 0; i < holds && g.Rs.Combat != null && g.Rs.Combat.Phase == CombatPhases.AwaitingReaction; i++)
                             g.Rs = DeckRogue.Engine.Run.ApplyRunCommand(g.Rs, new RunCommand_Combat { Command = new Command_ConfirmReaction { Fire = false } });
                     }
+                    if(Get("afterholdendturn")=="1" && g.Rs.Combat.Phase==CombatPhases.PlayerTurn) g.Rs=DeckRogue.Engine.Run.ApplyRunCommand(g.Rs,new RunCommand_Combat{Command=new Command_EndTurn()});
                 }
                 catch (Exception ex) { Debug.LogError("[Autopilot] state: set/endturn " + ex.Message); }
             }
@@ -990,6 +992,12 @@ namespace DeckRogue.Game
                 Time.captureFramerate = DetFramerate;   // det なら 60 のまま (撮影の時間刻みを最後まで固定する。2026-09-30 HD-2D 見本 P00)
             }
             // play=<手札index>: その札をプレイして (対象は最初の生存敵)、攻撃コマの途中を 4 枚撮る (2026-09-16 このは v2 のアニメ確認)
+            if(int.TryParse(Get("prepareplay"),out int prepareIndex) && g.Rs?.Combat!=null){
+                var prepare=g.Rs.Combat.Player.Hand[prepareIndex];int from=g.Rs.Combat.EventLog.Count;
+                g.DoCombat(new Command_PlayCard{CardUid=prepare.Uid});yield return WaitPresentation();
+                string prepareDir=string.IsNullOrEmpty(_linePrefix)?_dir:Path.Combine(_dir,_linePrefix);Directory.CreateDirectory(prepareDir);
+                File.WriteAllText(Path.Combine(prepareDir,"prepare-events.json"),new JObject{["energy"]=g.Rs.Combat.Player.Energy,["permanents"]=JArray.FromObject(g.Rs.Combat.Player.Permanents),["events"]=JArray.FromObject(g.Rs.Combat.EventLog.Skip(from).ToArray())}.ToString());
+            }
             int playIdx;
             if (Get("play") == "attack" && g.Rs != null && g.Rs.Combat != null)   // play=attack: 手札で最初のダメージ札 (index を数えなくてよい)
             {
@@ -1000,6 +1008,7 @@ namespace DeckRogue.Game
             if (playIdx >= 0 && g.Rs != null && g.Rs.Combat != null && playIdx < g.Rs.Combat.Player.Hand.Count)
             {
                 var pc = g.Rs.Combat.Player.Hand[playIdx];
+                int playEventStart=g.Rs.Combat.EventLog.Count;
                 Debug.Log("[Autopilot] play " + playIdx + " " + pc.Def.Name);
                 Time.captureFramerate = 60;   // 決定的な時間刻み (1フレーム=1/60秒)。プレイの前から固定して演出の頭を撮り逃さない
                 Presenter.MarkSeen(g.Rs.Combat);   // 跳んだ直後は戦闘開始・ターン開始の演出が未消化で、プレイの演出がその後ろに並んでしまう
@@ -1071,9 +1080,10 @@ namespace DeckRogue.Game
                         var shot = ScreenCapture.CaptureScreenshotAsTexture();
                         try { File.WriteAllBytes(Path.Combine(continuousDir,"continuous-"+i.ToString("D4")+".png"),shot.EncodeToPNG()); }
                         finally { Destroy(shot); TiltShiftSettings.Enabled=savedTilt; }
-                        frameLog.Add(new JObject { ["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["delta"]=Time.deltaTime,["hp"]=g.Rs.Combat.Enemies[0].Hp,["activeFx"]=Hd2dAttackFx.ActiveCount,["visibleDraws"]=Hd2dAttackFx.VisibleReviewDraws,["effects"]=Hd2dAttackFx.CaptureReviewState(),["lightAudit"]=Get("lightaudit")=="1"?JToken.FromObject(StageFx.CaptureLightReview()):null,["receiverPose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("enemy0")??new object()):null,["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws,["boundedEffects"]=BoundedContactFx.CaptureReviewState() });
+                        frameLog.Add(new JObject { ["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["delta"]=Time.deltaTime,["hp"]=g.Rs.Combat.Enemies[0].Hp,["activeFx"]=Hd2dAttackFx.ActiveCount,["visibleDraws"]=Hd2dAttackFx.VisibleReviewDraws,["effects"]=Hd2dAttackFx.CaptureReviewState(),["lightAudit"]=Get("lightaudit")=="1"?JToken.FromObject(StageFx.CaptureLightReview()):null,["receiverPose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("enemy0")??new object()):null,["sourcePose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("player")??new object()):null,["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws,["boundedEffects"]=BoundedContactFx.CaptureReviewState() });
                     }
-                    File.WriteAllText(Path.Combine(continuousDir,"continuous-clock.json"),frameLog.ToString());
+                    File.WriteAllText(Path.Combine(continuousDir,"continuous-clock.json"),frameLog.ToString()); File.WriteAllText(Path.Combine(continuousDir,"canopy-cache.json"),Hd2dAttackFx.CaptureCanopyCache().ToString());
+                    File.WriteAllText(Path.Combine(continuousDir,"actual-events.json"),JArray.FromObject(g.Rs.Combat.EventLog.Skip(playEventStart).ToArray()).ToString());
                 }
                 else for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("play-" + i, 1); }
                 Time.captureFramerate = DetFramerate;   // det なら 60 のまま (撮影の時間刻みを最後まで固定する。2026-09-30 HD-2D 見本 P00)
@@ -1108,14 +1118,27 @@ namespace DeckRogue.Game
                 }
             }
             // endplay=1: 手番を終えて敵フェーズを演出付き (Do 経由 = 順送り) で走らせ、コマ送りで撮る (2026-09-17 敵の行動の演出)。endshots=枚数・endevery=Nフレームごと
-            if (Get("endplay") == "1" && g.Rs != null && g.Rs.Combat != null && g.Rs.Combat.Phase == CombatPhases.PlayerTurn)
+            if (g.Rs != null && g.Rs.Combat != null && ((Get("endplay") == "1" && g.Rs.Combat.Phase == CombatPhases.PlayerTurn) || (Get("confirmplay") == "1" && g.Rs.Combat.Phase == CombatPhases.AwaitingReaction)))
             {
-                Time.captureFramerate = 60;
+                bool endContinuous=Get("endcontinuous")=="1";
+                Time.captureFramerate = endContinuous?30:60;
                 Presenter.MarkSeen(g.Rs.Combat);
-                { ClearScry(g); g.DoCombat(new Command_EndTurn()); }
+                int eventStart=g.Rs.Combat.EventLog.Count;
+                { ClearScry(g); if(Get("confirmplay")=="1"){var card=g.Rs.Combat.Player.SetCards.FirstOrDefault(x=>x.Def.Id=="green_reaction_root_weave"); if(card==null)throw new Exception("RootWeave actual Set card missing");g.DoCombat(new Command_ConfirmReaction{Fire=Get("confirmfire")!="0",CardUid=card.Uid});}else g.DoCombat(new Command_EndTurn()); }
                 int shotsN = 12; int.TryParse(Get("endshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 12;
                 int every = 10; int.TryParse(Get("endevery") ?? "", out every); if (every <= 0) every = 10;
-                for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("end-" + i, 1); }
+                if(endContinuous){
+                    string continuousDir=string.IsNullOrEmpty(_linePrefix)?_dir:Path.Combine(_dir,_linePrefix);Directory.CreateDirectory(continuousDir);var clocks=new JArray();
+                    int cancel=int.TryParse(Get("cancelpresentationat"),out int c)?c:-1;
+                    for(int i=0;i<shotsN;i++){
+                        if(i==cancel)Presenter.MarkSeen(g.Rs.Combat);
+                        yield return new WaitForEndOfFrame();var shot=ScreenCapture.CaptureScreenshotAsTexture();
+                        try{File.WriteAllBytes(Path.Combine(continuousDir,"continuous-"+i.ToString("D4")+".png"),shot.EncodeToPNG());}finally{Destroy(shot);}
+                        clocks.Add(new JObject{["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["hp"]=g.Rs.Combat.Player.Hp,["phase"]=g.Rs.Combat.Phase,["uiText"]=Get("confirmaudit")=="1"?JArray.FromObject(g.ScreenRoot.GetComponentsInChildren<TMPro.TMP_Text>().Where(x=>x.isActiveAndEnabled).Select(x=>new{text=x.text,screen=new[]{x.transform.position.x,x.transform.position.y}}).ToArray()):null,["fire"]=FireContinuousFx.CaptureReviewState(),["boundedEffects"]=BoundedContactFx.CaptureReviewState(),["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws});
+                    }
+                    File.WriteAllText(Path.Combine(continuousDir,"continuous-clock.json"),clocks.ToString()); File.WriteAllText(Path.Combine(continuousDir,"imp-cache.json"),FireContinuousFx.CaptureImpCache().ToString()); File.WriteAllText(Path.Combine(continuousDir,"bounded-cache.json"),BoundedContactFx.CaptureOwnedCache().ToString());
+                    File.WriteAllText(Path.Combine(continuousDir,"actual-events.json"),JArray.FromObject(g.Rs.Combat.EventLog.Skip(eventStart).ToArray()).ToString());
+                }else for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("end-" + i, 1); }
                 Time.captureFramerate = DetFramerate;   // det なら 60 のまま (撮影の時間刻みを最後まで固定する。2026-09-30 HD-2D 見本 P00)
                 yield return WaitPresentation();
             }

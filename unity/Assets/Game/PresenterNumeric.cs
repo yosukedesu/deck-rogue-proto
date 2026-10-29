@@ -85,6 +85,10 @@ namespace DeckRogue.Game {
      var ticket=ResolvedCombatFx.Capture(g,combat.EventLog[i]);captured[i]=ticket;
      ticket.LightBoltBinding=Hd2dLightBoltBinding.Capture(ticket,batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
      ticket.ColdSweepBinding=Hd2dColdSweepBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
+     ticket.ImpSparkBinding=ImpSparkBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
+     ticket.CanopyBinding=CanopyBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
+     ticket.WraithCurseBinding=WraithCurseBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
+     ticket.CrossbowAimedBinding=CrossbowAimedBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
     }
    // Nested play-from-exhaust also emits CardPlayed. Give every such segment
    // actor ownership through the same fence, without splitting gameplay or events.

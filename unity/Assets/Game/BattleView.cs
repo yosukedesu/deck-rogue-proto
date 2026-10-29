@@ -738,6 +738,7 @@ namespace DeckRogue.Game
 
         /// <summary>順送りで敵の攻撃が届いた (ブロック前の量)。受けるダメージの見込みから引き、残りの敵の攻撃だけを言う＝HP と見込みで二重に引かない。
         /// HP バーの削られる分の帯は左端 (見込みの残り HP) を保ったまま、塗りが縮んだ分だけ短くなる (2026-09-29 p08)</summary>
+        public void PresentNegatedIncoming(int remaining) { BattleScreen.SetNegatedIncoming(SelfArea,remaining); BattleScreen.RefreshIncomingLine(SelfArea,_shownPlayerBlock,_shownPlayerIce,_shownPlayerHp); }
         public void LandPlayerIncoming(int amount)
         {
             if (_playerArea == null) return;

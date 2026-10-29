@@ -10,12 +10,12 @@ namespace DeckRogue.Game {
   sealed class Slot {
    public Transform Root;public Mesh Mesh;public MeshRenderer Renderer;public G.Buffer Geometry;
    public Vector3[] Vertices;public Vector2[] UV,Mode;public Color[] Colors;
-   public bool UseCold;public Hd2d.NativeEffect ColdEffect;
+   public bool UseCold,UseWraith,UseCrossbow;public Hd2d.NativeEffect ColdEffect,WraithEffect,CrossbowEffect;
    public bool Busy,Landed;public int Version,Particles;public long Serial;public float Started,Expected,Emission;public G.Profile Profile;public ResolvedCombatFx.Ticket Ticket;
   }
   static readonly Slot[] Pool=new Slot[24];static readonly MaterialPropertyBlock Props=new MaterialPropertyBlock();
   static Material _material;static Color[] _primary,_core;static int _epoch;static long _serial;
-  static Material _coldMaterial;static Texture2D _coldDensity;
+  static Material _coldMaterial,_wraithMaterial,_crossbowMaterial;static Texture2D _coldDensity,_wraithDensity,_crossbowDensity;
   internal static int ColdReviewMode;
   internal const float ColdProjectionScale=1.36f;
   internal static float ColdReviewScale=ColdProjectionScale;
@@ -63,7 +63,13 @@ namespace DeckRogue.Game {
     var lo=new Vector2(float.PositiveInfinity,float.PositiveInfinity);var hi=new Vector2(float.NegativeInfinity,float.NegativeInfinity);
     for(int i=0;i<s.Vertices.Length;i++)if(s.Colors[i].a>0){var p=Stage.Camera.WorldToScreenPoint(s.Root.TransformPoint(s.Vertices[i]));lo=Vector2.Min(lo,p);hi=Vector2.Max(hi,p);}
 
-    result.Add(new JObject{["materialParameters"]=parameters,["scale"]=s.Root.localScale.x,["emission"]=s.Emission,["pixelBounds"]=visible>0?new JArray(lo.x,lo.y,hi.x,hi.y):new JArray(),["triangleIndices"]=s.Mesh.triangles.Length,["serial"]=s.Serial,["family"]=s.Profile.Id,["cold297"]=s.UseCold,["committed"]=s.Ticket?.ColdSweepBinding?.Committed==true,["landed"]=s.Landed,["age"]=s.Landed?Time.time-s.Started:Time.time-s.Expected,["enabled"]=s.Renderer.enabled && s.Root.gameObject.activeInHierarchy,["verticesWithAlpha"]=visible,["shader"]=s.Renderer.sharedMaterial?.shader?.name,["textureWidth"]=s.UseCold?_coldDensity.width:0,["textureHeight"]=s.UseCold?_coldDensity.height:0});
+    result.Add(new JObject{["materialParameters"]=parameters,["scale"]=s.Root.localScale.x,["emission"]=s.Emission,["pixelBounds"]=visible>0?new JArray(lo.x,lo.y,hi.x,hi.y):new JArray(),["triangleIndices"]=s.Mesh.triangles.Length,["serial"]=s.Serial,["family"]=s.Profile.Id,["crossbow318"]=s.UseCrossbow,["crossbowCommitted"]=s.Ticket?.CrossbowAimedBinding?.Committed==true,["wraith312"]=s.UseWraith,["wraithCommitted"]=s.Ticket?.WraithCurseBinding?.Committed==true,["cold297"]=s.UseCold,["committed"]=s.Ticket?.ColdSweepBinding?.Committed==true,["landed"]=s.Landed,["age"]=s.Landed?Time.time-s.Started:Time.time-s.Expected,["enabled"]=s.Renderer.enabled && s.Root.gameObject.activeInHierarchy,["verticesWithAlpha"]=visible,["shader"]=s.Renderer.sharedMaterial?.shader?.name,["textureWidth"]=s.UseCold?_coldDensity.width:s.UseWraith?_wraithDensity.width:s.UseCrossbow?_crossbowDensity.width:0,["textureHeight"]=s.UseCold?_coldDensity.height:s.UseWraith?_wraithDensity.height:s.UseCrossbow?_crossbowDensity.height:0});
+   }return result;
+  }
+  internal static JArray CaptureOwnedCache(){
+   var result=new JArray();foreach(var s in Pool)if(s!=null&&(s.WraithEffect!=null||s.CrossbowEffect!=null)){
+    var samples=new JArray();foreach(var effect in new[]{s.WraithEffect,s.CrossbowEffect})if(effect!=null){int positive=0;foreach(var b in effect.Batches)for(int i=0;i<b.Count;i++)if(b.Alpha(i)>0)positive++;samples.Add(new JObject{["texture"]=effect.Texture,["positiveVertices"]=positive});}
+    result.Add(new JObject{["meshId"]=s.Mesh.GetEntityId().ToString(),["busy"]=s.Busy,["active"]=s.Root.gameObject.activeInHierarchy,["rendererEnabled"]=s.Renderer.enabled,["ticketPresent"]=s.Ticket!=null,["samples"]=samples});
    }return result;
   }
   public static bool IsFamily(string family)=>G.Find(family)!=null;
@@ -97,7 +103,7 @@ namespace DeckRogue.Game {
    if(Math.Abs(dot(r,r)-1)>1e-4||Math.Abs(dot(u,u)-1)>1e-4||Math.Abs(dot(f,f)-1)>1e-4||Math.Abs(dot(r,u))>1e-4||Math.Abs(dot(r,f))>1e-4||Math.Abs(dot(u,f))>1e-4)return false;
    for(int x=-1;x<=1;x+=2)for(int y=-1;y<=1;y+=2)if(!Finite(point+basis*(new Vector3(x*.5f,y*.5f,0)*scale)))return false;return true;
   }
-  static void Retire(Slot s,int version){if(s==null||s.Version!=version)return;s.Busy=false;s.UseCold=false;s.ColdEffect?.ConfigureColdSweepCommittedContact?.Invoke(false);s.Ticket=null;if(s.Renderer!=null)s.Renderer.enabled=false;if(s.Root!=null)s.Root.gameObject.SetActive(false);}
+  static void Retire(Slot s,int version){if(s==null||s.Version!=version)return;s.Busy=false;s.UseCold=false;s.UseWraith=false;s.UseCrossbow=false;s.CrossbowEffect?.Sample(double.NaN);s.WraithEffect?.Sample(double.NaN);s.ColdEffect?.ConfigureColdSweepCommittedContact?.Invoke(false);s.Ticket=null;if(s.Renderer!=null)s.Renderer.enabled=false;if(s.Root!=null)s.Root.gameObject.SetActive(false);}
   public static void Cancel(){_epoch++;foreach(var s in Pool)if(s!=null){Retire(s,s.Version);s.Version++;}}
   static Slot Acquire(){
    int limit=GfxQuality.Level==GfxLevel.Low?12:24;Slot slot=null;
@@ -120,6 +126,8 @@ namespace DeckRogue.Game {
   static void Draw(Slot s,float age){
    Hd2d.NativeBatch cold=null;
    if(s.UseCold){s.ColdEffect.ConfigureColdSweepCommittedContact(s.Ticket?.ColdSweepBinding?.Committed==true);s.ColdEffect.Sample(age);cold=s.ColdEffect.Batches[0];}
+   else if(s.UseWraith){s.WraithEffect.Sample(s.Ticket?.WraithCurseBinding?.Committed==true?age:-.0001);cold=s.WraithEffect.Batches[0];}
+   else if(s.UseCrossbow){s.CrossbowEffect.Sample(s.Ticket?.CrossbowAimedBinding?.Committed==true?age:-.0001);cold=s.CrossbowEffect.Batches[0];}
    else G.Sample(s.Geometry,s.Profile,age,s.Particles);
    var b=s.Geometry;bool visible=false;
    for(int i=0;i<s.Vertices.Length;i++){
@@ -135,6 +143,8 @@ namespace DeckRogue.Game {
    // Palette values are already linear. SetColor would decode sRGB a second time.
    var primary=_primary[(int)s.Profile.Material];var core=_core[(int)s.Profile.Material];
    Props.Clear();Props.SetVector("_Primary",new Vector4(primary.r,primary.g,primary.b,primary.a));Props.SetVector("_Core",new Vector4(core.r,core.g,core.b,core.a));s.Renderer.SetPropertyBlock(Props);
+   if(s.UseCrossbow){Props.SetTexture("_BaseMap",_crossbowDensity);Props.SetFloat("_Age",age);Props.SetFloat("_Gain",s.Emission);s.Renderer.SetPropertyBlock(Props);}
+   if(s.UseWraith){Props.SetTexture("_BaseMap",_wraithDensity);Props.SetFloat("_Age",age);Props.SetFloat("_Gain",s.Emission);s.Renderer.SetPropertyBlock(Props);}
    if(s.UseCold){Props.SetTexture("_BaseMap",_coldDensity);Props.SetFloat("_Age",age);Props.SetFloat("_Gain",s.Emission);Props.SetFloat("_ReviewMode",ColdReviewMode==1||ColdReviewMode==3?1:ColdReviewMode>=4?ColdReviewMode:0);s.Renderer.SetPropertyBlock(Props);_coldMaterial.SetFloat("_ZTest",ColdReviewMode==2||ColdReviewMode==3?8:4);}
   }
   static IEnumerator Life(Slot s,int version,int epoch){
@@ -152,7 +162,9 @@ namespace DeckRogue.Game {
    float height=t.ContactVisibleHeight;var v=t.Visual;float size=v?.Size??1f,emission=v?.Emission??1f,particles=v?.Particles??1f;float scale=height*size;
    if(!Finite(t.Position)||!G.Finite(height)||height<=0||!G.Finite(scale)||scale<=0||!G.Finite(emission)||emission<0||!G.Finite(particles)){t.RenderFallbackReason="bounded_contact_invalid_captured_geometry";return null;}
    if(!Ready()){t.RenderFallbackReason=LastFailure;return null;}
-   bool ownedCold=!neutralFallback && t.ColdSweepBinding?.Eligible(t)==true;
+   bool ownedCold=!neutralFallback && t.ColdSweepBinding?.Eligible(t)==true;bool ownedWraith=!neutralFallback && t.WraithCurseBinding?.Eligible(t)==true;bool ownedCrossbow=!neutralFallback && t.CrossbowAimedBinding?.Eligible(t)==true;
+   if(ownedCrossbow&&_crossbowMaterial==null){var shader=Resources.Load<Shader>("Shaders/Hd2dCrossbowAimedSurface");_crossbowDensity=Resources.Load<Texture2D>("Art/fx/crossbow-pressure-density-v1");if(shader==null||!shader.isSupported||_crossbowDensity==null||_crossbowDensity.width!=1774||_crossbowDensity.height!=887||_crossbowDensity.mipmapCount!=1){t.RenderFallbackReason="crossbow318_resource_missing";return null;}_crossbowMaterial=new Material(shader);}
+   if(ownedWraith&&_wraithMaterial==null){var shader=Resources.Load<Shader>("Shaders/Hd2dWraithCurseSurface");_wraithDensity=Resources.Load<Texture2D>("Art/fx/wraith-pressure-density-v1");if(shader==null||_wraithDensity==null){t.RenderFallbackReason="wraith312_resource_missing";return null;}_wraithMaterial=new Material(shader);}
    if(ownedCold)scale*=ColdReviewScale;
    if(ownedCold && !ReadyCold()){t.RenderFallbackReason=LastFailure;return null;}
    var basis=Stage.Camera.transform.rotation;if(!CaptureValid(t.Position,scale,basis)){t.RenderFallbackReason="bounded_contact_invalid_camera_basis";return null;}
@@ -160,7 +172,9 @@ namespace DeckRogue.Game {
    try{
     s=Acquire();s.Busy=true;s.Landed=false;s.Expected=Time.time;s.Emission=emission;s.Profile=G.Find(neutralFallback?"minimal_neutral_contact":t.AttackFamily);s.Particles=G.MoteCount(particles);s.Ticket=t;
     s.Root.position=t.Position;s.Root.rotation=basis;s.Root.localScale=Vector3.one*scale;s.Root.gameObject.SetActive(true);s.Renderer.sharedMaterial=_material;
-    s.UseCold=ownedCold;
+    s.UseCold=ownedCold;s.UseWraith=ownedWraith;s.UseCrossbow=ownedCrossbow;
+    if(ownedCrossbow){if(s.CrossbowEffect==null)s.CrossbowEffect=Hd2d.Hd2dCrossbowAimedGeometry.Create();s.CrossbowEffect.ConfigureParticleGain?.Invoke(particles);s.CrossbowEffect.ConfigureSource?.Invoke(Quaternion.Inverse(basis)*(t.BeamOrigin-t.Position)/scale);s.CrossbowEffect.Sample(double.NaN);s.Renderer.sharedMaterial=_crossbowMaterial;}
+    if(ownedWraith){if(s.WraithEffect==null)s.WraithEffect=Hd2d.Hd2dWraithCurseGeometry.Create();s.WraithEffect.ConfigureParticleGain?.Invoke(particles);s.WraithEffect.ConfigureSource?.Invoke(Quaternion.Inverse(basis)*(t.BeamOrigin-t.Position)/scale);s.WraithEffect.Sample(double.NaN);s.Renderer.sharedMaterial=_wraithMaterial;}
     if(ownedCold){
      if(s.ColdEffect==null)s.ColdEffect=Hd2d.Hd2dColdSweepGeometry.Create();
      s.ColdEffect.ConfigureParticleGain?.Invoke(particles);
@@ -175,7 +189,7 @@ namespace DeckRogue.Game {
       if(!Current(captured,version,epoch)){StaleContacts++;t.RenderFallbackReason="bounded_contact_stale_pool_lease";return false;}
       if(captured.Landed)return true;
       if(!G.Finite(Time.time)||!Tween.SchedulingAllowed||!Stage.CombatWorld||Stage.Camera==null||!Stage.Camera.isActiveAndEnabled){t.RenderFallbackReason="bounded_contact_environment_unavailable";Retire(captured,version);return false;}
-      try{captured.Started=Time.time;captured.Landed=true;Draw(captured,0);t.AuthoredRenderer=ownedCold?"cold-sweep-contact-r297":neutralFallback?"bounded-neutral-fallback-r1":"bounded-contact-r1";t.AuthoredTier=v?.Tier;t.AuthoredTierReason=neutralFallback?"neutral_receipt_fallback":"composed_receipt_contact";return true;}
+      try{captured.Started=Time.time;captured.Landed=true;Draw(captured,0);t.AuthoredRenderer=ownedCrossbow?"crossbow-aimed-contact-r318":ownedWraith?"wraith-curse-contact-r312":ownedCold?"cold-sweep-contact-r297":neutralFallback?"bounded-neutral-fallback-r1":"bounded-contact-r1";t.AuthoredTier=v?.Tier;t.AuthoredTierReason=neutralFallback?"neutral_receipt_fallback":"composed_receipt_contact";return true;}
       catch(Exception e){t.RenderFallbackReason="bounded_contact_upload_failed:"+e.GetType().Name;Retire(captured,version);return false;}
      },
      Read=()=>Current(captured,version,epoch)?new{family=captured.Profile.Id,shape=captured.Profile.Form.ToString(),surface=captured.Profile.Material.ToString(),renderer="bounded-contact-r1",landed=captured.Landed,age=captured.Landed?Time.time-captured.Started:0f,visibleEnd=G.End,particleCount=captured.Particles,worldTransport=false,anticipation=0f,sceneLights=0,version,serial=captured.Serial,damageTier=t.Intensity?.Tier,renderTier=v?.Tier}:null

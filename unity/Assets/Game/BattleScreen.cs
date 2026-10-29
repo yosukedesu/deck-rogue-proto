@@ -2251,6 +2251,7 @@ namespace DeckRogue.Game
 
         /// <summary>順送りで敵の攻撃が届いた: 見込みから届いた分 (ブロック前の量) を引く＝残りの敵の攻撃だけを言う (旧: 届いた攻撃を HP と見込みで二重に引いていた)。
         /// 身代わりの符で消えた最初の攻撃は見込みに入っていないので引かない (2026-09-29 p08)</summary>
+        public static void SetNegatedIncoming(RectTransform area,int remaining) { var info=area?.Find("hpwrap")?.Find("incoming")?.GetComponent<IncomingInfo>(); if(info==null)return; info.Incoming=Math.Max(0,remaining);info.Landed=true; }
         public static void ConsumeIncoming(RectTransform area, int amount)
         {
             var wrap = area != null ? area.Find("hpwrap") : null;

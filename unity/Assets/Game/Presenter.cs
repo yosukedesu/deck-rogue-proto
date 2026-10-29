@@ -1243,9 +1243,10 @@ namespace DeckRogue.Game
                     });
                     break;
                 }
-                case GameEvent_ActionNegated _:
+                case GameEvent_ActionNegated negated:
                 {
                     Audio.Key("ActionNegated");
+                    if(ContactCurrent(g,ctx)){var remaining=RootWeaveNegationForecast.Remaining(NumericBatch(ctx.CapturedState),negated,Numeric.Generation);if(remaining.HasValue)g.Battle?.PresentNegatedIncoming(remaining.Value);}
                     var at = intentTag ?? enemyPan;
                     if (at == null) return;
                     var pos = Tween.CenterIn(at, fx);

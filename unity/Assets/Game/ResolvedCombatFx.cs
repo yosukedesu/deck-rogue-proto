@@ -21,6 +21,10 @@ namespace DeckRogue.Game {
    internal WaterPbfBinding PbfBinding;
    internal Hd2dLightBoltBinding LightBoltBinding;
    internal Hd2dColdSweepBinding ColdSweepBinding;
+   internal ImpSparkBinding ImpSparkBinding;
+   internal CanopyBinding CanopyBinding;
+   internal WraithCurseBinding WraithCurseBinding;
+   internal CrossbowAimedBinding CrossbowAimedBinding;
    internal LightningR9Binding LightningR9Binding;
    public bool FixedSmallContact=>DamageVfxIntensity.IsFixedSmallContact(AuthoredPresentation);
    public DamageVfxIntensity Intensity; public DamageVfxIntensity.Visual Visual=>DamageVfxIntensity.VisualFor(Intensity,AuthoredPresentation);

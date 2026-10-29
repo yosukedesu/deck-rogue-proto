@@ -1074,6 +1074,52 @@ internal static class Hd2dAttackPrototype
         };
         return effect;
     }
+    internal static NativeEffect CreateCanopyContact()
+    {
+        var body=new Layer(0,40);var nodes=new Layer(0,19);var leaves=new Layer(0,19);var core=new Layer(0,14);
+        body.Batch.Texture="canopy-organic-density-v1"; //299: main private material only; other three draws unchanged.
+        float age=0;bool committed=false;
+        var effect=new NativeEffect{Shader="Hd2dPrototype",Palette="hd2d-vegetal-cut",Batches=new[]{body.Batch,nodes.Batch,leaves.Batch,core.Batch},
+            VisualAge=()=>age,ConfigureCanopyCommittedContact=v=>committed=v,ReadCanopyCommitted=()=>committed,TargetPeak=.035f,FloorPeak=0,StageFocus=()=>0f,
+            Light=()=>!committed||!float.IsFinite(age)||age<0?0:MathF.Exp(-age/.065f),FloorLight=()=>0f};
+        effect.Sample=t=>{
+            age=(float)t;body.Reset();nodes.Reset();leaves.Reset();core.Reset();
+            if(!float.IsFinite(age)||!committed||age<0||age>.32f)return;
+            float close=Ease(age/.075f),release=Ease((age-.055f)/.15f),alpha=1-Ease((age-.065f)/.16f);
+            Vector3 center=new(.025f,.075f,.035f);
+            Vector3 Spine(float u)=>center+new Vector3(-.65f*(1-u)*(1-.22f*release),.10f*(1-u)+.12f*MathF.Sin(MathF.PI*u)*(1-.35f*release),0);
+            Vector3 At(float u,float side){
+                float width=(.012f+.15f*MathF.Pow(MathF.Max(0,MathF.Sin(MathF.PI*u)),.8f)*(1-.30f*u))*(1-.55f*release);
+                float unequal=side>0?(.90f+.10f*MathF.Sin(u*17f+.6f)):.62f;
+                return Spine(u)+new Vector3(0,side*width*unequal,0);
+            }
+            void V(float u,float side){float edge=side<0?.38f:side>0?.74f:1;
+                float fade=(.35f+.65f*MathF.Max(0,MathF.Sin(MathF.PI*u)))*(1-release*(1-u)*.8f);
+                body.V(At(u,side),new Vector2(u,(side+1)/2),alpha*fade*edge,1,1);}
+            for(int k=0;k<12;k++)for(int j=0;j<2;j++){
+                float u=k/12f,v=(k+1)/12f,lo=j-1,hi=j;
+                V(u,lo);V(v,lo);V(v,hi);V(u,lo);V(v,hi);V(u,hi);
+            }
+            // Two unequal short thorns attached to the main fold, not a second arc or branch body.
+            for(int k=0;k<2;k++){
+                float u=k==0?.31f:.61f;Vector3 a=At(u,1),b=At(u+.065f,1);
+                Vector3 tip=(a+b)*.5f+new Vector3(k==0?-.025f:.014f,(k==0?.047f:.029f)*(1-release),0);
+                nodes.V(a,new(.05f,.10f),alpha*(k==0?.78f:.48f),1,1);
+                nodes.V(b,new(.95f,.12f),alpha*(k==0?.66f:.40f),1,1);
+                nodes.V(tip,new(.37f,.95f),alpha*(k==0?.85f:.50f),1,2);
+            }
+            core.Sprite(center,.085f,.060f,.2f,MathF.Exp(-age/.035f)*.42f,3);
+            // Existing two subordinate leaves and their motion/phase are retained from installed plant.
+            for(int k=0;k<2;k++){
+                float dt=age-(.065f+k*.025f);if(dt<0)continue;float side=k==0?1:-1;
+                Vector3 pos=center+new Vector3((k==0?-.64f:-.47f)-dt*.16f,(k==0?.20f:-.19f)-dt*.16f-dt*dt*1.7f,.014f);
+                float fade=Ease(dt/.025f)*(1-Ease((dt-.095f)/.14f));
+                float turn=.28f+.72f*MathF.Abs(MathF.Cos(dt*14+k));
+                leaves.Leaf(pos,.065f,.027f*turn,side*(.6f+dt*7),fade*.72f);
+            }
+        };return effect;
+    }
+
     internal static NativeEffect CreateOwnedLightBoltContact(AttackRoute route)
     {
         var original=CreateLight(route);var oldBatches=original.Batches;var oldSample=original.Sample;
