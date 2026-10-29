@@ -625,6 +625,18 @@ namespace DeckRogue.Game
             g.SetSeed(_seed);
             g.LeaderId = Get("leader") ?? "leader_green";   // 前回の選択 (PlayerPrefs) に左右されないよう既定は緑
             if (Get("difficulty") != null) { int d; if (int.TryParse(Get("difficulty"), out d)) g.Difficulty = d; }
+            if (Get("textaudit") != null)
+            {   // 文の棚卸し (2026-10-30): 全札の面の本文と切れを JSON に。ランは作らない
+                TitleScreen.Mode = "title";
+                g.Rs = null;
+                g.Rebuild();
+                yield return null;
+                string auditPath = Path.Combine(_dir, (Get("name") ?? "textaudit") + ".json");
+                try { TextAudit.Write(g.ScreenRoot, auditPath); Debug.Log("textaudit: " + auditPath); }
+                catch (Exception ex) { Debug.LogError("textaudit failed: " + ex); }
+                yield return Shot(Get("name") ?? "textaudit", 4);
+                yield break;
+            }
             if (phase == "title" || phase == "setup")
             {   // ランの外の 2 画面 (2026-10-29 #4): 題と品書き／出立の支度。ランは作らない
                 TitleScreen.Mode = phase;
@@ -889,6 +901,7 @@ namespace DeckRogue.Game
             if (phase == "workshop") { g.WorkshopA = picks.Count > 0 ? picks[0] : -1; g.WorkshopB = picks.Count > 1 ? picks[1] : -1; }
             if (phase == "event" && picks.Count > 0) g.EventChoiceIndex = picks[0];   // イベントの「デッキから1枚選ぶ」画面 (pick=選択肢の番号。2026-09-15)
             if (phase == "departure" && picks.Count > 0) g.DepartureChoiceIndex = picks[0];   // 出立の店の「札を選ぶ」画面 (pick=品の番号。2026-09-24)
+            if (phase == "departure" && Get("deptab") != null) g.DepartureTab = Get("deptab");   // 出立の店の看板 (card／item／service。2026-10-30 案 A)
             if (Get("doodle") == "1")
             {   // 見本の落書き: 現在地の丸と、右上へ向かう波線 (描画の確認用)
                 var l = g.DoodlesFor(g.Rs.Act);

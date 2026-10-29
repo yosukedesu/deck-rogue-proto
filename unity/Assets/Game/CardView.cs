@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DeckRogue.Engine;
 using DeckRogue.Engine.Generated;
@@ -199,7 +200,7 @@ namespace DeckRogue.Game
             if (st != null)
             {
                 // 衝動の札 (このターン限り) は面に常時出す (2026-10-12 段2b Opus C: 衝動で引いた野火を含む5枚が失効した事故)
-                if (BattleView.IsImpulse(st, c.Uid)) trail.Add("衝動＝撃たなければ消滅（払えない札は捨て札へ）");
+                if (BattleView.IsImpulse(st, c.Uid)) trail.Add("衝動: このターンに出さなければ消滅（出せない札は捨て札へ）");
                 // 火の渦の「いま何回か」(同日 Opus C。Web の [現在N回] と同じ)
                 for (int i = 0; i < def.Effects.Count; i++)
                     if (def.Effects[i].Effect == "dealDamagePerCascade") { int n = st.Player.CascadesThisCombat ?? 0; trail.Add("チェイン" + n + "回×" + (def.Effects[i].Amount ?? 0) + "＝" + (n * (def.Effects[i].Amount ?? 0))); break; }
@@ -236,11 +237,15 @@ namespace DeckRogue.Game
                 // 覆われる札の余白で字が 14 を割るなら余白をやめる (字を小さくして読ませるより、覆われる方がまし。F01)
                 if (inset > 0f && body.fontSize < 14f) { UiKit.Stretch(body.rectTransform, 0f, 0f, 0f, 0f); body.ForceMeshUpdate(true); }
                 if (body.textBounds.size.y > body.rectTransform.rect.height + 0.5f)
-                {   // 12 でも入らない長文: 上から並べて、枠の外には出さず末尾を「…」に (全文は長押しの拡大。F10)
+                {   // 12 でも入らない長文 (2026-10-30 ユーザー「短くしないでいい。本家のようにスクロールで読めればいい」): 末尾を「…」で切らず、
+                    // 本文を 14 のまま枠より長く組んで、枠の中をスクロール (ホイール・指。手札の中はホイールだけ＝引くのは札を出す操作)。右端に細い栞
                     body.alignment = TextAlignmentOptions.TopLeft;
-                    body.overflowMode = TextOverflowModes.Ellipsis;
+                    body.overflowMode = TextOverflowModes.Overflow;
+                    body.enableAutoSizing = false;
+                    body.fontSize = Mathf.Max(body.fontSize, 14f);
                     body.ForceMeshUpdate(true);
                     LastBodyTruncated = true;
+                    MakeScrollable(bodyRt, body);
                 }
                 if (!metric.Success) AddDividers(body);
             }
@@ -322,6 +327,68 @@ namespace DeckRogue.Game
         }
 
         /// <summary>段落の間に線 (設計の 2px・板より少し明るい)。TMP の行の情報から、'\n' で終わる行とその次の行の間に置く</summary>
+        /// <summary>枠に入らない本文をスクロールできる形に (2026-10-30)。body は枠 (bodyRt) の子で中央の pivot のまま (罫線 AddDividers の座標を崩さない)。
+        /// 枠を RectMask2D で切り、本文を内容の高さに伸ばして上端を枠の上端に合わせる。手札の中は ScrollRect を置かず (引く＝札を出す操作を奪う) ホイールだけ。
+        /// 右端に細い栞 (枠の高さ×見えている割合) で「続きがある」と「今どこか」を見せる</summary>
+        static void MakeScrollable(RectTransform frame, TMP_Text body)
+        {
+            float viewH = frame.rect.height;
+            var crt = body.rectTransform;
+            crt.anchorMin = crt.anchorMax = new Vector2(0.5f, 0.5f);
+            crt.pivot = new Vector2(0.5f, 0.5f);
+            crt.sizeDelta = new Vector2(frame.rect.width - 6f, viewH);   // 栞の分だけ狭めてから折り返しを測り直す
+            body.margin = new Vector4(0f, 2f, 0f, 2f);   // 上下 2px: 枠の縁で最初の行の上端が切れない (「プ」が「ノ」に見えた)
+            body.ForceMeshUpdate(true);
+            float contentH = body.textBounds.size.y + 4f;
+            if (contentH <= viewH + 0.5f) { UiKit.Stretch(crt, 0f, 0f, 0f, 0f); return; }
+            frame.gameObject.AddComponent<RectMask2D>();
+            var hit = frame.gameObject.AddComponent<Image>();   // ホイール・指を受ける透明な面 (Enter/Click は親の札へ伝わる)
+            hit.color = new Color(0f, 0f, 0f, 0f);
+            crt.sizeDelta = new Vector2(frame.rect.width - 6f, contentH);
+            float max = contentH - viewH;
+            crt.anchoredPosition = new Vector2(-3f, -max / 2f);   // 上端を枠の上端へ (栞の分だけ左へ)
+            // 栞: 右端の細い溝と、見えている割合の長さの印
+            var track = UiKit.NewRect("track", frame);
+            track.anchorMin = new Vector2(1f, 0f); track.anchorMax = new Vector2(1f, 1f); track.pivot = new Vector2(1f, 0.5f);
+            track.offsetMin = new Vector2(-3f, 2f); track.offsetMax = new Vector2(0f, -2f);
+            var ti = track.gameObject.AddComponent<Image>(); ti.color = new Color(PaperFx.Paper.r, PaperFx.Paper.g, PaperFx.Paper.b, 0.18f); ti.raycastTarget = false;
+            var thumb = UiKit.NewRect("thumb", track);
+            thumb.anchorMin = new Vector2(0f, 1f); thumb.anchorMax = new Vector2(1f, 1f); thumb.pivot = new Vector2(0.5f, 1f);
+            float trackH = viewH - 4f, thumbH = Mathf.Max(8f, trackH * viewH / contentH);
+            thumb.sizeDelta = new Vector2(0f, thumbH); thumb.anchoredPosition = Vector2.zero;
+            var th = thumb.gameObject.AddComponent<Image>(); th.color = PaperFx.BrassLight; th.raycastTarget = false;
+            Action<float> place = delegate (float frac) { thumb.anchoredPosition = new Vector2(0f, -Mathf.Clamp01(frac) * (trackH - thumbH)); };
+            if (InHand)
+            {
+                var wheel = frame.gameObject.AddComponent<BodyWheel>();
+                wheel.Content = crt; wheel.Max = max; wheel.OnMoved = place;
+            }
+            else
+            {
+                var sr = frame.gameObject.AddComponent<ScrollRect>();
+                sr.content = crt; sr.viewport = frame;
+                sr.horizontal = false; sr.vertical = true;
+                sr.movementType = ScrollRect.MovementType.Clamped;
+                sr.inertia = true; sr.decelerationRate = 0.135f;
+                sr.scrollSensitivity = 14f;
+                sr.onValueChanged.AddListener(delegate (Vector2 v) { place(1f - v.y); });
+            }
+        }
+
+        /// <summary>手札の中の長い本文をホイールで送る (ScrollRect だと引く操作＝札を出す操作を奪うので、ホイールだけ)</summary>
+        public class BodyWheel : MonoBehaviour, IScrollHandler
+        {
+            public RectTransform Content; public float Max; public Action<float> OnMoved;
+            float _s;
+            public void OnScroll(PointerEventData d)
+            {
+                if (Content == null || Max <= 0f) return;
+                _s = Mathf.Clamp(_s - d.scrollDelta.y * 12f, 0f, Max);
+                Content.anchoredPosition = new Vector2(Content.anchoredPosition.x, -Max / 2f + _s);
+                if (OnMoved != null) OnMoved(_s / Max);
+            }
+        }
+
         static void AddDividers(TMP_Text body)
         {
             var ti = body.textInfo;
