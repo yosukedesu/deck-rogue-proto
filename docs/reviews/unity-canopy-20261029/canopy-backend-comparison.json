@@ -1,0 +1,819 @@
+{
+  "verifiedManifestEntries": 371,
+  "godot_format": "RGBA8, Compatibility OUTPUT_IS_SRGB=1; ALBEDO intermediate passes also traverse backend output path",
+  "unity_format": "R32G32B32A32_SFloat",
+  "oldDisplayModelMaxAbsError": 0.2524248162572236,
+  "candidateDisplayModelMaxAbsError": 0.013279243638542257,
+  "oldDisplayModelRMSE": 0.2195631249360238,
+  "candidateDisplayModelRMSE": 0.0033379742592408094,
+  "sampleEncodedModelVsGodotAlbedoReadbackMaxError": 0.024136723038799997,
+  "godotCalibration": {
+    "cal_0_albedo": [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "cal_0_output": [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "cal_0_18_albedo": [
+      0.1764706,
+      0.1764706,
+      0.1764706,
+      1.0
+    ],
+    "cal_0_18_output": [
+      0.4627451,
+      0.4627451,
+      0.4627451,
+      1.0
+    ],
+    "cal_0_5_albedo": [
+      0.5019608,
+      0.5019608,
+      0.5019608,
+      1.0
+    ],
+    "cal_0_5_output": [
+      0.73333335,
+      0.73333335,
+      0.73333335,
+      1.0
+    ],
+    "cal_1_albedo": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "cal_1_output": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "qualification": "Model comparison, not exact cross-GPU PASS. Low blue residual exceeds one RGBA8 code. Godot sample pass is opaque ALBEDO readback, not an unconverted float sampler observation. Unity linear-premult blending and Godot encoded blend_mix are not equated. Candidate changes only Canopy effective sample basis, RGB only; tissue/alpha expressions preserved; no global/import adjustment.",
+  "rows": [
+    {
+      "uv": [
+        0.25,
+        0.25
+      ],
+      "vertexAlpha": 1.0,
+      "unity_sample_linear": [
+        0.0140686035,
+        0.0362548828,
+        0.00591278076,
+        0.9894102
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.11764706,
+        0.20392157,
+        0.05490196,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.12352143621737693,
+        0.2098430029966336,
+        0.06940343333166007
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.33333334,
+        0.42352942,
+        0.24705882,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.10068457267732836,
+        0.17596369053352853,
+        0.05348946640922662
+      ],
+      "candidate_output_display_model": [
+        0.32991689317485334,
+        0.4250248328842048,
+        0.2477260060350539
+      ],
+      "godot_finalAlpha_readback": 0.9882353,
+      "unity_finalAlpha": 0.989410162
+    },
+    {
+      "uv": [
+        0.5,
+        0.25
+      ],
+      "vertexAlpha": 1.0,
+      "unity_sample_linear": [
+        0.0171508789,
+        0.048828125,
+        0.007068634,
+        0.992156863
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.12941177,
+        0.24705882,
+        0.0627451,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.13888242876364748,
+        0.244823023576406,
+        0.07901155586604572
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.34901962,
+        0.45882353,
+        0.2627451,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.11408055251671179,
+        0.20646898822548115,
+        0.06186849630441429
+      ],
+      "candidate_output_display_model": [
+        0.34918237916383704,
+        0.4568736499198515,
+        0.2645303307256489
+      ],
+      "godot_finalAlpha_readback": 0.99215686,
+      "unity_finalAlpha": 0.9921568
+    },
+    {
+      "uv": [
+        0.75,
+        0.25
+      ],
+      "vertexAlpha": 1.0,
+      "unity_sample_linear": [
+        0.143554688,
+        0.216430664,
+        0.0179138184,
+        0.9882353
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.41568628,
+        0.5019608,
+        0.13333334,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.4149046050789096,
+        0.5025732837052209,
+        0.1424304775470905
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.58431375,
+        0.63529414,
+        0.3529412,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.3547933513807225,
+        0.43124725550741794,
+        0.11717472692171738
+      ],
+      "candidate_output_display_model": [
+        0.5827044380850633,
+        0.6357285636607296,
+        0.35345312283936475
+      ],
+      "godot_finalAlpha_readback": 0.9882353,
+      "unity_finalAlpha": 0.988235235
+    },
+    {
+      "uv": [
+        0.25,
+        0.5
+      ],
+      "vertexAlpha": 1.0,
+      "unity_sample_linear": [
+        0.0185546875,
+        0.0470581055,
+        0.008728027,
+        0.9882353
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.13725491,
+        0.23921569,
+        0.078431375,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.1453432946276311,
+        0.24024562841159502,
+        0.09131903449982512
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.35686275,
+        0.45490196,
+        0.28235295,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.11971492989162291,
+        0.20247714374277637,
+        0.07260157459705233
+      ],
+      "candidate_output_display_model": [
+        0.3569130804555626,
+        0.45286403119896784,
+        0.2843971669272259
+      ],
+      "godot_finalAlpha_readback": 0.9882353,
+      "unity_finalAlpha": 0.988235235
+    },
+    {
+      "uv": [
+        0.5,
+        0.5
+      ],
+      "vertexAlpha": 1.0,
+      "unity_sample_linear": [
+        0.068359375,
+        0.11328125,
+        0.00631713867,
+        0.9902037
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.2901961,
+        0.37254903,
+        0.05882353,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.28994643511154977,
+        0.3707470426068321,
+        0.07288000088950347
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.49411765,
+        0.5568628,
+        0.25490198,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.2458201114936026,
+        0.31628452359173426,
+        0.05652130362774228
+      ],
+      "candidate_output_display_model": [
+        0.49425422388678014,
+        0.5534945688080245,
+        0.25395447282642036
+      ],
+      "godot_finalAlpha_readback": 0.99215686,
+      "unity_finalAlpha": 0.9902036
+    },
+    {
+      "uv": [
+        0.75,
+        0.5
+      ],
+      "vertexAlpha": 1.0,
+      "unity_sample_linear": [
+        0.0333251953,
+        0.07635498,
+        0.00308227539,
+        0.9882353
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.19607843,
+        0.30588236,
+        0.015686275,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.20070609853922955,
+        0.30621687369713513,
+        0.039822998038799996
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.41568628,
+        0.5058824,
+        0.18039216,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.16799559943934506,
+        0.26000919898999264,
+        0.028672558587935996
+      ],
+      "candidate_output_display_model": [
+        0.41620284454582124,
+        0.5068923669296097,
+        0.18517629809896646
+      ],
+      "godot_finalAlpha_readback": 0.9882353,
+      "unity_finalAlpha": 0.988235235
+    },
+    {
+      "uv": [
+        0.25,
+        0.75
+      ],
+      "vertexAlpha": 1.0,
+      "unity_sample_linear": [
+        0.01058197,
+        0.03186035,
+        0.005542755,
+        0.9882353
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.09019608,
+        0.19215687,
+        0.047058824,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.1035459595576613,
+        0.19596135601037762,
+        0.0660983318302093
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.3019608,
+        0.4117647,
+        0.23529412,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.08326440390831269,
+        0.1638578150437008,
+        0.05060716092361529
+      ],
+      "candidate_output_display_model": [
+        0.3026403258681729,
+        0.41152903899699156,
+        0.24163362181436193
+      ],
+      "godot_finalAlpha_readback": 0.9882353,
+      "unity_finalAlpha": 0.988235235
+    },
+    {
+      "uv": [
+        0.5,
+        0.75
+      ],
+      "vertexAlpha": 1.0,
+      "unity_sample_linear": [
+        0.0079574585,
+        0.0219726563,
+        0.0016784668,
+        0.9882353
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.07450981,
+        0.15686275,
+        0.0,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.085791073047883,
+        0.1599662072148833,
+        0.021685791056
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.27450982,
+        0.3764706,
+        0.12941177,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.06778076240408731,
+        0.13246724661997497,
+        0.015613769560319998
+      ],
+      "candidate_output_display_model": [
+        0.2756804663497231,
+        0.3736992954322615,
+        0.13144354928049135
+      ],
+      "godot_finalAlpha_readback": 0.9882353,
+      "unity_finalAlpha": 0.988235235
+    },
+    {
+      "uv": [
+        0.75,
+        0.75
+      ],
+      "vertexAlpha": 1.0,
+      "unity_sample_linear": [
+        0.009315491,
+        0.025100708,
+        0.00127601624,
+        0.9912871
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.08235294,
+        0.16862746,
+        0.0,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.09534472292698026,
+        0.17222439082023916,
+        0.0164861298208
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.2901961,
+        0.3882353,
+        0.09803922,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.07611228790853702,
+        0.14315733581506904,
+        0.011870013470976
+      ],
+      "candidate_output_display_model": [
+        0.29055295291274946,
+        0.3870931376647298,
+        0.11131846363854225
+      ],
+      "godot_finalAlpha_readback": 0.99215686,
+      "unity_finalAlpha": 0.991287053
+    },
+    {
+      "uv": [
+        0.25,
+        0.25
+      ],
+      "vertexAlpha": 0.5,
+      "unity_sample_linear": [
+        0.0140686035,
+        0.0362548828,
+        0.00591278076,
+        0.9894102
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.11764706,
+        0.20392157,
+        0.05490196,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.12352143621737693,
+        0.2098430029966336,
+        0.06940343333166007
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.33333334,
+        0.42352942,
+        0.24705882,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.10068457267732836,
+        0.17596369053352853,
+        0.05348946640922662
+      ],
+      "candidate_output_display_model": [
+        0.32991689317485334,
+        0.4250248328842048,
+        0.2477260060350539
+      ],
+      "godot_finalAlpha_readback": 0.49411765,
+      "unity_finalAlpha": 0.494705081
+    },
+    {
+      "uv": [
+        0.5,
+        0.25
+      ],
+      "vertexAlpha": 0.5,
+      "unity_sample_linear": [
+        0.0171508789,
+        0.048828125,
+        0.007068634,
+        0.992156863
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.12941177,
+        0.24705882,
+        0.0627451,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.13888242876364748,
+        0.244823023576406,
+        0.07901155586604572
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.34901962,
+        0.45882353,
+        0.2627451,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.11408055251671179,
+        0.20646898822548115,
+        0.06186849630441429
+      ],
+      "candidate_output_display_model": [
+        0.34918237916383704,
+        0.4568736499198515,
+        0.2645303307256489
+      ],
+      "godot_finalAlpha_readback": 0.49803922,
+      "unity_finalAlpha": 0.4960784
+    },
+    {
+      "uv": [
+        0.75,
+        0.25
+      ],
+      "vertexAlpha": 0.5,
+      "unity_sample_linear": [
+        0.143554688,
+        0.216430664,
+        0.0179138184,
+        0.9882353
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.41568628,
+        0.5019608,
+        0.13333334,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.4149046050789096,
+        0.5025732837052209,
+        0.1424304775470905
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.58431375,
+        0.63529414,
+        0.3529412,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.3547933513807225,
+        0.43124725550741794,
+        0.11717472692171738
+      ],
+      "candidate_output_display_model": [
+        0.5827044380850633,
+        0.6357285636607296,
+        0.35345312283936475
+      ],
+      "godot_finalAlpha_readback": 0.49411765,
+      "unity_finalAlpha": 0.494117618
+    },
+    {
+      "uv": [
+        0.25,
+        0.5
+      ],
+      "vertexAlpha": 0.5,
+      "unity_sample_linear": [
+        0.0185546875,
+        0.0470581055,
+        0.008728027,
+        0.9882353
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.13725491,
+        0.23921569,
+        0.078431375,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.1453432946276311,
+        0.24024562841159502,
+        0.09131903449982512
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.35686275,
+        0.45490196,
+        0.28235295,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.11971492989162291,
+        0.20247714374277637,
+        0.07260157459705233
+      ],
+      "candidate_output_display_model": [
+        0.3569130804555626,
+        0.45286403119896784,
+        0.2843971669272259
+      ],
+      "godot_finalAlpha_readback": 0.49411765,
+      "unity_finalAlpha": 0.494117618
+    },
+    {
+      "uv": [
+        0.5,
+        0.5
+      ],
+      "vertexAlpha": 0.5,
+      "unity_sample_linear": [
+        0.068359375,
+        0.11328125,
+        0.00631713867,
+        0.9902037
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.2901961,
+        0.37254903,
+        0.05882353,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.28994643511154977,
+        0.3707470426068321,
+        0.07288000088950347
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.49411765,
+        0.5568628,
+        0.25490198,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.2458201114936026,
+        0.31628452359173426,
+        0.05652130362774228
+      ],
+      "candidate_output_display_model": [
+        0.49425422388678014,
+        0.5534945688080245,
+        0.25395447282642036
+      ],
+      "godot_finalAlpha_readback": 0.49803922,
+      "unity_finalAlpha": 0.4951018
+    },
+    {
+      "uv": [
+        0.75,
+        0.5
+      ],
+      "vertexAlpha": 0.5,
+      "unity_sample_linear": [
+        0.0333251953,
+        0.07635498,
+        0.00308227539,
+        0.9882353
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.19607843,
+        0.30588236,
+        0.015686275,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.20070609853922955,
+        0.30621687369713513,
+        0.039822998038799996
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.41568628,
+        0.5058824,
+        0.18039216,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.16799559943934506,
+        0.26000919898999264,
+        0.028672558587935996
+      ],
+      "candidate_output_display_model": [
+        0.41620284454582124,
+        0.5068923669296097,
+        0.18517629809896646
+      ],
+      "godot_finalAlpha_readback": 0.49411765,
+      "unity_finalAlpha": 0.494117618
+    },
+    {
+      "uv": [
+        0.25,
+        0.75
+      ],
+      "vertexAlpha": 0.5,
+      "unity_sample_linear": [
+        0.01058197,
+        0.03186035,
+        0.005542755,
+        0.9882353
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.09019608,
+        0.19215687,
+        0.047058824,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.1035459595576613,
+        0.19596135601037762,
+        0.0660983318302093
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.3019608,
+        0.4117647,
+        0.23529412,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.08326440390831269,
+        0.1638578150437008,
+        0.05060716092361529
+      ],
+      "candidate_output_display_model": [
+        0.3026403258681729,
+        0.41152903899699156,
+        0.24163362181436193
+      ],
+      "godot_finalAlpha_readback": 0.49411765,
+      "unity_finalAlpha": 0.494117618
+    },
+    {
+      "uv": [
+        0.5,
+        0.75
+      ],
+      "vertexAlpha": 0.5,
+      "unity_sample_linear": [
+        0.0079574585,
+        0.0219726563,
+        0.0016784668,
+        0.9882353
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.07450981,
+        0.15686275,
+        0.0,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.085791073047883,
+        0.1599662072148833,
+        0.021685791056
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.27450982,
+        0.3764706,
+        0.12941177,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.06778076240408731,
+        0.13246724661997497,
+        0.015613769560319998
+      ],
+      "candidate_output_display_model": [
+        0.2756804663497231,
+        0.3736992954322615,
+        0.13144354928049135
+      ],
+      "godot_finalAlpha_readback": 0.49411765,
+      "unity_finalAlpha": 0.494117618
+    },
+    {
+      "uv": [
+        0.75,
+        0.75
+      ],
+      "vertexAlpha": 0.5,
+      "unity_sample_linear": [
+        0.009315491,
+        0.025100708,
+        0.00127601624,
+        0.9912871
+      ],
+      "godot_sample_ALBEDO_readback": [
+        0.08235294,
+        0.16862746,
+        0.0,
+        1.0
+      ],
+      "unity_sample_encoded_model": [
+        0.09534472292698026,
+        0.17222439082023916,
+        0.0164861298208
+      ],
+      "godot_output_ALBEDO_readback": [
+        0.2901961,
+        0.3882353,
+        0.09803922,
+        1.0
+      ],
+      "old_output_display_model": [
+        0.07611228790853702,
+        0.14315733581506904,
+        0.011870013470976
+      ],
+      "candidate_output_display_model": [
+        0.29055295291274946,
+        0.3870931376647298,
+        0.11131846363854225
+      ],
+      "godot_finalAlpha_readback": 0.49803922,
+      "unity_finalAlpha": 0.495643526
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "baseline": {
+    "frames": 32,
+    "eventsEqual": true,
+    "lastActiveFx": 0,
+    "frame8Mode": [
+      0.0
+    ]
+  },
+  "candidate": {
+    "frames": 32,
+    "eventsEqual": true,
+    "lastActiveFx": 0,
+    "frame8Mode": [
+      1.0
+    ]
+  },
+  "candidate-notilt": {
+    "frames": 32,
+    "eventsEqual": true,
+    "lastActiveFx": 0,
+    "frame8Mode": [
+      1.0
+    ]
+  },
+  "numeric": {
+    "sourceSampleMaxDifference": 0,
+    "alphaMaxDifference": 0,
+    "encodedSampleGainMaxError": 2.5990173818657425e-08,
+    "scope": "18 constant patches, actual RGBA32F GPU, not whole-scene blend parity"
+  }
+}
