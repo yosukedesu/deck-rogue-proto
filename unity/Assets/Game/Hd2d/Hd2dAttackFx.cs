@@ -52,6 +52,10 @@ namespace DeckRogue.Game
         }
         // QA-only isolated main-surface GPU draw: no scene depth, no other effects, no post.
         // Linear ARGB32 preview clamps HDR; this is not the final tone-mapped presentation.
+        internal static void CaptureCanopyNumeric(string path){
+            foreach(var s in Pool)if(s!=null&&s.Busy&&s.Effect?.ConfigureCanopyCommittedContact!=null)foreach(var d in s.Draws)if(d.Kind==40&&d.Renderer.enabled){var props=new MaterialPropertyBlock();d.Renderer.GetPropertyBlock(props);CanopyGpuProbe.Run(path,props.GetTexture("_BaseMap"),d.Renderer.sharedMaterial.shader);return;}
+            throw new InvalidOperationException("No actual active Canopy main material for numeric probe");
+        }
         internal static void CaptureCanopySolo(string path){
             if(!CanopyReview||Stage.Camera==null)return;
             var rt=RenderTexture.GetTemporary(Screen.width,Screen.height,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear);
