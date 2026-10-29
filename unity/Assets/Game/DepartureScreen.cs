@@ -275,6 +275,9 @@ namespace DeckRogue.Game
         public static RectTransform Art(Transform parent, DepartureOffer offer, float size)
         {
             var ch = offer.Choice;
+            // 薬草・道具箱は専用の印 (2026-10-29 店の案 B: 下の段の札は全部に絵を)。印が無ければ中身から
+            if (offer.Id == "dep_herb" && Theme.Art("icons", "herb") != null) return UiKit.Icon(parent, "herb", size).rectTransform;
+            if (offer.Id == "dep_toolbox" && Theme.Art("icons", "toolbox") != null) return UiKit.Icon(parent, "toolbox", size).rectTransform;
             if (ch.RelicId != null) return RunUi.RelicArt(parent, ch.RelicId, size).rectTransform;
             if (ch.Gears != null && ch.Gears.Count > 0)
             {

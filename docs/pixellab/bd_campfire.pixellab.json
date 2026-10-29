@@ -1,0 +1,24 @@
+{
+  "id": "bd_campfire_a",
+  "engine": "pixflux",
+  "request": {
+    "description": "HD-2D Octopath Traveler style pixel art scene, a calm cozy campfire at night in a small forest clearing at the mouth of an old mine, the fire in the lower center with a ring of stones, two mossy logs, a hanging kettle on a tripod, a brass lantern on a stump, sparks rising, warm amber firelight on the ground and tree trunks, tall dark pines and mist behind, moonlight, cool blue-grey palette with the fire as the warm center, no people, wide cinematic composition with empty dark space in the upper half",
+    "negative_description": "human, person, character, face, eyes, text, letters, watermark, border, frame, ui, blurry, daylight, blue sky, sun",
+    "image_size": {
+      "width": 400,
+      "height": 224
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "seed": 23
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-10-29T04:07:51.141Z"
+}

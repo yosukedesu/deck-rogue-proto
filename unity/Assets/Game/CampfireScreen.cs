@@ -14,12 +14,14 @@ namespace DeckRogue.Game
         public static void Build(GameRoot g, RectTransform root)
         {
             var run = g.Rs;
-            // 場面 (品質スプリント #3 2026-10-29 §10): 夜の森の箱庭の上に焚き火・丸太・座るこのは。暗幕は薄く (棚を開いている間は今までの濃さ)
+            // 案 A「静かな二択」(§11・2026-10-29 ユーザー裁定): 背景は PixelLab の一枚絵 (400×224 を 5 倍・描かれた炎は熾火に直してある)。
+            // その熾火の上に炎のコマ (act1_flame) を重ね、明かりの暈が脈打ち、火の粉が立ちのぼる。主人公は出さない。
+            // 一枚絵が無ければ今までの箱庭 (小物の場面)。棚 (鍛える・取り除く) を開いている間は暗幕 0.5
             BattleScreen.BuildBackground(root, run.Act);
-            var dim = UiKit.Pan(root, new Color(0f, 0f, 0f, g.SubMode != null ? 0.5f : 0.1f), "dim");
-            dim.raycastTarget = false;
-            UiKit.Stretch(dim.rectTransform, 0f, 0f, 0f, 0f);
-            if (g.SubMode == null) Scene(g, root, run);
+            bool quiet = g.SubMode == null;
+            bool painted = Backdrop(root, "bd_campfire", quiet ? 0f : 0.5f);
+            if (quiet && painted) FireOverlay(root);
+            else if (quiet) Scene(g, root, run);
             RunUi.TopBar(g, root, "焚き火");
             RunUi.Message(g, root);
 
@@ -71,15 +73,33 @@ namespace DeckRogue.Game
             }
 
             int extra = (opt.Dig && fresh ? 1 : 0) + (opt.TrainLeft > 0 && fresh ? 1 : 0) + (opt.Remove && fresh ? 1 : 0);
-            // 本家の形 (§10-3): 上に「どうする？」と絵札。絵札は場面の上 (焚き火は画面の下半分)
-            RunUi.Heading(root, "焚き火", extra > 0 ? "一息つく ・ どれか 1 つ ・ 鍛えた後は回復なしで立ち去る" : "一息つく ・ どちらか 1 つ ・ 鍛えた後は回復なしで立ち去る");
+            // 案 A「静かな二択」: 見出しは出さない。下の帯 (夜色の勾配) に大きな字の選択肢を横に並べ、帯の上に一行の案内
             int count = 2 + extra;
-            float w = UiKit.Phone && count > 3 ? 210f : 230f;   // 2 巡目: 絵札は小さめ (場面が主役)
-            float gap = count <= 2 ? 60f : UiKit.Phone ? 16f : 24f;
-            float optY = UiKit.Phone ? 40f : 200f;   // 絵札の中心 (PC: 上から 340・見出しのすぐ下。スマホ: 見出しの下)
-            float x0 = -((count - 1) * (w + gap)) / 2f;
+            var cs = BattleScreen.CanvasSize(root);
+            bool ph = UiKit.Phone;
+            string guideText = extra > 0 ? "焚き火で一息 ・ どれか 1 つ ・ 鍛えた後は回復なしで立ち去る" : "焚き火で一息 ・ どちらか 1 つ ・ 鍛えた後は回復なしで立ち去る";
+            // 下の帯: 長く淡い勾配＋短く濃い勾配 (Linear では α が薄く見えるので二重に)。火の熾 (絵の下端近く) の下に字を置く
+            Band(root, "campfire-band-soft", ph ? 200f : 300f, 0.7f);
+            Band(root, "campfire-band-deep", ph ? 120f : 170f, 0.95f);
+            float optH = ph ? 116f : 150f, optBottom = ph ? 10f : 18f;
+            if (ph) RunUi.Heading(root, "焚き火", guideText);   // スマホは案内を上部バーの札に畳む (帯の上は火)
+            else
+            {
+                var guide = UiKit.Txt(root, guideText, 14, PaperFx.PaperDim, TextAnchor.MiddleCenter);
+                guide.characterSpacing = 2f; guide.raycastTarget = false;
+                guide.outlineWidth = 0.15f; guide.outlineColor = new Color(0f, 0f, 0f, 0.8f);
+                UiKit.Anchor(guide.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, optBottom + optH + 8f), new Vector2(0f, optBottom + optH + 32f));
+            }
+            float w = Mathf.Min(ph ? 460f : 560f, (cs.x - 80f) / count);
+            float step = ph && count == 2 ? 620f : w;   // スマホの二択は火の左右に (火は画面の真ん中の下)
+            float x0 = -((count - 1) * step) / 2f;
+            float dotY = optBottom + optH - (ph ? 23f : 31f);
             int slot = 0;
-            Vector2 Pos() { return new Vector2(x0 + (slot++) * (w + gap), optY); }
+            Vector2 Pos()
+            {
+                if (slot > 0) Dot(root, x0 + (slot - 0.5f) * step, dotY);   // 選択肢の間の真鍮の点 (名前の高さ)
+                return new Vector2(x0 + (slot++) * step, 0f);
+            }
 
             // 休む
             // 休めない理由はレリックの名前で (2026-09-14 人間ラン#11: 古根の杯を持ったまま HP15 で「休む」を選んで回復ゼロ → ボスで敗北)
@@ -190,50 +210,166 @@ namespace DeckRogue.Game
             Stage.BindUnit(key, rt, img, s);
         }
 
-        /// <summary>絵札 (§10-3・本家の Rest／Smith の形): 紙の札 260×330。上に夜色の箱と挿絵 (PixelLab 48×48 を 100 に)、名前・一行・小さな行、押せるなら下に真鍮の小札「押して選ぶ」</summary>
-        static RectTransform Option(RectTransform root, string icon, string title, string line1, string line2, Vector2 pos, Action onClick, bool enabled, float w = 230f)
+        /// <summary>一枚絵の背景 (§11): Art/scenes/<name> (400×224) を 5 倍 (2000×1120) で中央に置き 1920×1080 からはみ出す 40／20 を切る。dim &gt; 0 なら暗幕。絵が無ければ false</summary>
+        public static bool Backdrop(RectTransform root, string name, float dim)
         {
-            float h = 316f;
-            bool narrow = w < 220f;
+            var art = Theme.Art("scenes", name);
+            if (art == null) return false;
+            var img = new GameObject("backdrop", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+            img.transform.SetParent(root, false);
+            img.sprite = art; img.preserveAspect = false; img.raycastTarget = false;
+            UiKit.PixelArt(img);
+            var cs = BattleScreen.CanvasSize(root);
+            float k = Mathf.Max(cs.x / art.rect.width, cs.y / art.rect.height);   // 画面を覆う倍率 (PC 5・スマホ 3)
+            float w = art.rect.width * k, h = art.rect.height * k;
+            img.rectTransform.anchorMin = img.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            img.rectTransform.sizeDelta = new Vector2(w, h);
+            img.rectTransform.anchoredPosition = Vector2.zero;
+            if (dim > 0f)
+            {
+                var d = UiKit.Pan(root, new Color(0f, 0f, 0f, dim), "dim");
+                d.raycastTarget = false;
+                UiKit.Stretch(d.rectTransform, 0f, 0f, 0f, 0f);
+            }
+            return true;
+        }
+
+        /// <summary>一枚絵の中の点 (絵の 400×224 の座標) をキャンバスの座標 (左下原点) へ</summary>
+        static Vector2 BackdropPoint(RectTransform root, float ax, float ay, float artW = 400f, float artH = 224f)
+        {
+            var cs = BattleScreen.CanvasSize(root);
+            float k = Mathf.Max(cs.x / artW, cs.y / artH);
+            float x = cs.x / 2f + (ax - artW / 2f) * k, y = cs.y / 2f - (ay - artH / 2f) * k;
+            return new Vector2(x, y);
+        }
+
+        /// <summary>焚き火 A の火: 一枚絵の熾火 (絵の (205, 178)) の上に炎のコマ 48×30 を 5 倍で重ね、明かりの暈が脈打ち、火の粉が立ちのぼる</summary>
+        static void FireOverlay(RectTransform root)
+        {
+            var cs = BattleScreen.CanvasSize(root);
+            float k = Mathf.Max(cs.x / 400f, cs.y / 224f);
+            var pit = BackdropPoint(root, 205f, 178f);
+            // 暈 (脈打つ)
+            var glow = UiKit.Pan(root, new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.26f), "fire-glow");
+            glow.sprite = MapForest.Radial(); glow.raycastTarget = false;
+            glow.rectTransform.anchorMin = glow.rectTransform.anchorMax = new Vector2(0f, 0f);
+            glow.rectTransform.sizeDelta = new Vector2(190f * k, 120f * k);
+            glow.rectTransform.anchoredPosition = pit + new Vector2(0f, 14f * k);
+            var fl = glow.gameObject.AddComponent<UiFlicker>(); fl.Base = 0.26f; fl.Amount = 0.22f;
+            // 炎 (コマ)
+            var frames = new List<Sprite>();
+            for (int i = 0; i < 8; i++) { var s = Theme.Art("props/anim", "act1_flame_idle_" + i); if (s == null) break; frames.Add(s); }
+            var flame0 = frames.Count > 0 ? frames[0] : Theme.Art("props", "act1_flame");
+            if (flame0 != null)
+            {
+                var rt = UiKit.NewRect("flame", root);
+                PaperFx.FitPixel(rt, flame0, pit.x - cs.x / 2f, pit.y - 2f * k, flame0.rect.width * k);
+                var img = rt.gameObject.AddComponent<Image>();
+                img.sprite = flame0; img.preserveAspect = true; img.raycastTarget = false;
+                UiKit.PixelArt(img);
+                if (frames.Count > 1) { var fb = rt.gameObject.AddComponent<Flipbook>(); fb.Frames = frames; fb.Fps = 7f; }
+            }
+            // 火の粉
+            var sp = UiKit.NewRect("sparks", root);
+            sp.anchorMin = sp.anchorMax = new Vector2(0f, 0f);
+            sp.anchoredPosition = pit + new Vector2(0f, 10f * k);
+            sp.sizeDelta = Vector2.zero;
+            var sk = sp.gameObject.AddComponent<SceneSparks>();
+            sk.Spread = 5f * k; sk.Rise = 44f * k;
+        }
+
+        /// <summary>UI のコマ送り (炎): Frames を Fps で回す。決定的な撮影では Tween.UnscaledDt で進む</summary>
+        public class Flipbook : MonoBehaviour
+        {
+            public List<Sprite> Frames; public float Fps = 8f;
+            Image _img; float _t; int _i;
+            void Awake() { _img = GetComponent<Image>(); }
+            void Update()
+            {
+                if (_img == null || Frames == null || Frames.Count < 2) return;
+                _t += Tween.UnscaledDt;
+                if (_t >= 1f / Fps) { _t = 0f; _i = (_i + 1) % Frames.Count; _img.sprite = Frames[_i]; }
+            }
+        }
+
+        /// <summary>UI の明かりの揺らぎ (暈の α)</summary>
+        public class UiFlicker : MonoBehaviour
+        {
+            public float Base = 0.3f, Amount = 0.2f;
+            Image _img; float _t;
+            void Awake() { _img = GetComponent<Image>(); _t = 1.7f; }
+            void Update()
+            {
+                if (_img == null) return;
+                _t += Tween.UnscaledDt;
+                float w = 0.6f * Mathf.Sin(_t * 7.3f) + 0.4f * Mathf.Sin(_t * 2.1f + 1.3f);
+                var c = _img.color; c.a = Base * (1f + Amount * w); _img.color = c;
+            }
+        }
+
+        /// <summary>下の帯 (透明→夜の黒の勾配。高さ h・下端の α)</summary>
+        static void Band(RectTransform root, string key, float h, float alpha)
+        {
+            var band = UiKit.Pan(root, Color.white, "band");
+            var c = Color.Lerp(PaperFx.Night, Color.black, 0.5f);
+            band.sprite = ThemeFx.Gradient(key, new Color(c.r, c.g, c.b, 0f), new Color(c.r, c.g, c.b, alpha));
+            band.raycastTarget = false;
+            UiKit.Anchor(band.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), Vector2.zero, new Vector2(0f, h));
+        }
+
+        /// <summary>選択肢の間の真鍮の点</summary>
+        static void Dot(RectTransform root, float x, float y)
+        {
+            var d = UiKit.Pan(root, PaperFx.Brass, "dot");
+            d.sprite = MapForest.Radial(); d.raycastTarget = false;
+            d.rectTransform.anchorMin = d.rectTransform.anchorMax = new Vector2(0.5f, 0f);
+            d.rectTransform.sizeDelta = new Vector2(12f, 12f);
+            d.rectTransform.anchoredPosition = new Vector2(x, y);
+        }
+
+        /// <summary>
+        /// 案 A「静かな二択」の選択肢 (§11): 下の帯の中の 1 列＝大きな字の名前 (40・字間広め)・一行・小さな行。札も箱も無い。
+        /// 押せる列はホバーで名前が真鍮になり下線が出る (ButtonMotion の 1.03 も)。押せない列は灰
+        /// </summary>
+        static RectTransform Option(RectTransform root, string icon, string title, string line1, string line2, Vector2 pos, Action onClick, bool enabled, float w = 560f)
+        {
+            bool ph = UiKit.Phone;
+            float h = ph ? 116f : 150f;
             var cell = UiKit.NewRect("opt-" + title, root);
-            cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
+            cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0f);
             cell.sizeDelta = new Vector2(w, h);
-            cell.anchoredPosition = pos;
-            var frame = UiKit.Frame(cell, Theme.Panel, enabled ? Color.white : new Color(0.6f, 0.6f, 0.6f, 1f), "frame", 3f);
-            UiKit.Stretch(frame.rectTransform, 0f, 0f, 0f, 0f);
-            float ib = narrow ? 96f : 108f;
-            var box = PaperFx.Sheet(cell, PaperFx.Tag, "ib", enabled ? PaperFx.Night : new Color(PaperFx.Night.r, PaperFx.Night.g, PaperFx.Night.b, 0.7f));
-            box.raycastTarget = false;
-            UiKit.Anchor(box.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-ib / 2f, -18f - ib), new Vector2(ib / 2f, -18f));
-            var ic = UiKit.Icon(box.transform, icon, narrow ? 76f : 84f);
-            ic.raycastTarget = false;
-            ic.rectTransform.anchorMin = ic.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-            ic.rectTransform.anchoredPosition = Vector2.zero;
-            float ty = -18f - ib - 6f;
-            var t = UiKit.Deco(cell, title, narrow ? 22 : 24, UiKit.ColInk, TextAnchor.MiddleCenter);
-            t.raycastTarget = false;
-            UiKit.Anchor(t.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, ty - 40f), new Vector2(0f, ty));
-            var l1 = UiKit.Txt(cell, line1, narrow ? 13 : 15, UiKit.ColInk, TextAnchor.MiddleCenter, true);
-            l1.raycastTarget = false;
-            l1.textWrappingMode = TextWrappingModes.Normal;
-            UiKit.Anchor(l1.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(12f, ty - 100f), new Vector2(-12f, ty - 42f));
-            var l2 = UiKit.Txt(cell, line2, 13, UiKit.ColInkSoft, TextAnchor.MiddleCenter);
-            l2.raycastTarget = false;
-            l2.textWrappingMode = TextWrappingModes.Normal;
-            UiKit.Anchor(l2.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(12f, ty - 140f), new Vector2(-12f, ty - 102f));
+            cell.anchoredPosition = new Vector2(pos.x, (ph ? 10f : 18f) + h / 2f);
+            var hit = UiKit.Pan(cell, new Color(0f, 0f, 0f, 0f), "hit");
+            hit.raycastTarget = enabled;
+            UiKit.Stretch(hit.rectTransform, 0f, 0f, 0f, 0f);
+            string spaced = title.Length <= 3 ? string.Join(" ", title.ToCharArray()) : title;   // 「休 む」「鍛 え る」
+            var t = UiKit.Deco(cell, spaced, ph ? 30 : 40, enabled ? PaperFx.Paper : PaperFx.PaperDim, TextAnchor.MiddleCenter);
+            t.characterSpacing = 4f; t.raycastTarget = false;
+            t.outlineWidth = 0.15f; t.outlineColor = new Color(0f, 0f, 0f, 0.8f);
+            UiKit.Anchor(t.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, ph ? -44f : -58f), new Vector2(0f, ph ? -2f : -4f));
+            var line = UiKit.Pan(cell, PaperFx.Brass, "underline");
+            line.raycastTarget = false;
+            UiKit.Anchor(line.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-90f, ph ? -47f : -62f), new Vector2(90f, ph ? -44f : -59f));
+            line.enabled = false;
+            var l1 = UiKit.Txt(cell, line1.Replace("\n", " "), ph ? 13 : 15, PaperFx.PaperDim, TextAnchor.MiddleCenter);
+            l1.raycastTarget = false; l1.textWrappingMode = TextWrappingModes.NoWrap; l1.overflowMode = TextOverflowModes.Ellipsis;
+            UiKit.Anchor(l1.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(8f, ph ? -72f : -92f), new Vector2(-8f, ph ? -50f : -68f));
+            var l2 = UiKit.Txt(cell, line2, ph ? 12 : 13, new Color(PaperFx.PaperDim.r, PaperFx.PaperDim.g, PaperFx.PaperDim.b, 0.75f), TextAnchor.MiddleCenter);
+            l2.raycastTarget = false; l2.textWrappingMode = TextWrappingModes.NoWrap; l2.overflowMode = TextOverflowModes.Ellipsis;
+            UiKit.Anchor(l2.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(8f, ph ? -100f : -116f), new Vector2(-8f, ph ? -74f : -94f));   // スマホは 26 の高さ (20 だと 13px の行が入らず Ellipsis で丸ごと消えた)
             if (enabled)
             {
-                var btn = frame.gameObject.AddComponent<Button>();
-                btn.targetGraphic = frame;
-                var cols = btn.colors; cols.highlightedColor = new Color(1.06f, 1.06f, 1.06f); cols.pressedColor = new Color(0.9f, 0.9f, 0.9f); btn.colors = cols;
+                var btn = hit.gameObject.AddComponent<Button>();
+                btn.targetGraphic = hit; btn.transition = Selectable.Transition.None;
                 btn.onClick.AddListener(delegate { Audio.Ui("click"); onClick(); });
-                frame.gameObject.AddComponent<ScreenFx.ButtonMotion>();   // ホバーで 1.03・押すと 0.96 (#2 条3)
-                var tag = PaperFx.Sheet(cell, PaperFx.Tag, "hint", PaperFx.BrassLight);
-                tag.raycastTarget = false;
-                UiKit.Anchor(tag.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-50f, 10f), new Vector2(50f, 34f));
-                var hintB = UiKit.Txt(tag.transform, "押して選ぶ", 12, PaperFx.BrassInk, TextAnchor.MiddleCenter, true);
-                hintB.raycastTarget = false;
-                UiKit.Stretch(hintB.rectTransform, 0f, 0f, 0f, 0f);
+                hit.gameObject.AddComponent<ScreenFx.ButtonMotion>();
+                var et = hit.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+                var enter = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter };
+                enter.callback.AddListener(delegate { t.color = PaperFx.BrassLight; line.enabled = true; });
+                et.triggers.Add(enter);
+                var exit = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit };
+                exit.callback.AddListener(delegate { t.color = PaperFx.Paper; line.enabled = false; });
+                et.triggers.Add(exit);
             }
             return cell;
         }

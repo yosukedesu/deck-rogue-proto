@@ -1,0 +1,24 @@
+{
+  "id": "bd_shop_b",
+  "engine": "pixflux",
+  "request": {
+    "description": "HD-2D Octopath Traveler style pixel art scene, a wandering peddler's wooden stall at night at the mouth of a mine in a forest, a wide counter in the lower center with a cloth draped over it, striped awning above, hanging brass lanterns, shelves with jars and tools, a covered handcart at the side, crates and sacks, warm lantern light, dark pines and mist behind, moonlight, cool blue-grey palette with warm lantern accents, no people, wide composition with the counter empty for items",
+    "negative_description": "human, person, character, face, eyes, text, letters, watermark, border, frame, ui, blurry, daylight, blue sky, sun",
+    "image_size": {
+      "width": 400,
+      "height": 224
+    },
+    "text_guidance_scale": 8,
+    "no_background": false,
+    "outline": "selective outline",
+    "shading": "detailed shading",
+    "detail": "highly detailed",
+    "view": "side",
+    "seed": 41
+  },
+  "usage": {
+    "type": "generations",
+    "generations": 1
+  },
+  "at": "2026-10-29T04:09:29.448Z"
+}
