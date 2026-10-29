@@ -1,0 +1,11 @@
+{
+  "primary9-frame6": {
+    "maxChannel": 26,
+    "changedPixels": 174931
+  },
+  "guard-frame12": {
+    "maxChannel": 34,
+    "changedPixels": 174809
+  },
+  "qualification": "These full images use different scenario order and absolute clocks; nonzero differences do not isolate the cue. No full-image equivalence claim. Event arrays match and original9 placement/style/trajectory are unchanged in source."
+}

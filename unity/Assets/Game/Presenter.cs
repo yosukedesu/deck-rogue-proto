@@ -102,6 +102,7 @@ namespace DeckRogue.Game
         }
 
         public static void Reset() {
+            frostIceCue=null;
             GameRoot.I?.CancelCombatPresentation();
             Tween.CancelPresentations();ClearNumericPresentation();ClearEnemyPresentation();++_impactEpoch;PendingImpactCount=0;_lastImpactAt=0f;
             ++_visualVersion;PendingVisualCount=0;LastSequenceDuration=0f;
@@ -2291,7 +2292,7 @@ namespace DeckRogue.Game
                     Audio.Key("BlockGained");
                     var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if(Stage.CombatWorld) { if(ib.Amount>=4)WorldBattleFx.Guard("player"); } else if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(PaperFx.SkyLight.r, PaperFx.SkyLight.g, PaperFx.SkyLight.b, 0.9f), 110f);
-                    Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(80f, 10f), "氷壁 +" + ib.Amount, PaperFx.SkyLight, 28, 40f, 0.7f);
+                    Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(80f, 10f), "氷壁 +" + ib.Amount, PaperFx.SkyLight, 28, 40f, 0.7f, placement:FrostIcePlacement(g,ctx,ib));
                     if (nudgeHp && g.Battle != null) g.Battle.NudgePlayerIce(ib.Amount);
                     break;
                 }

@@ -1,9 +1,11 @@
-# Pending after current GPU/lighting work: FrostShackle323
+# FrostShackle323 Unity receipt-owned upper lane
 
-Parent added selected323 after321, without interrupting current work. Kit and movie materialized through the official Library helper; size/SHA and ZIP CRC verified. Not ported yet.
+Verified input kit libfile_de85deb64d5c8191b15cab2c03665076 v0,94809B,SHA25662ea3d1a169886dfc56afb260a3844ac711836171a6516b3d0c85f01b48716f3; movie libfile_ad83ead1bfac8191beb620e033f7eba5 v0,465206B,SHA256ce1b2cfb3858f29df94a34398da96466d09c766bcc11dc27b83ec0fb9070a85c. Official materialization, byte hashes and ZIP CRC verified; Godot frame12 viewed.
 
-- Kit libfile_de85deb64d5c8191b15cab2c03665076 v0,94809 bytes,SHA25662ea3d1a169886dfc56afb260a3844ac711836171a6516b3d0c85f01b48716f3.
-- Movie libfile_ad83ead1bfac8191beb620e033f7eba5 v0,465206 bytes,SHA256ce1b2cfb3858f29df94a34398da96466d09c766bcc11dc27b83ec0fb9070a85c.
-- Actual blue_frost_shackle cost2 target0: EnemyWeakened1,Ice9,passiveIce1; energy3->1,Ice0->9->10,damage0. Events have no sourceUID; use actual Play/previousHand/order/reference ownership, never invent UID.
-- Preserve +9 placement; separate +1 upward by actual text/outline/icon height+8 internalpx plus previous drift. Preserve timing/values/other cues. First inspect Unity existing lanes to avoid duplicate changes, and capture face/HP/intent clearance.
-- Godot reported471checks/4runs incl blue_guard fallback and Artifact1 blocked-weaken branch. Artifact branch keeps old layout and is not craft-approved. Unity baseline recorded: actual CardPlayed, EnemyWeakened1, Ice9, Ice1; continuous frame12 visibly overlaps the two Ice labels. The Godot reference frame12 was also viewed. Lane separation is still pending, not PASS. Local evidence: evidence/unity-floor-receive/frost323-baseline and evidence/frost323-godot-frame12.png.
+Unity baseline visibly overlaps Ice9/Ice1. The default product fix is narrowly admitted by current committed receipt/generation, registered actual Play, previous hand UID for blue_frost_shackle, leader_blue, explicit valid target, no mode, preserved enemy identity and ordered actual CardPlayed/EnemyWeakened1/Ice9/Ice1 references. No event sourceUID is invented. Artifact-blocked weakening does not admit the correction.
+
+Ice9 is unchanged. TMP main/outline/shadow mesh bounds are measured in the existing float root. Ice1 goes above the actual currently drifting Ice9; clearance includes measured heights, the existing OutBack scale maximum and8 internal pixels. Normal measured height32.63992, primary initialY97.87279, primary currentY111.6596, clearance41.97816 and passive offset55.76501. Values, times, font, fade, scale and trajectories remain unchanged. Other Float callers retain the null placement callback. A completed pair releases its remembered cue; Presenter.Reset clears it on cancel/reset.
+
+Final build unity-frost323-v2-build.log: Succeeded/errors0/warnings43,83s. Eight contexts/560frames: explicit normal, blue_guard, shipped AxeOgre Artifact1, null target, green leader, reuse, cancel at7 between9 and1, then reuse. Normal/reuse and guard event arrays match prechange baselines; no damage. Cancel preserves actual game Ice10 and removes displayed cues; next admission succeeds. No player exception. Source-level invalid-receipt/mode guards are not separately fault-injected.
+
+Normal explicit context local lane readability PASS from actual frames6/12/24 and reuse. Face, HP, lantern and enemy intent remain clear. Artifact fallback still uses its previous layout and is not art-approved; no other-body/camera or overall VFX PASS. Selected original evidence is in `docs/reviews/unity-frost323-20261029/`; full continuous frames remain local.

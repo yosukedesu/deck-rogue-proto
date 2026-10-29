@@ -314,7 +314,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>浮き文字 (ダメージ数字など)。parent の座標系で pos から上へ浮いて消える</summary>
-        public static void Float(RectTransform parent, Vector2 pos, string text, Color color, int size = 34, float rise = 60f, float dur = 0.9f, float width = 240f)
+        public static void Float(RectTransform parent, Vector2 pos, string text, Color color, int size = 34, float rise = 60f, float dur = 0.9f, float width = 240f, Func<RectTransform,Vector2,Vector2> placement = null)
         {
             if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("float",text);
             if (parent == null) return;
@@ -334,6 +334,7 @@ namespace DeckRogue.Game
             t.outlineWidth = 0.32f;
             t.outlineColor = new Color(0.05f, 0.03f, 0.06f, 0.95f);
             UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
+            if(placement!=null){pos=placement(rt,pos);rt.anchoredPosition=pos;}
             rt.localScale = Vector3.one * 0.6f;
             Scale(rt, Vector3.one, 0.18f, Ease.OutBack);
             Run(dur, k =>

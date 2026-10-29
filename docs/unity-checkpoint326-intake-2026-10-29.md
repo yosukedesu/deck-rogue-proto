@@ -1,0 +1,5 @@
+# Queued after323: selected326 Light Burst
+
+Not yet materialized or ported. Kit libfile_5fc12c85e0288191b977bffc82c233f2 v0,1845886B/14members,SHA2567f261e2710963cc6e71b83dfbf333ca1860d556f1144da5f35cebef8bc8af7e0. Reference libfile_65c99b5e8f8481918c8e0b2bb6513817 v0,620604B,SHA256917b6fd81be740cd59a48662d7fbc0f7a01bd9573ace4499df498556e2e9f74c.
+
+white_light_burst, naturalLight1/E3, actualcost3, LightDischarged Spent1 (not Bolt LightSpent), damage4 on each of3 living targets, then EnemyWeakened1 each. Exact registered ownership/actual receipts, private main/core; old local particles/world light/clock/Weak cues unchanged. Selected short unequal golden shoulder plus small contact, consumption toward root from about.08. Godot19024/4,VSync only. Spent1/3targets selected; other Light amounts/target counts/death/Unity/otherbody not certified. Legal Light0 after Buckler has no damage/discharged and3Weak only. Await actual input manifest and visual review; Canopy color findings are hypotheses only.

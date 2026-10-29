@@ -1,0 +1,140 @@
+{
+  "artifact": {
+    "frames": 70,
+    "events": [
+      {
+        "type": "CardPlayed"
+      },
+      {
+        "type": "ArtifactBlocked",
+        "enemyIndex": 0
+      },
+      {
+        "type": "IceBlockGained",
+        "amount": 9
+      },
+      {
+        "type": "IceBlockGained",
+        "amount": 1
+      }
+    ]
+  },
+  "guard": {
+    "frames": 70,
+    "events": [
+      {
+        "type": "CardPlayed"
+      },
+      {
+        "type": "IceBlockGained",
+        "amount": 5
+      },
+      {
+        "type": "IceBlockGained",
+        "amount": 1
+      }
+    ]
+  },
+  "null-target": {
+    "frames": 70,
+    "events": [
+      {
+        "type": "CardPlayed"
+      },
+      {
+        "type": "EnemyWeakened",
+        "amount": 1,
+        "enemyIndex": 0
+      },
+      {
+        "type": "IceBlockGained",
+        "amount": 9
+      },
+      {
+        "type": "IceBlockGained",
+        "amount": 1
+      }
+    ]
+  },
+  "other-leader": {
+    "frames": 70,
+    "events": [
+      {
+        "type": "CardPlayed"
+      },
+      {
+        "type": "EnemyWeakened",
+        "amount": 1,
+        "enemyIndex": 0
+      },
+      {
+        "type": "IceBlockGained",
+        "amount": 9
+      }
+    ]
+  },
+  "owned": {
+    "frames": 70,
+    "events": [
+      {
+        "type": "CardPlayed"
+      },
+      {
+        "type": "EnemyWeakened",
+        "amount": 1,
+        "enemyIndex": 0
+      },
+      {
+        "type": "IceBlockGained",
+        "amount": 9
+      },
+      {
+        "type": "IceBlockGained",
+        "amount": 1
+      }
+    ]
+  },
+  "owned-reuse": {
+    "frames": 70,
+    "events": [
+      {
+        "type": "CardPlayed"
+      },
+      {
+        "type": "EnemyWeakened",
+        "amount": 1,
+        "enemyIndex": 0
+      },
+      {
+        "type": "IceBlockGained",
+        "amount": 9
+      },
+      {
+        "type": "IceBlockGained",
+        "amount": 1
+      }
+    ]
+  },
+  "placement": {
+    "measuredHeight": 32.63992,
+    "initial9Y": 97.87279,
+    "actualPrior9Y": 111.6596,
+    "clearance": 41.97816,
+    "passiveOffset": 55.76501,
+    "activatedOnly": [
+      "owned",
+      "owned-reuse"
+    ]
+  },
+  "qualification": "8 contexts/560frames. Normal/reused own lane local readability verified; between-pair cancel clears cues and next own admission works. Artifact/null target/other leader/guard fallback do not activate. No general all-body UX or Artifact art PASS.",
+  "cancel": {
+    "atFrame": 7,
+    "betweenPrimaryAndPassive": true,
+    "primaryAdmissions": 1,
+    "passiveAdmissionsAfterCancel": 0,
+    "reusePrimary": 1,
+    "reusePassive": 1,
+    "eventsEqual": true,
+    "frames": 140
+  }
+}
