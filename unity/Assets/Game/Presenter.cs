@@ -54,8 +54,8 @@ namespace DeckRogue.Game
         static void ClearEnemyPresentation() {
             ++_presentationGeneration;_enemyPresentation.Clear();_presentationOrigin=null;_presentationBoard=null;
         }
-        public static void PrepareEnemyPresentation(GameRoot g,GameState before,GameState after,bool force=false) {
-            PrepareNumeric(g,before,after);
+        public static void PrepareEnemyPresentation(GameRoot g,GameState before,GameState after,bool force=false,RunCommand ownerCommand=null) {
+            PrepareNumeric(g,before,after,ownerCommand);
             if((!CardVfxProfile.ShowcaseOn && !force) || g.Battle==null || before==null || after==null || !ReferenceEquals(Origin(before),Origin(after)))return;
             if(!ReferenceEquals(_presentationOrigin,Origin(after)) || _presentationBoard!=g.Battle) {
                 ClearEnemyPresentation();_presentationOrigin=Origin(after);_presentationBoard=g.Battle;

@@ -10,6 +10,7 @@ internal sealed class NativeEffect
 	public NativeBatch[] Batches = Array.Empty<NativeBatch>();
 
 	public Action<double> Sample;
+    public Action<bool> ConfigureLightBoltCommittedContact;
 
 	public Action<Vector3>? ConfigureSource;
 

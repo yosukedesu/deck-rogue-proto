@@ -10,7 +10,7 @@ namespace DeckRogue.Game {
    internal Vitals Copy()=>new Vitals{Hp=Hp,MaxHp=MaxHp,Block=Block,IceBlock=IceBlock,EnemyId=EnemyId};
   }
   public sealed class Batch {
-   public int Id,Generation,From,To,Pending; public bool Finished; public GameState After;
+   public int Id,Generation,From,To,Pending; public bool Finished; public GameState After; public GameState Before; public RunCommand OwnerCommand;
   }
   public sealed class Receipt {
    public int Index,Generation,Target=-1; public GameEvent Event; public Batch Batch;
@@ -92,11 +92,11 @@ namespace DeckRogue.Game {
    for(int i=0;i<before.EventLog.Count;i++)if(!ReferenceEquals(before.EventLog[i],after.EventLog[i]))return false;
    return true;
   }
-  public Batch Register(GameState before,GameState after) {
+  public Batch Register(GameState before,GameState after,RunCommand ownerCommand=null) {
    if(!Prefix(before,after)){Note("unproved_command_prefix",-1);return null;}
    if(latest==null)Seed(before);
    if(!ReferenceEquals(latest,before)){Note("numeric_command_lineage_mismatch",-1);return null;}
-   var b=new Batch{Id=++nextBatch,Generation=Generation,From=before.EventLog.Count,To=after.EventLog.Count,After=after};batches.Add(b);
+   var b=new Batch{Id=++nextBatch,Generation=Generation,From=before.EventLog.Count,To=after.EventLog.Count,After=after,Before=before,OwnerCommand=ownerCommand};batches.Add(b);
    for(int i=0;i<Math.Max(before.Enemies.Count,after.Enemies.Count);i++)
     if(i>=before.Enemies.Count || i>=after.Enemies.Count || before.Enemies[i].EnemyId!=after.Enemies[i].EnemyId)unstable.Add(i);
    for(int i=b.From;i<b.To;i++)if(after.EventLog[i] is GameEvent_EnemyHatched hatched)unstable.Add(hatched.EnemyIndex);

@@ -24,7 +24,7 @@ namespace DeckRogue.Game {
   static void ClearNumericPresentation() {
    ++numericEpoch;pumping=false;EnemySources.Clear();EnemySourceVisuals.Clear();EnemySourceHadVisual.Clear();Actions.Cancel();Numeric.Clear();NumericBatches.Clear();actionBudgets.Clear();numericBoard=null;
   }
-  static void PrepareNumeric(GameRoot g,GameState before,GameState after) {
+  static void PrepareNumeric(GameRoot g,GameState before,GameState after,RunCommand ownerCommand=null) {
    if(g?.Battle==null || before==null || after==null)return;
    if(numericBoard!=g.Battle || (Numeric.Active && !ReferenceEquals(Origin(Numeric.Latest),Origin(after)))) {
     ClearNumericPresentation();numericBoard=g.Battle;
@@ -36,7 +36,7 @@ namespace DeckRogue.Game {
     Debug.LogWarning("[Presentation] numeric lineage replaced; cancelling old owner");
     Reset();numericBoard=g.Battle;_seen=before.EventLog.Count;_seenCombat=before;
    }
-   var batch=Numeric.Register(before,after);
+   var batch=Numeric.Register(before,after,ownerCommand);
    if(batch!=null)NumericBatches.Add(batch);
   }
   static CombatPresentationLedger.Batch NumericBatch(GameState state) {
@@ -81,7 +81,10 @@ namespace DeckRogue.Game {
    Canvas.ForceUpdateCanvases();
    ReserveEnemyContacts(g,previous,combat,from,board);
    for(int i=from;i<combat.EventLog.Count;i++)
-    if(ResolvedCombatFx.IsResolved(combat.EventLog[i]))captured[i]=ResolvedCombatFx.Capture(g,combat.EventLog[i]);
+    if(ResolvedCombatFx.IsResolved(combat.EventLog[i])) {
+     var ticket=ResolvedCombatFx.Capture(g,combat.EventLog[i]);captured[i]=ticket;
+     ticket.LightBoltBinding=Hd2dLightBoltBinding.Capture(ticket,batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
+    }
    // Nested play-from-exhaust also emits CardPlayed. Give every such segment
    // actor ownership through the same fence, without splitting gameplay or events.
    var starts=new List<int>{from};

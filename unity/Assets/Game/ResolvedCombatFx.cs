@@ -19,6 +19,7 @@ namespace DeckRogue.Game {
    internal bool GroundCaptureAttempted;internal GroundSurfaceProvider.Lease GroundLease;internal string GroundCaptureReason;
    public WorldBattleFx.AttackPlayback AttackPlayback;
    internal WaterPbfBinding PbfBinding;
+   internal Hd2dLightBoltBinding LightBoltBinding;
    internal LightningR9Binding LightningR9Binding;
    public bool FixedSmallContact=>DamageVfxIntensity.IsFixedSmallContact(AuthoredPresentation);
    public DamageVfxIntensity Intensity; public DamageVfxIntensity.Visual Visual=>DamageVfxIntensity.VisualFor(Intensity,AuthoredPresentation);

@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
@@ -1002,7 +1003,15 @@ namespace DeckRogue.Game
                 int? modeIdx = null; int modeV;   // mode=<idx>: 選択式の札のモード (2026-09-20 威圧の不具合の再現に 灯の岐路「眩ます」)
                 if (int.TryParse(Get("mode") ?? "", out modeV) && pc.Def.Modes != null && modeV >= 0 && modeV < pc.Def.Modes.Count) modeIdx = modeV;
                 else if (pc.Def.Modes != null && pc.Def.Modes.Count > 0) modeIdx = 0;
-                if (Get("viaui") == "1" && g.Battle != null)
+                if (Get("explicitcommand") == "1")
+                {
+                    // QA recipe: dispatch a real command with an explicit target, including singleton encounters.
+                    // Ordinary UI intentionally leaves singleton targets null; it remains unchanged.
+                    if (!int.TryParse(Get("target"), out int explicitTarget) || explicitTarget < 0 || explicitTarget >= g.Rs.Combat.Enemies.Count)
+                        throw new ArgumentException("explicitcommand requires a valid target index");
+                    g.DoCombat(new Command_PlayCard { CardUid = pc.Uid, ModeIndex = modeIdx, TargetIndex = explicitTarget });
+                }
+                else if (Get("viaui") == "1" && g.Battle != null)
                 {
                     // viaui=1: 人がマウスで押すのと同じ経路 (手札の札の PointerClick → モードの窓のボタン → 敵の札) を EventSystem で叩く
                     var es = UnityEngine.EventSystems.EventSystem.current;
@@ -1044,7 +1053,24 @@ namespace DeckRogue.Game
                 }
                 int shotsN = 4; int.TryParse(Get("playshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 4;   // playshots=N で枚数 (札が飛んで着弾するまで 0.3〜0.6 秒)
                 int every = 4; int.TryParse(Get("playevery") ?? "", out every); if (every <= 0) every = 4;      // playevery=N フレームごとに撮る (1フレーム=1/60秒に固定)
-                for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("play-" + i, 1); }
+                if (Get("playcontinuous") == "1")
+                {
+                    Time.captureFramerate = 30;
+                    var frameLog = new JArray();
+                    string continuousDir=string.IsNullOrEmpty(_linePrefix)?_dir:Path.Combine(_dir,_linePrefix);
+                    Directory.CreateDirectory(continuousDir);
+                    int cancelFrame=int.TryParse(Get("cancelpresentationat"),out int requestedCancel)?requestedCancel:-1;
+                    for (int i = 0; i < shotsN; i++) {
+                        if(i==cancelFrame)Presenter.MarkSeen(g.Rs.Combat);
+                        yield return new WaitForEndOfFrame();
+                        var shot = ScreenCapture.CaptureScreenshotAsTexture();
+                        try { File.WriteAllBytes(Path.Combine(continuousDir,"continuous-"+i.ToString("D4")+".png"),shot.EncodeToPNG()); }
+                        finally { Destroy(shot); }
+                        frameLog.Add(new JObject { ["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["delta"]=Time.deltaTime,["hp"]=g.Rs.Combat.Enemies[0].Hp,["activeFx"]=Hd2dAttackFx.ActiveCount,["visibleDraws"]=Hd2dAttackFx.VisibleReviewDraws,["effects"]=Hd2dAttackFx.CaptureReviewState() });
+                    }
+                    File.WriteAllText(Path.Combine(continuousDir,"continuous-clock.json"),frameLog.ToString());
+                }
+                else for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot("play-" + i, 1); }
                 Time.captureFramerate = DetFramerate;   // det なら 60 のまま (撮影の時間刻みを最後まで固定する。2026-09-30 HD-2D 見本 P00)
                 yield return WaitPresentation();
             }

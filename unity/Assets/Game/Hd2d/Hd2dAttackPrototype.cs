@@ -1074,6 +1074,46 @@ internal static class Hd2dAttackPrototype
         };
         return effect;
     }
+    internal static NativeEffect CreateOwnedLightBoltContact(AttackRoute route)
+    {
+        var original=CreateLight(route);var oldBatches=original.Batches;var oldSample=original.Sample;
+        var oldSource=original.ConfigureSource;Vector3 source=new(-1,0,0);float age=0;bool committed=false;
+        var shoulder=new Layer(0,41);var core=new Layer(0,42);var flashes=new Layer(0,1);
+        shoulder.Batch.Texture="light-bolt-pressure-density-v1"; //305 dedicated sparse optical density; original RGBA unchanged.
+        foreach(var batch in oldBatches){var alpha=batch.Alpha;batch.Alpha=i=>float.IsFinite(age)&&age<0?alpha(i):0;}
+        original.Batches=new[]{oldBatches[0],oldBatches[1],oldBatches[2],oldBatches[3],oldBatches[4],shoulder.Batch,core.Batch,flashes.Batch};
+        original.ConfigureSource=v=>{source=v;oldSource?.Invoke(v);};
+        original.ConfigureLightBoltCommittedContact=v=>committed=v;
+        original.Sample=t=>{
+            age=(float)t;oldSample(t);shoulder.Reset();core.Reset();flashes.Reset();
+            if(!float.IsFinite(age)||age<0||!committed||age>=.22f)return;
+            Vector3 direction=(-source).Normalized();if(direction.LengthSquared()<.1f)direction=Vector3.Right;
+            Vector3 normal=new(-direction.Y,direction.X,0),anchor=new(0,.035f,.025f);
+            float release=Ease((age-.035f)/.145f),alpha=1-Ease((age-.065f)/.115f),front=Ease((age-.055f)/.105f)*.82f;
+            Vector3 At(float u,float side){
+                float w=(.012f+.18f*MathF.Pow(MathF.Max(0,MathF.Sin(MathF.PI*u)),.7f)*(1-.45f*u))*(1-.40f*release);
+                return anchor+direction*(-.70f+.82f*u)+normal*(.025f*MathF.Sin(MathF.PI*u)+side*w*(side>0?1:.70f));
+            }
+            void V(float u,float side){float across=side==0?1:side>0?.48f:.28f;
+                float a=alpha*.74f*Ease((u-front)/.13f)*(.45f+.55f*MathF.Max(0,MathF.Sin(MathF.PI*u)))*across;
+                shoulder.V(At(u,side),new(u,(side+1)/2),a,1.05f,1);}
+            for(int k=0;k<10;k++)for(int j=0;j<2;j++){float u=k/10f,v=(k+1)/10f,lo=j-1,hi=j;V(u,lo);V(v,lo);V(v,hi);V(u,lo);V(v,hi);V(u,hi);}
+            float peak=1-Ease((age-.018f)/.062f);
+            //302 main density lives upstream; the second existing core primitive marks actual arrival.
+            core.Taper(anchor-direction*.42f,anchor-direction*.20f,.024f,peak*.78f,3,1.20f);
+            core.Taper(anchor-direction*.07f,anchor+direction*.02f,.014f,peak*.60f,3,1.20f);
+            for(int k=0;k<2;k++){
+                float side=k==0?1:-1,dt=age-k*.018f;if(dt<0)continue;
+                float fade=1-Ease((dt-.025f)/(k==0?.095f:.070f));
+                Vector3 axis=(direction*(k==0?.70f:.35f)+normal*side*.72f).Normalized();
+                Vector3 root=anchor-direction*(k==0?.34f:.23f)+normal*side*.035f;
+                float length=(k==0?.14f:.085f)*(1-.65f*Ease(dt/.12f));
+                flashes.Taper(root+axis*length,root,k==0?.013f:.009f,fade*(k==0?.52f:.32f),2,1.10f);
+            }
+        };
+        return original;
+    }
+
     private static NativeEffect CreateLight(AttackRoute route)
     {
         var rays=new Layer(0,0);var core=new Layer(0,1);var shoulder=new Layer(0,6);

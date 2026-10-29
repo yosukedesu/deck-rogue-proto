@@ -28,12 +28,28 @@ namespace DeckRogue.Game
             public Vector3 Target, Feet, Right, Up, Toward, GroundRight, GroundToward; public Vector3? NearSurface;
             public Color[] Roles; public Color LightColor; public StageFx.ContractLightPlayback Light; public WorldBattleFx.AttackSpec LightSpec;
         }
-        static readonly Slot[] Pool = new Slot[8]; static int _epoch; static long _serial; static Material _material; static readonly MaterialPropertyBlock Props = new MaterialPropertyBlock();
+        static readonly Slot[] Pool = new Slot[8]; static int _epoch; static long _serial; static Material _material, _lightBoltMaterial; static readonly MaterialPropertyBlock Props = new MaterialPropertyBlock();
         static readonly Dictionary<string, NativeEffect> _cache = new Dictionary<string, NativeEffect>();
         static readonly Dictionary<string, Texture2D> _textures = new Dictionary<string, Texture2D>();
         static readonly Dictionary<string, Color[]> _palettes = new Dictionary<string, Color[]>();
         public static string LastFailure { get; private set; } public static int Submitted { get; private set; } public static int Recycled { get; private set; } public static int StaleContacts { get; private set; }
         public static int ActiveCount { get { int n = 0; foreach (var s in Pool) if (s != null && s.Busy) n++; return n; } }
+        internal static JArray CaptureReviewState() {
+            var slots=new JArray();
+            foreach(var s in Pool)if(s!=null && s.Busy) {
+                var layers=new JArray();
+                foreach(var d in s.Draws) {
+                    int visible=0;float maxAlpha=0;
+                    foreach(var c in d.C){if(c.a>0)visible++;maxAlpha=Mathf.Max(maxAlpha,c.a);}
+                    layers.Add(new JObject { ["kind"]=d.Kind,["enabled"]=d.Renderer.enabled,["verticesWithAlpha"]=visible,["maxAlpha"]=maxAlpha,["shader"]=d.Renderer.sharedMaterial?.shader?.name,["textureWidth"]=d.Texture?.width??0,["textureHeight"]=d.Texture?.height??0 });
+                }
+                slots.Add(new JObject{["serial"]=s.Serial,["landed"]=s.Landed,["age"]=s.Landed?Time.time-s.Started:Time.time-s.Expected,["committed"]=s.Ticket?.LightBoltBinding?.Committed==true,["layers"]=layers});
+            }
+            return slots;
+        }
+        internal static int VisibleReviewDraws {
+            get { int count=0;foreach(var s in Pool)if(s?.Draws!=null)foreach(var d in s.Draws)if(d?.Renderer!=null && d.Renderer.enabled && d.Renderer.gameObject.activeInHierarchy)count++;return count; }
+        }
 
         // ---- 札 id で受けるか (登録は PhysicalVfxProfiles / ElementalVfxProfiles = dot の表そのまま) ----
         public static bool Supports(string cardId) => HD2DFlags.Hd2dFx && !string.IsNullOrEmpty(cardId) && Hd2dAttackPrototype.Supports("card:" + cardId);
@@ -160,7 +176,7 @@ namespace DeckRogue.Game
 
         // ---- 枠の確保と片付け ----
         static void DestroyDraws(Slot s) { if (s?.Draws == null) return; foreach (var d in s.Draws) if (d?.Mesh != null) UnityEngine.Object.Destroy(d.Mesh); foreach (Transform c in s.Root) UnityEngine.Object.Destroy(c.gameObject); s.Draws = null; }
-        static void Retire(Slot s, int v) { if (s.Version != v) return; s.Busy = false; s.Light?.Cancel(); s.Light = null; s.Ticket = null; if (s.Root != null) s.Root.gameObject.SetActive(false); }
+        static void Retire(Slot s, int v) { if (s.Version != v) return; s.Busy = false; s.Effect?.ConfigureLightBoltCommittedContact?.Invoke(false); s.Light?.Cancel(); s.Light = null; s.Ticket = null; if (s.Root != null) s.Root.gameObject.SetActive(false); }
         public static void Cancel()
         {
             _epoch++; foreach (var s in Pool) if (s != null) { Retire(s, s.Version); s.Version++; }
@@ -198,6 +214,7 @@ namespace DeckRogue.Game
                 string tex = b.Texture.Length > 0 ? b.Texture : effect.Texture;
                 d.Texture = TextureOf(tex);
                 d.Kind = b.Kind;
+                d.Renderer.sharedMaterial = effect.ConfigureLightBoltCommittedContact != null && (b.Kind == 41 || b.Kind == 42) ? _lightBoltMaterial : _material;
                 d.TextureEnabled = tex.Length > 0 ? 1f : 0f;
                 d.AuthoredRgba = b.Texture.Length > 0 ? 1f : 0f;
                 d.UseTexture = b.Texture.Length > 0 ? 1f : (j == 0 ? 1f : 0f);
@@ -271,6 +288,8 @@ namespace DeckRogue.Game
                 }
                 d.Mesh.SetVertices(d.V); d.Mesh.SetUVs(0, d.UV); d.Mesh.SetUVs(1, d.Gain); d.Mesh.SetColors(d.C);
                 Props.Clear();
+                var linearCore=s.Roles[3];
+                Props.SetVector("_RoleCore",new Vector4(linearCore.r,linearCore.g,linearCore.b,linearCore.a));
                 Props.SetFloat("_Age", visualAge); Props.SetFloat("_Kind", d.Kind); Props.SetFloat("_TextureMotion", d.Motion);
                 bool flat = HD2DFlags.Hd2dFxFlat;   // 診断: hd2dfx=flat で絵を貼らず平らな四角で描く (層の位置と大きさを見る)
                 Props.SetFloat("_TextureEnabled", d.Texture != null && !flat ? d.TextureEnabled : 0f); Props.SetFloat("_AuthoredRgba", flat ? 0f : d.AuthoredRgba); Props.SetFloat("_UseTexture", flat ? 0f : d.UseTexture);
@@ -288,7 +307,7 @@ namespace DeckRogue.Game
                     float age;
                     if (s.Landed) { age = Time.time - s.Started; if (age >= s.Tail) yield break; }
                     else { age = Time.time - s.Expected; if (age >= .35f) yield break; }
-                    try { UpdateSource(s, age); s.Effect.Sample(age); Upload(s, age); }
+                    try { s.Effect.ConfigureLightBoltCommittedContact?.Invoke(s.Ticket?.LightBoltBinding?.Committed == true); UpdateSource(s, age); s.Effect.Sample(age); Upload(s, age); }
                     catch (Exception ex) { Debug.LogWarning("[Hd2dAttackFx] " + ex.GetType().Name + ": " + ex.Message); yield break; }
                     yield return null;
                 }
@@ -307,17 +326,24 @@ namespace DeckRogue.Game
             float height = t.ContactVisibleHeight > 0f ? t.ContactVisibleHeight : t.Height;
             if (!(height > 0f) || !float.IsFinite(t.Feet.x)) { t.RenderFallbackReason = "hd2d_invalid_captured_geometry"; return null; }
             string card = t.SourceKey; var route = RouteOf(t);
+            bool ownedLightBolt = t.LightBoltBinding?.Eligible(t) == true;
+            string cacheKey = route.Key + (ownedLightBolt ? "|LightBoltContact305" : "");
+            if (ownedLightBolt && _lightBoltMaterial == null) {
+                var shader = Resources.Load<Shader>("Shaders/Hd2dLightBoltOpticalSurface");
+                if (shader == null) { t.RenderFallbackReason = "light_bolt_private_shader_missing"; return null; }
+                _lightBoltMaterial = new Material(shader);
+            }
             NativeEffect effect;
             try
             {
-                if (!_cache.TryGetValue(route.Key, out effect)) { effect = Hd2dAttackPrototype.Create(route); if (effect != null) _cache[route.Key] = effect; }
+                if (!_cache.TryGetValue(cacheKey, out effect)) { effect = ownedLightBolt ? Hd2dAttackPrototype.CreateOwnedLightBoltContact(route) : Hd2dAttackPrototype.Create(route); if (effect != null) _cache[cacheKey] = effect; }
             }
             catch (Exception ex) { t.RenderFallbackReason = "hd2d_effect_construction_failed:" + ex.GetType().Name; return null; }
             if (effect == null) { t.RenderFallbackReason = "hd2d_route_unsupported"; return null; }
             Slot s = null;
             try
             {
-                s = Acquire(route.Key, effect);
+                s = Acquire(cacheKey, effect);
                 s.Ticket = t; s.Card = card; s.Busy = true;
                 var visual = t.Visual; bool physical = PhysicalVfxProfiles.ForCard(card) != null;
                 s.Height = Mathf.Max(.25f, height); s.Size = physical ? 1f : (visual?.Size ?? 1f); s.LightPower = visual?.Light ?? 1f;
@@ -353,7 +379,7 @@ namespace DeckRogue.Game
                 s.Root.gameObject.SetActive(true);
                 int v = s.Version, e = _epoch; var captured = s;
                 t.OutcomeIncomingReason = "hd2d_prototype_route";
-                Debug.Log("[Hd2dAttackFx] begin card=" + card + " palette=" + effect.Palette + " batches=" + effect.Batches.Length + " height=" + s.Height.ToString("F2") + " remote=" + s.Remote + " lead=" + (s.Expected - Time.time).ToString("F3") + " tail=" + s.Tail.ToString("F2"));
+                Debug.Log("[Hd2dAttackFx] begin card=" + card + " ownedLightBolt=" + ownedLightBolt + " palette=" + effect.Palette + " batches=" + effect.Batches.Length + " height=" + s.Height.ToString("F2") + " remote=" + s.Remote + " lead=" + (s.Expected - Time.time).ToString("F3") + " tail=" + s.Tail.ToString("F2"));
                 // 予備動作の音 (dot の BattleStage: 札の最初の当たりで一度)。当たりの音は Presenter が Hd2dContact.<札> で鳴らす
                 if (t.Index == 0 && Hd2dAttackPrototype.HasAuthoredAudio(card)) Audio.Key("Hd2dOnset." + Hd2dAttackPrototype.AudioCard(card));
                 var playback = new WorldBattleFx.AttackPlayback
@@ -366,6 +392,7 @@ namespace DeckRogue.Game
                         try
                         {
                             captured.Landed = true; captured.Started = Time.time;
+                            captured.Effect.ConfigureLightBoltCommittedContact?.Invoke(t.LightBoltBinding?.Committed == true);
                             UpdateSource(captured, 0f); captured.Effect.Sample(0f); Upload(captured, 0f);
                             if (Stage.ImpactTargetCurrent(t.Target, t.Impact))
                             {

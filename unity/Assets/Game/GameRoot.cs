@@ -375,7 +375,7 @@ namespace DeckRogue.Game
                 else SaveGame.Write(this, Rs);
             }
             if(wasCombat && prevRs?.Combat!=null && Rs?.Combat!=null && !ReferenceEquals(prevRs,Rs))
-                Presenter.PrepareEnemyPresentation(this,prevRs.Combat,Rs.Combat,Rs.Phase!=RunPhases.Combat || Presenter.HasEnemyPhase(Rs.Combat));
+                Presenter.PrepareEnemyPresentation(this,prevRs.Combat,Rs.Combat,Rs.Phase!=RunPhases.Combat || Presenter.HasEnemyPhase(Rs.Combat),cmd);
             bool combatEnded = wasCombat && Rs != null && Rs.Phase != RunPhases.Combat;
             // 確認の窓 (発動/温存) から進んだ手: 順送りで古い盤面を見せる前に窓と暗がりだけ先に畳む (2026-09-17)
             bool fromWindow = wasCombat && prevRs != null && prevRs.Combat != null && prevRs.Combat.Phase == CombatPhases.AwaitingReaction && Rs != null && !ReferenceEquals(Rs, prevRs);
