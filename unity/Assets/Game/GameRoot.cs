@@ -93,6 +93,8 @@ namespace DeckRogue.Game
         public int EventChoiceIndex = -1;   // カード指定待ちの選択肢
         /// <summary>出立の店 (2026-09-24): 除去・鍛えの品で対象の札を選んでいる (品の添字)。出立を離れたら捨てる</summary>
         public int DepartureChoiceIndex = -1;
+        /// <summary>出立の店で開いている看板 (card／item／service。2026-10-30 案 A)</summary>
+        public string DepartureTab = "card";
         /// <summary>デッキの一覧 (RunUi.CardGrid) の「鍛えた後を見る」(2026-09-16 ユーザー「デッキ一覧すべてで鍛えた後を見るボタン」。本家 Smith の Show Upgrade)。ランの間は保つ</summary>
         public bool ShowUpgraded;
         /// <summary>スマホの一覧で押した札 (選ぶ→下の帯で確定。2026-09-16 案A)。鍵は画面ごと ("forge"/"remove"/"event") で、別の画面の一覧には効かない。手が通ると捨てる</summary>

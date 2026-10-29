@@ -49,70 +49,181 @@ namespace DeckRogue.Game
             float lineH = ph ? 42f : 58f;
             MasterLine(root, Content.DepartureMasterLine(run.Colors), lineTop, lineH, cs.x);
 
-            float top = lineTop + lineH + (ph ? 8f : 18f);
-            var cards = new List<int>(); var relics = new List<int>(); var services = new List<int>();
+            // 3 種の看板と棚 (2026-10-30 ユーザー「カード・アイテム・サービスの 3 種のボタンを見せて選ばせ、押した種類の詳細を見せる」→ カンバス Departure の案 A):
+            // 行商の一言の下に横並びの看板 3 枚。押した看板が真鍮に点き、下の棚にその種類だけ並ぶ。買った数は看板に残る。「店を出て坑へ」は常に右下
+            float top = lineTop + lineH + (ph ? 10f : 24f);
+            var cards = new List<int>(); var items = new List<int>(); var services = new List<int>();
             for (int i = 0; i < offers.Count; i++)
             {
                 if (offers[i].Kind == "card") cards.Add(i);
-                else if (offers[i].Kind == "relic") relics.Add(i);
-                else services.Add(i);
+                else if (Run.EventChoiceNeedsCard(offers[i].Choice)) services.Add(i);   // 荷の整理・研ぎ＝デッキの手続き
+                else items.Add(i);   // 遺物・薬草・道具箱＝物
             }
-            // 普通の店と同じ並べ方 (2026-09-24 夜 ユーザー「種類名はいらない。普通の商店のように」): 左に札 (カードの面)、右の列に遺物、札の下にサービス
-            float colW = ph ? 440f : 480f, side = ph ? 20f : 40f, gap = ph ? 10f : 14f;
-            float leftW = cs.x - side * 2f - colW - (ph ? 20f : 40f);
-            float svcH = ph ? 126f : 140f;
-            float bottomPad = ph ? 12f : 30f;
-            float shelfH = cs.y - top - svcH - gap - bottomPad;
-            // 札の棚
-            int nc = cards.Count;
-            if (nc > 0)
+            string tab = g.DepartureTab ?? "card";
+            if ((tab == "card" && cards.Count == 0) || (tab == "item" && items.Count == 0) || (tab == "service" && services.Count == 0))
+                tab = cards.Count > 0 ? "card" : items.Count > 0 ? "item" : "service";
+            float side = ph ? 20f : 40f;
+            float contentW = Mathf.Min(ph ? cs.x - side * 2f : 1296f, cs.x - side * 2f);
+            float left = (cs.x - contentW) / 2f;
+            float signH = ph ? 86f : 132f, sgap = ph ? 10f : 24f;
+            float signW = (contentW - sgap * 2f) / 3f;
+            Sign(g, root, run, "card", "カード", "自分の色の札 " + cards.Count + " 枚", cards, tab == "card", left, top, signW, signH);
+            Sign(g, root, run, "item", "アイテム", "遺物と坑口の品 " + items.Count + " 点", items, tab == "item", left + signW + sgap, top, signW, signH);
+            Sign(g, root, run, "service", "サービス", "取り除く・鍛える", services, tab == "service", left + (signW + sgap) * 2f, top, signW, signH);
+
+            float leaveH = ph ? 56f : 60f, bottomPad = ph ? 12f : 30f, gap = ph ? 10f : 20f;
+            float shelfTop = top + signH + (ph ? 14f : 30f);
+            float shelfH = cs.y - shelfTop - bottomPad - leaveH - gap;
+            string label = tab == "card" ? "カード　自分の色の札 ・ 押すと拡大" : tab == "item" ? "アイテム　古代の遺物と坑口の品" : "サービス　デッキの手続き";
+            var shelf = ShopScreen.Tier(root, label, left, cs.x - left - contentW, shelfTop, shelfH);
+            float pad = ph ? 14f : 40f;
+            if (tab == "card")
             {
-                float cgap = ph ? 16f : 28f, priceH = 56f;
-                float scale = Mathf.Min(ph ? 0.9f : 1.3f, Mathf.Min((leftW - cgap * (nc - 1)) / nc / CardView.W, (shelfH - priceH) / CardView.H));
-                float cw = CardView.W * scale, ch = CardView.H * scale;
+                int nc = cards.Count;
+                float cgap = ph ? 16f : 40f, priceH = 56f;
+                float scale = Mathf.Min(ph ? 0.9f : 1.3f, Mathf.Min((contentW - pad * 2f - cgap * (nc - 1)) / nc / CardView.W, (shelfH - pad * 2f - priceH) / CardView.H));
+                float cw = CardView.W * scale, chh = CardView.H * scale;
                 float tw = nc * cw + (nc - 1) * cgap;
+                float cy = shelfTop + (shelfH - (chh + priceH)) / 2f;
                 for (int k = 0; k < nc; k++)
                 {
                     var cell = CardCell(g, root, run, cards[k], scale);
                     cell.anchorMin = cell.anchorMax = new Vector2(0f, 1f);
                     cell.pivot = new Vector2(0.5f, 1f);
-                    cell.anchoredPosition = new Vector2(side + leftW / 2f - tw / 2f + cw / 2f + k * (cw + cgap), -top);
-                    cell.sizeDelta = new Vector2(cw, ch + priceH);
+                    cell.anchoredPosition = new Vector2(left + contentW / 2f - tw / 2f + cw / 2f + k * (cw + cgap), -cy);
+                    cell.sizeDelta = new Vector2(cw, chh + priceH);
                 }
             }
-            // サービスの段 (札の下)
-            int ns = services.Count;
-            if (ns > 0)
+            else if (tab == "item")
             {
-                float sw = (leftW - gap * (ns - 1)) / ns;
-                float sy = cs.y - bottomPad - svcH;
-                for (int k = 0; k < ns; k++)
+                // 上の列: 遺物 (大きな紙の札)。下の列: 薬草・道具箱 (少し小さい)
+                var relics = new List<int>(); var goods = new List<int>();
+                for (int k = 0; k < items.Count; k++) { if (offers[items[k]].Choice.RelicId != null) relics.Add(items[k]); else goods.Add(items[k]); }
+                float y = shelfTop + pad;
+                float innerW = contentW - pad * 2f;
+                if (relics.Count > 0)
                 {
-                    var tile = Tile(g, root, run, services[k], sw, svcH);
-                    tile.anchorMin = tile.anchorMax = new Vector2(0f, 1f);
-                    tile.pivot = new Vector2(0f, 1f);
-                    tile.anchoredPosition = new Vector2(side + k * (sw + gap), -sy);
+                    float rh = ph ? 124f : 170f, rgap = ph ? 10f : 24f;   // スマホは本文の 1 行が入る高さ (104 では名前だけになった)
+                    float rw = (innerW - rgap * (relics.Count - 1)) / relics.Count;
+                    for (int k = 0; k < relics.Count; k++)
+                    {
+                        var tile = Tile(g, root, run, relics[k], rw, rh);
+                        tile.anchorMin = tile.anchorMax = new Vector2(0f, 1f); tile.pivot = new Vector2(0f, 1f);
+                        tile.anchoredPosition = new Vector2(left + pad + k * (rw + rgap), -y);
+                    }
+                    y += rh + (ph ? 12f : 24f);
+                }
+                if (goods.Count > 0)
+                {
+                    float gh = ph ? 110f : 140f, ggap = ph ? 10f : 24f;
+                    float gw = Mathf.Min(ph ? 360f : 480f, (innerW - ggap * (goods.Count - 1)) / goods.Count);
+                    float tw = goods.Count * gw + (goods.Count - 1) * ggap;
+                    for (int k = 0; k < goods.Count; k++)
+                    {
+                        var tile = Tile(g, root, run, goods[k], gw, gh);
+                        tile.anchorMin = tile.anchorMax = new Vector2(0f, 1f); tile.pivot = new Vector2(0f, 1f);
+                        tile.anchoredPosition = new Vector2(left + contentW / 2f - tw / 2f + k * (gw + ggap), -y);
+                    }
                 }
             }
-            // 遺物の列 (右)
-            float leaveH = ph ? 56f : 60f;
-            float colX = cs.x - side - colW;
-            float colH = cs.y - top - bottomPad - leaveH - gap;
-            int nr = relics.Count;
-            if (nr > 0)
+            else
             {
-                float rh = Mathf.Min(ph ? 140f : 170f, (colH - gap * (nr - 1)) / nr);
-                for (int k = 0; k < nr; k++)
+                // サービス: 横長の札を縦に (荷の整理・研ぎ)
+                float sh = ph ? 110f : 140f, svgap = ph ? 10f : 20f;
+                float sw = Mathf.Min(ph ? innerWidth(contentW, pad) : 960f, contentW - pad * 2f);
+                float y = shelfTop + pad;
+                for (int k = 0; k < services.Count; k++)
                 {
-                    var tile = Tile(g, root, run, relics[k], colW, rh);
-                    tile.anchorMin = tile.anchorMax = new Vector2(0f, 1f);
-                    tile.pivot = new Vector2(0f, 1f);
-                    tile.anchoredPosition = new Vector2(colX, -top - k * (rh + gap));
+                    var tile = Tile(g, root, run, services[k], sw, sh);
+                    tile.anchorMin = tile.anchorMax = new Vector2(0f, 1f); tile.pivot = new Vector2(0f, 1f);
+                    tile.anchoredPosition = new Vector2(left + (contentW - sw) / 2f, -y);
+                    y += sh + svgap;
                 }
             }
             var slot = UiKit.NewRect("leave-slot", root);
-            UiKit.Anchor(slot, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(colX, bottomPad), new Vector2(colX + colW, bottomPad + leaveH));
+            float leaveW = ph ? 260f : 320f;
+            UiKit.Anchor(slot, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(left + contentW - leaveW, bottomPad), new Vector2(left + contentW, bottomPad + leaveH));
             LeaveButton(g, root, slot);
+        }
+
+        static float innerWidth(float contentW, float pad) { return contentW - pad * 2f; }
+
+        /// <summary>
+        /// 看板 (案 A): 木の板 (選んでいる種類は真鍮に点く)。左に絵 (カード＝札の面の縮小・アイテム＝遺物の絵・サービス＝鉄床の印)、名前、小さな一行、右上に「N 点」と買った数。
+        /// 押すとその種類の棚に切り替わる
+        /// </summary>
+        static void Sign(GameRoot g, RectTransform root, RunState run, string key, string name, string small, List<int> idx, bool on, float left, float top, float w, float h)
+        {
+            bool ph = UiKit.Phone;
+            var offers = run.Departure.Offers;
+            int bought = 0;
+            for (int i = 0; i < idx.Count; i++) if (Run.DepartureOfferBought(run, offers[idx[i]])) bought++;
+            var wood = Color.Lerp(PaperFx.BrassInk, PaperFx.Night, 0.42f);   // 店の看板と同じ木の色
+            var board = PaperFx.Sheet(root, PaperFx.Panel, "sign-" + key, on ? PaperFx.BrassLight : wood);
+            UiKit.Anchor(board.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(left, -top - h), new Vector2(left + w, -top));
+            var rim = board.gameObject.AddComponent<Outline>();
+            rim.effectColor = on ? PaperFx.BrassInk : new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.45f);
+            rim.effectDistance = new Vector2(1.5f, -1.5f); rim.useGraphicAlpha = false;
+            if (!on)
+            {
+                board.raycastTarget = true;
+                var btn = board.gameObject.AddComponent<Button>();
+                btn.transition = Selectable.Transition.None;
+                btn.onClick.AddListener(delegate { Audio.Ui("click"); g.DepartureTab = key; g.Rebuild(); });
+            }
+            var bt = board.transform;
+            float pad = ph ? 10f : 18f;
+            float artS = ph ? 56f : 96f;
+            // 絵
+            RectTransform art = null;
+            if (key == "card" && idx.Count > 0)
+            {
+                CardDef def = null;
+                try { def = Content.GetCardDef(offers[idx[0]].Choice.AddCardIds[0]); } catch (Exception) { }
+                if (def != null)
+                {
+                    float sc = (ph ? 60f : 108f) / CardView.H;
+                    var cv = CardView.Build(bt, new CardInstance { Uid = "sign-card", Def = def }, null, true, false, "sign-card");
+                    cv.anchorMin = cv.anchorMax = new Vector2(0f, 0.5f); cv.pivot = new Vector2(0f, 0.5f);
+                    cv.localScale = Vector3.one * sc;
+                    cv.anchoredPosition = new Vector2(pad, 0f);
+                    foreach (var gr in cv.GetComponentsInChildren<Graphic>(true)) gr.raycastTarget = false;
+                    artS = CardView.W * sc;
+                }
+            }
+            else if (key == "item" && idx.Count > 0)
+            {
+                art = Art(bt, offers[idx[0]], artS);
+            }
+            else
+            {
+                art = UiKit.Icon(bt, "anvil", artS).rectTransform;
+            }
+            if (art != null)
+            {
+                art.anchorMin = art.anchorMax = new Vector2(0f, 0.5f); art.pivot = new Vector2(0f, 0.5f);
+                art.anchoredPosition = new Vector2(pad, 0f);
+                foreach (var gr in art.GetComponentsInChildren<Graphic>(true)) gr.raycastTarget = false;
+            }
+            float textL = pad + artS + (ph ? 10f : 18f);
+            var nm = UiKit.Deco(bt, name, ph ? 20 : 30, on ? PaperFx.Ink : PaperFx.Paper, TextAnchor.MiddleLeft);
+            nm.characterSpacing = 6f; nm.raycastTarget = false; nm.textWrappingMode = TextWrappingModes.NoWrap;
+            UiKit.Anchor(nm.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(textL, -(ph ? 10f : 18f) - (ph ? 28f : 44f)), new Vector2(-pad, -(ph ? 10f : 18f)));
+            if (!ph || h >= 86f)
+            {
+                var sm = UiKit.Txt(bt, small, ph ? 12 : 14, on ? PaperFx.BrassInk : PaperFx.PaperDim, TextAnchor.UpperLeft);
+                sm.raycastTarget = false; sm.textWrappingMode = TextWrappingModes.NoWrap;
+                UiKit.Anchor(sm.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(textL, -(ph ? 40f : 66f) - (ph ? 18f : 24f)), new Vector2(-pad, -(ph ? 40f : 66f)));
+            }
+            // 右上の「N 点」「買った M」
+            string cnt = (idx.Count - bought) + " 点" + (bought > 0 ? " ・ 買った " + bought : "");
+            var tag = PaperFx.Sheet(bt, PaperFx.Tag, "cnt", on ? new Color(1f, 1f, 1f, 0.45f) : new Color(0f, 0f, 0f, 0.35f));
+            tag.raycastTarget = false;
+            float tagW = cnt.Length * (ph ? 9f : 11f) + 20f;
+            UiKit.Anchor(tag.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-pad - tagW, -(ph ? 8f : 14f) - (ph ? 22f : 26f)), new Vector2(-pad, -(ph ? 8f : 14f)));
+            var ct = UiKit.Txt(tag.transform, cnt, ph ? 12 : 14, on ? PaperFx.Ink : PaperFx.BrassLight, TextAnchor.MiddleCenter, true);
+            ct.raycastTarget = false; ct.textWrappingMode = TextWrappingModes.NoWrap;
+            UiKit.Stretch(ct.rectTransform, 0f, 0f, 0f, 0f);
         }
 
         /// <summary>札1枚 (普通の店と同じ: カードの面＋下に値札。押すと拡大・買うのは値札)</summary>

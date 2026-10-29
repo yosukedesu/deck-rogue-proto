@@ -303,7 +303,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>段 (案 B): 夜色の板 (α 0.72) と左上の真鍮の見出し札。返り値は板の RectTransform (中身は中央基準で置く)</summary>
-        static RectTransform Tier(RectTransform root, string label, float left, float right, float top, float h)
+        public static RectTransform Tier(RectTransform root, string label, float left, float right, float top, float h)
         {
             // 盤の rgba(15,17,32,.72)。Linear の合成では屋台の明るい暖色が 7% 透けるだけで茶色 (53,39,27) に出たので、ほぼ不透明 (0.98) の夜色にする
             var board = PaperFx.Sheet(root, PaperFx.Tag, "tier", new Color(PaperFx.Night.r, PaperFx.Night.g, PaperFx.Night.b, 0.98f));
