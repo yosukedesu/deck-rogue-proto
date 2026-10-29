@@ -95,30 +95,46 @@ namespace DeckRogue.Game
                     else if (lo != null && shop.Departures[d].Sold != true) leftOthers.Add(d);
                 }
 
-            // 段の寸法。PC は盤の値 (上の段 180〜600・下の段 636〜846)。スマホは上部バーの下から「店を出る」の上までを 2 段に割る
+            // 案 B「品物と帳場を分ける」(§11-2・2026-10-29 ユーザー裁定「B。レリックは全部同じ大きさで良くない？」):
+            // 右＝縦長の木の看板「帳場」(取り除く・鍛える・ギアの棚＝デッキの手続き)。左＝段 2 つ (上: 札 1 列／下: 遺物と坑口の品＝全部同じ大きさの札)。
+            // PC は盤の値 (看板 380・上の段 180〜600・下の段 636〜936)。スマホは看板 300 で上部バーの下から「店を出る」の上までを 2 段に割る
             float side = ph ? 20f : 60f;
-            float btnH = ph ? 48f : 52f, btnBottom = ph ? 12f : 40f;
-            float tier2H = ph ? 136f : 210f;
+            float btnH = ph ? 48f : 52f, btnBottom = ph ? 12f : 28f;
+            float signW = ph ? 300f : 380f;
+            float signLeft = csS.x - side - signW;
+            float rightInset = side + signW + (ph ? 16f : 40f);   // 段の右端 (看板の手前)
             float tier1Top = ph ? RunUi.TopH + 12f : 180f;
+            float tier2H = ph ? 136f : 230f;
             float tierGap = ph ? 12f : 36f;
             float tier1H = ph ? csS.y - tier1Top - (btnBottom + btnH + 10f) - tier2H - tierGap : 420f;
             float tier2Top = tier1Top + tier1H + tierGap;
-            var tier1 = Tier(root, "札　" + (shop.Cards.Count + leftCards.Count) + " 枚", side, tier1Top, tier1H);
-            var tier2 = Tier(root, "遺物 ・ 坑口の品 ・ サービス", side, tier2Top, tier2H);
+            var tier1 = Tier(root, "札　" + (shop.Cards.Count + leftCards.Count) + " 枚", side, rightInset, tier1Top, tier1H);
+            var tier2 = Tier(root, leftOthers.Count > 0 ? "遺物 ・ 坑口の品" : "遺物", side, rightInset, tier2Top, tier2H);
+            Sign(g, root, run, shop, rmPrice, upPrice, signLeft, signW, tier1Top, tier2Top + tier2H);   // 看板の下端は下の段と揃える
 
-            // 上の段: 札を 1 列 (全部入る倍率。PC は 0.85・スマホは 0.6 まで)
+            // 上の段: 札を 1 列 (全部入る倍率。PC は 0.85・スマホは 0.6 まで。スマホで 5 枚以上が 0.45 を割る時は 2 段に折る)
             int nShop = shop.Cards.Count;
             int n = nShop + leftCards.Count;
-            float innerW = csS.x - side * 2f - 80f;
+            float innerW = csS.x - side - rightInset - 80f;
             float gap = ph ? 12f : 24f;
-            float scale = Mathf.Min(ph ? 0.6f : 0.95f, (innerW - Math.Max(0, n - 1) * gap) / Math.Max(1, n) / CardView.W);
-            scale = Mathf.Min(scale, (tier1H - 24f - 60f) / CardView.H);   // 段の高さにも収める (値札 60 ぶんを足す)
+            float scale = Mathf.Min(ph ? 0.6f : 0.85f, (innerW - Math.Max(0, n - 1) * gap) / Math.Max(1, n) / CardView.W);
+            int rows = 1, perRow = n;
+            if (ph && n >= 5 && scale < 0.45f)
+            {
+                rows = 2; perRow = (n + 1) / 2;
+                scale = Mathf.Min(0.6f, Mathf.Min((innerW - (perRow - 1) * gap) / perRow / CardView.W, (tier1H - 24f - 2f * 60f - 8f) / 2f / CardView.H));
+            }
+            else scale = Mathf.Min(scale, (tier1H - 24f - 60f) / CardView.H);   // 段の高さにも収める (値札 60 ぶんを足す)
             float cardW = CardView.W * scale, cardH = CardView.H * scale;
-            float totalW = n * cardW + Math.Max(0, n - 1) * gap;
+            float totalW = perRow * cardW + Math.Max(0, perRow - 1) * gap;
             float x0 = -totalW / 2f + cardW / 2f;
             float tagW = Mathf.Min(176f, cardW + gap - 8f);   // 値札は隣と重ねない
-            float cellY = 4f;   // 段の中心 (札は 30 上・値札は下)
-            Func<int, Vector2> cellPos = i => new Vector2(x0 + i * (cardW + gap), cellY);
+            Func<int, Vector2> cellPos = i =>
+            {
+                int col = i % perRow, row = i / perRow;
+                float y = rows == 2 ? (row == 0 ? 1f : -1f) * (cardH + 64f) / 2f : 4f;
+                return new Vector2(x0 + col * (cardW + gap), y);
+            };
             for (int i = nShop; i < n; i++)
             {   // 坑口で買わなかった札 (普通の札と同じ見た目・値段は棚の値段)
                 int di = leftCards[i - nShop];
@@ -170,21 +186,21 @@ namespace DeckRogue.Game
                 PriceTag(cell, item.Price, sold ? "売切" : null, canBuy, sold ? null : (Action)delegate { if (canBuy) { Audio.Ui("buy"); ScreenFx.FlyTo(g, cv, "deck", () => g.Do(new RunCommand_ShopBuyCard { Index = idx })); } }, tagW, rareSlot);
             }
 
-            // 下の段: 遺物 → 坑口の品 → 取り除く → 鍛える → ギアの棚。同じ大きさの紙の札 (左に絵・名前・一行・値札のボタン)
+            // 下の段: 品物だけ＝店の遺物 → 坑口の品 (遺物・薬草・道具箱)。全部同じ大きさの紙の札 (左に絵・名前・一行・値札のボタン)
             var tiles = new List<Action<RectTransform, float, float>>();
             if (shop.RelicId != null)
             {
                 RelicDef rd = null;
                 try { rd = Content.GetRelicDef(shop.RelicId); } catch (Exception) { }
                 string rName = rd != null ? rd.Name : shop.RelicId;
-                string rSub = (rd != null ? CardText.RarityLabel(rd.Rarity) + "の遺物 ・ " + rd.Description : "");
+                string rSub = (rd != null ? "店の遺物 ・ " + rd.Description : "店の遺物");
                 string rTip = "<b>" + rName + "</b>  " + shop.RelicPrice + "G" + (rd != null ? "\n" + CardText.RarityLabel(rd.Rarity) + "\n" + rd.Description : "");
                 bool canRelic = run.Gold >= shop.RelicPrice;
                 string relicId = shop.RelicId;
                 tiles.Add((tile, w, h) => Tile(g, tile, w, h, p => RunUi.RelicArt(p, relicId, 64f).rectTransform, rName, rSub, rTip, shop.RelicPrice, null, canRelic,
                     delegate { Audio.Ui("buy"); var art = tile.Find("art"); ScreenFx.FlyTo(g, art != null ? art as RectTransform : tile, "relics", () => g.Do(new RunCommand_ShopBuyRelic())); }));
             }
-            else tiles.Add((tile, w, h) => Tile(g, tile, w, h, p => UiKit.Icon(p, "star", 48f).rectTransform, "遺物", "売切", "<b>遺物</b>\n売切", shop.RelicPrice, "売切", false, null));
+            else tiles.Add((tile, w, h) => Tile(g, tile, w, h, p => UiKit.Icon(p, "star", 48f).rectTransform, "店の遺物", "売切", "<b>店の遺物</b>\n売切", shop.RelicPrice, "売切", false, null));
             foreach (var idx0 in leftOthers)
             {
                 int idx = idx0;
@@ -192,49 +208,107 @@ namespace DeckRogue.Game
                 var offer = LeftoverOffer(run, slot.Id);
                 bool available = Run.EventChoiceAvailable(run, offer.Choice);   // 店の値段は slot.Price (物価の倍率込み)。出立の店の値段・購入済みは見ない
                 bool canBuy = available && run.Gold >= slot.Price;
-                string sub = available ? DepartureScreen.Summary(offer) : "選べない: " + DepartureScreen.UnavailableReason(run, offer.Choice);
+                string sub = available ? "坑口の品 ・ " + DepartureScreen.Summary(offer) : "選べない: " + DepartureScreen.UnavailableReason(run, offer.Choice);
                 tiles.Add((tile, w, h) => Tile(g, tile, w, h, p => DepartureScreen.Art(p, offer, 64f), offer.Name, sub, DepartureScreen.Tip(offer), slot.Price, null, canBuy, delegate
                 {
                     if (Run.EventChoiceNeedsCard(offer.Choice)) { Audio.Ui("click"); g.ShopMode = "depart-pick:" + idx; g.Rebuild(); }
                     else { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyDeparture { Index = idx }); }
                 }));
             }
-            tiles.Add((tile, w, h) => Tile(g, tile, w, h, p => UiKit.Icon(p, "exhaust", 56f).rectTransform, "取り除く", "デッキの 1 枚を永久に外す ・ 使うたび +25 G",
-                "<b>取り除く</b>  " + rmPrice + "G\nデッキの 1 枚を永久に外す。使うたび 25 G 値上がり (ラン通算)", rmPrice, null, run.Gold >= rmPrice && run.Deck.Count > 5, delegate { g.ShopMode = "remove"; g.Rebuild(); }));
-            tiles.Add((tile, w, h) => Tile(g, tile, w, h, p => UiKit.Icon(p, "hammer", 56f).rectTransform, "鍛える", "デッキの 1 枚を鍛える ・ 使うたび +50 G",
-                "<b>鍛える</b>  " + upPrice + "G\nデッキの 1 枚を鍛える。使うたび 50 G 値上がり (ラン通算)", upPrice, null, run.Gold >= upPrice, delegate { g.ShopMode = "upgrade"; g.Rebuild(); }));
-            int shelfN = shop.Gears != null ? shop.Gears.Count : 0;
-            int manaPrice = shop.ManaPrice ?? DeckRogue.Engine.Run.SHOP_MANA_PRICE;
-            var gearsHeld = DeckRogue.Engine.Run.GearsOf(run);
-            tiles.Add((tile, w, h) => Tile(g, tile, w, h, p => UiKit.Icon(p, "toolbox", 56f).rectTransform, "ギアの棚", shelfN + " 枠 ・ 魔素 10 ごと " + manaPrice + " G ・ 持ち物 " + gearsHeld.Count + "/" + Gears.GEAR_CARRY_MAX,
-                "<b>ギアの棚</b>\nギア " + shelfN + " 枠と魔素 (10 ごと " + manaPrice + " G)。持ち物 " + gearsHeld.Count + "/" + Gears.GEAR_CARRY_MAX, manaPrice, null, true, delegate { g.ShopMode = "gears"; g.Rebuild(); }, "棚を開く"));
             {
                 int tn = tiles.Count;
                 float tgap = ph ? 10f : 20f;
-                float tw = Mathf.Min(ph ? 262f : 300f, (csS.x - side * 2f - 80f - tgap * (tn - 1)) / tn);
-                float th = ph ? 104f : 136f;
+                float tw = Mathf.Min(ph ? 262f : 300f, (csS.x - side - rightInset - 80f - tgap * (tn - 1)) / tn);
+                float th = ph ? 104f : 160f;
                 float tx0 = -((tn - 1) * (tw + tgap)) / 2f;
                 for (int i = 0; i < tn; i++)
                 {
                     var tile = UiKit.NewRect("tile" + i, tier2);
                     tile.anchorMin = tile.anchorMax = new Vector2(0.5f, 0.5f);
                     tile.sizeDelta = new Vector2(tw, th);
-                    tile.anchoredPosition = new Vector2(tx0 + i * (tw + tgap), ph ? -4f : -6f);
+                    tile.anchoredPosition = new Vector2(tx0 + i * (tw + tgap), ph ? -4f : 0f);
                     tiles[i](tile, tw, th);
                 }
             }
 
-            // 進む＝真鍮の決定のボタン (右下)
-            RunUi.BottomButton(root, "店を出て坑へ", delegate { g.ShopMode = null; g.Do(new RunCommand_ShopLeave()); }, 18, 260f, btnH, csS.x / 2f - side - 130f, btnBottom, PaperFx.BrassLight);
+            // 進む＝真鍮の決定のボタン (看板の下・右端)
+            RunUi.BottomButton(root, "店を出て坑へ", delegate { g.ShopMode = null; g.Do(new RunCommand_ShopLeave()); }, 18, Mathf.Min(360f, signW), btnH, csS.x / 2f - side - Mathf.Min(360f, signW) / 2f, btnBottom, PaperFx.BrassLight);
+        }
+
+        /// <summary>
+        /// 帳場の看板 (案 B): 右の縦長の木の板。「帳　場」の見出し・取り除く／鍛える (名前・二行・真鍮のボタン)・仕切り・ギアの棚 (枠と魔素・「棚を開く」)・仕切り・小さな注記。
+        /// 品物 (左の段) と見た目を変える＝紙でなく木・ボタンは値札でなく手続き
+        /// </summary>
+        static void Sign(GameRoot g, RectTransform root, RunState run, ShopState shop, int rmPrice, int upPrice, float left, float w, float top, float bottom)
+        {
+            bool ph = UiKit.Phone;
+            var wood = Color.Lerp(PaperFx.BrassInk, PaperFx.Night, 0.42f);   // 木の色 (1 巡目の看板と同じ)
+            var board = PaperFx.Sheet(root, PaperFx.Panel, "sign", wood);
+            board.raycastTarget = false;
+            UiKit.Anchor(board.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(left, -bottom), new Vector2(left + w, -top));
+            var rim = board.gameObject.AddComponent<Outline>();
+            rim.effectColor = new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.45f); rim.effectDistance = new Vector2(1.5f, -1.5f); rim.useGraphicAlpha = false;
+            var bt = board.transform;
+            float pad = ph ? 16f : 28f;
+            float y = ph ? 12f : 22f;   // 上からの距離
+            var head = UiKit.Deco(bt, "帳　場", ph ? 18 : 22, PaperFx.BrassLight, TextAnchor.MiddleCenter);
+            head.characterSpacing = 8f; head.raycastTarget = false;
+            UiKit.Anchor(head.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -y - (ph ? 26f : 34f)), new Vector2(0f, -y));
+            y += ph ? 34f : 48f;
+            Rule(bt, pad, y); y += ph ? 10f : 20f;
+            y = Block(g, bt, pad, y, "取り除く", "デッキの 1 枚を永久に外す" + (ph ? " ・ 使うたび +25 G" : "\n使うたび 25 G 値上がり (ラン通算)"), rmPrice + " G", run.Gold >= rmPrice && run.Deck.Count > 5, delegate { g.ShopMode = "remove"; g.Rebuild(); });
+            y = Block(g, bt, pad, y, "鍛える", "デッキの 1 枚を鍛える" + (ph ? " ・ 使うたび +50 G" : "\n使うたび 50 G 値上がり (ラン通算)"), upPrice + " G", run.Gold >= upPrice, delegate { g.ShopMode = "upgrade"; g.Rebuild(); });
+            Rule(bt, pad, y); y += ph ? 10f : 20f;
+            int shelfN = shop.Gears != null ? shop.Gears.Count : 0;
+            int manaPrice = shop.ManaPrice ?? DeckRogue.Engine.Run.SHOP_MANA_PRICE;
+            var gearsHeld = DeckRogue.Engine.Run.GearsOf(run);
+            y = Block(g, bt, pad, y, "ギアの棚", shelfN + " 枠 ・ 魔素 10 ごと " + manaPrice + " G" + (ph ? "" : "\n持ち物 " + gearsHeld.Count + " / " + Gears.GEAR_CARRY_MAX), "棚を開く", true, delegate { g.ShopMode = "gears"; g.Rebuild(); });
+            if (!ph)
+            {
+                Rule(bt, pad, y); y += 20f;
+                var foot = UiKit.Txt(bt, "値札を押すと買う。札は押すと拡大。\n帳場の手続きはデッキの一覧が開く。", 12, PaperFx.PaperDim, TextAnchor.UpperLeft);
+                foot.raycastTarget = false; foot.textWrappingMode = TextWrappingModes.Normal;
+                UiKit.Anchor(foot.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(pad, -y - 48f), new Vector2(-pad, -y));
+            }
+        }
+
+        /// <summary>看板の仕切り線 (真鍮・薄く)</summary>
+        static void Rule(Transform parent, float pad, float y)
+        {
+            var r = UiKit.Pan(parent, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.3f), "rule");
+            r.raycastTarget = false;
+            UiKit.Anchor(r.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(pad, -y - 1f), new Vector2(-pad, -y));
+        }
+
+        /// <summary>看板の 1 区画: 名前 (紙色・太)・小さな二行 (淡い紙色)・真鍮のボタン (幅いっぱい)。返り値は次の区画の上端 (上からの距離)</summary>
+        static float Block(GameRoot g, Transform parent, float pad, float y, string name, string small, string button, bool enabled, Action onClick)
+        {
+            bool ph = UiKit.Phone;
+            var nm = UiKit.Deco(parent, name, ph ? 16 : 20, PaperFx.Paper, TextAnchor.MiddleLeft);
+            nm.raycastTarget = false;
+            float nmH = ph ? 24f : 30f;
+            UiKit.Anchor(nm.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(pad, -y - nmH), new Vector2(-pad, -y));
+            y += nmH;
+            var sm = UiKit.Txt(parent, small, ph ? 12 : 12, PaperFx.PaperDim, TextAnchor.UpperLeft);
+            sm.raycastTarget = false; sm.textWrappingMode = TextWrappingModes.Normal;
+            float smH = ph ? 18f : 40f;
+            UiKit.Anchor(sm.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(pad, -y - smH), new Vector2(-pad, -y));
+            y += smH + (ph ? 6f : 10f);
+            float bh = ph ? 40f : 44f;
+            var b = UiKit.Btn(parent, button, delegate { Audio.Ui("click"); onClick(); }, ph ? 15 : 16, enabled, PaperFx.BrassLight);
+            var le = b.GetComponent<LayoutElement>();
+            if (le != null) UnityEngine.Object.Destroy(le);
+            UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(pad, -y - bh), new Vector2(-pad, -y));
+            return y + bh + (ph ? 12f : 26f);
         }
 
         /// <summary>段 (案 B): 夜色の板 (α 0.72) と左上の真鍮の見出し札。返り値は板の RectTransform (中身は中央基準で置く)</summary>
-        static RectTransform Tier(RectTransform root, string label, float side, float top, float h)
+        static RectTransform Tier(RectTransform root, string label, float left, float right, float top, float h)
         {
             // 盤の rgba(15,17,32,.72)。Linear の合成では屋台の明るい暖色が 7% 透けるだけで茶色 (53,39,27) に出たので、ほぼ不透明 (0.98) の夜色にする
             var board = PaperFx.Sheet(root, PaperFx.Tag, "tier", new Color(PaperFx.Night.r, PaperFx.Night.g, PaperFx.Night.b, 0.98f));
             board.raycastTarget = false;
-            UiKit.Anchor(board.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(side, -top - h), new Vector2(-side, -top));
+            UiKit.Anchor(board.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(left, -top - h), new Vector2(-right, -top));
             var rim = board.gameObject.AddComponent<Outline>();
             rim.effectColor = new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.35f); rim.effectDistance = new Vector2(1f, -1f); rim.useGraphicAlpha = false;
             float tabW = label.Length * (UiKit.Phone ? 14f : 15f) + 28f;
@@ -267,15 +341,15 @@ namespace DeckRogue.Game
             art.anchoredPosition = new Vector2(pad + artS / 2f, -upper / 2f);
             if (art.sizeDelta.x > artS || art.sizeDelta.x <= 0f) art.sizeDelta = new Vector2(artS, artS);   // 遺物の絵は 32/64 の整数倍のまま
             float textL = pad + artS + (narrow ? 6f : 10f);
-            var nm = UiKit.Deco(tile, name, narrow ? 14 : (ph ? 16 : 18), PaperFx.Ink, TextAnchor.MiddleLeft);
+            var nm = UiKit.Deco(tile, name, narrow ? 14 : (ph ? 16 : 20), PaperFx.Ink, TextAnchor.MiddleLeft);
             nm.textWrappingMode = TextWrappingModes.NoWrap; nm.overflowMode = TextOverflowModes.Ellipsis; nm.raycastTarget = false;
             if (narrow) UiKit.Anchor(nm.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(textL, -upper), new Vector2(-pad, 0f));
             else
             {
-                UiKit.Anchor(nm.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(textL, ph ? -30f : -36f), new Vector2(-pad, ph ? -6f : -8f));
+                UiKit.Anchor(nm.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(textL, ph ? -30f : -40f), new Vector2(-pad, ph ? -6f : -4f));   // PC の 20px は 36 の高さが要る (28 だと Ellipsis で名前が丸ごと消えた)
                 var sm = UiKit.Txt(tile, sub, ph ? 12 : 13, PaperFx.InkSoft, TextAnchor.UpperLeft);
                 sm.textWrappingMode = TextWrappingModes.Normal; sm.overflowMode = TextOverflowModes.Ellipsis; sm.raycastTarget = false;
-                UiKit.Anchor(sm.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(textL, -upper), new Vector2(-pad, ph ? -30f : -36f));
+                UiKit.Anchor(sm.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(textL, -upper), new Vector2(-pad, ph ? -30f : -40f));
             }
             float priceW = Mathf.Min(176f, w - pad * 2f);
             var wrap = UiKit.NewRect("pricewrap", tile);
@@ -421,11 +495,6 @@ namespace DeckRogue.Game
             return null;
         }
 
-        static void ServiceBtn(Transform parent, string label, bool enabled, Action onClick)
-        {
-            var b = UiKit.Btn(parent, label, onClick, 17, enabled);
-            UiKit.Le(b, -1f, 48f, -1f, 48f);
-        }
 
         /// <summary>値札。onBuy があればボタン (「N G で買う」。2026-09-22 札のタップは拡大になったので、買うのはここだけ)。指で押せる 48 の高さ</summary>
         public static void PriceTag(RectTransform cell, int price, string over, bool affordable, Action onBuy = null, float width = 176f, bool star = false, string text = null)
