@@ -1,0 +1,34 @@
+{
+  "imp-baseline-clock.json": {
+    "bytes": 486558,
+    "sha256": "49230caf04b903b7b3bc73ddb5076dbba366bb0aaa024c5c3c7984a8e5d471a5"
+  },
+  "imp-baseline.mp4": {
+    "bytes": 451055,
+    "sha256": "d13b5365b48612a5cdb0a47223eca8bf91e7f8c36f8cb97bf88721bdf2534172"
+  },
+  "imp-combined-clock.json": {
+    "bytes": 488451,
+    "sha256": "2b347606ba8706c5cf5bf7a019f3d88b343fa050e21ce2b372d4fcdb3b0c528a"
+  },
+  "imp-combined.mp4": {
+    "bytes": 443650,
+    "sha256": "0db19ea2245a951f54e0f80353c974fc3d66a22be25858fa95ec513fb11fc25b"
+  },
+  "light-baseline-clock.json": {
+    "bytes": 206586,
+    "sha256": "96e59629e0ad1b367b4b73fa6ca1682339b644c055504d39287d57df8ce42d70"
+  },
+  "light-baseline.mp4": {
+    "bytes": 349351,
+    "sha256": "79632ddca924b7ffcdbf3d5f5a3560387c02ac23cf3d50c5dd1bc21e84c0d22f"
+  },
+  "light-combined-clock.json": {
+    "bytes": 213757,
+    "sha256": "074f4bd49f01c8213ef305aae22c3d95b88b23a1280b50cf755cebda5e79d13a"
+  },
+  "light-combined.mp4": {
+    "bytes": 328852,
+    "sha256": "0a5d936d0f0a044edca85d19aed048e7c532f9f31e6a0bf726659f4fdd9492a9"
+  }
+}
