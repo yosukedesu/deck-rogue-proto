@@ -1,0 +1,447 @@
+{
+  "imp-actor-only": {
+    "frames": 55,
+    "activeFrames": [],
+    "factors": [],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0,
+    "eventsEqual": true,
+    "maxDifferences": {
+      "worldIntensity": 0.00022425999999953206,
+      "worldAge": 9.599999999942987e-07,
+      "hurt": 0
+    }
+  },
+  "imp-baseline": {
+    "frames": 55,
+    "activeFrames": [],
+    "factors": [],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0
+  },
+  "imp-cancel": {
+    "frames": 55,
+    "activeFrames": [
+      36,
+      37
+    ],
+    "factors": [
+      0.25
+    ],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0
+  },
+  "imp-combined": {
+    "frames": 55,
+    "activeFrames": [
+      36,
+      37,
+      38,
+      39
+    ],
+    "factors": [
+      0.25
+    ],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0,
+    "eventsEqual": true,
+    "maxDifferences": {
+      "worldIntensity": 0.00022425999999953206,
+      "worldAge": 1.4320999999969941e-06,
+      "hurt": 0
+    }
+  },
+  "imp-floor-only": {
+    "frames": 55,
+    "activeFrames": [
+      36,
+      37,
+      38,
+      39
+    ],
+    "factors": [
+      0.25
+    ],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0,
+    "eventsEqual": true,
+    "maxDifferences": {
+      "worldIntensity": 0.00022411000000044368,
+      "worldAge": 1.668999999981935e-06,
+      "hurt": 0
+    }
+  },
+  "imp-reset": {
+    "frames": 55,
+    "activeFrames": [],
+    "factors": [],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0,
+    "eventsEqual": true,
+    "maxDifferences": {
+      "worldIntensity": 0.00022411000000044368,
+      "worldAge": 1.4304999999964485e-06,
+      "hurt": 0
+    }
+  },
+  "imp-shader-one": {
+    "frames": 55,
+    "activeFrames": [],
+    "factors": [],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0,
+    "eventsEqual": true,
+    "maxDifferences": {
+      "worldIntensity": 0,
+      "worldAge": 2.509999999511514e-07,
+      "hurt": 0
+    }
+  },
+  "light-actor-only": {
+    "frames": 70,
+    "activeFrames": [],
+    "factors": [],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0,
+    "eventsEqual": true,
+    "maxDifferences": {
+      "worldIntensity": 0.00038751999999941944,
+      "worldAge": 3.815300000001298e-06,
+      "hurt": 0
+    }
+  },
+  "light-baseline": {
+    "frames": 70,
+    "activeFrames": [],
+    "factors": [],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0
+  },
+  "light-cancel": {
+    "frames": 70,
+    "activeFrames": [
+      11
+    ],
+    "factors": [
+      0.25
+    ],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0
+  },
+  "light-combined": {
+    "frames": 70,
+    "activeFrames": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30
+    ],
+    "factors": [
+      0.25
+    ],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0,
+    "eventsEqual": true,
+    "maxDifferences": {
+      "worldIntensity": 0.00038751999999941944,
+      "worldAge": 3.815300000001298e-06,
+      "hurt": 0
+    }
+  },
+  "light-floor-only": {
+    "frames": 70,
+    "activeFrames": [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30
+    ],
+    "factors": [
+      0.25
+    ],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0,
+    "eventsEqual": true,
+    "maxDifferences": {
+      "worldIntensity": 0.00038751999999941944,
+      "worldAge": 3.825999999984564e-06,
+      "hurt": 0
+    }
+  },
+  "light-reset": {
+    "frames": 70,
+    "activeFrames": [],
+    "factors": [],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0,
+    "eventsEqual": true,
+    "maxDifferences": {
+      "worldIntensity": 0.00038751999999941944,
+      "worldAge": 3.825999999984564e-06,
+      "hurt": 0
+    }
+  },
+  "light-shader-one": {
+    "frames": 70,
+    "activeFrames": [],
+    "factors": [],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0,
+    "eventsEqual": true,
+    "maxDifferences": {
+      "worldIntensity": 0.00038751999999941944,
+      "worldAge": 3.825999999984564e-06,
+      "hurt": 0
+    }
+  },
+  "monk-self": {
+    "frames": 100,
+    "activeFrames": [],
+    "factors": [],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0
+  },
+  "monk-squire": {
+    "frames": 100,
+    "activeFrames": [],
+    "factors": [],
+    "bindings": [
+      [
+        "StageBatch_02",
+        0,
+        "moss_turf_128",
+        "DeckRogue/OwnedFloorModule"
+      ],
+      [
+        "StageBatch_02",
+        1,
+        "earth_128",
+        "DeckRogue/OwnedFloorModule"
+      ]
+    ],
+    "finalCount": 0.0
+  }
+}

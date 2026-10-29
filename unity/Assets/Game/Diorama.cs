@@ -421,6 +421,7 @@ namespace DeckRogue.Game
                         if(NightForestPreview)lanternGround=mr.bounds.center+Vector3.back*PreviewFloat("warmForward",1.5f);
                     }
                 }
+                OwnedFloorReceive.RegisterIntegrated(full);
                 _fullGround=new FullStageGround(full);
                 if(lanternGround.HasValue) {
                     var p=lanternGround.Value;float h=_fullGround.Height(p.x,p.z);p.y=PreviewFloat("warmWorldY",(float.IsNaN(h)?0:h)+PreviewFloat("warmHeight",.9f));

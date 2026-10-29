@@ -1,0 +1,242 @@
+{
+  "imp-private-multiplier1-vs-original": [
+    {
+      "frame": 0,
+      "maxChannel": 0,
+      "meanChannel": 0.0,
+      "changedPixels": 0
+    },
+    {
+      "frame": 36,
+      "maxChannel": 0,
+      "meanChannel": 0.0,
+      "changedPixels": 0
+    },
+    {
+      "frame": 37,
+      "maxChannel": 0,
+      "meanChannel": 0.0,
+      "changedPixels": 0
+    },
+    {
+      "frame": 39,
+      "maxChannel": 0,
+      "meanChannel": 0.0,
+      "changedPixels": 0
+    },
+    {
+      "frame": 40,
+      "maxChannel": 1,
+      "meanChannel": 2.8935185185185184e-06,
+      "changedPixels": 8
+    }
+  ],
+  "imp-floor-only": [
+    {
+      "frame": 36,
+      "floorMeanBaselineRGB": [
+        165.23684782608694,
+        83.71478260869566,
+        64.88826086956522
+      ],
+      "floorMeanCandidateRGB": [
+        159.5442391304348,
+        77.78271739130435,
+        62.744565217391305
+      ],
+      "frameMeanAbs": 0.19051142939814814
+    },
+    {
+      "frame": 37,
+      "floorMeanBaselineRGB": [
+        167.1361956521739,
+        90.77054347826088,
+        67.96336956521739
+      ],
+      "floorMeanCandidateRGB": [
+        161.13315217391303,
+        84.66565217391305,
+        65.60815217391304
+      ],
+      "frameMeanAbs": 0.19358977141203704
+    },
+    {
+      "frame": 39,
+      "floorMeanBaselineRGB": [
+        98.31554347826086,
+        38.75945652173913,
+        47.711630434782606
+      ],
+      "floorMeanCandidateRGB": [
+        97.99195652173913,
+        38.255434782608695,
+        47.508478260869566
+      ],
+      "frameMeanAbs": 0.08296875
+    }
+  ],
+  "imp-combined": [
+    {
+      "frame": 36,
+      "floorMeanBaselineRGB": [
+        165.23684782608694,
+        83.71478260869566,
+        64.88826086956522
+      ],
+      "floorMeanCandidateRGB": [
+        145.3748913043478,
+        65.59184782608696,
+        57.34195652173913
+      ],
+      "frameMeanAbs": 0.5558192274305556
+    },
+    {
+      "frame": 37,
+      "floorMeanBaselineRGB": [
+        167.1361956521739,
+        90.77054347826088,
+        67.96336956521739
+      ],
+      "floorMeanCandidateRGB": [
+        143.3567391304348,
+        68.51608695652173,
+        58.58945652173913
+      ],
+      "frameMeanAbs": 0.6399714265046296
+    },
+    {
+      "frame": 39,
+      "floorMeanBaselineRGB": [
+        98.31554347826086,
+        38.75945652173913,
+        47.711630434782606
+      ],
+      "floorMeanCandidateRGB": [
+        96.48565217391304,
+        36.772608695652174,
+        46.89826086956522
+      ],
+      "frameMeanAbs": 0.14545392071759258
+    }
+  ],
+  "light-private-multiplier1-vs-original": [
+    {
+      "frame": 0,
+      "maxChannel": 3,
+      "meanChannel": 3.327546296296296e-05,
+      "changedPixels": 59
+    },
+    {
+      "frame": 11,
+      "maxChannel": 0,
+      "meanChannel": 0.0,
+      "changedPixels": 0
+    },
+    {
+      "frame": 18,
+      "maxChannel": 0,
+      "meanChannel": 0.0,
+      "changedPixels": 0
+    },
+    {
+      "frame": 25,
+      "maxChannel": 0,
+      "meanChannel": 0.0,
+      "changedPixels": 0
+    },
+    {
+      "frame": 31,
+      "maxChannel": 0,
+      "meanChannel": 0.0,
+      "changedPixels": 0
+    }
+  ],
+  "light-floor-only": [
+    {
+      "frame": 11,
+      "floorMeanBaselineRGB": [
+        81.40927083333334,
+        72.2759375,
+        78.76302083333333
+      ],
+      "floorMeanCandidateRGB": [
+        56.08708333333333,
+        56.04541666666667,
+        67.2146875
+      ],
+      "frameMeanAbs": 0.3382986111111111
+    },
+    {
+      "frame": 18,
+      "floorMeanBaselineRGB": [
+        81.81177083333333,
+        72.4859375,
+        78.991875
+      ],
+      "floorMeanCandidateRGB": [
+        56.041979166666664,
+        55.95291666666667,
+        67.22104166666666
+      ],
+      "frameMeanAbs": 0.3489080584490741
+    },
+    {
+      "frame": 25,
+      "floorMeanBaselineRGB": [
+        81.79010416666667,
+        72.49177083333333,
+        78.8703125
+      ],
+      "floorMeanCandidateRGB": [
+        55.98770833333333,
+        55.99041666666667,
+        67.14833333333333
+      ],
+      "frameMeanAbs": 0.3454908130787037
+    }
+  ],
+  "light-combined": [
+    {
+      "frame": 11,
+      "floorMeanBaselineRGB": [
+        81.40927083333334,
+        72.2759375,
+        78.76302083333333
+      ],
+      "floorMeanCandidateRGB": [
+        28.840416666666666,
+        36.78458333333333,
+        44.11375
+      ],
+      "frameMeanAbs": 1.419710648148148
+    },
+    {
+      "frame": 18,
+      "floorMeanBaselineRGB": [
+        81.81177083333333,
+        72.4859375,
+        78.991875
+      ],
+      "floorMeanCandidateRGB": [
+        28.91208333333333,
+        36.77885416666667,
+        44.067083333333336
+      ],
+      "frameMeanAbs": 1.4269871238425926
+    },
+    {
+      "frame": 25,
+      "floorMeanBaselineRGB": [
+        81.79010416666667,
+        72.49177083333333,
+        78.8703125
+      ],
+      "floorMeanCandidateRGB": [
+        28.824166666666667,
+        36.7396875,
+        44.084583333333335
+      ],
+      "frameMeanAbs": 1.4265162037037038
+    }
+  ]
+}

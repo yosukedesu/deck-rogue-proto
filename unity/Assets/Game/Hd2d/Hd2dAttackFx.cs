@@ -35,7 +35,7 @@ namespace DeckRogue.Game
         static readonly Dictionary<string, Color[]> _palettes = new Dictionary<string, Color[]>();
         public static string LastFailure { get; private set; } public static int Submitted { get; private set; } public static int Recycled { get; private set; } public static int StaleContacts { get; private set; }
         public static int ActiveCount { get { int n = 0; foreach (var s in Pool) if (s != null && s.Busy) n++; return n; } }
-        internal static bool ReviewDisableLightBoltWorld;internal static float LightBoltActorReceiveCandidate=1;
+        internal static bool ReviewDisableLightBoltWorld;internal static float LightBoltActorReceiveCandidate=1;internal static float LightBoltFloorReceiveCandidate=1;
         internal static bool CanopyReview;
         internal static int CanopyReviewMode;internal static bool CanopyEncodedCandidate;
         internal static JArray CaptureCanopyProjection(){
@@ -439,6 +439,7 @@ namespace DeckRogue.Game
                             {
                                 captured.Light = StageFx.BeginContractAttackLight(t.Target, t.Impact?.Target, e, captured.Target, captured.Feet, captured.Height, captured.LightSpec, 0, false,
                                     () => Current(captured, v, e) && Stage.ImpactTargetCurrent(t.Target, t.Impact), 1f, captured.LightPower, () => Time.time - captured.Started);
+                                if(ownedLightBolt)StageFx.BindFloorReceiver(captured.Light,2,LightBoltFloorReceiveCandidate,()=>Current(captured,v,e)&&Stage.ImpactTargetCurrent(t.Target,t.Impact));
                                 if(ownedLightBolt)StageFx.BindAttackReceiver(captured.Light,t.Impact?.Target,2,LightBoltActorReceiveCandidate,()=>Current(captured,v,e)&&Stage.ImpactTargetCurrent(t.Target,t.Impact));
                                 captured.Light?.Land();
                             }

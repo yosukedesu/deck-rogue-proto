@@ -620,6 +620,9 @@ namespace DeckRogue.Game
             FireContinuousFx.ImpReviewMode=int.TryParse(Get("impprobe"),out int impProbe)?impProbe:0;
             Hd2dAttackFx.ReviewDisableLightBoltWorld=Get("boltworld")=="0";
             BoundedContactFx.OwnedReview=Get("ownedaudit")=="1";BoundedContactFx.OwnedReviewMode=int.TryParse(Get("ownedprobe"),out int ownedProbe)?ownedProbe:0;Tween.ReviewSuppressScreenFlash=Get("screenflash")=="0";Tween.ReviewScreenFlashes.Clear();
+            FireContinuousFx.ImpFloorReceiveCandidate=float.TryParse(Get("impfloor"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float impFloor)?Mathf.Clamp(impFloor,.01f,1):1;
+            Hd2dAttackFx.LightBoltFloorReceiveCandidate=float.TryParse(Get("boltfloor"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float boltFloor)?Mathf.Clamp(boltFloor,.01f,1):1;
+            OwnedFloorReceive.SetProbe(Get("floorprobe")=="1");
             FireContinuousFx.ImpActorReceiveCandidate=float.TryParse(Get("impreceive"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float impReceive)?Mathf.Clamp(impReceive,.01f,1):1;
             Hd2dAttackFx.LightBoltActorReceiveCandidate=float.TryParse(Get("boltreceive"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float boltReceive)?Mathf.Clamp(boltReceive,.01f,1):1;
             Hd2dAttackFx.CanopyEncodedCandidate=Get("canopyencoded")=="1";
