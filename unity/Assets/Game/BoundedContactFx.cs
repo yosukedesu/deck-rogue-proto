@@ -10,13 +10,32 @@ namespace DeckRogue.Game {
   sealed class Slot {
    public Transform Root;public Mesh Mesh;public MeshRenderer Renderer;public G.Buffer Geometry;
    public Vector3[] Vertices;public Vector2[] UV,Mode;public Color[] Colors;
+   public bool UseCold;public Hd2d.NativeEffect ColdEffect;
    public bool Busy,Landed;public int Version,Particles;public long Serial;public float Started,Expected,Emission;public G.Profile Profile;public ResolvedCombatFx.Ticket Ticket;
   }
   static readonly Slot[] Pool=new Slot[24];static readonly MaterialPropertyBlock Props=new MaterialPropertyBlock();
   static Material _material;static Color[] _primary,_core;static int _epoch;static long _serial;
+  static Material _coldMaterial;static Texture2D _coldDensity;
+  static bool ReadyCold() {
+   if(_coldMaterial!=null)return true;
+   var shader=Resources.Load<Shader>("Shaders/Hd2dColdSweepSurface");
+   _coldDensity=Resources.Load<Texture2D>("Art/fx/cold-frost-density-v1");
+   if(shader==null || !shader.isSupported || _coldDensity==null || _coldDensity.width!=1774 || _coldDensity.height!=887 || _coldDensity.mipmapCount!=1){LastFailure="cold297_shader_or_original_density_unavailable";return false;}
+   _coldMaterial=new Material(shader);return true;
+  }
   public static string LastFailure {get;private set;}
   public static int Submitted {get;private set;}public static int Recycled {get;private set;}public static int StaleContacts {get;private set;}
   public static int ActiveCount {get{int n=0;foreach(var s in Pool)if(s!=null&&s.Busy)n++;return n;}}
+  internal static int VisibleReviewDraws {get{int n=0;foreach(var s in Pool)if(s!=null&&s.Renderer.enabled&&s.Root.gameObject.activeInHierarchy)n++;return n;}}
+  internal static JArray CaptureReviewState(){
+   var result=new JArray();foreach(var s in Pool)if(s?.Busy==true){
+    int visible=0;foreach(var c in s.Colors)if(c.a>0)visible++;
+    var lo=new Vector2(float.PositiveInfinity,float.PositiveInfinity);var hi=new Vector2(float.NegativeInfinity,float.NegativeInfinity);
+    for(int i=0;i<s.Vertices.Length;i++)if(s.Colors[i].a>0){var p=Stage.Camera.WorldToScreenPoint(s.Root.TransformPoint(s.Vertices[i]));lo=Vector2.Min(lo,p);hi=Vector2.Max(hi,p);}
+
+    result.Add(new JObject{["scale"]=s.Root.localScale.x,["emission"]=s.Emission,["pixelBounds"]=visible>0?new JArray(lo.x,lo.y,hi.x,hi.y):new JArray(),["triangleIndices"]=s.Mesh.triangles.Length,["serial"]=s.Serial,["family"]=s.Profile.Id,["cold297"]=s.UseCold,["committed"]=s.Ticket?.ColdSweepBinding?.Committed==true,["landed"]=s.Landed,["age"]=s.Landed?Time.time-s.Started:Time.time-s.Expected,["enabled"]=s.Renderer.enabled && s.Root.gameObject.activeInHierarchy,["verticesWithAlpha"]=visible,["shader"]=s.Renderer.sharedMaterial?.shader?.name,["textureWidth"]=s.UseCold?_coldDensity.width:0,["textureHeight"]=s.UseCold?_coldDensity.height:0});
+   }return result;
+  }
   public static bool IsFamily(string family)=>G.Find(family)!=null;
   public static bool Eligible(ResolvedCombatFx.Ticket ticket)=>ticket!=null&&IsFamily(ticket.AttackFamily);
   public static float Duration(string family)=>IsFamily(family)?(float)G.End:0f;
@@ -48,7 +67,7 @@ namespace DeckRogue.Game {
    if(Math.Abs(dot(r,r)-1)>1e-4||Math.Abs(dot(u,u)-1)>1e-4||Math.Abs(dot(f,f)-1)>1e-4||Math.Abs(dot(r,u))>1e-4||Math.Abs(dot(r,f))>1e-4||Math.Abs(dot(u,f))>1e-4)return false;
    for(int x=-1;x<=1;x+=2)for(int y=-1;y<=1;y+=2)if(!Finite(point+basis*(new Vector3(x*.5f,y*.5f,0)*scale)))return false;return true;
   }
-  static void Retire(Slot s,int version){if(s==null||s.Version!=version)return;s.Busy=false;if(s.Renderer!=null)s.Renderer.enabled=false;if(s.Root!=null)s.Root.gameObject.SetActive(false);}
+  static void Retire(Slot s,int version){if(s==null||s.Version!=version)return;s.Busy=false;s.UseCold=false;s.ColdEffect?.ConfigureColdSweepCommittedContact?.Invoke(false);s.Ticket=null;if(s.Renderer!=null)s.Renderer.enabled=false;if(s.Root!=null)s.Root.gameObject.SetActive(false);}
   public static void Cancel(){_epoch++;foreach(var s in Pool)if(s!=null){Retire(s,s.Version);s.Version++;}}
   static Slot Acquire(){
    int limit=GfxQuality.Level==GfxLevel.Low?12:24;Slot slot=null;
@@ -69,8 +88,16 @@ namespace DeckRogue.Game {
   }
   static bool Current(Slot s,int version,int epoch)=>s!=null&&s.Busy&&s.Version==version&&epoch==_epoch&&s.Root!=null;
   static void Draw(Slot s,float age){
-   G.Sample(s.Geometry,s.Profile,age,s.Particles);var b=s.Geometry;bool visible=false;
+   Hd2d.NativeBatch cold=null;
+   if(s.UseCold){s.ColdEffect.ConfigureColdSweepCommittedContact(s.Ticket?.ColdSweepBinding?.Committed==true);s.ColdEffect.Sample(age);cold=s.ColdEffect.Batches[0];}
+   else G.Sample(s.Geometry,s.Profile,age,s.Particles);
+   var b=s.Geometry;bool visible=false;
    for(int i=0;i<s.Vertices.Length;i++){
+    if(cold!=null){
+     var p=cold.Position(i);float alpha=cold.Alpha(i);var uv=cold.Uv(i);var mode=cold.Effect(i);
+     if(!p.IsFinite() || !G.Finite(alpha))throw new InvalidOperationException("cold297_nonfinite_gpu_input");
+     s.Vertices[i]=p;s.UV[i]=uv;s.Mode[i]=mode;s.Colors[i]=new Color(1,1,1,alpha);visible|=alpha>0;continue;
+    }
     if(!G.Finite(b.X[i])||!G.Finite(b.Y[i])||!G.Finite(b.Alpha[i]))throw new InvalidOperationException("nonfinite_gpu_input");
     s.Vertices[i]=new Vector3((float)b.X[i],(float)b.Y[i],0);s.UV[i]=new Vector2((float)b.U[i],(float)b.V[i]);s.Mode[i]=new Vector2((float)b.Soft[i],0);s.Colors[i]=new Color(s.Emission,s.Emission,s.Emission,(float)b.Alpha[i]);visible|=b.Alpha[i]>0;
    }
@@ -78,6 +105,7 @@ namespace DeckRogue.Game {
    // Palette values are already linear. SetColor would decode sRGB a second time.
    var primary=_primary[(int)s.Profile.Material];var core=_core[(int)s.Profile.Material];
    Props.Clear();Props.SetVector("_Primary",new Vector4(primary.r,primary.g,primary.b,primary.a));Props.SetVector("_Core",new Vector4(core.r,core.g,core.b,core.a));s.Renderer.SetPropertyBlock(Props);
+   if(s.UseCold){Props.SetTexture("_BaseMap",_coldDensity);Props.SetFloat("_Age",age);Props.SetFloat("_Gain",s.Emission);s.Renderer.SetPropertyBlock(Props);}
   }
   static IEnumerator Life(Slot s,int version,int epoch){
    try{while(Current(s,version,epoch)){
@@ -94,18 +122,29 @@ namespace DeckRogue.Game {
    float height=t.ContactVisibleHeight;var v=t.Visual;float size=v?.Size??1f,emission=v?.Emission??1f,particles=v?.Particles??1f;float scale=height*size;
    if(!Finite(t.Position)||!G.Finite(height)||height<=0||!G.Finite(scale)||scale<=0||!G.Finite(emission)||emission<0||!G.Finite(particles)){t.RenderFallbackReason="bounded_contact_invalid_captured_geometry";return null;}
    if(!Ready()){t.RenderFallbackReason=LastFailure;return null;}
+   bool ownedCold=!neutralFallback && t.ColdSweepBinding?.Eligible(t)==true;
+   if(ownedCold && !ReadyCold()){t.RenderFallbackReason=LastFailure;return null;}
    var basis=Stage.Camera.transform.rotation;if(!CaptureValid(t.Position,scale,basis)){t.RenderFallbackReason="bounded_contact_invalid_camera_basis";return null;}
    Slot s=null;
    try{
     s=Acquire();s.Busy=true;s.Landed=false;s.Expected=Time.time;s.Emission=emission;s.Profile=G.Find(neutralFallback?"minimal_neutral_contact":t.AttackFamily);s.Particles=G.MoteCount(particles);s.Ticket=t;
     s.Root.position=t.Position;s.Root.rotation=basis;s.Root.localScale=Vector3.one*scale;s.Root.gameObject.SetActive(true);s.Renderer.sharedMaterial=_material;
+    s.UseCold=ownedCold;
+    if(ownedCold){
+     if(s.ColdEffect==null)s.ColdEffect=Hd2d.Hd2dColdSweepGeometry.Create();
+     s.ColdEffect.ConfigureParticleGain?.Invoke(particles);
+     s.ColdEffect.ConfigureSource?.Invoke(Quaternion.Inverse(basis)*(t.BeamOrigin-t.Position)/scale);
+     s.ColdEffect.ConfigureColdSweepCommittedContact(false);
+     s.Renderer.sharedMaterial=_coldMaterial;
+     Debug.Log("[ColdSweep297] owned contact uid="+t.SourceUid+" target="+t.Target+" texture="+_coldDensity.width+"x"+_coldDensity.height);
+    }
     int version=s.Version,epoch=_epoch;var captured=s;
     var handle=new WorldBattleFx.AttackPlayback{
      Contact=()=>{
       if(!Current(captured,version,epoch)){StaleContacts++;t.RenderFallbackReason="bounded_contact_stale_pool_lease";return false;}
       if(captured.Landed)return true;
       if(!G.Finite(Time.time)||!Tween.SchedulingAllowed||!Stage.CombatWorld||Stage.Camera==null||!Stage.Camera.isActiveAndEnabled){t.RenderFallbackReason="bounded_contact_environment_unavailable";Retire(captured,version);return false;}
-      try{captured.Started=Time.time;captured.Landed=true;Draw(captured,0);t.AuthoredRenderer=neutralFallback?"bounded-neutral-fallback-r1":"bounded-contact-r1";t.AuthoredTier=v?.Tier;t.AuthoredTierReason=neutralFallback?"neutral_receipt_fallback":"composed_receipt_contact";return true;}
+      try{captured.Started=Time.time;captured.Landed=true;Draw(captured,0);t.AuthoredRenderer=ownedCold?"cold-sweep-contact-r297":neutralFallback?"bounded-neutral-fallback-r1":"bounded-contact-r1";t.AuthoredTier=v?.Tier;t.AuthoredTierReason=neutralFallback?"neutral_receipt_fallback":"composed_receipt_contact";return true;}
       catch(Exception e){t.RenderFallbackReason="bounded_contact_upload_failed:"+e.GetType().Name;Retire(captured,version);return false;}
      },
      Read=()=>Current(captured,version,epoch)?new{family=captured.Profile.Id,shape=captured.Profile.Form.ToString(),surface=captured.Profile.Material.ToString(),renderer="bounded-contact-r1",landed=captured.Landed,age=captured.Landed?Time.time-captured.Started:0f,visibleEnd=G.End,particleCount=captured.Particles,worldTransport=false,anticipation=0f,sceneLights=0,version,serial=captured.Serial,damageTier=t.Intensity?.Tier,renderTier=v?.Tier}:null

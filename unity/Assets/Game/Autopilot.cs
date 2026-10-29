@@ -1066,7 +1066,7 @@ namespace DeckRogue.Game
                         var shot = ScreenCapture.CaptureScreenshotAsTexture();
                         try { File.WriteAllBytes(Path.Combine(continuousDir,"continuous-"+i.ToString("D4")+".png"),shot.EncodeToPNG()); }
                         finally { Destroy(shot); }
-                        frameLog.Add(new JObject { ["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["delta"]=Time.deltaTime,["hp"]=g.Rs.Combat.Enemies[0].Hp,["activeFx"]=Hd2dAttackFx.ActiveCount,["visibleDraws"]=Hd2dAttackFx.VisibleReviewDraws,["effects"]=Hd2dAttackFx.CaptureReviewState() });
+                        frameLog.Add(new JObject { ["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["delta"]=Time.deltaTime,["hp"]=g.Rs.Combat.Enemies[0].Hp,["activeFx"]=Hd2dAttackFx.ActiveCount,["visibleDraws"]=Hd2dAttackFx.VisibleReviewDraws,["effects"]=Hd2dAttackFx.CaptureReviewState(),["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws,["boundedEffects"]=BoundedContactFx.CaptureReviewState() });
                     }
                     File.WriteAllText(Path.Combine(continuousDir,"continuous-clock.json"),frameLog.ToString());
                 }

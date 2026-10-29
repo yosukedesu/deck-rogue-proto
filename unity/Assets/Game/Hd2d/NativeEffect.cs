@@ -11,6 +11,7 @@ internal sealed class NativeEffect
 
 	public Action<double> Sample;
     public Action<bool> ConfigureLightBoltCommittedContact;
+    public Action<bool> ConfigureColdSweepCommittedContact;
 
 	public Action<Vector3>? ConfigureSource;
 

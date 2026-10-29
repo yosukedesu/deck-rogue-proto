@@ -27,7 +27,8 @@ Shader "DeckRogue/Hd2dLightBoltOpticalSurface" {
      coverage=(1-smoothstep(.12,.43,abs(i.uv.y-.5)))*smoothstep(0,.16,i.uv.x)*(1-smoothstep(.65,1,i.uv.x));
      rgb=_RoleCore.rgb;
     }else{
-     float4 optical=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,lerp(float2(.15,.34),float2(.86,.72),float2(i.uv.x,1-i.uv.y)));
+     float2 imageUV=lerp(float2(.15,.34),float2(.86,.72),float2(i.uv.x,1-i.uv.y));
+     float4 optical=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,float2(imageUV.x,1-imageUV.y));
      coverage=optical.a;rgb=optical.rgb;
     }
     float edge=min(min(i.uv.x,1-i.uv.x),min(i.uv.y,1-i.uv.y));
