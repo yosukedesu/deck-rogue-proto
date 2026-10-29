@@ -91,7 +91,7 @@ namespace DeckRogue.Game {
     }
     d.Renderer.enabled=visible;if(!visible)continue;d.Mesh.SetVertices(d.Vertices);d.Mesh.SetColors(d.Colors);
     if(s.Family=="beam"){d.Mesh.SetUVs(0,d.UV);d.Mesh.bounds=new Bounds((lo+hi)*.5f,hi-lo+Vector3.one*.001f);}
-    Props.Clear();Props.SetTexture("_BaseMap",s.Family=="claw"?_slash:s.Family=="fang"?_fang:_blunt);Props.SetFloat("_UseTexture",j==0?1:0);Props.SetFloat("_BluntAccent",s.Family=="blunt"?1:0);Props.SetFloat("_UseBeam",s.Family=="beam" && j==0?1:0);Props.SetFloat("_VisualAge",(float)visualAge);Props.SetFloat("_Gain",j==2?s.Particles:s.Emission);d.Renderer.SetPropertyBlock(Props);
+    Props.Clear();var baseMap=s.Family=="claw"?_slash:s.Family=="fang"?_fang:_blunt;if(baseMap!=null)Props.SetTexture("_BaseMap",baseMap); // 光線 (beam) は絵を使わず、打撃の絵がまだ読まれていないと null (2026-10-30 歩哨の三つ子で ArgumentNullException)Props.SetFloat("_UseTexture",j==0?1:0);Props.SetFloat("_BluntAccent",s.Family=="blunt"?1:0);Props.SetFloat("_UseBeam",s.Family=="beam" && j==0?1:0);Props.SetFloat("_VisualAge",(float)visualAge);Props.SetFloat("_Gain",j==2?s.Particles:s.Emission);d.Renderer.SetPropertyBlock(Props);
    }
   }
   static float LightAge(Slot s)=>s.Landed?Time.time-s.Started:.222f;
