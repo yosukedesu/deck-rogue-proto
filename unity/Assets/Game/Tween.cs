@@ -699,9 +699,13 @@ namespace DeckRogue.Game
         }
 
         /// <summary>画面全体の色の点滅 (被弾の赤など)</summary>
+        internal static bool ReviewSuppressScreenFlash;
+        internal static readonly System.Collections.Generic.List<object> ReviewScreenFlashes=new System.Collections.Generic.List<object>();
         public static void ScreenFlash(RectTransform layer, Color color, float dur = 0.25f)
         {
             if (layer == null) return;
+            if(BoundedContactFx.OwnedReview)ReviewScreenFlashes.Add(new{time=Time.time,color=new[]{color.r,color.g,color.b,color.a},dur,suppressed=ReviewSuppressScreenFlash});
+            if(ReviewSuppressScreenFlash)return;
             var rt = UiKit.NewRect("flash", layer);
             UiKit.Stretch(rt, 0f, 0f, 0f, 0f);
             var img = rt.gameObject.AddComponent<Image>();

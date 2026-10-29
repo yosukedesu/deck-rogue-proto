@@ -617,6 +617,10 @@ namespace DeckRogue.Game
             _stateSpec = spec;
             HD2DFlags.ApplyState(kv);
             ColdSweepFocusPass.Enabled=Get("coldfocus")!="0";
+            FireContinuousFx.ImpReviewMode=int.TryParse(Get("impprobe"),out int impProbe)?impProbe:0;
+            Hd2dAttackFx.ReviewDisableLightBoltWorld=Get("boltworld")=="0";
+            BoundedContactFx.OwnedReview=Get("ownedaudit")=="1";BoundedContactFx.OwnedReviewMode=int.TryParse(Get("ownedprobe"),out int ownedProbe)?ownedProbe:0;Tween.ReviewSuppressScreenFlash=Get("screenflash")=="0";Tween.ReviewScreenFlashes.Clear();
+            Hd2dAttackFx.CanopyReview=Get("canopyaudit")=="1";Hd2dAttackFx.CanopyReviewMode=int.TryParse(Get("canopyprobe"),out int canopyProbe)?canopyProbe:0;
             HealContinuousFx.MonkReceiveScale=float.TryParse(Get("monkreceive"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float monkReceive)?Mathf.Clamp01(monkReceive):.08f;
             BoundedContactFx.ColdReviewMode=int.TryParse(Get("coldprobe"),out int coldProbe)?Mathf.Clamp(coldProbe,0,9):0;
             BoundedContactFx.ColdReviewScale=float.TryParse(Get("coldscale"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float coldScale)?Mathf.Clamp(coldScale,.5f,2f):BoundedContactFx.ColdProjectionScale;
@@ -1080,11 +1084,13 @@ namespace DeckRogue.Game
                     for (int i = 0; i < shotsN; i++) {
                         if(i==cancelFrame)Presenter.MarkSeen(g.Rs.Combat);
                         bool savedTilt=TiltShiftSettings.Enabled; if(Get("coldblur")=="0")TiltShiftSettings.Enabled=false;
+                        var postData=Stage.Camera?.GetComponent<UniversalAdditionalCameraData>();bool savedPost=postData!=null&&postData.renderPostProcessing;if(Get("canopypost")=="0"&&postData!=null)postData.renderPostProcessing=false;
                         yield return new WaitForEndOfFrame();
                         var shot = ScreenCapture.CaptureScreenshotAsTexture();
                         try { File.WriteAllBytes(Path.Combine(continuousDir,"continuous-"+i.ToString("D4")+".png"),shot.EncodeToPNG()); }
-                        finally { Destroy(shot); TiltShiftSettings.Enabled=savedTilt; }
-                        frameLog.Add(new JObject { ["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["delta"]=Time.deltaTime,["hp"]=g.Rs.Combat.Enemies[0].Hp,["activeFx"]=Hd2dAttackFx.ActiveCount,["visibleDraws"]=Hd2dAttackFx.VisibleReviewDraws,["effects"]=Hd2dAttackFx.CaptureReviewState(),["healFx"]=Get("lightaudit")=="1"?HealContinuousFx.CaptureReviewState():null,["lightAudit"]=Get("lightaudit")=="1"?JToken.FromObject(StageFx.CaptureLightReview()):null,["receiverPose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("enemy0")??new object()):null,["sourcePose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("player")??new object()):null,["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws,["boundedEffects"]=BoundedContactFx.CaptureReviewState() });
+                        finally { Destroy(shot); TiltShiftSettings.Enabled=savedTilt;if(postData!=null)postData.renderPostProcessing=savedPost; }
+                        if(Hd2dAttackFx.CanopyReview&&i>=7&&i<=16)Hd2dAttackFx.CaptureCanopySolo(Path.Combine(continuousDir,"solo-"+i.ToString("D4")+".png"));
+                        frameLog.Add(new JObject { ["canopyProjection"]=Hd2dAttackFx.CaptureCanopyProjection(),["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["delta"]=Time.deltaTime,["hp"]=g.Rs.Combat.Enemies[0].Hp,["activeFx"]=Hd2dAttackFx.ActiveCount,["visibleDraws"]=Hd2dAttackFx.VisibleReviewDraws,["effects"]=Hd2dAttackFx.CaptureReviewState(),["healFx"]=Get("lightaudit")=="1"?HealContinuousFx.CaptureReviewState():null,["lightAudit"]=Get("lightaudit")=="1"?JToken.FromObject(StageFx.CaptureLightReview()):null,["receiverPose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("enemy0")??new object()):null,["sourcePose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("player")??new object()):null,["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws,["boundedEffects"]=BoundedContactFx.CaptureReviewState() });
                     }
                     File.WriteAllText(Path.Combine(continuousDir,"continuous-clock.json"),frameLog.ToString()); File.WriteAllText(Path.Combine(continuousDir,"canopy-cache.json"),Hd2dAttackFx.CaptureCanopyCache().ToString());
                     File.WriteAllText(Path.Combine(continuousDir,"actual-events.json"),JArray.FromObject(g.Rs.Combat.EventLog.Skip(playEventStart).ToArray()).ToString());
@@ -1136,9 +1142,10 @@ namespace DeckRogue.Game
                     int cancel=int.TryParse(Get("cancelpresentationat"),out int c)?c:-1;
                     for(int i=0;i<shotsN;i++){
                         if(i==cancel)Presenter.MarkSeen(g.Rs.Combat);
+                        bool savedTilt=TiltShiftSettings.Enabled;if(Get("coldblur")=="0")TiltShiftSettings.Enabled=false;
                         yield return new WaitForEndOfFrame();var shot=ScreenCapture.CaptureScreenshotAsTexture();
-                        try{File.WriteAllBytes(Path.Combine(continuousDir,"continuous-"+i.ToString("D4")+".png"),shot.EncodeToPNG());}finally{Destroy(shot);}
-                        clocks.Add(new JObject{["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["hp"]=g.Rs.Combat.Player.Hp,["phase"]=g.Rs.Combat.Phase,["uiText"]=Get("confirmaudit")=="1"?JArray.FromObject(g.ScreenRoot.GetComponentsInChildren<TMPro.TMP_Text>().Where(x=>x.isActiveAndEnabled).Select(x=>new{text=x.text,screen=new[]{x.transform.position.x,x.transform.position.y}}).ToArray()):null,["fire"]=FireContinuousFx.CaptureReviewState(),["boundedEffects"]=BoundedContactFx.CaptureReviewState(),["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws});
+                        try{File.WriteAllBytes(Path.Combine(continuousDir,"continuous-"+i.ToString("D4")+".png"),shot.EncodeToPNG());}finally{Destroy(shot);TiltShiftSettings.Enabled=savedTilt;}
+                        clocks.Add(new JObject{["screenFlashes"]=JToken.FromObject(Tween.ReviewScreenFlashes),["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["hp"]=g.Rs.Combat.Player.Hp,["phase"]=g.Rs.Combat.Phase,["uiText"]=Get("confirmaudit")=="1"?JArray.FromObject(g.ScreenRoot.GetComponentsInChildren<TMPro.TMP_Text>().Where(x=>x.isActiveAndEnabled).Select(x=>new{text=x.text,screen=new[]{x.transform.position.x,x.transform.position.y}}).ToArray()):null,["fire"]=FireContinuousFx.CaptureReviewState(),["boundedEffects"]=BoundedContactFx.CaptureReviewState(),["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws});
                     }
                     File.WriteAllText(Path.Combine(continuousDir,"continuous-clock.json"),clocks.ToString()); File.WriteAllText(Path.Combine(continuousDir,"imp-cache.json"),FireContinuousFx.CaptureImpCache().ToString()); File.WriteAllText(Path.Combine(continuousDir,"bounded-cache.json"),BoundedContactFx.CaptureOwnedCache().ToString());
                     File.WriteAllText(Path.Combine(continuousDir,"actual-events.json"),JArray.FromObject(g.Rs.Combat.EventLog.Skip(eventStart).ToArray()).ToString());

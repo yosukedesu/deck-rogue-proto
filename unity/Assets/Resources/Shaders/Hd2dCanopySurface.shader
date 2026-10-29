@@ -1,19 +1,20 @@
 Shader "DeckRogue/Hd2dCanopySurface" {
- Properties {_BaseMap("Original organic density",2D)="white"{} _Age("Actual contact age",Float)=0}
+ Properties {_BaseMap("Original organic density",2D)="white"{} _Age("Actual contact age",Float)=0 _ReviewSolid("QA solid",Float)=0 _ReviewZTest("QA depth test",Float)=4}
  SubShader {
   Tags {"RenderPipeline"="UniversalPipeline" "Queue"="Transparent+11" "RenderType"="Transparent"}
   Pass {
    Tags {"LightMode"="UniversalForward"}
-   Blend One OneMinusSrcAlpha ZWrite Off ZTest LEqual Cull Off
+   Blend One OneMinusSrcAlpha ZWrite Off ZTest [_ReviewZTest] Cull Off
    HLSLPROGRAM
    #pragma vertex vert
    #pragma fragment frag
    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-   TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);float _Age;
+   TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);float _Age;float _ReviewSolid;
    struct A{float4 p:POSITION;float2 uv:TEXCOORD0;float2 gain:TEXCOORD1;float4 color:COLOR;};
    struct V{float4 p:SV_POSITION;float2 uv:TEXCOORD0;float gain:TEXCOORD1;float alpha:TEXCOORD2;};
    V vert(A i){V o;o.p=TransformObjectToHClip(i.p.xyz);o.uv=i.uv;o.gain=i.gain.x;o.alpha=i.color.a;return o;}
    float4 frag(V i):SV_Target{
+    if(_ReviewSolid>.5){clip(i.alpha-.00001);return float4(.05,1,.15,1);}
     float u=i.uv.x,v=i.uv.y;
     // Godot's direct-v image crop: v0=image .22, v1=image .78.
     // Only the image-to-Unity texture-origin conversion is applied, unlike Cold's (1-v) crop.

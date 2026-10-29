@@ -35,6 +35,33 @@ namespace DeckRogue.Game
         static readonly Dictionary<string, Color[]> _palettes = new Dictionary<string, Color[]>();
         public static string LastFailure { get; private set; } public static int Submitted { get; private set; } public static int Recycled { get; private set; } public static int StaleContacts { get; private set; }
         public static int ActiveCount { get { int n = 0; foreach (var s in Pool) if (s != null && s.Busy) n++; return n; } }
+        internal static bool ReviewDisableLightBoltWorld;
+        internal static bool CanopyReview;
+        internal static int CanopyReviewMode;
+        internal static JArray CaptureCanopyProjection(){
+            var rows=new JArray();if(!CanopyReview||Stage.Camera==null)return rows;
+            var cam=Stage.Camera;
+            foreach(var slot in Pool)if(slot!=null&&slot.Busy&&slot.Effect?.ConfigureCanopyCommittedContact!=null){
+                for(int j=0;j<slot.Draws.Length;j++){
+                    var d=slot.Draws[j];if(d.Kind!=40)continue;var b=slot.Effect.Batches[j];var vertices=new JArray();
+                    for(int i=0;i<d.V.Length;i++)if(d.C[i].a>0){var w=slot.Root.TransformPoint(d.V[i]);var screen=cam.WorldToScreenPoint(w);var view=cam.worldToCameraMatrix.MultiplyPoint(w);vertices.Add(new JObject{["i"]=i,["role"]=b.Role(i),["screenBottomOrigin"]=new JArray(screen.x,screen.y,screen.z),["viewZ"]=view.z,["world"]=new JArray(w.x,w.y,w.z),["uv"]=new JArray(d.UV[i].x,d.UV[i].y),["alpha"]=d.C[i].a,["gain"]=d.Gain[i].x});}
+                    var props=new MaterialPropertyBlock();d.Renderer.GetPropertyBlock(props);var tex=props.GetTexture("_BaseMap");
+                    rows.Add(new JObject{["target"]=slot.Ticket.Target,["age"]=Time.time-slot.Started,["kind"]=d.Kind,["batch"]=j,["enabled"]=d.Renderer.enabled,["shader"]=d.Renderer.sharedMaterial.shader.name,["material"]=d.Renderer.sharedMaterial.GetEntityId().ToString(),["boundTexture"]=tex?.name,["width"]=tex?.width??0,["height"]=tex?.height??0,["shaderAge"]=props.GetFloat("_Age"),["probe"]=CanopyReviewMode,["receiverAnchorViewZ"]=cam.worldToCameraMatrix.MultiplyPoint(slot.Ticket.Position).z,["vertices"]=vertices});
+                }
+            }return rows;
+        }
+        // QA-only isolated main-surface GPU draw: no scene depth, no other effects, no post.
+        // Linear ARGB32 preview clamps HDR; this is not the final tone-mapped presentation.
+        internal static void CaptureCanopySolo(string path){
+            if(!CanopyReview||Stage.Camera==null)return;
+            var rt=RenderTexture.GetTemporary(Screen.width,Screen.height,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear);
+            var cb=new CommandBuffer{name="Canopy300 isolated GPU diagnostic"};
+            cb.SetRenderTarget(rt);cb.ClearRenderTarget(false,true,Color.clear);var cam=Stage.Camera;
+            cb.SetViewProjectionMatrices(cam.worldToCameraMatrix,GL.GetGPUProjectionMatrix(cam.projectionMatrix,true));
+            foreach(var s in Pool)if(s!=null&&s.Busy&&s.Effect?.ConfigureCanopyCommittedContact!=null)foreach(var d in s.Draws)if(d.Kind==40&&d.Renderer.enabled){var props=new MaterialPropertyBlock();d.Renderer.GetPropertyBlock(props);cb.DrawMesh(d.Mesh,s.Root.localToWorldMatrix,d.Renderer.sharedMaterial,0,0,props);}
+            Graphics.ExecuteCommandBuffer(cb);var old=RenderTexture.active;RenderTexture.active=rt;var tex=new Texture2D(rt.width,rt.height,TextureFormat.RGBA32,false,true);
+            try{tex.ReadPixels(new Rect(0,0,rt.width,rt.height),0,0);tex.Apply();System.IO.File.WriteAllBytes(path,tex.EncodeToPNG());}finally{UnityEngine.Object.Destroy(tex);RenderTexture.active=old;cb.Release();RenderTexture.ReleaseTemporary(rt);}
+        }
         internal static JArray CaptureReviewState() {
             var slots=new JArray();
             foreach(var s in Pool)if(s!=null && s.Busy) {
@@ -281,7 +308,7 @@ namespace DeckRogue.Game
                 var b = e.Batches[j]; var d = s.Draws[j];
                 bool any = false;
                 for (int k = 0; k < b.Count; k++) if (b.Alpha(k) > 1e-5f) { any = true; break; }
-                d.Renderer.enabled = any;
+                d.Renderer.enabled = any && !(CanopyReviewMode>=4 && e.ConfigureCanopyCommittedContact!=null && d.Kind!=40);
                 if (!any) continue;
                 for (int i = 0; i < b.Count; i++)
                 {
@@ -295,6 +322,8 @@ namespace DeckRogue.Game
                 Props.Clear();
                 var linearCore=s.Roles[3];
                 Props.SetVector("_RoleCore",new Vector4(linearCore.r,linearCore.g,linearCore.b,linearCore.a));
+                Props.SetFloat("_ReviewSolid",CanopyReview && (CanopyReviewMode==1||CanopyReviewMode==3||CanopyReviewMode==5)?1f:0f);
+                if(e.ConfigureCanopyCommittedContact!=null&&d.Kind==40)d.Renderer.sharedMaterial.SetFloat("_ReviewZTest",CanopyReview&&(CanopyReviewMode==2||CanopyReviewMode==3)?8f:4f);
                 Props.SetFloat("_Age", visualAge); Props.SetFloat("_Kind", d.Kind); Props.SetFloat("_TextureMotion", d.Motion);
                 bool flat = HD2DFlags.Hd2dFxFlat;   // 診断: hd2dfx=flat で絵を貼らず平らな四角で描く (層の位置と大きさを見る)
                 Props.SetFloat("_TextureEnabled", d.Texture != null && !flat ? d.TextureEnabled : 0f); Props.SetFloat("_AuthoredRgba", flat ? 0f : d.AuthoredRgba); Props.SetFloat("_UseTexture", flat ? 0f : d.UseTexture);
@@ -401,7 +430,7 @@ namespace DeckRogue.Game
                             captured.Landed = true; captured.Started = Time.time;
                             captured.Effect.ConfigureLightBoltCommittedContact?.Invoke(t.LightBoltBinding?.Committed == true); captured.Effect.ConfigureCanopyCommittedContact?.Invoke(t.CanopyBinding?.Committed == true);
                             UpdateSource(captured, 0f); captured.Effect.Sample(0f); Upload(captured, 0f);
-                            if (Stage.ImpactTargetCurrent(t.Target, t.Impact))
+                            if (Stage.ImpactTargetCurrent(t.Target, t.Impact) && !(ownedLightBolt && ReviewDisableLightBoltWorld))
                             {
                                 captured.Light = StageFx.BeginContractAttackLight(t.Target, t.Impact?.Target, e, captured.Target, captured.Feet, captured.Height, captured.LightSpec, 0, false,
                                     () => Current(captured, v, e) && Stage.ImpactTargetCurrent(t.Target, t.Impact), 1f, captured.LightPower, () => Time.time - captured.Started);

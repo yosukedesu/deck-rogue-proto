@@ -16,6 +16,7 @@ namespace DeckRogue.Game {
   static readonly Slot[] Pool=new Slot[24];static readonly MaterialPropertyBlock Props=new MaterialPropertyBlock();
   static Material _material;static Color[] _primary,_core;static int _epoch;static long _serial;
   static Material _coldMaterial,_wraithMaterial,_crossbowMaterial;static Texture2D _coldDensity,_wraithDensity,_crossbowDensity;
+  internal static bool OwnedReview;internal static int OwnedReviewMode;
   internal static int ColdReviewMode;
   internal const float ColdProjectionScale=1.36f;
   internal static float ColdReviewScale=ColdProjectionScale;
@@ -50,7 +51,13 @@ namespace DeckRogue.Game {
     int visible=0;float maxAlpha=0;foreach(var c in s.Colors){if(c.a>0)visible++;maxAlpha=Mathf.Max(maxAlpha,c.a);}
     var actual=new MaterialPropertyBlock();s.Renderer.GetPropertyBlock(actual);
     var parameters=new JObject{["age"]=actual.GetFloat("_Age"),["gain"]=actual.GetFloat("_Gain"),["review"]=actual.GetFloat("_ReviewMode"),["maxVertexAlpha"]=maxAlpha};
-    if(s.UseCold){var tex=(Texture2D)actual.GetTexture("_BaseMap");var c=tex.GetPixelBilinear(.39f,.46f);parameters["textureFormat"]=tex.graphicsFormat.ToString();parameters["cpuSampleRaw"]=new JArray(c.r,c.g,c.b,c.a);parameters["zTest"]=s.Renderer.sharedMaterial.GetFloat("_ZTest");}
+         if(OwnedReview&&(s.UseWraith||s.UseCrossbow)){
+      var vs=new JArray();for(int i=0;i<s.Vertices.Length;i++)if(s.Colors[i].a>0){var w=s.Root.TransformPoint(s.Vertices[i]);var q=Stage.Camera.WorldToScreenPoint(w);vs.Add(new JObject{["i"]=i,["mode"]=new JArray(s.Mode[i].x,s.Mode[i].y),["screenBottomOrigin"]=new JArray(q.x,q.y,q.z),["viewZ"]=Stage.Camera.worldToCameraMatrix.MultiplyPoint(w).z,["uv"]=new JArray(s.UV[i].x,s.UV[i].y),["alpha"]=s.Colors[i].a});}
+      var receiver=s.Ticket.Impact.Target as Component;if(receiver!=null){parameters["receiverPlaneViewZ"]=Stage.Camera.worldToCameraMatrix.MultiplyPoint(receiver.transform.TransformPoint(new Vector3(0,.5f,0))).z;}
+      parameters["ownedRoleVertices"]=vs;parameters["receiverAnchorViewZ"]=Stage.Camera.worldToCameraMatrix.MultiplyPoint(s.Ticket.Position).z;
+      var tex=actual.GetTexture("_BaseMap") as Texture2D;parameters["textureName"]=tex?.name;parameters["textureFormat"]=tex?.graphicsFormat.ToString();parameters["material"]=s.Renderer.sharedMaterial.GetEntityId().ToString();
+     }
+if(s.UseCold){var tex=(Texture2D)actual.GetTexture("_BaseMap");var c=tex.GetPixelBilinear(.39f,.46f);parameters["textureFormat"]=tex.graphicsFormat.ToString();parameters["cpuSampleRaw"]=new JArray(c.r,c.g,c.b,c.a);parameters["zTest"]=s.Renderer.sharedMaterial.GetFloat("_ZTest");}
     if(s.UseCold){
      var vertices=new JArray();
      for(int i=64;i<72;i++){var w=s.Root.TransformPoint(s.Vertices[i]);var screen=Stage.Camera.WorldToScreenPoint(w);var view=Stage.Camera.worldToCameraMatrix.MultiplyPoint3x4(w);vertices.Add(new JObject{["index"]=i,["imageXY"]=new JArray(screen.x,Screen.height-screen.y),["viewZ"]=view.z,["uv"]=new JArray(s.UV[i].x,s.UV[i].y),["mode"]=new JArray(s.Mode[i].x,s.Mode[i].y),["alpha"]=s.Colors[i].a});}
@@ -143,6 +150,7 @@ namespace DeckRogue.Game {
    // Palette values are already linear. SetColor would decode sRGB a second time.
    var primary=_primary[(int)s.Profile.Material];var core=_core[(int)s.Profile.Material];
    Props.Clear();Props.SetVector("_Primary",new Vector4(primary.r,primary.g,primary.b,primary.a));Props.SetVector("_Core",new Vector4(core.r,core.g,core.b,core.a));s.Renderer.SetPropertyBlock(Props);
+   if(s.UseWraith||s.UseCrossbow){Props.SetFloat("_ReviewSolid",OwnedReview&&(OwnedReviewMode==1||OwnedReviewMode==3)?1:0);s.Renderer.sharedMaterial.SetFloat("_ReviewZTest",OwnedReview&&(OwnedReviewMode==2||OwnedReviewMode==3)?8:4);}
    if(s.UseCrossbow){Props.SetTexture("_BaseMap",_crossbowDensity);Props.SetFloat("_Age",age);Props.SetFloat("_Gain",s.Emission);s.Renderer.SetPropertyBlock(Props);}
    if(s.UseWraith){Props.SetTexture("_BaseMap",_wraithDensity);Props.SetFloat("_Age",age);Props.SetFloat("_Gain",s.Emission);s.Renderer.SetPropertyBlock(Props);}
    if(s.UseCold){Props.SetTexture("_BaseMap",_coldDensity);Props.SetFloat("_Age",age);Props.SetFloat("_Gain",s.Emission);Props.SetFloat("_ReviewMode",ColdReviewMode==1||ColdReviewMode==3?1:ColdReviewMode>=4?ColdReviewMode:0);s.Renderer.SetPropertyBlock(Props);_coldMaterial.SetFloat("_ZTest",ColdReviewMode==2||ColdReviewMode==3?8:4);}
