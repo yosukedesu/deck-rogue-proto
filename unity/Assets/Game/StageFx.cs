@@ -726,6 +726,11 @@ namespace DeckRogue.Game
             return o;
         }
 
+        internal static object CaptureLightReview() {
+            var slots=new List<object>();foreach(var s in _slots)if(s.Light!=null && s.Lit)slots.Add(new{kind=s.Kind,key=s.Key,enabled=s.Light.enabled,intensity=s.Light.intensity,color=new[]{s.Light.color.r,s.Light.color.g,s.Light.color.b},position=new[]{s.Light.transform.position.x,s.Light.transform.position.y,s.Light.transform.position.z},peak=s.Peak,age=s.T,duration=s.Dur});
+            var contacts=new List<object>();foreach(var c in ContractContributions)contacts.Add(new{serial=c.Serial,key=c.Key,active=c.Active,landed=c.Landed,age=c.Age,power=c.Power,targetPeak=c.Spec.TargetPeakMultiplier,floorPeak=c.Spec.FloorPeakMultiplier});
+            return new{targetRawSum=_contractTargetSum,floorRawSum=_contractFloorSum,slots,contacts};
+        }
         static void EnsureDriver()
         {
             if (_root == null) Prepare(StageLook.Current != null ? StageLook.Current.Hit : Defaults);

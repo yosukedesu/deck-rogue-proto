@@ -23,6 +23,7 @@ namespace DeckRogue.Game
         sealed class Slot
         {
             public Transform Root; public Draw[] Draws; public NativeEffect Effect; public string EffectKey, Card; public ResolvedCombatFx.Ticket Ticket;
+            public NativeEffect OwnedLightBoltEffect;
             public bool Busy, Landed, Locked, Remote; public int Version; public long Serial;
             public float Started, Expected, Height, Size, LightPower, Tail;
             public Vector3 Target, Feet, Right, Up, Toward, GroundRight, GroundToward; public Vector3? NearSurface;
@@ -43,7 +44,7 @@ namespace DeckRogue.Game
                     foreach(var c in d.C){if(c.a>0)visible++;maxAlpha=Mathf.Max(maxAlpha,c.a);}
                     layers.Add(new JObject { ["kind"]=d.Kind,["enabled"]=d.Renderer.enabled,["verticesWithAlpha"]=visible,["maxAlpha"]=maxAlpha,["shader"]=d.Renderer.sharedMaterial?.shader?.name,["textureWidth"]=d.Texture?.width??0,["textureHeight"]=d.Texture?.height??0 });
                 }
-                slots.Add(new JObject{["serial"]=s.Serial,["landed"]=s.Landed,["age"]=s.Landed?Time.time-s.Started:Time.time-s.Expected,["committed"]=s.Ticket?.LightBoltBinding?.Committed==true,["layers"]=layers});
+                slots.Add(new JObject{["lightPower"]=s.LightPower,["hitIndex"]=s.Ticket?.Index,["expectedTime"]=s.Expected,["actualContactTime"]=s.Landed?s.Started:(float?)null,["serial"]=s.Serial,["landed"]=s.Landed,["age"]=s.Landed?Time.time-s.Started:Time.time-s.Expected,["committed"]=s.Ticket?.LightBoltBinding?.Committed==true,["layers"]=layers});
             }
             return slots;
         }
@@ -181,12 +182,15 @@ namespace DeckRogue.Game
         {
             _epoch++; foreach (var s in Pool) if (s != null) { Retire(s, s.Version); s.Version++; }
         }
-        static Slot Acquire(string key, NativeEffect effect)
+        static Slot Acquire(string key, NativeEffect effect, Func<NativeEffect> ownedFactory = null)
         {
             int limit = GfxQuality.Level == GfxLevel.Low ? 4 : 8; Slot s = null;
             for (int i = 0; i < limit; i++) { if (Pool[i] == null) Pool[i] = new Slot(); if (!Pool[i].Busy || Pool[i].Root == null) { s = Pool[i]; break; } }
             if (s == null) { s = Pool[0]; for (int i = 1; i < limit; i++) if (Pool[i].Serial < s.Serial) s = Pool[i]; Recycled++; }
             Retire(s, s.Version); s.Version++; s.Serial = ++_serial;
+            // Each active receipt owns mutable geometry, committed state and its light clock.
+            // Reuse only after this slot retires; another pending hit must not overwrite them.
+            if (ownedFactory != null) effect = s.OwnedLightBoltEffect ?? (s.OwnedLightBoltEffect = ownedFactory());
             if (s.Root == null) { s.Root = new GameObject("hd2d-prototype-r192").transform; }
             s.Root.position = Vector3.zero; s.Root.rotation = Quaternion.identity; s.Root.localScale = Vector3.one;
             if (s.EffectKey != key || s.Draws == null || s.Draws.Length != effect.Batches.Length) { DestroyDraws(s); s.Draws = new Draw[effect.Batches.Length]; s.EffectKey = key; }
@@ -343,7 +347,8 @@ namespace DeckRogue.Game
             Slot s = null;
             try
             {
-                s = Acquire(cacheKey, effect);
+                s = Acquire(cacheKey, effect, ownedLightBolt ? () => Hd2dAttackPrototype.CreateOwnedLightBoltContact(route) : (Func<NativeEffect>)null);
+                effect = s.Effect;
                 s.Ticket = t; s.Card = card; s.Busy = true;
                 var visual = t.Visual; bool physical = PhysicalVfxProfiles.ForCard(card) != null;
                 s.Height = Mathf.Max(.25f, height); s.Size = physical ? 1f : (visual?.Size ?? 1f); s.LightPower = visual?.Light ?? 1f;

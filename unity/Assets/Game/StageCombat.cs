@@ -148,7 +148,7 @@ namespace DeckRogue.Game
         public static object ImpactPose(string key) {
             if(!_bound.TryGetValue(key,out var u)||u==null||u.Rect==null)return null;
             return new {unit=u.GetEntityId().ToString(),motion=u.MotionVersion,recoil=u.RecoilVersion,anim=u.Anim,frame=u.Frame,frameT=u.FrameT,
-                offset=new[]{u.CombatOffset.x,u.CombatOffset.y,u.CombatOffset.z},kick=new[]{u.CombatRecoilOffset.x,u.CombatRecoilOffset.y,u.CombatRecoilOffset.z}};
+                flashRemaining=u.FlashT,materialFlash=u.Mat!=null&&u.Mat.HasProperty("_Flash")?u.Mat.GetFloat("_Flash"):0f,offset=new[]{u.CombatOffset.x,u.CombatOffset.y,u.CombatOffset.z},kick=new[]{u.CombatRecoilOffset.x,u.CombatRecoilOffset.y,u.CombatRecoilOffset.z}};
         }
         public static float ShowcaseImpact(string target,ImpactCapture captured,float seconds,bool heavy) {
             if(!CardVfxProfile.ShowcaseOn || captured==null || !_bound.TryGetValue(target,out var u) || u==null || u.Rect==null || u!=captured.Target)return 0f;

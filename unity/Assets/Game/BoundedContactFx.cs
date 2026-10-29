@@ -16,6 +16,24 @@ namespace DeckRogue.Game {
   static readonly Slot[] Pool=new Slot[24];static readonly MaterialPropertyBlock Props=new MaterialPropertyBlock();
   static Material _material;static Color[] _primary,_core;static int _epoch;static long _serial;
   static Material _coldMaterial;static Texture2D _coldDensity;
+  internal static int ColdReviewMode;
+  internal const float ColdProjectionScale=1.36f;
+  internal static float ColdReviewScale=ColdProjectionScale;
+  internal static void SetColdForward(bool enabled){if(_coldMaterial!=null)_coldMaterial.SetShaderPassEnabled("ColdForward",enabled);}
+  internal static void CollectColdRenderers(System.Collections.Generic.List<Renderer> result){result.Clear();foreach(var s in Pool)if(s?.Busy==true&&s.UseCold&&s.Renderer.enabled&&s.Root.gameObject.activeInHierarchy)result.Add(s.Renderer);}
+  static JObject ColdGpuProbe(Material material,Texture2D texture,Color core){
+   var mesh=new Mesh();var rt=new RenderTexture(8,8,24,RenderTextureFormat.ARGBFloat,RenderTextureReadWrite.Linear);var read=new Texture2D(8,8,TextureFormat.RGBAFloat,false,true);var old=RenderTexture.active;
+   var cmd=new CommandBuffer();
+   try{
+    mesh.vertices=new[]{new Vector3(-1,-1,0),new Vector3(1,-1,0),new Vector3(1,1,0),new Vector3(-1,1,0)};mesh.triangles=new[]{0,1,2,0,2,3};
+    mesh.uv=new[]{Vector2.one*.5f,Vector2.one*.5f,Vector2.one*.5f,Vector2.one*.5f};mesh.uv2=new[]{new Vector2(0,2),new Vector2(0,2),new Vector2(0,2),new Vector2(0,2)};
+    mesh.colors=new[]{new Color(1,1,1,.5f),new Color(1,1,1,.5f),new Color(1,1,1,.5f),new Color(1,1,1,.5f)};
+    var props=new MaterialPropertyBlock();props.SetTexture("_BaseMap",texture);props.SetVector("_Core",new Vector4(core.r,core.g,core.b,core.a));props.SetFloat("_Age",0);props.SetFloat("_Gain",.72f);props.SetFloat("_ReviewMode",0);
+    rt.Create();cmd.SetRenderTarget(rt);cmd.ClearRenderTarget(true,true,Color.clear);cmd.SetViewProjectionMatrices(Matrix4x4.identity,GL.GetGPUProjectionMatrix(Matrix4x4.Ortho(-1,1,-1,1,-1,1),true));cmd.DrawMesh(mesh,Matrix4x4.identity,material,0,0,props);Graphics.ExecuteCommandBuffer(cmd);
+    RenderTexture.active=rt;read.ReadPixels(new Rect(0,0,8,8),0,0);read.Apply();var gpu=read.GetPixel(4,4);var raw=texture.GetPixelBilinear(.39f,.46f);var linear=raw.linear;float alpha=.5f*raw.a;var expected=Color.Lerp(linear,core,.55f)*(.72f*alpha);
+    return new JObject{["scope"]="isolated real shader role2 UV.5 age0 gain.72 alpha.5; float linear RT, no stage/postprocess",["gpuPremultLinear"]=new JArray(gpu.r,gpu.g,gpu.b,gpu.a),["cpuApproxPremultLinear"]=new JArray(expected.r,expected.g,expected.b,alpha),["rawGamma"]=new JArray(raw.r,raw.g,raw.b,raw.a),["coreLinear"]=new JArray(core.r,core.g,core.b)};
+   }finally{RenderTexture.active=old;cmd.Release();rt.Release();UnityEngine.Object.Destroy(rt);UnityEngine.Object.Destroy(mesh);UnityEngine.Object.Destroy(read);}
+  }
   static bool ReadyCold() {
    if(_coldMaterial!=null)return true;
    var shader=Resources.Load<Shader>("Shaders/Hd2dColdSweepSurface");
@@ -29,11 +47,23 @@ namespace DeckRogue.Game {
   internal static int VisibleReviewDraws {get{int n=0;foreach(var s in Pool)if(s!=null&&s.Renderer.enabled&&s.Root.gameObject.activeInHierarchy)n++;return n;}}
   internal static JArray CaptureReviewState(){
    var result=new JArray();foreach(var s in Pool)if(s?.Busy==true){
-    int visible=0;foreach(var c in s.Colors)if(c.a>0)visible++;
+    int visible=0;float maxAlpha=0;foreach(var c in s.Colors){if(c.a>0)visible++;maxAlpha=Mathf.Max(maxAlpha,c.a);}
+    var actual=new MaterialPropertyBlock();s.Renderer.GetPropertyBlock(actual);
+    var parameters=new JObject{["age"]=actual.GetFloat("_Age"),["gain"]=actual.GetFloat("_Gain"),["review"]=actual.GetFloat("_ReviewMode"),["maxVertexAlpha"]=maxAlpha};
+    if(s.UseCold){var tex=(Texture2D)actual.GetTexture("_BaseMap");var c=tex.GetPixelBilinear(.39f,.46f);parameters["textureFormat"]=tex.graphicsFormat.ToString();parameters["cpuSampleRaw"]=new JArray(c.r,c.g,c.b,c.a);parameters["zTest"]=s.Renderer.sharedMaterial.GetFloat("_ZTest");}
+    if(s.UseCold){
+     var vertices=new JArray();
+     for(int i=64;i<72;i++){var w=s.Root.TransformPoint(s.Vertices[i]);var screen=Stage.Camera.WorldToScreenPoint(w);var view=Stage.Camera.worldToCameraMatrix.MultiplyPoint3x4(w);vertices.Add(new JObject{["index"]=i,["imageXY"]=new JArray(screen.x,Screen.height-screen.y),["viewZ"]=view.z,["uv"]=new JArray(s.UV[i].x,s.UV[i].y),["mode"]=new JArray(s.Mode[i].x,s.Mode[i].y),["alpha"]=s.Colors[i].a});}
+     parameters["role2Vertices"]=vertices;
+     var receiver=s.Ticket?.Impact?.Target as Component;
+     if(receiver!=null){var w=receiver.transform.TransformPoint(new Vector3(0,.5f,0));parameters["receiverCenterViewZ"]=Stage.Camera.worldToCameraMatrix.MultiplyPoint3x4(w).z;var rr=receiver.GetComponent<MeshRenderer>();parameters["receiverQueue"]=rr?.sharedMaterial?.renderQueue;}
+     parameters["effectQueue"]=s.Renderer.sharedMaterial.renderQueue; parameters["focusPassFrame"]=ColdSweepFocusPass.ExecutedFrame; parameters["focusDraws"]=ColdSweepFocusPass.ExecutedDraws; parameters["forwardPassEnabled"]=s.Renderer.sharedMaterial.GetShaderPassEnabled("ColdForward"); parameters["focusFailure"]=ColdSweepFocusPass.Failure;
+     if(s.Landed && Time.time-s.Started<.001f)parameters["isolatedGpuProbe"]=ColdGpuProbe(s.Renderer.sharedMaterial,_coldDensity,_core[(int)s.Profile.Material]);
+    }
     var lo=new Vector2(float.PositiveInfinity,float.PositiveInfinity);var hi=new Vector2(float.NegativeInfinity,float.NegativeInfinity);
     for(int i=0;i<s.Vertices.Length;i++)if(s.Colors[i].a>0){var p=Stage.Camera.WorldToScreenPoint(s.Root.TransformPoint(s.Vertices[i]));lo=Vector2.Min(lo,p);hi=Vector2.Max(hi,p);}
 
-    result.Add(new JObject{["scale"]=s.Root.localScale.x,["emission"]=s.Emission,["pixelBounds"]=visible>0?new JArray(lo.x,lo.y,hi.x,hi.y):new JArray(),["triangleIndices"]=s.Mesh.triangles.Length,["serial"]=s.Serial,["family"]=s.Profile.Id,["cold297"]=s.UseCold,["committed"]=s.Ticket?.ColdSweepBinding?.Committed==true,["landed"]=s.Landed,["age"]=s.Landed?Time.time-s.Started:Time.time-s.Expected,["enabled"]=s.Renderer.enabled && s.Root.gameObject.activeInHierarchy,["verticesWithAlpha"]=visible,["shader"]=s.Renderer.sharedMaterial?.shader?.name,["textureWidth"]=s.UseCold?_coldDensity.width:0,["textureHeight"]=s.UseCold?_coldDensity.height:0});
+    result.Add(new JObject{["materialParameters"]=parameters,["scale"]=s.Root.localScale.x,["emission"]=s.Emission,["pixelBounds"]=visible>0?new JArray(lo.x,lo.y,hi.x,hi.y):new JArray(),["triangleIndices"]=s.Mesh.triangles.Length,["serial"]=s.Serial,["family"]=s.Profile.Id,["cold297"]=s.UseCold,["committed"]=s.Ticket?.ColdSweepBinding?.Committed==true,["landed"]=s.Landed,["age"]=s.Landed?Time.time-s.Started:Time.time-s.Expected,["enabled"]=s.Renderer.enabled && s.Root.gameObject.activeInHierarchy,["verticesWithAlpha"]=visible,["shader"]=s.Renderer.sharedMaterial?.shader?.name,["textureWidth"]=s.UseCold?_coldDensity.width:0,["textureHeight"]=s.UseCold?_coldDensity.height:0});
    }return result;
   }
   public static bool IsFamily(string family)=>G.Find(family)!=null;
@@ -105,7 +135,7 @@ namespace DeckRogue.Game {
    // Palette values are already linear. SetColor would decode sRGB a second time.
    var primary=_primary[(int)s.Profile.Material];var core=_core[(int)s.Profile.Material];
    Props.Clear();Props.SetVector("_Primary",new Vector4(primary.r,primary.g,primary.b,primary.a));Props.SetVector("_Core",new Vector4(core.r,core.g,core.b,core.a));s.Renderer.SetPropertyBlock(Props);
-   if(s.UseCold){Props.SetTexture("_BaseMap",_coldDensity);Props.SetFloat("_Age",age);Props.SetFloat("_Gain",s.Emission);s.Renderer.SetPropertyBlock(Props);}
+   if(s.UseCold){Props.SetTexture("_BaseMap",_coldDensity);Props.SetFloat("_Age",age);Props.SetFloat("_Gain",s.Emission);Props.SetFloat("_ReviewMode",ColdReviewMode==1||ColdReviewMode==3?1:ColdReviewMode>=4?ColdReviewMode:0);s.Renderer.SetPropertyBlock(Props);_coldMaterial.SetFloat("_ZTest",ColdReviewMode==2||ColdReviewMode==3?8:4);}
   }
   static IEnumerator Life(Slot s,int version,int epoch){
    try{while(Current(s,version,epoch)){
@@ -123,6 +153,7 @@ namespace DeckRogue.Game {
    if(!Finite(t.Position)||!G.Finite(height)||height<=0||!G.Finite(scale)||scale<=0||!G.Finite(emission)||emission<0||!G.Finite(particles)){t.RenderFallbackReason="bounded_contact_invalid_captured_geometry";return null;}
    if(!Ready()){t.RenderFallbackReason=LastFailure;return null;}
    bool ownedCold=!neutralFallback && t.ColdSweepBinding?.Eligible(t)==true;
+   if(ownedCold)scale*=ColdReviewScale;
    if(ownedCold && !ReadyCold()){t.RenderFallbackReason=LastFailure;return null;}
    var basis=Stage.Camera.transform.rotation;if(!CaptureValid(t.Position,scale,basis)){t.RenderFallbackReason="bounded_contact_invalid_camera_basis";return null;}
    Slot s=null;

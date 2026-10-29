@@ -616,6 +616,9 @@ namespace DeckRogue.Game
             // 起動の時 (BeforeSceneLoad) にも -state から当ててあるので、1行1起動なら何も変わらない (Changed も投げない)
             _stateSpec = spec;
             HD2DFlags.ApplyState(kv);
+            ColdSweepFocusPass.Enabled=Get("coldfocus")!="0";
+            BoundedContactFx.ColdReviewMode=int.TryParse(Get("coldprobe"),out int coldProbe)?Mathf.Clamp(coldProbe,0,9):0;
+            BoundedContactFx.ColdReviewScale=float.TryParse(Get("coldscale"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float coldScale)?Mathf.Clamp(coldScale,.5f,2f):BoundedContactFx.ColdProjectionScale;
             { int ml; MapScreen.LinePalette = int.TryParse(Get("mapline", ""), out ml) ? ml : 0; }   // 地図の道の中央線の色の候補 (2026-10-28)
             // 地図のスクロールの計測 (2026-10-28 ユーザー「スクロールがカクつく」): mapscroll=1 で往復・mapdbg=nolife,noforest,nostage,canvas で切り分け。vSync を切って1フレームの実コストを測る
             MapScreen.AutoScroll = Get("mapscroll", "0") != "0";
@@ -1005,6 +1008,7 @@ namespace DeckRogue.Game
                 else if (pc.Def.Modes != null && pc.Def.Modes.Count > 0) modeIdx = 0;
                 if (Get("explicitcommand") == "1")
                 {
+                    if(Get("playcontinuous")=="1" && Get("continuousclock")=="30")Time.captureFramerate=30;
                     // QA recipe: dispatch a real command with an explicit target, including singleton encounters.
                     // Ordinary UI intentionally leaves singleton targets null; it remains unchanged.
                     if (!int.TryParse(Get("target"), out int explicitTarget) || explicitTarget < 0 || explicitTarget >= g.Rs.Combat.Enemies.Count)
@@ -1062,11 +1066,12 @@ namespace DeckRogue.Game
                     int cancelFrame=int.TryParse(Get("cancelpresentationat"),out int requestedCancel)?requestedCancel:-1;
                     for (int i = 0; i < shotsN; i++) {
                         if(i==cancelFrame)Presenter.MarkSeen(g.Rs.Combat);
+                        bool savedTilt=TiltShiftSettings.Enabled; if(Get("coldblur")=="0")TiltShiftSettings.Enabled=false;
                         yield return new WaitForEndOfFrame();
                         var shot = ScreenCapture.CaptureScreenshotAsTexture();
                         try { File.WriteAllBytes(Path.Combine(continuousDir,"continuous-"+i.ToString("D4")+".png"),shot.EncodeToPNG()); }
-                        finally { Destroy(shot); }
-                        frameLog.Add(new JObject { ["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["delta"]=Time.deltaTime,["hp"]=g.Rs.Combat.Enemies[0].Hp,["activeFx"]=Hd2dAttackFx.ActiveCount,["visibleDraws"]=Hd2dAttackFx.VisibleReviewDraws,["effects"]=Hd2dAttackFx.CaptureReviewState(),["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws,["boundedEffects"]=BoundedContactFx.CaptureReviewState() });
+                        finally { Destroy(shot); TiltShiftSettings.Enabled=savedTilt; }
+                        frameLog.Add(new JObject { ["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["delta"]=Time.deltaTime,["hp"]=g.Rs.Combat.Enemies[0].Hp,["activeFx"]=Hd2dAttackFx.ActiveCount,["visibleDraws"]=Hd2dAttackFx.VisibleReviewDraws,["effects"]=Hd2dAttackFx.CaptureReviewState(),["lightAudit"]=Get("lightaudit")=="1"?JToken.FromObject(StageFx.CaptureLightReview()):null,["receiverPose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("enemy0")??new object()):null,["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws,["boundedEffects"]=BoundedContactFx.CaptureReviewState() });
                     }
                     File.WriteAllText(Path.Combine(continuousDir,"continuous-clock.json"),frameLog.ToString());
                 }
