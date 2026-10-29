@@ -63,6 +63,7 @@ Shader "DeckRogue/StageUnitLit"
         _LocalLights ("Local Lights", Float) = 0
         _OutlineFloor ("Outline Floor", Color) = (0.094,0.086,0.118,1)
         _WhiteCap ("White Cap", Float) = 1
+        _OwnedHealReceiveCount ("Owned recovery receive count", Float) = 0
         _BlackLift ("Black Lift (linear rgb pure black becomes)", Vector) = (0,0,0,0)
         _ShadeLift ("Shade Lift (x gain, y knee linear)", Vector) = (0,0,0,0)
         _CharTint ("Char Tint (linear rgb multiplier)", Vector) = (1,1,1,0)
@@ -179,6 +180,7 @@ Shader "DeckRogue/StageUnitLit"
             #define HD2D_HIT_LIGHTS_MAX 8
             float4 _HD2DHitLights[HD2D_HIT_LIGHTS_MAX];
             float _HD2DHitLightCount;
+            float _OwnedHealReceiveCount;float4 _OwnedHealReceiveLights[2];
 
             // 段2 (レーン S): 点光源のループの添字 (LIGHT_LOOP の lightIndex) から、その光の位置 (xyz・w = 1 なら点光源/スポット・0 なら平行光)。
             // URP の GetAdditionalLight と同じ読み方 (cluster のループはそのままの添字・通常のループは物ごとの添字に直す・構造化バッファの版も)
@@ -197,9 +199,19 @@ Shader "DeckRogue/StageUnitLit"
             }
 
             // 段2 (レーン S): その光に技の光の印が付いているか (位置が印の配列のどれかと 1 cm 以内)
-            bool HD2D_IsHitLight(uint loopIndex)
+            float HD2D_OwnedHealReceive(float4 lp){
+                if(_OwnedHealReceiveCount<.5)return 1;
+
+                if(lp.w<.5)return 1;
+                float3 d0=lp.xyz-_OwnedHealReceiveLights[0].xyz;
+                float3 d1=lp.xyz-_OwnedHealReceiveLights[1].xyz;
+                float f0=dot(d0,d0)<1e-4?_OwnedHealReceiveLights[0].w:1;
+                return (_OwnedHealReceiveCount>1.5 && dot(d1,d1)<1e-4)?_OwnedHealReceiveLights[1].w:f0;
+            }
+            bool HD2D_IsHitLight(uint loopIndex, out float receive)
             {
                 float4 lp = HD2D_AdditionalLightPosition(loopIndex);
+                receive = HD2D_OwnedHealReceive(lp);
                 bool hit = false;
                 [unroll] for (int k = 0; k < HD2D_HIT_LIGHTS_MAX; k++)
                 {
@@ -321,8 +333,9 @@ Shader "DeckRogue/StageUnitLit"
                     #endif
                     {
                         half nd = saturate(dot(nW, al.direction));
-                        if (_HD2DHitLightCount > 0.5 && HD2D_IsHitLight(lightIndex))
-                            attackLocal += al.color * (al.distanceAttenuation * (.3h + .7h * nd));
+                        float ownedReceive;
+                        if (_HD2DHitLightCount > 0.5 && HD2D_IsHitLight(lightIndex, ownedReceive))
+                            attackLocal += al.color * (al.distanceAttenuation * (.3h + .7h * nd)) * ownedReceive;
                         else local += al.color * (al.distanceAttenuation * nd);
                     }
                     LIGHT_LOOP_END

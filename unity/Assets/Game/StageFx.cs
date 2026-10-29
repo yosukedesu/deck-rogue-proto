@@ -230,6 +230,7 @@ namespace DeckRogue.Game
             internal string Key; internal object Identity; internal int Epoch; internal long Serial;
             internal Vector3 Impact,Feet; internal float Height,Start,Power; internal bool Active=true,Landed;
             internal WorldBattleFx.AttackSpec Spec; internal Func<bool> Valid; internal Func<float> AgeProvider;
+            internal Material ReceiverMaterial;internal float ReceiverScale=1f;internal Func<bool> ReceiverValid;
             internal float Age=>AgeProvider!=null?AgeProvider():Landed?Time.time-Start:Mathf.Min(-.000001f,Time.time-Start);
             public bool Land() {
                 if(!Active || (Valid!=null && !Valid()))return false;
@@ -242,6 +243,7 @@ namespace DeckRogue.Game
             public Slot Target,Floor; public bool Selected;
             public readonly List<ContractLightPlayback> Contributions=new List<ContractLightPlayback>();
         }
+        static readonly HashSet<Material> OwnedReceiverMaterials=new HashSet<Material>();
         static readonly List<ContractLightPlayback> ContractContributions=new List<ContractLightPlayback>();
         static readonly List<ContractLightGroup> ContractGroups=new List<ContractLightGroup>();
         static long _contractSerial;static int _contractRecordEvictions,_contractGroupSuppressions;
@@ -296,7 +298,7 @@ namespace DeckRogue.Game
         static void ClearContractLights() {
             foreach(var c in ContractContributions)c.Active=false;
             foreach(var g in ContractGroups){RetireContractSlot(g.Target,g);RetireContractSlot(g.Floor,g);}
-            ContractContributions.Clear();ContractGroups.Clear();_contractTargetSum=_contractFloorSum=0f;
+            ContractContributions.Clear();ContractGroups.Clear();_contractTargetSum=_contractFloorSum=0f;RefreshOwnedReceivers();
         }
         static Slot PickContractSlot(bool allowEviction) {
             Slot best=null;long oldest=long.MaxValue;
@@ -373,6 +375,27 @@ namespace DeckRogue.Game
                 g.Target=UpdateContractEndpoint(g,g.Target,false,ContractCapScale(_contractTargetSum),admit);
                 if(lights>1)g.Floor=UpdateContractEndpoint(g,g.Floor,true,ContractCapScale(_contractFloorSum),admit);
             }
+    RefreshOwnedReceivers();
+        }
+        // Per-material receiver projection; actual world Light properties are untouched.
+        static void RefreshOwnedReceivers(){
+            bool owned=false;foreach(var c in ContractContributions)if(c.ReceiverMaterial!=null){owned=true;break;}
+            if(!owned&&OwnedReceiverMaterials.Count==0)return;
+            foreach(var m in OwnedReceiverMaterials)if(m!=null)m.SetFloat("_OwnedHealReceiveCount",0);OwnedReceiverMaterials.Clear();
+            var entries=new Dictionary<Material,List<Vector4>>();
+            foreach(var group in ContractGroups)if(group.Selected)foreach(bool floor in new[]{false,true}){
+                var slot=floor?group.Floor:group.Target;if(slot?.Light==null||!slot.Light.isActiveAndEnabled)continue;
+                ContractLightPlayback winner=null;float weight=0;
+                // Selected heal's existing max-combine winner. Mixed additive groups fail closed.
+                if(group.MaxCombineGroup!="heal-uplift-continuous-r1")continue;
+                foreach(var c in group.Contributions){float w=ContractEnvelope(c.Spec,c.Age,floor)*c.Power*(floor?c.Spec.FloorPeakMultiplier:c.Spec.TargetPeakMultiplier);if(w>weight){winner=c;weight=w;}}
+                if(winner?.ReceiverMaterial==null||winner.ReceiverValid?.Invoke()!=true)continue;
+                var pos=slot.Light.transform.position;bool collision=false;
+                foreach(var other in _slots)if(other.Light!=null&&other.Light!=slot.Light&&other.Light.isActiveAndEnabled&&(other.Light.transform.position-pos).sqrMagnitude<1e-4f){collision=true;break;}
+                if(collision)continue;
+                var m=winner.ReceiverMaterial;if(!entries.TryGetValue(m,out var list)){list=new List<Vector4>();entries.Add(m,list);}list.Add(new Vector4(pos.x,pos.y,pos.z,Mathf.Clamp01(winner.ReceiverScale)));
+            }
+            foreach(var entry in entries){if(entry.Value.Count>2)continue;var values=new Vector4[2];int n=entry.Value.Count;for(int i=0;i<n;i++)values[i]=entry.Value[i];entry.Key.SetVectorArray("_OwnedHealReceiveLights",values);entry.Key.SetFloat("_OwnedHealReceiveCount",n);OwnedReceiverMaterials.Add(entry.Key);}
         }
 
         static void SetAuthoredDecay(long sequence,float hold,float tau,float releasePhase) {
@@ -729,7 +752,9 @@ namespace DeckRogue.Game
         internal static object CaptureLightReview() {
             var slots=new List<object>();foreach(var s in _slots)if(s.Light!=null && s.Lit)slots.Add(new{kind=s.Kind,key=s.Key,enabled=s.Light.enabled,intensity=s.Light.intensity,color=new[]{s.Light.color.r,s.Light.color.g,s.Light.color.b},position=new[]{s.Light.transform.position.x,s.Light.transform.position.y,s.Light.transform.position.z},peak=s.Peak,age=s.T,duration=s.Dur});
             var contacts=new List<object>();foreach(var c in ContractContributions)contacts.Add(new{serial=c.Serial,key=c.Key,active=c.Active,landed=c.Landed,age=c.Age,power=c.Power,targetPeak=c.Spec.TargetPeakMultiplier,floorPeak=c.Spec.FloorPeakMultiplier});
-            return new{targetRawSum=_contractTargetSum,floorRawSum=_contractFloorSum,slots,contacts};
+            var receivers=new List<object>();foreach(var m in OwnedReceiverMaterials)if(m!=null){var a=m.GetVectorArray("_OwnedHealReceiveLights");receivers.Add(new{material=m.GetEntityId().ToString(),count=m.GetFloat("_OwnedHealReceiveCount"),lights=Array.ConvertAll(a,v=>new[]{v.x,v.y,v.z,v.w}),flash=m.GetFloat("_Flash"),whiteCap=m.GetFloat("_WhiteCap")});}
+            var actorCounts=new List<object>();foreach(var key in new[]{"player","enemy0"}){var c=Stage.CaptureImpact(key)?.Target as Component;var m=c?.GetComponent<MeshRenderer>()?.sharedMaterial;if(m!=null)actorCounts.Add(new{key,material=m.GetEntityId().ToString(),count=m.GetFloat("_OwnedHealReceiveCount")});}
+            return new{targetRawSum=_contractTargetSum,floorRawSum=_contractFloorSum,slots,contacts,receivers,actorCounts};
         }
         static void EnsureDriver()
         {

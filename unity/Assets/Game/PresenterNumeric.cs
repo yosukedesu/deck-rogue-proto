@@ -87,6 +87,8 @@ namespace DeckRogue.Game {
      ticket.ColdSweepBinding=Hd2dColdSweepBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
      ticket.ImpSparkBinding=ImpSparkBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
      ticket.CanopyBinding=CanopyBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
+     ticket.MonkSquireHealBinding=MonkSquireHealBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
+     ticket.MonkSelfHealBinding=MonkSelfHealBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
      ticket.WraithCurseBinding=WraithCurseBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
      ticket.CrossbowAimedBinding=CrossbowAimedBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
     }

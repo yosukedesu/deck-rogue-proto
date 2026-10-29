@@ -617,6 +617,7 @@ namespace DeckRogue.Game
             _stateSpec = spec;
             HD2DFlags.ApplyState(kv);
             ColdSweepFocusPass.Enabled=Get("coldfocus")!="0";
+            HealContinuousFx.MonkReceiveScale=float.TryParse(Get("monkreceive"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float monkReceive)?Mathf.Clamp01(monkReceive):.08f;
             BoundedContactFx.ColdReviewMode=int.TryParse(Get("coldprobe"),out int coldProbe)?Mathf.Clamp(coldProbe,0,9):0;
             BoundedContactFx.ColdReviewScale=float.TryParse(Get("coldscale"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float coldScale)?Mathf.Clamp(coldScale,.5f,2f):BoundedContactFx.ColdProjectionScale;
             { int ml; MapScreen.LinePalette = int.TryParse(Get("mapline", ""), out ml) ? ml : 0; }   // 地図の道の中央線の色の候補 (2026-10-28)
@@ -994,8 +995,11 @@ namespace DeckRogue.Game
             // play=<手札index>: その札をプレイして (対象は最初の生存敵)、攻撃コマの途中を 4 枚撮る (2026-09-16 このは v2 のアニメ確認)
             if(int.TryParse(Get("prepareplay"),out int prepareIndex) && g.Rs?.Combat!=null){
                 var prepare=g.Rs.Combat.Player.Hand[prepareIndex];int from=g.Rs.Combat.EventLog.Count;
-                g.DoCombat(new Command_PlayCard{CardUid=prepare.Uid});yield return WaitPresentation();
                 string prepareDir=string.IsNullOrEmpty(_linePrefix)?_dir:Path.Combine(_dir,_linePrefix);Directory.CreateDirectory(prepareDir);
+                bool prepareAudit=Get("prepareaudit")=="1";if(prepareAudit)Time.captureFramerate=30;
+                g.DoCombat(new Command_PlayCard{CardUid=prepare.Uid});
+                if(prepareAudit){var rows=new JArray();for(int pi=0;pi<70;pi++){yield return new WaitForEndOfFrame();var shot=ScreenCapture.CaptureScreenshotAsTexture();try{File.WriteAllBytes(Path.Combine(prepareDir,"prepare-"+pi.ToString("D4")+".png"),shot.EncodeToPNG());}finally{Destroy(shot);}rows.Add(new JObject{["index"]=pi,["time"]=Time.time,["lightAudit"]=JToken.FromObject(StageFx.CaptureLightReview()),["healFx"]=HealContinuousFx.CaptureReviewState()});}File.WriteAllText(Path.Combine(prepareDir,"prepare-clock.json"),rows.ToString());}
+                yield return WaitPresentation();
                 File.WriteAllText(Path.Combine(prepareDir,"prepare-events.json"),new JObject{["energy"]=g.Rs.Combat.Player.Energy,["permanents"]=JArray.FromObject(g.Rs.Combat.Player.Permanents),["events"]=JArray.FromObject(g.Rs.Combat.EventLog.Skip(from).ToArray())}.ToString());
             }
             int playIdx;
@@ -1080,7 +1084,7 @@ namespace DeckRogue.Game
                         var shot = ScreenCapture.CaptureScreenshotAsTexture();
                         try { File.WriteAllBytes(Path.Combine(continuousDir,"continuous-"+i.ToString("D4")+".png"),shot.EncodeToPNG()); }
                         finally { Destroy(shot); TiltShiftSettings.Enabled=savedTilt; }
-                        frameLog.Add(new JObject { ["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["delta"]=Time.deltaTime,["hp"]=g.Rs.Combat.Enemies[0].Hp,["activeFx"]=Hd2dAttackFx.ActiveCount,["visibleDraws"]=Hd2dAttackFx.VisibleReviewDraws,["effects"]=Hd2dAttackFx.CaptureReviewState(),["lightAudit"]=Get("lightaudit")=="1"?JToken.FromObject(StageFx.CaptureLightReview()):null,["receiverPose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("enemy0")??new object()):null,["sourcePose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("player")??new object()):null,["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws,["boundedEffects"]=BoundedContactFx.CaptureReviewState() });
+                        frameLog.Add(new JObject { ["index"]=i,["frame"]=Time.frameCount,["time"]=Time.time,["delta"]=Time.deltaTime,["hp"]=g.Rs.Combat.Enemies[0].Hp,["activeFx"]=Hd2dAttackFx.ActiveCount,["visibleDraws"]=Hd2dAttackFx.VisibleReviewDraws,["effects"]=Hd2dAttackFx.CaptureReviewState(),["healFx"]=Get("lightaudit")=="1"?HealContinuousFx.CaptureReviewState():null,["lightAudit"]=Get("lightaudit")=="1"?JToken.FromObject(StageFx.CaptureLightReview()):null,["receiverPose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("enemy0")??new object()):null,["sourcePose"]=Get("lightaudit")=="1"?JToken.FromObject(Stage.ImpactPose("player")??new object()):null,["boundedVisibleDraws"]=BoundedContactFx.VisibleReviewDraws,["boundedEffects"]=BoundedContactFx.CaptureReviewState() });
                     }
                     File.WriteAllText(Path.Combine(continuousDir,"continuous-clock.json"),frameLog.ToString()); File.WriteAllText(Path.Combine(continuousDir,"canopy-cache.json"),Hd2dAttackFx.CaptureCanopyCache().ToString());
                     File.WriteAllText(Path.Combine(continuousDir,"actual-events.json"),JArray.FromObject(g.Rs.Combat.EventLog.Skip(playEventStart).ToArray()).ToString());

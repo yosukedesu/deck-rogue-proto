@@ -23,6 +23,8 @@ namespace DeckRogue.Game {
    internal Hd2dColdSweepBinding ColdSweepBinding;
    internal ImpSparkBinding ImpSparkBinding;
    internal CanopyBinding CanopyBinding;
+   internal MonkSelfHealBinding MonkSelfHealBinding;
+   internal MonkSquireHealBinding MonkSquireHealBinding;
    internal WraithCurseBinding WraithCurseBinding;
    internal CrossbowAimedBinding CrossbowAimedBinding;
    internal LightningR9Binding LightningR9Binding;
