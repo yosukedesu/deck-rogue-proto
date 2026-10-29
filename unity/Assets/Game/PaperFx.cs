@@ -211,6 +211,8 @@ namespace DeckRogue.Game
         public static Sprite NightCard { get { return Nine("night_card", 32, 8, 10, d => d < 2f ? Paper2 : NightHi, false); } }
         /// <summary>夜の札 (情報): 夜の線 NightEdge 2px・夜の地。紙 (濃) の Tag2 の役 (帳面・自分の札・トークン・人形の札)</summary>
         public static Sprite NightCard2 { get { return Nine("night_card2", 32, 8, 10, d => d < 2f ? NightEdge : Night, false); } }
+        /// <summary>細い枠だけ (中は透明・角丸)。焚き火の選択肢の列を囲う (2026-10-29 ユーザー「選択肢に細めの枠を囲ってあげると押しやすいかも」)。色は Image.color で</summary>
+        public static Sprite GhostFrame { get { return Nine("ghost_frame", 32, 8, 10, d => d < 1.6f ? Color.white : new Color(1f, 1f, 1f, 0f), false); } }
         /// <summary>夜の色つきの札 (Image.color で染める): 白の縁 1.5px・灰 NightTintFill の地＝縁が地より一段明るい同じ色相。淡い塗りの札 (状態・rider・盾) の役。
         /// 色は NightTintOf (塗りの色 ÷ NightTintFill) で渡す</summary>
         public static Sprite NightTint { get { return Nine("night_tint", 32, 8, 10, d => d < 1.5f ? Color.white : new Color(NightTintFill, NightTintFill, NightTintFill, 1f), false); } }

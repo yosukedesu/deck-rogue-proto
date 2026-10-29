@@ -93,13 +93,8 @@ namespace DeckRogue.Game
             float w = Mathf.Min(ph ? 460f : 560f, (cs.x - 80f) / count);
             float step = ph && count == 2 ? 620f : w;   // スマホの二択は火の左右に (火は画面の真ん中の下)
             float x0 = -((count - 1) * step) / 2f;
-            float dotY = optBottom + optH - (ph ? 23f : 31f);
             int slot = 0;
-            Vector2 Pos()
-            {
-                if (slot > 0) Dot(root, x0 + (slot - 0.5f) * step, dotY);   // 選択肢の間の真鍮の点 (名前の高さ)
-                return new Vector2(x0 + (slot++) * step, 0f);
-            }
+            Vector2 Pos() { return new Vector2(x0 + (slot++) * step, 0f); }   // 列の間の真鍮の点は細い枠 (Option) に置き換えた
 
             // 休む
             // 休めない理由はレリックの名前で (2026-09-14 人間ラン#11: 古根の杯を持ったまま HP15 で「休む」を選んで回復ゼロ → ボスで敗北)
@@ -342,6 +337,11 @@ namespace DeckRogue.Game
             var hit = UiKit.Pan(cell, new Color(0f, 0f, 0f, 0f), "hit");
             hit.raycastTarget = enabled;
             UiKit.Stretch(hit.rectTransform, 0f, 0f, 0f, 0f);
+            // 細い枠 (採点 3.5「選択肢に細めの枠を囲ってあげると押しやすいかも」): 淡い紙色の線・押せない列はさらに薄く・ホバーで真鍮
+            var frameC = enabled ? new Color(PaperFx.PaperDim.r, PaperFx.PaperDim.g, PaperFx.PaperDim.b, 0.6f) : new Color(PaperFx.PaperDim.r, PaperFx.PaperDim.g, PaperFx.PaperDim.b, 0.25f);
+            var frame = PaperFx.Sheet(cell, PaperFx.GhostFrame, "frame", frameC);
+            frame.raycastTarget = false;
+            UiKit.Stretch(frame.rectTransform, ph ? 6f : 10f, ph ? 6f : 10f, 0f, 0f);
             string spaced = title.Length <= 3 ? string.Join(" ", title.ToCharArray()) : title;   // 「休 む」「鍛 え る」
             var t = UiKit.Deco(cell, spaced, ph ? 30 : 40, enabled ? PaperFx.Paper : PaperFx.PaperDim, TextAnchor.MiddleCenter);
             t.characterSpacing = 4f; t.raycastTarget = false;
@@ -365,10 +365,10 @@ namespace DeckRogue.Game
                 hit.gameObject.AddComponent<ScreenFx.ButtonMotion>();
                 var et = hit.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
                 var enter = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter };
-                enter.callback.AddListener(delegate { t.color = PaperFx.BrassLight; line.enabled = true; });
+                enter.callback.AddListener(delegate { t.color = PaperFx.BrassLight; line.enabled = true; frame.color = new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.95f); });
                 et.triggers.Add(enter);
                 var exit = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit };
-                exit.callback.AddListener(delegate { t.color = PaperFx.Paper; line.enabled = false; });
+                exit.callback.AddListener(delegate { t.color = PaperFx.Paper; line.enabled = false; frame.color = frameC; });
                 et.triggers.Add(exit);
             }
             return cell;
