@@ -64,6 +64,7 @@ Shader "DeckRogue/StageUnitLit"
         _OutlineFloor ("Outline Floor", Color) = (0.094,0.086,0.118,1)
         _WhiteCap ("White Cap", Float) = 1
         _OwnedHealReceiveCount ("Owned recovery receive count", Float) = 0
+        _OwnedAttackReceiveCount ("Owned attack receiver QA count", Float) = 0
         _BlackLift ("Black Lift (linear rgb pure black becomes)", Vector) = (0,0,0,0)
         _ShadeLift ("Shade Lift (x gain, y knee linear)", Vector) = (0,0,0,0)
         _CharTint ("Char Tint (linear rgb multiplier)", Vector) = (1,1,1,0)
@@ -181,6 +182,7 @@ Shader "DeckRogue/StageUnitLit"
             float4 _HD2DHitLights[HD2D_HIT_LIGHTS_MAX];
             float _HD2DHitLightCount;
             float _OwnedHealReceiveCount;float4 _OwnedHealReceiveLights[2];
+            float _OwnedAttackReceiveCount;float4 _OwnedAttackReceiveLights[2];
 
             // 段2 (レーン S): 点光源のループの添字 (LIGHT_LOOP の lightIndex) から、その光の位置 (xyz・w = 1 なら点光源/スポット・0 なら平行光)。
             // URP の GetAdditionalLight と同じ読み方 (cluster のループはそのままの添字・通常のループは物ごとの添字に直す・構造化バッファの版も)
@@ -208,10 +210,19 @@ Shader "DeckRogue/StageUnitLit"
                 float f0=dot(d0,d0)<1e-4?_OwnedHealReceiveLights[0].w:1;
                 return (_OwnedHealReceiveCount>1.5 && dot(d1,d1)<1e-4)?_OwnedHealReceiveLights[1].w:f0;
             }
+            float HD2D_OwnedAttackReceive(float4 lp){
+                if(_OwnedAttackReceiveCount<.5)return 1;
+
+                if(lp.w<.5)return 1;
+                float3 d0=lp.xyz-_OwnedAttackReceiveLights[0].xyz;
+                float3 d1=lp.xyz-_OwnedAttackReceiveLights[1].xyz;
+                float f0=dot(d0,d0)<1e-4?_OwnedAttackReceiveLights[0].w:1;
+                return (_OwnedAttackReceiveCount>1.5 && dot(d1,d1)<1e-4)?_OwnedAttackReceiveLights[1].w:f0;
+            }
             bool HD2D_IsHitLight(uint loopIndex, out float receive)
             {
                 float4 lp = HD2D_AdditionalLightPosition(loopIndex);
-                receive = HD2D_OwnedHealReceive(lp);
+                receive = HD2D_OwnedHealReceive(lp)*HD2D_OwnedAttackReceive(lp);
                 bool hit = false;
                 [unroll] for (int k = 0; k < HD2D_HIT_LIGHTS_MAX; k++)
                 {
