@@ -1,7 +1,7 @@
 # Unity checkpoint 305 intake — 2026-10-29
 
 ## Result
-Blocked on exact pre-288 inputs and Unity batch startup. No effect implementation was ported and no Unity parity or Android performance PASS is claimed. Existing main and other worktrees were preserved; no merge or push.
+Blocked on exact pre-288 inputs. Unity batch verification is incomplete. No effect implementation was ported and no Unity parity or Android performance PASS is claimed. Existing main and other worktrees were preserved; no merge or push.
 
 Repository: `/home/yosuke/projects/deck-rogue-proto` (WSL Ubuntu).
 Isolated branch: `codex/unity-checkpoint305-20261029`.
@@ -41,12 +41,12 @@ Full path/hash inventory is in evidence/checkpoint305-prerequisites.json in the 
 ## Verification
 - PASS: all 63 bundled checksum entries across four kits.
 - PASS: existing C# engine golden verification, all 13 run JSONs match (isolated worktree, dotnet run -- verify ../../goldens/runs/*.json --data ../../src/data).
-- NOT CONFIRMED: Unity baseline compilation. First batch log stops at AssetDatabase Initial Refresh Start. Second batch log explicitly says application return code1, following licensing-client validation and unavailable-access-token messages despite resolved entitlements. Root cause not established. No compiler success or rendered capture obtained.
+- NOT COMPLETED: Unity baseline compilation. Initial sandbox process checks misleadingly did not show the elevated process. Elevated CIM later proved the first batch PID20788 was still importing assets, with worker1748. A duplicate invocation logged return code1 and licensing messages; these do not prove a licensing root cause. To stop a race with metadata cleanup, only this task's batch20788 and worker1748 were terminated. Existing Unity MCP22064 was untouched. No compiler success or rendered capture obtained; allow a fresh initial import to finish before future cleanup.
 - NOT RUN: ported normal/interrupted/repeated/UID/multi-hit/pool-reset regressions, Unity/Godot visual parity, Android performance.
 
 ## Continuation plan
 1. Supply exact missing logical input; rerun full305 manifest reconstruction audit without modifying Godot publication.
-2. Resolve baseline Unity batch startup on this dedicated worktree.
+2. Rerun baseline Unity batch on the dedicated worktree; monitor the elevated process and let initial asset import finish before inspecting or restoring metadata.
 3. Incrementally port post192 route/receipt infrastructure, preserving existing StageCombat actor timing and indices divisible by3, UV1 HDR gain and linear RGB semantics.
 4. Apply each selected effect with exact owner/receipt predicates; preserve installed/ambient/trigger UID distinctions and Scald semantics. Exclude checkpoint311.
 5. Capture actual Unity conditions and verify lifecycle/other-route regressions before claiming parity.
