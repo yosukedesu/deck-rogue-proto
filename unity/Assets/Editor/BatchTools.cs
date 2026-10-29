@@ -53,16 +53,10 @@ namespace DeckRogue.EditorTools
                 var commands = (JArray)golden["commands"];
                 var hashes = (JArray)golden["hashes"];
                 if (origin == null || commands == null || hashes == null) { Debug.LogError($"[DeckRogue] {name}: origin/commands/hashes が無い"); failedFiles++; continue; }
-                var kind = (string)origin["kind"] ?? "run";
-                if (kind != "run") { Debug.LogError($"[DeckRogue] {name}: origin.kind={kind} は未対応"); failedFiles++; continue; }
-
-                var seed = (int)origin["seed"];
-                var leaderId = (string)origin["leaderId"];
-                var deckId = (string)origin["deckId"];
-                var difficulty = origin["difficulty"] != null ? (int)origin["difficulty"] : Run.DEFAULT_DIFFICULTY;
-
+                // Use the engine replay origin exactly as the dotnet golden harness does.
+                // Checkpoint origins are established fixtures, not a different expectation.
                 RunState run;
-                try { run = Run.CreateRun(seed, ReactionModes.SetConfirm, leaderId, deckId, difficulty); }
+                try { run = Run.ReplayInitialRun(JsonUnions.FromToken<ReplayOrigin>(origin)); }
                 catch (Exception e) { Debug.LogError($"[DeckRogue] {name}: ラン生成で例外: {e.Message}"); failedFiles++; continue; }
 
                 var count = Math.Min(commands.Count, hashes.Count);
