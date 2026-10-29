@@ -84,6 +84,7 @@ namespace DeckRogue.Game {
     if(ResolvedCombatFx.IsResolved(combat.EventLog[i])) {
      var ticket=ResolvedCombatFx.Capture(g,combat.EventLog[i]);captured[i]=ticket;
      ticket.LightBoltBinding=Hd2dLightBoltBinding.Capture(ticket,batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
+     ticket.TripleHornBinding=TripleHornBinding.Capture(ticket,batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation,()=>g.LeaderId=="leader_green");
      ticket.LightBurstBinding=LightBurstBinding.Capture(ticket,batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation,()=>g.LeaderId=="leader_white");
      ticket.ColdSweepBinding=Hd2dColdSweepBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);
      ticket.ImpSparkBinding=ImpSparkBinding.Capture(batch,Numeric.Find(i,combat.EventLog[i]),()=>Numeric.Generation);

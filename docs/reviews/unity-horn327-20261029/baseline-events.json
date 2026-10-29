@@ -1,0 +1,90 @@
+[
+  {
+    "cardId": "green_triple_horn",
+    "type": "CardPlayed"
+  },
+  {
+    "presentationReceipt": {
+      "version": 1,
+      "target": "enemy",
+      "enemyIndex": 0,
+      "enemyId": "enemy_probe",
+      "before": {
+        "hp": 200,
+        "maxHp": 200,
+        "block": 0
+      },
+      "after": {
+        "hp": 195,
+        "maxHp": 200,
+        "block": 0
+      }
+    },
+    "source": "player",
+    "amount": 5,
+    "hpLoss": 5,
+    "enemyIndex": 0,
+    "presentationSource": {
+      "kind": "card",
+      "definitionId": "green_triple_horn",
+      "uid": "green_triple_horn#dbgh0"
+    },
+    "type": "DamageDealt"
+  },
+  {
+    "presentationReceipt": {
+      "version": 1,
+      "target": "enemy",
+      "enemyIndex": 0,
+      "enemyId": "enemy_probe",
+      "before": {
+        "hp": 195,
+        "maxHp": 200,
+        "block": 0
+      },
+      "after": {
+        "hp": 190,
+        "maxHp": 200,
+        "block": 0
+      }
+    },
+    "source": "player",
+    "amount": 5,
+    "hpLoss": 5,
+    "enemyIndex": 0,
+    "presentationSource": {
+      "kind": "card",
+      "definitionId": "green_triple_horn",
+      "uid": "green_triple_horn#dbgh0"
+    },
+    "type": "DamageDealt"
+  },
+  {
+    "presentationReceipt": {
+      "version": 1,
+      "target": "enemy",
+      "enemyIndex": 0,
+      "enemyId": "enemy_probe",
+      "before": {
+        "hp": 190,
+        "maxHp": 200,
+        "block": 0
+      },
+      "after": {
+        "hp": 185,
+        "maxHp": 200,
+        "block": 0
+      }
+    },
+    "source": "player",
+    "amount": 5,
+    "hpLoss": 5,
+    "enemyIndex": 0,
+    "presentationSource": {
+      "kind": "card",
+      "definitionId": "green_triple_horn",
+      "uid": "green_triple_horn#dbgh0"
+    },
+    "type": "DamageDealt"
+  }
+]

@@ -441,6 +441,7 @@ namespace DeckRogue.Game
                                     () => Current(captured, v, e) && Stage.ImpactTargetCurrent(t.Target, t.Impact), 1f, captured.LightPower, () => Time.time - captured.Started);
                                 if(ownedLightBolt)StageFx.BindFloorReceiver(captured.Light,2,LightBoltFloorReceiveCandidate,()=>Current(captured,v,e)&&Stage.ImpactTargetCurrent(t.Target,t.Impact));
                                 if(ownedLightBolt)StageFx.BindAttackReceiver(captured.Light,t.Impact?.Target,2,LightBoltActorReceiveCandidate,()=>Current(captured,v,e)&&Stage.ImpactTargetCurrent(t.Target,t.Impact));
+                                if(t.TripleHornBinding?.Eligible(t)==true&&captured.Light!=null)captured.Light.TripleHorn=t.TripleHornBinding;
                                 captured.Light?.Land();
                             }
                             t.AuthoredRenderer = RendererId; return true;

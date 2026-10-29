@@ -230,6 +230,7 @@ namespace DeckRogue.Game
             internal string Key; internal object Identity; internal int Epoch; internal long Serial;
             internal Vector3 Impact,Feet; internal float Height,Start,Power; internal bool Active=true,Landed;
             internal WorldBattleFx.AttackSpec Spec; internal Func<bool> Valid; internal Func<float> AgeProvider;
+            internal TripleHornBinding TripleHorn;
             internal int FloorReceiveFamily;internal float FloorReceiveScale=1;internal Func<bool> FloorReceiveValid;
             internal Material AttackReceiverMaterial;internal float AttackReceiverScale=1;internal int AttackReceiverFamily;internal Func<bool> AttackReceiverValid;
             internal Material ReceiverMaterial;internal float ReceiverScale=1f;internal Func<bool> ReceiverValid;
@@ -300,7 +301,7 @@ namespace DeckRogue.Game
         static void ClearContractLights() {
             foreach(var c in ContractContributions)c.Active=false;
             foreach(var g in ContractGroups){RetireContractSlot(g.Target,g);RetireContractSlot(g.Floor,g);}
-            ContractContributions.Clear();ContractGroups.Clear();_contractTargetSum=_contractFloorSum=0f;RefreshOwnedReceivers();RefreshAttackReceivers();RefreshFloorReceivers();
+            ContractContributions.Clear();ContractGroups.Clear();_contractTargetSum=_contractFloorSum=0f;RefreshOwnedReceivers();RefreshAttackReceivers();RefreshFloorReceivers();RefreshTripleHornReceivers();
         }
         static Slot PickContractSlot(bool allowEviction) {
             Slot best=null;long oldest=long.MaxValue;
@@ -377,7 +378,7 @@ namespace DeckRogue.Game
                 g.Target=UpdateContractEndpoint(g,g.Target,false,ContractCapScale(_contractTargetSum),admit);
                 if(lights>1)g.Floor=UpdateContractEndpoint(g,g.Floor,true,ContractCapScale(_contractFloorSum),admit);
             }
-    RefreshOwnedReceivers();RefreshAttackReceivers();RefreshFloorReceivers();
+    RefreshOwnedReceivers();RefreshAttackReceivers();RefreshFloorReceivers();RefreshTripleHornReceivers();
         }
         internal static void BindFloorReceiver(ContractLightPlayback light,int family,float factor,Func<bool> valid){if(light==null||factor>=.999f||factor<=0||family<1||family>2)return;light.FloorReceiveFamily=family;light.FloorReceiveScale=Mathf.Clamp(factor,.01f,1);light.FloorReceiveValid=valid;}
         static void RefreshFloorReceivers(){
@@ -391,6 +392,21 @@ namespace DeckRogue.Game
                 }
             }
             if(values.Count>4)values.Clear();OwnedFloorReceive.Apply(values);
+        }
+        static void RefreshTripleHornReceivers(){
+            var values=new List<Vector4>();TripleHornBinding selected=null;bool invalid=false;
+            foreach(var group in ContractGroups)if(group.Selected){
+                TripleHornBinding owner=null;bool mixed=false;
+                foreach(var c in group.Contributions){var b=c.TripleHorn;if(b==null||!b.Current){mixed=true;break;}if(owner!=null&&(!ReferenceEquals(owner.Target,b.Target)||!ReferenceEquals(owner.Hero,b.Hero))){mixed=true;break;}owner=b;}
+                if(mixed||owner==null)continue;
+                if(selected!=null&&(!ReferenceEquals(selected.Target,owner.Target)||!ReferenceEquals(selected.Hero,owner.Hero))){invalid=true;break;}selected=owner;
+                foreach(var slot in new[]{group.Target,group.Floor}){
+                    if(slot?.Light==null||!slot.Light.isActiveAndEnabled)continue;var pos=slot.Light.transform.position;bool collision=false;
+                    foreach(var other in _slots)if(other.Light!=null&&other.Light!=slot.Light&&other.Light.isActiveAndEnabled&&(other.Light.transform.position-pos).sqrMagnitude<1e-4f){collision=true;break;}
+                    if(collision){invalid=true;break;}values.Add(new Vector4(pos.x,pos.y,pos.z,1));
+                }
+            }
+            if(invalid)values.Clear();TripleHornReceiveState.Apply(values,selected?.Hero,selected?.Target);
         }
         static readonly HashSet<Material> AttackReceiverMaterials=new HashSet<Material>();
         // Opt-in actor-only candidate. Floor and world lights remain unchanged.
@@ -793,7 +809,7 @@ namespace DeckRogue.Game
             var contacts=new List<object>();foreach(var c in ContractContributions)contacts.Add(new{floorReceiveFamily=c.FloorReceiveFamily,floorReceiveScale=c.FloorReceiveScale,attackReceiveScale=c.AttackReceiverScale,attackReceiveFamily=c.AttackReceiverFamily,serial=c.Serial,key=c.Key,active=c.Active,landed=c.Landed,age=c.Age,power=c.Power,targetPeak=c.Spec.TargetPeakMultiplier,floorPeak=c.Spec.FloorPeakMultiplier});
             var receivers=new List<object>();foreach(var m in OwnedReceiverMaterials)if(m!=null){var a=m.GetVectorArray("_OwnedHealReceiveLights");receivers.Add(new{material=m.GetEntityId().ToString(),count=m.GetFloat("_OwnedHealReceiveCount"),lights=Array.ConvertAll(a,v=>new[]{v.x,v.y,v.z,v.w}),flash=m.GetFloat("_Flash"),whiteCap=m.GetFloat("_WhiteCap")});}
             var actorCounts=new List<object>();foreach(var key in new[]{"player","enemy0"}){var c=Stage.CaptureImpact(key)?.Target as Component;var m=c?.GetComponent<MeshRenderer>()?.sharedMaterial;if(m!=null)actorCounts.Add(new{flash=m.GetFloat("_Flash"),attackCount=m.GetFloat("_OwnedAttackReceiveCount"),attackLights=Array.ConvertAll(m.GetVectorArray("_OwnedAttackReceiveLights")??Array.Empty<Vector4>(),v=>new[]{v.x,v.y,v.z,v.w}),key,material=m.GetEntityId().ToString(),count=m.GetFloat("_OwnedHealReceiveCount")});}
-            return new{floorReceivers=OwnedFloorReceive.Capture(),targetRawSum=_contractTargetSum,floorRawSum=_contractFloorSum,slots,contacts,receivers,actorCounts};
+            return new{tripleHorn=TripleHornReceiveState.Capture(),floorReceivers=OwnedFloorReceive.Capture(),targetRawSum=_contractTargetSum,floorRawSum=_contractFloorSum,slots,contacts,receivers,actorCounts};
         }
         static void EnsureDriver()
         {

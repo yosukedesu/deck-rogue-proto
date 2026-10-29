@@ -1,0 +1,496 @@
+{
+  "localEffects": [],
+  "canopyProjection": [],
+  "index": 19,
+  "frame": 1024,
+  "time": 23.2333336,
+  "delta": 0.0333333351,
+  "hp": 17,
+  "activeFx": 3,
+  "visibleDraws": 6,
+  "effects": [
+    {
+      "effectIdentity": 1170203776,
+      "ownedCanopy": false,
+      "sourceUid": "green_triple_horn#dbgh0",
+      "canopyCommitted": false,
+      "lightPower": 1.0,
+      "hitIndex": 0,
+      "expectedTime": 22.8666668,
+      "actualContactTime": 22.8666668,
+      "serial": 16,
+      "landed": true,
+      "age": 0.3666668,
+      "committed": false,
+      "layers": [
+        {
+          "kind": 6.0,
+          "enabled": false,
+          "verticesWithAlpha": 6,
+          "maxAlpha": 0.0005357384,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 7.0,
+          "enabled": false,
+          "verticesWithAlpha": 6,
+          "maxAlpha": 0.04296314,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 5.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 3.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 512,
+          "textureHeight": 256
+        },
+        {
+          "kind": 9.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 512,
+          "textureHeight": 256
+        },
+        {
+          "kind": 3.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 1.0,
+          "enabled": false,
+          "verticesWithAlpha": 12,
+          "maxAlpha": 0.000824213,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 2.0,
+          "enabled": false,
+          "verticesWithAlpha": 30,
+          "maxAlpha": 0.0247907583,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 4.0,
+          "enabled": false,
+          "verticesWithAlpha": 6,
+          "maxAlpha": 0.0134550473,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        }
+      ]
+    },
+    {
+      "effectIdentity": 1170203776,
+      "ownedCanopy": false,
+      "sourceUid": "green_triple_horn#dbgh0",
+      "canopyCommitted": false,
+      "lightPower": 1.0,
+      "hitIndex": 1,
+      "expectedTime": 23.0466671,
+      "actualContactTime": 23.0666676,
+      "serial": 17,
+      "landed": true,
+      "age": 0.166666031,
+      "committed": false,
+      "layers": [
+        {
+          "kind": 6.0,
+          "enabled": false,
+          "verticesWithAlpha": 6,
+          "maxAlpha": 0.0005357384,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 7.0,
+          "enabled": true,
+          "verticesWithAlpha": 12,
+          "maxAlpha": 0.362456679,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 5.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 3.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 512,
+          "textureHeight": 256
+        },
+        {
+          "kind": 9.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 512,
+          "textureHeight": 256
+        },
+        {
+          "kind": 3.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 1.0,
+          "enabled": false,
+          "verticesWithAlpha": 12,
+          "maxAlpha": 0.000824213,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 2.0,
+          "enabled": true,
+          "verticesWithAlpha": 30,
+          "maxAlpha": 0.240263849,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 4.0,
+          "enabled": true,
+          "verticesWithAlpha": 6,
+          "maxAlpha": 0.111111507,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        }
+      ]
+    },
+    {
+      "effectIdentity": 1170203776,
+      "ownedCanopy": false,
+      "sourceUid": "green_triple_horn#dbgh0",
+      "canopyCommitted": false,
+      "lightPower": 1.0,
+      "hitIndex": 2,
+      "expectedTime": 23.2266674,
+      "actualContactTime": 23.2333336,
+      "serial": 18,
+      "landed": true,
+      "age": 0.0,
+      "committed": false,
+      "layers": [
+        {
+          "kind": 6.0,
+          "enabled": true,
+          "verticesWithAlpha": 6,
+          "maxAlpha": 0.65,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 7.0,
+          "enabled": true,
+          "verticesWithAlpha": 12,
+          "maxAlpha": 1.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 5.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 3.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 512,
+          "textureHeight": 256
+        },
+        {
+          "kind": 9.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 512,
+          "textureHeight": 256
+        },
+        {
+          "kind": 3.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 1.0,
+          "enabled": true,
+          "verticesWithAlpha": 12,
+          "maxAlpha": 1.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 2.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        },
+        {
+          "kind": 4.0,
+          "enabled": false,
+          "verticesWithAlpha": 0,
+          "maxAlpha": 0.0,
+          "shader": "DeckRogue/Hd2dPrototype",
+          "textureWidth": 0,
+          "textureHeight": 0
+        }
+      ]
+    }
+  ],
+  "healFx": [],
+  "lightAudit": {
+    "tripleHorn": {
+      "probe": true,
+      "factor": 0.12,
+      "count": 2,
+      "lights": [
+        [
+          5.248807,
+          1.03281355,
+          2.32133222,
+          0.12
+        ],
+        [
+          5.248807,
+          0.414678067,
+          2.230969,
+          0.12
+        ]
+      ],
+      "actors": [
+        {
+          "key": "player",
+          "material": "19496:2304",
+          "receiver": 1.0
+        },
+        {
+          "key": "enemy0",
+          "material": "19102:4352",
+          "receiver": 0.0
+        },
+        {
+          "key": "enemy1",
+          "material": "19226:3328",
+          "receiver": 1.0
+        },
+        {
+          "key": "enemy2",
+          "material": "19367:2816",
+          "receiver": 0.0
+        }
+      ]
+    },
+    "floorReceivers": [],
+    "targetRawSum": 1.0,
+    "floorRawSum": 1.0,
+    "slots": [
+      {
+        "kind": "contract-attack-target",
+        "key": "enemy1",
+        "enabled": true,
+        "intensity": 4.455,
+        "color": [
+          1.0,
+          0.8784314,
+          0.6313726
+        ],
+        "position": [
+          5.248807,
+          1.03281355,
+          2.32133222
+        ],
+        "peak": 4.455,
+        "age": 0.0,
+        "duration": 0.38
+      },
+      {
+        "kind": "contract-attack-floor",
+        "key": "enemy1",
+        "enabled": true,
+        "intensity": 18.27,
+        "color": [
+          1.0,
+          0.8784314,
+          0.6313726
+        ],
+        "position": [
+          5.248807,
+          0.414678067,
+          2.230969
+        ],
+        "peak": 18.27,
+        "age": 0.0,
+        "duration": 0.38
+      }
+    ],
+    "contacts": [
+      {
+        "floorReceiveFamily": 0,
+        "floorReceiveScale": 1.0,
+        "attackReceiveScale": 1.0,
+        "attackReceiveFamily": 0,
+        "serial": 16,
+        "key": "enemy1",
+        "active": true,
+        "landed": true,
+        "age": 0.3666668,
+        "power": 1.0,
+        "targetPeak": 0.11,
+        "floorPeak": 0.29
+      },
+      {
+        "floorReceiveFamily": 0,
+        "floorReceiveScale": 1.0,
+        "attackReceiveScale": 1.0,
+        "attackReceiveFamily": 0,
+        "serial": 17,
+        "key": "enemy1",
+        "active": true,
+        "landed": true,
+        "age": 0.166666031,
+        "power": 1.0,
+        "targetPeak": 0.11,
+        "floorPeak": 0.29
+      },
+      {
+        "floorReceiveFamily": 0,
+        "floorReceiveScale": 1.0,
+        "attackReceiveScale": 1.0,
+        "attackReceiveFamily": 0,
+        "serial": 18,
+        "key": "enemy1",
+        "active": true,
+        "landed": true,
+        "age": 0.0,
+        "power": 1.0,
+        "targetPeak": 0.11,
+        "floorPeak": 0.29
+      }
+    ],
+    "receivers": [],
+    "actorCounts": [
+      {
+        "flash": 0.0,
+        "attackCount": 0.0,
+        "attackLights": [],
+        "key": "player",
+        "material": "19496:2304",
+        "count": 0.0
+      },
+      {
+        "flash": 0.0,
+        "attackCount": 0.0,
+        "attackLights": [],
+        "key": "enemy0",
+        "material": "19102:4352",
+        "count": 0.0
+      }
+    ]
+  },
+  "receiverPose": {
+    "unit": "19101:3328",
+    "motion": 1,
+    "recoil": 1,
+    "anim": "idle",
+    "frame": 5,
+    "frameT": 0.08333336,
+    "flashRemaining": 0.0,
+    "materialFlash": 0.0,
+    "offset": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "kick": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "sourcePose": {
+    "unit": "19489:2304",
+    "motion": 3,
+    "recoil": 1,
+    "anim": "idle",
+    "frame": 0,
+    "frameT": 0.145000011,
+    "flashRemaining": 0.0,
+    "materialFlash": 0.0,
+    "offset": [
+      8.922278,
+      0.0,
+      2.85551476
+    ],
+    "kick": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "boundedVisibleDraws": 0,
+  "boundedEffects": []
+}

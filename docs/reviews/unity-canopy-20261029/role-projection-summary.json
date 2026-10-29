@@ -1,0 +1,1256 @@
+{
+  "baseline": [
+    {
+      "frame": 7,
+      "target": "enemy0",
+      "age": 0.0,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        717.53656,
+        291.387878,
+        791.6478,
+        328.003571
+      ],
+      "bboxSize": [
+        74.11123999999995,
+        36.61569300000002
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 8,
+      "target": "enemy0",
+      "age": 0.0333333,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        717.53656,
+        291.387878,
+        791.6478,
+        328.003571
+      ],
+      "bboxSize": [
+        74.11123999999995,
+        36.61569300000002
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 9,
+      "target": "enemy0",
+      "age": 0.06666684,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        717.817139,
+        291.618,
+        791.6478,
+        327.995544
+      ],
+      "bboxSize": [
+        73.83066099999996,
+        36.377544
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.131126687,
+        0.992795765
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 9,
+      "target": "enemy1",
+      "age": 0.0,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        896.5402,
+        277.2685,
+        970.6051,
+        313.861237
+      ],
+      "bboxSize": [
+        74.06489999999997,
+        36.592737
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 10,
+      "target": "enemy0",
+      "age": 0.100000143,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        721.05835,
+        294.276062,
+        791.6478,
+        327.9028
+      ],
+      "bboxSize": [
+        70.58944999999994,
+        33.62673799999999
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.09652706,
+        0.8015734
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 10,
+      "target": "enemy1",
+      "age": 0.0333333,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        896.5402,
+        277.2685,
+        970.6051,
+        313.861237
+      ],
+      "bboxSize": [
+        74.06489999999997,
+        36.592737
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 10,
+      "target": "enemy2",
+      "age": 0.0,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1076.526,
+        273.237579,
+        1150.57764,
+        309.823822
+      ],
+      "bboxSize": [
+        74.0516399999999,
+        36.586243000000024
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 11,
+      "target": "enemy0",
+      "age": 0.133333445,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        726.231934,
+        298.518738,
+        791.6478,
+        327.75473
+      ],
+      "bboxSize": [
+        65.41586599999994,
+        29.23599200000001
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.0464090221,
+        0.4893244
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 11,
+      "target": "enemy1",
+      "age": 0.0666666,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        896.8206,
+        277.498383,
+        970.6051,
+        313.8532
+      ],
+      "bboxSize": [
+        73.78449999999998,
+        36.354817000000025
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.131126776,
+        0.9927962
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 11,
+      "target": "enemy2",
+      "age": 0.0333333,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1076.526,
+        273.237579,
+        1150.57764,
+        309.823822
+      ],
+      "bboxSize": [
+        74.0516399999999,
+        36.586243000000024
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 12,
+      "target": "enemy0",
+      "age": 0.166666746,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        731.1908,
+        302.585358,
+        791.6478,
+        327.612854
+      ],
+      "bboxSize": [
+        60.456999999999994,
+        25.027496000000042
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.0132492483,
+        0.214018047
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 12,
+      "target": "enemy1",
+      "age": 0.0999999046,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        900.0598,
+        280.154755,
+        970.6051,
+        313.760529
+      ],
+      "bboxSize": [
+        70.5453,
+        33.605774
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.09652743,
+        0.801575541
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 12,
+      "target": "enemy2",
+      "age": 0.0666666,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1076.8064,
+        273.467468,
+        1150.57764,
+        309.8158
+      ],
+      "bboxSize": [
+        73.77124000000003,
+        36.34833200000003
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.131126776,
+        0.9927962
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 15,
+      "target": "enemy0",
+      "age": 0.266666651,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        733.7879,
+        304.715179,
+        791.6478,
+        327.538544
+      ],
+      "bboxSize": [
+        57.859899999999925,
+        22.823365000000024
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.001768045,
+        0.0439777933
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 15,
+      "target": "enemy1",
+      "age": 0.199999809,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        912.7814,
+        290.5874,
+        970.6051,
+        313.396454
+      ],
+      "bboxSize": [
+        57.82370000000003,
+        22.809054000000003
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.00176807935,
+        0.043978598
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 15,
+      "target": "enemy2",
+      "age": 0.166666508,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1090.16931,
+        284.426,
+        1150.57764,
+        309.4334
+      ],
+      "bboxSize": [
+        60.40832999999998,
+        25.00740000000002
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.0132493954,
+        0.214019611
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    }
+  ],
+  "candidate": [
+    {
+      "frame": 7,
+      "target": "enemy0",
+      "age": 0.0,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        717.53656,
+        291.387878,
+        791.6478,
+        328.003571
+      ],
+      "bboxSize": [
+        74.11123999999995,
+        36.61569300000002
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 8,
+      "target": "enemy0",
+      "age": 0.0333333,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        717.53656,
+        291.387878,
+        791.6478,
+        328.003571
+      ],
+      "bboxSize": [
+        74.11123999999995,
+        36.61569300000002
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 9,
+      "target": "enemy0",
+      "age": 0.0666666,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        717.817139,
+        291.618,
+        791.6478,
+        327.995544
+      ],
+      "bboxSize": [
+        73.83066099999996,
+        36.377544
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.131126776,
+        0.9927962
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 9,
+      "target": "enemy1",
+      "age": 0.0,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        896.5402,
+        277.2685,
+        970.6051,
+        313.861237
+      ],
+      "bboxSize": [
+        74.06489999999997,
+        36.592737
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 10,
+      "target": "enemy0",
+      "age": 0.0999999046,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        721.05835,
+        294.276,
+        791.6478,
+        327.9028
+      ],
+      "bboxSize": [
+        70.58944999999994,
+        33.6268
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.09652743,
+        0.801575541
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 10,
+      "target": "enemy1",
+      "age": 0.0333333,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        896.5402,
+        277.2685,
+        970.6051,
+        313.861237
+      ],
+      "bboxSize": [
+        74.06489999999997,
+        36.592737
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 10,
+      "target": "enemy2",
+      "age": 0.0,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1076.526,
+        273.237579,
+        1150.57764,
+        309.823822
+      ],
+      "bboxSize": [
+        74.0516399999999,
+        36.586243000000024
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 11,
+      "target": "enemy0",
+      "age": 0.133333683,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        726.232,
+        298.518738,
+        791.6478,
+        327.75473
+      ],
+      "bboxSize": [
+        65.41579999999999,
+        29.23599200000001
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.0464086942,
+        0.4893221
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 11,
+      "target": "enemy1",
+      "age": 0.06666708,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        896.8206,
+        277.4984,
+        970.6051,
+        313.8532
+      ],
+      "bboxSize": [
+        73.78449999999998,
+        36.35480000000001
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.131126612,
+        0.9927954
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 11,
+      "target": "enemy2",
+      "age": 0.03333378,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1076.526,
+        273.237579,
+        1150.57764,
+        309.823822
+      ],
+      "bboxSize": [
+        74.0516399999999,
+        36.586243000000024
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 12,
+      "target": "enemy0",
+      "age": 0.166666985,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        731.190857,
+        302.585419,
+        791.6478,
+        327.612854
+      ],
+      "bboxSize": [
+        60.45694299999991,
+        25.027435000000025
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.0132490993,
+        0.214016438
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 12,
+      "target": "enemy1",
+      "age": 0.100000381,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        900.0598,
+        280.1548,
+        970.6051,
+        313.760529
+      ],
+      "bboxSize": [
+        70.5453,
+        33.605729
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.09652671,
+        0.801571369
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 12,
+      "target": "enemy2",
+      "age": 0.06666708,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1076.80652,
+        273.467468,
+        1150.57764,
+        309.8158
+      ],
+      "bboxSize": [
+        73.77111999999988,
+        36.34833200000003
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.131126612,
+        0.9927954
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 15,
+      "target": "enemy0",
+      "age": 0.2666669,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        733.7879,
+        304.715179,
+        791.6478,
+        327.538544
+      ],
+      "bboxSize": [
+        57.859899999999925,
+        22.823365000000024
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.0017680109,
+        0.04397699
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 15,
+      "target": "enemy1",
+      "age": 0.200000286,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        912.7814,
+        290.5874,
+        970.6051,
+        313.396454
+      ],
+      "bboxSize": [
+        57.82370000000003,
+        22.809054000000003
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.0017680109,
+        0.04397699
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 15,
+      "target": "enemy2",
+      "age": 0.166666985,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1090.16943,
+        284.4261,
+        1150.57764,
+        309.4334
+      ],
+      "bboxSize": [
+        60.408210000000054,
+        25.007299999999987
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.0132490993,
+        0.214016438
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    }
+  ],
+  "candidate-notilt": [
+    {
+      "frame": 7,
+      "target": "enemy0",
+      "age": 0.0,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        717.53656,
+        291.387878,
+        791.6478,
+        328.003571
+      ],
+      "bboxSize": [
+        74.11123999999995,
+        36.61569300000002
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 8,
+      "target": "enemy0",
+      "age": 0.0333333,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        717.53656,
+        291.387878,
+        791.6478,
+        328.003571
+      ],
+      "bboxSize": [
+        74.11123999999995,
+        36.61569300000002
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 9,
+      "target": "enemy0",
+      "age": 0.0666666,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        717.817139,
+        291.618,
+        791.6478,
+        327.995544
+      ],
+      "bboxSize": [
+        73.83066099999996,
+        36.377544
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.131126776,
+        0.9927962
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 9,
+      "target": "enemy1",
+      "age": 0.0,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        896.5402,
+        277.2685,
+        970.6051,
+        313.861237
+      ],
+      "bboxSize": [
+        74.06489999999997,
+        36.592737
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 10,
+      "target": "enemy0",
+      "age": 0.100000381,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        721.05835,
+        294.276062,
+        791.6478,
+        327.9028
+      ],
+      "bboxSize": [
+        70.58944999999994,
+        33.62673799999999
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.09652671,
+        0.801571369
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 10,
+      "target": "enemy1",
+      "age": 0.03333378,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        896.5402,
+        277.2685,
+        970.6051,
+        313.861237
+      ],
+      "bboxSize": [
+        74.06489999999997,
+        36.592737
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 10,
+      "target": "enemy2",
+      "age": 0.0,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1076.526,
+        273.237579,
+        1150.57764,
+        309.823822
+      ],
+      "bboxSize": [
+        74.0516399999999,
+        36.586243000000024
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 11,
+      "target": "enemy0",
+      "age": 0.1333332,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        726.231934,
+        298.5187,
+        791.6478,
+        327.75473
+      ],
+      "bboxSize": [
+        65.41586599999994,
+        29.23602999999997
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.04640934,
+        0.489326566
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 11,
+      "target": "enemy1",
+      "age": 0.0666666,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        896.8206,
+        277.498383,
+        970.6051,
+        313.8532
+      ],
+      "bboxSize": [
+        73.78449999999998,
+        36.354817000000025
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.131126776,
+        0.9927962
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 11,
+      "target": "enemy2",
+      "age": 0.0333328247,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1076.526,
+        273.237579,
+        1150.57764,
+        309.823822
+      ],
+      "bboxSize": [
+        74.0516399999999,
+        36.586243000000024
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.133,
+        1.0
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 12,
+      "target": "enemy0",
+      "age": 0.166666985,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        731.190857,
+        302.585419,
+        791.6478,
+        327.612854
+      ],
+      "bboxSize": [
+        60.45694299999991,
+        25.027435000000025
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.0132490993,
+        0.214016438
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 12,
+      "target": "enemy1",
+      "age": 0.100000381,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        900.0598,
+        280.1548,
+        970.6051,
+        313.760529
+      ],
+      "bboxSize": [
+        70.5453,
+        33.605729
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.09652671,
+        0.801571369
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 12,
+      "target": "enemy2",
+      "age": 0.0666666,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1076.8064,
+        273.467468,
+        1150.57764,
+        309.8158
+      ],
+      "bboxSize": [
+        73.77124000000003,
+        36.34833200000003
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.131126776,
+        0.9927962
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 15,
+      "target": "enemy0",
+      "age": 0.2666664,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        733.7879,
+        304.715179,
+        791.6478,
+        327.538544
+      ],
+      "bboxSize": [
+        57.859899999999925,
+        22.823365000000024
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.05990029999999891,
+        0.05990029999999891
+      ],
+      "alphaRange": [
+        0.00176807935,
+        0.043978598
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 15,
+      "target": "enemy1",
+      "age": 0.199999809,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        912.7814,
+        290.5874,
+        970.6051,
+        313.396454
+      ],
+      "bboxSize": [
+        57.82370000000003,
+        22.809054000000003
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06386779999999703,
+        0.06386779999999703
+      ],
+      "alphaRange": [
+        0.00176807935,
+        0.043978598
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    },
+    {
+      "frame": 15,
+      "target": "enemy2",
+      "age": 0.166666031,
+      "role": 1,
+      "positiveVertices": 144,
+      "screenTopOriginBox": [
+        1090.16919,
+        284.425964,
+        1150.57764,
+        309.4334
+      ],
+      "bboxSize": [
+        60.4084499999999,
+        25.007435999999984
+      ],
+      "cameraZRelativeCapturedAnchor": [
+        0.06509779999999665,
+        0.06509779999999665
+      ],
+      "alphaRange": [
+        0.0132496944,
+        0.214022845
+      ],
+      "qualification": "Positive-alpha vertex envelope only; not fragment coverage or visible artwork area."
+    }
+  ]
+}

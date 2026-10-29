@@ -1,0 +1,94 @@
+{
+  "audit.py": {
+    "bytes": 2545,
+    "sha256": "192bfb89be9055852d6a2308c52fb56b222f59712100ac4e5364cc7ed89f4d1a"
+  },
+  "baseline-19.png": {
+    "bytes": 1002776,
+    "sha256": "898aba85779c25b2544d9cc337ae0bbe7c52b7c992653ff362cdf95fa9e0ace4"
+  },
+  "baseline-clock.json": {
+    "bytes": 181485,
+    "sha256": "c507eafa6e2f173a2ec14aacf60b56477e7992066ef32d0701841fc33790b9b9"
+  },
+  "baseline-events.json": {
+    "bytes": 1754,
+    "sha256": "b5accaa9c97d34e9b55c89bd1cc80dafc32be85824f1c8ab718e03cda0403e15"
+  },
+  "baseline-full.mp4": {
+    "bytes": 345656,
+    "sha256": "b92d8e13c31d67605fca62b8704bcf928b74f5d6ec4b318734c593ff17a80a9a"
+  },
+  "candidate-14.png": {
+    "bytes": 974674,
+    "sha256": "24cfbc8afe5d71a020eb16bd24a836e5fd9f4f297b332b3bdbbb1c18abb183bd"
+  },
+  "candidate-19.png": {
+    "bytes": 983585,
+    "sha256": "7e15cb5bef7eb5a0bdd62c8f2894752d88a2d2c404e5f927d651aba0596e1814"
+  },
+  "candidate-24.png": {
+    "bytes": 971942,
+    "sha256": "4a9908ef48a5bb6e13652a4fa01ff45f00e19ff69f1b507eb0d8cc26c1a9ce84"
+  },
+  "candidate-8.png": {
+    "bytes": 973952,
+    "sha256": "9a9a604e8e2d54f2d45d58f10faee7a5b8b0295d7c034a2e7258bbddcf212d62"
+  },
+  "candidate-clock.json": {
+    "bytes": 182433,
+    "sha256": "f85332f97780b93bd522dea1b1446d4e10c5ac921de786433896fc12ade4ba15"
+  },
+  "candidate-events.json": {
+    "bytes": 1754,
+    "sha256": "b5accaa9c97d34e9b55c89bd1cc80dafc32be85824f1c8ab718e03cda0403e15"
+  },
+  "candidate-full.mp4": {
+    "bytes": 326184,
+    "sha256": "38a72145a82ec2c2eab35fab35d544b92cb868da54d0163017326c8a7364810e"
+  },
+  "candidate-mid-19.png": {
+    "bytes": 989615,
+    "sha256": "bdc09f0f225afbce6c1817361bb6d8dd7192307e92d1b3cfed25ca212a772cf8"
+  },
+  "conditions.txt": {
+    "bytes": 2534,
+    "sha256": "94ff6b6566b6bc2e78ee9a80dff46d9f6c17cd58d495775c7563e3d651773097"
+  },
+  "godot-reference9.png": {
+    "bytes": 1498086,
+    "sha256": "b0342d0a59b75268f4f9a3d309872a743772d34e2d0089958acdf0880ed209a0"
+  },
+  "identity-pixel-check-initial-run.json": {
+    "bytes": 882,
+    "sha256": "80ea5e0d0e094e18ffd427118e19dac445f6efab99d0591f5592ffc714b9380b"
+  },
+  "light-pose-invariants.json": {
+    "bytes": 497,
+    "sha256": "4534d7e1383b4d6e29f0e8f6378d9c2f8937987806852259591035c55764c70a"
+  },
+  "preexisting-clock-observation.json": {
+    "bytes": 823,
+    "sha256": "d93b618d47b0059b3ae8b483e686f906a4fefa50edf78e22068a31bae38c25c4"
+  },
+  "README.md": {
+    "bytes": 3939,
+    "sha256": "9e37768e75781b4ff05d0c2be4104a4f2ac8ba1a232076d83fcc8f20b781acbb"
+  },
+  "source-handoff.md": {
+    "bytes": 9572,
+    "sha256": "f561442b59e7a9d6b31501621b921ddf7180ded8a39d77e703448368d5474661"
+  },
+  "trio-target1-19.png": {
+    "bytes": 991215,
+    "sha256": "1a005eb06173d5be2eb827a477e47307a12340fdb01ff3225587a1d1a89000a7"
+  },
+  "trio-target1-frame19-state.json": {
+    "bytes": 11731,
+    "sha256": "dcae0509105d3acbb2b0fe06d808aee7735056d554c4e3ccb1cf0758e4057d6a"
+  },
+  "validation-summary.json": {
+    "bytes": 3722,
+    "sha256": "52b0996500a13e377cf3ffce786bdba59990a8049fd25d7f028da269b02b5fc3"
+  }
+}

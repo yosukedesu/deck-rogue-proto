@@ -20,7 +20,7 @@ namespace DeckRogue.Game {
    public WorldBattleFx.AttackPlayback AttackPlayback;
    internal WaterPbfBinding PbfBinding;
    internal Hd2dLightBoltBinding LightBoltBinding;
-   internal LightBurstBinding LightBurstBinding;
+   internal LightBurstBinding LightBurstBinding; internal TripleHornBinding TripleHornBinding;
    internal Hd2dColdSweepBinding ColdSweepBinding;
    internal ImpSparkBinding ImpSparkBinding;
    internal CanopyBinding CanopyBinding;

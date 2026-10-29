@@ -1,0 +1,236 @@
+{
+  "baseline": {
+    "frames": 70,
+    "activeFrames": [
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "receivers": [
+      "enemy0",
+      "player"
+    ],
+    "factors": [
+      1.0
+    ],
+    "damage": 5,
+    "hits": 3,
+    "pierced": [
+      null,
+      null,
+      null
+    ],
+    "finalReset": true,
+    "startHp": 200,
+    "endHp": 185
+  },
+  "cancel": {
+    "frames": 70,
+    "activeFrames": [
+      19
+    ],
+    "receivers": [
+      "enemy0",
+      "player"
+    ],
+    "factors": [
+      0.12
+    ],
+    "damage": 5,
+    "hits": 3,
+    "pierced": [
+      null,
+      null,
+      null
+    ],
+    "finalReset": true,
+    "startHp": 200,
+    "endHp": 185
+  },
+  "candidate": {
+    "frames": 70,
+    "activeFrames": [
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "receivers": [
+      "enemy0",
+      "player"
+    ],
+    "factors": [
+      0.12
+    ],
+    "damage": 5,
+    "hits": 3,
+    "pierced": [
+      null,
+      null,
+      null
+    ],
+    "finalReset": true,
+    "eventsEqualBaseline": true,
+    "maxDifferences": {
+      "worldIntensity": 0.0001068000000010727,
+      "worldAge": 5.000000000143778e-07,
+      "hurt": 0,
+      "effectAge": 9.539999999974569e-07
+    },
+    "startHp": 200,
+    "endHp": 185
+  },
+  "candidate-mid": {
+    "frames": 70,
+    "activeFrames": [
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "receivers": [
+      "enemy0",
+      "player"
+    ],
+    "factors": [
+      0.3
+    ],
+    "damage": 5,
+    "hits": 3,
+    "pierced": [
+      null,
+      null,
+      null
+    ],
+    "finalReset": true,
+    "eventsEqualBaseline": true,
+    "maxDifferences": {
+      "worldIntensity": 0.00010870000000018365,
+      "worldAge": 9.50999999999036e-07,
+      "hurt": 0,
+      "effectAge": 9.630000000204753e-07
+    },
+    "startHp": 200,
+    "endHp": 185
+  },
+  "identity": {
+    "frames": 70,
+    "activeFrames": [],
+    "receivers": [],
+    "factors": [],
+    "damage": 5,
+    "hits": 3,
+    "pierced": [
+      null,
+      null,
+      null
+    ],
+    "finalReset": true,
+    "eventsEqualBaseline": true,
+    "maxDifferences": {
+      "worldIntensity": 0,
+      "worldAge": 2.520000000338918e-07,
+      "hurt": 0,
+      "effectAge": 4.999999999588667e-07
+    },
+    "startHp": 200,
+    "endHp": 185
+  },
+  "reuse": {
+    "frames": 70,
+    "activeFrames": [
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "receivers": [
+      "enemy0",
+      "player"
+    ],
+    "factors": [
+      0.12
+    ],
+    "damage": 5,
+    "hits": 3,
+    "pierced": [
+      null,
+      null,
+      null
+    ],
+    "finalReset": true,
+    "eventsEqualBaseline": true,
+    "maxDifferences": {
+      "worldIntensity": 0.0005407000000001716,
+      "worldAge": 3.3399999999975116e-06,
+      "hurt": 0,
+      "effectAge": 4.290000000004013e-06
+    },
+    "startHp": 200,
+    "endHp": 185
+  },
+  "trio-target1": {
+    "frames": 70,
+    "activeFrames": [
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "receivers": [
+      "enemy1",
+      "player"
+    ],
+    "factors": [
+      0.12
+    ],
+    "damage": 5,
+    "hits": 3,
+    "pierced": [
+      null,
+      null,
+      null
+    ],
+    "finalReset": true,
+    "startHp": 200,
+    "endHp": 185
+  },
+  "unowned-energy4": {
+    "frames": 70,
+    "activeFrames": [],
+    "receivers": [],
+    "factors": [],
+    "damage": 5,
+    "hits": 3,
+    "pierced": [
+      null,
+      null,
+      null
+    ],
+    "finalReset": true,
+    "startHp": 200,
+    "endHp": 185
+  },
+  "volley": {
+    "frames": 70,
+    "activeFrames": [],
+    "receivers": [],
+    "factors": [],
+    "damage": 2,
+    "hits": 3,
+    "pierced": [
+      null,
+      null,
+      null
+    ],
+    "finalReset": true,
+    "startHp": 200,
+    "endHp": 194
+  }
+}

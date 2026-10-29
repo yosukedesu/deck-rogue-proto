@@ -617,6 +617,7 @@ namespace DeckRogue.Game
             _stateSpec = spec;
             HD2DFlags.ApplyState(kv);
             ColdSweepFocusPass.Enabled=Get("coldfocus")!="0";
+            TripleHornReceiveState.Probe=Get("horn327probe")=="1";TripleHornReceiveState.Factor=float.TryParse(Get("hornreceive"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out var hornFactor)?Mathf.Clamp(hornFactor,.01f,1):1;
             LocalMaterialProfileFx.ReviewDisableBurst=Get("burst326")=="0";
             FireContinuousFx.ImpReviewMode=int.TryParse(Get("impprobe"),out int impProbe)?impProbe:0;
             Hd2dAttackFx.ReviewDisableLightBoltWorld=Get("boltworld")=="0";
@@ -813,6 +814,7 @@ namespace DeckRogue.Game
                     }
                     if (!ReferenceEquals(pl, st0.Player)) g.Rs = g.Rs with { Combat = st0 with { Player = pl } };
                     // 敵0の状態を直接いじる (演出の確認用 2026-09-17 ④⑥): ehp=<HP>・eexposed=<急所>・eblock=<ブロック>・hand=<cardId,...> (手札を差し替え)
+                    if(Get("horn327fixture")=="1"){var hs=g.Rs.Combat;int hi=int.TryParse(Get("target"),out var ht)?ht:0;if(hi>=0&&hi<hs.Enemies.Count){var he=new List<EnemyState>(hs.Enemies);he[hi]=he[hi] with {Hp=200,MaxHp=200,Block=0};g.Rs=g.Rs with {Combat=hs with {Enemies=he}};}}
                     var st1 = g.Rs.Combat;
                     if (st1.Enemies.Count > 0 && (Get("ehp") != null || Get("eexposed") != null || Get("eblock") != null))
                     {

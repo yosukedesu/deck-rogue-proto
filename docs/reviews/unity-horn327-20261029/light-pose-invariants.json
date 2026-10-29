@@ -1,0 +1,26 @@
+{
+  "candidate": {
+    "color": 0,
+    "position": 0,
+    "peak": 0.0001068000000010727,
+    "duration": 0,
+    "receiverOffset": 0,
+    "receiverKick": 0
+  },
+  "candidate-mid": {
+    "color": 0,
+    "position": 0,
+    "peak": 0.00010870000000018365,
+    "duration": 0,
+    "receiverOffset": 0,
+    "receiverKick": 0
+  },
+  "reuse": {
+    "color": 9.999999994736442e-08,
+    "position": 0,
+    "peak": 0.0005407000000001716,
+    "duration": 0,
+    "receiverOffset": 0,
+    "receiverKick": 0
+  }
+}

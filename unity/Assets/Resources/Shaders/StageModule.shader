@@ -304,6 +304,7 @@ Shader "DeckRogue/StageModule"
 
             // 段2 (レーン S): 点光源のループの添字 (LIGHT_LOOP の lightIndex) から、その光の位置 (xyz・w = 1 なら点光源/スポット・0 なら平行光)。
             // URP の GetAdditionalLight と同じ読み方 (cluster のループはそのままの添字・通常のループは物ごとの添字に直す・構造化バッファの版も)
+            #include "TripleHornReceive.hlsl"
             float4 HD2D_AdditionalLightPosition(uint loopIndex)
             {
             #if USE_CLUSTER_LIGHT_LOOP
@@ -604,6 +605,7 @@ Shader "DeckRogue/StageModule"
             #endif
                 LIGHT_LOOP_BEGIN(pixelLightCount)
                     Light al = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
+                    al.color *= TripleHornReceive(HD2D_AdditionalLightPosition(lightIndex));
                 #ifdef _LIGHT_LAYERS
                     if (IsMatchingLightLayer(al.layerMask, meshRenderingLayers))
                 #endif
