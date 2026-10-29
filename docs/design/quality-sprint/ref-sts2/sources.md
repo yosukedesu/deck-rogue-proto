@@ -22,3 +22,19 @@ Steam の公式スクショ 6 枚（`store.steampowered.com/api/appdetails?appid
 - 右に凡例の巻物（印をホバーすると同じ種類の節が光る）・左上に戻るの赤いリボン・左下に落書きの道具（羽根ペン・消しゴム・全消し）。
 - 節のホバー＝札「Floor 28／65/82 HP・288 Gold（見込み）／Unknown - Treasure／Rewards: 36 Gold・Planisphere」。
 - 画面に見える行は 8〜9（1 幕 15 行）。紙の外は暗い洞窟で、地図の外に世界がのぞく。
+
+## #3 場面化の参照（2026-10-29 に追加）
+
+| ファイル | 画面 | 出どころ |
+|---|---|---|
+| `sts2-rest-site-2options.jpg` | 焚き火（休む／鍛える の 2 択。「What shall I do?」の下に絵札。主人公が火のそばに座る） | Steam コミュニティ: https://images.steamusercontent.com/ugc/11771019016913427548/5B88D70B089C2FDF7DB3FFC4587722A78B77C7F9/ |
+| `sts2-rest-site-5options.jpg` | 焚き火（レリックで 5 択に増えた例） | Steam コミュニティ: https://images.steamusercontent.com/ugc/17282976147471898768/B35B26716B4277AEAC18A8C374EF801483604AC9/ |
+| `sts2-card-reward.jpg` | 札の報酬（「Choose a Card」の旗・札 3 枚・Skip。戦闘の場面が暗く残る） | Steam コミュニティ: https://images.steamusercontent.com/ugc/10327946532080271058/31F85CFF0CF62317734A5585903978EB4A3D4E18/ |
+| `sts2-loot-list.jpg` | 戦利品の一覧（「Loot!」の旗・行ごとの札・Skip） | Steam コミュニティ: https://images.steamusercontent.com/ugc/15542666067643786882/95840BE3BE0C224404A1FA8E4055BDDD838910D0/ |
+| `sts2-treasure-chest.jpg` | 宝箱（大きな箱の一枚絵・Proceed） | Steam コミュニティ: https://images.steamusercontent.com/ugc/13863002256382651624/CF1A287C9792F45232B72908E77B4CB2023C4C57/ |
+| `sts2-relic-popup.jpg` | レリックの札（名前・絵・本文・左右の矢） | Steam コミュニティ: https://images.steamusercontent.com/ugc/16450327039589062610/50E5E4D5CD6CD2B1C41E318B7CC76233EBD9C96F/ |
+| `sts2-shop-official.jpg` | 店（天幕の中に行商人・品物は机の上の札と床の品・Proceed の赤いリボン） | Steam 公式スクショ（appdetails 2868840） |
+| `sts2-event-official.jpg` | 出来事（左に大きな絵・右に名前と本文・選択肢の札） | Steam 公式スクショ |
+| `sts2-neow-official.jpg` | Neow（出立の相手。大きな絵と台詞・3 択） | Steam 公式スクショ |
+
+読めた本家の文法: **どの画面も「場面」の上に UI が乗る**（店＝天幕と行商人・焚き火＝主人公が火のそばに座る・報酬＝戦闘の場面を暗くしたまま旗と札・宝箱＝箱そのものが主役・出来事＝絵が画面の半分）。選択肢は紙の板でなく絵札（焚き火の Rest／Smith）。進む＝赤いリボンの Proceed／Skip。
