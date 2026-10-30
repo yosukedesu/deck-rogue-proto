@@ -1,0 +1,42 @@
+{
+  "_doc": [
+    "幕1の軽い設計図 (2026-10-30 ユーザー「Xperia 5 II だとかなりカクつく。S25 はカクつかない」)。持ち主は GfxQuality (画質の段)。",
+    "スマホの段 (実機か tier=phone) で画質が 標準 か 軽量 の時だけ、全部の層 (.phone・変種の .phone・承認済みの森 look_act1_integrated) の後に最後に重ねる = 重さの値が必ず勝つ。",
+    "中身は W4 P31 の段3 (look_act1_phone3) と同じ間引きに、影つきの光を月だけ (256) に減らし、グレインと色収差を切ったもの。構図・霧の色・ぼかしの帯は変えない。",
+    "  光の筋 (shaft)・霧の面 (fog)・霧の板 (mist) は組まない (dropKinds)。揺れ (sway) と半立体の法線 (normalAtlas) なし。逆光なし。ぼかしの点はスマホの半分 (8/6)。",
+    "  影: maxShadowedLights 1 (EnforceShadowCap が 逆光 → 舞台の灯 → 月 の順に切るので、残るのは月)・mainResolution 256。",
+    "軽量はこの上に look_act1.light2 (影なし) を重ね、コードの側で 舞台を 0.75 倍 (renderScale) とぼかしなし (TiltShiftSettings.Enabled=false)。",
+    "設計図は箱庭の組み立て (戦闘の始まり) で読むので、設定を変えた後は次の戦闘から効く。PC の撮影で見るには STATE に tier=phone;gfx=std (か gfx=low)。"
+  ],
+  "materials": {
+    "glow": {
+      "intensity": 0
+    }
+  },
+  "diorama": {
+    "dropKinds": [
+      "shaft",
+      "fog",
+      "mist"
+    ],
+    "sway": false,
+    "normalAtlas": false
+  },
+  "backlight": {
+    "on": false
+  },
+  "shadow": {
+    "maxShadowedLights": 1,
+    "mainResolution": 256
+  },
+  "post": {
+    "filmGrain": false,
+    "chromaticAberration": false
+  },
+  "tiltShiftPass": {
+    "phone": {
+      "taps": 8,
+      "nearOwnTaps": 6
+    }
+  }
+}

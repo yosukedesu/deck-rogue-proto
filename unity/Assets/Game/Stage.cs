@@ -1142,7 +1142,8 @@ namespace DeckRogue.Game
         /// <summary>箱庭の組み方の名札。組むのに使う旗 (幹 trunk=・光の設計図 look=・段 tier=) が変われば別の名札 = Paint が組み直す</summary>
         static string DioramaSignature(int act)
         {
-            return "d|" + act + "|" + HD2DFlags.Trunk + "|" + (HD2DFlags.Look ?? "") + "|" + HD2DFlags.Tier;
+            // 画質の段 (2026-10-30 GfxQuality): 軽い設計図 (.light/.light2) を重ねるかで別の名札 = 段を変えたら次の戦闘で組み直す
+            return "d|" + act + "|" + HD2DFlags.Trunk + "|" + (HD2DFlags.Look ?? "") + "|" + HD2DFlags.Tier + (GfxQuality.LowStage ? "|light2" : GfxQuality.LightStage ? "|light" : "");
         }
 
         /// <summary>

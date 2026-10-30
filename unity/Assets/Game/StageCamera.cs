@@ -41,6 +41,45 @@ namespace DeckRogue.Game
         /// <summary>次の組み直しで舞台を描き直させる (描いた幕を忘れる = 次の Paint が同じ幕でも組み直す)</summary>
         public static void Invalidate() { _paintedAct = -1; }
 
+        static bool _idle; static Camera _idleCam; static int _idleMask; static bool _idlePost;
+        /// <summary>舞台のカメラを休ませているか (SetIdle)</summary>
+        public static bool Idle => _idle;
+
+        /// <summary>
+        /// 舞台のカメラを休ませる (2026-10-30 GfxQuality。ユーザー「Xperia 5 II だとかなりカクつく」): 地図とタイトルは UI が画面を覆うので、
+        /// 裏で箱庭と後処理を描いても見えない。cullingMask 0・後処理なし = 塗り (背景色) だけ。戻す時は控えた値へ。
+        /// 呼ぶのは GameRoot.BuildScreen (スマホの段だけ。PC の撮影の画を変えない)。Ensure の前なら場面のカメラ (Camera.main) を休ませる
+        /// </summary>
+        public static void SetIdle(bool idle)
+        {
+            var cam = _cam != null ? _cam : Camera.main;
+            if (idle == _idle && (cam == _idleCam || !idle)) return;
+            if (_idle && _idleCam != null && _idleCam != cam) RestoreIdle();   // 休ませていたカメラが変わった (Ensure で場面のカメラをそのまま使うので普段は同じ)
+            if (cam == null) { _idle = false; _idleCam = null; return; }
+            try
+            {
+                var data = cam.GetUniversalAdditionalCameraData();
+                if (idle)
+                {
+                    if (!_idle) { _idleMask = cam.cullingMask; _idlePost = data.renderPostProcessing; }
+                    cam.cullingMask = 0; data.renderPostProcessing = false;
+                    _idleCam = cam; _idle = true;
+                }
+                else RestoreIdle();
+            }
+            catch (Exception e) { Debug.LogWarning("[Stage] カメラを休ませられない: " + e.Message); }
+        }
+
+        static void RestoreIdle()
+        {
+            if (_idleCam != null)
+            {
+                _idleCam.cullingMask = _idleMask;
+                try { _idleCam.GetUniversalAdditionalCameraData().renderPostProcessing = _idlePost; } catch (Exception) { }
+            }
+            _idle = false; _idleCam = null;
+        }
+
         /// <summary>レイアウト用のカメラの回転 (揺れと寄りと漂いを含まない)。UI の置き場はこの回転と _camBase で写す。LayoutCamera の前は今の見下ろし</summary>
         public static Quaternion LayoutRotation => _laidOut ? _layoutRot : Quaternion.Euler(CurrentPitch, 0f, 0f);
 

@@ -615,6 +615,12 @@ namespace DeckRogue.Game
             // 起動の時 (BeforeSceneLoad) にも -state から当ててあるので、1行1起動なら何も変わらない (Changed も投げない)
             _stateSpec = spec;
             HD2DFlags.ApplyState(kv);
+            // 画質の段と fps の札 (2026-10-30 GfxQuality): gfx=high|std|low はこの起動だけ (PlayerPrefs に書かない。tier=phone と組で舞台の軽い段を PC で撮る)・fpshud=1
+            {
+                string gq = Get("gfx");
+                if (gq != null) { GfxQuality.Override = gq == "high" ? 0 : (gq == "std" || gq == "standard") ? 1 : gq == "low" ? 2 : -1; GfxQuality.Apply(); }
+                if (Get("fpshud") == "1") GfxQuality.FpsHudForce = true;
+            }
             { int ml; MapScreen.LinePalette = int.TryParse(Get("mapline", ""), out ml) ? ml : 0; }   // 地図の道の中央線の色の候補 (2026-10-28)
             // 地図のスクロールの計測 (2026-10-28 ユーザー「スクロールがカクつく」): mapscroll=1 で往復・mapdbg=nolife,noforest,nostage,canvas で切り分け。vSync を切って1フレームの実コストを測る
             MapScreen.AutoScroll = Get("mapscroll", "0") != "0";

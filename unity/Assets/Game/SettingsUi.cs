@@ -65,7 +65,7 @@ namespace DeckRogue.Game
         public static void Build(GameRoot g, RectTransform root)
         {
             bool phone = UiKit.Phone;
-            float h = phone ? 560f : 640f;
+            float h = phone ? 590f : 640f;   // スマホは画質の段の注記 1 行ぶん (2026-10-30)
             var inner = BattleScreen.Modal(root, 820f, h, "settings");
             // 外側 (背景) を触ると閉じる
             var backdrop = inner.parent.parent as RectTransform;
@@ -118,7 +118,17 @@ namespace DeckRogue.Game
                 BattleScreen.SetSize(qb, 130f, 46f);
             }
             var qHint = UiKit.Txt(qRow, GfxQuality.IsAuto ? "いま " + GfxQuality.Name(GfxQuality.Level) : "", 14, UiKit.ColDim, TextAnchor.MiddleLeft);
-            UiKit.Le(qHint, 120f, 46f, -1f, 46f);
+            UiKit.Le(qHint, 100f, 46f, -1f, 46f);
+            // fps の札 (2026-10-30 ユーザー「Xperia 5 II だとかなりカクつく」): 左上に fps・1 コマの時間・最悪のコマを出す (PerfHud)。重さを伝えてもらう時に
+            bool fpsOn = GfxQuality.FpsHud;
+            var fb = UiKit.Btn(qRow, "fps", delegate { GfxQuality.FpsHud = !fpsOn; g.Rebuild(); }, 17, true, fpsOn ? PaperFx.BrassLight : (Color?)null);
+            BattleScreen.SetSize(fb, 90f, 46f);
+            if (phone)
+            {
+                // スマホの段の中身 (GfxQuality.cs): 標準 = 舞台の光の筋・霧・影を減らす。軽量 = さらに舞台を 0.75 倍で描き、ぼかしと影を切る。文字と札は変わらない
+                var qNote = UiKit.Txt(inner, "標準＝舞台の光の筋・霧・影を減らす。軽量＝さらに舞台を 0.75 倍で描き、ぼかしと影を切る（文字と札はそのまま）。次の戦闘から", 14, UiKit.ColDim, TextAnchor.MiddleLeft);
+                UiKit.Le(qNote, -1f, 24f, -1f, 24f);
+            }
 
             // ---- 音量 ----
             Section(inner, "音量");

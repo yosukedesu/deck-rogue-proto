@@ -842,7 +842,7 @@ namespace DeckRogue.Game
             }
             var texts = new List<KeyValuePair<string, string>>();
             TextAsset[] dir = null;
-            foreach (var n in names)
+            Action<string> addLayer = n =>
             {
                 TextAsset ta = null;
                 try { ta = Resources.Load<TextAsset>(ResourceDir + n); }
@@ -856,13 +856,19 @@ namespace DeckRogue.Game
                     foreach (var t in dir) if (t != null && t.name == n) { ta = t; break; }
                 }
                 if (ta != null) texts.Add(new KeyValuePair<string, string>(n, ta.text));
-            }
+            };
+            foreach (var n in names) addLayer(n);
             // Approved forest settings ship in Resources, after tier layers, matching reviewed output.
             if(act==1 && Diorama.IntegratedForest) {
                 var integrated=Resources.Load<TextAsset>(ResourceDir+"look_act1_integrated");
                 if(integrated==null)throw new InvalidOperationException("Integrated forest look missing");
                 texts.Add(new KeyValuePair<string,string>("look_act1_integrated",integrated.text));
             }
+            // 画質の段 (2026-10-30 GfxQuality。ユーザー「Xperia 5 II だとかなりカクつく」): スマホの段で 標準 以下なら軽い設計図 .light、軽量なら .light2 も、
+            // 承認済みの森より後に重ねる = 重さの値 (組まない部品・影の数・グレイン) が必ず勝つ。PC (tier=pc) では読まない = 撮影の画は変わらない
+            string lightTag = "";
+            if (GfxQuality.LightStage) { addLayer(baseName + ".light"); lightTag = "+light"; }
+            if (GfxQuality.LowStage) { addLayer(baseName + ".light2"); lightTag = "+light2"; }
             // Local review override; no persistence and no effect unless explicitly requested.
             var previewFile = Autopilot.Arg("-forest-look");
             if (act == 1 && Diorama.NightForestPreview && !string.IsNullOrEmpty(previewFile))
@@ -871,8 +877,15 @@ namespace DeckRogue.Game
                 catch (Exception e) { Debug.LogWarning("[StageLook] Forest preview file: " + e.Message); }
             }
             var d = FromLayers(act, texts);
-            d.Name = overlays != null && overlays.Count > 0 ? baseName + "+" + string.Join("+", overlays) : baseName;
+            d.Name = (overlays != null && overlays.Count > 0 ? baseName + "+" + string.Join("+", overlays) : baseName) + lightTag;
             return d;
+        }
+
+        /// <summary>画質の段が変わった時 (GfxQuality.Apply): 当てている間だけ、段から決まる値 (ぼかしの有無) を当て直す。設計図 (.light) は次の Apply から</summary>
+        public static void OnQualityChanged()
+        {
+            if (!Active || Current == null || !HD2DFlags.DioramaHere) return;
+            ApplyTiltShift(Current);
         }
 
         static void OnQuit() { Restore(); }   // エディタの再生の終わりに URP のアセットの値を戻す (実行時に書いた値がアセットに残らないように)
@@ -1919,8 +1932,9 @@ namespace DeckRogue.Game
         {
             var t = d.Dof;
             // uionly・unitsonly の撮影の間は切ったまま (Autopilot が撮る前に Enabled を控えて false にしている。組み直しや旗の通知で書き直すと撮影の間に戻ってしまう = P07 の申し送り。W2 P12 の直し)
-            TiltShiftSettings.Enabled = HD2DFlags.TiltShift == HD2DTiltShift.On && !HD2DFlags.UiOnly && !HD2DFlags.UnitsOnly;
-            TiltShiftSettings.UseUrpBokeh = HD2DFlags.TiltShift == HD2DTiltShift.Urp;
+            // 画質 軽量 (スマホの段) ではぼかしを掛けない (2026-10-30 GfxQuality。半解像度でも全画面のパスが 2 本)
+            TiltShiftSettings.Enabled = HD2DFlags.TiltShift == HD2DTiltShift.On && !HD2DFlags.UiOnly && !HD2DFlags.UnitsOnly && !GfxQuality.LowStage;
+            TiltShiftSettings.UseUrpBokeh = HD2DFlags.TiltShift == HD2DTiltShift.Urp && !GfxQuality.LowStage;
             TiltShiftSettings.RampNear = Mathf.Max(0.01f, t.RampNear);
             TiltShiftSettings.RampFar = Mathf.Max(0.01f, t.RampFar);
             TiltShiftSettings.MaxPxPC = Mathf.Max(0f, t.MaxPxPC);

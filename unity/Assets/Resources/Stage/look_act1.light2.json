@@ -1,0 +1,9 @@
+{
+  "_doc": [
+    "幕1のいちばん軽い段 (2026-10-30。画質 軽量)。look_act1.light の上に重ねる。持ち主は GfxQuality。",
+    "影を落とす光を 0 にする (EnforceShadowCap が月の影も切る)。舞台の 0.75 倍とぼかしなしはコードの側 (GfxQuality.Apply・StageLook.ApplyTiltShift)。"
+  ],
+  "shadow": {
+    "maxShadowedLights": 0
+  }
+}

@@ -825,6 +825,7 @@ namespace DeckRogue.Game
                 Presenter.Reset(); // Navigation/replacement cancels the old owner's callbacks and clock.
             }
             if (_root == null) return;
+            GfxQuality.Restart();   // 画質の自動: 組み直しの引っかかりは数えない (2026-10-30)
             _anchors.Clear();
             for (int i = _root.childCount - 1; i >= 0; i--)
             {
@@ -869,6 +870,9 @@ namespace DeckRogue.Game
         void BuildScreen()
         {
             UpdateBgm();
+            // 舞台のカメラを休ませる (2026-10-30 GfxQuality): スマホの段で、UI が画面を覆う場面 (タイトル・地図) は箱庭も後処理も描かない。fps の札は設定に合わせて出す／消す
+            Stage.SetIdle(GfxQuality.PhoneLike && Content.IsLoaded && (Rs == null || Rs.Phase == RunPhases.Map) && !ViewMap);
+            PerfHud.Sync();
             // 戦闘は新画面 (M2): キャンバス直下 1920×1080 に組む。旧画面の入れ物には何も置かない
             if (Content.IsLoaded && Rs != null && Rs.Phase == RunPhases.Combat && Rs.Combat != null)
             {
