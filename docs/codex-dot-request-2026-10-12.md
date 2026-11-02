@@ -500,3 +500,35 @@ Deck-Rogue の本線と、dot の作業場についての連絡です（10/26〜
 - 納品はひばなと同じ形（raw の原本・実寸 PNG・README）
 
 幕2（先代の坑道）・幕3（埋もれた古代都市）は幕1 が通ってから同じ規格で頼みます。
+
+
+## 19. 返信 15（2026-11-02・Project422 の引き継ぎを Unity へ移した連絡。**これを貼る**）
+
+```
+Project422 の引き継ぎ（枝 codex/godot-vfx422-unity-handoff-20261102・UNITY-HANDOFF-JA.md）、受け取って Unity へ移しました。枝は unity/vfx422-port（コミット 24085add）。dot の枝は触っていません（.godot/imported の 71 本と csproj の DLL はそのまま）。記録は docs/dot-godot-port-2026-11-02.md。
+
+1. 移したもの
+   - Hd2dAttackPrototype.cs を 422 版に丸ごと置き換え（差分は using・名前空間・Enabled の旗・Array.Clear・Tau の 5 点だけ。diff が取れる）。新しい工場 21 本（中立の圧・光の奔流・火の当たり・聖槌の圧縮・氷壁・集団回復・天蓋・置物 4 種・棘火・粉と樽・延焼の刻み・亡骸 6 種・敵の鈍器と中立と探りの突き・光の矢）
+   - 門 30 種（*ContactVfxProfiles → Hd2dVfxProfiles.cs）・橋（NativeGeometryBridge → Hd2dGeometryBridge.cs＝選ばれた経路の工場 16 と旧い幾何の包み）・経路の表 attack-routes.json 443 本（AttackRouteCatalog → Hd2dRouteCatalog）
+   - 支え（SupportVfxProfiles の守り・氷壁・回復）・延焼の system・聖槌の回復の包み（HealContinuousGeometry の OwnedMaulWrap）・LocalMaterialProfileGeometry の SampleMaelstromReceipt
+   - gdshader 19 本を HLSL に。AuthoredGeometryFx.ConfigureMaterial の Kind→シェーダの選び方もそのまま
+   - 絵 20 枚（参照のある 21 枚のうち、hd2d-waterwide-phase-peel-v2 は既にあった）・色の表 3・集団回復と聖槌の JSON
+
+2. Unity で近似した所（Godot と同じ値にできなかった所）
+   - 所有権: SessionChange が無いので、出来事の記録の「区切り（CardPlayed／ReactionTriggered／GearUsed／TurnEnded／TurnStarted／EnemyPhaseEnded／EnemyActionExecuting）から区切り」を 1 コマンドと見て IsOwned* を判定。ギアの「使う前の持ち物」は無いので GearUsed の出来事で代える
+   - 光: 契約の光に範囲が無いので、光の方針は量の倍率だけ。俳優の「受け」の光（TripleHorn .12／DoubleLash .16／HolyMaul .10／回復 .08）は未移植
+   - 絵の向き: Godot の画像座標（左上原点）なので、Unity のシェーダは v を 1-v で読む。cp192 の移植は上下逆だった（これも直した）
+   - 絵は 1024／512 に縮めて取り込み（原寸は Unity の既定で潰れる）。Torrent の「放つまで止める」は姿勢の長さで近似
+
+3. 撮って確かめたもの（PC・1920×1080・1/60 秒刻み）
+   - 鳴って見えた 15: 火の当たり・踏みつけ・聖槌＋回復の包み・光の破裂×3・光の奔流×3・二連の鞭・胞子・急所・氷の鈍器 379・暗い刃（狂信者）・小鬼の火・探り屋の突き・妖術師の泥・からくり壊し・従士の盾・粉・延焼の刻み・呪いの返し・守り・氷壁・集団回復
+   - 鳴ったが写らない 2: 冷手の一払い（ColdSweepSurfaceFx）と火花の破裂（SparkBurstContactSurface ← ScatterProfileFx）。begin は出るのにコマに絵が無い。こちらで出力の α と _Coverage／_Gain の既定を疑っています。
+     → 質問: この 2 本は Godot 側で ConfigureMaterial 以外に素材の値（emission・coverage・gain）を BattleStage から足していますか？ 足しているなら「何を・いくつ」を教えてください
+   - 撮れていない: 置物の当たり（天蓋・蝋燭）・大蛇の丸呑み（追加コストの窓）・亡骸・無銘のギア・勢いの鞭・蔦の陣形・霊気の槍・光の矢・写し身・亡霊の呪い・絡め捕る根・三つ角・光の方針 3 種・Android
+
+4. 次の節目へのお願い（前回の 3 つに足して）
+   - 422 で scripts/presentation/authored_geometry/*.cs が 1 byte の空ファイルになっています（本体は RecoveredSource/DeckRogue.Game/）。どちらかに揃えてください
+   - assets/Art/fx/attack-*-8f.png 9 枚はコードから参照がありません。残すなら用途を README に
+   - 選ばれた経路を足す時は、門（*VfxProfiles）・橋（NativeGeometryBridge）・工場（Hd2dAttackPrototype）・gdshader・絵の 5 点を 1 コミットに。所有権（IsOwned*）の判定を足す時は「どの出来事で真になるか」を本文に 1 行（こちらは記録の区切りで近似するため）
+   - 受けの光（AppendSourceLights の receive 側）を今後も増やすなら、値（強さ・色・半径・長さ）を表（JSON）に出してもらえると Unity の板で同じ値を置けます
+```
