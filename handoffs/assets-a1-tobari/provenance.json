@@ -1,0 +1,88 @@
+{
+  "method": "built-in image_gen.imagegen",
+  "model": "not exposed by tool",
+  "rawUnmodified": true,
+  "thirdPartyExternalImages": false,
+  "referenceCommit": "6f690f8d7f0c617e8561bfb6862edcad9e109fac",
+  "sources": [
+    "docs/art-bible.md",
+    "docs/world.md",
+    "src/data/leaders.json",
+    "unity/Assets/Resources/Art/leaders/leader_blue.png",
+    "unity/Assets/Resources/Art/leaders/leader_red.png"
+  ],
+  "raw": [
+    {
+      "file": "raw/anticipation.png",
+      "size": [
+        1312,
+        1199
+      ],
+      "sha256": "eb62ffbd047e888c6fbbbca9ef1d1aae04bbaf3f4bacb372ec29eae171794a17",
+      "usage": "accepted"
+    },
+    {
+      "file": "raw/attack-draft.png",
+      "size": [
+        2172,
+        724
+      ],
+      "sha256": "eaa5efb99117e02f1447afede797b38e1b88a7ec4b155da416c34be56e2addbb",
+      "usage": "rejected hand continuity"
+    },
+    {
+      "file": "raw/attack.png",
+      "size": [
+        2172,
+        724
+      ],
+      "sha256": "1d3c6976521145d0436bbdd6e82146fb035df1e4559f43f508df79b16f882947",
+      "usage": "only cells1,2 used; cell0 rejected hand continuity"
+    },
+    {
+      "file": "raw/block.png",
+      "size": [
+        1312,
+        1199
+      ],
+      "sha256": "6b8abed158d496653050572f941161b71a5f404c141891fe2a6fa633ddb4ccc6",
+      "usage": "accepted"
+    },
+    {
+      "file": "raw/core-draft.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "b484e02f22a5076f116227ec830dbeb3408cb5e58c50cf80413c3627c8f39b5a",
+      "usage": "rejected proportions"
+    },
+    {
+      "file": "raw/core.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "aa5d8ef51eea14b5cf75543b64b2f767444d42a37dd2f1941cb8f282511f0c46",
+      "usage": "accepted"
+    },
+    {
+      "file": "raw/hurt.png",
+      "size": [
+        1312,
+        1199
+      ],
+      "sha256": "e24e928a36e30626074327e9f35189189b49721ded331326174080b0d5cdf2c2",
+      "usage": "accepted"
+    },
+    {
+      "file": "raw/idle.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "378a9a572d7dbdedf87a00b35124b54056453ef2bf6d2929e08b3cb81d2ff4b0",
+      "usage": "accepted"
+    }
+  ]
+}

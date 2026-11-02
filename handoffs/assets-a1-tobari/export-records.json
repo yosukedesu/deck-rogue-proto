@@ -1,0 +1,383 @@
+{
+  "resampler": "nearest",
+  "transparentRgb": [
+    0,
+    0,
+    0
+  ],
+  "idleFootStabilization": {
+    "source": "idle0",
+    "rectangle": [
+      0,
+      68,
+      128,
+      84
+    ]
+  },
+  "frames": [
+    {
+      "file": "Art/leaders/leader_black.png",
+      "raw": "raw/core.png",
+      "cell": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        521,
+        61,
+        990,
+        1008
+      ],
+      "resized": [
+        32,
+        64
+      ],
+      "position": [
+        42,
+        13
+      ],
+      "footCenterRoundingError": -0.5
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_0.png",
+      "raw": "raw/idle.png",
+      "cell": [
+        0,
+        0,
+        384,
+        512
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        79,
+        44,
+        316,
+        511
+      ],
+      "resized": [
+        32,
+        64
+      ],
+      "position": [
+        42,
+        13
+      ],
+      "footCenterRoundingError": -0.5
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_1.png",
+      "raw": "raw/idle.png",
+      "cell": [
+        384,
+        0,
+        768,
+        512
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        59,
+        44,
+        297,
+        511
+      ],
+      "resized": [
+        33,
+        64
+      ],
+      "position": [
+        42,
+        13
+      ],
+      "footCenterRoundingError": 0.0
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_2.png",
+      "raw": "raw/idle.png",
+      "cell": [
+        768,
+        0,
+        1152,
+        512
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        44,
+        43,
+        290,
+        511
+      ],
+      "resized": [
+        34,
+        64
+      ],
+      "position": [
+        42,
+        13
+      ],
+      "footCenterRoundingError": 0.0
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_3.png",
+      "raw": "raw/idle.png",
+      "cell": [
+        1152,
+        0,
+        1536,
+        512
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        41,
+        43,
+        290,
+        511
+      ],
+      "resized": [
+        34,
+        64
+      ],
+      "position": [
+        41,
+        13
+      ],
+      "footCenterRoundingError": 0.0
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_4.png",
+      "raw": "raw/idle.png",
+      "cell": [
+        0,
+        512,
+        384,
+        1024
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        78,
+        33,
+        321,
+        493
+      ],
+      "resized": [
+        34,
+        64
+      ],
+      "position": [
+        42,
+        13
+      ],
+      "footCenterRoundingError": 0.0
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_5.png",
+      "raw": "raw/idle.png",
+      "cell": [
+        384,
+        512,
+        768,
+        1024
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        58,
+        32,
+        304,
+        494
+      ],
+      "resized": [
+        34,
+        64
+      ],
+      "position": [
+        42,
+        13
+      ],
+      "footCenterRoundingError": 0.0
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_6.png",
+      "raw": "raw/idle.png",
+      "cell": [
+        768,
+        512,
+        1152,
+        1024
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        45,
+        33,
+        288,
+        494
+      ],
+      "resized": [
+        34,
+        64
+      ],
+      "position": [
+        42,
+        13
+      ],
+      "footCenterRoundingError": 0.0
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_7.png",
+      "raw": "raw/idle.png",
+      "cell": [
+        1152,
+        512,
+        1536,
+        1024
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        53,
+        33,
+        294,
+        493
+      ],
+      "resized": [
+        34,
+        64
+      ],
+      "position": [
+        42,
+        13
+      ],
+      "footCenterRoundingError": 0.0
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_attack_0.png",
+      "raw": "raw/anticipation.png",
+      "cell": [
+        0,
+        0,
+        1312,
+        1199
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        331,
+        123,
+        959,
+        1117
+      ],
+      "resized": [
+        39,
+        62
+      ],
+      "position": [
+        40,
+        15
+      ],
+      "footCenterRoundingError": 0.5
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_attack_1.png",
+      "raw": "raw/attack.png",
+      "cell": [
+        724,
+        0,
+        1448,
+        724
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        139,
+        70,
+        675,
+        689
+      ],
+      "resized": [
+        54,
+        62
+      ],
+      "position": [
+        40,
+        15
+      ],
+      "footCenterRoundingError": 0.0
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_attack_2.png",
+      "raw": "raw/attack.png",
+      "cell": [
+        1448,
+        0,
+        2172,
+        724
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        169,
+        52,
+        529,
+        690
+      ],
+      "resized": [
+        36,
+        64
+      ],
+      "position": [
+        41,
+        13
+      ],
+      "footCenterRoundingError": 0.0
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_block_0.png",
+      "raw": "raw/block.png",
+      "cell": [
+        0,
+        0,
+        1312,
+        1199
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        396,
+        142,
+        964,
+        1115
+      ],
+      "resized": [
+        36,
+        62
+      ],
+      "position": [
+        42,
+        15
+      ],
+      "footCenterRoundingError": -0.5
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_hurt_0.png",
+      "raw": "raw/hurt.png",
+      "cell": [
+        0,
+        0,
+        1312,
+        1199
+      ],
+      "alphaThreshold": 128,
+      "cropWithinCell": [
+        343,
+        153,
+        1067,
+        1117
+      ],
+      "resized": [
+        47,
+        62
+      ],
+      "position": [
+        38,
+        15
+      ],
+      "footCenterRoundingError": 0.5
+    }
+  ]
+}

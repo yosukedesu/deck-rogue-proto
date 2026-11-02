@@ -1,0 +1,140 @@
+{
+  "dimensionsAlphaPaletteFootRow": "pass",
+  "uniqueAuthoredFrames": 13,
+  "idleBootsIdentical": true,
+  "apngRoundtrip": "pass",
+  "frames": [
+    {
+      "file": "Art/leaders/anim/leader_black_idle_0.png",
+      "bbox": [
+        42,
+        13,
+        74,
+        77
+      ],
+      "sha256": "a29a764d2cd98b2e67f2b3abb3a9713c3bf1b210c6895ea96c23788e72de56c3"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_1.png",
+      "bbox": [
+        42,
+        13,
+        75,
+        77
+      ],
+      "sha256": "9604e006fab15087a337b37d692607f1b06ea74e18d6042d6d0bc325824f2b46"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_2.png",
+      "bbox": [
+        42,
+        13,
+        76,
+        77
+      ],
+      "sha256": "c4690bb528cdd8790aad4fbca455c08f7f486a817b26fe12f40017edf61113ba"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_3.png",
+      "bbox": [
+        41,
+        13,
+        75,
+        77
+      ],
+      "sha256": "8deed4c39d2ae987d32f0092c006ce102cb31dff646a04bbc14cbdadb52cd579"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_4.png",
+      "bbox": [
+        42,
+        13,
+        76,
+        77
+      ],
+      "sha256": "559691eeb0319b883c7beb52eb1405618796a7026b52af7905c585e100cdb9c1"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_5.png",
+      "bbox": [
+        42,
+        13,
+        76,
+        77
+      ],
+      "sha256": "2b5cd80ad1ea65d110baeaeaa28d69ffdffa7520e2f3a724ab99369f347650bb"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_6.png",
+      "bbox": [
+        42,
+        13,
+        76,
+        77
+      ],
+      "sha256": "a4be1122cacf13630fcaf565c64c17796ca260b81df77020bc6184fe477b3613"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_idle_7.png",
+      "bbox": [
+        42,
+        13,
+        76,
+        77
+      ],
+      "sha256": "1a2a93f96c567f120b3e328d35726d5a4b7bb8fc4252c643d62a81e980c22623"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_attack_0.png",
+      "bbox": [
+        40,
+        15,
+        79,
+        77
+      ],
+      "sha256": "fa31b162f6a6254214c8e097d8921b8505f4e2751b7c5eb623c7303dc7c69bcd"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_attack_1.png",
+      "bbox": [
+        40,
+        15,
+        94,
+        77
+      ],
+      "sha256": "d6ef5dda60b19a4181fe388ce340d3a8c6c8bf1babf4e4036d4ddafbce2fcf18"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_attack_2.png",
+      "bbox": [
+        41,
+        13,
+        77,
+        77
+      ],
+      "sha256": "34b02ca5d7db3d86b678efec569fa725d8fe0b0cb3320e80184fb0037122e5b5"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_block_0.png",
+      "bbox": [
+        42,
+        15,
+        78,
+        77
+      ],
+      "sha256": "49ef28ae5e849b49e911af37aa813317a7f9dd31ea8470c53f2af8325813c997"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_hurt_0.png",
+      "bbox": [
+        38,
+        15,
+        85,
+        77
+      ],
+      "sha256": "c186cb655071b8fdb1d623a82b5ae45876907835808350f0d110082ffce5aefb"
+    }
+  ],
+  "runtime": "not tested",
+  "android": "not tested"
+}
