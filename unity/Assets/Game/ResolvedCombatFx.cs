@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using DeckRogue.Engine.Generated;
 
@@ -31,6 +32,9 @@ namespace DeckRogue.Game {
    internal Ticket ContributionParent,ContributionTemplate;internal Ticket[] ContributionChildren;
    internal bool ContributionsCancelled;
    internal Ticket CopyForContribution()=>(Ticket)MemberwiseClone();
+   // HD-2D (Project422・2026-11-02): 門 (Hd2dOwnership) が読む文脈。出来事そのもの・記録と位置・前後の盤面・リーダー・持ち物。Capture と Presenter.AttachContext が入れる
+   internal GameEvent SourceEvent; internal IReadOnlyList<GameEvent> Log; internal int EventIndex=-1; internal GameState PrevState,AfterState; internal string LeaderId;
+   internal IReadOnlyList<GearInstance> GearsBefore,GearsAfter; internal IReadOnlyList<string> SeenGearIds;
   }
   internal static Action<Ticket> PresentedForReview;
   internal static Action<Ticket> ChildPresentedForReview;
@@ -42,7 +46,8 @@ namespace DeckRogue.Game {
   public static bool IsResolved(GameEvent ev) => ev is GameEvent_DamageDealt || ev is GameEvent_ConfusedAttack || ev is GameEvent_BurnTick || ev is GameEvent_ScaldTick || ev is GameEvent_ThornsReflected || ev is GameEvent_HpLost || ev is GameEvent_HpHealed || ev is GameEvent_EnemyHealed || ev is GameEvent_RegenTicked;
   public static Ticket Capture(GameRoot g,GameEvent ev) {
    if(!IsResolved(ev))return null;
-   var t=new Ticket{Event=ev.Type,Target="player",Outcome="hit"};
+   var t=new Ticket{Event=ev.Type,Target="player",Outcome="hit",SourceEvent=ev,AfterState=g?.Rs?.Combat,LeaderId=g?.LeaderId,GearsAfter=g?.Rs?.Gears,SeenGearIds=g?.Rs?.SeenGearIds};
+   if(t.AfterState?.EventLog!=null){t.Log=t.AfterState.EventLog;for(int k=t.Log.Count-1;k>=0;k--)if(ReferenceEquals(t.Log[k],ev)){t.EventIndex=k;break;}}   // 記録の中の位置 (門が同じコマンドの出来事を見る)
    switch(ev) {
     case GameEvent_HpHealed b:t.Amount=b.Amount;t.Element="heal";t.Outcome="heal";t.Color=ElementBattleFx.ColorFor("heal",Color.white);break;
     case GameEvent_EnemyHealed b:t.Target="enemy"+b.TargetIndex;t.Amount=b.Amount;t.Element="heal";t.Outcome="heal";t.Color=ElementBattleFx.ColorFor("heal",Color.white);break;
@@ -185,11 +190,12 @@ namespace DeckRogue.Game {
      // Recovery is a contact-only response: age0 now, no predictive windup, HP delay,
      // damage flash or actor pause. Keep old fallback position if the package is absent.
      if(t.AttackFamily=="heal_uplift") {
-      t.AttackPlayback=HealContinuousFx.Begin(t);
+      // HD-2D (Project422): 白の大槌の主たるプレイの回復は所有の包み (HolyMaulHealReceive)。それ以外は今までの回復の描き手
+      t.AttackPlayback=Hd2dAttackFx.BeginHeal(t)??HealContinuousFx.Begin(t);
       t.AuthoredAttackShown=t.AttackPlayback!=null && t.AttackPlayback.Land();
       if(!t.AuthoredAttackShown){t.AttackPlayback=WorldBattleFx.AuthoredAttackAt(t.RecoveryPosition,t.Feet,t.Height,t.AttackFamily,-1f,0f,t.Target,false,t.Impact?.Target,t.AuthoredPresentation);t.AuthoredAttackShown=t.AttackPlayback!=null && t.AttackPlayback.Land();}
      }
-     if(t.AuthoredAttackShown){done=true;t.RenderPath=t.AuthoredRenderer=="continuous-heal-uplift-r1"?"continuous-heal-uplift-r1:heal_uplift":"authored-v2:heal_uplift";AuthoredRecoveryPresented++;}
+     if(t.AuthoredAttackShown){done=true;t.RenderPath=t.AuthoredRenderer==Hd2dAttackFx.RendererId422?"hd2d-project422:holy-maul-owned-heal":t.AuthoredRenderer=="continuous-heal-uplift-r1"?"continuous-heal-uplift-r1:heal_uplift":"authored-v2:heal_uplift";AuthoredRecoveryPresented++;}
      else {if(t.AttackFamily!=null && t.RenderFallbackReason==null)t.RenderFallbackReason="authored_family_unavailable";done=WorldBattleFx.ElementAt(t.Position,t.Height,"heal");if(done)t.RenderPath="element:heal";}
     }
     else if(t.Outcome=="guard" || t.Outcome=="nullified"){
@@ -202,8 +208,10 @@ namespace DeckRogue.Game {
     }
     else {
      if(t.SystemResponseCandidate!=null){
-      t.OutcomeRendered=t.SystemResponseFamily!=null && CardVfxProfile.ShowcaseOn && SystemOutcomeFx.TryPlayDamage(t);
-      if(t.OutcomeRendered){done=true;t.RenderPath="continuous-system-r1:"+t.SystemResponseFamily;}
+      // HD-2D (Project422): 延焼のティック (system:burn) は本物の受領なら Hd2dBurnStatusFx (CreateBurnTickContact)。選ばれなければ今までの SystemOutcomeFx
+      if(t.SystemResponseFamily=="burn" && CardVfxProfile.ShowcaseOn){t.AttackPlayback=Hd2dAttackFx.BeginSystem(t);t.AuthoredAttackShown=t.AttackPlayback!=null && t.AttackPlayback.Land();if(t.AuthoredAttackShown){t.OutcomeRendered=true;done=true;t.RenderPath="hd2d-project422:system:burn";}}
+      if(!done)t.OutcomeRendered=t.SystemResponseFamily!=null && CardVfxProfile.ShowcaseOn && SystemOutcomeFx.TryPlayDamage(t);
+      if(t.OutcomeRendered && !done){done=true;t.RenderPath="continuous-system-r1:"+t.SystemResponseFamily;}
       else t.RenderFallbackReason=t.SystemResponseFamily==null?t.SystemResponseEvidence:!CardVfxProfile.ShowcaseOn?"system_showcase_disabled":SystemOutcomeFx.LastFailure;
      }
      if(!done && t.Outcome!="cost" && t.Outcome!="affliction"){
@@ -220,7 +228,7 @@ namespace DeckRogue.Game {
      if(!t.AuthoredAttackShown && FireContinuousFx.Eligible(t) && t.AttackFamily=="fire"){t.AttackPlayback=WorldBattleFx.StandardFireContact(t);t.AuthoredAttackShown=t.AttackPlayback!=null && t.AttackPlayback.Land();}
      if(!t.AuthoredAttackShown && WaterContinuousFx.Eligible(t)){t.AttackPlayback=WorldBattleFx.StandardWaterContact(t);t.AuthoredAttackShown=t.AttackPlayback!=null && t.AttackPlayback.Land();}
      if(!t.AuthoredAttackShown && PhysicalSlashFx.Eligible(t)){t.AttackPlayback=WorldBattleFx.StandardSlashContact(t);t.AuthoredAttackShown=t.AttackPlayback!=null && t.AttackPlayback.Land();}
-     if(t.AuthoredAttackShown){done=true;t.RenderPath=(t.AuthoredRenderer==Hd2dAttackFx.RendererId?"hd2d-prototype-r192:":t.AuthoredRenderer=="bounded-contact-r1"?"bounded-contact-r1:":t.AuthoredRenderer=="continuous-local-material-r1"?"continuous-local-material-r1:":t.AuthoredRenderer=="continuous-wide-profile-r2"?"continuous-wide-profile-r2:":t.AuthoredRenderer=="continuous-scatter-profile-r2"?"continuous-scatter-profile-r2:":t.AuthoredRenderer==LightningR9CandidateFx.RendererId?"procedural-lightning-r9-medium-candidate:":t.AuthoredRenderer=="continuous-lightning-discharge-r2"?"continuous-lightning-discharge-r2:":t.AuthoredRenderer=="continuous-ground-r2"?"continuous-ground-r2:":t.AuthoredRenderer=="continuous-ice-crystal-r2"?"continuous-ice-crystal-r2:":t.AuthoredRenderer=="continuous-light-ray-r2"?"continuous-light-ray-r2:":t.AuthoredRenderer=="continuous-dark-drain-r1"?"continuous-dark-drain-r1:":t.AuthoredRenderer=="continuous-fire-modes-r1"?"continuous-fire-modes-r1:":t.AuthoredRenderer=="continuous-water-flow-r1"||t.AuthoredRenderer=="cached-water-pbf-r4-candidate"?"continuous-water-flow-r1:":t.AuthoredRenderer==PhysicalMediumCandidateFx.RendererId?"procedural-physical-medium-r2-candidate:":t.AuthoredRenderer=="continuous-physical-slash-tiers-r1"?"continuous-physical-slash-tiers-r1:":t.AttackFamily=="vine_slash"?"continuous-mesh-r1:":PlayerContactFx.IsFamily(t.AttackFamily)?"continuous-physical-delivery-r1:":EnemyContactFx.IsFamily(t.AttackFamily)?(t.AttackFamily=="enemy_beam"?"continuous-neutral-beam-r1:":"continuous-physical-r1:"):"authored-v2:")+t.AttackFamily;}
+     if(t.AuthoredAttackShown){done=true;t.RenderPath=(t.AuthoredRenderer==Hd2dAttackFx.RendererId?"hd2d-prototype-r192:":t.AuthoredRenderer==Hd2dAttackFx.RendererId422?"hd2d-project422:":t.AuthoredRenderer=="bounded-contact-r1"?"bounded-contact-r1:":t.AuthoredRenderer=="continuous-local-material-r1"?"continuous-local-material-r1:":t.AuthoredRenderer=="continuous-wide-profile-r2"?"continuous-wide-profile-r2:":t.AuthoredRenderer=="continuous-scatter-profile-r2"?"continuous-scatter-profile-r2:":t.AuthoredRenderer==LightningR9CandidateFx.RendererId?"procedural-lightning-r9-medium-candidate:":t.AuthoredRenderer=="continuous-lightning-discharge-r2"?"continuous-lightning-discharge-r2:":t.AuthoredRenderer=="continuous-ground-r2"?"continuous-ground-r2:":t.AuthoredRenderer=="continuous-ice-crystal-r2"?"continuous-ice-crystal-r2:":t.AuthoredRenderer=="continuous-light-ray-r2"?"continuous-light-ray-r2:":t.AuthoredRenderer=="continuous-dark-drain-r1"?"continuous-dark-drain-r1:":t.AuthoredRenderer=="continuous-fire-modes-r1"?"continuous-fire-modes-r1:":t.AuthoredRenderer=="continuous-water-flow-r1"||t.AuthoredRenderer=="cached-water-pbf-r4-candidate"?"continuous-water-flow-r1:":t.AuthoredRenderer==PhysicalMediumCandidateFx.RendererId?"procedural-physical-medium-r2-candidate:":t.AuthoredRenderer=="continuous-physical-slash-tiers-r1"?"continuous-physical-slash-tiers-r1:":t.AttackFamily=="vine_slash"?"continuous-mesh-r1:":PlayerContactFx.IsFamily(t.AttackFamily)?"continuous-physical-delivery-r1:":EnemyContactFx.IsFamily(t.AttackFamily)?(t.AttackFamily=="enemy_beam"?"continuous-neutral-beam-r1:":"continuous-physical-r1:"):"authored-v2:")+t.AttackFamily;}
      else if(!SafeNeutralReceipt(t)) {
       if(t.AttackFamily!=null && t.RenderFallbackReason==null)t.RenderFallbackReason="authored_family_unavailable";
       done=WorldBattleFx.ElementAt(t.Position,t.Height,t.Element,t.Visual);
@@ -234,7 +242,7 @@ namespace DeckRogue.Game {
      }
     }
    }
-   if(done){WorldPresented++;if(attached){if(t.Outcome=="hit") {if(t.AuthoredRenderer=="bounded-contact-r1"){/* Minimal receipt contact deliberately adds no scene light or actor pause. */}else if(t.OutcomeRendered){/* System response owns its single bounded light. */}else if(t.AuthoredAttackShown && (t.AuthoredRenderer==Hd2dAttackFx.RendererId||t.AuthoredRenderer==LightningR9CandidateFx.RendererId||t.AuthoredRenderer==PhysicalMediumCandidateFx.RendererId||t.AuthoredRenderer=="continuous-physical-slash-tiers-r1"||t.AuthoredRenderer=="continuous-water-flow-r1"||t.AuthoredRenderer=="cached-water-pbf-r4-candidate"||t.AuthoredRenderer=="continuous-fire-modes-r1"||t.AuthoredRenderer=="continuous-dark-drain-r1"||t.AuthoredRenderer=="continuous-light-ray-r2"||t.AuthoredRenderer=="continuous-ice-crystal-r2"||t.AuthoredRenderer=="continuous-ground-r2"||t.AuthoredRenderer=="continuous-lightning-discharge-r2"||t.AuthoredRenderer=="continuous-scatter-profile-r2"||t.AuthoredRenderer=="continuous-wide-profile-r2"||t.AuthoredRenderer=="continuous-local-material-r1")){/* Authored tier renderer owns its one bounded light. */}else if(t.AuthoredAttackShown)StageFx.AuthoredAttackHit(t.Target,t.Feet,t.Height,t.AttackFamily,t.Heavy||(t.Finishing&&(t.Element=="physical"||t.Element=="arcane")),t.AuthoredPresentation,t.Visual);else if(t.Element!="physical" && t.Element!="arcane")StageFx.ElementHit(t.Target,t.Element,t.Color,t.Heavy,t.Visual);else if(t.Target=="player")StageFx.FoeHit(t.Target,t.Color,t.Amount>=15,t.Visual);else if(t.Finishing)StageFx.Finish(t.Target,t.Color,t.FixedSmallContact?t.Visual:null);else StageFx.PlayerHit(t.Target,t.Style,t.Heavy,t.Color,t.Visual);}else if(t.Outcome=="heal"){if(!t.AuthoredAttackShown)StageFx.Cast(t.Target,"light",t.Color);}else if(t.Outcome=="guard" && !t.OutcomeRendered)StageFx.Guard(t.Target,t.Target=="player"?1:-1);}}
+   if(done){WorldPresented++;if(attached){if(t.Outcome=="hit") {if(t.AuthoredRenderer=="bounded-contact-r1"){/* Minimal receipt contact deliberately adds no scene light or actor pause. */}else if(t.OutcomeRendered){/* System response owns its single bounded light. */}else if(t.AuthoredAttackShown && (t.AuthoredRenderer==Hd2dAttackFx.RendererId||t.AuthoredRenderer==Hd2dAttackFx.RendererId422||t.AuthoredRenderer==LightningR9CandidateFx.RendererId||t.AuthoredRenderer==PhysicalMediumCandidateFx.RendererId||t.AuthoredRenderer=="continuous-physical-slash-tiers-r1"||t.AuthoredRenderer=="continuous-water-flow-r1"||t.AuthoredRenderer=="cached-water-pbf-r4-candidate"||t.AuthoredRenderer=="continuous-fire-modes-r1"||t.AuthoredRenderer=="continuous-dark-drain-r1"||t.AuthoredRenderer=="continuous-light-ray-r2"||t.AuthoredRenderer=="continuous-ice-crystal-r2"||t.AuthoredRenderer=="continuous-ground-r2"||t.AuthoredRenderer=="continuous-lightning-discharge-r2"||t.AuthoredRenderer=="continuous-scatter-profile-r2"||t.AuthoredRenderer=="continuous-wide-profile-r2"||t.AuthoredRenderer=="continuous-local-material-r1")){/* Authored tier renderer owns its one bounded light. */}else if(t.AuthoredAttackShown)StageFx.AuthoredAttackHit(t.Target,t.Feet,t.Height,t.AttackFamily,t.Heavy||(t.Finishing&&(t.Element=="physical"||t.Element=="arcane")),t.AuthoredPresentation,t.Visual);else if(t.Element!="physical" && t.Element!="arcane")StageFx.ElementHit(t.Target,t.Element,t.Color,t.Heavy,t.Visual);else if(t.Target=="player")StageFx.FoeHit(t.Target,t.Color,t.Amount>=15,t.Visual);else if(t.Finishing)StageFx.Finish(t.Target,t.Color,t.FixedSmallContact?t.Visual:null);else StageFx.PlayerHit(t.Target,t.Style,t.Heavy,t.Color,t.Visual);}else if(t.Outcome=="heal"){if(!t.AuthoredAttackShown)StageFx.Cast(t.Target,"light",t.Color);}else if(t.Outcome=="guard" && !t.OutcomeRendered)StageFx.Guard(t.Target,t.Target=="player"?1:-1);}}
    else if(SafeNeutralReceipt(t)) {
     if(!t.ExactSource)t.RenderFallbackReason="unproven_source_neutral_receipt";
     else if(t.RenderFallbackReason==null)t.RenderFallbackReason=t.HasWorld?"bounded_contact_renderer_unavailable":"bounded_contact_world_target_unavailable";

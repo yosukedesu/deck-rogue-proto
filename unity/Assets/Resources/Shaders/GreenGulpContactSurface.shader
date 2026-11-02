@@ -1,0 +1,44 @@
+// GreenGulpContactSurface.shader — dot の Godot 版 Project422 shaders/authored_GreenGulpContactSurface.gdshader を URP の HLSL に写したもの (2026-11-02)。
+// 土台は BoundedContactFx.shader (頂点の色 r = 明るさ・a = 不透明度、uv1 = (柔らかさ, 役割))。絵は Godot の画像座標 (左上が原点) で書かれているので、読む時に v を 1-v にする。
+// 出力は乗算済み (rgb*alpha, alpha)・Blend One OneMinusSrcAlpha = Godot の blend_mix と同じ見え方。式と数値は gdshader のまま。
+Shader "DeckRogue/GreenGulpContactSurface" {
+ Properties { _Age("Visual age",Float)=0 _BaseMap("Authored density",2D)="white"{} _Primary("Linear primary",Color)=(.65,.65,.65,1) _Core("Linear core",Color)=(1,1,1,1) }
+ SubShader { Tags {"RenderPipeline"="UniversalPipeline" "Queue"="Transparent+11" "RenderType"="Transparent"}
+  Pass { Name "GreenGulpContactSurfaceForward" Tags {"LightMode"="UniversalForward"}
+   Blend One OneMinusSrcAlpha ZWrite Off ZTest LEqual Cull Off
+   HLSLPROGRAM
+   #pragma vertex vert
+   #pragma fragment frag
+   #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+   TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);
+   CBUFFER_START(UnityPerMaterial)
+   float4 _Primary,_Core;float _Age;
+   CBUFFER_END
+   float4 TexBaseMap(float2 g){return SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,float2(g.x,1.0-g.y));}
+   struct A {float4 p:POSITION;float2 uv:TEXCOORD0;float2 effect:TEXCOORD1;float4 color:COLOR;};
+   struct V {float4 p:SV_POSITION;float2 uv:TEXCOORD0;float2 effect:TEXCOORD1;float4 color:COLOR;};
+   V vert(A i){V o;o.p=TransformObjectToHClip(i.p.xyz);o.uv=i.uv;o.effect=i.effect;o.color=i.color;return o;}
+   float4 frag(V i):SV_Target {
+    float2 input_uv=i.uv;float2 input_effect=i.effect;float4 input_color=i.color;
+    //381v2 actual original fang and leaf-root density, uneven short release.
+    if(input_effect.x>90.5){
+        float2 q=float2(input_uv.x,1.0-input_uv.y);
+        float4 texel=TexBaseMap(q);
+        float grain=TexBaseMap(float2(clamp(q.x+.035,0.0,1.0),q.y)).g;
+        float release=smoothstep(.025,.170,_Age);
+        float erosion=1.0-smoothstep(.78-.66*release,1.02-.66*release,1.0-texel.a*.75-grain*.25);
+        float alpha2=clamp(input_color.a*texel.a*erosion,0.0,1.0);
+        float3 rgb2=texel.rgb*(input_effect.x>91.5?float3(.75,.70,.56):float3(.61,.68,.46));
+        return float4(rgb2*alpha2,alpha2);
+    }
+    float2 centered=input_uv*2.0-1.0;
+    float radial=saturate(1.0-dot(centered,centered));
+    float edge=input_effect.x>.5?radial*radial:saturate(min(input_uv.y,1.0-input_uv.y)*12.0);
+    float alpha=saturate(input_color.a*edge);
+    float3 rgb=lerp(_Primary.rgb,_Core.rgb,radial*.55)*max(0.0,input_color.r);
+    return float4(rgb*alpha,alpha);
+   }
+   ENDHLSL
+  }
+ }
+}

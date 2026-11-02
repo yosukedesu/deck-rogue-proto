@@ -1,0 +1,6 @@
+{
+  "_note": "dot の Godot 版 AuthoredGeometryFx.LoadRoles の既定の色 (色の表に役割が無い時の穴埋め)。コードに 16 進を書かないためにここに置く (2026-11-02)",
+  "roles_srgb": { "shadow": "#535E69", "primary": "#C6C6BE", "edge": "#DEDCD1", "core": "#F2EEE4" },
+  "scene_light_srgb": "#C6C6BE",
+  "bounded": { "shadow": "#444444", "primary": "#A8A8A8", "core": "#EEEEEE" }
+}

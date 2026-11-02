@@ -1,0 +1,65 @@
+// CrossbowAimedSurface.shader — dot の Godot 版 Project422 shaders/authored_CrossbowAimedSurface.gdshader を URP の HLSL に写したもの (2026-11-02)。
+// 土台は BoundedContactFx.shader (頂点の色 r = 明るさ・a = 不透明度、uv1 = (柔らかさ, 役割))。絵は Godot の画像座標 (左上が原点) で書かれているので、読む時に v を 1-v にする。
+// 出力は乗算済み (rgb*alpha, alpha)・Blend One OneMinusSrcAlpha = Godot の blend_mix と同じ見え方。式と数値は gdshader のまま。
+Shader "DeckRogue/CrossbowAimedSurface" {
+ Properties { _Age("Visual age",Float)=0 _BaseMap("Authored density",2D)="white"{} _Primary("Linear primary",Color)=(.65,.65,.65,1) _Core("Linear core",Color)=(1,1,1,1) }
+ SubShader { Tags {"RenderPipeline"="UniversalPipeline" "Queue"="Transparent+11" "RenderType"="Transparent"}
+  Pass { Name "CrossbowAimedSurfaceForward" Tags {"LightMode"="UniversalForward"}
+   Blend One OneMinusSrcAlpha ZWrite Off ZTest LEqual Cull Off
+   HLSLPROGRAM
+   #pragma vertex vert
+   #pragma fragment frag
+   #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+   TEXTURE2D(_BaseMap);SAMPLER(sampler_BaseMap);
+   CBUFFER_START(UnityPerMaterial)
+   float4 _Primary,_Core;float _Age;
+   CBUFFER_END
+   float4 TexBaseMap(float2 g){return SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,float2(g.x,1.0-g.y));}
+   struct A {float4 p:POSITION;float2 uv:TEXCOORD0;float2 effect:TEXCOORD1;float4 color:COLOR;};
+   struct V {float4 p:SV_POSITION;float2 uv:TEXCOORD0;float2 effect:TEXCOORD1;float4 color:COLOR;};
+   V vert(A i){V o;o.p=TransformObjectToHClip(i.p.xyz);o.uv=i.uv;o.effect=i.effect;o.color=i.color;return o;}
+   float4 frag(V i):SV_Target {
+    float2 input_uv=i.uv;float2 input_effect=i.effect;float4 input_color=i.color;
+    //314 exact owned receiving pressure only. Old neutral motes remain role0 below.
+    float role=input_effect.y;
+    if(role>.5){
+        float u=input_uv.x,v=input_uv.y;
+        if(role>2.5){
+            float band=1.0-smoothstep(.20,.50,abs(v-.5));
+            float ends=smoothstep(0.0,.18,u)*(1.0-smoothstep(.65,1.0,u));
+            float alpha3=clamp(input_color.a*band*ends,0.0,1.0);
+            float3 rgb3=float3(.40,.38,.32)*max(0.0,input_color.r);
+            return float4(rgb3*alpha3,alpha3);
+        }
+        if(role>1.5){
+            float shape=smoothstep(0.0,.10,min(min(u,1.0-u),min(v,1.0-v)));
+            //318 dark compression crease contrasts with hurt-white; not an opaque black disk.
+            float creaseAxis=.46+.10*sin(3.14159265*u);
+            float crease=1.0-smoothstep(.045,.22,abs(v-creaseAxis));
+            float shortEdge=smoothstep(.32,.48,u)*(1.0-smoothstep(.68,.83,u))*(1.0-smoothstep(.025,.075,abs(v-(creaseAxis+.12))));
+            float3 rgb2=lerp(float3(.20,.19,.17),float3(.045,.040,.032),crease);
+            rgb2=lerp(rgb2,float3(.66,.59,.45),shortEdge)*max(0.0,input_color.r);
+            float alpha2=clamp(input_color.a*shape,0.0,1.0);
+            return float4(rgb2*alpha2,alpha2);
+        }
+        float transverse=smoothstep(0.0,.18,v)*(1.0-smoothstep(.70,1.0,v));
+        //315 main density only: no baked impact flare; existing core remains a separate role.
+        float4 density=TexBaseMap(float2(.35+.23*u,.365+.35*(1.0-v)-.11*u));
+        float3 rgb1=density.rgb*max(0.0,input_color.r);
+        float contour=u+.10*sin(8.0*v+u);
+        float front=lerp(-.15,1.15,smoothstep(.035,.120,_Age));
+        float remain=smoothstep(front-.025,front+.025,contour);
+        float alpha1=clamp(input_color.a*density.a*transverse*remain,0.0,1.0);
+        return float4(rgb1*alpha1,alpha1);
+    }
+    float2 centered=input_uv*2.0-1.0;
+    float radial=saturate(1.0-dot(centered,centered));
+    float edge=input_effect.x>.5?radial*radial:saturate(min(input_uv.y,1.0-input_uv.y)*12.0);
+    float alpha=saturate(input_color.a*edge);
+    float3 rgb=lerp(_Primary.rgb,_Core.rgb,radial*.55)*max(0.0,input_color.r);
+    return float4(rgb*alpha,alpha);
+   }
+   ENDHLSL
+  }
+ }
+}

@@ -146,12 +146,63 @@ namespace DeckRogue.Game
                 b.Aura.Vertices[k + 1] = new Point(r * Math.Cos(k * Math.PI / 4), -.14 + r * 1.65 * Math.Sin(k * Math.PI / 4), .024); b.Aura.Alpha[k + 1] = alpha;
             }
         }
-        public static void Sample(Buffer b, double age)
+        //363 owned HolyMaul recovery: two open rising side-wraps, never a filled torso disk.
+        //Geometry stays in existing current-foot-relative camera plane; no receipt or clock changes.
+        // (Project422 で足された。dot の Godot 版 RecoveredSource/DeckRogue.Game/HealContinuousGeometry.cs と同じ式。2026-11-02)
+        static void OwnedMaulWrap(Buffer b, double t, double scale)
+        {
+            for (int i = 0; i < b.Aura.Vertices.Length; i++) b.Aura.Alpha[i] = 0.0;
+            for (int tail = 0; tail < TailCount; tail++)
+            {
+                int side = tail % 2 == 0 ? -1 : 1; int segment = tail / 2;
+                double born = Births[tail * 2]; double age = t - born;
+                double q = Clamp(age / .34); double envelope = Smooth(age / .035) * Fade(age, .11, .34) * .36;
+                b.TailActive[tail] = envelope > 0;
+                for (int k = 0; k < 5; k++)
+                {
+                    double u = k / 4.0;
+                    double y = -.365 + segment * .145 + q * .10 + (u - .5) * .145;
+                    double height = Clamp((y + .40) / .74);
+                    double x = side * (.355 - .13 * height + .024 * Math.Sin(Math.PI * u + segment * .70));
+                    double width = .009 * Math.Sin(Math.PI * u) * (1 - .35 * q);
+                    for (int j = 0; j < 3; j++)
+                    {
+                        int n = tail * 15 + k * 3 + j;
+                        b.Tails.Vertices[n] = new Point((x + (j - 1) * width) * scale, y * scale, .035);
+                        b.Tails.Alpha[n] = envelope * (side < 0 ? 1.0 : .82);
+                        b.Tails.Gain[n] = .72;
+                    }
+                }
+            }
+            for (int i = 0; i < MoteCount; i++)
+            {
+                double age = t - Births[i]; double life = .27 + .017 * (i % 4); double q = Clamp(age / life);
+                int side = i % 2 == 0 ? -1 : 1;
+                double y = -.31 + .055 * (i % 4) + .55 * q;
+                double x = side * (.345 - .12 * Clamp((y + .35) / .72) + .025 * Math.Sin(Math.PI * q + i * .6));
+                double alpha = Smooth(age / .026) * Fade(age, life * .35, life) * .65;
+                double radius = (.015 + .003 * (i % 3)) * (.8 + .2 * Math.Sin(Math.PI * q));
+                var center = new Point(x * scale, y * scale, .042 + .001 * (i % 3));
+                b.MoteCenters[i] = center; b.MoteActive[i] = alpha > 0;
+                for (int j = 0; j < 4; j++)
+                {
+                    double dx = (j == 0 || j == 3 ? -radius : radius) * scale;
+                    double dy = (j < 2 ? -radius : radius) * 1.2 * scale;
+                    int n = i * 4 + j; b.Motes.Vertices[n] = new Point(center.X + dx, center.Y + dy, center.Z);
+                    b.Motes.Alpha[n] = alpha; b.Motes.Gain[n] = .72;
+                }
+            }
+        }
+
+        public static void Sample(Buffer b, double age, bool ownedHolyMaul = false, double ownedWrapScale = 1.0)
         {
             if (b == null) throw new ArgumentNullException("b");
             double t = SafeAge(age); b.VisualAge = t; b.LightEnvelope = Light(t);
             b.TargetAreaW = 28 * b.LightEnvelope; b.FloorAreaW = 10 * b.LightEnvelope;
+            //Reset payload gains even if a diagnostic reuses a buffer across optional variants.
+            Array.Fill(b.Tails.Gain, 1.15); Array.Fill(b.Motes.Gain, 1.65);
             Aura(b, t); for (int i = 0; i < TailCount; i++) Tail(b, t, i); for (int i = 0; i < MoteCount; i++) Mote(b, t, i);
+            if (ownedHolyMaul) OwnedMaulWrap(b, t, ownedWrapScale);
         }
     }
 }

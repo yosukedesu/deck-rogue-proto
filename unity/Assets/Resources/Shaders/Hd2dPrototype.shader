@@ -1,4 +1,5 @@
 // Hd2dPrototype.shader — dot の Godot 版 shaders/authored_Hd2dPrototype.gdshader (checkpoint 192) を URP の HLSL に写したもの (2026-10-27)。
+// 2026-11-02 Project422 の追加: 層の種類 92/93 (白の大槌の圧の密度と裂け目)・絵の動き 33 (所有の軸の突き = 鉱物の図鑑の密度)・7 の帯は 93 の負の時刻にも。
 // 変えた所: 頂点の色は COLOR (役割の色・線形) × TEXCOORD1.x (明るさ) で HDR を保つ (Unity の頂点色は 8bit なので明るさを別の口で渡す)。
 // Godot の blend_mix = SrcAlpha/OneMinusSrcAlpha、unshaded、cull_disabled、depth_draw_never。OUTPUT_IS_SRGB の分岐は線形の URP では不要。
 // _Kind・_TextureMotion・_Age などの番号と式は Godot と同じ値 (Hd2dAttackPrototype が組む層の意味に対応)。
@@ -33,7 +34,8 @@ Shader "DeckRogue/Hd2dPrototype" {
    float noise2(float2 p){float2 i=floor(p),f=frac(p);f=f*f*(3.0-2.0*f);return lerp(lerp(hash2(i),hash2(i+float2(1,0)),f.x),lerp(hash2(i+float2(0,1)),hash2(i+float2(1,1)),f.x),f.y);}
    bool Motion(float lo,float hi){return _TextureMotion>lo && _TextureMotion<hi;}
    bool Kind(float lo,float hi){return _Kind>lo && _Kind<hi;}
-   float4 Tex(float2 uv){return SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,uv);}
+   // 2026-11-02: 絵の uv は Godot の画像座標 (左上が原点。Layer.MaterialSprite が Y を反転して作る) なので、Unity (左下が原点) では v を 1-v にして読む
+   float4 Tex(float2 uv){return SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,float2(uv.x,1.0-uv.y));}
    float4 frag(V i):SV_Target {
     float4 tint=i.tint;
     float2 encoded_uv=i.uv;
@@ -52,6 +54,61 @@ Shader "DeckRogue/Hd2dPrototype" {
     if(!textured && Kind(13.5,14.5)){
      float radius=length((uv-float2(.5,.5))*2.0);
      alpha=tint.a*exp(-radius*radius*5.5)*(1.0-smoothstep(.65,1.0,radius));
+    }
+    //366 owned HolyMaul: a density volume, NOT a colored carrier quad.
+    //Broad unequal lobes and open fractures occupy only part of the UV rectangle at birth.
+    if(!textured && Kind(91.5,92.5)){
+     float2 q=(uv-.5)*2.0;
+     float release=smoothstep(.060,.30,_Age);
+     float2 adv=q+float2(-.18,.12)*release;
+     float macro=noise2(adv*float2(3.8,4.7)+float2(2.4,7.1));
+     float fine=noise2(adv*float2(13.0,17.0));
+     float bulk=length((q-float2(-.12,-.07))*float2(1.15,1.30))-.61;
+     float upper=length((q-float2(.18,.39))*float2(1.65,2.0))-.48;
+     float side=length((q-float2(.39,-.16))*float2(2.0,1.65))-.40;
+     float signed_body=min(bulk,min(upper,side))+(macro-.5)*.38;
+     float body=1.0-smoothstep(-.10,.035,signed_body);
+     //Macroscopic torn channel opens from the upper-right boundary, never a circular ring.
+     float channel=1.0-smoothstep(.045,.12,abs(q.y-(.11+.31*q.x+.09*sin(q.x*8.0))));
+     channel*=smoothstep(.06,.40,q.x);
+     float voids=smoothstep(.63-.17*release,.78-.17*release,macro)*smoothstep(.12,.55,length(q));
+     float density=body*(1.0-channel*(.55+.45*release))*(1.0-voids);
+     float consume=smoothstep(release*.80-.12,release*.80+.15,macro*.72+fine*.28);
+     float2 nq=(q-float2(-.29,-.12))*float2(3.5,4.1);
+     float nucleus=exp(-dot(nq,nq));
+     float volume=.30+.50*(1.0-smoothstep(-.38,.02,signed_body))+.20*fine;
+     rgb=lerp(tint.rgb*float3(.69,.48,.24),tint.rgb*(.90+.20*fine),volume);
+     rgb=lerp(rgb,float3(1.0,.85,.58),nucleus*.18*(1.0-release));
+     alpha=tint.a*density*consume*(.28+.48*volume+.20*nucleus);
+    }
+    //371 shared-contour warm body: preserve middle-density alpha instead of discarding it.
+    if(textured && Kind(91.5,92.5) && _Age>=0.0){
+     float4 raw=Tex(float2(.205,.295)+uv*float2(.630,.470));
+     float3 lin=raw.rgb;   // 線形の URP: 絵は読んだ時点で線形
+     float density=dot(lin,float3(.2126,.7152,.0722));
+     float release=smoothstep(.090,.30,_Age);
+     float grain=noise2(uv*float2(8.0,5.0)+float2(.21,-.14)*release);
+     float dissolve=smoothstep(release*.80-.13,release*.80+.14,grain*.65+density*.35);
+     //372: middle-density body only. High-density fissures belong to the next pass.
+     float middle=smoothstep(.004,.085,density)*(1.0-.88*smoothstep(.55,.92,density));
+     rgb=tint.rgb*(.28+.30*sqrt(max(density,0.0)));
+     alpha=tint.a*raw.a*middle*(.40+.25*density)*dissolve;
+    }
+    //369 actual rawfracture alpha is the silhouette, not decoration inside outlinedtriangles.
+    if(textured && Kind(92.5,93.5) && _Age>=0.0){
+     float2 raw_uv=float2(.205,.295)+uv*float2(.630,.470);
+     float4 raw=Tex(raw_uv);
+     float3 density_rgb=raw.rgb;
+     float density=dot(density_rgb,float3(.2126,.7152,.0722));
+     float release=smoothstep(.065,.235,_Age);
+     float structure=noise2(uv*float2(8.0,5.0)+float2(.21,-.14)*release);
+     float dissolve=smoothstep(release*.88-.12,release*.88+.15,structure*.62+density*.38);
+     //Suppress gray fog, retain porous luminous veins plus unequal amber shoulder.
+     float shoulder=smoothstep(.010,.20,density);
+     //372: preserve actual raw contrast and palette/emission instead of mapping most
+     //of the body to one pale constant. White is reserved for the tiny separate nucleus.
+     rgb=tint.rgb*(.18+.82*sqrt(max(density,0.0)));
+     alpha=tint.a*raw.a*shoulder*(.42+.58*sqrt(max(density,0.0)))*dissolve;
     }
     // Ground-only looming shadow: broad unequal lobes, no literal paw drawing.
     if(!textured && Kind(7.5,8.5)){
@@ -75,7 +132,7 @@ Shader "DeckRogue/Hd2dPrototype" {
      float across=abs(uv.y-.5)*2.0;
      alpha=tint.a*exp(-across*across*5.0)*smoothstep(0.0,.08,edge);
     }
-    if(!textured && !dust && Kind(6.5,7.5)){
+    if(!dust && ((!textured && Kind(6.5,7.5))||(Kind(92.5,93.5) && _Age<0.0))){
      float across=abs(uv.y-.5)*2.0;
      float hot=1.0-smoothstep(.08,.48,across);
      float shoulder=exp(-across*across*3.8);
@@ -103,7 +160,7 @@ Shader "DeckRogue/Hd2dPrototype" {
      float2 q=(uv-.5)*2.0;
      alpha=tint.a*exp(-dot(q,q)*3.4)*(1.0-smoothstep(.65,1.0,length(q)));
     }
-    if(textured && _UseTexture>.5){
+    if(textured && _UseTexture>.5 && !Kind(91.5,93.5)){
      float2 sample_uv=uv;
      if(Motion(24.5,25.5)){
       float move=smoothstep(0.0,.24,_Age);
@@ -341,6 +398,17 @@ Shader "DeckRogue/Hd2dPrototype" {
       float release=smoothstep(.035,.17,_Age);
       material.a*=smoothstep(release*.68-.15,release*.68+.15,noise2(uv*float2(37.0,29.0)));
       material.rgb*=1.0-.22*release;
+     }
+     if(Motion(32.5,33.5)){
+      // Physical atlas density, not synthetic noise/geometry glyphs.
+      // Low-density feathered boundaries disappear before its mineral core.
+      if(uv.x<.5){
+       float u=(uv.x-69.0/1774.0)/(768.0/1774.0);
+       material.a*=smoothstep(0.0,.12,u)*(1.0-smoothstep(.985,1.0,u));
+      }
+      float release=smoothstep(.055,.205,_Age);
+      float threshold=release*.88;
+      material.a*=smoothstep(threshold-.10,threshold+.10,material.a);
      }
      // 線形の URP: sRGB の絵はサンプルの時点で線形になっている (Godot の OUTPUT_IS_SRGB の分岐は要らない)
      float3 sampled=material.rgb;

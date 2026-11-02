@@ -1,0 +1,11 @@
+{
+  "id": "holy-maul-owned-recovery-wrap",
+  "roles_srgb": {
+    "shadow": "#493420",
+    "primary": "#987044",
+    "edge": "#D4AA5A",
+    "core": "#EACD8E"
+  },
+  "scene_light_srgb": "#C39B50",
+  "scope": "Only registered HolyMaul-owned Heal marker; negative-center open side wrap. Pending native review."
+}

@@ -13,6 +13,22 @@ internal sealed class NativeEffect
 
 	public Action<Vector3>? ConfigureSource;
 
+    // Only exact Mirror factory consumes this receipt-derived presentation phase.
+    public Action<bool>? ConfigureBlueCommittedContact;
+    public Action<bool>? ConfigureMirrorCommittedContact;
+    public Action<bool>? ConfigureImpSparkCommittedContact;
+    public Action<bool>? ConfigureColdSweepCommittedContact;
+    public Action<bool>? ConfigureCanopyCommittedContact;
+    public Action<bool>? ConfigureLightBoltCommittedContact;
+    public Action<bool>? ConfigureLightBurstCommittedContact;
+    public Action<bool>? ConfigureVineFormationCounterCommittedContact;
+    public Action<bool>? ConfigureAetherLanceCommittedContact;
+    public Action<bool>? ConfigureSparkBurstCommittedContact;
+    public Action<bool>? ConfigureMomentumWhipCommittedContact;
+    public Action<bool>? ConfigureCultistDarkBladeCommittedContact;
+    public Action<bool>? ConfigureGreenGulpCommittedContact;
+    public Action<bool>? ConfigureSpore385CommittedContact;
+
     public Action<bool>? ConfigureRemoteStrike;
     public Action<bool>? ConfigureSourceGesture;
     // Presentation-only deterministic variation captured once at effect Begin.
