@@ -1,0 +1,229 @@
+{
+  "authoredFrameCount": 13,
+  "distinctPixelFrames": 13,
+  "dimensionsPass": true,
+  "baselinePass": true,
+  "binaryAlphaPass": true,
+  "canonicalPalettePass": true,
+  "transparentRgbZero": true,
+  "frames": [
+    {
+      "id": "leader_red_idle_0",
+      "sha256": "bd60b834fbbf9d99f73f6d79442720954df379132dfa708eb6d76c7624ea494d",
+      "opaqueBounds": [
+        44,
+        13,
+        78,
+        77
+      ],
+      "paletteColors": 59,
+      "opaquePixels": 1475
+    },
+    {
+      "id": "leader_red_idle_1",
+      "sha256": "5686481841db8bac735bfe48bf3bb83505fa7e9b9a49fb2e823c330302a47beb",
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "paletteColors": 58,
+      "opaquePixels": 1510
+    },
+    {
+      "id": "leader_red_idle_2",
+      "sha256": "e358f070e4acc689ac3e31d23663e072e9cd2ae30aac37681a6d0cebfcc05c21",
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "paletteColors": 58,
+      "opaquePixels": 1521
+    },
+    {
+      "id": "leader_red_idle_3",
+      "sha256": "fd1e32164c04a4a7ef6d5ae832e005c9e15e9d1ab2db5b374631f1817c76f88d",
+      "opaqueBounds": [
+        42,
+        13,
+        78,
+        77
+      ],
+      "paletteColors": 58,
+      "opaquePixels": 1526
+    },
+    {
+      "id": "leader_red_idle_4",
+      "sha256": "8cc76be024d62f4f7223a0c6ff36fbd1b707acbc6920bc656b7792ae9f4fbbba",
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "paletteColors": 58,
+      "opaquePixels": 1513
+    },
+    {
+      "id": "leader_red_idle_5",
+      "sha256": "c364718bb14783613e22ca308dba0526f6b00136ba13b57b08839a3a824d94fc",
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "paletteColors": 57,
+      "opaquePixels": 1509
+    },
+    {
+      "id": "leader_red_idle_6",
+      "sha256": "60ba3f5b65a9576729e2d7234b1c941d6269eda7482b0402c450c0a81adf7733",
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "paletteColors": 57,
+      "opaquePixels": 1516
+    },
+    {
+      "id": "leader_red_idle_7",
+      "sha256": "a00b24b4b7284b8c7d6d75cb915f233981af4f64781ab87383ac67523d8438db",
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "paletteColors": 59,
+      "opaquePixels": 1508
+    },
+    {
+      "id": "leader_red_attack_0",
+      "sha256": "b5f0b9f559ca705e817a6486d7215fddff9cc06a2833f67477ff7c1404ee2bcf",
+      "opaqueBounds": [
+        37,
+        15,
+        81,
+        77
+      ],
+      "paletteColors": 55,
+      "opaquePixels": 1497
+    },
+    {
+      "id": "leader_red_attack_1",
+      "sha256": "c247076ed3d81a77e438614d8c266a2881a9f59d984300df92e4f83da4a73a1b",
+      "opaqueBounds": [
+        38,
+        15,
+        98,
+        77
+      ],
+      "paletteColors": 55,
+      "opaquePixels": 1601
+    },
+    {
+      "id": "leader_red_attack_2",
+      "sha256": "beb03c183b2237bf0cb415e5f9cb01696f84485988e867950d35f85795b6da2a",
+      "opaqueBounds": [
+        42,
+        13,
+        76,
+        77
+      ],
+      "paletteColors": 55,
+      "opaquePixels": 1467
+    },
+    {
+      "id": "leader_red_block_0",
+      "sha256": "6a8a71a98bb3d8cbfe73d9cc2ed4eabfd1466836857054670107da4e57c6e4ff",
+      "opaqueBounds": [
+        44,
+        15,
+        77,
+        77
+      ],
+      "paletteColors": 57,
+      "opaquePixels": 1379
+    },
+    {
+      "id": "leader_red_hurt_0",
+      "sha256": "d031f838480b8b0f3437175306f165bcd0146fb5debe70555b9748814e371712",
+      "opaqueBounds": [
+        32,
+        15,
+        76,
+        77
+      ],
+      "paletteColors": 59,
+      "opaquePixels": 1299
+    }
+  ],
+  "unityRuntimeTested": false,
+  "androidTested": false,
+  "idleOrderedLoopEdges": [
+    {
+      "fromFrame": 0,
+      "toFrame": 1,
+      "changedPixels": 983
+    },
+    {
+      "fromFrame": 1,
+      "toFrame": 2,
+      "changedPixels": 842
+    },
+    {
+      "fromFrame": 2,
+      "toFrame": 3,
+      "changedPixels": 874
+    },
+    {
+      "fromFrame": 3,
+      "toFrame": 4,
+      "changedPixels": 936
+    },
+    {
+      "fromFrame": 4,
+      "toFrame": 5,
+      "changedPixels": 828
+    },
+    {
+      "fromFrame": 5,
+      "toFrame": 6,
+      "changedPixels": 775
+    },
+    {
+      "fromFrame": 6,
+      "toFrame": 7,
+      "changedPixels": 819
+    },
+    {
+      "fromFrame": 7,
+      "toFrame": 0,
+      "changedPixels": 957
+    }
+  ],
+  "idleSolesIdentical": true,
+  "apngRoundtrip": {
+    "idle": true,
+    "attack": true
+  },
+  "visualReview": "All13 frames inspected at native and4x contact sheet; attack windup/contact/recovery, guard book and backward hurt silhouette distinguishable; no visible background/ground; feet stable idle. Ordered strip including7->0 inspected. Preview APNG decoded and matched, not tested in engine.",
+  "scope": "Only handoffs/assets-a1-hibana PNG/JSON/README; no engine, Unity code, portraits, BGM, key visual or baseline422 change",
+  "prepublicationAudit": {
+    "passed": true,
+    "fileCount": 52,
+    "changedPaths": 52,
+    "scopePass": true,
+    "jsonParsePass": true,
+    "allManifestHashesPass": true,
+    "allRawHashesPass": true,
+    "compatibilityByteIdentityPass": true,
+    "secretPatternScanPass": true
+  }
+}

@@ -1,0 +1,836 @@
+{
+  "schemaVersion": 1,
+  "id": "a1-hibana-20261102",
+  "leaderId": "leader_red",
+  "name": "ひばな",
+  "row": "A1",
+  "branch": "codex/assets-a1-hibana-20261102",
+  "baseCommit": "6f690f8d7f0c617e8561bfb6862edcad9e109fac",
+  "dimensions": [
+    128,
+    84
+  ],
+  "footAnchor": {
+    "x": 60,
+    "y": 76,
+    "origin": "top-left",
+    "meaning": "last opaque sole row; x is registered body/feet axis"
+  },
+  "unityPivotNormalized": [
+    0.46875,
+    0.09523809523809523
+  ],
+  "authoredFrameCount": 13,
+  "frameCounts": {
+    "idle": 8,
+    "attack": 3,
+    "block": 1,
+    "hurt": 1
+  },
+  "baseImage": "Art/leaders/leader_red.png",
+  "baseImageAliasOf": "Art/leaders/anim/leader_red_idle_0.png",
+  "clips": {
+    "idle": {
+      "frames": [
+        "Art/leaders/anim/leader_red_idle_0.png",
+        "Art/leaders/anim/leader_red_idle_1.png",
+        "Art/leaders/anim/leader_red_idle_2.png",
+        "Art/leaders/anim/leader_red_idle_3.png",
+        "Art/leaders/anim/leader_red_idle_4.png",
+        "Art/leaders/anim/leader_red_idle_5.png",
+        "Art/leaders/anim/leader_red_idle_6.png",
+        "Art/leaders/anim/leader_red_idle_7.png"
+      ],
+      "durationsMs": [
+        125,
+        125,
+        125,
+        125,
+        125,
+        125,
+        125,
+        125
+      ],
+      "loop": true
+    },
+    "attack": {
+      "frames": [
+        "Art/leaders/anim/leader_red_attack_0.png",
+        "Art/leaders/anim/leader_red_attack_1.png",
+        "Art/leaders/anim/leader_red_attack_2.png"
+      ],
+      "durationsMs": [
+        130,
+        100,
+        180
+      ],
+      "loop": false,
+      "contactFrame": 1,
+      "contactTimeMs": 130
+    },
+    "block": {
+      "frames": [
+        "Art/leaders/anim/leader_red_block_0.png"
+      ],
+      "durationsMs": [
+        300
+      ],
+      "loop": false
+    },
+    "hurt": {
+      "frames": [
+        "Art/leaders/anim/leader_red_hurt_0.png"
+      ],
+      "durationsMs": [
+        220
+      ],
+      "loop": false
+    }
+  },
+  "frames": [
+    {
+      "id": "leader_red_idle_0",
+      "file": "Art/leaders/anim/leader_red_idle_0.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        44,
+        13,
+        78,
+        77
+      ],
+      "sha256": "bd60b834fbbf9d99f73f6d79442720954df379132dfa708eb6d76c7624ea494d",
+      "raw": "raw/idle.png",
+      "rawCell": [
+        0,
+        0,
+        444,
+        444
+      ],
+      "rawAlphaBoundsInCell": [
+        142,
+        40,
+        356,
+        441
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        34,
+        64
+      ],
+      "paste": [
+        44,
+        13
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128,
+      "postprocess": "Lock idle lower legs y66..83 to exported idle0 for foot stability"
+    },
+    {
+      "id": "leader_red_idle_1",
+      "file": "Art/leaders/anim/leader_red_idle_1.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "sha256": "5686481841db8bac735bfe48bf3bb83505fa7e9b9a49fb2e823c330302a47beb",
+      "raw": "raw/idle.png",
+      "rawCell": [
+        444,
+        0,
+        887,
+        444
+      ],
+      "rawAlphaBoundsInCell": [
+        115,
+        39,
+        332,
+        441
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        35,
+        64
+      ],
+      "paste": [
+        43,
+        13
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128,
+      "postprocess": "Lock idle lower legs y66..83 to exported idle0 for foot stability"
+    },
+    {
+      "id": "leader_red_idle_2",
+      "file": "Art/leaders/anim/leader_red_idle_2.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "sha256": "e358f070e4acc689ac3e31d23663e072e9cd2ae30aac37681a6d0cebfcc05c21",
+      "raw": "raw/idle.png",
+      "rawCell": [
+        887,
+        0,
+        1330,
+        444
+      ],
+      "rawAlphaBoundsInCell": [
+        87,
+        39,
+        307,
+        441
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        35,
+        64
+      ],
+      "paste": [
+        43,
+        13
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128,
+      "postprocess": "Lock idle lower legs y66..83 to exported idle0 for foot stability"
+    },
+    {
+      "id": "leader_red_idle_3",
+      "file": "Art/leaders/anim/leader_red_idle_3.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        42,
+        13,
+        78,
+        77
+      ],
+      "sha256": "fd1e32164c04a4a7ef6d5ae832e005c9e15e9d1ab2db5b374631f1817c76f88d",
+      "raw": "raw/idle.png",
+      "rawCell": [
+        1330,
+        0,
+        1774,
+        444
+      ],
+      "rawAlphaBoundsInCell": [
+        54,
+        39,
+        281,
+        441
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        36,
+        64
+      ],
+      "paste": [
+        42,
+        13
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128,
+      "postprocess": "Lock idle lower legs y66..83 to exported idle0 for foot stability"
+    },
+    {
+      "id": "leader_red_idle_4",
+      "file": "Art/leaders/anim/leader_red_idle_4.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "sha256": "8cc76be024d62f4f7223a0c6ff36fbd1b707acbc6920bc656b7792ae9f4fbbba",
+      "raw": "raw/idle.png",
+      "rawCell": [
+        0,
+        444,
+        444,
+        887
+      ],
+      "rawAlphaBoundsInCell": [
+        138,
+        20,
+        357,
+        423
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        35,
+        64
+      ],
+      "paste": [
+        43,
+        13
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128,
+      "postprocess": "Lock idle lower legs y66..83 to exported idle0 for foot stability"
+    },
+    {
+      "id": "leader_red_idle_5",
+      "file": "Art/leaders/anim/leader_red_idle_5.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "sha256": "c364718bb14783613e22ca308dba0526f6b00136ba13b57b08839a3a824d94fc",
+      "raw": "raw/idle.png",
+      "rawCell": [
+        444,
+        444,
+        887,
+        887
+      ],
+      "rawAlphaBoundsInCell": [
+        112,
+        20,
+        332,
+        423
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        35,
+        64
+      ],
+      "paste": [
+        43,
+        13
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128,
+      "postprocess": "Lock idle lower legs y66..83 to exported idle0 for foot stability"
+    },
+    {
+      "id": "leader_red_idle_6",
+      "file": "Art/leaders/anim/leader_red_idle_6.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "sha256": "60ba3f5b65a9576729e2d7234b1c941d6269eda7482b0402c450c0a81adf7733",
+      "raw": "raw/idle.png",
+      "rawCell": [
+        887,
+        444,
+        1330,
+        887
+      ],
+      "rawAlphaBoundsInCell": [
+        87,
+        20,
+        308,
+        423
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        35,
+        64
+      ],
+      "paste": [
+        43,
+        13
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128,
+      "postprocess": "Lock idle lower legs y66..83 to exported idle0 for foot stability"
+    },
+    {
+      "id": "leader_red_idle_7",
+      "file": "Art/leaders/anim/leader_red_idle_7.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        43,
+        13,
+        78,
+        77
+      ],
+      "sha256": "a00b24b4b7284b8c7d6d75cb915f233981af4f64781ab87383ac67523d8438db",
+      "raw": "raw/idle.png",
+      "rawCell": [
+        1330,
+        444,
+        1774,
+        887
+      ],
+      "rawAlphaBoundsInCell": [
+        63,
+        20,
+        283,
+        423
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        35,
+        64
+      ],
+      "paste": [
+        43,
+        13
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128,
+      "postprocess": "Lock idle lower legs y66..83 to exported idle0 for foot stability"
+    },
+    {
+      "id": "leader_red_attack_0",
+      "file": "Art/leaders/anim/leader_red_attack_0.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        37,
+        15,
+        81,
+        77
+      ],
+      "sha256": "b5f0b9f559ca705e817a6486d7215fddff9cc06a2833f67477ff7c1404ee2bcf",
+      "raw": "raw/attack.png",
+      "rawCell": [
+        0,
+        0,
+        724,
+        724
+      ],
+      "rawAlphaBoundsInCell": [
+        163,
+        72,
+        580,
+        665
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        44,
+        62
+      ],
+      "paste": [
+        37,
+        15
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128
+    },
+    {
+      "id": "leader_red_attack_1",
+      "file": "Art/leaders/anim/leader_red_attack_1.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        38,
+        15,
+        98,
+        77
+      ],
+      "sha256": "c247076ed3d81a77e438614d8c266a2881a9f59d984300df92e4f83da4a73a1b",
+      "raw": "raw/attack.png",
+      "rawCell": [
+        724,
+        0,
+        1448,
+        724
+      ],
+      "rawAlphaBoundsInCell": [
+        112,
+        70,
+        686,
+        660
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        60,
+        62
+      ],
+      "paste": [
+        38,
+        15
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128
+    },
+    {
+      "id": "leader_red_attack_2",
+      "file": "Art/leaders/anim/leader_red_attack_2.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        42,
+        13,
+        76,
+        77
+      ],
+      "sha256": "beb03c183b2237bf0cb415e5f9cb01696f84485988e867950d35f85795b6da2a",
+      "raw": "raw/attack.png",
+      "rawCell": [
+        1448,
+        0,
+        2172,
+        724
+      ],
+      "rawAlphaBoundsInCell": [
+        185,
+        71,
+        502,
+        666
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        34,
+        64
+      ],
+      "paste": [
+        42,
+        13
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128
+    },
+    {
+      "id": "leader_red_block_0",
+      "file": "Art/leaders/anim/leader_red_block_0.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        44,
+        15,
+        77,
+        77
+      ],
+      "sha256": "6a8a71a98bb3d8cbfe73d9cc2ed4eabfd1466836857054670107da4e57c6e4ff",
+      "raw": "raw/block.png",
+      "rawCell": [
+        0,
+        0,
+        1547,
+        1016
+      ],
+      "rawAlphaBoundsInCell": [
+        576,
+        160,
+        975,
+        912
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        33,
+        62
+      ],
+      "paste": [
+        44,
+        15
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128
+    },
+    {
+      "id": "leader_red_hurt_0",
+      "file": "Art/leaders/anim/leader_red_hurt_0.png",
+      "dimensions": [
+        128,
+        84
+      ],
+      "footAnchor": [
+        60,
+        76
+      ],
+      "opaqueBounds": [
+        32,
+        15,
+        76,
+        77
+      ],
+      "sha256": "d031f838480b8b0f3437175306f165bcd0146fb5debe70555b9748814e371712",
+      "raw": "raw/hurt.png",
+      "rawCell": [
+        0,
+        0,
+        1548,
+        1016
+      ],
+      "rawAlphaBoundsInCell": [
+        480,
+        169,
+        1006,
+        904
+      ],
+      "resample": "nearest",
+      "resizedSize": [
+        44,
+        62
+      ],
+      "paste": [
+        32,
+        15
+      ],
+      "palette": "palette.json",
+      "alphaThreshold": 128
+    }
+  ],
+  "palette": "palette.json",
+  "importDestination": "unity/Assets/Resources/Art/leaders",
+  "importSettings": {
+    "filter": "Point",
+    "sRGB": true,
+    "mipmaps": false,
+    "compression": "None",
+    "npotScale": "None",
+    "alpha": "straight",
+    "pixelsPerUnit": 100
+  },
+  "runtimeIntegrationPerformed": false,
+  "timingContract": "Recommended authored timing; this manifest is not auto-consumed by current Unity code. Existing gameplay contact remains authoritative.",
+  "compatibility": {
+    "root": "compatibility/Art/leaders",
+    "frameCounts": {
+      "idle": 8,
+      "attack": 4,
+      "block": 4,
+      "hurt": 3
+    },
+    "durationsMs": {
+      "idle": [
+        250,
+        250,
+        250,
+        250,
+        250,
+        250,
+        250,
+        250
+      ],
+      "attack": [
+        50,
+        80,
+        40,
+        180
+      ],
+      "block": [
+        60,
+        80,
+        100,
+        200
+      ],
+      "hurt": [
+        60,
+        160,
+        100
+      ]
+    },
+    "nominalAttackContactFrame": 2,
+    "nominalAttackContactTimeMs": 130,
+    "mapping": [
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_idle_0.png",
+        "source": "Art/leaders/anim/leader_red_idle_0.png",
+        "sha256": "bd60b834fbbf9d99f73f6d79442720954df379132dfa708eb6d76c7624ea494d",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_idle_1.png",
+        "source": "Art/leaders/anim/leader_red_idle_1.png",
+        "sha256": "5686481841db8bac735bfe48bf3bb83505fa7e9b9a49fb2e823c330302a47beb",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_idle_2.png",
+        "source": "Art/leaders/anim/leader_red_idle_2.png",
+        "sha256": "e358f070e4acc689ac3e31d23663e072e9cd2ae30aac37681a6d0cebfcc05c21",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_idle_3.png",
+        "source": "Art/leaders/anim/leader_red_idle_3.png",
+        "sha256": "fd1e32164c04a4a7ef6d5ae832e005c9e15e9d1ab2db5b374631f1817c76f88d",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_idle_4.png",
+        "source": "Art/leaders/anim/leader_red_idle_4.png",
+        "sha256": "8cc76be024d62f4f7223a0c6ff36fbd1b707acbc6920bc656b7792ae9f4fbbba",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_idle_5.png",
+        "source": "Art/leaders/anim/leader_red_idle_5.png",
+        "sha256": "c364718bb14783613e22ca308dba0526f6b00136ba13b57b08839a3a824d94fc",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_idle_6.png",
+        "source": "Art/leaders/anim/leader_red_idle_6.png",
+        "sha256": "60ba3f5b65a9576729e2d7234b1c941d6269eda7482b0402c450c0a81adf7733",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_idle_7.png",
+        "source": "Art/leaders/anim/leader_red_idle_7.png",
+        "sha256": "a00b24b4b7284b8c7d6d75cb915f233981af4f64781ab87383ac67523d8438db",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_attack_0.png",
+        "source": "Art/leaders/anim/leader_red_attack_0.png",
+        "sha256": "b5f0b9f559ca705e817a6486d7215fddff9cc06a2833f67477ff7c1404ee2bcf",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_attack_1.png",
+        "source": "Art/leaders/anim/leader_red_attack_0.png",
+        "sha256": "b5f0b9f559ca705e817a6486d7215fddff9cc06a2833f67477ff7c1404ee2bcf",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_attack_2.png",
+        "source": "Art/leaders/anim/leader_red_attack_1.png",
+        "sha256": "c247076ed3d81a77e438614d8c266a2881a9f59d984300df92e4f83da4a73a1b",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_attack_3.png",
+        "source": "Art/leaders/anim/leader_red_attack_2.png",
+        "sha256": "beb03c183b2237bf0cb415e5f9cb01696f84485988e867950d35f85795b6da2a",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_block_0.png",
+        "source": "Art/leaders/anim/leader_red_block_0.png",
+        "sha256": "6a8a71a98bb3d8cbfe73d9cc2ed4eabfd1466836857054670107da4e57c6e4ff",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_block_1.png",
+        "source": "Art/leaders/anim/leader_red_block_0.png",
+        "sha256": "6a8a71a98bb3d8cbfe73d9cc2ed4eabfd1466836857054670107da4e57c6e4ff",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_block_2.png",
+        "source": "Art/leaders/anim/leader_red_block_0.png",
+        "sha256": "6a8a71a98bb3d8cbfe73d9cc2ed4eabfd1466836857054670107da4e57c6e4ff",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_block_3.png",
+        "source": "Art/leaders/anim/leader_red_block_0.png",
+        "sha256": "6a8a71a98bb3d8cbfe73d9cc2ed4eabfd1466836857054670107da4e57c6e4ff",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_hurt_0.png",
+        "source": "Art/leaders/anim/leader_red_hurt_0.png",
+        "sha256": "d031f838480b8b0f3437175306f165bcd0146fb5debe70555b9748814e371712",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_hurt_1.png",
+        "source": "Art/leaders/anim/leader_red_hurt_0.png",
+        "sha256": "d031f838480b8b0f3437175306f165bcd0146fb5debe70555b9748814e371712",
+        "isAdditionalAuthoredFrame": false
+      },
+      {
+        "file": "compatibility/Art/leaders/anim/leader_red_hurt_2.png",
+        "source": "Art/leaders/anim/leader_red_hurt_0.png",
+        "sha256": "d031f838480b8b0f3437175306f165bcd0146fb5debe70555b9748814e371712",
+        "isAdditionalAuthoredFrame": false
+      }
+    ],
+    "warning": "Use either canonical Art or compatibility Art, never overlay the two. Aliases are byte-identical duplicates, not new poses."
+  },
+  "contactsheet": "contactsheet.png",
+  "previews": [
+    "idle-preview.png",
+    "attack-preview.png",
+    "block-preview.png",
+    "hurt-preview.png"
+  ]
+}

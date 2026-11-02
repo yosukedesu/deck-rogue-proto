@@ -1,0 +1,86 @@
+{
+  "id": "a1-hibana-20261102",
+  "generator": "OpenAI built-in image_gen.imagegen",
+  "generatorModel": "not exposed by tool",
+  "generationDate": "2026-11-02",
+  "paidApiCliUsed": false,
+  "canonicalSource": {
+    "repository": "yosukedesu/deck-rogue-proto",
+    "commit": "6f690f8d7f0c617e8561bfb6862edcad9e109fac",
+    "path": "unity/Assets/Resources/Art/leaders/leader_red.png",
+    "sha256": "b405e774dcfffd2d8300ea979095f6b97826c26b9356e86bad3ce0b04310e7ba",
+    "matchesProject422Reference": true
+  },
+  "raw": [
+    {
+      "file": "raw/attack.png",
+      "sha256": "562f56c8e322fa53a3ba80923abfa1f24d1072f8622b8f020c3144240ad281c5",
+      "dimensions": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "status": "accepted-source",
+      "untouched": true
+    },
+    {
+      "file": "raw/attack_windup.png",
+      "sha256": "bac15274f6456653072594fdf4d8bb9f06b6e5b2589ebba6671aa04a718eb800",
+      "dimensions": [
+        1548,
+        1016
+      ],
+      "mode": "RGBA",
+      "status": "rejected-costume-drift",
+      "untouched": true
+    },
+    {
+      "file": "raw/block.png",
+      "sha256": "6fd72111be0e71d844db14f4c8defacb41b6bcc918baf88a7bbd1a0d4b8c3e6f",
+      "dimensions": [
+        1547,
+        1016
+      ],
+      "mode": "RGBA",
+      "status": "accepted-source",
+      "untouched": true
+    },
+    {
+      "file": "raw/canonical-leader_red.png",
+      "sha256": "b405e774dcfffd2d8300ea979095f6b97826c26b9356e86bad3ce0b04310e7ba",
+      "dimensions": [
+        128,
+        84
+      ],
+      "mode": "RGBA",
+      "status": "canonical-reference",
+      "untouched": true
+    },
+    {
+      "file": "raw/hurt.png",
+      "sha256": "a5c2e68d448939c2a9d6eae7aa96b080b6458839da455e231be8966c7477bcaa",
+      "dimensions": [
+        1548,
+        1016
+      ],
+      "mode": "RGBA",
+      "status": "accepted-source",
+      "untouched": true
+    },
+    {
+      "file": "raw/idle.png",
+      "sha256": "ff55513791e5a049b02ca5e7acdbf2f1ee11a92bbabd67455e935902e0af57f7",
+      "dimensions": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "status": "accepted-source",
+      "untouched": true
+    }
+  ],
+  "prompts": "prompts.json",
+  "exportRecords": "export-records.json",
+  "method": "RGBA raw bytes preserved; crop each cell by alpha>=128 bounds; nearest-neighbor size registration; map RGB to canonical character59-color palette with no dithering; alpha threshold128; idle y66..83 fixed to idle0; no procedural pose generation",
+  "rightsNote": "Existing canonical artwork belongs to project provenance; new pose sources generated for this requested bundle. No third-party image downloaded. No CC0 or exclusive-rights claim."
+}
