@@ -131,6 +131,8 @@ namespace DeckRogue.Game
         public static bool Hd2dFx { get; set; } = true;
         /// <summary>hd2dfx=flat — 診断: HD-2D の演出の層を絵なしの平らな四角で描く (位置と大きさの確認)</summary>
         public static bool Hd2dFxFlat { get; set; } = false;
+        /// <summary>hd2dfx=diag — 診断: 選ばれた経路の当たりの最初の数コマを player.log に出す (年齢・層ごとの α の最大・頂点の広がり・シェーダ。2026-11-02 dot の助言「Sample 直後の committed・時刻・max(alpha) を出せば切り分けられる」)</summary>
+        public static bool Hd2dFxDiag { get; set; } = false;
         /// <summary>dof=0|1|urp</summary>
         public static HD2DTiltShift TiltShift { get; set; } = HD2DTiltShift.Off;
         /// <summary>drift=1 (待機の漂い。撮影では切る)</summary>
@@ -588,7 +590,7 @@ namespace DeckRogue.Game
                     if (v == "showcase" || v == "baseline") CombatPresentationShowcase = v == "showcase"; else Warn(key, v);
                     return true;
                 case "hd2dfx":
-                    if (v == "1" || v == "on" || v == "true") { Hd2dFx = true; Hd2dFxFlat = false; } else if (v == "0" || v == "off" || v == "false") Hd2dFx = false; else if (v == "flat") { Hd2dFx = true; Hd2dFxFlat = true; } else Warn(key, v);
+                    if (v == "1" || v == "on" || v == "true") { Hd2dFx = true; Hd2dFxFlat = false; } else if (v == "0" || v == "off" || v == "false") Hd2dFx = false; else if (v == "flat") { Hd2dFx = true; Hd2dFxFlat = true; } else if (v == "diag") { Hd2dFx = true; Hd2dFxDiag = true; } else Warn(key, v);
                     return true;
                 case "heroscale": if (TryAuto(v, out f)) HeroScale = f; else Warn(key, v); return true;
                 case "keycolor":

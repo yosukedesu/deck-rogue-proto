@@ -439,12 +439,33 @@ namespace DeckRogue.Game
                     float age;
                     if (s.Landed) { age = Time.time - s.Started; if (age >= s.Tail) yield break; }
                     else { age = Time.time - s.Expected; if (age >= .35f) yield break; }
-                    try { UpdateSource(s, age); s.Effect.Sample(age); Upload(s, age); }
+                    try { UpdateSource(s, age); s.Effect.Sample(age); Upload(s, age); if (HD2DFlags.Hd2dFxDiag && s.Landed && age < .12f) Diag(s, age); }
                     catch (Exception ex) { Debug.LogWarning("[Hd2dAttackFx] " + ex.GetType().Name + ": " + ex.Message); yield break; }
                     yield return null;
                 }
             }
             finally { if (e == _epoch) Retire(s, v); }
+        }
+        /// <summary>診断 (hd2dfx=diag): Sample→Upload の直後に、層ごとの α の最大・頂点の画面上の広がり・シェーダ・絵を 1 行で (dot の助言 2026-11-02)</summary>
+        static void Diag(Slot s, float age)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.Append("[Hd2dAttackFx] diag route=").Append(s.Route.Key).Append(" age=").Append(age.ToString("F3")).Append(" emission=").Append(s.Emission.ToString("F2")).Append(" height=").Append(s.Height.ToString("F2"));
+            for (int j = 0; j < s.Effect.Batches.Length; j++)
+            {
+                var b = s.Effect.Batches[j]; var d = s.Draws[j];
+                float maxA = 0f; int lit = 0; float minX = float.MaxValue, maxX = float.MinValue, minY = float.MaxValue, maxY = float.MinValue;
+                for (int i = 0; i < b.Count; i++)
+                {
+                    float a = b.Alpha(i); if (a > maxA) maxA = a; if (a <= 1e-5f) continue; lit++;
+                    var sp = Stage.Camera != null ? Stage.Camera.WorldToScreenPoint(d.V[i]) : Vector3.zero;
+                    if (sp.x < minX) minX = sp.x; if (sp.x > maxX) maxX = sp.x; if (sp.y < minY) minY = sp.y; if (sp.y > maxY) maxY = sp.y;
+                }
+                sb.Append(" | batch").Append(j).Append(" kind=").Append(b.Kind).Append(" shader=").Append(d.Shader).Append(" mat=").Append(d.Renderer.sharedMaterial != null ? d.Renderer.sharedMaterial.shader.name : "null")
+                  .Append(" tex=").Append(d.Texture != null ? d.Texture.name : "-").Append(" enabled=").Append(d.Renderer.enabled).Append(" maxAlpha=").Append(maxA.ToString("F3")).Append(" lit=").Append(lit).Append("/").Append(b.Count);
+                if (lit > 0) sb.Append(" screen=[").Append(minX.ToString("F0")).Append(",").Append(minY.ToString("F0")).Append("]-[").Append(maxX.ToString("F0")).Append(",").Append(maxY.ToString("F0")).Append("]");
+            }
+            Debug.Log(sb.ToString());
         }
         /// <summary>約束済みの当たり (Godot の Set*CommittedContact): 本物の受領が立った瞬間 (Land) に、選ばれた経路の分だけ true</summary>
         static void Commit(NativeEffect e, AttackRoute route, bool committed)

@@ -118,8 +118,8 @@
 | `hand=green_weak_point` | card → OwnedAxial (PlayerContactFx) | ○ | ○ (小さい) |
 | `hand=blue_glacial_maul` | card → BlueOwnedContact379 (BlueContact379Surface) | ○ | ○ 青い塊 |
 | `hand=blue_ripple_blade` | card → BlueOwnedContact379 | ○ | △ 薄い筋 (防がれて 0 ダメの状態で撮れた) |
-| `hand=blue_cold_sweep` | card → ColdSweep (ColdSweepSurfaceFx) | ○ | **× 写っていない** (§5) |
-| `hand=white_spark_burst` | card → SparkBurst (ScatterProfileFx) | ○ | **× 写っていない** (§5) |
+| `hand=blue_cold_sweep;hd2dfx=diag` | card → ColdSweep (ColdSweepSurfaceFx) | ○ | ○ 肩の高さに青白い霜の払い (最初の撮影で「写らない」としたのは撮り損ね。§5-1) |
+| `hand=white_spark_burst;hd2dfx=diag` | card → SparkBurst (SparkBurstContactSurface) | ○ | ○ 白と橙の火花の芯 (同上) |
 | `hand=white_spark_storm` | card → WarmSpark397 (ScatterProfileFx) | ○ | △ 数字の横に粒が少し |
 | `hand=green_guard` | support:green_guard/block → Hd2dSupportFx (.50 秒) | ○ | ○ 自分の前に白い盾の面 |
 | `hand=blue_ice_wall;leader=leader_blue` | support:blue_ice_wall/ice-gain (.52 秒) | ○ | ○ 氷の霧 |
@@ -140,9 +140,12 @@
 
 ## 5. 未検証・差異
 
-### 5-1. 鳴ったが見えなかった (次の作業)
-- **冷手の一払い (ColdSweepSurfaceFx)** と **火花の破裂 (SparkBurstContactSurface ← ScatterProfileFx)**: begin は出るが並べたコマに絵が無い。他の Bounded 系 (379・暗い刃・探り屋の刺し) は見えるので、この 2 本のシェーダの出力 (α か `_Coverage`/`_Gain` の既定) を疑う。カメラへ .28 寄せる処方 (§3-8) は効いている (379 が見えるようになった)。
+### 5-1. 「鳴ったが見えなかった」は撮り損ねだった (2026-11-02 夕・解決)
+- 冷手の一払いと火花の破裂は **描けている**。dot の助言 (「Sample 直後の committed・時刻・max(alpha) を出せば切り分けられる」) どおり診断の旗 `hd2dfx=diag` を足して撮り直したら、約束済みの当たりは Land で true・age は 0.017 から・α の最大は 冷手 .55／火花 1.0・シェーダと素材は専用のもの・画面上の広がりは 冷手 103×50px／火花 38×27px (1920×1080) で、2 枚目のコマに写っていた。
+- 見落とした理由: 撮影の間隔が約 0.1 秒 (playevery=2 でも CaptureScreenshot の止まりで 6 フレームごとになる) で、0.18 秒の当たりは 1 コマしか写らない。並べた一覧を 3 コマ目から切っていたので外した。**当たりの確認は 1〜3 コマ目を見る**。
+- 火花は本家どおり小さい (芯は .05 秒・粒は幅 1〜4px)。Godot でも同じ幾何・同じ scale (`_height*_size`) なので差ではない。
 - さざなみの刃: 防がれて 0 の状態でしか撮れていない。素通しの当たりで撮り直す。
+- 診断の旗 `hd2dfx=diag` は残す (`Hd2dAttackFx.Diag`: 着弾から .12 秒の各コマで経路・age・層ごとの α の最大・点いた頂点数・画面の矩形・シェーダ・素材・絵を 1 行)。
 
 ### 5-2. 撮れていない経路 (Godot と同じ条件が作れていない)
 - 棘の天蓋 (Canopy)・血の蝋燭 (InstalledDark)・置物の当たり全般: `perms=` で置いても敵の攻撃に対して誘発する絵が出なかった (置物の効果の誘発の条件を満たす状態キーが要る)。
