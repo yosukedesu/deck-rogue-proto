@@ -1,0 +1,23 @@
+{
+  "revision": "earth-stomp-ground-r2",
+  "interpretation": "surface colors decoded once; independent scene light; Unity intensity uncalibrated",
+  "shader_reference": "frozen R2 exactfield",
+  "earth": {
+    "roles_srgb": {
+      "shadow": "#493D32",
+      "primary": "#927452",
+      "edge": "#B99B78",
+      "core": "#D9C2A0"
+    },
+    "scene_light_srgb": "#B3A08B"
+  },
+  "stomp": {
+    "roles_srgb": {
+      "shadow": "#535E69",
+      "primary": "#C6C6BE",
+      "edge": "#DEDCD1",
+      "core": "#F2EEE4"
+    },
+    "scene_light_srgb": "#C6C5BC"
+  }
+}

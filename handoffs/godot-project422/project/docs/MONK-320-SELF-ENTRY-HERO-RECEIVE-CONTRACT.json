@@ -1,0 +1,30 @@
+{
+  "revision": 320,
+  "base": 319,
+  "diagnostic": "Actual hero _Flash0/Modulate1 and linked actor arrays. authored_StageUnitLit applies attack_local*.75 after normal WhiteCap. Heal peak two IsAttack RGB sums about2.949/3.991/3.143 at idx1, decreases to near0 by7. ActualTargetPeak .17818181/Floor .06/lightGain.65, not generic defaults. Read-only diagnostic pixels match original movie.",
+  "change": "Only actual hero binding receives the exact owned Monk self-entry HealContinuous analytic target/floor lights at factor0.08. Original factor1; peak approximate sum .236/.319/.251 before attenuation/albedo/.75. Nonzero supplemental irradiance, not a new cap or material fix.",
+  "ownership": [
+    "real samegeneration ordinary callback/event/commandowner/receipt identity and Reasonnull",
+    "actual Play UID previously Hand white_perm_monk, absent beforePerms, newly afterPerms Retainer Life2",
+    "actual doll UID map/definition, player receipt exact heal1 and receiver/source both currenthero",
+    "sameowner PermanentPlayed monk then first exact HpHealed1 SourceUID; no subsequent-entry heal claim",
+    "local selected route only; Beat.Route original and all numeric timing unchanged"
+  ],
+  "invariants": [
+    "local heal geometry/raw/shader/alpha/Light envelope/particles/emission/duration unchanged",
+    "world physical target/floor Omni energies unchanged",
+    "forestReceiver true and other actors receive original radiance; other heals/default Append calls factor1",
+    "actor shader WhiteCap/Exposure/Flash/Modulate and all worldlights unchanged",
+    "Heal1/Light1 selfentry separate and no Rushed or invented doll beam",
+    "no committed callback/state bool; private effect route is reset through existing Begin/Clear; generation checked at admission"
+  ],
+  "gates": [
+    "actualhero light pair old*.08 vs sameframe before, nonhero/forest/worldOmni and localdraw identical",
+    "face/clothes readable and local chest-heal radiance still evident; no zeroeffect success claim",
+    "wholeevent/HP1 Light1 and actualUID unchanged, ordinary/near-route negatives isolated",
+    "native actual first70 then independent craft; no shared heal-family nerf"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

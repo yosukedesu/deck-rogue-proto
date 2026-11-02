@@ -1,0 +1,21 @@
+{
+  "revision": 281,
+  "base": 280,
+  "scope": "Exact naturally expired PowderPod from explicit sameUID ConfirmReaction Fire=false; single prior instance, post attack window, TrapAge>=TrapLife, actual Held then Whiff before exact hit reference and Expired after it; no same-definition ReactionTriggered. Actual Amount14 qualification only.",
+  "change": "Exclude only BeginBeat fallback hero PlayPose attack. Source actor, source/target positions, route, receiving material, scheduling, receipt and all rules unchanged.",
+  "excluded": [
+    "true Confirm counter10",
+    "other reactions and expiry cards",
+    "enemy forced destruction",
+    "null CardUid decline",
+    "multiple prior copies with same definition",
+    "modified Amount other than14"
+  ],
+  "newRaw": 0,
+  "newImport": 0,
+  "limitations": [
+    "Yellow hero particles may be attack-sprite content; not yet independently isolated. No source material edits.",
+    "Native and art pending; prior 280 movie proves repeated hero attack.",
+    "Final card zone may reshuffle/draw; not fixed discard."
+  ]
+}

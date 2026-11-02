@@ -1,0 +1,28 @@
+{
+  "revision": 208,
+  "base": 206,
+  "scope": "Five exact direct neutral SPELL contexts only; no207 enemy trial",
+  "definitions": [
+    "black_whispering_ghost",
+    "black_groaning_skull",
+    "blue_page_wind",
+    "green_rooting_rush",
+    "blue_aftermath"
+  ],
+  "material": "Exact selected NeutralPressure caster profile reused, geometry/timing/source-kind gates unchanged",
+  "source_contracts": {
+    "black_whispering_ghost": "Actual draw2 before damage2; onSelfExhausted draw1 is not attack",
+    "black_groaning_skull": "Deliberately new direct neutral13/noheal. Exact automatic Censer exhaustedUID Dark4/drain adapter remains separate; historical direct legacy-negative versioned, not rewritten.",
+    "blue_page_wind": "Remaining hand x2 before draw2; explicit authored neutral/user correction, no wind/water/ring material",
+    "green_rooting_rush": "Damage6 then floorMomentum/2 Growth; actual Sprint Momentum3 makes modifieddamage9 thenGrowth1",
+    "blue_aftermath": "Pre-own-increment CardsPlayedThisTurn damage; firstplay0, afterrealPrayer1; no fake counters"
+  },
+  "required_gates": [
+    "One grouped per-ID actual rules/native witness",
+    "Draw-before/after, zero-hand and preincrement-count boundaries",
+    "Paired directSkull neutral13/noheal vs actualCenser Skull Dark4/drain regression with exactUID and no borrowed source",
+    "Shared selected neutral caster invariants inherited, no nested continuation claim"
+  ],
+  "status": "Conditional candidate; build/static/native/art pending",
+  "external_changes": "No engine, media or Git mutation"
+}

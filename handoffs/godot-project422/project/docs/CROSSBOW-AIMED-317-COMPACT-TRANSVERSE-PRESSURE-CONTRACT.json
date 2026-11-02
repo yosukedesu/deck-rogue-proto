@@ -1,0 +1,33 @@
+{
+  "revision": 317,
+  "base": 316,
+  "basis": "316bodyoutsidepositionworks but long silver blade/ribbon dominates. One structural shorttransversebelly+subordinateconnectingface, notalpha/coefficient rescue. Astra prefreeze agreement and actualgate maintained.",
+  "geometry": {
+    "allocation": "main64 in0..63/core8 at64..71/residue8 at72..79/oldmotes up to16 at80..95; capacity160, no newparticlecount",
+    "parameters": "bodyU=min(1,u/.625); rootU=max(0,(u-.625)/.375)",
+    "along": "body-.75+.40bodyU; root-.35*(1-rootU); both +.025q*(1-u)",
+    "center": "body-.15-.08sin(pi*bodyU); root-.15*(1-rootU), continuous at.625",
+    "width": "body(.018+.18*sin(pi*bodyU)^.70+.037bodyU), root .055*(1-rootU)+.008rootU; both *(1-.2q). .055 join leaves shortfaceconnection not suddencord",
+    "asymmetry": "lower .55-.32exp(-((bodyU-.52)/.18)^2), upper.90; unequalopenpressure notsymarrowhead",
+    "coverage": "main.72*oldfade*SmoothMirror(u/.10)*(1-.72SmoothMirror(rootU))*oldcross(.18,1,.32), localmain/root redistributionintentional",
+    "coreAndResidue": "exactoldgeometry/UV/HDR functions copiedindices+16, no newpoints/size/gain; semanticcompareold48..63 to new64..79",
+    "motes": "sixarrayscopyold4..19 to80..95 beforeclear0..79. Sameposition/UV/alpha/soft/count; semanticcompareold64..79 to new80..95",
+    "actualroot": "centerlocal0/finiteunchangedwidth, no newimpactorigin. Sameconfiguredsourceaxis."
+  },
+  "material": "316private shader andrawB/shearedUV byteunchanged. UV arrays same0..1parameter but8segments replaces6 so interpolation and sampledphysicalplacement differ. Highrawridge must not become a long rootline.",
+  "reviewIntent": "shortoutermain about30-50x25-45px effectivepressuretarget, nothardcodedpixels or bboxsuccess. Retainexternaldarkspace, broadsoft pressure andtinyhardroot bothread, no Vsign/detachedpebble/longblade.",
+  "invariants": [
+    "313actualclock/owner/real14Vulnerable/actor/worldlight/queue unchanged",
+    "core/residue/motequantity andgeometry/UV/HDR unchanged withindexoffset",
+    "no newshader/raw/import/globalgain; oldsharedBounded/factory unchanged outside exactCrossbowbody"
+  ],
+  "gates": [
+    "finite/capacity/sharedjoin/inverse audit",
+    "actualnative main/root/core rolelocations, semantic indexoffsetmotes comparison, 13agecommit equality",
+    "wholeinitialshape shortpressure notuniformplate/stone/arrowhead; no repeatedtinycoefficient loops",
+    "ownmovie onlyafterstaticcraftPASS"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

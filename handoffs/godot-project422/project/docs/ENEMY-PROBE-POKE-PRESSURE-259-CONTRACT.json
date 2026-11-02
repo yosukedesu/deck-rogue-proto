@@ -1,0 +1,29 @@
+{
+  "revision": 259,
+  "base": "selected258",
+  "scope": "exact enemy:enemy_probe/poke only; existing full EnemyContactVfxProfiles.SelectedRoute plus exact key/definition/family",
+  "cause": "fresh258 actual0030 has thin continuous whiteblue light-blade beside hero; improve receiver-local pressure/contact hierarchy without inventing a longer weapon",
+  "newFactory": "CreateProbePokeContact",
+  "fixed": [
+    "original CreateEnemyPoke wholebytes and other6pair dispatch",
+    "actual enemy weapon/pose/approach/source callback",
+    "real single damage/receipt/actor/rules",
+    "center(0,.025,.035),source-derived direction",
+    "window[-.07,.28]",
+    "TargetPeak.09/FloorPeak.09/Light exp(-age/.085)/Floor exp(-age/.14)",
+    "existing glow Sprite/alpha",
+    "raw0, oldshader/palette/renderer all unchanged"
+  ],
+  "geometry": "short rounded pressure ribbon 8 continuousUV segments, global start/end feather only; very short core contact plus subordinate oblique stress;2unequal separated remnants",
+  "numbers": {
+    "pre": "advanceEase((age+.065)/.065),tip center-direction*(.30*(1-advance)+.025),length.18,width.028,alpha.48advance",
+    "body": "releaseEase(age/.16),alpha1-Ease((age-.025)/.13),taildistance.48-.16release,tipdistance.025+.10release,width.11*(1-.60release),bend.022*(1-release)",
+    "ribbon": "breadth .010+width*sin(PI*u)*(.45+.55u); UV u continuous0..1 over all8segments",
+    "contact": "length .118,halfwidth.017,alpha1-Ease(age/.075); second short oblique width.006 alpha.65,existing gain1.15",
+    "remnants": "2start.025/.037, unequal .035/.022 lengths,.005/.0035 widths,alpha.45/.30,existinggain.85"
+  },
+  "topology": "4 batches kind14/21/21/2 writtenmax6/48/12/12; each Count512",
+  "qualification": "Local receiving cue only; does not prove actual weapon tip reaches hero in existing staging. No shaft across gap, new spear/body, new hit or hurt-wash increase.",
+  "native": "pending",
+  "art": "pending"
+}

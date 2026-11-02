@@ -1,0 +1,16 @@
+{
+  "revision": 288,
+  "base": 287,
+  "scope": "same exact Mirror/realLeak owner, actual event-identical same-generation CommittedExact receipt only",
+  "change": "receipt-derived callback selects new positive body at max(0,oldVisualAge), including first committed micro-negative draw; no epsilon",
+  "reset": "Begin defaultfalse every reuse; Clear false; Advance supplies current actual receipt boolean before Sample; only Mirror factory consumes callback",
+  "unchanged": [
+    "Stageclock/effectTime/retirement/queue/rules/events",
+    "old sampler VisualAge/core/particles/light",
+    "body positions/formulas except phase0 at actual committed micro-negative",
+    "all other effect callbacknull/defaultfalse",
+    "287 exact pose exclusion"
+  ],
+  "newRaw": 0,
+  "native": "pending"
+}

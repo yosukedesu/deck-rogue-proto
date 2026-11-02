@@ -1,0 +1,29 @@
+{
+  "status": "FROZEN_ALIAS_ONLY_CANDIDATE_PENDING_NATIVE",
+  "revision": 354,
+  "base": "selected353 unchanged, Whip baseline1018/1 actual unresolved fallback",
+  "change": "One presentation-only exact alias branch in AttackRouteCatalog.Resolve, after normal exact lookup succeeds/fails and before UnknownRoutes increment. Existing explicit exactentries keep priority. No Stage lateoverride/doubleauthority.",
+  "gate": [
+    "hit.Source == player",
+    "hit.PresentationEnemyAction == null",
+    "PresentationSource.Kind == permanent",
+    "PresentationSource.DefinitionId == relic_momentum_whip_passive",
+    "PresentationSource.Uid == hit.SourceUid == relic_relic_momentum_whip",
+    "_routes contains permanent:relic_momentum_whip",
+    "existing candidate fulltuple Key relic:relic_momentum_whip, DefinitionId relic_momentum_whip, SourceKind permanent, Family neutral_whip_contact, Renderer BoundedContactFx, Element neutral, FixedSmall true"
+  ],
+  "result": "Return the existing immutable canonical AttackRoute only. Do not change hit/source UID/DefinitionId/receipt/eventlog; input requestkey permanent:relic_momentum_whip_passive separately recorded from resolved route Key relic:relic_momentum_whip and Identity permanent:relic_momentum_whip.",
+  "scopeLimits": "Catalog has no installed session state, so this is exact provenance-mapping alias, not independent registeredowner verification. Actual GainRelic installedUID and current generation/ref numeric ownership remain baseline helper evidence. No blanket _passive stripping, no new alias for otherrelic/leader/card, mismatched sourcekind/UID/enemyexecution/missingcanonical entry keeps originalUnknownRoutes++ fallback.",
+  "fixed": [
+    "actual WindDash cost1/Momentum4/relicDamage1/Draw1/E2 wholeoracle",
+    "original event permanent suffix and relicUID distinct from primarycardUID",
+    "engine/code/assets/catalog data",
+    "existing Bounded shaders/geometry/size/gain/light/actor-motion code",
+    "source clock/receipt/numeric/token/UI"
+  ],
+  "intentional": "Previously unresolved minimal_neutral_contact now existing neutral_whip_contact profile. Actual material/geometry differences come solely from selecting alreadyauthored profile. Expected both lead0/end.18/FixedContact; actual effect phase/light and gestures must be observed rather than asserted invariant without evidence.",
+  "separateHold": "Astra observed heroattack0 at relicdamage8 despite WindDash support: read-only diagnosis pending. Alias must not simultaneously suppress pose; fullcard quality remains separate if extra gesture persists.",
+  "helperPlan": "same successful353 recipe/capture, actual source requestkey/resolved route identity fields both explicit; require actualcanonical tuple only for this case and sourceunchanged. Exact fulloracle/refgen positive witness/texture/phase/70–180untilStageclear retained, Stagecueclear!=wholeUIclear. QA-only clonedcatalog tests can verify wrongUID/kind/unknown/missingcanonical fallback without mutating stage or engine.",
+  "native": "sole original70 comparison after independentinverse/build, no newraw/newwhipbody. Sprite/material quality judged actual, not catalogname.",
+  "storage": "cloudonly>=5GB margin, PC C/D prohibited, originalbaselineHOLD compactpreserved first."
+}

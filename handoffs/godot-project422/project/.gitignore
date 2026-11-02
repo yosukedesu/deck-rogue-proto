@@ -1,0 +1,10 @@
+# Build and local verification state; exported/imported resources are tracked intentionally.
+obj/
+bin/
+.godot/mono/
+.godot/editor/
+.godot/shader_cache/
+qa/captures/
+*.user
+*.jks
+*.keystore

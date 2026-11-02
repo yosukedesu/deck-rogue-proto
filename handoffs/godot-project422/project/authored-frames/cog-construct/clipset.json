@@ -1,0 +1,216 @@
+{
+  "schema": 1,
+  "status": "M52_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_cog_construct",
+  "sourceCanvas": [
+    104,
+    80
+  ],
+  "frameCanvas": [
+    104,
+    80
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    52,
+    80
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 73,
+  "registrationKind": "grounded-original-source-reference",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "cded57396501b37447b692d1fd81779ef4c05986b75e5db53d0449ef6474b32d",
+  "sourceArtManifestSha256": "faa01affe76215a3801f6677177e16585eccdffc6447374ec1fa8df2f0a213f7",
+  "authoredMoves": [
+    "repeater",
+    "expel",
+    "charge_up",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "cded57396501b37447b692d1fd81779ef4c05986b75e5db53d0449ef6474b32d"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "cded57396501b37447b692d1fd81779ef4c05986b75e5db53d0449ef6474b32d"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "5d01cbc426eb2b22507d9e53a5b1460bba77b5402e50267dad1882aee73c6ad9"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "e92e86034e5258f32526f6ba340fbbe6077e1fa229636aab70b878e012416259"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "e10702a4883c4e5c55c48d652f053577796370b6beefd972efe6b813e29f8bcd"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "10e77a3f761f93e4e2dc2d91433201fdbc260b27072ff578a1f1ce00728ebce7"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "2c7b4b075410a093546b8a9a222355710f4637a8803f49ccc4e4ef5462834ae2"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "d5580cee4f6d907ffcb7f6054d6efc4eb697cae9fc0497f71323fbe9e54e40ca"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "3bd07576569cc0296847f0a3116381e6a8e9174f86e7c13f48b8c6b917a67a8d"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "583d3dfacb68fe9a146242699c5fe1242c1671806f3babb404deafa78cbdd820"
+      }
+    ],
+    "repeaterprepare": [
+      {
+        "file": "repeaterprepare.png",
+        "duration": 0.18,
+        "sha256": "0006a2090dcfa02e75e78d9c138e08899699316f2f8cdae568ae056e56ecaa3c"
+      }
+    ],
+    "repeatercontact": [
+      {
+        "file": "repeatercontact.png",
+        "duration": 0.05,
+        "sha256": "3a71028190339907688b539d1f3aa7d473b3450d3815d9711a6b7fb3434caa83"
+      }
+    ],
+    "expelprepare": [
+      {
+        "file": "expelprepare.png",
+        "duration": 0.18,
+        "sha256": "dcd6919a5ddc95509cec5b0a38b40e88dd54f0de886b16e1b3d24483de34650b"
+      }
+    ],
+    "expelcontact1": [
+      {
+        "file": "expelcontact1.png",
+        "duration": 0.05,
+        "sha256": "65dbcb13008a08cba71d7143bab0ddb24b43a4ae32ac485750507f6af2502d84"
+      }
+    ],
+    "expelrebound": [
+      {
+        "file": "expelrebound.png",
+        "duration": 0.12,
+        "sha256": "b122edd15c0323cb389da6dca79ae1bccfb866f788b203f425cd45f94cb3b4a2"
+      }
+    ],
+    "expelcontact2": [
+      {
+        "file": "expelcontact2.png",
+        "duration": 0.05,
+        "sha256": "43766f28eb832d12fdc5a8375d7fb3ac1f88d657a65ddc7cc136a3a3f4d438e6"
+      }
+    ],
+    "chargeprepare": [
+      {
+        "file": "chargeprepare.png",
+        "duration": 0.18,
+        "sha256": "32f28d8825d1ab59c4ba5192f7882ca02058ab6fdfaca148034343b91efbc7a3"
+      }
+    ],
+    "chargepulse": [
+      {
+        "file": "chargehold.png",
+        "duration": 0.05,
+        "sha256": "038ae7d28d53696fc7e03279c7f947bda80fdaf4d236b6c5ecd0f24a6d089c38"
+      }
+    ],
+    "chargereturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "5cd963233588add57e33da5356a21732c285f74fbde53d914739a45c7cf3ccd4"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "cded57396501b37447b692d1fd81779ef4c05986b75e5db53d0449ef6474b32d"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "5cd963233588add57e33da5356a21732c285f74fbde53d914739a45c7cf3ccd4"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "cded57396501b37447b692d1fd81779ef4c05986b75e5db53d0449ef6474b32d"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "c442647a704b2a532c06f370564f8995184d52b63bf2bef4cfac6da93661e540"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "72bbc07b8b6ec749882502f0c2da05449139e42f8567699112ef3a6b15f08a90"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "5cd963233588add57e33da5356a21732c285f74fbde53d914739a45c7cf3ccd4"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "cded57396501b37447b692d1fd81779ef4c05986b75e5db53d0449ef6474b32d"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "cded57396501b37447b692d1fd81779ef4c05986b75e5db53d0449ef6474b32d"
+      }
+    ]
+  },
+  "physicalNewKeyCount": 13,
+  "recoveryAuthorship": "owner-reviewed-finite-sequence-no-contact-reuse",
+  "drawingOnlyDurationNormalization": {
+    "contactPulseAndGuardHoldSeconds": 0.05,
+    "finiteReturns": "Approved recovery/return sequences remain drawing-only; existing Stage End/deadline governs exit."
+  }
+}

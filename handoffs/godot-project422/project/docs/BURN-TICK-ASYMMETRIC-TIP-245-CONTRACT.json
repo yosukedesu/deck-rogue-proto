@@ -1,0 +1,18 @@
+{
+  "revision": 245,
+  "base": 244,
+  "status": "preflight 0 errors /1923 existing warnings /9.60s; native/art pending",
+  "changes": {
+    "width*(.82f+.18f*v)": "width*(.20f+.80f*Ease(v/.82f))",
+    ".035f+.09f*rise,main*.88f": ".12f+.09f*rise,main*.88f",
+    "new Vector3(-.205f,.01f+.11f*rise,.004f)": "new Vector3(-.285f,.01f+.11f*rise,.004f)",
+    ".17f*(1-.35f*consume),.215f,-.035f-.04f*rise": ".115f*(1-.35f*consume),.215f,-.035f-.04f*rise"
+  },
+  "invariants": [
+    "height,UV,alpha,gain,light,receipt,source/camera/actor,dispatch unchanged",
+    "new function only; old installedFire and CreateBurnStatus entire bytes preserved",
+    "same .212s terminal and lower-edge consumption"
+  ],
+  "qualityGoal": "narrow bent main flame tip and visible receiver gap; no larger overall fire or extra event",
+  "history": "244 held: attachment improved over243 burst but rounded merged fire egg"
+}

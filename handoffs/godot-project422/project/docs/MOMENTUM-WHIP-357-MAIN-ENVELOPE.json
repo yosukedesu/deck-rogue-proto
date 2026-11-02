@@ -1,0 +1,82 @@
+{
+  "revision": 357,
+  "status": "FROZEN_CANDIDATE_NOT_NATIVE",
+  "base": "356 initial shape improved, temporal HOLD; no new raw/RGB/geometry/mask",
+  "singleChange": "Private MomentumWhip main role71 vertex-alpha envelope only; old2motes retain exact old sample alpha",
+  "formula": "For 0<=t<=.020 use old .8*(1-t/.18)^2. For .020<t<=.055 hold A=.8*(1-.020/.18)^2=.6320987654. Thereafter A*(1-smoothstep(.055,.150,t)); main0 by.150. Existing negative/pending/retirement gates unchanged.",
+  "maxAndContinuity": "No new crest or higher peak: alpha starts at old.8, monotonically decreases to .6321 then holds, then decreases to0. Continuous at.020/.055/.150, derivative has an intentional kink at.020 (old derivative→0); source time unchanged.",
+  "initial008": "Actual8 age.01666689 is before.020, so all vertex/material bytes and intendedRGBA unchanged; actual draw comparison required.",
+  "invariants": [
+    "Original rawA RGBA and import/source_color",
+    "All globalUV/geometry/anchor1440,660/rigid22/root/basis/size",
+    "Existing private death mask and two notches unchanged",
+    "Old2motes positions/UV/alpha/gain",
+    "Gain.72 once and all RGB/light0/Omni/Flash",
+    "355pose/354alias/owner/receipt/engine/UI",
+    "Existing .18 effect retirement"
+  ],
+  "predictedActualSampleTimes": [
+    {
+      "frame": 8,
+      "age": 0.01666689,
+      "oldAlpha": 0.6587087610437555,
+      "proposedMainAlpha": 0.6587087610437555,
+      "ratioToOldAlpha": 1.0,
+      "unchangedRawWeightedMaskRemain": 1.0,
+      "oldAlphaIntegralPx": 283.3760654328463,
+      "proposedAlphaIntegralPx": 283.3760654328463
+    },
+    {
+      "frame": 9,
+      "age": 0.05000025,
+      "oldAlpha": 0.41728234568055556,
+      "proposedMainAlpha": 0.6320987654320988,
+      "ratioToOldAlpha": 1.5147987255516264,
+      "unchangedRawWeightedMaskRemain": 1.0,
+      "oldAlphaIntegralPx": 179.5145841178359,
+      "proposedAlphaIntegralPx": 271.92846323962806
+    },
+    {
+      "frame": 10,
+      "age": 0.08333361,
+      "oldAlpha": 0.23072570260820002,
+      "proposedMainAlpha": 0.4969580499147369,
+      "ratioToOldAlpha": 2.1538911542882215,
+      "unchangedRawWeightedMaskRemain": 0.522212561082223,
+      "oldAlphaIntegralPx": 51.833796265246235,
+      "proposedAlphaIntegralPx": 111.64435526889172
+    },
+    {
+      "frame": 11,
+      "age": 0.11666697,
+      "oldAlpha": 0.0990388318266889,
+      "proposedMainAlpha": 0.17884836102519766,
+      "ratioToOldAlpha": 1.8058407770617682,
+      "unchangedRawWeightedMaskRemain": 0.019752923298933737,
+      "oldAlphaIntegralPx": 0.8416017168677835,
+      "proposedAlphaIntegralPx": 1.5197986983650364
+    },
+    {
+      "frame": 12,
+      "age": 0.15000033,
+      "oldAlpha": 0.022221733336022235,
+      "proposedMainAlpha": 0.0,
+      "ratioToOldAlpha": 0.0,
+      "unchangedRawWeightedMaskRemain": 0.0,
+      "oldAlphaIntegralPx": 0.0,
+      "proposedAlphaIntegralPx": 0.0
+    }
+  ],
+  "interpretation": "009 mask remains1 so retains readable main mass without inventing early erosion; actualfirst erosion is between9 and10. 010 unchangedmask retains52.22% rawweighted density with stronger mainalpha .497. 011 unchangedmask only1.975% remains, so prolonged large residue not predicted; allmain0 by12. Alpha integrals are rawtexel planar area approximations, not visible GPU opacity/contrast/depth/filter.",
+  "qualityGate": [
+    "008 exact initial appearance preserved",
+    "009 retains initial pressure without turning into a held whiteblob",
+    "010 unequal local erosion becomes readable, not merely wholebody opacity extension",
+    "011 weak short residual only,12 mainzero/oldmotes separate; no secondcrest",
+    "WholeHOLD if staticblobs linger or consumption still untraceable; no automatic coefficient loop"
+  ],
+  "execution": "After parent GO: one-line main-envelope change in factory, fullinverse356, helper filename/qualification only, independentaudit, sole70AB, cloud>=5GB/noPC; preserve356HOLD note32254B/fab010…a4bd",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

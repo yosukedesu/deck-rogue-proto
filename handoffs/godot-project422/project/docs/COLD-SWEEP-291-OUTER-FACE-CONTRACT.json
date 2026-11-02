@@ -1,0 +1,32 @@
+{
+  "revision": 291,
+  "base": "290-v2",
+  "basis": "290 own301staticHOLD: body remained mostly inside target forearm/torso; moderate density change alone did not establish a readable directional cold face",
+  "scope": "same exact owner/receipt/callback/cache and analytic shader; receiving composition only",
+  "geometry": {
+    "main": "8 segments x2 cross rows x4 vertices=64, continuous globalUV/soft0 edge path already in unchanged shader",
+    "localCenterPath": "x=-.43+.47u+.035q(1-u); y=.085(1-u)+.026sin(pi*u)-.025u",
+    "halfWidth": "(.012+.065 sin(pi*u)^.8*(1-.45u))*(1-.30q)",
+    "root": "same old contact0; downstream narrow end +.04,-.025 adjacent to root, no source/actor movement",
+    "longEnds": "vertex fade upstream0 throughu.13, root end22% instead of hard rectangular cap",
+    "crossDensity": "lower .04 / center1 / upper.28; no full-length white edge",
+    "residue": "4 small unequal soft quads after q.25, peakformula.13*Smooth((q-.25)/.2)*(1-q)^1.5, not coequal starburst",
+    "bodyVertices": 80,
+    "particles": "original sampled2-4motes copied verbatim from old12.. to80..",
+    "capacity": 160,
+    "indices": 240,
+    "actualTypicalActive": "main64 minus zero-end vertices +residue depending phase +8oldmotes; not allallocated160 visible",
+    "z": 0
+  },
+  "invariants": [
+    "same .18 end/lead0/systemclock/queue/number4/Ice4/passive1",
+    "same peakmain .48 and power1.1 envelope from290; additional longitudinal consumption only",
+    "same Coldpalette/HDRgain/depth/rendersettings/light0/sharedshader; no newraw/import",
+    "same finite guard / actualcommit reset / PlayUID owner / all otherfactories",
+    "old290 version and raw301 kept HOLD; movie not run"
+  ],
+  "artHypothesis": "outside-facing asymmetric belly with narrow receiving root, not a free projectile/solidiceweapon/belt/ovalbag; current placement numbers are localspace hypotheses, not fixedscreenpixel constants",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

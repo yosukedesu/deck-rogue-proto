@@ -1,0 +1,41 @@
+{
+  "revision": 297,
+  "base": 296,
+  "basis": "296static coldcraftPASS but ownmovie retains samefoldedplate .003/.036/.070/.103 uniformfade, temporalcraftHOLD; functional4/clearPASS alone insufficient",
+  "changes": {
+    "onlyShader": "Exact private ColdSweep material bounded age-local alpha consumption",
+    "existingAge": "_Age read from existing AuthoredGeometryFx material sample; no newclock/timeoffset/Stage modifications",
+    "initial": "t<=.04 all roles byte-equivalent formula output to296",
+    "mainFrostRole2": [
+      0.04,
+      0.105
+    ],
+    "bellyRole1": [
+      0.04,
+      0.145
+    ],
+    "oldFoldPeelRole3": [
+      0.085,
+      0.175
+    ],
+    "shape": "outerU first with authoredlinearRGB luminance .42*(L-.32) and crosssection .14sin(7v+3u), thresholdfront-.32..1.42 smoothstep, width .09; darkpatches first/palefrost locallylate",
+    "alpha": "only multipliesexistingcoverage by0..1; cannot createbrighternewcrest",
+    "expectedFrameDifference": ".07 outerface visiblybroken; .103 broadwhitefacegone; lateexistingroot/fold only; .18oldclear"
+  },
+  "invariants": [
+    "all296 C# geometry/XYZ/UV/vertexalpha/localmovement/owner/clock unchanged",
+    "same raw1774x887/sourceColor/private RGB/gain/depth/worldLight0",
+    "same first two sampledcontact frames .0033/.0367 expectedpixelmaterial",
+    "same damage4/Ice4/passive1/receipt/queue/actor/poolreset",
+    "role0 oldmotes byteunchanged",
+    "global.18lifetime unchanged, no extra loop/impact"
+  ],
+  "qualifications": [
+    "Materialfragmentalpha after.04 intentionallydifferent; notuniformgeometryAB allpixelclaim",
+    "Analytic contour includes authored lowfrequencydensity, notpurestraightwipe; actualnative silhouette mustprovebreakup",
+    "No newraw orregressionbeforetemporalcraftPASS"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

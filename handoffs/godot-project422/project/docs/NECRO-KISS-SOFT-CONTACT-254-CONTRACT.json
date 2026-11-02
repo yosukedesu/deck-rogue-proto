@@ -1,0 +1,42 @@
+{
+  "revision": 254,
+  "base": "selected253/fresh253Kiss757PASS",
+  "scope": "existing exact selected necro/card:black_corpse_kiss/dark_drain/dark/Hd2dNecroContactFx/FixedSmall",
+  "ownership": "existing actual exhausted card PresentationSource UID differs from ambient Censer SourceUid; movement/orderedmill/trigger all unchanged",
+  "reason": "fresh0010 actual.050 shows detached large upper smoke stamp and small torso stamp, outward angry dark flame",
+  "shape": "single low-opacity cold dark surface consumed toward small torso touch, no strong Curse clamp/no summoned actor/returnbeam",
+  "root": [
+    0.26,
+    0.01,
+    0.025
+  ],
+  "projection": "fresh0010 same enemy target(4.10633,1.3547131,-1.0442339),height2.670783,size.88 as249/253 chest projection; no screen constants",
+  "timing": "old localDark phase times dt=age*1.25; negative empty; .30 gate; contact tail1-Ease((dt-.18)/.12)",
+  "topology": {
+    "kind": [
+      4,
+      16,
+      16,
+      16,
+      2
+    ],
+    "capacityEach": 512,
+    "maxWritten": [
+      6,
+      192,
+      192,
+      192,
+      18
+    ]
+  },
+  "unchanged": [
+    "oldCreateDark/CreateNecroDark/CreateReactionDark/installedDark bytes",
+    "otherSkull/directCorpseKiss",
+    "Prayer/independentheal/rules/camera/hero pose",
+    "sourcecallbacksnull/lightoldlocal.028/Floor0/StageFocus0",
+    "allraw/shader/palette/renderer"
+  ],
+  "newRaw": 0,
+  "native": "pending",
+  "art": "pending"
+}

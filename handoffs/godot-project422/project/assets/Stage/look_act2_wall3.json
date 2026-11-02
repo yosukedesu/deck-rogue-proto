@@ -1,0 +1,7 @@
+{
+  "_doc": [
+    "幕2 の撮り比べの変種 (2026-10-03 HD-2D 段2 レーン B。計画 docs/design/hd2d-stage2-plan-2026-10-02.md §3 手順2・§4)。旗 look=look_act2_wall3 で幕2 の設計図 (look_act2 + .char + .dof) の上に重ねる (変える鍵だけ書く。スマホでは .phone が後に重なる)。",
+    "壁の岩棚の張り出し 3 unit の設計図 act2_layout_wall3 (レーン C・本番は 2)。光は既定のまま (提灯は at で部品に付いていく)"
+  ],
+  "layout": "act2_layout_wall3"
+}

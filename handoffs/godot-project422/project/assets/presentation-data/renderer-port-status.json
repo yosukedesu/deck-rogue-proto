@@ -1,0 +1,316 @@
+{
+  "updated_utc": "2026-10-12T04:15:00Z",
+  "status": "implemented source geometry and shader adapter; not visual acceptance",
+  "coverage": {
+    "damage_routes": 428,
+    "damage_renderers": 15,
+    "families": 52,
+    "source_cs_byte_identical": 25,
+    "shader_parse_checks": 18,
+    "headless_suite_groups": 149
+  },
+  "renderers": [
+    {
+      "renderer": "BoundedContactFx",
+      "route_count": 184,
+      "families": [
+        "minimal_neutral_contact",
+        "neutral_point_contact",
+        "neutral_wind_contact",
+        "water_slash_contact",
+        "cold_sweep_contact",
+        "ice_blunt_contact",
+        "plant_bind_contact",
+        "plant_point_contact",
+        "neutral_engulf_contact",
+        "wood_blunt_contact",
+        "plant_fang_contact",
+        "ember_streak_contact",
+        "fire_blade_contact",
+        "vertical_fire_contact",
+        "smoke_local_contact",
+        "curved_vine_contact",
+        "fire_point_contact",
+        "ice_break_contact",
+        "neutral_whip_contact",
+        "neutral_thrown_object_contact",
+        "dark_slash_contact",
+        "neutral_projectile_contact",
+        "curved_object_contact",
+        "local_curse_contact"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "DarkDrainFx",
+      "route_count": 16,
+      "families": [
+        "dark_drain"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "EarthStompFx",
+      "route_count": 3,
+      "families": [
+        "stomp",
+        "earth_fissure"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "EnemyContactFx",
+      "route_count": 76,
+      "families": [
+        "enemy_claw",
+        "enemy_fang",
+        "enemy_blunt",
+        "enemy_beam"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "FireContinuousFx",
+      "route_count": 36,
+      "families": [
+        "fire_localburst",
+        "fire"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "IceCrystalFx",
+      "route_count": 2,
+      "families": [
+        "ice_lance"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "LightRayFx",
+      "route_count": 11,
+      "families": [
+        "light"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "LightningDischargeFx",
+      "route_count": 3,
+      "families": [
+        "lightning_discharge"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "LocalMaterialProfileFx",
+      "route_count": 8,
+      "families": [
+        "local_dark",
+        "local_physical",
+        "local_water_flow",
+        "local_botanical",
+        "local_light"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "PhysicalSlashFx",
+      "route_count": 30,
+      "families": [
+        "slash"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "PlayerContactFx",
+      "route_count": 26,
+      "families": [
+        "pierce_contact",
+        "physical_meteor"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "ScatterProfileFx",
+      "route_count": 12,
+      "families": [
+        "scatter_ice",
+        "scatter_spore",
+        "scatter_fire",
+        "scatter_warm_spark"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "VineSlashFx",
+      "route_count": 6,
+      "families": [
+        "vine_slash"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "WaterContinuousFx",
+      "route_count": 9,
+      "families": [
+        "water"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    },
+    {
+      "renderer": "WideProfileFx",
+      "route_count": 6,
+      "families": [
+        "wide_water",
+        "wide_fire"
+      ],
+      "geometry": "byte-identical original pure C# source, called by NativeGeometryBridge",
+      "shader": "source formula translated to Godot spatial shader; native optical parity unverified",
+      "runtime_binding": "passed all covered family/tier Begin/Sample/Clear smoke in 149-group Godot headless suite",
+      "native_pixels": "pending representative GPU captures",
+      "fallback": "generic continuous fallback reserved for unsupported runtime route only; source minimal_neutral_contact remains intentional bounded family",
+      "known_limits": [
+        "cross-engine light energy calibration",
+        "Compatibility sRGB blend versus source linear HDR",
+        "native Godot PBR approximation for Earth rocks"
+      ]
+    }
+  ],
+  "other_renderers": [
+    "HealContinuousFx",
+    "SystemOutcomeFx"
+  ],
+  "later_candidates": "not silently substituted for frozen full-game baseline; see audit/assets/candidate_collections.csv",
+  "not_yet_closed": [
+    "actor shader and clip/choreography parity",
+    "status/permanent source cues",
+    "actual GPU all-family appearance and S25 Mobile HDR/performance"
+  ]
+}

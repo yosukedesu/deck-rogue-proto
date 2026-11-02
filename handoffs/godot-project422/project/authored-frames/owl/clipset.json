@@ -1,0 +1,163 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_elite_owl",
+  "sourceCanvas": [
+    160,
+    112
+  ],
+  "frameCanvas": [
+    192,
+    128
+  ],
+  "sourceOffset": [
+    16,
+    16
+  ],
+  "originalAnchor": [
+    80,
+    112
+  ],
+  "anchor": [
+    96,
+    128
+  ],
+  "spriteOffset": [
+    0,
+    8
+  ],
+  "groundMaxY": 119,
+  "sourcePngSha256": "daeba4eba889010d4d43125542bf6b7ac544c60cba677da92149604d2da9dd03",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "cc4a18040bf0da19dddad2dc7b21e7b34d5ce7e60ebee7f28898a5bd486aeb64"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.125,
+        "sha256": "cc4a18040bf0da19dddad2dc7b21e7b34d5ce7e60ebee7f28898a5bd486aeb64"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.125,
+        "sha256": "3f4b1322bc5ea88632879ac77864fc8a3fa08a467dc238c83dd49639234bb5f1"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.125,
+        "sha256": "981d94da77f0a96c382f3569892aa15176f36dcef542a6a7a581feca716c7827"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.125,
+        "sha256": "d1fea9570e7f40ebe5f01454e420a5f73193394711eae34f30edf59173450405"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.125,
+        "sha256": "d5301beb8b3d4ef07d2ac48ae3e4a2349fd8e5a7c84b6dbdb7ce14d7c2935319"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.125,
+        "sha256": "c96347f0332fcb30c9f1582f28f657d92a8e81c568216d414fec364a3e2798a2"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.125,
+        "sha256": "bca43d622512c39c125add86816ca13f5c8c7b905a3d4487075922deff7af2a6"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.125,
+        "sha256": "2bbf88446bfc0cc3c62172b1235967c1575615771d0d249cde34bdbb81e68b49"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "693ed328a4e9aabf12080b088a0ffce52e3db0e2220b87b21ff71b6d2a82ad00"
+      }
+    ],
+    "wingprepare": [
+      {
+        "file": "wingprepare.png",
+        "duration": 0.2,
+        "sha256": "a71670de14ac5456b1827fb9ce297c549b943a6e03cc352d326557f8e271ba9c"
+      }
+    ],
+    "wingcontact": [
+      {
+        "file": "wingcontact.png",
+        "duration": 0.055,
+        "sha256": "e7777a53c480e26f9a71ebc182de15bc979d4ddd05e3a0ba731771dbad75a2e4"
+      }
+    ],
+    "diveprepare": [
+      {
+        "file": "diveprepare.png",
+        "duration": 0.15,
+        "sha256": "2ad1b85042e58a14ffa59047cb640e1105a6ab6c1776acbaa5b649ea3cc20beb"
+      }
+    ],
+    "divecontact": [
+      {
+        "file": "divecontact.png",
+        "duration": 0.055,
+        "sha256": "6b74cad7992b031be501143b1f03222153c699e31b655d5c6daab0ba605e20a1"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "e83189374a4267512087605d39a01c9125fba5e99a062cb68ef75d25f90b5ca1"
+      }
+    ],
+    "braceprepare": [
+      {
+        "file": "braceprepare.png",
+        "duration": 0.12,
+        "sha256": "3a7fc144789b717ca6573b60a92d21e131d5222196cda65fca5c8191e62d8d61"
+      }
+    ],
+    "bracehold": [
+      {
+        "file": "bracehold.png",
+        "duration": 0.12,
+        "sha256": "8687e529821d63e7247ae331f1397a54c8b41712f3c897443c70923353a51caa"
+      }
+    ],
+    "block": [
+      {
+        "file": "bracehold.png",
+        "duration": 0.18,
+        "sha256": "8687e529821d63e7247ae331f1397a54c8b41712f3c897443c70923353a51caa"
+      }
+    ]
+  },
+  "status": "M29_COMPLETE_THREE_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "wing",
+    "brace",
+    "talon_dive"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "wing8-11 and talon_dive18-24 distinct single actual contacts; brace8-12 first own actual BlockGained only. Existing talon_dive mist1 event must remain once; presentation never re-applies it. Strict support tuple, stale reaction epoch rejection, finite recovery. Preserve wing->brace->talon_dive->wing graph. No gameplay/data/timing mutation.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "rest_canvas exact original RGBA padded left16/right16/top16",
+    "reactiveBlock": "bracehold drawing reused under independent block-notification; fullblock cannot trigger hurt",
+    "staticLayout": "original160x112 opaque footprint and layout anchor80,112 preserved; expanded192x128 authored envelope only for motion, anchor96,128 spriteOffset0,+8 ground119"
+  }
+}

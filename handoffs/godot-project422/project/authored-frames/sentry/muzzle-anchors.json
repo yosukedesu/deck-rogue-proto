@@ -1,0 +1,394 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_elite_sentry",
+  "coordinateSystem": "Native 144x112 PNG pixels; origin at top-left; x right, y down. Keep fractional runtime rendering transforms separate; multiply pixel offset by current Sprite2D global transform only once.",
+  "frameCanvas": [
+    144,
+    112
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "paddingLTRB": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "anchor": [
+    72,
+    112
+  ],
+  "authoritativeFor": "existing beam-style ranged/release presentation only; no new gameplay mechanic or added projectile",
+  "frames": {
+    "rest": {
+      "file": "rest.png",
+      "sha256": "26f478cd3bb4acc312027322d99725573898f8c7c68f3aacc690e5d063a29ac6",
+      "emissionPixel": [
+        26,
+        55
+      ],
+      "apertureCenterPixel": [
+        29,
+        55
+      ],
+      "emissionOffsetFromAnchor": [
+        -46,
+        -57
+      ],
+      "apertureOffsetFromAnchor": [
+        -43,
+        -57
+      ],
+      "pixelAlphaAtEmission": 255,
+      "pixelAlphaAtAperture": 255,
+      "emissionRgb": [
+        233,
+        221,
+        198
+      ],
+      "apertureRgb": [
+        62,
+        66,
+        76
+      ],
+      "equipment": "original screen-left rectangular cannon arm",
+      "visualInspection": "Native enlarged muzzle crop inspected; coordinates refer to square/tilted opening of original cannon, never head hole/eye or waist. Emission is front left lip aligned with the visible opening; aperture center is separately recorded."
+    },
+    "idle": {
+      "file": "idle.png",
+      "sha256": "089f0f095264762c78b62f3df6b6e3a461803977bc0af8ee5a23bf9c7933a680",
+      "emissionPixel": [
+        25,
+        55
+      ],
+      "apertureCenterPixel": [
+        28,
+        55
+      ],
+      "emissionOffsetFromAnchor": [
+        -47,
+        -57
+      ],
+      "apertureOffsetFromAnchor": [
+        -44,
+        -57
+      ],
+      "pixelAlphaAtEmission": 255,
+      "pixelAlphaAtAperture": 255,
+      "emissionRgb": [
+        217,
+        203,
+        178
+      ],
+      "apertureRgb": [
+        43,
+        46,
+        58
+      ],
+      "equipment": "original screen-left rectangular cannon arm",
+      "visualInspection": "Native enlarged muzzle crop inspected; coordinates refer to square/tilted opening of original cannon, never head hole/eye or waist. Emission is front left lip aligned with the visible opening; aperture center is separately recorded."
+    },
+    "hurt": {
+      "file": "hurt.png",
+      "sha256": "2efa0a9ffd60a30ed733539ad1fbcf86a2c1fcf9929783247917faa67d4594a0",
+      "emissionPixel": [
+        41,
+        44
+      ],
+      "apertureCenterPixel": [
+        45,
+        44
+      ],
+      "emissionOffsetFromAnchor": [
+        -31,
+        -68
+      ],
+      "apertureOffsetFromAnchor": [
+        -27,
+        -68
+      ],
+      "pixelAlphaAtEmission": 255,
+      "pixelAlphaAtAperture": 255,
+      "emissionRgb": [
+        43,
+        46,
+        58
+      ],
+      "apertureRgb": [
+        20,
+        22,
+        42
+      ],
+      "equipment": "original screen-left rectangular cannon arm",
+      "visualInspection": "Native enlarged muzzle crop inspected; coordinates refer to square/tilted opening of original cannon, never head hole/eye or waist. Emission is front left lip aligned with the visible opening; aperture center is separately recorded."
+    },
+    "recovery": {
+      "file": "recovery.png",
+      "sha256": "b09a183521e90dee43871f097098f24c3f55b2c6151aef613d3108417372a82b",
+      "emissionPixel": [
+        25,
+        58
+      ],
+      "apertureCenterPixel": [
+        29,
+        58
+      ],
+      "emissionOffsetFromAnchor": [
+        -47,
+        -54
+      ],
+      "apertureOffsetFromAnchor": [
+        -43,
+        -54
+      ],
+      "pixelAlphaAtEmission": 255,
+      "pixelAlphaAtAperture": 255,
+      "emissionRgb": [
+        20,
+        22,
+        42
+      ],
+      "apertureRgb": [
+        43,
+        46,
+        58
+      ],
+      "equipment": "original screen-left rectangular cannon arm",
+      "visualInspection": "Native enlarged muzzle crop inspected; coordinates refer to square/tilted opening of original cannon, never head hole/eye or waist. Emission is front left lip aligned with the visible opening; aperture center is separately recorded."
+    },
+    "boltprepare": {
+      "file": "boltprepare.png",
+      "sha256": "5ea7400bfcf841c19ca1ae767d4c3446e7e1a53cd90440e8c5c6f0350f4e3bf3",
+      "emissionPixel": [
+        25,
+        47
+      ],
+      "apertureCenterPixel": [
+        29,
+        47
+      ],
+      "emissionOffsetFromAnchor": [
+        -47,
+        -65
+      ],
+      "apertureOffsetFromAnchor": [
+        -43,
+        -65
+      ],
+      "pixelAlphaAtEmission": 255,
+      "pixelAlphaAtAperture": 255,
+      "emissionRgb": [
+        24,
+        27,
+        42
+      ],
+      "apertureRgb": [
+        55,
+        57,
+        70
+      ],
+      "equipment": "original screen-left rectangular cannon arm",
+      "visualInspection": "Native enlarged muzzle crop inspected; coordinates refer to square/tilted opening of original cannon, never head hole/eye or waist. Emission is front left lip aligned with the visible opening; aperture center is separately recorded."
+    },
+    "boltrelease": {
+      "file": "boltrelease.png",
+      "sha256": "ec993d300560225a0dd7ef21b4f95007139dba4315eb4239e48e70952c4e637f",
+      "emissionPixel": [
+        43,
+        36
+      ],
+      "apertureCenterPixel": [
+        48,
+        36
+      ],
+      "emissionOffsetFromAnchor": [
+        -29,
+        -76
+      ],
+      "apertureOffsetFromAnchor": [
+        -24,
+        -76
+      ],
+      "pixelAlphaAtEmission": 255,
+      "pixelAlphaAtAperture": 255,
+      "emissionRgb": [
+        20,
+        22,
+        42
+      ],
+      "apertureRgb": [
+        20,
+        22,
+        42
+      ],
+      "equipment": "original screen-left rectangular cannon arm",
+      "visualInspection": "Native enlarged muzzle crop inspected; coordinates refer to square/tilted opening of original cannon, never head hole/eye or waist. Emission is front left lip aligned with the visible opening; aperture center is separately recorded."
+    },
+    "beamprepare": {
+      "file": "beamprepare.png",
+      "sha256": "01dd78f6191b1bc142889ea67c0fb5faea8bbf09154ac59de1da6c5d90c93d9e",
+      "emissionPixel": [
+        25,
+        64
+      ],
+      "apertureCenterPixel": [
+        29,
+        64
+      ],
+      "emissionOffsetFromAnchor": [
+        -47,
+        -48
+      ],
+      "apertureOffsetFromAnchor": [
+        -43,
+        -48
+      ],
+      "pixelAlphaAtEmission": 255,
+      "pixelAlphaAtAperture": 255,
+      "emissionRgb": [
+        20,
+        22,
+        42
+      ],
+      "apertureRgb": [
+        50,
+        45,
+        71
+      ],
+      "equipment": "original screen-left rectangular cannon arm",
+      "visualInspection": "Native enlarged muzzle crop inspected; coordinates refer to square/tilted opening of original cannon, never head hole/eye or waist. Emission is front left lip aligned with the visible opening; aperture center is separately recorded."
+    },
+    "beamrelease": {
+      "file": "beamrelease.png",
+      "sha256": "845683a25f1f799d5b2fd81b9b9daa4d2af27f1e52f780ecfa74a57cbb991ccf",
+      "emissionPixel": [
+        41,
+        62
+      ],
+      "apertureCenterPixel": [
+        45,
+        62
+      ],
+      "emissionOffsetFromAnchor": [
+        -31,
+        -50
+      ],
+      "apertureOffsetFromAnchor": [
+        -27,
+        -50
+      ],
+      "pixelAlphaAtEmission": 255,
+      "pixelAlphaAtAperture": 255,
+      "emissionRgb": [
+        43,
+        46,
+        58
+      ],
+      "apertureRgb": [
+        62,
+        66,
+        76
+      ],
+      "equipment": "original screen-left rectangular cannon arm",
+      "visualInspection": "Native enlarged muzzle crop inspected; coordinates refer to square/tilted opening of original cannon, never head hole/eye or waist. Emission is front left lip aligned with the visible opening; aperture center is separately recorded."
+    },
+    "guardprepare": {
+      "file": "guardprepare.png",
+      "sha256": "01ec6296651f8968b8588f3e7b967e2e39b0cbe6e70079a09651cc5a02abf9a5",
+      "emissionPixel": [
+        43,
+        77
+      ],
+      "apertureCenterPixel": [
+        48,
+        77
+      ],
+      "emissionOffsetFromAnchor": [
+        -29,
+        -35
+      ],
+      "apertureOffsetFromAnchor": [
+        -24,
+        -35
+      ],
+      "pixelAlphaAtEmission": 255,
+      "pixelAlphaAtAperture": 255,
+      "emissionRgb": [
+        20,
+        22,
+        42
+      ],
+      "apertureRgb": [
+        20,
+        22,
+        42
+      ],
+      "equipment": "original screen-left rectangular cannon arm",
+      "visualInspection": "Native enlarged muzzle crop inspected; coordinates refer to square/tilted opening of original cannon, never head hole/eye or waist. Emission is front left lip aligned with the visible opening; aperture center is separately recorded."
+    },
+    "guardhold": {
+      "file": "guardhold.png",
+      "sha256": "b55304482ed6462c59621cdb4f665f50ea394d300f3d1fadcc720e69e0fa82e1",
+      "emissionPixel": [
+        44,
+        80
+      ],
+      "apertureCenterPixel": [
+        48,
+        80
+      ],
+      "emissionOffsetFromAnchor": [
+        -28,
+        -32
+      ],
+      "apertureOffsetFromAnchor": [
+        -24,
+        -32
+      ],
+      "pixelAlphaAtEmission": 255,
+      "pixelAlphaAtAperture": 255,
+      "emissionRgb": [
+        24,
+        27,
+        42
+      ],
+      "apertureRgb": [
+        43,
+        46,
+        58
+      ],
+      "equipment": "original screen-left rectangular cannon arm",
+      "visualInspection": "Native enlarged muzzle crop inspected; coordinates refer to square/tilted opening of original cannon, never head hole/eye or waist. Emission is front left lip aligned with the visible opening; aperture center is separately recorded."
+    }
+  },
+  "clipAliases": {
+    "block": "rest"
+  },
+  "movePhaseEmitters": {
+    "bolt": {
+      "prepare": "boltprepare",
+      "release": "boltrelease",
+      "recovery": "recovery",
+      "existingVisualRoute": "beam-style ranged/release with existing neutral fallback; do not invent bolt effect"
+    },
+    "beam": {
+      "prepare": "beamprepare",
+      "release": "beamrelease",
+      "recovery": "recovery",
+      "existingVisualRoute": "existing actual beam; release starts at emissionPixel(41,62), offset(-31,-50) from anchor; track active frame if beam persists into recovery."
+    },
+    "guard": {
+      "prepare": "guardprepare",
+      "hold": "guardhold",
+      "recovery": "recovery",
+      "emits": false
+    }
+  },
+  "runtimeNote": "The art is default facing left. Use the active frame emitter, applying existing sprite scale and mirroring exactly once. Do not use a generic body/waist center or ring-head opening. Raw art contains no beam/projectile. Sidecar coordinates are not a gameplay hit event."
+}

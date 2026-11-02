@@ -1,0 +1,38 @@
+{
+  "revision": 332,
+  "base": 331,
+  "cause": "331initialshape/root staticPASS; sameleafoutline uniformlyfades .033/.067 temporalHOLD.",
+  "delta": "PrivateVine shader role1 mask only; _Age uniform existing bridge supplies actual328contact materialage. No sourceclock/geometry/UV/raw/RGB/vertexalpha/oldmotes change.",
+  "contour": "u+.10sin(11v+3u)+.12(g-r), bounded[-.22,1.22] for normalizedlineartexturechannels",
+  "front": {
+    "formula": "-.30+.78S(0,1/30,t)+.34S(1/30,2/30,t)+.46S(2/30,.100,t)",
+    "stages": [
+      -0.3,
+      0.48,
+      0.82,
+      1.28
+    ],
+    "ages": [
+      0,
+      0.03333333333333333,
+      0.06666666666666667,
+      0.1
+    ],
+    "edgeHalfwidth": 0.035,
+    "monotonic": "allpositive steps, positiveintervals,C1 joins",
+    "initial": "upperedge-.265<-.22 givesconsume1",
+    "bodyEnd": "loweredge1.245>1.22 givesconsume0 at.100"
+  },
+  "root": "smoothstep(.86,.98,u) mixed with1-smoothstep(.070,.150,t); fixedUV mixture ofnonincreasingfunctions, initial1/end0; oldvertex(1-t/.18)^2 stillapplies",
+  "qualifications": [
+    "initial331pixeltheoryexact; actualGPU A/B required",
+    "oldmotes role0 untouched",
+    "geometry already excludedquad5,7 unchanged",
+    "uniformfade notusedasnewfix; actualunevenoutlineconsumption gate",
+    "allworldlight0/328clock7/actorFlash unchanged",
+    "no directwallclock/subframeclaim"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

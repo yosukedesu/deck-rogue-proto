@@ -1,0 +1,43 @@
+{
+  "status": "FROZEN_CANDIDATE_NOT_YET_NATIVE",
+  "base": 350,
+  "evidence": "CPU perspective-correct private alpha raster: shoulder first2draw169/217 pixels alpha>=.2, outside actual texturealpha10229/95. Not GPUfragment proof. Thus not solely registration or mask collapse; native original still subordinate haze.",
+  "scope": "Only RGB expression in exact Aether private role53. No changes to any alpha, UV, XYZ, gain, age mask, old fade/pulse, root/basis, roles51/52, old3motes, lights, actor, Ice cue, owner, schedule or otherBounded.",
+  "coordinates": "Existing global shoulder UV u0..1 along all8quads / v0..1 across. Shared station sameUV; no new UV2 or perquad reset.",
+  "linearRGB": {
+    "root": [
+      0.035,
+      0.08,
+      0.14
+    ],
+    "broadBelly": [
+      0.18,
+      0.42,
+      0.57
+    ],
+    "outerThinBlue": [
+      0.09,
+      0.2,
+      0.31
+    ],
+    "shortBlueWhiteDifference": [
+      0.5,
+      0.72,
+      0.82
+    ]
+  },
+  "formula": [
+    "du=(u-.44)/.30; belly=exp(-du*du); acrossValue=.70+.30*exp(-((v-.48)/.44)^2) using explicit signed square multiplication.",
+    "rgb=mix(root,broadBelly,belly*acrossValue); rgb=mix(rgb,outerThinBlue,smoothstep(.72,1.0,u));",
+    "creaseCenter=.62-.15*(u-.25); dv=(v-creaseCenter)/.11; localized=smoothstep(.20,.30,u)*(1-smoothstep(.43,.58,u))*exp(-dv*dv);",
+    "rgb=mix(rgb,shortBlueWhiteDifference,.62*localized). Existing gain applied once by unchanged output path."
+  ],
+  "shapeMeaning": "One broad middle-blue pressure belly, with one short sloped internal blue-white contrast, not a full-width white stripe, complete bright perimeter, two matching prongs or solid pale-blue capsule. Root remains dark and outer end subordinate.",
+  "actualGate": "First4/5 original1280 must show belly as active aether pressure distinct from arm/background and small core. Not just color/technical witness. Existing6..9 temporal masks unchanged; no adoption if floating panel, graytab, paleplate or diffuse haze persists.",
+  "stopRule": "If same unresolved tab/haze issue survives, stop coefficient iterations and revisit role design rather than extra gain/alpha/scale.",
+  "resources": "Cloud only. No userPC C writes/native until parentGO and audit. One small diagnostic PNG reused; no duplicate originalframes.",
+  "revision": 351,
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

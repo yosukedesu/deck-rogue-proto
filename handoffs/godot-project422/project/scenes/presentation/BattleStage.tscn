@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/presentation/BattleStage.cs" id="1_wx2d8"]
+
+[node name="BattleStage" type="Node3D" unique_id=1589876252]
+script = ExtResource("1_wx2d8")

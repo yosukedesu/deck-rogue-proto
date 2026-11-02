@@ -1,0 +1,14 @@
+{
+  "revision": 253,
+  "base": "252 material approved direction held",
+  "onlyRuntimeDelta": "main body axis(-.94,.342) to(-.985,-.174), approximately30degrees clockwise in world XY; all other bytes unchanged",
+  "projection": "252 actual root938,331 vs main tip895,275; aim left-outside between face and sword, around865-890,300-320 judged from same1280actual; never hardcoded screen coordinates",
+  "unchanged": [
+    "raw original",
+    "root/envelope/alpha/gain/timing/light",
+    "cooling remnant/embers",
+    "all rules/owners/otherfactory/profile/bridge"
+  ],
+  "native": "pending",
+  "art": "pending"
+}

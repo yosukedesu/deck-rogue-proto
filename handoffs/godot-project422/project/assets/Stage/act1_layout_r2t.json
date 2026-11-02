@@ -1,0 +1,997 @@
+{
+  "_doc": "幕1の箱庭の設計図 (HD-2D 見本 P04・計画 docs/design/hd2d-slice-plan-2026-09-30.md §2-2)。座標は道の座標: t = 道に沿った距離・s = 道と直角 (+ が奥)・y = その場所の地面からの高さ (abs=true なら絶対の高さ)。yaw は度 (block・rig・fence・marker は道の向きから・ほかは世界)。tiles の variants は種ごとの候補 (先に読めた絵。文字列か {art, calm, sat, clampWhite})、rot は none|flipX|rot4。surfaces の shader は array (道の座標で1軸投影)|atlas (半立体と札)|uv (メッシュの UV)|shaft (光の面)。エディタのメニュー「DeckRogue/箱庭/幕1を組む」で組み、動かしてから「書き戻す」と parts の t・s・y・yaw・scale が書き換わる。初版は scratchpad の gen_layout.py (seed 20260930) が作った。W3b P22 (ユーザー「本家っぽく」): 座席の帯の土と草を明暗の戻ったタイル (pathSeat・grassSeat) に、地面の小札 (kind litter・39枚。背丈 12 ドット以下は座席の帯にも置ける)、奥の高い幹 (trunk-l1〜r2)、月光の筋を画面の上から左上の光で (lobe 0 = 霧の芯で薄めない)、霧の面の明るさ (gain)、上の角に暗い樹冠。W3 の設計図は act1_layout_w3.json (旗 look= の変種 look_act1_w3layout で組める)。W3b の統合 (本家っぽく): 月光の筋を見えるように、霧の面の gain を 0.53 倍 (vein-mist 0.55→0.29・mist-t2 0.85→0.45) にして光の面の強さを 1.6→3.0 に上げた (look_act1.json の materials.glow) = 霧の面の明るさはそのまま・筋だけ約1.9倍。統合前 (レーン P22 の W3b) の設計図は act1_layout_w3blanes.json (変種 look_act1_w3blanes で組める)【二周目の試しの設計図 (計画 docs/design/hd2d-round2-plan-2026-10-01.md §2 レーン C 段1・§3-2 の試しのビルド)。W5 (act1_layout_w5.json) の配置の写しに、奥の端の直しだけ: (1) 段3 (terrace-3) の奥 back 46→70 (天面 4.5 は W5 のまま) (2) カメラに付く背景の板 = 額縁 backdrop (source backdropPlain・32 ドットの無地・flat・深さ 140・scale 110)。flat の source は足元の中心が原点 (DioramaMesh.Card) なので、vy 0.5 = 板の下の辺が画面の真ん中の行・そこから上を全部覆う (下の半分は地面が覆う)。距離の霧で霧の色に満ち、霧の芯 (lobe) で真ん中が明るく端が暗くなる (3) 坑口の櫓を霧の帯の外へ (t 8.2・s 19.8 → t -3.09・s 40 = PC の画面 x 123〜225) (4) 坑口の櫓の横の柵2つ (t 4.4・s 17.2 と t 11.9・s 17.6) を外した。光の設計図 look_act1_r2tA〜C の layout キー (値 act1_layout_r2t) で組む。既定では読まない。配置の計算は scratchpad/hd2d/r2/lane-C/place.py】【統合 2026-10-01 試しのビルド: 段の天面を段2 の値へ下げた (terrace-1 1.3→0.8・terrace-2 2.6→1.4 (底 1.05→0.3)・terrace-3 4.5→2.0 (底 2.35→0.6))。前の縁は W5 のまま。abs の樹冠・葉は足元の段が下がった分だけ下げた。レーン B・C の報告「W5 の天面 4.5 は新しいカメラの目の高さ 3.42 より上で、霧の帯が段3 の壁に隠れる」への対処】",
+  "version": 1,
+  "act": 1,
+  "pathYaw": -22,
+  "tile": 64,
+  "albedoLinear": true,
+  "normalStrength": 0.6,
+  "staticBatch": true,
+  "tiles": {
+    "grass": {
+      "rot": "flipX",
+      "fallback": [
+        74,
+        96,
+        60
+      ],
+      "variants": [
+        [
+          "Art/stage/act1/tiles/top_grass_a",
+          {
+            "art": "Art/tiles/act1_grass_a",
+            "calm": 0.32,
+            "sat": 0.82,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/top_grass_b",
+          {
+            "art": "Art/tiles/act1_grass_d",
+            "calm": 0.32,
+            "sat": 0.82,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/top_grass_c",
+          {
+            "art": "Art/tiles/act1_grass_a",
+            "calm": 0.32,
+            "sat": 0.82,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/top_grass_d",
+          {
+            "art": "Art/tiles/act1_grass_d",
+            "calm": 0.32,
+            "sat": 0.82,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "path": {
+      "rot": "rot4",
+      "fallback": [
+        112,
+        90,
+        70
+      ],
+      "variants": [
+        [
+          "Art/stage/act1/tiles/top_path_a",
+          {
+            "art": "Art/tiles/act1_dirt_a",
+            "calm": 0.3,
+            "sat": 0.85,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/top_path_b",
+          {
+            "art": "Art/tiles/act1_dirt_b",
+            "calm": 0.3,
+            "sat": 0.85,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/top_path_c",
+          {
+            "art": "Art/tiles/act1_dirt_c",
+            "calm": 0.3,
+            "sat": 0.85,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/top_path_d",
+          {
+            "art": "Art/tiles/act1_dirt_a",
+            "calm": 0.3,
+            "sat": 0.85,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "rock": {
+      "rot": "flipX",
+      "fallback": [
+        98,
+        104,
+        104
+      ],
+      "variants": [
+        [
+          "Art/stage/act1/tiles/side_rock_a",
+          {
+            "art": "Art/tiles/act1_stone_a",
+            "calm": 0.45,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/side_rock_b",
+          {
+            "art": "Art/tiles/act1_m_crack",
+            "calm": 0.45,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/side_rock_c",
+          {
+            "art": "Art/tiles/act1_stone_a",
+            "calm": 0.45,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/side_rock_d",
+          {
+            "art": "Art/tiles/act1_m_crack",
+            "calm": 0.45,
+            "sat": 0.8,
+            "clampWhite": true
+          }
+        ]
+      ]
+    },
+    "wood": {
+      "rot": "flipX",
+      "fallback": [
+        86,
+        70,
+        54
+      ],
+      "variants": [
+        [
+          "Art/stage/act1/tiles/side_wood_a",
+          {
+            "art": "Art/tiles/act2_plank",
+            "calm": 0.6,
+            "sat": 1.0
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/side_wood_b",
+          {
+            "art": "Art/tiles/act2_wood",
+            "calm": 0.6,
+            "sat": 1.0
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/side_wood_c",
+          {
+            "art": "Art/tiles/act2_plank",
+            "calm": 0.6,
+            "sat": 1.0
+          }
+        ],
+        [
+          "Art/stage/act1/tiles/side_wood_d",
+          {
+            "art": "Art/tiles/act2_wood",
+            "calm": 0.6,
+            "sat": 1.0
+          }
+        ]
+      ]
+    },
+    "bark": {
+      "rot": "flipX",
+      "fallback": [
+        52,
+        40,
+        34
+      ],
+      "variants": [
+        [
+          "Art/stage/act1/tiles/side_bark_a",
+          "Art/tiles/act1_bark"
+        ]
+      ]
+    },
+    "pathSeat": {
+      "_doc": "W3b P22 (ユーザー「座席の帯の地面は石畳・土・草のドットが読める程度に明暗を戻す」): 座席の帯の土。コード生成 (scratchpad の gen_art.py) の踏み固めた土・斑・小石・ひび・草の芽。色は幕1の色表だけ。明暗は W1 の tile-calm (3色の平らな面) の約2倍。見つからなければ W3 の土",
+      "rot": "rot4",
+      "fallback": [
+        112,
+        90,
+        70
+      ],
+      "variants": [
+        [
+          "Art/stage/act1/tiles/top_path_seat_a",
+          "Art/stage/act1/tiles/top_path_a"
+        ],
+        [
+          "Art/stage/act1/tiles/top_path_seat_b",
+          "Art/stage/act1/tiles/top_path_b"
+        ],
+        [
+          "Art/stage/act1/tiles/top_path_seat_c",
+          "Art/stage/act1/tiles/top_path_c"
+        ],
+        [
+          "Art/stage/act1/tiles/top_path_seat_d",
+          "Art/stage/act1/tiles/top_path_d"
+        ]
+      ]
+    },
+    "grassSeat": {
+      "_doc": "W3b P22: 座席の帯の草。PixelLab の草 (raw/tiles/top_grass_s2) を tile-calm --contrast 0.6 --no-auto → 色表へ写した物 (W1 は 0.25 前後)。奥の段の草 (grass) は W1 のまま静か",
+      "rot": "flipX",
+      "fallback": [
+        74,
+        96,
+        60
+      ],
+      "variants": [
+        [
+          "Art/stage/act1/tiles/top_grass_seat_a",
+          "Art/stage/act1/tiles/top_grass_a"
+        ],
+        [
+          "Art/stage/act1/tiles/top_grass_seat_b",
+          "Art/stage/act1/tiles/top_grass_b"
+        ],
+        [
+          "Art/stage/act1/tiles/top_grass_seat_c",
+          "Art/stage/act1/tiles/top_grass_c"
+        ],
+        [
+          "Art/stage/act1/tiles/top_grass_seat_d",
+          "Art/stage/act1/tiles/top_grass_d"
+        ]
+      ]
+    }
+  },
+  "surfaces": {
+    "terrain": {
+      "shader": "array",
+      "side": "pathSeat",
+      "top": "grassSeat",
+      "receive": 0.8,
+      "shadowStrength": 1.0,
+      "topThreshold": 0.65,
+      "topBlend": 0.15,
+      "vcolorAO": 1.0
+    },
+    "rock": {
+      "shader": "array",
+      "side": "rock",
+      "top": "grass",
+      "receive": 0.8,
+      "shadowStrength": 1.0,
+      "topThreshold": 0.72,
+      "topBlend": 0.12,
+      "vcolorAO": 1.0,
+      "tint": [
+        0.72,
+        0.76,
+        0.8
+      ]
+    },
+    "wood": {
+      "shader": "array",
+      "side": "wood",
+      "top": "wood",
+      "receive": 0.8,
+      "shadowStrength": 1.0,
+      "vcolorAO": 1.0
+    },
+    "relief": {
+      "shader": "atlas",
+      "receive": 0.35,
+      "shadowStrength": 1.0,
+      "cutoff": 0.4,
+      "vcolorAO": 1.0
+    },
+    "bark": {
+      "shader": "uv",
+      "tile": "bark",
+      "receive": 0.8,
+      "shadowStrength": 1.0,
+      "vcolorAO": 1.0
+    },
+    "glow": {
+      "shader": "shaft",
+      "tint": [
+        0.42,
+        0.8,
+        0.76
+      ],
+      "intensity": 1.4,
+      "softDepth": 1.5,
+      "nearFade": 3.0,
+      "edgeFade": 1.0,
+      "fog": 0.25,
+      "lobeFloor": 0.2
+    }
+  },
+  "sources": {
+    "canopy1": {
+      "art": [
+        "Art/stage/act1/relief/canopy_1",
+        "Art/props/act1_leafclump1"
+      ],
+      "depth": 0.12,
+      "cells": 44
+    },
+    "canopy2": {
+      "art": [
+        "Art/stage/act1/relief/canopy_2",
+        "Art/props/act1_leafclump4"
+      ],
+      "depth": 0.12,
+      "cells": 44
+    },
+    "canopy3": {
+      "art": [
+        "Art/stage/act1/relief/canopy_3",
+        "Art/props/act1_leafclump5"
+      ],
+      "depth": 0.12,
+      "cells": 44
+    },
+    "leaf4": {
+      "art": [
+        "Art/stage/act1/relief/act1_leafclump4",
+        "Art/props/act1_leafclump4"
+      ],
+      "depth": 0.12,
+      "cells": 36
+    },
+    "leaf5": {
+      "art": [
+        "Art/stage/act1/relief/act1_leafclump5",
+        "Art/props/act1_leafclump5"
+      ],
+      "depth": 0.12,
+      "cells": 36
+    },
+    "bush": {
+      "art": [
+        "Art/stage/act1/relief/bush_1",
+        "Art/stage/act1/relief/act1_bush2",
+        "Art/props/act1_bush2"
+      ],
+      "depth": 0.14,
+      "cells": 40
+    },
+    "fern": {
+      "art": [
+        "Art/stage/act1/relief/fern_2",
+        "Art/stage/act1/relief/act1_fern",
+        "Art/props/act1_fern"
+      ],
+      "depth": 0.1,
+      "cells": 32
+    },
+    "fern2": {
+      "art": [
+        "Art/stage/act1/relief/fern_1",
+        "Art/stage/act1/relief/act1_fern2",
+        "Art/props/act1_fern2"
+      ],
+      "depth": 0.1,
+      "cells": 40
+    },
+    "rockBig1": {
+      "art": [
+        "Art/stage/act1/relief/act1_rock_big1",
+        "Art/props/act1_rock_big1"
+      ],
+      "depth": 0.2,
+      "cells": 44
+    },
+    "rockBig2": {
+      "art": [
+        "Art/stage/act1/relief/act1_rock_big2",
+        "Art/props/act1_rock_big2"
+      ],
+      "depth": 0.2,
+      "cells": 40
+    },
+    "stump": {
+      "art": [
+        "Art/props/act1_stump"
+      ],
+      "depth": 0.18,
+      "cells": 36
+    },
+    "log": {
+      "art": [
+        "Art/props/act1_log2"
+      ],
+      "depth": 0.14,
+      "cells": 48
+    },
+    "rootArt": {
+      "art": [
+        "Art/stage/act1/relief/act1_root",
+        "Art/props/act1_root"
+      ],
+      "depth": 0.1,
+      "cells": 32
+    },
+    "tallgrass": {
+      "art": [
+        "Art/props/act1_tallgrass1"
+      ],
+      "depth": 0.06,
+      "cells": 32
+    },
+    "pine": {
+      "art": [
+        "Art/props/act1_tree_pine"
+      ],
+      "depth": 0.08,
+      "cells": 44
+    },
+    "pine2": {
+      "art": [
+        "Art/props/act1_tree_pine2"
+      ],
+      "depth": 0.08,
+      "cells": 44
+    },
+    "treeOak2": {
+      "art": [
+        "Art/stage/act1/relief/act1_tree_oak2",
+        "Art/props/act1_tree_oak2"
+      ],
+      "depth": 0.1,
+      "cells": 44
+    },
+    "treeGiant": {
+      "art": [
+        "Art/stage/act1/relief/act1_tree_giant",
+        "Art/props/act1_tree_giant"
+      ],
+      "depth": 0.1,
+      "cells": 48
+    },
+    "treeOak": {
+      "art": [
+        "Art/stage/act1/relief/act1_tree_oak",
+        "Art/props/act1_tree_oak"
+      ],
+      "depth": 0.1,
+      "cells": 48
+    },
+    "treeline": {
+      "art": [
+        "Art/props/act1_treeline"
+      ],
+      "depth": 0.06,
+      "cells": 50
+    },
+    "frameBranch": {
+      "art": [
+        "Art/stage/act1/relief/frame_1",
+        "Art/props/act1_fern2"
+      ],
+      "depth": 0.12,
+      "cells": 48
+    },
+    "frameVines": {
+      "art": [
+        "Art/stage/act1/relief/frame_2",
+        "Art/props/act1_leafclump4"
+      ],
+      "depth": 0.1,
+      "cells": 48
+    },
+    "frameFern": {
+      "art": [
+        "Art/stage/act1/relief/fern_1",
+        "Art/props/act1_fern2"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "frameBush": {
+      "art": [
+        "Art/stage/act1/relief/bush_1",
+        "Art/props/act1_leafclump1"
+      ],
+      "depth": 0.12,
+      "cells": 40
+    },
+    "sprout": {
+      "art": [
+        "Art/stage/act1/relief/act1_bush3",
+        "Art/props/act1_bush3"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "flower": {
+      "art": [
+        "Art/props/act1_flower"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "shroom": {
+      "art": [
+        "Art/props/act1_shroom"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "shroom2": {
+      "art": [
+        "Art/props/act1_shroom2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "pebble": {
+      "art": [
+        "Art/props/act1_rock"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "rockSmall": {
+      "art": [
+        "Art/props/act1_rock_small"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "trunkTall1": {
+      "_doc": "W3b P22 (本家の夜の森 = 奥の霧の前に暗い幹が縦に並ぶ): 奥の高い幹。コード生成 (樹皮のタイル side_bark を縦に敷いて幹の形に切る・左上からの丸い陰・根元の張り出し・枝の付け根)。幅 26・高さ 200 ドット (8 unit = 段の上から画面の上の外まで)",
+      "art": [
+        "Art/stage/act1/relief/trunk_tall_1"
+      ],
+      "depth": 0.1,
+      "cells": 48
+    },
+    "trunkTall2": {
+      "art": [
+        "Art/stage/act1/relief/trunk_tall_2"
+      ],
+      "depth": 0.1,
+      "cells": 48
+    },
+    "trunkTall3": {
+      "art": [
+        "Art/stage/act1/relief/trunk_tall_3"
+      ],
+      "depth": 0.1,
+      "cells": 48
+    },
+    "litterPebble1": {
+      "_doc": "W3b P22 (ユーザー「小石・草の株・ひび・落ち葉の小さな2Dの札を不規則に控えめに散らす」): 地面の小札 (kind litter)。コード生成の 3〜8 ドットの絵 (1ドット = 座席で 4px)。背丈 12 ドット以下 (Diorama.LitterMaxTexels)",
+      "art": [
+        "Art/stage/act1/litter/pebble_1"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterPebble2": {
+      "art": [
+        "Art/stage/act1/litter/pebble_2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterPebble3": {
+      "art": [
+        "Art/stage/act1/litter/pebble_3"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterPebble4": {
+      "art": [
+        "Art/stage/act1/litter/pebble_4"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterTuft1": {
+      "art": [
+        "Art/stage/act1/litter/tuft_1"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterTuft2": {
+      "art": [
+        "Art/stage/act1/litter/tuft_2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterTuft3": {
+      "art": [
+        "Art/stage/act1/litter/tuft_3"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterTuft4": {
+      "art": [
+        "Art/stage/act1/litter/tuft_4"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterLeaves1": {
+      "art": [
+        "Art/stage/act1/litter/leaves_1"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterLeaves2": {
+      "art": [
+        "Art/stage/act1/litter/leaves_2"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "litterTwig1": {
+      "art": [
+        "Art/stage/act1/litter/twig_1"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    },
+    "backdropPlain": {
+      "_doc": "二周目 レーン C 段1 (計画 §2 レーン C・K2・K10): カメラの奥 (深さ 140) に敷く背景の板の絵 (レーン D の relief/backdrop_plain = 32×32 の不透明の無地・色表の暗い紺緑 #204043)。霧で上書きされるので色は目立たない。flat = 平らな札 (半立体にしない = 額縁の depth キーが膨らみの比に読まれて板がカメラへ膨らむのを避ける)",
+      "art": [
+        "Art/stage/act1/relief/backdrop_plain"
+      ],
+      "depth": 0.0,
+      "cells": 8,
+      "flat": true
+    }
+  },
+  "parts": [
+    {"kind":"slab","name":"front-step","surface":"terrain","top":-0.6,"bottom":-2.2,"back":-3.2,"grid":1.28,"chamfer":0.0,"front":[[-34.0,-16.0],[38.0,-16.0]]},
+    {"kind":"slab","name":"seat-band","surface":"terrain","top":0.0,"bottom":-0.9,"back":7.2,"grid":0.64,"chamfer":0.12,"mask":"clearing","maskCenter":[3.0,0.3],"maskRadius":[14.5,3.3],"trail":1.1,"seed":41,"front":[[-34.0,-3.52],[-33.36,-3.52],[-32.72,-3.52],[-32.08,-3.52],[-31.44,-3.52],[-30.8,-3.52],[-30.16,-3.52],[-29.52,-3.52],[-28.88,-3.84],[-28.24,-3.84],[-27.6,-3.84],[-26.96,-3.84],[-26.32,-3.84],[-25.68,-3.84],[-25.04,-3.84],[-24.4,-3.84],[-23.76,-3.84],[-23.12,-3.52],[-22.48,-3.52],[-21.84,-3.52],[-21.2,-3.52],[-20.56,-3.52],[-19.92,-3.52],[-19.28,-3.52],[-18.64,-3.52],[-18.0,-3.2],[-17.36,-3.52],[-16.72,-3.2],[-16.08,-3.52],[-15.44,-3.52],[-14.8,-3.52],[-14.16,-3.52],[-13.52,-3.52],[-12.88,-3.52],[-12.24,-3.52],[-11.6,-3.52],[-10.96,-3.52],[-10.32,-3.52],[-9.68,-3.52],[-9.04,-3.52],[-8.4,-3.52],[-7.76,-3.52],[-7.12,-3.52],[-6.48,-3.52],[-5.84,-3.52],[-5.2,-3.52],[-4.56,-3.52],[-3.92,-3.52],[-3.28,-3.84],[-2.64,-3.84],[-2.0,-3.84],[-1.36,-3.84],[-0.72,-3.84],[-0.08,-3.84],[0.56,-3.84],[1.2,-3.84],[1.84,-3.52],[2.48,-3.84],[3.12,-3.52],[3.76,-3.52],[4.4,-3.52],[5.04,-3.52],[5.68,-3.52],[6.32,-3.52],[6.96,-3.52],[7.6,-3.52],[8.24,-3.52],[8.88,-3.52],[9.52,-3.52],[10.16,-3.52],[10.8,-3.52],[11.44,-3.52],[12.08,-3.52],[12.72,-3.52],[13.36,-3.52],[14.0,-3.2],[14.64,-3.2],[15.28,-3.2],[15.92,-3.2],[16.56,-3.2],[17.2,-3.2],[17.84,-3.2],[18.48,-3.52],[19.12,-3.52],[19.76,-3.52],[20.4,-3.52],[21.04,-3.52],[21.68,-3.52],[22.32,-3.52],[22.96,-3.52],[23.6,-3.52],[24.24,-3.52],[24.88,-3.52],[25.52,-3.52],[26.16,-3.52],[26.8,-3.52],[27.44,-3.52],[28.08,-3.52],[28.72,-3.52],[29.36,-3.52],[30.0,-3.52],[30.64,-3.84],[31.28,-3.84],[31.92,-3.84],[32.56,-3.84],[33.2,-3.84],[33.84,-3.84],[34.48,-3.84],[35.12,-3.84],[35.76,-3.84],[36.4,-3.52],[37.04,-3.52],[37.68,-3.52]]},
+    {"kind":"slab","name":"terrace-1","surface":"rock","top":0.8,"bottom":-0.25,"back":13.0,"grid":1.28,"chamfer":0.16,"front":[[-34.0,5.76],[-33.36,5.44],[-32.72,5.44],[-32.08,5.44],[-31.44,5.44],[-30.8,5.44],[-30.16,5.44],[-29.52,5.12],[-28.88,5.12],[-28.24,5.12],[-27.6,5.12],[-26.96,5.12],[-26.32,5.12],[-25.68,5.44],[-25.04,5.12],[-24.4,5.44],[-23.76,5.44],[-23.12,5.76],[-22.48,5.76],[-21.84,5.76],[-21.2,6.08],[-20.56,5.76],[-19.92,5.76],[-19.28,6.08],[-18.64,5.76],[-18.0,5.76],[-17.36,5.76],[-16.72,5.76],[-16.08,5.76],[-15.44,5.76],[-14.8,5.76],[-14.16,5.76],[-13.52,5.76],[-12.88,5.76],[-12.24,6.08],[-11.6,5.76],[-10.96,5.76],[-10.32,6.08],[-9.68,6.08],[-9.04,5.76],[-8.4,5.76],[-7.76,5.76],[-7.12,5.76],[-6.48,5.44],[-5.84,5.44],[-5.2,5.44],[-4.56,5.44],[-3.92,5.12],[-3.28,5.12],[-2.64,5.12],[-2.0,5.12],[-1.36,5.12],[-0.72,5.12],[-0.08,5.12],[0.56,5.44],[1.2,5.44],[1.84,5.44],[2.48,5.44],[3.12,5.44],[3.76,5.76],[4.4,5.44],[5.04,5.44],[5.68,5.44],[6.32,5.44],[6.96,5.44],[7.6,5.44],[8.24,5.44],[8.88,5.44],[9.52,5.44],[10.16,5.76],[10.8,5.76],[11.44,5.76],[12.08,6.08],[12.72,6.08],[13.36,6.08],[14.0,6.08],[14.64,6.08],[15.28,6.08],[15.92,6.08],[16.56,6.08],[17.2,5.76],[17.84,6.08],[18.48,5.76],[19.12,5.76],[19.76,5.44],[20.4,5.44],[21.04,5.44],[21.68,5.44],[22.32,5.44],[22.96,5.44],[23.6,5.76],[24.24,5.44],[24.88,5.44],[25.52,5.44],[26.16,5.44],[26.8,5.44],[27.44,5.76],[28.08,5.44],[28.72,5.44],[29.36,5.12],[30.0,5.12],[30.64,5.12],[31.28,5.12],[31.92,5.12],[32.56,5.12],[33.2,5.12],[33.84,5.12],[34.48,5.44],[35.12,5.44],[35.76,5.76],[36.4,5.76],[37.04,5.76],[37.68,5.76]]},
+    {"kind":"slab","name":"terrace-2","surface":"rock","top":1.4,"bottom":0.3,"back":26.0,"grid":1.28,"chamfer":0.16,"front":[[-34.0,11.84],[-33.36,12.16],[-32.72,11.84],[-32.08,11.52],[-31.44,11.52],[-30.8,11.2],[-30.16,11.52],[-29.52,10.88],[-28.88,10.88],[-28.24,10.88],[-27.6,10.88],[-26.96,10.88],[-26.32,10.88],[-25.68,10.88],[-25.04,10.56],[-24.4,10.88],[-23.76,10.88],[-23.12,11.2],[-22.48,11.2],[-21.84,11.2],[-21.2,11.2],[-20.56,10.88],[-19.92,10.88],[-19.28,10.88],[-18.64,10.56],[-18.0,10.56],[-17.36,10.56],[-16.72,10.56],[-16.08,10.56],[-15.44,10.56],[-14.8,10.56],[-14.16,10.56],[-13.52,10.88],[-12.88,10.88],[-12.24,11.2],[-11.6,11.52],[-10.96,11.84],[-10.32,11.84],[-9.68,11.84],[-9.04,11.84],[-8.4,11.52],[-7.76,11.84],[-7.12,11.52],[-6.48,11.2],[-5.84,11.2],[-5.2,11.2],[-4.56,11.2],[-3.92,11.2],[-3.28,11.2],[-2.64,11.2],[-2.0,11.2],[-1.36,11.52],[-0.72,11.52],[-0.08,11.52],[0.56,11.52],[1.2,11.52],[1.84,11.2],[2.48,11.52],[3.12,11.52],[3.76,11.2],[4.4,11.2],[5.04,10.88],[5.68,10.56],[6.32,10.24],[6.96,10.56],[7.6,10.56],[8.24,10.56],[8.88,10.24],[9.52,10.24],[10.16,10.56],[10.8,10.88],[11.44,10.88],[12.08,10.88],[12.72,11.2],[13.36,10.88],[14.0,11.2],[14.64,10.88],[15.28,11.2],[15.92,11.2],[16.56,11.2],[17.2,10.88],[17.84,10.88],[18.48,10.88],[19.12,10.88],[19.76,10.88],[20.4,11.2],[21.04,11.2],[21.68,11.2],[22.32,11.2],[22.96,11.52],[23.6,11.52],[24.24,11.84],[24.88,11.84],[25.52,11.84],[26.16,11.84],[26.8,11.84],[27.44,11.52],[28.08,11.52],[28.72,11.2],[29.36,11.2],[30.0,10.88],[30.64,11.2],[31.28,10.88],[31.92,10.88],[32.56,10.88],[33.2,10.88],[33.84,10.56],[34.48,10.88],[35.12,10.88],[35.76,11.2],[36.4,10.88],[37.04,10.88],[37.68,10.88]]},
+    {"kind":"slab","name":"terrace-3","surface":"rock","top":2.0,"bottom":0.6,"back":70.0,"grid":1.28,"chamfer":0.2,"front":[[-34.0,18.88],[-33.36,18.88],[-32.72,18.56],[-32.08,18.56],[-31.44,18.88],[-30.8,18.56],[-30.16,18.56],[-29.52,18.56],[-28.88,18.24],[-28.24,18.56],[-27.6,18.24],[-26.96,18.24],[-26.32,18.56],[-25.68,18.56],[-25.04,18.56],[-24.4,18.88],[-23.76,18.88],[-23.12,18.56],[-22.48,18.88],[-21.84,18.88],[-21.2,18.56],[-20.56,18.56],[-19.92,18.24],[-19.28,17.92],[-18.64,17.6],[-18.0,17.6],[-17.36,17.92],[-16.72,17.6],[-16.08,17.6],[-15.44,17.28],[-14.8,17.6],[-14.16,17.6],[-13.52,17.6],[-12.88,17.6],[-12.24,17.92],[-11.6,17.92],[-10.96,17.92],[-10.32,17.92],[-9.68,18.24],[-9.04,18.24],[-8.4,17.92],[-7.76,17.92],[-7.12,17.92],[-6.48,17.92],[-5.84,17.92],[-5.2,17.6],[-4.56,17.92],[-3.92,17.92],[-3.28,17.92],[-2.64,17.92],[-2.0,18.56],[-1.36,18.56],[-0.72,18.88],[-0.08,18.56],[0.56,18.88],[1.2,19.2],[1.84,20.16],[2.48,21.76],[3.12,23.04],[3.76,24.64],[4.4,24.96],[5.04,24.64],[5.68,24.64],[6.32,24.32],[6.96,24.64],[7.6,24.64],[8.24,24.0],[8.88,24.32],[9.52,24.32],[10.16,24.32],[10.8,24.32],[11.44,24.64],[12.08,24.64],[12.72,24.0],[13.36,22.4],[14.0,20.8],[14.64,19.2],[15.28,17.92],[15.92,17.6],[16.56,17.6],[17.2,17.6],[17.84,17.28],[18.48,17.28],[19.12,17.28],[19.76,17.28],[20.4,17.28],[21.04,17.92],[21.68,17.92],[22.32,17.92],[22.96,18.24],[23.6,18.24],[24.24,18.24],[24.88,18.24],[25.52,18.56],[26.16,18.56],[26.8,18.56],[27.44,18.88],[28.08,18.56],[28.72,18.24],[29.36,18.56],[30.0,18.56],[30.64,18.24],[31.28,18.56],[31.92,18.24],[32.56,18.56],[33.2,18.56],[33.84,18.88],[34.48,18.88],[35.12,18.88],[35.76,18.88],[36.4,18.88],[37.04,18.88],[37.68,18.88]]},
+    {"kind":"rig","name":"pithead","t":-3.09,"s":40.0,"yaw":0.0,"w":2.0,"d":1.6,"h":1.9,"wheel":0.42,"spin":18,"seed":501},
+    {"kind":"fence","t":16.4,"s":6.6,"yaw":8.0,"len":3.0,"h":0.85,"posts":3,"seed":603},
+    {"kind":"fence","t":-15.5,"s":6.3,"yaw":-10.0,"len":2.6,"h":0.85,"posts":3,"seed":604},
+    {"kind":"fence","t":21.5,"s":-3.1,"yaw":3.0,"len":3.2,"h":0.85,"posts":4,"seed":605},
+    {"kind":"marker","name":"waystone-left","t":-11.2,"s":3.9,"yaw":12.0,"h":1.35,"seed":701},
+    {"kind":"marker","name":"waystone-right","t":16.4,"s":3.7,"yaw":-8.0,"h":1.25,"seed":702},
+    {"kind":"block","t":-10.2,"s":5.93,"y":0.0,"yaw":6.0,"w":1.9,"d":1.3,"h":1.42,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":808},
+    {"kind":"block","t":13.4,"s":5.93,"y":0.0,"yaw":-8.0,"w":1.6,"d":1.2,"h":1.42,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":809},
+    {"kind":"block","t":21.2,"s":5.29,"y":0.0,"yaw":10.0,"w":2.2,"d":1.4,"h":1.42,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":810},
+    {"kind":"block","t":-7.4,"s":11.51,"y":0.0,"yaw":-5.0,"w":2.0,"d":1.4,"h":1.42,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":811},
+    {"kind":"block","t":3.4,"s":11.23,"y":0.0,"yaw":7.0,"w":1.7,"d":1.2,"h":1.42,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":812},
+    {"kind":"block","t":18.6,"s":10.73,"y":0.0,"yaw":-12.0,"w":1.9,"d":1.5,"h":1.42,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":813},
+    {"kind":"block","t":-4.2,"s":17.77,"y":0.0,"yaw":4.0,"w":2.2,"d":1.6,"h":2.02,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":814},
+    {"kind":"block","t":15.6,"s":17.61,"y":0.0,"yaw":-6.0,"w":2.0,"d":1.4,"h":2.02,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":815},
+    {"kind":"block","t":17.2,"s":-3.35,"y":0.0,"yaw":12.0,"w":1.4,"d":1.0,"h":0.72,"cut":0.32,"chamfer":0.14,"sink":0.25,"seed":816},
+    {"kind":"tree","name":"tree-0","t":-8.3,"s":7.9,"yaw":236.0,"h":13.0,"r":0.62,"lean":0.35,"flare":0.55,"roots":5,"rootLen":1.5,"relief":"treeGiant","reliefScale":1.0,"flip":false,"seed":900,"tint":0.62},
+    {"kind":"tree","name":"tree-1","t":19.4,"s":8.4,"yaw":207.0,"h":12.0,"r":0.55,"lean":-0.3,"flare":0.55,"roots":4,"rootLen":1.5,"relief":"treeOak","reliefScale":1.0,"flip":true,"seed":901,"tint":0.62},
+    {"kind":"tree","name":"tree-2","t":-4.6,"s":13.4,"yaw":322.0,"h":13.5,"r":0.7,"lean":0.4,"flare":0.55,"roots":5,"rootLen":1.5,"relief":"treeGiant","reliefScale":1.0,"flip":false,"seed":902},
+    {"kind":"tree","name":"tree-3","t":15.2,"s":13.0,"yaw":113.0,"h":12.5,"r":0.6,"lean":-0.35,"flare":0.55,"roots":4,"rootLen":1.5,"relief":"treeOak2","reliefScale":1.0,"flip":true,"seed":903},
+    {"kind":"tree","name":"tree-4","t":-9.6,"s":20.6,"yaw":345.0,"h":12.0,"r":0.66,"lean":0.3,"flare":0.55,"roots":4,"rootLen":1.5,"relief":"treeOak","reliefScale":1.0,"flip":false,"seed":904},
+    {"kind":"tree","name":"tree-5","t":1.6,"s":21.8,"yaw":157.0,"h":11.0,"r":0.58,"lean":-0.2,"flare":0.55,"roots":4,"rootLen":1.5,"relief":"treeOak2","reliefScale":1.0,"flip":true,"seed":905},
+    {"kind":"tree","name":"tree-6","t":23.0,"s":19.8,"yaw":327.0,"h":12.0,"r":0.64,"lean":0.25,"flare":0.55,"roots":4,"rootLen":1.5,"relief":"treeGiant","reliefScale":1.0,"flip":false,"seed":906},
+    {"kind":"relief","src":"leaf5","t":-9.13,"s":6.965,"y":6.726,"abs":true,"yaw":-15.0,"flip":true,"shadow":1,"seed":1024,"tint":0.7},
+    {"kind":"relief","src":"canopy3","t":-7.626,"s":6.833,"y":5.1,"abs":true,"yaw":-15.0,"flip":false,"shadow":1,"seed":1025,"tint":0.55},
+    {"kind":"relief","src":"leaf4","t":-5.607,"s":6.874,"y":5.426,"abs":true,"yaw":-13.0,"flip":false,"shadow":1,"seed":1026,"tint":0.7},
+    {"kind":"relief","src":"canopy3","t":17.332,"s":7.095,"y":5.155,"abs":true,"yaw":-3.0,"flip":false,"shadow":1,"seed":1027,"tint":0.7},
+    {"kind":"relief","src":"canopy2","t":19.139,"s":7.444,"y":4.85,"abs":true,"yaw":12.0,"flip":false,"shadow":1,"seed":1028,"tint":0.55},
+    {"kind":"relief","src":"leaf5","t":20.18,"s":7.305,"y":6.786,"abs":true,"yaw":8.0,"flip":true,"shadow":1,"seed":1029,"tint":0.7},
+    {"kind":"relief","src":"canopy3","t":-5.299,"s":12.467,"y":5.0,"abs":true,"yaw":-7.0,"flip":true,"shadow":1,"seed":1030,"tint":0.6},
+    {"kind":"relief","src":"canopy2","t":-3.457,"s":12.768,"y":7.663,"abs":true,"yaw":6.0,"flip":false,"shadow":1,"seed":1031},
+    {"kind":"relief","src":"leaf5","t":-2.288,"s":12.376,"y":7.283,"abs":true,"yaw":13.0,"flip":false,"shadow":1,"seed":1032},
+    {"kind":"relief","src":"canopy3","t":12.921,"s":12.251,"y":5.0,"abs":true,"yaw":-11.0,"flip":true,"shadow":1,"seed":1033,"tint":0.6},
+    {"kind":"relief","src":"leaf5","t":14.879,"s":12.031,"y":6.646,"abs":true,"yaw":-7.0,"flip":true,"shadow":1,"seed":1034},
+    {"kind":"relief","src":"canopy1","t":16.555,"s":12.162,"y":6.923,"abs":true,"yaw":7.0,"flip":false,"shadow":1,"seed":1035},
+    {"kind":"relief","src":"canopy1","t":-10.325,"s":19.303,"y":6.89,"abs":true,"yaw":9.0,"flip":true,"shadow":1,"seed":1036},
+    {"kind":"relief","src":"canopy1","t":-9.365,"s":19.78,"y":8.413,"abs":true,"yaw":4.0,"flip":true,"shadow":1,"seed":1037},
+    {"kind":"relief","src":"canopy1","t":-6.948,"s":19.589,"y":7.996,"abs":true,"yaw":-14.0,"flip":false,"shadow":1,"seed":1038},
+    {"kind":"relief","src":"leaf4","t":-0.593,"s":21.094,"y":7.584,"abs":true,"yaw":-6.0,"flip":true,"shadow":1,"seed":1039},
+    {"kind":"relief","src":"leaf5","t":1.542,"s":20.726,"y":6.326,"abs":true,"yaw":-4.0,"flip":false,"shadow":1,"seed":1040},
+    {"kind":"relief","src":"canopy3","t":2.778,"s":21.109,"y":7.556,"abs":true,"yaw":-13.0,"flip":false,"shadow":1,"seed":1041},
+    {"kind":"relief","src":"leaf4","t":21.877,"s":18.763,"y":6.609,"abs":true,"yaw":1.0,"flip":true,"shadow":1,"seed":1042},
+    {"kind":"relief","src":"canopy1","t":23.868,"s":18.466,"y":8.266,"abs":true,"yaw":1.0,"flip":false,"shadow":1,"seed":1043},
+    {"kind":"relief","src":"leaf5","t":25.42,"s":18.811,"y":6.426,"abs":true,"yaw":12.0,"flip":true,"shadow":1,"seed":1044},
+    {"kind":"relief","src":"pine","t":-15.863,"s":20.793,"yaw":-8.0,"flip":true,"seed":1100},
+    {"kind":"relief","src":"treeOak2","t":-11.534,"s":25.727,"yaw":-9.0,"flip":true,"seed":1101},
+    {"kind":"relief","src":"pine2","t":-4.669,"s":21.195,"yaw":-10.0,"flip":false,"seed":1102},
+    {"kind":"relief","src":"pine2","t":0.318,"s":24.41,"yaw":3.0,"flip":false,"seed":1103},
+    {"kind":"relief","src":"treeOak2","t":5.435,"s":31.703,"yaw":-3.0,"flip":true,"seed":1104},
+    {"kind":"relief","src":"pine2","t":10.861,"s":30.536,"yaw":-5.0,"flip":true,"seed":1105},
+    {"kind":"relief","src":"pine","t":16.849,"s":23.661,"yaw":4.0,"flip":true,"seed":1106},
+    {"kind":"relief","src":"pine2","t":21.15,"s":24.217,"yaw":-7.0,"flip":false,"seed":1107},
+    {"kind":"relief","src":"treeline","t":-6.0,"s":33.0,"yaw":0.0,"scale":1.0,"seed":1190},
+    {"kind":"relief","src":"treeline","t":19.0,"s":32.0,"yaw":0.0,"flip":true,"seed":1191},
+    {"kind":"rock","t":19.689,"s":-6.802,"yaw":82.0,"r":0.543,"h":0.477,"sides":8,"squash":0.975,"seed":211177},
+    {"kind":"rock","t":4.801,"s":-6.232,"yaw":220.0,"r":0.44,"h":0.32,"sides":7,"squash":0.889,"seed":874595},
+    {"kind":"rock","t":21.079,"s":-8.613,"yaw":31.0,"r":0.33,"h":0.302,"sides":8,"squash":0.97,"seed":602999},
+    {"kind":"rock","t":7.023,"s":-6.667,"yaw":320.0,"r":0.407,"h":0.454,"sides":7,"squash":0.701,"seed":120714},
+    {"kind":"rock","t":10.07,"s":-6.68,"yaw":175.0,"r":0.875,"h":0.613,"sides":8,"squash":0.684,"seed":189198},
+    {"kind":"rock","t":14.888,"s":-7.205,"yaw":296.0,"r":0.771,"h":0.704,"sides":6,"squash":0.833,"seed":751935},
+    {"kind":"rock","t":-13.828,"s":-5.055,"yaw":276.0,"r":1.036,"h":0.924,"sides":7,"squash":0.762,"seed":720485},
+    {"kind":"rock","t":16.649,"s":-8.344,"yaw":104.0,"r":1.056,"h":0.808,"sides":5,"squash":0.793,"seed":103985},
+    {"kind":"rock","t":0.37,"s":-6.08,"yaw":52.0,"r":1.11,"h":0.955,"sides":7,"squash":0.792,"seed":939185},
+    {"kind":"rock","t":-11.881,"s":-0.978,"yaw":181.0,"r":0.563,"h":0.421,"sides":8,"squash":0.926,"seed":196663},
+    {"kind":"rock","t":-23.481,"s":3.833,"yaw":312.0,"r":0.299,"h":0.236,"sides":6,"squash":0.954,"seed":961001},
+    {"kind":"rock","t":-18.861,"s":2.706,"yaw":262.0,"r":0.373,"h":0.276,"sides":7,"squash":0.835,"seed":137014},
+    {"kind":"rock","t":-15.15,"s":2.683,"yaw":289.0,"r":0.375,"h":0.354,"sides":8,"squash":0.906,"seed":182379},
+    {"kind":"rock","t":26.244,"s":2.585,"yaw":348.0,"r":0.517,"h":0.467,"sides":6,"squash":0.952,"seed":613403},
+    {"kind":"rock","t":-21.427,"s":-2.728,"yaw":272.0,"r":0.503,"h":0.383,"sides":8,"squash":0.739,"seed":261245},
+    {"kind":"rock","t":25.786,"s":-2.331,"yaw":201.0,"r":0.875,"h":0.738,"sides":8,"squash":0.978,"seed":852730},
+    {"kind":"rock","t":19.158,"s":3.419,"yaw":255.0,"r":0.496,"h":0.564,"sides":6,"squash":0.738,"seed":657644},
+    {"kind":"rock","t":13.543,"s":7.61,"yaw":291.0,"r":0.314,"h":0.293,"sides":5,"squash":0.797,"seed":101368},
+    {"kind":"rock","t":27.954,"s":7.307,"yaw":283.0,"r":0.443,"h":0.408,"sides":8,"squash":0.873,"seed":465513},
+    {"kind":"rock","t":14.773,"s":8.724,"yaw":184.0,"r":0.305,"h":0.316,"sides":5,"squash":0.747,"seed":173980},
+    {"kind":"rock","t":8.058,"s":7.493,"yaw":194.0,"r":0.322,"h":0.263,"sides":8,"squash":0.675,"seed":904816},
+    {"kind":"rock","t":-17.955,"s":7.355,"yaw":99.0,"r":1.183,"h":0.868,"sides":8,"squash":0.9,"seed":995044},
+    {"kind":"rock","t":-4.114,"s":7.476,"yaw":151.0,"r":1.061,"h":0.927,"sides":7,"squash":0.722,"seed":507176},
+    {"kind":"rock","t":-7.155,"s":9.462,"yaw":313.0,"r":0.832,"h":0.628,"sides":5,"squash":0.847,"seed":607643},
+    {"kind":"rock","t":3.183,"s":5.838,"yaw":28.0,"r":0.446,"h":0.489,"sides":6,"squash":0.734,"seed":340586},
+    {"kind":"rock","t":-5.242,"s":9.14,"yaw":49.0,"r":0.403,"h":0.29,"sides":7,"squash":0.89,"seed":845015},
+    {"kind":"rock","t":0.386,"s":11.952,"yaw":88.0,"r":0.349,"h":0.352,"sides":8,"squash":0.706,"seed":471091},
+    {"kind":"rock","t":-12.4,"s":16.198,"yaw":265.0,"r":1.157,"h":1.111,"sides":5,"squash":0.989,"seed":503108},
+    {"kind":"rock","t":6.59,"s":11.356,"yaw":199.0,"r":1.038,"h":0.881,"sides":6,"squash":0.983,"seed":17147},
+    {"kind":"rock","t":-17.855,"s":15.09,"yaw":246.0,"r":0.514,"h":0.411,"sides":5,"squash":0.958,"seed":613294},
+    {"kind":"rock","t":23.718,"s":14.664,"yaw":143.0,"r":0.531,"h":0.562,"sides":7,"squash":0.783,"seed":567331},
+    {"kind":"rock","t":26.701,"s":14.403,"yaw":215.0,"r":0.539,"h":0.448,"sides":7,"squash":0.919,"seed":133271},
+    {"kind":"rock","t":4.077,"s":12.917,"yaw":40.0,"r":0.557,"h":0.599,"sides":7,"squash":0.799,"seed":309432},
+    {"kind":"rock","t":19.17,"s":23.019,"yaw":288.0,"r":0.558,"h":0.602,"sides":5,"squash":0.728,"seed":536913},
+    {"kind":"rock","t":-7.39,"s":25.73,"yaw":206.0,"r":0.344,"h":0.246,"sides":5,"squash":0.932,"seed":391969},
+    {"kind":"rock","t":-6.908,"s":29.145,"yaw":237.0,"r":1.0,"h":1.126,"sides":7,"squash":0.762,"seed":925577},
+    {"kind":"rock","t":-15.682,"s":29.014,"yaw":162.0,"r":1.231,"h":0.912,"sides":6,"squash":0.881,"seed":475492},
+    {"kind":"relief","src":"rockBig1","t":-15.411,"s":-6.323,"yaw":-2.0,"flip":true,"seed":927550},
+    {"kind":"relief","src":"fern","t":2.031,"s":-8.765,"yaw":-4.0,"flip":false,"seed":113942},
+    {"kind":"relief","src":"fern","t":-2.091,"s":-8.831,"yaw":4.0,"flip":true,"seed":93274},
+    {"kind":"relief","src":"leaf4","t":5.868,"s":-8.918,"yaw":-5.0,"flip":false,"seed":73877},
+    {"kind":"relief","src":"rockBig2","t":-6.833,"s":-8.238,"yaw":-11.0,"flip":true,"seed":294043},
+    {"kind":"relief","src":"rockBig1","t":0.05,"s":-8.529,"yaw":-11.0,"flip":true,"seed":826537},
+    {"kind":"relief","src":"fern2","t":16.123,"s":-5.149,"yaw":-5.0,"flip":false,"seed":890579},
+    {"kind":"relief","src":"bush","t":24.525,"s":-8.972,"yaw":-14.0,"flip":true,"seed":695212},
+    {"kind":"relief","src":"bush","t":18.845,"s":-2.11,"yaw":4.0,"flip":false,"seed":338641},
+    {"kind":"relief","src":"fern","t":22.054,"s":0.154,"yaw":9.0,"flip":true,"seed":681653},
+    {"kind":"relief","src":"bush","t":-20.77,"s":3.539,"yaw":18.0,"flip":true,"seed":30763},
+    {"kind":"relief","src":"leaf4","t":-17.795,"s":-2.672,"yaw":17.0,"flip":false,"seed":779858},
+    {"kind":"relief","src":"bush","t":27.986,"s":0.172,"yaw":-18.0,"flip":true,"seed":381008},
+    {"kind":"relief","src":"leaf5","t":-12.621,"s":2.485,"yaw":6.0,"flip":true,"seed":827428},
+    {"kind":"relief","src":"rockBig2","t":-22.384,"s":-0.8,"yaw":2.0,"flip":false,"seed":522390},
+    {"kind":"relief","src":"rockBig1","t":19.533,"s":1.221,"yaw":-12.0,"flip":false,"seed":10384},
+    {"kind":"relief","src":"fern","t":-21.229,"s":0.692,"yaw":-2.0,"flip":false,"seed":892138},
+    {"kind":"relief","src":"leaf5","t":-13.222,"s":-1.898,"yaw":-1.0,"flip":false,"seed":894854},
+    {"kind":"relief","src":"bush","t":-0.408,"s":9.881,"yaw":-4.0,"flip":true,"seed":383616},
+    {"kind":"relief","src":"leaf5","t":2.464,"s":7.899,"yaw":4.0,"flip":false,"seed":882943},
+    {"kind":"relief","src":"bush","t":-16.533,"s":9.462,"yaw":-2.0,"flip":false,"seed":40811},
+    {"kind":"relief","src":"rockBig2","t":-0.955,"s":7.69,"yaw":-10.0,"flip":false,"seed":581516},
+    {"kind":"relief","src":"fern","t":15.131,"s":6.732,"yaw":14.0,"flip":false,"seed":433533},
+    {"kind":"relief","src":"fern","t":11.566,"s":8.219,"yaw":2.0,"flip":false,"seed":458639},
+    {"kind":"relief","src":"fern","t":26.258,"s":10.737,"yaw":-2.0,"flip":false,"seed":886869},
+    {"kind":"relief","src":"leaf4","t":-8.212,"s":5.88,"yaw":-11.0,"flip":true,"seed":475725},
+    {"kind":"relief","src":"rockBig1","t":16.949,"s":9.252,"yaw":1.0,"flip":false,"seed":511210},
+    {"kind":"relief","src":"leaf4","t":-15.986,"s":15.052,"yaw":-4.0,"flip":false,"seed":390159},
+    {"kind":"relief","src":"leaf5","t":19.151,"s":14.484,"yaw":-3.0,"flip":false,"seed":807483},
+    {"kind":"relief","src":"rockBig1","t":-7.939,"s":15.781,"yaw":17.0,"flip":true,"seed":367435},
+    {"kind":"relief","src":"leaf5","t":10.063,"s":15.487,"yaw":-18.0,"flip":false,"seed":469547},
+    {"kind":"relief","src":"rockBig2","t":-10.866,"s":13.834,"yaw":9.0,"flip":false,"seed":468853},
+    {"kind":"relief","src":"rockBig1","t":-15.325,"s":11.417,"yaw":-10.0,"flip":false,"seed":187085},
+    {"kind":"relief","src":"fern2","t":0.149,"s":16.491,"yaw":1.0,"flip":true,"seed":432430},
+    {"kind":"relief","src":"fern2","t":-8.593,"s":27.122,"yaw":-4.0,"flip":false,"seed":302199},
+    {"kind":"relief","src":"rockBig2","t":-6.968,"s":19.382,"yaw":16.0,"flip":false,"seed":898094},
+    {"kind":"relief","src":"rockBig1","t":16.248,"s":28.987,"yaw":-8.0,"flip":false,"seed":48376},
+    {"kind":"relief","src":"log","t":24.0,"s":3.2,"yaw":-18.0,"flip":true,"seed":1429},
+    {"kind":"relief","src":"rootArt","t":-9.8,"s":-4.6,"yaw":0.0,"flip":false,"seed":1430},
+    {"kind":"card","src":"pebble","t":12.411,"s":-5.074,"yaw":-5.0,"flip":false,"seed":641758},
+    {"kind":"card","src":"shroom","t":-10.969,"s":-7.594,"yaw":-5.0,"flip":false,"seed":729586},
+    {"kind":"card","src":"sprout","t":10.947,"s":-8.912,"yaw":11.0,"flip":false,"seed":635761},
+    {"kind":"card","src":"shroom2","t":8.943,"s":-4.984,"yaw":8.0,"flip":false,"seed":566468},
+    {"kind":"card","src":"rockSmall","t":25.402,"s":-5.749,"yaw":-2.0,"flip":false,"seed":691147},
+    {"kind":"card","src":"flower","t":3.86,"s":-7.704,"yaw":-7.0,"flip":true,"seed":880357},
+    {"kind":"card","src":"rockSmall","t":14.678,"s":-4.758,"yaw":10.0,"flip":false,"seed":731421},
+    {"kind":"card","src":"rockSmall","t":9.813,"s":-8.831,"yaw":6.0,"flip":true,"seed":706675},
+    {"kind":"card","src":"rockSmall","t":2.732,"s":-5.685,"yaw":-11.0,"flip":false,"seed":276396},
+    {"kind":"card","src":"sprout","t":13.41,"s":-8.028,"yaw":1.0,"flip":false,"seed":304425},
+    {"kind":"card","src":"pebble","t":17.805,"s":-6.847,"yaw":12.0,"flip":true,"seed":992087},
+    {"kind":"card","src":"flower","t":22.623,"s":-9.152,"yaw":3.0,"flip":false,"seed":267649},
+    {"kind":"card","src":"flower","t":22.462,"s":-7.608,"yaw":0.0,"flip":true,"seed":454087},
+    {"kind":"card","src":"shroom2","t":-12.035,"s":-4.969,"yaw":11.0,"flip":true,"seed":340244},
+    {"kind":"card","src":"shroom","t":-14.198,"s":-8.221,"yaw":6.0,"flip":true,"seed":920283},
+    {"kind":"card","src":"flower","t":-11.031,"s":-5.848,"yaw":-1.0,"flip":true,"seed":945908},
+    {"kind":"card","src":"sprout","t":1.934,"s":-4.314,"yaw":0.0,"flip":false,"seed":869788},
+    {"kind":"card","src":"shroom2","t":-3.61,"s":-6.66,"yaw":-1.0,"flip":false,"seed":474407},
+    {"kind":"card","src":"pebble","t":24.273,"s":-5.439,"yaw":3.0,"flip":false,"seed":625675},
+    {"kind":"card","src":"rockSmall","t":17.539,"s":-5.774,"yaw":-8.0,"flip":true,"seed":76136},
+    {"kind":"card","src":"shroom","t":17.516,"s":-4.735,"yaw":3.0,"flip":true,"seed":240682},
+    {"kind":"card","src":"shroom2","t":27.844,"s":-2.499,"yaw":0.0,"flip":true,"seed":957704},
+    {"kind":"card","src":"shroom2","t":19.098,"s":-0.821,"yaw":0.0,"flip":true,"seed":581194},
+    {"kind":"card","src":"sprout","t":18.45,"s":0.155,"yaw":2.0,"flip":true,"seed":201333},
+    {"kind":"card","src":"rockSmall","t":24.587,"s":4.524,"yaw":-7.0,"flip":true,"seed":458639},
+    {"kind":"card","src":"sprout","t":15.532,"s":-2.655,"yaw":-6.0,"flip":false,"seed":193165},
+    {"kind":"card","src":"rockSmall","t":-22.95,"s":4.999,"yaw":2.0,"flip":false,"seed":903731},
+    {"kind":"card","src":"pebble","t":-23.369,"s":2.139,"yaw":0.0,"flip":false,"seed":610680},
+    {"kind":"card","src":"rockSmall","t":23.854,"s":0.422,"yaw":-12.0,"flip":true,"seed":661301},
+    {"kind":"card","src":"sprout","t":-16.524,"s":1.603,"yaw":0.0,"flip":true,"seed":652165},
+    {"kind":"card","src":"shroom2","t":16.495,"s":-2.363,"yaw":9.0,"flip":false,"seed":34875},
+    {"kind":"card","src":"sprout","t":-11.739,"s":0.22,"yaw":-8.0,"flip":false,"seed":955660},
+    {"kind":"card","src":"sprout","t":-16.258,"s":0.954,"yaw":-6.0,"flip":false,"seed":423704},
+    {"kind":"card","src":"shroom","t":27.467,"s":4.611,"yaw":-4.0,"flip":false,"seed":104406},
+    {"kind":"card","src":"shroom2","t":21.173,"s":2.646,"yaw":8.0,"flip":true,"seed":266192},
+    {"kind":"card","src":"sprout","t":-14.134,"s":3.354,"yaw":-8.0,"flip":false,"seed":576032},
+    {"kind":"card","src":"rockSmall","t":-14.217,"s":0.245,"yaw":10.0,"flip":false,"seed":745203},
+    {"kind":"card","src":"flower","t":20.206,"s":-1.253,"yaw":0.0,"flip":true,"seed":205295},
+    {"kind":"card","src":"pebble","t":23.353,"s":-2.269,"yaw":8.0,"flip":true,"seed":741965},
+    {"kind":"card","src":"sprout","t":-18.869,"s":4.572,"yaw":12.0,"flip":true,"seed":560157},
+    {"kind":"card","src":"shroom","t":16.382,"s":0.513,"yaw":4.0,"flip":false,"seed":61777},
+    {"kind":"card","src":"shroom2","t":26.374,"s":4.122,"yaw":6.0,"flip":false,"seed":25416},
+    {"kind":"card","src":"flower","t":16.281,"s":2.446,"yaw":-11.0,"flip":true,"seed":823066},
+    {"kind":"card","src":"flower","t":-14.899,"s":-1.078,"yaw":11.0,"flip":false,"seed":228595},
+    {"kind":"card","src":"flower","t":-20.846,"s":-1.724,"yaw":5.0,"flip":false,"seed":399630},
+    {"kind":"card","src":"pebble","t":3.823,"s":4.475,"yaw":-1.0,"flip":true,"seed":598680},
+    {"kind":"card","src":"rockSmall","t":12.719,"s":4.376,"yaw":-10.0,"flip":true,"seed":224452},
+    {"kind":"card","src":"rockSmall","t":8.508,"s":4.309,"yaw":-12.0,"flip":false,"seed":233537},
+    {"kind":"card","src":"pebble","t":12.258,"s":3.497,"yaw":-5.0,"flip":false,"seed":909469},
+    {"kind":"card","src":"pebble","t":0.811,"s":4.754,"yaw":12.0,"flip":true,"seed":480465},
+    {"kind":"card","src":"shroom2","t":-6.871,"s":4.032,"yaw":-9.0,"flip":true,"seed":694415},
+    {"kind":"card","src":"sprout","t":-7.937,"s":4.273,"yaw":-4.0,"flip":false,"seed":90340},
+    {"kind":"card","src":"rockSmall","t":6.148,"s":4.194,"yaw":8.0,"flip":false,"seed":344457},
+    {"kind":"card","src":"sprout","t":-20.127,"s":6.511,"yaw":-10.0,"flip":false,"seed":620616},
+    {"kind":"card","src":"flower","t":20.42,"s":9.98,"yaw":9.0,"flip":false,"seed":209779},
+    {"kind":"card","src":"flower","t":2.439,"s":9.138,"yaw":-7.0,"flip":true,"seed":465630},
+    {"kind":"card","src":"sprout","t":9.634,"s":8.096,"yaw":-4.0,"flip":false,"seed":666908},
+    {"kind":"card","src":"shroom","t":8.506,"s":9.157,"yaw":1.0,"flip":false,"seed":798154},
+    {"kind":"card","src":"rockSmall","t":7.477,"s":6.437,"yaw":0.0,"flip":true,"seed":234663},
+    {"kind":"card","src":"flower","t":-19.527,"s":9.089,"yaw":-9.0,"flip":false,"seed":427143},
+    {"kind":"card","src":"flower","t":23.425,"s":10.241,"yaw":-8.0,"flip":false,"seed":760757},
+    {"kind":"card","src":"rockSmall","t":8.276,"s":6.046,"yaw":-7.0,"flip":false,"seed":683488},
+    {"kind":"card","src":"sprout","t":4.455,"s":5.763,"yaw":0.0,"flip":false,"seed":484041},
+    {"kind":"card","src":"shroom","t":18.111,"s":8.947,"yaw":7.0,"flip":true,"seed":473869},
+    {"kind":"card","src":"pebble","t":-3.646,"s":5.593,"yaw":3.0,"flip":false,"seed":807205},
+    {"kind":"card","src":"shroom2","t":4.12,"s":6.941,"yaw":6.0,"flip":false,"seed":483092},
+    {"kind":"card","src":"flower","t":-21.644,"s":6.435,"yaw":10.0,"flip":true,"seed":983998},
+    {"kind":"card","src":"pebble","t":23.012,"s":5.568,"yaw":1.0,"flip":false,"seed":347934},
+    {"kind":"card","src":"shroom2","t":-18.848,"s":5.957,"yaw":11.0,"flip":false,"seed":601807},
+    {"kind":"card","src":"flower","t":-19.268,"s":7.984,"yaw":-10.0,"flip":false,"seed":14144},
+    {"kind":"card","src":"shroom","t":5.508,"s":9.092,"yaw":11.0,"flip":true,"seed":98476},
+    {"kind":"card","src":"rockSmall","t":-11.207,"s":10.249,"yaw":-9.0,"flip":true,"seed":455945},
+    {"kind":"card","src":"rockSmall","t":-9.643,"s":8.556,"yaw":-7.0,"flip":false,"seed":373919},
+    {"kind":"card","src":"shroom","t":21.139,"s":9.76,"yaw":5.0,"flip":true,"seed":176523},
+    {"kind":"card","src":"sprout","t":-0.472,"s":5.218,"yaw":-9.0,"flip":true,"seed":945820},
+    {"kind":"card","src":"pebble","t":-4.941,"s":6.058,"yaw":-2.0,"flip":false,"seed":49908},
+    {"kind":"card","src":"flower","t":-20.331,"s":9.635,"yaw":-1.0,"flip":false,"seed":607628},
+    {"kind":"card","src":"sprout","t":-1.074,"s":5.621,"yaw":1.0,"flip":true,"seed":257340},
+    {"kind":"card","src":"flower","t":-9.897,"s":7.224,"yaw":3.0,"flip":true,"seed":815875},
+    {"kind":"card","src":"sprout","t":-1.432,"s":10.413,"yaw":-6.0,"flip":true,"seed":994815},
+    {"kind":"card","src":"rockSmall","t":5.849,"s":5.512,"yaw":7.0,"flip":false,"seed":669834},
+    {"kind":"card","src":"flower","t":-2.128,"s":9.501,"yaw":12.0,"flip":false,"seed":936285},
+    {"kind":"card","src":"rockSmall","t":-6.9,"s":7.819,"yaw":-6.0,"flip":true,"seed":40403},
+    {"kind":"card","src":"sprout","t":0.091,"s":6.808,"yaw":-5.0,"flip":false,"seed":915408},
+    {"kind":"card","src":"pebble","t":10.303,"s":8.674,"yaw":12.0,"flip":false,"seed":647065},
+    {"kind":"card","src":"sprout","t":-13.324,"s":12.552,"yaw":2.0,"flip":true,"seed":292157},
+    {"kind":"card","src":"sprout","t":-16.133,"s":13.593,"yaw":-7.0,"flip":true,"seed":115781},
+    {"kind":"card","src":"flower","t":8.662,"s":17.033,"yaw":9.0,"flip":true,"seed":26111},
+    {"kind":"card","src":"pebble","t":-19.181,"s":15.318,"yaw":8.0,"flip":true,"seed":903790},
+    {"kind":"card","src":"shroom","t":24.69,"s":13.834,"yaw":-5.0,"flip":true,"seed":840814},
+    {"kind":"card","src":"sprout","t":1.007,"s":14.011,"yaw":1.0,"flip":false,"seed":942850},
+    {"kind":"card","src":"flower","t":10.194,"s":10.758,"yaw":4.0,"flip":true,"seed":602713},
+    {"kind":"card","src":"shroom","t":13.41,"s":14.35,"yaw":11.0,"flip":true,"seed":800623},
+    {"kind":"card","src":"shroom","t":-14.299,"s":14.073,"yaw":-1.0,"flip":true,"seed":770815},
+    {"kind":"card","src":"sprout","t":27.977,"s":15.161,"yaw":7.0,"flip":true,"seed":847310},
+    {"kind":"card","src":"pebble","t":25.203,"s":17.383,"yaw":-1.0,"flip":true,"seed":8455},
+    {"kind":"card","src":"rockSmall","t":-17.861,"s":13.131,"yaw":8.0,"flip":true,"seed":530483},
+    {"kind":"card","src":"flower","t":22.544,"s":12.718,"yaw":-2.0,"flip":true,"seed":16837},
+    {"kind":"card","src":"rockSmall","t":21.772,"s":16.035,"yaw":-5.0,"flip":true,"seed":432730},
+    {"kind":"card","src":"rockSmall","t":23.184,"s":12.135,"yaw":-1.0,"flip":false,"seed":802661},
+    {"kind":"card","src":"sprout","t":8.815,"s":15.794,"yaw":12.0,"flip":false,"seed":695378},
+    {"kind":"card","src":"pebble","t":-6.67,"s":14.307,"yaw":-5.0,"flip":false,"seed":318819},
+    {"kind":"card","src":"rockSmall","t":10.982,"s":13.13,"yaw":-11.0,"flip":false,"seed":234840},
+    {"kind":"card","src":"rockSmall","t":27.768,"s":13.697,"yaw":-9.0,"flip":true,"seed":517382},
+    {"kind":"card","src":"shroom","t":13.255,"s":21.184,"yaw":-11.0,"flip":false,"seed":938240},
+    {"kind":"card","src":"shroom","t":24.557,"s":12.524,"yaw":-7.0,"flip":false,"seed":107552},
+    {"kind":"card","src":"flower","t":-8.511,"s":12.369,"yaw":-9.0,"flip":false,"seed":219159},
+    {"kind":"card","src":"flower","t":23.077,"s":15.673,"yaw":-5.0,"flip":true,"seed":515698},
+    {"kind":"card","src":"shroom","t":21.919,"s":14.728,"yaw":-5.0,"flip":false,"seed":432769},
+    {"kind":"card","src":"shroom","t":12.073,"s":21.553,"yaw":2.0,"flip":true,"seed":77535},
+    {"kind":"card","src":"rockSmall","t":9.371,"s":11.055,"yaw":4.0,"flip":false,"seed":649083},
+    {"kind":"card","src":"pebble","t":9.6,"s":12.058,"yaw":4.0,"flip":false,"seed":509504},
+    {"kind":"card","src":"pebble","t":9.973,"s":12.934,"yaw":0.0,"flip":false,"seed":328389},
+    {"kind":"card","src":"flower","t":-9.437,"s":25.576,"yaw":12.0,"flip":false,"seed":471869},
+    {"kind":"card","src":"pebble","t":9.843,"s":25.955,"yaw":0.0,"flip":true,"seed":851634},
+    {"kind":"card","src":"pebble","t":-12.022,"s":29.814,"yaw":-6.0,"flip":true,"seed":461308},
+    {"kind":"card","src":"flower","t":27.288,"s":20.775,"yaw":-2.0,"flip":true,"seed":657197},
+    {"kind":"card","src":"pebble","t":23.173,"s":26.667,"yaw":-3.0,"flip":false,"seed":885747},
+    {"kind":"card","src":"sprout","t":15.458,"s":25.635,"yaw":-2.0,"flip":true,"seed":153098},
+    {"kind":"card","src":"rockSmall","t":-14.041,"s":23.772,"yaw":-11.0,"flip":true,"seed":15528},
+    {"kind":"card","src":"flower","t":-5.775,"s":25.144,"yaw":8.0,"flip":true,"seed":534825},
+    {"kind":"card","src":"shroom2","t":-2.365,"s":24.475,"yaw":-8.0,"flip":true,"seed":617019},
+    {"kind":"card","src":"pebble","t":9.507,"s":26.997,"yaw":7.0,"flip":false,"seed":775874},
+    {"kind":"fog","name":"vein-mist","t":6.0,"s":30.0,"y":0.0,"w":110.0,"h":14.0,"v0":0.0,"gain":0.29},
+    {"kind":"fog","name":"mist-t3","t":4.0,"s":16.2,"y":0.0,"w":90.0,"h":3.2,"v0":0.45},
+    {"kind":"fog","name":"mist-t2","t":4.0,"s":9.6,"y":0.0,"w":90.0,"h":2.2,"v0":0.6,"gain":0.45},
+    {"kind":"shaft","name":"moon-shaft-0","t":-5.45,"s":5.2,"y":6.905,"abs":true,"top":0.9,"bottom":2.6,"len":7.2,"dir":[0.36,-1.0,0.34],"gain":1.0,"lobe":0.0},
+    {"kind":"shaft","name":"moon-shaft-1","t":-1.6,"s":5.8,"y":6.973,"abs":true,"top":0.8,"bottom":2.2,"len":7.0,"dir":[0.36,-1.0,0.34],"gain":0.8,"lobe":0.0},
+    {"kind":"shaft","name":"moon-shaft-2","t":5.25,"s":6.4,"y":7.08,"abs":true,"top":0.9,"bottom":2.4,"len":6.6,"dir":[0.36,-1.0,0.34],"gain":0.9,"lobe":0.0},
+    {"kind":"shaft","name":"moon-shaft-3","t":10.55,"s":7.0,"y":7.167,"abs":true,"top":0.7,"bottom":2.0,"len":6.4,"dir":[0.36,-1.0,0.34],"gain":0.7,"lobe":0.0},
+    {"kind":"relief","name":"trunk-l1","src":"trunkTall3","t":-6.95,"s":14.2,"yaw":-6.0,"flip":false,"shadow":1,"seed":1101,"tint":0.62},
+    {"kind":"relief","name":"trunk-l2","src":"trunkTall1","t":-0.35,"s":17.2,"yaw":5.0,"flip":true,"shadow":1,"seed":1102,"tint":0.72},
+    {"kind":"relief","name":"trunk-c1","src":"trunkTall2","t":10.65,"s":22.5,"yaw":-3.0,"flip":false,"shadow":1,"seed":1103,"tint":0.85},
+    {"kind":"relief","name":"trunk-r1","src":"trunkTall1","t":13.35,"s":16.4,"yaw":7.0,"flip":false,"shadow":1,"seed":1104,"tint":0.72},
+    {"kind":"relief","name":"trunk-r2","src":"trunkTall3","t":18.55,"s":10.4,"yaw":-8.0,"flip":true,"shadow":1,"seed":1105,"tint":0.6},
+    {"kind":"litter","src":"litterTuft4","t":2.418,"s":4.903,"yaw":-4.0,"flip":true,"seed":1201},
+    {"kind":"litter","src":"litterTuft1","t":11.997,"s":4.698,"yaw":2.0,"flip":false,"seed":1202},
+    {"kind":"litter","src":"litterTuft2","t":12.563,"s":4.552,"yaw":2.0,"flip":false,"seed":1203},
+    {"kind":"litter","src":"litterTuft1","t":16.048,"s":4.552,"yaw":-2.0,"flip":false,"seed":1204},
+    {"kind":"litter","src":"litterPebble2","t":2.508,"s":4.4,"yaw":-4.0,"flip":false,"seed":1205},
+    {"kind":"litter","src":"litterPebble4","t":11.605,"s":4.257,"yaw":-2.0,"flip":true,"seed":1206},
+    {"kind":"litter","src":"litterTwig1","t":3.152,"s":4.177,"yaw":0.0,"flip":true,"seed":1207},
+    {"kind":"litter","src":"litterPebble4","t":6.655,"s":4.118,"yaw":6.0,"flip":true,"seed":1208},
+    {"kind":"litter","src":"litterPebble2","t":12.178,"s":4.03,"yaw":4.0,"flip":false,"seed":1209},
+    {"kind":"litter","src":"litterLeaves2","t":14.956,"s":4.0,"yaw":-4.0,"flip":false,"seed":1210},
+    {"kind":"litter","src":"litterTuft4","t":16.36,"s":3.927,"yaw":-4.0,"flip":true,"seed":1211},
+    {"kind":"litter","src":"litterLeaves1","t":7.232,"s":3.898,"yaw":-2.0,"flip":false,"seed":1212},
+    {"kind":"litter","src":"litterTuft1","t":7.244,"s":3.537,"yaw":-2.0,"flip":false,"seed":1213},
+    {"kind":"litter","src":"litterTuft1","t":6.183,"s":3.449,"yaw":-2.0,"flip":false,"seed":1214},
+    {"kind":"litter","src":"litterPebble3","t":-0.04,"s":3.41,"yaw":4.0,"flip":false,"seed":1215},
+    {"kind":"litter","src":"litterTuft2","t":-0.421,"s":3.353,"yaw":-4.0,"flip":false,"seed":1216},
+    {"kind":"litter","src":"litterTwig1","t":-6.119,"s":3.332,"yaw":6.0,"flip":true,"seed":1217},
+    {"kind":"litter","src":"litterPebble1","t":0.638,"s":3.32,"yaw":4.0,"flip":true,"seed":1218},
+    {"kind":"litter","src":"litterPebble1","t":-5.725,"s":3.181,"yaw":4.0,"flip":true,"seed":1219},
+    {"kind":"litter","src":"litterLeaves2","t":-5.409,"s":2.855,"yaw":-2.0,"flip":false,"seed":1220},
+    {"kind":"litter","src":"litterPebble3","t":-0.736,"s":2.845,"yaw":-2.0,"flip":true,"seed":1221},
+    {"kind":"litter","src":"litterLeaves1","t":-2.743,"s":2.524,"yaw":-4.0,"flip":true,"seed":1222},
+    {"kind":"litter","src":"litterPebble4","t":13.136,"s":2.125,"yaw":0.0,"flip":false,"seed":1223},
+    {"kind":"litter","src":"litterPebble4","t":13.705,"s":1.994,"yaw":-2.0,"flip":true,"seed":1224},
+    {"kind":"litter","src":"litterPebble3","t":-8.555,"s":1.849,"yaw":0.0,"flip":true,"seed":1225},
+    {"kind":"litter","src":"litterTuft2","t":13.607,"s":1.639,"yaw":-2.0,"flip":true,"seed":1226},
+    {"kind":"litter","src":"litterTuft4","t":-6.996,"s":-1.601,"yaw":-6.0,"flip":false,"seed":1227},
+    {"kind":"litter","src":"litterTuft4","t":-0.587,"s":-1.879,"yaw":-4.0,"flip":true,"seed":1228},
+    {"kind":"litter","src":"litterTuft4","t":3.797,"s":-2.303,"yaw":-2.0,"flip":true,"seed":1229},
+    {"kind":"litter","src":"litterTuft4","t":-2.328,"s":-2.569,"yaw":-4.0,"flip":false,"seed":1230},
+    {"kind":"litter","src":"litterTwig1","t":-1.361,"s":-2.637,"yaw":6.0,"flip":false,"seed":1231},
+    {"kind":"litter","src":"litterPebble1","t":4.01,"s":-2.664,"yaw":-4.0,"flip":false,"seed":1232},
+    {"kind":"litter","src":"litterLeaves1","t":3.563,"s":-2.704,"yaw":0.0,"flip":true,"seed":1233},
+    {"kind":"litter","src":"litterTuft4","t":9.074,"s":-2.887,"yaw":-6.0,"flip":false,"seed":1234},
+    {"kind":"litter","src":"litterPebble1","t":-1.781,"s":-2.927,"yaw":-4.0,"flip":false,"seed":1235},
+    {"kind":"litter","src":"litterPebble1","t":4.308,"s":-2.933,"yaw":2.0,"flip":false,"seed":1236},
+    {"kind":"litter","src":"litterPebble4","t":-3.661,"s":-3.055,"yaw":2.0,"flip":false,"seed":1237},
+    {"kind":"litter","src":"litterPebble3","t":-4.266,"s":-3.154,"yaw":-2.0,"flip":false,"seed":1238},
+    {"kind":"litter","src":"litterTuft1","t":-4.611,"s":-3.293,"yaw":-6.0,"flip":true,"seed":1239},
+    {"kind":"frame","name":"frame-left-mid","src":"frameBranch","vx":0.02,"vy":0.55,"depth":7.0,"scale":0.288,"flip":false,"roll":-14.0,"tint":0.5,"phone":{"vy":0.66}},
+    {"kind":"frame","name":"frame-low-left","src":"frameFern","vx":0.03,"vy":0.15,"depth":6.5,"scale":0.394,"flip":false,"roll":4.0,"tint":0.5},
+    {"kind":"frame","name":"frame-low-right","src":"frameBush","vx":0.97,"vy":0.28,"depth":7.0,"scale":0.471,"flip":true,"roll":-4.0,"tint":0.5},
+    {"kind":"frame","name":"backdrop","src":"backdropPlain","vx":0.5,"vy":0.5,"depth":140.0,"scale":110.0,"shadow":false,"_doc":"カメラに付く背景の板 (奥の端を霧に沈める)。flat の札は足元の中心が原点なので vy 0.5 = 板の下の辺が画面の真ん中の行。幅 140.8 unit・高さ 140.8 unit"}
+  ]
+}

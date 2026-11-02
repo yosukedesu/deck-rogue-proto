@@ -1,0 +1,48 @@
+{
+  "revision": 295,
+  "base": 294,
+  "basis": "294coverage increase stillcraftHOLD; softcoldbelly and frostedge not distinct. Stop width/alpha microgrowth; separate bounded frost geometry role",
+  "changes": {
+    "residueVertices": "Reuse64..79 four quads as four triangular facets (duplicate final vertex), not seven additive pieces",
+    "hierarchy": "u .24/.35 paired unequal maincrest; .53/.70 smaller subordinate peel fragments",
+    "halfLengths": [
+      0.043,
+      0.026,
+      0.02,
+      0.012
+    ],
+    "heights": [
+      0.024,
+      0.017,
+      0.012,
+      0.008
+    ],
+    "relativeStrength": [
+      1,
+      0.7,
+      0.42,
+      0.26
+    ],
+    "peakRoleAlpha": 0.62,
+    "roleTime": "(1-q)^1.3; mainpair atcontact; subordinate starts q>.10/.22 with .12 smooth ramp; same global .18s horizon",
+    "material": "role2 bypasses analytic radial/edge mask, rawalpha times vertexalpha; raw frost ROI [.30,.44]\u2013[.48,.64], RGB mix(rawlinear,existingColdCore,.55)*gain once",
+    "qualification": "This intentionally changes local coverage/material/topology of residual role. Not alpha-identical. Peak not global gain; integrated role coverage changes."
+  },
+  "invariants": [
+    "Main0..63 exact294geometry/XYZ/UV/vertexalpha/texture/coverage",
+    "Old motes80.. and allowner/callback/reset/clock unchanged",
+    "Originalraw293 unchanged, no generation/import added",
+    "full longitudinal/root envelope and same outerbelly region, no new global scale/length",
+    "globalgain1/Light0/depth/sharedshader unchanged",
+    "real4 thenIce4 thenpassive1 unchanged"
+  ],
+  "scope": [
+    "One main broken cold edge with subordinate flakes, not fulloutline/weapon/closedplate",
+    "Actual1280 craft governs, no claim based on geometryabsencefaults",
+    "Transient subfragments nonmonotonic appearance is deliberate, not new hit or secondpulse",
+    "Projection/wholeoracle/actualbinding retained in native"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

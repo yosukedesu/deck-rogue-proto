@@ -1,0 +1,69 @@
+{
+  "revision": "356 v3 implementation proposal",
+  "status": "FROZEN_CANDIDATE_NOT_NATIVE",
+  "raw": "qa/raw356-whip-pressure-a/ORIGINAL-imagegen-a.png",
+  "rawFileSHA256": "db67a11590293016e4050c8434f2fcc41aea1331e5808da3d80c56836ec4962d",
+  "rawDecodedRGBAsha256": "2a7fca411cef86ec028232a8951a0526475a0e4dc8b0b5866d1a93e8a4249de0",
+  "mapping": {
+    "sourceBoundsHalfOpen": [
+      0,
+      12,
+      1605,
+      971
+    ],
+    "rootTexel": [
+      1440,
+      660
+    ],
+    "rootSampleRGBA": [
+      253,
+      253,
+      251,
+      252
+    ],
+    "layout": "Full bounds flat 4x4 quad grid/64bodyvertices, no shape warp or opaque crop. Replace all old48 sine-wave body vertices; no oldwave or independent whitecore overlaid.",
+    "nativeEquivalentScale": "66/1605 pixels per source texel, divided by first8 observed151.6518 pixels/local unit; screen clockwise22deg converted to basis-local rotation with y up. Frozen existing root exact.",
+    "worldExtent": "Derived fixed local extent ~.4352x.2601 before rigid rotation. Old Whip had no q-driven main pulse, so do not claim removing a pulse. Local scale/rotation is intended body change; actor height/size/basis and frozenroot unchanged.",
+    "actualPredictionAuthority": "qa/raw356-whip-pressure-a/PROPOSED-FULL-UV-ROOT-REGISTRATION-ROT22.json",
+    "qualifications": [
+      "Source centertexel prediction using actual first8/9 receiver alpha, not fragment/depth or whole-width proof",
+      "Main samples1000,520/850,480/700,450 outside both receiver silhouettes;1200,600 and1150,750 inside both",
+      "All-rect845–921/y285–346 includes faint separate raw islands, not main visible occupancy; raw islands are not the old2motes"
+    ]
+  },
+  "owner": "Reuse355 source-meaning installed relic predicate, exact registered samegeneration/ref/valid/Reasonnull, then per-Sample CommittedExact beforepositive. No fixedcard/leader/amount. Begin/Clear false and existing cache setter lifecycle; otherBounded fallback byte-equivalent.",
+  "shader": {
+    "role": 71,
+    "sampling": "Dedicated source_color raw sampler, sampled linear RGB passed once through existing authored output transfer; gain existing .72 once. No palette tint/whitefill/extra light.",
+    "alpha": "rawalpha * old .8*(1-age/.18)^2 * new monotonic local consume. No alpha boost. Whole original RGBA preserved, newimport fix_alpha_border=false/premult=false/lossless/noMip/size0; oldimports unchanged.",
+    "UV": "Global original imageUV continuous shared edges, role coordinate normalized to full bounding rectangle for consume; no perquad repeat",
+    "age": "Actual NativeEffect sample elapsed/renderer shader _Age with declared private shader authority, no SetAge/preview age fabrication; old genericBounded age remains only metadata",
+    "consume": "Initial age<=.05 mask1. After .055, two unequal broad side-connected notches eat into middle/outside density; contact-side residual survives longer. Spatial death-time based on u with two unequal smooth depressions, clamped>=.055; transition widths .010–.012, allmain0 by.15. Monotonic eachUV, no secondcrest or global same-outline fade. Exactformula to be frozen/audited before native; gaussian signed squares via t*t only.",
+    "consumeFormula": "Let u,v be bbox-normalized global UV. A=exp(-(((u-.56)/.22)^2+((v-.32)/.34)^2)); B=exp(-(((u-.29)/.17)^2+((v-.77)/.25)^2)); death=clamp(.065+.065*u-.026*A-.014*B,.067,.150); mask=1-smoothstep(death-.012,death,age). Squares implement t*t. Thus earliest fade begins.055, first .05 is fully retained, every UV zero by.15. Unequal broad notches are an intended authored coverage change, not guaranteed GPU consumption."
+  },
+  "oldMotes": "Exact old2motes8verts/payload/time/gain, copied from oldWhip at48..55 to reserved80..87. No newparticles from counting raw islands. Capacity160 preserved.",
+  "invariants": [
+    "354canonicalalias and original sourceeventUID",
+    "355pose-only meaning gate/currentprimarycardattack",
+    "Engine Momentum/Draw/Damage/receipt/contact clock",
+    "Frozenroot/basis/actor/whole .18 retirement",
+    "Old2motes/light0/Omni/Flash/UI/cues"
+  ],
+  "gates": [
+    "First8/.0167 and9/.05 normal1280 show compressed density/contact, not fixed comet/whiteblob/cloth",
+    "10/.083 has unequal local body consumption,11/.116 short residual,12/.15 rawmain0, oldparticles separate",
+    "No cap+handle, physicalweapon, root relocation or body-wide large effect",
+    "Raw entrance risk/history retained; old2mote/binding/sourcehash/actualAge/readability separately verified"
+  ],
+  "scope": "One structure+authoredmaterial trial; no extraB; original355HOLD saved; cloud>=5GB, no PC C/D. Own70 plus read-only AB after independentaudit, no duplicatefullPNGtree.",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN",
+  "implementation": {
+    "body64": true,
+    "motes80to95Max": true,
+    "capacity160": true,
+    "pose355MethodUnchanged": true,
+    "freshMaterialOwner": "Same predicate semantics copied with explicit actor arguments so Advance does not depend on stale current-stage actor slots."
+  }
+}

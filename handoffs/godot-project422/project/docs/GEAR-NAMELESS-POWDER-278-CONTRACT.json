@@ -1,0 +1,39 @@
+{
+  "revision": 278,
+  "base": 277,
+  "scope": "actual held gear_nameless UseGear AsGearId gear_powder only",
+  "basis": "fresh277 nameless239 rules PASS independent static HOLD: legacy upward thin orange branches dominate volume; direct273 is not proxy art",
+  "ownership": [
+    "actual eventOwners UseGear previous index held nonempty UID and positive charges",
+    "previous SeenGearIds contains selected Powder",
+    "actual consumed same held instance",
+    "ordered outer GearUsed nameless then inner GearUsed powder before this exact event",
+    "positive valid enemy receipt, player gear Powder source with no fabricated UID",
+    "directPowder predicate unchanged and still rejects all AsGearId"
+  ],
+  "material": "Reuse selected273 CreatePowderContact fresh factory with distinct selected renderer/cache identity. Same size/time/raw/target/floor light. Future Powder material edit requires reviewing Keg and Nameless dependents.",
+  "invariants": [
+    "2 GearUsed events are not 2 attacks",
+    "gameplay/queue/receipt timing unchanged",
+    "other chosen gears and direct Keg remain unchanged",
+    "no hero cast/projectile/selfloss addition",
+    "world lighting gate remains StageFocus0; validate actual world rather than scalar alone"
+  ],
+  "batches": {
+    "kind": [
+      0,
+      15,
+      2
+    ],
+    "space": 0,
+    "capacityEach": 512,
+    "writtenMax": [
+      288,
+      288,
+      30
+    ]
+  },
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

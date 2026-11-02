@@ -1,0 +1,21 @@
+{
+  "_doc": [
+    "P22 (W3) の比較用の変種: 舞台の光を W2 の値に戻す (月・舞台の灯・逆光・環境光・霧・技の光)。灯の形 (mask・pool・fit)・霧の光の芯 (lobe)・高さの霧は切る。",
+    "撮影の STATE に look=look_act1_w2light。箱庭の設計図 (act1_layout.json の額縁・幹・色の倍率・光の面の強さ) は W3 のまま = 光だけの差を見る。持ち主は P22。"
+  ],
+  "moon": { "color": [0.74, 0.82, 1.0], "intensity": 1.1 },
+  "lamp": {
+    "illum": 1.0,
+    "mask": { "on": false },
+    "pool": { "on": false },
+    "fit": { "on": false }
+  },
+  "backlight": { "t": 4.0, "s": 22.0, "y": 5.8, "illum": 1.6 },
+  "ambient": { "sky": [0.30, 0.36, 0.58], "equator": [0.22, 0.27, 0.40], "ground": [0.12, 0.13, 0.18] },
+  "fog": {
+    "color": [0.34, 0.50, 0.60],
+    "height": { "on": false },
+    "lobe": { "on": false }
+  },
+  "hitLight": { "intensity": 1.0, "hold": 0.3, "foeMul": 1.0, "guardMul": 0.7 }
+}

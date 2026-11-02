@@ -1,0 +1,28 @@
+{
+  "revision": 306,
+  "base": 305,
+  "basis": "Actual original baseline112 and diagnostic112 fail unchanged positiveCommittedExact assert. Diagnostic frame27 clock1.4333333 < contact/start1.52, preview1.4219999; visible material age0/active16, receipt generation4 notcommitted, hero80. Planned real single9 thenWeak1, not an artHOLD or wronghit diagnosis.",
+  "scope": "Exact enemy_nemesis_wraith/curse_touch enemy_actual_execution/local_curse_contact/BoundedContactFx/dark/nonSmall, positiveHpLoss single execution, actual registered EndTurn owner and source enemy index, hero target, same enemy before/after, prior actual matching EnemyActionExecuting execution index.",
+  "delta": "Stage only: separate exact owner predicate and Begin initial negative sample; Advance pending negative cap, actual samegeneration reference CommittedExact Reasonnull -> real LastContact age0. Invalid contacted receipt remains negative but ordinary retirement elapsed is retained.",
+  "invariants": [
+    "No geometry/raw/shader/globalclamp/worldclock/rules/numericqueue changes",
+    "Existing exact Worm and all other callers/Curse routes retained byte-for-byte outside new hunks",
+    "BoundedContactGeometry old negative sample naturally empty; new cue not fabricated",
+    "Enemy real singleton debug initialization/first End/Weak1 wholeoracle unchanged; campaign encounter reachability unverified"
+  ],
+  "timing": {
+    "pending": "Windup+min(-.0001,clock-ContactAt)",
+    "committed": "Windup+max(0,clock-LastContact)",
+    "retirement": "committed contactAge; invalid/pending retain prior ordinary elapsed",
+    "Begin": "actual supplied actor args before beat actor fields assigned; default0 other callers"
+  },
+  "gates": [
+    "original strict positive committed exact retained",
+    "pending visiblebody0 and age negative; first actualcommitted age0; realpredicate livepositive and isolatedactorargs negative",
+    "fresh actual art starts only after technical boundary passes, no inherited cardCurse art",
+    "other Bounded/shared contact and lifecycle minimum after independent craft gate"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

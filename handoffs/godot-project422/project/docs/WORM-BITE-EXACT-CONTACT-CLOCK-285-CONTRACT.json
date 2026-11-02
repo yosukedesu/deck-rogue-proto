@@ -1,0 +1,21 @@
+{
+  "revision": 285,
+  "base": 284,
+  "scope": "Only exact enemy_burrow_worm/bite full tuple, real enemy/source index and hero target, positive HpLoss, one executed hit, registered EndTurn owner with actual prior EnemyActionExecuting and same source before/after.",
+  "change": "Before commit preserve clock-ContactAt negative age capped at -.0001 instead of clamped elapsed0; after same-generation CommittedExact use clock-LastContact age0. Geometry jaw anticipation/core/particles remain original.",
+  "invalidReceipt": "If Contacted but invalid receipt: core remains capped negative, retirementTime stays ordinary elapsed. No permanent active hold, existing reject/fault path unchanged.",
+  "unchanged": [
+    "Stage queue/contact scheduling",
+    "engine/receipts/numeric",
+    "source actor movement",
+    "all geometry/raw/shader/light formulas",
+    "other Fang/moves/actors",
+    "multiple executed hits and fully blocked outcomes excluded"
+  ],
+  "diagnosis": "source284 frame27 clock5.1053977 < contact5.1920652, preview5.094065, materialAge0 activejaw8+core8, receipt uncommitted. AuthoredGeometryFx age is contact-relative, no delegate; generic Math.Max elapsed caused earlycore.",
+  "newRaw": 0,
+  "native": "pending",
+  "initialSample": "AuthoredGeometryFx.Begin gains optional initialElapsed default0; only same owned pending Worm bite passes Windup+min(-.0001,clock-ContactAt), so initial Begin sample never builds a contact core. All other callers retain default0. No reliance on later same-frame overwrite.",
+  "v1": "Source-only v1 preserved, not supplied to QA/applied/built/native. v2 closes initial Begin Sample0 as well as Advance sampling.",
+  "v3": "Initial Begin occurs inside WithOrdinaryBeat before its finally persists b.Source/Target. Use same predicate core with the actual current callback source/target at Begin; Advance wrapper uses persisted b.Source/Target. No ownership weakening or inferred replacement actor. v2 original retained; QA execution status separately recorded."
+}

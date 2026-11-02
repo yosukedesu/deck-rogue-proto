@@ -1,0 +1,7 @@
+{
+  "_doc": [
+    "P22 (W3b) の比較用の変種: 光は新しいまま (look_act1.json)、設計図 (箱庭) だけ W3 の写し act1_layout_w3.json で組む = 座席の土と草・地面の小札・奥の幹・月光の筋・樹冠の変更の効き目だけを見る。",
+    "撮影の STATE に look=look_act1_w3layout。Stage.PaintDiorama が光の設計図の \"layout\" を読む (W3b P22)。持ち主は P22。"
+  ],
+  "layout": "act1_layout_w3"
+}

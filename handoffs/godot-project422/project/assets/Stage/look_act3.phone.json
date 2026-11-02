@@ -1,0 +1,46 @@
+{
+  "_doc": [
+    "幕3 のスマホの段 (2026-10-03 HD-2D 段2 段1b レーン B3・約束 docs/design/hd2d-stage2/contracts.md §C2-7 と同じ作り)。tier=phone (実機は既定で phone) の時だけ、look_act3.json・.char・.dof・(旗 look= の変種) の上に最後に重ねる。",
+    "作り方: look_act1.phone.json の 7 つの鍵 (fog.lobe.powerV・stageVignette・backlight.shadow・shadow の 4 つ・camera.msaaMax・tiltShift.halfRes・envGrade.tint) を写してから、幕3 の差分を書いた (計画 §2 B 段1b・分析 §5-3 R3-6「壁 1 枚＋柱＋立面」)。",
+    "段0 の軽さは幕1 と同じ: 影つきの光は 平行光と舞台の灯の 2 つ (影 512・カスケード1)・柱の逆光は影なし (backlight.shadow false = 柱の根元の放射状の影はスマホでは出ない)・MSAA なし・ぼかしは半解像度。技の光の影は借りられない (上限 2)。",
+    "スマホ (22°・7°・足元 0.525) で見えるのは T1〜T4 の立面と奥の壁の y ≈5.6 まで (柱の逆光 y 6 は画面の上の外・行 −71)。柱の帯は逆光が照らす T1 の天面と T2〜T3 の立面 (行 140〜285)・筋 (設計図)・粒で読ませる。壁 2・櫓・裂け目・池・機械の庭・遠くの霧は設計図の phone.hide (レーン C3)。割れ目の灯 crack は look_act3.json の lights の phone.on false で消す。",
+    "霧の距離はカメラの距離の比 r で自動 (スマホ r 1.393 = PC の 1.672 より霧が近い = 奥の壁の霧 0.46) なので start・end は書かない。lights の配列はここに書かない (配列は重ねると丸ごと置き換わる。スマホだけの点け消しと強さは look_act3.json の各 lights の phone)。"
+  ],
+  "fog": {
+    "_doc": "霧の光の芯の縦の絞り powerV 1600 は幕1 のスマホの写しの鍵 (幕3 は芯を切っている = 効かない。旗 look= の変種で芯を点けた時だけ効く)。2 段目の強さ 0.25→0.2 (スマホは霧が近い = 段の立面に 2 段目が深く掛かる。幕2 のスマホと同じ比)",
+    "lobe": {
+      "powerV": 1600
+    },
+    "far2": {
+      "strength": 0.2
+    }
+  },
+  "stageVignette": {
+    "_doc": "横 0.75 は幕1 のスマホの写し (床の中央÷端)。上は写しの 0.1 → 0.05 (PC は 0。スマホの画面の上は奥の壁の y 4〜5.6 = 柱の外の壁を少しだけ沈める。提案 A のスマホの下書き)",
+    "side": 0.75,
+    "top": 0.05
+  },
+  "backlight": {
+    "shadow": false
+  },
+  "shadow": {
+    "cascades": 1,
+    "mainResolution": 512,
+    "additionalResolution": 512,
+    "maxShadowedLights": 2
+  },
+  "camera": {
+    "msaaMax": 1
+  },
+  "tiltShift": {
+    "halfRes": true
+  },
+  "envGrade": {
+    "_doc": "スマホの夜を締める = PC の [0.96,1.05,1.09] の 0.89 倍 (幕1・幕2 のスマホと同じ比)。床と柱の明るさの順は変わらない。撮って違えば PC と同じ値へ",
+    "tint": [
+      0.854,
+      0.935,
+      0.97
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "_doc": "二周目の写し look_act1_r2 のスマホの上書き (三周目 直しの輪1・統合 2026-10-02)。look_act1.phone.json が三周目でスマホの envGrade.tint と stageVignette.top を持ったので、写しのスマホは二周目の値 (look_act1_r2.json の値) に戻す。StageLook.LoadNamed が .phone の後に重ねる",
+  "envGrade": {
+    "tint": [
+      0.78,
+      0.9,
+      1.08
+    ]
+  },
+  "stageVignette": {
+    "top": 0.12
+  }
+}

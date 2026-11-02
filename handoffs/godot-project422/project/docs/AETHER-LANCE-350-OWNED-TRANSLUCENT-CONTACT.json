@@ -1,0 +1,116 @@
+{
+  "status": "FROZEN_CANDIDATE_NOT_YET_NATIVE",
+  "base": 349,
+  "cause": "Actual Point is one degenerate-quad triangle with near-uniform neutral fill. Binding and timing pass; solid white wedge and uniform fade fail role/readability. Not Vine SoftBox cause.",
+  "geometry": {
+    "root": [
+      0,
+      0
+    ],
+    "contactCoreBounds": [
+      -0.045,
+      -0.025,
+      0.025,
+      0.025
+    ],
+    "shoulderBezier": [
+      [
+        0,
+        0
+      ],
+      [
+        -0.1,
+        0.065
+      ],
+      [
+        -0.23,
+        0.04
+      ]
+    ],
+    "shoulderHalfWidth": {
+      "maximum": 0.065,
+      "maximumAtU": [
+        0.35,
+        0.55
+      ],
+      "ends": "root retains face-width connection; outer terminal tapers without a separate cap"
+    },
+    "edge": "one unequal short blue-white crease at contact, not full perimeter or two matching prongs",
+    "projectionQualification": "Approximately172.33nativepx/unit from actual first4; approximately42x22geometry only. P2 predicts865.32,324.96 relative root904.96,331.86. Not fragment coverage or whole-frame bodymask."
+  },
+  "material": {
+    "newRaw": false,
+    "implementation": "private analytic role shader; do not reuse full radial-squared mote mask on shoulder",
+    "core": "short pale blue-white crease with darker contact flank; no filled white triangle",
+    "shoulderLinearRGB": {
+      "middle": [
+        0.13,
+        0.27,
+        0.38
+      ],
+      "subordinateVioletVariation": [
+        0.22,
+        0.18,
+        0.32
+      ]
+    },
+    "coverage": "one connected low-frequency middle-density belly. Broad middle mask plateau, one soft outer edge, unequal open cut on opposite side; not a uniformly softened thin strip. Avoid fully enclosed capsule, cloth rim, armor plate, fork or floating blade.",
+    "gain": "keep existing gain; no global brightness increase",
+    "motes": "all original three mote quads and their shader role remain unchanged"
+  },
+  "localTime": {
+    "actualSampleAges": [
+      0.00333333,
+      0.03666663,
+      0.06999993,
+      0.103333235,
+      0.13666654,
+      0.16999984
+    ],
+    "firstTwo": "contact crease plus connected blue belly must remain readable in both first draws, not a single-frame blink",
+    "middle": "around.07 unequal central opening separates small residual pressure rather than holding one filled wedge",
+    "late": "around.103 only short unequal remnants, around.137 small root residue; existing.18 retirement",
+    "constraints": "existing clock, pulse and base fade unchanged; added private coverage masks monotonic at fixed UV, no second crest. Actual remaining coverage required, not CPU role-count claim."
+  },
+  "ownership": {
+    "proposed": "exact original AetherLance full tuple plus registered actual blue PlayCard/previous-hand UID/current target; beforeAether2 and unique ordered AetherDischarged Spent2 -> single Damage8 with actual card PresentationSource UID/index -> passiveIce1. Discharge/Ice SourceUid remains absent.",
+    "sampleGate": "same-generation registered damage receipt ref, actual receiver, CommittedExact; invalidate pooled ownership on Begin/Clear and evaluate fresh at Sample. No global Bounded changes, no new scheduling/rebase justified by this baseline."
+  },
+  "fixed": [
+    "actual root/basis/scale",
+    "actor motion and sprites",
+    "engine resource/event order",
+    "receipt clock and numeric damage8",
+    "Ice utility cue",
+    "world lights0 and existing scene state",
+    "old three motes",
+    "all other Bounded fallback routes"
+  ],
+  "observer": [
+    "actual per-positive receiverGetImage bytes and transforms, no empty-path cache across frames",
+    "actual indexed core/shoulder/mote local-world-screen coordinates and shader role/UV/coverage parameters",
+    "same continuous original70 capture and whole oracle; early positive dump before any strict failure",
+    "compare first4/5 readability and6-9 consumption at normal1280"
+  ],
+  "acceptance": "Short translucent aether piercing pressure: contact core + one blue belly + open release independently read at normal1280, without solid spear/beam, flat wedge, fork, wing plate, cloth or global flash. Geometry/projection alone not PASS.",
+  "astraReview": "2026-10-30 00:07:06: one comparison eligible; mandatory broad middle coverage not radial-squared collapse; first two draws and old-fade late visibility remain actual gates.",
+  "next": "Parent specification review/implementation GO first, then frozen inverse audit and soleQA native. No source/runtime modification in this design step.",
+  "revision": 350,
+  "actualImplementation": {
+    "bodyVertices": 44,
+    "motesDestinationStart": 80,
+    "capacity": 160,
+    "shaderRoles": [
+      51,
+      52,
+      53
+    ],
+    "moteRole": 1,
+    "clock": "existing .18, no rebase or new scheduling",
+    "oldMotePayload": "source4.. shifted80.. otherwise unchanged",
+    "peakMetadata": "zero/zero matches actual349 B; Light0 preserved"
+  },
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

@@ -1,0 +1,52 @@
+{
+  "revision": 269,
+  "baseHeld": 268,
+  "selected": 261,
+  "scope": "Main opening stationary reveal stations, density face plus sloped top to ground rear hinge",
+  "geometry": {
+    "mainStations": "u=k/8, v=min((k+1)/8,advance); skip u>=advance",
+    "secondaryStations": "unchanged scaled advance",
+    "mainBodySegments": [
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "section": "Ease((q-.375)/.125)*(1-Ease((q-.875)/.125))",
+    "upper": "existing Height envelope times Section; no maximum height increase",
+    "rear": "Ground(Center(q)+normal*((1+.65*Section(q))*Width(q)))+.002Up; no aperture/soilShape term",
+    "mainGap": [
+      2
+    ],
+    "topAddedQuads": 5
+  },
+  "texture": {
+    "unchangedRaw": "hd2d-earth-soil-bank-v1.png",
+    "facePixels": "x=250+250q, y600..700",
+    "topPixels": "same x, y600..660",
+    "readOnlyPatchAudit": "x250..500/y600..700 alpha min251 mean252.466; RGB mean72.909/56.055/45.209",
+    "rawFileEdit": false
+  },
+  "maxWritten": {
+    "lips": 168,
+    "bank": 144
+  },
+  "capacity": 512,
+  "fixed": [
+    "peakheight upper bound.116",
+    "shortbanks",
+    "rock size/trajectory/count7",
+    "alpha/gain",
+    "worldlights",
+    "actualrules/owners/time",
+    "StageActor/shader"
+  ],
+  "qualifications": [
+    "Rear hinge fixed per full q; reveal terminal vertex still advances along existing path",
+    "Opening front width still follows aperture during growth",
+    "Art not proven by numerical grounding"
+  ],
+  "native": "PENDING",
+  "art": "PENDING"
+}

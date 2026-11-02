@@ -1,0 +1,508 @@
+{
+  "scope": "read-only next four, three simple plus one two-event conversion; no source/native changes",
+  "recommended_ids": [
+    "black_burning_bone",
+    "black_shadow_cleaver",
+    "fusion_sapling_maul",
+    "green_devour_vine"
+  ],
+  "optional_later": "green_x_vine_flurry actual X-contract, not fixed-one alias",
+  "actual_rows": [
+    {
+      "id": "black_burning_bone",
+      "definition": {
+        "id": "black_burning_bone",
+        "name": "燃ゆる骨片",
+        "cost": 1,
+        "type": "physical",
+        "rarity": "common",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 6
+          },
+          {
+            "trigger": "onSelfExhausted",
+            "effect": "gainEnergy",
+            "amount": 1
+          }
+        ]
+      },
+      "routes": [
+        {
+          "key": "card:black_burning_bone",
+          "definitionId": "black_burning_bone",
+          "sourceKind": "card",
+          "family": "minimal_neutral_contact",
+          "renderer": "BoundedContactFx",
+          "element": "neutral",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        }
+      ],
+      "profile": {
+        "element": "physical",
+        "style": "slash"
+      },
+      "source_context": {
+        "card": {
+          "authoredAttack": "minimal_neutral_contact",
+          "element": "neutral",
+          "authoredSemanticReason": "燃ゆる骨片 explicitly combines burning with a physical bone fragment, but gives no throw, stab, scatter, or explosive contact. A generic fire projectile or physical slash would invent delivery; retain bounded neutral physical contact until fragment delivery is chosen."
+        }
+      }
+    },
+    {
+      "id": "black_shadow_cleaver",
+      "definition": {
+        "id": "black_shadow_cleaver",
+        "name": "影の大鉈",
+        "cost": 1,
+        "type": "physical",
+        "rarity": "common",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 8
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "exhaustFromDeck",
+            "amount": 1
+          }
+        ]
+      },
+      "routes": [
+        {
+          "key": "card:black_shadow_cleaver",
+          "definitionId": "black_shadow_cleaver",
+          "sourceKind": "card",
+          "family": "slash",
+          "renderer": "PhysicalSlashFx",
+          "element": "physical",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        }
+      ],
+      "profile": {
+        "element": "physical",
+        "style": "slash",
+        "authoredAttack": "slash",
+        "authoredRequiresCardMetadata": true
+      },
+      "source_context": null
+    },
+    {
+      "id": "fusion_sapling_maul",
+      "definition": {
+        "id": "fusion_sapling_maul",
+        "name": "若木の巨槌",
+        "cost": 4,
+        "type": "physical",
+        "color": "green",
+        "exhaust": true,
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 36
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "gainEnergyMax",
+            "amount": 1
+          }
+        ],
+        "retain": true
+      },
+      "routes": [
+        {
+          "key": "card:fusion_sapling_maul",
+          "definitionId": "fusion_sapling_maul",
+          "sourceKind": "card",
+          "family": "enemy_blunt",
+          "renderer": "EnemyContactFx",
+          "element": "physical",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        }
+      ],
+      "profile": {
+        "element": "earth",
+        "style": "stomp"
+      },
+      "source_context": {
+        "card": {
+          "authoredAttack": "enemy_blunt",
+          "element": "physical",
+          "authoredSemanticReason": "Definition explicitly names a physical bash, wooden strike or hammer/crushing contact; this display-only contact does not claim earth magic."
+        }
+      }
+    },
+    {
+      "id": "green_devour_vine",
+      "definition": {
+        "id": "green_devour_vine",
+        "name": "根喰らいの蔓",
+        "cost": 2,
+        "type": "physical",
+        "axis": [
+          "shatter"
+        ],
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "shatterBlockConvert"
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 8
+          }
+        ],
+        "rarity": "uncommon"
+      },
+      "routes": [
+        {
+          "key": "card:green_devour_vine",
+          "definitionId": "green_devour_vine",
+          "sourceKind": "card",
+          "family": "minimal_neutral_contact",
+          "renderer": "BoundedContactFx",
+          "element": "neutral",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        }
+      ],
+      "profile": {
+        "element": "vine",
+        "style": "vine"
+      },
+      "source_context": {
+        "card": {
+          "authoredAttack": "minimal_neutral_contact",
+          "element": "neutral",
+          "authoredSemanticReason": "根喰らいの蔓 identifies a root-eating vine but supplies no lash, bite geometry or drain mechanic. shatterBlockConvert turns destroyed block into damage and then dealDamage 8 resolves separately; retain neutral contacts rather than inventing life absorption or plant-sword slashes."
+        }
+      }
+    },
+    {
+      "id": "green_x_vine_flurry",
+      "definition": {
+        "id": "green_x_vine_flurry",
+        "name": "蔦の連撃",
+        "cost": 1,
+        "xCost": true,
+        "type": "physical",
+        "color": "green",
+        "rarity": "uncommon",
+        "axis": [
+          "ramp"
+        ],
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 5,
+            "xHits": true
+          }
+        ]
+      },
+      "routes": [
+        {
+          "key": "card:green_x_vine_flurry",
+          "definitionId": "green_x_vine_flurry",
+          "sourceKind": "card",
+          "family": "vine_slash",
+          "renderer": "VineSlashFx",
+          "element": "vine",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        }
+      ],
+      "profile": {
+        "element": "vine",
+        "style": "vine",
+        "authoredAttack": "vine_slash",
+        "authoredSourceKinds": [
+          "card"
+        ],
+        "authoredRequiresSourceMetadata": true,
+        "authoredEvidence": "Stage33 explicit shared impact; src/data/cards.green.json#/39; same style/element; actual receipts only. Native Unity QA pending."
+      },
+      "source_context": null
+    },
+    {
+      "id": "black_necro_knight",
+      "definition": {
+        "id": "black_necro_knight",
+        "name": "亡骸の騎士",
+        "cost": 2,
+        "type": "physical",
+        "rarity": "rare",
+        "exhaust": true,
+        "necroCost": 2,
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamageDrain",
+            "amount": 12
+          }
+        ],
+        "axis": [
+          "graveyard"
+        ]
+      },
+      "routes": [
+        {
+          "key": "card:black_necro_knight",
+          "definitionId": "black_necro_knight",
+          "sourceKind": "card",
+          "family": "minimal_neutral_contact",
+          "renderer": "BoundedContactFx",
+          "element": "neutral",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        }
+      ],
+      "profile": {
+        "element": "physical",
+        "style": "slash"
+      },
+      "source_context": {
+        "card": {
+          "authoredAttack": "minimal_neutral_contact",
+          "element": "neutral",
+          "authoredSemanticReason": "亡骸の騎士 is type=physical and explicitly deals drain damage. Knight does not specify sword, spear, or blunt attack; the current slash profile is not semantic proof. The established dark_drain shader requires dark presentation, which is not established by physical drain alone. Conservative neutral chosen: no source-return geometry is established in the receipt capture; an intake/return adapter remains unimplemented rather than inventing dark drain, a sword, or a new heal."
+        }
+      }
+    },
+    {
+      "id": "black_yomi_gate",
+      "definition": {
+        "id": "black_yomi_gate",
+        "name": "黄泉の門",
+        "cost": 3,
+        "type": "spell",
+        "rarity": "rare",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamageDrain",
+            "amount": 9,
+            "target": "all"
+          }
+        ]
+      },
+      "routes": [
+        {
+          "key": "card:black_yomi_gate",
+          "definitionId": "black_yomi_gate",
+          "sourceKind": "card",
+          "family": "dark_drain",
+          "renderer": "DarkDrainFx",
+          "element": "dark",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        }
+      ],
+      "profile": {
+        "element": "dark",
+        "style": "spell",
+        "authoredAttack": "dark_drain",
+        "authoredRequiresCardMetadata": true
+      },
+      "source_context": null
+    },
+    {
+      "id": "red_catalyst_aoe",
+      "definition": {
+        "id": "red_catalyst_aoe",
+        "name": "散り火",
+        "cost": 1,
+        "type": "spell",
+        "rarity": "common",
+        "fusionCatalyst": "aoe",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 4
+          }
+        ]
+      },
+      "routes": [
+        {
+          "key": "card:red_catalyst_aoe",
+          "definitionId": "red_catalyst_aoe",
+          "sourceKind": "card",
+          "family": "fire_localburst",
+          "renderer": "FireContinuousFx",
+          "element": "fire",
+          "fixedSmall": false,
+          "portStatus": "red32-approved-profile/new-local-fire-adaptation; exact-owner-and-positive-receipt-gated; runtime-native-validation-pending"
+        },
+        {
+          "key": "reaction:red_catalyst_aoe",
+          "definitionId": "red_catalyst_aoe",
+          "sourceKind": "reaction",
+          "family": "fire_localburst",
+          "renderer": "FireContinuousFx",
+          "element": "fire",
+          "fixedSmall": true,
+          "portStatus": "red32-approved-profile/new-local-fire-adaptation; exact-owner-and-positive-receipt-gated; runtime-native-validation-pending",
+          "presentationPolicy": "noncard_fixed_small_contact_v1"
+        }
+      ],
+      "profile": {
+        "element": "fire",
+        "style": "spark"
+      },
+      "source_context": null
+    },
+    {
+      "id": "red_fire_tongue",
+      "definition": {
+        "id": "red_fire_tongue",
+        "name": "火の舌",
+        "cost": 1,
+        "type": "spell",
+        "rarity": "common",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamagePerBurn",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "applyBurn",
+            "amount": 2
+          }
+        ]
+      },
+      "routes": [
+        {
+          "key": "card:red_fire_tongue",
+          "definitionId": "red_fire_tongue",
+          "sourceKind": "card",
+          "family": "fire_localburst",
+          "renderer": "FireContinuousFx",
+          "element": "fire",
+          "fixedSmall": false,
+          "portStatus": "red32-approved-profile/new-local-fire-adaptation; exact-owner-and-positive-receipt-gated; runtime-native-validation-pending"
+        },
+        {
+          "key": "reaction:red_fire_tongue",
+          "definitionId": "red_fire_tongue",
+          "sourceKind": "reaction",
+          "family": "fire_localburst",
+          "renderer": "FireContinuousFx",
+          "element": "fire",
+          "fixedSmall": true,
+          "portStatus": "red32-approved-profile/new-local-fire-adaptation; exact-owner-and-positive-receipt-gated; runtime-native-validation-pending",
+          "presentationPolicy": "noncard_fixed_small_contact_v1"
+        }
+      ],
+      "profile": {
+        "element": "fire",
+        "style": "spell"
+      },
+      "source_context": null
+    }
+  ],
+  "absent_literal_checks": {
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision166-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": {
+      "black_burning_bone": false,
+      "black_shadow_cleaver": false,
+      "fusion_sapling_maul": false,
+      "green_devour_vine": false
+    },
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision166-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": {
+      "black_burning_bone": false,
+      "black_shadow_cleaver": false,
+      "fusion_sapling_maul": false,
+      "green_devour_vine": false
+    },
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision171-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": {
+      "black_burning_bone": false,
+      "black_shadow_cleaver": false,
+      "fusion_sapling_maul": false,
+      "green_devour_vine": false
+    },
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision171-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": {
+      "black_burning_bone": false,
+      "black_shadow_cleaver": false,
+      "fusion_sapling_maul": false,
+      "green_devour_vine": false
+    },
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision172-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": {
+      "black_burning_bone": false,
+      "black_shadow_cleaver": false,
+      "fusion_sapling_maul": false,
+      "green_devour_vine": false
+    },
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision172-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": {
+      "black_burning_bone": false,
+      "black_shadow_cleaver": false,
+      "fusion_sapling_maul": false,
+      "green_devour_vine": false
+    },
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision174-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": {
+      "black_burning_bone": false,
+      "black_shadow_cleaver": false,
+      "fusion_sapling_maul": false,
+      "green_devour_vine": false
+    },
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision174-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": {
+      "black_burning_bone": false,
+      "black_shadow_cleaver": false,
+      "fusion_sapling_maul": false,
+      "green_devour_vine": false
+    },
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision175-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": {
+      "black_burning_bone": false,
+      "black_shadow_cleaver": false,
+      "fusion_sapling_maul": false,
+      "green_devour_vine": false
+    },
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision175-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": {
+      "black_burning_bone": false,
+      "black_shadow_cleaver": false,
+      "fusion_sapling_maul": false,
+      "green_devour_vine": false
+    }
+  },
+  "sha256": {
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Combat.cs": "506e88c23b151d5cb571f43a556761f65000c3c3f15090b4901492b3512a1e5c",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Effects.cs": "49aabacbdeba548ea5c3ceb14c1e18bd16a7b591ea6eeb3da6b81a21c51907bb",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/assets/attack-routes.json": "d876cbe1c9eb6eead41e8adf0690e7b61ea7a33f547971ed629879ae82523846",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/assets/presentation-data/card-vfx-profiles.json": "762fa8c66e277b208f80a815d365bca7b49965cbdcf8a3870d07484936528f1c",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/data/cards.black.json": "b6c1dc47de08cc8566ec4bb268bfd573a2c6c0860ccd4c10d8595fed7ebe3624",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/data/cards.white.json": "22b67ae13ee9a94c974ab25eb4be504e1e93c83ef0902f40a235e0179df0c717",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/data/cards.red.json": "dab5509fb6bc5dd44e4498d32ea38b3a19d9215c6b713b4e7004fbe582aa6810",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/data/cards.blue.json": "355809c021fb217b741e2152ac425fc114a0c919a66f99dff8fa9aff8eb2222c",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/data/cards.green.json": "3093790a6abbc3c0469f817b9372d03e108dfe4ec177f9e4ef27c5461459cb78",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/data/fusions.json": "6567b3e50615a50b1300f0f111bbabc3626daa5edb365bbf9fefed70dc1fd7bc",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision166-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": "5830914e9720ee3de555d30655e78feb57ad1011c3542105c02e8f56ada2be4c",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision166-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": "babf3208ced120066bb1ea52d1ec90667a182be5973711457750d3de0942971b",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision171-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": "f838fb636e510f8b34f45a1e5571d5e03da5ce1a61ffc4e110eb4aaff7df034d",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision171-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": "2f184f50452eafd0dab5554887a52363b252e7e8b0e408ba129bdde203a4c86b",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision172-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": "47865363a35b702c6930b680af2a5eae09cdfc436663f5463c7302792bb18424",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision172-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": "2ef482d263f1d201a73571ec14da5587cb3fda516798a9cc4f6d5b3157a0f4ee",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision174-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": "b30e367265c3c001a3f93c102cd9b71cdd49f49ba4489ea2d22789fc447e5b49",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision174-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": "2ef482d263f1d201a73571ec14da5587cb3fda516798a9cc4f6d5b3157a0f4ee",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision175-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": "566d2950b691de207f96a6e20810c641ca8253876c9fca9b5f437e49072b1916",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision175-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": "2ef482d263f1d201a73571ec14da5587cb3fda516798a9cc4f6d5b3157a0f4ee",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/revision172-source/scripts/presentation/BattleStage.cs": "984c299afd0fbdee55b8716312b5a78813ba538ec8b5ad653066631442da6acd",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/assets/Art/cards_modern/black_burning_bone.png": "a5809b117dc7feae51062657b7cce47a4a296495d8b1288ae83a8f7c73d28464",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/assets/Art/cards_modern/black_shadow_cleaver.png": "7e7ec3fea8229698c0f3f6c377a50f6941f26614e22272da82d730b3f3c1f6c4",
+    "/workspace/scratch/948944000d55/attack-hd2d-prototype-20261025/source/assets/Art/cards_modern/fusion_sapling_maul.png": "f01af6201b4bd9e93fbdb1f2726a58f9caec2683cca3546422db8f8973e9bc4e"
+  },
+  "revision": 177,
+  "base": "selected176; excludes171/175",
+  "native": "pending",
+  "mapping": "BurningBone/Devour=NeutralFlurry;Cleaver=DirectionalCut;Maul=selected heavy FinisherWrath abstract blunt, not Wood material"
+}

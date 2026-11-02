@@ -1,0 +1,15 @@
+{
+  "_doc": [
+    "二周目 本番 (2026-10-01 統合担当)。試しの決定のままの霧の芯の edge と舞台の横の減光 = 既定へ入れる前の値。既定は本番の前に look_act1_r2edge の値 (edge 1.0・side 0.8・sideStart 0.30) へ変えた。旗 look=look_act1_r2edge03 で既定の上に重ねると、試しの決定 (edge 0.3・side 0.9・sideStart 0.28) の姿になる。",
+    "撮影: scripts/hd2d-states/r2-look.txt の PC-V-r2edge03-*"
+  ],
+  "fog": {
+    "lobe": {
+      "edge": 0.3
+    }
+  },
+  "stageVignette": {
+    "side": 0.9,
+    "sideStart": 0.28
+  }
+}

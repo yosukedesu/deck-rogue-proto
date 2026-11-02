@@ -1,0 +1,39 @@
+{
+  "revision": 202,
+  "state": "bounded installed material trial pending native/art",
+  "base": 200,
+  "new_exact_definitions": {
+    "fire": [
+      "red_perm_runfire",
+      "red_perm_thorn_flame",
+      "red_perm_cascade_sparks"
+    ],
+    "dark": [
+      "black_perm_tithe",
+      "black_perm_seedbed"
+    ]
+  },
+  "route_contract": "actual sourceKindpermanent, explicitdefinition/family/originalrenderer/element/FixedSmall; Sparks keypermanent: only, otherselected keycard:",
+  "owner": "owningChange previous/current actual installedsameUID+definition/typepermanent/nonRetainer/noEcho/Lifenull; SourceUid==PresentationUid and positivevalidenemyreceipt; no relaxation",
+  "old_neutral": "all9 originaltuples/material unchanged; historical neutral andCandle diagnostics remainnarrow wrappers",
+  "source_policy": "only proveninstalled passive fallback swing suppressed; legitimate parentcast/reaction/enemy motion untouched",
+  "material": "existing localBurnFire and localOnlyDark reused via explicitfactorywrappers; no sourcecallbacks/packet/beam/gather, no manufactured Burn/drain event",
+  "timing": "same provedinstalled negativeagecap covers exactnewtuples; actualnonnegative committed/exact proof stillrequired",
+  "independent_riders": [
+    "Thorn damage3 thenBurn2",
+    "Tithe/Seedbed actualdrainheal",
+    "Runfire actualImpulsePlayed",
+    "Sparks actualCascade withHitId",
+    "Seedbed actualexhaust threshold2\u21925"
+  ],
+  "excluded": [
+    "BlazeHeart special ignition and ordinaryturnstart",
+    "retainer/leader/relic/gear",
+    "direct-card samekey",
+    "199/201 neutralSPELL",
+    "genericpermanent route or UIDrelaxation"
+  ],
+  "baseline": "actualmatched200 Thorn/Tithe exactUID and borrowedhomeattack observed; fullcycle receipts separate",
+  "native_plan": "one actualperID witness+two materialrepresentativecycles; sharedowner/cap/wrongtuple/oldneutral controls once, narrow newtriggerboundaries not5fullmatrices",
+  "publication": "no newpush authority"
+}

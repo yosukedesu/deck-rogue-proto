@@ -1,0 +1,31 @@
+{
+  "revision": 227,
+  "baseTrial": 226,
+  "status": "preflight0errors/1923baselinewarnings10.99s; native pending",
+  "scope": "terminal shared-body handoff/opacity only",
+  "newRawBytes": 0,
+  "windows": {
+    "materialCollapse": "Ease((age-lastAt-.025)/.09), replacing226 .10/.18",
+    "terminalBodyEnvelope": "1-Ease((age-lastAt-.115)/.26); multiplies original visible",
+    "handoffComplete": "lastAt+.115",
+    "bodyClear": "lastAt+.375 or original .72 lifetime, whichever first"
+  },
+  "monotonicProof": "For age>=lastAt+.115, collapse weight=1 and old rise factor=1. Both original fade and new terminal envelope are nonnegative nonincreasing smoothsteps; their product cannot increase. A weight=0. Geometry old collapse only lowers upper height until last+.235. This is opacity/shape envelope, NOT a proof every native pixel or foam microadvection monotonically darkens.",
+  "unchanged": [
+    "226 bodyFold including all vertex expressions",
+    "all samples before lastAt+.025",
+    "actual last contact at lastAt",
+    "path/head/receiver event time/order",
+    "local actual-hit rupture/wake/drops",
+    "Light/FloorLight/StageFocus/StageActor/profiles/shader/audio",
+    "rawA/old03/B2 retained unused"
+  ],
+  "unityIntegration": "No Stage/Actor changes. Only terminal material handoff .025\u2192.115s after last contact and monotone shared-body opacity .115\u2192.375s after last contact.",
+  "gates": [
+    "native23\u201330 continuous keys show no foam rebound or opacity cliff",
+    "lastactual advancing head unchanged",
+    "A\u219203 receives visible remaining volume rather than replacing already vanished body",
+    "226 improved18\u201322 exact front preserved",
+    "tailclear inside prior lifetime"
+  ]
+}

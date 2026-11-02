@@ -1,0 +1,52 @@
+{
+  "revision": 289,
+  "base": 288,
+  "scope": "exact actual enemy_cinder_imp/spark_toss positive receiving contact only",
+  "basis": "fresh288 own620 staticHOLD: three coequal long flame claws after whitehurt",
+  "owner": "real EndTurn owner, actual same index previous/current enemy, preceding same execution+branch, exact fulltuple, real actor/source, valid player receipt and actual single contribution; no cardUID invented",
+  "commit": "Begin current receipt identity+same ledger generation+CommittedExact+Reasonnull; Advance current receipt bool; Clear resets cached closure; only new density batches require committed AND old VisualAge>=0; no epsilon/clamp/time change",
+  "material": "2 additional 165-vertex kind0 full-density grids; reuse unchanged273 raw; .82x.62 main directional belly and .74x.52 short dim cooling. Root0 old receiving point, actual incoming axis. No cloned gear factory. Native Fire shader retains luminance-ramp interpretation, actual material trial not proven RGB identity.",
+  "batches": {
+    "count": 8,
+    "capacity": [
+      165,
+      99,
+      99,
+      99,
+      9,
+      64,
+      165,
+      165
+    ],
+    "kind": [
+      0,
+      1,
+      1,
+      1,
+      2,
+      3,
+      0,
+      0
+    ],
+    "positive": "old three tongues alpha0, oldflight/core/embers preserved; new2 contact only",
+    "negative": "all original6 geometry sample unchanged; new2 alpha0"
+  },
+  "invariants": [
+    "original FireContinuousGeometry and shader untouched",
+    "same .13 lead/.276 end/.023 old flight endpoint",
+    "old ConfigureSource/Tip/negative flight unchanged",
+    "old core9/embers64/light/TargetPeak.35/FloorPeak.12 unchanged",
+    "engine7 observed is not hardcoded; actual6..9+Scald1fresh/rules/queue/actor unchanged",
+    "other card/gear/enemy Fire unchanged/cache identity separated",
+    "new raw0/import0"
+  ],
+  "qualifications": [
+    "prior620 actual strict positiveCommittedExact passed; future delayed/invalid receipt newbody0 only, old shared geometry not globally clock-fixed",
+    "micro-negative committed retains original negative-phase flight; no old positive tongue exists there",
+    "same-generation live pending newbody assertion requires actual reach or isolated sampler qualification",
+    "no art adoption until own still/continuous gates; shape dimensions are hypothesis not numeric damage scale"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

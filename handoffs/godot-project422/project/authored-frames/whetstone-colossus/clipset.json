@@ -1,0 +1,166 @@
+{
+  "schema": 1,
+  "status": "M46_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_whetstone_colossus",
+  "sourceCanvas": [
+    144,
+    120
+  ],
+  "frameCanvas": [
+    144,
+    130
+  ],
+  "sourceOffset": [
+    0,
+    10
+  ],
+  "anchor": [
+    72,
+    130
+  ],
+  "spriteOffset": [
+    0,
+    5
+  ],
+  "groundMaxY": 121,
+  "registrationKind": "original-ground-anchor",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest_canvas.png",
+  "sourcePngSha256": "4ea18678bb0ca59fb48fd49087c6efc416b2d59c8c9f30f2b16c353df048e9a1",
+  "sourceArtManifestSha256": "2ad1336f11fe510ba573466aea846104c3707162503fcaf6aa2f12fb33976082",
+  "authoredMoves": [
+    "brace",
+    "hone",
+    "guillotine"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "9c6ae4526d8084198eed9fb0974bfeb4779557181a4748aa95af199c2f7a27dc"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.15,
+        "sha256": "9c6ae4526d8084198eed9fb0974bfeb4779557181a4748aa95af199c2f7a27dc"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.15,
+        "sha256": "19c80d629ab812c61f3a77b7022d6f00bbd06cbb6c7f8d0061e721f8da43a362"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.15,
+        "sha256": "e6607a7a342eaa35fd6ef0d0073365895ce48f40c7e060322d58b815f18bb292"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.15,
+        "sha256": "6e9596a83363c895f1cc496a0f71d9344f675224a36c7b82a9bc0804dde2e4d9"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.15,
+        "sha256": "5a0770f044cf73535e56e33e8352f80132bd040fc95d0509a43aa019ef4cc7b9"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.15,
+        "sha256": "9ae1ab8f7f20785996cf5b20f4111c83db5c0cc26c28d582f38360fb869ceca2"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.15,
+        "sha256": "95af894d8d9b2daa161428cf109c41d3650971b3619497e5ef656b3b66292df7"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.15,
+        "sha256": "f30690a7334a4c12a88bba8e83bf24911554f1447b7bc6337ce21c54ed27193f"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "c9c1a1cde74787164af6b5a2407ef408eea0610785e9d22739d3ea1c01d4d206"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "guillotinerecovery.png",
+        "duration": 0.16,
+        "sha256": "7e031bec05b55732950b00dc25cf9dfeb357c49f70c7e7348729467c116888a8"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "9c6ae4526d8084198eed9fb0974bfeb4779557181a4748aa95af199c2f7a27dc"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "braceprepare.png",
+        "duration": 0.18,
+        "sha256": "695cdc749c61f5e6dea7452cfa95e602353eb9b6063ca525b31c63946bc455ec"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "bracehold.png",
+        "duration": 0.05,
+        "sha256": "243ac69eb00f3538966222663de92e6e0018ac78fdde49d6949b4f2b778cb153"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "guillotinerecovery.png",
+        "duration": 0.16,
+        "sha256": "7e031bec05b55732950b00dc25cf9dfeb357c49f70c7e7348729467c116888a8"
+      }
+    ],
+    "honereturn": [
+      {
+        "file": "guillotinerecovery.png",
+        "duration": 0.16,
+        "sha256": "7e031bec05b55732950b00dc25cf9dfeb357c49f70c7e7348729467c116888a8"
+      }
+    ],
+    "guillotineprepare": [
+      {
+        "file": "guillotineprepare.png",
+        "duration": 0.18,
+        "sha256": "0b3d77d6ff7af4b98eeb7de7276406fb012674b83f0b321fff621a1ec6412594"
+      }
+    ],
+    "guillotinecontact": [
+      {
+        "file": "guillotinecontact.png",
+        "duration": 0.05,
+        "sha256": "29a54d550aa04b028311cc6a1e51a0a23891ef9101320a7949ab06d053acb2b5"
+      }
+    ],
+    "honeprepare": [
+      {
+        "file": "honeprepare.png",
+        "duration": 0.18,
+        "sha256": "c0dbe877a566836712c260cfc34928702bb72a8bc454d51f95d6f23903f884e9"
+      }
+    ],
+    "honepulse": [
+      {
+        "file": "honehold.png",
+        "duration": 0.05,
+        "sha256": "f02f6f8a15dbc9540df7dc81ff6755bdfc64393d15097b9d4e6e2f554f13f3e6"
+      }
+    ]
+  }
+}

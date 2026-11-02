@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "revision": "system-reflect-burn-r1",
+  "families": {
+    "reflect": {
+      "roles_srgb": {
+        "shadow": "#535E69",
+        "primary": "#C6C6BE",
+        "edge": "#DEDCD1",
+        "core": "#F2EEE4"
+      },
+      "scene_light_srgb": "#C6C6BE"
+    },
+    "burn": {
+      "roles_srgb": {
+        "shadow": "#612221",
+        "primary": "#D65A28",
+        "edge": "#F2A052",
+        "core": "#FFE8AE"
+      },
+      "scene_light_srgb": "#D65A28"
+    }
+  },
+  "target_peak_multiplier": 0.1,
+  "floor_peak_multiplier": 0,
+  "unity_light_calibrated": false,
+  "strength_policy": "fixed restrained system response; no heavy escalation"
+}

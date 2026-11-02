@@ -1,0 +1,29 @@
+{
+  "revision": 237,
+  "baseHeld": 236,
+  "status": "preflight0errors/1923baselinewarnings10.62s; native/art pending",
+  "scope": "one aspect-ratio/interval-causality trial, raw0",
+  "held236": "moving curve became shorter than its width, producing two fog balls and face cloud instead of restorative membrane",
+  "changes": {
+    "mainPath": "x extent -1.05\u2192.08; cubic y stays -.34\u2192.15\u2192.12 below face",
+    "gatherInterval": "to=.40+.60*Ease(local/.16), from=0 untillocal.23; retain outside-to-chest span at .10\u2192.23",
+    "catchUp": "closing=Ease((local-.23)/.17),from=.66*closing",
+    "halfwidth": "(.012+(.17main/.105secondary)*sin(pi*u))*(.66+.34*open)*(1-.74closing)*(1-.45lift)",
+    "purpose": "long visible side approx2\u20133times short side during gathering; reduce width while tail catches up so it cannot become a shortfat ball",
+    "newRaw": 0
+  },
+  "unchanged": [
+    "all code outsideMassHeal",
+    "palette/shader/lights/worldfloor",
+    "owner/receipt/zero/nested/actualheal",
+    "short highlight topology and warm focus/motes",
+    "rightdelay.075/end.66",
+    "sharedPrayer/StageActor"
+  ],
+  "gates": [
+    "long external curved membrane, not orb/2uprights",
+    "rootcatchup after meaningful external presence",
+    "chest lower receiving point without facecloud",
+    "if still fog/flat, stop samegeometry loop and adopt dedicated densityraw"
+  ]
+}

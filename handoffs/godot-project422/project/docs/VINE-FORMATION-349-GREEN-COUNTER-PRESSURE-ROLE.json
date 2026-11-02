@@ -1,0 +1,20 @@
+{
+  "revision": 349,
+  "base": 348,
+  "scope": "New exact-owned nonphysical green counter aura role; replaces private neutral polygon material/shape, not another scalar rescue. No new raw, vine body, fist, weapon, complete ring, equal parallel bands.",
+  "geometry": "Quadratic P0(0,0),P1(-.16,.24),P2(-.38,.10),12 connected quads with analytic tangent normals and single width bell nearu.43/asymmetric sides. Three short unequal crease quads u.21..47. Total60 bodyvertices<80, oldmotes80.. unchanged. Rootzero/basis/scale/pulse unchanged.",
+  "material": "One low-frequency muted green belly with dark green root and short yellowgreen crease; cross-width coverage fades edges. UV2.y is shared-edge-consistent alongcurve u. No texture/raw/globalgain/light.",
+  "time": "Existing actual Sample/.18 retirement and fade retained. Private shader reads existing _Age; concave bite .020\u2192.065, outerfront .035\u2192.100, weak shortouter residual .055\u2192.095, smallroot residual .100\u2192.150. All masks monotone per fixedUV, no secondcrest. Actual firstpositive .0167/.05/.0833/.1167/.15, not age0/.033 captures. First2draws should retain broadmain; third residual; fourth root/particles.",
+  "design_target": "Ordinary1280 effective main20\u201328\u00d714\u201320px; total including thin tail50\u201365\u00d725\u201340px. These are fragment readability goals, not geometry/GPU guarantees.",
+  "invariants": [
+    "Exact existing Confirm/age2/reactionUID/counter8 currentgenref committed perSample owner",
+    "345notice/Canvas/allengine/events/numeric/actor/clock",
+    "Old2motes localXYZUVAlphaGain/softshader/light0",
+    "AllotherBoundedfallback/sharedshaders unchanged"
+  ],
+  "qualification": "First23 textureSHA/source match and alpha102 rows inform initial placement only; empty ResourcePath cache is not allframe texture proof. Reference conventional attacks inform role hierarchy only, not this counter implementation or copied timings.",
+  "gate": "Green mainpressure/contact/curvedshorttail/motes role readable; blade/leaf/wing/cape/wholebodymask/flicker/flatgradient HOLD.",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

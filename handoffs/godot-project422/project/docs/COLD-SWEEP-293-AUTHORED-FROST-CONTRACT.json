@@ -1,0 +1,49 @@
+{
+  "revision": 293,
+  "base": "292-v2",
+  "basis": "292307 technicalPASS but coldcraftHOLD; Gaussian coefficient iterations stopped. 291placement/time preserved, not finalcraft qualification.",
+  "raw": {
+    "path": "assets/Art/fx/cold-frost-density-v1.png",
+    "sha256": "5e2f5d46a862f6d2c1c5c9e65dfb535b6ba3a5a51badd81db467c206afa521f2",
+    "canvas": [
+      1774,
+      887
+    ],
+    "format": "RGBA PNG",
+    "generatedOriginal": "qa/raw293-cold-frost-a/cold-frost-density-raw-a.png",
+    "unchangedOriginal": true,
+    "imageTopLeftUV": [
+      0.06,
+      0.12,
+      0.94,
+      0.87
+    ],
+    "alphaBelly": {
+      "mean": 232.8332667,
+      "median": 252
+    },
+    "sourceImport": "No imported GPU files in source; soleQA performs actual import and binding check"
+  },
+  "changes": [
+    "Exact ColdSweep factory Texture binding only; geometry/sample/callback unchanged",
+    "Private shader main role1 replaces Gaussian RGB with source_color decoded authored RGB times existing gain once",
+    "Main alpha is existing vertexAlpha*analyticEdge*rawAlpha; never increased by new texture",
+    "Existing residue role2 and old mote role0 color/alpha unchanged"
+  ],
+  "invariants": [
+    "291 XYZ/UV/vertexalpha and motion/window .18",
+    "actualownership/CommittedExact/generation/BeginClear/poolreset",
+    "damage4 thenIce4 thenpassive1; queue/clock/actor unchanged",
+    "shared shaders/gain/light0/depth unchanged",
+    "No new weapon/actor/giantshape; one original raster only"
+  ],
+  "qualifications": [
+    "Texture lowalpha RGB is not visiblehalo proof",
+    "Native smallprojection cold hierarchy must be independently judged; raw attractive alone is not PASS",
+    "Actual imported alpha/binding/codeSHA must be recorded; import alpha border may change RGBA bytes",
+    "Unity port needs this private shader and unchanged raster; no GPU/native art claim before run"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

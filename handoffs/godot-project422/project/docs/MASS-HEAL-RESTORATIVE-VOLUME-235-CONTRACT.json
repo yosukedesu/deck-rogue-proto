@@ -1,0 +1,34 @@
+{
+  "revision": 235,
+  "base": 234,
+  "status": "preflight0errors/1923baselinewarnings10.33s; native/visual untested",
+  "selectedRepresentative": "white_mass_heal positive valid owner-action heal slot only",
+  "reason": "108 actual0006 capture label .200s, actual VisualAge=.1666668, plus sheet: small gold particles/fine lines plus white actor wash; no readable external restorative body. Original Prayer factory byteexact108\u2192234.",
+  "route": "support:white_mass_heal/heal / white_mass_heal / support / prayer_heal / Hd2dSupportFx / light / FixedSmall true",
+  "ownership": "Existing Describe/heal receipt/first eligible slot/zero consumes slot/nested provenance remains byteexact; selector is only visual exact-route dispatch",
+  "phases": {
+    "open": "0\u2192.10s external unequal membrane opening",
+    "gather": "0\u2192.26s inward travelling broad fold; right begins+.035s",
+    "release": ".28\u2192.56s upward unfurl, surface narrows; particles .30+stagger",
+    "clear": "main .60/.635s, all sample end.66; no receiving geometry age<0"
+  },
+  "geometry": "two unequal open surfaces,12longitudinal\u00d73cross cells\u00d76=216 each; totalmembrane432<512. Travelling fold72vertices max, focus6, motes24. No closed circle/shield/newhit/weapon/source beam.",
+  "material": "new palette pale cool interior/ivory edge/warm small receiving point; old shared shader byteunchanged, scene light color exact oldPrayer; no raw additions",
+  "lighting": "TargetPeak/FloorPeak .045 each; same oldPrayer Light/Floor envelopes and no StageFocus",
+  "unchanged": [
+    "CreatePrayerHeal exact234/108",
+    "all nonMassHeal factories and selector fallbacks",
+    "Support Describe numeric/ownership rules",
+    "StageActor/renderer/shader/source/hit/audio",
+    "existing maxHp heal cap/actual0 no hotbody/Light/token/exhaust events"
+  ],
+  "newBytes": "fewKB source/docs/palette only; no new raw or clone",
+  "nativeGates": [
+    "normal UI exterior body visible not whitewash/cloth/shield",
+    "asymmetric open\u2192inward gather\u2192upward release temporal causal read",
+    "actual15/1/0 and nested Censer provenance retained, no extraheal",
+    "Prayer negative/factoryequal and fulltuple negatives",
+    "all active finite <=512/clear at.66",
+    "Unity motion still user-side; no runtime performance claim"
+  ]
+}

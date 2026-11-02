@@ -1,0 +1,57 @@
+{
+  "revision": 358,
+  "status": "FROZEN_CANDIDATE_NOT_NATIVE",
+  "base": 357,
+  "intent": "Exact real Cultist dark_blade receiving contact clock only. Complete own baseline before judging existing Dark Slash material. No generic contact-clock unification.",
+  "cause": {
+    "proof": "proofs/audit357-cultist-precommit-actual-source-cause.json",
+    "original": "94/exit1 at frame26; first strict failure original PNG/JSON/prefix preserved",
+    "actual": "clock1.3291668 < ContactAt1.4158334; generation4/eventref current but Committed/Exact/contacted false; main40+motes12 positive; heroHP80, one total plannedDamage5 to75",
+    "source": "enemy preview StartEffect initialElapsed0 and Advance max0 elapsed sample nonnegative Bounded age0 before real numeric commit; no shaderAge issue or partial aggregate receipt"
+  },
+  "structuralOwner": {
+    "route": {
+      "Key": "enemy:enemy_cultist/dark_blade",
+      "DefinitionId": "dark_blade",
+      "SourceKind": "enemy_actual_execution",
+      "Family": "dark_slash_contact",
+      "Renderer": "BoundedContactFx",
+      "Element": "dark",
+      "FixedSmall": false
+    },
+    "event": "actual GameEvent_DamageDealt Source enemy, EnemyIndex valid, HpLoss>0. No Amount5/initialintent/Strength/leader/Block0 constant. PositiveHpLoss admission may include partial block; partial-block actual behavior is not yet tested. Fully blocked/noHpLoss is outside this predicate.",
+    "actors": "Begin uses explicit current _sourceActor/_targetActor before b.Source/Target persistence; Advance uses b.Source/Target. source == current Enemy(index), source.DefinitionId enemy_cultist, target == current _hero. No sourceUID fabrication.",
+    "execution": "ProvenEnemyAttackMove(actual PresentationEnemyAction, actual source)==dark_blade; actual enemy_cultist ExecutedHits1; actual same execution index attack Executing event precedes same Damage event reference in owner.Change.Events.",
+    "owner": "Registered owner Command_EndTurn; previous/current same enemy_cultist at actualindex; actual event reference belongs to this owner. Both initial dark and legitimate guard then strengthened dark may qualify. No fixed seed required by product.",
+    "receiptIdentity": "_receipts has exact hit object; Receipt.Event reference == hit; Receipt.Values reference == CombatPresentationLedger.Read(hit); current ledger generation. Identity does not require Committed at Begin and must not reject a Reason-invalid receipt into normal positive sampling.",
+    "commitAdmission": "b.Contacted AND current receipt identity AND receipt.Committed AND receipt.Exact AND receipt.Reason==null AND nonnull Values valid for event and Target player. Invalid/noncommitted remains suppressed for this structural owner."
+  },
+  "changes": [
+    {
+      "where": "BattleStage.StartEffect immediately before native.Begin",
+      "logic": "When exact structural owner and !Contacted, initialElapsed=scenario.Windup + min(-.0001f, clock - ContactAt). This makes CPU body age negative at preview. No change route/scenario/contact time."
+    },
+    {
+      "where": "AdvanceOrdinaryEffects, after default elapsed/effectTime setup",
+      "logic": "For exact owned beat: if real committed admission, contactAge=max(0,clock-LastContact), effectTime=Windup+contactAge and retirementTime=Windup+contactAge. Else if !Contacted, effectTime=Windup+min(-.0001f,clock-ContactAt), retain ordinary retirementTime. Else invalid contacted: effectTime=Windup-.0001f, retain ordinary elapsed retirement so it cannot remain active forever."
+    }
+  ],
+  "fixed": [
+    "Bounded geometry/shader/palette/gain/size/light/motes",
+    "actor enemy authored motion and hero hurt/recoil",
+    "engine RNG/damage/guardStrength/enrage/HP/events/source identity",
+    "ordinary queue/numeric fence/ContactAt/receipt emission",
+    "all prior exact predicates including Worm/Wraith/Crossbow/Vine and selected Whip357",
+    "no SetAge or force commit; no event expected-value rewrite"
+  ],
+  "qa": {
+    "helperBase": "/tmp/ThreeAttackQa357CultistDarkBladeMovieProposal.cs SHA7871f82a58eb6f4610ce97ea95a71252845ff4c6d1b8e4c5c7f03bb98f59a2a1",
+    "recipe": "Same fixedseed52001 normal constructor and initial dark-or-realguard branch. Original fulloracle/nonemptypositive/currentreceipt/actualauthoredpose/70–180 naturalclear retained. No forced age/intent/RNG.",
+    "additionalReadOnly": "Capture selected scenario windup/StartedAt/effectoffset/material metadata distinctly; beforecommit main must stay absent, first realpositive samegen/refCommittedExact and age relative to LastContact. Record stageend/effectduration changes honestly. Geometry waveform comparison only matched contact-relative ages, not falsely wholeframeAB because 357 stopped before receipt.",
+    "acceptance": "Technical contact-clock completion only, not visual PASS. Then Astra existing darkslash own material/readability review. No fresh all-other-enemy native parity claim."
+  },
+  "qualification": "Shape.Slash contact-only source branch has no authored anticipatory role. Exact1hit positiveHpLoss scope; partial-block actual is untested and aggregate/partial-receipt/multihit generalized fix explicitly out of scope. Currentgeneration/Event/Values identity mismatch is a structural nonmatch and may use existing fallback: no universal failclosed guarantee for malformed/stale identity.",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "NOT_YET_OBSERVED"
+}

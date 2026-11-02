@@ -1,0 +1,50 @@
+{
+  "revision": 294,
+  "base": 293,
+  "basis": "293 raw bound and geometry invariant technical313PASS but native craftHOLD: authored frost compressed into narrow effective cross section; not missing binding",
+  "scope": "One outer-belly coverage redistribution experiment, NOT width-only and NOT RGB coefficient iteration",
+  "changes": {
+    "halfWidthBellyCoefficient": {
+      "before": 0.065,
+      "after": 0.115
+    },
+    "upperSideWidthMultiplier": "1-.15*belly (belly=sin(pi*u)^.8); exact u=0/1 endpoint widths unchanged",
+    "crossSectionVertexAlphaMultipliers": {
+      "lower": [
+        0.04,
+        0.1
+      ],
+      "center": [
+        1,
+        1
+      ],
+      "upper": [
+        0.28,
+        0.42
+      ]
+    },
+    "peakAlpha": [
+      0.48,
+      0.48
+    ],
+    "qualification": "Total integrated visible density can increase despite equal peak alpha; raw alpha and shaderedge continue multiplying coverage"
+  },
+  "invariants": [
+    "Main centerline/root/u length and both endpoint positions unchanged",
+    "same 293 original raster/hash/image UV rectangle/private shader byte",
+    "same .18 second window and q/centerline movement/width time decay/consumption",
+    "old residues and motes unchanged",
+    "same actualowner/receipt/generation/reset/queue/numbers4/Ice4+1",
+    "gain/sharedshader/worldlight0/depth/actor/scale unchanged"
+  ],
+  "QA": [
+    "actual world->camera projected vertices, UV and vertexalpha plus viewport/root output sizes",
+    "Old293 projected width can only be same-camera old-formula estimate; original293 actualcamera not recorded",
+    "Native cold belly/frost breakup vs opaque plate/wetcloth gate; contact/face/4 readable",
+    "No movie or regression before independent craft static PASS"
+  ],
+  "rawNew": 0,
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

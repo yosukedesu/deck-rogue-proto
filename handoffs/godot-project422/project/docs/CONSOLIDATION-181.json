@@ -1,0 +1,42 @@
+{
+  "revision": 181,
+  "base": "selected178 + selected175 profiles + selected179 exact reaction adapter",
+  "inherited": {
+    "175": {
+      "runs": 17,
+      "checks": 6851,
+      "shutdownNotices": 1
+    },
+    "179": {
+      "runs": 7,
+      "checks": 2200,
+      "positiveCommittedRows": 36,
+      "matchedActorRows": 111,
+      "shutdownResourceNotices": 0,
+      "otherNotices": "lifecycle focus outside tree"
+    }
+  },
+  "merge": "Every changed179 runtime file copied only after asserting selected178 equals179base176; no selected code overwritten.175 five profiles spliced without losing171/166.",
+  "fresh": "Pending sameUIDFang replay + actual confirmedreaction + samekeynecro negative; no unrelated fullfamily reruns",
+  "countsAfterGates": {
+    "globalAttackIds": 92,
+    "supportCases": 12,
+    "overlap": 1,
+    "globalUniqueIds": 103,
+    "separateContexts": [
+      "Burst@Izzet",
+      "enemy probe/poke",
+      "Candle",
+      "Censer\u2192CorpseKiss",
+      "Burn system",
+      "Curse confirmed reaction"
+    ]
+  },
+  "excluded": [
+    "177 fourphysical candidates",
+    "180 installedpermanent extension",
+    "generic reactions",
+    "generic nested/physical continuation",
+    "new media"
+  ]
+}

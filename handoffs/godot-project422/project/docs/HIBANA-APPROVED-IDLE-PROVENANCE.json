@@ -1,0 +1,30 @@
+{
+  "character": "Hibana / ひばな / leader_red",
+  "scope": "One approved static idle frame only. No new animation frames, no attack or VFX recertification.",
+  "sourcePack": "Hibana_Idle_v4_OneFrame_Pack.zip",
+  "sourceMember": "Hibana_Idle_v4/Hibana_Idle_v4_128x84.png",
+  "rawSha256": "b405e774dcfffd2d8300ea979095f6b97826c26b9356e86bad3ce0b04310e7ba",
+  "destination": "assets/Art/leaders/leader_red.png",
+  "pixels": "128x84 RGBA; visible bbox [44,13,76,77), alpha 0/255, 59 visible RGB colors",
+  "anchor": {
+    "x": 60,
+    "bottomPixelY": 76,
+    "groundEdgeY": 77,
+    "spriteOffsetX": 4,
+    "topMargin": 13,
+    "bottomMargin": 7
+  },
+  "approval": {
+    "approvedDateUtc": "2026-10-27",
+    "status": "User-approved one-frame Hibana baseline; full conversational provenance retained separately outside production."
+  },
+  "import": {
+    "engine": "Godot4.6.3-stable official mono",
+    "uid": "uid://dt3lmwrmbyoy1",
+    "independentDecodedRgbaSha256": "d34ec31212942faafacf05425ba2a8573f681a0ac537dec84c32c7fb70f1ba37",
+    "alphaAndVisibleRgbUnchanged": true,
+    "notes": "New independent official import, not cloned from another character. Godot fix_alpha_border may change hidden RGB only."
+  },
+  "codeChange": "BattleActor.Configure extends existing +4px foot-anchor adjustment to non-placeholder leaders/leader_red. Other actors, vertical alpha scan, materials, VFX and animation loading unchanged.",
+  "qualification": "Raw PNG byte-for-byte source preservation. This manifest does not assert native visual acceptance; separate candidate421 QA/native evidence is required."
+}

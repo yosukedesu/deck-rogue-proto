@@ -1,0 +1,34 @@
+{
+  "revision": 292,
+  "base": 291,
+  "basis": "291 direction/oneclosurePASS but finalcoldidentitycraftHOLD after own acceptedIceLance comparison: grayblue windsmear insufficient. Original291657/2 remainsHOLD not selected.",
+  "scope": "exactColdSweep material RGB-only comparison; no newraw",
+  "changes": {
+    "exactShader": "ColdSweepSurfaceFx, copy of oldBounded with same coverage/blend/depth/output conversion; shared old shader byte preserved",
+    "materialRoles": "UV2.y main1(0..63), residual2(64..79), oldmotes0(80..); UV2.x soft flag unchanged",
+    "belly": "same Cold primary, broad mainGaussian+weaksecondary rather than stripes; .58..1Primary RGB",
+    "rime": "two unequal localized one-side coldCore peaks, u .285/.51, unequal widths/soft gaussian endpoints; neither fulloutline nor full-length whiteedge",
+    "residual": "same existingshortshapes, cooler Primary/Core color; oldmotes originalRGB path"
+  },
+  "invariants": [
+    "all291 XYZ/UV/vertexAlpha/sampling clock/motion byte preserved",
+    "samealpha coverage formula and .18 horizon",
+    "samegain/emission/Coldpalette actualuniforms/depth/light0",
+    "sameowner/receipt callback/generation/finiteguard/poolreset/queue/numbers4+Ice4+passive1",
+    "oldSharedBoundedshader/factories unchanged; newshader used byexactfactoryonly",
+    "no particle/cast/body geometry\u8ffd\u52a0, no raw/importedtexture asset"
+  ],
+  "newFiles": [
+    "shaders/authored_ColdSweepSurfaceFx.gdshader",
+    "docs/COLD-SWEEP-292-COLD-MATERIAL-CONTRACT.json"
+  ],
+  "qualifications": [
+    "materialbranch based on staticpervertexrole not actualtime changes",
+    "newshaderneedsnativeGPUcompile and realuniform\u78ba\u8a8d",
+    "if identity remains coloredwind, no coefficient-loop successclaim; artHOLD and revisitmaterialdesign",
+    "do not promote291geometryPASS tofinalcraftPASS"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

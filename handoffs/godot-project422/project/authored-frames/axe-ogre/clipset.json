@@ -1,0 +1,206 @@
+{
+  "enemyId": "enemy_axe_ogre",
+  "sourceCanvas": [
+    144,
+    120
+  ],
+  "frameCanvas": [
+    144,
+    120
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    72,
+    120
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "sourcePngSha256": "257e05a08ce17c32b3ee5acc9a7ddd701744ad6998cf332cbbc438f8bac7f0c4",
+  "schema": 1,
+  "status": "M40_RUNTIME_CANDIDATE_NOT_EXECUTED",
+  "groundMaxY": 111,
+  "sourceArtManifestSha256": "fdda4b6553cd03e4ed946636f6c06d2770d5cbe76466a3fd8f3b1be5083a3273",
+  "authoredMoves": [
+    "windup",
+    "great_swing",
+    "gasp"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "257e05a08ce17c32b3ee5acc9a7ddd701744ad6998cf332cbbc438f8bac7f0c4"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "257e05a08ce17c32b3ee5acc9a7ddd701744ad6998cf332cbbc438f8bac7f0c4"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "bd9b4cbcdb593c415ce91d5ee4838238e36caf2398573571ceb3336a86b8c2d3"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "0e3dc0db1a1c38defbdae11b18a67306635a839a7935e6940edd41cbb9946b99"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "61d7e0f5b7cf492fe7b9bb5cf6ce4f91af96db71d82595b27bdfaec205cfa7bd"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "5a0b5155a808c218a83ae410cb56e7fb0ac1c3d0069de771e757c5cdd4f91b25"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "f21dc3f2d890c52f9f57249734599764e02095d35c826b511570b794de952369"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "66afec9a0648e613746067dc39ce1cf32e01d16d44aeb6598751ec63b60fd224"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "4a34b246ccb961bc6cde180e42b99eae59436ecb8d10fd2f2496b59d8e230ef5"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "cd8cd198b3a940615116a33979dacb6c8911612ce63fc55582016a05bae215b2"
+      }
+    ],
+    "windupprepare": [
+      {
+        "file": "windupprepare.png",
+        "duration": 0.16,
+        "sha256": "e3a2e8059ad937a5f957f5c381101ed002e14f3c6a6cdfe3c8fc2be612d2b71b"
+      }
+    ],
+    "winduphold": [
+      {
+        "file": "winduphold.png",
+        "duration": 0.24,
+        "sha256": "78416b49ca18f76a0daa74f81360cd4faec2f5112fe12502c22866dd1040e69e"
+      }
+    ],
+    "block": [
+      {
+        "file": "winduphold.png",
+        "duration": 0.18,
+        "sha256": "78416b49ca18f76a0daa74f81360cd4faec2f5112fe12502c22866dd1040e69e"
+      }
+    ],
+    "swingprepare": [
+      {
+        "file": "swingprepare.png",
+        "duration": 0.22,
+        "sha256": "02ba31cbff49a67baada9d6c2f3cb5c618828fbb6cc1ec4009a56a20fc2cbb88"
+      }
+    ],
+    "swingcontact": [
+      {
+        "file": "swingcontact.png",
+        "duration": 0.055,
+        "sha256": "7208a650ee6f0905b8d5e2e3dbe5f8962a3564cae5ff505dfbcdebc415df94dc"
+      }
+    ],
+    "attackprepare": [
+      {
+        "file": "swingprepare.png",
+        "duration": 0.22,
+        "sha256": "02ba31cbff49a67baada9d6c2f3cb5c618828fbb6cc1ec4009a56a20fc2cbb88"
+      }
+    ],
+    "attackcontact": [
+      {
+        "file": "swingcontact.png",
+        "duration": 0.055,
+        "sha256": "7208a650ee6f0905b8d5e2e3dbe5f8962a3564cae5ff505dfbcdebc415df94dc"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "cab743ac9bb76e9048d83a3bae6f7a9361b800888ea738754a8f7f73ac1eafd7"
+      }
+    ],
+    "gaspprepare": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "cab743ac9bb76e9048d83a3bae6f7a9361b800888ea738754a8f7f73ac1eafd7"
+      }
+    ],
+    "gasphold": [
+      {
+        "file": "gasp.png",
+        "duration": 0.24,
+        "sha256": "95709a270039a5cbc9ec2f466730a25bb10f728cdaaa0bc08a1c8219797c807b"
+      }
+    ],
+    "gasp": [
+      {
+        "file": "gasp.png",
+        "duration": 0.24,
+        "sha256": "95709a270039a5cbc9ec2f466730a25bb10f728cdaaa0bc08a1c8219797c807b"
+      },
+      {
+        "file": "recovery.png",
+        "duration": 0.14,
+        "sha256": "cab743ac9bb76e9048d83a3bae6f7a9361b800888ea738754a8f7f73ac1eafd7"
+      },
+      {
+        "file": "gasp.png",
+        "duration": 0.22,
+        "sha256": "95709a270039a5cbc9ec2f466730a25bb10f728cdaaa0bc08a1c8219797c807b"
+      }
+    ],
+    "return": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "cab743ac9bb76e9048d83a3bae6f7a9361b800888ea738754a8f7f73ac1eafd7"
+      },
+      {
+        "file": "rest.png",
+        "duration": 0.12,
+        "sha256": "257e05a08ce17c32b3ee5acc9a7ddd701744ad6998cf332cbbc438f8bac7f0c4"
+      }
+    ]
+  },
+  "finiteRestContract": {
+    "move": "gasp",
+    "prepareAlias": "recovery.png",
+    "maxFromSupportStart": 0.96,
+    "gaspSeconds": 0.6,
+    "afterEndRequires": "exact owned real EnemyActionResolved",
+    "invalidatedBy": [
+      "cancel",
+      "newAttack",
+      "newSupport",
+      "placement",
+      "death"
+    ]
+  }
+}

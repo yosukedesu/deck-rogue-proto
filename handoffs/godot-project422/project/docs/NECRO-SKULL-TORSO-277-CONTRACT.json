@@ -1,0 +1,34 @@
+{
+  "revision": 277,
+  "base": 276,
+  "scope": "exact selected necro black_groaning_skull only",
+  "basis": "fresh276 baseline770 PASS rules; independent static HOLD detached head-left main mask and separate torso mask; old194/196 limited adoption retained",
+  "geometry": "Independent copy of selected275 local Dark receiving material geometry. Same known torso registration root(.26,.01,.025), primary .64x.44/subordinate .27x.23; existing three-phase raw and light. Not scaled by drain4, no skull or summon. Independent method prevents future reaction edits from silently affecting necro. Actual Skull still/temporal required.",
+  "invariants": [
+    "Censer ambient SourceUid qa-prep-0 differs from exhausted necro PresentationSource.Uid qa-nested-drain",
+    "existing moved-instance/ambientCenser/ordered-event ownership unchanged",
+    "real drain4 then independent heal2 and recursive mill; Prayer independent",
+    "Stage/Actor/engine/queue/pose unchanged",
+    "old sharedDark/Kiss/other necro and reaction factories unchanged",
+    "no reaction threshold or ConfirmReaction admission reused",
+    "raw/shader/import/global light unchanged"
+  ],
+  "capacity": {
+    "kinds": [
+      16,
+      16,
+      16,
+      2
+    ],
+    "space": 0,
+    "capacityEach": 512,
+    "writtenMax": [
+      12,
+      12,
+      12,
+      42
+    ]
+  },
+  "native": "PENDING",
+  "art": "PENDING"
+}

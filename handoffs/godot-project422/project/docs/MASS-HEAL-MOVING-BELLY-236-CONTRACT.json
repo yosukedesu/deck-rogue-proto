@@ -1,0 +1,31 @@
+{
+  "revision": 236,
+  "baseHeld": 235,
+  "status": "preflight completed; see qa/rev236-build-preflight.log; native/art pending",
+  "scope": "CreateMassHeal internal membrane path/width/short highlight only",
+  "failure235": "actual0006\u21920010 keeps white paired A-shaped uprights; lower roots remain planted while tips extend. External presence improved but no restorative mass transfer; held not selected.",
+  "changes": {
+    "path": "left cubic(-.73,-.37)\u2192(-.86,-.04)\u2192(-.20,.23)\u2192(.08,.16), secondary right(.47,-.26)\u2192(.55,.04)\u2192(.25,.23)\u2192(.04,.13)",
+    "movingInterval": "q=Ease(local/.26); from=.62*Ease((q-.18)/.82),to=.22+.78q; curve material resides on moving interval, releases outside lower roots before tail",
+    "asymmetry": "right local start+.075 vs left0; primary halfwidth .018+.32sin(pi*u), secondary .018+.18sin(pi*u)",
+    "belly": "alpha .28+.20sin(pi*across) times envelope, cold interior/ivory partial side; no entire bright outline",
+    "highlights": "2 short separated sections [.32,.50] and [.72,.81], widths .010/.007; not long white rails",
+    "release": "same postlocal.28 upward unfurl; left clear local.60, right local.585 +.075 delay=.66, no tail beyond old.66"
+  },
+  "unchanged": [
+    "raw0",
+    "palette/shader/light/floor exact235",
+    "Support ownerDescribe/zero slot/nested semantics",
+    "Prayer/all otherfactories exact",
+    "actualevents/receipt/StageActor/time/audio",
+    "warm focus/motes exact235"
+  ],
+  "capacity": "membrane432/folds24/focus6/motes24<512",
+  "gates": [
+    "external belly retains presence without frame/wing/whiteuprights",
+    "visible lower root releases while belly migrates inward",
+    "left primary/right subordinate .075 phase visible",
+    "chest focus then upperrelease, no secondheal",
+    "same actual15 recovery fixture/finite/negative/clear and all legacyproof"
+  ]
+}

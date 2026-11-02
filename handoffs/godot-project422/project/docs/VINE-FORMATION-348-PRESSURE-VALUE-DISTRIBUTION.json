@@ -1,0 +1,17 @@
+{
+  "revision": 348,
+  "base": 347,
+  "scope": "Material RGB distribution only for private role41. Canonical unpulsed local u=clamp(-localX/.23,0,1) carried UV2.y, sharededge-consistent, allother roles retain effect.y0.",
+  "material": "Root charcoal linear(.045,.050,.047)\u2192mid muted silvergray(.34,.36,.33) via smoothstep(.15,.70,u), then outer mutedgray(.22,.24,.22) via smoothstep(.80,1,u). Existing input gain/output transfer unchanged.",
+  "invariants": [
+    "All geometry/indices/root/basis/scale/UV/vertexalpha/gain/currentfade/.18",
+    "Role41 original compression alpha unchanged",
+    "Ivory edge42/warm shoulder43/oldsoft1 motes shader and payload unchanged",
+    "Owner/perSample receipt/345notice/engineorder/actor/worldlight0"
+  ],
+  "qualification": "RGB redistribution responds to dark face lost against dark background after347 placement. No globalbrightening/alpha rescue/newraw. Material coordinate is not geometry movement.",
+  "gate": "Actual normal1280 short pressure face readable with dark root and subordinate crease; plate/metalpatch/contourband remains HOLD. First23 source texture identity is not allframe bodymask guarantee.",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

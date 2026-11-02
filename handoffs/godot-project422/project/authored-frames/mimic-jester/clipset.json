@@ -1,0 +1,304 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_mimic_jester",
+  "sourceCanvas": [
+    104,
+    88
+  ],
+  "frameCanvas": [
+    104,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    52,
+    88
+  ],
+  "sourcePngSha256": "7edb4d0576286e8df14386d7021e840e6415b9b5f8d9c6c7b5206242e188430d",
+  "groundMaxY": 79,
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest.png",
+  "approvedArtManifestSha256": "906e531ad8add2a4dd1202e59dbd95b3360d260af80cd01ba8e5f09a693968fb",
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "7edb4d0576286e8df14386d7021e840e6415b9b5f8d9c6c7b5206242e188430d"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "7edb4d0576286e8df14386d7021e840e6415b9b5f8d9c6c7b5206242e188430d"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "79466ef7e7ca770562c62e3dfe8d3d866bc4ee5c88722991e951f1a2e0ef82d6"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "1a6e8c6dc86082c8d5e13a495bb64230fc00ac99d783119451d4662e1cebacd5"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "99c385d624afb303f3f2752eb6b3f332e8d00bd58ab5aae57e132298bedaf2d6"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "d298654329dded35cde9195dc45016d25ec221f1ff9b488900c1d52f7adadc38"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "6a51f6df4d9d0a6b86eecb406eb9d4bd9b60c6f5087bff02cf2e1e259ee3f742"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "8e9bfdadfbdeab404405c57edcecc97bbb02ae0e67e0574d4ed463d3ba175073"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "b1f821eb20e7d5fbe295b41dbd4c3464323c60795f9be693979a2fa9e5a028ac"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "0486731c764d15f5e1d001e7cac76f2497b0b5dd0597728c16bec6463a4afd7c"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "prepare.png",
+        "duration": 0.18,
+        "sha256": "afcc6a8863095347edbcb9c25a581b2275c0fd9067d49701dfca9847c476fdb0"
+      }
+    ],
+    "contacta": [
+      {
+        "file": "contacta.png",
+        "duration": 0.04,
+        "sha256": "f67a6de33a18f43f6337499dc9e0ee4b4907938a4afc5c82556a5de3f366f59c"
+      }
+    ],
+    "rebound": [
+      {
+        "file": "rebound.png",
+        "duration": 0.1,
+        "sha256": "67444a12866f0e868d5ccc0e896a1129f79df36dd9ac77975a9c4a1c540c8e3c"
+      }
+    ],
+    "contactb": [
+      {
+        "file": "contactb.png",
+        "duration": 0.04,
+        "sha256": "18b7c6e8ffdeee1b1fd028af2df5139284057f327e60606d98d5cb9f2f86ab55"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "bc565ccd36311a6a87029a01bf294a9f8a0d99ea48aae799bd1c4ea145b4fd45"
+      }
+    ]
+  },
+  "physicalSupportFrames": {
+    "rest.png": {
+      "rearSoleRow": 79,
+      "rearContactPixelsX": [
+        87,
+        88,
+        89
+      ],
+      "rearSoleCenterX": 88.0,
+      "sourceCenter": [
+        88,
+        79
+      ],
+      "sourceTolerance": [
+        0,
+        0
+      ],
+      "roiXExclusive": [
+        80,
+        98
+      ]
+    },
+    "idle.png": {
+      "rearSoleRow": 79,
+      "rearContactPixelsX": [
+        86,
+        87,
+        88,
+        89,
+        90
+      ],
+      "rearSoleCenterX": 88.0,
+      "sourceCenter": [
+        88,
+        79
+      ],
+      "sourceTolerance": [
+        0,
+        0
+      ],
+      "roiXExclusive": [
+        80,
+        98
+      ]
+    },
+    "hurt.png": {
+      "rearSoleRow": 79,
+      "rearContactPixelsX": [
+        86,
+        87,
+        88,
+        89,
+        90
+      ],
+      "rearSoleCenterX": 88.0,
+      "sourceCenter": [
+        88,
+        79
+      ],
+      "sourceTolerance": [
+        0,
+        0
+      ],
+      "roiXExclusive": [
+        80,
+        98
+      ]
+    },
+    "prepare.png": {
+      "rearSoleRow": 79,
+      "rearContactPixelsX": [
+        86,
+        87,
+        88,
+        89,
+        90
+      ],
+      "rearSoleCenterX": 88.0,
+      "sourceCenter": [
+        88,
+        79
+      ],
+      "sourceTolerance": [
+        0,
+        0
+      ],
+      "roiXExclusive": [
+        80,
+        98
+      ]
+    },
+    "contacta.png": {
+      "rearSoleRow": 79,
+      "rearContactPixelsX": [
+        86,
+        87,
+        88,
+        89,
+        90
+      ],
+      "rearSoleCenterX": 88.0,
+      "sourceCenter": [
+        88,
+        79
+      ],
+      "sourceTolerance": [
+        0,
+        0
+      ],
+      "roiXExclusive": [
+        80,
+        98
+      ]
+    },
+    "rebound.png": {
+      "rearSoleRow": 79,
+      "rearContactPixelsX": [
+        86,
+        87,
+        88,
+        89,
+        90
+      ],
+      "rearSoleCenterX": 88.0,
+      "sourceCenter": [
+        88,
+        79
+      ],
+      "sourceTolerance": [
+        0,
+        0
+      ],
+      "roiXExclusive": [
+        80,
+        98
+      ]
+    },
+    "contactb.png": {
+      "rearSoleRow": 79,
+      "rearContactPixelsX": [
+        86,
+        87,
+        88,
+        89,
+        90
+      ],
+      "rearSoleCenterX": 88.0,
+      "sourceCenter": [
+        88,
+        79
+      ],
+      "sourceTolerance": [
+        0,
+        0
+      ],
+      "roiXExclusive": [
+        80,
+        98
+      ]
+    },
+    "recovery.png": {
+      "rearSoleRow": 79,
+      "rearContactPixelsX": [
+        87,
+        88,
+        89
+      ],
+      "rearSoleCenterX": 88.0,
+      "sourceCenter": [
+        88,
+        79
+      ],
+      "sourceTolerance": [
+        0,
+        0
+      ],
+      "roiXExclusive": [
+        80,
+        98
+      ]
+    }
+  }
+}

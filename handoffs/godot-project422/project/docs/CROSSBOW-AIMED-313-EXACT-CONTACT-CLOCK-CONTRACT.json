@@ -1,0 +1,28 @@
+{
+  "revision": 313,
+  "base": "312-v2",
+  "basis": "OriginalCrossbow134exit1 QA null Effect scan exception before strict; correctedQA-only B137exit1 real positiveCommittedExact fail. Bframe30 clock6.263199<ContactAt/StartedAt6.4831986, preview6.2498665, actualage0/active16/receiptgeneration4 uncommitted/Contactedfalse, hero60 while aimed14 intends46 thenVulnerable1. No separate newdiagnosticrun needed because beforeassertdump saved.",
+  "scope": "Exact enemy_crossbow_archer/aimed_shot enemy_actual_execution/neutral_projectile_contact/BoundedContactFx/neutral/!Small. Actual positiveHpLoss single execution, sourceenemyindex/hero, registered real EndTurn event owner, matching before/current enemy and preceding actualexecution index/move. Priorbolt/bolt_2 not selected.",
+  "delta": "Stage3hunks only: independent predicate, initialnegative before Native.Begin actualactors, Advance pendingnegative/samegeneration actualeventreference CommittedExactReasonnull LastContact rebase. Invalidcontacted staysnegative with oldelapsed retirement.",
+  "timing": {
+    "pending": "Windup+min(-.0001,clock-ContactAt)",
+    "committed": "Windup+max(0,clock-LastContact)",
+    "invalidContacted": "effectTime=Windup-.0001, oldretirementelapsed preserved"
+  },
+  "invariants": [
+    "All312Wraith/285Worm/generalBounded predicates and clock unchanged outside separate newhunks",
+    "No artgeometry/shader/raw/worldlight/actualactor/queue/rules changes",
+    "Real3End sequence: bolt, bolt_2 withMoveIdbolt, aimed_shot; currentactualscale/RNG numeric oracle nothardcoded14",
+    "Campaignreachability unverified; regularDebugLaunchCombat actualenemy singleton",
+    "OtherCrossbowmoves andotherenemies explicitly not widened; familywide safeclaim forbidden"
+  ],
+  "gates": [
+    "sameactual strictpositiveCommittedExact unchanged, pendingallbody0 andfirstactualcommitage0",
+    "actualpredicate positive andexact Wraith false; actorargument isolated negatives later",
+    "actualnewclock-gated baseline only starts artquality assessment; original134 exception and137realclockfailure preserved separately",
+    "minimalcompatibility/lifecycle only after finalcraft gate"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

@@ -1,0 +1,143 @@
+{
+  "revision": 305,
+  "base": 304,
+  "basis": "304 reused Torrent crop produced milkwhite cloth; stop crop/alpha microloops. Dedicated imagegen one-source comparison after raw/UV review.",
+  "delta": "Main texture reference plus authored sample UV only; new raw original bytes, no image processing. Main source RGB and alpha replace prior density, no extra white fill. Existing core branch untouched.",
+  "raw": {
+    "path": "assets/Art/fx/light-bolt-pressure-density-v1.png",
+    "canvas": [
+      1774,
+      887
+    ],
+    "sha256": "c7009b9c4634b829a8abfff71885421ecd163c32b2602983521e67e65b98b608",
+    "originalUnmodified": true,
+    "generationProvenance": "qa/raw305-light-pressure-a/GENERATION-PROVENANCE.json",
+    "UV": [
+      0.15,
+      0.34,
+      0.86,
+      0.72
+    ],
+    "orientation": "(u,1-v), axis image v~.53 aligns mesh center",
+    "inspection": {
+      "size": [
+        1774,
+        887
+      ],
+      "sha256": "c7009b9c4634b829a8abfff71885421ecd163c32b2602983521e67e65b98b608",
+      "regions": {
+        "whole": {
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "box": [
+            0,
+            0,
+            1774,
+            887
+          ],
+          "mean": 6.956449733022018,
+          "p50": 0.0,
+          "above128": 0.018807934730524462,
+          "below32": 0.9473460443916829,
+          "zero": 0.882234810980097
+        },
+        "proposed": {
+          "uv": [
+            0.15,
+            0.28,
+            0.86,
+            0.66
+          ],
+          "box": [
+            266,
+            248,
+            1525,
+            585
+          ],
+          "mean": 25.796296339942916,
+          "p50": 0.0,
+          "above128": 0.06975297148365596,
+          "below32": 0.804722319772416,
+          "zero": 0.5663271919921373
+        },
+        "upperShoulder": {
+          "uv": [
+            0.2,
+            0.32,
+            0.8,
+            0.48
+          ],
+          "box": [
+            354,
+            283,
+            1419,
+            425
+          ],
+          "mean": 11.295298551874629,
+          "p50": 0.0,
+          "above128": 0.012847979898168353,
+          "below32": 0.8901937446273888,
+          "zero": 0.6115585531971169
+        },
+        "axis": {
+          "uv": [
+            0.2,
+            0.5,
+            0.8,
+            0.55
+          ],
+          "box": [
+            354,
+            443,
+            1419,
+            487
+          ],
+          "mean": 133.93871105420402,
+          "p50": 119.0,
+          "above128": 0.4792573623559539,
+          "below32": 0.1823943661971831,
+          "zero": 0.005441741357234315
+        }
+      },
+      "actualProposedUV": {
+        "uv": [
+          0.15,
+          0.34,
+          0.86,
+          0.72
+        ],
+        "box": [
+          266,
+          301,
+          1525,
+          638
+        ],
+        "mean": 25.794875118729717,
+        "p50": 0.0,
+        "above128": 0.06975297148365596,
+        "zero": 0.5677201301961191,
+        "rationale": "axis image v~.53 maps to mesh center row v=.5; upper shoulder remains on upper side through 1-v"
+      }
+    }
+  },
+  "invariants": [
+    "302 main placement/geometry/UV arrays/vertexalpha/time/gain retained",
+    "actual 3 event references and same generation committed gate unchanged",
+    "old negative flight/gather, world light, shared Light, core branch and flashes unchanged",
+    "private main mask remains sampled rawalpha times vertexalpha/canvas edge; pixel RGB/alpha intentionally different",
+    "new raw requires one import; preserve all existing imports and actual BaseMap path/canvas/SHA/mips readback"
+  ],
+  "gates": [
+    "original1280 optical core vs thin warm translucent shoulder, not gold blade/fabric/star",
+    "sparse source alpha may be insufficient after projection; no success inferred from raw alone",
+    "same geometry/clock numerical differences recorded accurately; exact pending newbody0 remains",
+    "still craft before own movie, then original shared WhiteStrike/lifecycle only on GO"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

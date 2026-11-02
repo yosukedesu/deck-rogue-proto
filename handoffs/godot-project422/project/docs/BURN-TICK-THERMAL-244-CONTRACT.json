@@ -1,0 +1,45 @@
+{
+  "revision": 244,
+  "status": "product preflight 0 errors / 1923 existing warnings / 9.44 seconds; native and art pending",
+  "base": "reconstructed243 known whole Hd2d SHA32c3ae; not original QA restoration",
+  "changed": {
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs": "c3dd689f67e122e5278e9d098b394967662bb73fd46d81d11afd753b5fa0d030",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/NativeGeometryBridge.cs": "6d488122fa0aed8536dbefef73c7fd02c14d058cb129692582ab9926666a00e0"
+  },
+  "scope": "existing validated StatusContact route dispatch only; Select/SelectedRoute unchanged",
+  "oldFactoryAndInstalledWrapper": "entire base source recovered by removing new factory; byteexact",
+  "capacity": {
+    "body": 384,
+    "cooling": 192,
+    "embers": 30,
+    "warmth": 6
+  },
+  "raw": "unchanged fire-volume-02/04; no new raw",
+  "uv": {
+    "main": [
+      0.53,
+      0.035,
+      0.46,
+      0.6
+    ],
+    "side": [
+      0.04,
+      0.29,
+      0.43,
+      0.44
+    ],
+    "remnant": [
+      0.55,
+      0,
+      0.45,
+      0.73
+    ]
+  },
+  "timing": "negative geometry empty; terminal .212; main fades .035 to .155; side .020 to .105; remainder onset0-.035 and decay .075-.200",
+  "invariants": [
+    "gameplay/receipt/actor/camera/owner unchanged",
+    "same Light exp(-age/.085), TargetPeak .035, FloorPeak .015, FloorLight0, StageFocus0",
+    "five existing sparks .011 spacing unchanged",
+    "Shader/palette/import/raw unchanged"
+  ]
+}

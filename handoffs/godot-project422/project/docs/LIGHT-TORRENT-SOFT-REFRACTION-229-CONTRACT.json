@@ -1,0 +1,38 @@
+{
+  "revision": 229,
+  "baseTrial": 228,
+  "status": "preflight0errors/1923baselinewarnings13.07s; nativepending",
+  "scope": "exact Torrent-only Plane helper and main-plane registration; dispatch unchanged",
+  "rawBytes": 0,
+  "shape": {
+    "grid": "8 longitudinal\u00d74 cross strips=192vertices/plane, max2planes/layer384<512",
+    "alphaLongitudinal": "Ease(u/.22)*(1-Ease((u-.72)/.28))",
+    "alphaCross": "max(0,sin(v*pi)) squared; both outer edgeszero",
+    "curvature": "sin(u*pi)*(bend+.018*sin(u*2pi-age*14))",
+    "width": "existing sin(u*pi)*(.72+.28u), finiteclamped",
+    "purpose": "soft internal density, no opaque outline or rigidblade"
+  },
+  "mainContactPlane": {
+    "origin": "anchor-direction*.08+normal*.05",
+    "tip": "origin-direction*(.18+.38opening-.12release)+normal*(.12+.40opening-.30release)",
+    "start": "origin+direction*(.05*(1-release))-direction*(release*.12)",
+    "location": "short source-facing upper negative space; actual core and glint locked to originalcontact"
+  },
+  "unchanged": [
+    "exactfulltupleguard",
+    "sharedCreateLight/LightBolt/all otherfactories",
+    "228opening0\u2192.055/fold.055\u2192.16/bodyfade.065\u2192.16/remnantsend.194",
+    "profiles interval.22 and actual3hit ownership",
+    "Light/Floor/StageFocus/TargetPeak/FloorPeak/StageActor/shader/audio/raws",
+    "layercount/maxgain/noextraimpacts"
+  ],
+  "unityIntegration": "No Stage/Actor/time changes. Torrent-only mesh density/feather and main-plane orientation changes.",
+  "gates": [
+    "negative source/travel no paperblade",
+    "positive optical plane reads outside receiver without wing/icefacet",
+    "core retains hierarchy over soft plane",
+    "3actual crest/trough separate before .22 nextbeat",
+    "finite indexedworldUV/384capacity",
+    "old sharedLight/Bolt output unchanged"
+  ]
+}

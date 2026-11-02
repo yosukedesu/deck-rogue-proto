@@ -1,0 +1,143 @@
+{
+  "schema": 1,
+  "status": "M42_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_elite_husk_3",
+  "sourceCanvas": [
+    176,
+    112
+  ],
+  "frameCanvas": [
+    184,
+    112
+  ],
+  "sourceOffset": [
+    8,
+    0
+  ],
+  "anchor": [
+    96,
+    112
+  ],
+  "spriteOffset": [
+    -4,
+    0
+  ],
+  "groundMaxY": 103,
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest_canvas.png",
+  "sourcePngSha256": "b2fc3483e70d13ab536ee7ba5a664133fb5322bd67d4740e67ad97ec75d3b939",
+  "sourceArtManifestSha256": "69679d3f9b47889b0cd7f0828abb47e570dcd2a42979c639533812747bf04056",
+  "authoredMoves": [
+    "slash",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "306430fde8e62b6a40163497c82b1f631b560014fb09fdda45835e88da1d87e7"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.15,
+        "sha256": "306430fde8e62b6a40163497c82b1f631b560014fb09fdda45835e88da1d87e7"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.15,
+        "sha256": "dbf1dc8f7ac65522c16797e0b0fa35e9012e521797a1b9064faea58f1a94b14c"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.15,
+        "sha256": "21687e29d828b8cacaa698156af30c62631d063e4080a738f95f3509a74574c9"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.15,
+        "sha256": "d8609d3f46bd6faba8c2a854a9b048977b71e5a20fccff2bcfc9020a425da4db"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.15,
+        "sha256": "013fc06cbc435561cab36d9c8502809c62a3aed1f5d4ac2e32715eca8c01a744"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.15,
+        "sha256": "cd2fa403d293368ef9c4dd21b8064bcdf187b95ca9c675d5e45f717fc91dbb61"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.15,
+        "sha256": "96c6b1c46d431f3b06e01dfdfd664b958ecd16bfbc592826b8c4a1424264cf58"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.15,
+        "sha256": "15c0ab4bc7f286d63e77f55a71fcb36e9ad71d89717008575689ec3b4d449767"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "2de03c07330a7af013b68f26dadab18b8d1c41b8d9f2a4743b1c36228ca62272"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "slashprepare.png",
+        "duration": 0.18,
+        "sha256": "eb6d9ec4fabe3dccae5d576559af82c715134bb1e8e0de9a5433f4f0581f4c33"
+      }
+    ],
+    "contact": [
+      {
+        "file": "slashcontact.png",
+        "duration": 0.05,
+        "sha256": "81721515684c366a64c838ff1e14c499bb213508fbdf98a4722499434767255a"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "eec00d2274f990e33929391f01b3554b57c854c5318ec03e6b21e58927fdc5bc"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "306430fde8e62b6a40163497c82b1f631b560014fb09fdda45835e88da1d87e7"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "3a57196ae45c53e0f041ecd6652344545d06501f0b8494383ce5a67a82c529ab"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "26772e4d51fad75d504bb2b4b133276dd995117f67dc899e1def6b8939975785"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "eec00d2274f990e33929391f01b3554b57c854c5318ec03e6b21e58927fdc5bc"
+      }
+    ]
+  }
+}

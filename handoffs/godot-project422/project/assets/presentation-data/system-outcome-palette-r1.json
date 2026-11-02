@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "revision": "system-outcome-r1",
+  "meaning": "guard/nullify resource response, no damage element claim",
+  "roles_srgb": {
+    "shadow": "#3D4855",
+    "primary": "#78858F",
+    "edge": "#B0BCC2",
+    "core": "#DCE5E7"
+  },
+  "scene_light_srgb": "#B0BCC2",
+  "nullify_light": 0,
+  "guard_target_peak_multiplier": 0.1,
+  "guard_floor_peak_multiplier": 0,
+  "unity_light_calibrated": false
+}

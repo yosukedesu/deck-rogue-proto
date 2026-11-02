@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_cultist",
+  "sourceCanvas": [
+    96,
+    88
+  ],
+  "frameCanvas": [
+    96,
+    88
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "originalAnchor": [
+    48,
+    88
+  ],
+  "anchor": [
+    48,
+    88
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 79,
+  "sourcePngSha256": "638183b8d53c15e23daa0348bb4f8449e0dedb5fac2dfb4e8ba0face509720d4",
+  "clips": {
+    "rest": [
+      {
+        "file": "enemy_cultist_rest.png",
+        "duration": 0.2,
+        "sha256": "638183b8d53c15e23daa0348bb4f8449e0dedb5fac2dfb4e8ba0face509720d4"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.125,
+        "sha256": "dc9c2ce3e9241e917916c8a84d684b3c91100a6425f4512e5da172afaefe18a9"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.125,
+        "sha256": "34e27fde811ba1893bd9064f690b97878fb0df086c9e89e3b8363e91cefd8e98"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.125,
+        "sha256": "ccd4c5c2c86e3fd41d6f148a872413478466feeb10dc55a7b5ebdd786ba2d6de"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.125,
+        "sha256": "0a43a928fd4010b4180dfba005fcda471378e58a1ec4f93a24402925696f7a95"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.125,
+        "sha256": "ad2248bda8b361efe2c93d7960da701efed57d07d7268adfdc424784fa12e5ab"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.125,
+        "sha256": "cd9c554f55d65754b42eaf46f4626ec4f2f9063e114ce7b9f40f318e0fd6627d"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.125,
+        "sha256": "b24982f56eaa48b67da2d16ac68fa2c13da286442cca0ee9ab38e2ebf746c23d"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.125,
+        "sha256": "317deb9afd0fb4c2a3818a72dcd104d1e3aa9b290a7a7052111bcd43737846c2"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "enemy_cultist_hurt_01.png",
+        "duration": 0.18,
+        "sha256": "80f23f957bf9f2c19b545973c3b4192cac91b7fdaa28ce7d1f87bf9e2e857341"
+      }
+    ],
+    "bladeprepare": [
+      {
+        "file": "enemy_cultist_dark_blade_prepare.png",
+        "duration": 0.2,
+        "sha256": "fd6b4dff3d56e3336485e5436ed6a78fc92691a245643704a093a4e945122a8d"
+      }
+    ],
+    "bladecontact": [
+      {
+        "file": "enemy_cultist_dark_blade_contact.png",
+        "duration": 0.055,
+        "sha256": "1ba85546007858e18befcbbb440ce890001616f838a74dc0b4db89bd07614d02"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "enemy_cultist_dark_blade_recovery.png",
+        "duration": 0.18,
+        "sha256": "bc507b01d54731d0cb795dbfaa7887d1984cd740d49cede8773c71ef5b9a007e"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "enemy_cultist_guard_prepare.png",
+        "duration": 0.12,
+        "sha256": "2e6bee6eb99080ad88e8570e03fa007e7887f7666e0a9e2a331e7b2a644e5b63"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "enemy_cultist_guard_hold.png",
+        "duration": 0.12,
+        "sha256": "8cd2790e98a99142a8ced6289bfe9be8a0bf008e2d9a9ea21455b360f85165e3"
+      }
+    ],
+    "block": [
+      {
+        "file": "enemy_cultist_guard_hold.png",
+        "duration": 0.18,
+        "sha256": "8cd2790e98a99142a8ced6289bfe9be8a0bf008e2d9a9ea21455b360f85165e3"
+      }
+    ]
+  },
+  "status": "M26_COMPLETE_TWO_MOVES_CANDIDATE",
+  "authoredMoves": [
+    "dark_blade",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "runtime_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "dark_blade5-7 single actual accepted contact only; guard4-6 first own actual BlockGained only; alsoBuffStrength1 cannot retrigger or extend hold; unchanged enrage2 and rand/noRepeat graph; strict support tuple, stale reaction epoch rejection, finite guardprepare recovery. No gameplay/data/timing mutation.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "reactiveBlock": "guard_hold drawing reused under independent block-notification; fullblock cannot trigger hurt",
+    "staticLayout": "original96x88 opaque footprint and centered layout anchor48,88 preserved; authored envelope used only during motion; registered foot drawing y79; spriteOffset0,0"
+  }
+}

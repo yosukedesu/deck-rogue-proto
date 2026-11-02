@@ -1,0 +1,39 @@
+{
+  "revision": 304,
+  "base": 303,
+  "basis": "303 own1777 staticHOLD: purplefog replaced bythinmilkyblade; stopanalyticcoefficient loop. Existing opticaldensity actualraw+UV independently inspected, wholeLightTorrent geometry/adoption notused asproxy.",
+  "delta": "Main batch5 Texture binds existing raw, private mainRGB/coverage uses authoredRGBA. Corebatch6 private opticalkernel and oldnegative5/sharedflash7 unchanged. No newraw/import or sharedshader/factory change.",
+  "raw": {
+    "path": "assets/Art/fx/hd2d-light-torrent-density-v1.png",
+    "sha256": "38c80640f6064c222b6af340aa543c7856f9ebd6fc1193fe9c72e7819c96308d",
+    "canvas": [
+      1536,
+      1024
+    ],
+    "originalUnmodified": true,
+    "ROI": [
+      0.5,
+      0.4,
+      0.9,
+      0.7
+    ],
+    "sampling": "(u,1-v): upper image shoulder to upper mesh; excludes finished rightmosttip and wholeflow",
+    "alpha": "ROI mean~201/255,P50=251, >128~79.43%; nearopaque main does not independently prove transparent shoulder. Actual final rawalpha times unchanged vertexalpha and canvas softedge.",
+    "risk": "ROI upperpurplewhite/lowerwhite ridges mayform opticalcloth/boat ribbon; existingvertexcross .48/1/.28 attenuates sides but success must be actualpixel judged. No new thin crossmask/alpha tuning before comparison."
+  },
+  "invariants": [
+    "302composition XYZ/UV/vertexalpha/gain/time preserved via303; oldsameworldlight/sourceflight/actual3receipts/owner/pool unchanged",
+    "303mainRole1 decodegain once; raw sourcecolor decode/output conversion once, no uniform extra glow",
+    "shared CreateLight, Torrentfactory andexistingtexturebytes unchanged",
+    "corebranch same303, newtextureonlybatch5; shape120/core12/flashes12 andall8batches unchanged"
+  ],
+  "gates": [
+    "actualmain_BaseMap path1536x1024/decodedRGBA SHA/mips/privateCodeSHA readback; existingimport SHA unchanged",
+    "samefirst3mainXYZ/UV/vertexalpha vs303; pixelRGB/alpha intentionally new",
+    "raw useful lowfrequency radiantcore/one-sidedshoulder vsfullwhiteblade/cloth; original1280 still beforemovie",
+    "if inheritedtwoedge dominates do not iterate coefficients or claimTorrent priorPASS; reevaluate materialstructure"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

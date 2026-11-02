@@ -1,0 +1,10 @@
+{
+ "_doc": "ピントの変種 (直しの輪1 で既定が lensFar 1.4・帯の奥 6.0 になった。この変種は lensFar 2.0)",
+ "tiltShiftPass": {
+  "lensFar": 2.0,
+  "pathBand": [
+   -2.4,
+   6.0
+  ]
+ }
+}

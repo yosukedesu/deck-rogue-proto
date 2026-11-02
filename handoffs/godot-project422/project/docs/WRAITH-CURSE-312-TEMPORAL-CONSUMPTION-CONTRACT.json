@@ -1,0 +1,65 @@
+{
+  "revision": 312,
+  "base": 311,
+  "basis": "311 staticcraft passes but actual0/.033/.066 held completefold then .100 almostgone. Temporal-only unequal outsidebelly consumption, preserve initial authored material and composition.",
+  "actualSeconds": {
+    "mainWindow": [
+      0,
+      0.1
+    ],
+    "front": [
+      -0.4,
+      1.4
+    ],
+    "frontFeather": 0.035,
+    "rootWindow": [
+      0.07,
+      0.15
+    ],
+    "rootSpatialBlend": [
+      0.78,
+      0.94
+    ],
+    "contour": "u+.12sin(9v+2u)+.20(raw.g-raw.r), same311 texture-dependent contour; conservative bounds[-.32,1.32] fornormalizedraw",
+    "initialCoverage": "same311 age0 smoothstep(-.385,-.315,contour); multiplied by newfactor which is exactly1 atage0 over bound. ActualRGBA equality still to verify.",
+    "endGuarantee": "at.100 newmainfront lower1.365 exceeds contourupper1.32 so consume0; rootfactor0 at.150. No residual-main forcedcutoff.",
+    "monotonic": "for fixedUV/raw, frontmonotonic increases androotfactor decreases, convexrootblend stays0..1 nonincreasing. Not mathematical screenpixel/subframe proof.",
+    "frontStages": [
+      [
+        0,
+        -0.4
+      ],
+      [
+        0.03333333333333333,
+        0.35
+      ],
+      [
+        0.06666666666666667,
+        0.65
+      ],
+      [
+        0.1,
+        1.4
+      ]
+    ],
+    "frontInterpolation": "sum of three positive-increment smoothsteps (.75,.30,.75), disjoint sequential windows with zero derivative at joins; fixedUV monotonic C1 front."
+  },
+  "gates": [
+    "actual0 initialRGBA preserved",
+    "actual.033 externalunequal missingbelly, .066 substantialpartialconsumption, .100 smallroot/.133 thinresidue, .150zero shaderbody",
+    "not straightwipe/globalalpha advance/heldplate thenpop/newcrest",
+    "whole70clock/actor/receipt/9Weak1/geometryactual points unchanged; oldmotes andnegativepending0 retained"
+  ],
+  "invariants": [
+    "allC# and311 geometry/raw/RGB/gain/privateUV/vertexalpha unchanged",
+    "306 exactownedclock/queue/rules/worldlight/actor unchanged",
+    "unusedrole2 branch androle0 oldmotes unchanged; onlymainrole1 temporalcoverage edited",
+    "source visualEnd .18 unchanged; rawdensity affects boundary, noextra generation/import"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING",
+  "version": 2,
+  "v1History": "Frozen but never applied/built/native. Astra preflight identified .033front~.048/.066front~1.06 could repeat heldthenabrupt consumption; revised before one native comparison.",
+  "artPreflight": "Astra recommended intermediate .65 ratherthan.75 to keep some innerbelly alongside root at.066; actualraw/native is quality authority, no numericquality guarantee."
+}

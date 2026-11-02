@@ -1,0 +1,29 @@
+{
+  "revision": 319,
+  "base": 318,
+  "cause": "Actual RootWeave support B195/movie309: ReactionTriggered then Growth2 then ActionNegated(index0) all occur, but old Stage ignores negated.EnemyIndex and prints 無効 over hero below Growth. No damage/material route is assumed.",
+  "change": "Only registered actual RootWeave Confirm Firetrue owned ActionNegated now uses Enemy(index).Contact and 行動無効 text. Existing ShowReceipt adds worldUp .4; existing popup color d8cfed, animation, timing and lifecycle unchanged. No new effect, pulse, attack or Block.",
+  "owner": [
+    "actual event reference in _eventOwners, actual Confirm UID",
+    "previous set-confirm awaiting prePending with same index, before/after same enemyID and actual actor binding",
+    "previous exact RootWeave UID reaction, IsTrapLive and UsableSetCards, removed from after SetCards",
+    "same Change ordered unique ReactionTriggered RootWeave set-confirm → GrowthAdded2 → exact ActionNegated reference, no earlier negation",
+    "GrowthAdded/ActionNegated have no sourceUID; this is owner-action attribution not fabricated per-event provenance"
+  ],
+  "preserved": [
+    "Growth2 and reaction labels stay hero",
+    "all nonqualifying ActionNegated old hero fallback byte-equivalent",
+    "game intent, guard negation, event order, timeline, actor poses, stage clock, numeric rules, VFX raw/shaders/materials unchanged",
+    "No attack-block art coverage: native recipe is Probe guard at age1 after actual Set2/Endpoke/Endguard",
+    "No persistent intent replacement, new UI system, world light or projectile"
+  ],
+  "gates": [
+    "actual late enemy-side label readable with cancel meaning and no hero Growth confusion",
+    "same native70 wholeoracle/clock/event order and no damage/extraattack",
+    "isolated missingowner/UID/index/decline negatives separate from reachable sequence",
+    "If text registration alone insufficient, do not claim further visual cancellation before separate craft judgment"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

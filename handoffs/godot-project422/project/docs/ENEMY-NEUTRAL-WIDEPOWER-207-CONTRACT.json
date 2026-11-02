@@ -1,0 +1,11 @@
+{
+  "revision": 207,
+  "base": 206,
+  "scope": "Only enemy_wide_power/surge, original enemy_actual_execution/minimal_neutral_contact/BoundedContactFx/neutral/nonSmall",
+  "material": "Compact asymmetric target-local neutral compression using existing pressure vocabulary; actual enemy animation retained; no breath/sonic/projectile/name inference",
+  "ownership": "Existing exact actor+move actual execution log and single contribution, effectiveAmount, valid player receipt unchanged",
+  "timing": "Existing Blunt guard retained, separate exact selected-neutral owner helper adds uncontacted negative-age cap; sampler has zero negative geometry/light/floor/stage",
+  "baseline": "Untouched205 actual keys726+movie244=970PASS; critic observed source compress/spring/recovery and weak receiving wash",
+  "gates": "Pending build/static/native/art; verify negative actual samples invisible and all nonnegative ages committed/exact, absorption/lifecycle and oldBlunt/Pierce compatibility",
+  "excluded": "Other68 neutral enemy rows, multihit, modifiers not passing existing equality, support moves; no engine/actor/timing changes"
+}

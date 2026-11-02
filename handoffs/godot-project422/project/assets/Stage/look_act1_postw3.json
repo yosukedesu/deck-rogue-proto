@@ -1,0 +1,13 @@
+{
+  "_doc": [
+    "P22 (W3b) の比較用の変種: 後処理だけ W3 に戻す (contrast 10・colorFilter [0.95,0.98,1.04]・LGG なし・ブルーム 0.8/0.65・周辺減光 0.25/0.45)。後処理はキャラにも掛かるので、W3b の後処理がキャラ (P23 の⑧・輪郭・白の b*) をどう動かしたかを切り分ける。",
+    "撮影の STATE に look=look_act1_postw3。持ち主は P22。"
+  ],
+  "post": {
+    "contrast": 10,
+    "colorFilter": [0.95, 0.98, 1.04],
+    "liftGammaGain": { "lift": [1, 1, 1, 0], "gamma": [1, 1, 1, 0], "gain": [1, 1, 1, 0] },
+    "bloom": { "threshold": 1.0, "intensity": 0.8, "scatter": 0.65, "tint": [0.92, 0.98, 1.0] },
+    "vignette": { "intensity": 0.25, "smoothness": 0.45, "color": [0.02, 0.02, 0.06] }
+  }
+}

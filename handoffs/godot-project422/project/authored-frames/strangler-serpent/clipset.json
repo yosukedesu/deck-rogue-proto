@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "status": "M44_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_strangler_serpent",
+  "sourceCanvas": [
+    112,
+    88
+  ],
+  "frameCanvas": [
+    124,
+    88
+  ],
+  "sourceOffset": [
+    11,
+    0
+  ],
+  "anchor": [
+    67,
+    88
+  ],
+  "spriteOffset": [
+    -5,
+    0
+  ],
+  "groundMaxY": 79,
+  "registrationKind": "original-ground-anchor",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest_canvas.png",
+  "sourcePngSha256": "d9c870ad80296c967bb94ccf7caece670f65c65bc75e3fd94232babd5a1d26f2",
+  "sourceArtManifestSha256": "203af6cd75f3043cb48ece81ecc259acf48c191b94ee74204c4aff4693c9ad0a",
+  "authoredMoves": [
+    "constrict",
+    "lash",
+    "thwack",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "2b077a4242b1c0d2487b182496245ecf512e31e5a9043e60e4cbef5d851fbda3"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.15,
+        "sha256": "2b077a4242b1c0d2487b182496245ecf512e31e5a9043e60e4cbef5d851fbda3"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.15,
+        "sha256": "9b6abe2c59ba0836fa35ab6ea94ccf65593be9cd900e9e957625ad12a790b304"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.15,
+        "sha256": "6bf8a5cc308355f84fbf2b29da70dedddf8421b3e99ef3f9f7912168f44fe0da"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.15,
+        "sha256": "b8efc1edf1e775d2a6997e6d11fee4749ebebe8d3fa9e6e725264e9fbeb6fadd"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.15,
+        "sha256": "f9c64482afe1dc98917de2b67d3d5c1b71d9155304f693ff3ca3c3163a3e32c3"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.15,
+        "sha256": "7978a90c537ea632cd907849342ce9e3491847aa0cf064c16ac8f2db5e6d3993"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.15,
+        "sha256": "88e40f9df9bc2734d62ce4d5a0d8ef921d975af43c04fb146ad68071c67f2710"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.15,
+        "sha256": "05ba4a1dc437260844e4a98e750909228c4d8920d15ea68bef431b06bd58d1f2"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "77c6e8b744c98525a8fcd3649c6133c5ba5b593eec07293cb03cfc985ca9627c"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "5c07bb30fa57f5b3e41b6792e071d5c61626611180f8dfcadb052a92662d1f43"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "2b077a4242b1c0d2487b182496245ecf512e31e5a9043e60e4cbef5d851fbda3"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "994d10fc7be46cb4ded4eceb9709b6543396deaa71f2f15c42e09a79605b6c7b"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "e3cbcde94997fab040becea82e269ccfab3f735920a4845daf479c28c9a04c10"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "5c07bb30fa57f5b3e41b6792e071d5c61626611180f8dfcadb052a92662d1f43"
+      }
+    ],
+    "constrictprepare": [
+      {
+        "file": "constrictprepare.png",
+        "duration": 0.18,
+        "sha256": "3e42cc054411f92ff501aa770f62bf4b08c5ce832e13efbded4afe0d56ef1bba"
+      }
+    ],
+    "constrictcontact": [
+      {
+        "file": "constrictcontact.png",
+        "duration": 0.05,
+        "sha256": "b58390bc40ecad665710f1f9a33d2bfa4ba3e25774915264a5d1c14d3e21d6b8"
+      }
+    ],
+    "lashprepare": [
+      {
+        "file": "lashprepare.png",
+        "duration": 0.18,
+        "sha256": "ac9fea0f0eb0979a5695a9b11e06e704475657354c48293bf59012cc39fc337e"
+      }
+    ],
+    "lashcontact": [
+      {
+        "file": "lashcontact.png",
+        "duration": 0.05,
+        "sha256": "e458f53998abe04225ac68449930886870ab756df2a6fec2b493aa103fe35c33"
+      }
+    ],
+    "thwackprepare": [
+      {
+        "file": "thwackprepare.png",
+        "duration": 0.18,
+        "sha256": "a6da932a9fc17d6973c27d187fac90cfa5f032801a67e42eb8a8debe5d23f8cd"
+      }
+    ],
+    "thwackcontact": [
+      {
+        "file": "thwackcontact.png",
+        "duration": 0.05,
+        "sha256": "64a2fbd49f08c7f1573b13f9b0e182ddb09ce2df7f975f34355002f592d86600"
+      }
+    ]
+  }
+}

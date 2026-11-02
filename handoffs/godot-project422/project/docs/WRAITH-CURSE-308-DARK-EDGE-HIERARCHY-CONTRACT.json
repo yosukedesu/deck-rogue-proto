@@ -1,0 +1,29 @@
+{
+  "revision": 308,
+  "base": 307,
+  "basis": "307 actual main outside body but lightpurple folds/cloth dominate; raw-to-main path has actual HDR.r1 and no whitefill/doublegain. Original UV centerV.5 linearLmean.052 vs lowerV.15 .0175, while centercrossalpha1 vs .405. Highcoverage aligned bright folds, dark pocket coverage weaker. Exact imported mip perfragment not reconstructed by rawrow averages.",
+  "delta": "Private MAIN RGB only: darkDensity=rawRGB*.10; retain original RGB only short unequal upper ridge mask. No crop, geometry, alpha, temporal erosion or import changes. This is one material-role comparison, not globalgain increase.",
+  "ridge": {
+    "longitudinal": "smoothstep(.10,.20,u)*(1-smoothstep(.56,.67,u))",
+    "center": ".73+.035*sin(7*u)+.08*density.g",
+    "cross": "1-smoothstep(.035,.12,abs(v-center))",
+    "authoredBreakup": "smoothstep(.012,.055,linearRawLuma)",
+    "RGB": "mix(rawRGB*.10,rawRGB,ridge)*actualHDR.r; never brighter than307 for anychannel"
+  },
+  "invariants": [
+    "All shader main alpha terms/canvas edge/temporal mask byte unchanged",
+    "306 exact Begin/Advance actualcommit clock and invalidretirement unchanged",
+    "307 body XYZ/UV/vertexalpha/gain/motes/worldlight/pose/actual9Weak1 unchanged",
+    "Raw1254-square original retained; actual bound512-square/mips9 from preexisting import, no import changes",
+    "shared Bounded shader and private role0 motes unchanged"
+  ],
+  "gates": [
+    "actual original1280 dark receiving pressure with shortpurple edge thickness, not merely more darkened pixels",
+    "blackuniformshadow/darkcloth/feather or hero-capeextension remains HOLD; do not chase .10 multiplier coefficients",
+    "firstsameframe actualgeometry/alpha/clock comparison plusshaderreadback; pixelRGB intentionallychanged",
+    "Astra ownstill thencontinuous only ifcraftPASS; no newraw assumed"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

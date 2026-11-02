@@ -1,0 +1,16 @@
+{
+  "revision": 347,
+  "base": 346,
+  "scope": "Only 28 private pressure-body vertex placement. Root stays zero; connected core crosses incoming upper-left contour with one short unequal crease and subordinate shoulder. No cap/handle/body/weapon.",
+  "evidence": "First positive frame23 actual GetImage hash matches source probe idle_00 RGBA; actual camera/sprite mapping supports first23 alpha102 rows. Empty ResourcePath cached first-image does not prove later texture stability. Upperleft gap is evidence-based candidate, not fragment acceptance.",
+  "geometry": "Core root\u2192(-.135,.11)\u2192(-.205,.125)\u2192(-.23,.085)\u2192(-.13,.04)\u2192root; crease(-.215,.12)\u2192(-.16,.11)\u2192(-.09,.055); shoulder stations(-.025,.012),(-.10,.06),(-.19,.11),(-.25,.14). Width remains finite continuous, no detached object.",
+  "invariants": [
+    "All346 shader/colors/UV/vertexalpha/gain/pulse/fade/.18",
+    "Actual root/basis/scale/oldmotes/light0/owner-perSample/cancel semantics",
+    "345notice/Canvas/allnumeric/engine/actor motion"
+  ],
+  "gate": "Ordinary1280 compression across receiver contour, not armor or floating weapon; static plus temporal original. Geometric bbox is not fragment coverage.",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

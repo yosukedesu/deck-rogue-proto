@@ -1,0 +1,23 @@
+Scoped three-attack audio integration, 2026-10-25
+
+Six game clips are derived from the CC0 material recordings listed in
+PROVENANCE_AND_HANDOFF.md and candidate_manifest.json. The research handoff's
+'no product edits' statement describes that research stage, not this integration.
+
+Actual game clips: 48000 Hz, mono, PCM16, uncompressed Godot WAV import.
+One onset and one contact clip per attack; no additional game/damage events.
+These replace the previous generic synthesized transients for exactly six keys.
+Missing resources emit an explicit warning and fall back only for runtime safety;
+QA requires the recorded ResourcePath and exact decoded PCM SHA, so fallback is
+not a passing result.
+
+Mix recipe and measured output hashes/headroom: game_mix_manifest.json.
+Reproduction script: build_game_mix.py (inputs are the retained research candidates).
+Selected masters, candidate generation and source license HTML are retained in
+the recovery material folder audio-foley-20261025, not needed in runtime builds.
+
+Additional sounds: Kenney; qubodup / Iwan Gabovitch; AntumDeluge;
+Joseph SARDIN (BigSoundBank.com). CC0 1.0; voluntary credits retained.
+
+No perceptual listening/audition approval is claimed. Numerical clipping,
+resource selection, synchronization and native mixed output are separate checks.

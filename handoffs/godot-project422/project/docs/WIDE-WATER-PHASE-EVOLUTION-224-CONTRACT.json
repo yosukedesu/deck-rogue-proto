@@ -1,0 +1,91 @@
+{
+  "revision": 224,
+  "baseSelected": 223,
+  "status": "product preflight 0 errors / 1923 baseline warnings; native and visual acceptance pending",
+  "scope": "CreateRollingWater shared material only; no new route/owner/hit",
+  "assets": [
+    {
+      "path": "assets/Art/fx/hd2d-waterwide-phase-crest-v2.png",
+      "raw": "generated_images/exec-1f10ef89-1e4b-4ef6-99a1-709ad27dbe9c.png",
+      "bytes": 1615181,
+      "sha256": "ffa45d67e8286a356354ae960be1c75e486f3f13c0147bda2b819305d535a06f",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "unmodified": true
+    },
+    {
+      "path": "assets/Art/fx/hd2d-waterwide-phase-peel-v2.png",
+      "raw": "generated_images/exec-8e5e1d09-662c-4c34-80a6-32da2fdc0cf5.png",
+      "bytes": 1350903,
+      "sha256": "2579f67124feab03aae9970f6363720f490e2a2a574349d9876cc23bbec7f980",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "unmodified": true
+    }
+  ],
+  "rawTrialExcluded": "exec-6f33d5b9-07a2-4e56-909c-8a16fecb4f67.png (high-C B1 retained outside product)",
+  "phaseOrder": [
+    "old01 swell",
+    "new crest A",
+    "new peel B2",
+    "old03 collapse"
+  ],
+  "windows": {
+    "overturn": "Ease((age-firstAt+.025)/.13) unchanged",
+    "peel": "Ease((journey-.32)/.58)*Ease((age-firstAt)/.10)",
+    "journey": "Clamp((age-firstAt)/Max(.16,lastAt-firstAt)) unchanged",
+    "collapse": "Ease((age-lastAt-.025)/.21) unchanged"
+  },
+  "weights": [
+    "visible*(1-collapse)*(1-overturn)",
+    "visible*(1-collapse)*overturn*(1-peel)",
+    "visible*(1-collapse)*overturn*peel",
+    "visible*collapse"
+  ],
+  "weightSum": "visible; alpha coverage of raw differs, native opacity continuity remains gate",
+  "geometry": {
+    "basalUV": [
+      0.88,
+      0.73
+    ],
+    "rawUV": "full canvas unchanged",
+    "crestFold": "A only: y *= 1-.24*peel*Ease((u-.45)/.35)*upper; upper=Clamp((.73-v)/.34)",
+    "perLayerVertices": 216,
+    "capacity": 512,
+    "depths": [
+      0,
+      1,
+      1.5,
+      2
+    ]
+  },
+  "unchanged": [
+    "source/head/path interpolation/actual receiver times",
+    "all local positive-hit rupture/wake/drops",
+    "Light/FloorLight/StageFocus/TargetPeak/FloorPeak",
+    "Stage/Actor/bridge/shader/profiles/audio",
+    "other factories including selected Earth223"
+  ],
+  "unityIntegration": "No Stage/Actor numerical changes. Material phase and A upper-crest mesh fold only. Existing TextureMotion30 selected by hd2d-waterwide-phase- prefix. Raw originals included; no Godot import settings required.",
+  "gates": [
+    "same actual rules/owner/hit order",
+    "basal registration/no floor detachment",
+    "no double crest ghost across crossfades",
+    "no abrupt alpha disappearance",
+    "B2 web not held as lace/board",
+    "swell/crest/peel/low collapse in real continuous native frames"
+  ],
+  "rawAlphaNotes": {
+    "A_belly_zero_pct": 31.925,
+    "A_belly_mid32_223_pct": 26.479,
+    "B2_belly_zero_pct": 36.313,
+    "B2_belly_mid32_223_pct": 3.194,
+    "haloAboveBelowMaxAlpha": 1
+  }
+}

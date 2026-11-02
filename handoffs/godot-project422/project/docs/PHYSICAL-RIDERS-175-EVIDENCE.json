@@ -1,0 +1,444 @@
+{
+  "scope": "Five exact card-source physical candidates only; no new geometry/shader",
+  "ids": [
+    "black_scythe",
+    "black_blood_spray",
+    "green_growing_fang",
+    "fusion_wild_stampede",
+    "fusion_bloom_dance"
+  ],
+  "actual_rows": [
+    {
+      "id": "black_scythe",
+      "name": "死神の鎌",
+      "route": {
+        "key": "card:black_scythe",
+        "definitionId": "black_scythe",
+        "sourceKind": "card",
+        "family": "slash",
+        "renderer": "PhysicalSlashFx",
+        "element": "physical",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "classification": "existing-vocabulary review candidate; NOT automatic alias",
+      "context_status": "not globally selected161",
+      "definition": {
+        "id": "black_scythe",
+        "name": "死神の鎌",
+        "cost": 4,
+        "type": "physical",
+        "rarity": "rare",
+        "exhaust": true,
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamageDrain",
+            "amount": 22
+          }
+        ]
+      },
+      "profile": {
+        "element": "physical",
+        "style": "slash",
+        "authoredAttack": "slash",
+        "authoredRequiresCardMetadata": true
+      },
+      "source_context": null
+    },
+    {
+      "id": "black_blood_spray",
+      "name": "血飛沫の刃",
+      "route": {
+        "key": "card:black_blood_spray",
+        "definitionId": "black_blood_spray",
+        "sourceKind": "card",
+        "family": "slash",
+        "renderer": "PhysicalSlashFx",
+        "element": "physical",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "classification": "existing-vocabulary review candidate; NOT automatic alias",
+      "context_status": "not globally selected161",
+      "definition": {
+        "id": "black_blood_spray",
+        "name": "血飛沫の刃",
+        "cost": 1,
+        "type": "physical",
+        "rarity": "common",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "loseHp",
+            "amount": 2
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 13
+          },
+          {
+            "trigger": "onSelfExhausted",
+            "effect": "dealDamage",
+            "amount": 3
+          }
+        ]
+      },
+      "profile": {
+        "element": "physical",
+        "style": "slash",
+        "authoredAttack": "slash",
+        "authoredRequiresCardMetadata": true
+      },
+      "source_context": {
+        "necro": {
+          "authoredAttack": "slash",
+          "element": "physical",
+          "authoredPresentation": "noncard_fixed_small_contact_v1",
+          "authoredSemanticReason": "血飛沫の刃 explicitly names a blade; necro can share slash. onPlay self HP loss is not this damage receipt."
+        }
+      }
+    },
+    {
+      "id": "green_growing_fang",
+      "name": "育つ牙",
+      "route": {
+        "key": "card:green_growing_fang",
+        "definitionId": "green_growing_fang",
+        "sourceKind": "card",
+        "family": "enemy_fang",
+        "renderer": "EnemyContactFx",
+        "element": "physical",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "classification": "existing-vocabulary review candidate; NOT automatic alias",
+      "context_status": "not globally selected161",
+      "definition": {
+        "id": "green_growing_fang",
+        "name": "育つ牙",
+        "cost": 1,
+        "type": "physical",
+        "rarity": "uncommon",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 6
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "growSelf",
+            "amount": 4
+          }
+        ]
+      },
+      "profile": {
+        "element": "physical",
+        "style": "fang",
+        "authoredAttack": "enemy_fang",
+        "authoredSourceKinds": [
+          "card"
+        ],
+        "authoredRequiresSourceMetadata": true,
+        "authoredEvidence": "Stage33 explicit shared impact; src/data/cards.green.json#/68; same style/element; actual receipts only. Native Unity QA pending."
+      },
+      "source_context": null
+    },
+    {
+      "id": "fusion_bloom_dance",
+      "name": "開花乱舞",
+      "route": {
+        "key": "card:fusion_bloom_dance",
+        "definitionId": "fusion_bloom_dance",
+        "sourceKind": "card",
+        "family": "minimal_neutral_contact",
+        "renderer": "BoundedContactFx",
+        "element": "neutral",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "classification": "existing-vocabulary review candidate; NOT automatic alias",
+      "context_status": "not globally selected161",
+      "definition": {
+        "id": "fusion_bloom_dance",
+        "name": "開花乱舞",
+        "cost": 3,
+        "type": "physical",
+        "color": "green",
+        "exhaust": true,
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "doubleGrowth"
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          }
+        ]
+      },
+      "profile": {
+        "element": "vine",
+        "style": "vine"
+      },
+      "source_context": {
+        "card": {
+          "authoredAttack": "minimal_neutral_contact",
+          "element": "neutral",
+          "authoredSemanticReason": "開花乱舞 supplies flowering/dance imagery but no specified cutting vine, launched petals or attack material. Growth doubling and interleaved growth gains are resources, not evidence of botanical projectiles. Keep its five ordinary physical contacts neutral."
+        }
+      }
+    },
+    {
+      "id": "fusion_wild_stampede",
+      "name": "暴走する荒角",
+      "route": {
+        "key": "card:fusion_wild_stampede",
+        "definitionId": "fusion_wild_stampede",
+        "sourceKind": "card",
+        "family": "pierce_contact",
+        "renderer": "PlayerContactFx",
+        "element": "physical",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      "classification": "existing-vocabulary review candidate; NOT automatic alias",
+      "context_status": "not globally selected161",
+      "definition": {
+        "id": "fusion_wild_stampede",
+        "name": "暴走する荒角",
+        "cost": 1,
+        "type": "physical",
+        "color": "green",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "addMomentum",
+            "amount": 4
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 8,
+            "pierce": true
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 2,
+            "pierce": true
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 2,
+            "pierce": true
+          }
+        ],
+        "freeIfMomentumAtLeast": 5
+      },
+      "profile": {
+        "element": "earth",
+        "style": "stomp"
+      },
+      "source_context": {
+        "card": {
+          "authoredAttack": "pierce_contact",
+          "element": "physical",
+          "authoredSemanticReason": "暴走する荒角 explicitly names a wild/raging horn. Generic physical pointed contact is a bounded interpretation of that horn for all three real damage effects, without an animal model, ground stomp or earth rupture."
+        }
+      }
+    }
+  ],
+  "fusion_recipes": [
+    {
+      "a": "green_sig_rite_of_bloom",
+      "b": "green_sig_vine_dance",
+      "result": {
+        "id": "fusion_bloom_dance",
+        "name": "開花乱舞",
+        "cost": 3,
+        "type": "physical",
+        "color": "green",
+        "exhaust": true,
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "doubleGrowth"
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addGrowth",
+            "amount": 1
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 3
+          }
+        ]
+      }
+    },
+    {
+      "a": "green_trample_charge",
+      "b": "green_tailwind",
+      "result": {
+        "id": "fusion_wild_stampede",
+        "name": "暴走する荒角",
+        "cost": 1,
+        "type": "physical",
+        "color": "green",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "addMomentum",
+            "amount": 4
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 8,
+            "pierce": true
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 2,
+            "pierce": true
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 2,
+            "pierce": true
+          }
+        ],
+        "freeIfMomentumAtLeast": 5
+      }
+    }
+  ],
+  "sha256": {
+    "attack-hd2d-prototype-20261025/source/data/cards.black.json": "b6c1dc47de08cc8566ec4bb268bfd573a2c6c0860ccd4c10d8595fed7ebe3624",
+    "attack-hd2d-prototype-20261025/source/data/cards.green.json": "3093790a6abbc3c0469f817b9372d03e108dfe4ec177f9e4ef27c5461459cb78",
+    "attack-hd2d-prototype-20261025/source/data/cards.blue.json": "355809c021fb217b741e2152ac425fc114a0c919a66f99dff8fa9aff8eb2222c",
+    "attack-hd2d-prototype-20261025/source/data/fusions.json": "6567b3e50615a50b1300f0f111bbabc3626daa5edb365bbf9fefed70dc1fd7bc",
+    "attack-hd2d-prototype-20261025/source/assets/attack-routes.json": "d876cbe1c9eb6eead41e8adf0690e7b61ea7a33f547971ed629879ae82523846",
+    "attack-hd2d-prototype-20261025/source/assets/presentation-data/card-vfx-profiles.json": "762fa8c66e277b208f80a815d365bca7b49965cbdcf8a3870d07484936528f1c",
+    "attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Effects.cs": "49aabacbdeba548ea5c3ceb14c1e18bd16a7b591ea6eeb3da6b81a21c51907bb",
+    "attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Combat.cs": "506e88c23b151d5cb571f43a556761f65000c3c3f15090b4901492b3512a1e5c",
+    "attack-hd2d-prototype-20261025/source/assets/Art/cards_modern/black_scythe.png": "2fe2223e9ed14fb6d432e1b741e45952ec2e60ddbdf23eec9ff77f460dfeda77",
+    "attack-hd2d-prototype-20261025/source/assets/Art/cards_modern/black_blood_spray.png": "d058ee6ef3b3be29bc26b414ade5e651f40bcb6df349fe6145661e93f0c57b54",
+    "attack-hd2d-prototype-20261025/revision172-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": "47865363a35b702c6930b680af2a5eae09cdfc436663f5463c7302792bb18424",
+    "attack-hd2d-prototype-20261025/revision172-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": "2ef482d263f1d201a73571ec14da5587cb3fda516798a9cc4f6d5b3157a0f4ee",
+    "attack-hd2d-prototype-20261025/revision166-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": "5830914e9720ee3de555d30655e78feb57ad1011c3542105c02e8f56ada2be4c",
+    "attack-hd2d-prototype-20261025/revision166-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": "babf3208ced120066bb1ea52d1ec90667a182be5973711457750d3de0942971b",
+    "attack-hd2d-prototype-20261025/revision171-source/RecoveredSource/DeckRogue.GodotPort.Presentation/PhysicalVfxProfiles.cs": "f838fb636e510f8b34f45a1e5571d5e03da5ce1a61ffc4e110eb4aaff7df034d",
+    "attack-hd2d-prototype-20261025/revision171-source/RecoveredSource/DeckRogue.GodotPort.Presentation/ElementalVfxProfiles.cs": "2f184f50452eafd0dab5554887a52363b252e7e8b0e408ba129bdde203a4c86b"
+  },
+  "same_uid_replay_addendum": {
+    "path": "/workspace/scratch/948944000d55/full-vfx-inventory-20261026/real-zero-cascade-and-growing-fang-replay.md",
+    "commands": [
+      "PlayCard(F)",
+      "PlayCard(R, DeckUids=[F])",
+      "PlayCard(F)"
+    ],
+    "costs": [
+      1,
+      1,
+      1
+    ],
+    "native_tested": false
+  },
+  "revision": 175,
+  "base": "selected174; no171Cut or173continuation",
+  "native": "pending",
+  "actualReplay": "GrowingFang UID F -> actual green_regrowth_root Command_PlayCard DeckUids=[F] -> same F; total3 energy, real CardGrew4 then8, damage6 then10 in clean modifier fixture. No fresh instance substitution."
+}

@@ -1,0 +1,16 @@
+{
+  "revision": 323,
+  "base": "322v2",
+  "cause": "Own322205 utilityHOLD: label separation succeeds(min textbounds13.190883internal), but lower1 crosses hero face12-32. Old321overprint and322lower-face failures preserved.",
+  "change": "Same exactowned passive1 now above9. Offset measured max text/outline/iconpeakheight+8internalpx plus actual prior9 contact lead: clamp(currentclock-LastContact9,0,1)*.45world projected upward. Capture drift atShow so both existing trajectories stay unchanged.",
+  "invariants": [
+    "322 owner method byte-identical",
+    "Ice9 position and both receipt timing/value/alpha/font/icons unchanged",
+    "all other status fallback/no new materials/FX/gameplay",
+    "poolcallback state already clears onreuse/end/Cancel"
+  ],
+  "gate": "actual70 text/icon separation and upperlane no face/HP/lantern/intent collision through entire visiblelife; not accepted by numericgap only",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

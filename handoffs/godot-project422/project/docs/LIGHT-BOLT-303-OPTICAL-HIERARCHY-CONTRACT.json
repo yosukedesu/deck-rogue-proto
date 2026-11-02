@@ -1,0 +1,19 @@
+{
+  "revision": 303,
+  "base": 302,
+  "basis": "302 actual1533stillHOLD: upstream placement readable, material smoothpurplewhitecapsule. Stop width/position coefficient loop; exact private optical hard/soft mask comparison.",
+  "scope": "Only selectedLightBolt+Hd2dPrototype+hd2d-light+Space0+kind41/42 override private shader; negativeold5batches and otherLight unaffected. No raw.",
+  "geometry": "All302 XYZ/UV/vertexalpha/gain/time/callbacks/actor/clock/worldlight unchanged. MainKind0->41,coreKind1->42; mainrole center2->1 toencode one known gain basis forprivate RGB, outerrole1 unchanged; coreRole3 unchanged. Flashes oldkind1/sharedshader unchanged.",
+  "material": "Short curved asymmetric lumen windowu.12-.74, width.018+.055*sin(pi*phase)*(1-.45u), spine.43+.065sin; lowercross.66 vsupper1. Warmgold band wider andsoft, one-sided thinchromaticshoulder .14; peaklumen .90/warm.38 coverageclamped1. Neither uniformwhitebar nor allbodyfog intended. Existingtwo coretriangles masked into opticalkernels with unequalendfeather, nofilledwhite shard.",
+  "gain": "CUSTOM0 roleRGB includes existing gain/emission; divide byknownRolePrimary forbody orRoleCore forcore, then multiply newRGBonce. No globalgain increase or changedpaletteasset. Localwarmgold linearRGB(1,.78,.34), white fromexistingRoleCore.",
+  "finite": "denominator max.0001; widthpositive; phaseclamp; no negativefractionalpow; allsmoothstep intervals ordered; coverage0..1; originalfiniteage guard unchanged.",
+  "actualGates": [
+    "bodyallXYZ/UV/vertexalpha exact with302 atsameage; roleRGB/Kind intentionallydifferent",
+    "actualprivate shader path/codeSHA on5,6; negativeold0..4/sharedflash7 unchanged",
+    "1280 first/.066/.08/.093: visiblewhitegoldlumen vs translucentthinshoulder, no whitebar/disc/fog/star, rootconnection remains",
+    "same9keys first; ownmovie onlyaftercraftPASS, no prior302movie"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

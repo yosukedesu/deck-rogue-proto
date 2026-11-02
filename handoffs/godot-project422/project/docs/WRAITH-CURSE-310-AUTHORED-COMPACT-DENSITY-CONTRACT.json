@@ -1,0 +1,47 @@
+{
+  "revision": 310,
+  "base": 309,
+  "basis": "309 gap/compact placement improved but effective body still smallpurplefragment; no more .10 coefficient toggles. Dedicated authored density restores readable middle-purple mass with deep interior and shortedge at49x57 diagnostic scale.",
+  "delta": "Exact factory Texture reference plus private main direct authoredRGB/alpha UV; remove308 mainRGB compression/ridge mask. Thinroot samegeometry/alpha samples same newraw middle-density region at subdued .45RGB factor, not a white connecting line.",
+  "raw": {
+    "path": "assets/Art/fx/wraith-pressure-density-v1.png",
+    "canvas": [
+      1254,
+      1254
+    ],
+    "sha256": "f3e0fc494e7094fbf20ecaccd88dcfd1557f3c33420c2b9eb8e648a3b6bfa8d8",
+    "originalUnmodified": true,
+    "provenance": "qa/raw310-wraith-density-a/GENERATION-PROVENANCE.json",
+    "mainUV": [
+      0.23,
+      0.22,
+      0.83,
+      0.8
+    ],
+    "rootUV": [
+      0.6,
+      0.39,
+      0.78,
+      0.59
+    ],
+    "orientation": "(u,1-v), image-top crop",
+    "alpha": "mainROI mean207.25/P50252/>12883.21%/zero6.49%; actualRGBA coverage not darkRGB assumedtransparent",
+    "inspection": "Original/UV plus49x57 diagnostic on dark and medium backgrounds; NOT native shader/perspective/alpha proof. Independent raw review notes two dark hollows/S-shoulder, so eye/rock risk is NOT declared absent."
+  },
+  "invariants": [
+    "309 geometry/main48/root8/reserved8/oldmotes andvertexalpha unchanged",
+    "306 clockactualcommit/owner/generation/invalidretirement allunchanged",
+    "mainalpha/edge/temporal windows unchanged, contour reads newraw values intentionally so pixel erosion boundary maydiffer",
+    "worldwash/Boundedzerolight/gain/actor/actual9Weak1 unchanged",
+    "oldDark raw/import andotherCurse/factories unchanged; newasset one import only"
+  ],
+  "gates": [
+    "actualsource vsGPUdimensions separately record; do not repeat raw1254=GPU1254 assumption withoutactualimportproof",
+    "No fixedpixel count: original1280 compactpressure midpurple/innerdark/shortedge mustread, not mask/skull/rock/cloth",
+    "thinroot meaningful pressureconnection without brightrope; initialmaterialthenowncontinuous depletion",
+    "sameXYZ/UV/vertexalpha/age/oldmotes proof, rawshader binding codeSHA/decodedRGBA/mips, oldimports unchanged"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

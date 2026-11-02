@@ -1,0 +1,29 @@
+{
+  "status": "FROZEN_POSE_ONLY_CANDIDATE_PENDING_NATIVE",
+  "revision": 355,
+  "base": 354,
+  "change": "One additional independent exact-installed-relic predicate in existing BeginBeat hero PlayPose(attack) suppression condition. Do not widen PermanentContactVfxProfiles material allowlist.",
+  "sideEffectDecomposition": {
+    "BeginBeat": "nonenemy nonDirect damage source resolves nonretainer relic to hero; exact branch only calls _sourceActor.PlayPose(attack,_clock). There is no step/lunge in this branch. _sourceActor/_targetActor/from/to and StartEffect/audio are outside branch and unchanged.",
+    "PlayPose": "sets explicit pose and calls StartPose, increments PoseStartCount/resets attack frame/clock and updates sprite/authored frame. Skip means no new attack start, not forceidle. Existing pose continues naturally.",
+    "BeginSourceCard": "Motion.BeginAction/castlight/capture remain. Physical carddirect approach/attack/lunge branches require actualDirect damage; WindDash has none. Those branches unchanged.",
+    "enemy": "BeginSourceEnemyLunge in separate enemy branch unchanged."
+  },
+  "predicate": {
+    "actualContext": "hit.Source player, no PresentationEnemyAction; PresentationSource permanent/Def relic_momentum_whip_passive, both UIDs relic_relic_momentum_whip; canonicalWhip fulltuple resolved by354 alias. No primary card ID/amount/leader restrictions.",
+    "installed": "same actual UID/Def in both previous and current Player.Permanents, Typepermanent/Innate true/nonRetainer/nonEcho/Life null. Not by suffix alone or relic display name.",
+    "registered": "_eventOwners exact actual hit; owner.Change.Events contains same reference; receipt.Event same reference/current ledger Generation/Values reference exactly hit.PresentationReceipt; CombatPresentationLedger.Valid and Reason null; raw receipt.Target enemy/index matches current _targetActor==Enemy(index); current _sourceActor==_hero. Use Begin current actors, not not-yet-persisted OrdinaryBeat.Source/Target.",
+    "phase": "Committed deliberately not required at Begin; suppress only new animation start, not contact/receipt execution.",
+    "scope": "That relic own damageBeat only. Primary sourceKind card, other relicUIDs/unknown/nonmatching/generation invalid retain old behavior. Current sourceowner proof is presentation registration plus installedstate, not arbitrary synthetic event authenticity."
+  },
+  "QAExpected": {
+    "intended": "hero no new attack pose on relicbeat; record PoseStartCount/PoseName/MotionVersion/currenttexture and sourceposition before/at/after; existingidle continues, no explicit idle setter. Exact own cue/numeric/wholeoracle/capture same.",
+    "preserve": "real Momentum4/Damage1/Draw1/E2, event source/UID, canonicalalias, targethurt/receiptclock/geometry/material/light/Omni/cues, no damagewindowshift",
+    "actualNotAssumed": "hero renderedframe and pixel changes expected, allactorfullJSON cannot remain same; source/contact/root projection and all nonhero arrays independently compare. Stage end/cuepool completion not allUI.",
+    "negative": "helper can clone hit to prove referenceownership false; fresh full cardattack outside this exactevent not reclassified. Separate prior-existing-pose continuation is sourceonly unless actuallaterboundaryrun.",
+    "boundary": "Real green_trample_charge cost1: Momentum3→relic1→card5×2, E2/total11. Actual two cardUID Directtrue receipts preserve normal primary attack pose/lunge; relic Directfalse start must not restart existing pose. No wholeheroidle assertion in this boundary. Own WindDash remains no new attack. Boundary native after own/parent minimum scope, not implied by source audit."
+  },
+  "materialHold": "Keep exact existing neutral_whip fine sinusoidal line unchanged; its material HOLD is separate. No gain/geometry/raw/time changes.",
+  "storage": "354 originalHOLD preserved first; cloudonly>=5GB, one audited original70 native.",
+  "supersedes": "Initial WindDash/4/1-bound design retained as history; this v2 follows installed-relic source semantics, parent/auditor reviewed."
+}

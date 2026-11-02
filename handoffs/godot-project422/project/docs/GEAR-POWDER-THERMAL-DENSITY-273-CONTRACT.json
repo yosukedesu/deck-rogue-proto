@@ -1,0 +1,39 @@
+{
+  "revision": 273,
+  "base": 272,
+  "scope": "exact direct gear_powder only",
+  "hypothesis": "Dedicated low-frequency thermal density replaces radial fire-volume02/04 material; no further star/crown alpha-mask coefficients",
+  "raw": {
+    "path": "assets/Art/fx/hd2d-fire-volume-powder-density-v1.png",
+    "sha256": "366b92a4a249636e8dee0695d931fb2559423fc37140219d7c33b8b5e6f65ae8",
+    "bytes": 1889492,
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGBA",
+    "generated": "image_gen built-in transparent_background true",
+    "original": "raw-trials/273-powder/hd2d-powder-thermal-density-rawA.png",
+    "unmodified": true,
+    "art": "Independent raw candidate suitable for one native trial; not final native PASS"
+  },
+  "materialChange": "Same raw one copy for body and time-staggered lower-gain cooling; old radial core attenuation/open-wedge mask removed because new original carries volume hierarchy. No duplicate full-strength hot crest. Existing fire texture motion12/body and23/cooling retained by existing filename routing.",
+  "invariants": [
+    "root UV .63/.64, actual target anchor",
+    "mainwidth .58,height .44,angle -.32 and short opening .035",
+    "time/body .14,cooling .24,end .284",
+    "opacity/gain values unchanged apart from removal of obsolete spatial mask",
+    "old Fire light palette, hold .025/end .115, peaks .35/.12, floorheight .2",
+    "owner/selector/csproj/Stage/shaders/other routes unchanged"
+  ],
+  "capacity": {
+    "body": 288,
+    "cooling": 288,
+    "embers": 30,
+    "each": 512
+  },
+  "native": "PENDING",
+  "art": "PENDING",
+  "risks": [
+    "Dense dark lower-right cloud must not become dominant earth lump at native small projection",
+    "Keep hot belly readable; no global exposure increase"
+  ]
+}

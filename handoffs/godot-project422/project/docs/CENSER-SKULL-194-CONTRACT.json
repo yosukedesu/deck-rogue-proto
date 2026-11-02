@@ -1,0 +1,34 @@
+{
+  "revision": 194,
+  "state": "candidate-awaiting-native",
+  "base": "selected192 / published8834bd18",
+  "new_definition": "black_groaning_skull",
+  "existing_definition": "black_corpse_kiss",
+  "expected_definition_payloads": {
+    "black_corpse_kiss": 3,
+    "black_groaning_skull": 4
+  },
+  "scope": "actual installed Censer -> real deck exhaustion only; exact source definition and UID Draw-to-Exhaust movement, distinct ambient Censer UID, ordered matching CardsMilled/NecroFired and valid receiving receipt",
+  "tuple": "necro / dark_drain / DarkDrainFx / dark / fixedSmall -> Hd2dNecroContactFx",
+  "source_policy": "same target-local porous Dark; suppress only proven passive borrowed hero fallback swing, retain legitimate parent action and independent healing; no packet or heal-return stream",
+  "direct_negative": "black_groaning_skull CARD is neutral/BoundedContactFx damage13 WITHOUT heal and remains legacy/unmapped; do not conflate with automatic drain4",
+  "history": "Old153 same-key Skull automatic-necro legacy negative is intentionally superseded only by this new exact Censer/Draw-to-Exhaust contract; unrelated negatives remain",
+  "native_required": [
+    "actual installed Censer plus real heal/deck exhaustion with exact Skull UID and actual modified damage/heal ledger",
+    "actual emitted-source selected-runtime witness and nonnegative-age committed/exact proof",
+    "direct same-key card remains legacy, no-necro on absent Censer/empty deck by shared invariant where relevant",
+    "representative source correctness/local clear; reuse existing shape, no generic necro rollout"
+  ],
+  "unchanged": [
+    "engine rules",
+    "NativeGeometryBridge",
+    "Hd2dAttackPrototype geometry",
+    "AuthoredGeometryFx cache",
+    "all unrelated source gates"
+  ],
+  "excluded": [
+    188,
+    191
+  ],
+  "publication": "no new push authorization"
+}

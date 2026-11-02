@@ -1,0 +1,57 @@
+{
+  "revision": 329,
+  "base": 328,
+  "cause": "Actual328 body92 consists of two40vertex arcs+12motes, radius.16 at0/halfwidthmax.018, oldalpha.75*(1-t/.18)^2; no main belly. Light/peaks/sourceLights0. ActorFlash/hurt remains existing. No new lighting intervention.",
+  "scope": "exact originalVineGrasp tuple+actual328 owner, localFX marker only; originalBeat maintains328clock",
+  "newRoute": "VineGraspContactFx",
+  "raw": {
+    "path": "assets/Art/fx/canopy-organic-density-v1.png",
+    "sha256": "8984752ffbba540693e371684a1ed06947a4a20feec639408ac16b7776c1d6e3",
+    "canvas": [
+      1870,
+      841
+    ],
+    "imageTopUV": [
+      0.18,
+      0.28,
+      0.65,
+      0.76
+    ],
+    "sampling": "vec2(u,1-v)",
+    "alpha": "ROInearopaque P50=252/zero0; mesh and edge define transparency, no claim rawtransparent",
+    "qualification": "existingCanopymaterial trial notCanopyqualityproxy"
+  },
+  "geometry": {
+    "mainVertices": 64,
+    "motes": "old80..95 ->64..79 exact6arraycopy, count2..4 same",
+    "capacity": 160,
+    "axis": "normalized actual incoming, finitefallbackRight",
+    "along": "(-.70+.04q)*(1-u)",
+    "center": "-.06*(1-u)-.12sin(pi*u)",
+    "halfwidth": "(.012+.22sin(pi*u)^.70)*(1-.45u)*(1-.25q)",
+    "side": "upper.85 lower.70-.48exp(-((u-.5)/.18)^2)",
+    "root": "u1center0/oldactualtarget unchanged; finiteendpointwidth remains",
+    "coverage": ".75*(1-q)^2*Smooth(u/.12) \u00d7center1/upper.42/lower.25 \u00d7rawalpha\u00d7shaderedge",
+    "light": 0,
+    "end": 0.18
+  },
+  "projection": "design target externaldarkspace chestroot~291,369 native1280; worldrelative actorheight basis only/no screen constants. Oldfinalscreenvertices notrecorded/no exactoldbboxclaim. Candidateactualallvertices observer required.",
+  "invariants": [
+    "328clock7damage/wholeoracle",
+    "enemy sprite motion/heroFlash/globalwash",
+    "allworldlights0/oldmotespositionsUVSoftAlpha",
+    "otherBounded/fullsharedshader",
+    "no literal vinebridge/newstatus/body"
+  ],
+  "risks": [
+    "opaqueleaf/cape/cloth versus short organic pressure",
+    "thinroot/cap-handle relapse",
+    "shaderedge affectscoverage",
+    "staticfirstshape andactualtemporal native gate"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN",
+  "freeze": "329-v2",
+  "v2Reason": "Explicit TargetPeak0/FloorPeak0 preserves old decorated Bounded metadata; v1 default.35/.12 produced zero emittedLight but metadata differed. No geometry/shader/native comparison occurred onv1."
+}

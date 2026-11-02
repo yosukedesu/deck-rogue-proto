@@ -1,0 +1,34 @@
+{
+  "revision": 276,
+  "base": 275,
+  "scope": "exact selected reaction black_underworld_hand only",
+  "basis": "fresh275 baseline459 PASS rules but independent static HOLD: detached upper-left major mask and separate torso minor mask; original191 limited accepted review retained as history",
+  "factory": "Independent exact Underworld wrapper creates a fresh275 torso material instance. Same root/dimensions/phases/light; no shared mutable state, no amount8 downscale. Grudge material code reused deliberately; any later Grudge material edit must also re-review this dependent Underworld route or separate factory first.",
+  "invariants": [
+    "old sharedDark/other Dark factory bytes unchanged",
+    "Stage/Actor/owner/queue/engine unchanged",
+    "real ConfirmReaction same live Presentation UID; ambient SourceUid null separate",
+    "drain8 then separate heal4, existing counterpose",
+    "no actual hand/skull/return projectile",
+    "no new raw/shader/import/light",
+    "no new action>=8 condition: Underworld eligibility remains its original rule"
+  ],
+  "capacity": {
+    "kinds": [
+      16,
+      16,
+      16,
+      2
+    ],
+    "space": 0,
+    "capacityEach": 512,
+    "writtenMax": [
+      12,
+      12,
+      12,
+      42
+    ]
+  },
+  "native": "PENDING",
+  "art": "PENDING"
+}

@@ -1,0 +1,44 @@
+{
+  "revision": 234,
+  "base": 233,
+  "status": "productpreflight0errors/1923baselinewarnings10.47s; native dynamic anchor/pose gate pending",
+  "scope": "exact full Torrent direct route existing action token; release sprite frame3 only",
+  "changedFiles": [
+    "scripts/presentation/BattleActor.cs",
+    "scripts/presentation/BattleStage.cs"
+  ],
+  "holdEnd": "max over non-rejected actual direct Torrent beats of max(ContactAt, Contacted ? LastContact : ContactAt)+.10; refresh after ProcessOrdinaryContacts before actor visual sampling",
+  "pose": "normal frames0/1/2 unchanged; consume frame3 normal duration then hold until derived endpoint; first update after expiry advances normally without restarting .18 tail",
+  "ownership": "existing action.Capture must belong to actor Motion, current hd2d owner, no death; clear each stage frame and BeginHd2dPose; cancellation token invalidation immediately disables hold",
+  "nominalExplanation": {
+    "firstContactFromAction": 0.4,
+    "interval": 0.22,
+    "threeHitLast": 0.84,
+    "connectionEnd": 0.94,
+    "oldSpriteDurations": [
+      0.1,
+      0.12,
+      0.055,
+      0.18
+    ],
+    "oldNominalSum": 0.455,
+    "qualification": "Not fixed .94 code; derives existing contacts and actual late contact. Sprite start clock can differ from action launch; native logged independently."
+  },
+  "unchanged": [
+    "Hd2dAttackPrototype exact233",
+    "optical shader231/raw exact",
+    "AuthoredGeometryFx/selector exact233",
+    "all gameplay/hit/receipt/order/.22",
+    "all camera/worldlight/floor/audio/profile",
+    "nonTorrent/LightBolt routes"
+  ],
+  "risk": "Held sprite transform can still move relative to frozen emitter; every-frame emitter/connector source projection must be checked before acceptance. No dynamic follow callback added.",
+  "unityIntegration": "Only release frame3 lifetime extends for actual Torrent owner through final connection +.10s; retain actual initial casting frames and cancellation. No movement or numeric timing edits.",
+  "gates": [
+    "3rd connector stays at displayed emitter through final release",
+    "no source restart or frozen recovery after expiry/cancel/death/new owner",
+    "full tuple negatives/sharedLight unchanged",
+    "233 material/core/halo body and perhit window exact",
+    "actual3hit .22/omissions preserved"
+  ]
+}

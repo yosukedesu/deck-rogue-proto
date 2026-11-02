@@ -1,0 +1,15 @@
+{
+  "revision": 283,
+  "base": 282,
+  "scope": "Same exact Maelstrom sampler, replace elliptical arc centreline/parallel widths with asymmetric cubic folded surface and one short fine terminal lip. Existing raw interior UV follows unequal density rather than constant white bank.",
+  "reason": "282 actual body gained density but reads as C-shaped belt; target low-frequency unequal belly to open thin end, no closed ellipse.",
+  "unchanged": [
+    "route/cache/renderer/shader/raw",
+    "core/droplets/light",
+    "sample windows and envelopes",
+    "actor/queue/receipt/engine"
+  ],
+  "newRaw": 0,
+  "native": "pending",
+  "geometry": "same330/4/48 vertices and topology; no amplified gain, no full ring; exact native projected composition still requires review"
+}

@@ -1,0 +1,10 @@
+{
+  "_doc": [
+    "P22 (W3) の比較用の変種: 夜を明るめに (月・舞台の灯・環境光を約 +25%・座席の外の落とし方を浅く)。既定 (look_act1) が暗すぎた時の候補。",
+    "撮影の STATE に look=look_act1_bright。持ち主は P22。"
+  ],
+  "moon": { "intensity": 0.8 },
+  "lamp": { "illum": 2.0, "mask": { "outside": 0.18 } },
+  "ambient": { "sky": [0.26, 0.30, 0.50], "equator": [0.18, 0.21, 0.33], "ground": [0.09, 0.10, 0.13] },
+  "fog": { "color": [0.21, 0.29, 0.38], "lobe": { "strength": 2.0, "edge": 0.6 } }
+}

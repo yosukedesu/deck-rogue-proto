@@ -1,0 +1,47 @@
+{
+  "revision": 271,
+  "base": 270,
+  "status": "PROTOTYPE_PENDING_NATIVE_ART",
+  "scope": "exact direct gear_powder only; Keg/nameless/installed/card unchanged",
+  "owner": "Actual UseGear index into Previous.Gears, positive charge/UID, post instance consumed, one preceding matching GearUsed, real event ownership; presentation source UID absent; valid positive enemy receipt. No synthetic UID",
+  "timing": {
+    "oldPlanLead": 0,
+    "oldPlanEnd": 0.284,
+    "expandEnd": 0.035,
+    "bodyFade": [
+      0.025,
+      0.14
+    ],
+    "cooling": [
+      0.035,
+      0.24
+    ],
+    "allClear": 0.284
+  },
+  "lightPreservation": {
+    "palette": "fire-continuous-palette-r1",
+    "targetPeak": 0.35,
+    "floorPeak": 0.12,
+    "hold": 0.025,
+    "end": 0.115,
+    "floorHeightFactor": 0.2,
+    "actorReceive": 1,
+    "FixedSmallSize": 0.88,
+    "lightGain": 0.65,
+    "sourceCue": "none"
+  },
+  "geometry": {
+    "body288": "full original raw02 alpha, hot root UV .63,.64, width .58 height .44, angle -.32 rad",
+    "cooling288": "raw04 one copy, width .54 height .40",
+    "embers24": "4 unequal short sparks",
+    "eachBatchCapacity": 512
+  },
+  "rawNew": 0,
+  "sharedShaderBytes": "unchanged",
+  "rulesQueueReceiptActor": "unchanged",
+  "qualifications": [
+    "No quality PASS before fresh actual review",
+    "Gear acquisition not proved by initial held-item fixture",
+    "Existing intermittent Audio shutdown notice remains separate"
+  ]
+}

@@ -1,0 +1,273 @@
+{
+  "schema": 1,
+  "status": "SQUIRREL_GNAW_IDLE_HURT_ART_REVIEW_CANDIDATE",
+  "enemyId": "enemy_thorn_squirrel",
+  "displayName": "針毛の栗鼠",
+  "moveId": "gnaw",
+  "moveKind": "single_contact_bite",
+  "sourceCanvas": [
+    80,
+    64
+  ],
+  "frameCanvas": [
+    80,
+    64
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    40,
+    64
+  ],
+  "groundMaxY": 59,
+  "sourcePngSha256": "2cf0c15ac565b21d0f3c236799a7755dc04678543d71d6e6ab6e231e5c39c464",
+  "nativeRegistration": {
+    "rest": {
+      "bakedDelta": [
+        0,
+        0
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        15,
+        12,
+        64,
+        60
+      ],
+      "bboxAfter": [
+        15,
+        12,
+        64,
+        60
+      ],
+      "opaqueClipped": 0
+    },
+    "idle": {
+      "bakedDelta": [
+        0,
+        0
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        17,
+        14,
+        64,
+        60
+      ],
+      "bboxAfter": [
+        17,
+        14,
+        64,
+        60
+      ],
+      "opaqueClipped": 0
+    },
+    "prepare": {
+      "bakedDelta": [
+        0,
+        1
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        15,
+        12,
+        65,
+        59
+      ],
+      "bboxAfter": [
+        15,
+        13,
+        65,
+        60
+      ],
+      "opaqueClipped": 0
+    },
+    "contact": {
+      "bakedDelta": [
+        0,
+        1
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        13,
+        13,
+        66,
+        59
+      ],
+      "bboxAfter": [
+        13,
+        14,
+        66,
+        60
+      ],
+      "opaqueClipped": 0
+    },
+    "recovery": {
+      "bakedDelta": [
+        0,
+        -1
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        18,
+        14,
+        65,
+        61
+      ],
+      "bboxAfter": [
+        18,
+        13,
+        65,
+        60
+      ],
+      "opaqueClipped": 0
+    },
+    "hurt": {
+      "bakedDelta": [
+        0,
+        2
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxBefore": [
+        18,
+        11,
+        65,
+        58
+      ],
+      "bboxAfter": [
+        18,
+        13,
+        65,
+        60
+      ],
+      "opaqueClipped": 0
+    }
+  },
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 1.2,
+        "sha256": "2cf0c15ac565b21d0f3c236799a7755dc04678543d71d6e6ab6e231e5c39c464"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.2625,
+        "sha256": "2cf0c15ac565b21d0f3c236799a7755dc04678543d71d6e6ab6e231e5c39c464"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.2625,
+        "sha256": "1256a2ee25c6948c022798a4c928f10657332637f024e42ec4544434179dbb44"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.2625,
+        "sha256": "21ff91fd4421a1426053707956d6f7b9daf67d5bda29b647f621d03833f7057f"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.2625,
+        "sha256": "500fc1374a12a0bcbbf6c6f737a57508f368d2dbff09f9b67e9b1763111edbaa"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.2625,
+        "sha256": "1394ccd24516d49de81cd28d68ca9b5b8eb32d847c76156c8cc6c8842ba12056"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.2625,
+        "sha256": "7e2caadff6f99932b21fba83f48e106e11f435f3281f3f17f8b6d27ec1484752"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.2625,
+        "sha256": "6a3aeb62a0339fec6ff5cecd5af1cc790530149bbf1d00e9b5bfc9ef2716b5b8"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.2625,
+        "sha256": "eb3c6972b2877a48c3b287cda48203be1c3dd79e2b35241071851c603831cd8c"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "prepare.png",
+        "duration": 0.18,
+        "sha256": "2855a75829c586fdf6c8ae450e725bcf990c60e5496829cc2241b9daa3fbc483"
+      }
+    ],
+    "contact": [
+      {
+        "file": "contact.png",
+        "duration": 0.11,
+        "sha256": "ed63ce1a9c8ae6de6d49093071a02fa0bfbffef57c5ab586c56b79fc06b843ab"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.22,
+        "sha256": "3c0071c7a8863e5de643f9af1738ab52d71227c20730043cbbfff210fb242fd9"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "8d30e5243479cf7f98df344af633da621cf2189b850f51a0afaba677bdfe3b02"
+      }
+    ]
+  },
+  "idleLoop": [
+    "rest",
+    "idle"
+  ],
+  "moveClips": {
+    "gnaw": [
+      "prepare",
+      "contact",
+      "recovery"
+    ]
+  },
+  "eventContract": {
+    "gnaw": "One contact key at the authoritative single gnaw contact event. Prepare before contact, recovery afterward. Do not add hits or alter damage/timing.",
+    "hurt": "Short defensive reaction only when this enemy receives an applicable hit, returning to rest.",
+    "thorns": "Passive thorns=2; no extra move, contact pose or retaliatory attack created."
+  },
+  "durationNote": "Display-hold suggestions only. Idle rest 1200ms / variation 900ms for quiet breathing. Do not extend gameplay timing.",
+  "pending": [
+    "runtime_integration_and_acceptance",
+    "event_sync_in_actual_battle",
+    "smoothing_review_at_target_playback_speed"
+  ],
+  "artSourceManifestSha256": "0f605c353eebd82dc7b2f3556330f154839a61a6f9484adfe235b4ffab184930",
+  "runtimeComposition": "The supplied rest/idle loop is expanded to one two-frame idle clip; source PNGs and suggested durations unchanged."
+}

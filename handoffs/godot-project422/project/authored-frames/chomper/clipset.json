@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "status": "M51_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_chomper",
+  "sourceCanvas": [
+    144,
+    88
+  ],
+  "frameCanvas": [
+    144,
+    96
+  ],
+  "sourceOffset": [
+    0,
+    8
+  ],
+  "anchor": [
+    72,
+    96
+  ],
+  "spriteOffset": [
+    0,
+    4
+  ],
+  "groundMaxY": 87,
+  "registrationKind": "grounded-original-source-reference",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest-registered.png",
+  "sourcePngSha256": "dfba9e1beac0a033de53d962c5efbd4aa87cbcd970a2ea2406eef2e33887436b",
+  "sourceArtManifestSha256": "bc86fc1e64f6935b5bd028dd6e43b832a945eeb3b18176970514cebb1a04b867",
+  "authoredMoves": [
+    "clamp",
+    "screech",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest-registered.png",
+        "duration": 0.2,
+        "sha256": "6a8701c661a02a931fcad3ed7c7b94693da9a3ffbe4b4fe4ed607b61534a4811"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "6a8701c661a02a931fcad3ed7c7b94693da9a3ffbe4b4fe4ed607b61534a4811"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "facac3071fdfcf1bf3d93d02686985cb64096e53c8ee279b7008654536b36dfb"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "dbbfdd982b3df3abafb9f7efcf601bc80b0c1637ff70a3b15b331bd5dcf4c582"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "b18959545d730cd5ed9a52e9903badd213ae124cd11cad5332e22110b4f32c2c"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "47745c3e70e3ba11122b56bf93d04557aa799cf0bd1405186b3802d0591fbf08"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "8bef1589bc1a9d2f6005805487b32962a7cd1059004760a4ec067579f21f9632"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "e2b26b962053b96e29e2d46a639c4439f20a8af2641a0f222dd6c4971567c7c9"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "b00c50c7bfefd3eed02b0c69b4dbabdf2c262a79d695ea61152dc78a683be934"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "5133627f7ab293ceae5afce863e32ca875c41b54cf75dccee59f34b5abbfa505"
+      }
+    ],
+    "clampprepare": [
+      {
+        "file": "clampprepare.png",
+        "duration": 0.18,
+        "sha256": "b87d68a1a569a326d6d97f31ee8f360d51d72d4d1aa32be23ba614131ed2cb0d"
+      }
+    ],
+    "clampcontact1": [
+      {
+        "file": "clampcontact1.png",
+        "duration": 0.05,
+        "sha256": "e88bba35eda7ffb275856df3cac81c5d9c9eb88be1a0fc503e29147782defd63"
+      }
+    ],
+    "clamprebound": [
+      {
+        "file": "clamprebound.png",
+        "duration": 0.12,
+        "sha256": "56a2a0a66dcf70c1caeca1d804e72b14a45b623033a983f3c5884feae61a34dc"
+      }
+    ],
+    "clampcontact2": [
+      {
+        "file": "clampcontact2.png",
+        "duration": 0.05,
+        "sha256": "1344e0fd0a122d5305f36467325ba5a20ffe6958b2fa73aebe2f931517d48722"
+      }
+    ],
+    "screechprepare": [
+      {
+        "file": "screechprepare.png",
+        "duration": 0.18,
+        "sha256": "f132d6c48415cecb097fe619d1edd72b62bc43902a46f39c6a70f6a4c7a7b6c1"
+      }
+    ],
+    "screechapply": [
+      {
+        "file": "screechapply.png",
+        "duration": 0.12,
+        "sha256": "7166174241e267864ee04813e307d53d526be4dd3366e0db2659a07bdc02c8c8"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "8f61daee54e08ce0746c6e01ab32c73393d6e48fad68ed2251d94c16942906ad"
+      },
+      {
+        "file": "rest-registered.png",
+        "duration": 0.12,
+        "sha256": "6a8701c661a02a931fcad3ed7c7b94693da9a3ffbe4b4fe4ed607b61534a4811"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "a95f1b5e339388812e8bf0731413589893cb926d595876460dd73fe0a0909723"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "b33be06f0b5ee7b08fc877d266d52e40aa78ef9ee0a998c8494ab1879bb9a10e"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.12,
+        "sha256": "8f61daee54e08ce0746c6e01ab32c73393d6e48fad68ed2251d94c16942906ad"
+      },
+      {
+        "file": "rest-registered.png",
+        "duration": 0.12,
+        "sha256": "6a8701c661a02a931fcad3ed7c7b94693da9a3ffbe4b4fe4ed607b61534a4811"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest-registered.png",
+        "duration": 0.2,
+        "sha256": "6a8701c661a02a931fcad3ed7c7b94693da9a3ffbe4b4fe4ed607b61534a4811"
+      }
+    ]
+  },
+  "physicalNewKeyCount": 11,
+  "recoveryAuthorship": "owner-reviewed-finite-sequence-no-contact-reuse",
+  "drawingOnlyDurationNormalization": {
+    "contactPulseAndGuardHoldSeconds": 0.05,
+    "finiteReturns": "Approved recovery/return sequences remain drawing-only; existing Stage End/deadline governs exit."
+  }
+}

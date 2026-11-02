@@ -1,0 +1,28 @@
+{
+  "revision": 246,
+  "base": 245,
+  "status": "product preflight 0errors /1923 existing warnings /8.55s; native/art pending",
+  "scope": "exact blue_ice_wall existing validated owner-action gain; no gain SourceUid exists so no universal direct-effect attribution",
+  "unchanged": [
+    "old CreateIceGuard entire method and all other factories",
+    "SupportVfxProfiles.Describe/PrimaryOwner/claimed slot logic",
+    "Stage/Actor/renderer/sharedshader/raw/palettes/Engine",
+    "existing scenario and same .52 sampler end and light coefficients"
+  ],
+  "geometry": "one front face + short dark side; base y-.48; x .12-.73 / top .48; growth0-.11,stable until.28,fade to.51; no shatter",
+  "raw": "0 added; procedural existing Kind13 and same ice palette",
+  "capacity": {
+    "side": 12,
+    "face": 18,
+    "frost": 18,
+    "edge": 48,
+    "halo": 6,
+    "motes": 24
+  },
+  "delta": {
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs": "232a850ea2962ab0eb9f610d089e1749becf5c136104983a8738136ceb0c4687",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/SupportVfxProfiles.cs": "93b71e3347df6132b331f041ce04868612e18a5880d45e39c6ffedf2656c15ad",
+    "RecoveredSource/DeckRogue.GodotPort.Presentation/NativeGeometryBridge.cs": "e294414da7b1d45c80e54352457ff655350e3a424f47823f1c4d9006d5327c38"
+  },
+  "staticReconstruction": "remove only new factory/predicate/dispatch recovers each whole245 file byteexact"
+}

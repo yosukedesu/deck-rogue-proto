@@ -1,0 +1,346 @@
+{
+  "revision": 166,
+  "state": "candidate-unselected",
+  "base": "selected161; no163/164/165 mixed",
+  "design": "Explicit neutral physical source-context abstract pressure reuse, no name-derived tree/fire/light material or anatomy. No new support mapping for mixed Block riders.",
+  "audit": {
+    "scope": "read-only proposed next batch",
+    "ids": [
+      "green_trunk_stance",
+      "green_prey_strike",
+      "red_blaze_pursuit",
+      "fusion_sprint_strike",
+      "fusion_holy_stance"
+    ],
+    "actual_rows": [
+      {
+        "id": "green_trunk_stance",
+        "name": "大幹の構え",
+        "route": {
+          "key": "card:green_trunk_stance",
+          "definitionId": "green_trunk_stance",
+          "sourceKind": "card",
+          "family": "minimal_neutral_contact",
+          "renderer": "BoundedContactFx",
+          "element": "neutral",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        },
+        "classification": "existing-vocabulary review candidate; NOT automatic alias",
+        "context_status": "not globally selected161",
+        "definition": {
+          "id": "green_trunk_stance",
+          "name": "大幹の構え",
+          "cost": 3,
+          "type": "physical",
+          "color": "green",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamagePerEnergyMax",
+              "amount": 3
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "gainBlockPerEnergyMax",
+              "amount": 3
+            }
+          ],
+          "rarity": "rare"
+        },
+        "profile": {
+          "element": "physical",
+          "style": "slash"
+        },
+        "source_context": {
+          "card": {
+            "authoredAttack": "minimal_neutral_contact",
+            "element": "neutral",
+            "authoredSemanticReason": "大幹の構え is a trunk-like stance, followed by energy-capacity-scaled damage and block. A stance does not specify a wooden swing, cutting blade or ground strike, and resource scaling gives no delivery shape. Retain neutral physical contact."
+          }
+        }
+      },
+      {
+        "id": "green_prey_strike",
+        "name": "獲物",
+        "route": {
+          "key": "card:green_prey_strike",
+          "definitionId": "green_prey_strike",
+          "sourceKind": "card",
+          "family": "minimal_neutral_contact",
+          "renderer": "BoundedContactFx",
+          "element": "neutral",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        },
+        "classification": "existing-vocabulary review candidate; NOT automatic alias",
+        "context_status": "not globally selected161",
+        "definition": {
+          "id": "green_prey_strike",
+          "name": "獲物",
+          "cost": 1,
+          "type": "physical",
+          "color": "green",
+          "rarity": "uncommon",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 8
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "gainMaxHp",
+              "amount": 3,
+              "condition": {
+                "targetDead": true
+              }
+            }
+          ],
+          "exhaust": true
+        },
+        "profile": {
+          "element": "physical",
+          "style": "slash"
+        },
+        "source_context": {
+          "card": {
+            "authoredAttack": "minimal_neutral_contact",
+            "element": "neutral",
+            "authoredSemanticReason": "獲物 names prey, without specifying a bite, claw, blade, drain or delivery material. Damage 8 and conditional gainMaxHp 3 are distinct effects. A kill-dependent maximum-HP reward is not damage-drain mechanics, so retain neutral physical contact."
+          }
+        }
+      },
+      {
+        "id": "red_blaze_pursuit",
+        "name": "紅蓮の追撃",
+        "route": {
+          "key": "card:red_blaze_pursuit",
+          "definitionId": "red_blaze_pursuit",
+          "sourceKind": "card",
+          "family": "minimal_neutral_contact",
+          "renderer": "BoundedContactFx",
+          "element": "neutral",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        },
+        "classification": "existing-vocabulary review candidate; NOT automatic alias",
+        "context_status": "not globally selected161",
+        "definition": {
+          "id": "red_blaze_pursuit",
+          "name": "紅蓮の追撃",
+          "cost": 2,
+          "type": "physical",
+          "rarity": "uncommon",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 12
+            },
+            {
+              "trigger": "onPlay",
+              "condition": {
+                "blaze": true
+              },
+              "effect": "dealDamage",
+              "amount": 12
+            }
+          ]
+        },
+        "profile": {
+          "element": "physical",
+          "style": "slash"
+        },
+        "source_context": {
+          "card": {
+            "authoredAttack": "minimal_neutral_contact",
+            "element": "neutral",
+            "authoredSemanticReason": "紅蓮の追撃 supplies a crimson-lotus/flame epithet and follow-up attack but no unambiguous delivery material or weapon shape. The physical type and blaze condition do not prove a flame projectile or slash. Keep both damage contacts neutral until that presentation is resolved."
+          }
+        }
+      },
+      {
+        "id": "fusion_sprint_strike",
+        "name": "疾走の打撃",
+        "route": {
+          "key": "card:fusion_sprint_strike",
+          "definitionId": "fusion_sprint_strike",
+          "sourceKind": "card",
+          "family": "minimal_neutral_contact",
+          "renderer": "BoundedContactFx",
+          "element": "neutral",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        },
+        "classification": "existing-vocabulary review candidate; NOT automatic alias",
+        "context_status": "not globally selected161",
+        "definition": {
+          "id": "fusion_sprint_strike",
+          "name": "疾走の打撃",
+          "cost": 1,
+          "type": "physical",
+          "color": "green",
+          "freeIfMomentumAtLeast": 5,
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "addMomentum",
+              "amount": 3
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 6,
+              "pierce": true
+            }
+          ]
+        },
+        "profile": {
+          "element": "earth",
+          "style": "stomp"
+        },
+        "source_context": {
+          "card": {
+            "authoredAttack": "minimal_neutral_contact",
+            "element": "neutral",
+            "authoredSemanticReason": "疾走の打撃 describes a running blow but specifies no fist, blunt implement, horn, footfall or ground fracture. Physical damage and momentum gain alone do not settle that delivery. Keep neutral contact rather than inheriting the current earth/stomp profile."
+          }
+        }
+      },
+      {
+        "id": "fusion_holy_stance",
+        "name": "灯火の構え",
+        "route": {
+          "key": "card:fusion_holy_stance",
+          "definitionId": "fusion_holy_stance",
+          "sourceKind": "card",
+          "family": "minimal_neutral_contact",
+          "renderer": "BoundedContactFx",
+          "element": "neutral",
+          "fixedSmall": false,
+          "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+        },
+        "classification": "existing-vocabulary review candidate; NOT automatic alias",
+        "context_status": "not globally selected161",
+        "definition": {
+          "id": "fusion_holy_stance",
+          "name": "灯火の構え",
+          "cost": 1,
+          "type": "physical",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 5
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "gainBlock",
+              "amount": 5
+            }
+          ],
+          "freeIfHandAll": "nonphysical",
+          "color": "white"
+        },
+        "profile": {
+          "element": "physical",
+          "style": "slash"
+        },
+        "source_context": {
+          "card": {
+            "authoredAttack": "minimal_neutral_contact",
+            "element": "neutral",
+            "authoredSemanticReason": "The actual title 灯火の構え is a lamp/fire stance, without a specified damaging motion or weapon. Physical damage followed by block does not establish a Light ray, fire plume, healing effect or slash. Keep neutral physical contact."
+          }
+        }
+      }
+    ],
+    "actual_fusion_recipes": [
+      {
+        "a": "green_strike",
+        "b": "green_sprint",
+        "result": {
+          "id": "fusion_sprint_strike",
+          "name": "疾走の打撃",
+          "cost": 1,
+          "type": "physical",
+          "color": "green",
+          "freeIfMomentumAtLeast": 5,
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "addMomentum",
+              "amount": 3
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 6,
+              "pierce": true
+            }
+          ]
+        }
+      },
+      {
+        "a": "white_strike",
+        "b": "white_guard",
+        "result": {
+          "id": "fusion_holy_stance",
+          "name": "灯火の構え",
+          "cost": 1,
+          "type": "physical",
+          "effects": [
+            {
+              "trigger": "onPlay",
+              "effect": "dealDamage",
+              "amount": 5
+            },
+            {
+              "trigger": "onPlay",
+              "effect": "gainBlock",
+              "amount": 5
+            }
+          ],
+          "freeIfHandAll": "nonphysical",
+          "color": "white"
+        }
+      }
+    ],
+    "sha256": {
+      "attack-hd2d-prototype-20261025/source/data/cards.green.json": "3093790a6abbc3c0469f817b9372d03e108dfe4ec177f9e4ef27c5461459cb78",
+      "attack-hd2d-prototype-20261025/source/data/cards.red.json": "dab5509fb6bc5dd44e4498d32ea38b3a19d9215c6b713b4e7004fbe582aa6810",
+      "attack-hd2d-prototype-20261025/source/data/cards.blue.json": "355809c021fb217b741e2152ac425fc114a0c919a66f99dff8fa9aff8eb2222c",
+      "attack-hd2d-prototype-20261025/source/data/fusions.json": "6567b3e50615a50b1300f0f111bbabc3626daa5edb365bbf9fefed70dc1fd7bc",
+      "attack-hd2d-prototype-20261025/source/assets/attack-routes.json": "d876cbe1c9eb6eead41e8adf0690e7b61ea7a33f547971ed629879ae82523846",
+      "attack-hd2d-prototype-20261025/source/assets/presentation-data/card-vfx-profiles.json": "762fa8c66e277b208f80a815d365bca7b49965cbdcf8a3870d07484936528f1c",
+      "attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Effects.cs": "49aabacbdeba548ea5c3ceb14c1e18bd16a7b591ea6eeb3da6b81a21c51907bb",
+      "attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Combat.cs": "506e88c23b151d5cb571f43a556761f65000c3c3f15090b4901492b3512a1e5c"
+    },
+    "prerequisite_cost_correction": {
+      "id": "green_sprint",
+      "actual_definition": {
+        "id": "green_sprint",
+        "name": "疾駆",
+        "cost": 0,
+        "type": "physical",
+        "color": "green",
+        "rarity": "common",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 2,
+            "pierce": true
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "addMomentum",
+            "amount": 3
+          }
+        ]
+      },
+      "note": "Two real prior Sprints cost0+0; then free SprintStrike base0. Earlier prose1+1 was incorrect; actual aura/effective-cost oracle still applies."
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "revision": 315,
+  "base": 314,
+  "basis": "314 exactanalytic pressure body technicallypasses613 but native milkwhiteblur/steam, hardsoft roles notread. Stopanalytic coefficient iteration. Material-only comparison, samegeometry/core/residue/time.",
+  "raw": {
+    "path": "assets/Art/fx/crossbow-pressure-density-v1.png",
+    "sha256": "681caf25f1a7487ce1b90e114fb5c765cca1205e5af88e497b559ae0297dacc7",
+    "canvas": [
+      1774,
+      887
+    ],
+    "originalUnmodified": true,
+    "provenance": "qa/raw315-crossbow-pressure-b/GENERATION-PROVENANCE.json",
+    "mainUV": [
+      0.335,
+      0.365,
+      0.655,
+      0.715
+    ],
+    "orientation": "image top through(u,1-v)",
+    "ROI": [
+      594,
+      323,
+      1161,
+      634
+    ],
+    "alphaMean": 73.95059460011228,
+    "alphaP50": 1,
+    "zeroPercent": 49.03168365119062,
+    "above128Percent": 31.464752150711423,
+    "qualification": "Zeroarea is margins andholes, not a guarantee that survivingdensity is semitransparent. Native soft/hard/blend remainsgate.",
+    "rejectedA": "qa/raw315-crossbow-pressure-a original preserved, SHA3e27c4c4d2d382bbf5234ef3698f2c8b577ed622758de079c1572ecdd3d5cb26; no productbinding/import. Independent rawA HOLD for rightflare/twoconvergingridges andnearopaque fabric/smokebag. No cropmicroloop used to rescue A.",
+    "preflightB": "Independent original/UV/64x30 two-background inspection finds one darkbelly/shortmediumgraypatch/largeclearspace, allows one nativecompare but not materialcraftPASS; holeycharcoalsheet risk remains."
+  },
+  "delta": "One exactfactory Texture property andprivate main RGB\u2192authored density; pixelalpha multiplies rawalpha while old vertexalpha/transverse/erosion stayfixed. Existing core/residue/oldmotes shaderbranches byteunchanged.",
+  "invariants": [
+    "All314XYZ/UVarrays/vertexalpha/gain/worldlight/313ownerclock/actor/actual14Vulnerable unchanged",
+    "No newcore/flash/shaft/projectilebody; newraw main only, no newshader sharedscope",
+    "SameoriginalEnd.18, mainerosion .035-.120; rawalpha changesvisiblearea but no new agecontourinputs",
+    "Existingimports snapshot protected; newone import configuration measured before expectedGPUdimensionassert"
+  ],
+  "gates": [
+    "actualnewBaseMappath/non-null/decodedRGBA/size/mips andprivatecodeSHA",
+    "actual314geometry points/UV/vertexalpha equality separate frompixelalpha intentionaldifference",
+    "normal1280 darkdensity subordinate tocontact/hardcore, not pastedcharcoalfragment/fabric/steam; no hairtail/longline",
+    "staticfirst37/38 thenowncontinuous only aftercraftGO; no advancegain/alpha rescue"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

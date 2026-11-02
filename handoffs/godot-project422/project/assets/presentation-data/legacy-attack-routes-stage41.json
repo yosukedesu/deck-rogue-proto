@@ -1,0 +1,82 @@
+[
+  {
+    "key": "card:red_grand_fireworks",
+    "definitionId": "red_grand_fireworks",
+    "sourceKind": "card",
+    "family": "scatter_fire",
+    "renderer": "ScatterProfileFx",
+    "element": "fire",
+    "fixedSmall": false,
+    "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+  },
+  {
+    "key": "card:red_blaze_storm",
+    "definitionId": "red_blaze_storm",
+    "sourceKind": "card",
+    "family": "minimal_neutral_contact",
+    "renderer": "BoundedContactFx",
+    "element": "neutral",
+    "fixedSmall": false,
+    "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+  },
+  {
+    "key": "card:red_all_in",
+    "definitionId": "red_all_in",
+    "sourceKind": "card",
+    "family": "minimal_neutral_contact",
+    "renderer": "BoundedContactFx",
+    "element": "neutral",
+    "fixedSmall": false,
+    "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+  },
+  {
+    "key": "card:red_long_shot",
+    "definitionId": "red_long_shot",
+    "sourceKind": "card",
+    "family": "minimal_neutral_contact",
+    "renderer": "BoundedContactFx",
+    "element": "neutral",
+    "fixedSmall": false,
+    "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+  },
+  {
+    "key": "card:red_streak_bet",
+    "definitionId": "red_streak_bet",
+    "sourceKind": "card",
+    "family": "minimal_neutral_contact",
+    "renderer": "BoundedContactFx",
+    "element": "neutral",
+    "fixedSmall": false,
+    "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+  },
+  {
+    "key": "card:red_double_dice",
+    "definitionId": "red_double_dice",
+    "sourceKind": "card",
+    "family": "pierce_contact",
+    "renderer": "PlayerContactFx",
+    "element": "physical",
+    "fixedSmall": false,
+    "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+  },
+  {
+    "key": "card:red_leap_arrow",
+    "definitionId": "red_leap_arrow",
+    "sourceKind": "card",
+    "family": "fire",
+    "renderer": "FireContinuousFx",
+    "element": "fire",
+    "fixedSmall": false,
+    "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+  },
+  {
+    "key": "card:red_double_down",
+    "definitionId": "red_double_down",
+    "sourceKind": "card",
+    "family": "minimal_neutral_contact",
+    "renderer": "BoundedContactFx",
+    "element": "neutral",
+    "fixedSmall": false,
+    "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+  }
+]

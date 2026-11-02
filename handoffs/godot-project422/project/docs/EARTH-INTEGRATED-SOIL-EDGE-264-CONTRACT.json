@@ -1,0 +1,42 @@
+{
+  "revision": 264,
+  "base": "held263",
+  "scope": "Earth integrate existing principal soilbank with dark opening; no new raw/plane copy",
+  "cause": "263 projected darkbelly128x14.2px/face3.44px improvesratio but separate soilbank and opening lack one rupture hierarchy",
+  "changes": {
+    "principalBank": "remove independent piece0 only; reuse its same originalraw crop and gain on mainOpening positive-side boundary, no extra mainbank",
+    "mainFace": "uniform role1 quad replaced with original soil texture; maximum authoredheight .065 vs old independent piece0 .22",
+    "bottom": "Point(u,side1,y.002), shares exact opening edge",
+    "top": "Point(u,1+.10*soilShape, .006+.065*soilShape*(.77+.23*sin(2.7u)))",
+    "soilShape": "Ease(age/.065)*(1-Ease((age-.14)/.24)) (oldmainrise/fall)",
+    "soilOpacity": "Ease(age/.018)*(1-Ease((age-.40)/.17)) (oldmain)",
+    "uv": "unprocessed1254raw; uPixel=8+(.01+.42*q)*1238, rowTop490/1254 rowBottom826/1254; partial advancingq does not stretch fullraw",
+    "edgeAlpha": "Ease(q/.12)*Ease((advance-q)/.16)"
+  },
+  "fixed": [
+    "263 darkopening path/width/timing/role0",
+    "secondary opening",
+    "bankpiece1/2 allvalues",
+    "rocks/dust/focus/rawquad",
+    "all actual/rules/seed/owner/StageActor/worldlight",
+    "all nonEarth functions"
+  ],
+  "topology": {
+    "sameSixKinds": [
+      3,
+      1,
+      3,
+      2,
+      4,
+      14
+    ],
+    "lipsWrittenMax": 168,
+    "bankWrittenMax": 120,
+    "capacityEach": 512
+  },
+  "rawAdded": 0,
+  "shaderAdded": 0,
+  "native": "pending",
+  "art": "pending",
+  "risk": "long textured plate or detached soil edge remains nativegate; no claim before actual"
+}

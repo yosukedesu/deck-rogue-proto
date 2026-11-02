@@ -1,0 +1,10 @@
+{
+  "id": "hd2d-mass-heal",
+  "roles_srgb": {
+    "shadow": "#55666C",
+    "primary": "#B7D2DA",
+    "edge": "#F7F3E6",
+    "core": "#FFF1C8"
+  },
+  "scene_light_srgb": "#EED8AD"
+}

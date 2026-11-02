@@ -1,0 +1,32 @@
+{
+ "_": "scripts/art-lint.py が書く。keyflip = 画像ファイルを左右反転した絵 (StageUnitLit の _KeyFlip=1 の対象)。lightFromRight = 光が右から描き込まれている絵 (反転はしていない。_KeyFlip の候補)。名前は Resources/Art の絵の名前 (拡張子なし)",
+ "keyflip": [
+  "enemy_bowl_bug",
+  "enemy_brood_raptor",
+  "enemy_devoted_sculptor",
+  "enemy_elite_husk_1",
+  "enemy_elite_mirror_djinn",
+  "enemy_ember_furnace",
+  "enemy_haze_stag",
+  "enemy_haze_stag_96",
+  "enemy_kin_priest",
+  "enemy_mimic_jester",
+  "enemy_mourn_beast",
+  "enemy_scald_gnat",
+  "enemy_seal_orb",
+  "enemy_set_wary",
+  "enemy_vine_walker",
+  "enemy_wolf"
+ ],
+ "lightFromRight": [
+  "enemy_elite_doom_chanter",
+  "enemy_elite_iron_egg",
+  "enemy_kin_follower",
+  "enemy_kin_priest",
+  "enemy_mimic_imp",
+  "enemy_raptor_egg",
+  "enemy_wide_power",
+  "enemy_wolf",
+  "white_perm_hound"
+ ]
+}

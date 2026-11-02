@@ -1,0 +1,63 @@
+{
+  "revision": 330,
+  "base": "329-v2",
+  "cause": "329actualgreen main density over hero hair, external area only thin haze; actual64point projection and raw UVcenter diagnostic support registration cause, not missingdraw/illumination.",
+  "change": "Only along/center formulas in exact Vine factory, same continuous64vertices/no separatecap/root/motes changes.",
+  "along": {
+    "old": "(-.70+.04q)*(1-u)",
+    "new": "-.90+.30u+.60u^3+.04q*(1-u)",
+    "root": "u1=0 allq",
+    "continuity": "C1 smooth polynomial, derivative .30+1.80u^2-.04q positive in live domain"
+  },
+  "center": {
+    "old": "-.06*(1-u)-.12sin(pi*u)",
+    "new": "-.025*(1-u)-.03sin(pi*u)"
+  },
+  "actualBasisPrediction": {
+    "root": [
+      291.9942309865765,
+      374.2090575473375
+    ],
+    "u.5old": [
+      332.468212739594,
+      349.28821791693474
+    ],
+    "u.5new": [
+      374.5634479616451,
+      356.6195573545465
+    ],
+    "u.625new": [
+      361.2053863454181,
+      359.2800729888342
+    ],
+    "u.75new": [
+      343.58352305347904,
+      363.104404646665
+    ],
+    "u.875new": [
+      320.81156538282653,
+      368.0988649113292
+    ],
+    "normalViewport": [
+      1280,
+      720
+    ],
+    "fitResidualMaxPx": 4.3e-05,
+    "qualification": "reconstruction from actual329 billboard local/finalscreen correspondence; candidate prediction not actualnative/fragmentproof; no screenconstants in implementation"
+  },
+  "invariants": [
+    "allwidth/alpha/UV/HDR/raw/shader/time/oldmotes",
+    "all328clock/7damage/heroFlash/enemyactualmotion",
+    "TargetPeak0/FloorPeak0/actualworldlight0",
+    "allotherVine/Bounded notbroadened"
+  ],
+  "risks": [
+    "long leafcap+stem",
+    "closedleafplate insteadorganicpressure",
+    "intermediateface effective density insufficient",
+    "oldfade all-at-once remains independently temporal gate"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

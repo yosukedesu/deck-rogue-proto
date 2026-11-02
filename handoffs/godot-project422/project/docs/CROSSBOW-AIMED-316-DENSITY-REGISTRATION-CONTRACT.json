@@ -1,0 +1,36 @@
+{
+  "revision": 316,
+  "base": 315,
+  "basis": "315 rawB removesmilkyblur but actualdensemain mergeswithstep horizontals/corehurt. Readonly actualprojection+CPU rawalpha diagnostic supports placement/UVdensitydisconnect, not globalalpha or missingbinding.",
+  "diagnosis": {
+    "path": "qa/crossbow316-readonly/APPROXIMATE-ACTUAL-PROJECTION-ALPHA-MAP.json",
+    "qualification": "Actualframe37 vertexprojection x.8 plus originalPNGbilinear andshaderformula is approximateCPU coverage only. No actualGPU/depth/importfix reproduction.",
+    "estimatedMainAlphaAboveHalf": "269pixels bbox317..356/y374..386 onstep",
+    "estimatedCoreAlphaAboveHalf": "95pixels bbox291..301/y367..380 withinhurt/hair",
+    "centerUVBefore": "rawalpha alongu0/.167/.333/.5/.667/.833/1\u22480/138/240/0/0/0/0: largehole interruptscontactdirection"
+  },
+  "newComposition": {
+    "along": "-.98*(1-u)+.025q*(1-u), old-.60 extent replaced",
+    "center": "-.10*(1-u)-.05sinpiu, old+.060*(1-u)+.025sinpiu replaced",
+    "target": "actual1280density roughlyx350-390/y350-375 externaldarkspace is reviewgoal, notscreenconstant andnotguaranteedprojection",
+    "actualroot": "samecenter0; core/residuepositions andallwidth/alpha expressions unchanged",
+    "UV": "imageU=.35+.23u; imageV=.365+.35*(1-v)-.11u. OriginalB used unchanged; texturepath unchanged. Map main dense center through upperinterior instead of crossinghole. FullrangeU[.35,.58],V[.255,.715] finitewithinimage.",
+    "centerAlphaAfter": "originaldiagnostic0/211/239/250/247/134/59 atsameu stations, notlinearvisiblebrightness/quality proof",
+    "qualification": "combined maingeometry placement andUVdensity registration, notpureXYZ orpurematerial comparison. Localfootprintlength intentionallychanges; no false oldbboxinvariance."
+  },
+  "invariants": [
+    "mainwidth/vertexalpha/core48..55/residue56..63/oldmotes64..79 allunchanged",
+    "sameprivateRGB/gain/alphaformula/temporalwindows/maincontouru, so fixedUVtemporalformula unchanged buttexture registration changespixels",
+    "rawBoriginal/no newgeneration/import; rejectedA remainsunbound",
+    "313actualclock/owner/actor/14Vulnerable/zeroLight/worldwash/fullotherroute unchanged"
+  ],
+  "gates": [
+    "mainonebelly inexternaldarkspace, taperconnection actualroot/opening remains",
+    "notlonggraybelt/ribbon/floatingchunk/hairtail; numericUVcontinuity notcraftPASS",
+    "all13age/commit/core/residue/motes actualinvariance; read-onlymainprojection andmaterialbinding",
+    "nativeinitialstill beforeownmovie, noalpha/gainrescue"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

@@ -1,0 +1,23 @@
+{
+  "revision": 282,
+  "base": 281,
+  "scope": "Exact card:blue_maelstrom/card/local_water_flow/LocalMaterialProfileFx/water/nonSmall with exact definition. Dedicated cache identity. No broad Water profile admission.",
+  "geometry": "Replace only body sampling with one uneven open curl and short subordinate lip using dense interior crop of existing water-flow-surface-r1. Two existing 33x5 grids, 330 body vertices/512 triangles; core4/2tri and droplets48/24tri unchanged. Existing texture alpha retained; extra geometric transparent edges.",
+  "unchanged": [
+    "all old Sample bodies",
+    "core and particle sampler",
+    "LightEnvelope/TargetAreaW/FloorAreaW",
+    "NativeLead0/bodyend .17/end .263",
+    "shader palette raw and import",
+    "Stage actor source target scheduling receipts rules",
+    "other local water cards and direct WaterStrike/Wide"
+  ],
+  "recipe": "Real blue_flash cost0 draw2/exhaust -> count1/E3/Ice1 -> Maelstrom cost3 base4 each alive -> Ice2/count2/E0. First-card count0 is separate SystemOutcome, not claimed covered.",
+  "newRaw": 0,
+  "qualifications": [
+    "Native/art pending",
+    "Same native occupied scale is target, must inspect actual projection",
+    "No cast/travel added; no closed thick ring",
+    "Existing raw full image inspected before reuse; no new texture generation"
+  ]
+}

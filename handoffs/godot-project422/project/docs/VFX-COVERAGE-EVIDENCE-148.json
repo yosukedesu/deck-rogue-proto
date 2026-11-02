@@ -1,0 +1,4000 @@
+{
+  "scope": "Read-only correction proposal for frozen148 ledger; no product edits, no new native runs. Selected claims come from checkpoint reports plus passing actual primary-ID transitions, not registry presence.",
+  "ledger": "attack-hd2d-prototype-20261025/revision148-source/docs/VFX-ROLLOUT-COVERAGE.json",
+  "candidate_rows": 39,
+  "rows": [
+    {
+      "id": "black_drain",
+      "name": "生命吸収",
+      "old_state": "candidate107",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        107
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV107-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev107-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev107-dark-blocked",
+          "checks": 194,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_drain",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev107-dark-blocked/black_drain-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "8641b631-8842-4801-8712-76eb4b4df66e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev107-dark-heal0",
+          "checks": 219,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_drain",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev107-dark-heal0/black_drain-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "8641b631-8842-4801-8712-76eb4b4df66e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev107-dark-heal1",
+          "checks": 273,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_drain",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev107-dark-heal1/black_drain-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "8641b631-8842-4801-8712-76eb4b4df66e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev107-dark-keys",
+          "checks": 249,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_drain",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev107-dark-keys/black_drain-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "8641b631-8842-4801-8712-76eb4b4df66e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev107-dark-middle",
+          "checks": 236,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_drain",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev107-dark-middle/black_drain-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "8641b631-8842-4801-8712-76eb4b4df66e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev107-dark-middle-movie",
+          "checks": 56,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_drain",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev107-dark-middle-movie/black_drain-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "8e449039-c3db-4794-a3d6-e3fba9762027",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev107-dark-movie",
+          "checks": 56,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_drain",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev107-dark-movie/black_drain-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "8e449039-c3db-4794-a3d6-e3fba9762027",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Direct card outgoing Dark only; capped/zero/blocked recovery independent. No inferred stolen-HP return or generic nested pairing.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "black_big_drain",
+      "name": "貪り喰らう",
+      "old_state": "candidate110",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        110
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV110-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev110-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev110-big",
+          "checks": 237,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_big_drain",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev110-big/black_big_drain-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "9dc7e554-cd17-414f-83d0-3b866c982e77",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev110-big-blocked",
+          "checks": 195,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_big_drain",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev110-big-blocked/black_big_drain-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "9dc7e554-cd17-414f-83d0-3b866c982e77",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Direct card single Dark; Block100 retains independent heal.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "black_blood_price",
+      "name": "血の代償",
+      "old_state": "candidate138",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        138
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV138-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev138-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-black_blood_price-standard",
+          "checks": 210,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_blood_price",
+          "event_types": [
+            "CardPlayed",
+            "HpLost",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-black_blood_price-standard/black_blood_price-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-blood-price-movie",
+          "checks": 50,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_blood_price",
+          "event_types": [
+            "CardPlayed",
+            "HpLost",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-blood-price-movie/black_blood_price-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "a7592118-bde4-4de8-b595-32edf8b2cb89",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-price-blocked",
+          "checks": 165,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_blood_price",
+          "event_types": [
+            "CardPlayed",
+            "HpLost",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-price-blocked/black_blood_price-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-price-lifecycle",
+          "checks": 238,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_blood_price",
+          "event_types": [
+            "CardPlayed",
+            "HpLost",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-price-lifecycle/black_blood_price-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-price-lowhp",
+          "checks": 207,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_blood_price",
+          "event_types": [
+            "CardPlayed",
+            "HpLost",
+            "DamageDealt",
+            "CombatEnded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-price-lowhp/black_blood_price-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Selfloss6 BEFORE outgoing24; actual HP6 still engine emits outgoing thenCombatEnded. No drain/heal invented.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "black_wraith_feast",
+      "name": "死霊の饗宴",
+      "old_state": "candidate110",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        110
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV110-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev110-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev110-wraith-at",
+          "checks": 302,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_wraith_feast",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained",
+            "CardExhausted",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev110-wraith-at/black_wraith_feast-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "9dc7e554-cd17-414f-83d0-3b866c982e77",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev110-wraith-at-movie",
+          "checks": 83,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_wraith_feast",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained",
+            "CardExhausted",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev110-wraith-at-movie/black_wraith_feast-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "93aebc8c-dae8-45c1-931a-28ff5b9e7406",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev110-wraith-below",
+          "checks": 275,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_wraith_feast",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained",
+            "CardExhausted",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev110-wraith-below/black_wraith_feast-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "9dc7e554-cd17-414f-83d0-3b866c982e77",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Direct card Dark; real exhaust pile 4/5 threshold produces14/26; heals retain actual caps/passives.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "black_blood_thirst",
+      "name": "血の渇き",
+      "old_state": "candidate110",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        110
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV110-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev110-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev110-blood",
+          "checks": 237,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_blood_thirst",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev110-blood/black_blood_thirst-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "9dc7e554-cd17-414f-83d0-3b866c982e77",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Direct card outgoing Dark only; self-exhaust/necro recovery remains nonattack, tested negative.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "black_corpse_kiss",
+      "name": "骸の口づけ",
+      "old_state": "candidate112_card_only",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        112
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV112-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev112-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev112-direct",
+          "checks": 346,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "black_corpse_kiss",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpHealed",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev112-direct/black_corpse_kiss-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "dc8fcd7c-7c3c-49f2-87e1-f41e3685e641",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "SourceKind card only. Identical textual key with SourceKind necro remains legacy; real censer negative tested, not new necro art acceptance.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "blue_ice_wall",
+      "name": "氷壁",
+      "old_state": "candidate108",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        108
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV108-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev108-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev108-blue_ice_wall",
+          "checks": 225,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_ice_wall",
+          "event_types": [
+            "CardPlayed",
+            "IceBlockGained",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev108-blue_ice_wall/blue_ice_wall-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e05defb5-6893-4020-924e-155e689513f7",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev108-blue_ice_wall-movie",
+          "checks": 47,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_ice_wall",
+          "event_types": [
+            "CardPlayed",
+            "IceBlockGained",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev108-blue_ice_wall-movie/blue_ice_wall-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "a7caf13e-005d-4479-bcc2-6ca87c422d42",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Exact primary support owner, actual positive Ice gain; passive gains independent.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "blue_frost_chain",
+      "name": "氷結の連鎖",
+      "old_state": "candidate108",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        108
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV108-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev108-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev108-blue_frost_chain",
+          "checks": 200,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_frost_chain",
+          "event_types": [
+            "CardPlayed",
+            "IceBlockGained",
+            "CardsDrawn",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev108-blue_frost_chain/blue_frost_chain-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e05defb5-6893-4020-924e-155e689513f7",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        }
+      ],
+      "accepted_scope_and_exclusions": "Exact primary Ice owner; draw and passive gain remain independent.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "blue_thick_ice",
+      "name": "厚氷の盾",
+      "old_state": "candidate108",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        108
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV108-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev108-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev108-blue_thick_ice",
+          "checks": 200,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_thick_ice",
+          "event_types": [
+            "CardPlayed",
+            "IceBlockGained",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev108-blue_thick_ice/blue_thick_ice-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e05defb5-6893-4020-924e-155e689513f7",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        }
+      ],
+      "accepted_scope_and_exclusions": "Exact primary Ice owner; no ordinary Block inference.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "blue_rolling_wave",
+      "name": "巻き波",
+      "old_state": "candidate148_merge",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        146
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV146-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev146-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-standard",
+          "checks": 868,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_rolling_wave",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-standard/blue_rolling_wave-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "9f658afb-8ee7-4076-959a-fafc431cf425",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-standard-movie",
+          "checks": 136,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_rolling_wave",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-standard-movie/blue_rolling_wave-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e7967b61-fa5c-45b7-87b1-10c3bf35f0ca",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-bright-brute",
+          "checks": 502,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_rolling_wave",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-bright-brute/blue_rolling_wave-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c6643578-f6ff-4d29-b92d-cbb7e7f3b3b5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-small-phone",
+          "checks": 504,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_rolling_wave",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-small-phone/blue_rolling_wave-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c6643578-f6ff-4d29-b92d-cbb7e7f3b3b5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-first-block",
+          "checks": 754,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_rolling_wave",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-first-block/blue_rolling_wave-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c6643578-f6ff-4d29-b92d-cbb7e7f3b3b5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-first-dead",
+          "checks": 758,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_rolling_wave",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-first-dead/blue_rolling_wave-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c6643578-f6ff-4d29-b92d-cbb7e7f3b3b5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-all-blocked",
+          "checks": 284,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_rolling_wave",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-all-blocked/blue_rolling_wave-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c6643578-f6ff-4d29-b92d-cbb7e7f3b3b5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-lifecycle",
+          "checks": 1871,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_rolling_wave",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-lifecycle/blue_rolling_wave-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c6643578-f6ff-4d29-b92d-cbb7e7f3b3b5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-two-priors",
+          "checks": 1039,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_rolling_wave",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-two-priors/blue_rolling_wave-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c6643578-f6ff-4d29-b92d-cbb7e7f3b3b5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-zero",
+          "checks": 282,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_rolling_wave",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-zero/blue_rolling_wave-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c6643578-f6ff-4d29-b92d-cbb7e7f3b3b5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-firstblock-movie",
+          "checks": 148,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "blue_rolling_wave",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "IceBlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev146-waterwide-firstblock-movie/blue_rolling_wave-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "b46025b8-0747-481b-8adf-10b388a45e7b",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Shared Water path selected146, merged148. Current CardsPlayed count (own increment later), zero/allblocked/sparse/death/path reset; not single Water per target.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_double_lash",
+      "name": "二連の蔦打ち",
+      "old_state": "candidate114",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        114
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV114-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev114-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev114-attribution",
+          "checks": 186,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_double_lash",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev114-attribution/green_double_lash-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "5de9cb96-d1c4-4b6b-9eec-4a9db428f111",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-blocked",
+          "checks": 200,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_double_lash",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-blocked/green_double_lash-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "5a447048-a238-4ec9-badc-99a11955634e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-bright-brute",
+          "checks": 307,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_double_lash",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-bright-brute/green_double_lash-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "5a447048-a238-4ec9-badc-99a11955634e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-chain-cancel",
+          "checks": 253,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_double_lash",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-chain-cancel/green_double_lash-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "5a447048-a238-4ec9-badc-99a11955634e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-dark-small",
+          "checks": 309,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_double_lash",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-dark-small/green_double_lash-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "5a447048-a238-4ec9-badc-99a11955634e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-keys",
+          "checks": 321,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_double_lash",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-keys/green_double_lash-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "5a447048-a238-4ec9-badc-99a11955634e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-lifecycle",
+          "checks": 207,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_double_lash",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "EnemyDied"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-lifecycle/green_double_lash-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "5a447048-a238-4ec9-badc-99a11955634e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-middle",
+          "checks": 307,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_double_lash",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-middle/green_double_lash-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "5a447048-a238-4ec9-badc-99a11955634e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-middle-movie",
+          "checks": 60,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_double_lash",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-middle-movie/green_double_lash-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "0a18f425-6c64-486c-a430-35cba576f1e5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-movie",
+          "checks": 60,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_double_lash",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev114-vegetal-movie/green_double_lash-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "0a18f425-6c64-486c-a430-35cba576f1e5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Actual two-hit Vegetal; first death skips later damage, blocked/system, middle and cleanup bounded.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_fang",
+      "name": "牙の一撃",
+      "old_state": "candidate143_merge",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        141
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV141-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev141-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev141-fang-blue-small",
+          "checks": 195,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_fang",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev141-fang-blue-small/green_fang-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "b2a6f485-e0fb-45d9-8938-4910c65d774c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev141-fang-lifecycle",
+          "checks": 224,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_fang",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev141-fang-lifecycle/green_fang-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "b2a6f485-e0fb-45d9-8938-4910c65d774c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev141-fang-middle",
+          "checks": 193,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_fang",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev141-fang-middle/green_fang-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "b2a6f485-e0fb-45d9-8938-4910c65d774c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev141-fang-middle-movie",
+          "checks": 48,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_fang",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev141-fang-middle-movie/green_fang-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "476f6fef-4af1-4c19-b199-8965d3260a76",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev141-fang-pierce-block",
+          "checks": 193,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_fang",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev141-fang-pierce-block/green_fang-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "b2a6f485-e0fb-45d9-8938-4910c65d774c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev141-fang-spider",
+          "checks": 201,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_fang",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev141-fang-spider/green_fang-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "b2a6f485-e0fb-45d9-8938-4910c65d774c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev141-fang-standard",
+          "checks": 209,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_fang",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev141-fang-standard/green_fang-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "b2a6f485-e0fb-45d9-8938-4910c65d774c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev141-fang-standard-movie",
+          "checks": 48,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_fang",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev141-fang-standard-movie/green_fang-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "476f6fef-4af1-4c19-b199-8965d3260a76",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev141-fang-turnarmor-zero",
+          "checks": 163,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_fang",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev141-fang-turnarmor-zero/green_fang-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "b2a6f485-e0fb-45d9-8938-4910c65d774c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev141-fang-white-brute",
+          "checks": 193,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_fang",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev141-fang-white-brute/green_fang-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "b2a6f485-e0fb-45d9-8938-4910c65d774c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        }
+      ],
+      "accepted_scope_and_exclusions": "Selected141 opposed pressure only, merged143. Real pierce/turnArmor zero, standard/spider/size/middle; rejected91–96/139 not retroactively selected.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_guard",
+      "name": "防御",
+      "old_state": "candidate136_support",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        135
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV135-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev135-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev135-guard-frail",
+          "checks": 435,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_guard",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev135-guard-frail/green_guard-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d01b4191-716c-42c2-bc55-e5e1350661ae",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev135-guard-lifecycle",
+          "checks": 460,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_guard",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev135-guard-lifecycle/green_guard-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d01b4191-716c-42c2-bc55-e5e1350661ae",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev135-guard-standard",
+          "checks": 425,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_guard",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev135-guard-standard/green_guard-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d01b4191-716c-42c2-bc55-e5e1350661ae",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev135-guard-standard-movie",
+          "checks": 44,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_guard",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev135-guard-standard-movie/green_guard-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "6142d674-315b-4520-a458-121da99d006e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev135-guard-watcher",
+          "checks": 437,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_guard",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained",
+            "StrengthGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev135-guard-watcher/green_guard-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d01b4191-716c-42c2-bc55-e5e1350661ae",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Exact ordinaryBlock primary owner; Frail/lifecycle/watcher and unrelated passive negatives.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_entangle",
+      "name": "絡み蔦",
+      "old_state": "candidate136_merge",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        134,
+        135
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV134-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev134-native-receipts.json",
+        "attack-hd2d-prototype-20261025/qa/REV135-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev135-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev134-bind-blocked",
+          "checks": 157,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev134-bind-blocked/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "99059add-1164-4229-9415-d0364d6ea750",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev134-bind-blue-small",
+          "checks": 195,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev134-bind-blue-small/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "99059add-1164-4229-9415-d0364d6ea750",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev134-bind-defence-negative",
+          "checks": 389,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev134-bind-defence-negative/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "99059add-1164-4229-9415-d0364d6ea750",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev134-bind-lifecycle",
+          "checks": 224,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev134-bind-lifecycle/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "99059add-1164-4229-9415-d0364d6ea750",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev134-bind-middle",
+          "checks": 193,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev134-bind-middle/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "99059add-1164-4229-9415-d0364d6ea750",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev134-bind-middle-movie",
+          "checks": 48,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev134-bind-middle-movie/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "153d84b0-9304-496d-97a6-07da10af1d44",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev134-bind-standard",
+          "checks": 197,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev134-bind-standard/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "99059add-1164-4229-9415-d0364d6ea750",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev134-bind-standard-movie",
+          "checks": 48,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev134-bind-standard-movie/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "153d84b0-9304-496d-97a6-07da10af1d44",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev134-bind-white-brute",
+          "checks": 193,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev134-bind-white-brute/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "99059add-1164-4229-9415-d0364d6ea750",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev135-entangle-banneret-negative",
+          "checks": 125,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev135-entangle-banneret-negative/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d01b4191-716c-42c2-bc55-e5e1350661ae",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev135-entangle-defence",
+          "checks": 425,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev135-entangle-defence/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d01b4191-716c-42c2-bc55-e5e1350661ae",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev135-entangle-frail",
+          "checks": 435,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev135-entangle-frail/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d01b4191-716c-42c2-bc55-e5e1350661ae",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev135-entangle-thorn-negative",
+          "checks": 125,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_entangle",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev135-entangle-thorn-negative/green_entangle-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d01b4191-716c-42c2-bc55-e5e1350661ae",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Attack ModeIndex1 selected134 Bind; defence ModeIndex0 selected135 Guard; merged136. Real alternating mode and passive ownership negative controls. Same ID contributes one attack and one support scope.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_finisher_wrath",
+      "name": "大樹の怒り",
+      "old_state": "candidate128",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        128
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV128-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev128-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev128-green_finisher_wrath-standard",
+          "checks": 239,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_finisher_wrath",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "GrowthAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev128-green_finisher_wrath-standard/green_finisher_wrath-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "a819393e-044a-43f7-85a2-b74b55946534",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev128-wrath-blocked",
+          "checks": 183,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_finisher_wrath",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "GrowthAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev128-wrath-blocked/green_finisher_wrath-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "a819393e-044a-43f7-85a2-b74b55946534",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        }
+      ],
+      "accepted_scope_and_exclusions": "Actual damage36 thenGrowth1, including blocked; abstract pressure, not tree/root.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_sig_vine_dance",
+      "name": "蔦の乱舞",
+      "old_state": "candidate128",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        128
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV128-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev128-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev128-green_sig_vine_dance-standard",
+          "checks": 729,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_sig_vine_dance",
+          "event_types": [
+            "CardPlayed",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev128-green_sig_vine_dance-standard/green_sig_vine_dance-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "a819393e-044a-43f7-85a2-b74b55946534",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev128-vine-blocked",
+          "checks": 488,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_sig_vine_dance",
+          "event_types": [
+            "CardPlayed",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev128-vine-blocked/green_sig_vine_dance-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "a819393e-044a-43f7-85a2-b74b55946534",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev128-vine-dance-movie",
+          "checks": 89,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_sig_vine_dance",
+          "event_types": [
+            "CardPlayed",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev128-vine-dance-movie/green_sig_vine_dance-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "265f0a07-e5d5-40a8-9132-b04696358a6a",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev128-vine-first-death",
+          "checks": 244,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_sig_vine_dance",
+          "event_types": [
+            "CardPlayed",
+            "GrowthAdded",
+            "DamageDealt",
+            "EnemyDied",
+            "GrowthAdded",
+            "GrowthAdded",
+            "GrowthAdded",
+            "GrowthAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev128-vine-first-death/green_sig_vine_dance-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "a819393e-044a-43f7-85a2-b74b55946534",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev128-vine-lifecycle",
+          "checks": 764,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_sig_vine_dance",
+          "event_types": [
+            "CardPlayed",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt",
+            "GrowthAdded",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev128-vine-lifecycle/green_sig_vine_dance-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "a819393e-044a-43f7-85a2-b74b55946534",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Five actual Growth1→damage pairs. Initial growth0 yields3/4/5/6/7; first lethal omits later damage but remaining Growth persists.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_leaf_strike",
+      "name": "見切り撃ち",
+      "old_state": "candidate138",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        138
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV138-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev138-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-green_leaf_strike-standard",
+          "checks": 202,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_leaf_strike",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "GrowthAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-green_leaf_strike-standard/green_leaf_strike-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-leaf-defend",
+          "checks": 199,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_leaf_strike",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "CardsDrawn"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-leaf-defend/green_leaf_strike-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-leaf-lethal",
+          "checks": 219,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_leaf_strike",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "EnemyDied",
+            "GrowthAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-leaf-lethal/green_leaf_strike-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        }
+      ],
+      "accepted_scope_and_exclusions": "Real enc_probe_pair attack vs defend predicates; pierce thenGrowth/draw. Distinct from deferred green_leaf_blade; no invented leaf coating.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_earth_roar",
+      "name": "大地の唸り",
+      "old_state": "candidate126",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        126
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV126-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev126-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev126-earth-all-blocked",
+          "checks": 483,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_earth_roar",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev126-earth-all-blocked/green_earth_roar-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c869dc22-2e06-4443-9bb6-2ce493f18a23",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev126-earth-bright-brute",
+          "checks": 253,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_earth_roar",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev126-earth-bright-brute/green_earth_roar-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c869dc22-2e06-4443-9bb6-2ce493f18a23",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev126-earth-first-wave-death",
+          "checks": 706,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_earth_roar",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "EnemyDied",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev126-earth-first-wave-death/green_earth_roar-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c869dc22-2e06-4443-9bb6-2ce493f18a23",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev126-earth-high-movie",
+          "checks": 84,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_earth_roar",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev126-earth-high-movie/green_earth_roar-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "b78c0578-3ce5-4505-a384-10ebffbbe94b",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev126-earth-high-wave",
+          "checks": 827,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_earth_roar",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev126-earth-high-wave/green_earth_roar-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c869dc22-2e06-4443-9bb6-2ce493f18a23",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev126-earth-lifecycle",
+          "checks": 879,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_earth_roar",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev126-earth-lifecycle/green_earth_roar-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c869dc22-2e06-4443-9bb6-2ce493f18a23",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev126-earth-small-phone",
+          "checks": 255,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_earth_roar",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev126-earth-small-phone/green_earth_roar-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c869dc22-2e06-4443-9bb6-2ce493f18a23",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev126-earth-sparse",
+          "checks": 593,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_earth_roar",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev126-earth-sparse/green_earth_roar-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c869dc22-2e06-4443-9bb6-2ce493f18a23",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev126-earth-standard-keys",
+          "checks": 432,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_earth_roar",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev126-earth-standard-keys/green_earth_roar-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c4b6d532-43fa-4fed-8ecd-c34e9230084e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev126-earth-standard-movie",
+          "checks": 66,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_earth_roar",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev126-earth-standard-movie/green_earth_roar-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "bef87de1-5222-41b0-bd99-93de2d4f4da5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Actual EnergyMaxAtTurnStart3/5 one/two all-target passes; sparse/death/blocked order. Selected126, merged127/129; no general Earth registry promotion.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_spreading_vine",
+      "name": "増える蔦",
+      "old_state": "candidate122",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        122
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV122-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev122-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev122-green_spreading_vine",
+          "checks": 208,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_spreading_vine",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "CardCopied"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev122-green_spreading_vine/green_spreading_vine-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "4551a24a-929d-4719-97c7-99fd8d939820",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev122-green_spreading_vine-movie",
+          "checks": 50,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_spreading_vine",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "CardCopied"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev122-green_spreading_vine-movie/green_spreading_vine-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "0a2ce8cd-75e7-467f-a26d-ded74fb9af95",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev122-vine-blocked",
+          "checks": 143,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_spreading_vine",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "CardCopied"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev122-vine-blocked/green_spreading_vine-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "4551a24a-929d-4719-97c7-99fd8d939820",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        }
+      ],
+      "accepted_scope_and_exclusions": "One actual damage then CardCopied realUID in discard, including blocked. Single Vegetal impulse.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_verdant_hour",
+      "name": "深緑の刻",
+      "old_state": "candidate128",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        128
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV128-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev128-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev128-green_verdant_hour-standard",
+          "checks": 234,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_verdant_hour",
+          "event_types": [
+            "CardPlayed",
+            "GrowthAdded",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev128-green_verdant_hour-standard/green_verdant_hour-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "a819393e-044a-43f7-85a2-b74b55946534",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev128-verdant-threshold",
+          "checks": 312,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_verdant_hour",
+          "event_types": [
+            "CardPlayed",
+            "GrowthAdded",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev128-verdant-threshold/green_verdant_hour-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "a819393e-044a-43f7-85a2-b74b55946534",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Growth first; real prior commands reach threshold; actual6 vs8+9 preserve current growth.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_sprint",
+      "name": "疾駆",
+      "old_state": "candidate122",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        122
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV122-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev122-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev122-green_sprint",
+          "checks": 202,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_sprint",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev122-green_sprint/green_sprint-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "4551a24a-929d-4719-97c7-99fd8d939820",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev122-sprint-pierce",
+          "checks": 183,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_sprint",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev122-sprint-pierce/green_sprint-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "4551a24a-929d-4719-97c7-99fd8d939820",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        }
+      ],
+      "accepted_scope_and_exclusions": "Piercing2 beforeMomentum3; actual Block100 retained.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_tailwind",
+      "name": "追い風",
+      "old_state": "candidate122",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        122
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV122-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev122-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev122-green_tailwind",
+          "checks": 202,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_tailwind",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev122-green_tailwind/green_tailwind-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "4551a24a-929d-4719-97c7-99fd8d939820",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev122-green_tailwind-movie",
+          "checks": 48,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_tailwind",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev122-green_tailwind-movie/green_tailwind-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "0a2ce8cd-75e7-467f-a26d-ded74fb9af95",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev122-tailwind-free",
+          "checks": 193,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_tailwind",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev122-tailwind-free/green_tailwind-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "4551a24a-929d-4719-97c7-99fd8d939820",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        }
+      ],
+      "accepted_scope_and_exclusions": "Actual paid/free threshold with prior real Sprints; damage6/12, no synthetic counter.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "green_catalyst_light",
+      "name": "軽石の盾",
+      "old_state": "candidate137_support",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        137
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV137-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev137-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev137-green_catalyst_light-frail",
+          "checks": 419,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_catalyst_light",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev137-green_catalyst_light-frail/green_catalyst_light-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "dceb37ff-76df-4025-91ad-a8eb741ee798",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev137-green_catalyst_light-standard",
+          "checks": 419,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "green_catalyst_light",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev137-green_catalyst_light-standard/green_catalyst_light-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "dceb37ff-76df-4025-91ad-a8eb741ee798",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Exact ordinaryBlock5/Frail3; explicit abstract brace, not literal stone; no fusion discount invented.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "red_spreading_fire",
+      "name": "延焼弾",
+      "old_state": "candidate124",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        124
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV124-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev124-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev124-red_spreading_fire-standard",
+          "checks": 245,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_spreading_fire",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "BurnApplied",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev124-red_spreading_fire-standard/red_spreading_fire-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "37365f17-01f7-4e68-9005-d94212e6f00e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev124-spreading-blaze",
+          "checks": 228,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_spreading_fire",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "BurnApplied",
+            "BlazeIgnited",
+            "CardsDrawn",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev124-spreading-blaze/red_spreading_fire-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "37365f17-01f7-4e68-9005-d94212e6f00e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev124-spreading-blocked",
+          "checks": 164,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_spreading_fire",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "BurnApplied",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev124-spreading-blocked/red_spreading_fire-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "37365f17-01f7-4e68-9005-d94212e6f00e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Fire8→Burn6→conditional draw; actual prior burn/blaze branch and blocked preserve Burn. Burn status-tick art is separate scope.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "red_reckless",
+      "name": "捨て身の一撃",
+      "old_state": "candidate138",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        138
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV138-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev138-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-reckless-lifecycle",
+          "checks": 238,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_reckless",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpLost",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-reckless-lifecycle/red_reckless-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-reckless-lowhp",
+          "checks": 227,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_reckless",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "EnemyDied",
+            "HpLost",
+            "MomentumAdded",
+            "CombatEnded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-reckless-lowhp/red_reckless-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-red_reckless-standard",
+          "checks": 210,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_reckless",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "HpLost",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-red_reckless-standard/red_reckless-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Outgoing14 then selfloss3; lethal enemy/selfloss ordering, independent block/ice unchanged.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "red_final_blow",
+      "name": "とどめの一撃",
+      "old_state": "candidate115",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        115
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV115-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev115-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev115-finalblow-above",
+          "checks": 209,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_final_blow",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev115-finalblow-above/red_final_blow-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e2ae48ab-3227-4172-9046-13b3b9681b04",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev115-finalblow-blocked",
+          "checks": 161,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_final_blow",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev115-finalblow-blocked/red_final_blow-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e2ae48ab-3227-4172-9046-13b3b9681b04",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev115-finalblow-lethal",
+          "checks": 264,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_final_blow",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "EnemyDied",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev115-finalblow-lethal/red_final_blow-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e2ae48ab-3227-4172-9046-13b3b9681b04",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev115-finalblow-movie",
+          "checks": 46,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_final_blow",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev115-finalblow-movie/red_final_blow-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "54e239b7-5f77-466b-99e7-1812004d3bdb",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev115-finalblow-threshold",
+          "checks": 209,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_final_blow",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev115-finalblow-threshold/red_final_blow-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e2ae48ab-3227-4172-9046-13b3b9681b04",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Cut alias; actual HP threshold51/200 vs50/200, damage10/28, blocked/lethal and lifecycle.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "red_fang_breaker",
+      "name": "砕牙",
+      "old_state": "candidate122",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        122
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV122-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev122-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev122-fang-blocked",
+          "checks": 141,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_fang_breaker",
+          "event_types": [
+            "CardPlayed",
+            "EnemyWeakened",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev122-fang-blocked/red_fang_breaker-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "4551a24a-929d-4719-97c7-99fd8d939820",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev122-red_fang_breaker",
+          "checks": 202,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_fang_breaker",
+          "event_types": [
+            "CardPlayed",
+            "EnemyWeakened",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev122-red_fang_breaker/red_fang_breaker-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "4551a24a-929d-4719-97c7-99fd8d939820",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Weak1 before damage13; blocked preserves Weak/red passive; abstract pressure not Fang anatomy.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "red_flurry",
+      "name": "灼熱の連打",
+      "old_state": "candidate118",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        118
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV118-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev118-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev118-flurry-blocked",
+          "checks": 276,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_flurry",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev118-flurry-blocked/red_flurry-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "ae07ec09-ec93-43b3-a077-6966a229c8f8",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev118-flurry-cancellation",
+          "checks": 435,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_flurry",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev118-flurry-cancellation/red_flurry-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "ae07ec09-ec93-43b3-a077-6966a229c8f8",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev118-flurry-first-death",
+          "checks": 229,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_flurry",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "EnemyDied",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev118-flurry-first-death/red_flurry-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "ae07ec09-ec93-43b3-a077-6966a229c8f8",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev118-flurry-keys",
+          "checks": 412,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_flurry",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev118-flurry-keys/red_flurry-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "ae07ec09-ec93-43b3-a077-6966a229c8f8",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev118-flurry-movie",
+          "checks": 65,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_flurry",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev118-flurry-movie/red_flurry-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "16945c72-7480-4056-b38d-8afc1f9808b1",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev118-flurry-second-death",
+          "checks": 333,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_flurry",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "EnemyDied",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev118-flurry-second-death/red_flurry-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "ae07ec09-ec93-43b3-a077-6966a229c8f8",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Three renewed neutral pressure impulses; actual first/second death reduces contacts, blocked and cleanup; no inferred fists.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "red_double_tap",
+      "name": "二連の火弾",
+      "old_state": "candidate124",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        124
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV124-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev124-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev124-double-blocked",
+          "checks": 216,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_double_tap",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev124-double-blocked/red_double_tap-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "37365f17-01f7-4e68-9005-d94212e6f00e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev124-double-first-death",
+          "checks": 239,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_double_tap",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "EnemyDied",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev124-double-first-death/red_double_tap-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "37365f17-01f7-4e68-9005-d94212e6f00e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev124-double-lifecycle",
+          "checks": 367,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_double_tap",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev124-double-lifecycle/red_double_tap-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "37365f17-01f7-4e68-9005-d94212e6f00e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev124-double-tap-movie",
+          "checks": 64,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_double_tap",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev124-double-tap-movie/red_double_tap-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "67e0f7f1-9469-4549-90e5-85cad4fb7a7a",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev124-double-white-brute",
+          "checks": 337,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_double_tap",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev124-double-white-brute/red_double_tap-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "37365f17-01f7-4e68-9005-d94212e6f00e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev124-red_double_tap-standard",
+          "checks": 349,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_double_tap",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "DamageDealt",
+            "MomentumAdded"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev124-red_double_tap-standard/red_double_tap-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "37365f17-01f7-4e68-9005-d94212e6f00e",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        }
+      ],
+      "accepted_scope_and_exclusions": "Two actual5 hits; first lethal emits one; blocked keeps two system outcomes, lifecycle bounded.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "red_catalyst_light",
+      "name": "火口の綿",
+      "old_state": "candidate137_support",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        137
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV137-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev137-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev137-red_catalyst_light-frail",
+          "checks": 419,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_catalyst_light",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev137-red_catalyst_light-frail/red_catalyst_light-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "dceb37ff-76df-4025-91ad-a8eb741ee798",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev137-red_catalyst_light-standard",
+          "checks": 419,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "red_catalyst_light",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev137-red_catalyst_light-standard/red_catalyst_light-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "dceb37ff-76df-4025-91ad-a8eb741ee798",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Exact ordinaryBlock5/Frail3; abstract brace not cotton/fire material.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "white_guard",
+      "name": "白盾",
+      "old_state": "candidate136_support",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        135
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV135-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev135-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev135-white-guard-phone",
+          "checks": 435,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_guard",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev135-white-guard-phone/white_guard-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d01b4191-716c-42c2-bc55-e5e1350661ae",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "EXACT white_guard played in rev135-white-guard-phone, not green_guard with white leader. One native run435 checks. PositiveBlock5 at75/75HP, owned support. No separate white_guard Frail/lifecycle run found in135: inherited family checks are green_guard/entangle, not per-ID reruns.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "white_mass_heal",
+      "name": "大いなる癒し",
+      "old_state": "candidate108",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        108
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV108-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev108-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-0",
+          "checks": 115,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_mass_heal",
+          "event_types": [
+            "CardPlayed",
+            "HpHealed",
+            "LightGained",
+            "LightGained",
+            "CardsAddedToHand",
+            "CardExhausted"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-0/white_mass_heal-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e05defb5-6893-4020-924e-155e689513f7",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-1",
+          "checks": 239,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_mass_heal",
+          "event_types": [
+            "CardPlayed",
+            "HpHealed",
+            "LightGained",
+            "LightGained",
+            "CardsAddedToHand",
+            "CardExhausted"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-1/white_mass_heal-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e05defb5-6893-4020-924e-155e689513f7",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-15",
+          "checks": 239,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_mass_heal",
+          "event_types": [
+            "CardPlayed",
+            "HpHealed",
+            "LightGained",
+            "LightGained",
+            "CardsAddedToHand",
+            "CardExhausted"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-15/white_mass_heal-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e05defb5-6893-4020-924e-155e689513f7",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-nested-0",
+          "checks": 122,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_mass_heal",
+          "event_types": [
+            "CardPlayed",
+            "HpHealed",
+            "CardsMilled",
+            "NecroFired",
+            "HpHealed",
+            "LightGained",
+            "LightGained",
+            "LightGained",
+            "CardsAddedToHand",
+            "CardExhausted"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-nested-0/white_mass_heal-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e05defb5-6893-4020-924e-155e689513f7",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-nested-16",
+          "checks": 264,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_mass_heal",
+          "event_types": [
+            "CardPlayed",
+            "HpHealed",
+            "CardsMilled",
+            "NecroFired",
+            "HpHealed",
+            "LightGained",
+            "LightGained",
+            "LightGained",
+            "CardsAddedToHand",
+            "CardExhausted"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-nested-16/white_mass_heal-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e05defb5-6893-4020-924e-155e689513f7",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev108-white_mass_heal-movie",
+          "checks": 49,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_mass_heal",
+          "event_types": [
+            "CardPlayed",
+            "HpHealed",
+            "LightGained",
+            "LightGained",
+            "CardsAddedToHand",
+            "CardExhausted"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev108-white_mass_heal-movie/white_mass_heal-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "a7caf13e-005d-4479-bcc2-6ca87c422d42",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Exact owning-action recovery; capped15/1/0, actual nested censer1/0 separate. Zero owns no flourish. No general direct-effect heal provenance theorem.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "white_mode_crossroad",
+      "name": "灯の岐路",
+      "old_state": "candidate106-mode-branch",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        106
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV106-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev106-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev106-crossroad-attack",
+          "checks": 233,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_mode_crossroad",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "EnemyWeakened"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev106-crossroad-attack/white_mode_crossroad-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c9004d2e-9b40-4cfd-bb65-1fc7a48b26a8",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev106-crossroad-attack-movie",
+          "checks": 50,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_mode_crossroad",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "EnemyWeakened"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev106-crossroad-attack-movie/white_mode_crossroad-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "e36b1305-3090-40db-b587-84090bb4f3ab",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev106-crossroad-blocked",
+          "checks": 152,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_mode_crossroad",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "EnemyWeakened"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev106-crossroad-blocked/white_mode_crossroad-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c9004d2e-9b40-4cfd-bb65-1fc7a48b26a8",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev106-crossroad-defence",
+          "checks": 378,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_mode_crossroad",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev106-crossroad-defence/white_mode_crossroad-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "c9004d2e-9b40-4cfd-bb65-1fc7a48b26a8",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        }
+      ],
+      "accepted_scope_and_exclusions": "Mode0 Light damage10→Weak2 accepted106. Mode1 Block14 nonleakage tested only: existing system Block, NOT selected new Guard art and NOT a support-owner entry.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "white_rally",
+      "name": "灯の集い",
+      "old_state": "candidate138",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        138
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV138-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev138-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-rally-blocked",
+          "checks": 167,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_rally",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-rally-blocked/white_rally-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-rally-one",
+          "checks": 209,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_rally",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-rally-one/white_rally-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-rally-two",
+          "checks": 214,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_rally",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "BlockGained",
+            "BlockGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-rally-two/white_rally-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev138-rally-zero",
+          "checks": 162,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_rally",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev138-rally-zero/white_rally-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "65733afd-7f75-446a-b515-d14b439b880c",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Noninnate permanent count0/1/2 yields0/6/12; zero remains system, passiveBlock independent, not one-hit-per-permanent.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "white_light_hoard",
+      "name": "灯り溜め",
+      "old_state": "candidate137_support",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        137
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV137-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev137-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev137-hoard-movie",
+          "checks": 44,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_light_hoard",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev137-hoard-movie/white_light_hoard-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "9258f501-9825-4ee5-bb9c-1afc1cd33bf4",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev137-white_light_hoard-frail",
+          "checks": 419,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_light_hoard",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev137-white_light_hoard-frail/white_light_hoard-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "dceb37ff-76df-4025-91ad-a8eb741ee798",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev137-white_light_hoard-standard",
+          "checks": 419,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_light_hoard",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev137-white_light_hoard-standard/white_light_hoard-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "dceb37ff-76df-4025-91ad-a8eb741ee798",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Exact ordinaryBlock8/Frail6; Light2 remains separate status, not Light beam.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "white_light_spray",
+      "name": "灯のしぶき",
+      "old_state": "candidate120",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        120
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV120-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev120-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev120-scatter-all-blocked",
+          "checks": 249,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_light_spray",
+          "event_types": [
+            "CardPlayed",
+            "LightSpent",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev120-scatter-all-blocked/white_light_spray-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "11bbd0e9-c77c-47be-92c0-5330d7db6c84",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": true
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev120-scatter-bright-brute",
+          "checks": 219,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_light_spray",
+          "event_types": [
+            "CardPlayed",
+            "LightSpent",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev120-scatter-bright-brute/white_light_spray-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "ef2ff5d0-3cb0-428b-857e-e76f15410da5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev120-scatter-first-block",
+          "checks": 317,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_light_spray",
+          "event_types": [
+            "CardPlayed",
+            "LightSpent",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev120-scatter-first-block/white_light_spray-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "ef2ff5d0-3cb0-428b-857e-e76f15410da5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev120-scatter-first-dead-b",
+          "checks": 284,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_light_spray",
+          "event_types": [
+            "CardPlayed",
+            "LightSpent",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev120-scatter-first-dead-b/white_light_spray-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "11bbd0e9-c77c-47be-92c0-5330d7db6c84",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev120-scatter-lifecycle",
+          "checks": 398,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_light_spray",
+          "event_types": [
+            "CardPlayed",
+            "LightSpent",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev120-scatter-lifecycle/white_light_spray-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "11bbd0e9-c77c-47be-92c0-5330d7db6c84",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev120-scatter-small-phone",
+          "checks": 221,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_light_spray",
+          "event_types": [
+            "CardPlayed",
+            "LightSpent",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev120-scatter-small-phone/white_light_spray-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "ef2ff5d0-3cb0-428b-857e-e76f15410da5",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev120-spray-standard-keys",
+          "checks": 355,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_light_spray",
+          "event_types": [
+            "CardPlayed",
+            "LightSpent",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev120-spray-standard-keys/white_light_spray-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "44809516-01df-473d-8723-f7519c0617ce",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev120-spray-standard-movie",
+          "checks": 62,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_light_spray",
+          "event_types": [
+            "CardPlayed",
+            "LightSpent",
+            "DamageDealt",
+            "DamageDealt",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev120-spray-standard-movie/white_light_spray-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "834a2cd9-5e69-473b-a788-cabe8674ffab",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Actual Light cost/gather, first-positive receiver ownership, blocked/sparse/insufficientLight/repeat; no shipped onLightDischarged passive fixture claimed.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "white_shining_strike",
+      "name": "輝きの一撃",
+      "old_state": "candidate122",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        122
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV122-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev122-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev122-white_shining_strike",
+          "checks": 202,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_shining_strike",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "LightGained"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev122-white_shining_strike/white_shining_strike-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "4551a24a-929d-4719-97c7-99fd8d939820",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Neutral outgoing8 followed by independentLight2; no invented Light coating.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "white_severance",
+      "name": "断ち切り",
+      "old_state": "candidate109",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        109
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV109-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev109-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev109-severance",
+          "checks": 244,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_severance",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "CardsAddedToDraw",
+            "CardsAddedToDiscard",
+            "CardsAddedToHand"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev109-severance/white_severance-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d4b16f0f-f89d-4937-b290-9c2a9206b205",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev109-severance-blocked",
+          "checks": 161,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_severance",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "CardsAddedToDraw",
+            "CardsAddedToDiscard",
+            "CardsAddedToHand"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev109-severance-blocked/white_severance-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d4b16f0f-f89d-4937-b290-9c2a9206b205",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev109-severance-movie",
+          "checks": 50,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "white_severance",
+          "event_types": [
+            "CardPlayed",
+            "DamageDealt",
+            "CardsAddedToDraw",
+            "CardsAddedToDiscard",
+            "CardsAddedToHand"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev109-severance-movie/white_severance-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d123b627-c548-4320-a6a9-cf967e713187",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Cut damage13 then one token each draw/discard/hand; axis spark is not coating requirement.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    },
+    {
+      "id": "fusion_practice_swing",
+      "name": "素振り",
+      "old_state": "candidate109",
+      "recommended_state": "selected148-inherited-bounded",
+      "acceptance_revisions": [
+        109
+      ],
+      "evidence": [
+        "attack-hd2d-prototype-20261025/qa/REV109-CHECKPOINT-QA.txt",
+        "attack-hd2d-prototype-20261025/qa/rev109-native-receipts.json"
+      ],
+      "actual_primary_card_runs": [
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev109-fusion-aura",
+          "checks": 212,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "fusion_practice_swing",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev109-fusion-aura/fusion_practice_swing-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d4b16f0f-f89d-4937-b290-9c2a9206b205",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev109-fusion-free",
+          "checks": 210,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "fusion_practice_swing",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev109-fusion-free/fusion_practice_swing-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d4b16f0f-f89d-4937-b290-9c2a9206b205",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        },
+        {
+          "directory": "attack-hd2d-prototype-20261025/qa/rev109-fusion-paid",
+          "checks": 210,
+          "pass": true,
+          "exit_code": 0,
+          "primary_card": "fusion_practice_swing",
+          "event_types": [
+            "CardPlayed",
+            "BlockGained",
+            "DamageDealt"
+          ],
+          "transition": "attack-hd2d-prototype-20261025/qa/rev109-fusion-paid/fusion_practice_swing-complete-rule-transition.json",
+          "runtime": {
+            "mvid": "d4b16f0f-f89d-4937-b290-9c2a9206b205",
+            "assembly": "DeckRogue, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+          },
+          "shutdown_resource_notice": false
+        }
+      ],
+      "accepted_scope_and_exclusions": "Actual fusion recipe play Block5→damage7; real hand/aura paid/free cost. Fusion crafting UI NOT tested.",
+      "native_evidence_note": "Listed runs prove exact primary ID and passing ordered transition; some are negative/blocked branches, not each a positive authored effect. Visual selection derives from checkpoint bounded review. No reruns performed by this audit."
+    }
+  ],
+  "hashes": {
+    "attack-hd2d-prototype-20261025/qa/REV107-CHECKPOINT-QA.txt": "bf969930e3dcb11df4fe4afafe2b483b5b10453fc195c177888211c90a9b8131",
+    "attack-hd2d-prototype-20261025/qa/rev107-native-receipts.json": "46d51cb78190bfa7f42d8ad15991a2cc49da7d15d1372b0f919d1399eaeeb593",
+    "attack-hd2d-prototype-20261025/qa/rev107-dark-blocked/black_drain-complete-rule-transition.json": "59ea227bf2b1c42a5f9c3d8132522afcab01cbc3d1216982410f2ddc5faed275",
+    "attack-hd2d-prototype-20261025/qa/rev107-dark-heal0/black_drain-complete-rule-transition.json": "1b6fc7b5c6f1b005440129e8212a2decc1273a46454727d8c8bba565f10e3b49",
+    "attack-hd2d-prototype-20261025/qa/rev107-dark-heal1/black_drain-complete-rule-transition.json": "726b29155bcbf7bdf7314b832b1baf0a58915dc1f33a3581d9e8db39b2e42041",
+    "attack-hd2d-prototype-20261025/qa/rev107-dark-keys/black_drain-complete-rule-transition.json": "8321fd23e436ef90d0bbe15a431d0ec608c0ec243a8c466524b7e26789f8c705",
+    "attack-hd2d-prototype-20261025/qa/rev107-dark-middle/black_drain-complete-rule-transition.json": "5542b688b4a80bbfb9710cdbd436da0f3064ce2ff44c5ae2c2b7dc4d5f794435",
+    "attack-hd2d-prototype-20261025/qa/rev107-dark-middle-movie/black_drain-complete-rule-transition.json": "5542b688b4a80bbfb9710cdbd436da0f3064ce2ff44c5ae2c2b7dc4d5f794435",
+    "attack-hd2d-prototype-20261025/qa/rev107-dark-movie/black_drain-complete-rule-transition.json": "8321fd23e436ef90d0bbe15a431d0ec608c0ec243a8c466524b7e26789f8c705",
+    "attack-hd2d-prototype-20261025/qa/REV110-CHECKPOINT-QA.txt": "ccd3f61a53aca87eee8e9afe7fdd18b920c01e9a7b00448bf8dbb34a5a1b7d14",
+    "attack-hd2d-prototype-20261025/qa/rev110-native-receipts.json": "49ec81ec90b7ab0ac81c4530d8137794e3fe533a2e22fd0954821032d2782c92",
+    "attack-hd2d-prototype-20261025/qa/rev110-big/black_big_drain-complete-rule-transition.json": "f1daaa570d383c6943f12994219fe42cad345f9aebf55e7f9b936c66d06eb1d2",
+    "attack-hd2d-prototype-20261025/qa/rev110-big-blocked/black_big_drain-complete-rule-transition.json": "0783df26a73d2c985c525a158b4e01affad7c9b192c042d98ee03201c423b7b6",
+    "attack-hd2d-prototype-20261025/qa/REV138-CHECKPOINT-QA.txt": "4ce21f73c3da0554c7f28dcf36479be153737a3031b6383eea9cd2f5aa73c55d",
+    "attack-hd2d-prototype-20261025/qa/rev138-native-receipts.json": "076f6a8254d0b1d8ea2fd5cdefbfd39fc856243d12073e3e112a1c969492b42b",
+    "attack-hd2d-prototype-20261025/qa/rev138-black_blood_price-standard/black_blood_price-complete-rule-transition.json": "34c0ddf2c54aaab4aa6cd004babfcd3e7c319cc31b241edbfdcb40f1a2b43a4d",
+    "attack-hd2d-prototype-20261025/qa/rev138-blood-price-movie/black_blood_price-complete-rule-transition.json": "34c0ddf2c54aaab4aa6cd004babfcd3e7c319cc31b241edbfdcb40f1a2b43a4d",
+    "attack-hd2d-prototype-20261025/qa/rev138-price-blocked/black_blood_price-complete-rule-transition.json": "9a457d990980ea1702defc5c4b5c4a0df2e90b4c9e5c4a4a201dd0aeef108db2",
+    "attack-hd2d-prototype-20261025/qa/rev138-price-lifecycle/black_blood_price-complete-rule-transition.json": "34c0ddf2c54aaab4aa6cd004babfcd3e7c319cc31b241edbfdcb40f1a2b43a4d",
+    "attack-hd2d-prototype-20261025/qa/rev138-price-lowhp/black_blood_price-complete-rule-transition.json": "0d20d0678966f02a4c4e3e3a574f4603c6e4edefa520a94c778297539e3ea15f",
+    "attack-hd2d-prototype-20261025/qa/rev110-wraith-at/black_wraith_feast-complete-rule-transition.json": "73eed51e8960a79deb6d9fbb4ec007a5aa204fafa470cf4ebf4533a31d9bcde4",
+    "attack-hd2d-prototype-20261025/qa/rev110-wraith-at-movie/black_wraith_feast-complete-rule-transition.json": "73eed51e8960a79deb6d9fbb4ec007a5aa204fafa470cf4ebf4533a31d9bcde4",
+    "attack-hd2d-prototype-20261025/qa/rev110-wraith-below/black_wraith_feast-complete-rule-transition.json": "80f0e527c05f8dca3f9449b0f5c664b664c9ac6ae96680c601c10946cce2ec81",
+    "attack-hd2d-prototype-20261025/qa/rev110-blood/black_blood_thirst-complete-rule-transition.json": "f36cd2d013cf04e37525c7e1db746a038f18da8303a093988d16de5d2862a374",
+    "attack-hd2d-prototype-20261025/qa/REV112-CHECKPOINT-QA.txt": "163b94a11ba82c47563260e685fef26e9b5252d583193df6901635ae45f5a3b0",
+    "attack-hd2d-prototype-20261025/qa/rev112-native-receipts.json": "c94b60e40015b2cbe2aa5f06f389644b7c9f40d5f46acdc0195f32a72862298e",
+    "attack-hd2d-prototype-20261025/qa/rev112-direct/black_corpse_kiss-complete-rule-transition.json": "73cae96c91246a914c88ddbc4a8cb533928376409cc4cea8c62b69d6178eabeb",
+    "attack-hd2d-prototype-20261025/qa/REV108-CHECKPOINT-QA.txt": "8561f57f7c048e51d299d71e953ce499ce927365f4ce08af7dad59619c41cd11",
+    "attack-hd2d-prototype-20261025/qa/rev108-native-receipts.json": "fa808193cae1fb9bd548031b2bd9e27e1ebcf110acb178a7dc45e326672063e3",
+    "attack-hd2d-prototype-20261025/qa/rev108-blue_ice_wall/blue_ice_wall-complete-rule-transition.json": "16575db134cb793a11f3be4e7ab37b005326e706f1c14f084383ac07a9516d6f",
+    "attack-hd2d-prototype-20261025/qa/rev108-blue_ice_wall-movie/blue_ice_wall-complete-rule-transition.json": "e96e55feb1a6cf4b1dcba5cd121b46ea4a7067a0f6d205dfbb4632eff890138b",
+    "attack-hd2d-prototype-20261025/qa/rev108-blue_frost_chain/blue_frost_chain-complete-rule-transition.json": "058260f6e426adb8d22fb46897f5843808e156fc137a7f6874e589eeb304d6e6",
+    "attack-hd2d-prototype-20261025/qa/rev108-blue_thick_ice/blue_thick_ice-complete-rule-transition.json": "2305db7af0c532eb0ed29bf9c7f0a5defd1986299a047f9db9a286c7a7bf2778",
+    "attack-hd2d-prototype-20261025/qa/REV146-CHECKPOINT-QA.txt": "9116f4e092b7108570bb5141c0d843482ec1c2db245ab7b691aa76073250ca48",
+    "attack-hd2d-prototype-20261025/qa/rev146-native-receipts.json": "0d1b4e2ca4054b69f6824e3a7562fb36ea856066e3aca040d2a5259cff84260a",
+    "attack-hd2d-prototype-20261025/qa/rev146-waterwide-standard/blue_rolling_wave-complete-rule-transition.json": "86fef282f71c37d1a9579e28fe122b179512af0cf9ca47a566527a2e0289d48f",
+    "attack-hd2d-prototype-20261025/qa/rev146-waterwide-standard-movie/blue_rolling_wave-complete-rule-transition.json": "86fef282f71c37d1a9579e28fe122b179512af0cf9ca47a566527a2e0289d48f",
+    "attack-hd2d-prototype-20261025/qa/rev146-waterwide-bright-brute/blue_rolling_wave-complete-rule-transition.json": "a55a299148f36a91fdd53662038b4169219258a155d282693e565990b2b56a57",
+    "attack-hd2d-prototype-20261025/qa/rev146-waterwide-small-phone/blue_rolling_wave-complete-rule-transition.json": "eb7fba8704c8f4ed3bdf2769dea6c7f1aefd96092591c2abbec49be1792713c7",
+    "attack-hd2d-prototype-20261025/qa/rev146-waterwide-first-block/blue_rolling_wave-complete-rule-transition.json": "920145e6eb5494e2a9fea53e0d91014138f5e5e1d5cdbf554633c48948ffe8e0",
+    "attack-hd2d-prototype-20261025/qa/rev146-waterwide-first-dead/blue_rolling_wave-complete-rule-transition.json": "33ed10630eb426749106ef468757b1d3e7df8ceceed98a6ff06da013bab5550b",
+    "attack-hd2d-prototype-20261025/qa/rev146-waterwide-all-blocked/blue_rolling_wave-complete-rule-transition.json": "3621da00c8ca2de37ac861381190614e2631dec5e94b503001f9cfe5bdc0b562",
+    "attack-hd2d-prototype-20261025/qa/rev146-waterwide-lifecycle/blue_rolling_wave-complete-rule-transition.json": "86fef282f71c37d1a9579e28fe122b179512af0cf9ca47a566527a2e0289d48f",
+    "attack-hd2d-prototype-20261025/qa/rev146-waterwide-two-priors/blue_rolling_wave-complete-rule-transition.json": "3a5ad40bb8b6b43d8ce912d0e8bff975843f033dbfdf3d79607fe6e56db47973",
+    "attack-hd2d-prototype-20261025/qa/rev146-waterwide-zero/blue_rolling_wave-complete-rule-transition.json": "1858f0d032343112ebb047e4ffc21a4296d7eb9417341be9d7717a2e609b606c",
+    "attack-hd2d-prototype-20261025/qa/rev146-waterwide-firstblock-movie/blue_rolling_wave-complete-rule-transition.json": "920145e6eb5494e2a9fea53e0d91014138f5e5e1d5cdbf554633c48948ffe8e0",
+    "attack-hd2d-prototype-20261025/qa/REV114-CHECKPOINT-QA.txt": "96d5845f247dd50e80720b551aa9bfff6df2367dbe0faa30885adf2d8ee42da5",
+    "attack-hd2d-prototype-20261025/qa/rev114-native-receipts.json": "3d14c8bf116edd734cfe4f4e17328dc5c844337aba246342958a2461ae846192",
+    "attack-hd2d-prototype-20261025/qa/rev114-attribution/green_double_lash-complete-rule-transition.json": "c469bbc780cdaba295404634bf4c91a1a92b3246c17cd0f538c217f08cd65b04",
+    "attack-hd2d-prototype-20261025/qa/rev114-vegetal-blocked/green_double_lash-complete-rule-transition.json": "ff2ba84963d11f7e7c7fed1d33a306fdafb5ac35e6a5b0477191f9543f34c250",
+    "attack-hd2d-prototype-20261025/qa/rev114-vegetal-bright-brute/green_double_lash-complete-rule-transition.json": "8b72fc89ee2fd53a6d50648f541f739025852a6cfb987216f448fd7f8c596bf0",
+    "attack-hd2d-prototype-20261025/qa/rev114-vegetal-chain-cancel/green_double_lash-complete-rule-transition.json": "c469bbc780cdaba295404634bf4c91a1a92b3246c17cd0f538c217f08cd65b04",
+    "attack-hd2d-prototype-20261025/qa/rev114-vegetal-dark-small/green_double_lash-complete-rule-transition.json": "84ad45ca945892ead8a3532b79515286773d8e438384e83c09334f4d22694edd",
+    "attack-hd2d-prototype-20261025/qa/rev114-vegetal-keys/green_double_lash-complete-rule-transition.json": "c469bbc780cdaba295404634bf4c91a1a92b3246c17cd0f538c217f08cd65b04",
+    "attack-hd2d-prototype-20261025/qa/rev114-vegetal-lifecycle/green_double_lash-complete-rule-transition.json": "382add81cbf1d4f10380d92498ce3c772b840f5141efb81fd0581d1acfeb25d7",
+    "attack-hd2d-prototype-20261025/qa/rev114-vegetal-middle/green_double_lash-complete-rule-transition.json": "fa87b73da3a8b199118c5d6965f7e5c5b580c3fb06e35796a2f0a612c574edac",
+    "attack-hd2d-prototype-20261025/qa/rev114-vegetal-middle-movie/green_double_lash-complete-rule-transition.json": "fa87b73da3a8b199118c5d6965f7e5c5b580c3fb06e35796a2f0a612c574edac",
+    "attack-hd2d-prototype-20261025/qa/rev114-vegetal-movie/green_double_lash-complete-rule-transition.json": "c469bbc780cdaba295404634bf4c91a1a92b3246c17cd0f538c217f08cd65b04",
+    "attack-hd2d-prototype-20261025/qa/REV141-CHECKPOINT-QA.txt": "423c352e6662bb8d4b90b9b6c95a5ad05fb8766417166af0f6964e8a2f957152",
+    "attack-hd2d-prototype-20261025/qa/rev141-native-receipts.json": "f46d7e6e65674f4b4bb1986b7f0eaf11ba714dd9fb7f3cf3fa539169c53c5397",
+    "attack-hd2d-prototype-20261025/qa/rev141-fang-blue-small/green_fang-complete-rule-transition.json": "e09b04a2aa0f20a2f41eb68648700d452ee76547228e9fac49274b29fd5fd42e",
+    "attack-hd2d-prototype-20261025/qa/rev141-fang-lifecycle/green_fang-complete-rule-transition.json": "3d777aea32978530a04335a367c7fb2f00e44a7cb9dfe1db8da51da2cfa6507d",
+    "attack-hd2d-prototype-20261025/qa/rev141-fang-middle/green_fang-complete-rule-transition.json": "bdbca80b5109d3ef9e82c22f30dddfda610ef416effe4910206458eb4790a744",
+    "attack-hd2d-prototype-20261025/qa/rev141-fang-middle-movie/green_fang-complete-rule-transition.json": "bdbca80b5109d3ef9e82c22f30dddfda610ef416effe4910206458eb4790a744",
+    "attack-hd2d-prototype-20261025/qa/rev141-fang-pierce-block/green_fang-complete-rule-transition.json": "26456e89684cf7f86cc79046704c3131a849d58457b722f50ccf02722f54ad0d",
+    "attack-hd2d-prototype-20261025/qa/rev141-fang-spider/green_fang-complete-rule-transition.json": "20a4a0697179c9e8c422c66604d2b97f99ed03ee4011562f758c4ffba0672d93",
+    "attack-hd2d-prototype-20261025/qa/rev141-fang-standard/green_fang-complete-rule-transition.json": "3d777aea32978530a04335a367c7fb2f00e44a7cb9dfe1db8da51da2cfa6507d",
+    "attack-hd2d-prototype-20261025/qa/rev141-fang-standard-movie/green_fang-complete-rule-transition.json": "3d777aea32978530a04335a367c7fb2f00e44a7cb9dfe1db8da51da2cfa6507d",
+    "attack-hd2d-prototype-20261025/qa/rev141-fang-turnarmor-zero/green_fang-complete-rule-transition.json": "7cdd521d728bd95ddb4b13c1e120bd37d13c2d4a27b33d61fda6948cf89d33bd",
+    "attack-hd2d-prototype-20261025/qa/rev141-fang-white-brute/green_fang-complete-rule-transition.json": "3c2acf19ea469a0bdccd7a17414b1c8ded4bab615294637c3e46e166453d0969",
+    "attack-hd2d-prototype-20261025/qa/REV135-CHECKPOINT-QA.txt": "ab798977b3fe93b44f4527aabad023ec275e1d87db76643a22a8d17b8c1f018a",
+    "attack-hd2d-prototype-20261025/qa/rev135-native-receipts.json": "278907baa466b5d678c231f25d3bb146bc56a368269b9ec62b508cd65052f6e1",
+    "attack-hd2d-prototype-20261025/qa/rev135-guard-frail/green_guard-complete-rule-transition.json": "6e30ed1cf462d8a3c064e1a5cdc302b80fcd68582481d46a868d7acc7ab15fd1",
+    "attack-hd2d-prototype-20261025/qa/rev135-guard-lifecycle/green_guard-complete-rule-transition.json": "9babc4dfcd4f538c241a7e537e3e587489ce4a1f21e46a43f483e8b5a104e374",
+    "attack-hd2d-prototype-20261025/qa/rev135-guard-standard/green_guard-complete-rule-transition.json": "9babc4dfcd4f538c241a7e537e3e587489ce4a1f21e46a43f483e8b5a104e374",
+    "attack-hd2d-prototype-20261025/qa/rev135-guard-standard-movie/green_guard-complete-rule-transition.json": "9babc4dfcd4f538c241a7e537e3e587489ce4a1f21e46a43f483e8b5a104e374",
+    "attack-hd2d-prototype-20261025/qa/rev135-guard-watcher/green_guard-complete-rule-transition.json": "58236d36f2171f1e4f365f946ae4086d3de4af4c0496d0744323096fcfd82c43",
+    "attack-hd2d-prototype-20261025/qa/REV134-CHECKPOINT-QA.txt": "4167dbf65dac59c34d9f63929fa4574a32bcb7e230111fff2394ae4a50035e87",
+    "attack-hd2d-prototype-20261025/qa/rev134-native-receipts.json": "247b592ad357263a38635287e552bcb43d81496970e7785e998f84e94c595356",
+    "attack-hd2d-prototype-20261025/qa/rev134-bind-blocked/green_entangle-complete-rule-transition.json": "3cb19ae0cb4325a919bf1bff69c80a4939c33e709a3169dc6d76e16a5ffa4fd6",
+    "attack-hd2d-prototype-20261025/qa/rev134-bind-blue-small/green_entangle-complete-rule-transition.json": "408e8d655cbe4332a3f083b1af02c2d580fec0134b33db4d1abe1e06954097a4",
+    "attack-hd2d-prototype-20261025/qa/rev134-bind-defence-negative/green_entangle-complete-rule-transition.json": "47317ff84b907cb2118453071169974ee3ad65ef1e10043f8483c073e6419e51",
+    "attack-hd2d-prototype-20261025/qa/rev134-bind-lifecycle/green_entangle-complete-rule-transition.json": "3b40c202884a7fc2ba5fd9b503fd2cdf8bce8482d0a17cda1d708c47501a296c",
+    "attack-hd2d-prototype-20261025/qa/rev134-bind-middle/green_entangle-complete-rule-transition.json": "c8be5d56385efe07ae67d67dcd50880abb291300bfac258341a3268887636134",
+    "attack-hd2d-prototype-20261025/qa/rev134-bind-middle-movie/green_entangle-complete-rule-transition.json": "c8be5d56385efe07ae67d67dcd50880abb291300bfac258341a3268887636134",
+    "attack-hd2d-prototype-20261025/qa/rev134-bind-standard/green_entangle-complete-rule-transition.json": "3b40c202884a7fc2ba5fd9b503fd2cdf8bce8482d0a17cda1d708c47501a296c",
+    "attack-hd2d-prototype-20261025/qa/rev134-bind-standard-movie/green_entangle-complete-rule-transition.json": "3b40c202884a7fc2ba5fd9b503fd2cdf8bce8482d0a17cda1d708c47501a296c",
+    "attack-hd2d-prototype-20261025/qa/rev134-bind-white-brute/green_entangle-complete-rule-transition.json": "b2613ada4fb0ad9751c41b64db6d416c555e0157e6631abdd0d851e61bd4379a",
+    "attack-hd2d-prototype-20261025/qa/rev135-entangle-banneret-negative/green_entangle-complete-rule-transition.json": "3174797de205ff9130e01d87a46bd771d2a17fb2feab59eb9f00350e2c2a2913",
+    "attack-hd2d-prototype-20261025/qa/rev135-entangle-defence/green_entangle-complete-rule-transition.json": "47317ff84b907cb2118453071169974ee3ad65ef1e10043f8483c073e6419e51",
+    "attack-hd2d-prototype-20261025/qa/rev135-entangle-frail/green_entangle-complete-rule-transition.json": "8b65d4de3699defbbc683d7fa1922c99809c60b00d72c706cfe414c9b64b3e7b",
+    "attack-hd2d-prototype-20261025/qa/rev135-entangle-thorn-negative/green_entangle-complete-rule-transition.json": "73be69f6b8f21b6fb5134a997c9fea4846337bd00874c01d2c42900eda3a69bd",
+    "attack-hd2d-prototype-20261025/qa/REV128-CHECKPOINT-QA.txt": "e0ff8414f57dd6c3c4a5881f996c48f32113d71b97c503d9ca24aa6ae5972e52",
+    "attack-hd2d-prototype-20261025/qa/rev128-native-receipts.json": "3c957c1d1e38249f63b2f6446986c846a5c1b61428ae000c12aa15c81d519440",
+    "attack-hd2d-prototype-20261025/qa/rev128-green_finisher_wrath-standard/green_finisher_wrath-complete-rule-transition.json": "4b7a90ae3a00e7e450f519dc4fda0c6290b2b28a96c0bd35541427e07f1d2287",
+    "attack-hd2d-prototype-20261025/qa/rev128-wrath-blocked/green_finisher_wrath-complete-rule-transition.json": "5f0adadba9e3a782e294a92d72a8e1330d56e95692e338ffaf5b314ae5bcbe9a",
+    "attack-hd2d-prototype-20261025/qa/rev128-green_sig_vine_dance-standard/green_sig_vine_dance-complete-rule-transition.json": "10bb45b20a633db1859872ad22a7bb14ccbce6bb29b4a0339377ff04583b1535",
+    "attack-hd2d-prototype-20261025/qa/rev128-vine-blocked/green_sig_vine_dance-complete-rule-transition.json": "c6f627f3426b069c51022f994bc1e3f2f1b3fde1ce4b6894beb15e86e4bcaa3e",
+    "attack-hd2d-prototype-20261025/qa/rev128-vine-dance-movie/green_sig_vine_dance-complete-rule-transition.json": "10bb45b20a633db1859872ad22a7bb14ccbce6bb29b4a0339377ff04583b1535",
+    "attack-hd2d-prototype-20261025/qa/rev128-vine-first-death/green_sig_vine_dance-complete-rule-transition.json": "b494218284ad8f99daaa89a21b58b6b721cd0ec72d11caa88aeccf9fc8a106ec",
+    "attack-hd2d-prototype-20261025/qa/rev128-vine-lifecycle/green_sig_vine_dance-complete-rule-transition.json": "10bb45b20a633db1859872ad22a7bb14ccbce6bb29b4a0339377ff04583b1535",
+    "attack-hd2d-prototype-20261025/qa/rev138-green_leaf_strike-standard/green_leaf_strike-complete-rule-transition.json": "296232f85e213c6db994d898b54b76a9601b5186c0dab2d82a1fabbe9a02b991",
+    "attack-hd2d-prototype-20261025/qa/rev138-leaf-defend/green_leaf_strike-complete-rule-transition.json": "6a40368743b2bc4e9ffdd863169ab1cc87ec187fcf79da2ad1908ac0ac52b0b4",
+    "attack-hd2d-prototype-20261025/qa/rev138-leaf-lethal/green_leaf_strike-complete-rule-transition.json": "35b781159221a77ba6527065cd9b20ed7b4a3a3cf8e818f289b9f967ae63054e",
+    "attack-hd2d-prototype-20261025/qa/REV126-CHECKPOINT-QA.txt": "0eb338a9ef4785138de9eb2156edcef8206d01b7f09e94346f5327591aaf3ddb",
+    "attack-hd2d-prototype-20261025/qa/rev126-native-receipts.json": "d8106cd4e17709a44a69eaae63a6dbdcd522b2a12cf54244cc93e1ade4a24c46",
+    "attack-hd2d-prototype-20261025/qa/rev126-earth-all-blocked/green_earth_roar-complete-rule-transition.json": "b85586bb78e7c03d75768a082cb81c0f4518a715884a0da48206374805e442b2",
+    "attack-hd2d-prototype-20261025/qa/rev126-earth-bright-brute/green_earth_roar-complete-rule-transition.json": "dca771f48c019c3efd870cc7358397bcc5d81a39f8183e9f273a2bd3497b5764",
+    "attack-hd2d-prototype-20261025/qa/rev126-earth-first-wave-death/green_earth_roar-complete-rule-transition.json": "786f9fa8746f4b8ed7b8780b967f57393ce5f9cbe245cd9bc6164b675f2c4ed4",
+    "attack-hd2d-prototype-20261025/qa/rev126-earth-high-movie/green_earth_roar-complete-rule-transition.json": "0226b660237eb7bdebecfba38bebd4204e90baab09a7ac1a1a654b07d7792a2c",
+    "attack-hd2d-prototype-20261025/qa/rev126-earth-high-wave/green_earth_roar-complete-rule-transition.json": "0226b660237eb7bdebecfba38bebd4204e90baab09a7ac1a1a654b07d7792a2c",
+    "attack-hd2d-prototype-20261025/qa/rev126-earth-lifecycle/green_earth_roar-complete-rule-transition.json": "0226b660237eb7bdebecfba38bebd4204e90baab09a7ac1a1a654b07d7792a2c",
+    "attack-hd2d-prototype-20261025/qa/rev126-earth-small-phone/green_earth_roar-complete-rule-transition.json": "ea8f5570c37c83bb07a894e7c544e27e43efb11695b0b07f48da7531aabb8ab0",
+    "attack-hd2d-prototype-20261025/qa/rev126-earth-sparse/green_earth_roar-complete-rule-transition.json": "0ae8a5f92cac60261e59a0b2dff64ef1b680cf3269f53e818f5640ba0d43a67a",
+    "attack-hd2d-prototype-20261025/qa/rev126-earth-standard-keys/green_earth_roar-complete-rule-transition.json": "35e807939e9c006cf5c42b0dff444698de315405c0bce5f27e026c7544a838a7",
+    "attack-hd2d-prototype-20261025/qa/rev126-earth-standard-movie/green_earth_roar-complete-rule-transition.json": "35e807939e9c006cf5c42b0dff444698de315405c0bce5f27e026c7544a838a7",
+    "attack-hd2d-prototype-20261025/qa/REV122-CHECKPOINT-QA.txt": "33f8f2c691de6666ab5e1074f6d155879a17f88de29afc4aeb44e5c01a4ec054",
+    "attack-hd2d-prototype-20261025/qa/rev122-native-receipts.json": "8c6c0dd39919f28ee6280161ce7c7e397458786e0ff57a7b30fc3ddd9aa6915d",
+    "attack-hd2d-prototype-20261025/qa/rev122-green_spreading_vine/green_spreading_vine-complete-rule-transition.json": "d3d3153b252ecf200ca4f851817bfde735b1560337ac6f3bb74c45294856ae8b",
+    "attack-hd2d-prototype-20261025/qa/rev122-green_spreading_vine-movie/green_spreading_vine-complete-rule-transition.json": "d3d3153b252ecf200ca4f851817bfde735b1560337ac6f3bb74c45294856ae8b",
+    "attack-hd2d-prototype-20261025/qa/rev122-vine-blocked/green_spreading_vine-complete-rule-transition.json": "8d6cdb806af7ce0d689d1745cc609bc01112e265f682cc3017c37e286b118f33",
+    "attack-hd2d-prototype-20261025/qa/rev128-green_verdant_hour-standard/green_verdant_hour-complete-rule-transition.json": "d68bbf5a44a1ab76c0be93cc931a757777731adfa17b708a1d5dff1108210120",
+    "attack-hd2d-prototype-20261025/qa/rev128-verdant-threshold/green_verdant_hour-complete-rule-transition.json": "1423bf54a5e17100bb09f2cd76ea46121f4b90455e94ba0902918f5ee9db60f7",
+    "attack-hd2d-prototype-20261025/qa/rev122-green_sprint/green_sprint-complete-rule-transition.json": "3d74cb2039585de4368be26347bf340de1fc6d789bef1954201df23262583f74",
+    "attack-hd2d-prototype-20261025/qa/rev122-sprint-pierce/green_sprint-complete-rule-transition.json": "aa1e06b0394b353223e6b3888faffb43fecd22b10047f920eafc7465f0867848",
+    "attack-hd2d-prototype-20261025/qa/rev122-green_tailwind/green_tailwind-complete-rule-transition.json": "e6d94183f918979f9f304383d3f8a7e970947ffd905edf897de3723af526cc74",
+    "attack-hd2d-prototype-20261025/qa/rev122-green_tailwind-movie/green_tailwind-complete-rule-transition.json": "e6d94183f918979f9f304383d3f8a7e970947ffd905edf897de3723af526cc74",
+    "attack-hd2d-prototype-20261025/qa/rev122-tailwind-free/green_tailwind-complete-rule-transition.json": "6f0fea9c5036c4d0caab24f8af7ddbdda182ec688ec5c61f4b911f7208968cfa",
+    "attack-hd2d-prototype-20261025/qa/REV137-CHECKPOINT-QA.txt": "fd9a69be67e90941468ca1defe5da9fbdca548d12662e5171e3d4099a3d1fabd",
+    "attack-hd2d-prototype-20261025/qa/rev137-native-receipts.json": "7f7185ae448bef4b6410c4355ddeb727bab27ffd55d53d9b81dfd157b54588b0",
+    "attack-hd2d-prototype-20261025/qa/rev137-green_catalyst_light-frail/green_catalyst_light-complete-rule-transition.json": "ef11124b156f6e95631ace57518669079534676bdfd5bf3e22e3649437a4c928",
+    "attack-hd2d-prototype-20261025/qa/rev137-green_catalyst_light-standard/green_catalyst_light-complete-rule-transition.json": "22c6d137c52c05c73dcb74bb49a09d7529f2a18a3cc9056006dc5b7d35dbe296",
+    "attack-hd2d-prototype-20261025/qa/REV124-CHECKPOINT-QA.txt": "dedb2457d87fc1d4f90881e904c306d69431423a3c4677fe47db720a7e849859",
+    "attack-hd2d-prototype-20261025/qa/rev124-native-receipts.json": "fa4c93569b29ae5e38f2426fb68a8c83b55a720278083aaf9c4e049f7a17c25a",
+    "attack-hd2d-prototype-20261025/qa/rev124-red_spreading_fire-standard/red_spreading_fire-complete-rule-transition.json": "91ed1b21bda823ae28a71ef4328e8d3af1391bc0803d6ca6986af8f42938f6b8",
+    "attack-hd2d-prototype-20261025/qa/rev124-spreading-blaze/red_spreading_fire-complete-rule-transition.json": "f5e3ae43257630253f55439e51b6cf51a9c4b4a3c50c8210b3384e4a07d28c9a",
+    "attack-hd2d-prototype-20261025/qa/rev124-spreading-blocked/red_spreading_fire-complete-rule-transition.json": "8324dd0ff3128091504fb1cd757d3eccbc6f0c8839cf9a456137bbef3f0d5ba1",
+    "attack-hd2d-prototype-20261025/qa/rev138-reckless-lifecycle/red_reckless-complete-rule-transition.json": "3f1674c8eea9aca650bc64990f2f3a6fdf218f1536ea1645b6c49078bee21230",
+    "attack-hd2d-prototype-20261025/qa/rev138-reckless-lowhp/red_reckless-complete-rule-transition.json": "fa2322a4578c0a7148b8c79a8c7e0bdaff3b31b9277f0032c38c6b48a91b39d8",
+    "attack-hd2d-prototype-20261025/qa/rev138-red_reckless-standard/red_reckless-complete-rule-transition.json": "3f1674c8eea9aca650bc64990f2f3a6fdf218f1536ea1645b6c49078bee21230",
+    "attack-hd2d-prototype-20261025/qa/REV115-CHECKPOINT-QA.txt": "2a729f2a56cb07bcc17847916ffd9be357cef4795477018b07c422e6d5147e55",
+    "attack-hd2d-prototype-20261025/qa/rev115-native-receipts.json": "1373bb5a0a8f6dd994adbdc7305e2c3cbf7e33384db34231d1d56ca39bf97744",
+    "attack-hd2d-prototype-20261025/qa/rev115-finalblow-above/red_final_blow-complete-rule-transition.json": "2aabe606f8b705917705f43c345f413c5dbedd0dcfe39f06cbfddab9408792ae",
+    "attack-hd2d-prototype-20261025/qa/rev115-finalblow-blocked/red_final_blow-complete-rule-transition.json": "fccb3ab24dc5843978fd9b457ff7c440b3b903291c02c6fe6b21e78fcf778001",
+    "attack-hd2d-prototype-20261025/qa/rev115-finalblow-lethal/red_final_blow-complete-rule-transition.json": "dec3ffbc74fb972790f5c82b35ab1eab52a48d5b4dc5bb86f8885a0dc8604763",
+    "attack-hd2d-prototype-20261025/qa/rev115-finalblow-movie/red_final_blow-complete-rule-transition.json": "0783e71143f5bae90ae477f40b47dc393c997800a28f0217f6bd0bf84ef2c505",
+    "attack-hd2d-prototype-20261025/qa/rev115-finalblow-threshold/red_final_blow-complete-rule-transition.json": "0783e71143f5bae90ae477f40b47dc393c997800a28f0217f6bd0bf84ef2c505",
+    "attack-hd2d-prototype-20261025/qa/rev122-fang-blocked/red_fang_breaker-complete-rule-transition.json": "a660e31d7ed1f62c5485ca72534f8468988baf66f0ef00030ffe29ce7cc4dd42",
+    "attack-hd2d-prototype-20261025/qa/rev122-red_fang_breaker/red_fang_breaker-complete-rule-transition.json": "46044728ae7f180e8b5193a88d976ccb874cde2f1a11de12f0ccc987fc41bc8f",
+    "attack-hd2d-prototype-20261025/qa/REV118-CHECKPOINT-QA.txt": "eb880c2f5acbfdc31305119e58683065a1e52d6a5bdd6070e77c4b15754c9db7",
+    "attack-hd2d-prototype-20261025/qa/rev118-native-receipts.json": "772bf3e7bcc6a7604daf4cc8a5904270546711158e34e73fdedb4ded07c484b8",
+    "attack-hd2d-prototype-20261025/qa/rev118-flurry-blocked/red_flurry-complete-rule-transition.json": "7fb6aaef5918fc36cd1955af94c391c1f599126e408c9a5449e03489ef158020",
+    "attack-hd2d-prototype-20261025/qa/rev118-flurry-cancellation/red_flurry-complete-rule-transition.json": "810e33ab730655f8d8bec73f42d6e1ecafd8a5656cffbd32820a1b0000b1647c",
+    "attack-hd2d-prototype-20261025/qa/rev118-flurry-first-death/red_flurry-complete-rule-transition.json": "4909250ce0c043241e20287c3f72538a5856795521ba501f9e783aafd5445412",
+    "attack-hd2d-prototype-20261025/qa/rev118-flurry-keys/red_flurry-complete-rule-transition.json": "810e33ab730655f8d8bec73f42d6e1ecafd8a5656cffbd32820a1b0000b1647c",
+    "attack-hd2d-prototype-20261025/qa/rev118-flurry-movie/red_flurry-complete-rule-transition.json": "810e33ab730655f8d8bec73f42d6e1ecafd8a5656cffbd32820a1b0000b1647c",
+    "attack-hd2d-prototype-20261025/qa/rev118-flurry-second-death/red_flurry-complete-rule-transition.json": "efae167a1e7680a3ce02fd71f6445fe2bcecd8172f0f7a175ba61ea27e98123e",
+    "attack-hd2d-prototype-20261025/qa/rev124-double-blocked/red_double_tap-complete-rule-transition.json": "6e565a947fee1ff809749eb394f6b6fdfccf72fa774b39a7265508463afde6a6",
+    "attack-hd2d-prototype-20261025/qa/rev124-double-first-death/red_double_tap-complete-rule-transition.json": "92fc0860623457d0358cefd8a6716508dcc3a4876c31d95e96b414c62cfd237b",
+    "attack-hd2d-prototype-20261025/qa/rev124-double-lifecycle/red_double_tap-complete-rule-transition.json": "82ffc2ae6188578e3162f32c3fcac6a95b9b5da623735f35447ad1c6f5f94287",
+    "attack-hd2d-prototype-20261025/qa/rev124-double-tap-movie/red_double_tap-complete-rule-transition.json": "82ffc2ae6188578e3162f32c3fcac6a95b9b5da623735f35447ad1c6f5f94287",
+    "attack-hd2d-prototype-20261025/qa/rev124-double-white-brute/red_double_tap-complete-rule-transition.json": "c3b65538601ae36cf714faab9c532fc0d1ab53a6a7a4407467da8d8d7f2436cf",
+    "attack-hd2d-prototype-20261025/qa/rev124-red_double_tap-standard/red_double_tap-complete-rule-transition.json": "82ffc2ae6188578e3162f32c3fcac6a95b9b5da623735f35447ad1c6f5f94287",
+    "attack-hd2d-prototype-20261025/qa/rev137-red_catalyst_light-frail/red_catalyst_light-complete-rule-transition.json": "f23ed4629d526291d27244c55b4ad4f4817deeb50bfffa89793796094619b19d",
+    "attack-hd2d-prototype-20261025/qa/rev137-red_catalyst_light-standard/red_catalyst_light-complete-rule-transition.json": "d4449938fe16e37d00dc4112a167e292546e84c942c2bdb579ba2c67ab587e2d",
+    "attack-hd2d-prototype-20261025/qa/rev135-white-guard-phone/white_guard-complete-rule-transition.json": "cf940e075f9273bae6c6e1c8ea74923759555c93d52a118a00432a9118155e4f",
+    "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-0/white_mass_heal-complete-rule-transition.json": "475387bac1ebbcea81e77d2d042c06025a58b20bbbdbd07f4b1b80f144a83889",
+    "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-1/white_mass_heal-complete-rule-transition.json": "41061f25c13753d28a5d3849078257e4307c68f3ef2f5cba07491ed16d18cc48",
+    "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-15/white_mass_heal-complete-rule-transition.json": "4005660aa6db64a22408bfb66f56c975138cc24ba7220ac1ff19415b0b757ef9",
+    "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-nested-0/white_mass_heal-complete-rule-transition.json": "666e0554fa39a35d4089cf51f6033ca9ebe768008ec8f428d8b917c6ba327e9f",
+    "attack-hd2d-prototype-20261025/qa/rev108-mass-heal-nested-16/white_mass_heal-complete-rule-transition.json": "b02f1ef96abf3faed830fa0d6dd1bba69decf708fb532b331e7b1a77ea193de2",
+    "attack-hd2d-prototype-20261025/qa/rev108-white_mass_heal-movie/white_mass_heal-complete-rule-transition.json": "4005660aa6db64a22408bfb66f56c975138cc24ba7220ac1ff19415b0b757ef9",
+    "attack-hd2d-prototype-20261025/qa/REV106-CHECKPOINT-QA.txt": "79c16840d4e59a4b2c72891ed29b58b7a24187d02f5b772711b10d1d234e9f97",
+    "attack-hd2d-prototype-20261025/qa/rev106-native-receipts.json": "6e725de7fc98025a1d02b70ef3efcff62c1f062f95df68f1afa3bd01c441d6ce",
+    "attack-hd2d-prototype-20261025/qa/rev106-crossroad-attack/white_mode_crossroad-complete-rule-transition.json": "ed2e491efdacd9509aac667306519e3c052fbeaf8b03599259565ccbd240f951",
+    "attack-hd2d-prototype-20261025/qa/rev106-crossroad-attack-movie/white_mode_crossroad-complete-rule-transition.json": "ed2e491efdacd9509aac667306519e3c052fbeaf8b03599259565ccbd240f951",
+    "attack-hd2d-prototype-20261025/qa/rev106-crossroad-blocked/white_mode_crossroad-complete-rule-transition.json": "32fdb28ca6aad71773d6a4f4f5277a991d65b98000d32d55a5d74ca1b2587974",
+    "attack-hd2d-prototype-20261025/qa/rev106-crossroad-defence/white_mode_crossroad-complete-rule-transition.json": "9c880ecc2476f62c525a9defe21a264c2a6da3472d25d777cc80768c673de459",
+    "attack-hd2d-prototype-20261025/qa/rev138-rally-blocked/white_rally-complete-rule-transition.json": "35f8a72adef21a8e7ca80a98d3908b36ed24aa3953f90b67510b6068b318f2f4",
+    "attack-hd2d-prototype-20261025/qa/rev138-rally-one/white_rally-complete-rule-transition.json": "c201e6fe5964f0d47f09f54bcd105ee002b467e4c7e869631491a7e0f90a5497",
+    "attack-hd2d-prototype-20261025/qa/rev138-rally-two/white_rally-complete-rule-transition.json": "960b6af1a65c212347179d1411126606c5f9977bcfff83670b04ed54617e97a1",
+    "attack-hd2d-prototype-20261025/qa/rev138-rally-zero/white_rally-complete-rule-transition.json": "8dd29e351eb116e436d3d987cc4fc224192a31b6ad1afb1f3ca1dfa243d1717c",
+    "attack-hd2d-prototype-20261025/qa/rev137-hoard-movie/white_light_hoard-complete-rule-transition.json": "edf5e92cf58e6d6d9c268b72e308264c52b4f113e58c2cc69a498be9b004e147",
+    "attack-hd2d-prototype-20261025/qa/rev137-white_light_hoard-frail/white_light_hoard-complete-rule-transition.json": "f3c727a7d2271b71183bc4a52a8968f3d23e45ec4e85280a69d3635391b84504",
+    "attack-hd2d-prototype-20261025/qa/rev137-white_light_hoard-standard/white_light_hoard-complete-rule-transition.json": "edf5e92cf58e6d6d9c268b72e308264c52b4f113e58c2cc69a498be9b004e147",
+    "attack-hd2d-prototype-20261025/qa/REV120-CHECKPOINT-QA.txt": "f9dc8aa36582acd7f1b4024d5804706ce45163ab3534d3eeb246104405754e16",
+    "attack-hd2d-prototype-20261025/qa/rev120-native-receipts.json": "d267878c64eecaad9d9cd06d97942b7bc0c4732aa73356ae822c36ae9ec6a041",
+    "attack-hd2d-prototype-20261025/qa/rev120-scatter-all-blocked/white_light_spray-complete-rule-transition.json": "cd6b79d9ab06408f658ee49a7368daabd89943fd59f26c263d0b22cc834f772c",
+    "attack-hd2d-prototype-20261025/qa/rev120-scatter-bright-brute/white_light_spray-complete-rule-transition.json": "30a3613ba3976af1066a0a6b55a49f30b4bda067a7335de7cfda94bcdc2d331d",
+    "attack-hd2d-prototype-20261025/qa/rev120-scatter-first-block/white_light_spray-complete-rule-transition.json": "093d9dfc9c210d3c5cf041d284d586cdea85ec5d7aad98b600ab133e5b91acba",
+    "attack-hd2d-prototype-20261025/qa/rev120-scatter-first-dead-b/white_light_spray-complete-rule-transition.json": "b576edef7fc6c6a11329e94fb5fdb98106d74ed3b1f5367c97b7cde661fe2816",
+    "attack-hd2d-prototype-20261025/qa/rev120-scatter-lifecycle/white_light_spray-complete-rule-transition.json": "d33c82a3ae07111d97766391d0ce6e92d2eab867a8fab6c4e1b0d107ac8924b2",
+    "attack-hd2d-prototype-20261025/qa/rev120-scatter-small-phone/white_light_spray-complete-rule-transition.json": "52eefd124b203d4b01bc249370802287f688e8fc9fcc944e9e31d57a89237504",
+    "attack-hd2d-prototype-20261025/qa/rev120-spray-standard-keys/white_light_spray-complete-rule-transition.json": "d33c82a3ae07111d97766391d0ce6e92d2eab867a8fab6c4e1b0d107ac8924b2",
+    "attack-hd2d-prototype-20261025/qa/rev120-spray-standard-movie/white_light_spray-complete-rule-transition.json": "d33c82a3ae07111d97766391d0ce6e92d2eab867a8fab6c4e1b0d107ac8924b2",
+    "attack-hd2d-prototype-20261025/qa/rev122-white_shining_strike/white_shining_strike-complete-rule-transition.json": "d51c10c95195bda50f3931fdde6f52da8cc64c821813976f8632bf61a934ccb4",
+    "attack-hd2d-prototype-20261025/qa/REV109-CHECKPOINT-QA.txt": "51d87d3a346ff33d73a58abde56a431162c9bb8f64e5e8ef8e635f161c92f11a",
+    "attack-hd2d-prototype-20261025/qa/rev109-native-receipts.json": "d4da93ab3205b1cbc2b31fdf30b2e65e6d9a4d97d1f9a8e5831fca3758601021",
+    "attack-hd2d-prototype-20261025/qa/rev109-severance/white_severance-complete-rule-transition.json": "cdb743bbea95c0b46f08a91dd62581c57fdfe9442946d68ee9dbbaeb61726d29",
+    "attack-hd2d-prototype-20261025/qa/rev109-severance-blocked/white_severance-complete-rule-transition.json": "50b565dde5c571ded42ea13e95c1993b4279a8606a2c0c050847b296ab2fc75f",
+    "attack-hd2d-prototype-20261025/qa/rev109-severance-movie/white_severance-complete-rule-transition.json": "cdb743bbea95c0b46f08a91dd62581c57fdfe9442946d68ee9dbbaeb61726d29",
+    "attack-hd2d-prototype-20261025/qa/rev109-fusion-aura/fusion_practice_swing-complete-rule-transition.json": "80e96e5fd28329686d3b2b1bf36acf7bdbbd1a2af72722a546d581c1fe2f40d6",
+    "attack-hd2d-prototype-20261025/qa/rev109-fusion-free/fusion_practice_swing-complete-rule-transition.json": "27eb521a65bba6ac086eae2e50be69b53bc38bc4acabc0088f413b6d175a19b5",
+    "attack-hd2d-prototype-20261025/qa/rev109-fusion-paid/fusion_practice_swing-complete-rule-transition.json": "1d8fac61deb93e039f81978557881b49b4b1d7507f7f5e0f16cac239fd124568",
+    "attack-hd2d-prototype-20261025/revision148-source/docs/VFX-ROLLOUT-COVERAGE.json": "03ff53a550c3534eeee76226d0c35fef2b9719e8160680ffd1a7fb61fdceb00a",
+    "attack-hd2d-prototype-20261025/qa/REV116-CHECKPOINT-QA.txt": "c346c1cbaf3a8086ee580c8138fe661b59374128b4ee328b3bed84018b932b96",
+    "attack-hd2d-prototype-20261025/qa/REV121-CHECKPOINT-QA.txt": "5088ca2a946dc41e19f5a729903bc6f6596c286f46789d6999d966bb7a72624d",
+    "attack-hd2d-prototype-20261025/qa/REV123-CHECKPOINT-QA.txt": "c360cc008e834c1651cb725e9a5db1579e5ab9f8098ecc13f7ea12c1ab229906",
+    "attack-hd2d-prototype-20261025/qa/REV127-CHECKPOINT-QA.txt": "216cfc211848ea36287e9785b21d01850cc9e7398b90c457e0f4a89ee4f36998",
+    "attack-hd2d-prototype-20261025/qa/REV129-CHECKPOINT-QA.txt": "7915b572912fcad8eccaa387ca4bafc135b9e8de44bbf25e87dfbb5681c93eab",
+    "attack-hd2d-prototype-20261025/qa/REV136-CHECKPOINT-QA.txt": "33faf08a295006d3c3ec401514baae765f90cb0aa0a041791efb8bf815804579",
+    "attack-hd2d-prototype-20261025/qa/REV143-CHECKPOINT-QA.txt": "31164b2075ae54b4a7c894a10f1160b6fc01fd45e6ee5e5b89c7bd9db759c0f5",
+    "attack-hd2d-prototype-20261025/qa/REV147-CHECKPOINT-QA.txt": "2798273ca15c44d63b780169b767c3b4933dd846572f02fe24fedeac4b4e663f",
+    "attack-hd2d-prototype-20261025/qa/REV148-CHECKPOINT-QA.txt": "c645aa99f7eb56dd6474ac6aa5c9f007f7fb38f3667f7a6e368db24532449463",
+    "attack-hd2d-prototype-20261025/qa/rev148-verified-overlay-manifest.json": "96e39b8c34dafb4902a66ffe3101498b8f1997fe2359eb1a7c42efbf03702e51",
+    "attack-hd2d-prototype-20261025/qa/rev148-native-receipts.json": "c89be2a0aa9f2888cc6f2444ce2e0fb96b38fafc2cbd6b0f84bb235f606f57c0",
+    "attack-hd2d-prototype-20261025/qa/rev148-inherited-receipt-allowlist.json": "36f957e6ef143be5e8e9c9d77fc07003c866c596e2db1b1080b2c40f315ebed4",
+    "attack-hd2d-prototype-20261025/qa/rev148-snapshot-receipt.json": "64553300c9a6a9339f306999262dd54c8e7e94d1b96b10b2e8c38e786fbfda62"
+  },
+  "counts": {
+    "candidate_rows_correctable": 39,
+    "nondeferred_unique_ids": 73,
+    "attack_registry_scopes": 62,
+    "support_registry_scopes": 12,
+    "overlap_id": "green_entangle",
+    "count_note": "62+12-1=73 is registry/accounting, NOT independently a quality proof. This audit confirms39 stale candidate rows using checkpoint plus exact primary-ID native receipts. Earlier34 selected rows remain inherited, not freshly re-audited."
+  },
+  "exclusions": [
+    "Enemy probe/poke selected147→148 is separate source-kind, not a498-card row.",
+    "Candle148 legacy baseline and Burn150 future status selection do not promote permanent/status cards in selected148 ledger.",
+    "No full498 completion, general source-kind acceptance, Android/FPS, listening, leak-free or resource plateau claim.",
+    "Per-ID positive standard evidence does not mean every branch/material/pairing tested; preserve cited bounded checkpoint scopes."
+  ]
+}

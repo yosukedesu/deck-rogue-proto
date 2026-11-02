@@ -1,0 +1,19 @@
+{
+  "selectedRevision": 176,
+  "masterVersion": 65,
+  "terminal": "REV176-CHECKPOINT-QA.txt:3 fresh4955PASS/exit0 supersedes frozen pending prose",
+  "counts": {
+    "globalAttackIds": 82,
+    "physical": 49,
+    "elemental": 33,
+    "supportCases": 12,
+    "overlap": 1,
+    "globalUniqueIds": 93,
+    "separateContext": "blue_aether_burst@leader_izzet"
+  },
+  "remainingAt176": {
+    "cardCatalogRows": 126,
+    "noncardNoSelectedAdapter": 232
+  },
+  "limits": "Counts are inventory, not completion. Three exact noncard adapters and separate Burn system cue; bounded modes/owners/threefamily-onecascade continuation.178 adds only selected171 five IDs;175/177 excluded."
+}

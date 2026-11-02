@@ -1,0 +1,30 @@
+{
+  "revision": 183,
+  "state": "implemented-reuse-candidate-awaiting-baseline-and-native",
+  "base_planned": "selected182 after fresh gates",
+  "cards": [
+    {
+      "id": "black_necro_knight",
+      "profile": "NeutralFlurry",
+      "commands": [
+        "actual Command_PlayCard from Hand",
+        "actual Command_PlayNecro from Exhaust same UID"
+      ],
+      "rules": "real ManaConvert funds both;12 and independent modified-damage/2 heal each; second consumes UID without re-exhaust/landing",
+      "source": "Kind card both; legitimate player actor action, not passive-necro suppression"
+    },
+    {
+      "id": "green_x_vine_flurry",
+      "profile": "DoubleLash",
+      "commands": [
+        "ordinary actual PlayCard at live Energy0/2/3"
+      ],
+      "rules": "pay all live Energy, actual hits only and lethal truncation; xAmount does not set arbitrary count; CascadeEligible excludes X"
+    }
+  ],
+  "inherited": "family material/cancel/cache invariants versioned; new engine command/zone/UID and dynamic paid-count witnesses",
+  "baseline": "untouched Knight actual two-command source before candidate; after182 reel captures",
+  "art": "no new bitmap; no Dark return line or summoned knight/vine weapon",
+  "audit": "full-vfx-inventory-20261026/necro-knight-two-commands-and-x-vine-contract.json",
+  "base": "immutable182 awaiting fresh merge completion"
+}

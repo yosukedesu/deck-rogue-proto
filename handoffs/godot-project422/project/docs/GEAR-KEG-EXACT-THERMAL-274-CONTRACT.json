@@ -1,0 +1,26 @@
+{
+  "revision": 274,
+  "base": 273,
+  "scope": "exact direct gear_powder_keg only, independently tested candidate",
+  "basis": "fresh270 Keg213 rules PASS/art HOLD for thin fire branches; baseline same FixedSmall .88,height2.982063 and old material as Powder. Reusing selected273 thermal material is a hypothesis, not proxy art approval.",
+  "ownership": "realUseGear Index/Previous held Keg instance UID/charge consumption and ordered GearUsed; Presentation UID absent. AsGearId recursion rejected.",
+  "factory": "CreateKegContact creates a fresh CreatePowderContact material instance. Same root/size/time/gain/old Fire lighting; no amount16 scale-up. Independent Keg route/profile/owner predicate.",
+  "rules": "real16 all then separate HpLost4; no new fourth fire burst/self damage presentation changes",
+  "preserved": [
+    "Powder original factory/profile/owner method bytes",
+    "Earth270 cap/queue/receipts",
+    "Keg legacy route for unowned/zeroHpLoss/nameless recursion",
+    "shared shader/raw bytes",
+    "hero existing gear motion and HpLost presentation"
+  ],
+  "rawNew": 0,
+  "batchCapacity": 512,
+  "written": [
+    288,
+    288,
+    30
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

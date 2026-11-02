@@ -1,0 +1,266 @@
+{
+  "revision": 171,
+  "state": "candidate-unselected",
+  "base": "selected170, excludes unselected165/166",
+  "audit": {
+    "scope": "proposed direct-card only; no native",
+    "ids": [
+      "black_strike",
+      "black_oblivion_blade",
+      "black_oblivion_axe",
+      "white_blade_prayer",
+      "black_shadow_blade"
+    ],
+    "definitions": [
+      {
+        "id": "black_strike",
+        "name": "影の一撃",
+        "cost": 1,
+        "type": "physical",
+        "rarity": "common",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 6
+          },
+          {
+            "trigger": "onSelfExhausted",
+            "effect": "dealDamage",
+            "amount": 2
+          }
+        ]
+      },
+      {
+        "id": "black_shadow_blade",
+        "name": "影の刃",
+        "cost": 0,
+        "type": "physical",
+        "rarity": "common",
+        "exhaust": true,
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "loseHp",
+            "amount": 2
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 8
+          }
+        ]
+      },
+      {
+        "id": "black_oblivion_blade",
+        "name": "忘却の刃",
+        "cost": 1,
+        "type": "physical",
+        "rarity": "common",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 6,
+            "amountMax": 12,
+            "exhaustThreshold": 5
+          },
+          {
+            "trigger": "onSelfExhausted",
+            "effect": "dealDamage",
+            "amount": 2
+          }
+        ]
+      },
+      {
+        "id": "black_oblivion_axe",
+        "name": "忘却の斧",
+        "cost": 1,
+        "type": "physical",
+        "rarity": "uncommon",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 6,
+            "amountMax": 14,
+            "exhaustThreshold": 5
+          }
+        ]
+      },
+      {
+        "id": "white_blade_prayer",
+        "name": "灯りの刃",
+        "cost": 1,
+        "type": "physical",
+        "rarity": "common",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 6
+          },
+          {
+            "trigger": "onPlay",
+            "effect": "gainHp",
+            "amount": 6,
+            "condition": {
+              "perfectBlockLastPhase": true
+            }
+          }
+        ]
+      }
+    ],
+    "routes": [
+      {
+        "key": "card:black_strike",
+        "definitionId": "black_strike",
+        "sourceKind": "card",
+        "family": "slash",
+        "renderer": "PhysicalSlashFx",
+        "element": "physical",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      {
+        "key": "card:black_strike",
+        "definitionId": "black_strike",
+        "sourceKind": "necro",
+        "family": "minimal_neutral_contact",
+        "renderer": "BoundedContactFx",
+        "element": "neutral",
+        "fixedSmall": true,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending",
+        "presentationPolicy": "noncard_fixed_small_contact_v1"
+      },
+      {
+        "key": "card:black_shadow_blade",
+        "definitionId": "black_shadow_blade",
+        "sourceKind": "card",
+        "family": "slash",
+        "renderer": "PhysicalSlashFx",
+        "element": "physical",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      {
+        "key": "card:black_oblivion_blade",
+        "definitionId": "black_oblivion_blade",
+        "sourceKind": "card",
+        "family": "slash",
+        "renderer": "PhysicalSlashFx",
+        "element": "physical",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      {
+        "key": "card:black_oblivion_blade",
+        "definitionId": "black_oblivion_blade",
+        "sourceKind": "necro",
+        "family": "slash",
+        "renderer": "PhysicalSlashFx",
+        "element": "physical",
+        "fixedSmall": true,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending",
+        "presentationPolicy": "noncard_fixed_small_contact_v1"
+      },
+      {
+        "key": "card:black_oblivion_axe",
+        "definitionId": "black_oblivion_axe",
+        "sourceKind": "card",
+        "family": "slash",
+        "renderer": "PhysicalSlashFx",
+        "element": "physical",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      {
+        "key": "card:white_blade_prayer",
+        "definitionId": "white_blade_prayer",
+        "sourceKind": "card",
+        "family": "slash",
+        "renderer": "PhysicalSlashFx",
+        "element": "physical",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      }
+    ],
+    "profiles": {
+      "black_strike": {
+        "base": {
+          "element": "physical",
+          "style": "slash",
+          "authoredAttack": "slash",
+          "evidence": "Existing physical slash profile; explicit blade/sword source. Art only, no showcase pause/timing."
+        },
+        "source": {
+          "necro": {
+            "authoredAttack": "minimal_neutral_contact",
+            "element": "neutral",
+            "authoredSemanticReason": "Ordinary necro damage does not establish the ordinary card slash implement. Preserve card slash; exact necro receives fixed-small neutral contact.",
+            "authoredPresentation": "noncard_fixed_small_contact_v1"
+          }
+        }
+      },
+      "black_oblivion_blade": {
+        "base": {
+          "element": "physical",
+          "style": "slash",
+          "authoredAttack": "slash",
+          "authoredRequiresCardMetadata": true
+        },
+        "source": {
+          "necro": {
+            "authoredAttack": "slash",
+            "element": "physical",
+            "authoredPresentation": "noncard_fixed_small_contact_v1",
+            "authoredSemanticReason": "忘却の刃 explicitly names a blade; necro can share slash without changing normal card presentation."
+          }
+        }
+      },
+      "black_oblivion_axe": {
+        "base": {
+          "element": "physical",
+          "style": "slash",
+          "authoredAttack": "slash",
+          "authoredRequiresCardMetadata": true
+        },
+        "source": null
+      },
+      "white_blade_prayer": {
+        "base": {
+          "element": "physical",
+          "style": "slash",
+          "authoredAttack": "slash",
+          "authoredRequiresCardMetadata": true
+        },
+        "source": null
+      },
+      "black_shadow_blade": {
+        "base": {
+          "element": "physical",
+          "style": "slash",
+          "authoredAttack": "slash",
+          "authoredRequiresCardMetadata": true
+        },
+        "source": null
+      }
+    },
+    "hold_correction": "No independent shadow-coating evidence for these four black direct cards. WhiteBladePrayer legacy art genuine warm luminous blade: preserve warm Cut intent, not new Light beam.",
+    "sha256": {
+      "attack-hd2d-prototype-20261025/source/data/cards.black.json": "b6c1dc47de08cc8566ec4bb268bfd573a2c6c0860ccd4c10d8595fed7ebe3624",
+      "attack-hd2d-prototype-20261025/source/data/cards.white.json": "22b67ae13ee9a94c974ab25eb4be504e1e93c83ef0902f40a235e0179df0c717",
+      "attack-hd2d-prototype-20261025/source/assets/attack-routes.json": "d876cbe1c9eb6eead41e8adf0690e7b61ea7a33f547971ed629879ae82523846",
+      "attack-hd2d-prototype-20261025/source/assets/presentation-data/card-vfx-profiles.json": "762fa8c66e277b208f80a815d365bca7b49965cbdcf8a3870d07484936528f1c",
+      "attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Effects.cs": "49aabacbdeba548ea5c3ceb14c1e18bd16a7b591ea6eeb3da6b81a21c51907bb",
+      "attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Combat.cs": "506e88c23b151d5cb571f43a556761f65000c3c3f15090b4901492b3512a1e5c",
+      "attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.GodotPort.Presentation/SourceShowcaseProfiles.cs": "55750da9bff5b4d4d2ab0ab015c128caa274258156321b2800586f4f3045a949",
+      "attack-hd2d-prototype-20261025/source/assets/Art/cards_modern/black_strike.png": "cdfc83a6ee1a80929f4839ca4c9dea0f3156fbc0d6399ddc4d7c13dab13807fd",
+      "attack-hd2d-prototype-20261025/source/assets/Art/cards_modern/black_oblivion_blade.png": "d45039c39543406c5c2baf0cd73c8e4518ad75f3c59840b341125de4a29bfc7f",
+      "attack-hd2d-prototype-20261025/source/assets/Art/cards_modern/black_oblivion_axe.png": "e98ca15fd3d93d8e60337aa9d1fdda48016406f321b2984350263f257136ee2e",
+      "attack-hd2d-prototype-20261025/source/assets/Art/cards_modern/white_blade_prayer.png": "58eeb77909605416753ea568eaedcff255f25cf7dd34865058c20164fd60a76e",
+      "attack-hd2d-prototype-20261025/source/assets/Art/cards_modern/black_shadow_blade.png": "e5a959b5c77017a65d2d05483673c480b88b8636ec79db909a94e0994cc3d1c6",
+      "attack-hd2d-prototype-20261025/source/assets/Art/cards/white_blade_prayer.png": "562eb01cdd826132dd5d85ac6682f8ab1b92c13dd9e211935d364089ff167716"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "ice-crystal-r2",
+  "roles_srgb": {
+    "shadow": "#24485E",
+    "primary": "#64A4BE",
+    "edge": "#A7CAD5",
+    "core": "#E4F1F1"
+  },
+  "scene_light_srgb": "#A2C5D2",
+  "runtime_exposure_approved": false,
+  "scene_light_intensity": null,
+  "basis": "New Ice R2 reconstruction,42/16Area reference is not recovered R1 calibration; Unity bounded light uncalibrated."
+}

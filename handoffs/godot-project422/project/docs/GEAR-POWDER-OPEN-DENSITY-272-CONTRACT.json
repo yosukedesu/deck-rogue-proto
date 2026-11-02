@@ -1,0 +1,17 @@
+{
+  "revision": 272,
+  "base": "271-v4",
+  "scope": "exact direct Powder only; same root/area/gain/raw/window/world-light",
+  "causeTest": "closed crown and thin radial lines dominate belly; circular explosion itself is not a generic defect",
+  "change": "body white-center attenuation .10+.90Ease(distance/.26), broad soft lower-left gap from center through original alpha outer edge, lower lobe density .45..1; no geometry boundary changes",
+  "contact": "one .017x.010 half-extent short patch at local(.025,.018,.002), fade .012..057, alpha .65/gain .80; no new worldlight",
+  "capacity": {
+    "body": 288,
+    "cooling": 288,
+    "embers": 30,
+    "each": 512
+  },
+  "unchanged": "cooling/raw originals/timing .284/scale .88/Light .025..115/queue/receipts/other routes",
+  "status": "NATIVE_ART_PENDING",
+  "next": "one samefixture comparison; if raw radial structure remains dominant, do not iterate minor coefficients"
+}

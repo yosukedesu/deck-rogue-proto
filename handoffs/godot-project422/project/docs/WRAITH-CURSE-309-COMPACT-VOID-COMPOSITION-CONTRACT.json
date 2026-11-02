@@ -1,0 +1,31 @@
+{
+  "revision": 309,
+  "base": 308,
+  "basis": "308 darkRGB role redistribution still hair/cape horizontaltail; stopRGBcoefficient loop. One fundamental compact externalpressure composition, same mainrawRGB/UV/time/gain.",
+  "observedOriginalRoot": "308 actual projection u1 center~292,374 at1280; mainbbox~292-394/y355-405. Original root unchanged, move main only.",
+  "newComposition": {
+    "designGoal": "enemy-side upper compactdarkmass centered estimated380,338, main55-70x50-65 effectivepx target; actualprojection/art required, nohardcodedpixels",
+    "main": "6x2quads48verts, along-.94+.46u+.025q(1-u), acrosscenter-.30+.12u-.025sin(pi*u), width(.03+.23sin(pi*u)^.65)*(1-.18q)",
+    "asymmetry": "upper.95; lower .72-.42exp(-((u-.68)/.13)^2) creates an open unequal notch, not roundorb/secondhead",
+    "mainVertexAlpha": "same308 .84*fade/endfade/cross .15/1/.35, remapped on new6segment topology",
+    "root": "2thinquad8verts in48..55; -.48*(1-u),-.18*(1-u)-.025sin(pi*u),width.011*(1-.35u),alpha.30*fade*(.65+.35*(1-u)); ends atoriginal0,0, nooriginshift",
+    "reserved": "56..63clear; oldmotes64..same coordinates/alpha/count",
+    "temporal": "main308shader erosion/phase unchanged; thinroot fades .105-.175 with no freshpeak"
+  },
+  "material": "main308 shader block byteunchanged, sameUV/raw/gain/darkRGB-ridge. Only separate narrow rootrole2 samples small same-raw density ROI .49,.24-.57,.34 with .10darkbodyRGB and no brightedge.",
+  "invariants": [
+    "306 exactowner/realcommit BeginAdvanceclock/invalidretirement allC#outsidefactory untouched",
+    "sameactual9+Weak1/rules/actor/worldwash/Boundedzerolight",
+    "sameexistingraw1254 source/GPU512mips9/import unchanged",
+    "nohands/scythe/longenemybridge/globalbloom/extra particles/newraw"
+  ],
+  "gates": [
+    "negativegap fromhero hair/cape, compactmass reads external receivingpressure not extension or secondhead",
+    "mainopaqueishdarkdensity plus limitedpurpleedge; not badge/orb/eye/blackcloth",
+    "thinroot is not sameweight brightVcord; actualcontact connection preserved",
+    "strict clock/gpu/wholeoracle; nativeoriginal1280 still thenowncontinuous aftercraftGO"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

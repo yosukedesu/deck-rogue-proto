@@ -1,0 +1,13 @@
+{
+  "id": "light-ray-rebuild-r2",
+  "roles_srgb": {
+    "shadow": "#777360",
+    "primary": "#D4CBA9",
+    "edge": "#E8E0C4",
+    "core": "#FFF5D8"
+  },
+  "scene_light_srgb": "#DED5BA",
+  "runtime_exposure_approved": false,
+  "scene_light_intensity": null,
+  "basis": "Light R2 reconstructed contract; new comparison Area60/20W is not recovered R1 evidence. Unity bounded gains provisional."
+}

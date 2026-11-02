@@ -1,0 +1,97 @@
+{
+  "revision": 359,
+  "status": "FROZEN_CANDIDATE_NOT_NATIVE",
+  "base": 358,
+  "baseline": "358v2 300checks/original74 contact-clock technically closes. Existing DarkSlash material HOLD: same40 positions/10segments, persegment UV resets, pale line across neck/forearm/hair fades uniformly. hero Flash and red overlay are not the effect body.",
+  "role": "A single asymmetric dark-violet slashing pressure crossing part of the receiving hero silhouette, with a compact vivid violet side ridge and a short biased lavender-white compression core. Dense colored belly, dark negative region and background-open gap must read together; not merely a white outline over a dark fill. No literal sword/blade/weapon/body, black fogball, ribbon, closed crescent or full-body cover.",
+  "sourceEvidence": {
+    "actualRoot": "Frozen(-4.9730654,.912877,1.2397707), unchanged; current hero recoil/contact is separate.",
+    "actualTexture": "leader_green_idle_5.png 92x78, decodedRGBA5E9663170D64409610E185EB02AF9C3A9C7CDF5BAF42DE6EAC951FB81F234FA4 read eachpositive. alpha102bbox[18,14,76,78) is envelope, not materialfragment.",
+    "existingMaterial": "Shape.Slash Arc(0,-.085,.2,-.1,2.05,.025,.88fade), 10quads; main positions constant all6positive. Shader main uses strip edge; radial only mixes palette, not a full radial-squared main-alpha mask.",
+    "viewportLimitation": "358 screen projection was saved but actual viewport size/camera matrix/nativePNG dimensions not captured together. Do not claim exact nativebbox by guessed .8 conversion. Next helper will capture them sameDraw."
+  },
+  "existingRawAssessment": [
+    {
+      "file": "assets/Art/fx/attack-dark-body-v2-8f.png",
+      "sha256": "c700c2e9cd59c4de753525283c3368815de715b9bb934fe4665842ac0853f8cf",
+      "observation": "Directly viewed fullatlas: multiple thin swirls/closed lobes rather than one slashing belly. Reuse would preserve the thin-line role problem."
+    },
+    {
+      "file": "assets/Art/fx/hd2d-dark-contraction-01.png",
+      "sha256": "25d40d5cab98be595bc72074fe648f247bb95e966fd9ccf25eff24c5d6f41a75",
+      "observation": "Directly viewed: two large lobed dark masses feeding central opening, high fold/smoke texture. Cropping risks dense cloth/rock or smoke, not a short slash."
+    },
+    {
+      "otherReviewedByAstra": "Wraith density, contraction02/03, emission/element, dark-drain isolated arc",
+      "observation": "Rock/fold masses or multiple arc wisps. Dark-drain small-use diagnosis retains thin violet ridge with insufficient belly. No existing family art quality rejection is implied."
+    }
+  ],
+  "newRawProposal": {
+    "count": 1,
+    "tool": "image_gen only after parentGO; transparent_background=true",
+    "budget": "Original PNG max a few MB, preserve originalbytes/decodedRGBA, cloudonly, no B iteration without furtherGO",
+    "composition": "Single short oblique pressure with one broad low-frequency dark-violet/indigo belly. An asymmetric saturated violet ridge exists on only part of one side; short pale-lavender compression center inset in that ridge, no continuous white perimeter. One large irregular transparent cut enters from the opposite flank and leaves a width-bearing density connection toward the contact end. Far end thins into a few unequal translucent remnants, no equal rays, no loops, no needle/metal spearhead. True alpha, no backdrop/shadow sheet.",
+    "colorStructure": "Near-black-violet restricted to local cleft/contact shadow, not whole belly. Belly retains mid-value saturated violet on dark forest; small brighter violet separates it from gray/red hurt. White core short/subordinate. No wholeimage additive glow or fullfield wash.",
+    "orientation": "Directional curved slash pressure, not symmetric horizontal comet. Contact end and outer belly must remain one continuous broad structure. Actual anchor texel/rotation chosen only after inspecting raw; no fabricated hardcoded rawfeature."
+  },
+  "registrationAndOccupancy": {
+    "fixed": "358 frozenroot/basis/height/source clock; no move of actual contact to rescue readability.",
+    "gate": "Put the EFFECTIVE belly across the receiving right/up silhouette boundary, with continuous width back to root and face kept open. Incoming enemy is to the right. Root-only core must not carry the whole effect.",
+    "targets": "Initial belly roughly30–40 by15–22 nativepx is an entry readability target, NOT a cap or projectionproof. Full effective action may need70–90 by35–50px to bridge root-to-hair boundary. Do not shrink to50–65 just to honor an arbitrary small bbox. No fullhero/face cover. Actualraw/transforms determine candidate geometry beforefreeze.",
+    "geometryCandidate": "One planar authored-UV main surface with globally continuousUV, not10 independently reset strip UVs; no oldarc overlay or extra whitecorequad. Full alpha-bbox use preferred; no centralopaque crop masquerading as transparency. Exact extent/anchor/rotation specified after raw inspection, before productGO."
+  },
+  "temporalProposal": {
+    "clock": "Keep358 actualLastContact rebase/negative preview suppression, overall .18retirement, existing oldmotes and light0.",
+    "sampleTargets": "Actual own29 age0 and30~.0333 should both have belly/core/gap.31~.0667 opens asymmetrically,32~.10 short unequal remainder,33~.1333 trace,34~.1667 oldmotes only ifmain .15zero.",
+    "firstComparison": "Superseded by finalTemporal below: retain old .88fade only <=.020, hold its .020value through .055 then smoothstep to0 .15; no multiplication by oldfade afterward. Mask unchanged through initialtwo actual draws and nonuniform consumption thereafter.",
+    "limits": "No secondarycrest/newpulse/stage timing change. These are designtargets not provenfragments; if initialtwo or breakup fails, preserve failure rather than quietly addinglight."
+  },
+  "ownership": "Exact358 real Cultist/dark_blade positiveHpLoss singleexecutedhit/registeredactualrefgen/currentenemy+hero. Factory marker only for provenowner, freshCommittedExact perSample, Begin/Clear reset. OtherBounded defaults unchanged. No global suffix/clock/material replacement. Partialblock untested, identity malformed outside admittedscope.",
+  "fixed": [
+    "actor authoredbladecontact and recoil",
+    "hero Flash/redwash/hurt pose",
+    "engine/RNG/damage/Strength/enrage/fulloracle",
+    "event/receipt/ContactAt and358timing",
+    "allanalytic/worldlight/Omni energy0 for thiseffect",
+    "UI/numeric/intent/token behavior",
+    "old3motes payload unless laterexplicitGO"
+  ],
+  "entryReview": "Astra + parent inspect originalRGBA/alpha and representative actual-use-sized two-background composites before bind. Raw entryeligible != nativecraftPASS. Alpha255 absence != transparentbelly. Avoid darkoutlinedblade/leafplate/purpleflameball. No additional rawB until cause-based request.",
+  "observer": "Next existing70–180 helper retains alloracle/strict/mainwitness and records sameDraw nativePNGdimensions, viewport+visibleRect, camera projection/FOV/matrices+convention, actual main indexedpoints/UV/alpha/materialbinding, currentreceiver sprite transform/offset/pixelSize/actualGetImage eachpositive plus frozenroot. No addedForceDraw/pose/age override.",
+  "selectedRaw": {
+    "fileSHA": "8653410a5e47cdd03b287bce60624eccf4f1366b772e32c96f67c1ed3b6ebcc9",
+    "decodedRGBA": "dc3bdcbdc78bd3165f0c1e3d4da63ddf518ef93da6c32b6bf84df90b97b2adfe",
+    "size": [
+      1659,
+      948
+    ],
+    "bbox": [
+      33,
+      23,
+      1621,
+      897
+    ],
+    "rootTexel": [
+      110,
+      840
+    ],
+    "localWidth": 0.72,
+    "localHeight": 0.396272040302267,
+    "rotation": 0,
+    "crop": "full alpha bbox",
+    "bodyVertices": 64,
+    "oldMotes": "40.. copied unchanged to80.."
+  },
+  "finalTemporal": {
+    "main": "<=.020 old.88fade, hold .020value .6953086 until.055, then smoothstep zero.15; oldfade not multiplied again",
+    "mask": "death=clamp(.150-.065u-.065exp(-((u-.50)/.23)^2-((vTop-.60)/.28)^2),.067,.15);remain=1-smoothstep(death-.012,death,age)",
+    "initialTwo": "mask1 at age0/.0333. envelope .88/.695309. .0667 envelope~.666 with localmask; .10 envelope~.375; these numeric values not GPUvisibility",
+    "motes": "oldoriginalfade/payload unchanged; all .18 retirement"
+  },
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN",
+  "importContract": "new1 only lossless/fix_alpha_borderfalse/premultfalse/channelidentity/noMip/size0; old4744unchanged",
+  "freezeVersion": 2,
+  "maskV1": "Original amp.035/centerV.68 had CPU rawweighted remain1 at age.0667: source intent mismatch caught before any build/native. Preserved frozen359-v1-unrun-delta. V2 rawweighted .8466 at.0667/.3616 at.10, not GPUfragment proof."
+}

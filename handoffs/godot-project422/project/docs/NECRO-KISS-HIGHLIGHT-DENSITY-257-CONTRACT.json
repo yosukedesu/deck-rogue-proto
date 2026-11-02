@@ -1,0 +1,24 @@
+{
+  "revision": 257,
+  "base": "held256",
+  "scope": "exact selected necro CorpseKiss body material only",
+  "selector": "UsesCorpseKissDensityMaterial(AttackRoute?, NativeEffect?, NativeBatch?) full tuple + Hd2dPrototype/hd2d-dark + kind16/space0/exact density texture; null and every near-miss false",
+  "shader": "authored_Hd2dKissDensity.gdshader; copy of byte-preserved shared shader with one sampled-linear-RGB correction",
+  "diagnosis": "AuthoredRGBA replaces RGB with sampled*max(tint.rgb); core #C2A9E5 is reduced to max linear channel rather than purple hue multiplication. No new additive whitening was present; raw upper white density dominates. Code reasoning, not a retroactive uniform measurement.",
+  "linearTransfer": {
+    "Y": "dot(sampled, (.2126,.7152,.0722))",
+    "belowOrEqual": ".28 unchanged",
+    "above": "Yprime=.28+.18*(1-exp(-(Y-.28)/.18)); sampled*=Yprime/Y",
+    "properties": "continuous monotone shoulder; same chromaticity; dark/mid exact; asymptote .46; no division at zero"
+  },
+  "fixed": [
+    "all raw bytes",
+    "prototype geometry,root,area,alpha .58,window,light",
+    "rules/owner/receipt/StageActor",
+    "old shared shader and other Dark routes",
+    "original A/B and held QA"
+  ],
+  "Unity": "Port transfer on texture linear RGB after sRGB sampling, before existing vertex scale; do not add Godot OUTPUT_IS_SRGB compensation in Unity linear pipeline. Exact material opt-in only; preserve Unity renderer APIs.",
+  "art": "pending",
+  "native": "pending"
+}

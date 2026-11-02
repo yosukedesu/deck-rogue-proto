@@ -1,0 +1,43 @@
+{
+  "revision": 256,
+  "base": "255 held",
+  "scope": "exact selected NecroKiss only",
+  "raw": {
+    "path": "assets/Art/fx/hd2d-necro-kiss-density-v1.png",
+    "original": "/workspace/scratch/948944000d55/generated_images/exec-a3bc6e95-877e-43fa-be01-06536fc73cda.png",
+    "sha256": "a98b61f48f1f6621bdc32e97608003a34017d29e89d21b442a80d681902b507b",
+    "bytes": 1370215,
+    "size": [
+      1254,
+      1254
+    ],
+    "requestedSize": [
+      1024,
+      1024
+    ],
+    "unprocessed": true,
+    "alpha16bbox": [
+      50,
+      99,
+      1162,
+      1143
+    ],
+    "borderMax": 1,
+    "heldRawA": "exec-6927b463-7878-4e9b-a0d4-083df6827897.png closed cloudbag HOLD"
+  },
+  "material": "single rawB with broad unequal coldgraypurple layers/open negative-space channels; removes255 uniformveil and old3darkfirephases; no stacked copies",
+  "registration": "dark raw tip alpha>100/RGBmean<80 ROIx>1000y>900 centroid(.894616,.830288), authoredpivot(.895,.830); x=(u-.895)*.697,y=(.830-v)*.503 within254 previous carrier bounds",
+  "alphaGain": "rawRGBA original, vertex.58*onset*envelope gain1; old darkpoint/gain and motes unchanged",
+  "timing": "dt=age1.25, consumeEase(dt/.20), onsetEase(dt/.018), envelope1-Ease((dt-.25)/.10), negative/.30empty; no extra beat",
+  "topology": "3batches contact/body/motes kind4/16/2, writtenmax6/192/18, Count512each",
+  "loader": "newtextureprefix matches no TextureMotion special branch, existing authoredRGBA path TextureMotion0; no newshader/importchange",
+  "fixed": [
+    "root(.26,.01,.025)",
+    "oldlight.028/Floor0/StageFocus0",
+    "contacttail/motes",
+    "owner/fulltuple/rules/hero/otherfactories",
+    "existing raw originals"
+  ],
+  "native": "pending",
+  "art": "pending"
+}

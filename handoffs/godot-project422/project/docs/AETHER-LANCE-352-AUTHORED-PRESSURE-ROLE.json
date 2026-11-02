@@ -1,0 +1,67 @@
+{
+  "status": "FROZEN_CANDIDATE_NOT_YET_NATIVE",
+  "base": 351,
+  "raw": {
+    "path": "qa/raw352-aether-pressure-a/ORIGINAL-imagegen-a.png",
+    "sha256": "5b1ab13b0e83aad398095a24a835a9e213f11dda4086baf83c2292ceecc7eb39",
+    "bytes": 1644482,
+    "size": [
+      1536,
+      1024
+    ],
+    "rgbaOriginalUnconverted": true,
+    "alphaBBoxAbove1HalfOpen": [
+      48,
+      182,
+      1520,
+      846
+    ],
+    "prereview": "Initial fullshape HOLD flame-arrow risk preserved; parent and Astra permit one actual own comparison as abstract aether direction, not materialPASS. No B generation."
+  },
+  "registration": {
+    "rootTexturePixel": [
+      1460,
+      556
+    ],
+    "evidence": "Actual image column1460 alpha>=128 rows550..563;1470 has none. Anchor high-alpha contact endpoint, not alphaBBoxrightmost1520.",
+    "uRoot": 0.9592391304347826,
+    "vTopRoot": 0.5632530120481928,
+    "mapping": "localX=(u-uRoot)*.46; localY=(vTopRoot-vTop)*.21+(uRoot-u)*.08; localZ0. Everyimagepixel uses entirealphaBBox; no hidden center crop.",
+    "mainExtent": "Fixed from firstdraw; do NOT apply old.8..1 geometrypulse to the newface. This is a new role, not previousgeometryinvariant.",
+    "geometry": "8x2 quad grid =64vertices below80 with continuous station UV; one rawface, no extra rootquad/cap/handle. Existing frozenroot/basis/height/size/actor transforms retained.",
+    "estimatedNativeBBox": "~79x50 using first4actual172.33px/unit. Root904.96,331.86; approximate fullquad829..908/298..348. Texturealpha makes effective shape smaller. NotGPUfragmentbounds.",
+    "qualification": "60rawpixels of faint transparent margin beyondanchor remain and may project slightly beyondroot; endpointdefinition is deliberately high-alpha contact, not all-alpha boundary."
+  },
+  "shader": {
+    "privateRole": 58,
+    "batchKind": 51,
+    "binding": "aether-piercing-pressure-v1, originalPNG copiedbyteexact; existing _BaseMap binding via batch.Texture; private source_color/filter_linear/repeat_disable sampler.",
+    "uv": "u,vBottom global acrossgrid; imageUV=(48+1472*u,182+664*(1-vBottom))/(1536,1024). Sharedstations identical UV.",
+    "rgb": "ActualtextureRGB under source_color sampler -> gain once -> existing authored_output conversion. No neutralpalette tint or additional whitecore. Reportactualbackend/binding/format, do not assume PNGbytes arelinear.",
+    "alpha": "Originalrawalpha *existingPoint vertexopacity .9*(1-age/.18)^2 *private monotonic consume only. No alpha/gainboost; originalmotes retain their ownfallbackformula.",
+    "consume": "contour=u+.07*sin(11*vBottom+3*u)+.08*(sample.b-sample.r); front=-.15+.30*smoothstep(0,.037,age)+.43*smoothstep(.037,.070,age)+.32*smoothstep(.070,.100,age)+.40*smoothstep(.100,.150,age); remain=smoothstep(front-.055,front+.055,contour). AtfixedUV/sample contour fixed andfrontmonotonic, firstmain remains; finalfront1.30 exceedscontourupperbound1.15 bymargin.",
+    "timingQualification": "Actual first.0033/.0367 retains main; .07 starts meaningful central consumption; .10 onlynearroot remains; .15 rawmain0; ordinary.18retirement unchanged. This is source intent, not observedart."
+  },
+  "preserved": [
+    "exact350ownership/currentgenactualreceipt gate andpoolreset",
+    "realBreath/Spent2/Damage8/Ice1 engine andclock",
+    "actualroot/basis/scale/sourceactor/receiver",
+    "old3motes sampledunchanged andcopied4..15->80..91",
+    "light0/peaks0/noOmni addition",
+    "all otherBounded fallback and oldselectedtechniques"
+  ],
+  "nativeGate": [
+    "initial004/005 broadbluepressure/internalshortcore independentlyread atordinary1280",
+    "rightendpoint rooted; no floatingarrow/metalweapon or thinhandlecap",
+    "abstraction can have direction but mustnotbe permanentfireball/heldplate",
+    "006onward unequal consumptionnotmerelyfullshapeuniformfade",
+    "raw actualTexture dimensions/RGBA/noMips/binding/source_color transfer qualified",
+    "allmote/clock/actor/light/Ice AB invariants"
+  ],
+  "resourcePolicy": "Cloudonly; >=5GBheadroom preflight; oneraw1.64MB, onemovie andselectedkeys/hash only, no C/D outputs orfullPNGtree duplicates.",
+  "next": "Parent specification implementationGO -> freeze/audit -> soleown70 native, no B.",
+  "revision": 352,
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

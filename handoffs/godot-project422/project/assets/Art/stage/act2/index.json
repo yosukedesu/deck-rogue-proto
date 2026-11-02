@@ -1,0 +1,1618 @@
+{
+ "_": "HD-2D 段2 の幕2「先代の坑道」の箱庭の絵の一覧 (2026-10-03 レーン D が書く。作り方は docs/pixellab/hd2d-act2/README.md・作り直しは python3 -B docs/pixellab/hd2d-act2/gen_items.py all)。art は Resources からのパス (拡張子なし)。タイルは calm 済み＝読み込み側で明暗を絞り直さない (DioramaTileCandidate の calm=1・sat=1)。色はどれも docs/pixellab/hd2d-act2/palette-act2.json へ写してある (半立体と小札も)。半立体の発光 emission (_e) は箱庭の道がまだ読まない (各項目の emissionUse)。幕1 の Art/stage/act1・今の舞台の Art/tiles・Art/props は読むだけで変えていない",
+ "tileSize": 64,
+ "texelsPerUnit": 25,
+ "palette": "docs/pixellab/hd2d-act2/palette-act2.json",
+ "materials": {
+  "side_cliff": {
+   "face": "side",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act2/tiles/side_cliff_a",
+    "Art/stage/act2/tiles/side_cliff_b",
+    "Art/stage/act2/tiles/side_cliff_c",
+    "Art/stage/act2/tiles/side_cliff_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "壁・岩棚の側面。Art/tiles/act2_cliff_a・b・d を tile-calm (明暗 1/3 から、ざらつき 640 を超えれば 1/5 まで自動で絞る・彩度 0.8)。act2_cliff_c は小さな丸い石が詰まった「泡状の石」(集合体の柄) なので使わず、c は cliff_a の上下反転",
+   "src": [
+    "Art/tiles/act2_cliff_a",
+    "Art/tiles/act2_cliff_b",
+    "Art/tiles/act2_cliff_a (flipY)",
+    "Art/tiles/act2_cliff_d"
+   ],
+   "lapvar": [
+    703.2,
+    615.7,
+    712.9,
+    626.8
+   ],
+   "contrastUsed": [
+    0.333,
+    0.333,
+    0.333,
+    0.333
+   ],
+   "palP95Before": [
+    1.87,
+    3.28,
+    1.8,
+    2.57
+   ],
+   "pass": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "top_cliff": {
+   "face": "top",
+   "rot": "rot4",
+   "art": [
+    "Art/stage/act2/tiles/top_cliff_a",
+    "Art/stage/act2/tiles/top_cliff_b",
+    "Art/stage/act2/tiles/top_cliff_c",
+    "Art/stage/act2/tiles/top_cliff_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "岩棚の天面。側面と同じ岩 (cliff_c は使わない) を上下反転などで 1/4 に絞り、砂ぼこりで少し明るく (L +0.05)・彩度 0.6 (本家の段は天面が立面より明るい)",
+   "src": [
+    "Art/tiles/act2_cliff_b (flipY)",
+    "Art/tiles/act2_cliff_a (flipY)",
+    "Art/tiles/act2_cliff_d (flipY)",
+    "Art/tiles/act2_cliff_b"
+   ],
+   "lapvar": [
+    413.7,
+    438.9,
+    368.3,
+    383.2
+   ],
+   "contrastUsed": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+   ],
+   "palP95Before": [
+    1.8,
+    1.52,
+    1.88,
+    1.82
+   ],
+   "pass": [
+    true,
+    false,
+    true,
+    false
+   ]
+  },
+  "top_stone": {
+   "face": "top",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act2/tiles/top_stone_a",
+    "Art/stage/act2/tiles/top_stone_b",
+    "Art/stage/act2/tiles/top_stone_c",
+    "Art/stage/act2/tiles/top_stone_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "一段目の敷石 (宿場の石畳)。Art/tiles/act2_stone_a〜d を calm 0.25。stone_c は stone_a と同じ絵なので上下反転して別の種に。石が横の列に並ぶ絵なので rot4 で回さない (flipX だけ)",
+   "src": [
+    "Art/tiles/act2_stone_a",
+    "Art/tiles/act2_stone_b",
+    "Art/tiles/act2_stone_c (flipY)",
+    "Art/tiles/act2_stone_d"
+   ],
+   "lapvar": [
+    461.7,
+    465.2,
+    474.6,
+    576.3
+   ],
+   "contrastUsed": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+   ],
+   "palP95Before": [
+    1.84,
+    1.59,
+    1.84,
+    1.82
+   ],
+   "pass": [
+    false,
+    true,
+    false,
+    true
+   ]
+  },
+  "side_plank": {
+   "face": "side",
+   "rot": "none",
+   "art": [
+    "Art/stage/act2/tiles/side_plank_a",
+    "Art/stage/act2/tiles/side_plank_b",
+    "Art/stage/act2/tiles/side_plank_c",
+    "Art/stage/act2/tiles/side_plank_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "板張り (歩廊の囲い・棚の面)。Art/tiles/act2_plank (1 枚) の板の列を並べ替え・上下反転して 4 種。板の継ぎ目の暗い列がいつも左端 (0 列) と 16・32・48 列に来るので回さない (flipX で左右を反転すると継ぎ目が 63 列へ移り、隣のタイルとの間で継ぎ目が 2 テクセル幅になる所と、継ぎ目が消えて幅 32 の板になる所がでたらめに出る)",
+   "src": [
+    "Art/tiles/act2_plank",
+    "Art/tiles/act2_plank (boards:2,3,0,1|flipY)",
+    "Art/tiles/act2_plank (boards:1,3,0,2)",
+    "Art/tiles/act2_plank (boards:3,0,2,1|flipY)"
+   ],
+   "lapvar": [
+    534.2,
+    524.6,
+    567.4,
+    559.8
+   ],
+   "contrastUsed": [
+    0.4,
+    0.4,
+    0.4,
+    0.4
+   ],
+   "palP95Before": [
+    1.18,
+    1.18,
+    1.18,
+    1.24
+   ],
+   "pass": [
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "top_plank": {
+   "face": "top",
+   "rot": "none",
+   "art": [
+    "Art/stage/act2/tiles/top_plank_a",
+    "Art/stage/act2/tiles/top_plank_b",
+    "Art/stage/act2/tiles/top_plank_c",
+    "Art/stage/act2/tiles/top_plank_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "歩廊の床。板は縦 (テクスチャの v＝天面では奥行き s の向き＝歩廊を横切る板)。側面より 1 段静かに・少し明るく (踏まれて擦れた面)。継ぎ目が左端の列に来るので side_plank と同じく回さない",
+   "src": [
+    "Art/tiles/act2_plank (boards:1,2,3,0)",
+    "Art/tiles/act2_plank (boards:3,1,0,2|flipY)",
+    "Art/tiles/act2_plank (boards:2,0,1,3)",
+    "Art/tiles/act2_plank (flipY)"
+   ],
+   "lapvar": [
+    337.0,
+    359.5,
+    324.5,
+    328.5
+   ],
+   "contrastUsed": [
+    0.3,
+    0.3,
+    0.3,
+    0.3
+   ],
+   "palP95Before": [
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "pass": [
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "side_timber": {
+   "face": "side",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act2/tiles/side_timber_a",
+    "Art/stage/act2/tiles/side_timber_b",
+    "Art/stage/act2/tiles/side_timber_c",
+    "Art/stage/act2/tiles/side_timber_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "支保工の柱・梁・枕木の側面。Art/tiles/act2_wood (1 枚) の板の列を並べ替え・上下反転して 4 種。少し暗く (古い坑木)。板の継ぎ目は tile-calm の後に中の列 (4〜60) へ散って左右の端には来ないので、flipX で反転しても継ぎ目は 2 重にも消えもしない (幕1 の side_wood と同じ flipX。回さない none でもよい)。10/7 に PixelLab の act2_side_timber で差し替える予定 (発注書の必須 1)",
+   "src": [
+    "Art/tiles/act2_wood",
+    "Art/tiles/act2_wood (boards:1,0,2|flipY)",
+    "Art/tiles/act2_wood (boards:2,1,0)",
+    "Art/tiles/act2_wood (boards:0,2,1|flipY)"
+   ],
+   "lapvar": [
+    525.2,
+    598.0,
+    586.3,
+    683.3
+   ],
+   "contrastUsed": [
+    0.406,
+    0.45,
+    0.419,
+    0.417
+   ],
+   "palP95Before": [
+    1.4,
+    1.55,
+    1.4,
+    1.65
+   ],
+   "pass": [
+    false,
+    true,
+    true,
+    true
+   ]
+  },
+  "top_timber": {
+   "face": "top",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act2/tiles/top_timber_a",
+    "Art/stage/act2/tiles/top_timber_b",
+    "Art/stage/act2/tiles/top_timber_c",
+    "Art/stage/act2/tiles/top_timber_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "柱・梁・枕木の天面。木目は縦 (天面では奥行き s の向き＝枕木の長さの向き)。継ぎ目は端に来ないので flipX でよい (side_timber と同じ)",
+   "src": [
+    "Art/tiles/act2_wood (boards:2,0,1)",
+    "Art/tiles/act2_wood (boards:1,2,0|flipY)",
+    "Art/tiles/act2_wood (flipY)",
+    "Art/tiles/act2_wood (boards:0,2,1)"
+   ],
+   "lapvar": [
+    373.7,
+    481.4,
+    408.1,
+    507.9
+   ],
+   "contrastUsed": [
+    0.35,
+    0.35,
+    0.35,
+    0.35
+   ],
+   "palP95Before": [
+    1.53,
+    1.61,
+    1.5,
+    1.61
+   ],
+   "pass": [
+    true,
+    true,
+    false,
+    true
+   ]
+  },
+  "top_earth_seat": {
+   "face": "top",
+   "rot": "rot4",
+   "art": [
+    "Art/stage/act2/tiles/top_earth_seat_a",
+    "Art/stage/act2/tiles/top_earth_seat_b",
+    "Art/stage/act2/tiles/top_earth_seat_c",
+    "Art/stage/act2/tiles/top_earth_seat_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "座席の帯の床 (コード生成)。灰白の踏み固めた砂の床・砂の粒 (横 4〜6×縦 3〜4 テクセル・白色の乱数で置く＝等間隔にしない)・小石 1〜3。灯の真下で無彩色に読める明るさ (本家 ot2 の床 (92,96,93)〜(139,129,122))。art-bible §3-3 の幕2 の例外 (砂の粒・画面の細かさ 40〜90)",
+   "src": [
+    "コード生成 (gen_items.py seat 種 1100・砂の粒の量 ×2.4)",
+    "コード生成 (gen_items.py seat 種 1101・砂の粒の量 ×2.2)",
+    "コード生成 (gen_items.py seat 種 1102・砂の粒の量 ×2.0)",
+    "コード生成 (gen_items.py seat 種 1103・砂の粒の量 ×1.8)"
+   ],
+   "lapvar": [
+    768.0,
+    720.3,
+    711.5,
+    729.4
+   ],
+   "gateLapvar": 800,
+   "screenFineness": [
+    52.3,
+    53.5,
+    48.1,
+    51.5
+   ],
+   "screenFinenessLit": [
+    95.2,
+    97.6,
+    87.6,
+    93.8
+   ],
+   "satMedian": [
+    0.043,
+    0.043,
+    0.043,
+    0.043
+   ],
+   "pass": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "top_earth": {
+   "face": "top",
+   "rot": "rot4",
+   "art": [
+    "Art/stage/act2/tiles/top_earth_a",
+    "Art/stage/act2/tiles/top_earth_b",
+    "Art/stage/act2/tiles/top_earth_c",
+    "Art/stage/act2/tiles/top_earth_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "段の天面の土 (コード生成)。gen_art の earth_tile_r2 (幕1 二周目の座席の土の作り＝斑・掻いた跡・小石 2〜3) を幕2 の床の灰白の段の暗い側で。座席の床より暗い (段の天面は帯の外)",
+   "src": [
+    "コード生成 (gen_items.py earth 種 1201)",
+    "コード生成 (gen_items.py earth 種 1202)",
+    "コード生成 (gen_items.py earth 種 1203)",
+    "コード生成 (gen_items.py earth 種 1204)"
+   ],
+   "lapvar": [
+    764.2,
+    670.0,
+    666.1,
+    746.4
+   ],
+   "gateLapvar": 800,
+   "pass": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "side_earth": {
+   "face": "side",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act2/tiles/side_earth_a",
+    "Art/stage/act2/tiles/side_earth_b",
+    "Art/stage/act2/tiles/side_earth_c",
+    "Art/stage/act2/tiles/side_earth_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "段と slab の前の面 (コード生成)。横に流れる地層の筋・埋まった小石・暗めの土",
+   "src": [
+    "コード生成 (gen_items.py strata 種 1300)",
+    "コード生成 (gen_items.py strata 種 1301)",
+    "コード生成 (gen_items.py strata 種 1302)",
+    "コード生成 (gen_items.py strata 種 1303)"
+   ],
+   "lapvar": [
+    181.3,
+    180.7,
+    172.1,
+    160.0
+   ],
+   "gateLapvar": 800,
+   "pass": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "side_iron": {
+   "face": "side",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act2/tiles/side_iron_a",
+    "Art/stage/act2/tiles/side_iron_b",
+    "Art/stage/act2/tiles/side_iron_c",
+    "Art/stage/act2/tiles/side_iron_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "レールの側面 (コード生成)。暗い鉄に小さな錆の斑",
+   "src": [
+    "コード生成 (gen_items.py iron_side 種 1400)",
+    "コード生成 (gen_items.py iron_side 種 1401)",
+    "コード生成 (gen_items.py iron_side 種 1402)",
+    "コード生成 (gen_items.py iron_side 種 1403)"
+   ],
+   "lapvar": [
+    140.7,
+    176.9,
+    153.8,
+    190.9
+   ],
+   "gateLapvar": 800,
+   "pass": [
+    true,
+    true,
+    false,
+    true
+   ]
+  },
+  "top_iron": {
+   "face": "top",
+   "rot": "flipX",
+   "art": [
+    "Art/stage/act2/tiles/top_iron_a",
+    "Art/stage/act2/tiles/top_iron_b",
+    "Art/stage/act2/tiles/top_iron_c",
+    "Art/stage/act2/tiles/top_iron_d"
+   ],
+   "calm": 1,
+   "sat": 1,
+   "note": "レールの天面 (コード生成)。車輪に磨かれた明るい鋼",
+   "src": [
+    "コード生成 (gen_items.py iron_top 種 1500)",
+    "コード生成 (gen_items.py iron_top 種 1501)",
+    "コード生成 (gen_items.py iron_top 種 1502)",
+    "コード生成 (gen_items.py iron_top 種 1503)"
+   ],
+   "lapvar": [
+    61.2,
+    118.5,
+    51.8,
+    76.9
+   ],
+   "gateLapvar": 800,
+   "pass": [
+    true,
+    true,
+    false,
+    true
+   ]
+  }
+ },
+ "relief": {
+  "barrel_stack": {
+   "art": "Art/stage/act2/relief/barrel_stack",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    34,
+    43
+   ],
+   "unitsAt25": [
+    1.36,
+    1.72
+   ],
+   "from": "Art/props/act2_barrel_stack",
+   "srcDots": [
+    48,
+    48
+   ],
+   "note": "樽の山。下の砂の皿を切る (樽の下端の箍は残す)",
+   "normal": "Art/stage/act2/relief/barrel_stack_n",
+   "palP95Before": 4.75,
+   "ops": {
+    "band": [
+     37,
+     9,
+     38
+    ],
+    "ground": [
+     40,
+     "sand"
+    ],
+    "below": 42
+   }
+  },
+  "crate_stack": {
+   "art": "Art/stage/act2/relief/crate_stack",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    32,
+    43
+   ],
+   "unitsAt25": [
+    1.28,
+    1.72
+   ],
+   "from": "Art/props/act2_crate_stack",
+   "srcDots": [
+    48,
+    52
+   ],
+   "note": "木箱の山。下の草の台を切る",
+   "normal": "Art/stage/act2/relief/crate_stack_n",
+   "palP95Before": 4.63,
+   "ops": {
+    "ground": [
+     30,
+     "grass"
+    ],
+    "band": [
+     34,
+     10,
+     37
+    ],
+    "below": 45
+   }
+  },
+  "crystal_big": {
+   "art": "Art/stage/act2/relief/crystal_big",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    62,
+    83
+   ],
+   "unitsAt25": [
+    2.48,
+    3.32
+   ],
+   "from": "Art/props/act2_crystal_big",
+   "srcDots": [
+    80,
+    112
+   ],
+   "note": "大結晶。根元の岩と苔を切る (岩は 3D の rock に任せる)。結晶の明るい所は _e.png",
+   "normal": "Art/stage/act2/relief/crystal_big_n",
+   "palP95Before": 5.65,
+   "emission": "Art/stage/act2/relief/crystal_big_e",
+   "emissionFrac": 0.48,
+   "emissionUse": "箱庭は未使用 (2026-10-03: Diorama・DioramaTextures は半立体の _n だけ読み _e を読まない。光らせるには半立体の材料に _e の口が要る＝統合か S への申し送り)",
+   "ops": {
+    "ground": [
+     74,
+     "rock+grass"
+    ]
+   }
+  },
+  "gear_big": {
+   "art": "Art/stage/act2/relief/gear_big",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    32,
+    31
+   ],
+   "unitsAt25": [
+    1.28,
+    1.24
+   ],
+   "from": "Art/props/act2_gear_big",
+   "srcDots": [
+    40,
+    40
+   ],
+   "note": "大歯車。足元の草と砂を切る",
+   "normal": "Art/stage/act2/relief/gear_big_n",
+   "palP95Before": 6.46,
+   "ops": {
+    "ground": [
+     27,
+     "grass+sand+weed"
+    ],
+    "band": [
+     29,
+     6,
+     33
+    ],
+    "below": 35
+   }
+  },
+  "gear_pile": {
+   "art": "Art/stage/act2/relief/gear_pile",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    54,
+    27
+   ],
+   "unitsAt25": [
+    2.16,
+    1.08
+   ],
+   "from": "Art/props/act2_gear_pile",
+   "srcDots": [
+    64,
+    32
+   ],
+   "note": "歯車の山。間の草と下の灰の地面の帯を切る",
+   "normal": "Art/stage/act2/relief/gear_pile_n",
+   "palP95Before": 7.73,
+   "ops": {
+    "ground": [
+     11,
+     "grass"
+    ],
+    "below": 25
+   }
+  },
+  "hearth": {
+   "art": "Art/stage/act2/relief/hearth",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    71,
+    73
+   ],
+   "unitsAt25": [
+    2.84,
+    2.92
+   ],
+   "from": "Art/props/act2_hearth",
+   "srcDots": [
+    80,
+    80
+   ],
+   "note": "炉。下の砂の皿と草を切る (鍋とスコップは残す)。炎は _e.png・暖色は舞台の点光源",
+   "normal": "Art/stage/act2/relief/hearth_n",
+   "palP95Before": 6.11,
+   "emission": "Art/stage/act2/relief/hearth_e",
+   "emissionFrac": 0.034,
+   "emissionUse": "箱庭は未使用 (2026-10-03: Diorama・DioramaTextures は半立体の _n だけ読み _e を読まない。光らせるには半立体の材料に _e の口が要る＝統合か S への申し送り)",
+   "ops": {
+    "ground": [
+     [
+      66,
+      "grass+sand"
+     ],
+     [
+      70,
+      "soil"
+     ]
+    ],
+    "band": [
+     68,
+     8,
+     71
+    ],
+    "below": 72
+   }
+  },
+  "lumber": {
+   "art": "Art/stage/act2/relief/lumber",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    55,
+    22
+   ],
+   "unitsAt25": [
+    2.2,
+    0.88
+   ],
+   "from": "Art/props/act2_lumber",
+   "srcDots": [
+    80,
+    32
+   ],
+   "note": "材木。まわりの草と下の地面の帯を切る",
+   "normal": "Art/stage/act2/relief/lumber_n",
+   "palP95Before": 4.48,
+   "ops": {
+    "ground": [
+     0,
+     "grass"
+    ],
+    "band": [
+     19,
+     16,
+     66
+    ],
+    "below": 26
+   }
+  },
+  "minecart": {
+   "art": "Art/stage/act2/relief/minecart",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    49,
+    37
+   ],
+   "unitsAt25": [
+    1.96,
+    1.48
+   ],
+   "from": "Art/props/act2_minecart",
+   "srcDots": [
+    64,
+    40
+   ],
+   "note": "トロッコ。下の軌道と土の皿を切る (レールは 3D の rail)。鉱の結晶は _e.png",
+   "normal": "Art/stage/act2/relief/minecart_n",
+   "palP95Before": 5.25,
+   "emission": "Art/stage/act2/relief/minecart_e",
+   "emissionFrac": 0.052,
+   "emissionUse": "箱庭は未使用 (2026-10-03: Diorama・DioramaTextures は半立体の _n だけ読み _e を読まない。光らせるには半立体の材料に _e の口が要る＝統合か S への申し送り)",
+   "ops": {
+    "band": [
+     29,
+     13,
+     51
+    ],
+    "ground": [
+     29,
+     "sand+dirt"
+    ],
+    "below": 36
+   }
+  },
+  "minecart_tipped": {
+   "art": "Art/stage/act2/relief/minecart_tipped",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    49,
+    26
+   ],
+   "unitsAt25": [
+    1.96,
+    1.04
+   ],
+   "from": "Art/props/act2_minecart_tipped",
+   "srcDots": [
+    64,
+    32
+   ],
+   "note": "倒れたトロッコ。下の砂の皿を切る",
+   "normal": "Art/stage/act2/relief/minecart_tipped_n",
+   "palP95Before": 4.63,
+   "ops": {
+    "band": [
+     23,
+     11,
+     55
+    ],
+    "ground": [
+     24,
+     "sand"
+    ],
+    "below": 26
+   }
+  },
+  "sacks": {
+   "art": "Art/stage/act2/relief/sacks",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    38,
+    22
+   ],
+   "unitsAt25": [
+    1.52,
+    0.88
+   ],
+   "from": "Art/props/act2_sacks",
+   "srcDots": [
+    48,
+    32
+   ],
+   "note": "袋。下の砂の皿を切る (袋と砂が同じ色なので行で切る)",
+   "normal": "Art/stage/act2/relief/sacks_n",
+   "palP95Before": 3.98,
+   "ops": {
+    "band": [
+     20,
+     7,
+     40
+    ],
+    "below": 23
+   }
+  },
+  "shelter": {
+   "art": "Art/stage/act2/relief/shelter",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    76,
+    48
+   ],
+   "unitsAt25": [
+    3.04,
+    1.92
+   ],
+   "from": "Art/props/act2_shelter",
+   "srcDots": [
+    96,
+    64
+   ],
+   "note": "差し掛け。足元の草と土を切る (3D の rig＋布が本命・これは予備)",
+   "normal": "Art/stage/act2/relief/shelter_n",
+   "palP95Before": 6.03,
+   "ops": {
+    "ground": [
+     38,
+     "grass"
+    ],
+    "band": [
+     45,
+     16,
+     79
+    ],
+    "below": 50
+   }
+  },
+  "stall_a": {
+   "art": "Art/stage/act2/relief/stall_a",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    88,
+    66
+   ],
+   "unitsAt25": [
+    3.52,
+    2.64
+   ],
+   "from": "Art/props/act2_stall_a",
+   "srcDots": [
+    96,
+    72
+   ],
+   "note": "屋台。足元の草と土の皿を切る (3D の rig＋布が本命・これは予備)",
+   "normal": "Art/stage/act2/relief/stall_a_n",
+   "palP95Before": 4.72,
+   "ops": {
+    "ground": [
+     56,
+     "grass+sand"
+    ],
+    "band": [
+     56,
+     11,
+     86
+    ],
+    "below": 65
+   }
+  },
+  "stall_b": {
+   "art": "Art/stage/act2/relief/stall_b",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    64,
+    52
+   ],
+   "unitsAt25": [
+    2.56,
+    2.08
+   ],
+   "from": "Art/props/act2_stall_b",
+   "srcDots": [
+    80,
+    64
+   ],
+   "note": "小屋。足元の草と土を切る (3D の block が本命・これは予備)",
+   "normal": "Art/stage/act2/relief/stall_b_n",
+   "palP95Before": 4.83,
+   "ops": {
+    "ground": [
+     40,
+     "grass"
+    ],
+    "band": [
+     45,
+     16,
+     72
+    ],
+    "below": 53
+   }
+  },
+  "toolrack": {
+   "art": "Art/stage/act2/relief/toolrack",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    35,
+    52
+   ],
+   "unitsAt25": [
+    1.4,
+    2.08
+   ],
+   "from": "Art/props/act2_toolrack",
+   "srcDots": [
+    48,
+    56
+   ],
+   "note": "道具掛け。足元の土の皿と草を切る",
+   "normal": "Art/stage/act2/relief/toolrack_n",
+   "palP95Before": 4.71,
+   "ops": {
+    "ground": [
+     41,
+     "grass+sand"
+    ],
+    "band": [
+     46,
+     10,
+     40
+    ],
+    "below": 51
+   }
+  },
+  "winch": {
+   "art": "Art/stage/act2/relief/winch",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    53,
+    51
+   ],
+   "unitsAt25": [
+    2.12,
+    2.04
+   ],
+   "from": "Art/props/act2_winch",
+   "srcDots": [
+    72,
+    64
+   ],
+   "note": "巻き上げ機。足元の砂の皿と草を切る",
+   "normal": "Art/stage/act2/relief/winch_n",
+   "palP95Before": 7.09,
+   "ops": {
+    "ground": [
+     44,
+     "grass+sand"
+    ],
+    "band": [
+     47,
+     12,
+     61
+    ],
+    "below": 52
+   }
+  },
+  "wreck": {
+   "art": "Art/stage/act2/relief/wreck",
+   "kind": "足元と皿を切った",
+   "group": "cut",
+   "dots": [
+    80,
+    57
+   ],
+   "unitsAt25": [
+    3.2,
+    2.28
+   ],
+   "from": "Art/props/act2_wreck",
+   "srcDots": [
+    96,
+    64
+   ],
+   "note": "機械の残骸。足元の砂と草を切る",
+   "normal": "Art/stage/act2/relief/wreck_n",
+   "palP95Before": 5.27,
+   "ops": {
+    "ground": [
+     48,
+     "grass+sand"
+    ],
+    "band": [
+     50,
+     9,
+     84
+    ],
+    "below": 57
+   }
+  },
+  "bell_post": {
+   "art": "Art/stage/act2/relief/bell_post",
+   "kind": "そのまま (薄い皿・影の帯・草だけ切った)",
+   "group": "keep",
+   "dots": [
+    30,
+    63
+   ],
+   "unitsAt25": [
+    1.2,
+    2.52
+   ],
+   "from": "Art/props/act2_bell_post",
+   "srcDots": [
+    32,
+    64
+   ],
+   "note": "鐘の柱。根元の草の芽だけ切る",
+   "normal": "Art/stage/act2/relief/bell_post_n",
+   "palP95Before": 4.4,
+   "ops": {
+    "ground": [
+     56,
+     "grass"
+    ],
+    "below": 61
+   }
+  },
+  "crate": {
+   "art": "Art/stage/act2/relief/crate",
+   "kind": "そのまま",
+   "group": "keep",
+   "dots": [
+    32,
+    30
+   ],
+   "unitsAt25": [
+    1.28,
+    1.2
+   ],
+   "from": "Art/props/act2_crate",
+   "srcDots": [
+    32,
+    32
+   ],
+   "note": "木箱",
+   "normal": "Art/stage/act2/relief/crate_n",
+   "palP95Before": 6.29
+  },
+  "crate_open": {
+   "art": "Art/stage/act2/relief/crate_open",
+   "kind": "そのまま (薄い皿・影の帯・草だけ切った)",
+   "group": "keep",
+   "dots": [
+    39,
+    25
+   ],
+   "unitsAt25": [
+    1.56,
+    1.0
+   ],
+   "from": "Art/props/act2_crate_open",
+   "srcDots": [
+    40,
+    32
+   ],
+   "note": "開いた木箱。下の薄い土の皿を切る",
+   "normal": "Art/stage/act2/relief/crate_open_n",
+   "palP95Before": 4.12,
+   "ops": {
+    "band": [
+     23,
+     6,
+     33
+    ],
+    "below": 27
+   }
+  },
+  "crystal": {
+   "art": "Art/stage/act2/relief/crystal",
+   "kind": "そのまま",
+   "group": "keep",
+   "dots": [
+    36,
+    45
+   ],
+   "unitsAt25": [
+    1.44,
+    1.8
+   ],
+   "from": "Art/props/act2_crystal",
+   "srcDots": [
+    40,
+    48
+   ],
+   "note": "小結晶 (根元の暗い岩ごと)。結晶の明るい所は _e.png",
+   "normal": "Art/stage/act2/relief/crystal_n",
+   "palP95Before": 5.93,
+   "emission": "Art/stage/act2/relief/crystal_e",
+   "emissionFrac": 0.275,
+   "emissionUse": "箱庭は未使用 (2026-10-03: Diorama・DioramaTextures は半立体の _n だけ読み _e を読まない。光らせるには半立体の材料に _e の口が要る＝統合か S への申し送り)"
+  },
+  "lantern_hang": {
+   "art": "Art/stage/act2/relief/lantern_hang",
+   "kind": "そのまま",
+   "group": "keep",
+   "dots": [
+    16,
+    37
+   ],
+   "unitsAt25": [
+    0.64,
+    1.48
+   ],
+   "from": "Art/props/act2_lantern_hang",
+   "srcDots": [
+    32,
+    40
+   ],
+   "note": "吊り提灯 (光が描き込み)。ガラスは _e.png。10/7 に光の無い提灯で差し替えるか決める",
+   "normal": "Art/stage/act2/relief/lantern_hang_n",
+   "palP95Before": 5.73,
+   "emission": "Art/stage/act2/relief/lantern_hang_e",
+   "emissionFrac": 0.449,
+   "emissionUse": "箱庭は未使用 (2026-10-03: Diorama・DioramaTextures は半立体の _n だけ読み _e を読まない。光らせるには半立体の材料に _e の口が要る＝統合か S への申し送り)"
+  },
+  "lantern_hang_b": {
+   "art": "Art/stage/act2/relief/lantern_hang_b",
+   "kind": "そのまま",
+   "group": "keep",
+   "dots": [
+    16,
+    28
+   ],
+   "unitsAt25": [
+    0.64,
+    1.12
+   ],
+   "from": "Art/props/act2_lantern_hang_b",
+   "srcDots": [
+    32,
+    32
+   ],
+   "note": "吊り提灯 (小)。ガラスは _e.png",
+   "normal": "Art/stage/act2/relief/lantern_hang_b_n",
+   "palP95Before": 10.44,
+   "emission": "Art/stage/act2/relief/lantern_hang_b_e",
+   "emissionFrac": 0.352,
+   "emissionUse": "箱庭は未使用 (2026-10-03: Diorama・DioramaTextures は半立体の _n だけ読み _e を読まない。光らせるには半立体の材料に _e の口が要る＝統合か S への申し送り)"
+  },
+  "ore_pile": {
+   "art": "Art/stage/act2/relief/ore_pile",
+   "kind": "そのまま",
+   "group": "keep",
+   "dots": [
+    41,
+    22
+   ],
+   "unitsAt25": [
+    1.64,
+    0.88
+   ],
+   "from": "Art/props/act2_ore_pile",
+   "srcDots": [
+    48,
+    24
+   ],
+   "note": "鉱の山。鉱の結晶は _e.png",
+   "normal": "Art/stage/act2/relief/ore_pile_n",
+   "palP95Before": 4.8,
+   "emission": "Art/stage/act2/relief/ore_pile_e",
+   "emissionFrac": 0.118,
+   "emissionUse": "箱庭は未使用 (2026-10-03: Diorama・DioramaTextures は半立体の _n だけ読み _e を読まない。光らせるには半立体の材料に _e の口が要る＝統合か S への申し送り)"
+  },
+  "pulley": {
+   "art": "Art/stage/act2/relief/pulley",
+   "kind": "そのまま",
+   "group": "keep",
+   "dots": [
+    20,
+    78
+   ],
+   "unitsAt25": [
+    0.8,
+    3.12
+   ],
+   "from": "Art/props/act2_pulley",
+   "srcDots": [
+    40,
+    80
+   ],
+   "note": "滑車 (吊り物)",
+   "normal": "Art/stage/act2/relief/pulley_n",
+   "palP95Before": 4.39
+  },
+  "roots_hang": {
+   "art": "Art/stage/act2/relief/roots_hang",
+   "kind": "そのまま",
+   "group": "keep",
+   "dots": [
+    31,
+    69
+   ],
+   "unitsAt25": [
+    1.24,
+    2.76
+   ],
+   "from": "Art/props/act2_roots_hang",
+   "srcDots": [
+    48,
+    72
+   ],
+   "note": "垂れ根 (吊り物・上に苔の塊)",
+   "normal": "Art/stage/act2/relief/roots_hang_n",
+   "palP95Before": 6.59
+  },
+  "stalactite_a": {
+   "art": "Art/stage/act2/relief/stalactite_a",
+   "kind": "そのまま",
+   "group": "keep",
+   "dots": [
+    17,
+    74
+   ],
+   "unitsAt25": [
+    0.68,
+    2.96
+   ],
+   "from": "Art/props/act2_stalactite_a",
+   "srcDots": [
+    32,
+    80
+   ],
+   "note": "鍾乳石 (吊り物)",
+   "normal": "Art/stage/act2/relief/stalactite_a_n",
+   "palP95Before": 4.81
+  },
+  "trough": {
+   "art": "Art/stage/act2/relief/trough",
+   "kind": "そのまま (薄い皿・影の帯・草だけ切った)",
+   "group": "keep",
+   "dots": [
+    58,
+    22
+   ],
+   "unitsAt25": [
+    2.32,
+    0.88
+   ],
+   "from": "Art/props/act2_trough",
+   "srcDots": [
+    72,
+    28
+   ],
+   "note": "水桶。下の灰の影の帯を切る",
+   "normal": "Art/stage/act2/relief/trough_n",
+   "palP95Before": 4.54,
+   "ops": {
+    "ground": [
+     23,
+     "shadow"
+    ],
+    "below": 26
+   }
+  },
+  "tunnel_side": {
+   "art": "Art/stage/act2/relief/tunnel_side",
+   "kind": "そのまま (薄い皿・影の帯・草だけ切った)",
+   "group": "keep",
+   "dots": [
+    71,
+    86
+   ],
+   "unitsAt25": [
+    2.84,
+    3.44
+   ],
+   "from": "Art/props/act2_tunnel_side",
+   "srcDots": [
+    80,
+    104
+   ],
+   "note": "脇坑の枠。足元の草と砂を切る (下端は行で平らに)",
+   "normal": "Art/stage/act2/relief/tunnel_side_n",
+   "palP95Before": 4.48,
+   "ops": {
+    "ground": [
+     70,
+     "grass+sand+weed"
+    ],
+    "band": [
+     73,
+     14,
+     63
+    ],
+    "below": 91
+   }
+  },
+  "ladder": {
+   "art": "Art/stage/act2/relief/ladder",
+   "kind": "等角で頼んだ絵 (使える物だけ。足元を切った)",
+   "group": "iso",
+   "dots": [
+    20,
+    76
+   ],
+   "unitsAt25": [
+    0.8,
+    3.04
+   ],
+   "from": "Art/props/act2_ladder",
+   "srcDots": [
+    32,
+    80
+   ],
+   "note": "梯子。ほぼ正面の絵なので足元の灰の影だけ切って使う (3D の fence/rig で組むなら要らない)",
+   "normal": "Art/stage/act2/relief/ladder_n",
+   "palP95Before": 3.96,
+   "ops": {
+    "ground": [
+     72,
+     "shadow"
+    ],
+    "below": 74
+   }
+  },
+  "lantern": {
+   "art": "Art/stage/act2/relief/lantern",
+   "kind": "等角で頼んだ絵 (吊り物・正面に近い物はそのまま)",
+   "group": "iso",
+   "dots": [
+    28,
+    45
+   ],
+   "unitsAt25": [
+    1.12,
+    1.8
+   ],
+   "from": "Art/props/act2_lantern",
+   "srcDots": [
+    32,
+    48
+   ],
+   "note": "壁掛けの提灯 (光が描き込み・等角)。ガラスは _e.png。10/7 の lantern_head が来るまでの代わり",
+   "normal": "Art/stage/act2/relief/lantern_n",
+   "palP95Before": 7.43,
+   "emission": "Art/stage/act2/relief/lantern_e",
+   "emissionFrac": 0.379,
+   "emissionUse": "箱庭は未使用 (2026-10-03: Diorama・DioramaTextures は半立体の _n だけ読み _e を読まない。光らせるには半立体の材料に _e の口が要る＝統合か S への申し送り)"
+  },
+  "lantern_post": {
+   "art": "Art/stage/act2/relief/lantern_post",
+   "kind": "等角で頼んだ絵 (使える物だけ。足元を切った)",
+   "group": "iso",
+   "dots": [
+    25,
+    79
+   ],
+   "unitsAt25": [
+    1.0,
+    3.16
+   ],
+   "from": "Art/props/act2_lantern_post",
+   "srcDots": [
+    40,
+    88
+   ],
+   "note": "灯柱。等角の台座 (下の円盤) を切って柱だけ使う。灯は _e.png。3D の marker＋頭の絵が本命",
+   "normal": "Art/stage/act2/relief/lantern_post_n",
+   "palP95Before": 2.56,
+   "emission": "Art/stage/act2/relief/lantern_post_e",
+   "emissionFrac": 0.076,
+   "emissionUse": "箱庭は未使用 (2026-10-03: Diorama・DioramaTextures は半立体の _n だけ読み _e を読まない。光らせるには半立体の材料に _e の口が要る＝統合か S への申し送り)",
+   "ops": {
+    "below": 80
+   }
+  },
+  "roots": {
+   "art": "Art/stage/act2/relief/roots",
+   "kind": "等角で頼んだ絵 (吊り物・正面に近い物はそのまま)",
+   "group": "iso",
+   "dots": [
+    32,
+    47
+   ],
+   "unitsAt25": [
+    1.28,
+    1.88
+   ],
+   "from": "Art/props/act2_roots",
+   "srcDots": [
+    48,
+    48
+   ],
+   "note": "垂れ根の束 (吊り物は向きの問題が無い)",
+   "normal": "Art/stage/act2/relief/roots_n",
+   "palP95Before": 5.1
+  },
+  "stalactite": {
+   "art": "Art/stage/act2/relief/stalactite",
+   "kind": "等角で頼んだ絵 (吊り物・正面に近い物はそのまま)",
+   "group": "iso",
+   "dots": [
+    30,
+    46
+   ],
+   "unitsAt25": [
+    1.2,
+    1.84
+   ],
+   "from": "Art/props/act2_stalactite",
+   "srcDots": [
+    48,
+    48
+   ],
+   "note": "鍾乳石の束 (吊り物は向きの問題が無い)",
+   "normal": "Art/stage/act2/relief/stalactite_n",
+   "palP95Before": 5.0
+  },
+  "tunnel_mouth": {
+   "art": "Art/stage/act2/relief/tunnel_mouth",
+   "kind": "等角で頼んだ絵 (使える物だけ。足元を切った)",
+   "group": "iso",
+   "dots": [
+    96,
+    97
+   ],
+   "unitsAt25": [
+    3.84,
+    3.88
+   ],
+   "from": "Art/props/act2_tunnel_mouth",
+   "srcDots": [
+    128,
+    144
+   ],
+   "note": "坑口の枠。柱の台の下 (砂と岩) を行で切る。3D (marker×2＋block の梁＋黒い card) が本命・これは予備",
+   "normal": "Art/stage/act2/relief/tunnel_mouth_n",
+   "palP95Before": 2.75,
+   "ops": {
+    "below": 113
+   }
+  }
+ },
+ "litter": {
+  "gravel_1": {
+   "art": "Art/stage/act2/litter/gravel_1",
+   "dots": [
+    9,
+    6
+   ],
+   "note": "砂利 (小石 3〜5 個の不規則な塊)"
+  },
+  "gravel_2": {
+   "art": "Art/stage/act2/litter/gravel_2",
+   "dots": [
+    13,
+    7
+   ],
+   "note": "砂利 (小石 3〜5 個の不規則な塊)"
+  },
+  "gravel_3": {
+   "art": "Art/stage/act2/litter/gravel_3",
+   "dots": [
+    9,
+    4
+   ],
+   "note": "砂利 (小石 3〜5 個の不規則な塊)"
+  },
+  "gravel_4": {
+   "art": "Art/stage/act2/litter/gravel_4",
+   "dots": [
+    10,
+    5
+   ],
+   "note": "砂利 (小石 3〜5 個の不規則な塊)"
+  },
+  "pebble_1": {
+   "art": "Art/stage/act2/litter/pebble_1",
+   "dots": [
+    4,
+    3
+   ],
+   "note": "小石 1 個 (左上が明るく右下に影)"
+  },
+  "pebble_2": {
+   "art": "Art/stage/act2/litter/pebble_2",
+   "dots": [
+    6,
+    4
+   ],
+   "note": "小石 1 個 (左上が明るく右下に影)"
+  },
+  "pebble_3": {
+   "art": "Art/stage/act2/litter/pebble_3",
+   "dots": [
+    3,
+    3
+   ],
+   "note": "小石 1 個 (左上が明るく右下に影)"
+  },
+  "pebble_4": {
+   "art": "Art/stage/act2/litter/pebble_4",
+   "dots": [
+    6,
+    4
+   ],
+   "note": "小石 1 個 (左上が明るく右下に影)"
+  },
+  "gear_1": {
+   "art": "Art/stage/act2/litter/gear_1",
+   "dots": [
+    5,
+    4
+   ],
+   "note": "落ちて半分埋まった小さな歯車 (真鍮・鉄)"
+  },
+  "gear_2": {
+   "art": "Art/stage/act2/litter/gear_2",
+   "dots": [
+    8,
+    5
+   ],
+   "note": "落ちて半分埋まった小さな歯車 (真鍮・鉄)"
+  },
+  "gear_3": {
+   "art": "Art/stage/act2/litter/gear_3",
+   "dots": [
+    6,
+    5
+   ],
+   "note": "落ちて半分埋まった小さな歯車 (真鍮・鉄)"
+  },
+  "chips_1": {
+   "art": "Art/stage/act2/litter/chips_1",
+   "dots": [
+    6,
+    4
+   ],
+   "note": "木くず (細い木片)"
+  },
+  "chips_2": {
+   "art": "Art/stage/act2/litter/chips_2",
+   "dots": [
+    7,
+    3
+   ],
+   "note": "木くず (細い木片)"
+  },
+  "chips_3": {
+   "art": "Art/stage/act2/litter/chips_3",
+   "dots": [
+    5,
+    4
+   ],
+   "note": "木くず (細い木片)"
+  },
+  "chips_4": {
+   "art": "Art/stage/act2/litter/chips_4",
+   "dots": [
+    9,
+    3
+   ],
+   "note": "木くず (細い木片)"
+  }
+ },
+ "held": {
+  "barrel": {
+   "from": "Art/props/act2_barrel",
+   "reason": "単体の樽は等角投影 (天面と台座が見える) しか無い。10/7 の barrel_front まで置かない (樽の山 barrel_stack で代わる)"
+  },
+  "post_brace": {
+   "from": "Art/props/act2_post_brace",
+   "reason": "支保工の柱は 3D (block/rig) で組む。絵は等角で縄の巻きつき (却下の柄に近い)。置かない"
+  }
+ },
+ "discarded": {
+  "rope_coil": {
+   "from": "Art/props/act2_rope_coil",
+   "reason": "縄の輪は却下済みの柄 (art-bible §8-3「縄の輪も捨てる」)"
+  },
+  "gear": {
+   "from": "Art/props/act2_gear",
+   "reason": "等角の小歯車。gear_big と小札の gear_* で足りる"
+  },
+  "rail_a": {
+   "from": "Art/props/act2_rail_a",
+   "reason": "レールは 3D の rail で組む (寝かせた札は潰れる)"
+  },
+  "rail_b": {
+   "from": "Art/props/act2_rail_b",
+   "reason": "レールは 3D の rail で組む"
+  },
+  "rubble_rock": {
+   "from": "Art/props/act2_rubble_rock",
+   "reason": "岩は 3D の rock (低ポリの多面体)"
+  },
+  "stall": {
+   "from": "Art/props/act2_stall",
+   "reason": "旧の屋台 (等角・砂の台)。stall_a/b に置き換え済み"
+  }
+ }
+}

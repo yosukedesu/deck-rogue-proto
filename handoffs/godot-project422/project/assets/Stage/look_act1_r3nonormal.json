@@ -1,0 +1,6 @@
+{
+  "_doc": "三周目 試しの変種 (統合 2026-10-02): 半立体の法線アトラスを作らない (look の diorama.normalAtlas=false) = 法線の効きを既定と並べて見る",
+  "diorama": {
+    "normalAtlas": false
+  }
+}

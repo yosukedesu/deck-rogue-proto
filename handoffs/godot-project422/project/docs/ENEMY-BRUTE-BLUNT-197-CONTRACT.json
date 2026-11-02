@@ -1,0 +1,29 @@
+{
+  "revision": 197,
+  "state": "bounded trial, native/art pending",
+  "base": 196,
+  "exact_new_pair": "enemy_brute/club",
+  "original_tuple": "enemy_actual_execution/enemy_blunt/EnemyContactFx/physical/nonSmall",
+  "selected_renderer": "Hd2dEnemyContactFx",
+  "source_proof": "unchanged actual actor+move/log execution index/branch/enemy index, one aggregate/one contribution, effectiveActual==Amount, valid player receipt, positive HpLoss",
+  "material": "compact asymmetric incoming pressure fan, short core, unequal fragments, small airy release; existing pressure bitmap/palette",
+  "orientation": "camera-local actual source vector, attacker-facing receiving edge",
+  "negative_age": "no geometry/light/floor; authored enemy motion alone supplies anticipation",
+  "retains": "all selected196 scopes, exact existing Pierce geometry and selectors; no actor/action/engine/timing edits",
+  "baseline": "196 Brute actual first EndTurn damage10,681PASS; existing white response precedes displayed low pose, preserved not retimed",
+  "native_required": [
+    "actual committed/exact positive ages",
+    "source-facing contact and short clear",
+    "unchanged real enemy motion/ledger",
+    "exact family/actor/move negative gates",
+    "inherited oldPierce compatibility"
+  ],
+  "excludes": [
+    "other enemy_blunt keys",
+    "multihit",
+    "generic modifier expansion",
+    "new body/weapon art",
+    "negative-age impact"
+  ],
+  "publication": "no push authority"
+}

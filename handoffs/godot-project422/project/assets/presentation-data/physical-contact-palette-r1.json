@@ -1,0 +1,12 @@
+{
+  "id": "physical",
+  "revision": "candidate_r1_art_direction_accepted_20261009",
+  "roles_srgb": {
+    "shadow": "#535E69",
+    "primary": "#C6C6BE",
+    "edge": "#DEDCD1",
+    "core": "#F2EEE4"
+  },
+  "scene_light_srgb": "#C6C6BE",
+  "runtime_exposure_approved": false
+}

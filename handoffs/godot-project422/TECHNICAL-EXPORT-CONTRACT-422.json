@@ -1,0 +1,67 @@
+{
+  "checkpoint": 422,
+  "canonical_checkpoint": {
+    "library_id": "libfile_7b0a2e99571c8191aa991fdaccc40a97",
+    "version": 0,
+    "sha256": "0cd58a882b6e7ef267d3e80f178623fc11e8fc048c50eb2be36d706c0c5717c2"
+  },
+  "delivered_unique_paths": 10653,
+  "source_product_files": 8837,
+  "supplemental_import_recipes": 1748,
+  "required_runtime_recovery_files": 71,
+  "identical_path_overlaps": 3,
+  "export_override": {
+    "path": "authored-frames/chimera-3/clipset.json",
+    "removed_json_field": "authorizedApexCorrection.authorizationMessageId",
+    "canonical_sha256": "de5b9e3b5fd7bad0b55fc1392e237e48b64dcc9f1be8074a2cbfafb28a748b7c",
+    "export_sha256": "74efc4e220eff4e9ab2bbd33e7d80ef7016c5c7d0eca8f4eb4821ca093dda4d7",
+    "all_other_parsedJSON_exact": true,
+    "runtime_parser_references": [],
+    "canonical_unchanged": true
+  },
+  "toolchain": {
+    "godot": "4.6.3 .NET",
+    "dotnet_sdk_major": 9
+  },
+  "default_scene": "res://scenes/Main.tscn",
+  "production_main": "res://scripts/app/Main.cs",
+  "fresh_import": {
+    "exit": 0,
+    "registry_entries": 5306,
+    "registry_sha256": "c6081bcaafa95439156fc3589fd4c53bbabda5235fc9bb08ceaa316c2c05e414",
+    "recipe_changes": 5,
+    "changes_UID_only": true,
+    "required_runtime71_unchanged": true
+  },
+  "build": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 1926
+  },
+  "canonical_product_post_build_hashes": "8837/8837 PASS",
+  "native_smoke": {
+    "pass": true,
+    "exit": 0,
+    "scope": "Default production Main; normal New Run to shop, map and stable first battle with green actor, three mud enemies, forest background and five textured cards.",
+    "exit_method": "Normal Save and Exit to menu, then normal desktop window close; not forced termination.",
+    "qa_hooks": false,
+    "resource_load_errors": 0,
+    "limits": [
+      "Audio device unavailable; dummy fallback.",
+      "VSync unsupported.",
+      "Not all-effects, whole-game, audio or Android certification."
+    ]
+  },
+  "limits": [
+    "Missing original source assets remain missing; required compiled dependencies must be preserved.",
+    "Official full import and actual resource binding verification are required; raw file equality alone is insufficient.",
+    "No QA import-cache or prior UID-cache distribution.",
+    "Canonical green/blue/white scope plus Hibana single idle; other placeholder portraits remain.",
+    "No all-effects, all-character, audio, Android or cross-platform certification."
+  ],
+  "archive_layout": "All ordinary ZIP parts merge project/ paths into one NEW EMPTY folder; no .z01 format.",
+  "archive_metadata": [
+    "DELIVERED-UNION-MANIFEST.json",
+    "TECHNICAL-EXPORT-CONTRACT-422.json"
+  ]
+}

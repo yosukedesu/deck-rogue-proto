@@ -1,0 +1,27 @@
+{
+  "revision": 284,
+  "base": 283,
+  "scope": "Exact Maelstrom only: replace water body texture and interior UV domain, preserve 283 geometry coordinates/alpha/gain/envelope and all old light/particles/core.",
+  "raw": {
+    "path": "assets/Art/fx/maelstrom-water-density-v1.png",
+    "sha256": "3ca6569a0e25001c553971b972e9b07d83971ade3598c940d5fd1ca0476baef1",
+    "origin": "built-in imagegen one new rawA, transparent RGBA1536x1024 alpha0..253, original retained raw284/maelstrom-water-density-rawA.png",
+    "usage": "Interior U .28+.48u+.015consume, V .42+.16side; do not paste generated outer island/foam/halo silhouette."
+  },
+  "newRaw": 1,
+  "unchanged": [
+    "all vertex positions",
+    "all alpha/gain and clocks",
+    "shader/blend/filter",
+    "droplet Lookup",
+    "core",
+    "actor/source/target/queue/receipt/actual4x3",
+    "nonexact water texture and geometry"
+  ],
+  "qualification": [
+    "RawA independently inspected as density candidate, not native PASS",
+    "283 actual GPU binding proved old water-flow-surface-r1 present, mip0/filterlinear; no mip/filter causality proved",
+    "Original decoded raw differs imported border pixels; cause not asserted",
+    "native/import/build pending sole QA writer"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "revision": 205,
+  "base": 204,
+  "selected_addition": 202,
+  "scope": "Exact five installed Fire/Dark definitions with existing strict installed UID owner; preserve selected neutral SPELL caster and fourteen enemy keys.",
+  "fresh202": {
+    "hosts": 6,
+    "checks": 6120,
+    "exit_codes": 0,
+    "art": "Both representative matched cycles selected",
+    "notice": "Oldneutral Bone shutdown4resources notice retained",
+    "failed_setup": "Generic probe initial Block reset across EndTurn; failed setup retained, corrected actual Beetle shell control796"
+  },
+  "merge": "Only exact202 Stage/bridge/permanent profile plus two installed factory wrappers added to204; removing wrappers recovers204 Hd2d byte-exact",
+  "excluded": [
+    203,
+    "BlazeHeart special ignition path"
+  ],
+  "limitations": [
+    "No global idle suppression claim",
+    "Thorn Burn status is independent real event, not manufactured by material reuse",
+    "No future Git publication authorized"
+  ],
+  "fresh_merge_gate": "Pending actual installed material plus loaded204 neutral/other source retention; terminal QA supersedes pending status."
+}

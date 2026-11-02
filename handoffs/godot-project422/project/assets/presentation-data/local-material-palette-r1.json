@@ -1,0 +1,50 @@
+{
+  "schema": "deckrogue.local-material-palette/1",
+  "profiles": {
+    "local_dark": {
+      "roles_srgb": {
+        "shadow": "#241C35",
+        "primary": "#604A82",
+        "edge": "#9182AA",
+        "core": "#D5CBE6"
+      },
+      "scene_light_srgb": "#9383A8"
+    },
+    "local_light": {
+      "roles_srgb": {
+        "shadow": "#777360",
+        "primary": "#D4CBA9",
+        "edge": "#E8E0C4",
+        "core": "#FFF5D8"
+      },
+      "scene_light_srgb": "#DED5BA"
+    },
+    "local_botanical": {
+      "roles_srgb": {
+        "shadow": "#143A2B",
+        "primary": "#2D624B",
+        "edge": "#6F9173",
+        "core": "#D7E2C8"
+      },
+      "scene_light_srgb": "#8BA18A"
+    },
+    "local_physical": {
+      "roles_srgb": {
+        "shadow": "#535E69",
+        "primary": "#C6C6BE",
+        "edge": "#DEDCD1",
+        "core": "#F2EEE4"
+      },
+      "scene_light_srgb": "#C6C5BC"
+    },
+    "local_water_flow": {
+      "roles_srgb": {
+        "shadow": "#132D46",
+        "primary": "#285D7C",
+        "edge": "#719BAE",
+        "core": "#D3E0E6"
+      },
+      "scene_light_srgb": "#89A5B4"
+    }
+  }
+}

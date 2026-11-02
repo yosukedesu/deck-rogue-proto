@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "status": "M45_UNEXECUTED_CANDIDATE",
+  "enemyId": "enemy_mud_lump",
+  "sourceCanvas": [
+    96,
+    80
+  ],
+  "frameCanvas": [
+    96,
+    80
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    48,
+    80
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "groundMaxY": 73,
+  "registrationKind": "original-ground-anchor",
+  "restOriginalFile": "rest.png",
+  "restFrameFile": "rest_canvas.png",
+  "sourcePngSha256": "21741ab1a4a1d7e981fc68a4d042c64e21911cb58d2b0b24133579a9d0e72efa",
+  "sourceArtManifestSha256": "cd8e944d3f4cccff737ff470e8c607e3b901234d43ad831b55dfbf28491dc163",
+  "authoredMoves": [
+    "slop",
+    "mud_guard",
+    "slam",
+    "mud_toss"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "21741ab1a4a1d7e981fc68a4d042c64e21911cb58d2b0b24133579a9d0e72efa"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.15,
+        "sha256": "21741ab1a4a1d7e981fc68a4d042c64e21911cb58d2b0b24133579a9d0e72efa"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.15,
+        "sha256": "9513c1c1410c8f3d414432adfd88a0319078665e4dd3ea803dbc00ace0383a82"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.15,
+        "sha256": "cdd15723730759175ae0e50ce4133e96575178e39853ad4310eb68b1a48c5c16"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.15,
+        "sha256": "ff8c74614340a585e2a340d1b00b89712b39c27ff2fe1488806f04fbe2842f32"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.15,
+        "sha256": "17bc65590961be4b8774f9284719674082887dc81c096148f8cc4856b41f19dc"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.15,
+        "sha256": "4d4ad9f160676fcc07b1b8a6f01f3ae4e2ff6272f3a3f1a110b08eb13d3075f6"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.15,
+        "sha256": "266cfef64b6b8297cacc8595f6bf3deb84a53efa0f674a2c883e9d4921bd2b87"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.15,
+        "sha256": "c2a2dc4ecc59918d2ca0c0fb02a0b73e398537ac6b9bff641f162aebd13cb640"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.12,
+        "sha256": "765f28a4a90cb03be9125a0dea36c5bff77781cb101b463ccb4ea37e18ba6997"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "24a5cc631b4bd4e74ff73bd169e9d6d8afdeb48b332b4989e89fbb3ab4aa7754"
+      }
+    ],
+    "block": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.12,
+        "sha256": "21741ab1a4a1d7e981fc68a4d042c64e21911cb58d2b0b24133579a9d0e72efa"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.18,
+        "sha256": "9c62d1b9e2fb55370eb1aef5d85400dd4d53eee34ba1f4f9737f3d49dd11f6e1"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.05,
+        "sha256": "ba7d470b8972d3280cc18649bb18525c80c2dd51b3dcde13bde19f59c6a0d1af"
+      }
+    ],
+    "guardreturn": [
+      {
+        "file": "recovery.png",
+        "duration": 0.16,
+        "sha256": "24a5cc631b4bd4e74ff73bd169e9d6d8afdeb48b332b4989e89fbb3ab4aa7754"
+      }
+    ],
+    "slopprepare": [
+      {
+        "file": "slopprepare.png",
+        "duration": 0.18,
+        "sha256": "2fd25203345a39f0d863e9cdf796d1ec445697aa77f90a535710a29975af37ad"
+      }
+    ],
+    "sloprelease": [
+      {
+        "file": "slopcontact.png",
+        "duration": 0.1,
+        "sha256": "24c5f939fb2777194af76ff89b40caa18327824708017e3614a36a2824e0456c"
+      }
+    ],
+    "tossprepare": [
+      {
+        "file": "mudtossprepare.png",
+        "duration": 0.18,
+        "sha256": "72c6ca12d1363290eaebbd9b9929c3d4d971a67797427a787f28adc574c33698"
+      }
+    ],
+    "tossrelease": [
+      {
+        "file": "mudtosscontact.png",
+        "duration": 0.1,
+        "sha256": "8d676b6719599af132bb2fa3e9479c8949fe26a59f74fb9e3daf8553c8022b24"
+      }
+    ],
+    "slamprepare": [
+      {
+        "file": "slamprepare.png",
+        "duration": 0.18,
+        "sha256": "1d817e5467a4785cac7002ddf09cfa9daaab400187c0c75b5fb52ce9ff61a637"
+      }
+    ],
+    "slamcontact": [
+      {
+        "file": "slamcontact.png",
+        "duration": 0.05,
+        "sha256": "16e11533b672fa9667801b0c5aefaaf206d7f458579d9d4b849d958531db6c4c"
+      }
+    ]
+  }
+}

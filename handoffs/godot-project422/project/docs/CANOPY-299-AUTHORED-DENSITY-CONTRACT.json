@@ -1,0 +1,42 @@
+{
+  "revision": 299,
+  "base": "298-v2",
+  "reason": "298 own747 static craft HOLD: flat green gradient and bright Y vein. Stop analytic coefficient iteration; one substantial authored density comparison.",
+  "selection": "Unchanged exact Canopy full tuple + registered installed owner + actual same-generation committed receipt; other Plant unaffected",
+  "delta": "Only main batch Texture plus private body shader RGB sampled from authored density and final alpha multiplied by rawalpha. No shared shader or other three draw changes.",
+  "raw": {
+    "path": "assets/Art/fx/canopy-organic-density-v1.png",
+    "sha256": "8984752ffbba540693e371684a1ed06947a4a20feec639408ac16b7776c1d6e3",
+    "canvas": [
+      1870,
+      841
+    ],
+    "format": "RGBA",
+    "originalUnmodified": true,
+    "UV": [
+      0.18,
+      0.22,
+      0.82,
+      0.78
+    ],
+    "alpha": "Inner mean251.65/255, P50=252; raw is nearly opaque. Final transparency derives from unchanged vertexalpha/edge/consume times rawalpha. Pixelalpha intentionally not identical."
+  },
+  "invariants": [
+    "All geometry/positions/UV/vertexalpha/role gain/age/receipt values unchanged from298-v2",
+    "main144/thorn6/leaves12/core6; mainactualbbox113.77x56.21 in prior1280 mapping is geometry, not new material visibility proof",
+    "existing TargetPeak.035/Floor0/finiteLight exp(-age/.065), Stage sourcepose/clock/queue/rules unchanged",
+    "realCanopy install2 thenSprout0, Growth1 prior to actual3all, installedUID distinct fromtrigger, ambientinstalled; later draw1/exhaust separate",
+    "otherPlant factory remains original297"
+  ],
+  "shader": "Private Hd2dCanopySurface only; _BaseMap source_color decode, output conversion same, existing CUSTOM0 gain recovery once, no extra color/gain tuning. Existing edge and temporal consume retained.",
+  "gate": [
+    "Astra raw+UV inspection supports one actual comparison, not native PASS",
+    "actual main_BaseMap non-null/path/size/decodedRGBA SHA/codeSHA/import audit",
+    "compare all16age and main144geometry/vertexalpha rows vs298-v2; actual opticalpixel differences expected",
+    "native full-size still: organic thickness vs solid pasted leaf, Y-like branch residual; no premature craft acceptance",
+    "own continuous after static PASS only"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

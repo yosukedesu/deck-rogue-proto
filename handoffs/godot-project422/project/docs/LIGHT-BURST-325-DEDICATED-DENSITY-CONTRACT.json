@@ -1,0 +1,33 @@
+{
+  "revision": 325,
+  "base": 324,
+  "scope": "One main optical material comparison only; exact324 ownership/geometry/coverage/time/core/particles/worldlight untouched.",
+  "raw": {
+    "path": "assets/Art/fx/light-burst-pressure-density-v1.png",
+    "sha256": "3430f200eeaf99ebbdb553efa1bd52f35f2dc0d5e135b481297bec5ede41b827",
+    "width": 1536,
+    "height": 1024,
+    "source": "built-in image_gen B original copied byte-for-byte; A is separate unbound pre-native HOLD",
+    "imageROI": [
+      0.08,
+      0.12,
+      0.92,
+      0.88
+    ],
+    "shaderUV": "mixROI(u,1-v)",
+    "diagnosticAlpha": {
+      "mean": 124.78366672002976,
+      "P50": 131,
+      "zeroFraction": 0.3617669080600464,
+      "above128Fraction": 0.5019623362689658
+    },
+    "diagnosticQualification": "60x40 composite is material inspection, not nativefragment/quality proof; actual imagealpha remains multiplied by unchanged vertexalpha"
+  },
+  "sampling": "Existing Local compatibility per-tap decode/output path unchanged. No gain/whitefill modifications. Raw alpha and RGB sampling are intentional pixel differences.",
+  "prereview": "Astra candidate B permits one native comparison: repeated ribs removed, midgold belly/open notch remain. Golden torn cloth/solid piece and upper/lower brightfold risks remain. Not material PASS.",
+  "geometry": "324 unchanged. Proposed -.48 shorten was NOT applied; preserve -.72..035 existing composition to isolate material. No screen-constant geometry.",
+  "gate": "All3 original1280: short luminous thickness and smallcore vs warmshoulder; no long yellowband/paper/cloth/all-edge rim. Uneven consumption later, no retainedsheet. IfHOLD stop coefficientrescue.",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

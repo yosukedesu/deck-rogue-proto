@@ -1,0 +1,214 @@
+{
+  "revision": 172,
+  "state": "candidate-unselected",
+  "base": "selected170; no166/171 aliases",
+  "baseline": "untouched161 708PASS; damage5 -> heal2 -> Light1 per actual receiver, not all damage then all healing",
+  "direct": "black_feast exact card route; actual command UID/provenance required in QA; first positive direct receipt owns gather; other direct receivers retain outbound delivery and local Dark contraction",
+  "nested": "Candle permanent UID and Censer-mediated exhausted Corpse UID stay separately owned. FullHP heal0 still triggers hooks. No heal pairing/return stream; current living targets may change through nested kills.",
+  "shared_delta": "CreateDark sourceGesture callback/defaulttrue; localOnly necro callback remains null, source/scene remain absent. Old direct Dark matched native control required.",
+  "audit": {
+    "scope": "read-only proposal only; no new native run",
+    "representative": "black_feast",
+    "definitions": [
+      {
+        "id": "black_feast",
+        "name": "貪欲の宴",
+        "cost": 2,
+        "type": "spell",
+        "rarity": "uncommon",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamageDrain",
+            "amount": 5,
+            "target": "all"
+          }
+        ]
+      },
+      {
+        "id": "black_corpse_kiss",
+        "name": "骸の口づけ",
+        "cost": 1,
+        "type": "spell",
+        "rarity": "common",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamageDrain",
+            "amount": 5
+          },
+          {
+            "trigger": "onSelfExhausted",
+            "effect": "dealDamageDrain",
+            "amount": 3
+          }
+        ]
+      },
+      {
+        "id": "black_yomi_gate",
+        "name": "黄泉の門",
+        "cost": 3,
+        "type": "spell",
+        "rarity": "rare",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamageDrain",
+            "amount": 9,
+            "target": "all"
+          }
+        ]
+      },
+      {
+        "id": "black_blood_candle",
+        "name": "血の燭台",
+        "cost": 1,
+        "type": "permanent",
+        "rarity": "common",
+        "effects": [
+          {
+            "trigger": "onHealed",
+            "effect": "dealDamage",
+            "amount": 1
+          }
+        ]
+      },
+      {
+        "id": "black_thirst_censer",
+        "name": "渇きの香炉",
+        "cost": 1,
+        "type": "permanent",
+        "rarity": "uncommon",
+        "effects": [
+          {
+            "trigger": "onHealed",
+            "effect": "exhaustFromDeck",
+            "amount": 1
+          }
+        ]
+      }
+    ],
+    "routes": [
+      {
+        "key": "card:black_feast",
+        "definitionId": "black_feast",
+        "sourceKind": "card",
+        "family": "dark_drain",
+        "renderer": "DarkDrainFx",
+        "element": "dark",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      {
+        "key": "card:black_corpse_kiss",
+        "definitionId": "black_corpse_kiss",
+        "sourceKind": "card",
+        "family": "dark_drain",
+        "renderer": "DarkDrainFx",
+        "element": "dark",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      {
+        "key": "card:black_corpse_kiss",
+        "definitionId": "black_corpse_kiss",
+        "sourceKind": "necro",
+        "family": "dark_drain",
+        "renderer": "DarkDrainFx",
+        "element": "dark",
+        "fixedSmall": true,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending",
+        "presentationPolicy": "noncard_fixed_small_contact_v1"
+      },
+      {
+        "key": "card:black_yomi_gate",
+        "definitionId": "black_yomi_gate",
+        "sourceKind": "card",
+        "family": "dark_drain",
+        "renderer": "DarkDrainFx",
+        "element": "dark",
+        "fixedSmall": false,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending"
+      },
+      {
+        "key": "card:black_blood_candle",
+        "definitionId": "black_blood_candle",
+        "sourceKind": "permanent",
+        "family": "minimal_neutral_contact",
+        "renderer": "BoundedContactFx",
+        "element": "neutral",
+        "fixedSmall": true,
+        "portStatus": "original-pure-geometry-and-source-shader-adapter; headless-binding-verified; native-optical-parity-pending",
+        "presentationPolicy": "noncard_fixed_small_contact_v1"
+      }
+    ],
+    "profiles": {
+      "black_feast": {
+        "base": {
+          "element": "dark",
+          "style": "spell",
+          "authoredAttack": "dark_drain",
+          "authoredRequiresCardMetadata": true
+        },
+        "source": null
+      },
+      "black_yomi_gate": {
+        "base": {
+          "element": "dark",
+          "style": "spell",
+          "authoredAttack": "dark_drain",
+          "authoredRequiresCardMetadata": true
+        },
+        "source": null
+      },
+      "black_blood_candle": {
+        "base": {
+          "element": "physical",
+          "style": "slash"
+        },
+        "source": {
+          "permanent": {
+            "authoredAttack": "minimal_neutral_contact",
+            "element": "neutral",
+            "authoredSemanticReason": "Title or trigger does not unambiguously determine physical weapon versus magic medium. Do not auto-opt into authored slash or invent a family. No automatic opt-in.",
+            "authoredPresentation": "noncard_fixed_small_contact_v1"
+          }
+        }
+      },
+      "black_thirst_censer": {
+        "base": {
+          "element": "physical",
+          "style": "slash"
+        },
+        "source": null
+      },
+      "black_corpse_kiss": {
+        "base": {
+          "element": "dark",
+          "style": "spell",
+          "authoredAttack": "dark_drain",
+          "authoredRequiresCardMetadata": true
+        },
+        "source": {
+          "necro": {
+            "authoredAttack": "dark_drain",
+            "element": "dark",
+            "authoredPresentation": "noncard_fixed_small_contact_v1",
+            "authoredSemanticReason": "The separate onSelfExhausted effect is explicitly dealDamageDrain, so necro shares dark_drain."
+          }
+        }
+      }
+    },
+    "sha256": {
+      "attack-hd2d-prototype-20261025/source/data/cards.black.json": "b6c1dc47de08cc8566ec4bb268bfd573a2c6c0860ccd4c10d8595fed7ebe3624",
+      "attack-hd2d-prototype-20261025/source/data/cards.blue.json": "355809c021fb217b741e2152ac425fc114a0c919a66f99dff8fa9aff8eb2222c",
+      "attack-hd2d-prototype-20261025/source/assets/attack-routes.json": "d876cbe1c9eb6eead41e8adf0690e7b61ea7a33f547971ed629879ae82523846",
+      "attack-hd2d-prototype-20261025/source/assets/presentation-data/card-vfx-profiles.json": "762fa8c66e277b208f80a815d365bca7b49965cbdcf8a3870d07484936528f1c",
+      "attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Effects.cs": "49aabacbdeba548ea5c3ceb14c1e18bd16a7b591ea6eeb3da6b81a21c51907bb",
+      "attack-hd2d-prototype-20261025/source/RecoveredSource/DeckRogue.Engine/Combat.cs": "506e88c23b151d5cb571f43a556761f65000c3c3f15090b4901492b3512a1e5c",
+      "attack-hd2d-prototype-20261025/source/scripts/presentation/BattleStage.cs": "6eaf0319557f1177c711f59c78f3dfd5a1d9173cd8d58eb41885f056546818be"
+    }
+  },
+  "firstblocked_evidence": "Corrected165 firstblocked721PASS/26 positive-age committed rows, owner starts-.113 after gather window; actual critic cause gate held.",
+  "extension": "Only exact black_feast/card/dark_drain/DarkDrainFx/dark/nonfixed joins shared preview and cap. Same actual command UID/Current valid receipt/target Before/no pending same-target guards. Nested Candle/necro never join. No numeric/event/grouping changes."
+}

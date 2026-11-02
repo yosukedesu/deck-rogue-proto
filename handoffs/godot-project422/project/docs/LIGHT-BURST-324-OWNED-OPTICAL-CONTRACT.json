@@ -1,0 +1,51 @@
+{
+  "revision": 324,
+  "base": 323,
+  "scope": "exact actual white direct Play / naturalLight1 discharged1 / three nonlethal positiveDamage4 and followingthreeWeak1; no LightSpent invented",
+  "selection": "Original fulltuple -> LightBurstContactFx runtimeonly; originalBeat/time/worldlights/actor/Weakcue retained",
+  "owner": "registered actualPlay sameprevioushandUID, beforeLight1/after0,3liveHP>4/actualtargetID,uniqueorderedPlayed->LightDischargedSpent1->3sameUIDDamage4->3EnemyWeakened1. Actualsamegen/ref/CommittedExact Reasonnull gates every Sample; Clear and Begin reset callback. Othercount/resource/blocked/missingweak cases fallback.",
+  "geometry": {
+    "mainVertices": 64,
+    "mainIndices": 96,
+    "coreVertices": 4,
+    "coreIndices": 6,
+    "oldParticleBatch": "verbatim sampled old batch2; valid committed alpha unchanged",
+    "mainAlong": [
+      -0.72,
+      0.035
+    ],
+    "mainHalfWidth": ".009+.16*sin(pi*u)^.70*(1-.4u), lower*.55",
+    "mainCenter": ".035*sin(pi*u)",
+    "mainAlpha": ".74*fade*progressivefront*(.45+.55belly)*cross1/.48/.28",
+    "bodyGain": 2.15,
+    "coreGain": 2.7,
+    "coreXY": [
+      [
+        -0.09,
+        -0.018
+      ],
+      [
+        0.035,
+        -0.01
+      ],
+      [
+        0.02,
+        0.015
+      ],
+      [
+        -0.075,
+        0.022
+      ]
+    ],
+    "coreAlpha": ".62*(1-smooth(.014,.074,t))",
+    "bodyEnd": 0.172,
+    "effectEnd": 0.198
+  },
+  "raw": "Existing305 light-bolt-pressure-density-v1 original unchanged; imageROI .15,.34-.86,.72 (u,1-v). Raw80x32 prereview warns line/flare vs visiblewarmshoulder; no305proxyPASS.",
+  "shader": "Exactprivate Local Shader+palette+Space0+Kind41/42 override; existingLocal per-tap compatibility decode/output retained, gainCUSTOM0.r once; particlesoriginalsharedshader; no changes to305shader.",
+  "composition": "Actualincomingaxis upstreamshortunequal shoulder to tinyactualrootcore; target~65-90x25-35 visiblearea is only intention, actualprojection/fragmentgate. No wholeStar/newweapon/globalgain/particlecount expansion.",
+  "nativeGate": "allthree actual1280 hardcore/translucentwarmshoulder/root readable; no blade/laser/star, no actor/Weak/time/worldlightchange. If thinpinHOLD stop coefficientloop.",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

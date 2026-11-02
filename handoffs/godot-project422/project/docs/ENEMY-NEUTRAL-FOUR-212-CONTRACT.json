@@ -1,0 +1,15 @@
+{
+  "revision": 212,
+  "base": 211,
+  "status": "Conditional on211 final focused bounds and exact per-ID actual witnesses; not blanketneutral admission",
+  "change": "Only EnemyContactVfxProfiles selected neutral actor/move allowlist adds four exactpairs; material/cap/owner/actor/numeric source unchanged",
+  "recipes": {
+    "enemy_thief/mug": "Actual enc_thief_pair thirdEndTurn aftersneak/snatch, preserve companions/AI",
+    "enemy_crab_crusher/thrash": "Actual enc_kaiser_crab firstEndTurn, preserve originaltraits/AI",
+    "enemy_devoted_sculptor/savage": "Actual enc_sculptor_shadow secondEndTurn afterrealcarve_rite Strength3, no fakebuff",
+    "enemy_forgotten_soul/dread": "Actual enc_lost_forgotten member1 secondEndTurn afteractualmiasma riders, preserve companion"
+  },
+  "gate": "One grouped host with full ordered actual event/state/projection/source/receipt witness for everykey; representative Crab/floatingSoul views. Inherit211 finite/material/absorption/lifecycle once, notfourmatrices. Existing effectiveActual==Amount mustpassunchanged orfailclosed.",
+  "excluded": "Other64 neutral rows, multihit/mirror/HPscaled and supportmoves; no automatic admission of remaining single-hit definitions",
+  "preservation": "Contains allselected208cardriders and211finiteendpointfix; no Git/mediachange"
+}

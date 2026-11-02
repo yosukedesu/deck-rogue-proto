@@ -1,0 +1,37 @@
+{
+  "revision": 182,
+  "state": "selected-inheritance-awaiting-fresh-merge",
+  "base": "selected181",
+  "inherits": {
+    "177": {
+      "runs": 11,
+      "checks": 2746,
+      "scope": "four exact direct physical IDs",
+      "notices": "one Cleaver-empty shutdown notice"
+    },
+    "180": {
+      "runs": 12,
+      "checks": 6250,
+      "scope": "four exact installed neutral definitions plus prior Candle; includes explicit no-trigger negative",
+      "notices": "none"
+    }
+  },
+  "fresh_required": [
+    "actual Devour Block conversion",
+    "Chorus actual exhaust4→5 same actors",
+    "Crimson mixed actual parent attack",
+    "confirmed reaction regression"
+  ],
+  "preserved": [
+    "181 confirmed reaction",
+    "175 physical riders",
+    "171 Cut aliases",
+    "all earlier selected source contexts"
+  ],
+  "limits": [
+    "not generic installed permanent mapping",
+    "not global hero idle policy",
+    "no new geometry",
+    "no new media yet"
+  ]
+}

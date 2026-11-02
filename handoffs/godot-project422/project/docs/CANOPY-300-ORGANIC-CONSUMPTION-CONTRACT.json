@@ -1,0 +1,39 @@
+{
+  "revision": 300,
+  "base": 299,
+  "basis": "299 actual1517/2 static organic material PASS, ownmovie temporal HOLD: wholeleaf outline held duringfade across3receivers. Preserve initial craft, change temporal structure only.",
+  "delta": "Only exact private body shader alpha multiplier; C# all unchanged. Raw/RGB/UV/gain/vertexalpha/geometry/light/core/nodes/oldleaves/Stage/receipt/clock unchanged.",
+  "phases": {
+    "body": [
+      0.05,
+      0.135
+    ],
+    "root": [
+      0.1,
+      0.17
+    ],
+    "rootZoneU": [
+      0.76,
+      0.92
+    ],
+    "front": [
+      -0.55,
+      1.7
+    ],
+    "edgeHalfWidth": 0.045,
+    "contour": "u+.42*(g-.25*r-.30)+.14*sin(8v+3u)+.10*sin(14v-5u)"
+  },
+  "intent": "Initial .0167/.05 same material; .0833 outer belly unequal missingtissue; .1167 mainleafoutline mostly gone with existing thinroot/shortnode residue, no newlygeneratedcrest; .170 newmainmask fullyzero. End original.32 remains.",
+  "finite": "UV0..1 and sourcecolor RGB0..1; contour lower>=-.471 and upper<=1.534, fronts-.55/1.70 ensure initial1/final0 with.045transition. Smoothstep positiveinterval; masks0..1 and nonincreasing forfixedUV. Existingactual_Age finiteguard unchanged.",
+  "gates": [
+    "actualmovie all3receiptlocalages, initialRGBA equality not predicted",
+    "fullgeometry/UV/vertexalpha/clock/owner unchanged nativecomparison with explicitfloatdifferences",
+    "noheldleaf fade/straightwipe/newsecondpulse/largepop; vertexactive notfragmentvisibility",
+    "oldPlant/lifecycle remainpending untilowncraftPASS"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING",
+  "version": 2,
+  "nativeWindowQualification": "Astra actual299 lastactive.1767; root end.170 is inside existing visible window. v1 .205 was prepared only, no build/native, corrected before execution; no late extension of effect horizon."
+}

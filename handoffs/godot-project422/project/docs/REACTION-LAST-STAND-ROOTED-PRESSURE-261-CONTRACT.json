@@ -1,0 +1,82 @@
+{
+  "revision": 261,
+  "base": "selected260",
+  "name": "\u6b7b\u4e2d\u306e\u6d3b",
+  "scope": "exact confirmed card:black_reaction_last_stand / reaction / dark_drain / dark / Hd2dReactionContactFx / FixedSmall",
+  "purpose": "fresh260 head-left detached large cloud plus chest cloud; reconnect unequal pressures at one torso root, not enlarge because damage20",
+  "root": [
+    0.26,
+    0.01,
+    0.025
+  ],
+  "oldRoot": [
+    0.035,
+    0.14,
+    0.025
+  ],
+  "geometry": {
+    "oldMainHalfExtents": [
+      0.6864,
+      0.6084
+    ],
+    "oldSecondaryHalfExtents": [
+      0.6474,
+      0.5928
+    ],
+    "newMainHalfExtents": [
+      0.65,
+      0.46
+    ],
+    "newSecondaryHalfExtents": [
+      0.3,
+      0.25
+    ],
+    "scale": "rx*(1-.22*close), ry*(1-.28*close)",
+    "angle": "main=-.12+.11*close; secondary=-.65+.13*close",
+    "close": "Ease(dt/.20)",
+    "pivot": [
+      0.6,
+      0.58
+    ],
+    "registration": "same normalized receiver geometry convention as selected Curse, no fixed screen pixel; native actual torso/weapon check pending"
+  },
+  "timingUnchanged": {
+    "dt": "age*1.25-part*.012",
+    "onset": "Ease(dt/.018)",
+    "phase0": "1-Ease((dt-.055)/.035)",
+    "phase1": "Ease((dt-.055)/.035)*(1-Ease((dt-.145)/.050))",
+    "phase2": "Ease((dt-.145)/.050)*(1-Ease((dt-.25)/.10))",
+    "window": "0<=age<=.44; old negative interval was transparent"
+  },
+  "fixed": [
+    "raw originals phase01/02/03",
+    "alpha/gain/phase timing",
+    "TargetPeak .028, FloorPeak0, StageFocus0",
+    "Light 1-Ease((age-.025)/.12)",
+    "seven original mote trajectories relative to relocated common root",
+    "actual conditional HP check / same confirmed reaction UID / SourceUid null",
+    "actual drain20 and separate heal",
+    "existing counter pose / StageActor",
+    "all other Reaction/Necro/Installed/shared Dark factories full bytes"
+  ],
+  "topology": {
+    "kinds": [
+      16,
+      16,
+      16,
+      2
+    ],
+    "capacityEach": 512,
+    "maxWrittenEach": [
+      12,
+      12,
+      12,
+      42
+    ]
+  },
+  "rawAdded": 0,
+  "shaderAdded": 0,
+  "native": "pending",
+  "art": "pending",
+  "baseline": "fresh260 LastStand482 PASS; previous HP37/80; enemy200->180; hero47 after actual heal; known Ogg shutdown notice separate"
+}

@@ -1,0 +1,76 @@
+{
+  "revision": 263,
+  "base": "held262",
+  "scope": "Earth main Opening arguments only; root/secondary/all other code byte unchanged",
+  "measuredCause": {
+    "actual262frame18receiver0DarkFloorBoundsNative1280": [
+      380.56,
+      423.08,
+      568.6,
+      429.76
+    ],
+    "dimensionsPx": [
+      188.04,
+      6.68
+    ],
+    "soilFaceAboutPx": 7,
+    "shader": "role0 #292720 correct blend_mix",
+    "pixelExampleNative1280": {
+      "xy": [
+        476,
+        426
+      ],
+      "fresh261RGB": [
+        176,
+        143,
+        131
+      ],
+      "held262RGB": [
+        61,
+        54,
+        43
+      ]
+    },
+    "conclusion": "dark material works; floor foreshortening makes long thin slit while exposed soil face dominates"
+  },
+  "changes": {
+    "outer": {
+      "from": [
+        -0.95,
+        -0.34
+      ],
+      "to": [
+        -0.61,
+        -0.8
+      ]
+    },
+    "bend": {
+      "from": 0.075,
+      "to": 0.065
+    },
+    "width": {
+      "from": 0.13,
+      "to": 0.24
+    },
+    "soilFaceHeight": {
+      "from": 0.04,
+      "to": 0.018
+    }
+  },
+  "fixed": [
+    "root(-.04,-.12)",
+    "short secondary",
+    "seed width irregularity",
+    "all sampler times/alpha/roles/gain",
+    "all raw/soilbank/stones/dust/focus",
+    "global/target/floorlight/StageActor/camera",
+    "rules/actual3target1hit",
+    "all nonEarth functions"
+  ],
+  "qualification": "world-normalized geometry, not hardcoded screen offsets; fresh actual dark footprint / actor / HP overlap and ground contact remain native gate",
+  "topology": "same6 batches/cap512/lips216 max",
+  "rawAdded": 0,
+  "shaderAdded": 0,
+  "native": "pending",
+  "art": "pending"
+}

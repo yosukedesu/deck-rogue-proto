@@ -1,0 +1,24 @@
+{
+  "revision": 326,
+  "base": 325,
+  "scope": "One composition comparison: main64 vertex along coordinate only. Same rawB/UV/width/alpha/gain/core/particles/time/worldlight/owner.",
+  "oldAlong": "-.72+.755*u",
+  "newAlong": "u<=.625 ? -.48+.592*u : -.11+.145*((u-.625)/.375)",
+  "stations": {
+    "outer": -0.48,
+    "u625": -0.11,
+    "contactEnd": 0.035
+  },
+  "lengths": {
+    "oldMain_u0to625": 0.471875,
+    "newMain": 0.37,
+    "oldRoot_u625to1": 0.283125,
+    "newRoot": 0.145
+  },
+  "continuity": "Same Vertex function and binary .625 existing segment boundary; all shared edges use identical inputs. C0 only, derivative continuity not claimed. No separate cap or new root quad.",
+  "registration": "Root centerline/end unchanged. Main density shifts inward; ~18 nativepixels is estimate not implementation constant. All3 must retain visible bodyoutside density and short continuous root, no hurt burial.",
+  "prereview": "Astra agrees neck-priority two-section mapping over uniform scaling. Check station kink, closed smallflag/outerbulge and hero hurt burial. No preemptive raw/width/alpha tuning.",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

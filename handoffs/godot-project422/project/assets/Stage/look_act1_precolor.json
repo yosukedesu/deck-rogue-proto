@@ -1,0 +1,79 @@
+{
+  "_doc": [
+    "変種 (旗 look=look_act1_precolor)。2026-09-30 W3 の統合で舞台の色を本家へ寄せる前の、P22 の W3 の色に戻す (比べる用)。",
+    "P22 の変種 _bright・_dark・_w2light は色も書くので、look=look_act1_precolor+look_act1_bright の順で重ねると P22 の意図どおりに比べられる。"
+  ],
+  "envGrade": {
+    "on": false
+  },
+  "moon": {
+    "color": [
+      0.66,
+      0.76,
+      1.0
+    ]
+  },
+  "lamp": {
+    "color": [
+      0.92,
+      0.96,
+      1.0
+    ]
+  },
+  "backlight": {
+    "color": [
+      0.4,
+      0.95,
+      0.88
+    ]
+  },
+  "ambient": {
+    "sky": [
+      0.23,
+      0.27,
+      0.45
+    ],
+    "equator": [
+      0.16,
+      0.19,
+      0.3
+    ],
+    "ground": [
+      0.08,
+      0.09,
+      0.12
+    ]
+  },
+  "fog": {
+    "color": [
+      0.18,
+      0.25,
+      0.34
+    ],
+    "height": {
+      "color": [
+        0.34,
+        0.59,
+        0.64
+      ]
+    },
+    "lobe": {
+      "color": [
+        0.36,
+        0.78,
+        0.74
+      ],
+      "strength": 1.7
+    }
+  },
+  "materials": {
+    "glow": {
+      "tint": [
+        0.42,
+        0.8,
+        0.76
+      ],
+      "intensity": 1.4
+    }
+  }
+}

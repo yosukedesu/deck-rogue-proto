@@ -1,0 +1,813 @@
+{
+  "schema": 1,
+  "status": "THIEF_ALL_FOUR_MOVES_IDLE_HURT_AUTHORED_SOURCE",
+  "enemyId": "enemy_thief",
+  "displayName": "こそ泥ゴブリン",
+  "moveIds": [
+    "sneak",
+    "snatch",
+    "mug",
+    "run_off"
+  ],
+  "sourceCanvas": [
+    80,
+    64
+  ],
+  "frameCanvas": [
+    80,
+    64
+  ],
+  "sourceOffset": [
+    0,
+    0
+  ],
+  "spriteOffset": [
+    0,
+    0
+  ],
+  "anchor": [
+    40,
+    64
+  ],
+  "groundMaxY": 59,
+  "sourcePngSha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25",
+  "nativeRegistration": {
+    "rest": {
+      "bakedScale": 1,
+      "bakedDelta": [
+        0,
+        0
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bboxAfter": [
+        5,
+        12,
+        74,
+        60
+      ],
+      "opaqueClipped": 0
+    },
+    "idle": {
+      "key": "idle",
+      "rawSize": [
+        1402,
+        1122
+      ],
+      "nativeSize": [
+        80,
+        64
+      ],
+      "rawSha256": "a944f93d074819323d5becabd59b252ccb3bf48831deaf0356290ec262d473bc",
+      "sourceSha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25",
+      "nativeSha256": "f113dac5ec01b145445077ccd58f3ce52f9d7b2b6938597ce03123ab3257db93",
+      "bboxBefore": [
+        8,
+        10,
+        76,
+        59
+      ],
+      "bboxAfter": [
+        8,
+        11,
+        76,
+        60
+      ],
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueClipped": 0,
+      "paletteSubsetOfSource": true,
+      "bakedDelta": [
+        0,
+        1
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bakedScale": 1,
+      "technicalTransformsOnly": [
+        "nearest resize entire canvas to source 80x64",
+        "binary alpha threshold 128",
+        "nearest original palette RGB remap",
+        "ground registration to y59"
+      ],
+      "poseAuthorship": "individually imagegen-redrawn anatomy"
+    },
+    "sneak": {
+      "key": "sneak",
+      "rawSize": [
+        1402,
+        1122
+      ],
+      "nativeSize": [
+        80,
+        64
+      ],
+      "rawSha256": "e02bb4930cb3462c40084ad477edb9b52fbd83949e73733c38a0d8146cc426d7",
+      "sourceSha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25",
+      "nativeSha256": "7508a4c1e359b33e3e7de16ee2f5fb32355ada67e3db075b4ef1f32d4e90b425",
+      "bboxBefore": [
+        17,
+        14,
+        73,
+        59
+      ],
+      "bboxAfter": [
+        17,
+        15,
+        73,
+        60
+      ],
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueClipped": 0,
+      "paletteSubsetOfSource": true,
+      "bakedDelta": [
+        0,
+        1
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bakedScale": 1,
+      "technicalTransformsOnly": [
+        "nearest resize entire canvas to source 80x64",
+        "binary alpha threshold 128",
+        "nearest original palette RGB remap",
+        "ground registration to y59"
+      ],
+      "poseAuthorship": "individually imagegen-redrawn anatomy"
+    },
+    "reach": {
+      "key": "reach",
+      "rawSize": [
+        1402,
+        1122
+      ],
+      "nativeSize": [
+        80,
+        64
+      ],
+      "rawSha256": "ebe9bd75ff0e1afe2f016153c5b321aa6165a7989501bce83f59b792c028d2e6",
+      "sourceSha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25",
+      "nativeSha256": "69da8c246c49ebf4e48c9fc7612b2d81a157dc8c42f68e37610ec0ffac0d12ef",
+      "bboxBefore": [
+        4,
+        16,
+        77,
+        55
+      ],
+      "bboxAfter": [
+        4,
+        21,
+        77,
+        60
+      ],
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueClipped": 0,
+      "paletteSubsetOfSource": true,
+      "bakedDelta": [
+        0,
+        5
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bakedScale": 1,
+      "technicalTransformsOnly": [
+        "nearest resize entire canvas to source 80x64",
+        "binary alpha threshold 128",
+        "nearest original palette RGB remap",
+        "ground registration to y59"
+      ],
+      "poseAuthorship": "individually imagegen-redrawn anatomy"
+    },
+    "stow": {
+      "key": "stow",
+      "rawSize": [
+        1402,
+        1122
+      ],
+      "nativeSize": [
+        80,
+        64
+      ],
+      "rawSha256": "bf68ac7e062b98f35cd90714b0a1d78254473634fe11fdd43ff24a3c66aab1ab",
+      "sourceSha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25",
+      "nativeSha256": "94dd5ca62d75c37e8ba86a546f7f6dff4e7805243629ad3214466823273fcabe",
+      "bboxBefore": [
+        20,
+        11,
+        72,
+        60
+      ],
+      "bboxAfter": [
+        20,
+        11,
+        72,
+        60
+      ],
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueClipped": 0,
+      "paletteSubsetOfSource": true,
+      "bakedDelta": [
+        0,
+        0
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bakedScale": 1,
+      "technicalTransformsOnly": [
+        "nearest resize entire canvas to source 80x64",
+        "binary alpha threshold 128",
+        "nearest original palette RGB remap",
+        "ground registration to y59"
+      ],
+      "poseAuthorship": "individually imagegen-redrawn anatomy"
+    },
+    "windup": {
+      "key": "windup",
+      "rawSize": [
+        1402,
+        1122
+      ],
+      "nativeSize": [
+        80,
+        64
+      ],
+      "rawSha256": "72fe5cc77b462357bf2c4361e1a4e9cee6a70ff5a864211e45c0a18ac1d99288",
+      "sourceSha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25",
+      "nativeSha256": "538d3a89256218910932bd947243f7f9b54cef58fed2a6885726cdca3089ae77",
+      "bboxBefore": [
+        17,
+        11,
+        73,
+        60
+      ],
+      "bboxAfter": [
+        17,
+        11,
+        73,
+        60
+      ],
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueClipped": 0,
+      "paletteSubsetOfSource": true,
+      "bakedDelta": [
+        0,
+        0
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bakedScale": 1,
+      "technicalTransformsOnly": [
+        "nearest resize entire canvas to source 80x64",
+        "binary alpha threshold 128",
+        "nearest original palette RGB remap",
+        "ground registration to y59"
+      ],
+      "poseAuthorship": "individually imagegen-redrawn anatomy"
+    },
+    "contact": {
+      "key": "contact",
+      "rawSize": [
+        1402,
+        1122
+      ],
+      "nativeSize": [
+        80,
+        64
+      ],
+      "rawSha256": "7ea488cd6fe9e411c486abf705b6cd8503f0fa467e00463ea96bca18fd61e64a",
+      "sourceSha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25",
+      "nativeSha256": "3da6a0ec004834229526b7dacc6934f4305ddb2ac2c659a5cb7876ba74b31761",
+      "bboxBefore": [
+        6,
+        12,
+        73,
+        57
+      ],
+      "bboxAfter": [
+        6,
+        15,
+        73,
+        60
+      ],
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueClipped": 0,
+      "paletteSubsetOfSource": true,
+      "bakedDelta": [
+        0,
+        3
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bakedScale": 1,
+      "technicalTransformsOnly": [
+        "nearest resize entire canvas to source 80x64",
+        "binary alpha threshold 128",
+        "nearest original palette RGB remap",
+        "ground registration to y59"
+      ],
+      "poseAuthorship": "individually imagegen-redrawn anatomy"
+    },
+    "hurt": {
+      "key": "hurt",
+      "rawSize": [
+        1402,
+        1122
+      ],
+      "nativeSize": [
+        80,
+        64
+      ],
+      "rawSha256": "5cdf1a3e73af09e6acda1216af43e7f490361bd097c16b752102cca52d024526",
+      "sourceSha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25",
+      "nativeSha256": "a24719a8d517c16fbd551fbec5f47ab9c44649d2929ac1fa906ff2023938a592",
+      "bboxBefore": [
+        19,
+        10,
+        70,
+        60
+      ],
+      "bboxAfter": [
+        19,
+        10,
+        70,
+        60
+      ],
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueClipped": 0,
+      "paletteSubsetOfSource": true,
+      "bakedDelta": [
+        0,
+        0
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bakedScale": 1,
+      "technicalTransformsOnly": [
+        "nearest resize entire canvas to source 80x64",
+        "binary alpha threshold 128",
+        "nearest original palette RGB remap",
+        "ground registration to y59"
+      ],
+      "poseAuthorship": "individually imagegen-redrawn anatomy"
+    },
+    "turn": {
+      "key": "turn",
+      "rawSize": [
+        1402,
+        1122
+      ],
+      "nativeSize": [
+        80,
+        64
+      ],
+      "rawSha256": "7c4e5c1c1887165e57c3a327decaeb7041cdc816d4925f19df66ff05340b47d4",
+      "sourceSha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25",
+      "nativeSha256": "3bc0772a0d440b3bb19b2f5288af20c3ef51e6a4a104d2705a577701ee531fad",
+      "bboxBefore": [
+        21,
+        7,
+        63,
+        58
+      ],
+      "bboxAfter": [
+        21,
+        9,
+        63,
+        60
+      ],
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueClipped": 0,
+      "paletteSubsetOfSource": true,
+      "bakedDelta": [
+        0,
+        2
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bakedScale": 1,
+      "technicalTransformsOnly": [
+        "nearest resize entire canvas to source 80x64",
+        "binary alpha threshold 128",
+        "nearest original palette RGB remap",
+        "ground registration to y59"
+      ],
+      "poseAuthorship": "individually imagegen-redrawn anatomy"
+    },
+    "run": {
+      "key": "run",
+      "rawSize": [
+        1402,
+        1122
+      ],
+      "nativeSize": [
+        80,
+        64
+      ],
+      "rawSha256": "eeb7df0f46e34d8f8fe7637e6fb59c15cdd179e73c108c2e7de573bae45f6b61",
+      "sourceSha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25",
+      "nativeSha256": "81bfd4d4d03c34634ffc19c80aa4ab93724d67dc021b3b312a2b84b28a78f7d0",
+      "bboxBefore": [
+        10,
+        15,
+        74,
+        60
+      ],
+      "bboxAfter": [
+        10,
+        15,
+        74,
+        60
+      ],
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueClipped": 0,
+      "paletteSubsetOfSource": true,
+      "bakedDelta": [
+        0,
+        0
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bakedScale": 1,
+      "technicalTransformsOnly": [
+        "nearest resize entire canvas to source 80x64",
+        "binary alpha threshold 128",
+        "nearest original palette RGB remap",
+        "ground registration to y59"
+      ],
+      "poseAuthorship": "individually imagegen-redrawn anatomy"
+    },
+    "runpass": {
+      "key": "runpass",
+      "rawSize": [
+        1402,
+        1122
+      ],
+      "nativeSize": [
+        80,
+        64
+      ],
+      "rawSha256": "0f2d2e2d10ff949b1ef0fab85498bda8f92d98335ac65a380f9d4578bb4272b8",
+      "sourceSha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25",
+      "nativeSha256": "35567a3ddb684efc849994457b149466724b6c6e98a0d7a26e8b5f548c110abf",
+      "bboxBefore": [
+        14,
+        13,
+        72,
+        58
+      ],
+      "bboxAfter": [
+        14,
+        15,
+        72,
+        60
+      ],
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueClipped": 0,
+      "paletteSubsetOfSource": true,
+      "bakedDelta": [
+        0,
+        2
+      ],
+      "runtimeDelta": [
+        0,
+        0
+      ],
+      "bakedScale": 1,
+      "technicalTransformsOnly": [
+        "nearest resize entire canvas to source 80x64",
+        "binary alpha threshold 128",
+        "nearest original palette RGB remap",
+        "ground registration to y59"
+      ],
+      "poseAuthorship": "individually imagegen-redrawn anatomy"
+    }
+  },
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 1.4,
+        "sha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.2875,
+        "sha256": "936acf607bb937d5f366879e8ef088f32d4b27a0556dec873331b5494aefff25"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.2875,
+        "sha256": "3af6fcd9dd4e7493a88a8b4e8eb0f0f26590c63547070c7f6905a16ba27bcccb"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.2875,
+        "sha256": "d17424dbcd460181daf4a883ad31ad5da3bd41ebb468744ffde920678d2ad814"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.2875,
+        "sha256": "58e5ff3649d1386e43b0e9e10ee7f14f2efe4adecfbedf7b29da2d939ec54708"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.2875,
+        "sha256": "4a9e23cffb0891986a9e8f8af0c13e5c335ffd91b70a5ccda3e74e869c067f90"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.2875,
+        "sha256": "9c965025fc516540e2475601678b9ac6731698fa26d520a6e040b49ef526dc2f"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.2875,
+        "sha256": "f986a875d4090471f1e11aa039032571ad4c758d55822d6d54200c0fb36b85a6"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.2875,
+        "sha256": "ed586101c1731e6cf50cb917f0e574f345efd886ae1f262826278b4fe50ebf10"
+      }
+    ],
+    "sneak": [
+      {
+        "file": "sneak.png",
+        "duration": 0.45,
+        "sha256": "7508a4c1e359b33e3e7de16ee2f5fb32355ada67e3db075b4ef1f32d4e90b425"
+      }
+    ],
+    "reach": [
+      {
+        "file": "reach.png",
+        "duration": 0.18,
+        "sha256": "69da8c246c49ebf4e48c9fc7612b2d81a157dc8c42f68e37610ec0ffac0d12ef"
+      }
+    ],
+    "stow": [
+      {
+        "file": "stow.png",
+        "duration": 0.25,
+        "sha256": "94dd5ca62d75c37e8ba86a546f7f6dff4e7805243629ad3214466823273fcabe"
+      }
+    ],
+    "windup": [
+      {
+        "file": "windup.png",
+        "duration": 0.18,
+        "sha256": "538d3a89256218910932bd947243f7f9b54cef58fed2a6885726cdca3089ae77"
+      }
+    ],
+    "contact": [
+      {
+        "file": "contact.png",
+        "duration": 0.1,
+        "sha256": "3da6a0ec004834229526b7dacc6934f4305ddb2ac2c659a5cb7876ba74b31761"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "a24719a8d517c16fbd551fbec5f47ab9c44649d2929ac1fa906ff2023938a592"
+      }
+    ],
+    "turn": [
+      {
+        "file": "turn.png",
+        "duration": 0.15,
+        "sha256": "3bc0772a0d440b3bb19b2f5288af20c3ef51e6a4a104d2705a577701ee531fad"
+      }
+    ],
+    "run": [
+      {
+        "file": "run.png",
+        "duration": 0.12,
+        "sha256": "81bfd4d4d03c34634ffc19c80aa4ab93724d67dc021b3b312a2b84b28a78f7d0"
+      }
+    ],
+    "runpass": [
+      {
+        "file": "runpass.png",
+        "duration": 0.12,
+        "sha256": "35567a3ddb684efc849994457b149466724b6c6e98a0d7a26e8b5f548c110abf"
+      }
+    ],
+    "prepare": [
+      {
+        "file": "windup.png",
+        "duration": 0.18,
+        "sha256": "538d3a89256218910932bd947243f7f9b54cef58fed2a6885726cdca3089ae77"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "idle.png",
+        "duration": 0.15,
+        "sha256": "f113dac5ec01b145445077ccd58f3ce52f9d7b2b6938597ce03123ab3257db93"
+      }
+    ],
+    "block": [
+      {
+        "file": "idle.png",
+        "duration": 0.08,
+        "sha256": "f113dac5ec01b145445077ccd58f3ce52f9d7b2b6938597ce03123ab3257db93"
+      },
+      {
+        "file": "sneak.png",
+        "duration": 0.14,
+        "sha256": "7508a4c1e359b33e3e7de16ee2f5fb32355ada67e3db075b4ef1f32d4e90b425"
+      }
+    ],
+    "flee": [
+      {
+        "file": "run.png",
+        "duration": 0.12,
+        "sha256": "81bfd4d4d03c34634ffc19c80aa4ab93724d67dc021b3b312a2b84b28a78f7d0"
+      },
+      {
+        "file": "runpass.png",
+        "duration": 0.12,
+        "sha256": "35567a3ddb684efc849994457b149466724b6c6e98a0d7a26e8b5f548c110abf"
+      }
+    ]
+  },
+  "idleLoop": [
+    "rest",
+    "idle"
+  ],
+  "moveClips": {
+    "sneak": [
+      "idle",
+      "sneak",
+      "idle"
+    ],
+    "snatch": [
+      "sneak",
+      "reach",
+      "stow",
+      "idle"
+    ],
+    "mug": [
+      "windup",
+      "contact",
+      "idle"
+    ],
+    "run_off": [
+      "turn",
+      "run",
+      "runpass",
+      "run",
+      "runpass"
+    ]
+  },
+  "stateClips": {
+    "idle": [
+      "rest",
+      "idle"
+    ],
+    "hurt": [
+      "hurt",
+      "idle"
+    ],
+    "defend": [
+      "idle",
+      "sneak",
+      "idle"
+    ],
+    "steal-gold": [
+      "sneak",
+      "reach",
+      "stow",
+      "idle"
+    ],
+    "attack": [
+      "windup",
+      "contact",
+      "idle"
+    ],
+    "flee": [
+      "turn",
+      "run",
+      "runpass",
+      "run",
+      "runpass"
+    ]
+  },
+  "moveContracts": {
+    "sneak": {
+      "kind": "defend",
+      "min": 4,
+      "max": 6,
+      "contactKey": "sneak",
+      "reason": "Low knee bend, head lowered, hand pulled close to face; no shield added."
+    },
+    "snatch": {
+      "kind": "steal-gold",
+      "min": 12,
+      "max": 20,
+      "contactKey": "reach",
+      "recoveryKey": "stow",
+      "reason": "Open hand stretches left; then folds up/back to original sack mouth. No coins/items are created in sprite."
+    },
+    "mug": {
+      "kind": "attack",
+      "min": 5,
+      "max": 7,
+      "contactKey": "contact",
+      "damageEvents": 1,
+      "reason": "Existing bare claw/forearm makes short closed-hand jab left. Original image has no clear sword; no weapon invented."
+    },
+    "run_off": {
+      "kind": "flee",
+      "entryKey": "turn",
+      "cycle": [
+        "run",
+        "runpass"
+      ],
+      "exitDirection": [
+        1,
+        0
+      ],
+      "facing": "RIGHT after turn; sprite artwork already right-facing; never mirror again",
+      "reason": "Left battle stance pivots with backward glance, then two distinct rightward leg strides. Sack trails left."
+    }
+  },
+  "eventContract": {
+    "sneak": "Hold compact sneak pose at authoritative defend event; preserve block4–6, no attack event.",
+    "snatch": "Reach at authoritative steal-gold event, stow immediately afterward; preserve12–20 exactly once, no damage event.",
+    "mug": "One contact pose synchronized to single authoritative attack5–7; no extra hit. Existing generic physical VFX semantics remain a separate integration choice.",
+    "run_off": "Start turn only on actual run_off state, then authored run/runpass cycle moves actor root toward screen right. Keep canvas registration fixed, do not mirror or stretch. Respect authoritative flee/removal timing; never reinsert removed enemy or return to idle after successful flee. If removal is instantaneous, the final pre-removal visible pose may be used without changing gameplay timing.",
+    "hurt": "Short grounded recoil on applicable incoming damage, then current valid living state; do not override successful escape/removal.",
+    "idle": "Slow rest/idle alternation with no gameplay events."
+  },
+  "durationNote": "Suggested display holds only. Preserve authoritative gameplay timing. Shared idle is recovery for sneak/snatch/mug; no redundant recovery generation.",
+  "runtimeAcceptance": false,
+  "pending": [
+    "runtime_integration",
+    "actual_event_sync",
+    "game_acceptance"
+  ],
+  "rendering": "Nearest integer scaling; binary alpha; no affine pose deformation; root translation permitted for genuine flee movement.",
+  "runtimeAliases": {
+    "sourceManifestSha256": "31b25333b84abd8cfc830ccf2ba64044faafc0ecc491615a7275b21021514507",
+    "pixelsUnchanged": true,
+    "idle": "rest and idle",
+    "prepare": "windup",
+    "recovery": "idle",
+    "block": "idle and sneak",
+    "flee": "run and runpass, already right facing",
+    "snatchSync": "real Resolved presentation only; theft applied only by unchanged engine declaration"
+  }
+}

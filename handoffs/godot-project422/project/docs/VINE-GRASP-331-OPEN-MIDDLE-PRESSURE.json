@@ -1,0 +1,32 @@
+{
+  "revision": 331,
+  "base": 330,
+  "cause": "330externaldensityvisible but terminalclosedleaf+longneck readsclub/sprout. Structuralcoverage revision notuniformlength/gain tweak.",
+  "geometry": {
+    "main": "same64allocatedvertices, positivehalf quads5and7 (segments2,3/u.25-.50) unindexed, oppositehalfcontinuous",
+    "indexCount": 228,
+    "oldIndexCount": 240,
+    "maxMainIndexedVertices": 56,
+    "maxMoteIndexedVertices": 16,
+    "capacity": 160,
+    "widthOld": "(.012+.22sin(pi*u)^.70)*(1-.45u)*(1-.25q)",
+    "widthNew": "(.010+.25exp(-((u-.64)/.25)^2)*sin(pi*u)^.35)*(1-.25q)",
+    "mainHalfwidthAtU625": 0.252293587,
+    "qualification": "densityRGB/alpha unchanged; geometryarea changes so visualdensitycenter notguaranteed bybellalone"
+  },
+  "invariants": [
+    "330along/center/rootcenter/actualexternalregistration",
+    "sameUV/raw/sourcecolor/shader/gain/vertexalpha/time",
+    "same328clock/7damage/oldmotes positions/indices/rules/actorFlash/light0"
+  ],
+  "risks": [
+    "openfork/scissors/Ysymbol",
+    "hardrectangularcut",
+    "leafplate/cloth insteadpressure",
+    "uniformfade deferred untilactualshape gate"
+  ],
+  "prereview": "Astra agrees one structuralcomparison; notnativequalityapproval",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

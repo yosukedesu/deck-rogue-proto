@@ -1,0 +1,41 @@
+{
+  "revision": 233,
+  "baseTrial": 232,
+  "status": "preflight0errors/1923baselinewarnings10.66s; nativepending",
+  "scope": "Connectioninternal geometry only; start/end/window exact232",
+  "newRawBytes": 0,
+  "integration": {
+    "oldPlainHalo": "removed from edge batch",
+    "newHalo": "same bodybatch/Kind33/231opticalshader/raw; centralUV u .08\u2192.965,v .43\u2192.60;6segments36vertices",
+    "newCore": "existingcorebatch3segments18vertices",
+    "center": "start.Lerp(end,u)+normal*.03*sin(u*pi)*(1-release), endpoints exact",
+    "entry": "Ease(u<.70?u/.70:(1-u)/.30)",
+    "haloHalfWidth": ".010+.002u+.034entry",
+    "haloOpacity": ".12-.02u+.164entry times oldconnectionenvelope",
+    "coreHalfWidth": ".005-.002u+.005entry",
+    "coreOpacity": ".30-.18u+.346entry times oldenvelope",
+    "gains": "halo1.05/core1.35 same material constants"
+  },
+  "capacity": {
+    "negativeBody": 468,
+    "positiveBody": 252,
+    "coreMax": 24,
+    "capacity": 512
+  },
+  "unchanged": [
+    "all code outside Connectioninternal strokes",
+    "all material shader231/raw/selector",
+    "source actualanchor/end/window[-.11,+.10]/.22interval",
+    "mainbodypositionsUVopacity/gain/phase",
+    "actual3hit/event/receipt/StageActor/worldlight/camera/audio"
+  ],
+  "unityIntegration": "No Stage/Actor/timing change. Connection now uses same raw optical halo UVband and curved/tapered three-section core, no plainuniform whiteStroke. Constants above required for portability.",
+  "gates": [
+    "causal caster\u2192target read without white ruler/cord",
+    "halo hue/density merges into mainbody not separatetexturestrip",
+    "no obvious segmentjoints/UVbandhardedges",
+    "no extrahead/owneroverlap/windowchange",
+    "mainmaterial hierarchy preserved",
+    "normal-speed3beat/trough/lastclear afterstill gates"
+  ]
+}

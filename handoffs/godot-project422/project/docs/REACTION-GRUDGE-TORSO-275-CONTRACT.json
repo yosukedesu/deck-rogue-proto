@@ -1,0 +1,39 @@
+{
+  "revision": 275,
+  "base": 274,
+  "scope": "exact selected reaction black_reaction_grudge only",
+  "basis": "fresh274 actual0019..0032 reverified detached upper-left major mask plus torso minor mask. Old191 limited review remains historical; this is current actual deficit, not unreviewed assumption.",
+  "change": "One torso root(.26,.01,.025); main .64x.44 and subordinate .27x.23, asymmetric axes. Uses old dark-contraction three phases and timing. Registration knowledge/three-phase local implementation pattern from selectedLastStand is reused, not its exact shape values; this is independently tested Grudge, no claim of new unique raw.",
+  "invariants": [
+    "actual previous effective ActionValue>=8 eligibility; not HpLoss threshold",
+    "same live set PresentationSource.Uid qa-card, ambient SourceUid null distinguished",
+    "counterpose and separate drain18/heal9 unchanged",
+    "old sharedDark/Underworld/Curse/LastStand factory bytes unchanged",
+    "Stage/Actor/queue/owner/engine/raw/shader unchanged",
+    "target light .028/floor0/stagefocus0, phase dt age1.25-part.012, end .44"
+  ],
+  "capacity": {
+    "batches": 4,
+    "kinds": [
+      16,
+      16,
+      16,
+      2
+    ],
+    "maxWritten": [
+      12,
+      12,
+      12,
+      42
+    ],
+    "capacityEach": 512
+  },
+  "rawNew": 0,
+  "risks": [
+    "actual visible density root may differ from mathematical pivot",
+    "uniform shrinking vs outer consumption remains temporal gate",
+    "face/18/HP and blade nonalignment require actual verification"
+  ],
+  "native": "PENDING",
+  "art": "PENDING"
+}

@@ -1,0 +1,633 @@
+{
+  "schema": 1,
+  "status": "M60_FINAL_ART_PINNED_RUNTIME_UNEXECUTED",
+  "enemyId": "enemy_kin_follower",
+  "sourceCanvas": [
+    160,
+    112
+  ],
+  "frameCanvas": [
+    160,
+    116
+  ],
+  "sourceOffset": [
+    0,
+    4
+  ],
+  "anchor": [
+    80,
+    116
+  ],
+  "spriteOffset": [
+    0,
+    2
+  ],
+  "groundMaxY": 107,
+  "groundMaxYSemantics": "Actual support sole opaque107/boundary108; dance has a different actual planted foot, not raised knee.",
+  "placementContract": {
+    "kind": "anatomical-support-foot",
+    "frames": {
+      "boomerangprepare.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          42.5,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          40,
+          41,
+          42,
+          43,
+          44,
+          45
+        ],
+        "danceUsesOnlyActualPlantedFoot": false,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          -37.5,
+          -47.0
+        ]
+      },
+      "boomerangrelease.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          42.5,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          40,
+          41,
+          42,
+          43,
+          44,
+          45
+        ],
+        "danceUsesOnlyActualPlantedFoot": false,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          -37.5,
+          -47.0
+        ]
+      },
+      "dancehold.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          80,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          78,
+          79,
+          80,
+          81,
+          82,
+          83
+        ],
+        "danceUsesOnlyActualPlantedFoot": true,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          0.0,
+          -47.0
+        ]
+      },
+      "danceprepare.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          80,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "danceUsesOnlyActualPlantedFoot": true,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          0.0,
+          -47.0
+        ]
+      },
+      "guardhold.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          42.5,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          40,
+          41,
+          42,
+          43,
+          44
+        ],
+        "danceUsesOnlyActualPlantedFoot": false,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          -37.5,
+          -47.0
+        ]
+      },
+      "guardprepare.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          42.5,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          40,
+          41,
+          42,
+          43,
+          44,
+          45
+        ],
+        "danceUsesOnlyActualPlantedFoot": false,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          -37.5,
+          -47.0
+        ]
+      },
+      "hurt.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          42.5,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          40,
+          41,
+          42,
+          43,
+          44,
+          45
+        ],
+        "danceUsesOnlyActualPlantedFoot": false,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          -37.5,
+          -47.0
+        ]
+      },
+      "idle.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          42.5,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          41,
+          42,
+          43,
+          44
+        ],
+        "danceUsesOnlyActualPlantedFoot": false,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          -37.5,
+          -47.0
+        ]
+      },
+      "recovery.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          42.5,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          40,
+          41,
+          42,
+          43,
+          44,
+          45
+        ],
+        "danceUsesOnlyActualPlantedFoot": false,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          -37.5,
+          -47.0
+        ]
+      },
+      "rest.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          42.5,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          39,
+          40,
+          41,
+          42
+        ],
+        "danceUsesOnlyActualPlantedFoot": false,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          -37.5,
+          -47.0
+        ]
+      },
+      "slashcontact.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          42.5,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          40,
+          41,
+          42,
+          43,
+          44,
+          45
+        ],
+        "danceUsesOnlyActualPlantedFoot": false,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          -37.5,
+          -47.0
+        ]
+      },
+      "slashprepare.png": {
+        "kind": "actual-anatomical-support-foot",
+        "supportSoleTarget": [
+          42.5,
+          107
+        ],
+        "soleOpaqueY": 107,
+        "soleBoundaryY": 108,
+        "opaqueSupportRoiX": [
+          40,
+          41,
+          42,
+          43,
+          44,
+          45
+        ],
+        "danceUsesOnlyActualPlantedFoot": false,
+        "raisedKneeHairClothBladeAndBboxNotSupport": true,
+        "spriteLocalPixelPoint": [
+          -37.5,
+          -47.0
+        ]
+      }
+    },
+    "registration": {
+      "method": "One common scale274/87 from calibration head-to-front-support sole height versus original87. All twelve raw components isolated without redrawing. Nearest-point sampling, alpha>=128, nearest source colors. Whole-frame translation registers explicitly identified real support foot. Braced front sole targets42.5,107, based on original42.5,103 plus top padding4. One-leg dance planted foot targets80,107 at original body axis; raised knee is not support. No per-pose scaling, part manipulation, pixel painting, rigid pose rotations or synthetic frames.",
+      "commonRawPixelsPerNativePixel": 3.1494252873563218,
+      "sourcePhysicalFrontFootSoleCenterX": 42.5,
+      "sourcePhysicalSupportSoleOpaqueY": 103,
+      "registeredPhysicalSupportSoleOpaqueY": 107,
+      "physicalSupportSoleBoundaryY": 108,
+      "groundBoundaryIsNotAnAdditionalPixelTranslation": true,
+      "danceSupportFootTarget": [
+        80,
+        107
+      ],
+      "sourcePhysicalFrontFootRoi": [
+        39,
+        100,
+        47,
+        104
+      ],
+      "doNotUseWeaponHairClothOrOpaqueBboxBottomForSupport": true,
+      "raisedDanceLegIsNotSupport": true,
+      "centeredSpriteOffsetFormula": "Sprite3D uses localY=(textureHeight/2-pixelY+sprite.Offset.Y)*PixelSize. X compensation=canvasHalfDeltaX-sourceOffsetX; Y compensation=sourceOffsetY-canvasHalfDeltaY. Here offset=(0,+2) gives58-(y+4)+2=56-y, preserving original global source pixels.",
+      "frameSupport": {
+        "calibration": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            78,
+            122
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 92.5,
+          "rawPhysicalSupportFootSoleOpaqueY": 342,
+          "nativePhysicalSupportFootSoleTarget": [
+            42.5,
+            107
+          ]
+        },
+        "idle": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            451,
+            492
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 468.5,
+          "rawPhysicalSupportFootSoleOpaqueY": 340,
+          "nativePhysicalSupportFootSoleTarget": [
+            42.5,
+            107
+          ]
+        },
+        "hurt": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            807,
+            851
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 821.0,
+          "rawPhysicalSupportFootSoleOpaqueY": 340,
+          "nativePhysicalSupportFootSoleTarget": [
+            42.5,
+            107
+          ]
+        },
+        "recovery": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            1179,
+            1220
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 1193.0,
+          "rawPhysicalSupportFootSoleOpaqueY": 342,
+          "nativePhysicalSupportFootSoleTarget": [
+            42.5,
+            107
+          ]
+        },
+        "slashprepare": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            71,
+            115
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 84.0,
+          "rawPhysicalSupportFootSoleOpaqueY": 685,
+          "nativePhysicalSupportFootSoleTarget": [
+            42.5,
+            107
+          ]
+        },
+        "slashcontact": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            451,
+            507
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 470.5,
+          "rawPhysicalSupportFootSoleOpaqueY": 678,
+          "nativePhysicalSupportFootSoleTarget": [
+            42.5,
+            107
+          ]
+        },
+        "boomerangprepare": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            805,
+            852
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 817.5,
+          "rawPhysicalSupportFootSoleOpaqueY": 685,
+          "nativePhysicalSupportFootSoleTarget": [
+            42.5,
+            107
+          ]
+        },
+        "boomerangrelease": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            1193,
+            1240
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 1207.0,
+          "rawPhysicalSupportFootSoleOpaqueY": 685,
+          "nativePhysicalSupportFootSoleTarget": [
+            42.5,
+            107
+          ]
+        },
+        "danceprepare": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            176,
+            213
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 189.0,
+          "rawPhysicalSupportFootSoleOpaqueY": 1021,
+          "nativePhysicalSupportFootSoleTarget": [
+            80,
+            107
+          ]
+        },
+        "dancehold": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            550,
+            590
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 565.5,
+          "rawPhysicalSupportFootSoleOpaqueY": 1021,
+          "nativePhysicalSupportFootSoleTarget": [
+            80,
+            107
+          ]
+        },
+        "guardprepare": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            810,
+            861
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 823.0,
+          "rawPhysicalSupportFootSoleOpaqueY": 1019,
+          "nativePhysicalSupportFootSoleTarget": [
+            42.5,
+            107
+          ]
+        },
+        "guardhold": {
+          "registrationLandmark": "Actual support-foot sole, manually identified within anatomical foot ROI; front left foot for braced stances, lone planted right foot for one-leg dance. Never hair, cloth, blade or global opaque minimum.",
+          "rawPhysicalSupportFootRoiX": [
+            1193,
+            1241
+          ],
+          "rawPhysicalSupportFootSoleCenterX": 1207.0,
+          "rawPhysicalSupportFootSoleOpaqueY": 1021,
+          "nativePhysicalSupportFootSoleTarget": [
+            42.5,
+            107
+          ]
+        }
+      }
+    },
+    "sprite3DPointFormula": {
+      "x": "pixelX-frameWidth/2+spriteOffsetX",
+      "y": "frameHeight/2-pixelY+spriteOffsetY"
+    },
+    "preserveOriginalStaticSize": [
+      160,
+      112
+    ]
+  },
+  "restOriginalFile": "rest-original.png",
+  "restFrameFile": "rest.png",
+  "sourcePngSha256": "d97d3e3f4e7d932255e5a28d7edb78ac5ff3f6abce44bce1e15354afaa49277d",
+  "approvedArtManifestSha256": "a79f006fc88a6b81b3bdff41e95a615333dbb44643928befb7d4d5a6014f2436",
+  "authoredMoves": [
+    "slash",
+    "boomerang",
+    "dance",
+    "guard"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "physicalNewKeyCount": 11,
+  "clips": {
+    "rest": [
+      {
+        "file": "rest.png",
+        "duration": 0.2,
+        "sha256": "badc41f2a3eb50ad464eef8e2ded9694eef9d220f6147e50626948b0509702fb"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.1375,
+        "sha256": "badc41f2a3eb50ad464eef8e2ded9694eef9d220f6147e50626948b0509702fb"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.1375,
+        "sha256": "affb2ec9f630ccc8fa0fcdda15a7d2ebc7d6365062cf9f2b1b2630794c2a6bd0"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.1375,
+        "sha256": "1ee5031ff5b2fe672d19ecf8b58ec8e896dcd275bed4783ebe47a2fdced0b2af"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.1375,
+        "sha256": "506d35145da30036b36602053fa089f8b0b910f1d3129ceb05eb5b7d45f45d5e"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.1375,
+        "sha256": "76bcfb2e4f3ec691a5e683d3b75b99a95ee96fee75677dcfe332133cdaa263d4"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.1375,
+        "sha256": "4622f21a3979ccf57c52c5a98ad76ff09d9264c2f65b23af3ed56e55002414cf"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.1375,
+        "sha256": "8b3632ed37d64aff0cf8df1dd5ba40c6eab05da8f23cbda4c707644b08cb2be7"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.1375,
+        "sha256": "94305f3dd5b109fe71e6261a5a8616bea47dd3a6458eee2cc82248641b6ff28c"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.16,
+        "sha256": "f276835bb3485b5c1968cc172ff3b3873d275147c3db18bbbda94db2172b3d7a"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "6bedc3145840ce9250f3f83e0edb3abfe2352fab36af2a1389ea871fa5bd3384"
+      }
+    ],
+    "slashprepare": [
+      {
+        "file": "slashprepare.png",
+        "duration": 0.22,
+        "sha256": "f6d4b4702c84b16ab7d2d4bcd5a35b607894f561720102852824412e11774504"
+      }
+    ],
+    "slashcontact": [
+      {
+        "file": "slashcontact.png",
+        "duration": 0.14,
+        "sha256": "f249e08f04dbe963f1a0bc9e5663e3152a1d00b6fb05b6ad9e2f5b727d578bce"
+      }
+    ],
+    "boomerangprepare": [
+      {
+        "file": "boomerangprepare.png",
+        "duration": 0.24,
+        "sha256": "5d4c014f9c1213d528647e678121c9fee2a5e7cdbc557496dad611b03e7e5b3e"
+      }
+    ],
+    "boomerangrelease": [
+      {
+        "file": "boomerangrelease.png",
+        "duration": 0.16,
+        "sha256": "a850343f1db15edd0c44f6b6b35d6f164d508d31e3f7b0efb86397f306cdbd7a"
+      }
+    ],
+    "danceprepare": [
+      {
+        "file": "danceprepare.png",
+        "duration": 0.24,
+        "sha256": "417f66a226ff7ad8b64478a455ffb0f2c824b4b1e96ba29ce7765295c372480c"
+      }
+    ],
+    "dancehold": [
+      {
+        "file": "dancehold.png",
+        "duration": 0.28,
+        "sha256": "9138197fa50638ed7fe2e2fcb798d9008a2a9630fa26ecb36ffbb3aaf22cd2c9"
+      }
+    ],
+    "guardprepare": [
+      {
+        "file": "guardprepare.png",
+        "duration": 0.22,
+        "sha256": "52f91d78f7f0bba2784de095a66311ad61910e9165e03d1519760272569fb4df"
+      }
+    ],
+    "guardhold": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.28,
+        "sha256": "6ecc67873d23de1b908e06872099e5f6dd3a501083533d581650e5faea0ee9cf"
+      }
+    ],
+    "block": [
+      {
+        "file": "guardhold.png",
+        "duration": 0.18,
+        "sha256": "6ecc67873d23de1b908e06872099e5f6dd3a501083533d581650e5faea0ee9cf"
+      }
+    ]
+  },
+  "drawingOnlyNormalization": "Original art durations retained; existing bounded selector windows own real-contact timing. No gameplay or release clock changes.",
+  "releaseContract": "One existing first release/recovery, actual target contacts0/1 cannot rethrow; no flight or weapon-return trajectory claim."
+}

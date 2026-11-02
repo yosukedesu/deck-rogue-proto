@@ -1,0 +1,38 @@
+{
+  "schema": "deckrogue.bounded-contact-palette/1",
+  "surfaces": {
+    "Neutral": {
+      "primary": "#A8A8A8",
+      "core": "#EEEEEE"
+    },
+    "Water": {
+      "primary": "#285D7C",
+      "core": "#D3E0E6"
+    },
+    "Cold": {
+      "primary": "#64A4BE",
+      "core": "#E4F1F1"
+    },
+    "Wood": {
+      "primary": "#756653",
+      "core": "#BDAF94"
+    },
+    "Plant": {
+      "primary": "#2D624B",
+      "core": "#D7E2C8"
+    },
+    "Fire": {
+      "primary": "#D65A28",
+      "core": "#FFE8AE"
+    },
+    "Smoke": {
+      "primary": "#797979",
+      "core": "#ADADAD"
+    },
+    "Dark": {
+      "primary": "#604A82",
+      "core": "#D5CBE6"
+    }
+  },
+  "notes": "Neutral and smoke are achromatic. Water, cold, plant, fire and dark reuse existing accepted palette roles; wood is muted local brown for the explicitly named young trunk. No new image, tier or scene light."
+}

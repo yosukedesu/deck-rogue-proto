@@ -1,0 +1,88 @@
+{
+  "revision": 163,
+  "state": "candidate-unselected",
+  "baseline": "exact161 428 native checks; existing ordinary blue attack pose and three Damage6 then IceBlock3+passive1",
+  "design": "shared source gather, unequal short angular arrivals; one pulse per authoritative contact; rigid fractured chips rotate and fall; no whole IceLance copies or invented extra hits",
+  "regions": {
+    "state": "read-only preparation; no IceHail implementation or native acceptance",
+    "source": "attack-hd2d-prototype-20261025/source/assets/Art/fx/ice-crystal-surface-r2.png",
+    "sha256": "56272403fd97d71095e5f9b2105b996eacaf05df0580fd51757271d25f7f580e",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "regions": [
+      {
+        "name": "A",
+        "pixel_bounds_exclusive": [
+          1314,
+          121,
+          1397,
+          342
+        ],
+        "uv0_top_left": [
+          0.7406989853438557,
+          0.13641488162344984
+        ],
+        "uv_size": [
+          0.0467869222096956,
+          0.2491544532130778
+        ],
+        "aspect": 0.3755656108597285,
+        "alpha_gt127": 0.4409856621054353,
+        "role": "intact-looking short angular crystal; minor neighboring low-area pixels remain"
+      },
+      {
+        "name": "B",
+        "pixel_bounds_exclusive": [
+          1449,
+          568,
+          1523,
+          619
+        ],
+        "uv0_top_left": [
+          0.8167981961668546,
+          0.6403607666290868
+        ],
+        "uv_size": [
+          0.04171364148816235,
+          0.05749718151071026
+        ],
+        "aspect": 1.4509803921568627,
+        "alpha_gt127": 0.36036036036036034,
+        "role": "single squat fractured chip"
+      },
+      {
+        "name": "C",
+        "pixel_bounds_exclusive": [
+          1596,
+          290,
+          1637,
+          323
+        ],
+        "uv0_top_left": [
+          0.8996617812852311,
+          0.3269447576099211
+        ],
+        "uv_size": [
+          0.023111612175873732,
+          0.03720405862457723
+        ],
+        "aspect": 1.2424242424242424,
+        "alpha_gt127": 0.2690317812269032,
+        "role": "single small fractured chip"
+      }
+    ],
+    "cautions": [
+      "UV origin is image top-left; existing MaterialRegion flips V",
+      "Preserve crop aspect, no whole spear/radial cluster",
+      "Not rounded hailstones; angular fragment reuse trial",
+      "One actual damage contact per receiver; separate IceBlock3 event",
+      "Await untouched161 baseline before concrete geometry"
+    ]
+  },
+  "timing": "explicit Ice cast profile, launch lead .20, presentation target spacing .035; engine resolution unchanged",
+  "limitations": "region A has small stray fragment risk; runtime import/mips and gameplay material legibility require native inspection; no broad Ice mapping",
+  "previous_trial": "162 art rejected repeated wing/shard arrangement despite938 technical PASS",
+  "revision163": "Stable captured receiver/volley seed drives coherent arrival/contact centers and size, independently varied fragment rotation/velocity/gravity/decay; no extra contacts or new phase timing/light/bitmap."
+}

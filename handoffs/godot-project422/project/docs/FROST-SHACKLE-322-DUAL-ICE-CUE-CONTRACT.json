@@ -1,0 +1,21 @@
+{
+  "revision": 322,
+  "base": 321,
+  "cause": "Own201 direct70 utility HOLD: Ice9 and passiveIce1 use identical hero.Contact+Up*.65 origin/duration1/drift.45; observed Ydiff.06 from receipt timing, not a full line lane.",
+  "change": "Exact registered Shackle passive +1 only: projected measured full Label3D font/mesh/outline or pool icon peak1.14 height (whichever larger) plus8 internalviewport pixels downward. Ice9 untouched; icon follows old pool label offset.",
+  "ownership": [
+    "actual registered Play UID in previoushand Shackle spell, explicit target valid before/after enemy, mode null",
+    "actual current-generation eventref Committed/Exact receipt Reasonnull",
+    "unique ordered CardPlayed Shackle -> EnemyWeakened1 same target -> IceBlockGained9 -> exact IceBlockGained1",
+    "no sourceUID fabricated; all other Ice/status fallback untouched"
+  ],
+  "invariants": [
+    "numeric/order/timing/duration1/font30/pixelsize.008/outline7/colors/icons/hero blockpose",
+    "existing pool placement callback Clear/end reset; no new cache/state",
+    "no new material/Wall/chains/FX/worldlight/actor modifications"
+  ],
+  "pixelQualification": "height measured in actual camera viewport; +8 is UI margin, not product world geometry. Existing earlier Ice9 upward drift increases separation. Native text/face/HP gate required.",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

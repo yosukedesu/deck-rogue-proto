@@ -1,0 +1,33 @@
+{
+  "revision": 360,
+  "base": 359,
+  "status": "FROZEN_MASK_ONLY_CANDIDATE_UNRUN",
+  "scope": "Exact359 Cultist private role81 existing main mask spatial death schedule only. No other branch/material alpha/geometry changes.",
+  "original359": "324/1 original74 wholeHOLD; initial29/30 improved but long upper edge remains31 and32 collapses",
+  "formulaBefore": "        float death=clamp(.150-.065*u-.065*notch,.067,.150);\n        float remain=1.0-smoothstep(death-.012,death,_Age);",
+  "formulaAfter": "        //360 consume far length earlier while retaining more middle/root density at .10.\n        float death=clamp(.145-.080*smoothstep(.55,.78,u)-.085*notch,.065,.150);\n        float remain=1.0-smoothstep(death-.016,death,_Age);",
+  "fixed": [
+    "same fullUV/raw originalSHA8653410a5e47cdd03b287bce60624eccf4f1366b772e32c96f67c1ed3b6ebcc9",
+    "sameRGB/gain/mainvertexenvelope .88initial/.695309hold→.15zero",
+    "sameglobalUV/64body/root110,840/localwidth.72",
+    "sameold3motes and sharedfallback",
+    "same358 exactcontactclock/actor/hurt/redoverlay/engine/RNG/UI",
+    "same Light0 and all scene lights"
+  ],
+  "predictions": {
+    "firstTwo": "deathmin.065 minus fade .016 = .049; allUV remain1 at actual29age0 and30age.0333333. Require actual rawRGBA29/30 exact359.",
+    "third": "u>.78 far length consumed at age.0667; gaussian lower/mid-notch and smooth u threshold may yield unequal shortening, actual glyph not asserted.",
+    "fourth": "Rawweighted remaining .4554 at.1 vs359 .3616; middle/root intended to persist rather than sudden faint root only.",
+    "cpuRemain": {
+      "at.0333333": 1,
+      "at.0666667": 0.7872100436411812,
+      "at.1": 0.4553930548699971,
+      "at.1333333": 0.0933434099908279
+    },
+    "qualification": "Raw texel alpha-weighted multiplication only; no perspective/filter/depth/RGBcontrast/compositing/GPU fragment guarantee."
+  },
+  "risk": "U threshold could create a straight clipped section like scissors on a leaf. Native31 must show nonobject unequal shortening, not merely average alpha reduction. Native32 residual must remain readable.",
+  "audit": "Single replacement inverse359 whole shader, allother existing SHA fixed, newdoc only; helper qualification only",
+  "native": "PENDING one authorized same74 comparison after audit/capacity",
+  "art": "UNSEEN; no selectedPASS"
+}

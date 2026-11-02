@@ -1,0 +1,29 @@
+{
+  "revision": 302,
+  "base": 301,
+  "basis": "301 own1533staticHOLD: longstarremoved but purplegray60.44x34.59 geometricshoulder overwhitehurt/forearm. No301movie. Composition plus localrole redistribution, not puregeometry or uniformgain increase.",
+  "changes": {
+    "spine": "old-.34+.46u -> -.70+.82u; actualanchor(0,.035,.025) and receivingend+.12 retained",
+    "halfwidth": "old .012+.13*sin(pi*u)^.7 -> .012+.18*sin(pi*u)^.7*(1-.45u); existingrelease factor same",
+    "lowerCross": ".62 -> .70",
+    "alphaCross": "lower/center/upper .32/1/.60 -> .28/1/.48, peak .74 and alltimefactors unchanged",
+    "mainRole": "center row existingedge2 #DED6F4; outerrows primary1 #A99BC9; gain1.05 same. No palette/sharedshader edits",
+    "core": "same12vertices: upstream taper-.42 ->-.20/halfwidth.024/alpha.78, arrivaltaper-.07 ->+.02/halfwidth.014/alpha.60; gain1.20/time same; oldcoretwohalvesalpha.70/.86",
+    "flashes": "same2 unequal lengths/widths/alpha/gain/windows, roots-.34/-.23 instead-.10/-.025; no countincrease"
+  },
+  "intent": "One lightpressure belly mainly in observed incomingdarkspace x820-860, thin continuousshoulder to actualchestroot plus smallarrivalknot; not detachedegg/horizontalrod. Aim100-115x40-50 geometricbbox, effectivefragment/material visibility mustbejudged; nohardpixelconstants.",
+  "invariants": [
+    "oldCreateLight negative5drawgeometry/cast/travel and allworldlight callback bytes",
+    "owner/fulltuple/actual3hitrefs/receiptgeneration/reset/Stageclock/numeric/actorpose",
+    "newbatchcounts120/12/12 andallcapacity512/raw0/sharedshader/palette unchanged",
+    "newlocalmaterialagewindows same301; no additional glow or globalgain"
+  ],
+  "gates": [
+    "actualfirst3receiptprojection/primitivebbox vsfragmentdistinction",
+    "independent still original1280: whitegoldcore->translucentshoulder vsfog/disc, incomingconnectedroot, face4intentclear",
+    "ownmovie onlyafterstaticPASS; oldLight/life afterfinalart"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

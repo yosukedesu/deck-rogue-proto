@@ -1,0 +1,65 @@
+{
+  "revision": 280,
+  "base": 279,
+  "scope": "exact card:red_strike receiving contact only; full seven-field tuple gate",
+  "basis": "fresh279 actual single6 contact has white-center radial flame fan obscuring torso/head; first card damage6 then separate red Momentum2",
+  "ownership": "Existing actual card command/qa-card/receipt capture unchanged; no new owner admission or Stage code",
+  "material": "Reuse unmodified273 powder density raw as material only, not gear factory/proxy. One incoming-axis upstream belly with receiving-side anchor and short dark cooling; no new raw/import.",
+  "dimensions": {
+    "root": [
+      0.26,
+      0.01,
+      0.025
+    ],
+    "fullHotWidth": 1.48,
+    "fullHotHeight": 0.92,
+    "uvAnchor": [
+      0.63,
+      0.64
+    ],
+    "direction": "actual ConfigureSource incoming XY, fallback right only for degenerate zero vector"
+  },
+  "invariants": [
+    "all original negative-age Fire gather/travel code unchanged",
+    "ConfigureSource and all StageFocus/TargetPeak/FloorPeak/Light/FloorLight formulas unchanged",
+    "same original effect lifetime .55",
+    "other card Fire routes including SpreadingFire/DoubleTap unchanged",
+    "all gear/permanent/Burn/engine/queue/receipts/shader/raw unchanged"
+  ],
+  "batches": {
+    "count": 9,
+    "kind": [
+      0,
+      0,
+      0,
+      15,
+      3,
+      3,
+      1,
+      2,
+      0
+    ],
+    "space": 0,
+    "capacityEach": 512,
+    "positiveWrittenMax": [
+      0,
+      0,
+      288,
+      288,
+      0,
+      0,
+      6,
+      30,
+      0
+    ],
+    "negativeWritten": "original Fire path unchanged"
+  },
+  "limits": [
+    "root is prior local registration hypothesis, actual card image gate required",
+    "material reuse is not adoption; body/time/axis independent card review",
+    "world light formulas preserved, not new actual world measurement claim"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

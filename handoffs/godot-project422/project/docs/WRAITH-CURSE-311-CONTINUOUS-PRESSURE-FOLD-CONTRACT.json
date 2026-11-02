@@ -1,0 +1,31 @@
+{
+  "revision": 311,
+  "base": 310,
+  "basis": "310 native readable middlepurple and darkinterior, but closed floatingrock and invisible root. One structural continuous pressure field, not RGB/alpha coefficient trial. Astra composition agreement received before freeze.",
+  "composition": {
+    "topology": "8segments x2strips x4=64 main vertices, every shared edge uses same function; previous48main/8root/8reserved replaced, no added particles or capacity",
+    "along": "-.94*(1-u)+.025*q*(1-u), same outer reach and actualcontact center0",
+    "center": "-.30*(1-u)-.075*sin(pi*u), diagonal fold from upper external belly to chest, not horizontal hairtail",
+    "width": "(.008+.26*sin(pi*u)^.70*(1-.75*SmoothMirror((u-.32)/.60)))*(1-.18q)",
+    "openSide": "lower scale .72-.62*exp(-((u-.50)/.16)^2) produces broad unequal cutaway into the belly; upper .95. Not a closed ring nor separate cutout hole.",
+    "coverage": "peak .84 to .30 at root via SmoothMirror((u-.38)/.62), old cross .15/1/.35 and fade unchanged. This is intentional geometry AND vertex coverage redistribution, not pure XYZ-only.",
+    "material": "all64 role1 continuousUV uses310 authoredRGB/alpha; previous rootrole2 no longer selected. Private shader byteunchanged (unused rootbranch retained).",
+    "root": "centerline ends actual0,0; terminal edges have finite width .008*.95/.72 times existing shrink. Shader edge fades UV endpoint; no claim exactendpoint opaque. Connection must read over adjacent interior surface, not brightcord.",
+    "projection": "worldrelative axis and actor scale only. Prior main49x57 diagnostic not preserved bbox; combined connected shape deliberately spans main-to-root with tapered area. Actual1280 main/connection coverage must be measured, not inferred from vertexbbox."
+  },
+  "invariants": [
+    "310raw original/UV/shader/gain/temporal windows unchanged; different sampling over geometry means pixel erosion shape can change",
+    "306clock/realownedreceipt/LastContact/invalidretirement/actual9Weak1 unchanged",
+    "oldmotes copied4..19 to64..79 before main overwrite; sameXYZ/UV/HDR/count",
+    "zero worldlight/actor/otherCurse/fullsource outside exactfactory unchanged; no newasset/import"
+  ],
+  "gates": [
+    "readable single external pressurefold continuously reducing toward actualchest, notfloatingrock/eye",
+    "hairgap remains; no long horizontal plume, no Vrope or equalwidth ribbon",
+    "new main upper/lower open silhouette, one dominant belly not allsamewidth",
+    "actualoldmotes+age/commit equality and strict source gates; original1280 still then continuous only after craftGO"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

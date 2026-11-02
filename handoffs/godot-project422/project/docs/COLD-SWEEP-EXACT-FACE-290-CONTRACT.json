@@ -1,0 +1,35 @@
+{
+  "revision": 290,
+  "base": 289,
+  "scope": "exact direct blue_cold_sweep receiving face; separate authoredIce4 and passiveIce1 untouched",
+  "basis": "own289 staticHOLD+257 read-only visible GPU diagnostic: analytic3SoftBoxes/radial2/rapidfade; not missing binding. Diagnosed1600x900 widths64.45/58.01/51.56 and height7.96 are NOT raw1280 PNG pixels.",
+  "owner": "real PlayCard UID equals actual card presentationUID and previousHand instance, explicit target index/valid enemy receipt, preceding CardPlayed before identical hit. Actual same-generation CommittedExact receipt controls only selected factory. Ambient source not fabricated; initial no-permanent null observed separately.",
+  "geometry": "existing160vertex1batch/240indices, first12 vertices changed from3equalbars to one irregular main softquad+2subordinate short ends; .34 mainwidth/.135height close to old overall.34x.146 footprint. Same root0/Z0/depth, actual incomingXY axis, no solid ice weapon.",
+  "opacity": "same main peak .48, same .18 lifespan; mainfade power1.1 vs old all2, subordinate.38*oldfade/.22*power1.5. Temporal material distribution changes but clocks/queue/retirement do not.",
+  "invariants": [
+    "sharedBoundedContactGeometry and shader unchanged",
+    "Cold palette/HDR gain/emission/light0 unchanged",
+    "original2-4motes remain same sample afterbody",
+    "oldnegativeage empty; newfalsecommit allgeometry0; no epsilon",
+    "sourceactor/motion/rules/numeric4/Ice4/Ice1/timing unchanged",
+    "otherBounded/cardIce/Hail/Water factories unchanged; exactcache identity",
+    "newraw0/import0/csproj0"
+  ],
+  "capacity": {
+    "batches": 1,
+    "vertices": 160,
+    "indices": 240,
+    "actualTypicalActive": 20,
+    "body": 12,
+    "particles": "8..16 depending existing quality config"
+  },
+  "limits": [
+    "actual direction mapping/visibility and new mainface legibility require own native tests",
+    "not fullblock/modifier/otheractor proof",
+    "new callback freshunit and actualpoolreset are distinct evidence",
+    "source prior diagnostics cannot prove allfragment depth visibility"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

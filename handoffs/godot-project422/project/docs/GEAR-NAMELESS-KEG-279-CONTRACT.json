@@ -1,0 +1,38 @@
+{
+  "revision": 279,
+  "base": 278,
+  "scope": "exact held Nameless choosing Keg only, separate from direct Keg and Nameless Powder",
+  "basis": "fresh278 NamelessKeg274 checks independent static HOLD upward thin branches dominate thermal volume",
+  "ownership": [
+    "actual UseGear Previous index real Nameless positive-charge UID",
+    "AsGearId and Previous SeenGearIds exact Keg",
+    "same held instance actual charge consumption",
+    "ordered GearUsed Nameless then Keg before same hit",
+    "positive valid matching enemy receipt, Keg gear source UID absent"
+  ],
+  "material": "Reuse CreateKegContact fresh instance; dimensions/time/raw/gain/light unchanged from274. That wrapper depends on Powder material, so future common material edits require all four exact contexts reviewed.",
+  "invariants": [
+    "actual16all followed by separate HpLost4 unchanged",
+    "no fourth receiving fire for selfloss",
+    "2 GearUsed not 2 attack waves",
+    "engine/queue/receipts/old owner predicates unchanged",
+    "raw0/import0/mainfactory unchanged"
+  ],
+  "batches": {
+    "kind": [
+      0,
+      15,
+      2
+    ],
+    "space": 0,
+    "capacityEach": 512,
+    "writtenMax": [
+      288,
+      288,
+      30
+    ]
+  },
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

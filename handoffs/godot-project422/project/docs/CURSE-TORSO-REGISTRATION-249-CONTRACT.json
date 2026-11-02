@@ -1,0 +1,46 @@
+{
+  "source": "fresh248 frame20 actual age 0.049999356",
+  "projectionModel": "SourceCameraLayout PC5deg/Fov22, 1600x900; validated against logged target to <.01 internal pixels; native1280=.8",
+  "targetNative": [
+    904.9598711221126,
+    331.85630987691025
+  ],
+  "oldRootNative": [
+    907.7828239312605,
+    346.9948658406384
+  ],
+  "newRootNative": [
+    945.0137267382185,
+    330.2789502946573
+  ],
+  "reviewerManualTorsoRegion": [
+    938,
+    956,
+    318,
+    344
+  ],
+  "reviewerManualWeaponEndpoint": [
+    905,
+    350
+  ],
+  "oldDistanceToTorsoCenter": 42.35354332362919,
+  "newDistanceToTorsoCenter": 2.1131006005496036,
+  "localRootOld": [
+    0.015,
+    -0.1,
+    0.025
+  ],
+  "localRootNew": [
+    0.26,
+    0.01,
+    0.025
+  ],
+  "sourceRule": "target+basis*root*height*size; no fixed screen code or actor/camera change",
+  "limitation": "screen anatomy box is independent image judgment, not engine bone; native must verify other pose/size compatibility",
+  "revision": 249,
+  "baseline": "248 HOLD weapon-enchantment misread",
+  "changes": "root(.26,.01,.025), main angle .12+.22*close; only these two expressions",
+  "unchanged": "all width/alpha/phase/raw/gain/light/owner/hero pose/rules/sharedDark",
+  "native": "pending",
+  "art": "pending"
+}

@@ -1,0 +1,40 @@
+{
+  "revision": 328,
+  "base": 327,
+  "actualFailure": {
+    "run": "new327-vine-walker-direct-movie",
+    "assertions": 155,
+    "exit": 1,
+    "frame": 48,
+    "clock": 5.7291694,
+    "contactAt": 5.815837,
+    "materialAge": 0,
+    "activeVertices": 92,
+    "receiptGeneration": 4,
+    "committed": false,
+    "contacted": false,
+    "heroHp": 72,
+    "actualDamage": 7,
+    "intendedAfterHp": 65,
+    "dump": "first-positive-before-strict-failure.json/png"
+  },
+  "scope": "Exact enemy_vine_walker/grasping_vines enemy_actual_execution/plant_bind_contact/BoundedContactFx/vine/!Small. Actual positiveHpLoss single execution, sourceenemyindex/hero, registered real EndTurn event owner, matching before/current enemy and preceding actualexecution index/move. Prior swipe/guard not selected.",
+  "delta": "Stage3 added hunks only: independent predicate, initialnegative before Native.Begin using actualactors, Advance pendingnegative/samegeneration actualeventreference CommittedExactReasonnull LastContact rebase. Invalidcontacted remainsnegative with oldelapsed retirement.",
+  "timing": {
+    "pending": "Windup+min(-.0001,clock-ContactAt)",
+    "committed": "Windup+max(0,clock-LastContact)",
+    "invalidContacted": "effectTime=Windup-.0001; ordinary elapsed retirement unchanged"
+  },
+  "invariants": [
+    "Existing Crossbow/Wraith/Worm and generalBounded unchanged",
+    "No geometry/shader/raw/worldlight/actor/queue/rules changes",
+    "Real3End sequence swipe2hit aggregate then guardStrength1 then grasp single actualscaledbuffed oracle",
+    "Campaignreachability unverified regularDebugLaunchCombat singleton",
+    "No new status/bind body inferred from name",
+    "VisualAge delegate absent remains null; actual materialage separately observed"
+  ],
+  "qualification": "normalfinite actualclock domain; no broad arbitraryinput/family guarantee",
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "UNSEEN"
+}

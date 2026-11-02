@@ -1,0 +1,47 @@
+{
+  "revision": 188,
+  "state": "candidate-awaiting187-and188-gates",
+  "base": "selected185 plus exact candidate187 allowlist only; excludes186 caster trial",
+  "pairs": [
+    [
+      "enemy_probe",
+      "lunge"
+    ],
+    [
+      "enemy_rock_beetle",
+      "horn_jab"
+    ],
+    [
+      "enemy_bond_wolf",
+      "lunge"
+    ],
+    [
+      "enemy_elite_gold_raven",
+      "peck"
+    ],
+    [
+      "enemy_haze_stag",
+      "antler_jab"
+    ],
+    [
+      "enemy_haze_stag",
+      "antler_charge"
+    ]
+  ],
+  "existing_selected_pair": [
+    "enemy_probe",
+    "poke"
+  ],
+  "change": "Exact actor+move allowlist uses unchanged actual execution/single-aggregate/valid player receipt policy; adds full physical/nonSmall tuple validation",
+  "cache": "existing AttackRouteCatalog.Identity includes full enemyID/moveID; lunge names do not collide",
+  "preserved": "NativeBridge/factory/actor movement/BattleStage unchanged from185; sourcekind card supports remains false",
+  "qa": "one multi-case real shipped move witness harness, representative source/body variants and shared ownership/blocked/cancel invariants; no blanket animation quality claim",
+  "excluded": [
+    "Book/Crab multihit",
+    "Joker unreachable node",
+    "random unproven healer move",
+    "hatched replacement actor",
+    "retainer/card source"
+  ],
+  "known_riders": "Haze charge Wound3 independent; beetle shell changes effective enemy action without invented alsoDefend"
+}

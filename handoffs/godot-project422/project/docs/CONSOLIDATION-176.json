@@ -1,0 +1,25 @@
+{
+  "revision": 176,
+  "base": "selected174 + exact173 continuation diff from170",
+  "inheritance": {
+    "174": "selected masterv64",
+    "173": {
+      "runs": 10,
+      "checks": 14607,
+      "sampledPositiveRowsCommittedExact": 642,
+      "violations": 0,
+      "shutdownNotices": 1
+    }
+  },
+  "scope": "Retains selected172 exact Feast preview/cap and166 aliases; adds only narrowly audited primary spell continuation for IceScatter/LightScatter/WaterWide",
+  "mergeVerification": "Exact173 diff applied to174 without fuzz; only two context offsets due172 helper retained",
+  "excludes": [
+    "171 Cut five",
+    "175 physical riders",
+    "Rooting caster",
+    "generic Dark continuation",
+    "generic physical/midcombo/multiple cascade regrouping",
+    "new media"
+  ],
+  "freshNative": "Pending same-ID continuation and Feast firstblocked/nested regression;173 full scoped gates terminal"
+}

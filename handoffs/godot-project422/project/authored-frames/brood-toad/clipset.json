@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "enemyId": "enemy_brood_toad",
+  "sourceCanvas": [
+    144,
+    112
+  ],
+  "frameCanvas": [
+    240,
+    128
+  ],
+  "sourceOffset": [
+    96,
+    16
+  ],
+  "anchor": [
+    168,
+    128
+  ],
+  "spriteOffset": [
+    -48,
+    8
+  ],
+  "groundMaxY": 119,
+  "sourcePngSha256": "1634c5e232b745961cb250f496921ff3c912f7c0ea1f8c5417325db98de71a7f",
+  "originalAnchor": [
+    72,
+    112
+  ],
+  "clips": {
+    "rest": [
+      {
+        "file": "rest_canvas.png",
+        "duration": 0.2,
+        "sha256": "de6050de0470341599fe0170ab2eb130b724b653559f651c83dda72710df8fae"
+      }
+    ],
+    "idle": [
+      {
+        "file": "idle_00.png",
+        "duration": 0.125,
+        "sha256": "de6050de0470341599fe0170ab2eb130b724b653559f651c83dda72710df8fae"
+      },
+      {
+        "file": "idle_01.png",
+        "duration": 0.125,
+        "sha256": "0cdcfe2a54d6dc8d655481cd7c44e9824e5bb086e10a5faf17ea9a880dd55c9e"
+      },
+      {
+        "file": "idle_02.png",
+        "duration": 0.125,
+        "sha256": "69731369358d72bacf7091728943bcdf9d33eebb75d7d37185b2795f362905d3"
+      },
+      {
+        "file": "idle_03.png",
+        "duration": 0.125,
+        "sha256": "4a01c93a66423390b22cfd3bc25d3109e0a24d1740c588a319d4187db447ee48"
+      },
+      {
+        "file": "idle_04.png",
+        "duration": 0.125,
+        "sha256": "478076178bdcd12cd67022bab05723810a2a1f7953ca9c51571a2f58d77de22e"
+      },
+      {
+        "file": "idle_05.png",
+        "duration": 0.125,
+        "sha256": "359010bf19a0243a9a7f51f48a3a5f1c2172347683ef6956a94ca2126c56c732"
+      },
+      {
+        "file": "idle_06.png",
+        "duration": 0.125,
+        "sha256": "dace3a66ceb947e2cc83cd82039a74aacf8fe43e486ba33bec8cc9f3ee113d24"
+      },
+      {
+        "file": "idle_07.png",
+        "duration": 0.125,
+        "sha256": "48438cb06f7ae2e82c4ec56c2f13d36cb634f16b33664911c9a4b0a8b37174f3"
+      }
+    ],
+    "hurt": [
+      {
+        "file": "hurt.png",
+        "duration": 0.18,
+        "sha256": "9bdb684a3a5f1bcbf00af59e6357c3df869bd0d8f391bf70888e68caa9c4d574"
+      }
+    ],
+    "block": [
+      {
+        "file": "squathold.png",
+        "duration": 0.18,
+        "sha256": "c58f5b5f49c8fc6c0fb30f221a4a0103fcd81541c3b2e21fc593fbc25b665bac"
+      }
+    ],
+    "recovery": [
+      {
+        "file": "recovery.png",
+        "duration": 0.18,
+        "sha256": "38bcdcbc6c40c618b816394b81454d1e7bf436b1e65c9791fc5fe92aed6562e9"
+      }
+    ],
+    "squathold": [
+      {
+        "file": "squathold.png",
+        "duration": 0.2,
+        "sha256": "c58f5b5f49c8fc6c0fb30f221a4a0103fcd81541c3b2e21fc593fbc25b665bac"
+      }
+    ],
+    "squatprepare": [
+      {
+        "file": "squatprepare.png",
+        "duration": 0.2,
+        "sha256": "35ed47822befb15fe477f1f6f68ffb4aae89e0e45460a00e856fdac4c29ccbff"
+      }
+    ],
+    "tonguecontact": [
+      {
+        "file": "tonguecontact.png",
+        "duration": 0.055,
+        "sha256": "6b6a4139f594fe3ff0c45f383714f4e0aafc143ebd3c4846232d723f89e550f8"
+      }
+    ],
+    "tongueprepare": [
+      {
+        "file": "tongueprepare.png",
+        "duration": 0.2,
+        "sha256": "99441b9618535b5fb1308902669f27cb93016ae4c174c1f7228d6c94f2424a4f"
+      }
+    ]
+  },
+  "status": "M35_STATIC_CANDIDATE_RUNTIME_PENDING",
+  "authoredMoves": [
+    "tongue",
+    "squat"
+  ],
+  "unmappedMoves": [],
+  "missingArt": [],
+  "pending": [
+    "compile",
+    "headless_acceptance",
+    "native_acceptance"
+  ],
+  "runtimeAcceptance": "pending",
+  "eventContract": "Exactly one accepted real tongue or gnaw contact. Toad squat only actual own BlockGained with instance/version/execution/owner tuple; recovery via squatprepare. Larva has no support move. Weak1 and death split remain canonical engine only.",
+  "runtimeAliases": {
+    "restOriginalPngBytesPreserved": true,
+    "restRuntimeCanvas": "rest_canvas",
+    "reactiveBlock": "squathold",
+    "supportRecovery": "squatprepare"
+  },
+  "footRegistration": {
+    "originalRearFootMaxX": 131,
+    "paddedRearFootMaxX": 227,
+    "groundMaxY": 119,
+    "note": "All seven keys use one shared 1/3 export scale. Register the drawn rear-foot right edge and ground; never use pose-bounds normalization."
+  }
+}

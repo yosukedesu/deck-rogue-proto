@@ -1,0 +1,48 @@
+{
+  "revision": 238,
+  "baseHeld": 237,
+  "status": "preflight 0 errors /1923 baseline warnings /10.86s; native/art pending",
+  "scope": "exact positive MassHeal material only; retain237 long-surface positions/time",
+  "raw": {
+    "path": "assets/Art/fx/hd2d-mass-heal-density-v1.png",
+    "bytes": 1804114,
+    "sha256": "38290b7e1db5916c1fa9739ecc8d0cc231866e6a5f791f9db7276e0b7fffffb0",
+    "size": [
+      1536,
+      1024
+    ],
+    "unmodified": true,
+    "alphaZeroFraction": 0.5254154205322266,
+    "alphaP75": 162,
+    "alphaP90": 244,
+    "alphaMax": 253,
+    "warning": "left/right raw edges contain alpha; geometric endpoint taper required"
+  },
+  "changes": {
+    "membrane": "Kind3 authoredRGBA existing shared shader TextureMotion0; no shader/renderer change",
+    "uv": "(.08+.84*s-.06*Ease(local/.28),across); negative UV translation moves density toward positive s/chest",
+    "alpha": ".72*envelope*Ease(s/.10)*Ease((1-s)/.10); raw alpha and existing canvas edge fade remain; no extra cross-width feather",
+    "gain": 1,
+    "role": 2,
+    "shortFoldAlpha": [
+      0.18,
+      0.11
+    ],
+    "reason": "raw carries internal ivory density and warm-white interrupted folds; de-emphasize old untextured rails"
+  },
+  "unchanged": [
+    "237 center/width/positions/depth and all phase times",
+    "owner/receipt/actualheal/zero slot/nested semantics",
+    "all code outside CreateMassHeal",
+    "Stage/Actor/shader/renderer/palette/Prayer",
+    "Light/FloorLight/TargetPeak/StageFocus",
+    "warm chest focus and late motes"
+  ],
+  "gates": [
+    "actual translucent internal density instead of uniform fog/cloth",
+    "no rectangular raw edges or long ribbon",
+    "density moves toward chest with actual geometry convergence",
+    "no white face cloud / UI conflict",
+    "same rules/events and native ages as237; finite indexed geometry"
+  ]
+}

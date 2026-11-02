@@ -1,0 +1,78 @@
+{
+  "revision": 296,
+  "base": 295,
+  "basis": "295 tinyfacet13x5px subordinate accents failed coldcraft. Fundamental coherent mainface composition, footprint constraint lifted by parent. Astra supports readable mainfront not bbox-only threshold.",
+  "screenDesignTargets": {
+    "rootPNG": [
+      1280,
+      720
+    ],
+    "overallEstimatedPx": [
+      95,
+      50
+    ],
+    "mainFrostEstimatedPx": [
+      40,
+      18
+    ],
+    "qualification": "Design estimates from old projection, not product screen constants or actual measurement. Astra100-120x45-60 recommendation was compositional guidance not mandatory threshold."
+  },
+  "geometry": {
+    "mainLongitudinalStart": [
+      -0.43,
+      -0.58
+    ],
+    "mainLongitudinalSpan": [
+      0.47,
+      0.62
+    ],
+    "contactEnd": [
+      0.04,
+      -0.025
+    ],
+    "widthBellyCoefficient": [
+      0.115,
+      0.19
+    ],
+    "lowerWidth": "1-.35*belly",
+    "upperWidth": "full",
+    "centerlineY": ".10*(1-u)+.030sin(pi*u)-.025u",
+    "mainPeakAlpha": [
+      0.48,
+      0.55
+    ],
+    "crossAlpha": [
+      0.08,
+      1,
+      0.38
+    ],
+    "frost": "64..71 two joined unequal quadfaces spanning x-.51..-.25/y.075...19; irregular broken top outline, not pointed blade",
+    "secondary": "72..75 attached cool underside;76..79 one late peelingtriangle",
+    "frostPeak": 0.62,
+    "localContraction": "x about-.32 with1-.32q, y about.075 with1-.28q, slighttowardcontactshift"
+  },
+  "material": {
+    "sameRaw293": true,
+    "sameMainUV": true,
+    "mainFaceRole2": "raw frost patch +existingCore .55",
+    "attachedFoldRole3": "samepatch +Core .18",
+    "globalgain": 1,
+    "worldLight": 0
+  },
+  "invariants": [
+    "Stage/owner/queue/receipt/clock all byte unchanged",
+    "same .18 effect horizon, no extrahit/Ice4+1",
+    "same batchcapacity160 and oldmotes80..95",
+    "same original texture/no generation/no globalshader",
+    "actualcontact root preserved but outwardlength/width explicitly increase",
+    "no extraactor/weapon/wholebloom"
+  ],
+  "qualifications": [
+    "Not samefootprint/geometry/alpha as295; decisive composition comparison",
+    "Native maincoldfront and softbelly must read as different roles, not whiteplate/cloth/weapon",
+    "own static then owncontinuous gating; no highestquality based solely on lackoffaults"
+  ],
+  "build": "PENDING",
+  "native": "PENDING",
+  "art": "PENDING"
+}

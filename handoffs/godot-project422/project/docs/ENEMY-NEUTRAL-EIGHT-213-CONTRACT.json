@@ -1,0 +1,124 @@
+{
+  "revision": 213,
+  "base": 212,
+  "status": "Conditional candidate only; requires211sharedgate,212fourkeygate and everynew actualkey witness",
+  "runtime_change": "Only selected neutral actor/move allowlist adds exact8; full tuple/actual execution/validplayerreceipt/singlecontribution/effectiveAmount equality/cap/material/source motion unchanged",
+  "rows": [
+    {
+      "key": "enemy:enemy_forgotten_soul/miasma",
+      "encounter": "enc_lost_forgotten",
+      "memberIndex": 1,
+      "actualEncounterMember": {
+        "enemyId": "enemy_forgotten_soul"
+      },
+      "orderedRiders": [
+        "actual attack DamageDealt/receipt; actual onAttacked and damage-taken hooks remain independent",
+        "enemy BlockGained 5",
+        "player status frail 1",
+        "acting enemy StrengthGained 1 if still alive"
+      ]
+    },
+    {
+      "key": "enemy:enemy_devoted_sculptor/carve_rite",
+      "encounter": "enc_sculptor_shadow",
+      "memberIndex": 0,
+      "actualEncounterMember": {
+        "enemyId": "enemy_devoted_sculptor",
+        "hpScale": 0.7,
+        "strength": -2
+      },
+      "orderedRiders": [
+        "actual attack DamageDealt/receipt; actual onAttacked and damage-taken hooks remain independent",
+        "acting enemy StrengthGained 3 if still alive"
+      ]
+    },
+    {
+      "key": "enemy:enemy_lost_soul/debilitating_smog",
+      "encounter": "enc_lost_forgotten",
+      "memberIndex": 0,
+      "actualEncounterMember": {
+        "enemyId": "enemy_lost_soul"
+      },
+      "orderedRiders": [
+        "actual attack DamageDealt/receipt; actual onAttacked and damage-taken hooks remain independent",
+        "player status weak 1",
+        "acting enemy StrengthGained 1 if still alive"
+      ]
+    },
+    {
+      "key": "enemy:enemy_hexer/mud",
+      "encounter": "enc_hexer_shadow",
+      "memberIndex": 0,
+      "actualEncounterMember": {
+        "enemyId": "enemy_hexer",
+        "hpScale": 0.6,
+        "strength": -2
+      },
+      "orderedRiders": [
+        "actual attack DamageDealt/receipt; actual onAttacked and damage-taken hooks remain independent",
+        "player status weak 3"
+      ]
+    },
+    {
+      "key": "enemy:enemy_mud_lump/slop",
+      "encounter": "enc_mud_mudlings",
+      "memberIndex": 0,
+      "actualEncounterMember": {
+        "enemyId": "enemy_mud_lump",
+        "hpScale": 0.8
+      },
+      "orderedRiders": [
+        "actual attack DamageDealt/receipt; actual onAttacked and damage-taken hooks remain independent",
+        "player status frail 1"
+      ]
+    },
+    {
+      "key": "enemy:enemy_spore_cap/frail_spores",
+      "encounter": "enc_sporecap_fruit",
+      "memberIndex": 0,
+      "actualEncounterMember": {
+        "enemyId": "enemy_spore_cap",
+        "hpScale": 0.75,
+        "strength": -1
+      },
+      "orderedRiders": [
+        "actual attack DamageDealt/receipt; actual onAttacked and damage-taken hooks remain independent",
+        "player status frail 1"
+      ]
+    },
+    {
+      "key": "enemy:enemy_strangler_serpent/constrict",
+      "encounter": "enc_serpent_fruit",
+      "memberIndex": 0,
+      "actualEncounterMember": {
+        "enemyId": "enemy_strangler_serpent",
+        "hpScale": 0.7,
+        "strength": -1
+      },
+      "orderedRiders": [
+        "actual attack DamageDealt/receipt; actual onAttacked and damage-taken hooks remain independent",
+        "player status restrain 1"
+      ]
+    },
+    {
+      "key": "enemy:enemy_sludge_spider/oil_spray",
+      "encounter": "enc_spider_fruit",
+      "memberIndex": 0,
+      "actualEncounterMember": {
+        "enemyId": "enemy_sludge_spider",
+        "hpScale": 0.7,
+        "strength": -1
+      },
+      "orderedRiders": [
+        "actual attack DamageDealt/receipt; actual onAttacked and damage-taken hooks remain independent",
+        "player status weak 1"
+      ]
+    }
+  ],
+  "actual_runs": "Seven firstEndTurn encounter fixtures prove eight keys; enc_lost_forgotten must witness both actual spirit keys, not countone asboth",
+  "material_limits": "Modest local neutral receiver pressure; actual named mud/spores/smog/serpent attacks do not authorize invented elemental cloud or bind visual. Existing debuff/status and actor motion retained.",
+  "excluded": "Other56 neutral rows including unsupported multihit/mirror/HPscaled; special Sentry/Crossbow/Cannon/ThunderGlobe notadded",
+  "shared_vs_new": "Inherit211finite/Block/Ice/cancel/source material once; perkey fullstate/events/native owner witness and new body/rider examples, no8guardmatrices",
+  "audit_sha256": "7f1d3f8b2dab896aa5edeff4ee33f94f6e52f53c7049b476ad00fb045076b0a9",
+  "publication": "No Git or media change"
+}

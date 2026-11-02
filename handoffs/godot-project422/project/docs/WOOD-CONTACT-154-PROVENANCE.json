@@ -1,0 +1,54 @@
+[
+  {
+    "file": "wood-contact-01.png",
+    "original": "generated_images/exec-a0b83088-c5a9-4d0a-b5d5-cf76fefb9910.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "actual_contact": [
+      0.34,
+      0.56
+    ],
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_gt32_area": 0.09315453706035423,
+    "alpha_gt127_area": 0.08535175476751906,
+    "bbox_gt32": [
+      354,
+      537,
+      1169,
+      884
+    ],
+    "sha256": "330bfa97c8fc1ac4813357426d3327aa2541dea4ab02fcf3d10930beffe00231"
+  },
+  {
+    "file": "wood-contact-02.png",
+    "original": "generated_images/exec-46689afc-db85-4b8f-a464-1a0a44a3cf1a.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "actual_contact": [
+      0.34,
+      0.56
+    ],
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_gt32_area": 0.06871599398670665,
+    "alpha_gt127_area": 0.05601214868401975,
+    "bbox_gt32": [
+      351,
+      518,
+      1199,
+      909
+    ],
+    "sha256": "ebceb5d582509e9c30cfbaae315e36b654d56d941d59a971b70aebc4acdb4e11"
+  }
+]

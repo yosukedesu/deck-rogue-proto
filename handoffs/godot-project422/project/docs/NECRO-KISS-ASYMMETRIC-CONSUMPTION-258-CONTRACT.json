@@ -1,0 +1,28 @@
+{
+  "revision": 258,
+  "base": "held257",
+  "scope": "exact CorpseKiss body local coverage and consumption only",
+  "reason": "257 upper-luminance compression visibly changes pixels but does not remove three-finger/late-fan grammar; stop tonal iterations",
+  "fixed": [
+    "rawB allbytes",
+    "257 material and exactselector",
+    "root(.26,.01,.025)",
+    "carrier outer size/UV/tip",
+    "body global opacity .58 and gain1",
+    "dt age1.25, envelope/window/contact/motes/light",
+    "rules/owner/StageActor/all other factories"
+  ],
+  "change": "remove radial position draw=1-.64*consume*distance. Preserve only original small y bend. Upper broad stream remains, lower subordinate regions erase early; curved wide alpha frontier consumes outer end toward chest root. No whole-body alpha reduction.",
+  "formula": {
+    "subordinate": "1-Ease((dt-.005)/.070)",
+    "main": "1-Ease((v-(.26+.81*u))/.10)",
+    "hierarchy": "main+(1-main)*subordinate",
+    "front": ".85*Ease((dt-.015)/.22)+.035*sin(v*8)*Ease(dt/.06)",
+    "remaining": "Ease((u-front+.10)/.18)",
+    "coverage": "hierarchy*remaining"
+  },
+  "topology": "3 batches kind4/16/2, written6/432/18; body12x6 instead8x4 for smooth UV mask interpolation; Count512each",
+  "qualification": "257 shader retained to isolate consumption cause, not independently quality-approved. Geometry erasure is a visual material operation, not additional game events.",
+  "native": "pending",
+  "art": "pending"
+}

@@ -1,0 +1,18 @@
+{
+  "revision": 255,
+  "base": "254 held",
+  "only": "exactKiss factory one untextured low-frequency belly layer within same Point bounds/time/consumption; old contact/raw phases unchanged",
+  "cause": "254 shadow-purple mass disappears into blueblack enemy cloth; only stain remains",
+  "layer": "Kind0, palette core coldlavender, local gain.85 opacitymax.38*onset*phaseSum; asymmetric Gaussian belly centred UV(.37,.43), open root-side edge, no luminous ring",
+  "topology": "contact/veil/first/middle/last/motes kind4/0/16/16/16/2 maxWritten6/192/192/192/192/18 eachcapacity512",
+  "fixed": [
+    "root(.26,.01,.025)",
+    "oldPoint max footprint",
+    "all old opacity/gain/phase windows/light/floor",
+    "original darkraw unchanged",
+    "rules/sourceUID!=presentationUID/owner/hero/otherfactories"
+  ],
+  "native": "pending",
+  "art": "pending",
+  "newRaw": 0
+}
