@@ -41,6 +41,7 @@ namespace DeckRogue.Game.Hd2dMath
         public float X, Y;
         public Vector2(float x, float y) { X = x; Y = y; }
         public static readonly Vector2 Zero = new Vector2(0, 0), One = new Vector2(1, 1);
+        public static readonly Vector2 Right = new Vector2(1, 0), Left = new Vector2(-1, 0), Up = new Vector2(0, -1), Down = new Vector2(0, 1);   // Godot の Vector2 は Y が下向き (Up = (0,-1))
         public static Vector2 operator +(Vector2 a, Vector2 b) => new Vector2(a.X + b.X, a.Y + b.Y);
         public static Vector2 operator -(Vector2 a, Vector2 b) => new Vector2(a.X - b.X, a.Y - b.Y);
         public static Vector2 operator -(Vector2 a) => new Vector2(-a.X, -a.Y);
@@ -54,6 +55,7 @@ namespace DeckRogue.Game.Hd2dMath
         public Vector2 Lerp(Vector2 to, float w) => new Vector2(X + (to.X - X) * w, Y + (to.Y - Y) * w);
         public float DistanceTo(Vector2 b) => (b - this).Length();
         public bool IsFinite() => float.IsFinite(X) && float.IsFinite(Y);
+        public float Dot(Vector2 b) => X * b.X + Y * b.Y;
         public static implicit operator UnityEngine.Vector2(Vector2 v) => new UnityEngine.Vector2(v.X, v.Y);
         public static implicit operator Vector2(UnityEngine.Vector2 v) => new Vector2(v.x, v.y);
         public override string ToString() => "(" + X + ", " + Y + ")";

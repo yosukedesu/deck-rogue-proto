@@ -151,5 +151,62 @@ namespace DeckRogue.Game
             b.SampleBounds=new Bounds(min,max);
         }
         public static bool SampleReceipt(Buffer b,double age,double availableA=0,int count=MaximumParticleCount){double? native=NativeAge(age,availableA);Sample(b,age,count);return native.HasValue;}
+        // 282: exact Maelstrom body only. Preserve legacy core, droplets and light clocks.
+        // (Project422 で足された。dot の Godot 版 RecoveredSource/DeckRogue.Game/LocalMaterialProfileGeometry.cs と同じ式。2026-11-02)
+        public static void SampleMaelstromReceipt(Buffer b, double age)
+        {
+            if (b.Family != Profile.Water) throw new ArgumentException("Maelstrom requires water");
+            SampleReceipt(b, age);
+            double t = Math.Max(0.0, age);
+            double open = 0.22 + 0.78 * (1.0 - Math.Exp(-65.0 * t));
+            double consume = Smooth((t - 0.04) / 0.1);
+            double envelope = Envelope(age, 0.0, 0.17);
+            for (int band = 0; band < 2; band++)
+            {
+                // One open, unequal curling sheet; the second band is only its short lip.
+                for (int i = 0; i < 33; i++)
+                {
+                    double u = i / 32.0;
+                    double path = band == 0 ? u : 0.67 + 0.28 * u;
+                    // An unequal folded sheet, not an elliptical centreline with parallel banks.
+                    double v = 1.0 - path;
+                    double cx = (-0.26*v*v*v + 3.0*0.02*v*v*path
+                        + 3.0*0.29*v*path*path + 0.09*path*path*path) * open;
+                    double cy = (-0.025*v*v*v - 3.0*0.10*v*v*path
+                        + 3.0*0.12*v*path*path + 0.17*path*path*path) * open;
+                    double dx = 3.0*(0.28*v*v + 0.54*v*path - 0.20*path*path);
+                    double dy = 3.0*(-0.075*v*v + 0.44*v*path + 0.05*path*path);
+                    double length = Math.Sqrt(dx*dx + dy*dy);
+                    double nx = -dy / Math.Max(0.001,length), ny = dx / Math.Max(0.001,length);
+                    double belly = Math.Pow(Math.Sin(Math.PI * u), 0.7);
+                    double width = (band == 0 ? 0.145 : 0.017) * belly
+                        * (1.0 - 0.65*path) * (1.0 - 0.6 * consume);
+                    for (int j = 0; j < 5; j++)
+                    {
+                        double side = j * 0.5 - 1.0;
+                        double cross = 1.0 - side * side;
+                        double edge = side < 0.0 ? 0.62 : 1.0 + 0.25*Math.Sin(2.0*Math.PI*path);
+                        double x = cx + nx * side * width * edge;
+                        double y = cy + ny * side * width * edge;
+                        // 284: interior density only; exclude the generated outer foam/halo silhouette.
+                        double tu = 0.28 + 0.48 * u + 0.015 * consume;
+                        double tv = 0.42 + 0.16 * side;
+                        Put(b, b.Body, band * 165 + i * 5 + j,
+                            x, y, 0.027 + band * 0.008 + 0.01 * cross,
+                            tu, tv, envelope * (band == 0 ? 0.9 : 0.28) * cross * belly,
+                            1.4);
+                    }
+                }
+            }
+            // Recompute the declared bounds after the body replacement, including old particles.
+            Point min = b.Core.Vertices[0], max = min;
+            foreach (var mesh in b.Batches)
+                foreach (var v in mesh.Vertices)
+                {
+                    min.X=Math.Min(min.X,v.X); min.Y=Math.Min(min.Y,v.Y); min.Z=Math.Min(min.Z,v.Z);
+                    max.X=Math.Max(max.X,v.X); max.Y=Math.Max(max.Y,v.Y); max.Z=Math.Max(max.Z,v.Z);
+                }
+            b.SampleBounds = new Bounds(min,max);
+        }
     }
 }

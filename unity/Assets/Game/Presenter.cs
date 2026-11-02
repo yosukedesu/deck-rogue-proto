@@ -242,6 +242,7 @@ namespace DeckRogue.Game
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, visibleBoard);
                 ctx.Feedback=ResolvedCombatFx.Capture(g,ev);
+                if(ctx.Feedback!=null){ctx.Feedback.PrevState=visibleBoard;if(ctx.Feedback.Log==null){ctx.Feedback.Log=log;ctx.Feedback.EventIndex=i;}}   // HD-2D (Project422) の門が読む前の盤面と記録
                 if(ctx.Feedback?.Outcome=="hit" && intensityAt.TryGetValue(i,out var intensity))ctx.Feedback.Intensity=intensity;
                 if (batchAt.ContainsKey(i)) { ctx.Batch = batchAt[i]; ctx.BatchLast = batchLast.Contains(i); }
                 if (hitAt.ContainsKey(i)) ctx.Hit = hitAt[i];
@@ -387,6 +388,7 @@ namespace DeckRogue.Game
                 ctx.EventIndex=i;ctx.ContactEvent=ev;ctx.CapturedState=combat;EnemySources.TryGetValue(i,out ctx.EnemySource);EnemySourceVisuals.TryGetValue(i,out ctx.EnemySourceVisual);ctx.EnemySourceHadVisual=EnemySourceHadVisual.Contains(i);ctx.Action=action;ctx.NumericEpoch=epoch;ctx.CapturedBoard=board;
                 ctx.NumericReceipt=Numeric.Find(i,ev);
                 capturedTickets.TryGetValue(i,out ctx.Feedback);
+                if(ctx.Feedback!=null){ctx.Feedback.PrevState=prevBoard;if(ctx.Feedback.Log==null){ctx.Feedback.Log=log;ctx.Feedback.EventIndex=i;}}   // HD-2D (Project422) の門が読む前の盤面と記録
                 if(ctx.Feedback!=null)Stage.BindImpactActor(ctx.Feedback.Impact);
                 if(ctx.Feedback?.Outcome=="hit" && intensityAt.TryGetValue(i,out var intensity))ctx.Feedback.Intensity=intensity;
                 if (batchAt.ContainsKey(i)) { ctx.Batch = batchAt[i]; ctx.BatchLast = batchLast.Contains(i); }
@@ -2169,7 +2171,7 @@ namespace DeckRogue.Game
                         Vector2 hitPos = pSpr != null ? Tween.CenterIn(pSpr, fx) : Tween.CenterIn(rt, fx);
                         Color hitColor = EnemyColor(route);
                         var authoredEnemy=ctx?.Feedback;
-                        bool authoredReady=Stage.CombatWorld && authoredEnemy?.Outcome=="hit" && authoredEnemy.AttackFamily!=null && WorldBattleFx.AuthoredAttackAvailable(authoredEnemy.AttackFamily);
+                        bool authoredReady=Stage.CombatWorld && authoredEnemy?.Outcome=="hit" && ((authoredEnemy.AttackFamily!=null && WorldBattleFx.AuthoredAttackAvailable(authoredEnemy.AttackFamily)) || Hd2dAttackFx.Eligible(authoredEnemy));   // HD-2D (Project422): 選ばれた敵の技の当たり (Hd2dEnemyContactFx ほか) も新しい描き手で
                         float hitDelay = 0f;
                         if (atkSpr != null)
                         {
@@ -2271,8 +2273,9 @@ namespace DeckRogue.Game
                         return;
                     }
                     Audio.Key("BlockGained");
+                    bool hd2dGuard = Stage.CombatWorld && Hd2dSupport.TryPlay(g, ctx, b);   // HD-2D (Project422): 守りの札の主たる 1 回のブロックは受けた側の上に支えの演出 (Hd2dSupportFx)
                     var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
-                    if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(0.55f, 0.75f, 1f, 0.9f), 110f);
+                    if (ps != null && !hd2dGuard) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(0.55f, 0.75f, 1f, 0.9f), 110f);
                     Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(80f, 10f), "+" + b.Amount, UiKit.ColBlock, 30, 40f, 0.7f);
                     var bName = PermanentName(g, ctx, b.SourceUid);   // 出所の名前 (2026-09-22)
                     if (bName != null) Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(80f, -18f), bName, PaperFx.Paper, 18, 34f, 0.8f);
@@ -2289,7 +2292,8 @@ namespace DeckRogue.Game
                     if (rt == null) return;
                     Audio.Key("BlockGained");
                     var ps = g.Battle != null ? g.Battle.PlayerSprite() : null;
-                    if(Stage.CombatWorld) { if(ib.Amount>=4)WorldBattleFx.Guard("player"); } else if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(PaperFx.SkyLight.r, PaperFx.SkyLight.g, PaperFx.SkyLight.b, 0.9f), 110f);
+                    bool hd2dIce = Stage.CombatWorld && Hd2dSupport.TryPlay(g, ctx, ib);   // HD-2D (Project422): 氷壁の札の主たる 1 回の氷壁は支えの演出 (氷の壁 / 氷の守り)
+                    if(Stage.CombatWorld) { if(ib.Amount>=4 && !hd2dIce)WorldBattleFx.Guard("player"); } else if (ps != null) Tween.IconBurst(fx, Tween.CenterIn(ps, fx) + new Vector2(0f, 20f), "shield", new Color(PaperFx.SkyLight.r, PaperFx.SkyLight.g, PaperFx.SkyLight.b, 0.9f), 110f);
                     Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(80f, 10f), "氷壁 +" + ib.Amount, PaperFx.SkyLight, 28, 40f, 0.7f);
                     if (nudgeHp && g.Battle != null) g.Battle.NudgePlayerIce(ib.Amount);
                     break;
@@ -2652,6 +2656,7 @@ namespace DeckRogue.Game
                         return;
                     }
                     if(h.Amount>0)Audio.Key("HpHealed");
+                    if(Stage.CombatWorld)Hd2dSupport.TryPlay(g, ctx, h);   // HD-2D (Project422): 祈りの一節・大いなる癒しの主たる 1 回の回復は支えの演出 (回復の券の描き手とは別に、受けた側の上に)
                     var hs = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (h.Amount>0 && hs != null && !Stage.CombatWorld) Tween.IconBurst(fx, Tween.CenterIn(hs, fx) + new Vector2(0f, 20f), "heart", new Color(0.6f, 1f, 0.6f, 0.9f), 100f);
                     Tween.Float(fx, PlayerFloatPos(g, fx) + new Vector2(-80f, 10f), "+" + h.Amount, UiKit.ColAccent, 30, 40f, 0.7f);

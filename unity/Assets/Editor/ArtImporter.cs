@@ -45,6 +45,15 @@ namespace DeckRogue.EditorTools
             // Floor grain uses RGB only and repeats; alpha must never dilate the source RGB.
             // HD-2D の攻撃演出の絵 (dot の Godot 版 checkpoint 192・2026-10-27): 1254² などの大きな RGBA を Godot と同じ 512 に縮め、ミップつきのなめらかな読み (hd2d-*)。
             // 色の絵 (sRGB)・Clamp・読み戻し不要。Hd2dPrototype.shader が _BaseMap として受ける
+            // Project422 (2026-11-02) の表面の素材 (aether-/canopy-/cold-/crossbow-/cultist-/holymaul-/light-bolt-/light-burst-/maelstrom-/momentum-whip-/wraith-*): Godot は原寸・ミップなし (size_limit 0) だったが、
+            // 1254〜1870 px の RGBA を端末のメモリに載せるのは重いので 1024 に縮め、ミップつきのなめらかな読み (hd2d-* と同じ扱い。シェーダは正規化した uv で読むので画素の式は保たれる)
+            string fx422=System.IO.Path.GetFileNameWithoutExtension(assetPath);
+            if(assetPath.Replace('\\','/').Contains("/Resources/Art/fx/") && (fx422=="aether-piercing-pressure-v1" || fx422=="canopy-organic-density-v1" || fx422=="cold-frost-density-v1" || fx422=="crossbow-pressure-density-v1" || fx422=="cultist-dark-pressure-v1" || fx422=="holymaul-compressed-fracture-v1" || fx422=="light-bolt-pressure-density-v1" || fx422=="light-burst-pressure-density-v1" || fx422=="maelstrom-water-density-v1" || fx422=="momentum-whip-pressure-v1" || fx422=="wraith-pressure-density-v1")) {
+                imp.textureType=TextureImporterType.Default;imp.sRGBTexture=true;imp.alphaIsTransparency=true;
+                imp.maxTextureSize=1024;imp.npotScale=TextureImporterNPOTScale.None;imp.filterMode=FilterMode.Bilinear;imp.wrapMode=TextureWrapMode.Clamp;
+                imp.textureCompression=TextureImporterCompression.Uncompressed;imp.mipmapEnabled=true;imp.isReadable=false;
+                return;
+            }
             if(System.IO.Path.GetFileNameWithoutExtension(assetPath).StartsWith("hd2d-",System.StringComparison.Ordinal) && assetPath.Replace('\\','/').Contains("/Resources/Art/fx/")) {
                 imp.textureType=TextureImporterType.Default;imp.sRGBTexture=true;imp.alphaIsTransparency=true;
                 imp.maxTextureSize=512;imp.npotScale=TextureImporterNPOTScale.None;imp.filterMode=FilterMode.Bilinear;imp.wrapMode=TextureWrapMode.Clamp;
