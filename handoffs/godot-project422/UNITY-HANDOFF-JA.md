@@ -1,6 +1,8 @@
 # Claudeへの依頼
 
-`yosukedesu/deck-rogue-proto` の `codex/godot-vfx422-unity-handoff-20261102` ブランチをfetchし、`handoffs/godot-project422/` のGodot Project422を元に、既存Unityプロジェクトへ対象VFX全体を移植してください。単なる素材コピーで終わらせず、実際の戦闘で正しく再生されるところまで実装・確認してください。
+`yosukedesu/deck-rogue-proto` の `codex/godot-vfx422-handoff-cleanup-20261102` ブランチをfetchし、`handoffs/godot-project422/` のGodot Project422整理版を元に、既存Unityプロジェクトへ対象VFX全体を移植してください。単なる素材コピーで終わらせず、実際の戦闘で正しく再生されるところまで実装・確認してください。整理内容・コミット単位・所有権条件は `CLEANUP-AND-CONTRIBUTION-JA.md` を先に読んでください。
+
+ColdSweepSurfaceFxとSparkBurstContactSurfaceはユーザー報告でUnity表示を確認済みです。以前の不可視報告は撮影間隔とモンタージュ切り出しによるもので、追加修正の根拠にしないでください。UnityのageはLandで0になる着弾基準なのでwindupを再減算しないでください。受光係数は減衰として扱い、追加ライトやJSON出力の新規実装はこの整理依頼に含みません。
 
 まずこのフォルダのREADME、最新版 `Godot-Project422-README-JA.txt`、リポジトリのCLAUDE.md、`docs/dot-godot-port-2026-10-27.md` と `docs/codex-dot-request-2026-10-12.md` §16–17を読んでください。checkpoint192で移植済みの `unity/Assets/Game/Hd2d/`、`Hd2dMath`、`Hd2dAttackFx`、`StageHd2dAnchors`、シェーダーを踏まえ、現在のUnityバージョン・描画パイプライン・戦闘イベントとの対応を調査してください。
 

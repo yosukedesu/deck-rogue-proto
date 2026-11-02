@@ -1,0 +1,245 @@
+{
+  "baseline_commit": "05c4d208a0ae7968bbbe5073c5b22ab79d02c3e2",
+  "baseline_manifest": "DELIVERED-UNION-MANIFEST.json",
+  "baseline_manifest_scope": "Original Project422 delivery, not the successor current inventory",
+  "baseline_count": 10653,
+  "successor_count": 10628,
+  "removed": [
+    {
+      "path": "scripts/presentation/authored_geometry/BoundedContactGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/BoundedContactGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/CombatOutcome.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/CombatOutcome.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/CombatPresentationLedger.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/CombatPresentationLedger.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/DamageVfxIntensity.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/DamageVfxIntensity.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/DarkDrainGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/DarkDrainGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/EarthStompGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/EarthStompGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/EnemyAttackContactPlan.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/EnemyAttackContactPlan.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/EnemyContactGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/EnemyContactGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/FireContinuousGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/FireContinuousGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/HealContinuousGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/HealContinuousGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/IceCrystalGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/IceCrystalGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/LightRayGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/LightRayGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/LightningDischargeGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/LightningDischargeGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/LightningR9Geometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/LightningR9Geometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/LocalMaterialProfileGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/LocalMaterialProfileGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/PhysicalSlashGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/PhysicalSlashGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/PlayerContactGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/PlayerContactGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/PlayerContactRockData.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/PlayerContactRockData.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/ScatterProfileGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/ScatterProfileGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/SystemImpactGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/SystemImpactGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/SystemOutcomeGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/SystemOutcomeGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/SystemSelfLossGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/SystemSelfLossGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/VineSlashGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/VineSlashGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/WaterContinuousGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/WaterContinuousGeometry.cs"
+    },
+    {
+      "path": "scripts/presentation/authored_geometry/WideProfileGeometry.cs",
+      "baseline_bytes": 1,
+      "baseline_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "reason": "One-byte newline stub excluded from explicit Compile items; authoritative implementation retained in RecoveredSource/DeckRogue.Game/WideProfileGeometry.cs"
+    }
+  ],
+  "changed_substantive_files": [],
+  "all_retained_files_sha256_equal_baseline": true,
+  "legacy_images_preserved": [
+    {
+      "path": "assets/Art/fx/attack-slash-body-8f.png",
+      "sha256": "930a226b4bdff3a712b5d65ed50e0d73375de7d828d9d3b3af8ab17ba3bdd696",
+      "bytes": 234992,
+      "kind": "product"
+    },
+    {
+      "path": "assets/Art/fx/attack-slash-glow-8f.png",
+      "sha256": "007b0966d31605b22784019d25331cd6a3594ad8c3e077b7efb09061936a7368",
+      "bytes": 24248,
+      "kind": "product"
+    },
+    {
+      "path": "assets/Art/fx/attack-slash-particles-8f.png",
+      "sha256": "c1ee99d3759f4292b54c2cb366d6f3027155b7f3abc22108b5e9c60210cf95fe",
+      "bytes": 233257,
+      "kind": "product"
+    },
+    {
+      "path": "assets/Art/fx/attack-stomp-body-8f.png",
+      "sha256": "b6815b783f2eb27ea80d2cfb2674150197ef6fca0a0f15925d0d75fc9cc6ca7a",
+      "bytes": 257632,
+      "kind": "product"
+    },
+    {
+      "path": "assets/Art/fx/attack-stomp-glow-8f.png",
+      "sha256": "c929ce965ff10cf2022c1ae3d8a4b3a0369f2a457ae36c69c7a7485a140c3b7e",
+      "bytes": 41707,
+      "kind": "product"
+    },
+    {
+      "path": "assets/Art/fx/attack-stomp-particles-8f.png",
+      "sha256": "a4fc67ab10af51fa383ac6bbdd76f79b479467a7a002beac260c9bae7cbdb983",
+      "bytes": 187991,
+      "kind": "product"
+    },
+    {
+      "path": "assets/Art/fx/attack-water-body-8f.png",
+      "sha256": "7a2a5c2e1a5a03958897844812ebca5c5737681842c5899a10b78c5ce16bd429",
+      "bytes": 231774,
+      "kind": "product"
+    },
+    {
+      "path": "assets/Art/fx/attack-water-glow-8f.png",
+      "sha256": "4a11bb278e218dd88ef3136e954618fef71ed62bbb2dcd1f1f81051014c4b23c",
+      "bytes": 39919,
+      "kind": "product"
+    },
+    {
+      "path": "assets/Art/fx/attack-water-particles-8f.png",
+      "sha256": "ef68e1c60fd521bb20dc7dd6502909378b3f9869f6903453f3e609f7d871d6f5",
+      "bytes": 144201,
+      "kind": "product"
+    }
+  ],
+  "preserved_runtime_contract": {
+    "declared_required_dependencies": 71,
+    "identical_overlaps": 3,
+    "manifest_preserved_runtime_entries": 68,
+    "lib_dlls": [
+      "lib/GodotSharp.dll",
+      "lib/Newtonsoft.Json.dll"
+    ],
+    "all_retained": true
+  },
+  "checks": {
+    "stub_path_references": 0,
+    "corresponding_stub_uid_files": 0,
+    "explicit_compile_items_resolve": true,
+    "build": {
+      "sdk": "10.0.400 x64",
+      "project_target": "net9.0",
+      "godot_sdk": "4.6.3",
+      "configuration": "Debug",
+      "result": "success",
+      "errors": 0,
+      "warnings": 1926,
+      "warning_note": "Same count as baseline recorded build; diagnostics in unchanged substantive sources. Not a warning-by-warning baseline rerun comparison."
+    },
+    "startup_resource_load": "Not run: Godot executable not found in PATH or inspected existing install/download locations. .NET build is not a runtime import/startup test.",
+    "full_native_vfx_retest": false,
+    "unity_runtime_test": "Not run by this cleanup task; ColdSweep/SparkBurst visibility findings are user-reported."
+  }
+}
