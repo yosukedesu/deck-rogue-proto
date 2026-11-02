@@ -1159,6 +1159,13 @@ namespace DeckRogue.Game
                 u.FrameDur["attack"]=new[]{.05f,.07f,.08f,.12f};
                 u.FrameDur["block"]=new[]{.06f,.08f,.10f,.16f};
             }
+            if(sprite.name=="leader_red") {
+                // ひばな (2026-11-02 dot の A1 納品 handoffs/assets-a1-hibana): 待機 8 (125ms)・攻撃 3 = 予備動作→当たり→戻り (当たりは 0.13 秒後＝敵の組と同じ拍)・防御 1・被弾 1。manifest の timingContract の推奨時間
+                u.FrameDur["idle"]=new[]{.125f,.125f,.125f,.125f,.125f,.125f,.125f,.125f};
+                u.FrameDur["attack"]=new[]{.13f,.10f,.18f};
+                u.FrameDur["block"]=new[]{.30f};
+                u.FrameDur["hurt"]=new[]{.22f};
+            }
             if (dot)
             {
                 // 待機は台帳の秒 (dot の 0.1375×8)。攻撃は 予備動作→当たり→戻り の 3 枚で当たりを 0.13 秒後に (このはと同じ拍)。被弾・防御は 1 枚
