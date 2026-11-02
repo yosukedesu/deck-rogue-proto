@@ -160,16 +160,17 @@
 - 絵は 1024／512 に縮めて取り込む (Godot は原寸)。Torrent の「放つまで止める」は姿勢の長さで近似 (白光の流れは 4 コマ目を .42 秒)。
 - 色の既定 (役割の 4 色・舞台の光・Bounded の 3 色) は `Data/hd2d-palette-defaults.json` に出した (C# に色の生の値を書かない規約)。
 
-## 6. dot への伝言 (次の節目のお願い)
+## 6. dot への伝言 (次の節目のお願い) → 整理版で回答済み (2026-11-02 夜)
 
-- 422 で `scripts/presentation/authored_geometry/*.cs` が 1 byte の空ファイルになっている (本体は `RecoveredSource/DeckRogue.Game/`)。混乱の元なので、どちらかに揃えてほしい。
-- `attack-*-8f.png` 9 枚はコードから参照が無い。残すなら用途を README に。
+- ~~422 で `scripts/presentation/authored_geometry/*.cs` が 1 byte の空ファイルになっている (本体は `RecoveredSource/DeckRogue.Game/`)。混乱の元なので、どちらかに揃えてほしい。~~ → **整理版の枝 `codex/godot-vfx422-handoff-cleanup-20261102` (0fe94e66) で 25 本を削除**。差分の一覧は `handoffs/godot-project422/SUCCESSOR-DELTA.json`、説明は `CLEANUP-AND-CONTRIBUTION-JA.md`。元の 05c4d208 からの差は 25 本の削除と文書 4 本 (README・UNITY-HANDOFF-JA・新規 2 本) の 29 ファイルだけで、実装・絵・依存は無変更＝**Unity 側に移し直すものは無い** (こちらで `git show --stat` と照合)。
+- ~~`attack-*-8f.png` 9 枚はコードから参照が無い。残すなら用途を README に。~~ → 「旧演出の参照・来歴の保持」として原状保存 (同文書)。`AuthoredGeometryFx` が名前から動的に組むので「絶対に未使用」とは言い切らない、との注記。Unity は 9 枚とも取り込んでいない (取り込んだのは v2 と密度の絵だけ) ので影響なし。
+- 整理版の文書は、次回以降のコミット単位の約束も書いている: 門 (profile)・所有権/橋・工場・shader・texture を 1 コミットに、本文に route の Key/DefinitionId/SourceKind/Family/Renderer/Element/FixedSmall と実イベント型、発生元 UID の照合の仕方 (`PresentationSource.Uid` と `DamageDealt.SourceUid` を同一視しない)、対象 index と before/after、command の必要条件と出来事の順、登録/予測と着弾確定の区別 (`receipt.Committed && Exact && Reason == null`)、接触基準時刻と終了。**次の節目からは、この本文を読んで `Hd2dOwnership` の近似 (§3-2) を合わせる**。
 
 ## 7. 数え方 (再現用)
 
 ```bash
-git fetch origin codex/godot-vfx422-unity-handoff-20261102
-B=origin/codex/godot-vfx422-unity-handoff-20261102; P=handoffs/godot-project422/project
+git fetch origin codex/godot-vfx422-handoff-cleanup-20261102   # 整理版 (元の codex/godot-vfx422-unity-handoff-20261102＝05c4d208 は基準として残る。差は空スタブ 25 の削除と文書だけ)
+B=origin/codex/godot-vfx422-handoff-cleanup-20261102; P=handoffs/godot-project422/project
 git archive $B $P | tar -x -C /tmp/p422
 # 幾何の差 (cp192 → 422)
 diff <(git show origin/codex/unity-parity-20261013:RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs) /tmp/p422/$P/RecoveredSource/DeckRogue.GodotPort.Presentation/Hd2dAttackPrototype.cs | grep -c '^[<>]'   # 1631
