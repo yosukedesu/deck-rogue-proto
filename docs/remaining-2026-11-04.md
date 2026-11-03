@@ -7,9 +7,9 @@
 
 | # | 残件 | 状態 | 置き場・手がかり |
 |---|---|---|---|
-| 1 | **品質スプリント #5 音の点検**。札ごとの当たりの音は 3 枚だけ・`block` の音の鍵がコードにあるのに `audio.json` に無い・幕1 の一周を聴いて採点していない | 未着手 | `docs/design/quality-sprint-2026-10-28.md` §2 の順・`unity/Assets/Game/Audio.cs`・`Resources/Data/audio.json` |
-| 2 | **ひばなの法線**。dot の束に法線が無く、旧い一枚絵の法線のまま 13 コマが動く | 未着手 | `scripts/sprite-normals.py normals`・`Art/leaders/anim/leader_red_*` |
-| 3 | **テストの既知の赤 1 件**。`src/sim/unity-colors.test.ts` が dot の `LightningR9CandidateFx.cs:44` の色の直書きで落ちる（main でも） | 未着手 | 色を `PaperFx` の名前かデータ JSON へ |
+| 1 | **品質スプリント #5 音の点検**。札ごとの当たりの音は 3 枚だけ・`block` の音の鍵がコードにあるのに `audio.json` に無い・幕1 の一周を聴いて採点していない | 半分（夜の磨きで鍵 50 余りを合成で足し・ダッキング・環境音・鼓動。`docs/design/audio/synth-keys-2026-11-04.md`。採点と素材の差し替えが残り） | `docs/design/quality-sprint-2026-10-28.md` §2 の順・`unity/Assets/Game/Audio.cs`・`Resources/Data/audio.json` |
+| 2 | **ひばなの法線**。dot の束に法線が無く、旧い一枚絵の法線のまま 13 コマが動く | **済（81565235）** | `scripts/sprite-normals.py normals`・`Art/leaders/anim/leader_red_*` |
+| 3 | **テストの既知の赤 1 件**。`src/sim/unity-colors.test.ts` が dot の `LightningR9CandidateFx.cs:44` の色の直書きで落ちる（main でも） | **済（81565235）** | 色を `PaperFx` の名前かデータ JSON へ |
 | 4 | **魔導書の発光の位置**が待機 1 コマ基準で固定（`StageUnits.cs` の `{"leader_red", (0.48,0.42)}`）。攻撃の当たりで本の位置とずれる | 未着手・目立たない | コマごとの位置を持たせる |
 
 ## B. 次の節目・実機待ち
@@ -27,3 +27,11 @@
 
 - 幕2/3 をジオラマにするか（段2。`HD2DFlags.DefaultDioramaActs="1"`）
 - 人間ラン・ルール調整・新色の解凍（品質スプリント中は凍結）
+
+## D. 夜の磨き（2026-11-04 夜）の後に残った事
+
+- 朝の採点: `docs/design/juice-pass-2026-11-04.md` §5 のシートと `loop-juice-2026-11-04.mp4`・exe（`D:\deck-rogue\DeckRogue-win`）で 1〜5。4 未満の画面は戻す旗が各束の report の risks にある。
+- 裁定が要る変更: 評価の窓を決着直後→報酬の 1.2 秒後に（設定で切れる）／箱庭でも揺れる（設定で 0 に）／敵の大技の合図を自動に（`look_act1.json motion.enemyBig.auto`）／状態異常の小札の Flash（規約の線引き）。
+- 撮影キーの無い物（exe で手で確かめる）: 札のホバー・傾き・隣が開く／予測の帯と「倒せる」／エナジーの玉／ツールチップの遅れ／手札の呼吸／設定の「演出」の効き。
+- 未実装で残した案: 大きい当たりの全体ヒットストップ（Autopilot の門と対）／札の「ひらり」の共通部品／粒のプール／敗北の評価の窓の畳み／宝箱の儀式は幕2/3 のみ。
+- 音: 合成の虫（森の夜）と鼓動は「安っぽい」と言われうる → 不評なら USFX の在庫に差し替え（鍵は変えない）。
