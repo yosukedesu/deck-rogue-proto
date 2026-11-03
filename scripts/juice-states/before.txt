@@ -1,0 +1,18 @@
+# 見た目・UX・演出の磨き (2026-11-04) — 直す前/後の同じ場面。1行 = 名前|STATE。
+# 撮り方: scripts/unity-win.sh states scripts/juice-states/before.txt 4242 (SHOTS_OUT=<置き場>)
+J-title|phase=title
+J-setup|phase=setup
+J-map|phase=map
+J-combat|phase=combat;enemy=enemy_wolf
+J-enter|phase=combat;enemy=enc_wolf_hexer_drummer;entershots=10;enterevery=4
+J-swing|phase=combat;enemy=enemy_probe;play=attack;playshots=10;playevery=2
+J-kill|phase=combat;enemy=enemy_probe;ehp=3;play=attack;playshots=24;playevery=4
+J-enemyphase|phase=combat;enemy=enemy_wolf;endplay=1;endshots=12;endevery=3
+J-reward|phase=reward
+J-relic|phase=relic
+J-shop|phase=shop
+J-campfire|phase=campfire
+J-event|phase=event
+J-workshop|phase=workshop
+J-won|phase=won
+J-lost|phase=lost

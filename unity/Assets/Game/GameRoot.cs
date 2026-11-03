@@ -311,7 +311,7 @@ namespace DeckRogue.Game
                     }
                     yield return null;elapsed+=Tween.UnscaledDt;
                 }
-                if(version==_presentationVersion && ReferenceEquals(Rs,state) && Battle==board && terminal && !Stage.CombatWorld) {
+                if(version==_presentationVersion && ReferenceEquals(Rs,state) && Battle==board && terminal) {   // 2026-11-04: 箱庭 (幕1) でも勝敗の余韻を出す (旧 `&& !Stage.CombatWorld` は幕1 で勝利の帯を一度も出していなかった)
                     bool outcomeDone=false;outcomeShown=true;
                     using(Tween.BeginPresentation())Presenter.ShowOutcome(this,state,snapshot,()=>{outcomeDone=true;Tween.CancelPresentations();});
                     elapsed=0f;timeout=8f;
@@ -392,6 +392,7 @@ namespace DeckRogue.Game
             if(wasCombat && Rs?.Combat!=null && Battle!=null && !ReferenceEquals(prevRs,Rs)
                 && (combatEnded || Presenter.HasEnemyPhase(Rs.Combat))) {
                 if(fromWindow)Battle.CloseReactionWindow();
+                Presenter.PrevRun = prevRs;   // 2026-11-04: 決着の余韻で G・魔素の増えた量を出すため、戦闘の手の直前のランを渡す
                 BeginCombatPresentation(Rs.Combat,combatEnded);
                 return;
             }

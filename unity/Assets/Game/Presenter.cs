@@ -22,6 +22,8 @@ namespace DeckRogue.Game
         public static int PendingImpactCount {get;private set;}
         public static float LastImpactDelay {get;private set;}
         public static float LastSequenceDuration {get;private set;}
+        /// <summary>戦闘の手の直前のラン (GameRoot.Do が渡す)。決着の余韻で G・魔素の増えた量 (endedRs との差) を出すのに使う。戦闘の外では null のことがある</summary>
+        public static RunState PrevRun;
         static float _lastImpactAt;
         public static bool PresentationIdle => Actions.QueuedCount==0 && Actions.PendingContacts==0 && Numeric.PendingCount==0 && PendingImpactCount==0 && PendingVisualCount==0 && Tween.PendingPresentationCount==0 && ScenarioPresentationDriver.ActiveCount==0 && !Tween.FinishSlowActive && WorldBattleFx.ActiveCount==0 && CodexBattleFx.ActiveCount==0 && !Stage.HasCombatMotion && !Stage.HasCombatAnimation && Stage.ActiveImpactPauseCount==0;
         public static int QueuedImpactCount {get;private set;}

@@ -172,6 +172,18 @@ namespace DeckRogue.Game
             src.Play();
         }
 
+        // ---- 2026-11-04 見た目・UX・演出の磨き: 音の共通口 (中身は音の束 D が実装する。呼ぶ側はこの署名だけを頼る) ----
+        /// <summary>表の鍵を音程の倍率つきで鳴らす (チェインの段・多段の積み上がりのラチェット。pitchMul 1.0 = 素・1.06 = 半音上)。表に無い鍵は何もしない</summary>
+        public static bool KeyPitched(string key, float pitchMul, float volMul = 1f) { return Key(key, volMul); }
+        /// <summary>BGM の自動の抑え (ダッキング): depth (0〜1。0.5 = 半分に) まで attack 秒で沈め、hold 秒保ち、release 秒で戻す。重ねたら深い方・長い方。時計は unscaled</summary>
+        public static void Duck(float depth = 0.5f, float hold = 0.6f, float release = 0.9f, float attack = 0.08f) { }
+        /// <summary>BGM に一瞬ローパスを掛ける (敗北・致死の間)。seconds 秒で元へ。0 で即戻す</summary>
+        public static void Muffle(float seconds) { }
+        /// <summary>環境音の層 (森の夜・焚き火など)。key は表の ambience.xxx の鍵。null で止める (クロスフェード)。同じ鍵なら何もしない</summary>
+        public static void Ambience(string key) { }
+        /// <summary>鼓動のループ (低 HP・致死級)。on で始め、rate は 1 秒あたりの拍 (0.9〜1.7)。off で止める</summary>
+        public static void Heartbeat(bool on, float rate = 1f) { }
+
         /// <summary>ホバー音は連打を抑える (0.06 秒に1回)</summary>
         public static void Hover()
         {
