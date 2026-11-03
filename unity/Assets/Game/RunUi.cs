@@ -205,12 +205,37 @@ namespace DeckRogue.Game
         {
             string msg = g.Error != null ? "! " + g.Error : g.Notice;
             if (string.IsNullOrEmpty(msg)) return;
-            var pan = UiKit.Frame(root, Theme.Panel, g.Error != null ? new Color(1f, 0.7f, 0.7f, 1f) : Color.white, "message", 3f);
+            bool error = g.Error != null;
+            var pan = UiKit.Frame(root, Theme.Panel, error ? new Color(1f, 0.7f, 0.7f, 1f) : Color.white, "message", 3f);
             UiKit.Anchor(pan.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-460f, -TopH - 56f), new Vector2(460f, -TopH - 8f));
             pan.raycastTarget = false;
-            var t = UiKit.Txt(pan.transform, msg, 16, g.Error != null ? UiKit.ColBadInk : UiKit.ColInk, TextAnchor.MiddleCenter, true);
+            var t = UiKit.Txt(pan.transform, msg, 16, error ? UiKit.ColBadInk : UiKit.ColInk, TextAnchor.MiddleCenter, true);
             UiKit.Stretch(t.rectTransform, 12f, 12f, 0f, 0f);
             t.raycastTarget = false;
+            // 通知の作法 (G15・2026-11-04): 16px 上から降りてくる (0.22 秒 OutCubic)。通知は 2.5 秒で薄れる (消さない＝組み直しが片付ける)。
+            // 拒否理由は残り、震えて薔薇の縁。入り (ScreenFx の条2) の対象外＝自分で現れる
+            pan.gameObject.AddComponent<ScreenFx.EntrySkip>();
+            if (error)
+            {
+                var edge = pan.gameObject.AddComponent<Outline>();
+                edge.effectDistance = new Vector2(3f, -3f); edge.useGraphicAlpha = false;
+                edge.effectColor = new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, 0.85f);
+            }
+            if (ScreenFx.Instant) return;
+            var cg = pan.gameObject.AddComponent<CanvasGroup>(); cg.alpha = 0f; cg.blocksRaycasts = false;
+            var prt = pan.rectTransform;
+            var p0 = prt.anchoredPosition;
+            prt.anchoredPosition = p0 + new Vector2(0f, 16f);
+            Tween.After(ScreenFx.Busy ? 0.2f : 0f, () =>
+            {
+                if (prt == null) return;
+                Tween.Run(0.22f, k => { if (prt == null) return; prt.anchoredPosition = p0 + new Vector2(0f, 16f * (1f - k)); cg.alpha = Mathf.Clamp01(k * 1.5f); }, Ease.OutCubic, () =>
+                {
+                    if (prt == null) return;
+                    if (error) { Tween.Shake(prt, 6f * Mathf.Max(0.25f, FxSettings.Shake), 0.25f); Audio.Key("card_cancel", 0.5f); }
+                    else Tween.After(2.5f, () => { if (cg != null) Tween.Run(0.3f, k => { if (cg != null) cg.alpha = 1f - k; }, Ease.Linear); });
+                });
+            });
         }
 
         /// <summary>レリックの絵 (プレースホルダー: idから生成した紋様。PixelLab の絵が Resources/Art/relics/&lt;id&gt; にあればそれ)</summary>

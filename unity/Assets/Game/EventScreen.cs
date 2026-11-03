@@ -28,8 +28,20 @@ namespace DeckRogue.Game
             {
                 var ch = def.Choices[g.EventChoiceIndex];
                 int ci = g.EventChoiceIndex;
+                bool isUpgrade = ch.UpgradeCard == true;
                 CardPick(g, root, ch, "「" + ch.Label + "」", "event",
-                    delegate (int i) { g.EventChoiceIndex = -1; g.Do(new RunCommand_EventChoice { Index = ci, CardIndex = i }); },
+                    delegate (int i)
+                    {
+                        g.EventChoiceIndex = -1;
+                        if (isUpgrade)
+                        {   // 鍛える出来事 (G3): 焚き火と同じ演出のあとに手を進める (結果の札は出さない＝鍛えた姿を見せた)
+                            var area = root.Find("pick") as RectTransform;
+                            var cell = ScreenJuice.GridCell(area, i);
+                            var before = i >= 0 && i < run.Deck.Count ? run.Deck[i] : null;
+                            ScreenJuice.UpgradeShine(g, cell, before, () => g.Do(new RunCommand_EventChoice { Index = ci, CardIndex = i }));
+                        }
+                        else Choose(g, new RunCommand_EventChoice { Index = ci, CardIndex = i });
+                    },
                     "選び直す", delegate { g.EventChoiceIndex = -1; g.Rebuild(); });
                 return;
             }
@@ -140,7 +152,7 @@ namespace DeckRogue.Game
                 Action act = delegate
                 {
                     if (needsCard) { g.EventChoiceIndex = idx; g.Rebuild(); }
-                    else { Audio.Ui("event_choice"); g.Do(new RunCommand_EventChoice { Index = idx }); }
+                    else { Audio.Ui("event_choice"); Choose(g, new RunCommand_EventChoice { Index = idx }, leave); }
                 };
                 if (!ph)
                 {   // PC (2 巡目 §10-6「選択肢が普通のボタン」): 夜色の帯＝名前 (真鍮) と何が起きるか (淡い紙色) の 2 行。押せる帯は真鍮の細い縁、立ち去るは縁なし
@@ -178,6 +190,22 @@ namespace DeckRogue.Game
                 var tx = b.GetComponentInChildren<TMP_Text>();
                 if (tx != null) { tx.alignment = TextAlignmentOptions.Left; tx.margin = new Vector4(18f, 0f, 12f, 0f); }
             }
+        }
+
+        /// <summary>
+        /// 選択肢を選ぶ (G6・2026-11-04): 手を進めてから幕が閉じるまで 1.2 秒の窓 (ScreenFx.DeferNextSwitch) を取り、その間に手の前後のランの差分
+        /// (G・HP・札・遺物＝engine の実値) を夜の札で滑り込ませる (event_gain / event_loss)。幕が始まらなかった (手が拒まれた) 時は窓を消す。Instant なら手だけ
+        /// </summary>
+        static void Choose(GameRoot g, RunCommand cmd, bool free = false)
+        {
+            var prev = g.Rs;
+            if (free) { g.Do(cmd); return; }   // 無料の「立ち去る」: 何も起きないので待たせない
+            ScreenFx.DeferNextSwitch(FxSettings.Dur(1.2f));
+            g.Do(cmd);
+            if (!ScreenFx.Busy || g.Rs == null || ReferenceEquals(g.Rs, prev)) { ScreenFx.DeferNextSwitch(0f); return; }
+            ScreenFx.DeferNextSwitch(0f);
+            if (g.Rs.Phase == RunPhases.Combat) return;   // 戦闘へ続く手は結果の札を出さない (戦闘の始まりが答え)
+            ScreenJuice.ShowOutcome(g, prev, g.Rs);
         }
 
         /// <summary>出来事の挿絵の名前 (§10-4): 名前と中身から 祠 (event_shrine)・取引 (event_trade)・恵み (event_blessing) を選ぶ。どれでもなければ坑道の道標 (event)</summary>

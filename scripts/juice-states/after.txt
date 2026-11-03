@@ -1,0 +1,32 @@
+# 見た目・UX・演出の磨き (2026-11-04) — 直した後の同じ場面 (before.txt の 16 行) ＋ 新しい口で撮る「選んだ後の 1 秒」。1行 = 名前|STATE。
+# 撮り方: SHOTS_OUT=unity/Shots/juice/after scripts/unity-win.sh states scripts/juice-states/after.txt 4242
+# シート: python3 scripts/juice-sheet.py unity/Shots/juice/after J-outcome out.png --cols 6 / --pairs unity/Shots/juice/before unity/Shots/juice/after で前後を左右に
+# 鍵 (Autopilot.cs 束 F): motion=1 (幕・入り・飛びを動かす)・outcome=1・lose=1・take=1・relictake=1・rest=1・buy=<idx>・acttitle=1・php=<HP>。各 Nshots/Nevery で枚数と間隔
+J-title|phase=title
+J-setup|phase=setup
+J-map|phase=map
+J-combat|phase=combat;enemy=enemy_wolf
+J-enter|phase=combat;enemy=enc_wolf_hexer_drummer;entershots=10;enterevery=4
+J-swing|phase=combat;enemy=enemy_probe;play=attack;playshots=10;playevery=2
+J-kill|phase=combat;enemy=enemy_probe;ehp=3;play=attack;playshots=24;playevery=4
+J-enemyphase|phase=combat;enemy=enemy_wolf;endplay=1;endshots=12;endevery=3
+J-reward|phase=reward
+J-relic|phase=relic
+J-shop|phase=shop
+J-campfire|phase=campfire
+J-event|phase=event
+J-workshop|phase=workshop
+J-won|phase=won
+J-lost|phase=lost
+# ---- 新しい行: 決着・敗北・選んだ後の 1 秒 (連写) ----
+J-outcome|phase=combat;enemy=enemy_probe;motion=1;outcome=1;outcomeshots=36;outcomeevery=10
+J-victory-boss|phase=combat;boss=1;enemy=enemy_ogre;motion=1;outcome=1;outcomeshots=36;outcomeevery=10
+J-lose|phase=combat;enemy=enemy_ogre;motion=1;lose=1;loseshots=40;loseevery=3
+J-danger|phase=combat;enemy=enemy_wolf;php=20
+J-preview|phase=combat;enemy=enemy_wolf;ehp=3;dragaim=0:0
+J-take|phase=reward;motion=1;take=1;takeshots=16;takeevery=3
+J-relictake|phase=relic;motion=1;relictake=1;relictakeshots=16;relictakeevery=3
+J-rest|phase=campfire;hp=50;motion=1;rest=1;restshots=16;restevery=3
+J-buy|phase=shop;gold=300;motion=1;buy=0;buyshots=16;buyevery=3
+J-acttitle|phase=map;act=2;acttitle=1;acttitleshots=30;acttitleevery=4
+J-settings|phase=map;settings=1

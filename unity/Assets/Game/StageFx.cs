@@ -439,6 +439,28 @@ namespace DeckRogue.Game
         }
 
         /// <summary>
+        /// 束 E (2026-11-04 StageBeat): 灯っている光 (MotionLight が返した番号 seq) の場所・強さ (refDist の距離での明るさ)・届く距離を書き直す。
+        /// 経過 (T) はそのまま = 減衰の形を乱さない (からくりの光の輪が広がる・崩れの光が上へ抜ける、に毎フレーム呼ぶ)。消えていれば false
+        /// </summary>
+        internal static bool Retune(long seq, Vector3 world, float intensity, float range)
+        {
+            if (!Live || seq <= 0) return false;
+            if (float.IsNaN(world.x) || float.IsNaN(world.y) || float.IsNaN(world.z)) return false;
+            var h = StageLook.Current != null ? StageLook.Current.Hit : Defaults;
+            int n = Math.Min(_want, _slots.Count);
+            for (int i = 0; i < n; i++)
+            {
+                var s = _slots[i];
+                if (!s.Lit || s.Light == null || s.Seq != seq) continue;
+                s.Light.transform.position = world;
+                s.Peak = Mathf.Max(0f, intensity) * h.RefDist * h.RefDist;
+                s.Light.range = Mathf.Max(0.1f, range);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// 動きを止める時 (StageMotion.StopAll: 門が閉じた・戦闘の画面が無くなった): 寄りの光 (印の付いた光) を消して印を外し、借りていた影を返す。
         /// 普通の当たりの光はそのまま減衰させる (今の口の通り方を変えない)。印の付いた光が無ければ何もしない
         /// </summary>

@@ -1,0 +1,939 @@
+{
+ "reports": [
+  {
+   "lane": "A: 戦闘の演出の進行 (Presenter 系・Tween)",
+   "done": [
+    {
+     "id": "G1/G5/A9/B08 勝利の山",
+     "what": "Presenter.cs:ShowOutcome を書き直し。Audio.Duck で BGM を沈め → 帯 (victory_band。鍵が無ければ ui.win) → 0.45 秒後に倒した敵の位置 (_lastDownPos＝EnemyDied で覚えた胸の位置) から真鍮の硬貨 4〜10 個が上部バーの g.Anchor(\"gold\") へ弧を描いて飛び、着くたび coin_land を KeyPitched で上げ・札が跳ね・G の数字が刻みで増える (PresenterJuice.cs:FlyLoot。増分＝PrevRun と endedRs の Gold の差)。魔素は青緑の玉が \"mana\" へ (mana_land)。終わったら ScreenFx.Shown(null の札) に新しい値を覚えさせ報酬画面で二重に出ない。記録の行の先頭に「+15 G ・ 魔素 +5」(逃げられた分は「−N G（逃げられた）」)、行ごとに tally_tick を音程を上げて (OutcomeLine に pitch 引数)。箱庭でも StageBeat.Victory(boss)。Stage.Dolly は旧舞台だけ。全体 1.8〜2.4 秒 (幕ボス +0.9)・タップで飛ばせる (既存の block)。ScreenFx.Instant では硬貨を飛ばさず値だけ覚える",
+     "how_to_see": "phase=combat;enemy=enemy_probe;ehp=3;play=attack;playshots=72;playevery=3 (とどめ→撃破の判→帯→硬貨→記録の行まで)"
+    },
+    {
+     "id": "G2 とどめ・B08 撃破",
+     "what": "Presenter.cs の player DamageDealt の finishing 分岐: ZoomPunch を撤去 (裁定「酔う」)、PresenterJuice.cs:FinishBlowCue＝StageBeat.FinishBlow(敵の体の中心の世界座標・boss)・HitFlash(ei,1)・Shake(1,.25)・finish_blow・Audio.Duck(.6,.5,.6)・白 (Paper3 α.42×FxSettings.Flash 0.12 秒) → 夜色 (α.28 0.35 秒) の 2 段の閃き・白い輪 260 (幕ボス 320)。延焼で焼け落ちたとどめ (BurnTick) も同じ。EnemyDied で PresenterJuice.cs:EnemyDownCue＝判「撃破」(真鍮・幕ボスは大きめ)・enemy_down / enemy_down_boss・StageBeat.EnemyDown(足元)。数字の台帳が崩れを待たせている時は 0.25 秒遅らせる",
+     "how_to_see": "phase=combat;enemy=enemy_probe;ehp=3;play=attack;playshots=30;playevery=2 (1〜6 コマ目に閃きと 68px の数字・12 コマ目あたりに「撃破」)"
+    },
+    {
+     "id": "G3/M03 数字の段",
+     "what": "PresenterJuice.cs:DamageTier (0 小<5／1 中／2 大＝15 以上か最大 HP の 1/4 以上か急所／3 とどめ。DamageVfxIntensity と同じ昇格) と TierSize (30/40/54/68px・スマホ 0.85 倍)。大・とどめは新しい Tween.FloatBig (1.35→1.0 の叩き込み＋止まった瞬間に 1 コマ白・とどめは真鍮の縁)。自分の当たり・延焼のティック (Ember)・被弾 (HurtTier: 15 以上か最大 HP の 2 割で大・薔薇・致死は段 3) に適用。色は従来の役割 (真鍮の紙／盾に吸われたは鋼青／延焼は Ember)",
+     "how_to_see": "phase=combat;enemy=enemy_probe;play=attack;playshots=24;playevery=4 と endplay=1;endshots=40;endevery=3 (被弾側)"
+    },
+    {
+     "id": "G4/M02 多段の積み上がり",
+     "what": "HitPlan に Sum (札の当たりの Amount の和) を足し、PresenterJuice.cs:ComboTick＝2 発目から狙った敵の肩に夜の小札「×2」「×3」が 1 枚だけ跳ねながら増え、combo_up を KeyPitched (1+0.07×段)。数字は右へ 14px ずつずらし +3px。最後の 1 発で 3 発以上なら 0.25 秒後に判「N 連続 ・ 合計 M」(真鍮)。全体攻撃 (Volley) は札を出さない",
+     "how_to_see": "phase=combat;enemy=enemy_probe;hand=<多段の札 id>;penergy=5;play=0;playshots=40;playevery=3 (例: 蔦の連撃)"
+    },
+    {
+     "id": "④/G8 被弾の縁・鼓動",
+     "what": "Presenter.cs と PresenterEnemyContacts.cs の被弾: 全画面の朱 (ScreenFlash 0.9,0.1,0.1) を PresenterJuice.cs:HurtVignette (ThemeFx.Vignette(PaperFx.Rose) を画面の縁だけ・α .16+HpLoss×.02 ≦.5×FxSettings.Flash・0.4〜0.6 秒) に置き換え、StageBeat.PlayerHit(HpLoss/20)・StageBeat.Shake。SyncDangerCue＝数字の台帳の表示 HP (NumericDisplayState) で HP 3 割以下／致死級 (BattleView.SyncDanger と同じ式) を判定し、変わった瞬間に Audio.Heartbeat(on, 0.9|1.7)・danger_in・StageBeat.Danger(on, lethal)。被弾の着地・回復・ターン開始・DeathSaved・戦闘開始 (0.3 秒後) で見直し、決着・Reset で止める",
+     "how_to_see": "phase=combat;enemy=enemy_probe;hp=20;endplay=1;endshots=40;endevery=3"
+    },
+    {
+     "id": "G6/G7 白い点滅・揺れを StageBeat へ",
+     "what": "自分の当たり (段で 0.35/0.55/とどめ 1)・延焼 0.2・人形の束 0.3/0.5・豹変 0.6 で StageBeat.HitFlash(ei, strength)。揺れは Stage.Shake に加えて StageBeat.Shake(strength, dur) を大きい当たり (Amount/30)・被弾 (HpLoss/20)・とどめ 1・豹変 0.5・ブロック砕き 0.3 で呼ぶ (中身は束 E)",
+     "how_to_see": "phase=combat;enemy=enemy_probe;play=attack;playshots=24;playevery=4"
+    },
+    {
+     "id": "G17/6 登場",
+     "what": "Presenter.cs:ShowEntrance の `if(Stage.CombatWorld)return 0f` を外した。箱庭では UI の縮みの代わりに Stage.Dissolve(key, 1→0) 0.42 秒 (足元から現れる。止められたら 0 へ戻す) ＋足元の輪、StageBeat.EnemyEnter(count, boss)。名前の帯 (強個体・幕ボス) と帳面の隠しは箱庭でも出る。幕ボスの Dolly は旧舞台だけ。通常戦は入力を塞がない (後の出来事を 0.35+0.09n 秒待たせるだけ)",
+     "how_to_see": "phase=combat;enemy=enemy_probe;entershots=24;enterevery=3 と phase=combat;boss=1;entershots=36;enterevery=4"
+    },
+    {
+     "id": "G9/A3/7 赤・霊気の出来事",
+     "what": "PresenterJuice.cs:IsRedEvent/RedEventGap/ShowRedEvent＝Cascaded (cascade_flip を段で上げ・外れの小札が山札の上に跳ねて落ちる最大 3・当たりの札の幽霊 (GhostToken) が山札から狙った敵へ飛び Ember の輪と判「チェイン」「チェイン ×N」・cascade_hit を 1+0.08×段で。空振りは「チェイン 空振り」)・CascadeRetargeted「本体はこの敵へ」・BlazeIgnited (blaze_ignite・生存敵全員の足元に Ember の輪・縁が Ember に 0.5 秒・判「猛り火」・StageBeat.Blaze(true))・BlazeExtinguished (blaze_out・「猛り火が消えた」・Blaze(false))・BurnDischarged (Ember の輪＋「延焼 N を解き放った」)・ImpulseKindled (手札の位置から札の幽霊が火の粉になって自分へ・判「くべた」・impulse_burn)・ImpulseReturned「衝動の失効 X は捨て札へ」・ImpulseKept「燠の守り X を残した」・AetherGained「霊気 +N」(aether_gain)・AetherDischarged (青緑の大きな輪＋FloatBig「霊気 N を放出!」)・RegenBroken「再生が止まった」・HpLossCapped「脈打つ欠片が損失を止めた」。Show の分岐・PlayTracked の篩・PlaySequenced/MainSequenceGap の間 (チェイン 0.22・猛り火 0.3・他 0.2)・IsShownEvent・TableSound (null) に通した。順送りの ctx に EventIndex/CapturedState を赤の出来事だけ渡す",
+     "how_to_see": "phase=combat;leader=leader_red;hand=<チェインの札 id>;penergy=5;play=0;playshots=40;playevery=3 (札 id は goldens/events の Cascaded の実例から)"
+    },
+    {
+     "id": "B07 意図の札の予兆",
+     "what": "Presenter.cs:ShowEnemyAct の EnemyActionExecuting: 攻撃なら意図の札を Punch 0.24 (他 0.16)・紙 (intent-tag/paper) を BrassLight に Tween.Flash 0.35・enemy_telegraph。StageMotion.EnemyBigFlashing (大技の赤い合図) 中は重ねない。攻撃の行動の間を 0.32→0.44 (順送り 2 表と PlayTracked 0.3→0.42)",
+     "how_to_see": "phase=combat;enemy=enemy_probe;endplay=1;endshots=30;endevery=3"
+    },
+    {
+     "id": "G10 手番の帯",
+     "what": "Presenter.cs:Banner＝帯が左 40px から OutCubic 0.22 秒で滑り込み、下の線 (accent) が幅 0→120 に伸び、消える時は右へ 24px 流れる。TurnStarted で StageBeat.TurnBeat(true)・エナジーの輪を Punch・TurnEnded で TurnBeat(false)",
+     "how_to_see": "phase=combat;enemy=enemy_probe;endplay=1;endshots=40;endevery=3 (「敵の番」→次の「あなたの番」)"
+    },
+    {
+     "id": "G11 からくりの発動・打ち消し",
+     "what": "ReactionTriggered: 判「発動」26px・StageBeat.TrapFired・仕込み枠から的へ細い青緑の BeamFx・着弾で trap_fire_big と青緑の縁 (HurtVignette Mana α.22 0.3 秒)。ActionNegated: 意図の札の CanvasGroup が α 1→0.35→1 (0.4 秒) で「効かなかった」・判「打ち消し」(Stamp に昇格)。GearUsed にも TrapFired",
+     "how_to_see": "phase=combat;enemy=enemy_probe;sets=<仕込み札 id>*;endturn=1;fire=1;fireshots=30;fireevery=3"
+    },
+    {
+     "id": "G13 敗北",
+     "what": "FinishingBlowIndex が自分の致死 (Player.Hp<=0) なら最後の敵の打撃を返す。敵→自分の着弾の瞬間に Tween.FinishSlow (飛び道具の 0.22 秒を遅い時計で待たせないよう Show 冒頭ではなく RunContact の中)・薔薇の閃き (α.3×Flash)・段 3 の数字。ResolvedCombatFx の ticket.Finishing は自分の致死では立てない。ShowOutcome の敗北＝Audio.Muffle(2.6)・Duck・StageBeat.Defeat・PresenterJuice.cs:PlayerCrumble (Stage.Dissolve(\"player\") 1.1 秒・薔薇の粒 10・defeat_fall) → 0.85 秒で「倒れた…」→ 2.5 秒で次へ",
+     "how_to_see": "phase=combat;enemy=enemy_probe;hp=1;endplay=1;endshots=72;endevery=3"
+    },
+    {
+     "id": "B11 このターンの合計",
+     "what": "PresenterJuice.cs:AddTurnTotal＝自分の当たり・延焼のティック・人形の束の Amount を足し、2 発目から自分の頭上 (スマホは +56・PC は +100・上部バーに掛けない) の夜の札「このターン 48」を 1 枚だけ 0.2 秒で数え上げ・Punch。30 以上で字が真鍮。TurnEnded で 0.5 秒後に薄れて消え、TurnStarted・戦闘開始・Reset で 0",
+     "how_to_see": "phase=combat;enemy=enemy_probe;hand=<攻撃札 2 枚>;penergy=5;play=0;playshots=20;playevery=3 → もう 1 枚 play で 2 発目から札が出る"
+    },
+    {
+     "id": "その他",
+     "what": "FxSettings.Flash を既存の全画面の閃き (豹変の薔薇・DeathSaved の真鍮) にも掛ける (PresenterJuice.cs:FlashScreen)。ShowEnergyPaid で払った量に応じて energy_spend を KeyPitched。PresenterLightningR9/PhysicalMedium の筋書きの篩に IsRedEvent を足し、TableSound から外れた AetherDischarged が筋書きを誤って通さないように。Presenter.Reset で ClearJuice (札・鼓動・猛り火) と StageBeat.Reset",
+     "how_to_see": "—"
+    }
+   ],
+   "skipped": [
+    {
+     "id": "S6/M04 大きい当たりの全体ヒットストップ",
+     "why": "指示どおり Time.timeScale は新しく触らない。局所の止め (CombatImpactPause.MaxWindow .14・CardVfxProfile.ImpactPauseFor) は StageCombat.cs／ResolvedCombatFx.cs (担当外) の定数なので 0.2 秒へは伸ばせなかった。AutopilotTempo/VfxCoverage の timeScale==1 の門はそのまま通る"
+    },
+    {
+     "id": "G12 HP バーの残像",
+     "why": "BattleScreen.cs (束 B) の TweenHpBar/HpBarInfo の持ち物"
+    },
+    {
+     "id": "G14 札をプレイした瞬間の手触り",
+     "why": "BattleView.AnimateOut/CardView (束 B)。こちらは energy_spend の音だけ足した"
+    },
+    {
+     "id": "G16 勝利→報酬の連続・札のめくり",
+     "why": "GameRoot.cs (束 C2)・RewardScreen.cs・ScreenFx.cs (束 C1) の持ち物"
+    },
+    {
+     "id": "G10 の「敵の番」のレターボックス",
+     "why": "上下の夜の帯が上部バーの紙に掛かり規約 8 (紙は染めない) に触れるので見送り。StageBeat.TurnBeat(false) で舞台が冷たくなる方に寄せた"
+    },
+    {
+     "id": "G15 貫通の数字の色・余りの表示",
+     "why": "時間切れ。急所は段で既に大きい。余り (Amount−HpLoss−Blocked) は engine の値から出せるので次に足せる"
+    }
+   ],
+   "new_api": [
+    "unity/Assets/Game/Tween.cs: public static void FloatBig(RectTransform parent, Vector2 pos, string text, Color color, int size, Color? edge = null, float rise = 50f, float dur = 1.0f, float width = 300f) — 1.35→1.0 で叩き込む大きい浮き数字 (縁の色つき・止まった瞬間に 1 コマ白)",
+    "unity/Assets/Game/Presenter.cs: static void OutcomeLine(RectTransform layer, string text, float y, float pitch = 1f) — 記録の行 (tally_tick の音程つき。private)",
+    "unity/Assets/Game/PresenterJuice.cs (partial Presenter・private): DamageTier/HurtTier/TierSize/TierNumber・HurtVignette/FlashScreen・SyncDangerCue/DangerOff・AddTurnTotal/ClearTurnTotal・ComboTick/ClearCombo・EnemyDownCue・FinishBlowCue・IsRedEvent/RedEventGap/ShowRedEvent・FlyLoot・PlayerCrumble・ClearJuice (他の束が呼ぶ想定の public は無し)"
+   ],
+   "audio_keys_used": [
+    "finish_blow",
+    "enemy_down",
+    "enemy_down_boss",
+    "coin_fly",
+    "coin_land (KeyPitched)",
+    "mana_land (KeyPitched)",
+    "victory_band (無ければ ui.win)",
+    "tally_tick (KeyPitched。無ければ CardsDrawn)",
+    "cascade_flip (KeyPitched)",
+    "cascade_hit (KeyPitched)",
+    "blaze_ignite",
+    "blaze_out",
+    "aether_gain",
+    "combo_up (KeyPitched)",
+    "danger_in",
+    "defeat_fall",
+    "energy_spend (KeyPitched)",
+    "enemy_telegraph",
+    "trap_fire_big",
+    "impulse_burn (ImpulseKindled 1.0・ImpulseReturned 0.5)",
+    "Audio.Heartbeat(on, 0.9|1.7) / (false)",
+    "Audio.Duck (とどめ .6/.5/.6・勝利 .45/1.4〜2.2/1.0・敗北 .7/1.8/1.2)",
+    "Audio.Muffle(2.6) (敗北)",
+    "契約に無い既存の鍵の流用: BurnDischarged (延焼を解き放った) に BurnTick・AetherDischarged に表の AetherDischarged (hit_big)・PlayerDied/ReactionTriggered/EnemyDied は従来どおり"
+   ],
+   "files_touched": [
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/Presenter.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/PresenterJuice.cs (新規)",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/PresenterEnemyContacts.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/PresenterLightningR9.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/PresenterPhysicalMedium.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/Tween.cs"
+   ],
+   "risks": [
+    "コンパイルは未確認 (規約 14)。署名は grep で確かめた: Stage.TryGetUnitBox(key, out Vector3 feet, out float h)・Stage.Dissolve(key,k)・ScreenFx.Shown(g,key,value,tag,text,unit,count)・PaperFx.NightNote(parent,text,size,maxWidth,bold,name)・ThemeFx.Vignette(Color,string)・Effects.IncomingTotal・DeckRogue.Engine.Run.ManaOf。新規 PresenterJuice.cs は Unity が .meta を作る",
+    "撃破の音が二重になりうる: BattleView.KillEnemy (束 B) が従来どおり Audio.Key(\"EnemyDied\")＝death を鳴らし、こちらが enemy_down を足した。束 D は enemy_down を death と重ねて成立する層 (崩れの砂) にするか、EnemyDied を null に",
+    "ShowOutcome は PrevRun (GameRoot.Do が渡す) を読む。null なら G・魔素の行と硬貨は出ない (従来の帯と記録だけ)。チェックポイント開始・続きからの最初の戦闘で PrevRun が立っているかを撮影で確認",
+    "箱庭の登場 (Stage.Dissolve 1→0) は StageUnit が bound 済みの時だけ効く (未 bound なら何もせず普通に立つ)。Reset で途中停止したら Dissolve を 0 へ戻す onCancel を付けた。幕1 で敵が「消えたまま」になったら ShowEntrance の world 分岐を外す (旗はない。`bool world` を false 固定で戻せる)",
+    "敵の体の白い点滅 (0.10 倍) と揺れ・勝利の明かり・危険・猛り火・足元の光は StageBeat の中身 (束 E) 待ち。E が空のままなら箱庭では旧どおり見えない (UI 側の判・数字・閃き・硬貨は出る)",
+    "鼓動 (Heartbeat)・Duck・Muffle・Ambience は束 D の実装待ち。danger_in/heartbeat は NumericDisplayState の表示 HP で判定するので、順送り中は着弾ごとに見直す (多段で 1〜2 回早く鳴る可能性)",
+    "勝利の硬貨の数え上げは上部バーの G の数字 (int に読める最初の TMP) を直接書き換え、最後に ScreenFx.Shown(null 札) で値を覚えさせる。途中でタップして飛ばすと覚える前に CancelPresentations されるので報酬画面で従来の「+15 G」が出る (二重ではない)",
+    "FinishingBlowIndex が自分の致死も返すようになった＝PlaySequenced では gap +0.35・Show でスロー。ResolvedCombatFx の ticket.Finishing は自分の致死では false に留めた (StageFx.Finish を主人公に掛けない)。DeathSaved (Hp>0) は従来どおり",
+    "AutopilotTempo/VfxCoverage: timeScale は FinishSlow 以外触っていない。ただし敵の攻撃の順送りの間を 0.32→0.44 (PlayTracked 0.3→0.42) にしたので、frames<budget の門が厳しい検査なら 1 行動 +0.12 秒ぶん伸びる",
+    "既存の全画面の閃き (豹変・DeathSaved・とどめ) は FxSettings.Flash を掛けるようにしたので、設定で 0 にすると閃かない (縁のビネットも 0)",
+    "採点で落ちたら戻す旗: 数字の段 → TierNumber の中で常に Tween.Float に落とせる／硬貨 → FlyLoot の先頭で return 0／合計の札 → AddTurnTotal の先頭で return／意図の脈打ち → ShowEnemyAct の `ex.Kind == \"attack\"` の塊を消す"
+   ]
+  },
+  {
+   "lane": "B 戦闘画面の UI (BattleScreen・BattleView・CardView・Tooltip・GearUi・新規 BattleJuice)",
+   "done": [
+    {
+     "id": "B01",
+     "what": "札を触れた／引いた間、狙う敵 (GuardRedirect 後。全体攻撃は生存全員) の HP バーに「この札でここまで減る」の帯 (自分の札と同じ RoseLoss＋斜線の器を敵の帳面にも作り、SetEnemyPredict が LossTo を書く)。値は BattleJuice.PredictHpLoss＝engine の Effects.DamageBreakdownOf を 1 ヒットずつ辿り、ヒットの間は敵の写し (record の with: Block・Exposed・DamageThisTurn・Slippery) を進める＝装甲・ターン装甲・潜伏・朧・敵ブロックまで同じ式。X・選択式・条件つき・参照の効果は -1 (帯なし)。帯が出た時 preview_tick 1 回。組み直し後はポインタがまだ札の上なら出し直す (BattleView.ReapplyPreview)。BattleView.cs: ShowCardPreview/ClearCardPreview・BattleScreen.cs: SetEnemyPredict・HpBar(predictable)・HookHandCard の enter/drag/exit/endDrag",
+     "how_to_see": "撮影キーにホバーは無いので Windows exe で手札に触れる (STATE=\"phase=combat;enemy=enemy_probe;ehp=12;hand=green_strike,green_strike\" で立ち上げ、1 枚目に触れると敵の HP バーの右端に帯)。スマホは単体札を敵の上へ引く"
+    },
+    {
+     "id": "B02",
+     "what": "見込みで HP が 0 以下になる敵の帳面の右上に夜の札「倒せる」(剣の絵 16＋Deco 15・BrassLight) を -6° で判のように重ね、真鍮の明るい縁が 1.2Hz で脈打つ (LethalPulse＝EndTurnPulse と同じ式)・出た瞬間 Punch 0.2・lethal_mark 1 回。意図の札は CanvasGroup 0.6 に沈む (登場演出の α0 には触らない・自分で沈めた札だけ戻す)。スマホは狙いの矢の指先の輪の芯が BrassLight・輪 1.15 倍 (BattleView.PreviewLethal)",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;ehp=3;hand=green_strike\" で exe を立ち上げ 1 枚目に触れる (ehp=3 なので打撃 6 で倒せる＝判が出る)"
+    },
+    {
+     "id": "B03",
+     "what": "エナジーの輪: 前の組み立てで見せた値 (BattleView.ShownEnergy) から弧を滑らせる (払った＝0.25s OutCubic・補充＝0.35s OutBack で満ちる)、数字は Lerp で数え下げ＋払った時 Punch 0.22、0 になったら円盤が 0.2s で灰 (0.85) に沈む。出した札 (仕込み・置物も) から払ったコストぶんの真鍮の玉 (18px・最大 6) が Tween.Projectile 0.22s・0.04s ずらしで輪へ飛び、着いた瞬間に輪が Punch 0.1・BrassLight の輪 60・energy_spend (BattleView.EnergyOrbs)。弧と数字の滑りは札を出した直後なら 0.2s 遅らせて玉の到着に合わせる。ScreenFx.Instant では滑らせない。BattleScreen.cs BuildEndTurn の輪・BattleView.AnimateOut",
+     "how_to_see": "phase=combat;enemy=enemy_probe;play=attack;playshots=30;playevery=3 (3〜10 枚目で玉が輪へ飛び、弧が削れる)"
+    },
+    {
+     "id": "B04",
+     "what": "札の手触り (PC): 触れると ±3° (扇の傾きの半分を戻す向き) に傾き、板と同じ形の墨の影 (CardView.Fill が InHand の時だけ作る name=\"shadow\"・既定は非表示) が 0.12s で 18 下へ伸びる (持ち上げは 24)。引く時は 0.8 倍にせず等倍で浮かせ、BattleJuice.CardDragFollow が 1−exp(−dt×18) で指に遅れて付いてきて横の速さから ±12° まで傾く (EndDrag で外して Tween.Move が戻す)。持ち上げで card_lift・戻すと card_cancel。両隣の札は 12px 開く (BattleView.SpreadAround。飛んでいる途中の札は触らない)。スマホは傾け・慣性なし (狙いの矢の裁定のまま)。Refill/作り直しでも影を付け直す",
+     "how_to_see": "exe で手札に触れる・引く (撮影キー無し)"
+    },
+    {
+     "id": "B05",
+     "what": "消滅: 札の板 (frame) が BrassLight に閃いてから 0.25 倍へ縮み、熾 (Ember・3 つに 1 つ BrassLight) の粒 8 個が立ちのぼる (BattleJuice.EmberBurst＝添字と黄金角で散らす・乱数なし)・CardExhausted。札が山札・捨て札・消滅の札に着くと札が Punch 0.12 し、数字は g.Rs.Combat の実数と違えば書いて跳ねる (BattleView.PileLanded。演出で先に進めない)。消滅の札が初めて現れる時は OutBack 0.3s (BattleScreen.BuildPiles。前の数は BattleView.LastStatus[\"pile:exhaust\"])",
+     "how_to_see": "phase=combat;enemy=enemy_probe;hand=<消滅を持つ札 id>;play=0;playshots=36;playevery=3"
+    },
+    {
+     "id": "B06",
+     "what": "敵の帳面の状態の札 (筋力・延焼・急所・混乱・威圧) が付いた／増えた時に跳ねて現れる: MiniPill に name=\"pill-<記号>\" を付け RectTransform を返すようにし、LedgerStrip が前の組み立ての値 (BattleView.LastStatus \"e<敵>:<記号>\") と比べて 1 コマ後 (Tween.After 0.05) に Punch 0.3＋紙を Flash 0.4 (藤の紙は Plum・他は BrassLight)。筋力以外は status_apply 1 回。消えた状態は 0 に戻す。Presenter は触らず組み直し側で判定 (順送りの後の組み直しで必ず通る)",
+     "how_to_see": "phase=combat;enemy=enemy_probe;hand=<急所や延焼を付ける札 id>;play=0;playshots=30;playevery=3 (着弾後の組み直しで帳面の札が跳ねる)"
+    },
+    {
+     "id": "B09",
+     "what": "ホバーの説明 (PC): 触れて 0.35s (手札の札は 0.5s) 遅れて出す (予約の番号 _pendingToken＝離れたら古い予約は出ない)、CanvasGroup α 0→1 の 0.12s と下から 8px 上がって入る。札を引いている間 (BattleScreen.Dragging) は出さない。スマホの固定パネルは不変。Tooltip.Attach(…, delay) を追加",
+     "how_to_see": "exe で手札・帳面に触れる"
+    },
+    {
+     "id": "B10",
+     "what": "ターン終了 (打てる札なしの脈動中) の押し込み: EndTurnPulse に IPointerDown/Up/Exit を足し、脈動の倍率に 0.93 の押し込み (0.06s) を掛ける。ギアのトークンを押した時と組んだ時 (GearUi.Submit) に青緑 (ManaLight・Mana) の輪を FxLayer (組み直しで消えない層) に置く",
+     "how_to_see": "exe でターン終了を押し込む・ギアを組む"
+    },
+    {
+     "id": "B12",
+     "what": "ドロー: 最初の 1 枚で山札の札が Punch 0.1、札ごとに出発点 (山札) に紙色の小さな輪 40 (BattleView.SyncHand の isNew)",
+     "how_to_see": "phase=combat;enemy=enemy_probe;entershots=40;enterevery=3 (配られる間)。または endplay=1 で次のターンの配り"
+    },
+    {
+     "id": "B13",
+     "what": "狙われた敵の反応: 札を触れた／引いた時、見込みの対象の帳面と意図の札に真鍮の明るい縁 (hoveredge。狙い・候補の縁 edge/dragedge が既にあれば足さない)・帳面が Punch 0.04・体が Stage.Flash 0.06 (BattleView.AddHoverEdge)。離すと消える",
+     "how_to_see": "B01 と同じ (exe で触れる)"
+    },
+    {
+     "id": "B14",
+     "what": "スマホの狙いの矢: 指の下の敵が切り替わった時、指先の輪が 1→1.25→1 (Tween.Run 0.18s・_aimPulse)・その敵の体が Stage.Flash 0.06・Audio.Hover (0.06s の間引きつき)。BattleView.SetAimEdge",
+     "how_to_see": "スマホ (UISCALE=1.6) で単体札を 2 体の間で引く"
+    },
+    {
+     "id": "B15",
+     "what": "確認の窓の「発動」を押した瞬間: トークンの位置に青緑の輪 (ManaLight 120・Mana 70) を FxLayer に置き、トークンを Punch 0.25・trap_fire_big を鳴らしてから onFire (窓は Rebuild で消えるので残る層に)。BattleScreen.ReactionRow",
+     "how_to_see": "phase=combat;enemy=enemy_probe;sets=<仕込み札 id>*;endturn=1;fire=1;fireshots=16;fireevery=3"
+    },
+    {
+     "id": "B16",
+     "what": "出せる札の縁: CardView.Fill が InHand かつ playable (自分の番) の時、板の外 3px に BrassLight の縁 (playableedge・α0.45)。残りエナジーとコストがちょうど同じ札は α0.8＝「残り 1E で出せるのはこれ」。出せない札は従来の沈み (CardDim) のまま＝差が強まる",
+     "how_to_see": "phase=combat;enemy=enemy_probe;penergy=1 (1E の札だけ縁が濃い)"
+    },
+    {
+     "id": "G12/TB-10",
+     "what": "HP バーの削られ方 (敵・自分とも同じ HpBar): 塗りの後ろに紙色 (Paper3 α0.85) の残像 (ghost) を置き、減る時は塗りが 0.18s で落ち、残像は元の長さで 0.25s 止まってから 0.4s OutQuad で追いつく (とどめ＝0 へは 0.6s 残す)。続けて削られた時は残像の右端を保つ (GhostRev で版を管理)。数字は減った瞬間 Punch 0.18。増える (回復) 時は残像を即追従。SetHpBarImmediate (Presenter が数字を持つ間) は残像を出さない。UiKit は触らず BattleScreen.TweenHpBar の中に (TB-10 の UiKit.BarLive は作っていない＝UiKit は担当外)",
+     "how_to_see": "phase=combat;enemy=enemy_probe;play=attack;playshots=40;playevery=3 (着弾後 6〜30 枚目で白い残像が遅れて縮む)"
+    },
+    {
+     "id": "M15",
+     "what": "手札の呼吸 (PC): HandLayer に BattleJuice.HandBreath を付け、自分の番で引いていない間だけ 0.5Hz・±1.5px で上下 (Tween.UnscaledDt。ScreenFx.Instant では止める＝撮影は決定的)",
+     "how_to_see": "exe で自分の番に待つ"
+    }
+   ],
+   "skipped": [
+    {
+     "id": "TB-10 (UiKit.BarLive/BarTween)",
+     "why": "UiKit.cs は担当外。同じ文法 (残像・数字の跳ね) を BattleScreen.TweenHpBar に入れた (G12 参照)。回復の MossLight の閃きは紙の塗りを染めるので入れていない"
+    },
+    {
+     "id": "B03 の Presenter.ShowEnergyPaid 側",
+     "why": "Presenter.cs は束 A の担当。玉が札から輪へ飛ぶ演出は BattleView.AnimateOut (EnergyOrbs) に置いた。ShowEnergyPaid の輪の Punch 0.14 は残っているので、着いた時の Punch 0.1 と二重に跳ねる (気になれば束 A 側で ShowEnergyPaid の非 X 札の Punch を外す)"
+    },
+    {
+     "id": "B05 ④ 切り直しの裏向きの小札",
+     "why": "時間の都合。DeckShuffled の出来事を EventLog から拾って捨て札→山札へ 3 枚飛ばす口は BattleView.SyncHand にある (未実装)"
+    },
+    {
+     "id": "B06 の自分の資源の chip (p:)",
+     "why": "時間の都合。敵の帳面の札だけ。SmallChip に name を付ける所から (LastStatus の \"p:<名前>\" の鍵は用意済み)"
+    },
+    {
+     "id": "B12 の「+N 枚」の浮き文字",
+     "why": "配るたびに文字が出ると五月蠅いので山札の跳ねと輪だけにした"
+    },
+    {
+     "id": "B13 の足元の輪・敵の入れ物の持ち上げ",
+     "why": "入れ物 (pan) を動かすと舞台のビルボードが一緒に跳ぶ (Stage.BindUnit が矩形を読む) ので帳面の Punch と縁・Stage.Flash に留めた"
+    }
+   ],
+   "new_api": [
+    "unity/Assets/Game/BattleJuice.cs: public static int PredictHpLoss(GameState st, CardInstance c, int enemyIdx) — 札を敵に出した時の HP 損失の見込み (engine の DamageBreakdownOf を 1 ヒットずつ・-1 = 読めない)",
+    "BattleJuice.cs: public static bool TargetsAll(CardDef def) / HasPlayDamage(CardDef def) — onPlay のダメージが全体か／あるか",
+    "BattleJuice.cs: public static void Mote(RectTransform fx, Vector2 p0, Color color, int index, float rise=80, float dur=0.65) / EmberBurst(RectTransform fx, Vector2 center, float w, float h, int n=8) — 乱数なしの光の粒・熾の粒",
+    "BattleJuice.cs: class CardDragFollow : MonoBehaviour { RectTransform Rt; Vector2 Target; bool HasTarget; } — 札の慣性つき追従と傾き／class HandBreath : MonoBehaviour { RectTransform Layer; Func<bool> Active; } — 層の呼吸",
+    "BattleScreen.cs: public static void SetEnemyPredict(RectTransform pan, int loss, bool lethal) — 敵の帳面の HP バーに見込みの帯と「倒せる」の判 (loss≤0 で消す)",
+    "BattleScreen.cs: public static bool Dragging — 手札を引いている間 (Tooltip・呼吸が読む)",
+    "BattleScreen.cs: HpBarInfo に Ghost/GhostR/GhostRev (残像)・LossTo の既定 int.MaxValue (帯なし)。HpBar(..., bool predictable=false)",
+    "BattleView.cs: public void ShowCardPreview(GameRoot g, GameState st, HandCard hc, int over) / ClearCardPreview(GameRoot g) — 札を持った時の見込み (帯・判・縁)／public bool PreviewLethal",
+    "BattleView.cs: public void SpreadAround(int idx) — 触れた札の両隣を開ける (PC)／public int ShownEnergy／public readonly Dictionary<string,int> LastStatus — 前の組み立てで見せた値 (状態の札・消滅の札の数)",
+    "CardView.cs: public static void SetShadow(RectTransform card, bool on, float drop) — 手札の札の影の出し入れ",
+    "Tooltip.cs: public static void Attach(GameObject target, Func<string> textProvider, bool withKeywords=true, float delay=-1f) — delay (秒) を足した (省略 0.35・0 で即)"
+   ],
+   "audio_keys_used": [
+    "lethal_mark (契約)",
+    "preview_tick (契約)",
+    "card_lift (契約)",
+    "card_cancel (契約)",
+    "energy_spend (契約)",
+    "status_apply (契約)",
+    "trap_fire_big (契約)",
+    "CardExhausted (既存の鍵。消滅の燃え)",
+    "CardsDrawn (既存。変更なし)",
+    "ui.click (既存。GearUi)",
+    "Audio.Hover() (既存の間引きつきホバー音。スマホの狙いの切り替わり B14 に流用＝契約外の新しい鍵は足していない)"
+   ],
+   "files_touched": [
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/BattleJuice.cs (新規)",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/BattleScreen.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/BattleView.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/CardView.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/Tooltip.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/GearUi.cs"
+   ],
+   "risks": [
+    "コンパイルの不安 (確認済みだが実機なし): BattleJuice.PredictHpLoss が engine の record (EnemyState/GameState) に with 式を使う＝Assets 側の asmdef が C# 9 の record を扱えること (engine 自身が record なので通るはず)。BattleJuice.cs の .meta は Unity が取り込み時に作る (手で作っていない)",
+    "BattleJuice.CardDragFollow / HandBreath は静的クラスの入れ子の MonoBehaviour を AddComponent する (BattleScreen.EndTurnPulse と同じ作法)",
+    "unity-colors.test / unity-vocab.test は通した (5/5)。新しい色は使っていない (Paper3・Ink・BrassLight・Ember の名前と透明度だけ)",
+    "B16 の出せる札の縁 (BrassLight α0.45/0.8) は紙がうるさくなる可能性。採点で落ちたら CardView.Fill の playableedge の 10 行を消す (他に依存なし)",
+    "見込みの帯は条件つき・X・選択式・参照 (dealDamagePer〜) の札では出ない＝「帯が無い＝読めない札」。ランダム火力は下限で読む。急所は 1 ヒットごとに 1 減る写しで進めるので engine の順 (急所→装甲→ブロック) と同じだが、札自身の onPlay の他の効果 (先にブロックを割る粉砕・急所を付けてから殴る等) は見込みに乗らない＝その札では帯が実際より小さく出る (大きく見せる嘘は無い)",
+    "B06 の状態の札の跳ねは「前の組み立てとの差」なので、戦闘の最初の組み立てで既に筋力を持つ敵 (ボス) の札も 1 回跳ねる。順送りの途中の組み直しが来ない経路 (Presenter が数字を持つ間) では着弾のタイミングより遅れて跳ねることがある",
+    "B03: Presenter.ShowEnergyPaid の輪の Punch 0.14 と EnergyOrbs の到着の Punch 0.1 が二重に跳ねる (束 A が ShowEnergyPaid の非 X 札の Punch を外せば一本になる)",
+    "HandBreath は HandLayer の anchoredPosition を毎フレーム ±1.5 書く。HandLayer の位置を他が動かす設計変更が来たら _base の取り直しが要る (今は Ensure で一度置くだけ)",
+    "Tooltip の遅れは Tween.After (Time.deltaTime 積算) なので決着のスロー (timeScale 0.22) の間は 0.35s が伸びる。ヒットストップ中にホバーしても出るのが遅いだけで害は無い",
+    "撮影: ホバー・ドラッグの状態キーが無いので B01/B02/B04/B09/B13 は exe で手で確かめる (uxdrag は codex 枝 a7f86b5 の Autopilot にだけある)。play=/endplay= のコマ送りで G12 (残像)・B03 (玉と弧)・B05 (熾)・B06 (札の跳ね)・B15 (fire=1) は撮れる",
+    "G12 で TweenHpBar の塗りの速さを 0.35→0.18s (減る時だけ) に変えた。Presenter の着弾の数字との同期が気になれば FxSettings.Dur(0.18f) を 0.25 に戻す (1 か所)"
+   ]
+  },
+  {
+   "lane": "C1: 戦闘以外の画面の「選んだ後の 1 秒」(報酬・遺物・店・焚き火・工房・出来事・共通の飛び/数え上げ/幕の音/ボタン/通知)",
+   "done": [
+    {
+     "id": "G1/M06 報酬の札の儀式",
+     "what": "ScreenJuice.RevealCard (新規 unity/Assets/Game/ScreenJuice.cs) を RewardScreen.Reward の CardView.Build の直後に。札は裏 (Art/ui/cardback・BattleView.CardBack と同じ作り) で並び、i×0.12 秒ずらしで scaleX 1→0 (InQuad 0.16)→0→1 (OutBack 0.2) で返る。返り切った瞬間に PaperFx.RarityEdge の輪 (C140/U200/R300)＋card_flip (段ごとに音程↑)。レアは返る前から真鍮の暈 (UiFlicker で呼吸)・返った瞬間 rare_reveal＋全画面の淡い真鍮の閃き (α0.12×FxSettings.Flash)＋粒10。アンコモンは小さな暈＋粒4。返っている間は「取る」interactable=false (終わると TB-17 の pop)。3 枚で 0.6 秒。見送るに card_cancel。店のレア枠は暈だけ (flip=false)",
+     "how_to_see": "PLAYER_ARGS=\"-motion\" STATE=\"phase=reward\" shots state 4242 (Instant では表のまま＋レアの暈だけ)"
+    },
+    {
+     "id": "G7/M12 遺物",
+     "what": "ScreenJuice.RelicGet: 取る→真鍮の輪 360・淡い閃き・粒10・札の上に夜の帯の名前 (NightLine 0.8 秒)・絵 (relic-art) が Puff 1.25・relic_get → 0.45 秒後に FlyTo (land_relic)。宝箱: 「開ける」で箱が 0.3 秒揺れ (card_lift) → 組み直し → 1 コマ後に ChestBurst (白→真鍮の閃き 0.2・輪 320・粒 14・relic_get)・遺物の札は 0.8→1 で遅れて立つ。幕ボスの 3 択は ScreenFx.Weight で入りを 0.1 秒ずつ遅く・0.86 から大きく。店の遺物購入も同じ帯",
+     "how_to_see": "STATE=\"phase=relic\" / 幕2 の宝箱は phase=relic;act=2 の宝箱の節"
+    },
+    {
+     "id": "G8 店",
+     "what": "ShopScreen: 値札 (price/pricewrap) から上部バーの G へ硬貨 3〜4 枚 (ScreenJuice.Coins＝Tween.Projectile 真鍮 18px・0.05 秒ずらし・coin_fly 1 回・着くたび coin_land を少し高く・G の札が Punch)。今買った札/ギアは ScreenJuice.SoldCover(animate) で覆いが 0→0.6・紙の判「売切」が 1.6→1 で押し当てられ sold_stamp (_justSoldCard/_justSoldGear＝Build の終わりで消す)。払えない値札は interactable のまま押せて ScreenJuice.Denied＝震え＋「G が足りない」の浮き文字＋card_cancel 0.6 (買わない)。鍛える＝UpgradeShine 共用",
+     "how_to_see": "STATE=\"phase=shop\" → 値札を押す (loop の動画で)"
+    },
+    {
+     "id": "G2 焚き火・休む",
+     "what": "CampfireScreen.Rest: ScreenFx.DeferNextSwitch(1.1) で手の後・幕が閉じる前の窓を取り、g.Do の後に engine の実値 (prev.Hp→Rs.Hp) で上部バーの HP を 0.6 秒数え上げ (ScreenJuice.HealCount・rest_heal・「+N」苔の浮き文字・粒)、炎の暈が一拍 1.9 倍/大きさ 1.3 倍 (FireFlare)、火の粉が 0.6 秒 3 倍 (SceneSparks.Burst)、Ember の淡い閃き。Remember(\"hp\") で地図の「+N」を二重に出さない。手が拒まれたら窓を消す",
+     "how_to_see": "PLAYER_ARGS=\"-motion\" STATE=\"phase=campfire;hp=30\" → 休むを押す (loop)"
+    },
+    {
+     "id": "G3/M07 鍛える",
+     "what": "ScreenJuice.UpgradeShine(g, cell, before, then): 一覧の cell の札の複製 (ScreenFx.CloneForFx) が中央へ 0.22 秒で寄って 1.15 倍 (スマホ 1.0)、0.11 秒間隔で 3 度 白い一閃＋Shake 4＋輪＋upgrade_shine (音程↑)、3 打目で CardView.Refill(Upgrade.UpgradeCard) の姿 (名前に「+」)＋輪 280＋閃き＋粒 8＋「鍛えた」の浮き文字、0.4 秒後にデッキへ FlyTo→then。焚き火 (CampfireScreen forge の onPick)・店 (ShopScreen upgrade)・出来事 (EventScreen.CardPick の isUpgrade) の 3 箇所から。合計約 1.4 秒",
+     "how_to_see": "STATE=\"phase=campfire;submode=forge\" → 札を選ぶ (loop)"
+    },
+    {
+     "id": "G10 工房",
+     "what": "WorkshopScreen 合成する → ScreenJuice.FuseMelt: slotA/slotB の札の複製が結果の札 (result) の位置へ 0.3 秒 (InQuad) で寄りながら 0.6 倍・±14°、重なった瞬間に青緑の閃き (α0.2×Flash)・Mana の輪 320・粒 10・fuse_melt、結果の札が 1.4→1 で押し当てられ白く光り、0.5 秒後にデッキへ飛んでから Do。硬貨 3 枚も G へ",
+     "how_to_see": "STATE=\"phase=workshop;pick=0,1\" → 合成する (loop)"
+    },
+    {
+     "id": "G6 出来事の結果",
+     "what": "EventScreen.Choose: DeferNextSwitch(1.2) → g.Do → ScreenJuice.ShowOutcome(prev, now)＝差分を人の言葉に (ScreenJuice.Diff: ±G 真鍮/薔薇・HP/最大 HP 苔/薔薇・札の名前 (2 枚まで)/枚数・負傷/烙印・取り除いた枚数・鍛えた枚数・遺物の名前・何も無ければ「何も起きなかった」) し、画面中央の下に夜の札を右から 0.12 秒ずらしで滑り込ませる (幕が片付ける)。得たら event_gain・失ったら event_loss。無料の立ち去りは待たせない・戦闘へ続く手は出さない。Remember(gold/hp) で地図の差分と二重にしない",
+     "how_to_see": "STATE=\"phase=event;event=<id>\" → 選択肢 (loop)"
+    },
+    {
+     "id": "TB-05/G17/A16 飛びの弧と着地",
+     "what": "ScreenFx.FlyTo: 直線→弧 (FlyArc 90・距離に比例・−6° の傾き)、着地で行き先の印 Punch .14・輪 (札=真鍮 140／遺物・魔素=青緑 120)・land_card/land_relic 0.6、0.1 秒置いて then。複製は ScreenFx.CloneForFx (public・ButtonMotion/EventTrigger を外す)",
+     "how_to_see": "報酬で取る (loop)"
+    },
+    {
+     "id": "G14 ギア・魔素",
+     "what": "報酬のギア「取る」と店のギア「買う」は FlyTo(…,\"mana\"〔無ければ deck〕)。店の魔素は硬貨が G へ＋青緑の玉 3 発が匣 (mana の印) へ (Coins mana=true・mana_land) 飛び切ってから Do (間は LockInput)。満杯の入れ替えは今まで通り",
+     "how_to_see": "STATE=\"phase=reward\" のギア／phase=shop;shopmode=gears"
+    },
+    {
+     "id": "TB-03/A6 数え上げ",
+     "what": "ScreenFx.CountTo(text, from, to, dur, tickKey, tickVol) を公開 (値が変わったコマだけ書く・0.05 秒に 1 回 Audio.KeyPitched で音程↑・終わりに Punch .08)。Shown の G は coin_land の刻み (増 0.45／減 0.2)。焚き火の HP もこれ",
+     "how_to_see": "報酬の後の地図 (G が増える)"
+    },
+    {
+     "id": "A14 幕の紙の音",
+     "what": "ScreenFx.SwitchCo: 閉じ始めに paper_swish 0.7・開き始めに 0.4 (Instant は Switch 自体を飛ばすので鳴らない)",
+     "how_to_see": "loop の動画"
+    },
+    {
+     "id": "TB-17 ボタンの階層",
+     "what": "ScreenFx.ButtonMotion: interactable の立ち上がりで 0.92→1 (OutBack 0.2)＋button_appear 0.4 (同じコマは 1 回)。決定のボタン (Pulse) は入りが終わる 0.3 秒で button_appear 0.35 を一度 (同じコマは 1 回・立ち上がりで鳴らしたら鳴らさない)",
+     "how_to_see": "報酬の札が返り切った時の「取る」"
+    },
+    {
+     "id": "G15 通知",
+     "what": "RunUi.Message: 板に ScreenFx.EntrySkip (入りの対象外)・CanvasGroup、16px 上から 0.22 秒 OutCubic で降りて α 0→1 (幕の最中なら 0.2 秒待つ)。Notice は 2.5 秒後に 0.3 秒で薄れる (消さない)。Error は残り、Shake 6＋Rose の Outline＋card_cancel 0.5",
+     "how_to_see": "STATE=\"phase=map;memo=1\" でメモ→「メモを記録した」／拒否される手"
+    },
+    {
+     "id": "FxSettings.Dur",
+     "what": "ScreenFx の CloseDur/OpenDur/EnterDur/EnterStep/FlyDur/NodeDur/CountDur/MapScrollDur を const → FxSettings.Dur で割る静的プロパティ (MapScreen の式はそのまま読める)。新しい演出の秒数も FxSettings.Dur・揺れは FxSettings.Shake・閃きは FxSettings.Flash を掛ける",
+     "how_to_see": "設定の速さを変えて loop"
+    },
+    {
+     "id": "DeferNextSwitch (共通の口)",
+     "what": "ScreenFx.DeferNextSwitch(sec): 次の Switch が幕を閉じる前に入力を塞いで待つ窓 (0.25 秒過ぎたらタップで飛ばせる)。手の後に engine の実値で演出を出す (焚き火・出来事) ための器。ScreenFx.Remember(key, value)/ShownValue で上部バーの差分の二重出しを防ぐ",
+     "how_to_see": "—"
+    }
+   ],
+   "skipped": [
+    {
+     "id": "G1 の fix の『Audio.Ui(pick_relic) 併用』",
+     "why": "契約の鍵 rare_reveal/card_flip に揃えた (束 D が音を足す)。既存の ui.* は重ねない"
+    },
+    {
+     "id": "G3 のタップで早送り",
+     "why": "合計 1.4 秒に収めたので早送りの口は付けていない (LockInput の間はタップが通らない。要れば SwitchCo の hold と同じ Input 監視を UpgradeShine に足す)"
+    },
+    {
+     "id": "M06 の『レアの外線が 1.2Hz で脈』",
+     "why": "暈 (UiFlicker) の呼吸で代えた。札の面 (CardView) を触らずに済む"
+    },
+    {
+     "id": "A6 の hp_down・TB-03 の ui.count",
+     "why": "契約の鍵一覧に無い。HP 減は既存の薔薇の Flash のまま。G の刻みは coin_land で代用"
+    }
+   ],
+   "new_api": [
+    "unity/Assets/Game/ScreenFx.cs: public static void DeferNextSwitch(float sec) — 次の幕が閉じる前に sec 秒待つ (手の後に今の画面の上で演出を見せる窓。Instant では 0)",
+    "unity/Assets/Game/ScreenFx.cs: public static void Remember(string key, int value) / public static int? ShownValue(string key) — 上部バーの値を先に見せたと覚えさせる (差分の二重出し防止)",
+    "unity/Assets/Game/ScreenFx.cs: public static void CountTo(TMP_Text text, int from, int to, float dur, string tickKey = null, float tickVol = 0.5f) — 数え上げ (刻みの音は KeyPitched で上がる・終わりに Punch)",
+    "unity/Assets/Game/ScreenFx.cs: public static GameObject CloneForFx(RectTransform from, RectTransform fx) — 演出用の複製 (ButtonMotion/EventTrigger を外し fx 層へ、見た目の位置と倍率を合わせる)",
+    "unity/Assets/Game/ScreenFx.cs: public static void Weight(RectTransform rt, float extraDelay, float fromScale = 0.86f) — 入り (条2) の重み。class EntryHint / class EntrySkip (入りの対象外の印)",
+    "unity/Assets/Game/ScreenFx.cs: public const float FlyArc = 90f。CloseDur/OpenDur/EnterDur/EnterStep/FlyDur/NodeDur/CountDur/MapScrollDur は static プロパティ (FxSettings.Dur)",
+    "unity/Assets/Game/ScreenJuice.cs (新規): RevealCard(g, cell, cv, rarity, index, Button take, bool flip=true) / RelicGet(g, cell, name, then) / ChestBurst(g, chest) / Coins(g, from, n, mana=false, then=null) / Denied(tag, text=\"G が足りない\") / SoldCover(over, animate) / HealCount(g, from, to) / UpgradeShine(g, cell, before, then) / FireFlare(Image glow, dur) / FuseMelt(g, a, b, result, then) / Diff(prev, now) → List<Outcome> / ShowOutcome(g, prev, now) → float / NightLine(layer, pos, text, ink, size, hold, delay) / Motes(layer, pos, color, n, rise, spread, dur) / GridCell(area, index) / FirstText(rt)",
+    "unity/Assets/Game/CampfireScreen.cs: SceneSparks.Burst(float sec) — 火の粉を sec 秒だけ 0.03 秒ごとに噴く"
+   ],
+   "audio_keys_used": [
+    "card_flip",
+    "rare_reveal",
+    "relic_get",
+    "land_card",
+    "land_relic",
+    "coin_fly",
+    "coin_land",
+    "mana_land",
+    "sold_stamp",
+    "rest_heal",
+    "upgrade_shine",
+    "fuse_melt",
+    "event_gain",
+    "event_loss",
+    "paper_swish",
+    "button_appear",
+    "card_cancel",
+    "card_lift",
+    "(既存の ui.*: click/pick_card/pick_relic/buy/upgrade/rest/fuse/event_choice/remove はそのまま)"
+   ],
+   "files_touched": [
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/ScreenFx.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/ScreenJuice.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/RewardScreen.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/ShopScreen.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/CampfireScreen.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/WorkshopScreen.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/EventScreen.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/RunUi.cs"
+   ],
+   "risks": [
+    "コンパイルは未確認 (署名は grep で確かめた)。要注意: WorkshopScreen.cs の `Button fuse = null; fuse = UiKit.Btn(..., delegate { ... fuse ... })` (ラムダが自分を捕まえる形)・ScreenJuice.UpgradeShine の `CardView.Refill(crt, after, null, true, false)`・EventScreen.Choose の引数型 `RunCommand` (DeckRogue.Engine.Generated の abstract record)。unity-colors.test / unity-vocab.test は通した",
+    "ScreenFx.CloseDur 等を const → static プロパティに変えた。他ファイルで const 文脈 (case/属性/const 代入) に使っていれば落ちる (grep では MapScreen.cs:359 の式だけ＝問題なし)",
+    "DeferNextSwitch の窓 (焚き火の休む・出来事の選択) は「g.Do → フェーズが変わる → Switch」が同じコマで始まる前提。Switch が始まらなければ 0 に戻す。幕が閉じるまで g.Rs は新しいのに画面は古い＝その間 (最長 1.2 秒・入力は塞ぐ) に別の経路から Rebuild が走ると演出が切れるだけで害は無いはず。採点で違和感なら Rest/Choose の DeferNextSwitch を外せば旧挙動",
+    "ShopScreen.PriceTag: 払えない値札も interactable (押すと Denied)。DepartureScreen (束外) も同じ PriceTag を使うので出立の店でも「G が足りない」が出る (買わない判定は呼び側の if (ok) のまま)。元の見た目 (桃灰) は維持",
+    "報酬の「取る」は札が返り切るまで interactable=false (3 枚で 0.6 秒)。Autopilot は 1.4 秒待って押すので足りるはず。足りなければ RevealCard の 0.12 秒を縮める",
+    "FlyTo の then は着地の 0.1 秒後 (旧は即)。店の連続購入で 0.1 秒ずつ遅くなる。Shown の G の数え上げに coin_land の刻みが入る＝束 D が coin_land を足さないと無音 (害は無い)",
+    "FuseMelt は結果の札 (result) の localScale を 0→1.4→1 と直接書く。Build 直後の Tween.Punch(cell, .08, .5) と 0.5 秒以内に重なると Punch の基準が取り違えて少し跳ねる可能性 (Acquire/Sync の既知の性質。実害は小)",
+    "ChestBurst/Weight は宝箱 (幕2/3 だけ) なので幕1 の一周では見えない。幕ボスの遺物 3 択の入りの重みは BeginEntries 経由 (幕のある切り替え) でだけ効く",
+    "audio.json に無い鍵 (card_flip 等) は Audio.Key が false を返して黙る＝束 D の鍵待ち。鍵名は契約どおり"
+   ]
+  },
+  {
+   "lane": "C2: ランの節目の画面 (走破・敗北・幕の題字・評価の窓・設定の演出・環境音・地図の着いた合図とボス前・タイトルの呼吸)",
+   "done": [
+    {
+     "id": "G4/M05/M14",
+     "what": "unity/Assets/Game/EndScreen.cs を全面書き直し (EndScreen.Build)。①題: 走破＝真鍮の「走破」88px が 1.3→1 で押し当てられ (0.4 秒・FxSettings.Dur)、真鍮の罫が 0→520 に伸び、FxLayer に BrassLight の輪 760 と α0.18×FxSettings.Flash の閃き。敗北＝薔薇の「倒れた」が 28px 沈み、薔薇の細い罫だけ。音 victory_band／defeat_fall。②ランの記録＝2 列の紙の札 (PaperFx.Tag2) が 0.5 秒から 0.12 秒ずらしで Punch .08 と tally_tick で積まれ、数字は 0 から 0.4 秒で数え上げ。項目＝到達 幕/行・勝利 N 戦・倒した強個体・倒した幕ボス・戦ったターン・最大の 1 ターン火力・からくりの発動 (Feedback.History の Metrics。無ければ出さない)・残り HP・所持金・デッキ・選んだ回数 (Feedback.Choices)・難易度。③遺物＝紙の円 (PaperFx.Disc＋RunUi.RelicArt) が GridLayout で 0.06 秒ずらしに 0→1 OutBack、Tooltip に名前と本文。④デッキ＝PC は右の塊に RunUi.CardGrid (0.66 倍)、スマホは「デッキ N 枚を見る」で RunUi.DeckViewer。⑤ボタン「もう一度（同じリーダー）」(新 GameRoot.RestartRun＝新しいシードで StartRun)・「タイトルへ」・右下に小さく「レポートを書き出す」。敗北は もう一度 が真鍮の主、走破は タイトルへ が主。⑥敗北は「倒したのは <敵>（強個体／幕ボス）・N ターン」の夜色の札 (Feedback.LastBattle) と、敗因の 2 分類 (構築の失敗／理不尽／未入力) に合わせた定型の一言「次は、…」。走破は Ember の暈 (UiFlicker) と脈の粒 (TitleScreen.Motes 12)。Instant では全部終わりの姿",
+     "how_to_see": "STATE=\"phase=won;act=3;deck=deck_big_mana;relics=relic_oldroot_cup,relic_double_charm;hp=40;gold=180\" と STATE=\"phase=lost;act=2;rating=lost\" (Instant なので数え上げは最終値)。動きは PLAYER_ARGS=\"-motion\" か一周の動画の敗北の節"
+    },
+    {
+     "id": "G5/M10",
+     "what": "新規 unity/Assets/Game/ActTitleFx.cs (ActTitleFx.Show(g, act, rebuild))。夜色の板 (ScreenFx の幕とは別の Image) が 0.16 秒で覆い、覆った下で rebuild、板の上に小さな真鍮の「第一幕」(22px・字間 12)・幕の名前 60px (MapScreen.ActName＝坑口の森／先代の坑道／埋もれた古代都市・字間 14)・真鍮の罫 260 が 0.3 秒で浮かび (8px 上昇・罫が伸びる)、1.0 秒保ち (タップで切る)、0.25 秒で消え、ScreenFx.BeginEntries を付けて 0.22 秒で開く。合計 +1.55 秒 (FxSettings.Dur で速い設定は短い)。音 act_title。GameRoot.Do は幕が変わった手 (prevRs.Act != Rs.Act) で、StartRun はランの始まりで呼ぶ。ScreenFx.Instant なら ScreenFx.Switch に落とす",
+     "how_to_see": "動画 (loop) のタイトル→出立の間 / 幕ボス撃破→次の幕の地図。shots では Instant なので出ない (PLAYER_ARGS=\"-motion\" で StartRun を撮る)"
+    },
+    {
+     "id": "G9/M08",
+     "what": "Feedback.cs に RatingReady を足し、Feedback.Record は RatingOpen = FxSettings.RatingWindow・RatingReady=false。ShouldShowRating は RatingReady か ScreenFx.Instant の時だけ真 (撮影の rating=won|lost は従来の経路)。GameRoot.ScheduleRating/RatingLater: 報酬／遺物の画面が組まれて 1.2 秒 (走破・敗北は 2.6 秒) 後に、画面を組み直さずに FeedbackUi.RatingDialog を ScreenRoot の上に足し、窓は 0.2 秒で α 0→1。重ね窓が開いていれば次の組み直しで出る。FeedbackUi.RateButton の未入力の札は「この戦いを評価」(真鍮)。OpenRating (手で開く) は待たない",
+     "how_to_see": "実機で戦闘に勝って報酬の画面を見る (1.2 秒後に窓)。撮影 STATE rating=won は従来どおり即"
+    },
+    {
+     "id": "G12/M13",
+     "what": "SettingsUi.Build に Section「演出」: 画面の揺れ (つまみ 0〜1.5＝FxSettings.Shake)・閃光 (FxSettings.Flash)・一瞬の止め (FxSettings.Pause)・速さ ふつう／速い (FxSettings.Speed 1／1.5)・戦闘の評価の窓：出す／出さない (FxSettings.RatingWindow)。Slider に max 引数を足した。PC の窓は 930 高。スマホは窓が 675 しか無いので段を UiKit.Scroll (しおりつき) に入れ、下の spacer は PC だけ",
+     "how_to_see": "STATE=\"phase=map;settings=1\" (PC) と UISCALE=1.6 の同じ STATE (スマホの一覧)"
+    },
+    {
+     "id": "A7/A8 呼び出し側",
+     "what": "GameRoot.UpdateBgm の頭で UpdateAmbience: タイトル・走破・敗北＝Audio.Ambience(null)、焚き火＝ambience.campfire、それ以外は幕で ambience.forest_night／ambience.cave／ambience.ruins (戦闘も同じ鍵)。戦闘の始まりで CurrentNode が boss なら Audio.Key(\"boss_start\") (鍵が無ければ従来の ui.combat_start)",
+     "how_to_see": "音なので実機。audio.json に鍵が揃ってから"
+    },
+    {
+     "id": "G11/G13",
+     "what": "MapScreen.cs: ①着いた合図＝前の行からのスクロール (ScrollFix.OnArrive) が止まった瞬間に、現在地の灯 (ember) が α 0→0.40・160→240 で点き (0.35 秒)、Ember の輪 220 が content の節の位置で広がり (ArriveRing)、真鍮の輪が Punch .1、音 map_arrive。②幕ボスの前の行 (次の行が全部 Boss) だけ: 窓に薔薇 α0.14 の周辺の霧 (SlowPulse 0.5Hz・±50%)、ボスの節の暈 0.26→0.5 と二重の輪 0.18→0.4 を MapLife.Pulses で脈打たせ、名札「幕ボス ・ 次の節」(RoseLight)、見出しの小さな行に「次は幕ボス」。ボス前の行以外は 1 画素も変えない",
+     "how_to_see": "STATE=\"phase=map;act=1\" で幕ボスの前の行に立つ (難しければ ehp 等で進めた save)。着いた合図は PLAYER_ARGS=\"-motion\" で戦闘→地図の手"
+    },
+    {
+     "id": "G16",
+     "what": "TitleScreen.cs: ロゴ Image に Breathe (大きさ 1.00↔1.012・4 秒周期) と Mask＋光の掃き (Sweep: 真鍮 α0.35 の HBand 180 幅・−20°・1.6 秒後から 7 秒ごとに左→右 0.9 秒。Mask で題の形の中だけ)。品書きの今の行の ◆ が 0.75〜1.0 でゆっくり明滅 (MenuRow.Update)。「はじめる」を押した瞬間に BrassLight α0.1×FxSettings.Flash の閃き。Instant では置かない",
+     "how_to_see": "STATE=\"phase=title\" を PLAYER_ARGS=\"-motion\" で数秒ぶん (掃きは 1.6 秒後から)"
+    }
+   ],
+   "skipped": [
+    {
+     "id": "G9 (2) 報酬の旗の文言と戦利品の暈・粒",
+     "why": "RewardScreen.cs は束 C1 の担当ファイル"
+    },
+    {
+     "id": "M05 敗北の評価の窓を板の下に畳む",
+     "why": "窓は遅らせて出す形 (2.6 秒後に同じ RatingDialog) にした。畳むには FeedbackUi の窓を分解する必要があり、計測器の形を変えない方を選んだ"
+    },
+    {
+     "id": "G11 ボスの節を押した時の低い音 (ui.node_boss)",
+     "why": "幕ボスの戦闘の始まりに boss_start が鳴るので二重になる。節の音は従来の ui.node のまま"
+    }
+   ],
+   "new_api": [
+    "unity/Assets/Game/ActTitleFx.cs: public static void ActTitleFx.Show(GameRoot g, int act, Action rebuild) — 幕の題字つきの画面の切り替え (Instant なら ScreenFx.Switch に落ちる)",
+    "unity/Assets/Game/ActTitleFx.cs: public static bool ActTitleFx.Busy — 題字が出ている間 (板が入力を塞ぐ)。Autopilot が待てる",
+    "unity/Assets/Game/ActTitleFx.cs: public static string ActTitleFx.Numeral(int act) — 第一幕／第二幕／第三幕",
+    "unity/Assets/Game/GameRoot.cs: public void GameRoot.RestartRun() — 同じリーダー・難易度・新しいシードで StartRun",
+    "unity/Assets/Game/Feedback.cs: public static bool Feedback.RatingReady — 評価の窓を出してよい時機 (GameRoot.ScheduleRating が立てる・OpenRating は即)",
+    "unity/Assets/Game/MapScreen.cs: public class MapScreen.SlowPulse : MonoBehaviour (Base/Amount/Hz) — Image の α のゆっくりした脈",
+    "unity/Assets/Game/TitleScreen.cs: public class TitleScreen.Breathe (Amount/Period)・TitleScreen.Sweep (From/To/Period/Dur/Delay) — 呼吸と光の掃き (他画面でも使える)"
+   ],
+   "audio_keys_used": [
+    "act_title",
+    "victory_band",
+    "defeat_fall",
+    "tally_tick",
+    "map_arrive",
+    "boss_start",
+    "ambience.forest_night",
+    "ambience.cave",
+    "ambience.ruins",
+    "ambience.campfire",
+    "ui.combat_start (既存。boss_start が表に無い時の予備)",
+    "ui.start_run (既存。もう一度のボタン)"
+   ],
+   "files_touched": [
+    "unity/Assets/Game/EndScreen.cs",
+    "unity/Assets/Game/ActTitleFx.cs (新規)",
+    "unity/Assets/Game/GameRoot.cs",
+    "unity/Assets/Game/Feedback.cs",
+    "unity/Assets/Game/FeedbackUi.cs",
+    "unity/Assets/Game/SettingsUi.cs",
+    "unity/Assets/Game/MapScreen.cs",
+    "unity/Assets/Game/TitleScreen.cs"
+   ],
+   "risks": [
+    "コンパイル: EndScreen.cs の RunUi.CardGrid 呼び出し (confirmRoot:・cellScale: の名前つき引数)・PaperFx.NightNote の第 6 引数 name・Tween.After(…, () => Tween.Run(...)) (値を返す式のラムダを Action へ) を grep で確かめたが実コンパイルはしていない",
+    "Autopilot (束 F): ActTitleFx.Busy の間 (約 1.55 秒) は板が入力を塞ぐ。loop の動画で Autopilot が ScreenFx.Busy だけを待つと、題字の下で次の手が進む (見た目は板が覆うので崩れないが、入りの動きが題字の下で終わる)。Autopilot.Shot/loop の待ちに `|| ActTitleFx.Busy` を足してほしい。ResetForLine には Feedback.RatingReady = false を足すとよい (必須ではない: OpenRating が真にする)",
+    "評価の窓の既定の挙動を変えた (決着直後→報酬の画面の 1.2 秒後。設定「戦闘の評価の窓：出さない」で止められる)。評価はプレイテストの計測器なので朝に一言。報酬を 1.2 秒以内に取って地図へ出ると窓は出ない (左下の「この戦いを評価」は Reward/RelicReward の間だけ) ＝回答率が落ちる可能性。落ちたら ScheduleRating の 1.2 秒を 0.6 秒へ、または Feedback.Record の RatingOpen を元の true へ戻す",
+    "boss_start は幕ボスの戦闘の始まりで GameRoot が鳴らす。Presenter.cs:907 (束 A) が同じ場所で act_start を流用しているので二重に鳴る可能性＝束 A か音の束で片方に寄せる",
+    "ActTitleFx の板は ScreenFx の幕と別物なので、題字の間に ScreenFx.Switch が重なると幕が板の下で閉じて開く (見た目は板が覆うので崩れない)。幕が変わる手は RelicReward→Map の 1 手だけ",
+    "設定の窓: PC の高さ 930 (1080 の窓に収まる)。スマホは段を UiKit.Scroll に入れた＝画質の行 (4 ボタン＋fps) が一覧の幅 (しおり 22 ぶん狭い) で 1 行に収まるか撮影で確認。収まらなければ qRow のボタン幅 130→118",
+    "走破の画面の PC 右の CardGrid (0.66 倍・幅 946) と左の記録 (2 列×300) が重ならないか撮影で確認 (leftCx=cs.x×0.27・rightL=cs.x×0.47)。スマホは記録 2 列×236 を x 70〜554・右の塊 648〜 に置いた",
+    "TitleScreen のロゴの Mask: Linear の合成で掃きの α 0.35 が持ち上がって見えるかもしれない (ロゴの α 0.72→茶色の注記と同じ罠)。強ければ Sweep の α を 0.2 へ。Mask は UI の既定の素材でステンシルを書く＝PixelMat は掛けていないので問題ないはず",
+    "地図のボス前の空気: 幕1 の地図は採点 4 で通過済み。ボス前の行 (全焚き火の行) 以外では 1 画素も変えていないが、ボス前の行で薔薇 α0.14 の霧が「濃い」と感じたら SlowPulse の Base を 0.08 へ"
+   ]
+  },
+  {
+   "lane": "D: 音 (Audio.cs・Synth.cs・audio.json)",
+   "done": [
+    {
+     "id": "A1",
+     "what": "Audio.Duck(depth, hold, release, attack) の中身 (unity/Assets/Game/Audio.cs: Duck / TickDuck)。BGM の目標音量に (1-沈み) を掛ける包絡を Update で進める (時計は Tween.UnscaledDt の積算 _clock＝ヒットストップ・とどめのスロー中も実時間)。重ねたら深い方・長い方・短い attack。呼ぶ側 (Presenter 等) は契約の署名のまま",
+     "how_to_see": "耳で: 勝利の帯・とどめ・敗北で BGM が沈んで戻る (呼ぶ側が Duck を呼んだ後)。撮影では確認できない (音)"
+    },
+    {
+     "id": "A11",
+     "what": "Audio.Muffle(seconds) の中身 (Audio.cs: Muffle / TickMuffle / EnsureBgm)。BGM の子 GO に AudioLowPassFilter 1 本。0.12 秒で 22000→700Hz・seconds 秒で元へ (対数補間・戻りは InQuad)。0 で即戻し・終わると filter を無効化。PlayerDied の鍵を hit_big → defeat_fall (Synth: sine 220→50 0.7 秒＋ノイズ＋0.55 秒で床の鈍い音・jitter 0)",
+     "how_to_see": "耳で: 敗北の暗転で BGM が遠くなる (呼ぶ側が Muffle(3) を呼んだ後)。player.log の [Audio] play defeat_fall"
+    },
+    {
+     "id": "A7",
+     "what": "Audio.Ambience(key) の中身 (Audio.cs: Ambience / StartAmbience / TickAmbience)。環境音の AudioSource 1 本・鍵が変われば 0.4 秒で沈め 0.4 秒で出す (計 0.8 秒)・同じ鍵なら何もしない・null で止める・音量は Master×BgmVol×表の volume (設定の BGM スライダに含む)。Synth に 8 秒ループ 4 本 (amb_forest_night＝低い風＋虫の高い粒 11 群／amb_campfire＝ノイズの揺らぎ＋爆ぜ 26＋低い弾け 5／amb_cave＝薄い風＋55Hz の唸り＋水滴 6 と残響／amb_ruins＝風＋41.2/61.7Hz の外した唸り＋遠い金属 2)。継ぎ目は Loopify (末尾 0.5 秒を先頭に焼く)。表の鍵 ambience.forest_night / campfire / cave / ruins",
+     "how_to_see": "耳で: GameRoot が Phase ごとに Audio.Ambience(\"ambience.forest_night\") 等を呼べば地図・報酬・店で虫と風、焚き火で爆ぜが鳴る。一周の動画 (scripts/loop-video.sh) を音つきで"
+    },
+    {
+     "id": "A5",
+     "what": "Audio.Heartbeat(on, rate) の中身 (Audio.cs: Heartbeat / TickHeartbeat)。専用 AudioSource 1 本・1/rate 秒ごとに Synth の heartbeat (sine 70→45Hz 120ms を 0.16 秒置きに 2 発) を打つ。rate 1.3 以上 (致死級) は音量 0.5・pitch 1.08、それ以下は 0.35。20 秒続いたら音量を半分 (絵は続ける)。danger_in の鍵 (低い一打＋沈む音) も",
+     "how_to_see": "耳で: BattleView.SyncDanger が Heartbeat(true, 0.9/1.7) を呼べば低 HP で鼓動。STATE=\"phase=combat;enemy=enemy_probe;hp=15\" の戦闘で (呼ぶ側の配線後)"
+    },
+    {
+     "id": "A3+TB-12",
+     "what": "Audio.KeyPitched(key, pitchMul, volMul) の中身 (Audio.cs: KeyPitched / PlayEx)。Play に音程の倍率を渡す口 PlayEx(name, volume, pitchJitter, pitchMul) を足した (Play の署名は不変＝Presenter の Audio.Play(\"block\",0.6f) はそのまま動く)。Synth に cascade_flip (歯車のラチェット tri 1200/1400/1600 を 60ms 刻み) と cascade_hit (粒＋square 600→1200 の上昇＋胴)・combo_up (多段の鈴)。鍵 cascade_flip / cascade_hit (minGap 0) / combo_up (minGap 0)。型名の鍵 Cascaded/CascadeRetargeted は意図的に足していない (Presenter.Show は TableSound で鍵があれば音だけ鳴らして return＝絵の case が死ぬ)",
+     "how_to_see": "耳で: Presenter の case Cascaded が Audio.KeyPitched(\"cascade_hit\", 1+0.08*段) を呼べば段ごとに上がる。hand=<チェイン札> の撮影時に player.log の [Audio] play cascade_hit … pitch=1.08"
+    },
+    {
+     "id": "A2",
+     "what": "BGM を 2 本の AudioSource で本当のクロスフェード (Audio.cs: Bgm / TickBgm / EnsureBgm)。新曲 0→1 と旧曲 1→0 を 0.8 秒の等パワー (sin/cos) で重ねる (旧: 0.4 秒消して 0.6 秒出す＝約 1 秒の谷)。ループ版でない曲 (audio.json の bgm._overlap＝act1・title) は loop=false にして残り 1.0 秒で同じ曲をもう 1 本から始めて 1.0 秒重ねる＝幕1 の一周 (約 88 秒) で聴いていた継ぎ目の谷が消える。音量は毎フレーム Master×BgmVol×(1-duck) を書く (Apply は即時に 1 回)",
+     "how_to_see": "耳で: 地図→幕ボスの節で曲が切れ目なく重なる。act1 の 88 秒目で無音にならない"
+    },
+    {
+     "id": "A12",
+     "what": "同じ鍵の最短間隔と音量の揺らぎ (Audio.cs: SfxEntry.MinGap/VolJitter・KeyPitched)。既定 minGap 0.05 秒 (表の minGap で上書き・0 で間引かない)・音量は Jitter を持つ鍵だけ ±8% (表の volJitter)。揺らぎは乱数でなく黄金比の小数部で散らす (撮影で再現する)。TurnStarted/TurnEnded/coin_land/tally_tick/combo_up/cascade_hit/rest_heal/mana_land/coin_fly は minGap 0。Verbose なら間引いた音も player.log に ([Audio] skip <key> (minGap))",
+     "how_to_see": "player.log: 全体攻撃 (0.03 秒刻み) で [Audio] skip DamageDealt.player が出る"
+    },
+    {
+     "id": "A6+A9+A16",
+     "what": "硝貨・刻み・着地の鍵を Synth で (coin_fly＝sine 2400→3000 60ms＋tri 3600／coin_land＝2600Hz の粒・倍音 2 本・減衰 60ms／mana_land＝硝子の sine 1320→1480／tally_tick＝tri 1800 60ms＋紙の粒／land_card＝tri 1320 50ms／land_relic＝sine 1500＋3000＋金属の粒／button_appear)。全部 audio.json の契約名で。victory_band＝C-E-G-C-D の和音 1 つ (sine・1.7 秒・旋律なし＝ジングル無しの裁定)",
+     "how_to_see": "耳で: ScreenFx.Shown の数え上げが Audio.KeyPitched(\"coin_land\", 1+0.03*i) を呼べば 8 粒が上がる。一周の動画で"
+    },
+    {
+     "id": "A4+A10",
+     "what": "猛り火と衝動の鍵 (Synth: blaze_ignite＝ノイズ lp .2→.7 を上げながら saw 200→900／blaze_out＝sine 600→200＋短い息／impulse_burn＝帯域ノイズ lp .5→.15＋saw 300→700＋sine 500→250 の紙が燃え落ちる／aether_gain＝上へ抜ける硝子)。型名の鍵 (BlazeIgnited・Impulse*・AetherGained) は足していない (上と同じ理由＝Presenter の case が音を呼ぶ)",
+     "how_to_see": "耳で: hand=<火の札> の撮影で Presenter が Audio.Key(\"blaze_ignite\") を呼んだ時。player.log の [Audio] play blaze_ignite"
+    },
+    {
+     "id": "A8",
+     "what": "boss_start の鍵 (Synth: sine 90→35Hz の太鼓 0.9 秒＋息＋square 110Hz の低い持続 1.2 秒＋sine 55・jitter 0・gain 0.85)。enemy_down (砂がこぼれるノイズの下降＋低い胴＋砕けた粒 3)・enemy_down_boss (1.3 秒・80→25Hz) も",
+     "how_to_see": "耳で: GameRoot が node.Type==boss で Audio.Key(\"boss_start\") を呼べば。STATE=\"phase=combat;boss=1\" の player.log"
+    },
+    {
+     "id": "M01",
+     "what": "当たりの 3 段 (Synth: hit_tier1＝ノイズ 80ms lp .5＋sine 220→120 の乾いた紙／hit_tier2＝ノイズ 120ms＋sine 170→70＋薄い square の胴／hit_tier3＝ノイズ 220ms lp .45＋sine 130→38＋square＋後乗りのノイズの床)・finish_blow (sine 110→30 の打撃＋帯域ノイズの裂け hp .6＋saw 2400→900)。既存の DamageDealt.player* (USFX BLUNT) は据え置き＝Presenter が hit_tier* を呼ぶようになってから聴き比べて片方に",
+     "how_to_see": "耳で: STATE=\"phase=combat;enemy=enemy_probe;ehp=3;play=attack;playshots=24;playevery=4\" で Presenter が hit_tier*/finish_blow を呼んだ時"
+    },
+    {
+     "id": "A14",
+     "what": "paper_swish (帯域ノイズ lp .5→.9・hp .3・0.22 秒・音量 0.3・minGap 0.1。閉じは pitch 0.85・開きは 1.1 を呼ぶ側で KeyPitched)・card_flip (minGap 0.03)・rare_reveal (高い和音の煌めき・旋律なし)・upgrade_shine (金床の一打の後に細い鈴)・rest_heal (温かい刻み・minGap 0)・sold_stamp (判を押す鈍い音)・fuse_melt (溶けて沈み 0.5 秒で鈴)・event_gain/event_loss (上がる/下がる二音)・map_arrive (低い木の音)・card_lift/card_cancel (紙が擦れて上がる/下がる)・energy_spend・enemy_telegraph・trap_fire_big・lethal_mark・preview_tick。relic_get=relic・buy_coin=gold・act_title=act_start・status_apply=debuff は既存素材を当てた",
+     "how_to_see": "一周の動画を音つきで (呼ぶ側の配線後)"
+    },
+    {
+     "id": "A17+A18",
+     "what": "EnemyIntentDeclared: null → enemy_telegraph 0.35 (旧 buff の静かな版＝予告に留める)。Audio.Hover が表の ui.hover (minGap 0.06) を通す (Play(\"hover\") の直書きをやめた。表に無ければ旧の直書きに落ちる)。\"block\" の鍵 (block.ogg 0.6) を足した＝Presenter の Audio.Play(\"block\",0.6f) は残したまま、表に移す口がある。DeathSaved の二重の行を 1 行に。CombatEnded/ui.lose は null のまま理由を _note に",
+     "how_to_see": "player.log: 敵が強化を宣言した時 [Audio] play enemy_telegraph"
+    },
+    {
+     "id": "docs",
+     "what": "docs/design/audio/synth-keys-2026-11-04.md: 共通の口の中身・契約の鍵 50 の sfx と音色の意図・環境音の中身・表で直した鍵・朝の点検の残り (一周の動画の音量詰め・hit_tier と BLUNT の聴き比べ)",
+     "how_to_see": "Read docs/design/audio/synth-keys-2026-11-04.md"
+    }
+   ],
+   "skipped": [
+    {
+     "id": "A3 (Presenter 側)・A4 (絵)・A5 (BattleView 側)・A6 (ScreenFx 側)・A7 (GameRoot 側)・A8/A9/A14/A16 (呼ぶ側)",
+     "why": "他の束の担当ファイル。音の側 (鍵・合成・口の中身) は全部入れたので、呼ぶ側が契約の名前で Audio.Key/KeyPitched/Duck/Muffle/Ambience/Heartbeat を呼べば鳴る"
+    },
+    {
+     "id": "A13 (左右の定位 pan)",
+     "why": "契約に無い口。Audio.PlayEx に pan を足すのは 1 行だが呼ぶ側 (Presenter) が無いと意味が無いので見送り。欲しければ PlayEx(name, volume, jitter, pitchMul, pan) を次に足す"
+    },
+    {
+     "id": "A15 (札ごとの当たりの音 DamageDealt.player.<style>)",
+     "why": "Presenter の鍵の呼び方を変える必要があり担当外。音の側は hit_tier1〜3 と既存 slash/hd2d_* があるので、Presenter が style を鍵に混ぜれば表に行を足すだけ"
+    },
+    {
+     "id": "A16 の ui.pick_card の差し替え",
+     "why": "契約の鍵 card_flip/land_card を足した。ui.pick_card (=card_play) を変えるかは朝に聴いて決める (報酬の採点 4 通過の画面の音を黙って変えない)"
+    },
+    {
+     "id": "A18 の hd2d_*.wav の .meta",
+     "why": "Unity を起動しないと生成できない (unity-win.sh は実行しない規約)。統合担当が compile を回した後に出来た .meta をコミットすればよい"
+    }
+   ],
+   "new_api": [
+    "unity/Assets/Game/Audio.cs: public static void PlayEx(string name, float volume, float pitchJitter, float pitchMul) — 素材名を音程の倍率つきで鳴らす (KeyPitched の実体。表を通さない直書き用)",
+    "unity/Assets/Game/Audio.cs: public static bool KeyPitched(string key, float pitchMul, float volMul = 1f) — 署名は契約のまま。中身＝minGap の間引き・音量の揺らぎ・音程の倍率",
+    "unity/Assets/Game/Audio.cs: Duck / Muffle / Ambience / Heartbeat — 署名は契約のまま。中身を入れた (空でなくなった)",
+    "unity/Assets/Game/Audio.cs: SfxEntry.MinGap / SfxEntry.VolJitter — audio.json の minGap / volJitter から読む (既定 0.05 秒 / ±0.08)",
+    "unity/Assets/Resources/Audio/audio.json: bgm._overlap (ループ版でない曲の一覧。TickBgm が末尾 1 秒を重ねる)・sfx の鍵 50 (契約の全部＋block・boss_start)・ambience.* 4"
+   ],
+   "audio_keys_used": [
+    "(定義した鍵・契約の全部) hit_tier1",
+    "hit_tier2",
+    "hit_tier3",
+    "finish_blow",
+    "enemy_down",
+    "enemy_down_boss",
+    "coin_fly",
+    "coin_land",
+    "mana_land",
+    "victory_band",
+    "tally_tick",
+    "lethal_mark",
+    "preview_tick",
+    "cascade_flip",
+    "cascade_hit",
+    "blaze_ignite",
+    "blaze_out",
+    "aether_gain",
+    "combo_up",
+    "danger_in",
+    "defeat_fall",
+    "card_lift",
+    "card_cancel",
+    "energy_spend",
+    "enemy_telegraph",
+    "trap_fire_big",
+    "status_apply",
+    "impulse_burn",
+    "card_flip",
+    "rare_reveal",
+    "relic_get",
+    "upgrade_shine",
+    "rest_heal",
+    "buy_coin",
+    "sold_stamp",
+    "fuse_melt",
+    "act_title",
+    "paper_swish",
+    "land_card",
+    "land_relic",
+    "event_gain",
+    "event_loss",
+    "map_arrive",
+    "button_appear",
+    "ambience.forest_night",
+    "ambience.campfire",
+    "ambience.cave",
+    "ambience.ruins",
+    "(契約外で足した鍵) block",
+    "boss_start",
+    "(表で変えた既存の鍵) EnemyIntentDeclared→enemy_telegraph",
+    "PlayerDied→defeat_fall",
+    "ui.hover (minGap 0.06)",
+    "(Synth の素材名で鍵ではない) heartbeat・amb_forest_night・amb_campfire・amb_cave・amb_ruins"
+   ],
+   "files_touched": [
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/Audio.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/Synth.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Resources/Audio/audio.json",
+    "/home/yosuke/projects/deck-rogue-proto/docs/design/audio/synth-keys-2026-11-04.md"
+   ],
+   "risks": [
+    "コンパイルは未確認 (規約 14)。見直した点: Audio.cs は Tween.UnscaledDt (public static float) と AudioLowPassFilter (UnityEngine) だけに依存・?./?? 無し・Random は既存 2 箇所 (Pick・pitch) のまま。Synth.cs の switch は case ごとの float[] (notes/band/rare) を別名にした。落ちたら Audio.cs の TickBgm/TickAmbience/TickHeartbeat から疑う",
+    "型名の鍵 (Cascaded・CascadeRetargeted・BlazeIgnited・BlazeExtinguished・ImpulseReturned/Kindled/Kept・AetherGained) は意図的に audio.json に足していない: Presenter.Show は TableSound で鍵があれば音だけ鳴らして return するので、足すと束 A の絵の case が動かなくなる。束 A の case が無い出来事は無音のまま＝朝の点検で「鳴らない」が出たらここ (束 A が Audio.Key(\"blaze_ignite\") 等を呼んでいるか)",
+    "環境音は 1 本なので「クロスフェード」は 0.4 秒沈めて 0.4 秒出す谷つき (重ねない)。AudioSource の合計 16 本を守るため。重ねたいならプールを 11 にして環境音を 2 本に",
+    "合成の虫 (amb_forest_night) と鼓動は「安っぽい」と言われうる＝一周の動画を聴いて不評なら audio.json の sfx を USFX の在庫 (docs/audio-design.md §9) に差し替える。鍵は変えない",
+    "act1/title の継ぎ目の重ね (bgm._overlap・loop=false) は AudioSource.time を毎フレーム見る。曲の残り 1 秒で同じ曲をもう 1 本から始めるので、その 1 秒間は 2 本鳴る (等パワーなので音量は約 1.0 倍)。PeriTune のループ版に差し替えたら _overlap から外す。落ちたら _overlap を [] にすれば旧の loop=true に戻る",
+    "Duck の時計は Audio.Update の _clock (Tween.UnscaledDt 積算)。Tween.UnscaledDt は Autopilot.Det で 1/60 固定＝撮影の決定性は保つが、Audio の Update が Tween の Update より後に回る順序は保証していない (音なので 1 コマの差は聴こえない)",
+    "ScreenFx.Instant は見ていない (音は撮影では鳴らないので門は不要。Application.isPlaying だけ)",
+    "audio.json の DeathSaved が 2 行あったのを 1 行に統合 (jitter 0・volume 0.9)。既存の挙動は後の行が勝っていたので同じ"
+   ]
+  },
+  {
+   "lane": "E: 舞台 (HD-2D の箱庭) が出来事に応える (StageBeat の 13 の口＋S12・S15)",
+   "done": [
+    {
+     "id": "StageBeat.Shake",
+     "what": "unity/Assets/Game/StageBeat.cs:Shake → Stage.Shake。unity/Assets/Game/StageCamera.cs:Shake の箱庭の門 (|| Stage.CombatWorld) を外し、箱庭は ×0.6・上限 10px・0.3 秒以内・FxSettings.Shake を掛ける。StageDriver.LateUpdate の揺れを UnityEngine.Random から 2 周波の正弦 (17.3Hz/23.1Hz・位相は揺れの始まりから積算) ＋ (残り/全体)² の減衰に = 撮るたびに同じ。strength 1 = 箱庭で 8px。寄りの姿勢 (TryCloseUpPose) との加算の合成は不変。Presenter の既存の Stage.Shake (被弾 18px・とどめ 12px・踏み込み 7px) も箱庭で揺れる (10.8→上限 10・7.2・4.2px)",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;play=attack;playshots=24;playevery=3\" → 当たりの 1〜3 コマ目で舞台 (地面・幹) だけがずれ、紙の UI は動かない"
+    },
+    {
+     "id": "StageBeat.HitFlash",
+     "what": "StageBeat.cs:HitFlash(enemyIndex, strength) → Stage.Flash(\"enemyN\", 0.18〜0.26 秒, 白の量 0.35〜0.8)。unity/Assets/Game/StageUnits.cs:Flash に strength の引数 (負なら既定 DioFlashDefault=0.35)・StageUnit.FlashStrength・材質の _Flash の書き込み (旧 `dio ? 0.10f : 0.85f`) を `dio ? FlashStrength : 0.85f` に。シェーダ StageUnit/StageUnitLit の _Flash は白への lerp なので白飛びしない。Presenter の既存の Stage.Flash(\"enemy\"+ei) も箔庭で 0.35 に上がる",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;play=attack;playshots=24;playevery=3\" → 当たりのコマで敵の体が白く跳ねる (旧は目視でほぼ分からない 0.10)"
+    },
+    {
+     "id": "StageBeat.FinishBlow",
+     "what": "StageBeat.cs:FinishBlow(worldPos, boss): 露出の一瞬の山 (0.08 秒で +0.55 段・幕ボス +0.75・FxSettings.Flash を掛ける → 0.3/0.45 秒で (1−u)² で 0 へ。StageLook.SetExposureBoost の器・StageMotion の敵の大技の間は書かない)＋当たりの位置に白い光 (StageFx.MotionLight Paper3・強さ 16/24×画質の倍率・届く距離 8/9.5・0.35/0.45 秒・幕ボスは影つき・reuse 番号で灯し直し)＋Shake(1, 0.25)",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;ehp=3;play=attack;playshots=30;playevery=3\" (束 A が FinishingBlow で呼んだ後)。1〜3 コマ目で舞台全体が一瞬明るく・当たりの所に白い光・揺れ"
+    },
+    {
+     "id": "StageBeat.EnemyDown",
+     "what": "StageBeat.cs:EnemyDown(worldPos, boss): 足元+0.3 の光 (Paper3/幕ボスは BrassLight・強さ 14/22・距離 7/9) が 0.6/0.9 秒で上へ 1.6/2.2 unit 抜けながら消える (毎フレーム StageFx.Retune = 新しい口。経過はそのまま)・4 体同時まで (器 _downs)・粒 18/30 (自前の ParticleSystem HD2D-BeatMotes・Emit だけ・黄金角で散らす・高の段だけ)・Shake(0.25/0.6)",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;ehp=3;play=attack;playshots=40;playevery=3\" → 崩れ (Dissolve) の間、足元から光と粒が上がる (束 A/B が KillEnemy から呼んだ後)"
+    },
+    {
+     "id": "StageBeat.Victory",
+     "what": "StageBeat.cs:Victory(boss): 2 秒 (幕ボス 2.6 秒・ScreenFx.Instant なら即) で 露出 +0.07 段 (≈+5%)・霧 0.85 倍 (StageLook.SetFogScale。寄りの間は書かない)・舞台の灯 (スポット) の色を真鍮の光 (PaperFx.BrassLight) へ 0.35 (新しい口 StageLook.SetLampTint。月と逆光は触らない)・0.3 秒後に蛍の粒 (Stage.FxSystem(\"fireflies\") = 新しい口) から金色の 24 粒を Emit。常在の値は毎フレーム書き直す (光の組み直しで基が取り直されても合う)・戦闘の画面が無くなったら自動で基へ",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;ehp=1;play=attack;playshots=90;playevery=3\" (束 A が ShowOutcome で呼んだ後)。決着の帯の後ろで舞台がじわりと明るく暖かく・蛍が金色に"
+    },
+    {
+     "id": "StageBeat.Defeat",
+     "what": "StageBeat.cs:Defeat(): 1.2 秒で 露出 −0.24 段 (≈−15%)・彩度 −40 (新しい口 StageLook.SetSaturationOffset = ColorAdjustments.saturation 基+差)・周辺減光 +0.12 (新しい口 StageLook.SetVignetteOffset = Vignette.intensity 基+差)。Volume の部品は TouchedTypes の中だけ = Restore の控えで戻る",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;hp=3;endplay=1;endshots=60;endevery=3\" (束 A が ShowOutcome 敗北で呼んだ後)。倒れた後に舞台の色が抜けて沈む (紙の UI は染まらない)"
+    },
+    {
+     "id": "StageBeat.Danger",
+     "what": "StageBeat.cs:Danger(on, lethal): 周辺減光 +0.10 (致死級 +0.18 と 1.7Hz・±0.03 の脈 = Tween.UnscaledDt)・彩度 −10 (致死級 −20)。0.5 秒で入り off で 0.4 秒で戻る。何度呼んでも同じ (Rebuild ごとに呼ばれる前提)",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;hp=12\" (束 B が SyncDanger から呼んだ後)。画面の縁が暗く締まり色が少し抜ける"
+    },
+    {
+     "id": "StageBeat.Blaze",
+     "what": "StageBeat.cs:Blaze(on): 灯の色を熾 (PaperFx.Ember) へ 0.45・色の寄せ (新しい口 StageLook.SetColorFilterMix = ColorAdjustments.colorFilter を基→先へ k で lerp) を暖へ 0.15・周辺減光が 1Hz で +0.03±0.03 の薄い脈。0.4 秒で入り off で 0.5 秒で戻る",
+     "how_to_see": "STATE=\"phase=combat;leader=leader_red;enemy=enemy_probe;hand=<延焼を撒く赤の札>;play=0;playshots=30;playevery=4\" (束 A が BlazeIgnited/BlazeExtinguished の case で呼んだ後)。点いた瞬間に灯が橙に寄る"
+    },
+    {
+     "id": "StageBeat.TurnBeat",
+     "what": "StageBeat.cs:TurnBeat(playerTurn): あなたの番 = 露出 +0.05 段 (0.08 で上げ 0.22 で戻す)・敵の番 = 色を少し冷たく (CoolFilter (0.88,0.94,1) へ頂点 0.7・0.1 で寄せ 0.2 で戻す)。どちらも 0.3 秒",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;endplay=1;endshots=40;endevery=3\" → 敵の番の頭の 1〜4 コマが少し冷たく、あなたの番の頭が少し明るい"
+    },
+    {
+     "id": "StageBeat.EnemyEnter",
+     "what": "StageBeat.cs:EnemyEnter(count, boss): 各敵の足元+0.35 に淡い光 (Paper2・強さ 6・距離 5・0.45 秒) を 0.12+0.09i 秒後に (予約 _sched・6 体まで・reuse 番号で灯し直し)。ボスは露出を 0.25 秒で −0.35 段へ落として 0.35 秒で戻す「息を呑む」＋0.28 秒後に Shake(0.4, 0.2)。Dolly は使わない",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;entershots=24;enterevery=3\" ／ 幕ボス: STATE=\"phase=combat;boss=1;entershots=30;enterevery=3\" (束 A が ShowEntrance で呼んだ後)"
+    },
+    {
+     "id": "StageBeat.PlayerHit",
+     "what": "StageBeat.cs:PlayerHit(strength): 主人公の足元+0.3 に薔薇 (PaperFx.Rose) の光 (強さ 5+7×strength・距離 4.5・0.3 秒・reuse)＋Shake(strength×0.6, 0.2)",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;endplay=1;endshots=40;endevery=3\" → 敵の当たりのコマで主人公の足元が薔薇色に・舞台が小さく揺れる"
+    },
+    {
+     "id": "StageBeat.TrapFired",
+     "what": "StageBeat.cs:TrapFired(): 主人公の足元+0.25 に青緑 (PaperFx.Mana) の光を灯し、0.4 秒で届く距離 1.5→7 (速く広がりゆっくり届く) と強さ 9→0 を毎フレーム StageFx.Retune で書く = 光の輪が広がる",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;sets=<仕込み札の id>*;fire=1;fireshots=24;fireevery=3\" (束 A が発動の演出で呼んだ後)"
+    },
+    {
+     "id": "StageBeat.Reset",
+     "what": "StageBeat.cs:Reset(): 一瞬の山・予約・常在の値を全部 0 にし、露出 (StageMotion の敵の大技の間は譲る)・彩度・周辺減光・色の寄せ・灯の色・霧 (寄りの間は譲る) を基へ。粒を Clear。加えて StageBeat.Tick が「戦闘の画面が無い (GameRoot.I.Battle == null) のに常在の値が残っている」なら自分で Reset。StageLook 側は S2M_Reset (Apply の頭・Restore の頭) から SB_Reset で基へ戻す",
+     "how_to_see": "決着 → 報酬の画面 (STATE=\"phase=reward\") で舞台が基の色のまま"
+    },
+    {
+     "id": "StageBeat.Tick (時計)",
+     "what": "StageBeat.cs:Tick(dt) を unity/Assets/Game/StageCamera.cs の StageDriver.LateUpdate が StageMotion.Tick の直後に呼ぶ (Time.deltaTime 積算 = 撮影で 1/60・とどめのスローではゆっくり。脈だけ Tween.UnscaledDt)。Tween の coroutine を使わないので常在の変化が Presenter.PresentationIdle を塞がない。何も走っていなければ 1 行で返る。書く主は 1 つ: 露出は StageMotion.EnemyBigFlashing の間は書かず終わった同じフレームにこちらが書く・暗転 (SetDim) は使わない・霧は CloseUpActive の間は書かない。StageMotion.DimActive (新しい口) も用意",
+     "how_to_see": "—"
+    },
+    {
+     "id": "S12 敵の大技の合図を自動で",
+     "what": "unity/Assets/Resources/Stage/look_act1.json の motion に enemyBig {auto:true, minTotal:12} と phone {enemyBig {minTotal:16}} を足した (StageMotion.IsEnemyBig = 攻撃の技が 2 つ以上・いちばん大きい技・実値×発数 ≥ minTotal。名指し 17 技はそのまま)。赤い合図 0.17 秒→暖→白→帯が幕1 のほぼ全部の敵の最大の技に出る",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;endplay=1;endshots=40;endevery=3\" → 探り屋の「本気」で赤い合図→閃光"
+    },
+    {
+     "id": "S15 画質の段の予算",
+     "what": "StageBeat.cs:LightMul / ParticlesOk が GfxQuality.Level を読む: 高 = 全部・標準 = 追加の点光源 ×0.5・粒なし・軽量 = 追加の点光源なし・粒なし (露出・減光・彩度・色寄せ・揺れは Volume とカメラの値だけなので残す)。粒は 1 回 30 個まで (崩れ 18/30・蛍 24)",
+     "how_to_see": "STATE=\"phase=combat;enemy=enemy_probe;gfx=low;ehp=3;play=attack;playshots=30;playevery=3\" → 露出の山と揺れは出るが足元の追加の光と粒は出ない"
+    }
+   ],
+   "skipped": [
+    {
+     "id": "S14 待機の灯の呼吸 (lamp.flicker)",
+     "why": "輪郭の暗さの目標 (OutlineTarget) が月と露出を読み、det の撮影では揺らせない。impact 2 で危険が利益を超える。勝利の蛍 (S14 の前半) は Victory に入れた"
+    },
+    {
+     "id": "S5 の板の潰し (Flash の間 x1.03/y0.97)",
+     "why": "StageUnit の板の localScale は毎フレーム LateUpdate が書く (Tween.Squash の基準の共有の対象外) ので、別の経路を足すと足元の沈みの不具合を再び呼ぶ。白の量の引き上げ (0.10→0.35〜0.8) で手応えは出る"
+    },
+    {
+     "id": "S13 とどめだけ寄る (moveOnFinish)",
+     "why": "ユーザー裁定「技でカメラが変わるのは酔う」に触れる。契約も「カメラの寄り・ズームは使わない (とどめも)」なので入れない"
+    },
+    {
+     "id": "S6 ヒットストップの復活",
+     "why": "Tween.cs・Presenter.cs・AutopilotTempo.cs は束 A の持ち物"
+    }
+   ],
+   "new_api": [
+    "unity/Assets/Game/StageBeat.cs: internal static void StageBeat.Tick(float dt) — StageDriver.LateUpdate が StageMotion.Tick の直後に呼ぶ時計 (他からは呼ばない)",
+    "unity/Assets/Game/StageLook.cs: public static void StageLook.SetSaturationOffset(float delta) / public static float SaturationOffset — ColorAdjustments.saturation を基+差 (0 で基へ)",
+    "unity/Assets/Game/StageLook.cs: public static void StageLook.SetVignetteOffset(float delta) / public static float VignetteOffset — Vignette.intensity を基+差 (0 で基へ)",
+    "unity/Assets/Game/StageLook.cs: public static void StageLook.SetColorFilterMix(Color target, float k) / public static float ColorFilterMix — ColorAdjustments.colorFilter を基→target へ k で lerp (0 で基へ)。紙の UI は染まらない",
+    "unity/Assets/Game/StageLook.cs: public static void StageLook.SetLampTint(Color target, float k) / public static float LampTint — 舞台の灯 (スポット) の色を基→target へ k で lerp (0 で基へ)。月と逆光は触らない",
+    "unity/Assets/Game/StageUnits.cs: public static void Stage.Flash(string key, float dur = 0.18f, float strength = -1f) / public const float Stage.DioFlashDefault = 0.35f — 箱庭の白の量 (負なら既定)。旧の 2 引数の呼び方はそのまま通る",
+    "unity/Assets/Game/Stage.cs: public static ParticleSystem Stage.FxSystem(string name) — 粒の系 (fireflies・moondust-slice…) を名前で (無ければ null)",
+    "unity/Assets/Game/StageFx.cs: internal static bool StageFx.Retune(long seq, Vector3 world, float intensity, float range) — MotionLight が返した番号の光の場所・強さ・距離を経過を保って書き直す (消えていれば false)",
+    "unity/Assets/Game/StageMotion.cs: public static bool StageMotion.DimActive — 暗転を書いている間 true (書く主を 1 つに)",
+    "unity/Assets/Game/StageCamera.cs: Stage.Shake(float px, float dur) の振る舞いの変更 — 箱庭でも揺れる (×0.6・上限 10px・0.3 秒以内)・FxSettings.Shake を掛ける・決定的 (乱数なし)。ZoomPunch/Dolly の箱庭の門は据え置き"
+   ],
+   "audio_keys_used": [],
+   "files_touched": [
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/StageBeat.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/StageLook.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/StageCamera.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/StageUnits.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/StageFx.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/Stage.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/StageMotion.cs",
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Resources/Stage/look_act1.json"
+   ],
+   "risks": [
+    "コンパイルは Unity では未確認。代わりにローカルの csc (dotnet 8 Roslyn) で unity/Assets/Game の 168 ファイルを Unity 6000.6.0f1 の Managed DLL とバッチ作業コピー (/mnt/d/deck-rogue/unity-batch/Library/ScriptAssemblies・11-04 02:36) を参照にして型検査し 0 エラー (検査の台本: /tmp/claude-1000/-home-yosuke-projects-deck-rogue-proto/31d623d9-6b03-4c3d-b43c-8579b601c36c/scratchpad/csc/run.sh・7 秒で回る。統合担当も使える)。負の対照 (わざと間違えた 2 行) は捕まえた",
+    "同じ検査の 2 回目 (03:05) で unity/Assets/Game/BattleScreen.cs(3849,66) error CS0165 「prevEx が未代入」が一度出た (束 B の編集途中のファイル・私のファイルではない。3 回目は出ていない)。統合のコンパイルで出たら束 B の `int prevEx = 0; bool hadEx = g.Battle != null && ...TryGetValue(..., out prevEx)` の行",
+    "StageBeat の 13 の口はまだ誰も呼んでいない (grep で 0 件)。束 A の Presenter の呼び出しが入るまで、見えるのは ①Presenter の既存の Stage.Shake が箱庭で揺れるようになった ②既存の Stage.Flash の白が 0.10→0.35 に上がった ③S12 の合図、の 3 つ。Presenter が StageBeat.Shake と Stage.Shake を同じ所で両方呼んでも ShakeAmp は Max で畳むので二重にならない",
+    "撮影の比較画像が変わる: play=/endplay=/fire= のコマ送りに舞台の揺れ (決定的・同じコマなら同じ量) と強い白の点滅が写る。既存の比較 PNG との差は想定内",
+    "S12 (motion.enemyBig.auto=true・minTotal 12・スマホ 16) は 2026-10-03 の反証で auto を false にした経緯がある (理由は記録に無い)。合図の 0.17 秒ぶん敵フェーズが長くなる。多すぎる・酔うなら look_act1.json の motion.enemyBig.auto を false に戻す (1 行)",
+    "Stage.Shake の箱庭の門を外したので、ユーザーが APK で「酔う」と言った経緯に触れる可能性。既定は小さく短い (上限 10px・0.3 秒) で、設定の窓の FxSettings.Shake=0 で切れる (設定の窓の UI は束 C2/B)。戻す旗 = StageCamera.Shake の `if (Stage.CombatWorld) ...` の行を `return` に",
+    "Victory/Defeat/Danger/Blaze の常在の値は Reset か「戦闘の画面が無くなった」で戻る。Presenter が Rebuild (BattleView の組み直し) の後に Danger/Blaze を呼び直さないと、組み直しで Battle が一瞬 null になった時に自動 Reset で消える (Danger は SyncDanger が Rebuild ごとに呼ぶ前提・Blaze は束 A が Effects.IsBlazing を Rebuild で読む前提)",
+    "霧の倍率 (SetFogScale) は StageMotion と器を共有。寄り (CloseUpActive) の間は書かず、StageMotion の RestoreFog/StopAll が 1 に戻しても常在の間は次のフレームで書き直す",
+    "露出は StageMotion の敵の大技 (EnemyBigFlashing) が勝つ: 勝利の +0.07 段の最中に敵の大技が来ることは無いが、Danger 中の大技は大技の露出だけになる (約 0.5 秒) = 意図どおり",
+    "画質の標準/軽量の実機の fps は未計測 (友人の Xperia 待ち)。追加の光は標準で半分・軽量で無し、粒は高だけにしてある",
+    "StageLook の新しい口は Volume の overrideState を true にして書き、0 で元の overrideState と値へ戻す。Restore の控え (VolBak) は値と overrideState の両方を控えているので、途中で落ちても Restore で一致する"
+   ]
+  },
+  {
+   "lane": "F: 演出を撮って見るための道具",
+   "done": [
+    {
+     "id": "T2",
+     "what": "STATE の鍵 motion=1 (Autopilot.cs:StateJump の頭 — その行だけ ScreenFx.Instant=false にして幕・入り・飛び・数え上げを動かす。acttitle=1 も自動で false)。ResetForLine が `ScreenFx.Instant = _scenario != \"loop\" && Arg(\"-motion\") == null` で既定へ戻す。Shot は幕 (ScreenFx.Busy) と幕の題字 (ActTitleFx.Busy) が開き切るまで待つが、連写 (_burst) の間は待たない＝幕の途中が写る。Rebuild の直後にも ScreenFx.Busy/ActTitleFx.Busy の待ちを足した (StartRun の題字が連写の頭に写らない)",
+     "how_to_see": "phase=reward;motion=1;take=1 など (motion=1 を足す)"
+    },
+    {
+     "id": "T1",
+     "what": "連写の口 6 つ (Autopilot.cs:StateJump、fire=1 の直後。共通の Burst(prefix,N,every)＋FindDeep): take=1;takeshots=N;takeevery=M (報酬の reward-take-0 を ClickUi で押す。既定 16×3)・relictake=1 (relic-take-0)・rest=1;restshots;restevery (焚き火の CampfireScreen.Option の \"opt-休む\"/\"hit\" を FindDeep で探して押す。無ければ RunCommand_CampfireRest を Do)・buy=<idx>;buyshots;buyevery (ShopScreen.PriceTag の \"price\" の Button を階層の順に集めて idx 番目を押す)・acttitle=1;acttitleshots;acttitleevery (ActTitleFx.Show(g, Rs.Act, g.Rebuild) を今の幕で鳴らして既定 30×4=2 秒。終わりは ActTitleFx.Busy が落ちるまで待つ)。各口は captureFramerate=60 → 押す → 連写 → DetFramerate → WaitPresentation の既存の形",
+     "how_to_see": "phase=reward;motion=1;take=1;takeshots=16;takeevery=3 ／ phase=campfire;hp=50;motion=1;rest=1 ／ phase=shop;gold=300;motion=1;buy=0 ／ phase=map;act=2;acttitle=1"
+    },
+    {
+     "id": "T1b",
+     "what": "outcome=1;outcomeshots=N;outcomeevery=M (Autopilot.cs): 最初の生存敵の HP を 1 に (ehp= と同じ with {}) → Rebuild → MarkSeen → 最初のダメージ札を BeginPlay → 対象 → 既定 36 枚×10 フレーム＝6 秒 (とどめ→勝利の帯→硬貨→戦いの記録→報酬まで)。2 体以上の編成はとどめにならないのでログに注記",
+     "how_to_see": "phase=combat;enemy=enemy_probe;motion=1;outcome=1;outcomeshots=36;outcomeevery=10 ／ boss=1;enemy=enemy_ogre で幕ボス版"
+    },
+    {
+     "id": "T3",
+     "what": "lose=1;loseshots=N;loseevery=M (Autopilot.cs): 自分の HP=1・ブロック 0 に (pblock= と同じ型の with {}) → Rebuild → EndTurn を DoCombat → 既定 40×3 で倒れる瞬間と結果の画面まで。あわせて php=<HP> (自分の今の HP を直接書く鍵。hp= の割合の丸めに頼らない) を pblock の隣に",
+     "how_to_see": "phase=combat;enemy=enemy_ogre;motion=1;lose=1;loseshots=40;loseevery=3 ／ 危険の帯は phase=combat;enemy=enemy_wolf;php=20"
+    },
+    {
+     "id": "after.txt",
+     "what": "scripts/juice-states/after.txt (新規): before.txt の 16 行＋J-outcome・J-victory-boss・J-lose・J-danger (php=20)・J-preview (ehp=3;dragaim=0:0)・J-take・J-relictake・J-rest (hp=50)・J-buy (gold=300;buy=0)・J-acttitle (act=2)・J-settings の 11 行。頭のコメントに撮り方とシートの作り方",
+     "how_to_see": "SHOTS_OUT=unity/Shots/juice/after scripts/unity-win.sh states scripts/juice-states/after.txt 4242"
+    },
+    {
+     "id": "T5",
+     "what": "scripts/juice-sheet.py (新規・PIL のみ・動作確認済み): `<dir> <prefix> <out.png> [--cols N] [--width W]` で <prefix>-k.png を k の順に名前の札つきで並べる／`--pairs <before_dir> <after_dir> <out.png> [--prefix P]` で同じ名前を左=前・右=後に／`--all <dir> <out_dir>` で行ごとに 1 枚ずつ",
+     "how_to_see": "python3 scripts/juice-sheet.py unity/Shots/juice/after J-outcome /tmp/x.png --cols 6"
+    },
+    {
+     "id": "T-reset",
+     "what": "ResetForLine (Autopilot.cs) に Feedback.RatingReady=false (束 C2 の評価の窓の時機)・ScreenFx.Instant の既定への戻し・ActTitleFx.Busy の待ちを足した。GameRoot 側の新しい旗は public な物が無かった (_ratingTimer は private・RestartRun はメソッド) ので触っていない",
+     "how_to_see": "states で motion=1 の行の次の行が動きなしで撮れること"
+    }
+   ],
+   "skipped": [
+    {
+     "id": "T6",
+     "why": "scripts/unity-win.sh は担当ファイル外 (指示で scripts/unity-win.sh は実行も編集もしない)。kill_batch_players の sleep 10 と exit 124 の打ち直しは統合担当へ (risks に記載)"
+    }
+   ],
+   "new_api": [
+    "unity/Assets/Game/Autopilot.cs: IEnumerator Burst(string prefix, int shotsN, int every) — 連写 (private。Autopilot 内の新しい口はこれを呼ぶ。間は Shot が幕・題字を待たない)",
+    "unity/Assets/Game/Autopilot.cs: static Transform FindDeep(Transform root, string name) — anchor の登録が無いボタンを名前で探す (private)",
+    "STATE の鍵: motion=1・acttitle=1[;acttitleshots;acttitleevery]・outcome=1[;outcomeshots;outcomeevery]・lose=1[;loseshots;loseevery]・take=1[;takeshots;takeevery]・relictake=1[;relictakeshots;relictakeevery]・rest=1[;restshots;restevery]・buy=<idx>[;buyshots;buyevery]・php=<HP>"
+   ],
+   "audio_keys_used": [],
+   "files_touched": [
+    "/home/yosuke/projects/deck-rogue-proto/unity/Assets/Game/Autopilot.cs",
+    "/home/yosuke/projects/deck-rogue-proto/scripts/juice-states/after.txt",
+    "/home/yosuke/projects/deck-rogue-proto/scripts/juice-sheet.py"
+   ],
+   "risks": [
+    "コンパイルは未確認 (規約どおり)。確かめた署名: RunPhases.Reward/RelicReward/Campfire/Shop・RunCommand_PickReward/PickRelic/CampfireRest・ActTitleFx.Busy/Show(g,act,Action)・Feedback.RatingReady・PlayerState.Hp/MaxHp/Block の init・ClickUi(RectTransform)。Burst は try/finally の中で yield (entershots と同じ形)",
+    "rest=1 は CampfireScreen.Option の子の名前 \"opt-休む\"→\"hit\" に依存 (束 C/B が焚き火のボタンの名前を変えたら Do に落ちる＝演出は撮れるが人と同じ経路でなくなる)。buy=<idx> は ShopScreen.PriceTag の \"price\" の名前に依存 (Tile の値札も \"price\" なので階層の順＝札の列→下の段)",
+    "outcome=1 は 1 体の編成でだけ勝利まで届く (J-outcome=enemy_probe・J-victory-boss=enemy_ogre)。lose=1 は敵の初手が攻撃でないと死なない (J-lose は enemy_ogre＝T1 棍棒)。loseshots=40×3=2 秒で足りなければ増やす",
+    "motion=1 の行で非チェックポイント開始 (phase=combat;enemy=…) は g.StartRun() が ActTitleFx の題字 (約 1.7 秒) を鳴らす。Rebuild の直後で Busy を待つので連写には写らないが、1 行あたり 2 秒ほど遅くなる",
+    "ResetForLine で ActTitleFx.Busy を待つ＝前の行の題字が出たままなら最長 1.7 秒待つ (無限ではない: 題字の保ちは固定)",
+    "T6 (unity-win.sh の sleep 10・exit 124 の自動の打ち直し) は統合担当へ: scripts/unity-win.sh の kill_batch_players の sleep 2→10、shots/states で player exit=124 かつ png 0 枚なら同じ引数で 1 回だけ打ち直す",
+    "GameRoot 側に撮影で戻すべき新しい public の旗が増えたら ResetForLine に足す必要がある (今回は無し: _ratingTimer は private なので束 C2 が public にしたら足す)"
+   ]
+  }
+ ]
+}

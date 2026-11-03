@@ -108,6 +108,27 @@ namespace DeckRogue.Game
             // 出せない札は板・帯・絵をまとめて灰に沈める (主な合図は手札の16px沈み。p05)
             var tint = playable ? Color.white : PaperFx.CardDim;
 
+            if (InHand)
+            {
+                // 影 (2026-11-04 B04): 板と同じ形の墨の 9 スライスを板の下に。普段は消えていて、触れた・持ち上げた時に SetShadow が出して下へ伸ばす (浮いた感じ)
+                var shadow = PaperFx.Sheet(root, PaperFx.Card, "shadow", new Color(PaperFx.Ink.r, PaperFx.Ink.g, PaperFx.Ink.b, 0.35f));
+                UiKit.Stretch(shadow.rectTransform, 0f, 0f, 0f, 0f);
+                shadow.rectTransform.anchoredPosition = new Vector2(0f, -6f);
+                shadow.raycastTarget = false;
+                shadow.gameObject.SetActive(false);
+                // 出せる札の縁 (2026-11-04 B16): 板の外 3px に真鍮の明るい縁。ちょうど払える (残りエナジー＝コスト) 札は濃く＝「残り 1E で出せるのはこれ」が目に飛び込む。
+                // 選択中 (触れた札) の縁は BattleView の dragedge (α1) なので、α を落として見分ける。採点で紙がうるさければ消す
+                if (playable && st != null && st.Phase == CombatPhases.PlayerTurn)
+                {
+                    int ec = def.Cost;
+                    try { ec = Effects.EffectiveCost(st, c); } catch (Exception) { }
+                    bool exact = def.XCost != true && ec > 0 && ec == st.Player.Energy;
+                    var pe = PaperFx.Sheet(root, PaperFx.Card, "playableedge", new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, exact ? 0.8f : 0.45f));
+                    UiKit.Stretch(pe.rectTransform, -3f, -3f, -3f, -3f);
+                    pe.raycastTarget = false;
+                }
+            }
+
             // ① 色の帯 (板の穴の下。1 設計px 大きく敷いて継ぎ目を見せない) と光沢
             var sheen = Theme.Art("ui", "cardface_band");
             for (int i = 0; i < Bands.Length; i++)
@@ -420,6 +441,16 @@ namespace DeckRogue.Game
         {
             var k = card != null ? card.Find("keynum") : null;
             if (k != null && k.gameObject.activeSelf != on) k.gameObject.SetActive(on);
+        }
+
+        /// <summary>手札の札の影を出し入れする (2026-11-04 B04)。on なら 0.12 秒で下へ drop だけ伸びる (触れて 18・持ち上げて 24)。無ければ何もしない</summary>
+        public static void SetShadow(RectTransform card, bool on, float drop)
+        {
+            var s = card != null ? card.Find("shadow") as RectTransform : null;
+            if (s == null) return;
+            if (!on) { s.gameObject.SetActive(false); s.anchoredPosition = new Vector2(0f, -6f); return; }
+            if (!s.gameObject.activeSelf) { s.gameObject.SetActive(true); s.SetAsFirstSibling(); }
+            Tween.Move(s, new Vector2(0f, -drop), 0.12f, Ease.OutQuad);
         }
 
         static void BuildKeyNum(RectTransform root, CardDef def, Func<int, int> mod)

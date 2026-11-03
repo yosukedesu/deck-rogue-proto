@@ -68,6 +68,19 @@ namespace DeckRogue.Game
                 li.transform.SetParent(root, false);
                 li.sprite = logo; li.raycastTarget = false; li.preserveAspect = true;
                 UiKit.Anchor(li.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(-logoW / 2f, -logoTop - logoH), new Vector2(logoW / 2f, -logoTop));
+                // 題が生きている (2026-11-04 束 C2・G16): 4 秒周期でごく薄く呼吸 (1.00↔1.012)・7 秒ごとに真鍮の光の帯が左から右へ掃く (0.9 秒。Mask で題の形の中だけ)。撮影では置かない
+                if (!ScreenFx.Instant)
+                {
+                    li.gameObject.AddComponent<Breathe>();
+                    var mask = li.gameObject.AddComponent<Mask>(); mask.showMaskGraphic = true;
+                    var sweep = UiKit.Pan(li.transform, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.35f), "sweep");
+                    sweep.sprite = MapForest.HBand(); sweep.raycastTarget = false;
+                    sweep.rectTransform.anchorMin = sweep.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                    sweep.rectTransform.sizeDelta = new Vector2(180f, logoH * 2.4f);
+                    sweep.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -20f);
+                    var sw = sweep.gameObject.AddComponent<Sweep>();
+                    sw.From = -logoW / 2f - 160f; sw.To = logoW / 2f + 160f; sw.Period = 7f; sw.Dur = 0.9f; sw.Delay = 1.6f;
+                }
             }
             else
             {
@@ -84,7 +97,12 @@ namespace DeckRogue.Game
             string saveSummary = null;
             if (SaveGame.Exists) { try { saveSummary = SaveGame.PeekSummary(); } catch (Exception) { } }
             MenuRow.Rows.Clear();
-            Row(g, root, "はじめる", null, true, y, rowH, delegate { Mode = "setup"; ScreenFx.Switch(g, g.Rebuild); });
+            Row(g, root, "はじめる", null, true, y, rowH, delegate
+            {
+                // 押した瞬間に真鍮の薄い閃き (2026-11-04 束 C2・G16。FxSettings.Flash を掛ける)
+                if (!ScreenFx.Instant && g.FxLayer != null) { float fa = 0.1f * FxSettings.Flash; if (fa > 0.005f) Tween.ScreenFlash(g.FxLayer, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, fa), 0.3f); }
+                Mode = "setup"; ScreenFx.Switch(g, g.Rebuild);
+            });
             y -= rowH;
             if (SaveGame.Exists)
             {
@@ -188,6 +206,57 @@ namespace DeckRogue.Game
                 if (Label != null) Label.color = on ? PaperFx.BrassLight : PaperFx.Paper;
                 if (L != null) L.gameObject.SetActive(on);
                 if (R != null) R.gameObject.SetActive(on);
+            }
+            float _t;
+            /// <summary>今の行の ◆ はゆっくり明滅する (2026-11-04 束 C2・G16。0.75〜1.0・約 0.4Hz)</summary>
+            void Update()
+            {
+                if (L == null || !L.gameObject.activeSelf || ScreenFx.Instant) return;
+                _t += Tween.UnscaledDt;
+                float a = 0.75f + 0.25f * Mathf.Sin(_t * 2.4f);
+                var c = L.color; c.a = a; L.color = c;
+                if (R != null) R.color = c;
+            }
+        }
+
+        /// <summary>題の呼吸 (2026-11-04 束 C2・G16): 大きさ 1.00↔1.012 を Period 秒で。時計は Tween.UnscaledDt</summary>
+        public class Breathe : MonoBehaviour
+        {
+            public float Amount = 0.012f, Period = 4f;
+            RectTransform _rt; Vector3 _base; float _t;
+            void Awake() { _rt = (RectTransform)transform; _base = _rt.localScale; }
+            void Update()
+            {
+                if (_rt == null) return;
+                _t += Tween.UnscaledDt;
+                float w = 0.5f - 0.5f * Mathf.Cos(_t / Mathf.Max(0.1f, Period) * Mathf.PI * 2f);
+                _rt.localScale = _base * (1f + Amount * w);
+            }
+        }
+
+        /// <summary>光の掃き (2026-11-04 束 C2・G16): Delay の後、Period 秒ごとに From→To を Dur 秒で流れる帯。流れていない間は透明</summary>
+        public class Sweep : MonoBehaviour
+        {
+            public float From, To, Period = 7f, Dur = 0.9f, Delay = 1.5f;
+            RectTransform _rt; Image _img; float _t, _a0;
+            void Awake()
+            {
+                _rt = (RectTransform)transform; _img = GetComponent<Image>();
+                if (_img != null) { _a0 = _img.color.a; var c = _img.color; c.a = 0f; _img.color = c; }
+            }
+            void Update()
+            {
+                if (_rt == null || _img == null) return;
+                _t += Tween.UnscaledDt;
+                float c = _t - Delay;
+                var col = _img.color;
+                if (c < 0f) { col.a = 0f; _img.color = col; return; }
+                float ph = c % Mathf.Max(0.1f, Period);
+                if (ph > Dur) { if (col.a != 0f) { col.a = 0f; _img.color = col; } return; }
+                float u = ph / Dur;
+                _rt.anchoredPosition = new Vector2(Mathf.Lerp(From, To, u), 0f);
+                col.a = _a0 * Mathf.Sin(u * Mathf.PI);
+                _img.color = col;
             }
         }
 

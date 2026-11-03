@@ -24,7 +24,7 @@ namespace DeckRogue.Game {
     if(log[i] is GameEvent_EnemyDied dead&&damage>=0&&!death&&dead.EnemyIndex==hit.EnemyIndex){death=true;continue;}
     // Any additional dispatched work, nested play, real hit or target remains
     // wholly on the established route. Cosmetic pieces never create receipts.
-    if(log[i] is GameEvent_CardPlayed||CombatPresentationLedger.IsNumeric(log[i])||ResolvedCombatFx.IsResolved(log[i])||IsActorCue(log[i])||IsStatusEvent(log[i])||IsTrapEvent(log[i])||IsEnemyActEvent(log[i])||TableSound(log[i])!=null)return;
+    if(log[i] is GameEvent_CardPlayed||CombatPresentationLedger.IsNumeric(log[i])||ResolvedCombatFx.IsResolved(log[i])||IsActorCue(log[i])||IsStatusEvent(log[i])||IsTrapEvent(log[i])||IsEnemyActEvent(log[i])||IsRedEvent(log[i])||TableSound(log[i])!=null)return;   // 赤・霊気の出来事は TableSound から外れた (2026-11-04) ので名指しで除く
    }
    if(damage!=ctx.EventIndex||discharge<0||!LightningR9Clock.Finite(landAt)||landAt-Time.time+1e-7<LightningR9Clock.NativeLead)return;
    LightningR9Clock clock;try{clock=new LightningR9Clock(Time.time,landAt);}catch(ArgumentException){return;}

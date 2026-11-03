@@ -1,7 +1,8 @@
 {
-  "_doc": "音の割り当て表 (2026-09-13 音の設計書 docs/audio-design.md)。bgm: 場面→Resources/Audio/bgm/<file> (拡張子なし)。sfx: イベント/UI の鍵→Resources/Audio/sfx/<name> (番号違い _2.._6 は揺らぎ)。素材が無い名前は Synth が合成する。差し替えはこの表を書き換えるだけ",
+  "_doc": "音の割り当て表 (2026-09-13 音の設計書 docs/audio-design.md)。bgm: 場面→Resources/Audio/bgm/<file> (拡張子なし)。sfx: イベント/UI の鍵→Resources/Audio/sfx/<name> (番号違い _2.._6 は揺らぎ)。素材が無い名前は Synth が合成する。差し替えはこの表を書き換えるだけ。2026-11-04 束 D: 鍵ごとに minGap (同じ鍵の最短間隔・既定 0.05 秒・0 で間引かない) と volJitter (音量の揺らぎ ±・既定 0.08・jitter 0 の鍵は揺らさない) を持てる。合成で足した鍵の一覧と音色の意図は docs/design/audio/synth-keys-2026-11-04.md",
   "bgm": {
-    "_doc": "本家形 (2026-09-14): act1-3=幕の曲 (マップ・報酬・焚き火・店・イベント・工房・通常戦闘を通して流れ続ける)。専用曲は elite (null なら幕の曲) と boss1-3 だけ。won/lost=null なら幕の曲/タイトル",
+    "_doc": "本家形 (2026-09-14): act1-3=幕の曲 (マップ・報酬・焚き火・店・イベント・工房・通常戦闘を通して流れ続ける)。専用曲は elite (null なら幕の曲) と boss1-3 だけ。won/lost=null なら幕の曲/タイトル。_overlap=ループ版でない曲 (末尾の残り 1 秒を同じ曲のもう 1 本に重ねて継ぎ目を消す。ループ版に差し替えたら外す)",
+    "_overlap": ["act1", "title"],
     "title": "title",
     "act1": "act1",
     "act2": "act2",
@@ -14,7 +15,7 @@
     "lost": null
   },
   "sfx": {
-    "_doc": "鍵は GameEvent の型名 (例 CardSet)。Presenter が特別扱いする鍵 (DamageDealt.* / TurnStarted / TurnEnded / BlockGained / HpHealed / 状態異常) はコード側が読む。volume は 0〜1、jitter は音程の揺らぎ幅",
+    "_doc": "鍵は GameEvent の型名 (例 CardSet)。Presenter が特別扱いする鍵 (DamageDealt.* / TurnStarted / TurnEnded / BlockGained / HpHealed / 状態異常) はコード側が読む。volume は 0〜1、jitter は音程の揺らぎ幅。注意: 型名の鍵を足すと Presenter.Show は TableSound で音だけ鳴らして return する (絵の case が動かなくなる)。絵つきで扱う出来事 (Cascaded・CascadeRetargeted・BlazeIgnited・BlazeExtinguished・Impulse*・AetherGained) は型名でなく下の契約の鍵 (cascade_flip 等) を Presenter が Audio.Key/KeyPitched で呼ぶ",
     "CardPlayed": {
       "sfx": "card_play",
       "volume": 0.7
@@ -80,7 +81,9 @@
       "_note": "駆けつけ (ひなたのパッシブ。2026-09-19 判と一緒に)。人形が動く金属の機構"
     },
     "EnemyIntentDeclared": {
-      "sfx": null
+      "sfx": "enemy_telegraph",
+      "volume": 0.35,
+      "_note": "敵が強化・応援を宣言した (2026-11-04 A17: 旧 null)。旧 buff の静かな版 = 予告に留める"
     },
     "EnemyDied": {
       "sfx": "death",
@@ -162,11 +165,6 @@
       "sfx": "hit_big",
       "volume": 0.9
     },
-    "DeathSaved": {
-      "sfx": "heal",
-      "volume": 1.0,
-      "jitter": 0.0
-    },
     "MaxHpGained": {
       "sfx": "heal",
       "volume": 0.8
@@ -215,7 +213,8 @@
       "_note": "継ぎ火・永遠の灯 (2026-09-21)"
     },
     "CombatEnded": {
-      "sfx": null
+      "sfx": null,
+      "_note": "勝利は victory_band (帯)・敗北は defeat_fall が受けるので、ここでは鳴らさない"
     },
     "_ui": "以下は画面の操作 (Audio.Ui(\"...\") で鳴らす)",
     "ui.click": {
@@ -226,7 +225,9 @@
     "ui.hover": {
       "sfx": "hover",
       "volume": 0.5,
-      "jitter": 0.1
+      "jitter": 0.1,
+      "minGap": 0.06,
+      "_note": "Audio.Hover が通す (2026-11-04 A18: 直書きをやめた)"
     },
     "ui.pick_card": {
       "sfx": "card_play",
@@ -278,7 +279,7 @@
     },
     "ui.lose": {
       "sfx": null,
-      "_note": "ジングルは鳴らさない (2026-09-14 ユーザー裁定)"
+      "_note": "ジングルは鳴らさない (2026-09-14 ユーザー裁定)。敗北は Duck + Muffle で BGM を遠くし、PlayerDied=defeat_fall で受ける (2026-11-04)"
     },
     "_presenter": "Presenter が絵に合わせて鳴らす鍵 (2026-09-14): DamageDealt.* / BlockGained / TurnStarted / TurnEnded / HpHealed / StatusInflicted / GrowthAdded",
     "DamageDealt.player.swing": {
@@ -312,12 +313,14 @@
     "TurnStarted": {
       "sfx": "turn",
       "volume": 0.6,
-      "jitter": 0.0
+      "jitter": 0.0,
+      "minGap": 0
     },
     "TurnEnded": {
       "sfx": "enemy_turn",
       "volume": 0.6,
-      "jitter": 0.0
+      "jitter": 0.0,
+      "minGap": 0
     },
     "HpHealed": {
       "sfx": "heal",
@@ -347,9 +350,10 @@
       "_note": "マップから戦闘へ"
     },
     "PlayerDied": {
-      "sfx": "hit_big",
+      "sfx": "defeat_fall",
       "volume": 0.9,
-      "jitter": 0.0
+      "jitter": 0.0,
+      "_note": "倒れる (2026-11-04 A11: hit_big の流用から専用の落下音に。Synth)"
     },
     "GearUsed": {
       "sfx": "trap_fire",
@@ -360,12 +364,18 @@
     "DeathSaved": {
       "sfx": "heal",
       "volume": 0.9,
+      "jitter": 0.0,
       "_note": "蘇りの発条 (ギア)・蜥蜴の尾で致死を耐えた"
     },
     "DamageDealt.blocked": {
       "sfx": "block",
       "volume": 0.8,
       "_note": "敵の攻撃を完全に防いだ (HP損失0) 時の盾の音"
+    },
+    "block": {
+      "sfx": "block",
+      "volume": 0.6,
+      "_note": "Presenter の Audio.Play(\"block\") 直書き (アーティファクトが弾いた) を表に移す口 (2026-11-04 A18)"
     },
     "LightGained": {
       "sfx": "light_gain",
@@ -410,7 +420,262 @@
     "Hd2dOnset.green_finisher_stomp": {
       "sfx": "hd2d_weight",
       "volume": 0.45
+    },
+    "_contract_battle": "2026-11-04 見た目・UX・演出の磨き: 戦闘の契約の鍵 (束 A/B/E が Audio.Key / KeyPitched で呼ぶ。名前は固定)。素材が無いので全部 Synth。音色の意図は docs/design/audio/synth-keys-2026-11-04.md",
+    "hit_tier1": {
+      "sfx": "hit_tier1",
+      "volume": 0.6,
+      "_note": "小さな当たり (<8)。乾いた紙の打撃"
+    },
+    "hit_tier2": {
+      "sfx": "hit_tier2",
+      "volume": 0.75,
+      "_note": "中の当たり。胴が鳴る"
+    },
+    "hit_tier3": {
+      "sfx": "hit_tier3",
+      "volume": 0.9,
+      "jitter": 0.03,
+      "_note": "大 (15 以上か最大 HP の 1/4 以上)。床が震える"
+    },
+    "finish_blow": {
+      "sfx": "finish_blow",
+      "volume": 0.95,
+      "jitter": 0.02,
+      "_note": "とどめ: 低い打撃 + 高い裂け。Duck(0.5, 0.35, 0.3, 0.05) と一緒に"
+    },
+    "enemy_down": {
+      "sfx": "enemy_down",
+      "volume": 0.7,
+      "_note": "敵が崩れる (砂がこぼれる)。撃破の death (BattleView) の後に重ねてよい"
+    },
+    "enemy_down_boss": {
+      "sfx": "enemy_down_boss",
+      "volume": 0.9,
+      "jitter": 0.0,
+      "_note": "幕ボスが崩れる (長く低く)"
+    },
+    "coin_fly": {
+      "sfx": "coin_fly",
+      "volume": 0.45,
+      "minGap": 0
+    },
+    "coin_land": {
+      "sfx": "coin_land",
+      "volume": 0.4,
+      "minGap": 0,
+      "_note": "硝貨が上部バーに着く = 数え上げの刻み。KeyPitched で 1+0.03×i と上げる。店では 0.25 に (ui.buy と重なる)"
+    },
+    "mana_land": {
+      "sfx": "mana_land",
+      "volume": 0.45,
+      "minGap": 0
+    },
+    "victory_band": {
+      "sfx": "victory_band",
+      "volume": 0.7,
+      "jitter": 0.0,
+      "_note": "勝利の帯。旋律を持たない和音 1 つ (ジングル無しの裁定)。Duck(0.35, 1.4, 0.8, 0.15) と一緒に"
+    },
+    "tally_tick": {
+      "sfx": "tally_tick",
+      "volume": 0.45,
+      "minGap": 0,
+      "_note": "戦いの記録の 1 行。KeyPitched で 1+0.04×i"
+    },
+    "lethal_mark": {
+      "sfx": "lethal_mark",
+      "volume": 0.5,
+      "jitter": 0.0
+    },
+    "preview_tick": {
+      "sfx": "preview_tick",
+      "volume": 0.4
+    },
+    "cascade_flip": {
+      "sfx": "cascade_flip",
+      "volume": 0.6,
+      "jitter": 0.0,
+      "_note": "チェインがめくる (歯車のラチェット)"
+    },
+    "cascade_hit": {
+      "sfx": "cascade_hit",
+      "volume": 0.7,
+      "jitter": 0.0,
+      "minGap": 0,
+      "_note": "チェインの当たり。KeyPitched で段ごとに 1+0.08×n"
+    },
+    "blaze_ignite": {
+      "sfx": "blaze_ignite",
+      "volume": 0.8,
+      "jitter": 0.02
+    },
+    "blaze_out": {
+      "sfx": "blaze_out",
+      "volume": 0.5
+    },
+    "aether_gain": {
+      "sfx": "aether_gain",
+      "volume": 0.5
+    },
+    "combo_up": {
+      "sfx": "combo_up",
+      "volume": 0.45,
+      "jitter": 0.0,
+      "minGap": 0,
+      "_note": "多段の積み上がり。KeyPitched で 1+0.06×n (半音ずつ)"
+    },
+    "danger_in": {
+      "sfx": "danger_in",
+      "volume": 0.7,
+      "jitter": 0.0,
+      "_note": "HP 3 割を割った。鼓動は Audio.Heartbeat(true, 0.9/1.7)"
+    },
+    "defeat_fall": {
+      "sfx": "defeat_fall",
+      "volume": 0.9,
+      "jitter": 0.0
+    },
+    "card_lift": {
+      "sfx": "card_lift",
+      "volume": 0.4
+    },
+    "card_cancel": {
+      "sfx": "card_cancel",
+      "volume": 0.4
+    },
+    "energy_spend": {
+      "sfx": "energy_spend",
+      "volume": 0.5
+    },
+    "enemy_telegraph": {
+      "sfx": "enemy_telegraph",
+      "volume": 0.4,
+      "_note": "敵の意図が実行の直前に脈打つ"
+    },
+    "trap_fire_big": {
+      "sfx": "trap_fire_big",
+      "volume": 0.9,
+      "jitter": 0.02,
+      "_note": "からくりの発動の山 (ReactionTriggered=trap_fire の上に重ねる大きい方)"
+    },
+    "status_apply": {
+      "sfx": "debuff",
+      "volume": 0.6,
+      "jitter": 0.03,
+      "_note": "状態異常が付く (StatusInflicted と同じ素材)"
+    },
+    "impulse_burn": {
+      "sfx": "impulse_burn",
+      "volume": 0.6,
+      "_note": "衝動の失効・くべる (紙が燃え落ちる)。失効は 0.5 倍で"
+    },
+    "_contract_screen": "画面の契約の鍵 (束 C が呼ぶ)",
+    "card_flip": {
+      "sfx": "card_flip",
+      "volume": 0.5,
+      "minGap": 0.03,
+      "_note": "報酬の札が返る (3 枚が 0.1 秒ずらしで来るので間引きは 0.03)"
+    },
+    "rare_reveal": {
+      "sfx": "rare_reveal",
+      "volume": 0.6,
+      "jitter": 0.0
+    },
+    "relic_get": {
+      "sfx": "relic",
+      "volume": 0.8,
+      "_note": "遺物を得た (ui.pick_relic と同じ宝箱)"
+    },
+    "upgrade_shine": {
+      "sfx": "upgrade_shine",
+      "volume": 0.55,
+      "jitter": 0.0,
+      "_note": "鍛えた (ui.upgrade=forge のつるはしの後に)"
+    },
+    "rest_heal": {
+      "sfx": "rest_heal",
+      "volume": 0.4,
+      "minGap": 0,
+      "_note": "休んだ・HP の数え上げの刻み。KeyPitched で少しずつ上げる"
+    },
+    "buy_coin": {
+      "sfx": "gold",
+      "volume": 0.8,
+      "_note": "買った (ui.buy と同じ硝貨)"
+    },
+    "sold_stamp": {
+      "sfx": "sold_stamp",
+      "volume": 0.7
+    },
+    "fuse_melt": {
+      "sfx": "fuse_melt",
+      "volume": 0.65,
+      "jitter": 0.0
+    },
+    "act_title": {
+      "sfx": "act_start",
+      "volume": 0.8,
+      "jitter": 0.0,
+      "_note": "幕の題字 (ui.act_start と同じ素材)"
+    },
+    "paper_swish": {
+      "sfx": "paper_swish",
+      "volume": 0.3,
+      "minGap": 0.1,
+      "_note": "幕・入り。一周で 10 回以上鳴るので小さく短く。閉じは pitch 0.85・開きは 1.1"
+    },
+    "land_card": {
+      "sfx": "land_card",
+      "volume": 0.4
+    },
+    "land_relic": {
+      "sfx": "land_relic",
+      "volume": 0.45
+    },
+    "event_gain": {
+      "sfx": "event_gain",
+      "volume": 0.55
+    },
+    "event_loss": {
+      "sfx": "event_loss",
+      "volume": 0.55
+    },
+    "map_arrive": {
+      "sfx": "map_arrive",
+      "volume": 0.5
+    },
+    "button_appear": {
+      "sfx": "button_appear",
+      "volume": 0.4
+    },
+    "boss_start": {
+      "sfx": "boss_start",
+      "volume": 0.85,
+      "jitter": 0.0,
+      "_note": "幕ボスの登場 (低い太鼓)。ui.combat_start の代わりに。Duck(0.4, 1.2, 0.6, 0.2) と一緒に"
+    },
+    "_ambience": "環境音 (Audio.Ambience(key) で鳴らす。loop・音量は Master×BgmVol×volume・鍵が変われば 0.4 秒で沈めて 0.4 秒で出す)。全部 Synth の 8 秒ループ。本物 (USFX ELEMENTS/Fire の Campfire loop 等) に差し替える時は Resources/Audio/sfx/<sfx> を置く",
+    "ambience.forest_night": {
+      "sfx": "amb_forest_night",
+      "volume": 0.5,
+      "_note": "幕1 の夜の森: 低い風 + 虫の高い粒がまばら。戦闘中は呼ぶ側が別の鍵にせず続ける (BGM と同じく途切れない)"
+    },
+    "ambience.campfire": {
+      "sfx": "amb_campfire",
+      "volume": 0.6,
+      "_note": "焚き火: ノイズの爆ぜ"
+    },
+    "ambience.cave": {
+      "sfx": "amb_cave",
+      "volume": 0.5,
+      "_note": "幕2 の坑道: 水滴 + 低い残響"
+    },
+    "ambience.ruins": {
+      "sfx": "amb_ruins",
+      "volume": 0.5,
+      "_note": "幕3 の古代都市: 風 + 低い唸り"
     }
   },
-  "_loudness": "BGM は -16 LUFS、SE はピーク -1dB に正規化済み (2026-09-14 ユーザー「BGMがでかい」)。素材を足す時も同じ物差しで (scripts はまだ無い。ffmpeg volume で)"
+  "_loudness": "BGM は -16 LUFS、SE はピーク -1dB に正規化済み (2026-09-14 ユーザー「BGMがでかい」)。素材を足す時も同じ物差しで (scripts はまだ無い。ffmpeg volume で)。Synth の鍵は Finish の gain 0.4〜0.95 で既存の合成音 (light_gain 0.55・hit 0.9) に揃えた"
 }

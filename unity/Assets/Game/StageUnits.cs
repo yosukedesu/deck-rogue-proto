@@ -1289,11 +1289,18 @@ namespace DeckRogue.Game
             return u.Anim + "#" + u.Frame + " t=" + Time.realtimeSinceStartup.ToString("F2") + " tex=" + (u.Mat != null && u.Mat.mainTexture != null ? u.Mat.mainTexture.name : "-");
         }
 
-        /// <summary>被弾の白い点滅</summary>
-        public static void Flash(string key, float dur = 0.18f)
+        /// <summary>箱庭の被弾の白い点滅の既定の強さ (束 E 2026-11-04: 旧 0.10 は法線つきの受光と重ねるために 1/8 に落としていたが、当たりの手応えが消えていた。シェーダの _Flash は白への lerp なので白飛びしない)</summary>
+        public const float DioFlashDefault = 0.35f;
+
+        /// <summary>被弾の白い点滅。strength = 箱庭での白の量 (0〜1。負なら既定 DioFlashDefault。今の舞台は常に 0.85)。StageBeat.HitFlash は 0.35〜0.8 を渡す</summary>
+        public static void Flash(string key, float dur = 0.18f, float strength = -1f)
         {
             StageUnit u;
-            if (_bound.TryGetValue(key, out u) && u != null) u.FlashT = dur;
+            if (_bound.TryGetValue(key, out u) && u != null)
+            {
+                u.FlashT = dur;
+                u.FlashStrength = strength >= 0f ? Mathf.Clamp01(strength) : DioFlashDefault;
+            }
         }
 
         /// <summary>撃破の崩れ (2026-09-17 ユーザー「倒した敵は消えるようにしたほうが良くない？」): 0→1 でドットが頭から消えていき、接地影も薄くなる</summary>
@@ -1306,6 +1313,7 @@ namespace DeckRogue.Game
         class StageUnit : MonoBehaviour
         {
             public RectTransform Rect; public Image Img; public Material Mat; public MeshRenderer Rend; public float FlashT; public float DissolveK; public float Depth; public Transform Shadow;
+            public float FlashStrength = DioFlashDefault;   // 箱庭の白の量 (Flash が書く。束 E 2026-11-04)
             public Transform Halo; public Vector2 HaloUv; public float FeetPad;
             public float FootAnchorX=.5f;
             public Vector3 CombatOffset, CombatRecoilOffset; public int MotionVersion, RecoilVersion;
@@ -1685,7 +1693,7 @@ namespace DeckRogue.Game
                 if (IsLit) { var rimArt = CharExtras().ArtFor(ArtName); if (rimArt != null && rimArt.Rim >= 0f) rim = rimArt.Rim; }   // 三周目 直しの輪4: 絵ごとのリムが勝つ
                 Mat.SetFloat("_Rim", rim);
                 if (advanceClock && FlashT > 0f) FlashT -= Time.deltaTime;
-                Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * (dio ? 0.10f : 0.85f));
+                Mat.SetFloat("_Flash", Mathf.Clamp01(FlashT / 0.18f) * (dio ? FlashStrength : 0.85f));   // 束 E (2026-11-04): 箱庭の白の量は Flash の強さ (旧 0.10 固定)
                 Mat.SetFloat("_Dissolve", DissolveK);
                 SyncShadowMode(dio);
                 if (Shadow != null)

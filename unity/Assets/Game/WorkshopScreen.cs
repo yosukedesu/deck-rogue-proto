@@ -143,7 +143,16 @@ namespace DeckRogue.Game
 
             int ia = g.WorkshopA, ib = g.WorkshopB;
             bool can = a != null && b != null && blocked == null && run.Gold >= price;
-            var fuse = UiKit.Btn(srt, "合成する  " + price + "G" + (run.Gold < price ? " (不足)" : ""), delegate { Audio.Ui("fuse"); g.Do(new RunCommand_WorkshopFuse { IndexA = ia, IndexB = ib }); }, 20, can, PaperFx.BrassLight);   // 決定のボタン＝真鍮の紙 (旧 生の #f0d58a。2026-09-29 p26)
+            Button fuse = null;
+            fuse = UiKit.Btn(srt, "合成する  " + price + "G" + (run.Gold < price ? " (不足)" : ""), delegate
+            {   // 溶ける (G10・2026-11-04): 硬貨が G へ・素材 2 枚が結果の札へ寄って溶け (fuse_melt)、新しい札が押し当てられて現れ、デッキへ飛んでから手を進める
+                Audio.Ui("fuse");
+                var sa = srt.Find("slotA/slot-card") as RectTransform;
+                var sb = srt.Find("slotB/slot-card") as RectTransform;
+                var res = srt.Find("result") as RectTransform;
+                ScreenJuice.Coins(g, fuse != null ? fuse.GetComponent<RectTransform>() : null, 3);
+                ScreenJuice.FuseMelt(g, sa, sb, res, () => g.Do(new RunCommand_WorkshopFuse { IndexA = ia, IndexB = ib }));
+            }, 20, can, PaperFx.BrassLight);   // 決定のボタン＝真鍮の紙 (旧 生の #f0d58a。2026-09-29 p26)
             if (can) ScreenFx.Primary(fuse);
             var fle = fuse.GetComponent<LayoutElement>();
             if (fle != null) UnityEngine.Object.Destroy(fle);

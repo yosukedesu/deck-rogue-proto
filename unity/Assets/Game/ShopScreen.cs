@@ -11,6 +11,9 @@ namespace DeckRogue.Game
 {
     public static class ShopScreen
     {
+        /// <summary>今買った札／ギアの添字 (売切の判を押し当てる演出は買った直後の組み直しの 1 回だけ。2026-11-04 G8)。Build の終わりで消す</summary>
+        static int _justSoldCard = -1, _justSoldGear = -1;
+
         public static void Build(GameRoot g, RectTransform root)
         {
             var run = g.Rs;
@@ -72,7 +75,12 @@ namespace DeckRogue.Game
                         g.ShopMode = null;
                         Audio.Ui(rm ? "remove" : "upgrade");
                         if (rm) g.Do(new RunCommand_ShopRemove { Index = i });
-                        else g.Do(new RunCommand_ShopUpgrade { Index = i });
+                        else
+                        {   // 鍛える＝焚き火と同じ演出 (G3・2026-11-04): 札が中央で 3 度光って鍛えた姿に、それからデッキへ飛んで手を進める
+                            var cell = ScreenJuice.GridCell(area, i);
+                            var before = i >= 0 && i < run.Deck.Count ? run.Deck[i] : null;
+                            ScreenJuice.UpgradeShine(g, cell, before, () => g.Do(new RunCommand_ShopUpgrade { Index = i }));
+                        }
                     },
                     removing ? 500f : 400f, pickKey: removing ? "shop-remove" : "shop-upgrade", confirmRoot: root);
                 if (!removing) { CampfireScreen.AttachUpgradeTips(area, run.Deck); if (preview != null) CampfireScreen.AttachForgePreview(g, area, run.Deck, preview); }
@@ -154,7 +162,14 @@ namespace DeckRogue.Game
                 dcv.anchoredPosition = new Vector2(0f, 30f);
                 RewardScreen.HoverRaise(dcv, delegate { Audio.Ui("click"); CardPopup.Open(g, dci, null); });
                 CardPopup.Attach(g, dcv, dci, null, true);
-                PriceTag(dcell, dslot.Price, null, dOk, delegate { if (dOk) { Audio.Ui("buy"); ScreenFx.FlyTo(g, dcv, "deck", () => g.Do(new RunCommand_ShopBuyDeparture { Index = di })); } }, tagW);
+                PriceTag(dcell, dslot.Price, null, dOk, delegate
+                {
+                    if (!dOk) return;
+                    Audio.Ui("buy");
+                    var tagRt = dcell.Find("price") as RectTransform;
+                    ScreenJuice.Coins(g, tagRt != null ? tagRt : dcv, 3);   // 硬貨が G へ (G8)
+                    ScreenFx.FlyTo(g, dcv, "deck", () => g.Do(new RunCommand_ShopBuyDeparture { Index = di }));
+                }, tagW);
             }
             for (int i = 0; i < nShop; i++)
             {
@@ -173,17 +188,20 @@ namespace DeckRogue.Game
                 var cv = CardView.Build(cell, ci, null, canBuy, false, "shop-card");
                 cv.localScale = Vector3.one * scale;
                 cv.anchoredPosition = new Vector2(0f, 30f);
-                if (sold)
-                {
-                    var cover = UiKit.Pan(cv, new Color(0f, 0f, 0f, 0.6f), "sold");
-                    UiKit.Stretch(cover.rectTransform, 0f, 0f, 0f, 0f);
-                    var st = UiKit.Txt(cover.transform, "売切", 40, UiKit.ColBad, TextAnchor.MiddleCenter, true);
-                    UiKit.Stretch(st.rectTransform, 0f, 0f, 0f, 0f);
-                }
+                if (sold) ScreenJuice.SoldCover(cv, _justSoldCard == i);   // 売切の判 (G8): 今買った札は押し当てられて現れる・他は静止
                 else RewardScreen.HoverRaise(cv, delegate { Audio.Ui("click"); CardPopup.Open(g, ci, null); });   // タップ＝拡大 (説明)。買うのは値札のボタン (2026-09-22 報酬と同じ作法)
                 CardPopup.Attach(g, cv, ci, null, true);
                 bool rareSlot = i == nShop - 1 && nShop >= 6;   // レア枠は値札の頭に「★」(夜の段の上に注記の札を重ねない)
-                PriceTag(cell, item.Price, sold ? "売切" : null, canBuy, sold ? null : (Action)delegate { if (canBuy) { Audio.Ui("buy"); ScreenFx.FlyTo(g, cv, "deck", () => g.Do(new RunCommand_ShopBuyCard { Index = idx })); } }, tagW, rareSlot);
+                if (rareSlot && !sold) ScreenJuice.RevealCard(g, cell, cv, "rare", 0, null, false);   // レア枠 (M06): 真鍮の暈が札の後ろで呼吸する (返りは報酬だけ)
+                PriceTag(cell, item.Price, sold ? "売切" : null, canBuy, sold ? null : (Action)delegate
+                {
+                    if (!canBuy) return;
+                    Audio.Ui("buy");
+                    var tagRt = cell.Find("price") as RectTransform;
+                    ScreenJuice.Coins(g, tagRt != null ? tagRt : cv, 3);   // 硬貨が値札から上部バーの G へ (G8)
+                    _justSoldCard = idx;
+                    ScreenFx.FlyTo(g, cv, "deck", () => g.Do(new RunCommand_ShopBuyCard { Index = idx }));
+                }, tagW, rareSlot);
             }
 
             // 下の段: 品物だけ＝店の遺物 → 坑口の品 (遺物・薬草・道具箱)。全部同じ大きさの紙の札 (左に絵・名前・一行・値札のボタン)
@@ -198,7 +216,14 @@ namespace DeckRogue.Game
                 bool canRelic = run.Gold >= shop.RelicPrice;
                 string relicId = shop.RelicId;
                 tiles.Add((tile, w, h) => Tile(g, tile, w, h, p => RunUi.RelicArt(p, relicId, 64f).rectTransform, rName, rSub, rTip, shop.RelicPrice, null, canRelic,
-                    delegate { Audio.Ui("buy"); var art = tile.Find("art"); ScreenFx.FlyTo(g, art != null ? art as RectTransform : tile, "relics", () => g.Do(new RunCommand_ShopBuyRelic())); }));
+                    delegate
+                    {   // 遺物 (G7・G8): 硬貨が G へ・光の輪と名前の帯 (relic_get)・それから上部バーへ飛ぶ
+                        Audio.Ui("buy");
+                        var tagRt = tile.Find("pricewrap") as RectTransform;
+                        ScreenJuice.Coins(g, tagRt != null ? tagRt : tile, 4);
+                        var art = tile.Find("art");
+                        ScreenJuice.RelicGet(g, tile, rName, () => ScreenFx.FlyTo(g, art != null ? art as RectTransform : tile, "relics", () => g.Do(new RunCommand_ShopBuyRelic())));
+                    }));
             }
             else tiles.Add((tile, w, h) => Tile(g, tile, w, h, p => UiKit.Icon(p, "star", 48f).rectTransform, "店の遺物", "売切", "<b>店の遺物</b>\n売切", shop.RelicPrice, "売切", false, null));
             foreach (var idx0 in leftOthers)
@@ -212,7 +237,13 @@ namespace DeckRogue.Game
                 tiles.Add((tile, w, h) => Tile(g, tile, w, h, p => DepartureScreen.Art(p, offer, 64f), offer.Name, sub, DepartureScreen.Tip(offer), slot.Price, null, canBuy, delegate
                 {
                     if (Run.EventChoiceNeedsCard(offer.Choice)) { Audio.Ui("click"); g.ShopMode = "depart-pick:" + idx; g.Rebuild(); }
-                    else { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyDeparture { Index = idx }); }
+                    else
+                    {   // 坑口の品 (G8): 硬貨が G へ飛び切ってから手を進める (0.36 秒。間は入力を塞ぐ)
+                        Audio.Ui("buy");
+                        ScreenFx.LockInput(true);
+                        var tagRt = tile.Find("pricewrap") as RectTransform;
+                        ScreenJuice.Coins(g, tagRt != null ? tagRt : tile, 3, false, () => { ScreenFx.LockInput(false); g.Do(new RunCommand_ShopBuyDeparture { Index = idx }); });
+                    }
                 }));
             }
             {
@@ -233,6 +264,7 @@ namespace DeckRogue.Game
 
             // 進む＝真鍮の決定のボタン (看板の下・右端)
             RunUi.BottomButton(root, "店を出て坑へ", delegate { g.ShopMode = null; g.Do(new RunCommand_ShopLeave()); }, 18, Mathf.Min(360f, signW), btnH, csS.x / 2f - side - Mathf.Min(360f, signW) / 2f, btnBottom, PaperFx.BrassLight);
+            _justSoldCard = -1; _justSoldGear = -1;   // 判の演出は買った直後の 1 回だけ
         }
 
         /// <summary>
@@ -420,13 +452,7 @@ namespace DeckRogue.Game
                 UiKit.Anchor(cell, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(i * (cw + gap), 0f), new Vector2(i * (cw + gap) + cw, 0f));
                 var card = GearUi.Card(cell, def, item.Id, 200f, 272f, null, scale);
                 card.anchorMin = card.anchorMax = new Vector2(0.5f, 1f); card.pivot = new Vector2(0.5f, 1f); card.anchoredPosition = Vector2.zero;
-                if (sold)
-                {
-                    var cover = UiKit.Pan(card, new Color(0f, 0f, 0f, 0.6f), "sold");
-                    UiKit.Stretch(cover.rectTransform, 0f, 0f, 0f, 0f);
-                    var st = UiKit.Txt(cover.transform, "売切", 40, UiKit.ColBad, TextAnchor.MiddleCenter, true);
-                    UiKit.Stretch(st.rectTransform, 0f, 0f, 0f, 0f);
-                }
+                if (sold) ScreenJuice.SoldCover(card, _justSoldGear == i);   // 売切の判 (G8)
                 var tag = UiKit.NewRect("pricewrap", cell);
                 UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-cw / 2f, 0f), new Vector2(cw / 2f, btnH));
                 PriceTag(tag, item.Price, sold ? "売切" : null, canBuy);
@@ -434,7 +460,13 @@ namespace DeckRogue.Game
                 {
                     Audio.Ui("buy");
                     if (DeckRogue.Engine.Run.GearFull(g.Rs)) { g.GearSwap = "shop:" + idx; g.Rebuild(); }
-                    else g.Do(new RunCommand_ShopBuyGear { Index = idx });
+                    else
+                    {   // ギアも飛ぶ (G14): 硬貨が G へ・ギアの札が匣 (魔素の札) へ
+                        ScreenJuice.Coins(g, tag, 3);
+                        _justSoldGear = idx;
+                        string dest = g.Anchor("mana") != null ? "mana" : "deck";
+                        ScreenFx.FlyTo(g, card, dest, () => g.Do(new RunCommand_ShopBuyGear { Index = idx }));
+                    }
                 }, 15, canBuy, PaperFx.BrassLight);
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
@@ -453,7 +485,14 @@ namespace DeckRogue.Game
                 var tag = UiKit.NewRect("pricewrap", cell);
                 UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-cw / 2f, 0f), new Vector2(cw / 2f, btnH));
                 PriceTag(tag, manaPrice, full ? "上限" : null, canBuy);
-                var b = UiKit.Btn(cell, full ? "魔素は上限" : "買う", delegate { Audio.Ui("buy"); g.Do(new RunCommand_ShopBuyMana()); }, 15, canBuy, PaperFx.BrassLight);
+                var b = UiKit.Btn(cell, full ? "魔素は上限" : "買う", delegate
+                {   // 魔素 (G14): 硬貨が G へ・青緑の玉が匣へ飛び切ってから手を進める
+                    Audio.Ui("buy");
+                    if (g.Anchor("mana") == null || ScreenFx.Instant) { g.Do(new RunCommand_ShopBuyMana()); return; }
+                    ScreenFx.LockInput(true);
+                    ScreenJuice.Coins(g, tag, 3);
+                    ScreenJuice.Coins(g, card, 3, true, () => { ScreenFx.LockInput(false); g.Do(new RunCommand_ShopBuyMana()); });
+                }, 15, canBuy, PaperFx.BrassLight);
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
                 UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-cw / 2f + 10f, 40f), new Vector2(cw / 2f - 10f, btnH + 14f));
@@ -507,10 +546,11 @@ namespace DeckRogue.Game
             bg.sprite = asBtn ? Theme.Button : Theme.Tag; bg.type = Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f;
             bg.color = over != null ? new Color(0.5f, 0.5f, 0.5f, 1f) : affordable ? (asBtn ? PaperFx.BrassLight : Color.white) : new Color(0.7f, 0.55f, 0.55f, 1f);
             if (asBtn)
-            {
+            {   // 払えない値札も押せる (G8・2026-11-04): 押すと震えて「G が足りない」(買わない)。押せる値札は onBuy
                 var btn = tag.gameObject.AddComponent<Button>();
-                btn.targetGraphic = bg; btn.interactable = affordable;
-                btn.onClick.AddListener(delegate { onBuy(); });
+                btn.targetGraphic = bg; btn.interactable = true;
+                btn.transition = affordable ? Selectable.Transition.ColorTint : Selectable.Transition.None;
+                btn.onClick.AddListener(delegate { if (affordable) onBuy(); else ScreenJuice.Denied(tag); });
             }
             var hg = UiKit.Horz(tag, 4, 0);
             hg.childAlignment = TextAnchor.MiddleCenter;

@@ -711,11 +711,11 @@ namespace DeckRogue.Game
             var pills = new List<LedgerPillSpec>();
             if (alive)
             {
-                if (e.Strength != 0) pills.Add(new LedgerPillSpec(e.Strength > 0 ? "strength_up" : "strength_down", "筋力" + (e.Strength > 0 ? "+" : "") + e.Strength, e.Strength > 0 ? PaperFx.BrassInk : PaperFx.SkyInk));
-                if (e.Burn > 0) pills.Add(new LedgerPillSpec("burn", "延焼" + e.Burn, PaperFx.Ink));
-                if (e.Exposed > 0) pills.Add(new LedgerPillSpec("exposed", "急所" + e.Exposed, PaperFx.BrassInk));
-                if (e.Confusion > 0) pills.Add(new LedgerPillSpec("confuse", "混乱" + e.Confusion, PaperFx.PlumInk, PaperFx.PlumLight));
-                if ((e.Weak ?? 0) > 0) pills.Add(new LedgerPillSpec("weak", "威圧" + e.Weak.Value, PaperFx.SkyInk));
+                if (e.Strength != 0) pills.Add(new LedgerPillSpec(e.Strength > 0 ? "strength_up" : "strength_down", "筋力" + (e.Strength > 0 ? "+" : "") + e.Strength, e.Strength > 0 ? PaperFx.BrassInk : PaperFx.SkyInk) { Val = e.Strength });
+                if (e.Burn > 0) pills.Add(new LedgerPillSpec("burn", "延焼" + e.Burn, PaperFx.Ink) { Val = e.Burn });
+                if (e.Exposed > 0) pills.Add(new LedgerPillSpec("exposed", "急所" + e.Exposed, PaperFx.BrassInk) { Val = e.Exposed });
+                if (e.Confusion > 0) pills.Add(new LedgerPillSpec("confuse", "混乱" + e.Confusion, PaperFx.PlumInk, PaperFx.PlumLight) { Val = e.Confusion });
+                if ((e.Weak ?? 0) > 0) pills.Add(new LedgerPillSpec("weak", "威圧" + e.Weak.Value, PaperFx.SkyInk) { Val = e.Weak.Value });
                 if ((e.Artifact ?? 0) > 0) pills.Add(new LedgerPillSpec(null, "アーティファクト" + e.Artifact.Value, PaperFx.Ink));   // 旧「AF1」は略語で読めなかった (2026-09-20)
                 if (e.BurrowActive == true) pills.Add(new LedgerPillSpec(null, "潜伏", PaperFx.Ink));
                 if ((e.Slippery ?? 0) > 0) pills.Add(new LedgerPillSpec(null, "朧 残り" + e.Slippery.Value + "回", PaperFx.Ink));   // 2026-09-27 朧の大鹿: HPに届く当たりの残り回数
@@ -798,18 +798,52 @@ namespace DeckRogue.Game
                 UiKit.Anchor(right, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-600f, 0f), new Vector2(0f, 0f));   // 右詰め: 右端を合わせて左へ伸びる (溢れた分は左で切れる)
                 var rg = UiKit.Horz(right, 4, 0);
                 rg.childAlignment = TextAnchor.MiddleRight; rg.childForceExpandWidth = false; rg.childForceExpandHeight = false;
+                var pulses = new List<RectTransform>(); bool pulseSound = false;
                 foreach (int i in shown)
                 {
                     var pl = pills[i];
                     string text = form == 0 ? pl.Text : (form == 1 || pl.Icon == null) ? pl.Short : "";
-                    MiniPill(right, pl.Icon, text, pl.Ink, pl.Paper, pl.Tip ?? ChipTip(pl.Text), 13, form != 0);
+                    var prt = MiniPill(right, pl.Icon, text, pl.Ink, pl.Paper, pl.Tip ?? ChipTip(pl.Text), 13, form != 0);
+                    // 付いた・増えた状態の札は跳ねて現れる (2026-11-04 B06): 前の組み立てで見せた値 (BattleView.LastStatus) と比べる。筋力は音なし (状態異常ではない)
+                    if (prt != null && pl.Icon != null && pl.Val != 0 && g.Battle != null && !dying)
+                    {
+                        string key = "e" + index + ":" + pl.Icon;
+                        int prev = 0; bool had = g.Battle.LastStatus.TryGetValue(key, out prev);
+                        if (!had || Math.Abs(pl.Val) > Math.Abs(prev)) { pulses.Add(prt); if (!pl.Icon.StartsWith("strength")) pulseSound = true; }
+                        g.Battle.LastStatus[key] = pl.Val;
+                    }
+                }
+                if (pulses.Count > 0)
+                {
+                    if (pulseSound) Audio.Key("status_apply");
+                    foreach (var prt in pulses)
+                    {
+                        var p2 = prt;
+                        Tween.After(0.05f, () =>
+                        {   // レイアウトグループの子は組んだ直後は左上を指すので 1 コマ待つ
+                            if (p2 == null) return;
+                            Tween.Punch(p2, 0.3f, 0.3f);
+                            var bg = p2.GetComponent<Image>();
+                            if (bg != null) Tween.Flash(bg, bg.color == PaperFx.PlumLight ? PaperFx.Plum : PaperFx.BrassLight, 0.4f);
+                        });
+                    }
+                }
+            }
+            if (g.Battle != null)
+            {   // 消えた状態は 0 に戻す (次に付いた時にまた跳ねる)
+                foreach (var ic in StatusPillIcons)
+                {
+                    bool present = false;
+                    for (int i = 0; i < pills.Count && !present; i++) if (pills[i].Icon == ic) present = true;
+                    if (!present) g.Battle.LastStatus["e" + index + ":" + ic] = 0;
                 }
             }
             // HP バー (2段目)。ブロックがあれば左端に盾 (本家形): 盾の札の右端から 4 手前でバーを始める (盾がバーに 4 重なる)。右端は盾の有無によらず w−pad。
             // 2026-09-29 p04: 旧は半幅を shieldW/2 縮めたうえで両端を +shieldW ずらしていて、右端が帳面の紙の外へ PC 5px・スマホ 3px はみ出していた。
             // スマホの帯も 20 (旧 16: 塗りが 13px しかなく 15 の数字の下が墨の縁に掛かった。帳面は下の余白 6→4 で +2 だけ)
             float barTop = top + nameH + 2f, barH = 20f;
-            HpBar(strip, new Vector2(0f, 0f), new Vector2(1f, 0f), h - barTop - barH, h - barTop, shownHp, e.MaxHp, w / 2f - pad, ph ? 13 : 16, alive ? InterruptMarkRatio(def, e) : -1f);
+            // predictable: 札を持った時の「この札でここまで減る」の帯の器を持つ (2026-11-04 B01。帯は SetEnemyPredict が書くまで出ない)
+            HpBar(strip, new Vector2(0f, 0f), new Vector2(1f, 0f), h - barTop - barH, h - barTop, shownHp, e.MaxHp, w / 2f - pad, ph ? 13 : 16, alive ? InterruptMarkRatio(def, e) : -1f, 0, -1, alive);
             var bar = strip.Find("hpbar") as RectTransform;
             // 盾の置き場 (順送りの途中でブロックが増減した時に SetEnemyBlockBadge が同じ場所へ出し入れする。2026-09-17)
             var slot = strip.gameObject.AddComponent<BlockSlot>();
@@ -829,11 +863,16 @@ namespace DeckRogue.Game
             }
         }
 
+        /// <summary>状態の札の記号 (付いた・消えたの比較に使う一覧。2026-11-04 B06)</summary>
+        static readonly string[] StatusPillIcons = { "strength_up", "strength_down", "burn", "exposed", "confuse", "weak" };
+
         /// <summary>帳面の名前の行の札1枚 (状態・1体の時の特性)。Short は狭い時の「絵＋数字」の数字 (末尾の符号つきの数。数の無い2字はそのまま・それ以外は絵だけ)。
         /// Icon=null (1対1の記号が無い札) は狭い形でも言葉のまま (Short＝Text)。Ink/Paper は墨と紙 (2026-09-29 p18: 塗りは紙(濃)・役割は墨。混乱だけ藤の紙)</summary>
         class LedgerPillSpec
         {
             public string Icon, Text, Short, Tip; public Color Ink, Paper;
+            /// <summary>量 (筋力・延焼・急所・混乱・威圧)。付いた・増えた時に札を跳ねさせる比較に使う。特性の札は 0</summary>
+            public int Val;
             public LedgerPillSpec(string icon, string text, Color ink, Color? paper = null)
             {
                 Icon = icon; Text = text; Ink = ink; Paper = paper ?? PaperFx.Paper2;
@@ -1354,10 +1393,10 @@ namespace DeckRogue.Game
         /// スマホは文字が 15 に切り上がるので 20→22 (2026-09-29 p16。24 だと頭上の rider の段 22 に収まらない)。
         /// 2026-09-29 p18: 地は細い縁の札 (中墨1px・塗りは paper ちょうど。旧は墨2px の Tag に色を掛けて塗りが紙より暗い #e0cea4 になり、帳面でいちばん重い線だった)、
         /// 絵は 16px の等倍 (旧 14 は 16 ドットを間引いて剣が「✓」に見えた)・墨1色の版。icon=null は絵なし (1対1の記号が無い札)</summary>
-        static void MiniPill(Transform row, string icon, string text, Color ink, Color paper, string tip, int size = 13, bool tight = false)   // size は UiKit.Fs で最小に切り上がる
+        static RectTransform MiniPill(Transform row, string icon, string text, Color ink, Color paper, string tip, int size = 13, bool tight = false)   // size は UiKit.Fs で最小に切り上がる
         {
             bool ph = UiKit.Phone;
-            var pill = UiKit.NewRect("pill", row);
+            var pill = UiKit.NewRect(icon != null ? "pill-" + icon : "pill", row);   // 名前に記号 (2026-11-04 B06: 付いた札を外から探して跳ねさせる)
             var bg = pill.gameObject.AddComponent<Image>();
             bg.sprite = PaperFx.TagThin; bg.type = Image.Type.Sliced; bg.pixelsPerUnitMultiplier = 1f; bg.color = paper; bg.raycastTarget = tip != null;
             float h = ph ? 22f : 24f;
@@ -1380,6 +1419,7 @@ namespace DeckRogue.Game
             var fit = pill.gameObject.AddComponent<ContentSizeFitter>();
             fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             if (tip != null) Tooltip.Attach(pill.gameObject, delegate { return tip; });
+            return pill;
         }
 
         /// <summary>帳面の小さな札の幅の見積り (MiniPill: 余白 2+4 + 絵 16 + 間 2 + 文字 + 余白 4)。icon=false は絵なしの札 (余白 2+4 + 文字 + 余白 4)</summary>
@@ -1540,18 +1580,30 @@ namespace DeckRogue.Game
         /// <summary>HP バーの値 (演出で滑らせるために持つ)。Mark = 行動が変わる線の位置 (無ければ -1)・HpOnly = 線を避けて今の HP だけを出している (2026-09-29 p04)。
         /// Loss/LossTo = 自分の HP バーの「削られる分」の帯と、敵の番の後に残る HP の見込み (2026-09-29 p08。敵の HP バーには無い＝Loss が null)。
         /// 帯は LossTo から今の塗りの端 (Now＝滑っている途中の HP) まで＝攻撃が届いて塗りが縮んでも、見込みの左端は動かない</summary>
-        public class HpBarInfo : MonoBehaviour { public int Max; public int Value; public int Revision; public float Now; public RectTransform Fill; public TMP_Text Label; public float Mark = -1f; public bool HpOnly; public RectTransform Loss; public int LossTo; }
+        /// Ghost/GhostR = 削られた分の残像 (2026-11-04 G12/TB-10。塗りの後ろの紙色の帯。減った時に元の長さで 0.25 秒止まってから新しい長さへ流れる)。GhostRev は残像の補間の版。
+        /// LossTo は見込みが無い時 int.MaxValue (帯を出さない。敵の帳面の HP バーは札を持った時だけ SetEnemyPredict が書く)</summary>
+        public class HpBarInfo : MonoBehaviour { public int Max; public int Value; public int Revision; public float Now; public RectTransform Fill; public TMP_Text Label; public float Mark = -1f; public bool HpOnly; public RectTransform Loss; public int LossTo = int.MaxValue; public RectTransform Ghost; public float GhostR; public int GhostRev; }
 
         /// <summary>入れ物の中の HP バーを target まで滑らせる (無ければ何もしない)</summary>
         public static void SetHpBarImmediate(RectTransform container, int target)
         {
             var info = container != null ? container.GetComponentInChildren<HpBarInfo>() : null;
             if (info == null || info.Fill == null) return;
-            ++info.Revision;
+            ++info.Revision; ++info.GhostRev;
             info.Value = target; info.Now = target;
-            info.Fill.anchorMax = new Vector2(info.Max > 0 ? Mathf.Clamp01((float)target / info.Max) : 0f, 1f);
+            float r = info.Max > 0 ? Mathf.Clamp01((float)target / info.Max) : 0f;
+            info.Fill.anchorMax = new Vector2(r, 1f);
+            SetGhost(info, r);   // 即時の書き換え (Presenter が数字を持つ間) は残像を出さない
             if (info.Label != null) info.Label.text = Mathf.Max(0, target) + (info.HpOnly ? "" : " / " + info.Max);
             if (info.Loss != null) SetLossBand(info);
+        }
+
+        /// <summary>残像の帯の右端を比率 r に置く (塗りの後ろ。塗りより右に出た分だけ見える)</summary>
+        static void SetGhost(HpBarInfo info, float r)
+        {
+            if (info == null || info.Ghost == null) return;
+            info.GhostR = Mathf.Clamp01(r);
+            info.Ghost.anchorMax = new Vector2(info.GhostR, 1f);
         }
 
         // Numeric receipt contact may change HP and its denominator together.
@@ -1573,13 +1625,121 @@ namespace DeckRogue.Game
             float r0 = info.Max > 0 ? Mathf.Clamp01((float)from / info.Max) : 0f;
             float r1 = info.Max > 0 ? Mathf.Clamp01((float)target / info.Max) : 0f;
             var fill = info.Fill; var label = info.Label; int max = info.Max; var hi = info;
-            Tween.Run(0.35f, k =>
+            bool hurt = target < from;
+            // 削られ方の文法 (2026-11-04 G12/TB-10・本家の白ゲージ): 減る時は塗りが速く落ち (0.18 秒)、残像 (紙色の帯) が元の長さで 0.25 秒止まってから 0.4 秒で追いつく。
+            // 数字は減った瞬間に跳ねる。増える時 (回復) は残像を即追従させ、塗りが 0.35 秒で満ちる
+            float dur = hurt ? FxSettings.Dur(0.18f) : 0.35f;
+            if (hurt && label != null) Tween.Punch(label.rectTransform, 0.18f, 0.28f);
+            if (info.Ghost != null)
+            {
+                if (!hurt) SetGhost(info, r1);
+                else
+                {
+                    SetGhost(info, Mathf.Max(info.GhostR, r0));   // 続けて削られた時は残像の右端を保つ (前の残像が流れ切る前に次の当たり)
+                    int grev = ++info.GhostRev;
+                    float g0 = info.GhostR;
+                    float hold = target <= 0 ? 0.6f : 0.25f;   // とどめは残像を長く残す
+                    Tween.After(FxSettings.Dur(hold), () =>
+                    {
+                        if (hi == null || hi.GhostRev != grev) return;
+                        Tween.Run(FxSettings.Dur(0.4f), k => { if (hi != null && hi.GhostRev == grev) SetGhost(hi, Mathf.Lerp(g0, r1, k)); }, Ease.OutQuad);
+                    });
+                }
+            }
+            Tween.Run(dur, k =>
             {
                 if (fill == null || hi == null || hi.Revision != revision) return;
                 fill.anchorMax = new Vector2(Mathf.Lerp(r0, r1, k), 1f);
                 if (label != null) label.text = Mathf.Max(0, Mathf.RoundToInt(Mathf.Lerp(from, target, k))) + (hi != null && hi.HpOnly ? "" : " / " + max);
                 if (hi != null) { hi.Now = Mathf.Lerp(from, target, k); if (hi.Loss != null) SetLossBand(hi); }   // 削られる分の帯の右端も塗りの端についていく (p08)
-            }, Ease.OutCubic);
+            }, hurt ? Ease.OutQuad : Ease.OutCubic);
+        }
+
+        /// <summary>
+        /// 札を持った時の「この札でここまで減る」(2026-11-04 B01/B02)。敵の帳面の HP バーの帯 (自分の札の削られる分の帯と同じ器) に、見込みの残り HP を書く。
+        /// loss ≤ 0 で消す。lethal なら帳面に「倒せる」の判 (真鍮の縁が脈打つ) を出し、意図の札を薄く沈める (もう来ない)。印が点いた時だけ lethal_mark を 1 回鳴らす
+        /// </summary>
+        public static void SetEnemyPredict(RectTransform pan, int loss, bool lethal)
+        {
+            if (pan == null) return;
+            var strip = pan.Find("strip") as RectTransform;
+            var info = strip != null ? strip.GetComponentInChildren<HpBarInfo>() : null;
+            if (info != null && info.Loss != null)
+            {
+                info.LossTo = loss > 0 ? info.Value - loss : int.MaxValue;
+                SetLossBand(info);
+            }
+            var mark = strip != null ? strip.Find("lethal") : null;
+            if (lethal && loss > 0)
+            {
+                if (mark == null && strip != null) { LethalMark(strip); Audio.Key("lethal_mark"); }
+            }
+            else if (mark != null) UnityEngine.Object.Destroy(mark.gameObject);
+            SetIntentDim(pan, lethal && loss > 0);
+        }
+
+        /// <summary>意図の札を薄く沈める／戻す (倒せる見込みの間だけ。登場の演出で隠れている札 (α 0) には触らない)</summary>
+        static void SetIntentDim(RectTransform pan, bool dim)
+        {
+            var tag = pan != null ? pan.Find("intent-tag") : null;
+            if (tag == null) return;
+            var cg = tag.GetComponent<CanvasGroup>();
+            if (dim)
+            {
+                if (cg == null) cg = tag.gameObject.AddComponent<CanvasGroup>();
+                else if (cg.alpha < 0.99f) return;   // 登場の演出 (EntranceHidesIntents) の途中
+                var marker = tag.Find("lethal-dim");
+                if (marker == null) UiKit.NewRect("lethal-dim", tag);
+                cg.alpha = 0.6f;
+            }
+            else
+            {
+                var marker = tag.Find("lethal-dim");
+                if (marker == null) return;   // 自分で沈めた札だけ戻す
+                UnityEngine.Object.Destroy(marker.gameObject);
+                if (cg != null) cg.alpha = 1f;
+            }
+        }
+
+        /// <summary>「倒せる」の判 (B02): 帳面の右上の角に掛かる夜の札 (剣の絵＋「倒せる」真鍮の明るい墨)。真鍮の縁が 1.2Hz で脈打ち、出た瞬間に跳ねる</summary>
+        static void LethalMark(RectTransform strip)
+        {
+            bool ph = UiKit.Phone;
+            var rt = UiKit.NewRect("lethal", strip);
+            float w = ph ? 86f : 92f, h = ph ? 26f : 28f;
+            UiKit.Anchor(rt, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-w + 10f, -h + 12f), new Vector2(10f, 12f));
+            rt.localRotation = Quaternion.Euler(0f, 0f, -6f);
+            var edge = PaperFx.Sheet(rt, PaperFx.Tag, "edge", PaperFx.BrassLight);
+            UiKit.Stretch(edge.rectTransform, -3f, -3f, -3f, -3f);
+            edge.raycastTarget = false;
+            var paper = PaperFx.Sheet(rt, PaperFx.NightTag, "paper");
+            UiKit.Stretch(paper.rectTransform, 0f, 0f, 0f, 0f);
+            paper.raycastTarget = false;
+            var ic = UiKit.Icon(rt, "sword", 16f, PaperFx.BrassLight, true);
+            ic.rectTransform.anchorMin = ic.rectTransform.anchorMax = new Vector2(0f, 0.5f);
+            ic.rectTransform.pivot = new Vector2(0f, 0.5f);
+            ic.rectTransform.anchoredPosition = new Vector2(8f, 0f);
+            ic.raycastTarget = false;
+            var t = UiKit.Deco(rt, "倒せる", ph ? 15 : 15, PaperFx.BrassLight, TextAnchor.MiddleLeft);
+            UiKit.Anchor(t.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(28f, 0f), new Vector2(-4f, 0f));
+            t.textWrappingMode = TextWrappingModes.NoWrap;
+            t.raycastTarget = false;
+            var pulse = rt.gameObject.AddComponent<LethalPulse>();
+            pulse.Edge = edge;
+            Tween.Punch(rt, 0.2f, 0.3f);
+        }
+
+        /// <summary>「倒せる」の判の縁の脈 (EndTurnPulse と同じ式。1.2Hz・0.45↔1.0)</summary>
+        public class LethalPulse : MonoBehaviour
+        {
+            public Image Edge; float _t;
+            void Update()
+            {
+                if (Edge == null) return;
+                _t += Tween.UnscaledDt;
+                float s = 0.5f - 0.5f * Mathf.Cos(_t * 1.2f * Mathf.PI * 2f);
+                var c = Edge.color; Edge.color = new Color(c.r, c.g, c.b, 0.45f + 0.55f * s);
+            }
         }
 
         /// <summary>
@@ -1606,7 +1766,7 @@ namespace DeckRogue.Game
         /// 2026-09-29 p04: 塗りを inner の子にして満タンでも右の縁が残る・HP 0 で負の幅の塗りが出ない・線の中心と「ちょうどその HP の塗りの端」がそろう。
         /// 旧 outlineWidth 0.16 の紙の縁取りは Mobile SDF で OUTLINE_ON が入らず一度も描かれていなかった
         /// </summary>
-        static void HpBar(RectTransform parent, Vector2 aMin, Vector2 aMax, float yMin, float yMax, int hp, int max, float xHalf = 0f, int textSize = 15, float markRatio = -1f, int predictLoss = 0, int predictFrom = -1)
+        static void HpBar(RectTransform parent, Vector2 aMin, Vector2 aMax, float yMin, float yMax, int hp, int max, float xHalf = 0f, int textSize = 15, float markRatio = -1f, int predictLoss = 0, int predictFrom = -1, bool predictable = false)
         {
             var bar = UiKit.NewRect("hpbar", parent);
             // xHalf > 0 なら中央から ±xHalf の固定幅 (スマホの敵は隣との間隔に収める。2026-09-15)
@@ -1622,13 +1782,18 @@ namespace DeckRogue.Game
             var inner = UiKit.NewRect("inner", bar);
             UiKit.Stretch(inner, 3f, 3f, 3f, 3f);
             float r = max > 0 ? Mathf.Clamp01((float)hp / max) : 0f;
+            // 残像 (2026-11-04 G12): 塗りの後ろの紙色 (明) の帯。減った分が一瞬残ってから縮む (本家の白ゲージ)。普段は塗りと同じ長さ＝見えない
+            var ghost = UiKit.NewRect("ghost", inner);
+            var gimg = ghost.gameObject.AddComponent<Image>();
+            gimg.color = new Color(PaperFx.Paper3.r, PaperFx.Paper3.g, PaperFx.Paper3.b, 0.85f); gimg.raycastTarget = false;
+            UiKit.Anchor(ghost, new Vector2(0f, 0f), new Vector2(r, 1f), Vector2.zero, Vector2.zero);
             var fill = UiKit.NewRect("fill", inner);
             var fimg = fill.gameObject.AddComponent<Image>();
             fimg.sprite = ThemeFx.Gradient("hpfill", Color.Lerp(PaperFx.Rose, Color.white, 0.15f), Color.Lerp(PaperFx.Rose, Color.black, 0.08f));
             fimg.raycastTarget = false;
             UiKit.Anchor(fill, new Vector2(0f, 0f), new Vector2(r, 1f), Vector2.zero, Vector2.zero);
             RectTransform loss = null;
-            if (predictLoss > 0)
+            if (predictLoss > 0 || predictable)
             {   // 削られる分 (2026-09-29 p08。自分の札だけ): 塗りの端から左へ見込みの HP 損失ぶん、薔薇の薄塗り＋墨の斜線。左端に墨の刻み (上下へ 3 はみ出す)。
                 // 数字 (後で作る) はこの上＝紙の下敷きで読める。札を出してブロックが増えるたびに縮む (組み直し)
                 loss = UiKit.NewRect("loss", inner);
@@ -1660,8 +1825,10 @@ namespace DeckRogue.Game
             info.Max = max; info.Value = hp; info.Fill = fill; info.Label = t;
             info.Mark = markRatio > 0f && markRatio < 1f ? markRatio : -1f;
             info.Now = hp;
-            // predictFrom = 見込みを数える元の HP (組み直しで塗りが shownHp から今の HP へ滑る時は今の HP。省略は hp)
-            info.Loss = loss; info.LossTo = (predictFrom >= 0 ? predictFrom : hp) - Math.Max(0, predictLoss);
+            info.Ghost = ghost; info.GhostR = r;
+            // predictFrom = 見込みを数える元の HP (組み直しで塗りが shownHp から今の HP へ滑る時は今の HP。省略は hp)。
+            // 敵の帳面 (predictable・見込み 0) は int.MaxValue＝帯なし。札を持った時に SetEnemyPredict が書く
+            info.Loss = loss; info.LossTo = predictLoss > 0 ? (predictFrom >= 0 ? predictFrom : hp) - predictLoss : int.MaxValue;
             SetLossBand(info);
             FitHpLabel(info);
         }
@@ -3444,6 +3611,8 @@ namespace DeckRogue.Game
         }
 
         static bool _dragging;
+        /// <summary>手札の札を引いている間 (Tooltip は出さない・手札の呼吸は止める。2026-11-04)</summary>
+        public static bool Dragging { get { return _dragging; } }
         // スマホで敵を狙う札 (選択式でない単体の札) をドラッグ中: 札は手札に留まり、指まで狙いの矢が伸びる (2026-09-29 p09。BattleView.UpdateAimArrow)
         static bool _dragAim;
 
@@ -3483,7 +3652,17 @@ namespace DeckRogue.Game
                 rt.SetAsLastSibling();
                 rt.localRotation = Quaternion.identity;
                 if (_dragAim) { rt.anchoredPosition = hc.BasePos; rt.localScale = Vector3.one * CardScale; CardView.SetKeyNumVisible(rt, true); }   // 押した時の持ち上げ (+70・1.18倍) を戻す。以後は矢の部品が押さえる
-                else rt.localScale = Vector3.one * 0.8f;
+                else if (UiKit.Phone) rt.localScale = Vector3.one * 0.8f;
+                else
+                {   // PC (2026-11-04 B04): 指に付く札は小さくせず等倍で浮かせる (影が伸びる)。指に遅れて付いてきて、動きの向きに傾く (CardDragFollow)
+                    rt.localScale = Vector3.one * CardScale;
+                    var follow = rt.gameObject.GetComponent<BattleJuice.CardDragFollow>();
+                    if (follow == null) follow = rt.gameObject.AddComponent<BattleJuice.CardDragFollow>();
+                    follow.Rt = rt; follow.HasTarget = false; follow.enabled = true;
+                }
+                CardView.SetShadow(rt, true, 24f);
+                Audio.Key("card_lift");
+                if (g.Battle != null) g.Battle.SpreadAround(-1);
                 try { if (g.Rs != null) LightUi.PreviewFor(g.Rs.Combat, c); } catch (Exception) { }   // 灯籠に「−2 → 4」などの予告 (2026-09-20)
             });
             et.triggers.Add(beginDrag);
@@ -3494,7 +3673,12 @@ namespace DeckRogue.Game
                 var pd = d as PointerEventData;
                 var parent = rt.parent as RectTransform;
                 Vector2 local;
-                if (!_dragAim && pd != null && parent != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, pd.position, null, out local)) rt.anchoredPosition = local;
+                if (!_dragAim && pd != null && parent != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, pd.position, null, out local))
+                {
+                    var follow = rt.gameObject.GetComponent<BattleJuice.CardDragFollow>();
+                    if (follow != null && follow.enabled) { follow.Target = local; follow.HasTarget = true; }   // PC: 慣性つきで追う (B04)
+                    else rt.anchoredPosition = local;
+                }
                 // 敵の上に来たら、その敵に対する実値で札を描き直す (急所・装甲が数字に乗る)
                 if (pd != null && g.Battle != null && g.Rs != null && g.Rs.Combat != null)
                 {
@@ -3502,6 +3686,7 @@ namespace DeckRogue.Game
                     try { g.Battle.RefreshHandCard(g, g.Rs.Combat, hc, over); } catch (Exception) { }
                     // 狙いの矢: 札の上端から指まで。指の下の敵には真鍮の縁 (p09)
                     if (_dragAim) { try { g.Battle.UpdateAimArrow(g, g.Rs.Combat, hc, pd.position, over); } catch (Exception e) { Debug.LogException(e); } }
+                    else { try { g.Battle.ShowCardPreview(g, g.Rs.Combat, hc, over); } catch (Exception) { } }   // 指の下の敵の HP バーに「ここまで減る」(2026-11-04 B01)
                 }
             });
             et.triggers.Add(drag);
@@ -3513,13 +3698,17 @@ namespace DeckRogue.Game
                 if (_dragAim && g.Battle != null) g.Battle.ClearAimArrow();   // 矢と縁を片付け、札の押さえを外す (p09)
                 _dragAim = false;
                 LightUi.HidePreview();
+                var follow = rt.gameObject.GetComponent<BattleJuice.CardDragFollow>();
+                if (follow != null) { follow.HasTarget = false; follow.enabled = false; }   // 以後は Tween.Move が位置を持つ (B04)
+                CardView.SetShadow(rt, false, 0f);
+                if (g.Battle != null) g.Battle.ClearCardPreview(g);   // 見込みの帯と「倒せる」を消す (B01/B02)
                 var pd = d as PointerEventData;
                 int enemyIdx = pd != null ? EnemyUnderPointer(pd) : -1;
                 bool overField = pd != null && pd.position.y > DropLineScreen(rt);   // r3 の PC は上がった札の上端の 15.6 下 (=二周目と同じ)・スマホは沈めた手札の上端＋111 (二周目は画面の 36%)
                 if (c.Def.Modes != null && c.Def.Modes.Count > 0)
                 {
                     if (overField) { g.PreferredTarget = enemyIdx; g.ModeChoiceUid = c.Uid; g.Rebuild(); }
-                    else { Tween.Move(rt, hc.BasePos, 0.15f); Tween.Scale(rt, Vector3.one * CardScale, 0.15f); rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot); CardView.SetKeyNumVisible(rt, true); RestoreOrder(rt); }
+                    else { Audio.Key("card_cancel"); Tween.Move(rt, hc.BasePos, 0.15f); Tween.Scale(rt, Vector3.one * CardScale, 0.15f); rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot); CardView.SetKeyNumVisible(rt, true); RestoreOrder(rt); }
                     return;
                 }
                 if (enemyIdx >= 0 || overField)
@@ -3528,6 +3717,7 @@ namespace DeckRogue.Game
                     PlayCard(g, c, null);
                     return;
                 }
+                Audio.Key("card_cancel");   // 戻した (2026-11-04 B04)
                 Tween.Move(rt, hc.BasePos, 0.15f);
                 Tween.Scale(rt, Vector3.one * CardScale, 0.15f);
                 rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot);
@@ -3544,7 +3734,14 @@ namespace DeckRogue.Game
                 Tween.Scale(rt, Vector3.one * R3U_HoverScale, 0.12f, Ease.OutQuad);
                 Tween.Move(rt, hc.BasePos + new Vector2(0f, HandLift + HandSink), 0.12f, Ease.OutQuad);   // 沈めた分を足す = 持ち上げた札は今と同じ高さ (HD-2D 見本 2026-09-30 P20)。r3 のスマホは +130 (親指より上)
                 CardView.SetKeyNumVisible(rt, false);   // r3: 上がっている間は要の数字の札を隠す (本文に同じ数字がある。仕様 §4)
-                rt.localRotation = Quaternion.identity;
+                // 触れた札は少し傾き (PC ±3°。扇の傾きと反対側へ戻す感じ)・影が伸び・両隣が開く (2026-11-04 B04/M15)。スマホは傾けない
+                rt.localRotation = UiKit.Phone ? Quaternion.identity : Quaternion.Euler(0f, 0f, Mathf.Clamp(-hc.BaseRot * 0.5f, -3f, 3f));
+                CardView.SetShadow(rt, true, 18f);
+                if (g.Battle != null)
+                {
+                    g.Battle.SpreadAround(hc.Index);
+                    try { if (g.Rs != null) g.Battle.ShowCardPreview(g, g.Rs.Combat, hc, -1); } catch (Exception) { }   // 狙う敵の HP バーに「ここまで減る」(B01/B02)
+                }
                 try { if (g.Rs != null) LightUi.PreviewFor(g.Rs.Combat, c); } catch (Exception) { }   // 灯籠に予告 (PC のホバー。2026-09-20)
             });
             et.triggers.Add(enter);
@@ -3554,6 +3751,8 @@ namespace DeckRogue.Game
                 if (_dragging) return;
                 LightUi.HidePreview();
                 CardView.SetKeyNumVisible(rt, true);
+                CardView.SetShadow(rt, false, 0f);
+                if (g.Battle != null) { g.Battle.SpreadAround(-1); g.Battle.ClearCardPreview(g); }
                 Tween.Scale(rt, Vector3.one * CardScale, 0.12f, Ease.OutQuad);
                 Tween.Move(rt, hc.BasePos, 0.12f, Ease.OutQuad);
                 rt.localRotation = Quaternion.Euler(0f, 0f, hc.BaseRot);
@@ -3642,7 +3841,18 @@ namespace DeckRogue.Game
             Pile(g, root, new Vector2(0f, 0f), new Vector2(e, py), new Vector2(pw, phh), "draw", "山札", p.DrawPile.Count, delegate { g.ViewPile = "draw"; g.Rebuild(); }, "pile-draw");
             Pile(g, root, new Vector2(1f, 0f), new Vector2(-(pw + e), py), new Vector2(pw, phh), "discard", "捨て札", p.DiscardPile.Count, delegate { g.ViewPile = "discard"; g.Rebuild(); }, "pile-discard");
             if (p.ExhaustPile.Count > 0)   // 本家と同じく、消滅は1枚以上ある時だけ (1ターン目の右下の角を静かに保つ)
+            {
                 Pile(g, root, new Vector2(1f, 0f), new Vector2(-(pw + e), py + phh + exGap), new Vector2(pw, 36f), "exhaust", "消滅", p.ExhaustPile.Count, delegate { g.ViewPile = "exhaust"; g.Rebuild(); }, "pile-exhaust");
+                // 初めて現れる時は OutBack で出る (2026-11-04 B05)。前の組み立てで見せた数は BattleView.LastStatus に持つ
+                int prevEx = 0; bool hadEx = g.Battle != null && g.Battle.LastStatus.TryGetValue("pile:exhaust", out prevEx);
+                var exRt = g.Anchor("pile-exhaust");
+                if (exRt != null && g.Battle != null && hadEx && prevEx == 0 && !ScreenFx.Instant)
+                {
+                    exRt.localScale = Vector3.zero;
+                    Tween.Scale(exRt, Vector3.one, 0.3f, Ease.OutBack);
+                }
+            }
+            if (g.Battle != null) g.Battle.LastStatus["pile:exhaust"] = p.ExhaustPile.Count;
             if (g.ViewPile != null) BuildPileViewer(g, root, st);
         }
 
@@ -3805,12 +4015,18 @@ namespace DeckRogue.Game
         /// Time.unscaledDeltaTime で進む (ヒットストップの timeScale に引きずられない)。ボタンを押した後の順送り (古い盤面の上の敵フェーズ) では、
         /// 組んだ時の GameState が g.Rs.Combat と同じものでなくなるので止める
         /// </summary>
-        public class EndTurnPulse : MonoBehaviour
+        public class EndTurnPulse : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
         {
             public Image Edge; public GameObject Note; public GameRoot G; public GameState Built;
-            float _t;
+            float _t, _press = 1f; bool _down;
+            // 押し込み (2026-11-04 B10): ButtonMotion はこのボタンを飛ばすので、脈動に押した時の 0.93 を掛ける (0.06 秒で沈み、離すと戻る)
+            public void OnPointerDown(PointerEventData d) { _down = true; }
+            public void OnPointerUp(PointerEventData d) { _down = false; }
+            public void OnPointerExit(PointerEventData d) { _down = false; }
             void Update()
             {
+                float dt = Tween.UnscaledDt;
+                _press = Mathf.MoveTowards(_press, _down ? 0.93f : 1f, dt / 0.06f * 0.07f);
                 if (G == null || G.Rs == null || !ReferenceEquals(G.Rs.Combat, Built))
                 {
                     transform.localScale = Vector3.one;
@@ -3819,11 +4035,11 @@ namespace DeckRogue.Game
                     enabled = false;
                     return;
                 }
-                _t += Tween.UnscaledDt;   // det の撮影では 1/60 秒 (2026-09-30 HD-2D 見本 P00)
+                _t += dt;   // det の撮影では 1/60 秒 (2026-09-30 HD-2D 見本 P00)
                 float live = _t - 0.4f;
-                if (live <= 0f) return;
+                if (live <= 0f) { transform.localScale = Vector3.one * _press; return; }
                 float s = 0.5f - 0.5f * Mathf.Cos(live * 1.2f * Mathf.PI * 2f);
-                transform.localScale = Vector3.one * (1f + 0.03f * s);
+                transform.localScale = Vector3.one * ((1f + 0.03f * s) * _press);
                 if (Edge != null)
                 {
                     float a = (0.45f + 0.55f * s) * Mathf.Clamp01(live / 0.2f);   // 現れる時だけ 0.2 秒で薄く入る
@@ -3932,6 +4148,10 @@ namespace DeckRogue.Game
             var dImg = disc.gameObject.AddComponent<Image>();
             dImg.sprite = PaperFx.Disc(); dImg.preserveAspect = true; dImg.raycastTarget = false;
             dImg.color = st.Player.Energy > 0 ? Color.white : new Color(0.85f, 0.85f, 0.85f, 1f);
+            // 前の組み立てで見せたエナジー (2026-11-04 B03): 違えば弧と数字を前の値から滑らせる (払った＝0.25 秒で削れる・補充＝0.35 秒で満ちる)。0 になったら円盤が沈む
+            int shownBefore = g.Battle != null ? g.Battle.ShownEnergy : -1;
+            bool slide = shownBefore >= 0 && shownBefore != st.Player.Energy && !ScreenFx.Instant;
+            if (slide && st.Player.Energy <= 0 && shownBefore > 0) { dImg.color = Color.white; var di = dImg; Tween.Run(FxSettings.Dur(0.2f), k => { if (di != null) di.color = Color.Lerp(Color.white, new Color(0.85f, 0.85f, 0.85f, 1f), k); }, Ease.OutQuad); }
             // 空きの溝 (2026-09-29 p20): 使った分は暗い真鍮の溝として残る＝「使った分＝くすんだ真鍮／残り＝明るい真鍮」。旧は弧だけで、空いた所に夜の舞台が透けて輪が欠けた「C」に見えた
             var track = UiKit.NewRect("track", sun);
             UiKit.Stretch(track, 0f, 0f, 0f, 0f);
@@ -3944,6 +4164,18 @@ namespace DeckRogue.Game
             aImg.sprite = PaperFx.Ring(7); aImg.color = PaperFx.Brass; aImg.raycastTarget = false;
             aImg.type = Image.Type.Filled; aImg.fillMethod = Image.FillMethod.Radial360; aImg.fillOrigin = 2; aImg.fillClockwise = true;
             aImg.fillAmount = Mathf.Clamp01((float)st.Player.Energy / turnMax);   // 一時マナで分母を超えても弧は満タンのまま (超えた分は外の小玉)
+            if (slide)
+            {   // 弧の滑り (B03): 札から飛ぶ玉 (BattleView.EnergyOrbs 0.22 秒) が着く頃に削れ始める。補充は OutBack で満ちる
+                float f0 = Mathf.Clamp01((float)shownBefore / turnMax), f1 = aImg.fillAmount;
+                bool spend = st.Player.Energy < shownBefore;
+                var ai = aImg;
+                ai.fillAmount = f0;
+                Tween.After(spend && g.Battle != null && g.Battle.LastPlayedUid != null ? 0.2f : 0f, () =>
+                {
+                    if (ai == null) return;
+                    Tween.Run(FxSettings.Dur(spend ? 0.25f : 0.35f), k => { if (ai != null) ai.fillAmount = Mathf.Lerp(f0, f1, k); }, spend ? Ease.OutCubic : Ease.OutBack);
+                });
+            }
             // 目盛り (2026-09-29 p20): 分母が 2〜12 の時、上から右回りに 360/分母 度ごとの紙色の切れ目＝帯を分母の数に割る (真鍮の上でも溝の上でも見える)
             if (turnMax >= 2 && turnMax <= 12)
             {
@@ -3966,6 +4198,19 @@ namespace DeckRogue.Game
             }
             var et = UiKit.Deco(sun, st.Player.Energy.ToString(), 40, PaperFx.Ink, TextAnchor.MiddleCenter);
             UiKit.Anchor(et.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(-8f, 4f), new Vector2(-8f, 6f));
+            if (slide)
+            {   // 数字は前の値から数える (払った時は跳ねる。B03)
+                var ett = et; int e0 = shownBefore, e1 = st.Player.Energy;
+                ett.text = e0.ToString();
+                bool spend = e1 < e0;
+                Tween.After(spend && g.Battle != null && g.Battle.LastPlayedUid != null ? 0.2f : 0f, () =>
+                {
+                    if (ett == null) return;
+                    if (spend) Tween.Punch(ett.rectTransform, 0.22f, 0.3f);
+                    Tween.Run(FxSettings.Dur(0.25f), k => { if (ett != null) ett.text = Mathf.RoundToInt(Mathf.Lerp(e0, e1, k)).ToString(); }, Ease.OutQuad, () => { if (ett != null) ett.text = e1.ToString(); });
+                });
+            }
+            if (g.Battle != null) g.Battle.ShownEnergy = st.Player.Energy;
             var em = UiKit.Txt(sun, "/ " + turnMax, 15, PaperFx.InkSoft, TextAnchor.MiddleLeft, true);
             UiKit.Anchor(em.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(16f, -14f), new Vector2(60f, 8f));
             // 名札「エナジー」は灯籠の名札「灯」と対で太字 (SemiBold)・中墨 (2026-09-29 p20)
@@ -4644,7 +4889,20 @@ namespace DeckRogue.Game
             float bh = ph ? 30f : 28f;
             if (usable && onFire != null)
             {
-                var fb = UiKit.Btn(row, "発動", delegate { onFire(); }, ph ? 18 : 20, true, PaperFx.BrassLight);
+                var fb = UiKit.Btn(row, "発動", delegate
+                {
+                    // 発動の瞬間 (2026-11-04 B15): 窓は Rebuild で消えるので、トークンの位置に青緑の輪と閃きを FxLayer (残る層) に置いてから手を送る。音は trap_fire_big
+                    var fx = g.FxLayer;
+                    if (fx != null && tok != null)
+                    {
+                        var at = Tween.CenterIn(tok, fx);
+                        Tween.RingBurst(fx, at, PaperFx.ManaLight, 120f, 0.35f);
+                        Tween.RingBurst(fx, at, PaperFx.Mana, 70f, 0.25f);
+                        Tween.Punch(tok, 0.25f, 0.2f);
+                    }
+                    Audio.Key("trap_fire_big");
+                    onFire();
+                }, ph ? 18 : 20, true, PaperFx.BrassLight);
                 var fle = fb.GetComponent<LayoutElement>(); if (fle != null) UnityEngine.Object.Destroy(fle);
                 if (topAlign) UiKit.Anchor(fb.GetComponent<RectTransform>(), new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-btnW, -2f - bh * 2f), new Vector2(0f, -2f));
                 else UiKit.Anchor(fb.GetComponent<RectTransform>(), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-btnW, -bh), new Vector2(0f, bh));

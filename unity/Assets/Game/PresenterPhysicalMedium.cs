@@ -17,7 +17,7 @@ namespace DeckRogue.Game {
     if(log[i] is GameEvent_EnemyDied died&&death==null&&at>=0&&died.EnemyIndex==((GameEvent_DamageDealt)log[at]).EnemyIndex){death=died;continue;}
     // These are all other records dispatched by PlayTracked. A complex command
     // remains wholly on the established path, preserving its original event order.
-    if(log[i] is GameEvent_CardPlayed||CombatPresentationLedger.IsNumeric(log[i])||ResolvedCombatFx.IsResolved(log[i])||IsActorCue(log[i])||IsStatusEvent(log[i])||IsTrapEvent(log[i])||IsEnemyActEvent(log[i])||TableSound(log[i])!=null)return false;
+    if(log[i] is GameEvent_CardPlayed||CombatPresentationLedger.IsNumeric(log[i])||ResolvedCombatFx.IsResolved(log[i])||IsActorCue(log[i])||IsStatusEvent(log[i])||IsTrapEvent(log[i])||IsEnemyActEvent(log[i])||IsRedEvent(log[i])||TableSound(log[i])!=null)return false;   // 赤・霊気の出来事は TableSound から外れた (2026-11-04) ので名指しで除く
    }
    if(at<0||!captured.TryGetValue(at,out var ticket)||ticket==null||!plan.Hits.TryGetValue(at,out var hitPlan)||hitPlan.Total!=1||hitPlan.Index!=0||!plan.Sources.TryGetValue(at,out var route)||route==null||!plan.Intensity.TryGetValue(at,out var intensity)||intensity?.Tier!="medium")return false;
    var receipt=Numeric.Find(at,log[at]);

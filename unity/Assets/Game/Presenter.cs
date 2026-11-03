@@ -108,6 +108,7 @@ namespace DeckRogue.Game
             Tween.CancelPresentations();ClearNumericPresentation();ClearEnemyPresentation();++_impactEpoch;PendingImpactCount=0;_lastImpactAt=0f;
             ++_visualVersion;PendingVisualCount=0;LastSequenceDuration=0f;
             WorldBattleFx.Cancel();StageFx.CancelPresentationLights();Stage.CancelCombatMotion();_seen=0;_seenCombat=null;
+            ClearJuice();StageBeat.Reset();   // 2026-11-04 演出の磨き: 合計の札・多段の札・鼓動・舞台の変化 (勝利の明かり・危険・猛り火) を基へ
             var fx=GameRoot.I?.FxLayer;
             if(fx!=null)for(int i=fx.childCount-1;i>=0;i--){var child=fx.GetChild(i);child.gameObject.SetActive(false);if(!CodexBattleFx.Owns(child))UnityEngine.Object.Destroy(child.gameObject);}
 
@@ -233,16 +234,18 @@ namespace DeckRogue.Game
                 else if (ev is GameEvent_ConfusedAttack) gap = 0.4f;
                 else if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) gap = 0.6f;
                 else if (ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed) gap = 0.15f;
+                else if (IsRedEvent(ev)) gap = RedEventGap(ev);   // チェイン・猛り火・くべる・霊気 (2026-11-04 演出の磨き)
                 else if (IsStatusEvent(ev)) gap = 0.3f;
                 else if (ev is GameEvent_ReactionTriggered) gap = 0.55f;   // 札が飛んで着弾するまで待ってから返しのダメージ (2026-09-17)
                 else if (IsTrapEvent(ev)) gap = 0.3f;
-                else if (ev is GameEvent_EnemyActionExecuting) gap = 0.32f;   // 予備動作 (縮む) → 当たり (2026-09-17)
+                else if (ev is GameEvent_EnemyActionExecuting exq) gap = exq.Kind == "attack" ? 0.44f : 0.32f;   // 予備動作 (縮む) → 当たり (2026-09-17)。攻撃は意図の札の脈打ち (予兆) のぶん +0.12 (2026-11-04)
                 else if (ev is GameEvent_EnemyInterrupted) gap = 0.55f;   // 豹変の判を読ませてから次 (2026-09-17 ④)
                 else if (IsEnemyActEvent(ev)) gap = 0.25f;
                 else if (ResolvedCombatFx.IsResolved(ev) || TableSound(ev) != null) gap = 0.12f;   // 表 (audio.json) で音だけ鳴るイベント (撃破・分裂…)
                 else continue;
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, visibleBoard);
+                if (IsRedEvent(ev)) { ctx.EventIndex = i; ctx.CapturedState = combat; }   // チェインの段・飛び先を記録から引く (2026-11-04)
                 ctx.Feedback=ResolvedCombatFx.Capture(g,ev);
                 if(ctx.Feedback!=null){ctx.Feedback.PrevState=visibleBoard;if(ctx.Feedback.Log==null){ctx.Feedback.Log=log;ctx.Feedback.EventIndex=i;}}   // HD-2D (Project422) の門が読む前の盤面と記録
                 if(ctx.Feedback?.Outcome=="hit" && intensityAt.TryGetValue(i,out var intensity))ctx.Feedback.Intensity=intensity;
@@ -282,10 +285,11 @@ namespace DeckRogue.Game
             if (ev is GameEvent_ConfusedAttack) return .4f;
             if (ev is GameEvent_TurnEnded || ev is GameEvent_TurnStarted) return .6f;
             if (ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed) return .15f;
+            if (IsRedEvent(ev)) return RedEventGap(ev);   // 2026-11-04 演出の磨き
             if (IsStatusEvent(ev)) return .3f;
             if (ev is GameEvent_ReactionTriggered) return .55f;
             if (IsTrapEvent(ev)) return .3f;
-            if (ev is GameEvent_EnemyActionExecuting) return .32f;
+            if (ev is GameEvent_EnemyActionExecuting ex) return ex.Kind == "attack" ? .44f : .32f;   // 攻撃は意図の札の脈打ち (予兆) のぶん +0.12 (2026-11-04)
             if (ev is GameEvent_EnemyInterrupted) return .55f;
             if (IsEnemyActEvent(ev)) return .25f;
             return .12f;
@@ -330,7 +334,9 @@ namespace DeckRogue.Game
             // 戦闘の始まり (2026-09-17 ⑨): 敵が順に現れ、強個体・幕ボスは名前の帯。その間は後の出来事 (ターン開始の帯など) を待たせる
             if (from == 0 && log.Count > 0 && log[0] is GameEvent_CombatStarted)
             {
+                ClearJuice();   // 新しい戦闘: 合計の札・鼓動を 0 から (2026-11-04)
                 try { delay += ShowEntrance(g, fx, combat); } catch (Exception e) { Debug.LogWarning("[Presenter] entrance " + e.Message); }
+                AfterVisual(delay + 0.3f, () => { if (g.Battle == board) SyncDangerCue(g); });   // 前の戦闘で削られた HP が 3 割以下なら最初から鼓動
             }
             if(!visualPlan.Built) {
                 visualPlan.Built=true;visualPlan.Finishing=FinishingBlowIndex(log,visualPlan.From,combat);
@@ -383,7 +389,7 @@ namespace DeckRogue.Game
                     try { Show(g,fx,ev,false,cctx); } catch(Exception e) { Debug.LogWarning("[Presenter] "+e.Message); }
                     continue;
                 }   // 攻撃コマは札を出した瞬間に
-                if (!(CombatPresentationLedger.IsNumeric(ev) || ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_EnemyIntentDeclared || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || ResolvedCombatFx.IsResolved(ev) || TableSound(ev) != null)) continue;
+                if (!(CombatPresentationLedger.IsNumeric(ev) || ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_EnemyIntentDeclared || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || IsRedEvent(ev) || ResolvedCombatFx.IsResolved(ev) || TableSound(ev) != null)) continue;
                 var captured = ev;
                 var ctx = ReactionContextFor(g, log, i, prevBoard);
                 ctx.Display = display;
@@ -435,7 +441,7 @@ namespace DeckRogue.Game
                 // 連続する演出は 0.12 秒ずつずらす (同じ場所に重ならない・順番が読める)。束ねた人形の粒は 0.04 秒 (2026-09-21)
                 AfterVisual(delay,()=>ShowSafely(g,fx,captured,ctx));
                 delay += EnemyContactSpan(ctx);
-                delay += enemyPhase && !cardAction ? MainSequenceGap(ev,ctx) : ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : (ctx.Hit != null && ctx.Hit.Volley && !ctx.Hit.VolleyLast) ? 0.03f : ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting ? 0.3f : ev is GameEvent_EnemyInterrupted ? 0.45f : 0.12f;
+                delay += enemyPhase && !cardAction ? MainSequenceGap(ev,ctx) : ctx.Batch != null ? (ctx.BatchLast ? 0.2f : 0.04f) : (ctx.Hit != null && ctx.Hit.Volley && !ctx.Hit.VolleyLast) ? 0.03f : ev is GameEvent_ReactionTriggered ? 0.45f : ev is GameEvent_EnemyActionExecuting exg ? (exg.Kind == "attack" ? 0.42f : 0.3f) : ev is GameEvent_EnemyInterrupted ? 0.45f : IsRedEvent(ev) ? RedEventGap(ev) : 0.12f;
             }
             LastSequenceDuration=delay;
             if(display != null && to==log.Count) AfterVisual(delay + .01f, ()=>FinishDisplayAfterEnemyProjection(g,display,to,epoch,board));
@@ -480,7 +486,15 @@ namespace DeckRogue.Game
                     var spr = g.Battle != null ? g.Battle.EnemySprite(ex.EnemyIndex) : null;
                     if (pan == null) return;
                     var tag = pan.Find("intent-tag") as RectTransform;
-                    if (tag != null) Tween.Punch(tag, 0.16f);
+                    if (tag != null) Tween.Punch(tag, ex.Kind == "attack" ? 0.24f : 0.16f, 0.32f);
+                    // 予兆 (2026-11-04 B07): 攻撃の意図の札の紙が真鍮に一瞬点き、enemy_telegraph。大技の赤い合図 (StageMotion.EnemyBig) が出ている時は重ねない
+                    if (tag != null && ex.Kind == "attack" && !StageMotion.EnemyBigFlashing)
+                    {
+                        var tagPaper = tag.Find("paper");
+                        var tagImg = tagPaper != null ? tagPaper.GetComponent<Image>() : null;
+                        if (tagImg != null) Tween.Flash(tagImg, PaperFx.BrassLight, 0.35f);
+                        Audio.Key("enemy_telegraph");
+                    }
                     Vector2 center = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
                     string moveId = MoveIdFor(ctx, ex.EnemyIndex);
                     Stage.PlayEnemyMove("enemy" + ex.EnemyIndex, moveId, ex.Kind);   // 技ごとのコマ (2026-10-28・dot の台帳)。無ければ attack/block
@@ -619,7 +633,10 @@ namespace DeckRogue.Game
                     if (spr == null && pan == null) return;
                     var pos = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
                     if(bt.Amount>0 && !Stage.CombatWorld) Tween.IconBurst(fx, pos, "burn", new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.9f), 120f);
-                    Tween.Float(fx, pos + new Vector2(0f, 40f), bt.Amount.ToString(), PaperFx.Ember, 34, 44f, 0.9f);
+                    // 延焼のティック: Ember の数字 (大きさは段。2026-11-04 G3)・敵の体は弱く白く・このターンの合計にも足す (撃破サマリーと同じ数え方)
+                    TierNumber(fx, pos + new Vector2(0f, 40f), bt.Amount.ToString(), PaperFx.Ember, Mathf.Min(2, DamageTier(bt.Amount, EnemyMaxHpOf(g, ctx, bt.EnemyIndex), false, ctx != null && ctx.FinishingBlow)));
+                    if (bt.Amount > 0) { StageBeat.HitFlash(bt.EnemyIndex, 0.2f); AddTurnTotal(g, fx, bt.Amount); }
+                    if (ctx != null && ctx.FinishingBlow) FinishBlowCue(g, fx, bt.EnemyIndex, pos);   // 延焼で焼け落ちたとどめ (2026-11-04)
                     if (live && g.Battle != null) g.Battle.NudgeEnemyHp(bt.EnemyIndex, -bt.Amount);
                     break;
                 }
@@ -642,7 +659,7 @@ namespace DeckRogue.Game
                     Tween.IconBurst(fx, pos, "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, 0.9f), 140f);
                     Tween.RingBurst(fx, pos, PaperFx.SkyLight, 180f, 0.35f);
                     Tween.Float(fx, pos + new Vector2(0f, 50f), "ブロックを砕いた " + bs.Amount, PaperFx.SkyLight, 26, 36f, 0.9f);
-                    Stage.Shake(5f, 0.2f);
+                    Stage.Shake(5f, 0.2f); StageBeat.Shake(0.3f, 0.2f);   // 箱庭で効くのは後者 (2026-11-04)
                     if (live && g.Battle != null) g.Battle.SetEnemyBlock(bs.EnemyIndex, 0);
                     break;
                 }
@@ -657,11 +674,11 @@ namespace DeckRogue.Game
                     Audio.Key("EnemyInterrupted");
                     Vector2 center = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
                     if (spr != null) { Tween.Puff(spr, 0.45f, 1.22f); Tween.Shake(spr, 7f, 0.45f); }
-                    Stage.Flash("enemy" + ei.EnemyIndex);
-                    Stage.Shake(8f, 0.3f);
+                    Stage.Flash("enemy" + ei.EnemyIndex); StageBeat.HitFlash(ei.EnemyIndex, 0.6f);
+                    Stage.Shake(8f, 0.3f); StageBeat.Shake(0.5f, 0.25f);   // 箱庭で効くのは後者 (2026-11-04)
                     Tween.RingBurst(fx, center, PaperFx.Rose, 280f, 0.5f);
                     Tween.RingBurst(fx, center, PaperFx.BrassLight, 170f, 0.35f);
-                    Tween.ScreenFlash(fx, new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, 0.16f), 0.3f);
+                    FlashScreen(fx, PaperFx.Rose, 0.16f, 0.3f);   // 設定の閃光の倍率を掛ける (2026-11-04)
                     // 目盛り (行動が変わる線) が弾ける。組み直し済みの帳面から目盛りは消えているので、半分の線は HP バーの中央から出す
                     var mark = pan.Find("strip/hpbar/inner/mark") as RectTransform;   // 目盛りは塗りと同じ inner の子 (2026-09-29 p04)
                     var bar = pan.Find("strip/hpbar") as RectTransform;
@@ -702,9 +719,16 @@ namespace DeckRogue.Game
                     break;
                 }
                 case GameEvent_EnemyDied ed:
+                {
                     // 倒れた (2026-09-17 ユーザー「倒した敵は消えるようにしたほうが良くない？」): 着弾の後に崩して消す。組み直しの前でも後でも1回だけ (BattleView が覚える)
+                    // 撃破の判「撃破」と enemy_down・舞台の足元の光 (2026-11-04 B08)。数字の台帳が着弾をまだ見せていない (崩れが待たされる) 時は少し遅らせる
+                    bool held = g.Battle != null && HasEnemyPresentation(g.Rs != null ? g.Rs.Combat : null, ed.EnemyIndex);
+                    int dei = ed.EnemyIndex; var board = g.Battle;
+                    if (!held) EnemyDownCue(g, fx, dei);
+                    else AfterVisual(0.25f, () => { if (g.Battle == board) EnemyDownCue(g, fx, dei); });
                     if (g.Battle != null) g.Battle.KillEnemy(g, ed.EnemyIndex, false);
                     break;
+                }
                 case GameEvent_EnemyFled ef:
                     if (g.Battle != null) g.Battle.KillEnemy(g, ef.EnemyIndex, true);
                     break;
@@ -817,6 +841,7 @@ namespace DeckRogue.Game
             var prev = ctx != null ? ctx.Prev : null;
             if (orb == null || def == null || cur == null) return;
             int paid = prev != null ? Math.Max(0, prev.Player.Energy - cur.Player.Energy) : def.Cost;
+            if (paid > 0) Audio.KeyPitched("energy_spend", 1f + 0.04f * Mathf.Min(paid, 5), 0.6f);   // 払った量で少し上がる (2026-11-04)
             if (def.XCost != true) { if (paid > 0 || def.Cost > 0) Tween.Punch(orb, 0.14f, 0.25f); return; }
             int effX = paid + (cur.XBonus ?? 0) + (def.XBonus ?? 0);
             Tween.Punch(orb, 0.22f, 0.3f);
@@ -841,11 +866,14 @@ namespace DeckRogue.Game
         /// </summary>
         static float ShowEntrance(GameRoot g, RectTransform fx, GameState combat)
         {
-            if(Stage.CombatWorld)return 0f; // Cards are usable as soon as the combat state is ready.
+            // 2026-11-04 (G17): 箱庭 (幕1) の早期 return を外した。通常戦は入力を塞がない (札は戦闘の状態が出来た瞬間から使える) ので、登場は見せるだけ
             if (g.Battle == null || combat == null) return 0f;
             string nodeType = null;
             try { var node = DeckRogue.Engine.Run.CurrentNode(g.Rs); nodeType = node != null ? node.Type : null; } catch (Exception) { }
             bool boss = nodeType == MapNodeTypes.Boss, elite = nodeType == MapNodeTypes.Elite;
+            bool world = Stage.CombatWorld;
+            int living = 0; for (int i = 0; i < combat.Enemies.Count; i++) if (combat.Enemies[i].Hp > 0) living++;
+            StageBeat.EnemyEnter(living, boss);
             // 強個体・幕ボスの名前の帯 (2026-09-30 F47 ユーザー裁定「帯を下げ、札は後から」): 置き場は登場の縮みを掛ける前 (絵が座席に等身大で立っている時) に測る。
             // 意図の札は帯と寄りが終わるまで隠す (帯が消える時に 0.2 秒で出す＝名乗り → 予告の順。寄りの間に 128 ドットの鬣が札の尾に食い込まない)。
             // 見本 (箱庭) では敵の帳面も同じく隠す (足元と帳面の間に帯が入らず、帯の文字が帳面の名前に重なるため。直しの輪2)
@@ -867,6 +895,18 @@ namespace DeckRogue.Game
                 if (spr == null) continue;
                 var img = spr.GetComponent<Image>();
                 var origin = spr.anchoredPosition; float h = spr.rect.height; float pivotY = spr.pivot.y;
+                string ukey = "enemy" + i;
+                if (world)
+                {   // 箱庭 (2026-11-04 G17): 絵は舞台の板なので、UI の縮みでなく崩れの逆 (Dissolve 1→0＝足元から現れる) で見せる。途中で止められたら元へ
+                    Stage.Dissolve(ukey, 1f);
+                    var srtW = spr; float dlW = 0.1f + step * i;
+                    AfterVisual(dlW, () =>
+                    {
+                        Tween.Run(0.42f, k => Stage.Dissolve(ukey, 1f - k), Ease.OutQuad, () => Stage.Dissolve(ukey, 0f), () => Stage.Dissolve(ukey, 0f));
+                        AfterVisual(0.22f, () => { if (srtW != null) Tween.RingBurst(fx, Tween.CenterIn(srtW, fx) + new Vector2(0f, -h * 0.42f), new Color(PaperFx.Paper2.r, PaperFx.Paper2.g, PaperFx.Paper2.b, 0.5f), 160f, 0.4f); });
+                    });
+                    continue;
+                }
                 spr.localScale = new Vector3(0.7f, 0.7f, 1f);
                 spr.anchoredPosition = origin + new Vector2(0f, -h * pivotY * (1f - 0.7f) + 40f);
                 if (img != null) img.color = new Color(1f, 1f, 1f, 0f);
@@ -904,7 +944,7 @@ namespace DeckRogue.Game
             AfterVisual(0.35f, () => NameBand(fx, boss ? "幕ボス" : "強個体", enc, boss, hold, bandTop, bandX));
             // 寄りは帯が消えきる前に戻り終える (旧 1.3+0.7+0.9=2.9 秒は帯より 0.4 秒長く、意図の札を出す時に舞台がまだ寄っていた)。割合は旧と同じ (寄る 45%・留まる 25%・戻る 30%)
             float dolly = bandEnd - 0.04f;
-            if (boss) { Stage.Dolly(0.9f, dolly * 0.45f, dolly * 0.25f, dolly * 0.30f); Audio.Ui("act_start"); }
+            if (boss) { if (!world) Stage.Dolly(0.9f, dolly * 0.45f, dolly * 0.25f, dolly * 0.30f); Audio.Ui("act_start"); }   // 箱庭では寄らない (ユーザー裁定「酔う」)。舞台の反応は StageBeat.EnemyEnter (2026-11-04)
             AfterVisual(bandEnd, () => BattleScreen.RevealIntentsAfterEntrance(g, 0.2f));
             var block = UiKit.NewRect("inputblock", fx);
             UiKit.Stretch(block, 0f, 0f, 0f, 0f);
@@ -1067,30 +1107,47 @@ namespace DeckRogue.Game
             bool skippable = false;
             skip.onClick.AddListener(delegate { if (skippable) finish(); });
             AfterVisual(0.5f, () => {if(done)return;skippable=true;if(skipGroup!=null)skipGroup.interactable=true;});
+            DangerOff(); ClearTurnTotal(true); ClearCombo(true);   // 鼓動と途中の札は決着で止める (2026-11-04)
             if (lost)
             {
-                // 暗転: 地の色が 1.2 秒で覆い、薔薇の「倒れた…」
+                // 敗北 (2026-11-04 G13): BGM がこもって沈み、舞台が暗く冷たく (StageBeat.Defeat)、主人公が崩れて (defeat_fall)、地の色が 1.2 秒で覆い、薔薇の「倒れた…」
+                Audio.Muffle(2.6f); Audio.Duck(0.7f, 1.8f, 1.2f, 0.2f);
+                StageBeat.Defeat();
                 var dark = UiKit.NewRect("dark", layer);
                 UiKit.Stretch(dark, 0f, 0f, 0f, 0f);
                 var dimg = dark.gameObject.AddComponent<Image>(); dimg.color = new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, 0f); dimg.raycastTarget = false;
-                Tween.Run(1.2f, k => { if (dimg != null) dimg.color = new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, 0.88f * k); }, Ease.OutQuad);
-                AfterVisual(0.5f, () => { OutcomeBand(layer, "倒れた…", PaperFx.Rose, 44); Audio.Ui("lose"); });
-                AfterVisual(2.2f, finish);
+                Tween.Run(1.3f, k => { if (dimg != null) dimg.color = new Color(PaperFx.Ground.r, PaperFx.Ground.g, PaperFx.Ground.b, 0.88f * k); }, Ease.OutQuad);
+                AfterVisual(0.08f, () => { try { PlayerCrumble(g, fx, 1.1f); } catch (Exception e) { Debug.LogWarning("[Presenter] crumble " + e.Message); } });
+                AfterVisual(0.85f, () => { OutcomeBand(layer, "倒れた…", PaperFx.Rose, 44); Audio.Ui("lose"); });
+                AfterVisual(2.5f, finish);
                 return;
             }
-            // 勝利: 帯 → 記録の行が 0.13 秒ごとに積み上がる → 余韻 → 報酬へ
+            // 勝利 (2026-11-04 G1・G5・A9): BGM を沈め (Duck) → 帯 (victory_band) → 倒した敵の位置から G・魔素の硬貨が上部バーへ (coin_land/mana_land・数え上げ)
+            // → 記録の行が 0.12 秒ごとに刻み音 (tally_tick) と積み上がる → 余韻 → 報酬へ。箱庭でも出る (GameRoot の門を開けた)。舞台の明かりは StageBeat.Victory
             string title = boss ? "幕ボス撃破" : elite ? "強個体撃破" : "勝利";
-            AfterVisual(0.15f, () => { OutcomeBand(layer, title, PaperFx.BrassLight, boss ? 52 : 44); Audio.Ui("win"); });
-            if (boss) Stage.Dolly(0.8f, 1.6f, 1.2f, 0.8f);
-            var lines = SummaryLines(final != null ? final.EventLog : null);
-            float y0 = -56f; float t = 0.42f;
+            Audio.Duck(0.45f, boss ? 2.2f : 1.4f, 1.0f, 0.1f);
+            StageBeat.Victory(boss);
+            AfterVisual(0.15f, () => { OutcomeBand(layer, title, PaperFx.BrassLight, boss ? 52 : 44); if (!Audio.Key("victory_band")) Audio.Ui("win"); });
+            if (boss && !Stage.CombatWorld) Stage.Dolly(0.8f, 1.6f, 1.2f, 0.8f);   // 旧舞台だけ (箱庭は寄らない。裁定「酔う」)
+            // もらえた: G・魔素の増えた量＝戦闘の手の直前のラン (PrevRun) と終わったランの差。盗まれて逃げられた分 (負) は飛ばさず行にだけ
+            int goldDelta = PrevRun != null ? endedRs.Gold - PrevRun.Gold : 0;
+            int manaDelta = PrevRun != null ? DeckRogue.Engine.Run.ManaOf(endedRs) - DeckRogue.Engine.Run.ManaOf(PrevRun) : 0;
+            var lines = new List<string>();
+            if (goldDelta > 0 || manaDelta > 0) lines.Add((goldDelta > 0 ? "+" + goldDelta + " G" : "") + (goldDelta > 0 && manaDelta > 0 ? " ・ " : "") + (manaDelta > 0 ? "魔素 +" + manaDelta : ""));
+            else if (goldDelta < 0) lines.Add("−" + (-goldDelta) + " G（逃げられた）");
+            lines.AddRange(SummaryLines(final != null ? final.EventLog : null));
+            Vector2 lootFrom = _lastDownPos.HasValue ? _lastDownPos.Value : new Vector2(fx.rect.width * 0.18f, 0f);
+            AfterVisual(0.45f, () => { if (done) return; try { FlyLoot(g, fx, lootFrom, goldDelta, manaDelta, endedRs); } catch (Exception e) { Debug.LogWarning("[Presenter] loot " + e.Message); } });
+            float y0 = -56f; float t = 0.55f;
             for (int i = 0; i < lines.Count; i++)
             {
-                string line = lines[i]; float y = y0 - 34f * i;
-                AfterVisual(t, () => OutcomeLine(layer, line, y));
+                string line = lines[i]; float y = y0 - 34f * i; int ii = i;
+                AfterVisual(t, () => { if (done) return; OutcomeLine(layer, line, y, 1f + 0.04f * ii); });
                 t += 0.12f;
             }
-            AfterVisual(t + (boss ? 1.6f : elite ? 0.9f : 0.65f), finish);
+            // 硬貨が全部着いてから (最大 0.45+0.5+0.42) 余韻へ。幕ボスは長く
+            float hold = Mathf.Max(t, 1.45f) + (boss ? 1.6f : elite ? 0.9f : 0.7f);
+            AfterVisual(hold, finish);
         }
 
         /// <summary>決着の帯: 画面の真ん中の紙の帯に大きな文字 (1.3 倍から押し当てるように縮む)</summary>
@@ -1111,8 +1168,8 @@ namespace DeckRogue.Game
             Tween.Run(0.22f, k => { if (rt == null) return; rt.localScale = Vector3.one * (1.3f - 0.3f * Tween.Apply(Ease.OutCubic, k)); cg.alpha = Mathf.Clamp01(k * 2f); }, Ease.Linear);
         }
 
-        /// <summary>記録の1行: 小さな紙の札が右から滑り込む</summary>
-        static void OutcomeLine(RectTransform layer, string text, float y)
+        /// <summary>記録の1行: 小さな紙の札が右から滑り込む。刻み音 tally_tick は行ごとに音程が上がる (無ければ札を引く音。2026-11-04 A9)</summary>
+        static void OutcomeLine(RectTransform layer, string text, float y, float pitch = 1f)
         {
             var rt = UiKit.NewRect("outcome-line", layer);
             float w = 60f + text.Length * 20f;
@@ -1124,7 +1181,7 @@ namespace DeckRogue.Game
             var cg = rt.gameObject.AddComponent<CanvasGroup>(); cg.alpha = 0f; cg.blocksRaycasts = false;
             var p0 = rt.anchoredPosition;
             Tween.Run(0.2f, k => { if (rt == null) return; rt.anchoredPosition = p0 + new Vector2(50f * (1f - Tween.Apply(Ease.OutCubic, k)), 0f); cg.alpha = k; }, Ease.Linear);
-            Audio.Key("CardsDrawn");
+            if (!Audio.KeyPitched("tally_tick", pitch, 0.6f)) Audio.Key("CardsDrawn");
         }
 
         /// <summary>戦いの記録 (engine/summary.ts battleSummary の写し。表示層だけの集計)。延焼のティックも与ダメ、とげの反射も被ダメに数える</summary>
@@ -1227,16 +1284,21 @@ namespace DeckRogue.Game
                     RectTransform dest = (negate || strike) ? (intentTag ?? enemyPan) : null;
                     if (dest == null) { var ps = g.Battle != null ? g.Battle.PlayerSprite() : null; dest = ps ?? playerRt; }
                     Vector2 to = dest != null ? Tween.CenterIn(dest, fx) + (dest == intentTag ? Vector2.zero : new Vector2(0f, 40f)) : slotPos + new Vector2(0f, 120f);
-                    Tween.Stamp(fx, stampPos, "発動", PaperFx.BrassLight, PaperFx.Ink, PaperFx.Brass);
+                    // 読み勝ち (2026-11-04 G11): 判は大きめ・舞台の足元に青緑の光 (StageBeat.TrapFired)。着弾で画面の縁が青緑に・trap_fire_big (発動の山)
+                    Tween.Stamp(fx, stampPos, "発動", PaperFx.BrassLight, PaperFx.Ink, PaperFx.Brass, 26, 0.6f, -8f);
                     Tween.RingBurst(fx, slotPos, PaperFx.Mana, 140f, 0.4f);
+                    StageBeat.TrapFired();
                     var ghost = GhostToken(fx, slotPos, rt.CardId, def);
                     // 跳ねてから飛ぶ。着弾で青緑の星と輪、打ち消しなら×
                     Tween.Run(0.14f, k => { if (ghost != null) ghost.localScale = Vector3.one * (1f + 0.35f * Mathf.Sin(k * Mathf.PI)); }, Ease.Linear, () =>
                     {
                         if (ghost == null) return;
+                        Tween.BeamFx(fx, slotPos, to, new Color(PaperFx.Mana.r, PaperFx.Mana.g, PaperFx.Mana.b, 0.7f), 0.3f, 0.6f);   // 仕込み枠から的へ細い青緑の筋
                         Tween.Move(ghost, to, 0.3f, Ease.InOutQuad, () =>
                         {
                             if (ghost == null) return;
+                            Audio.Key("trap_fire_big");
+                            HurtVignette(fx, PaperFx.Mana, 0.22f, 0.3f, "mana");
                             Tween.RingBurst(fx, to, PaperFx.Mana, 150f, 0.35f);
                             Tween.IconBurst(fx, to, "set", new Color(PaperFx.Mana.r, PaperFx.Mana.g, PaperFx.Mana.b, 0.95f), 96f);
                             // 打ち消しの×は ActionNegated の側で押す (二重にしない)
@@ -1255,8 +1317,11 @@ namespace DeckRogue.Game
                     var pos = Tween.CenterIn(at, fx);
                     Tween.CrossMark(fx, pos, PaperFx.Brass, 64f);
                     Tween.Shake(at, 8f, 0.35f);
-                    // 一言は札の下に (意図の札は画面の上の方にあるので上に出すと切れる)
-                    Tween.Float(fx, pos + new Vector2(0f, -64f), "打ち消し", PaperFx.ManaLight, 26, 30f, 0.9f);
+                    // 「効かなかった」(2026-11-04 G11): 意図の札が一瞬薄れて戻る (α 1→0.35→1)。判「打ち消し」は札の下に (意図の札は画面の上の方にあるので上に出すと切れる)
+                    var negCg = at.GetComponent<CanvasGroup>(); if (negCg == null) negCg = at.gameObject.AddComponent<CanvasGroup>();
+                    var negAt = at;
+                    Tween.Run(0.4f, k => { if (negAt != null && negCg != null) negCg.alpha = 1f - 0.65f * Mathf.Sin(k * Mathf.PI); }, Ease.Linear, () => { if (negCg != null) negCg.alpha = 1f; }, () => { if (negCg != null) negCg.alpha = 1f; });
+                    Tween.Stamp(fx, pos + new Vector2(0f, -64f), "打ち消し", PaperFx.Paper2, PaperFx.ManaInk, PaperFx.Mana, 24, 0.6f, -6f);
                     break;
                 }
                 case GameEvent_ReactionHeld _:
@@ -1326,6 +1391,7 @@ namespace DeckRogue.Game
                     Vector2 to = dest != null ? Tween.CenterIn(dest, fx) + (dest == intentTag ? Vector2.zero : new Vector2(0f, 40f)) : fromPos + new Vector2(0f, 120f);
                     Tween.Stamp(fx, gStamp, "組んだ", PaperFx.BrassLight, PaperFx.Ink, PaperFx.Brass);
                     Tween.RingBurst(fx, fromPos, PaperFx.Mana, 140f, 0.4f);
+                    StageBeat.TrapFired();   // ギアもからくり: 舞台の足元に青緑の光 (2026-11-04)
                     // 舞台の匣: 蓋が開いて閃く。仕込み札が無ければ 0.6 秒後に閉じる (SyncField と同じ呼び方)
                     try
                     {
@@ -1361,9 +1427,10 @@ namespace DeckRogue.Game
                     Stage.Flash("player");
                     Tween.RingBurst(fx, pos, PaperFx.Rose, 260f, 0.5f);
                     Tween.RingBurst(fx, pos, PaperFx.BrassLight, 170f, 0.35f);
-                    Tween.ScreenFlash(fx, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.14f), 0.3f);
+                    FlashScreen(fx, PaperFx.BrassLight, 0.14f, 0.3f);   // 設定の閃光の倍率を掛ける (2026-11-04)
                     Tween.Stamp(fx, pos + new Vector2(0f, 30f), ds.Source == "gear" ? "蘇りの発条がはじけた!" : "蜥蜴の尾が砕けた!", PaperFx.Paper2, PaperFx.BadInk, PaperFx.Rose, 22, 0.9f, -6f);
                     AfterVisual(0.3f, () => Tween.Float(fx, pos + new Vector2(0f, 96f), "HP " + ds.Hp + " で踏みとどまった", PaperFx.BrassLight, 24, 30f, 1.2f));
+                    AfterVisual(0.35f, () => SyncDangerCue(g));   // 踏みとどまった HP で鼓動 (2026-11-04)
                     break;
                 }
                 case GameEvent_RetainerRushed rr:
@@ -1509,7 +1576,18 @@ namespace DeckRogue.Game
             float cx, cy, w;
             BannerPlace(g, fx, t.GetPreferredValues(text).x + 72f, out cx, out cy, out w);
             UiKit.Anchor(rt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(cx - w / 2f, cy - 40f), new Vector2(cx + w / 2f, cy + 40f));
-            Tween.Run(0.9f, k => { if (cg != null) cg.alpha = k < 0.15f ? k / 0.15f : k > 0.7f ? 1f - (k - 0.7f) / 0.3f : 1f; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+            // 動きの文法「入り」(2026-11-04 G10): 帯は左 40px から OutCubic 0.22 秒で滑り込み、下の線は幅 0→120 に伸びる (NameBand と同じ作法)。消える時は右へ少し流れる
+            var p0 = rt.anchoredPosition;
+            var accRt = accent.rectTransform; accRt.localScale = new Vector3(0f, 1f, 1f);
+            Tween.Run(0.9f, k =>
+            {
+                if (rt == null || cg == null) return;
+                float dur = 0.9f, tt = k * dur;
+                float slide = Tween.Apply(Ease.OutCubic, Mathf.Clamp01(tt / 0.22f));
+                rt.anchoredPosition = p0 + new Vector2(-40f * (1f - slide) + (k > 0.7f ? 24f * (k - 0.7f) / 0.3f : 0f), 0f);
+                if (accRt != null) accRt.localScale = new Vector3(Tween.Apply(Ease.OutCubic, Mathf.Clamp01((tt - 0.08f) / 0.26f)), 1f, 1f);
+                cg.alpha = k < 0.15f ? k / 0.15f : k > 0.7f ? 1f - (k - 0.7f) / 0.3f : 1f;
+            }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 
         /// <summary>
@@ -1560,7 +1638,7 @@ namespace DeckRogue.Game
         static string TableSound(GameEvent ev)
         {
             if (ev == null) return null;
-            if (ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_CardPlayed || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev)) return null;
+            if (ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_CardPlayed || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || IsRedEvent(ev)) return null;   // 赤・霊気の出来事は絵と一緒に Show が鳴らす (2026-11-04)
             // 絵の側 (BattleView) が札の飛び・撃破の消えに合わせて鳴らすイベントは、ここでは二重に鳴らさない
             if (ev is GameEvent_CardSet || ev is GameEvent_CardsDrawn || ev is GameEvent_EnemyDied || ev is GameEvent_EnemyFled) return null;
             var n = ev.GetType().Name;
@@ -1613,7 +1691,7 @@ namespace DeckRogue.Game
         /// (人形・置物の SourceUid つきは除く) に、形 (CardHitStyle) と多段の位置を付ける。Index＝何発目 (0 から)・Total＝発数。
         /// 全体攻撃は「同じ敵が2度目に出るまで」を1発 (Volley) と数え、Volley の中は 0.05 秒刻みで一斉に走らせて揺れは最後の1つだけ
         /// </summary>
-        sealed class HitPlan { public CardDef Def; public string Style = "slash"; public int Index; public int Total; public bool Volley; public bool VolleyFirst; public bool VolleyLast; public CardVfxProfile.Showcase Showcase; public bool AuthoredCastReady; }
+        sealed class HitPlan { public CardDef Def; public string Style = "slash"; public int Index; public int Total; public bool Volley; public bool VolleyFirst; public bool VolleyLast; public CardVfxProfile.Showcase Showcase; public bool AuthoredCastReady; public int Sum; }   // Sum＝この札の当たりの Amount の和 (多段の「合計 M」。2026-11-04)
         static void PlanCardHits(IReadOnlyList<GameEvent> log, int from, Dictionary<int, HitPlan> at)
         {
             CardDef cur = null; bool directPlay=false,ambiguousScope=false;
@@ -1623,15 +1701,17 @@ namespace DeckRogue.Game
                 if (cur == null || run.Count == 0) { run.Clear(); return; }
                 string style = CardHitStyle(cur);
                 var volleys = new List<List<int>>(); var seen = new HashSet<int>(); List<int> v = null;
+                int sum = 0;
                 foreach (var idx in run)
                 {
                     int ei = (log[idx] as GameEvent_DamageDealt).EnemyIndex ?? 0;
+                    sum += Math.Max(0, (log[idx] as GameEvent_DamageDealt).Amount);
                     if (v == null || seen.Contains(ei)) { v = new List<int>(); volleys.Add(v); seen.Clear(); }
                     v.Add(idx); seen.Add(ei);
                 }
                 for (int k = 0; k < volleys.Count; k++)
                     for (int m = 0; m < volleys[k].Count; m++)
-                        at[volleys[k][m]] = new HitPlan { Def = cur, Style = style, Showcase = directPlay ? CardVfxProfile.Comparison(cur) : null, Index = k, Total = volleys.Count, Volley = volleys[k].Count > 1, VolleyFirst = m == 0, VolleyLast = m == volleys[k].Count - 1 };
+                        at[volleys[k][m]] = new HitPlan { Def = cur, Style = style, Showcase = directPlay ? CardVfxProfile.Comparison(cur) : null, Index = k, Total = volleys.Count, Volley = volleys[k].Count > 1, VolleyFirst = m == 0, VolleyLast = m == volleys[k].Count - 1, Sum = sum };
                 run.Clear();
             }
             for (int i = Math.Max(0, from); i < log.Count; i++)
@@ -1687,7 +1767,7 @@ namespace DeckRogue.Game
         static bool IsShownEvent(GameEvent ev)
         {
             return ev is GameEvent_CardPlayed || ev is GameEvent_DamageDealt || ev is GameEvent_BlockGained || ev is GameEvent_IceBlockGained || ev is GameEvent_HpHealed
-                || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_EnemyIntentDeclared || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || TableSound(ev) != null;
+                || ev is GameEvent_TurnStarted || ev is GameEvent_TurnEnded || ev is GameEvent_EnemyIntentDeclared || IsStatusEvent(ev) || IsTrapEvent(ev) || IsEnemyActEvent(ev) || IsRedEvent(ev) || TableSound(ev) != null;
         }
 
         /// <summary>from 以降の出来事を走査し、2つ以上続く人形の粒の並びごとに DollBatch を割り当てる (最後の添字を last に)</summary>
@@ -1728,7 +1808,9 @@ namespace DeckRogue.Game
                 Color numColor = sum <= 0 ? UiKit.ColDim : (hpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;
                 Tween.Float(fx, pos, (cnt > 1 ? "人形×" + cnt + ": " : "") + sum, numColor, sum >= 15 ? 40 : 32, 60f, 1.0f);
                 if (blocked > 0) AfterVisual(0.06f, () => Tween.Float(fx, pos + new Vector2(0f, -34f), "ブロックで −" + blocked, PaperFx.SkyLight, 20, 34f, 1.0f));
-                if (hpLoss > 0 && sum >= 15) Stage.Shake(Mathf.Min(10f, sum * 0.3f), 0.2f);
+                if (hpLoss > 0 && sum >= 15) { Stage.Shake(Mathf.Min(10f, sum * 0.3f), 0.2f); StageBeat.Shake(Mathf.Clamp01(sum / 30f), 0.2f); }
+                if (hpLoss > 0) StageBeat.HitFlash(ei, sum >= 15 ? 0.5f : 0.3f);
+                AddTurnTotal(g, fx, sum);   // 人形の束もこのターンの合計に (2026-11-04 B11)
                 if (nudge && g.Battle != null && hpLoss > 0) g.Battle.NudgeEnemyHp(ei, -hpLoss);
                 if (nudge && g.Battle != null && blocked > 0) g.Battle.NudgeEnemyBlock(ei, -blocked);
             }
@@ -1855,7 +1937,12 @@ namespace DeckRogue.Game
         /// <summary>とどめの一撃 (2026-09-17 ⑫): 新しい出来事の中で、最後に敵を倒したプレイヤーの打撃。戦闘が決着 (全滅・逃走) した時だけ。無ければ -1</summary>
         static int FinishingBlowIndex(IReadOnlyList<GameEvent> log, int from, GameState combat)
         {
-            if (combat == null || combat.Player.Hp<=0) return -1;
+            if (combat == null) return -1;
+            if (combat.Player.Hp <= 0)
+            {   // 自分の致死 (2026-11-04 G13): 最後に HP を削った敵の打撃にもスローと薔薇の閃き (致死を耐えた DeathSaved は Hp>0 なのでここへ来ない)
+                for (int i = log.Count - 1; i >= from; i--) if (log[i] is GameEvent_DamageDealt dd && dd.Source != "player" && dd.HpLoss > 0) return i;
+                return -1;
+            }
             for (int i = 0; i < combat.Enemies.Count; i++) if (combat.Enemies[i].Hp > 0) return -1;
             for (int i = log.Count - 1; i >= from; i--) {
                 if(log[i] is GameEvent_DamageDealt dd && dd.Source=="player" && dd.HpLoss>0)return i;
@@ -2005,12 +2092,15 @@ namespace DeckRogue.Game
                 RunContact(g,ctx,()=>Show(g,fx,ev,false,ctx));return;
             }
             ctx?.Display?.Before(ev,ctx.EnemyIndex);
-            if(ctx?.FinishingBlow==true)Tween.FinishSlow();
+            // 自分の致死 (敵の打撃) のスローは着弾の瞬間 (RunContact の中) に掛ける＝飛び道具の 0.22 秒を 0.22 倍で待たせない (2026-11-04 G13)
+            bool selfLethalHit = ev is GameEvent_DamageDealt lethalEv && lethalEv.Source != "player";
+            if(ctx?.FinishingBlow==true && !selfLethalHit)Tween.FinishSlow();
             if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("show",ev.GetType().Name);
-            if((Stage.CombatWorld || ev is GameEvent_HpLost || ev is GameEvent_ScaldTick || ev is GameEvent_ConfusedAttack || CombatOutcome.Read(ev).Kind=="guard" || CombatOutcome.Read(ev).Kind=="nullified") && ResolvedCombatFx.IsResolved(ev) && !InnerContact(ev)) {var ticket=ctx?.Feedback??ResolvedCombatFx.Capture(g,ev);if(ticket!=null)ticket.Finishing=ctx?.FinishingBlow==true;ResolvedCombatFx.Show(g,fx,ticket);}
+            if((Stage.CombatWorld || ev is GameEvent_HpLost || ev is GameEvent_ScaldTick || ev is GameEvent_ConfusedAttack || CombatOutcome.Read(ev).Kind=="guard" || CombatOutcome.Read(ev).Kind=="nullified") && ResolvedCombatFx.IsResolved(ev) && !InnerContact(ev)) {var ticket=ctx?.Feedback??ResolvedCombatFx.Capture(g,ev);if(ticket!=null)ticket.Finishing=ctx?.FinishingBlow==true && !selfLethalHit;ResolvedCombatFx.Show(g,fx,ticket);}
             if (StageMotion.CloseUpActive) MotionInterruptFor(ev, ctx);   // 段2 レーン M: 寄りの外の者に演出が出る前に寄りを戻す (寄りが走っていなければ読むだけ = 門が偽なら何も起きない)
             var key = TableSound(ev);
             if (key != null) { Audio.Key(key); return; }
+            if (IsRedEvent(ev)) { ShowRedEvent(g, fx, ev, ctx ?? new ReactionCtx()); return; }   // チェイン・猛り火・くべる・衝動・霊気 (2026-11-04)
             if (IsTrapEvent(ev)) { ShowTrap(g, fx, ev, ctx ?? new ReactionCtx()); return; }
             if (IsEnemyActEvent(ev)) { ShowEnemyAct(g, fx, ev, ctx ?? new ReactionCtx(), nudgeHp); return; }
             switch (ev)
@@ -2102,6 +2192,9 @@ namespace DeckRogue.Game
                             if(!Stage.CombatWorld || ctx?.Feedback==null || ctx.Feedback.Element=="physical" || ctx.Feedback.Element=="arcane")Stage.Flash("enemy" + ei);
                             Stage.PlayAnim("enemy" + ei, "hurt");   // 被弾のコマ (dot の組だけ持つ。2026-10-28)
                         }
+                        bool finishingHit = ctx != null && ctx.FinishingBlow;
+                        int tier = DamageTier(d.Amount, EnemyMaxHpOf(g, ctx, ei), crit, finishingHit);   // 数字の段 (2026-11-04 G3)
+                        if (d.HpLoss > 0) StageBeat.HitFlash(ei, finishingHit ? 1f : tier >= 2 ? 0.55f : 0.35f);   // 箱庭の白い点滅は見える量で (G6)
                         // 急所: 筋と衝撃線が真鍮色 (big 扱い = 交差する2本目と針10) になり、真鍮の輪が広がる (旧: 星の絵 = 2026-09-17 ユーザー「星型がダサい」で撤去)
                         if (crit && !guardedE) Tween.RingBurst(fx, hit, PaperFx.BrassLight, 200f, 0.35f);
                         if (blocked > 0 && !shell && d.HpLoss > 0) Tween.IconBurst(fx, hit + new Vector2(-10f, 10f), "shield", new Color(PaperFx.Sky.r, PaperFx.Sky.g, PaperFx.Sky.b, 0.7f), 90f);
@@ -2111,14 +2204,15 @@ namespace DeckRogue.Game
                         if (!hd2dAudio && (hp == null || !hp.Volley || hp.VolleyFirst)) Audio.Key("DamageDealt.player.swing");
                         if (d.HpLoss<=0 && CombatOutcome.Read(d).Kind=="guard") Audio.Key("DamageDealt.blocked");
                         else if (d.HpLoss>0 && !volleyTail) Audio.Key(hd2dAudio ? "Hd2dContact." + Hd2dAttackFx.AudioCard(ctx.Feedback.SourceKey) : big ? "DamageDealt.player.big" : "DamageDealt.player");
-                        if (!volleyTail && !guardedE && (big || style == "stomp")) Stage.Shake(Mathf.Min(14f, Mathf.Max(6f, d.Amount * 0.4f)) * (crit ? 1.2f : 1f) * (style == "stomp" ? 1.3f : 1f), 0.25f);   // 踏みつけは小さくても揺れる
-                        // ⑫ カメラ (2026-09-17): 大技は舞台がぐっと寄る。とどめ (戦闘を決めた一撃) はヒットストップ＝時間が一瞬凍って、大きく寄る
-                        bool finishing = ctx != null && ctx.FinishingBlow;
-                        if (finishing) { Stage.ZoomPunch(1.1f, 0.6f); Stage.Shake(12f, 0.35f); Tween.RingBurst(fx, hit, new Color(1f, 1f, 0.95f, 0.9f), 260f, 0.5f); }
-                        else if (big && !guardedE && !volleyTail)
+                        if (!volleyTail && !guardedE && (big || style == "stomp"))
                         {
-                            Stage.ZoomPunch(crit ? 0.5f : 0.35f, 0.3f);
+                            Stage.Shake(Mathf.Min(14f, Mathf.Max(6f, d.Amount * 0.4f)) * (crit ? 1.2f : 1f) * (style == "stomp" ? 1.3f : 1f), 0.25f);   // 踏みつけは小さくても揺れる
+                            StageBeat.Shake(Mathf.Clamp01(d.Amount / 30f + (style == "stomp" ? 0.2f : 0f)) * (crit ? 1.2f : 1f), 0.22f);   // 箱庭で効くのは後者 (2026-11-04)
                         }
+                        // ⑫ とどめ (戦闘を決めた一撃): スロー (Show の冒頭) ＋ 白→夜の 2 段の閃き・舞台の露出・finish_blow (FinishBlowCue。2026-11-04 G2)。
+                        // 旧の ZoomPunch (寄り) は撤去 (ユーザー裁定「技でカメラが変わるのは酔う」)
+                        bool finishing = finishingHit;
+                        if (finishing) { Stage.Shake(12f, 0.35f); FinishBlowCue(g, fx, ei, hit); }
                         // 舞台の技の光 (2026-09-30 HD-2D 見本 P13): 2Dの当たりと同じ所に点光源。色は当たりの形、大きい当たり (15以上・急所) は強く影あり (PC)。
                         // とどめはその代わりに白・0.3秒・影あり (1つだけ灯す)。stage=diorama だけ・old では何もしない (乱数も Tween も使わない)
                         // 段2 (2026-10-03 レーン M): 寄る当たり (計画 ctx.Motion) と寄っている敵への当たりは、寄り・寄りの技の光・火花 (StageMotion) へ。
@@ -2126,9 +2220,13 @@ namespace DeckRogue.Game
                         bool motionHit = !Stage.CombatWorld && !guardedE && spr != null && ((ctx != null && ctx.Motion != null) || StageMotion.CloseUpOn(ei) || StageMotion.LightsEveryHit);
                         if (motionHit) StageMotion.PlayerHit(ei, style, ctx != null ? ctx.Motion : null, big, finishing, streak);
                         else if (!Stage.CombatWorld && !guardedE && spr != null) { if (finishing) StageFx.Finish("enemy" + ei,streak); else StageFx.PlayerHit("enemy" + ei, style, big,streak); }
-                        // 数字: 通った量は真鍮の紙、盾に全部吸われたら鋼青、0 は薄く。急所は大きく
+                        // 数字: 通った量は真鍮の紙、盾に全部吸われたら鋼青、0 は薄く。大きさは段 (量と最大 HP の割合・急所・とどめ。2026-11-04 G3)。
+                        // 多段 (G4): 2 発目から右へ 14px ずつずらして少し大きく、肩の「×N」と最後の「N 連続 ・ 合計 M」(ComboTick)
                         Color numColor = d.Amount <= 0 ? UiKit.ColDim : (d.HpLoss <= 0 && blocked > 0) ? PaperFx.SkyLight : PaperFx.BrassLight;
-                        Tween.Float(fx, pos, d.Amount.ToString(), numColor, crit ? 50 : (d.Amount >= 20 ? 46 : 36));
+                        int comboIdx = hp != null && hp.Total >= 2 && !hp.Volley ? Mathf.Min(hp.Index, 3) : 0;
+                        TierNumber(fx, pos + new Vector2(14f * comboIdx, 0f), d.Amount.ToString(), numColor, guardedE ? Mathf.Min(tier, 1) : tier, 3 * comboIdx);
+                        if (!guardedE && hp != null) ComboTick(g, fx, ei, hp);
+                        AddTurnTotal(g, fx, d.Amount);
                         // 盾の数字 (帳面の左端の盾) が減ったのを見せる。盾の札が無ければ (吸い切って消えた・殻) 数字の脇の一言で
                         var bshield = blocked > 0 && !shell ? rt.Find("strip/block") as RectTransform : null;
                         if (bshield != null) { Tween.Punch(bshield, 0.25f); Tween.Float(fx, Tween.CenterIn(bshield, fx) + new Vector2(0f, 10f), "−" + blocked, PaperFx.SkyLight, 22, 30f, 0.8f); }
@@ -2215,21 +2313,27 @@ namespace DeckRogue.Game
                             // 完全に防いだ時は被弾音でなく防御音 (2026-09-14 ユーザー指摘)。ブロックで受けた盾の音 + 構えの絵
                             if (dd.HpLoss<=0 && CombatOutcome.Read(dd).Kind=="guard") { Audio.Key("DamageDealt.blocked"); if(enemyFeedback==null || Stage.ImpactTargetCurrent("player",enemyFeedback.Impact))Stage.PlayAnim("player", "block"); }
                             else if(dd.HpLoss>0)Audio.Key(dd.HpLoss>=12?"DamageDealt.enemy.big":"DamageDealt.enemy");
+                            bool lethalHit = ctx != null && ctx.FinishingBlow;   // 自分の致死の一撃 (2026-11-04 G13)
+                            if (lethalHit) Tween.FinishSlow();
                             if (dd.HpLoss > 0)
                             {
                                 Stage.PlayAnim("player", "hurt");
                                 if (pSprC != null) { Tween.Lunge(pSprC, new Vector2(-36f, 0f)); }   // のけぞり (後ろへ小さく)
                                 Stage.Shake(Mathf.Min(18f, 4f + dd.HpLoss * 0.7f) * (style == "blunt" ? 1.3f : 1f), 0.3f);
+                                StageBeat.Shake(Mathf.Clamp01(dd.HpLoss / 20f) * (style == "blunt" ? 1.2f : 1f) * (lethalHit ? 1.3f : 1f), 0.25f);   // 箱庭で効くのは後者
+                                StageBeat.PlayerHit(Mathf.Clamp01(dd.HpLoss / 20f));
                                 Stage.Flash("player");
-                                float hurtA = Mathf.Min(0.35f, 0.1f + dd.HpLoss * 0.015f);
+                                // 被弾の縁 (2026-11-04 ④): 全画面の朱をやめて画面の縁だけ薔薇に (紙の UI は染めない)。大きいほど濃く長く。致死は薔薇の閃き
+                                float hurtA = Mathf.Min(0.5f, 0.16f + dd.HpLoss * 0.02f);
                                 // 段2 レーン M (直し 2026-10-03・反証「白の閃きに被弾の赤い点滅が重なり紙の UI まで桃色」): 敵の大技の合図から帯の終わりまでは α を上限まで (0 = 出さない)。門が偽なら今のまま
                                 if (StageMotion.EnemyBigFlashing) hurtA = Mathf.Min(hurtA, StageMotion.EnemyBigHurtFlashAlpha);
-                                if (hurtA > 0.001f) Tween.ScreenFlash(fx, new Color(0.9f, 0.1f, 0.1f, hurtA));
+                                if (hurtA > 0.001f) HurtVignette(fx, PaperFx.Rose, hurtA, dd.HpLoss >= 12 ? 0.6f : 0.4f, "rose");
+                                if (lethalHit) FlashScreen(fx, PaperFx.Rose, 0.3f, 0.4f);
                             }
                             var pos = Tween.CenterIn(rtC, fx) + new Vector2(UnityEngine.Random.Range(-40f, 40f), 10f);
-                            // 数字は失った HP (2026-09-17 ⑥)。完全に防いだら「防いだ」、盾が吸った量は脇に鋼青で (旧: ブロック前の量を朱で＝表示の嘘)
+                            // 数字は失った HP (2026-09-17 ⑥)。完全に防いだら「防いだ」、盾が吸った量は脇に鋼青で (旧: ブロック前の量を朱で＝表示の嘘)。大きさは段 (G3)
                             int blockedP = ActualAbsorption(dd,dd.Blocked??0);
-                            if (dd.HpLoss > 0) {Tween.Float(fx, pos, "-" + dd.HpLoss, UiKit.ColBad, dd.HpLoss >= 15 ? 46 : 36);if(ctx!=null)ctx.EnemyAggregatePopupShown=true;}
+                            if (dd.HpLoss > 0) {TierNumber(fx, pos, "-" + dd.HpLoss, UiKit.ColBad, lethalHit ? 3 : HurtTier(dd.HpLoss, PlayerMaxHpOf(g, ctx)));if(ctx!=null)ctx.EnemyAggregatePopupShown=true;}
                             else if (dd.Amount > 0 && CombatOutcome.Read(dd).Kind!="nullified") Tween.Float(fx, pos, "防いだ", PaperFx.SkyLight, 30);
                             else if(dd.Amount<=0) Tween.Float(fx, pos, "0", UiKit.ColDim, 30);
                             if (blockedP > 0)
@@ -2243,6 +2347,7 @@ namespace DeckRogue.Game
                             if (nudge && g.Battle != null) g.Battle.LandPlayerIncoming(dd.Amount);   // 見込みから届いた攻撃を引く (先に。この後の Nudge が残りで引き直す。p08)
                             if (nudge && g.Battle != null && dd.HpLoss > 0) g.Battle.NudgePlayerHp(-dd.HpLoss);
                             if (nudge && g.Battle != null && blockedP > 0) g.Battle.AbsorbPlayerBlock(blockedP);   // 自分の札の盾の数字も吸われた分だけ減る (通常→氷壁の順。2026-09-17)
+                            if (dd.HpLoss > 0) SyncDangerCue(g);   // HP 3 割以下で鼓動 (2026-11-04 ④)
                         }));
                     }
                     break;
@@ -2303,6 +2408,10 @@ namespace DeckRogue.Game
                 case GameEvent_TurnStarted ts:
                     Audio.Key("TurnStarted");
                     Banner(g, fx, "ターン " + ts.Turn + "  —  あなたの番", false);
+                    StageBeat.TurnBeat(true);   // 舞台が一瞬明るく (2026-11-04)
+                    ClearTurnTotal(false); ClearCombo(false);   // このターンの合計は 0 から
+                    { var orbT = g.Anchor("energy"); if (orbT != null) AfterVisual(0.12f, () => { if (orbT != null) Tween.Punch(orbT, 0.12f, 0.3f); }); }   // エナジーが戻った合図
+                    AfterVisual(0.3f, () => SyncDangerCue(g));   // 新しい意図で致死級かを見直す
                     // 上部バーの手番の札も順送りの間に「あなたの番」へ (2026-09-29。即時の時は組み直し済み＝触らない)
                     if (nudgeHp || ctx?.Display?.Current==true || (Stage.CombatWorld && (ctx?.Display == null || ctx.Display.Current))) BattleScreen.SetPhase(g, 0, -1, 0);
                     // 自ターンの始まりで通常ブロックは消える (留め具 blockKeep なら N まで残る)。順送りの途中の盾の数字もここで揃える。この後の置物の分は BlockGained が足す
@@ -2369,6 +2478,8 @@ namespace DeckRogue.Game
                 case GameEvent_TurnEnded _:
                     Audio.Key("TurnEnded");
                     Banner(g, fx, "敵の番", true);
+                    StageBeat.TurnBeat(false);   // 舞台が一瞬冷たく (2026-11-04)
+                    AfterVisual(0.5f, () => ClearTurnTotal(true));   // このターンの合計の札は薄れて消える
                     // 上部バーの手番の札を夜の札「敵の番」に (2026-09-29: 旧は敵が行動している間ずっと「あなたの番」のままだった)
                     if (nudgeHp || ctx?.Display?.Current==true || (Stage.CombatWorld && (ctx?.Display == null || ctx.Display.Current))) BattleScreen.SetPhase(g, 1, -1, PhaseEnemyCount(g, ctx, -1));
                     // 敵フェーズの始まりで敵のブロックは失効 (潜伏の殻は残る)。帳面の盾もここで消す
@@ -2658,6 +2769,7 @@ namespace DeckRogue.Game
                         return;
                     }
                     if(h.Amount>0)Audio.Key("HpHealed");
+                    if(h.Amount>0)AfterVisual(0.2f, () => SyncDangerCue(g));   // 回復で 3 割を超えたら鼓動が止まる (2026-11-04)
                     if(Stage.CombatWorld)Hd2dSupport.TryPlay(g, ctx, h);   // HD-2D (Project422): 祈りの一節・大いなる癒しの主たる 1 回の回復は支えの演出 (回復の券の描き手とは別に、受けた側の上に)
                     var hs = g.Battle != null ? g.Battle.PlayerSprite() : null;
                     if (h.Amount>0 && hs != null && !Stage.CombatWorld) Tween.IconBurst(fx, Tween.CenterIn(hs, fx) + new Vector2(0f, 20f), "heart", new Color(0.6f, 1f, 0.6f, 0.9f), 100f);

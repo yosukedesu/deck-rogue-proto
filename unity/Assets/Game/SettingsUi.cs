@@ -65,7 +65,7 @@ namespace DeckRogue.Game
         public static void Build(GameRoot g, RectTransform root)
         {
             bool phone = UiKit.Phone;
-            float h = phone ? 590f : 640f;   // スマホは画質の段の注記 1 行ぶん (2026-10-30)
+            float h = phone ? 590f : 930f;   // スマホは画質の段の注記 1 行ぶん (2026-10-30)。PC は「演出」の段 (2026-11-04) のぶん高く
             var inner = BattleScreen.Modal(root, 820f, h, "settings");
             // 外側 (背景) を触ると閉じる
             var backdrop = inner.parent.parent as RectTransform;
@@ -78,6 +78,13 @@ namespace DeckRogue.Game
                 if (winImg != null) winImg.raycastTarget = true;   // 窓の中のクリックは背景へ抜けない
             }
             UiKit.Head(inner, "設定", 26);
+            // スマホは窓の高さが 675 しか無いので、段を縦のしおりつきの一覧に入れる (2026-11-04 「演出」の段が増えた)。PC は窓にそのまま
+            RectTransform body = inner;
+            if (phone)
+            {
+                body = UiKit.Scroll(inner, true, new Color(0f, 0f, 0f, 0f), 10, 0);
+                UiKit.Le(UiKit.ScrollRoot(body), -1f, 0f, -1f, 0f, -1f, 1f);
+            }
 
             if (!phone)
             {
@@ -107,8 +114,8 @@ namespace DeckRogue.Game
             }
 
             // ---- 画質 (2026-10-04: 技の光・火花・エフェクトの暈。自動 = スマホは戦闘の重さで下げる) ----
-            Section(inner, "画質");
-            var qRow = Row(inner);
+            Section(body, "画質");
+            var qRow = Row(body);
             int qm = GfxQuality.Mode;
             string[] qNames = { "自動", "高", "標準", "軽量" };
             for (int qi = 0; qi < 4; qi++)
@@ -126,18 +133,40 @@ namespace DeckRogue.Game
             if (phone)
             {
                 // スマホの段の中身 (GfxQuality.cs): 標準 = 舞台の光の筋・霧・影を減らす。軽量 = さらに舞台を 0.75 倍で描き、ぼかしと影を切る。文字と札は変わらない
-                var qNote = UiKit.Txt(inner, "標準＝舞台の光の筋・霧・影を減らす。軽量＝さらに舞台を 0.75 倍で描き、ぼかしと影を切る（文字と札はそのまま）。次の戦闘から", 14, UiKit.ColDim, TextAnchor.MiddleLeft);
+                var qNote = UiKit.Txt(body, "標準＝舞台の光の筋・霧・影を減らす。軽量＝さらに舞台を 0.75 倍で描き、ぼかしと影を切る（文字と札はそのまま）。次の戦闘から", 14, UiKit.ColDim, TextAnchor.MiddleLeft);
                 UiKit.Le(qNote, -1f, 24f, -1f, 24f);
             }
 
-            // ---- 音量 ----
-            Section(inner, "音量");
-            Slider(inner, "全体", Audio.Master, v => { Audio.Master = v; }, true);
-            Slider(inner, "BGM", Audio.BgmVol, v => { Audio.BgmVol = v; }, false);
-            Slider(inner, "効果音", Audio.SfxVol, v => { Audio.SfxVol = v; }, true);
+            // ---- 演出 (2026-11-04 見た目・UX・演出の磨き 束 C2・G12/M13): 揺れ・閃光・一瞬の止め・速さ・戦闘の評価の窓。値は FxSettings (PlayerPrefs) ----
+            Section(body, "演出");
+            Slider(body, "画面の揺れ", FxSettings.Shake, v => { FxSettings.Shake = v; }, false, 1.5f);
+            Slider(body, "閃光", FxSettings.Flash, v => { FxSettings.Flash = v; }, false);
+            Slider(body, "一瞬の止め", FxSettings.Pause, v => { FxSettings.Pause = v; }, false);
+            var fxRow = Row(body);
+            var spdLabel = UiKit.Txt(fxRow, "速さ", 17, UiKit.ColInk, TextAnchor.MiddleLeft);
+            UiKit.Le(spdLabel, 110f, 44f, 110f, 44f);
+            bool fast = FxSettings.Speed > 1.2f;
+            var bNormal = UiKit.Btn(fxRow, "ふつう", delegate { FxSettings.Speed = 1f; g.Rebuild(); }, 17, true, fast ? (Color?)null : PaperFx.BrassLight);
+            BattleScreen.SetSize(bNormal, 130f, 46f);
+            var bFast = UiKit.Btn(fxRow, "速い", delegate { FxSettings.Speed = 1.5f; g.Rebuild(); }, 17, true, fast ? PaperFx.BrassLight : (Color?)null);
+            BattleScreen.SetSize(bFast, 130f, 46f);
+            Tooltip.Attach(bFast.gameObject, delegate { return "幕・札の飛び・数え上げ・決着の余韻を 1.5 倍の速さで（本家の高速モードと同じ）"; });
+            bool rating = FxSettings.RatingWindow;
+            var bRate = UiKit.Btn(fxRow, rating ? "戦闘の評価の窓：出す" : "戦闘の評価の窓：出さない", delegate { FxSettings.RatingWindow = !rating; g.Rebuild(); }, 15, true, rating ? PaperFx.BrassLight : (Color?)null);
+            BattleScreen.SetSize(bRate, phone ? 260f : 300f, 46f);
+            Tooltip.Attach(bRate.gameObject, delegate { return "戦闘が終わるたびに強さ・面白さを聞く窓。出さない時も、報酬の画面の左下の「評価」から付けられる（調整の材料になります）"; });
 
-            var spacer = UiKit.NewRect("spacer", inner);
-            UiKit.Le(spacer, -1f, 4f, -1f, -1f, -1f, 1f);
+            // ---- 音量 ----
+            Section(body, "音量");
+            Slider(body, "全体", Audio.Master, v => { Audio.Master = v; }, true);
+            Slider(body, "BGM", Audio.BgmVol, v => { Audio.BgmVol = v; }, false);
+            Slider(body, "効果音", Audio.SfxVol, v => { Audio.SfxVol = v; }, true);
+
+            if (!phone)
+            {   // PC は残りの高さを空ける (スマホは一覧 (body) が残りを取るので置かない。2026-11-04)
+                var spacer = UiKit.NewRect("spacer", inner);
+                UiKit.Le(spacer, -1f, 4f, -1f, -1f, -1f, 1f);
+            }
             var btns = Row(inner);
             btns.GetComponent<HorizontalLayoutGroup>().childAlignment = TextAnchor.MiddleRight;
             var close = UiKit.Btn(btns, "閉じる", delegate { g.SettingsOpen = false; g.Rebuild(); }, 18, true, PaperFx.BrassLight);
@@ -176,8 +205,8 @@ namespace DeckRogue.Game
             return row;
         }
 
-        /// <summary>横のつまみ: 名前・帯・%。動かした値はすぐ保存。sfxTest=手を離した時に効果音を1つ鳴らして確かめる</summary>
-        static void Slider(RectTransform inner, string label, float value, Action<float> onChange, bool sfxTest)
+        /// <summary>横のつまみ: 名前・帯・%。動かした値はすぐ保存。sfxTest=手を離した時に効果音を1つ鳴らして確かめる。max=つまみの右端の値 (揺れは 1.5 まで。% は 1.0 を 100 として出す)</summary>
+        static void Slider(RectTransform inner, string label, float value, Action<float> onChange, bool sfxTest, float max = 1f)
         {
             var row = Row(inner);
             var name = UiKit.Txt(row, label, 17, UiKit.ColInk, TextAnchor.MiddleLeft);
@@ -207,8 +236,8 @@ namespace DeckRogue.Game
             sl.handleRect = handle;
             sl.targetGraphic = hImg;
             sl.direction = UnityEngine.UI.Slider.Direction.LeftToRight;
-            sl.minValue = 0f; sl.maxValue = 1f; sl.wholeNumbers = false;
-            sl.value = Mathf.Clamp01(value);
+            sl.minValue = 0f; sl.maxValue = max; sl.wholeNumbers = false;
+            sl.value = Mathf.Clamp(value, 0f, max);
             var pct = UiKit.Txt(row, Mathf.RoundToInt(value * 100f) + "%", 17, UiKit.ColInk, TextAnchor.MiddleRight);
             UiKit.Le(pct, 70f, 44f, 70f, 44f);
             sl.onValueChanged.AddListener(v =>

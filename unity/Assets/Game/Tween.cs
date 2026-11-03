@@ -344,6 +344,45 @@ namespace DeckRogue.Game
             }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 
+        /// <summary>
+        /// 大きい浮き数字 (2026-11-04 演出の磨き・数字の段): Float と同じ字だが 1.35 倍から叩き込んで止まり (本家の「でかいのが出た」)、
+        /// 止まった瞬間に 1 コマ白く光る。edge があれば縁取りをその色に (とどめは真鍮の縁)。時計は Float と同じ (Time.deltaTime の積算)
+        /// </summary>
+        public static void FloatBig(RectTransform parent, Vector2 pos, string text, Color color, int size, Color? edge = null, float rise = 50f, float dur = 1.0f, float width = 300f)
+        {
+            if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("float",text);
+            if (parent == null) return;
+            var rt = UiKit.NewRect("float-big", parent);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(width, size + 30f);
+            rt.anchoredPosition = pos;
+            var cg = rt.gameObject.AddComponent<CanvasGroup>();
+            cg.blocksRaycasts = false;
+            cg.interactable = false;
+            var sh = UiKit.Txt(rt, text, size, new Color(0f, 0f, 0f, 0.8f), TextAnchor.MiddleCenter, true);
+            UiKit.Stretch(sh.rectTransform, 3f, -3f, 3f, -3f);
+            sh.outlineWidth = 0.32f;
+            sh.outlineColor = new Color(0f, 0f, 0f, 0.8f);
+            var t = UiKit.Txt(rt, text, size, color, TextAnchor.MiddleCenter, true);
+            t.outlineWidth = edge.HasValue ? 0.38f : 0.32f;
+            t.outlineColor = edge.HasValue ? new Color(edge.Value.r, edge.Value.g, edge.Value.b, 1f) : new Color(0.05f, 0.03f, 0.06f, 0.95f);
+            UiKit.Stretch(t.rectTransform, 0f, 0f, 0f, 0f);
+            rt.localScale = Vector3.one * 1.35f;
+            var baseColor = color;
+            Run(dur, k =>
+            {
+                if (rt == null) return;
+                // 叩き込み: 最初の 0.12 秒で 1.35 → 1.0 (OutCubic)。止まった瞬間 (0.12〜0.2) は字が白へ寄って戻る＝1 コマの光
+                float slam = Apply(Ease.OutCubic, Mathf.Clamp01(k * dur / 0.12f));
+                rt.localScale = Vector3.one * (1.35f - 0.35f * slam);
+                float white = Mathf.Clamp01(1f - Mathf.Abs(k * dur - 0.14f) / 0.07f);
+                if (t != null) t.color = Color.Lerp(baseColor, Color.white, white * 0.7f);
+                float lift = Mathf.Clamp01((k * dur - 0.2f) / Mathf.Max(0.01f, dur - 0.2f));
+                rt.anchoredPosition = pos + new Vector2(0f, rise * Apply(Ease.OutQuad, lift));
+                cg.alpha = k < 0.65f ? 1f : 1f - (k - 0.65f) / 0.35f;
+            }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+        }
+
         /// <summary>斬撃: pos に筋を出して 0.18 秒で消える (angle は度)</summary>
         public static void Slash(RectTransform layer, Vector2 pos, float angle, Color color)
         {

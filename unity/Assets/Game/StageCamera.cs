@@ -621,10 +621,19 @@ namespace DeckRogue.Game
             return new Vector2(sx / sf, sy / sf);
         }
 
-        /// <summary>画面揺れは舞台 (カメラ) が揺れる。紙の UI は揺れない</summary>
+        /// <summary>
+        /// 画面揺れは舞台 (カメラ) が揺れる。紙の UI は揺れない。
+        /// 束 E (2026-11-04 StageBeat): 箱庭 (CombatWorld) でも揺れる (旧は dot の門で止めていた = 幕1 の当たりが「絵の上の演出」に見えた)。
+        /// 箱庭は寄りの画 (22°) で 1px の重みが違うので ×0.6・上限 10px・0.3 秒以内に丸める (ユーザー裁定「酔う」は寄りへの判定なので、揺れは小さく短く)。
+        /// 量に FxSettings.Shake (設定の窓・0 で揺れない) を掛ける。寄りの姿勢 (TryCloseUpPose) とは StageDriver で加算の合成
+        /// </summary>
         public static void Shake(float px, float dur)
         {
-            if (_driver == null || Stage.CombatWorld) return;
+            if (_driver == null || !(px > 0f) || float.IsNaN(px) || float.IsInfinity(px)) return;
+            float mul = FxSettings.Shake;
+            if (mul <= 0f) return;
+            if (Stage.CombatWorld) { px = Mathf.Min(10f, px * 0.6f); dur = Mathf.Min(dur, 0.3f); }
+            px *= mul;
             _driver.ShakeAmp = Mathf.Max(_driver.ShakeAmp, px);
             _driver.ShakeT = Mathf.Max(_driver.ShakeT, dur);
             _driver.ShakeDur = Mathf.Max(0.05f, dur);
@@ -667,7 +676,7 @@ namespace DeckRogue.Game
 
         class StageDriver : MonoBehaviour
         {
-            public float ShakeAmp, ShakeT, ShakeDur = 0.3f;
+            public float ShakeAmp, ShakeT, ShakeDur = 0.3f, ShakePhase;   // ShakePhase = 揺れの位相 (束 E: 乱数を使わない決定的な揺れ)
             public float PushAmp, PushT, PushDur = 0.3f;                       // ズームパンチ (前へ出て戻る)
             public float DollyAmp, DollyIn, DollyHold, DollyOut, DollyT; public bool DollyOn;   // ゆっくり寄って戻る
             int _lastW, _lastH, _settle;
@@ -677,6 +686,7 @@ namespace DeckRogue.Game
             {
                 if (_cam == null) return;
                 StageMotion.Tick(Time.deltaTime);   // 段2 (レーン M): 寄り・暗転・板の時計 (何も走っていなければ何もしない。門が偽なら一度も走らない)
+                StageBeat.Tick(Time.deltaTime);     // 束 E (2026-11-04): 舞台が出来事に応える口の時計 (StageMotion の後 = 露出の主が StageMotion なら譲る。何も走っていなければ何もしない)
                 var gr = GameRoot.I; GfxQuality.Sample(Time.unscaledDeltaTime, gr != null && gr.Rs != null && gr.Rs.Phase == DeckRogue.Engine.Generated.RunPhases.Combat);   // 画質の自動 (スマホの箱庭の戦闘だけ)
                 // 画面の切り欠き・safeArea が変わったら (折りたたみ端末・マルチウィンドウ)、2フレーム後に組み直す (左端の部品が UiKit.CutoutLeft で穴を避ける。2026-09-29 p10)。
                 // Screen.cutouts は配列を作るので 30 フレームに1回だけ見る (向きは固定なので実質は起動時の1回)
@@ -707,10 +717,15 @@ namespace DeckRogue.Game
                 Vector3 off = Vector3.zero;
                 if (ShakeT > 0f)
                 {
+                    // 束 E (2026-11-04): 乱数 (UnityEngine.Random) を捨てて決定的に = 撮るたびに同じ。横 17.3Hz・縦 23.1Hz の 2 つの正弦 (位相は揺れの始まりから積算)。
+                    // 減衰は (残り/全体)² = 速く大きく収束 (旧は線形で、終わりまでだらだら揺れた)
                     ShakeT -= Time.deltaTime;
-                    float a = ShakeAmp * Mathf.Clamp01(ShakeT / ShakeDur) * _k;
-                    off = _right * (UnityEngine.Random.Range(-a, a)) + _up * (UnityEngine.Random.Range(-a, a));
-                    if (ShakeT <= 0f) ShakeAmp = 0f;
+                    ShakePhase += Time.deltaTime;
+                    float r = Mathf.Clamp01(ShakeT / ShakeDur);
+                    float a = ShakeAmp * r * r * _k;
+                    float ph = ShakePhase * 2f * Mathf.PI;
+                    off = _right * (a * Mathf.Sin(ph * 17.3f + 0.7f)) + _up * (a * 0.72f * Mathf.Sin(ph * 23.1f + 2.1f));
+                    if (ShakeT <= 0f) { ShakeAmp = 0f; ShakePhase = 0f; }
                 }
                 // 寄り (ズームパンチ・ドリー): 前へ出る = _fwd 方向。板は _camBase 基準の座席に立つので、寄るとそのぶん大きく見える
                 float push = 0f;

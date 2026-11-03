@@ -1800,9 +1800,108 @@ namespace DeckRogue.Game
             ca.postExposure.value = _s2mExpBase + _s2mExp;
         }
 
+        // ================================================================ 束 E (2026-11-04 StageBeat): 彩度・周辺減光・色の寄せ・灯の色の「基 ± 差」の口
+        // 呼ぶのは StageBeat だけ。初めて書き換える時に今の値を基に取り、0 (k=0) で基へ正確に戻して基を捨てる (S2M と同じ作法)。
+        // Volume の部品は TouchedTypes の中の型 (ColorAdjustments・Vignette) だけ = Restore の控え (VolBak) と Application.quitting で戻る。
+
+        static float _sbSat, _sbVig, _sbSatBase, _sbVigBase;
+        static bool _sbSatOn, _sbVigOn, _sbSatOvr, _sbVigOvr;
+        static Color _sbFilterBase, _sbLampBase;
+        static float _sbFilterK, _sbLampK;
+        static bool _sbFilterOn, _sbLampOn, _sbFilterOvr;
+
+        /// <summary>彩度の差 (ColorAdjustments.saturation = 基 + delta。−100〜100)。0 で基へ正確に戻す。光を当てていなければ覚えるだけ</summary>
+        public static void SetSaturationOffset(float delta)
+        {
+            _sbSat = float.IsNaN(delta) || float.IsInfinity(delta) ? 0f : Mathf.Clamp(delta, -100f, 100f);
+            if (!Active || _bakVol == null || _bakVol.Profile == null) return;
+            ColorAdjustments ca;
+            if (!_bakVol.Profile.TryGet(out ca) || ca == null) return;
+            if (_sbSat == 0f)
+            {
+                if (_sbSatOn) { ca.saturation.value = _sbSatBase; ca.saturation.overrideState = _sbSatOvr; _sbSatOn = false; }
+                return;
+            }
+            if (!_sbSatOn) { _sbSatBase = ca.saturation.value; _sbSatOvr = ca.saturation.overrideState; _sbSatOn = true; }
+            ca.saturation.overrideState = true;
+            ca.saturation.value = Mathf.Clamp(_sbSatBase + _sbSat, -100f, 100f);
+        }
+        /// <summary>今の彩度の差 (0 = そのまま)</summary>
+        public static float SaturationOffset => _sbSat;
+
+        /// <summary>周辺減光の差 (Vignette.intensity = 基 + delta。0〜1 に丸める)。0 で基へ正確に戻す</summary>
+        public static void SetVignetteOffset(float delta)
+        {
+            _sbVig = float.IsNaN(delta) || float.IsInfinity(delta) ? 0f : Mathf.Clamp(delta, -1f, 1f);
+            if (!Active || _bakVol == null || _bakVol.Profile == null) return;
+            Vignette vg;
+            if (!_bakVol.Profile.TryGet(out vg) || vg == null) return;
+            if (_sbVig == 0f)
+            {
+                if (_sbVigOn) { vg.intensity.value = _sbVigBase; vg.intensity.overrideState = _sbVigOvr; _sbVigOn = false; }
+                return;
+            }
+            if (!_sbVigOn) { _sbVigBase = vg.intensity.value; _sbVigOvr = vg.intensity.overrideState; _sbVigOn = true; }
+            vg.intensity.overrideState = true;
+            vg.intensity.value = Mathf.Clamp01(_sbVigBase + _sbVig);
+        }
+        /// <summary>今の周辺減光の差 (0 = そのまま)</summary>
+        public static float VignetteOffset => _sbVig;
+
+        /// <summary>色の寄せ (ColorAdjustments.colorFilter = 基から target へ k で lerp。0〜1)。k=0 で基へ正確に戻す。紙の UI (Overlay) は染まらない</summary>
+        public static void SetColorFilterMix(Color target, float k)
+        {
+            _sbFilterK = float.IsNaN(k) ? 0f : Mathf.Clamp01(k);
+            if (!Active || _bakVol == null || _bakVol.Profile == null) return;
+            ColorAdjustments ca;
+            if (!_bakVol.Profile.TryGet(out ca) || ca == null) return;
+            if (_sbFilterK <= 0f)
+            {
+                if (_sbFilterOn) { ca.colorFilter.value = _sbFilterBase; ca.colorFilter.overrideState = _sbFilterOvr; _sbFilterOn = false; }
+                return;
+            }
+            if (!_sbFilterOn) { _sbFilterBase = ca.colorFilter.value; _sbFilterOvr = ca.colorFilter.overrideState; _sbFilterOn = true; }
+            var t = new Color(Mathf.Max(0f, target.r), Mathf.Max(0f, target.g), Mathf.Max(0f, target.b), _sbFilterBase.a);
+            ca.colorFilter.overrideState = true;
+            ca.colorFilter.value = Color.Lerp(_sbFilterBase, t, _sbFilterK);
+        }
+        /// <summary>今の色の寄せの k (0 = そのまま)</summary>
+        public static float ColorFilterMix => _sbFilterK;
+
+        /// <summary>舞台の灯 (スポット) の色の寄せ (基から target へ k で lerp)。k=0 で基へ正確に戻す。月と逆光は触らない (輪郭の暗さの目標は月を読む)</summary>
+        public static void SetLampTint(Color target, float k)
+        {
+            _sbLampK = float.IsNaN(k) ? 0f : Mathf.Clamp01(k);
+            if (!Active || _lamp == null) return;
+            if (_sbLampK <= 0f)
+            {
+                if (_sbLampOn) { _lamp.color = _sbLampBase; _sbLampOn = false; }
+                return;
+            }
+            if (!_sbLampOn) { _sbLampBase = _lamp.color; _sbLampOn = true; }
+            var t = new Color(target.r, target.g, target.b, 1f);
+            _lamp.color = Color.Lerp(_sbLampBase, t, _sbLampK);
+        }
+        /// <summary>今の灯の色の寄せの k (0 = そのまま)</summary>
+        public static float LampTint => _sbLampK;
+
+        /// <summary>束 E の口を全部基へ戻して捨てる (S2M_Reset から = Apply の頭・Restore の頭)。何も書き換えていなければ何もしない</summary>
+        static void SB_Reset()
+        {
+            ColorAdjustments ca = null; Vignette vg = null;
+            bool vol = _bakVol != null && _bakVol.Profile != null;
+            if (vol) { _bakVol.Profile.TryGet(out ca); _bakVol.Profile.TryGet(out vg); }
+            if (_sbSatOn) { if (ca != null) { ca.saturation.value = _sbSatBase; ca.saturation.overrideState = _sbSatOvr; } _sbSatOn = false; }
+            if (_sbVigOn) { if (vg != null) { vg.intensity.value = _sbVigBase; vg.intensity.overrideState = _sbVigOvr; } _sbVigOn = false; }
+            if (_sbFilterOn) { if (ca != null) { ca.colorFilter.value = _sbFilterBase; ca.colorFilter.overrideState = _sbFilterOvr; } _sbFilterOn = false; }
+            if (_sbLampOn) { if (_lamp != null) _lamp.color = _sbLampBase; _sbLampOn = false; }
+            _sbSat = 0f; _sbVig = 0f; _sbFilterK = 0f; _sbLampK = 0f;
+        }
+
         /// <summary>全部を基へ戻して捨てる (Apply の頭・Restore の頭)。何も書き換えていなければ何もしない</summary>
         static void S2M_Reset()
         {
+            SB_Reset();   // 束 E (2026-11-04): 彩度・周辺減光・色の寄せ・灯の色も基へ
             if (_s2mAirOn) S2M_PutAirBase();
             if (_s2mExpOn)
             {

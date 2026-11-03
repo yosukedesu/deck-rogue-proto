@@ -140,6 +140,8 @@ namespace DeckRogue.Game
                 OnClick(paper.gameObject, delegate
                 {
                     Audio.Ui("click");
+                    // 押した手応え (2026-11-04 B10): 組み直しでトークンは作り直されるので、残る層 (FxLayer) に青緑の小さな輪を置く
+                    if (g.FxLayer != null && slot != null) Tween.RingBurst(g.FxLayer, Tween.CenterIn(slot, g.FxLayer), PaperFx.ManaLight, 90f, 0.3f);
                     if (g.GearPending != null && g.GearPending.Index == idx) g.GearPending = null;   // 同じ札をもう一度押すと閉じる
                     else g.GearPending = new PendingGear { Index = idx };
                     g.Rebuild();
@@ -566,6 +568,14 @@ namespace DeckRogue.Game
                 else { p.Stage = "target"; g.Rebuild(); return; }
             }
             var cmd = new RunCommand_UseGear { Index = p.Index, TargetIndex = p.TargetIndex, CardUid = p.CardUid, AsGearId = p.AsGearId };
+            // 組んだ瞬間 (2026-11-04 B10): トークンから青緑の輪が広がる (Presenter の GearGhost が的へ飛ぶ前の合図)。残る層に置く
+            var tokRt = g.Anchor("gear:" + gears[p.Index].Uid);
+            if (g.FxLayer != null && tokRt != null)
+            {
+                var at = Tween.CenterIn(tokRt, g.FxLayer);
+                Tween.RingBurst(g.FxLayer, at, PaperFx.ManaLight, 120f, 0.35f);
+                Tween.RingBurst(g.FxLayer, at, PaperFx.Mana, 70f, 0.25f);
+            }
             g.GearPending = null;
             Audio.Ui("click");
             g.Do(cmd);

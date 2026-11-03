@@ -203,6 +203,7 @@ namespace DeckRogue.Game
         int _n;
         string _stateSpec;    // 今撮っている STATE (layout.json の "state")
         string _linePrefix;   // -statesfile の行の名前 (null = 1行1起動の普通の名前 NN-name.png)
+        bool _burst;          // 連写の途中 (幕・幕の題字が動いていても待たずに撮る。2026-11-04 束 F: motion=1 の連写は幕の途中こそ撮りたい)
         int _lineN;           // その行で撮った枚数
         int _diff0;           // -statesfile を始めた時の難易度 (行の頭で戻す)
 
@@ -389,8 +390,9 @@ namespace DeckRogue.Game
                 for (int i = 0; i < settle + 3; i++) yield return null;
                 yield break; // Dedicated paired frame captures are owned by PresentationReview.
             }
-            // 幕 (ScreenFx 条1。2026-10-29) が動いていたら開き切るまで待つ (黒い幕を撮らない。撮影は既定で Instant なので普段は素通り)
-            while (ScreenFx.Busy) yield return null;
+            // 幕 (ScreenFx 条1。2026-10-29) と幕の題字 (ActTitleFx) が動いていたら開き切るまで待つ (黒い幕を撮らない。撮影は既定で Instant なので普段は素通り)。
+            // 連写 (_burst) の間は待たない = motion=1 の幕の途中・題字の浮かぶ途中を撮る (2026-11-04 束 F)
+            while (!_burst && (ScreenFx.Busy || ActTitleFx.Busy)) yield return null;
             // レイアウトと描画が落ち着くまで数フレーム待つ (Rebuild 直後の1フレームは LayoutGroup が未計算)。コマ送りの途中を撮る時は settle=1
             ApplyCaptureMode();   // uionly / unitsonly (立っていなければ何もしない。2026-09-30 HD-2D 見本 P01)
             for (int i = 0; i < settle; i++) yield return null;
@@ -615,6 +617,9 @@ namespace DeckRogue.Game
             // 起動の時 (BeforeSceneLoad) にも -state から当ててあるので、1行1起動なら何も変わらない (Changed も投げない)
             _stateSpec = spec;
             HD2DFlags.ApplyState(kv);
+            // motion=1 (2026-11-04 束 F): この行だけ幕・入り・飛び・数え上げを動かす (ScreenFx.Instant=false)。行の頭 ResetForLine が既定へ戻す。
+            // acttitle=1 (幕の題字を鳴らして連写) も動きが要るので同じ
+            if (Get("motion") == "1" || Get("acttitle") == "1") ScreenFx.Instant = false;
             // 画質の段と fps の札 (2026-10-30 GfxQuality): gfx=high|std|low はこの起動だけ (PlayerPrefs に書かない。tier=phone と組で舞台の軽い段を PC で撮る)・fpshud=1
             {
                 string gq = Get("gfx");
@@ -846,6 +851,11 @@ namespace DeckRogue.Game
                         int v; var st3 = g.Rs.Combat;
                         if (int.TryParse(Get("pblock"), out v)) g.Rs = g.Rs with { Combat = st3 with { Player = st3.Player with { Block = Math.Max(0, v) } } };
                     }
+                    if (Get("php") != null)
+                    {   // 自分の今の HP を直接書く (hp= はチェックポイントの割合で丸まる。敗北の瞬間・HP 3 割の危険の確認。2026-11-04 束 F)
+                        int v; var st7 = g.Rs.Combat;
+                        if (int.TryParse(Get("php"), out v)) g.Rs = g.Rs with { Combat = st7 with { Player = st7.Player with { Hp = Math.Max(1, Math.Min(st7.Player.MaxHp, v)) } } };
+                    }
                     if (Get("plight") != null)
                     {   // 自分の灯 (放出・灯コスト・しきい値の確認。2026-09-20)
                         int v; var st5 = g.Rs.Combat;
@@ -940,6 +950,8 @@ namespace DeckRogue.Game
             var perfBase = g.Rs;   // perf=<秒>: 決着したらこの盤面へ跳び直す (RunState は不変なので同じ戦闘がそのまま戻る)
             g.Rebuild();
             yield return DetSettleStage();   // det: 舞台の粒を頭から再生して90フレーム待つ (det でなければ何もしない)
+            // motion=1 の時は StartRun の幕の題字・ChooseNode の幕が動いている。連写の頭に板が写らないよう開き切るまで待つ (2026-11-04 束 F)
+            while (ScreenFx.Busy || ActTitleFx.Busy) yield return null;
             // entershots=N: 戦闘の始まり (敵の登場・強個体/幕ボスの名前の帯) をコマ送りで撮る (2026-09-17 ⑨)。状態へ跳んだ直後は Play が呼ばれないので明示的に鳴らす
             if (Get("entershots") != null && g.Rs != null && g.Rs.Combat != null)
             {
@@ -1134,6 +1146,113 @@ namespace DeckRogue.Game
                     yield return WaitPresentation();
                 }
                 else Debug.LogWarning("[Autopilot] fire: 発動できる仕込み札が無い");
+            }
+            // ---- 2026-11-04 見た目・UX・演出の磨き 束 F: 「選んだ後の 1 秒」と決着・敗北をコマ送りで撮る口 ----
+            // どれも既存の口 (play=・endplay=) と同じ形: captureFramerate=60 → 人と同じ経路 (ClickUi) か Do でコマンド → N 枚を M フレームごと → DetFramerate へ戻す → WaitPresentation。
+            // 連写の間 (_burst) は Shot が幕・題字を待たない = motion=1 と組めば幕の途中・飛びの途中が写る。
+            //   outcome=1;outcomeshots=N;outcomeevery=M  敵 0 の HP を 1 にして最初のダメージ札を出し、とどめ→勝利の帯→硬貨→戦いの記録→報酬まで (既定 36 枚×10 フレーム=6 秒)
+            //   lose=1;loseshots=N;loseevery=M           自分の HP を 1 にして手番を終え、倒れる瞬間と結果の画面まで (既定 40 枚×3 フレーム)
+            //   take=1;takeshots=N;takeevery=M           報酬の画面で「取る」(reward-take-0) を押して、札が飛ぶ 1 秒 (既定 16 枚×3)
+            //   relictake=1 (relictakeshots/relictakeevery) 遺物の「取る」(relic-take-0)
+            //   rest=1;restshots=N;restevery=M           焚き火の「休む」を押して HP の数え上げ (既定 16 枚×3)。ボタンは CampfireScreen.Option の "opt-休む" / "hit"
+            //   buy=<idx>;buyshots=N;buyevery=M          店の値札 (ShopScreen.PriceTag の "price" のボタン。並びは階層の順=札の列→下の段) の idx 番目を押して、買った 1 秒 (既定 16 枚×3)
+            //   acttitle=1;acttitleshots=N;acttitleevery=M  幕の題字 (ActTitleFx) を今の幕で鳴らして連写 (既定 30 枚×4=2 秒)。ScreenFx.Instant は自動で false
+            if (Get("outcome") == "1" && g.Rs != null && g.Rs.Combat != null && g.Rs.Combat.Phase == CombatPhases.PlayerTurn)
+            {
+                var stO = g.Rs.Combat;
+                int pIdx = -1;
+                for (int i = 0; i < stO.Player.Hand.Count; i++) { var c = stO.Player.Hand[i]; if (c.Def.Type != "reaction" && (c.Def.Modes == null || c.Def.Modes.Count == 0) && c.Def.Effects.Any(e => e.Effect == "dealDamage")) { pIdx = i; break; } }
+                int alive = -1; for (int i = 0; i < stO.Enemies.Count; i++) if (stO.Enemies[i].Hp > 0) { alive = i; break; }
+                if (pIdx < 0 || alive < 0) Debug.LogWarning("[Autopilot] outcome: 手札にダメージ札が無い か 敵がいない");
+                else
+                {
+                    // 最初の生存敵の HP を 1 に (ehp= と同じ形)。2 体以上の編成はとどめにならない (勝利まで撮るなら 1 体の編成で)
+                    var enemies = new List<EnemyState>(stO.Enemies); enemies[alive] = enemies[alive] with { Hp = 1 };
+                    g.Rs = g.Rs with { Combat = stO with { Enemies = enemies } };
+                    g.Rebuild(); yield return null;
+                    var pc = g.Rs.Combat.Player.Hand[pIdx];
+                    Debug.Log("[Autopilot] outcome: " + pc.Def.Name + " → enemy" + alive);
+                    Time.captureFramerate = 60;
+                    Presenter.MarkSeen(g.Rs.Combat);
+                    g.BeginPlay(pc, null);
+                    yield return null;
+                    if (g.Pending != null && g.Pending.NextNeed() == "target") g.OnEnemyClicked(alive);
+                    int shotsN = 36; int.TryParse(Get("outcomeshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 36;
+                    int every = 10; int.TryParse(Get("outcomeevery") ?? "", out every); if (every <= 0) every = 10;
+                    yield return Burst("outcome", shotsN, every);
+                    Time.captureFramerate = DetFramerate;
+                    yield return WaitPresentation();
+                }
+            }
+            if (Get("lose") == "1" && g.Rs != null && g.Rs.Combat != null && g.Rs.Combat.Phase == CombatPhases.PlayerTurn)
+            {
+                var stL = g.Rs.Combat;
+                g.Rs = g.Rs with { Combat = stL with { Player = stL.Player with { Hp = 1, Block = 0 } } };   // 敵の最初の攻撃で倒れる (pblock= と同じ形)
+                g.Rebuild(); yield return null;
+                Time.captureFramerate = 60;
+                Presenter.MarkSeen(g.Rs.Combat);
+                { ClearScry(g); g.DoCombat(new Command_EndTurn()); }
+                int shotsN = 40; int.TryParse(Get("loseshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 40;
+                int every = 3; int.TryParse(Get("loseevery") ?? "", out every); if (every <= 0) every = 3;
+                yield return Burst("lose", shotsN, every);
+                Time.captureFramerate = DetFramerate;
+                yield return WaitPresentation();
+            }
+            if (Get("take") == "1" && g.Rs != null && g.Rs.Phase == RunPhases.Reward)
+            {
+                Time.captureFramerate = 60;
+                if (!ClickUi(g.Anchor("reward-take-0"))) { Debug.LogWarning("[Autopilot] take: reward-take-0 が無い → Do"); g.Do(new RunCommand_PickReward { Index = 0 }); }
+                int shotsN = 16; int.TryParse(Get("takeshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 16;
+                int every = 3; int.TryParse(Get("takeevery") ?? "", out every); if (every <= 0) every = 3;
+                yield return Burst("take", shotsN, every);
+                Time.captureFramerate = DetFramerate;
+                yield return WaitPresentation();
+            }
+            if (Get("relictake") == "1" && g.Rs != null && g.Rs.Phase == RunPhases.RelicReward)
+            {
+                Time.captureFramerate = 60;
+                if (!ClickUi(g.Anchor("relic-take-0"))) { Debug.LogWarning("[Autopilot] relictake: relic-take-0 が無い → Do"); g.Do(new RunCommand_PickRelic { Index = 0 }); }
+                int shotsN = 16; int.TryParse(Get("relictakeshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 16;
+                int every = 3; int.TryParse(Get("relictakeevery") ?? "", out every); if (every <= 0) every = 3;
+                yield return Burst("relictake", shotsN, every);
+                Time.captureFramerate = DetFramerate;
+                yield return WaitPresentation();
+            }
+            if (Get("rest") == "1" && g.Rs != null && g.Rs.Phase == RunPhases.Campfire && g.ScreenRoot != null)
+            {
+                var opt = FindDeep(g.ScreenRoot, "opt-休む");
+                var hit = opt != null ? opt.Find("hit") : null;
+                Time.captureFramerate = 60;
+                if (hit == null || !ClickUi(hit as RectTransform)) { Debug.LogWarning("[Autopilot] rest: 「休む」のボタンが無い → Do"); g.Do(new RunCommand_CampfireRest()); }
+                int shotsN = 16; int.TryParse(Get("restshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 16;
+                int every = 3; int.TryParse(Get("restevery") ?? "", out every); if (every <= 0) every = 3;
+                yield return Burst("rest", shotsN, every);
+                Time.captureFramerate = DetFramerate;
+                yield return WaitPresentation();
+            }
+            int buyIdx;
+            if (int.TryParse(Get("buy") ?? "", out buyIdx) && g.Rs != null && g.Rs.Phase == RunPhases.Shop && g.ScreenRoot != null)
+            {
+                var tags = new List<RectTransform>();
+                foreach (var b in g.ScreenRoot.GetComponentsInChildren<Button>(true)) if (b.gameObject.name == "price") tags.Add(b.GetComponent<RectTransform>());
+                Time.captureFramerate = 60;
+                if (buyIdx >= 0 && buyIdx < tags.Count) { Debug.Log("[Autopilot] buy: 値札 " + buyIdx + " / " + tags.Count); ClickUi(tags[buyIdx]); }
+                else Debug.LogWarning("[Autopilot] buy: 値札 " + buyIdx + " が無い (" + tags.Count + " 枚)");
+                int shotsN = 16; int.TryParse(Get("buyshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 16;
+                int every = 3; int.TryParse(Get("buyevery") ?? "", out every); if (every <= 0) every = 3;
+                yield return Burst("buy", shotsN, every);
+                Time.captureFramerate = DetFramerate;
+                yield return WaitPresentation();
+            }
+            if (Get("acttitle") == "1" && g.Rs != null)
+            {
+                Time.captureFramerate = 60;
+                ActTitleFx.Show(g, g.Rs.Act, g.Rebuild);   // Instant は頭で false にしてある (true だと ScreenFx.Switch に落ちて題字が出ない)
+                int shotsN = 30; int.TryParse(Get("acttitleshots") ?? "", out shotsN); if (shotsN <= 0) shotsN = 30;
+                int every = 4; int.TryParse(Get("acttitleevery") ?? "", out every); if (every <= 0) every = 4;
+                yield return Burst("acttitle", shotsN, every);
+                Time.captureFramerate = DetFramerate;
+                while (ActTitleFx.Busy) yield return null;
             }
             // hideui=1: 舞台と絵 (敵・リーダー・狙いの輪) だけを残して UI を全部消す (配置案のモックの下地用。2026-09-15 戦闘画面の見直し)。
             // entershots の連写の時は連写の前にも当てる (HideUiNow。2026-10-02 三周目 直しの輪1)。ここは1枚撮りの時と同じ (同じ処理を2度当てても同じ)
@@ -1437,6 +1556,26 @@ namespace DeckRogue.Game
             yield return LoopWait(0.35f);
             float t = 0f;
             while (t < max && (ScreenFx.Busy || g.CombatPresentationPending || !Presenter.PresentationIdle)) { yield return null; t += 1f / 60f; }
+        }
+
+        /// <summary>連写 (2026-11-04 束 F): every フレームごとに shotsN 枚を「prefix-i」で撮る。間は Shot が幕・題字を待たない (_burst)</summary>
+        IEnumerator Burst(string prefix, int shotsN, int every)
+        {
+            _burst = true;
+            try
+            {
+                for (int i = 0; i < shotsN; i++) { for (int f = 0; f < every; f++) yield return null; yield return Shot(prefix + "-" + i, 1); }
+            }
+            finally { _burst = false; }
+        }
+
+        /// <summary>名前で子孫を探す (anchor の登録が無いボタン用。2026-11-04 束 F)。無ければ null</summary>
+        static Transform FindDeep(Transform root, string name)
+        {
+            if (root == null) return null;
+            if (root.name == name) return root;
+            for (int i = 0; i < root.childCount; i++) { var r = FindDeep(root.GetChild(i), name); if (r != null) return r; }
+            return null;
         }
 
         /// <summary>人がマウスで押すのと同じ経路 (PointerClick) で押す。無ければ false</summary>
@@ -1800,6 +1939,9 @@ namespace DeckRogue.Game
             g.Notice = null; g.Error = null; g.PhaseShownKind = -1;
             if (_diff0 > 0) g.Difficulty = _diff0;   // 前の行の difficulty= を持ち越さない (起動した時の値へ)
             Feedback.MemoOpen = false; Feedback.RatingOpen = false; Feedback.Silent = false;
+            Feedback.RatingReady = false;   // 評価の窓の時機 (束 C2。2026-11-04) を前の行から持ち越さない
+            ScreenFx.Instant = _scenario != "loop" && Arg("-motion") == null;   // motion=1 / acttitle=1 の行の後は既定 (動きを飛ばす) へ (2026-11-04 束 F)
+            while (ActTitleFx.Busy) yield return null;   // 前の行の幕の題字が出ていたら消えるまで (板が次の行に写らないように)
             if (Screen.width != origW || Screen.height != origH)
             {   // resize= の行の後
                 Screen.SetResolution(origW, origH, false);

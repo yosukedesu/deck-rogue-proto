@@ -30,6 +30,9 @@ namespace DeckRogue.Game
         public static string MemoDraft = "";
         /// <summary>戦闘直後の評価ダイアログを開いているか (決定/スキップで閉じる。「評価」ボタンで再び開く)</summary>
         public static bool RatingOpen;
+        /// <summary>評価の窓を出してよい時機になった (2026-11-04 束 C2・G9): 決着直後は立てず、報酬の画面が入り終わってから GameRoot.ScheduleRating が立てる。
+        /// 「評価」ボタンから開く時 (OpenRating) と撮影 (ScreenFx.Instant) は待たない</summary>
+        public static bool RatingReady;
         /// <summary>ダイアログの下書き (押した点数はその場で反映せず、決定で1回だけ確定する = ブラウザ版と同じ)</summary>
         public static int DraftStrength = -1, DraftFun = -1;
         public static string DraftLossFeel;
@@ -62,7 +65,7 @@ namespace DeckRogue.Game
             _commands.Clear(); _times.Clear();
             _origin = origin;
             MemoOpen = false; MemoDraft = "";
-            RatingOpen = false; ResetDraft();
+            RatingOpen = false; RatingReady = false; ResetDraft();
             LastExportPath = null;
         }
 
@@ -85,7 +88,7 @@ namespace DeckRogue.Game
                 for (int i = 0; i < _commands.Count; i++) _times.Add(times != null && i < times.Count ? times[i] : (_times.Count > 0 ? _times[_times.Count - 1] : NowMs()));
             }
             MemoOpen = false; MemoDraft = "";
-            RatingOpen = false; ResetDraft();
+            RatingOpen = false; RatingReady = false; ResetDraft();
             LastExportPath = null;
         }
 
@@ -130,7 +133,10 @@ namespace DeckRogue.Game
                     {
                         History.Add(Report.ArchiveBattle(c, battleNo, enemyId, prev.CurrentElite, prev.Hp, prev.Deck.Count, prev.Act, node != null && node.Type == MapNodeTypes.Boss, Text));
                         archived = true;
-                        RatingOpen = true;   // 決着直後に1回だけダイアログで聞く (決定/スキップで閉じる)
+                        // 決着直後に1回だけダイアログで聞く (決定/スキップで閉じる)。設定「戦闘の評価の窓」を切っていれば開かない (左下の「評価」から付けられる。2026-11-04 束 C2)。
+                        // 出す時機は GameRoot.ScheduleRating (報酬の画面が入り終わってから) = RatingReady が立つまで待つ
+                        RatingOpen = FxSettings.RatingWindow;
+                        RatingReady = false;
                         ResetDraft();
                     }
                 }
@@ -163,6 +169,7 @@ namespace DeckRogue.Game
         public static bool ShouldShowRating(RunState run)
         {
             if (!RatingOpen || run == null || LastBattle == null) return false;
+            if (!RatingReady && !ScreenFx.Instant) return false;   // 時機を待つ (2026-11-04 束 C2。撮影は従来どおり即)
             return run.Phase == RunPhases.Reward || run.Phase == RunPhases.RelicReward || run.Phase == RunPhases.Won || run.Phase == RunPhases.Lost;
         }
 
@@ -186,6 +193,7 @@ namespace DeckRogue.Game
                 DraftNote = last.Rating.Note ?? "";
             }
             RatingOpen = true;
+            RatingReady = true;   // 自分で開いた窓は待たせない
         }
 
         /// <summary>決定: 下書きを最後の戦闘の評価として確定する (敗北時は敗因も必須 = 呼び出し側が活性を制御)</summary>

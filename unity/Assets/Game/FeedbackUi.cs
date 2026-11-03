@@ -49,7 +49,8 @@ namespace DeckRogue.Game
             if (!Feedback.CanRate(g.Rs) || Feedback.RatingOpen) return;
             var last = Feedback.LastBattle;
             bool rated = last != null && last.Rating != null && last.Rating.Strength.HasValue && last.Rating.Fun.HasValue;
-            var b = UiKit.Btn(root, rated ? "評価 済" : "評価（未入力）", delegate { Feedback.OpenRating(); g.Rebuild(); }, 14, true, rated ? (Color?)null : PaperFx.BrassLight);
+            // 未入力は小さな真鍮の札「この戦いを評価」(2026-11-04 束 C2・M08: 窓は遅れて出るか、設定で出さない＝ここが入口)
+            var b = UiKit.Btn(root, rated ? "評価 済" : "この戦いを評価", delegate { Feedback.OpenRating(); g.Rebuild(); }, 14, true, rated ? (Color?)null : PaperFx.BrassLight);
             var le = b.GetComponent<LayoutElement>();
             if (le != null) UnityEngine.Object.Destroy(le);
             UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24f, 40f), new Vector2(190f, 80f));

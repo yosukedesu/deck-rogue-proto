@@ -1263,6 +1263,14 @@ namespace DeckRogue.Game
             if (st == null || !st.Ok) Debug.LogWarning(sb.ToString()); else Debug.Log(sb.ToString());
         }
 
+        /// <summary>粒の系 (StageFx の子) を名前で (fireflies・moondust-slice など。無ければ null)。束 E (StageBeat 2026-11-04) が勝利の蛍に使う</summary>
+        public static ParticleSystem FxSystem(string name)
+        {
+            if (_fx == null || string.IsNullOrEmpty(name)) return null;
+            var t = _fx.Find(name);
+            return t != null ? t.GetComponent<ParticleSystem>() : null;
+        }
+
         /// <summary>粒子の幕別トグル: 蛍・水のきらめき・落ち葉・月の塵は森 (幕1) のもの。幕3 は月の塵だけ戻す。
         /// 箱庭 (幕1の見本) は小川が無いので水のきらめきを止め、粒の光のひな型 (mote-light-template) も点けない。
         /// 二周目 段2 (R2B): 箱庭で光の設計図 (look) の moondust.slice が true なら、今の moondust の代わりに箱庭だけの月の塵 moondust-slice を点ける</summary>

@@ -70,20 +70,23 @@ namespace DeckRogue.Game {
      if(!Stage.CombatWorld) {StageFx.FoeHit("player",ranged?ticket.Color:(Color?)null,hp>=12);}
      Stage.PlayAnim("player","hurt");if(spr!=null)Tween.Lunge(spr,new Vector2(-36f,0f));
      Stage.Flash("player");
+     StageBeat.PlayerHit(Mathf.Clamp01(hp/20f));   // 箔庭の足元の薔薇の光 (2026-11-04)
      if(!ctx.EnemyGlobalHitCueShown) {
       ctx.EnemyGlobalHitCueShown=true;
       // Preserve the original aggregate envelope once, on first actual injury.
       // Stage.Shake keeps its existing fixed-camera/world-mode disable gate.
       int total=ctx.Feedback.Amount;
       Stage.Shake(Mathf.Min(18f,4f+total*.7f)*(style=="blunt"?1.3f:1f),.3f);
-      float alpha=Mathf.Min(.35f,.1f+total*.015f);if(StageMotion.EnemyBigFlashing)alpha=Mathf.Min(alpha,StageMotion.EnemyBigHurtFlashAlpha);
-      if(alpha>.001f)Tween.ScreenFlash(fx,new Color(.9f,.1f,.1f,alpha));
+      StageBeat.Shake(Mathf.Clamp01(total/20f)*(style=="blunt"?1.2f:1f),.25f);   // 箔庭で効くのは後者 (2026-11-04)
+      // 被弾の縁 (2026-11-04 ④): 全画面の朱をやめて画面の縁だけ薔薇に (紙の UI は染めない)
+      float alpha=Mathf.Min(.5f,.16f+total*.02f);if(StageMotion.EnemyBigFlashing)alpha=Mathf.Min(alpha,StageMotion.EnemyBigHurtFlashAlpha);
+      if(alpha>.001f)HurtVignette(fx,PaperFx.Rose,alpha,total>=12?.6f:.4f,"rose");
       if(CombatTimingProbe.Enabled)CombatTimingProbe.Event("enemyGlobalHitCue",ctx.EventIndex+":"+ticket.ContributionOrdinal);
      }
     }
    }
    Vector2 pos=(rt!=null?Tween.CenterIn(rt,fx):ticket.Ui)+new Vector2(UnityEngine.Random.Range(-40f,40f),10f);
-   if(hp>0)Tween.Float(fx,pos,"-"+hp,UiKit.ColBad,hp>=15?46:36);
+   if(hp>0)TierNumber(fx,pos,"-"+hp,UiKit.ColBad,HurtTier(hp,PlayerMaxHpOf(g,ctx)));   // 大きさは段 (2026-11-04 G3)
    else if(ticket.Outcome=="guard")Tween.Float(fx,pos,"防いだ",PaperFx.SkyLight,30);
    else if(row.AmountContribution==0)Tween.Float(fx,pos,"0",UiKit.ColDim,30);
    if(blocked>0) {
@@ -91,6 +94,7 @@ namespace DeckRogue.Game {
     AfterVisual(.08f,()=>Tween.Float(fx,pos+new Vector2(0,-36f),"ブロックで −"+blocked,PaperFx.SkyLight,22,34f,1f));
    }
    if(attached && !Stage.CombatWorld && rt!=null && hp>0)Tween.Punch(rt,Mathf.Min(.1f,.03f+row.AmountContribution*.004f),keepBottom:true);
+   if(hp>0)SyncDangerCue(g);   // HP 3 割以下で鼓動 (2026-11-04 ④)
   }
   static void ShowEnemyAggregateCount(GameRoot g,ReactionCtx ctx) {
    var p=ctx?.NumericReceipt?.Projection;

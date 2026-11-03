@@ -15,6 +15,8 @@ namespace DeckRogue.Game
     {
         /// <summary>宝箱を開けた (そのランの状態の間だけ。手が進んで Rs が変わればまた閉じた箱から)</summary>
         static RunState _chestOpenedFor;
+        /// <summary>開けた直後の組み直し (光の破裂を 1 回だけ出す。2026-11-04 M12)</summary>
+        static RunState _chestBurstFor;
 
         public static void Reward(GameRoot g, RectTransform root)
         {
@@ -53,7 +55,11 @@ namespace DeckRogue.Game
                 {
                     Audio.Ui("pick_relic");
                     if (DeckRogue.Engine.Run.GearFull(g.Rs)) { g.GearSwap = "reward"; g.Rebuild(); }
-                    else g.Do(new RunCommand_TakeGear());
+                    else
+                    {   // ギアも飛ぶ (G14・2026-11-04): 匣 (魔素の札) へ。無ければデッキの札へ
+                        string dest = g.Anchor("mana") != null ? "mana" : "deck";
+                        ScreenFx.FlyTo(g, gcard, dest, () => g.Do(new RunCommand_TakeGear()));
+                    }
                 }, 16, true, PaperFx.BrassLight);
                 var tle = tb.GetComponent<LayoutElement>();
                 if (tle != null) UnityEngine.Object.Destroy(tle);
@@ -95,9 +101,11 @@ namespace DeckRogue.Game
                 UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-90f, 0f), new Vector2(90f, 48f));
                 ScreenFx.Primary(b);
                 g.RegisterAnchor("reward-take-" + i, b.GetComponent<RectTransform>());
+                // 儀式 (G1・M06・2026-11-04): 裏向きで並び 0.12 秒ずらしで返る。レアは真鍮の暈と光の破裂。返っている間は「取る」を押せない
+                ScreenJuice.RevealCard(g, cell, cv, def.Rarity, i, b);
             }
 
-            if (opts != null) RunUi.BottomButton(root, "見送る", delegate { g.Do(new RunCommand_SkipReward()); }, 18, 260f, 52f);
+            if (opts != null) RunUi.BottomButton(root, "見送る", delegate { Audio.Key("card_cancel", 0.7f); g.Do(new RunCommand_SkipReward()); }, 18, 260f, 52f);
             else RunUi.BottomButton(root, "見送る", delegate { g.Do(new RunCommand_SkipGear()); }, 18, 260f, 52f);   // 札を先に取った後: 残るのはギアだけ
             // 満杯の入れ替えの窓は最後に組む (札の上に重ねる)
             if (hasGear && g.GearSwap == "reward")
@@ -111,26 +119,42 @@ namespace DeckRogue.Game
             bool chest = false;
             try { var node = DeckRogue.Engine.Run.CurrentNode(run); chest = node != null && node.Type == MapNodeTypes.Treasure; } catch (Exception) { }
             bool opened = ReferenceEquals(_chestOpenedFor, run);
+            bool justOpened = opened && ReferenceEquals(_chestBurstFor, run);
+            _chestBurstFor = null;
             Backdrop(g, root, chest ? "宝箱" : "レリック", 0.4f);   // 主人公の絵は置かない (§10-6)
             if (chest)
             {
                 var chestArt = Theme.Art("props", opened ? "act1_chest_open" : "act1_chest_closed");
+                RectTransform chestRt = null;
                 if (chestArt != null)
                 {
-                    SceneProp(root, "scene-chest", chestArt, -2.4f, 0.5f, 64f * 3f * BattleScreen.ArtScale);
+                    chestRt = SceneProp(root, "scene-chest", chestArt, -2.4f, 0.5f, 64f * 3f * BattleScreen.ArtScale);
                     if (opened)
                     {
                         Stage.AttachLight("scene-chest", PaperFx.BrassLight, 3f, 6f, 0.5f, 0.05f);
                         Stage.AttachGlow("scene-chest", new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.3f), 3f, 0.5f);
                     }
                 }
+                // 開いた瞬間 (M12・2026-11-04): 組み直しの 1 コマ後に白→真鍮の閃き・箱の上に輪と粒・relic_get。遺物の札は入りで少し遅れて大きく立つ (下の Weight)
+                if (justOpened) { var cr = chestRt; Tween.After(0.05f, () => ScreenJuice.ChestBurst(g, cr)); }
                 if (!opened)
                 {
                     Banner(root, "宝箱", "道の脇に古い箱。開けると中の遺物を 1 つ持ち帰れる");
-                    var open = RunUi.BottomButton(root, "開ける", delegate { Audio.Ui("click"); _chestOpenedFor = g.Rs; g.Rebuild(); }, 20, 260f, 56f, 0f, UiKit.Phone ? 24f : 120f, PaperFx.BrassLight);
+                    var open = RunUi.BottomButton(root, "開ける", delegate
+                    {
+                        Audio.Ui("click");
+                        // 箱が 2 度揺れてから開く (M12)。Instant なら即
+                        if (ScreenFx.Instant || chestRt == null) { _chestOpenedFor = g.Rs; _chestBurstFor = g.Rs; g.Rebuild(); return; }
+                        ScreenFx.LockInput(true);
+                        Tween.Shake(chestRt, 6f * Mathf.Max(0.25f, FxSettings.Shake), 0.3f);
+                        Audio.Key("card_lift", 0.6f);
+                        Tween.After(0.32f, () => { ScreenFx.LockInput(false); _chestOpenedFor = g.Rs; _chestBurstFor = g.Rs; g.Rebuild(); });
+                    }, 20, 260f, 56f, 0f, UiKit.Phone ? 24f : 120f, PaperFx.BrassLight);
                     return;
                 }
             }
+            // 幕ボスの遺物 3 択 (G7): 入りに重み＝0.1 秒ずつ遅く・0.86 から大きく立つ。宝箱を開けた直後の 1 択も同じ
+            bool weighty = justOpened || (run.RelicOptions != null && run.RelicOptions.Count >= 3);
             int left = run.RelicPicksLeft.HasValue ? run.RelicPicksLeft.Value : 1;
             Banner(root, chest ? "宝箱" : "レリック", left > 1 ? "あと " + left + " 個選べる" : "1 個選んで持ち帰る。見送ってもよい");
 
@@ -147,7 +171,15 @@ namespace DeckRogue.Game
                 var cell = RelicPanel(root, rd, opts[i], w, h);
                 cell.anchorMin = cell.anchorMax = new Vector2(0.5f, 0.5f);
                 cell.anchoredPosition = new Vector2(x0 + i * (w + gap), UiKit.Phone ? -30f : 20f);   // スマホは見出しと重ならないよう下げる
-                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_relic"); ScreenFx.FlyTo(g, cell, "relics", () => g.Do(new RunCommand_PickRelic { Index = idx })); }, 18, true, PaperFx.BrassLight);
+                if (weighty) ScreenFx.Weight(cell, 0.1f * (i + 1), 0.86f);
+                if (justOpened && !ScreenFx.Instant)
+                {   // 箱を開けた直後は幕が無い (同じ画面の組み直し) ので、遺物の札だけ 0.1 秒遅れて 0.8→1 で立つ
+                    var cr2 = cell; cr2.localScale = Vector3.one * 0.8f;
+                    Tween.After(0.1f + 0.08f * i, () => Tween.Scale(cr2, Vector3.one, 0.3f, Ease.OutBack));
+                }
+                string relicName = rd != null ? rd.Name : opts[i];
+                // 得た瞬間 (G7・2026-11-04): 光の輪・夜の帯に名前・relic_get → 0.45 秒後に上部バーへ飛ぶ (land_relic)
+                var b = UiKit.Btn(cell, "取る", delegate { Audio.Ui("pick_relic"); ScreenJuice.RelicGet(g, cell, relicName, () => ScreenFx.FlyTo(g, cell, "relics", () => g.Do(new RunCommand_PickRelic { Index = idx }))); }, 18, true, PaperFx.BrassLight);
                 var le = b.GetComponent<LayoutElement>();
                 if (le != null) UnityEngine.Object.Destroy(le);
                 UiKit.Anchor(b.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-100f, 16f), new Vector2(100f, 62f));

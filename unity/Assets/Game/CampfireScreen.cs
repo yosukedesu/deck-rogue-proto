@@ -64,7 +64,13 @@ namespace DeckRogue.Game
                 RunUi.CardGrid(g, area, run.Deck,
                     delegate (int i, CardInstance c) { return Upgrade.CanUpgradeCard(c) ? "鍛える" : null; },
                     delegate (int i, CardInstance c) { return Upgrade.CanUpgradeCard(c); },
-                    delegate (int i) { Audio.Ui("upgrade"); g.Do(new RunCommand_CampfireUpgrade { Index = i }); },
+                    delegate (int i)
+                    {   // 鍛えた瞬間 (G3・M07・2026-11-04): 選んだ札が中央で 3 度光って鍛えた姿に (upgrade_shine)、デッキへ飛んでから手を進める
+                        Audio.Ui("upgrade");
+                        var cell = ScreenJuice.GridCell(area, i);
+                        var before = i >= 0 && i < run.Deck.Count ? run.Deck[i] : null;
+                        ScreenJuice.UpgradeShine(g, cell, before, () => g.Do(new RunCommand_CampfireUpgrade { Index = i }));
+                    },
                     400f, pickKey: "forge", confirmRoot: root);
                 AttachUpgradeTips(area, run.Deck);
                 if (preview != null) AttachForgePreview(g, area, run.Deck, preview);
@@ -100,7 +106,7 @@ namespace DeckRogue.Game
             // 休めない理由はレリックの名前で (2026-09-14 人間ラン#11: 古根の杯を持ったまま HP15 で「休む」を選んで回復ゼロ → ボスで敗北)
             var rest = Option(root, "bedroll", "休む", restHeals ? "HP を " + heal + " 回復\n（最大 HP の " + (int)Math.Round(run.CampfireRatio * 100) + "%）" : noRest ? noRestName + ": 焚き火で休めない" : "すでに鍛えたので回復なし",
                 restHeals ? "今の HP " + run.Hp + " → " + Math.Min(run.MaxHp, run.Hp + heal) : "回復なしで立ち去る (HP " + run.Hp + "/" + run.MaxHp + " のまま)",
-                Pos(), delegate { Audio.Ui("rest"); g.Do(new RunCommand_CampfireRest()); }, true, w);
+                Pos(), delegate { Audio.Ui("rest"); Rest(g); }, true, w);
             // 鍛える
             Option(root, "anvil", "鍛える", !opt.Forge ? "融合の鎚: 焚き火では鍛えられない" : remain > 0 ? "デッキの 1 枚を鍛える\n（数値が伸びる・コストが下がる）" : "この焚き火ではもう鍛えられない",
                 remain > 0 ? "残り " + remain + " 回 ・ 鍛えた後を見てから決められる" : "", Pos(),
@@ -114,6 +120,29 @@ namespace DeckRogue.Game
             if (opt.Remove && fresh)
                 Option(root, "skull", "取り除く", "安らぎの煙管: デッキの1枚を永久に除去", "休む・鍛えるとは排他", Pos(),
                     delegate { g.SubMode = "remove"; g.Rebuild(); }, run.Deck.Count > 5, w);
+        }
+
+        /// <summary>焚き火 A の暈と火の粉 (休んだ時に一拍燃え上がる・噴く。組み直しで消えるので null を見る)</summary>
+        static Image _fireGlow;
+        static SceneSparks _fireSparks;
+
+        /// <summary>
+        /// 休む (G2・2026-11-04): 手を進めてから幕が閉じるまで 1.1 秒の窓 (ScreenFx.DeferNextSwitch) を取り、その間に
+        /// 上部バーの HP の数字が engine の実値 (手の前後の差) で数え上がり (rest_heal)・炎が一拍大きく・火の粉が噴き・暖かい光が画面に一瞬広がる。
+        /// 幕が始まらなかった (手が拒まれた) 時は窓を消す。Instant なら手だけ
+        /// </summary>
+        static void Rest(GameRoot g)
+        {
+            var prev = g.Rs;
+            ScreenFx.DeferNextSwitch(FxSettings.Dur(1.1f));
+            g.Do(new RunCommand_CampfireRest());
+            if (!ScreenFx.Busy || g.Rs == null || ReferenceEquals(g.Rs, prev)) { ScreenFx.DeferNextSwitch(0f); return; }
+            ScreenFx.DeferNextSwitch(0f);
+            ScreenJuice.HealCount(g, prev.Hp, g.Rs.Hp);
+            if (g.Rs.Hp <= prev.Hp || ScreenFx.Instant) return;
+            ScreenJuice.FireFlare(_fireGlow);
+            if (_fireSparks != null) _fireSparks.Burst(0.6f);
+            if (g.FxLayer != null) Tween.ScreenFlash(g.FxLayer, new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.14f * FxSettings.Flash), 0.5f);
         }
 
         /// <summary>場面 (§10-3「場面は舞台で組む」): 道の真ん中に焚き火 (PixelLab 48×48・炎のコマは props/anim)・両側に丸太・左の丸太にこのは (座りの絵があればそれ、無ければ立ち絵)。
@@ -159,14 +188,16 @@ namespace DeckRogue.Game
             public float Spread = 26f, Rise = 180f;
             readonly List<Image> _live = new List<Image>();
             readonly List<float> _t0 = new List<float>(), _dur = new List<float>(), _x0 = new List<float>(), _ph = new List<float>();
-            float _t, _next;
+            float _t, _next, _burstUntil;
             System.Random _rng = new System.Random(7);
+            /// <summary>噴く (休んだ瞬間): sec 秒だけ 0.03 秒ごとに出す (上限 28 は変えない)</summary>
+            public void Burst(float sec) { _burstUntil = _t + sec; _next = _t; }
             void Update()
             {
                 _t += Tween.UnscaledDt;
                 if (_t >= _next && _live.Count < 28)
                 {
-                    _next = _t + 0.09f;
+                    _next = _t + (_t < _burstUntil ? 0.03f : 0.09f);
                     var go = new GameObject("spark", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
                     go.transform.SetParent(transform, false);
                     var img = go.GetComponent<Image>();
@@ -251,6 +282,7 @@ namespace DeckRogue.Game
             glow.rectTransform.sizeDelta = new Vector2(190f * k, 120f * k);
             glow.rectTransform.anchoredPosition = pit + new Vector2(0f, 14f * k);
             var fl = glow.gameObject.AddComponent<UiFlicker>(); fl.Base = 0.26f; fl.Amount = 0.22f;
+            _fireGlow = glow;
             // 炎 (コマ)
             var frames = new List<Sprite>();
             for (int i = 0; i < 8; i++) { var s = Theme.Art("props/anim", "act1_flame_idle_" + i); if (s == null) break; frames.Add(s); }
@@ -271,6 +303,7 @@ namespace DeckRogue.Game
             sp.sizeDelta = Vector2.zero;
             var sk = sp.gameObject.AddComponent<SceneSparks>();
             sk.Spread = 5f * k; sk.Rise = 44f * k;
+            _fireSparks = sk;
         }
 
         /// <summary>UI のコマ送り (炎): Frames を Fps で回す。決定的な撮影では Tween.UnscaledDt で進む</summary>

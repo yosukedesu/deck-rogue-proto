@@ -96,6 +96,14 @@ namespace DeckRogue.Game
                 content.gameObject.AddComponent<GraphicRaycaster>();
             }
             var life = Dbg("nolife") ? null : content.gameObject.AddComponent<MapLife>();
+            // 幕ボスの前の行 (2026-11-04 束 C2・G11): 次の行が全部ボスの節なら、地図の空気を少し変える (薔薇の薄い霧の帯が脈打つ・ボスの節の灯が強く脈打つ・名札は「次の節」)
+            _bossNext = false;
+            if (run.Row + 1 < run.Map.Count && run.Map[run.Row + 1].Count > 0)
+            {
+                _bossNext = true;
+                foreach (var bn in run.Map[run.Row + 1]) if (bn.Type != MapNodeTypes.Boss) { _bossNext = false; break; }
+            }
+            _curEmber = null; _curRing = null; _curAt = Vector2.zero; _curFound = false;
 
             // 地面 (夜の草のタイル。8×8 枚の 512 ドットの塊を 1ドット=2px で繰り返す)
             {
@@ -298,7 +306,7 @@ namespace DeckRogue.Game
             }
 
             // 窓に貼る空気 (地図と一緒には動かない): 夜の青・月明かり・月光の筋・上の霧・周辺減光・手前の暗い木・上下の暗がり
-            Atmosphere(view, viewW, viewH, overlay);
+            Atmosphere(view, viewW, viewH, overlay, _bossNext && !overlay);
 
             // 現在行が下から 38% に来るようにスクロール
             float curY = run.Row >= 0 ? NodePos(run.Map[run.Row][run.Col], run.Row).y : startPos.y;
@@ -317,6 +325,21 @@ namespace DeckRogue.Game
             scroll.verticalNormalizedPosition = fromNorm ?? norm;
             var fixer = view.gameObject.AddComponent<ScrollFix>();
             fixer.Scroll = scroll; fixer.Norm = norm; fixer.From = fromNorm;
+            // 着いた (2026-11-04 束 C2・G13): 前の行から視線が運ばれて止まった瞬間に、現在地の灯が点き (α 0→0.40・160→240)、輪が広がり、真鍮の輪が跳ねる。音 map_arrive
+            if (fromNorm != null && _curFound && _curEmber != null)
+            {
+                var ember = _curEmber; var ring = _curRing; var at = _curAt; var cont = content;
+                var ec = ember.color;
+                ember.color = new Color(ec.r, ec.g, ec.b, 0f);
+                ember.rectTransform.sizeDelta = new Vector2(160f, 160f);
+                fixer.OnArrive = () =>
+                {
+                    if (ember != null) Tween.Run(0.35f, k => { if (ember == null) return; ember.color = new Color(ec.r, ec.g, ec.b, ec.a * k); ember.rectTransform.sizeDelta = new Vector2(Mathf.Lerp(160f, 240f, k), Mathf.Lerp(160f, 240f, k)); }, Ease.OutCubic);
+                    if (cont != null) ArriveRing(cont, at);
+                    if (ring != null) Tween.Punch(ring.rectTransform, 0.1f, 0.3f);
+                    Audio.Key("map_arrive");
+                };
+            }
             if (AutoScroll) { var asc = view.gameObject.AddComponent<MapAutoScroll>(); asc.Scroll = scroll; asc.Wheel = AutoScrollWheel; }
 
             if (overlay)
@@ -344,6 +367,8 @@ namespace DeckRogue.Game
         class ScrollFix : MonoBehaviour
         {
             public ScrollRect Scroll; public float Norm; public float? From; int _n; float _t;
+            /// <summary>前の行から運ばれて止まった瞬間 (2026-11-04 束 C2・G13 着いた合図)</summary>
+            public Action OnArrive;
             void LateUpdate()
             {
                 if (Scroll == null) { Destroy(this); return; }
@@ -358,7 +383,37 @@ namespace DeckRogue.Game
                 _t += Tween.UnscaledDt;
                 float u = Mathf.Clamp01((_t - ScreenFx.OpenDur) / ScreenFx.MapScrollDur);
                 Scroll.verticalNormalizedPosition = Mathf.Lerp(From.Value, Norm, Tween.Apply(Ease.OutCubic, u));
-                if (u >= 1f) Destroy(this);
+                if (u >= 1f) { var a = OnArrive; OnArrive = null; if (a != null) a(); Destroy(this); }
+            }
+        }
+
+        // ---- 2026-11-04 束 C2: 着いた合図と幕ボス前の空気 ----
+        static bool _bossNext;
+        static Image _curEmber, _curRing; static Vector2 _curAt; static bool _curFound;
+
+        /// <summary>現在地の節に灯の輪が広がって消える (Tween.RingBurst の content 版。content の pivot は下の中央なので Place で置く)</summary>
+        static void ArriveRing(RectTransform content, Vector2 at)
+        {
+            var img = UiKit.Pan(content, new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.7f), "arrive-ring");
+            img.sprite = ThemeFx.Ring(); img.preserveAspect = true; img.raycastTarget = false;
+            Place(img.rectTransform, at + new Vector2(0f, 6f), new Vector2(220f, 220f), new Vector2(0.5f, 0.5f));
+            var rt = img.rectTransform;
+            rt.localScale = Vector3.one * 0.3f;
+            Tween.Run(0.45f, k => { if (rt == null) return; rt.localScale = Vector3.one * (0.3f + 1.0f * k); img.color = new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.7f * (1f - k * k)); }, Ease.OutQuad, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+        }
+
+        /// <summary>ゆっくりした脈 (0.5Hz)。幕ボス前の薔薇の霧の帯に。時計は Tween.UnscaledDt</summary>
+        public class SlowPulse : MonoBehaviour
+        {
+            public float Base = 0.14f, Amount = 0.5f, Hz = 0.5f;
+            Image _img; float _t;
+            void Awake() { _img = GetComponent<Image>(); }
+            void Update()
+            {
+                if (_img == null) return;
+                _t += Tween.UnscaledDt;
+                float w = 0.5f - 0.5f * Mathf.Cos(_t * Hz * Mathf.PI * 2f);
+                var c = _img.color; c.a = Base * (1f - Amount * 0.5f + Amount * w); _img.color = c;
             }
         }
 
@@ -586,7 +641,7 @@ namespace DeckRogue.Game
         }
 
         /// <summary>窓に貼る空気 (地図と一緒に動かない)。色はカンバスの案1 の値 (multiply/screen は α の重ねで近似)</summary>
-        static void Atmosphere(RectTransform view, float viewW, float viewH, bool overlay)
+        static void Atmosphere(RectTransform view, float viewW, float viewH, bool overlay, bool bossNext = false)
         {
             Image Layer(string name, Sprite sp, Color c)
             {
@@ -624,6 +679,13 @@ namespace DeckRogue.Game
             // 周辺減光
             var vig = Layer("vignette", MapForest.Vignette(), new Color(0.02f, 0.027f, 0.063f, 0.6f));
             UiKit.Stretch(vig.rectTransform, 0f, 0f, 0f, 0f);
+            // 幕ボスの前の行 (2026-11-04 束 C2・G11): 周辺に薔薇の薄い霧が 0.5Hz で脈打つ (ボス前の行以外では 1 画素も変えない)
+            if (bossNext)
+            {
+                var air = Layer("boss-air", MapForest.Vignette(), new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, 0.14f));
+                UiKit.Stretch(air.rectTransform, 0f, 0f, 0f, 0f);
+                air.gameObject.AddComponent<SlowPulse>();
+            }
             // 手前の暗い木 (画面の下の角。額縁)
             if (!overlay)
             {
@@ -690,17 +752,21 @@ namespace DeckRogue.Game
                 if (c.a < 1f) UiKit.LinearShade(im, 0.12f);   // 下は暗い地面
                 return im;
             }
-            if (cur) Soft("ember", MapForest.Radial(), new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.40f), new Vector2(0f, cy), new Vector2(240f, 240f));
+            if (cur) { _curEmber = Soft("ember", MapForest.Radial(), new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.40f), new Vector2(0f, cy), new Vector2(240f, 240f)); _curAt = at; _curFound = true; }
             if (avail) Soft("halo", MapForest.Radial(), new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.22f), new Vector2(0f, cy), new Vector2(140f, 140f));
-            if (boss) Soft("boss-glow", MapForest.Radial(), new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, 0.26f), new Vector2(0f, cy + 6f), new Vector2(260f, 240f));
+            if (boss)
+            {
+                var bg = Soft("boss-glow", MapForest.Radial(), new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, _bossNext ? 0.5f : 0.26f), new Vector2(0f, cy + 6f), new Vector2(260f, 240f));
+                if (_bossNext && life != null) life.Pulses.Add(bg);   // 次の節が幕ボス: 灯が強く脈打つ (2026-11-04 束 C2・G11)
+            }
             Soft("shadow", MapForest.Radial(), new Color(0f, 0f, 0f, 0.6f), new Vector2(0f, cy - 7f), new Vector2(dsz + 36f, dsz + 36f));   // カンバスの 0 7px 14px の影
             if (avail) Soft("rim-glow", MapForest.Radial(), new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.5f), new Vector2(0f, cy), new Vector2(dsz + 44f, dsz + 44f));
             else if (cur) Soft("rim-glow", MapForest.Radial(), new Color(PaperFx.Ember.r, PaperFx.Ember.g, PaperFx.Ember.b, 0.6f), new Vector2(0f, cy), new Vector2(dsz + 52f, dsz + 52f));
             float tsz = MapForest.TokenSize(dsz);
             Soft("disc", MapForest.Token(boss), passed && !taken && !cur ? new Color(1f, 1f, 1f, 0.5f) : Color.white, new Vector2(0f, cy), new Vector2(tsz, tsz));
             Image ring = null;
-            if (boss) { Ring("ring", dsz + 3f, 3f, new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, 0.7f)); Ring("ring2", dsz + 11f, 5f, new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, 0.18f)); }
-            else if (cur) { Ring("ring", dsz + 3f, 3f, PaperFx.Brass); Ring("ring2", dsz + 10f, 4f, new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.30f)); }
+            if (boss) { Ring("ring", dsz + 3f, 3f, new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, 0.7f)); var r2 = Ring("ring2", dsz + 11f, 5f, new Color(PaperFx.Rose.r, PaperFx.Rose.g, PaperFx.Rose.b, _bossNext ? 0.4f : 0.18f)); if (_bossNext && life != null) life.Pulses.Add(r2); }
+            else if (cur) { _curRing = Ring("ring", dsz + 3f, 3f, PaperFx.Brass); Ring("ring2", dsz + 10f, 4f, new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.30f)); }
             else if (avail) ring = Ring("ring", dsz + 3f, 3f, PaperFx.BrassLight);
             else if (taken) Ring("ring", dsz + 2f, 2f, new Color(PaperFx.Brass.r, PaperFx.Brass.g, PaperFx.Brass.b, 0.45f));
             else Ring("ring", dsz + 2f, 2f, new Color(PaperFx.PaperDim.r, PaperFx.PaperDim.g, PaperFx.PaperDim.b, passed ? 0.07f : 0.14f));   // 細い縁 (通らなかった節は半分)
@@ -729,7 +795,7 @@ namespace DeckRogue.Game
                 var bt = UiKit.Txt(labels, bname, 24, PaperFx.RoseLight, TextAnchor.MiddleLeft, true);
                 bt.outlineWidth = 0.22f; bt.outlineColor = new Color(0f, 0f, 0f, 0.85f); bt.raycastTarget = false;
                 Place(bt.rectTransform, at + new Vector2(70f, 34f), new Vector2(360f, 32f), new Vector2(0f, 0.5f));
-                var bs = UiKit.Txt(labels, "幕ボス ・ あと " + left + " 行", 14, PaperFx.PaperDim, TextAnchor.MiddleLeft);
+                var bs = UiKit.Txt(labels, _bossNext && left == 1 ? "幕ボス ・ 次の節" : "幕ボス ・ あと " + left + " 行", 14, _bossNext && left == 1 ? PaperFx.RoseLight : PaperFx.PaperDim, TextAnchor.MiddleLeft);
                 bs.outlineWidth = 0.2f; bs.outlineColor = new Color(0f, 0f, 0f, 0.85f); bs.raycastTarget = false;
                 Place(bs.rectTransform, at + new Vector2(70f, 8f), new Vector2(360f, 22f), new Vector2(0f, 0.5f));
             }
@@ -801,7 +867,7 @@ namespace DeckRogue.Game
             name.characterSpacing = 6f; name.raycastTarget = false;
             UiKit.Anchor(name.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(80f, -54f), new Vector2(-10f, -6f));
             int toFire = BattlesToCampfire(run);
-            string sub = "行 " + (run.Row + 1) + " / " + run.Map.Count + "  ・  勝利 " + run.BattlesWon + " 戦" + (toFire >= 0 ? "  ・  次の焚き火まで " + toFire + " 戦" : "");
+            string sub = "行 " + (run.Row + 1) + " / " + run.Map.Count + "  ・  勝利 " + run.BattlesWon + " 戦" + (toFire >= 0 ? "  ・  次の焚き火まで " + toFire + " 戦" : "") + (_bossNext ? "  ・  次は幕ボス" : "");
             var st = UiKit.Txt(band.rectTransform, sub, 14, PaperFx.InkSoft, TextAnchor.MiddleLeft);
             st.characterSpacing = 1f; st.raycastTarget = false;
             UiKit.Anchor(st.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(18f, -78f), new Vector2(-10f, -54f));

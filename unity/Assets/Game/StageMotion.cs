@@ -287,6 +287,9 @@ namespace DeckRogue.Game
 
         public static bool EnemyBigFlashing => _plateT >= 0f && On;
 
+        /// <summary>暗転 (StageLook.SetDim) を書いている (落として保つ・戻している・まだ 1 に戻っていない)。束 E (StageBeat) は真の間 SetDim を書かない (書く主を 1 つに)</summary>
+        public static bool DimActive => _dimPhase != 0 || _dimK < 1f;
+
         /// <summary>敵の大技の間の被弾の画面の赤い点滅の α の上限 (光の設計図の enemyBig.hurtFlashAlpha・既定 0.1。0 = 出さない)</summary>
         public static float EnemyBigHurtFlashAlpha => Mathf.Clamp01(Tune.EnemyBig.HurtFlash);
 

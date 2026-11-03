@@ -63,6 +63,11 @@ namespace DeckRogue.Game
         public string LastPlayedUid;
         public int LastPlayedTarget = -1;
 
+        /// <summary>前の組み立てで輪に見せたエナジー (-1 = まだ)。輪の弧を前の値から滑らせる (2026-11-04 B03)。戦闘ごとに BattleView が作り直されるので自然に戻る</summary>
+        public int ShownEnergy = -1;
+        /// <summary>前の組み立てで見せた状態の量 ("e&lt;敵&gt;:&lt;記号&gt;"・"p:&lt;名前&gt;")。付いた・増えた札を跳ねさせる比較に使う (2026-11-04 B06)</summary>
+        public readonly Dictionary<string, int> LastStatus = new Dictionary<string, int>();
+
         public static BattleView Ensure(GameRoot g, RectTransform root)
         {
             if (g.Battle != null && g.Battle.Root == root && g.Battle.FieldLayer != null) return g.Battle;
@@ -75,6 +80,13 @@ namespace DeckRogue.Game
             v.UiLayer = UiKit.NewRect("ui", root);
             UiKit.Stretch(v.UiLayer, 0f, 0f, 0f, 0f);
             g.Battle = v;
+            if (!UiKit.Phone)
+            {   // 手札の呼吸 (2026-11-04 M15): 自分の番だけ扇の層が ±1.5px でゆっくり上下する。ドラッグ中・撮影 (Instant) は止める
+                var breath = v.HandLayer.gameObject.AddComponent<BattleJuice.HandBreath>();
+                breath.Layer = v.HandLayer;
+                var gg = g;
+                breath.Active = () => !BattleScreen.Dragging && !ScreenFx.Instant && gg.Rs != null && gg.Rs.Combat != null && gg.Rs.Combat.Phase == CombatPhases.PlayerTurn && gg.Pending == null;
+            }
             return v;
         }
 
@@ -855,6 +867,120 @@ namespace DeckRogue.Game
             return g.PreferredTarget >= 0 && g.PreferredTarget < st.Enemies.Count && st.Enemies[g.PreferredTarget].Hp > 0 ? BattleScreen.GuardRedirect(st, g.PreferredTarget) : (alive == 1 ? firstAlive : -1);
         }
 
+        // ---- 札を持った時の見込み (2026-11-04 B01/B02/B13): 狙う敵の HP バーに「この札でここまで減る」の帯・倒せるなら「倒せる」の判・帳面と意図の札に真鍮の明るい縁 ----
+        readonly List<int> _previewTargets = new List<int>();
+        readonly List<KeyValuePair<int, GameObject>> _previewEdges = new List<KeyValuePair<int, GameObject>>();
+        string _previewUid; int _previewOver = -1; string _previewSound;
+        /// <summary>いま持っている札で狙いの敵を倒せる見込みか (スマホの狙いの矢の輪が読む)</summary>
+        public bool PreviewLethal;
+
+        /// <summary>札 hc を持っている (触れている・引いている) 間の見込みを敵側に出す。over = 指の下の敵 (-1 なら狙い・生存 1 体)。出せない札・ダメージの無い札は何も出さない</summary>
+        public void ShowCardPreview(GameRoot g, GameState st, HandCard hc, int over)
+        {
+            if (g == null || st == null || hc == null || hc.Card == null || hc.Rt == null) { ClearCardPreview(g); return; }
+            var def = hc.Card.Def;
+            if (!hc.Playable || st.Phase != CombatPhases.PlayerTurn || !BattleJuice.HasPlayDamage(def)) { ClearCardPreview(g); return; }
+            _previewUid = hc.Card.Uid; _previewOver = over;
+            var targets = new List<int>();
+            if (BattleJuice.TargetsAll(def)) { for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) targets.Add(i); }
+            else
+            {
+                int t = over >= 0 && over < st.Enemies.Count && st.Enemies[over].Hp > 0 ? BattleScreen.GuardRedirect(st, over) : PreviewTargetFor(g, st);
+                if (t >= 0 && t < st.Enemies.Count && st.Enemies[t].Hp > 0) targets.Add(t);
+            }
+            for (int k = _previewTargets.Count - 1; k >= 0; k--)
+                if (!targets.Contains(_previewTargets[k])) { ClearEnemyPreview(g, _previewTargets[k]); _previewTargets.RemoveAt(k); }
+            bool anyLethal = false, fresh = false;
+            foreach (int t in targets)
+            {
+                var pan = g.Anchor("enemy" + t);
+                if (pan == null) continue;
+                int loss = BattleJuice.PredictHpLoss(st, hc.Card, t);
+                bool lethal = loss > 0 && st.Enemies[t].Hp - loss <= 0;
+                if (lethal) anyLethal = true;
+                BattleScreen.SetEnemyPredict(pan, loss, lethal);
+                if (!_previewTargets.Contains(t)) { _previewTargets.Add(t); fresh = true; AddHoverEdge(g, pan, t); }
+            }
+            PreviewLethal = anyLethal;
+            if (fresh && targets.Count > 0)
+            {
+                string skey = _previewUid + ":" + string.Join(",", targets.ConvertAll(x => x.ToString()).ToArray());
+                if (skey != _previewSound) { _previewSound = skey; Audio.Key("preview_tick"); }
+            }
+        }
+
+        /// <summary>狙われた敵の反応 (B13): 帳面と意図の札に真鍮の明るい縁 (もう狙いの縁がある敵には足さない)・帳面が少し跳ね・体が一瞬白く光る</summary>
+        void AddHoverEdge(GameRoot g, RectTransform pan, int idx)
+        {
+            foreach (var nm in AimBlockers)
+            {
+                var host = pan.Find(nm);
+                if (host == null || host.Find("edge") != null || host.Find("dragedge") != null) continue;
+                var edge = PaperFx.Sheet(host, PaperFx.Tag, "hoveredge", new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.8f));
+                UiKit.Stretch(edge.rectTransform, -3f, -3f, -3f, -3f);
+                edge.raycastTarget = false;
+                edge.transform.SetAsFirstSibling();
+                _previewEdges.Add(new KeyValuePair<int, GameObject>(idx, edge.gameObject));
+            }
+            var strip = pan.Find("strip") as RectTransform;
+            if (strip != null) Tween.Punch(strip, 0.04f, 0.2f);
+            Stage.Flash("enemy" + idx, 0.06f);
+        }
+
+        void ClearEnemyPreview(GameRoot g, int idx)
+        {
+            var pan = g != null ? g.Anchor("enemy" + idx) : null;
+            if (pan != null) BattleScreen.SetEnemyPredict(pan, 0, false);
+            for (int k = _previewEdges.Count - 1; k >= 0; k--)
+            {
+                if (_previewEdges[k].Key != idx) continue;
+                if (_previewEdges[k].Value != null) UnityEngine.Object.Destroy(_previewEdges[k].Value);
+                _previewEdges.RemoveAt(k);
+            }
+        }
+
+        /// <summary>見込みを全部消す (札を離した・戻した・手札から消えた)</summary>
+        public void ClearCardPreview(GameRoot g)
+        {
+            foreach (int t in _previewTargets) ClearEnemyPreview(g, t);
+            _previewTargets.Clear();
+            foreach (var kv in _previewEdges) if (kv.Value != null) UnityEngine.Object.Destroy(kv.Value);
+            _previewEdges.Clear();
+            _previewUid = null; _previewOver = -1; _previewSound = null; PreviewLethal = false;
+        }
+
+        /// <summary>組み直しの後 (敵の帳面は作り直されて帯も縁も消えている): まだ同じ札を持っていれば見込みを出し直す。持っていなければ忘れる</summary>
+        void ReapplyPreview(GameRoot g, GameState st)
+        {
+            if (_previewUid == null) return;
+            _previewTargets.Clear(); _previewEdges.Clear(); _previewSound = null;
+            HandCard hc;
+            bool holding = _hand.TryGetValue(_previewUid, out hc) && hc.Rt != null;
+            if (holding && !BattleScreen.Dragging)
+            {   // 触れているだけの札: 指 (ポインタ) がまだ札の上にある時だけ (Enter/Exit が作り直しで来ない場合の取り残しを防ぐ)
+                try { holding = !UiKit.Phone && RectTransformUtility.RectangleContainsScreenPoint(hc.Rt, Input.mousePosition, null); } catch (Exception) { holding = false; }
+            }
+            if (holding) ShowCardPreview(g, st, hc, _previewOver);
+            else ClearCardPreview(g);
+        }
+
+        /// <summary>触れた札の両隣を 12px 開ける (2026-11-04 B04/M15。PC だけ)。idx &lt; 0 で全部を扇の位置へ戻す。飛んでいる途中・持ち上がっている札は触らない</summary>
+        public void SpreadAround(int idx)
+        {
+            if (UiKit.Phone) return;
+            foreach (var kv in _hand)
+            {
+                var hc = kv.Value;
+                if (hc == null || hc.Rt == null) continue;
+                if (idx >= 0 && hc.Index == idx) continue;
+                if ((hc.Rt.anchoredPosition - hc.BasePos).sqrMagnitude > 40f * 40f) continue;
+                float dx = idx < 0 ? 0f : hc.Index == idx - 1 ? -12f : hc.Index == idx + 1 ? 12f : 0f;
+                var target = hc.BasePos + new Vector2(dx, 0f);
+                if ((hc.Rt.anchoredPosition - target).sqrMagnitude < 0.25f) continue;
+                Tween.Move(hc.Rt, target, 0.12f, Ease.OutQuad);
+            }
+        }
+
         /// <summary>ドラッグ中に敵の上へ来た/離れた時、その札だけ描き直す (本家と同じく敵に当てた時に数字が変わる。2026-09-09)</summary>
         public void RefreshHandCard(GameRoot g, GameState st, HandCard hc, int previewEnemy)
         {
@@ -869,6 +995,7 @@ namespace DeckRogue.Game
             finally { CardView.PreviewEnemy = -1; CardView.CompactName = false; CardView.BodyRightInset = 0f; CardView.InHand = false; }
             if (BattleScreen.R3) BattleScreen.R3A_HoverCatch(hc.Rt);   // r3: Refill が子を全部捨てるので、上がった札の下の透明な的を付け直す
             if (BattleScreen.R3 && hc.Rt.localScale.x > BattleScreen.CardScale + 0.01f) CardView.SetKeyNumVisible(hc.Rt, false);   // 上がっている札は要の数字の札を隠したまま
+            if (BattleScreen.Dragging) CardView.SetShadow(hc.Rt, true, 24f);   // 引いている札の影も付け直す (2026-11-04 B04)
         }
 
         // ---- 狙いの矢 (スマホ。2026-09-29 p09 ユーザー裁定「狙いの矢だけ」) ----
@@ -899,6 +1026,7 @@ namespace DeckRogue.Game
             bool show = screenPos.y > BattleScreen.DropLineScreen(Root);   // 取り消しの線 = EndDrag の「場に出す」線 (r3 は沈めた手札の上端＋111)
             _aimLine.gameObject.SetActive(show);
             SetAimEdge(g, st, show ? over : -1);
+            if (show) ShowCardPreview(g, st, hc, over); else ClearCardPreview(g);   // 指の下の敵の HP バーに「ここまで減る」(2026-11-04 B01/B02)
             // 撃とうとしている札に真鍮の縁 (2026-09-30 F36: 札は手札の元の位置のままで、どの札から矢が出ているかが形から読めなかった)。
             // 札の子は RefreshHandCard の描き直しで全部消えるので、無ければ付け直す。取り消しの線より下では矢と一緒に隠す
             var de = hc.Rt.Find("dragedge");
@@ -1002,7 +1130,9 @@ namespace DeckRogue.Game
             {
                 var core = _aimRing.Find("brass");
                 var ci = core != null ? core.GetComponent<Image>() : null;
-                if (ci != null) ci.color = dimRing ? PaperFx.PaperDim : PaperFx.Brass;
+                // 倒せる見込みなら芯を明るい真鍮に・輪を 1.15 倍 (2026-11-04 B02 スマホ)。敵が切り替わった直後は _aimPulse ぶん膨らむ (B14)
+                if (ci != null) ci.color = dimRing ? PaperFx.PaperDim : PreviewLethal ? PaperFx.BrassLight : PaperFx.Brass;
+                _aimRing.localScale = Vector3.one * ((PreviewLethal && !dimRing ? 1.15f : 1f) + _aimPulse);
             }
             if (text != _aimNoteText || (_aimNote == null && text != null))
             {
@@ -1120,11 +1250,18 @@ namespace DeckRogue.Game
             bool stale = false;
             foreach (var o in _aimEdges) if (o == null) { stale = true; break; }
             if (idx == _aimEdgeIdx && !stale) return;
+            bool switched = idx != _aimEdgeIdx && idx >= 0;
             ClearAimEdges();
             _aimEdgeIdx = idx;
             if (idx < 0) return;   // 指の下に敵がいない＝離すと今までの狙い (PreferredTarget) に撃つ。その敵の縁 "edge" はそのまま見せる
             var pan = g.Anchor("enemy" + idx);
             if (pan == null) return;
+            if (switched)
+            {   // 指の下の敵が切り替わった手応え (2026-11-04 B14): 指先の輪が 1→1.25→1 (0.18 秒)・その敵の体が一瞬白く光る・小さな音 (Hover は 0.06 秒に 1 回の間引き)
+                Tween.Run(0.18f, k => { _aimPulse = Mathf.Sin(k * Mathf.PI) * 0.25f; }, Ease.Linear, () => { _aimPulse = 0f; }, () => { _aimPulse = 0f; });
+                Stage.Flash("enemy" + idx, 0.06f);
+                Audio.Hover();
+            }
             foreach (var nm in AimBlockers)
             {
                 var host = pan.Find(nm);
@@ -1151,6 +1288,7 @@ namespace DeckRogue.Game
         }
 
         readonly List<GameObject> _aimHidden = new List<GameObject>();   // 指で別の敵を狙っている間だけ隠した前の狙いの縁
+        float _aimPulse;   // 指先の輪の膨らみ (敵が切り替わった直後の 0.18 秒。B14)
 
         void ClearAimEdges()
         {
@@ -1340,6 +1478,7 @@ namespace DeckRogue.Game
                     finally { CardView.PreviewEnemy = -1; CardView.CompactName = false; CardView.BodyRightInset = 0f; CardView.InHand = false; }
                     rt2.anchoredPosition = pos; rt2.localRotation = rot; rt2.localScale = scl;
                     if (BattleScreen.R3 && scl.x > BattleScreen.CardScale + 0.01f) CardView.SetKeyNumVisible(rt2, false);   // 触れて上がっている札は要の数字の札を隠したまま
+                    if (scl.x > BattleScreen.CardScale + 0.01f || BattleScreen.Dragging) CardView.SetShadow(rt2, true, BattleScreen.Dragging ? 24f : 18f);   // 上がっている札の影を保つ (2026-11-04 B04)
                     hc = new HandCard { Rt = rt2, Card = c, Playable = playable, Settable = settable, Cost = cost, Preview = preview, Compact = compact, BodyInset = inset };
                     _hand[c.Uid] = hc;
                     fresh = false;
@@ -1394,6 +1533,7 @@ namespace DeckRogue.Game
                     continue;
                 }
                 bool isNew = (hc.Rt.anchoredPosition - drawPos).sqrMagnitude < 1f;
+                bool firstNew = isNew && k == 0;
                 float delay = isNew ? drawDelay + 0.05f * (k++) : 0f;
                 var rtc = hc.Rt;
                 Tween.After(delay, () =>
@@ -1403,6 +1543,13 @@ namespace DeckRogue.Game
                     {
                         // めくり (2026-09-17 ⑦): 裏のまま飛び出し、道中で横幅が 0 まで細くなって表に返り、扇の位置で等身大に
                         Audio.Key("CardsDrawn");
+                        // 山札が応える (2026-11-04 B12): 最初の 1 枚で山札の札が跳ね、札ごとに出発点に紙色の小さな輪
+                        var pileRt = g.Anchor("pile-draw");
+                        if (pileRt != null)
+                        {
+                            if (firstNew) Tween.Punch(pileRt, 0.1f, 0.2f);
+                            if (g.FxLayer != null) Tween.RingBurst(g.FxLayer, Tween.CenterIn(pileRt, g.FxLayer), PaperFx.Paper, 40f, 0.25f);
+                        }
                         var p0 = rtc.anchoredPosition; var r0 = rtc.localRotation; float s0 = rtc.localScale.y;
                         var back = rtc.Find("back");
                         Tween.Run(0.34f, t =>
@@ -1424,6 +1571,7 @@ namespace DeckRogue.Game
                     Tween.Run(0.2f, t => { if (rtc != null) rtc.localRotation = Quaternion.Slerp(rr0, rot, t); }, Ease.OutQuad);
                 });
             }
+            ReapplyPreview(g, st);   // 持っている札の見込みを作り直した帳面へ (2026-11-04 B01)
             LastPlayedUid = null;
             LastPlayedTarget = -1;
         }
@@ -1620,7 +1768,7 @@ namespace DeckRogue.Game
         {
             BattleScreen.HookHandCard(g, hc, c);
             var cardRef = c;
-            Tooltip.Attach(hc.Rt.gameObject, delegate { return BattleScreen.KeywordsOnly(cardRef.Def); }, false);
+            Tooltip.Attach(hc.Rt.gameObject, delegate { return BattleScreen.KeywordsOnly(cardRef.Def); }, false, 0.5f);   // 手札は 0.5 秒遅れ (本文は面に書いてある。2026-11-04 B09)
         }
 
         /// <summary>ターン終了: 手札を全部捨て札へ飛ばす (順送り演出の TurnEnded で呼ぶ)</summary>
@@ -1654,10 +1802,11 @@ namespace DeckRogue.Game
             bool inExhaust = false;
             for (int i = 0; i < st.Player.ExhaustPile.Count; i++) if (st.Player.ExhaustPile[i].Uid == uid) inExhaust = true;
 
-            if (inSet) { Audio.Key("CardSet"); FlyTo(g, rt, "setslot" + setIdx, delay, 0.3f, true, 0.5f); return; }
-            if (inPerm) { FlyTo(g, rt, "player", delay, 0.3f, true, 0.4f); return; }
+            if (inSet) { Audio.Key("CardSet"); EnergyOrbs(g, rt, hc.Cost, hc.Card.Def); FlyTo(g, rt, "setslot" + setIdx, delay, 0.3f, true, 0.5f); return; }
+            if (inPerm) { EnergyOrbs(g, rt, hc.Cost, hc.Card.Def); FlyTo(g, rt, "player", delay, 0.3f, true, 0.4f); return; }
             if (uid == LastPlayedUid)
             {
+                EnergyOrbs(g, rt, hc.Cost, hc.Card.Def);   // 払ったエナジーが札から輪へ流れる (2026-11-04 B03)
                 float retire = PlayedCardRetireDuration(hc.Card.Def);
                 if (retire > 0f) {
                     // Fly directly to its pile rather than crossing the enemy silhouette.
@@ -1682,20 +1831,67 @@ namespace DeckRogue.Game
                 Tween.Scale(rt, Vector3.one * 0.6f, 0.2f, Ease.OutQuad);
                 rt.localRotation = Quaternion.identity;
                 string dest = inExhaust ? null : "pile-discard";
-                Tween.After(0.26f, () => { if (rt != null) { if (dest == null) Shatter(rt); else FlyTo(g, rt, dest, 0f, 0.25f, true); } });
+                Tween.After(0.26f, () => { if (rt != null) { if (dest == null) Shatter(g, rt); else FlyTo(g, rt, dest, 0f, 0.25f, true); } });
                 return;
             }
-            if (inExhaust) { Tween.After(delay, () => { if (rt != null) Shatter(rt); }); return; }
+            if (inExhaust) { Tween.After(delay, () => { if (rt != null) Shatter(g, rt); }); return; }
             FlyTo(g, rt, "pile-discard", delay, 0.3f, true);
         }
 
-        void Shatter(RectTransform rt)
+        /// <summary>払ったエナジー (表示したコスト) ぶんの真鍮の玉が、出した札から輪へ飛ぶ (2026-11-04 B03)。着いた瞬間に輪が跳ね、小さな輪が広がり、energy_spend。X 札・0 コストは無し</summary>
+        static void EnergyOrbs(GameRoot g, RectTransform card, int cost, CardDef def)
+        {
+            if (g == null || card == null || cost <= 0 || (def != null && def.XCost == true)) return;
+            var fx = g.FxLayer; var orb = g.Anchor("energy");
+            if (fx == null || orb == null) return;
+            Vector2 from = Tween.CenterIn(card, fx), to = Tween.CenterIn(orb, fx);
+            int n = Mathf.Min(cost, 6);
+            for (int i = 0; i < n; i++)
+            {
+                int ii = i;
+                Tween.After(0.04f * i, () => Tween.Projectile(fx, from, to, PaperFx.Brass, 18f, 0.22f, 30f + 12f * (ii % 3), () =>
+                {
+                    var o2 = g.Anchor("energy");   // 組み直しで作り直されていれば新しい輪
+                    if (ii == 0) { Audio.Key("energy_spend"); if (o2 != null) Tween.Punch(o2, 0.1f, 0.2f); }
+                    Tween.RingBurst(fx, o2 != null ? Tween.CenterIn(o2, fx) : to, PaperFx.BrassLight, 60f, 0.25f);
+                }));
+            }
+        }
+
+        /// <summary>消滅 (2026-11-04 B05): 札が真鍮の明るい色に閃いてから縮み、熾の粒が立ちのぼる (一度きりの重さ)。旧は縮んで薄れるだけ</summary>
+        void Shatter(GameRoot g, RectTransform rt)
         {
             var cg = rt.GetComponent<CanvasGroup>();
             if (cg == null) cg = rt.gameObject.AddComponent<CanvasGroup>();   // ?? は不可: エディタでは無いコンポーネントが例外を投げる null オブジェクトで返る
             cg.blocksRaycasts = false;
-            Tween.Scale(rt, Vector3.one * 0.2f, 0.3f, Ease.InQuad);
-            Tween.Run(0.3f, k => { if (cg != null) cg.alpha = 1f - k; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+            Audio.Key("CardExhausted");
+            var frame = rt.Find("frame");
+            var fimg = frame != null ? frame.GetComponent<Image>() : null;
+            if (fimg != null) Tween.Flash(fimg, PaperFx.BrassLight, 0.3f);
+            var fx = g != null ? g.FxLayer : null;
+            if (fx != null) BattleJuice.EmberBurst(fx, Tween.CenterIn(rt, fx), rt.rect.width * rt.localScale.x, rt.rect.height * rt.localScale.y, 8);
+            Tween.Scale(rt, Vector3.one * 0.25f, 0.3f, Ease.InQuad);
+            Tween.Run(0.3f, k => { if (cg != null) cg.alpha = 1f - k * k; }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+        }
+
+        /// <summary>札が山札・捨て札・消滅の札に着いた (2026-11-04 B05): 札が受けて跳ね、数は状態の実数を読んで置く (演出で先に進めない＝順送りの途中で戻る瞬間を作らない)</summary>
+        static void PileLanded(GameRoot g, string anchor)
+        {
+            if (g == null || anchor == null || !anchor.StartsWith("pile-")) return;
+            var dest = g.Anchor(anchor);
+            if (dest == null) return;
+            Tween.Punch(dest, 0.12f, 0.25f);
+            var st = g.Rs != null ? g.Rs.Combat : null;
+            if (st == null) return;
+            int n = anchor == "pile-draw" ? st.Player.DrawPile.Count : anchor == "pile-discard" ? st.Player.DiscardPile.Count : st.Player.ExhaustPile.Count;
+            var row = dest.Find("row");
+            if (row == null) return;
+            for (int i = 0; i < row.childCount; i++)
+            {
+                var t = row.GetChild(i).GetComponent<TMPro.TMP_Text>();
+                int cur;
+                if (t != null && int.TryParse(t.text, out cur)) { if (cur != n) { t.text = n.ToString(); Tween.Punch(t.rectTransform, 0.2f, 0.25f); } break; }
+            }
         }
 
         void FlyTo(GameRoot g, RectTransform rt, string anchor, float delay, float dur, bool destroy, float endScale = 0.3f)
@@ -1712,7 +1908,7 @@ namespace DeckRogue.Game
                 rt.SetAsLastSibling();
                 Tween.Move(rt, to, dur, Ease.InOutQuad);
                 Tween.Scale(rt, Vector3.one * endScale, dur, Ease.InQuad);
-                Tween.Run(dur, k => { if (cg != null) cg.alpha = k < 0.7f ? 1f : 1f - (k - 0.7f) / 0.3f; }, Ease.Linear, () => { if (destroy && rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
+                Tween.Run(dur, k => { if (cg != null) cg.alpha = k < 0.7f ? 1f : 1f - (k - 0.7f) / 0.3f; }, Ease.Linear, () => { if (destroy && rt != null) UnityEngine.Object.Destroy(rt.gameObject); PileLanded(g, anchor); });
             });
         }
     }

@@ -385,8 +385,13 @@ namespace DeckRogue.Game
             if (Rs != null) _lastAct = Rs.Act;
             // 幕の切り替わり (2026-09-14 ユーザー「ステージ切り替わり時に SE が必要」): 幕ボス撃破後の次の幕へ / ランの開始
             if (Rs != null && prevAct != Rs.Act) Audio.Ui("act_start");
-            // 戦闘の始まり: マップから戦闘へ (同上)
-            if (!wasCombat && Rs != null && Rs.Phase == RunPhases.Combat) Audio.Ui("combat_start");
+            // 戦闘の始まり: マップから戦闘へ (同上)。幕ボスは低い一打 (boss_start。2026-11-04 束 C2・A8。鍵は音の束が足す。無ければ通常の音)
+            if (!wasCombat && Rs != null && Rs.Phase == RunPhases.Combat)
+            {
+                bool bossFight = false;
+                try { var node = DeckRogue.Engine.Run.CurrentNode(Rs); bossFight = node != null && node.Type == MapNodeTypes.Boss; } catch (Exception) { }
+                if (!(bossFight && Audio.Key("boss_start"))) Audio.Ui("combat_start");
+            }
             // Preserve the old hand, HP and intents while the engine's already-resolved enemy
             // turn / final blow is presented. Ordinary player cards retain independent fast timelines.
             if(wasCombat && Rs?.Combat!=null && Battle!=null && !ReferenceEquals(prevRs,Rs)
@@ -412,7 +417,18 @@ namespace DeckRogue.Game
                 Rebuild();
                 if (Rs != null && Rs.Combat != null && Rs.Phase == RunPhases.Combat) Presenter.Play(this, Rs.Combat); else Presenter.Reset();
             };
-            if (phaseChanged) ScreenFx.Switch(this, after); else after();
+            // 幕の題字 (2026-11-04 束 C2・G5): 幕が変わった手 (幕ボス→次の幕) は、幕が閉じている間に「第二幕 先代の坑道」を浮かべてから開く。Instant なら ActTitleFx が Switch に落とす
+            bool actChanged = Rs != null && prevRs != null && prevRs.Act != Rs.Act;
+            if (phaseChanged && actChanged) ActTitleFx.Show(this, Rs.Act, after);
+            else if (phaseChanged) ScreenFx.Switch(this, after); else after();
+        }
+
+        /// <summary>「もう一度（同じリーダー）」(2026-11-04 束 C2・G4): 走破／敗北の画面から、同じリーダー・同じ難易度・新しいシードで始める</summary>
+        public void RestartRun()
+        {
+            Seed = UnityEngine.Random.Range(1, 99999);
+            if (_seedField != null) _seedField.SetTextWithoutNotify(Seed.ToString());
+            StartRun();
         }
 
         public void DoCombat(Command cmd)
@@ -473,7 +489,8 @@ namespace DeckRogue.Game
                 Rs = null;
             }
             ScreenFx.ResetShown();
-            if (Rs != null) ScreenFx.Switch(this, Rebuild); else Rebuild();
+            // 幕の題字 (2026-11-04 束 C2・G5/M10): ランの始まりは「第一幕 坑口の森」を幕の間に浮かべてから出立の店へ (Instant なら ScreenFx.Switch)
+            if (Rs != null) ActTitleFx.Show(this, Rs.Act, Rebuild); else Rebuild();
         }
 
         public void BackToSetup()
@@ -761,6 +778,7 @@ namespace DeckRogue.Game
         /// <summary>場面に合わせて BGM を切り替える (同じ名前なら何もしない)。素材は Resources/Audio/bgm/<name>、無ければ合成</summary>
         void UpdateBgm()
         {
+            UpdateAmbience();
             try
             {
                 // 場面名 → 表 (Resources/Audio/audio.json) → 素材名。elite/rest/lost は表に無ければ幕の曲・マップの曲へ落ちる
@@ -784,6 +802,59 @@ namespace DeckRogue.Game
                 Audio.Bgm(Audio.BgmFor("act" + Rs.Act) ?? Audio.BgmFor("map" + Rs.Act));
             }
             catch (Exception e) { Debug.LogWarning("[Audio] bgm: " + e.Message); }
+        }
+
+        /// <summary>環境音の層 (2026-11-04 束 C2・A7 の呼び出し側。中身は音の束 D の Audio.Ambience): 幕1 の夜の森／幕2 の坑道／幕3 の古代都市、焚き火は火のはぜる音、
+        /// タイトル・走破・敗北は無し。戦闘も同じ鍵 (BGM と同じく「場面でコロコロ変えない」)。鍵が表に無ければ Audio 側が黙る</summary>
+        void UpdateAmbience()
+        {
+            try
+            {
+                string key = null;
+                if (Rs != null && Rs.Phase != RunPhases.Won && Rs.Phase != RunPhases.Lost)
+                {
+                    if (Rs.Phase == RunPhases.Campfire) key = "ambience.campfire";
+                    else key = Rs.Act >= 3 ? "ambience.ruins" : Rs.Act == 2 ? "ambience.cave" : "ambience.forest_night";
+                }
+                Audio.Ambience(key);
+            }
+            catch (Exception e) { Debug.LogWarning("[Audio] ambience: " + e.Message); }
+        }
+
+        // ---- 戦闘直後の評価の窓 (2026-11-04 束 C2・G9/M08): 報酬の画面が入り終わってから 1.2 秒 (走破／敗北は 2.6 秒) 遅らせて出す ----
+        bool _ratingTimer;
+
+        /// <summary>評価の窓を遅らせて出す。Instant (撮影) は従来どおり即 (Feedback.ShouldShowRating が見る)。設定で窓を切っていれば Feedback.Record が RatingOpen を立てない</summary>
+        void ScheduleRating()
+        {
+            if (_ratingTimer || ScreenFx.Instant || !Feedback.RatingOpen || Feedback.RatingReady || Rs == null || !Feedback.CanRate(Rs)) return;
+            _ratingTimer = true;
+            StartCoroutine(RatingLater(Rs, Rs.Phase == RunPhases.Won || Rs.Phase == RunPhases.Lost ? 2.6f : 1.2f));
+        }
+
+        System.Collections.IEnumerator RatingLater(RunState rs, float delay)
+        {
+            float t = 0f;
+            while (t < delay) { yield return null; t += Tween.UnscaledDt; }
+            _ratingTimer = false;
+            if (!ReferenceEquals(Rs, rs) || !Feedback.RatingOpen || Feedback.RatingReady || CombatPresentationPending || ScreenRoot == null) yield break;
+            Feedback.RatingReady = true;
+            // 画面は組み直さない (走破の記録の積み上げ・報酬の札の入りを止めない)。重ね窓が開いていれば次の組み直しで出る
+            if (MenuOpen || SettingsOpen || Confirm != null || ViewMap || ViewDeck || ViewRelics || Feedback.MemoOpen) yield break;
+            int before = ScreenRoot.childCount;
+            FeedbackUi.RatingDialog(this, ScreenRoot);
+            // 現れ方: 窓の暗幕と紙が 0.2 秒で浮かぶ
+            if (ScreenRoot.childCount > before)
+            {
+                var top = ScreenRoot.GetChild(ScreenRoot.childCount - 1) as RectTransform;
+                if (top != null)
+                {
+                    var cg = top.gameObject.GetComponent<CanvasGroup>();
+                    if (cg == null) cg = top.gameObject.AddComponent<CanvasGroup>();
+                    cg.alpha = 0f;
+                    Tween.Run(0.2f, k => { if (cg != null) cg.alpha = k; }, Ease.OutQuad);
+                }
+            }
         }
 
         void Update()
@@ -917,6 +988,7 @@ namespace DeckRogue.Game
                     else if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot);   // 画面の上に重ねる (最後に組む)
                     else if (ViewRelics) RunUi.RelicViewer(this, ScreenRoot);   // ≡ の「レリック一覧」(2026-09-22)
                     if (Feedback.ShouldShowRating(Rs)) FeedbackUi.RatingDialog(this, ScreenRoot);   // 戦闘直後の評価 (1回だけ聞く)
+                    else ScheduleRating();   // 2026-11-04 束 C2: 高揚の頂点で聞かない＝報酬の札が入り終わってから遅れて出す
                     if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot);
                     if (MenuOpen) RunUi.Menu(this, ScreenRoot);
                     if (SettingsOpen) SettingsUi.Build(this, ScreenRoot);
