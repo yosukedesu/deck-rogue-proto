@@ -185,10 +185,17 @@ case "$MODE" in
     kill_batch_players
     STIMEOUT="${SHOT_TIMEOUT:-$((120 + NLINES * ${STATE_SECS:-40}))}"
     echo "states: $NLINES 行 (時間切れ ${STIMEOUT} 秒)"
-    timeout -k 5 "$STIMEOUT" "$EXE" -autopilot "${SCENARIO:-state}" -statesfile "$(wslpath -w "$WIN_DIR/states-run.txt")" -seed "$SEED" -shots "$(wslpath -w "$WIN_DIR/Shots")" \
-      ${DET:+-det} ${UISCALE:+-uiscale "$UISCALE"} ${FAKECUTOUT:+-fakecutout "$FAKECUTOUT"} ${HD2D:+-hd2d "$HD2D"} ${PLAYER_ARGS:-} \
-      -screen-width "${SHOT_W:-1920}" -screen-height "${SHOT_H:-1080}" -screen-fullscreen 0 -logFile "$(wslpath -w "$WIN_DIR/player.log")"
-    PCODE=$?
+    # 1 回おきに D3D の初期化で固まる (player.log に [Autopilot] が出ず exit 124・png 0 枚) → 同じ引数で 1 回だけ打ち直す (2026-11-04 T6)
+    for attempt in 1 2; do
+      timeout -k 5 "$STIMEOUT" "$EXE" -autopilot "${SCENARIO:-state}" -statesfile "$(wslpath -w "$WIN_DIR/states-run.txt")" -seed "$SEED" -shots "$(wslpath -w "$WIN_DIR/Shots")" \
+        ${DET:+-det} ${UISCALE:+-uiscale "$UISCALE"} ${FAKECUTOUT:+-fakecutout "$FAKECUTOUT"} ${HD2D:+-hd2d "$HD2D"} ${PLAYER_ARGS:-} \
+        -screen-width "${SHOT_W:-1920}" -screen-height "${SHOT_H:-1080}" -screen-fullscreen 0 -logFile "$(wslpath -w "$WIN_DIR/player.log")"
+      PCODE=$?
+      if [ "$PCODE" = "124" ] && ! grep -q "\[Autopilot\]" "$WIN_DIR/player.log" 2>/dev/null && [ "$attempt" = "1" ]; then
+        echo "states: 起動で固まった (exit 124・Autopilot が始まっていない) → 10 秒待って打ち直す"; kill_batch_players; sleep 10; continue
+      fi
+      break
+    done
     NGOT=$(collect_shots)
     echo "player exit=$PCODE states: $NLINES 行 → $NGOT files (${SHOTS_OUT:-$REPO/unity/Shots})"
     grep -E "\[Autopilot\]|Exception|error" "$WIN_DIR/player.log" 2>/dev/null | cut -c1-200 | tail -30

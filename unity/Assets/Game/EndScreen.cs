@@ -106,7 +106,7 @@ namespace DeckRogue.Game
                     trt.anchoredPosition = tp0 + new Vector2(0f, 28f);
                     Tween.Run(FxSettings.Dur(0.55f), k => { if (trt == null) return; trt.anchoredPosition = tp0 + new Vector2(0f, 28f * (1f - k)); tcg.alpha = Mathf.Clamp01(k * 1.6f); }, Ease.OutCubic);
                     Tween.After(0.2f, () => Tween.Run(FxSettings.Dur(0.6f), k => { if (rule != null) rule.rectTransform.sizeDelta = new Vector2(ruleW * k, 2f); }, Ease.OutQuad));
-                    Audio.Key("defeat_fall");
+                    Audio.Key("PlayerDied");   // 題の音は「倒れた」の鍵で (崩れの defeat_fall から 2.5 秒後。同じ素材の 3 回目を避けたい時は audio.json の PlayerDied だけ替える。2026-11-04)
                 }
                 Tween.After(0.35f, () => Tween.Run(0.3f, k => { if (scg != null) scg.alpha = k; }, Ease.OutQuad));
             }

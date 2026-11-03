@@ -81,9 +81,8 @@
       "_note": "駆けつけ (ひなたのパッシブ。2026-09-19 判と一緒に)。人形が動く金属の機構"
     },
     "EnemyIntentDeclared": {
-      "sfx": "enemy_telegraph",
-      "volume": 0.35,
-      "_note": "敵が強化・応援を宣言した (2026-11-04 A17: 旧 null)。旧 buff の静かな版 = 予告に留める"
+      "sfx": null,
+      "_note": "宣言は無音 (2026-11-04 束 G: A17 で enemy_telegraph を当てたが、宣言ごとに鳴ると実行の予兆と二重になる)。強化・応援の予兆は Presenter が実行の直前に enemy_telegraph (volume 0.5) を鳴らす"
     },
     "EnemyDied": {
       "sfx": "death",
@@ -353,7 +352,7 @@
       "sfx": "defeat_fall",
       "volume": 0.9,
       "jitter": 0.0,
-      "_note": "倒れる (2026-11-04 A11: hit_big の流用から専用の落下音に。Synth)"
+      "_note": "倒れる (2026-11-04 A11: hit_big の流用から専用の落下音に。Synth)。決着 (Presenter.ShowOutcome) と敗北の画面の題 (EndScreen・2.5 秒後) が鳴らす。崩れ (PresenterJuice.PlayerCrumble) は defeat_fall の鍵"
     },
     "GearUsed": {
       "sfx": "trap_fire",

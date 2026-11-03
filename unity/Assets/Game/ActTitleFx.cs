@@ -42,10 +42,11 @@ namespace DeckRogue.Game
             switch (act) { case 1: return "第一幕"; case 2: return "第二幕"; case 3: return "第三幕"; default: return "第" + act + "幕"; }
         }
 
-        /// <summary>幕の題字つきで画面を切り替える。Instant・板を作れない・題字がもう出ている時は ScreenFx.Switch へ</summary>
+        /// <summary>幕の題字つきで画面を切り替える。Instant・板を作れない・題字がもう出ている時は ScreenFx.Switch へ。
+        /// 幕の始まりの音はここで 1 回だけ: 題字を出す経路は Co の act_title・出せない経路は Switch の直前の ui.act_start (GameRoot 側では鳴らさない。2026-11-04 二重鳴りの是正)</summary>
         public static void Show(GameRoot g, int act, Action rebuild)
         {
-            if (ScreenFx.Instant || g == null || g.ScreenRoot == null || g.ScreenRoot.parent == null || _busy) { ScreenFx.Switch(g, rebuild); return; }
+            if (ScreenFx.Instant || g == null || g.ScreenRoot == null || g.ScreenRoot.parent == null || _busy) { Audio.Ui("act_start"); ScreenFx.Switch(g, rebuild); return; }
             I.StartCoroutine(I.Co(g, act, rebuild));
         }
 

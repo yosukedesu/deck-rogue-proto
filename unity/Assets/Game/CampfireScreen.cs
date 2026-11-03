@@ -106,7 +106,7 @@ namespace DeckRogue.Game
             // 休めない理由はレリックの名前で (2026-09-14 人間ラン#11: 古根の杯を持ったまま HP15 で「休む」を選んで回復ゼロ → ボスで敗北)
             var rest = Option(root, "bedroll", "休む", restHeals ? "HP を " + heal + " 回復\n（最大 HP の " + (int)Math.Round(run.CampfireRatio * 100) + "%）" : noRest ? noRestName + ": 焚き火で休めない" : "すでに鍛えたので回復なし",
                 restHeals ? "今の HP " + run.Hp + " → " + Math.Min(run.MaxHp, run.Hp + heal) : "回復なしで立ち去る (HP " + run.Hp + "/" + run.MaxHp + " のまま)",
-                Pos(), delegate { Audio.Ui("rest"); Rest(g); }, true, w);
+                Pos(), delegate { Audio.Ui("rest"); Rest(g, restHeals); }, true, w);
             // 鍛える
             Option(root, "anvil", "鍛える", !opt.Forge ? "融合の鎚: 焚き火では鍛えられない" : remain > 0 ? "デッキの 1 枚を鍛える\n（数値が伸びる・コストが下がる）" : "この焚き火ではもう鍛えられない",
                 remain > 0 ? "残り " + remain + " 回 ・ 鍛えた後を見てから決められる" : "", Pos(),
@@ -129,13 +129,17 @@ namespace DeckRogue.Game
         /// <summary>
         /// 休む (G2・2026-11-04): 手を進めてから幕が閉じるまで 1.1 秒の窓 (ScreenFx.DeferNextSwitch) を取り、その間に
         /// 上部バーの HP の数字が engine の実値 (手の前後の差) で数え上がり (rest_heal)・炎が一拍大きく・火の粉が噴き・暖かい光が画面に一瞬広がる。
-        /// 幕が始まらなかった (手が拒まれた) 時は窓を消す。Instant なら手だけ
+        /// 幕が始まらなかった (手が拒まれた) 時は窓を消す。Instant なら手だけ。
+        /// 回復しない「休む」(鍛えた後・休めない遺物・HP 満タンで最大 HP も伸びない) は見せる物が無いので窓を取らない (2026-11-04 レビューの是正: 1.1 秒の空の待ちになっていた)。
+        /// 「回復するか」は engine と同じ式: restHeals かつ (HP が満タンでない、または薬研のように最大 HP を伸ばす遺物 restMaxHp がある)
         /// </summary>
-        static void Rest(GameRoot g)
+        static void Rest(GameRoot g, bool restHeals)
         {
             var prev = g.Rs;
-            ScreenFx.DeferNextSwitch(FxSettings.Dur(1.1f));
+            bool heals = restHeals && prev != null && (prev.Hp < prev.MaxHp || DeckRogue.Engine.Run.RelicBonusSum(prev, "restMaxHp") > 0);
+            if (heals) ScreenFx.DeferNextSwitch(FxSettings.Dur(1.1f));
             g.Do(new RunCommand_CampfireRest());
+            // 同じコマに始まった Switch の輪には効かない (読み取り済み)。幕が始まらなかった時に窓を消す保険
             if (!ScreenFx.Busy || g.Rs == null || ReferenceEquals(g.Rs, prev)) { ScreenFx.DeferNextSwitch(0f); return; }
             ScreenFx.DeferNextSwitch(0f);
             ScreenJuice.HealCount(g, prev.Hp, g.Rs.Hp);

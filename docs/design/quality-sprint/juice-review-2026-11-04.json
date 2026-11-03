@@ -1,0 +1,738 @@
+{
+ "confirmed": [
+  {
+   "title": "勝利の余韻を飛ばすと G・魔素の差分が報酬画面でもう一度出る (remember が取り消される)",
+   "file": "unity/Assets/Game/PresenterJuice.cs",
+   "line": 605,
+   "severity": "wrong",
+   "detail": "FlyLoot は「見せた値」の記録 (ScreenFx.Shown で gold/mana を覚えさせる remember) を AfterVisual(last + 0.02f) で硬貨が全部着いた後に回している (PresenterJuice.cs:605)。ShowOutcome は GameRoot.cs:316 で using(Tween.BeginPresentation()) の中で呼ばれ、AfterVisual→Tween.After→ReservePresentation() はその scope を掴む (Tween.cs の PresentationLease が _presentationScope を立てる)。余韻の skip (0.5 秒から押せる) か outcome watchdog で finish→onDone→Tween.CancelPresentations() が走ると、まだ 0.45+0.42+0.02 秒 (≈1.3 秒) 先の remember は AfterCo が scope.Cancelled で yield break して二度と呼ばれない。結果、_shown[\"gold\"] は戦闘前の値のままなので、次の報酬画面の RunUi.TopBar (RunUi.cs:72 ScreenFx.Shown(g,\"gold\",…,count:true)) が同じ増分の「+N G」の浮き文字と 0.4 秒の数え上げをもう一度出す (魔素も同様)。確信度: 高 (経路はコードで追った。スキップは誰でも押せる)。",
+   "fix": "remember() を演出の後回しにせず、FlyLoot の頭 (Instant 分岐の前) で即呼ぶ。もしくは ShowOutcome の finish の中で ScreenFx.Remember(\"gold\", endedRs.Gold) / Remember(\"mana\", ManaOf(endedRs)) を呼ぶ (CancelPresentations より前に)。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "コードで経路を追い、実際に起きる。(1) GameRoot.cs:316 `using(Tween.BeginPresentation())Presenter.ShowOutcome(...)` の中で組まれる AfterVisual (Presenter.cs:100) → Tween.After (Tween.cs:268) → ReservePresentation() がその scope を掴む。FlyLoot は 0.45 秒後に走り (Presenter.cs:1140)、remember を AfterVisual(last + 0.02f) で後回しにする (PresenterJuice.cs:606。goldDelta>0 なら last≥0.42 → 絶対時刻 ≈0.89 秒以降)。(2) スキップは 0.5 秒から押せる (Presenter.cs:1108) → finish → onDone → Tween.CancelPresentations() → scope.Cancel() (PresentationWorkScope.cs:15 Cancelled=true)。AfterCo (Tween.cs:277) は scope.Cancelled で yield break し remember は二度と呼ばれない。さらに AfterVisual 自体も version==_visualVersion を見るので、続く Presenter.Reset() (GameRoot.cs:333 ++_visualVersion) でも落ちる。outcome watchdog (8 秒) も同じ経路。(3) BattleScreen の上部バーは ScreenFx.Shown(\"gold\") を呼ばない (BattleScreen.cs:217〜。RegisterAnchor だけ) ので _shown[\"gold\"] は戦闘前の地図の TopBar の値 (= PrevRun.Gold) のまま。報酬画面の RunUi.TopBar (RunUi.cs:72 count:true・74 mana) が old≠value で Punch＋「+N G」の浮き文字＋0.4 秒の数え上げ (coin_land の刻み) をもう一度出す。魔素も同じ (RunUi.cs:74)。ScreenJuice.cs:519 の Remember は出来事用で勝利の経路には無い。",
+     "fix_ok": true,
+     "better_fix": "提案のどちらでも足りる。推奨は後者寄りの一本化: ShowOutcome の finish の冒頭 (Presenter.cs:1097、`done=true` の直後・onDone より前) で `ScreenFx.Remember(\"gold\", endedRs.Gold); ScreenFx.Remember(\"mana\", DeckRogue.Engine.Run.ManaOf(endedRs));` を呼ぶ。理由＝勝利・敗北・スキップ・watchdog の全経路が finish を通る (watchdog は finish を通らず Presenter.Reset へ行くので、GameRoot.cs:331 の watchdog 分岐にも同じ 2 行を置くか、FlyLoot の頭でも即 remember しておく＝二重に覚えても害は無い)。FlyLoot 側は remember を頭 (Instant 分岐の前・PresenterJuice.cs:552 直後) で即呼び、末尾の AfterVisual(last+0.02f, remember) は削除してよい (数え上げは FlyLoot が text を直接書くので _shown の値を先に更新しても表示には影響しない)。"
+    },
+    {
+     "refuted": false,
+     "reason": "コードで経路を確認した。(1) 戦闘中の上部バー (BattleScreen.cs:217-223) は \"gold\" の的を登録するだけで ScreenFx.Shown を呼ばないので、_shown[\"gold\"]/[\"mana\"] は戦闘前の値のまま。(2) FlyLoot (PresenterJuice.cs:605) の remember は AfterVisual→Tween.After で予約され、FlyLoot 自身が AfterVisual の中 (Presenter.cs:1140) で呼ばれるため InPresentation(scope,…) が _presentationScope を立てた状態で ReservePresentation() が同じ scope を掴む。(3) AfterCo (Tween.cs:273-280) は scope.Cancelled で yield break する。ShowOutcome の finish→onDone (GameRoot.cs:316) は Tween.CancelPresentations() を呼び、skip は 0.5 秒から押せる (Presenter.cs:1110) のに remember は 0.45＋最大 0.86＋0.02≈1.33 秒先。(4) その後 Presenter.Reset()→ScreenFx.Switch(Rebuild)→RewardScreen.cs:253 RunUi.TopBar→ScreenFx.Shown(g,\"gold\",run.Gold,…,count:true) (RunUi.cs:72) が old≠value で「+N G」の浮き文字と数え上げ (ScreenFx.cs:366-380) をもう一度出す。魔素も同様 (RunUi.cs:74)。watchdog (8 秒) 経路の Presenter.Reset→CancelPresentations でも同じ。",
+     "fix_ok": true,
+     "better_fix": "提案のうち「FlyLoot の頭 (Instant 分岐の前) で remember() を即呼ぶ」で足りる。ScreenFx.Shown は tag==null なら値を覚えるだけで演出を出さないので、硬貨が飛ぶ前に覚えても見た目は変わらない (硬貨の着弾の数え上げは FlyLoot が text.text を直接書くので _shown に依存しない)。末尾の AfterVisual(last+0.02f, remember) は削除してよい。finish 側に Remember を置く案も動くが、FlyLoot が呼ばれる前 (0.45 秒以前) に watchdog で落ちた場合などの網羅性を考えても、FlyLoot の頭で即呼ぶ方が単純で漏れが無い。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "消滅の音が 1 枚につき 2 回鳴る (Presenter の表と BattleView.Shatter の両方)",
+   "file": "unity/Assets/Game/BattleView.cs",
+   "line": 1867,
+   "severity": "wrong",
+   "detail": "engine は消滅のたびに GameEvent_CardExhausted を出し (Runtime/Combat.cs:1273/1347/1476)、audio.json に \"CardExhausted\" (sfx exhaust) があるので Presenter.Show は TableSound 経由で既に鳴らしている (Presenter.cs:1643 の除外は CardSet/CardsDrawn/EnemyDied/EnemyFled だけ)。今回 BattleView.Shatter に Audio.Key(\"CardExhausted\") が足された (BattleView.cs:1867) ため、同じ札の消滅で、出来事の時刻と札が縮む時刻 (出した札なら 0.26 秒後・delay 後) の 2 回鳴る。KeyPitched の MinGap 0.05 秒では間引けない。確信度: 高。",
+   "fix": "Shatter の Audio.Key(\"CardExhausted\") を外す (表の方が engine の時刻で鳴る) か、絵に合わせたいなら Presenter.cs:1643 の除外列に GameEvent_CardExhausted を加えて Shatter だけで鳴らす (CardSet/CardsDrawn と同じ作法)。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。確認した経路: (1) engine は消滅のたびに GameEvent_CardExhausted を出す (unity/Packages/com.deckrogue.engine/Runtime/Combat.cs:1273/1347/1476/1581/1867/2628)。(2) Presenter.Show は TableSound(ev) で型名 \"CardExhausted\" を鍵にし audio.json にあるので Audio.Key を鳴らす (unity/Assets/Game/Presenter.cs:1638-1647・2101-2102)。除外列 (Presenter.cs:1643) は CardSet/CardsDrawn/EnemyDied/EnemyFled だけで、IsRedEvent/IsStatusEvent/IsTrapEvent/IsEnemyActEvent のどれにも CardExhausted は入っていない。順送りの採り込み (Presenter.cs:392) も TableSound(ev) != null で通す。(3) audio.json の \"CardExhausted\" (sfx exhaust) は be403c4e の時点から既に存在し、今回の差分で BattleView.Shatter に Audio.Key(\"CardExhausted\") が足された (BattleView.cs:1867。be403c4e との diff で +Audio.Key(\"CardExhausted\") を確認)。Shatter は出した札の消滅 (BattleView.cs:1834・0.26 秒後) と手札から消えた札の消滅 (BattleView.cs:1837・delay 後) の両方で呼ばれる。(4) Audio.KeyPitched の MinGap 0.05 秒 (Audio.cs:95・171-180) は 0.26 秒以上離れた 2 回を間引けないので、同じ札の消滅で exhaust が 2 回鳴る。唯一鳴らない例外は PlayedCardRetireDuration > 0 (authored attack の札) の経路で、そこは Shatter を通らず fade するだけ。",
+     "fix_ok": true,
+     "better_fix": "提案の前者「Shatter の Audio.Key(\"CardExhausted\") (BattleView.cs:1867) を外す」を推す。後者 (Presenter.cs:1643 の除外列に GameEvent_CardExhausted を加えて Shatter だけで鳴らす) だと、手札を経由しない消滅 (山札喰い・忘却系の山札からの消滅・置物/トークンの消滅など Shatter が呼ばれない経路) で音が消える。絵に合わせたい場合は、除外列に加えた上で BattleView 側の「手札に無い札の消滅」にも鳴らす口が要るので、まず表の 1 回に戻すのが最小。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。確認した経路: (1) Presenter.Show の表の音＝`Presenter.cs:2101` `var key = TableSound(ev); if (key != null) { Audio.Key(key); return; }`。TableSound (1638〜) の除外列 (1643) は CardSet/CardsDrawn/EnemyDied/EnemyFled だけで、GameEvent_CardExhausted は \"CardExhausted\" に写され `Audio.HasKey` が真 (audio.json:56 に `\"CardExhausted\": {\"sfx\":\"exhaust\"}`・exhaust.ogg も実在)。Show へ入る門 (392 行) も `TableSound(ev) != null` を通すので、engine が消滅のたびに出す GameEvent_CardExhausted (Runtime/Combat.cs:1273/1347/1476/1581/1867/2628) で必ず 1 回鳴る。この経路は差分の前 (be403c4e の Presenter.cs:1565・audio.json) から同じ。(2) 今回の差分で `BattleView.cs:1867` の Shatter に `Audio.Key(\"CardExhausted\")` が追加された。Shatter は手札から消えた札が消滅置き場にある時に呼ばれる (1834: 出した札なら 0.26 秒後／1837: 出していない札＝消滅コスト・衝動の失効などは delay 後)。よって手札の札 1 枚の消滅につき、出来事の時刻 (Presenter) と札が縮む時刻 (Shatter) の 2 回鳴る。audio.json の CardExhausted に minGap は無く、KeyPitched の間引きも効かない (0.26 秒の差は仮に 0.05 秒の間隔があっても捨てられない)。",
+     "fix_ok": true,
+     "better_fix": "提案の 2 案のうち「Shatter の Audio.Key(\"CardExhausted\") を外す」が安全。もう一方 (Presenter.cs:1643 の除外列に GameEvent_CardExhausted を加えて Shatter だけで鳴らす) を取ると、Shatter が走らない消滅＝山札喰いや忘却で山札から直接消える札・仕込み札の期限切れの消滅・手札に無い札の消滅では音が丸ごと消えるので、その案なら Shatter が受け持たない消滅を別に鳴らす必要がある。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "評価の窓: 報酬の画面で 1.2 秒以内に手を進めると、その戦闘の評価の窓が二度と出ない",
+   "file": "unity/Assets/Game/GameRoot.cs",
+   "line": 839,
+   "severity": "wrong",
+   "detail": "GameRoot.cs:825-845 ScheduleRating/RatingLater。報酬の画面に入って Rebuild → ScheduleRating が 1.2 秒の RatingLater を 1 本だけ立てる (_ratingTimer=true)。その間に「取る」(FlyTo 0.45 秒) や「見送る」で g.Do が通ると Rs が変わり、①同じ Reward 相 (ギアが残る) なら after→Rebuild→ScheduleRating は _ratingTimer が立っているので何もせず、1.2 秒で元の RatingLater が `!ReferenceEquals(Rs, rs)` で yield break (839-840)＝RatingReady は立たず、誰も立て直さない。プレイヤーが次に何かするまで窓は出ず、ギアを取って Map へ行くと CanRate が偽 (Feedback.cs:177-181＝Reward/RelicReward/Won/Lost だけ) なので ScheduleRating も「この戦いを評価」のボタン (FeedbackUi.cs:49) も出ない。②Map へ直行なら同じ理由で即消える。Feedback.RatingOpen は true のまま次の Record まで残り、その戦闘の評価は取れない。直す前 (be403c4e) は決着直後に必ず窓が出て決定/スキップを求めていたので、計測器としての欠落は新しい。確信度: 高 (経路は全部コードで追える。取る→FlyTo→Do で 0.5 秒前後、見送るは即)。",
+   "fix": "RatingLater の bail (840) の後に `if (Feedback.RatingOpen && !Feedback.RatingReady && Feedback.CanRate(Rs)) ScheduleRating();` で立て直す (Rs が変わって同じ相に居る時)。相を離れる時 (Reward→Map) は ShouldShowRating/CanRate に Map を含めるか、Do の直前 (phaseChanged で Reward 系から出る時) に RatingReady=true にして一度だけ出す、のどちらかを選ぶ。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "コードを追った結果、指摘どおり起きる。\n経路: 決着の演出が終わると `CompleteCombatPresentation` が `CancelCombatPresentation()` → `ScreenFx.Switch(this, Rebuild)` を呼び、幕が閉じ切った時点で `Rebuild()` → 報酬の画面 → `Feedback.ShouldShowRating` は `RatingReady=false` で偽 → `ScheduleRating()` が `_ratingTimer=true` にして 1.2 秒の `RatingLater(Rs, 1.2f)` を 1 本立てる (GameRoot.cs:829-832)。幕が開くのに 0.22 秒 (その間は raycastTarget で入力が塞がる) なので、プレイヤーが押せる残りは約 1.0 秒。\nその間に手が通ると `Do` で `Rs = ApplyRunCommand(...)` (record の with 構文＝必ず別の参照) になる。\n① 札を取ってギアが残る (`FinishReward` は GearOption があれば Reward のまま・Run.cs:1889): 「見送る」は即 `Do`、「取る」は FlyTo 0.45+0.1 秒後に `Do`。`phaseChanged=false` なので即 `Rebuild` → `ScheduleRating` は `_ratingTimer` が立っているので何もしない。1.2 秒で元のコルーチンが `!ReferenceEquals(Rs, rs)` で `yield break` (GameRoot.cs:840)。`_ratingTimer=false` に戻るが `RatingReady` は立たず、報酬の画面で `Rebuild` を起こすのはプレイヤーの手だけなので、何秒待っても窓は出ない。左下の「この戦いを評価」も `FeedbackUi.RateButton` が `Feedback.RatingOpen` で return するので出ない (FeedbackUi.cs:49)。次にギアを取る/見送ると `Phase=Map` → `Rebuild` の Map 分岐 (GameRoot.cs:966) は `ScheduleRating` も `RateButton` も呼ばず、`CanRate` も Map を含まない (Feedback.cs:177-181)。\n② ギアが無く札を取る/見送る → 即 Map。同じ理由で窓もボタンも出ない。\n`RatingOpen` は次の `Feedback.Record` (次の戦闘の決着) まで true のまま残り、その戦闘の評価は取れない。be403c4e では報酬の `Rebuild` で即 `RatingDialog` を出していたので (旧 GameRoot.cs:919・旧 ShouldShowRating に RatingReady の門が無い)、欠落は今回の差分で新しく生じたもの。\n確信度: 高。経路は全部コードで追え、タイマー・幕・FlyTo の秒数も定数 (`ScreenFx.OpenDur` 0.22・`CloseDur` 0.16・FlyTo の `Tween.After(0.1f)`) から読める。「見送る」なら画面が見えてから約 1 秒以内、「取る」なら約 0.45 秒以内の操作で再現する (遺物 3 択の RelicReward も `PickRelic` が同じ形で、Won/Lost は 2.6 秒)。",
+     "fix_ok": false,
+     "better_fix": "提案の前半 (RatingLater の bail の後に `if (Feedback.RatingOpen && !Feedback.RatingReady && Feedback.CanRate(Rs)) ScheduleRating();`) は ① (同じ相に居る時) には足りる。ただしそれなら bail の条件そのものを直す方が素直: `!ReferenceEquals(Rs, rs)` を `!Feedback.CanRate(Rs)` に替える (Rs が変わっても Reward/RelicReward/Won/Lost に居るなら 1.2 秒で `RatingReady=true` にしてよい。他の条件 `CombatPresentationPending`・`ScreenRoot==null` はそのまま)。再アームの二重化も `_ratingTimer` が守るので要らない。\n提案の後半は 2 択とも穴がある: 「CanRate に Map を含める」は `LastBattle` が初戦以降ずっと非 null なので、ランの残り全部の地図に「この戦いを評価」ボタンが常駐する (RateButton は CanRate だけで出す)。「Do の直前に RatingReady=true にして一度だけ出す」は `ShouldShowRating` が相を Reward/RelicReward/Won/Lost に限っている (Feedback.cs:173) ので Map では窓が出ず、結局出ない。\n② の直し方: `Feedback` に一回限りの旗 `RatingCarry` を足し、`Do` で `Feedback.RatingOpen && !Feedback.RatingReady && Feedback.CanRate(prevRs) && !Feedback.CanRate(Rs)` の時に `RatingReady=true; RatingCarry=true` を立てる。`ShouldShowRating` と `CanRate` は `RatingCarry` が立っている間だけ Map も受け、`Rebuild` の Map 分岐 (GameRoot.cs:966) でも `RateButton` と `ShouldShowRating` の判定を通す (地図の後に組む)。`RatingCarry` は `CommitRating`/スキップ/`Record` の決着の保管 (Feedback.cs:68・91・138・213 の RatingOpen を触る所) で必ず落とす。Autopilot.cs:1941-1942 の初期化にも足す。\nまた `FeedbackUi.RateButton` の `|| Feedback.RatingOpen` は「窓が開いている間はボタンを隠す」意図なので、`RatingOpen && RatingReady` (実際に窓が出ている時) に狭めると、時機待ちの間も左下から自分で開けて入口が消えない。"
+    },
+    {
+     "refuted": false,
+     "reason": "コードで経路を全部追えて、実際に起きる。\n(1) 報酬の画面の Rebuild (GameRoot.cs:990-991) → ScheduleRating が `_ratingTimer=true` で RatingLater(Rs, 1.2f) を 1 本だけ立てる (829-833)。\n(2) 1.2 秒以内に「取る」(RewardScreen.cs:98 → ScreenFx.FlyTo ≈0.45 秒＋着地 0.1 秒 → g.Do) か「見送る」(108・即) が通ると、Do で Rs は新しい RunState に置き換わる (GameRoot.cs:348。状態は不変なので ReferenceEquals は必ず偽になる)。\n(3) ギアが残っていれば engine の FinishReward (Run.cs:1887-1891) で Phase は Reward のまま → phaseChanged 偽 → after() → Rebuild → ShouldShowRating は RatingReady が偽なので偽 (Feedback.cs:172) → ScheduleRating は `_ratingTimer` が立っているので何もしない (830)。\n(4) 1.2 秒で RatingLater が `!ReferenceEquals(Rs, rs)` で yield break (840)。RatingReady は立たず、`_ratingTimer=false` に戻るだけで誰も立て直さない。プレイヤーが次にギアを取る/見送ると Phase は Map になり、Map の Rebuild (966) は RateButton も ScheduleRating も呼ばず、CanRate(Map) も偽 (Feedback.cs:177-181)。RatingOpen は次の Feedback.Record (138) まで true のまま＝その戦闘の評価は取れない。\n(5) ギアが無く「取る」で直接 Map へ行く経路も、RatingLater が Rs の変化で抜け、Map では CanRate が偽なので同じ。\n通常の報酬は「札→ギア」の 2 手なので、1 手目を 1.2 秒以内に押すだけで再現する (FlyTo 込みで約 0.55 秒)。直す前 (be403c4e) は Reward の Rebuild で即ダイアログを出し決定/スキップを求めていたので、計測の欠落は新しい。",
+     "fix_ok": false,
+     "better_fix": "提案の前半 (bail の後に `ScheduleRating()` で立て直す) は「同じ相に居る」経路 (3) は塞ぐが、後半が曖昧。(5) と「ギアを取って Map へ出る」経路は、Map で ShouldShowRating/CanRate が偽なので RatingReady を立てただけでは窓が出ない。\n勧める形:\n① RatingLater の bail (GameRoot.cs:840) から `!ReferenceEquals(Rs, rs)` を外し、`!Feedback.CanRate(Rs)` で判定する (遅延の目的は「報酬の札が入り終わるのを待つ」だけで、Rs の同一性は要らない)。これで (3) は一本の時計で足りる。\n② 相を離れる時: Do (GameRoot.cs:339〜) で `prevRs` が Reward/RelicReward/Won/Lost、`Rs.Phase == Map`、`Feedback.RatingOpen && !Feedback.RatingReady` なら `Feedback.RatingReady = true` と新しい旗 (例 `Feedback.RatingCarried = true`、Record と CommitRating/スキップで倒す) を立て、ShouldShowRating は `RatingCarried` が立っている間だけ Map も受ける。Map の Rebuild (966) に `if (Feedback.ShouldShowRating(Rs)) FeedbackUi.RatingDialog(this, ScreenRoot);` を 1 行足す (配置は変えない・重ね窓だけ)。\n③ 併せて `_ratingTimer` が true の間に相が変わる場合 (Reward→Map) は、RatingLater 側でも ② の旗で窓を出す (Rebuild 済みなら FeedbackUi.RatingDialog を直接呼ぶ。既存の 846 行以降と同じ)。\nこれで「1.2 秒以内に手を進めた」どの経路でも、同じ戦闘の評価を一度だけ聞ける。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "UpgradeShine: 光っている途中で FxLayer が片づくと ScreenFx.LockInput(true) が解けず、手も進まない (入力が永久に塞がる)",
+   "file": "unity/Assets/Game/ScreenJuice.cs",
+   "line": 366,
+   "severity": "stuck",
+   "detail": "ScreenJuice.cs:350 で ScreenFx.LockInput(true) を掛け、複製 crt (FxLayer の子) を 0.22 秒寄せ→0.11 秒間隔の 3 打→0.4 秒→FlyTo→then と進む。3 打の Tween.After (364-388) は `if (crt == null) return;` (366) で抜けるだけ＝3 打目 (hit==2) に来る前に crt が消えると、LockInput(false) も then() (g.Do) も二度と呼ばれず、透明な幕 (_curtain.raycastTarget=true) が全入力を塞いだまま、鍛える手も進まない。crt が消える経路: GameRoot.Rebuild は戦闘以外で FxLayer の子を全部 Destroy する (GameRoot.cs:917-920)、Presenter.Reset も同じ (Presenter.cs:114)。押してから約 0.44 秒の窓で Rebuild が来るのは、ウィンドウの大きさの変更 (StageCamera.cs:713 → Rebuild)・F11 (設定の窓が開いている時)・スマホの切り欠き/向きの変化・Autopilot の g.Do。幕 (ScreenFx.Switch) が来ない限り raycastTarget は戻らず、戻すのは Do だけなので詰む。焚き火 (CampfireScreen.cs:70-76)・店 (ShopScreen.cs:78-83)・出来事 (EventScreen.cs:155-163) の鍛えるが全部ここを通る。0.4 秒の After (380-386) だけは `crt == null` で LockInput(false)+then() しているので、意図はあるが 3 打の側に抜けている。同じ形: RelicGet (ScreenJuice.cs:199-213) は LockInput(true) の後 cell が消えると FlyTo が from==null で then() だけ呼ぶ＝Do が相を変えない時 (RelicReward で RelicPicksLeft>1) は幕が来ず塞がったまま。FuseMelt (419-449) は result==null を見ているので無事。確信度: 中 (窓は約 0.44 秒・引き金は Rebuild が要る)。",
+   "fix": "3 打の After と寄せの Run の `crt == null` の枝を `{ ScreenFx.LockInput(false); then(); return; }` に揃え、then が二度呼ばれないよう `bool fired` で守る (hit==2 の中からも 0.4 秒の After からも)。RelicGet も `Tween.After(…, () => { if (cell == null) ScreenFx.LockInput(false); then(); })` にする。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "コードを読んで経路を確認した。実際に起きる（引き金は Rebuild が 0.44 秒の窓に来ること）。\n\n確認した事実:\n1. `ScreenJuice.cs:350` で `ScreenFx.LockInput(true)`。幕 `_curtain` は `ScreenFx.EnsureCurtain` でキャンバス直下に作られ（`ScreenFx.cs:76-83`）FxLayer の子ではないので、Rebuild で消えず `raycastTarget=true` のまま残る。\n2. 複製 `crt` は `CloneForFx(card, fx)`／`CardView.Build(fx, …)` で FxLayer の子。`GameRoot.Rebuild`（`GameRoot.cs:912-921`、戦闘以外）と `Presenter.Reset`（`Presenter.cs:114`）が FxLayer の子を全部 Destroy する。\n3. 3 打の `Tween.After`（`ScreenJuice.cs:364-366`）は `if (crt == null) return;` で抜けるだけ。`hit==2` の中にある 0.4 秒の After（380-386）だけが `LockInput(false)+then()` を持つが、そこへ届く前に crt が消えると誰も呼ばない。寄せの `Tween.Run`（353-358）も onUpdate が return するだけで onDone は dur 後に必ず来るので、3 つの After は全部そろって黙って抜ける。\n4. 戦闘外では `_presentationScope` が null なので `Tween.After`（`Tween.cs:268-279`）は Rebuild の後も予定どおり発火する＝「抜けるだけ」の枝が確実に実行される。\n5. 解錠の口は `ScreenFx.Switch` の末尾（`ScreenFx.cs:147`）と各所の `LockInput(false)` だけ。`GameRoot.Do` は `phaseChanged` の時しか Switch しない（`GameRoot.cs:423`）し、then() 自体が呼ばれないので Do も来ない。GameRoot/Rebuild に LockInput を戻す箱は無い（grep で確認）。\n6. 窓内に Rebuild が来る実在の経路: `StageCamera.cs:705-713`（画面の寸法が変わって 2 フレーム落ち着いたら `GameRoot.I.Rebuild()`）。焚き火・店・出来事の鍛えるは全部 `UpgradeShine` を通る（`CampfireScreen.cs:70-76` で確認）。\n\n確信度: 機構は高（決定的）・頻度は低（押してから約 0.44 秒以内にウィンドウの大きさ変更・向き/切り欠きの変化などで Rebuild が要る）。起きた時は幕が透明なまま全入力を塞ぎ、戦闘以外には解錠の口が無いので詰む。\n\nRelicGet（199-213）の方も同形で実在: `Tween.After(…, then)` は cell が消えても then を呼び、`FlyTo` は `from == null` で `then()` だけ呼ぶ（`ScreenFx.cs:420`）＝自前の LockInput(false) を通らない。then の g.Do が相を変えない時（遺物 3 択で残りがある時など）は Switch が来ず塞がったまま。",
+     "fix_ok": true,
+     "better_fix": "提案で足りる。補足 2 点: (a) `bool fired` の守りは 3 打の After・寄せの Run の onDone・0.4 秒の After の全部で共有し、`crt == null` の枝は `{ if (fired) return; fired = true; ScreenFx.LockInput(false); then(); return; }` に揃える（3 打は 3 つとも null で抜けるので、守りが無いと then＝g.Do が 3 回飛ぶ）。(b) 同じ形の取りこぼしは `UpgradeShine` の `Tween.Run` の onUpdate だけでなく、ScreenJuice 全体で `LockInput(true)` の後に `if (x == null) return;` で抜ける枝を grep で洗う（`FuseMelt` 419-449 は result==null で解錠しているので無事）。RelicGet は提案どおり `Tween.After(…, () => { if (cell == null) ScreenFx.LockInput(false); then(); })` で足りる（FlyTo の from==null 経路が then を呼ぶのは変えなくてよい）。"
+    },
+    {
+     "refuted": false,
+     "reason": "コードを読んで確認した。実際に起きる。\n- ScreenJuice.cs:350 で ScreenFx.LockInput(true)。幕 (_curtain) はキャンバス直下 (ScreenFx.cs:76-83) なので FxLayer の掃除では消えず、raycastTarget=true が残る。LockInput(false) を呼ぶのは正常経路の ScreenFx.FlyTo (ScreenFx.cs:440) と 0.4 秒の After の `crt == null` 枝 (ScreenJuice.cs:382) だけ。\n- 3 打の Tween.After (ScreenJuice.cs:364-366) は `if (crt == null) return;` で黙って抜ける。Tween.After は戦闘外では _presentationScope が null なので中断されず必ず走る (Tween.cs:52-53・268-279)。寄せの Tween.Run (354) も crt が消えても onDone (3 打の登録) は呼ばれる。よって押してから約 0.44 秒 (0.22 寄せ + 0.11×2) の間に crt が Destroy されると hit==2 に届かず、LockInput(false) も then() (g.Do) も呼ばれない。\n- crt が消える経路は実在する: GameRoot.Rebuild は戦闘以外で FxLayer の子を全部 Destroy する (GameRoot.cs:917-920)。Rebuild の引き金は StageDriver.LateUpdate のウィンドウ寸法の変化 (_settle 2 フレーム後に GameRoot.I.Rebuild()。StageCamera.cs:705-713。戦闘で門をかけていない)・切り欠きの変化 (同 696-701)・F11/Alt+Enter で設定の窓が開いている時 (GameRoot.cs:864-867→RebuildAfterFrames)。Rebuild 自身は LockInput を触らない (GameRoot.cs に LockInput の呼び出し無し)。\n- その後は幕が全入力を塞ぐので、ユーザーの操作で ScreenFx.Switch (ScreenFx.cs:147 で raycastTarget=false) に至る手が無い＝詰む。焚き火 (CampfireScreen.cs:72)・店 (ShopScreen.cs:82)・出来事 (EventScreen.cs:41) の鍛えるが全部ここを通る。\n- RelicGet (ScreenJuice.cs:199-213) も同形: LockInput(true) の後 cell が消えると、0.45 秒後の then → ScreenFx.FlyTo(g, cell, …) が from==null で then() だけ呼び (ScreenFx.cs:420)、g.Do が相を変えない時 (RewardScreen.cs:182 で RelicPicksLeft>1・ShopScreen.cs:225 の購入) は Switch が来ず (GameRoot.cs:423 の else after()) 幕が塞がったまま。\n引き金が「0.44 秒の窓に Rebuild が重なる」ことなので頻度は低いが、起きれば復帰不能。",
+     "fix_ok": true,
+     "better_fix": "提案で足りる (3 打の After と寄せの Run の `crt == null` 枝を `{ ScreenFx.LockInput(false); then(); return; }` に揃え `bool fired` で then の二重呼びを防ぐ／RelicGet は After の中で `if (cell == null) ScreenFx.LockInput(false); then();`)。LockInput(false) は幕が動いている間 (_busy) は無視されるので幕の所有権とは衝突しない。\n加えて安全網として、GameRoot.Rebuild が FxLayer の子を全部 Destroy する枝 (GameRoot.cs:917-920) と Presenter.Reset の同じ掃除 (Presenter.cs:114) の直後に `ScreenFx.LockInput(false)` を 1 行置くと、FxLayer の演出が閉包ごと無効になる唯一の場所で鍵も一緒に捨てられる (ScreenJuice/ScreenFx の他の LockInput(true) 持ち＝ScreenFx.cs:341・430 も同じ形で詰みうるため)。ただし then (g.Do) が失われて手が進まないのは、ユーザーがもう一度押せば済むので、鍵の解除だけで実害は消える。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "出来事→戦闘・焚き火の回復なしの「休む」: 見せる物が無いのに「選んだ後の 1 秒」の待ち (入力を塞いだまま) が走る",
+   "file": "unity/Assets/Game/EventScreen.cs",
+   "line": 207,
+   "severity": "stuck",
+   "detail": "EventScreen.cs:199-208 Choose: DeferNextSwitch(1.2) → g.Do → 相が変われば ScreenFx.Switch → StartCoroutine は最初の yield まで同期に進むので、SwitchCo (ScreenFx.cs:113-124) はこの時点で _deferOnce を読み取って hold の輪に入り、_curtain.raycastTarget=true で入力を塞ぐ。Choose に戻ってから `if (g.Rs.Phase == RunPhases.Combat) return;` (207) で結果の札を出さないが、hold はもう始まっているので取り消せない＝戦う選択肢を押すと、出来事の画面が 1.2 秒 (FxSettings.Dur) 固まったまま何も起きず、その後に幕が閉じて戦闘。0.25 秒を過ぎればタップで飛ばせるが、合図は無い。CampfireScreen.cs:134-146 Rest も同じ: 「休む」は restHeals が偽 (鍛えた後・休めない遺物) でも押せ、HealCount は to<=from で何もせず (ScreenJuice.cs:317)、142 で return＝1.1 秒の空の待ち。確信度: 高 (StartCoroutine の同期進行は Unity の仕様)。",
+   "fix": "ScreenFx に `public static void CancelHold()` (hold の輪が毎フレーム見る static bool を立てる) を足し、Choose の Combat の枝と Rest の `Hp <= prev.Hp` の枝で呼ぶ。または DeferNextSwitch を Do の後でなく「見せる物がある」と分かってから掛けられるよう、Switch を 1 フレーム遅らせる形にする。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "コードを読んで確認した。実際に起きる。\n- GameRoot.Do (unity/Assets/Game/GameRoot.cs:415-423) は phaseChanged なら同期に ScreenFx.Switch(this, after) を呼ぶ。Switch (ScreenFx.cs:103-108) は _busy でなければ StartCoroutine(SwitchCo) を呼び、Unity の StartCoroutine は最初の yield まで同期に進むので、SwitchCo (ScreenFx.cs:110-124) は Do の戻り前に `_busy=true`・`_curtain.raycastTarget=true`・`hold=_deferOnce; _deferOnce=0f` を済ませ、hold>0 なら while の輪で最初の `yield return null` に入る。\n- よって EventScreen.Choose (EventScreen.cs:203-208) の Do の後の `ScreenFx.DeferNextSwitch(0f)` は既に 0 になった _deferOnce を 0 にするだけで、走り出した hold は止まらない。`if (g.Rs.Phase == RunPhases.Combat) return;` (207) で結果の札を出さないので、出来事→戦闘 (phase Event→Combat は phaseChanged) では、入力を塞いだ透明の幕の下で 1.2 秒 (FxSettings.Dur(1.2f)) 何も見せずに待ち、その後に幕が閉じて戦闘。Do の中で combat_start の音 (GameRoot.cs:389-394) だけは即鳴る。0.25 秒以降のタップで飛ばせるが合図は無い。\n- CampfireScreen.Rest (CampfireScreen.cs:134-146) も同じ。「休む」は restHeals が偽 (CampfireScreen.cs:37・107-108「すでに鍛えたので回復なし」「焚き火で休めない」) でも押せ、HP が満タンで heal=0 の時も含め、HealCount (ScreenJuice.cs:311-317) は `to <= from` で早期 return、Rest 142 の `g.Rs.Hp <= prev.Hp` で return＝1.1 秒の空の待ち (Campfire→Map は phaseChanged なので Switch は走る)。\n確信度: 高 (StartCoroutine の同期進行は Unity の仕様・各行を読んで追えた)。",
+     "fix_ok": true,
+     "better_fix": "提案の `ScreenFx.CancelHold()` (static bool を立て、hold の while が毎フレーム見て break する) で足りる。補足 2 点: ① フラグは SwitchCo が hold を読む所 (ScreenFx.cs:114) で必ず偽に戻す (立てたまま次の Switch に漏れないように)。輪の最初の判定は Choose に戻る前に同期で済むので、立てた後は次のフレームで抜ける＝1 フレームの遅れだけ。② 焚き火は Do の前に分かる (`restHeals` が偽、または `run.Hp >= run.MaxHp`) ので、Rest ではその時 DeferNextSwitch を掛けない方が単純。出来事は Do の結果でしか分からないので CancelHold が要る (「Switch を 1 フレーム遅らせる」案は _busy・_queued の順序に触るので勧めない)。"
+    },
+    {
+     "refuted": false,
+     "reason": "コードで確認した。(1) 出来事→戦闘: `EventScreen.Choose` (unity/Assets/Game/EventScreen.cs:201-208) は `ScreenFx.DeferNextSwitch(1.2)` → `g.Do(cmd)`。`GameRoot.Do` (GameRoot.cs:419-423) は Event→Combat で `phaseChanged` が真・`actChanged` が偽なので `ScreenFx.Switch(this, after)` を同期に呼び、`Switch` (ScreenFx.cs:103-107) は `StartCoroutine(SwitchCo)` を直接呼ぶ。Unity の StartCoroutine は最初の yield まで同期に進むので、`SwitchCo` (ScreenFx.cs:109-123) はその場で `_busy=true`・`_curtain.raycastTarget=true`・`hold=_deferOnce(1.2)` を読み取って待ちの輪に入ってから制御を返す。Choose に戻った後の `DeferNextSwitch(0f)` (206) はもう読み終わった `_deferOnce` を消すだけで、進行中の hold には効かない。207 の `if (Phase==Combat) return` で結果の札も出さないため、1.2 秒 (FxSettings.Dur) の間、出来事の画面が透明の幕で入力を塞がれたまま何も起きない。0.25 秒以降のタップで飛ばせるが合図は無い。(2) 焚き火の「休む」: ボタンは `restHeals` が偽でも押せる (CampfireScreen.cs:107-109 の enabled 引数が `true`)。engine の `RunCommand_CampfireRest` (Run.cs:2217-2229) は休めない時も例外を投げず `Phase=Map` の新しい状態を返すので、`Rest` (CampfireScreen.cs:134-146) では `ReferenceEquals(g.Rs, prev)` が偽・Campfire→Map で Switch が同期に始まり hold 1.1 秒に入る。その後 `HealCount` は `to <= from` で何もせず (ScreenJuice.cs:317)、142 で return＝空の待ち。どちらも「実際に起きる」。",
+     "fix_ok": true,
+     "better_fix": "提案の `ScreenFx.CancelHold()` (hold の輪が毎フレーム見る static bool を立て、輪を抜ける時に消費して戻す) で足りる。輪は毎フレーム yield しているので、Choose/Rest が同期に戻った直後に立てた旗は次のフレームの判定で見える。補足の簡略化: 焚き火側は hold を取る前に判定できる (`run.CampfireUpgradesUsed == 0 && !noRest` は Do の前に分かるので、`Rest` に restHeals を渡して偽なら `DeferNextSwitch` を呼ばない) のが一番素直。出来事側は手を適用しないと戦闘へ続くか分からないので CancelHold が要る。「Switch を 1 フレーム遅らせる」案は、同じフレームに `_queued` や `Busy` を見る呼び手 (Choose/Rest の `!ScreenFx.Busy` の判定・Autopilot の timeScale 検査) の前提が変わるので、こちらは避けた方がよい。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "勝利の G・魔素の差分が報酬画面で二度出る (飛ばした時)",
+   "file": "unity/Assets/Game/PresenterJuice.cs",
+   "line": 606,
+   "severity": "wrong",
+   "detail": "FlyLoot は硬貨を全部飛ばし終えた後 (AfterVisual(last+0.02)＝決着の帯から約 1.3 秒) に ScreenFx.Shown(\"gold\"/\"mana\") へ新しい値を覚えさせる。一方 Presenter.cs:1108 の skip は 0.5 秒で押せる。0.5〜1.3 秒の間に画面を叩くと finish → onDone → Tween.CancelPresentations → 報酬画面の Rebuild が先に走り、RunUi.cs:72 の ScreenFx.Shown(\"gold\", run.Gold) が「前に見せた値 (戦闘前)」と比べて「+N G」の浮き文字＋数え上げ＋coin_land の刻みをもう一度出す (魔素も「+N」)。硬貨が飛んだ直後に同じ増分の札が降る＝差分の二重。確信度: 高 (コードの順序から確定。remember は Shown のあとにしか走らない／cancel されれば走らない)。",
+   "fix": "ShowOutcome の finish (Presenter.cs:1094 付近) か FlyLoot の冒頭で先に ScreenFx.Remember(\"gold\", endedRs.Gold)・Remember(\"mana\", ManaOf(endedRs)) を書いてしまい、硬貨の飛びは表示だけにする (AfterVisual の remember は不要になる)。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。根拠: ①戦闘の上部バー (`BattleScreen.cs:217-222`) は `ScreenFx.Shown(\"gold\"/\"mana\")` を呼ばないので、`_shown[\"gold\"]` は戦闘前の地図/報酬画面 (`RunUi.cs:72,74`) が覚えた値のまま。②`FlyLoot` の `remember` は `AfterVisual(last+0.02)` (`PresenterJuice.cs:606`) でしか走らず、`AfterVisual`→`Tween.After` は `ReservePresentation()` で `BeginPresentation` の scope を掴む (`Tween.cs:268-279`)。skip の `finish`→`onDone`→`Tween.CancelPresentations()` (`GameRoot.cs:316`) で scope が Cancelled になると `AfterCo` は `yield break` し、`remember` は永久に走らない (さらに `Presenter.Reset()` も Cancel)。③skip は `AfterVisual(0.5)` で押せる (`Presenter.cs:1108`)、FlyLoot は 0.45 で始まり remember は 0.45+最大 0.825+0.02≈1.3 秒。0.5〜1.3 秒の間に叩くと硬貨が飛び始めた (数字も部分的に数え上がった・「+N G」の行も出た) 後に、報酬画面の `RunUi.TopBar` の `Shown(\"gold\", run.Gold)` が old=戦闘前と比べて「+N G」の浮き文字＋CountTo(coin_land) を、「mana」も「+N」をもう一度出す。`ResetShown` は新規ラン/続きから/タイトルでしか呼ばれないので間に挟まらない。",
+     "fix_ok": true,
+     "better_fix": "提案で足りる。置き場は `ShowOutcome` の勝利分岐で goldDelta/manaDelta を計算した直後 (Presenter.cs:1133 付近、AfterVisual の外で同期的に) に `ScreenFx.Remember(\"gold\", endedRs.Gold); ScreenFx.Remember(\"mana\", DeckRogue.Engine.Run.ManaOf(endedRs));` を書くのがよい (FlyLoot の冒頭だと FlyLoot 自体が AfterVisual(0.45) 越しなので、watchdog 等で走らない経路が残る)。FlyLoot 内の `remember`／`AfterVisual(last+0.02f, remember)` は削る (Instant 分岐も Remember 済みなので不要)。敗北分岐は報酬画面に行かないので触らなくてよい。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。確認した経路: (1) 戦闘中の上部バーは BattleScreen.BuildTopBar が組み、ScreenFx.Shown(\"gold\"/\"mana\") を呼ばない (grep で RunUi.cs:72・74 と PresenterJuice.cs:552 以外に呼び手なし)。しかも CombatPresentationPending の間は GameRoot.Rebuild (GameRoot.cs:895) が早期 return するので、決着→報酬の Rebuild まで _shown[\"gold\"] は戦闘前の地図画面の値のまま。(2) ShowOutcome は GameRoot.cs:316 で using(Tween.BeginPresentation()) の中で呼ばれ、中の AfterVisual→Tween.After は ReservePresentation で同じ scope を掴む (Tween.cs:268-279・PresentationLease が _presentationScope を立てる)。FlyLoot の remember は AfterVisual(last+0.02) (PresenterJuice.cs:606) で、硬貨の開始 0.45 秒＋最長 0.045*9+0.42≒0.83 秒＝帯から約 1.28 秒後。(3) skip は AfterVisual(0.5) で押せるようになる (Presenter.cs:1109)。0.5〜1.28 秒の間に叩くと finish→onDone→Tween.CancelPresentations (GameRoot.cs:316) が scope.Cancel し、AfterCo は `scope.Cancelled` で yield break (Tween.cs:276) ＝ remember は走らない。(4) その後 Presenter.Reset→ScreenFx.Switch(Rebuild) で RewardScreen→RunUi.TopBar→Shown(\"gold\", run.Gold, …, count:true) が old=戦闘前の値と比べ、Punch＋「+N G」の浮き文字＋CountTo(coin_land の刻み) をもう一度出す。\"mana\" も Shown(…, g.Anchor(\"mana\"), null, …) で Punch＋「+N」。なお goldDelta<0 (逃げられた) かつ manaDelta>0 の時も remember は末尾なので同じ経路で報酬画面に「−N G」が出る。通常 (飛ばさない) 経路は hold = max(t,1.45)+0.7 ≥ 2.15 秒 > 1.28 秒なので remember が先に走り二重にならない＝飛ばした時だけの不具合。",
+     "fix_ok": true,
+     "better_fix": "提案どおりで足りるが、置き場は FlyLoot の冒頭より ShowOutcome の勝利分岐の先頭 (Presenter.cs:1134 付近、goldDelta/manaDelta を求めた直後) に `ScreenFx.Remember(\"gold\", endedRs.Gold); ScreenFx.Remember(\"mana\", DeckRogue.Engine.Run.ManaOf(endedRs));` を同期で書くのがよい。理由: FlyLoot は AfterVisual(0.45) 越しで、skip 可能になる 0.5 秒との間が 0.05 秒しかなく、どちらも After 任せだと順序が時計に依存する／`goldDelta<0 && manaDelta>0` の「逃げられた」経路も同時に塞がる。FlyLoot 末尾の AfterVisual(last+0.02, remember) と Instant 分岐の remember() は不要になる (FlyLoot 内の数え上げは text.text を直接書くので Remember に依らない)。ScreenFx.Shown は値が同じなら何もしないので、Remember 済みなら報酬画面の Rebuild で浮き文字・刻みは出ない。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "energy_spend と輪の跳ねが 1 枚の札で二度鳴る",
+   "file": "unity/Assets/Game/BattleView.cs",
+   "line": 1855,
+   "severity": "ugly",
+   "detail": "札を出すと Presenter.ShowEnergyPaid (Presenter.cs:844) が CardPlayed で即 KeyPitched(\"energy_spend\") と Tween.Punch(orb) を鳴らし、さらに BattleView.EnergyOrbs が 0.22 秒後の玉の着地で Audio.Key(\"energy_spend\") と Punch(o2) をもう一度鳴らす。同じ札の支払いで同じ音が 2 回・輪の跳ねが 2 回 (minGap 0.05 では抑えられない間隔)。",
+   "fix": "どちらか一方に寄せる。玉が輪へ飛ぶ演出 (B03) を主にするなら ShowEnergyPaid の KeyPitched と X 以外の Punch を外す (X 札は EnergyOrbs が出さないので X の分だけ残す)。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる (確信度 高)。根拠: ①Presenter.cs:2498 の CardPlayed で ShowEnergyPaid (Presenter.cs:844) が paid>0 なら即 KeyPitched(\"energy_spend\") を鳴らし、X 以外は Tween.Punch(orb, 0.14, 0.25) を掛ける。②同じ札は手札の組み直し (BattleView.cs:1441 → AnimateOut) で uid==LastPlayedUid の枝 (1809) に入り EnergyOrbs を呼ぶ。EnergyOrbs は cost>0 かつ X 以外なら Projectile 0.22 秒の着地 (1855) で Audio.Key(\"energy_spend\") と Punch(o2, 0.1, 0.2) をもう一度鳴らす。③audio.json の energy_spend は minGap 未指定＝既定 0.05 秒で、0.22 秒の間隔は間引かれない (Audio.cs:171-178)。④両方ともこの差分で追加された行 (git diff で確認)。よって 1E 以上の普通の札 1 枚で音 2 回・輪の跳ね 2 回。仕込み札 (inSet) は CardPlayed が出ないので EnergyOrbs のみ＝重複なし。",
+     "fix_ok": true,
+     "better_fix": "提案どおりで足りる。ShowEnergyPaid を「X 札の時だけ音と Punch を出す」に絞る (非 X は EnergyOrbs が着地で鳴らす)。具体的には Presenter.cs:844 の KeyPitched を `def.XCost == true` の分岐の中へ移し、845 行の非 X の Punch を外す (0 コスト札は EnergyOrbs も出さないので無音になるが、払っていないので妥当)。もう一方に寄せる (EnergyOrbs 側の音を消す) 案は、玉の着地と音のタイミングが合わなくなるので非推奨。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。普通の札のプレイでは GameRoot.SubmitIfReady (GameRoot.cs:706) が Battle.LastPlayedUid を立ててから DoCombat → Rebuild で手札の同期 (BattleView.cs:1441 AnimateOut) が走り、uid==LastPlayedUid の枝 (BattleView.cs:1809) と置物の枝 (1806) が EnergyOrbs を呼ぶ。EnergyOrbs は cost>0 かつ X 以外なら 0.22 秒後の着地で Audio.Key(\"energy_spend\") と Tween.Punch(輪) を鳴らす (BattleView.cs:1855)。同じ手で GameRoot.cs:418 の Presenter.Play が CardPlayed を処理し (Presenter.cs:2498) ShowEnergyPaid が paid>0 なら Audio.KeyPitched(\"energy_spend\") と Punch(orb, 0.14, 0.25) を即時に鳴らす (Presenter.cs:844-845)。audio.json の energy_spend には minGap が無く (547-550 行)、仮にあっても 0.22 秒の間隔は既定の 0.05 を超えるので抑えられない。差分で新しく入ったのは Presenter.cs:844 の KeyPitched と BattleView の EnergyOrbs 一式 (git diff で確認)。仕込み (CardSet) は Presenter 側が CardPlayed でないため二重にならない。",
+     "fix_ok": true,
+     "better_fix": "提案のとおりで足りる。Presenter.ShowEnergyPaid (Presenter.cs:844-845) を「def.XCost==true の時だけ KeyPitched と Punch(0.22) を鳴らす」に絞り、X 以外の早期 return 枝 (845 行) は Punch を外して return だけにする。EnergyOrbs は X 札と 0 コストを既に弾いているので、X の分だけが Presenter に残り重なりは消える。音を払った量で音程を上げたい (B03 の意図) なら、代わりに EnergyOrbs 側の Audio.Key を Audio.KeyPitched(\"energy_spend\", 1f + 0.04f * Mathf.Min(cost, 5), 0.6f) に替えればよい。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "敗北で defeat_fall が 0.08 秒差で二度鳴る",
+   "file": "unity/Assets/Game/Presenter.cs",
+   "line": 1078,
+   "severity": "ugly",
+   "detail": "ShowOutcome は敗北で Audio.Key(\"PlayerDied\") を鳴らす。audio.json で PlayerDied の sfx は 2026-11-04 に hit_big → defeat_fall に替わった。続けて AfterVisual(0.08) の PlayerCrumble (PresenterJuice.cs:615) が Audio.Key(\"defeat_fall\") を鳴らすので、同じ落下音が 0.08 秒差で 2 回 (別の鍵なので minGap も効かない)。さらに EndScreen.Build (EndScreen.cs の敗北の題) でも defeat_fall を鳴らすので、負けると同じ音を 3 回聞く。",
+   "fix": "ShowOutcome の Audio.Key(\"PlayerDied\") を外す (崩れの側が鳴らす) か、PlayerCrumble の defeat_fall を外す。EndScreen 側は題の音として残すなら別の鍵に。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "コードで確認した。(1) `Presenter.ShowOutcome` (unity/Assets/Game/Presenter.cs:1078) は敗北なら即 `Audio.Key(\"PlayerDied\")` を鳴らし、audio.json:352 で PlayerDied の sfx は `defeat_fall` (volume 0.9)。(2) 同関数の敗北分岐 (Presenter.cs:1120) が `AfterVisual(0.08f, PlayerCrumble)` を予約し、`PlayerCrumble` (PresenterJuice.cs:615) の先頭で `Audio.Key(\"defeat_fall\")` を鳴らす。audio.json:534 の `defeat_fall` の鍵は同じ sfx `defeat_fall` で、`KeyPitched` の minGap は鍵名ごと (`_lastAt[key]`) かつどちらの鍵にも minGap が無いので捨てられない＝同じ落下音が 0.08 秒差で 2 回鳴る。FxLayer が無い時だけ PlayerCrumble に届かない (その場合は 1 回)。(3) 余韻の後 `GameRoot.CompleteCombatPresentation` → `ScreenFx.Switch(Rebuild)` → `EndScreen.Build(..., false)` (GameRoot.cs:981) が `!inst` の分岐で `Audio.Key(\"defeat_fall\")` (EndScreen.cs:109) を鳴らすので、通常プレイでは約 2.5 秒後に 3 回目。撮影 (ScreenFx.Instant) では 3 回目だけ鳴らない。加えて 0.85 秒で `Audio.Ui(\"lose\")` も鳴る。指摘どおり実際に起きる。",
+     "fix_ok": true,
+     "better_fix": "提案で足りる。推奨は Presenter.cs:1078 の `if (lost) Audio.Key(\"PlayerDied\");` を外す (崩れの演出と音を PlayerCrumble に一本化。FxLayer が無い経路では音が消えるので、その場合だけ `if (lost && fx == null) Audio.Key(\"PlayerDied\");` を早期 return の前に残す)。EndScreen.cs:109 の 3 回目は 2.5 秒離れた題の音なので残してよいが、同じ音の繰り返しが気になるなら audio.json の PlayerDied 鍵を題用に使い分ける (EndScreen は `Audio.Key(\"PlayerDied\")`・sfx を別の短い音に) のが鍵の数を増やさない形。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。unity/Assets/Game/Presenter.cs:1078 で敗北時に Audio.Key(\"PlayerDied\") → audio.json:352 で sfx は defeat_fall。同じ ShowOutcome の敗北分岐 (Presenter.cs:1118) が AfterVisual(0.08f) で PlayerCrumble を呼び、PresenterJuice.cs:615 が Audio.Key(\"defeat_fall\") → audio.json:534 で同じ sfx defeat_fall。鍵が別 (\"PlayerDied\" と \"defeat_fall\") なので Audio.KeyPitched の minGap は _lastAt[key] 単位で効かず (しかも両鍵とも minGap 未設定)、同じ落下音が 0.08 秒差で 2 回鳴る。fx == null の時だけ 1079 行で早期 return して 1 回になる。さらに onDone → GameRoot.cs:981 の EndScreen.Build(lost) が !ScreenFx.Instant なら EndScreen.cs:109 で三たび defeat_fall を鳴らす (こちらは余韻 2.5 秒＋画面の切り替えの後なので「題の音」として間は空くが、同じクリップの 3 回目)。PlayerDied の行は be403c4e 以前からあり (旧 hit_big)、今回の束が A11 で sfx を defeat_fall に替えつつ G13 で崩れ側にも defeat_fall を足したことで重なった。",
+     "fix_ok": true,
+     "better_fix": "PresenterJuice.cs:615 の Audio.Key(\"defeat_fall\") を外す側を推奨 (Presenter.cs:1078 の PlayerDied を残す)。理由: audio.json:282 の注記が「PlayerDied=defeat_fall で受ける」と書いており表の意図と一致する／fx == null の早期 return 経路でも音が残る／ShowOutcome 内で t=0 に 1 回だけになる。EndScreen.cs:109 は 2.5 秒以上あとの題の音なので残してよいが、同じクリップの 3 回目を避けるなら Audio.Ui(\"lose\") か無音にする (ユーザー裁定「勝敗のジングルは鳴らさない」とも整合)。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "消滅の音 (exhaust) が出来事と札の崩れで二度鳴る",
+   "file": "unity/Assets/Game/BattleView.cs",
+   "line": 1867,
+   "severity": "ugly",
+   "detail": "Shatter に Audio.Key(\"CardExhausted\") を足したが、audio.json の \"CardExhausted\" は GameEvent_CardExhausted の型名の鍵で、Presenter.Show の TableSound (Presenter.cs:1638) が出来事の順送りで既に鳴らしている (CardSet/CardsDrawn/EnemyDied のような除外に入っていない)。消滅する札 1 枚につき exhaust が 2 回 (出来事の時と 0.26 秒後の崩れの時)。",
+   "fix": "TableSound の除外に GameEvent_CardExhausted を足して絵の側 (Shatter) だけが鳴らす (CardSet・CardsDrawn と同じ扱い) か、Shatter の Audio.Key を外す。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に二度鳴る。Presenter.cs:1638 の TableSound は GameEvent_CardExhausted を除外していない (除外は DamageDealt 系・Status/Trap/EnemyAct/Red・CardSet・CardsDrawn・EnemyDied・EnemyFled だけ) ので、型名 \"CardExhausted\" が audio.json:57 の鍵 (sfx \"exhaust\") に当たり、Presenter.cs:2101-2102 の `var key = TableSound(ev); if (key != null) { Audio.Key(key); return; }` で出来事の順送りの時に鳴る。一方 BattleView.cs:1867 の Shatter にも Audio.Key(\"CardExhausted\") が足された (be403c4e..30e63e2b の差分で新規)。Shatter はプレイした札が消滅する時 BattleView.cs:1834 で 0.26 秒後に、手札から消えた消滅札 (衝動の失効・消滅コスト) は BattleView.cs:1837 で delay 後に呼ばれる。Audio の MinGap は既定 0.05 秒なので 0.26 秒差の 2 回目は間引かれず、消滅 1 枚につき exhaust が 2 回鳴る。",
+     "fix_ok": true,
+     "better_fix": "提案のうち「Shatter の Audio.Key(\"CardExhausted\") を外す」の方を推す。TableSound の除外に CardExhausted を足すと、手札以外からの消滅 (山札喰い `kind:'mill'` の millPlayerDeck・忘却系の exhaustFromDeck・仕込み札の消滅・消滅置き場からの直接プレイ) は Shatter を通らないので無音になる。札の崩れに音を合わせたいなら、Presenter の Show 側で「その札が直前の手札にあった (BattleView の手札 diff が Shatter する)」時だけ TableSound を抑える判定を足すか、Shatter が鳴らす代わりに Presenter の CardExhausted の Show を 0.26 秒遅らせる (Tween.After) 方が漏れが無い。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。確認した経路は 2 本: ① `Presenter.Show` (unity/Assets/Game/Presenter.cs:2101) が `TableSound(ev)` (同 1638〜1647) の返す鍵で `Audio.Key` を鳴らし、`TableSound` の除外列 (DamageDealt…・CardSet/CardsDrawn/EnemyDied/EnemyFled) に `GameEvent_CardExhausted` は無く、audio.json:57 に `\"CardExhausted\": {\"sfx\":\"exhaust\"}` があるので出来事の順送りで 1 回鳴る (これは差分前からの挙動)。② 差分で `BattleView.Shatter` (BattleView.cs:1862〜) に `Audio.Key(\"CardExhausted\")` (1867) が足され、手札の札が消滅置き場へ行く時 (1834: プレイ後 0.26 秒・1837: その他 `delay` 後) にもう 1 回鳴る。audio.json の CardExhausted に minGap は無いので `Audio.KeyPitched` の重複落としも効かない。手札からの消滅 1 枚につき exhaust が 2 回 (出来事の時と崩れの時)。手札に無い札の消滅 (山札喰い・忘却・捨て札からの消滅) は ① だけなので 1 回。",
+     "fix_ok": true,
+     "better_fix": "提案の 2 択のうち「Shatter の Audio.Key を外す」を取る。TableSound の除外に CardExhausted を足す案だと、手札の絵を経ない消滅 (敵の山札喰い・忘却系・捨て札や山札からの消滅・衝動の失効で手札の絵が別経路で消える場合) が無音になる。Presenter 側は全ての消滅の出来事を拾うので、音の所有権は Presenter に残し、Shatter は閃き・縮み・熾の粒 (絵) だけにする。音を崩れの瞬間に合わせたいなら、audio.json の CardExhausted に minGap (0.3 程度) を足して「先に鳴った方だけ」にする手もあるが、順送りの間隔次第で鳴る方が揺れるので、Shatter から外す方が確実。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "からくり発動で trap_fire_big が押した時と着弾で二度鳴る",
+   "file": "unity/Assets/Game/BattleScreen.cs",
+   "line": 4903,
+   "severity": "ugly",
+   "detail": "確認の窓の「発動」ボタン (BattleScreen.cs:4903) が Audio.Key(\"trap_fire_big\") を鳴らし、続く順送りの ReactionTriggered で幽霊の札が的に着いた瞬間 (Presenter.cs:1300) にもう一度 Audio.Key(\"trap_fire_big\")。同じ大きい音が約 0.5 秒差で 2 回 (間に表の trap_fire も鳴る)。自己誘発や伏せ札の自動発動は窓を通らないので 1 回＝発動の経路で音の数が違う。",
+   "fix": "ボタン側は押した手応え (輪と Punch) だけにして音は着弾の 1 回に揃える (ボタンの Audio.Key を外す)。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。BattleScreen.cs:4903 の「発動」ボタンが押下時に Audio.Key(\"trap_fire_big\") を鳴らし、その onFire → g.DoCombat(ConfirmReaction{Fire=true}) (BattleScreen.cs:4697) がエンジンの resolveReactionEffects (src/engine/effects.ts:2781) で ReactionTriggered を emit する。Presenter.Show では TableSound(ev) が IsTrapEvent の出来事に null を返す (Presenter.cs:1641) ので ShowTrap (Presenter.cs:1260) に入り、まず Audio.Key(\"ReactionTriggered\")=trap_fire (1272)、幽霊の札の跳ね 0.14 秒＋飛び 0.3 秒の後の着弾で再び Audio.Key(\"trap_fire_big\") (1300)。audio.json の trap_fire_big (556〜561) には minGap が無いので Audio.KeyPitched の同鍵の間引きも効かず、確認の窓を通る発動では大きい音が約 0.45〜0.6 秒差で 2 回鳴る。自己誘発 (combat.ts:1879 fireSelfSetTriggers) はボタンを通らないので 1 回＝経路で音の数が違う、という指摘どおり。",
+     "fix_ok": true,
+     "better_fix": "提案で足りる (BattleScreen.cs:4903 の Audio.Key(\"trap_fire_big\") を外し、輪と Punch だけ残す。着弾の 1 回に揃う)。代案として audio.json の trap_fire_big に minGap 0.8 を足せば二重打ちは消えるが、「押した瞬間」側が残って着弾側が捨てられる＝絵 (着弾の輪・縁の青緑) と音がずれるので、ボタン側を外す方が筋がよい。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。`unity/Assets/Game/BattleScreen.cs:4903` の「発動」ボタンの delegate が `Audio.Key(\"trap_fire_big\")` を即時に鳴らしてから `onFire()`（= `g.DoCombat(new Command_ConfirmReaction{Fire=true,...})`、BattleScreen.cs:4697）を送る。コマンドで記録される `GameEvent_ReactionTriggered` は Presenter の順送りで `IsTrapEvent` に拾われ（Presenter.cs:392 → 2104 → `ShowTrap`）、`Presenter.cs:1272` で表の `ReactionTriggered`（= trap_fire）を鳴らし、幽霊の札の跳ね 0.14 秒＋飛び 0.3 秒の後の着弾の閉包（Presenter.cs:1300）でもう一度 `Audio.Key(\"trap_fire_big\")`。`trap_fire_big` の表の行（audio.json:556〜561）に minGap は無く既定 0.05 秒（Audio.cs:95 `SfxEntry.MinGap=0.05f`）なので約 0.5 秒差の 2 回は間引かれない。自己誘発・自動発動は窓のボタンを通らないので Presenter 側の 1 回だけ＝経路で音の数が違うという指摘もそのとおり。",
+     "fix_ok": true,
+     "better_fix": "提案どおり BattleScreen.cs:4903 の `Audio.Key(\"trap_fire_big\")` を外すだけで足りる（輪 2 つと Punch は残るので押した手応えは失われず、音は着弾の 1 回に揃う）。押した瞬間に無音なのが気になるなら `Audio.Ui(\"click\")` 程度の軽い操作音に差し替えるのが代案（trap_fire_big は着弾の山として Presenter 側に一本化）。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "幕ボスの登場で boss_start と act_start の低い一打が重なる",
+   "file": "unity/Assets/Game/GameRoot.cs",
+   "line": 393,
+   "severity": "ugly",
+   "detail": "GameRoot.Do は幕ボスの戦闘へ入る手で Audio.Key(\"boss_start\") (表の note「ui.combat_start の代わりに」) を鳴らすが、Presenter.ShowEntrance (Presenter.cs:947) は従来どおり幕ボスの名前の帯で Audio.Ui(\"act_start\") を鳴らしたまま。低い太鼓系の合図が 0.35 秒差で 2 つ。act_start は本来「幕の切り替わり」の音で、同じ手の中で 2 役になっている。",
+   "fix": "ShowEntrance の boss 分岐の Audio.Ui(\"act_start\") を外す (boss_start が入口の一打)。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。経路を追うと: 幕ボスの節で地図→戦闘へ入る手は GameRoot.Do (unity/Assets/Game/GameRoot.cs:389-393) で `Run.CurrentNode(Rs).Type == Boss` を見て `Audio.Key(\"boss_start\")` を鳴らす。鍵 `boss_start` は audio.json:652 に実在し (sfx=boss_start・Synth.cs:539 の 1.4 秒の低い太鼓)、KeyPitched は表にあれば true を返すので combat_start には落ちない。続けて同じ手は phaseChanged (地図→戦闘) なので ScreenFx.Switch → 幕が閉じ切った後に `after` (Rebuild + Presenter.Play) → Presenter.Play は log[0] が CombatStarted なので ShowEntrance (Presenter.cs:338→867) を呼び、boss (同じ CurrentNode の Boss 判定) なら Presenter.cs:947 で無条件に `Audio.Ui(\"act_start\")` を鳴らす。`ui.act_start` も audio.json:340 に実在し素材 act_start.ogg もある。従って幕ボスの登場で boss_start (1.4 秒) と act_start が CloseDur ぶんの差で重なる (ScreenFx.Instant の時は同じフレーム)。差分前も combat_start+act_start の二重だったが、boss_start の note「ui.combat_start の代わりに」が示す通り、束 C2/A8 は act_start を残したまま低い一打を足したので、低音系が 2 つ重なる形になった。",
+     "fix_ok": true,
+     "better_fix": "提案どおり Presenter.cs:947 の boss 分岐から `Audio.Ui(\"act_start\")` を外すだけで足りる (幕ボスの判定は両方とも `Run.CurrentNode(Rs).Type == MapNodeTypes.Boss` で一致し、boss_start は GameRoot.Do で入口の手にだけ鳴る。表に boss_start が無い環境では GameRoot 側が combat_start に落ちるので無音にはならない)。補足として、note にある Duck(0.4, 1.2, 0.6, 0.2) が GameRoot.cs:393 の呼び出しに付いていない (Audio.Key だけ) ので、本当に「一緒に」鳴らすなら同じ場所で Audio.Duck を呼ぶ必要がある。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。GameRoot.Do (unity/Assets/Game/GameRoot.cs:389-394) は Map→Combat の手で CurrentNode が Boss なら Audio.Key(\"boss_start\") を同期で鳴らす (表 audio.json:652 に鍵あり・Synth.cs:539 で生成されるので Key は true を返し combat_start は鳴らない)。その同じ手の続きで phaseChanged なので ScreenFx.Switch(after) → Rebuild → Presenter.Play → log[0] が CombatStarted なので ShowEntrance (Presenter.cs:338→867) が走り、boss 分岐の Audio.Ui(\"act_start\") (Presenter.cs:947) が同期で鳴る (AfterVisual に包まれていない)。よって幕の切り替えの太鼓 (act_start.ogg) と低い太鼓 (boss_start) が、幕の閉じ開きの時間差 (概ね 0.3〜0.5 秒) で続けて鳴る。さらに差分前は ShowEntrance 先頭の `if(Stage.CombatWorld) return 0f;` (be403c4e 版) で幕1 の箱庭では act_start まで届かなかったが、G17 でその早期 return を外したので幕1 の幕ボスでも二重に鳴るようになった。",
+     "fix_ok": true,
+     "better_fix": "提案どおり Presenter.cs:947 の boss 分岐から Audio.Ui(\"act_start\") を外すだけで足りる (入口の一打は GameRoot.Do の boss_start に一本化。表に boss_start が無い環境では Do 側が combat_start に落ちるので無音にはならない)。念のため残したいなら `if (!Audio.HasKey(\"boss_start\")) Audio.Ui(\"act_start\");` と鍵の有無で排他にする。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "HP バーの残像が回復の後にもう一度浮き出る",
+   "file": "unity/Assets/Game/BattleScreen.cs",
+   "line": 1635,
+   "severity": "ugly",
+   "detail": "SetHpBar の減る側は GhostRev を進めて hold(0.25) 後に g0→r1 の Tween を予約するが、増える側 (回復) は SetGhost(info, r1) だけで GhostRev を進めない。削られた直後 0.25 秒以内に回復 (人形の回復・ドレイン・敵の再生など) が来ると、残像は一度 r1(回復後) に揃うのに、予約していた Tween が hi.GhostRev==grev のまま生きていて発火し、閉包の g0 (削られる前の高い位置) から古い低い r1 へ補間する＝塗りの右に紙色の帯がもう一度現れてから縮む。SetHpBarMaximum (BattleScreen.cs:1611) も Max を変えるだけで残像の anchor を直さないので、分母が変わった後の最初の削りで古い比率の残像が塗りの外に残る。",
+   "fix": "増える側でも ++info.GhostRev を行い (予約の Tween を無効化)、SetHpBarMaximum で SetGhost(info, Value/Max) を呼び直す。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "コードを読んで確認した（unity/Assets/Game/BattleScreen.cs:1617-1655）。TweenHpBar の減る側は `SetGhost(max(GhostR,r0))` → `grev=++GhostRev` → `g0=GhostR` を閉包に取り、`Tween.After(hold)` の後に `GhostRev==grev` なら `Tween.Run(0.4s, g0→r1)` を回す。増える側（`!hurt`）は 1635 行で `SetGhost(info, r1)` だけで GhostRev を進めない。したがって hold（0.25 秒・とどめは 0.6 秒）以内に同じバーへ非減少の TweenHpBar が来ると、残像はいったん新しい r1 に揃うが、予約済みの After と Run は `hi.GhostRev==grev` のまま生きているので発火し、最初のフレームで残像を g0（削られる前の高い位置）へ戻してから古い r1 へ縮める＝塗りの右に紙色の帯がもう一度出てから消える。実際に起きる経路: (1) Presenter の出来事の間隔は HpHealed で 0.15 秒（Presenter.cs:236・287）なので、被弾→被攻撃後の回復（怨嗟・死中の活）や HpLost→HpHealed が hold 内に並ぶ。(2) さらに広く、CombatDisplaySequence.Finish（CombatDisplaySequence.cs:43）が numericOwned でない時に `DisplayPlayerHp(current.Player.Hp,false)` を無条件に呼び、BattleView.DisplayPlayerHp（BattleView.cs:738）は値が同じでも TweenHpBar を呼ぶ→ `target==from` は `hurt=false` なので 1635 行の SetGhost(r1) が走る。Finish は敵の着弾の投影が終わり次第（PresenterEnemyContacts.cs:50-51）なので、敵の攻撃を受けるたびに「残像が一度消えて hold 後に再び浮き出る」が起きうる（確信度: 高。回復の経路はコード上で確定、Finish の経路は投影の完了が 0.25 秒以内に来るかに依るが、同フレーム〜数フレーム後に呼ばれる作りで通常は該当する）。SetHpBarMaximum（1611）は Max だけ書き換えて残像の anchor を触らないので、Max が増えつつ HP が減る同時更新では `max(GhostR(旧比率), r0(新比率))` で旧比率の方が大きく、帯が実際より長く出る（こちらは軽微・頻度は低い）。",
+     "fix_ok": true,
+     "better_fix": "提案（増える側で `++info.GhostRev` して予約の After/Run を無効化・SetHpBarMaximum で `SetGhost(info, (float)info.Value/info.Max)` を呼び直す）で不具合自体は止まる。ただし `target==from` の呼び直し（Finish・Rebuild 後の同値の TweenHpBar）でも GhostRev を進めると、敵の攻撃の直後に Finish が来るたび残像が殺されて「残像の演出」そのものが出なくなる。なので増える側の分岐を `if (target > from) { ++info.GhostRev; SetGhost(info, r1); }`（同値なら残像に触らない）にするのが望ましい。あわせて SetHpBarMaximum は Fill の anchorMax も `Value/Max` で引き直すと、Max だけ変わって HP が同値の時に塗りが旧比率のまま残らない（今は後続の TweenHpBar の最初のフレームが直すので致命ではない）。"
+    },
+    {
+     "refuted": false,
+     "reason": "起きる。unity/Assets/Game/BattleScreen.cs:1635 の増える側は SetGhost(info, r1) だけで GhostRev を進めないので、1639〜1646 で予約した After(hold 0.25)→Run(0.4) は hi.GhostRev==grev のまま生きており、閉包の g0（削られる前の比率）から古い r1（削られた後）へ補間する。回復後の塗り r_heal は普通 g0 より低い（回復量＜被ダメ）ので、hold 明けに塗りの右へ紙色の帯が g0 まで再び現れてから縮む。0.25 秒以内に「減る→増える」が同じバーへ届く実例: 自分の攻撃札で とげ持ち（針毛の栗鼠）を殴る → engine は effects.ts:1439 の ThornsReflected（HP 損失）→ combat.ts:1266 の onAttackPlayed（癒しの人形 white_perm_choir の回復）の順で出し、Presenter.cs:626 が NudgePlayerHp(-HpLoss)、Presenter.cs:444 の既定 gap 0.12 秒後に HpHealed（人形の束は FlushDollBatch で Nudge）＝hold 0.25 の内側。帯は とげ 2〜3/HP75 ぶんで小さいが実際に出る。被攻撃後の確認の窓を挟む回復（怨嗟・聖歌の壁）や敵の延焼ティック→回復行動（gap 合計 0.6 以上）は hold を越えるので主症状は出ず、流れている Run に SetGhost が一瞬上書きされて戻る程度（軽微）。SetHpBarMaximum（BattleScreen.cs:1611）の指摘も正しい: Max を増やしただけだと次の TweenHpBar が SetGhost(max(GhostR, r0)) で古い比率の GhostR（新しい分母では高すぎる）を残し、塗りの外に帯が出る。ただし戦闘中に最大 HP が増える経路は稀で、数値の台帳（numericOwned）の経路では FinishNumeric が差分を 1 回の TweenHpBar に畳むので主症状は出にくい。",
+     "fix_ok": true,
+     "better_fix": "提案で足りる。補足として SetHpBarMaximum でも SetGhost(info, Value/Max) と一緒に ++info.GhostRev を行う（流れている残像の Run は旧分母の閉包 g0/r1 を持つので、無効化しないと新しい anchor を次のフレームで上書きする）。増える側の ++GhostRev は意図どおり「回復は残像を即追従」になるので副作用はない。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "札で付けた状態の札が着弾の前に跳ねて鳴る (B06 の時機)",
+   "file": "unity/Assets/Game/BattleScreen.cs",
+   "line": 818,
+   "severity": "ugly",
+   "detail": "通常の札のプレイは GameRoot.Do が古い盤面を保たず即 Rebuild する (敵フェーズが無い手)。LedgerStrip は新しい状態で帳面を組むので、急所・延焼・威圧・混乱の札が押した瞬間に跳ねて status_apply が鳴り (BattleScreen.cs:812/818)、その 0.3〜0.5 秒後に順送りの着弾で「急所 +2」の浮き文字が出る。札が敵に届く前に敵の状態が変わって見える＝時機の嘘。札の文字が先に出るのは以前からだが、跳ねと音で目立つようになった。",
+   "fix": "Rebuild 時は LastStatus を更新するだけにして跳ねと音を出さず、Presenter の ExposedApplied/BurnApplied/EnemyWeakened の case (Presenter.cs:2557〜2597) から帳面の該当の pill (名前 pill-<icon>) を探して Punch・Flash・status_apply を鳴らす。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。GameRoot.Do (GameRoot.cs:339〜) は敵フェーズが無い手 (combatEnded でも HasEnemyPhase でもない通常の札のプレイ) では BeginCombatPresentation に入らず、`after()` で即 Rebuild() → Presenter.Play の順に同期で呼ぶ。Rebuild の LedgerStrip は新しい盤面 (st) で帳面を組むので、BattleScreen.cs:807〜828 の比較が「増えた」と判定して Tween.After(0.05) で Punch・Flash、Audio.Key(\"status_apply\") は組んだその場 (t≈0) で鳴る。一方 Presenter.PlayTracked では ExposedApplied/EnemyWeakened/BurnApplied は ResolvedCombatFx.IsResolved に含まれない (ResolvedCombatFx.cs:46) ので AfterVisual(delay,…) の経路で、delay は player の DamageDealt があれば 0.13 から始まり、先行する当たりの EnemyContactSpan と 0.12 の間隔が積まれる (Presenter.cs:325〜327・442〜444)。つまり打ち据え (ダメージ＋急所) のような札では帳面の札が先に跳ねて鳴り、着弾と「急所 +2」の浮き文字は 0.13 秒以上後＝指摘どおりの時機の逆転。ダメージの無い状態札 (delay=0) は差がほぼ無いが、札の飛ぶ振り (CardPlayed の Show) の前に帳面が変わる点は同じ。",
+     "fix_ok": false,
+     "better_fix": "提案の方向 (Rebuild は LastStatus を更新するだけ・跳ねと音は Presenter の出来事の時機で) で概ね足りるが、そのままだと 2 つ漏れる。(1) 混乱: StatusPillIcons に \"confuse\" があるが Presenter.Show に GameEvent_EnemyConfused の case が無い (CardText.cs:1153 の文だけ) ので、混乱の札だけ跳ねも音も失う→ case を足す。(2) 敵フェーズの順送り (preserveBoard＝古い盤面) 中に付いた状態 (仕込み札・置物の返しで付く延焼・急所など) は、古い帳面に pill-<icon> がまだ無いので Presenter から探しても見つからず、演出後の Rebuild は LastStatus を更新するだけ＝一度も跳ねずに黙って現れる。推奨: Rebuild では今の比較を残して「増えた札」を跳ねさせずに BattleView の保留 (pill の RectTransform＋icon＋音の要否) に積み、Presenter の ExposedApplied/EnemyWeakened/BurnApplied/EnemyConfused/StrengthGained の case がその敵・その icon の保留を取り出して Punch・Flash・status_apply を鳴らす (見つからなければ pill-<icon> を名前で探す)。順送りの後の Rebuild (Presenter.PresentationIdle に戻る側) では浮き文字がもう済んでいるので今どおりその場で跳ねさせる。p2 == null の検査と Rebuild で Destroy される点は今の Tween.After(0.05) と同じ扱いでよい。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。経路: `GameRoot.Do` (unity/Assets/Game/GameRoot.cs:396-403) は敵フェーズも決着も無い通常の札のプレイでは BeginCombatPresentation に入らず、`after` (GameRoot.cs:419-423) が `Rebuild()` → `Presenter.Play` の順で呼ぶ。Rebuild は新しい盤面で `LedgerStrip` を組み、BattleScreen.cs:806-826 で `LastStatus` との差があれば直ちに `Audio.Key(\"status_apply\")` (818)・0.05 秒後に `Tween.Punch`/`Flash` (822-826) を出す。一方 Presenter 側は `QueuePresentation` (PresenterNumeric.cs:72-) → `PlayTracked` (Presenter.cs:316-) で、札に自分の DamageDealt があれば `delay=0.13` (Presenter.cs:329) から着弾、状態の出来事はその後に `AfterVisual(delay, …)` (Presenter.cs:441) で「急所 +N」「威圧 +N」「延焼 +N」の浮き文字 (Presenter.cs:2557-2602) を出す。つまり 砕牙・打ち据え・火弾系のように「ダメージ＋状態」を持つ札では、帳面の札が鳴って跳ねるのが着弾より約 0.1〜0.3 秒先行する。前の手の演出が `Actions` の列で待っている時 (PresenterNumeric.cs:98) はさらに開く。確信度: 高 (コードの順序そのもの。状態だけの札〔ダメージ無し〕は delay=0 なのでほぼ同時＝嘘にならない)。",
+     "fix_ok": true,
+     "better_fix": "提案の方向で足りるが 2 点を足す。(1) Rebuild の跳ねを全部やめると、敵フェーズの順送り (preserveBoard) 中に付いた状態 (罠・置物の誘発・敵の自己強化) は古い帳面に該当の pill が無いので Presenter の case が見つけられず、順送り後の Rebuild でも LastStatus を更新するだけでは一度も跳ねなくなる。→ Rebuild の跳ねは残し、「この差分を Presenter がこれから見せる」時だけ抑える (例: Presenter に `_seen` 以降の未演出の出来事に該当の敵×状態があるかを返す静的な問い〔ExposedApplied/EnemyWeakened/BurnApplied/StatusInflicted(敵) を見る〕を足し、LedgerStrip はそれが真なら Punch・音を出さず LastStatus の更新だけ。Presenter の case は `g.Anchor(\"enemy\"+idx)` の下から `pill-<icon>` を再帰で探し (statusmask/status の下に居る。`Find` は直下だけなので GetComponentsInChildren か経路指定)、見つかれば Punch・Flash・status_apply、無ければ浮き文字だけ)。(2) 音は 1 手につき 1 回に (全体威圧で敵ごとに case が鳴ると重なる。Rebuild 側は `pulseSound` で 1 回にまとめていたので同じ扱いを)。pill の名前は既に `MiniPill` で \"pill-<icon>\" になっている (BattleScreen.cs:1399) ので探す側だけ足せばよい。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "勝利の魔素の増分が、ギアでとどめを刺した時に小さく出る",
+   "file": "unity/Assets/Game/Presenter.cs",
+   "line": 1134,
+   "severity": "wrong",
+   "detail": "manaDelta は PrevRun (戦闘の最後の手の直前のラン) との差。最後の手が RunCommand_UseGear (倒す系のギアでとどめ) の時、その手で払った魔素 10 が PrevRun 側に残っているので manaDelta＝報酬 −10 になり、通常戦 (+5) では負＝「魔素 +5」の行も玉の飛びも出ない。G は戦闘中に変わらないので正しい。",
+   "fix": "魔素の増分は endedRs と「戦闘開始時のラン」の差でなく、engine の勝利の精算の値 (報酬の魔素) を読む。無ければ PrevRun に UseGear の支払いを足し戻す (PrevRun を BeginCombatPresentation の時点でなく戦闘の開始時に固定し、ギアの支払いを別に数える)。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。GameRoot.Do (unity/Assets/Game/GameRoot.cs:345, 400) は最後の手の直前の Rs を prevRs として Presenter.PrevRun に渡し、Presenter.cs:1134 は ManaOf(endedRs) − ManaOf(PrevRun) を増分にしている。engine の RunCommand_UseGear (unity/Packages/com.deckrogue.engine/Runtime/Run.cs:2031〜2058) は SpendGear で Mana −GEAR_MANA_COST(10) を引いた後に、全滅なら同じ手の中で AfterVictory (Run.cs:1855) が MANA_PER_WIN(5)／MANA_PER_ELITE_BOSS(10) を足す。したがってギアでとどめを刺した手では manaDelta＝通常戦 −5・エリート/ボス 0 となり、Presenter.cs:1136 の `manaDelta > 0` の条件を満たさず「魔素 +5／+10」の行も FlyLoot の魔素の玉も出ない (G は戦闘中に動かないので goldDelta は正しい)。ギアを同じターンの途中で使って札でとどめの場合は最後の手が PlayCard なので影響なし＝「最後の手が UseGear で勝った時」だけの不具合。",
+     "fix_ok": true,
+     "better_fix": "engine には「勝利で得た魔素」の専用フィールドが無い (AfterVictory は Mana を直接足すだけ) ので、最小の直しは GameRoot.Do の Presenter.PrevRun を渡す所 (GameRoot.cs:400) で、cmd が RunCommand_UseGear の時だけ `prevRs with { Mana = Run.ManaOf(prevRs) - Gears.GEAR_MANA_COST }` を渡す (支払いを足し戻すのと同義。煙玉は勝利を経ないので無関係)。あるいは Presenter 側で manaDelta を「Math.Min(MANA_MAX, before + 報酬) − before」の形で引き直す (before＝支払い後の魔素) にすれば上限 50 のクランプも engine と同じ式になる。engine (Runtime) は触らない前提なので「精算の値を読む」案は engine の変更が要り不可、PrevRun の足し戻し案で足りる。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる（確信度 高）。根拠: (1) `unity/Packages/com.deckrogue.engine/Runtime/Run.cs:2031-2057` の `RunCommand_UseGear` は `SpendGear`（:327 で `Mana = ManaOf(run) - GEAR_MANA_COST`＝−10）を先に適用した `after` を `AfterVictory(after, …)` に渡す。`AfterVictory`（:1855）は `(run.Mana ?? 0) + MANA_PER_WIN(5)` を足すので、終わったランの魔素は「直前 −10 +5」＝直前より 5 少ない。(2) `unity/Assets/Game/GameRoot.cs:400` は `Presenter.PrevRun = prevRs`（UseGear を適用する前のラン）を渡し、`combatEnded`（Phase が Reward に変わる・Combat は残る）なので UseGear でとどめを刺した手もこの経路に入る。(3) `unity/Assets/Game/Presenter.cs:1134` の `manaDelta = ManaOf(endedRs) − ManaOf(PrevRun)` は通常戦で −5、エリート/ボスで 0 になり、:1136 の「魔素 +N」の行は出ず、`PresenterJuice.cs:553/583` の `FlyLoot` も `manaDelta <= 0` で魔素の玉を飛ばさない。G は戦闘中に変わらないので goldDelta は正しい。ギアでとどめを刺せる札（火薬・火薬樽）は実在する。",
+     "fix_ok": false,
+     "better_fix": "提案の第1案「engine の勝利の精算の値を読む」は使えない: `AfterVictory` の `gained`（G）も魔素の加算も RunState に別の欄として残らず、欄を足すのは engine を触ることになる（規約で禁止）。第2案（支払いを足し戻す）は正しいが、PrevRun を戦闘開始時に固定するのは大げさ。最小の直し: `GameRoot.Do`（`unity/Assets/Game/GameRoot.cs:400`）には `cmd` がそのまま見えているので、PrevRun を渡す時に UseGear の手だけ支払い分を引いて渡す＝`Presenter.PrevRun = cmd is RunCommand_UseGear ? prevRs with { Mana = DeckRogue.Engine.Run.ManaOf(prevRs) - Gears.GEAR_MANA_COST } : prevRs;`（RunState は record なので `with` が使える。`Gears.GEAR_MANA_COST` は public const）。これで `Presenter.cs:1134` の差は「報酬の魔素（上限 50 でのクランプ込み）」になり、「魔素 +5」の行と玉の飛びが出る。煙玉（flee）は報酬なし・Phase=Map で Combat=null になり決着の演出に入らないので影響なし。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "報酬の札が返るたびに「取る」が button_appear を鳴らす (card_flip と重なる)",
+   "file": "unity/Assets/Game/ScreenJuice.cs",
+   "line": 180,
+   "severity": "ugly",
+   "detail": "RevealCard は返りの間 take.interactable=false にし、返り切った所で true に戻す。UiKit.Btn の全ボタンに付く ScreenFx.ButtonMotion (ScreenFx.cs:279) は interactable の立ち上がりを「押せるようになった」と見て pop＋button_appear を鳴らす (同じコマだけ 1 回に間引く)。札は 0.12 秒ずらしで返るので 3 枚で card_flip×3 と button_appear×3 が交互に鳴り、音が 6 つ重なる。",
+   "fix": "RevealCard は interactable を触らず、返りの間だけ Button を無効化する別の手 (CanvasGroup.interactable か「取る」の onClick に取る前の gate) にする。または ButtonMotion に「初めの interactable の切り替えを無視する」旗 (EntrySkip のような印) を付けて RevealCard から立てる。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。RewardScreen.cs:98 で UiKit.Btn が「取る」を作り (UiKit.cs:854 で ButtonMotion を AddComponent)、同じコマの内に RewardScreen.cs:105 → ScreenJuice.RevealCard が `take.interactable = false` (ScreenJuice.cs:162) にする。ButtonMotion の最初の Update (ScreenFx.cs:279〜) はこの時点で active=false を見るので `_seen=true, _wasActive=false` になる。返り切った所 (ScreenJuice.cs:180) で `take.interactable = true` に戻ると、次の Update で `_seen && active && !_wasActive && !Instant` が成立し、pop と `Audio.Key(\"button_appear\", 0.4f)` が鳴る。`_appearFrame` の間引きは同じコマだけなので、0.12 秒ずらしの 3 枚は別のコマ＝3 回鳴る。時刻は card_flip が 0.16/0.28/0.40 秒、button_appear が 0.36/0.48/0.60 秒で交互に重なる。Pulse 側は `_appeared=true` が立つので二重には鳴らないが、pop 側の 3 回は残る。店 (ShopScreen.cs:195) は take=null なので無関係。",
+     "fix_ok": true,
+     "better_fix": "提案のうち CanvasGroup.interactable を推奨。ButtonMotion.Active は `_btn.interactable` だけを見るので CanvasGroup では pop も音も出ず、Button.IsInteractable() は親の CanvasGroup を見るので押下は止まる (onClick の gate だけだと押せる見た目のままホバー音も鳴る)。ただし「取る」のボタンに CanvasGroup を足すと ButtonMotion の Awake 後でも問題ない。もう一方の案なら ButtonMotion に `public void Arm()`（`_wasActive = true` にする）を足し、RevealCard で `take.interactable = true` の直前に呼ぶのが最小。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる (確信度: 高。コードの経路で確認)。RewardScreen.cs:98 の UiKit.Btn が「取る」に ScreenFx.ButtonMotion を付け (UiKit.cs:854)、同じ組み直しの中で ScreenJuice.RevealCard (ScreenJuice.cs:162) が take.interactable=false にする。ButtonMotion の最初の Update は active=false を見て _seen=true・_wasActive=false になり、返り切った所 (ScreenJuice.cs:180) で true に戻すと ScreenFx.cs:279 の「_seen && active && !_wasActive && !Instant」が立って pop＋Audio.Key(\"button_appear\") が鳴る。間引きは _appearFrame＝同じコマだけで、札は 0.12 秒ずらし (別のコマ) なので 3 枚で 3 回鳴る。RevealCard が無ければ 3 つの「取る」は同じコマに現れて Pulse 側の appear (ScreenFx.cs:298) が 1 回に間引かれるので、この儀式が 1 回→3 回に増やしている。時間軸は card_flip(i)＝遅れ+0.16 秒・button_appear(i)＝遅れ+0.36 秒で、0.6 秒の間に 6 音が交互に並ぶ (「同時に 6 つ重なる」は言い過ぎだが、交互に鳴ること自体は起きる)。button_appear に minGap は無い (audio.json:648)。",
+     "fix_ok": true,
+     "better_fix": "提案のどちらでも止まるが注意が 2 点。(1) 「旗」案で pop 側 (ScreenFx.cs:279) だけ黙らせると、_appeared が false のまま Pulse 側 (ScreenFx.cs:295〜301) が「active になって 0.3 秒後」に別々のコマで鳴り、やはり 3 回になる。旗を立てる時は _wasActive=true と _appeared=true の両方を立てる (例: ButtonMotion に public void MarkShown(){ _wasActive=true; _appeared=true; } を足し、RevealCard が take.interactable=true の直前に呼ぶ)。1 回だけ鳴らしたいなら index==0 の札だけ呼ばない。(2) CanvasGroup 案は「取る」のボタンの GameObject だけに付ける (cell に付けると札のタップ=拡大も止まる)。この案では Button.interactable は true のままなので Pulse の _t が組み直し直後から進み、3 つとも同じコマの 0.3 秒後に appear 1 回＋縁の脈が返り切る前に始まる (押せない間に脈打つ) 点は残る。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "敵の予兆の音が宣言と実行で二度鳴る (全部の意図で鳴る)",
+   "file": "unity/Assets/Resources/Audio/audio.json",
+   "line": 83,
+   "severity": "ugly",
+   "detail": "EnemyIntentDeclared の sfx を null から enemy_telegraph にしたが、この出来事は攻撃も含む全ての意図の宣言で出る (note の「強化・応援を宣言した」より広い)。Presenter.Show は TableSound で型名の鍵を鳴らすので、敵フェーズの終わりに生きている敵の数だけ enemy_telegraph が 0.12 秒刻みで鳴り、次の敵フェーズでは B07 (Presenter.cs:481〜487) が攻撃の実行の直前にも enemy_telegraph を鳴らす。1 体の攻撃につき同じ音が宣言と実行で 2 回。さらに Presenter.cs:517 の buff 実行の Audio.Key(\"EnemyIntentDeclared\") も同じ音になったので強化は 3 回。",
+   "fix": "EnemyIntentDeclared は sfx null に戻す (宣言は無音・実行の予兆だけ鳴らす) か、宣言の音を別の小さい鍵にして B07 の鍵と分け、Presenter.cs:517 は buff 用の鍵に差し替える。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。経路を確認した: (1) `unity/Assets/Game/Presenter.cs:1638` `TableSound` は EnemyIntentDeclared を除外リストに持たず、型名 \"EnemyIntentDeclared\" を `Audio.HasKey` で見て鍵を返す。差分前は audio.json の sfx が null だったので `Audio.KeyPitched` (Audio.cs:168) が `string.IsNullOrEmpty(e.Sfx)` で無音のまま return していたが、差分後 (audio.json:83〜86) は enemy_telegraph 0.35 が鳴る。(2) 順送りの列 (Presenter.cs:228〜244) で EnemyIntentDeclared は専用の branch が無く 244 行の `TableSound(ev) != null → gap 0.12` に落ち、Show (Presenter.cs:2101〜2102) の `var key = TableSound(ev); if (key != null) { Audio.Key(key); return; }` で鳴る。engine は敵フェーズの終わりに生きている敵ごとに 1 回 (combat.ts:447) に加え、割り込みの差し替え・分裂体の登場 (combat.ts:345/352/358/649/722) でも出すので、敵の数だけ 0.12 秒刻みで鳴る。(3) 次の敵フェーズでは B07 (Presenter.cs:490〜497) が attack の EnemyActionExecuting で `Audio.Key(\"enemy_telegraph\")` (audio.json:551 の 0.4) を鳴らす＝1 体の攻撃につき宣言と実行で同じ合成音が 2 回。(4) buff の実行 (Presenter.cs:517) の `Audio.Key(\"EnemyIntentDeclared\")` は差分前から存在し (差分に +/- が無い)、鍵の中身が null→enemy_telegraph になったので強化は宣言+実行で 2 回、さらに rally/buff を宣言するたび鳴る。鍵名が別 (\"EnemyIntentDeclared\" と \"enemy_telegraph\") なので minGap 0.05 の間引きも掛からない。",
+     "fix_ok": true,
+     "better_fix": "提案の後者を推奨: audio.json の EnemyIntentDeclared は sfx null に戻す (宣言は無音・実行の予兆だけ B07 が鳴らす)。ただし null に戻すと Presenter.cs:517 の buff の `Audio.Key(\"EnemyIntentDeclared\")` も差分前と同じ無音に戻る (A17 の「強化に静かな音を」の意図が消える) ので、audio.json に buff 用の鍵 (例 \"enemy_buff\": sfx enemy_telegraph・volume 0.35、または Synth の buff 系) を足して 517 行をその鍵に差し替える。宣言そのものに音を残したい場合だけ、別の小さい鍵を作って TableSound の除外リスト (Presenter.cs:1641) に GameEvent_EnemyIntentDeclared を加え、Show で明示的に鳴らす形にする (型名の鍵のままだと全種の意図で鳴り続ける)。"
+    },
+    {
+     "refuted": false,
+     "reason": "コードで確認した。実際に起きる。\n(1) `Presenter.cs:392` の絞り込みは `GameEvent_EnemyIntentDeclared` を通し、`Show` (Presenter.cs:2101〜2102) は最初に `TableSound(ev)` を見る。`TableSound` (Presenter.cs:1638〜1648) の除外一覧に EnemyIntentDeclared は無く、型名 \"EnemyIntentDeclared\" を `Audio.HasKey` で引く。audio.json:83〜86 で sfx が `enemy_telegraph` になったので、`Audio.KeyPitched` (Audio.cs:164〜) は `string.IsNullOrEmpty(e.Sfx)` を抜けて鳴らす。差分前は sfx null だったので `HasKey` は真でも `KeyPitched` が false を返して無音だった＝今回の表の変更だけで挙動が変わっている。EnemyIntentDeclared は攻撃・防御を含む全ての宣言で出る (CombatDisplaySequence.cs:35 の RefreshIntent と同じ出来事) ので、敵フェーズの終わりに生きている敵の数だけ鳴る (間隔は Presenter.cs:244 の 0.12 秒・minGap 既定 0.05 より長いので間引かれない)。\n(2) 次の敵フェーズで `GameEvent_EnemyActionExecuting` (Kind==\"attack\") が来ると Presenter.cs:491〜497 (B07) が `Audio.Key(\"enemy_telegraph\")` を鳴らす。鍵は \"enemy_telegraph\" (audio.json:551) と \"EnemyIntentDeclared\" で別なので minGap でも重ならず、同じ Synth の音 (Synth.cs:435) が宣言と実行で 1 体の攻撃につき 2 回鳴る。\n(3) Presenter.cs:517 の buff の実行は `Audio.Key(\"EnemyIntentDeclared\")` を呼ぶので、強化は宣言 (1 回) ＋実行 (1 回) ＝同じ音が 2 回 (攻撃と同じ)。指摘の「3 回」は数え過ぎ (buff には B07 の攻撃の予兆は乗らない) だが、二度鳴りの本体は成立する。",
+     "fix_ok": true,
+     "better_fix": "提案の前者 (audio.json:83 の EnemyIntentDeclared を `\"sfx\": null` に戻す) で足りる。TableSound は型名の鍵が表にあれば Show を return するだけなので、null に戻しても差分前と同じ (無音・絵は従来どおり RefreshIntent) に戻り、B07 の実行の予兆と Presenter.cs:517 の buff の `Audio.Key(\"EnemyIntentDeclared\")` は旧どおり無音になる。buff の実行にも音が欲しいなら Presenter.cs:517 だけを `Audio.Key(\"enemy_telegraph\")` か別の静かな鍵に差し替える (TableSound は意図の種別を見られないので「強化・応援の宣言だけ鳴らす」は表では書けない。宣言で種別ごとに鳴らしたいなら TableSound の除外に EnemyIntentDeclared を足し、CombatDisplaySequence.cs:35 の RefreshIntent の所で Intent.Kind を見て鳴らす必要がある)。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "攻撃の意図の札の「紙」を Tween.Flash で真鍮に染めている",
+   "file": "unity/Assets/Game/Presenter.cs",
+   "line": 495,
+   "severity": "rule",
+   "detail": "EnemyActionExecuting (attack) の予兆で `tag.Find(\"paper\")` の Image に `Tween.Flash(tagImg, PaperFx.BrassLight, 0.35f)` を掛けている。意図の札の \"paper\" は BattleScreen.IntentTag (1345 行) が `PaperFx.Sheet(tag, Tag/Tag2, \"paper\")` で作る紙 (クリーム) の面そのもので、Tween.Flash は Graphic.color を flash→元へ Lerp する＝紙の塗りを 0.35 秒 真鍮に染める。裁定「紙の UI は染めない」(今回の束の約束にも「紙は光らせない＝光と輪は FxLayer に置く」と書いてある) に反する。既定 (HD2DFlags.UiNight=false) では毎ターン敵が攻撃するたび起きる。ui=night の時は NightSkin.LateUpdate が毎フレーム色を書き戻すので点滅がちらつく。確信度: 高 (コードを読んだ事実。ScreenFx.Shown の hp の札に同じ Flash の先例はある)",
+   "fix": "紙を染めず FxLayer 側に置く＝札の矩形の上に `Tween.RingBurst` か細い真鍮の縁 (`PaperFx.Sheet(tag, Tag, \"edge\", BrassLight)` を 0.35 秒で消す) を重ねる。IntentTag の aimed/acting 用の \"edge\" と同じ作り",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "コードで確認できた事実。`unity/Assets/Game/Presenter.cs:488-497`（be403c4e..30e63e2b で追加）は `EnemyActionExecuting` の Kind==\"attack\" かつ `StageMotion.EnemyBigFlashing` が偽の時に `tag.Find(\"paper\")` の Image へ `Tween.Flash(tagImg, PaperFx.BrassLight, 0.35f)` を掛ける。この \"paper\" は `BattleScreen.IntentTag`（BattleScreen.cs:1345）が `PaperFx.Sheet(tag, Tag/Tag2, \"paper\")` で作る紙の 9 スライス本体で、`PaperFx.Sheet` は tint 省略で `color = Color.white`（PaperFx.cs:740）。`Tween.Flash`（Tween.cs:309-314）は `g.color = Lerp(flash, origin, k)` なので、紙の塗りが 0.35 秒 BrassLight×紙色に染まる＝「紙の UI は染めない」に反する。既定（EnemyBig は大技の時だけ）では敵が攻撃を実行するたび毎回起きる。なお `candidate/aimed/acting` の真鍮の \"edge\"（BattleScreen.cs:1333-1343）は `acting` が AwaitingReaction の時だけなので、順送り中の攻撃には縁が無く、紙そのものが光る唯一の合図になっている。ui=night で NightSkin が毎フレーム色を書き戻す件は該当ファイル（NightSkin.cs）が見つからず未確認（主張の本体には影響しない）。",
+     "fix_ok": true,
+     "better_fix": "提案どおり紙を触らず縁か輪で出すのでよいが、縁を `PaperFx.Sheet(tag, Tag, \"edge\", BrassLight)` で tag の子に足す場合は 1 点注意: IntentTag の既存の \"edge\" は paper より先に作って paper が内側を覆う構造なので、後から足した Sheet は paper と row（絵・数字）の上に重なり中身を隠す。足した直後に `edge.transform.SetAsFirstSibling()` で paper の後ろへ回し、`UiKit.Stretch(edge.rectTransform, -5,-5,-5,-5)`・`raycastTarget=false` とし、`Tween.Run(0.35f, k => { if (edge != null) { var c = edge.color; c.a = 1f-k; edge.color = c; } }, Ease.OutQuad, () => { if (edge != null) Destroy(edge.gameObject); })` で消す（Rebuild で tag が壊れても `== null` で止まる）。もっと簡単な代案は FxLayer 側に `Tween.RingBurst(fx, Tween.CenterIn(tag, fx), PaperFx.BrassLight, 幅相当, 0.35f)` を置くだけにして `Tween.Flash` の行を削る（既存の Punch と enemy_telegraph の音は残す）。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。unity/Assets/Game/Presenter.cs:491-495 で `ex.Kind==\"attack\" && !StageMotion.EnemyBigFlashing` の時に `tag.Find(\"paper\")` の Image へ `Tween.Flash(tagImg, PaperFx.BrassLight, 0.35f)` を掛けている。この \"paper\" は BattleScreen.cs:1345 の `PaperFx.Sheet(tag, minor ? Tag2 : Tag, \"paper\")`＝紙の九分割スプライトを color=Color.white で置いた面そのもの (PaperFx.cs:733-742)。Tween.Flash (Tween.cs:309-314) は Graphic.color を BrassLight→元 (白) に Lerp するので、0.35 秒のあいだ紙の塗りが真鍮に染まる。EnemyBigFlashing は `StageMotion.IsEnemyBig` を通った大技でだけ立つ (Presenter.cs:1919-1935・StageMotion.cs:249/288) ので、通常の攻撃では毎回この経路に入る。この束自身の約束 (PresenterJuice.cs:5「紙は光らせない」・ScreenJuice.cs:10「紙は光らせない＝光と輪は FxLayer に置く」) と裁定「紙の UI は染めない」に反する。順送りの間隔も攻撃だけ +0.12 (Presenter.cs:241/292) に広げてあるので、札は Rebuild で消える前に染まった姿が見える。ui=night では PaperFx.NightSkin.LateUpdate が毎フレーム Apply で色を写し戻す (PaperFx.cs:908-) ため、Flash の書き込みと競合してちらつく (この点は既定 OFF なので副次)。確信度: 高 (コードの事実)。",
+     "fix_ok": true,
+     "better_fix": "提案 (紙を染めず縁を重ねる) で足りるが、作り方に 1 点注意。IntentTag の既存の \"edge\" は paper より前に作って (BattleScreen.cs:1335-1344) 下に敷き、-3/-5 のはみ出しだけが縁として見えている。Presenter 側で後から `PaperFx.Sheet(tag, Tag, \"edge\", BrassLight)` を足すと兄弟の最後＝一番手前に塗りつぶしの板が載り、絵と数字を 0.35 秒隠す。よって ①足した edge は `SetAsFirstSibling()` で paper の下に入れて -5 のはみ出しだけを見せ、Tween.Run で α を 1→0 にして Destroy (閉包は `if (img != null)` で Rebuild 後の Destroy 済みを弾く)、または ②FxLayer 側で `Tween.RingBurst(fx, Tween.CenterIn(tag, fx), PaperFx.BrassLight, …)` を使い札には何も足さない、のどちらか。名前を \"edge\" にしておけば NightSkin の「写さないもの」(PaperFx.cs:890 の注記) に乗り、ui=night でも真鍮のまま残る。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "被弾のビネットが上部バーと手札 (画面の縁の UI) を薔薇に染める",
+   "file": "unity/Assets/Game/PresenterJuice.cs",
+   "line": 90,
+   "severity": "rule",
+   "detail": "HurtVignette は FxLayer (ScreenRoot より前面・画面全体) に Theme.Vignette(rgb) を −24px 外まで広げて貼り、α を `min(0.5, 0.16+HpLoss×0.02)` (Presenter.cs:2330・PresenterEnemyContacts.cs:83) まで上げる。Vignette の α は中心 0・縁で a²×0.85 なので、上下の中央で約 0.44×α、角で約 0.85×α＝HpLoss 17 で上部バーの紙の札に ≈0.22、手札の両端に ≈0.4 の薔薇が乗る。注釈は「中央と紙は染めない」だが、紙の UI は画面の縁 (上部バー・手札・帳面の下) に並んでいるので実際には染まる。旧の全画面 0.1〜0.35 と比べて縁では濃くなっている。確信度: 中 (式から計算。ユーザー裁定の「染める」の線引きは判定待ち)",
+   "fix": "α の上限を 0.25 程度に下げるか、ビネットの矩形を上部バーの下〜手札の上 (BattleScreen.TopH と手札の帯) に収めて紙の上に掛けない",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。根拠: (1) `HurtVignette` は `fx`＝`GameRoot.FxLayer` に貼る (PresenterJuice.cs:95-97)。FxLayer はキャンバス直下で `ScreenRoot` の後に作られる (GameRoot.cs:240-243) ので、上部バー・手札・帳面の紙の上に重なる。(2) `ThemeFx.Vignette` の α は `clamp01((d-0.55)/0.7)² × 0.85` (Theme.cs:955-958)。矩形は画面より −24px 広い (1968×1128 相当) ので、1080p の上部バー (TopH=72) の帯では dy≈0.83〜0.96 → α≈0.22〜0.43、四隅は d>1.25 で α=0.85。(3) 呼び側の α は `min(0.5, 0.16+HpLoss×0.02)` (Presenter.cs:2325・PresenterEnemyContacts.cs:82)。HpLoss 17 で上部バーに ≈0.11〜0.22、手札の扇の両端 (dx≈0.4・dy≈−0.9) に ≈0.22、四隅に ≈0.43 の薔薇が乗る。HpLoss 5 でも上部バー ≈0.06〜0.11・隅 ≈0.22＝旧の全画面 0.175 と同じ帯。(4) 作業ツリーの未コミット分 (`UiKit.LinearSprite(…, 0.03f)`＋`LinearShade(img, 0.03f)`) は「下は舞台の暗い縁」を仮定して α を写すので、Linear では明るい紙の上でさらに濃く出る。注釈「紙は染めない」は満たされていない (中央だけ染めない)。確信度: 高 (式と層の順をコードで確認。見た目の採点は別)。",
+     "fix_ok": false,
+     "better_fix": "α の上限を 0.25 に下げても四隅 ≈0.21・上部バー ≈0.1 は残り、「紙は染めない」にはならない。矩形を TopH〜手札の帯に縮めると縁の勾配が舞台の中に寄る (手札の扇の高さは枚数で変わり、スマホの帳面は足元) ので形が変わる。足りる直し: 貼り先を FxLayer でなく `g.Battle.FieldLayer` (BattleView.cs:76。HandLayer・UiLayer より下) にし `SetAsLastSibling()`＝BattleView.SyncDanger の危険の縁 (BattleView.cs:1736-1744。10-29 に通過済みの同じ絵) と同じ層・同じ全画面の矩形。紙の UI (上部バー・手札・帳面・確認の窓) が上に描かれるので染まらず、舞台の縁だけが薔薇になる。`g.Battle == null` (箱庭でない・Rebuild 直後) の時だけ従来の fx に落とす。LinearSprite/LinearShade の 0.03 の仮定も舞台の上なら正しくなる。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる（確信度: 高）。根拠: ①`GameRoot.cs:240-243` で `ScreenRoot` の後に `FxLayer` を `NewRect` しているので FxLayer は戦闘画面（上部バー `BattleScreen.cs:175`・手札 `BattleView.cs:77`・UiLayer）の全部より前面に描かれる。②`PresenterJuice.cs:90-101`（30e63e2b 時点）は `UiKit.Stretch(rt,-24,…)` で画面より 24px 外まで広げ、`ThemeFx.Vignette`（`Theme.cs:943-960`: α＝clamp((d−0.55)/0.7)²×0.85、中心 0・縁 0.85）を頂点 α＝`min(0.5, 0.16+HpLoss×0.02)×FxSettings.Flash`（既定 1）で貼る。1920×1080 で計算すると、上部バーの位置（画面上端から 0〜60px）で絵の α ≈0.25〜0.43、四隅で 0.85 → HpLoss 17 なら上部バー ≈0.13〜0.21・手札の両端 ≈0.4 の薔薇が紙の上に乗る。旧の全画面 0.35 と比べ四隅では濃い。③同じ絵を使う既存の `BattleView.SyncDanger`（`BattleView.cs:1736-1741`）は意図どおり `FieldLayer`（手札・UI 層の下）に置き「紙の UI には掛けない」を守っているが、HurtVignette は `fx` に置いているため注釈「中央と紙は染めない」と実装が食い違う。④さらに 30e63e2b の HurtVignette は `LinearSprite`/`LinearShade` を通していない（ScreenFlash は `Tween.cs:749` で通している）ので Linear の合成では計算値よりさらに濃く見える（作業ツリーの未コミット版はここだけ直してあるが置き場は fx のまま）。表示は 0.4〜0.6 秒で消えるので短時間だが、被弾のたびに毎回起きる。",
+     "fix_ok": false,
+     "better_fix": "α 上限を 0.25 に下げても紙は染まる（四隅で ≈0.21。「染めない」の裁定は満たさない）。矩形を上部バー〜手札の間に収める案は動くが、ビネットの縁の形が崩れ・スマホ配置（帳面・≡）ごとの寸法合わせが要る。推奨: `SyncDanger` と同じく置き場を `g.Battle.FieldLayer`（紙の層より下）にする＝`HurtVignette(RectTransform fx, …)` の親を `GameRoot.I != null && GameRoot.I.Battle != null && GameRoot.I.Battle.FieldLayer != null ? GameRoot.I.Battle.FieldLayer : fx` に切り替え、`rt.SetAsLastSibling()` で舞台の上・紙の下に置く（Rebuild で FieldLayer が壊れても Tween の閉包は `img != null`/`rt != null` を見ているので安全）。あわせて `UiKit.LinearSprite(..., 0.03f)`＋`UiKit.LinearShade(img, 0.03f)` を通す（作業ツリーの未コミット版と同じ）。マナ/燠（Presenter.cs:1301・PresenterJuice.cs:422）の呼び出しも同じ関数なので一緒に直る。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "とどめの全画面の白の閃き α 0.42 が紙の UI まで飛ばす (ScreenFlash の α が強い)",
+   "file": "unity/Assets/Game/PresenterJuice.cs",
+   "line": 298,
+   "severity": "rule",
+   "detail": "コミット 30e63e2b の FinishBlowCue は `FlashScreen(fx, PaperFx.Paper3, 0.42f, 0.12f)` → 0.1 秒後に `FlashScreen(fx, PaperFx.Night, 0.28f, 0.35f)`。旧の全画面の閃きは最大 0.16 (EnemyInterrupted・DeathSaved) で、0.42 の白は手札・帳面・上部バーの紙を白飛びさせる (とどめは Tween.FinishSlow で時間も遅くなるので 0.12 秒が長く見える)。作業ツリー (未コミット) では 0.3/0.08・0.14/0.3 に下げた注釈が入っているので、直す方向は一致している＝コミットに載せること。確信度: 高 (作業ツリーの注釈「撮影で白が 0.27 秒続いて紙まで飛んだ」が実測)",
+   "fix": "作業ツリーの値 (白 0.3・0.08 秒／夜 0.14・0.3 秒) をコミットする。あわせて Presenter.cs:2331 の自分の致死の `FlashScreen(fx, PaperFx.Rose, 0.3f, 0.4f)` も 0.2 以下に",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。根拠: (1) コミット 30e63e2b の `PresenterJuice.cs:298` は `FlashScreen(fx, PaperFx.Paper3, 0.42f, 0.12f)` で、`FxSettings.Flash` の既定は 1（PlayerPrefs \"fx.flash\" 既定 1f）なので α 0.42 がそのまま出る。(2) `Tween.ScreenFlash` は全画面 Stretch の Image を `FxLayer` に置き、`GameRoot.cs:240-243` で FxLayer は ScreenRoot の後ろの兄弟＝手札・帳面・上部バーの紙の上に重なる（紙を染めない裁定に反する）。(3) 時計: `Tween.Run` は Time.deltaTime の積算（Tween.cs:134-149）で、とどめは `Presenter.cs:2097` の `Tween.FinishSlow()`（timeScale 0.22・保持 0.45 秒）が先に掛かるので、0.12 秒の閃きは実時間で約 0.5 秒（0.12/0.22）続く。作業ツリーの注釈「撮影で白が 0.27 秒続いて紙まで飛んだ」はこの実測。(4) さらにコミット版の `Tween.ScreenFlash` には `UiKit.LinearShade` が無く、Linear の合成で半透明の板の α が持ち上がる既知の罠（CLAUDE.md「紙の板の α 0.72 が茶色」）により見かけの α は 0.42 より強い。LinearShade の追加も作業ツリーでだけ入っている（未コミット）。",
+     "fix_ok": true,
+     "better_fix": "提案どおり作業ツリーの値（白 0.3・0.08 秒／夜 0.14・0.3 秒）をコミットするのに加え、同じく未コミットの `unity/Assets/Game/Tween.cs:749` の `UiKit.LinearShade(img)`（ScreenFlash の頂点 α の写し）も一緒に載せないと α の見かけが設計値に戻らない。`Presenter.cs:2331` の自分の致死 `FlashScreen(fx, PaperFx.Rose, 0.3f, 0.4f)` も直前の `Tween.FinishSlow()`（2317）で 0.4 秒が実時間 0.8 秒前後に伸びるので、α 0.2 以下・0.25 秒程度に（または既存の `HurtVignette` 側だけ濃くして全画面は出さない）。"
+    },
+    {
+     "refuted": false,
+     "reason": "起きる。コミット 30e63e2b の `PresenterJuice.cs:298` は `FlashScreen(fx, PaperFx.Paper3, 0.42f, 0.12f)` で、FlashScreen は `FxSettings.Flash`（既定 1）を掛けてそのまま `Tween.ScreenFlash` に渡す。ScreenFlash は `GameRoot.FxLayer`（canvas 直下に全画面 Stretch で置く層。手札・帳面・上部バーより上に浮き数字を出す層）に Image を全面に貼るので、紙の UI も一緒に白く覆う。さらに (1) コミット版の ScreenFlash は `UiKit.LinearShade` を呼んでおらず、Linear の合成で頂点 α が持ち上がる（紙の α 0.72 が茶色に見えるのと同じ罠）＝ 0.42 より濃く見える。(2) 消える時計は `Tween.Run`＝`Time.deltaTime` の積算で、とどめは Show の冒頭で `Tween.FinishSlow()`（timeScale 0.22）を掛けているので 0.12 秒の白が実時間では約 0.27〜0.5 秒続く。作業ツリーの注釈「撮影で白が 0.27 秒続いて紙まで飛んだ」はこの実測で、直し（0.3/0.08・夜 0.14/0.3 と ScreenFlash への LinearShade）は作業ツリーにだけあり、コミットには載っていない。",
+     "fix_ok": true,
+     "better_fix": "作業ツリーの 3 点をまとめてコミットする: ①PresenterJuice.cs:298-299 の値（白 0.3・0.08 秒／夜 0.14・0.3 秒）②Tween.cs:749 の `UiKit.LinearShade(img)`（これが無いと 0.3 でも Linear で濃く出る。値の変更だけでは足りない）③同じ理由で Presenter.cs:2331 の自分の致死 `FlashScreen(fx, PaperFx.Rose, 0.3f, 0.4f)` も `Tween.FinishSlow()`（2317 行）の下で 0.4 秒が実時間 1 秒超になるので 0.2 以下・0.3 秒程度に。あわせて、この閃きは timeScale に引きずられる設計なので、「紙を飛ばさない」を保ちたいなら FlashScreen の dur を UnscaledDt 系の時計で消す（Tween.After 相当）ことを検討する価値はあるが、値を下げるだけでも実測上は足りる。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "audio.json に型名の鍵 EnemyIntentDeclared を足したので、攻撃を含む全部の意図の宣言で音が鳴り、敵フェーズが伸びる",
+   "file": "unity/Assets/Resources/Audio/audio.json",
+   "line": 83,
+   "severity": "wrong",
+   "detail": "EnemyIntentDeclared の sfx を null→enemy_telegraph にした (_note は「敵が強化・応援を宣言した」)。しかし Presenter.TableSound は型名で表を引くだけ (EnemyIntentDeclared は IsEnemyActEvent 等の除外に無い) なので、attack・defend・rally… どの種類でも宣言ごとに enemy_telegraph が鳴る。さらに ①攻撃は EnemyActionExecuting の予兆 (Presenter.cs:496 `Audio.Key(\"enemy_telegraph\")`) でもう一度鳴る＝1 行動に 2 回 ②Presenter.Play の敵フェーズの順送り (229〜250 行) で、旧は `else continue` で飛んでいた EnemyIntentDeclared が `TableSound(ev) != null` の枝に入り、敵 1 体につき 0.12 秒の間が増える (3 体戦で毎ターン +0.36 秒)。同じ表の _doc が「型名の鍵を足すと Presenter.Show は TableSound で音だけ鳴らして return する」と注意している通りの経路。確信度: 高 (コードの経路。buff の実行では 517 行の `Audio.Key(\"EnemyIntentDeclared\")` が別に鳴らしている)",
+   "fix": "EnemyIntentDeclared の sfx を null に戻し、強化・応援の宣言で鳴らしたいなら Presenter の EnemyIntentDeclared の宣言の種類を見て契約の鍵 (enemy_telegraph) を名指しで呼ぶ (TableSound から除外する)",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "半分は起きる・半分は起きない。\n【起きる】音の部分。`TableSound`（unity/Assets/Game/Presenter.cs:1638〜1647）は DamageDealt／Status／Trap／IsEnemyActEvent／IsRedEvent／CardSet 等を除いた型名を `Audio.HasKey` で引くだけで、`GameEvent_EnemyIntentDeclared` は除外に無い。`Show`（Presenter.cs:2101〜2102）は `TableSound(ev)` が非 null なら `Audio.Key(key); return;` なので、audio.json:83 で sfx を enemy_telegraph にした今、attack・defend・rally・heal… どの種類の意図の宣言でも enemy_telegraph（0.35）が鳴る。宣言は両方の順送り（Presenter.cs:227〜 の Play ループ＝`TableSound(ev)!=null` の枝、Presenter.cs:392 のループ＝元から EnemyIntentDeclared を通す）に乗り、`CombatDisplaySequence.cs:35` も宣言を表示に流しているので、戦闘開始の宣言と敵フェーズ末の次の宣言の両方で鳴る。攻撃の敵は `EnemyActionExecuting` の予兆（Presenter.cs:490〜496 `Audio.Key(\"enemy_telegraph\")`）でも鳴るので 1 行動あたり 2 回。minGap は既定 0.05 秒で、実行→宣言は 0.3 秒以上離れるので間引かれない。\n【起きない】時間の部分。`Audio.HasKey` は `_sfxTable.ContainsKey` だけで sfx が null でも true（Audio.cs:158・LoadTable は sfx null の行も `_sfxTable[kv.Key]=e` で登録＝変更前 be403c4e の Audio.cs:80〜111 も同じ）。旧表にも `\"EnemyIntentDeclared\": {\"sfx\": null}` があったので、変更前から `TableSound(ev)` は \"EnemyIntentDeclared\" を返し、Play ループでは `else continue` でなく gap 0.12 秒の枝に入っていた（Show は `Audio.Key` が Sfx 空で何もせず return）。392 行のループは元から EnemyIntentDeclared を通し MainSequenceGap の既定 .12 だった。したがって敵 1 体につき 0.12 秒増える／3 体戦で +0.36 秒、は起きない（間は変更前と同じ）。",
+     "fix_ok": true,
+     "better_fix": "提案（sfx を null に戻し、強化・応援の宣言だけ Presenter が種類を見て enemy_telegraph を名指しで呼ぶ）で足りるが、2 点の補足が要る。①`HasKey` は sfx null でも true なので、Show に `case GameEvent_EnemyIntentDeclared` を足して種類で分けるなら、`TableSound` の除外リスト（Presenter.cs:1641）に `ev is GameEvent_EnemyIntentDeclared` を足さないと 2102 行の早期 return に食われて case に届かない（提案の「TableSound から除外する」はこの意味で必須）。②buff の実行（Presenter.cs:517 `Audio.Key(\"EnemyIntentDeclared\")`）は型名の鍵で鳴らしているので、sfx を null に戻すとここが再び無音になる。意図どおり「旧 buff の静かな版」を実行時に鳴らしたいなら 517 行を `Audio.Key(\"enemy_telegraph\")`（契約の鍵）に書き換える。宣言で鳴らしたいのは強化・応援だけなら、宣言時の種類は `d.Intent` の kind（CardText.cs:1038 が IntentLine に渡しているもの）で判定できる。"
+    },
+    {
+     "refuted": false,
+     "reason": "半分は起きる・半分は起きない。\n【起きる】宣言ごとに enemy_telegraph が鳴る: `Presenter.TableSound` (unity/Assets/Game/Presenter.cs:1638-1647) は EnemyIntentDeclared を除外せず型名で表を引き、`Show` (同 2101-2102) は `key != null` なら `Audio.Key(key); return;` で、EnemyIntentDeclared の `case` は Show の switch に無い (grep で 0 件)。`Audio.KeyPitched` (unity/Assets/Game/Audio.cs:164-189) は Sfx が null でなければ鳴らす。engine は attack/defend/rest/flee など全種類の宣言で GameEvent_EnemyIntentDeclared を出す (Runtime/Combat.cs:405・413・420・522・725・794) ので、attack の宣言でも鳴り、同じ行動は実行時の予兆 (Presenter.cs:496) でもう一度鳴る (ただし間に自分の手番が挟まるので連打ではない)。buff は宣言時＋実行時 (Presenter.cs:517 `Audio.Key(\"EnemyIntentDeclared\")`) の 2 回。_note「強化・応援を宣言した」とは食い違う実挙動。\n【起きない】敵フェーズが 0.12 秒×敵の数だけ伸びる: 変更前も audio.json に `\"EnemyIntentDeclared\": {\"sfx\": null}` の鍵が存在し、`Audio.HasKey` は sfx の中身を見ず鍵の有無だけで true を返す (Audio.cs:158・旧 111 も同じ)。つまり旧版でも `TableSound(ev)` は \"EnemyIntentDeclared\" を返し、PlaySequenced の `TableSound(ev) != null` の枝 (Presenter.cs:244) で gap 0.12 が付いていた (Show では Audio.Key が null Sfx で no-op)。今回の差分で時間は変わらない。",
+     "fix_ok": true,
+     "better_fix": "最小の直し: audio.json:83 の sfx を null に戻すだけで音の問題は消える (鍵は残るので HasKey・gap は従来どおり)。強化・応援の宣言で鳴らしたいなら、Show の `var key = TableSound(ev);` の前に `if (ev is GameEvent_EnemyIntentDeclared d) { if (d.Intent?.Kind == \"buff\" || d.Intent?.Kind == \"rally\") Audio.Key(\"enemy_telegraph\"); return; }` を置く (TableSound 自体から除外すると PlaySequenced:244 の枝に入らず `else continue` になり、順送りで宣言が Show されなくなるので除外はしない)。なお Presenter.cs:517 は実行時の鍵を \"EnemyIntentDeclared\" でなく契約の鍵 \"enemy_telegraph\" を名指しで呼ぶように直すと、表の型名の鍵への依存が消える。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "幕の始まりで act_start の音が 2 回鳴る (GameRoot の ui.act_start と ActTitleFx の act_title が同じ素材)",
+   "file": "unity/Assets/Game/ActTitleFx.cs",
+   "line": 101,
+   "severity": "ugly",
+   "detail": "ActTitleFx.Co は題字を出す時に `Audio.Key(\"act_title\")` を鳴らし、audio.json:616 で act_title の sfx は \"act_start\"。一方 GameRoot は幕が変わった手で `Audio.Ui(\"act_start\")` (GameRoot.cs:387) を鳴らしてから同じ手で `ActTitleFx.Show` を呼ぶ (417〜429 行)。ランの開始も StartRun が `Audio.Ui(\"act_start\")` (GameRoot.cs:478) → 直後に `ActTitleFx.Show` (492 行) なので、幕が閉じる 0.16 秒＋組み直し 1 コマの後に同じ音がもう一度鳴る。確信度: 高",
+   "fix": "ActTitleFx を通す経路 (幕が変わった手・ランの開始) では GameRoot 側の `Audio.Ui(\"act_start\")` を鳴らさない (ActTitleFx.Show が Switch に落ちた時だけ鳴らす)、または act_title の sfx を別の素材にする",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。根拠: (1) audio.json:341 `ui.act_start` と :616 `act_title` はどちらも sfx \"act_start\"・どちらも minGap を持たない。(2) Audio.KeyPitched (Audio.cs:164〜) の捨てる判定は「同じ鍵が MinGap 秒以内」だけで、鍵が違う (ui.act_start / act_title) 上に MinGap=0 なので両方 PlayEx に届く。(3) GameRoot.cs:387 は幕が変わった手で `Audio.Ui(\"act_start\")` を鳴らし、同じ手の末尾 (GameRoot.cs:421〜423) で `phaseChanged && actChanged` なら `ActTitleFx.Show` を呼ぶ。ActTitleFx.Co は板を閉じる 0.16 秒＋1 コマの後 (ActTitleFx.cs:101) に `Audio.Key(\"act_title\")` を鳴らす＝同じ素材が約 0.2 秒ずらして 2 回。(4) ランの開始も GameRoot.cs:478 `Audio.Ui(\"act_start\")` → :492 `ActTitleFx.Show` で同じ。Instant (撮影) では Show が ScreenFx.Switch に落ちて act_title は鳴らないので 1 回だが、実プレイでは Instant でないので再現する。",
+     "fix_ok": true,
+     "better_fix": "提案で足りる。実装の形としては、GameRoot.cs:387 と :478 の `Audio.Ui(\"act_start\")` を消し、ActTitleFx.Show の冒頭で Switch に落ちる分岐 (ActTitleFx.cs:48) にだけ `Audio.Ui(\"act_start\")` を足すのが一か所で済む (題字が出る時は Co の act_title が鳴り、Instant や板を作れない時・題字がもう出ている時は従来の音が同じタイミングで鳴る)。GameRoot 側で条件を複製する (Instant・ScreenRoot の有無・Busy) より漏れが出ない。Presenter.cs:947 の幕ボス登場の `Audio.Ui(\"act_start\")` は別の場面なので触らない。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。根拠: (1) GameRoot.Do の幕が変わった手 (unity/Assets/Game/GameRoot.cs:387) と StartRun (GameRoot.cs:478) が `Audio.Ui(\"act_start\")` → 表 `ui.act_start` (audio.json:341、sfx \"act_start\") を即時に鳴らす。(2) 同じ手で `phaseChanged && actChanged` なら ActTitleFx.Show (GameRoot.cs:429)、StartRun でも ActTitleFx.Show (GameRoot.cs:492)。通常のプレイでは ScreenFx.Instant が偽・_busy も偽なので Switch へは落ちず Co が走り、板を閉じる 0.16 秒＋1 コマの後に `Audio.Key(\"act_title\")` (ActTitleFx.cs:101) → 表 `act_title` (audio.json:616、sfx \"act_start\"・同じ素材)。(3) Audio.KeyPitched の MinGap による捨ては鍵ごと (`_lastAt[key]`) で、`ui.act_start` と `act_title` は別の鍵なので重複は弾かれない。しかもどちらも minGap 未設定。(4) 素材 unity/Assets/Resources/Audio/sfx/act_start.ogg は実在するので無音ではなく、同じ音が約 0.17 秒ずれて 2 回鳴る。撮影 (Instant) では Show が Switch に落ちるので 1 回だけ＝スクショ/一周の動画の確認では見つからない経路。",
+     "fix_ok": true,
+     "better_fix": "提案で足りる。簡潔な形は、GameRoot.cs:387 と :478 の `Audio.Ui(\"act_start\")` を消し、ActTitleFx.Show の先頭で Switch に落ちる分岐 (Instant・板を作れない・_busy) に `Audio.Ui(\"act_start\")` を足して「題字を出す経路は Co の中の act_title・出せない経路は Switch の直前の ui.act_start」と 1 回ずつにする。Presenter.cs:947 の幕ボス登場の `Audio.Ui(\"act_start\")` は別の場面 (戦闘の始まり) なので触らない。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "札を引いている間、ShowCardPreview が毎ドラッグイベントで見込みを再計算し GC を出す",
+   "file": "unity/Assets/Game/BattleView.cs",
+   "line": 588,
+   "severity": "perf",
+   "detail": "`ShowCardPreview` (BattleView.cs:588-620) は PC の Drag (BattleScreen.cs:3686) とスマホの `UpdateAimArrow` (BattleView.cs:709) から**指が動くたび (毎フレーム)** 呼ばれるが、同じ札・同じ敵・同じ盤面でも早期 return が無い。毎回 `new List<int>()` (BattleView.cs:594)、`BattleJuice.PredictHpLoss` (BattleJuice.cs:93-95) の `new List<EnemyState>(sim.Enemies)`＋`sim with {}`＋`en with {}` のレコード複製 (多段なら発数ぶん)、`BattleScreen.SetEnemyPredict` (BattleScreen.cs:1591-1208) の `pan.Find(\"strip\")`・`GetComponentInChildren<HpBarInfo>()`・`strip.Find(\"lethal\")`・`SetIntentDim` の `Find` 2 回、を繰り返す。1 フレームあたり数百 byte〜数 KB の確保＝ドラッグ中に GC が走り、スマホのカクつきの直接の原因になる (確信度 高: 呼び出し経路と確保はコードから確定。Xperia での GC 頻度は未計測)。既存の `RefreshHandCard` は敵の上に来た/離れた時だけ描き直す設計だったのに、新しい口は毎回走る。",
+   "fix": "`ShowCardPreview` の頭で `if (hc.Card.Uid == _previewUid && over == _previewOver && ReferenceEquals(st, _previewState)) return;` のように (札 Uid・over・GameState の参照) が前回と同じなら何もしない。`_previewState` を新しく持ち、`ClearCardPreview`/`ReapplyPreview` で null に戻す。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "コードで確認した。`ShowCardPreview` (unity/Assets/Game/BattleView.cs:878-911) には同じ札・同じ敵・同じ盤面での早期 return が無く、呼ばれるたびに `new List<int>()` (884)、`BattleJuice.PredictHpLoss` (BattleJuice.cs:48-99: `Effects.DamageBreakdownOf`＋ヒットごとの `en with {}`・`new List<EnemyState>(sim.Enemies)`・`sim with {}`) 、`BattleScreen.SetEnemyPredict` (BattleScreen.cs:1662-1679: `pan.Find(\"strip\")`・`GetComponentInChildren<HpBarInfo>()`・`strip.Find(\"lethal\")`・`SetIntentDim` の `Find` 2 回・`SetLossBand` の `Find(\"tick\")`) を全部やり直す。呼び元は PC の Drag (BattleScreen.cs:3689。`_dragAim` でない時) とスマホの `UpdateAimArrow` (BattleView.cs:1029。Drag から毎回) で、Unity の Drag は指が動いたフレームごとに来る＝引いている間はほぼ毎フレーム。「指の下の敵が変わった時だけ」のゲートは `_previewTargets.Contains(t)` で縁と音にしか掛かっておらず (899・905-909)、既存の `RefreshHandCard` が `hc.Preview == preview` で描き直しを止めている (985-988) のと対照的。確保と探索が毎フレーム起きること自体はコードから確定。Xperia での GC の頻度・体感の因果は未計測なので「カクつきの直接の原因」の部分は確信度 中。",
+     "fix_ok": true,
+     "better_fix": "提案で足りる。補足 2 点: ①GameState はコマンドごとに新しい参照になる不変レコードなので `ReferenceEquals(st, _previewState)` で盤面の同一性を見るのは妥当 (急所・ブロック・勢い・成長が変われば必ず別の参照になる)。②`ReapplyPreview` (BattleView.cs:953) は組み直しで敵の帳面が作り直された後に同じ uid・over・st で `ShowCardPreview` を呼ぶので、そこで `_previewState = null` に戻さないと帯と縁が出なくなる＝提案どおり `ClearCardPreview`/`ReapplyPreview` の両方で null に戻すこと。あわせて `_previewOver` の比較は `over` そのもの (GuardRedirect の前の値) で十分。"
+    },
+    {
+     "refuted": false,
+     "reason": "コードで確認した。`BattleView.ShowCardPreview` (unity/Assets/Game/BattleView.cs:878-911) は PC の Drag コールバック (BattleScreen.cs:3689、`_dragAim` でない時) と、スマホの `UpdateAimArrow` (BattleView.cs:1029) の中から、uGUI の Drag イベントごと＝ポインタが動く毎フレーム呼ばれる。頭にあるのは null・Playable・Phase・HasPlayDamage の門だけで、「前回と同じ札・同じ敵・同じ盤面」の早期 return は無い。毎回起きる確保: `new List<int>()` (BattleView.cs:884)、`g.Anchor(\"enemy\" + t)` の文字列連結 (:897)、`BattleJuice.PredictHpLoss` (BattleJuice.cs:50-) の中の発数ごとの `en with {…}`・`new List<EnemyState>(sim.Enemies)`・`sim with { Enemies = list }` (BattleJuice.cs:86-95。GameState のレコード複製は大きい)、`BattleScreen.SetEnemyPredict` (BattleScreen.cs:1662-1679) の `Find(\"strip\")`・`GetComponentInChildren<HpBarInfo>()`・`Find(\"lethal\")`・`SetIntentDim` の `Find` 2 回 (Find は確保しないが毎フレームの探索)。対照として同じ Drag から呼ばれる既存の `RefreshHandCard` (BattleView.cs:985-988) は `if (hc.Preview == preview) return;` で同じ的なら何もしない設計で、新しい口だけが毎フレーム走る、という指摘どおり。確保が毎フレーム起きること自体は確定。スマホで GC が「カクつきの直接の原因」になるかは未計測で、ここは指摘側も「未計測」と明記しているので、不具合として返すのは「ドラッグ中に毎フレーム見込みを再計算し確保する」の部分。",
+     "fix_ok": true,
+     "better_fix": "提案の鍵 (札 Uid・over・GameState の参照) で足りるが、2 点だけ添える。①`ReapplyPreview` (BattleView.cs:953-965) は Rebuild の後に `_previewTargets`/`_previewEdges` を空にしてから同じ uid・over・st で `ShowCardPreview` を呼ぶので、ここで `_previewState` を null に戻さないと早期 return して帯と縁が出直さなくなる (提案に書いてあるとおり必ず入れる)。②over が −1 の時の的は `PreviewTargetFor` (BattleView.cs:863-868) が `g.PreferredTarget` を読むので、鍵に `g.PreferredTarget` も足す (PC のホバー中に狙いが変わった時に古い敵の帯が残らないように)。GameState は不変なので参照の一致＝盤面の一致でよい。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "札を出すたび energy_spend が 2 回鳴る (Presenter と BattleView の二重)",
+   "file": "unity/Assets/Game/BattleView.cs",
+   "line": 1855,
+   "severity": "wrong",
+   "detail": "Presenter.ShowEnergyPaid (unity/Assets/Game/Presenter.cs:841) が CardPlayed のたび `Audio.KeyPitched(\"energy_spend\", …)` を鳴らし、同じ札の AnimateOut → EnergyOrbs (BattleView.cs:1842-1858) が最初の玉の着地 (0.22 秒後) でもう一度 `Audio.Key(\"energy_spend\")` を鳴らす (1855)。audio.json に energy_spend の鍵はある (行 547) ので両方が実際に鳴り、1 枚ごとに同じ音が 0.2 秒ずらしで 2 回。輪の Punch も Presenter 側 (0.14) と着地側 (0.1) で二重。",
+   "fix": "どちらか一方に寄せる。玉が輪に届いた瞬間に鳴らす方が絵と合うので、ShowEnergyPaid の KeyPitched を外す (X 札の玉は EnergyOrbs が出さないので、X 札だけ ShowEnergyPaid 側で鳴らす)。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。経路を確認した:\n1) Presenter.cs:2498 — `GameEvent_CardPlayed` の case で無条件に `ShowEnergyPaid(g, fx, def, ctx)` を呼び、Presenter.cs:844 で `paid > 0` なら `Audio.KeyPitched(\"energy_spend\", …)`。paid は Prev と Cur のエナジー差なので、コスト 1 以上の通常札で必ず正になる。\n2) 同じ札は BattleView.Rebuild の「手札から消えた札」(BattleView.cs:1441) → `AnimateOut` → `uid == LastPlayedUid` (GameRoot.cs:706 で PlayCard のたび設定) の枝 (BattleView.cs:1809) で `EnergyOrbs(g, rt, hc.Cost, hc.Card.Def)` → 0.22 秒後の最初の玉の着地で `Audio.Key(\"energy_spend\")` (BattleView.cs:1855)。\n3) 間引きは効かない: audio.json:547 の `energy_spend` には minGap の指定が無く既定 0.05 秒 (Audio.cs:95 `MinGap = 0.05f`)。2 回の間隔は約 0.22 秒なので両方 `PlayEx` に届く。\nよってコスト 1 以上・X でない札を出すたび、同じ音が 0.2 秒ずらしで 2 回鳴る (X 札は EnergyOrbs が early return するので 1 回・0 コストは両方とも鳴らない)。輪の Punch も Presenter.cs:845 (0.14) と BattleView.cs:1855 (0.1) で二重。",
+     "fix_ok": true,
+     "better_fix": "提案どおり ShowEnergyPaid 側の KeyPitched を X 札だけに絞れば二重は消える。加えて: (a) 「払った量で音程が少し上がる」意図 (Presenter.cs:844 のコメント) を残すなら、BattleView.EnergyOrbs 側の `Audio.Key(\"energy_spend\")` を `Audio.KeyPitched(\"energy_spend\", 1f + 0.04f * Mathf.Min(cost, 5), 0.6f)` にして cost で同じ式を使う (EnergyOrbs は cost を既に受け取っている)。(b) 輪の Punch も同じ理由で二重なので、ShowEnergyPaid の非 X の枝 `Tween.Punch(orb, 0.14f, 0.25f)` (Presenter.cs:845) も外し、着地側 (BattleView.cs:1855) の Punch だけに寄せる。X 札は EnergyOrbs が何もしないので、音も Punch も ShowEnergyPaid に残す。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。経路を確認した: (1) GameRoot.Do → Presenter の出来事ループ (Presenter.cs:363-389) が CardPlayed ごとに ctx.Prev=prevBoard を付けて Show を呼び、TableSound は CardPlayed に null を返す (Presenter.cs:1641) ので switch の case CardPlayed (2488) に届き、ShowEnergyPaid (2498→841) で paid = prev.Energy − cur.Energy > 0 なら Audio.KeyPitched(\"energy_spend\") が鳴る。(2) 同じ手の Rebuild で手札から消えた札は AnimateOut (BattleView.cs:1441→1792) に入り、uid == LastPlayedUid (SubmitIfReady が GameRoot.cs:706 で設定) なので EnergyOrbs (1810→1842) が走り、最初の玉の着地 (Projectile 0.22 秒後) で Audio.Key(\"energy_spend\") (1855)。audio.json の energy_spend (行 547) に minGap は無く既定 0.05 秒 (Audio.cs:95) なので 0.22 秒差の 2 発目は間引かれない。Synth にも energy_spend があるので素材が無くても合成音で両方鳴る。輪の Punch も ShowEnergyPaid (0.14) と着地 (0.1) で二重。コスト 0 と X 札は EnergyOrbs 側が出さないので二重にならない。",
+     "fix_ok": true,
+     "better_fix": "提案どおり ShowEnergyPaid の KeyPitched を X 札 (def.XCost == true) だけに限り、非 X の Punch(orb, 0.14f) も外して着地側に寄せる (音だけ外すと輪の二重跳ねが残る)。KeyPitched の「払った量で音程が上がる」を保ちたいなら EnergyOrbs の ii==0 の所を Audio.KeyPitched(\"energy_spend\", 1f + 0.04f * Mathf.Min(cost, 5), 0.6f) にする。注意点: 手札から直接出さない経路 (LastPlayedUid が立たない自動操縦・消滅置き場からの直接プレイ) は EnergyOrbs を通らないが、前者は演出確認用、後者は paid=0 なので今も鳴らない＝実害なし。保険として audio.json の energy_spend に minGap 0.3 を書けば、経路の取りこぼしがあっても 1 枚 1 回に収まる。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "消滅のたび CardExhausted が 2 回鳴る (TableSound と Shatter の二重)",
+   "file": "unity/Assets/Game/BattleView.cs",
+   "line": 1867,
+   "severity": "wrong",
+   "detail": "engine は消滅のたび GameEvent_CardExhausted を出す (Runtime/Combat.cs:1273,1347,1476)。Presenter.TableSound (Presenter.cs:1638-1648) は CardSet/CardsDrawn/EnemyDied/EnemyFled だけを除外し、CardExhausted は audio.json に鍵がある (行 57) ので Show で `Audio.Key(\"CardExhausted\")` が鳴る。今回 BattleView.Shatter (BattleView.cs:1862-1868) にも `Audio.Key(\"CardExhausted\")` が足されたので、消滅 1 枚につき表の音と絵の音が 0.26 秒ほどずれて 2 回鳴る。",
+   "fix": "TableSound の除外に `ev is GameEvent_CardExhausted` を足す (「絵の側が鳴らす」の既存の作法どおり)。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "コードで確認した。実際に起きる。(1) `Presenter.TableSound` (unity/Assets/Game/Presenter.cs:1638-1647) の除外は DamageDealt 等＋CardSet/CardsDrawn/EnemyDied/EnemyFled だけで、GameEvent_CardExhausted は型名 \"CardExhausted\" が audio.json (行 56-59。この差分の前からある鍵・minGap 無し＝既定 0.05 秒) にあるので、Show (Presenter.cs:2101-2102) が `Audio.Key(\"CardExhausted\")` を鳴らして return する。(2) 同じコマンドの手札の差分で、消滅置き場に移った手札は `AnimateOut` (BattleView.cs:1833-1837) が `Shatter(g, rt)` を 0.26 秒後 (プレイした札) または delay 後 (衝動の失効・消滅コスト等) に呼び、`Shatter` (BattleView.cs:1862-1868) が今回足された `Audio.Key(\"CardExhausted\")` を鳴らす。Audio.KeyPitched の minGap は 0.05 秒 (既定) なので 0.26 秒離れた 2 回目は捨てられない。よって手札から消滅する札 1 枚につき \"exhaust\" が 2 回鳴る。確信度: 高 (呼び先を全て読んだ)。",
+     "fix_ok": true,
+     "better_fix": "提案 (TableSound に `ev is GameEvent_CardExhausted` を足す) で二重は消えるが、手札に無い札の消滅＝山札からの消滅 (Combat.cs:1347 exhaustFromDeckChoose・2480 山札喰い・1581/1867 の罠や置物の消滅) と、`PlayedCardRetireDuration > 0` の退場経路 (BattleView.cs:1812-1822。Shatter を通らず自前で縮む) では音が丸ごと無くなる。GameEvent_CardExhausted は CardId しか持たず uid が無いので「手札にあった時だけ表を黙らせる」判定も確実には書けない。より小さい直し方は BattleView.cs:1867 の `Audio.Key(\"CardExhausted\")` を消して差分前の形 (表が 1 回鳴らす) に戻すこと。絵と音を揃えたいなら、Shatter の音は残し、TableSound の除外を足した上で、山札からの消滅 (Show 側で手札に rt が無い時) と retire 経路にも `Audio.Key(\"CardExhausted\")` を足す必要がある。"
+    },
+    {
+     "refuted": false,
+     "reason": "実際に起きる。根拠: (1) audio.json 行 57 に \"CardExhausted\" の鍵があり minGap 指定なし＝既定 0.05 秒 (Audio.cs:95)。(2) Presenter.TableSound (Presenter.cs:1638-1648) の除外に GameEvent_CardExhausted は無いので、Show (Presenter.cs:2101-2102) が出来事ごとに Audio.Key(\"CardExhausted\") を鳴らす。(3) 今回の差分で BattleView.Shatter (BattleView.cs:1867) に Audio.Key(\"CardExhausted\") が足された (git diff で +1 行を確認)。Shatter は手札の札が消滅置き場へ行く時に AnimateOut から呼ばれる (BattleView.cs:1834 はプレイ後 0.26 秒遅れ、1837 は delay 遅れ)。(4) 2 回の間隔は 0.26 秒前後で MinGap 0.05 秒の間引きには掛からない＝消滅 1 枚で 2 回鳴る。Audio.KeyPitched (Audio.cs:165-180) に他の重複排除は無い。",
+     "fix_ok": true,
+     "better_fix": "提案 (TableSound の除外に `ev is GameEvent_CardExhausted` を足す) で二重は消えるが、Shatter を通らない消滅は無音になる点に注意: ①プレイした攻撃札で CardVfxProfile の AuthoredAttack がある (PlayedCardRetireDuration>0) 場合は BattleView.cs:1815-1821 の縮んで薄れる枝を通り Shatter を呼ばないので、その枝にも Audio.Key(\"CardExhausted\") を足す。②手札に無い札の消滅 (黒の exhaustFromDeck・仕込み札の期限切れ消滅など) は絵の側に鳴らす口が無い。これらを残したいなら、逆に BattleView.cs:1867 の Audio.Key を削って表 (Show) 側だけに所有権を置く方が取りこぼしが無い (絵と音が 0.26 秒ずれるのは今の CardPlayed と同じ程度)。どちらにしても所有権を一方に寄せること。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "回復しない「休む」(HP 満タン・古根の杯・鍛えた後) で 1.1 秒の空の待ちができる",
+   "file": "unity/Assets/Game/CampfireScreen.cs",
+   "line": 137,
+   "severity": "wrong",
+   "detail": "CampfireScreen.Rest (unity/Assets/Game/CampfireScreen.cs:134-146) は Do の前に無条件で `ScreenFx.DeferNextSwitch(1.1)` を立てる。ScreenFx.SwitchCo は StartCoroutine の同じフレームで `_deferOnce` を読み取ってしまう (ScreenFx.cs:114) ので、Do の後の `DeferNextSwitch(0f)` は効かず、幕が閉じるまで 1.1 秒 (0.25 秒以降はタップで飛ばせる) 入力を塞いで待つ。回復量 0 のとき (restHeals=false の「回復なしで立ち去る」や HP 満タン) は HealCount も FireFlare も走らず、焚き火の画面が何も起きずに止まるだけになる。確信度: 高 (SwitchCo の読み取り順と Rest の分岐をコードで確認)。",
+   "fix": "Do の前に回復するかを判定し (run.Hp < run.MaxHp かつ焚き火で休める)、回復しないなら DeferNextSwitch を呼ばずに `g.Do` だけにする。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "実際に起きる。経路をコードで確認した: CampfireScreen.Rest (unity/Assets/Game/CampfireScreen.cs:137) は無条件に ScreenFx.DeferNextSwitch(1.1) → g.Do(CampfireRest)。engine の CampfireRest は回復の有無にかかわらず phase を campfire→map に変える (src/engine/run.ts:2206-2218) ので GameRoot.Do (GameRoot.cs:421-423) で phaseChanged=true → ScreenFx.Switch → I.StartCoroutine(SwitchCo)。Unity の StartCoroutine は最初の yield までを同じフレームで同期実行するため、SwitchCo:114 の `float hold = _deferOnce; _deferOnce = 0f;` が Do の中で既に走り、Rest 側の Do 後の DeferNextSwitch(0f) は空振り。hold=1.1 のあいだ幕は透明のまま raycastTarget=true で入力を塞ぎ (0.25 秒以降はタップで飛ばせる)、回復 0 の時 (HP 満タン・古根の杯 noRest・鍛えた後 campfireUpgradesUsed>0) は HealCount が `to <= from` で即 return (ScreenJuice.cs:317)・FireFlare 等も `g.Rs.Hp <= prev.Hp` で return するので、何も起きない画面で 1.1 秒 (最短 0.25 秒) 待つだけになる。Instant (撮影) では DeferNextSwitch が 0 を書くので撮影には出ない＝実プレイだけの症状。",
+     "fix_ok": true,
+     "better_fix": "提案どおり Do の前に判定して DeferNextSwitch を呼び分ければ足りる。判定は Build で既に計算している restHeals (noRest でなく CampfireUpgradesUsed==0) を Rest に渡し、`restHeals && (run.Hp < run.MaxHp || DeckRogue.Engine.Run.RelicBonusSum(run, \"restMaxHp\") > 0)` とする (薬研は HP 満タンでも最大 HP と HP を +N するので engine の実値が増え、HealCount が数え上がる＝窓を取る側に入れる。Run.RelicBonusSum は public・Run.cs:193)。Do 後の `DeferNextSwitch(0f)` 2 行は「幕が始まらなかった時に窓を消す」保険として残してよいが、同じフレームの Switch には効かないことをコメントに書いておく。"
+    },
+    {
+     "refuted": false,
+     "reason": "コードで確認、実際に起きる。(1) `CampfireScreen.Rest` (unity/Assets/Game/CampfireScreen.cs:134-146) は `g.Do` の前に無条件で `ScreenFx.DeferNextSwitch(FxSettings.Dur(1.1f))` を立てる。(2) engine の `RunCommand_CampfireRest` (Run.cs:2217-2228) は `rested=false`（鍛えた後・NoRest の遺物）でも HP 満タンでも拒まず Phase を Map にする → `GameRoot.Do` (GameRoot.cs:423) で `phaseChanged` となり `ScreenFx.Switch` → `StartCoroutine(SwitchCo)` が同じフレームで同期的に走り、最初の yield より前の `float hold = _deferOnce; _deferOnce = 0f;` (ScreenFx.cs:114) で 1.1 秒を読み取る。(3) `Do` から戻った後の `DeferNextSwitch(0f)` は既に 0 になった変数を 0 にするだけで、進行中のコルーチンの `hold` には届かない。(4) 回復なしの時は `HealCount` が `to <= from` で即 return (ScreenJuice.cs:317)・`FireFlare` 以下は `g.Rs.Hp <= prev.Hp` で return なので、焚き火の画面が何も動かずに入力だけ塞がれて 1.1 秒（0.25 秒以降はタップで短縮可）待つ。「休む」の札は restHeals=false でも押せる（Option の enabled に true を渡している・CampfireScreen.cs:109）ので「回復なしで立ち去る」「すでに鍛えたので回復なし」の経路は人間のプレイで普通に踏む。Instant（撮影）では DeferNextSwitch が 0 を書くので撮影には出ない＝実機でだけ見える。",
+     "fix_ok": true,
+     "better_fix": "提案（Do の前に「回復するか」を判定し、しないなら DeferNextSwitch を呼ばない）で足りる。判定は画面側に既にある `restHeals`（= !noRest && CampfireUpgradesUsed == 0）を Rest に渡し、`restHeals && (run.Hp < run.MaxHp || RelicBonusSum(run,\"restMaxHp\") > 0)` とすると engine と同じ式になる（relics.json:376 に restMaxHp=2 の遺物があり、HP 満タンでも最大 HP が伸びて HP も増える＝数え上げが出るべきケース）。簡便には engine を先に試算して差を見る形でもよい: `var next = Run.Apply(prev, new RunCommand_CampfireRest()); if (next.Hp > prev.Hp) DeferNextSwitch(1.1)` → `g.Do`。なお、SwitchCo 側で `_deferOnce` の読み取りを最初の yield の後に遅らせる直し方は、Rest が Do の後に無条件で `DeferNextSwitch(0f)` を呼んでいる（CampfireScreen.cs:139-140）ため回復ありの場合も窓が消えて逆に壊れる。採らないこと。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "報酬の札の「返り」が幕と入りの下で起き、1 枚目 (2 枚目も大半) の返りが見えない",
+   "file": "unity/Assets/Game/ScreenJuice.cs",
+   "line": 164,
+   "severity": "ugly",
+   "detail": "RewardScreen.Reward (unity/Assets/Game/RewardScreen.cs:105) は組み立て時に ScreenJuice.RevealCard を呼び、RevealCard は組み立ての瞬間から `Tween.After(0.12×i)` → 裏が細くなる 0.16 → 表が開く 0.2 (ScreenJuice.cs:164-176) を走らせる。一方 決着→報酬は ScreenFx.Switch (GameRoot.cs CompleteCombatPresentation → ScreenFx.Switch) で、組み直し後に 1 フレーム待ち → BeginEntries → 幕が 0.22 秒で開く (ScreenFx.cs:132-146)。しかも cell (`reward<i>`) は root 直下の点アンカーなので 入りの対象＝α 0 から k×0.04 秒遅れて 0.175 秒で現れる。結果、1 枚目は裏→細くなる→card_flip の音まで全部が幕と α0 の下 (〜0.3 秒) で終わり、見えるのは「半分開いた札が薄く現れる」だけ。2 枚目も裏の時間 (0.12〜0.28) はほぼ隠れる。儀式の狙い (裏向きで並んで返る) が 3 枚目にしか出ない。確信度: 中〜高 (時刻の計算に基づく。Instant でない通常プレイで起きる)。",
+   "fix": "RevealCard の遅れを幕と入りの後に揃える: `delay = ScreenFx.OpenDur + 0.1 + 0.12×i` のように開き切ってから返す。あるいは cell に ScreenFx.EntrySkip を付けて入りを切り、返りだけで現す。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "時刻を追うと重なりは実際に起きる（程度は指摘よりやや軽い）。\n- `ScreenFx.SwitchCo`（ScreenFx.cs:122-146）: 幕 α=1 で `rebuild()` → `RewardScreen.Reward` が組まれ、その中で `ScreenJuice.RevealCard` が `Tween.After(0.12×i)` を即座に始める（Tween.After は StartCoroutine の初回反復で delay=0 なら同フレームに action を実行し、`Tween.Run(0.16)` の裏の縮みが t=0 から走る。時計は Time.deltaTime＝幕とは独立）。\n- その後 1 フレーム待って `BeginEntries`（cell `reward<i>` は root 直下の点アンカー → α 0・0.92 倍から、Delay=(1〜2+i)×0.04 秒、α は 0.175 秒で 1 へ）、幕は 0.22 秒 OutQuad で開く。\n- 結果、1 枚目の「裏が細くなる」0〜0.16 秒は、幕（0.1 秒時点で α≈0.3、0.16 秒で ≈0.07）と入りの α（0.16 秒時点で ≈0.45）の下で進み、`card_flip` が鳴る瞬間の札は半透明。表が開く 0.16〜0.36 秒は見える。2 枚目も裏の時間 0.12〜0.28 秒の前半は入りの α 0→0.5 の途中。3 枚目から「裏向きで並んで返る」が素直に見える。\n- 「全部が α0 の下で終わる」は言い過ぎだが（幕は 0.1 秒で 7 割開く）、「1 枚目の裏の時間が幕と入りに隠れ、儀式の最初が薄い」は通常プレイで実際に起きる。Instant では RevealCard は早期 return なので撮影には出ない。",
+     "fix_ok": true,
+     "better_fix": "提案の前者（`delay = ScreenFx.OpenDur + 0.1f + FxSettings.Dur(0.12f) * index`）で足りる。EnterStep×(k+i)+EnterDur ≈ 0.4 秒より少し後ろに置くと入りも完全に終わってから返る（例: `ScreenFx.OpenDur + ScreenFx.EnterDur + 0.12×i`）。EntrySkip を付ける案は「幕が開く 0.22 秒」との重なりは解けないので単独では不十分（遅れを足す方が本筋）。RevealCard は ScreenFx.Switch 以外の組み直し（同フェーズの Rebuild）でも呼ばれるので、OpenDur ぶんの遅れは常に付けてよい（Instant では早期 return）。"
+    },
+    {
+     "refuted": false,
+     "reason": "コードで確認できた（起きる）。決着→報酬は GameRoot.cs:331 で `ScreenFx.Switch(this, Rebuild)`＝幕 α=1 の下で Rebuild → RewardScreen.Reward → ScreenJuice.RevealCard が組み立ての瞬間に `Tween.After(0.12×i)` を始める（Tween.After は delay 0 なら StartCoroutine の同期実行でその場で action、時計は Time.deltaTime。ScreenFx.cs:130-134）。幕は 1 フレーム後に OpenDur 0.22 秒・OutQuad で開く（t=0.1 で α≈0.30・t=0.16 で α≈0.12）。cell `reward<i>` は root 直下で anchorMin==anchorMax の点アンカーなので BeginEntries の入りの対象＝CanvasGroup α 0 から始まり（ScreenFx.cs:186-199）、前に TopBar（横長）・Banner・（通知があれば Message）が並ぶので k≧2 → 遅れ 0.08〜0.12＋0.04×i 秒、α は EnterDur 0.28 の u×1.6 で満ちる＝開始から約 0.175 秒後。よって 1 枚目: 裏が細くなる 0〜0.16 秒と card_flip（0.16 秒）は cell α 0〜約 0.25・幕 α 1〜0.12 の下＝事実上見えず、表が開く 0.16〜0.36 の後半だけが薄く現れる。2 枚目: 裏 0.12〜0.28 秒に対し cell1 の α は約 0.12〜0.16 秒から立ち上がり約 0.30 秒で満ちる＝裏の時間はほぼ隠れる。3 枚目（裏 0.24〜0.40）からしか「裏向きで並んで返る」が出ない。Presentation の scope は Reward 時点で null（Presenter.Reset 後）なので打ち切りはなく、純粋に時刻の重なりの問題。ScreenFx.Instant（撮影）では RevealCard が早期 return するので撮影では再現しない＝通常プレイだけで起きる。",
+     "fix_ok": false,
+     "better_fix": "提案の後半（cell に ScreenFx.EntrySkip）だけでは足りない: 入りの α を切っても幕そのものが 0〜0.22 秒を覆う（0.1 秒で α≈0.30）ので 1 枚目の裏はやはり幕の下。提案の前半（遅れを幕の後に揃える）は方向は正しいが 2 点補う: ①Reward は Switch を通らない Rebuild（ギアの入れ替えの窓 `g.GearSwap=\"reward\"` → g.Rebuild など）でも組まれるので、常に OpenDur を足すと幕が無い時に無駄に待つ。`ScreenFx.Busy`（ScreenFx.cs:39 に公開済み）を見て、幕が動いている時だけ `lead = ScreenFx.OpenDur + 入りが満ちるまで（0.12 + 0.04×i + 0.175 程度＝FxSettings.Dur で包む）` を足し、そうでなければ 0。②FxSettings.Dur で速度倍率に乗せる（RevealCard の他の時間と同じ作法）。これで 3 枚の返りの終わりは約 0.32+0.6≈0.95 秒＝自動操縦が「取る」を押す 1.4 秒より短いまま（RevealCard の注記の前提を保つ）。「取る」の interactable=false→true の復帰は返りの終わりに付いているので、遅らせても押せない時間が 1 秒弱に伸びるだけで問題ない。あるいは cell に EntrySkip を付けつつ RevealCard 側で幕の後に遅らせる両方でもよい（入りの α フェードと裏向きの登場が二重に見えるのを避けられる）。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "鍛えるの演出 (UpgradeShine) の途中で組み直しが入ると入力が塞がったまま・手も進まない",
+   "file": "unity/Assets/Game/ScreenJuice.cs",
+   "line": 366,
+   "severity": "stuck",
+   "detail": "ScreenJuice.UpgradeShine (unity/Assets/Game/ScreenJuice.cs:334-391) は `ScreenFx.LockInput(true)` を掛け、解除と `then` (g.Do の実行) は 3 打目 (hit==2) の 0.4 秒後の FlyTo か `crt == null` の分岐だけ。ところが 3 つの `Tween.After` の頭の `if (crt == null) return;` (356, 366) は解除も then も呼ばずに抜ける。クローン crt は FxLayer の子で、戦闘外の GameRoot.Rebuild は FxLayer の子を全部 Destroy する (GameRoot.cs:918-921) ので、約 1.4 秒の演出中に Rebuild が走る (ウィンドウの大きさ変更 StageCamera.cs:713・スマホの safeArea 変化・設定の窓の操作など) と、幕は透明のまま raycastTarget=true で入力が永久に塞がり、鍛える手も発行されない (次の Switch まで復帰しない)。確信度: 経路はコードで確定・引き金 (1.4 秒の間の Rebuild) は稀。",
+   "fix": "356・366 の早期 return を `{ ScreenFx.LockInput(false); then(); return; }` にする (then は一度だけ呼ばれるよう done 旗を持つ)。FuseMelt (419-449) の result==null 分岐と同じ形。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "コードで経路を確認した。(1) `ScreenJuice.UpgradeShine` (unity/Assets/Game/ScreenJuice.cs:350) は `ScreenFx.LockInput(true)` を掛け、解除と `then` は hit==2 の 0.4 秒後 (382–384) にしか無い。(2) 356・366 の `if (crt == null) return;` は解除も then も呼ばない。366 で早期 return すると hit==2 の枝に二度と入らないので、幕 (`ScreenFx._curtain`・キャンバス直下で Rebuild では壊れない) の raycastTarget が true のまま残り、鍛える手 (`g.Do(RunCommand_CampfireUpgrade ...)` 等) も発行されない。次に `ScreenFx.Switch` が走って `_curtain.raycastTarget=false` (ScreenFx.cs:147) になるまで入力は塞がったまま。(3) crt は FxLayer の子 (ScreenFx.CloneForFx / CardView.Build(fx,...)) で、戦闘外の `GameRoot.Rebuild` は FxLayer の子を Destroy する (GameRoot.cs:918–921)。(4) 引き金は入力を介さないものが実在する: `StageDriver.LateUpdate` (StageCamera.cs:703–714) は idle でも `_cam != null` なら毎フレーム動き、Screen の寸法が変われば 2 フレーム後に `GameRoot.I.Rebuild()`。PC のウィンドウの端のドラッグや F11 / Alt+Enter (`GameRoot.Update` 864–868 → `SettingsUi.ToggleFullscreen` → 解像度変更) は幕の raycast では止まらない。スマホの safeArea/cutout の変化 (StageCamera.cs:693–697) も同じ経路。よって「1.4 秒の演出中に大きさが変わる」と実際に起きる (稀だが決定的)。",
+     "fix_ok": true,
+     "better_fix": "提案で足りるが形を少し直す。356 は Tween.Run の毎フレームの step なので、ここに then を書くと done 旗が無ければ毎フレーム呼ばれる。done 旗つきの `finish` を 1 つ作り、(a) Run の完了コールバック (359) の頭で `if (crt == null) { finish(); return; }`、(b) 3 つの After (366) の頭で同じ、(c) 382 の null 分岐と FlyTo の then も `finish` に差し替える (FlyTo は自分で LockInput(false) するので finish 側の LockInput(false) が重なっても害は無い: ScreenFx.LockInput は _busy 中は無視される)。step (356) は従来どおり `return` だけでよい。例: `bool done = false; Action finish = () => { if (done) return; done = true; ScreenFx.LockInput(false); then(); };`。FuseMelt (419–449) も `Tween.Run` の完了 (433) で result==null を見ているので同じ病気は無いが、ra/rb の Destroy 後に step が走る点は既に null 検査済みで問題なし。"
+    },
+    {
+     "refuted": false,
+     "reason": "コードで経路を確認した。(1) 幕 `_curtain` は canvas 直下 (GameRoot.cs:249 `EnsureCurtain(canvasGo.transform)`) で ScreenRoot/FxLayer の子ではないため、Rebuild (GameRoot.cs:910-921) を生き残り、`LockInput(true)` で立てた raycastTarget=true はそのまま残る。(2) クローン crt は FxLayer の子 (`ScreenFx.CloneForFx(card, fx)` / `CardView.Build(fx, …)`) で、焚き火・店・出来事は非戦闘なので Rebuild が FxLayer の子を Destroy する (GameRoot.cs:918-921。CodexBattleFx の所有物だけ除外)。(3) ScreenJuice.cs:366 の `if (crt == null) return;` は 3 つの After (hit 0/1/2) すべてで解除も `then` も呼ばずに抜け、`LockInput(false)`/`then()` は hit==2 の内側 (0.4 秒後の After か FlyTo) にしか無い。Tween.After は `ReservePresentation()` が戦闘外では null を返すので取り消されず、素直に走って早期 return する。(4) 引き金: StageCamera.cs:713 の「画面の大きさが 2 フレーム落ち着いたら Rebuild」はウィンドウの大きさ変更で演出中でも走る (設定の窓はこの間入力が塞がれているので押せないが、OS 側のリサイズは防げない)。結果、幕が透明のまま入力を塞ぎ、鍛える手 (g.Do) も発行されない。ScreenJuice.cs:356 の方は Tween.Run の毎フレームの callback で、return しても onDone は走るので単独では害は無い (問題は 366 側)。",
+     "fix_ok": true,
+     "better_fix": "提案で足りるが 2 点だけ補正: ① 356 (Tween.Run の毎フレーム callback) は触らず、代わりに Run の onDone の頭で `if (crt == null) { ScreenFx.LockInput(false); finish(); return; }` とし After を組まない。② 366 の After 3 本は `if (crt == null) { ScreenFx.LockInput(false); finish(); return; }` にして、`finish` は FlyTo と同じ `bool done` 旗で一度だけ then を呼ぶ (hit 0/1/2 の 3 本が同時に null を見るので旗が無いと g.Do が 3 回走り、2 回目以降が RunCommand の拒否で Notice を出す)。既存の hit==2 内側の `crt == null` 分岐も同じ finish に揃える。then (g.Do) は Rebuild 後に呼んでも閉包の index はランの状態から取っているので有効。"
+    }
+   ],
+   "confirmed": true
+  },
+  {
+   "title": "報酬の 3 枚目の「取る」が 0.6 秒押せず、タップで飛ばせない",
+   "file": "unity/Assets/Game/ScreenJuice.cs",
+   "line": 162,
+   "severity": "ugly",
+   "detail": "RevealCard (unity/Assets/Game/ScreenJuice.cs:162-180) は `take.interactable=false` にしてから 0.12×index の遅れ＋0.16＋0.2 で返し終えて初めて押せるようにする。3 枚目は 0.60 秒 (速い設定でも 0.40 秒)、2 枚目は 0.48 秒。ScreenFx.Update のタップ (ScreenFx.cs:233-234) は入りの動きしか終わりに飛ばさず、返りは飛ばせない。幕と入りの下で 1 枚目が隠れる (別の指摘) のと合わせ、報酬で一番取りたい札ほど待たされる。",
+   "fix": "タップで全部の返りを終わりの姿へ飛ばす口を足す (ScreenFx.FinishEntries と同じく RevealCard の進行を一覧に持ち、ScreenFx.Update のタップで完了させる)。もしくは遅れを 0.12→0.06 にして 3 枚で 0.48 以内に収める。",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "コードで確認。`ScreenJuice.RevealCard`（unity/Assets/Game/ScreenJuice.cs:162-180）は `take.interactable=false` にしてから `Tween.After(FxSettings.Dur(0.12f)*index)` → `Tween.Run(Dur(0.16))` → `Tween.Run(Dur(0.2))` の完了で初めて `interactable=true` に戻す。3 枚目（index 2）は 0.24+0.16+0.20＝0.60 秒・2 枚目は 0.48 秒・「速い」（Speed 1.5、SettingsUi.cs:151）でも 0.40 秒。RewardScreen.cs:105 が報酬の札 3 枚すべてでこれを呼ぶ。飛ばす口は無い: `ScreenFx.Update`（ScreenFx.cs:233-234）のタップは `_entries`（入りの動き）だけを `FinishEntriesNow` で終わらせ、RevealCard の Tween には触れない。`ScreenFx.FinishEntries` の呼び元も ActTitleFx.cs:68・ScreenFx.cs:112 だけ。Tween.Run/After に外から完了させる口も使っていない。補足: 報酬へは幕 (`ScreenFx.Switch`) 経由で入るので rebuild 後 OpenDur＝0.22 秒は幕が入力を塞いでいる（ScreenFx.cs:136-147）。返りは rebuild の瞬間に始まるため、幕が開いてから実際に押せないのは 3 枚目で約 0.38 秒・2 枚目で約 0.26 秒（Instant では RevealCard が早期 return するので撮影には出ない）。「返っている間は押せない」はコメント通りの意図だが、タップで飛ばせないこと・3 枚目ほど遅いことは事実として起きる。",
+     "fix_ok": true,
+     "better_fix": "提案の前者（タップで返りを終わりの姿へ飛ばす）で足りる。実装の注意: RevealCard の進行（cv・back・take・s・index・rarity）を ScreenJuice 側の一覧に持ち、ScreenFx.Update のタップ（または ScreenFx.FinishEntriesNow）から「back を Destroy・cv.localScale=one*s・take.interactable=true・一覧を Clear」で完了させる。既に走っている Tween.After/Tween.Run の閉包は `cv == null` や進行済みフラグで no-op にする（Rebuild で Destroy 済みになりうるので == null で見る）。幕が開いている間（_curtain.raycastTarget=true）も ScreenFx.Update は Input を直接読むのでタップは拾える。後者（遅れ 0.12→0.06）だけだと 3 枚目が 0.42 秒で依然「速い」でないと 0.4 を超え、飛ばせない点も残るので、前者を主にして遅れの短縮は任意。"
+    },
+    {
+     "refuted": false,
+     "reason": "コードで確認できる。unity/Assets/Game/ScreenJuice.cs:162 で `take.interactable = false` にし、押せるようになるのは 164〜175 行の Tween.After(0.12×index) → Tween.Run(0.16) → Tween.Run(0.2) の完了コールバック（176 行）だけ。3 枚目は 0.24+0.16+0.20＝0.60 秒・2 枚目 0.48 秒（FxSettings.Speed の上限 2 でも 0.30 秒）。ScreenFx.cs:233-234 のタップは `FinishEntriesNow()`＝入りの `_entries` を終わらせるだけで、RevealCard の返りは ScreenFx の一覧に無く、Tween.After は void を返すので外から打ち切る口も無い。RewardScreen.cs:105 は 3 枚全部で RevealCard を呼び、自動操縦以外（人の指）に飛ばす手段は無い。「取る」が 0.6 秒押せない・タップで飛ばせないは実際に起きる。ただし 127 行の注記どおり作者の意図した待ち（自動操縦の 1.4 秒より短い）なので、「不具合」というより「飛ばす口が無い」設計の穴。",
+     "fix_ok": true,
+     "better_fix": "提案 1（タップで返りを終わりの姿へ）で足りるが、実装の注意点: Tween.After は打ち切れないので、RevealCard ごとに「完了済み」フラグ（または進行の記録オブジェクト）を持ち、タップで終わらせる時は ①back を Destroy ②cv.localScale＝s ③take.interactable＝true ④card_flip を 1 回だけ鳴らす（輪・粒は省く）を行い、後から来る After/Run のコールバックはフラグを見て何もしない（cv==null の検査も残す）。ScreenFx.Update のタップ検査は `_entries.Count==0` で早期 return しているので（ScreenFx.cs:231）、返りの一覧を同じ Update で見るならその条件も直す。提案 2（0.12→0.06）は 3 枚目 0.48 秒に縮むだけで「飛ばせない」は残るので、提案 1 の方がよい。"
+    }
+   ],
+   "confirmed": true
+  }
+ ],
+ "rejected": [
+  {
+   "title": "Autopilot take=1 (motion=1): 「取る」が札の返りの間 interactable=false なので ClickUi が黙って捨てられ、取る演出が一度も撮れない",
+   "file": "unity/Assets/Game/Autopilot.cs",
+   "reasons": [
+    "実際に起きる（確信度 高）。根拠: ①`scripts/juice-states/after.txt:27` の J-take は `phase=reward;motion=1;take=1` で、`Autopilot.cs:622` が motion=1 で `ScreenFx.Instant=false` にする。②`RewardScreen.cs:105` が `ScreenJuice.RevealCard(g, cell, cv, def.Rarity, i, b)` を呼び、Instant でないので `ScreenJuice.cs:162` で `take.interactable=false`、戻るのは `Tween.After(0.12×i)` → `Tween.Run(0.16)` → `Tween.Run(0.2)` の完了時＝札 0 で約 0.36 秒後。③Autopilot は `g.Rebuild()`（951。ScreenFx.Switch を通らないので `_busy` は立たない）→ `DetSettleStage`（det でなければ即 break・160-162）→ `while (ScreenFx.Busy || ActTitleFx.Busy)`（偽）→ `WaitPresentation`（報酬では CombatPresentationPending も inputblock も無く即戻る）→ `ClickUi(g.Anchor(\"reward-take-0\"))`（1204）と、Rebuild から 1〜2 フレームで押す。④`ClickUi`（1578-1585）は `ExecuteEvents.Execute(pointerClickHandler)` の結果を見ず常に true。uGUI の `Button.OnPointerClick` → `Press()` は `IsInteractable()` が偽なら何もしないので、押下は捨てられ、警告も `g.Do` の予備も走らない。⑤Burst は 16 枚×3 フレーム＝48 フレーム（captureFramerate 60 で 0.8 秒）なので、札が返り切って止まった報酬画面だけが写り、「取る」の FlyTo（RewardScreen.cs:98）は一度も鳴らない。",
+    "実際の撮影行 (scripts/juice-states/after.txt:27 `J-take|phase=reward;motion=1;take=1;…`) は act/deck/relics/hp/gold/difficulty を持たないので StateJump は `g.StartRun()` の経路 (Autopilot.cs:680 付近) を通る。StartRun は motion=1 (Instant=false) かつ ScreenRoot が Awake で作られている (GameRoot.cs:240) ので `ActTitleFx.Show` → `Co` を走らせる (ActTitleFx.cs:48,57)。Co は 0.16 秒の閉じの後に `rebuild()`=GameRoot.Rebuild を呼び (この時 g.Rs はすでに報酬なので RewardScreen が組まれ RevealCard が始まる＝take-0 は 0.36 秒後に interactable に戻る)、その後 1 フレーム＋題字 0.3＋保つ 1.0＋消える 0.25＋開く 0.22 ≈ 1.8 秒 (Speed 最大 2 でも ≈0.9 秒) を経て `_busy=false`。Autopilot は 954 行目で `ActTitleFx.Busy` が落ちるまで待ってから 1204 行目の ClickUi に進むので、押す時点で「取る」は interactable=true になっている。指摘の「Rebuild の直後に即 ClickUi」は、Autopilot が 952 行目で自分で呼ぶ Rebuild だけを見ていて、その後の ActTitleFx による再組み直しと Busy 待ちを見落としている。実際の撮影結果 docs/design/quality-sprint/juice-after-take-2026-11-04.png でも J-take-2 で札がデッキへ縮んで飛び、J-take-5 以降は札が取られてギアだけ残っており、取る演出は撮れている。なお act=/deck= 等を付けたチェックポイント開始 (CreateDebugCheckpointRun の経路。ActTitleFx も幕も走らない) と take=1 を組み合わせた場合だけは指摘どおり同フレームの ClickUi が interactable=false に当たって黙って落ちるが、その組み合わせの撮影行は存在せず、指摘が挙げた再現条件 (take=1 + motion=1) では起きない。"
+   ]
+  },
+  {
+   "title": "店の買い物で硬貨の飛びと上部バーの「−N G」数え上げが二重",
+   "file": "unity/Assets/Game/ShopScreen.cs",
+   "reasons": [
+    "コード上の流れ自体は指摘どおり（ShopScreen.cs:201 の ScreenJuice.Coins → FlyTo → g.Do → Rebuild → RunUi.cs:72 の ScreenFx.Shown(\"gold\") が旧値と比べて「−N G」の浮き文字＋CountTo＋coin_land の刻み。Coins は Remember を呼ばない）。しかしこれは不具合ではなく設計どおり。docs/design/juice-pass-2026-11-04.md:69 が「選んだ後の 1 秒」の仕様として「買う（硬貨が G へ・「売切」・−75 G）」と、硬貨の飛びと −N G の両方を明記している。ScreenFx.Shown 側も「買い物 (減る) は小さく＝店の ui.buy と重なる」と店での重なりを前提に刻みの音量を 0.2 に落としており（ScreenFx.cs:376-377）、「札を取る＝FlyTo で deck へ飛ぶ → Shown(\"deck\") で +1 枚」も同じ「飛んで着いたら上部バーの数字が動く」の型で意図されている（RunUi.cs:96 のコメント）。魔素の Coins(mana)→Shown(\"mana\") も同型。出来事の deck（ShowOutcome が gold/hp だけ Remember する点）は「○○を得た」の夜の札の後に地図で「+1 枚」が出るのは実際に起きるが、ShowOutcome のコメントが「G・HP の値は覚えさせて」と範囲を明示して選んでおり、不具合と断じる確信は持てない（疑わしきは落とす）。",
+    "コードの挙動の観察（硬貨が飛ぶ → Rebuild で ScreenFx.Shown(\"gold\") が「−N G」と 0.4 秒の数え上げを出す）は正しいが、それは不具合ではなく設計どおり。根拠: ①`docs/design/juice-pass-2026-11-04.md` 69 行目「買う（硬貨が G へ・「売切」・−75 G）」＝硬貨の飛びと「−75 G」の両方を「選んだ後の 1 秒」として意図して並べている。勝利の流れ（53 行目「硬貨が上部バーの G へ弧で飛び（着くたび音程が上がる刻み・数字が増える）」）も同じ形で、硬貨＝支払いが動く絵・数え上げ＝数字が追いつく絵、の対。②`ScreenFx.Shown`（ScreenFx.cs:380 付近）のコメント「G の数え上げには硬貨の刻み (A6)。買い物 (減る) は小さく＝店の ui.buy と重なる」と、減る時だけ刻みの音量を 0.2 に落とす実装（`up ? 0.45f : 0.2f`）は、店の買い物の後に Shown が鳴ることを前提に調整している＝重なりは認識済みの設計。③`Coins` は 0.36 秒で先に着き、札の FlyTo（0.45 秒）の後に Rebuild → 数え上げ、と時間がずれるので「同じ支払いが同時に 2 回」ではなく順送り。魔素も同じ構図（硬貨→玉→「+10」）。出来事の deck（夜の札「○○を得た」の後に地図で「+1 枚」）は ShowOutcome が意図的に gold/hp だけ覚える作りで、報酬の「取る」→「+1 枚」と同じ合図が地図でも出るだけ＝好みの範囲で、実害（誤った数字・落ちる・操作不能）は無い。よって「実際に起きる不具合」には当たらない。"
+   ]
+  },
+  {
+   "title": "出来事から戦闘へ続く選択肢で画面が 1.2 秒黙って止まる",
+   "file": "unity/Assets/Game/EventScreen.cs",
+   "reasons": [
+    "コードの読みは半分正しい: `ScreenFx.Switch` → `StartCoroutine(SwitchCo)` は最初の yield まで同期に進み、`SwitchCo` (unity/Assets/Game/ScreenFx.cs:114) が `hold=_deferOnce` をローカルに写して `_deferOnce=0` にしてから待ちループへ入るので、`Choose` (EventScreen.cs:206) のあとの `DeferNextSwitch(0f)` は既に走っている待ちを取り消せない。しかし「出来事の選択肢から戦闘へ続く」経路が engine に存在しない。`EventChoice` は `applyEventChoice` → `applyChoiceDef(run, choice, cardIndex, 'map')` (src/engine/run.ts:1071〜1215) で、戻り先は `phase: 'map'`・HP0 なら `'lost'`・札を選ぶ遺物なら `enterPendingChoice` の `'relic-choose'` の 3 つだけ。`EventChoiceDef` に戦闘を始めるフィールドは無く、events.json にも戦闘を指す値は無い (?マスの「戦闘 10%」はノードに入った瞬間に決まり、出来事の選択肢ではない)。したがって EventScreen.cs:207 の `if (g.Rs.Phase == RunPhases.Combat) return;` は到達しない死に枝で、「戦う選択肢を押すと 1.2 秒黙って止まる」症状は実際には起きない。map / relic-choose へ続く通常の経路では ShowOutcome が 1.2 秒の窓の間に出るので、待ちは意図どおり。",
+    "実際に起きる。経路を追うと: EventScreen.Choose (EventScreen.cs:203〜207) は `ScreenFx.DeferNextSwitch(1.2)` → `g.Do(cmd)`。GameRoot.Do (GameRoot.cs:339〜423) は出来事→戦闘で phaseChanged=true・actChanged=false なので `ScreenFx.Switch(this, after)` (GameRoot.cs:423) を同期に呼び、Switch は `I.StartCoroutine(I.SwitchCo(...))` (ScreenFx.cs:104)。Unity の StartCoroutine は最初の yield まで同期に進むので、SwitchCo の `float hold = _deferOnce; _deferOnce = 0f;` (ScreenFx.cs:114) が Do の中で実行され hold=1.2 がローカルに取り込まれる。その後 Choose に戻って `DeferNextSwitch(0f)` を呼んでも _deferOnce は既に 0 で、走っている hold ループ (ScreenFx.cs:117〜122) には届かない。Phase==Combat の return (EventScreen.cs:207) で結果の札も出ないため、出来事の画面がそのまま残り (幕は透明・raycastTarget=true で入力だけ塞ぐ)、0.25 秒を過ぎればタップで飛ばせるが、放っておくと 1.2 秒 (FxSettings.Dur 倍率) 止まってから幕が閉じて戦闘が組まれる。なお combat_start の音は Do の中 (GameRoot.cs:395〜400) で先に鳴るので「無音」ではないが、画面は何も変わらず止まる点は指摘どおり。Do が失敗して Rs が変わらない場合 (ReferenceEquals(g.Rs, prev)) は Switch が走らないので _deferOnce=0 の取り消しは効く＝この分岐だけ問題。"
+   ]
+  },
+  {
+   "title": "山札・捨て札の数が、順送りの途中で最終の状態の数に跳ぶ (切り直しで 0 を見せる)",
+   "file": "unity/Assets/Game/BattleView.cs",
+   "reasons": [
+    "指摘の前提「ターン終了の順送り (TurnEnded) で DiscardHand→FlyTo→PileLanded が呼ばれる」が成り立たない。`BattleView.DiscardHand` (unity/Assets/Game/BattleView.cs:1775) は定義だけで、Presenter・GameRoot・PresenterJuice のどこからも呼ばれていない (grep で呼び出し 0 件・追加コミット dbee6ead 以来の死にコード)。手札が捨て札へ飛ぶ経路は `BattleView.SyncHand` の「手札から消えた札 → AnimateOut → FlyTo(\"pile-discard\")」(BattleView.cs:1441・1838) だけで、SyncHand は `BattleScreen.Build` (BattleScreen.cs:113) からしか呼ばれない。Build は順送りが終わった後の Rebuild で、同じ最終状態 `st` を使って先に `BuildPiles(g, ui, st)` (BattleScreen.cs:109) が山札・捨て札の札を最終の数で作り直してから SyncHand が札を飛ばす。したがって 0.3 秒後に PileLanded が `g.Rs.Combat` の数を読んでも、表示されている数と同じなので `cur != n` が偽で何も書き換えない (跳びも「0 を見せる」も起きない)。順送り中 (古い盤面の上) には捨て札への飛行が無いので、敵フェーズの切り直しの数が古い山札の数と並ぶ瞬間も生じない。札のプレイ (敵フェーズ無し) も Do→即 Rebuild→SyncHand の順で同じく一致する。残る経路 (札のプレイで戦闘が決着した時の順送り) は「決着→Switch→Rebuild」で古い盤面は幕の向こうに消え、その間に PileLanded が最終の捨て札の数を書いても見える差は捨て札 +1 程度で、切り直しも次の引きも起きない。",
+    "指摘の前提の経路が存在しない。`BattleView.DiscardHand` (unity/Assets/Game/BattleView.cs:1775) は定義だけで呼び出し元が 0 件 (`git grep DiscardHand 30e63e2b -- unity` も定義 1 件のみ)。Presenter の `GameEvent_TurnEnded` の処理 (Presenter.cs:2478〜) は音・帯・手番の札・敵ブロックの帳面だけで、手札を捨て札へ飛ばしていない。つまりターン終了の順送り (古い盤面を保つ間) に `FlyTo(\"pile-discard\")`→`PileLanded` は走らない。手札が捨て札へ飛ぶのは順送りが終わって `Rebuild` が走った時の `AnimateOut` (BattleView.cs:1441→1792) で、その `st` は手が終わった最終の状態。同じ Rebuild が `Pile(...)` (BattleScreen.cs:3841-3842) で山札・捨て札の数を最終の実数で描き直しているので、着地時の `PileLanded` が読む `g.Rs.Combat` の数と表示は一致し `cur != n` が偽＝書き換えも Punch も起きない。「切り直し後の 0 を見せる」「1 枚目で一気に跳ぶ」はどちらも発生しない。残るのは「Rebuild の時点で数が最終値になり、その後に手札の絵が捨て札へ飛ぶ」という以前からの見え方だが、これは PileLanded の追加で生じたものではなく、順送り中に数字が動く不具合でもない。"
+   ]
+  },
+  {
+   "title": "「倒せる」の判が分裂・残機の敵でも出て、意図の札を「もう来ない」と沈める",
+   "file": "unity/Assets/Game/BattleView.cs",
+   "reasons": [
+    "コードの事実関係は指摘どおり (BattleView.cs:899 の lethal は HP−loss≤0 だけで決め、engine の processSplits は親が倒れた瞬間に spawnEnemies→declareOne で次の体が意図つきで出る)。しかし「嘘になる」は成立しない。①「倒せる」の判はその体を倒せるという意味で、ゲーム自身の語彙 (CardText.cs:966「残機 (倒すと次の形態で起き上がる)」・:967「分裂 (倒すと N 体に分かれる)」) が分裂・残機を「倒す」と呼んでいる＝判と矛盾しない。②沈めるのは親の intent-tag だけ (BattleScreen.SetIntentDim は pan.Find(\"intent-tag\"))。親は hp 0・split:true で二度と行動しないので、その札の意図は本当に来ない。次の体は別の敵 index に新しい帳面と意図の札を持って出る (Rebuild で親の帳面は消える)。「もう来ない」は画面の文ではなくコメントの説明語で、画面に嘘の文は出ない。③孵化 (HatchInto) は敵の行動 kind:'hatch' であり死で起きない＝卵を倒せば孵化しない。卵を lethal=false にする提案は逆に嘘を作る。④錆びた楔 (summonBlocked) で分裂 (count>1) を止めている時は親を倒せば終わりなので、SplitInto!=null で一律に判を消す提案はその場面で「倒せるのに判が出ない」という新しい不一致になる。以上、起きる現象は設計どおりで「実際に起きる不具合」ではない。",
+    "engine の分裂・残機は「親の席を差し替える」のではなく、親は hp 0・split=true のまま同じ index に残り、子は `enemies` の末尾に新しい要素として追加される（`src/engine/combat.ts` processSplits → spawnEnemies: `s = { ...s, enemies: [...s.enemies, child] }`・C# `Combat.cs:678 SpawnEnemies` も同じ）。子の意図は新しい index で `declareOne` されるので、Unity では別の敵の帳面・意図の札として出る。したがって `BattleView.cs:899` の lethal が指す「この体は倒せる」も、`SetEnemyPredict` が沈める意図の札（その敵 index の札＝親の宣言済みの技）が「もう来ない」も、どちらも実際に起きることと一致する。親の宣言した技は実行されず、来るのは新しい体の新しい意図で、それはプレイヤーのターン中に即座に宣言されて別の札として見える。嘘になる表示は無い。孵化（hatchInto）は HP 0 で起きるのではなく敵の行動（kind:'hatch'）なので、lethal の判定とは無関係。"
+   ]
+  },
+  {
+   "title": "状態異常の札 (紙の小札) の塗りを Tween.Flash で真鍮/藤に染めている",
+   "file": "unity/Assets/Game/BattleScreen.cs",
+   "reasons": [
+    "コードの事実は指摘どおり（BattleScreen.cs:827 で状態異常の MiniPill の Image.color を Tween.Flash で BrassLight/Plum→元の紙色へ 0.4 秒で戻している）だが、「紙の UI は染めない」の裁定違反には当たらない。裁定の出典は docs/design/hd2d-stage2-plan-2026-10-02.md:42／hd2d-stage2-analysis-2026-10-02.md:247 の「敵の大技の全画面フラッシュ＋色の帯（舞台の板だけ・紙は染めない）」＝全画面の帯や閃きで紙まで色を被せない、という意味で、1 枚の小札を一瞬光らせることは対象外。しかも同じ Tween.Flash で個別の紙の札を光らせる書き方は差分の前（be403c4e）から存在し通過済み: ScreenFx.cs:305（上部バーの HP の札を RoseLight で Flash・10-29 の #2 で 4 通過）、Presenter.cs:695（意図の札の paper を RoseLight で Flash）、BattleScreen.cs:3421。色も PaperFx の役割名の内側（真鍮＝BrassLight は決定ボタンの「真鍮の紙」そのもの、藤 Plum＝状態異常）。Rebuild で pill が壊れても Flash は g != null を見るので実行時の不具合も無い。好み・解釈の話であり「実際に起きる不具合」ではないため落とす。",
+    "実際に起きる。unity/Assets/Game/BattleScreen.cs:827 は `Tween.After(0.05f, …)` の中で状態異常の MiniPill (`MiniPill` は Image に `PaperFx.TagThin` の紙を貼り `bg.color = paper`＝pl.Paper〔Paper2 か PlumLight〕) の Image を取り、`Tween.Flash(bg, PlumLight なら Plum / それ以外 BrassLight, 0.4f)` を呼ぶ。Tween.cs:309 の Flash は `g.color = Color.Lerp(flash, origin, k)` で Image.color そのものを 0.4 秒かけて書き換える＝紙の小札が藤／真鍮に染まってから紙色へ戻る。この行はこの差分 (be403c4e..30e63e2b) で追加された新規の行。null 安全 (p2 == null・Flash 内の g != null) には問題なく、クラッシュではなく「紙の UI は染めない」裁定への抵触として確認できる。なお補足として、同じ差分で BattleView.cs:1870 にも `Tween.Flash(fimg, PaperFx.BrassLight, 0.3f)` が新規に入っている (fimg が紙の Image なら同種)。一方 ScreenFx.cs:378 の HP 札の RoseLight の Flash は差分の前 (be403c4e 時点の 305 行) から存在しており、裁定が「一瞬の閃き」まで含むかは文書で確かめられなかった＝裁定の射程だけが残る不確かさ。"
+   ]
+  },
+  {
+   "title": "Audio.Update が毎フレーム PlayerPrefs を 4 回読む (Master/BgmVol の getter)",
+   "file": "unity/Assets/Game/Audio.cs",
+   "reasons": [
+    "コードの事実関係は正しい: `Audio.Update` (Audio.cs:392) → `TickBgm` (443: `Master * BgmVol`) と `TickAmbience` (515: 同じ) が毎フレーム走り、`Master`/`BgmVol` は `PlayerPrefs.GetFloat` を直接返す getter (61-63) なので、BGM と環境音が鳴っている間は毎フレーム 4 回の PlayerPrefs 読みになる。`ScreenFx.Update` (ScreenFx.cs:241) の `EnterDur` → `FxSettings.Dur` → `Speed` も入りの間は部品ごとに毎フレーム読む。ただし「実際に起きる不具合」としては落とす。(1) 機能上の誤りは無く、音量・時間とも正しい値が得られる。(2) コストの見積もりが過大: Android の PlayerPrefs.GetFloat は JNI 経由だが SharedPreferences は初回読込後メモリ上の Map なので 1 回は数 µs 級で、4 回/フレームなら数十 µs、入りの 10〜30 回/フレームでも 0.3 秒間に 0.1〜0.3ms 程度＝16.6ms 予算に対して体感に出る量ではない。指摘自身も「確信度 中・実測していない」としている。(3) 旧実装も `Bgm()` の Tween 内で target を 1 回しか読んでいないとはいえ、SFX の再生ごとに `SfxVol` を読んでいたので「書くのは Apply の時だけ」という対比は正確ではない。実測 (Xperia の fps の札) で PlayerPrefs が最悪のコマの原因と出るまでは不具合扱いにしない。",
+    "コードの事実として起きる。`Audio.Update` (Audio.cs:392-400) は毎フレーム `TickBgm`・`TickAmbience`・`TickHeartbeat` を呼び、`TickBgm` (Audio.cs:443) と `TickAmbience` (Audio.cs:515) はそれぞれ `Master * BgmVol` を評価する。`Master`/`BgmVol`/`SfxVol` (Audio.cs:61-63) は `PlayerPrefs.GetFloat` をそのまま返す getter なので、BGM が鳴り (`_bgmCur >= 0`) 環境音の AudioSource がある (`_amb != null`) 間は毎フレーム 4 回の PlayerPrefs 読みになる (鼓動が鳴る拍にはさらに 2 回)。旧実装 (be403c4e) は `Apply()` と BGM 切替の時に `Master * BgmVol` を 1 回読んで `target` に束ねていたので、これは今回の差分で入った退行。`ScreenFx.EnterDur` (ScreenFx.cs:24 → FxSettings.Dur → `Speed` getter = PlayerPrefs) も `ScreenFx.Update` (ScreenFx.cs:241) で部品ごとに毎フレーム読み、`MapScreen.ScrollFix.LateUpdate` (MapScreen.cs:384) の `OpenDur`/`MapScrollDur` も同じ型。「無駄な読みが毎フレーム走る」までは確実。実機でのコマ落ちに結びつくかは未計測 (確信度 中。Android の PlayerPrefs は SharedPreferences への JNI 呼び出しで、1 回 0.05〜0.3ms 級の報告が多い＝Xperia 5 II の 16.6ms 予算の 1〜数%)。見た目・音の不具合ではなく、スマホの重さの対策 (`docs/design/hd2d-slice/perf-runbook.md` §2-1) と逆向きの退行として扱うのが妥当。"
+   ]
+  },
+  {
+   "title": "タイトルの Breathe・Sweep・MenuRow の明滅がスマホでも毎フレーム動き、キャンバスを毎フレーム再バッチする",
+   "file": "unity/Assets/Game/TitleScreen.cs",
+   "reasons": [
+    "コードの事実関係は半分正しいが、指摘の核心「何も操作していないタイトル画面に毎フレームの再バッチという新しい常時コストを足した」は成り立たない。\n\n確認した事実 (行番号は指摘の 905〜981 ではなく、実ファイルは 690 行。該当は TitleScreen.cs:72-83 の付与、194-221 MenuRow、223-236 Breathe、238-262 Sweep):\n- Breathe.Update は毎フレーム localScale を書く・MenuRow.Update は ◆ 2 枚の色を毎フレーム書く・門は `!ScreenFx.Instant` だけで UiKit.Phone / GfxQuality は見ない。ここは指摘どおり。\n- しかし be403c4e の時点で既にタイトル画面には毎フレーム動く uGUI 要素がある: 紋の `Spin` (TitleScreen.cs:60・Image の transform を毎フレーム回す)、`Motes` (:43・スマホでも 14 粒の Image を毎フレーム動かす)、`Mist`×2 と `Drift` (:38-39, 554)。いずれも Phone/Gfx の門が無く、この差分で足されたものではない (git show be403c4e で確認)。つまりタイトルの Canvas は差分の前から毎フレーム再バッチしており、「Xperia でタイトルがカクつく」(10-30) の報告はその状態で出たもの。Breathe と MenuRow が足す増分は「ロゴ 1 枚のスケール書き換え＋小さな Image 2 枚の頂点色の再生成」で、既に 14〜22 粒＋霧＋紋が毎フレーム動いている Canvas の再バッチ回数は変わらない (毎フレーム→毎フレーム)。\n- 本当に新しい描画コストは `Mask` (ステンシル書き込み＋ロゴの材質の分裂で描画呼び出しが数個増える) だけで、これは「毎フレーム再バッチ」とは別の話。Xperia での ms は未計測と指摘自身が認めており、「実際に起きる不具合」としては確認できない。\n- Sweep は Delay 前後とも α が変わらない時は色を書かない (Graphic.color の setter は同値なら dirty にしない) ので指摘どおり主因ではない。\n\nよって「新しい常時コストで Xperia のカクつきを悪化させる」は根拠が揺らぎ、増分も未計測＝疑わしきは落とす。",
+    "「毎フレームの再バッチをタイトルに新しく足した」は成り立たない。差分の前 (be403c4e) からタイトル画面には Motes (スマホ 14・PC 22 枚の Image が毎フレーム anchoredPosition と color を書く)・Spin (紋を毎フレーム回す)・Drift (霧 2 枚の位置と α を毎フレーム書く) が同じ root (同じ Canvas) に乗っていて、門は ScreenFx.Instant さえ無い (unity/Assets/Game/TitleScreen.cs 37-61・627-690。be403c4e でも同じ)。uGUI の Canvas の再構築は「その Canvas のどれか 1 要素が dirty なら走る」ので、Xperia の 10-30 報告の時点で既にタイトルの Canvas は毎フレーム再構築されており、Breathe (ロゴ 1 枚の localScale)・MenuRow (◆ 2 枚の色) が増えても再構築の回数は 0 → 1 でなく 1 → 1。足されたのは dirty 要素の頂点の再計算 3 枚ぶん＝Motes 14 枚の 1/5 以下で、「常時コストを足した」という指摘の主因の説明が事実と合わない。Mask の追加 (TitleScreen.cs:75) は確かに新しい (ステンシルの書き込み＋解除の 2 ドロー＋ロゴと帯が別バッチ) が、760×209 の矩形 1 枚ぶんで、Xperia でコマ落ちを起こす量の根拠が無い (未計測)。「疑わしきは落とす」で refuted。"
+   ]
+  },
+  {
+   "title": "環境音 4 本の合成 (8.5 秒×22050 サンプル) が初回の Ambience() でメインスレッドを止める",
+   "file": "unity/Assets/Game/Synth.cs",
+   "reasons": [
+    "コードで確認した事実: (1) `Audio.Load(\"sfx\",\"amb_*\")` (Audio.cs:192-206) は `Resources/Audio/sfx/amb_*` が無いので初回は `Synth.Sfx` へ落ちる。`Resources/Audio/sfx` の 119 ファイルに amb_* は無く、audio.json:658 の注記も「全部 Synth の 8 秒ループ」と明記＝合成経路が本番の経路。(2) `AmbForestNight` 等 (Synth.cs:569-634) は `Wind` が 8.5s×22050＝187,425 反復 (NextDouble・Lerp×2・Sin)、`AmbCave` は 8.5 秒の `Tone` 1 本、`AmbRuins` は 2 本 (各 187k 反復の Osc)、`Loopify` の複製、`Finish` (Synth.cs:66-75) の Mathf.Abs 187k＋Math.Tanh 187k＋`AudioClip.Create/SetData`。全部同期・メインスレッド。(3) 呼び出しは `GameRoot.BuildScreen`→`UpdateBgm`→`UpdateAmbience`→`Audio.Ambience`→`StartAmbience`→`Load` (GameRoot.cs:779-821・Audio.cs:304-323・474-499) で、鍵が変わる初回 (ランの最初の画面・幕の入り・焚き火の入り) に 1 回ずつ起きる。(4) 対照: BGM の `Synth.Bgm` は 19 秒級でもっと重いが `Resources/Audio/bgm/act1.ogg` 等の実素材があるため実際には呼ばれない＝8.5 秒級の同期合成は環境音だけが本番で踏む。よって「初回の Ambience() で 1 コマ止まる」は実際に起きる。ms は未計測 (指摘側も概算)。影響は鍵ごとに 1 回・多くは幕の板の下に隠れる低い深刻度で、クラッシュや挙動の誤りではない。",
+    "仕組みの記述は正しい: `Audio.Load(\"sfx\",\"amb_*\")` (unity/Assets/Game/Audio.cs:193-207) は Resources に素材が無いので (Resources/Audio/sfx に amb_* は無い・audio.json:658 も「全部 Synth」と明記) 初回だけ `Synth.Sfx` を同期で呼び、`Wind`/`Tone`/`Loopify`/`Finish` (Synth.cs:109-134・66-74・569-634) は 187k サンプルを 1 つずつ回してメインスレッドで 750KB の AudioClip を作る。ただし「実際に起きる不具合」としては落とす。理由: (1) 呼ばれる場所は `GameRoot.Rebuild` → `BuildScreen` の先頭 (GameRoot.cs:942-944) で、同じフレームで ScreenRoot の子を全部 Destroy して画面全体 (地図・焚き火) を組み直している。そのフレームは環境音の有無に関わらず既に 1 コマ以上止まる重いフレームで、環境音の合成はその中に 1 回だけ (鍵ごとに 1 回・最大 4 回／起動) 足されるだけ＝独立したカクつきとして観測できない。(2) 発生箇所は ActTitleFx の板 (GameRoot.cs:422・493) か ScreenFx の幕の下。(3) BGM は ogg の実素材 (Resources/Audio/bgm/act1-3・boss1-3・title) なので `Synth.Bgm` の同期合成は通らず、「音の合成がメインスレッドを止める」経路はこの 4 本だけ。PC で 10〜20ms・端末で数十 ms の推定は妥当だが、既に落ちているフレームに乗る 1 回きりの加算で、ユーザーが「カクつく」と報告する種類のものではない。疑わしきは落とす、で refuted。"
+   ]
+  },
+  {
+   "title": "ターン終了の捨て札の飛びで、捨て札の枚数が「敵フェーズ後の最終値」に先に跳ぶ",
+   "file": "unity/Assets/Game/BattleView.cs",
+   "reasons": [
+    "指摘の経路「TurnEnded の順送り → DiscardHand → FlyTo(\"pile-discard\") → PileLanded」は存在しない。`BattleView.DiscardHand` (unity/Assets/Game/BattleView.cs:1775) は定義だけで、`grep -rn DiscardHand unity/Assets/` の該当はこの 1 行のみ＝呼び手が無い (Presenter.cs の `case GameEvent_TurnEnded` 2478〜2486 行は Banner・StageBeat・SetPhase・ResetEnemyBlocks だけ)。手札を捨て札へ飛ばすのは `BattleView.SyncHand` → `AnimateOut` → `FlyTo` で、`SyncHand` の呼び手は `BattleScreen.Build` (BattleScreen.cs:113) だけ＝順送りが終わった後の Rebuild の中。その時点の `g.Rs` は最終状態で、同じ Build の `BuildPiles` (BattleScreen.cs:3841-3842) が描く捨て札の数字も同じ `p.DiscardPile.Count` を読むので、PileLanded (BattleView.cs:1886) が書く値は既に表示している値と一致し (`cur != n` が偽) 書き換えも Punch も起きない。山札が尽きて切り直したターンでも、Rebuild の瞬間に数字が最終値になるのは旧実装と同じで、この差分が「札が積まれているのに枚数が減る瞬間」を新しく作ることはない。通常の札のプレイ (敵フェーズ無し) は Do の直後に Rebuild されるので、こちらも PileLanded と BuildPiles が同じ状態を読む。",
+    "指摘の経路「TurnEnded の順送り → BattleView.DiscardHand → FlyTo(\"pile-discard\") → PileLanded」は存在しない。`DiscardHand` (unity/Assets/Game/BattleView.cs:1775) は unity/Assets 全体で呼び手が 0 件 (grep で定義のみ)。Presenter.cs の `case GameEvent_TurnEnded` (Presenter.cs:2478-2487) も手札を飛ばさず、音・帯・StageBeat・手番の札・敵ブロックの帳面だけを触る。順送りの間 (CombatPresentationPending) に捨て札へ飛ぶ札は無い。\n\n実際に手札が捨て札へ飛ぶのは順送りが終わって `GameRoot.Rebuild` → `BattleScreen.Build` (BattleScreen.cs:101-113) が `BuildPiles(g, ui, st)` で山札・捨て札の数字を `st.DiscardPile.Count` (最終値) で描いた後、`v.SyncHand` が「手札から消えた札」を `AnimateOut` → `FlyTo(\"pile-discard\")` で飛ばす時 (BattleView.cs:1436-1441・1838)。その着地で `PileLanded` が読む `g.Rs.Combat` は BuildPiles が読んだのと同じ状態なので `cur == n` となり数字は書き換わらない (Punch も起きない)。「札が積まれているのに枚数が減る瞬間」は出ない。\n\nまた旧実装との差も無い: 旧 (be403c4e) も Rebuild で最終値を描いた後に札が飛んでいたので、「切り直し後 0 の上に札が着く」見え方は新旧同じで、今回の差分が新しく作った不具合ではない。\n\nPileLanded が実値と食い違う状態を読む余地があるのは「Rs 更新後に古い盤面の上で FlyTo が走る」場合だけだが、Do は敵フェーズ／決着を含む手では即 `BeginCombatPresentation` して Rebuild を遅らせ、その間 SyncHand は呼ばれない (SyncHand の呼び手は BattleScreen.Build:113 と RefreshHandCard のみ)。通常のカードプレイ (敵フェーズ無し) は Do → Rebuild → SyncHand の順で、やはり Rebuild が同じ状態の最終値を先に描く。"
+   ]
+  },
+  {
+   "title": "走破／敗北の画面: 横の狭い窓 (キャンバス幅 1540 未満) で左の記録と右の遺物・デッキが重なる",
+   "file": "unity/Assets/Game/EndScreen.cs",
+   "reasons": [
+    "指摘の前提「4:3 のウィンドウでキャンバス幅が 1440」が成り立たない。PC の CanvasScaler は `GameRoot.cs:214-215` で基準 1920×1080・`matchWidthOrHeight = 0.5`（幅と高さの幾何平均）なので、キャンバス幅 W は `BattleScreen.CanvasSize`（BattleScreen.cs:89-99）の式で W = sqrt(画面幅/1920 × 画面高/1080) の逆数 × 画面幅 = 1440 × sqrt(アスペクト比) になる。4:3 (1.333) → W ≈ 1663、5:4 (1.25) → W ≈ 1610、撮影の `resize=1280x1000` (1.28) → W ≈ 1629 で、いずれも 1540 を超え、記録の右端 (0.27W+308) と右の塊 (0.47W) は重ならない（4:3 で約 25px、5:4 で約 14px の余白）。W < 1540 になるのはアスペクト比 1.144 未満（ほぼ正方形か縦長）の時だけで、PC は `ProjectSettings.asset` の `resizableWindow: 0` で窓を自由に伸ばせず、設定の窓の解像度は `SettingsUi.Presets`（SettingsUi.cs:17）の 16:9 5 種＋端末そのものの大きさに限られるため、実際のプレイで到達できる形ではない。EndScreen.cs:116-129・179 の数式自体（左の右端 0.27W+308・右の左端 0.47W）は指摘どおりだが、「ウィンドウを 4:3 にすると重なる」は起きない。",
+    "指摘の数式は「キャンバス幅＝画面幅」を前提にしているが、PC の CanvasScaler は referenceResolution 1920×1080・matchWidthOrHeight=0.5（GameRoot.cs:208-215。幾何平均）なので、キャンバス幅は sqrt(1920×1080×アスペクト比) になる（BattleScreen.CanvasSize も同じ式）。4:3 の窓ならキャンバス幅は 1663（右の塊との隙間 +25px）、5:4 なら 1610（+14px）で重ならない。重なる条件 W<1540 はアスペクト比 1.14 未満（ほぼ正方形か縦長）の時だけ。しかも PC の解像度は設定の窓の Presets（全て 16:9）＋端末そのものの大きさしか選べず（SettingsUi.cs:17-29）、ProjectSettings は resizableWindow: 0 でドラッグによる任意の大きさの変更も不可。よって 4:3／5:4 で重なるという事象は起きず、実機で到達できる窓の形でも起きない。"
+   ]
+  }
+ ]
+}

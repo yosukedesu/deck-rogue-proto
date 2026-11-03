@@ -85,18 +85,24 @@ namespace DeckRogue.Game
 
         /// <summary>
         /// 被弾の縁 (2026-11-04): 旧は全画面を朱で染めていた (紙の UI まで桃色＝段2 の反証)。画面の縁だけがビネットで色づき、中央と紙は染めない。
-        /// alpha は呼び側の量に FxSettings.Flash を掛ける。dur 秒で消える
+        /// alpha は呼び側の量に FxSettings.Flash を掛ける。dur 秒で消える。
+        /// 置き場は BattleView.FieldLayer の最後 (舞台の上・紙の下＝BattleView.SyncDanger の危険の縁と同じ層。2026-11-04 反証: FxLayer に置くと画面の縁に並ぶ上部バー・手札の紙まで染まった)。箱庭でない時は従来の fx
         /// </summary>
         static void HurtVignette(RectTransform fx, Color rgb, float alpha, float dur, string key)
         {
             if (fx == null) return;
             float a = Mathf.Clamp01(alpha) * FxSettings.Flash;
             if (a <= 0.004f) return;
-            var rt = UiKit.NewRect("vignette-" + key, fx);
+            RectTransform parent = fx;
+            var g = GameRoot.I;
+            if (g != null && g.Battle != null && g.Battle.FieldLayer != null) parent = g.Battle.FieldLayer;
+            var rt = UiKit.NewRect("vignette-" + key, parent);
             UiKit.Stretch(rt, -24f, -24f, -24f, -24f);
+            rt.SetAsLastSibling();
             var img = rt.gameObject.AddComponent<Image>();
-            img.sprite = ThemeFx.Vignette(rgb, "vignette-" + key); img.type = Image.Type.Simple; img.preserveAspect = false; img.raycastTarget = false;
+            img.sprite = UiKit.LinearSprite(ThemeFx.Vignette(rgb, "vignette-" + key), 0.03f); img.type = Image.Type.Simple; img.preserveAspect = false; img.raycastTarget = false;   // Linear: 絵に焼いた α と頂点の α を舞台の縁 (0.03) を仮定して写す (BattleView.SyncDanger と同じ)
             img.color = new Color(1f, 1f, 1f, a);
+            UiKit.LinearShade(img, 0.03f);
             Tween.Run(dur, k => { if (img != null) img.color = new Color(1f, 1f, 1f, a * (1f - k)); }, Ease.OutQuad, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 
@@ -294,8 +300,8 @@ namespace DeckRogue.Game
             StageBeat.Shake(1f, 0.25f);
             Audio.Key("finish_blow");
             Audio.Duck(0.6f, 0.5f, 0.6f, 0.03f);
-            FlashScreen(fx, PaperFx.Paper3, 0.42f, 0.12f);
-            AfterVisual(0.1f, () => FlashScreen(fx, PaperFx.Night, 0.28f, 0.35f));
+            FlashScreen(fx, PaperFx.Paper3, 0.3f, 0.08f);   // 2026-11-04 撮影で白が 0.27 秒続いて紙まで飛んだ → 短く薄く (ScreenFlash が Linear の α を写すようにもした)
+            AfterVisual(0.08f, () => FlashScreen(fx, PaperFx.Night, 0.14f, 0.3f));
             Tween.RingBurst(fx, hit, new Color(1f, 1f, 0.95f, 0.9f), boss ? 320f : 260f, 0.5f);
         }
 
@@ -547,9 +553,9 @@ namespace DeckRogue.Game
         {
             if (g == null || fx == null || endedRs == null) return 0f;
             var goldTag = g.Anchor("gold"); var manaTag = g.Anchor("mana");
-            int goldNow = endedRs.Gold, manaNow = DeckRogue.Engine.Run.ManaOf(endedRs);
-            Action remember = () => { ScreenFx.Shown(g, "gold", goldNow, null, null, " G", false); ScreenFx.Shown(g, "mana", manaNow, null, null, "", false); };
-            if (ScreenFx.Instant || (goldDelta <= 0 && manaDelta <= 0)) { remember(); return 0f; }
+            int goldNow = endedRs.Gold;
+            // 「見せた値」の記録は ShowOutcome が勝利の分岐の頭で同期に済ませている (2026-11-04 反証。ここで後回しにすると飛ばした時に取り消され、報酬画面で差分が二度出た)
+            if (ScreenFx.Instant || (goldDelta <= 0 && manaDelta <= 0)) return 0f;
             float last = 0f;
             if (goldDelta > 0 && goldTag != null)
             {
@@ -602,16 +608,14 @@ namespace DeckRogue.Game
                     last = Mathf.Max(last, dl + 0.46f);
                 }
             }
-            AfterVisual(last + 0.02f, remember);
             return last;
         }
 
         // ---------------------------------------------------------------- 敗北の崩れ (G13)
 
-        /// <summary>主人公が崩れる (敵の崩れと同じ Dissolve を薔薇の粒で)。defeat_fall。舞台の主人公が居なければ絵の UI だけ薄れる</summary>
+        /// <summary>主人公が崩れる (敵の崩れと同じ Dissolve を薔薇の粒で)。落下の音は ShowOutcome の PlayerDied (表で defeat_fall) が鳴らす＝ここでは鳴らさない (2026-11-04 反証: 0.08 秒差で二度鳴っていた)。舞台の主人公が居なければ絵の UI だけ薄れる</summary>
         static void PlayerCrumble(GameRoot g, RectTransform fx, float dur)
         {
-            Audio.Key("defeat_fall");
             Stage.PlayAnim("player", "hurt");
             var spr = g.Battle != null ? g.Battle.PlayerSprite() : null;
             var img = spr != null ? spr.GetComponent<Image>() : null;

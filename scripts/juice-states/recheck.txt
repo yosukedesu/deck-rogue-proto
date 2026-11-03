@@ -1,0 +1,13 @@
+# 見た目・UX・演出の磨き (2026-11-04) — レビューの直しの後の確認 (after.txt の要点だけ)。1行 = 名前|STATE
+J-kill|phase=combat;enemy=enemy_probe;ehp=3;play=attack;playshots=24;playevery=4
+J-outcome|phase=combat;enemy=enemy_probe;motion=1;outcome=1;outcomeshots=36;outcomeevery=10
+J-victory-boss|phase=combat;boss=1;enemy=enemy_brute;motion=1;outcome=1;outcomeshots=36;outcomeevery=10
+J-lose|phase=combat;enemy=enemy_brute;motion=1;lose=1;loseshots=40;loseevery=3
+J-enemyphase|phase=combat;enemy=enemy_wolf;endplay=1;endshots=12;endevery=3
+J-danger|phase=combat;enemy=enemy_wolf;php=20
+J-reward|phase=reward
+J-take|phase=reward;motion=1;take=1;takeshots=16;takeevery=3
+J-relictake|phase=relic;motion=1;relictake=1;relictakeshots=16;relictakeevery=3
+J-rest|phase=campfire;hp=50;motion=1;rest=1;restshots=16;restevery=3
+J-won|phase=won
+J-lost|phase=lost

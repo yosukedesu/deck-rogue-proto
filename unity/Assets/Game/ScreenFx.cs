@@ -45,13 +45,23 @@ namespace DeckRogue.Game
         static Image _curtain;
         static Action _queued;   // 幕が閉じている間に来た次の組み直し
         static float _deferOnce;   // 次の幕が閉じる前に待つ秒 (選んだ後の 1 秒。DeferNextSwitch)
+        static bool _holding;      // SwitchCo が「選んだ後の 1 秒」の輪の中にいる
+        static bool _cancelHold;   // 輪を次のコマで抜ける (CancelHold)。輪を抜ける時に消費して戻す
 
         /// <summary>
         /// 選んだ後の 1 秒 (2026-11-04 束 C1): 次の Switch は幕を閉じる前に sec 秒待つ (入力は塞ぐ・タップで飛ばせる)。
         /// 手 (g.Do) の後に出来事の結果・回復の数え上げを「今の画面の上」で見せるための窓。Do の直前に呼び、Switch が始まらなかったら 0 で消す。
-        /// Instant では効かない (撮影は止まった画面)
+        /// Instant では効かない (撮影は止まった画面)。
+        /// 注意: Switch の StartCoroutine は最初の yield まで同期に進むので、同じコマの Do の後に 0 で消しても「もう始まった輪」には効かない。
+        /// 見せる物が無いと Do の後に分かった時 (出来事→戦闘) は CancelHold で輪を抜ける
         /// </summary>
         public static void DeferNextSwitch(float sec) { _deferOnce = Instant ? 0f : Mathf.Max(0f, sec); }
+
+        /// <summary>
+        /// 選んだ後の待ちをやめる (2026-11-04 レビューの是正): 幕を閉じる前の輪 (DeferNextSwitch) が走っていれば次のコマで抜ける。
+        /// 輪が無ければ何もしない (旗を次の Switch に漏らさない)。出来事で戦闘へ続く手を選んだ時など「見せる物が無い」と Do の後に分かる場面で呼ぶ
+        /// </summary>
+        public static void CancelHold() { if (_holding) _cancelHold = true; }
 
         static ScreenFx I
         {
@@ -114,13 +124,16 @@ namespace DeckRogue.Game
             float hold = _deferOnce; _deferOnce = 0f;
             if (hold > 0f)
             {
+                _holding = true; _cancelHold = false;
                 float h = 0f;
                 while (h < hold)
                 {
+                    if (_cancelHold) break;   // 見せる物が無いと分かった (CancelHold)
                     bool tap = h > 0.25f && (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began));
                     if (tap) break;
                     h += Dt; yield return null;
                 }
+                _holding = false; _cancelHold = false;   // 消費して戻す (次の Switch に漏らさない)
             }
             Audio.Key("paper_swish", 0.7f);   // 幕が閉じる紙の音 (A14)
             float a0 = _curtain.color.a;
@@ -227,11 +240,17 @@ namespace DeckRogue.Game
             }
         }
 
+        /// <summary>Update を回す実体を用意する (報酬の札の返りはこの Update のタップで飛ばすので、幕が一度も動いていなくても作っておく)</summary>
+        public static void EnsureInstance() { var me = I; if (me == null) return; }
+
         void Update()
         {
-            if (_entries.Count == 0) return;
+            // 報酬の札の返り (ScreenJuice.RevealCard) も同じタップで終わりの姿へ (2026-11-04 レビューの是正: 3 枚目の「取る」が 0.6 秒押せなかった)
+            bool reveals = ScreenJuice.HasReveals;
+            if (_entries.Count == 0 && !reveals) return;
             bool tap = Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began);
-            if (tap) { FinishEntriesNow(); return; }
+            if (tap) { FinishEntriesNow(); if (reveals) ScreenJuice.FinishReveals(); return; }
+            if (_entries.Count == 0) return;
             _entryT += Dt;
             bool all = true;
             for (int i = _entries.Count - 1; i >= 0; i--)
@@ -262,6 +281,8 @@ namespace DeckRogue.Game
             static int _appearFrame = -1;   // 同じコマに並んだ決定のボタンは 1 回だけ鳴る
 
             void Awake() { _rt = (RectTransform)transform; _btn = GetComponent<Button>(); _base = _rt.localScale; }
+            /// <summary>「もう現れた」と印を付ける (2026-11-04 レビューの是正): 自分で現れ方を持つ側 (報酬の札の返り) が interactable を戻す直前に呼ぶと、立ち上がりの pop と button_appear (脈の側の 1 回も) を鳴らさない</summary>
+            public void MarkShown() { _wasActive = true; _appeared = true; _seen = true; }
             public void OnPointerEnter(PointerEventData d) { _in = true; if (!UiKit.Phone && Active) Audio.Hover(); }
             public void OnPointerExit(PointerEventData d) { _in = false; _down = false; }
             public void OnPointerDown(PointerEventData d) { _down = true; }

@@ -487,12 +487,10 @@ namespace DeckRogue.Game
                     if (pan == null) return;
                     var tag = pan.Find("intent-tag") as RectTransform;
                     if (tag != null) Tween.Punch(tag, ex.Kind == "attack" ? 0.24f : 0.16f, 0.32f);
-                    // 予兆 (2026-11-04 B07): 攻撃の意図の札の紙が真鍮に一瞬点き、enemy_telegraph。大技の赤い合図 (StageMotion.EnemyBig) が出ている時は重ねない
+                    // 予兆 (2026-11-04 B07): 攻撃の意図の札の上に真鍮の輪が一瞬広がり (FxLayer に置く＝紙は染めない。旧は紙の面を Tween.Flash で真鍮に染めていた→反証で是正)、enemy_telegraph。大技の赤い合図 (StageMotion.EnemyBig) が出ている時は重ねない
                     if (tag != null && ex.Kind == "attack" && !StageMotion.EnemyBigFlashing)
                     {
-                        var tagPaper = tag.Find("paper");
-                        var tagImg = tagPaper != null ? tagPaper.GetComponent<Image>() : null;
-                        if (tagImg != null) Tween.Flash(tagImg, PaperFx.BrassLight, 0.35f);
+                        Tween.RingBurst(fx, Tween.CenterIn(tag, fx), PaperFx.BrassLight, 110f, 0.3f);
                         Audio.Key("enemy_telegraph");
                     }
                     Vector2 center = spr != null ? Tween.CenterIn(spr, fx) : Tween.CenterIn(pan, fx);
@@ -514,7 +512,7 @@ namespace DeckRogue.Game
                         case "buff":
                             if (spr != null) Tween.Puff(spr, 0.4f, 1.15f);
                             Tween.RingBurst(fx, center, PaperFx.Brass, 180f, 0.4f);
-                            Audio.Key("EnemyIntentDeclared");
+                            Audio.Key("enemy_telegraph", 0.5f);   // 強化の実行は予兆の音を小さく (2026-11-04 反証: 型名の鍵 EnemyIntentDeclared は表で null に戻る＝宣言は無音)
                             break;
                         case "rally":
                         {
@@ -841,8 +839,10 @@ namespace DeckRogue.Game
             var prev = ctx != null ? ctx.Prev : null;
             if (orb == null || def == null || cur == null) return;
             int paid = prev != null ? Math.Max(0, prev.Player.Energy - cur.Player.Energy) : def.Cost;
-            if (paid > 0) Audio.KeyPitched("energy_spend", 1f + 0.04f * Mathf.Min(paid, 5), 0.6f);   // 払った量で少し上がる (2026-11-04)
-            if (def.XCost != true) { if (paid > 0 || def.Cost > 0) Tween.Punch(orb, 0.14f, 0.25f); return; }
+            // X 以外の札は音も輪の跳ねも出さない (2026-11-04 反証): 玉が輪へ飛ぶ演出 (BattleView.EnergyOrbs) が着地で energy_spend と跳ねを出すので、ここで鳴らすと 1 枚で二度鳴った。
+            // X の札は EnergyOrbs が玉を出さないので、こちらで払った量ぶん鳴らす (払った量で少し上がる)
+            if (def.XCost != true) return;
+            if (paid > 0) Audio.KeyPitched("energy_spend", 1f + 0.04f * Mathf.Min(paid, 5), 0.6f);
             int effX = paid + (cur.XBonus ?? 0) + (def.XBonus ?? 0);
             Tween.Punch(orb, 0.22f, 0.3f);
             var from = Tween.CenterIn(orb, fx);
@@ -944,7 +944,7 @@ namespace DeckRogue.Game
             AfterVisual(0.35f, () => NameBand(fx, boss ? "幕ボス" : "強個体", enc, boss, hold, bandTop, bandX));
             // 寄りは帯が消えきる前に戻り終える (旧 1.3+0.7+0.9=2.9 秒は帯より 0.4 秒長く、意図の札を出す時に舞台がまだ寄っていた)。割合は旧と同じ (寄る 45%・留まる 25%・戻る 30%)
             float dolly = bandEnd - 0.04f;
-            if (boss) { if (!world) Stage.Dolly(0.9f, dolly * 0.45f, dolly * 0.25f, dolly * 0.30f); Audio.Ui("act_start"); }   // 箱庭では寄らない (ユーザー裁定「酔う」)。舞台の反応は StageBeat.EnemyEnter (2026-11-04)
+            if (boss) { if (!world) Stage.Dolly(0.9f, dolly * 0.45f, dolly * 0.25f, dolly * 0.30f); }   // 箱庭では寄らない (ユーザー裁定「酔う」)。舞台の反応は StageBeat.EnemyEnter (2026-11-04)。入口の一打は GameRoot.Do の boss_start に一本化 (旧 act_start は 0.35 秒差で重なっていた)
             AfterVisual(bandEnd, () => BattleScreen.RevealIntentsAfterEntrance(g, 0.2f));
             var block = UiKit.NewRect("inputblock", fx);
             UiKit.Stretch(block, 0f, 0f, 0f, 0f);
@@ -1132,6 +1132,11 @@ namespace DeckRogue.Game
             // もらえた: G・魔素の増えた量＝戦闘の手の直前のラン (PrevRun) と終わったランの差。盗まれて逃げられた分 (負) は飛ばさず行にだけ
             int goldDelta = PrevRun != null ? endedRs.Gold - PrevRun.Gold : 0;
             int manaDelta = PrevRun != null ? DeckRogue.Engine.Run.ManaOf(endedRs) - DeckRogue.Engine.Run.ManaOf(PrevRun) : 0;
+            // 「見せた値」は硬貨が着く前にここで同期で覚える (2026-11-04 反証): 旧は FlyLoot の末尾 (約 1.3 秒後) に回していたので、
+            // 余韻を 0.5 秒で飛ばす・watchdog で落ちると取り消され、報酬画面の上部バーが同じ「+N G」「+N」をもう一度出していた。
+            // 硬貨の数え上げは FlyLoot が文字を直接書くので、先に覚えても見た目は変わらない
+            ScreenFx.Remember("gold", endedRs.Gold);
+            ScreenFx.Remember("mana", DeckRogue.Engine.Run.ManaOf(endedRs));
             var lines = new List<string>();
             if (goldDelta > 0 || manaDelta > 0) lines.Add((goldDelta > 0 ? "+" + goldDelta + " G" : "") + (goldDelta > 0 && manaDelta > 0 ? " ・ " : "") + (manaDelta > 0 ? "魔素 +" + manaDelta : ""));
             else if (goldDelta < 0) lines.Add("−" + (-goldDelta) + " G（逃げられた）");
@@ -2328,7 +2333,7 @@ namespace DeckRogue.Game
                                 // 段2 レーン M (直し 2026-10-03・反証「白の閃きに被弾の赤い点滅が重なり紙の UI まで桃色」): 敵の大技の合図から帯の終わりまでは α を上限まで (0 = 出さない)。門が偽なら今のまま
                                 if (StageMotion.EnemyBigFlashing) hurtA = Mathf.Min(hurtA, StageMotion.EnemyBigHurtFlashAlpha);
                                 if (hurtA > 0.001f) HurtVignette(fx, PaperFx.Rose, hurtA, dd.HpLoss >= 12 ? 0.6f : 0.4f, "rose");
-                                if (lethalHit) FlashScreen(fx, PaperFx.Rose, 0.3f, 0.4f);
+                                if (lethalHit) FlashScreen(fx, PaperFx.Rose, 0.18f, 0.25f);   // 直前の Tween.FinishSlow で時間が伸びるので薄く短く (2026-11-04 反証: 0.3・0.4 秒は紙の UI まで薔薇に飛んだ)
                             }
                             var pos = Tween.CenterIn(rtC, fx) + new Vector2(UnityEngine.Random.Range(-40f, 40f), 10f);
                             // 数字は失った HP (2026-09-17 ⑥)。完全に防いだら「防いだ」、盾が吸った量は脇に鋼青で (旧: ブロック前の量を朱で＝表示の嘘)。大きさは段 (G3)

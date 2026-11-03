@@ -871,6 +871,8 @@ namespace DeckRogue.Game
         readonly List<int> _previewTargets = new List<int>();
         readonly List<KeyValuePair<int, GameObject>> _previewEdges = new List<KeyValuePair<int, GameObject>>();
         string _previewUid; int _previewOver = -1; string _previewSound;
+        /// <summary>前回の見込みを出した時の盤面と狙い (GameState は不変で手ごとに別の参照になるので、参照の一致＝盤面の一致)。指が動くたび呼ばれても同じ鍵なら計算し直さない</summary>
+        GameState _previewState; int _previewPreferred = -1;
         /// <summary>いま持っている札で狙いの敵を倒せる見込みか (スマホの狙いの矢の輪が読む)</summary>
         public bool PreviewLethal;
 
@@ -880,7 +882,9 @@ namespace DeckRogue.Game
             if (g == null || st == null || hc == null || hc.Card == null || hc.Rt == null) { ClearCardPreview(g); return; }
             var def = hc.Card.Def;
             if (!hc.Playable || st.Phase != CombatPhases.PlayerTurn || !BattleJuice.HasPlayDamage(def)) { ClearCardPreview(g); return; }
-            _previewUid = hc.Card.Uid; _previewOver = over;
+            // 同じ札・同じ指の下の敵・同じ盤面・同じ狙いなら何もしない (ドラッグの毎コマ呼ばれるので、見込みの再計算と Find・List の確保を繰り返さない)
+            if (_previewState != null && ReferenceEquals(st, _previewState) && hc.Card.Uid == _previewUid && over == _previewOver && g.PreferredTarget == _previewPreferred) return;
+            _previewUid = hc.Card.Uid; _previewOver = over; _previewState = st; _previewPreferred = g.PreferredTarget;
             var targets = new List<int>();
             if (BattleJuice.TargetsAll(def)) { for (int i = 0; i < st.Enemies.Count; i++) if (st.Enemies[i].Hp > 0) targets.Add(i); }
             else
@@ -947,6 +951,7 @@ namespace DeckRogue.Game
             foreach (var kv in _previewEdges) if (kv.Value != null) UnityEngine.Object.Destroy(kv.Value);
             _previewEdges.Clear();
             _previewUid = null; _previewOver = -1; _previewSound = null; PreviewLethal = false;
+            _previewState = null; _previewPreferred = -1;
         }
 
         /// <summary>組み直しの後 (敵の帳面は作り直されて帯も縁も消えている): まだ同じ札を持っていれば見込みを出し直す。持っていなければ忘れる</summary>
@@ -954,6 +959,7 @@ namespace DeckRogue.Game
         {
             if (_previewUid == null) return;
             _previewTargets.Clear(); _previewEdges.Clear(); _previewSound = null;
+            _previewState = null;   // 帳面が作り直されて帯も縁も無いので、同じ鍵でも必ず出し直す (ShowCardPreview の早期 return を通さない)
             HandCard hc;
             bool holding = _hand.TryGetValue(_previewUid, out hc) && hc.Rt != null;
             if (holding && !BattleScreen.Dragging)
@@ -1852,7 +1858,7 @@ namespace DeckRogue.Game
                 Tween.After(0.04f * i, () => Tween.Projectile(fx, from, to, PaperFx.Brass, 18f, 0.22f, 30f + 12f * (ii % 3), () =>
                 {
                     var o2 = g.Anchor("energy");   // 組み直しで作り直されていれば新しい輪
-                    if (ii == 0) { Audio.Key("energy_spend"); if (o2 != null) Tween.Punch(o2, 0.1f, 0.2f); }
+                    if (ii == 0) { Audio.KeyPitched("energy_spend", 1f + 0.04f * Mathf.Min(cost, 5), 0.6f); if (o2 != null) Tween.Punch(o2, 0.1f, 0.2f); }   // 払った量で少し上がる (Presenter 側は X 札だけ鳴らす)
                     Tween.RingBurst(fx, o2 != null ? Tween.CenterIn(o2, fx) : to, PaperFx.BrassLight, 60f, 0.25f);
                 }));
             }
@@ -1864,7 +1870,7 @@ namespace DeckRogue.Game
             var cg = rt.GetComponent<CanvasGroup>();
             if (cg == null) cg = rt.gameObject.AddComponent<CanvasGroup>();   // ?? は不可: エディタでは無いコンポーネントが例外を投げる null オブジェクトで返る
             cg.blocksRaycasts = false;
-            Audio.Key("CardExhausted");
+            // 音は鳴らさない: 消滅の音は Presenter の表 (GameEvent_CardExhausted の TableSound) が engine の時刻で 1 回鳴らす。ここでも鳴らすと 1 枚につき 2 回になっていた
             var frame = rt.Find("frame");
             var fimg = frame != null ? frame.GetComponent<Image>() : null;
             if (fimg != null) Tween.Flash(fimg, PaperFx.BrassLight, 0.3f);

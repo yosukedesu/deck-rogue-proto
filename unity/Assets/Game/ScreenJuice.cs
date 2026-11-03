@@ -121,10 +121,60 @@ namespace DeckRogue.Game
 
         // ---- 1) 報酬の札の儀式 (G1・M06) ----
 
+        /// <summary>返りの進行の記録 (タップで全部を終わりの姿へ飛ばすため。後から来る After/Run は Done を見て何もしない)</summary>
+        class Reveal { public RectTransform Cv; public RectTransform Back; public Button Take; public float S; public bool Done; }
+        static readonly List<Reveal> _reveals = new List<Reveal>();
+
+        /// <summary>返っている途中の札がある (ScreenFx.Update がタップを見る条件)。組み直しで消えた札は数えない</summary>
+        public static bool HasReveals
+        {
+            get
+            {
+                for (int i = _reveals.Count - 1; i >= 0; i--)
+                {
+                    var r = _reveals[i];
+                    if (r.Done || r.Cv == null) { _reveals.RemoveAt(i); continue; }
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        /// <summary>1 枚を終わりの姿へ (裏を消す・大きさを戻す・「取る」を押せるように)。二度目は何もしない</summary>
+        static void FinishReveal(Reveal r)
+        {
+            if (r == null || r.Done) return;
+            r.Done = true;
+            if (r.Back != null) UnityEngine.Object.Destroy(r.Back.gameObject);
+            if (r.Cv != null) r.Cv.localScale = Vector3.one * r.S;
+            if (r.Take != null)
+            {
+                var bm = r.Take.GetComponent<ScreenFx.ButtonMotion>();
+                if (bm != null) bm.MarkShown();   // 立ち上がりの button_appear を鳴らさない (card_flip と重ならない)
+                r.Take.interactable = true;
+            }
+        }
+
+        /// <summary>押したら待たせない: 返っている途中の札を全部終わりの姿へ (card_flip は 1 回だけ。輪・粒は省く)。ScreenFx.Update のタップから</summary>
+        public static void FinishReveals()
+        {
+            bool any = false;
+            for (int i = 0; i < _reveals.Count; i++)
+            {
+                var r = _reveals[i];
+                if (r.Done || r.Cv == null) continue;
+                FinishReveal(r); any = true;
+            }
+            _reveals.Clear();
+            if (any) Audio.KeyPitched("card_flip", 1f, 0.8f);
+        }
+
         /// <summary>
         /// 報酬の札 cv (cell の子・倍率 scale) を裏向きで置き、index×0.12 秒ずらして返す。返り切った瞬間に rarity の色の輪 (C 140／U 200／R 300) と card_flip。
         /// レアは返る前から真鍮の暈が呼吸し、返った瞬間に rare_reveal と全画面の淡い真鍮の閃き・粒 10。アンコモンは小さな暈と粒 4。
-        /// take (「取る」) は返っている間は押せない。返りは 1 枚 0.36 秒＝3 枚で 0.6 秒 (自動操縦が押す 1.4 秒より短い)。Instant なら表のまま
+        /// take (「取る」) は返っている間は押せない。返りは 1 枚 0.36 秒＝3 枚で 0.6 秒 (自動操縦が押す 1.4 秒より短い)。Instant なら表のまま。
+        /// 幕が動いている最中 (ScreenFx.Switch の組み直し) に呼ばれたら、幕が開いて入りが終わる (OpenDur＋EnterDur) まで返りを待つ＝1 枚目の返りが幕の下で終わらない。
+        /// タップ (ScreenFx.Update) で全部を終わりの姿へ飛ばせる (FinishReveals)
         /// </summary>
         public static void RevealCard(GameRoot g, RectTransform cell, RectTransform cv, string rarity, int index, Button take, bool flip = true)
         {
@@ -161,29 +211,40 @@ namespace DeckRogue.Game
             back.SetAsLastSibling();
             if (take != null) take.interactable = false;
             float s = cv.localScale.x;
-            float delay = FxSettings.Dur(0.12f) * index;
+            // 幕が動いている (決着→報酬の Switch の組み直しの中) なら、幕が開き入りが満ちるまで待ってから返す。同じ相の組み直し (幕なし) は従来どおり
+            float lead = ScreenFx.Busy ? ScreenFx.OpenDur + ScreenFx.EnterDur : 0f;
+            float delay = lead + FxSettings.Dur(0.12f) * index;
             float d1 = FxSettings.Dur(0.16f), d2 = FxSettings.Dur(0.2f);
+            var rec = new Reveal { Cv = cv, Back = back, Take = take, S = s };
+            _reveals.Add(rec);
+            ScreenFx.EnsureInstance();   // タップで飛ばす口 (ScreenFx.Update) を確かに回す
             Tween.After(delay, () =>
             {
-                if (cv == null) return;
+                if (rec.Done || cv == null) return;
                 // 前半: 裏が細くなる
-                Tween.Run(d1, k => { if (cv != null) cv.localScale = new Vector3(s * (1f - k), s, 1f); }, Ease.InQuad, () =>
+                Tween.Run(d1, k => { if (!rec.Done && cv != null) cv.localScale = new Vector3(s * (1f - k), s, 1f); }, Ease.InQuad, () =>
                 {
-                    if (cv == null) return;
+                    if (rec.Done || cv == null) return;
                     if (back != null) UnityEngine.Object.Destroy(back.gameObject);
                     Audio.KeyPitched("card_flip", 1f + 0.05f * index, 0.8f);
                     // 後半: 表が開く
-                    Tween.Run(d2, k => { if (cv != null) cv.localScale = new Vector3(s * k, s, 1f); }, Ease.OutBack, () =>
+                    Tween.Run(d2, k => { if (!rec.Done && cv != null) cv.localScale = new Vector3(s * k, s, 1f); }, Ease.OutBack, () =>
                     {
-                        if (cv == null) return;
+                        if (rec.Done || cv == null) return;
+                        rec.Done = true;
                         cv.localScale = Vector3.one * s;
-                        if (take != null) take.interactable = true;
+                        if (take != null)
+                        {
+                            var bm = take.GetComponent<ScreenFx.ButtonMotion>();
+                            if (bm != null) bm.MarkShown();   // 「取る」が押せるようになっても button_appear は鳴らさない (card_flip と重ならない)
+                            take.interactable = true;
+                        }
                         var c = Tween.CenterIn(cv, fx);
                         Tween.RingBurst(fx, c, edge, rare ? 300f : unc ? 200f : 140f, 0.4f);
                         if (rare)
                         {
                             Audio.Key("rare_reveal");
-                            Tween.ScreenFlash(fx, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.12f * FxSettings.Flash), 0.35f);
+                            Tween.ScreenFlash(fx, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.08f * FxSettings.Flash), 0.3f);
                             Motes(fx, c, PaperFx.BrassLight, 10, 120f, 80f);
                             Tween.Punch(cv, 0.08f, 0.35f);
                         }
@@ -203,13 +264,14 @@ namespace DeckRogue.Game
             ScreenFx.LockInput(true);
             var c = Tween.CenterIn(cell, fx);
             Tween.RingBurst(fx, c, PaperFx.BrassLight, 360f, 0.5f);
-            Tween.ScreenFlash(fx, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.12f * FxSettings.Flash), 0.3f);
+            Tween.ScreenFlash(fx, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.07f * FxSettings.Flash), 0.25f);
             Motes(fx, c, PaperFx.BrassLight, 10, 110f, 90f);
             if (!string.IsNullOrEmpty(name)) NightLine(fx, c + new Vector2(0f, cell.rect.height * 0.5f + 40f), name, PaperFx.BrassLight, 24, 0.8f);
             var art = cell.Find("relic-art") as RectTransform;
             if (art != null) Tween.Puff(art, 0.4f, 1.25f);
             Audio.Key("relic_get");
-            Tween.After(FxSettings.Dur(0.45f), then);
+            // cell が消えていたら (組み直し) FlyTo が from==null で then だけ呼び LockInput が残るので、ここで解く (幕が動いている間は幕が握るので重なっても害は無い)
+            Tween.After(FxSettings.Dur(0.45f), () => { if (cell == null) ScreenFx.LockInput(false); then(); });
         }
 
         /// <summary>宝箱が開いた瞬間 (組み直しの後に呼ぶ): 白→真鍮の閃き・箱の上に輪と粒 14・relic_get</summary>
@@ -217,7 +279,7 @@ namespace DeckRogue.Game
         {
             var fx = Fx(g);
             if (ScreenFx.Instant || fx == null) return;
-            Tween.ScreenFlash(fx, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.2f * FxSettings.Flash), 0.35f);
+            Tween.ScreenFlash(fx, new Color(PaperFx.BrassLight.r, PaperFx.BrassLight.g, PaperFx.BrassLight.b, 0.1f * FxSettings.Flash), 0.3f);
             if (chest != null)
             {
                 var c = Tween.CenterIn(chest, fx);
@@ -348,6 +410,15 @@ namespace DeckRogue.Game
                 crt.anchoredPosition = new Vector2(0f, 20f);
             }
             ScreenFx.LockInput(true);
+            // 複製 crt が途中で消える (組み直し＝GameRoot.Rebuild / Presenter.Reset が FxLayer の子を捨てる) 経路の全部で、鍵を解いて手を一度だけ進める。
+            // 3 打の After は 3 本とも null を見るので、旗が無いと g.Do が 3 回飛ぶ (2026-11-04 レビューの是正)
+            bool done = false;
+            Action finish = () =>
+            {
+                if (done) return; done = true;
+                ScreenFx.LockInput(false);
+                then();
+            };
             Vector2 p0 = crt.anchoredPosition, p1 = new Vector2(0f, 20f);
             float s0 = crt.localScale.x, s1 = UiKit.Phone ? 1.0f : 1.15f;
             float gap = FxSettings.Dur(0.11f);
@@ -358,12 +429,14 @@ namespace DeckRogue.Game
                 crt.localScale = Vector3.one * Mathf.Lerp(s0, s1, k);
             }, Ease.OutCubic, () =>
             {
+                if (crt == null) { finish(); return; }
                 for (int i = 0; i < 3; i++)
                 {
                     int hit = i;
                     Tween.After(gap * i, () =>
                     {
-                        if (crt == null) return;
+                        if (done) return;
+                        if (crt == null) { finish(); return; }
                         Audio.KeyPitched("upgrade_shine", 1f + 0.08f * hit, 0.8f);
                         WhiteFlash(crt, 0.6f, 0.14f);
                         Tween.Shake(crt, 4f * Mathf.Max(0.25f, FxSettings.Shake), 0.1f);
@@ -379,9 +452,10 @@ namespace DeckRogue.Game
                             Tween.Punch(crt, 0.1f, 0.35f);
                             Tween.After(FxSettings.Dur(0.4f), () =>
                             {
-                                if (crt == null) { ScreenFx.LockInput(false); then(); return; }
+                                if (done) return;
+                                if (crt == null) { finish(); return; }
                                 var src = crt;
-                                ScreenFx.FlyTo(g, src, "deck", then);   // FlyTo は src を複製してから飛ばす (LockInput を引き継ぐ)
+                                ScreenFx.FlyTo(g, src, "deck", finish);   // FlyTo は src を複製してから飛ばす (LockInput を引き継ぐ。finish 側の解錠が重なっても幕が動いている間は無視される)
                                 UnityEngine.Object.Destroy(src.gameObject);
                             });
                         }
@@ -434,7 +508,7 @@ namespace DeckRogue.Game
             {
                 if (ca != null) UnityEngine.Object.Destroy(ca);
                 if (cb != null) UnityEngine.Object.Destroy(cb);
-                Tween.ScreenFlash(fx, new Color(PaperFx.ManaLight.r, PaperFx.ManaLight.g, PaperFx.ManaLight.b, 0.2f * FxSettings.Flash), 0.3f);
+                Tween.ScreenFlash(fx, new Color(PaperFx.ManaLight.r, PaperFx.ManaLight.g, PaperFx.ManaLight.b, 0.1f * FxSettings.Flash), 0.3f);
                 Tween.RingBurst(fx, dst, PaperFx.Mana, 320f, 0.45f);
                 Motes(fx, dst, PaperFx.ManaLight, 10, 110f, 80f);
                 if (result == null) { ScreenFx.LockInput(false); then(); return; }

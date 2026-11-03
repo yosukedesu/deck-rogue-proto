@@ -815,18 +815,24 @@ namespace DeckRogue.Game
                 }
                 if (pulses.Count > 0)
                 {
-                    if (pulseSound) Audio.Key("status_apply");
-                    foreach (var prt in pulses)
+                    // 時機 (2026-11-04 反証): 札のプレイは古い盤面を保たず即 Rebuild するので、ここで跳ねると札が敵に届く前に状態が変わって見えた。
+                    // Presenter が着弾を控えている (PendingImpactCount > 0) 間は、最後の着弾 (LastImpactDelay) の少し後に跳ねて鳴る。控えが無ければ 1 コマ後
+                    // (レイアウトグループの子は組んだ直後は左上を指すので 1 コマ待つ)。LastStatus は上で既に更新してある。先に組み直されて札が消えていれば何もしない
+                    float pulseDelay = Presenter.PendingImpactCount > 0 ? Presenter.LastImpactDelay + 0.05f : 0.05f;
+                    bool sound = pulseSound;
+                    Tween.After(pulseDelay, () =>
                     {
-                        var p2 = prt;
-                        Tween.After(0.05f, () =>
-                        {   // レイアウトグループの子は組んだ直後は左上を指すので 1 コマ待つ
-                            if (p2 == null) return;
-                            Tween.Punch(p2, 0.3f, 0.3f);
-                            var bg = p2.GetComponent<Image>();
+                        bool any = false;
+                        foreach (var prt in pulses)
+                        {
+                            if (prt == null) continue;
+                            any = true;
+                            Tween.Punch(prt, 0.3f, 0.3f);
+                            var bg = prt.GetComponent<Image>();
                             if (bg != null) Tween.Flash(bg, bg.color == PaperFx.PlumLight ? PaperFx.Plum : PaperFx.BrassLight, 0.4f);
-                        });
-                    }
+                        }
+                        if (any && sound) Audio.Key("status_apply");
+                    });
                 }
             }
             if (g.Battle != null)
@@ -1611,7 +1617,14 @@ namespace DeckRogue.Game
         public static bool SetHpBarMaximum(RectTransform container,int maxHp) {
             var info=container!=null?container.GetComponentInChildren<HpBarInfo>():null;
             if(info==null)return false;
-            int value=Math.Max(1,maxHp);bool changed=info.Max!=value;info.Max=value;return changed;
+            int value=Math.Max(1,maxHp);bool changed=info.Max!=value;info.Max=value;
+            if(changed){
+                // 分母が変わったら残像を今の比率で引き直す。流れている残像の補間 (旧分母の閉包 g0/r1) は版を進めて止める (止めないと次のコマで古い比率を書き戻す)。
+                // 塗りは続く TweenHpBar/SetHpBarImmediate の最初のコマが新しい分母で直す
+                ++info.GhostRev;
+                SetGhost(info,Mathf.Clamp01((float)info.Value/info.Max));
+            }
+            return changed;
         }
 
         public static void TweenHpBar(RectTransform container, int target)
@@ -1627,12 +1640,13 @@ namespace DeckRogue.Game
             var fill = info.Fill; var label = info.Label; int max = info.Max; var hi = info;
             bool hurt = target < from;
             // 削られ方の文法 (2026-11-04 G12/TB-10・本家の白ゲージ): 減る時は塗りが速く落ち (0.18 秒)、残像 (紙色の帯) が元の長さで 0.25 秒止まってから 0.4 秒で追いつく。
-            // 数字は減った瞬間に跳ねる。増える時 (回復) は残像を即追従させ、塗りが 0.35 秒で満ちる
+            // 数字は減った瞬間に跳ねる。増える時 (回復) は残像を即追従させ (予約してある残像の補間は版を進めて無効に＝削られた直後の回復で古い残像がもう一度浮き出ない)、塗りが 0.35 秒で満ちる。
+            // 同じ値の呼び直し (Finish・組み直し) は残像に触らない (流れている残像を殺さない)
             float dur = hurt ? FxSettings.Dur(0.18f) : 0.35f;
             if (hurt && label != null) Tween.Punch(label.rectTransform, 0.18f, 0.28f);
             if (info.Ghost != null)
             {
-                if (!hurt) SetGhost(info, r1);
+                if (!hurt) { if (target > from) { ++info.GhostRev; SetGhost(info, r1); } }
                 else
                 {
                     SetGhost(info, Mathf.Max(info.GhostR, r0));   // 続けて削られた時は残像の右端を保つ (前の残像が流れ切る前に次の当たり)
@@ -4891,7 +4905,8 @@ namespace DeckRogue.Game
             {
                 var fb = UiKit.Btn(row, "発動", delegate
                 {
-                    // 発動の瞬間 (2026-11-04 B15): 窓は Rebuild で消えるので、トークンの位置に青緑の輪と閃きを FxLayer (残る層) に置いてから手を送る。音は trap_fire_big
+                    // 発動の瞬間 (2026-11-04 B15): 窓は Rebuild で消えるので、トークンの位置に青緑の輪と閃きを FxLayer (残る層) に置いてから手を送る。
+                    // 音はここでは鳴らさない: trap_fire_big は順送りの ReactionTriggered の着弾 (Presenter) が 1 回鳴らす。ここでも鳴らすと押した時と着弾で 2 回になっていた
                     var fx = g.FxLayer;
                     if (fx != null && tok != null)
                     {
@@ -4900,7 +4915,6 @@ namespace DeckRogue.Game
                         Tween.RingBurst(fx, at, PaperFx.Mana, 70f, 0.25f);
                         Tween.Punch(tok, 0.25f, 0.2f);
                     }
-                    Audio.Key("trap_fire_big");
                     onFire();
                 }, ph ? 18 : 20, true, PaperFx.BrassLight);
                 var fle = fb.GetComponent<LayoutElement>(); if (fle != null) UnityEngine.Object.Destroy(fle);

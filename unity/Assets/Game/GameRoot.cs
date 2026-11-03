@@ -381,10 +381,8 @@ namespace DeckRogue.Game
             bool combatEnded = wasCombat && Rs != null && Rs.Phase != RunPhases.Combat;
             // 確認の窓 (発動/温存) から進んだ手: 順送りで古い盤面を見せる前に窓と暗がりだけ先に畳む (2026-09-17)
             bool fromWindow = wasCombat && prevRs != null && prevRs.Combat != null && prevRs.Combat.Phase == CombatPhases.AwaitingReaction && Rs != null && !ReferenceEquals(Rs, prevRs);
-            int prevAct = _lastAct;
             if (Rs != null) _lastAct = Rs.Act;
-            // 幕の切り替わり (2026-09-14 ユーザー「ステージ切り替わり時に SE が必要」): 幕ボス撃破後の次の幕へ / ランの開始
-            if (Rs != null && prevAct != Rs.Act) Audio.Ui("act_start");
+            // 幕の切り替わりの音 (2026-09-14 ユーザー「ステージ切り替わり時に SE が必要」) は ActTitleFx.Show が 1 回だけ鳴らす (題字を出す時は act_title・出せない時は ui.act_start。2026-11-04 二重鳴りの是正)
             // 戦闘の始まり: マップから戦闘へ (同上)。幕ボスは低い一打 (boss_start。2026-11-04 束 C2・A8。鍵は音の束が足す。無ければ通常の音)
             if (!wasCombat && Rs != null && Rs.Phase == RunPhases.Combat)
             {
@@ -397,7 +395,11 @@ namespace DeckRogue.Game
             if(wasCombat && Rs?.Combat!=null && Battle!=null && !ReferenceEquals(prevRs,Rs)
                 && (combatEnded || Presenter.HasEnemyPhase(Rs.Combat))) {
                 if(fromWindow)Battle.CloseReactionWindow();
-                Presenter.PrevRun = prevRs;   // 2026-11-04: 決着の余韻で G・魔素の増えた量を出すため、戦闘の手の直前のランを渡す
+                // 2026-11-04: 決着の余韻で G・魔素の増えた量を出すため、戦闘の手の直前のランを渡す。
+                // ギアでとどめを刺した手は、その手で払った魔素 (GEAR_MANA_COST) が直前のランに残っているので足し戻す＝差が「勝利で得た魔素」になる
+                Presenter.PrevRun = cmd is RunCommand_UseGear
+                    ? prevRs with { Mana = DeckRogue.Engine.Run.ManaOf(prevRs) - Gears.GEAR_MANA_COST }
+                    : prevRs;
                 BeginCombatPresentation(Rs.Combat,combatEnded);
                 return;
             }
@@ -412,6 +414,12 @@ namespace DeckRogue.Game
             // 幕 (条1。2026-10-29 §9): フェーズ (か幕) が変わる手は夜色の幕を閉じてから組み直し、入りの動きを付けて開く。同じフェーズの組み直しは今まで通り瞬時
             bool phaseChanged = Rs != null && (prevRs == null || prevRs.Phase != Rs.Phase || prevRs.Act != Rs.Act);
             ScreenFx.MapScrollFromPrev = phaseChanged && Rs.Phase == RunPhases.Map && prevRs != null && prevRs.Phase != RunPhases.Map && Rs.Row >= 1;
+            // 評価の窓の持ち越し (2026-11-04 束 G): 報酬の画面で 1.2 秒を待たずに地図へ出た時は、時機を「今」にして地図で一度だけ窓を出す
+            // (Feedback.CanRate / ShouldShowRating は RatingReady が立っている間だけ Map も受ける。決定／スキップで RatingOpen が落ちれば地図からは消える)
+            if (!ScreenFx.Instant && Rs != null && prevRs != null && Rs.Phase == RunPhases.Map
+                && (prevRs.Phase == RunPhases.Reward || prevRs.Phase == RunPhases.RelicReward)
+                && Feedback.RatingOpen && !Feedback.RatingReady)
+                Feedback.RatingReady = true;
             Action after = delegate
             {
                 Rebuild();
@@ -475,7 +483,7 @@ namespace DeckRogue.Game
                 }
                 Rs = DeckRogue.Engine.Run.CreateRun(Seed, ReactionModes.SetConfirm, LeaderId, null, Difficulty, null);
                 _lastAct = Rs.Act;
-                Audio.Ui("act_start");
+                // 幕の始まりの音は ActTitleFx.Show が 1 回だけ鳴らす (2026-11-04 二重鳴りの是正)
                 // フィードバックの記録を白紙に (ジャーナルの origin = リプレイの起点)
                 Feedback.BeginRun(new ReplayOrigin { Kind = "run", Seed = Seed, LeaderId = LeaderId, Difficulty = Difficulty });
                 // 進行中のランは1本 (2026-09-15): 前のセーブは消して、開始直後の状態から自動保存を始める
@@ -837,7 +845,9 @@ namespace DeckRogue.Game
             float t = 0f;
             while (t < delay) { yield return null; t += Tween.UnscaledDt; }
             _ratingTimer = false;
-            if (!ReferenceEquals(Rs, rs) || !Feedback.RatingOpen || Feedback.RatingReady || CombatPresentationPending || ScreenRoot == null) yield break;
+            // 待つ目的は「報酬の札が入り終わるのを待つ」だけなので、その間に手が進んで Rs が替わっていても同じ相 (CanRate) に居るなら出す
+            // (2026-11-04 束 G: 旧は Rs の同一性で引き返し、1.2 秒以内に「取る」「見送る」と窓が二度と出なかった)
+            if (!Feedback.RatingOpen || Feedback.RatingReady || Rs == null || !Feedback.CanRate(Rs) || CombatPresentationPending || ScreenRoot == null) yield break;
             Feedback.RatingReady = true;
             // 画面は組み直さない (走破の記録の積み上げ・報酬の札の入りを止めない)。重ね窓が開いていれば次の組み直しで出る
             if (MenuOpen || SettingsOpen || Confirm != null || ViewMap || ViewDeck || ViewRelics || Feedback.MemoOpen) yield break;
@@ -963,7 +973,7 @@ namespace DeckRogue.Game
             }
             // タイトルとマップも新画面 (M3)
             if (Content.IsLoaded && Rs == null) { TitleScreen.Build(this, ScreenRoot); if (SettingsOpen) SettingsUi.Build(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
-            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); if (ViewRelics) RunUi.RelicViewer(this, ScreenRoot); if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot); if (MenuOpen) RunUi.Menu(this, ScreenRoot); if (SettingsOpen) SettingsUi.Build(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
+            if (Content.IsLoaded && Rs.Phase == RunPhases.Map) { MapScreen.Build(this, ScreenRoot); if (Feedback.ShouldShowRating(Rs)) FeedbackUi.RatingDialog(this, ScreenRoot); if (ViewDeck) RunUi.DeckViewer(this, ScreenRoot); if (ViewRelics) RunUi.RelicViewer(this, ScreenRoot); if (Feedback.MemoOpen) FeedbackUi.MemoDialog(this, ScreenRoot); if (MenuOpen) RunUi.Menu(this, ScreenRoot); if (SettingsOpen) SettingsUi.Build(this, ScreenRoot); if (Confirm != null) RunUi.ConfirmDialog(this, ScreenRoot); return; }
             if (Content.IsLoaded)
             {
                 bool built = true;

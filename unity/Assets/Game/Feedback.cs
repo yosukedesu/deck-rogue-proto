@@ -170,13 +170,16 @@ namespace DeckRogue.Game
         {
             if (!RatingOpen || run == null || LastBattle == null) return false;
             if (!RatingReady && !ScreenFx.Instant) return false;   // 時機を待つ (2026-11-04 束 C2。撮影は従来どおり即)
-            return run.Phase == RunPhases.Reward || run.Phase == RunPhases.RelicReward || run.Phase == RunPhases.Won || run.Phase == RunPhases.Lost;
+            return CanRate(run);
         }
 
-        /// <summary>「評価」ボタンを出すか (決着直後のフェーズなら、閉じた後でも直せる)</summary>
+        /// <summary>「評価」ボタンを出すか (決着直後のフェーズなら、閉じた後でも直せる)。
+        /// 報酬の画面を 1.2 秒以内に離れた時は GameRoot.Do が RatingReady を立てて持ち越すので、窓が開いていて時機が来ている間だけ地図 (Map) も受ける
+        /// (決定／スキップで RatingOpen が落ちれば地図からは消える＝「この戦いを評価」が地図に常駐しない。2026-11-04 束 G)</summary>
         public static bool CanRate(RunState run)
         {
             if (run == null || LastBattle == null) return false;
+            if (run.Phase == RunPhases.Map) return RatingOpen && RatingReady;
             return run.Phase == RunPhases.Reward || run.Phase == RunPhases.RelicReward || run.Phase == RunPhases.Won || run.Phase == RunPhases.Lost;
         }
 

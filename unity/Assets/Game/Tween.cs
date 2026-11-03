@@ -746,6 +746,7 @@ namespace DeckRogue.Game
             var img = rt.gameObject.AddComponent<Image>();
             img.color = color;
             img.raycastTarget = false;
+            UiKit.LinearShade(img);   // 2026-11-04: Linear の合成では半透明の板の α が持ち上がる (紙の α 0.72 が茶色に見える罠)。全画面の閃きも UiKit.Pan と同じく頂点の α を写す
             Run(dur, k => { if (img != null) img.color = new Color(color.r, color.g, color.b, color.a * (1f - k)); }, Ease.Linear, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); });
         }
 

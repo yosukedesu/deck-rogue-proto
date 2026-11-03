@@ -204,7 +204,11 @@ namespace DeckRogue.Game
             g.Do(cmd);
             if (!ScreenFx.Busy || g.Rs == null || ReferenceEquals(g.Rs, prev)) { ScreenFx.DeferNextSwitch(0f); return; }
             ScreenFx.DeferNextSwitch(0f);
-            if (g.Rs.Phase == RunPhases.Combat) return;   // 戦闘へ続く手は結果の札を出さない (戦闘の始まりが答え)
+            if (g.Rs.Phase == RunPhases.Combat)
+            {   // 戦闘へ続く手は結果の札を出さない (戦闘の始まりが答え)。見せる物が無いので、もう始まっている「選んだ後の 1 秒」の輪も抜ける (同じコマの DeferNextSwitch(0) は輪に効かない)
+                ScreenFx.CancelHold();
+                return;
+            }
             ScreenJuice.ShowOutcome(g, prev, g.Rs);
         }
 
