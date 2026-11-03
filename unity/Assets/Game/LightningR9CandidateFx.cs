@@ -40,8 +40,9 @@ namespace DeckRogue.Game {
    var now=Stage.CaptureImpact(t.Target);return t.Impact?.Actor!=null&&now.Actor==t.Impact.Actor&&now.MotionVersion==t.Impact.MotionVersion;
   }
   static bool EnvironmentReady()=>Tween.SchedulingAllowed&&Stage.CombatWorld&&Stage.Camera!=null&&Stage.Camera.isActiveAndEnabled&&QualitySettings.activeColorSpace==ColorSpace.Linear&&!ElementBattleFx.ForceMissingForTest;
-  static Color Linear(string hex){if(!ColorUtility.TryParseHtmlString(hex,out var c))throw new InvalidOperationException("r9_palette_invalid");return c.linear;}
-  static WorldBattleFx.AttackSpec Spec()=>new WorldBattleFx.AttackSpec(new[]{0f,0f,0f,0f,0f,0f,0f,0f,(float)LightningR9Clock.VisibleEnd},1,1,1,Linear("#BAB4E3"),Linear("#928CC6"),0,.043f,.058f){ContractLighting=true,StandardContractPower=true,TargetPeakMultiplier=.35f*(42f/55f),FloorPeakMultiplier=0f,MaxCombineGroup="lightning-r9-medium"};
+  // 稀な R9 の雷の色 (dot の 2026-10 の候補: 外側 #BAB4E3・内側 #928CC6 を sRGB の小数で。C# に 16 進を書かない規約 = src/sim/unity-colors.test.ts)
+  static Color Linear(float r,float g,float b)=>new Color(r,g,b,1f).linear;
+  static WorldBattleFx.AttackSpec Spec()=>new WorldBattleFx.AttackSpec(new[]{0f,0f,0f,0f,0f,0f,0f,0f,(float)LightningR9Clock.VisibleEnd},1,1,1,Linear(186f/255f,180f/255f,227f/255f),Linear(146f/255f,140f/255f,198f/255f),0,.043f,.058f){ContractLighting=true,StandardContractPower=true,TargetPeakMultiplier=.35f*(42f/55f),FloorPeakMultiplier=0f,MaxCombineGroup="lightning-r9-medium"};
   internal static Action<Shader,bool> ReadinessForReview;
   static void ObserveReadiness(Shader shader,bool accepted){
    var observer=ReadinessForReview;if(observer==null)return;
