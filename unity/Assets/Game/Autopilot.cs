@@ -953,6 +953,9 @@ namespace DeckRogue.Game
             }
             if (Get("memo") == "1") { Feedback.MemoOpen = true; Feedback.MemoDraft = Get("memotext") ?? ""; }
             var perfBase = g.Rs;   // perf=<秒>: 決着したらこの盤面へ跳び直す (RunState は不変なので同じ戦闘がそのまま戻る)
+            // 直接跳んだ戦闘 (DebugLaunchCombat・盤面の書き換え) は演出 (Presenter.Play) を通らない＝出来事は見せ終わったものとして扱う。
+            // しないと灯籠が「まだ見せていない灯 +1」を引いた値のまま残る (2026-11-04 灯の初回値の直し)。entershots= は下で演出を頭から流し直す
+            if (g.Rs != null && g.Rs.Combat != null && Get("enemy") != null) Presenter.MarkSeen(g.Rs.Combat);
             g.Rebuild();
             yield return DetSettleStage();   // det: 舞台の粒を頭から再生して90フレーム待つ (det でなければ何もしない)
             // motion=1 の時は StartRun の幕の題字・ChooseNode の幕が動いている。連写の頭に板が写らないよう開き切るまで待つ (2026-11-04 束 F)
@@ -973,6 +976,7 @@ namespace DeckRogue.Game
                 Time.captureFramerate = 60;
                 yield return null;
                 Presenter.Reset();
+                LightUi.SetLight(Presenter.LightBefore(g.Rs.Combat), false);   // 演出を頭から流し直す＝灯籠も「まだ見せていない灯」を引いた値から (2026-11-04)
                 Presenter.Play(g, g.Rs.Combat);
                 GameObject fxGo = hideBurst && g.FxLayer != null ? g.FxLayer.gameObject : null;
                 bool fxWas = fxGo != null && fxGo.activeSelf;

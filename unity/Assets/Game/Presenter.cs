@@ -119,6 +119,7 @@ namespace DeckRogue.Game
             bool comparison=Numeric.Active || Actions.QueuedCount>0 || CardVfxProfile.ShowcaseOn || _presentationOrigin!=null || GameRoot.I?.CombatPresentationPending==true;
             if(comparison)Reset();
             _seen = combat != null ? combat.EventLog.Count : 0; _seenCombat = combat;
+            if (combat != null) LightUi.SetLight(combat.Player.Light ?? 0, false);   // 演出済みにした＝灯籠も今の値へ (組み直しの前に見せない前提で数えた値を残さない。2026-11-04)
             var g=GameRoot.I;
             if(comparison && combat!=null && g?.Battle!=null && ReferenceEquals(g.Rs?.Combat,combat))g.Battle.ReconcileComparisonCheckpoint(g,combat);
         }
@@ -163,9 +164,16 @@ namespace DeckRogue.Game
         {
             if (combat == null) return 0;
             int v = combat.Player.Light ?? 0;
-            if (!HasNewEvents(combat)) return v;
+            // まだ見せていない出来事の範囲は、演出 (QueuePresentation) が実際に見せる範囲と同じにする (2026-11-04 ユーザー「ひなたの灯の初回値が内部値と異なって表記されている」):
+            // 旧は HasNewEvents (当たり・撃破・札を出した) が無い時は「見せない」として今の値を返していたが、演出は戦闘の始め (CombatStarted→TurnStarted→ひなたの灯+1) も
+            // 必ず見せて粒の到着で +1 する＝初回だけ 1 のはずが 2 に見えた。演出が見せない時＝同じ盤面を見せ終わっている時だけ今の値
+            var previous = _seenCombat as GameState;
+            if (ReferenceEquals(previous, combat)) return v;
             var log = combat.EventLog;
-            for (int i = log.Count - 1; i >= _seen && i >= 0; i--)
+            int from = Math.Min(_seen, log.Count);
+            if (previous != null && !ReferenceEquals(Origin(previous), Origin(combat))) from = 0;
+            var batch = NumericBatch(combat); if (batch != null) from = batch.From;
+            for (int i = log.Count - 1; i >= from && i >= 0; i--)
             {
                 if (log[i] is GameEvent_LightGained lg) v -= lg.Amount;
                 else if (log[i] is GameEvent_LightSpent ls) v += ls.Amount;
