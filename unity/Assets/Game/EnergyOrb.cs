@@ -31,7 +31,23 @@ namespace DeckRogue.Game
             var swA = Layer(orb, "swirlA", UiKit.LinearSprite(Swirl("a", 3, 1.6f), 0.3f), empty ? Hidden : Color.white, 10f);   // Linear の合成で半透明が薄く出るので α を写す (紙の α の罠と同じ)
             var swB = Layer(orb, "swirlB", UiKit.LinearSprite(Swirl("b", 5, -1.1f), 0.3f), empty ? Hidden : new Color(1f, 1f, 1f, 0.7f), 14f);
             var core = Layer(orb, "core", Core(), empty ? Hidden : new Color(1f, 1f, 1f, 0.35f), 26f);
-            Layer(orb, "bezel", Bezel(), empty ? Dim : Color.white, 0f);
+            // 縁の目盛り (2026-11-04 ユーザー「目盛りはいる」): 縁の輪を上限の数で区切り、残りの分を明るい真鍮・使った分を真鍮の墨で。上から右回り。
+            // 上限を超えた分 (5/3) は輪が満タンのまま (数字が正)。上限が 2〜12 の時だけ区切る (1 と 13 以上は輪だけ)
+            const int Thick = 10;
+            var track = Layer(orb, "track", PaperFx.Ring(Thick), PaperFx.BrassInk, 0f);
+            track.preserveAspect = true;
+            var arc = Layer(orb, "arc", PaperFx.Ring(Thick), PaperFx.BrassLight, 0f);
+            arc.type = Image.Type.Filled; arc.fillMethod = Image.FillMethod.Radial360; arc.fillOrigin = 2; arc.fillClockwise = true;
+            float f1 = Mathf.Clamp01((float)energy / Mathf.Max(1, turnMax));
+            arc.fillAmount = f1;
+            if (turnMax >= 2 && turnMax <= 12) Layer(orb, "ticks", PaperFx.RingTicks(Thick, turnMax, 4f), PaperFx.Night, 0f);
+            if (shownBefore >= 0 && shownBefore != energy && !ScreenFx.Instant)
+            {   // 払うと区切りが暗くなる (0.2 秒)・補充は明るくなりながら満ちる (0.35 秒・少し行き過ぎる)
+                float f0 = Mathf.Clamp01((float)shownBefore / Mathf.Max(1, turnMax));
+                bool gain = energy > shownBefore;
+                var ai = arc; ai.fillAmount = f0;
+                Tween.Run(FxSettings.Dur(gain ? 0.35f : 0.2f), k => { if (ai != null) ai.fillAmount = Mathf.Lerp(f0, f1, k); }, gain ? Ease.OutBack : Ease.OutCubic, () => { if (ai != null) ai.fillAmount = f1; });
+            }
             // 外の光 (補充の閃きで強くなる)。宝珠の後ろ
             var halo = Layer(orb, "halo", Halo(), new Color(1f, 1f, 1f, empty ? 0f : 0.16f), -size * 0.24f);
             halo.transform.SetAsFirstSibling();   // 光は宝珠の後ろ。宝珠の地は BodyOf で名前から引く (不足の朱の閃き)
@@ -187,7 +203,7 @@ namespace DeckRogue.Game
             });
         }
 
-        /// <summary>縁の金具: 真鍮の墨の輪に、左上だけ明るい真鍮の光の線</summary>
+        /// <summary>縁の金具: 真鍮の墨の輪に、左上だけ明るい真鍮の光の線 (2026-11-04 目盛りの輪に替えたので今は使わない。戻す時の口)</summary>
         static Sprite Bezel()
         {
             return Make("bezel", (dx, dy, r) =>
