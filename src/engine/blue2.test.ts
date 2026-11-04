@@ -15,7 +15,7 @@ describe('霊気獲得の誘発 (静電の帳)', () => {
     s = setAndArm(s, 't1_blue_frost_veil') // 罠モデル: 伏せたターンは鳴らない
     const hp0 = s.enemies[0].hp
     const hp1 = s.enemies[1].hp
-    // 敵0の攻撃 → 霜の帳が発動 (氷壁8+霊気1) → 静電の帳が全体1ダメ
+    // 敵0の攻撃 → 霜の帳が発動 (氷壁6+霊気1。2026-11-04 氷壁 約0.8倍) → 静電の帳が全体1ダメ
     let s2: typeof s = {
       ...s,
       enemies: s.enemies.map((e, i) =>
@@ -34,7 +34,7 @@ describe('霊気獲得の誘発 (静電の帳)', () => {
 })
 
 describe('氷壁の換金 (氷の槍)', () => {
-  it('現在の氷壁×1のダメージ。氷壁は消費しない', () => {
+  it('現在の氷壁×1のダメージ。氷壁は消費しない (氷壁は 2026-11-04 ユーザー裁定の約0.8倍で 15→12)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_ice_wall',
       'blue_ice_lance',
@@ -43,13 +43,13 @@ describe('氷壁の換金 (氷の槍)', () => {
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ice_wall' })
     const hpBefore = s.enemies[0].hp
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_ice_lance' })
-    expect(s.enemies[0].hp).toBe(hpBefore - 15) // 氷壁15×1 (2026-08-30 引き上げ)
-    expect(s.player.iceBlock).toBe(15)
+    expect(s.enemies[0].hp).toBe(hpBefore - 12) // 氷壁12×1 (2026-08-30 引き上げの15を 2026-11-04 に約0.8倍)
+    expect(s.player.iceBlock).toBe(12)
   })
 })
 
 describe('魔力盗み (打ち消しの換金)', () => {
-  it('敵の行動を打ち消し、その実値ぶん氷壁を得る', () => {
+  it('敵の行動を打ち消し、その実値ぶん氷壁を得る (得た氷壁は次の自ターンの始めに半分。2026-11-04 ユーザー裁定)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_spell_steal',
     ])
@@ -57,11 +57,16 @@ describe('魔力盗み (打ち消しの換金)', () => {
     s = setAndArm(s, 't0_blue_spell_steal')
     s = withIntent(s, attackIntent(13))
     const hpBefore = s.player.hp
+    const log0 = s.eventLog.length
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction')
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
     expect(s.player.hp).toBe(hpBefore) // 打ち消しで被弾なし
-    expect(s.player.iceBlock).toBe(13) // 実値13を氷壁に変換
+    const fresh = s.eventLog.slice(log0)
+    expect(fresh.some((e) => e.type === 'IceBlockGained' && e.amount === 13)).toBe(true) // 実値13を氷壁に変換
+    expect(s.phase).toBe('player-turn')
+    expect(fresh.filter((e) => e.type === 'IceBlockDecayed')).toEqual([{ type: 'IceBlockDecayed', from: 13, to: 6 }])
+    expect(s.player.iceBlock).toBe(6) // 次の自ターンの始めに半分 (切り捨て)
     expect(s.player.aether).toBe(1)
   })
 })
@@ -89,9 +94,9 @@ describe('置物の呪文プレイ誘発 (霧の分身)', () => {
     s = { ...s, player: { ...s.player, energy: 9 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_perm_mist_double' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_ponder' })
-    expect(s.player.iceBlock).toBe(4) // 分身1 + 思案の氷壁3 (2026-08-27)
+    expect(s.player.iceBlock).toBe(3) // 分身1 (据え置き) + 思案の氷壁2 (2026-08-27 の3を 2026-11-04 に約0.8倍)
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_green_strike' })
-    expect(s.player.iceBlock).toBe(4) // 物理では増えない
+    expect(s.player.iceBlock).toBe(3) // 物理では増えない
   })
 })
 
@@ -114,13 +119,14 @@ describe('大漩渦 (ストームの全体化)', () => {
 })
 
 describe('心眼 (敵防御窓の換金)', () => {
-  it('敵が防御した後に氷壁4+霊気3 (敵フェーズのドローは全捨てされるため無価値だった)', () => {
+  it('敵が防御した後に氷壁3+霊気3 (敵フェーズのドローは全捨てされるため無価値だった。氷壁は 2026-11-04 ユーザー裁定の約0.8倍で 4→3、次の自ターンの始めに半分)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_reaction_mind_eye',
     ])
     s = setAndArm(s, 't0_blue_reaction_mind_eye')
     s = withIntent(s, defendIntent(8))
     const handBefore = s.player.hand.length
+    const log0 = s.eventLog.length
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.phase).toBe('awaiting-reaction')
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
@@ -128,7 +134,10 @@ describe('心眼 (敵防御窓の換金)', () => {
     // 敵フェーズに引いた札は一度もプレイできない = ドローの価値が0だった。
     // 戦闘をまたいで持ち越す資源 (氷壁・霊気) へ置き換えた。
     expect(s.player.aether).toBe(3)
-    expect(s.player.iceBlock).toBe(4)
+    const fresh = s.eventLog.slice(log0)
+    expect(fresh.some((e) => e.type === 'IceBlockGained' && e.amount === 3)).toBe(true)
+    expect(s.phase).toBe('player-turn')
+    expect(s.player.iceBlock).toBe(1) // 氷壁3 を次の自ターンの始めに半分 (切り捨て)
     void handBefore
   })
 })

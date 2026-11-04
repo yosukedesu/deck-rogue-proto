@@ -276,7 +276,7 @@ function eventLines(s: GameState, logFrom: number): string[] {
       else if (e.type === 'CardPlayed') L.push(` プレイ:${cname(e.cardId)}`)
       else if (e.type === 'CardSet') L.push(` 伏せた:${cname(e.cardId)}`)
       else if (e.type === 'Cascaded') L.push(e.hitId !== undefined ? ` 🔗チェイン:${cname(e.cardId)}→${cname(e.hitId)}をコストを払わずにプレイ${e.revealed.length > 0 ? `(${e.revealed.length}枚は山札の底へ)` : ''}` : ` 🔗チェイン:${cname(e.cardId)}→当たりなし${e.revealed.length > 0 ? `(${e.revealed.length}枚は山札の底へ)` : ''}`)
-      else if (e.type === 'ImpulseDrawn') L.push(` 衝動${e.count}枚(このターン限り。撃たなければターン終了時に消滅。コストが残りエナジーを上回る札は捨て札へ)`)
+      else if (e.type === 'ImpulseDrawn') L.push(` 衝動${e.count}枚(このターン限り。撃たなければターン終了時に消滅)`)
       else if (e.type === 'ImpulseReturned') L.push(` 衝動の失効:${cname(e.cardId)}は払えなかったので捨て札へ`)
       else if (e.type === 'ImpulseKept') L.push(` 燠の守り:${cname(e.cardId)}を手札に残した(次のターンまで)`)
       else if (e.type === 'ImpulseKindled') L.push(` 🔥くべた:${cname(e.cardId)}の追加コストとして${e.cardIds.map(cname).join('・')}を火にくべた(消滅)`)

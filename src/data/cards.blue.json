@@ -28,7 +28,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 5
+        "amount": 4
       }
     ]
   },
@@ -47,7 +47,37 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 3
+        "amount": 2
+      }
+    ]
+  },
+  {
+    "id": "blue_mode_tide_crossroad",
+    "name": "潮の岐路",
+    "cost": 1,
+    "type": "spell",
+    "rarity": "common",
+    "effects": [],
+    "modes": [
+      {
+        "name": "7ダメージ",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "dealDamage",
+            "amount": 7
+          }
+        ]
+      },
+      {
+        "name": "氷壁4",
+        "effects": [
+          {
+            "trigger": "onPlay",
+            "effect": "gainIceBlock",
+            "amount": 4
+          }
+        ]
       }
     ]
   },
@@ -61,7 +91,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 15
+        "amount": 12
       }
     ]
   },
@@ -80,7 +110,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 3
+        "amount": 2
       }
     ]
   },
@@ -199,7 +229,7 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "gainIceBlock",
-        "amount": 7
+        "amount": 6
       },
       {
         "trigger": "onAttackIncoming",
@@ -226,7 +256,7 @@
       {
         "trigger": "onAttacked",
         "effect": "gainIceBlock",
-        "amount": 3
+        "amount": 2
       },
       {
         "trigger": "onAttacked",
@@ -272,7 +302,7 @@
       {
         "trigger": "onTurnStart",
         "effect": "gainIceBlock",
-        "amount": 4
+        "amount": 3
       }
     ]
   },
@@ -319,7 +349,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlockPerCardPlayed",
-        "amount": 5
+        "amount": 4
       }
     ]
   },
@@ -567,7 +597,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 10
+        "amount": 8
       },
       {
         "trigger": "onPlay",
@@ -601,7 +631,7 @@
       {
         "trigger": "onEnemyDefended",
         "effect": "gainIceBlock",
-        "amount": 4
+        "amount": 3
       },
       {
         "trigger": "onEnemyDefended",
@@ -620,7 +650,7 @@
       {
         "trigger": "onAttackIncoming",
         "effect": "gainIceBlock",
-        "amount": 12
+        "amount": 10
       },
       {
         "trigger": "onAttackIncoming",
@@ -652,7 +682,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 9
+        "amount": 7
       }
     ]
   },
@@ -730,7 +760,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 8
+        "amount": 6
       }
     ]
   },
@@ -971,7 +1001,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 6
+        "amount": 5
       },
       {
         "trigger": "onPlay",
@@ -1014,7 +1044,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 4
+        "amount": 3
       }
     ]
   },
@@ -1068,7 +1098,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 3
+        "amount": 2
       }
     ]
   },
@@ -1087,7 +1117,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 8
+        "amount": 6
       }
     ]
   },
@@ -1101,7 +1131,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlockPerCardPlayed",
-        "amount": 3
+        "amount": 2
       },
       {
         "trigger": "onPlay",
@@ -1120,7 +1150,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlockPerHandCard",
-        "amount": 3
+        "amount": 2
       },
       {
         "trigger": "onPlay",
@@ -1177,7 +1207,7 @@
       {
         "trigger": "onTurnStart",
         "effect": "gainIceBlock",
-        "amount": 3
+        "amount": 2
       },
       {
         "trigger": "onAttacked",
@@ -1272,7 +1302,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 5
+        "amount": 4
       }
     ]
   },
@@ -1390,7 +1420,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 6
+        "amount": 5
       },
       {
         "trigger": "onPlay",
@@ -1607,7 +1637,7 @@
       {
         "trigger": "onEnemyAction",
         "effect": "gainIceBlock",
-        "amount": 3
+        "amount": 2
       }
     ]
   },
@@ -1626,7 +1656,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 3
+        "amount": 2
       }
     ]
   },
@@ -1640,7 +1670,7 @@
       {
         "trigger": "onPlay",
         "effect": "gainIceBlock",
-        "amount": 5
+        "amount": 4
       },
       {
         "trigger": "onPlay",

@@ -75,7 +75,7 @@ namespace DeckRogue.Engine
                 ["blue_knowledge_torrent"] = new[] { Eff("onPlay", "drawCards", 1) },
                 ["blue_ripple_blade"] = new[] { Eff("onPlay", "dealDamage", 3) },
                 ["blue_storm_echo"] = new[] { Eff("onAttacked", "dealDamage", 4) },
-                ["blue_ice_lance"] = new[] { Eff("onPlay", "gainIceBlock", 4) }, // 氷壁を足してから撃つ
+                ["blue_ice_lance"] = new[] { Eff("onPlay", "gainIceBlock", 3) }, // 氷壁を足してから撃つ (2026-11-04 約 0.8 倍: 4→3。TS と同じ)
                 ["blue_echo"] = new[] { Eff("onPlay", "drawCards", 1) }, // 反復+ = 1E・反復1＋1ドロー (0Eにしない。2026-09-25 Opus 青C。TS と同形)
                 ["red_all_in"] = new[] { Eff("onPlay", "dealDamage", 6) },
                 ["white_rally"] = new[] { Eff("onPlay", "gainBlock", 4) }, // 隊列を組んでから撃つ

@@ -29,6 +29,7 @@ namespace DeckRogue.Game {
     case GameEvent_TurnStarted _: board.SetPlayerBlock(current.BlockKeep.HasValue?Math.Min(board.ShownPlayerBlock,current.BlockKeep.Value):0);break;
     case GameEvent_BlockGained b: if(b.Target=="player")board.NudgePlayerBlock(b.Amount);else board.NudgeEnemyBlock(Math.Max(0,enemy),b.Amount);break;
     case GameEvent_IceBlockGained b: board.NudgePlayerIce(b.Amount);break;
+    case GameEvent_IceBlockDecayed d: board.SetPlayerIce(d.To);break;   // 2026-11-04 氷壁は自ターンの始めに半分
     case GameEvent_BlockShattered b: board.SetEnemyBlock(b.EnemyIndex,0);break;
     case GameEvent_DamageDealt d: if(d.Source=="player" && d.Blocked>0)board.NudgeEnemyBlock(d.EnemyIndex??0,-d.Blocked.Value);break;
     case GameEvent_ConfusedAttack c: board.NudgeEnemyBlock(c.TargetIndex,-c.Blocked);break;

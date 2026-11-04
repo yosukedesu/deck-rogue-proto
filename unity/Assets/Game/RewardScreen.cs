@@ -13,6 +13,7 @@ namespace DeckRogue.Game
 {
     public static class RewardScreen
     {
+        static string _revealedKey;   // 最後に捲れを見せた報酬の提示 (幕:行:札の並び)。同じ提示の組み直しでは返さない
         /// <summary>宝箱を開けた (そのランの状態の間だけ。手が進んで Rs が変わればまた閉じた箱から)</summary>
         static RunState _chestOpenedFor;
         /// <summary>開けた直後の組み直し (光の破裂を 1 回だけ出す。2026-11-04 M12)</summary>
@@ -78,6 +79,11 @@ namespace DeckRogue.Game
                 var none = UiKit.Txt(root, "候補がありません", 22, UiKit.ColDim, TextAnchor.MiddleCenter);
                 UiKit.Anchor(none.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0f, -30f), new Vector2(0f, 30f));
             }
+            // 捲れは提示の 1 回だけ (2026-11-04 ユーザー「ギアを取った時や評価ダイアログを閉じた時にも捲れが出て鬱陶しい」):
+            // 同じ提示 (幕・行・候補の札の並び) の組み直しでは返さない。新しい提示 (次の戦闘の報酬) なら鍵が変わって返す
+            string revealKey = n > 0 ? g.Rs.Act + ":" + g.Rs.Row + ":" + string.Join(",", opts) : null;
+            bool flipNow = revealKey != null && revealKey != _revealedKey;
+            if (flipNow) _revealedKey = revealKey;
             for (int i = 0; i < n; i++)
             {
                 int idx = i;
@@ -102,7 +108,7 @@ namespace DeckRogue.Game
                 ScreenFx.Primary(b);
                 g.RegisterAnchor("reward-take-" + i, b.GetComponent<RectTransform>());
                 // 儀式 (G1・M06・2026-11-04): 裏向きで並び 0.12 秒ずらしで返る。レアは真鍮の暈と光の破裂。返っている間は「取る」を押せない
-                ScreenJuice.RevealCard(g, cell, cv, def.Rarity, i, b);
+                ScreenJuice.RevealCard(g, cell, cv, def.Rarity, i, b, flipNow);
             }
 
             if (opts != null) RunUi.BottomButton(root, "見送る", delegate { Audio.Key("card_cancel", 0.7f); g.Do(new RunCommand_SkipReward()); }, 18, 260f, 52f);

@@ -6,7 +6,7 @@ import type { RunCommand, RunJournal, RunState } from '../engine/run.ts'
 import type { GameEvent } from '../engine/types.ts'
 
 /** 赤の解凍（2026-10-10〜12）で増えた出来事 */
-export const RED_EVENTS = ['Cascaded', 'CascadeRetargeted', 'ImpulseKindled', 'ImpulseReturned', 'ImpulseKept', 'BlazeIgnited', 'BlazeExtinguished'] as const
+export const RED_EVENTS = ['Cascaded', 'CascadeRetargeted', 'ImpulseKindled', 'ImpulseKept', 'BlazeIgnited', 'BlazeExtinguished'] as const
 
 export interface EventExample {
   readonly commandIndex: number // 1 始まり（verify-goldens の「コマンドN」と同じ数え方）

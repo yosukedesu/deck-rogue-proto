@@ -35,16 +35,17 @@ describe('アンセム (blessRetainers)', () => {
           { uid: 'p1', def: getCardDef('white_perm_squire') }, // 従者: 毎T2ダメ
           { uid: 'p2', def: getCardDef('white_perm_warcry') }, // +1
           { uid: 'p3', def: getCardDef('white_perm_anthem') }, // +2
-          { uid: 'p4', def: getCardDef('blue_frost_armor') }, // 従者でない置物: 毎T氷壁4
+          { uid: 'p4', def: getCardDef('blue_frost_armor') }, // 従者でない置物: 毎T氷壁3 (2026-11-04 氷壁 約0.8倍で 4→3)
         ],
       },
     }
     s = withIntent(s, attackIntent(0))
     const hpBefore = s.enemies[0].hp
     const iceBefore = s.player.iceBlock
+    expect(iceBefore).toBe(0) // 氷壁0から始める＝自ターンの始めの半分 (2026-11-04) は差に効かない
     s = applyCommand(s, { type: 'EndTurn' })
     expect(hpBefore - s.enemies[0].hp).toBe(3 + 3) // 剣3+アンセム3
-    expect(s.player.iceBlock - iceBefore).toBe(4) // 霜の鎧はretainerでないので素の4
+    expect(s.player.iceBlock - iceBefore).toBe(3) // 霜の鎧はretainerでないので素の3
   })
 })
 

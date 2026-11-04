@@ -112,12 +112,6 @@ export function isPlayableFromHand(card: CardInstance, state?: GameState): boole
   )
 }
 
-/** 失効する衝動の札が「払えなかった」札か (赤 2026-10-12 3幕フルラン 裁定 F2「払えない札だけ捨て札へ」):
- *  出せる札で、その時点の実コストが残りエナジーを上回る。出せない札 (呪い・負傷・がらくた) は false = 消滅のまま (掃除の効果を残す) */
-export function impulseUnaffordable(state: GameState, card: CardInstance): boolean {
-  return isPlayableFromHand(card, state) && effectiveCost(state, card) > state.player.energy
-}
-
 /** 常在の印 (置物の effects に名前だけ書く効果) が場にあるか。深き仕掛け・燻り・連火の炉心・燠の守りが読む */
 export function hasStaticEffect(state: GameState, effectName: string): boolean {
   return state.player.permanents.some((p) => p.def.effects.some((e) => e.effect === effectName))

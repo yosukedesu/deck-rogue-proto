@@ -295,11 +295,11 @@ describe('虚弱 (カードのプレイで得るブロック25%減。2026-09-01 
     expect(s.player.block).toBe(3) // 防御5 → floor(5*0.75)=3
   })
 
-  it('氷壁は虚弱の対象外 (別経路 = 青の柱を侵さない)', () => {
+  it('氷壁は虚弱の対象外 (別経路 = 青の柱を侵さない。氷壁の札は 2026-11-04 ユーザー裁定で約0.8倍＝15→12)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42), ['blue_ice_wall'])
     s = { ...s, player: { ...s.player, frail: 1 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ice_wall' })
-    expect(s.player.iceBlock).toBe(15) // 減らない
+    expect(s.player.iceBlock).toBe(12) // 減らない (虚弱なら floor(12×0.75)=9)
   })
 
   it('置物のターン開始ブロックは虚弱の対象外 (カードのプレイではない)', () => {

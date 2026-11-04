@@ -244,14 +244,18 @@ describe('火は火を呼ぶ (R 2E 置物。段2b 裁定 R6 作り直し): チ�
 })
 
 describe('データ (段2)', () => {
-  it('赤は 106種 = 報酬99 (C41／U40／R18) ＋ 初期専用7。段2の7枚と段2b の守り2枚は報酬に出る', () => {
+  it('赤は 106種 = 報酬100 (C41／U41／R18) ＋ 初期専用6。段2の7枚と段2b の守り2枚は報酬に出る (2026-11-04 ユーザー裁定の初期デッキ入れ替え: 火中の取り出し C が初期専用へ・火纏い C と棘火の帳 U が報酬へ)', () => {
     const red = allCards.filter((c) => c.color === 'red')
     expect(red.length).toBe(106)
     const rewards = red.filter((c) => !REWARD_EXCLUDED.has(c.id))
-    expect(rewards.length).toBe(99)
+    expect(rewards.length).toBe(100)
+    expect(red.length - rewards.length).toBe(6) // 初期専用: 火弾・灰の盾・着火・火加減・火花・火中の取り出し
     const by = (r: string) => rewards.filter((c) => c.rarity === r).length
-    // 段1の記録 (C41／U38／R17) は数え違いで、実際は C36／U37／R17＝90 だった。段2で C+3・U+3・R+1、段2b で C+2 (守りの床)
-    expect([by('common'), by('uncommon'), by('rare')]).toEqual([41, 40, 18])
+    // 段1の記録 (C41／U38／R17) は数え違いで、実際は C36／U37／R17＝90 だった。段2で C+3・U+3・R+1、段2b で C+2 (守りの床)＝C41／U40／R18。
+    // 2026-11-04: C −1 (火中の取り出し) +1 (火纏い)・U +1 (棘火の帳)
+    expect([by('common'), by('uncommon'), by('rare')]).toEqual([41, 41, 18])
+    expect(REWARD_EXCLUDED.has('red_impulse')).toBe(true)
+    for (const id of ['red_perm_flarecoat', 'red_perm_thorn_flame']) expect(REWARD_EXCLUDED.has(id), id).toBe(false)
     for (const id of ['red_rake', 'red_burn_off', 'red_popping_fire', 'red_perm_fire_awakening', 'red_kindle', 'red_ash_breath', 'red_perm_fire_calls_fire', 'red_ash_veil', 'red_ember_screen']) {
       expect(REWARD_EXCLUDED.has(id), id).toBe(false)
     }

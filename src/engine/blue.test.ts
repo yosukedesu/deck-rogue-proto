@@ -25,21 +25,47 @@ describe('カラーパイ', () => {
 })
 
 describe('氷壁 (持ち越しブロック)', () => {
-  it('氷壁はターン開始で消えず、通常ブロックの後に消費される', () => {
+  it('氷壁は通常ブロックの後に消費され、残りは自ターンの始めに半分 (切り捨て) で持ち越す (2026-11-04 ユーザー裁定: 旧「ターン開始で消えない」は防御の完全上位互換だった)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_ice_wall',
       'green_guard', // 通常ブロック役 (氷盾は2026-08-25に氷壁化したため緑の防御を借りる)
     ])
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_ice_wall' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_green_guard' })
-    expect(s.player.iceBlock).toBe(15) // 2026-08-30 凍結遺産の下限引き上げ (13→15)
+    expect(s.player.iceBlock).toBe(12) // 2026-11-04 氷壁 約0.8倍 (15→12)
     expect(s.player.block).toBe(5)
     // 攻撃10: 通常ブロック5を先に消費し、残り5を氷壁で受ける
     s = withIntent(s, attackIntent(10))
     s = applyCommand(s, { type: 'EndTurn' })
     expect(s.player.hp).toBe(s.player.maxHp)
     expect(s.player.block).toBe(0) // 次ターン開始でリセット
-    expect(s.player.iceBlock).toBe(10) // 15 - 5 が持ち越されている
+    expect(s.player.iceBlock).toBe(3) // 12 - 5 = 7 を次の自ターンの始めに半分 (切り捨て) = 3
+    const decay = s.eventLog.filter((e) => e.type === 'IceBlockDecayed')
+    expect(decay).toEqual([{ type: 'IceBlockDecayed', from: 7, to: 3 }])
+  })
+
+  it('氷壁の半分は毎ターン重なる: 8→4→2→1→0。IceBlockDecayed {from,to} は TurnStarted の直前に出て、0 になったら出ない (2026-11-04 ユーザー裁定)', () => {
+    let s = freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue')
+    s = { ...s, player: { ...s.player, iceBlock: 8 } }
+    const seen: number[] = [s.player.iceBlock]
+    for (const [from, to] of [[8, 4], [4, 2], [2, 1], [1, 0]] as const) {
+      const log0 = s.eventLog.length
+      s = passTurn(s)
+      expect(s.phase).toBe('player-turn')
+      expect(s.player.iceBlock).toBe(to)
+      const fresh = s.eventLog.slice(log0)
+      const at = fresh.findIndex((e) => e.type === 'IceBlockDecayed')
+      expect(fresh[at]).toEqual({ type: 'IceBlockDecayed', from, to })
+      expect(fresh[at + 1]?.type).toBe('TurnStarted') // ターンの始めの知らせの直前
+      expect(fresh.filter((e) => e.type === 'IceBlockDecayed')).toHaveLength(1)
+      seen.push(s.player.iceBlock)
+    }
+    expect(seen).toEqual([8, 4, 2, 1, 0])
+    // 氷壁0のターンは半分の知らせを出さない
+    const log0 = s.eventLog.length
+    s = passTurn(s)
+    expect(s.player.iceBlock).toBe(0)
+    expect(s.eventLog.slice(log0).some((e) => e.type === 'IceBlockDecayed')).toBe(false)
   })
 })
 
@@ -185,7 +211,7 @@ describe('霊気 (妨害→フィニッシュ変換)', () => {
 })
 
 describe('ストームの3系統', () => {
-  it('渦の障壁: 詠唱数×4の氷壁を得る', () => {
+  it('渦の障壁: 詠唱数×4の氷壁を得る (2026-11-04 ユーザー裁定の氷壁 約0.8倍で ×5→×4)', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
       'blue_guard',
       'blue_ponder',
@@ -194,8 +220,8 @@ describe('ストームの3系統', () => {
     s = { ...s, player: { ...s.player, energy: 5 } }
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_guard' })
     s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_ponder' })
-    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_barrier' }) // 詠唱数2 ×5 = 10
-    expect(s.player.iceBlock).toBe(10 + 5 + 3) // 障壁10 + 氷盾5 + 思案の氷壁3
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't2_blue_storm_barrier' }) // 詠唱数2 ×4 = 8
+    expect(s.player.iceBlock).toBe(8 + 4 + 2) // 障壁8 + 氷盾4 + 思案の氷壁2 (2026-11-04 氷壁 約0.8倍)
   })
 
   it('連鎖する思考: 詠唱数×1枚ドロー', () => {

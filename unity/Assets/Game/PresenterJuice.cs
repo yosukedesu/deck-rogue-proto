@@ -314,7 +314,8 @@ namespace DeckRogue.Game
         {
             return ev is GameEvent_Cascaded || ev is GameEvent_CascadeRetargeted || ev is GameEvent_BlazeIgnited || ev is GameEvent_BlazeExtinguished
                 || ev is GameEvent_BurnDischarged || ev is GameEvent_ImpulseKindled || ev is GameEvent_ImpulseReturned || ev is GameEvent_ImpulseKept
-                || ev is GameEvent_AetherGained || ev is GameEvent_AetherDischarged || ev is GameEvent_RegenBroken || ev is GameEvent_HpLossCapped;
+                || ev is GameEvent_AetherGained || ev is GameEvent_AetherDischarged || ev is GameEvent_RegenBroken || ev is GameEvent_HpLossCapped
+                || ev is GameEvent_IceBlockDecayed;   // 2026-11-04 氷壁が半分に (自ターンの始め)
         }
 
         /// <summary>出来事ごとの間 (順送り): チェインは当たりの札の DamageDealt が本体より先に解決する順を崩さないよう 0.22 まで。ほかは 0.2</summary>
@@ -499,6 +500,13 @@ namespace DeckRogue.Game
                 case GameEvent_ImpulseKept ik2:
                 {   // 燠の守りで残した
                     Tween.Float(fx, playerPos + new Vector2(0f, 90f), "燠の守り " + CardText.CardName(ik2.CardId) + " を残した", PaperFx.BrassLight, 20, 30f, 1.1f, 360f);
+                    break;
+                }
+                case GameEvent_IceBlockDecayed icd:
+                {   // 氷壁が半分に (2026-11-04 ユーザー裁定)。自分の足元に鋼青の小さな輪と「氷壁 8→4」。割れる音は鳴らさない (手番の帯と重ねない)
+                    var at = playerPos + new Vector2(-60f, 70f);
+                    Tween.RingBurst(fx, at, PaperFx.SkyLight, 90f, 0.3f);
+                    Tween.Float(fx, at, "氷壁 " + icd.From + "→" + icd.To, PaperFx.SkyLight, 24, 30f, 1.0f);
                     break;
                 }
                 case GameEvent_AetherGained ag:

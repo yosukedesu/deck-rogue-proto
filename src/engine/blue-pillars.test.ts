@@ -34,12 +34,12 @@ describe('潮読み: 占術', () => {
     expect(s.eventLog.some((e) => e.type === 'Scried')).toBe(true)
   })
 
-  it('読み切り=この戦闘で占術で捨てた枚数×2。渦見の鏡=占術で捨てた1枚ごと氷壁2 (2026-09-25 Opus 青B「捨てる理由が無い」の処方)', () => {
+  it('読み切り=この戦闘で占術で捨てた枚数×2。渦見の鏡=占術で捨てた1枚ごと氷壁2 (2026-09-25 Opus 青B「捨てる理由が無い」の処方。先見の盾は 2026-11-04 ユーザー裁定の氷壁 約0.8倍で 6→5・渦見の鏡は据え置き)', () => {
     let s = perm(withDraw(base(['blue_foresight_shield', 'blue_read_through']), ['blue_guard', 'blue_guard', 'blue_guard', 'blue_guard']), 'blue_perm_eddy_mirror')
     const ice0 = s.player.iceBlock
     s = play(s, 't0_blue_foresight_shield')
     s = applyCommand(s, { type: 'ResolveScry', discardUids: ['d0_blue_guard', 'd1_blue_guard'] })
-    expect(s.player.iceBlock - ice0).toBe(6 + 2 * 2)
+    expect(s.player.iceBlock - ice0).toBe(5 + 2 * 2) // 先見の盾5＋鏡2×捨てた2枚
     expect(s.player.scriedThisCombat).toBe(3)
     expect(s.player.scryDiscardedThisCombat).toBe(2)
     const hp0 = s.enemies[0].hp
@@ -202,11 +202,16 @@ describe('緑と同じ89枚にする追加9枚 (2026-09-25)', () => {
     expect(s.player.discardPile.find((c) => c.uid === 't0_blue_strike')?.retainDiscount).toBeUndefined()
   })
 
-  it('見張りの鈴=敵がどんな行動をしても霊気+2と氷壁3・浅瀬読み=0E 占術2＋氷壁3・渦の足場=氷壁5＋詠唱+1', () => {
-    expect(getCardDef('blue_reaction_watch_bell').effects.every((e) => e.trigger === 'onEnemyAction')).toBe(true)
+  it('見張りの鈴=敵がどんな行動をしても霊気+2と氷壁2・浅瀬読み=0E 占術2＋氷壁2・渦の足場=氷壁4＋詠唱+1 (氷壁は 2026-11-04 ユーザー裁定で約0.8倍: 3→2・3→2・5→4)', () => {
+    const bell = getCardDef('blue_reaction_watch_bell')
+    expect(bell.effects.every((e) => e.trigger === 'onEnemyAction')).toBe(true)
+    expect(bell.effects.map((e) => [e.effect, e.amount])).toEqual([['addAether', 2], ['gainIceBlock', 2]])
     expect(getCardDef('blue_shallow_read')).toMatchObject({ cost: 0 })
+    expect(getCardDef('blue_shallow_read').effects.map((e) => [e.effect, e.amount])).toEqual([['scry', 2], ['gainIceBlock', 2]])
     let s = base(['blue_eddy_foothold'])
+    const ice0 = s.player.iceBlock
     s = play(s, 't0_blue_eddy_foothold')
+    expect(s.player.iceBlock - ice0).toBe(4)
     expect(s.player.cardsPlayedThisTurn).toBe(1 + 1)
   })
 })
@@ -226,12 +231,20 @@ describe('Opus 青3本の答え合わせ (2026-09-25)', () => {
     expect(effectiveCost(s, kept)).toBe(0)
   })
 
-  it('魔力盗みの氷壁は多段なら合計 (9×3 を消すと+27。A: 1発ぶんの+9しか入らなかった)', () => {
+  it('魔力盗みの氷壁は多段なら合計 (9×3 を消すと+27。A: 1発ぶんの+9しか入らなかった)。次の自ターンの始めに半分になる (2026-11-04 ユーザー裁定)', () => {
     let s = setAndArm(base(['blue_spell_steal']), 't0_blue_spell_steal')
     const ice0 = s.player.iceBlock
+    const log0 = s.eventLog.length
     s = applyCommand(withIntent(s, { kind: 'attack', actual: 9, hits: 3 } as never), { type: 'EndTurn' })
     s = applyCommand(s, { type: 'ConfirmReaction', fire: true })
-    expect(s.player.iceBlock - ice0).toBeGreaterThanOrEqual(27)
+    const fresh = s.eventLog.slice(log0)
+    // 打ち消した瞬間に合計27を得る (1発ぶんの9ではない)
+    expect(fresh.some((e) => e.type === 'IceBlockGained' && e.amount === 27)).toBe(true)
+    // 敵フェーズが終わり次の自ターンへ: 得た氷壁は半分 (切り捨て) で持ち越す
+    expect(s.phase).toBe('player-turn')
+    const decay = fresh.find((e) => e.type === 'IceBlockDecayed')
+    expect(decay).toEqual({ type: 'IceBlockDecayed', from: ice0 + 27, to: Math.floor((ice0 + 27) / 2) })
+    expect(s.player.iceBlock).toBe(Math.floor((ice0 + 27) / 2))
   })
 
   it('沈思の一撃 (知恵の重み×思案のレシピ) は1枚引いてから手札×3 (B: 2枚引いてから×4 で最大101)', () => {

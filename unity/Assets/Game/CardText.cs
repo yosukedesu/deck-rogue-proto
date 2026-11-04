@@ -95,7 +95,7 @@ namespace DeckRogue.Game
             { "gainBlock", "ブロックN" },
             { "gainBlockPerEnergyMax", "エナジー上限×Nのブロック" },
             { "gainBlockPerPermanent", "場の置物の数×Nのブロック" },
-            { "gainIceBlock", "氷壁N（次のターンにも残るブロック）" },
+            { "gainIceBlock", "氷壁N（次のターンに半分が残るブロック）" },
             { "gainIceBlockPerCardPlayed", "このターンに出した札の数×Nの氷壁" },
             { "gainIceBlockPerHandCard", "手札の枚数×Nの氷壁" },
             { "gainBlockPerHandCard", "手札の枚数×Nのブロック" },
@@ -114,7 +114,7 @@ namespace DeckRogue.Game
             { "negateConvertIce", "その行動を打ち消し、その行動の値と同じだけ氷壁を得る" },
             { "drawCards", "カードをN枚引く" },
             { "drawCardsPerCardPlayed", "このターンに出した札の数×N枚、カードを引く" },
-            { "impulseDraw", "山札の上からN枚を手札に加える。このターンの終わりまでに出さなければ消滅する" },
+            { "impulseDraw", "カードをN枚引く。引いた札はこのターンの終わりまでに出さなければ消滅する" },
             { "gainEnergy", "このターンだけエナジー+N" },
             { "gainEnergyMax", "エナジー上限+N" },
             { "discountNext", "次に出す札のコスト-N" },
@@ -1054,6 +1054,7 @@ namespace DeckRogue.Game
             }
             var k = ev as GameEvent_BlockGained; if (k != null) return (k.Target == "player" ? "自分" : "敵") + "がブロック+" + k.Amount;
             var l = ev as GameEvent_IceBlockGained; if (l != null) return "氷壁+" + l.Amount;
+            var icd = ev as GameEvent_IceBlockDecayed; if (icd != null) return "氷壁が半分に: " + icd.From + "→" + icd.To;   // 2026-11-04 氷壁は自ターンの始めに半分
             var m = ev as GameEvent_StrengthGained; if (m != null) return "敵の筋力 +" + m.Amount + (m.Reason != null ? " (" + StrengthReasonJa(m.Reason) + ")" : "");
             var n = ev as GameEvent_BurnApplied; if (n != null) return "敵に延焼+" + n.Amount;
             var o = ev as GameEvent_BurnTick; if (o != null) return "延焼で敵に" + o.Amount + "ダメージ";

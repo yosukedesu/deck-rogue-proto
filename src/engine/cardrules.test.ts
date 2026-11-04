@@ -192,7 +192,7 @@ describe('基本札の上位互換サイクル (2026-08-27。確定済みルー�
   // ここでは各色の後継カードを名指しで固定する。消えたり弱体化したらここで落ちる。
   const CYCLE: Record<string, { attack: string; guard: string }> = {
     green: { attack: 'green_tailwind', guard: 'green_entangle' }, // 追い風=6貫通(勢い5以上で0E) / モード:ブロック7 (荒角の一撃は2026-09-05 撤去)
-    blue: { attack: 'blue_rapid_strike', guard: 'blue_thick_ice' }, // 6+1ドロー / 氷壁7
+    blue: { attack: 'blue_rapid_strike', guard: 'blue_thick_ice' }, // 6+1ドロー / 氷壁6 (2026-11-04 氷壁 約0.8倍。氷盾は4)
     red: { attack: 'red_ember_slash', guard: 'red_hearth_shield' }, // 6+衝動1 / 4+衝動1+延焼1
     white: { attack: 'white_shield_strike', guard: 'white_light_hoard' }, // 5+ブロック3 / ブロック5+灯2 (修繕の灯は 2026-09-24 に撤去)
     black: { attack: 'black_grave_bolt', guard: 'black_gravestone' }, // ミル1+6/12 / 5+燃料2

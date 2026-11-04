@@ -93,7 +93,7 @@ describe('反復 (呪文コピー)', () => {
 
   it('リアクション (呪文でない) の解決は反復の対象にならない', () => {
     let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), [
-      'blue_frost_veil', // 反応: 被攻撃前に氷壁7+霊気1
+      'blue_frost_veil', // 反応: 被攻撃前に氷壁6+霊気1 (2026-11-04 氷壁 約0.8倍)
     ])
     s = setAndArm(s, 't0_blue_frost_veil') // 罠モデル: 前のターンに仕込む
     s = withHand(s, ['blue_echo'])

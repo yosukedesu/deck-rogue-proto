@@ -59,7 +59,7 @@ const BONUS_UPGRADES: Record<string, readonly DeclarativeEffect[]> = {
   blue_knowledge_torrent: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }],
   blue_ripple_blade: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 3 }],
   blue_storm_echo: [{ trigger: 'onAttacked', effect: 'dealDamage', amount: 4 }],
-  blue_ice_lance: [{ trigger: 'onPlay', effect: 'gainIceBlock', amount: 4 }], // 氷壁を足してから撃つ
+  blue_ice_lance: [{ trigger: 'onPlay', effect: 'gainIceBlock', amount: 3 }], // 氷壁を足してから撃つ (2026-11-04 氷壁の値を約 0.8 倍に: 4→3)
   blue_echo: [{ trigger: 'onPlay', effect: 'drawCards', amount: 1 }], // 反復+ = 1E・反復1＋1ドロー (0Eにしない。2026-09-25 Opus 青C)
   red_all_in: [{ trigger: 'onPlay', effect: 'dealDamage', amount: 6 }],
   white_rally: [{ trigger: 'onPlay', effect: 'gainBlock', amount: 4 }], // 隊列を組んでから撃つ

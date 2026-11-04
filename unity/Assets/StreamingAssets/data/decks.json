@@ -455,7 +455,7 @@
     "id": "run_basic_blue",
     "name": "ラン基本デッキ(青)",
     "color": "blue",
-    "description": "青ドラフト連戦の出発点。水撃×2・氷盾×3・氷の槍・潮の一滴(派生攻撃)・思案・対抗呪文・霜の帳の10枚",
+    "description": "青の初期デッキ。緑・白と同じ形 (2026-11-04 ユーザー「ひばな・みぞれの初期デッキを緑・白と同じような構成に」): 水撃3・渦流の鞭 (打ち据え枠)・氷盾3・潮の岐路 (新・モード=決断の教材。7ダメージか氷壁4)・知恵の重み (派生=手札を火力に)・対抗呪文 (からくりの教材)。潮の一滴は報酬プールへ",
     "cards": [
       {
         "cardId": "blue_strike",
@@ -470,11 +470,11 @@
         "count": 3
       },
       {
-        "cardId": "blue_weight_of_wisdom",
+        "cardId": "blue_mode_tide_crossroad",
         "count": 1
       },
       {
-        "cardId": "blue_tide_drop",
+        "cardId": "blue_weight_of_wisdom",
         "count": 1
       },
       {
@@ -667,34 +667,30 @@
     "id": "run_basic_red",
     "name": "ラン基本デッキ(赤)",
     "color": "red",
-    "description": "赤ドラフト連戦の出発点。手数で押す構成: 火弾×3・火花×1(0マナ)・火加減(8ダメかブロック6)・灰の盾×2・憤怒置物2(火纏い・棘火の帳)・着火の10枚(2026-10-10 Opus 赤3本: 幕1の通常戦 2.3〜2.5T で火花×2→火花×1＋火加減)",
+    "description": "赤の初期デッキ。緑・白と同じ形 (2026-11-04 ユーザー「ひばな・みぞれの初期デッキを緑・白と同じような構成に」): 火弾3・着火 (打ち据え枠=殴りながら延焼)・灰の盾3・火加減 (モード=決断の教材)・火花 (派生=0E の手数)・火中の取り出し (衝動の教材。赤はからくりを持たないので衝動の枠)。火纏い・棘火の帳は報酬プールへ",
     "cards": [
       {
         "cardId": "red_strike",
         "count": 3
       },
       {
-        "cardId": "red_spark",
-        "count": 1
-      },
-      {
-        "cardId": "red_guard",
-        "count": 2
-      },
-      {
-        "cardId": "red_perm_flarecoat",
-        "count": 1
-      },
-      {
-        "cardId": "red_perm_thorn_flame",
-        "count": 1
-      },
-      {
         "cardId": "red_ignite",
         "count": 1
       },
       {
+        "cardId": "red_guard",
+        "count": 3
+      },
+      {
         "cardId": "red_mode_firecontrol",
+        "count": 1
+      },
+      {
+        "cardId": "red_spark",
+        "count": 1
+      },
+      {
+        "cardId": "red_impulse",
         "count": 1
       }
     ]
@@ -2420,21 +2416,66 @@
     "name": "赤 段2検証A 刈る・点ける（幕2開始用）",
     "description": "2026-10-12 赤の解凍 段2のチェックポイント A: 初期の芯9枚+火掻き×2・焼き払い・爆ぜ火×2・火の目覚め・業火の炉(作り直し)・燻り・火勢倍し・火の舌・火喰らい",
     "cards": [
-      { "cardId": "red_strike", "count": 2 },
-      { "cardId": "red_spark", "count": 1 },
-      { "cardId": "red_guard", "count": 2 },
-      { "cardId": "red_mode_firecontrol", "count": 1 },
-      { "cardId": "red_perm_flarecoat", "count": 1 },
-      { "cardId": "red_ignite", "count": 1 },
-      { "cardId": "red_rake", "count": 2 },
-      { "cardId": "red_burn_off", "count": 1 },
-      { "cardId": "red_popping_fire", "count": 2 },
-      { "cardId": "red_perm_fire_awakening", "count": 1 },
-      { "cardId": "red_perm_furnace", "count": 1 },
-      { "cardId": "red_perm_smolder", "count": 1 },
-      { "cardId": "red_burn_double", "count": 1 },
-      { "cardId": "red_fire_tongue", "count": 1 },
-      { "cardId": "red_blaze_devour", "count": 1 }
+      {
+        "cardId": "red_strike",
+        "count": 2
+      },
+      {
+        "cardId": "red_spark",
+        "count": 1
+      },
+      {
+        "cardId": "red_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_mode_firecontrol",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      },
+      {
+        "cardId": "red_rake",
+        "count": 2
+      },
+      {
+        "cardId": "red_burn_off",
+        "count": 1
+      },
+      {
+        "cardId": "red_popping_fire",
+        "count": 2
+      },
+      {
+        "cardId": "red_perm_fire_awakening",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_furnace",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_smolder",
+        "count": 1
+      },
+      {
+        "cardId": "red_burn_double",
+        "count": 1
+      },
+      {
+        "cardId": "red_fire_tongue",
+        "count": 1
+      },
+      {
+        "cardId": "red_blaze_devour",
+        "count": 1
+      }
     ]
   },
   {
@@ -2442,21 +2483,66 @@
     "name": "赤 段2検証B くべる・刹那（幕2開始用）",
     "description": "2026-10-12 赤の解凍 段2のチェックポイント B: 初期の芯10枚+火にくべる×2・灰の息・灰の衣・燠の守り・燃え残り・火中の取り出し・燃え上がる着想・走り火・熾火の一閃",
     "cards": [
-      { "cardId": "red_strike", "count": 2 },
-      { "cardId": "red_spark", "count": 1 },
-      { "cardId": "red_guard", "count": 3 },
-      { "cardId": "red_mode_firecontrol", "count": 1 },
-      { "cardId": "red_perm_flarecoat", "count": 1 },
-      { "cardId": "red_ignite", "count": 1 },
-      { "cardId": "red_kindle", "count": 2 },
-      { "cardId": "red_ash_breath", "count": 1 },
-      { "cardId": "red_perm_ash_robe", "count": 1 },
-      { "cardId": "red_perm_ember_keeper", "count": 1 },
-      { "cardId": "red_perm_embers_left", "count": 1 },
-      { "cardId": "red_impulse", "count": 1 },
-      { "cardId": "red_big_impulse", "count": 1 },
-      { "cardId": "red_perm_runfire", "count": 1 },
-      { "cardId": "red_ember_slash", "count": 1 }
+      {
+        "cardId": "red_strike",
+        "count": 2
+      },
+      {
+        "cardId": "red_spark",
+        "count": 1
+      },
+      {
+        "cardId": "red_guard",
+        "count": 3
+      },
+      {
+        "cardId": "red_mode_firecontrol",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      },
+      {
+        "cardId": "red_kindle",
+        "count": 2
+      },
+      {
+        "cardId": "red_ash_breath",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_ash_robe",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_ember_keeper",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_embers_left",
+        "count": 1
+      },
+      {
+        "cardId": "red_impulse",
+        "count": 1
+      },
+      {
+        "cardId": "red_big_impulse",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_runfire",
+        "count": 1
+      },
+      {
+        "cardId": "red_ember_slash",
+        "count": 1
+      }
     ]
   },
   {
@@ -2464,21 +2550,66 @@
     "name": "赤 段2検証C チェイン（幕2開始用）",
     "description": "2026-10-12 赤の解凍 段2のチェックポイント C: 初期の芯10枚+火は火を呼ぶ・連火の炉心・火口開き×2・火送りの一撃・連火弾・燎火の使い・連なる火花・野火・火の渦",
     "cards": [
-      { "cardId": "red_strike", "count": 2 },
-      { "cardId": "red_spark", "count": 2 },
-      { "cardId": "red_guard", "count": 2 },
-      { "cardId": "red_mode_firecontrol", "count": 1 },
-      { "cardId": "red_perm_flarecoat", "count": 1 },
-      { "cardId": "red_ignite", "count": 1 },
-      { "cardId": "red_perm_fire_calls_fire", "count": 1 },
-      { "cardId": "red_perm_cascade_core", "count": 1 },
-      { "cardId": "red_cascade_vent", "count": 2 },
-      { "cardId": "red_cascade_strike", "count": 1 },
-      { "cardId": "red_cascade_bolt", "count": 1 },
-      { "cardId": "red_perm_cascade_envoy", "count": 1 },
-      { "cardId": "red_perm_cascade_sparks", "count": 1 },
-      { "cardId": "red_brushfire", "count": 1 },
-      { "cardId": "red_cascade_vortex", "count": 1 }
+      {
+        "cardId": "red_strike",
+        "count": 2
+      },
+      {
+        "cardId": "red_spark",
+        "count": 2
+      },
+      {
+        "cardId": "red_guard",
+        "count": 2
+      },
+      {
+        "cardId": "red_mode_firecontrol",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_flarecoat",
+        "count": 1
+      },
+      {
+        "cardId": "red_ignite",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_fire_calls_fire",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_cascade_core",
+        "count": 1
+      },
+      {
+        "cardId": "red_cascade_vent",
+        "count": 2
+      },
+      {
+        "cardId": "red_cascade_strike",
+        "count": 1
+      },
+      {
+        "cardId": "red_cascade_bolt",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_cascade_envoy",
+        "count": 1
+      },
+      {
+        "cardId": "red_perm_cascade_sparks",
+        "count": 1
+      },
+      {
+        "cardId": "red_brushfire",
+        "count": 1
+      },
+      {
+        "cardId": "red_cascade_vortex",
+        "count": 1
+      }
     ]
   }
 ]

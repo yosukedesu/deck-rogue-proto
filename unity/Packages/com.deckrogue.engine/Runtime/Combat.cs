@@ -603,12 +603,13 @@ namespace DeckRogue.Engine
                 NextTurnBlock = null,
                 NextTurnLight = null,
                 BellLocked = null,   // 静かな鈴の固定 (2026-09-24 E2) は自ターン開始で消える
-                // 通常ブロックはリセット。氷壁 (iceBlock) は持ち越される。
+                // 通常ブロックはリセット。氷壁 (iceBlock) は半分 (切り捨て) を持ち越す (2026-11-04 ユーザー裁定。TS と同形)。
                 // 上限のスナップショットもここで更新 = このターン中のランプは上限参照札に乗らない
                 Player = state.Player with
                 {
                     // 頑丈な留め具 (blockKeep): ブロックをN持ち越す
                     Block = state.BlockKeep != null ? Math.Min(state.Player.Block, state.BlockKeep.Value) : 0,
+                    IceBlock = state.Player.IceBlock / 2,
                     // 溶けない氷菓 (energyCarry): 余ったエナジーを持ち越す (T1 は素の値)
                     Energy = state.Player.EnergyMax + ((state.EnergyCarry == true || carryOnce) && turn > 1 ? state.Player.Energy : 0) + (nextTurnEnergy ?? 0),
                     EnergyMaxAtTurnStart = state.Player.EnergyMax + (state.EnergyMaxRefBonus ?? 0),
@@ -638,6 +639,7 @@ namespace DeckRogue.Engine
                     return e.Intent != null ? cleared with { PrevIntentKind = e.Intent.Kind } : cleared;
                 }),
             };
+            if (state.Player.IceBlock > 0) s = Events.Emit(s, new GameEvent_IceBlockDecayed { From = state.Player.IceBlock, To = s.Player.IceBlock });
             s = Events.Emit(s, new GameEvent_TurnStarted { Turn = turn, Hand = s.Player.Hand.Select(c => c.Def.Name).ToList() });
             // ドローを onTurnStart 誘発より先に行う。霞み: ドロー-2・最低3枚
             // 過負荷の歯車 (ギア) は nextTurnDraw に負の量を積む = 0 で下げ止める (2026-09-17)
@@ -1842,11 +1844,8 @@ namespace DeckRogue.Engine
                     expired = expired.Where(c => c.Uid != keptUidLocal).ToList();
                 }
                 string? keptUid = kept?.Uid;
-                // 払えなかった札 (実コスト>残りエナジー) は捨て札へ (2026-10-12 裁定 F2)。判定は盤面を書き換える前の s で。TS と同形
-                var stBefore = s;
-                var returned = expired.Where(c => Effects.ImpulseUnaffordable(stBefore, c)).ToList();
-                var returnedUids = new HashSet<string>(returned.Select(c => c.Uid));
-                var burned = expired.Where(c => !returnedUids.Contains(c.Uid)).ToList();
+                // 出さなかった衝動の札は全部消滅する (2026-11-04 ユーザー裁定で 2026-10-12 の F2「払えなかった札は捨て札へ」を撤回。TS と同形)
+                var burned = expired;
                 s = s with
                 {
                     Player = s.Player with
@@ -1855,21 +1854,19 @@ namespace DeckRogue.Engine
                             .Where(c => !impulse.Contains(c.Uid) || c.Uid == keptUid)
                             .Select(c => c.Uid == keptUid ? c with { KeptImpulse = true } : c)
                             .ToList(),
-                        DiscardPile = Concat(s.Player.DiscardPile, returned),
                         ExhaustPile = Concat(s.Player.ExhaustPile, burned),
                         ImpulseUids = new List<string>(),
                     },
                 };
                 if (kept != null) s = Events.Emit(s, new GameEvent_ImpulseKept { CardId = kept.Def.Id });
-                foreach (var card in returned) s = Events.Emit(s, new GameEvent_ImpulseReturned { CardId = card.Def.Id });
                 foreach (var card in burned)
                 {
                     s = Events.Emit(s, new GameEvent_CardExhausted { CardId = card.Def.Id });
                 }
                 int aliveIdx = FirstAliveOrZero(s);
-                // 燃え残り・灰の衣 (赤 2026-10-10): 失効1枚ごとに鳴る (捨て札へ戻った札も失効)
+                // 燃え残り・灰の衣 (赤 2026-10-10): 失効1枚ごとに鳴る
                 for (int i = 0; i < expired.Count; i++) s = Effects.RunPermanentTriggers(s, "onImpulseExpired", aliveIdx);
-                // 衝動失効の消滅 = 亡者の合唱が誘発する。捨て札へ戻った札は消滅ではない
+                // 衝動失効の消滅 = 亡者の合唱が誘発する
                 s = Effects.FireExhaustTriggers(s, burned.Count, aliveIdx);
                 // 亡骸効果: 衝動で引いた亡骸札の失効もプレイ以外の消滅なので発火する
                 s = Effects.FireNecroEffects(s, burned, aliveIdx);

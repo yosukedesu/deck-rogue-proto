@@ -103,7 +103,7 @@ export interface PlayerState extends CombatantState {
    * 素のコスト0のカードは消費しない。伏せるコストは対象外。未使用分は持ち越し
    */
   readonly nextCardDiscount: number
-  /** 衝動 (赤): 「このターン限り」の手札の uid。自ターン終了時に未使用なら消滅する (払えなかった札は捨て札へ。2026-10-12) */
+  /** 衝動 (赤): 「このターン限り」の手札の uid。自ターン終了時に未使用なら消滅する (2026-11-04 に「払えなかった札は捨て札へ」を撤回) */
   readonly impulseUids: readonly string[]
   /** 弱体: 残りNターンの間、与ダメージ25%減 (切り捨て)。自ターン終了時に1減る */
   readonly weak: number
@@ -722,6 +722,7 @@ export type GameEvent =
     }
   | { readonly type: 'BlockGained'; readonly presentationReceipt?: CombatPresentationReceipt; readonly target: 'player' | 'enemy'; readonly amount: number; readonly sourceUid?: string }
   | { readonly type: 'IceBlockGained'; readonly presentationReceipt?: CombatPresentationReceipt; readonly amount: number } // 氷壁 (持ち越しブロック)
+  | { readonly type: 'IceBlockDecayed'; readonly from: number; readonly to: number } // 氷壁は自ターンの始めに半分 (切り捨て) になる (2026-11-04 ユーザー「防御の完全上位互換で崩壊。毎ターン半分に」)
   | { readonly type: 'AetherGained'; readonly amount: number } // 霊気 (妨害の蓄積)
   | { readonly type: 'SpellEchoed'; readonly cardId: string } // 反復 (青): 呪文の効果が2回解決された
   | { readonly type: 'NecroFired'; readonly cardId: string } // 亡骸効果 (黒): 消滅した札の亡骸効果が発火した

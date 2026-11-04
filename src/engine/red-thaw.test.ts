@@ -234,15 +234,16 @@ describe('バーンと刹那の穴埋め', () => {
     expect(s.player.hand.some((c) => c.uid === 't2_red_guard')).toBe(false)
   })
 
-  it('衝動の失効: 払えなかった札 (実コスト>残りエナジー) は捨て札へ・払えた札と出せない札 (負傷) は消滅 (2026-10-12 3幕フルラン 裁定 F2)。燃え残りは3枚とも鳴る', () => {
+  it('衝動の失効: 出さなかった衝動の札はターンの終わりに全部消滅する＝払えなかった札 (実コスト>残りエナジー) も払えた札も出せない札 (負傷) も (2026-11-04 ユーザー裁定で 2026-10-12 の F2「払えなかった札は捨て札へ」を撤回)。燃え残りは失効の3枚ぶん鳴る', () => {
     let s = withPerms(withHand(base(), ['red_strike', 'red_inferno', WOUND_DEF.id]), ['red_perm_embers_left'])
     s = withIntent({ ...s, player: { ...s.player, energy: 2, impulseUids: ['t0_red_strike', 't1_red_inferno', `t2_${WOUND_DEF.id}`] } }, restIntent())
     s = applyCommand(s, { type: 'EndTurn' })
-    expect(ids(s.player.exhaustPile).sort()).toEqual([WOUND_DEF.id, 'red_strike'].sort()) // 火弾1E≦2 は払えた＝消滅、負傷は出せない＝消滅
-    expect(s.player.discardPile.concat(s.player.hand, s.player.drawPile).some((c) => c.uid === 't1_red_inferno')).toBe(true) // 業火3E>2 は捨て札へ (敵フェーズ後の引きで手札に来うる)
-    expect(s.player.exhaustPile.some((c) => c.def.id === 'red_inferno')).toBe(false)
-    expect(s.eventLog.filter((e) => e.type === 'ImpulseReturned').map((e) => (e as { cardId: string }).cardId)).toEqual(['red_inferno'])
-    expect(s.eventLog.filter((e) => e.type === 'CardExhausted')).toHaveLength(2)
+    // 火弾1E≦2 (払えた)・業火3E>2 (払えなかった)・負傷 (出せない) の3枚とも消滅
+    expect(ids(s.player.exhaustPile).sort()).toEqual([WOUND_DEF.id, 'red_inferno', 'red_strike'].sort())
+    expect(s.player.discardPile.concat(s.player.hand, s.player.drawPile).some((c) => c.uid === 't1_red_inferno')).toBe(false) // 捨て札へは戻らない
+    expect(s.eventLog.some((e) => e.type === 'ImpulseReturned')).toBe(false) // 出来事 ImpulseReturned はもう出ない
+    expect(s.eventLog.filter((e) => e.type === 'CardExhausted')).toHaveLength(3)
+    expect(s.player.impulseUids).toEqual([])
     expect(s.enemies[0].burn).toBe(9 - 1) // 燃え残り +3 ×3枚 = 9、敵フェーズ開始で1減る
   })
 
@@ -287,10 +288,10 @@ describe('鍛える (本家形へ。例外2枚)', () => {
 })
 
 describe('データとラン', () => {
-  it('赤 106種・報酬99＋初期専用7 (段1: チェイン14・穴埋め7・触媒2 を足し、カオス8と重なり2を撤去。2026-10-10 火加減を初期デッキへ。段2 2026-10-12: +7・段2b: 守り+2)。撤去した札は無い', () => {
+  it('赤 106種・報酬100＋初期専用6 (段1: チェイン14・穴埋め7・触媒2 を足し、カオス8と重なり2を撤去。2026-10-10 火加減を初期デッキへ。段2 2026-10-12: +7・段2b: 守り+2。2026-11-04 ユーザー裁定: 火纏い・棘火の帳を報酬へ戻し、火中の取り出しを初期専用に)。撤去した札は無い', () => {
     const red = allCards.filter((c) => c.color === 'red')
     expect(red.length).toBe(106)
-    expect(red.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(99)
+    expect(red.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(100)
     for (const id of ['red_long_shot', 'red_streak_bet', 'red_all_in', 'red_double_dice', 'red_leap_arrow', 'red_double_down', 'red_grand_fireworks', 'red_perm_gambler', 'red_perm_ward', 'red_blaze_storm']) {
       expect(red.some((c) => c.id === id), id).toBe(false)
     }
@@ -300,12 +301,13 @@ describe('データとラン', () => {
     expect(getCardDef('red_leaping_flame').name).toBe('飛び火') // 既存の札はそのまま (キーワード名は「チェイン」)
   })
 
-  it('初期デッキ (run_basic_red): 火弾3・火花1・火加減1・灰の盾2・火纏い・棘火の帳・着火＝10枚。初期専用の札は報酬に出ない (2026-10-10 Opus 赤 A 2.29T・C 2.5T → 火花×2→火花×1＋火加減)', () => {
+  it('初期デッキ (run_basic_red): 火弾3・着火1・灰の盾3・火加減1・火花1・火中の取り出し1＝10枚。初期専用の札は報酬に出ない (2026-10-10 Opus 赤 A 2.29T・C 2.5T → 火花×2→火花×1＋火加減。2026-11-04 ユーザー裁定「緑・白と同じような構成に」→ 火纏い・棘火の帳を外して灰の盾3・火中の取り出し)', () => {
     const d = getDeckDef('run_basic_red')
     const counts = Object.fromEntries(d.cards.map((c) => [c.cardId, c.count]))
-    expect(counts).toEqual({ red_strike: 3, red_spark: 1, red_mode_firecontrol: 1, red_guard: 2, red_perm_flarecoat: 1, red_perm_thorn_flame: 1, red_ignite: 1 })
+    expect(counts).toEqual({ red_strike: 3, red_ignite: 1, red_guard: 3, red_mode_firecontrol: 1, red_spark: 1, red_impulse: 1 })
     expect(d.cards.reduce((a, c) => a + c.count, 0)).toBe(10)
     for (const c of d.cards) expect(REWARD_EXCLUDED.has(c.cardId), c.cardId).toBe(true)
+    for (const id of ['red_perm_flarecoat', 'red_perm_thorn_flame']) expect(REWARD_EXCLUDED.has(id), id).toBe(false) // 報酬プールへ戻した
   })
 
   it('チェインを持つ札は赤だけで、コストは1以上 (0E のチェインは当たりが無い)', () => {

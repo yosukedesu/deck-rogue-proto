@@ -18,15 +18,29 @@ const fireReaction = (s: GameState, attack: number): GameState => {
 }
 
 describe('初期デッキとみぞれ', () => {
-  it('ラン基本デッキ＝水撃3・渦流の鞭・氷盾3・知恵の重み・潮の一滴・対抗呪文。氷の槍・思案・霜の帳は報酬プールへ', () => {
+  it('ラン基本デッキ＝水撃3・渦流の鞭・氷盾3・潮の岐路・知恵の重み・対抗呪文 (2026-11-04 ユーザー裁定「緑・白と同じような構成に」: 潮の一滴→潮の岐路)。潮の一滴・氷の槍・思案・霜の帳は報酬プールへ', () => {
     const deck = getDeckDef('run_basic_blue')
     const ids = deck.cards.flatMap((c) => Array.from({ length: c.count }, () => c.cardId)).sort()
-    expect(ids).toEqual(['blue_counterspell', 'blue_current_lash', 'blue_guard', 'blue_guard', 'blue_guard', 'blue_strike', 'blue_strike', 'blue_strike', 'blue_tide_drop', 'blue_weight_of_wisdom'])
+    expect(ids).toEqual(['blue_counterspell', 'blue_current_lash', 'blue_guard', 'blue_guard', 'blue_guard', 'blue_mode_tide_crossroad', 'blue_strike', 'blue_strike', 'blue_strike', 'blue_weight_of_wisdom'])
     for (const id of ids) expect(REWARD_EXCLUDED.has(id), id).toBe(true)
-    for (const id of ['blue_ice_lance', 'blue_ponder', 'blue_frost_veil']) expect(REWARD_EXCLUDED.has(id), id).toBe(false)
+    for (const id of ['blue_tide_drop', 'blue_ice_lance', 'blue_ponder', 'blue_frost_veil']) expect(REWARD_EXCLUDED.has(id), id).toBe(false)
     const blue = allCards.filter((c) => c.color === 'blue')
-    expect(blue.length).toBe(95) // 2026-09-25 3本柱: +13 −5 → 緑と同じ報酬89枚に +9
-    expect(blue.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(89)
+    expect(blue.length).toBe(96) // 2026-09-25 3本柱: +13 −5 → 95。2026-11-04 潮の岐路 +1
+    expect(blue.filter((c) => !REWARD_EXCLUDED.has(c.id)).length).toBe(90) // 89＋潮の一滴 (初期デッキから報酬へ)。潮の岐路は初期専用
+  })
+
+  it('潮の岐路 (2026-11-04 新・初期専用): 1E 呪文のコモン。モードは「7ダメージ」か「氷壁4」', () => {
+    const d = getCardDef('blue_mode_tide_crossroad')
+    expect(d).toMatchObject({ cost: 1, type: 'spell', rarity: 'common', color: 'blue' })
+    expect(d.modes?.map((m) => m.effects.map((e) => [e.effect, e.amount]))).toEqual([[['dealDamage', 7]], [['gainIceBlock', 4]]])
+    let s = withHand(freshCombat('set-confirm', 'enemy_brute', 42, 'starter_blue'), ['blue_mode_tide_crossroad', 'blue_mode_tide_crossroad'])
+    s = { ...s, player: { ...s.player, energy: 9 } }
+    const hp0 = s.enemies[0].hp
+    const ice0 = s.player.iceBlock
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't0_blue_mode_tide_crossroad', targetIndex: 0, modeIndex: 0 })
+    expect(hp0 - s.enemies[0].hp).toBe(7)
+    s = applyCommand(s, { type: 'PlayCard', cardUid: 't1_blue_mode_tide_crossroad', modeIndex: 1 })
+    expect(s.player.iceBlock - ice0).toBe(4)
   })
 
   it('みぞれは仕込み枠2・説明文は今の効果 (呪文を撃つたび氷壁+1)', () => {
@@ -104,7 +118,7 @@ describe('鍛えるの本家形 (青) と例外', () => {
 
   it('旧3段のまま: 氷の槍 (2Eのまま・氷壁4を足してから撃つ＝1E 化は 2026-08-31 に封じた)・魔力の火花 (次のカード-3)', () => {
     expect(up('blue_ice_lance')).toMatchObject({ cost: 2 })
-    expect(up('blue_ice_lance').effects.map((e) => [e.effect, e.amount])).toEqual([['gainIceBlock', 4], ['dealDamagePerIceBlock', 1]])
+    expect(up('blue_ice_lance').effects.map((e) => [e.effect, e.amount])).toEqual([['gainIceBlock', 3], ['dealDamagePerIceBlock', 1]])
     expect(up('blue_spark').effects).toEqual([{ trigger: 'onPlay', effect: 'discountNext', amount: 3 }])
   })
 })

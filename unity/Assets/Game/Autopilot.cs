@@ -851,6 +851,11 @@ namespace DeckRogue.Game
                         int v; var st3 = g.Rs.Combat;
                         if (int.TryParse(Get("pblock"), out v)) g.Rs = g.Rs with { Combat = st3 with { Player = st3.Player with { Block = Math.Max(0, v) } } };
                     }
+                    if (Get("pice") != null)
+                    {   // 自分の氷壁 (2026-11-04 氷壁が自ターンの始めに半分になる表示の確認。pblock= と同じ書き換え)
+                        int v; var st8 = g.Rs.Combat;
+                        if (int.TryParse(Get("pice"), out v)) g.Rs = g.Rs with { Combat = st8 with { Player = st8.Player with { IceBlock = Math.Max(0, v) } } };
+                    }
                     if (Get("php") != null)
                     {   // 自分の今の HP を直接書く (hp= はチェックポイントの割合で丸まる。敗北の瞬間・HP 3 割の危険の確認。2026-11-04 束 F)
                         int v; var st7 = g.Rs.Combat;

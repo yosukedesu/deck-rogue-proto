@@ -862,7 +862,7 @@
             {
               "trigger": "onPlay",
               "effect": "gainIceBlock",
-              "amount": 12
+              "amount": 10
             }
           ]
         }
@@ -896,7 +896,7 @@
             {
               "trigger": "onPlay",
               "effect": "gainIceBlockPerHandCard",
-              "amount": 3
+              "amount": 2
             },
             {
               "trigger": "onPlay",
@@ -1000,7 +1000,7 @@
         {
           "trigger": "onPlay",
           "effect": "gainIceBlock",
-          "amount": 10
+          "amount": 8
         },
         {
           "trigger": "onPlay",

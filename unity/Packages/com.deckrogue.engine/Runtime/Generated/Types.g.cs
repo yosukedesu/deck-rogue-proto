@@ -293,7 +293,7 @@ namespace DeckRogue.Engine.Generated
         /// <summary>マナ軽減トークン: 次にプレイする1枚のコストを軽減して消費される。 素のコスト0のカードは消費しない。伏せるコストは対象外。未使用分は持ち越し</summary>
         [JsonProperty("nextCardDiscount")]
         public int NextCardDiscount { get; init; }
-        /// <summary>衝動 (赤): 「このターン限り」の手札の uid。自ターン終了時に未使用なら消滅する (払えなかった札は捨て札へ。2026-10-12)</summary>
+        /// <summary>衝動 (赤): 「このターン限り」の手札の uid。自ターン終了時に未使用なら消滅する (2026-11-04 に「払えなかった札は捨て札へ」を撤回)</summary>
         [JsonProperty("impulseUids")]
         public IReadOnlyList<string> ImpulseUids { get; init; } = default!;
         /// <summary>弱体: 残りNターンの間、与ダメージ25%減 (切り捨て)。自ターン終了時に1減る</summary>
@@ -1354,6 +1354,17 @@ namespace DeckRogue.Engine.Generated
         public CombatPresentationReceipt? PresentationReceipt { get; init; }
         [JsonProperty("amount")]
         public int Amount { get; init; }
+    }
+
+    /// <summary>GameEvent: type="IceBlockDecayed"</summary>
+    public sealed record GameEvent_IceBlockDecayed : GameEvent
+    {
+        public const string TypeTag = "IceBlockDecayed";
+        public GameEvent_IceBlockDecayed() { Type = TypeTag; }
+        [JsonProperty("from")]
+        public int From { get; init; }
+        [JsonProperty("to")]
+        public int To { get; init; }
     }
 
     /// <summary>GameEvent: type="AetherGained"</summary>

@@ -88,13 +88,14 @@ namespace DeckRogue.Engine
             // --- スターター個性注入の追随 ---
             "green_entangle",
             "green_vine_wedge",
-            "blue_tide_drop",
+            // "blue_tide_drop" は 2026-11-04 に報酬プールへ (TS と同じ)
             "blue_current_lash", // 2026-09-25 青の解凍: 初期デッキの渦流の鞭・知恵の重み (氷の槍・思案・霜の帳は報酬プールへ)
             "blue_weight_of_wisdom",
             "red_spark",
             "red_ignite",
-            "red_perm_flarecoat",
-            "red_perm_thorn_flame",
+            // "red_perm_flarecoat"・"red_perm_thorn_flame" は 2026-11-04 に報酬プールへ (TS と同じ)
+            "red_impulse",
+            "blue_mode_tide_crossroad",
             "red_mode_firecontrol", // 2026-10-10 Opus 赤3本: 火加減を初期デッキへ (火花×2→火花×1＋火加減)
             "white_shield_strike",
             "white_light_bolt", // 灯の矢 (白の派生=灯の教材=放出。2026-09-21 夜 ユーザー裁定「継ぎ火を消して灯の矢に」: 継ぎ火は報酬プールへ)

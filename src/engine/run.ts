@@ -43,15 +43,16 @@ export const REWARD_EXCLUDED = new Set([
   // 確定済みルール「報酬プールはスターター札除外」に全色を同期) ---
   'green_entangle',
   'green_vine_wedge',
-  'blue_tide_drop',
+  // 'blue_tide_drop' は 2026-11-04 に初期デッキから外して報酬プールへ (潮の岐路と入れ替え)
   // 2026-09-25 青の解凍 (docs/blue-thaw-proposal-2026-09-25.md): 初期デッキを緑の形に＝渦流の鞭 (殴りながら守る枠)・知恵の重み (手札6枚を火力にする個性の1枚)。
   // 氷の槍・思案・霜の帳は報酬プールへ (初期デッキだけで幕1 10.0T → 6.1T)
   'blue_current_lash',
   'blue_weight_of_wisdom',
   'red_spark',
   'red_ignite',
-  'red_perm_flarecoat',
-  'red_perm_thorn_flame',
+  // 'red_perm_flarecoat'・'red_perm_thorn_flame' は 2026-11-04 に初期デッキから外して報酬プールへ (赤の初期デッキを緑・白と同じ形に)
+  'red_impulse', // 火中の取り出し (2026-11-04 赤の初期デッキの衝動の教材)
+  'blue_mode_tide_crossroad', // 潮の岐路 (2026-11-04 青の初期デッキのモード札＝初期専用)
   // 2026-10-10 Opus 赤3本 (A 2.29T・C 2.5T で棚卸し §6 の線「幕1が平均3T台なら火花×2→火花×1＋火加減」を2本が下回った): 火加減は初期専用に
   'red_mode_firecontrol',
   'white_shield_strike', // 灯盾の一撃 (白の打ち据え枠=殴りながら守る)

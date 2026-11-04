@@ -7,7 +7,7 @@
 import { canUpgradeInHand, upgradeCard } from './upgrade.ts'
 import { buildDeck, getEnemyDef, SCALD_DEF, BRAND_DEF, GUILT_DEF, getCardDef } from './content.ts'
 import { resolveFusedDef } from './fusion.ts'
-import { applyDamageInterrupts, burnNoDecay, hasStaticEffect, impulseUnaffordable, cardNeedsTarget, gainLight, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, expireRetainers, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge, trapLifeOf } from './effects.ts'
+import { applyDamageInterrupts, burnNoDecay, hasStaticEffect, cardNeedsTarget, gainLight, cardStatusRoom, drawCards, effectiveCost, effectiveIntent, expireRetainers, fireEnemyDied, fireExhaustTriggers, fireNecroEffects, gainPlayerBlock, hasHuntableTokens, isBrandCard, isDamageEffect, isDoll, isPlayableFromHand, isTrapLive, millPlayerDeck, resolveEffectTargeted, resolveOnPlayEffects, applyEnemyWeak, retainerRequirementMet, trapAge, trapLifeOf } from './effects.ts'
 import { applyInterruptsTo, startNodeFor, walkToMove } from './enemyGraph.ts'
 import { applyDeathInterrupts, bindRedeclare, blazeConditionMet, effectiveStrength, enterPermanent, gainEnemyStrength, isBlazing, refreshIntentValues, resolveIgniteEffects, setBellActive } from './effects.ts'
 import { buildLeaderPassive, getLeaderDef, JUNK_DEF, resolveEncounter, WOUND_DEF } from './content.ts'
@@ -516,12 +516,13 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
     ...rest,
     turn,
     phase: 'player-turn',
-    // 通常ブロックはリセット。氷壁 (iceBlock) は持ち越される。
+    // 通常ブロックはリセット。氷壁 (iceBlock) は半分 (切り捨て) を持ち越す (2026-11-04 ユーザー裁定: 防御の完全上位互換だったので値を約 0.8 倍にし、毎ターン半分に)。
     // 上限のスナップショットもここで更新 = このターン中のランプは上限参照札に乗らない
     player: {
       ...state.player,
       // 頑丈な留め具 (blockKeep): ブロックをN持ち越す
       block: state.blockKeep !== undefined ? Math.min(state.player.block, state.blockKeep) : 0,
+      iceBlock: Math.floor(state.player.iceBlock / 2),
       // 溶けない氷菓 (energyCarry): 余ったエナジーを持ち越す (T1 は素の値)
       // 貯め置き (energyCarryThisTurn) はギアの1回版。どちらかが立っていれば持ち越す
       energy: state.player.energyMax + ((state.energyCarry === true || carryOnce === true) && turn > 1 ? state.player.energy : 0) + (nextTurnEnergy ?? 0),
@@ -555,6 +556,7 @@ function startPlayerTurn(state: GameState, turn: number): GameState {
       return { ...keep, intent: null, ...(e.intent !== null ? { prevIntentKind: e.intent.kind } : {}) }
     }),
   }
+  if (state.player.iceBlock > 0) s = emit(s, { type: 'IceBlockDecayed', from: state.player.iceBlock, to: s.player.iceBlock })
   s = emit(s, { type: 'TurnStarted', turn, hand: s.player.hand.map((c) => c.def.name) })
   // ドローを onTurnStart 誘発より先に行う (2026-08-31 変更)。
   // 手札参照の置物 (懐深き外套=手札×N氷壁) が「まだ0枚の手札」を読むのを防ぐ。
@@ -1654,8 +1656,8 @@ export function endTurn(state: GameState, hearthSparks?: number, retainUids?: re
       if (s.phase === 'lost') return s
     }
   }
-  // 衝動 (このターン限りの手札) は未使用なら消滅する。ただし払えなかった札 (実コスト>残りエナジー) は捨て札へ
-  // (2026-10-12 3幕フルラン Opus 赤3本「強い札ほど戦闘から消える」→ 裁定 F2。燃え残り・灰の衣は両方で鳴る)
+  // 衝動 (このターン限りの手札) は未使用ならターンの終わりに消滅する (2026-11-04 ユーザー「衝動X＝山札の上からX枚引く。その札はターン終了時に消滅する、が正しい」
+  // → 2026-10-12 の裁定 F2「払えなかった札は捨て札へ」を撤回。燠の守りで残す 1 枚だけは手札に残る)
   if (s.player.impulseUids.length > 0) {
     const impulse = new Set(s.player.impulseUids)
     let expired = s.player.hand.filter((c) => impulse.has(c.uid))
@@ -1669,8 +1671,7 @@ export function endTurn(state: GameState, hearthSparks?: number, retainUids?: re
       expired = expired.filter((c) => c.uid !== keptUid)
     }
     const keptUid = kept?.uid
-    const returned = expired.filter((c) => impulseUnaffordable(s, c))
-    const burned = expired.filter((c) => !returned.includes(c))
+    const burned = expired
     s = {
       ...s,
       player: {
@@ -1678,20 +1679,18 @@ export function endTurn(state: GameState, hearthSparks?: number, retainUids?: re
         hand: s.player.hand
           .filter((c) => !impulse.has(c.uid) || c.uid === keptUid)
           .map((c) => (c.uid === keptUid ? { ...c, keptImpulse: true } : c)),
-        discardPile: [...s.player.discardPile, ...returned],
         exhaustPile: [...s.player.exhaustPile, ...burned],
         impulseUids: [],
       },
     }
     if (kept !== null) s = emit(s, { type: 'ImpulseKept', cardId: kept.def.id })
-    for (const card of returned) s = emit(s, { type: 'ImpulseReturned', cardId: card.def.id })
     for (const card of burned) {
       s = emit(s, { type: 'CardExhausted', cardId: card.def.id })
     }
     const aliveIdx = Math.max(0, s.enemies.findIndex((e) => e.hp > 0))
-    // 燃え残り・灰の衣 (赤 2026-10-10): 失効1枚ごとに鳴る (失効は衝動の出来事なので、消滅の誘発より先。捨て札へ戻った札も失効)
+    // 燃え残り・灰の衣 (赤 2026-10-10): 失効1枚ごとに鳴る (失効は衝動の出来事なので、消滅の誘発より先)
     for (let i = 0; i < expired.length; i++) s = runPermanentTriggers(s, 'onImpulseExpired', aliveIdx)
-    // 衝動失効の消滅 = 亡者の合唱が誘発する (確定済みルール表「消滅の誘発」)。捨て札へ戻った札は消滅ではない
+    // 衝動失効の消滅 = 亡者の合唱が誘発する (確定済みルール表「消滅の誘発」)
     s = fireExhaustTriggers(s, burned.length, aliveIdx)
     // 亡骸効果: 衝動で引いた亡骸札の失効もプレイ以外の消滅なので発火する
     s = fireNecroEffects(s, burned, aliveIdx)
