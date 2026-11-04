@@ -3,7 +3,7 @@
 //   0 消えている (硝子は暗く枠も沈む・数字は薄墨)／1〜2 ともる／3〜5 灯る (足元に光溜まり)／6〜9 盛る (火の粉が舞う)／10〜 眩い (芯が白く光溜まりが広がる)。
 // 上限は無いので「満ちる」は言わない＝溜めるほど明るい。白の色を持つリーダーは灯0でも出す (消灯)、他のリーダーは灯1以上で現れる。
 // 出来事 (LightGained／LightSpent／LightDischarged) の的は anchor "light"。順送りの間 (古い盤面の上) は Presenter が Add/Spend/Drain で動かし、組み直しは最後に見せた値から始める (HP の Nudge と同じ器)。
-// 絵: ThemeFx.Lantern (差し替え Art/ui/lantern.png)・ThemeFx.Flame (Art/fx/flame.png)・光は ThemeFx.Glow。
+// 絵: 2026-11-04 から LanternArt (コードで描く真鍮の金具・硝子の奥・炎 3 層・照り返し。エナジーの宝珠と同じ描き方)。光は ThemeFx.Glow。旧のドットの ThemeFx.Lantern・Flame は使わない
 using System;
 using System.Collections.Generic;
 using DeckRogue.Engine;
@@ -22,6 +22,9 @@ namespace DeckRogue.Game
 
         static RectTransform _root, _glass, _flameRt, _previewRt, _glowRt, _poolRt;
         static Image _lantern, _glassFill, _flame, _glow, _pool;
+        // 2026-11-04 大手並みの灯籠 (LanternArt): 硝子の奥 (消灯の夜の硝子＋灯った暖かい光)・炎の 3 層・照り返し
+        static Image _glassCold, _flameIn, _flameCore, _sheen;
+        static RectTransform _flameInRt, _flameCoreRt;
         static TMP_Text _num, _previewText;
         static Image _previewBg;
         static float _scale = 3f;
@@ -83,47 +86,57 @@ namespace DeckRogue.Game
             _poolRt.anchorMin = _poolRt.anchorMax = new Vector2(0.5f, 0f);
             _poolRt.anchoredPosition = new Vector2(0f, 3f * scale);
             _pool = _poolRt.gameObject.AddComponent<Image>();
-            _pool.sprite = ThemeFx.Glow(); _pool.raycastTarget = false;
+            _pool.sprite = LanternArt.Glow(); _pool.raycastTarget = false;
             // 硝子から漏れる光 (絵の後ろ)
             _glowRt = UiKit.NewRect("glow", _root);
             _glowRt.anchorMin = _glowRt.anchorMax = new Vector2(0.5f, 0f);
             _glowRt.anchoredPosition = new Vector2(0f, h - (GlassY + GlassH * 0.55f) * scale);
             _glow = _glowRt.gameObject.AddComponent<Image>();
-            _glow.sprite = ThemeFx.Glow(); _glow.raycastTarget = false;
-            // 灯籠の絵
-            var lRt = UiKit.NewRect("lantern", _root);
-            UiKit.Stretch(lRt, 0f, 0f, 0f, 0f);
-            _lantern = lRt.gameObject.AddComponent<Image>();
-            _lantern.raycastTarget = true;
-            // 硝子の窓 (絵の上): 炎の光の地 → 炎 → 数字
+            _glow.sprite = LanternArt.Glow(); _glow.raycastTarget = false;
+            // 硝子の窓 (金具の後ろ): 夜の硝子 → 灯った光 (α で切り替える) → 炎 3 層 → 照り返し。金具の窓は透明なので、この上に金具を重ねる
             _glass = UiKit.NewRect("glass", _root);
             UiKit.Anchor(_glass, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(GlassX * scale, -(GlassY + GlassH) * scale), new Vector2((GlassX + GlassW) * scale, -GlassY * scale));
+            var gc = UiKit.NewRect("cold", _glass);
+            UiKit.Stretch(gc, 0f, 0f, 0f, 0f);
+            _glassCold = gc.gameObject.AddComponent<Image>();
+            _glassCold.sprite = LanternArt.GlassBack(false); _glassCold.raycastTarget = false;
             var gf = UiKit.NewRect("fill", _glass);
             UiKit.Stretch(gf, 0f, 0f, 0f, 0f);
             _glassFill = gf.gameObject.AddComponent<Image>();
-            _glassFill.sprite = ThemeFx.Gradient("lantern-glass", PaperFx.Brass, PaperFx.BrassLight);   // 上が真鍮・下が真鍮の紙。白い芯は炎の絵が持つ
+            _glassFill.sprite = LanternArt.GlassBack(true);   // 灯った硝子の奥 (下の芯から明るい真鍮・熾・縁は沈む)
             _glassFill.raycastTarget = false;
-            _flameRt = UiKit.NewRect("flame", _glass);
-            _flameRt.anchorMin = _flameRt.anchorMax = new Vector2(0.5f, 0f);
-            _flameRt.pivot = new Vector2(0.5f, 0f);
-            _flameRt.anchoredPosition = new Vector2(0f, 1f * scale);
-            _flame = _flameRt.gameObject.AddComponent<Image>();
-            _flame.sprite = ThemeFx.Flame(); _flame.raycastTarget = false;
+            _flameRt = NewFlame("flame", 0, out _flame);
+            _flameInRt = NewFlame("flameIn", 1, out _flameIn);
+            _flameCoreRt = NewFlame("flameCore", 2, out _flameCore);
             _flicker = _flameRt.gameObject.AddComponent<Flicker>();
-            _num = UiKit.Deco(_glass, "0", Mathf.RoundToInt(GlassH * scale * 0.62f), PaperFx.Ink, TextAnchor.MiddleCenter);
-            UiKit.Stretch(_num.rectTransform, 0f, 0f, 0f, 0f);
+            _flicker.Inner = _flameInRt; _flicker.Core = _flameCoreRt; _flicker.Glow = _glow;
+            var sh = UiKit.NewRect("sheen", _glass);
+            UiKit.Stretch(sh, 0f, 0f, 0f, 0f);
+            _sheen = sh.gameObject.AddComponent<Image>();
+            _sheen.sprite = LanternArt.Sheen(); _sheen.raycastTarget = false;
+            // 灯籠の金具 (窓は透明)＝説明の的
+            var lRt = UiKit.NewRect("lantern", _root);
+            UiKit.Stretch(lRt, 0f, 0f, 0f, 0f);
+            _lantern = lRt.gameObject.AddComponent<Image>();
+            _lantern.sprite = LanternArt.Frame();
+            _lantern.raycastTarget = true;
+            // 数字 (台座の銘板・金具の上): エナジーの宝珠と同じ紙色＋暗い縁取り。硝子の中は炎が主役 (数字を窓に置くと炎が隠れた)
+            var numRt = UiKit.NewRect("num", _root);
+            UiKit.Anchor(numRt, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, h * 0.27f));
+            _num = UiKit.Deco(numRt, "0", Mathf.RoundToInt(h * 0.24f), PaperFx.Paper3, TextAnchor.MiddleCenter);
+            UiKit.Stretch(_num.rectTransform, -10f, -10f, -4f, -4f);
+            var nh = UiKit.NumHaloNight(_num.font); if (nh != null) _num.fontSharedMaterial = nh;
             _num.raycastTarget = false;
-            // 旧・クリーム色の縁 0.12 は撤去 (2026-09-29 p20): SDF の余白 6 では外へ約 0.4px しか出ず画面に1画素も出ていなかった。読みやすさは硝子の地 (t1 0.95・t2 以上 不透明) が持つ
             // 火の粉 (盛る以上)
             _root.gameObject.AddComponent<Sparks>().Init(_root, scale);
             // 足元の名札「灯」＝タップの的 (用語の説明と、この戦闘の入りの内訳)
             var tag = UiKit.NewRect("tag", _root);
             float tw = 44f, th = 24f;   // 15px の太字が入る大きさ (2026-09-29 p20。旧 40×20・13px 細字は描いた画素で 3.1:1 しか無かった)
             UiKit.Anchor(tag, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-tw / 2f, -th - 4f), new Vector2(tw / 2f, -4f));
-            var tagImg = PaperFx.Sheet(tag, PaperFx.Tag2, "paper");
+            var tagImg = PaperFx.Sheet(tag, PaperFx.NightTag, "paper");   // 2026-11-04: 夜の札 (金具の灯籠と宝珠に合わせる)
             UiKit.Stretch(tagImg.rectTransform, 0f, 0f, 0f, 0f);
             tagImg.raycastTarget = true;
-            var tagTx = UiKit.Txt(tag, "灯", 15, PaperFx.InkSoft, TextAnchor.MiddleCenter, true);   // 中墨 (名札＝二次の文字)・太字。エナジーの輪の名札「エナジー」と対
+            var tagTx = UiKit.Txt(tag, "灯", 15, PaperFx.BrassLight, TextAnchor.MiddleCenter, true);   // 淡い真鍮の太字
             UiKit.Stretch(tagTx.rectTransform, 0f, 0f, 0f, 0f);
             tagTx.raycastTarget = false;
             var gRef = g;
@@ -186,29 +199,47 @@ namespace DeckRogue.Game
         }
         public static void Add(int delta, bool animate) { SetLight(_shown + delta, animate); }
 
+        /// <summary>炎の層を硝子の中に作る (下端を芯に・pivot 下)。layer 0 外・1 中・2 芯</summary>
+        static RectTransform NewFlame(string name, int layer, out Image img)
+        {
+            var rt = UiKit.NewRect(name, _glass);
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0f);
+            rt.pivot = new Vector2(0.5f, 0f);
+            rt.anchoredPosition = new Vector2(0f, 3f * _scale);
+            img = rt.gameObject.AddComponent<Image>();
+            img.sprite = LanternArt.Flame(layer); img.raycastTarget = false;
+            return rt;
+        }
+
         static void Apply(int n)
         {
             if (_root == null) return;
             int t = Tier(n);
             float s = _scale, w = DotsW * s, h = DotsH * s;
-            _lantern.sprite = ThemeFx.Lantern(t > 0);
-            _lantern.color = Color.white;
+            // 消灯は金具が沈む (灰の掛け算)。灯っている間は真鍮のまま
+            _lantern.color = t == 0 ? new Color(0.62f, 0.62f, 0.62f, 1f) : Color.white;
             _num.text = n.ToString();
-            _num.color = t == 0 ? PaperFx.PaperDim : PaperFx.Ink;
+            _num.color = t == 0 ? PaperFx.PaperDim : PaperFx.Paper3;
+            // 硝子の奥: 灯っていれば暖かい光 (段が上がるほど明るい＝消灯の夜の硝子を下に残して重ねる)
             _glassFill.gameObject.SetActive(t > 0);
-            // 硝子の地は灯1以上でほぼ不透明 (2026-09-29 p20。承認済みの案B の硝子＝t≥1 で不透明の真鍮〜真鍮の紙): 旧 α 0.5+0.1t は灯5で 0.7 しかなく、
-            // 暗い窓が透けて数字の地が 3.3〜4.0:1 に落ちていた。灯の段階の差は炎の大きさ・漏れる光・足元の光溜まり・火の粉で表す
-            _glassFill.color = new Color(1f, 1f, 1f, t >= 2 ? 1f : 0.95f);
-            _flameRt.gameObject.SetActive(t > 0);
-            float[] fk = { 0f, 0.55f, 0.8f, 1.0f, 1.15f };
-            _flameRt.sizeDelta = new Vector2(12f * s * fk[t], 16f * s * fk[t]);
-            if (_flicker != null) _flicker.Base = _flameRt.sizeDelta;
-            _glowRt.gameObject.SetActive(t > 0);
-            _glowRt.sizeDelta = new Vector2(w * 1.9f, h * 0.72f);
-            _glow.color = new Color(ThemeFx.LampGlow.r, ThemeFx.LampGlow.g, ThemeFx.LampGlow.b, t == 0 ? 0f : 0.16f + 0.08f * t);
+            _glassFill.color = new Color(1f, 1f, 1f, t == 0 ? 0f : t == 1 ? 0.7f : t == 2 ? 0.88f : 1f);
+            // 炎 3 層 (外・中・芯)。段で大きく、眩い (段4) は芯が太る
+            float gh = GlassH * s, gw = GlassW * s;
+            float[] fk = { 0f, 0.62f, 0.8f, 0.94f, 1.06f };
+            bool on = t > 0;
+            _flameRt.gameObject.SetActive(on); _flameInRt.gameObject.SetActive(on); _flameCoreRt.gameObject.SetActive(on);
+            _flameRt.sizeDelta = new Vector2(gw * 0.6f * fk[t], gh * 0.86f * fk[t]);
+            _flameInRt.sizeDelta = new Vector2(gw * 0.36f * fk[t], gh * 0.6f * fk[t]);
+            _flameCoreRt.sizeDelta = new Vector2(gw * (t >= 4 ? 0.22f : 0.15f) * fk[t], gh * 0.32f * fk[t]);
+            if (_flicker != null) { _flicker.Base = _flameRt.sizeDelta; _flicker.BaseIn = _flameInRt.sizeDelta; _flicker.BaseCore = _flameCoreRt.sizeDelta; }
+            _glowRt.gameObject.SetActive(on);
+            _glowRt.sizeDelta = new Vector2(w * (1.7f + 0.25f * t), h * (0.62f + 0.06f * t));
+            _glow.color = new Color(ThemeFx.LampGlow.r, ThemeFx.LampGlow.g, ThemeFx.LampGlow.b, t == 0 ? 0f : 0.14f + 0.08f * t);
+            if (_flicker != null) _flicker.GlowBase = _glow.color.a;
             _poolRt.gameObject.SetActive(t >= 2);
             _poolRt.sizeDelta = new Vector2(w * (0.9f + 0.3f * t), h * 0.16f * (0.7f + 0.2f * t));
-            _pool.color = new Color(1f, 0.92f, 0.66f, 0.12f + 0.06f * t);
+            _pool.color = new Color(ThemeFx.LampGlow.r, ThemeFx.LampGlow.g, ThemeFx.LampGlow.b, 0.12f + 0.06f * t);
+            _sheen.color = new Color(1f, 1f, 1f, t == 0 ? 0.6f : 1f);
             var sp = _root.GetComponent<Sparks>();
             if (sp != null) sp.Tier = t;
         }
@@ -217,8 +248,9 @@ namespace DeckRogue.Game
         public static void Flare(float amount)
         {
             if (_root == null) return;
-            if (_flameRt.gameObject.activeSelf) Tween.Punch(_flameRt, amount * 2f, 0.32f, true);
-            Tween.Punch(_glass, amount * 0.5f, 0.28f);
+            if (_flameRt.gameObject.activeSelf) { Tween.Punch(_flameRt, amount * 2f, 0.32f, true); Tween.Punch(_flameInRt, amount * 2.4f, 0.32f, true); Tween.Punch(_flameCoreRt, amount * 2.8f, 0.3f, true); }
+            Tween.Punch(_root, amount * 0.35f, 0.28f, true);   // 灯籠ごと少し跳ねる (足元を留める)
+            if (_sheen != null) { var sc = _sheen.color; Tween.Run(0.3f, k => { if (_sheen != null) _sheen.color = new Color(1f, 1f, 1f, Mathf.Lerp(1.8f, sc.a, k)); }, Ease.OutQuad); }   // 硝子がきらりと
             if (_glowRt.gameObject.activeSelf)
             {
                 var c = _glow.color; float a0 = c.a;
@@ -238,8 +270,9 @@ namespace DeckRogue.Game
                 int v = Mathf.RoundToInt(Mathf.Lerp(start, 0f, k));
                 _num.text = v.ToString();
                 if (_glassFill != null) { var c = _glassFill.color; _glassFill.color = new Color(c.r, c.g, c.b, Mathf.Lerp(a0, 0.2f, k)); }
-                if (_flameRt != null && _flameRt.gameObject.activeSelf) _flameRt.localScale = new Vector3(1f - 0.7f * k, 1f - 0.8f * k, 1f);
-            }, Ease.OutQuad, () => { if (_flameRt != null) _flameRt.localScale = Vector3.one; SetLight(0, false); });
+                var fsc = new Vector3(1f - 0.7f * k, 1f - 0.8f * k, 1f);
+                if (_flameRt != null && _flameRt.gameObject.activeSelf) { _flameRt.localScale = fsc; if (_flameInRt != null) _flameInRt.localScale = fsc; if (_flameCoreRt != null) _flameCoreRt.localScale = fsc; }
+            }, Ease.OutQuad, () => { if (_flameRt != null) { _flameRt.localScale = Vector3.one; if (_flameInRt != null) _flameInRt.localScale = Vector3.one; if (_flameCoreRt != null) _flameCoreRt.localScale = Vector3.one; } Smoke(); SetLight(0, false); });
         }
 
         /// <summary>灯が足りない札を押した: 灯籠が首を振り、硝子が朱に一瞬光る</summary>
@@ -248,6 +281,7 @@ namespace DeckRogue.Game
             if (_root == null) return;
             Tween.Shake(_root, 6f, 0.28f);
             if (_glassFill != null && _glassFill.gameObject.activeSelf) Tween.Flash(_glassFill, PaperFx.Rose, 0.4f);
+            else if (_glassCold != null) Tween.Flash(_glassCold, PaperFx.Rose, 0.4f);
             else if (_lantern != null) Tween.Flash(_lantern, PaperFx.Rose, 0.4f);
         }
 
@@ -304,19 +338,49 @@ namespace DeckRogue.Game
             return c + new Vector2(0f, _root.rect.height / 2f);
         }
 
-        /// <summary>炎のゆらぎ (deltaTime の積算＝コマ送り撮影でも決定的)</summary>
+        /// <summary>炎のゆらぎ (deltaTime の積算＝コマ送り撮影でも決定的): 外・中・芯が少しずつずれて伸び縮みし、外は左右に揺れる。暈は炎に合わせて息をする</summary>
         class Flicker : MonoBehaviour
         {
-            public Vector2 Base;
+            public Vector2 Base, BaseIn, BaseCore;
+            public RectTransform Inner, Core; public Image Glow; public float GlowBase;
             float _t;
             void LateUpdate()
             {
                 var rt = transform as RectTransform;
                 if (rt == null || Base.x <= 0f) return;
                 _t += Time.deltaTime;
-                float sx = 1f + 0.05f * Mathf.Sin(_t * 23f) + 0.03f * Mathf.Sin(_t * 7.3f);
-                float sy = 1f + 0.07f * Mathf.Sin(_t * 17f + 1.3f) + 0.04f * Mathf.Sin(_t * 5.1f);
-                rt.sizeDelta = new Vector2(Base.x * sx, Base.y * sy);
+                float n1 = 0.05f * Mathf.Sin(_t * 23f) + 0.03f * Mathf.Sin(_t * 7.3f);
+                float n2 = 0.07f * Mathf.Sin(_t * 17f + 1.3f) + 0.04f * Mathf.Sin(_t * 5.1f);
+                rt.sizeDelta = new Vector2(Base.x * (1f + n1), Base.y * (1f + n2));
+                rt.localRotation = Quaternion.Euler(0f, 0f, 3f * Mathf.Sin(_t * 3.1f) + 1.5f * Mathf.Sin(_t * 8.7f));
+                if (Inner != null && BaseIn.x > 0f) { Inner.sizeDelta = new Vector2(BaseIn.x * (1f + n1 * 0.8f), BaseIn.y * (1f + 0.09f * Mathf.Sin(_t * 19f + 0.7f))); Inner.localRotation = Quaternion.Euler(0f, 0f, 2f * Mathf.Sin(_t * 3.4f + 0.4f)); }
+                if (Core != null && BaseCore.x > 0f) Core.sizeDelta = new Vector2(BaseCore.x, BaseCore.y * (1f + 0.06f * Mathf.Sin(_t * 29f)));
+                if (Glow != null && GlowBase > 0f) { var c = Glow.color; c.a = GlowBase * (1f + 0.6f * n2); Glow.color = c; }
+            }
+        }
+
+        /// <summary>放出の後: 笠のあたりから細い煙が 3 筋立ちのぼって消える (炎が抜けた合図)</summary>
+        static void Smoke()
+        {
+            if (_root == null || ScreenFx.Instant) return;
+            for (int i = 0; i < 3; i++)
+            {
+                var rt = UiKit.NewRect("smoke", _root);
+                rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
+                float x0 = (i - 1) * 6f * _scale, y0 = -(GlassY + 4f) * _scale;
+                rt.anchoredPosition = new Vector2(x0, y0);
+                float sz = (6f + 2f * i) * _scale;
+                rt.sizeDelta = new Vector2(sz, sz);
+                var img = rt.gameObject.AddComponent<Image>();
+                img.sprite = LanternArt.Glow(); img.color = new Color(0.55f, 0.55f, 0.55f, 0f); img.raycastTarget = false;
+                float delay = 0.08f * i, rise = (16f + 4f * i) * _scale;
+                Tween.After(delay, () => Tween.Run(0.9f, k =>
+                {
+                    if (rt == null) return;
+                    rt.anchoredPosition = new Vector2(x0 + Mathf.Sin(k * 5f + i) * 3f * _scale, y0 + rise * k);
+                    rt.localScale = Vector3.one * (1f + 1.2f * k);
+                    img.color = new Color(0.55f, 0.55f, 0.55f, 0.35f * Mathf.Sin(k * Mathf.PI));
+                }, Ease.OutQuad, () => { if (rt != null) UnityEngine.Object.Destroy(rt.gameObject); }));
             }
         }
 
@@ -339,10 +403,10 @@ namespace DeckRogue.Game
                 float x0 = ((float)_rng.NextDouble() - 0.5f) * DotsW * _scale * 0.5f;
                 float y0 = -12f * _scale + (float)_rng.NextDouble() * 6f * _scale;
                 rt.anchoredPosition = new Vector2(x0, y0);
-                float sz = (1.5f + (float)_rng.NextDouble() * 1.5f) * _scale;
+                float sz = (2.4f + (float)_rng.NextDouble() * 1.8f) * _scale;   // なめらかな粒は芯が小さいので少し大きく
                 rt.sizeDelta = new Vector2(sz, sz);
                 var img = rt.gameObject.AddComponent<Image>();
-                img.sprite = ThemeFx.Spark(); img.color = _rng.NextDouble() < 0.5 ? PaperFx.BrassLight : ThemeFx.LampCore; img.raycastTarget = false;
+                img.sprite = LanternArt.Glow(); img.color = _rng.NextDouble() < 0.5 ? PaperFx.BrassLight : ThemeFx.LampCore; img.raycastTarget = false;   // なめらかな光の粒 (旧はドットの菱形)
                 float rise = (14f + (float)_rng.NextDouble() * 10f) * _scale, drift = ((float)_rng.NextDouble() - 0.5f) * 8f * _scale;
                 Tween.Run(0.9f + (float)_rng.NextDouble() * 0.4f, k =>
                 {
