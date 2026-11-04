@@ -839,10 +839,9 @@ namespace DeckRogue.Game
             var prev = ctx != null ? ctx.Prev : null;
             if (orb == null || def == null || cur == null) return;
             int paid = prev != null ? Math.Max(0, prev.Player.Energy - cur.Player.Energy) : def.Cost;
-            // X 以外の札は音も輪の跳ねも出さない (2026-11-04 反証): 玉が輪へ飛ぶ演出 (BattleView.EnergyOrbs) が着地で energy_spend と跳ねを出すので、ここで鳴らすと 1 枚で二度鳴った。
-            // X の札は EnergyOrbs が玉を出さないので、こちらで払った量ぶん鳴らす (払った量で少し上がる)
-            if (def.XCost != true) return;
+            // 払った音 (払った量で少し上がる)。宝珠の数字は組み直しで跳ねる (EnergyOrb)。2026-11-04 本家形: 札から玉は飛ばさない
             if (paid > 0) Audio.KeyPitched("energy_spend", 1f + 0.04f * Mathf.Min(paid, 5), 0.6f);
+            if (def.XCost != true) return;
             int effX = paid + (cur.XBonus ?? 0) + (def.XBonus ?? 0);
             Tween.Punch(orb, 0.22f, 0.3f);
             var from = Tween.CenterIn(orb, fx);

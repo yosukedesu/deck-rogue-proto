@@ -3598,7 +3598,8 @@ namespace DeckRogue.Game
                 if (orb != null)
                 {
                     Tween.Shake(orb, 6f, 0.25f);
-                    var oi = orb.GetComponentInChildren<Image>();
+                    Image oi = EnergyOrb.BodyOf(orb);
+                    if (oi == null) oi = orb.GetComponentInChildren<Image>();
                     if (oi != null) Tween.Flash(oi, PaperFx.Rose, 0.4f);
                 }
             }
@@ -4152,85 +4153,12 @@ namespace DeckRogue.Game
             // 足してあるので引く (引かないと大樹の心を持つ間ずっと「3 / 4」に戻る)。弧・「/ N」・目盛りの数はすべてこの値を読む
             int turnMax = st.Player.EnergyMaxAtTurnStart > 0 ? st.Player.EnergyMaxAtTurnStart - (st.EnergyMaxRefBonus ?? 0) : st.Player.EnergyMax;   // 0 は旧セーブの欠落
             if (turnMax < 1) turnMax = 1;
-            // エナジーの輪 (紙の円盤に真鍮の弧)
+            // エナジーの宝珠 (2026-11-04 ユーザー「本家形を踏襲」= 回る模様の宝珠＋中央に「残り/上限」・0 で色が落ちる・補充で光る。旧の紙の円盤＋真鍮の弧・目盛り・名札・超過の小玉は撤去)。
+            // 位置と大きさは旧の輪と同じ (左下・山札の真上・128)＝灯籠・予告の札・r3 の配置はそのまま
             float orbY = r3ph ? R3U_OrbYPhone : 116f;   // r3 のスマホは 48 下 (足元の帳の下。仕様 §3)
-            var sun = UiKit.NewRect("energyOrb", root);
-            UiKit.Anchor(sun, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(orbX, orbY), new Vector2(orbX + 128f, orbY + 128f));
-            sun.localRotation = Quaternion.Euler(0f, 0f, -3f);
-            var disc = UiKit.NewRect("disc", sun);   // 最初の子のまま (CannotPlay の Flash が GetComponentInChildren<Image> で円盤を朱に光らせる)
-            UiKit.Stretch(disc, 6f, 6f, 6f, 6f);
-            var dImg = disc.gameObject.AddComponent<Image>();
-            dImg.sprite = PaperFx.Disc(); dImg.preserveAspect = true; dImg.raycastTarget = false;
-            dImg.color = st.Player.Energy > 0 ? Color.white : new Color(0.85f, 0.85f, 0.85f, 1f);
-            // 前の組み立てで見せたエナジー (2026-11-04 B03): 違えば弧と数字を前の値から滑らせる (払った＝0.25 秒で削れる・補充＝0.35 秒で満ちる)。0 になったら円盤が沈む
             int shownBefore = g.Battle != null ? g.Battle.ShownEnergy : -1;
-            bool slide = shownBefore >= 0 && shownBefore != st.Player.Energy && !ScreenFx.Instant;
-            if (slide && st.Player.Energy <= 0 && shownBefore > 0) { dImg.color = Color.white; var di = dImg; Tween.Run(FxSettings.Dur(0.2f), k => { if (di != null) di.color = Color.Lerp(Color.white, new Color(0.85f, 0.85f, 0.85f, 1f), k); }, Ease.OutQuad); }
-            // 空きの溝 (2026-09-29 p20): 使った分は暗い真鍮の溝として残る＝「使った分＝くすんだ真鍮／残り＝明るい真鍮」。旧は弧だけで、空いた所に夜の舞台が透けて輪が欠けた「C」に見えた
-            var track = UiKit.NewRect("track", sun);
-            UiKit.Stretch(track, 0f, 0f, 0f, 0f);
-            var tImg = track.gameObject.AddComponent<Image>();
-            tImg.sprite = PaperFx.Ring(7); tImg.color = PaperFx.BrassInk; tImg.raycastTarget = false;
-            var arc = UiKit.NewRect("arc", sun);
-            UiKit.Stretch(arc, 0f, 0f, 0f, 0f);
-            var aImg = arc.gameObject.AddComponent<Image>();
-            // エナジーの輪＝真鍮 (2026-09-16 ユーザー「エナジー表記は黄色系がいい」)。raycastTarget は旧はコメントの中に入って効いていなかった (2026-09-29 p20)
-            aImg.sprite = PaperFx.Ring(7); aImg.color = PaperFx.Brass; aImg.raycastTarget = false;
-            aImg.type = Image.Type.Filled; aImg.fillMethod = Image.FillMethod.Radial360; aImg.fillOrigin = 2; aImg.fillClockwise = true;
-            aImg.fillAmount = Mathf.Clamp01((float)st.Player.Energy / turnMax);   // 一時マナで分母を超えても弧は満タンのまま (超えた分は外の小玉)
-            if (slide)
-            {   // 弧の滑り (B03): 札から飛ぶ玉 (BattleView.EnergyOrbs 0.22 秒) が着く頃に削れ始める。補充は OutBack で満ちる
-                float f0 = Mathf.Clamp01((float)shownBefore / turnMax), f1 = aImg.fillAmount;
-                bool spend = st.Player.Energy < shownBefore;
-                var ai = aImg;
-                ai.fillAmount = f0;
-                Tween.After(spend && g.Battle != null && g.Battle.LastPlayedUid != null ? 0.2f : 0f, () =>
-                {
-                    if (ai == null) return;
-                    Tween.Run(FxSettings.Dur(spend ? 0.25f : 0.35f), k => { if (ai != null) ai.fillAmount = Mathf.Lerp(f0, f1, k); }, spend ? Ease.OutCubic : Ease.OutBack);
-                });
-            }
-            // 目盛り (2026-09-29 p20): 分母が 2〜12 の時、上から右回りに 360/分母 度ごとの紙色の切れ目＝帯を分母の数に割る (真鍮の上でも溝の上でも見える)
-            if (turnMax >= 2 && turnMax <= 12)
-            {
-                var ticks = UiKit.NewRect("ticks", sun);
-                UiKit.Stretch(ticks, 0f, 0f, 0f, 0f);
-                var tkImg = ticks.gameObject.AddComponent<Image>();
-                tkImg.sprite = PaperFx.RingTicks(7, turnMax); tkImg.color = PaperFx.Paper; tkImg.raycastTarget = false;
-            }
-            // 上限を超えた分 (一時マナ・溶けない氷菓の持ち越し。2026-09-29 p20): 輪の外の右上に真鍮の小玉 (コスト玉と同じ絵) を超えた数だけ (5つまで。数は中央の数字が正)
-            int over = st.Player.Energy - turnMax;
-            for (int i = 0; i < over && i < 5; i++)
-            {
-                float a = (20f + 16f * i) * Mathf.Deg2Rad;   // 上から右回り
-                var o = UiKit.NewRect("over" + i, sun);
-                o.anchorMin = o.anchorMax = o.pivot = new Vector2(0.5f, 0.5f);
-                o.sizeDelta = new Vector2(14f, 14f);
-                o.anchoredPosition = new Vector2(Mathf.Sin(a), Mathf.Cos(a)) * 74f;
-                var oi = o.gameObject.AddComponent<Image>();
-                oi.sprite = PaperFx.Orb(PaperFx.Brass); oi.preserveAspect = true; oi.raycastTarget = false;
-            }
-            var et = UiKit.Deco(sun, st.Player.Energy.ToString(), 40, PaperFx.Ink, TextAnchor.MiddleCenter);
-            UiKit.Anchor(et.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(-8f, 4f), new Vector2(-8f, 6f));
-            if (slide)
-            {   // 数字は前の値から数える (払った時は跳ねる。B03)
-                var ett = et; int e0 = shownBefore, e1 = st.Player.Energy;
-                ett.text = e0.ToString();
-                bool spend = e1 < e0;
-                Tween.After(spend && g.Battle != null && g.Battle.LastPlayedUid != null ? 0.2f : 0f, () =>
-                {
-                    if (ett == null) return;
-                    if (spend) Tween.Punch(ett.rectTransform, 0.22f, 0.3f);
-                    Tween.Run(FxSettings.Dur(0.25f), k => { if (ett != null) ett.text = Mathf.RoundToInt(Mathf.Lerp(e0, e1, k)).ToString(); }, Ease.OutQuad, () => { if (ett != null) ett.text = e1.ToString(); });
-                });
-            }
+            var sun = EnergyOrb.Build(root, st.Player.Energy, turnMax, orbX, orbY, 128f, shownBefore);
             if (g.Battle != null) g.Battle.ShownEnergy = st.Player.Energy;
-            var em = UiKit.Txt(sun, "/ " + turnMax, 15, PaperFx.InkSoft, TextAnchor.MiddleLeft, true);
-            UiKit.Anchor(em.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(16f, -14f), new Vector2(60f, 8f));
-            // 名札「エナジー」は灯籠の名札「灯」と対で太字 (SemiBold)・中墨 (2026-09-29 p20)
-            var el = UiKit.Txt(sun, "エナジー", 13, PaperFx.InkSoft, TextAnchor.MiddleCenter, true);
-            el.characterSpacing = 2f;
-            UiKit.Anchor(el.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 20f), new Vector2(0f, 38f));
             g.RegisterAnchor("energy", sun);
             float ls = UiKit.Phone ? 2.5f : 3f;
             if (st.Player.EnergyMax > turnMax)

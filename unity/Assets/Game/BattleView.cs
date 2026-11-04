@@ -1808,11 +1808,10 @@ namespace DeckRogue.Game
             bool inExhaust = false;
             for (int i = 0; i < st.Player.ExhaustPile.Count; i++) if (st.Player.ExhaustPile[i].Uid == uid) inExhaust = true;
 
-            if (inSet) { Audio.Key("CardSet"); EnergyOrbs(g, rt, hc.Cost, hc.Card.Def); FlyTo(g, rt, "setslot" + setIdx, delay, 0.3f, true, 0.5f); return; }
-            if (inPerm) { EnergyOrbs(g, rt, hc.Cost, hc.Card.Def); FlyTo(g, rt, "player", delay, 0.3f, true, 0.4f); return; }
+            if (inSet) { Audio.Key("CardSet"); FlyTo(g, rt, "setslot" + setIdx, delay, 0.3f, true, 0.5f); return; }
+            if (inPerm) { FlyTo(g, rt, "player", delay, 0.3f, true, 0.4f); return; }
             if (uid == LastPlayedUid)
             {
-                EnergyOrbs(g, rt, hc.Cost, hc.Card.Def);   // 払ったエナジーが札から輪へ流れる (2026-11-04 B03)
                 float retire = PlayedCardRetireDuration(hc.Card.Def);
                 if (retire > 0f) {
                     // Fly directly to its pile rather than crossing the enemy silhouette.
@@ -1844,7 +1843,7 @@ namespace DeckRogue.Game
             FlyTo(g, rt, "pile-discard", delay, 0.3f, true);
         }
 
-        /// <summary>払ったエナジー (表示したコスト) ぶんの真鍮の玉が、出した札から輪へ飛ぶ (2026-11-04 B03)。着いた瞬間に輪が跳ね、小さな輪が広がり、energy_spend。X 札・0 コストは無し</summary>
+        /// <summary>払ったエナジー (表示したコスト) ぶんの真鍮の玉が、出した札から輪へ飛ぶ (2026-11-04 B03)。同日 ユーザー「本家形を踏襲」で呼ばない (本家は数字が変わるだけ)。戻す時の口として残す</summary>
         static void EnergyOrbs(GameRoot g, RectTransform card, int cost, CardDef def)
         {
             if (g == null || card == null || cost <= 0 || (def != null && def.XCost == true)) return;
