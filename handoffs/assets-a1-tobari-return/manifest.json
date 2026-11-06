@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "asset_id": "A1-r-tobari-attack-return",
-  "character": "Tobari / とばり",
+  "character": "Tobari / \u3068\u3070\u308a",
   "status": "review_candidate_not_integrated",
   "frame_size_px": [
     192,
@@ -121,26 +121,26 @@
       ],
       "lowest_nonzero_alpha_row": 115,
       "alpha_bbox_xyxy_exclusive": [
-        60,
-        43,
-        127,
+        9,
+        3,
+        128,
         116
       ],
       "visible_bbox_alpha_gt16_xyxy_exclusive": [
-        61,
-        44,
-        126,
+        63,
+        42,
+        127,
         116
       ],
       "sole_row_visible_x_range": [
         90,
-        108
+        107
       ],
       "alpha_min_nonzero": 1,
       "alpha_max": 254,
-      "nonzero_pixels": 2618,
-      "low_alpha_1_to16_pixels": 258,
-      "sha256": "c2ec2c516e1fcedd3ff77e9db655f32350ab18b91906877ec2dc774fff04b9c0"
+      "nonzero_pixels": 2577,
+      "low_alpha_1_to16_pixels": 274,
+      "sha256": "9647d5eee705a1f35e2037cbad3f6019cec6a9ab7c5abdbb99f91d8ade98cd11"
     }
   ],
   "source": {
@@ -204,7 +204,7 @@
           1536,
           1024
         ],
-        "scale_relative_to_192_equivalent": 1.0
+        "scale_relative_to_192_equivalent": 0.965
       },
       {
         "index": 2,
@@ -212,10 +212,12 @@
           1536,
           1024
         ],
-        "scale_relative_to_192_equivalent": 1.1,
-        "registration": "Uniform normalization around generated foot (792,928) -> (99,116)"
+        "scale_relative_to_192_equivalent": 1.0,
+        "registration": "One nearest resize /8, generated foot (792,928) -> (99,116)",
+        "source": "Canonical original idle at native scale, then imagegen-only background correction"
       }
-    ]
+    ],
+    "face_fix_prompts": "face_fix_prompts.json"
   },
   "verification": {
     "dimensions_and_alpha_rows": "pass",
@@ -223,11 +225,12 @@
     "ingame_playback_tested": false,
     "runtime_integration_performed": false,
     "known_caveats": [
-      "Generated files retain very low-alpha pixels outside the visible contour; no alpha threshold was applied. None extend below row115.",
-      "Generated color/pixel clusters differ somewhat from source art.",
-      "Existing attack and idle have different native cell sizes and body poses. Final comparison uses unscaled native idle, not the earlier0.9x study.",
-      "The original idle pivot is absent; preview uses a measured/inferred pivot, not a verified runtime setting."
-    ]
+      "Imagegen retained faint alpha pixels outside the visible contour. No alpha threshold was applied; none extend below row115.",
+      "Return2 was regenerated, not an exact pixel-only face patch. Fine clothing/weapon pixels also differ from the previous return2.",
+      "Canonical idle pixels, return0/1 and frame durations are unchanged.",
+      "Original idle pivot is inferred for preview, not verified in runtime. In-game playback was not tested."
+    ],
+    "face_fidelity": "independent review of final face correction, see qa_review.md"
   },
   "repository_base": {
     "repository": "yosukedesu/deck-rogue-proto",
@@ -243,5 +246,20 @@
     "src/engine",
     "src/data",
     "unity"
-  ]
+  ],
+  "revision": "face_fix_2026-11-06",
+  "face_fix": {
+    "supersedes_commit": "00d07818a36736627f8dde2004dba83b3c31c408",
+    "before_image": "references/return2_before_face_fix.png",
+    "comparison": "face_comparison.png",
+    "unchanged_frames": [
+      0,
+      1
+    ],
+    "unchanged_return_durations_ms": [
+      100,
+      100,
+      100
+    ]
+  }
 }

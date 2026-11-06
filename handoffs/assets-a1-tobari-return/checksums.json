@@ -1,14 +1,17 @@
 {
-  "README.md": "5433c4c03e953a7807aad996e92c3b9631a62b9ba0d14866c5ae49e4ff8bf6a2",
-  "attack_return_preview.apng": "d4f6801cd71d0b71a589c7941b722f8b869286aac940c78bd90962e44a12d732",
-  "contactsheet.png": "d7bba43048a3ef031cb89934eb2186d83615940b93aaaf0436ea3b3b0e4554d4",
+  "README.md": "aa5de5d419a48266dc42512335c7732e89525616798aa332607b1e7e7f43de6d",
+  "attack_return_preview.apng": "31990672812c99ad23dfc9ae80ac3dafc63a4f16b10131f5a20ae62ddbcfacad",
+  "contactsheet.png": "0190de9b1aea8cd01e578f0e88d16f03718e2c3f80a99b4560af9df017ac7f0e",
+  "face_comparison.png": "8e545c98142e61cc377ca37d3e9b6e0b1cb312e9d8875d834e3ffd9927737f4b",
+  "face_fix_prompts.json": "4e5cff7851cb07beda7462ac95df907e1ad836156a7b4638b3557b3ba5aef9d4",
   "leader_black_attack_return_0.png": "3a148a631d194e7fa9a667bd74ebdf3efab23001bf8ff88df484a50e93c64c97",
   "leader_black_attack_return_1.png": "750a7796fb39e79730529023e36e71f3fa0bdc1ca862226011fdccdbafe70648",
-  "leader_black_attack_return_2.png": "c2ec2c516e1fcedd3ff77e9db655f32350ab18b91906877ec2dc774fff04b9c0",
-  "manifest.json": "12f451487dbea2764b69de8e4e019916af1cd1840639113f5cb8e4e3c021417c",
+  "leader_black_attack_return_2.png": "9647d5eee705a1f35e2037cbad3f6019cec6a9ab7c5abdbb99f91d8ade98cd11",
+  "manifest.json": "1e53e14a0c3f2dc55d8908e8a36db0bbd2c60ab5de06f98c629c626760d0a3e1",
   "prompts.json": "d50988d41d1760e5dbb6881b6ac4c3314c9f8076ef0dbc460fa837fde0b27659",
-  "qa_review.md": "cfc23cc065e777beab50ac3ed6b8d01c55dd9b309017ea7d2d390e3dc48fe8db",
+  "qa_review.md": "e79f3a8f20ad0ba7e7b3ccc2a4e55574636ceda0e55a896c5216c2bf03fa4ed6",
   "references/attack_15_original.png": "7de74f4491a36157ac92a36c392b24607aba4189220f6b384aad12f986fa66aa",
   "references/idle_0_original_128x84.png": "3e667139efef790ecb65e412ea35522931cdcc9ff5488394de76a529c423a5dc",
-  "verification.json": "7416f650b7369b7da065c547549be918103419d39c09f5d4fef6eda9d7885715"
+  "references/return2_before_face_fix.png": "c2ec2c516e1fcedd3ff77e9db655f32350ab18b91906877ec2dc774fff04b9c0",
+  "verification.json": "099299bbb7dba766b0996b4a1090b83c5d6e121c1f009b7254bf16926724b9cc"
 }

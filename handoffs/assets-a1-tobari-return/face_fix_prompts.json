@@ -1,0 +1,26 @@
+{
+  "tool": "built-in imagegen",
+  "transparent_background": true,
+  "note": "Prompts record requested edits. Achieved measurements and limitations are recorded in manifest.json and verification.json.",
+  "face_fix_revision": {
+    "date": "2026-11-06",
+    "source": "Canonical original idle at native 1.0 scale, displayed at8x; previous return0/1 untouched",
+    "rejected_trials": [
+      "Trial1 improved malformed face but enlarged eyes/exposed cheeks; rejected by independent review.",
+      "Trial2 remained too broad; rejected before publication."
+    ],
+    "accepted_steps": [
+      {
+        "step": "Rebuild return2 from canonical idle without resizing its face",
+        "prompt": "Precise animation sprite edit. Use this original sprite as the sole source of truth. Preserve the ENTIRE face, eyes, forehead, bangs, head, silver hair, ribbons, body, dress and boots EXACTLY as shown, at exactly the same size and coordinates. Do NOT redraw, beautify, sharpen or simplify the face. Keep the original small eyes and understated expression. Make only a TINY animation change to the scythe and gripping forearms: rotate the scythe about four degrees counterclockwise about the lower hand, moving the blade's upper-left joint left by 2 original pixels and down by 1 original pixel, so this is the frame immediately before this exact original idle pose. Both hands remain touching its continuous shaft. Everything else unchanged, particularly the face. Canvas stays1536x1024, exactly192x128 enlarged8x. Keep all coarse8x8 pixel clusters. Feet at x792,y928, sole pixels end at y927. One character, transparent RGBA background. No text, no background, no grid, no glow, no halo, no shadow, no effects, no softness, no new details. This original's face must survive without any new interpretation.",
+        "generated_file": "exec-ca42431f-e298-4d48-8a55-2d3778ec716b.png"
+      },
+      {
+        "step": "Imagegen transparent-background correction of rebuilt return2",
+        "prompt": "Background extraction and exact pixel-art preservation. Keep this entire sprite exactly unchanged, including its exact small eyes, facial pixels, head size, hair, bows, scythe, grip, dress and boots. Do not reinterpret or redraw any feature. The face is approved as drawn. Correct only the transparent background: remove all isolated stray low-opacity pixels OUTSIDE the actual character-and-scythe silhouette, particularly the lone faint pixel far to the right below the feet. Do not remove any character pixels, do not alter the silhouette. Output the same1536x1024 RGBA canvas at identical scale and position with genuine zero-alpha outside the sprite. Both soles end at source row927; rows928 to1023 must be entirely zero alpha. No glow, blur, smoke, shadow, edge halo, particles, background or text. Preserve the coarse8x8 block grid and every original facial pixel.",
+        "generated_file": "exec-538ac5cb-d3a2-4771-8715-f8671cf9dda8.png"
+      }
+    ],
+    "export": "Single nearest-neighbor resize from1536x1024 to192x128. No alpha threshold, masks, compositing repairs, hand-painted edits or recoloring."
+  }
+}
