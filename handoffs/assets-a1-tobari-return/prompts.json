@@ -1,0 +1,25 @@
+{
+  "tool": "built-in imagegen",
+  "transparent_background": true,
+  "note": "Prompts describe requested output; achieved measurements and caveats are in manifest/verification, not asserted from prompt text.",
+  "prompts": [
+    {
+      "frame": 0,
+      "reference": "attack15 original at8x nearest display",
+      "prompt": "Use case: precise-object-edit. One very small follow-up animation frame to this exact sprite. Keep the original girl almost unchanged. Raise the scythe’s far-left joint from waist level to just above waist, and tilt its shaft from nearly horizontal to20degrees down-right. Both hands move with and touch shaft. Girl straightens knees just a little and turns subtly toward front-right, retaining original face, small eyes, silver twin tails, dark dress and muted original pixel style. Body crown y488, soles y927, feet midpoint x792 on same1536x1024 canvas. Do not zoom or center. Coarse8x8 pixel blocks, not smooth detailed illustration. Return transparent sprite only. No glow, no background, no lighting effects, no particles, no smoke, no shadow, no border or text. Nothing outside the hard character/weapon silhouette. Entire lower96pixels completely transparent. Real zero-alpha clear background, not black."
+    },
+    {
+      "frame": 1,
+      "references": [
+        "attack15 original at8x",
+        "idle0 original128x84 placed+39,+39 then8x"
+      ],
+      "prompt": "Use case: identity-preserve. Create exactly ONE intermediate sprite halfway between these2 canonical frames: attack15(image1) -> THIS SPRITE -> idle0(image2). Keep the SAME low-resolution muted pixel-art character identity, face, bangs, hairbows, silver twin tails, gothic black dress, boots and chunky original pixel clusters. Do not redesign the face with red eyes or add details. Torso is turning from sideways-right to the front-right diagonal of image2, rising naturally from the lower attack posture. Body crown target y472 (59 source pixels), soles y927 (115 source row), feet midpoint x792 (99 source px). This exact1536x1024 canvas is an8x enlargement of192x128. Do not zoom or recenter. Scythe moves up from the low left position to diagonal across torso: mount upper-left aroundx456,y520, hands grip continuous diagonal shaft at chest/waist, shaft angle35degrees downward right. Blade curves above-left towards above head, same blade/shaft physical proportions as references. Both hands remain firmly connected to the shaft and blade connected to mount. One girl only; no afterimages. Genuinely transparent outside silhouette with hard clean pixel-art edges, zero alpha outside actual object, no glow/shadow/background/smoke/noise/particles/text. All rows belowy927 fully transparent."
+    },
+    {
+      "frame": 2,
+      "reference": "idle0 uniformly0.9 scaled comparison at8x; final export normalized1.10 aroundfoot to return toward native endpoint",
+      "prompt": "Use case: precise-object-edit. Make a minimal animation in-between from this exact existing pixel-art idle sprite. Change ONLY the pose of the scythe and gripping forearms by a very small amount: rotate the scythe about5degrees counterclockwise in screen coordinates about the lower hand, lowering its upper-left attachment point roughly16 displayed pixels (2 original pixels) and shifting it left roughly16px, as if it is just about to settle into this exact idle pose. Preserve the entire face, eyes, head, hair, ribbons, torso, dress, skirt, legs, boots, all colors, pixel clusters and character scale unchanged. Do not redesign, sharpen, smooth or add details. Keep the original front-right three-quarter orientation. Both original hands visibly hold the same single continuous shaft attached to the blade, with a tiny natural forearm adjustment only. The next frame after this will be the exact supplied original image. Output one sprite on the same1536x1024 transparent canvas at the same position with soles at y927, center x792. This is192x128 source pixel art enlarged8x, preserve coarse pixel grid. No special effects, shadow, glow, noise, text, grids or border. Every outside pixel must have zero alpha, no faint alpha residue."
+    }
+  ]
+}

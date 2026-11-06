@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "asset_id": "A1-r-tobari-attack-return",
+  "character": "Tobari / とばり",
+  "status": "review_candidate_not_integrated",
+  "frame_size_px": [
+    192,
+    128
+  ],
+  "pixel_format": "RGBA8",
+  "facing": "right_to_front_right_three_quarter",
+  "pivot_from_top_left_px": [
+    99,
+    116
+  ],
+  "lowest_nonzero_alpha_row": 115,
+  "playback": {
+    "order": [
+      "attack:index15",
+      "leader_black_attack_return_0.png",
+      "leader_black_attack_return_1.png",
+      "leader_black_attack_return_2.png",
+      "idle:index0"
+    ],
+    "return_frame_durations_ms": [
+      100,
+      100,
+      100
+    ],
+    "return_duration_ms": 300,
+    "recommended_total_range_ms": [
+      250,
+      350
+    ],
+    "loop_return": false,
+    "end_action": "handoff_to_existing_idle_index0",
+    "preview_endpoint_hold_ms": {
+      "attack15": 350,
+      "idle0": 500
+    }
+  },
+  "rendering": {
+    "filter": "nearest",
+    "mipmaps": false,
+    "alpha": "straight",
+    "do_not_use_alpha_bbox_as_body_or_pivot": true
+  },
+  "frames": [
+    {
+      "file": "leader_black_attack_return_0.png",
+      "width": 192,
+      "height": 128,
+      "mode": "RGBA",
+      "pivot_px": [
+        99,
+        116
+      ],
+      "lowest_nonzero_alpha_row": 115,
+      "alpha_bbox_xyxy_exclusive": [
+        0,
+        40,
+        115,
+        116
+      ],
+      "visible_bbox_alpha_gt16_xyxy_exclusive": [
+        23,
+        40,
+        115,
+        116
+      ],
+      "sole_row_visible_x_range": [
+        86,
+        109
+      ],
+      "alpha_min_nonzero": 1,
+      "alpha_max": 254,
+      "nonzero_pixels": 2720,
+      "low_alpha_1_to16_pixels": 224,
+      "sha256": "3a148a631d194e7fa9a667bd74ebdf3efab23001bf8ff88df484a50e93c64c97"
+    },
+    {
+      "file": "leader_black_attack_return_1.png",
+      "width": 192,
+      "height": 128,
+      "mode": "RGBA",
+      "pivot_px": [
+        99,
+        116
+      ],
+      "lowest_nonzero_alpha_row": 115,
+      "alpha_bbox_xyxy_exclusive": [
+        57,
+        42,
+        122,
+        116
+      ],
+      "visible_bbox_alpha_gt16_xyxy_exclusive": [
+        57,
+        42,
+        122,
+        116
+      ],
+      "sole_row_visible_x_range": [
+        85,
+        110
+      ],
+      "alpha_min_nonzero": 1,
+      "alpha_max": 254,
+      "nonzero_pixels": 2716,
+      "low_alpha_1_to16_pixels": 369,
+      "sha256": "750a7796fb39e79730529023e36e71f3fa0bdc1ca862226011fdccdbafe70648"
+    },
+    {
+      "file": "leader_black_attack_return_2.png",
+      "width": 192,
+      "height": 128,
+      "mode": "RGBA",
+      "pivot_px": [
+        99,
+        116
+      ],
+      "lowest_nonzero_alpha_row": 115,
+      "alpha_bbox_xyxy_exclusive": [
+        60,
+        43,
+        127,
+        116
+      ],
+      "visible_bbox_alpha_gt16_xyxy_exclusive": [
+        61,
+        44,
+        126,
+        116
+      ],
+      "sole_row_visible_x_range": [
+        90,
+        108
+      ],
+      "alpha_min_nonzero": 1,
+      "alpha_max": 254,
+      "nonzero_pixels": 2618,
+      "low_alpha_1_to16_pixels": 258,
+      "sha256": "c2ec2c516e1fcedd3ff77e9db655f32350ab18b91906877ec2dc774fff04b9c0"
+    }
+  ],
+  "source": {
+    "archive": "Tobari_idle_attack_Claude_v1.zip",
+    "archive_sha256": "e69c58a2e55863ede76415c7b2d0bce6ffad718d24e9ae784d2286d01a38947d",
+    "attack15": {
+      "cell_size": [
+        192,
+        128
+      ],
+      "alpha_bbox": [
+        22,
+        43,
+        119,
+        116
+      ],
+      "pivot": [
+        99,
+        116
+      ]
+    },
+    "idle0": {
+      "cell_size": [
+        128,
+        84
+      ],
+      "alpha_bbox": [
+        25,
+        2,
+        91,
+        77
+      ],
+      "declared_pivot": null,
+      "preview_inferred_pivot": [
+        60,
+        77
+      ],
+      "preview_translation": [
+        39,
+        39
+      ],
+      "preview_scale": 1.0,
+      "note": "Native source pixels unchanged. Runtime idle pivot and display scale have not been inspected."
+    }
+  },
+  "generation": {
+    "method": "imagegen edits of provided original sprite references",
+    "export": "nearest-neighbor only; no alpha threshold, cleanup mask, paintover, recolor or effects",
+    "frames": [
+      {
+        "index": 0,
+        "generated_size": [
+          1536,
+          1024
+        ],
+        "scale_relative_to_192_equivalent": 1.0
+      },
+      {
+        "index": 1,
+        "generated_size": [
+          1536,
+          1024
+        ],
+        "scale_relative_to_192_equivalent": 1.0
+      },
+      {
+        "index": 2,
+        "generated_size": [
+          1536,
+          1024
+        ],
+        "scale_relative_to_192_equivalent": 1.1,
+        "registration": "Uniform normalization around generated foot (792,928) -> (99,116)"
+      }
+    ]
+  },
+  "verification": {
+    "dimensions_and_alpha_rows": "pass",
+    "hands_and_scythe": "independent visual review, see qa_review.md",
+    "ingame_playback_tested": false,
+    "runtime_integration_performed": false,
+    "known_caveats": [
+      "Generated files retain very low-alpha pixels outside the visible contour; no alpha threshold was applied. None extend below row115.",
+      "Generated color/pixel clusters differ somewhat from source art.",
+      "Existing attack and idle have different native cell sizes and body poses. Final comparison uses unscaled native idle, not the earlier0.9x study.",
+      "The original idle pivot is absent; preview uses a measured/inferred pivot, not a verified runtime setting."
+    ]
+  },
+  "repository_base": {
+    "repository": "yosukedesu/deck-rogue-proto",
+    "branch": "main",
+    "sha": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+    "commit_date_utc": "2026-11-04T04:12:46Z",
+    "warning": "This GitHub main may be older than current local or implementation work. Only this new handoff directory is added."
+  },
+  "restricted_scope_unchanged": [
+    "portraits",
+    "BGM",
+    "key_visual",
+    "src/engine",
+    "src/data",
+    "unity"
+  ]
+}

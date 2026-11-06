@@ -1,0 +1,108 @@
+{
+  "measurements": [
+    {
+      "file": "leader_black_attack_return_0.png",
+      "width": 192,
+      "height": 128,
+      "mode": "RGBA",
+      "pivot_px": [
+        99,
+        116
+      ],
+      "lowest_nonzero_alpha_row": 115,
+      "alpha_bbox_xyxy_exclusive": [
+        0,
+        40,
+        115,
+        116
+      ],
+      "visible_bbox_alpha_gt16_xyxy_exclusive": [
+        23,
+        40,
+        115,
+        116
+      ],
+      "sole_row_visible_x_range": [
+        86,
+        109
+      ],
+      "alpha_min_nonzero": 1,
+      "alpha_max": 254,
+      "nonzero_pixels": 2720,
+      "low_alpha_1_to16_pixels": 224,
+      "sha256": "3a148a631d194e7fa9a667bd74ebdf3efab23001bf8ff88df484a50e93c64c97"
+    },
+    {
+      "file": "leader_black_attack_return_1.png",
+      "width": 192,
+      "height": 128,
+      "mode": "RGBA",
+      "pivot_px": [
+        99,
+        116
+      ],
+      "lowest_nonzero_alpha_row": 115,
+      "alpha_bbox_xyxy_exclusive": [
+        57,
+        42,
+        122,
+        116
+      ],
+      "visible_bbox_alpha_gt16_xyxy_exclusive": [
+        57,
+        42,
+        122,
+        116
+      ],
+      "sole_row_visible_x_range": [
+        85,
+        110
+      ],
+      "alpha_min_nonzero": 1,
+      "alpha_max": 254,
+      "nonzero_pixels": 2716,
+      "low_alpha_1_to16_pixels": 369,
+      "sha256": "750a7796fb39e79730529023e36e71f3fa0bdc1ca862226011fdccdbafe70648"
+    },
+    {
+      "file": "leader_black_attack_return_2.png",
+      "width": 192,
+      "height": 128,
+      "mode": "RGBA",
+      "pivot_px": [
+        99,
+        116
+      ],
+      "lowest_nonzero_alpha_row": 115,
+      "alpha_bbox_xyxy_exclusive": [
+        60,
+        43,
+        127,
+        116
+      ],
+      "visible_bbox_alpha_gt16_xyxy_exclusive": [
+        61,
+        44,
+        126,
+        116
+      ],
+      "sole_row_visible_x_range": [
+        90,
+        108
+      ],
+      "alpha_min_nonzero": 1,
+      "alpha_max": 254,
+      "nonzero_pixels": 2618,
+      "low_alpha_1_to16_pixels": 258,
+      "sha256": "c2ec2c516e1fcedd3ff77e9db655f32350ab18b91906877ec2dc774fff04b9c0"
+    }
+  ],
+  "checks": {
+    "three_frames": true,
+    "rgba_192x128": true,
+    "lowest_row_115": true,
+    "new_frames_distinct": true,
+    "no_alpha_threshold_applied": true,
+    "runtime_not_modified": true
+  }
+}
