@@ -1,0 +1,118 @@
+{
+  "result": "passed",
+  "executed_at": "2026-11-06",
+  "command": "python3 -I tobari_defense_hit_20261106/verify_bundle.py",
+  "checks": [
+    {
+      "check": "Exactly 2 distinct deliverable sprite PNGs",
+      "passed": true
+    },
+    {
+      "check": "leader_black_block_0 dimensions/RGBA",
+      "passed": true
+    },
+    {
+      "check": "leader_black_block_0 binary alpha",
+      "passed": true
+    },
+    {
+      "check": "leader_black_block_0 transparent RGB zero",
+      "passed": true
+    },
+    {
+      "check": "leader_black_block_0 last opaque row 115",
+      "passed": true
+    },
+    {
+      "check": "leader_black_block_0 sole midpoint boundary x99",
+      "passed": true
+    },
+    {
+      "check": "leader_black_block_0 transparent four borders",
+      "passed": true
+    },
+    {
+      "check": "leader_black_block_0 manifest hash",
+      "passed": true
+    },
+    {
+      "check": "leader_black_hurt_0 dimensions/RGBA",
+      "passed": true
+    },
+    {
+      "check": "leader_black_hurt_0 binary alpha",
+      "passed": true
+    },
+    {
+      "check": "leader_black_hurt_0 transparent RGB zero",
+      "passed": true
+    },
+    {
+      "check": "leader_black_hurt_0 last opaque row 115",
+      "passed": true
+    },
+    {
+      "check": "leader_black_hurt_0 sole midpoint boundary x99",
+      "passed": true
+    },
+    {
+      "check": "leader_black_hurt_0 transparent four borders",
+      "passed": true
+    },
+    {
+      "check": "leader_black_hurt_0 manifest hash",
+      "passed": true
+    },
+    {
+      "check": "Reference 192x128 matches source byte for byte",
+      "passed": true
+    },
+    {
+      "check": "Reference 960x640 matches source byte for byte",
+      "passed": true
+    },
+    {
+      "check": "block reproducible RGBA pixels",
+      "passed": true
+    },
+    {
+      "check": "block raw hash",
+      "passed": true
+    },
+    {
+      "check": "hurt reproducible RGBA pixels",
+      "passed": true
+    },
+    {
+      "check": "hurt raw hash",
+      "passed": true
+    },
+    {
+      "check": "All 7 PNGs decode",
+      "passed": true
+    },
+    {
+      "check": "All current JSON documents parse",
+      "passed": true
+    }
+  ],
+  "visual_review": {
+    "result": "pass",
+    "reviewed": [
+      "source identity",
+      "apparent body scale",
+      "braced defense versus recoil",
+      "native size and 2x nearest sheet",
+      "no background/clipping/stray artifacts"
+    ],
+    "independent_review": "Pass; no material corrections; runtime untested."
+  },
+  "not_run": [
+    "Unity import",
+    "Godot import",
+    "game runtime playback",
+    "Android",
+    "user scoring"
+  ],
+  "scope": "Asset-only verification, not game code test suite"
+}

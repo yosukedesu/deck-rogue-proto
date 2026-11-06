@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "bundle_id": "assets-a1-tobari-defense-hit",
+  "backlog_row": "A1",
+  "date": "2026-11-06",
+  "branch": "codex/assets-a1-tobari-defense-hit-20261106",
+  "base_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "character": "とばり",
+  "character_id": "leader_black",
+  "asset_count": 2,
+  "coordinate_convention": {
+    "origin": "top-left",
+    "positive_x": "right",
+    "positive_y": "down",
+    "units": "pixels",
+    "pivot_semantics": "ground boundary below last opaque boot row, consistent with supplied attack frame"
+  },
+  "rendering": {
+    "filter": "nearest",
+    "mipmaps": false,
+    "color_space": "sRGB",
+    "alpha": "straight, binary 0/255",
+    "compression": "none",
+    "sprite_pivot_normalized_bottom_left": [
+      0.515625,
+      0.09375
+    ]
+  },
+  "assets": [
+    {
+      "id": "leader_black_block_0",
+      "character_id": "leader_black",
+      "state": "block",
+      "file": "Art/leaders/anim/leader_black_block_0.png",
+      "frame_size": [
+        192,
+        128
+      ],
+      "frame_count": 1,
+      "pivot_from_top_left": [
+        99,
+        116
+      ],
+      "bottom_opaque_row": 115,
+      "recommended_duration_ms": 300,
+      "loop": false,
+      "target_file": "unity/Assets/Resources/Art/leaders/anim/leader_black_block_0.png",
+      "sha256": "b8d0a31f6d0f6f6210d2c3a4f2bd226ebbcd0aabc50d4a137d97a26ba15cac26"
+    },
+    {
+      "id": "leader_black_hurt_0",
+      "character_id": "leader_black",
+      "state": "hurt",
+      "file": "Art/leaders/anim/leader_black_hurt_0.png",
+      "frame_size": [
+        192,
+        128
+      ],
+      "frame_count": 1,
+      "pivot_from_top_left": [
+        99,
+        116
+      ],
+      "bottom_opaque_row": 115,
+      "recommended_duration_ms": 220,
+      "loop": false,
+      "target_file": "unity/Assets/Resources/Art/leaders/anim/leader_black_hurt_0.png",
+      "sha256": "edb9598bb2a6129331f777ed19b61c6af59285ce8e841b179c12a9921da404db"
+    }
+  ],
+  "preview": "contactsheet.png",
+  "integration_status": {
+    "imported": false,
+    "runtime_tested": false,
+    "latest_user_import_visible_on_remote": false,
+    "note": "User-reported import-leader-tobari.py and assets-tobari-claude-v1 are not present in verified public main; do not infer runtime behavior."
+  }
+}

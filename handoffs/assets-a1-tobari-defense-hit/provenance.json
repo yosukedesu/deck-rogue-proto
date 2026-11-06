@@ -1,0 +1,49 @@
+{
+  "source_package": {
+    "filename": "Tobari_idle_attack_Claude_v1.zip",
+    "sha256": "e69c58a2e55863ede76415c7b2d0bce6ffad718d24e9ae784d2286d01a38947d",
+    "source": "User-supplied Tobari_idle_attack_Claude_v1, 2026-11-06",
+    "readme_limitations": "Source ZIP did not unify idle and attack scale. Latest game importer is not on remote main."
+  },
+  "reference": {
+    "file": "reference/tobari_attack_00.png",
+    "original_path": "attack/Tobari_transparent_sprite_v1/frames_192x128/tobari_attack_00.png",
+    "sha256": "c0c7ddd74fde05bb3b9a088d0c0aa1276b66648b9dd3684ab40bff0397d56c95",
+    "size": [
+      192,
+      128
+    ],
+    "pivot": [
+      99,
+      116
+    ],
+    "high_resolution_file": "reference/tobari_attack_00_960x640.png",
+    "high_resolution_sha256": "05d2da6b15b50764ebb95f370220d7aa307f9b7de75cef088cac069f193b30e4",
+    "unchanged_copy": true
+  },
+  "generated": {
+    "tool": "built-in image_gen.imagegen",
+    "model": "not disclosed by tool",
+    "date": "2026-11-06",
+    "raw_files": [
+      "raw/defense.png",
+      "raw/hurt.png"
+    ],
+    "prompts": "prompts.json",
+    "no_external_third_party_images": true
+  },
+  "rights": "Retains source artwork provenance. Not a CC0 claim.",
+  "repository": {
+    "url": "https://github.com/yosukedesu/deck-rogue-proto",
+    "verified_base": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+    "missing_paths": [
+      "scripts/import-leader-tobari.py",
+      "handoffs/assets-tobari-claude-v1"
+    ],
+    "docs": [
+      "docs/dot-asset-backlog-2026-11-02.md",
+      "docs/art-bible.md",
+      "docs/codex-dot-request-2026-10-12.md section 22"
+    ]
+  }
+}

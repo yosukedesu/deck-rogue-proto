@@ -1,0 +1,73 @@
+{
+  "algorithm": "SHA-256",
+  "excludes": [
+    "checksum_manifest.json"
+  ],
+  "files": [
+    {
+      "file": "Art/leaders/anim/leader_black_block_0.png",
+      "bytes": 9881,
+      "sha256": "b8d0a31f6d0f6f6210d2c3a4f2bd226ebbcd0aabc50d4a137d97a26ba15cac26"
+    },
+    {
+      "file": "Art/leaders/anim/leader_black_hurt_0.png",
+      "bytes": 8550,
+      "sha256": "edb9598bb2a6129331f777ed19b61c6af59285ce8e841b179c12a9921da404db"
+    },
+    {
+      "file": "README.md",
+      "bytes": 7114,
+      "sha256": "d6f5cf69ef08ae18e2985b987a29a57f4c536924f8ead1eec031c994622bb21e"
+    },
+    {
+      "file": "contactsheet.png",
+      "bytes": 175199,
+      "sha256": "59e3c015cf22c45485701598e5b8d0fda8cec9903448d60324bf4c78c7169e78"
+    },
+    {
+      "file": "export-records.json",
+      "bytes": 1420,
+      "sha256": "0db04693fcb6e2b68fecaf173f8e4088c04474015ef3773bb19ecb3e9f6cbd43"
+    },
+    {
+      "file": "manifest.json",
+      "bytes": 2295,
+      "sha256": "f5e04c1ff520dae38cdf254a6a95cbb687016c9a01fbfc07fdd412ada150c0e9"
+    },
+    {
+      "file": "prompts.json",
+      "bytes": 4251,
+      "sha256": "7eb5c7168debd277fed50726387b8438fbfca997f897569db3df7f222d78414e"
+    },
+    {
+      "file": "provenance.json",
+      "bytes": 1633,
+      "sha256": "2a9adc97cc932f17aef58a2440ce7f684eb7879211eb2232f52bef2bc8308d55"
+    },
+    {
+      "file": "qa.json",
+      "bytes": 2697,
+      "sha256": "ae0db6431b2534fef4834a127dbcb4fbaaf07cfc6c692ac824fcd7b855d8c55b"
+    },
+    {
+      "file": "raw/defense.png",
+      "bytes": 1066600,
+      "sha256": "a5a2c5f6f7cc3b902e8e04ccf747eca8bc224806d7ead4c5dcde8af6cd7a9ae1"
+    },
+    {
+      "file": "raw/hurt.png",
+      "bytes": 1083457,
+      "sha256": "f71df7c6b7dea458e6868e17fdc76412fbcb4a9353201a69a4e8b91f49c6ffbd"
+    },
+    {
+      "file": "reference/tobari_attack_00.png",
+      "bytes": 9407,
+      "sha256": "c0c7ddd74fde05bb3b9a088d0c0aa1276b66648b9dd3684ab40bff0397d56c95"
+    },
+    {
+      "file": "reference/tobari_attack_00_960x640.png",
+      "bytes": 79418,
+      "sha256": "05d2da6b15b50764ebb95f370220d7aa307f9b7de75cef088cac069f193b30e4"
+    }
+  ]
+}

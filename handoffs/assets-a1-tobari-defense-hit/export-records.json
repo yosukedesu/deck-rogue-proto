@@ -1,0 +1,68 @@
+{
+  "tool": "ImageMagick 7, packaging only; new poses authored by imagegen",
+  "canvas": [
+    192,
+    128
+  ],
+  "transparent_rgb": [
+    0,
+    0,
+    0
+  ],
+  "records": [
+    {
+      "id": "block",
+      "raw": "raw/defense.png",
+      "alpha_threshold": 128,
+      "source_crop_xywh": [
+        205,
+        342,
+        788,
+        567
+      ],
+      "output_crop_size": [
+        99,
+        71
+      ],
+      "paste_xy": [
+        27,
+        45
+      ],
+      "filter": "nearest/point",
+      "final": "Art/leaders/anim/leader_black_block_0.png",
+      "raw_sha256": "a5a2c5f6f7cc3b902e8e04ccf747eca8bc224806d7ead4c5dcde8af6cd7a9ae1",
+      "final_sha256": "b8d0a31f6d0f6f6210d2c3a4f2bd226ebbcd0aabc50d4a137d97a26ba15cac26",
+      "raw_size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "hurt",
+      "raw": "raw/hurt.png",
+      "alpha_threshold": 128,
+      "source_crop_xywh": [
+        182,
+        379,
+        839,
+        550
+      ],
+      "output_crop_size": [
+        96,
+        63
+      ],
+      "paste_xy": [
+        30,
+        53
+      ],
+      "filter": "nearest/point",
+      "final": "Art/leaders/anim/leader_black_hurt_0.png",
+      "raw_sha256": "f71df7c6b7dea458e6868e17fdc76412fbcb4a9353201a69a4e8b91f49c6ffbd",
+      "final_sha256": "edb9598bb2a6129331f777ed19b61c6af59285ce8e841b179c12a9921da404db",
+      "raw_size": [
+        1536,
+        1024
+      ]
+    }
+  ]
+}
