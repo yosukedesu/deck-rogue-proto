@@ -1,0 +1,1077 @@
+{
+  "schema": "deckrogue.asset-handoff.v1",
+  "bundle": "B8 enemy elemental contacts",
+  "date": "2026-11-08",
+  "branch": "codex/assets-b8-20261108",
+  "source_reference_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "status": "eight asset candidates complete; production integration and GPU rendering not verified",
+  "generation": "original direct native integer-pixel drawing; no game sprite copied; no generative-image resizing",
+  "theme": "night glass; fine brass plus elemental accents",
+  "format": {
+    "mode": "RGBA",
+    "bit_depth": 8,
+    "alpha_values": [
+      0,
+      255
+    ],
+    "filter": "nearest",
+    "mipmaps": false,
+    "compression": "lossless",
+    "blend": "normal straight alpha",
+    "trim": false,
+    "atlas_rotation": false
+  },
+  "mesh_contract": {
+    "schema": "deckrogue.contact-mesh.v1",
+    "type": "indexed fixed-frame silhouette mesh, not continuous procedural 422 geometry",
+    "coordinate_system": "x toward attacker; y screen up; z=0; mesh width=one visible receiver height; root is locked receiving contact",
+    "default_texture_scale": "64 native texels per receiver height; prefer integer output scale for pixel preview",
+    "layers": "contact material only; no separate runtime light",
+    "indices": "triangle list; all vertices have atlas uv; cull disabled",
+    "normals": "not used, unshaded; port may supply screen-facing normal",
+    "alpha_gain_role": "alpha=1,gain=1,role=material; shader uses authored sRGB RGB",
+    "shader_file": "godot/enemy_contact.gdshader",
+    "sampler_file": "godot/enemy_contact_sampler.gd",
+    "clock": "external age relative to committed contact, not TIME; negative/nonfinite/finished return no mesh",
+    "large_mesh_adapter": "indexed mesh expands to triangle soup in 422 Layer: use index count, not unique vertex count; split into at most 510 expanded vertices per 512-capacity batch without splitting triangles",
+    "alternatives": "use PNG fallback OR mesh renderer, never both",
+    "direct_422_drop_in": false
+  },
+  "global_contract": {
+    "authority": "actual resolved execution and receipt; names are candidate mapping only, never proof",
+    "timeline": "contact/confirmed status application starts at age0; no invented windup/projectile/damage",
+    "damage_gate": "proven enemy source instance, actual move execution, supported receipt; full block/ice/nullified routes keep their existing defense reaction",
+    "status_gate": "curse and roar are hex actions; use actual confirmed effect/application, not DamageDealt-only gate",
+    "multiple_hits": "proven individual contributions only; do not replay aggregate plus individual hits; if evidence is insufficient retain original presentation",
+    "replacement": "suppress replaced neutral contacts; no duplicate with acid/bell existing routes",
+    "placement": "receiving opaque surface, not attacker feet; y basis remains screen up; x basis toward proven attacker",
+    "ownership": "stop and clear on interrupt, scene disposal, stale owner/epoch; do not restore or mutate game state",
+    "light": "no target light, floor light, bloom or stage focus added; no environmental light timing claimed",
+    "reduced_motion": "one short local keyframe or omit motion; never delay game resolution",
+    "unmapped": "poison and cold are delivered but not assigned to any current enemy; no color/name inference",
+    "excluded_changes": [
+      "src/engine",
+      "src/data",
+      "Unity code",
+      "portraits",
+      "BGM",
+      "key visuals"
+    ]
+  },
+  "assets": [
+    {
+      "id": "enemy_acid_contact",
+      "label_ja": "酸",
+      "file": "Art/fx/enemy_acid_contact_8f.png",
+      "mesh_file": "Geometry/enemy_acid_contact.json",
+      "size": [
+        512,
+        64
+      ],
+      "frame_size": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "layout": "horizontal",
+      "anchor_px_top_left": [
+        32,
+        32
+      ],
+      "contact_frame": 0,
+      "duration_ms": [
+        30,
+        35,
+        40,
+        45,
+        50,
+        55,
+        60,
+        35
+      ],
+      "total_duration_ms": 350,
+      "loop": false,
+      "final_frame_fully_transparent": true,
+      "mapping_status": "candidate_requiring_proven_execution",
+      "candidate_routes": [
+        {
+          "enemy_id": "enemy_slug",
+          "move_id": "acid_spit"
+        }
+      ],
+      "trigger_kind": "confirmed_enemy_contact",
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 30
+        },
+        {
+          "index": 1,
+          "rect": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35
+        },
+        {
+          "index": 2,
+          "rect": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        },
+        {
+          "index": 3,
+          "rect": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45
+        },
+        {
+          "index": 4,
+          "rect": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 50
+        },
+        {
+          "index": 5,
+          "rect": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55
+        },
+        {
+          "index": 6,
+          "rect": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 60
+        },
+        {
+          "index": 7,
+          "rect": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35
+        }
+      ],
+      "sha256": "14092adec42e3c7eeaa4b98ef35aae59ac7d3e0d4d98eaf859c998cdb4e1437b",
+      "mesh_sha256": "b126ed6106176314c5bba0e491a35d03df9038d837138cc4aa48eaef23e78720"
+    },
+    {
+      "id": "enemy_poison_contact",
+      "label_ja": "毒",
+      "file": "Art/fx/enemy_poison_contact_8f.png",
+      "mesh_file": "Geometry/enemy_poison_contact.json",
+      "size": [
+        512,
+        64
+      ],
+      "frame_size": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "layout": "horizontal",
+      "anchor_px_top_left": [
+        32,
+        32
+      ],
+      "contact_frame": 0,
+      "duration_ms": [
+        35,
+        40,
+        45,
+        50,
+        55,
+        60,
+        65,
+        40
+      ],
+      "total_duration_ms": 390,
+      "loop": false,
+      "final_frame_fully_transparent": true,
+      "mapping_status": "unmapped_reserved_art",
+      "candidate_routes": [],
+      "trigger_kind": "unassigned",
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35
+        },
+        {
+          "index": 1,
+          "rect": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        },
+        {
+          "index": 2,
+          "rect": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45
+        },
+        {
+          "index": 3,
+          "rect": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 50
+        },
+        {
+          "index": 4,
+          "rect": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55
+        },
+        {
+          "index": 5,
+          "rect": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 60
+        },
+        {
+          "index": 6,
+          "rect": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 65
+        },
+        {
+          "index": 7,
+          "rect": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        }
+      ],
+      "sha256": "8e6a3b62e13b05ac5d4e6c51d650e3e4baf2c9d2f9ee32aa016de2ca22601b74",
+      "mesh_sha256": "a25f284bd667ab5f82d8994e32c2459e1154f4f6fbf1486cd1b2e97842cc725d"
+    },
+    {
+      "id": "enemy_curse_contact",
+      "label_ja": "呪い",
+      "file": "Art/fx/enemy_curse_contact_8f.png",
+      "mesh_file": "Geometry/enemy_curse_contact.json",
+      "size": [
+        512,
+        64
+      ],
+      "frame_size": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "layout": "horizontal",
+      "anchor_px_top_left": [
+        32,
+        32
+      ],
+      "contact_frame": 0,
+      "duration_ms": [
+        35,
+        40,
+        45,
+        50,
+        55,
+        55,
+        60,
+        40
+      ],
+      "total_duration_ms": 380,
+      "loop": false,
+      "final_frame_fully_transparent": true,
+      "mapping_status": "candidate_requiring_proven_execution",
+      "candidate_routes": [
+        {
+          "enemy_id": "enemy_hexer",
+          "move_id": "curse"
+        }
+      ],
+      "trigger_kind": "confirmed_status_application_not_damage",
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35
+        },
+        {
+          "index": 1,
+          "rect": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        },
+        {
+          "index": 2,
+          "rect": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45
+        },
+        {
+          "index": 3,
+          "rect": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 50
+        },
+        {
+          "index": 4,
+          "rect": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55
+        },
+        {
+          "index": 5,
+          "rect": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55
+        },
+        {
+          "index": 6,
+          "rect": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 60
+        },
+        {
+          "index": 7,
+          "rect": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        }
+      ],
+      "sha256": "9d341dbc0dccddc1304ddbefbfcb0a5599868235311d70de1a30296056f47009",
+      "mesh_sha256": "ffc5093820e5a1629caba943e7bd52fea330dbc7cb2e5ab12448c4b203691220"
+    },
+    {
+      "id": "enemy_roar_contact",
+      "label_ja": "吠え",
+      "file": "Art/fx/enemy_roar_contact_8f.png",
+      "mesh_file": "Geometry/enemy_roar_contact.json",
+      "size": [
+        512,
+        64
+      ],
+      "frame_size": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "layout": "horizontal",
+      "anchor_px_top_left": [
+        32,
+        32
+      ],
+      "contact_frame": 0,
+      "duration_ms": [
+        25,
+        30,
+        35,
+        40,
+        45,
+        50,
+        55,
+        40
+      ],
+      "total_duration_ms": 320,
+      "loop": false,
+      "final_frame_fully_transparent": true,
+      "mapping_status": "candidate_requiring_proven_execution",
+      "candidate_routes": [
+        {
+          "enemy_id": "enemy_gaping_maw",
+          "move_id": "roar"
+        }
+      ],
+      "trigger_kind": "confirmed_status_application_not_damage",
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 25
+        },
+        {
+          "index": 1,
+          "rect": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 30
+        },
+        {
+          "index": 2,
+          "rect": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35
+        },
+        {
+          "index": 3,
+          "rect": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        },
+        {
+          "index": 4,
+          "rect": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45
+        },
+        {
+          "index": 5,
+          "rect": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 50
+        },
+        {
+          "index": 6,
+          "rect": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55
+        },
+        {
+          "index": 7,
+          "rect": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        }
+      ],
+      "sha256": "535e856e764e7d8c0ad7c710ab12eb02c842b4d1ef4046f689d232f66a85f8ff",
+      "mesh_sha256": "831b5cb4c50aab60680fec1aef0b039f84d8ca4b7df4555495ca8a85f41ae81a"
+    },
+    {
+      "id": "enemy_bell_contact",
+      "label_ja": "鈴",
+      "file": "Art/fx/enemy_bell_contact_8f.png",
+      "mesh_file": "Geometry/enemy_bell_contact.json",
+      "size": [
+        512,
+        64
+      ],
+      "frame_size": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "layout": "horizontal",
+      "anchor_px_top_left": [
+        32,
+        32
+      ],
+      "contact_frame": 0,
+      "duration_ms": [
+        30,
+        35,
+        40,
+        45,
+        50,
+        55,
+        60,
+        45
+      ],
+      "total_duration_ms": 360,
+      "loop": false,
+      "final_frame_fully_transparent": true,
+      "mapping_status": "candidate_requiring_proven_execution",
+      "candidate_routes": [
+        {
+          "enemy_id": "enemy_warden",
+          "move_id": "bell_strike"
+        },
+        {
+          "enemy_id": "enemy_warden",
+          "move_id": "bell_hushed"
+        },
+        {
+          "enemy_id": "enemy_warden",
+          "move_id": "bell_frenzy"
+        }
+      ],
+      "trigger_kind": "confirmed_enemy_contact",
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 30
+        },
+        {
+          "index": 1,
+          "rect": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35
+        },
+        {
+          "index": 2,
+          "rect": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        },
+        {
+          "index": 3,
+          "rect": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45
+        },
+        {
+          "index": 4,
+          "rect": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 50
+        },
+        {
+          "index": 5,
+          "rect": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55
+        },
+        {
+          "index": 6,
+          "rect": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 60
+        },
+        {
+          "index": 7,
+          "rect": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45
+        }
+      ],
+      "sha256": "a69fe20ea52e038b25a6df1ca160b35f276ed426da3fef1e452419e1feecf89e",
+      "mesh_sha256": "bdee6257a1ff640b52cf2ccdcb3fe66c158cd530a1db746674f576e981911d64"
+    },
+    {
+      "id": "enemy_song_contact",
+      "label_ja": "歌",
+      "file": "Art/fx/enemy_song_contact_8f.png",
+      "mesh_file": "Geometry/enemy_song_contact.json",
+      "size": [
+        512,
+        64
+      ],
+      "frame_size": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "layout": "horizontal",
+      "anchor_px_top_left": [
+        32,
+        32
+      ],
+      "contact_frame": 0,
+      "duration_ms": [
+        35,
+        40,
+        45,
+        50,
+        55,
+        60,
+        65,
+        40
+      ],
+      "total_duration_ms": 390,
+      "loop": false,
+      "final_frame_fully_transparent": true,
+      "mapping_status": "candidate_requiring_proven_execution",
+      "candidate_routes": [
+        {
+          "enemy_id": "enemy_elite_doom_chanter",
+          "move_id": "dual_chant"
+        }
+      ],
+      "trigger_kind": "confirmed_enemy_contact",
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35
+        },
+        {
+          "index": 1,
+          "rect": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        },
+        {
+          "index": 2,
+          "rect": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45
+        },
+        {
+          "index": 3,
+          "rect": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 50
+        },
+        {
+          "index": 4,
+          "rect": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55
+        },
+        {
+          "index": 5,
+          "rect": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 60
+        },
+        {
+          "index": 6,
+          "rect": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 65
+        },
+        {
+          "index": 7,
+          "rect": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        }
+      ],
+      "sha256": "ebd0c507c8112ad1e6fa7c9a57e3421dbcc441bfded57e81c4fb0860ea5d85ee",
+      "mesh_sha256": "1715b3fdef7bbe91796118d74e9999f01d4340c112c6edebac26623f4f3ddbd0"
+    },
+    {
+      "id": "enemy_cold_contact",
+      "label_ja": "冷気",
+      "file": "Art/fx/enemy_cold_contact_8f.png",
+      "mesh_file": "Geometry/enemy_cold_contact.json",
+      "size": [
+        512,
+        64
+      ],
+      "frame_size": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "layout": "horizontal",
+      "anchor_px_top_left": [
+        32,
+        32
+      ],
+      "contact_frame": 0,
+      "duration_ms": [
+        30,
+        35,
+        40,
+        45,
+        50,
+        55,
+        60,
+        45
+      ],
+      "total_duration_ms": 360,
+      "loop": false,
+      "final_frame_fully_transparent": true,
+      "mapping_status": "unmapped_reserved_art",
+      "candidate_routes": [],
+      "trigger_kind": "unassigned",
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 30
+        },
+        {
+          "index": 1,
+          "rect": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35
+        },
+        {
+          "index": 2,
+          "rect": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        },
+        {
+          "index": 3,
+          "rect": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45
+        },
+        {
+          "index": 4,
+          "rect": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 50
+        },
+        {
+          "index": 5,
+          "rect": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55
+        },
+        {
+          "index": 6,
+          "rect": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 60
+        },
+        {
+          "index": 7,
+          "rect": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45
+        }
+      ],
+      "sha256": "278e386b993a077eec850b735d74fba320d19526c448ab5d11c175ad3c59345b",
+      "mesh_sha256": "a79a9724f4267edb9a2ef00f0baacf9c9553aeb7d0f436183588803fcbd2258b"
+    },
+    {
+      "id": "enemy_lightning_contact",
+      "label_ja": "雷",
+      "file": "Art/fx/enemy_lightning_contact_8f.png",
+      "mesh_file": "Geometry/enemy_lightning_contact.json",
+      "size": [
+        512,
+        64
+      ],
+      "frame_size": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "layout": "horizontal",
+      "anchor_px_top_left": [
+        32,
+        32
+      ],
+      "contact_frame": 0,
+      "duration_ms": [
+        20,
+        25,
+        30,
+        35,
+        40,
+        45,
+        55,
+        50
+      ],
+      "total_duration_ms": 300,
+      "loop": false,
+      "final_frame_fully_transparent": true,
+      "mapping_status": "candidate_requiring_proven_execution",
+      "candidate_routes": [
+        {
+          "enemy_id": "enemy_thunder_globe",
+          "move_id": "shock_slap"
+        },
+        {
+          "enemy_id": "enemy_thunder_globe",
+          "move_id": "thunder_strike"
+        },
+        {
+          "enemy_id": "enemy_thunder_globe",
+          "move_id": "galvanic_burst"
+        }
+      ],
+      "trigger_kind": "confirmed_enemy_contact",
+      "frames": [
+        {
+          "index": 0,
+          "rect": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 20
+        },
+        {
+          "index": 1,
+          "rect": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 25
+        },
+        {
+          "index": 2,
+          "rect": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 30
+        },
+        {
+          "index": 3,
+          "rect": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35
+        },
+        {
+          "index": 4,
+          "rect": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40
+        },
+        {
+          "index": 5,
+          "rect": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45
+        },
+        {
+          "index": 6,
+          "rect": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55
+        },
+        {
+          "index": 7,
+          "rect": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 50
+        }
+      ],
+      "sha256": "561bb937e9affc409b005e4848b451aaa8f5e8abfee3cc60380889e1beb2ba0e",
+      "mesh_sha256": "6bb9830c94a627b5ded53cb3631acafe0e08894309c57bac6b01aac51ecb9251"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "checks": 3853,
+  "failures": [],
+  "assets": {
+    "acid": {
+      "opaque_pixels": [
+        180,
+        243,
+        300,
+        340,
+        270,
+        181,
+        35,
+        0
+      ],
+      "max_indexed_vertices_per_frame": 348,
+      "max_expanded_triangle_vertices_per_frame": 522,
+      "total_ms": 350,
+      "max_422_triangle_soup_batches_512_capacity": 2
+    },
+    "poison": {
+      "opaque_pixels": [
+        106,
+        147,
+        165,
+        171,
+        140,
+        126,
+        47,
+        0
+      ],
+      "max_indexed_vertices_per_frame": 340,
+      "max_expanded_triangle_vertices_per_frame": 510,
+      "total_ms": 390,
+      "max_422_triangle_soup_batches_512_capacity": 1
+    },
+    "curse": {
+      "opaque_pixels": [
+        145,
+        146,
+        142,
+        102,
+        106,
+        40,
+        32,
+        0
+      ],
+      "max_indexed_vertices_per_frame": 184,
+      "max_expanded_triangle_vertices_per_frame": 276,
+      "total_ms": 380,
+      "max_422_triangle_soup_batches_512_capacity": 1
+    },
+    "roar": {
+      "opaque_pixels": [
+        190,
+        208,
+        118,
+        93,
+        106,
+        113,
+        7,
+        0
+      ],
+      "max_indexed_vertices_per_frame": 432,
+      "max_expanded_triangle_vertices_per_frame": 648,
+      "total_ms": 320,
+      "max_422_triangle_soup_batches_512_capacity": 2
+    },
+    "bell": {
+      "opaque_pixels": [
+        56,
+        63,
+        96,
+        112,
+        114,
+        134,
+        120,
+        0
+      ],
+      "max_indexed_vertices_per_frame": 360,
+      "max_expanded_triangle_vertices_per_frame": 540,
+      "total_ms": 360,
+      "max_422_triangle_soup_batches_512_capacity": 2
+    },
+    "song": {
+      "opaque_pixels": [
+        72,
+        72,
+        77,
+        75,
+        58,
+        39,
+        46,
+        0
+      ],
+      "max_indexed_vertices_per_frame": 224,
+      "max_expanded_triangle_vertices_per_frame": 336,
+      "total_ms": 390,
+      "max_422_triangle_soup_batches_512_capacity": 1
+    },
+    "cold": {
+      "opaque_pixels": [
+        110,
+        189,
+        251,
+        282,
+        267,
+        140,
+        37,
+        0
+      ],
+      "max_indexed_vertices_per_frame": 352,
+      "max_expanded_triangle_vertices_per_frame": 528,
+      "total_ms": 360,
+      "max_422_triangle_soup_batches_512_capacity": 2
+    },
+    "lightning": {
+      "opaque_pixels": [
+        234,
+        231,
+        80,
+        52,
+        52,
+        10,
+        7,
+        0
+      ],
+      "max_indexed_vertices_per_frame": 188,
+      "max_expanded_triangle_vertices_per_frame": 282,
+      "total_ms": 300,
+      "max_422_triangle_soup_batches_512_capacity": 1
+    }
+  },
+  "deterministic_regeneration": true,
+  "game_runtime_tested": false,
+  "gpu_render_tested": false,
+  "geometry": "fixed-frame indexed row-run mesh; not continuous 422 geometry"
+}

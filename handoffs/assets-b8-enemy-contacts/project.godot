@@ -1,0 +1,7 @@
+; Standalone validation project, not the production game's configuration.
+config_version=5
+[application]
+config/name="DeckRogue B8 asset verification"
+[rendering]
+renderer/rendering_method="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false

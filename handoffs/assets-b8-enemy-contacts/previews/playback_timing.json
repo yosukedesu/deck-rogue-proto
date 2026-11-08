@@ -1,0 +1,114 @@
+{
+  "acid": {
+    "production_ms": [
+      30,
+      35,
+      40,
+      45,
+      50,
+      55,
+      60,
+      35
+    ],
+    "pause_ms": 800,
+    "dummy_is_not_game_art": true
+  },
+  "poison": {
+    "production_ms": [
+      35,
+      40,
+      45,
+      50,
+      55,
+      60,
+      65,
+      40
+    ],
+    "pause_ms": 800,
+    "dummy_is_not_game_art": true
+  },
+  "curse": {
+    "production_ms": [
+      35,
+      40,
+      45,
+      50,
+      55,
+      55,
+      60,
+      40
+    ],
+    "pause_ms": 800,
+    "dummy_is_not_game_art": true
+  },
+  "roar": {
+    "production_ms": [
+      25,
+      30,
+      35,
+      40,
+      45,
+      50,
+      55,
+      40
+    ],
+    "pause_ms": 800,
+    "dummy_is_not_game_art": true
+  },
+  "bell": {
+    "production_ms": [
+      30,
+      35,
+      40,
+      45,
+      50,
+      55,
+      60,
+      45
+    ],
+    "pause_ms": 800,
+    "dummy_is_not_game_art": true
+  },
+  "song": {
+    "production_ms": [
+      35,
+      40,
+      45,
+      50,
+      55,
+      60,
+      65,
+      40
+    ],
+    "pause_ms": 800,
+    "dummy_is_not_game_art": true
+  },
+  "cold": {
+    "production_ms": [
+      30,
+      35,
+      40,
+      45,
+      50,
+      55,
+      60,
+      45
+    ],
+    "pause_ms": 800,
+    "dummy_is_not_game_art": true
+  },
+  "lightning": {
+    "production_ms": [
+      20,
+      25,
+      30,
+      35,
+      40,
+      45,
+      55,
+      50
+    ],
+    "pause_ms": 800,
+    "dummy_is_not_game_art": true
+  }
+}

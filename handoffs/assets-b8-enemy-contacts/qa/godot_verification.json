@@ -1,0 +1,7 @@
+{
+  "checks": 176,
+  "failures": [],
+  "godot": "4.6.3-stable (official)",
+  "gpu_render_tested": false,
+  "runtime_game_integration_tested": false
+}
