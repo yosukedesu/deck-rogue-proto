@@ -1,0 +1,1167 @@
+{
+  "reviewer": "independent C2 QA",
+  "technicalPassed": 282,
+  "technicalFailed": 0,
+  "checks": [
+    {
+      "check": "inventory_32",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_a.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_a.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_a.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_a.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_a.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_a.opaque",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_a.self_lr",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_a.self_tb",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_b.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_b.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_b.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_b.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_b.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_b.opaque",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_b.self_lr",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_b.self_tb",
+      "pass": true
+    },
+    {
+      "check": "act2_path.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_path.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_path.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_path.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_path.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_path.opaque",
+      "pass": true
+    },
+    {
+      "check": "act2_path.self_lr",
+      "pass": true
+    },
+    {
+      "check": "act2_path.self_tb",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_a.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_a.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_a.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_a.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_a.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_a.opaque",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_a.self_lr",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_a.self_tb",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_b.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_b.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_b.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_b.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_b.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_b.opaque",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_b.self_lr",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_b.self_tb",
+      "pass": true
+    },
+    {
+      "check": "act3_path.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_path.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_path.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_path.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_path.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_path.opaque",
+      "pass": true
+    },
+    {
+      "check": "act3_path.self_lr",
+      "pass": true
+    },
+    {
+      "check": "act3_path.self_tb",
+      "pass": true
+    },
+    {
+      "check": "act2_support.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_support.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_support.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_support.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_support.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_support.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act2_support.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_straight.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_straight.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_straight.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_straight.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_straight.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_straight.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_straight.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_curve.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_curve.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_curve.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_curve.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_curve.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_curve.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_curve.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act2_shaft.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_shaft.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_shaft.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_shaft.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_shaft.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_shaft.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act2_shaft.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act2_winch.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_winch.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_winch.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_winch.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_winch.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_winch.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act2_winch.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act3_tower_ruin.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_tower_ruin.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_tower_ruin.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_tower_ruin.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_tower_ruin.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_tower_ruin.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act3_tower_ruin.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act3_plaza.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_plaza.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_plaza.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_plaza.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_plaza.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_plaza.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act3_plaza.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act3_arch.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_arch.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_arch.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_arch.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_arch.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_arch.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act3_arch.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act3_aqueduct.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_aqueduct.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_aqueduct.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_aqueduct.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_aqueduct.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_aqueduct.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act3_aqueduct.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act3_rubble.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_rubble.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_rubble.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_rubble.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_rubble.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_rubble.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act3_rubble.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act2_start.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_start.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_start.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_start.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_start.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_start.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act2_start.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_turtle.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_turtle.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_turtle.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_turtle.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_turtle.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_turtle.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_turtle.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden.rgba",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden.sha",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden.bbox",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act3_start.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_start.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_start.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_start.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_start.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_start.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act3_start.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_warden.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_warden.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_warden.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_warden.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_warden.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_warden.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_warden.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace.dimensions",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace.rgba",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace.sha",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace.bbox",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace.all_margin",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace.anchor_bottom",
+      "pass": true
+    },
+    {
+      "check": "node_battle.dimensions",
+      "pass": true
+    },
+    {
+      "check": "node_battle.rgba",
+      "pass": true
+    },
+    {
+      "check": "node_battle.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "node_battle.sha",
+      "pass": true
+    },
+    {
+      "check": "node_battle.bbox",
+      "pass": true
+    },
+    {
+      "check": "node_battle.all_margin",
+      "pass": true
+    },
+    {
+      "check": "node_battle.actual_a3_identity",
+      "pass": true
+    },
+    {
+      "check": "node_battle.a3_sha",
+      "pass": true
+    },
+    {
+      "check": "node_elite.dimensions",
+      "pass": true
+    },
+    {
+      "check": "node_elite.rgba",
+      "pass": true
+    },
+    {
+      "check": "node_elite.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "node_elite.sha",
+      "pass": true
+    },
+    {
+      "check": "node_elite.bbox",
+      "pass": true
+    },
+    {
+      "check": "node_elite.all_margin",
+      "pass": true
+    },
+    {
+      "check": "node_elite.actual_a3_identity",
+      "pass": true
+    },
+    {
+      "check": "node_elite.a3_sha",
+      "pass": true
+    },
+    {
+      "check": "node_unknown.dimensions",
+      "pass": true
+    },
+    {
+      "check": "node_unknown.rgba",
+      "pass": true
+    },
+    {
+      "check": "node_unknown.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "node_unknown.sha",
+      "pass": true
+    },
+    {
+      "check": "node_unknown.bbox",
+      "pass": true
+    },
+    {
+      "check": "node_unknown.all_margin",
+      "pass": true
+    },
+    {
+      "check": "node_unknown.actual_a3_identity",
+      "pass": true
+    },
+    {
+      "check": "node_unknown.a3_sha",
+      "pass": true
+    },
+    {
+      "check": "node_campfire.dimensions",
+      "pass": true
+    },
+    {
+      "check": "node_campfire.rgba",
+      "pass": true
+    },
+    {
+      "check": "node_campfire.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "node_campfire.sha",
+      "pass": true
+    },
+    {
+      "check": "node_campfire.bbox",
+      "pass": true
+    },
+    {
+      "check": "node_campfire.all_margin",
+      "pass": true
+    },
+    {
+      "check": "node_campfire.actual_a3_identity",
+      "pass": true
+    },
+    {
+      "check": "node_campfire.a3_sha",
+      "pass": true
+    },
+    {
+      "check": "node_shop.dimensions",
+      "pass": true
+    },
+    {
+      "check": "node_shop.rgba",
+      "pass": true
+    },
+    {
+      "check": "node_shop.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "node_shop.sha",
+      "pass": true
+    },
+    {
+      "check": "node_shop.bbox",
+      "pass": true
+    },
+    {
+      "check": "node_shop.all_margin",
+      "pass": true
+    },
+    {
+      "check": "node_shop.actual_a3_identity",
+      "pass": true
+    },
+    {
+      "check": "node_shop.a3_sha",
+      "pass": true
+    },
+    {
+      "check": "node_workshop.dimensions",
+      "pass": true
+    },
+    {
+      "check": "node_workshop.rgba",
+      "pass": true
+    },
+    {
+      "check": "node_workshop.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "node_workshop.sha",
+      "pass": true
+    },
+    {
+      "check": "node_workshop.bbox",
+      "pass": true
+    },
+    {
+      "check": "node_workshop.all_margin",
+      "pass": true
+    },
+    {
+      "check": "node_workshop.actual_a3_identity",
+      "pass": true
+    },
+    {
+      "check": "node_workshop.a3_sha",
+      "pass": true
+    },
+    {
+      "check": "node_treasure.dimensions",
+      "pass": true
+    },
+    {
+      "check": "node_treasure.rgba",
+      "pass": true
+    },
+    {
+      "check": "node_treasure.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "node_treasure.sha",
+      "pass": true
+    },
+    {
+      "check": "node_treasure.bbox",
+      "pass": true
+    },
+    {
+      "check": "node_treasure.all_margin",
+      "pass": true
+    },
+    {
+      "check": "node_treasure.actual_a3_identity",
+      "pass": true
+    },
+    {
+      "check": "node_treasure.a3_sha",
+      "pass": true
+    },
+    {
+      "check": "node_boss.dimensions",
+      "pass": true
+    },
+    {
+      "check": "node_boss.rgba",
+      "pass": true
+    },
+    {
+      "check": "node_boss.alpha_values",
+      "pass": true
+    },
+    {
+      "check": "node_boss.sha",
+      "pass": true
+    },
+    {
+      "check": "node_boss.bbox",
+      "pass": true
+    },
+    {
+      "check": "node_boss.all_margin",
+      "pass": true
+    },
+    {
+      "check": "node_boss.actual_a3_identity",
+      "pass": true
+    },
+    {
+      "check": "node_boss.a3_sha",
+      "pass": true
+    },
+    {
+      "check": "2.aa.lr",
+      "pass": true
+    },
+    {
+      "check": "2.aa.tb",
+      "pass": true
+    },
+    {
+      "check": "2.ab.lr",
+      "pass": true
+    },
+    {
+      "check": "2.ab.tb",
+      "pass": true
+    },
+    {
+      "check": "2.ba.lr",
+      "pass": true
+    },
+    {
+      "check": "2.ba.tb",
+      "pass": true
+    },
+    {
+      "check": "2.bb.lr",
+      "pass": true
+    },
+    {
+      "check": "2.bb.tb",
+      "pass": true
+    },
+    {
+      "check": "3.aa.lr",
+      "pass": true
+    },
+    {
+      "check": "3.aa.tb",
+      "pass": true
+    },
+    {
+      "check": "3.ab.lr",
+      "pass": true
+    },
+    {
+      "check": "3.ab.tb",
+      "pass": true
+    },
+    {
+      "check": "3.ba.lr",
+      "pass": true
+    },
+    {
+      "check": "3.ba.tb",
+      "pass": true
+    },
+    {
+      "check": "3.bb.lr",
+      "pass": true
+    },
+    {
+      "check": "3.bb.tb",
+      "pass": true
+    },
+    {
+      "check": "draw_tiles.py.exit",
+      "pass": true
+    },
+    {
+      "check": "draw_act2.py.exit",
+      "pass": true
+    },
+    {
+      "check": "draw_act3.py.exit",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_a.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act2_ground_b.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act2_path.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_a.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_ground_b.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_path.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act2_support.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_straight.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act2_rail_curve.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act2_shaft.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act2_winch.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_tower_ruin.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_plaza.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_arch.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_aqueduct.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_rubble.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act2_start.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_turtle.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_start.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_warden.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1.reproduction",
+      "pass": true
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace.reproduction",
+      "pass": true
+    }
+  ],
+  "visualStatus": "pass_with_minor_runtime_caveats",
+  "visualObservations": [
+    {
+      "severity": "minor",
+      "scope": "act2/act3 ground",
+      "finding": "Rechecked revised mixed-ground and assembly previews. Dark shared-patch contrast is reduced; wallpaper rhythm is substantially less salient and no longer competes with routes and nodes. Small native tile periodicity remains visible on close inspection, acceptable for asset handoff.",
+      "previousSeverity": "medium",
+      "resolved": true
+    },
+    {
+      "severity": "minor",
+      "scope": "act3 props",
+      "finding": "Cool stone props have less contrast against act3 stone ground than act2 wooden props. Silhouettes remain identifiable; runtime placement and lighting/tint must be verified."
+    }
+  ],
+  "notTested": [
+    "Unity loader",
+    "in-game scene",
+    "all seeded map arrangements",
+    "actual UI scaling and click regions",
+    "Android"
+  ],
+  "imageAssetsModifiedByReviewer": false,
+  "revisionReviewed": "ground contrast reduction, final six tiles",
+  "finalTileSha256": {
+    "act2_ground_a.png": "f288e86cb335a1c07a87bc02a0e85858799a41f813a82d4f4a911159a5511785",
+    "act2_ground_b.png": "1bde88065d62d9b6b13f86d3d6a4f6e5d99b6e910f79a04ced5edfc180a04c8f",
+    "act2_path.png": "6ee3ab48770e5d57a8400b192b5463bc2eca20c98a97492efa7e33c9f766abeb",
+    "act3_ground_a.png": "b3391a56463877b6b7d27329badcceb2f9b891a021c6bf3156cf0d881ff43289",
+    "act3_ground_b.png": "eef06da88364c9f850b944b2daa40c63871a8d4189ba68ad8fd1eebe2dd77db4",
+    "act3_path.png": "3669e5e0165bc0bbed3a4a1dde18fba23c7168ffc73148d47fbf450264bfeca5"
+  }
+}

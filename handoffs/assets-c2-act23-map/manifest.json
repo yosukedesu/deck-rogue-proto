@@ -1,0 +1,1166 @@
+{
+  "schemaVersion": 1,
+  "bundleId": "assets-c2-act23-map",
+  "row": "C2",
+  "created": "2026-11-08",
+  "branch": "codex/assets-c2-20261108",
+  "baseCommit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "status": "artifact_review_ready",
+  "readyForImport": true,
+  "imported": false,
+  "runtimeVerified": false,
+  "workflow": "native_integer_pixel_drawing",
+  "theme": "夜硝子と真鍮 / night glass and aged brass",
+  "lightDirection": "upper-left",
+  "counts": {
+    "new": 24,
+    "reusedUnmodifiedA3": 8,
+    "totalPng": 32
+  },
+  "assets": [
+    {
+      "id": "act2_ground_a",
+      "act": 2,
+      "labelJa": "基礎地面A",
+      "kind": "tile",
+      "file": "png/act2_ground_a.png",
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "transparent": false,
+      "alphaMode": "opaque",
+      "filterMode": "Point",
+      "wrapMode": "Repeat",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_ground_a.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "f288e86cb335a1c07a87bc02a0e85858799a41f813a82d4f4a911159a5511785",
+      "visibleBoundsXYXY": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "source": "source/draw_tiles.py"
+    },
+    {
+      "id": "act2_ground_b",
+      "act": 2,
+      "labelJa": "基礎地面B",
+      "kind": "tile",
+      "file": "png/act2_ground_b.png",
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "transparent": false,
+      "alphaMode": "opaque",
+      "filterMode": "Point",
+      "wrapMode": "Repeat",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_ground_b.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "1bde88065d62d9b6b13f86d3d6a4f6e5d99b6e910f79a04ced5edfc180a04c8f",
+      "visibleBoundsXYXY": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "source": "source/draw_tiles.py"
+    },
+    {
+      "id": "act2_path",
+      "act": 2,
+      "labelJa": "進路の帯に使う地面",
+      "kind": "tile",
+      "file": "png/act2_path.png",
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "transparent": false,
+      "alphaMode": "opaque",
+      "filterMode": "Point",
+      "wrapMode": "Repeat",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_path.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "6ee3ab48770e5d57a8400b192b5463bc2eca20c98a97492efa7e33c9f766abeb",
+      "visibleBoundsXYXY": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "source": "source/draw_tiles.py"
+    },
+    {
+      "id": "act3_ground_a",
+      "act": 3,
+      "labelJa": "基礎地面A",
+      "kind": "tile",
+      "file": "png/act3_ground_a.png",
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "transparent": false,
+      "alphaMode": "opaque",
+      "filterMode": "Point",
+      "wrapMode": "Repeat",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_ground_a.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "b3391a56463877b6b7d27329badcceb2f9b891a021c6bf3156cf0d881ff43289",
+      "visibleBoundsXYXY": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "source": "source/draw_tiles.py"
+    },
+    {
+      "id": "act3_ground_b",
+      "act": 3,
+      "labelJa": "基礎地面B",
+      "kind": "tile",
+      "file": "png/act3_ground_b.png",
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "transparent": false,
+      "alphaMode": "opaque",
+      "filterMode": "Point",
+      "wrapMode": "Repeat",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_ground_b.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "eef06da88364c9f850b944b2daa40c63871a8d4189ba68ad8fd1eebe2dd77db4",
+      "visibleBoundsXYXY": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "source": "source/draw_tiles.py"
+    },
+    {
+      "id": "act3_path",
+      "act": 3,
+      "labelJa": "進路の帯に使う地面",
+      "kind": "tile",
+      "file": "png/act3_path.png",
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "transparent": false,
+      "alphaMode": "opaque",
+      "filterMode": "Point",
+      "wrapMode": "Repeat",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_path.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "3669e5e0165bc0bbed3a4a1dde18fba23c7168ffc73148d47fbf450264bfeca5",
+      "visibleBoundsXYXY": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "source": "source/draw_tiles.py"
+    },
+    {
+      "id": "act2_support",
+      "act": 2,
+      "labelJa": "木の支保工",
+      "kind": "prop",
+      "file": "png/act2_support.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_support.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "06445e2df3b490aee4b7a57be2fb6e313e385b33e28e46da2538d5ed42b23f4f",
+      "visibleBoundsXYXY": [
+        7,
+        13,
+        89,
+        92
+      ],
+      "source": "source/draw_act2.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act2_rail_straight",
+      "act": 2,
+      "labelJa": "短い軌道・直線",
+      "kind": "prop",
+      "file": "png/act2_rail_straight.png",
+      "size": [
+        96,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_rail_straight.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "c7c82d10ad1d2d35587b071e3c6506319e9a5de5cb2a651e45edac8fd93d9732",
+      "visibleBoundsXYXY": [
+        8,
+        14,
+        91,
+        44
+      ],
+      "source": "source/draw_act2.py",
+      "anchorPixels": [
+        48,
+        44
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act2_rail_curve",
+      "act": 2,
+      "labelJa": "短い軌道・曲線",
+      "kind": "prop",
+      "file": "png/act2_rail_curve.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_rail_curve.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "7920402e449fcdda9f9826039746bcdbb9e0516e76eeeb61a5d5c6d350b96c92",
+      "visibleBoundsXYXY": [
+        7,
+        25,
+        91,
+        92
+      ],
+      "source": "source/draw_act2.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act2_shaft",
+      "act": 2,
+      "labelJa": "柵付きの立坑",
+      "kind": "prop",
+      "file": "png/act2_shaft.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_shaft.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "3b5d1971b3897f0a00a46f0e4e1914035c83315764fbefa936a2e859d33ae468",
+      "visibleBoundsXYXY": [
+        7,
+        23,
+        89,
+        92
+      ],
+      "source": "source/draw_act2.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act2_winch",
+      "act": 2,
+      "labelJa": "巻き上げ機と鉱車置場",
+      "kind": "prop",
+      "file": "png/act2_winch.png",
+      "size": [
+        96,
+        64
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_winch.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "3c5ac1e177bc10859217e9ddc6e00f5b05f21cfa67271dce743cd7ae75ca42aa",
+      "visibleBoundsXYXY": [
+        7,
+        15,
+        89,
+        60
+      ],
+      "source": "source/draw_act2.py",
+      "anchorPixels": [
+        48,
+        60
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act3_tower_ruin",
+      "act": 3,
+      "labelJa": "崩れた塔",
+      "kind": "prop",
+      "file": "png/act3_tower_ruin.png",
+      "size": [
+        96,
+        128
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_tower_ruin.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "dffd2261dbe8ffcb0461b45fa2152e5721507259cc926f9acf8a60bf51882449",
+      "visibleBoundsXYXY": [
+        5,
+        25,
+        92,
+        124
+      ],
+      "source": "source/draw_act3.py",
+      "anchorPixels": [
+        48,
+        124
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act3_plaza",
+      "act": 3,
+      "labelJa": "石敷きの小広場",
+      "kind": "prop",
+      "file": "png/act3_plaza.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_plaza.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "c565b13a07214836728ab185d7a48ee80e3a7a665844fe7d080e97ad3a2a2876",
+      "visibleBoundsXYXY": [
+        5,
+        36,
+        92,
+        92
+      ],
+      "source": "source/draw_act3.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act3_arch",
+      "act": 3,
+      "labelJa": "破損した街路アーチ",
+      "kind": "prop",
+      "file": "png/act3_arch.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_arch.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "3e164453c064cf66289a238a436ee52e20a33092b2501bcdc97a6a7249945c29",
+      "visibleBoundsXYXY": [
+        5,
+        25,
+        92,
+        92
+      ],
+      "source": "source/draw_act3.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act3_aqueduct",
+      "act": 3,
+      "labelJa": "低い水路と橋",
+      "kind": "prop",
+      "file": "png/act3_aqueduct.png",
+      "size": [
+        128,
+        64
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_aqueduct.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "04486a246f4c6476103cb9bd16776064d432980026989f5e4384b2ef4ee5e61b",
+      "visibleBoundsXYXY": [
+        5,
+        15,
+        124,
+        60
+      ],
+      "source": "source/draw_act3.py",
+      "anchorPixels": [
+        64,
+        60
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act3_rubble",
+      "act": 3,
+      "labelJa": "散らばる切石と倒柱",
+      "kind": "prop",
+      "file": "png/act3_rubble.png",
+      "size": [
+        96,
+        64
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_rubble.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "5c8342231246008ea69987e29c462e69587d81d3113c5c2a0887631123cfee1e",
+      "visibleBoundsXYXY": [
+        5,
+        24,
+        92,
+        60
+      ],
+      "source": "source/draw_act3.py",
+      "anchorPixels": [
+        48,
+        60
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act2_start",
+      "act": 2,
+      "labelJa": "坑道への降り口",
+      "kind": "landmark",
+      "file": "png/act2_start.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_start.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "ab19739b1e46e0406a92d62bf91ff5318062f00c3b8a8ef6714daaa5c9e3b6fa",
+      "visibleBoundsXYXY": [
+        7,
+        10,
+        89,
+        92
+      ],
+      "source": "source/draw_act2.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act2_boss_enemy_turtle",
+      "act": 2,
+      "labelJa": "眠たがりの大亀の巣",
+      "kind": "landmark",
+      "file": "png/act2_boss_enemy_turtle.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_boss_enemy_turtle.png",
+      "encounterId": "enemy_turtle",
+      "reused": false,
+      "sha256": "1fdd534edfedd220d06018080b38dc491d5f7dd7a18163b24d23c54b450975f5",
+      "visibleBoundsXYXY": [
+        7,
+        26,
+        89,
+        92
+      ],
+      "source": "source/draw_act2.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act2_boss_enc_kaiser_crab",
+      "act": 2,
+      "labelJa": "双腕の巨蟹の溜まり場",
+      "kind": "landmark",
+      "file": "png/act2_boss_enc_kaiser_crab.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_boss_enc_kaiser_crab.png",
+      "encounterId": "enc_kaiser_crab",
+      "reused": false,
+      "sha256": "9e374ba915452bc1a8c9e0d348277a851edcd560311aad4f61a54c8fc8578017",
+      "visibleBoundsXYXY": [
+        7,
+        28,
+        89,
+        92
+      ],
+      "source": "source/draw_act2.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act2_boss_enemy_winch_warden",
+      "act": 2,
+      "labelJa": "巻き上げ機の番人の機関室",
+      "kind": "landmark",
+      "file": "png/act2_boss_enemy_winch_warden.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act2_boss_enemy_winch_warden.png",
+      "encounterId": "enemy_winch_warden",
+      "reused": false,
+      "sha256": "3313f3c8c5e740cfa326e4e5b29cb29d4e180a4ad6886490d842d415af6f01b8",
+      "visibleBoundsXYXY": [
+        7,
+        13,
+        89,
+        92
+      ],
+      "source": "source/draw_act2.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act3_start",
+      "act": 3,
+      "labelJa": "古代都市への降り口",
+      "kind": "landmark",
+      "file": "png/act3_start.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_start.png",
+      "encounterId": null,
+      "reused": false,
+      "sha256": "fa2e866bd7349803b8be54e242babc0f3925809ae9dbbfaa3b171da519f5cec7",
+      "visibleBoundsXYXY": [
+        5,
+        24,
+        92,
+        92
+      ],
+      "source": "source/draw_act3.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act3_boss_enemy_warden",
+      "act": 3,
+      "labelJa": "刻限の門番の門楼",
+      "kind": "landmark",
+      "file": "png/act3_boss_enemy_warden.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_boss_enemy_warden.png",
+      "encounterId": "enemy_warden",
+      "reused": false,
+      "sha256": "aade03a6d8604ac4802ed7949f5475b7b0f97ea5a06be815e8c6c8c54f9402a2",
+      "visibleBoundsXYXY": [
+        5,
+        7,
+        92,
+        92
+      ],
+      "source": "source/draw_act3.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act3_boss_enemy_chimera_1",
+      "act": 3,
+      "labelJa": "蘇る合成獣の実験施設",
+      "kind": "landmark",
+      "file": "png/act3_boss_enemy_chimera_1.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_boss_enemy_chimera_1.png",
+      "encounterId": "enemy_chimera_1",
+      "reused": false,
+      "sha256": "86748418a2709518c80a272315fbda760b703453cde960387c78d09032d9c608",
+      "visibleBoundsXYXY": [
+        5,
+        22,
+        92,
+        92
+      ],
+      "source": "source/draw_act3.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "act3_boss_enemy_ember_furnace",
+      "act": 3,
+      "labelJa": "熾を喰う古炉の炉室",
+      "kind": "landmark",
+      "file": "png/act3_boss_enemy_ember_furnace.png",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/act3_boss_enemy_ember_furnace.png",
+      "encounterId": "enemy_ember_furnace",
+      "reused": false,
+      "sha256": "29083397c83d821e4265dba0f9c371f9888d9829cdb874c69b6a2beea378bf01",
+      "visibleBoundsXYXY": [
+        5,
+        7,
+        92,
+        92
+      ],
+      "source": "source/draw_act3.py",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary, origin top-left; bottom-center of authored base"
+    },
+    {
+      "id": "node_battle",
+      "act": null,
+      "labelJa": "battle",
+      "kind": "node",
+      "file": "png/node_battle.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/node_battle.png",
+      "encounterId": null,
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "reused": true,
+      "reuseSource": {
+        "bundle": "A3",
+        "commit": "da7c71ef85b6781c6dc24ddcd2497fdc7822e8cd",
+        "path": "handoffs/assets-a3-act1-map/png/node_battle.png",
+        "sha256": "2500f0b4935cfcd2c0420244073850e0c50d124ce29693203604c0db5cc559a1"
+      },
+      "sha256": "2500f0b4935cfcd2c0420244073850e0c50d124ce29693203604c0db5cc559a1",
+      "visibleBoundsXYXY": [
+        5,
+        5,
+        44,
+        44
+      ]
+    },
+    {
+      "id": "node_elite",
+      "act": null,
+      "labelJa": "elite",
+      "kind": "node",
+      "file": "png/node_elite.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/node_elite.png",
+      "encounterId": null,
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "reused": true,
+      "reuseSource": {
+        "bundle": "A3",
+        "commit": "da7c71ef85b6781c6dc24ddcd2497fdc7822e8cd",
+        "path": "handoffs/assets-a3-act1-map/png/node_elite.png",
+        "sha256": "69583184db25f6bcd310eed3e6d264cb5f70172370b761afc9a5b48a4a5bf539"
+      },
+      "sha256": "69583184db25f6bcd310eed3e6d264cb5f70172370b761afc9a5b48a4a5bf539",
+      "visibleBoundsXYXY": [
+        4,
+        5,
+        45,
+        45
+      ]
+    },
+    {
+      "id": "node_unknown",
+      "act": null,
+      "labelJa": "unknown",
+      "kind": "node",
+      "file": "png/node_unknown.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/node_unknown.png",
+      "encounterId": null,
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "reused": true,
+      "reuseSource": {
+        "bundle": "A3",
+        "commit": "da7c71ef85b6781c6dc24ddcd2497fdc7822e8cd",
+        "path": "handoffs/assets-a3-act1-map/png/node_unknown.png",
+        "sha256": "e9065383d50ed92fc0d896e99ca697b74ed383bf42d52a59fa261a4bc4f263be"
+      },
+      "sha256": "e9065383d50ed92fc0d896e99ca697b74ed383bf42d52a59fa261a4bc4f263be",
+      "visibleBoundsXYXY": [
+        10,
+        5,
+        40,
+        45
+      ]
+    },
+    {
+      "id": "node_campfire",
+      "act": null,
+      "labelJa": "campfire",
+      "kind": "node",
+      "file": "png/node_campfire.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/node_campfire.png",
+      "encounterId": null,
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "reused": true,
+      "reuseSource": {
+        "bundle": "A3",
+        "commit": "da7c71ef85b6781c6dc24ddcd2497fdc7822e8cd",
+        "path": "handoffs/assets-a3-act1-map/png/node_campfire.png",
+        "sha256": "6e56f0c6a631cf686e3a7a234f77d335be0010c19e885f8926c9f20321d7da75"
+      },
+      "sha256": "6e56f0c6a631cf686e3a7a234f77d335be0010c19e885f8926c9f20321d7da75",
+      "visibleBoundsXYXY": [
+        6,
+        4,
+        43,
+        45
+      ]
+    },
+    {
+      "id": "node_shop",
+      "act": null,
+      "labelJa": "shop",
+      "kind": "node",
+      "file": "png/node_shop.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/node_shop.png",
+      "encounterId": null,
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "reused": true,
+      "reuseSource": {
+        "bundle": "A3",
+        "commit": "da7c71ef85b6781c6dc24ddcd2497fdc7822e8cd",
+        "path": "handoffs/assets-a3-act1-map/png/node_shop.png",
+        "sha256": "e6956f1a4a349228c9a12d7defee9cfa1e6a24265161f99ebf1c3276ca475c04"
+      },
+      "sha256": "e6956f1a4a349228c9a12d7defee9cfa1e6a24265161f99ebf1c3276ca475c04",
+      "visibleBoundsXYXY": [
+        3,
+        4,
+        45,
+        46
+      ]
+    },
+    {
+      "id": "node_workshop",
+      "act": null,
+      "labelJa": "workshop",
+      "kind": "node",
+      "file": "png/node_workshop.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/node_workshop.png",
+      "encounterId": null,
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "reused": true,
+      "reuseSource": {
+        "bundle": "A3",
+        "commit": "da7c71ef85b6781c6dc24ddcd2497fdc7822e8cd",
+        "path": "handoffs/assets-a3-act1-map/png/node_workshop.png",
+        "sha256": "60d62e9d40e9c4b08bcf67c231462951425243eac1fa7ea7fd596140c85e7cba"
+      },
+      "sha256": "60d62e9d40e9c4b08bcf67c231462951425243eac1fa7ea7fd596140c85e7cba",
+      "visibleBoundsXYXY": [
+        5,
+        3,
+        43,
+        47
+      ]
+    },
+    {
+      "id": "node_treasure",
+      "act": null,
+      "labelJa": "treasure",
+      "kind": "node",
+      "file": "png/node_treasure.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/node_treasure.png",
+      "encounterId": null,
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "reused": true,
+      "reuseSource": {
+        "bundle": "A3",
+        "commit": "da7c71ef85b6781c6dc24ddcd2497fdc7822e8cd",
+        "path": "handoffs/assets-a3-act1-map/png/node_treasure.png",
+        "sha256": "baaca8fcbb570d3498468559dc78b453b8acd06a809aa33a58ac81e6a8f900ae"
+      },
+      "sha256": "baaca8fcbb570d3498468559dc78b453b8acd06a809aa33a58ac81e6a8f900ae",
+      "visibleBoundsXYXY": [
+        7,
+        7,
+        43,
+        44
+      ]
+    },
+    {
+      "id": "node_boss",
+      "act": null,
+      "labelJa": "boss",
+      "kind": "node",
+      "file": "png/node_boss.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "Point",
+      "wrapMode": "Clamp",
+      "colorSpace": "sRGB",
+      "preGraded": true,
+      "additionalNightGradeRecommended": false,
+      "intendedResourcePath": "Art/map/node_boss.png",
+      "encounterId": null,
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "reused": true,
+      "reuseSource": {
+        "bundle": "A3",
+        "commit": "da7c71ef85b6781c6dc24ddcd2497fdc7822e8cd",
+        "path": "handoffs/assets-a3-act1-map/png/node_boss.png",
+        "sha256": "3439d36bb91ee2b330ad5f064101b434ea9414c4f84a958500d4cac831a463de"
+      },
+      "sha256": "3439d36bb91ee2b330ad5f064101b434ea9414c4f84a958500d4cac831a463de",
+      "visibleBoundsXYXY": [
+        9,
+        4,
+        40,
+        46
+      ]
+    }
+  ],
+  "integrationNotes": [
+    "New act2_/act3_ resource keys require a map loader and placement adapter on the receiving side. This bundle changes no Unity/runtime code.",
+    "Do not replace map_mine_gate or map_cart without switching their roles. They are common legacy resources.",
+    "The 8 node PNGs are unchanged A3 common symbols; boss node and encounter landmark are separate objects.",
+    "Ground and path are already darkened sRGB native art. Avoid applying MapForest legacy Grade twice.",
+    "Point/Nearest. Keep tile edges aligned to integer pixels. Actual display sizes and click regions need host-side validation.",
+    "No characters, standing art, BGM, key visuals, src/engine, src/data, or Unity code changed."
+  ],
+  "qa": {
+    "artifactAssertionsPassed": 335,
+    "independentAssertionsPassed": 282,
+    "visualReview": "passed_after_tile_contrast_revision",
+    "runtimeVerified": false
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "newAssetMethod": "Original integer-coordinate native pixel authoring with Python/Pillow, no image resampling or AI-generated source image",
+  "sourceInputsReadOnly": [
+    {
+      "path": "docs/world.md",
+      "commit": "114ee430310c5a2df02ea048f23d1f8375c22c66"
+    },
+    {
+      "path": "docs/dot-asset-backlog-2026-11-02.md",
+      "commit": "114ee430310c5a2df02ea048f23d1f8375c22c66"
+    },
+    {
+      "path": "unity/Assets/Game/MapForest.cs",
+      "commit": "114ee430310c5a2df02ea048f23d1f8375c22c66"
+    },
+    {
+      "path": "unity/Assets/Game/MapScreen.cs",
+      "commit": "114ee430310c5a2df02ea048f23d1f8375c22c66"
+    },
+    {
+      "path": "src/engine/map.ts",
+      "commit": "114ee430310c5a2df02ea048f23d1f8375c22c66"
+    },
+    {
+      "path": "src/data/enemies.json",
+      "commit": "114ee430310c5a2df02ea048f23d1f8375c22c66"
+    },
+    {
+      "path": "src/data/encounters.json",
+      "commit": "114ee430310c5a2df02ea048f23d1f8375c22c66"
+    }
+  ],
+  "themeCaveat": "Latest user instruction overrides old paper theme. Exact 2026-11-05 shared UI constants were not visible on accessible main. Colors are authored to match A3, not asserted to be exact current UI constants.",
+  "reusedNodes": {
+    "commit": "da7c71ef85b6781c6dc24ddcd2497fdc7822e8cd",
+    "paths": [
+      "handoffs/assets-a3-act1-map/png/node_battle.png",
+      "handoffs/assets-a3-act1-map/png/node_elite.png",
+      "handoffs/assets-a3-act1-map/png/node_unknown.png",
+      "handoffs/assets-a3-act1-map/png/node_campfire.png",
+      "handoffs/assets-a3-act1-map/png/node_shop.png",
+      "handoffs/assets-a3-act1-map/png/node_workshop.png",
+      "handoffs/assets-a3-act1-map/png/node_treasure.png",
+      "handoffs/assets-a3-act1-map/png/node_boss.png"
+    ]
+  },
+  "referencePngs": [
+    {
+      "file": "references/act2_winch.png",
+      "sourcePath": "unity/Assets/Resources/Art/stage/act2/relief/winch.png",
+      "commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "547ca1a30ccfb39abd391967cc8cf4a7c6e5dfbcf3c2f9be46aa2da8fc5795de",
+      "modified": false,
+      "import": false
+    },
+    {
+      "file": "references/act2_tunnel_mouth.png",
+      "sourcePath": "unity/Assets/Resources/Art/stage/act2/relief/tunnel_mouth.png",
+      "commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "365c5c7517d3ed7eca1b101e95d930762cbd1c7b854c17c4fbc4831690ef04ae",
+      "modified": false,
+      "import": false
+    },
+    {
+      "file": "references/act3_pillar_broken.png",
+      "sourcePath": "unity/Assets/Resources/Art/stage/act3/relief/pillar_broken.png",
+      "commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "20d0bc63d082493c54f421b10c9d0595fc7edcfe98e7b40fc4a55e1787301b1e",
+      "modified": false,
+      "import": false
+    },
+    {
+      "file": "references/act3_wall_ruin.png",
+      "sourcePath": "unity/Assets/Resources/Art/stage/act3/relief/wall_ruin.png",
+      "commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "2e1d2f9d2ee1ac7b251b217ee881aa8e641f9ca8f5e5a590969b4aae7ea59119",
+      "modified": false,
+      "import": false
+    }
+  ]
+}

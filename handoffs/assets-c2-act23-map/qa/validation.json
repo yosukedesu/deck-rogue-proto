@@ -1,0 +1,1690 @@
+{
+  "artifactOnly": true,
+  "passed": 335,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "new_count",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "reused_count",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "unique_ids",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "png_inventory",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_a:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_a:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_a:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_a:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_a:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_a:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_a:opaque",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_a:repeat",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_a:LR",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_a:TB",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_b:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_b:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_b:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_b:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_b:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_b:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_b:opaque",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_b:repeat",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_b:LR",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_b:TB",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_path:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_path:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_path:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_path:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_path:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_path:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_path:opaque",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_path:repeat",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_path:LR",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_path:TB",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_a:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_a:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_a:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_a:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_a:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_a:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_a:opaque",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_a:repeat",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_a:LR",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_a:TB",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_b:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_b:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_b:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_b:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_b:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_b:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_b:opaque",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_b:repeat",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_b:LR",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_b:TB",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_path:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_path:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_path:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_path:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_path:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_path:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_path:opaque",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_path:repeat",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_path:LR",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_path:TB",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_support:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_support:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_support:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_support:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_support:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_support:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_support:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_support:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_support:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_straight:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_straight:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_straight:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_straight:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_straight:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_straight:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_straight:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_straight:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_straight:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_curve:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_curve:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_curve:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_curve:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_curve:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_curve:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_curve:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_curve:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_curve:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_shaft:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_shaft:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_shaft:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_shaft:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_shaft:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_shaft:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_shaft:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_shaft:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_shaft:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_winch:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_winch:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_winch:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_winch:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_winch:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_winch:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_winch:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_winch:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_winch:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_tower_ruin:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_tower_ruin:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_tower_ruin:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_tower_ruin:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_tower_ruin:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_tower_ruin:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_tower_ruin:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_tower_ruin:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_tower_ruin:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_plaza:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_plaza:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_plaza:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_plaza:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_plaza:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_plaza:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_plaza:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_plaza:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_plaza:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_arch:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_arch:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_arch:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_arch:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_arch:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_arch:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_arch:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_arch:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_arch:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_aqueduct:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_aqueduct:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_aqueduct:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_aqueduct:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_aqueduct:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_aqueduct:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_aqueduct:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_aqueduct:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_aqueduct:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_rubble:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_rubble:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_rubble:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_rubble:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_rubble:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_rubble:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_rubble:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_rubble:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_rubble:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_start:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_start:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_start:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_start:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_start:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_start:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_start:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_start:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_start:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_turtle:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_turtle:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_turtle:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_turtle:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_turtle:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_turtle:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_turtle:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_turtle:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_turtle:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_start:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_start:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_start:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_start:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_start:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_start:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_start:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_start:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_start:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_warden:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_warden:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_warden:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_warden:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_warden:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_warden:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_warden:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_warden:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_warden:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace:ground_boundary",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_battle:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_battle:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_battle:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_battle:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_battle:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_battle:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_battle:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_battle:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_battle:A3_byte_identity",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_elite:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_elite:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_elite:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_elite:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_elite:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_elite:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_elite:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_elite:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_elite:A3_byte_identity",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_unknown:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_unknown:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_unknown:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_unknown:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_unknown:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_unknown:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_unknown:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_unknown:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_unknown:A3_byte_identity",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_campfire:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_campfire:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_campfire:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_campfire:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_campfire:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_campfire:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_campfire:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_campfire:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_campfire:A3_byte_identity",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_shop:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_shop:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_shop:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_shop:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_shop:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_shop:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_shop:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_shop:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_shop:A3_byte_identity",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_workshop:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_workshop:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_workshop:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_workshop:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_workshop:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_workshop:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_workshop:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_workshop:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_workshop:A3_byte_identity",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_treasure:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_treasure:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_treasure:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_treasure:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_treasure:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_treasure:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_treasure:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_treasure:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_treasure:A3_byte_identity",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_boss:size",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_boss:RGBA",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_boss:sha256",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_boss:binary_alpha",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_boss:bbox",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_boss:filter",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_boss:transparent_margin",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_boss:clamp",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "node_boss:A3_byte_identity",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2:mixedLR",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2:mixedTB",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2:variants_distinct",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2:boss_ids",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3:mixedLR",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3:mixedTB",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3:variants_distinct",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3:boss_ids",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "draw_tiles.py:runs",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "draw_act2.py:runs",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "draw_act3.py:runs",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_a:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_ground_b:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_path:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_a:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_ground_b:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_path:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_support:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_straight:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_rail_curve:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_shaft:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_winch:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_tower_ruin:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_plaza:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_arch:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_aqueduct:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_rubble:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_start:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_turtle:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enc_kaiser_crab:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act2_boss_enemy_winch_warden:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_start:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_warden:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_chimera_1:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "act3_boss_enemy_ember_furnace:source_reproduces_bytes",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "imported_false",
+      "pass": true,
+      "details": null
+    },
+    {
+      "check": "runtimeVerified_false",
+      "pass": true,
+      "details": null
+    }
+  ],
+  "notTested": [
+    "Unity import",
+    "actual map loader",
+    "click targets",
+    "route overlap with all generated seeds",
+    "Android",
+    "gameplay"
+  ]
+}

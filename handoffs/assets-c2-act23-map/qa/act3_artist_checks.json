@@ -1,0 +1,241 @@
+{
+  "status": "pass",
+  "images": [
+    {
+      "id": "act3_tower_ruin",
+      "size": [
+        96,
+        128
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        5,
+        25,
+        92,
+        124
+      ],
+      "anchorPixels": [
+        48,
+        124
+      ],
+      "lastOpaqueRow": 123,
+      "colors": 11,
+      "sha256": "dffd2261dbe8ffcb0461b45fa2152e5721507259cc926f9acf8a60bf51882449",
+      "reproductionMatches": true
+    },
+    {
+      "id": "act3_plaza",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        5,
+        36,
+        92,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "lastOpaqueRow": 91,
+      "colors": 12,
+      "sha256": "c565b13a07214836728ab185d7a48ee80e3a7a665844fe7d080e97ad3a2a2876",
+      "reproductionMatches": true
+    },
+    {
+      "id": "act3_arch",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        5,
+        25,
+        92,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "lastOpaqueRow": 91,
+      "colors": 12,
+      "sha256": "3e164453c064cf66289a238a436ee52e20a33092b2501bcdc97a6a7249945c29",
+      "reproductionMatches": true
+    },
+    {
+      "id": "act3_aqueduct",
+      "size": [
+        128,
+        64
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        5,
+        15,
+        124,
+        60
+      ],
+      "anchorPixels": [
+        64,
+        60
+      ],
+      "lastOpaqueRow": 59,
+      "colors": 11,
+      "sha256": "04486a246f4c6476103cb9bd16776064d432980026989f5e4384b2ef4ee5e61b",
+      "reproductionMatches": true
+    },
+    {
+      "id": "act3_rubble",
+      "size": [
+        96,
+        64
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        5,
+        24,
+        92,
+        60
+      ],
+      "anchorPixels": [
+        48,
+        60
+      ],
+      "lastOpaqueRow": 59,
+      "colors": 9,
+      "sha256": "5c8342231246008ea69987e29c462e69587d81d3113c5c2a0887631123cfee1e",
+      "reproductionMatches": true
+    },
+    {
+      "id": "act3_start",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        5,
+        24,
+        92,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "lastOpaqueRow": 91,
+      "colors": 13,
+      "sha256": "fa2e866bd7349803b8be54e242babc0f3925809ae9dbbfaa3b171da519f5cec7",
+      "reproductionMatches": true
+    },
+    {
+      "id": "act3_boss_enemy_warden",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        5,
+        7,
+        92,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "lastOpaqueRow": 91,
+      "colors": 13,
+      "sha256": "aade03a6d8604ac4802ed7949f5475b7b0f97ea5a06be815e8c6c8c54f9402a2",
+      "reproductionMatches": true
+    },
+    {
+      "id": "act3_boss_enemy_chimera_1",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        5,
+        22,
+        92,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "lastOpaqueRow": 91,
+      "colors": 16,
+      "sha256": "86748418a2709518c80a272315fbda760b703453cde960387c78d09032d9c608",
+      "reproductionMatches": true
+    },
+    {
+      "id": "act3_boss_enemy_ember_furnace",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        5,
+        7,
+        92,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "lastOpaqueRow": 91,
+      "colors": 15,
+      "sha256": "29083397c83d821e4265dba0f9c371f9888d9829cdb874c69b6a2beea378bf01",
+      "reproductionMatches": true
+    }
+  ],
+  "source": "source/draw_act3.py",
+  "visualReview": "Artist viewed 3x sheet on night background: all nine silhouettes distinguishable, no clipped opaque edges, no face or creature, distinct cool ancient stone and restricted warm furnace. Not independent QA or runtime testing."
+}

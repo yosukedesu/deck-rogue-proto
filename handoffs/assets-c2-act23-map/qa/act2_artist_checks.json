@@ -1,0 +1,223 @@
+{
+  "status": "artist_review",
+  "nativePixelDrawing": true,
+  "runtimeVerified": false,
+  "assets": [
+    {
+      "id": "act2_support",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        7,
+        13,
+        89,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "reproducibleByteMatch": true,
+      "sha256": "06445e2df3b490aee4b7a57be2fb6e313e385b33e28e46da2538d5ed42b23f4f"
+    },
+    {
+      "id": "act2_rail_straight",
+      "size": [
+        96,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        8,
+        14,
+        91,
+        44
+      ],
+      "anchorPixels": [
+        48,
+        44
+      ],
+      "reproducibleByteMatch": true,
+      "sha256": "c7c82d10ad1d2d35587b071e3c6506319e9a5de5cb2a651e45edac8fd93d9732"
+    },
+    {
+      "id": "act2_rail_curve",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        7,
+        25,
+        91,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "reproducibleByteMatch": true,
+      "sha256": "7920402e449fcdda9f9826039746bcdbb9e0516e76eeeb61a5d5c6d350b96c92"
+    },
+    {
+      "id": "act2_shaft",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        7,
+        23,
+        89,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "reproducibleByteMatch": true,
+      "sha256": "3b5d1971b3897f0a00a46f0e4e1914035c83315764fbefa936a2e859d33ae468"
+    },
+    {
+      "id": "act2_winch",
+      "size": [
+        96,
+        64
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        7,
+        15,
+        89,
+        60
+      ],
+      "anchorPixels": [
+        48,
+        60
+      ],
+      "reproducibleByteMatch": true,
+      "sha256": "3c5ac1e177bc10859217e9ddc6e00f5b05f21cfa67271dce743cd7ae75ca42aa"
+    },
+    {
+      "id": "act2_start",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        7,
+        10,
+        89,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "reproducibleByteMatch": true,
+      "sha256": "ab19739b1e46e0406a92d62bf91ff5318062f00c3b8a8ef6714daaa5c9e3b6fa"
+    },
+    {
+      "id": "act2_boss_enemy_turtle",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        7,
+        26,
+        89,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "reproducibleByteMatch": true,
+      "sha256": "1fdd534edfedd220d06018080b38dc491d5f7dd7a18163b24d23c54b450975f5"
+    },
+    {
+      "id": "act2_boss_enc_kaiser_crab",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        7,
+        28,
+        89,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "reproducibleByteMatch": true,
+      "sha256": "9e374ba915452bc1a8c9e0d348277a851edcd560311aad4f61a54c8fc8578017"
+    },
+    {
+      "id": "act2_boss_enemy_winch_warden",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        7,
+        13,
+        89,
+        92
+      ],
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "reproducibleByteMatch": true,
+      "sha256": "3313f3c8c5e740cfa326e4e5b29cb29d4e180a4ad6886490d842d415af6f01b8"
+    }
+  ]
+}
