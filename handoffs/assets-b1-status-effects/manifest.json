@@ -1,0 +1,1660 @@
+{
+  "schema_version": 1,
+  "bundle": "B1-status-application",
+  "date": "2026-11-08",
+  "branch": "codex/assets-b1-20261108",
+  "source_main_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "source_backlog": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/docs/dot-asset-backlog-2026-11-02.md#L76",
+  "scope": "original art-only handoff; no runtime code integration",
+  "creation_method": "direct-native-64x64-pixel-drawing; no bitmap input, no resampling of game assets",
+  "runtime_integration_tested": false,
+  "theme": "night glass and brass, latest user instruction takes precedence over old paper theme",
+  "render": {
+    "format": "PNG",
+    "mode": "RGBA",
+    "alpha": "straight, binary 0/255",
+    "filter": "nearest",
+    "mipmaps": false,
+    "blend": "normal alpha",
+    "trim_transparent_pixels": false,
+    "scale": "same native pixel scale as battle units; prefer integer screen scale",
+    "canvas_origin": "top_left",
+    "x_direction": "right",
+    "y_direction": "down"
+  },
+  "playback": {
+    "frame_count": 8,
+    "layout": "horizontal, left to right",
+    "cell_size": [
+      64,
+      64
+    ],
+    "sheet_size": [
+      512,
+      64
+    ],
+    "frame_durations_ms": [
+      65,
+      65,
+      70,
+      80,
+      85,
+      85,
+      100,
+      70
+    ],
+    "total_duration_ms": 620,
+    "loop": false,
+    "clear_frame_index": 7,
+    "clear_on_finish": true,
+    "mark_start_ms": 550,
+    "mark_start_frame_index": 7,
+    "mark_layer": "below application VFX; card text above both",
+    "mark_lifetime": "until the actual status or corresponding card is removed",
+    "mark_loop": false,
+    "duplicate_policy": "refresh application at new gain; keep one mark per target/status; engine decides stacking"
+  },
+  "assets": [
+    {
+      "key": "enemy_weak",
+      "label_ja": "威圧",
+      "engine_mapping_at_source_commit": "EnemyState.weak",
+      "legacy_unity_display_alias": "weak",
+      "target_kind": "enemy",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L202",
+      "motif": "藍紫の圧迫輪＋下降する二重山形",
+      "anchor_px": [
+        32,
+        52
+      ],
+      "anchor_meaning": "target foot / state indicator baseline",
+      "destination_clip": null,
+      "application": {
+        "path": "Art/fx/status_enemy_weak_8f.png",
+        "size": [
+          512,
+          64
+        ],
+        "sha256": "cc03201647fe220c8ba3fe012105d5b6933b9ce853278a22217227195bcb859a",
+        "frame_durations_ms": [
+          65,
+          65,
+          70,
+          80,
+          85,
+          85,
+          100,
+          70
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "rect": [
+              0,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              21,
+              10,
+              44,
+              47
+            ]
+          },
+          {
+            "index": 1,
+            "rect": [
+              64,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              14,
+              13,
+              51,
+              51
+            ]
+          },
+          {
+            "index": 2,
+            "rect": [
+              128,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": [
+              8,
+              16,
+              57,
+              56
+            ]
+          },
+          {
+            "index": 3,
+            "rect": [
+              192,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 80,
+            "bbox_local": [
+              6,
+              20,
+              59,
+              59
+            ]
+          },
+          {
+            "index": 4,
+            "rect": [
+              256,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              9,
+              24,
+              56,
+              58
+            ]
+          },
+          {
+            "index": 5,
+            "rect": [
+              320,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              13,
+              43,
+              52,
+              58
+            ]
+          },
+          {
+            "index": 6,
+            "rect": [
+              384,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 100,
+            "bbox_local": [
+              15,
+              45,
+              50,
+              58
+            ]
+          },
+          {
+            "index": 7,
+            "rect": [
+              448,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": null
+          }
+        ]
+      },
+      "mark": {
+        "path": "Art/fx/status_enemy_weak_mark.png",
+        "size": [
+          64,
+          64
+        ],
+        "sha256": "5c80ed895be80e103060ac615db5f04be26862b2739a90c9299cca4956d2770c",
+        "bbox_local": [
+          15,
+          42,
+          50,
+          56
+        ],
+        "placement": "at target foot or dedicated status indicator",
+        "status_lifetime_driven": true
+      }
+    },
+    {
+      "key": "vulnerable",
+      "label_ja": "脆弱",
+      "engine_mapping_at_source_commit": "PlayerState.vulnerable / PlayerStatus.vulnerable",
+      "legacy_unity_display_alias": "exposed",
+      "target_kind": "player",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L110",
+      "motif": "枝分かれした赤いひび",
+      "anchor_px": [
+        32,
+        52
+      ],
+      "anchor_meaning": "target foot / state indicator baseline",
+      "destination_clip": null,
+      "application": {
+        "path": "Art/fx/status_vulnerable_8f.png",
+        "size": [
+          512,
+          64
+        ],
+        "sha256": "b8d3d11edc1b4c544ac61d2ef3d7faaf6329439543bfcab88d002b66ed80d4c3",
+        "frame_durations_ms": [
+          65,
+          65,
+          70,
+          80,
+          85,
+          85,
+          100,
+          70
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "rect": [
+              0,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              29,
+              9,
+              34,
+              16
+            ]
+          },
+          {
+            "index": 1,
+            "rect": [
+              64,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              27,
+              9,
+              34,
+              25
+            ]
+          },
+          {
+            "index": 2,
+            "rect": [
+              128,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": [
+              22,
+              9,
+              42,
+              37
+            ]
+          },
+          {
+            "index": 3,
+            "rect": [
+              192,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 80,
+            "bbox_local": [
+              9,
+              9,
+              56,
+              51
+            ]
+          },
+          {
+            "index": 4,
+            "rect": [
+              256,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              9,
+              9,
+              56,
+              55
+            ]
+          },
+          {
+            "index": 5,
+            "rect": [
+              320,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              9,
+              9,
+              56,
+              55
+            ]
+          },
+          {
+            "index": 6,
+            "rect": [
+              384,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 100,
+            "bbox_local": [
+              13,
+              9,
+              49,
+              50
+            ]
+          },
+          {
+            "index": 7,
+            "rect": [
+              448,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": null
+          }
+        ]
+      },
+      "mark": {
+        "path": "Art/fx/status_vulnerable_mark.png",
+        "size": [
+          64,
+          64
+        ],
+        "sha256": "54cbf7c62da358b85d4bb6c2dba9d8fda2d452be87efc5060186b29e58875d02",
+        "bbox_local": [
+          19,
+          38,
+          45,
+          60
+        ],
+        "placement": "at target foot or dedicated status indicator",
+        "status_lifetime_driven": true
+      }
+    },
+    {
+      "key": "frail",
+      "label_ja": "虚弱",
+      "engine_mapping_at_source_commit": "PlayerState.frail / PlayerStatus.frail",
+      "legacy_unity_display_alias": "frail",
+      "target_kind": "player",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L128",
+      "motif": "割れて開く青灰の盾",
+      "anchor_px": [
+        32,
+        52
+      ],
+      "anchor_meaning": "target foot / state indicator baseline",
+      "destination_clip": null,
+      "application": {
+        "path": "Art/fx/status_frail_8f.png",
+        "size": [
+          512,
+          64
+        ],
+        "sha256": "4702bf11ec0d08d58f3311c14789282c6cfccd2bcd9a036f09f9152993167f88",
+        "frame_durations_ms": [
+          65,
+          65,
+          70,
+          80,
+          85,
+          85,
+          100,
+          70
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "rect": [
+              0,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              17,
+              8,
+              47,
+              47
+            ]
+          },
+          {
+            "index": 1,
+            "rect": [
+              64,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              17,
+              10,
+              47,
+              49
+            ]
+          },
+          {
+            "index": 2,
+            "rect": [
+              128,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": [
+              17,
+              11,
+              47,
+              50
+            ]
+          },
+          {
+            "index": 3,
+            "rect": [
+              192,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 80,
+            "bbox_local": [
+              13,
+              11,
+              50,
+              50
+            ]
+          },
+          {
+            "index": 4,
+            "rect": [
+              256,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              12,
+              12,
+              51,
+              51
+            ]
+          },
+          {
+            "index": 5,
+            "rect": [
+              320,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              11,
+              14,
+              52,
+              53
+            ]
+          },
+          {
+            "index": 6,
+            "rect": [
+              384,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 100,
+            "bbox_local": [
+              10,
+              16,
+              53,
+              55
+            ]
+          },
+          {
+            "index": 7,
+            "rect": [
+              448,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": null
+          }
+        ]
+      },
+      "mark": {
+        "path": "Art/fx/status_frail_mark.png",
+        "size": [
+          64,
+          64
+        ],
+        "sha256": "9d9a95f5d16d3a9ef9383db42d7af9ed60be2a3ec38bf2c60929492c068ae2e1",
+        "bbox_local": [
+          23,
+          39,
+          42,
+          59
+        ],
+        "placement": "at target foot or dedicated status indicator",
+        "status_lifetime_driven": true
+      }
+    },
+    {
+      "key": "restrain",
+      "label_ja": "拘束",
+      "engine_mapping_at_source_commit": "PlayerState.restrain / PlayerStatus.restrain",
+      "legacy_unity_display_alias": null,
+      "target_kind": "player",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L133",
+      "motif": "真鍮色の縄と結び目",
+      "anchor_px": [
+        32,
+        52
+      ],
+      "anchor_meaning": "target foot / state indicator baseline",
+      "destination_clip": null,
+      "application": {
+        "path": "Art/fx/status_restrain_8f.png",
+        "size": [
+          512,
+          64
+        ],
+        "sha256": "e252643947573d6f13a7c3161e244e184c952a6073e0d811ed608352f66bca35",
+        "frame_durations_ms": [
+          65,
+          65,
+          70,
+          80,
+          85,
+          85,
+          100,
+          70
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "rect": [
+              0,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              7,
+              28,
+              18,
+              41
+            ]
+          },
+          {
+            "index": 1,
+            "rect": [
+              64,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              9,
+              16,
+              56,
+              41
+            ]
+          },
+          {
+            "index": 2,
+            "rect": [
+              128,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": [
+              11,
+              17,
+              54,
+              42
+            ]
+          },
+          {
+            "index": 3,
+            "rect": [
+              192,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 80,
+            "bbox_local": [
+              13,
+              18,
+              52,
+              55
+            ]
+          },
+          {
+            "index": 4,
+            "rect": [
+              256,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              15,
+              20,
+              50,
+              57
+            ]
+          },
+          {
+            "index": 5,
+            "rect": [
+              320,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              16,
+              22,
+              49,
+              59
+            ]
+          },
+          {
+            "index": 6,
+            "rect": [
+              384,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 100,
+            "bbox_local": [
+              17,
+              24,
+              48,
+              61
+            ]
+          },
+          {
+            "index": 7,
+            "rect": [
+              448,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": null
+          }
+        ]
+      },
+      "mark": {
+        "path": "Art/fx/status_restrain_mark.png",
+        "size": [
+          64,
+          64
+        ],
+        "sha256": "cf5400e6160b9c8f6c79e4b2c70b3f431e4c0b569e8093ab0b9356838a6016dd",
+        "bbox_local": [
+          19,
+          43,
+          46,
+          60
+        ],
+        "placement": "at target foot or dedicated status indicator",
+        "status_lifetime_driven": true
+      }
+    },
+    {
+      "key": "mist",
+      "label_ja": "霞み",
+      "engine_mapping_at_source_commit": "PlayerState.mist / PlayerStatus.mist",
+      "legacy_unity_display_alias": "draw",
+      "target_kind": "player",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L116",
+      "motif": "左右へ流れる霧の帯",
+      "anchor_px": [
+        32,
+        52
+      ],
+      "anchor_meaning": "target foot / state indicator baseline",
+      "destination_clip": null,
+      "application": {
+        "path": "Art/fx/status_mist_8f.png",
+        "size": [
+          512,
+          64
+        ],
+        "sha256": "d7cacca27d2feaa88e9cc42e5791337888566c51c2c77c1d2f8b3c01a7f4b7e5",
+        "frame_durations_ms": [
+          65,
+          65,
+          70,
+          80,
+          85,
+          85,
+          100,
+          70
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "rect": [
+              0,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              20,
+              21,
+              49,
+              49
+            ]
+          },
+          {
+            "index": 1,
+            "rect": [
+              64,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              18,
+              21,
+              48,
+              49
+            ]
+          },
+          {
+            "index": 2,
+            "rect": [
+              128,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": [
+              12,
+              17,
+              50,
+              53
+            ]
+          },
+          {
+            "index": 3,
+            "rect": [
+              192,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 80,
+            "bbox_local": [
+              11,
+              17,
+              53,
+              53
+            ]
+          },
+          {
+            "index": 4,
+            "rect": [
+              256,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              12,
+              17,
+              54,
+              53
+            ]
+          },
+          {
+            "index": 5,
+            "rect": [
+              320,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              16,
+              17,
+              52,
+              53
+            ]
+          },
+          {
+            "index": 6,
+            "rect": [
+              384,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 100,
+            "bbox_local": [
+              20,
+              21,
+              50,
+              49
+            ]
+          },
+          {
+            "index": 7,
+            "rect": [
+              448,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": null
+          }
+        ]
+      },
+      "mark": {
+        "path": "Art/fx/status_mist_mark.png",
+        "size": [
+          64,
+          64
+        ],
+        "sha256": "5ed5bdad07fcd8392061df914c2c96f27aaef30f6164b480ea52153b753010da",
+        "bbox_local": [
+          17,
+          42,
+          48,
+          55
+        ],
+        "placement": "at target foot or dedicated status indicator",
+        "status_lifetime_driven": true
+      }
+    },
+    {
+      "key": "slow",
+      "label_ja": "重り",
+      "engine_mapping_at_source_commit": "PlayerState.slow / PlayerStatus.slow",
+      "legacy_unity_display_alias": "exposed",
+      "target_kind": "player",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L121",
+      "motif": "落下する錘と低い衝撃輪",
+      "anchor_px": [
+        32,
+        52
+      ],
+      "anchor_meaning": "target foot / state indicator baseline",
+      "destination_clip": null,
+      "application": {
+        "path": "Art/fx/status_slow_8f.png",
+        "size": [
+          512,
+          64
+        ],
+        "sha256": "b0affcf92bd1559fd7e116da64504eade470fdfaae1d30533cb572dd922efe97",
+        "frame_durations_ms": [
+          65,
+          65,
+          70,
+          80,
+          85,
+          85,
+          100,
+          70
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "rect": [
+              0,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              17,
+              3,
+              48,
+              37
+            ]
+          },
+          {
+            "index": 1,
+            "rect": [
+              64,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              17,
+              6,
+              48,
+              40
+            ]
+          },
+          {
+            "index": 2,
+            "rect": [
+              128,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": [
+              17,
+              11,
+              48,
+              45
+            ]
+          },
+          {
+            "index": 3,
+            "rect": [
+              192,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 80,
+            "bbox_local": [
+              12,
+              18,
+              52,
+              59
+            ]
+          },
+          {
+            "index": 4,
+            "rect": [
+              256,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              10,
+              19,
+              54,
+              59
+            ]
+          },
+          {
+            "index": 5,
+            "rect": [
+              320,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              7,
+              18,
+              58,
+              59
+            ]
+          },
+          {
+            "index": 6,
+            "rect": [
+              384,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 100,
+            "bbox_local": [
+              6,
+              18,
+              59,
+              59
+            ]
+          },
+          {
+            "index": 7,
+            "rect": [
+              448,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": null
+          }
+        ]
+      },
+      "mark": {
+        "path": "Art/fx/status_slow_mark.png",
+        "size": [
+          64,
+          64
+        ],
+        "sha256": "0bbd0f82009fd819a560cd1d39396428afd2474a4150974894a57e02a93cb421",
+        "bbox_local": [
+          24,
+          39,
+          41,
+          58
+        ],
+        "placement": "at target foot or dedicated status indicator",
+        "status_lifetime_driven": true
+      }
+    },
+    {
+      "key": "wound",
+      "label_ja": "負傷",
+      "engine_mapping_at_source_commit": "PlayerStatus.wound",
+      "legacy_unity_display_alias": null,
+      "target_kind": "card",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L1446",
+      "motif": "札表面の赤い裂け",
+      "anchor_px": [
+        32,
+        32
+      ],
+      "anchor_meaning": "card center",
+      "destination_clip": "actual card face, below text",
+      "application": {
+        "path": "Art/fx/status_wound_8f.png",
+        "size": [
+          512,
+          64
+        ],
+        "sha256": "3b15a58ade33beb9507a1b431a0d420c2145759533e1db7e9dcb6662c536d6ea",
+        "frame_durations_ms": [
+          65,
+          65,
+          70,
+          80,
+          85,
+          85,
+          100,
+          70
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "rect": [
+              0,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              37,
+              8,
+              46,
+              16
+            ]
+          },
+          {
+            "index": 1,
+            "rect": [
+              64,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              13,
+              8,
+              51,
+              54
+            ]
+          },
+          {
+            "index": 2,
+            "rect": [
+              128,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": [
+              13,
+              8,
+              51,
+              54
+            ]
+          },
+          {
+            "index": 3,
+            "rect": [
+              192,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 80,
+            "bbox_local": [
+              13,
+              8,
+              51,
+              54
+            ]
+          },
+          {
+            "index": 4,
+            "rect": [
+              256,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              13,
+              8,
+              51,
+              56
+            ]
+          },
+          {
+            "index": 5,
+            "rect": [
+              320,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              13,
+              8,
+              53,
+              56
+            ]
+          },
+          {
+            "index": 6,
+            "rect": [
+              384,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 100,
+            "bbox_local": [
+              16,
+              8,
+              49,
+              56
+            ]
+          },
+          {
+            "index": 7,
+            "rect": [
+              448,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": null
+          }
+        ]
+      },
+      "mark": {
+        "path": "Art/fx/status_wound_mark.png",
+        "size": [
+          64,
+          64
+        ],
+        "sha256": "52d48292a41daa6f1884f4be613cdbe2fb04e69705edc7056ac4b1c2743ed5a3",
+        "bbox_local": [
+          23,
+          17,
+          43,
+          50
+        ],
+        "placement": "on target card",
+        "status_lifetime_driven": true
+      }
+    },
+    {
+      "key": "scald",
+      "label_ja": "火傷",
+      "engine_mapping_at_source_commit": "PlayerStatus.scald",
+      "legacy_unity_display_alias": null,
+      "target_kind": "card",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L1447",
+      "motif": "札の下辺の焦げと小さい炎。burnとは別",
+      "anchor_px": [
+        32,
+        32
+      ],
+      "anchor_meaning": "card center",
+      "destination_clip": "actual card face, below text",
+      "application": {
+        "path": "Art/fx/status_scald_8f.png",
+        "size": [
+          512,
+          64
+        ],
+        "sha256": "f9f0652ae417e7ec30e59c6d2ce7480a40de9a2957baff09fa648db7ee808e48",
+        "frame_durations_ms": [
+          65,
+          65,
+          70,
+          80,
+          85,
+          85,
+          100,
+          70
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "rect": [
+              0,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              13,
+              10,
+              51,
+              55
+            ]
+          },
+          {
+            "index": 1,
+            "rect": [
+              64,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              13,
+              10,
+              51,
+              55
+            ]
+          },
+          {
+            "index": 2,
+            "rect": [
+              128,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": [
+              13,
+              10,
+              53,
+              55
+            ]
+          },
+          {
+            "index": 3,
+            "rect": [
+              192,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 80,
+            "bbox_local": [
+              13,
+              10,
+              53,
+              55
+            ]
+          },
+          {
+            "index": 4,
+            "rect": [
+              256,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              13,
+              10,
+              53,
+              55
+            ]
+          },
+          {
+            "index": 5,
+            "rect": [
+              320,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              13,
+              10,
+              53,
+              55
+            ]
+          },
+          {
+            "index": 6,
+            "rect": [
+              384,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 100,
+            "bbox_local": [
+              20,
+              48,
+              44,
+              55
+            ]
+          },
+          {
+            "index": 7,
+            "rect": [
+              448,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": null
+          }
+        ]
+      },
+      "mark": {
+        "path": "Art/fx/status_scald_mark.png",
+        "size": [
+          64,
+          64
+        ],
+        "sha256": "d1bc550d1a281addcedc0e2057f57d549a42f87516977767fd12f2f073059817",
+        "bbox_local": [
+          15,
+          48,
+          50,
+          55
+        ],
+        "placement": "on target card",
+        "status_lifetime_driven": true
+      }
+    },
+    {
+      "key": "confusion",
+      "label_ja": "混乱",
+      "engine_mapping_at_source_commit": "EnemyState.confusion",
+      "legacy_unity_display_alias": "confuse",
+      "target_kind": "enemy",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L178",
+      "motif": "紫の渦とずれる軌道",
+      "anchor_px": [
+        32,
+        52
+      ],
+      "anchor_meaning": "target foot / state indicator baseline",
+      "destination_clip": null,
+      "application": {
+        "path": "Art/fx/status_confusion_8f.png",
+        "size": [
+          512,
+          64
+        ],
+        "sha256": "3913b30e43031f6e383d8e505e834790e91abe09fb894dad739510c6cb24bd14",
+        "frame_durations_ms": [
+          65,
+          65,
+          70,
+          80,
+          85,
+          85,
+          100,
+          70
+        ],
+        "frames": [
+          {
+            "index": 0,
+            "rect": [
+              0,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              10,
+              10,
+              55,
+              51
+            ]
+          },
+          {
+            "index": 1,
+            "rect": [
+              64,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 65,
+            "bbox_local": [
+              11,
+              11,
+              56,
+              50
+            ]
+          },
+          {
+            "index": 2,
+            "rect": [
+              128,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": [
+              12,
+              12,
+              57,
+              49
+            ]
+          },
+          {
+            "index": 3,
+            "rect": [
+              192,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 80,
+            "bbox_local": [
+              13,
+              13,
+              56,
+              49
+            ]
+          },
+          {
+            "index": 4,
+            "rect": [
+              256,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              12,
+              14,
+              50,
+              49
+            ]
+          },
+          {
+            "index": 5,
+            "rect": [
+              320,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 85,
+            "bbox_local": [
+              11,
+              15,
+              49,
+              50
+            ]
+          },
+          {
+            "index": 6,
+            "rect": [
+              384,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 100,
+            "bbox_local": [
+              11,
+              15,
+              49,
+              50
+            ]
+          },
+          {
+            "index": 7,
+            "rect": [
+              448,
+              0,
+              64,
+              64
+            ],
+            "duration_ms": 70,
+            "bbox_local": null
+          }
+        ]
+      },
+      "mark": {
+        "path": "Art/fx/status_confusion_mark.png",
+        "size": [
+          64,
+          64
+        ],
+        "sha256": "a058a3f767b83dbe6d4151fdf130c6e4fe81bacab713c925e1a4d31ff5b59de1",
+        "bbox_local": [
+          23,
+          42,
+          45,
+          57
+        ],
+        "placement": "at target foot or dedicated status indicator",
+        "status_lifetime_driven": true
+      }
+    }
+  ],
+  "previews": {
+    "contactsheet_native.png": "native 1x; mock card and anchor guides are preview-only",
+    "readability_2x.png": "peak 2x nearest and mark 1x on three backgrounds",
+    "status_application_preview.png": {
+      "format": "APNG",
+      "frames": 10,
+      "duration_ms": [
+        65,
+        65,
+        70,
+        80,
+        85,
+        85,
+        100,
+        70,
+        900,
+        220
+      ],
+      "total_duration_ms": 1740,
+      "scale": 3,
+      "loop": "preview only",
+      "mark_composited_from_frame": 7
+    }
+  },
+  "implementation_notes": [
+    "No game source is modified. Event hooks, target IDs, stacking and removal must be connected by the implementer.",
+    "enemy_weak is an asset alias for EnemyState.weak, not a new engine status.",
+    "wound/scald are card overlays, never enemy foot counters. Clip to the actual card face; keep text above VFX.",
+    "Published main predates the active Godot integration and the 2026-11-05 color addendum. Current runtime/token parity is unverified.",
+    "marks for multiple statuses require deliberate layout; do not pile every mark at one anchor."
+  ],
+  "palette": "palette.json",
+  "source": "source/draw_status_fx.py",
+  "verification": "qa/verification.json",
+  "visual_review": "qa/visual_review.md"
+}

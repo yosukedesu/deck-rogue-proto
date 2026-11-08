@@ -1,0 +1,2408 @@
+{
+  "bundle": "B1-status-application",
+  "verified_date": "2026-11-08",
+  "pillow_version": "13.0.0",
+  "checks_passed": 314,
+  "checks_total": 314,
+  "all_pass": true,
+  "runtime_integration_tested": false,
+  "visual_review_is_separate": "qa/visual_review.md",
+  "files": [
+    {
+      "path": "Art/fx/status_enemy_weak_8f.png",
+      "sha256": "cc03201647fe220c8ba3fe012105d5b6933b9ce853278a22217227195bcb859a",
+      "size": [
+        512,
+        64
+      ],
+      "colors": 4,
+      "nontransparent_pixels": 2184,
+      "cell_bboxes": [
+        [
+          21,
+          10,
+          44,
+          47
+        ],
+        [
+          14,
+          13,
+          51,
+          51
+        ],
+        [
+          8,
+          16,
+          57,
+          56
+        ],
+        [
+          6,
+          20,
+          59,
+          59
+        ],
+        [
+          9,
+          24,
+          56,
+          58
+        ],
+        [
+          13,
+          43,
+          52,
+          58
+        ],
+        [
+          15,
+          45,
+          50,
+          58
+        ],
+        null
+      ]
+    },
+    {
+      "path": "Art/fx/status_enemy_weak_mark.png",
+      "sha256": "5c80ed895be80e103060ac615db5f04be26862b2739a90c9299cca4956d2770c",
+      "size": [
+        64,
+        64
+      ],
+      "colors": 4,
+      "nontransparent_pixels": 116,
+      "cell_bboxes": [
+        [
+          15,
+          42,
+          50,
+          56
+        ]
+      ]
+    },
+    {
+      "path": "Art/fx/status_vulnerable_8f.png",
+      "sha256": "b8d3d11edc1b4c544ac61d2ef3d7faaf6329439543bfcab88d002b66ed80d4c3",
+      "size": [
+        512,
+        64
+      ],
+      "colors": 6,
+      "nontransparent_pixels": 1285,
+      "cell_bboxes": [
+        [
+          29,
+          9,
+          34,
+          16
+        ],
+        [
+          27,
+          9,
+          34,
+          25
+        ],
+        [
+          22,
+          9,
+          42,
+          37
+        ],
+        [
+          9,
+          9,
+          56,
+          51
+        ],
+        [
+          9,
+          9,
+          56,
+          55
+        ],
+        [
+          9,
+          9,
+          56,
+          55
+        ],
+        [
+          13,
+          9,
+          49,
+          50
+        ],
+        null
+      ]
+    },
+    {
+      "path": "Art/fx/status_vulnerable_mark.png",
+      "sha256": "54cbf7c62da358b85d4bb6c2dba9d8fda2d452be87efc5060186b29e58875d02",
+      "size": [
+        64,
+        64
+      ],
+      "colors": 3,
+      "nontransparent_pixels": 106,
+      "cell_bboxes": [
+        [
+          19,
+          38,
+          45,
+          60
+        ]
+      ]
+    },
+    {
+      "path": "Art/fx/status_frail_8f.png",
+      "sha256": "4702bf11ec0d08d58f3311c14789282c6cfccd2bcd9a036f09f9152993167f88",
+      "size": [
+        512,
+        64
+      ],
+      "colors": 7,
+      "nontransparent_pixels": 5500,
+      "cell_bboxes": [
+        [
+          17,
+          8,
+          47,
+          47
+        ],
+        [
+          17,
+          10,
+          47,
+          49
+        ],
+        [
+          17,
+          11,
+          47,
+          50
+        ],
+        [
+          13,
+          11,
+          50,
+          50
+        ],
+        [
+          12,
+          12,
+          51,
+          51
+        ],
+        [
+          11,
+          14,
+          52,
+          53
+        ],
+        [
+          10,
+          16,
+          53,
+          55
+        ],
+        null
+      ]
+    },
+    {
+      "path": "Art/fx/status_frail_mark.png",
+      "sha256": "9d9a95f5d16d3a9ef9383db42d7af9ed60be2a3ec38bf2c60929492c068ae2e1",
+      "size": [
+        64,
+        64
+      ],
+      "colors": 4,
+      "nontransparent_pixels": 245,
+      "cell_bboxes": [
+        [
+          23,
+          39,
+          42,
+          59
+        ]
+      ]
+    },
+    {
+      "path": "Art/fx/status_restrain_8f.png",
+      "sha256": "e252643947573d6f13a7c3161e244e184c952a6073e0d811ed608352f66bca35",
+      "size": [
+        512,
+        64
+      ],
+      "colors": 4,
+      "nontransparent_pixels": 2555,
+      "cell_bboxes": [
+        [
+          7,
+          28,
+          18,
+          41
+        ],
+        [
+          9,
+          16,
+          56,
+          41
+        ],
+        [
+          11,
+          17,
+          54,
+          42
+        ],
+        [
+          13,
+          18,
+          52,
+          55
+        ],
+        [
+          15,
+          20,
+          50,
+          57
+        ],
+        [
+          16,
+          22,
+          49,
+          59
+        ],
+        [
+          17,
+          24,
+          48,
+          61
+        ],
+        null
+      ]
+    },
+    {
+      "path": "Art/fx/status_restrain_mark.png",
+      "sha256": "cf5400e6160b9c8f6c79e4b2c70b3f431e4c0b569e8093ab0b9356838a6016dd",
+      "size": [
+        64,
+        64
+      ],
+      "colors": 4,
+      "nontransparent_pixels": 255,
+      "cell_bboxes": [
+        [
+          19,
+          43,
+          46,
+          60
+        ]
+      ]
+    },
+    {
+      "path": "Art/fx/status_mist_8f.png",
+      "sha256": "d7cacca27d2feaa88e9cc42e5791337888566c51c2c77c1d2f8b3c01a7f4b7e5",
+      "size": [
+        512,
+        64
+      ],
+      "colors": 6,
+      "nontransparent_pixels": 2582,
+      "cell_bboxes": [
+        [
+          20,
+          21,
+          49,
+          49
+        ],
+        [
+          18,
+          21,
+          48,
+          49
+        ],
+        [
+          12,
+          17,
+          50,
+          53
+        ],
+        [
+          11,
+          17,
+          53,
+          53
+        ],
+        [
+          12,
+          17,
+          54,
+          53
+        ],
+        [
+          16,
+          17,
+          52,
+          53
+        ],
+        [
+          20,
+          21,
+          50,
+          49
+        ],
+        null
+      ]
+    },
+    {
+      "path": "Art/fx/status_mist_mark.png",
+      "sha256": "5ed5bdad07fcd8392061df914c2c96f27aaef30f6164b480ea52153b753010da",
+      "size": [
+        64,
+        64
+      ],
+      "colors": 3,
+      "nontransparent_pixels": 148,
+      "cell_bboxes": [
+        [
+          17,
+          42,
+          48,
+          55
+        ]
+      ]
+    },
+    {
+      "path": "Art/fx/status_slow_8f.png",
+      "sha256": "b0affcf92bd1559fd7e116da64504eade470fdfaae1d30533cb572dd922efe97",
+      "size": [
+        512,
+        64
+      ],
+      "colors": 6,
+      "nontransparent_pixels": 5191,
+      "cell_bboxes": [
+        [
+          17,
+          3,
+          48,
+          37
+        ],
+        [
+          17,
+          6,
+          48,
+          40
+        ],
+        [
+          17,
+          11,
+          48,
+          45
+        ],
+        [
+          12,
+          18,
+          52,
+          59
+        ],
+        [
+          10,
+          19,
+          54,
+          59
+        ],
+        [
+          7,
+          18,
+          58,
+          59
+        ],
+        [
+          6,
+          18,
+          59,
+          59
+        ],
+        null
+      ]
+    },
+    {
+      "path": "Art/fx/status_slow_mark.png",
+      "sha256": "0bbd0f82009fd819a560cd1d39396428afd2474a4150974894a57e02a93cb421",
+      "size": [
+        64,
+        64
+      ],
+      "colors": 4,
+      "nontransparent_pixels": 192,
+      "cell_bboxes": [
+        [
+          24,
+          39,
+          41,
+          58
+        ]
+      ]
+    },
+    {
+      "path": "Art/fx/status_wound_8f.png",
+      "sha256": "3b15a58ade33beb9507a1b431a0d420c2145759533e1db7e9dcb6662c536d6ea",
+      "size": [
+        512,
+        64
+      ],
+      "colors": 5,
+      "nontransparent_pixels": 1789,
+      "cell_bboxes": [
+        [
+          37,
+          8,
+          46,
+          16
+        ],
+        [
+          13,
+          8,
+          51,
+          54
+        ],
+        [
+          13,
+          8,
+          51,
+          54
+        ],
+        [
+          13,
+          8,
+          51,
+          54
+        ],
+        [
+          13,
+          8,
+          51,
+          56
+        ],
+        [
+          13,
+          8,
+          53,
+          56
+        ],
+        [
+          16,
+          8,
+          49,
+          56
+        ],
+        null
+      ]
+    },
+    {
+      "path": "Art/fx/status_wound_mark.png",
+      "sha256": "52d48292a41daa6f1884f4be613cdbe2fb04e69705edc7056ac4b1c2743ed5a3",
+      "size": [
+        64,
+        64
+      ],
+      "colors": 3,
+      "nontransparent_pixels": 168,
+      "cell_bboxes": [
+        [
+          23,
+          17,
+          43,
+          50
+        ]
+      ]
+    },
+    {
+      "path": "Art/fx/status_scald_8f.png",
+      "sha256": "f9f0652ae417e7ec30e59c6d2ce7480a40de9a2957baff09fa648db7ee808e48",
+      "size": [
+        512,
+        64
+      ],
+      "colors": 6,
+      "nontransparent_pixels": 2518,
+      "cell_bboxes": [
+        [
+          13,
+          10,
+          51,
+          55
+        ],
+        [
+          13,
+          10,
+          51,
+          55
+        ],
+        [
+          13,
+          10,
+          53,
+          55
+        ],
+        [
+          13,
+          10,
+          53,
+          55
+        ],
+        [
+          13,
+          10,
+          53,
+          55
+        ],
+        [
+          13,
+          10,
+          53,
+          55
+        ],
+        [
+          20,
+          48,
+          44,
+          55
+        ],
+        null
+      ]
+    },
+    {
+      "path": "Art/fx/status_scald_mark.png",
+      "sha256": "d1bc550d1a281addcedc0e2057f57d549a42f87516977767fd12f2f073059817",
+      "size": [
+        64,
+        64
+      ],
+      "colors": 4,
+      "nontransparent_pixels": 179,
+      "cell_bboxes": [
+        [
+          15,
+          48,
+          50,
+          55
+        ]
+      ]
+    },
+    {
+      "path": "Art/fx/status_confusion_8f.png",
+      "sha256": "3913b30e43031f6e383d8e505e834790e91abe09fb894dad739510c6cb24bd14",
+      "size": [
+        512,
+        64
+      ],
+      "colors": 7,
+      "nontransparent_pixels": 2879,
+      "cell_bboxes": [
+        [
+          10,
+          10,
+          55,
+          51
+        ],
+        [
+          11,
+          11,
+          56,
+          50
+        ],
+        [
+          12,
+          12,
+          57,
+          49
+        ],
+        [
+          13,
+          13,
+          56,
+          49
+        ],
+        [
+          12,
+          14,
+          50,
+          49
+        ],
+        [
+          11,
+          15,
+          49,
+          50
+        ],
+        [
+          11,
+          15,
+          49,
+          50
+        ],
+        null
+      ]
+    },
+    {
+      "path": "Art/fx/status_confusion_mark.png",
+      "sha256": "a058a3f767b83dbe6d4151fdf130c6e4fe81bacab713c925e1a4d31ff5b59de1",
+      "size": [
+        64,
+        64
+      ],
+      "colors": 4,
+      "nontransparent_pixels": 194,
+      "cell_bboxes": [
+        [
+          23,
+          42,
+          45,
+          57
+        ]
+      ]
+    }
+  ],
+  "apng_durations_ms": [
+    65,
+    65,
+    70,
+    80,
+    85,
+    85,
+    100,
+    70,
+    900,
+    220
+  ],
+  "recreated_byte_identical_files": [
+    "Art/fx/status_confusion_8f.png",
+    "Art/fx/status_confusion_mark.png",
+    "Art/fx/status_enemy_weak_8f.png",
+    "Art/fx/status_enemy_weak_mark.png",
+    "Art/fx/status_frail_8f.png",
+    "Art/fx/status_frail_mark.png",
+    "Art/fx/status_mist_8f.png",
+    "Art/fx/status_mist_mark.png",
+    "Art/fx/status_restrain_8f.png",
+    "Art/fx/status_restrain_mark.png",
+    "Art/fx/status_scald_8f.png",
+    "Art/fx/status_scald_mark.png",
+    "Art/fx/status_slow_8f.png",
+    "Art/fx/status_slow_mark.png",
+    "Art/fx/status_vulnerable_8f.png",
+    "Art/fx/status_vulnerable_mark.png",
+    "Art/fx/status_wound_8f.png",
+    "Art/fx/status_wound_mark.png",
+    "manifest.json",
+    "palette.json",
+    "previews/contactsheet_native.png",
+    "previews/readability_2x.png",
+    "previews/status_application_preview.png"
+  ],
+  "checks": [
+    {
+      "check": "exactly_18_native_assets",
+      "pass": true
+    },
+    {
+      "check": "nine_target_keys",
+      "pass": true
+    },
+    {
+      "check": "eight_durations_sum_620",
+      "pass": true
+    },
+    {
+      "check": "no_loop_or_stuck_last_frame",
+      "pass": true
+    },
+    {
+      "check": "mark_handoff_at_clear_frame",
+      "pass": true
+    },
+    {
+      "check": "runtime_unverified_declared",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:target_and_anchor",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:sha256",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:palette",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        21,
+        10,
+        44,
+        47
+      ]
+    },
+    {
+      "check": "enemy_weak:frame0:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:1:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        14,
+        13,
+        51,
+        51
+      ]
+    },
+    {
+      "check": "enemy_weak:frame1:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:2:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        8,
+        16,
+        57,
+        56
+      ]
+    },
+    {
+      "check": "enemy_weak:frame2:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:3:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        6,
+        20,
+        59,
+        59
+      ]
+    },
+    {
+      "check": "enemy_weak:frame3:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:4:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        9,
+        24,
+        56,
+        58
+      ]
+    },
+    {
+      "check": "enemy_weak:frame4:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:5:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        43,
+        52,
+        58
+      ]
+    },
+    {
+      "check": "enemy_weak:frame5:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:6:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        15,
+        45,
+        50,
+        58
+      ]
+    },
+    {
+      "check": "enemy_weak:frame6:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:frame7_clear",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:frame7:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:application:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:mark:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:mark:sha256",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:mark:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:mark:palette",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:mark:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:mark:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        15,
+        42,
+        50,
+        56
+      ]
+    },
+    {
+      "check": "enemy_weak:mark:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "enemy_weak:mark_bbox",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:target_and_anchor",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:sha256",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:palette",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        29,
+        9,
+        34,
+        16
+      ]
+    },
+    {
+      "check": "vulnerable:frame0:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:1:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        27,
+        9,
+        34,
+        25
+      ]
+    },
+    {
+      "check": "vulnerable:frame1:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:2:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        22,
+        9,
+        42,
+        37
+      ]
+    },
+    {
+      "check": "vulnerable:frame2:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:3:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        9,
+        9,
+        56,
+        51
+      ]
+    },
+    {
+      "check": "vulnerable:frame3:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:4:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        9,
+        9,
+        56,
+        55
+      ]
+    },
+    {
+      "check": "vulnerable:frame4:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:5:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        9,
+        9,
+        56,
+        55
+      ]
+    },
+    {
+      "check": "vulnerable:frame5:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:6:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        9,
+        49,
+        50
+      ]
+    },
+    {
+      "check": "vulnerable:frame6:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:frame7_clear",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:frame7:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:application:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:mark:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:mark:sha256",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:mark:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:mark:palette",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:mark:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:mark:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        19,
+        38,
+        45,
+        60
+      ]
+    },
+    {
+      "check": "vulnerable:mark:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "vulnerable:mark_bbox",
+      "pass": true
+    },
+    {
+      "check": "frail:target_and_anchor",
+      "pass": true
+    },
+    {
+      "check": "frail:application:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "frail:application:sha256",
+      "pass": true
+    },
+    {
+      "check": "frail:application:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "frail:application:palette",
+      "pass": true
+    },
+    {
+      "check": "frail:application:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "frail:application:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        17,
+        8,
+        47,
+        47
+      ]
+    },
+    {
+      "check": "frail:frame0:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "frail:application:1:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        17,
+        10,
+        47,
+        49
+      ]
+    },
+    {
+      "check": "frail:frame1:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "frail:application:2:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        17,
+        11,
+        47,
+        50
+      ]
+    },
+    {
+      "check": "frail:frame2:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "frail:application:3:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        11,
+        50,
+        50
+      ]
+    },
+    {
+      "check": "frail:frame3:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "frail:application:4:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        12,
+        12,
+        51,
+        51
+      ]
+    },
+    {
+      "check": "frail:frame4:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "frail:application:5:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        11,
+        14,
+        52,
+        53
+      ]
+    },
+    {
+      "check": "frail:frame5:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "frail:application:6:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        10,
+        16,
+        53,
+        55
+      ]
+    },
+    {
+      "check": "frail:frame6:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "frail:frame7_clear",
+      "pass": true
+    },
+    {
+      "check": "frail:frame7:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "frail:application:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "frail:mark:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "frail:mark:sha256",
+      "pass": true
+    },
+    {
+      "check": "frail:mark:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "frail:mark:palette",
+      "pass": true
+    },
+    {
+      "check": "frail:mark:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "frail:mark:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        23,
+        39,
+        42,
+        59
+      ]
+    },
+    {
+      "check": "frail:mark:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "frail:mark_bbox",
+      "pass": true
+    },
+    {
+      "check": "restrain:target_and_anchor",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:sha256",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:palette",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        7,
+        28,
+        18,
+        41
+      ]
+    },
+    {
+      "check": "restrain:frame0:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:1:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        9,
+        16,
+        56,
+        41
+      ]
+    },
+    {
+      "check": "restrain:frame1:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:2:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        11,
+        17,
+        54,
+        42
+      ]
+    },
+    {
+      "check": "restrain:frame2:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:3:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        18,
+        52,
+        55
+      ]
+    },
+    {
+      "check": "restrain:frame3:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:4:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        15,
+        20,
+        50,
+        57
+      ]
+    },
+    {
+      "check": "restrain:frame4:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:5:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        16,
+        22,
+        49,
+        59
+      ]
+    },
+    {
+      "check": "restrain:frame5:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:6:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        17,
+        24,
+        48,
+        61
+      ]
+    },
+    {
+      "check": "restrain:frame6:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "restrain:frame7_clear",
+      "pass": true
+    },
+    {
+      "check": "restrain:frame7:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "restrain:application:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "restrain:mark:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "restrain:mark:sha256",
+      "pass": true
+    },
+    {
+      "check": "restrain:mark:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "restrain:mark:palette",
+      "pass": true
+    },
+    {
+      "check": "restrain:mark:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "restrain:mark:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        19,
+        43,
+        46,
+        60
+      ]
+    },
+    {
+      "check": "restrain:mark:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "restrain:mark_bbox",
+      "pass": true
+    },
+    {
+      "check": "mist:target_and_anchor",
+      "pass": true
+    },
+    {
+      "check": "mist:application:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "mist:application:sha256",
+      "pass": true
+    },
+    {
+      "check": "mist:application:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "mist:application:palette",
+      "pass": true
+    },
+    {
+      "check": "mist:application:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "mist:application:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        20,
+        21,
+        49,
+        49
+      ]
+    },
+    {
+      "check": "mist:frame0:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "mist:application:1:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        18,
+        21,
+        48,
+        49
+      ]
+    },
+    {
+      "check": "mist:frame1:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "mist:application:2:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        12,
+        17,
+        50,
+        53
+      ]
+    },
+    {
+      "check": "mist:frame2:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "mist:application:3:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        11,
+        17,
+        53,
+        53
+      ]
+    },
+    {
+      "check": "mist:frame3:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "mist:application:4:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        12,
+        17,
+        54,
+        53
+      ]
+    },
+    {
+      "check": "mist:frame4:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "mist:application:5:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        16,
+        17,
+        52,
+        53
+      ]
+    },
+    {
+      "check": "mist:frame5:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "mist:application:6:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        20,
+        21,
+        50,
+        49
+      ]
+    },
+    {
+      "check": "mist:frame6:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "mist:frame7_clear",
+      "pass": true
+    },
+    {
+      "check": "mist:frame7:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "mist:application:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "mist:mark:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "mist:mark:sha256",
+      "pass": true
+    },
+    {
+      "check": "mist:mark:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "mist:mark:palette",
+      "pass": true
+    },
+    {
+      "check": "mist:mark:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "mist:mark:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        17,
+        42,
+        48,
+        55
+      ]
+    },
+    {
+      "check": "mist:mark:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "mist:mark_bbox",
+      "pass": true
+    },
+    {
+      "check": "slow:target_and_anchor",
+      "pass": true
+    },
+    {
+      "check": "slow:application:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "slow:application:sha256",
+      "pass": true
+    },
+    {
+      "check": "slow:application:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "slow:application:palette",
+      "pass": true
+    },
+    {
+      "check": "slow:application:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "slow:application:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        17,
+        3,
+        48,
+        37
+      ]
+    },
+    {
+      "check": "slow:frame0:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "slow:application:1:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        17,
+        6,
+        48,
+        40
+      ]
+    },
+    {
+      "check": "slow:frame1:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "slow:application:2:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        17,
+        11,
+        48,
+        45
+      ]
+    },
+    {
+      "check": "slow:frame2:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "slow:application:3:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        12,
+        18,
+        52,
+        59
+      ]
+    },
+    {
+      "check": "slow:frame3:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "slow:application:4:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        10,
+        19,
+        54,
+        59
+      ]
+    },
+    {
+      "check": "slow:frame4:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "slow:application:5:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        7,
+        18,
+        58,
+        59
+      ]
+    },
+    {
+      "check": "slow:frame5:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "slow:application:6:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        6,
+        18,
+        59,
+        59
+      ]
+    },
+    {
+      "check": "slow:frame6:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "slow:frame7_clear",
+      "pass": true
+    },
+    {
+      "check": "slow:frame7:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "slow:application:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "slow:mark:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "slow:mark:sha256",
+      "pass": true
+    },
+    {
+      "check": "slow:mark:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "slow:mark:palette",
+      "pass": true
+    },
+    {
+      "check": "slow:mark:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "slow:mark:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        24,
+        39,
+        41,
+        58
+      ]
+    },
+    {
+      "check": "slow:mark:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "slow:mark_bbox",
+      "pass": true
+    },
+    {
+      "check": "wound:target_and_anchor",
+      "pass": true
+    },
+    {
+      "check": "wound:application:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "wound:application:sha256",
+      "pass": true
+    },
+    {
+      "check": "wound:application:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "wound:application:palette",
+      "pass": true
+    },
+    {
+      "check": "wound:application:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "wound:application:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        37,
+        8,
+        46,
+        16
+      ]
+    },
+    {
+      "check": "wound:frame0:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "wound:application:1:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        8,
+        51,
+        54
+      ]
+    },
+    {
+      "check": "wound:frame1:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "wound:application:2:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        8,
+        51,
+        54
+      ]
+    },
+    {
+      "check": "wound:frame2:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "wound:application:3:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        8,
+        51,
+        54
+      ]
+    },
+    {
+      "check": "wound:frame3:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "wound:application:4:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        8,
+        51,
+        56
+      ]
+    },
+    {
+      "check": "wound:frame4:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "wound:application:5:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        8,
+        53,
+        56
+      ]
+    },
+    {
+      "check": "wound:frame5:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "wound:application:6:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        16,
+        8,
+        49,
+        56
+      ]
+    },
+    {
+      "check": "wound:frame6:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "wound:frame7_clear",
+      "pass": true
+    },
+    {
+      "check": "wound:frame7:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "wound:application:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "wound:mark:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "wound:mark:sha256",
+      "pass": true
+    },
+    {
+      "check": "wound:mark:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "wound:mark:palette",
+      "pass": true
+    },
+    {
+      "check": "wound:mark:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "wound:mark:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        23,
+        17,
+        43,
+        50
+      ]
+    },
+    {
+      "check": "wound:mark:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "wound:mark_bbox",
+      "pass": true
+    },
+    {
+      "check": "scald:target_and_anchor",
+      "pass": true
+    },
+    {
+      "check": "scald:application:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "scald:application:sha256",
+      "pass": true
+    },
+    {
+      "check": "scald:application:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "scald:application:palette",
+      "pass": true
+    },
+    {
+      "check": "scald:application:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "scald:application:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        10,
+        51,
+        55
+      ]
+    },
+    {
+      "check": "scald:frame0:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "scald:application:1:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        10,
+        51,
+        55
+      ]
+    },
+    {
+      "check": "scald:frame1:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "scald:application:2:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        10,
+        53,
+        55
+      ]
+    },
+    {
+      "check": "scald:frame2:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "scald:application:3:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        10,
+        53,
+        55
+      ]
+    },
+    {
+      "check": "scald:frame3:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "scald:application:4:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        10,
+        53,
+        55
+      ]
+    },
+    {
+      "check": "scald:frame4:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "scald:application:5:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        10,
+        53,
+        55
+      ]
+    },
+    {
+      "check": "scald:frame5:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "scald:application:6:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        20,
+        48,
+        44,
+        55
+      ]
+    },
+    {
+      "check": "scald:frame6:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "scald:frame7_clear",
+      "pass": true
+    },
+    {
+      "check": "scald:frame7:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "scald:application:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "scald:mark:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "scald:mark:sha256",
+      "pass": true
+    },
+    {
+      "check": "scald:mark:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "scald:mark:palette",
+      "pass": true
+    },
+    {
+      "check": "scald:mark:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "scald:mark:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        15,
+        48,
+        50,
+        55
+      ]
+    },
+    {
+      "check": "scald:mark:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "scald:mark_bbox",
+      "pass": true
+    },
+    {
+      "check": "confusion:target_and_anchor",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:sha256",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:palette",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        10,
+        10,
+        55,
+        51
+      ]
+    },
+    {
+      "check": "confusion:frame0:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:1:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        11,
+        11,
+        56,
+        50
+      ]
+    },
+    {
+      "check": "confusion:frame1:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:2:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        12,
+        12,
+        57,
+        49
+      ]
+    },
+    {
+      "check": "confusion:frame2:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:3:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        13,
+        13,
+        56,
+        49
+      ]
+    },
+    {
+      "check": "confusion:frame3:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:4:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        12,
+        14,
+        50,
+        49
+      ]
+    },
+    {
+      "check": "confusion:frame4:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:5:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        11,
+        15,
+        49,
+        50
+      ]
+    },
+    {
+      "check": "confusion:frame5:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:6:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        11,
+        15,
+        49,
+        50
+      ]
+    },
+    {
+      "check": "confusion:frame6:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "confusion:frame7_clear",
+      "pass": true
+    },
+    {
+      "check": "confusion:frame7:manifest_rect_duration_bbox",
+      "pass": true
+    },
+    {
+      "check": "confusion:application:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "confusion:mark:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "confusion:mark:sha256",
+      "pass": true
+    },
+    {
+      "check": "confusion:mark:alpha_binary_with_transparency",
+      "pass": true
+    },
+    {
+      "check": "confusion:mark:palette",
+      "pass": true
+    },
+    {
+      "check": "confusion:mark:transparent_RGB_zero",
+      "pass": true
+    },
+    {
+      "check": "confusion:mark:0:nonempty_safe_margin",
+      "pass": true,
+      "details": [
+        23,
+        42,
+        45,
+        57
+      ]
+    },
+    {
+      "check": "confusion:mark:no_duplicate_cells",
+      "pass": true
+    },
+    {
+      "check": "confusion:mark_bbox",
+      "pass": true
+    },
+    {
+      "check": "all_18_assets_unique",
+      "pass": true
+    },
+    {
+      "check": "APNG_10_full_frames",
+      "pass": true
+    },
+    {
+      "check": "APNG_timing",
+      "pass": true,
+      "details": [
+        65,
+        65,
+        70,
+        80,
+        85,
+        85,
+        100,
+        70,
+        900,
+        220
+      ]
+    },
+    {
+      "check": "APNG_frames_distinct",
+      "pass": true
+    },
+    {
+      "check": "APNG_preview_loop_only",
+      "pass": true
+    },
+    {
+      "check": "README_native_and_runtime_limitations",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_confusion_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_confusion_mark.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_enemy_weak_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_enemy_weak_mark.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_frail_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_frail_mark.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_mist_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_mist_mark.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_restrain_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_restrain_mark.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_scald_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_scald_mark.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_slow_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_slow_mark.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_vulnerable_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_vulnerable_mark.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_wound_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/status_wound_mark.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:manifest.json",
+      "pass": true
+    },
+    {
+      "check": "reproduce:palette.json",
+      "pass": true
+    },
+    {
+      "check": "reproduce:previews/contactsheet_native.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:previews/readability_2x.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:previews/status_application_preview.png",
+      "pass": true
+    }
+  ]
+}
