@@ -1,0 +1,15 @@
+{
+  "reference_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "read_only": true,
+  "sources": [
+    {"path": "docs/dot-asset-backlog-2026-11-02.md", "section": "B3", "finding": "Four trap states, 8-frame PNGs; no per-frame dimension specified"},
+    {"path": "src/engine/types.ts", "lines": [662,665,802,820], "finding": "CardSet / ReactionTriggered / SetCardExpired / SetCardDestroyed event definitions"},
+    {"path": "src/engine/combat.ts", "lines": [2424,2488], "finding": "Expiry destinations differ; onSetDestroyed may run on expiry; CardExhausted can follow"},
+    {"path": "unity/Assets/Game/Presenter.cs", "lines": [1282,1368], "finding": "Trigger hop 140 ms and flight 300 ms; expiry flight 550 ms; destroy pose 300 ms; retain impact/SE"},
+    {"path": "unity/Assets/Game/Presenter.cs", "lines": [2011,2022], "finding": "Resolve set-slot position using pre-event board; cardId is definition, not instance"},
+    {"path": "unity/Assets/Game/BattleScreen.cs", "lines": [3467,3533], "finding": "setslotN token 68x74, illustration 64x38 and status band"},
+    {"path": "unity/Assets/Game/BattleView.cs", "lines": [1811,1811], "finding": "CardSet animation flies hand to slot in 300 ms and owns sound"}
+  ],
+  "later_local_code_verified": false,
+  "runtime_integration_tested": false
+}

@@ -1,0 +1,1627 @@
+{
+  "bundle": "B3-traps",
+  "verified_date": "2026-11-08",
+  "pillow_version": "13.0.0",
+  "all_pass": true,
+  "checks_passed": 350,
+  "checks_total": 350,
+  "runtime_integration_tested": false,
+  "files": [
+    {
+      "path": "Art/fx/trap_place_8f.png",
+      "sha256": "80021270a0251f2f696fd26764fab3c15b8ec81d4274c67ac09bf17247e721b3",
+      "size_px": [
+        512,
+        64
+      ]
+    },
+    {
+      "path": "Art/fx/trap_trigger_8f.png",
+      "sha256": "41518b7900cd3499ae45d32b6bba67439248d0655f9e359aee0a1440326497fc",
+      "size_px": [
+        512,
+        64
+      ]
+    },
+    {
+      "path": "Art/fx/trap_expire_8f.png",
+      "sha256": "4a7e09cce41dbca38399f2a5aedf16e78c600baa4f4ec1aaeee549bbdb8d6b08",
+      "size_px": [
+        512,
+        64
+      ]
+    },
+    {
+      "path": "Art/fx/trap_destroy_8f.png",
+      "sha256": "f1010aaf099d4464cf2b6cc0cd491bd6e2a348481243d982fdc37f36eb7f87cb",
+      "size_px": [
+        512,
+        64
+      ]
+    }
+  ],
+  "apng_frame_count": 40,
+  "apng_total_duration_ms": 6565,
+  "recreated_byte_identical_files": [
+    "Art/fx/trap_destroy_8f.png",
+    "Art/fx/trap_expire_8f.png",
+    "Art/fx/trap_place_8f.png",
+    "Art/fx/trap_trigger_8f.png",
+    "manifest.json",
+    "previews/playback_timing.json",
+    "previews/traps_contactsheet.png",
+    "previews/traps_native.png",
+    "previews/traps_playback.png"
+  ],
+  "checks": [
+    {
+      "check": "four_expected_sheets",
+      "pass": true
+    },
+    {
+      "check": "native_grid_settings",
+      "pass": true
+    },
+    {
+      "check": "no_baked_proxy",
+      "pass": true
+    },
+    {
+      "check": "runtime_not_tested",
+      "pass": true
+    },
+    {
+      "check": "place:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "place:hash",
+      "pass": true
+    },
+    {
+      "check": "place:palette",
+      "pass": true
+    },
+    {
+      "check": "place:binary_alpha",
+      "pass": true
+    },
+    {
+      "check": "place:transparent_rgb_zero",
+      "pass": true
+    },
+    {
+      "check": "place:0:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "place:0:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        4,
+        15,
+        59,
+        50
+      ]
+    },
+    {
+      "check": "place:0:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "place:1:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "place:1:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        7,
+        17,
+        58,
+        49
+      ]
+    },
+    {
+      "check": "place:1:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "place:2:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "place:2:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        12,
+        17,
+        55,
+        47
+      ]
+    },
+    {
+      "check": "place:2:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "place:3:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "place:3:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        14,
+        17,
+        53,
+        46
+      ]
+    },
+    {
+      "check": "place:3:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "place:4:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "place:4:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        16,
+        20,
+        50,
+        45
+      ]
+    },
+    {
+      "check": "place:4:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "place:5:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "place:5:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        11,
+        20,
+        56,
+        49
+      ]
+    },
+    {
+      "check": "place:5:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "place:6:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "place:6:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        10,
+        10,
+        57,
+        47
+      ]
+    },
+    {
+      "check": "place:6:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "place:7:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "place:7:four_pixel_margin_or_clear",
+      "pass": true
+    },
+    {
+      "check": "place:7:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "place:eight_distinct_frames",
+      "pass": true
+    },
+    {
+      "check": "place:timing_single_shot_clear",
+      "pass": true
+    },
+    {
+      "check": "place:fixed_center",
+      "pass": true
+    },
+    {
+      "check": "trigger:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "trigger:hash",
+      "pass": true
+    },
+    {
+      "check": "trigger:palette",
+      "pass": true
+    },
+    {
+      "check": "trigger:binary_alpha",
+      "pass": true
+    },
+    {
+      "check": "trigger:transparent_rgb_zero",
+      "pass": true
+    },
+    {
+      "check": "trigger:0:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "trigger:0:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        16,
+        20,
+        50,
+        45
+      ]
+    },
+    {
+      "check": "trigger:0:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "trigger:1:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "trigger:1:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        15,
+        12,
+        50,
+        53
+      ]
+    },
+    {
+      "check": "trigger:1:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "trigger:2:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "trigger:2:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        13,
+        10,
+        54,
+        55
+      ]
+    },
+    {
+      "check": "trigger:2:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "trigger:3:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "trigger:3:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        9,
+        7,
+        58,
+        57
+      ]
+    },
+    {
+      "check": "trigger:3:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "trigger:4:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "trigger:4:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        8,
+        6,
+        58,
+        58
+      ]
+    },
+    {
+      "check": "trigger:4:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "trigger:5:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "trigger:5:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        6,
+        10,
+        59,
+        55
+      ]
+    },
+    {
+      "check": "trigger:5:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "trigger:6:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "trigger:6:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        5,
+        12,
+        60,
+        53
+      ]
+    },
+    {
+      "check": "trigger:6:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "trigger:7:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "trigger:7:four_pixel_margin_or_clear",
+      "pass": true
+    },
+    {
+      "check": "trigger:7:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "trigger:eight_distinct_frames",
+      "pass": true
+    },
+    {
+      "check": "trigger:timing_single_shot_clear",
+      "pass": true
+    },
+    {
+      "check": "trigger:fixed_center",
+      "pass": true
+    },
+    {
+      "check": "expire:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "expire:hash",
+      "pass": true
+    },
+    {
+      "check": "expire:palette",
+      "pass": true
+    },
+    {
+      "check": "expire:binary_alpha",
+      "pass": true
+    },
+    {
+      "check": "expire:transparent_rgb_zero",
+      "pass": true
+    },
+    {
+      "check": "expire:0:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "expire:0:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        16,
+        20,
+        50,
+        45
+      ]
+    },
+    {
+      "check": "expire:0:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "expire:1:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "expire:1:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        14,
+        20,
+        52,
+        46
+      ]
+    },
+    {
+      "check": "expire:1:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "expire:2:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "expire:2:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        11,
+        19,
+        53,
+        50
+      ]
+    },
+    {
+      "check": "expire:2:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "expire:3:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "expire:3:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        9,
+        17,
+        53,
+        53
+      ]
+    },
+    {
+      "check": "expire:3:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "expire:4:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "expire:4:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        10,
+        20,
+        43,
+        56
+      ]
+    },
+    {
+      "check": "expire:4:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "expire:5:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "expire:5:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        9,
+        22,
+        45,
+        58
+      ]
+    },
+    {
+      "check": "expire:5:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "expire:6:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "expire:6:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        24,
+        29,
+        47,
+        60
+      ]
+    },
+    {
+      "check": "expire:6:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "expire:7:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "expire:7:four_pixel_margin_or_clear",
+      "pass": true
+    },
+    {
+      "check": "expire:7:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "expire:eight_distinct_frames",
+      "pass": true
+    },
+    {
+      "check": "expire:timing_single_shot_clear",
+      "pass": true
+    },
+    {
+      "check": "expire:fixed_center",
+      "pass": true
+    },
+    {
+      "check": "destroy:PNG_RGBA_size",
+      "pass": true
+    },
+    {
+      "check": "destroy:hash",
+      "pass": true
+    },
+    {
+      "check": "destroy:palette",
+      "pass": true
+    },
+    {
+      "check": "destroy:binary_alpha",
+      "pass": true
+    },
+    {
+      "check": "destroy:transparent_rgb_zero",
+      "pass": true
+    },
+    {
+      "check": "destroy:0:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "destroy:0:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        16,
+        19,
+        50,
+        48
+      ]
+    },
+    {
+      "check": "destroy:0:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "destroy:1:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "destroy:1:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        14,
+        18,
+        52,
+        46
+      ]
+    },
+    {
+      "check": "destroy:1:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "destroy:2:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "destroy:2:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        12,
+        15,
+        54,
+        50
+      ]
+    },
+    {
+      "check": "destroy:2:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "destroy:3:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "destroy:3:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        10,
+        11,
+        56,
+        54
+      ]
+    },
+    {
+      "check": "destroy:3:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "destroy:4:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "destroy:4:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        8,
+        8,
+        58,
+        58
+      ]
+    },
+    {
+      "check": "destroy:4:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "destroy:5:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "destroy:5:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        6,
+        10,
+        60,
+        51
+      ]
+    },
+    {
+      "check": "destroy:5:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "destroy:6:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "destroy:6:four_pixel_margin_or_clear",
+      "pass": true,
+      "detail": [
+        4,
+        9,
+        58,
+        51
+      ]
+    },
+    {
+      "check": "destroy:6:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "destroy:7:rect_bbox_time",
+      "pass": true
+    },
+    {
+      "check": "destroy:7:four_pixel_margin_or_clear",
+      "pass": true
+    },
+    {
+      "check": "destroy:7:not_blank_until_clear",
+      "pass": true
+    },
+    {
+      "check": "destroy:eight_distinct_frames",
+      "pass": true
+    },
+    {
+      "check": "destroy:timing_single_shot_clear",
+      "pass": true
+    },
+    {
+      "check": "destroy:fixed_center",
+      "pass": true
+    },
+    {
+      "check": "four_correct_event_types",
+      "pass": true
+    },
+    {
+      "check": "expiry_not_forced_exhaust",
+      "pass": true
+    },
+    {
+      "check": "exclude_whiff_hold_extend",
+      "pass": true
+    },
+    {
+      "check": "no_extra_sound",
+      "pass": true
+    },
+    {
+      "check": "APNG:40_frames",
+      "pass": true
+    },
+    {
+      "check": "APNG:preview_loop",
+      "pass": true
+    },
+    {
+      "check": "APNG:0:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:0:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:0:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:0:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:0:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:1:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:1:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:1:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:1:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:1:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:2:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:2:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:2:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:2:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:2:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:3:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:3:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:3:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:3:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:3:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:4:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:4:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:4:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:4:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:4:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:5:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:5:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:5:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:5:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:5:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:6:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:6:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:6:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:6:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:6:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:7:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:7:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:7:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:7:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:7:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:8:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:8:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:8:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:8:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:8:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:9:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:9:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:9:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:9:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:9:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:10:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:10:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:10:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:10:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:10:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:11:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:11:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:11:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:11:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:11:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:12:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:12:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:12:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:12:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:12:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:13:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:13:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:13:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:13:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:13:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:14:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:14:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:14:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:14:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:14:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:15:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:15:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:15:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:15:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:15:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:16:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:16:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:16:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:16:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:16:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:17:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:17:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:17:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:17:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:17:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:18:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:18:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:18:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:18:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:18:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:19:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:19:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:19:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:19:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:19:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:20:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:20:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:20:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:20:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:20:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:21:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:21:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:21:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:21:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:21:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:22:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:22:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:22:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:22:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:22:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:23:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:23:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:23:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:23:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:23:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:24:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:24:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:24:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:24:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:24:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:25:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:25:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:25:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:25:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:25:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:26:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:26:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:26:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:26:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:26:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:27:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:27:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:27:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:27:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:27:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:28:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:28:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:28:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:28:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:28:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:29:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:29:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:29:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:29:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:29:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:30:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:30:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:30:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:30:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:30:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:31:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:31:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:31:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:31:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:31:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:32:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:32:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:32:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:32:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:32:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:33:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:33:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:33:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:33:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:33:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:34:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:34:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:34:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:34:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:34:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:35:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:35:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:35:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:35:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:35:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:36:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:36:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:36:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:36:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:36:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:37:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:37:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:37:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:37:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:37:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:38:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:38:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:38:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:38:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:38:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:39:duration",
+      "pass": true
+    },
+    {
+      "check": "APNG:39:place:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:39:trigger:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:39:expire:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:39:destroy:decoded_pixels",
+      "pass": true
+    },
+    {
+      "check": "APNG:durations_total",
+      "pass": true,
+      "detail": 6565
+    },
+    {
+      "check": "APNG:no_short_frames",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/trap_destroy_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/trap_expire_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/trap_place_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:Art/fx/trap_trigger_8f.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:manifest.json",
+      "pass": true
+    },
+    {
+      "check": "reproduce:previews/playback_timing.json",
+      "pass": true
+    },
+    {
+      "check": "reproduce:previews/traps_contactsheet.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:previews/traps_native.png",
+      "pass": true
+    },
+    {
+      "check": "reproduce:previews/traps_playback.png",
+      "pass": true
+    },
+    {
+      "check": "README:limitations",
+      "pass": true
+    }
+  ]
+}
