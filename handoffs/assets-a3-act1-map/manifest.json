@@ -1,0 +1,291 @@
+{
+  "schemaVersion": 1,
+  "bundleId": "assets-a3-act1-map",
+  "row": "A3",
+  "created": "2026-11-08",
+  "branch": "codex/assets-a3-20261108",
+  "baseCommit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "status": "asset_review_ready",
+  "readyForImport": true,
+  "imported": false,
+  "runtimeVerified": false,
+  "workflow": "native_pixel_drawing",
+  "theme": "夜硝子と真鍮 / night glass and aged brass",
+  "lightDirection": "upper-left",
+  "assets": [
+    {
+      "id": "map_gate_act1",
+      "labelJa": "出発点：坑口の門",
+      "file": "png/map_gate_act1.png",
+      "intendedResourcePath": "Art/map/map_gate_act1.png",
+      "kind": "landmark",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary at bottom-center of ground, origin top-left",
+      "encounterId": null,
+      "usage": "act1_start",
+      "sha256": "2e7b1f20903ef3e05312e8a33f8ada93cff4f93a10648eaaa5d7448a1610d110"
+    },
+    {
+      "id": "map_boss_enemy_brute",
+      "labelJa": "脳筋オーガの巣",
+      "file": "png/map_boss_enemy_brute.png",
+      "intendedResourcePath": "Art/map/map_boss_enemy_brute.png",
+      "kind": "landmark",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary at bottom-center of ground, origin top-left",
+      "encounterId": "enemy_brute",
+      "usage": "act1_destination",
+      "sha256": "1ab482b0d86caa92b39a5e2bb992249132d4540ac5b870847ab3628514e2a083"
+    },
+    {
+      "id": "map_boss_enc_kin_ritual",
+      "labelJa": "血族の儀式場",
+      "file": "png/map_boss_enc_kin_ritual.png",
+      "intendedResourcePath": "Art/map/map_boss_enc_kin_ritual.png",
+      "kind": "landmark",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary at bottom-center of ground, origin top-left",
+      "encounterId": "enc_kin_ritual",
+      "usage": "act1_destination",
+      "sha256": "9a89e462b2b930f75b3315a2b94455f6f231aaf02ddcaadf8468779ad7ae4b25"
+    },
+    {
+      "id": "map_boss_enemy_haze_stag",
+      "labelJa": "朧の大鹿の林",
+      "file": "png/map_boss_enemy_haze_stag.png",
+      "intendedResourcePath": "Art/map/map_boss_enemy_haze_stag.png",
+      "kind": "landmark",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        48,
+        92
+      ],
+      "anchorConvention": "pixel boundary at bottom-center of ground, origin top-left",
+      "encounterId": "enemy_haze_stag",
+      "usage": "act1_destination",
+      "sha256": "5fdd047c59f2d69bd545b9fd68791062c3da96ae241922470c5e7f5919296179"
+    },
+    {
+      "id": "node_battle",
+      "labelJa": "通常戦闘",
+      "file": "png/node_battle.png",
+      "intendedResourcePath": "Art/map/node_battle.png",
+      "kind": "node",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "usage": "battle",
+      "sha256": "2500f0b4935cfcd2c0420244073850e0c50d124ce29693203604c0db5cc559a1"
+    },
+    {
+      "id": "node_elite",
+      "labelJa": "強敵",
+      "file": "png/node_elite.png",
+      "intendedResourcePath": "Art/map/node_elite.png",
+      "kind": "node",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "usage": "elite",
+      "sha256": "69583184db25f6bcd310eed3e6d264cb5f70172370b761afc9a5b48a4a5bf539"
+    },
+    {
+      "id": "node_unknown",
+      "labelJa": "未知の出来事",
+      "file": "png/node_unknown.png",
+      "intendedResourcePath": "Art/map/node_unknown.png",
+      "kind": "node",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "usage": "unknown",
+      "sha256": "e9065383d50ed92fc0d896e99ca697b74ed383bf42d52a59fa261a4bc4f263be"
+    },
+    {
+      "id": "node_campfire",
+      "labelJa": "焚き火",
+      "file": "png/node_campfire.png",
+      "intendedResourcePath": "Art/map/node_campfire.png",
+      "kind": "node",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "usage": "campfire",
+      "sha256": "6e56f0c6a631cf686e3a7a234f77d335be0010c19e885f8926c9f20321d7da75"
+    },
+    {
+      "id": "node_shop",
+      "labelJa": "商店",
+      "file": "png/node_shop.png",
+      "intendedResourcePath": "Art/map/node_shop.png",
+      "kind": "node",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "usage": "shop",
+      "sha256": "e6956f1a4a349228c9a12d7defee9cfa1e6a24265161f99ebf1c3276ca475c04"
+    },
+    {
+      "id": "node_workshop",
+      "labelJa": "工房",
+      "file": "png/node_workshop.png",
+      "intendedResourcePath": "Art/map/node_workshop.png",
+      "kind": "node",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "usage": "workshop",
+      "sha256": "60d62e9d40e9c4b08bcf67c231462951425243eac1fa7ea7fd596140c85e7cba"
+    },
+    {
+      "id": "node_treasure",
+      "labelJa": "宝箱",
+      "file": "png/node_treasure.png",
+      "intendedResourcePath": "Art/map/node_treasure.png",
+      "kind": "node",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "usage": "treasure",
+      "sha256": "baaca8fcbb570d3498468559dc78b453b8acd06a809aa33a58ac81e6a8f900ae"
+    },
+    {
+      "id": "node_boss",
+      "labelJa": "ボス節",
+      "file": "png/node_boss.png",
+      "intendedResourcePath": "Art/map/node_boss.png",
+      "kind": "node",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "transparent": true,
+      "alphaMode": "binary",
+      "filterMode": "nearest",
+      "anchorPixels": [
+        24,
+        24
+      ],
+      "anchorConvention": "canvas center, origin top-left",
+      "usage": "boss",
+      "sha256": "3439d36bb91ee2b330ad5f064101b434ea9414c4f84a958500d4cac831a463de"
+    }
+  ],
+  "integrationNotes": [
+    "The currently visible main shows map_mine_gate at the destination and map_cart at the start. These new files implement the requested opposite semantic: map_gate_act1 is the start, three map_boss files are destinations. Do not blindly rename-replace the existing images.",
+    "The ritual destination uses encounter id enc_kin_ritual; it is not an individual enemy id.",
+    "Preserve native alpha and point/nearest sampling. Node sprites grow from 32x32 to 48x48; choose layout size explicitly rather than blindly inheriting pixels-per-unit.",
+    "Anchor coordinates are placement recommendations, not validated engine importer offsets."
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "method": "All final pixels directly authored at output resolution; reference PNGs viewed, not copied or resized into outputs.",
+  "references": [
+    {
+      "file": "references/enemy_brute.png",
+      "sourceRepositoryPath": "Art/enemies/enemy_brute.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "90baf3b247266b5e3b31ce42c5ddaba83d9e0f0ea29be0a9b354b0e832b0e645"
+    },
+    {
+      "file": "references/enemy_haze_stag.png",
+      "sourceRepositoryPath": "Art/enemies/enemy_haze_stag.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "52655f8d8d4ba1bae4f020457bf3fc5d474eb34d9bba4882037b2cb0adea56ec"
+    },
+    {
+      "file": "references/enemy_kin_follower.png",
+      "sourceRepositoryPath": "Art/enemies/enemy_kin_follower.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "6936ac2c3f4a2e03dc354ef568365c0f0403aff13235f133b2b9113a1187358f"
+    },
+    {
+      "file": "references/enemy_kin_priest.png",
+      "sourceRepositoryPath": "Art/enemies/enemy_kin_priest.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "de93d3f5a02d5f29f723cf7c2f65b83591eace586187f0aaf1d0834666a37b7b"
+    },
+    {
+      "file": "references/map_cart.png",
+      "sourceRepositoryPath": "Art/map/map_cart.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "5e9eb3ead083a0d9314e5ad2f0833182ed54069ed4f808e0b905e072906d0aaa"
+    },
+    {
+      "file": "references/map_mine_gate.png",
+      "sourceRepositoryPath": "Art/map/map_mine_gate.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "eeeebe67cfbe388dfadfc05a57a6cc7d8af436fa4c35b500f6fb5557ab2b2bd0"
+    },
+    {
+      "file": "references/node_battle.png",
+      "sourceRepositoryPath": "Art/map/node_battle.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "b450cba4972f78a821edb14f07270ffc71bb85fde0c8da2b441b2d9a75ea88d4"
+    },
+    {
+      "file": "references/node_boss.png",
+      "sourceRepositoryPath": "Art/map/node_boss.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "6b6bb1e95bb0c3b734291aa2617c724d3d822235669fc5029fd4db885bae48a8"
+    },
+    {
+      "file": "references/node_campfire.png",
+      "sourceRepositoryPath": "Art/map/node_campfire.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "80044f59db893b072cf40fbf1bf1cdcd48cd78bb951ce9df6ccd7f20b05c7178"
+    },
+    {
+      "file": "references/node_elite.png",
+      "sourceRepositoryPath": "Art/map/node_elite.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "685e146e6d808c009c8faf79211dcfb783abbe90061f303942be2607647b72ff"
+    },
+    {
+      "file": "references/node_shop.png",
+      "sourceRepositoryPath": "Art/map/node_shop.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "7ace3d001d2b5298c4ea203b16d48a39b5e1f54fb18131f70af054a13edd46c4"
+    },
+    {
+      "file": "references/node_treasure.png",
+      "sourceRepositoryPath": "Art/map/node_treasure.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "08f6d304e987e6515eb9b7b74a721e0d581695d51d72e447b82330a7fea8847a"
+    },
+    {
+      "file": "references/node_unknown.png",
+      "sourceRepositoryPath": "Art/map/node_unknown.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "6f75bd1635ef96bb03eb99a226bf44ae62cc630a04c10c7890c33d8b664faac3"
+    },
+    {
+      "file": "references/node_workshop.png",
+      "sourceRepositoryPath": "Art/map/node_workshop.png",
+      "ref": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+      "sha256": "b4e75edfae5809080678268f7bee68598f3ba55878c607c6bbb479e1a74abf5b"
+    }
+  ],
+  "exactThemeAddendumAccessible": false
+}

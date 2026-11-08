@@ -1,0 +1,692 @@
+{
+  "status": "pass",
+  "checksPassed": 91,
+  "checksFailed": 0,
+  "method": "Original integer-coordinate drawing on 96x96/48x48 final canvas. No source raster scaling. Nearest enlargement used only for QA display.",
+  "assets": [
+    {
+      "id": "map_gate_act1",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        8,
+        12,
+        91,
+        92
+      ],
+      "marginsLTRB": [
+        8,
+        12,
+        5,
+        4
+      ],
+      "opaqueColorCount": 21,
+      "sha256": "2e7b1f20903ef3e05312e8a33f8ada93cff4f93a10648eaaa5d7448a1610d110"
+    },
+    {
+      "id": "map_boss_enemy_brute",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        8,
+        11,
+        91,
+        92
+      ],
+      "marginsLTRB": [
+        8,
+        11,
+        5,
+        4
+      ],
+      "opaqueColorCount": 20,
+      "sha256": "1ab482b0d86caa92b39a5e2bb992249132d4540ac5b870847ab3628514e2a083"
+    },
+    {
+      "id": "map_boss_enc_kin_ritual",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        8,
+        14,
+        91,
+        92
+      ],
+      "marginsLTRB": [
+        8,
+        14,
+        5,
+        4
+      ],
+      "opaqueColorCount": 24,
+      "sha256": "9a89e462b2b930f75b3315a2b94455f6f231aaf02ddcaadf8468779ad7ae4b25"
+    },
+    {
+      "id": "map_boss_enemy_haze_stag",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        4,
+        6,
+        92,
+        92
+      ],
+      "marginsLTRB": [
+        4,
+        6,
+        4,
+        4
+      ],
+      "opaqueColorCount": 20,
+      "sha256": "5fdd047c59f2d69bd545b9fd68791062c3da96ae241922470c5e7f5919296179"
+    },
+    {
+      "id": "node_battle",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        5,
+        5,
+        44,
+        44
+      ],
+      "marginsLTRB": [
+        5,
+        5,
+        4,
+        4
+      ],
+      "opaqueColorCount": 14,
+      "sha256": "2500f0b4935cfcd2c0420244073850e0c50d124ce29693203604c0db5cc559a1"
+    },
+    {
+      "id": "node_elite",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        4,
+        5,
+        45,
+        45
+      ],
+      "marginsLTRB": [
+        4,
+        5,
+        3,
+        3
+      ],
+      "opaqueColorCount": 11,
+      "sha256": "69583184db25f6bcd310eed3e6d264cb5f70172370b761afc9a5b48a4a5bf539"
+    },
+    {
+      "id": "node_unknown",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        10,
+        5,
+        40,
+        45
+      ],
+      "marginsLTRB": [
+        10,
+        5,
+        8,
+        3
+      ],
+      "opaqueColorCount": 8,
+      "sha256": "e9065383d50ed92fc0d896e99ca697b74ed383bf42d52a59fa261a4bc4f263be"
+    },
+    {
+      "id": "node_campfire",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        6,
+        4,
+        43,
+        45
+      ],
+      "marginsLTRB": [
+        6,
+        4,
+        5,
+        3
+      ],
+      "opaqueColorCount": 9,
+      "sha256": "6e56f0c6a631cf686e3a7a234f77d335be0010c19e885f8926c9f20321d7da75"
+    },
+    {
+      "id": "node_shop",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        3,
+        4,
+        45,
+        46
+      ],
+      "marginsLTRB": [
+        3,
+        4,
+        3,
+        2
+      ],
+      "opaqueColorCount": 6,
+      "sha256": "e6956f1a4a349228c9a12d7defee9cfa1e6a24265161f99ebf1c3276ca475c04"
+    },
+    {
+      "id": "node_workshop",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        5,
+        3,
+        43,
+        47
+      ],
+      "marginsLTRB": [
+        5,
+        3,
+        5,
+        1
+      ],
+      "opaqueColorCount": 11,
+      "sha256": "60d62e9d40e9c4b08bcf67c231462951425243eac1fa7ea7fd596140c85e7cba"
+    },
+    {
+      "id": "node_treasure",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        7,
+        7,
+        43,
+        44
+      ],
+      "marginsLTRB": [
+        7,
+        7,
+        5,
+        4
+      ],
+      "opaqueColorCount": 14,
+      "sha256": "baaca8fcbb570d3498468559dc78b453b8acd06a809aa33a58ac81e6a8f900ae"
+    },
+    {
+      "id": "node_boss",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "alphaBBoxExclusive": [
+        9,
+        4,
+        40,
+        46
+      ],
+      "marginsLTRB": [
+        9,
+        4,
+        8,
+        2
+      ],
+      "opaqueColorCount": 13,
+      "sha256": "3439d36bb91ee2b330ad5f064101b434ea9414c4f84a958500d4cac831a463de"
+    }
+  ],
+  "tests": [
+    {
+      "name": "exact_final_asset_count",
+      "pass": true
+    },
+    {
+      "name": "manifest_ids_match",
+      "pass": true
+    },
+    {
+      "name": "map_gate_act1_dimensions",
+      "pass": true
+    },
+    {
+      "name": "map_gate_act1_rgba",
+      "pass": true
+    },
+    {
+      "name": "map_gate_act1_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "map_gate_act1_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "map_gate_act1_common_base_boundary",
+      "pass": true
+    },
+    {
+      "name": "map_gate_act1_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "map_gate_act1_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_brute_dimensions",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_brute_rgba",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_brute_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_brute_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_brute_common_base_boundary",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_brute_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_brute_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enc_kin_ritual_dimensions",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enc_kin_ritual_rgba",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enc_kin_ritual_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enc_kin_ritual_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enc_kin_ritual_common_base_boundary",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enc_kin_ritual_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enc_kin_ritual_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_haze_stag_dimensions",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_haze_stag_rgba",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_haze_stag_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_haze_stag_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_haze_stag_common_base_boundary",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_haze_stag_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_haze_stag_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_battle_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_battle_rgba",
+      "pass": true
+    },
+    {
+      "name": "node_battle_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "node_battle_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "node_battle_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "node_battle_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_elite_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_elite_rgba",
+      "pass": true
+    },
+    {
+      "name": "node_elite_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "node_elite_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "node_elite_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "node_elite_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_unknown_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_unknown_rgba",
+      "pass": true
+    },
+    {
+      "name": "node_unknown_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "node_unknown_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "node_unknown_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "node_unknown_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_campfire_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_campfire_rgba",
+      "pass": true
+    },
+    {
+      "name": "node_campfire_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "node_campfire_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "node_campfire_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "node_campfire_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_shop_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_shop_rgba",
+      "pass": true
+    },
+    {
+      "name": "node_shop_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "node_shop_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "node_shop_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "node_shop_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_workshop_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_workshop_rgba",
+      "pass": true
+    },
+    {
+      "name": "node_workshop_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "node_workshop_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "node_workshop_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "node_workshop_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_treasure_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_treasure_rgba",
+      "pass": true
+    },
+    {
+      "name": "node_treasure_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "node_treasure_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "node_treasure_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "node_treasure_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_boss_dimensions",
+      "pass": true
+    },
+    {
+      "name": "node_boss_rgba",
+      "pass": true
+    },
+    {
+      "name": "node_boss_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "node_boss_transparent_all_edges",
+      "pass": true
+    },
+    {
+      "name": "node_boss_manifest_hash",
+      "pass": true
+    },
+    {
+      "name": "node_boss_manifest_dimensions",
+      "pass": true
+    },
+    {
+      "name": "map_gate_act1_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_brute_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enc_kin_ritual_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "map_boss_enemy_haze_stag_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "node_battle_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "node_elite_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "node_unknown_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "node_campfire_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "node_shop_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "node_workshop_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "node_treasure_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "node_boss_regeneration_bytes_match",
+      "pass": true
+    },
+    {
+      "name": "only_expected_resource_path_prefix",
+      "pass": true
+    }
+  ],
+  "runtimeStatus": "not_tested",
+  "limitations": [
+    "No integration into the current game",
+    "Published main predates user-described 2026-11-05 theme addendum; selected palette is a documented proposal, not canonical exact color constants",
+    "Simplified map-marker rendering, not a recreation of all existing scenery pixels"
+  ]
+}

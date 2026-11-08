@@ -1,0 +1,247 @@
+{
+  "method": "Direct integer-coordinate drawing on final 48x48 canvas; no source raster resampling",
+  "palette": {
+    "void": "#101a28",
+    "night": "#172438",
+    "navy": "#22364b",
+    "slate": "#334b61",
+    "blue": "#4d687d",
+    "steel": "#7b98a7",
+    "ice": "#a8c4cb",
+    "umber": "#302b2b",
+    "bronze": "#584236",
+    "brassdark": "#735538",
+    "brass": "#9b743f",
+    "gold": "#c89c55",
+    "glint": "#e5be72",
+    "copperdark": "#643f38",
+    "copper": "#995840",
+    "rust": "#bd7550",
+    "tealdark": "#17414b",
+    "teal": "#287080",
+    "aqua": "#57a5af",
+    "foam": "#9acdd0",
+    "plumdark": "#312c46",
+    "plum": "#4f405c",
+    "violet": "#74607b",
+    "emberdark": "#713943",
+    "ember": "#ad4d3c",
+    "orange": "#dd713e",
+    "flame": "#efa54e",
+    "hot": "#f5cf72",
+    "wooddark": "#332e30",
+    "wood": "#574139",
+    "woodlit": "#805744",
+    "woodglint": "#a57550"
+  },
+  "assets": [
+    {
+      "file": "node_battle.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        5,
+        5,
+        44,
+        44
+      ],
+      "marginsLTRB": [
+        5,
+        5,
+        4,
+        4
+      ],
+      "opaqueColors": 14,
+      "sha256": "2500f0b4935cfcd2c0420244073850e0c50d124ce29693203604c0db5cc559a1"
+    },
+    {
+      "file": "node_elite.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        4,
+        5,
+        45,
+        45
+      ],
+      "marginsLTRB": [
+        4,
+        5,
+        3,
+        3
+      ],
+      "opaqueColors": 11,
+      "sha256": "69583184db25f6bcd310eed3e6d264cb5f70172370b761afc9a5b48a4a5bf539"
+    },
+    {
+      "file": "node_unknown.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        10,
+        5,
+        40,
+        45
+      ],
+      "marginsLTRB": [
+        10,
+        5,
+        8,
+        3
+      ],
+      "opaqueColors": 8,
+      "sha256": "e9065383d50ed92fc0d896e99ca697b74ed383bf42d52a59fa261a4bc4f263be"
+    },
+    {
+      "file": "node_campfire.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        6,
+        4,
+        43,
+        45
+      ],
+      "marginsLTRB": [
+        6,
+        4,
+        5,
+        3
+      ],
+      "opaqueColors": 9,
+      "sha256": "6e56f0c6a631cf686e3a7a234f77d335be0010c19e885f8926c9f20321d7da75"
+    },
+    {
+      "file": "node_shop.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        3,
+        4,
+        45,
+        46
+      ],
+      "marginsLTRB": [
+        3,
+        4,
+        3,
+        2
+      ],
+      "opaqueColors": 6,
+      "sha256": "e6956f1a4a349228c9a12d7defee9cfa1e6a24265161f99ebf1c3276ca475c04"
+    },
+    {
+      "file": "node_workshop.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        5,
+        3,
+        43,
+        47
+      ],
+      "marginsLTRB": [
+        5,
+        3,
+        5,
+        1
+      ],
+      "opaqueColors": 11,
+      "sha256": "60d62e9d40e9c4b08bcf67c231462951425243eac1fa7ea7fd596140c85e7cba"
+    },
+    {
+      "file": "node_treasure.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        7,
+        7,
+        43,
+        44
+      ],
+      "marginsLTRB": [
+        7,
+        7,
+        5,
+        4
+      ],
+      "opaqueColors": 14,
+      "sha256": "baaca8fcbb570d3498468559dc78b453b8acd06a809aa33a58ac81e6a8f900ae"
+    },
+    {
+      "file": "node_boss.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "bbox": [
+        9,
+        4,
+        40,
+        46
+      ],
+      "marginsLTRB": [
+        9,
+        4,
+        8,
+        2
+      ],
+      "opaqueColors": 13,
+      "sha256": "3439d36bb91ee2b330ad5f064101b434ea9414c4f84a958500d4cac831a463de"
+    }
+  ]
+}
