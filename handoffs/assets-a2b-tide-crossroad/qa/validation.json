@@ -1,0 +1,47 @@
+{
+  "result": "pass",
+  "requested_native_dimensions": [
+    80,
+    48
+  ],
+  "actual_native_dimensions": [
+    80,
+    48
+  ],
+  "mode": "RGB",
+  "unique_colors": 39,
+  "opaque": true,
+  "native_pixel_authored": true,
+  "generation_reads_no_image": true,
+  "generation_no_resize_or_antialias": true,
+  "deterministic_rerender_sha256_matches": true,
+  "visual_review": {
+    "viewed_at_native_size": true,
+    "viewed_at_10x_nearest": true,
+    "compared_with_current_lash_ice_wall_guard": true,
+    "first_person_hands": true,
+    "offensive_water_arc": true,
+    "defensive_ice_wall": true,
+    "single_coherent_composition": true,
+    "no_text_or_card_frame": true,
+    "note": "Native hard-edged clusters are deliberately crisper than the existing softly shaded card references; palette, scale, first-person perspective and blue-vs-warm contrast are matched.",
+    "revision": 2,
+    "revision_changes": [
+      "Deepened glove shadows; finger side planes and gaps",
+      "Added small cyan-reflection and knuckle clusters",
+      "Sculpted sleeve folds",
+      "Recessed architectural openings and masonry details"
+    ],
+    "independent_review": "Practical import-ready asset after revision. Harder edges and simpler shading than references remain and are disclosed in README."
+  },
+  "reference_all_native_size_80x48": true,
+  "reference_color_counts": {
+    "references/blue_current_lash.png": 36,
+    "references/blue_guard.png": 36,
+    "references/blue_ice_wall.png": 36,
+    "references/blue_mode_tide_crossroad.png": 36,
+    "references/blue_tide_drop.png": 36
+  },
+  "placeholder_equals_tide_drop": true,
+  "scope": "Only handoffs/assets-a2b-tide-crossroad is changed; no production code or existing asset overwritten."
+}

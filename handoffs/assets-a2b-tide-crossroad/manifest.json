@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "bundle": "A2b",
+  "asset_id": "blue_mode_tide_crossroad",
+  "display_name_ja": "潮の岐路",
+  "date": "2026-11-08",
+  "branch": "codex/assets-a2b-20261108",
+  "base_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "status": "ready_for_import",
+  "ready_for_import": true,
+  "card": {
+    "cost_energy": 1,
+    "type": "spell",
+    "choice": [
+      "damage_7",
+      "ice_wall_4"
+    ]
+  },
+  "target": {
+    "path": "Art/cards/blue_mode_tide_crossroad.png",
+    "width": 80,
+    "height": 48,
+    "format": "PNG",
+    "mode": "RGB",
+    "composition": "first_person_foreground_hands",
+    "filter": "Point",
+    "mipmaps": false
+  },
+  "output": {
+    "path": "Art/cards/blue_mode_tide_crossroad.png",
+    "width": 80,
+    "height": 48,
+    "mode": "RGB",
+    "colors": 39,
+    "sha256": "af7ff3708a220d5d916eb16e4dc288eb08971df463b891803286258e49efc4c0"
+  },
+  "frames": [
+    {
+      "index": 0,
+      "file": "Art/cards/blue_mode_tide_crossroad.png"
+    }
+  ],
+  "references": [
+    {
+      "path": "references/blue_current_lash.png",
+      "width": 80,
+      "height": 48,
+      "mode": "RGB",
+      "colors": 36,
+      "sha256": "9b9d2db8c27934c981901a698b5a17aabac39ba702be2e67278a0896356882ca"
+    },
+    {
+      "path": "references/blue_guard.png",
+      "width": 80,
+      "height": 48,
+      "mode": "RGB",
+      "colors": 36,
+      "sha256": "958ef12b6e4b26034112c134dc6d4b972b68cbeb293d3182bd9ad46bb571400a"
+    },
+    {
+      "path": "references/blue_ice_wall.png",
+      "width": 80,
+      "height": 48,
+      "mode": "RGB",
+      "colors": 36,
+      "sha256": "0ed55fbd488d8435cdbb7fc96b1912ea1cc8574a306b688de88112c0e6bb7bbb"
+    },
+    {
+      "path": "references/blue_mode_tide_crossroad.png",
+      "width": 80,
+      "height": 48,
+      "mode": "RGB",
+      "colors": 36,
+      "sha256": "31ea618d1ea1be0d05d56cff043f7556dc40a1d035d702e14e179859bafb6123"
+    },
+    {
+      "path": "references/blue_tide_drop.png",
+      "width": 80,
+      "height": 48,
+      "mode": "RGB",
+      "colors": 36,
+      "sha256": "31ea618d1ea1be0d05d56cff043f7556dc40a1d035d702e14e179859bafb6123"
+    }
+  ],
+  "production": {
+    "method": "Direct authored integer-pixel shapes and individual pixel clusters at native resolution",
+    "source": "source/draw_tide_crossroad.py",
+    "canvas": [
+      80,
+      48
+    ],
+    "resized_from_large_raster": false,
+    "image_inputs_read": false,
+    "antialiasing": false,
+    "random_noise": false,
+    "color_count": 39,
+    "reproducible": true,
+    "source_sha256": "6c2263638f15e87463010cad484ba6c4a017e7aa0239e8987dab8d3e5b5609c2",
+    "user_instruction": "本物のドットをあなたが打てない？"
+  },
+  "previews": {
+    "native": "Art/cards/blue_mode_tide_crossroad.png",
+    "nearest_10x": "qa/blue_mode_tide_crossroad_10x.png",
+    "style_comparison_4x": "qa/style_comparison_4x.png"
+  },
+  "qa": "qa/validation.json",
+  "constraints": [
+    "No portraits, BGM, key visual, src/engine, src/data, or Unity code changes",
+    "No text, UI frame, or baked-in paper UI"
+  ],
+  "qa_revision": 2
+}
