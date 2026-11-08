@@ -1,0 +1,725 @@
+{
+  "result": "pass",
+  "checks_passed": 105,
+  "checks_total": 105,
+  "checks": [
+    {
+      "name": "exactly_14_pngs",
+      "pass": true
+    },
+    {
+      "name": "unique_14_ids",
+      "pass": true
+    },
+    {
+      "name": "manifest_files_match_disk",
+      "pass": true
+    },
+    {
+      "name": "atlas_size_mode",
+      "pass": true
+    },
+    {
+      "name": "weak_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "weak_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "weak_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "weak_visible",
+      "pass": true
+    },
+    {
+      "name": "weak_palette",
+      "pass": true
+    },
+    {
+      "name": "weak_sha",
+      "pass": true
+    },
+    {
+      "name": "weak_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "vulnerable_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "vulnerable_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "vulnerable_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "vulnerable_visible",
+      "pass": true
+    },
+    {
+      "name": "vulnerable_palette",
+      "pass": true
+    },
+    {
+      "name": "vulnerable_sha",
+      "pass": true
+    },
+    {
+      "name": "vulnerable_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "frail_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "frail_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "frail_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "frail_visible",
+      "pass": true
+    },
+    {
+      "name": "frail_palette",
+      "pass": true
+    },
+    {
+      "name": "frail_sha",
+      "pass": true
+    },
+    {
+      "name": "frail_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "restrain_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "restrain_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "restrain_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "restrain_visible",
+      "pass": true
+    },
+    {
+      "name": "restrain_palette",
+      "pass": true
+    },
+    {
+      "name": "restrain_sha",
+      "pass": true
+    },
+    {
+      "name": "restrain_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "mist_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "mist_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "mist_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "mist_visible",
+      "pass": true
+    },
+    {
+      "name": "mist_palette",
+      "pass": true
+    },
+    {
+      "name": "mist_sha",
+      "pass": true
+    },
+    {
+      "name": "mist_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "slow_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "slow_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "slow_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "slow_visible",
+      "pass": true
+    },
+    {
+      "name": "slow_palette",
+      "pass": true
+    },
+    {
+      "name": "slow_sha",
+      "pass": true
+    },
+    {
+      "name": "slow_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "wound_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "wound_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "wound_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "wound_visible",
+      "pass": true
+    },
+    {
+      "name": "wound_palette",
+      "pass": true
+    },
+    {
+      "name": "wound_sha",
+      "pass": true
+    },
+    {
+      "name": "wound_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "scald_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "scald_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "scald_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "scald_visible",
+      "pass": true
+    },
+    {
+      "name": "scald_palette",
+      "pass": true
+    },
+    {
+      "name": "scald_sha",
+      "pass": true
+    },
+    {
+      "name": "scald_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "confusion_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "confusion_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "confusion_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "confusion_visible",
+      "pass": true
+    },
+    {
+      "name": "confusion_palette",
+      "pass": true
+    },
+    {
+      "name": "confusion_sha",
+      "pass": true
+    },
+    {
+      "name": "confusion_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "exposed_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "exposed_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "exposed_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "exposed_visible",
+      "pass": true
+    },
+    {
+      "name": "exposed_palette",
+      "pass": true
+    },
+    {
+      "name": "exposed_sha",
+      "pass": true
+    },
+    {
+      "name": "exposed_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "enemy_weak_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "enemy_weak_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "enemy_weak_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "enemy_weak_visible",
+      "pass": true
+    },
+    {
+      "name": "enemy_weak_palette",
+      "pass": true
+    },
+    {
+      "name": "enemy_weak_sha",
+      "pass": true
+    },
+    {
+      "name": "enemy_weak_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "burn_resist_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "burn_resist_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "burn_resist_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "burn_resist_visible",
+      "pass": true
+    },
+    {
+      "name": "burn_resist_palette",
+      "pass": true
+    },
+    {
+      "name": "burn_resist_sha",
+      "pass": true
+    },
+    {
+      "name": "burn_resist_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "armor_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "armor_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "armor_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "armor_visible",
+      "pass": true
+    },
+    {
+      "name": "armor_palette",
+      "pass": true
+    },
+    {
+      "name": "armor_sha",
+      "pass": true
+    },
+    {
+      "name": "armor_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "thorns_32x32_rgba",
+      "pass": true
+    },
+    {
+      "name": "thorns_binary_alpha",
+      "pass": true
+    },
+    {
+      "name": "thorns_transparent_border",
+      "pass": true
+    },
+    {
+      "name": "thorns_visible",
+      "pass": true
+    },
+    {
+      "name": "thorns_palette",
+      "pass": true
+    },
+    {
+      "name": "thorns_sha",
+      "pass": true
+    },
+    {
+      "name": "thorns_atlas_equal",
+      "pass": true
+    },
+    {
+      "name": "all_images_unique",
+      "pass": true
+    },
+    {
+      "name": "reproduction_14_byte_exact",
+      "pass": true
+    },
+    {
+      "name": "reproduction_atlas_byte_exact",
+      "pass": true
+    }
+  ],
+  "images": [
+    {
+      "id": "weak",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 232,
+      "bbox": [
+        5,
+        5,
+        26,
+        28
+      ],
+      "visible_colors": 3,
+      "sha256": "8cc1c79dac31969fdeea0858aa95ced897dd46a9d983373c94b8151e7aadf217"
+    },
+    {
+      "id": "vulnerable",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 397,
+      "bbox": [
+        1,
+        5,
+        31,
+        29
+      ],
+      "visible_colors": 5,
+      "sha256": "1e9a094483827e70cfeb709d7e884fa59c2ffb6818733dac09c81570465b23fc"
+    },
+    {
+      "id": "frail",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 429,
+      "bbox": [
+        5,
+        3,
+        27,
+        30
+      ],
+      "visible_colors": 6,
+      "sha256": "442e3170328cdfd09699115552531d524324edacf82ea7efcaf11e369bc7228e"
+    },
+    {
+      "id": "restrain",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 349,
+      "bbox": [
+        3,
+        4,
+        30,
+        28
+      ],
+      "visible_colors": 6,
+      "sha256": "d4c541b5600273dcb9f0c021790e3ffcb470d6e38931927722c8dc862bd6b590"
+    },
+    {
+      "id": "mist",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 466,
+      "bbox": [
+        2,
+        3,
+        30,
+        29
+      ],
+      "visible_colors": 7,
+      "sha256": "34742ec29ed196e692ac5b155b93a90f05eddee22341f9c33cc8d4876ece53f2"
+    },
+    {
+      "id": "slow",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 451,
+      "bbox": [
+        4,
+        3,
+        29,
+        30
+      ],
+      "visible_colors": 7,
+      "sha256": "a510e0ebcb8fcabf96f5b88522240924a066af42cbdaf2e70f1009c2e6e3d1a8"
+    },
+    {
+      "id": "wound",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 234,
+      "bbox": [
+        3,
+        4,
+        29,
+        30
+      ],
+      "visible_colors": 3,
+      "sha256": "3017ca6df65237effad262400725016b40107d0a6bcce56f297955b4bcd39fac"
+    },
+    {
+      "id": "scald",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 295,
+      "bbox": [
+        4,
+        3,
+        28,
+        29
+      ],
+      "visible_colors": 6,
+      "sha256": "0752179c5ff5f3fdc93f73c68f66657ce0f09a700e574c5d4961d937fd88a4d9"
+    },
+    {
+      "id": "confusion",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 403,
+      "bbox": [
+        2,
+        1,
+        29,
+        30
+      ],
+      "visible_colors": 5,
+      "sha256": "2b0a96230c84615ba93846ba1973f759ea2e33ec2e3bf126eed4e5021d0545be"
+    },
+    {
+      "id": "exposed",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 176,
+      "bbox": [
+        2,
+        2,
+        30,
+        30
+      ],
+      "visible_colors": 6,
+      "sha256": "141c086c9ef4e23a2d52a393335f580d131671597d07e93677f79b09de0566fb"
+    },
+    {
+      "id": "enemy_weak",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 357,
+      "bbox": [
+        3,
+        3,
+        29,
+        31
+      ],
+      "visible_colors": 6,
+      "sha256": "1f188fd8b6f8742046088e826ce4c781ce4daa772f8a960a725652a0529e5a5b"
+    },
+    {
+      "id": "burn_resist",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 382,
+      "bbox": [
+        4,
+        4,
+        29,
+        31
+      ],
+      "visible_colors": 8,
+      "sha256": "d923befb7ba4626ec6329a416a7f751740aa476e8ffb49d3e743fdc2e39362c8"
+    },
+    {
+      "id": "armor",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 476,
+      "bbox": [
+        2,
+        4,
+        30,
+        30
+      ],
+      "visible_colors": 7,
+      "sha256": "dec40e8edb35c24ec8b6ed4da48aa08c36ca74608f0855c0a16e8fc12479ea7e"
+    },
+    {
+      "id": "thorns",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "opaque_pixels": 489,
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "visible_colors": 5,
+      "sha256": "efa9a6dcd567994a7c2efd9f643bd1a0374abecc739ba447c789f5bd069f2c16"
+    }
+  ],
+  "runtime_integration_tested": false,
+  "visual_qa": "See qa/visual_review.md; technical checks do not prove semantic recognition."
+}

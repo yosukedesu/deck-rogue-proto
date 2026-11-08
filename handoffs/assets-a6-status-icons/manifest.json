@@ -1,0 +1,482 @@
+{
+  "schema_version": 1,
+  "bundle": "A6",
+  "title": "状態異常アイコン14種 / Night glass and brass",
+  "date_utc": "2026-11-08",
+  "branch": "codex/assets-a6-20261108",
+  "repository": "yosukedesu/deck-rogue-proto",
+  "base_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "ready_for_import": true,
+  "runtime_integration_tested": false,
+  "native_pixel_art": true,
+  "authoring": "Integer-coordinate original drawing on a 32x32 canvas; no imagegen, no bitmap resampling; preview only uses nearest-neighbor enlargement.",
+  "canvas": [
+    32,
+    32
+  ],
+  "alpha": "binary 0/255; transparent border; no baked background, numbers or text",
+  "sampling": "nearest; do not trim transparent margins; preserve 32x32 canvas",
+  "atlas": {
+    "file": "status_atlas.png",
+    "size": [
+      224,
+      64
+    ],
+    "columns": 7,
+    "rows": 2,
+    "padding": 0,
+    "extrusion": 0,
+    "warning": "Prefer individual PNGs when the consumer uses filtering/mipmaps; atlas is nearest-only."
+  },
+  "theme": {
+    "name": "night glass and brass",
+    "background_for_review": "#101a2b",
+    "palette_file": "palette.json",
+    "source_warning": "The 2026-11-05 theme appendix is absent from current remote main; user instruction takes precedence. No claim of exact unseen theme color tokens."
+  },
+  "mapping_notes": [
+    "weak = player weak; enemy_weak = EnemyState.weak only; this is an asset namespace decision, not engine renaming.",
+    "confusion maps to EnemyState.confusion; old UI alias is confuse.",
+    "thorns maps to EnemyState/EnemyDef.thorns; old UI alias is counter.",
+    "scald (火傷) is the unusable hand card, not burn (延焼). burn_resist maps to EnemyDef.burnResist.",
+    "wound/scald are card/status concepts and not asserted to be persistent runtime counters.",
+    "Old Unity may render code-drawn 16px symbols rather than these PNGs; current Godot consumer has not been verified."
+  ],
+  "excluded": [
+    "junk",
+    "turnArmor",
+    "burn alone",
+    "B1 application animations"
+  ],
+  "source_backlog": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/docs/dot-asset-backlog-2026-11-02.md#L65",
+  "assets": [
+    {
+      "id": "weak",
+      "label_ja": "弱体",
+      "file": "png/status_weak.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "PlayerState.weak",
+        "PlayerStatus.weak"
+      ],
+      "old_unity_alias": "weak",
+      "meaning_ja": "与ダメージ25%減。二重下向き山形の系統を維持。",
+      "visual": "Two downward brass chevrons; reduced player attack.",
+      "atlas_rect": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        5,
+        5,
+        26,
+        28
+      ],
+      "sha256": "8cc1c79dac31969fdeea0858aa95ced897dd46a9d983373c94b8151e7aadf217",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L108-L109"
+    },
+    {
+      "id": "vulnerable",
+      "label_ja": "脆弱",
+      "file": "png/status_vulnerable.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "PlayerState.vulnerable",
+        "PlayerStatus.vulnerable"
+      ],
+      "old_unity_alias": "exposed",
+      "meaning_ja": "被ダメージ50%増。急所の的をそのまま流用せず、割れ・開口などで区別。",
+      "visual": "Split red heart with open central wound; not the enemy target icon.",
+      "atlas_rect": [
+        32,
+        0,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        1,
+        5,
+        31,
+        29
+      ],
+      "sha256": "1e9a094483827e70cfeb709d7e884fa59c2ffb6818733dac09c81570465b23fc",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L110-L111"
+    },
+    {
+      "id": "frail",
+      "label_ja": "虚弱",
+      "file": "png/status_frail.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "PlayerState.frail",
+        "PlayerStatus.frail"
+      ],
+      "old_unity_alias": "frail",
+      "meaning_ja": "カード由来ブロック25%減。ひびの入った盾。",
+      "visual": "Cracked steel shield; reduced card-derived block.",
+      "atlas_rect": [
+        64,
+        0,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        5,
+        3,
+        27,
+        30
+      ],
+      "sha256": "442e3170328cdfd09699115552531d524324edacf82ea7efcaf11e369bc7228e",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L128-L132"
+    },
+    {
+      "id": "restrain",
+      "label_ja": "拘束",
+      "file": "png/status_restrain.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "PlayerState.restrain",
+        "PlayerStatus.restrain"
+      ],
+      "old_unity_alias": null,
+      "meaning_ja": "1ターンのプレイ枚数上限3。拘束具・結び縄。",
+      "visual": "Paired iron shackles connected by brass links.",
+      "atlas_rect": [
+        96,
+        0,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        3,
+        4,
+        30,
+        28
+      ],
+      "sha256": "d4c541b5600273dcb9f0c021790e3ffcb470d6e38931927722c8dc862bd6b590",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L133-L138"
+    },
+    {
+      "id": "mist",
+      "label_ja": "霞み",
+      "file": "png/status_mist.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "PlayerState.mist",
+        "PlayerStatus.mist"
+      ],
+      "old_unity_alias": "draw",
+      "meaning_ja": "ターン開始ドロー2減。霧で隠れる札など。紙色のカード面は使わない。",
+      "visual": "Fog crossing a slate-blue card, without paper-colored fill.",
+      "atlas_rect": [
+        128,
+        0,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        2,
+        3,
+        30,
+        29
+      ],
+      "sha256": "34742ec29ed196e692ac5b155b93a90f05eddee22341f9c33cc8d4876ece53f2",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L116-L120"
+    },
+    {
+      "id": "slow",
+      "label_ja": "重り",
+      "file": "png/status_slow.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "PlayerState.slow",
+        "PlayerStatus.slow"
+      ],
+      "old_unity_alias": "exposed",
+      "meaning_ja": "プレイ枚数に応じ被ダメージ増。錘の明確なシルエット。",
+      "visual": "Heavy iron weight with a brass handle.",
+      "atlas_rect": [
+        160,
+        0,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        4,
+        3,
+        29,
+        30
+      ],
+      "sha256": "a510e0ebcb8fcabf96f5b88522240924a066af42cbdaf2e70f1009c2e6e3d1a8",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L121-L126"
+    },
+    {
+      "id": "wound",
+      "label_ja": "負傷",
+      "file": "png/status_wound.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "PlayerStatus.wound"
+      ],
+      "old_unity_alias": null,
+      "meaning_ja": "使用不可の負傷札。赤い裂け目。プレイヤーの持続カウンターではない。",
+      "visual": "Three torn crimson cuts and a small drop.",
+      "atlas_rect": [
+        192,
+        0,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        3,
+        4,
+        29,
+        30
+      ],
+      "sha256": "3017ca6df65237effad262400725016b40107d0a6bcce56f297955b4bcd39fac",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L1446-L1449"
+    },
+    {
+      "id": "scald",
+      "label_ja": "火傷",
+      "file": "png/status_scald.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "PlayerStatus.scald"
+      ],
+      "old_unity_alias": null,
+      "meaning_ja": "手札に残るとHP-2の使用不可札。焦げ跡＋火傷。延焼 burn と区別。",
+      "visual": "Charred palm with a hot blister and two steam marks, not a flame alone.",
+      "atlas_rect": [
+        0,
+        32,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        4,
+        3,
+        28,
+        29
+      ],
+      "sha256": "0752179c5ff5f3fdc93f73c68f66657ce0f09a700e574c5d4961d937fd88a4d9",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L1447"
+    },
+    {
+      "id": "confusion",
+      "label_ja": "混乱",
+      "file": "png/status_confusion.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "EnemyState.confusion"
+      ],
+      "old_unity_alias": "confuse",
+      "meaning_ja": "攻撃先が他の敵（いなければ自分）になる。渦。",
+      "visual": "Continuous violet spiral with two offset motes.",
+      "atlas_rect": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        2,
+        1,
+        29,
+        30
+      ],
+      "sha256": "2b0a96230c84615ba93846ba1973f759ea2e33ec2e3bf126eed4e5021d0545be",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L178-L179"
+    },
+    {
+      "id": "exposed",
+      "label_ja": "急所",
+      "file": "png/status_exposed.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "EnemyState.exposed"
+      ],
+      "old_unity_alias": "exposed",
+      "meaning_ja": "次に受けるプレイヤーダメージN回が50%増。的・標的。",
+      "visual": "Thin brass target with four sight marks and red center.",
+      "atlas_rect": [
+        64,
+        32,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        2,
+        2,
+        30,
+        30
+      ],
+      "sha256": "141c086c9ef4e23a2d52a393335f580d131671597d07e93677f79b09de0566fb",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L180-L181"
+    },
+    {
+      "id": "enemy_weak",
+      "label_ja": "威圧",
+      "file": "png/status_enemy_weak.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "EnemyState.weak"
+      ],
+      "old_unity_alias": "weak",
+      "meaning_ja": "次のN回の攻撃行動が与ダメージ25%減。弱体と同系列、別ファイル名は文脈衝突回避案。",
+      "visual": "Lowered horned head over two small descending chevrons.",
+      "atlas_rect": [
+        96,
+        32,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        3,
+        3,
+        29,
+        31
+      ],
+      "sha256": "1f188fd8b6f8742046088e826ce4c781ce4daa772f8a960a725652a0529e5a5b",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L202-L203"
+    },
+    {
+      "id": "burn_resist",
+      "label_ja": "延焼耐性",
+      "file": "png/status_burn_resist.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "EnemyDef.burnResist"
+      ],
+      "old_unity_alias": null,
+      "meaning_ja": "毎フェーズの延焼減衰が追加N。炎を遮る形。炎単体の流用禁止。",
+      "visual": "Flame partly covered by a closed steel shield.",
+      "atlas_rect": [
+        128,
+        32,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        4,
+        4,
+        29,
+        31
+      ],
+      "sha256": "d923befb7ba4626ec6329a416a7f751740aa476e8ffb49d3e743fdc2e39362c8",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L1592-L1593"
+    },
+    {
+      "id": "armor",
+      "label_ja": "装甲",
+      "file": "png/status_armor.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "EnemyState.armor",
+        "EnemyDef.armor"
+      ],
+      "old_unity_alias": "armor",
+      "meaning_ja": "1ヒットの被ダメ上限。胴鎧。ブロックの盾と区別。",
+      "visual": "Steel breastplate with a neck opening and shoulder plates.",
+      "atlas_rect": [
+        160,
+        32,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        2,
+        4,
+        30,
+        30
+      ],
+      "sha256": "dec40e8edb35c24ec8b6ed4da48aa08c36ca74608f0855c0a16e8fc12479ea7e",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L218-L219"
+    },
+    {
+      "id": "thorns",
+      "label_ja": "とげ",
+      "file": "png/status_thorns.png",
+      "size": [
+        32,
+        32
+      ],
+      "format": "RGBA PNG",
+      "engine_fields": [
+        "EnemyState.thorns",
+        "EnemyDef.thorns"
+      ],
+      "old_unity_alias": "counter",
+      "meaning_ja": "プレイヤーの攻撃ヒットへの反射。外向きの棘。",
+      "visual": "Coiled thorn vine with asymmetric outward spikes.",
+      "atlas_rect": [
+        192,
+        32,
+        32,
+        32
+      ],
+      "opaque_bounds": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "sha256": "efa9a6dcd567994a7c2efd9f643bd1a0374abecc739ba447c789f5bd069f2c16",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L233-L234"
+    }
+  ]
+}

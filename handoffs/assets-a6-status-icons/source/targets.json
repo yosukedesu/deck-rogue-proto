@@ -1,0 +1,170 @@
+{
+  "purpose": "read-only A6 preparation, not a delivered asset manifest",
+  "verified_source_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "source_scope_warning": "公開 origin/main は 2026-11-04 時点。2026-11-05 夜硝子と真鍮への追補はこの commit にない。最新のユーザー指示を優先。現行 Godot 側の採用名は未検証。",
+  "target_count": 14,
+  "requested_dimensions": [
+    32,
+    32
+  ],
+  "requested_pattern": "Art/icons/status_<key>.png",
+  "proposed_format": "RGBA PNG, transparent, native 32x32 raster",
+  "source_backlog": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/docs/dot-asset-backlog-2026-11-02.md#L65",
+  "targets": [
+    {
+      "asset_key": "weak",
+      "filename_proposal": "status_weak.png",
+      "label": "弱体",
+      "engine_ref": "PlayerState.weak / PlayerStatus.weak",
+      "old_unity_icon_alias": "weak",
+      "semantic_and_visual_notes": "与ダメージ25%減。二重下向き山形の系統を維持。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L108-L109"
+    },
+    {
+      "asset_key": "vulnerable",
+      "filename_proposal": "status_vulnerable.png",
+      "label": "脆弱",
+      "engine_ref": "PlayerState.vulnerable / PlayerStatus.vulnerable",
+      "old_unity_icon_alias": "exposed",
+      "semantic_and_visual_notes": "被ダメージ50%増。急所の的をそのまま流用せず、割れ・開口などで区別。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L110-L111"
+    },
+    {
+      "asset_key": "frail",
+      "filename_proposal": "status_frail.png",
+      "label": "虚弱",
+      "engine_ref": "PlayerState.frail / PlayerStatus.frail",
+      "old_unity_icon_alias": "frail",
+      "semantic_and_visual_notes": "カード由来ブロック25%減。ひびの入った盾。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L128-L132"
+    },
+    {
+      "asset_key": "restrain",
+      "filename_proposal": "status_restrain.png",
+      "label": "拘束",
+      "engine_ref": "PlayerState.restrain / PlayerStatus.restrain",
+      "old_unity_icon_alias": null,
+      "semantic_and_visual_notes": "1ターンのプレイ枚数上限3。拘束具・結び縄。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L133-L138"
+    },
+    {
+      "asset_key": "mist",
+      "filename_proposal": "status_mist.png",
+      "label": "霞み",
+      "engine_ref": "PlayerState.mist / PlayerStatus.mist",
+      "old_unity_icon_alias": "draw",
+      "semantic_and_visual_notes": "ターン開始ドロー2減。霧で隠れる札など。紙色のカード面は使わない。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L116-L120"
+    },
+    {
+      "asset_key": "slow",
+      "filename_proposal": "status_slow.png",
+      "label": "重り",
+      "engine_ref": "PlayerState.slow / PlayerStatus.slow",
+      "old_unity_icon_alias": "exposed",
+      "semantic_and_visual_notes": "プレイ枚数に応じ被ダメージ増。錘の明確なシルエット。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L121-L126"
+    },
+    {
+      "asset_key": "wound",
+      "filename_proposal": "status_wound.png",
+      "label": "負傷",
+      "engine_ref": "PlayerStatus.wound",
+      "old_unity_icon_alias": null,
+      "semantic_and_visual_notes": "使用不可の負傷札。赤い裂け目。プレイヤーの持続カウンターではない。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L1446-L1449"
+    },
+    {
+      "asset_key": "scald",
+      "filename_proposal": "status_scald.png",
+      "label": "火傷",
+      "engine_ref": "PlayerStatus.scald",
+      "old_unity_icon_alias": null,
+      "semantic_and_visual_notes": "手札に残るとHP-2の使用不可札。焦げ跡＋火傷。延焼 burn と区別。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L1447"
+    },
+    {
+      "asset_key": "confusion",
+      "filename_proposal": "status_confusion.png",
+      "label": "混乱",
+      "engine_ref": "EnemyState.confusion",
+      "old_unity_icon_alias": "confuse",
+      "semantic_and_visual_notes": "攻撃先が他の敵（いなければ自分）になる。渦。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L178-L179"
+    },
+    {
+      "asset_key": "exposed",
+      "filename_proposal": "status_exposed.png",
+      "label": "急所",
+      "engine_ref": "EnemyState.exposed",
+      "old_unity_icon_alias": "exposed",
+      "semantic_and_visual_notes": "次に受けるプレイヤーダメージN回が50%増。的・標的。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L180-L181"
+    },
+    {
+      "asset_key": "enemy_weak",
+      "filename_proposal": "status_enemy_weak.png",
+      "label": "威圧",
+      "engine_ref": "EnemyState.weak",
+      "old_unity_icon_alias": "weak",
+      "semantic_and_visual_notes": "次のN回の攻撃行動が与ダメージ25%減。弱体と同系列、別ファイル名は文脈衝突回避案。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L202-L203"
+    },
+    {
+      "asset_key": "burn_resist",
+      "filename_proposal": "status_burn_resist.png",
+      "label": "延焼耐性",
+      "engine_ref": "EnemyDef.burnResist",
+      "old_unity_icon_alias": null,
+      "semantic_and_visual_notes": "毎フェーズの延焼減衰が追加N。炎を遮る形。炎単体の流用禁止。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L1592-L1593"
+    },
+    {
+      "asset_key": "armor",
+      "filename_proposal": "status_armor.png",
+      "label": "装甲",
+      "engine_ref": "EnemyState.armor / EnemyDef.armor",
+      "old_unity_icon_alias": "armor",
+      "semantic_and_visual_notes": "1ヒットの被ダメ上限。胴鎧。ブロックの盾と区別。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L218-L219"
+    },
+    {
+      "asset_key": "thorns",
+      "filename_proposal": "status_thorns.png",
+      "label": "とげ",
+      "engine_ref": "EnemyState.thorns / EnemyDef.thorns",
+      "old_unity_icon_alias": "counter",
+      "semantic_and_visual_notes": "プレイヤーの攻撃ヒットへの反射。外向きの棘。",
+      "source": "https://github.com/yosukedesu/deck-rogue-proto/blob/114ee430310c5a2df02ea048f23d1f8375c22c66/src/engine/types.ts#L233-L234"
+    }
+  ],
+  "not_in_A6_14": [
+    "junk / がらくた",
+    "burn / 延焼そのもの",
+    "turnArmor / ターン装甲",
+    "B1 状態異常付与アニメ"
+  ],
+  "existing_pngs": [
+    "burn",
+    "exposed",
+    "growth",
+    "momentum",
+    "shield",
+    "skull"
+  ],
+  "existing_png_qa": {
+    "count": 6,
+    "dimensions": [
+      32,
+      32
+    ],
+    "mode": "RGBA",
+    "alpha_values": [
+      0,
+      255
+    ]
+  },
+  "existing_style_warning": "既存 burn/exposed/shield の現物はクリームのハイライトと濃い縁がある。意味・形の参照に留め、最新テーマの描き方の正本にしない。",
+  "filename_decision_warning": "上記 status_* 名は依頼の汎用パターンからの提案であり既存の確定ファイル名ではない。weak はプレイヤー弱体と敵威圧で衝突するため enemy_weak を提案。実装名を変えず manifest に文脈と alias を書く。",
+  "integration_warning": "旧 Unity は icons/<name>.png をロードし、32px 未満では16pxコード絵を返す。status_ プレフィクスの納品だけでは自動差替えにならない。実装者が取り込みマッピングを行う。制作側はコード・データを変更しない。"
+}
