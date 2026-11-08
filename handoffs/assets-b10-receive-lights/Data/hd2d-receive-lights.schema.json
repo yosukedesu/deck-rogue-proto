@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HD2D B10 receive lighting handoff v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "content_revision",
+    "runtime_status",
+    "operation_scope",
+    "color_contract",
+    "time_contract",
+    "curve_definitions",
+    "smoothstep_definition",
+    "recipient_precedence",
+    "profiles",
+    "host_predicate_contracts",
+    "current_route_exclusions",
+    "integration_constraints",
+    "verification_status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string"
+    },
+    "content_revision": {
+      "type": "string"
+    },
+    "runtime_status": {
+      "type": "string"
+    },
+    "operation_scope": {
+      "type": "object"
+    },
+    "color_contract": {
+      "type": "object"
+    },
+    "time_contract": {
+      "type": "object"
+    },
+    "curve_definitions": {
+      "type": "object"
+    },
+    "smoothstep_definition": {
+      "type": "object"
+    },
+    "recipient_precedence": {
+      "type": "array"
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "route_match",
+          "operation",
+          "requires_all_host_predicates",
+          "receiver_multipliers",
+          "channels",
+          "outside_scope_multiplier",
+          "coefficient_time_behavior",
+          "reference_light"
+        ],
+        "properties": {
+          "id": {
+            "enum": [
+              "triple_horn_legacy",
+              "double_lash",
+              "holy_maul_attack",
+              "holy_maul_owned_heal"
+            ]
+          },
+          "status": {
+            "enum": [
+              "legacy_marker_only",
+              "current_marker"
+            ]
+          },
+          "route_match": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "key",
+              "definition_id",
+              "source_kind",
+              "family",
+              "renderer",
+              "element",
+              "fixed_small"
+            ],
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "definition_id": {
+                "type": "string"
+              },
+              "source_kind": {
+                "type": "string"
+              },
+              "family": {
+                "type": "string"
+              },
+              "renderer": {
+                "type": "string"
+              },
+              "element": {
+                "type": "string"
+              },
+              "fixed_small": {
+                "oneOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "const": "any"
+                  }
+                ]
+              }
+            }
+          },
+          "operation": {
+            "const": "multiply_existing_analytical_radiance"
+          },
+          "requires_all_host_predicates": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "receiver_multipliers": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "hero",
+              "actual_target",
+              "forest",
+              "other_actor",
+              "probe"
+            ],
+            "properties": {
+              "hero": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "actual_target": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "forest": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "other_actor": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "probe": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          },
+          "channels": {
+            "const": [
+              "target",
+              "floor"
+            ]
+          },
+          "outside_scope_multiplier": {
+            "const": 1.0
+          },
+          "coefficient_time_behavior": {
+            "const": "constant_while_current_predicates_true"
+          },
+          "reference_light": {
+            "type": "object",
+            "required": [
+              "role",
+              "scene_color_srgb",
+              "target",
+              "floor",
+              "height_definition",
+              "actor_near_radius_height_fraction"
+            ],
+            "properties": {
+              "role": {
+                "const": "reference_only_do_not_create_or_reapply"
+              },
+              "scene_color_srgb": {
+                "type": "string",
+                "pattern": "^#[0-9A-F]{6}$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "host_predicate_contracts": {
+      "type": "object"
+    },
+    "current_route_exclusions": {
+      "type": "array"
+    },
+    "integration_constraints": {
+      "type": "object"
+    },
+    "verification_status": {
+      "type": "object"
+    }
+  }
+}

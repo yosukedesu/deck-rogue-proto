@@ -1,0 +1,599 @@
+{
+  "schema_version": 1,
+  "id": "hd2d-receive-lights",
+  "content_revision": "b10-20261108-r1",
+  "runtime_status": "handoff_contract_requires_host_reader_and_adapter",
+  "operation_scope": {
+    "creates_lights": false,
+    "changes_gameplay": false,
+    "changes_emission": false,
+    "changes_actor_global_receive": false,
+    "changes_native_omni": false,
+    "pixel_art_required": false,
+    "missing_or_invalid_profile": "preserve_existing_lighting",
+    "unknown_route": "preserve_existing_lighting",
+    "no_matching_or_failed_predicate_multiplier": 1.0
+  },
+  "color_contract": {
+    "stored": "sRGB_hex",
+    "lighting_math": "linear_RGB",
+    "decode": "IEC_61966_2_1_once_before_radiance_multiplication",
+    "coefficient_domain": "linear_radiance",
+    "already_linear_inputs": "do_not_decode_again"
+  },
+  "time_contract": {
+    "unit": "seconds",
+    "origin": "actual_contact_or_heal_receipt_commit",
+    "unity_land_age": "already_zero_at_contact_do_not_subtract_windup",
+    "sample_frequency": "host_frame_time_not_sprite_frame_index",
+    "end": "host_effect_retirement",
+    "coefficient": "constant_when_qualified_source_envelopes_are_separate"
+  },
+  "curve_definitions": {
+    "unity": {
+      "type": "constant",
+      "value": 1.0
+    },
+    "attack_target": {
+      "type": "smoothstep_fall",
+      "start_seconds": 0.045,
+      "end_seconds": 0.165,
+      "before_contact": 0.0
+    },
+    "floor_tau_0.25": {
+      "type": "exponential_decay",
+      "tau_seconds": 0.25,
+      "before_contact": 0.0
+    },
+    "floor_tau_0.09": {
+      "type": "exponential_decay",
+      "tau_seconds": 0.09,
+      "before_contact": 0.0
+    },
+    "floor_tau_0.13": {
+      "type": "exponential_decay",
+      "tau_seconds": 0.13,
+      "before_contact": 0.0
+    },
+    "prototype_actor_floor": {
+      "type": "baseline_plus_smoothstep_fall",
+      "start_seconds": 0.055,
+      "end_seconds": 0.19,
+      "baseline": 0.14,
+      "amplitude": 0.76,
+      "before_contact": 0.14
+    },
+    "heal": {
+      "type": "smoothstep_rise_times_fall",
+      "rise_start_seconds": 0.0,
+      "rise_end_seconds": 0.03,
+      "fall_start_seconds": 0.055,
+      "fall_end_seconds": 0.24,
+      "outside_window": 0.0
+    }
+  },
+  "smoothstep_definition": {
+    "input_clamp": [
+      0.0,
+      1.0
+    ],
+    "polynomial": "u*u*(3-2*u)"
+  },
+  "recipient_precedence": [
+    "probe",
+    "hero",
+    "actual_target",
+    "forest",
+    "other_actor"
+  ],
+  "profiles": [
+    {
+      "id": "triple_horn_legacy",
+      "status": "legacy_marker_only",
+      "route_match": {
+        "key": "card:green_triple_horn",
+        "definition_id": "green_triple_horn",
+        "source_kind": "card",
+        "family": "pierce_contact",
+        "renderer": "TripleHornReceiverFx",
+        "element": "physical",
+        "fixed_small": false
+      },
+      "operation": "multiply_existing_analytical_radiance",
+      "requires_all_host_predicates": [
+        "committed_owned_triple_horn"
+      ],
+      "receiver_multipliers": {
+        "hero": 0.12,
+        "actual_target": 0.12,
+        "forest": 0.12,
+        "other_actor": 1.0,
+        "probe": 1.0
+      },
+      "channels": [
+        "target",
+        "floor"
+      ],
+      "outside_scope_multiplier": 1.0,
+      "coefficient_time_behavior": "constant_while_current_predicates_true",
+      "reference_light": {
+        "role": "reference_only_do_not_create_or_reapply",
+        "scene_color_srgb": "#FFE0A1",
+        "height_definition": {
+          "source": "effect_target_visible_height_at_begin_world",
+          "minimum": 0.25,
+          "independent_of_geometry_size": true
+        },
+        "peak_stage": "after_bridge_before_scenario_light_gain_and_receive",
+        "light_gain": "preserve_existing_scenario_source_visual_or_tier_gain",
+        "target": {
+          "factory_peak": 0.11,
+          "bridge_peak_multiplier": 1.0,
+          "peak": 0.11,
+          "analytical_radiance_scale": 40.5,
+          "range": {
+            "unit": "world",
+            "value": 7.0
+          },
+          "range_over_height": "7/H",
+          "envelope": "attack_target",
+          "position": "preserve_existing_target_light_position"
+        },
+        "floor": {
+          "factory_peak": 0.29,
+          "bridge_peak_multiplier": 1.0,
+          "peak": 0.29,
+          "analytical_radiance_scale": 63.0,
+          "range": {
+            "unit": "world",
+            "value": 13.0
+          },
+          "range_over_height": "13/H",
+          "envelope": "floor_tau_0.25",
+          "position_height_fraction": 0.45,
+          "actor_receive_curve": "prototype_actor_floor",
+          "forest_receive_curve": "unity",
+          "enabled_when": "existing_quality_level_below_2_or_analytical_floor_fallback"
+        },
+        "actor_near_radius_height_fraction": {
+          "hero": 0,
+          "actual_target": 0.0,
+          "other_actor": 0.0
+        },
+        "forest_near_radius": "not_bound_preserve_existing_forest_attenuation",
+        "height_power_normalization": "none",
+        "geometry_release_reference_seconds": 0.38,
+        "release_policy": "use_existing_effect_retirement_no_extension",
+        "lifetime_boundary_semantics": "light_becomes_inactive_when_host_retires_effect"
+      }
+    },
+    {
+      "id": "double_lash",
+      "status": "current_marker",
+      "route_match": {
+        "key": "card:green_double_lash",
+        "definition_id": "green_double_lash",
+        "source_kind": "card",
+        "family": "vine_slash",
+        "renderer": "DoubleLashReceiverFx",
+        "element": "vine",
+        "fixed_small": false
+      },
+      "operation": "multiply_existing_analytical_radiance",
+      "requires_all_host_predicates": [
+        "committed_owned_double_lash"
+      ],
+      "receiver_multipliers": {
+        "hero": 0.16,
+        "actual_target": 0.16,
+        "forest": 0.16,
+        "other_actor": 1.0,
+        "probe": 1.0
+      },
+      "channels": [
+        "target",
+        "floor"
+      ],
+      "outside_scope_multiplier": 1.0,
+      "coefficient_time_behavior": "constant_while_current_predicates_true",
+      "reference_light": {
+        "role": "reference_only_do_not_create_or_reapply",
+        "scene_color_srgb": "#C2E8A2",
+        "height_definition": {
+          "source": "effect_target_visible_height_at_begin_world",
+          "minimum": 0.25,
+          "independent_of_geometry_size": true
+        },
+        "peak_stage": "after_bridge_before_scenario_light_gain_and_receive",
+        "light_gain": "preserve_existing_scenario_source_visual_or_tier_gain",
+        "target": {
+          "factory_peak": 0.11,
+          "bridge_peak_multiplier": 1.0,
+          "peak": 0.11,
+          "analytical_radiance_scale": 40.5,
+          "range": {
+            "unit": "world",
+            "value": 7.0
+          },
+          "range_over_height": "7/H",
+          "envelope": "attack_target",
+          "position": "preserve_existing_target_light_position"
+        },
+        "floor": {
+          "factory_peak": 0.29,
+          "bridge_peak_multiplier": 1.0,
+          "peak": 0.29,
+          "analytical_radiance_scale": 63.0,
+          "range": {
+            "unit": "world",
+            "value": 13.0
+          },
+          "range_over_height": "13/H",
+          "envelope": "floor_tau_0.25",
+          "position_height_fraction": 0.45,
+          "actor_receive_curve": "prototype_actor_floor",
+          "forest_receive_curve": "unity",
+          "enabled_when": "existing_quality_level_below_2_or_analytical_floor_fallback"
+        },
+        "actor_near_radius_height_fraction": {
+          "hero": 0,
+          "actual_target": 0.0,
+          "other_actor": 0.0
+        },
+        "forest_near_radius": "not_bound_preserve_existing_forest_attenuation",
+        "height_power_normalization": "none",
+        "geometry_release_reference_seconds": 0.5,
+        "release_policy": "use_existing_effect_retirement_no_extension",
+        "lifetime_boundary_semantics": "light_becomes_inactive_when_host_retires_effect"
+      }
+    },
+    {
+      "id": "holy_maul_attack",
+      "status": "current_marker",
+      "route_match": {
+        "key": "card:white_holy_maul",
+        "definition_id": "white_holy_maul",
+        "source_kind": "card",
+        "family": "enemy_blunt",
+        "renderer": "HolyMaulReceiverFx",
+        "element": "physical",
+        "fixed_small": false
+      },
+      "operation": "multiply_existing_analytical_radiance",
+      "requires_all_host_predicates": [
+        "committed_owned_holy_maul_attack"
+      ],
+      "receiver_multipliers": {
+        "hero": 0.1,
+        "actual_target": 0.1,
+        "forest": 0.1,
+        "other_actor": 1.0,
+        "probe": 1.0
+      },
+      "channels": [
+        "target",
+        "floor"
+      ],
+      "outside_scope_multiplier": 1.0,
+      "coefficient_time_behavior": "constant_while_current_predicates_true",
+      "reference_light": {
+        "role": "reference_only_do_not_create_or_reapply",
+        "scene_color_srgb": "#FFD29A",
+        "height_definition": {
+          "source": "effect_target_visible_height_at_begin_world",
+          "minimum": 0.25,
+          "independent_of_geometry_size": true
+        },
+        "peak_stage": "after_bridge_before_scenario_light_gain_and_receive",
+        "light_gain": "preserve_existing_scenario_source_visual_or_tier_gain",
+        "target": {
+          "factory_peak": 0.085,
+          "bridge_peak_multiplier": 1.0,
+          "peak": 0.085,
+          "analytical_radiance_scale": 40.5,
+          "range": {
+            "unit": "world",
+            "value": 7.0
+          },
+          "range_over_height": "7/H",
+          "envelope": "attack_target",
+          "position": "preserve_existing_target_light_position"
+        },
+        "floor": {
+          "factory_peak": 0.035,
+          "bridge_peak_multiplier": 1.0,
+          "peak": 0.035,
+          "analytical_radiance_scale": 63.0,
+          "range": {
+            "unit": "world",
+            "value": 13.0
+          },
+          "range_over_height": "13/H",
+          "envelope": "floor_tau_0.09",
+          "position_height_fraction": 0.45,
+          "actor_receive_curve": "prototype_actor_floor",
+          "forest_receive_curve": "unity",
+          "enabled_when": "existing_quality_level_below_2_or_analytical_floor_fallback"
+        },
+        "actor_near_radius_height_fraction": {
+          "hero": 0,
+          "actual_target": 0.0,
+          "other_actor": 0.0
+        },
+        "forest_near_radius": "not_bound_preserve_existing_forest_attenuation",
+        "height_power_normalization": "none",
+        "geometry_release_reference_seconds": 0.42,
+        "release_policy": "use_existing_effect_retirement_no_extension",
+        "lifetime_boundary_semantics": "light_becomes_inactive_when_host_retires_effect"
+      }
+    },
+    {
+      "id": "holy_maul_owned_heal",
+      "status": "current_marker",
+      "route_match": {
+        "key": "system:holy-maul-owned-heal",
+        "definition_id": "",
+        "source_kind": "system",
+        "family": "heal",
+        "renderer": "HealContinuousFx",
+        "element": "light",
+        "fixed_small": "any"
+      },
+      "operation": "multiply_existing_analytical_radiance",
+      "requires_all_host_predicates": [
+        "committed_owned_holy_maul_heal"
+      ],
+      "receiver_multipliers": {
+        "hero": 0.08,
+        "actual_target": 1.0,
+        "forest": 1.0,
+        "other_actor": 1.0,
+        "probe": 1.0
+      },
+      "channels": [
+        "target",
+        "floor"
+      ],
+      "outside_scope_multiplier": 1.0,
+      "coefficient_time_behavior": "constant_while_current_predicates_true",
+      "reference_light": {
+        "role": "reference_only_do_not_create_or_reapply",
+        "scene_color_srgb": "#C39B50",
+        "height_definition": {
+          "source": "effect_target_visible_height_at_begin_world",
+          "minimum": 0.25,
+          "independent_of_geometry_size": true
+        },
+        "peak_stage": "after_bridge_before_scenario_light_gain_and_receive",
+        "light_gain": "fixed_small_0.65_else_1.0_overrides_scenario_and_source_visual",
+        "target": {
+          "factory_peak": 0.1,
+          "bridge_peak_multiplier": 0.509090909090909,
+          "peak": 0.050909090909090904,
+          "analytical_radiance_scale": 40.5,
+          "range": {
+            "unit": "world",
+            "value": 7.0
+          },
+          "range_over_height": "7/H",
+          "envelope": "heal",
+          "position": "preserve_existing_target_light_position"
+        },
+        "floor": {
+          "factory_peak": 0.045,
+          "bridge_peak_multiplier": 0.5,
+          "peak": 0.0225,
+          "analytical_radiance_scale": 63.0,
+          "range": {
+            "unit": "world",
+            "value": 13.0
+          },
+          "range_over_height": "13/H",
+          "envelope": "heal",
+          "position_height_fraction": 0.2,
+          "actor_receive_curve": "unity",
+          "forest_receive_curve": "unity",
+          "enabled_when": "existing_quality_level_below_2_or_analytical_floor_fallback"
+        },
+        "actor_near_radius_height_fraction": {
+          "hero": 0.3,
+          "actual_target": 0.0,
+          "other_actor": 0.0
+        },
+        "forest_near_radius": "not_bound_preserve_existing_forest_attenuation",
+        "height_power_normalization": "none",
+        "geometry_release_reference_seconds": 0.541,
+        "release_policy": "use_existing_effect_retirement_no_extension",
+        "lifetime_boundary_semantics": "light_becomes_inactive_when_host_retires_effect"
+      }
+    }
+  ],
+  "host_predicate_contracts": {
+    "committed_owned_triple_horn": {
+      "common": [
+        "current registered event reference, not an inferred amount or card name",
+        "current receipt generation and valid receipt values",
+        "receipt is Committed and Exact, with no rejection reason",
+        "effect actual target actor identity, not the material recipient, matches the receipt target",
+        "the host already owns and emits this light; this table never schedules an event"
+      ],
+      "leader": "leader_green",
+      "direct_card": "green_triple_horn",
+      "command": "real PlayCard; previous physical hand UID = presentation UID; ModeIndex absent; explicit matching target index",
+      "energy_before_after": [
+        3,
+        1
+      ],
+      "zero_before": [
+        "Growth",
+        "Momentum",
+        "Weak"
+      ],
+      "target_block_before": 0,
+      "target_hp_before_strictly_greater_than": 15,
+      "same_enemy_identity_before_after": true,
+      "one_card_played_before_hits": true,
+      "damage_events": {
+        "count": 3,
+        "all_same_presentation_source_uid_matching_play_card": true,
+        "amount_each": 5,
+        "hp_loss_each": 5,
+        "source": "player",
+        "source_uid_null": true
+      },
+      "selected_route_must_remain": "TripleHornReceiverFx",
+      "exclude_selected_renderer": [
+        "OwnedAxialContactFx"
+      ]
+    },
+    "committed_owned_double_lash": {
+      "common": [
+        "current registered event reference, not an inferred amount or card name",
+        "current receipt generation and valid receipt values",
+        "receipt is Committed and Exact, with no rejection reason",
+        "effect actual target actor identity, not the material recipient, matches the receipt target",
+        "the host already owns and emits this light; this table never schedules an event"
+      ],
+      "leader": "leader_green",
+      "direct_card": "green_double_lash",
+      "command": "real PlayCard; previous physical hand UID = presentation UID; ModeIndex absent; explicit matching target index",
+      "energy_before_after": [
+        3,
+        2
+      ],
+      "zero_before": [
+        "Growth",
+        "Momentum",
+        "Weak"
+      ],
+      "target_block_before": 0,
+      "target_hp_before_strictly_greater_than": 10,
+      "same_enemy_identity_before_after": true,
+      "one_card_played_before_hits": true,
+      "damage_events": {
+        "count": 2,
+        "all_same_presentation_source_uid_matching_play_card": true,
+        "amount_each": 5,
+        "hp_loss_each": 5,
+        "source": "player",
+        "source_uid_null": true
+      }
+    },
+    "committed_owned_holy_maul_attack": {
+      "common": [
+        "current registered event reference, not an inferred amount or card name",
+        "current receipt generation and valid receipt values",
+        "receipt is Committed and Exact, with no rejection reason",
+        "effect actual target actor identity, not the material recipient, matches the receipt target",
+        "the host already owns and emits this light; this table never schedules an event"
+      ],
+      "leader": "leader_white",
+      "direct_card": "white_holy_maul",
+      "command": "real PlayCard; previous physical hand UID = presentation UID; ModeIndex absent; explicit matching target index",
+      "one_card_played_before_primary_damage": true,
+      "primary_damage": "exactly one direct player/null-source-UID damage with matching card provenance, target, command owner and ledger reference",
+      "fixed_energy_or_damage_fixture_required": false,
+      "same_action_generation": true,
+      "source_actor": "actual_hero",
+      "target_actor": "actual_receipt_enemy"
+    },
+    "committed_owned_holy_maul_heal": {
+      "common": [
+        "current registered event reference, not an inferred amount or card name",
+        "current receipt generation and valid receipt values",
+        "receipt is Committed and Exact, with no rejection reason",
+        "effect actual target actor identity, not the material recipient, matches the receipt target",
+        "the host already owns and emits this light; this table never schedules an event"
+      ],
+      "leader": "leader_white",
+      "owner_card": "white_holy_maul",
+      "primary_damage": "registered primary damage from the same real card command and previous physical hand UID; not a later passive hit",
+      "heal_selection": "first SourceUid=null HpHealed after the primary damage, before checking its amount",
+      "amount": "nonnegative and equal to afterHP-beforeHP; the host owns whether it renders",
+      "zero_amount": "consumes the primary slot; never adopt a later passive heal",
+      "source_actor": "actual_hero",
+      "target_actor": "actual_hero",
+      "same_command_owner": true,
+      "same_action_generation": true,
+      "contacted": true,
+      "excluded": [
+        "generic_heal",
+        "enemy_heal",
+        "regen_tick",
+        "doll_entry_heal",
+        "passive_followup_heal"
+      ]
+    }
+  },
+  "current_route_exclusions": [
+    {
+      "id": "triple_horn_owned_axial",
+      "role": "existing_current_route_reference_not_a_b10_override",
+      "route_match": {
+        "key": "card:green_triple_horn",
+        "definition_id": "green_triple_horn",
+        "source_kind": "card",
+        "family": "pierce_contact",
+        "renderer": "OwnedAxialContactFx",
+        "element": "physical",
+        "fixed_small": false
+      },
+      "do_not_apply": [
+        "triple_horn_legacy"
+      ],
+      "b10_multiplier": 1.0,
+      "reason": "the selected mineral axial route replaces the legacy receive marker; do not multiply both",
+      "reference_light": {
+        "scene_color_srgb": "#FFE0A1",
+        "target_peak": 0.035,
+        "floor_peak": 0.025,
+        "target_range_height_fraction": 0.7,
+        "floor_range_height_fraction": 1.05,
+        "actor_near_radius_height_fraction": 0.24,
+        "height_power_normalization": "H*H/9",
+        "target_envelope": "attack_target",
+        "floor_envelope": "floor_tau_0.13",
+        "actor_floor_receive_curve": "prototype_actor_floor",
+        "geometry_release_reference_seconds": 0.38
+      }
+    }
+  ],
+  "integration_constraints": {
+    "must_not_change": [
+      "native_omni_energy",
+      "mesh_emission",
+      "material_alpha",
+      "hurt_flash",
+      "actor_modulate",
+      "actor_global_receive",
+      "environment_lights",
+      "scene_exposure",
+      "forest_spectacle_crest",
+      "geometry",
+      "gameplay_events",
+      "hit_count",
+      "authoritative_contact_time"
+    ],
+    "new_lights_allowed": false,
+    "predicates_recomputed_per_receiver_bind": true,
+    "pooled_state_must_not_persist": true,
+    "preserve_existing_multi_light_caps_and_order": true,
+    "unity_current_limitations": [
+      "no reader for this JSON",
+      "no recipient-specific analytical input matching the Godot path",
+      "contract endpoint range fixed at target7/floor13",
+      "current shared target/floor envelope does not preserve independent floor tail",
+      "near-radius denominator requires a separate host implementation"
+    ],
+    "unity_partial_approximation": "explicitly document approximation; do not change shared actor _Receive or silently affect unrelated receivers",
+    "reference_radiance_scales": "Godot reference only; do not multiply 40.5/63 onto Unity contract 18/28",
+    "missing_predicate_or_unknown_recipient": "leave existing lighting unchanged"
+  },
+  "verification_status": {
+    "data_contract_tested": true,
+    "runtime_reader_implemented": false,
+    "game_visual_tested": false,
+    "gpu_tested": false,
+    "android_tested": false
+  }
+}

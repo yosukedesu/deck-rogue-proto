@@ -1,0 +1,28 @@
+{
+  "status": "pass",
+  "scope": "JSON/schema and a local reference evaluator only; not the game implementation",
+  "assertion_count": 523,
+  "groups": [
+    "schema and finite values",
+    "four profiles and strict route matching",
+    "predicate true/false/missing/type cases",
+    "recipient scope and precedence",
+    "legacy/current route exclusion",
+    "seconds-based curve boundaries and decay",
+    "sRGB-to-linear reference values",
+    "world-space range vs height ratio",
+    "critical source-snapshot spot checks"
+  ],
+  "runtime_execution_tested": false,
+  "gpu_tested": false,
+  "android_tested": false,
+  "visual_tested": false,
+  "executable_code_shipped": false,
+  "independent_review": "pass_79_assertions",
+  "notes": [
+    "Geometry release metadata does not force light retirement. Host cleanup remains authoritative.",
+    "Ownership predicates are supplied by the host; this table does not implement ledger checks.",
+    "The reference evaluator was used for tests only and is not shipped."
+  ],
+  "reference_float_tolerance": 1e-06
+}

@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "bundle": "B10",
+  "id": "assets-b10-receive-lights",
+  "revision": "20261108-r1",
+  "branch": "codex/assets-b10-20261108",
+  "repository": "yosukedesu/deck-rogue-proto",
+  "handoff_path": "handoffs/assets-b10-receive-lights",
+  "base_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "asset_count": 1,
+  "receiver_profile_count": 4,
+  "current_route_exclusion_count": 1,
+  "asset": {
+    "id": "hd2d-receive-lights",
+    "file": "Data/hd2d-receive-lights.json",
+    "media_type": "application/json",
+    "pixel_dimensions": null,
+    "foot_anchor": null,
+    "frame_count": null,
+    "intended_import_path": "Data/hd2d-receive-lights.json",
+    "unity_candidate_import_path": "Assets/Resources/Data/hd2d-receive-lights.json",
+    "automatic_runtime_import": false,
+    "reader_and_host_adapter_required": true
+  },
+  "validation": {
+    "numeric_assertions": 523,
+    "independent_assertions": 79,
+    "game_runtime_tested": false,
+    "visual_tested": false,
+    "gpu_tested": false,
+    "android_tested": false
+  },
+  "scope": {
+    "runtime_code_included": false,
+    "unity_code_changed": false,
+    "game_data_changed": false,
+    "source_code_copies_included": false,
+    "private_notes_included": false,
+    "new_lights_created": false
+  },
+  "files": [
+    {
+      "file": "Data/hd2d-receive-lights.json",
+      "bytes": 21275,
+      "sha256": "a0e8b4640059106deefe82499b5962d156624ff170a7375e8167246979cf621b",
+      "role": "runtime_data_contract"
+    },
+    {
+      "file": "Data/hd2d-receive-lights.schema.json",
+      "bytes": 5528,
+      "sha256": "664d72da87fdbc066450fa90f1f546a6c27f2777e32f6ff739f463c9347cd2a7",
+      "role": "validation_schema"
+    },
+    {
+      "file": "README.md",
+      "bytes": 8643,
+      "sha256": "e5bf46fe0044b8cbcbfa001c473d5352f2155b1fe1f3788ec1a436db785cbd3f",
+      "role": "documentation"
+    },
+    {
+      "file": "qa/independent-review.json",
+      "bytes": 1761,
+      "sha256": "7faf63c920e0b01c024ce58b88eb8c3352e183b47dbd93c653196c4997511553",
+      "role": "validation_reference"
+    },
+    {
+      "file": "qa/reference-samples.json",
+      "bytes": 5155,
+      "sha256": "972e6a02745f13ee5bb114a6695d4399186477a1d21811724a1a4eddc0135324",
+      "role": "validation_reference"
+    },
+    {
+      "file": "qa/verification.json",
+      "bytes": 1059,
+      "sha256": "d212af24d37b12698be6d294694a80423ecd64c727f07804a7b2721e3f15fe5e",
+      "role": "validation_reference"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "status": "pass",
+  "scope": "独立した静的照合とJSON検査。実ゲームの動作承認ではありません。",
+  "independent_assertion_count": 79,
+  "reviewed_files": [
+    {
+      "file": "Data/hd2d-receive-lights.json",
+      "sha256": "a0e8b4640059106deefe82499b5962d156624ff170a7375e8167246979cf621b"
+    },
+    {
+      "file": "Data/hd2d-receive-lights.schema.json",
+      "sha256": "664d72da87fdbc066450fa90f1f546a6c27f2777e32f6ff739f463c9347cd2a7"
+    },
+    {
+      "file": "README.md",
+      "sha256": "e5bf46fe0044b8cbcbfa001c473d5352f2155b1fe1f3788ec1a436db785cbd3f"
+    }
+  ],
+  "checks": [
+    "4係数と受け面の限定、対象外倍率1",
+    "TripleHorn旧マーカーとOwnedAxial現行経路の分離",
+    "sRGB色、線形計算、接触基準の時間曲線",
+    "world単位の7/13と身長比、近傍半径の区別",
+    "所有条件、主回復と後続回復の区別",
+    "READMEとJSONの整合、JSON Schema検証"
+  ],
+  "resolved_findings": [
+    {
+      "item": "聖槌回復のpeak",
+      "result": "factory .10/.045、bridge 28/55・.5、最終約 .05090909/.0225 を分離して確認。"
+    },
+    {
+      "item": "聖槌回復のlightGain",
+      "result": "FixedSmall時 .65、その他1。scenario/sourceVisualより優先。"
+    },
+    {
+      "item": "身長H",
+      "result": "効果開始時の実対象身長を使い、受け面ごとに取り替えない。"
+    },
+    {
+      "item": "所有と対象の表現",
+      "result": "効果対象と材質受け面、PresentationSource UIDとnull SourceUidを区別。"
+    }
+  ],
+  "runtime_execution_tested": false,
+  "gpu_tested": false,
+  "android_tested": false,
+  "visual_tested": false,
+  "source_code_copied_into_review": false
+}

@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "status": "data_contract_reference_not_runtime_capture",
+  "color_samples": [
+    {
+      "id": "triple_horn_legacy",
+      "srgb_hex": "#FFE0A1",
+      "linear_rgb": [
+        1.0,
+        0.74540420954,
+        0.356400144146
+      ]
+    },
+    {
+      "id": "double_lash",
+      "srgb_hex": "#C2E8A2",
+      "linear_rgb": [
+        0.539479489012,
+        0.806952257669,
+        0.361306779784
+      ]
+    },
+    {
+      "id": "holy_maul_attack",
+      "srgb_hex": "#FFD29A",
+      "linear_rgb": [
+        1.0,
+        0.644479681971,
+        0.323143209113
+      ]
+    },
+    {
+      "id": "holy_maul_owned_heal",
+      "srgb_hex": "#C39B50",
+      "linear_rgb": [
+        0.54572446137,
+        0.327778098057,
+        0.080219820314
+      ]
+    }
+  ],
+  "curve_samples": [
+    {
+      "contact_age_seconds": -0.001,
+      "unity": 1.0,
+      "attack_target": 0.0,
+      "floor_tau_0.25": 0.0,
+      "floor_tau_0.09": 0.0,
+      "floor_tau_0.13": 0.0,
+      "prototype_actor_floor": 0.14,
+      "heal": 0.0
+    },
+    {
+      "contact_age_seconds": 0,
+      "unity": 1.0,
+      "attack_target": 1,
+      "floor_tau_0.25": 1.0,
+      "floor_tau_0.09": 1.0,
+      "floor_tau_0.13": 1.0,
+      "prototype_actor_floor": 0.9,
+      "heal": 0
+    },
+    {
+      "contact_age_seconds": 0.015,
+      "unity": 1.0,
+      "attack_target": 1,
+      "floor_tau_0.25": 0.941764533584,
+      "floor_tau_0.09": 0.846481724891,
+      "floor_tau_0.13": 0.891023376696,
+      "prototype_actor_floor": 0.9,
+      "heal": 0.5
+    },
+    {
+      "contact_age_seconds": 0.03,
+      "unity": 1.0,
+      "attack_target": 1,
+      "floor_tau_0.25": 0.886920436717,
+      "floor_tau_0.09": 0.716531310574,
+      "floor_tau_0.13": 0.793922657818,
+      "prototype_actor_floor": 0.9,
+      "heal": 1
+    },
+    {
+      "contact_age_seconds": 0.045,
+      "unity": 1.0,
+      "attack_target": 1,
+      "floor_tau_0.25": 0.835270211411,
+      "floor_tau_0.09": 0.606530659713,
+      "floor_tau_0.13": 0.707403647404,
+      "prototype_actor_floor": 0.9,
+      "heal": 1
+    },
+    {
+      "contact_age_seconds": 0.055,
+      "unity": 1.0,
+      "attack_target": 0.980324074074,
+      "floor_tau_0.25": 0.802518797962,
+      "floor_tau_0.09": 0.542747481164,
+      "floor_tau_0.13": 0.655028244386,
+      "prototype_actor_floor": 0.9,
+      "heal": 1
+    },
+    {
+      "contact_age_seconds": 0.1,
+      "unity": 1.0,
+      "attack_target": 0.562355324074,
+      "floor_tau_0.25": 0.670320046036,
+      "floor_tau_0.09": 0.329192987808,
+      "floor_tau_0.13": 0.463369369231,
+      "prototype_actor_floor": 0.702962962963,
+      "heal": 0.851282253766
+    },
+    {
+      "contact_age_seconds": 0.164999,
+      "unity": 1.0,
+      "attack_target": 2.08e-10,
+      "floor_tau_0.25": 0.516853401901,
+      "floor_tau_0.09": 0.159881522531,
+      "floor_tau_0.13": 0.281049891124,
+      "prototype_actor_floor": 0.208541397224,
+      "heal": 0.359808816868
+    },
+    {
+      "contact_age_seconds": 0.165,
+      "unity": 1.0,
+      "attack_target": 0,
+      "floor_tau_0.25": 0.516851334492,
+      "floor_tau_0.09": 0.15987974608,
+      "floor_tau_0.13": 0.28104772921,
+      "prototype_actor_floor": 0.208536300361,
+      "heal": 0.359800998954
+    },
+    {
+      "contact_age_seconds": 0.19,
+      "unity": 1.0,
+      "attack_target": 0,
+      "floor_tau_0.25": 0.46766642701,
+      "floor_tau_0.09": 0.121103332392,
+      "floor_tau_0.13": 0.231879262848,
+      "prototype_actor_floor": 0.14,
+      "heal": 0.179653722386
+    },
+    {
+      "contact_age_seconds": 0.239999,
+      "unity": 1.0,
+      "attack_target": 0,
+      "floor_tau_0.25": 0.38289441755,
+      "floor_tau_0.09": 0.069484223265,
+      "floor_tau_0.13": 0.157844303317,
+      "prototype_actor_floor": 0.14,
+      "heal": 8.8e-11
+    },
+    {
+      "contact_age_seconds": 0.24,
+      "unity": 1.0,
+      "attack_target": 0,
+      "floor_tau_0.25": 0.382892885975,
+      "floor_tau_0.09": 0.069483451223,
+      "floor_tau_0.13": 0.157843089135,
+      "prototype_actor_floor": 0.14,
+      "heal": 0.0
+    },
+    {
+      "contact_age_seconds": 0.38,
+      "unity": 1.0,
+      "attack_target": 0,
+      "floor_tau_0.25": 0.218711886952,
+      "floor_tau_0.09": 0.014666017117,
+      "floor_tau_0.13": 0.053767992539,
+      "prototype_actor_floor": 0.14,
+      "heal": 0.0
+    },
+    {
+      "contact_age_seconds": 0.42,
+      "unity": 1.0,
+      "attack_target": 0,
+      "floor_tau_0.25": 0.186373976039,
+      "floor_tau_0.09": 0.009403562551,
+      "floor_tau_0.13": 0.039527081644,
+      "prototype_actor_floor": 0.14,
+      "heal": 0.0
+    },
+    {
+      "contact_age_seconds": 0.5,
+      "unity": 1.0,
+      "attack_target": 0,
+      "floor_tau_0.25": 0.135335283237,
+      "floor_tau_0.09": 0.003865920139,
+      "floor_tau_0.13": 0.021361739175,
+      "prototype_actor_floor": 0.14,
+      "heal": 0.0
+    },
+    {
+      "contact_age_seconds": 0.541,
+      "unity": 1.0,
+      "attack_target": 0,
+      "floor_tau_0.25": 0.114864741926,
+      "floor_tau_0.09": 0.00245136293,
+      "floor_tau_0.13": 0.015583564753,
+      "prototype_actor_floor": 0.14,
+      "heal": 0.0
+    }
+  ]
+}
