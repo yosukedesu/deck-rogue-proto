@@ -1,0 +1,744 @@
+{
+  "result": "pass",
+  "checks_passed": 91,
+  "checks_total": 91,
+  "checks": [
+    {
+      "name": "core_asset_count_6",
+      "pass": true
+    },
+    {
+      "name": "asset_paths_exact",
+      "pass": true
+    },
+    {
+      "name": "all_unique_ids",
+      "pass": true
+    },
+    {
+      "name": "only_assets_in_handoff",
+      "pass": true
+    },
+    {
+      "name": "binary_alpha_declared",
+      "pass": true
+    },
+    {
+      "name": "nearest_no_mipmaps_no_trim",
+      "pass": true
+    },
+    {
+      "name": "banner_end_l_size_and_mode",
+      "pass": true
+    },
+    {
+      "name": "banner_end_l_sha",
+      "pass": true
+    },
+    {
+      "name": "banner_end_l_alpha_0_255",
+      "pass": true
+    },
+    {
+      "name": "banner_end_l_transparent_black",
+      "pass": true
+    },
+    {
+      "name": "banner_end_l_palette_only",
+      "pass": true
+    },
+    {
+      "name": "banner_end_l_two_pixel_padding",
+      "pass": true
+    },
+    {
+      "name": "banner_end_r_size_and_mode",
+      "pass": true
+    },
+    {
+      "name": "banner_end_r_sha",
+      "pass": true
+    },
+    {
+      "name": "banner_end_r_alpha_0_255",
+      "pass": true
+    },
+    {
+      "name": "banner_end_r_transparent_black",
+      "pass": true
+    },
+    {
+      "name": "banner_end_r_palette_only",
+      "pass": true
+    },
+    {
+      "name": "banner_end_r_two_pixel_padding",
+      "pass": true
+    },
+    {
+      "name": "win_emblem_size_and_mode",
+      "pass": true
+    },
+    {
+      "name": "win_emblem_sha",
+      "pass": true
+    },
+    {
+      "name": "win_emblem_alpha_0_255",
+      "pass": true
+    },
+    {
+      "name": "win_emblem_transparent_black",
+      "pass": true
+    },
+    {
+      "name": "win_emblem_palette_only",
+      "pass": true
+    },
+    {
+      "name": "win_emblem_two_pixel_padding",
+      "pass": true
+    },
+    {
+      "name": "lose_ink_size_and_mode",
+      "pass": true
+    },
+    {
+      "name": "lose_ink_sha",
+      "pass": true
+    },
+    {
+      "name": "lose_ink_alpha_0_255",
+      "pass": true
+    },
+    {
+      "name": "lose_ink_transparent_black",
+      "pass": true
+    },
+    {
+      "name": "lose_ink_palette_only",
+      "pass": true
+    },
+    {
+      "name": "lose_ink_two_pixel_padding",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_size_and_mode",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_sha",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_alpha_0_255",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_transparent_black",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_palette_only",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_two_pixel_padding",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_8_unique_frames",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_8_rects_match",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_positive_durations",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_total_duration",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_fixed_pivot",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_frame_0_padding",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_frame_1_padding",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_frame_2_padding",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_frame_3_padding",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_frame_4_padding",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_frame_5_padding",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_frame_6_padding",
+      "pass": true
+    },
+    {
+      "name": "petal_8f_frame_7_padding",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_size_and_mode",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_sha",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_alpha_0_255",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_transparent_black",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_palette_only",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_two_pixel_padding",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_8_unique_frames",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_8_rects_match",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_positive_durations",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_total_duration",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_fixed_pivot",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_frame_0_padding",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_frame_1_padding",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_frame_2_padding",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_frame_3_padding",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_frame_4_padding",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_frame_5_padding",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_frame_6_padding",
+      "pass": true
+    },
+    {
+      "name": "ember_8f_frame_7_padding",
+      "pass": true
+    },
+    {
+      "name": "caps_exact_horizontal_mirrors",
+      "pass": true
+    },
+    {
+      "name": "caps_fit_existing_boss_bands",
+      "pass": true
+    },
+    {
+      "name": "emblems_same_96px_frame",
+      "pass": true
+    },
+    {
+      "name": "petal_720ms_loop",
+      "pass": true
+    },
+    {
+      "name": "ember_680ms_one_shot",
+      "pass": true
+    },
+    {
+      "name": "ember_shrinks_each_frame",
+      "pass": true
+    },
+    {
+      "name": "preview_playback_matches_both_manifests",
+      "pass": true
+    },
+    {
+      "name": "preview_two_petal_cycles_1440ms",
+      "pass": true
+    },
+    {
+      "name": "highlight_brass2_contrast3_#0f1120",
+      "pass": true
+    },
+    {
+      "name": "highlight_steel2_contrast3_#0f1120",
+      "pass": true
+    },
+    {
+      "name": "highlight_rose2_contrast3_#0f1120",
+      "pass": true
+    },
+    {
+      "name": "highlight_ember2_contrast3_#0f1120",
+      "pass": true
+    },
+    {
+      "name": "highlight_brass2_contrast3_#20233a",
+      "pass": true
+    },
+    {
+      "name": "highlight_steel2_contrast3_#20233a",
+      "pass": true
+    },
+    {
+      "name": "highlight_rose2_contrast3_#20233a",
+      "pass": true
+    },
+    {
+      "name": "highlight_ember2_contrast3_#20233a",
+      "pass": true
+    },
+    {
+      "name": "highlight_brass2_contrast3_#2c3d4b",
+      "pass": true
+    },
+    {
+      "name": "highlight_steel2_contrast3_#2c3d4b",
+      "pass": true
+    },
+    {
+      "name": "highlight_rose2_contrast3_#2c3d4b",
+      "pass": true
+    },
+    {
+      "name": "highlight_ember2_contrast3_#2c3d4b",
+      "pass": true
+    },
+    {
+      "name": "all_6_artworks_byte_exact_on_regenerate",
+      "pass": true
+    },
+    {
+      "name": "manifest_byte_exact_on_regenerate",
+      "pass": true
+    },
+    {
+      "name": "preview_apng_byte_exact_on_regenerate",
+      "pass": true
+    }
+  ],
+  "assets": [
+    {
+      "id": "banner_end_l",
+      "size": [
+        64,
+        48
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_pixels": 741,
+      "visible_colors": 10,
+      "bbox": [
+        5,
+        4,
+        62,
+        44
+      ],
+      "sha256": "809f657b46a3448bf0fad3cc1bd7eae3e153393e4d6a5c7e5c04ca4739bc9b31"
+    },
+    {
+      "id": "banner_end_r",
+      "size": [
+        64,
+        48
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_pixels": 741,
+      "visible_colors": 10,
+      "bbox": [
+        2,
+        4,
+        59,
+        44
+      ],
+      "sha256": "5c49649cff066ed69f5d9ac090c5273bbdac4ee406b39bc5a54b0685ee105367"
+    },
+    {
+      "id": "win_emblem",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_pixels": 2623,
+      "visible_colors": 8,
+      "bbox": [
+        7,
+        8,
+        89,
+        89
+      ],
+      "sha256": "6101020cba28de023742f93efcfb7126dff0b10e67b60007f789d939a26c9528"
+    },
+    {
+      "id": "lose_ink",
+      "size": [
+        96,
+        96
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_pixels": 2438,
+      "visible_colors": 10,
+      "bbox": [
+        11,
+        14,
+        88,
+        93
+      ],
+      "sha256": "f7dc7096099be5e22361741e5993c4997a9406b0ac3d05651f619c786c2f221c"
+    },
+    {
+      "id": "petal_8f",
+      "size": [
+        256,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_pixels": 760,
+      "visible_colors": 3,
+      "bbox": [
+        10,
+        9,
+        246,
+        24
+      ],
+      "sha256": "5c5ab87c16c39a4bfca9a6f62628704d934173ccd9982060a0d8100b56f2853b",
+      "frames": [
+        {
+          "index": 0,
+          "bbox": [
+            10,
+            9,
+            24,
+            23
+          ],
+          "visible_pixels": 137,
+          "duration_ms": 90
+        },
+        {
+          "index": 1,
+          "bbox": [
+            12,
+            10,
+            23,
+            23
+          ],
+          "visible_pixels": 108,
+          "duration_ms": 90
+        },
+        {
+          "index": 2,
+          "bbox": [
+            14,
+            9,
+            20,
+            24
+          ],
+          "visible_pixels": 64,
+          "duration_ms": 90
+        },
+        {
+          "index": 3,
+          "bbox": [
+            12,
+            10,
+            21,
+            23
+          ],
+          "visible_pixels": 72,
+          "duration_ms": 90
+        },
+        {
+          "index": 4,
+          "bbox": [
+            10,
+            10,
+            23,
+            24
+          ],
+          "visible_pixels": 131,
+          "duration_ms": 90
+        },
+        {
+          "index": 5,
+          "bbox": [
+            11,
+            10,
+            22,
+            23
+          ],
+          "visible_pixels": 93,
+          "duration_ms": 90
+        },
+        {
+          "index": 6,
+          "bbox": [
+            14,
+            9,
+            20,
+            24
+          ],
+          "visible_pixels": 63,
+          "duration_ms": 90
+        },
+        {
+          "index": 7,
+          "bbox": [
+            11,
+            10,
+            22,
+            23
+          ],
+          "visible_pixels": 92,
+          "duration_ms": 90
+        }
+      ]
+    },
+    {
+      "id": "ember_8f",
+      "size": [
+        256,
+        32
+      ],
+      "mode": "RGBA",
+      "alpha_values": [
+        0,
+        255
+      ],
+      "visible_pixels": 290,
+      "visible_colors": 3,
+      "bbox": [
+        11,
+        8,
+        242,
+        23
+      ],
+      "sha256": "5616b0d4768b8958431e7cd7b5f5e1000e7af14cb6a0d2b167fb960aca29304e",
+      "frames": [
+        {
+          "index": 0,
+          "bbox": [
+            11,
+            8,
+            21,
+            23
+          ],
+          "visible_pixels": 67,
+          "duration_ms": 70
+        },
+        {
+          "index": 1,
+          "bbox": [
+            13,
+            8,
+            21,
+            23
+          ],
+          "visible_pixels": 66,
+          "duration_ms": 70
+        },
+        {
+          "index": 2,
+          "bbox": [
+            13,
+            10,
+            21,
+            23
+          ],
+          "visible_pixels": 59,
+          "duration_ms": 80
+        },
+        {
+          "index": 3,
+          "bbox": [
+            14,
+            12,
+            20,
+            23
+          ],
+          "visible_pixels": 39,
+          "duration_ms": 80
+        },
+        {
+          "index": 4,
+          "bbox": [
+            14,
+            13,
+            20,
+            22
+          ],
+          "visible_pixels": 26,
+          "duration_ms": 90
+        },
+        {
+          "index": 5,
+          "bbox": [
+            14,
+            15,
+            19,
+            22
+          ],
+          "visible_pixels": 18,
+          "duration_ms": 90
+        },
+        {
+          "index": 6,
+          "bbox": [
+            15,
+            17,
+            19,
+            22
+          ],
+          "visible_pixels": 10,
+          "duration_ms": 100
+        },
+        {
+          "index": 7,
+          "bbox": [
+            15,
+            18,
+            18,
+            21
+          ],
+          "visible_pixels": 5,
+          "duration_ms": 100
+        }
+      ]
+    }
+  ],
+  "highlight_contrasts": [
+    {
+      "background": "#0f1120",
+      "highlight": "brass2",
+      "ratio": 8.546
+    },
+    {
+      "background": "#0f1120",
+      "highlight": "steel2",
+      "ratio": 6.638
+    },
+    {
+      "background": "#0f1120",
+      "highlight": "rose2",
+      "ratio": 6.812
+    },
+    {
+      "background": "#0f1120",
+      "highlight": "ember2",
+      "ratio": 9.111
+    },
+    {
+      "background": "#20233a",
+      "highlight": "brass2",
+      "ratio": 7.031
+    },
+    {
+      "background": "#20233a",
+      "highlight": "steel2",
+      "ratio": 5.461
+    },
+    {
+      "background": "#20233a",
+      "highlight": "rose2",
+      "ratio": 5.605
+    },
+    {
+      "background": "#20233a",
+      "highlight": "ember2",
+      "ratio": 7.496
+    },
+    {
+      "background": "#2c3d4b",
+      "highlight": "brass2",
+      "ratio": 5.108
+    },
+    {
+      "background": "#2c3d4b",
+      "highlight": "steel2",
+      "ratio": 3.967
+    },
+    {
+      "background": "#2c3d4b",
+      "highlight": "rose2",
+      "ratio": 4.071
+    },
+    {
+      "background": "#2c3d4b",
+      "highlight": "ember2",
+      "ratio": 5.446
+    }
+  ],
+  "contrast_note": "Ratios measure selected structural highlights, not every decorative/shadow pixel; not a text accessibility certification.",
+  "runtime_integration_tested": false,
+  "visual_review": "qa/independent_visual_review.md"
+}
