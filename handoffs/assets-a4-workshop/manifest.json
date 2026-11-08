@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "bundle": "A4_workshop_scene",
+  "created": "2026-11-08",
+  "branch": "codex/assets-a4-20261108",
+  "baseCommit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+  "theme": "night glass and brass",
+  "productionMethod": "native integer-coordinate pixel placement; no AI raster generation, resizing, anti-aliasing, blur or quantization",
+  "assets": [
+    {
+      "id": "bd_workshop",
+      "file": "png/bd_workshop.png",
+      "recommendedDestination": "unity/Assets/Resources/Art/scenes/bd_workshop.png",
+      "width": 400,
+      "height": 224,
+      "mode": "RGB",
+      "alpha": "opaque (no alpha channel)",
+      "usedColors": 48,
+      "sha256": "4c9442350a811ba076b92c70b18427a478bb20cb0ed34ea0a368e8e905e3df6a",
+      "bytes": 17561,
+      "usage": "character-free workshop facility scene; card combination",
+      "importRecommendation": {
+        "filterMode": "Point",
+        "compression": "None",
+        "mipmaps": false
+      },
+      "integrationPerformed": false,
+      "runtimeVerified": false
+    }
+  ],
+  "previews": [
+    {
+      "file": "preview/workshop_preview_3x.png",
+      "size": [
+        1200,
+        672
+      ],
+      "scaling": "nearest-neighbor 3x; preview only"
+    },
+    {
+      "file": "qa/comparison_facilities.png",
+      "size": [
+        816,
+        512
+      ],
+      "usage": "native-sized comparison with reference workshop, shop and campfire"
+    }
+  ],
+  "references": [
+    {
+      "file": "references/workshop.png",
+      "repositoryPath": "unity/Assets/Resources/Art/scenes/workshop.png",
+      "sha256": "c2585bf14c25e322bfd789afed22dbf6ee877ef4e3a442b4ea163e985212ae56",
+      "modification": "none; reference only"
+    },
+    {
+      "file": "references/bd_shop.png",
+      "repositoryPath": "unity/Assets/Resources/Art/scenes/bd_shop.png",
+      "sha256": "3c03d48c9de01a5fec23a0e731efa52fdbd3ce29a707ebc9a20e3f8c069197aa",
+      "modification": "none; reference only"
+    },
+    {
+      "file": "references/bd_campfire.png",
+      "repositoryPath": "unity/Assets/Resources/Art/scenes/bd_campfire.png",
+      "sha256": "722ab5d15e29333d7ba8c14c90feaaef3780be96cd8a1b220d7ec54145110ce0",
+      "modification": "none; reference only"
+    }
+  ],
+  "reproducibility": {
+    "script": "source/draw_workshop.py",
+    "pythonVersion": "3.12.14",
+    "pillowVersion": "13.0.0",
+    "palette": "source/palette.json",
+    "verificationScript": "source/verify.py"
+  },
+  "constraints": {
+    "noCharacters": true,
+    "noText": true,
+    "noPaperBackground": true,
+    "noCodeIntegration": true,
+    "modifiedScope": "handoffs/assets-a4-workshop only"
+  },
+  "knownLimitations": [
+    "11-05 theme appendix not present in fetched main; latest user message governs the visual theme",
+    "game layout/crop/text overlay/device brightness not runtime tested",
+    "not claimed to reproduce original facility art style exactly"
+  ]
+}

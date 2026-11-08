@@ -1,0 +1,103 @@
+{
+  "status": "pass",
+  "passed": 19,
+  "checks": [
+    {
+      "name": "target_dimensions",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "mode_and_opacity",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "48_used_colors",
+      "pass": true,
+      "details": 48
+    },
+    {
+      "name": "asset_hash_matches_manifest",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "asset_bytes_match_manifest",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "source_syntax",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "no_resize_blur_quantize_in_asset_source",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "no_reference_load_in_asset_source",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "all_pixels_from_fixed_palette",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "palette_file_matches_pixels",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "rebuild_pixel_exact",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "rebuild_png_byte_exact",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "preview_dimensions",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "preview_exact_nearest_neighbor",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "comparison_dimensions",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "reference_unchanged_workshop.png",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "reference_unchanged_bd_shop.png",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "reference_unchanged_bd_campfire.png",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "expected_asset_count",
+      "pass": true,
+      "details": null
+    }
+  ],
+  "runtimeVerified": false,
+  "pillowVersion": "13.0.0"
+}
