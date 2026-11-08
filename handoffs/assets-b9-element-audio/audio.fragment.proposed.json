@@ -1,0 +1,187 @@
+{
+  "_doc": "PROPOSED SEMANTIC KEYS, not an installed replacement audio.json. Merge sfx entries only after a presentation bridge maps authoritative card/material/style to them. Never replace bgm. Existing card-ID keys are unchanged by this bundle.",
+  "sfx": {
+    "Hd2dOnset.element.physical": {
+      "sfx": "hd2d_physical_onset",
+      "volume": 0.45,
+      "jitter": 0,
+      "volJitter": 0,
+      "minGap": 0.05
+    },
+    "Hd2dContact.element.physical": {
+      "sfx": "hd2d_physical_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dOnset.element.fire": {
+      "sfx": "hd2d_fire_onset",
+      "volume": 0.45,
+      "jitter": 0,
+      "volJitter": 0,
+      "minGap": 0.05
+    },
+    "Hd2dContact.element.fire": {
+      "sfx": "hd2d_fire_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dOnset.element.ice": {
+      "sfx": "hd2d_ice_onset",
+      "volume": 0.45,
+      "jitter": 0,
+      "volJitter": 0,
+      "minGap": 0.05
+    },
+    "Hd2dContact.element.ice": {
+      "sfx": "hd2d_ice_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dOnset.element.light": {
+      "sfx": "hd2d_light_onset",
+      "volume": 0.45,
+      "jitter": 0,
+      "volJitter": 0,
+      "minGap": 0.05
+    },
+    "Hd2dContact.element.light": {
+      "sfx": "hd2d_light_contact",
+      "volume": 0.68,
+      "jitter": 0,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dOnset.element.dark": {
+      "sfx": "hd2d_dark_onset",
+      "volume": 0.45,
+      "jitter": 0,
+      "volJitter": 0,
+      "minGap": 0.05
+    },
+    "Hd2dContact.element.dark": {
+      "sfx": "hd2d_dark_contact",
+      "volume": 0.68,
+      "jitter": 0,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dOnset.element.water": {
+      "sfx": "hd2d_water_onset",
+      "volume": 0.45,
+      "jitter": 0,
+      "volJitter": 0,
+      "minGap": 0.05
+    },
+    "Hd2dContact.element.water": {
+      "sfx": "hd2d_water_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dOnset.element.earth": {
+      "sfx": "hd2d_earth_onset",
+      "volume": 0.45,
+      "jitter": 0,
+      "volJitter": 0,
+      "minGap": 0.05
+    },
+    "Hd2dContact.element.earth": {
+      "sfx": "hd2d_earth_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dOnset.element.vine": {
+      "sfx": "hd2d_vine_onset",
+      "volume": 0.45,
+      "jitter": 0,
+      "volJitter": 0,
+      "minGap": 0.05
+    },
+    "Hd2dContact.element.vine": {
+      "sfx": "hd2d_vine_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dOnset.element.lightning": {
+      "sfx": "hd2d_lightning_onset",
+      "volume": 0.45,
+      "jitter": 0,
+      "volJitter": 0,
+      "minGap": 0.05
+    },
+    "Hd2dContact.element.lightning": {
+      "sfx": "hd2d_lightning_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dOnset.element.heal": {
+      "sfx": "hd2d_heal_onset",
+      "volume": 0.45,
+      "jitter": 0,
+      "volJitter": 0,
+      "minGap": 0.05
+    },
+    "Hd2dContact.element.heal": {
+      "sfx": "hd2d_heal_contact",
+      "volume": 0.68,
+      "jitter": 0,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dContact.enemy.fang": {
+      "sfx": "hd2d_enemy_fang_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dContact.enemy.claw": {
+      "sfx": "hd2d_enemy_claw_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dContact.enemy.thrust": {
+      "sfx": "hd2d_enemy_thrust_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dContact.enemy.blunt": {
+      "sfx": "hd2d_enemy_blunt_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dContact.enemy.beam": {
+      "sfx": "hd2d_enemy_beam_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    },
+    "Hd2dContact.enemy.throw": {
+      "sfx": "hd2d_enemy_throw_contact",
+      "volume": 0.68,
+      "jitter": 0.015,
+      "volJitter": 0.03,
+      "minGap": 0.05
+    }
+  }
+}

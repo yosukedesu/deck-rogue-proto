@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "integration_status": "not_installed",
+  "routes": [
+    {
+      "asset": "hd2d_physical_onset",
+      "proposed_key": "Hd2dOnset.element.physical",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "cast_or_attack_begin_once",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_physical_contact",
+      "proposed_key": "Hd2dContact.element.physical",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_fire_onset",
+      "proposed_key": "Hd2dOnset.element.fire",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "cast_or_attack_begin_once",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_fire_contact",
+      "proposed_key": "Hd2dContact.element.fire",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_ice_onset",
+      "proposed_key": "Hd2dOnset.element.ice",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "cast_or_attack_begin_once",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_ice_contact",
+      "proposed_key": "Hd2dContact.element.ice",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_light_onset",
+      "proposed_key": "Hd2dOnset.element.light",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "cast_or_attack_begin_once",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_light_contact",
+      "proposed_key": "Hd2dContact.element.light",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_dark_onset",
+      "proposed_key": "Hd2dOnset.element.dark",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "cast_or_attack_begin_once",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_dark_contact",
+      "proposed_key": "Hd2dContact.element.dark",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_water_onset",
+      "proposed_key": "Hd2dOnset.element.water",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "cast_or_attack_begin_once",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_water_contact",
+      "proposed_key": "Hd2dContact.element.water",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_earth_onset",
+      "proposed_key": "Hd2dOnset.element.earth",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "cast_or_attack_begin_once",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_earth_contact",
+      "proposed_key": "Hd2dContact.element.earth",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_vine_onset",
+      "proposed_key": "Hd2dOnset.element.vine",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "cast_or_attack_begin_once",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_vine_contact",
+      "proposed_key": "Hd2dContact.element.vine",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_lightning_onset",
+      "proposed_key": "Hd2dOnset.element.lightning",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "cast_or_attack_begin_once",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_lightning_contact",
+      "proposed_key": "Hd2dContact.element.lightning",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_heal_onset",
+      "proposed_key": "Hd2dOnset.element.heal",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "cast_or_attack_begin_once",
+      "avoid_duplicate": [
+        "HpHealed_existing_harp"
+      ]
+    },
+    {
+      "asset": "hd2d_heal_contact",
+      "proposed_key": "Hd2dContact.element.heal",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "positive_effective_heal_receipt",
+      "avoid_duplicate": [
+        "HpHealed_existing_harp"
+      ]
+    },
+    {
+      "asset": "hd2d_enemy_fang_contact",
+      "proposed_key": "Hd2dContact.enemy.fang",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_enemy_claw_contact",
+      "proposed_key": "Hd2dContact.enemy.claw",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_enemy_thrust_contact",
+      "proposed_key": "Hd2dContact.enemy.thrust",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_enemy_blunt_contact",
+      "proposed_key": "Hd2dContact.enemy.blunt",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_enemy_beam_contact",
+      "proposed_key": "Hd2dContact.enemy.beam",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    },
+    {
+      "asset": "hd2d_enemy_throw_contact",
+      "proposed_key": "Hd2dContact.enemy.throw",
+      "status": "requires_Claude_presentation_bridge",
+      "trigger": "actual_positive_hp_damage_contact",
+      "avoid_duplicate": [
+        "generic_damage_sound"
+      ]
+    }
+  ],
+  "family_aliases": {
+    "vine": [
+      "vegetal",
+      "wood_if_visually_vine_or_leaf_not_all_wood"
+    ],
+    "earth": [
+      "EarthFracture"
+    ],
+    "physical": [
+      "neutral_melee_slash_fallback"
+    ]
+  },
+  "safety_rules": [
+    "Existing confirmed source-material route wins; card color alone is not an element mapping.",
+    "Preserve guard/nullify/miss semantics. Do not emit hit on zero HP loss.",
+    "Heal contact is only for actual positive healing, not HP loss. Preserve existing user-selected harp if not specifically replacing it.",
+    "Onset once per cast; no replay for each target. Contact follows actual contribution, never synthetic extra attacks.",
+    "Suppress old generic hit only when replacement plays successfully.",
+    "Keep legacy volley aggregation. Never duplicate a simultaneous target burst just because multiple receivers exist.",
+    "Do not add new GameEvent type-name keys into audio.json: existing presenter dispatch may treat those as terminal audio-only events."
+  ]
+}

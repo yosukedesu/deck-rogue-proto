@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "count": 26,
+  "format_all": "48000Hz mono PCM16",
+  "manifest_hash_checks": 26,
+  "raw_masters_present": 26,
+  "routing_keys": 26,
+  "standalone_html_links": "all exist",
+  "rebuild_sha256_matches": 26,
+  "listened": false,
+  "game_integration_tested": false
+}

@@ -1,0 +1,132 @@
+[
+  {
+    "index": 1,
+    "id": "hd2d_physical_onset",
+    "at_s": 0
+  },
+  {
+    "index": 2,
+    "id": "hd2d_physical_contact",
+    "at_s": 1.0
+  },
+  {
+    "index": 3,
+    "id": "hd2d_fire_onset",
+    "at_s": 2.09
+  },
+  {
+    "index": 4,
+    "id": "hd2d_fire_contact",
+    "at_s": 3.14
+  },
+  {
+    "index": 5,
+    "id": "hd2d_ice_onset",
+    "at_s": 4.45
+  },
+  {
+    "index": 6,
+    "id": "hd2d_ice_contact",
+    "at_s": 5.47
+  },
+  {
+    "index": 7,
+    "id": "hd2d_light_onset",
+    "at_s": 6.65
+  },
+  {
+    "index": 8,
+    "id": "hd2d_light_contact",
+    "at_s": 7.7
+  },
+  {
+    "index": 9,
+    "id": "hd2d_dark_onset",
+    "at_s": 8.94
+  },
+  {
+    "index": 10,
+    "id": "hd2d_dark_contact",
+    "at_s": 10.03
+  },
+  {
+    "index": 11,
+    "id": "hd2d_water_onset",
+    "at_s": 11.36
+  },
+  {
+    "index": 12,
+    "id": "hd2d_water_contact",
+    "at_s": 12.39
+  },
+  {
+    "index": 13,
+    "id": "hd2d_earth_onset",
+    "at_s": 13.72
+  },
+  {
+    "index": 14,
+    "id": "hd2d_earth_contact",
+    "at_s": 14.8
+  },
+  {
+    "index": 15,
+    "id": "hd2d_vine_onset",
+    "at_s": 16.25
+  },
+  {
+    "index": 16,
+    "id": "hd2d_vine_contact",
+    "at_s": 17.25
+  },
+  {
+    "index": 17,
+    "id": "hd2d_lightning_onset",
+    "at_s": 18.36
+  },
+  {
+    "index": 18,
+    "id": "hd2d_lightning_contact",
+    "at_s": 19.35
+  },
+  {
+    "index": 19,
+    "id": "hd2d_heal_onset",
+    "at_s": 20.46
+  },
+  {
+    "index": 20,
+    "id": "hd2d_heal_contact",
+    "at_s": 21.55
+  },
+  {
+    "index": 21,
+    "id": "hd2d_enemy_fang_contact",
+    "at_s": 23.1
+  },
+  {
+    "index": 22,
+    "id": "hd2d_enemy_claw_contact",
+    "at_s": 24.14
+  },
+  {
+    "index": 23,
+    "id": "hd2d_enemy_thrust_contact",
+    "at_s": 25.21
+  },
+  {
+    "index": 24,
+    "id": "hd2d_enemy_blunt_contact",
+    "at_s": 26.23
+  },
+  {
+    "index": 25,
+    "id": "hd2d_enemy_beam_contact",
+    "at_s": 27.46
+  },
+  {
+    "index": 26,
+    "id": "hd2d_enemy_throw_contact",
+    "at_s": 28.61
+  }
+]
