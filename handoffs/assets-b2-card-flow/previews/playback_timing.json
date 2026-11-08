@@ -1,0 +1,314 @@
+{
+  "preview_only": true,
+  "format": "APNG",
+  "size": [
+    772,
+    284
+  ],
+  "durations_ms": [
+    350,
+    65,
+    65,
+    75,
+    80,
+    85,
+    85,
+    95,
+    70,
+    700,
+    350,
+    55,
+    60,
+    65,
+    65,
+    70,
+    75,
+    80,
+    70,
+    700,
+    350,
+    45,
+    50,
+    55,
+    65,
+    75,
+    75,
+    85,
+    70,
+    700,
+    350,
+    70,
+    70,
+    75,
+    80,
+    85,
+    85,
+    95,
+    70,
+    700,
+    350,
+    55,
+    55,
+    65,
+    75,
+    85,
+    85,
+    90,
+    70,
+    700
+  ],
+  "sequence": [
+    {
+      "effect": "exhaust",
+      "stage": "ready",
+      "duration_ms": 350
+    },
+    {
+      "effect": "exhaust",
+      "stage": 0,
+      "duration_ms": 65
+    },
+    {
+      "effect": "exhaust",
+      "stage": 1,
+      "duration_ms": 65
+    },
+    {
+      "effect": "exhaust",
+      "stage": 2,
+      "duration_ms": 75
+    },
+    {
+      "effect": "exhaust",
+      "stage": 3,
+      "duration_ms": 80
+    },
+    {
+      "effect": "exhaust",
+      "stage": 4,
+      "duration_ms": 85
+    },
+    {
+      "effect": "exhaust",
+      "stage": 5,
+      "duration_ms": 85
+    },
+    {
+      "effect": "exhaust",
+      "stage": 6,
+      "duration_ms": 95
+    },
+    {
+      "effect": "exhaust",
+      "stage": 7,
+      "duration_ms": 70
+    },
+    {
+      "effect": "exhaust",
+      "stage": "hold",
+      "duration_ms": 700
+    },
+    {
+      "effect": "discard",
+      "stage": "ready",
+      "duration_ms": 350
+    },
+    {
+      "effect": "discard",
+      "stage": 0,
+      "duration_ms": 55
+    },
+    {
+      "effect": "discard",
+      "stage": 1,
+      "duration_ms": 60
+    },
+    {
+      "effect": "discard",
+      "stage": 2,
+      "duration_ms": 65
+    },
+    {
+      "effect": "discard",
+      "stage": 3,
+      "duration_ms": 65
+    },
+    {
+      "effect": "discard",
+      "stage": 4,
+      "duration_ms": 70
+    },
+    {
+      "effect": "discard",
+      "stage": 5,
+      "duration_ms": 75
+    },
+    {
+      "effect": "discard",
+      "stage": 6,
+      "duration_ms": 80
+    },
+    {
+      "effect": "discard",
+      "stage": 7,
+      "duration_ms": 70
+    },
+    {
+      "effect": "discard",
+      "stage": "hold",
+      "duration_ms": 700
+    },
+    {
+      "effect": "draw",
+      "stage": "ready",
+      "duration_ms": 350
+    },
+    {
+      "effect": "draw",
+      "stage": 0,
+      "duration_ms": 45
+    },
+    {
+      "effect": "draw",
+      "stage": 1,
+      "duration_ms": 50
+    },
+    {
+      "effect": "draw",
+      "stage": 2,
+      "duration_ms": 55
+    },
+    {
+      "effect": "draw",
+      "stage": 3,
+      "duration_ms": 65
+    },
+    {
+      "effect": "draw",
+      "stage": 4,
+      "duration_ms": 75
+    },
+    {
+      "effect": "draw",
+      "stage": 5,
+      "duration_ms": 75
+    },
+    {
+      "effect": "draw",
+      "stage": 6,
+      "duration_ms": 85
+    },
+    {
+      "effect": "draw",
+      "stage": 7,
+      "duration_ms": 70
+    },
+    {
+      "effect": "draw",
+      "stage": "hold",
+      "duration_ms": 700
+    },
+    {
+      "effect": "impulse_expire",
+      "stage": "ready",
+      "duration_ms": 350
+    },
+    {
+      "effect": "impulse_expire",
+      "stage": 0,
+      "duration_ms": 70
+    },
+    {
+      "effect": "impulse_expire",
+      "stage": 1,
+      "duration_ms": 70
+    },
+    {
+      "effect": "impulse_expire",
+      "stage": 2,
+      "duration_ms": 75
+    },
+    {
+      "effect": "impulse_expire",
+      "stage": 3,
+      "duration_ms": 80
+    },
+    {
+      "effect": "impulse_expire",
+      "stage": 4,
+      "duration_ms": 85
+    },
+    {
+      "effect": "impulse_expire",
+      "stage": 5,
+      "duration_ms": 85
+    },
+    {
+      "effect": "impulse_expire",
+      "stage": 6,
+      "duration_ms": 95
+    },
+    {
+      "effect": "impulse_expire",
+      "stage": 7,
+      "duration_ms": 70
+    },
+    {
+      "effect": "impulse_expire",
+      "stage": "hold",
+      "duration_ms": 700
+    },
+    {
+      "effect": "kindle",
+      "stage": "ready",
+      "duration_ms": 350
+    },
+    {
+      "effect": "kindle",
+      "stage": 0,
+      "duration_ms": 55
+    },
+    {
+      "effect": "kindle",
+      "stage": 1,
+      "duration_ms": 55
+    },
+    {
+      "effect": "kindle",
+      "stage": 2,
+      "duration_ms": 65
+    },
+    {
+      "effect": "kindle",
+      "stage": 3,
+      "duration_ms": 75
+    },
+    {
+      "effect": "kindle",
+      "stage": 4,
+      "duration_ms": 85
+    },
+    {
+      "effect": "kindle",
+      "stage": 5,
+      "duration_ms": 85
+    },
+    {
+      "effect": "kindle",
+      "stage": 6,
+      "duration_ms": 90
+    },
+    {
+      "effect": "kindle",
+      "stage": 7,
+      "duration_ms": 70
+    },
+    {
+      "effect": "kindle",
+      "stage": "hold",
+      "duration_ms": 700
+    }
+  ],
+  "frame_count": 50,
+  "loop": 0
+}
