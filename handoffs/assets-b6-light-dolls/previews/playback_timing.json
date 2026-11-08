@@ -1,0 +1,86 @@
+{
+  "light_gain": {
+    "durations_ms": [
+      40,
+      45,
+      45,
+      45,
+      45,
+      45,
+      55,
+      40,
+      800
+    ],
+    "last_preview_frame": "800ms restart hold, not production"
+  },
+  "light_command": {
+    "durations_ms": [
+      45,
+      50,
+      55,
+      65,
+      65,
+      60,
+      55,
+      45,
+      800
+    ],
+    "last_preview_frame": "800ms restart hold, not production"
+  },
+  "light_release": {
+    "durations_ms": [
+      35,
+      35,
+      40,
+      45,
+      45,
+      45,
+      45,
+      40,
+      800
+    ],
+    "last_preview_frame": "800ms restart hold, not production"
+  },
+  "doll_ignite": {
+    "durations_ms": [
+      45,
+      50,
+      55,
+      65,
+      65,
+      60,
+      60,
+      50,
+      800
+    ],
+    "last_preview_frame": "800ms restart hold, not production"
+  },
+  "doll_step": {
+    "durations_ms": [
+      35,
+      30,
+      30,
+      40,
+      40,
+      35,
+      35,
+      35,
+      800
+    ],
+    "last_preview_frame": "800ms restart hold, not production"
+  },
+  "doll_dissolve": {
+    "durations_ms": [
+      55,
+      60,
+      70,
+      80,
+      80,
+      80,
+      70,
+      65,
+      800
+    ],
+    "last_preview_frame": "800ms restart hold, not production"
+  }
+}

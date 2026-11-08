@@ -1,0 +1,1244 @@
+{
+  "schema_version": 1,
+  "bundle": "B6-light-dolls",
+  "date": "2026-11-08",
+  "branch": "codex/assets-b6-20261108",
+  "delivery_status": "asset bundle only; runtime integration not tested",
+  "production": {
+    "pixel_format": "RGBA8",
+    "alpha_values": [
+      0,
+      255
+    ],
+    "layout": "horizontal, left to right, zero-based",
+    "filter": "nearest",
+    "mipmaps": false,
+    "blend_mode": "normal alpha",
+    "trim": false,
+    "rotate_atlas_cells": false,
+    "coordinate_system": "top-left image origin; rect x,y,width,height; bbox exclusive right/bottom",
+    "scale": "same logical pixel scale as 32px/48px doll art; uniform integer enlargement; never squash 64px canvas to a 32px rectangle",
+    "palette": "palette.json",
+    "creation": "direct integer-grid original artwork; no image generation or resized source"
+  },
+  "not_in_scope": [
+    "A7 lantern body",
+    "energy orb",
+    "doll character redesign",
+    "engine/data/Unity changes",
+    "audio",
+    "runtime integration"
+  ],
+  "animations": [
+    {
+      "key": "light_gain",
+      "path": "Art/fx/light_gain_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "frame_size_px": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "sha256": "7378f81955ae9890b326fc59da7bd8fee2a0f6dc4330619e06dcc90684a2748b",
+      "duration_ms": 360,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40,
+          "start_ms": 0,
+          "alpha_bbox_px": [
+            18,
+            23,
+            32,
+            41
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 40,
+          "alpha_bbox_px": [
+            20,
+            24,
+            33,
+            40
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 85,
+          "alpha_bbox_px": [
+            21,
+            24,
+            34,
+            40
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 130,
+          "alpha_bbox_px": [
+            23,
+            25,
+            34,
+            39
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 175,
+          "alpha_bbox_px": [
+            25,
+            27,
+            35,
+            38
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 220,
+          "alpha_bbox_px": [
+            27,
+            29,
+            35,
+            36
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55,
+          "start_ms": 265,
+          "alpha_bbox_px": [
+            31,
+            31,
+            34,
+            34
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40,
+          "start_ms": 320,
+          "alpha_bbox_px": null
+        }
+      ],
+      "purpose": "灯を得る火の粉。出どころから既存ランタンの硝子中心へ",
+      "anchor_px": [
+        32,
+        32
+      ],
+      "placement": "moving world-space projectile root; pixels are local sparks, not a full source-to-target line",
+      "route": {
+        "from": "resolved source position",
+        "to": "existing lantern glass centre",
+        "progress_at_frame_start": [
+          0,
+          0.12,
+          0.28,
+          0.47,
+          0.67,
+          0.85,
+          1,
+          1
+        ],
+        "arrival_frame": 6,
+        "arrival_time_ms": 265,
+        "curve": "quadratic arc, optional upward control point; sample root at integer logical pixels",
+        "rotation": "none"
+      },
+      "guards": [
+        "amount > 0 only",
+        "carry / residual-light: no incoming projectile, use existing local lantern feedback",
+        "if lantern or source cannot resolve, skip route; never invent another source",
+        "particle count is decorative; do not update light count per particle"
+      ]
+    },
+    {
+      "key": "light_command",
+      "path": "Art/fx/light_command_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "frame_size_px": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "sha256": "7eaa683d6d8f9e7490e888f23f1a70024c9431834f77f5699a2c09b6454f0734",
+      "duration_ms": 440,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 0,
+          "alpha_bbox_px": [
+            18,
+            10,
+            47,
+            47
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 50,
+          "start_ms": 45,
+          "alpha_bbox_px": [
+            8,
+            4,
+            57,
+            48
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55,
+          "start_ms": 95,
+          "alpha_bbox_px": [
+            7,
+            3,
+            58,
+            49
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 65,
+          "start_ms": 150,
+          "alpha_bbox_px": [
+            7,
+            3,
+            58,
+            50
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 65,
+          "start_ms": 215,
+          "alpha_bbox_px": [
+            8,
+            4,
+            57,
+            50
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 60,
+          "start_ms": 280,
+          "alpha_bbox_px": [
+            8,
+            4,
+            57,
+            50
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55,
+          "start_ms": 340,
+          "alpha_bbox_px": [
+            7,
+            6,
+            58,
+            50
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 395,
+          "alpha_bbox_px": null
+        }
+      ],
+      "purpose": "号令で対象の人形が同時に光る",
+      "anchor_px": [
+        32,
+        52
+      ],
+      "placement": "each resolved active doll feet; common start timestamp for all targets",
+      "sprite_sync": {
+        "warm_mix_hex": "#dfc77f",
+        "warm_mix_weight_at_frame_start": [
+          0,
+          0.15,
+          0.35,
+          0.5,
+          0.35,
+          0.15,
+          0.05,
+          0
+        ],
+        "offset_px": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "reset_on_complete_or_cancel": true
+      },
+      "guards": [
+        "only actual command/rally targets",
+        "light cost alone is not proof of a command",
+        "synchronize one instance per UID; do not duplicate per damage event",
+        "ring is effect-only; existing doll artwork stays unchanged"
+      ]
+    },
+    {
+      "key": "light_release",
+      "path": "Art/fx/light_release_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "frame_size_px": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "sha256": "fae6c5855a0a44bdfd9e83764b595ad0e2da7bac8e013c30e7015a46b6ad8bd2",
+      "duration_ms": 330,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35,
+          "start_ms": 0,
+          "alpha_bbox_px": [
+            23,
+            29,
+            40,
+            37
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35,
+          "start_ms": 35,
+          "alpha_bbox_px": [
+            17,
+            29,
+            40,
+            37
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40,
+          "start_ms": 70,
+          "alpha_bbox_px": [
+            11,
+            29,
+            40,
+            37
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 110,
+          "alpha_bbox_px": [
+            7,
+            29,
+            40,
+            37
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 155,
+          "alpha_bbox_px": [
+            11,
+            29,
+            40,
+            37
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 200,
+          "alpha_bbox_px": [
+            18,
+            29,
+            40,
+            37
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 245,
+          "alpha_bbox_px": [
+            30,
+            29,
+            40,
+            36
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40,
+          "start_ms": 290,
+          "alpha_bbox_px": null
+        }
+      ],
+      "purpose": "灯がランタンから確定した対象へ飛ぶ",
+      "anchor_px": [
+        39,
+        32
+      ],
+      "placement": "moving world-space projectile root",
+      "route": {
+        "from": "existing lantern glass centre",
+        "to": "resolved intended enemy, or resolved dolls for rally release",
+        "progress_at_frame_start": [
+          0,
+          0.1,
+          0.27,
+          0.48,
+          0.7,
+          0.9,
+          1,
+          1
+        ],
+        "arrival_frame": 6,
+        "arrival_time_ms": 245,
+        "texture_forward": "+x (right)",
+        "rotation": "avoid arbitrary raster rotation; keep right-facing for rightward shots, mirror x for leftward shots; trajectory direction belongs to root"
+      },
+      "guards": [
+        "spent > 0 only",
+        "payment-only / sparks conversion must NOT play enemy release",
+        "do not assume every release attacks an enemy: rally routes to dolls",
+        "one resolved target per projectile; no fallback player-as-enemy",
+        "damage time belongs to presentation/game events, not PNG animation end"
+      ]
+    },
+    {
+      "key": "doll_ignite",
+      "path": "Art/fx/doll_ignite_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "frame_size_px": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "sha256": "f38ca28d9cbde2c95b50e62b23062a1c94dd903a84474198540935eeddd4502d",
+      "duration_ms": 450,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 45,
+          "start_ms": 0,
+          "alpha_bbox_px": [
+            19,
+            44,
+            46,
+            55
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 50,
+          "start_ms": 45,
+          "alpha_bbox_px": [
+            19,
+            41,
+            46,
+            55
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55,
+          "start_ms": 95,
+          "alpha_bbox_px": [
+            16,
+            19,
+            49,
+            55
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 65,
+          "start_ms": 150,
+          "alpha_bbox_px": [
+            14,
+            18,
+            52,
+            56
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 65,
+          "start_ms": 215,
+          "alpha_bbox_px": [
+            12,
+            17,
+            55,
+            57
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 60,
+          "start_ms": 280,
+          "alpha_bbox_px": [
+            10,
+            16,
+            57,
+            57
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 60,
+          "start_ms": 340,
+          "alpha_bbox_px": [
+            10,
+            48,
+            57,
+            57
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 50,
+          "start_ms": 400,
+          "alpha_bbox_px": null
+        }
+      ],
+      "purpose": "人形登場時の点灯、足元の光輪と左右の小さな火",
+      "anchor_px": [
+        32,
+        52
+      ],
+      "placement": "new doll feet, behind or in front as local stage VFX; labels remain above",
+      "sprite_sync": {
+        "warm_mix_hex": "#dfc77f",
+        "warm_mix_weight_at_frame_start": [
+          0,
+          0.15,
+          0.35,
+          0.5,
+          0.35,
+          0.15,
+          0.05,
+          0
+        ],
+        "offset_px": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "scale": 1,
+        "reset_on_complete_or_cancel": true
+      },
+      "guards": [
+        "newly appeared doll only; do not replay on UI rebuild/load",
+        "existing 32px/48px art is not part of this texture",
+        "avoid combining duplicate existing ring bursts with this atlas"
+      ]
+    },
+    {
+      "key": "doll_step",
+      "path": "Art/fx/doll_step_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "frame_size_px": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "sha256": "2261b4f9edae01772e27241739f50034acba249e0f1e10a8cd6990c6d9b6f415",
+      "duration_ms": 280,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35,
+          "start_ms": 0,
+          "alpha_bbox_px": [
+            17,
+            51,
+            20,
+            52
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 30,
+          "start_ms": 35,
+          "alpha_bbox_px": [
+            10,
+            49,
+            24,
+            56
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 30,
+          "start_ms": 65,
+          "alpha_bbox_px": [
+            11,
+            47,
+            49,
+            56
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40,
+          "start_ms": 95,
+          "alpha_bbox_px": [
+            12,
+            47,
+            49,
+            56
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 40,
+          "start_ms": 135,
+          "alpha_bbox_px": [
+            13,
+            47,
+            49,
+            56
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35,
+          "start_ms": 175,
+          "alpha_bbox_px": [
+            18,
+            47,
+            49,
+            54
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35,
+          "start_ms": 210,
+          "alpha_bbox_px": [
+            18,
+            51,
+            44,
+            55
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 35,
+          "start_ms": 245,
+          "alpha_bbox_px": null
+        }
+      ],
+      "purpose": "人形が短く踏み込み、定位置へ戻る",
+      "anchor_px": [
+        32,
+        52
+      ],
+      "placement": "launch feet fixed for full effect; do not parent to moving doll sprite",
+      "sprite_sync": {
+        "offset_px_at_frame_start": [
+          [
+            0,
+            0
+          ],
+          [
+            -1,
+            0
+          ],
+          [
+            4,
+            -1
+          ],
+          [
+            8,
+            -2
+          ],
+          [
+            6,
+            -1
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "offset_coordinate_system": "top-left logical pixel axes (+x right, +y down)",
+        "facing": "right; mirror artwork and negate x offsets for left",
+        "interpolation": "linear with integer pixel snapping; final origin exactly restored",
+        "reset_on_complete_or_cancel": true,
+        "hit_frame": 3,
+        "hit_time_ms": 95
+      },
+      "guards": [
+        "actual attacking doll UID only; not every permanent/sourceUid is a doll",
+        "movement is visual only, never move hitbox, label, seat or layout",
+        "prevent double lunge with existing presentation tween",
+        "damage is authorized event timing, hit time is recommendation not rule change"
+      ]
+    },
+    {
+      "key": "doll_dissolve",
+      "path": "Art/fx/doll_dissolve_8f.png",
+      "size_px": [
+        512,
+        64
+      ],
+      "frame_size_px": [
+        64,
+        64
+      ],
+      "frame_count": 8,
+      "sha256": "92abac2296b3c299c4bee43e3a469f6f12b0443692bb490dbf058fbf523e925d",
+      "duration_ms": 560,
+      "frames": [
+        {
+          "index": 0,
+          "rect_px": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 55,
+          "start_ms": 0,
+          "alpha_bbox_px": [
+            19,
+            9,
+            41,
+            20
+          ]
+        },
+        {
+          "index": 1,
+          "rect_px": [
+            64,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 60,
+          "start_ms": 55,
+          "alpha_bbox_px": [
+            17,
+            13,
+            47,
+            29
+          ]
+        },
+        {
+          "index": 2,
+          "rect_px": [
+            128,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 70,
+          "start_ms": 115,
+          "alpha_bbox_px": [
+            18,
+            16,
+            46,
+            44
+          ]
+        },
+        {
+          "index": 3,
+          "rect_px": [
+            192,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 80,
+          "start_ms": 185,
+          "alpha_bbox_px": [
+            17,
+            19,
+            47,
+            50
+          ]
+        },
+        {
+          "index": 4,
+          "rect_px": [
+            256,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 80,
+          "start_ms": 265,
+          "alpha_bbox_px": [
+            21,
+            32,
+            46,
+            52
+          ]
+        },
+        {
+          "index": 5,
+          "rect_px": [
+            320,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 80,
+          "start_ms": 345,
+          "alpha_bbox_px": [
+            22,
+            43,
+            45,
+            55
+          ]
+        },
+        {
+          "index": 6,
+          "rect_px": [
+            384,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 70,
+          "start_ms": 425,
+          "alpha_bbox_px": [
+            23,
+            53,
+            43,
+            58
+          ]
+        },
+        {
+          "index": 7,
+          "rect_px": [
+            448,
+            0,
+            64,
+            64
+          ],
+          "duration_ms": 65,
+          "start_ms": 495,
+          "alpha_bbox_px": null
+        }
+      ],
+      "purpose": "人形の灯が抜け、上から崩れて消える",
+      "anchor_px": [
+        32,
+        52
+      ],
+      "placement": "original doll feet; particles do not follow sinking sprite",
+      "sprite_sync": {
+        "remove_top_fraction_at_frame_start": [
+          0,
+          0.08,
+          0.23,
+          0.41,
+          0.61,
+          0.79,
+          0.94,
+          1
+        ],
+        "offset_px_at_frame_start": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            3
+          ]
+        ],
+        "mask": "hide each source-sprite pixel row y when y < round(height * fraction), top-left image coordinates; only sprite image, not labels or layout",
+        "after_frame_7": "sprite remains invisible; destroy/release presentation instance only after authoritative removal",
+        "cancel": "consult authoritative state; if still present restore original sprite/mask/position, if removed never resurrect"
+      },
+      "guards": [
+        "confirmed destroy/sacrifice/expire/dismiss only; not generic damage",
+        "UID required; one terminal effect per entity",
+        "replacement for old dissolve/motes, not addition to double particles",
+        "ash is visual only; no game state changes"
+      ]
+    }
+  ],
+  "common_contract": {
+    "play": "once, index 0..7; end frame fully transparent",
+    "z_order": "stage effects above ground, doll bodies readable; always below labels, counts and tooltips",
+    "bounds": "64x64 canvas includes effect only; use unclipped VFX layer, not card/icon clipping rectangle",
+    "numbers": "all counts/state from authoritative game result, not particles or frame counters",
+    "concurrency": "deduplicate same action + same UID; synchronized command targets; do not block gameplay on decorative completion",
+    "reduced_motion": "omit routes/lunge, show brief local tint if appropriate; state still resolves",
+    "abort": "destroy transient overlays and restore non-terminal sprite tint/position; terminal state must not resurrect",
+    "current_user_theme": "night glass and brass; no paper/cream/thick ink"
+  },
+  "previews": {
+    "native": "previews/light_dolls_native.png",
+    "contactsheet": "previews/light_dolls_contactsheet.png",
+    "apng": "previews/<key>_playback.png",
+    "warning": "dummy tokens are original preview-only neutral shapes, not production artwork; APNG has extra 800ms restart hold"
+  },
+  "read_only_references": {
+    "backlog": "docs/dot-asset-backlog-2026-11-02.md B6",
+    "base_commit": "114ee430310c5a2df02ea048f23d1f8375c22c66",
+    "paths": [
+      "src/engine/types.ts",
+      "unity/Assets/Game/Presenter.cs",
+      "unity/Assets/Game/BattleView.cs"
+    ],
+    "note": "read for existing event semantics and 32px/48px doll scale only; code/data snapshots are not bundled"
+  }
+}
