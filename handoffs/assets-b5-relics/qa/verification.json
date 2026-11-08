@@ -1,0 +1,52 @@
+{
+  "result": "pass",
+  "production_assets": [
+    {
+      "path": "Art/fx/relic_ring_8f.png",
+      "dimensions": [
+        512,
+        64
+      ],
+      "color_count_including_transparent": 7,
+      "sha256": "11233d5ebabf618b5738b3c810d13d298ce2bad07de302e59fe74241d5aaa87f"
+    },
+    {
+      "path": "Art/ui/relic_counter_plate.png",
+      "dimensions": [
+        24,
+        14
+      ],
+      "color_count_including_transparent": 5,
+      "sha256": "ea58d237dead8f13e5c098ae4a33d70d5956bba3cdab2ec84c909cce178bb107"
+    },
+    {
+      "path": "Art/ui/relic_counter_plate_active.png",
+      "dimensions": [
+        24,
+        14
+      ],
+      "color_count_including_transparent": 6,
+      "sha256": "a1504b0001cf461ccff0e6a03fae2eef21c0a02a776c03157af6657dbb5319b8"
+    }
+  ],
+  "checks": {
+    "rgba8": true,
+    "binary_alpha": true,
+    "transparent_rgb_zero": true,
+    "declared_palette_only": true,
+    "ring_8_distinct_frames": true,
+    "min_margin_px": 6,
+    "icon_34x34_aperture_clear": true,
+    "last_frame_transparent": true,
+    "counter_text_area_blank": true,
+    "timing_550_ms": true,
+    "icon_restored_at_end": true,
+    "apng_all_10_frames_decode_and_durations_match": true,
+    "rebuild_byte_identical": true
+  },
+  "limitations": [
+    "No game integration or runtime playback verified.",
+    "Visual review is separate qa/visual_review.md.",
+    "Source fixtures and original game icons are not distributed."
+  ]
+}
