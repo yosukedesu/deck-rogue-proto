@@ -323,10 +323,16 @@
     "android": "not_run"
   },
   "delivery_limits": {
-    "github_publication": "not_done_existing_approval_unresolved",
+    "github_publication": "published",
     "game_integration": false,
     "art_style": "HD2D pixel-style generated source, not manually authored single-pixel art",
     "terrain_dependency": "Image y>=248 must be occluded by actual stage terrain; preview gray band is only a diagnostic mask."
   },
-  "forbidden_paths_changed": []
+  "forbidden_paths_changed": [],
+  "publication": {
+    "state": "published",
+    "initialAssetCommit": "f38c56b005bae411ad316f596eb8bf2e8df266b2",
+    "gameIntegrationVerified": false,
+    "date": "2026-11-09"
+  }
 }

@@ -1,11 +1,6 @@
 {
-  "prepared_at_utc": "2026-11-08T23:30:50.637010+00:00",
-  "repository": "yosukedesu/deck-rogue-proto",
-  "branch": "codex/assets-c1-20261108",
-  "verified_ref_sha": "114ee430310c5a2df02ea048f23d1f8375c22c66",
-  "repository_writes_this_run": false,
-  "reason": "Existing GitHub approval not confirmed resolved; did not retry blocked write or use alternative push.",
-  "assets_complete": true,
-  "independent_qa": "passed_with_terrain_occlusion_condition",
-  "game_integration_verified": false
+  "state": "published",
+  "initialAssetCommit": "f38c56b005bae411ad316f596eb8bf2e8df266b2",
+  "gameIntegrationVerified": false,
+  "date": "2026-11-09"
 }
